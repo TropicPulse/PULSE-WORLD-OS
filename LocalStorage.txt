@@ -1,0 +1,33 @@
+[
+  "cachedUsers",
+  "cachedBusinesses",
+"cachedBusinessesTimestamp",
+  "cachedEvents",
+"cachedEventsTimestamp",
+  "cachedUsersTimestamp",
+  "cachedHistory",
+  "cachedHistoryTimestamp",
+  "cachedSettings",
+  "cachedSettingsTimestamp"
+].forEach(k => localStorage.removeItem(k));
+
+console.log("🔥 Pulse cache cleared");
+
+
+
+
+
+
+
+
+
+
+
+console.log(
+  "cachedUsers (pretty) →",
+  JSON.stringify(
+    JSON.parse(localStorage.getItem("cachedUsers") || "[]"),
+    null,
+    2
+  )
+);

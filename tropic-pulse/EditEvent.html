@@ -1,0 +1,2016 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport"
+      content="width=device-width,
+               initial-scale=1,
+               maximum-scale=1,
+               minimum-scale=1,
+               user-scalable=no">
+<title>Tropic Pulse - Event Form</title>
+
+
+<!-- Google Font -->
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-HSX89KS63P"></script>
+
+
+<script type="module" src="https://tropicpulse.bz/proxy/PulseUpdate.js?v8"></script>
+<script type="module" src="https://tropicpulse.bz/proxy/PulseBand.js?v8"></script>
+<script type="module" src="https://tropicpulse.bz/proxy/PulseClient.js?v8"></script>
+
+<script type="module" src="https://tropicpulse.bz/proxy/PulseUsersCacheManager.js?v8"></script>
+<script type="module" src="https://tropicpulse.bz/proxy/PulseEventCacheManager.js?v8"></script>
+<script type="module" src="https://tropicpulse.bz/proxy/PulseBusCacheManager.js?v8"></script>
+<script type="module" src="https://tropicpulse.bz/proxy/PulseHistoryCacheManager.js?v8"></script>
+<script type="module" src="https://tropicpulse.bz/proxy/PulseSettingsCacheManager.js?v8"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-HSX89KS63P');
+document.addEventListener("contextmenu", function(e) {
+    e.preventDefault();
+  });
+  document.addEventListener("dragstart", function(e) {
+    e.preventDefault();
+  });
+  !function(f,b,e,v,n,t,s){
+    if(f.fbq) return;
+    n = f.fbq = function(){
+      n.callMethod ?
+        n.callMethod.apply(n, arguments) : n.queue.push(arguments)
+    };
+    if(!f._fbq) f._fbq = n;
+    n.push = n;
+    n.loaded = true;
+    n.version = '2.0';
+    n.queue = [];
+    t = b.createElement(e);
+    t.async = true;
+    t.src = v;
+    s = b.getElementsByTagName(e)[0];
+    s.parentNode.insertBefore(t, s);
+  }(window, document, 'script', 'https://connect.facebook.net/en_US/fbevents.js');
+
+  fbq('init', '1651551349364459');
+  fbq('track', 'PageView');
+</script>
+
+<noscript>
+  <img
+    height="1"
+    width="1"
+    style="display:none"
+    src="https://www.facebook.com/tr?id=1651551349364459&ev=PageView&noscript=1"
+  />
+</noscript>
+<!-- End Meta Pixel Code -->
+ <style>
+:root {
+  --t-gold: #f5d27a;
+  --t-gold-deep: #b58a3c;
+  --t-bg-dark: #05080c;
+  --t-metal-light: #d9dde4;
+  --t-metal-mid: #9ca3b0;
+  --t-metal-dark: #4b515e;
+  --t-text-main: #f5f7fb;
+  --t-text-subtle: #a7b0c4;
+  --t-card-bg: #070a11;
+}
+
+body {
+  padding: 0;
+  margin: 0;
+  width: 100%;
+  min-height: 100dvh;
+
+  display: flex;
+  justify-content: center;
+
+  background: #000;
+  background-image: url('https://tropicpulse.bz/Mysterious.png?v8');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+
+  font-family: Arial, sans-serif;
+}
+
+/* Overlay ONLY — NOT a second background */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+
+  /* Optional tint */
+  background: rgba(0,0,0,0.25);
+
+  pointer-events: none;
+  z-index: -1;
+}
+
+.fade-ready {
+  transition: opacity 0.25s ease, transform 0.25s ease;
+}
+.img-wrapper.fade-swap {
+  opacity: 0.4;
+  transform: scale(0.92);
+}
+.fade-out {
+  opacity: 0;
+  transform: scale(0.85);
+}
+
+.header {
+  background: linear-gradient(135deg, #0f8f4f 0%, #0a6e3a 100%);
+  color: white;
+  padding: 13px 20px;
+  font-size: 18px;
+  font-weight: 600;
+  border-radius: 10px;
+  text-align: center;
+  justify-content: center;
+  box-shadow:
+    0 4px 12px rgba(0,0,0,0.30),
+    0 12px 28px rgba(0,0,0,0.32),
+    inset 0 0 0 1px rgba(255,255,255,0.35);
+  backdrop-filter: blur(16px);
+  overflow: hidden;
+  position: relative;
+  z-index: 999;
+  top: 0;
+  margin-top: -18px;
+  margin-bottom: 14px;
+}
+
+.header::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 45%;
+  background: rgba(255,255,255,0.12);
+}
+
+.header {
+  position: sticky;
+  z-index: 999;
+  top: 0;
+  display: inline-flex;      /* ← the magic */
+  align-items: center;
+  justify-content: center;   /* ← center the filter row */
+  width: 100%;               
+  min-width: 0;            /* ← keeps it full width without stretching */
+}
+
+
+.event-form-container {
+  width: 480px;
+    min-width: 0;
+    max-width: 100%;
+    min-height: 0;
+    margin: 0 6px;
+  border-radius: 22px;
+    display: flex;
+    
+    box-shadow: 0 6px 22px rgba(0,0,0,0.1);
+    flex-direction: column;     /* image on top, row below */
+  background: #ffff99;
+  box-shadow:
+    0 4px 12px rgba(0,0,0,0.30),
+    0 12px 28px rgba(0,0,0,0.32),
+    inset 0 0 0 1px rgba(255,255,255,0.35);
+  padding: 4px;
+}
+
+/* Circular blurred aura */
+.event-form-container::before {
+  content: "";
+  position: absolute;
+  width: 480px;
+    min-width: 0;
+    max-width: 100%;
+    min-height: 0;
+    margin: 0 6px;
+  inset: 0; /* controls aura size */
+  border-radius: inherit; /* ← PERFECT FIX */
+  z-index: -1;
+  background-size: contain;
+  /* Black → transparent fade */
+  background: radial-gradient(
+    circle,
+    rgba(0,0,0,0.85) 0%,
+    rgba(0,0,0,0.55) 35%,
+    rgba(0,0,0,0.25) 60%,
+    rgba(0,0,0,0) 100%
+  );
+  filter: blur(45px);
+  opacity: 1;
+}
+
+.form-group { margin-bottom: 18px; }
+
+label { font-weight: 600; margin-bottom: 6px; display: block; }
+
+input, select, textarea {
+  width: 100%;
+  min-width: 0;        /* allows shrinking inside flex */
+  padding: 4px;
+  border-radius: 10px;
+  border: 1px solid #ccc;
+  font-size: 15px;
+  box-sizing: border-box;
+}
+
+
+.venue-row input {
+  padding: 10px;
+  flex: 1;  
+  border-radius: 10px;
+  border: 1px solid #ccc;
+  font-size: 15px;
+  min-width: 0;
+}
+
+
+#imagePreview {
+  display: flex;
+  gap: clamp(4px, 2vw, 10px);
+  flex-wrap: wrap;
+  margin-top: 10px;
+}
+
+#imagePreview img {
+  width: clamp(38px, 17vw, 88px);
+  height: clamp(38px, 17vw, 88px);
+  object-fit: cover;
+  border-radius: 10px;
+  border: 2px solid #0a6e3a;
+}
+
+.save-btn {
+  width: 100%; padding: 14px;
+  background: linear-gradient(135deg, green, green);
+  color: white; border: none; border-radius: 12px;
+  font-size: 18px; font-weight: 600; cursor: pointer;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+  align-items: center;
+  min-width: 0;
+}
+.img-wrapper {
+  /* Responsive magic */
+  width: clamp(40px, 18vw, 88px);
+  height: clamp(40px, 18vw, 88px);
+
+  border-radius: 10px;
+  background: white;
+  border: 4px solid rgba(255, 215, 130, 0.6);
+  position: relative;
+  display: inline-block; /* keeps wrapper tight to image */
+
+  align-items: center;
+  justify-content: center;
+}
+
+.img-wrapper img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 10px;
+  border: 2px solid #0a6e3a;
+}
+
+.img-delete {
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  background: #ff3b30;
+  color: white;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.25);
+}
+
+.map-wrapper {
+  border-radius: 14px;
+  overflow: hidden;
+  box-shadow: 0 4px 14px rgba(0,0,0,0.18);
+  margin-top: 10px;
+}
+
+.map-wrapper img {
+  width: 100%;
+  display: block;
+}
+
+
+.venue-row {
+  display: flex;        /* makes items sit on one line */
+  gap: 8px;
+  align-items: center;
+}
+
+.venue-check-btn {
+  padding: 10px 14px;
+  background: #0a6e3a;
+  color: white;
+  border: none;
+  border-radius: 10px;
+  font-weight: 600;
+  cursor: pointer;
+  opacity: 0.4;
+  white-space: nowrap;
+}
+
+.venue-check-btn:disabled {
+  cursor: default;
+  opacity: 0.4;
+}
+
+.venue-check-btn:not(:disabled) {
+  opacity: 1;
+}
+
+#venuePreview {
+  display: none;
+  margin-top: 12px;
+  padding: 12px;
+  border-radius: 12px;
+  background: #f8fff4;
+  border: 1px solid #cde8d2;
+  box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+}
+
+#floatingCategoryBubble {
+  position: fixed;
+  top: 6px;
+  right: 6px;
+  /* Responsive magic */
+  width: clamp(60px, 18vw, 100px);
+  height: clamp(60px, 18vw, 100px);
+
+  border-radius: 50%;
+  background: #f7e7c6;
+  border: 4px solid rgba(255, 215, 130, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  transition: opacity 0.25s ease;
+  border-color: rgb(255, 225, 150);
+  box-shadow: 0 0 6px rgba(255, 215, 130, 0.6);
+}
+
+#floatingCategoryBubble.hidden {
+  opacity: 0;
+  pointer-events: none;
+}
+
+#floatingCategoryBubble img {
+  width: 110%;
+  height: 110%;
+  margin-bottom: -6px;
+  object-fit: contain;
+}
+
+/* *:not(#floatingCategoryBubble img) {
+  box-sizing: border-box;
+  max-width: 100% !important;
+} */
+
+/* Platinum grey bubble */
+#floatingCategoryBubble.platinum {
+  background: #e5e5e5 !important;   /* soft platinum grey */
+  border-color: #cfcfcf !important;
+  box-shadow: 0 0 6px rgba(180, 180, 180, 0.6) !important;
+}
+
+#addPhoneBtn {
+  padding: 10px 14px;
+  background: orange;
+  color: black;
+  border: none;
+  border-radius: 10px;
+  font-weight: 600;
+  cursor: pointer;
+  opacity: 1;
+  white-space: nowrap;
+}
+
+
+#addWhatsAppBtn {
+  padding: 10px 14px;
+  background: green;
+  color: black;
+  border: none;
+  border-radius: 10px;
+  font-weight: 600;
+  cursor: pointer;
+  opacity: 1;
+  white-space: nowrap;
+}
+
+#addEmailBtn {
+  padding: 10px 14px;
+  background: blue;
+  color: black;
+  border: none;
+  border-radius: 10px;
+  font-weight: 600;
+  cursor: pointer;
+  opacity: 1;
+  white-space: nowrap;
+}
+.floating-scroll-up {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  width: 45px;
+  height: 45px;
+  background: white;
+  border-radius: 50%;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.25);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 26px;
+  font-weight: 700;
+  cursor: pointer;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.25s ease;
+  z-index: 9999;
+}
+.floating-scroll-up.visible {
+  opacity: 1;
+  pointer-events: auto;
+}
+.range-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  min-width: 0;
+  gap: 10px;
+}
+
+#tpOverlay {
+  transition: opacity 0.25s ease;
+}
+
+#tpDot {
+  transition: transform 0.25s ease;
+}
+
+#tpOverlay.show #tpDot {
+  transform: scale(1.5);
+}
+#tpDot {
+  animation: tpPulse 2.2s ease-in-out infinite;
+}
+
+#tpIcon {
+  fill: white;
+  box-shadow:
+    0 4px 12px rgba(0,0,0,0.30),
+    0 12px 28px rgba(0,0,0,0.32),
+    inset 0 0 0 1px rgba(255,255,255,0.35);
+}
+@keyframes tpPulse {
+  0%   { transform: scale(1.5); }
+  50%  { transform: scale(2); }
+  100% { transform: scale(1.5); }
+}
+
+.day-open,
+.day-close {
+  width: 100%;
+  min-width: 0; /* allows shrinking */
+}
+
+
+/* Fullscreen overlay */
+#t-loading {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.22);
+  backdrop-filter: blur(16px) saturate(180%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999999;
+  opacity: 1;
+  transition: opacity 0.6s ease-out;
+}
+
+/* Logo */
+#t-loading-logo {
+  width: 250px;
+  height: 250px;
+  object-fit: contain;
+  animation: tpShimmer 3.5s ease-in-out infinite;
+}
+
+/* Magical shimmer sweep */
+@keyframes tpShimmer {
+  0% {
+    transform: scale(0.92);
+    opacity: 0.7;
+    filter: drop-shadow(0 0 4px rgba(0,255,200,0.2));
+  }
+  50% {
+    transform: scale(1.09);
+    opacity: 1;
+    filter: drop-shadow(0 0 18px rgba(0,255,200,0.45));
+  }
+  100% {
+    transform: scale(0.92);
+    opacity: 0.7;
+    filter: drop-shadow(0 0 4px rgba(0,255,200,0.2));
+  }
+}
+
+/* Hidden state */
+#t-loading.hide {
+  opacity: 0;
+  pointer-events: none;
+}
+/* Entrance animation */
+@keyframes tpBubbleWaveIn {
+  0% {
+    opacity: 0;
+    transform: scale(0.6) translateY(20px);
+    filter: drop-shadow(0 0 0 rgba(0,255,200,0));
+  }
+  60% {
+    opacity: 1;
+    transform: scale(1.08) translateY(0);
+    filter: drop-shadow(0 0 12px rgba(0,255,200,0.35));
+  }
+  100% {
+    transform: scale(1) translateY(0);
+    filter: drop-shadow(0 0 4px rgba(0,255,200,0.2));
+  }
+}
+
+/* Shimmer sweep */
+@keyframes tpBubbleShimmer {
+  0% {
+    background-position: -100px 0;
+  }
+  100% {
+    background-position: -100px 0;
+  }
+}
+</style>
+
+</head>
+<body>
+<div id="t-loading">
+  <img src="https://tropicpulse.bz/ToucanLogo-Mini.png?v8" id="t-loading-logo" />
+</div>
+<div id="pulseband-overlay">
+  <div id="pulseband-badge">
+    <div class="pb-bars">
+      <span></span><span></span><span></span><span></span>
+    </div>
+  </div>
+
+  <div id="pulseband-panel">
+    <div class="pb-header">
+      <img class="pb-mini-badge" src="https://tropicpulse.bz/proxy/PulseBand.png"></img>
+    </div>
+
+    <div class="pb-row"><label>PulseBand Bars</label><span id="pb-bars-text">0/4</span></div>
+    <div class="pb-row"><label>Phone Bars</label><span id="pb-phonebars-text">0/4</span></div>
+    <div class="pb-row"><label>Stability</label><span id="pb-stability">0%</span></div>
+    <div class="pb-row"><label>Latency</label><span id="pb-latency">0 ms</span></div>
+    <div class="pb-row"><label>Micro‑Windows</label><span id="pb-micro">Idle</span></div>
+    <div class="pb-row"><label>Route</label><span id="pb-route">Primary</span></div>
+    <div class="pb-row"><label>State</label><span id="pb-state">Initializing</span></div>
+    <div class="pb-row"><label>Last Sync</label><span id="pb-sync">0s ago</span></div>
+    <div class="pb-row"><label>Efficiency</label><span id="pb-efficiency">Micro‑Burst</span></div>
+
+    <!-- ⭐ NEW: Network Health -->
+    <div class="pb-row"><label>Network Health</label><span id="pb-health">Checking…</span></div>
+
+    <!-- ⭐ NEW FIELD #1: PulseBand Advantage -->
+    <div class="pb-row"><label>PulseBand Advantage</label>
+      <span id="pb-advantage">2.5× Faster 🚀</span>
+    </div>
+
+    <!-- ⭐ NEW FIELD #2: Phone vs PulseBand Time -->
+    <div class="pb-row"><label>Phone vs PulseBand</label>
+      <span id="pb-estimated">Calculating…</span>
+    </div>
+  </div>
+</div>
+  <div class="event-form-container">
+    <div class="header" id="headerTitle">Event</div>
+    <form id="eventForm">
+
+      <div class="form-group">
+        <label>Event Title</label>
+        <input type="text" id="title" required />
+        <div style="font-size:12px; color:#0a6e3a; margin-top:4px;">
+          Icons allowed 🎉 🎤 🍔 🌴 😄 😁 😎 to make title stand out.
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>Category</label>
+        <select id="category" required>
+          <option value="" disabled selected>Select Category…</option>
+
+          <option value="adventures-excursions">Adventures/Excursions</option>
+          <option value="adult">Adult</option>
+          <option value="animal-pet services">Animal/Pet Services</option>
+          <option value="arts-crafts">Art</option>
+          <option value="barbecue">Barbecue</option>
+          <option value="beauty-spa">Beauty Spa</option>
+          <option value="drinks">Drinks</option>
+          <option value="food">Food</option>
+          <option value="gaming-tournament">Gaming/Tournament</option>
+          <option value="holidays">Holidays</option>
+          <option value="landmarks-cultural sites">Landmarks/Cultural Sites</option>
+          <option value="meetup">Meetup</option>
+          <option value="music">Music</option>
+          <option value="memories">Photo</option>
+          <option value="church">Religious</option>
+
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Language</label>
+        <select id="language">
+          <option value="English" selected>English</option>
+          <option value="Spanish">Spanish</option>
+          <option value="Creole">Creole</option>
+          <option value="Other">Other</option>
+        </select>
+      </div>
+
+      <div class="form-group" id="languageOtherGroup" style="display:none;">
+        <label>Specify Language</label>
+        <input type="text" id="languageOther" placeholder="Type your language…" />
+      </div>
+      <div class="form-group">
+        <label>
+          Venue
+          <span style="font-size:12px; color:#0a6e3a;">
+            (Auto-detects best match)
+          </span>
+        </label>
+
+        <div class="venue-row">
+          <input type="text" id="venue" />
+          <button type="button" id="checkVenueBtn" class="venue-check-btn" disabled>
+            Check
+          </button>
+        </div>
+
+        <div id="venuePreview"></div>
+      </div>
+      <!-- DATE RANGE -->
+      <div class="form-group" id="dateRangeGroup">
+        <label>Date Range</label>
+
+        <div class="range-row">
+          <input type="date" id="startDate" class="day-open" required />
+          <input type="date" id="endDate" class="day-close" required />
+        </div>
+      </div>
+
+      <!-- TIME RANGE -->
+      <div class="form-group" id="dateTimeGroup">
+        <label>Daily Time Range</label>
+
+        <div class="range-row">
+          <input type="time" id="startTime" class="day-open"  required />
+          <input type="time" id="endTime" class="day-close"  required />
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>Price (leave blank for FREE)</label>
+        <input type="number" id="price" min="0" step="1" />
+      </div>
+
+      <div class="form-group">
+        <label>Description</label>
+        <textarea id="description" rows="5"></textarea>
+      </div>
+
+      <div class="form-group">
+        <label>Upload Images (max 5)</label>
+        <div style="font-size:12px; color:#0a6e3a; margin-top:4px;">
+          Tap any Image to Set it as the Default. Tap the Red X to Remove.
+        </div>
+        <input type="file" id="images" accept="image/*" multiple />
+        <div id="imagePreview"></div>
+      </div>
+
+      <button type="submit" class="save-btn" id="submitBtn">Save</button>
+    </form>
+  </div>
+  <div id="confirmModal" style="
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background: rgba(0,0,0,0.45);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+  ">
+    <div style="
+      background: white;
+      padding: 20px;
+      border-radius: 12px;
+      width: 85%;
+      max-width: 320px;
+      text-align: center;
+      box-shadow: 0 4px 14px rgba(0,0,0,0.25);
+    ">
+  <div style="font-size: 17px; font-weight: 600; margin-bottom: 14px;">
+    Remove this image?
+  </div>
+
+  <button id="confirmYes" style="
+    background:#d9534f; color:white;
+    padding:10px 16px; border:none;
+    border-radius:8px; width:100%; margin-bottom:10px;
+    font-size:16px; font-weight:600;
+  ">Remove</button>
+
+  <button id="confirmNo" style="
+    background:#ccc; color:#333;
+    padding:10px 16px; border:none;
+    border-radius:8px; width:100%;
+    font-size:16px; font-weight:600;
+  ">Cancel</button>
+  </div>
+</div>
+<div id="floatingCategoryBubble" class="hidden">
+  <img id="floatingCategoryIcon" src="" alt="">
+</div>
+
+<script type="module">
+  window.onerror = function (msg, src, line, col, err) {
+    const div = document.createElement("div");
+    div.style.position = "fixed";
+    div.style.bottom = "0";
+    div.style.left = "0";
+    div.style.right = "0";
+    div.style.background = "rgba(255,0,0,0.85)";
+    div.style.color = "white";
+    div.style.padding = "10px";
+    div.style.fontSize = "14px";
+    div.style.zIndex = "9999";
+    div.style.whiteSpace = "pre-wrap";
+    div.textContent = `🔥 JS ERROR:\n${msg}\n${src}:${line}:${col}`;
+    document.body.appendChild(div);
+  };
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+  import { getDocs, getDoc, updateDoc, doc, deleteDoc, getFirestore, query, where, serverTimestamp, orderBy, setDoc,
+  collection,
+  initializeFirestore, 
+  persistentLocalCache, 
+  persistentMultipleTabManager 
+} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-storage.js";
+import { getAuth, setPersistence, browserLocalPersistence, signInWithCustomToken } 
+  from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+
+  /* FIREBASE */
+  const firebaseConfig = {
+    apiKey: "AIzaSyD4I5YDtZMMC_tDuwR9CEjhs_iAdrLzthQ",
+    authDomain: "tropic-pulse.firebaseapp.com",
+    projectId: "tropic-pulse",
+    storageBucket: "tropic-pulse.firebasestorage.app",
+    messagingSenderId: "642785071979",
+    appId: "1:642785071979:web:4287c6bdf51f5233db722e",
+    measurementId: "G-HSX89KS63P"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const db = initializeFirestore(app, {
+    localCache: persistentLocalCache({
+      tabManager: persistentMultipleTabManager()
+    }),
+    experimentalForceLongPolling: false,
+    experimentalAutoDetectLongPolling: false
+  });
+   
+  window.__serverTimeOffset = 0;
+
+    window.setServerNow = function (serverNowMs) {
+      const localNow = Date.now();
+      window.__serverTimeOffset = serverNowMs - localNow;
+    };
+
+    window.nowMs = function () {
+      return Date.now() + window.__serverTimeOffset;
+    };
+  let persistenceEnabled = false;
+  let lastTime = null;
+  let firstTime = null;
+  
+
+  let auth = getAuth();
+
+  try {
+    setPersistence(auth, browserLocalPersistence);
+    persistenceEnabled = true;
+    markAuth("Firebase Auth persistence enabled.");
+  } catch (err) {
+    console.error("Failed to enable persistence:", err);
+  }
+
+  
+    // -------------------------------------------------
+    //  REAL PAGE LOGIC STARTS HERE
+    // -------------------------------------------------
+    
+    let token = localStorage.getItem("tp_token_v4") || null;
+    let identity = null;
+    let trusted = null;
+    let autologin = null;
+    let loggedIn = false;
+    let userName = null;
+    let userEmail = null;
+    let userID = null;
+    
+    let eventCategories = JSON.parse(localStorage.getItem("eventCategories") || "[]");
+    let eventSubcategories = JSON.parse(localStorage.getItem("eventSubcategories") || "[]");
+    let eventCategoryIconMap = JSON.parse(localStorage.getItem("eventCategoryIconMap") || "{}");
+    let eventSubcategoryIconMap = JSON.parse(localStorage.getItem("eventSubcategoryIconMap") || "{}");
+    let isLoadingHours = false;
+    let selectedOwnerIndex = null;
+    let selectedCategories = [];
+    let dragIndex = null;
+    let selectedSubcategories = [];
+    let subDragIndex = null;
+    let formIsDirty = false;
+    let existingShortCode = null;
+    let currentEvent = null;
+    let resizeTimeout;
+    let loyalty = null;
+    let settings = null;
+
+
+    
+  /* -------------------------------------------------
+   VENUE CHECK LOGIC (GUARDED)
+    -------------------------------------------------- */
+
+    const venueInput = document.getElementById("venue");
+    const checkVenueBtn = document.getElementById("checkVenueBtn");
+    const venuePreview = document.getElementById("venuePreview");
+
+    const venueCache = new Map();
+
+ const languageSelect = document.getElementById("language");
+  const languageOtherGroup = document.getElementById("languageOtherGroup");
+  const languageOtherInput = document.getElementById("languageOther");
+
+  const categorySelect = document.getElementById("category");
+
+  const urlParams = new URLSearchParams(window.location.search);
+  const eventId = urlParams.get("id");
+
+  let existingImages = [];
+
+  const headerTitle = document.getElementById("headerTitle");
+  const submitBtn = document.getElementById("submitBtn");
+
+  
+    function normalizeVenue(str) {
+      return str.trim().toLowerCase().replace(/\s+/g, " ");
+    }
+
+    function isPlusCode(str) {
+      return /^[23456789CFGHJMPQRVWX]{4,}\+/.test(str);
+    }
+
+    function isLatLng(str) {
+      return /^-?\d{1,3}\.\d+,\s*-?\d{1,3}\.\d+$/.test(str);
+    }
+
+    function containsLocation(str) {
+      return /san pedro|belize|ambergris/i.test(str);
+    }
+
+    function isGarbage(str) {
+      return /^(test|asdf|qwer|1234)$/i.test(str);
+    }
+
+
+  function markAuth(label) {
+    const now = nowMs();
+    lastTime = now;
+    firstTime = now;
+    console.log(`${label}: +${(now - lastTime).toFixed(1)}ms`);
+  }
+
+  function showMessage(text, type = "error") {
+    const msg = document.getElementById("msg");
+    if (!msg) return; // safety fallback
+
+    // Set text + type
+    msg.textContent = text;
+    msg.className = "msg " + type;
+    msg.style.display = "block";
+
+    // Pulse animation
+    msg.classList.add("show");
+    setTimeout(() => msg.classList.remove("show"), 300);
+
+    // Smooth scroll to message
+    setTimeout(() => {
+      msg.scrollIntoView({ behavior: "smooth", block: "center" });
+    }, 50);
+
+    // Auto-hide after 4 seconds
+    setTimeout(() => {
+      msg.style.display = "none";
+    }, 4000);
+  }
+
+function safeLogout() {
+  localStorage.removeItem("tp_token_v4");
+  localStorage.removeItem("tp_device_token_v4");
+  mark("SAFE LOGOUT");
+}
+
+async function hardLogout(reason) {
+  try {
+    mark("HARD LOGOUT: " + (reason || "unknown"));
+    localStorage.removeItem("tp_token_v4");
+    localStorage.removeItem("tp_device_token_v4");
+    await reportDanger(reason || "hardLogout");
+  } catch (err) {
+    mark("HARD LOGOUT ERROR: " + err);
+    localStorage.removeItem("tp_token_v4");
+    localStorage.removeItem("tp_device_token_v4");
+  } finally {
+    window.location.replace("/CheckEmail.html");
+  }
+}
+
+/************************************************************
+ * SESSION CHECK (ALL PAGES EXCEPT LOGIN)
+ ************************************************************/
+async function sessionCheck() {
+  mark("sessionCheck");
+  
+  // -----------------------------------------
+  // 1. LOAD LOCAL VARIABLES
+  // -----------------------------------------
+  autologin = localStorage.getItem("tp_stay_signed_v4") === "1";
+  trusted   = localStorage.getItem("tp_device_token_v4") === "1";
+
+  try {
+    identity = JSON.parse(localStorage.getItem("tp_identity_v4") || "{}");
+  } catch {
+    identity = null;
+  }
+
+  token     = localStorage.getItem("tp_token_v4");
+  userID    = identity?.uid   || null;
+  userEmail = identity?.email || null;
+  userName  = identity?.displayName || null;
+
+  // -----------------------------------------
+  // 2. IDENTITY + TOKEN MUST EXIST
+  // -----------------------------------------
+  if (!identity || !userID || !token) {
+    mark("Missing identity or token → HARD LOGOUT");
+    hardLogout("missing_identity_or_token");
+    return false;
+  }
+
+  // -----------------------------------------
+  // 3. LOCAL INACTIVITY CHECK
+  // -----------------------------------------
+  const now       = nowMs();
+  const lastLocal = Number(localStorage.getItem("tp_last_active_v4")) || 0;
+  const diff      = now - lastLocal;
+
+  const active5    = diff < 5 * 60 * 1000;   // < 5 minutes
+  const inactive15 = diff > 15 * 60 * 1000; // > 15 minutes
+
+  if (inactive15 && !trusted) {
+    if (!autologin) {
+      mark("Inactive >15 min AND not autologin/trusted → HARD LOGOUT");
+      hardLogout("inactive_and_not_remembered");
+    } else {
+      mark("Inactive >15 min AND autologin → SOFT LOGOUT");
+      safeLogout();
+    }
+    return false;
+  }
+
+  // -----------------------------------------
+  // 5. FAST PATH: restore using cached Firebase token (fauth)
+  // -----------------------------------------
+  if (identity.fauth && persistenceEnabled === false) {
+    try {
+      await signInWithCustomToken(auth, identity.fauth);
+      mark("FAST-PATH: restored Firebase Auth using cached fauth");
+      localStorage.setItem("tp_last_active_v4", now);
+      return true;
+    } catch (err) {
+      mark("Cached fauth invalid → clearing and refreshing");
+      identity.fauth = null;
+      localStorage.setItem("tp_identity_v4", JSON.stringify(identity));
+    }
+  }
+
+  // -----------------------------------------
+  // 6. SLOW PATH: fetch fresh Firebase token from backend
+  // -----------------------------------------
+  if (!identity.fauth) {
+    try {
+      const res = await fetch(
+        "https://us-central1-tropic-pulse.cloudfunctions.net/getFirebaseAuthToken",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ token })
+        }
+      );
+
+      const data = await res.json();
+
+      // Danger → hard logout
+      if (data.hardLogout) {
+        mark("Backend flagged danger → HARD LOGOUT");
+        hardLogout("backend_danger_flag");
+        return false;
+      }
+
+      if (!data.firebaseToken) {
+        mark("No firebaseToken returned → HARD LOGOUT");
+        hardLogout("missing_firebase_token");
+        return false;
+      }
+
+      // Update JWT lineage if provided
+      if (data.newJwtToken) {
+        token = data.newJwtToken;
+        localStorage.setItem("tp_token_v4", token);
+        mark("Updated JWT lineage from backend");
+      }
+
+      // Restore Firebase Auth
+      await signInWithCustomToken(auth, data.firebaseToken);
+
+      // Update identity cache
+      identity.fauth = data.firebaseToken;
+      localStorage.setItem("tp_identity_v4", JSON.stringify(identity));
+
+      mark("SLOW-PATH: Firebase Auth restored with fresh token");
+      localStorage.setItem("tp_last_active_v4", now);
+      return true;
+
+    } catch (err) {
+      console.error("Failed to restore Firebase Auth:", err);
+      hardLogout("firebase_restore_failed");
+      return false;
+    }
+  }
+
+  // -----------------------------------------
+  // 7. HEARTBEAT UPDATE (non-blocking)
+  // -----------------------------------------
+  try {
+    updateDoc(doc(db, "Users", userID), {
+      isLoggedIn: true,
+      lastAppActive: serverTimestamp()
+    });
+    mark("Heartbeat saved");
+  } catch (err) {
+    mark("Heartbeat update FAILED: " + err);
+  }
+
+  localStorage.setItem("tp_last_active_v4", now);
+  return true;
+}
+
+function mark(label) {
+    const now = nowMs();
+    console.log(`${label}: +${(now - lastTime).toFixed(1)}ms`);
+    lastTime = now;
+  }
+
+  function openConfirm(onYes) {
+    const modal = document.getElementById("confirmModal");
+    const yesBtn = document.getElementById("confirmYes");
+    const noBtn = document.getElementById("confirmNo");
+
+    modal.style.display = "flex";
+
+    const cleanup = () => {
+      modal.style.display = "none";
+      yesBtn.onclick = null;
+      noBtn.onclick = null;
+    };
+
+    yesBtn.onclick = () => {
+      cleanup();
+      onYes();
+    };
+
+    noBtn.onclick = cleanup;
+  }
+    
+  async function initiateEvent() {
+ 
+  // 🔒 Guard language listener
+  if (!languageSelect.__bound) {
+    languageSelect.__bound = true;
+
+    languageSelect.addEventListener("change", () => {
+      if (languageSelect.value === "Other") {
+        languageOtherGroup.style.display = "block";
+      } else {
+        languageOtherGroup.style.display = "none";
+        languageOtherInput.value = "";
+      }
+    });
+  }
+  
+  if (eventId) {
+    headerTitle.textContent = "🪄✏️ Edit Event";
+    submitBtn.textContent = "🪄🔖 Save Changes";
+    loadEvent();
+  } else {
+    headerTitle.textContent = "🪄➕ Create Event";
+    submitBtn.textContent = "🪄🔖 Save New Event";
+  }
+
+
+  // 🔒 Guard beforeunload
+  if (!window.__editEventBeforeUnloadBound) {
+    window.__editEventBeforeUnloadBound = true;
+
+    window.addEventListener("beforeunload", (e) => {
+      if (formIsDirty) {
+        e.preventDefault();
+        e.returnValue = "";
+      }
+    });
+  }
+  
+    /* -------------------------------------------------
+      INPUT LISTENER — GUARDED
+    -------------------------------------------------- */
+    if (venueInput && !venueInput.__bound) {
+      venueInput.__bound = true;
+
+      venueInput.addEventListener("input", () => {
+        formIsDirty = true;
+
+        const v = venueInput.value.trim();
+
+        venuePreview.style.display = "none";
+        venuePreview.innerHTML = "";
+
+        if (v.length < 4 || isGarbage(v)) {
+          checkVenueBtn.disabled = true;
+          checkVenueBtn.style.opacity = 0.4;
+          return;
+        }
+
+        if (isPlusCode(v) || isLatLng(v)) {
+          checkVenueBtn.disabled = true;
+          checkVenueBtn.style.opacity = 0.4;
+
+          venuePreview.style.display = "block";
+          venuePreview.innerHTML = `
+            <div style="font-weight:600; color:#0a6e3a;">Coordinates detected</div>
+            <div>This venue will be used exactly as entered.</div>
+          `;
+          return;
+        }
+
+        checkVenueBtn.disabled = false;
+        checkVenueBtn.style.opacity = 1;
+      });
+    }
+
+    /* -------------------------------------------------
+      CHECK BUTTON — GUARDED
+    -------------------------------------------------- */
+    if (checkVenueBtn && !checkVenueBtn.__bound) {
+      checkVenueBtn.__bound = true;
+
+      checkVenueBtn.addEventListener("click", async () => {
+        const raw = venueInput.value.trim();
+        const v = normalizeVenue(raw);
+
+        if (!v || v.length < 4) return;
+
+        const key = v;
+
+        if (venueCache.has(key)) {
+          renderVenuePreview(venueCache.get(key));
+          return;
+        }
+
+        let query = raw;
+        if (!containsLocation(raw)) {
+          query += " San Pedro Belize";
+        }
+
+        const res = await fetch(
+          `https://resolvevenue-ilx3agka5q-uc.a.run.app?q=${encodeURIComponent(query)}`
+        )
+          .then(r => r.json())
+          .catch(() => ({ status: "error" }));
+
+        venueCache.set(key, res);
+        renderVenuePreview(res);
+      });
+    }
+    
+  /* -------------------------------------------------
+   IMAGE UPLOAD — GUARDED
+-------------------------------------------------- */
+const imagesInput = document.getElementById("images");
+if (imagesInput && !imagesInput.__bound) {
+  imagesInput.__bound = true;
+
+  imagesInput.addEventListener("change", async (e) => {
+    const files = Array.from(e.target.files);
+
+    if (files.length + existingImages.length > 5) {
+      showMessage("Maximum 5 images allowed.", "error");
+      e.target.value = "";
+      return;
+    }
+
+    const newURLs = await uploadNewImages(files);
+    existingImages = [...existingImages, ...newURLs];
+    renderImagePreview();
+  });
+}
+
+/* -------------------------------------------------
+   CATEGORY CHANGE — GUARDED
+-------------------------------------------------- */
+const categoryEl = document.getElementById("category");
+if (categoryEl && !categoryEl.__bound) {
+  categoryEl.__bound = true;
+
+  categoryEl.addEventListener("change", (e) => {
+    const key = e.target.value;
+    if (!key) return;
+
+    if (eventCategoryIconMap[key]) {
+      showFloatingCategoryIcon(key);
+    }
+  });
+}
+
+if (!document.__loyaltyVisibilityBound) {
+      document.__loyaltyVisibilityBound = true;
+      document.addEventListener("visibilitychange", () => {
+        if (document.visibilityState === "visible") {
+          setTimeout(async () => await sessionCheck(), 250);
+          mark("✅ VisibilityChange RERAN SESSIONCHECK AND LET THE FUNCTION DO THE LOGIC");
+        }
+      });
+    }
+
+/* -------------------------------------------------
+   SAVE EVENT — GUARDED
+-------------------------------------------------- */
+const eventForm = document.getElementById("eventForm");
+if (eventForm && !eventForm.__bound) {
+  eventForm.__bound = true;
+
+  eventForm.addEventListener("submit", async (e) => {
+    e.preventDefault();
+
+    let priceInput = document.getElementById("price").value.trim();
+    if (priceInput === "" || priceInput.toLowerCase() === "free" || priceInput === "0") {
+      priceInput = "";
+    } else if (isNaN(priceInput)) {
+      showMessage("Price must be a number or left blank for FREE.", "error");
+      return;
+    }
+
+    const startDate = document.getElementById("startDate").value;
+    const endDate   = document.getElementById("endDate").value;
+    const startTime = document.getElementById("startTime").value;
+    const endTime   = document.getElementById("endTime").value;
+
+    function toDateString(iso) {
+      if (!iso) return "";
+      const [year, month, day] = iso.split("-");
+      const months = ["JAN","FEB","MAR","APR","MAY","JUN","JUL","AUG","SEP","OCT","NOV","DEC"];
+      return `${day}-${months[parseInt(month)-1]}-${year}`;
+    }
+
+    function toTimeString(t) {
+      let [h, m] = t.split(":");
+      h = parseInt(h);
+      const ap = h >= 12 ? "PM" : "AM";
+      h = h % 12 || 12;
+      return `${h}:${m} ${ap}`;
+    }
+
+    let selectedLanguage = document.getElementById("language").value;
+    let finalLanguage = sanitizeLanguage(selectedLanguage);
+
+    if (selectedLanguage === "Other") {
+      const typed = sanitizeLanguage(document.getElementById("languageOther").value);
+      if (!typed) {
+        showMessage("Please enter a valid language (letters only).", "error");
+        return;
+      }
+      finalLanguage = typed;
+    }
+
+    const rawTitle = document.getElementById("title").value;
+    const title = playfulClean(sanitizeTitle(rawTitle));
+    const rawDescription = document.getElementById("description").value;
+    const description = playfulClean(rawDescription);
+
+    if (!title) {
+      showMessage("Title contains unsupported characters. Allowed icons: 🎉 🎤 🍔 🌴 ⚽", "error");
+      return;
+    }
+
+    const isEditing = !!eventId;
+    const eventID = eventId || crypto.randomUUID();
+
+    let shortCode = existingShortCode;
+    if (!shortCode) {
+      shortCode = crypto.randomUUID().replace(/-/g, "").slice(0, 8);
+    }
+
+    const payload = {
+      eventID,
+      title,
+      category: document.getElementById("category").value,
+      language: finalLanguage,
+      venue: document.getElementById("venue").value,
+      fromDate: toDateString(startDate),
+      toDate: toDateString(endDate),
+      fromTime: toTimeString(startTime),
+      toTime: toTimeString(endTime),
+      price: priceInput,
+      description,
+      images: existingImages,
+      email: userEmail || "",
+      shortCode: shortCode
+    };
+
+    if (currentEvent.mapImageUrl) payload.mapImageUrl = currentEvent.mapImageUrl;
+    if (currentEvent.mapsWebUrl) payload.mapsWebUrl = currentEvent.mapsWebUrl;
+    if (currentEvent.lat) payload.lat = currentEvent.lat;
+    if (currentEvent.lng) payload.lng = currentEvent.lng;
+    if (currentEvent.placeId) payload.placeId = currentEvent.placeId;
+
+    const docId = payload.eventID;
+
+    payload.email = currentEvent?.email || identity.email;
+
+    await setDoc(doc(db, "Events", docId), payload, { merge: true });
+    await setDoc(doc(db, "ShortLinks", shortCode), { eventID: docId }, { merge: true });
+    // ⭐ After saving to Firestore, update cachedEvents
+    try {
+      let arr = JSON.parse(localStorage.getItem("cachedEvents") || "[]");
+
+      // Build the updated event object exactly as it will appear in Firestore
+      const updatedEvent = sanitizeEvent({
+        id: docId,
+        ...payload
+      });
+
+      // Replace existing cached entry or add new one
+      const idx = arr.findIndex(x => x.id === docId);
+      if (idx >= 0) {
+        arr[idx] = updatedEvent;
+        console.log("CACHE: Updated existing cached event");
+      } else {
+        arr.push(updatedEvent);
+        console.log("CACHE: Added new event to cache");
+      }
+
+      localStorage.setItem("cachedEvents", JSON.stringify(arr));
+    } catch (err) {
+      console.error("CACHE UPDATE ERROR:", err);
+    }
+    formIsDirty = false;
+    showMessage(isEditing ? "Event updated!" : "Event created!", "success");
+
+    setTimeout(() => {
+      window.location.href = `https://tropicpulse.bz/eventDetail.html?id=${encodeURIComponent(docId)}`;
+    }, 600);
+    // -----------------------------------------
+  // ⭐ PREVENT DUPLICATE LISTENERS
+  // -----------------------------------------
+  if (!window.__pulsebandListenersAttached) {
+    window.__pulsebandListenersAttached = true;
+
+    // ⭐ 1. Restore state on load (runs ONCE)
+    window.addEventListener("load", () => {
+      const inactiveFlag = localStorage.getItem("pulseband_disabled") === "1";
+      const disabled = (window.isIdle === true && inactiveFlag === true);
+
+      if (disabled) {
+        window.isIdle = true;
+        window.pulseband.engineDisabled = true;
+      } else {
+        window.isIdle = false; // active by default
+        window.pulseband.engineDisabled = false;
+      }
+
+      updatePulseBandImage();
+      updatePulseBandPanel();
+    });
+
+    // ⭐ 2. Badge toggle listener
+    document.getElementById("pb-mini-badge").addEventListener("click", () => {
+      const inactiveFlag = localStorage.getItem("pulseband_disabled") === "1";
+      const disabled = (window.isIdle === true && inactiveFlag === true);
+
+      if (disabled) {
+        // Turn ON
+        localStorage.removeItem("pulseband_disabled");
+        window.isIdle = false;
+        window.pulseband.engineDisabled = false;
+      } else {
+        // Turn OFF
+        localStorage.setItem("pulseband_disabled", "1");
+        window.isIdle = true;
+        window.pulseband.engineDisabled = true;
+      }
+
+      updatePulseBandImage();
+      updatePulseBandPanel();
+    });
+  }
+  });
+}
+
+/* -------------------------------------------------
+   HISTORY STATE FIX
+-------------------------------------------------- */
+if (!history.state || !history.state.fromList) {
+  history.replaceState({ fromList: true }, "", location.href);
+}
+
+}
+
+  async function loadEvent() {
+  return await PulseEventCacheManager.getEventById(eventId);
+}
+
+  function makeDefaultImage(index) {
+    if (index === 0) return;
+
+    const first = existingImages[0];
+    const selected = existingImages[index];
+
+    existingImages[0] = selected;
+    existingImages[index] = first;
+
+    renderImagePreview();
+    formIsDirty = true;
+  }
+
+    
+function hideTPLoader() {
+    const el = document.getElementById("t-loading");
+    if (!el) return;
+    el.classList.add("hide");
+    setTimeout(() => el.remove(), 700);
+  }
+
+    /* -------------------------------------------------
+      CATEGORY ICON RESOLVER
+    -------------------------------------------------- */
+    async function getEventCategoryIcon(ev) {
+      if (!ev) return null;
+
+      const cat = (ev.category || "").toLowerCase().trim();
+      const sub = (ev.subcategory || "").toLowerCase().trim();
+
+      if (cat && eventCategoryIconMap[cat]) return eventCategoryIconMap[cat];
+      if (sub && eventSubcategoryIconMap[sub]) return eventSubcategoryIconMap[sub];
+
+      try {
+        const snap = await firebase.firestore()
+          .collection("CategoryIconCache")
+          .where("category", "==", ev.category)
+          .where("source", "array-contains", "events")
+          .get();
+
+        if (!snap.empty) {
+          const doc = snap.docs[0].data();
+          if (doc.migratedUrl) return doc.migratedUrl;
+        }
+      } catch (err) {
+        console.error("CategoryIconCache lookup failed:", err);
+      }
+
+      return null;
+    }
+
+
+  /* -------------------------------------------------
+   VENUE PREVIEW RENDERER
+    -------------------------------------------------- */
+    async function renderVenuePreview(res) {
+      venuePreview.style.display = "block";
+
+      if (!res || res.status === "error") {
+        venuePreview.innerHTML = `
+          <div style="color:#b00020; font-weight:600;">Could not check venue.</div>
+          <div>Please try again or enter coordinates.</div>
+        `;
+        return;
+      }
+
+      if (res.status === "no_match") {
+        venuePreview.innerHTML = `
+          <div style="color:#b00020; font-weight:600;">No match found</div>
+          <div>Please enter coordinates or a Plus Code.</div>
+        `;
+        return;
+      }
+
+      const mapUrl = res.mapImageUrl || res.staticMap || "";
+
+      venuePreview.innerHTML = `
+        <div style="font-weight:600; color:#0a6e3a;">${res.name}</div>
+        <div style="margin-bottom:8px;">${res.address}</div>
+
+        <div style="overflow:hidden; border-radius:12px; position:relative;">
+          <a id="mapLink" href="#" target="_blank" style="display:block;">
+            <div style="overflow:hidden; border-radius:12px; position:relative;">
+              <img id="mapImage" src="${mapUrl}" alt="Business Map"
+                  style="width:100%; height:auto; display:block;">
+            </div>
+          </a>
+
+          <div id="tpOverlay" style="
+            position:absolute;
+            top:0;
+            left:0;
+            width:100%;
+            height:100%;
+            pointer-events:none;
+            display:none;
+          ">
+            <div id="tpDot" style="
+              position:absolute;
+              width:18px;
+              height:18px;
+              background:#0b5f3c;
+              border-radius:50%;
+              border:2px solid white;
+              box-shadow:0 0 8px rgba(0,0,0,0.35);
+              transition: transform 0.25s ease;
+            ">
+              <img id="tpIcon" src="" alt="" style="
+                width:18px;
+                height:18px;
+                display:none;
+                filter:drop-shadow(0 0 2px rgba(0,0,0,0.4));
+              ">
+            </div>
+
+            <div id="tpLabel" style="
+              position:absolute;
+              display:flex;
+              align-items:center;
+              gap:6px;
+              padding:4px 10px;
+              background:rgba(11, 95, 60, 0.85);
+              color:white;
+              border-radius:20px;
+              font-size:12.5px;
+              font-weight:600;
+              white-space:nowrap;
+              transform:translate(-50%, -120%);
+              backdrop-filter: blur(4px);
+            ">
+              <span id="tpLabelText"></span>
+            </div>
+          </div>
+        </div>
+      `;
+
+      const iconUrl = await getEventCategoryIcon(currentEvent);
+      attachMapOverlayHandler(res.name, iconUrl || null);
+    }
+
+    /* -------------------------------------------------
+      MULTI‑IMAGE PREVIEW (GUARDED)
+    -------------------------------------------------- */
+    function renderImagePreview() {
+      const container = document.getElementById("imagePreview");
+      if (!container) return;
+
+      container.innerHTML = "";
+
+      existingImages.forEach((url, index) => {
+        const wrapper = document.createElement("div");
+        wrapper.className = "img-wrapper fade-ready";
+
+        const img = document.createElement("img");
+        img.src = url;
+
+        // 🔒 Guard click listener
+        img.addEventListener("click", () => {
+          if (index === 0) return;
+
+          wrapper.classList.add("fade-out");
+
+          setTimeout(() => {
+            makeDefaultImage(index);
+          }, 200);
+        });
+
+        const del = document.createElement("div");
+        del.className = "img-delete";
+        del.textContent = "×";
+
+        del.addEventListener("click", () => {
+          openConfirm(() => {
+            wrapper.classList.add("fade-out");
+
+            setTimeout(() => {
+              existingImages.splice(index, 1);
+              formIsDirty = true;
+              renderImagePreview();
+            }, 250);
+          });
+        });
+
+        wrapper.appendChild(img);
+        wrapper.appendChild(del);
+        container.appendChild(wrapper);
+      });
+    }
+
+  const allowedIcons = [
+    "🎉","🎊","✨","⭐","📅","🗓️","🎈",
+    "🎤","🎧","🎵","🎶","🎸","🥁","🌙","🍹",
+    "🍔","🍕","🌮","🍜","🍺","🍷","🥘","🍤",
+    "⚽","🏀","🏈","🎾","🎮","♟️","🙂","😊",
+    "🏖️","🌴","🌅","🤝","🧹","😄","😁","😎",
+    "🎄","🎃","🎆","🎇","😉","🤩","😃"
+  ];
+
+  function playfulClean(input) {
+    if (!input) return "";
+
+    const dictionary = {
+      "word_f": {
+        noun: [
+          "pineapple", "coconut", "marshmallow", "iguana nugget",
+          "hurricane dumpling", "reef goblin"
+        ],
+        verb: [
+          "juggle", "tap‑dance", "boogie", "shimmy",
+          "cha-cha", "crab‑walk"
+        ],
+        adj: [
+          "spicy", "wobbly", "chaotic", "sun‑kissed",
+          "unhinged", "reef‑powered"
+        ]
+      },
+
+      "word_s": {
+        noun: [
+          "guava", "papaya", "mango chunk", "sand pebble",
+          "fruit catastrophe", "tide‑sauce"
+        ],
+        verb: [
+          "splash", "scoot", "shuffle", "wiggle",
+          "plop", "sploosh"
+        ],
+        adj: [
+          "messy", "funky", "wonky", "dusty",
+          "sticky", "soggy"
+        ]
+      },
+
+      "word_b": {
+        noun: [
+          "seashell", "sunbeam", "toucan", "pelican",
+          "sass‑parrot", "beach diva"
+        ],
+        verb: [
+          "chirp", "wiggle", "sass", "squawk",
+          "side‑eye", "strut"
+        ],
+        adj: [
+          "salty", "spicy", "sassy", "stormy",
+          "feisty", "sun‑dramatic"
+        ]
+      },
+
+      "word_c": {
+        noun: [
+          "lava pearl", "reef blossom", "storm crystal", "moon pebble",
+          "tidal rune", "volcano sprinkle"
+        ],
+        adj: [
+          "ferocious", "untamed", "wild‑eyed", "tempest‑touched",
+          "mythic", "overdramatic"
+        ]
+      },
+
+      "word_a": {
+        noun: [
+          "iguana", "pelican", "sand crab", "reef turtle",
+          "snorkel gremlin", "beach potato"
+        ],
+        adj: [
+          "chunky", "sun‑kissed", "sandy", "reef‑brained",
+          "lumpy", "tide‑soaked"
+        ]
+      },
+
+      "word_d": {
+        noun: [
+          "sand dollar", "reef pebble", "tide pool", "conch shell",
+          "sunburn moment", "beach oopsie"
+        ],
+        adj: [
+          "breezy", "sun‑drenched", "tropical", "warm‑hearted",
+          "dramatic", "over‑toasted"
+        ]
+      }
+    };
+
+    const alias = {
+      "damn": "word_d",
+      "darn": "word_d",
+      "dang": "word_d",
+      // profanity categories mapped safely:
+      "fuck": "word_f",
+      "fucking": "word_f",
+      "shit": "word_s",
+      "bitch": "word_b",
+      "cunt": "word_c",
+      "ass": "word_a",
+      "asshole": "word_a"
+    };
+
+    function detectPOS(words, index) {
+      const prev = words[index - 1]?.toLowerCase();
+      const next = words[index + 1]?.toLowerCase();
+
+      if (prev && ["a","an","the","my","your","his","her","this","that"].includes(prev)) {
+        return "adj";
+      }
+      if (prev && ["i","you","we","they","he","she","it"].includes(prev)) {
+        return "verb";
+      }
+      return "noun";
+    }
+
+    const words = input.split(/\b/);
+
+    const cleaned = words.map((word, i) => {
+      const lower = word.toLowerCase();
+      const stripped = lower.replace(/[.,!?]/g, "");
+      const key = alias[stripped];
+      
+      if (!key) return word;
+
+      const pos = detectPOS(words, i);
+      const options = dictionary[key][pos] || dictionary[key].noun;
+      const replacement = options[Math.floor(Math.random() * options.length)];
+
+      if (word[0] === word[0].toUpperCase()) {
+        return replacement.charAt(0).toUpperCase() + replacement.slice(1);
+      }
+
+      return replacement;
+    });
+
+    return cleaned.join("");
+  }
+
+  function sanitizeTitle(str) {
+    const cleaned = str.trim().replace(/[<>]/g, "");
+
+    // Allow letters, numbers, spaces, and approved icons
+    const pattern = new RegExp(
+      `^[A-Za-z0-9\\s${allowedIcons.join("")}]{1,80}$`
+    );
+
+    if (!pattern.test(cleaned)) return null;
+
+    return cleaned;
+  }
+
+  
+  function showFloatingCategoryIcon(catKey) {
+    const icon = eventCategoryIconMap[catKey];
+    if (!icon) return;
+
+    const bubble = document.getElementById("floatingCategoryBubble");
+
+    // Set icon
+    document.getElementById("floatingCategoryIcon").src = icon;
+
+    // 🌴 Everything EXCEPT businesses/events = platinum
+    if (catKey === "businesses" || catKey === "events") {
+      bubble.classList.remove("platinum");   // keep tropical
+    } else {
+      bubble.classList.add("platinum");      // platinum for all others
+    }
+
+    bubble.classList.remove("hidden");
+  }
+
+  function sanitizeLanguage(input) {
+    const cleaned = input.trim();
+
+    // Allow letters, spaces, hyphens only
+    if (!/^[A-Za-z\s\-]{2,30}$/.test(cleaned)) {
+      return null;
+    }
+
+    // Capitalize first letter
+    return cleaned.charAt(0).toUpperCase() + cleaned.slice(1);
+  }
+
+  /* -----------------------------
+     UPLOAD IMAGES (NO AUTH REQUIRED)
+  ----------------------------- */
+  async function uploadNewImages(files) {
+    const urls = [];
+
+    for (const file of files) {
+      const storageRef = ref(storage, `events/${crypto.randomUUID()}-${file.name}`);
+
+      await uploadBytes(storageRef, file, {
+        contentType: file.type,
+        cacheControl: "public, max-age=31536000, immutable"
+      });
+
+      const url = await getDownloadURL(storageRef);
+      urls.push(url);
+    }
+
+    return urls;
+  }
+
+
+/* -------------------------------------------------
+   MAP OVERLAY HANDLER — GUARDED
+-------------------------------------------------- */
+function attachMapOverlayHandler(name, iconUrl = null) {
+  const mapImage = document.getElementById("mapImage");
+
+  if (!mapImage) {
+    console.warn("❌ No #mapImage found — overlay cannot attach");
+    return;
+  }
+
+  if (mapImage.complete) {
+    applyTropicOverlay(name, iconUrl);
+    return;
+  }
+
+  mapImage.onload = () => {
+    applyTropicOverlay(name, iconUrl);
+  };
+}
+
+// Global timeout holder for overlay resize
+let __tp_overlay_resize_timeout = null;
+
+function applyTropicOverlay(name, iconUrl = null) {
+  const overlay   = document.getElementById("tpOverlay");
+  const dot       = document.getElementById("tpDot");
+  const label     = document.getElementById("tpLabel");
+  const labelText = document.getElementById("tpLabelText");
+  const icon      = document.getElementById("tpIcon");
+  const mapImg    = document.getElementById("mapImage");
+
+  if (!overlay || !dot || !label || !mapImg || !labelText) {
+    console.warn("❌ Missing overlay elements — cannot apply overlay");
+    return;
+  }
+
+  const rect = mapImg.getBoundingClientRect();
+  const cx = rect.width / 2;
+  const cy = rect.height / 2;
+
+  dot.style.left = `${cx - 9}px`;
+  dot.style.top  = `${cy - 9}px`;
+
+  labelText.textContent = name || "Location";
+  label.style.left = `${cx}px`;
+  label.style.top  = `${cy - 22}px`;
+
+  if (iconUrl) {
+    icon.src = iconUrl;
+    icon.style.display = "block";
+  } else {
+    icon.style.display = "none";
+  }
+
+  overlay.style.display = "block";
+
+  // 🔒 Global guard for resize listener
+  if (!window.__tp_overlay_resize_bound) {
+    window.__tp_overlay_resize_bound = true;
+
+    window.addEventListener("resize", () => {
+      clearTimeout(__tp_overlay_resize_timeout);
+      __tp_overlay_resize_timeout = setTimeout(() => {
+        applyTropicOverlay(labelText.textContent, icon.src || null);
+      }, 150);
+    });
+  }
+}
+
+(async () => {
+    function mark(label, position = false) {
+      const now = nowMs();
+      if (position) {
+        console.log(`${label}: +${(now - firstTime).toFixed(1)}ms`);
+      } else {
+        console.log(`${label}: +${(now - lastTime).toFixed(1)}ms`);
+      }
+      lastTime = now;
+    }
+    mark("EVENT DOM STARTS");
+    
+    await sessionCheck();
+
+    mark("EVENT LOCATION READY");
+    
+    await loadEvent();
+    mark("EVENT LOADED");
+  
+    initiateEvent();
+    mark("EVENT OVERLAYS LOADED");
+    // -----------------------------
+  // LIVE PULSEBAND UPDATE LOOP
+  // -----------------------------
+  setInterval(async () => {
+    const inactiveFlag = localStorage.getItem("pulseband_disabled") === "1";
+    const disabled = (window.isIdle === true && inactiveFlag === true);
+    if (disabled) return;
+
+    const status = window.pulseband.getStatus();
+    const data = await window.getPulseBandRate();
+
+    window.pulseband.setStatus({
+      ...status,
+      ...data,
+      lastSyncTimestamp: nowMs(),
+      lastSyncSeconds: 0
+    });
+  }, 3000);
+
+  // -----------------------------
+  // LAST SYNC COUNTER LOOP
+  // -----------------------------
+  setInterval(() => {
+    const inactiveFlag = localStorage.getItem("pulseband_disabled") === "1";
+    const disabled = (window.isIdle === true && inactiveFlag === true);
+
+    const status = window.pulseband.getStatus();
+    const ts = getSafeTimestamp(status);
+    const seconds = safeSeconds((nowMs() - ts) / 1000);
+
+    window.pulseband.setStatus({
+      ...status,
+      lastSyncTimestamp: ts,
+      lastSyncSeconds: seconds
+    });
+  }, 1000);
+    hideTPLoader();
+    mark("EVENT DOM ENDS", true);
+  })();
+
+</script>
+</body>
+</html>

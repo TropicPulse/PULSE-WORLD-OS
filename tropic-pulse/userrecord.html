@@ -1,0 +1,2390 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport"
+      content="width=device-width,
+               initial-scale=1,
+               maximum-scale=1,
+               minimum-scale=1,
+               user-scalable=no">
+  <title>Tropic Pulse - User Profile</title>
+
+ <!-- Google Font -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-HSX89KS63P"></script>
+
+<script type="module" src="https://tropicpulse.bz/proxy/PulseUpdate.js?v8"></script>
+<script type="module" src="https://tropicpulse.bz/proxy/PulseBand.js?v8"></script>
+<script type="module" src="https://tropicpulse.bz/proxy/PulseClient.js?v8"></script>
+
+<script type="module" src="https://tropicpulse.bz/proxy/PulseUsersCacheManager.js?v8"></script>
+<script type="module" src="https://tropicpulse.bz/proxy/PulseHistoryCacheManager.js?v8"></script>
+<script type="module" src="https://tropicpulse.bz/proxy/PulseSettingsCacheManager.js?v8"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-HSX89KS63P');
+document.addEventListener("contextmenu", function(e) {
+    e.preventDefault();
+  });
+  document.addEventListener("dragstart", function(e) {
+    e.preventDefault();
+  });
+  !function(f,b,e,v,n,t,s){
+    if(f.fbq) return;
+    n = f.fbq = function(){
+      n.callMethod ?
+        n.callMethod.apply(n, arguments) : n.queue.push(arguments)
+    };
+    if(!f._fbq) f._fbq = n;
+    n.push = n;
+    n.loaded = true;
+    n.version = '2.0';
+    n.queue = [];
+    t = b.createElement(e);
+    t.async = true;
+    t.src = v;
+    s = b.getElementsByTagName(e)[0];
+    s.parentNode.insertBefore(t, s);
+  }(window, document, 'script', 'https://connect.facebook.net/en_US/fbevents.js');
+
+  fbq('init', '1651551349364459');
+  fbq('track', 'PageView');
+</script>
+
+<noscript>
+  <img
+    height="1"
+    width="1"
+    style="display:none"
+    src="https://www.facebook.com/tr?id=1651551349364459&ev=PageView&noscript=1"
+  />
+</noscript>
+<!-- End Meta Pixel Code -->
+  <style>
+    body {
+  padding: 0;
+  margin: 0;
+  width: 100%;
+  min-height: 100dvh;
+
+  display: flex;
+  justify-content: center;
+
+  background: #000;
+  background-image: url('https://tropicpulse.bz/Mysterious.png?v8');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+
+  font-family: Arial, sans-serif;
+}
+
+/* Overlay ONLY — NOT a second background */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+
+  /* Optional tint */
+  background: rgba(0,0,0,0.25);
+
+  pointer-events: none;
+  z-index: -1;
+}
+
+    .profile-container {
+      border-radius: 22px;
+      opacity: 0;
+      transition: opacity 1.2s ease-out 0.9s;
+      width: 100dvw;
+      min-width: 0;
+      min-height: auto;
+      flex-direction: column;
+      max-width: 464px;
+      margin: 1px auto 6px auto;
+      box-shadow: 0 6px 18px rgba(0,0,0,0.15);
+      display: flex;
+      justify-content: center;
+      text-align: center;
+    }
+    
+  /* Premium Black Header */
+  .profile-header {
+    position: sticky;
+    top: 0;
+    border: 2px solid #00a884;
+    z-index: 99999;
+    overflow: visible;
+    min-width: 0;
+    max-width: 100dvw;
+    margin-bottom: -2px;
+    max-height: 115px;            /* ← keeps it full width without stretching */
+    display: block;      /* ← the magic */
+    background: radial-gradient(circle at top, #07121f 0, #020509 55%, #000 100%);
+    border-radius: 22px;
+    text-align: center;
+    align-items: center;
+    justify-self: center;   /* ← center the filter row */
+    box-shadow:
+    0 4px 12px rgba(0,0,0,0.30),
+    0 12px 28px rgba(0,0,0,0.32),
+    inset 0 0 0 1px rgba(255,255,255,0.35);
+    backdrop-filter: blur(22px);
+    opacity: 1;
+    transition:
+      transform 1.4s cubic-bezier(0.22, 1, 0.36, 1),
+      opacity 1.0s ease-out;
+  }
+
+  /* Subtle luxury gradient */
+  .profile-header::after {
+    content: "";
+    position: absolute;
+    /* box-shadow:
+    0 4px 12px rgba(0,0,0,0.30),
+    0 12px 28px rgba(0,0,0,0.32),
+    inset 0 0 0 1px rgba(255,255,255,0.35); */
+    min-width: 0;            /* ← keeps it full width without stretching */
+    top: 0;
+    left: 0;
+    padding: 0;
+    width: 100%;
+    background: linear-gradient(to bottom, rgba(255,255,255,0.08), transparent);
+    pointer-events: none;
+  }
+
+
+  /* Floating Logo */
+  .profile-header .auth-logo {
+    width: 110px;
+    margin-bottom: 0px;
+    margin-top: 0px;
+    padding: 0;
+    height: auto;
+    object-fit: contain;
+    /* box-shadow:
+    0 4px 12px rgba(0,0,0,0.30),
+    0 12px 28px rgba(0,0,0,0.32),
+    inset 0 0 0 1px rgba(255,255,255,0.35); */
+    backdrop-filter: blur(22px);
+  }
+
+    .profile {
+      max-width: 100dvw;
+      padding: 0 6px;
+      border: 3px solid #ffffff;
+      justify-self: center;
+      padding-top: 22px; /* ⬅ more top & bottom padding */
+      background: #ffff99;
+      text-align: center;
+      /* PREMIUM MAGIC */
+      opacity: 0;
+      transition: opacity 1.2s ease-out 0.9s;
+      border-radius: 22px;
+      /* Inner yellow stays crisp, outer ring fades */
+      position: relative;
+      z-index: 2;
+      box-shadow: 0 6px 18px rgba(0,0,0,0.15);
+    }
+
+    /* Circular blurred aura */
+    .profile::before {
+      content: "";
+      position: absolute;
+      inset: 0; /* controls aura size */
+      z-index: -1;
+      /* Black → transparent fade */
+      border-radius: inherit; /* ← PERFECT FIX */
+      background: radial-gradient(
+        circle,
+        rgba(0,0,0,0.85) 0%,
+        rgba(0,0,0,0.55) 35%,
+        rgba(0,0,0,0.25) 60%,
+        rgba(0,0,0,0) 100%
+      );
+      filter: blur(45px);
+      opacity: 1;
+    }
+
+    .title {
+      width: 100%;
+      font-size: 28px;
+      max-height: 32px;
+      margin-top: -2px;
+      height: 100%;
+      min-height: 0;
+      color: #00a884;
+      justify-self: center;
+      text-align: center;
+      font-weight: 700;
+      /* The magic stack */
+      text-shadow:
+      /* white outline */
+      -1px -1px 0 #000,
+      1px -1px 0 #000,
+      -1px  1px 0 #000,
+      1px  1px 0 #000,
+
+      /* depth */
+      0 2px 4px rgba(0,0,0,0.45);
+
+      margin-bottom: -4px;
+    }
+
+    .subtitle {
+      font-size: 16px;
+      max-height: 22px;
+      height: 100%;
+      min-height: 0;
+      justify-self: center;
+      text-align: center;
+      color: #fff;
+      margin-bottom: 12px;
+      font-weight: 500;
+    }
+
+    .input {
+      width: 100%;
+      font-size: 16px;
+      border: 2px solid #00a884;
+      border-radius: 10px;
+      outline: none;
+      text-align: center;
+      box-sizing: border-box;
+      background: white;
+    }
+
+    .btn {
+      background: #00a884;
+      color: white;
+      padding: 12px;
+      border-radius: 999px;
+      cursor: pointer;
+      font-size: 16px;
+      box-shadow: 0 6px 14px rgba(0,168,132,0.25);
+      margin-top: 6px;
+      margin-bottom: 8px;
+    }
+
+    .btn:hover {
+      background: #008f72;
+    }
+
+    .checkbox-row {
+      align-items: center;
+      display: grid;
+      width: 100%;
+      text-align: center;
+      grid-template-columns: 1fr 1fr;
+      min-width: 0;
+      gap: 10px;
+      justify-content: center;
+      margin-top: 10px;
+      font-size: 14px;
+      direction: ltr;
+    }
+
+    .checkbox-row input[type="checkbox"] {
+      width: 14px;
+      height: 14px;
+      margin: 0;
+      position: static;
+    }
+
+    .checkbox-row span{
+      justify-content: center;
+      align-items: center;
+      
+      text-align: center;
+     
+      margin: 0;
+      position: static;
+    }
+
+    .msg {
+      display: none;
+      padding: 12px 16px;
+      margin: 10px 0;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 500;
+      transition: transform 0.2s ease, opacity 0.2s ease;
+    }
+    .msg.show {
+      transform: scale(1.03);
+    }
+
+    .display-row {
+      display: flex;
+      align-items: center;
+      width: 100%;
+      gap: 8px; /* spacing between input and button */
+    }
+
+    #displayNameInput {
+      flex: 1; /* this makes it fill remaining space */
+      min-width: 0; /* prevents overflow */
+    }
+
+    .success { color: #00a884; }
+    .error { color: #cc0000; }
+
+    /* Profile Photo + Shimmr */
+    .photo-section {
+      justify-self: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin-bottom: 14px;
+    }
+
+    .photo-wrapper {
+      width: 100%;
+      height: 100%;
+      justify-content: center;
+      display: flex;
+      border-radius: 50%;
+      box-shadow: outset 0 6px 18px rgba(0,0,0,0.15);
+      align-items: center;
+      position: relative;
+      margin-bottom: 10px;
+    }
+
+    .profile-photo {
+      width: 140px;
+      height: 140px;
+      justify-self: center;
+      box-shadow:
+    0 4px 12px rgba(0,0,0,0.30),
+    0 12px 28px rgba(0,0,0,0.32),
+    inset 0 0 0 1px rgba(255,255,255,0.35);
+      border-radius: 50%;
+      object-fit: cover;
+      border: 6px solid #00a884;
+      background: white;
+      display: block; /* hidden until loaded */
+    }
+
+    /* Stripe Panel */
+    .stripe-section {
+      width: 100%;
+      max-height: 110px;
+      margin-top: 10px;
+      margin-bottom: 16px;
+      text-align: center;
+      border-radius: 12px;
+      background: white;
+      color: #333;
+      border: 2px solid #00a884;
+    }
+
+    .stripe-title {
+      width: 100%;
+      max-height: 25px;
+      text-align: center;
+      color: #00a884;
+      font-size: 20px;
+    }
+
+    .stripe-status {
+      font-size: 16px;
+      margin-bottom: 10px;
+      text-align: center;
+    }
+
+    .btn.disabled {
+      opacity: 0.45;
+      cursor: not-allowed;
+      pointer-events: none;
+      filter: grayscale(40%);
+    }
+
+    .pulse-row {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      
+      text-align: center;
+      width: 100%;
+      max-width: 100%;
+      gap: 36px;
+      min-width: 0;
+      margin-top: 5px;
+      margin-bottom: 5px;
+    }
+
+    .pulse-points {
+      font-weight: 600;
+      color: #00a884;
+    }
+
+    .redeem-btn {
+      background: #00a884;
+      color: white;
+      border: none;
+      padding: 4px 8px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 14px;
+    }
+    #redeemConfirmInline {
+      display: none;
+      flex-direction: row;
+      align-items: center;
+    }
+
+    .t-btn-tri {
+      background: #2bb3b1;
+      color: white;
+      padding: 6px 12px;      /* ↓ smaller vertical + horizontal */
+      line-height: 1;         /* ↓ tighter text box */
+      font-size: 14px;        /* ↓ smaller text */
+      border-radius: 8px;     /* ↓ slightly smaller pill */
+      border: none;
+      font-weight: 600;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: 0.2s ease;
+    }
+
+    .t-btn-tri:hover {
+      background: #249c9a;
+    }
+
+    .t-btn-secondary {
+      background: #2bb3b1; /* teal */
+      color: white;
+      padding: 4px 8px;
+      max-height: 32px;
+      height: 100%;
+      min-height: 0;
+      border-radius: 10px;
+      border: none;
+      font-weight: 600;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: 0.2s ease;
+    }
+
+    .t-btn-secondary:hover {
+      background: #249c9a;
+    }
+
+    .t-btn-primary {
+      background: #2ecc71; /* Tropic Pulse green */
+      color: white;
+      padding: 4px 8px;
+      border-radius: 18px;
+      border: none;
+      max-height: 32px;
+      height: 100%;
+      min-height: 0;
+      min-width: 0;
+      font-weight: 600;
+      cursor: pointer;
+      transition: 0.2s ease;
+    }
+
+    .t-btn-primaryS {
+      background: #2ecc71; /* Tropic Pulse green */
+      color: white;
+      border-radius: 18px;
+      padding: 4px 0;
+      border: none;
+      max-height: 32px;
+      height: 100%;
+      width: 100%;
+      min-height: 0;
+      min-width: 0;
+      font-weight: 600;
+      cursor: pointer;
+      transition: 0.2s ease;
+    }
+
+    .t-btn-primary:hover {
+      background: #27ae60;
+    }
+    .t-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      width: 100%;
+    }
+    .t-input {
+      width: 100%;
+      flex: 1;
+      min-width: 0;
+      padding: 4px 10px;
+      border-radius: 10px;
+      border: 1px solid #d7d7d7;
+      background: #ffffff;
+      font-size: 15px;
+      color: #333;
+      box-sizing: border-box;
+    }
+
+    .t-input:focus {
+      border-color: #2bb3b1; /* teal highlight */
+      outline: none;
+      box-shadow: 0 0 0 2px rgba(43, 179, 177, 0.2);
+    }
+    
+    #displayNameStatus {
+      font-size: 12px;
+      line-height: 1.2;
+      padding: 4px 8px;
+      margin-top: 4px;
+      border-radius: 6px;
+      display: none;
+    }
+
+    /* Softer success */
+    .msg.success {
+      background: rgba(0, 150, 100, 0.10); /* lighter */
+      color: #007a55; /* deeper, less neon */
+      border: 1px solid rgba(0, 150, 100, 0.25);
+    }
+
+    /* Softer error */
+    .msg.error {
+      background: rgba(255, 80, 80, 0.10);
+      color: #b33;
+      border: 1px solid rgba(255, 80, 80, 0.25);
+    }
+
+  /* Fullscreen overlay */
+  #t-loading {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.22);
+    backdrop-filter: blur(16px) saturate(180%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999999;
+    opacity: 1;
+    transition: opacity 0.6s ease-out;
+  }
+
+  /* Logo */
+  #t-loading-logo {
+    width: 250px;
+    height: 250px;
+    object-fit: contain;
+    animation: tpShimmer 3.5s ease-in-out infinite;
+    
+  }
+
+  /* Magical shimer sweep */
+  @keyframes tpShimmer {
+    0% {
+      transform: scale(0.92);
+      opacity: 0.7;
+      filter: drop-shadow(0 0 4px rgba(0,255,200,0.2));
+    }
+    50% {
+      transform: scale(1.09);
+      opacity: 1;
+      filter: drop-shadow(0 0 18px rgba(0,255,200,0.45));
+    }
+    100% {
+      transform: scale(0.92);
+      opacity: 0.7;
+      filter: drop-shadow(0 0 4px rgba(0,255,200,0.2));
+    }
+  }
+
+  /* Hidden state */
+  #t-loading.hide {
+    opacity: 0;
+    pointer-events: none;
+  }
+  /* Entrance animation */
+  @keyframes tpBubbleWaveIn {
+    0% {
+      opacity: 0;
+      transform: scale(0.6) translateY(20px);
+      filter: drop-shadow(0 0 0 rgba(0,255,200,0));
+    }
+    60% {
+      opacity: 1;
+      transform: scale(1.08) translateY(0);
+      filter: drop-shadow(0 0 12px rgba(0,255,200,0.35));
+    }
+    100% {
+      transform: scale(1) translateY(0);
+      filter: drop-shadow(0 0 4px rgba(0,255,200,0.2));
+    }
+  }
+
+  /* Shimer sweep */
+  @keyframes tpBubbleShimmer {
+    0% {
+      background-position: -100px 0;
+    }
+    100% {
+      background-position: -100px 0;
+    }
+  }
+
+  
+    .shimmer {
+      width: 140px;
+      height: 140px;
+      justify-self: center;
+      border-radius: 50%;
+      background: linear-gradient(90deg, #e0e0e0 0%, #f8f8f8 50%, #e0e0e0 100%);
+      background-size: 200% 100%;
+      animation: shimmer 1.2s infinite;
+      position: absolute;
+      top: 0;
+    }
+
+    @keyframes shimmer {
+      0% { background-position: 200% 0; }
+      100% { background-position: -200% 0; }
+    }
+
+    h2 {
+      color: #00a884;
+      margin-bottom: 4px;
+      margin-top: 4px;
+      width: 100%;
+      justify-self: center;
+      font-size: 24px;
+      font-weight: 700;
+      /* The magic stack */
+      text-align: center;
+      text-shadow:
+        /* white outline */
+        -1px -1px 0 #000,
+        1px -1px 0 #000,
+        -1px  1px 0 #000,
+        1px  1px 0 #000,
+
+        /* depth */
+        0 2px 4px rgba(0,0,0,0.45);
+    }
+
+    
+.profile-header .hero-header-intro {
+  transform: translateY(100vh);
+  opacity: 0;
+}
+
+
+.hero-header-intro .profile-container {
+  opacity: 1;
+  transition: opacity 1.4s ease-out 0.9s;
+
+}
+
+.hero-header-intro .profile {
+  opacity: 1;
+  transition: opacity 1.4s ease-out 0.9s;
+
+}
+
+#hero-backdrop-top,
+#hero-backdrop-bottom {
+  position: fixed;
+  left: 0;
+  right: 0;
+  background: rgba(0,0,0,0.95);
+  pointer-events: none;
+  z-index: 999999;
+}
+
+/* Top backdrop covers above header */
+#hero-backdrop-top {
+  opacity: 0;
+  top: 0;
+  height: 100vh;
+  transition: height 1.2s ease-out, opacity 0.8s ease-out;
+}
+
+/* Bottom backdrop covers below header */
+#hero-backdrop-bottom {
+  opacity: 0;
+  bottom: 0;
+  height: 100vh;
+  transition: height 1.2s ease-out;
+}
+
+#pulseband-overlay {
+  position: fixed;
+  top: 10px;
+  right: 10px;
+  z-index: 99999;
+  font-family: system-ui, sans-serif;
+  color: #e9f9ff;
+}
+
+#pulseband-badge {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  backdrop-filter: blur(6px);
+  background: rgba(0, 40, 60, 0.45);
+  box-shadow: 0 0 8px rgba(0, 255, 200, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.pb-bars {
+  display: flex;
+  align-items: flex-end;
+}
+
+.pb-bars span {
+  width: 3px;
+  margin-left: 2px;
+  border-radius: 2px;
+  background: rgba(255, 255, 255, 0.25);
+  transition: background 0.2s, height 0.2s;
+}
+
+.pb-bars span:nth-child(1) { height: 6px; }
+.pb-bars span:nth-child(2) { height: 9px; }
+.pb-bars span:nth-child(3) { height: 12px; }
+.pb-bars span:nth-child(4) { height: 15px; }
+
+#pulseband-panel {
+  position: absolute;
+  top: 0;
+  right: 38px; /* panel opens to the LEFT of the badge */
+  width: 220px;
+  padding: 10px;
+  justify-content: center;
+  border-radius: 14px;
+  backdrop-filter: blur(10px);
+  background: linear-gradient(135deg, rgba(0,35,60,0.92), rgba(0,80,90,0.9));
+  box-shadow: 0 10px 24px rgba(0,0,0,0.35);
+  font-size: 11px;
+  display: none;
+  z-index: 999999;
+}
+
+.pb-header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 65px;
+  margin-bottom: 6px;
+  border-radius: 20px;
+  box-shadow:
+    0 4px 12px rgba(0,0,0,0.30),
+    0 12px 28px rgba(0,0,0,0.32),
+    inset 0 0 0 1px rgba(255,255,255,0.35);
+  border: 2px solid #000000;
+}
+
+.pb-mini-badge {
+  height: 100%;
+  width: 100%;
+  object-fit: contain;      /* zoom OUT to fit height */
+  object-position: left center;  /* ⭐ force image to left */
+  border-radius: 20px;
+  background: radial-gradient(circle at 30% 30%, #00ffd5, #007a8a);
+}
+.pb-mini-badge.inactive {
+  background: radial-gradient(circle at 30% 30%, #222 20%, #000 80%);
+}
+
+.pb-row {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 3px;
+}
+
+.pb-row label {
+  opacity: 0.7;
+}
+
+/* ⭐ Bars ALWAYS teal */
+#pulseband-badge .pb-bars span.active {
+  background: #00ffd5 !important;
+}
+
+/* ⭐ BOOST MODE: badge turns orange, bars stay teal */
+#pulseband-badge.boost {
+  background: rgba(255, 140, 0, 0.45); /* orange glow */
+  box-shadow: 0 0 10px rgba(255, 140, 0, 0.7);
+}
+
+/* ⭐ BOOST MODE: bars DO NOT change color */
+#pulseband-badge.boost .pb-bars span.active {
+  background: #00ffd5 !important; /* force teal */
+}
+
+/* ⭐ Transfer flicker stays the same */
+#pulseband-badge.transfer .pb-bars span.active {
+  animation: pbFlicker 0.25s ease-out;
+}
+
+@keyframes pbFlicker {
+  0%   { opacity: 1;   transform: scaleY(1); }
+  50%  { opacity: 0.4; transform: scaleY(0.6); }
+  100% { opacity: 1;   transform: scaleY(1); }
+}
+.pb-hint {
+  font-size: 11px;
+  opacity: 0.55;
+  margin-left: 4px;
+  font-weight: 500;
+  letter-spacing: 0.2px;
+  color: #c8f7ff; /* soft tropical teal */
+}
+
+.pb-row label {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.pb-row {
+  display: flex;
+  justify-content: space-between;
+}
+
+.pb-value {
+  font-weight: 600;
+  color: #fff;
+}
+
+  </style>
+</head>
+<body>
+  <div id="t-loading">
+    <img src="https://tropicpulse.bz/ToucanLogo-Mini.png?v8" id="t-loading-logo" />
+  </div>
+  <div id="pulseband-overlay">
+    <div id="pulseband-badge">
+      <div class="pb-bars">
+        <span></span><span></span><span></span><span></span>
+      </div>
+    </div>
+    <div id="pulseband-panel" class="pb-card">
+
+      <div class="pb-header">
+      <img id="pb-mini-badge" class="pb-mini-badge"
+          src="https://tropicpulse.bz/proxy/PulseBand.png"
+          alt="PulseBand Badge">
+    </div>
+      
+      <div class="pb-row">
+        <label>PulseBand Bars <span class="pb-hint">(App Speed)</span></label>
+        <span id="pb-bars-text" class="pb-value">0/4</span>
+      </div>
+
+      <div class="pb-row">
+        <label>Phone Bars <span class="pb-hint">(Signal Speed)</span></label>
+        <span id="pb-phonebars-text" class="pb-value">0/4</span>
+      </div>
+
+      <div class="pb-row">
+        <label>Stability <span class="pb-hint">(Connection Quality)</span></label>
+        <span id="pb-stability" class="pb-value">0%</span>
+      </div>
+
+      <div class="pb-row">
+        <label>Latency <span class="pb-hint">(Response Time)</span></label>
+        <span id="pb-latency" class="pb-value">0 ms</span>
+      </div>
+
+      <div class="pb-row">
+        <label>Micro‑Windows <span class="pb-hint">(Speed Bursts)</span></label>
+        <span id="pb-micro" class="pb-value">Idle</span>
+      </div>
+
+      <div class="pb-row">
+        <label>Route <span class="pb-hint">(Network Path)</span></label>
+        <span id="pb-route" class="pb-value">Primary</span>
+      </div>
+
+      <div class="pb-row">
+        <label>State <span class="pb-hint">(Current Mode)</span></label>
+        <span id="pb-state" class="pb-value">Initializing</span>
+      </div>
+
+      <div class="pb-row">
+        <label>Last Sync <span class="pb-hint">(Updated)</span></label>
+        <span id="pb-sync" class="pb-value">0s ago</span>
+      </div>
+
+      <div class="pb-row">
+        <label>Efficiency <span class="pb-hint">(Speed Mode)</span></label>
+        <span id="pb-efficiency" class="pb-value">Micro‑Burst</span>
+      </div>
+
+      <div class="pb-row">
+        <label>Network Health <span class="pb-hint">(Overall)</span></label>
+        <span id="pb-health" class="pb-value">Checking…</span>
+      </div>
+
+      <div class="pb-row">
+        <label>PulseBand Advantage</label>
+        <span id="pb-advantage" class="pb-value">2.5× Faster</span>
+      </div>
+
+      <div class="pb-row">
+        <label>Phone vs PulseBand</label>
+        <span id="pb-estimated" class="pb-value">Calculating…</span>
+      </div>
+
+    </div>
+  </div>
+  <div id="hero-backdrop-top"></div>
+  <div id="hero-backdrop-bottom"></div>
+  <div class="profile-container">
+    <div class="profile-header">
+      <img src="https://tropicpulse.bz/ToucanLogo-Mini.png?v8" class="auth-logo"/>
+    </div>
+    <div class="profile">
+      <!-- <img src="https://tropicpulse.bz/ToucanLogo-Mini.png?v8" class="auth-logo" /> -->
+      <h1 class="title" id="pageTitle">User Profile</h1>
+      <p class="subtitle" id="pageSubtitle">Create or Update your Tropic Pulse Account.</p>
+
+      <!-- PROFILE PHOTO -->
+      <div class="photo-section">
+        <div class="photo-wrapper">
+          <div id="shimmer" class="shimmer"></div>
+          <img id="profilePhoto" class="profile-photo" src="" />
+        </div>
+
+        <p id="changePhotoBtn" class="t-btn-secondary" style="display:inline-block; padding:2px 8px; border:2px solid black; color:black; border-radius:8px; font-weight:600; cursor:pointer; text-align:center;">📷 CHANGE PHOTO</p>
+        <input type="file" id="photoInput" accept="image/*" style="display:none;"></input>
+      </div>
+
+      <!-- USER FIELDS -->
+      <input id="fullName" class="t-input" type="text" placeholder="Full Name"></input>
+      <div class="t-row">
+        <input id="displayNameInput" class="t-input" type="text" placeholder="Display Name"></input>
+        <button id="checkDisplayNameBtn" class="t-btn-secondary">Check</button>
+      </div>
+
+      <p id="displayNameStatus" class="msg" style="display:none;"></p>
+      <input id="email" class="t-input" type="text" placeholder="Email"></input>
+
+      <button id="verifyEmailBtn" class="t-btn-secondary" style="display:none; margin-top:8px;">
+        Verify New Email
+      </button>
+
+      <div id="emailPinContainer" style="display:none; margin-top:10px;">
+        <input class="t-input" id="emailPinInput" placeholder="Enter PIN"></input>
+        <button id="submitEmailPinBtn" class="t-btn-primary">Submit PIN</button>
+      </div>
+
+      <input id="phone" class="t-input" type="text" placeholder="Phone" />
+
+      <!-- ⭐ FIXED PULSE POINTS ROW ⭐ -->
+      <div class="pulse-row">
+        <span id="pulsePointsDisplay" class="pulse-points">Pulse Points: 0</span>
+
+        <!-- Redeem button (default) -->
+        <button id="redeemPulseBtn" class="t-btn-primary">💱 Redeem</button>
+
+        <!-- Yes/No inline confirmation (hidden by default) -->
+        <div id="redeemConfirmInline" style="display:none; gap:6px;">
+          <span>Redeem Points?</span>
+          <button id="redeemYesBtn" class="t-btn-secondary" style="padding:4px 8px;">Yes</button>
+          <button id="redeemNoBtn" class="t-btn-secondary" style="padding:4px 8px;">No</button>
+        </div>
+      </div>
+
+      <!-- COUNTRY DROPDOWN -->
+      <select id="country" class="t-input">
+        <option value="">Select Country</option>
+        <option value="BZ">Belize</option>
+        <option value="US">United States</option>
+        <option value="CA">Canada</option>
+        <option value="MX">Mexico</option>
+
+        <!-- FULL COUNTRY LIST -->
+        <option value="AF">Afghanistan</option>
+        <option value="AL">Albania</option>
+        <option value="DZ">Algeria</option>
+        <option value="AS">American Samoa</option>
+        <option value="AD">Andorra</option>
+        <option value="AO">Angola</option>
+        <option value="AI">Anguilla</option>
+        <option value="AG">Antigua and Barbuda</option>
+        <option value="AR">Argentina</option>
+        <option value="AM">Armenia</option>
+        <option value="AW">Aruba</option>
+        <option value="AU">Australia</option>
+        <option value="AT">Austria</option>
+        <option value="AZ">Azerbaijan</option>
+        <option value="BS">Bahamas</option>
+        <option value="BH">Bahrain</option>
+        <option value="BD">Bangladesh</option>
+        <option value="BB">Barbados</option>
+        <option value="BY">Belarus</option>
+        <option value="BE">Belgium</option>
+        <option value="BJ">Benin</option>
+        <option value="BM">Bermuda</option>
+        <option value="BT">Bhutan</option>
+        <option value="BO">Bolivia</option>
+        <option value="BA">Bosnia and Herzegovina</option>
+        <option value="BW">Botswana</option>
+        <option value="BR">Brazil</option>
+        <option value="BN">Brunei</option>
+        <option value="BG">Bulgaria</option>
+        <option value="BF">Burkina Faso</option>
+        <option value="BI">Burundi</option>
+        <option value="KH">Cambodia</option>
+        <option value="CM">Cameroon</option>
+        <option value="CV">Cape Verde</option>
+        <option value="KY">Cayman Islands</option>
+        <option value="CF">Central African Republic</option>
+        <option value="TD">Chad</option>
+        <option value="CL">Chile</option>
+        <option value="CN">China</option>
+        <option value="CO">Colombia</option>
+        <option value="KM">Comoros</option>
+        <option value="CG">Congo</option>
+        <option value="CR">Costa Rica</option>
+        <option value="CI">Côte d'Ivoire</option>
+        <option value="HR">Croatia</option>
+        <option value="CU">Cuba</option>
+        <option value="CY">Cyprus</option>
+        <option value="CZ">Czech Republic</option>
+        <option value="DK">Denmark</option>
+        <option value="DJ">Djibouti</option>
+        <option value="DM">Dominica</option>
+        <option value="DO">Dominican Republic</option>
+        <option value="EC">Ecuador</option>
+        <option value="EG">Egypt</option>
+        <option value="SV">El Salvador</option>
+        <option value="GQ">Equatorial Guinea</option>
+        <option value="ER">Eritrea</option>
+        <option value="EE">Estonia</option>
+        <option value="SZ">Eswatini</option>
+        <option value="ET">Ethiopia</option>
+        <option value="FJ">Fiji</option>
+        <option value="FI">Finland</option>
+        <option value="FR">France</option>
+        <option value="GA">Gabon</option>
+        <option value="GM">Gambia</option>
+        <option value="GE">Georgia</option>
+        <option value="DE">Germany</option>
+        <option value="GH">Ghana</option>
+        <option value="GR">Greece</option>
+        <option value="GD">Grenada</option>
+        <option value="GT">Guatemala</option>
+        <option value="GN">Guinea</option>
+        <option value="GY">Guyana</option>
+        <option value="HT">Haiti</option>
+        <option value="HN">Honduras</option>
+        <option value="HK">Hong Kong</option>
+        <option value="HU">Hungary</option>
+        <option value="IS">Iceland</option>
+        <option value="IN">India</option>
+        <option value="ID">Indonesia</option>
+        <option value="IR">Iran</option>
+        <option value="IQ">Iraq</option>
+        <option value="IE">Ireland</option>
+        <option value="IL">Israel</option>
+        <option value="IT">Italy</option>
+        <option value="JM">Jamaica</option>
+        <option value="JP">Japan</option>
+        <option value="JO">Jordan</option>
+        <option value="KZ">Kazakhstan</option>
+        <option value="KE">Kenya</option>
+        <option value="KI">Kiribati</option>
+        <option value="KR">South Korea</option>
+        <option value="KW">Kuwait</option>
+        <option value="KG">Kyrgyzstan</option>
+        <option value="LA">Laos</option>
+        <option value="LV">Latvia</option>
+        <option value="LB">Lebanon</option>
+        <option value="LS">Lesotho</option>
+        <option value="LR">Liberia</option>
+        <option value="LY">Libya</option>
+        <option value="LI">Liechtenstein</option>
+        <option value="LT">Lithuania</option>
+        <option value="LU">Luxembourg</option>
+        <option value="MO">Macau</option>
+        <option value="MG">Madagascar</option>
+        <option value="MW">Malawi</option>
+        <option value="MY">Malaysia</option>
+        <option value="MV">Maldives</option>
+        <option value="ML">Mali</option>
+        <option value="MT">Malta</option>
+        <option value="MH">Marshall Islands</option>
+        <option value="MQ">Martinique</option>
+        <option value="MR">Mauritania</option>
+        <option value="MU">Mauritius</option>
+        <option value="MX">Mexico</option>
+        <option value="FM">Micronesia</option>
+        <option value="MD">Moldova</option>
+        <option value="MC">Monaco</option>
+        <option value="MN">Mongolia</option>
+        <option value="ME">Montenegro</option>
+        <option value="MA">Morocco</option>
+        <option value="MZ">Mozambique</option>
+        <option value="MM">Myanmar</option>
+        <option value="NA">Namibia</option>
+        <option value="NP">Nepal</option>
+        <option value="NL">Netherlands</option>
+        <option value="NZ">New Zealand</option>
+        <option value="NI">Nicaragua</option>
+        <option value="NE">Niger</option>
+        <option value="NG">Nigeria</option>
+        <option value="NO">Norway</option>
+        <option value="OM">Oman</option>
+        <option value="PK">Pakistan</option>
+        <option value="PW">Palau</option>
+        <option value="PA">Panama</option>
+        <option value="PG">Papua New Guinea</option>
+        <option value="PY">Paraguay</option>
+        <option value="PE">Peru</option>
+        <option value="PH">Philippines</option>
+        <option value="PL">Poland</option>
+        <option value="PT">Portugal</option>
+        <option value="PR">Puerto Rico</option>
+        <option value="QA">Qatar</option>
+        <option value="RO">Romania</option>
+        <option value="RU">Russia</option>
+        <option value="RW">Rwanda</option>
+        <option value="KN">Saint Kitts and Nevis</option>
+        <option value="LC">Saint Lucia</option>
+        <option value="VC">Saint Vincent and the Grenadines</option>
+        <option value="WS">Samoa</option>
+        <option value="SM">San Marino</option>
+        <option value="ST">São Tomé and Príncipe</option>
+        <option value="SA">Saudi Arabia</option>
+        <option value="SN">Senegal</option>
+        <option value="RS">Serbia</option>
+        <option value="SC">Seychelles</option>
+        <option value="SL">Sierra Leone</option>
+        <option value="SG">Singapore</option>
+        <option value="SK">Slovakia</option>
+        <option value="SI">Slovenia</option>
+        <option value="SB">Solomon Islands</option>
+        <option value="SO">Somalia</option>
+        <option value="ZA">South Africa</option>
+        <option value="ES">Spain</option>
+        <option value="LK">Sri Lanka</option>
+        <option value="SD">Sudan</option>
+        <option value="SR">Suriname</option>
+        <option value="SE">Sweden</option>
+        <option value="CH">Switzerland</option>
+        <option value="SY">Syria</option>
+        <option value="TW">Taiwan</option>
+        <option value="TJ">Tajikistan</option>
+        <option value="TZ">Tanzania</option>
+        <option value="TH">Thailand</option>
+        <option value="TL">Timor-Leste</option>
+        <option value="TG">Togo</option>
+        <option value="TO">Tonga</option>
+        <option value="TT">Trinidad and Tobago</option>
+        <option value="TN">Tunisia</option>
+        <option value="TR">Turkey</option>
+        <option value="TM">Turkmenistan</option>
+        <option value="TV">Tuvalu</option>
+        <option value="UG">Uganda</option>
+        <option value="UA">Ukraine</option>
+        <option value="AE">United Arab Emirates</option>
+        <option value="GB">United Kingdom</option>
+        <option value="UY">Uruguay</option>
+        <option value="UZ">Uzbekistan</option>
+        <option value="VU">Vanuatu</option>
+        <option value="VE">Venezuela</option>
+        <option value="VN">Vietnam</option>
+        <option value="YE">Yemen</option>
+        <option value="ZM">Zambia</option>
+        <option value="ZW">Zimbabwe</option>
+      </select>
+
+
+      <select id="role" class="input">
+        <option value="Customer">Customer</option>
+        <option value="Deliverer">Deliverer</option>
+        <option value="Vendor">Vendor</option>
+        <option value="Admin">Admin (Locked)</option>
+      </select>
+
+      <label class="checkbox-row">
+        <span><input type="checkbox" id="smsOpt" /> SMS Opt-In</span>
+        <span><input type="checkbox" id="emailOpt" /> Email Opt-In</span>
+      </label>
+
+      
+      <div id="leaveConfirmRow" style="display:none; margin-top:10px;">
+        <span>You have unsaved changes. Leave without saving?</span>
+        <button id="leaveYesBtn" class="t-btn-secondary">Yes</button>
+        <button id="leaveNoBtn" class="t-btn-secondary">No</button>
+      </div>
+
+      <div id="msg" class="msg"></div>
+
+      <!-- STRIPE STATUS PANEL -->
+      <div class="stripe-section">
+        <h2 class="stripe-title">Stripe Account</h2>
+        <div id="stripeStatus" class="stripe-status">Checking status…</div>
+        <div id="stripeAction" class="t-btn-tri"></div>
+      </div>
+      <div class="t-btn-primaryS" id="saveBtn">Save Profile</div>
+    </div>
+</div>
+
+<script type="module">
+  
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+  import { getDocs, getDoc, updateDoc, doc, deleteDoc, getFirestore, query, where, serverTimestamp, orderBy, setDoc,
+  collection,
+  initializeFirestore, 
+  persistentLocalCache, 
+  persistentMultipleTabManager 
+} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-storage.js";
+import { getAuth, setPersistence, browserLocalPersistence, signInWithCustomToken } 
+  from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+
+  /* FIREBASE */
+  const firebaseConfig = {
+    apiKey: "AIzaSyD4I5YDtZMMC_tDuwR9CEjhs_iAdrLzthQ",
+    authDomain: "tropic-pulse.firebaseapp.com",
+    projectId: "tropic-pulse",
+    storageBucket: "tropic-pulse.firebasestorage.app",
+    messagingSenderId: "642785071979",
+    appId: "1:642785071979:web:4287c6bdf51f5233db722e",
+    measurementId: "G-HSX89KS63P"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const db = initializeFirestore(app, {
+    localCache: persistentLocalCache({
+      tabManager: persistentMultipleTabManager()
+    }),
+    experimentalForceLongPolling: false,
+    experimentalAutoDetectLongPolling: false
+  });
+   
+  window.__serverTimeOffset = 0;
+
+    window.setServerNow = function (serverNowMs) {
+      const localNow = Date.now();
+      window.__serverTimeOffset = serverNowMs - localNow;
+    };
+
+    window.nowMs = function () {
+      return Date.now() + window.__serverTimeOffset;
+    };
+
+  let resizeTimeout;
+  let trusted = null;
+  let autologin = null;
+  let userName = null;
+  let userEmail = null;
+  let userID = null;
+  let token = localStorage.getItem("tp_token_v4") || null;
+  let persistenceEnabled = false;
+  let lastTime = null;
+  let isLoggedIn = false;
+  let firstTime = null;
+  let isDesk = isDesktop();
+  let isIdle = true;
+const defaultPayloadKB = 20;
+  let formIsDirty = false;
+  function markDirty() { formIsDirty = true; }
+
+  // ---------------------------
+  // LOAD IDENTITY
+  // ---------------------------
+  
+  // ---------------------------------------------
+// IDENTITY (CANONICAL SOURCE: localStorage)
+// ---------------------------------------------
+let identity = {};
+try {
+  identity = JSON.parse(localStorage.getItem("tp_identity_v4") || "{}");
+} catch {
+  identity = {};
+}
+
+// ---------------------------------------------
+// DOM ELEMENTS
+// ---------------------------------------------
+const img = document.getElementById("profilePhoto");
+const emailInput = document.getElementById("email");
+const verifyEmailBtn = document.getElementById("verifyEmailBtn");
+const saveBtn = document.getElementById("saveBtn");
+const changeBtn = document.getElementById("changePhotoBtn");
+const photoInput = document.getElementById("photoInput");
+
+// ---------------------------------------------
+// SAVE PROFILE
+// ---------------------------------------------
+saveBtn.onclick = async () => {
+  const ok = await updateUserRecordFromUI();
+  if (ok) {
+    showMessage("Profile updated!", "success");
+
+    // Update identity locally
+    identity.displayName = payload.displayName;
+    localStorage.setItem("tp_identity_v4", JSON.stringify(identity));
+
+    formIsDirty = false;
+  }
+};
+
+// ---------------------------------------------
+// EMAIL CHANGE HANDLER
+// ---------------------------------------------
+emailInput.addEventListener("input", () => {
+  const newEmail = emailInput.value.trim().toLowerCase();
+
+  if (identity && newEmail !== identity.email.toLowerCase()) {
+    verifyEmailBtn.style.display = "inline-block";
+    saveBtn.disabled = true;
+    saveBtn.classList.add("disabled");
+  } else {
+    verifyEmailBtn.style.display = "none";
+    saveBtn.disabled = false;
+    saveBtn.classList.remove("disabled");
+  }
+});
+
+// ---------------------------------------------
+// SEND EMAIL VERIFICATION PIN
+// ---------------------------------------------
+verifyEmailBtn.onclick = async () => {
+  const newEmail = emailInput.value.trim().toLowerCase();
+
+  const res = await fetch("https://sendpin-ilx3agka5q-uc.a.run.app", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      email: newEmail,
+      uid: identity.uid,
+      purpose: "emailChange"
+    })
+  });
+
+  const data = await res.json();
+
+  if (data.success) {
+    document.getElementById("emailPinContainer").style.display = "block";
+    showMessage("A verification code has been sent to " + newEmail, "success");
+  } else {
+    showMessage(data.error || "Unable to send verification PIN.", "error");
+  }
+};
+
+// ---------------------------------------------
+// PHOTO UPLOAD
+// ---------------------------------------------
+changeBtn.onclick = () => photoInput.click();
+
+photoInput.onchange = async (e) => {
+  const file = e.target.files[0];
+  if (!file) return;
+
+  const reader = new FileReader();
+  reader.onload = async () => {
+    const base64 = reader.result.split(",")[1];
+
+    const res = await fetch("https://uploadprofilephoto-ilx3agka5q-uc.a.run.app", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        uid: identity.uid,
+        image: base64
+      })
+    });
+
+    const data = await res.json();
+
+    if (data.success) {
+      img.style.display = "none";
+
+      img.onload = () => {
+        img.style.display = "block";
+      };
+
+      img.onerror = () => {
+        img.src = "https://tropicpulse.bz/Frustrated.png?v8";
+        img.style.display = "block";
+      };
+
+      img.src = data.photoURL;
+
+      // Update identity
+      identity.photoURL = data.photoURL;
+      localStorage.setItem("tp_identity_v4", JSON.stringify(identity));
+    }
+  };
+
+  reader.readAsDataURL(file);
+};
+
+// ---------------------------------------------
+// REDEEM PULSE POINTS
+// ---------------------------------------------
+const redeemBtn = document.getElementById("redeemPulseBtn");
+const confirmInline = document.getElementById("redeemConfirmInline");
+const redeemYes = document.getElementById("redeemYesBtn");
+const redeemNo = document.getElementById("redeemNoBtn");
+
+redeemBtn.onclick = () => {
+  const points = identity.pointsBalance ?? 0;
+
+  if (points < 500) {
+    showMessage("You need at least 500 points to redeem.", "error");
+    return;
+  }
+
+  redeemBtn.style.display = "none";
+  confirmInline.style.display = "flex";
+  saveBtn.disabled = true;
+  saveBtn.classList.add("disabled");
+};
+
+redeemNo.onclick = () => {
+  confirmInline.style.display = "none";
+  redeemBtn.style.display = "inline-block";
+  saveBtn.disabled = false;
+  saveBtn.classList.remove("disabled");
+};
+
+redeemYes.onclick = async () => {
+  const points = identity.pointsBalance;
+  const token = localStorage.getItem("tp_token_v4");
+
+  try {
+    const res = await fetch("https://updateuserrecord-ilx3agka5q-uc.a.run.app", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${token}`
+      },
+      body: JSON.stringify({
+        action: "redeemPulsePoints",
+        uid: identity.uid,
+        email: identity.email,
+        pointsToRedeem: points
+      })
+    });
+
+    const data = await res.json();
+
+    if (!res.ok || !data.success) {
+      showMessage(data.message || data.error || "Error submitting redemption request.", "error");
+      confirmInline.style.display = "none";
+      redeemBtn.style.display = "inline-block";
+      saveBtn.disabled = false;
+      saveBtn.classList.remove("disabled");
+      return;
+    }
+
+    // SUCCESS
+    identity.pointsBalance = data.pointsBalance;
+    localStorage.setItem("tp_identity_v4", JSON.stringify(identity));
+
+    showMessage("Redemption request submitted! Wallet will update within 24-48 hours.", "success");
+
+  } catch (err) {
+    console.error(err);
+    showMessage("Network error submitting redemption request.", "error");
+  }
+
+  confirmInline.style.display = "none";
+  redeemBtn.style.display = "inline-block";
+  saveBtn.disabled = false;
+  saveBtn.classList.remove("disabled");
+};
+document.getElementById("checkDisplayNameBtn").onclick = async () => {
+  const input = document.getElementById("displayNameInput");
+  const status = document.getElementById("displayNameStatus");
+
+  let raw = input.value.trim();
+
+  // 1. If empty → ask backend to generate a brand new name
+  if (!raw) {
+    const res = await fetch("https://checkdisplayname-ilx3agka5q-uc.a.run.app", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ generate: true })
+    });
+
+    const data = await res.json();
+    input.value = data.generated;
+    status.className = "msg success show";
+    status.textContent = "A New Display Name was Created!";
+    return;
+  }
+
+  // 2. Sanitize user input
+  const clean = sanitizeDisplayName(raw);
+  input.value = clean;
+
+  // 3. Check availability
+  const res = await fetch("https://checkdisplayname-ilx3agka5q-uc.a.run.app", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ name: clean })
+  });
+
+  const data = await res.json();
+  status.style.display = "block";
+
+  if (data.available) {
+    status.className = "msg success show";
+    status.textContent = "Display Name is Available!";
+    return;
+  }
+
+  // 4. If taken → ask backend to generate the next available version
+  const res2 = await fetch("https://checkdisplayname-ilx3agka5q-uc.a.run.app", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ base: clean })
+  });
+
+  const data2 = await res2.json();
+
+  input.value = data2.suggested;
+  status.className = "msg error show";
+  status.textContent = "That Name was Taken — Try This One!";
+};
+
+document.getElementById("submitEmailPinBtn").onclick = async () => {
+  const newEmail = emailInput.value.trim().toLowerCase();
+  const pin = document.getElementById("emailPinInput").value.trim();
+  const saveBtn = document.getElementById("saveBtn");
+
+  const res = await fetch("https://verifypin-ilx3agka5q-uc.a.run.app", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      email: newEmail,
+      pin,
+      uid: identity.uid,
+      purpose: "emailChange"
+    })
+  });
+
+  const data = await res.json();
+
+  if (data.success) {
+    identity.email = newEmail;
+    localStorage.setItem("tp_identity_v4", JSON.stringify(identity));
+
+    verifyEmailBtn.style.display = "none";
+    document.getElementById("emailPinContainer").style.display = "none";
+    saveBtn.disabled = false;
+    saveBtn.classList.remove("disabled");
+
+    showMessage("Email Verified and Updated!", "success");
+  } else {
+    showMessage((data.error || "Invalid PIN."), "error");
+  }
+};
+
+const msg = document.getElementById("msg");
+
+function showMessage(text, type = "error") {
+  const msg = document.getElementById("msg");
+  msg.textContent = text;
+  msg.className = "msg " + type;
+  msg.style.display = "block";
+
+  // pulse animation
+  msg.classList.add("show");
+  setTimeout(() => msg.classList.remove("show"), 300);
+
+  // smooth scroll
+  msg.scrollIntoView({ behavior: "smooth", block: "center" });
+
+  // auto-hide
+  setTimeout(() => {
+    msg.style.display = "none";
+  }, 4000);
+}
+
+[
+  "fullName",
+  "displayNameInput",
+  "email",
+  "phone"
+].forEach(id => {
+  const el = document.getElementById(id);
+  if (el) el.addEventListener("input", markDirty);
+});
+
+[
+  "country",
+  "role",
+  "smsOpt",
+  "emailOpt"
+].forEach(id => {
+  const el = document.getElementById(id);
+  if (el) el.addEventListener("change", markDirty);
+});
+
+window.addEventListener("beforeunload", (e) => {
+  if (!formIsDirty) return;
+  e.preventDefault();
+  e.returnValue = "";
+});
+
+// ---------------------------------------------
+// AUTH MARKERS + PERSISTENCE
+// ---------------------------------------------
+function markAuth(label) {
+  const now = nowMs();
+  lastTime = now;
+  firstTime = now;
+  console.log(`${label}: +${(now - lastTime).toFixed(1)}ms`);
+}
+
+let auth = getAuth();
+markAuth("Firebase Auth FIRST CHECK");
+
+try {
+  setPersistence(auth, browserLocalPersistence);
+  persistenceEnabled = true;
+  mark("Firebase Auth persistence enabled.");
+} catch (err) {
+  console.error("Failed to enable persistence:", err);
+}
+
+// ---------------------------------------------
+// LOADER + LOGOUT HELPERS
+// ---------------------------------------------
+function hideTPLoader() {
+  const el = document.getElementById("t-loading");
+  if (!el) return;
+  el.classList.add("hide");
+  setTimeout(() => el.remove(), 700);
+}
+
+function safeLogout() {
+  localStorage.removeItem("tp_token_v4");
+  localStorage.removeItem("tp_device_token_v4");
+  mark("SAFE LOGOUT");
+}
+
+async function hardLogout(reason) {
+  try {
+    mark("HARD LOGOUT: " + (reason || "unknown"));
+    localStorage.removeItem("tp_token_v4");
+    localStorage.removeItem("tp_device_token_v4");
+    await reportDanger(reason || "hardLogout");
+  } catch (err) {
+    mark("HARD LOGOUT ERROR: " + err);
+    localStorage.removeItem("tp_token_v4");
+    localStorage.removeItem("tp_device_token_v4");
+  } finally {
+    window.location.replace("/CheckEmail.html");
+  }
+}
+
+function mark(label) {
+  const now = nowMs();
+  console.log(`${label}: +${(now - lastTime).toFixed(1)}ms`);
+  lastTime = now;
+}
+
+// ---------------------------------------------
+// CLEAN SESSIONCHECK (NO CACHE/HEARTBEAT JUNK)
+// ---------------------------------------------
+async function sessionCheck() {
+  mark("sessionCheck");
+
+  // 0. Load local identity + flags
+  autologin = localStorage.getItem("tp_stay_signed_v4") === "1";
+  trusted   = localStorage.getItem("tp_device_token_v4") === "1";
+
+  try {
+    identity = JSON.parse(localStorage.getItem("tp_identity_v4") || "{}");
+  } catch {
+    identity = null;
+  }
+
+  token     = localStorage.getItem("tp_token_v4");
+  userID    = identity?.uid   || null;
+  userEmail = identity?.email || null;
+  userName  = identity?.displayName || identity?.name || null;
+
+  // 1. Identity + token required
+  if (!identity || !userID || !token) {
+    mark("Missing identity or token → HARD LOGOUT");
+    hardLogout("missing_identity_or_token");
+    return false;
+  }
+
+  // 2. Local inactivity check
+  const now       = nowMs();
+  const lastLocal = Number(localStorage.getItem("tp_last_active_v4")) || 0;
+  const diff      = now - lastLocal;
+
+  const inactive15 = diff > 15 * 60 * 1000;
+
+  if (inactive15 && !trusted) {
+    if (!autologin) {
+      mark("Inactive >15 min AND not autologin/trusted → HARD LOGOUT");
+      hardLogout("inactive_and_not_remembered");
+    } else {
+      mark("Inactive >15 min AND autologin → SOFT LOGOUT");
+      safeLogout();
+    }
+    return false;
+  }
+
+  // 3. Restore Firebase Auth (fast path)
+  if (identity.fauth && persistenceEnabled === false) {
+    try {
+      await signInWithCustomToken(auth, identity.fauth);
+      mark("FAST-PATH: restored Firebase Auth using cached fauth");
+      localStorage.setItem("tp_last_active_v4", now);
+      return true;
+    } catch (err) {
+      mark("Cached fauth invalid → clearing and refreshing");
+      identity.fauth = null;
+      localStorage.setItem("tp_identity_v4", JSON.stringify(identity));
+    }
+  }
+
+  // 4. Slow path: get fresh Firebase token
+  if (!identity.fauth) {
+    try {
+      const res = await fetch(
+        "https://us-central1-tropic-pulse.cloudfunctions.net/getFirebaseAuthToken",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ token })
+        }
+      );
+
+      const data = await res.json();
+
+      if (data.hardLogout) {
+        mark("Backend flagged danger → HARD LOGOUT");
+        hardLogout("backend_danger_flag");
+        return false;
+      }
+
+      if (!data.firebaseToken) {
+        mark("No firebaseToken returned → HARD LOGOUT");
+        hardLogout("missing_firebase_token");
+        return false;
+      }
+
+      if (data.newJwtToken) {
+        token = data.newJwtToken;
+        localStorage.setItem("tp_token_v4", token);
+        mark("Updated JWT lineage from backend");
+      }
+
+      await signInWithCustomToken(auth, data.firebaseToken);
+
+      identity.fauth = data.firebaseToken;
+      localStorage.setItem("tp_identity_v4", JSON.stringify(identity));
+
+      mark("SLOW-PATH: Firebase Auth restored with fresh token");
+      localStorage.setItem("tp_last_active_v4", now);
+      return true;
+
+    } catch (err) {
+      console.error("Failed to restore Firebase Auth:", err);
+      hardLogout("firebase_restore_failed");
+      return false;
+    }
+  }
+
+  // 5. Update last active
+  localStorage.setItem("tp_last_active_v4", now);
+  return true;
+}
+
+window.attemptStripeRedirect = function (url) {
+  // If redirecting to Stripe, ALWAYS allow it
+  if (url.includes("stripe.com") || url.includes("connect.stripe.com")) {
+    window.location.href = url;
+    return;
+  }
+
+  // Otherwise use the confirmation row
+  if (!formIsDirty) {
+    window.location.href = url;
+    return;
+  }
+
+  const row = document.getElementById("leaveConfirmRow");
+  row.style.display = "flex";
+
+  document.getElementById("leaveYesBtn").onclick = () => {
+    row.style.display = "none";
+    window.location.href = url;
+  };
+
+  document.getElementById("leaveNoBtn").onclick = () => {
+    row.style.display = "none";
+  };
+};
+
+export async function runHeroHeaderEntrance() {
+  if (window.__heroHeaderPlayed) return;
+  window.__heroHeaderPlayed = true;
+
+  // ---------------------------------------------------
+  // CREATE BACKDROP ELEMENTS
+  // ---------------------------------------------------
+  const top = document.createElement("div");
+  const bottom = document.createElement("div");
+  const header = document.querySelector(".profile-header");
+  top.id = "hero-backdrop-top";
+  bottom.id = "hero-backdrop-bottom";
+top.style.opacity = "1";
+      bottom.style.opacity = "1";
+  // Shared backdrop styles
+  const baseStyle = {
+    position: "fixed",
+    left: "0",
+    right: "0",
+    background: "rgba(0,0,0,0.65)",
+    pointerEvents: "none",
+    zIndex: "9999"
+  };
+
+  Object.assign(top.style, baseStyle, {
+    top: "0",
+    height: "100vh",
+    transition: "height 1.2s ease-out, opacity 0.8s ease-out"
+  });
+
+  Object.assign(bottom.style, baseStyle, {
+    bottom: "0",
+    height: "100vh",
+    transition: "height 1.2s ease-out"
+  });
+
+  document.body.appendChild(top);
+  document.body.appendChild(bottom);
+
+  
+
+  // Wait TWO frames so intro state is painted
+  await new Promise(requestAnimationFrame);
+  await new Promise(requestAnimationFrame);
+
+  // ---------------------------------------------------
+  // CINEMATIC PAUSE
+  // ---------------------------------------------------
+  await new Promise(res => setTimeout(res, 600));
+
+  bottom.style.height = "0";
+
+  // Top backdrop shrinks down to header height
+  top.style.height = "115px"; // your header height
+
+  // Fade out top backdrop after header settles
+  setTimeout(() => {
+    top.style.opacity = "0";
+  }, 900);
+
+  // Remove both backdrops after animation completes
+  setTimeout(() => {
+    bottom.style.opacity = "0";
+    top.remove();
+    bottom.remove();
+  }, 1800);
+}
+
+// -----------------------------------------------------
+// PHONE NORMALIZER
+// -----------------------------------------------------
+function normalizePhone(raw, row, coords = {}) {
+  if (!raw) return null;
+
+  // Clean weird whitespace + NBSP
+  let v = String(raw)
+    .replace(/\u00A0/g, " ")
+    .trim();
+
+  // Strip everything except digits and +
+  v = v.replace(/[^\d+]/g, "");
+
+  // Already valid E.164
+  if (v.startsWith("+") && v.length >= 8 && v.length <= 15) {
+    return v;
+  }
+
+  // Remove leading +
+  if (v.startsWith("+")) v = v.slice(1);
+
+  // Pure digits
+  const digits = v.replace(/\D/g, "");
+
+  // --- BELIZE LOGIC ---
+  // 7‑digit local numbers → +501
+  if (digits.length === 7) {
+    return "+501" + digits;
+  }
+
+  // 501 + 7 digits → +501xxxxxxx
+  if (digits.startsWith("501") && digits.length === 10) {
+    return "+501" + digits.slice(3);
+  }
+
+  // --- US / CANADA ---
+  if (digits.length === 10) {
+    return "+1" + digits;
+  }
+
+  if (digits.length === 11 && digits.startsWith("1")) {
+    return "+1" + digits.slice(1);
+  }
+
+  // --- INTERNATIONAL FALLBACK ---
+  if (digits.length >= 8 && digits.length <= 15) {
+    return "+" + digits;
+  }
+
+  // Reject everything else
+  return null;
+}
+
+function isDesktop() {
+  const ua = navigator.userAgent.toLowerCase();
+
+  const mobileUA =
+    ua.includes("iphone") ||
+    ua.includes("android") ||
+    ua.includes("ipad") ||
+    ua.includes("mobile");
+
+  const smallScreen = window.innerWidth < 900 || window.innerHeight < 700;
+  const touch = navigator.maxTouchPoints > 1;
+
+  // If UA says mobile AND screen is small AND touch exists → it's mobile
+  if (mobileUA && smallScreen && touch) return false;
+
+  // Otherwise → desktop
+  return true;
+}
+// ---------------------------
+  // LOAD STRIPE STATUS
+  // ---------------------------
+  async function loadStripeStatus() {
+    if (!isLoggedIn) return;
+
+    const statusEl = document.getElementById("stripeStatus");
+    const actionEl = document.getElementById("stripeAction");
+
+    statusEl.textContent = "Checking Status…";
+
+    const stripeId =
+      identity.stripeAccountID ||
+      identity.stripeId ||
+      null;
+
+    try {
+      const res = await fetch("https://getstripestatus-ilx3agka5q-uc.a.run.app", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          uid: identity.uid,
+          stripeAccountId: stripeId
+        })
+      });
+
+      const data = await res.json();
+
+      if (!data.success) {
+        statusEl.textContent = "Unable to Load Stripe Status!?";
+        actionEl.innerHTML = "";
+        return;
+      }
+      const status = data.status;
+      const actionDiv = document.getElementById("stripeAction");
+
+      
+      if (status === "connected") {
+        document.getElementById("stripeStatus").textContent = "Connected ✔";
+        actionDiv.innerHTML = `
+          <div class="t-btn-tri" onclick="attemptStripeRedirect('${data.dashboardLink}')">
+            Open Stripe Dashboard
+          </div>`;
+      } else if (status === "pending") {
+        document.getElementById("stripeStatus").textContent = "Onboarding Not Complete";
+        actionDiv.innerHTML = `
+          <div class="t-btn-tri" onclick="attemptStripeRedirect('${data.onboardingLink}')">
+            Continue Setup
+          </div>`;
+      } else if (status === "needs_verification") {
+        document.getElementById("stripeStatus").textContent = "Verification Required";
+        actionDiv.innerHTML = `
+          <div class="t-btn-tri" onclick="attemptStripeRedirect('${data.onboardingLink}')">
+            Fix Now
+          </div>`;
+      } else {
+        document.getElementById("stripeStatus").textContent = "Not Connected";
+        actionDiv.innerHTML = `
+          <div class="t-btn-tri" onclick="attemptStripeRedirect('${data.onboardingLink}')">
+            Start Setup
+          </div>`;
+      }
+
+    } catch (err) {
+      document.getElementById("stripeStatus").textContent = "Error Loading Status!?";
+    }
+  }
+  // ---------------------------
+  // LOAD FIRESTORE USER
+  // ---------------------------
+  async function loadFirestoreUser() {
+    if (!identity?.uid) return;
+
+    try {
+      const res = await fetch("https://getuserdata-ilx3agka5q-uc.a.run.app", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ uid: identity.uid })
+      });
+
+      const data = await res.json();
+
+      if (data.success && data.user) {
+        firestoreUser = data.user;
+        loadFallbackPhoto();
+        fillFormWithFirestore();
+      } else {
+        loadFallbackPhoto();
+      }
+    } catch (err) {
+      console.error("Error loading Firestore user:", err);
+      loadFallbackPhoto();
+    }
+  }
+
+  // ---------------------------
+  // FALLBACK PHOTO
+  // ---------------------------
+function loadFallbackPhoto() {
+  const shimmer = document.getElementById("shimmer");
+
+  // shimmer on
+  shimmer.style.display = "block";
+  // Determine the correct photo in priority order
+  const photo =
+    identity?.photoURL?.trim() ||
+    "https://tropicpulse.bz/Frustrated.png?v8";
+    mark("USERRECORD: GRABBING PHOTO URL");
+
+  if (photo) {
+    img.src = photo;
+    img.onload = () => {
+      shimmer.style.display = "none";
+      img.style.display = "block";
+    };
+    img.onerror = () => {
+      shimmer.style.display = "block";
+      img.style.display = "none";
+      mark("IMAGE LOAD ERROR PHOTO URL → FALLBACK TO FIRESTORE PHOTO");
+      // fall through to Firestore photo
+      loadFirestorePhoto(user, img, shimmer);
+      shimmer.style.display = "none";
+      img.style.display = "block";
+    };
+  }
+}
+
+  function sanitizeDisplayName(name) {
+    if (!name) return "";
+
+    // Convert middle dot to bullet dot (normalize everything)
+    name = name.replace(/·/g, "•");
+
+    // Allow letters, numbers, spaces, hyphens, underscores, and the bullet dot
+    name = name.replace(/[^\p{L}\p{N}\s\-_•]/gu, "");
+
+    // Convert spaces, hyphens, underscores → bullet dot
+    name = name.replace(/[\s\-_]+/g, "•");
+
+    // Collapse multiple dots
+    name = name.replace(/•+/g, "•");
+
+    // Trim dots from start/end
+    name = name.replace(/^•|•$/g, "");
+
+    // Capitalize each segment
+    name = name
+      .split("•")
+      .map(w => w.charAt(0).toUpperCase() + w.slice(1))
+      .join("•");
+
+    return name;
+  }
+
+ // -----------------------------
+// UPDATE USER RECORD FROM UI (CLOUD FUNCTION ONLY)
+// -----------------------------
+async function updateUserRecordFromUI() {
+  try {
+    mark("USER: UPDATE FROM UI");
+
+    const rawName        = document.getElementById("fullName").value.trim();
+    const rawDisplayName = document.getElementById("displayNameInput").value.trim();
+    const rawEmail       = document.getElementById("email").value.trim().toLowerCase();
+    const rawPhone       = document.getElementById("phone").value.trim();
+    const country        = document.getElementById("country").value;
+    const role           = document.getElementById("role").value;
+
+    const smsOpt   = document.getElementById("smsOpt").checked;
+    const emailOpt = document.getElementById("emailOpt").checked;
+
+    const cleanDisplayName = sanitizeDisplayName(rawDisplayName);
+    const normalizedPhone  = normalizePhone(rawPhone, country);
+
+    const token = localStorage.getItem("tp_token_v4");
+    if (!token || !identity?.uid) {
+      showMessage("Missing identity or token.", "error");
+      return false;
+    }
+
+    // Let backend own Firestore + normalization
+    const res = await fetch("https://updateuserrecord-ilx3agka5q-uc.a.run.app", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${token}`
+      },
+      body: JSON.stringify({
+        action: "updateProfile",
+        uid: identity.uid,
+        payload: {
+          name: rawName,
+          displayName: cleanDisplayName,
+          email: rawEmail,
+          phone: normalizedPhone,
+          country,
+          role,
+          receiveSMS: smsOpt,
+          receiveMassEmails: emailOpt,
+          photoURL: identity.photoURL || ""
+        }
+      })
+    });
+
+    const data = await res.json();
+
+    if (!res.ok || !data.success) {
+      showMessage(data.message || data.error || "Unable to update profile.", "error");
+      return false;
+    }
+
+    // Update local identity snapshot
+    identity = {
+      ...identity,
+      name: rawName,
+      displayName: cleanDisplayName,
+      email: rawEmail,
+      phone: normalizedPhone,
+      country,
+      role,
+      photoURL: identity.photoURL
+    };
+    localStorage.setItem("tp_identity_v4", JSON.stringify(identity));
+
+    mark("USER: UPDATE COMPLETE");
+    showMessage("Profile updated!", "success");
+    return true;
+
+  } catch (err) {
+    console.error("updateUserRecordFromUI error:", err);
+    showMessage("Unable to update profile.", "error");
+    return false;
+  }
+}
+
+// -----------------------------
+// USERRECORD BOOTSTRAP (NEW, SAFE)
+// -----------------------------
+(async () => {
+  function mark(label, position = false) {
+    const now = nowMs();
+    if (position) {
+      console.log(`${label}: +${(now - firstTime).toFixed(1)}ms`);
+    } else {
+      console.log(`${label}: +${(now - lastTime).toFixed(1)}ms`);
+    }
+    lastTime = now;
+  }
+
+  // Always start visually idle
+  window.isIdle = true;
+
+  // Engine is allowed to run unless the flag exists
+  window.pulseband.engineDisabled = false;
+
+  const badge = document.getElementById("pulseband-badge");
+  const panel = document.getElementById("pulseband-panel");
+
+  // -----------------------------
+  // PULSEBAND PANEL TOGGLE
+  // -----------------------------
+  badge.onclick = (e) => {
+    e.stopPropagation();
+    panel.style.display = panel.style.display === "block" ? "none" : "block";
+  };
+
+  document.addEventListener("click", (e) => {
+    const clickedInsidePanel = panel.contains(e.target);
+    const clickedBadge = badge.contains(e.target);
+    if (!clickedInsidePanel && !clickedBadge) {
+      panel.style.display = "none";
+    }
+  });
+
+  // -----------------------------
+  // VISIBILITY → SESSIONCHECK
+  // -----------------------------
+  if (!document.__loyaltyVisibilityBound) {
+    document.__loyaltyVisibilityBound = true;
+    document.addEventListener("visibilitychange", () => {
+      if (document.visibilityState === "visible") {
+        setTimeout(async () => await sessionCheck(), 250);
+        mark("✅ VisibilityChange RERAN SESSIONCHECK AND LET THE FUNCTION DO THE LOGIC");
+      }
+    });
+  }
+
+  // -----------------------------
+  // SESSIONCHECK
+  // -----------------------------
+  mark("USERRECORD: STARTING SESSIONCHECK");
+  await sessionCheck();
+
+  const inactiveFlag = localStorage.getItem("pulseband_disabled") === "1";
+  const disabled = (window.isIdle === true && inactiveFlag === true);
+
+  // -----------------------------
+  // PULSEBAND LIVE HOOKS
+  // -----------------------------
+  window.pulseband.on("update", updatePulseBandPanel);
+
+  function pulsebandTransferFlash() {
+    badge.classList.add("transfer");
+    setTimeout(() => badge.classList.remove("transfer"), 250);
+  }
+
+  window.pulseband.on("microWindow", () => {
+    pulsebandTransferFlash();
+  });
+
+  // -----------------------------
+  // TITLE / STRIPE VISIBILITY
+  // -----------------------------
+  if (!isLoggedIn) {
+    document.getElementById("pageTitle").textContent = "Create Account";
+    document.getElementById("pageSubtitle").textContent = "Set Up your Tropic Pulse Profile.";
+    document.querySelector(".stripe-section").style.display = "none";
+  }
+
+  hideTPLoader();
+
+  // No Firestore user load here anymore — just Stripe status
+  await loadStripeStatus();
+
+  document.body.classList.add("hero-header-intro");
+
+  mark("USERRECORD: STARTING HEROS ENTRANCE DOM");
+  await runHeroHeaderEntrance();
+
+  // -----------------------------
+  // LIVE PULSEBAND UPDATE LOOP
+  // -----------------------------
+  setInterval(async () => {
+    const inactiveFlag = localStorage.getItem("pulseband_disabled") === "1";
+    const disabled = (window.isIdle === true && inactiveFlag === true);
+    if (disabled) return;
+
+    const status = window.pulseband.getStatus();
+    const data = await window.getPulseBandRate();
+
+    window.pulseband.setStatus({
+      ...status,
+      ...data,
+      lastSyncTimestamp: nowMs(),
+      lastSyncSeconds: 0
+    });
+  }, 3000);
+
+  // -----------------------------
+  // LAST SYNC COUNTER LOOP
+  // -----------------------------
+  setInterval(() => {
+    const inactiveFlag = localStorage.getItem("pulseband_disabled") === "1";
+    const disabled = (window.isIdle === true && inactiveFlag === true);
+
+    const status = window.pulseband.getStatus();
+    const ts = getSafeTimestamp(status);
+    const seconds = safeSeconds((nowMs() - ts) / 1000);
+
+    window.pulseband.setStatus({
+      ...status,
+      lastSyncTimestamp: ts,
+      lastSyncSeconds: seconds
+    });
+  }, 1000);
+
+  // -----------------------------
+  // ONE-TIME BADGE STATE LISTENERS
+  // -----------------------------
+  if (!window.__pulsebandListenersAttached) {
+    window.__pulsebandListenersAttached = true;
+
+    window.addEventListener("load", () => {
+      const inactiveFlag = localStorage.getItem("pulseband_disabled") === "1";
+      const disabled = (window.isIdle === true && inactiveFlag === true);
+
+      if (disabled) {
+        window.isIdle = true;
+        window.pulseband.engineDisabled = true;
+      } else {
+        window.isIdle = false;
+        window.pulseband.engineDisabled = false;
+      }
+
+      updatePulseBandImage();
+      updatePulseBandPanel();
+    });
+
+    document.getElementById("pb-mini-badge").addEventListener("click", () => {
+      const inactiveFlag = localStorage.getItem("pulseband_disabled") === "1";
+      const disabled = (window.isIdle === true && inactiveFlag === true);
+
+      if (disabled) {
+        localStorage.removeItem("pulseband_disabled");
+        window.isIdle = false;
+        window.pulseband.engineDisabled = false;
+      } else {
+        localStorage.setItem("pulseband_disabled", "1");
+        window.isIdle = true;
+        window.pulseband.engineDisabled = true;
+      }
+
+      updatePulseBandImage();
+      updatePulseBandPanel();
+    });
+  }
+
+  mark("ENDING DOM BOOTSTRAP");
+  mark("USERRECORD: ENDING DOM LOAD", true);
+})();
+</script>
+</body>
+</html>

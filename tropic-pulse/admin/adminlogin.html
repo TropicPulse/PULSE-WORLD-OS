@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Tropic Pulse - Admin Login</title>
+  <!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-HSX89KS63P"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-HSX89KS63P');
+</script>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: "Poppins", sans-serif;
+      background: #ffff99;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+
+    .container {
+      width: 90%;
+      max-width: 420px;
+      background: white;
+      padding: 32px;
+      border-radius: 18px;
+      box-shadow: 0 8px 25px rgba(0,0,0,0.08);
+      text-align: center;
+      border: 3px solid #000000;
+    }
+
+    .toucan {
+      width: 120px;
+      margin-bottom: 12px;
+    }
+
+    button {
+      width: 100%;
+      margin-top: 18px;
+      padding: 14px;
+      background: #00aaff;
+      color: white;
+      border: none;
+      border-radius: 10px;
+      font-size: 1.1rem;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+
+    button:hover {
+      background: #0088cc;
+    }
+
+    .footer {
+      margin-top: 20px;
+      font-size: 0.85rem;
+      color: #777;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <img class="toucan" src="https://tropicpulse.bz/ToucanLogo.jpg" alt="Tropic Pulse Toucan" />
+
+    <h1>Admin Login</h1>
+    <p>Sign in with your authorized Google account.</p>
+
+    <button onclick="adminLogin()">Login with Google</button>
+
+    <div class="footer">Secure login • Powered by Tropic Pulse</div>
+  </div>
+
+  <!-- Firebase SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+
+  <!-- Login Logic -->
+  <script>
+    // Initialize Firebase
+    const firebaseConfig = {
+      apiKey: "AIzaSyD4I5YDtZMMC_tDuwR9CEjhs_iAdrLzthQ",
+      authDomain: "tropic-pulse.firebaseapp.com",
+      projectId: "tropic-pulse",
+    };
+    firebase.initializeApp(firebaseConfig);
+
+    const provider = new firebase.auth.GoogleAuthProvider();
+
+    // Handle mobile redirect result FIRST
+    firebase.auth().getRedirectResult().then(async (result) => {
+      if (result.user) {
+        const token = await result.user.getIdToken();
+        console.log("Mobile login token:", token);
+        window.location.href = "/admin.html";
+      }
+    });
+
+    // Login button handler
+    async function adminLogin() {
+      if (/Mobi|Android/i.test(navigator.userAgent)) {
+        // Mobile → redirect
+        firebase.auth().signInWithRedirect(provider);
+      } else {
+        // Desktop → popup
+        await firebase.auth().signInWithPopup(provider);
+        const token = await firebase.auth().currentUser.getIdToken();
+        console.log("Desktop login token:", token);
+        window.location.href = "/admin.html";
+      }
+    }
+  </script>
+
+</body>
+</html>

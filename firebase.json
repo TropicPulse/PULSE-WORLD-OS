@@ -1,0 +1,74 @@
+{
+  "functions": {
+    "source": "functions"
+  },
+
+  "hosting": {
+    "site": "tropic-pulse",
+    "public": "tropic-pulse",
+    "ignore": ["firebase.json", "**/.*", "**/node_modules/**"],
+
+    "headers": [
+      {
+        "source": "/**/*.html",
+        "headers": [{ "key": "Cache-Control", "value": "public,max-age=600" }]
+      },
+      {
+        "source": "/**/*.{js,css}",
+        "headers": [{ "key": "Cache-Control", "value": "public,max-age=300" }]
+      },
+      {
+        "source": "/**/*.{png,jpg,jpeg,webp,gif,svg}",
+        "headers": [
+          { "key": "Cache-Control", "value": "public,max-age=31536000,immutable" }
+        ]
+      }
+    ],
+
+    "rewrites": [
+      { "source": "/", "destination": "/index.html" },
+
+      { "source": "/admin", "destination": "/admin/admin.html" },
+      { "source": "/admin/", "destination": "/admin/admin.html" },
+      { "source": "/admin/**", "destination": "/admin" },
+
+      {
+        "source": "/TPProxy",
+        "run": { "serviceId": "tpproxy", "region": "us-central1" }
+      },
+      {
+        "source": "/TPProxy/",
+        "run": { "serviceId": "tpproxy", "region": "us-central1" }
+      },
+      {
+        "source": "/TPProxy/**",
+        "run": { "serviceId": "tpproxy", "region": "us-central1" }
+      },
+
+      { "source": "/delivery/**", "destination": "/index.html" },
+
+      { "source": "/resendlink", "function": "resendStripeLink" },
+
+      { "source": "/setup", "function": "stripeSetupComplete" },
+      { "source": "/setup/**", "function": "stripeSetupComplete" },
+
+      {
+        "source": "/getstripedashboardlink",
+        "function": "getStripeDashboardLink"
+      },
+
+      { "source": "/proxy", "destination": "/proxy/PulseBand.html" },
+      { "source": "/proxy/", "destination": "/proxy/PulseBand.html" },
+      { "source": "/proxy/**", "destination": "/proxy" },
+
+      { "source": "/emailopen", "function": "emailOpened" },
+      { "source": "/unsubscribe", "function": "unsubscribe" },
+      { "source": "/resubscribe", "function": "resubscribe" },
+      { "source": "/rolechange", "function": "rolechange" }
+    ],
+
+    "redirects": [
+      { "source": "/$", "destination": "https://tropicpulse.bz", "type": 301 }
+    ]
+  }
+}

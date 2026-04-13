@@ -1,0 +1,11 @@
+[
+  {
+    "origin": [
+      "https://tropic-pulse.web.app",
+      "https://stripe.tropicpulse.bz"
+    ],
+    "method": ["GET", "POST", "PUT", "HEAD", "DELETE"],
+    "responseHeader": ["Content-Type", "x-goog-meta-*"],
+    "maxAgeSeconds": 3600
+  }
+]

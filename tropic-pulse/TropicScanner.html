@@ -1,0 +1,1212 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Tropic Pulse Scanner</title>
+
+<!-- Google Font -->
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-HSX89KS63P"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-HSX89KS63P');
+</script>
+<!-- Meta Pixel Code -->
+<script>
+  !function(f,b,e,v,n,t,s){
+    if(f.fbq) return;
+    n = f.fbq = function(){
+      n.callMethod ?
+        n.callMethod.apply(n, arguments) : n.queue.push(arguments)
+    };
+    if(!f._fbq) f._fbq = n;
+    n.push = n;
+    n.loaded = true;
+    n.version = '2.0';
+    n.queue = [];
+    t = b.createElement(e);
+    t.async = true;
+    t.src = v;
+    s = b.getElementsByTagName(e)[0];
+    s.parentNode.insertBefore(t, s);
+  }(window, document, 'script', 'https://connect.facebook.net/en_US/fbevents.js');
+
+  fbq('init', '1651551349364459');
+  fbq('track', 'PageView');
+</script>
+
+<noscript>
+  <img
+    height="1"
+    width="1"
+    style="display:none"
+    src="https://www.facebook.com/tr?id=1651551349364459&ev=PageView&noscript=1"
+  />
+</noscript>
+<!-- End Meta Pixel Code -->
+<style>
+/* ——————————————————————————————————————————————
+   GLOBAL RESET
+—————————————————————————————————————————————— */
+* { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+body { margin: 0; font-family: system-ui; }
+html, body {
+  background: transparent !important;
+}
+/* ——————————————————————————————————————————————
+   ROOT CONTAINER (HIDDEN UNTIL .open())
+—————————————————————————————————————————————— */
+#t-scanner-root {
+  opacity: 0;
+  pointer-events: none;
+  display: block; /* always block */
+  transition: opacity 200ms ease;
+}
+
+@keyframes t-tint-breathe {
+  0% {
+    background: radial-gradient(circle at center,
+      rgba(0,60,60,0.35) 0%,
+      rgba(0,30,30,0.55) 60%,
+      rgba(0,10,10,0.65) 100%
+    );
+  }
+
+  50% {
+    background: radial-gradient(circle at center,
+      rgba(0,40,40,0.55) 0%,
+      rgba(0,20,20,0.85) 60%,
+      rgba(0,0,0,1.00) 100%
+    );
+  }
+
+  100% {
+    background: radial-gradient(circle at center,
+      rgba(0,60,60,0.35) 0%,
+      rgba(0,30,30,0.55) 60%,
+      rgba(0,10,10,0.65) 100%
+    );
+  }
+}
+
+.t-scan-frame {
+  position: fixed;
+  width: min(80vw, 80vh);
+  height: min(80vw, 80vh);
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  border-radius: 22px;
+  border: 3px solid rgba(0, 255, 255, 0.6); /* your teal line */
+  z-index: 10;
+  pointer-events: none;
+}
+
+/* ——————————————————————————————————————————————
+   SCAN FRAME INNER
+—————————————————————————————————————————————— */
+.t-scan-frame-inner {
+  width: 100%;
+  height: 100%;
+  border-radius: 24px;
+  border: 2px solid rgba(0,200,190,0.75);
+  box-shadow:
+    0 0 22px rgba(0,220,210,0.35),
+    0 0 0 1px rgba(255,215,160,0.25);
+  animation:
+    t-frame-breathe 4s ease-in-out infinite,
+    t-frame-tint 4s ease-in-out infinite;
+  position: relative;
+  z-index: 11;
+}
+@keyframes t-frame-tint {
+  0% {
+    background: rgba(0,60,60,0.12);
+  }
+  50% {
+    background: rgba(0,30,30,0.28);
+  }
+  100% {
+    background: rgba(0,60,60,0.12);
+  }
+}
+@keyframes t-frame-breathe {
+  0% {
+    border-color: rgba(0,180,170,0.65);
+    box-shadow:
+      0 0 18px rgba(0,200,190,0.30),
+      0 0 0 1px rgba(255,215,160,0.22);
+  }
+
+  50% {
+    border-color: rgba(0,180,230,0.95);
+    box-shadow:
+      0 0 34px rgba(0,255,245,0.55),
+      0 0 0 1px rgba(255,225,180,0.35);
+  }
+
+  100% {
+    border-color: rgba(0,180,170,0.65);
+    box-shadow:
+      0 0 18px rgba(0,200,190,0.30),
+      0 0 0 1px rgba(255,215,160,0.22);
+  }
+}
+
+/* ——————————————————————————————————————————————
+   TOP BAR
+—————————————————————————————————————————————— */
+.t-top-bar {
+  position: absolute;
+  top: 16px; left: 16px; right: 16px;
+  display: flex; justify-content: space-between; align-items: center;
+  z-index: 4;
+}
+
+.t-profile-ring {
+  width: 75px; height: 75px; border-radius: 999px;
+  background: radial-gradient(circle at 30% 0, #ffe9b5, #c28b3b);
+  padding: 2px; display: flex; align-items: center; justify-content: center;
+}
+
+.t-profile-photo {
+  width: 100%; height: 100%; border-radius: 999px;
+  background: linear-gradient(135deg, #0f766e, #22c55e);
+}
+
+.t-close-btn {
+  border: none; background: rgba(15,23,42,0.7);
+  color: #fff; border-radius: 999px;
+  padding: 6px 10px; font-size: 14px; cursor: pointer;
+}
+
+/* ——————————————————————————————————————————————
+   VALID SCAN OVERLAY
+—————————————————————————————————————————————— */
+.t-valid-burst {
+  position: absolute; top: 40%; left: 50%;
+  width: 260px; height: 260px;
+  transform: translate(-50%, -50%);
+  background: radial-gradient(circle, rgba(255,230,180,0.9), transparent);
+  filter: blur(8px); opacity: 0;
+  animation: t-burst-in 420ms ease-out forwards;
+}
+
+@keyframes t-burst-in {
+  0%   { opacity: 0; transform: translate(-50%,-50%) scale(0.7); }
+  100% { opacity: 1; transform: translate(-50%,-50%) scale(1); }
+}
+
+.t-valid-card {
+  width: 100%; max-width: 420px;
+  background: #fdfcf9;
+  border-radius: 18px;
+  border: 1px solid rgba(148,132,110,0.35);
+  box-shadow: 0 10px 30px rgba(15,23,42,0.35);
+  padding: 18px;
+  animation: t-card-rise 260ms ease-out forwards;
+}
+
+@keyframes t-card-rise {
+  0%   { transform: translateY(24px); opacity: 0; }
+  50%   { transform: translateY(12px); opacity: 0.5; }
+  100% { transform: translateY(0); opacity: 1; }
+}
+
+/* ——————————————————————————————————————————————
+   NON‑TROPIC FALLBACK
+—————————————————————————————————————————————— */
+
+.t-fallback-glow {
+  position: absolute; bottom: 0;
+  width: 80%; height: 180px; border-radius: 999px;
+  background: radial-gradient(circle at 50% 0,
+    rgba(0,180,170,0.35),
+    rgba(255,215,160,0.18),
+    transparent);
+  filter: blur(8px);
+}
+
+.t-fallback-card {
+  width: 100%; max-width: 420px;
+  background: #fdfcf9;
+  border-radius: 18px;
+  border: 1px solid rgba(148,132,110,0.35);
+  box-shadow: 0 10px 30px rgba(15,23,42,0.35);
+  padding: 16px;
+  animation: t-card-rise 220ms ease-out forwards;
+}
+
+.t-learn-more-btn {
+  margin-top: 8px;
+  border-radius: 999px;
+  border: none;
+  padding: 8px 12px;
+  background: #f3f0ea;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.t-gold-spark { color: #fbbf24; }
+
+#t-fallback-unfold {
+  margin-top: 10px; padding-top: 8px;
+  border-top: 1px solid rgba(148,132,110,0.25);
+  display: none; flex-direction: column; gap: 6px;
+}
+
+.t-pill-btn {
+  border-radius: 999px;
+  border: 1px solid rgba(148,132,110,0.55);
+  background: #f2efec;
+  box-shadow: 0 2px 4px rgba(15,23,42,0.12);
+  padding: 6px 10px;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+/* ——————————————————————————————————————————————
+   UNREADABLE
+—————————————————————————————————————————————— */
+
+.t-unreadable-card {
+  width: 100%; max-width: 420px;
+  background: #fdfcf9;
+  border-radius: 18px;
+  border: 1px solid rgba(148,132,110,0.35);
+  box-shadow: 0 10px 30px rgba(15,23,42,0.35);
+  padding: 14px 16px;
+  animation: t-card-rise 180ms ease-out forwards;
+}
+
+#t-video {
+  opacity: 0;
+  background: #000;
+  object-fit: fill; /* or contain, depending on your preference */
+}
+
+#t-video::-webkit-media-controls {
+  display: none !important;
+  object-fit: fill; /* or contain, depending on your preference */
+}
+
+/* ——————————————————————————————————————————————
+   FIX 2: STRONG GLOBAL DIM + BLUR
+—————————————————————————————————————————————— */
+
+@keyframes t-dim-breathe {
+  0%, 100% { background: rgba(0, 40, 40, 0.50); }
+  50%      { background: rgba(0, 40, 40, 0.60); }
+}
+
+/* ——————————————————————————————————————————————
+   FIX 3: MAGICAL CUTOUT AROUND SCAN BOX
+—————————————————————————————————————————————— */
+.t-cutout {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 2;
+  /* ❌ REMOVE blur — this is the problem */
+  /* backdrop-filter: blur(40px); */
+  /* -webkit-backdrop-filter: blur(40px); */
+
+  /* ✔ ONLY mask */
+  mask: radial-gradient(
+    circle at center,
+    transparent 0%,
+    transparent 32%,
+    black 40%
+  );
+}
+
+/* ——————————————————————————————————————————————
+   OVERLAY BLUR
+—————————————————————————————————————————————— */
+#t-valid-overlay,
+#t-fallback-root,
+#t-unreadable-root {
+  background: rgba(0, 0, 0, 0.85);
+  backdrop-filter: blur(40px);
+}
+
+
+#scannerProfilePhoto {
+  background-image: url("https://firebasestorage.googleapis.com/v0/b/tropic-pulse.firebasestorage.app/o/ToucanGeneral.jpg?alt=media&token=8e2a65a6-c8d2-4e36-be93-c80571270d11");
+  background-size: cover;
+  background-position: center;
+  transition: background-image 0.25s ease;
+}
+
+/* ——————————————————————————————————————————————
+   PROFILE MESSAGE BUBBLE
+—————————————————————————————————————————————— */
+
+#profileMessageBubble {
+  position: absolute;
+  top: 10px;
+  left: 95px;
+  max-width: 210px;
+  padding: 10px 14px;
+  background: rgba(0, 80, 80, 0.85);
+  color: white;
+  border-radius: 14px;
+  font-size: 0.9rem;
+  line-height: 1.3;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.25);
+  backdrop-filter: blur(6px);
+  opacity: 0;
+  transform: translateY(10px);
+  pointer-events: none;
+  transition: opacity 0.25s ease, transform 0.25s ease;
+  z-index: 10040;
+}
+
+#profileMessageBubble.show {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+
+.t-cutout {
+  opacity: 0;
+  transition: opacity 250ms ease;
+}
+
+#profileMessageBubble::after {
+  content: "";
+  position: absolute;
+  left: -8px;
+  top: 18px;
+  width: 0;
+  height: 0;
+  border-top: 8px solid transparent;
+  border-bottom: 8px solid transparent;
+  border-right: 10px solid rgba(0, 80, 80, 0.85);
+}
+
+/* ——————————————————————————————————————————————
+   ALIVE BUBBLE ENGINE
+—————————————————————————————————————————————— */
+#profileMessageBubble.t-breathe {
+  animation: tpBubbleBreath 4s ease-in-out infinite;
+}
+
+@keyframes tpBubbleBreath {
+  0%   { transform: translateY(0) scale(1); }
+  50%  { transform: translateY(-2px) scale(1.03); }
+  100% { transform: translateY(0) scale(1); }
+}
+
+#profileMessageBubble.t-look {
+  transform: translateY(0) translateX(3px) rotate(1.5deg);
+}
+
+#profileMessageBubble.t-focus-glow {
+  filter: drop-shadow(0 0 10px rgba(0,255,200,0.55));
+}
+
+#profileMessageBubble.t-pulse {
+  animation: tpBubblePulse 0.45s ease;
+}
+
+@keyframes tpBubblePulse {
+  0%   { transform: scale(1); }
+  50%  { transform: scale(1.07); }
+  100% { transform: scale(1); }
+}
+
+#profileMessageBubble.t-celebrate {
+  animation: tpBubbleCelebrate 1s ease;
+}
+
+
+
+@keyframes tpBubbleCelebrate {
+  0%   { transform: scale(1); }
+  30%  { transform: scale(1.15) rotate(2deg); }
+  60%  { transform: scale(1.05) rotate(-1deg); }
+  100% { transform: scale(1); }
+}
+
+#profileMessageBubble.t-sleep {
+  opacity: 0.35 !important;
+  transform: scale(0.95);
+}
+
+
+.t-bg {
+  position: fixed;
+  inset: 0;
+  background: #000;
+  background-image: url('https://tropicpulse.bz/Mysterious.png?v4');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  font-family: Arial, sans-serif;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: #fff;
+  z-index: 1;
+  animation: t-dim-breathe 4s ease-in-out infinite,
+}
+
+.t-camera-window {
+  position: fixed;
+  width: min(80vw, 80vh);
+  height: min(80vw, 80vh);
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  border-radius: 22px;
+  overflow: hidden;
+  z-index: 3 !important;
+  pointer-events: auto !important;
+  box-sizing: border-box;
+}
+
+.t-camera-window video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  box-sizing: border-box;
+}
+
+/* ——————————————————————————————————————————————
+   MAGICAL TAP RIPPLE ON CAMERA WINDOW
+—————————————————————————————————————————————— */
+.t-tap-ripple {
+  position: absolute;
+  width: 120px;
+  height: 120px;
+  border-radius: 999px;
+  pointer-events: none;
+  background: radial-gradient(
+    circle,
+    rgba(0,255,220,0.55) 0%,
+    rgba(0,200,180,0.35) 40%,
+    rgba(0,150,140,0.0) 70%
+  );
+  transform: translate(-50%, -50%) scale(0.2);
+  opacity: 0;
+  animation: tpTapRipple 450ms ease-out forwards;
+  z-index: 99999;
+}
+
+@keyframes tpTapRipple {
+  0% {
+    transform: translate(-50%, -50%) scale(0.2);
+    opacity: 0.9;
+  }
+  70% {
+    transform: translate(-50%, -50%) scale(1.25);
+    opacity: 0.45;
+  }
+  100% {
+    transform: translate(-50%, -50%) scale(1.6);
+    opacity: 0;
+  }
+}
+
+/* Center the overlay container */
+#t-valid-overlay,
+#t-fallback-root,
+#t-unreadable-root {
+  position: absolute;
+  bottom: 40px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: none;
+  width: auto;
+  height: auto;
+  padding: 0;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+}
+
+/* Make the card size naturally */
+.t-valid-card,
+.t-fallback-card,
+.t-unreadable-card {
+  background: white;
+  padding: 18px;
+  border-radius: 16px;
+  box-shadow: 0 8px 22px rgba(0,0,0,0.18);
+  max-width: 320px;      /* prevents stretching */
+  width: max-content;    /* prevents squishing */
+  text-align: left;      /* ensures text aligns normally */
+}
+</style>
+</head>
+
+<body>
+
+<!-- ——————————————————————————————————————————————
+     SCANNER ROOT (HIDDEN UNTIL TropicPulseScanner.open())
+—————————————————————————————————————————————— -->
+<div id="t-scanner-root">
+<div class="t-bg"></div>
+<div class="t-cutout"></div>
+  <!-- Camera -->
+  <div class="t-scan-frame">
+    <div class="t-scan-frame-inner"></div>
+    <div class="t-camera-window">
+        <video id="t-video" autoplay playsinline></video>
+    </div>
+</div>
+  
+
+  <!-- Top bar -->
+  <div class="t-top-bar">
+    <div class="t-profile-ring"><div class="t-profile-photo"></div></div><div id="profileMessageBubble"></div>
+    <button class="t-close-btn" onclick="TropicPulseScanner.close()">✕</button>
+  </div>
+
+  <!-- VALID -->
+  <div id="t-valid-overlay">
+    <div class="t-valid-burst"></div>
+    <div class="t-valid-card">
+      <div style="display:flex;gap:10px;align-items:center;margin-bottom:10px;">
+        <div class="t-valid-icon">✨</div>
+        <div>
+          <div style="font-weight:600;font-size:15px;">Tropic Pulse QR Recognized!</div>
+          <div style="font-size:13px;color:#4b5563;">Magic Unlocked. Rewards are Ready!</div>
+        </div>
+      </div>
+
+      <div style="margin-top:8px;padding-top:8px;border-top:1px solid rgba(148,132,110,0.25);">
+        <div style="display:flex;justify-content:space-between;font-size:13px;margin-top:4px;">
+          <span style="color:#6b7280;">Reward</span><span style="font-weight:500;">+120 points</span>
+        </div>
+        <div style="display:flex;justify-content:space-between;font-size:13px;margin-top:4px;">
+          <span style="color:#6b7280;">Location</span><span style="font-weight:500;">San Pedro • Beachfront</span>
+        </div>
+      </div>
+
+      <div style="margin-top:12px;display:flex;gap:10px;">
+        <button class="t-primary-btn" onclick="TropicPulseScanner.close()">Claim Reward</button>
+        <button class="t-secondary-link" onclick="TropicPulseScanner.close()">View All Rewards</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- NON‑TROPIC -->
+  <div id="t-fallback-root">
+  <div class="t-fallback-glow"></div>
+  <div class="t-fallback-card">
+    <div style="display:flex;gap:10px;align-items:center;margin-bottom:10px;">
+      <div class="t-fallback-icon">🌱</div>
+      <div>
+        <div style="font-size:15px;font-weight:600;">Hmm.. not part of Tropic Pulse just yet!</div>
+        <div style="font-size:13px;color:#4b5563;margin-top:2px;">Here’s what you can do Next.</div>
+      </div>
+    </div>
+
+    <button id="t-learn-more-btn" class="t-learn-more-btn">
+      <span>Learn more</span><span class="t-gold-spark">✦</span>
+    </button>
+
+    <div id="t-fallback-unfold">
+      <button class="t-pill-btn" onclick="TropicPulseScanner.reset()">Try Scanning Again!?</button>
+      <button class="t-pill-btn">What is Tropic Pulse?</button>
+      <button class="t-pill-btn">Unlock Rewards in the Tropic Pulse World!</button>
+    </div>
+  </div>
+</div>
+
+  <!-- UNREADABLE -->
+  <div id="t-unreadable-root">
+  <div class="t-unreadable-card">
+    <div style="display:flex;gap:10px;align-items:center;">
+      <div class="t-unreadable-icon">📷</div>
+      <div>
+        <div style="font-size:14px;font-weight:600;">Hmm… I couldn’t Read that One!?</div>
+        <div style="font-size:13px;color:#4b5563;margin-top:4px;">Try holding steady or adjusting the angle!</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+</div>
+<script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.js"></script>
+<script>
+window.onerror = function (msg, src, line, col, err) {
+    const div = document.createElement("div");
+    div.style.position = "fixed";
+    div.style.bottom = "0";
+    div.style.left = "0";
+    div.style.right = "0";
+    div.style.background = "rgba(255,0,0,0.85)";
+    div.style.color = "white";
+    div.style.padding = "10px";
+    div.style.fontSize = "14px";
+    div.style.zIndex = "999999";
+    div.style.whiteSpace = "pre-wrap";
+    div.textContent = `🔥 JS ERROR:\n${msg}\n${src}:${line}:${col}`;
+    document.body.appendChild(div);
+  };
+  (function () {
+  const logBox = document.createElement("div");
+  logBox.style.position = "fixed";
+  logBox.style.top = "0";
+  logBox.style.left = "0";
+  logBox.style.right = "0";
+  logBox.style.maxHeight = "40vh";
+  logBox.style.overflowY = "auto";
+  logBox.style.background = "rgba(0,0,0,0.75)";
+  logBox.style.color = "lime";
+  logBox.style.fontSize = "12px";
+  logBox.style.padding = "6px";
+  logBox.style.zIndex = "999999";
+  logBox.style.whiteSpace = "pre-wrap";
+  document.body.appendChild(logBox);
+
+  const oldLog = console.log;
+  console.log = function (...args) {
+    oldLog.apply(console, args);
+    logBox.textContent += args.join(" ") + "\n";
+  };
+})();
+console.log("🌞 Script loaded, attaching visibility listener…");
+  // --- SIMPLE IDENTITY CHECK ---
+let identityCheck = null;
+try {
+  identityCheck = JSON.parse(localStorage.getItem("tp_identity_v4") || "null");
+} catch {
+  identityCheck = null;
+}
+
+if (!identityCheck || !identityCheck.uid) {
+  // Clear all Tropic Pulse keys
+  Object.keys(localStorage).forEach(k => {
+    if (
+      k.startsWith("tp_") ||
+      k.includes("vault") ||
+      k.includes("pulse")
+    ) {
+      localStorage.removeItem(k);
+    }
+  });
+
+  const returnTo = encodeURIComponent("https://tropicpulse.bz/PulsePoints.html");
+  window.location.replace(`https://tropicpulse.bz/CheckEmail.html?returnTo=${returnTo}`);
+  throw new Error("No identity — redirecting to CheckEmail");
+}
+// --- END SIMPLE IDENTITY CHECK ---
+
+
+// Your QR scanner variables
+let qrCanvas = document.createElement("canvas");
+let qrCtx = qrCanvas.getContext("2d", { willReadFrequently: true });
+let lastActivity = Date.now();
+let inactivityInterval = null;
+const INACTIVITY_THRESHOLD = 9000; // 9 seconds
+
+// Small helpers for visibility
+function show(el) {
+  if (!el) return;
+  el.style.opacity = "1";
+  el.style.pointerEvents = "auto";
+}
+
+function hide(el) {
+  if (!el) return;
+  el.style.opacity = "0";
+  el.style.pointerEvents = "none";
+}
+
+
+/* ALIVE BUBBLE ENGINE FOR #profileMessageBubble */
+const TropicPulseBubbleController = (() => {
+  let bubble = null;
+  let state = "idle";
+  let timers = [];
+
+  function init() {
+    bubble = document.getElementById("profileMessageBubble");
+    if (!bubble) return;
+
+    startBreathing();
+    startAttentionShifts();
+  }
+
+  function setState(newState) {
+    state = newState;
+    clearTimers();
+
+    switch (newState) {
+      case "idle":
+        startBreathing();
+        startAttentionShifts();
+        break;
+      case "active":
+        bubble.classList.add("t-focus-glow");
+        startActivePulse();
+        break;
+      case "scanned":
+        playScanCelebration();
+        break;
+      case "sleep":
+        bubble.classList.add("t-sleep");
+        break;
+    }
+  }
+
+  function startBreathing() {
+    bubble.classList.add("t-breathe");
+  }
+
+  function startAttentionShifts() {
+    const t = setInterval(() => {
+      if (state !== "idle") return;
+      bubble.classList.add("t-look");
+      setTimeout(() => bubble.classList.remove("t-look"), 500);
+    }, random(6000, 12000));
+    timers.push(t);
+  }
+
+  function startActivePulse() {
+    const t = setInterval(() => {
+      if (state !== "active") return;
+      bubble.classList.add("t-pulse");
+      setTimeout(() => bubble.classList.remove("t-pulse"), 400);
+    }, 2400);
+    timers.push(t);
+  }
+
+  function playScanCelebration() {
+    bubble.classList.add("t-celebrate");
+    setTimeout(() => {
+      bubble.classList.remove("t-celebrate");
+      setState("active");
+    }, 1000);
+  }
+
+  function clearTimers() {
+    timers.forEach(t => clearInterval(t));
+    timers = [];
+    if (!bubble) return;
+    bubble.classList.remove(
+      "t-breathe",
+      "t-look",
+      "t-pulse",
+      "t-focus-glow",
+      "t-celebrate",
+      "t-sleep"
+    );
+  }
+
+  const random = (min, max) =>
+    Math.floor(Math.random() * (max - min + 1)) + min;
+
+  return {
+    init,
+    idle: () => setState("idle"),
+    active: () => setState("active"),
+    scanned: () => setState("scanned"),
+    sleep: () => setState("sleep")
+  };
+})();
+
+/* ——————————————————————————————————————————————
+   TROPIC PULSE SCANNER API (CALL FROM YOUR LOYALTY PAGE)
+—————————————————————————————————————————————— */
+let scannerIsOpen = false;
+let video = null;
+let stream = null;
+let scanLoop = null;
+
+window.TropicPulseScanner = {
+  open() {
+    scannerIsOpen = true;
+    const root = document.getElementById("t-scanner-root");
+
+    root.style.opacity = "1";
+    root.style.pointerEvents = "auto";
+    window.parent.postMessage({ action: "scannerReady" }, "*");
+    this.reset();
+    loadProfilePhoto();
+    startInactivityWatcher();
+
+    const greetings = [
+      "Welcome to Tropic Pulse’s Gateway! ✨",
+      "Ready to unlock some magic? 🌴",
+      "Let’s see what this QR reveals… 🔮",
+      "Your journey continues… ✦"
+    ];
+    const message = greetings[Math.floor(Math.random() * greetings.length)];
+    setTimeout(() => showProfileBubble(message), 300);
+
+    TropicPulseBubbleController.active();
+  },
+
+  close() {
+    scannerIsOpen = false;
+
+    const msg = "See you soon, explorer! 🌴";
+    showProfileBubble(msg);
+    TropicPulseBubbleController.sleep();
+    stopInactivityWatcher();
+    stopCamera();
+
+    const root = document.getElementById("t-scanner-root");
+    root.style.opacity = "0";
+    root.style.pointerEvents = "none";
+
+    window.parent.postMessage({ action: "closeScanner" }, "*");
+  },
+
+  reset() {
+    hide(document.getElementById("t-valid-overlay"));
+    hide(document.getElementById("t-fallback-root"));
+    hide(document.getElementById("t-unreadable-root"));
+    hide(document.getElementById("t-fallback-unfold"));
+
+    TropicPulseBubbleController.idle();
+
+    if (scannerIsOpen) {
+      if (
+        !stream ||
+        !stream.getVideoTracks().length ||
+        stream.getVideoTracks()[0].readyState !== "live"
+      ) {
+        startCamera();
+      }
+    }
+  },
+
+  handleScan(type) {
+    if (type === "tropic") {
+      showProfileBubble("Magic Unlocked! ✨");
+      TropicPulseBubbleController.scanned();
+      show(document.getElementById("t-valid-overlay"));
+    }
+
+    if (type === "nonTropic") {
+      showProfileBubble("Not a Tropic Pulse QR 🌴");
+      TropicPulseBubbleController.scanned();
+      show(document.getElementById("t-fallback-root"));
+    }
+
+    if (type === "unreadable") {
+      showProfileBubble("I couldn’t read that one… Try Again!?");
+      TropicPulseBubbleController.scanned();
+      const unreadable = document.getElementById("t-unreadable-root");
+      show(unreadable);
+      setTimeout(() => {
+        hide(unreadable);
+      }, 2500);
+    }
+  }
+};
+
+async function startCamera() {
+  video = document.getElementById("t-video");
+
+  stream = await requestBestCamera();
+  video.srcObject = stream;
+
+  video.onloadedmetadata = () => {
+    video.play();
+    video.style.opacity = "1";
+  };
+
+  video.onplaying = () => {
+    document.querySelector(".t-cutout").style.opacity = "1";
+  };
+
+  document
+    .querySelector(".t-camera-window")
+    .addEventListener("click", async (e) => {
+      if (!stream) return;
+
+      const rect = video.getBoundingClientRect();
+      const tapX = e.clientX - rect.left;
+      const tapY = e.clientY - rect.top;
+      spawnTapRipple(e.clientX, e.clientY);
+
+      const track = stream.getVideoTracks()[0];
+      if (!track) return;
+
+      const capabilities = track.getCapabilities?.() || {};
+
+      if (capabilities.focusMode && capabilities.focusMode.includes("continuous")) {
+        try {
+          await track.applyConstraints({ advanced: [{ focusMode: "continuous" }] });
+          console.log("Refocus: continuous autofocus refreshed");
+          return;
+        } catch (e) {
+          console.warn("Refocus failed, using fallback", e);
+        }
+      }
+
+      try {
+        await track.applyConstraints({ advanced: [{}] });
+        console.log("Refocus: fallback pulse applied");
+      } catch (e) {
+        console.warn("Fallback refocus failed", e);
+      }
+    });
+
+  scanLoop = requestAnimationFrame(tick);
+}
+
+async function requestBestCamera() {
+  const constraintsList = [
+    {
+      video: {
+        facingMode: { ideal: "environment" },
+        width: { ideal: 3840 },
+        height: { ideal: 2160 },
+        focusMode: "continuous"
+      }
+    },
+    {
+      video: {
+        facingMode: { ideal: "environment" },
+        width: { ideal: 1920 },
+        height: { ideal: 1080 },
+        focusMode: "continuous"
+      }
+    },
+    {
+      video: {
+        facingMode: { ideal: "environment" },
+        width: { ideal: 1280 },
+        height: { ideal: 720 },
+        focusMode: "continuous"
+      }
+    },
+    {
+      video: {
+        facingMode: { ideal: "environment" }
+      }
+    }
+  ];
+
+  for (const constraints of constraintsList) {
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia(constraints);
+      console.log("Camera started with:", constraints);
+      console.log("Actual settings:", stream.getVideoTracks()[0].getSettings());
+      return stream;
+    } catch (err) {
+      console.warn("Failed constraints:", constraints, err);
+    }
+  }
+
+  throw new Error("No camera available");
+}
+
+
+function showProfileBubble(message) {
+  const bubble = document.getElementById("profileMessageBubble");
+  bubble.textContent = message;
+
+  bubble.classList.add("show");
+  lastActivity = Date.now();
+  setTimeout(() => {
+    bubble.classList.remove("show");
+  }, 2500);
+}
+
+function startInactivityWatcher() {
+  stopInactivityWatcher();
+
+  inactivityInterval = setInterval(() => {
+    const now = Date.now();
+    const diff = now - lastActivity;
+
+    const bubbleScanningMessages = [
+      "Hold Steady… I’m Looking 👀",
+      "Let me get a closer look… ✦",
+      "Almost There… the Magic is Forming… ✨",
+      "I’m Reading the Vibes… 🌴",
+      "Just a little closer… I can feel it… 🔮",
+      "Scanning the Moment… Stay Right There…",
+      "Something’s Shimmering… Give me a sec… ✨",
+      "I’m following the Glow… Hold Still…",
+      "The Gateway is Tuning in… 🌺",
+      "Let me Focus… this one Feels Interesting…"
+    ];
+
+    if (diff > INACTIVITY_THRESHOLD) {
+      const msg =
+        bubbleScanningMessages[
+          Math.floor(Math.random() * bubbleScanningMessages.length)
+        ];
+      showProfileBubble(msg);
+      TropicPulseBubbleController.active();
+      lastActivity = now;
+
+      const chance = Math.random();
+      if (chance < 0.15) {
+        setTimeout(() => {
+          showProfileBubble("Scanning again… 🔄");
+          TropicPulseBubbleController.active();
+          TropicPulseScanner.reset();
+        }, 1200);
+      }
+    }
+  }, 1000);
+}
+
+function stopInactivityWatcher() {
+  if (inactivityInterval) {
+    clearInterval(inactivityInterval);
+    inactivityInterval = null;
+  }
+}
+
+async function loadProfilePhoto() {
+  try {
+    const el = document.querySelector(".t-profile-photo");
+
+    // 1. INSTANT fallback: your own profile photo
+    el.style.backgroundImage =
+      "url('https://firebasestorage.googleapis.com/v0/b/tropic-pulse.firebasestorage.app/o/ToucanGeneral.jpg?alt=media&token=8e2a65a6-c8d2-4e36-be93-c80571270d11')";
+    el.style.backgroundSize = "cover";
+    el.style.backgroundPosition = "center";
+
+    // 2. Load identity
+    const raw = localStorage.getItem("tp_identity_v4");
+    if (!raw) return;
+
+    const identity = JSON.parse(raw);
+    if (!identity.uid) return;
+
+    // 3. Fetch the REAL user photo URL
+    const res = await fetch("https://loadprofilephoto-ilx3agka5q-uc.a.run.app", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ uid: identity.uid })
+    });
+
+    const data = await res.json();
+    if (!data || !data.photoURL) return;
+
+    // 4. Preload the real image before swapping
+    const img = new Image();
+    img.src = data.photoURL;
+
+    img.onload = () => {
+      el.style.backgroundImage = `url('${data.photoURL}')`;
+    };
+
+  } catch (e) {
+    console.warn("Could not load profile photo", e);
+  }
+}
+
+function stopCamera() {
+  if (stream) {
+    stream.getTracks().forEach(t => t.stop());
+    stream = null;
+  }
+
+  if (video) {
+    video.srcObject = null;
+    video.style.opacity = "0";
+  }
+
+  if (scanLoop) {
+    cancelAnimationFrame(scanLoop);
+    scanLoop = null;
+  }
+}
+
+function isProbablyQR(text) {
+  const badPatterns = /[^a-zA-Z0-9:/?=._-]/g;
+  const weird = (text.match(badPatterns) || []).length;
+  return weird < text.length * 0.2;
+}
+
+function tick() {
+  if (!video || video.readyState !== video.HAVE_ENOUGH_DATA) {
+    scanLoop = requestAnimationFrame(tick);
+    return;
+  }
+
+  qrCanvas.width = video.videoWidth;
+  qrCanvas.height = video.videoHeight;
+
+  qrCtx.drawImage(video, 0, 0, qrCanvas.width, qrCanvas.height);
+
+  const imageData = qrCtx.getImageData(0, 0, qrCanvas.width, qrCanvas.height);
+  const code = jsQR(imageData.data, qrCanvas.width, qrCanvas.height, {
+    inversionAttempts: "dontInvert"
+  });
+
+  if (code) {
+    const text = code.data;
+
+    if (!text || text.length < 6 || !isProbablyQR(text)) {
+      TropicPulseScanner.handleScan("unreadable");
+      scanLoop = requestAnimationFrame(tick);
+      return;
+    }
+
+    if (text.toLowerCase().includes("tropicpulse")) {
+      TropicPulseScanner.handleScan("tropic");
+    } else {
+      TropicPulseScanner.handleScan("nonTropic");
+    }
+
+    stopCamera();
+    return;
+  }
+
+  scanLoop = requestAnimationFrame(tick);
+}
+
+document.addEventListener("visibilitychange", () => {
+  if (!document.hidden && scannerIsOpen) {
+    const videoEl = document.getElementById("t-video");
+    const s = videoEl.srcObject;
+    const track = s && s.getVideoTracks()[0];
+
+    if (!s || !track || track.readyState === "ended") {
+      startCamera();
+    }
+  }
+});
+
+/* Learn More → Unfold */
+document.getElementById("t-learn-more-btn").onclick = () => {
+  show(document.getElementById("t-fallback-unfold"));
+};
+
+document.addEventListener("DOMContentLoaded", () => {
+  TropicPulseBubbleController.init();
+});
+
+function spawnTapRipple(x, y) {
+  const ripple = document.createElement("div");
+  ripple.className = "t-tap-ripple";
+  ripple.style.left = `${x}px`;
+  ripple.style.top = `${y}px`;
+
+  document.getElementById("t-scanner-root").appendChild(ripple);
+
+  setTimeout(() => ripple.remove(), 500);
+}
+
+window.disableScannerInteractions = function() {
+  document.querySelectorAll("*").forEach(el => {
+    el.style.pointerEvents = "none";
+  });
+};
+</script>
+
+</body>
+</html>

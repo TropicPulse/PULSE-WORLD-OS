@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Tropic Pulse - Resending Link</title>
+
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+
+  <style>
+    html, body {
+      height: 100%;
+      margin: 0;
+      padding: 0;
+      font-family: 'Inter', sans-serif;
+      background: linear-gradient(135deg, #fff7b3, #ffe066);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      overflow: hidden;
+    }
+
+    .loader-container {
+      text-align: center;
+      animation: fadeIn 0.8s ease-out forwards;
+      opacity: 0;
+    }
+
+    .loader-image img {
+      width: 110px;
+      height: auto;
+      filter: drop-shadow(0 4px 12px rgba(0,0,0,0.25));
+      animation: float 2.4s ease-in-out infinite;
+    }
+
+    @keyframes float {
+      0% { transform: translateY(0px); }
+      50% { transform: translateY(-10px); }
+      100% { transform: translateY(0px); }
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="loader-container">
+    <div class="loader-image">
+      <img src="https://tropicpulse.bz/ToucanLogo-Mini.png?v4" alt="Tropic Pulse Logo">
+    </div>
+  </div>
+
+  <!-- ⭐ Injected server-side by your email template engine -->
+  <script>
+    window.__RESENDTOKEN__ = "%%RESENDTOKEN%%";
+    // Your email template replaces %%RESENDTOKEN%% with the real token.
+  </script>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      // DisplayName is cosmetic only — page must load no matter what
+      const params = new URLSearchParams(window.location.search);
+      const displayName = params.get("user") || "Friend";
+
+      // Real token is embedded privately in HTML
+      const token = window.__RESENDTOKEN__;
+
+      if (!token) {
+        window.location.href = "https://tropicpulse.bz/error.html";
+        return;
+      }
+
+      // POST token securely to backend
+      fetch("https://tropicpulse.bz/resendlink", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ token })
+      })
+      .then(() => {
+        // Redirect with ONLY displayName — no identifiers
+        window.location.href =
+          "https://tropicpulse.bz/success.html?user=" +
+          encodeURIComponent(displayName);
+      })
+      .catch(() => {
+        window.location.href = "https://tropicpulse.bz/error.html";
+      });
+    });
+  </script>
+
+</body>
+</html>

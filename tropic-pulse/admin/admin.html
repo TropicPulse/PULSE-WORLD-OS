@@ -1,0 +1,3928 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Tropic Pulse - Admin Panel</title>
+
+<!-- Google Font -->
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-HSX89KS63P"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-HSX89KS63P');
+</script>
+<!-- Meta Pixel Code -->
+<script>
+  !function(f,b,e,v,n,t,s){
+    if(f.fbq) return;
+    n = f.fbq = function(){
+      n.callMethod ?
+        n.callMethod.apply(n, arguments) : n.queue.push(arguments)
+    };
+    if(!f._fbq) f._fbq = n;
+    n.push = n;
+    n.loaded = true;
+    n.version = '2.0';
+    n.queue = [];
+    t = b.createElement(e);
+    t.async = true;
+    t.src = v;
+    s = b.getElementsByTagName(e)[0];
+    s.parentNode.insertBefore(t, s);
+  }(window, document, 'script', 'https://connect.facebook.net/en_US/fbevents.js');
+
+  fbq('init', '1651551349364459');
+  fbq('track', 'PageView');
+</script>
+
+<noscript>
+  <img
+    height="1"
+    width="1"
+    style="display:none"
+    src="https://www.facebook.com/tr?id=1651551349364459&ev=PageView&noscript=1"
+  />
+</noscript>
+<!-- End Meta Pixel Code -->
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+  
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+
+
+  <!-- Admin Authentication (MUST be module) -->
+  <script>
+  // --- SIMPLE IDENTITY CHECK ---
+  let identityCheck = null;
+  try {
+    identityCheck = JSON.parse(localStorage.getItem("tp_identity_v4") || "null");
+  } catch {
+    identityCheck = null;
+  }
+
+  if (!identityCheck || !identityCheck.uid) {
+    // Clear all Tropic Pulse keys
+    Object.keys(localStorage).forEach(k => {
+      if (
+        k.startsWith("tp_") ||
+        k.includes("vault") ||
+        k.includes("pulse")
+      ) {
+        localStorage.removeItem(k);
+      }
+    });
+    const returnTo = encodeURIComponent(window.location.href);
+    window.location.replace(`https://tropicpulse.bz/CheckEmail.html?returnTo=${returnTo}`);
+    throw new Error("No identity — redirecting to CheckEmail");
+  }
+  // --- END SIMPLE IDENTITY CHECK ---
+
+
+  (async () => {
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyD4I5YDtZMMC_tDuwR9CEjhs_iAdrLzthQ",
+      authDomain: "tropic-pulse.firebaseapp.com",
+      databaseURL: "https://tropic-pulse-default-rtdb.firebaseio.com",
+      projectId: "tropic-pulse",
+      storageBucket: "tropic-pulse.appspot.com",
+      messagingSenderId: "642785071979",
+      appId: "1:642785071979:web:4287c6bdf51f5233db722e",
+      measurementId: "G-HSX89KS63P"
+    };
+
+    if (!firebase.apps.length) {
+      firebase.initializeApp(firebaseConfig);
+    }
+    const db = firebase.firestore();
+
+    const token = localStorage.getItem("tp_token_v4");
+    if (!token) {
+      const returnTo = encodeURIComponent(window.location.href);
+      window.location.replace(`https://tropicpulse.bz/CheckEmail.html?returnTo=${returnTo}`);
+    }
+
+    const trusted = localStorage.getItem("tp_device_token_v4");
+    if (trusted !== "1") {
+      const returnTo = encodeURIComponent(window.location.href);
+      window.location.replace(`https://tropicpulse.bz/CheckEmail.html?returnTo=${returnTo}`);
+    }
+
+    const response = await fetch("https://verifytoken-ilx3agka5q-uc.a.run.app", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ token })
+    });
+
+    const data = await response.json();
+    if (!data.success) {
+      const returnTo = encodeURIComponent(window.location.href);
+      window.location.replace(`https://tropicpulse.bz/CheckEmail.html?returnTo=${returnTo}`);
+    }
+
+    const identity = data.identity;
+    localStorage.setItem("tp_identity_v4", JSON.stringify(identity));
+
+    if (!identity.role || identity.role.toLowerCase() !== "admin") {
+      window.location.replace("https://tropicpulse.bz/dashboard.html");
+    }
+
+  })();
+</script>
+  <style>
+    html {
+      font-size: 18px; /* Larger base size for mobile */
+    }
+
+    body {
+      margin: 0;
+      padding: 0;
+      background: #000;
+      background-image: url('https://tropicpulse.bz/Mysterious.png?v4');
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      background-attachment: fixed;
+      font-family: Arial, sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      color: #fff;
+    }
+    
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.65); /* increase to 0.75 or 0.85 for deeper darkness */
+      pointer-events: none;
+      z-index: -1;
+    }
+
+   @media (max-width: 600px) {
+    #card {
+      background: white;
+      padding: 20px; /* Slightly larger */
+      border-radius: 16px;
+      max-width: 600px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+      margin-left: 0;
+      margin-right: 0;
+    }
+    }
+
+    #sendEmailBtn.loading {
+      background-color: #b3b3b3;   /* light grey */
+      cursor: not-allowed;
+      color: #ffffff;
+    }
+
+    .loading-spinner {
+      border: 3px solid #eee;
+      border-top: 3px solid #3498db;
+      border-radius: 50%;
+      width: 16px;
+      height: 16px;
+      animation: spin 0.8s linear infinite;
+      display: inline-block;
+      margin-left: 8px;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    select, input, button {
+      width: 90%;
+      max-width: 600px;
+      padding: 10px; /* Larger tap targets */
+      margin-top: 10px;
+      border-radius: 10px;
+      border: 1px solid #ccc;
+      font-size: 18px; /* Larger text */
+      display: block;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    button {
+      background: #00a86b;
+      color: white;
+      border: none;
+      font-weight: bold;
+      cursor: pointer;
+      max-width: 600px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    button:hover {
+      background: #008f5c;
+    }
+
+    #orderlogs {
+      text-align: center;
+      text-align-last: center;
+    }
+
+    #modal-bg {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: rgba(0,0,0,0.6);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      z-index: 9999;
+    }
+
+    /* Sticky header */
+    #modal-header {
+      position: sticky;
+      top: 0;
+      background: white;
+      padding: 2px 5px; /* smaller top/bottom padding */
+      border-bottom: 1px solid #ddd;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      z-index: 10;
+    }
+
+
+    #modal {
+      background: white;
+      padding: 0;
+      border-radius: 12px;
+      width: 95%;
+      max-width: 600px;
+      max-height: 80vh;
+      overflow-y: auto;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+    }
+
+    
+    #container {
+      background: #ffff99;
+      padding: 0;
+      border-radius: 12px;
+      max-width: 520px;
+      overflow-y: auto;
+      margin: 1px auto 6px auto;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+    }
+
+
+        /* Close button */
+    #modal-close {
+      background: #d9534f;
+      color: white;
+      padding: 4px 10px;
+      border: none;
+      border-radius: 8px;
+      font-size: 13px;
+      cursor: pointer;
+    }
+
+    #modal-close:hover {
+      background: #c64542;
+    }
+
+        /* Preview content */
+    #preview-content {
+      padding: 0;
+      transform: scale(0.7);
+      transform-origin: top center;
+        margin-left: auto;
+        margin-right: auto;
+        display: block;
+    }
+    #payloadPreview h3,
+    #payloadPreview h4,
+    #payloadPreview pre {
+      margin-top: 0 !important;
+      padding-top: 0 !important;
+    }
+
+    #payloadPreview {
+      padding-top: 0 !important;
+      margin-top: 0 !important;
+    }
+    #log {
+      margin-top: 24px;
+      background: white;
+      padding: 18px;
+      border-radius: 12px;
+      max-width: 600px;
+      margin-left: auto;
+      margin-right: auto;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      font-size: 16px;
+    }
+    .toucan {
+        position: fixed;
+        width: 230px;
+        height: 230px;
+        background-size: contain;
+        background-repeat: no-repeat;
+        background-position: center;
+        pointer-events: none;
+        z-index: 99999;
+        opacity: 0.4;
+    }
+
+/* Top-left toucan (looking down) */
+    .toucan-top-left {
+        top: 30px;
+        left: 30px;
+        background-image: url("https://tropicpulse.bz/ToucanLeft.png?v4");
+    }
+
+/* Bottom-right toucan (looking up) */
+    .toucan-bottom-right {
+        bottom: 30px;
+        right: 30px;
+        background-image: url("https://tropicpulse.bz/ToucanRight.png?v4");
+    }
+
+    .user-row {
+      display: flex;
+      align-items: center;
+      justify-content: center; /* <-- THIS centers the row */
+      gap: 6px;
+      width: 100%;
+    }
+
+    .user-select {
+      flex: 0 1 550px;
+      max-width: 550px;
+      min-width: 0;
+    }
+
+    .sort-btn {
+      flex: 0 0 auto;
+      white-space: nowrap;
+      padding: 6px 10px;
+      font-size: 14px;
+    }
+    .user-row select,
+    .user-row button {
+      width: auto !important;
+      max-width: none !important;
+      display: inline-block !important;
+      margin: 0 !important;
+    }
+    
+  </style>
+</head>
+
+<body>
+  <div id="t-loading">
+  <img src="https://tropicpulse.bz/ToucanLogo-Mini.png?v4" id="t-loading-logo" />
+</div>
+  <div id="pulseband-overlay">
+  <div id="pulseband-badge">
+    <div class="pb-bars">
+      <span></span><span></span><span></span><span></span>
+    </div>
+  </div>
+
+  <div id="pulseband-panel">
+    <div class="pb-header">
+      <img class="pb-mini-badge" src="https://tropicpulse.bz/PulseBand.png?v4"></img>
+    </div>
+
+    <div class="pb-row"><label>PulseBand Bars</label><span id="pb-bars-text">0/4</span></div>
+    <div class="pb-row"><label>Phone Bars</label><span id="pb-phonebars-text">0/4</span></div>
+    <div class="pb-row"><label>Stability</label><span id="pb-stability">0%</span></div>
+    <div class="pb-row"><label>Latency</label><span id="pb-latency">0 ms</span></div>
+    <div class="pb-row"><label>Micro‑Windows</label><span id="pb-micro">Idle</span></div>
+    <div class="pb-row"><label>Route</label><span id="pb-route">Primary</span></div>
+    <div class="pb-row"><label>State</label><span id="pb-state">Initializing</span></div>
+    <div class="pb-row"><label>Last Sync</label><span id="pb-sync">0s ago</span></div>
+    <div class="pb-row"><label>Efficiency</label><span id="pb-efficiency">Micro‑Burst</span></div>
+
+    <!-- ⭐ NEW: Network Health -->
+    <div class="pb-row"><label>Network Health</label><span id="pb-health">Checking…</span></div>
+
+    <!-- ⭐ NEW FIELD #1: PulseBand Advantage -->
+    <div class="pb-row"><label>PulseBand Advantage</label>
+      <span id="pb-advantage">2.5× Faster</span>
+    </div>
+
+    <!-- ⭐ NEW FIELD #2: Phone vs PulseBand Time -->
+    <div class="pb-row"><label>Phone vs PulseBand</label>
+      <span id="pb-estimated">Calculating…</span>
+    </div>
+  </div>
+</div>
+<div id="container" style="text-align:center;">
+  <div class="toucan toucan-top-left"></div>
+  <div class="toucan toucan-bottom-right"></div>
+    <div style="text-align:center;margin-bottom:20px;">
+      <img src="https://tropicpulse.bz/ToucanLogo-Mini.png?v4" style="width:150px;border-radius:12px;">
+      <h1 style="color:#008f5c;font-size:30px;margin-top:10px;">Email Admin Panel</h1>
+    </div>
+
+    <div id="card" style="text-align:center;">
+      <h2 style="font-size:24px;">Send Dynamic Email</h2>
+
+      <input id="search" placeholder="Search Users..." onkeyup="filterUsers()">
+      <div class="user-row">
+        <select id="users" class="user-select">
+          <option>Loading Users...</option>
+        </select>
+        <button id="sortUsersBtn" class="sort-btn">A→Z</button>
+      </div>
+
+      <select id="type" onchange="onTypeChange()">
+        <option value="">Choose Email Type</option>
+        <option value="newUser">New User Welcome</option>
+        <option value="loyalty">Loyalty Enrollment</option>
+        <option value="sendPayout">Send Payout</option>
+        <option value="stripeOnboarding">Stripe Onboarding</option>
+        <option value="resendStripeLink">ReSend Stripe Link</option>
+        <option value="pulsePointRedemption">Pulse Point Redemption</option>
+        <option value="pulsePointsGifted">Pulse Point Earn</option>
+        <option value="newEvent">New Event</option>
+        <option value="newBusiness">New Business</option>
+        <option value="NoCredits">No Mass Credits</option>
+      </select>
+
+      
+      <div id="pulse" style="display:none;">
+        <input id="points" placeholder="Points">
+      </div>
+      <div id="orders" style="display:none;">
+        <select id="orderlogs">
+          <option>Loading Orders...</option>
+        </select>
+      </div>
+      <div id="events" style="display:none;">
+        <select id="eventSelect">
+          <option>Loading Events...</option>
+        </select>
+      </div>
+      <div id="bus" style="display:none;">
+        <select id="busSelect">
+          <option>Loading Businesses...</option>
+        </select>
+      </div>
+      
+
+      <button onclick="handlePreview()">Preview Email</button>
+      <button id="sendEmailBtn" onclick="sendEmail()">Send Email</button>
+
+      <p id="status"></p>
+    </div>
+
+    <div id="log">
+      <h4>Email Out Log</h4>
+      <div style="display:flex; gap:10px; margin-bottom:10px;">
+    
+    
+    <select id="filter-type" style="padding:6px 10px; border-radius:6px;">
+      <option value="">All Types</option>
+      <option value="newUser">New User</option>
+      <option value="loyalty">Loyalty</option>
+      <option value="sendPayout">Send Payout</option>
+      <option value="stripeOnboarding">Stripe Onboarding</option>
+      <option value="resendStripeLink">ReSend Stripe Link</option>
+      <option value="pulsePointRedemption">Pulse Point Redemption</option>
+      <option value="pulsePointsGifted">Pulse Point Earn</option>
+      <option value="newEvent">New Event</option>
+      <option value="newBusiness">New Business</option>
+      <option value="NoCredits">No Mass Credits</option>
+    </select>
+  </div>
+      <div id="log-list"></div>
+    </div>
+    
+
+    <!-- Modal -->
+  <div id="modal-bg">
+    <div id="modal">
+
+      <!-- Sticky Header -->
+      <div id="modal-header">
+        <h3>Email Details</h3>
+        <button id="modal-close" onclick="closeModal()">Close</button>
+      </div>
+
+      <!-- Scrollable Body -->
+      <div id="modal-body">
+
+        <!-- PAYLOAD DETAILS -->
+      <div id="payload-header" style="display:flex; justify-content:space-between; align-items:center;">
+        <h4>Payload Details</h4>
+        <button id="toggle-view-btn" style="padding:4px 10px; font-size:12px; cursor:pointer; width:250px;">
+              JSON View</button>
+      </div>
+      
+        <pre id="payloadPreview"
+            style="background:#f5f5f5; padding:0px; border-radius:6px; max-height:200px; overflow:auto;"></pre>
+      
+        <!-- HTML PREVIEW -->
+      <div id="htmlPreviewWrapper">
+        <h4>Email HTML Preview</h4>
+        <iframe id="htmlPreview"
+                style="width:100%; height:350px; border:1px solid #ccc; border-radius:6px;"></iframe>
+      </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+<!-- </div> -->
+  <!-- Firebase SDK -->
+  <script>
+    
+    const db = firebase.firestore();
+    let userSortMode = "alpha"; // "alpha" or "created"
+    let allOrders = [];
+    let allUsers = [
+      {
+        Email: "fordfamilydistribution@gmail.com",   // or your admin email
+        Name: "Jeremy Ford",
+        createdAt: 0
+      }
+    ];
+    let cachedUsers = JSON.parse(localStorage.getItem("cachedUsers") || "[]");
+    let allLogs = [];
+    let firstOrder = null;
+    let selectedOrder = null;
+    let orderID = null;
+    let allBus = [];
+    let selectedBus = null;
+    let allEvents = [];
+    let selectedEvent = null;
+    let logPoller = null;
+    
+
+function formatDate(value) {
+  if (!value) return "—";
+
+  const d = new Date(value);
+  if (isNaN(d.getTime())) return value; // fallback if it's not a valid date
+
+  return d.toLocaleString("en-US", {
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+    hour: "numeric",
+    minute: "2-digit",
+    second: "2-digit"
+  });
+}
+
+
+  function hideTPLoader() {
+    const el = document.getElementById("t-loading");
+    if (!el) return;
+    el.classList.add("hide");
+    setTimeout(() => el.remove(), 700);
+  }
+  
+
+function loadAllLogs(email) {
+  if (!email) return; // prevent poller from breaking
+
+  if (logPoller) {
+    clearInterval(logPoller);
+    logPoller = null;
+  }
+
+  async function fetchLogs() {
+    try {
+      const token = localStorage.getItem("tp_token_v4");
+
+      if (!token) {
+        console.error("❌ No Auth Token Found in LocalStorage!");
+        orderSelect.innerHTML = `<option>Auth Error</option>`;
+        return;
+      }
+
+      const resp = await fetch(
+        `https://getalllogs-ilx3agka5q-uc.a.run.app?email=${encodeURIComponent(email)}`,
+        {
+          method: "GET",
+          headers: {
+            "Authorization": `Bearer ${token}`
+          }
+        }
+      );
+      
+      const data = await resp.json();
+      console.log("Polling logs for:", email);
+      if (data.success) {
+        allLogs = data.logs;
+        renderLogs();
+      }
+    } catch (err) {
+      console.error("Polling error:", err);
+    }
+  }
+
+  fetchLogs();
+  logPoller = setInterval(fetchLogs, 1200);
+}
+
+function handlePreview() {
+  const payload = buildPayload();
+  if (!payload) return; // STOP if validation failed
+  previewEmail(payload);
+}
+
+function showOrders() {
+  document.getElementById("orders").style.display = "block";
+  const selectedEmail = document.getElementById("users")?.value.toLowerCase();
+  if (!selectedEmail || selectedEmail === "Loading Users...") {
+    console.warn("No valid user selected yet.");
+    return;
+  }
+
+  loadOrdersForUser(selectedEmail);
+}
+
+function currency(amount, displayCurrency = "$") {
+  // 1. Normalize amount into a clean string
+  amount = String(amount || "").replace("$", "").replace("BZ$", "");
+
+  // 2. Convert to number safely
+  const num = Number(amount);
+  const safe = isNaN(num) ? "0.00" : num.toFixed(2);
+
+  // 3. Normalize displayCurrency safely
+  displayCurrency = String(displayCurrency || "$").toUpperCase();
+
+  // 4. Convert displayCurrency into correct symbol
+  if (displayCurrency === "USD" || displayCurrency === "$") {
+    displayCurrency = "$";
+  } else {
+    displayCurrency = "BZ$";
+  }
+
+  // 5. Return formatted result
+  return `${displayCurrency}${safe}`;
+}
+
+function formatDisplayAmount(displayCurrency, amount) {
+  // If amount is null, undefined, empty string, or NaN → force 0.00
+  const safeAmount = Number(amount);
+  const finalAmount = isNaN(safeAmount) ? "0.00" : safeAmount.toFixed(2);
+  console.log(displayCurrency);
+  displayCurrency = String(displayCurrency || "$").toUpperCase();
+  console.log(displayCurrency);
+  if (displayCurrency === "USD" || displayCurrency === "$") {
+    displayCurrency = "$";
+  } else {
+    displayCurrency = "BZ$";
+  }
+
+  return currency(finalAmount,displayCurrency);
+}
+
+async function loadEvents() {
+  const eventSelect = document.getElementById("eventSelect");
+  eventSelect.innerHTML = `<option>Loading Events...</option>`;
+
+  try {
+    const snapshot = await db.collection("Events")
+      .orderBy("createdAt", "desc")
+      .get();
+
+    if (snapshot.empty) {
+      eventSelect.innerHTML = `<option>No Events Found</option>`;
+      return;
+    }
+
+    allEvents = snapshot.docs.map(doc => ({
+      id: doc.id,
+      ...doc.data()
+    }));
+
+    // Clear dropdown
+    eventSelect.innerHTML = "";
+
+    // Populate dropdown
+    allEvents.forEach(ev => {
+      const opt = document.createElement("option");
+      opt.value = ev.id;
+      opt.textContent = ev.Title || ev.title || "Untitled Event";
+      eventSelect.appendChild(opt);
+    });
+
+    // ⭐ FIX: Set selected value AFTER options exist
+    if (selectedEvent) {
+      eventSelect.value = selectedEvent.id;
+    } else {
+      selectedEvent = allEvents[0];
+      eventSelect.value = selectedEvent.id;
+    }
+
+  } catch (err) {
+    console.error("Error loading events:", err);
+    eventSelect.innerHTML = `<option>Error Loading Events</option>`;
+  }
+}
+
+async function loadBus() {
+  const busSelect = document.getElementById("busSelect");
+  busSelect.innerHTML = `<option>Loading Businesses...</option>`;
+
+  try {
+    const snapshot = await db.collection("Businesses")
+      .orderBy("createdAt", "desc")
+      .get();
+
+    if (snapshot.empty) {
+      busSelect.innerHTML = `<option>No Businesses Found</option>`;
+      return;
+    }
+
+    allBus = snapshot.docs.map(doc => ({
+      id: doc.id,
+      ...doc.data()
+    }));
+
+    // Clear dropdown
+    busSelect.innerHTML = "";
+
+    // Populate dropdown
+    allBus.forEach(ev => {
+      const opt = document.createElement("option");
+      opt.value = ev.id;
+      opt.textContent = ev.Busname || ev.busname || "Untitled Business";
+      busSelect.appendChild(opt);
+    });
+
+    // ⭐ FIX: Set selected value AFTER options exist
+    if (selectedBus) {
+      busSelect.value = selectedBus.id;
+    } else {
+      selectedBus = allBus[0];
+      busSelect.value = selectedBus.id;
+    }
+
+  } catch (err) {
+    console.error("Error loading businesses:", err);
+    busSelect.innerHTML = `<option>Error Loading Businesses</option>`;
+  }
+}
+
+function applyUserSort(list) {
+  if (userSortMode === "alpha") {
+    return [...list].sort((a, b) =>
+      (a.Email || "").localeCompare(b.Email || "")
+    );
+  }
+
+  if (userSortMode === "created") {
+    return [...list].sort((a, b) => {
+      const aDate = a.createdAt?._seconds || 0;
+      const bDate = b.createdAt?._seconds || 0;
+      return bDate - aDate; // newest first
+    });
+  }
+
+  return list;
+}
+
+// 🔹 LOAD USERS FROM FIRESTORE
+async function loadUsers() {
+  const usersDropdown = document.getElementById("users");
+  usersDropdown.innerHTML = `<option value="">Loading Users...</option>`;
+
+  try {
+    const token = localStorage.getItem("tp_token_v4");
+
+    if (!token) {
+      console.error("❌ No Auth Token Found in LocalStorage!");
+      usersDropdown.innerHTML = `<option value="">Auth Error</option>`;
+      return;
+    }
+
+    const resp = await fetch("https://getallusers-ilx3agka5q-uc.a.run.app", {
+      method: "GET",
+      headers: {
+        "Authorization": `Bearer ${token}`
+      }
+    });
+
+    const data = await resp.json();
+
+    if (!data.success) {
+      throw new Error(data.error || "Unknown error");
+    }
+
+    allUsers = data.users;
+
+    const sorted = applyUserSort(allUsers);
+    renderUsers(sorted);
+
+    if (sorted.length > 0) {
+      const firstEmail = sorted[0].Email || sorted[0].email;
+      usersDropdown.value = firstEmail;
+      loadAllLogs(firstEmail);
+    }
+
+  } catch (err) {
+    console.error("❌ [loadUsers] Failed to load users", err);
+    usersDropdown.innerHTML = `<option value="">Error Loading Users</option>`;
+  }
+}
+
+
+async function loadOrdersForUser(email) {
+  const orderSelect = document.getElementById("orderlogs");
+  orderSelect.innerHTML = `<option>Loading Orders...</option>`;
+
+  try {
+    const token = localStorage.getItem("tp_token_v4");
+
+    if (!token) {
+      console.error("❌ No Auth Token Found in LocalStorage!");
+      orderSelect.innerHTML = `<option>Auth Error</option>`;
+      return;
+    }
+
+    const resp = await fetch(
+      `https://getallorders-ilx3agka5q-uc.a.run.app?email=${encodeURIComponent(email)}`,
+      {
+        method: "GET",
+        headers: {
+          "Authorization": `Bearer ${token}`
+        }
+      }
+    );
+    const data = await resp.json();
+    if (!data.success) {
+      orderSelect.innerHTML = `<option>Error loading orders</option>`;
+      return;
+    }
+
+    const orders = data.orders;
+    allOrders = [];
+    orderSelect.innerHTML = "";
+
+    if (!orders.length) {
+      orderSelect.innerHTML = `<option>No Orders Found</option>`;
+      return;
+    }
+
+    orders.forEach(order => {
+      allOrders.push(order);
+
+      const therest = Number(
+        (
+          (Number(order.ordertotal) || 0) -
+          (Number(order.orderprice) || 0) -
+          (Number(order.ordertip) || 0) -
+          (Number(order.ordertax) || 0) -
+          (Number(order.ordershipping) || 0)
+        ).toFixed(2)
+      );
+
+      const percentage = (
+        ((Number(therest) || 0) / (Number(order.ordertotal) || 1)) * 100
+      ).toFixed(2) + "%";
+
+      const option = document.createElement("option");
+      option.value = order.id;
+      option.textContent =
+        `${order.orderID || order.id} — ${currency(order.ordertotal)} - ` +
+        `${currency(order.orderprice)} / ${currency(order.ordertip)} ` +
+        `($${therest}:::${percentage})`;
+
+      orderSelect.appendChild(option);
+    });
+
+    // Set first order
+    if (allOrders.length > 0) {
+      selectedOrder = allOrders[0];
+      firstOrder = allOrders[0];
+      document.getElementById("orderlogs").value = allOrders[0].id;
+    }
+
+  } catch (err) {
+    console.error("loadOrdersForUser error:", err);
+    orderSelect.innerHTML = `<option>Error loading orders</option>`;
+  }
+}
+
+function renderReadablePayload(data) {
+  if (!data) return "<div>No payload loaded</div>";
+
+  const format = (label, value) => {
+    let display = value ?? "—";
+
+    if (label === "Status") {
+      const color =
+        data.status === "Sent"
+          ? "green"
+          : data.status === "Opened"
+          ? "orange"
+          : "red";
+      display = `<span style="color:${color}; font-weight:600;">${display}</span>`;
+    }
+
+    if (label === "adminUser") {
+  const admin = data.adminUser ?? "—";
+  const userColor =
+    admin === "Aldwyn" ? "red" :
+    admin === "Automate" ? "blue" :
+    "black";
+
+  display = `<span style="color:${userColor}; margin-right:8px;">${display}</span>`;
+}
+
+    return `<div style="margin-bottom:10px; padding-top:2px;"><strong>${label}:</strong> ${display}</div>`;
+  };
+
+  let html = `<div style="font-size:14px; line-height:0.3; color:#333; padding-top:12px;">`;
+
+  // EMAIL INFO
+  html += `<h4>📧 EMAIL INFO</h4>`;
+  html += format("Name", data.userName);
+  html += format("Subject", data.subject);
+  html += format("Email", data.email);
+  html += format("Type", (data.emailType || "").toUpperCase());
+  html += format("Status", data.status);
+  if (data.status === "Failed") html += format("Error", data.error);
+
+  // USER INFO
+  html += `<h4 style="margin-top:10px;">👥 USER INFO</h4>`;
+  html += format("Name", data.userName);
+  html += format("User ID", data.userID);
+  html += format("StripeAccountID", data.stripeAccountID);
+
+  // EVENT DETAILS
+  if ((data.emailType || "").toUpperCase() === "NEWEVENT") {
+    html += `<h4 style="margin-top:10px;">🎉 EVENT</h4>`;
+    html += format("Event Name", data.eventTitle);
+    html += format("Event ID", data.eventID);
+    html += format("Event Summary", clean(data.eventSummary));
+    html += format("Event Description", clean(data.eventDescription));
+    html += format("Event From Date", safeDate(data.Fromdate));
+    html += format("Event To Date", safeDate(data.Todate));
+    html += format("Event From Time", data.Fromtime);
+    html += format("Event To Time", data.Totime);
+    html += format("Event Venue", data.Venue);
+    html += format("Event Language", data.language);
+    html += format("Event Category", data.Category);
+  }
+
+  // BUSINESS DETAILS
+  if ((data.emailType || "").toUpperCase() === "NEWBUSINESS") {
+    html += `<h4 style="margin-top:10px;">🏢 BUSINESS</h4>`;
+    html += format("Business Name", data.businessName);
+    html += format("Business ID", data.businessID);
+    html += format("Business Summary", clean(data.businessSummary));
+    html += format("Business Description", clean(data.businessDescription));
+    html += format("Business Location", data.location);
+    html += format("Business Email", data.businessEmail);
+    html += format("Business User Email", data.userEmail);
+    html += format("Business Date", safeDate(data.date));
+  }
+
+  // PULSEPOINT REDEMPTION
+  if ((data.emailType || "").toUpperCase() === "PULSEPOINTREDEMPTION") {
+    html += `<h4 style="margin-top:10px;">📦 DELIVERY</h4>`;
+    html += format("Deliverer Email", data.delivererEmail);
+
+    html += `<h4 style="margin-top:10px;">🎁 LOYALTY</h4>`;
+    html += format("Pulse Points", data.points);
+    html += format("Added Wallet Balance", currency(Number(data.points) / 100));
+  }
+
+  // PULSEPOINTSGIFTED / SENDPAYOUT
+  if (
+    (data.emailType || "").toUpperCase() === "PULSEPOINTSGIFTED" ||
+    (data.emailType || "").toUpperCase() === "SENDPAYOUT"
+  ) {
+    html += `<h4 style="margin-top:10px;">📦 DELIVERY</h4>`;
+    html += format("Order ID", data.orderID);
+    html += format("Payout Amount", currency(data.payoutAmount));
+    html += format("Deliverer Email", data.email);
+    html += format("Total Price", currency(data.totalPrice));
+    html += format("Order Price", currency(data.itemPrice));
+    html += format("Tip", currency(data.tipAmount));
+    html += format("Tax", currency(data.taxAmount));
+    html += format("Shipping", currency(data.shipping));
+
+    html += `<h4 style="margin-top:10px;">🎁 LOYALTY</h4>`;
+    html += format("Pulse Points", data.points);
+    html += format("Added Wallet Balance", currency(data.payoutAmount));
+  }
+
+  // TIMESTAMPS
+  html += `<h4 style="margin-top:10px;">⏱️ TIMESTAMPS</h4>`;
+  html += format("Created At", formatDate(data.createdAt));
+  html += format("Timestamp", formatDate(data.timestamp));
+  html += format("Updated At", formatDate(data.updatedAt));
+  html += format("Sent At", formatDate(data.sentAt));
+  html += format("Opened At", formatDate(data.openedAt));
+  html += format("Failed At", formatDate(data.failedAt));
+
+  // BALANCES
+  if (
+    (data.emailType || "").toUpperCase() === "SENDPAYOUT" ||
+    (data.emailType || "").toUpperCase() === "PULSEPOINTREDEMPTION"
+  ) {
+    html += `<h4 style="margin-top:10px;">💰 BALANCES</h4>`;
+    html += format("Pending Bank Deposits", currency(data.pendingBalance));
+    html += format("Available Balance", currency(data.availableBalance));
+    html += format("Display Currency", data.displayCurrency.toUpperCase());
+    html += format("Display Amount", currency(data.displayAmount));
+    html += format("Transfer Currency", data.transferCurrency.toUpperCase());
+  }
+    html += `<h4 style="margin-top:10px;">⚡ TRIGGERS</h4>`;
+    html += format("Trigger Source", data.triggerSource);
+    html += format("Triggered By", data.triggeredBy);
+    html += format("Admin User", data.adminUser);
+
+  html += `</div>`;
+  return html;
+}
+
+function renderJsonPayload(data) {
+  return `<pre style="font-size:12px; background:#f4f4f4; margin:0; padding:0px; border-radius:6px;">
+${JSON.stringify(data, null, 2)}</pre>`;
+}
+
+function safeDate(value) {
+  if (!value) return null;
+
+  // Firestore Timestamp object
+  if (typeof value.toDate === "function") {
+    try { return value.toDate().toISOString(); }
+    catch { return null; }
+  }
+
+  // Firestore raw timestamp object: { seconds, nanoseconds }
+  if (typeof value === "object" && ("seconds" in value || "_seconds" in value)) {
+    const sec = value.seconds ?? value._seconds;
+    try { return new Date(sec * 1000).toISOString(); }
+    catch { return null; }
+  }
+
+  // ISO string or JS Date
+  try {
+    const d = new Date(value);
+    if (!isNaN(d.getTime())) return d.toISOString();
+  } catch {}
+
+  return null;
+}
+
+
+function renderLogs() {
+  const selectedUser = document.getElementById("users")?.value.toLowerCase();
+  const typeFilter = document.getElementById("filter-type")?.value;
+
+  const container = document.getElementById("log-list");
+  container.innerHTML = "";
+
+  const filtered = allLogs.filter(log => {
+    const matchesUser =
+      selectedUser === "" ||
+      (log.to || "").toLowerCase() === selectedUser;
+
+    const matchesType =
+      typeFilter === "" ||
+      (log.type || "") === typeFilter;
+
+    return matchesUser && matchesType;
+  });
+
+  filtered.forEach(log => {
+    const statusColor =
+      log.status === "Sent" ? "green" :
+      log.status === "Opened" ? "orange" : "red";
+
+    const admin = log.payload?.adminUser ?? log.adminUser ?? "—";
+
+    const userColor =
+      admin === "Aldwyn" ? "red" :
+      admin === "Automate" ? "blue" :
+      "black";
+
+    const payloadForView = {
+  "========📧 EMAIL INFO ========": "",
+  logId: log.logId,
+  subject: log.subject,
+  email: log.to,
+  emailType: log.type,
+  status: log.status,
+  error: log.payload?.error ?? "—",
+
+  "========👥 USER INFO ========": "",
+  userName: log.name ?? log.payload?.name ?? "—",
+  userID: log.userID ?? log.payload?.userID ?? "—",
+  stripeAccountID: log.stripeAccountID ?? log.payload?.stripeAccountID ?? "—",
+
+  "=======🎉 EVENT DETAILS =======": "",
+  eventTitle: log.type === "newEvent" ? log.payload?.title ?? "—" : "—",
+  eventID: log.type === "newEvent" ? log.payload?.eventID ?? "—" : "—",
+  eventSummary: log.type === "newEvent" ? log.payload?.summary ?? "—" : "—",
+  eventDescription: log.type === "newEvent" ? log.payload?.description ?? "—" : "—",
+  eventFromDate: log.type === "newEvent" ? log.payload?.Fromdate ?? "—" : "—",
+  eventToDate: log.type === "newEvent" ? log.payload?.Todate ?? "—" : "—",
+  eventFromTime: log.type === "newEvent" ? log.payload?.Fromtime ?? "—" : "—",
+  eventToTime: log.type === "newEvent" ? log.payload?.Totime ?? "—" : "—",
+  eventVenue: log.type === "newEvent" ? log.payload?.Venue ?? "—" : "—",
+  eventLanguage: log.type === "newEvent" ? log.payload?.language ?? "—" : "—",
+  eventCategory: log.type === "newEvent" ? log.payload?.Category ?? "—" : "—",
+  eventImages: log.type === "newEvent" ? log.payload?.Url ?? "—" : "—",
+
+  "======🏢 BUSINESS DETAILS ======": "",
+  businessName: log.type === "newBusiness" ? log.payload?.busname ?? "—" : "—",
+  businessID: log.type === "newBusiness" ? log.payload?.busID ?? "—" : "—",
+  businessSummary: log.type === "newBusiness" ? log.payload?.summary ?? "—" : "—",
+  businessDescription: log.type === "newBusiness" ? log.payload?.description ?? "—" : "—",
+  location: log.type === "newBusiness" ? log.payload?.location ?? "—" : "—",
+  businessEmail: log.type === "newBusiness" ? log.payload?.busemail ?? "—" : "—",
+  userEmail: log.type === "newBusiness" ? (log.payload?.useremail ?? log.payload?.email ?? "—") : "—",
+  businessDate: log.type === "newBusiness" ? safeDate(log.payload?.date) ?? "—" : "—",
+
+  "========🎁 LOYALTY ========": "",
+  points: log.payload?.points ?? "—",
+  addedwalletbalance: (log.type === "pulsePointsGifted" || log.type === "sendPayout" || log.type === "pulsePointRedemption") ? log.payload?.payoutAmount : (Number.isFinite(Number(log.payload?.tipAmount)) ? Number.isFinite(Number(log.payload?.points) / 100) : "—"),
+
+  "========📦 DELIVERY ========": "",
+  payoutAmount: log.payload?.payoutAmount ?? "—",
+  orderID: (log.type === "pulsePointsGifted" || log.type === "sendPayout") ? log.payload?.orderID : log.payload?.orderId ?? "—",
+  delivererEmail: (log.type === "pulsePointsGifted" || log.type === "sendPayout") ? log.to : log.payload?.delivererEmail ?? "—",
+  totalPrice: (log.type === "pulsePointsGifted" || log.type === "sendPayout") ? log.payload?.totalPrice : log.payload?.ordertotal ?? "—",
+  itemPrice: (log.type === "pulsePointsGifted" || log.type === "sendPayout") ? log.payload?.itemPrice : log.payload?.orderprice ?? "—",
+  tipAmount: (log.type === "pulsePointsGifted" || log.type === "sendPayout") ? log.payload?.tipAmount : log.payload?.ordertip ?? "—",
+  taxAmount: (log.type === "pulsePointsGifted" || log.type === "sendPayout") ? log.payload?.taxAmount : log.payload?.ordertax ?? "—",
+  shipping: (log.type === "pulsePointsGifted" || log.type === "sendPayout") ? log.payload?.shipping : log.payload?.ordershipping ?? "—",
+
+  "========⏱️ TIMESTAMPS ========": "",
+  createdAt: safeDate(log.payload?.createdAt) 
+        ?? safeDate(log.createdAt) 
+        ?? "—",
+  timestamp: safeDate(log.timestamp) ?? "—",
+  updatedAt: safeDate(log.updatedAt) ?? "—",
+  sentAt: safeDate(log.sentAt) ?? "—",
+  failedAt: safeDate(log.failedAt) ?? "—",
+  openedAt: safeDate(log.openedAt) ?? "—",
+
+  "========💰 BALANCES ========": "",
+  pendingBalance: log.payload?.pendingBalance ?? "—",
+  availableBalance: log.payload?.availableBalance ?? "—",
+  displayCurrency: log.payload?.displayCurrency ?? "—",
+  displayAmount: log.payload?.displayAmount ?? "—",
+  transferCurrency: log.payload?.transferCurrency ?? "—",
+
+  "========⚡ TRIGGERS ========": "",
+  triggerSource: log.payload?.triggerSource ?? log.triggerSource ?? "—",
+  triggeredBy: log.payload?.triggeredBy ?? log.triggeredBy ?? "—",
+  adminUser: log.adminUser ?? log.payload?.adminUser ?? "—",
+
+};
+
+    container.innerHTML += `
+      <div style="padding:12px; border-bottom:1px solid #eee;">
+        <div style="display:flex; justify-content:space-between; align-items:center;">
+          <div>
+            <strong>${(log.type || "").toUpperCase()}</strong> → ${log.to}<br>
+            <small>${safeDate(log.payload?.createdAt) ?? safeDate(log.createdAt) ?? safeDate(log.timestamp) ?? "—"}</small><br>
+            <div style="display:flex; justify-content:space-between; width:100%;">
+              <span style="color:${statusColor}; font-weight:600;">${log.status}</span>
+              <span style="color:${userColor}; margin-right:8px;">${log?.adminUser || log.payload?.adminUser || ""}</span>
+            </div>
+          </div>
+
+          <button
+            class="view-btn"
+            data-id="${log.id}"
+            data-payload='${JSON.stringify(payloadForView)}'
+            style="padding:6px 10px; border-radius:6px; background:#008f5c; color:white; border:none;">
+            View
+          </button>
+        </div>
+      </div>
+    `;
+  });
+}
+
+document.getElementById("orderlogs").addEventListener("change", async (e) => {
+  const selectedId = e.target.value;
+  if (!selectedId) return;
+
+
+  selectedOrder = allOrders.find(o => o.id === selectedId);
+
+  console.log("Selected order:", selectedOrder);
+
+});
+
+let isJsonView = false;
+let currentPayload = null;
+
+document.getElementById("toggle-view-btn").addEventListener("click", () => {
+  if (!currentPayload) return;
+
+  isJsonView = !isJsonView;
+
+  document.getElementById("toggle-view-btn").textContent =
+    isJsonView ? "Readable View" : "JSON View";
+
+  document.getElementById("payloadPreview").innerHTML =
+    isJsonView
+      ? renderJsonPayload(currentPayload)
+      : renderReadablePayload(currentPayload);
+});
+
+document.getElementById("eventSelect").addEventListener("change", (e) => {
+  const selectedId = e.target.value;
+  selectedEvent = allEvents.find(ev => ev.id === selectedId);
+
+  console.log("Selected event:", selectedEvent);
+});
+
+document.getElementById("busSelect").addEventListener("change", (e) => {
+  const selectedId = e.target.value;
+  selectedBus = allBus.find(ev => ev.id === selectedId);
+
+  console.log("Selected business:", selectedBus);
+});
+
+document.addEventListener("click", async (e) => {
+  if (!e.target.classList.contains("view-btn")) return;
+
+  const btn = e.target;
+
+  // 1️⃣ Load payload from data attribute
+  currentPayload = parsePayload(btn.dataset.payload);
+
+  // 2️⃣ Reset to readable mode
+  isJsonView = false;
+  document.getElementById("toggle-view-btn").style.display = "block";
+  document.getElementById("toggle-view-btn").textContent = "JSON View";
+  document.getElementById("payloadPreview").innerHTML =
+    renderReadablePayload(currentPayload);
+
+  // 3️⃣ Handle Failed / Pending (no HTML preview)
+  if (currentPayload.status === "Failed" || currentPayload.status === "Pending") {
+    document.getElementById("htmlPreviewWrapper").style.display = "none";
+    document.getElementById("htmlPreview").srcdoc = "";
+    document.getElementById("htmlPreview").style.display = "none";
+    document.getElementById("modal-bg").style.display = "flex";
+    return;
+  }
+
+  // 4️⃣ Fetch HTML from Firestore using log ID
+  const logId = btn.dataset.id;
+  let htmlToShow = "";
+
+  try {
+    const resp = await fetch(`https://getloghtml-ilx3agka5q-uc.a.run.app?logId=${encodeURIComponent(logId)}`);
+    const data = await resp.json();
+    htmlToShow = data.html || getEmailHTML(currentPayload.emailType, currentPayload);
+    
+  } catch (err) {
+    console.error("Error loading HTML from EmailLogs:", err);
+    htmlToShow = getEmailHTML(currentPayload.emailType, currentPayload);
+  }
+
+  // 5️⃣ Show modal + HTML preview in iframe
+  document.getElementById("modal-bg").style.display = "flex";
+  document.getElementById("htmlPreviewWrapper").style.display = "block";
+  document.getElementById("htmlPreview").srcdoc = htmlToShow;
+  document.getElementById("htmlPreview").style.display = "block";
+});
+
+document.getElementById("type").addEventListener("change", () => {
+  const type = document.getElementById("type").value;
+  const email = document.getElementById("users").value;
+
+  document.getElementById("events").style.display = "none";
+  document.getElementById("orders").style.display = "none";
+  document.getElementById("bus").style.display = "none";
+
+  if (type === "newEvent") {
+    loadEvents();
+    document.getElementById("events").style.display = "block";
+  }
+
+  if (type === "newBusiness") {
+    loadBus();
+    document.getElementById("bus").style.display = "block";
+  }
+
+  if ((type === "pulsePointsGifted" || type === "sendPayout") && email) {
+    loadOrdersForUser(email);
+    document.getElementById("orders").style.display = "block";
+  }
+});
+
+const sortBtn = document.getElementById("sortUsersBtn");
+
+sortBtn.addEventListener("click", () => {
+  if (!allUsers || allUsers.length === 0) {
+    console.log("⏳ Users not loaded yet — ignoring sort click");
+    return;
+  }
+
+  const select = document.getElementById("users");
+  const previouslySelected = select.value;
+
+  // toggle sort mode
+  if (userSortMode === "alpha") {
+    userSortMode = "created";
+    sortBtn.textContent = "🕒";
+  } else {
+    userSortMode = "alpha";
+    sortBtn.textContent = "A→Z";
+  }
+
+  const sorted = applyUserSort(allUsers);
+  renderUsers(sorted);
+
+  // 1️⃣ Restore previous selection if valid
+  if (
+    previouslySelected &&
+    sorted.some(u => (u.Email || u.email) === previouslySelected)
+  ) {
+    select.value = previouslySelected;
+  }
+
+  // 2️⃣ If still nothing selected, auto-select first user
+  if (!select.value && sorted.length > 0) {
+    const firstEmail = sorted[0].Email || sorted[0].email;
+    select.value = firstEmail;
+  }
+
+  // 3️⃣ Load logs for whichever user is now selected
+  if (select.value) {
+    loadAllLogs(select.value);
+  }
+});
+
+document.getElementById("users").addEventListener("change", async () => {
+  const email = document.getElementById("users").value;
+  const type = document.getElementById("type").value;
+
+  if (!email) return;
+
+  if (type === "pulsePointsGifted" || type === "sendPayout") {
+    await loadOrdersForUser(email);
+  }
+
+  await loadAllLogs(email);   // <-- THIS IS NOW CORRECT
+});
+
+document.getElementById("filter-type").addEventListener("change", () => { 
+    renderLogs();
+});
+
+// 🔹 RENDER USERS INTO DROPDOWN
+function renderUsers(list) {
+  const select = document.getElementById("users");
+  if (!select) return;
+
+  select.innerHTML = "";
+
+  if (!list || list.length === 0) {
+    select.innerHTML = `<option>No users found</option>`;
+    return;
+  }
+
+  list.forEach(u => {
+    const email = u.Email || u.email;
+    const opt = document.createElement("option");
+    opt.value = email;
+    opt.textContent = email;
+    select.appendChild(opt);
+  });
+
+  // Only update logs when the user manually changes selection
+  select.onchange = () => {
+    selectedUser = select.value;
+    loadAllLogs(selectedUser);
+  };
+}
+
+function parsePayload(raw) {
+  try {
+    return JSON.parse(raw);
+  } catch (e) {
+    console.error("Payload JSON parse failed:", e, raw);
+    return {};
+  }
+}
+
+
+function isValidEmail(email) {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+}
+
+function filterUsers() {
+  const q = document.getElementById("search")?.value.trim().toLowerCase();
+  if (!Array.isArray(allUsers) || allUsers.length === 0) return;
+
+  if (isValidEmail(q)) {
+    const dropdown = document.getElementById("users");
+    dropdown.innerHTML = `
+      <option value="">Select User</option>
+      <option value="${q}" selected>${q} (manual)</option>
+    `;
+    return;
+  }
+
+  const filtered = allUsers.filter(u =>
+    (u.Email || u.email || "").toLowerCase().includes(q)
+  );
+
+  renderUsers(filtered);
+}
+
+function clean(str) {
+  if (!str) return "—";
+  return String(str)
+    .replace(/\\/g, "\\\\")   // escape backslashes FIRST
+    .replace(/\n/g, " ")      // remove newlines
+    .replace(/\r/g, " ")      // remove carriage returns
+    .replace(/"/g, '\\"')     // escape double quotes
+    .replace(/'/g, "\\'")     // escape apostrophes
+    .trim();
+}
+
+
+
+function onTypeChange() {
+      document.getElementById("pulse").style.display = "none";
+      document.getElementById("orders").style.display = "none";
+      document.getElementById("events").style.display = "none";
+      document.getElementById("bus").style.display = "none";
+      const type = document.getElementById("type")?.value;
+      const status = document.getElementById("status");
+      status.textContent = "";
+      status.style.color = "";
+      
+      if (type === "pulsePointRedemption") document.getElementById("pulse").style.display = "block";
+      if (type === "pulsePointsGifted" || type === "sendPayout") {
+         showOrders();
+         document.getElementById("orders").style.display = "block";
+        }
+      if (type === "newBusiness") {
+         document.getElementById("bus").style.display = "block";
+        }
+        if (type === "newEvent") {
+         document.getElementById("events").style.display = "block";
+        }
+    }
+function renderJsonPayload(obj) {
+  return `<pre style="white-space: pre-wrap; font-size:14px;">${escapeHtml(
+    JSON.stringify(obj, null, 2)
+  )}</pre>`;
+}
+
+
+function escapeHtml(str) {
+  return str
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;");
+}
+
+function showMessage(text, type = "error") {
+    const msg = document.getElementById("msg");
+    msg.textContent = text;
+    msg.className = "msg " + type;
+    msg.style.display = "block";
+
+    // ⭐ Add the pulse animation right here
+    msg.classList.add("show");
+    setTimeout(() => msg.classList.remove("show"), 300);
+
+    // ⭐ Smooth scroll to the message
+    msg.scrollIntoView({ behavior: "smooth", block: "center" });
+
+    // Auto-hide after 4 seconds (optional)
+    setTimeout(() => {
+      msg.style.display = "none";
+    }, 4000);
+  }
+
+function buildPayload(existing = {}) {
+  const email = document.getElementById("users")?.value.trim();
+  const type = document.getElementById("type")?.value;
+  const sendBtn = document.getElementById("sendEmailBtn");
+
+  // -----------------------------
+  // Helpers
+  // -----------------------------
+  const resetBtn = () => {
+    if (!sendBtn) return;
+    sendBtn.disabled = false;
+    sendBtn.classList.remove("loading");
+    sendBtn.innerHTML = "Send Email";
+    sendBtn.textContent = "Send Email";
+  };
+
+  const fail = (msg) => {
+    showMessage(msg, "error");
+    resetBtn();
+    return null;
+  };
+
+  const validateEmail = () => {
+  if (!email || !email.includes("@")) {
+    return fail("Please select a valid user!");
+  }
+  return true;
+};
+
+  // -----------------------------
+  // Base payload
+  // -----------------------------
+  const payload = {
+    ...existing,
+    email,
+    emailType: type,
+  };
+  if (!payload) return; 
+  // -----------------------------
+  // Type: sendPayout
+  // -----------------------------
+  if (type === "sendPayout") {
+    
+    if (validateEmail() === null) return null;
+    payload.orderID = document.getElementById("orderlogs")?.value || null;
+    payload.delivererEmail = email;
+
+    const orderPrice = Number(payload.itemPrice ?? payload.orderprice) || 0;
+    const orderTip = Number(payload.tipAmount ?? payload.ordertip) || 0;
+    
+
+    payload.payoutAmount = Number(orderTip.toFixed(2));
+
+    if (!payload.orderID || typeof payload.orderID !== "string") {
+      return fail("Order ID is required!");
+    }
+
+    if (isNaN(payload.payoutAmount)) {
+      return fail("Payout amount must be a number!");
+    }
+  }
+
+  // -----------------------------
+  // Type: pulsePointsGifted
+  // -----------------------------
+  if (type === "pulsePointsGifted") {
+    validateEmail();
+    if (validateEmail() === null) return null;
+    payload.delivererEmail = email;
+  }
+
+  // -----------------------------
+  // Type: pulsePointRedemption
+  // -----------------------------
+  if (type === "pulsePointRedemption") {
+    validateEmail();
+    if (validateEmail() === null) return null;
+    payload.points = document.getElementById("points")?.value;
+
+    if (!payload.points || isNaN(Number(payload.points))) {
+      return fail("Pulse Points must be a number!");
+    }
+  }
+
+  return payload;
+}
+
+const emailTemplates = {
+newUser: {
+  subject: (payload) => "Welcome to Tropic Pulse!",
+  html: (payload) => {
+	const { email, logId } = payload;
+    const trackingPixel =
+      logId && logId !== "Preview Mode"
+        ? `<img src="https://tropicpulse.bz/emailopen?logId=${encodeURIComponent(
+            logId
+          )}" width="1" height="1" alt="" style="display:block; opacity:0;">`
+        : "";
+
+    return `<!DOCTYPE html>
+<html>
+  <body style="margin:0; padding:0; background-color:#f4f4f4; font-family:Arial, sans-serif;">
+    <table width="100%" border="0" cellspacing="0" cellpadding="0" 
+           style="background-color:#f4f4f4; padding:40px 0;">
+      <tr>
+        <td align="center" style="background-color:#f4f4f4;">
+
+          <!-- Main Card -->
+          <table width="600" border="0" cellspacing="0" cellpadding="0" 
+                 style="background:#ffffff; border-radius:14px; overflow:hidden;">
+
+            <!-- BIG HEADER IMAGE -->
+            <tr>
+              <td>
+                <img src="https://tropicpulse.bz/Welcome.png?v4"
+                     alt="Tropic Pulse Header"
+                     width="600"
+                     style="display:block; width:100%; max-width:600px;">
+              </td>
+            </tr>
+
+            <!-- Inner Padding -->
+            <tr>
+              <td style="padding:30px;">
+
+                <!-- Welcome Title -->
+                <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                  <tr>
+                    <td align="center" 
+                        style="font-size:28px; font-weight:bold; color:#222;">
+                      Welcome to Tropic Pulse!
+                    </td>
+                  </tr>
+
+                  <tr>
+                    <td align="center" 
+                        style="font-size:16px; color:#666; padding-top:8px;">
+                      Your account has been successfully created!
+                    </td>
+                  </tr>
+
+                  <!-- Toucan Image -->
+                  <tr>
+                    <td align="center" style="padding:25px 0;">
+                      <img src="https://tropicpulse.bz/ToucanLogo-Mini.png?v4"
+                           alt="Tropic Pulse Toucan"
+                           width="180"
+                           style="display:block; border-radius:12px;">
+                    </td>
+                  </tr>
+
+                  <!-- Message -->
+                  <tr>
+                    <td align="center" 
+                        style="font-size:18px; color:#555; padding:25px 20px 10px 20px; line-height:24px;">
+                      You’re all set! Your Tropic Pulse account is ready to use.  
+                      If you plan to accept payments for Tropic Pulse services,  
+                      please check your email for important setup instructions.
+                    </td>
+                  </tr>
+
+                  <!-- Social Media Section -->
+                  <tr>
+                    <td align="center" style="padding-top:20px;">
+                      <div style="font-size:14px; color:#555; margin-bottom:10px;">
+                        Enjoy these moments! Share your successes with Tropic Pulse on social media.
+                      </div>
+                      <a href="https://linktr.ee/tropicpulse" target="_blank">
+                        <img src="https://tropicpulse.bz/SocialMedia.png?v4"
+                             alt="Social Media Icons"
+                             width="180"
+                             style="display:block; margin:auto;">
+                      </a>
+                    </td>
+                  </tr>
+
+                </table>
+              </td>
+            </tr>
+
+          </table>
+
+          ${trackingPixel}
+
+        </td>
+      </tr>
+    </table>
+  </body>
+</html>`;
+}
+},
+
+  loyalty: {
+    subject: (payload) => "Tropic Pulse: My Pulse Loyalty Enrollment Setup!",
+    html: (payload) => {
+	const { name, email, logId } = payload;
+    const trackingPixel =
+      logId && logId !== "Preview Mode"
+        ? `<img src="https://tropicpulse.bz/emailopen?logId=${encodeURIComponent(
+            logId
+          )}" width="1" height="1" alt="" style="opacity:0; width:1px; height:1px;">`
+        : "";
+
+    return `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>My Pulse Loyalty Enrollment Setup</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      background-color: #f3f5f7;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      color: #1f2933;
+    }
+    .wrapper {
+      width: 100%;
+      background-color: #f3f5f7;
+      padding: 24px 0;
+    }
+    .container {
+      max-width: 600px;
+      margin: 0 auto;
+      background-color: #ffffff;
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: 0 10px 30px rgba(15, 23, 42, 0.12);
+    }
+    .header {
+      background: linear-gradient(135deg, #00c2a8, #00a0ff);
+      padding: 24px 24px 20px;
+      text-align: left;
+      color: #ffffff;
+    }
+    .logo-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .logo-circle {
+      width: 70px;
+      height: 70px;
+      border-radius: 999px;
+      background: none !important;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 22px;
+    }
+    .brand-text {
+      font-size: 18px;
+      font-weight: 600;
+      letter-spacing: 0.03em;
+    }
+    .tagline {
+      font-size: 12px;
+      opacity: 0.9;
+    }
+    .header-title {
+      margin-top: 18px;
+      font-size: 22px;
+      font-weight: 700;
+    }
+    .header-subtitle {
+      margin-top: 6px;
+      font-size: 14px;
+      opacity: 0.95;
+    }
+    .content {
+      padding: 24px 24px 8px;
+      font-size: 14px;
+      line-height: 1.6;
+    }
+    .content h2 {
+      font-size: 20px;
+      margin: 0 0 12px;
+      color: #111827;
+    }
+    .pill {
+      display: inline-block;
+      padding: 4px 10px;
+      border-radius: 999px;
+      background-color: #ecfdf5;
+      color: #047857;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      margin-bottom: 10px;
+    }
+    .highlight-box {
+      margin: 16px 0;
+      padding: 12px 14px;
+      border-radius: 12px;
+      background-color: #f9fafb;
+      border: 1px solid #e5e7eb;
+    }
+    .highlight-label {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: #6b7280;
+      margin-bottom: 4px;
+    }
+    .highlight-value {
+      font-size: 13px;
+      font-weight: 600;
+      color: #111827;
+    }
+    .button-row {
+      margin: 22px 0 10px;
+      text-align: left;
+    }
+    .primary-button {
+      display: inline-block;
+      padding: 10px 18px;
+      border-radius: 999px;
+      background: linear-gradient(135deg, #00c2a8, #00a0ff);
+      color: #ffffff !important;
+      font-size: 13px;
+      font-weight: 600;
+      text-decoration: none;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+    .secondary-note {
+      font-size: 12px;
+      color: #6b7280;
+      margin-top: 8px;
+    }
+    .list-title {
+      margin-top: 18px;
+      font-size: 13px;
+      font-weight: 600;
+      color: #111827;
+    }
+    .list {
+      margin: 8px 0 0;
+      padding-left: 18px;
+      font-size: 13px;
+      color: #4b5563;
+    }
+    .footer {
+      padding: 14px 24px 20px;
+      font-size: 11px;
+      color: #9ca3af;
+      text-align: left;
+      border-top: 1px solid #e5e7eb;
+      background-color: #f9fafb;
+    }
+    .footer strong {
+      color: #4b5563;
+    }
+    .footer-links {
+      margin-top: 6px;
+    }
+    .footer-links span {
+      margin-right: 10px;
+    }
+    @media (max-width: 600px) {
+      .container {
+        border-radius: 0;
+      }
+      .header, .content, .footer {
+        padding-left: 18px;
+        padding-right: 18px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrapper">
+    <div class="container">
+      <div class="header">
+        <div class="logo-row">
+          <div style="text-align:center; width:100%;">
+            <div style="display:inline-block; text-align:center;">
+              <div class="logo-circle" style="margin:0 auto 10px auto;">
+                <img 
+                  src="https://tropicpulse.bz/ToucanLogo-Mini.png?v4"
+                  alt="Tropic Pulse Toucan"
+                  width="60"
+                  style="display:block; border-radius:50%;">
+              </div>
+              <div>
+                <div class="brand-text">TROPIC PULSE</div>
+                <div class="tagline">Enjoy these moments.</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div style="text-align:center; width:100%;">
+          <div class="header-title" style="display:inline-block; text-align:center;">My Pulse Loyalty Enrollment</div>
+          <div class="header-subtitle" style="display:inline-block; text-align:center;">
+            Your rewards journey is ready—just complete your enrollment in the app.
+          </div>
+        </div>
+      </div>
+
+      <div class="content">
+        <div style="text-align:center; width:100%;">
+          <span class="pill">My Pulse Loyalty</span>
+          <h2>Your Pulse Loyalty Enrollment</h2>
+        </div>
+
+        <p>Hi ${name || "there"},</p>
+
+        <p>
+          Your <strong>Pulse Loyalty</strong> setup is ready. Open the
+          <strong>Tropic Pulse</strong> app and complete your enrollment in
+          <strong>My Pulse Loyalty</strong> to start earning rewards on every eligible order and delivery.
+        </p>
+
+        <div class="highlight-box">
+          <div class="highlight-label">Account email</div>
+          <div class="highlight-value">${email || "N/A"}</div>
+        </div>
+
+        <div class="button-row">
+          <div class="thebutton" style="text-align:center;">
+            <a class="primary-button" href="https://linktr.ee/tropicpulse">
+              Open Tropic Pulse App
+            </a>
+          </div>
+          <div class="secondary-note">
+            If the button doesn’t work, just open the Tropic Pulse app on your device and look for
+            <strong>My Pulse Loyalty</strong> in the menu.
+          </div>
+        </div>
+
+        <div class="list-title">Once you complete enrollment, you can:</div>
+        <ul class="list">
+          <li>Earn rewards automatically on eligible orders and deliveries</li>
+          <li>View your Pulse Loyalty Member Card in the app</li>
+          <li>Track your progress toward future perks and offers</li>
+        </ul>
+
+        <p style="margin-top: 18px;">
+          If you didn’t request this or believe this email was sent in error, you can safely ignore it—your account
+          will remain unchanged.
+        </p>
+
+        <p style="margin-top: 18px;">
+          Welcome to the island’s most rewarding experience.
+        </p>
+
+        <p>
+          <strong>Tropic Pulse</strong><br/>
+          Enjoy these moments.
+        </p>
+      </div>
+
+      <div class="footer">
+        <div><strong>Tropic Pulse</strong> — San Pedro, Ambergris Caye</div>
+        <div class="footer-links">
+          <span>App: Tropic Pulse</span>
+          <span>Category: My Pulse Loyalty</span>
+        </div>
+        <div style="margin-top: 6px;">
+          You’re receiving this email because a Pulse Loyalty enrollment was started using this address.
+        </div>
+      </div>
+    </div>
+
+    ${trackingPixel}
+  </div>
+</body>
+</html>`;
+}
+},
+
+  sendPayout: {
+    subject: (payload) => {
+	const { orderID, delivererEmail } = payload;
+return `Tropic Pulse: Payout for your Delivery: ${orderID}`;
+},
+    html: (payload) => {
+	  const {payoutAmount, stripeAccountID, orderID, delivererEmail, pendingBalance, availableBalance,  displayCurrency, transferCurrency, displayAmount, logId } = payload;
+    let formatted = displayAmount || payoutAmount;
+    
+    const payoutAmountFormatted = formatDisplayAmount(displayCurrency,formatted);
+    const formattedavailable = formatDisplayAmount(displayCurrency,availableBalance);
+    const formattedpending = formatDisplayAmount(displayCurrency,pendingBalance);
+    const trackingPixel =
+    logId && logId !== "Preview Mode"
+      ? `<img src="https://tropicpulse.bz/emailopen?logId=${encodeURIComponent(logId)}" width="32" height="32" style="opacity:0;">`
+      : "";
+return `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Your Payout Has Been Sent</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      background-color: #f3f5f7;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      color: #1f2933;
+    }
+    .wrapper {
+      width: 100%;
+      background-color: #f3f5f7;
+      padding: 24px 0;
+    }
+    .container {
+      max-width: 600px;
+      margin: 0 auto;
+      background-color: #ffffff;
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: 0 10px 30px rgba(15, 23, 42, 0.12);
+    }
+    .header {
+      background: linear-gradient(135deg, #00c2a8, #00a0ff);
+      padding: 24px 24px 20px;
+      text-align: center;
+      color: #ffffff;
+    }
+    .brand-text {
+      font-size: 18px;
+      font-weight: 600;
+      letter-spacing: 0.03em;
+    }
+    .tagline {
+      font-size: 12px;
+      opacity: 0.9;
+    }
+    .header-title {
+      margin-top: 18px;
+      font-size: 22px;
+      font-weight: 700;
+    }
+    .header-subtitle {
+      margin-top: 6px;
+      font-size: 14px;
+      opacity: 0.95;
+    }
+    .content {
+      padding: 24px 24px 8px;
+      font-size: 14px;
+      line-height: 1.6;
+    }
+    .highlight-box {
+      margin: 16px 0;
+      padding: 12px 14px;
+      border-radius: 12px;
+      background-color: #f9fafb;
+      border: 1px solid #e5e7eb;
+    }
+    .highlight-label {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: #6b7280;
+      margin-bottom: 4px;
+    }
+    .highlight-value {
+      font-size: 13px;
+      font-weight: 600;
+      color: #111827;
+    }
+    .footer {
+      padding: 14px 24px 20px;
+      font-size: 11px;
+      color: #9ca3af;
+      text-align: left;
+      border-top: 1px solid #e5e7eb;
+      background-color: #f9fafb;
+    }
+    .footer strong {
+      color: #4b5563;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="wrapper">
+    <div class="container">
+
+      <!-- HEADER -->
+      <div class="header">
+
+        <!-- Logo -->
+        <img 
+          src="https://tropicpulse.bz/ToucanLogo-Mini.png?v4"
+          alt="Tropic Pulse Logo"
+          width="70"
+          height="70"
+          style="display:block; margin:0 auto 14px auto; border-radius:50%; object-fit:cover;"
+        >
+
+        <div class="brand-text">TROPIC PULSE</div>
+        <div class="tagline">Enjoy these moments.</div>
+
+        <div class="header-title">Your Payout Has Been Sent!</div>
+        <div class="header-subtitle">
+          Your earnings have been transferred to your Stripe balance.
+        </div>
+      </div>
+
+      <!-- CONTENT -->
+      <div class="content">
+
+        <!-- DETAILS -->
+        <div class="highlight-box">
+          <div class="highlight-label">Order ID</div>
+          <div class="highlight-value">${orderID}</div>
+        </div>
+
+        <div class="highlight-box">
+          <div class="highlight-label">Deliverer Email</div>
+          <div class="highlight-value">${delivererEmail}</div>
+        </div>
+
+        <div class="highlight-box">
+          <div class="highlight-label">Payout Amount</div>
+          <div class="highlight-value" style="font-size:20px; font-weight:700;">
+            ${payoutAmountFormatted}
+          </div>
+        </div>
+
+        <div class="highlight-box">
+          <div class="highlight-label">Current Wallet Balance</div>
+          <div class="highlight-value">${formattedavailable}</div>
+        </div>
+
+        <div class="highlight-box">
+          <div class="highlight-label">Pending Payments to Bank</div>
+          <div class="highlight-value" style="color:green;">
+            ${formattedpending}
+          </div>
+        </div>
+
+        <p style="margin-top: 18px;">
+          Your payout has been successfully deposited into your Stripe balance.  
+          Funds will become available based on your Stripe payout schedule.
+        </p>
+
+        <p>
+          <strong>Tropic Pulse</strong><br/>
+          Enjoy these moments.
+        </p>
+      </div>
+
+      <!-- FOOTER -->
+      <div class="footer">
+        <div><strong>Tropic Pulse</strong> — San Pedro, Ambergris Caye</div>
+        <div style="margin-top: 6px;">
+          You’re receiving this email because a payout was processed for your delivery.
+        </div>
+      </div>
+
+    </div>
+
+    ${trackingPixel}
+
+  </div>
+</body>
+</html>`;
+}
+},
+
+  stripeOnboarding: {
+     subject: (payload) => "Tropic Pulse: Getting Paid Soon?!",
+     html: (payload) => {
+	const {email,getPaidLink,reSendLink,logId} = payload;
+    const trackingPixel =
+      logId && logId !== "Preview Mode"
+        ? `<img src="https://tropicpulse.bz/emailopen?logId=${encodeURIComponent(
+            logId
+          )}" width="1" height="1" alt="" style="opacity:0; display:block;">`
+        : "";
+
+    return `<!DOCTYPE html>
+<html>
+  <body style="margin:0; padding:0; background-color:#f4f4f4; font-family:Arial, sans-serif;">
+    <table width="100%" border="0" cellspacing="0" cellpadding="0" 
+           style="background-color:#f4f4f4; padding:40px 0;">
+      <tr>
+        <td align="center">
+
+          <!-- Main Card -->
+          <table width="600" border="0" cellspacing="0" cellpadding="0" 
+                 style="background:#ffffff; border-radius:14px; overflow:hidden;">
+
+            <!-- Inner Padding -->
+            <tr>
+              <td style="padding:30px;">
+
+                <!-- Header Text -->
+                <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                  <tr>
+                    <td align="center" 
+                        style="font-size:28px; font-weight:bold; color:#222;">
+                      Stripe + Tropic Pulse
+                    </td>
+                  </tr>
+
+                  <tr>
+                    <td align="center" 
+                        style="font-size:18px; color:#666; padding-top:8px;">
+                      Automated, Instant Payments for Vendors/Deliverers!
+                    </td>
+                  </tr>
+
+                  <!-- Toucan Image -->
+                  <tr>
+                    <td align="center" style="padding:25px 0;">
+                      <img src="https://tropicpulse.bz/ToucanLogo-Mini.png?v4"
+                           alt="Tropic Pulse Toucan"
+                           width="220"
+                           style="display:block; border-radius:12px;">
+                    </td>
+                  </tr>
+
+                  <!-- Message -->
+                  <tr>
+                    <td align="center" 
+                        style="font-size:16px; color:#444; padding:0 20px 20px 20px; line-height:24px;">
+                      To start receiving automated payouts through Tropic Pulse, please complete your
+                      Stripe payment setup. This ensures we know exactly where to send your earnings.
+                    </td>
+                  </tr>
+
+                  <!-- Get Paid Button -->
+                  <tr>
+                    <td align="center" style="padding-bottom:20px;">
+                      <a href="${getPaidLink}"
+                         style="background-color:#00a86b;
+                                color:#ffffff;
+                                padding:14px 32px;
+                                text-decoration:none;
+                                font-size:18px;
+                                font-weight:bold;
+                                border-radius:8px;
+                                display:inline-block;">
+                        Get Paid
+                      </a>
+                    </td>
+                  </tr>
+
+                  <!-- Expiration Note -->
+                  <tr>
+                    <td align="center" 
+                        style="font-size:14px; color:#e63946; padding:0 20px 20px 20px; line-height:20px;">
+                      Your Stripe payment link expires in 24 hours.  
+                      If it expires or you need a new one, click below to resend your setup link.
+                    </td>
+                  </tr>
+
+                  <!-- Resend Link Button -->
+                  <tr>
+                    <td align="center" style="padding-bottom:30px;">
+                      <a href="${reSendLink}"
+                         style="background-color:#007bff;
+                                color:#ffffff;
+                                padding:12px 28px;
+                                text-decoration:none;
+                                font-size:16px;
+                                font-weight:bold;
+                                border-radius:8px;
+                                display:inline-block;">
+                        Resend Stripe Link
+                      </a>
+                    </td>
+                  </tr>
+
+                  <!-- Footer Note -->
+                  <tr>
+                    <td align="center" 
+                        style="font-size:12px; color:#777; line-height:18px; padding:0 20px;">
+                      To receive payments through Tropic Pulse, you must complete your Stripe setup 
+                      before accepting or delivering any orders.
+                    </td>
+                  </tr>
+
+                  <!-- Social Media Section -->
+                  <tr>
+                    <td align="center" style="padding-top:30px;">
+                      <div style="font-size:14px; color:#555; margin-bottom:10px;">
+                        Enjoy these moments! Share your successes with Tropic Pulse on social media.
+                      </div>
+                      <a href="https://linktr.ee/tropicpulse" target="_blank">
+                        <img src="https://tropicpulse.bz/SocialMedia.png?v4"
+                             alt="Social Media Icons"
+                             width="180"
+                             style="display:block; margin:auto;">
+                      </a>
+                    </td>
+                  </tr>
+
+                </table>
+              </td>
+            </tr>
+
+          </table>
+          <!-- End Main Card -->
+
+        </td>
+      </tr>
+    </table>
+
+    ${trackingPixel}
+
+  </body>
+</html>`;
+}
+},
+
+  resendStripeLink: {
+     subject: (payload) => "Tropic Pulse: Stripe Payments Link Resent!",
+     html: (payload) => {
+	const {email, getPaidLink, reSendLink, logId} = payload;
+    const trackingPixel =
+      logId && logId !== "Preview Mode"
+        ? `<img src="https://tropicpulse.bz/emailopen?logId=${encodeURIComponent(
+            logId
+          )}" width="1" height="1" alt="" style="opacity:0; display:block;">`
+        : "";
+
+    return `<!DOCTYPE html>
+<html>
+  <body style="margin:0; padding:0; background-color:#f4f4f4; font-family:Arial, sans-serif;">
+    <table width="100%" border="0" cellspacing="0" cellpadding="0" 
+           style="background-color:#f4f4f4; padding:40px 0;">
+      <tr>
+        <td align="center">
+
+          <!-- Main Card -->
+          <table width="600" border="0" cellspacing="0" cellpadding="0" 
+                 style="background:#ffffff; border-radius:14px; padding:30px;">
+
+            <!-- Header -->
+            <tr>
+              <td align="center" 
+                  style="font-size:28px; font-weight:bold; color:#222;">
+                Tropic Pulse
+              </td>
+            </tr>
+
+            <tr>
+              <td align="center" 
+                  style="font-size:18px; color:#666; padding-top:8px;">
+                Your Stripe Payments Link Has Been Resent!
+              </td>
+            </tr>
+
+            <!-- Toucan Image -->
+            <tr>
+              <td align="center" style="padding:25px 0;">
+                <img src="https://tropicpulse.bz/ToucanLogo-Mini.png?v4"
+                     alt="Tropic Pulse Toucan"
+                     width="220"
+                     style="display:block; border-radius:12px;">
+              </td>
+            </tr>
+
+            <!-- Message -->
+            <tr>
+              <td align="center" 
+                  style="font-size:16px; color:#444; padding:0 20px 20px 20px; line-height:24px;">
+                We’ve generated a fresh Stripe onboarding link so you can complete your 
+                payment setup and start receiving payouts through Tropic Pulse.
+              </td>
+            </tr>
+
+            <!-- Get Paid Button -->
+            <tr>
+              <td align="center" style="padding-bottom:20px;">
+                <a href="${getPaidLink}"
+                   style="background-color:#00a86b;
+                          color:#ffffff;
+                          padding:14px 32px;
+                          text-decoration:none;
+                          font-size:18px;
+                          font-weight:bold;
+                          border-radius:8px;
+                          display:inline-block;">
+                  Get Paid
+                </a>
+              </td>
+            </tr>
+
+            <!-- Expiration Note -->
+            <tr>
+              <td align="center" 
+                  style="font-size:14px; color:#e63946; padding:0 20px 20px 20px; line-height:20px;">
+                Your Stripe payment link expires in 24 hours.  
+                If it expires or you need a new one, click below to resend your setup link.
+              </td>
+            </tr>
+
+            <!-- Resend Link Button -->
+            <tr>
+              <td align="center" style="padding-bottom:30px;">
+                <a href="${reSendLink}"
+                   style="background-color:#007bff;
+                          color:#ffffff;
+                          padding:10px 26px;
+                          text-decoration:none;
+                          font-size:14px;
+                          border-radius:6px;
+                          display:inline-block;">
+                  Resend Stripe Link
+                </a>
+              </td>
+            </tr>
+
+            <!-- Footer Note -->
+            <tr>
+              <td align="center" 
+                  style="font-size:12px; color:#777; line-height:18px; padding:0 20px;">
+                To receive payments through Tropic Pulse, you must complete your Stripe setup 
+                before accepting or delivering any orders.
+              </td>
+            </tr>
+
+            <!-- Social Media Section -->
+            <tr>
+              <td align="center" style="padding-top:30px;">
+                <div style="font-size:14px; color:#555; margin-bottom:10px;">
+                  Enjoy these moments! Share your successes with Tropic Pulse on social media.
+                </div>
+                <a href="https://linktr.ee/tropicpulse" target="_blank">
+                  <img src="https://tropicpulse.bz/SocialMedia.png?v4"
+                       alt="Social Media Icons"
+                       width="180"
+                       style="display:block; margin:auto;">
+                </a>
+              </td>
+            </tr>
+
+          </table>
+          <!-- End Main Card -->
+
+        </td>
+      </tr>
+    </table>
+
+    ${trackingPixel}
+
+  </body>
+</html>`;
+}
+},
+
+  pulsePointRedemption: {
+    subject: (payload) => {
+	const { points } = payload;
+    return `Redemption Requested: ${points} Pulse Points Redemption`;
+    },
+    html: (payload) => {
+	const { name, email, points, pendingBalance, availableBalance, displayCurrency, transferCurrency, displayAmount, logId } = payload;
+    const pointToMoney = points/100
+    let formatted = pointToMoney || displayAmount || payoutAmount;
+    
+    const payoutAmountFormatted = formatDisplayAmount(displayCurrency,formatted);
+    const formattedavailable = formatDisplayAmount(displayCurrency,availableBalance);
+    const formattedpending = formatDisplayAmount(displayCurrency,pendingBalance);
+    const trackingPixel =
+      logId && logId !== "Preview Mode"
+        ? `<img src="https://tropicpulse.bz/emailopen?logId=${encodeURIComponent(
+            logId
+          )}" width="1" height="1" alt="" style="opacity:0; display:block;">`
+        : "";
+
+    return `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Pulse Points Redemption Requested</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      background-color: #f3f5f7;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      color: #1f2933;
+    }
+    .wrapper {
+      width: 100%;
+      background-color: #f3f5f7;
+      padding: 24px 0;
+    }
+    .container {
+      max-width: 600px;
+      margin: 0 auto;
+      background-color: #ffffff;
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: 0 10px 30px rgba(15, 23, 42, 0.12);
+    }
+    .header {
+      background: linear-gradient(135deg, #00c2a8, #00a0ff);
+      padding: 24px 24px 20px;
+      text-align: center;
+      color: #ffffff;
+    }
+    .logo-circle {
+      width: 70px;
+      height: 70px;
+      border-radius: 999px;
+      background: none !important;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 22px;
+    }
+    .brand-text {
+      font-size: 18px;
+      font-weight: 600;
+      letter-spacing: 0.03em;
+    }
+    .tagline {
+      font-size: 12px;
+      opacity: 0.9;
+    }
+    .header-title {
+      margin-top: 18px;
+      font-size: 22px;
+      font-weight: 700;
+    }
+    .header-subtitle {
+      margin-top: 6px;
+      font-size: 14px;
+      opacity: 0.95;
+    }
+    .content {
+      padding: 24px 24px 8px;
+      font-size: 14px;
+      line-height: 1.6;
+    }
+    .pill {
+      display: inline-block;
+      padding: 4px 10px;
+      border-radius: 999px;
+      background-color: #ecfdf5;
+      color: #047857;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      margin-bottom: 10px;
+    }
+    .highlight-box {
+      margin: 16px 0;
+      padding: 12px 14px;
+      border-radius: 12px;
+      background-color: #f9fafb;
+      border: 1px solid #e5e7eb;
+    }
+    .highlight-label {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: #6b7280;
+      margin-bottom: 4px;
+    }
+    .highlight-value {
+      font-size: 13px;
+      font-weight: 600;
+      color: #111827;
+    }
+    .footer {
+      padding: 14px 24px 20px;
+      font-size: 11px;
+      color: #9ca3af;
+      text-align: left;
+      border-top: 1px solid #e5e7eb;
+      background-color: #f9fafb;
+    }
+    .footer strong {
+      color: #4b5563;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="wrapper">
+    <div class="container">
+
+      <!-- HEADER -->
+      <div class="header">
+
+        <table width="100%" border="0" cellspacing="0" cellpadding="0">
+          <tr>
+            <td align="center">
+              <img 
+                src="https://tropicpulse.bz/ToucanLogo-Mini.png?v4"
+                alt="Tropic Pulse Logo"
+                width="70"
+                height="70"
+                style="
+                  display:block;
+                  margin:0 auto 14px auto;
+                  border-radius:50%;
+                  object-fit:cover;
+                ">
+            </td>
+          </tr>
+
+          <tr>
+            <td align="center">
+              <img 
+                src="https://tropicpulse.bz/CointoWallet.png?v4"
+                alt="Coin to Wallet"
+                width="120"
+                style="display:block; margin:0 auto 10px auto;">
+            </td>
+          </tr>
+        </table>
+
+        <div class="brand-text">TROPIC PULSE</div>
+        <div class="tagline">Enjoy these moments.</div>
+
+        <div class="header-title">Pulse Points Redemption Requested</div>
+        <div class="header-subtitle">
+          Your Pulse Points will be converted into Wallet Balance within 24–48 hours.
+        </div>
+      </div>
+
+      <!-- CONTENT -->
+      <div class="content">
+
+        <div style="text-align:center; width:100%;">
+          <span class="pill">Pulse Points</span>
+          <h2>Redeeming ${points} Pulse Points</h2>
+        </div>
+
+        <p>Hi ${name},</p>
+
+        <p>
+          Tropic Pulse has received your request to convert 
+          <strong>${points}</strong> Pulse Points into Wallet Balance.
+          Your payout will be processed shortly.
+        </p>
+
+        <div class="highlight-box">
+          <div class="highlight-label">User Email</div>
+          <div class="highlight-value">${email}</div>
+        </div>
+
+        <div class="highlight-box">
+          <div class="highlight-label">Pulse Points Redeemed</div>
+          <div class="highlight-value">${points}</div>
+        </div>
+
+        <div class="highlight-box">
+          <div class="highlight-label">Estimated Wallet Balance Added</div>
+          <div class="highlight-value" style="font-size:20px; font-weight:700;">
+            ${payoutAmountFormatted}
+          </div>
+        </div>
+
+        <p style="margin-top: 18px;">
+          Your Pulse Points have already been deducted from your account.  
+          You will receive a confirmation once the wallet balance is updated.
+        </p>
+
+        <p>
+          <strong>Tropic Pulse</strong><br/>
+          Enjoy these moments.
+        </p>
+      </div>
+
+      <div class="footer">
+        <div><strong>Tropic Pulse</strong> — San Pedro, Ambergris Caye</div>
+        <div style="margin-top: 6px;">
+          You’re receiving this email because a Pulse Points redemption was requested.
+        </div>
+      </div>
+
+    </div>
+
+    ${trackingPixel}
+
+  </div>
+</body>
+</html>`;
+}
+},
+pulsePointsGifted: {
+    subject: (payload) => {
+	const { points } = payload;
+    return `Tropic Pulse: You have Earned ${points} Pulse Points!`;
+    },
+    html: (payload) => {
+	  const { name, email, points, tipAmount, itemPrice, totalPrice, taxAmount, shipping, payoutAmount, logId } = payload;
+    const tip = num(tipAmount ?? payload.ordertip ?? payload.tip);
+    const price = num(itemPrice ?? payload.orderprice ?? payload.orderamount);
+
+    if (Number(payoutAmount) === 0) {
+      payoutAmount = Number((tip + price * 0.05).toFixed(2));
+    }
+    const formattedordertotal   = `BZ$${Number(totalPrice).toFixed(2)}`;
+    const formattedorderamount  = `BZ$${Number(price).toFixed(2)}`;
+    const formattedtip          = `BZ$${Number(tipAmount).toFixed(2)}`;
+    const formattedtax          = `BZ$${Number(taxAmount).toFixed(2)}`;
+    const trackingPixel =
+      logId && logId !== "Preview Mode"
+        ? `<img src="https://tropicpulse.bz/emailopen?logId=${encodeURIComponent(
+            logId
+          )}" width="1" height="1" alt="" style="opacity:0; display:block;">`
+        : "";
+
+    return `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Pulse Points Awarded</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      background-color: #f3f5f7;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      color: #1f2933;
+    }
+    .wrapper {
+      width: 100%;
+      background-color: #f3f5f7;
+      padding: 24px 0;
+    }
+    .container {
+      max-width: 600px;
+      margin: 0 auto;
+      background-color: #ffffff;
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: 0 10px 30px rgba(15, 23, 42, 0.12);
+    }
+    .header {
+      background: linear-gradient(135deg, #00c2a8, #00a0ff);
+      padding: 24px 24px 20px;
+      text-align: left;
+      color: #ffffff;
+    }
+    .logo-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .logo-circle {
+      width: 70px;
+      height: 70px;
+      border-radius: 999px;
+      background: none !important;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 22px;
+    }
+    .brand-text {
+      font-size: 18px;
+      font-weight: 600;
+      letter-spacing: 0.03em;
+    }
+    .tagline {
+      font-size: 12px;
+      opacity: 0.9;
+    }
+    .header-title {
+      margin-top: 18px;
+      font-size: 22px;
+      font-weight: 700;
+    }
+    .header-subtitle {
+      margin-top: 6px;
+      font-size: 14px;
+      opacity: 0.95;
+    }
+    .content {
+      padding: 24px 24px 8px;
+      font-size: 14px;
+      line-height: 1.6;
+    }
+    .pill {
+      display: inline-block;
+      padding: 4px 10px;
+      border-radius: 999px;
+      background-color: #ecfdf5;
+      color: #047857;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      margin-bottom: 10px;
+    }
+    .highlight-box {
+      margin: 16px 0;
+      padding: 12px 14px;
+      border-radius: 12px;
+      background-color: #f9fafb;
+      border: 1px solid #e5e7eb;
+    }
+    .highlight-label {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: #6b7280;
+      margin-bottom: 4px;
+    }
+    .highlight-value {
+      font-size: 13px;
+      font-weight: 600;
+      color: #111827;
+    }
+    .footer {
+      padding: 14px 24px 20px;
+      font-size: 11px;
+      color: #9ca3af;
+      text-align: left;
+      border-top: 1px solid #e5e7eb;
+      background-color: #f9fafb;
+    }
+    .footer strong {
+      color: #4b5563;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="wrapper">
+    <div class="container">
+
+      <div class="header">
+        <div class="logo-row">
+          <div style="text-align:center; width:100%;">
+            <div style="display:inline-block; text-align:center;">
+              <div class="logo-circle" style="margin:0 auto 10px auto;">
+                <img 
+                  src="https://tropicpulse.bz/ToucanLogo-Mini.png?v4"
+                  alt="Tropic Pulse Toucan"
+                  width="60"
+                  style="display:block; border-radius:50%;">
+              </div>
+              <div>
+                <div class="brand-text">TROPIC PULSE</div>
+                <div class="tagline">Enjoy these moments.</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div style="text-align:center; width:100%;">
+          <div class="header-title">Pulse Points Awarded</div>
+          <div class="header-subtitle">
+            Your delivery has earned you new Pulse Points.
+          </div>
+        </div>
+      </div>
+
+      <div class="content">
+
+        <div style="text-align:center; width:100%;">
+          <span class="pill">Pulse Points</span>
+          <h2>You’ve Earned ${points || "0"} Pulse Points</h2>
+        </div>
+
+        <p>Hi ${name || "there"},</p>
+
+        <p>
+          Thank you for your service. Tropic Pulse has credited 
+          <strong><span style="font-size:16px;">${points || "0"}</span> Pulse Points</strong>
+          to your profile for your recent delivery.
+        </p>
+
+        <div class="highlight-box">
+          <div class="highlight-label">Deliverer Email</div>
+          <div class="highlight-value">${email || "N/A"}</div>
+        </div>
+
+        <div class="highlight-box">
+          <div class="highlight-label">Order Item Price</div>
+          <div class="highlight-value">${formattedorderamount}</div>
+        </div>
+
+        <div class="highlight-box">
+          <div class="highlight-label">Belize Tax (12.5%)</div>
+          <div class="highlight-value">${formattedtax}</div>
+        </div>
+
+        <div class="highlight-box">
+          <div class="highlight-label">Tip</div>
+          <div class="highlight-value" style="font-weight:bold; font-size:22px;">
+            ${formattedtip}
+          </div>
+        </div>
+
+        <div class="highlight-box">
+          <div class="highlight-label">Order Total Price</div>
+          <div class="highlight-value">${formattedordertotal}</div>
+        </div>
+
+        <p style="margin-top: 18px;">
+          Stay tuned—your Pulse Points will soon unlock rewards, perks, and exclusive benefits.
+        </p>
+
+        <p>
+          <strong>Tropic Pulse</strong><br/>
+          Enjoy these moments.
+        </p>
+      </div>
+
+      <div class="footer">
+        <div><strong>Tropic Pulse</strong> — San Pedro, Ambergris Caye</div>
+        <div style="margin-top: 6px;">
+          You’re receiving this email because a delivery was completed using this address.
+        </div>
+      </div>
+    </div>
+
+    ${trackingPixel}
+
+  </div>
+</body>
+</html>`;
+}
+},
+
+rolechange: {
+     subject: (payload) => "Tropic Pulse: Role Change Requested",
+    important: true,
+     html: (payload) => {
+	const { role, payFrequency, payDay, logId } = payload;
+const trackingPixel =
+      logId && logId !== "Preview Mode"
+        ? `<img src="https://tropicpulse.bz/emailopen?logId=${encodeURIComponent(
+            logId
+          )}" width="1" height="1" alt="" style="opacity:0;display:block;">`
+        : "";
+
+    const payDayRow = payDay
+      ? `<tr>
+          <td style="padding:10px 12px;border:1px solid #e2e2e2;background:#fafafa;width:40%;font-size:13px;color:#777;">
+            Payday
+          </td>
+          <td style="padding:10px 12px;border:1px solid #e2e2e2;font-size:13px;color:#222;">
+            ${payDay}
+          </td>
+        </tr>`
+      : "";
+
+    return `<!DOCTYPE html>
+<html>
+  <body style="margin:0;padding:0;background:#f5f5f5;font-family:Arial,Helvetica,sans-serif;">
+    <table width="100%" cellpadding="0" cellspacing="0" style="padding:20px 0;">
+      <tr>
+        <td align="center">
+          <table width="600" cellpadding="0" cellspacing="0" style="background:#ffffff;border-radius:8px;overflow:hidden;border:1px solid #e2e2e2;">
+            
+            <!-- Logo -->
+            <tr>
+              <td align="center" style="padding:20px 20px 10px 20px;">
+                <img src="https://tropicpulse.bz/ToucanLogo-Mini.png?v4" alt="Tropic Pulse" style="max-width:180px;height:auto;display:block;">
+              </td>
+            </tr>
+
+            <!-- Title -->
+            <tr>
+              <td style="padding:10px 20px 20px 20px;">
+                <h2 style="margin:0 0 10px 0;font-size:20px;color:#222;text-align:center;">
+                  Role & Pay Frequency Updated
+                </h2>
+                <p style="margin:0 0 16px 0;font-size:14px;color:#555;text-align:center;">
+                  Your account details have been updated. Please review the changes below.
+                </p>
+
+                <!-- Data Table -->
+                <table width="100%" cellpadding="0" cellspacing="0" style="border-collapse:collapse;">
+
+                  <tr>
+                    <td style="padding:10px 12px;border:1px solid #e2e2e2;background:#fafafa;width:40%;font-size:13px;color:#777;">
+                      Role
+                    </td>
+                    <td style="padding:10px 12px;border:1px solid #e2e2e2;font-size:13px;color:#222;">
+                      ${role}
+                    </td>
+                  </tr>
+
+                  <tr>
+                    <td style="padding:10px 12px;border:1px solid #e2e2e2;background:#fafafa;width:40%;font-size:13px;color:#777;">
+                      Pay Frequency
+                    </td>
+                    <td style="padding:10px 12px;border:1px solid #e2e2e2;font-size:13px;color:#222;">
+                      ${payFrequency.toUpperCase()}
+                    </td>
+                  </tr>
+
+                  ${payDayRow}
+
+                </table>
+
+                <p style="margin:16px 0 0 0;font-size:12px;color:#999;text-align:center;">
+                  If you believe this change is incorrect, please contact <a href="mailto:Sales@TropicPulse.bz">Tropic Pulse support</a>.
+                </p>
+              </td>
+            </tr>
+
+          </table>
+        </td>
+        ${trackingPixel}
+      </tr>
+    </table>
+  </body>
+</html>`;
+}
+},
+
+  newEvent: {
+     subject: (payload) => "New Event on Tropic Pulse",
+    important: false,
+     html: (payload) => {
+	const { title, Fromdate, Todate, Fromtime, Totime, Venue, description, summary, unsubscribeUrl, language, logId } = payload;
+  const trackingPixel =
+      logId && logId !== "Preview Mode"
+        ? `<img src="https://tropicpulse.bz/emailopen?logId=${encodeURIComponent(
+            logId
+          )}" width="1" height="1" alt="" style="opacity:0;display:block;">`
+        : "";
+
+    return `<!DOCTYPE html>
+<html>
+  <body style="margin:0; padding:0; background-color:#f4f4f4; font-family:Arial, sans-serif;">
+  <table width="100%" cellpadding="0" cellspacing="0" style="background:#f7f7f7;padding:30px 0;font-family:'Poppins',sans-serif;">
+  <tr>
+    <td align="center">
+
+      <!-- Main Container -->
+      <table width="600" cellpadding="0" cellspacing="0" style="background:#ffffff;border-radius:18px;overflow:hidden;border:3px solid #000;">
+        
+        <!-- Header -->
+        <tr>
+          <td align="center" style="background:#ffff99;padding:30px 20px;">
+            <img src="https://tropicpulse.bz/ToucanLogo-Mini.png?v4" 
+                 alt="Tropic Pulse Toucan" width="120" style="display:block;margin-bottom:10px;border-radius:50%;border:3px solid #000;">
+            <h1 style="margin:0;font-size:26px;color:#000;">A New Event Just Hit Tropic Pulse!</h1>
+          </td>
+        </tr>
+
+        <!-- Cartoon Event Icon -->
+        <tr>
+          <td align="center" style="padding:20px;">
+            <img src="https://tropicpulse.bz/NewEvent.png?v4" 
+                 alt="New Event Illustration" width="160" 
+                 style="display:block;margin:0 auto 10px;">
+          </td>
+        </tr>
+
+        <!-- Content -->
+        <tr>
+          <td style="padding:0 30px 30px;color:#333;font-size:16px;line-height:1.6;">
+            <p style="margin-top:0;">
+              A brand‑new event has just been added to Tropic Pulse — and you won’t want to miss it!
+            </p>
+
+            <div style="background:#f0faff;border:2px solid #00aaff;border-radius:12px;padding:18px;margin:20px 0;">
+              <p style="margin:0;font-size:18px;font-weight:600;color:#000;">${title}</p>
+              <p style="margin:6px 0 0;font-size:15px;color:#555;">
+                <strong>${summary}</strong>
+              </p>
+
+              <p style="margin:6px 0 0;font-size:15px;color:#555;">
+                <span style="color:green; font-size:16px;">Date:</span>
+                <strong>${Fromdate} → ${Todate}</strong><br>
+                <span style="color:green; font-size:16px;">Time:</span>
+                <strong>${Fromtime} → ${Totime}</strong>
+              </p>
+              <p style="margin:6px 0 0;font-size:15px;color:#555;">
+                <span style="color:green; font-size:16px;">Venue:</span>
+                <strong>${Venue}</strong>
+              </p>
+              <p style="margin:6px 0 0;font-size:15px;color:#555;">
+                <span style="color:green; font-size:16px;">Language:</span>
+                <strong>${language}</strong>
+              </p>
+              <p style="margin:6px 0 0;font-size:15px;color:#555;">
+                <span style="color:green; font-size:16px;">Description:</span>
+                <strong>${description}</strong>
+              </p>
+            </div>
+
+            <p>
+              Open the Tropic Pulse app to get full details and stay in the loop with everything happening around San Pedro!
+            </p>
+
+            <p style="margin-top:25px;text-align:center;">
+              <a href="https://linktr.ee/tropicpulse" 
+                 style="background:#00aaff;color:#fff;padding:14px 24px;border-radius:10px;text-decoration:none;font-weight:600;display:inline-block;">
+                View Event on Tropic Pulse
+              </a>
+            </p>
+          </td>
+        </tr>
+
+        <!-- Footer -->
+<tr>
+  <td align="center" style="background:#fafafa; padding:20px; font-size:13px; color:#777; line-height:1.5;">
+    Powered by Tropic Pulse • San Pedro’s Everything App<br><br>
+    <em>This email was automatically generated because a new event was added to Tropic Pulse.</em>
+  </td>
+</tr>
+
+<!-- Unsubscribe Footer -->
+<tr>
+  <td align="center" style="padding:10px;">
+
+    <table width="100%" cellpadding="0" cellspacing="0" border="0">
+      <tr>
+        <td align="center">
+
+          <table width="500" cellpadding="0" cellspacing="0" border="0"
+                 style="background:#ffffff; border:2px solid #e5e5e5; border-radius:14px; padding:10px;">
+            <tr>
+              <td align="center" style="padding:10px;">
+
+                <img 
+                  src="https://tropicpulse.bz/Welcome.png?v4"
+                  alt="Tropic Pulse Logo"
+                  width="120"
+                  style="display:block; margin-bottom:10px; border-radius:12px;"
+                />
+
+                <p style="font-family:Arial, sans-serif; font-size:14px; color:#555;">
+                  Don’t want to receive these updates?
+                </p>
+
+                <a href="${unsubscribeUrl}"
+                   style="font-family:Arial, sans-serif; font-size:14px; color:#4a90e2; text-decoration:none; font-weight:bold;">
+                   Unsubscribe from Tropic Pulse mass emails
+                </a>
+
+              </td>
+            </tr>
+          </table>
+
+        </td>
+      </tr>
+    </table>
+
+  </td>
+</tr>
+      </table>
+    </td>
+    ${trackingPixel}
+  </tr>
+</table>
+</body>
+</html>`;
+}
+},
+
+  newBusiness: {
+     subject: (payload) => "New Business on Tropic Pulse",
+     html: (payload) => {
+	  const { busname, summary, description, link, location, busemail, logId } = payload;
+    const trackingPixel =
+      logId && logId !== "Preview Mode"
+        ? `<img src="https://tropicpulse.bz/emailopen?logId=${encodeURIComponent(
+            logId
+          )}" width="1" height="1" alt="" style="opacity:0;display:block;">`
+        : "";
+
+    return `<!DOCTYPE html>
+<html>
+  <body style="margin:0; padding:0; background-color:#f4f4f4; font-family:Arial, sans-serif;">
+  <table width="100%" cellpadding="0" cellspacing="0" style="background:#f7f7f7;padding:30px 0;font-family:'Poppins',sans-serif;">
+  <tr>
+    <td align="center">
+
+      <!-- Main Container -->
+      <table width="600" cellpadding="0" cellspacing="0" style="background:#ffffff;border-radius:18px;overflow:hidden;border:3px solid #000;">
+        
+        <!-- Header -->
+        <tr>
+          <td align="center" style="background:#ffff99;padding:30px 20px;">
+            <img src="https://tropicpulse.bz/ToucanLogo-Mini.png?v4" 
+                 alt="Tropic Pulse Toucan" width="120" style="display:block;margin-bottom:10px;border-radius:50%;border:3px solid #000;">
+            <h1 style="margin:0;font-size:26px;color:#000;">A New Business Just Joined Tropic Pulse!</h1>
+          </td>
+        </tr>
+
+        <!-- Cartoon Building -->
+        <tr>
+          <td align="center" style="padding:20px;">
+            <img src="https://tropicpulse.bz/NewBusiness.png?v4" 
+                 alt="New Business Illustration" width="160" 
+                 style="display:block;margin:0 auto 10px;">
+          </td>
+        </tr>
+
+        <!-- Content -->
+        <tr>
+          <td style="padding:0 30px 30px;color:#333;font-size:16px;line-height:1.6;">
+            <p style="margin-top:0;">
+              We’re excited to welcome a brand‑new local business to the Tropic Pulse community!
+            </p>
+
+            <div style="background:#f0faff;border:2px solid #00aaff;border-radius:12px;padding:18px;margin:20px 0;">
+              <p style="margin:0;font-size:18px;font-weight:600;color:#000;">${busname}</p>
+              <p style="margin:6px 0 0;font-size:15px;color:#555;">
+                <strong>${summary}</strong>
+              </p>
+
+              <p style="margin:6px 0 0;font-size:15px;color:#555;">
+                <span style="color:green; font-size:16px;">Location:</span>
+                <strong>${location}</strong>
+              </p>
+
+              <p style="margin:6px 0 0;font-size:15px;color:#555;">
+                <span style="color:green; font-size:16px;">Description:</span>
+                <strong>${description}</strong>
+              </p>
+
+              <p style="margin:6px 0 0;font-size:15px;color:#555;">
+                <span style="color:green; font-size:16px;">Email:</span>
+                <strong>${busemail}</strong>
+              </p>
+            </div>
+
+            <p>
+              Be sure to check them out on the Tropic Pulse app and show your support for another amazing local business in San Pedro!
+            </p>
+
+            <p style="margin-top:25px;text-align:center;">
+              <a href="https://linktr.ee/tropicpulse" 
+                 style="background:#00aaff;color:#fff;padding:14px 24px;border-radius:10px;text-decoration:none;font-weight:600;display:inline-block;">
+                Explore on Tropic Pulse
+              </a>
+            </p>
+          </td>
+        </tr>
+
+        <!-- Footer -->
+<tr>
+  <td align="center" style="background:#fafafa; padding:20px; font-size:13px; color:#777; line-height:1.5;">
+    Powered by Tropic Pulse • San Pedro’s Everything App<br><br>
+    <em>This email was automatically generated because a new business was added to Tropic Pulse.</em>
+  </td>
+</tr>
+
+<!-- Unsubscribe Footer -->
+<tr>
+  <td align="center" style="padding:10px;">
+
+    <table width="100%" cellpadding="0" cellspacing="0" border="0">
+      <tr>
+        <td align="center">
+
+          <table width="500" cellpadding="0" cellspacing="0" border="0"
+                 style="background:#ffffff; border:2px solid #e5e5e5; border-radius:14px; padding:10px;">
+            <tr>
+              <td align="center" style="padding:10px;">
+
+                <img 
+                  src="https://tropicpulse.bz/Welcome.png?v4"
+                  alt="Tropic Pulse Logo"
+                  width="120"
+                  style="display:block; margin-bottom:10px; border-radius:12px;"
+                />
+
+                <p style="font-family:Arial, sans-serif; font-size:14px; color:#555;">
+                  Don’t want to receive these updates?
+                </p>
+
+                <a href="${unsubscribeUrl}"
+                   style="font-family:Arial, sans-serif; font-size:14px; color:#4a90e2; text-decoration:none; font-weight:bold;">
+                   Unsubscribe from Tropic Pulse mass emails
+                </a>
+
+              </td>
+            </tr>
+          </table>
+
+        </td>
+      </tr>
+    </table>
+
+  </td>
+</tr>
+      </table>
+    </td>
+    ${trackingPixel}
+  </tr>
+</table>
+</body>
+</html>`;
+}
+},
+
+NoCredits: {
+     subject: (payload) => "You're out of Mass Notification Credits",
+     html: (payload) => {
+	  const { email, paymentLink, eventID, logId  } = payload;
+    const trackingPixel =
+      logId && logId !== "Preview Mode"
+        ? `<img src="https://tropicpulse.bz/emailopen?logId=${encodeURIComponent(
+            logId
+          )}" width="1" height="1" alt="" style="opacity:0;display:block;">`
+        : "";
+
+    return `<table width="100%" cellpadding="0" cellspacing="0" style="background:#f4f9f9; padding:40px 0; font-family:Arial, sans-serif;">
+  <tr>
+    <td align="center">
+      <table width="600" cellpadding="0" cellspacing="0" style="background:white; border-radius:12px; overflow:hidden; box-shadow:0 4px 12px rgba(0,0,0,0.08);">
+        
+        <!-- Header -->
+        <tr>
+          <td style="background:linear-gradient(135deg,#00c6ff,#0072ff); padding:30px; text-align:center;">
+            <img src="https://tropicpulse.bz/ToucanLogo-Mini.png?v4" alt="Tropic Pulse" width="90" style="margin-bottom:10px;">
+            <h1 style="color:white; margin:0; font-size:26px; font-weight:bold;">
+              You're Out of Credits
+            </h1>
+          </td>
+        </tr>
+
+        <!-- Body -->
+        <tr>
+          <td style="padding:30px; color:#333;">
+            <p style="font-size:16px; line-height:1.6; margin:0 0 20px;">
+              Hey Friend,
+            </p>
+
+            <p style="font-size:16px; line-height:1.6; margin:0 0 20px;">
+              You’ve used your free Mass Notification credits. To keep sending island‑wide announcements, you’ll need to purchase additional credits.
+            </p>
+
+            <p style="font-size:16px; line-height:1.6; margin:0 0 25px;">
+              Each credit is <strong>BZ$10</strong> and lets you broadcast a new event or business update to the entire Tropic Pulse community.
+            </p>
+
+            <!-- Button -->
+            <table cellpadding="0" cellspacing="0" style="margin:30px auto;">
+              <tr>
+                <td align="center" style="background:#00a86b; padding:14px 28px; border-radius:8px;">
+                  <a href="${paymentLink}" 
+                     style="color:white; text-decoration:none; font-size:18px; font-weight:bold; display:block;">
+                    Buy Credits
+                  </a>
+                </td>
+              </tr>
+            </table>
+
+            <p style="font-size:14px; color:#666; line-height:1.6; margin-top:20px;">
+              Once your purchase is complete, your credits will be added instantly and you can continue sending notifications without interruption.
+            </p>
+          </td>
+        </tr>
+
+        <!-- Footer -->
+        <tr>
+          <td style="background:#f0f7f7; padding:20px; text-align:center; font-size:12px; color:#777;">
+            Tropic Pulse • San Pedro, Belize<br>
+            You’re receiving this message because you attempted to send a Mass Notification.
+          </td>
+        </tr>
+
+      </table>
+      ${trackingPixel}
+    </td>
+  </tr>
+</table>`;
+}
+}
+};
+
+async function findUserNameByEmail(email) {
+  const resp = await fetch(
+    `https://finduserbyemail-ilx3agka5q-uc.a.run.app?email=${encodeURIComponent(email)}`
+  );
+
+  const data = await resp.json();
+  if (!data.success) return null;
+
+  return data.user;
+}
+
+
+
+function getEmailHTML(type, payload) {
+  return emailTemplates[type].html(payload);
+}
+
+async function previewEmail() {
+  try {
+    const type = document.getElementById("type")?.value;
+    const status = document.getElementById("status");
+    const email = document.getElementById("users")?.value;
+
+    status.textContent = "";
+    status.style.color = "";
+
+    const fail = (msg) => {
+      status.style.color = "red";
+      status.textContent = msg;
+      throw new Error(msg);
+    };
+
+    const loadOrder = async (orderID, email) => {
+      const token = localStorage.getItem("tp_token_v4");
+
+      if (!token) {
+        console.error("❌ No Auth Token Found in LocalStorage!");
+        orderSelect.innerHTML = `<option>Auth Error</option>`;
+        return;
+      }
+
+      const resp = await fetch(
+        `https://getallorders-ilx3agka5q-uc.a.run.app?email=${encodeURIComponent(email)}`,
+        {
+          method: "GET",
+          headers: {
+            "Authorization": `Bearer ${token}`
+          }
+        }
+      );
+      const data = await resp.json();
+
+      if (!data.success) throw new Error("Failed to load orders");
+
+      const order = data.orders.find(o => o.id === orderID);
+      if (!order) throw new Error("Order not found");
+
+      return order;
+    };
+
+    if (!type) fail("Please choose an email type before previewing!");
+
+    // -----------------------------
+    // Load user info
+    // -----------------------------
+    const userInfo = await findUserNameByEmail(email);
+    const name = userInfo.name || "Potential Customer";
+    const userID = userInfo.userID;
+    const stripeAccountID =
+      userInfo.stripeAccountID || userInfo.StripeAccountID || null;
+
+    // -----------------------------
+    // Base payload (required for ALL templates)
+    // -----------------------------
+    const payload = {
+      ...buildPayload(),
+      name,
+      email,
+      userID,
+      stripeAccountID,
+      adminUser: "Preview",
+      unsubscribeUrl: "https://tropicpulse.bz/unsubscribe?token=PREVIEW",
+      logId: "Preview Mode",
+    };
+
+    // -----------------------------
+    // EVENT EMAILS
+    // -----------------------------
+    if (type === "newEvent") {
+      if (!selectedEvent) fail("Please select an event first.");
+
+      const e = selectedEvent;
+
+      payload.eventID = e.id;
+
+      // Normalize old + new fields
+      payload.title = e.Title || e.title || "";
+      payload.summary = e.Summary || e.summary || "";
+      payload.description = e.Description || e.description || "";
+
+      payload.Fromdate = e.Fromdate || e.fromDate || "";
+      payload.Todate = e.Todate || e.toDate || "";
+      payload.Fromtime = e.Fromtime || e.fromTime || "";
+      payload.Totime = e.Totime || e.toTime || "";
+      payload.language = e.language || e.Language || "";
+      payload.Venue = e.Venue || e.venue || "";
+      payload.Url = e.Url || e.URL || (e.images?.[0] || "");
+      payload.Category = e.Category || e.category || "";
+      payload.Price = e.Price || e.price || "";
+
+      let date = e.Date || e.date;
+      if (date instanceof firebase.firestore.Timestamp) {
+        payload.date = date.toDate().toISOString();
+      } else if (date instanceof Date) {
+        payload.date = date.toISOString();
+      } else if (typeof date === "string") {
+        payload.date = new Date(date).toISOString();
+      } else {
+        payload.date = new Date().toISOString();
+      }
+    }
+
+    // -----------------------------
+    // BUSINESS EMAILS
+    // -----------------------------
+    if (type === "newBusiness") {
+      if (!selectedBus) fail("Please select a business first.");
+
+      const b = selectedBus;
+
+      payload.busID = b.id;
+      payload.busname = b.Busname || b.busname || "";
+      payload.summary = b.Summary || b.summary || "";
+      payload.description = b.Description || b.description || "";
+      payload.location = b.Location || b.location || "";
+      payload.busemail = b.Busemail || b.busemail || "";
+      payload.useremail = b.Useremail || b.useremail || "";
+
+      let date = b.Date || b.date;
+      if (date instanceof firebase.firestore.Timestamp) {
+        payload.date = date.toDate().toISOString();
+      } else if (date instanceof Date) {
+        payload.date = date.toISOString();
+      } else if (typeof date === "string") {
+        payload.date = new Date(date).toISOString();
+      } else {
+        payload.date = new Date().toISOString();
+      }
+    }
+
+    // -----------------------------
+    // NO CREDITS EMAIL
+    // -----------------------------
+    if (type === "NoCredits") {
+      payload.paymentLink = await createPaymentShortlink(userID, payload.eventID);
+    }
+
+    // -----------------------------
+    // ORDER EMAILS
+    // -----------------------------
+    if (type === "pulsePointsGifted" || type === "sendPayout") {
+      const orderID = document.getElementById("orderlogs")?.value || null;
+      const o = await loadOrder(orderID,email);
+
+      const tip = Number(o.ordertip) || 0;
+      const price = Number(o.orderprice) || 0;
+
+      const payoutAmount = Number(tip.toFixed(2));
+
+      Object.assign(payload, {
+        orderID,
+        productquantity: o.productquantity || 0,
+        totalPrice: o.ordertotal || 0,
+        itemPrice: o.orderprice || 0,
+        taxAmount: o.ordertax || 0,
+        tipAmount: o.ordertip || 0,
+        shipping: o.ordershipping || 0,
+        points: o.orderprice || 0,
+        payoutAmount,
+        displayAmount: payoutAmount,
+        displayCurrency: o.displayCurrency || "BZ$",
+        customerEmail: o.customerEmail || "",
+        delivererEmail: o.delivererEmail || "",
+        createdAt: o.createdAt?.toDate().toISOString() || "",
+      });
+    }
+
+    // -----------------------------
+    // Generate HTML
+    // -----------------------------
+    const html = getEmailHTML(type, payload);
+
+    // -----------------------------
+    // UI updates
+    // -----------------------------
+    document.getElementById("toggle-view-btn").style.display = "none";
+    document.getElementById("payloadPreview").textContent =
+      JSON.stringify(payload, null, 2);
+
+    const iframe = document.getElementById("htmlPreview");
+    iframe.srcdoc = html;
+
+    document.getElementById("htmlPreviewWrapper").style.display = "block";
+    iframe.style.display = "block";
+
+    document.getElementById("modal-bg").style.display = "flex";
+  } catch (err) {
+    console.error(err);
+    return;
+  }
+}
+
+function closeModal() {
+      document.getElementById("modal-bg").style.display = "none";
+    }
+    function safeJSONParse(str) {
+        try {
+            return JSON.parse(str);
+        } catch (e) {
+            return null; // or return the raw string
+        }
+    }
+
+  function normalizePhone(raw) {
+    if (!raw) return null;
+
+    // Remove all non-digits
+    let phone = String(raw).replace(/\D+/g, "");
+
+    // Already has country code (E.164 without +)
+    if (phone.length === 11 && phone.startsWith("1")) {
+      return "+" + phone; // US/Canada
+    }
+
+    if (phone.length === 10) {
+      // US number missing country code
+      return "+1" + phone;
+    }
+
+    if (phone.length === 8 && phone.startsWith("6")) {
+      // Belize local mobile number (e.g., 6xxxxxxx)
+      return "+501" + phone;
+    }
+
+    if (phone.length === 11 && phone.startsWith("501")) {
+      // Belize with country code but no +
+      return "+" + phone;
+    }
+
+    // Fallback: if it already starts with country code
+    if (phone.length > 8 && !phone.startsWith("+")) {
+      return "+" + phone;
+    }
+
+    return null;
+  }
+
+async function createPaymentShortlink(userID, eventID) {
+  const realUrl = `https://pay.tropicpulse.bz/b/00w4gy1ZP0Si7UpcgIfIs01?userID=${encodeURIComponent(userID)}&eventID=${encodeURIComponent(eventID)}`;
+  const code = Math.random().toString(36).substring(2, 10);
+
+  await db.collection("ShortLinks").doc(code).set({
+    url: realUrl,
+    createdAt: Date.now(),
+    type: "email"
+  });
+
+  return `https://tropicpulse.bz/l/${code}`;
+}
+
+async function sendEmail() {
+  console.log("SEND EMAIL CLICKED");
+
+  const sendBtn = document.getElementById("sendEmailBtn");
+  const status = document.getElementById("status");
+  status.textContent = "";
+  status.style.color = "";
+
+  const type = document.getElementById("type")?.value;
+  const email = document.getElementById("users")?.value;
+  const orderID = document.getElementById("orderlogs")?.value || null;
+
+  const disableBtn = () => {
+    if (!sendBtn) return;
+    sendBtn.disabled = true;
+    sendBtn.classList.add("loading");
+    sendBtn.textContent = "Sending…";
+  };
+
+  const enableBtn = () => {
+    if (!sendBtn) return;
+    sendBtn.disabled = false;
+    sendBtn.classList.remove("loading");
+    sendBtn.textContent = "Send Email";
+  };
+
+  const fail = (msg) => {
+    status.style.color = "red";
+    status.textContent = msg;
+    enableBtn();
+    throw new Error(msg);
+  };
+
+  disableBtn();
+
+  if (!type) fail("Please choose an email type before sending!");
+
+  // -----------------------------
+  // Load user info
+  // -----------------------------
+  const userInfo = await findUserNameByEmail(email);
+  const name = userInfo.name || "Potential Customer";
+  const userID = userInfo.userID;
+  const stripeAccountID =
+    userInfo.stripeAccountID || userInfo.StripeAccountID || null;
+  let phone = userInfo.Phone || userInfo.phone || null;
+  
+  // -----------------------------
+  // Base payload (required for ALL templates)
+  // -----------------------------
+  const payload = {
+    ...buildPayload(),
+    name,
+    email,
+    userID,
+    stripeAccountID,
+    adminUser: "Aldwyn",
+    unsubscribeUrl: "https://tropicpulse.bz/unsubscribe?token=Admin",
+  };
+  if (phone) {
+  phone = normalizePhone(phone);
+  }
+  // -----------------------------
+  // EVENT EMAILS
+  // -----------------------------
+  if (type === "newEvent") {
+    if (!selectedEvent) fail("Please select an event first.");
+
+    const e = selectedEvent;
+
+    payload.eventID = e.id;
+    payload.name = BECLEAN(name);
+    payload.title = BECLEAN(e.Title) ||BECLEAN(e.title) || "";
+    payload.summary = BECLEAN(e.Summary) || BECLEAN(e.summary) || "";
+    payload.description = BECLEAN(e.Description) || BECLEAN(e.description) || "";
+
+    payload.Fromdate = e.Fromdate || e.fromDate || "";
+    payload.Todate = e.Todate || e.toDate || "";
+    payload.Fromtime = e.Fromtime || e.fromTime || "";
+    payload.Totime = e.Totime || e.toTime || "";
+
+    payload.Venue = BECLEAN(e.Venue) || BECLEAN(e.venue) || "";
+    payload.Url = e.Url || e.URL || (e.images?.[0] || "");
+    payload.Category = e.Category || e.category || "";
+    payload.Price = e.Price || e.price || "";
+
+  }
+
+  // -----------------------------
+  // BUSINESS EMAILS
+  // -----------------------------
+  if (type === "newBusiness") {
+    if (!selectedBus) fail("Please select a business first.");
+
+    const b = selectedBus;
+
+    payload.busID = b.id;
+    payload.busname = BECLEAN(b.Busname) || BECLEAN(b.busname) || "";
+    payload.summary = BECLEAN(b.Summary) || BECLEAN(b.summary) || "";
+    payload.description = BECLEAN(b.Description) || BECLEAN(b.description) || "";
+    payload.location = BECLEAN(b.Location) || BECLEAN(b.location) || "";
+    payload.busemail = BECLEAN(b.Busemail) || BECLEAN(b.busemail) || "";
+    payload.useremail = BECLEAN(b.Useremail) || BECLEAN(b.useremail) || "";
+
+    let date = b.Date || b.date;
+    if (date instanceof firebase.firestore.Timestamp) {
+      payload.date = date.toDate().toISOString();
+    } else if (date instanceof Date) {
+      payload.date = date.toISOString();
+    } else if (typeof date === "string") {
+      payload.date = new Date(date).toISOString();
+    } else {
+      payload.date = new Date().toISOString();
+    }
+  }
+
+  // -----------------------------
+  // NO CREDITS EMAIL
+  // -----------------------------
+  if (type === "NoCredits") {
+    payload.paymentLink = await createPaymentShortlink(userID,payload.eventID);
+  }
+
+  // -----------------------------
+  // ORDER EMAILS
+  // -----------------------------
+  if (type === "pulsePointsGifted" || type === "sendPayout") {
+    if (!orderID) fail("Please select an order before sending.");
+
+    const token = localStorage.getItem("tp_token_v4");
+
+    if (!token) {
+      console.error("❌ No Auth Token Found in LocalStorage!");
+      orderSelect.innerHTML = `<option>Auth Error</option>`;
+      return;
+    }
+
+    const resp = await fetch(
+      `https://getallorders-ilx3agka5q-uc.a.run.app?email=${encodeURIComponent(email)}`,
+      {
+        method: "GET",
+        headers: {
+          "Authorization": `Bearer ${token}`
+        }
+      }
+    );
+    const data = await resp.json();
+    if (!data.success) fail("Failed to load orders.");
+
+    const o = data.orders.find(x => x.id === orderID);
+    if (!o) fail("Order not found.");
+
+    if (o.paidDeliverer === true) fail("Order has already been Paid.");
+
+    const tip = Number(o.ordertip) || 0;
+    const payoutAmount = Number(tip.toFixed(2));
+
+    Object.assign(payload, {
+      orderID,
+      productquantity: o.productquantity || 0,
+      totalPrice: o.ordertotal || 0,
+      itemPrice: o.orderprice || 0,
+      taxAmount: o.ordertax || 0,
+      tipAmount: o.ordertip || 0,
+      shipping: o.ordershipping || 0,
+      points: o.orderprice || 0,
+      payoutAmount,
+      displayAmount: payoutAmount,
+      displayCurrency: o.displayCurrency || "BZ$",
+      customerEmail: o.customerEmail || "",
+      delivererEmail: o.delivererEmail || "",
+      createdAt: o.createdAt?.toDate().toISOString() || "",
+    });
+  }
+
+  // -----------------------------
+  // Create EmailLog
+  // -----------------------------
+  const logResp = await fetch("https://createemaillog-ilx3agka5q-uc.a.run.app", {
+  method: "POST",
+  headers: { "Content-Type": "application/json" },
+  body: JSON.stringify({
+    date: new Date().toISOString(),
+    to: email,
+    type,
+    html: "",
+    payload,
+    triggeredBy: "Aldwyn",
+    adminUser: "Aldwyn",
+    emailType: type,
+    triggerSource: "adminPanel",
+    timestamp: new Date().toISOString(),
+    createdAt: new Date().toISOString(),
+    status: "Pending",
+    name
+  })
+});
+
+const logData = await logResp.json();
+payload.logId = logData.id;
+const ref = db.collection("EmailLogs").doc(payload.logId);
+
+  // -----------------------------
+// Generate HTML + subject
+// -----------------------------
+const subject = emailTemplates[type].subject(payload);
+const html = getEmailHTML(type, payload);
+
+// Update the EmailLog with subject + html
+await fetch("https://updateemaillog-ilx3agka5q-uc.a.run.app", {
+  method: "POST",
+  headers: { "Content-Type": "application/json" },
+  body: JSON.stringify({
+    id: payload.logId,
+    update: { logId: payload.logId, subject, html }
+  })
+});
+
+// -----------------------------
+// Send email via backend
+// -----------------------------
+try {
+  const response = await fetch(
+    "https://senddynamicemail-ilx3agka5q-uc.a.run.app",
+    {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ logId: payload.logId, ...payload }),
+    }
+  );
+
+  const text = await response.text();
+
+  // Try to parse JSON, but don't fail if it's not JSON
+  let data = {};
+  try {
+    data = JSON.parse(text);
+  } catch (e) {
+    console.warn("Non-JSON response from backend:", text);
+  }
+
+  // Backend explicitly says failure
+  if (data.success === false) {
+    status.style.color = "red";
+    status.textContent = "Email failed to Send!";
+    enableBtn();
+    return;
+  }
+
+  // Otherwise treat as success
+  status.style.color = "green";
+  status.textContent = "Email sent Successfully!";
+  enableBtn();
+  return;
+
+} catch (err) {
+  // Network or unexpected error
+  status.style.color = "red";
+  status.textContent = "Email failed to Send!";
+  enableBtn();
+  return;
+}
+  enableBtn();
+}
+(async () => {
+      loadUsers();
+      hideTPLoader();
+    })();
+  </script>
+</body>
+</html>

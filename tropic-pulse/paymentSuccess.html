@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Payment Successful • Tropic Pulse</title>
+
+  <!-- Google Font -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+  <!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-HSX89KS63P"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-HSX89KS63P');
+</script>
+
+  <!-- Meta Pixel Code -->
+  <script>
+  !function(f,b,e,v,n,t,s)
+  {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+  n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+  if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+  n.queue=[];t=b.createElement(e);t.async=!0;
+  t.src=v;s=b.getElementsByTagName(e)[0];
+  s.parentNode.insertBefore(t,s)}(window, document,'script',
+  'https://connect.facebook.net/en_US/fbevents.js');
+  fbq('init', '1651551349364459');
+  fbq('track', 'PageView');
+  </script>
+  <noscript><img height="1" width="1" style="display:none"
+  src="https://www.facebook.com/tr?id=1651551349364459&ev=PageView&noscript=1"
+  /></noscript>
+  <!-- End Meta Pixel Code -->
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      background: #000;
+      background-image: url('https://tropicpulse.bz/Mysterious.png?v4');
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      background-attachment: fixed;
+      font-family: Arial, sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      color: #fff;
+    }
+    
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.65); /* increase to 0.75 or 0.85 for deeper darkness */
+      pointer-events: none;
+      z-index: -1;
+    }
+
+    .card {
+      background: #ffff99;
+      margin: 1px auto 6px auto;
+      background: #0a6e3a;
+      padding: 40px;
+      border-radius: 20px;
+      backdrop-filter: blur(10px);
+      width: 100%;
+      max-width: 520px;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+    }
+
+    .logo {
+      width: 120px;
+      margin-bottom: 20px;
+    }
+
+    h1 {
+      font-size: 26px;
+      margin-bottom: 10px;
+    }
+
+    p {
+      font-size: 16px;
+      opacity: 0.9;
+    }
+
+    .loader {
+      margin: 25px auto;
+      border: 6px solid rgba(255,255,255,0.3);
+      border-top: 6px solid white;
+      border-radius: 50%;
+      width: 45px;
+      height: 45px;
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    .footer {
+      margin-top: 20px;
+      font-size: 13px;
+      opacity: 0.7;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="card">
+    <img src="https://tropicpulse.bz/ToucanLogo-Mini.png?v4" class="logo" />
+
+    <h1>Payment Successful</h1>
+    <p>Your Credits are being Added. Redirecting you back to your Event…</p>
+
+    <div class="loader"></div>
+
+    <p class="footer">Tropic Pulse • San Pedro, Belize</p>
+  </div>
+
+  <script>
+    async function runFlow() {
+      try {
+        const urlParams = new URLSearchParams(window.location.search);
+        const eventID = urlParams.get("eventID");
+
+        // If missing eventID, fallback to events page
+        if (!eventID) {
+          window.location.replace("https://tropicpulse.bz/eventspage.html");
+          return;
+        }
+
+        // Small delay so webhook finishes adding credits
+        await new Promise(resolve => setTimeout(resolve, 1500));
+
+        // Redirect to the specific event
+        window.location.replace(`https://tropicpulse.bz/eventDetail.html?id=${eventID}&payment=success`);
+
+      } catch (err) {
+        console.error("Payment success flow error:", err);
+        window.location.replace("https://tropicpulse.bz/eventspage.html");
+      }
+    }
+
+    runFlow();
+  </script>
+</body>
+</html>

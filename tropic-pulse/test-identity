@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<body style="font-family:Arial;padding:20px;">
+  <h2>Identity Auto-Load Test</h2>
+
+  <button onclick="saveIdentity()">Save Identity</button>
+
+  <pre id="output"></pre>
+
+<script>
+function saveIdentity() {
+  localStorage.setItem("tp_userId", "USER-123");
+  localStorage.setItem("tp_token", "TOKEN-ABC");
+  document.getElementById("output").innerText = "Identity saved.";
+}
+
+// This runs automatically every time the page loads
+window.onload = () => {
+  const userId = localStorage.getItem("tp_userId");
+  const token = localStorage.getItem("tp_token");
+
+  if (userId) {
+    document.getElementById("output").innerText =
+      `Auto-loaded:\nUser: ${userId}\nToken: ${token}`;
+  } else {
+    document.getElementById("output").innerText =
+      "No identity found yet.";
+  }
+};
+</script>
+</body>
+</html>

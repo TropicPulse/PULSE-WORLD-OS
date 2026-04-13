@@ -1,0 +1,1912 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Tropic Pulse — Discover Belize, Effortlessly</title>
+
+  <!-- Google Font -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+  <!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-HSX89KS63P"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-HSX89KS63P');
+</script>
+
+  <!-- Meta Pixel Code -->
+  <script>
+  !function(f,b,e,v,n,t,s)
+  {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+  n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+  if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+  n.queue=[];t=b.createElement(e);t.async=!0;
+  t.src=v;s=b.getElementsByTagName(e)[0];
+  s.parentNode.insertBefore(t,s)}(window, document,'script',
+  'https://connect.facebook.net/en_US/fbevents.js');
+  fbq('init', '1651551349364459');
+  fbq('track', 'PageView');
+  </script>
+  <noscript><img height="1" width="1" style="display:none"
+  src="https://www.facebook.com/tr?id=1651551349364459&ev=PageView&noscript=1"
+  /></noscript>
+  <!-- End Meta Pixel Code -->
+  <style>
+    :root {
+      /* Colors */
+      --tp-yellow: #ffff99;
+      --tp-teal: #00a884;
+      --tp-teal-soft: #00c7a6;
+      --tp-coral: #ff5a5a;
+      --tp-coral-dark: #ff3d3d;
+      --tp-bg: #000000;
+      --tp-text: #1a1a1a;
+      --tp-muted: #777777;
+      --tp-card-bg: #000000;
+      --tp-shadow-soft: 0 6px 18px rgba(0, 0, 0, 0.12);
+      --tp-radius-lg: 18px;
+      --tp-radius-md: 12px;
+      --tp-radius-sm: 8px;
+
+      /* Layout */
+      --tp-max-width: 1200px;
+      --tp-section-padding: 40px;
+      --tp-section-padding-lg: 40px;
+
+      /* Animation */
+      --tp-gradient-duration: 10s;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      margin: 0;
+      font-family: "Inter", sans-serif;
+      color: var(--tp-text);
+      line-height: 1.5;
+      background: #ffff99;
+    }
+
+    img {
+      max-width: 100%;
+      display: block;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    /* Utility */
+    .container {
+      width: 100%;
+      max-width: var(--tp-max-width);
+      margin: 0 auto;
+      padding: 0 20px;
+    }
+
+    /* Utility */
+    .testimonials-container {
+      width: 100%;
+      max-width: var(--tp-max-width);
+      margin: 0 auto;
+      padding: 0;
+    }
+
+    .section {
+      padding: var(--tp-section-padding) 0;
+    }
+
+    @media (min-width: 992px) {
+      .section {
+        padding: var(--tp-section-padding-lg) 0;
+      }
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 12px 22px;
+      border-radius: var(--tp-radius-md);
+      font-weight: 600;
+      font-size: 0.95rem;
+      border: none;
+      cursor: pointer;
+      transition: background 0.2s ease, transform 0.15s ease, box-shadow 0.15s ease;
+      text-decoration: none;
+      white-space: nowrap;
+    }
+
+    .btn-primary {
+      background: var(--tp-coral);
+      color: #fff;
+      box-shadow: 0 4px 10px rgba(255, 90, 90, 0.4);
+    }
+
+    .btn-primary:hover {
+      background: var(--tp-coral-dark);
+      transform: translateY(-1px);
+      box-shadow: 0 6px 14px rgba(255, 90, 90, 0.5);
+    }
+
+    .btn-outline {
+      background: transparent;
+      border: 2px solid transparent;
+      padding: 10px 20px;
+      font-weight: 600;
+
+      /* TEXT GRADIENT */
+      background-image: linear-gradient(90deg, #000000, #ffffff, #000000);
+      background-size: 400%;
+      background-position: 0%;
+      background-clip: text;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+
+      /* BORDER GRADIENT */
+      border-image: linear-gradient(90deg, #000000, #ffffff, #000000) 1;
+      transition: background-position 1s linear, border-image 1s linear;
+    }
+
+    .btn-outline:hover {
+      background-position: 100%; /* makes the shimmer slide left → right */
+      border-image: linear-gradient(90deg, #ff3d3d, #ffff00, #ff3d3d) 1;
+      box-shadow: 0 6px 14px rgba(255, 90, 90, 0.5);
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 4px 10px;
+      border-radius: 999px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      letter-spacing: 0.03em;
+      text-transform: uppercase;
+      background: rgba(255, 255, 255, 0.18);
+    }
+
+    .gradient-bg::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, #ffff99, #000000, #ffff99);
+      background-size: 400% 400%;
+      animation: tpGradient var(--tp-gradient-duration) linear 1 forwards;
+      z-index: -1;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* Animated background gradient (global wrapper) */
+    .gradient-bg {
+      position: relative;
+      background: #ffff99; /* final color after animation */
+      overflow: hidden;
+      align-items: center;
+      justify-content: center;
+    }
+
+    @keyframes tpGradient {
+      0% {
+        background-position: 0% 100%;
+      }
+      10% {
+        background-position: 10% 90%;
+      }
+      25% {
+        background-position: 25% 75%;
+      }
+      50% {
+        background-position: 50% 50%;
+      }
+      75% {
+        background-position: 75% 25%;
+      }
+      90% {
+        background-position: 90% 10%;
+      }
+      100% {
+        background-position: 100% 0%;
+      }
+    }
+
+    .hero-title,
+    .hero-subtitle,
+    .hero-eyebrow,
+    .hero-meta {
+      background: linear-gradient(
+        90deg,
+        #000000 0%,
+        #000000 25%,
+        #ffffff 50%,
+        #000000 75%,
+        #000000 100%
+      );
+      background-size: 200% 100%;
+      background-clip: text;
+      -webkit-background-clip: text;
+      color: transparent;
+      animation: textPulse var(--tp-gradient-duration) linear 1;
+    }
+
+    @keyframes textPulse {
+      0% {
+        background-position: 0% 100%;
+      }
+      10% {
+        background-position: 10% 90%;
+      }
+      25% {
+        background-position: 25% 75%;
+      }
+      50% {
+        background-position: 50% 50%;
+      }
+      75% {
+        background-position: 75% 25%;
+      }
+      90% {
+        background-position: 90% 10%;
+      }
+      100% {
+        background-position: 100% 0%;
+      }
+    }
+
+    /* ================= HEADER ================= */
+
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      background: linear-gradient(
+        to bottom,
+        var(--tp-yellow) 100%
+      );
+      backdrop-filter: blur(6px);
+    }
+
+    .header-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px 20px;
+      max-width: var(--tp-max-width);
+      margin: 0 auto;
+    }
+
+    .tp-header {
+      font-size: 2.3rem;
+      font-weight: 800;
+      color: var(--tp-teal);
+      letter-spacing: -0.5px;
+    }
+
+    .tp-header-mobile {
+      font-size: 1.3rem;
+      font-weight: 800;
+      color: var(--tp-teal);
+      letter-spacing: -0.5px;
+    }
+
+    nav {
+      display: flex;
+      align-items: center;
+      gap: 24px;
+    }
+
+    nav a {
+      font-size: 0.95rem;
+      font-weight: 500;
+      position: relative;
+    }
+
+    nav a::after {
+      content: "";
+      position: absolute;
+      left: 0;
+      bottom: -4px;
+      width: 0;
+      height: 2px;
+      background: var(--tp-teal);
+      transition: width 0.2s ease;
+    }
+
+    nav a:hover::after {
+      width: 100%;
+    }
+
+    .header-cta {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .mobile-menu-toggle {
+      display: none;
+      width: 32px;
+      height: 32px;
+      border-radius: 999px;
+      border: none;
+      background: #fff;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+    }
+
+    .mobile-menu-toggle span {
+      width: 18px;
+      height: 2px;
+      background: #333;
+      position: relative;
+    }
+
+    .mobile-menu-toggle span::before,
+    .mobile-menu-toggle span::after {
+      content: "";
+      position: absolute;
+      left: 0;
+      width: 18px;
+      height: 2px;
+      background: #333;
+    }
+
+    .mobile-menu-toggle span::before {
+      top: -5px;
+    }
+
+    .mobile-menu-toggle span::after {
+      top: 5px;
+    }
+
+    /* Mobile menu */
+    .mobile-menu {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.55);
+      backdrop-filter: blur(6px);
+      display: none;
+      z-index: 60;
+    }
+
+    .mobile-menu-panel {
+      position: absolute;
+      top: 0;
+      right: 0;
+      width: 260px;
+      height: 100%;
+      background: #ffffcc;
+      padding: 24px 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+      box-shadow: -4px 0 12px rgba(0, 0, 0, 0.2);
+    }
+
+    .mobile-menu-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .mobile-menu-close {
+      border: none;
+      background: transparent;
+      font-size: 1.4rem;
+      cursor: pointer;
+    }
+
+    .mobile-menu-nav a {
+      display: block;
+      padding: 8px 0;
+      font-weight: 500;
+    }
+
+    .mobile-menu-cta {
+      margin-top: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .mobile-menu.show {
+      display: block;
+    }
+
+    @media (max-width: 768px) {
+      nav {
+        display: none;
+      }
+      .header-cta {
+        display: none;
+      }
+      .mobile-menu-toggle {
+        display: inline-flex;
+      }
+    }
+
+    /* ================= HERO ================= */
+
+    .hero {
+      position: relative;
+      color: #000;
+      overflow: hidden;
+      align-items: center;
+    }
+
+    
+    .hero-bg {
+      position: relative;
+      width: 100%;
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      margin: 0;
+      padding: 0;
+      align-items: center;
+    }
+
+    .hero-overlay {
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(circle at top left, rgba(255, 255, 153, 0.35), transparent 55%),
+                  radial-gradient(circle at bottom right, rgba(255, 90, 90, 0.35), transparent 55%);
+      z-index: -1;
+      align-items: center;
+    }
+
+    .hero-inner {
+      padding: 50px 0 50px;
+      align-items: center;
+    }
+
+    .hero-grid {
+      display: grid;
+      gap: 200px;
+      align-items: center;
+    }
+
+    @media (min-width: 900px) {
+      .hero-grid {
+        grid-template-columns: 1.2fr 1fr;
+        align-items: center;
+      }
+    }
+
+    .hero-eyebrow {
+      margin-bottom: 12px;
+    }
+
+    .hero-title {
+      font-size: 2.6rem;
+      font-weight: 800;
+      letter-spacing: -0.04em;
+      margin-bottom: 14px;
+    }
+
+    @media (min-width: 900px) {
+      .hero-title {
+        font-size: 3.2rem;
+      }
+    }
+
+    .hero-subtitle {
+      font-size: 1.05rem;
+      max-width: 520px;
+      margin-bottom: 24px;
+      opacity: 0.95;
+    }
+
+    .hero-ctas {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-bottom: 8px;
+    }
+
+    .hero-meta {
+      font-size: 0.9rem;
+      opacity: 0.9;
+    }
+
+    .hero-phone {
+      position: relative;
+      max-width: 320px;
+      margin: 0 auto;
+    }
+
+    .phone-frame {
+      border-radius: 36px;
+      padding: 10px;
+      background: #ffffff;
+      box-shadow: 0 18px 40px rgba(0, 0, 0, 0.4);
+    }
+
+    .phone-inner {
+      border-radius: 28px;
+      overflow: hidden;
+      background: #000;
+    }
+
+    .phone-screen {
+      width: 100%;
+      height: 520px;
+      background: url("https://tropicpulse.bz/Phone.png?v=2");
+      background-size: cover;
+      background-position: center;
+    }
+
+    .phone-screen-img {
+      width: 100%;
+      height: 520px;
+      object-fit: cover;
+      display: block;
+    }
+
+    .phone-glow {
+      position: absolute;
+      inset: auto;
+      left: 50%;
+      bottom: -40px;
+      width: 220px;
+      height: 40px;
+      transform: translateX(-50%);
+      background: radial-gradient(circle, rgba(0, 0, 0, 0.4), transparent 70%);
+      filter: blur(4px);
+      z-index: -1;
+    }
+
+    /* ================= APP SHOWCASE CAROUSEL ================= */
+
+    .app-showcase {
+      background: #000000;
+    }
+
+    .section-header {
+      text-align: center;
+      margin-bottom: 40px;
+      color: #000;
+    }
+
+    .intouchsection {
+      text-align: center;
+      margin: 0 auto;
+      padding: 0;
+      color: #000;
+      max-width: var(--tp-max-width);
+      width: 100%;
+    }
+
+    .showcase-header {
+      text-align: center;
+      margin-bottom: 40px;
+      color: #fff;
+    }
+
+    .testimonials-header {
+      text-align: center;
+      margin-bottom: 40px;
+      color: #fff;
+    }
+
+    .section-eyebrow {
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: #000;
+      margin-bottom: 8px;
+      font-weight: 600;
+    }
+
+    .showcase-eyebrow {
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: #fff;
+      margin-bottom: 8px;
+      font-weight: 600;
+    }
+
+    .testimonials-eyebrow {
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: #fff;
+      margin-bottom: 8px;
+      font-weight: 600;
+    }
+
+    .section-title {
+      font-size: 2rem;
+      font-weight: 800;
+      color: #000;
+      margin-bottom: 8px;
+    }
+
+    .section-subtitle {
+      font-size: 0.98rem;
+      color: #000;
+      max-width: 520px;
+      margin: 0 auto;
+    }
+
+
+    .showcase-title {
+      font-size: 2rem;
+      font-weight: 800;
+      color: #fff;
+      margin-bottom: 8px;
+    }
+
+    .showcase-subtitle {
+      font-size: 0.98rem;
+      color: #fff;
+      max-width: 520px;
+      margin: 0 auto;
+    }
+
+    .testimonials-title {
+      font-size: 2rem;
+      font-weight: 800;
+      color: #fff;
+      margin-bottom: 8px;
+    }
+
+    .testimonials-subtitle {
+      font-size: 0.98rem;
+      color: #fff;
+      max-width: 520px;
+      margin: 0 auto;
+    }
+
+    .testimonials-wrapper {
+        background: #FFD400; /* Tropic Pulse yellow */
+        padding: 25px;
+        border-radius: 18px; /* Outer rounded corners */
+    }
+
+    .testimonials-inner {
+        background: #000; /* Black interior */
+        border-radius: 14px; /* Inner rounded corners */
+        padding: 30px;
+        color: #fff; /* White text inside */
+    }
+
+    .testimonials-inner h2 {
+        color: #FFD400; /* Optional: yellow title for contrast */
+        margin-bottom: 20px;
+    }
+
+    .testimonial-item {
+        margin-bottom: 20px;
+        padding-bottom: 15px;
+        border-bottom: 1px solid rgba(255,255,255,0.15);
+    }
+
+    .testimonial-item:last-child {
+        border-bottom: none;
+    }
+
+    .carousel {
+      position: relative;
+      overflow: hidden;
+      max-width: 1200px;
+      width: 100%;
+      margin: 0 auto;
+    }
+
+
+    .carousel-controls {
+      position: absolute;
+      bottom: 8px; 
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      gap: 15px;
+      z-index: 10;
+    }
+
+    /* The card that holds the carousel */
+    .carousel-card {
+      max-width: var(--tp-max-width);          /* leaves space on both sides */
+      width: 100%;
+      margin: 40px auto;       /* centers it */
+      padding: 0;           /* space inside the border */
+      background: #000000;     /* INSIDE the border = black */
+      border-radius: 24px;     /* softened corners */
+      border: 4px solid #000;  /* optional: black border */
+      overflow: hidden;        /* ensures rounded corners clip content */
+    }
+
+
+    .carousel-container {
+      width: 100%;
+      max-width: var(--tp-max-width);
+      margin: 0 auto;
+      padding: 0;
+      overflow: hidden;
+    }
+
+    .carousel-track {
+      display: flex;
+      width: 100%;
+      transition: transform 2s ease;
+    }
+
+    .carousel-slide {
+      flex: 0 0 calc(100% / 2); /* show 3 at a time */
+      display: flex;
+      justify-content: center;
+      width: 100%;
+      align-items: center;
+    }
+
+    .carousel-slide img {
+      width: 100%;
+      height: auto;
+      display: block;
+      border-radius: 12px;
+    }
+
+    .carousel,
+    .carousel-track,
+    .carousel-slide {
+      margin: 0 auto;
+      padding: 0;
+    }
+
+    .carousel-phone {
+      max-width: 260px;
+      border-radius: 30px;
+      padding: 0;
+      background: linear-gradient(145deg, #ffffff, #e0e0e0);
+      box-shadow: 0 14px 30px rgba(0, 0, 0, 0.25);
+    }
+
+    .carousel-phone-inner {
+      border-radius: 24px;
+      overflow: hidden;
+      background: #000;
+    }
+
+    .carousel-phone-screen {
+      width: 50%;
+      height: 460px;
+      background-size: cover;
+      background-position: center;
+    }
+
+    .carousel-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 999px;
+      background: #ccc;
+      cursor: pointer;
+      transition: background 0.2s ease, transform 0.2s ease;
+    }
+
+    .carousel-dot.active {
+      background: var(--tp-teal);
+      transform: scale(1.2);
+    }
+
+    .carousel-arrow {
+      border: none;
+      background: var(--tp-teal);
+      border-radius: 999px;
+      width: 44px;
+      height: 44px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+      cursor: pointer;
+    }
+
+    .carousel-screen-img {
+      width: 100%;
+      height: 460px;
+      object-fit: cover;
+      display: block;
+    }
+
+    .phone1 {
+      background-image: url("https://tropicpulse.bz/Phone1.png?v=11");
+      background-size: cover;
+      background-position: center;
+    }
+
+    /* ================= FEATURE GRID ================= */
+
+    .feature-grid-wrapper {
+      background: #ffff99;
+      background-size: cover;
+      background-position: center;
+      background-blend-mode: soft-light;
+    }
+
+    .feature-grid {
+      display: grid;
+      gap: 24px;
+    }
+
+    @media (min-width: 900px) {
+      .feature-grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+    }
+
+    .feature-card {
+      position: relative;
+      border-radius: var(--tp-radius-lg);
+      overflow: hidden;
+      box-shadow: var(--tp-shadow-soft);
+      height: 340px;
+      color: #fff;
+    }
+
+    .testimonial-card {
+      position: relative;
+      border-radius: var(--tp-radius-lg);
+      overflow: hidden;
+      box-shadow: var(--tp-shadow-soft);
+      height: 200px;
+      color: #fff;
+    }
+
+    .feature-card img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      filter: brightness(0.75);
+      transition: transform 0.3s ease;
+    }
+
+    .feature-card:hover img {
+      transform: scale(1.05);
+    }
+
+    .feature-card-overlay {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(to top, rgba(0, 0, 0, 0.7), transparent 55%);
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      padding: 20px;
+    }
+
+    .feature-card-title {
+      font-size: 1.3rem;
+      font-weight: 700;
+      margin-bottom: 6px;
+    }
+
+    .feature-card-text {
+      font-size: 0.9rem;
+      margin-bottom: 10px;
+      opacity: 0.95;
+    }
+
+    .feature-card .btn {
+      font-size: 0.85rem;
+      padding: 8px 16px;
+    }
+
+    /* ================= VENDOR ONBOARDING ================= */
+
+    .vendor-section {
+      background: #ffff99;
+    }
+
+    .two-column {
+      display: grid;
+      gap: 32px;
+      align-items: center;
+    }
+
+    @media (min-width: 900px) {
+      .two-column {
+        grid-template-columns: 1.1fr 1fr;
+      }
+    }
+
+    .section-text-block h2 {
+      font-size: 2rem;
+      margin-bottom: 12px;
+      font-weight: 800;
+      color: var(--tp-text);
+    }
+
+    .section-text-block p {
+      font-size: 0.98rem;
+      color: var(--tp-muted);
+      margin-bottom: 18px;
+      max-width: 520px;
+    }
+
+    .contact-text-block h2 {
+      font-size: 2rem;
+      margin-bottom: 12px;
+      font-weight: 800;
+      color: #000;
+    }
+
+    .contact-text-block p {
+      font-size: 0.98rem;
+      color: #000;
+      margin-bottom: 18px;
+      max-width: 520px;
+    }
+
+    .icon-list {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      display: grid;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    .icon-list li {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      font-size: 0.95rem;
+      color: var(--tp-text);
+    }
+
+    .icon-bullet {
+      width: 22px;
+      height: 22px;
+      border-radius: 999px;
+      background: rgba(0, 168, 132, 0.12);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--tp-teal);
+      font-size: 0.8rem;
+      flex-shrink: 0;
+    }
+
+    .vendor-card {
+      border-radius: var(--tp-radius-lg);
+      background: #ffff99;
+      box-shadow: var(--tp-shadow-soft);
+      padding: 22px;
+      background-image: url("https://tropicpulse.bz/Vendor.jpg?v=12");
+      background-size: cover;
+      background-position: center;
+      position: relative;
+      overflow: hidden;
+      color: #fff;
+    }
+
+    .vendor-card::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, rgba(0, 0, 0, 0.7), transparent 60%);
+    }
+
+    .vendor-card-inner {
+      position: relative;
+      z-index: 1;
+    }
+
+    .vendor-card h3 {
+      font-size: 1.4rem;
+      margin-bottom: 8px;
+    }
+
+    .vendor-card p {
+      font-size: 0.95rem;
+      max-width: 260px;
+      margin-bottom: 14px;
+    }
+
+    /* ================= DELIVERER RECRUITMENT ================= */
+
+    .deliverer-section {
+      background: #ffff99;
+    }
+
+    .deliverer-card {
+      border-radius: var(--tp-radius-lg);
+      background-image: url("https://tropicpulse.bz/Deliverer.jpg?v=13");
+      background-size: cover;
+      background-position: center;
+      box-shadow: var(--tp-shadow-soft);
+      padding: 22px;
+      position: relative;
+      overflow: hidden;
+      color: #fff;
+    }
+
+    .deliverer-card::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, rgba(0, 0, 0, 0.7), transparent 60%);
+    }
+
+    .deliverer-card-inner {
+      position: relative;
+      z-index: 1;
+    }
+
+    .deliverer-card h3 {
+      font-size: 1.4rem;
+      margin-bottom: 8px;
+    }
+
+    .deliverer-card p {
+      font-size: 0.95rem;
+      max-width: 260px;
+      margin-bottom: 14px;
+    }
+
+    .pill-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 16px;
+    }
+
+    .pill {
+      padding: 6px 12px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.18);
+      font-size: 0.8rem;
+    }
+
+    .tp-logo-wrapper {
+      display: flex;
+      justify-content: center;
+      margin-bottom: 10px;
+    }
+
+    .tp-logo-circle {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 3px solid #00b3b3; /* matches your teal vibe */
+      box-shadow: 0 0 10px rgba(0,0,0,0.15);
+    }
+
+    .tp-logo-circle-mobile {
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 3px solid #00b3b3; /* matches your teal vibe */
+      box-shadow: 0 0 10px rgba(0,0,0,0.15);
+    }
+
+    /* ================= (HALF 2 SECTIONS BELOW) ================= */
+  </style>
+</head>
+
+<body>
+
+  <!-- MOBILE MENU -->
+  <div class="mobile-menu" id="mobileMenu">
+    <div class="mobile-menu-panel">
+      <div class="mobile-menu-header">
+        <div class="tp-logo-wrapper">
+          <img 
+            src="https://tropicpulse.bz/ToucanLogo.jpg"
+            alt="Tropic Pulse Logo"
+            class="tp-logo-circle-mobile"
+          />
+        </div>
+        <h1 class="tp-header-mobile">Tropic Pulse</h1>
+        <button class="mobile-menu-close" id="mobileMenuClose">&times;</button>
+      </div>
+      <div class="mobile-menu-nav">
+        <a href="#hero">Home</a>
+        <a href="#vendors">Vendors</a>
+        <a href="#deliverers">Deliverers</a>
+        <a href="#pricing">Pricing</a>
+        <a href="#faq">FAQ</a>
+        <a href="#contact">Contact</a>
+        <a href="https://demanddelivery-18afd8688c24.pwastore.com">Open Web App</a>
+      </div>
+      <div class="mobile-menu-cta">
+        <a class="btn btn-primary" href="https://linktr.ee/tropicpulse">Open Tropic Pulse</a>
+        <a class="btn" style="background:#fff;color:#333;" href="#vendors">Become a Vendor</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- HEADER -->
+  
+  <header class="topmenu" style="background: #000; color: #fff; border-bottom: 3px inset rgba(0,0,0,0.4); box-shadow: 0 4px 10px rgba(0,0,0,0.25);">
+    <div class="header-inner">
+       <div class="tp-logo-wrapper">
+          <img 
+            src="https://tropicpulse.bz/ToucanLogo.jpg"
+            alt="Tropic Pulse Logo"
+            class="tp-logo-circle"
+          />
+        </div>
+        <h1 class="tp-header">Tropic Pulse</h1>
+      <nav>
+        <a href="#hero">Home</a>
+        <a href="#vendors">Vendors</a>
+        <a href="#deliverers">Deliverers</a>
+        <a href="#pricing">Pricing</a>
+        <a href="#faq">FAQ</a>
+        <a href="#contact">Contact</a>
+      </nav>
+      <div class="header-cta">
+        <a href="https://demanddelivery-18afd8688c24.pwastore.com" class="btn btn-primary">Open Web App</a>
+      </div>
+      <button class="mobile-menu-toggle" id="mobileMenuToggle">
+        <span></span>
+      </button>
+    </div>
+  </header>
+
+  <!-- HERO -->
+  <section class="hero gradient-bg" id="hero"  style="max-width:1200px;width:100%;margin:0 auto;justify-content:center;">
+    <div class="hero-bg"></div>
+    <div class="hero-overlay"></div>
+
+    <!-- Center the whole hero content -->
+    <div class="hero-inner" style="max-width:1200px;width:100%;margin:0 auto;justify-content:center;">
+      
+      <!-- Constrain + center the grid as a block -->
+      <div class="hero-grid" style="max-width:1200px;width:100%;margin:0 auto;justify-content:center;">
+
+        <div>
+          <div class="hero-eyebrow">
+            <span class="badge">Built for Belize</span>
+          </div>
+          <h1 class="hero-title">Discover Belize, Effortlessly.</h1>
+          <p class="hero-subtitle">
+            Tropic Pulse brings together food, drinks, shops, events, and local services into one island‑first app —
+            designed for the way San Pedro actually lives, eats, and explores.
+          </p>
+          <div class="hero-ctas">
+            <a href="https://linktr.ee/tropicpulse" target="_blank" class="btn btn-primary">Open Tropic Pulse</a>
+            <a href="#vendors" class="btn btn-outline">Become a Vendor</a>
+          </div>
+          <div class="hero-meta">
+            Live in San Pedro. Built for Belize. Expanding across the Caribbean.
+          </div>
+        </div>
+
+        <div class="hero-phone">
+          <div class="phone-frame">
+            <div class="phone-inner">
+              <img src="https://tropicpulse.bz/Phone1.png?v=18" class="phone-screen-img" alt="App Screen">
+            </div>
+          </div>
+          <div class="phone-glow"></div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+  <div class="carousel-card">
+  <!-- your existing carousel HTML goes here -->
+  <!-- APP SHOWCASE CAROUSEL -->
+  <section class="app-showcase section" id="app">
+    <div class="carousel-container">
+      <div class="showcase-header">
+        <div class="showcase-eyebrow">See the App in Action</div>
+        <h2 class="showcase-title">A single app for everything local</h2>
+        <p class="showcase-subtitle">
+          From burgers and cocktails to groceries, shops, and events — Tropic Pulse keeps the best of Belize at your fingertips.
+        </p>
+      </div>
+
+      <div class="carousel" id="appCarousel" style="width:100%;max-width:1200px;margin:0 auto;">
+        <div class="carousel-track">
+          <div class="carousel-slide">
+            <div class="carousel-phone">
+              <div class="carousel-phone-inner">
+                <img src="https://tropicpulse.bz/HomeScreen.jpg?v=26" class="carousel-screen-img" alt="App Screen">
+              </div>
+            </div>
+          </div>
+          <div class="carousel-slide">
+            <div class="carousel-phone">
+              <div class="carousel-phone-inner">
+                <img src="https://tropicpulse.bz/DeliveryMenu.jpg?v=25" class="carousel-screen-img" alt="App Screen">
+              </div>
+            </div>
+          </div>
+          <div class="carousel-slide">
+            <div class="carousel-phone">
+              <div class="carousel-phone-inner">
+                <img src="https://tropicpulse.bz/CartVendorsLoginScreen.jpg?v=24" class="carousel-screen-img" alt="App Screen">
+              </div>
+            </div>
+          </div>
+          <div class="carousel-slide">
+            <div class="carousel-phone">
+              <div class="carousel-phone-inner">
+                <img src="https://tropicpulse.bz/CartScreen.jpg?v=23" class="carousel-screen-img" alt="App Screen">
+              </div>
+            </div>
+          </div>
+          <div class="carousel-slide">
+            <div class="carousel-phone">
+              <div class="carousel-phone-inner">
+                <img src="https://tropicpulse.bz/LocalEventsScreen.jpg?v=22" class="carousel-screen-img" alt="App Screen">
+              </div>
+            </div>
+          </div>
+          <div class="carousel-slide">
+            <div class="carousel-phone">
+              <div class="carousel-phone-inner">
+                <img src="https://tropicpulse.bz/LoyaltyScreen.jpg?v=21" class="carousel-screen-img" alt="App Screen">
+              </div>
+            </div>
+          </div>
+          <div class="carousel-slide">
+            <div class="carousel-phone">
+              <div class="carousel-phone-inner">
+                <img src="https://tropicpulse.bz/DirectoryBusScreen.jpg?v=20" class="carousel-screen-img" alt="App Screen">
+              </div>
+            </div>
+          </div>
+          <div class="carousel-slide">
+            <div class="carousel-phone">
+              <div class="carousel-phone-inner">
+                <img src="https://tropicpulse.bz/OrderDelivering.jpg?v=19" class="carousel-screen-img" alt="App Screen">
+              </div>
+            </div>
+          </div>
+          <div class="carousel-slide">
+            <div class="carousel-phone">
+              <div class="carousel-phone-inner">
+                <img src="https://tropicpulse.bz/RoleChange.jpg?v=29" class="carousel-screen-img" alt="App Screen">
+              </div>
+            </div>
+          </div>
+          <div class="carousel-slide">
+            <div class="carousel-phone">
+              <div class="carousel-phone-inner">
+                <img src="https://tropicpulse.bz/Reviews.jpg?v=30" class="carousel-screen-img" alt="App Screen">
+              </div>
+            </div>
+          </div>
+          <div class="carousel-slide">
+            <div class="carousel-phone">
+              <div class="carousel-phone-inner">
+                <img src="https://tropicpulse.bz/PulsePointRedemption.jpg?v=31" class="carousel-screen-img" alt="App Screen">
+              </div>
+            </div>
+          </div>
+          <div class="carousel-slide">
+            <div class="carousel-phone">
+              <div class="carousel-phone-inner">
+                <img src="https://tropicpulse.bz/AccountSettings.jpg?v=32" class="carousel-screen-img" alt="App Screen">
+              </div>
+            </div>
+          </div>
+      </div>
+      <div class="carousel-controls">
+          <button class="carousel-arrow" data-dir="prev"><strong>&#8249;</strong></button>
+          <div class="carousel-dot active" data-slide="0"></div>
+          <div class="carousel-dot" data-slide="1"></div>
+          <div class="carousel-dot" data-slide="2"></div>
+          <div class="carousel-dot" data-slide="3"></div>
+          <div class="carousel-dot" data-slide="4"></div>
+          <div class="carousel-dot" data-slide="5"></div>
+          <div class="carousel-dot" data-slide="6"></div>
+          <div class="carousel-dot" data-slide="7"></div>
+          <div class="carousel-dot" data-slide="8"></div>
+          <div class="carousel-dot" data-slide="9"></div>
+          <div class="carousel-dot" data-slide="10"></div>
+          <button class="carousel-arrow" data-dir="next"><strong>&#8250;</strong></button>
+        </div>
+    </div>
+  </section>
+  </div>
+
+  <!-- FEATURE GRID -->
+  <section class="feature-grid-wrapper section" id="features">
+    <div class="container">
+      <div class="section-header">
+        <div class="section-eyebrow">Explore by Craving</div>
+        <h2 class="section-title">From burgers to beach bars</h2>
+        <p class="section-subtitle">
+          Tropic Pulse makes it easy to jump straight into what you’re craving — or discover something new around the corner.
+        </p>
+      </div>
+
+      <div class="feature-grid">
+        <div class="feature-card">
+          <img src="https://tropicpulse.bz/Burgers.png?v=14" alt="Burgers" />
+          <div class="feature-card-overlay">
+            <div class="feature-card-title">Burgers</div>
+            <div class="feature-card-text">
+              From beach grills to gourmet stacks — find the best burgers on the island.
+            </div>
+            <a href="https://demanddelivery-18afd8688c24.pwastore.com/folder/cayedirectory/2856554" class="btn btn-primary">Explore Burgers</a>
+          </div>
+        </div>
+
+        <div class="feature-card">
+          <img src="https://tropicpulse.bz/Drinks.png?v=15" alt="Drinks" />
+          <div class="feature-card-overlay">
+            <div class="feature-card-title">Drinks</div>
+            <div class="feature-card-text">
+              Cocktails, smoothies, juices, and local favorites — all just a few taps away.
+            </div>
+            <a href="https://demanddelivery-18afd8688c24.pwastore.com/folder/cayedirectory/2856559" class="btn btn-primary">Explore Drinks</a>
+          </div>
+        </div>
+
+        <div class="feature-card">
+          <img src="https://tropicpulse.bz/Groceries.jpg?v=16" alt="Groceries" />
+          <div class="feature-card-overlay">
+            <div class="feature-card-title">Groceries</div>
+            <div class="feature-card-text">
+              Local markets, essentials, and everyday goods — discover what’s nearby.
+            </div>
+            <a href="https://demanddelivery-18afd8688c24.pwastore.com/folder/cayedirectory/2856565" class="btn btn-primary">Explore Groceries</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- VENDOR ONBOARDING -->
+  <section class="vendor-section section" id="vendors">
+    <div class="container two-column">
+      <div class="section-text-block">
+        <div class="section-eyebrow">For Restaurants, Shops & Services</div>
+        <h2>Grow your business with Tropic Pulse</h2>
+        <p>
+          Tropic Pulse gives local businesses a modern, mobile‑first storefront — without the complexity.
+          Update menus, manage orders, and reach new customers across San Pedro and beyond.
+        </p>
+        <ul class="icon-list">
+          <li>
+            <div class="icon-bullet">✓</div>
+            <span>Real‑time menu and inventory updates.</span>
+          </li>
+          <li>
+            <div class="icon-bullet">✓</div>
+            <span>Integrated delivery and pickup options.</span>
+          </li>
+          <li>
+            <div class="icon-bullet">✓</div>
+            <span>Secure payouts powered by Stripe Connect.</span>
+          </li>
+          <li>
+            <div class="icon-bullet">✓</div>
+            <span>Built for Belizean businesses — not generic templates.</span>
+          </li>
+        </ul>
+        <a href="#contact" class="btn btn-primary">Become a Vendor</a>
+      </div>
+
+      <div class="vendor-card">
+        <div class="vendor-card-inner">
+          <h3>“We wanted something that felt like Belize.”</h3>
+          <p>
+            Tropic Pulse was designed with local owners in mind — simple tools, clear payouts, and a platform that
+            actually reflects the island’s energy.
+          </p>
+          <div class="pill-row">
+            <span class="pill">Restaurants</span>
+            <span class="pill">Bars</span>
+            <span class="pill">Shops</span>
+            <span class="pill">Services</span>
+          </div>
+          <span style="font-size:0.85rem;opacity:0.9;">Join early vendors shaping the future of local commerce in Belize.</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- DELIVERER RECRUITMENT -->
+  <section class="deliverer-section section" id="deliverers">
+    <div class="container two-column">
+      <div class="deliverer-card">
+        <div class="deliverer-card-inner">
+          <h3>Earn on your schedule.</h3>
+          <p>
+            Deliver with Tropic Pulse and turn your time on the island into flexible income — by bike, golf cart, or on foot.
+          </p>
+          <div class="pill-row">
+            <span class="pill">Flexible hours</span>
+            <span class="pill">Keep your tips</span>
+            <span class="pill">Island‑friendly routes</span>
+          </div>
+          <span style="font-size:0.85rem;opacity:0.9;">Perfect for locals, students, and anyone who knows San Pedro’s streets.</span>
+        </div>
+      </div>
+
+      <div class="section-text-block">
+        <div class="section-eyebrow">For Deliverers</div>
+        <h2>Deliver the best of the island</h2>
+        <p>
+          Tropic Pulse connects you with orders from restaurants, shops, and markets across San Pedro — so you can earn
+          on your own terms while helping people get what they need.
+        </p>
+        <ul class="icon-list">
+          <li>
+            <div class="icon-bullet">✓</div>
+            <span>Work when you want — no fixed shifts.</span>
+          </li>
+          <li>
+            <div class="icon-bullet">✓</div>
+            <span>Transparent earnings and tip tracking.</span>
+          </li>
+          <li>
+            <div class="icon-bullet">✓</div>
+            <span>Designed for Belizean roads, routes, and realities.</span>
+          </li>
+        </ul>
+        <a href="#contact" class="btn btn-primary">Become a Deliverer</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- HALF 2 (testimonials, pricing, FAQ, contact, footer, JS) WILL COME NEXT -->
+     <!-- TESTIMONIALS -->
+  <section class="section" id="testimonials">
+  <div class="testimonials-container">
+
+    <div class="testimonials-wrapper" style="background:#FFD400;padding:8px;border-radius:20px;">
+      <div class="testimonials-inner" style="background:#000;border-radius:16px;padding:8px;color:#fff;">
+
+        <div class="testimonials-header" style="text-align:center;margin-bottom:35px;">
+          <div class="testimonials-eyebrow" style="color:#FFD400;font-size:0.9rem;letter-spacing:1px;margin-bottom:6px;">
+            What people are saying
+          </div>
+          <h2 class="testimonials-title" style="color:#FFD400;margin-bottom:10px;">
+            Loved by Locals, Visitors, and Vendors
+          </h2>
+          <p class="testimonials-subtitle" style="color:#fff;opacity:0.85;max-width:750px;margin:0 auto;">
+            Tropic Pulse is built with the community — for the community. Here’s what early users are saying.
+          </p>
+        </div>
+
+        <div class="feature-grid" style="display:grid;gap:22px;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));">
+
+          <div class="testimonial-card" style="background:#111;border-radius:14px;padding:22px;color:#fff;">
+            <div style="font-size:0.9rem;color:#FFD400;margin-bottom:8px;">Customer</div>
+            <p style="font-size:0.95rem;margin-bottom:12px;opacity:0.9;">
+              “I used to bounce between apps, Facebook groups, and word of mouth. Now I just open Tropic Pulse and everything I need is there.”
+            </p>
+            <div style="font-weight:600;color:#FFD400;">Marisol, San Pedro</div>
+          </div>
+
+          <div class="testimonial-card" style="background:#111;border-radius:14px;padding:22px;color:#fff;">
+            <div style="font-size:0.9rem;color:#FFD400;margin-bottom:8px;">Restaurant Owner</div>
+            <p style="font-size:0.95rem;margin-bottom:12px;opacity:0.9;">
+              “We finally have a platform that feels like it was built for Belize — not just copied from somewhere else.”
+            </p>
+            <div style="font-weight:600;color:#FFD400;">Carlos, Beachfront Grill</div>
+          </div>
+
+          <div class="testimonial-card" style="background:#111;border-radius:14px;padding:22px;color:#fff;">
+            <div style="font-size:0.9rem;color:#FFD400;margin-bottom:8px;">Deliverer</div>
+            <p style="font-size:0.95rem;margin-bottom:12px;opacity:0.9;">
+              “I know the island well — now I get paid to use that knowledge. The app makes it simple.”
+            </p>
+            <div style="font-weight:600;color:#FFD400;">Jamal, Deliverer</div>
+          </div>
+
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+</section>
+
+  <!-- PRICING -->
+  <section class="section" id="pricing" style="background:#ffff99;">
+    <div class="container">
+      <div class="section-header">
+        <div class="section-eyebrow">Simple, Transparent</div>
+        <h2 class="section-title">Pricing that works for Belize</h2>
+        <p class="section-subtitle">
+          Tropic Pulse is built to support local businesses — with clear, straightforward pricing and no surprises.
+        </p>
+      </div>
+
+      <div class="feature-grid" style="grid-template-columns:repeat(auto-fit,minmax(260px,1fr));">
+        <div class="feature-card" style="height:auto;box-shadow:0 4px 14px rgba(0,0,0,0.08);color:#1a1a1a;">
+          <div style="background:#ffffff;padding:24px;">
+            <h3 style="font-size:1.3rem;margin-bottom:6px;">Customers</h3>
+            <p style="font-size:0.95rem;color:#555;margin-bottom:12px;">Free to browse, explore, and order.</p>
+            <ul style="list-style:none;padding:0;margin:0 0 16px 0;font-size:0.9rem;color:#555;">
+              <li>• No subscription required</li>
+              <li>• Transparent delivery fees</li>
+              <li>• Pay directly in the app (where available)</li>
+            </ul>
+            <span style="font-size:0.85rem;color:#777;">Perfect for locals and visitors exploring Belize.</span>
+          </div>
+        </div>
+
+        <div class="feature-card" style="height:auto;box-shadow:0 4px 14px rgba(0,0,0,0.08);color:#1a1a1a;">
+          <div style="background:#ffffff;padding:24px;">
+            <h3 style="font-size:1.3rem;margin-bottom:6px;">Vendors</h3>
+            <p style="font-size:0.95rem;color:#555;margin-bottom:12px;">Simple, fair fees that scale with your business.</p>
+            <ul style="list-style:none;padding:0;margin:0 0 16px 0;font-size:0.9rem;color:#555;">
+              <li>• No setup fee for early partners</li>
+              <li>• Per‑order commission structure</li>
+              <li>• Payouts via Stripe Connect</li>
+            </ul>
+            <span style="font-size:0.85rem;color:#777;">Talk to us for custom terms as we grow.</span>
+          </div>
+        </div>
+
+        <div class="feature-card" style="height:auto;box-shadow:0 4px 14px rgba(0,0,0,0.08);color:#1a1a1a;">
+          <div style="background:#ffffff;padding:24px;">
+            <h3 style="font-size:1.3rem;margin-bottom:6px;">Deliverers</h3>
+            <p style="font-size:0.95rem;color:#555;margin-bottom:12px;">Earn per delivery, plus tips.</p>
+            <ul style="list-style:none;padding:0;margin:0 0 16px 0;font-size:0.9rem;color:#555;">
+              <li>• Flexible schedule</li>
+              <li>• Keep your tips</li>
+              <li>• Clear earnings breakdown</li>
+            </ul>
+            <span style="font-size:0.85rem;color:#777;">We’re building a fair, sustainable ecosystem for everyone.</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FAQ -->
+  <section class="section" id="faq" style="background: #ffff99;">
+    <div class="container">
+      <div class="section-header">
+        <div class="section-eyebrow">Questions, Answered</div>
+        <h2 class="section-title">Frequently Asked Questions</h2>
+        <p class="section-subtitle">
+          Here are some of the most common questions about Tropic Pulse. Want to know more? Reach out anytime.
+        </p>
+      </div>
+
+      <div class="faq-list" style="max-width:800px;margin:0 auto;">
+        <div class="faq-item" data-faq>
+          <button class="faq-question">
+            <span>How does Tropic Pulse work?</span>
+            <span class="faq-toggle">+</span>
+          </button>
+          <div class="faq-answer">
+            Tropic Pulse connects customers, vendors, and deliverers in one app. Customers browse and order, vendors
+            manage their menus and offerings, and deliverers fulfill orders across San Pedro and beyond.
+          </div>
+        </div>
+
+        <div class="faq-item" data-faq>
+          <button class="faq-question">
+            <span>Is Tropic Pulse free to use?</span>
+            <span class="faq-toggle">+</span>
+          </button>
+          <div class="faq-answer">
+            For customers, browsing and exploring is free. Vendors and deliverers participate under a simple, transparent
+            fee structure designed to support local businesses and fair earnings.
+          </div>
+        </div>
+
+        <div class="faq-item" data-faq>
+          <button class="faq-question">
+            <span>How do I become a Vendor?</span>
+            <span class="faq-toggle">+</span>
+          </button>
+          <div class="faq-answer">
+            Use the contact form below or email us directly with your business details. We’ll walk you through onboarding,
+            menu setup, and payouts so you can start receiving orders quickly.
+          </div>
+        </div>
+
+        <div class="faq-item" data-faq>
+          <button class="faq-question">
+            <span>How do payouts work?</span>
+            <span class="faq-toggle">+</span>
+          </button>
+          <div class="faq-answer">
+            Payouts are handled via Stripe Connect, giving vendors and deliverers a secure, reliable way to receive funds.
+            Specific payout schedules and options are discussed during onboarding.
+          </div>
+        </div>
+
+        <div class="faq-item" data-faq>
+          <button class="faq-question">
+            <span>Where is Tropic Pulse available?</span>
+            <span class="faq-toggle">+</span>
+          </button>
+          <div class="faq-answer">
+            Tropic Pulse is launching in San Pedro, Belize, with plans to expand across the country and into the wider
+            Caribbean as we grow.
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <style>
+    /* FAQ styles (kept here for clarity, you can move into main CSS if you want) */
+    .faq-item {
+      background:#ffffff;
+      border-radius:12px;
+      margin-bottom:12px;
+      box-shadow:0 2px 8px rgba(0,0,0,0.06);
+      overflow:hidden;
+    }
+    .faq-question {
+      width:100%;
+      padding:14px 18px;
+      border:none;
+      background:transparent;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      font-size:0.98rem;
+      font-weight:600;
+      cursor:pointer;
+    }
+    .faq-answer {
+      padding:0 18px 14px 18px;
+      font-size:0.9rem;
+      color:#555;
+      display:none;
+    }
+    .faq-item.open .faq-answer {
+      display:block;
+    }
+    .faq-item.open .faq-toggle {
+      transform:rotate(45deg);
+    }
+    .faq-toggle {
+      transition:transform 0.2s ease;
+      font-size:1.2rem;
+    }
+  </style>
+
+  <!-- CONTACT + FOOTER -->
+  <section class="intouchsection" id="contact" style="background:#ffff99;padding:0;margin-bottom:60px;">
+  <div class="container">
+
+    <!-- Black Outer Border -->
+    <div style="background:#000;
+      padding:6px;
+      border-radius:18px;">
+
+      <!-- Beach Image Inner Box -->
+      <div style="background:url('https://tropicpulse.bz/Beach.png?v=18') center/cover no-repeat;
+        border-radius:20px;
+        padding:16px;">
+
+        <!-- Content Overlay -->
+        <div style="background:rgba(0,0,0,0.55);
+          border-radius:14px;
+          padding:6px;
+          color:#fff;">
+
+          <div class="section-header">
+            <div class="section-eyebrow" style="color:#FFD400;font-size:0.9rem;letter-spacing:1px;margin-bottom:6px;">
+              Get in Touch
+            </div>
+            <h2 class="section-title" style="color:#FFD400;margin-bottom:30px;">
+              Let’s build the future of Belize together
+            </h2>
+            <p class="section-subtitle" style="color:#fff;opacity:0.9;max-width:650px;margin:0 auto;">
+              Whether you’re a vendor, deliverer, or partner — we’d love to hear from you.
+            </p>
+          </div>
+
+          <div class="two-column" style="display:flex;gap:30px;align-items:flex-start;flex-wrap:wrap;">
+
+            <!-- FORM -->
+            <div style="flex:1;min-width:280px;">
+              <form style="background:rgba(0,0,0,0.7);border-radius:16px;padding:22px;color:#fff;">
+                <div style="margin-bottom:12px;">
+                  <label for="name" style="display:block;font-size:0.85rem;font-weight:600;margin-bottom:4px;">Name</label>
+                  <input id="name" type="text" placeholder="Your name" style="width:100%;padding:10px 12px;border-radius:8px;border:1px solid #333;background:#000;color:#fff;font-size:0.9rem;">
+                </div>
+
+                <div style="margin-bottom:12px;">
+                  <label for="email" style="display:block;font-size:0.85rem;font-weight:600;margin-bottom:4px;">Email</label>
+                  <input id="email" type="email" placeholder="you@example.com" style="width:100%;padding:10px 12px;border-radius:8px;border:1px solid #333;background:#000;color:#fff;font-size:0.9rem;">
+                </div>
+
+                <div style="margin-bottom:12px;">
+                  <label for="role" style="display:block;font-size:0.85rem;font-weight:600;margin-bottom:4px;">I’m interested as a...</label>
+                  <select id="role" style="width:100%;padding:10px 12px;border-radius:8px;border:1px solid #333;background:#000;color:#fff;font-size:0.9rem;">
+                    <option>Customer</option>
+                    <option>Vendor</option>
+                    <option>Deliverer</option>
+                    <option>Partner</option>
+                    <option>Other</option>
+                  </select>
+                </div>
+
+                <div style="margin-bottom:16px;">
+                  <label for="message" style="display:block;font-size:0.85rem;font-weight:600;margin-bottom:4px;">Message</label>
+                  <textarea id="message" rows="4" placeholder="Tell us a bit about what you have in mind..." style="width:100%;padding:10px 12px;border-radius:8px;border:1px solid #333;background:#000;color:#fff;font-size:0.9rem;"></textarea>
+                </div>
+
+                <button type="submit" class="btn btn-primary" style="width:100%;background:#FFD400;color:#000;font-weight:700;border:none;border-radius:10px;padding:12px 0;">
+                  Send message
+                </button>
+              </form>
+            </div>
+
+            <!-- TEXT BLOCK -->
+            <div class="contact-text-block" style="flex:1;min-width:280px;color:#fff;">
+              <h2 style="font-size:1.6rem;margin-bottom:10px;color:#FFD400;">Tropic Pulse — San Pedro, Belize</h2>
+              <p style="color:#fff;opacity:0.9;max-width:650px;margin:0 auto;">
+                We’re building Tropic Pulse from the ground up with Belize in mind — combining modern technology with the
+                warmth, flavor, and energy of the Caribbean.
+              </p>
+
+              <ul class="icon-list" style="margin-top:10px;list-style:none;padding:0;">
+                <li style="display:flex;align-items:center;margin-bottom:8px;">
+                  <div class="icon-bullet" style="margin-right:8px;color:#FFD400;">@</div>
+                  <span><strong><a href="mailto:Sales@TropicPulse.bz" style="color:#FFD400;">Sales@TropicPulse.bz</a></strong></span>
+                </li>
+
+                <li style="display:flex;align-items:center;margin-bottom:8px;">
+                  <div class="icon-bullet" style="margin-right:8px;color:#FFD400;">☎</div>
+                  <span><strong><a href="https://wa.me/15096077261" style="color:#FFD400;">+1 (509) 607‑7261</a></strong></span>
+                </li>
+
+                <li style="display:flex;align-items:center;margin-bottom:8px;">
+                  <div class="icon-bullet" style="margin-right:8px;color:#FFD400;">🌐</div>
+                  <span><strong><a href="https://tropicpulse.bz" style="color:#FFD400;">https://tropicpulse.bz</a></strong></span>
+                </li>
+              </ul>
+
+              <p style="color:#fff;opacity:0.9;max-width:650px;margin:0 auto;">
+                Interested in partnering, investing, or collaborating? Reach out — we’re always open to conversations that
+                move Belize forward.
+              </p>
+            </div>
+
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+  <footer style="background:#ffff99;padding:0;text-align:center;font-size:0.95rem;color:#333;">
+  <div style="max-width:900px;margin:0 auto;">
+
+    <h3 style="margin-bottom:10px;font-weight:800;color:#00a884;">Tropic Pulse</h3>
+    <p style="margin-bottom:20px;font-size:0.9rem;color:#444;">
+      Your all‑in‑one platform for food, drinks, shops, groceries, events, and local services across San Pedro, Belize.
+    </p>
+
+    <div style="display:flex;flex-wrap:wrap;justify-content:center;gap:30px;margin-bottom:30px;">
+
+      <div style="text-align:left;">
+        <h4 style="margin-bottom:8px;font-size:1rem;color:#00a884;">Contact</h4>
+        <p>Email: <a href="mailto:Sales@tropicpulse.bz">Sales@TropicPulse.bz</a></p>
+        <p>Phone: <a href="https://wa.me/15096077261">+1 (509) 607‑7261</a></p>
+        <p>Location: San Pedro, Belize</p>
+      </div>
+
+      <div style="text-align:left;">
+        <h4 style="margin-bottom:8px;font-size:1rem;color:#00a884;">Quick Links</h4>
+        <p><a href="#hero">Home</a></p>
+        <p><a href="#vendors">Become a Vendor</a></p>
+        <p><a href="#deliverers">Become a Deliverer</a></p>
+        <p><a href="#pricing">Pricing</a></p>
+        <p><a href="#faq">FAQ</a></p>
+        <p></p><a href="https://demanddelivery-18afd8688c24.pwastore.com">Open Web App</a></p>
+      </div>
+
+      <div style="text-align:left;">
+        <h4 style="margin-bottom:8px;font-size:1rem;color:#00a884;">Legal</h4>
+        <p><a href="#">Privacy Policy</a></p>
+        <p><a href="#">Terms of Service</a></p>
+        <p><a href="#">Vendor Agreement</a></p>
+      </div>
+
+    </div>
+
+    <div style="font-size:0.85rem;color:#555;margin-top:20px;">
+      © 2026 Tropic Pulse — Built with Passion for Belize.
+    </div>
+
+  </div>
+</footer>
+
+  <!-- SCRIPTS -->
+  <script>
+    // Mobile menu
+    const mobileMenuToggle = document.getElementById('mobileMenuToggle');
+    const mobileMenu = document.getElementById('mobileMenu');
+    const mobileMenuClose = document.getElementById('mobileMenuClose');
+
+    if (mobileMenuToggle && mobileMenu && mobileMenuClose) {
+      mobileMenuToggle.addEventListener('click', () => {
+        mobileMenu.classList.add('show');
+      });
+      mobileMenuClose.addEventListener('click', () => {
+        mobileMenu.classList.remove('show');
+      });
+      mobileMenu.addEventListener('click', (e) => {
+        if (e.target === mobileMenu) {
+          mobileMenu.classList.remove('show');
+        }
+      });
+    }
+
+    // Carousel
+const carousel = document.getElementById('appCarousel');
+if (carousel) {
+  const track = carousel.querySelector('.carousel-track');
+  const slides = Array.from(carousel.querySelectorAll('.carousel-slide'));
+  const dots = Array.from(carousel.querySelectorAll('.carousel-dot'));
+  const arrows = Array.from(carousel.querySelectorAll('.carousel-arrow'));
+
+  const visibleSlides = 2;
+  const totalSlides = slides.length;
+  const maxIndex = totalSlides - visibleSlides; // 10 - 2 = 8
+
+  let currentIndex = 0;
+
+  function updateCarousel(index) {
+    const clamped = Math.max(0, Math.min(index, maxIndex));
+    currentIndex = clamped;
+
+    // Each step moves 50% because 2 slides = 200% width
+    const offset = -(clamped * (100 / visibleSlides));
+    track.style.transform = `translateX(${offset}%)`;
+
+    dots.forEach((dot, i) => {
+      dot.classList.toggle('active', i === clamped);
+    });
+  }
+
+  dots.forEach((dot, i) => {
+    dot.addEventListener('click', () => updateCarousel(i));
+  });
+
+  arrows.forEach((arrow) => {
+    arrow.addEventListener('click', () => {
+      const dir = arrow.getAttribute('data-dir');
+      if (dir === 'next') updateCarousel(currentIndex + 1);
+      else updateCarousel(currentIndex - 1);
+    });
+  });
+
+  // Auto-advance
+  setInterval(() => {
+    if (currentIndex < maxIndex) updateCarousel(currentIndex + 1);
+    else updateCarousel(0);
+  }, 6000);
+}
+
+    // FAQ accordion
+    const faqItems = document.querySelectorAll('[data-faq]');
+    faqItems.forEach((item) => {
+      const btn = item.querySelector('.faq-question');
+      btn.addEventListener('click', () => {
+        const isOpen = item.classList.contains('open');
+        faqItems.forEach((i) => i.classList.remove('open'));
+        if (!isOpen) item.classList.add('open');
+      });
+    });
+  </script>
+
+</body>
+</html>
