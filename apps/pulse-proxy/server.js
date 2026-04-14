@@ -15,10 +15,11 @@ import {
   writePacket,
   generatePacketData
 } from "./pulse-miner/PacketEngine.js";
-import {
-  getNextMarketplaceJob,
-  submitMarketplaceResult
-} from "../pulse-miner/jobs/routing.js";
+// ❌ REMOVED: legacy miner routing import that no longer exists / is invalid
+// import {
+//   getNextMarketplaceJob,
+//   submitMarketplaceResult
+// } from "../pulse-miner/jobs/routing.js";
 
 const app = express();
 const PORT = process.env.PORT || 8080;
@@ -61,39 +62,9 @@ app.use((req, res, next) => {
 });
 
 // ------------------------------------------------------
-//  GET /getJob
+//  ❌ REMOVED: /getJob and /submitJob that depended on deleted routing.js
+//  These must be re-wired later to call the miner over HTTP instead of imports.
 // ------------------------------------------------------
-app.get("/getJob", async (req, res) => {
-  const deviceId = req.query.deviceId;
-
-  try {
-    const job = await getNextMarketplaceJob(deviceId);
-
-    if (!job) {
-      return res.json({ error: false, noJob: true });
-    }
-
-    res.json(job);
-  } catch (err) {
-    console.error("getJob error:", err);
-    res.json({ error: true, message: err.message });
-  }
-});
-
-// ------------------------------------------------------
-//  POST /submitJob
-// ------------------------------------------------------
-app.post("/submitJob", async (req, res) => {
-  const { deviceId, job, result } = req.body;
-
-  try {
-    const submit = await submitMarketplaceResult(job, result);
-    res.json({ ok: true, submit });
-  } catch (err) {
-    console.error("submitJob error:", err);
-    res.json({ error: true, message: err.message });
-  }
-});
 
 // ------------------------------------------------------
 //  Redis
@@ -188,6 +159,7 @@ export const adminUserScores = app.get("/UserScores", async (req, res) => {
     });
   }
 });
+
 // ------------------------------------------------------
 //  Pulse Logs (in-memory)
 // ------------------------------------------------------
@@ -255,7 +227,6 @@ function chunkBuffer(buffer, chunkSize = 128 * 1024) {
   }
   return chunks;
 }
-
 // ------------------------------------------------------
 //  Logs Endpoint
 // ------------------------------------------------------

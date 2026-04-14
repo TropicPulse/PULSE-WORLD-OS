@@ -19,48 +19,48 @@ import bcrypt from "bcryptjs";
 import sharp from "sharp";
 import { fileURLToPath } from "url";
 // Marketplace adapters (inside /pulse-miner/marketplaces/)
-import { marketplaceA } from "./pulse-miner/marketplaces/marketplaceA.js";
-import { marketplaceB } from "./pulse-miner/marketplaces/marketplaceB.js";
-import { marketplaceC } from "./pulse-miner/marketplaces/marketplaceC.js";
+import { marketplaceA } from "../pulse-miner/marketplaces/marketplaceA.js";
+import { marketplaceB } from "../pulse-miner/marketplaces/marketplaceB.js";
+import { marketplaceC } from "../pulse-miner/marketplaces/marketplaceC.js";
 
 // Remote scoring (ESM only)
-import { runUserScoring } from "./pulse-proxy/PulseUserScoring.js";
+import { runUserScoring } from "../pulse-proxy/PulseUserScoring.js";
 
-// Reputation loader (inside /pulse-miner/)
-import { loadMarketplaceReputation } from "./pulse-miner/MarketplaceReputation.js";
+// // Reputation loader (inside /pulse-miner/)
+// import { loadMarketplaceReputation } from "../pulse-miner/MarketplaceReputation.js";
 
-// Connector (inside /pulse-miner/)
-import { getNextJob } from "./pulse-miner/MarketplaceConnector.js";
+// // Connector (inside /pulse-miner/)
+// import { getNextJob } from "../pulse-miner/MarketplaceConnector.js";
 
-// Example: capacity for ONE worker instance
-const capacity = {
-  cpuAvailable: 2,
-  memoryAvailable: 2048
-};
+// // Example: capacity for ONE worker instance
+// const capacity = {
+//   cpuAvailable: 2,
+//   memoryAvailable: 2048
+// };
 
-// Example: your marketplace clients (you will implement these)
-const marketplaces = [
-  marketplaceA,
-  marketplaceB,
-  marketplaceC
-];
+// // Example: your marketplace clients (you will implement these)
+// const marketplaces = [
+//   marketplaceA,
+//   marketplaceB,
+//   marketplaceC
+// ];
 
-async function schedulerTick() {
-  const job = await getNextJob(marketplaces, capacity);
+// async function schedulerTick() {
+//   const job = await getNextJob(marketplaces, capacity);
 
-  if (!job) {
-    console.log("No jobs available right now.");
-    return;
-  }
+//   if (!job) {
+//     console.log("No jobs available right now.");
+//     return;
+//   }
 
-  console.log("Selected job:", job);
+//   console.log("Selected job:", job);
 
-  // TODO: hand this job to your worker execution layer
-}
+//   // TODO: hand this job to your worker execution layer
+// }
 
-schedulerTick();
+// schedulerTick();
 
-loadMarketplaceReputation();
+// loadMarketplaceReputation();
 
 export const VAULT_PATCH_TWILIGHT = {
   signature: "Twilight",

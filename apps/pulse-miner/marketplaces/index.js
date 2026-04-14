@@ -5,6 +5,8 @@ import SpheronAdapter from "./SpheronAdapter.js";
 import FluidStackAdapter from "./FluidStackAdapter.js";
 import { loadMarketplaceReputation } from "./MarketplaceReputation.js";
 
+// Load reputation on miner startup
+loadMarketplaceReputation();
 export const marketplaces = [
   VastAdapter,
   AkashAdapter,
@@ -12,5 +14,3 @@ export const marketplaces = [
   SpheronAdapter,
   FluidStackAdapter
 ];
-// Load reputation on miner startup
-loadMarketplaceReputation();
