@@ -1,4 +1,89 @@
-// PulseGPUEngine.js
+// FILE: tropic-pulse-functions/apps/pulse-gpu/PulseGPUEngine.js
+//
+// INTENT-CHECK: If you paste this while confused or frustrated, gently re-read your INTENT; if I am unsure of intent, I will ask you for the full INTENT paragraph.
+// 📘 PAGE INDEX — Source of Truth for This File
+//
+// This PAGE INDEX defines the identity, purpose, boundaries, and allowed
+// behavior of this file. It is the compressed representation of the entire
+// page. Keep this updated as functions, responsibilities, and logic evolve.
+//
+// If AI becomes uncertain or drifts, request: "Rules Design (Trust/Data)"
+//
+// CONTENTS TO MAINTAIN:
+//   • What this file IS
+//   • What this file IS NOT
+//   • Its responsibilities
+//   • Its exported classes/functions
+//   • Its internal logic summary
+//   • Allowed imports
+//   • Forbidden imports
+//   • Deployment rules
+//   • Safety constraints
+//
+// The PAGE INDEX + SUB‑COMMENTS allow full reconstruction of the file
+// without needing to paste the entire codebase. Keep summaries accurate.
+// The comments are the source of truth — if code and comments disagree,
+// the comments win.
+//
+// ROLE:
+//   The Pulse GPU Engine — consumes PulseGPURuntime, builds GPU pipelines,
+//   constructs render passes, and executes draw calls. This is the final
+//   stage of the Pulse GPU subsystem.
+//
+//   This file IS:
+//     • A frontend‑only WebGPU execution layer
+//     • A renderer that issues draw calls
+//     • A consumer of GPU‑ready packages from PulseGPURuntime
+//
+//   This file IS NOT:
+//     • A backend module
+//     • A CPU‑side optimizer (that’s PulseGPUBrain)
+//     • A GPU memory manager (that’s PulseGPURuntime)
+//     • A shader compiler (that’s PulseGPUBrain)
+//     • A business logic module
+//
+// DEPLOYMENT:
+//   Lives in /apps/pulse-gpu as part of the GPU subsystem.
+//   Must run ONLY in browser environments with WebGPU support.
+//   Must remain ESM‑only and side‑effect‑free until init() is called.
+//
+// SYNTAX RULES:
+//   ESM JavaScript ONLY — no TypeScript, no CommonJS, no require().
+//   Named exports ONLY — no default exports.
+//
+// IMPORT RULES:
+//   Allowed:
+//     • PulseGPURuntime from ./PulseGPURuntime.js
+//
+//   Forbidden:
+//     • Node.js APIs
+//     • Firebase, Stripe, Twilio, or any backend modules
+//     • DOM manipulation outside WebGPU context
+//     • Any environment‑specific dependencies
+//
+// INTERNAL LOGIC SUMMARY:
+//   • PulseRenderPassBuilder:
+//       - Builds basic render pass descriptors
+//
+//   • PulsePipelineBuilder:
+//       - Creates WebGPU render pipelines from shader modules
+//
+//   • PulseDrawExecutor:
+//       - Issues draw calls for meshes
+//       - Creates temporary render targets
+//
+//   • PulseGPUEngine:
+//       - Initializes PulseGPURuntime
+//       - Builds pipelines from shader modules
+//       - Iterates meshes and draws them
+//       - Submits command buffers to GPU queue
+//
+// SAFETY NOTES:
+//   • Must NEVER run on backend — WebGPU is browser‑only
+//   • Must NEVER assume device size — hardcoded textures are temporary
+//   • Must NEVER mutate runtime internals directly
+//   • Must ALWAYS check readiness before rendering
+//   • Must remain deterministic and side‑effect‑free outside init()
 // ------------------------------------------------------
 // Consumes PulseGPURuntime → builds pipelines →
 // executes render passes and draw calls.

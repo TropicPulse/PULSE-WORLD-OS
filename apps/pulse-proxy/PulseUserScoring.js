@@ -1,7 +1,104 @@
-// PulseUserScoring.js
+// FILE: apps/pulse-proxy/PulseUserScoring.js
+//
+// INTENT-CHECK: If you paste this while confused or frustrated, gently re-read your INTENT; if I am unsure of intent, I will ask you for the full INTENT paragraph.
+// 📘 PAGE INDEX — Source of Truth for This File
+//
+// This PAGE INDEX defines the identity, purpose, boundaries, and allowed
+// behavior of this file. It is the compressed representation of the entire
+// page. Keep this updated as scoring logic evolves.
+//
+// If AI becomes uncertain or drifts, request: "Rules Design (Trust/Data)"
+//
+// CONTENTS TO MAINTAIN:
+//   • What this file IS
+//   • What this file IS NOT
+//   • Responsibilities
+//   • Exported functions
+//   • Internal logic summary
+//   • Allowed operations
+//   • Forbidden operations
+//   • Safety constraints
+//
+// ROLE:
+//   PulseUserScoring — the batch scoring engine that reads UserMetrics and
+//   produces UserScores. This is the authoritative scoring pipeline for:
+//
+//     • trustScore
+//     • meshScore
+//     • phase
+//     • hubFlag
+//     • instance allocation
+//
+//   REAL‑WORLD CONTEXT (for future Aldwyn):
+//     • This file does NOT track metrics (PulseUserMetrics does).
+//     • This file does NOT run compute.
+//     • This file does NOT supervise workers.
+//     • This file does NOT talk to marketplaces.
+//     • This file does NOT execute arbitrary code.
+//     • This file ONLY transforms metrics → scores.
+//
+//   This file IS:
+//     • A batch scoring engine
+//     • A trust calculator
+//     • A mesh calculator
+//     • A phase classifier
+//     • A hub detector
+//     • An instance allocator
+//
+//   This file IS NOT:
+//     • A scheduler
+//     • A compute engine
+//     • A runtime
+//     • A marketplace adapter
+//     • A blockchain client
+//     • A wallet or token handler
+//
+// DEPLOYMENT:
+//   Lives in apps/pulse-proxy as part of the Tropic Pulse proxy subsystem.
+//   Must run in Node.js (uses Firestore).
+//   Must remain ESM-only and side-effect-free.
+//
+// SAFETY RULES (CRITICAL):
+//   • NO eval()
+//   • NO dynamic imports
+//   • NO arbitrary code execution
+//   • NO user-provided logic
+//   • NO compute execution
+//   • NO GPU work
+//   • NO marketplace calls
+//
+// INTERNAL LOGIC SUMMARY:
+//   • calculateTrustScore(m):
+//       - Activity
+//       - Mesh contribution
+//       - Hub signals
+//       - Latency quality
+//       - Stability
+//
+//   • calculateMeshScore(m):
+//       - Relays
+//       - Pings
+//       - Hub signals
+//       - Latency quality
+//
+//   • calculatePhase(trustScore):
+//       - 1 → 4 based on trust
+//
+//   • isHub(m):
+//       - Detects hub-like behavior
+//
+//   • allocateInstances(phase, hubFlag):
+//       - Normal users: 1 → 2
+//       - Hub users: 2 → 4
+//       - Hard cap: 4
+//
+//   • runUserScoring():
+//       - Reads UserMetrics
+//       - Computes all scores
+//       - Writes UserScores in batch
+//
 // ------------------------------------------------------
-// Reads UserMetrics → computes trust, mesh, phase, hub, instances
-// Writes results to UserScores/{userId}
+// PulseUserScoring — Batch Scoring Engine
 // ------------------------------------------------------
 
 import { getFirestore } from "firebase-admin/firestore";
@@ -82,10 +179,6 @@ function isHub(m) {
 // ------------------------------------------------------
 // allocateInstances() — NEW MODEL
 // ------------------------------------------------------
-// 2 tiers + hub boost
-// Normal users: 1 → 2
-// Hub users:    2 → 4
-// Max = 4
 function allocateInstances(phase, hubFlag) {
   // Base allocation: 1 or 2
   let base = phase >= 2 ? 2 : 1;

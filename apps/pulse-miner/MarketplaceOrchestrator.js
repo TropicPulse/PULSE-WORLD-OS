@@ -1,21 +1,108 @@
-// ======================================================
-// MarketplaceOrchestrator.js
-// Multi-marketplace job discovery + selection
-// ======================================================
+// FILE: tropic-pulse-functions/apps/pulse-miner/MarketplaceOrchestrator.js
 //
-// This module:
-//   • Pings marketplaces
-//   • Fetches jobs from healthy ones
-//   • Selects the best job for THIS device (CAPABILITY-BASED)
+// INTENT-CHECK: If you paste this while confused or frustrated, gently re-read your INTENT; if I am unsure of intent, I will ask you for the full INTENT paragraph.
+// 📘 PAGE INDEX — Source of Truth for This File
 //
-// It does NOT:
-//   • Wrap jobs into PulseJobSchema
-//   • Know about deviceId
-//   • Submit results
-//   • Talk to PulseProxy or PulseBand
+// This PAGE INDEX defines the identity, purpose, boundaries, and allowed
+// behavior of this file. It is the compressed representation of the entire
+// page. Keep this updated as functions, responsibilities, and logic evolve.
 //
-// MarketplaceConnector.js handles all of that.
-// ======================================================
+// If AI becomes uncertain or drifts, request: "Rules Design (Trust/Data)"
+//
+// CONTENTS TO MAINTAIN:
+//   • What this file IS
+//   • What this file IS NOT
+//   • Its responsibilities
+//   • Its exported functions
+//   • Its internal logic summary
+//   • Allowed imports
+//   • Forbidden imports
+//   • Deployment rules
+//   • Safety constraints
+//
+// ROLE:
+//   MarketplaceOrchestrator — the compute‑economy router for Pulse Miner.
+//   This module is responsible for:
+//     • Pinging all marketplaces
+//     • Filtering out unhealthy ones
+//     • Fetching jobs from healthy marketplaces
+//     • Applying marketplace reputation weighting
+//     • Selecting the best job for THIS device using capability scoring
+//
+//   REAL‑WORLD CONTEXT (for future Aldwyn):
+//     • This file does NOT talk directly to any marketplace APIs.
+//       That is handled by the individual adapters.
+//     • This file does NOT wrap jobs into PulseJobSchema.
+//       MarketplaceConnector.js handles that.
+//     • This file does NOT submit results.
+//       ResultSubmission.js handles that.
+//     • This file does NOT do any crypto, token handling, or blockchain work.
+//       Even if a marketplace uses a token (Akash = AKT*, Render = RNDR*, Spheron = SPHERON*),
+//       Tropic Pulse ONLY reads job metadata. We do NOT do crypto.
+//
+//   This file IS:
+//     • A job discovery engine
+//     • A marketplace health checker
+//     • A job aggregator
+//     • A capability-based job selector
+//     • A reputation-weighted scoring engine
+//
+//   This file IS NOT:
+//     • A scheduler
+//     • A compute engine
+//     • A marketplace adapter
+//     • A job wrapper
+//     • A result submitter
+//     • A blockchain client
+//     • A wallet or token handler
+//
+// DEPLOYMENT:
+//   Lives in /apps/pulse-miner as part of the Pulse Miner subsystem.
+//   Must run in any JS environment with fetch() available.
+//   Must remain ESM-only and side-effect-free.
+//
+// SYNTAX RULES:
+//   ESM JavaScript ONLY — no TypeScript, no CommonJS, no require().
+//   Named exports ONLY — no default exports.
+//
+// IMPORT RULES:
+//   Allowed:
+//     • PulseJobScoring.js
+//     • PulseDeviceProfile.js
+//     • MarketplaceReputation.js
+//
+//   Forbidden:
+//     • Direct marketplace API calls
+//     • Node.js APIs
+//     • Firebase, Stripe, Twilio, or backend modules
+//     • DOM manipulation
+//
+// INTERNAL LOGIC SUMMARY:
+//   • discoverHealthyMarketplaces():
+//       - Pings all marketplaces
+//       - Filters by latency threshold
+//
+//   • fetchJobsFromMarketplaces():
+//       - Fetches jobs from each healthy marketplace
+//       - Injects marketplaceId into each job
+//
+//   • selectBestJob():
+//       - Scores each job using capability scoring
+//       - Applies marketplace reputation weighting
+//       - Returns the highest-scoring job
+//
+//   • getNextJob():
+//       - Full pipeline: ping → fetch → weight → select
+//       - Returns the best job or null
+//
+// SAFETY NOTES:
+//   • Must NEVER throw unhandled errors
+//   • Must ALWAYS validate job objects
+//   • Must remain deterministic and side-effect-free
+//
+// ------------------------------------------------------
+// MarketplaceOrchestrator — Multi-marketplace job discovery + selection
+// ------------------------------------------------------
 
 import { scoreJobForDevice } from "./PulseJobScoring.js";
 import { getDeviceProfile } from "./PulseDeviceProfile.js";
@@ -104,7 +191,6 @@ export function selectBestJob(jobs) {
 // -------------------------------
 // 4. Orchestrator: get next job
 // -------------------------------
-
 export async function getNextJob(allMarketplaces) {
   const healthy = await discoverHealthyMarketplaces(allMarketplaces);
   if (healthy.length === 0) return null;

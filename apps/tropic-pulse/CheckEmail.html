@@ -15,16 +15,16 @@
 <!-- Google tag (gtag.js) -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-HSX89KS63P"></script>
 
+<!-- Pulse OS Core -->
 <script type="module" src="https://tropicpulse.bz/proxy/PulseUpdate.js?v8"></script>
 <script type="module" src="https://tropicpulse.bz/proxy/PulseBand.js?v8"></script>
 <script type="module" src="https://tropicpulse.bz/proxy/PulseClient.js?v8"></script>
+<script type="module" src="https://tropicpulse.bz/proxy/PulseNet.js?v8"></script>
 
-<script type="module" src="https://tropicpulse.bz/proxy/PulseUsersCacheManager.js?v8"></script>
-<script type="module" src="https://tropicpulse.bz/proxy/PulseBusCacheManager.js?v8"></script>
-<script type="module" src="https://tropicpulse.bz/proxy/PulseEventCacheManager.js?v8"></script>
-<script type="module" src="https://tropicpulse.bz/proxy/PulseOrdersCacheManager.js?v8"></script>
-<script type="module" src="https://tropicpulse.bz/proxy/PulseHistoryCacheManager.js?v8"></script>
-<script type="module" src="https://tropicpulse.bz/proxy/PulseSettingsCacheManager.js?v8"></script>
+<!-- Backend Connector Layer -->
+<script type="module">
+  import { getAuth, getHook, getMap, callHelper } from "/lib/Connectors/router.js";
+</script>
 <script>
   window.dataLayer = window.dataLayer || [];
   function gtag(){dataLayer.push(arguments);}
@@ -645,39 +645,10 @@ text-align: center;
     document.body.appendChild(div);
   };
 console.log("🌞 Script loaded, attaching visibility listener…");
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-  import { getDocs, getDoc, updateDoc, doc, deleteDoc, getFirestore, query, where, serverTimestamp, setDoc,
-  collection,
-  initializeFirestore, 
-  persistentLocalCache, 
-  persistentMultipleTabManager 
-} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
-import { getAuth, setPersistence, browserLocalPersistence, signInWithCustomToken } 
-  from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-storage.js";
+  let persistenceEnabled = true;
+  let lastTime = null;
+  let firstTime = null;
 
-/* FIREBASE */
-const firebaseConfig = {
-  apiKey: "AIzaSyD4I5YDtZMMC_tDuwR9CEjhs_iAdrLzthQ",
-  authDomain: "tropic-pulse.firebaseapp.com",
-  projectId: "tropic-pulse",
-  storageBucket: "tropic-pulse.firebasestorage.app",
-  messagingSenderId: "642785071979",
-  appId: "1:642785071979:web:4287c6bdf51f5233db722e",
-  measurementId: "G-HSX89KS63P"
-};
-
-const app = initializeApp(firebaseConfig);
-const db = initializeFirestore(app, {
-  localCache: persistentLocalCache({
-    tabManager: persistentMultipleTabManager()
-  }),
-  experimentalForceLongPolling: false,
-  experimentalAutoDetectLongPolling: false
-});
-let persistenceEnabled = false;
-let firstTime = null;
-let lastTime = null;
 window.__serverTimeOffset = 0;
 
 window.setServerNow = function (serverNowMs) {
@@ -688,9 +659,6 @@ window.setServerNow = function (serverNowMs) {
 window.nowMs = function () {
   return Date.now() + window.__serverTimeOffset;
 };
-
-  let auth = getAuth();
-markAuth("GRABBING AUTH");
 
 // --- GLOBAL STATE ---
 const params        = new URLSearchParams(window.location.search);
@@ -725,19 +693,17 @@ function markAuth(label) {
   console.log(`${label}: +${(now - lastTime).toFixed(1)}ms`);
 }
 
-// Optional: send attacker info before hard logout
 async function reportDanger(reason) {
   try {
-    await fetch("https://us-central1-tropic-pulse.cloudfunctions.net/reportSuspiciousClient", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
+    await getHook({
+      type: "danger",
+      payload: {
         reason,
         identitySnapshot: identity || null,
         tokenSnapshot: token || null,
         userAgent: navigator.userAgent,
         ts: nowMs()
-      })
+      }
     });
   } catch (err) {
     console.warn("Failed to report danger:", err);
@@ -777,17 +743,19 @@ async function loginBootstrap() {
 
   try {
     identity = JSON.parse(localStorage.getItem("tp_identity_v4") || "{}");
-    userName  = identity.name  || null;
-    userEmail = identity.email || null;
-    userID    = identity.uid   || null;
+    
   } catch (err) {
     identity = null;
   }
-
+  
+userName  = identity.name  || null;
+    userEmail = identity.email || null;
+    userID    = identity.uid   || null;
   token     = localStorage.getItem("tp_token_v4");
   autologin = localStorage.getItem("tp_stay_signed_v4") === "1";
   trusted   = localStorage.getItem("tp_device_token_v4") === "1";
 
+  let auth = await getAuth(token);
   const now       = nowMs();
   const lastLocal = Number(localStorage.getItem("tp_last_active_v4")) || 0;
   const inactive  = now - lastLocal > 15 * 60 * 1000;
@@ -840,19 +808,9 @@ async function loginBootstrap() {
 // UNIFIED IDENTITY RESTORE ENGINE
 // -----------------------------
 async function restoreIdentityFlow(mode, jwtToken) {
-  auth = getAuth();
-  mark(`IDENTITY FLOW START → ${mode}`);
+  
 
-  const res = await fetch(
-    "https://us-central1-tropic-pulse.cloudfunctions.net/getFirebaseAuthToken",
-    {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ token: jwtToken, uid: userID }) // ✅ FIXED HERE
-    }
-  );
-
-  const data = await res.json();
+  const data = await getAuth( jwtToken );
 
   // HARD LOGOUT
   if (data.hardLogout) {
@@ -864,17 +822,6 @@ async function restoreIdentityFlow(mode, jwtToken) {
   // SOFT LOGOUT
   if (!data.firebaseToken) {
     mark(`SOFT LOGOUT → ${mode}`);
-    safeLogout();
-    return { ok: false };
-  }
-
-  // Firebase Auth restore
-   setPersistence(auth, browserLocalPersistence);
-
-  try {
-    await signInWithCustomToken(auth, data.firebaseToken);
-  } catch (err) {
-    mark(`FIREBASE SIGN-IN FAILED → ${mode}: ${err}`);
     safeLogout();
     return { ok: false };
   }
@@ -958,18 +905,15 @@ if (!window.__sendPinBound) {
     }
 
     authMsg.style.display = "none";
-
     try {
-      const response = await fetch("https://sendpin-ilx3agka5q-uc.a.run.app", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email })
+      const data = await getHook({
+        type: "sendPin",
+        email
       });
 
-      const data = await response.json();
+      hideTPLoader();
 
       if (data.success) {
-        hideTPLoader();
 
         if (data.rateLimitRemaining !== undefined) {
           console.log(
@@ -988,10 +932,10 @@ if (!window.__sendPinBound) {
         pinInput.focus();
 
       } else {
-        hideTPLoader();
         authMsg.textContent = "Could not Send PIN. Try again!";
         authMsg.className = "msg error";
         authMsg.style.display = "block";
+
         emailSection.style.display = "block";
         rememberSection.style.display = "block";
         pinSection.style.display = "none";
@@ -1003,6 +947,7 @@ if (!window.__sendPinBound) {
       authMsg.textContent = "Network error. Try again!";
       authMsg.className = "msg error";
       authMsg.style.display = "block";
+
       emailSection.style.display = "block";
       rememberSection.style.display = "block";
       pinSection.style.display = "none";
@@ -1031,60 +976,71 @@ if (!window.__verifyPinBound) {
     }
 
     authMsg.style.display = "none";
-
     try {
-      const response = await fetch("https://verifypin-ilx3agka5q-uc.a.run.app", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          email,
-          pin,
-          purpose: "login",
-          userID
-        })
+      const data = await getHook({
+        type: "verifyPin",
+        email,
+        pin,
+        purpose: "login",
+        userID
       });
 
-      const data = await response.json();
+      hideTPLoader();
 
+      // -----------------------------------------
+      // SUCCESS → Save identity + token
+      // -----------------------------------------
       if (data.success && data.token && data.identity) {
 
+        // Save JWT
         localStorage.setItem("tp_token_v4", data.token);
+
+        // Save identity
         localStorage.setItem("tp_identity_v4", JSON.stringify(data.identity));
+
+        // Mark device as trusted
         localStorage.setItem("tp_device_token_v4", "1");
 
+        // Stay signed in
         if (document.getElementById("staySignedIn").checked) {
           localStorage.setItem("tp_stay_signed_v4", "1");
         } else {
           localStorage.removeItem("tp_stay_signed_v4");
         }
 
+        // Referral redemption (now backend-based)
         const pendingRef = localStorage.getItem("pendingReferral");
         if (pendingRef) {
           try {
-            const handleReferral = firebase.functions().httpsCallable("handleReferral");
-            await handleReferral({ referralCode: pendingRef });
+            await getHook({
+              type: "redeemReferral",
+              referralCode: pendingRef,
+              uid: data.identity.uid
+            });
           } catch (err) {
             console.error("Referral redemption failed:", err);
           }
           localStorage.removeItem("pendingReferral");
         }
 
+        // Identity restore (OS-style)
         const result = await restoreIdentityFlow("FRESH_LOGIN", data.token);
 
         if (result.ok) {
-          hideTPLoader();
           window.location.href = returnTo || "https://tropicpulse.bz/dashboard.html";
           return;
         }
 
-        hideTPLoader();
+        // Restore failed → show login UI
         emailSection.style.display = "block";
         rememberSection.style.display = "block";
         pinSection.style.display = "none";
         return;
       }
 
-      hideTPLoader();
+      // -----------------------------------------
+      // FAILURE → Invalid PIN
+      // -----------------------------------------
       authMsg.textContent = "Invalid PIN. Try again!";
       authMsg.className = "msg error";
       authMsg.style.display = "block";

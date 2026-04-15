@@ -15,15 +15,16 @@
 <!-- Google tag (gtag.js) -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-HSX89KS63P"></script>
 
+<!-- Pulse OS Core -->
 <script type="module" src="https://tropicpulse.bz/proxy/PulseUpdate.js?v8"></script>
 <script type="module" src="https://tropicpulse.bz/proxy/PulseBand.js?v8"></script>
 <script type="module" src="https://tropicpulse.bz/proxy/PulseClient.js?v8"></script>
+<script type="module" src="https://tropicpulse.bz/proxy/PulseNet.js?v8"></script>
 
-<script type="module" src="https://tropicpulse.bz/proxy/PulseUsersCacheManager.js?v8"></script>
-<script type="module" src="https://tropicpulse.bz/proxy/PulseEventCacheManager.js?v8"></script>
-<script type="module" src="https://tropicpulse.bz/proxy/PulseBusCacheManager.js?v8"></script>
-<script type="module" src="https://tropicpulse.bz/proxy/PulseHistoryCacheManager.js?v8"></script>
-<script type="module" src="https://tropicpulse.bz/proxy/PulseSettingsCacheManager.js?v8"></script>
+<!-- Backend Connector Layer -->
+<script type="module">
+  import { getAuth, getHook, getMap, callHelper } from "/lib/Connectors/router.js";
+</script>
 <script>
   window.dataLayer = window.dataLayer || [];
   function gtag(){dataLayer.push(arguments);}
@@ -925,37 +926,7 @@ body::before {
 <!-- Toast (kept in DOM so showToast works) -->
 <div id="tpToast"><span class="icon">📥</span><span id="tpToastMsg"></span></div>
 <script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-  import { getDocs, getDoc, updateDoc, doc, limit, setDoc, deleteDoc, getFirestore, query, where, serverTimestamp, orderBy,
-  collection,
-  initializeFirestore, 
-  persistentLocalCache, 
-  persistentMultipleTabManager 
-} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
-import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-storage.js";
-import { getAuth, setPersistence, browserLocalPersistence, signInWithCustomToken } 
-  from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-
-  /* FIREBASE */
-  const firebaseConfig = {
-    apiKey: "AIzaSyD4I5YDtZMMC_tDuwR9CEjhs_iAdrLzthQ",
-    authDomain: "tropic-pulse.firebaseapp.com",
-    projectId: "tropic-pulse",
-    storageBucket: "tropic-pulse.firebasestorage.app",
-    messagingSenderId: "642785071979",
-    appId: "1:642785071979:web:4287c6bdf51f5233db722e",
-    measurementId: "G-HSX89KS63P"
-  };
-
-  const app = initializeApp(firebaseConfig);
-  const db = initializeFirestore(app, {
-    localCache: persistentLocalCache({
-      tabManager: persistentMultipleTabManager()
-    }),
-    experimentalForceLongPolling: false,
-    experimentalAutoDetectLongPolling: false
-  });
-   
+     
   window.__serverTimeOffset = 0;
 
     window.setServerNow = function (serverNowMs) {
@@ -966,20 +937,11 @@ import { getAuth, setPersistence, browserLocalPersistence, signInWithCustomToken
     window.nowMs = function () {
       return Date.now() + window.__serverTimeOffset;
     };
-  let persistenceEnabled = false;
+  
+  let currentUserLocation = null;
+let persistenceEnabled = true;
   let lastTime = null;
   let firstTime = null;
-  let currentUserLocation = null;
-
-  let auth = getAuth();
-
-  try {
-    setPersistence(auth, browserLocalPersistence);
-    persistenceEnabled = true;
-    markAuth("Firebase Auth persistence enabled.");
-  } catch (err) {
-    console.error("Failed to enable persistence:", err);
-  }
 
  
   let token = localStorage.getItem("tp_token_v4") || null;
@@ -1057,7 +1019,7 @@ function mark(label) {
  ************************************************************/
 async function sessionCheck() {
   mark("sessionCheck");
-  
+
   // -----------------------------------------
   // 1. LOAD LOCAL VARIABLES
   // -----------------------------------------
@@ -1091,7 +1053,6 @@ async function sessionCheck() {
   const lastLocal = Number(localStorage.getItem("tp_last_active_v4")) || 0;
   const diff      = now - lastLocal;
 
-  const active5    = diff < 5 * 60 * 1000;   // < 5 minutes
   const inactive15 = diff > 15 * 60 * 1000; // > 15 minutes
 
   if (inactive15 && !trusted) {
@@ -1106,89 +1067,38 @@ async function sessionCheck() {
   }
 
   // -----------------------------------------
-  // 5. FAST PATH: restore using cached Firebase token (fauth)
+  // 4. BACKEND AUTH REFRESH (THE ONLY REAL STEP)
   // -----------------------------------------
-  if (identity.fauth && persistenceEnabled === false) {
-    try {
-      await signInWithCustomToken(auth, identity.fauth);
-      mark("FAST-PATH: restored Firebase Auth using cached fauth");
-      localStorage.setItem("tp_last_active_v4", now);
-      return true;
-    } catch (err) {
-      mark("Cached fauth invalid → clearing and refreshing");
-      identity.fauth = null;
-      localStorage.setItem("tp_identity_v4", JSON.stringify(identity));
-    }
+  const data = await getAuth(token);
+
+  if (data.hardLogout) {
+    mark("Backend flagged danger → HARD LOGOUT");
+    hardLogout("backend_danger_flag");
+    return false;
   }
 
-  // -----------------------------------------
-  // 6. SLOW PATH: fetch fresh Firebase token from backend
-  // -----------------------------------------
-  if (!identity.fauth) {
-    try {
-      const res = await fetch(
-        "https://us-central1-tropic-pulse.cloudfunctions.net/getFirebaseAuthToken",
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ token })
-        }
-      );
-
-      const data = await res.json();
-
-      // Danger → hard logout
-      if (data.hardLogout) {
-        mark("Backend flagged danger → HARD LOGOUT");
-        hardLogout("backend_danger_flag");
-        return false;
-      }
-
-      if (!data.firebaseToken) {
-        mark("No firebaseToken returned → HARD LOGOUT");
-        hardLogout("missing_firebase_token");
-        return false;
-      }
-
-      // Update JWT lineage if provided
-      if (data.newJwtToken) {
-        token = data.newJwtToken;
-        localStorage.setItem("tp_token_v4", token);
-        mark("Updated JWT lineage from backend");
-      }
-
-      // Restore Firebase Auth
-      await signInWithCustomToken(auth, data.firebaseToken);
-
-      // Update identity cache
-      identity.fauth = data.firebaseToken;
-      localStorage.setItem("tp_identity_v4", JSON.stringify(identity));
-
-      mark("SLOW-PATH: Firebase Auth restored with fresh token");
-      localStorage.setItem("tp_last_active_v4", now);
-      return true;
-
-    } catch (err) {
-      console.error("Failed to restore Firebase Auth:", err);
-      hardLogout("firebase_restore_failed");
-      return false;
-    }
+  if (!data.identity) {
+    mark("Backend returned no identity → HARD LOGOUT");
+    hardLogout("missing_identity_from_backend");
+    return false;
   }
 
-  // -----------------------------------------
-  // 7. HEARTBEAT UPDATE (non-blocking)
-  // -----------------------------------------
-  try {
-    updateDoc(doc(db, "Users", userID), {
-      isLoggedIn: true,
-      lastAppActive: serverTimestamp()
-    });
-    mark("Heartbeat saved");
-  } catch (err) {
-    mark("Heartbeat update FAILED: " + err);
+  // Update JWT lineage if provided
+  if (data.newJwtToken) {
+    token = data.newJwtToken;
+    localStorage.setItem("tp_token_v4", token);
+    mark("Updated JWT lineage from backend");
   }
 
+  // Update identity cache
+  identity = data.identity;
+  localStorage.setItem("tp_identity_v4", JSON.stringify(identity));
+
+  // -----------------------------------------
+  // 5. UPDATE LAST ACTIVE
+  // -----------------------------------------
   localStorage.setItem("tp_last_active_v4", now);
+
   return true;
 }
 
@@ -1548,13 +1458,12 @@ async function getEventCategoryIcon(ev) {
 
 async function regenerateEventMap(evt) {
   try {
-    const url =
-      `https://us-central1-tropic-pulse.cloudfunctions.net/generateMap` +
-      `?venue=${encodeURIComponent(evt.resolvedAddress || evt.address || "")}` +
-      `&eventID=${encodeURIComponent(evt.id)}`;
-
-    const res = await fetch(url);
-    const data = await res.json();
+    const venue = evt.resolvedAddress || evt.address || "";
+    const eventID = evt.id;
+    
+    // ⭐ NEW — call connector instead of backend URL
+    const data = await getMap(venue, eventID);
+    
 
     if (!data.success) {
       console.error("Regenerate event map failed:", data.error);
@@ -1653,13 +1562,11 @@ async function loadMapForEvent(ev) {
      2. FALLBACK: GENERATE NEW MAP
   -------------------------------------------------- */
   try {
-    const url =
-      `https://us-central1-tropic-pulse.cloudfunctions.net/generateMap` +
-      `?venue=${encodeURIComponent(cleanVenue)}` +
-      `&eventID=${encodeURIComponent(ev.id)}`;
-
-    const res  = await fetch(url);
-    const data = await res.json().catch(() => null);
+    const venue = cleanVenue || "";
+    const eventID = evt.id;
+    
+    // ⭐ NEW — call connector instead of backend URL
+    const data = await getMap(venue, eventID);
 
     if (!data || !data.success) {
       mapContainer.style.display = "block";
@@ -1732,23 +1639,16 @@ function updateMassEmailBadge(total) {
   btn.title = `Mass Email (${total} credits remaining)`;
 }
 
-/* ---------- Credits lazy loader ---------- */
+
 async function fetchUserCredits(email) {
-  try {
-    const res = await tpFetch(
-      `https://us-central1-tropic-pulse.cloudfunctions.net/getUserCredits?email=${encodeURIComponent(email)}`
-    );
-    const data = await res.json().catch(() => null);
+  const q = query(collection(db, "Users"), where("TPIdentity.email", "==", email), limit(1));
+  const snap = await getDocs(q);
+  const notif = snap.empty ? {} : (snap.docs[0].data().TPNotifications || {});
 
-    return {
-      freeRemaining: Math.max(0, 2 - (data?.freeUsed || 0)),
-      paidRemaining: data?.paidCredits || 0
-    };
-
-  } catch (err) {
-    console.error("Credit fetch failed:", err);
-    return { freeRemaining: 0, paidRemaining: 0 };
-  }
+  return {
+    freeRemaining: Math.max(0, (notif.freeMassNotificationsLimit ?? 2) - (notif.freeMassNotificationsUsed ?? 0)),
+    paidRemaining: notif.paidMassNotificationCredits ?? 0
+  };
 }
 
 /* -------------------------------------------------
@@ -2023,22 +1923,37 @@ async function renderEvent(evRaw) {
       };
     }
 
-    if (icsAdd) {
-      icsAdd.onclick = (e) => {
+    if (icsAdd && !icsAdd.__bound) {
+      icsAdd.__bound = true;
+
+      icsAdd.onclick = async (e) => {
         e.stopPropagation();
+
         if (!ev?.id) {
-          showToast('Event not ready. Try again in a moment.');
-          menu.classList.add('hidden');
+          showToast("Event not ready. Try again in a moment.");
+          menu.classList.add("hidden");
           return;
         }
+
         try {
-          const icsUrl = `https://ics-ilx3agka5q-uc.a.run.app?id=${encodeURIComponent(ev.id)}`;
-          window.location.href = icsUrl;
-          showToast('Calendar File Downloaded. Tap it to Open.');
-        } catch {
-          showToast('Unable to Download Calendar File!?');
+          // 1️⃣ Ask backend for ICS download URL
+          const res = await callHelper("downloadICS", { id: ev.id });
+
+          if (!res?.url) {
+            showToast("Unable to generate calendar file.");
+            menu.classList.add("hidden");
+            return;
+          }
+
+          // 2️⃣ Trigger download
+          window.location.href = res.url;
+          showToast("Calendar File Downloaded. Tap it to Open.");
+
+        } catch (err) {
+          showToast("Unable to Download Calendar File!?");
         }
-        menu.classList.add('hidden');
+
+        menu.classList.add("hidden");
       };
     }
 
@@ -2163,16 +2078,8 @@ async function renderEvent(evRaw) {
             eventTitle: ev.title
           };
 
-          const res = await tpFetch(
-            'https://us-central1-tropic-pulse.cloudfunctions.net/massEmailWebhook',
-            {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify(payload)
-            }
-          );
-
-          const data = await res.json().catch(()=>null);
+          // ⭐ NEW — call connector instead of backend URL
+          const data = await getHook(payload);
           const status = data?.status || data?.result?.status;
           const paymentLink = data?.paymentLink || data?.result?.paymentLink;
 

@@ -15,13 +15,16 @@
 <!-- Google tag (gtag.js) -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-HSX89KS63P"></script>
 
+<!-- Pulse OS Core -->
 <script type="module" src="https://tropicpulse.bz/proxy/PulseUpdate.js?v8"></script>
 <script type="module" src="https://tropicpulse.bz/proxy/PulseBand.js?v8"></script>
 <script type="module" src="https://tropicpulse.bz/proxy/PulseClient.js?v8"></script>
+<script type="module" src="https://tropicpulse.bz/proxy/PulseNet.js?v8"></script>
 
-<script type="module" src="https://tropicpulse.bz/proxy/PulseUsersCacheManager.js?v8"></script>
-<script type="module" src="https://tropicpulse.bz/proxy/PulseHistoryCacheManager.js?v8"></script>
-<script type="module" src="https://tropicpulse.bz/proxy/PulseSettingsCacheManager.js?v8"></script>
+<!-- Backend Connector Layer -->
+<script type="module">
+  import { getAuth, getHook, getMap, callHelper } from "/lib/Connectors/router.js";
+</script>
 <script>
   window.dataLayer = window.dataLayer || [];
   function gtag(){dataLayer.push(arguments);}
@@ -866,37 +869,10 @@
     </div>
   </div>
     <script type="module">
-      import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-      import { getDocs, getDoc, updateDoc, doc, deleteDoc, getFirestore, query, where, serverTimestamp, setDoc,
-      collection,
-      initializeFirestore, 
-      persistentLocalCache, 
-      persistentMultipleTabManager 
-      } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
-      import { getAuth, setPersistence, browserLocalPersistence, signInWithCustomToken } 
-        from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-      import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-storage.js";
+      let persistenceEnabled = true;
+  let lastTime = null;
+  let firstTime = null;
 
-      /* FIREBASE */
-      const firebaseConfig = {
-        apiKey: "AIzaSyD4I5YDtZMMC_tDuwR9CEjhs_iAdrLzthQ",
-        authDomain: "tropic-pulse.firebaseapp.com",
-        projectId: "tropic-pulse",
-        storageBucket: "tropic-pulse.firebasestorage.app",
-        messagingSenderId: "642785071979",
-        appId: "1:642785071979:web:4287c6bdf51f5233db722e",
-        measurementId: "G-HSX89KS63P"
-      };
-      let firstTime = null;
-      let lastTime = null;
-      const app = initializeApp(firebaseConfig);
-      const db = initializeFirestore(app, {
-        localCache: persistentLocalCache({
-          tabManager: persistentMultipleTabManager()
-        }),
-        experimentalForceLongPolling: false,
-        experimentalAutoDetectLongPolling: false
-      });
       
       window.__serverTimeOffset = 0;
 
@@ -908,17 +884,6 @@
       window.nowMs = function () {
         return Date.now() + window.__serverTimeOffset;
       };
-      let persistenceEnabled = false;
-       let auth = getAuth();
-      
-        try {
-          setPersistence(auth, browserLocalPersistence);
-          persistenceEnabled = true;
-          markAuth("Firebase Auth persistence enabled.");
-        } catch (err) {
-          console.error("Failed to enable persistence:", err);
-        }
-
       
       // -----------------------------
     // GLOBAL STATE
@@ -1180,32 +1145,21 @@ function normalizeUserRecord(user = {}) {
     // DANGER REPORT (unchanged)
     // -----------------------------
     async function reportDanger(reason) {
-      try {
-        const identityRaw = localStorage.getItem("tp_identity_v4");
-        const token = localStorage.getItem("tp_token_v4");
-
-        let identitySnapshot = null;
-        try {
-          identitySnapshot = identityRaw ? JSON.parse(identityRaw) : null;
-        } catch {
-          identitySnapshot = null;
-        }
-
-        await fetch("https://us-central1-tropic-pulse.cloudfunctions.net/reportSuspiciousClient", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            reason,
-            identitySnapshot,
-            tokenSnapshot: token || null,
-            userAgent: navigator.userAgent,
-            ts: nowMs()
-          })
-        });
-      } catch (err) {
-        console.warn("Failed to report danger:", err);
+  try {
+    await getHook({
+      type: "danger",
+      payload: {
+        reason,
+        identitySnapshot: identity || null,
+        tokenSnapshot: token || null,
+        userAgent: navigator.userAgent,
+        ts: nowMs()
       }
-    }
+    });
+  } catch (err) {
+    console.warn("Failed to report danger:", err);
+  }
+}
 
     // -----------------------------
     // SAFE LOGOUT HELPERS
@@ -1255,7 +1209,7 @@ async function sessionCheck() {
   mark("sessionCheck");
 
   // -----------------------------------------
-  // 0. LOAD LOCAL VARIABLES FIRST
+  // 1. LOAD LOCAL VARIABLES
   // -----------------------------------------
   autologin = localStorage.getItem("tp_stay_signed_v4") === "1";
   trusted   = localStorage.getItem("tp_device_token_v4") === "1";
@@ -1269,10 +1223,10 @@ async function sessionCheck() {
   token     = localStorage.getItem("tp_token_v4");
   userID    = identity?.uid   || null;
   userEmail = identity?.email || null;
-  userName  = identity?.displayName || identity?.name || null;
+  userName  = identity?.displayName || null;
 
   // -----------------------------------------
-  // 1. IDENTITY + TOKEN MUST EXIST
+  // 2. IDENTITY + TOKEN MUST EXIST
   // -----------------------------------------
   if (!identity || !userID || !token) {
     mark("Missing identity or token → HARD LOGOUT");
@@ -1281,13 +1235,13 @@ async function sessionCheck() {
   }
 
   // -----------------------------------------
-  // 2. LOCAL INACTIVITY CHECK
+  // 3. LOCAL INACTIVITY CHECK
   // -----------------------------------------
   const now       = nowMs();
   const lastLocal = Number(localStorage.getItem("tp_last_active_v4")) || 0;
   const diff      = now - lastLocal;
 
-  const inactive15 = diff > 15 * 60 * 1000;
+  const inactive15 = diff > 15 * 60 * 1000; // > 15 minutes
 
   if (inactive15 && !trusted) {
     if (!autologin) {
@@ -1301,70 +1255,38 @@ async function sessionCheck() {
   }
 
   // -----------------------------------------
-  // 3. RESTORE FIREBASE AUTH (FAST/SLOW PATH)
+  // 4. BACKEND AUTH REFRESH (THE ONLY REAL STEP)
   // -----------------------------------------
-  if (identity.fauth && persistenceEnabled === false) {
-    try {
-      await signInWithCustomToken(auth, identity.fauth);
-      mark("FAST-PATH: restored Firebase Auth using cached fauth");
-      localStorage.setItem("tp_last_active_v4", now);
-    } catch (err) {
-      mark("Cached fauth invalid → clearing and refreshing");
-      identity.fauth = null;
-      localStorage.setItem("tp_identity_v4", JSON.stringify(identity));
-    }
+  const data = await getAuth(token);
+
+  if (data.hardLogout) {
+    mark("Backend flagged danger → HARD LOGOUT");
+    hardLogout("backend_danger_flag");
+    return false;
   }
 
-  if (!identity.fauth) {
-    try {
-      const res = await fetch(
-        "https://us-central1-tropic-pulse.cloudfunctions.net/getFirebaseAuthToken",
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ token })
-        }
-      );
-
-      const data = await res.json();
-
-      if (data.hardLogout) {
-        mark("Backend flagged danger → HARD LOGOUT");
-        hardLogout("backend_danger_flag");
-        return false;
-      }
-
-      if (!data.firebaseToken) {
-        mark("No firebaseToken returned → HARD LOGOUT");
-        hardLogout("missing_firebase_token");
-        return false;
-      }
-
-      if (data.newJwtToken) {
-        token = data.newJwtToken;
-        localStorage.setItem("tp_token_v4", token);
-        mark("Updated JWT lineage from backend");
-      }
-
-      await signInWithCustomToken(auth, data.firebaseToken);
-
-      identity.fauth = data.firebaseToken;
-      localStorage.setItem("tp_identity_v4", JSON.stringify(identity));
-
-      mark("SLOW-PATH: Firebase Auth restored with fresh token");
-      localStorage.setItem("tp_last_active_v4", now);
-
-    } catch (err) {
-      console.error("Failed to restore Firebase Auth:", err);
-      hardLogout("firebase_restore_failed");
-      return false;
-    }
+  if (!data.identity) {
+    mark("Backend returned no identity → HARD LOGOUT");
+    hardLogout("missing_identity_from_backend");
+    return false;
   }
 
+  // Update JWT lineage if provided
+  if (data.newJwtToken) {
+    token = data.newJwtToken;
+    localStorage.setItem("tp_token_v4", token);
+    mark("Updated JWT lineage from backend");
+  }
+
+  // Update identity cache
+  identity = data.identity;
+  localStorage.setItem("tp_identity_v4", JSON.stringify(identity));
+
   // -----------------------------------------
-  // 4. UPDATE LAST ACTIVE
+  // 5. UPDATE LAST ACTIVE
   // -----------------------------------------
   localStorage.setItem("tp_last_active_v4", now);
+
   return true;
 }
 

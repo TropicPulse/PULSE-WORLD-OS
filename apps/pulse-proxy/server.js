@@ -1,7 +1,148 @@
 // ======================================================
-//  Pulse Engine — Server.js (Unified v3 Build)
+//  PULSE ENGINE — SERVER.JS (UNIFIED V3 BUILD)
+//  MASTER PAGE INDEX — ROOT OF BACKEND ARCHITECTURE
 // ======================================================
-
+//
+// INTENT-CHECK: If you paste this while confused or frustrated, gently re-read your INTENT; if I am unsure of intent, I will ask you for the full INTENT paragraph.
+//  WHAT THIS FILE IS:
+//  -------------------
+//  • The ROOT of the entire Pulse backend.
+//  • The entrypoint for the Tropic Pulse Proxy.
+//  • The universal request router for TPProxy.
+//  • The system that exposes admin dashboards.
+//  • The system that handles rate limiting.
+//  • The system that handles logs + metrics.
+//  • The system that handles warm connections.
+//  • The system that handles packet engine access.
+//  • The system that handles email alerts.
+//  • The system that sets identity + version headers.
+//  • The system that protects the user by FAILING OPEN.
+//
+//  WHAT THIS FILE IS NOT:
+//  -----------------------
+//  • NOT a compute engine.
+//  • NOT a miner engine.
+//  • NOT a miner runtime.
+//  • NOT a job orchestrator.
+//  • NOT a marketplace adapter.
+//  • NOT a scoring engine.
+//  • NOT a trust engine.
+//  • NOT a GPU worker.
+//  • NOT a blockchain client.
+//  • NOT a wallet or token handler.
+//  • NOT a place for arbitrary code execution.
+//  • NOT a place for business logic that belongs in subsystems.
+//
+//  ROLE IN THE ARCHITECTURE:
+//  --------------------------
+//  This file is the ROOT NODE of the backend dependency tree.
+//  Every subsystem above it depends on this file functioning:
+//
+//      Pulse Engine (server.js)
+//          ↓
+//      Pulse Proxy
+//          ↓
+//      Pulse User Metrics
+//          ↓
+//      Pulse User Scoring
+//          ↓
+//      Pulse Instance Orchestrator
+//          ↓
+//      Pulse Miner Engine
+//          ↓
+//      Pulse Miner Runtime
+//          ↓
+//      Pulse Compute
+//          ↓
+//      Packet Engine
+//
+//  If THIS file breaks → the entire backend stack collapses.
+//  If THIS file stalls → the proxy stalls.
+//  If THIS file blocks → the user experience breaks.
+//  If THIS file misroutes → the trust system collapses.
+//
+//  Therefore:
+//  THIS FILE MUST ALWAYS FAIL OPEN.
+//  THIS FILE MUST ALWAYS RETURN A RESPONSE.
+//  THIS FILE MUST NEVER BLOCK USER TRAFFIC.
+//  THIS FILE MUST NEVER EXECUTE ARBITRARY CODE.
+//  THIS FILE MUST NEVER BECOME A POINT OF FAILURE.
+//
+//
+//  SAFETY CONTRACT:
+//  ----------------
+//  • Always fail OPEN — never block user traffic.
+//  • Never run user-provided scripts.
+//  • Never eval, Function(), or dynamic import.
+//  • Never perform compute here — delegate to subsystems.
+//  • Never mutate global state except logs + metrics.
+//  • Never assume miner availability — proxy must stand alone.
+//  • Never assume Redis availability — fail open.
+//  • Never assume Firestore availability — fail open.
+//  • Never assume packet engine availability — fail open.
+//  • Never assume email availability — fail silently.
+//
+//
+//  OPERATIONAL RESPONSIBILITIES:
+//  -----------------------------
+//  • Express server initialization.
+//  • Identity headers (node, region, version).
+//  • Rate limiting (Redis-backed, fail-open).
+//  • Logging (in-memory ring buffer).
+//  • User metrics (lightweight, non-blocking).
+//  • Admin endpoints (UserScores, logs).
+//  • Universal proxy endpoint (/TPProxy).
+//  • Warm connection logic.
+//  • Chunking utilities.
+//  • Email alert system (non-blocking).
+//  • PacketEngine passthrough (safe).
+//
+//  THIS FILE MUST NEVER:
+//  ----------------------
+//  • Perform job scoring.
+//  • Perform job selection.
+//  • Perform job execution.
+//  • Perform GPU work.
+//  • Perform miner orchestration.
+//  • Perform trust scoring.
+//  • Perform instance allocation.
+//  • Perform marketplace communication.
+//  • Perform compute of any kind.
+//
+//
+//  FUTURE-YOU WARNING (CRITICAL):
+//  ------------------------------
+//  Five months from now, when something breaks:
+//
+//    • If the proxy is slow → check server.js first.
+//    • If rate limiting misbehaves → check server.js.
+//    • If logs vanish → check server.js.
+//    • If metrics stop updating → check server.js.
+//    • If admin dashboards break → check server.js.
+//    • If packet engine stops responding → check server.js.
+//    • If TPProxy returns errors → check server.js.
+//
+//  This file is the ROOT OF TRUST.
+//  This file is the FIRST POINT OF FAILURE.
+//  This file is the LAST LINE OF DEFENSE.
+//
+//
+//  DESIGN LAW FOR THIS FILE:
+//  -------------------------
+//  “If any subsystem fails, the proxy must fail OPEN.
+//   The proxy must never block, stall, or degrade the user’s device.
+//   The proxy must always pass traffic through even if the entire miner
+//   stack is offline.”
+//
+//
+//  FINAL NOTE:
+//  -----------
+//  This file is the operational heart of Tropic Pulse.
+//  Treat it as sacred.
+//  Treat it as immutable.
+//  Treat it as the root of your architecture.
+//
+// ======================================================
 import express from "express";
 import fetch from "node-fetch";
 import crypto from "crypto";
@@ -10,16 +151,21 @@ import { createClient } from "redis";
 import { getFirestore } from "firebase-admin/firestore";
 import dotenv from "dotenv";
 dotenv.config();
+
 import {
   readPacketExists,
   writePacket,
   generatePacketData
 } from "./pulse-miner/PacketEngine.js";
-// ❌ REMOVED: legacy miner routing import that no longer exists / is invalid
-// import {
-//   getNextMarketplaceJob,
-//   submitMarketplaceResult
-// } from "../pulse-miner/jobs/routing.js";
+
+// ------------------------------------------------------
+//  NEW: Timer Layer (Non‑Operational Logging + Saving)
+// ------------------------------------------------------
+import startPulseTimer from "./timer.js";   // <--- ADD THIS LINE
+
+// Start the background timer loop
+startPulseTimer();                          // <--- AND THIS LINE
+// ------------------------------------------------------
 
 const app = express();
 const PORT = process.env.PORT || 8080;

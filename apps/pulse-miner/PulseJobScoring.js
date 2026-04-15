@@ -1,9 +1,96 @@
-// ======================================================
-// PulseJobScoring.js — Capability-based job scoring
-// ======================================================
+// FILE: tropic-pulse-functions/apps/pulse-miner/PulseJobScoring.js
 //
-// Scores marketplace jobs based on what the DEVICE CAN DO.
-// ======================================================
+// INTENT-CHECK: If you paste this while confused or frustrated, gently re-read your INTENT; if I am unsure of intent, I will ask you for the full INTENT paragraph.
+// 📘 PAGE INDEX — Source of Truth for This File
+//
+// This PAGE INDEX defines the identity, purpose, boundaries, and allowed
+// behavior of this file. It is the compressed representation of the entire
+// page. Keep this updated as scoring logic evolves.
+//
+// If AI becomes uncertain or drifts, request: "Rules Design (Trust/Data)"
+//
+// CONTENTS TO MAINTAIN:
+//   • What this file IS
+//   • What this file IS NOT
+//   • Responsibilities
+//   • Exported functions
+//   • Internal logic summary
+//   • Allowed operations
+//   • Forbidden operations
+//   • Safety constraints
+//
+// ROLE:
+//   PulseJobScoring — the capability-based scoring engine for marketplace jobs.
+//   This module is responsible for:
+//     • Checking device compatibility
+//     • Estimating runtime on THIS device
+//     • Estimating payout
+//     • Applying bandwidth penalties
+//     • Applying stability bonuses
+//     • Producing a final numeric score
+//
+//   REAL‑WORLD CONTEXT (for future Aldwyn):
+//     • This file does NOT talk to marketplaces.
+//     • This file does NOT execute jobs.
+//     • This file does NOT wrap jobs.
+//     • This file does NOT supervise workers.
+//     • This file does NOT do crypto, mining, hashing, or token operations.
+//     • This file ONLY scores jobs based on device capability.
+//
+//   This file IS:
+//     • A deterministic scoring engine
+//     • A capability evaluator
+//     • A runtime estimator
+//     • A profitability estimator
+//     • A penalty/bonus calculator
+//
+//   This file IS NOT:
+//     • A scheduler
+//     • A compute engine
+//     • A job selector
+//     • A marketplace adapter
+//     • A reputation engine
+//     • A blockchain client
+//     • A wallet or token handler
+//
+// DEPLOYMENT:
+//   Lives in /apps/pulse-miner as part of the Pulse Miner subsystem.
+//   Must remain ESM-only and side-effect-free.
+//   Must NEVER import anything.
+//   Must NEVER mutate job objects.
+//
+// SAFETY RULES (CRITICAL):
+//   • NO eval()
+//   • NO dynamic imports
+//   • NO arbitrary code execution
+//   • NO network calls
+//   • NO filesystem access
+//   • NO crypto operations
+//
+// INTERNAL LOGIC SUMMARY:
+//   • scoreJobForDevice(rawJob, deviceProfile):
+//       - Hard compatibility checks
+//       - Runtime estimation
+//       - Payout estimation
+//       - Bandwidth penalty
+//       - Stability bonus
+//       - Final score = profitPerSecond * stability - bandwidthPenalty
+//
+//   • isJobCompatible():
+//       - CPU, memory, GPU sanity checks
+//
+//   • estimateRuntimeSeconds():
+//       - GPU-based speed factor
+//
+//   • estimatePayout():
+//       - Uses rawJob.payout directly
+//
+//   • estimateBandwidthPenalty():
+//       - Penalizes jobs requiring more bandwidth than device has
+//
+// ------------------------------------------------------
+// PulseJobScoring — Capability-Based Job Scoring
+// ------------------------------------------------------
 
 /**
  * deviceProfile = {

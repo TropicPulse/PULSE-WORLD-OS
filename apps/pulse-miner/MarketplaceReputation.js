@@ -1,20 +1,109 @@
-// ======================================================
-// MarketplaceReputation.js
-// Weighted reputation scoring for marketplaces
-// + Persistence to disk
-// ======================================================
+// FILE: tropic-pulse-functions/apps/pulse-miner/MarketplaceReputation.js
 //
-// Each marketplace gets a dynamic score based on:
-//   • Latency
-//   • API reliability
-//   • Job quality
-//   • Job profitability
-//   • Job completion success
-//   • Error rate
-//   • Historical performance
+// INTENT-CHECK: If you paste this while confused or frustrated, gently re-read your INTENT; if I am unsure of intent, I will ask you for the full INTENT paragraph.
+// 📘 PAGE INDEX — Source of Truth for This File
 //
-// Reputation is saved to disk so it survives restarts.
-// ======================================================
+// This PAGE INDEX defines the identity, purpose, boundaries, and allowed
+// behavior of this file. It is the compressed representation of the entire
+// page. Keep this updated as logic evolves.
+//
+// If AI becomes uncertain or drifts, request: "Rules Design (Trust/Data)"
+//
+// CONTENTS TO MAINTAIN:
+//   • What this file IS
+//   • What this file IS NOT
+//   • Its responsibilities
+//   • Its exported functions
+//   • Its internal logic summary
+//   • Allowed imports
+//   • Forbidden imports
+//   • Deployment rules
+//   • Safety constraints
+//
+// ROLE:
+//   MarketplaceReputation — persistent reliability scoring for all marketplaces.
+//   This module tracks:
+//     • Latency
+//     • API reliability
+//     • Job quality
+//     • Job profitability
+//     • Job completion success
+//     • Error rate
+//     • Historical performance
+//
+//   Reputation is stored on disk so it survives restarts.
+//
+//   REAL‑WORLD CONTEXT (for future Aldwyn):
+//     • This file does NOT interact with any marketplace APIs directly.
+//     • This file does NOT know about tokens, payouts, or financial systems.
+//       Even if a marketplace uses a token (AKT*, RNDR*, SPHERON*),
+//       reputation scoring is purely operational — we do NOT do crypto.
+//     • This file only receives normalized signals from MarketplaceConnector.
+//
+//   This file IS:
+//     • A persistent reputation engine
+//     • A weighted scoring model
+//     • A disk-backed memory store
+//     • A reliability tracker for compute marketplaces
+//
+//   This file IS NOT:
+//     • A scheduler
+//     • A job selector
+//     • A compute engine
+//     • A marketplace adapter
+//     • A blockchain client
+//     • A wallet or token handler
+//
+// DEPLOYMENT:
+//   Lives in /apps/pulse-miner as part of the Pulse Miner subsystem.
+//   Must run in Node.js (uses fs + path).
+//   Must remain synchronous for reliability (startup-critical).
+//
+// SYNTAX RULES:
+//   ESM JavaScript ONLY — no TypeScript, no CommonJS, no require().
+//   Named exports ONLY — no default exports.
+//
+// IMPORT RULES:
+//   Allowed:
+//     • fs (Node.js)
+//     • path (Node.js)
+//
+//   Forbidden:
+//     • Any browser-only APIs
+//     • Any marketplace adapters
+//     • Any compute logic
+//
+// INTERNAL LOGIC SUMMARY:
+//   • loadMarketplaceReputation():
+//       - Reads JSON file from disk
+//       - Loads into in-memory Map
+//
+//   • saveMarketplaceReputation():
+//       - Writes Map → JSON file
+//       - Ensures directory exists
+//
+//   • getMarketplaceReputation(id):
+//       - Returns stored reputation or default baseline
+//
+//   • updateMarketplaceReputation(id, signals):
+//       - Applies weighted scoring model
+//       - Blends old + new using EMA smoothing
+//       - Clamps score to 0–1
+//       - Saves to disk
+//
+//   • computeReputationSignals():
+//       - Converts raw metrics → normalized 0–1 signals
+//       - Uses helper normalizers for latency, errors, quality, profit
+//
+// SAFETY NOTES:
+//   • Must NEVER throw unhandled errors
+//   • Must ALWAYS clamp values to 0–1
+//   • Must ALWAYS persist after updates
+//   • Must remain deterministic
+//
+// ------------------------------------------------------
+// Marketplace Reputation Engine (Persistent)
+// ------------------------------------------------------
 
 import fs from "fs";
 import path from "path";

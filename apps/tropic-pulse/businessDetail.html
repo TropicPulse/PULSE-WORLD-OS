@@ -15,15 +15,16 @@
 <!-- Google tag (gtag.js) -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-HSX89KS63P"></script>
 
+<!-- Pulse OS Core -->
 <script type="module" src="https://tropicpulse.bz/proxy/PulseUpdate.js?v8"></script>
 <script type="module" src="https://tropicpulse.bz/proxy/PulseBand.js?v8"></script>
 <script type="module" src="https://tropicpulse.bz/proxy/PulseClient.js?v8"></script>
+<script type="module" src="https://tropicpulse.bz/proxy/PulseNet.js?v8"></script>
 
-<script type="module" src="https://tropicpulse.bz/proxy/PulseUsersCacheManager.js?v8"></script>
-<script type="module" src="https://tropicpulse.bz/proxy/PulseBusCacheManager.js?v8"></script>
-<script type="module" src="https://tropicpulse.bz/proxy/PulseOrdersCacheManager.js?v8"></script>
-<script type="module" src="https://tropicpulse.bz/proxy/PulseHistoryCacheManager.js?v8"></script>
-<script type="module" src="https://tropicpulse.bz/proxy/PulseSettingsCacheManager.js?v8"></script>>
+<!-- Backend Connector Layer -->
+<script type="module">
+  import { getAuth, getHook, getMap, callHelper } from "/lib/Connectors/router.js";
+</script>
 <script>
   window.dataLayer = window.dataLayer || [];
   function gtag(){dataLayer.push(arguments);}
@@ -902,37 +903,7 @@ body::before {
 
 <div id="tpToast"><span class="icon">📥</span><span id="tpToastMsg"></span></div>
 <script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-  import { getDocs, getDoc, updateDoc, setDoc, limit, doc, deleteDoc, getFirestore, query, where, serverTimestamp, orderBy,
-  collection,
-  initializeFirestore, 
-  persistentLocalCache, 
-  persistentMultipleTabManager 
-} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
-import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-storage.js";
-import { getAuth, setPersistence, browserLocalPersistence, signInWithCustomToken } 
-  from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-
-  /* FIREBASE */
-  const firebaseConfig = {
-    apiKey: "AIzaSyD4I5YDtZMMC_tDuwR9CEjhs_iAdrLzthQ",
-    authDomain: "tropic-pulse.firebaseapp.com",
-    projectId: "tropic-pulse",
-    storageBucket: "tropic-pulse.firebasestorage.app",
-    messagingSenderId: "642785071979",
-    appId: "1:642785071979:web:4287c6bdf51f5233db722e",
-    measurementId: "G-HSX89KS63P"
-  };
-
-  const app = initializeApp(firebaseConfig);
-  const db = initializeFirestore(app, {
-    localCache: persistentLocalCache({
-      tabManager: persistentMultipleTabManager()
-    }),
-    experimentalForceLongPolling: false,
-    experimentalAutoDetectLongPolling: false
-  });
-   
+  
   window.__serverTimeOffset = 0;
 
     window.setServerNow = function (serverNowMs) {
@@ -943,23 +914,11 @@ import { getAuth, setPersistence, browserLocalPersistence, signInWithCustomToken
     window.nowMs = function () {
       return Date.now() + window.__serverTimeOffset;
     };
-  let persistenceEnabled = false;
+  let persistenceEnabled = true;
   let lastTime = null;
   let firstTime = null;
 
   let currentUserLocation = null;
-
-
-  markAuth("Firebase Auth FIRST CHECK");
-  let auth = getAuth();
-
-  try {
-    setPersistence(auth, browserLocalPersistence);
-    persistenceEnabled = true;
-    mark("Firebase Auth persistence enabled.");
-  } catch (err) {
-    console.error("Failed to enable persistence:", err);
-  }
 
 
   const params = new URLSearchParams(window.location.search);
@@ -1017,7 +976,22 @@ function safeLogout() {
   localStorage.removeItem("tp_device_token_v4");
   mark("SAFE LOGOUT");
 }
-
+async function reportDanger(reason) {
+  try {
+    await getHook({
+      type: "danger",
+      payload: {
+        reason,
+        identitySnapshot: identity || null,
+        tokenSnapshot: token || null,
+        userAgent: navigator.userAgent,
+        ts: nowMs()
+      }
+    });
+  } catch (err) {
+    console.warn("Failed to report danger:", err);
+  }
+}
 async function hardLogout(reason) {
   try {
     mark("HARD LOGOUT: " + (reason || "unknown"));
@@ -1044,7 +1018,7 @@ function mark(label) {
  ************************************************************/
 async function sessionCheck() {
   mark("sessionCheck");
-  
+
   // -----------------------------------------
   // 1. LOAD LOCAL VARIABLES
   // -----------------------------------------
@@ -1078,7 +1052,6 @@ async function sessionCheck() {
   const lastLocal = Number(localStorage.getItem("tp_last_active_v4")) || 0;
   const diff      = now - lastLocal;
 
-  const active5    = diff < 5 * 60 * 1000;   // < 5 minutes
   const inactive15 = diff > 15 * 60 * 1000; // > 15 minutes
 
   if (inactive15 && !trusted) {
@@ -1093,89 +1066,38 @@ async function sessionCheck() {
   }
 
   // -----------------------------------------
-  // 5. FAST PATH: restore using cached Firebase token (fauth)
+  // 4. BACKEND AUTH REFRESH (THE ONLY REAL STEP)
   // -----------------------------------------
-  if (identity.fauth && persistenceEnabled === false) {
-    try {
-      await signInWithCustomToken(auth, identity.fauth);
-      mark("FAST-PATH: restored Firebase Auth using cached fauth");
-      localStorage.setItem("tp_last_active_v4", now);
-      return true;
-    } catch (err) {
-      mark("Cached fauth invalid → clearing and refreshing");
-      identity.fauth = null;
-      localStorage.setItem("tp_identity_v4", JSON.stringify(identity));
-    }
+  const data = await getAuth(token);
+
+  if (data.hardLogout) {
+    mark("Backend flagged danger → HARD LOGOUT");
+    hardLogout("backend_danger_flag");
+    return false;
   }
 
-  // -----------------------------------------
-  // 6. SLOW PATH: fetch fresh Firebase token from backend
-  // -----------------------------------------
-  if (!identity.fauth) {
-    try {
-      const res = await fetch(
-        "https://us-central1-tropic-pulse.cloudfunctions.net/getFirebaseAuthToken",
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ token })
-        }
-      );
-
-      const data = await res.json();
-
-      // Danger → hard logout
-      if (data.hardLogout) {
-        mark("Backend flagged danger → HARD LOGOUT");
-        hardLogout("backend_danger_flag");
-        return false;
-      }
-
-      if (!data.firebaseToken) {
-        mark("No firebaseToken returned → HARD LOGOUT");
-        hardLogout("missing_firebase_token");
-        return false;
-      }
-
-      // Update JWT lineage if provided
-      if (data.newJwtToken) {
-        token = data.newJwtToken;
-        localStorage.setItem("tp_token_v4", token);
-        mark("Updated JWT lineage from backend");
-      }
-
-      // Restore Firebase Auth
-      await signInWithCustomToken(auth, data.firebaseToken);
-
-      // Update identity cache
-      identity.fauth = data.firebaseToken;
-      localStorage.setItem("tp_identity_v4", JSON.stringify(identity));
-
-      mark("SLOW-PATH: Firebase Auth restored with fresh token");
-      localStorage.setItem("tp_last_active_v4", now);
-      return true;
-
-    } catch (err) {
-      console.error("Failed to restore Firebase Auth:", err);
-      hardLogout("firebase_restore_failed");
-      return false;
-    }
+  if (!data.identity) {
+    mark("Backend returned no identity → HARD LOGOUT");
+    hardLogout("missing_identity_from_backend");
+    return false;
   }
 
-  // -----------------------------------------
-  // 7. HEARTBEAT UPDATE (non-blocking)
-  // -----------------------------------------
-  try {
-    updateDoc(doc(db, "Users", userID), {
-      isLoggedIn: true,
-      lastAppActive: serverTimestamp()
-    });
-    mark("Heartbeat saved");
-  } catch (err) {
-    mark("Heartbeat update FAILED: " + err);
+  // Update JWT lineage if provided
+  if (data.newJwtToken) {
+    token = data.newJwtToken;
+    localStorage.setItem("tp_token_v4", token);
+    mark("Updated JWT lineage from backend");
   }
 
+  // Update identity cache
+  identity = data.identity;
+  localStorage.setItem("tp_identity_v4", JSON.stringify(identity));
+
+  // -----------------------------------------
+  // 5. UPDATE LAST ACTIVE
+  // -----------------------------------------
   localStorage.setItem("tp_last_active_v4", now);
+
   return true;
 }
 
@@ -1497,16 +1419,12 @@ function attachMapOverlayHandler(name, iconUrl = null) {
     applyTropicOverlay(name, iconUrl);
   };
 }
-
 async function regenerateMap(biz) {
   try {
-    const url =
-      `https://us-central1-tropic-pulse.cloudfunctions.net/generateMap` +
-      `?venue=${encodeURIComponent(biz.resolvedAddress || biz.address || "")}` +
-      `&businessID=${encodeURIComponent(biz.id)}`;
+    const venue = biz.resolvedAddress || biz.address || "";
 
-    const res = await fetch(url);
-    const data = await res.json();
+    // ⭐ NEW — call connector instead of backend URL
+    const data = await getMap(venue, biz.id);
 
     if (!data.success) {
       console.error("Regenerate map failed:", data.error);
@@ -1564,6 +1482,9 @@ async function loadMapForBusiness(biz) {
     biz.resolvedAddress &&
     biz.resolvedName;
 
+  // -------------------------------------------------
+  // 1. USE CACHED MAP IF AVAILABLE
+  // -------------------------------------------------
   if (hasCachedMap) {
     mapContainer.style.display = "block";
 
@@ -1603,14 +1524,12 @@ async function loadMapForBusiness(biz) {
     return;
   }
 
+  // -------------------------------------------------
+  // 2. NO CACHED MAP → CALL BACKEND THROUGH CONNECTOR
+  // -------------------------------------------------
   try {
-    const url =
-      `https://us-central1-tropic-pulse.cloudfunctions.net/generateMap` +
-      `?venue=${encodeURIComponent(cleanAddress)}` +
-      `&businessID=${encodeURIComponent(biz.id)}`;
-
-    const res  = await fetch(url);
-    const data = await res.json();
+    // ⭐ NEW — use connector instead of Cloud Function URL
+    const data = await getMap(cleanAddress, biz.id);
 
     if (!data.success) {
       mapContainer.style.display = "block";
@@ -1638,7 +1557,7 @@ async function loadMapForBusiness(biz) {
     mapImage.onload = null;
     mapImage.src = `${data.mapImageUrl}?t=${nowMs()}`;
     mapLink.href = data.mapsWebUrl;
-    
+
     const iconUrl = await getBusCategoryIcon(biz);
 
     attachMapOverlayHandler(
@@ -1650,7 +1569,7 @@ async function loadMapForBusiness(biz) {
     );
 
     mapImage.onclick = () => mapLink.click();
-    
+
   } catch (err) {
     console.error("Map Load Failed:", err);
   }
@@ -1710,24 +1629,15 @@ function updateMassEmailBadge(total) {
   btn.title = `Mass Email (${total} credits remaining)`;
 }
 
-/* -------------------------------------------------
-   15. USER CREDITS FETCH
--------------------------------------------------- */
 async function fetchUserCredits(email) {
-  try {
-    const res = await tpFetch(
-      `https://us-central1-tropic-pulse.cloudfunctions.net/getUserCredits?email=${encodeURIComponent(email)}`
-    );
-    const data = await res.json().catch(() => null);
+  const q = query(collection(db, "Users"), where("TPIdentity.email", "==", email), limit(1));
+  const snap = await getDocs(q);
+  const notif = snap.empty ? {} : (snap.docs[0].data().TPNotifications || {});
 
-    return {
-      freeRemaining: Math.max(0, 2 - (data?.freeUsed || 0)),
-      paidRemaining: data?.paidCredits || 0
-    };
-  } catch (err) {
-    console.error("Credit fetch failed:", err);
-    return { freeRemaining: 0, paidRemaining: 0 };
-  }
+  return {
+    freeRemaining: Math.max(0, (notif.freeMassNotificationsLimit ?? 2) - (notif.freeMassNotificationsUsed ?? 0)),
+    paidRemaining: notif.paidMassNotificationCredits ?? 0
+  };
 }
 /* -------------------------------------------------
    16. LOAD BUSINESS (idempotent, uses localStorage cache + versioning)
@@ -2260,63 +2170,56 @@ async function renderBusiness(biz) {
   }
 
   /* -------------------------------------------------
-     5. MASS EMAIL CONFIRM HANDLER (idempotent)
-  -------------------------------------------------- */
-  if (confirmYes && !confirmYes._tp_handler) {
-    confirmYes._tp_handler = async () => {
-      confirmOverlay.classList.add("hidden");
+   5. MASS EMAIL CONFIRM HANDLER (idempotent)
+-------------------------------------------------- */
+if (confirmYes && !confirmYes._tp_handler) {
+  confirmYes._tp_handler = async () => {
+    confirmOverlay.classList.add("hidden");
 
-      try {
-        massEmailBtn.disabled = true;
-        massEmailBtn.innerHTML = "⏳";
+    try {
+      massEmailBtn.disabled = true;
+      massEmailBtn.innerHTML = "⏳";
 
-        const payload = {
-          email: userEmail,
-          businessID: biz.id,
-          businessName: biz.busname
-        };
+      const payload = {
+        email: userEmail,
+        businessID: biz.id,
+        businessName: biz.busname
+      };
 
-        const res = await fetch(
-          "https://us-central1-tropic-pulse.cloudfunctions.net/massEmailWebhook",
-          {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(payload)
-          }
-        );
+      // ⭐ NEW — call connector instead of backend URL
+      const data = await getHook(payload);
 
-        const data = await res.json();
-        const status = data.status || data.result?.status;
-        const paymentLink = data.paymentLink || data.result?.paymentLink;
+      const status = data.status || data.result?.status;
+      const paymentLink = data.paymentLink || data.result?.paymentLink;
 
-        if (status === "no_credits" && paymentLink) {
-          showToast("You're Out of Credits. Redirecting...");
-          setTimeout(() => window.location.replace(paymentLink), 800);
-          return;
-        }
-
-        if (status === "sent") {
-          showToast("Mass Email Sent (-1 Credit)");
-          await lazyLoadCreditsForBusiness(biz);
-          massEmailBtn.innerHTML = "✔️";
-          massEmailBtn.disabled = false;
-          return;
-        }
-
-        showToast(`Mass Email Failed: ${(status || "ERROR").toUpperCase()}`);
-        massEmailBtn.innerHTML = "✉️";
-        massEmailBtn.disabled = false;
-
-      } catch (err) {
-        console.error("Mass Email Error:", err);
-        showToast("Error Sending Mass Email!");
-        massEmailBtn.innerHTML = "✉️";
-        massEmailBtn.disabled = false;
+      if (status === "no_credits" && paymentLink) {
+        showToast("You're Out of Credits. Redirecting...");
+        setTimeout(() => window.location.replace(paymentLink), 800);
+        return;
       }
-    };
 
-    confirmYes.addEventListener("click", confirmYes._tp_handler);
-  }
+      if (status === "sent") {
+        showToast("Mass Email Sent (-1 Credit)");
+        await lazyLoadCreditsForBusiness(biz);
+        massEmailBtn.innerHTML = "✔️";
+        massEmailBtn.disabled = false;
+        return;
+      }
+
+      showToast(`Mass Email Failed: ${(status || "ERROR").toUpperCase()}`);
+      massEmailBtn.innerHTML = "✉️";
+      massEmailBtn.disabled = false;
+
+    } catch (err) {
+      console.error("Mass Email Error:", err);
+      showToast("Error Sending Mass Email!");
+      massEmailBtn.innerHTML = "✉️";
+      massEmailBtn.disabled = false;
+    }
+  };
+
+  confirmYes.addEventListener("click", confirmYes._tp_handler);
+}
 
 
   /* -------------------------------------------------

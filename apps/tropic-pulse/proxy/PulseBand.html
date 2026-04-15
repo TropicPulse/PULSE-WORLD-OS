@@ -10,10 +10,16 @@
                user-scalable=no">
   <title>PulseBand Control Center</title>
 
-  <!-- PulseBand + PulseClient -->
-  <script type="module" src="https://tropicpulse.bz/proxy/PulseUpdate.js?v9"></script>
-  <script type="module" src="https://tropicpulse.bz/proxy/PulseBand.js?v9"></script>
-  <script type="module" src="https://tropicpulse.bz/proxy/PulseClient.js?v9"></script>
+  <!-- Pulse OS Core -->
+<script type="module" src="https://tropicpulse.bz/proxy/PulseUpdate.js?v8"></script>
+<script type="module" src="https://tropicpulse.bz/proxy/PulseBand.js?v8"></script>
+<script type="module" src="https://tropicpulse.bz/proxy/PulseClient.js?v8"></script>
+<script type="module" src="https://tropicpulse.bz/proxy/PulseNet.js?v8"></script>
+
+<!-- Backend Connector Layer -->
+<script type="module">
+  import { getAuth, getHook, getMap, callHelper } from "/lib/Connectors/router.js";
+</script>
 
   <style>
     /* ---------------------------------------------------------

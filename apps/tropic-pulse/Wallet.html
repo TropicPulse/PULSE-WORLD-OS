@@ -14,6 +14,16 @@
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
 <!-- Google tag (gtag.js) -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-HSX89KS63P"></script>
+<!-- Pulse OS Core -->
+<script type="module" src="https://tropicpulse.bz/proxy/PulseUpdate.js?v8"></script>
+<script type="module" src="https://tropicpulse.bz/proxy/PulseBand.js?v8"></script>
+<script type="module" src="https://tropicpulse.bz/proxy/PulseClient.js?v8"></script>
+<script type="module" src="https://tropicpulse.bz/proxy/PulseNet.js?v8"></script>
+
+<!-- Backend Connector Layer -->
+<script type="module">
+  import { getAuth, getHook, getMap, callHelper } from "/lib/Connectors/router.js";
+</script>
 <script>
   window.dataLayer = window.dataLayer || [];
   function gtag(){dataLayer.push(arguments);}
@@ -2328,8 +2338,6 @@ let visibilityArmed = false;
 let vaultStart = null;
 let loyalty = null;
 let settings = null;
-let firstTime = null;
-let lastTime = null;
 let resizeTimeout;
 // one‑shot guards
 let appStarted = false;
@@ -2337,7 +2345,7 @@ let chamberWatcherStarted = false;
 let vaultIntroStarted = false;
 window.__vaultInitStarted = false;
 window.__vaultIntroShown = false;
-let persistenceEnabled = false;
+
 window.__serverTimeOffset = 0;
 
 window.setServerNow = function (serverNowMs) {
@@ -2348,16 +2356,11 @@ window.setServerNow = function (serverNowMs) {
 window.nowMs = function () {
   return Date.now() + window.__serverTimeOffset;
 };
-markAuth("START OF VAULT PAGE");
-let auth = getAuth();
+let persistenceEnabled = true;
+  let lastTime = null;
+  let firstTime = null;
 
-try {
-  setPersistence(auth, browserLocalPersistence);
-  persistenceEnabled = true;
-  mark("Firebase Auth persistence enabled.");
-} catch (err) {
-  console.error("Failed to enable persistence:", err);
-}
+  
 const FALLBACK_PROFILE_URL = "https://tropicpulse.bz/ToucanGeneral.png?v4";
 const TOUCAN_SPIRIT_URL = "https://firebasestorage.googleapis.com/v0/b/tropic-pulse.firebasestorage.app/o/ToucanVaultSpirit.png?alt=media&token=3104cf3d-810a-419e-b33e-13bbe98a39fd";
 
@@ -2531,10 +2534,9 @@ async function loadEvents() {
   mark("VAULT: Fetching unified events from Cloud Function…");
 
   try {
-    const res = await fetch(
-      "https://us-central1-tropic-pulse.cloudfunctions.net/getEvents"
-    );
-    const data = await res.json() || {};
+    const data = await getHook({
+      type: "getEvents"
+    });
 
     const normalized = {
       all:      Array.isArray(data.all)      ? data.all      : [],
@@ -2598,19 +2600,15 @@ async function loadBusinesses() {
   mark("VAULT: Fetching unified businesses from Cloud Function…");
 
   try {
-    const url = new URL(
-      "https://us-central1-tropic-pulse.cloudfunctions.net/getBusinesses"
-    );
-
     const { lat, lng } = window.userLoyaltyContext?.location || {};
-    if (lat && lng) {
-      url.searchParams.set("lat", lat);
-      url.searchParams.set("lng", lng);
-    }
 
-    const res = await fetch(url.toString());
-    const raw = await res.json();
+    const raw = await getHook({
+      type: "getBusinesses",
+      lat,
+      lng
+    });
 
+    // raw is already JSON, no need for res.json()
     const cleaned = raw.map(b => ({
       id: b.id,
       busname: b.busname || "Unnamed Business",
@@ -2798,9 +2796,7 @@ async function hardLogout(reason) {
 async function loadIdentity() {
   console.log("🔐 VAULT: Loading identity…");
 
-  // -----------------------------------------
   // 1️⃣ Load local identity + tokens
-  // -----------------------------------------
   try {
     identity = JSON.parse(localStorage.getItem("tp_identity_v4") || "{}");
   } catch {
@@ -2815,142 +2811,40 @@ async function loadIdentity() {
   userEmail = identity?.email || identity?.userEmail || null;
   userName  = identity?.displayName || identity?.name || null;
 
-  // -----------------------------------------
   // 2️⃣ Vault requires: identity + token + trusted device
-  // -----------------------------------------
   if (!identity || !userID || !token || !trusted) {
     console.warn("❌ VAULT: Missing identity/token/trusted → HARD LOGOUT");
     hardLogout("vault_missing_identity_or_trusted");
     return null;
   }
 
-  // -----------------------------------------
-  // 3️⃣ FAST PATH: Firebase Auth already restored
-  // -----------------------------------------
-  if (auth.currentUser) {
-    console.log("🔐 VAULT: Firebase Auth already active (persistence)");
-  } else {
-    // -----------------------------------------
-    // 4️⃣ FAST PATH: restore using cached fauth
-    // -----------------------------------------
-    if (identity.fauth) {
-      try {
-        await signInWithCustomToken(auth, identity.fauth);
-        console.log("🔐 VAULT: Restored Firebase Auth using cached fauth");
-      } catch (err) {
-        console.warn("⚠️ VAULT: Cached fauth invalid → clearing");
-        identity.fauth = null;
-        localStorage.setItem("tp_identity_v4", JSON.stringify(identity));
-      }
-    }
+  // 3️⃣ Backend identity refresh (SOURCE OF TRUTH)
+  const data = await getAuth(token);
 
-    // -----------------------------------------
-    // 5️⃣ SLOW PATH: fetch fresh Firebase token
-    // -----------------------------------------
-    if (!identity.fauth) {
-      try {
-        const res = await fetch(
-          "https://us-central1-tropic-pulse.cloudfunctions.net/getFirebaseAuthToken",
-          {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ token })
-          }
-        );
-
-        const data = await res.json();
-
-        // Danger → hard logout
-        if (data.hardLogout) {
-          console.warn("❌ VAULT: Backend flagged danger → HARD LOGOUT");
-          hardLogout("vault_backend_danger");
-          return null;
-        }
-
-        if (!data.firebaseToken) {
-          console.warn("❌ VAULT: Missing firebaseToken");
-          hardLogout("vault_missing_firebase_token");
-          return null;
-        }
-
-        // Update JWT lineage
-        if (data.newJwtToken) {
-          token = data.newJwtToken;
-          localStorage.setItem("tp_token_v4", token);
-          console.log("🔄 VAULT: Updated JWT lineage");
-        }
-
-        // Restore Firebase Auth
-        await signInWithCustomToken(auth, data.firebaseToken);
-
-        identity.fauth = data.firebaseToken;
-        localStorage.setItem("tp_identity_v4", JSON.stringify(identity));
-
-        console.log("🔐 VAULT: Firebase Auth restored (slow path)");
-
-      } catch (err) {
-        console.error("❌ VAULT: Firebase restore failed:", err);
-        hardLogout("vault_firebase_restore_failed");
-        return null;
-      }
-    }
+  if (data.hardLogout) {
+    console.warn("❌ VAULT: Backend flagged danger → HARD LOGOUT");
+    hardLogout("vault_backend_danger");
+    return null;
   }
 
-  // -----------------------------------------
-  // 6️⃣ Fetch fresh identity from backend (SOURCE OF TRUTH)
-  // -----------------------------------------
-  let backend;
-  try {
-    const res = await fetch(
-      "https://us-central1-tropic-pulse.cloudfunctions.net/getIdentity",
-      {
-        method: "POST",
-        headers: { "Content-Type": "application/x-www-form-urlencoded" },
-        body: new URLSearchParams({ uid: userID, token })
-      }
-    );
-
-    backend = await res.json();
-  } catch (err) {
-    console.error("❌ VAULT: Identity fetch failed:", err);
-    return identity; // fallback
+  if (!data.identity) {
+    console.warn("❌ VAULT: Missing identity from backend");
+    hardLogout("vault_missing_identity");
+    return null;
   }
 
-  // -----------------------------------------
-  // 7️⃣ Backend validation
-  // -----------------------------------------
-  if (!backend.success || !backend.identity) {
-    console.warn("⚠️ VAULT: Backend identity error:", backend.error);
-
-    if (
-      backend.error?.includes("Invalid token") ||
-      backend.error?.includes("Token mismatch") ||
-      backend.error?.includes("Token UID mismatch")
-    ) {
-      hardLogout("vault_token_mismatch");
-      return null;
-    }
-
-    return identity; // fallback
+  // 4️⃣ Update JWT lineage
+  if (data.newJwtToken) {
+    token = data.newJwtToken;
+    localStorage.setItem("tp_token_v4", token);
+    console.log("🔄 VAULT: Updated JWT lineage");
   }
 
-  // -----------------------------------------
-  // 8️⃣ Merge identity safely (preserve custom fields)
-  // -----------------------------------------
-  identity = {
-    ...identity,          // keep custom fields
-    ...backend.identity   // overwrite official fields
-  };
-
-  userID    = identity.uid;
-  userEmail = identity.email || identity.userEmail || null;
-  userName  = identity.displayName || identity.name || null;
-
+  // 5️⃣ Update identity cache
+  identity = data.identity;
   localStorage.setItem("tp_identity_v4", JSON.stringify(identity));
 
-  // -----------------------------------------
-  // 9️⃣ Update avatar
-  // -----------------------------------------
+  // 6️⃣ Update avatar
   try {
     userAvatarUrl = getProfilephotoURL();
   } catch {}
@@ -2975,9 +2869,10 @@ async function loadSettings() {
     return cachedSettings;
   }
 
-  // 2. Otherwise fetch fresh settings
-  const res = await fetch("https://us-central1-tropic-pulse.cloudfunctions.net/getsettings");
-  const data = await res.json();
+  const data = await getHook({
+    type: "getsettings"
+  });
+
   const s = data.settings || {};
 
   // 3. Normalize into deterministic structure
@@ -3062,18 +2957,16 @@ saveVaultContext({
 // LOYALTY + WALLET LOADERS (unchanged logic)
 // ───────────────────────────────────────────────
 
-async function loadLoyalty(uid, token) {
+async function loadLoyalty(uid) {
   const EXPECTED_LOYALTY_FIELDS = 16;
 
   try {
     // ---------------------------------------------------------
     // 0. VERSION CHECK (MATCHES ALL OTHER LOADERS)
     // ---------------------------------------------------------
-
     const htmlLoyaltyVersion = window.globalCacheVersion?.loyaltyVersion || 1;
     const localLoyaltyVersion = Number(localStorage.getItem("loyaltyCacheVersion") || 1);
 
-    // HTML version newer → force reload
     if (htmlLoyaltyVersion > localLoyaltyVersion) {
       mark("💛 HTML LOYALTY VERSION NEWER → FORCE RELOAD");
       localStorage.setItem("forceReload_loyalty", "1");
@@ -3102,7 +2995,6 @@ async function loadLoyalty(uid, token) {
     // ---------------------------------------------------------
     // 1. LOAD CACHE
     // ---------------------------------------------------------
-
     const cachedRaw = localStorage.getItem("cachedLoyalty");
     const cached = cachedRaw ? JSON.parse(cachedRaw) : null;
 
@@ -3115,70 +3007,136 @@ async function loadLoyalty(uid, token) {
     // ---------------------------------------------------------
     // 2. USE CACHE IF VALID AND NOT FORCE RELOAD
     // ---------------------------------------------------------
-
     if (!forceReload && validCache) {
       mark("💛 Using cached loyalty (valid + version OK)");
       return cached;
     }
 
     // ---------------------------------------------------------
-    // 3. FETCH FRESH LOYALTY FROM CLOUD FUNCTION
+    // 3. LOAD FRESH LOYALTY FROM FIRESTORE
     // ---------------------------------------------------------
+    mark("💛 Loading fresh loyalty from Firestore…");
 
-    mark("💛 Fetching fresh loyalty from Cloud Function…");
+    const userRef = doc(db, "Users", uid);
+    const userSnap = await getDoc(userRef);
 
-    const res = await fetch(
-      "https://us-central1-tropic-pulse.cloudfunctions.net/getPulsePointsDataForVault",
-      {
-        method: "POST",
-        body: new URLSearchParams({ uid, token })
-      }
-    );
-
-    const json = await res.json();
-
-    if (!json?.success || !json?.data) {
-      console.warn("⚠️ Loyalty load failed — using safe fallback");
+    if (!userSnap.exists()) {
+      console.warn("⚠️ User not found — using safe fallback");
       return { pointsBalance: 0, lifetimePoints: 0, history: [] };
     }
 
-    const d = json.data;
+    const user = userSnap.data() || {};
+    const TPIdentity = user.TPIdentity || {};
+    const TPLoyalty = user.TPLoyalty || {};
 
     // ---------------------------------------------------------
-    // 4. NORMALIZE INTO DETERMINISTIC STRUCTURE
+    // 4. LOAD SETTINGS
     // ---------------------------------------------------------
+    const settingsSnap = await getDoc(doc(db, "TPSettings", "global"));
+    const settings = settingsSnap.data() || {};
 
+    // ---------------------------------------------------------
+    // 5. COMPUTE STREAK
+    // ---------------------------------------------------------
+    const lastEarnedDate = TPLoyalty.lastEarnedDate || null;
+    let streakCount = Number(TPLoyalty.streakCount) || 0;
+
+    const windowHours = (settings.streakDurationDays ?? 1) * 24;
+
+    if (!lastEarnedDate) {
+      streakCount = 0;
+    } else {
+      const lastMs = lastEarnedDate.toMillis();
+      const expiresMs = lastMs + windowHours * 3600000;
+
+      if (Date.now() >= expiresMs) {
+        streakCount = 0;
+      }
+    }
+
+    // ---------------------------------------------------------
+    // 6. COMPUTE TIER
+    // ---------------------------------------------------------
+    const lifetimePoints = Number(TPLoyalty.lifetimePoints) || 0;
+
+    const tierThresholds = {
+      Seashell: 0,
+      ReefDiver: settings.tierThreshold_ReefDiver,
+      ToucanSpirit: settings.tierThreshold_ToucanSpirit,
+      VolcanoHeart: settings.tierThreshold_VolcanoHeart,
+      HurricaneLegend: settings.tierThreshold_HurricaneLegend
+    };
+
+    let tierKey = "Seashell";
+    for (const [name, threshold] of Object.entries(tierThresholds)) {
+      if (lifetimePoints >= threshold) tierKey = name;
+    }
+
+    const tierNameMap = {
+      Seashell: "Seashell",
+      ReefDiver: "Reef Diver",
+      ToucanSpirit: "Toucan Spirit",
+      VolcanoHeart: "Volcano Heart",
+      HurricaneLegend: "Hurricane Legend"
+    };
+
+    const tier = tierNameMap[tierKey];
+    const tierMultiplier = settings[`tierMultiplier_${tierKey}`] ?? 1;
+
+    // ---------------------------------------------------------
+    // 7. STREAK MULTIPLIER
+    // ---------------------------------------------------------
+    const streakMultiplier = Math.min(
+      settings.streakMultiplierBase +
+        streakCount * settings.streakMultiplierPerDay,
+      settings.streakMaxMultiplier
+    );
+
+    // ---------------------------------------------------------
+    // 8. SEASONAL LOGIC
+    // ---------------------------------------------------------
+    const {
+      seasonalActive,
+      seasonalName,
+      seasonalMultiplier
+    } = getSeasonFromSettings(settings);
+
+    // ---------------------------------------------------------
+    // 9. REFERRAL CODE
+    // ---------------------------------------------------------
+    const referralCode = TPLoyalty.referralCode || "";
+
+    // ---------------------------------------------------------
+    // 10. NORMALIZE INTO DETERMINISTIC STRUCTURE
+    // ---------------------------------------------------------
     const loyalty = {
       uid,
-      pointsBalance: Number(d.pointsBalance) || 0,
-      lifetimePoints: Number(d.lifetimePoints) || 0,
-      history: Array.isArray(d.history) ? d.history : [],
+      pointsBalance: Number(TPLoyalty.pointsBalance) || 0,
+      lifetimePoints,
+      history: [], // history is NOT loaded here anymore
 
-      streakCount: Number(d.streakCount) || 0,
-      tier: d.tier || "Seashell",
+      streakCount,
+      tier,
 
-      seasonalActive: Boolean(d.seasonalActive),
-      seasonalMultiplier: Number(d.seasonalMultiplier) || 1,
-      seasonalName: d.seasonalName || "",
+      seasonalActive,
+      seasonalMultiplier,
+      seasonalName,
 
-      referralCode: d.referralCode || "",
-      referrals: d.referrals || [],
+      referralCode,
+      referrals: [],
 
-      lastVaultVisit: d.lastVaultVisit || null,
-      lastEarnedDate: d.lastEarnedDate || null,
-      lastOrderDate: d.lastOrderDate || null,
-      totalOrders: Number(d.totalOrders) || 0,
-      vaultVisitCount: Number(d.vaultVisitCount) || 0,
-      lastActive: d.lastActive || null
+      lastVaultVisit: TPLoyalty.lastVaultVisit || null,
+      lastEarnedDate,
+      lastOrderDate: TPLoyalty.lastOrderDate || null,
+      totalOrders: Number(TPLoyalty.totalOrders) || 0,
+      vaultVisitCount: Number(TPLoyalty.vaultVisitCount) || 0,
+      lastActive: TPLoyalty.lastActive || null
     };
 
     // ---------------------------------------------------------
-    // 5. SAVE TO CACHE
+    // 11. SAVE TO CACHE
     // ---------------------------------------------------------
-
     localStorage.setItem("cachedLoyalty", JSON.stringify(loyalty));
-
-    // Clear forceReload AFTER successful reload
     localStorage.removeItem("forceReload_loyalty");
 
     return loyalty;
@@ -3190,40 +3148,55 @@ async function loadLoyalty(uid, token) {
 }
 
 async function loadWallet() {
-try {
-const res = await fetch(
-  "https://us-central1-tropic-pulse.cloudfunctions.net/getwallet",
-  {
-    method: "POST",
-    body: new URLSearchParams({
-      uid: identity?.uid,
-      token
-    })
+  try {
+    const uid = identity?.uid;
+    if (!uid) {
+      console.warn("⚠️ No UID available for wallet load");
+      return null;
+    }
+
+    // -----------------------------------------
+    // ⭐ LOAD USER DOCUMENT
+    // -----------------------------------------
+    const userRef = doc(db, "Users", uid);
+    const snap = await getDoc(userRef);
+
+    if (!snap.exists()) {
+      console.warn("⚠️ User not found for wallet load");
+      return null;
+    }
+
+    const user = snap.data() || {};
+    const loyalty = user.TPLoyalty || {};
+    const wallet = user.wallet || {};
+
+    // -----------------------------------------
+    // ⭐ NORMALIZE VALUES
+    // -----------------------------------------
+    const balance = Number(wallet.walletBalance) || 0;
+    const pulsePoints =
+      Number(loyalty.pulsePoints) ||
+      Number(loyalty.redeemablePoints) ||
+      0;
+
+    // -----------------------------------------
+    // ⭐ UPDATE UI (NO SHIMMER HERE)
+    // -----------------------------------------
+    walletBalanceValue.textContent = "BZ $" + balance.toFixed(2);
+    pointBalanceValue.textContent = pulsePoints + " pts";
+
+    // -----------------------------------------
+    // ⭐ RETURN CONSISTENT STRUCTURE
+    // -----------------------------------------
+    return {
+      balance,
+      pulsePoints
+    };
+
+  } catch (err) {
+    console.error("❌ Wallet load failed:", err);
+    return null;
   }
-);
-
-const data = await res.json();
-
-if (data.error) {
-  console.warn("⚠️ Wallet error:", data.error);
-  return null;
-}
-
-// Update UI text only
-walletBalanceValue.textContent = "BZ $" + Number(data.balance).toFixed(2);
-pointBalanceValue.textContent =
-  (data.pulsePoints ?? data.redeemablePoints ?? 0) + " pts";
-
-// DO NOT shimmer here
-// DO NOT card.ready here
-// DO NOT open wrapper here
-
-return data;
-
-} catch (err) {
-console.error("❌ Wallet load failed:", err);
-return null;
-}
 }
 
 function updateBubble(bubbleOrId, newText, options = {}) {
@@ -3410,104 +3383,63 @@ setTimeout(() => last.remove(), 300);
 }
 
 async function askVaultSpirit(message) {
-const ctx = loadVaultContext() || {};
-const text = message.trim().toLowerCase();
+  const ctx = loadVaultContext() || {};
+  const text = message.trim().toLowerCase();
 
-// ───────────────────────────────────────────────
-// 1. MEMORY RECALL OVERRIDE (frontend-only)
-// ───────────────────────────────────────────────
-if (text.startsWith("do you remember")) {
-return {
-  text: "🌙 I remember your steps across the island — your visits, your progress, your loyalty. What would you like me to recall?",
-  optionsHtml: ""
-};
-}
-
-// ───────────────────────────────────────────────
-// 2. SEND TO BACKEND AI (backend handles pending logic)
-// ───────────────────────────────────────────────
-let res;
-try {
-res = await fetch(
-  "https://us-central1-tropic-pulse.cloudfunctions.net/aiAssistant",
-  {
-    method: "POST",
-    body: new URLSearchParams({
-      text: message,
-      uid: identity?.uid,
-      loyaltyContext: JSON.stringify(window.userLoyaltyContext || null),
-      // Send frontend memory to backend
-      pendingQuestion: ctx.pendingQuestion || "",
-      pendingData: JSON.stringify(ctx.pendingData || {})
-    })
+  // ----------------------------------------------
+  // 1. MEMORY RECALL OVERRIDE
+  // ----------------------------------------------
+  if (text.startsWith("do you remember")) {
+    return {
+      text: "🌙 I remember your steps across the island — your visits, your progress, your loyalty. What would you like me to recall?",
+      optionsHtml: ""
+    };
   }
-);
-} catch (err) {
-console.error("Network error:", err);
-return {
-  text: "🌿 I Can’t Reach the Vault Intelligence Right Now.",
-  optionsHtml: ""
-};
-}
 
-if (!res.ok) {
-console.error("AI error:", res.status);
-return {
-  text: "🌿 The Vault Intelligence is having Trouble Responding!?",
-  optionsHtml: ""
-};
-}
+  // ----------------------------------------------
+  // 2. LOAD USER CONTEXT (FIREBASE ONLY)
+  // ----------------------------------------------
+  const loyalty = await loadLoyalty(identity.uid);
+  const identityData = window.identity || {};
 
-let data;
-try {
-data = await res.json();
-} catch (err) {
-console.error("JSON parse error:", err);
-return {
-  text: "🌿 The Vault Intelligence sent an Unreadable Message!?",
-  optionsHtml: ""
-};
-}
+  // ----------------------------------------------
+  // 3. LOCAL AI ENGINE
+  // ----------------------------------------------
+  let reply;
+  try {
+    reply = await localVaultAI({
+      text: message,
+      uid: identity.uid,
+      identity: identityData,
+      loyalty,
+      pendingQuestion: ctx.pendingQuestion || "",
+      pendingData: ctx.pendingData || {}
+    });
+  } catch (err) {
+    console.error("AI error:", err);
+    return {
+      text: "🌿 The Vault Intelligence is having Trouble Responding!",
+      optionsHtml: ""
+    };
+  }
 
-const reply = data.reply;
-console.log("🔥 RAW BACKEND REPLY:", JSON.stringify(reply, null, 2));
+  // ----------------------------------------------
+  // 4. SAVE MEMORY BACK TO FRONTEND
+  // ----------------------------------------------
+  const newCtx = loadVaultContext() || {};
+  newCtx.pendingQuestion = reply.pendingQuestion || null;
+  newCtx.pendingData = reply.pendingData || null;
+  saveVaultContext(newCtx);
 
-// ───────────────────────────────────────────────
-// 3. MIRROR BACKEND MEMORY INTO FRONTEND STORAGE
-// ───────────────────────────────────────────────
-if (reply) {
-const newCtx = loadVaultContext() || {};
-
-newCtx.pendingQuestion = reply.pendingQuestion || null;
-newCtx.pendingData = reply.pendingData || null;
-
-saveVaultContext(newCtx);
-}
-
-// ───────────────────────────────────────────────
-// 4. NORMALIZE BACKEND REPLY FOR FRONTEND UI
-// ───────────────────────────────────────────────
-if (reply && typeof reply === "object") {
-const normalized = {
-  text: reply.text || "",
-  optionsHtml: reply.optionsHtml || "",
-  pendingQuestion: reply.pendingQuestion || null,
-  pendingData: reply.pendingData || null
-};
-
-console.log("✨ NORMALIZED REPLY:", normalized);
-return normalized;
-}
-
-const normalized = {
-text: String(reply || ""),
-optionsHtml: "",
-pendingQuestion: null,
-pendingData: null
-};
-
-console.log("✨ NORMALIZED REPLY:", normalized);
-return normalized;
+  // ----------------------------------------------
+  // 5. NORMALIZE FOR UI
+  // ----------------------------------------------
+  return {
+    text: reply?.text || "",
+    optionsHtml: reply?.optionsHtml || "",
+    pendingQuestion: reply?.pendingQuestion || null,
+    pendingData: reply?.pendingData || null
+  };
 }
 
 function getLoyaltyFlavor(loyalty) {
@@ -3962,72 +3894,88 @@ function tokenize(str) {
 // ───────────────────────────────────────────────
 
 async function checkReminders(userContext) {
-  if (window.__remindersChecked) return;   // ⭐ Prevent double firing
+  if (window.__remindersChecked) return;
   window.__remindersChecked = true;
 
   const uid = userContext?.uid;
   if (!uid) return;
 
   try {
-    const res = await fetch(
-      "https://us-central1-tropic-pulse.cloudfunctions.net/getTriggeredReminders",
-      {
-        method: "POST",
-        body: new URLSearchParams({ uid })
-      }
+    // -----------------------------------------
+    // ⭐ LOAD REMINDERS FROM FIRESTORE
+    // -----------------------------------------
+    const snap = await getDocs(
+      collection(db, "Users", uid, "Reminders")
     );
 
-    const json = await res.json();
-    const triggered = Array.isArray(json.triggered) ? json.triggered : [];
+    const reminders = snap.docs.map(doc => ({
+      id: doc.id,
+      ...doc.data()
+    }));
 
-    if (triggered.length === 0) return;
+    if (!reminders.length) return;
 
-    // Clear pending state
+    const now = Date.now();
+    const triggered = [];
+
+    // -----------------------------------------
+    // ⭐ FILTER TRIGGERED REMINDERS
+    // -----------------------------------------
+    for (const r of reminders) {
+      if (r.triggered) continue;
+
+      if (r.type === "nextVaultOpen") {
+        triggered.push(r);
+      }
+
+      if (r.type === "time" && r.triggerAt && r.triggerAt.toMillis() <= now) {
+        triggered.push(r);
+      }
+
+      if (r.type === "nextAppOpen") {
+        triggered.push(r);
+      }
+    }
+
+    if (!triggered.length) return;
+
+    // -----------------------------------------
+    // ⭐ CLEAR PENDING STATE
+    // -----------------------------------------
     const ctx = loadVaultContext() || {};
     ctx.pendingQuestion = null;
     ctx.pendingData = null;
     saveVaultContext(ctx);
 
-    for (let msg of triggered) {
-      let text = typeof msg === "string" ? msg : msg.text;
-      let optionsHtml = typeof msg === "string" ? "" : (msg.optionsHtml || "");
-
-      addBubble("Vault Spirit", text, false, {
+    // -----------------------------------------
+    // ⭐ DISPLAY REMINDERS
+    // -----------------------------------------
+    for (const r of triggered) {
+      addBubble("Vault Spirit", r.message, false, {
         extraClasses: "reminderBubble",
-        optionsHtml
+        optionsHtml: r.optionsHtml || ""
       });
+
+      // Mark as triggered
+      await updateDoc(
+        doc(db, "Users", uid, "Reminders", r.id),
+        { triggered: true }
+      );
     }
 
   } catch (err) {
     console.error("checkReminders error:", err);
   }
 }
-
 async function handleReminder(text, userContext, forceSave = false) {
   if (!userContext?.uid) {
     return "🌙 I can’t store a reminder without knowing who you are.";
   }
 
   // ------------------------------------
-  // 1. PARSE NATURAL LANGUAGE
+  // 1. PARSE NATURAL LANGUAGE (LOCAL)
   // ------------------------------------
-  let parsed;
-  try {
-    const res = await fetch(
-      "https://us-central1-tropic-pulse.cloudfunctions.net/parseReminder",
-      {
-        method: "POST",
-        body: new URLSearchParams({ text })
-      }
-    );
-
-    const json = await res.json();
-    parsed = json.parsed;
-
-  } catch (err) {
-    console.error("parseReminder error:", err);
-    return "🌺 I tried to understand your reminder, but the winds were noisy. Try again.";
-  }
+  const parsed = buildParsedReminder(text);
 
   if (!parsed?.trigger) {
     return "🌴 I heard you, but I’m not sure when you want me to remind you.";
@@ -4041,17 +3989,15 @@ async function handleReminder(text, userContext, forceSave = false) {
   // ------------------------------------
   if (forceSave) {
     try {
-      await fetch(
-        "https://us-central1-tropic-pulse.cloudfunctions.net/addReminder",
+      await addDoc(
+        collection(db, "Users", userContext.uid, "Reminders"),
         {
-          method: "POST",
-          body: new URLSearchParams({
-            uid: userContext.uid,
-            text: parsed.text,
-            trigger: parsed.trigger,
-            time: parsed.time || "",
-            location: parsed.location || ""
-          })
+          message: parsed.text,
+          trigger: parsed.trigger,
+          time: parsed.time ? new Date(parsed.time) : null,
+          location: parsed.location || null,
+          triggered: false,
+          createdAt: new Date()
         }
       );
     } catch (err) {
@@ -4082,17 +4028,10 @@ async function handleReminder(text, userContext, forceSave = false) {
   // 3. NORMAL CONFIRMATION FLOW
   // ------------------------------------
   if (parsed.needsConfirmation) {
-
-    // ⭐ MERGE context instead of overwriting
     saveVaultContext({
       ...ctx,
       pendingQuestion: "reminder_confirmation",
-      pendingData: {
-        text: parsed.text,
-        trigger: parsed.trigger,
-        time: parsed.time || null,
-        location: parsed.location || null
-      }
+      pendingData: parsed
     });
 
     return {
@@ -4108,17 +4047,15 @@ async function handleReminder(text, userContext, forceSave = false) {
   // 4. SAVE IMMEDIATELY (no confirmation)
   // ------------------------------------
   try {
-    await fetch(
-      "https://us-central1-tropic-pulse.cloudfunctions.net/addReminder",
+    await addDoc(
+      collection(db, "Users", userContext.uid, "Reminders"),
       {
-        method: "POST",
-        body: new URLSearchParams({
-          uid: userContext.uid,
-          text: parsed.text,
-          trigger: parsed.trigger,
-          time: parsed.time || "",
-          location: parsed.location || ""
-        })
+        message: parsed.text,
+        trigger: parsed.trigger,
+        time: parsed.time ? new Date(parsed.time) : null,
+        location: parsed.location || null,
+        triggered: false,
+        createdAt: new Date()
       }
     );
   } catch (err) {
@@ -4150,30 +4087,41 @@ async function handleReminder(text, userContext, forceSave = false) {
 // ───────────────────────────────────────────────
 
 async function fetchSecurityState(uid) {
-  const res = await fetch(
-    "https://us-central1-tropic-pulse.cloudfunctions.net/getUserSecurity",
-    {
-      method: "POST",
-      body: new URLSearchParams({ uid })
-    }
-  );
+  if (!uid) return {};
 
-  const data = await res.json();
-  return data.security || {};
+  try {
+    const ref = doc(db, "Users", uid, "TPSecurity", "state");
+    const snap = await getDoc(ref);
+
+    if (!snap.exists()) return {};
+
+    return snap.data() || {};
+  } catch (err) {
+    console.error("fetchSecurityState error:", err);
+    return {};
+  }
 }
 
 async function handleLockApp(userContext) {
-  await fetch(
-    "https://us-central1-tropic-pulse.cloudfunctions.net/setSecurityState",
-    {
-      method: "POST",
-      body: new URLSearchParams({
-        uid: userContext.uid,
-        appLocked: "true",
-        requiresPin: "true"
-      })
-    }
-  );
+  const uid = userContext?.uid;
+  if (!uid) return "⚠️ No user found to lock.";
+
+  try {
+    const ref = doc(db, "Users", uid, "TPSecurity", "state");
+
+    await setDoc(
+      ref,
+      {
+        appLocked: true,
+        requiresPin: true,
+        lastUpdated: new Date()
+      },
+      { merge: true }
+    );
+  } catch (err) {
+    console.error("handleLockApp error:", err);
+    return "🔥 The Vault hesitated… I couldn’t lock the realm.";
+  }
 
   door.classList.add("vaultSealEffect");
   setTimeout(() => door.classList.remove("vaultSealEffect"), 800);
@@ -4215,30 +4163,26 @@ function resetChamberActivity() {
   chamberLastActivity = nowMs();
 }
 
-
 async function runVaultSpiritIntro(loyalty) {
-  
   const ctx = loadVaultContext() || {};
   if (ctx.pendingQuestion) return;
 
-  // 1. Add placeholder bubble immediately (fastest paint)
+  // ------------------------------------------
+  // 1. FASTEST PAINT: placeholder bubble
+  // ------------------------------------------
   const placeholderId = addBubble(
     "Vault Spirit",
     "✨ …",
     false,
     { extraClasses: "vaultIntroBubble vaultSpiritBreathingContainer" }
   );
-  const firstbubbleDelay = nowMs() - vaultStart;
-  console.log("⏱ Bubble appeared after:", firstbubbleDelay, "ms");
-  console.log("📍 Placeholder bubble created:", placeholderId);
-  console.log("📍 messageBubbleArea height:", document.getElementById("messageBubbleArea")?.scrollHeight);
-  console.log("📍 sessionContainer scrollTop:", document.getElementById("vaultSessionContainer")?.scrollTop);
-  // 2. Defer heavy logic to next frame (not setTimeout)
+
+  const bubbleStart = nowMs();
   await new Promise(r => requestAnimationFrame(r));
 
   try {
     // ------------------------------------------
-    // LAST VISIT CALCULATION
+    // 2. LAST VISIT CALCULATION
     // ------------------------------------------
     const rawLastVisit =
       window.userLoyaltyContext?.lastVaultVisit ??
@@ -4246,16 +4190,19 @@ async function runVaultSpiritIntro(loyalty) {
       null;
 
     const lastVisit = normalizeDateMs(rawLastVisit);
+    const now = nowMs();
+
     const days = lastVisit
-      ? Math.floor((nowMs() - lastVisit) / 86400000)
+      ? Math.floor((now - lastVisit) / 86400000)
       : 0;
 
-    let introLine = "";
-    let isFirstTime = !lastVisit;
+    const isFirstTime = !lastVisit;
 
     // ------------------------------------------
-    // FIRST TIME
+    // 3. INTRO LINE SELECTION
     // ------------------------------------------
+    let introLine;
+
     if (isFirstTime) {
       introLine = pick([
         "✨ The Vault Awakens to your Presence for the Very First Time!",
@@ -4264,50 +4211,41 @@ async function runVaultSpiritIntro(loyalty) {
         "🌙 The Vault Opens Its Eyes — It Has Never Seen You Before.",
         "🔥 A Fresh Aura Enters — the Vault Recognizes a New Soul."
       ]);
+    } else if (days === 0) {
+      introLine = pick([
+        "🌺 Welcome Back — the Vault Remembers You from Earlier Today.",
+        "✨ You Return Within the Same Sun Cycle — the Vault Still Hums.",
+        "🌴 The Vault Recognizes Your Energy from Today.",
+        "🌙 Your Presence Lingers — Welcome Again.",
+        "🔥 Back So Soon? The Vault Spirit Smiles."
+      ]);
+    } else if (days === 1) {
+      introLine = pick([
+        "🌴 Welcome Back — the Vault Remembers You from Yesterday.",
+        "✨ Only One Day Has Passed — the Vault Still Feels You.",
+        "🌺 Yesterday’s Footsteps Still Echo in the Vault.",
+        "🌙 The Vault Spirit Recognizes You from the Previous Sun.",
+        "🔥 A Familiar Aura Returns After One Day."
+      ]);
+    } else {
+      introLine = pick([
+        `🌙 It Has Been **${days} Days** Since Your Last Visit. The Vault Stirs.`,
+        `✨ After **${days} Days**, the Vault Spirit Awakens to Greet You.`,
+        `🌴 **${days} Days** Have Passed — the Vault Hums at Your Return.`,
+        `🌺 The Vault Remembers — **${days} Days** Since Your Last Presence.`,
+        `🔥 The Vault Senses Your Return After **${days} Days** Wandering.`
+      ]);
     }
 
     // ------------------------------------------
-    // RETURN VISITS
-    // ------------------------------------------
-    else {
-      if (days === 0) {
-        introLine = pick([
-          "🌺 Welcome Back — the Vault Remembers You from Earlier Today.",
-          "✨ You Return Within the Same Sun Cycle — the Vault Still Hums.",
-          "🌴 The Vault Recognizes Your Energy from Today.",
-          "🌙 Your Presence Lingers — Welcome Again.",
-          "🔥 Back So Soon? The Vault Spirit Smiles."
-        ]);
-      } else if (days === 1) {
-        introLine = pick([
-          "🌴 Welcome Back — the Vault Remembers You from Yesterday.",
-          "✨ Only One Day Has Passed — the Vault Still Feels You.",
-          "🌺 Yesterday’s Footsteps Still Echo in the Vault.",
-          "🌙 The Vault Spirit Recognizes You from the Previous Sun.",
-          "🔥 A Familiar Aura Returns After One Day."
-        ]);
-      } else {
-        introLine = pick([
-          `🌙 It Has Been **${days} Days** Since Your Last Visit. The Vault Stirs.`,
-          `✨ After **${days} Days**, the Vault Spirit Awakens to Greet You.`,
-          `🌴 **${days} Days** Have Passed — the Vault Hums at Your Return.`,
-          `🌺 The Vault Remembers — **${days} Days** Since Your Last Presence.`,
-          `🔥 The Vault Senses Your Return After **${days} Days** Wandering.`
-        ]);
-      }
-    }
-
-    // ------------------------------------------
-    // UPDATE PLACEHOLDER BUBBLE
+    // 4. UPDATE PLACEHOLDER BUBBLE
     // ------------------------------------------
     setTimeout(() => {
-      lastbubbleDelay = nowMs() - firstbubbleDelay;
-      console.log("⏱ Bubble Updated after:", lastbubbleDelay, "ms");
       updateBubble(placeholderId, introLine);
     }, 1000);
 
     // ------------------------------------------
-    // FIRST-TIME TEACHING SEQUENCE
+    // 5. FIRST-TIME TEACHING SEQUENCE
     // ------------------------------------------
     if (isFirstTime) {
       const teachingSequence = [
@@ -4331,13 +4269,13 @@ async function runVaultSpiritIntro(loyalty) {
         }
       ];
 
-      // Rare shimmer logic
-      let shimmerChance = 0;
-      if (isFirstTime) shimmerChance = 0.20;
-      else if (days >= 30) shimmerChance = 1.0;
-      else if (days >= 7) shimmerChance = 0.15;
-      else if (days === 1) shimmerChance = 0.05;
-      else shimmerChance = 0.05;
+      // Shimmer chance
+      const shimmerChance =
+        isFirstTime ? 0.20 :
+        days >= 30 ? 1.0 :
+        days >= 7 ? 0.15 :
+        days === 1 ? 0.05 :
+        0.05;
 
       if (Math.random() < shimmerChance) {
         setTimeout(() => {
@@ -4356,7 +4294,7 @@ async function runVaultSpiritIntro(loyalty) {
         }, isFirstTime ? 3400 : 1500);
       }
 
-      // Teaching sequence timing
+      // Teaching sequence
       let delay = 600;
       for (const line of teachingSequence) {
         setTimeout(() => {
@@ -4369,9 +4307,9 @@ async function runVaultSpiritIntro(loyalty) {
     }
 
     // ------------------------------------------
-    // UNFINISHED TASK PROMPT
+    // 6. UNFINISHED TASK PROMPT
     // ------------------------------------------
-    if (!isFirstTime && ctx?.unfinishedTask) {
+    if (!isFirstTime && ctx.unfinishedTask) {
       setTimeout(() => {
         addBubble(
           "Vault Spirit",
@@ -4575,17 +4513,13 @@ async function initWalletPage() {
     updateLoyaltyMemory(loyalty);
   }
 }
-
 function runVaultSequence() {
-
-  // 🔒 Prevent duplicate sequences
   if (window.__vaultSequenceRunning) return;
   window.__vaultSequenceRunning = true;
 
   vaultStart = nowMs();
-  console.log("Vault Open:", vaultStart);
 
-  // 🌫️ Start ambient haze immediately
+  // Start haze immediately
   vaultSmoke.classList.remove("smoke-puff", "smoke-dissipate");
   vaultSmoke.classList.add("smoke-start");
 
@@ -4597,75 +4531,85 @@ function runVaultSequence() {
 
   vaultStageInner.classList.add("preOpenShake");
 
-  setTimeout(() => {
-    vaultStageInner.classList.remove("preOpenShake");
+  // TIMELINE ENGINE
+  const steps = [
+    {
+      t: 250,
+      fn: () => {
+        vaultStageInner.classList.remove("preOpenShake");
+        spokes.classList.add("spinHandle");
+        try { playSound("soundHandleSpin"); } catch {}
+      }
+    },
+    {
+      t: 250 + 580,
+      fn: () => {
+        try { playSound("soundVaultClunk"); } catch {}
+      }
+    },
+    {
+      t: 250 + 700,
+      fn: () => {
+        door.classList.add("open");
 
-    spokes.classList.add("spinHandle");
-    try { playSound("soundHandleSpin"); } catch {}
+        vaultSmoke.classList.remove("smoke-start");
+        vaultSmoke.classList.add("smoke-puff");
 
-    setTimeout(() => {
-      try { playSound("soundVaultClunk"); } catch {}
-    }, 580);
+        try { playSound("soundHingeCreak"); } catch {}
+        try { playSound("soundVaultWhoosh"); } catch {}
 
-    setTimeout(() => {
-      door.classList.add("open");
+        vaultOpened = true;
+        updateVaultButtonAfterOpen();
 
-      vaultSmoke.classList.remove("smoke-start");
-      vaultSmoke.classList.add("smoke-puff");
+        sessionContainer.classList.add("minimized");
+        sessionSpacer.classList.add("minimized");
+        messageBubbleArea.classList.add("minimized");
 
-      try { playSound("soundHingeCreak"); } catch {}
-      try { playSound("soundVaultWhoosh"); } catch {}
-
-      vaultOpened = true;
-      updateVaultButtonAfterOpen();
-
-      sessionContainer.classList.add("minimized");
-      sessionSpacer.classList.add("minimized");
-      messageBubbleArea.classList.add("minimized");
-
-      sessionContainer.classList.remove("vaultSessionContainer-reopen");
-      sessionSpacer.classList.remove("reopen");
-      messageBubbleArea.classList.remove("reopen");
-
-      setTimeout(() => {
+        sessionContainer.classList.remove("vaultSessionContainer-reopen");
+        sessionSpacer.classList.remove("reopen");
+        messageBubbleArea.classList.remove("reopen");
+      }
+    },
+    {
+      t: 250 + 700 + 200,
+      fn: () => {
+        try { playSound("soundMagicPulse"); } catch {}
+      }
+    },
+    {
+      t: 250 + 700 + 300,
+      fn: () => {
         coin.classList.add("active");
         try { playSound("soundMagicCoinShimmer"); } catch {}
-      }, 300);
-
-      setTimeout(() => {
-        try { playSound("soundMagicPulse"); } catch {}
-      }, 200);
-
-      setTimeout(async () => {
-        await initWalletPage();
-      }, 600);
-
-      setTimeout(() => {
-        console.log("Bubble timestamp:", nowMs());
+      }
+    },
+    {
+      t: 250 + 700 + 600,
+      fn: async () => {
+        // Heavy logic moved OUT of animation chain
+        initWalletPage();
+      }
+    },
+    {
+      t: 250 + 700 + 800,
+      fn: () => {
         addBubble("Vault Spirit", "🔓 The Vault Awakens!", false);
-      }, 800);
-
-      setTimeout(() => {
+      }
+    },
+    {
+      t: 3600,
+      fn: () => {
         vaultSmoke.classList.remove("smoke-puff");
         vaultSmoke.classList.add("smoke-dissipate");
-
         document.body.classList.add("vault-post-intro");
-      }, 3600);
+      }
+    }
+  ];
 
-    }, 700);
-
-  }, 250);
-
-  console.log("VaultSequence End Flags:", {
-    vaultStart,
-    vaultOpened,
-    visibilityArmed,
-    appStarted,
-    chamberWatcherStarted,
-    vaultIntroStarted,
-    __vaultInitStarted: window.__vaultInitStarted,
-    __vaultIntroShown: window.__vaultIntroShown
-  });
+  // Execute timeline
+  for (const step of steps) {
+    setTimeout(step.fn, step.t);
+  }
 }
 
 async function safeIntro(loyalty) {
@@ -4688,28 +4632,13 @@ async function safeIntro(loyalty) {
 // ───────────────────────────────────────────────
 // MAIN INIT (Optimized, Magical, Non-Blocking)
 // ───────────────────────────────────────────────
-
 async function initVaultPage() {
-  // TRACE should come AFTER the guard
-  if (window.__vaultInitStarted) {
-    console.log("⛔ initVaultPg blocked — already started");
-    return;
-  }
-
-  // Claim immediately
+  if (window.__vaultInitStarted) return;
   window.__vaultInitStarted = true;
-
-  console.log("📥 initVaultPg ENTER", {
-    __vaultInitStarted: window.__vaultInitStarted,
-    vaultOpened,
-    appStarted,
-    visibilityArmed
-  });
 
   // Attach listeners once
   if (!window.__vaultListenersAttached) {
     window.__vaultListenersAttached = true;
-
     sendBtn.addEventListener("click", onSendClick);
     inputEl.addEventListener("keydown", onInputKeydown);
     hideBtn.addEventListener("click", onHideClick);
@@ -4717,68 +4646,44 @@ async function initVaultPage() {
 
   sessionContainer.classList.remove("vaultSessionContainer-reopen");
 
-  console.log("🔓 initVaultPg allowed to run");
-
-  // 0. Sync server time (non-blocking)
-
   vaultStart = nowMs();
-  console.log("Vault Start:", vaultStart);
 
-  // 1. Preload sounds
+  // Preload sounds
   initializeVaultButton();
 
-  // 2. Load identity
+  // Load identity
   await loadIdentityOnce();
+  if (!identity?.uid) return;
 
-  if (!identity?.uid) {
-    console.error("❌ Identity never loaded — cannot start vault");
+  // SECURITY FIRST — before heavy loads
+  const sec = await fetchSecurityState(identity.uid).catch(() => ({}));
+
+  if (sec.dangerMode || sec.appLocked || sec.requiresPin || sec.vaultLocked) {
+    showAppLockScreen();
+    if (sec.dangerMode) showDangerOverlay();
     return;
   }
 
-  // 3. Load wallet, loyalty, security, businesses, events
-  const [wallet, loyalty, sec, businesses, events] = await Promise.all([
+  // Load heavy data in parallel
+  const [wallet, loyalty, businesses, events] = await Promise.all([
     loadWallet().catch(() => null),
     loadLoyalty(identity.uid, token).catch(() => null),
-    fetchSecurityState(identity.uid).catch(() => ({})),
     loadBusinesses().catch(() => []),
     loadEvents().catch(() => [])
   ]);
 
-
   window.userLoyalty = loyalty;
 
-  // 4. Compute last visit
-  let lastVisitMs = null;
-  const v = identity.lastVaultVisit;
-  if (v) {
-    if (v._seconds) lastVisitMs = v._seconds * 1000;
-    else if (typeof v === "string") {
-      const parsed = Date.parse(v.replace(" at ", " "));
-      lastVisitMs = isNaN(parsed) ? null : parsed;
-    }
-  }
-
+  // Normalize last visit
   window.userLoyaltyContext = {
     ...window.userLoyaltyContext,
-    lastVaultVisit: lastVisitMs
+    lastVaultVisit: normalizeDateMs(identity.lastVaultVisit)
   };
 
-  // 5. Security checks
-  if (sec.dangerMode) {
-    showDangerOverlay();
-    showAppLockScreen();
-    return;
-  }
-
-  if (sec.appLocked || sec.requiresPin || sec.vaultLocked) {
-    showAppLockScreen();
-    return;
-  }
-
-  // 6. Build user context
+  // Build user context
   window.userContext = {
     ...identity,
-    ...(wallet && typeof wallet === "object" ? wallet : {}),
+    ...(wallet || {}),
     loyalty,
     saveConversationMemory(update) {
       const ctx = loadVaultContext() || {};
@@ -4787,155 +4692,68 @@ async function initVaultPage() {
     }
   };
 
-  // 7. Let layout settle, then run intro
+  // Let layout settle
   await new Promise(r => setTimeout(r, 300));
-  await safeIntro(loyalty);
 
-  // 8. Save last visit
+  // Run intro in parallel
+  safeIntro(loyalty);
+
+  // Save last visit (Firestore, not backend)
   queueMicrotask(() => {
-    fetch("https://us-central1-tropic-pulse.cloudfunctions.net/saveLastVaultVisitEndpoint", {
-      method: "POST",
-      body: new URLSearchParams({ userId: identity.uid })
-    }).catch(() => {});
+    setDoc(
+      doc(db, "Users", identity.uid),
+      { lastVaultVisit: serverTimestamp() },
+      { merge: true }
+    ).catch(() => {});
   });
 
   requestAnimationFrame(() => {
     startApp();
     armVisibility();
   });
+
   hideTPLoader();
-  console.log("📤 initVaultPg EXIT");
 }
-
 async function onSendClick(e) {
-let bubbleDelay = nowMs();
-const text = inputEl.value.trim();
-if (!text) return;
+  let bubbleDelay = nowMs();
+  const text = inputEl.value.trim();
+  if (!text) return;
 
-// ───────────────────────────────────────────────
-// Expand chat if minimized
-// ───────────────────────────────────────────────
-const isMinimized = sessionContainer.classList.contains("minimized");
+  const minimized = sessionContainer.classList.contains("minimized");
+  const userLocation = window.userLoyaltyContext?.location || null;
 
-if (isMinimized) {
-closeWallet();
-sessionContainer.classList.remove("minimized");
-sessionSpacer.classList.remove("minimized");
-messageBubbleArea.classList.remove("minimized");
+  // ───────────────────────────────────────────────
+  // Expand or minimize chat
+  // ───────────────────────────────────────────────
+  if (minimized) {
+    closeWallet();
 
-messageBubbleArea.style.maxHeight = "100%";
-messageBubbleArea.style.height = "auto";
+    sessionContainer.classList.remove("minimized");
+    sessionSpacer.classList.remove("minimized");
+    messageBubbleArea.classList.remove("minimized");
 
-sessionContainer.classList.add("vaultSessionContainer-reopen");
-sessionSpacer.classList.add("reopen");
-messageBubbleArea.classList.add("reopen");
+    messageBubbleArea.style.maxHeight = "100%";
+    messageBubbleArea.style.height = "auto";
 
-void sessionContainer.offsetHeight;
-sessionContainer.classList.add("reopenAnim");
+    sessionContainer.classList.add("vaultSessionContainer-reopen");
+    sessionSpacer.classList.add("reopen");
+    messageBubbleArea.classList.add("reopen");
 
-const cleanup = () => {
-  sessionContainer.classList.remove("reopenAnim");
-  sessionSpacer.classList.remove("reopen");
-  sessionContainer.removeEventListener("transitionend", cleanup);
-};
+    // Force layout once
+    void sessionContainer.offsetHeight;
 
-sessionContainer.addEventListener("transitionend", cleanup);
-} else {
-if (vaultOpened) {
-  // → MINIMIZE CHAT
-  sessionContainer.classList.add("minimized");
-  sessionSpacer.classList.add("minimized");
-  messageBubbleArea.classList.add("minimized");
+    sessionContainer.classList.add("reopenAnim");
 
-  sessionContainer.classList.remove("vaultSessionContainer-reopen");
-  sessionSpacer.classList.remove("reopen");
-  messageBubbleArea.classList.remove("reopen");
-  openWallet();
-}
-}
+    const cleanup = () => {
+      sessionContainer.classList.remove("reopenAnim");
+      sessionSpacer.classList.remove("reopen");
+      sessionContainer.removeEventListener("transitionend", cleanup);
+    };
 
-// Clear input
-inputEl.value = "";
+    sessionContainer.addEventListener("transitionend", cleanup);
 
-// User bubble
-addBubble("You", text, true);
-
-// ───────────────────────────────────────────────
-// ⭐ 1. Handle numeric choice (1, 2, 3)
-// ───────────────────────────────────────────────
-const userLocation = window.userLoyaltyContext?.location || null;
-
-if (window.__pendingPlaceChoices && /^[1-3]$/.test(text.trim())) {
-  const response = await handlePlaceChoice(text, userLocation);
-
-  addBubble("Vault Spirit", response.text, false, {
-    optionsHtml: response.optionsHtml || ""
-  });
-
-  return; // STOP — do NOT call backend
-}
-
-// ───────────────────────────────────────────────
-// ⭐ 2. Handle directions intent (frontend resolver)
-// ───────────────────────────────────────────────
-const maybeDirections = await handleDirectionsIntent(text, userLocation);
-
-if (maybeDirections) {
-  addBubble("Vault Spirit", maybeDirections.text, false, {
-    optionsHtml: maybeDirections.optionsHtml || ""
-  });
-  return; // STOP — do NOT call backend
-}
-
-// ───────────────────────────────────────────────
-// ⭐ 3. Otherwise → send to backend AI
-// ───────────────────────────────────────────────
-let reply;
-try {
-  reply = await askVaultSpirit(text);
-} catch (err) {
-  console.error("askVaultSpirit failed:", err);
-  addBubble("Vault Spirit", "🌺 The winds were noisy… try again.", false);
-  return;
-}
-
-// Render reply
-requestAnimationFrame(() => {
-  addBubble("Vault Spirit", reply.text || "", false, {
-    optionsHtml: reply.optionsHtml || "",
-    extraClasses: reply.extraClasses || ""
-  });
-
-  if (reply.pendingQuestion) {
-    saveVaultContext({
-      pendingQuestion: reply.pendingQuestion,
-      pendingData: reply.pendingData || null
-    });
-  }
-});
-
-bubbleDelay = nowMs() - bubbleDelay;
-console.log("⏱ Bubble appeared after:", bubbleDelay, "ms");
-
-// Save context
-saveVaultContext({
-  lastIntent: "question",
-  lastQuestion: text,
-  unresolved: false
-});
-};
-function onInputKeydown(e) {
-  if (e.key === "Enter") {
-    e.preventDefault();
-    onSendClick();
-  }
-}
-
-function onHideClick() {
-  const isMinimized = sessionContainer.classList.contains("minimized");
-
-  if (!isMinimized) {
-    // → MINIMIZE CHAT
+  } else if (vaultOpened) {
+    // Minimize chat
     sessionContainer.classList.add("minimized");
     sessionSpacer.classList.add("minimized");
     messageBubbleArea.classList.add("minimized");
@@ -4943,166 +4761,210 @@ function onHideClick() {
     sessionContainer.classList.remove("vaultSessionContainer-reopen");
     sessionSpacer.classList.remove("reopen");
     messageBubbleArea.classList.remove("reopen");
-    
 
-    // ⭐ Only open wallet if vault door has been opened before
-    if (vaultOpened) {
-      openWallet();
-    }
-
-  } else {
-    // → REOPEN CHAT
-    sessionContainer.classList.remove("minimized");
-    sessionSpacer.classList.remove("minimized");
-    messageBubbleArea.classList.remove("minimized");
-
-    sessionContainer.classList.add("vaultSessionContainer-reopen");
-    sessionSpacer.classList.add("reopen");
-    messageBubbleArea.classList.add("reopen");
-    
-    // ⭐ Always close wallet when chat reopens
-    closeWallet();
+    openWallet();
   }
-};
 
+  // Clear input
+  inputEl.value = "";
+
+  // User bubble
+  addBubble("You", text, true);
+
+  // ───────────────────────────────────────────────
+  // 1. Numeric choice
+  // ───────────────────────────────────────────────
+  if (window.__pendingPlaceChoices && /^[1-3]$/.test(text)) {
+    const response = await handlePlaceChoice(text, userLocation);
+
+    addBubble("Vault Spirit", response.text, false, {
+      optionsHtml: response.optionsHtml || ""
+    });
+
+    return;
+  }
+
+  // ───────────────────────────────────────────────
+  // 2. Directions intent
+  // ───────────────────────────────────────────────
+  const maybeDirections = await handleDirectionsIntent(text, userLocation);
+
+  if (maybeDirections) {
+    addBubble("Vault Spirit", maybeDirections.text, false, {
+      optionsHtml: maybeDirections.optionsHtml || ""
+    });
+    return;
+  }
+
+  // ───────────────────────────────────────────────
+  // 3. Backend AI
+  // ───────────────────────────────────────────────
+  let reply;
+  try {
+    reply = await askVaultSpirit(text);
+  } catch (err) {
+    console.error("askVaultSpirit failed:", err);
+    addBubble("Vault Spirit", "🌺 The winds were noisy… try again.", false);
+    return;
+  }
+
+  // Render reply next frame
+  requestAnimationFrame(() => {
+    addBubble("Vault Spirit", reply.text || "", false, {
+      optionsHtml: reply.optionsHtml || "",
+      extraClasses: reply.extraClasses || ""
+    });
+
+    if (reply.pendingQuestion) {
+      saveVaultContext({
+        pendingQuestion: reply.pendingQuestion,
+        pendingData: reply.pendingData || null
+      });
+    }
+  });
+
+  // Timing log
+  bubbleDelay = nowMs() - bubbleDelay;
+  console.log("⏱ Bubble appeared after:", bubbleDelay, "ms");
+
+  // Save context (single write)
+  saveVaultContext({
+    lastIntent: "question",
+    lastQuestion: text,
+    unresolved: false
+  });
+}
+function onHideClick() {
+  const minimized = sessionContainer.classList.contains("minimized");
+
+  if (!minimized) {
+    // → MINIMIZE CHAT (batched)
+    sessionContainer.classList.add("minimized");
+    sessionSpacer.classList.add("minimized");
+    messageBubbleArea.classList.add("minimized");
+
+    sessionContainer.classList.remove("vaultSessionContainer-reopen");
+    sessionSpacer.classList.remove("reopen");
+    messageBubbleArea.classList.remove("reopen");
+
+    // Only open wallet if vault was opened
+    if (vaultOpened) openWallet();
+
+    return;
+  }
+
+  // → REOPEN CHAT (batched)
+  sessionContainer.classList.remove("minimized");
+  sessionSpacer.classList.remove("minimized");
+  messageBubbleArea.classList.remove("minimized");
+
+  sessionContainer.classList.add("vaultSessionContainer-reopen");
+  sessionSpacer.classList.add("reopen");
+  messageBubbleArea.classList.add("reopen");
+
+  // Always close wallet when chat reopens
+  closeWallet();
+}
 function tryInitVault(source = "unknown") {
-const now = nowMs();
+  const now = nowMs();
 
-console.log(`🔍 tryInitVault called from: ${source}`, {
-  now,
-  lastInitAttempt: tryInitVault.lastInitAttempt,
-  delta: now - (tryInitVault.lastInitAttempt || 0),
-  __vaultInitStarted: window.__vaultInitStarted
-});
+  // Guard FIRST — no wasted logs, no wasted work
+  if (window.__vaultInitStarted) {
+    console.log(`⛔ tryInitVault blocked (${source}) — init already started`);
+    return;
+  }
 
-// ❌ REMOVE the time-based debounce entirely
-// ✔ USE the init-started guard instead
+  console.log(`🔍 tryInitVault from: ${source}`, {
+    now,
+    __vaultInitStarted: window.__vaultInitStarted
+  });
 
-if (window.__vaultInitStarted) {
-  console.log("⛔ tryInitVault blocked — init already started");
-  return;
-}
+  // No debounce needed — initVaultPage owns the flag
+  tryInitVault.lastInitAttempt = now;
 
-tryInitVault.lastInitAttempt = now;
-
-if (!window.__vaultInitStarted) {
-  console.log("🚀 Running initVaultPg (from tryInitVault)");
-  // ❌ remove this line:
-  // window.__vaultInitStarted = true;
-  // ✅ let initVaultPg own the flag:
+  console.log("🚀 Running initVaultPage (from tryInitVault)");
   initVaultPage();
-} else {
-  console.log("⛔ tryInitVault blocked — init already started");
-}
 }
 
 // Arm visibility ONLY after vault init finishes
 function armVisibility() {
 visibilityArmed = true;
 }
-
 if (!window.__vaultLoadListenerAttached) {
-window.__vaultLoadListenerAttached = true;
+  window.__vaultLoadListenerAttached = true;
 
-window.addEventListener("load", () => {
-  mark("DOM LOADING");
-  console.log("📦 window.load fired", {
-    vaultOpened,
-    appStarted,
-    __vaultInitStarted: window.__vaultInitStarted
+  window.addEventListener("load", () => {
+    mark("DOM LOADING");
+
+    // Guard FIRST — no wasted work
+    if (appStarted || window.__vaultInitStarted) {
+      console.log("⛔ window.load: vault already started — skipping reset/init");
+      return;
+    }
+
+    // Reset smoke only if vault never opened
+    if (!vaultOpened && !vaultIntroStarted) {
+      vaultSmoke.classList.remove("smoke-start", "smoke-puff", "smoke-dissipate");
+    }
+
+    // Batch DOM resets
+    document.body.classList.remove("vault-post-intro");
+    sessionContainer.classList.remove("vaultSessionContainer-reopen");
+
+    // Reset vault flags in one place
+    Object.assign(window, {
+      __vaultIntroShown: false,
+      __vaultInitStarted: false
+    });
+
+    vaultOpened = false;
+    appStarted = false;
+    chamberWatcherStarted = false;
+    vaultIntroStarted = false;
+    vaultStart = null;
+
+    console.log("Load Flags (after reset):", {
+      vaultStart,
+      vaultOpened,
+      visibilityArmed,
+      appStarted,
+      chamberWatcherStarted,
+      vaultIntroStarted,
+      __vaultInitStarted: window.__vaultInitStarted,
+      __vaultIntroShown: window.__vaultIntroShown
+    });
+
+    // Use rAF instead of setTimeout(0)
+    requestAnimationFrame(() => {
+      mark("TRYING INIT VAULT");
+      tryInitVault("window.load");
+    });
   });
 
-  if (appStarted || window.__vaultInitStarted) {
-    console.log("⛔ window.load: vault already started — skipping reset/init");
-    return;
-  }
-
-  if (!vaultOpened && !vaultIntroStarted) {
-    vaultSmoke.classList.remove("smoke-start", "smoke-puff", "smoke-dissipate");
-  }
-
-  document.body.classList.remove("vault-post-intro");
-  sessionContainer.classList.remove("vaultSessionContainer-reopen");
-
-  window.__vaultIntroShown = false;
-  window.__vaultInitStarted = false;
-
-  vaultOpened = false;
-  appStarted = false;
-  chamberWatcherStarted = false;
-  vaultIntroStarted = false;
-  vaultStart = null;
-
-  console.log("Load Flags (after guarded reset):", {
-    vaultStart,
-    vaultOpened,
-    visibilityArmed,
-    appStarted,
-    chamberWatcherStarted,
-    vaultIntroStarted,
-    __vaultInitStarted: window.__vaultInitStarted,
-    __vaultIntroShown: window.__vaultIntroShown
-  });
-
-  setTimeout(() => {
-    mark("TRYING INIT VAULT");
-    tryInitVault("window.load");
-  }, 0);
-});
-mark("DOM ENDING");
+  mark("DOM ENDING");
 }
-
 function rebuildVaultUI() {
   console.log("🔧 rebuildVaultUI() — visual reset only");
 
-  // Reset minimized / reopened states
+  // Batch class resets
   sessionContainer.classList.remove("minimized", "vaultSessionContainer-reopen", "reopenAnim");
   sessionSpacer.classList.remove("minimized", "reopen");
   messageBubbleArea.classList.remove("minimized", "reopen");
 
-  // Reset intro visual state
   document.body.classList.remove("vault-post-intro");
 
-  // Reset heights so layout recalculates cleanly
+  // Batch style resets
   messageBubbleArea.style.maxHeight = "";
   messageBubbleArea.style.height = "";
 
-  // Force a reflow to stabilize layout
+  // Force layout once
   void sessionContainer.offsetHeight;
 
-  // Optional: scroll to bottom if needed
-  if (messageBubbleArea.scrollHeight > 0) {
-    messageBubbleArea.scrollTop = messageBubbleArea.scrollHeight;
+  // Scroll only if not already at bottom
+  const maxScroll = messageBubbleArea.scrollHeight - messageBubbleArea.clientHeight;
+  if (messageBubbleArea.scrollTop < maxScroll) {
+    messageBubbleArea.scrollTop = maxScroll;
   }
-}
-
-if (!window.__vaultVisibilityListenerAttached) {
-  window.__vaultVisibilityListenerAttached = true;
-
-  document.addEventListener("visibilitychange", () => {
-    console.log("👁 visibilitychange fired:", document.visibilityState, {
-      visibilityArmed,
-      readyState: document.readyState
-    });
-
-    if (!visibilityArmed) {
-      console.log("❌ visibiliychange ignored — not armed");
-      return;
-    }
-
-    if (document.readyState !== "complete") {
-      console.log("❌ visibiitychange ignored — page not fully loaded");
-      return;
-    }
-
-    if (document.visibilityState === "visible") {
-      console.log("👁 Page became visible");
-      console.log("🔄 Resetting vault init state for re-init");
-      loadIdentity();
-      mark("REBUILDING VAULT UI");
-      rebuildVaultUI(); // visual only, no new listeners
-    }
-  });
 }
 
 }

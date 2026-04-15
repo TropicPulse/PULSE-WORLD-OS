@@ -19,12 +19,12 @@ import bcrypt from "bcryptjs";
 import sharp from "sharp";
 import { fileURLToPath } from "url";
 // Marketplace adapters (inside /pulse-miner/marketplaces/)
-import { marketplaceA } from "../pulse-miner/marketplaces/marketplaceA.js";
-import { marketplaceB } from "../pulse-miner/marketplaces/marketplaceB.js";
-import { marketplaceC } from "../pulse-miner/marketplaces/marketplaceC.js";
+// import { marketplaceA } from "../pulse-miner/marketplaces/marketplaceA.js";
+// import { marketplaceB } from "../pulse-miner/marketplaces/marketplaceB.js";
+// import { marketplaceC } from "../pulse-miner/marketplaces/marketplaceC.js";
 
-// Remote scoring (ESM only)
-import { runUserScoring } from "../pulse-proxy/PulseUserScoring.js";
+// // Remote scoring (ESM only)
+// import { runUserScoring } from "../pulse-proxy/PulseUserScoring.js";
 
 // // Reputation loader (inside /pulse-miner/)
 // import { loadMarketplaceReputation } from "../pulse-miner/MarketplaceReputation.js";
@@ -84,7 +84,7 @@ function pulseCors(req, res, next) {
   next();
 }
 const EMAIL_PASSWORD = defineSecret("EMAIL_PASSWORD");
-const STRIPE_PASSWORD = defineSecret("STRIPE_PASSWORD");
+const STRIPE_PASSWORD = defineSecret("STRIPE_SECRET_KEY");
 const JWT_SECRET = defineSecret("JWT_SECRET");
 // CLOUD RUN ENVIRONMENTS
 const TP_API_KEY = process.env.TP_API_KEY;
@@ -92,7 +92,7 @@ const BASE_PAYMENT_URL = process.env.BASE_PAYMENT_URL;
 const GOOGLE_MAPS_KEY = process.env.GOOGLE_MAPS_KEY;
 const PLACEHOLDER_IMAGE_URL = process.env.PLACEHOLDER_IMAGE_URL;
 
-const STRIPE_WEBHOOK_SECRET = defineSecret("STRIPE_WEBHOOK_SECRET");
+const STRIPE_WEBHOOK_SECRET = defineSecret("STRIPE_SECRET_WEBHOOK");
 const MESSAGING_SERVICE_SID = defineSecret("MESSAGING_SERVICE_SID");
 const ACCOUNT_SID = defineSecret("ACCOUNT_SID");
 const AUTH_TOKEN = defineSecret("AUTH_TOKEN");
@@ -2495,45 +2495,6 @@ async function sendEmailToUser(email, emailType, payload = {}) {
   }
 }
 
-
-function currency(amount, displayCurrency = "$") {
-  let raw = String(amount || "").replace(/BZ?\$|\$/g, "").trim();
-  const num = Number(raw);
-  const safe = isNaN(num) ? "0.00" : num.toFixed(2);
-
-  let cur = String(displayCurrency || "$").trim().toUpperCase();
-  cur = cur === "USD" || cur === "$" || cur === "US$" ? "$" : "BZ$";
-
-  return `${cur}${safe}`;
-}
-
-function formatDisplayAmount(displayCurrency, amount) {
-  const safeAmount = Number(amount);
-  const finalAmount = isNaN(safeAmount) ? "0.00" : safeAmount.toFixed(2);
-
-  let cur = String(displayCurrency || "$").trim().toUpperCase();
-  cur = cur === "USD" || cur === "$" || cur === "US$" ? "$" : "BZ$";
-
-  return currency(finalAmount, cur);
-}
-
-
-function sanitizeEverything(input) {
-  if (!input) return "";
-
-  let text = String(input);
-
-  text = text.replace(/\s+/g, " ").trim();
-  text = text.replace(/[\u200B-\u200F\uFEFF]/g, "");
-  text = text.replace(/,/g, " • ");
-  text = text.replace(/'/g, "’");
-  text = text.replace(/\\/g, "");
-  text = text.replace(/\.{2,}/g, ".");
-
-  text = playfulClean(text);
-
-  return text.trim();
-}
 async function sendPinEmail(email, pin, payload, emailPassword) {
   try {
     const transporter = nodemailer.createTransport({
@@ -2659,6 +2620,45 @@ async function sendPinEmail(email, pin, payload, emailPassword) {
   }
 }
 
+
+function currency(amount, displayCurrency = "$") {
+  let raw = String(amount || "").replace(/BZ?\$|\$/g, "").trim();
+  const num = Number(raw);
+  const safe = isNaN(num) ? "0.00" : num.toFixed(2);
+
+  let cur = String(displayCurrency || "$").trim().toUpperCase();
+  cur = cur === "USD" || cur === "$" || cur === "US$" ? "$" : "BZ$";
+
+  return `${cur}${safe}`;
+}
+
+function formatDisplayAmount(displayCurrency, amount) {
+  const safeAmount = Number(amount);
+  const finalAmount = isNaN(safeAmount) ? "0.00" : safeAmount.toFixed(2);
+
+  let cur = String(displayCurrency || "$").trim().toUpperCase();
+  cur = cur === "USD" || cur === "$" || cur === "US$" ? "$" : "BZ$";
+
+  return currency(finalAmount, cur);
+}
+
+
+function sanitizeEverything(input) {
+  if (!input) return "";
+
+  let text = String(input);
+
+  text = text.replace(/\s+/g, " ").trim();
+  text = text.replace(/[\u200B-\u200F\uFEFF]/g, "");
+  text = text.replace(/,/g, " • ");
+  text = text.replace(/'/g, "’");
+  text = text.replace(/\\/g, "");
+  text = text.replace(/\.{2,}/g, ".");
+
+  text = playfulClean(text);
+
+  return text.trim();
+}
 function playfulClean(input) {
   if (!input) return "";
 
@@ -17733,7 +17733,179 @@ async function generateHistoryCache({ sizeOnly = false, deltaRequest = false } =
 
   return allHistory;
 }
+async function generateLoyaltyCache({ sizeOnly = false } = {}) {
 
+  // ---------------------------------------------------------
+  // ⭐ LOAD VERSION FROM Cache_Control/<autoDocId>
+  // ---------------------------------------------------------
+  const controlRef = db.collection("Cache_Control").doc("KCQFBaFpjSaPRDTAhJBg");
+  const controlSnap = await controlRef.get();
+  const control = controlSnap.data() || {};
+  const currentVersion = control.loyaltyVersion ?? 1;
+
+  // ---------------------------------------------------------
+  // ⭐ LOAD EXISTING SNAPSHOT FROM Cache_Meta/loyalty
+  // ---------------------------------------------------------
+  const metaRef = db.collection("Cache_Meta").doc("loyalty");
+  const metaSnap = await metaRef.get();
+  const meta = metaSnap.data() || {};
+
+  const now = Date.now();
+  const lastGenerated = meta.lastGenerated || 0;
+  const cachedVersion = meta.version || 0;
+  const cachedData = meta.data || [];
+
+  const ONE_DAY = 24 * 60 * 60 * 1000;
+
+  const isFreshByTime = now - lastGenerated < ONE_DAY;
+  const isFreshByVersion = cachedVersion === currentVersion;
+  const hasData = Array.isArray(cachedData) && cachedData.length > 0;
+
+  // ---------------------------------------------------------
+  // ⭐ CASE 1 — Fully fresh
+  // ---------------------------------------------------------
+  if (hasData && isFreshByTime && isFreshByVersion) {
+
+    if (sizeOnly) {
+      const json = JSON.stringify(cachedData);
+      return Buffer.byteLength(json, "utf8") / 1024;
+    }
+
+    return cachedData;
+  }
+
+  // ---------------------------------------------------------
+  // ⭐ CASE 2 — Build NEW full loyalty snapshot
+  // ---------------------------------------------------------
+  const usersSnap = await db.collection("Users").get();
+  const loyaltyList = [];
+
+  // Load global settings once
+  const settingsSnap = await db.collection("TPSettings").doc("global").get();
+  const settings = settingsSnap.data() || {};
+
+  for (const userDoc of usersSnap.docs) {
+    const uid = userDoc.id;
+    const userData = userDoc.data() || {};
+
+    const TPIdentity = userData.TPIdentity || {};
+    const TPLoyalty = userData.TPLoyalty || {};
+
+    // -----------------------------------------
+    // ⭐ DISPLAY NAME
+    // -----------------------------------------
+    const displayName = TPIdentity.displayName || "Explorer";
+
+    // -----------------------------------------
+    // ⭐ STREAK LOGIC
+    // -----------------------------------------
+    const lastEarnedDate = TPLoyalty.lastEarnedDate || null;
+    let streakCount = Number(TPLoyalty.streakCount) || 0;
+
+    const windowHours = (settings.streakDurationDays ?? 1) * 24;
+
+    if (!lastEarnedDate) {
+      streakCount = 0;
+    } else {
+      const lastMs = lastEarnedDate.toMillis();
+      const expiresMs = lastMs + windowHours * 3600000;
+
+      if (Date.now() >= expiresMs) {
+        streakCount = 0;
+      }
+    }
+
+    // -----------------------------------------
+    // ⭐ TIER LOGIC
+    // -----------------------------------------
+    const lifetimePoints = Number(TPLoyalty.lifetimePoints) || 0;
+
+    const tierThresholds = {
+      Seashell: 0,
+      ReefDiver: settings.tierThreshold_ReefDiver,
+      ToucanSpirit: settings.tierThreshold_ToucanSpirit,
+      VolcanoHeart: settings.tierThreshold_VolcanoHeart,
+      HurricaneLegend: settings.tierThreshold_HurricaneLegend
+    };
+
+    let tierKey = "Seashell";
+    for (const [name, threshold] of Object.entries(tierThresholds)) {
+      if (lifetimePoints >= threshold) tierKey = name;
+    }
+
+    const tierNameMap = {
+      Seashell: "Seashell",
+      ReefDiver: "Reef Diver",
+      ToucanSpirit: "Toucan Spirit",
+      VolcanoHeart: "Volcano Heart",
+      HurricaneLegend: "Hurricane Legend"
+    };
+
+    const tier = tierNameMap[tierKey];
+    const tierMultiplier = settings[`tierMultiplier_${tierKey}`] ?? 1;
+
+    // -----------------------------------------
+    // ⭐ STREAK MULTIPLIER
+    // -----------------------------------------
+    const streakMultiplier = Math.min(
+      settings.streakMultiplierBase +
+        streakCount * settings.streakMultiplierPerDay,
+      settings.streakMaxMultiplier
+    );
+
+    // -----------------------------------------
+    // ⭐ SEASONAL LOGIC
+    // -----------------------------------------
+    const {
+      seasonalActive,
+      seasonalName,
+      seasonalMultiplier
+    } = getSeasonFromSettings(settings);
+
+    // -----------------------------------------
+    // ⭐ REFERRAL CODE
+    // -----------------------------------------
+    const referralCode = TPLoyalty.referralCode || null;
+
+    // -----------------------------------------
+    // ⭐ BUILD LOYALTY SNAPSHOT
+    // -----------------------------------------
+    loyaltyList.push({
+      uid,
+      displayName,
+      lifetimePoints,
+      streakCount,
+      tier,
+      tierKey,
+      tierMultiplier,
+      streakMultiplier,
+      seasonalMultiplier,
+      seasonalActive,
+      seasonalName,
+      referralCode,
+      calculationVersion: TPLoyalty.calculationVersion ?? 1
+    });
+  }
+
+  // ---------------------------------------------------------
+  // ⭐ WRITE BACK FULL SNAPSHOT
+  // ---------------------------------------------------------
+  await metaRef.set({
+    lastGenerated: now,
+    version: currentVersion,
+    data: loyaltyList
+  });
+
+  // ---------------------------------------------------------
+  // ⭐ SIZE ONLY
+  // ---------------------------------------------------------
+  if (sizeOnly) {
+    const json = JSON.stringify(loyaltyList);
+    return Buffer.byteLength(json, "utf8") / 1024;
+  }
+
+  return loyaltyList;
+}
 function signChunk(userId, sessionId, index, dataBase64) {
   const h = crypto.createHash("sha256");
   h.update(userId + sessionId + index + dataBase64);
@@ -17761,6 +17933,9 @@ async function resolveCacheRequest(payload, baseVersion, sizeOnly) {
 
     REQUEST_ORDERS_CACHE: generateOrdersCache,
     REQUEST_ORDERS_CACHE_DELTA: generateOrdersCache,
+
+    REQUEST_LOYALTY_CACHE: generateLoyaltyCache,
+    REQUEST_LOYALTY_CACHE_DELTA: generateLoyaltyCache,
 
     REQUEST_HISTORY_CACHE: generateHistoryCache,
     REQUEST_HISTORY_CACHE_DELTA: generateHistoryCache,
@@ -20005,6 +20180,7 @@ function getWildlifeLocation(animal) {
 
   return map[animal] || "around the island";
 }
+
 export const redeemPulsePoints = onRequest(
   {
     region: "us-central1",
