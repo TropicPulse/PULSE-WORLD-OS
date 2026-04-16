@@ -1,0 +1,68 @@
+;;
+;; Domain:     tropicpulse.bz.
+;; Exported:   2025-12-01 03:35:49
+;;
+;; This file is intended for use for informational and archival
+;; purposes ONLY and MUST be edited before use on a production
+;; DNS server.  In particular, you must:
+;;   -- update the SOA record with the correct authoritative name server
+;;   -- update the SOA record with the contact e-mail address information
+;;   -- update the NS record(s) with the authoritative name servers for this domain.
+;;
+;; For further information, please consult the BIND documentation
+;; located on the following website:
+;;
+;; http://www.isc.org/
+;;
+;; And RFC 1035:
+;;
+;; http://www.ietf.org/rfc/rfc1035.txt
+;;
+;; Please note that we do NOT offer technical support for any use
+;; of this zone data, the BIND name server, or any other third-party
+;; DNS software.
+;;
+;; Use at your own risk.
+;; SOA Record
+tropicpulse.bz	3600	IN	SOA	holly.ns.cloudflare.com. dns.cloudflare.com. 2051622674 10000 2400 604800 3600
+
+;; NS Records
+tropicpulse.bz.	86400	IN	NS	holly.ns.cloudflare.com.
+tropicpulse.bz.	86400	IN	NS	kip.ns.cloudflare.com.
+
+;; A Records
+tropicpulse.bz.	1	IN	A	104.21.23.62 ; cf_tags=cf-proxied:true
+tropicpulse.bz.	1	IN	A	172.67.209.116 ; cf_tags=cf-proxied:true
+www.tropicpulse.bz.	1	IN	A	172.67.209.116 ; cf_tags=cf-proxied:true
+www.tropicpulse.bz.	1	IN	A	104.21.23.62 ; cf_tags=cf-proxied:true
+
+;; AAAA Records
+tropicpulse.bz.	1	IN	AAAA	2606:4700:3033::6815:173e ; cf_tags=cf-proxied:false
+tropicpulse.bz.	1	IN	AAAA	2606:4700:3031::ac43:d174 ; cf_tags=cf-proxied:false
+www.tropicpulse.bz.	1	IN	AAAA	2606:4700:3031::ac43:d174 ; cf_tags=cf-proxied:false
+www.tropicpulse.bz.	1	IN	AAAA	2606:4700:3033::6815:173e ; cf_tags=cf-proxied:false
+
+;; CNAME Records
+bounce.tropicpulse.bz.	1	IN	CNAME	custom-email-domain.stripe.com. ; cf_tags=cf-proxied:false
+f4zzldmke3dcqr43wdw3dmayk6kbzdkv._domainkey.tropicpulse.bz.	1	IN	CNAME	f4zzldmke3dcqr43wdw3dmayk6kbzdkv.dkim.custom-email-domain.stripe.com. ; cf_tags=cf-proxied:false
+jai3etcp6fy2pibywaqxyouldr66fnzu._domainkey.tropicpulse.bz.	1	IN	CNAME	jai3etcp6fy2pibywaqxyouldr66fnzu.dkim.custom-email-domain.stripe.com. ; cf_tags=cf-proxied:false
+k5jpkk3jhhsqotfehifczolsvp7adiwq._domainkey.tropicpulse.bz.	1	IN	CNAME	k5jpkk3jhhsqotfehifczolsvp7adiwq.dkim.custom-email-domain.stripe.com. ; cf_tags=cf-proxied:false
+kfmtnhso6j3xvbc4nopu7dx473vkds57._domainkey.tropicpulse.bz.	1	IN	CNAME	kfmtnhso6j3xvbc4nopu7dx473vkds57.dkim.custom-email-domain.stripe.com. ; cf_tags=cf-proxied:false
+pay.tropicpulse.bz.	1	IN	CNAME	hosted-checkout.stripecdn.com. ; cf_tags=cf-proxied:false
+vdenzwcspttjuqqkcjvmu7jdo77ml3aj._domainkey.tropicpulse.bz.	1	IN	CNAME	vdenzwcspttjuqqkcjvmu7jdo77ml3aj.dkim.custom-email-domain.stripe.com. ; cf_tags=cf-proxied:false
+x6cuwdtrdfghuteh4qgyiz2ri7aj4dnb._domainkey.tropicpulse.bz.	1	IN	CNAME	x6cuwdtrdfghuteh4qgyiz2ri7aj4dnb.dkim.custom-email-domain.stripe.com. ; cf_tags=cf-proxied:false
+
+;; MX Records
+tropicpulse.bz.	1	IN	MX	16 route3.mx.cloudflare.net.
+tropicpulse.bz.	1	IN	MX	21 route2.mx.cloudflare.net.
+tropicpulse.bz.	1	IN	MX	19 route1.mx.cloudflare.net.
+
+;; TXT Records
+_acme-challenge.pay.tropicpulse.bz.	1	IN	TXT	"2EXirMYA6rsO-5aG1kZ7L4e_cSP5NYJRakqo5YxvrnE"
+cf2024-1._domainkey.tropicpulse.bz.	1	IN	TXT	"v=DKIM1; h=sha256; k=rsa; p=MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAiweykoi+o48IOGuP7GR3X0MOExCUDY/BCRHoWBnh3rChl7WhdyCxW3jgq1daEjPPqoi7sJvdg5hEQVsgVRQP4DcnQDVjGMbASQtrY4WmB1VebF+RPJB2ECPsEDTpeiI5ZyUAwJaVX7r6bznU67g7LvFq35yIo4sdlmtZGV+i0H4cpYH9+3JJ78k" "m4KXwaf9xUJCWF6nxeD+qG6Fyruw1Qlbds2r85U9dkNDVAS3gioCvELryh1TxKGiVTkg4wqHTyHfWsp7KD3WQHYJn0RyfJJu6YEmL77zonn7p2SRMvTMP3ZEXibnC9gz3nnhR6wcYL8Q7zXypKTMD58bTixDSJwIDAQAB"
+_dmarc.tropicpulse.bz.	1	IN	TXT	"v=DMARC1; p=quarantine; sp=none; adkim=r; aspf=r; pct=100; fo=0; rf=afrf; ri=86400; rua=mailto:851f55d988c44b07b3c3336470c43794@dmarc-reports.cloudflare.net;"
+tropicpulse.bz.	1	IN	TXT	"v=spf1 include:_spf.mx.cloudflare.net ~all"
+tropicpulse.bz.	1	IN	TXT	"twilio-domain-verification=c69254c6ba19b75da832be245f28176a"
+tropicpulse.bz.	1	IN	TXT	"stripe-verification=a616f4428d762d35d3d7645063ceb9351b43efee3d8227f0e4b52152baa634be"
+tropicpulse.bz.	1	IN	TXT	"google-site-verification=cWw026YMSTN0aucLvvs_AuBGaBLKIcD5LebZx7kwMck"
+tropicpulse.bz.	1	IN	TXT	"google-site-verification=Sz6h9b_EYBomouglbIefp3-WOItbE8BURTMUHfjIIIE"
