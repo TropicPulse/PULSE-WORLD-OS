@@ -748,7 +748,6 @@ userName  = identity.name  || null;
   autologin = localStorage.getItem("tp_stay_signed_v4") === "1";
   trusted   = localStorage.getItem("tp_device_token_v4") === "1";
 
-  let auth = await getAuth(token);
   const now       = nowMs();
   const lastLocal = Number(localStorage.getItem("tp_last_active_v4")) || 0;
   const inactive  = now - lastLocal > 15 * 60 * 1000;
