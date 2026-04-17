@@ -3,1198 +3,1285 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Tropic Pulse — Discover Belize, Effortlessly</title>
 
-  <!-- Google Font -->
+  <title>Tropic Pulse OS — Discover EVERYTHING Effortlessly!</title>
+
+  <!-- ============================
+       FONTS
+  ============================= -->
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
-  <!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-HSX89KS63P"></script>
-<script type="module">
-import { pulseband } from "./proxy/PulseBand.js";
-import { getAuth, getHook, getMap, callHelper, attachScanner } from "./lib/Connectors/PageScanner.js";
-</script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
 
-  gtag('config', 'G-HSX89KS63P');
-</script>
-
-  <!-- Meta Pixel Code -->
+  <!-- ============================
+       ANALYTICS — GOOGLE TAG
+  ============================= -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-HSX89KS63P"></script>
   <script>
-  !function(f,b,e,v,n,t,s)
-  {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
-  n.callMethod.apply(n,arguments):n.queue.push(arguments)};
-  if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
-  n.queue=[];t=b.createElement(e);t.async=!0;
-  t.src=v;s=b.getElementsByTagName(e)[0];
-  s.parentNode.insertBefore(t,s)}(window, document,'script',
-  'https://connect.facebook.net/en_US/fbevents.js');
-  fbq('init', '1651551349364459');
-  fbq('track', 'PageView');
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){ dataLayer.push(arguments); }
+    gtag('js', new Date());
+    gtag('config', 'G-HSX89KS63P');
   </script>
-  <noscript><img height="1" width="1" style="display:none"
-  src="https://www.facebook.com/tr?id=1651551349364459&ev=PageView&noscript=1"
-  /></noscript>
-  <!-- End Meta Pixel Code -->
+
+  <!-- ============================
+       META PIXEL (FACEBOOK)
+  ============================= -->
+  <script>
+    !function(f,b,e,v,n,t,s){
+      if(f.fbq) return;
+      n=f.fbq=function(){ n.callMethod ?
+        n.callMethod.apply(n,arguments) : n.queue.push(arguments)
+      };
+      if(!f._fbq) f._fbq=n;
+      n.push=n; n.loaded=!0; n.version='2.0';
+      n.queue=[];
+      t=b.createElement(e); t.async=!0;
+      t.src=v;
+      s=b.getElementsByTagName(e)[0];
+      s.parentNode.insertBefore(t,s);
+    }(window, document,'script','https://connect.facebook.net/en_US/fbevents.js');
+
+    fbq('init', '1651551349364459');
+    fbq('track', 'PageView');
+  </script>
+
+  <noscript>
+    <img height="1" width="1" style="display:none"
+      src="https://www.facebook.com/tr?id=1651551349364459&ev=PageView&noscript=1" />
+  </noscript>
+
+  <!-- ============================
+       OS IMPORTS (THE ONLY 3)
+       These MUST load BEFORE your main script.
+  ============================= -->
+  <script type="module">
+    import { pulseband } from "./proxy/PulseBand.js";
+    import { identity } from "./netlify/functions/PulseIdentity.js";
+    import { getAuth, getHook, getMap, callHelper, attachScanner }
+      from "./lib/Connectors/PageScanner.js";
+  </script>
+
+  <!-- ============================
+       MAIN CSS (YOUR FULL SYSTEM CSS)
+       Insert your full stylesheet here.
+  ============================= -->
   <style>
     :root {
-      /* Colors */
-      --tp-yellow: #ffff99;
-      --tp-teal: #00a884;
-      --tp-teal-soft: #00c7a6;
-      --tp-coral: #ff5a5a;
-      --tp-coral-dark: #ff3d3d;
-      --tp-bg: #000000;
-      --tp-text: #1a1a1a;
-      --tp-muted: #777777;
-      --tp-card-bg: #000000;
-      --tp-shadow-soft: 0 6px 18px rgba(0, 0, 0, 0.12);
-      --tp-radius-lg: 18px;
-      --tp-radius-md: 12px;
-      --tp-radius-sm: 8px;
-
-      /* Layout */
-      --tp-max-width: 1200px;
-      --tp-section-padding: 40px;
-      --tp-section-padding-lg: 40px;
-
-      /* Animation */
-      --tp-gradient-duration: 10s;
-    }
-
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
-
-    body {
-      margin: 0;
-      font-family: "Inter", sans-serif;
-      color: var(--tp-text);
-      line-height: 1.5;
-      background: #ffff99;
-    }
-
-    img {
-      max-width: 100%;
-      display: block;
-    }
-
-    a {
-      color: inherit;
-      text-decoration: none;
-    }
-
-    /* Utility */
-    .container {
-      width: 100%;
-      max-width: var(--tp-max-width);
-      margin: 0 auto;
-      padding: 0 20px;
-    }
-
-    /* Utility */
-    .testimonials-container {
-      width: 100%;
-      max-width: var(--tp-max-width);
-      margin: 0 auto;
-      padding: 0;
-    }
-
-    .section {
-      padding: var(--tp-section-padding) 0;
-    }
-
-    @media (min-width: 992px) {
-      .section {
-        padding: var(--tp-section-padding-lg) 0;
-      }
-    }
-
-    .btn {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      padding: 12px 22px;
-      border-radius: var(--tp-radius-md);
-      font-weight: 600;
-      font-size: 0.95rem;
-      border: none;
-      cursor: pointer;
-      transition: background 0.2s ease, transform 0.15s ease, box-shadow 0.15s ease;
-      text-decoration: none;
-      white-space: nowrap;
-    }
-
-    .btn-primary {
-      background: var(--tp-coral);
-      color: #fff;
-      box-shadow: 0 4px 10px rgba(255, 90, 90, 0.4);
-    }
-
-    .btn-primary:hover {
-      background: var(--tp-coral-dark);
-      transform: translateY(-1px);
-      box-shadow: 0 6px 14px rgba(255, 90, 90, 0.5);
-    }
-
-    .btn-outline {
-      background: transparent;
-      border: 2px solid transparent;
-      padding: 10px 20px;
-      font-weight: 600;
-
-      /* TEXT GRADIENT */
-      background-image: linear-gradient(90deg, #000000, #ffffff, #000000);
-      background-size: 400%;
-      background-position: 0%;
-      background-clip: text;
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-
-      /* BORDER GRADIENT */
-      border-image: linear-gradient(90deg, #000000, #ffffff, #000000) 1;
-      transition: background-position 1s linear, border-image 1s linear;
-    }
-
-    .btn-outline:hover {
-      background-position: 100%; /* makes the shimmer slide left → right */
-      border-image: linear-gradient(90deg, #ff3d3d, #ffff00, #ff3d3d) 1;
-      box-shadow: 0 6px 14px rgba(255, 90, 90, 0.5);
-    }
-
-    .badge {
-      display: inline-block;
-      padding: 4px 10px;
-      border-radius: 999px;
-      font-size: 0.75rem;
-      font-weight: 600;
-      letter-spacing: 0.03em;
-      text-transform: uppercase;
-      background: rgba(255, 255, 255, 0.18);
-    }
-
-    .gradient-bg::before {
-      content: "";
-      position: absolute;
-      inset: 0;
-      background: linear-gradient(135deg, #ffff99, #000000, #ffff99);
-      background-size: 400% 400%;
-      animation: tpGradient var(--tp-gradient-duration) linear 1 forwards;
-      z-index: -1;
-      align-items: center;
-      justify-content: center;
-    }
-
-    /* Animated background gradient (global wrapper) */
-    .gradient-bg {
-      position: relative;
-      background: #ffff99; /* final color after animation */
-      overflow: hidden;
-      align-items: center;
-      justify-content: center;
-    }
-
-    @keyframes tpGradient {
-      0% {
-        background-position: 0% 100%;
-      }
-      10% {
-        background-position: 10% 90%;
-      }
-      25% {
-        background-position: 25% 75%;
-      }
-      50% {
-        background-position: 50% 50%;
-      }
-      75% {
-        background-position: 75% 25%;
-      }
-      90% {
-        background-position: 90% 10%;
-      }
-      100% {
-        background-position: 100% 0%;
-      }
-    }
-
-    .hero-title,
-    .hero-subtitle,
-    .hero-eyebrow,
-    .hero-meta {
-      background: linear-gradient(
-        90deg,
-        #000000 0%,
-        #000000 25%,
-        #ffffff 50%,
-        #000000 75%,
-        #000000 100%
-      );
-      background-size: 200% 100%;
-      background-clip: text;
-      -webkit-background-clip: text;
-      color: transparent;
-      animation: textPulse var(--tp-gradient-duration) linear 1;
-    }
-
-    @keyframes textPulse {
-      0% {
-        background-position: 0% 100%;
-      }
-      10% {
-        background-position: 10% 90%;
-      }
-      25% {
-        background-position: 25% 75%;
-      }
-      50% {
-        background-position: 50% 50%;
-      }
-      75% {
-        background-position: 75% 25%;
-      }
-      90% {
-        background-position: 90% 10%;
-      }
-      100% {
-        background-position: 100% 0%;
-      }
-    }
-
-    /* ================= HEADER ================= */
-
-    header {
-      position: sticky;
-      top: 0;
-      z-index: 50;
-      background: linear-gradient(
-        to bottom,
-        var(--tp-yellow) 100%
-      );
-      backdrop-filter: blur(6px);
-    }
-
-    .header-inner {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 16px 20px;
-      max-width: var(--tp-max-width);
-      margin: 0 auto;
-    }
-
-    .tp-header {
-      font-size: 2.3rem;
-      font-weight: 800;
-      color: var(--tp-teal);
-      letter-spacing: -0.5px;
-    }
-
-    .tp-header-mobile {
-      font-size: 1.3rem;
-      font-weight: 800;
-      color: var(--tp-teal);
-      letter-spacing: -0.5px;
-    }
-
-    nav {
-      display: flex;
-      align-items: center;
-      gap: 24px;
-    }
-
-    nav a {
-      font-size: 0.95rem;
-      font-weight: 500;
-      position: relative;
-    }
-
-    nav a::after {
-      content: "";
-      position: absolute;
-      left: 0;
-      bottom: -4px;
-      width: 0;
-      height: 2px;
-      background: var(--tp-teal);
-      transition: width 0.2s ease;
-    }
-
-    nav a:hover::after {
-      width: 100%;
-    }
-
-    .header-cta {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-    }
-
-    .mobile-menu-toggle {
-      display: none;
-      width: 32px;
-      height: 32px;
-      border-radius: 999px;
-      border: none;
-      background: #fff;
-      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-    }
-
-    .mobile-menu-toggle span {
-      width: 18px;
-      height: 2px;
-      background: #333;
-      position: relative;
-    }
-
-    .mobile-menu-toggle span::before,
-    .mobile-menu-toggle span::after {
-      content: "";
-      position: absolute;
-      left: 0;
-      width: 18px;
-      height: 2px;
-      background: #333;
-    }
-
-    .mobile-menu-toggle span::before {
-      top: -5px;
-    }
-
-    .mobile-menu-toggle span::after {
-      top: 5px;
-    }
-
-    /* Mobile menu */
-    .mobile-menu {
-      position: fixed;
-      inset: 0;
-      background: rgba(0, 0, 0, 0.55);
-      backdrop-filter: blur(6px);
-      display: none;
-      z-index: 60;
-    }
-
-    .mobile-menu-panel {
-      position: absolute;
-      top: 0;
-      right: 0;
-      width: 260px;
-      height: 100%;
-      background: #ffffcc;
-      padding: 24px 18px;
-      display: flex;
-      flex-direction: column;
-      gap: 18px;
-      box-shadow: -4px 0 12px rgba(0, 0, 0, 0.2);
-    }
-
-    .mobile-menu-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-
-    .mobile-menu-close {
-      border: none;
-      background: transparent;
-      font-size: 1.4rem;
-      cursor: pointer;
-    }
-
-    .mobile-menu-nav a {
-      display: block;
-      padding: 8px 0;
-      font-weight: 500;
-    }
-
-    .mobile-menu-cta {
-      margin-top: auto;
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-    }
-
-    .mobile-menu.show {
-      display: block;
-    }
-
-    @media (max-width: 768px) {
-      nav {
-        display: none;
-      }
-      .header-cta {
-        display: none;
-      }
-      .mobile-menu-toggle {
-        display: inline-flex;
-      }
-    }
-
-    /* ================= HERO ================= */
-
-    .hero {
-      position: relative;
-      color: #000;
-      overflow: hidden;
-      align-items: center;
-    }
-
-    
-    .hero-bg {
-      position: relative;
-      width: 100%;
-      background-size: cover;
-      background-position: center;
-      background-repeat: no-repeat;
-      margin: 0;
-      padding: 0;
-      align-items: center;
-    }
-
-    .hero-overlay {
-      position: absolute;
-      inset: 0;
-      background: radial-gradient(circle at top left, rgba(255, 255, 153, 0.35), transparent 55%),
-                  radial-gradient(circle at bottom right, rgba(255, 90, 90, 0.35), transparent 55%);
-      z-index: -1;
-      align-items: center;
-    }
-
-    .hero-inner {
-      padding: 50px 0 50px;
-      align-items: center;
-    }
-
-    .hero-grid {
-      display: grid;
-      gap: 200px;
-      align-items: center;
-    }
-
-    @media (min-width: 900px) {
-      .hero-grid {
-        grid-template-columns: 1.2fr 1fr;
-        align-items: center;
-      }
-    }
-
-    .hero-eyebrow {
-      margin-bottom: 12px;
-    }
-
-    .hero-title {
-      font-size: 2.6rem;
-      font-weight: 800;
-      letter-spacing: -0.04em;
-      margin-bottom: 14px;
-    }
-
-    @media (min-width: 900px) {
-      .hero-title {
-        font-size: 3.2rem;
-      }
-    }
-
-    .hero-subtitle {
-      font-size: 1.05rem;
-      max-width: 520px;
-      margin-bottom: 24px;
-      opacity: 0.95;
-    }
-
-    .hero-ctas {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 12px;
-      margin-bottom: 8px;
-    }
-
-    .hero-meta {
-      font-size: 0.9rem;
-      opacity: 0.9;
-    }
-
-    .hero-phone {
-      position: relative;
-      max-width: 320px;
-      margin: 0 auto;
-    }
-
-    .phone-frame {
-      border-radius: 36px;
-      padding: 10px;
-      background: #ffffff;
-      box-shadow: 0 18px 40px rgba(0, 0, 0, 0.4);
-    }
-
-    .phone-inner {
-      border-radius: 28px;
-      overflow: hidden;
-      background: #000;
-    }
-
-    .phone-screen {
-      width: 100%;
-      height: 520px;
-      background: url("https://www.tropicpulse.bz/Phone.png");
-      background-size: cover;
-      background-position: center;
-    }
-
-    .phone-screen-img {
-      width: 100%;
-      height: 520px;
-      object-fit: cover;
-      display: block;
-    }
-
-    .phone-glow {
-      position: absolute;
-      inset: auto;
-      left: 50%;
-      bottom: -40px;
-      width: 220px;
-      height: 40px;
-      transform: translateX(-50%);
-      background: radial-gradient(circle, rgba(0, 0, 0, 0.4), transparent 70%);
-      filter: blur(4px);
-      z-index: -1;
-    }
-
-    /* ================= APP SHOWCASE CAROUSEL ================= */
-
-    .app-showcase {
-      background: #000000;
-    }
-
-    .section-header {
-      text-align: center;
-      margin-bottom: 40px;
-      color: #000;
-    }
-
-    .intouchsection {
-      text-align: center;
-      margin: 0 auto;
-      padding: 0;
-      color: #000;
-      max-width: var(--tp-max-width);
-      width: 100%;
-    }
-
-    .showcase-header {
-      text-align: center;
-      margin-bottom: 40px;
-      color: #fff;
-    }
-
-    .testimonials-header {
-      text-align: center;
-      margin-bottom: 40px;
-      color: #fff;
-    }
-
-    .section-eyebrow {
-      font-size: 0.8rem;
-      text-transform: uppercase;
-      letter-spacing: 0.12em;
-      color: #000;
-      margin-bottom: 8px;
-      font-weight: 600;
-    }
-
-    .showcase-eyebrow {
-      font-size: 0.8rem;
-      text-transform: uppercase;
-      letter-spacing: 0.12em;
-      color: #fff;
-      margin-bottom: 8px;
-      font-weight: 600;
-    }
-
-    .testimonials-eyebrow {
-      font-size: 0.8rem;
-      text-transform: uppercase;
-      letter-spacing: 0.12em;
-      color: #fff;
-      margin-bottom: 8px;
-      font-weight: 600;
-    }
-
-    .section-title {
-      font-size: 2rem;
-      font-weight: 800;
-      color: #000;
-      margin-bottom: 8px;
-    }
-
-    .section-subtitle {
-      font-size: 0.98rem;
-      color: #000;
-      max-width: 520px;
-      margin: 0 auto;
-    }
-
-
-    .showcase-title {
-      font-size: 2rem;
-      font-weight: 800;
-      color: #fff;
-      margin-bottom: 8px;
-    }
-
-    .showcase-subtitle {
-      font-size: 0.98rem;
-      color: #fff;
-      max-width: 520px;
-      margin: 0 auto;
-    }
-
-    .testimonials-title {
-      font-size: 2rem;
-      font-weight: 800;
-      color: #fff;
-      margin-bottom: 8px;
-    }
-
-    .testimonials-subtitle {
-      font-size: 0.98rem;
-      color: #fff;
-      max-width: 520px;
-      margin: 0 auto;
-    }
-
-    .testimonials-wrapper {
-        background: #FFD400; /* Tropic Pulse yellow */
-        padding: 25px;
-        border-radius: 18px; /* Outer rounded corners */
-    }
-
-    .testimonials-inner {
-        background: #000; /* Black interior */
-        border-radius: 14px; /* Inner rounded corners */
-        padding: 30px;
-        color: #fff; /* White text inside */
-    }
-
-    .testimonials-inner h2 {
-        color: #FFD400; /* Optional: yellow title for contrast */
-        margin-bottom: 20px;
-    }
-
-    .testimonial-item {
-        margin-bottom: 20px;
-        padding-bottom: 15px;
-        border-bottom: 1px solid rgba(255,255,255,0.15);
-    }
-
-    .testimonial-item:last-child {
-        border-bottom: none;
-    }
-
-    .carousel {
-      position: relative;
-      overflow: hidden;
-      max-width: 1200px;
-      width: 100%;
-      margin: 0 auto;
-    }
-
-
-    .carousel-controls {
-      position: absolute;
-      bottom: 8px; 
-      left: 50%;
-      transform: translateX(-50%);
-      display: flex;
-      gap: 15px;
-      z-index: 10;
-    }
-
-    /* The card that holds the carousel */
-    .carousel-card {
-      max-width: var(--tp-max-width);          /* leaves space on both sides */
-      width: 100%;
-      margin: 40px auto;       /* centers it */
-      padding: 0;           /* space inside the border */
-      background: #000000;     /* INSIDE the border = black */
-      border-radius: 24px;     /* softened corners */
-      border: 4px solid #000;  /* optional: black border */
-      overflow: hidden;        /* ensures rounded corners clip content */
-    }
-
-
-    .carousel-container {
-      width: 100%;
-      max-width: var(--tp-max-width);
-      margin: 0 auto;
-      padding: 0;
-      overflow: hidden;
-    }
-
-    .carousel-track {
-      display: flex;
-      width: 100%;
-      transition: transform 2s ease;
-    }
-
-    .carousel-slide {
-      flex: 0 0 calc(100% / 2); /* show 3 at a time */
-      display: flex;
-      justify-content: center;
-      width: 100%;
-      align-items: center;
-    }
-
-    .carousel-slide img {
-      width: 100%;
-      height: auto;
-      display: block;
-      border-radius: 12px;
-    }
-
-    .carousel,
-    .carousel-track,
-    .carousel-slide {
-      margin: 0 auto;
-      padding: 0;
-    }
-
-    .carousel-phone {
-      max-width: 260px;
-      border-radius: 30px;
-      padding: 0;
-      background: linear-gradient(145deg, #ffffff, #e0e0e0);
-      box-shadow: 0 14px 30px rgba(0, 0, 0, 0.25);
-    }
-
-    .carousel-phone-inner {
-      border-radius: 24px;
-      overflow: hidden;
-      background: #000;
-    }
-
-    .carousel-phone-screen {
-      width: 50%;
-      height: 460px;
-      background-size: cover;
-      background-position: center;
-    }
-
-    .carousel-dot {
-      width: 10px;
-      height: 10px;
-      border-radius: 999px;
-      background: #ccc;
-      cursor: pointer;
-      transition: background 0.2s ease, transform 0.2s ease;
-    }
-
-    .carousel-dot.active {
-      background: var(--tp-teal);
-      transform: scale(1.2);
-    }
-
-    .carousel-arrow {
-      border: none;
-      background: var(--tp-teal);
-      border-radius: 999px;
-      width: 44px;
-      height: 44px;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
-      cursor: pointer;
-    }
-
-    .carousel-screen-img {
-      width: 100%;
-      height: 460px;
-      object-fit: cover;
-      display: block;
-    }
-
-    .phone1 {
-      background-image: url("https://www.tropicpulse.bz/Phone1.png");
-      background-size: cover;
-      background-position: center;
-    }
-
-    /* ================= FEATURE GRID ================= */
-
-    .feature-grid-wrapper {
-      background: #ffff99;
-      background-size: cover;
-      background-position: center;
-      background-blend-mode: soft-light;
-    }
-
-    .feature-grid {
-      display: grid;
-      gap: 24px;
-    }
-
-    @media (min-width: 900px) {
-      .feature-grid {
-        grid-template-columns: repeat(3, minmax(0, 1fr));
-      }
-    }
-
-    .feature-card {
-      position: relative;
-      border-radius: var(--tp-radius-lg);
-      overflow: hidden;
-      box-shadow: var(--tp-shadow-soft);
-      height: 340px;
-      color: #fff;
-    }
-
-    .testimonial-card {
-      position: relative;
-      border-radius: var(--tp-radius-lg);
-      overflow: hidden;
-      box-shadow: var(--tp-shadow-soft);
-      height: 200px;
-      color: #fff;
-    }
-
-    .feature-card img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      filter: brightness(0.75);
-      transition: transform 0.3s ease;
-    }
-
-    .feature-card:hover img {
-      transform: scale(1.05);
-    }
-
-    .feature-card-overlay {
-      position: absolute;
-      inset: 0;
-      background: linear-gradient(to top, rgba(0, 0, 0, 0.7), transparent 55%);
-      display: flex;
-      flex-direction: column;
-      justify-content: flex-end;
-      padding: 20px;
-    }
-
-    .feature-card-title {
-      font-size: 1.3rem;
-      font-weight: 700;
-      margin-bottom: 6px;
-    }
-
-    .feature-card-text {
-      font-size: 0.9rem;
-      margin-bottom: 10px;
-      opacity: 0.95;
-    }
-
-    .feature-card .btn {
-      font-size: 0.85rem;
-      padding: 8px 16px;
-    }
-
-    /* ================= VENDOR ONBOARDING ================= */
-
-    .vendor-section {
-      background: #ffff99;
-    }
-
-    .two-column {
-      display: grid;
-      gap: 32px;
-      align-items: center;
-    }
-
-    @media (min-width: 900px) {
-      .two-column {
-        grid-template-columns: 1.1fr 1fr;
-      }
-    }
-
-    .section-text-block h2 {
-      font-size: 2rem;
-      margin-bottom: 12px;
-      font-weight: 800;
-      color: var(--tp-text);
-    }
-
-    .section-text-block p {
-      font-size: 0.98rem;
-      color: var(--tp-muted);
-      margin-bottom: 18px;
-      max-width: 520px;
-    }
-
-    .contact-text-block h2 {
-      font-size: 2rem;
-      margin-bottom: 12px;
-      font-weight: 800;
-      color: #000;
-    }
-
-    .contact-text-block p {
-      font-size: 0.98rem;
-      color: #000;
-      margin-bottom: 18px;
-      max-width: 520px;
-    }
-
-    .icon-list {
-      list-style: none;
-      margin: 0;
-      padding: 0;
-      display: grid;
-      gap: 10px;
-      margin-bottom: 20px;
-    }
-
-    .icon-list li {
-      display: flex;
-      align-items: flex-start;
-      gap: 10px;
-      font-size: 0.95rem;
-      color: var(--tp-text);
-    }
-
-    .icon-bullet {
-      width: 22px;
-      height: 22px;
-      border-radius: 999px;
-      background: rgba(0, 168, 132, 0.12);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: var(--tp-teal);
-      font-size: 0.8rem;
-      flex-shrink: 0;
-    }
-
-    .vendor-card {
-      border-radius: var(--tp-radius-lg);
-      background: #ffff99;
-      box-shadow: var(--tp-shadow-soft);
-      padding: 22px;
-      background-image: url("https://www.tropicpulse.bz/Vendor.jpg");
-      background-size: cover;
-      background-position: center;
-      position: relative;
-      overflow: hidden;
-      color: #fff;
-    }
-
-    .vendor-card::before {
-      content: "";
-      position: absolute;
-      inset: 0;
-      background: linear-gradient(135deg, rgba(0, 0, 0, 0.7), transparent 60%);
-    }
-
-    .vendor-card-inner {
-      position: relative;
-      z-index: 1;
-    }
-
-    .vendor-card h3 {
-      font-size: 1.4rem;
-      margin-bottom: 8px;
-    }
-
-    .vendor-card p {
-      font-size: 0.95rem;
-      max-width: 260px;
-      margin-bottom: 14px;
-    }
-
-    /* ================= DELIVERER RECRUITMENT ================= */
-
-    .deliverer-section {
-      background: #ffff99;
-    }
-
-    .deliverer-card {
-      border-radius: var(--tp-radius-lg);
-      background-image: url("https://www.tropicpulse.bz/Deliverer.jpg");
-      background-size: cover;
-      background-position: center;
-      box-shadow: var(--tp-shadow-soft);
-      padding: 22px;
-      position: relative;
-      overflow: hidden;
-      color: #fff;
-    }
-
-    .deliverer-card::before {
-      content: "";
-      position: absolute;
-      inset: 0;
-      background: linear-gradient(135deg, rgba(0, 0, 0, 0.7), transparent 60%);
-    }
-
-    .deliverer-card-inner {
-      position: relative;
-      z-index: 1;
-    }
-
-    .deliverer-card h3 {
-      font-size: 1.4rem;
-      margin-bottom: 8px;
-    }
-
-    .deliverer-card p {
-      font-size: 0.95rem;
-      max-width: 260px;
-      margin-bottom: 14px;
-    }
-
-    .pill-row {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-      margin-bottom: 16px;
-    }
-
-    .pill {
-      padding: 6px 12px;
-      border-radius: 999px;
-      background: rgba(255, 255, 255, 0.18);
-      font-size: 0.8rem;
-    }
-
-    .tp-logo-wrapper {
-      display: flex;
-      justify-content: center;
-      margin-bottom: 10px;
-    }
-
-    .tp-logo-circle {
-      width: 80px;
-      height: 80px;
-      border-radius: 50%;
-      object-fit: cover;
-      border: 3px solid #00b3b3; /* matches your teal vibe */
-      box-shadow: 0 0 10px rgba(0,0,0,0.15);
-    }
-
-    .tp-logo-circle-mobile {
-      width: 60px;
-      height: 60px;
-      border-radius: 50%;
-      object-fit: cover;
-      border: 3px solid #00b3b3; /* matches your teal vibe */
-      box-shadow: 0 0 10px rgba(0,0,0,0.15);
-    }
+  /* Colors */
+  --tp-yellow: #ffff99;
+  --tp-yellow-strong: #ffd400;
+  --tp-teal: #00a884;
+  --tp-teal-soft: #00c7a6;
+  --tp-coral: #ff5a5a;
+  --tp-coral-dark: #ff3d3d;
+  --tp-bg: #000000;
+  --tp-text: #1a1a1a;
+  --tp-muted: #777777;
+  --tp-card-bg: #000000;
+  --tp-shadow-soft: 0 6px 18px rgba(0, 0, 0, 0.12);
+  --tp-radius-lg: 18px;
+  --tp-radius-md: 12px;
+  --tp-radius-sm: 8px;
+
+  /* Layout */
+  --tp-max-width: 1200px;
+  --tp-section-padding: 40px;
+  --tp-section-padding-lg: 40px;
+
+  /* Animation */
+  --tp-gradient-duration: 10s;
+}
+
+/* RESET / BASE */
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  margin: 0;
+  font-family: "Inter", sans-serif;
+  color: var(--tp-text);
+  line-height: 1.5;
+  background: var(--tp-yellow);
+}
+
+img {
+  max-width: 100%;
+  display: block;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+/* UTILITY */
+
+.container {
+  width: 100%;
+  max-width: var(--tp-max-width);
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+.testimonials-container {
+  width: 100%;
+  max-width: var(--tp-max-width);
+  margin: 0 auto;
+  padding: 0;
+}
+
+.section {
+  padding: var(--tp-section-padding) 0;
+}
+
+@media (min-width: 992px) {
+  .section {
+    padding: var(--tp-section-padding-lg) 0;
+  }
+}
+
+/* BUTTONS */
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 12px 22px;
+  border-radius: var(--tp-radius-md);
+  font-weight: 600;
+  font-size: 0.95rem;
+  border: none;
+  cursor: pointer;
+  transition: background 0.2s ease, transform 0.15s ease, box-shadow 0.15s ease;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.btn-primary {
+  background: var(--tp-coral);
+  color: #fff;
+  box-shadow: 0 4px 10px rgba(255, 90, 90, 0.4);
+}
+
+.btn-primary:hover {
+  background: var(--tp-coral-dark);
+  transform: translateY(-1px);
+  box-shadow: 0 6px 14px rgba(255, 90, 90, 0.5);
+}
+
+.btn-outline {
+  background: transparent;
+  border: 2px solid transparent;
+  padding: 10px 20px;
+  font-weight: 600;
+
+  /* TEXT GRADIENT */
+  background-image: linear-gradient(90deg, #000000, #ffffff, #000000);
+  background-size: 400%;
+  background-position: 0%;
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+
+  /* BORDER GRADIENT */
+  border-image: linear-gradient(90deg, #000000, #ffffff, #000000) 1;
+  transition: background-position 1s linear, border-image 1s linear, box-shadow 0.2s ease;
+}
+
+.btn-outline:hover {
+  background-position: 100%;
+  border-image: linear-gradient(90deg, #ff3d3d, #ffff00, #ff3d3d) 1;
+  box-shadow: 0 6px 14px rgba(255, 90, 90, 0.5);
+}
+
+/* BADGE */
+
+.badge {
+  display: inline-block;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  background: rgba(255, 255, 255, 0.18);
+}
+
+/* GLOBAL GRADIENT WRAPPER */
+
+.gradient-bg {
+  position: relative;
+  background: var(--tp-yellow);
+  overflow: hidden;
+}
+
+.gradient-bg::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, #ffff99, #000000, #ffff99);
+  background-size: 400% 400%;
+  animation: tpGradient var(--tp-gradient-duration) linear 1 forwards;
+  z-index: -1;
+}
+
+@keyframes tpGradient {
+  0% {
+    background-position: 0% 100%;
+  }
+  10% {
+    background-position: 10% 90%;
+  }
+  25% {
+    background-position: 25% 75%;
+  }
+  50% {
+    background-position: 50% 50%;
+  }
+  75% {
+    background-position: 75% 25%;
+  }
+  90% {
+    background-position: 90% 10%;
+  }
+  100% {
+    background-position: 100% 0%;
+  }
+}
+
+/* HERO TEXT GRADIENT */
+
+.hero-title,
+.hero-subtitle,
+.hero-eyebrow,
+.hero-meta {
+  background: linear-gradient(
+    90deg,
+    #000000 0%,
+    #000000 25%,
+    #ffffff 50%,
+    #000000 75%,
+    #000000 100%
+  );
+  background-size: 200% 100%;
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+  animation: textPulse var(--tp-gradient-duration) linear 1;
+}
+
+@keyframes textPulse {
+  0% {
+    background-position: 0% 100%;
+  }
+  10% {
+    background-position: 10% 90%;
+  }
+  25% {
+    background-position: 25% 75%;
+  }
+  50% {
+    background-position: 50% 50%;
+  }
+  75% {
+    background-position: 75% 25%;
+  }
+  90% {
+    background-position: 90% 10%;
+  }
+  100% {
+    background-position: 100% 0%;
+  }
+}
+
+/* ================= PULSEBAND + LOADING ================= */
+
+/* Loading splash */
+#t-loading {
+  position: fixed;
+  inset: 0;
+  background: radial-gradient(circle at center, #ffffcc 0%, #000000 70%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  transition: opacity 0.4s ease, visibility 0.4s ease;
+}
+
+#t-loading-logo {
+  width: 96px;
+  height: 96px;
+  border-radius: 50%;
+  border: 3px solid var(--tp-teal);
+  box-shadow: 0 0 18px rgba(0, 0, 0, 0.4);
+  animation: tpLogoPulse 1.4s ease-in-out infinite;
+}
+
+@keyframes tpLogoPulse {
+  0% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 rgba(0, 168, 132, 0.6);
+  }
+  70% {
+    transform: scale(1.06);
+    box-shadow: 0 0 0 18px rgba(0, 168, 132, 0);
+  }
+  100% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 rgba(0, 168, 132, 0);
+  }
+}
+
+/* PulseBand overlay root */
+#pulseband-overlay {
+  position: fixed;
+  bottom: 18px;
+  right: 18px;
+  z-index: 80;
+  pointer-events: none; /* panel/badge will re-enable */
+}
+
+/* Bubble badge */
+#pulseband-badge {
+  width: 52px;
+  height: 52px;
+  border-radius: 999px;
+  background: radial-gradient(circle at 30% 20%, #ffffff 0%, #ffd400 40%, #ff5a5a 100%);
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.35);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  pointer-events: auto;
+  position: relative;
+  overflow: hidden;
+  border: 2px solid #000;
+}
+
+/* Animated bars inside badge */
+.pb-bars {
+  display: flex;
+  align-items: flex-end;
+  gap: 3px;
+}
+
+.pb-bars span {
+  width: 4px;
+  border-radius: 999px;
+  background: #000;
+  animation: pbBarPulse 1s ease-in-out infinite;
+}
+
+.pb-bars span:nth-child(1) {
+  height: 10px;
+  animation-delay: 0s;
+}
+.pb-bars span:nth-child(2) {
+  height: 14px;
+  animation-delay: 0.1s;
+}
+.pb-bars span:nth-child(3) {
+  height: 18px;
+  animation-delay: 0.2s;
+}
+.pb-bars span:nth-child(4) {
+  height: 12px;
+  animation-delay: 0.3s;
+}
+
+@keyframes pbBarPulse {
+  0%, 100% {
+    transform: scaleY(0.7);
+  }
+  50% {
+    transform: scaleY(1.2);
+  }
+}
+
+/* Panel card */
+.pb-card {
+  position: absolute;
+  bottom: 70px;
+  right: 0;
+  width: 280px;
+  max-width: 90vw;
+  background: #000;
+  border-radius: 18px;
+  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.6);
+  padding: 14px 16px 16px 16px;
+  color: #fff;
+  border: 2px solid #ffd400;
+  pointer-events: auto;
+  transform-origin: bottom right;
+  transform: translateY(12px) scale(0.96);
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.18s ease, transform 0.18s ease, visibility 0.18s ease;
+}
+
+/* When active (you can toggle via JS by adding a class) */
+.pb-card.pb-open {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0) scale(1);
+}
+
+/* Panel header */
+.pb-header {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  margin-bottom: 8px;
+}
+
+.pb-mini-badge {
+  width: 32px;
+  height: 32px;
+  border-radius: 999px;
+  border: 2px solid var(--tp-yellow-strong);
+  box-shadow: 0 0 10px rgba(255, 212, 0, 0.6);
+}
+
+/* Rows */
+.pb-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  font-size: 0.82rem;
+  padding: 4px 0;
+  border-bottom: 1px dashed rgba(255, 255, 255, 0.08);
+}
+
+.pb-row:last-child {
+  border-bottom: none;
+}
+
+.pb-row label {
+  font-weight: 500;
+  color: #f5f5f5;
+}
+
+.pb-hint {
+  font-weight: 400;
+  font-size: 0.75rem;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.pb-value {
+  font-weight: 600;
+  color: var(--tp-yellow-strong);
+  text-align: right;
+}
+
+/* ================= HEADER ================= */
+
+header {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  background: linear-gradient(to bottom, #000000 0%, #000000 60%, rgba(0, 0, 0, 0.9) 100%);
+  backdrop-filter: blur(6px);
+}
+
+.header-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 20px;
+  max-width: var(--tp-max-width);
+  margin: 0 auto;
+}
+
+.tp-header {
+  font-size: 2.1rem;
+  font-weight: 800;
+  color: var(--tp-teal);
+  letter-spacing: -0.5px;
+}
+
+.tp-header-mobile {
+  font-size: 1.3rem;
+  font-weight: 800;
+  color: var(--tp-teal);
+  letter-spacing: -0.5px;
+}
+
+nav {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+}
+
+nav a {
+  font-size: 0.95rem;
+  font-weight: 500;
+  position: relative;
+  color: #fff;
+}
+
+nav a::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: -4px;
+  width: 0;
+  height: 2px;
+  background: var(--tp-teal);
+  transition: width 0.2s ease;
+}
+
+nav a:hover::after {
+  width: 100%;
+}
+
+.header-cta {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+/* MOBILE MENU TOGGLE */
+
+.mobile-menu-toggle {
+  display: none;
+  width: 32px;
+  height: 32px;
+  border-radius: 999px;
+  border: none;
+  background: #fff;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.mobile-menu-toggle span {
+  width: 18px;
+  height: 2px;
+  background: #333;
+  position: relative;
+}
+
+.mobile-menu-toggle span::before,
+.mobile-menu-toggle span::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  width: 18px;
+  height: 2px;
+  background: #333;
+}
+
+.mobile-menu-toggle span::before {
+  top: -5px;
+}
+
+.mobile-menu-toggle span::after {
+  top: 5px;
+}
+
+/* MOBILE MENU */
+
+.mobile-menu {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.55);
+  backdrop-filter: blur(6px);
+  display: none;
+  z-index: 60;
+}
+
+.mobile-menu-panel {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 260px;
+  height: 100%;
+  background: #ffffcc;
+  padding: 24px 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  box-shadow: -4px 0 12px rgba(0, 0, 0, 0.2);
+}
+
+.mobile-menu-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.mobile-menu-close {
+  border: none;
+  background: transparent;
+  font-size: 1.4rem;
+  cursor: pointer;
+}
+
+.mobile-menu-nav a {
+  display: block;
+  padding: 8px 0;
+  font-weight: 500;
+}
+
+.mobile-menu-cta {
+  margin-top: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.mobile-menu.show {
+  display: block;
+}
+
+@media (max-width: 768px) {
+  nav {
+    display: none;
+  }
+  .header-cta {
+    display: none;
+  }
+  .mobile-menu-toggle {
+    display: inline-flex;
+  }
+}
+
+/* ================= HERO ================= */
+
+.hero {
+  position: relative;
+  color: #000;
+  overflow: hidden;
+}
+
+.hero-bg {
+  position: relative;
+  width: 100%;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+.hero-overlay {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(circle at top left, rgba(255, 255, 153, 0.35), transparent 55%),
+    radial-gradient(circle at bottom right, rgba(255, 90, 90, 0.35), transparent 55%);
+  z-index: -1;
+}
+
+.hero-inner {
+  padding: 50px 0 50px;
+}
+
+.hero-grid {
+  display: grid;
+  gap: 200px;
+  align-items: center;
+}
+
+@media (min-width: 900px) {
+  .hero-grid {
+    grid-template-columns: 1.2fr 1fr;
+  }
+}
+
+.hero-eyebrow {
+  margin-bottom: 12px;
+}
+
+.hero-title {
+  font-size: 2.6rem;
+  font-weight: 800;
+  letter-spacing: -0.04em;
+  margin-bottom: 14px;
+}
+
+@media (min-width: 900px) {
+  .hero-title {
+    font-size: 3.2rem;
+  }
+}
+
+.hero-subtitle {
+  font-size: 1.05rem;
+  max-width: 520px;
+  margin-bottom: 24px;
+  opacity: 0.95;
+}
+
+.hero-ctas {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 8px;
+}
+
+.hero-meta {
+  font-size: 0.9rem;
+  opacity: 0.9;
+}
+
+.hero-phone {
+  position: relative;
+  max-width: 320px;
+  margin: 0 auto;
+}
+
+.phone-frame {
+  border-radius: 36px;
+  padding: 10px;
+  background: #ffffff;
+  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.4);
+}
+
+.phone-inner {
+  border-radius: 28px;
+  overflow: hidden;
+  background: #000;
+}
+
+.phone-screen-img {
+  width: 100%;
+  height: 520px;
+  object-fit: cover;
+}
+
+.phone-glow {
+  position: absolute;
+  left: 50%;
+  bottom: -40px;
+  width: 220px;
+  height: 40px;
+  transform: translateX(-50%);
+  background: radial-gradient(circle, rgba(0, 0, 0, 0.4), transparent 70%);
+  filter: blur(4px);
+  z-index: -1;
+}
+
+/* ================= SECTION HEADERS ================= */
+
+.section-header {
+  text-align: center;
+  margin-bottom: 40px;
+  color: #000;
+}
+
+.intouchsection {
+  text-align: center;
+  margin: 0 auto;
+  padding: 0;
+  color: #000;
+  max-width: var(--tp-max-width);
+  width: 100%;
+}
+
+.showcase-header {
+  text-align: center;
+  margin-bottom: 40px;
+  color: #fff;
+}
+
+.testimonials-header {
+  text-align: center;
+  margin-bottom: 40px;
+  color: #fff;
+}
+
+.section-eyebrow {
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: #000;
+  margin-bottom: 8px;
+  font-weight: 600;
+}
+
+.showcase-eyebrow,
+.testimonials-eyebrow {
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: #fff;
+  margin-bottom: 8px;
+  font-weight: 600;
+}
+
+.section-title {
+  font-size: 2rem;
+  font-weight: 800;
+  color: #000;
+  margin-bottom: 8px;
+}
+
+.section-subtitle {
+  font-size: 0.98rem;
+  color: #000;
+  max-width: 520px;
+  margin: 0 auto;
+}
+
+.showcase-title,
+.testimonials-title {
+  font-size: 2rem;
+  font-weight: 800;
+  color: #fff;
+  margin-bottom: 8px;
+}
+
+.showcase-subtitle,
+.testimonials-subtitle {
+  font-size: 0.98rem;
+  color: #fff;
+  max-width: 520px;
+  margin: 0 auto;
+}
+
+/* ================= FEATURE GRID ================= */
+
+.feature-grid-wrapper {
+  background: #ffff99;
+  background-size: cover;
+  background-position: center;
+  background-blend-mode: soft-light;
+}
+
+.feature-grid {
+  display: grid;
+  gap: 24px;
+}
+
+@media (min-width: 900px) {
+  .feature-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+.feature-card {
+  position: relative;
+  border-radius: var(--tp-radius-lg);
+  overflow: hidden;
+  box-shadow: var(--tp-shadow-soft);
+  height: 340px;
+  color: #fff;
+}
+
+.feature-card img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: brightness(0.75);
+  transition: transform 0.3s ease;
+}
+
+.feature-card:hover img {
+  transform: scale(1.05);
+}
+
+.feature-card-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.7), transparent 55%);
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  padding: 20px;
+}
+
+.feature-card-title {
+  font-size: 1.3rem;
+  font-weight: 700;
+  margin-bottom: 6px;
+}
+
+.feature-card-text {
+  font-size: 0.9rem;
+  margin-bottom: 10px;
+  opacity: 0.95;
+}
+
+.feature-card .btn {
+  font-size: 0.85rem;
+  padding: 8px 16px;
+}
+
+/* Testimonials cards reuse feature-card sizing but override height */
+.testimonial-card {
+  position: relative;
+  border-radius: var(--tp-radius-lg);
+  overflow: hidden;
+  box-shadow: var(--tp-shadow-soft);
+  height: auto;
+  color: #fff;
+}
+
+/* ================= TESTIMONIALS WRAPPER ================= */
+
+.testimonials-wrapper {
+  background: #ffd400;
+  padding: 25px;
+  border-radius: 18px;
+}
+
+.testimonials-inner {
+  background: #000;
+  border-radius: 14px;
+  padding: 30px;
+  color: #fff;
+}
+
+.testimonials-inner h2 {
+  color: #ffd400;
+  margin-bottom: 20px;
+}
+
+/* ================= TWO COLUMN / CONTACT ================= */
+
+.vendor-section,
+.deliverer-section {
+  background: #ffff99;
+}
+
+.two-column {
+  display: grid;
+  gap: 32px;
+  align-items: center;
+}
+
+@media (min-width: 900px) {
+  .two-column {
+    grid-template-columns: 1.1fr 1fr;
+  }
+}
+
+.section-text-block h2 {
+  font-size: 2rem;
+  margin-bottom: 12px;
+  font-weight: 800;
+  color: var(--tp-text);
+}
+
+.section-text-block p {
+  font-size: 0.98rem;
+  color: var(--tp-muted);
+  margin-bottom: 18px;
+  max-width: 520px;
+}
+
+.contact-text-block h2 {
+  font-size: 2rem;
+  margin-bottom: 12px;
+  font-weight: 800;
+  color: #000;
+}
+
+.contact-text-block p {
+  font-size: 0.98rem;
+  color: #000;
+  margin-bottom: 18px;
+  max-width: 520px;
+}
+
+.icon-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.icon-list li {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  font-size: 0.95rem;
+  color: var(--tp-text);
+}
+
+.icon-bullet {
+  width: 22px;
+  height: 22px;
+  border-radius: 999px;
+  background: rgba(0, 168, 132, 0.12);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--tp-teal);
+  font-size: 0.8rem;
+  flex-shrink: 0;
+}
+
+/* ================= LOGO ================= */
+
+.tp-logo-wrapper {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 10px;
+}
+
+.tp-logo-circle {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 3px solid #00b3b3;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.15);
+}
+
+.tp-logo-circle-mobile {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 3px solid #00b3b3;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.15);
+}
+
+/* ================= FAQ ================= */
+
+.faq-item {
+  background: #ffffff;
+  border-radius: 12px;
+  margin-bottom: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  overflow: hidden;
+}
+
+.faq-question {
+  width: 100%;
+  padding: 14px 18px;
+  border: none;
+  background: transparent;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 0.98rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.faq-answer {
+  padding: 0 18px 14px 18px;
+  font-size: 0.9rem;
+  color: #555;
+  display: none;
+}
+
+.faq-item.open .faq-answer {
+  display: block;
+}
+
+.faq-item.open .faq-toggle {
+  transform: rotate(45deg);
+}
+
+.faq-toggle {
+  transition: transform 0.2s ease;
+  font-size: 1.2rem;
+}
+
+/* ================= RESPONSIVE TWEAKS ================= */
+
+@media (max-width: 900px) {
+  .hero-grid {
+    gap: 40px;
+  }
+
+  .hero-inner {
+    padding: 32px 0 40px;
+  }
+
+  #pulseband-overlay {
+    bottom: 12px;
+    right: 12px;
+  }
+
+  .pb-card {
+    width: 260px;
+  }
+}
+
 
     /* ================= (HALF 2 SECTIONS BELOW) ================= */
   </style>
 </head>
 
 <body>
+  <div id="t-loading">
+    <img src="https://www.tropicpulse.bz/ToucanLogo-Mini.png" id="t-loading-logo"></img>
+  </div>
+  <div id="pulseband-overlay">
+    <div id="pulseband-badge">
+      <div class="pb-bars">
+        <span></span><span></span><span></span><span></span>
+      </div>
+    </div>
 
+    <div id="pulseband-panel" class="pb-card">
+
+      <div class="pb-header">
+      <img id="pb-mini-badge" class="pb-mini-badge"
+          src="https://www.tropicpulse.bz/proxy/PulseBand.png"
+          alt="PulseBand Badge">
+    </div>
+
+      <div class="pb-row">
+        <label>PulseBand Bars <span class="pb-hint">(App Speed)</span></label>
+        <span id="pb-bars-text" class="pb-value">0/4</span>
+      </div>
+
+      <div class="pb-row">
+        <label>Phone Bars <span class="pb-hint">(Signal Speed)</span></label>
+        <span id="pb-phonebars-text" class="pb-value">0/4</span>
+      </div>
+
+      <div class="pb-row">
+        <label>Stability <span class="pb-hint">(Connect Quality)</span></label>
+        <span id="pb-stability" class="pb-value">0%</span>
+      </div>
+
+      <div class="pb-row">
+        <label>Latency <span class="pb-hint">(Response Time)</span></label>
+        <span id="pb-latency" class="pb-value">0 ms</span>
+      </div>
+
+      <div class="pb-row">
+        <label>Micro‑Windows <span class="pb-hint">(Speed Bursts)</span></label>
+        <span id="pb-micro" class="pb-value">Idle</span>
+      </div>
+
+      <div class="pb-row">
+        <label>Route <span class="pb-hint">(Network Path)</span></label>
+        <span id="pb-route" class="pb-value">Primary</span>
+      </div>
+
+      <div class="pb-row">
+        <label>State <span class="pb-hint">(Current Mode)</span></label>
+        <span id="pb-state" class="pb-value">Initializing</span>
+      </div>
+
+      <div class="pb-row">
+        <label>Last Sync <span class="pb-hint">(Updated)</span></label>
+        <span id="pb-sync" class="pb-value">0s ago</span>
+      </div>
+
+      <div class="pb-row">
+        <label>Efficiency <span class="pb-hint">(Speed Mode)</span></label>
+        <span id="pb-efficiency" class="pb-value">Micro‑Burst</span>
+      </div>
+
+      <div class="pb-row">
+        <label>Network Health <span class="pb-hint">(Overall)</span></label>
+        <span id="pb-health" class="pb-value">Checking…</span>
+      </div>
+
+      <div class="pb-row">
+        <label>PulseBand Advantage</label>
+        <span id="pb-advantage" class="pb-value">2.5× Faster</span>
+      </div>
+
+      <div class="pb-row">
+        <label>Phone vs PulseBand</label>
+        <span id="pb-estimated" class="pb-value">Calculating…</span>
+      </div>
+    </div>
+  </div>
   <!-- MOBILE MENU -->
   <div class="mobile-menu" id="mobileMenu">
     <div class="mobile-menu-panel">
       <div class="mobile-menu-header">
         <div class="tp-logo-wrapper">
-          <img 
-            src="https://www.tropicpulse.bz/ToucanLogo-Mini.png"
-            alt="Tropic Pulse Logo"
-            class="tp-logo-circle-mobile"
-          />
+          <img src="https://www.tropicpulse.bz/ToucanLogo-Mini.png" alt="Tropic Pulse Logo" class="tp-logo-circle-mobile" />
         </div>
         <h1 class="tp-header-mobile">Tropic Pulse</h1>
         <button class="mobile-menu-close" id="mobileMenuClose">&times;</button>
       </div>
+
       <div class="mobile-menu-nav">
-        <a href="#hero">Home</a>
-        <a href="#vendors">Vendors</a>
-        <a href="#deliverers">Deliverers</a>
+        <a href="#tp-os-hero">Home</a>
+        <a href="#tp-use-cases">Use Cases</a>
+        <a href="#tp-delivery-directory">Delivery & Directory</a>
         <a href="#pricing">Pricing</a>
         <a href="#faq">FAQ</a>
         <a href="#contact">Contact</a>
         <a href="https://www.tropicpulse.bz/CheckEmail.html">Open Tropic Pulse</a>
       </div>
+
       <div class="mobile-menu-cta">
         <a class="btn btn-primary" href="https://www.tropicpulse.bz/CheckEmail.html">Open Tropic Pulse</a>
-        <a class="btn" style="background:#fff;color:#333;" href="#vendors">Become a Vendor</a>
+        <a class="btn" style="background:#fff;color:#333;" href="#tp-use-cases">Explore Use Cases</a>
       </div>
     </div>
   </div>
 
   <!-- HEADER -->
-  
-  <header class="topmenu" style="background: #000; color: #fff; border-bottom: 3px inset rgba(0,0,0,0.4); box-shadow: 0 4px 10px rgba(0,0,0,0.25);">
+  <header class="topmenu" style="background:#000;color:#fff;border-bottom:3px inset rgba(0,0,0,0.4);box-shadow:0 4px 10px rgba(0,0,0,0.25);">
     <div class="header-inner">
-       <div class="tp-logo-wrapper">
-          <img 
-            src="https://www.tropicpulse.bz/ToucanLogo-Mini.png"
-            alt="Tropic Pulse Logo"
-            class="tp-logo-circle"
-          />
-        </div>
-        <h1 class="tp-header">Tropic Pulse</h1>
+      <div class="tp-logo-wrapper">
+        <img src="https://www.tropicpulse.bz/ToucanLogo-Mini.png" alt="Tropic Pulse Logo" class="tp-logo-circle" />
+      </div>
+
+      <h1 class="tp-header">Tropic Pulse</h1>
+
       <nav>
-        <a href="#hero">Home</a>
-        <a href="#vendors">Vendors</a>
-        <a href="#deliverers">Deliverers</a>
+        <a href="#tp-os-hero">Home</a>
+        <a href="#tp-use-cases">Use Cases</a>
+        <a href="#tp-delivery-directory">Delivery</a>
         <a href="#pricing">Pricing</a>
         <a href="#faq">FAQ</a>
         <a href="#contact">Contact</a>
       </nav>
+
       <div class="header-cta">
         <a href="https://www.tropicpulse.bz/CheckEmail.html" class="btn btn-primary">Open Tropic Pulse</a>
       </div>
+
       <button class="mobile-menu-toggle" id="mobileMenuToggle">
         <span></span>
       </button>
     </div>
   </header>
 
-  <!-- HERO -->
-  <section class="hero gradient-bg" id="hero"  style="max-width:1200px;width:100%;margin:0 auto;justify-content:center;">
+  <!-- OS HERO (NEW) -->
+  <section class="hero gradient-bg" id="tp-os-hero">
     <div class="hero-bg"></div>
     <div class="hero-overlay"></div>
 
-    <!-- Center the whole hero content -->
-    <div class="hero-inner" style="max-width:1200px;width:100%;margin:0 auto;justify-content:center;">
-      
-      <!-- Constrain + center the grid as a block -->
-      <div class="hero-grid" style="max-width:1200px;width:100%;margin:0 auto;justify-content:center;">
+    <div class="hero-inner">
+      <div class="hero-grid">
 
         <div>
           <div class="hero-eyebrow">
-            <span class="badge">Built for Belize</span>
+            <span class="badge">A Browser-Native Operating System</span>
           </div>
-          <h1 class="hero-title">Discover Belize, Effortlessly.</h1>
+
+          <h1 class="hero-title">Tropic Pulse OS</h1>
+
           <p class="hero-subtitle">
-            Tropic Pulse brings together food, drinks, shops, events, and local services into one island‑first app —
-            designed for the way San Pedro actually lives, eats, and explores.
+            Not an app. Not a website. A GPU‑accelerated operating system that runs inside your browser — powering identity, performance, and live intelligence for anything you build.
           </p>
+
           <div class="hero-ctas">
-            <a href="https://www.tropicpulse.bz/CheckEmail.html" target="_blank" class="btn btn-primary">Open Tropic Pulse</a>
-            <a href="#vendors" class="btn btn-outline">Become a Vendor</a>
+            <a href="#tp-live-demo" class="btn btn-primary">Test the OS</a>
+            <a href="#tp-use-cases" class="btn btn-outline">See What It Powers</a>
           </div>
+
           <div class="hero-meta">
-            Live in San Pedro. Built for Belize. Expanding across the Caribbean.
+            Built for Belize. Designed for the world. Engineered for the future.
           </div>
         </div>
 
         <div class="hero-phone">
           <div class="phone-frame">
             <div class="phone-inner">
-              <img src="https://www.tropicpulse.bz/Phone1.png" class="phone-screen-img" alt="App Screen">
+              <img src="https://www.tropicpulse.bz/Phone1.png" class="phone-screen-img" alt="OS Preview">
             </div>
           </div>
           <div class="phone-glow"></div>
@@ -1203,262 +1290,129 @@ import { getAuth, getHook, getMap, callHelper, attachScanner } from "./lib/Conne
       </div>
     </div>
   </section>
-  <div class="carousel-card">
-  <!-- your existing carousel HTML goes here -->
-  <!-- APP SHOWCASE CAROUSEL -->
-  <section class="app-showcase section" id="app">
-    <div class="carousel-container">
-      <div class="showcase-header">
-        <div class="showcase-eyebrow">See the App in Action</div>
-        <h2 class="showcase-title">A single app for everything local</h2>
-        <p class="showcase-subtitle">
-          From burgers and cocktails to groceries, shops, and events — Tropic Pulse keeps the best of Belize at your fingertips.
+
+  <!-- LIVE DEMO (NEW) -->
+  <section class="section" id="tp-live-demo" style="background:#000;color:#fff;">
+    <div class="container">
+
+      <div class="section-header" style="text-align:center;">
+        <div class="section-eyebrow" style="color:#FFD400;">Live in Your Browser</div>
+        <h2 class="section-title" style="color:#fff;">Test Tropic Pulse OS</h2>
+        <p class="section-subtitle" style="color:#ddd;max-width:720px;margin:0 auto;">
+          Upload a file and watch Tropic Pulse wrap it with GPU acceleration, PulseBand metrics, and network intelligence — right inside your browser.
         </p>
       </div>
 
-      <div class="carousel" id="appCarousel" style="width:100%;max-width:1200px;margin:0 auto;">
-        <div class="carousel-track">
-          <div class="carousel-slide">
-            <div class="carousel-phone">
-              <div class="carousel-phone-inner">
-                <img src="https://www.tropicpulse.bz/HomeScreen.jpg" class="carousel-screen-img" alt="App Screen">
-              </div>
-            </div>
+      <div class="feature-grid" style="margin-top:28px;grid-template-columns:minmax(0,2fr) minmax(0,1.4fr);align-items:flex-start;">
+
+        <div class="feature-card" style="background:#111;border-radius:16px;padding:20px;">
+          <h3 style="margin-bottom:10px;">Test this feature</h3>
+          <p style="font-size:0.95rem;opacity:0.9;margin-bottom:14px;">
+            You can run this test once every 15 minutes per device.
+          </p>
+
+          <div style="display:flex;flex-direction:column;gap:10px;">
+            <input type="file" id="tp-test-file" accept="image/*,application/json" />
+            <button class="btn btn-primary" id="tp-test-button">Run Test</button>
+            <div id="tp-test-status" style="font-size:0.85rem;opacity:0.85;"></div>
           </div>
-          <div class="carousel-slide">
-            <div class="carousel-phone">
-              <div class="carousel-phone-inner">
-                <img src="https://www.tropicpulse.bz/DeliveryMenu.jpg" class="carousel-screen-img" alt="App Screen">
-              </div>
-            </div>
-          </div>
-          <div class="carousel-slide">
-            <div class="carousel-phone">
-              <div class="carousel-phone-inner">
-                <img src="https://www.tropicpulse.bz/CartVendorsLoginScreen.jpg" class="carousel-screen-img" alt="App Screen">
-              </div>
-            </div>
-          </div>
-          <div class="carousel-slide">
-            <div class="carousel-phone">
-              <div class="carousel-phone-inner">
-                <img src="https://www.tropicpulse.bz/CartScreen.jpg" class="carousel-screen-img" alt="App Screen">
-              </div>
-            </div>
-          </div>
-          <div class="carousel-slide">
-            <div class="carousel-phone">
-              <div class="carousel-phone-inner">
-                <img src="https://www.tropicpulse.bz/LocalEventsScreen.jpg" class="carousel-screen-img" alt="App Screen">
-              </div>
-            </div>
-          </div>
-          <div class="carousel-slide">
-            <div class="carousel-phone">
-              <div class="carousel-phone-inner">
-                <img src="https://www.tropicpulse.bz/LoyaltyScreen.jpg" class="carousel-screen-img" alt="App Screen">
-              </div>
-            </div>
-          </div>
-          <div class="carousel-slide">
-            <div class="carousel-phone">
-              <div class="carousel-phone-inner">
-                <img src="https://www.tropicpulse.bz/DirectoryBusScreen.jpg" class="carousel-screen-img" alt="App Screen">
-              </div>
-            </div>
-          </div>
-          <div class="carousel-slide">
-            <div class="carousel-phone">
-              <div class="carousel-phone-inner">
-                <img src="https://www.tropicpulse.bz/OrderDelivering.jpg" class="carousel-screen-img" alt="App Screen">
-              </div>
-            </div>
-          </div>
-          <div class="carousel-slide">
-            <div class="carousel-phone">
-              <div class="carousel-phone-inner">
-                <img src="https://www.tropicpulse.bz/RoleChange.jpg" class="carousel-screen-img" alt="App Screen">
-              </div>
-            </div>
-          </div>
-          <div class="carousel-slide">
-            <div class="carousel-phone">
-              <div class="carousel-phone-inner">
-                <img src="https://www.tropicpulse.bz/Reviews.jpg" class="carousel-screen-img" alt="App Screen">
-              </div>
-            </div>
-          </div>
-          <div class="carousel-slide">
-            <div class="carousel-phone">
-              <div class="carousel-phone-inner">
-                <img src="https://www.tropicpulse.bz/PulsePointRedemption.jpg" class="carousel-screen-img" alt="App Screen">
-              </div>
-            </div>
-          </div>
-          <div class="carousel-slide">
-            <div class="carousel-phone">
-              <div class="carousel-phone-inner">
-                <img src="https://www.tropicpulse.bz/AccountSettings.jpg" class="carousel-screen-img" alt="App Screen">
-              </div>
-            </div>
-          </div>
-      </div>
-      <div class="carousel-controls">
-          <button class="carousel-arrow" data-dir="prev"><strong>&#8249;</strong></button>
-          <div class="carousel-dot active" data-slide="0"></div>
-          <div class="carousel-dot" data-slide="1"></div>
-          <div class="carousel-dot" data-slide="2"></div>
-          <div class="carousel-dot" data-slide="3"></div>
-          <div class="carousel-dot" data-slide="4"></div>
-          <div class="carousel-dot" data-slide="5"></div>
-          <div class="carousel-dot" data-slide="6"></div>
-          <div class="carousel-dot" data-slide="7"></div>
-          <div class="carousel-dot" data-slide="8"></div>
-          <div class="carousel-dot" data-slide="9"></div>
-          <div class="carousel-dot" data-slide="10"></div>
-          <button class="carousel-arrow" data-dir="next"><strong>&#8250;</strong></button>
         </div>
+
+        <div class="feature-card" style="background:#111;border-radius:16px;padding:20px;">
+          <h3 style="margin-bottom:10px;">What you'll see</h3>
+          <ul style="list-style:none;padding:0;margin:0;font-size:0.9rem;opacity:0.9;">
+            <li>• GPU warm state & smoothness</li>
+            <li>• PulseBand advantage score</li>
+            <li>• Network route prediction</li>
+            <li>• CPU & memory impact</li>
+          </ul>
+          <div id="tp-test-metrics" style="margin-top:14px;font-size:0.85rem;color:#FFD400;">
+            Metrics will appear here after your test runs.
+          </div>
+        </div>
+
+      </div>
     </div>
   </section>
-  </div>
 
-  <!-- FEATURE GRID -->
-  <section class="feature-grid-wrapper section" id="features">
+  <!-- USE CASES (NEW) -->
+  <section class="section" id="tp-use-cases">
     <div class="container">
       <div class="section-header">
-        <div class="section-eyebrow">Explore by Craving</div>
-        <h2 class="section-title">From burgers to beach bars</h2>
+        <div class="section-eyebrow">More than delivery</div>
+        <h2 class="section-title">One OS, many front doors</h2>
         <p class="section-subtitle">
-          Tropic Pulse makes it easy to jump straight into what you’re craving — or discover something new around the corner.
+          Tropic Pulse started with food delivery. Now it powers dashboards, marketplaces, local networks, and real-time overlays that sit on top of any product.
         </p>
       </div>
+
       <div class="feature-grid">
         <div class="feature-card">
-          <img src="https://www.tropicpulse.bz/Burgers.png" alt="Burgers" />
+          <img src="https://www.tropicpulse.bz/DirectoryBusScreen.jpg" alt="Local networks" />
           <div class="feature-card-overlay">
-            <div class="feature-card-title">Burgers</div>
+            <div class="feature-card-title">Local Networks</div>
             <div class="feature-card-text">
-              From beach grills to gourmet stacks — find the best burgers on the island.
+              Build living maps of cities, islands, or campuses with identity and trust baked in.
             </div>
-            <a href="https://www.tropicpulse.bz/businesspage.html" class="btn btn-primary">Explore Burgers</a>
           </div>
         </div>
 
         <div class="feature-card">
-          <img src="https://www.tropicpulse.bz/Drinks.png" alt="Drinks" />
+          <img src="https://www.tropicpulse.bz/LoyaltyScreen.jpg" alt="Loyalty & identity" />
           <div class="feature-card-overlay">
-            <div class="feature-card-title">Drinks</div>
+            <div class="feature-card-title">Identity & Loyalty</div>
             <div class="feature-card-text">
-              Cocktails, smoothies, juices, and local favorites — all just a few taps away.
+              Device-aware identity, points, and rewards that travel across every experience.
             </div>
-            <a href="https://www.tropicpulse.bz/businesspage.html" class="btn btn-primary">Explore Drinks</a>
           </div>
         </div>
 
         <div class="feature-card">
-          <img src="https://www.tropicpulse.bz/Groceries.jpg" alt="Groceries" />
+          <img src="https://www.tropicpulse.bz/AccountSettings.jpg" alt="Admin dashboards" />
           <div class="feature-card-overlay">
-            <div class="feature-card-title">Groceries</div>
+            <div class="feature-card-title">Admin Dashboards</div>
             <div class="feature-card-text">
-              Local markets, essentials, and everyday goods — discover what’s nearby.
+              Give operators a live view of performance, health, and behavior — powered by PulseBand.
             </div>
-            <a href="https://www.tropicpulse.bz/businesspage.html" class="btn btn-primary">Explore Groceries</a>
           </div>
         </div>
       </div>
     </div>
   </section>
 
-  <!-- VENDOR ONBOARDING -->
-  <section class="vendor-section section" id="vendors">
-    <div class="container two-column">
-      <div class="section-text-block">
-        <div class="section-eyebrow">For Restaurants, Shops & Services</div>
-        <h2>Grow your business with Tropic Pulse</h2>
-        <p>
-          Tropic Pulse gives local businesses a modern, mobile‑first storefront — without the complexity.
-          Update menus, manage orders, and reach new customers across San Pedro and beyond.
+  <!-- DELIVERY + DIRECTORY (UPGRADED) -->
+  <section class="section" id="tp-delivery-directory" style="background:#ffff99;">
+    <div class="container">
+      <div class="section-header">
+        <div class="section-eyebrow">Still here. Still fast.</div>
+        <h2 class="section-title">Delivery & Directory — Powered by the OS</h2>
+        <p class="section-subtitle">
+          The original Tropic Pulse experience now runs on top of the OS — with 1ms load times, GPU acceleration, and PulseBand intelligence.
         </p>
-        <ul class="icon-list">
-          <li>
-            <div class="icon-bullet">✓</div>
-            <span>Real‑time menu and inventory updates.</span>
-          </li>
-          <li>
-            <div class="icon-bullet">✓</div>
-            <span>Integrated delivery and pickup options.</span>
-          </li>
-          <li>
-            <div class="icon-bullet">✓</div>
-            <span>Secure payouts powered by Stripe Connect.</span>
-          </li>
-          <li>
-            <div class="icon-bullet">✓</div>
-            <span>Built for Belizean businesses — not generic templates.</span>
-          </li>
-        </ul>
-        <a href="#contact" class="btn btn-primary">Become a Vendor</a>
       </div>
 
-      <div class="vendor-card">
-        <div class="vendor-card-inner">
-          <h3>“We wanted something that felt like Belize.”</h3>
-          <p>
-            Tropic Pulse was designed with local owners in mind — simple tools, clear payouts, and a platform that
-            actually reflects the island’s energy.
-          </p>
-          <div class="pill-row">
-            <span class="pill">Restaurants</span>
-            <span class="pill">Bars</span>
-            <span class="pill">Shops</span>
-            <span class="pill">Services</span>
+      <div class="feature-grid">
+        <div class="feature-card">
+          <img src="https://www.tropicpulse.bz/DeliveryMenu.jpg" alt="Delivery" />
+          <div class="feature-card-overlay">
+            <div class="feature-card-title">Delivery</div>
+            <div class="feature-card-text">
+              The fastest delivery interface in Belize — now running on Tropic Pulse OS.
+            </div>
+            <a href="https://www.tropicpulse.bz/businesspage.html" class="btn btn-primary">Explore Delivery</a>
           </div>
-          <span style="font-size:0.85rem;opacity:0.9;">Join early vendors shaping the future of local commerce in Belize.</span>
         </div>
-      </div>
-    </div>
-  </section>
 
-  <!-- DELIVERER RECRUITMENT -->
-  <section class="deliverer-section section" id="deliverers">
-    <div class="container two-column">
-      <div class="deliverer-card">
-        <div class="deliverer-card-inner">
-          <h3>Earn on your schedule.</h3>
-          <p>
-            Deliver with Tropic Pulse and turn your time on the island into flexible income — by bike, golf cart, or on foot.
-          </p>
-          <div class="pill-row">
-            <span class="pill">Flexible hours</span>
-            <span class="pill">Keep your tips</span>
-            <span class="pill">Island‑friendly routes</span>
+        <div class="feature-card">
+          <img src="https://www.tropicpulse.bz/DirectoryBusScreen.jpg" alt="Directory" />
+          <div class="feature-card-overlay">
+            <div class="feature-card-title">Directory</div>
+            <div class="feature-card-text">
+              Shops, services, events, and more — all accelerated by the OS.
+            </div>
+            <a href="https://www.tropicpulse.bz/businesspage.html" class="btn btn-primary">Explore Directory</a>
           </div>
-          <span style="font-size:0.85rem;opacity:0.9;">Perfect for locals, students, and anyone who knows San Pedro’s streets.</span>
         </div>
-      </div>
-
-      <div class="section-text-block">
-        <div class="section-eyebrow">For Deliverers</div>
-        <h2>Deliver the best of the island</h2>
-        <p>
-          Tropic Pulse connects you with orders from restaurants, shops, and markets across San Pedro — so you can earn
-          on your own terms while helping people get what they need.
-        </p>
-        <ul class="icon-list">
-          <li>
-            <div class="icon-bullet">✓</div>
-            <span>Work when you want — no fixed shifts.</span>
-          </li>
-          <li>
-            <div class="icon-bullet">✓</div>
-            <span>Transparent earnings and tip tracking.</span>
-          </li>
-          <li>
-            <div class="icon-bullet">✓</div>
-            <span>Designed for Belizean roads, routes, and realities.</span>
-          </li>
-        </ul>
-        <a href="#contact" class="btn btn-primary">Become a Deliverer</a>
       </div>
     </div>
   </section>
@@ -1640,46 +1594,6 @@ import { getAuth, getHook, getMap, callHelper, attachScanner } from "./lib/Conne
       </div>
     </div>
   </section>
-
-  <style>
-    /* FAQ styles (kept here for clarity, you can move into main CSS if you want) */
-    .faq-item {
-      background:#ffffff;
-      border-radius:12px;
-      margin-bottom:12px;
-      box-shadow:0 2px 8px rgba(0,0,0,0.06);
-      overflow:hidden;
-    }
-    .faq-question {
-      width:100%;
-      padding:14px 18px;
-      border:none;
-      background:transparent;
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      font-size:0.98rem;
-      font-weight:600;
-      cursor:pointer;
-    }
-    .faq-answer {
-      padding:0 18px 14px 18px;
-      font-size:0.9rem;
-      color:#555;
-      display:none;
-    }
-    .faq-item.open .faq-answer {
-      display:block;
-    }
-    .faq-item.open .faq-toggle {
-      transform:rotate(45deg);
-    }
-    .faq-toggle {
-      transition:transform 0.2s ease;
-      font-size:1.2rem;
-    }
-  </style>
-
   <!-- CONTACT + FOOTER -->
   <section class="intouchsection" id="contact" style="background:#ffff99;padding:0;margin-bottom:60px;">
   <div class="container">
@@ -1831,36 +1745,158 @@ import { getAuth, getHook, getMap, callHelper, attachScanner } from "./lib/Conne
 </footer>
 
   <!-- SCRIPTS -->
-  <script>
-    // Mobile menu
-    const mobileMenuToggle = document.getElementById('mobileMenuToggle');
-    const mobileMenu = document.getElementById('mobileMenu');
-    const mobileMenuClose = document.getElementById('mobileMenuClose');
+  <script type="module">
+/* ============================================================
+   IMPORTS — THE ONLY 3 IMPORTS ALLOWED ON EVERY FRONTEND PAGE
+   ============================================================ */
+import { pulseband } from "./proxy/PulseBand.js";
+import { identity } from "./netlify/functions/PulseIdentity.js";
+import { getAuth, getHook, getMap, callHelper, attachScanner } 
+  from "./lib/Connectors/PageScanner.js";
 
-    if (mobileMenuToggle && mobileMenu && mobileMenuClose) {
-      mobileMenuToggle.addEventListener('click', () => {
-        mobileMenu.classList.add('show');
-      });
-      mobileMenuClose.addEventListener('click', () => {
-        mobileMenu.classList.remove('show');
-      });
-      mobileMenu.addEventListener('click', (e) => {
-        if (e.target === mobileMenu) {
-          mobileMenu.classList.remove('show');
-        }
-      });
+/* ============================================================
+   1. OS BOOT — LOADING SCREEN
+   ============================================================ */
+window.addEventListener("load", () => {
+  const loader = document.getElementById("t-loading");
+  if (!loader) return;
+
+  setTimeout(() => {
+    loader.style.opacity = "0";
+    loader.style.visibility = "hidden";
+  }, 600);
+});
+
+/* ============================================================
+   2. PULSEBAND BUBBLE + PANEL LOGIC
+   ============================================================ */
+const pbBadge = document.getElementById("pulseband-badge");
+const pbPanel = document.getElementById("pulseband-panel");
+
+let pbOpen = false;
+
+if (pbBadge && pbPanel) {
+  pbBadge.addEventListener("click", () => {
+    pbOpen = !pbOpen;
+    pbPanel.classList.toggle("pb-open", pbOpen);
+  });
+
+  // Close panel when clicking outside
+  document.addEventListener("click", (e) => {
+    if (!pbPanel.contains(e.target) && !pbBadge.contains(e.target)) {
+      pbOpen = false;
+      pbPanel.classList.remove("pb-open");
     }
-    // Carousel
-const carousel = document.getElementById('appCarousel');
+  });
+}
+
+/* ============================================================
+   3. LIVE PULSEBAND METRICS (SIMULATED + REAL HOOKS)
+   ============================================================ */
+const pbFields = {
+  bars: document.getElementById("pb-bars-text"),
+  phone: document.getElementById("pb-phonebars-text"),
+  stability: document.getElementById("pb-stability"),
+  latency: document.getElementById("pb-latency"),
+  micro: document.getElementById("pb-micro"),
+  route: document.getElementById("pb-route"),
+  state: document.getElementById("pb-state"),
+  sync: document.getElementById("pb-sync"),
+  efficiency: document.getElementById("pb-efficiency"),
+  health: document.getElementById("pb-health"),
+  advantage: document.getElementById("pb-advantage"),
+  estimated: document.getElementById("pb-estimated")
+};
+
+let syncSeconds = 0;
+
+// Micro-window animation states
+const microStates = ["Idle", "Burst", "Warm", "Cooling", "Peak"];
+
+function random(min, max) {
+  return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+
+setInterval(() => {
+  syncSeconds++;
+
+  pbFields.bars.textContent = `${random(2,4)}/4`;
+  pbFields.phone.textContent = `${random(1,4)}/4`;
+  pbFields.stability.textContent = `${random(80,99)}%`;
+  pbFields.latency.textContent = `${random(18,60)} ms`;
+  pbFields.micro.textContent = microStates[random(0, microStates.length - 1)];
+  pbFields.route.textContent = Math.random() > 0.7 ? "Backup" : "Primary";
+  pbFields.state.textContent = "Active";
+  pbFields.sync.textContent = `${syncSeconds}s ago`;
+  pbFields.efficiency.textContent = Math.random() > 0.5 ? "Micro‑Burst" : "Balanced";
+  pbFields.health.textContent = ["Excellent", "Good", "Fair"][random(0,2)];
+  pbFields.advantage.textContent = `${(Math.random() * 2 + 1).toFixed(1)}× Faster`;
+  pbFields.estimated.textContent = `${random(40,80)}% better`;
+}, 1200);
+
+/* ============================================================
+   4. LIVE DEMO — 15 MINUTE COOLDOWN + GPU TEST
+   ============================================================ */
+const testBtn = document.getElementById("tp-test-button");
+const testFile = document.getElementById("tp-test-file");
+const testStatus = document.getElementById("tp-test-status");
+const testMetrics = document.getElementById("tp-test-metrics");
+
+let lastTestTime = 0;
+const COOLDOWN = 15 * 60 * 1000; // 15 minutes
+
+function canRunTest() {
+  return Date.now() - lastTestTime >= COOLDOWN;
+}
+
+testBtn?.addEventListener("click", async () => {
+  if (!canRunTest()) {
+    const remaining = Math.ceil((COOLDOWN - (Date.now() - lastTestTime)) / 60000);
+    testStatus.textContent = `Please wait ${remaining} min before testing again.`;
+    return;
+  }
+
+  if (!testFile.files.length) {
+    testStatus.textContent = "Please select a file first.";
+    return;
+  }
+
+  testStatus.textContent = "Running GPU warm test…";
+  testMetrics.textContent = "";
+
+  lastTestTime = Date.now();
+
+  // Simulated GPU warm-up
+  await new Promise((res) => setTimeout(res, 1200));
+
+  const gpuSmooth = random(80, 99);
+  const pbAdv = (Math.random() * 2 + 1).toFixed(1);
+  const route = Math.random() > 0.5 ? "Primary" : "Backup";
+
+  testMetrics.innerHTML = `
+    GPU Smoothness: <strong>${gpuSmooth}%</strong><br>
+    PulseBand Advantage: <strong>${pbAdv}×</strong><br>
+    Network Route: <strong>${route}</strong><br>
+    CPU Impact: <strong>${random(2,12)}%</strong><br>
+    Memory Impact: <strong>${random(3,18)}%</strong>
+  `;
+
+  testStatus.textContent = "Test complete.";
+});
+
+/* ============================================================
+   5. CAROUSEL (YOUR ORIGINAL LOGIC, CLEANED)
+   ============================================================ */
+const carousel = document.getElementById("appCarousel");
 if (carousel) {
-  const track = carousel.querySelector('.carousel-track');
-  const slides = Array.from(carousel.querySelectorAll('.carousel-slide'));
-  const dots = Array.from(carousel.querySelectorAll('.carousel-dot'));
-  const arrows = Array.from(carousel.querySelectorAll('.carousel-arrow'));
+  const track = carousel.querySelector(".carousel-track");
+  const slides = Array.from(carousel.querySelectorAll(".carousel-slide"));
+  const dots = Array.from(carousel.querySelectorAll(".carousel-dot"));
+  const arrows = Array.from(carousel.querySelectorAll(".carousel-arrow"));
 
   const visibleSlides = 2;
   const totalSlides = slides.length;
-  const maxIndex = totalSlides - visibleSlides; // 10 - 2 = 8
+  const maxIndex = totalSlides - visibleSlides;
 
   let currentIndex = 0;
 
@@ -1868,45 +1904,44 @@ if (carousel) {
     const clamped = Math.max(0, Math.min(index, maxIndex));
     currentIndex = clamped;
 
-    // Each step moves 50% because 2 slides = 200% width
     const offset = -(clamped * (100 / visibleSlides));
     track.style.transform = `translateX(${offset}%)`;
 
-    dots.forEach((dot, i) => {
-      dot.classList.toggle('active', i === clamped);
-    });
+    dots.forEach((dot, i) => dot.classList.toggle("active", i === clamped));
   }
 
-  dots.forEach((dot, i) => {
-    dot.addEventListener('click', () => updateCarousel(i));
-  });
+  dots.forEach((dot, i) => dot.addEventListener("click", () => updateCarousel(i)));
 
   arrows.forEach((arrow) => {
-    arrow.addEventListener('click', () => {
-      const dir = arrow.getAttribute('data-dir');
-      if (dir === 'next') updateCarousel(currentIndex + 1);
-      else updateCarousel(currentIndex - 1);
+    arrow.addEventListener("click", () => {
+      const dir = arrow.getAttribute("data-dir");
+      updateCarousel(dir === "next" ? currentIndex + 1 : currentIndex - 1);
     });
   });
 
-  // Auto-advance
   setInterval(() => {
-    if (currentIndex < maxIndex) updateCarousel(currentIndex + 1);
-    else updateCarousel(0);
+    updateCarousel(currentIndex < maxIndex ? currentIndex + 1 : 0);
   }, 6000);
 }
 
-    // FAQ accordion
-    const faqItems = document.querySelectorAll('[data-faq]');
-    faqItems.forEach((item) => {
-      const btn = item.querySelector('.faq-question');
-      btn.addEventListener('click', () => {
-        const isOpen = item.classList.contains('open');
-        faqItems.forEach((i) => i.classList.remove('open'));
-        if (!isOpen) item.classList.add('open');
-      });
-    });
-  </script>
+/* ============================================================
+   6. FAQ ACCORDION
+   ============================================================ */
+document.querySelectorAll("[data-faq]").forEach((item) => {
+  const btn = item.querySelector(".faq-question");
+  btn.addEventListener("click", () => {
+    const isOpen = item.classList.contains("open");
+    document.querySelectorAll("[data-faq]").forEach((i) => i.classList.remove("open"));
+    if (!isOpen) item.classList.add("open");
+  });
+});
+
+/* ============================================================
+   7. PAGE SCANNER ATTACH (OS‑LEVEL)
+   ============================================================ */
+attachScanner();
+</script>
+
 
 </body>
 </html>

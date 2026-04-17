@@ -640,42 +640,30 @@ text-align: center;
     document.body.appendChild(div);
   };
 console.log("🌞 Script loaded, attaching visibility listener…");
-  let persistenceEnabled = true;
-  let firstTime = null;
-
-
-
-// --- GLOBAL STATE ---
-const params        = new URLSearchParams(window.location.search);
-const returnTo      = params.get("returnTo");
-
-
-let identity = null;
-let isIdle = true;
-const defaultPayloadKB = 20;
-let isDesk = isDesktop();
-let token = null;
-let resizeTimeout = null;
-let trusted = null;
-let autologin = null;
-let loggedIn = false;
-let userName = null;
-let userEmail = null;
-let userID = null;
-
-let authMsg       = document.getElementById("authMsg");
-let pinSection    = document.getElementById("pinSection");
-let emailSection  = document.getElementById("emailSection");
-let pinInput    = document.getElementById("pinInput");
-let emailInput  = document.getElementById("emailInput");
-let rememberSection = document.getElementById("rememberSection");
-
-// ============================================================================
-// LOGIN PAGE — PULSE OS v5 (CLEAN VERSION)
-// Minimal logic: UI + sendPin + verifyPin + identity bootstrap
+  // ============================================================================
+// LOGIN PAGE — PULSE OS v6
+// Pure UI + Identity Bootstrap + Send PIN + Verify PIN
+// NO PulseBand system, NO PulseGPU system, NO PageScanner, NO timers.
 // ============================================================================
 
-// Small debug marker (kept for support)
+// -----------------------------
+// GLOBAL ELEMENTS
+// -----------------------------
+const authMsg        = document.getElementById("authMsg");
+const pinSection     = document.getElementById("pinSection");
+const emailSection   = document.getElementById("emailSection");
+const rememberSection = document.getElementById("rememberSection");
+
+const pinInput       = document.getElementById("pinInput");
+const emailInput     = document.getElementById("emailInput");
+const staySignedIn   = document.getElementById("staySignedIn");
+
+const params   = new URLSearchParams(window.location.search);
+const returnTo = params.get("returnTo");
+
+// -----------------------------
+// DEBUG MARKER
+// -----------------------------
 function mark(msg) {
   console.log("[LOGIN]", msg);
 }
@@ -690,8 +678,18 @@ function showTPLoader() {
   requestAnimationFrame(() => el.classList.add("show"));
 }
 
+function hideTPLoader() {
+  const el = document.getElementById("t-loading");
+  if (!el) return;
+
+  el.classList.remove("show");
+  setTimeout(() => {
+    el.style.display = "none";
+  }, 150);
+}
+
 // -----------------------------
-// SHOW LOGIN UI (email + pin)
+// SHOW LOGIN UI
 // -----------------------------
 function showLoginUI() {
   emailSection.style.display = "block";
@@ -707,22 +705,20 @@ async function loginBootstrap() {
   showTPLoader();
   mark("BOOTSTRAP START");
 
-  const id = await identity();     // Load + validate + repair identity
+  const id = await identity(); // Load + validate + repair identity
 
   if (!id) {
-    // No identity → show login UI
     hideTPLoader();
     showLoginUI();
     return;
   }
 
-  // Identity valid → redirect to dashboard
   hideTPLoader();
   window.location.href = returnTo || "/dashboard.html";
 }
 
 // ============================================================================
-// 2) SEND PIN (UI → backend)
+// 2) SEND PIN
 // ============================================================================
 if (!window.__sendPinBound) {
   window.__sendPinBound = true;
@@ -774,9 +770,8 @@ if (!window.__sendPinBound) {
   });
 }
 
-
 // ============================================================================
-// 3) VERIFY PIN (UI → backend → save identity/token → redirect)
+// 3) VERIFY PIN
 // ============================================================================
 if (!window.__verifyPinBound) {
   window.__verifyPinBound = true;
@@ -807,7 +802,6 @@ if (!window.__verifyPinBound) {
 
       hideTPLoader();
 
-      // SUCCESS → Save identity + token
       if (data.success && data.token && data.identity) {
         localStorage.setItem("tp_token_v4", data.token);
         localStorage.setItem("tp_identity_v4", JSON.stringify(data.identity));
@@ -819,18 +813,10 @@ if (!window.__verifyPinBound) {
           localStorage.removeItem("tp_stay_signed_v4");
         }
 
-        // ⭐ NO system logic here
-        // NO identity()
-        // NO PageScanner
-        // NO PulseBand system
-        // NO pipelines
-        // NO update loops
-
         window.location.href = returnTo || "/dashboard.html";
         return;
       }
 
-      // FAILURE → Invalid PIN
       authMsg.className = "msg error";
       authMsg.textContent = "Invalid PIN. Try again!";
       authMsg.style.display = "block";
@@ -846,20 +832,17 @@ if (!window.__verifyPinBound) {
   });
 }
 
-
 // ============================================================================
-// ⭐ PULSEBAND UI BADGE ONLY (NO SYSTEM LAYERS, NO UI REFRESH)
+// 4) PULSEBAND BADGE ONLY (NO SYSTEM LAYERS)
 // ============================================================================
 if (!window.__pulsebandListenersAttached) {
   window.__pulsebandListenersAttached = true;
 
-  // Restore idle state only
   window.addEventListener("load", () => {
     const disabled = localStorage.getItem("pulseband_disabled") === "1";
     window.isIdle = disabled;
   });
 
-  // Toggle idle state only
   document.getElementById("pb-mini-badge")?.addEventListener("click", () => {
     const disabled = localStorage.getItem("pulseband_disabled") === "1";
 
@@ -873,136 +856,29 @@ if (!window.__pulsebandListenersAttached) {
   });
 }
 
-mark("🔥 WARM START COMPLETE");
-
-
+mark("🔥 LOGIN PAGE READY");
 
 // ============================================================================
-// ⭐ LOADER UI (CLEAN + FIXED)
+// LOGIN PAGE — OS v6 DOM SCRIPT
+// pulseband = lowercase UI-only
+// NO PulseClient, NO PulseNet, NO PulseGPU, NO system layers
 // ============================================================================
-function hideTPLoader() {
-  const el = document.getElementById("t-loading");
-  if (!el) return;
-
-  el.classList.remove("show");
-
-  // Delay removal slightly for smoother fade-out
-  setTimeout(() => {
-    mark("HIDING LOADER IMAGE");
-    el.style.display = "none";
-  }, 150);
-
-  // Focus helpers (non-breaking)
-  emailInput?.focus();
-  pinInput?.focus();
-}
-
-
-// ============================================================================
-// ⭐ MARKER (FIXED TIMING BUG)
-// ============================================================================
-let lastTime = Date.now();
-
-// ============================================================================
-// ⭐ DESKTOP DETECTION (CLEAN VERSION)
-// ============================================================================
-function isDesktop() {
-  const ua = navigator.userAgent.toLowerCase();
-
-  const mobileUA =
-    ua.includes("iphone") ||
-    ua.includes("android") ||
-    ua.includes("ipad") ||
-    ua.includes("mobile");
-
-  const smallScreen = window.innerWidth < 900 || window.innerHeight < 700;
-  const touch = navigator.maxTouchPoints > 1;
-
-  // If UA says mobile AND screen is small AND touch exists → mobile
-  if (mobileUA && smallScreen && touch) return false;
-
-  return true; // otherwise desktop
-}
-
-
-// ============================================================================
-// ⭐ UNIVERSAL PULSEBAND DATA PIPELINE (ES MODULE VERSION)
-// ============================================================================
-
-export function attachPulseBandPipeline(PulseClient, pulseband, pulsenet) {
-  if (!PulseClient || !pulseband) {
-    console.warn("PulseBand pipeline: PulseClient or pulseband missing");
-    return;
-  }
-
-  // ⭐ 1. Live updates from PulseClient → PulseBand UI
-  try {
-    PulseClient.onStateChange = (state) => {
-      try {
-        pulseband.update?.(state);
-      } catch (err) {
-        console.error("PulseBand.update failed:", err);
-      }
-
-      // Forward to PulseNet if available
-      try {
-        pulsenet?.updateSignalFromPulseBand?.(pulseband.getStatus());
-      } catch (err) {
-        console.error("PulseNet update failed:", err);
-      }
-    };
-  } catch (err) {
-    console.error("PulseBand pipeline: unable to attach onStateChange", err);
-  }
-
-  // ⭐ 2. Push initial state immediately
-  try {
-    const initial = PulseClient.getState?.();
-    if (initial) {
-      pulseband.update?.(initial);
-
-      // Forward initial state to PulseNet
-      pulsenet?.updateSignalFromPulseBand?.(pulseband.getStatus());
-    }
-  } catch (err) {
-    console.error("PulseBand initial update failed:", err);
-  }
-}
 
 (async () => {
 
-  // -----------------------------------------
-  // ⭐ Minimal debug marker
-  // -----------------------------------------
   function mark(label) {
-    console.log("[CHECKEMAIL]", label);
+    console.log("[LOGIN DOM]", label);
   }
 
-  mark("STARTING DOM LOAD");
+  mark("DOM LOAD START");
 
   // -----------------------------------------
-  // ⭐ PulseBand warm start (UI only)
+  // ⭐ LOGIN BOOTSTRAP ONLY
   // -----------------------------------------
-  mark("WARMSTART → BEGIN");
-  warmStartApp();
-  mark("WARMSTART → END");
-
-  // -----------------------------------------
-  // ⭐ PulseBand data pipeline
-  // -----------------------------------------
-  mark("PIPELINE → BEGIN");
-  attachPulseBandPipeline();
-  mark("PIPELINE → END");
-
-  // -----------------------------------------
-  // ⭐ LOGIN BOOTSTRAP (identity decides everything)
-  // -----------------------------------------
-  mark("BOOTSTRAP → BEGIN");
   await loginBootstrap();
-  mark("BOOTSTRAP → END");
 
   // -----------------------------------------
-  // ⭐ PulseBand badge + panel toggle
+  // ⭐ PulseBand badge toggle ONLY (UI-only)
   // -----------------------------------------
   const badge = document.getElementById("pulseband-badge");
   const panel = document.getElementById("pulseband-panel");
@@ -1021,44 +897,18 @@ export function attachPulseBandPipeline(PulseClient, pulseband, pulsenet) {
   }
 
   // -----------------------------------------
-  // ⭐ LIVE PULSEBAND UPDATE LOOP (UI ONLY)
+  // ⭐ NO PIPELINES
+  // ⭐ NO TIMERS
+  // ⭐ NO PulseClient
+  // ⭐ NO PulseNet
+  // ⭐ NO PulseGPU
+  // ⭐ NO system layers
   // -----------------------------------------
-  setInterval(async () => {
-    const disabled = localStorage.getItem("pulseband_disabled") === "1";
-    if (disabled || window.isIdle) return;
 
-    const status = pulseband.getStatus();
-    const data = await window.getPulseBandRate();
-
-    pulseband.setStatus({
-      ...status,
-      ...data,
-      lastSyncTimestamp: nowMs(),
-      lastSyncSeconds: 0
-    });
-  }, 3000);
-
-  // -----------------------------------------
-  // ⭐ LAST SYNC COUNTER LOOP (UI ONLY)
-  // -----------------------------------------
-  setInterval(() => {
-    const disabled = localStorage.getItem("pulseband_disabled") === "1";
-    if (disabled || window.isIdle) return;
-
-    const status = pulseband.getStatus();
-    const ts = getSafeTimestamp(status);
-    const seconds = safeSeconds((nowMs() - ts) / 1000);
-
-    pulseband.setStatus({
-      ...status,
-      lastSyncTimestamp: ts,
-      lastSyncSeconds: seconds
-    });
-  }, 1000);
-
-  mark("ENDING DOM LOAD");
+  mark("DOM LOAD END");
 
 })();
+
 
 </script>
 </body>
