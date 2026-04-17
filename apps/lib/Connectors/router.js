@@ -3,10 +3,6 @@
 // LAYER: B‑LAYER (FRONTEND INTELLIGENCE + LOGGING CONNECTOR)
 //
 // PURPOSE:
-// This is the INTELLIGENCE LAYER of the frontend.
-// All healing, logging, detection, and telemetry flow through here.
-//
-// Router.js MUST:
 // • Receive logs + healing requests from PageScanner (A2).
 // • Store logs in RouterMemory.
 // • Dedupe repeated failures.
@@ -17,13 +13,12 @@
 // ============================================================================
 
 import { RouterMemory } from "./RouterMemory.js";
-import { scheduleFlush } from "./Timer.js";
+import { timer } from "./timer.js";
 
 // ------------------------------------------------------------
 // ⭐ UNIVERSAL SYS‑CALL FUNCTION (A → B → C)
 // ------------------------------------------------------------
 export async function route(type, payload = {}) {
-  // ⭐ Log every call for lineage + debugging
   logEvent("routeCall", { type, payload });
 
   try {
@@ -35,7 +30,6 @@ export async function route(type, payload = {}) {
 
     const json = await res.json();
 
-    // ⭐ Log backend response for drift detection
     logEvent("routeResponse", { type, payload, json });
 
     return json;
@@ -51,8 +45,7 @@ export async function route(type, payload = {}) {
 }
 
 // ------------------------------------------------------------
-// ⭐ LOGGING + HEALING ENTRY POINT (A2 → B)
-// Called by PageScanner for missing fields/functions/etc.
+// ⭐ LOGGING ENTRY POINT (A2 → B)
 // ------------------------------------------------------------
 export function logEvent(eventType, data) {
   const entry = {
@@ -63,13 +56,11 @@ export function logEvent(eventType, data) {
   };
 
   RouterMemory.push(entry);
-  scheduleFlush(); // Timer.js handles batching + Firebase writes
+  timer();
 }
 
 // ------------------------------------------------------------
-// ⭐ HEALING HELPERS (OPTIONAL)
-// PageScanner may call route("fetchField", {...})
-// Router logs it + forwards to backend.
+// ⭐ HEALING ENTRY POINT (A2 → B)
 // ------------------------------------------------------------
 export async function heal(type, payload) {
   logEvent("healingRequest", { type, payload });
@@ -77,8 +68,7 @@ export async function heal(type, payload) {
 }
 
 // ============================================================================
-// NO getMap / getAuth / getHook.
-// NO connector functions.
-// NO backend logic.
-// Router.js = INTELLIGENCE + LOGGING + HEALING.
+// NO getMap / getAuth / getHook / callHelper.
+// Router.js = INTELLIGENCE + LOGGING + HEALING ONLY.
 // ============================================================================
+
