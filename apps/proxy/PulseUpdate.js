@@ -1,11 +1,11 @@
 /* ============================================================
-   PulseUpdate.js — v6
-   Purpose: Simple telemetry → PulseBand + PulseNet
+   PulseUpdate.js — v6 (ES Module, OS‑safe)
+   Purpose: Simple telemetry → returns normalized metrics
    Notes:
-     - No 4-layer health
-     - No proxy health map
-     - No system compute
-     - Just: measure → normalize → pulseband.setStatus()
+     - No PulseBand imports
+     - No PulseNet imports
+     - No globals
+     - Pure subsystem module
    ============================================================ */
 
 /* ------------------------------------------------------------
@@ -56,9 +56,9 @@ function classifyNetworkHealth(latency) {
 }
 
 /* ------------------------------------------------------------
-   3. Single telemetry → PulseBand.setStatus()
+   3. Public API: return normalized telemetry
 ------------------------------------------------------------ */
-async function pollPulseTelemetry() {
+async function getPulseTelemetry() {
   const ping = await measureLatency();
 
   const latency = ping.rtt;
@@ -73,15 +73,7 @@ async function pollPulseTelemetry() {
     lastChunkIndex: Date.now()
   };
 
-  const gpuPerf = {
-    smoothness: window.gpu?.runtime?.smoothnessScore ?? 0,
-    pacing: window.gpu?.runtime?.pacingQuality ?? "Unknown",
-    stalls: window.gpu?.runtime?.stallCount ?? 0,
-    efficiency: window.gpu?.runtime?.efficiencySavings ?? 100,
-    load: window.gpu?.runtime?.loadPercent ?? 0
-  };
-
-  pulseband?.setStatus({
+  return {
     live: {
       latency,
       phoneKbps: kbps,
@@ -94,20 +86,14 @@ async function pollPulseTelemetry() {
       microWindowActive: true,
       lastSyncTimestamp: Date.now()
     },
-    snapshot,
-    gpuPerformance: gpuPerf
-  });
-
-  // Bridge into PulseNet (if present)
-  if (window.pulsenet && pulseband) {
-    window.pulsenet.updateSignalFromPulseBand(pulseband.getStatus());
-  }
+    snapshot
+  };
 }
 
 /* ------------------------------------------------------------
-   4. Init: start simple telemetry loop
+   Exported API
 ------------------------------------------------------------ */
-(async function initPulseUpdate() {
-  await pollPulseTelemetry();
-  setInterval(pollPulseTelemetry, 3000);
-})();
+export const PulseUpdate = {
+  measureLatency,
+  getPulseTelemetry
+};

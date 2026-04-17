@@ -1,12 +1,10 @@
 /* ============================================================
-   PulseClient.js — PulseClient v6
-   Purpose: Thin fetch wrapper → PulseBand + PulseNet
+   PulseClient.js — PulseClient v6 (ES Module, OS‑safe)
+   Purpose: Thin fetch wrapper → returns data + meta
    Notes:
-     - No Earn / No Marketplace / No compute loop
-     - No physics polling (PulseBand handles warmup)
-     - No system info bloat
-     - No remember-me logic
-     - Just: fetch → measure → report → return
+     - Does NOT import PulseBand or PulseNet
+     - Does NOT touch globals
+     - Pure subsystem module
    ============================================================ */
 
 const PULSE_PROXY_URL = "https://www.tropicpulse.bz";
@@ -52,21 +50,6 @@ async function pulseFetch(url) {
     else if (contentType.startsWith("text/")) data = await res.text();
     else data = await res.arrayBuffer();
 
-    // Report to PulseBand
-    pulseband?.setStatus({
-      snapshot: {
-        advantage: 1.0,
-        timeSaved: 0
-      },
-      live: {
-        route: "Pulse",
-        lastSyncTimestamp: Date.now()
-      }
-    });
-
-    // Report to PulseNet
-    pulsenet?.updateSignalFromPulseBand(pulseband.getStatus());
-
     return { data, meta: { route: "Pulse", bytes, durationMs } };
 
   } catch (err) {
@@ -82,17 +65,6 @@ async function pulseFetch(url) {
     else if (contentType.startsWith("text/")) data = await fbRes.text();
     else data = await fbRes.arrayBuffer();
 
-    // Report fallback to PulseBand
-    pulseband?.setStatus({
-      live: {
-        route: "Phone",
-        lastSyncTimestamp: Date.now()
-      }
-    });
-
-    // Report to PulseNet
-    pulsenet?.updateSignalFromPulseBand(pulseband.getStatus());
-
     return { data, meta: { route: "Phone", bytes, durationMs: fbDuration } };
   }
 }
@@ -103,10 +75,3 @@ async function pulseFetch(url) {
 export const PulseClient = {
   get: pulseFetch
 };
-
-/* ------------------------------------------------------------
-   Global Exposure (PulseBand v6 pattern)
------------------------------------------------------------- */
-if (typeof globalThis !== "undefined") {
-  globalThis.pulseclient = PulseClient;
-}
