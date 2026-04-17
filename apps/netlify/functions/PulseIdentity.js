@@ -1,18 +1,29 @@
 // ============================================================================
 // PulseIdentity.js
 // Universal identity loader + backend healer + logout handler
+// OS‑v5 Debugging Upgrade: Layer + Role + Purpose + Color Logs
 // ============================================================================
 
-// -----------------------------
+// ------------------------------------------------------------
+// ⭐ OS‑v5 CONTEXT MAP
+// ------------------------------------------------------------
+const ID_CONTEXT = {
+  layer: "A2‑Layer",
+  role: "IDENTITY_LOADER",
+  purpose: "Load, validate, repair identity + sync server time",
+  context: "Frontend identity state + backend healing"
+};
+
+// ------------------------------------------------------------
 // INTERNAL STATE
-// -----------------------------
+// ------------------------------------------------------------
 let _identity = null;
 let _token    = null;
 let _loading  = false;
 
-// -----------------------------
+// ------------------------------------------------------------
 // TIME SYNC (server → client offset)
-// -----------------------------
+// ------------------------------------------------------------
 let __serverTimeOffset = 0;
 
 function setServerNow(serverNowMs) {
@@ -27,14 +38,28 @@ function nowMs() {
   return Date.now() + __serverTimeOffset;
 }
 
-// -----------------------------
-// HELPERS
-// -----------------------------
-function mark(msg) {
-  console.log("[PulseIdentity]", msg);
+// ------------------------------------------------------------
+// HELPERS (color‑coded logs)
+// ------------------------------------------------------------
+function markInfo(msg) {
+  console.log(`%c[IDENTITY] ${msg}`, "color:#03A9F4; font-weight:bold;");
+}
+
+function markGood(msg) {
+  console.log(`%c[IDENTITY] ${msg}`, "color:#4CAF50; font-weight:bold;");
+}
+
+function markWarn(msg) {
+  console.log(`%c[IDENTITY] ${msg}`, "color:#FFC107; font-weight:bold;");
+}
+
+function markBad(msg) {
+  console.log(`%c[IDENTITY] ${msg}`, "color:#FF5252; font-weight:bold;");
 }
 
 function loadLocal() {
+  markInfo("LOCAL LOAD → reading tp_identity_v4 + tp_token_v4");
+
   try {
     _identity = JSON.parse(localStorage.getItem("tp_identity_v4") || "{}");
   } catch {
@@ -45,6 +70,8 @@ function loadLocal() {
 }
 
 function saveLocal(identity, token) {
+  markGood("LOCAL SAVE → identity + token");
+
   if (identity) {
     localStorage.setItem("tp_identity_v4", JSON.stringify(identity));
   }
@@ -53,25 +80,29 @@ function saveLocal(identity, token) {
   }
 }
 
-// -----------------------------
+// ------------------------------------------------------------
 // LOGOUT HANDLING
-// -----------------------------
+// ------------------------------------------------------------
 function flagLogout(reason) {
-  mark("FLAG LOGOUT: " + reason);
+  markBad(`LOGOUT FLAGGED → ${reason}`);
   localStorage.setItem("tp_logout_flag", reason);
 }
 
 function clearLocal() {
+  markWarn("LOCAL CLEAR → identity + token removed");
+
   localStorage.removeItem("tp_identity_v4");
   localStorage.removeItem("tp_token_v4");
   localStorage.removeItem("tp_device_token_v4");
   localStorage.removeItem("tp_last_active_v4");
 }
 
-// -----------------------------
-// BACKEND CALLS
-// -----------------------------
+// ------------------------------------------------------------
+// BACKEND CALLS (self‑describing)
+// ------------------------------------------------------------
 async function backend(type, payload = {}) {
+  markInfo(`BACKEND CALL → ${type}`);
+
   const res = await fetch("/.netlify/functions/endpoint", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -82,7 +113,7 @@ async function backend(type, payload = {}) {
 }
 
 // ============================================================================
-// MAIN IDENTITY LOADER (UPDATED WITH TIME OFFSET PERSISTENCE)
+// MAIN IDENTITY LOADER (UPDATED WITH OS‑v5 CONTEXT + COLOR LOGS)
 // ============================================================================
 export async function identity() {
   // Prevent double-loading
@@ -98,19 +129,20 @@ export async function identity() {
   }
 
   _loading = true;
-  mark("IDENTITY: START");
+  markInfo("🟦 IDENTITY START");
 
   // 1. Load local state
   loadLocal();
 
-  // ⭐ 1A. If identity has saved timeOffsetMs → apply it immediately
+  // ⭐ 1A. Apply saved time offset
   if (_identity && typeof _identity.timeOffsetMs === "number") {
+    markInfo(`TIME OFFSET (saved) → ${_identity.timeOffsetMs}ms`);
     setServerOffset(_identity.timeOffsetMs);
   }
 
-  // 2. If missing identity or token → backend repair
+  // 2. Missing identity or token → backend repair
   if (!_identity || !_identity.uid || !_token) {
-    mark("IDENTITY: Missing local identity → backend repair");
+    markWarn("IDENTITY MISSING → backend repair");
 
     const repaired = await backend("repairIdentity", {
       uid: _identity?.uid || null,
@@ -118,19 +150,18 @@ export async function identity() {
     });
 
     if (!repaired || !repaired.identity) {
-      mark("IDENTITY: Backend could not repair → flag logout");
+      markBad("BACKEND REPAIR FAILED → logout");
       flagLogout("identity_unrepairable");
       clearLocal();
       _loading = false;
       return null;
     }
 
-    // ⭐ TIME SYNC (serverNow → offset)
+    // ⭐ TIME SYNC
     if (repaired.serverNow) {
       const offset = repaired.serverNow - Date.now();
+      markInfo(`TIME SYNC (repair) → offset ${offset}ms`);
       setServerOffset(offset);
-
-      // Save offset into identity
       repaired.identity.timeOffsetMs = offset;
     }
 
@@ -138,12 +169,13 @@ export async function identity() {
     _token    = repaired.token || _token;
 
     saveLocal(_identity, _token);
+    markGood("IDENTITY REPAIRED");
     _loading = false;
     return _identity;
   }
 
   // 3. Validate identity with backend
-  mark("IDENTITY: Validating with backend");
+  markInfo("VALIDATING IDENTITY");
 
   const check = await backend("validateIdentity", {
     uid: _identity.uid,
@@ -151,37 +183,41 @@ export async function identity() {
   });
 
   if (check.hardLogout) {
-    mark("IDENTITY: Backend flagged danger → logout");
+    markBad("BACKEND DANGER → HARD LOGOUT");
     flagLogout("backend_danger");
     clearLocal();
     _loading = false;
     return null;
   }
 
-  // ⭐ TIME SYNC (serverNow → offset)
+  // ⭐ TIME SYNC
   if (check.serverNow) {
     const offset = check.serverNow - Date.now();
+    markInfo(`TIME SYNC (validate) → offset ${offset}ms`);
     setServerOffset(offset);
 
-    // Save offset into identity if missing or changed
     _identity.timeOffsetMs = offset;
     saveLocal(_identity, _token);
   }
 
   // 4. Backend may return updated identity or token
   if (check.identity) {
+    markGood("IDENTITY UPDATED (backend)");
     _identity = check.identity;
     saveLocal(_identity, _token);
   }
 
   if (check.newJwtToken) {
+    markGood("TOKEN UPDATED (backend)");
     _token = check.newJwtToken;
     saveLocal(_identity, _token);
   }
 
   // 5. Update last active
   localStorage.setItem("tp_last_active_v4", nowMs());
+  markGood("LAST ACTIVE UPDATED");
 
   _loading = false;
+  markGood("🟩 IDENTITY COMPLETE");
   return _identity;
 }

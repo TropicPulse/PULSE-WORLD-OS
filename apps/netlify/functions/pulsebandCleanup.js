@@ -3,9 +3,10 @@
 // LAYER: D‑LAYER (BACKEND FUNCTION)
 //
 // PURPOSE:
-// • Direct backend function for pulsebandCleanup.
-// • Name matches file, matches function, matches logs.
-// • No scheduling wrapper — heartbeat calls this.
+// • Cleanup expired Pulseband sessions + chunks.
+// • Cleanup Pulseband errors + redownload logs.
+// • Maintain deterministic badge integrity.
+// • Called directly by heartbeat (timer.js).
 // ============================================================================
 
 import * as admin from "firebase-admin";
@@ -16,12 +17,27 @@ if (!admin.apps.length) {
 }
 const db = getFirestore();
 
+// ------------------------------------------------------------
+// ⭐ HUMAN‑READABLE CONTEXT MAP
+// ------------------------------------------------------------
+const CLEANUP_CONTEXT = {
+  label: "PULSEBAND_CLEANUP",
+  layer: "D‑Layer",
+  purpose: "Pulseband Session + Error Cleanup",
+  context: "Deletes expired sessions, chunks, errors, and redownload logs"
+};
+
 // ============================================================================
 // BACKEND ENTRY POINT (CALLED BY HEARTBEAT)
 // ============================================================================
 export async function pulsebandCleanup() {
   const runId = `PB_CLEANUP_${Date.now()}`;
   const errorPrefix = `ERR_${runId}_`;
+
+  console.log(
+    `%c🟦 START ${CLEANUP_CONTEXT.label} → ${runId}`,
+    "color:#03A9F4; font-weight:bold;"
+  );
 
   try {
     // ---------------------------------------------------------
@@ -35,10 +51,16 @@ export async function pulsebandCleanup() {
       const createdAt = data.createdAt?.toMillis?.() || 0;
 
       if (createdAt < cutoff24h) {
+        console.log(
+          `%c🟨 DELETE SESSION → ${s.id}`,
+          "color:#FFC107; font-weight:bold;"
+        );
+
         const chunksSnap = await s.ref.collection("chunks").get();
         for (const c of chunksSnap.docs) {
           await c.ref.delete();
         }
+
         await s.ref.delete();
       }
     }
@@ -51,7 +73,12 @@ export async function pulsebandCleanup() {
 
     for (const e of errorsSnap.docs) {
       const createdAt = e.data()?.createdAt?.toMillis?.() || 0;
+
       if (createdAt < cutoff7d) {
+        console.log(
+          `%c🟨 DELETE ERROR → ${e.id}`,
+          "color:#FFC107; font-weight:bold;"
+        );
         await e.ref.delete();
       }
     }
@@ -63,7 +90,12 @@ export async function pulsebandCleanup() {
 
     for (const r of redlSnap.docs) {
       const createdAt = r.data()?.createdAt?.toMillis?.() || 0;
+
       if (createdAt < cutoff7d) {
+        console.log(
+          `%c🟨 DELETE REDOWNLOAD → ${r.id}`,
+          "color:#FFC107; font-weight:bold;"
+        );
         await r.ref.delete();
       }
     }
@@ -74,20 +106,33 @@ export async function pulsebandCleanup() {
     await db.collection("TIMER_LOGS").doc(runId).set({
       fn: "pulsebandCleanup",
       runId,
+      ...CLEANUP_CONTEXT,
       createdAt: admin.firestore.FieldValue.serverTimestamp()
     });
 
-    return { ok: true, runId };
+    console.log(
+      `%c🟩 COMPLETE ${CLEANUP_CONTEXT.label} → ${runId}`,
+      "color:#4CAF50; font-weight:bold;"
+    );
+
+    return { ok: true, runId, ...CLEANUP_CONTEXT };
 
   } catch (err) {
+    console.error(
+      `%c🟥 FATAL ERROR`,
+      "color:#FF5252; font-weight:bold;",
+      err
+    );
+
     await db.collection("FUNCTION_ERRORS").doc(`${errorPrefix}FATAL`).set({
       fn: "pulsebandCleanup",
       stage: "fatal",
       error: String(err),
       runId,
+      ...CLEANUP_CONTEXT,
       createdAt: admin.firestore.FieldValue.serverTimestamp()
     });
 
-    return { ok: false, runId, error: String(err) };
+    return { ok: false, runId, error: String(err), ...CLEANUP_CONTEXT };
   }
 }

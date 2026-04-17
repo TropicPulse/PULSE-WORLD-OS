@@ -3,9 +3,10 @@
 // LAYER: D‑LAYER (BACKEND FUNCTION)
 //
 // PURPOSE:
-// • Direct backend function for pulseHistoryRepair.
-// • Name matches file, matches function, matches logs.
-// • No scheduling wrapper — heartbeat calls this.
+// • Normalize + repair pulse_history entries.
+// • Prune dead records older than 30 days.
+// • Ensure deterministic lineage for scoring + history.
+// • Called directly by heartbeat (timer.js).
 // ============================================================================
 
 import * as admin from "firebase-admin";
@@ -16,12 +17,27 @@ if (!admin.apps.length) {
 }
 const db = getFirestore();
 
+// ------------------------------------------------------------
+// ⭐ HUMAN‑READABLE CONTEXT MAP
+// ------------------------------------------------------------
+const REPAIR_CONTEXT = {
+  label: "PULSE_HISTORY_REPAIR",
+  layer: "D‑Layer",
+  purpose: "Pulse History Normalization + Cleanup",
+  context: "Repairs missing fields, prunes dead entries, ensures deterministic lineage"
+};
+
 // ============================================================================
 // BACKEND ENTRY POINT (CALLED BY HEARTBEAT)
 // ============================================================================
 export async function pulseHistoryRepair() {
   const runId = `PB_REPAIR_${Date.now()}`;
   const errorPrefix = `ERR_${runId}_`;
+
+  console.log(
+    `%c🟦 START ${REPAIR_CONTEXT.label} → ${runId}`,
+    "color:#03A9F4; font-weight:bold;"
+  );
 
   const repairedDocs = [];
   const deletedDocs = [];
@@ -41,16 +57,26 @@ export async function pulseHistoryRepair() {
         const data = h.data() || {};
         const createdAt = data.createdAt?.toMillis?.() || 0;
 
-        // delete very old, obviously dead records
+        // ---------------------------------------------------------
+        // ⭐ DELETE: very old + dead
+        // ---------------------------------------------------------
         if (createdAt && createdAt < cutoff30d && data.status === "dead") {
           await h.ref.delete();
           deletedDocs.push(id);
+
+          console.log(
+            `%c🟨 DELETED → ${id}`,
+            "color:#FFC107; font-weight:bold;"
+          );
+
           continue;
         }
 
         const updates = {};
 
-        // normalize missing fields
+        // ---------------------------------------------------------
+        // ⭐ NORMALIZE MISSING FIELDS
+        // ---------------------------------------------------------
         if (!data.userId && data.uid) {
           updates.userId = data.uid;
         }
@@ -66,17 +92,30 @@ export async function pulseHistoryRepair() {
         if (Object.keys(updates).length > 0) {
           updates.repairedAt = admin.firestore.FieldValue.serverTimestamp();
           updates.repairRunId = runId;
+
           await h.ref.set(updates, { merge: true });
           repairedDocs.push(id);
+
+          console.log(
+            `%c🟩 REPAIRED → ${id}`,
+            "color:#4CAF50; font-weight:bold;"
+          );
         }
 
       } catch (err) {
+        console.error(
+          `%c🟥 ERROR (doc) → ${id}`,
+          "color:#FF5252; font-weight:bold;",
+          err
+        );
+
         await db.collection("FUNCTION_ERRORS").doc(`${errorPrefix}${id}`).set({
           fn: "pulseHistoryRepair",
           stage: "history_doc",
           docId: id,
           error: String(err),
           runId,
+          ...REPAIR_CONTEXT,
           createdAt: admin.firestore.FieldValue.serverTimestamp()
         });
       }
@@ -92,25 +131,39 @@ export async function pulseHistoryRepair() {
       deletedCount: deletedDocs.length,
       repairedDocs,
       deletedDocs,
+      ...REPAIR_CONTEXT,
       createdAt: admin.firestore.FieldValue.serverTimestamp()
     });
+
+    console.log(
+      `%c🟩 COMPLETE ${REPAIR_CONTEXT.label} → ${runId}`,
+      "color:#4CAF50; font-weight:bold;"
+    );
 
     return {
       ok: true,
       runId,
       repairedDocs,
-      deletedDocs
+      deletedDocs,
+      ...REPAIR_CONTEXT
     };
 
   } catch (err) {
+    console.error(
+      `%c🟥 FATAL ERROR`,
+      "color:#FF5252; font-weight:bold;",
+      err
+    );
+
     await db.collection("FUNCTION_ERRORS").doc(`${errorPrefix}FATAL`).set({
       fn: "pulseHistoryRepair",
       stage: "fatal",
       error: String(err),
       runId,
+      ...REPAIR_CONTEXT,
       createdAt: admin.firestore.FieldValue.serverTimestamp()
     });
 
-    return { ok: false, runId, error: String(err) };
+    return { ok: false, runId, error: String(err), ...REPAIR_CONTEXT };
   }
 }

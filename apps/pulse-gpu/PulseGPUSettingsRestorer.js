@@ -1,76 +1,28 @@
+// ============================================================================
 // FILE: tropic-pulse-functions/apps/pulse-gpu/PulseGPUSettingsRestorer.js
+// LAYER: GPU-SUBSYSTEM (PURE LOGIC / SETTINGS RESTORATION)
 //
-// INTENT-CHECK: If you paste this while confused or frustrated, gently re-read your INTENT.
-//
-// 📘 PAGE INDEX — Source of Truth for This File
-//
-// ROLE:
-//   PulseGPUSettingsRestorer — consumes:
-//       • PulseGPUPerformanceAdvisor advice objects
-//       • PulseGPUSettingsMemory entries
-//   and produces deterministic "restoration plans":
-//       • which settings to restore
-//       • which settings to apply
-//       • which settings to upgrade
-//       • which settings to revert
-//
-//   This file IS:
-//     • A pure logic module
-//     • A deterministic planner for GPU settings restoration
-//     • A bridge between advisor insights and actionable changes
-//     • v5-ready: plans are compatible with the self-healing layer
-//
-//   This file IS NOT:
-//     • A renderer
-//     • A GPU runtime
-//     • A WebGPU/WebGL interface
-//     • A persistence layer
-//     • A UI or notification system
-//     • A backend module
-//
-// DEPLOYMENT:
-//   Lives in /apps/pulse-gpu as part of the GPU subsystem.
-//   Must remain ESM-only and side-effect-free.
-//   Must be safe to run in both browser and server environments.
-//
-// SAFETY RULES:
-//   • NO WebGPU/WebGL APIs
-//   • NO DOM APIs
-//   • NO Node.js APIs
-//   • NO filesystem or network access
-//   • NO randomness or timestamps
-//   • NO mutation of external state
-//   • FAIL-OPEN: malformed advice must not break planning
-//   • SELF-REPAIR READY: plans must be reconstructable and validateable
-//
-// INTERNAL LOGIC SUMMARY:
-//   • Consumes advice objects from PulseGPUPerformanceAdvisor
-//   • Produces "restoration plans":
-//       {
-//         action: "restore" | "apply-optimal" | "upgrade-tier" | "noop",
-//         reason: string,
-//         targetSettings: object | null,
-//         baselineSettings: object | null,
-//         extra: object | null,
-//         meta: {
-//           layer: "PulseGPUSettingsRestorer",
-//           version: 4,
-//           target: "full-gpu",
-//           selfRepairable: true
-//         }
-//       }
-//   • Core operations:
-//       - buildRestorePlan(adviceList)
-//       - buildRestorePlanForRegression(advice)
-//       - buildRestorePlanForImprovement(advice)
-//       - buildRestorePlanForSuboptimal(advice)
-//       - buildRestorePlanForTierUpgrade(advice)
-//       - validatePlan(plan)
-//
-// ------------------------------------------------------
-// Restoration plan builder (v5-ready)
-// ------------------------------------------------------
+// PulseGPUSettingsRestorer v5 — Deterministic, Pure-Logic Restoration Planner
+// NO GPU. NO DOM. NO NODE. NO NETWORK. PURE LOGIC + METADATA.
+// ============================================================================
 
+// ------------------------------------------------------------
+// ⭐ OS‑v5 CONTEXT METADATA
+// ------------------------------------------------------------
+const RESTORER_CONTEXT = {
+  layer: "PulseGPUSettingsRestorer",
+  role: "GPU_SETTINGS_RESTORER",
+  purpose: "Deterministic planner for GPU settings restoration",
+  context:
+    "Consumes advisor insights + memory entries to produce restoration plans",
+  target: "full-gpu",
+  version: 5,
+  selfRepairable: true
+};
+
+// ------------------------------------------------------------
+// Restoration plan builder (v5-ready + OS‑v5 metadata)
+// ------------------------------------------------------------
 function buildPlan({
   action,
   reason,
@@ -84,52 +36,34 @@ function buildPlan({
     targetSettings,
     baselineSettings,
     extra,
-    meta: {
-      layer: "PulseGPUSettingsRestorer",
-      version: 4,
-      target: "full-gpu",
-      selfRepairable: true
-    }
+    meta: { ...RESTORER_CONTEXT }
   };
 }
 
-// ------------------------------------------------------
+// ------------------------------------------------------------
 // Plan validation (for healing layer)
-// ------------------------------------------------------
-
+// ------------------------------------------------------------
 function validatePlan(plan) {
   if (!plan || typeof plan !== "object") return false;
   if (typeof plan.action !== "string") return false;
   if (typeof plan.reason !== "string") return false;
-  if (!plan.meta || plan.meta.layer !== "PulseGPUSettingsRestorer") {
-    return false;
-  }
+  if (!plan.meta || plan.meta.layer !== "PulseGPUSettingsRestorer") return false;
   return true;
 }
 
-// ------------------------------------------------------
-// PulseGPUSettingsRestorer
-// ------------------------------------------------------
-
+// ------------------------------------------------------------
+// PulseGPUSettingsRestorer (v5-ready + OS‑v5 metadata)
+// ------------------------------------------------------------
 class PulseGPUSettingsRestorer {
   constructor() {}
 
-  // Static metadata for self-healing layer
-  static meta = {
-    layer: "PulseGPUSettingsRestorer",
-    version: 4,
-    target: "full-gpu",
-    selfRepairable: true
-  };
+  // Static metadata for discovery + healing
+  static meta = { ...RESTORER_CONTEXT };
 
   // ----------------------------------------------------
   // Main entry point:
   //   Takes an array of advice objects → returns a plan.
   // ----------------------------------------------------
-  //
-  // If multiple advice objects exist, we choose the highest severity.
-  // Fail-open: invalid or missing advice → noop plan.
-  //
   buildRestorePlan(adviceList = []) {
     if (!Array.isArray(adviceList) || adviceList.length === 0) {
       return buildPlan({
@@ -191,7 +125,8 @@ class PulseGPUSettingsRestorer {
       extra: {
         deltaPercent: advice.deltaPercent,
         baselineMetrics: advice.extra?.baselineMetrics,
-        repairHint: advice.extra?.repairHint || "restore-baseline-settings"
+        repairHint:
+          advice.extra?.repairHint || "restore-baseline-settings"
       }
     });
   }
@@ -208,7 +143,8 @@ class PulseGPUSettingsRestorer {
       extra: {
         deltaPercent: advice.deltaPercent,
         baselineMetrics: advice.extra?.baselineMetrics,
-        repairHint: advice.extra?.repairHint || "suggest-baseline-settings"
+        repairHint:
+          advice.extra?.repairHint || "suggest-baseline-settings"
       }
     });
   }
@@ -219,7 +155,8 @@ class PulseGPUSettingsRestorer {
   buildRestorePlanForTierUpgrade(advice) {
     return buildPlan({
       action: "upgrade-tier",
-      reason: "A higher tier configuration has historically delivered better performance.",
+      reason:
+        "A higher tier configuration has historically delivered better performance.",
       targetSettings: advice.baselineSettings || null,
       baselineSettings: advice.baselineSettings || null,
       extra: {
@@ -243,16 +180,16 @@ class PulseGPUSettingsRestorer {
       baselineSettings: advice.baselineSettings || null,
       extra: {
         deltaPercent: advice.deltaPercent,
-        repairHint: advice.extra?.repairHint || "promote-current-to-baseline"
+        repairHint:
+          advice.extra?.repairHint || "promote-current-to-baseline"
       }
     });
   }
 }
 
-// ------------------------------------------------------
+// ------------------------------------------------------------
 // EXPORTS
-// ------------------------------------------------------
-
+// ------------------------------------------------------------
 export {
   PulseGPUSettingsRestorer,
   buildPlan,

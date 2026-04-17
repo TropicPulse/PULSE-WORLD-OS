@@ -13,18 +13,9 @@
 // ============================================================================
 
 // GPU Intelligence Layer
-import { BrainInput, PulseGPUBrainExport } from "../pulse-gpu/PulseGPUBrain.js";
-import { PulseGPURuntime } from "../pulse-gpu/PulseGPURuntime.js";
-import { PulseGPUEngine } from "../pulse-gpu/PulseGPUEngine.js";
+import * as PulseGPU from "../pulse-gpu/PulseGPU.js";
+import * as Pulse from "./Pulse.js";
 
-// Pulse Update Loop (device → band)
-import { PulseUpdate } from "./PulseUpdate.js";
-
-// Pulse Client (fetch wrapper)
-import { PulseClient } from "./PulseClient.js";
-
-// PulseNet (network intelligence)
-import { PulseNet } from "./PulseNet.js";
 
 
 (function () {

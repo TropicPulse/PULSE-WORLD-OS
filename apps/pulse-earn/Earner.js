@@ -1,36 +1,24 @@
+// ============================================================================
 // FILE: tropic-pulse-functions/apps/pulse-earn/Earner.js
+// LAYER: EARN-SUBSYSTEM (PURE LOGIC / SAFE COMPUTE ENGINE)
 //
-// Earner v5 — Deterministic, Drift‑Proof, Self‑Healing Compute Engine
+// Earner v5.2 — Deterministic, Drift‑Proof, Self‑Healing Compute Engine
 // NO AI LAYERS. NO TRANSLATION. NO MEMORY MODEL. PURE HEALING.
-//
-// ------------------------------------------------------
-// 📘 PAGE INDEX — Source of Truth for This File
-// ------------------------------------------------------
-//
-// ROLE:
-//   Earner — the deterministic, sandboxed compute engine for Pulse Earn jobs.
-//
-// RESPONSIBILITIES:
-//   • Execute ONLY safe, predefined compute operations
-//   • Dispatch job.type to safe compute modules
-//   • Measure execution time deterministically
-//   • Maintain healing metadata
-//
-// SAFETY RULES (CRITICAL):
-//   • NO eval()
-//   • NO Function()
-//   • NO dynamic imports
-//   • NO arbitrary code execution
-//   • NO user-provided logic
-//   • NO mutation of input job objects
-//   • NO non-deterministic behavior
-//   • NO network calls
-//   • NO filesystem access
-//
-// ------------------------------------------------------
-// Healing Metadata
-// ------------------------------------------------------
+// ============================================================================
 
+// ------------------------------------------------------------
+// ⭐ OS‑v5 CONTEXT METADATA
+// ------------------------------------------------------------
+const EARNER_CONTEXT = {
+  layer: "Earner",
+  role: "EARN_COMPUTE_ENGINE",
+  purpose: "Execute deterministic, sandboxed compute operations for Earn jobs",
+  context: "Safe compute dispatcher + healing metadata"
+};
+
+// ------------------------------------------------------------
+// Healing Metadata
+// ------------------------------------------------------------
 const healingState = {
   lastJobType: null,
   lastError: null,
@@ -38,11 +26,12 @@ const healingState = {
   cycleCount: 0,
   lastTimestamp: null,
   executionState: "idle", // idle | dispatching | executing | returning | error
+  ...EARNER_CONTEXT
 };
 
-// ------------------------------------------------------
+// ------------------------------------------------------------
 // computeWork(job)
-// ------------------------------------------------------
+// ------------------------------------------------------------
 export async function computeWork(job) {
   const start = performance.now();
   healingState.cycleCount++;
@@ -91,6 +80,7 @@ export async function computeWork(job) {
       success: true,
       output,
       durationMs: performance.now() - start,
+      ...EARNER_CONTEXT
     };
 
   } catch (err) {
@@ -101,14 +91,14 @@ export async function computeWork(job) {
       success: false,
       error: err.message,
       durationMs: performance.now() - start,
+      ...EARNER_CONTEXT
     };
   }
 }
 
-// ------------------------------------------------------
+// ------------------------------------------------------------
 // SAFE COMPUTE MODULES
-// ------------------------------------------------------
-
+// ------------------------------------------------------------
 function textTransform({ text = "", mode = "upper" }) {
   switch (mode) {
     case "upper": return text.toUpperCase();
@@ -149,9 +139,9 @@ function jsonTransform({ json, pick }) {
   return out;
 }
 
-// ------------------------------------------------------
+// ------------------------------------------------------------
 // Export healing metadata for EarnHealer
-// ------------------------------------------------------
+// ------------------------------------------------------------
 export function getEarnerHealingState() {
   return { ...healingState };
 }

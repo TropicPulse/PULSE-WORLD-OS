@@ -1,24 +1,29 @@
 // ============================================================================
 // FILE: /apps/tropic-pulse/lib/Connectors/router.js
 // LAYER: B‑LAYER (FRONTEND INTELLIGENCE + LOGGING CONNECTOR)
-//
-// PURPOSE:
-// • Receive logs + healing requests from PageScanner (A2).
-// • Store logs in RouterMemory.
-// • Dedupe repeated failures.
-// • Detect drift.
-// • Detect missing fields/functions/accessors/handlers.
-// • Forward backend requests to endpoint.js.
-// • Flush logs to Firebase via Timer.js.
 // ============================================================================
 
 import { RouterMemory } from "./RouterMemory.js";
 
 // ------------------------------------------------------------
+// ⭐ CONTEXT MAP (LAYER + PURPOSE + ROLE)
+// ------------------------------------------------------------
+const ROUTER_CONTEXT = {
+  label: "ROUTER",
+  layer: "B‑Layer",
+  purpose: "Frontend → Backend Connector",
+  context: "Sends structured requests to backend router"
+};
+
+// ------------------------------------------------------------
 // ⭐ UNIVERSAL SYS‑CALL FUNCTION (A → B → C)
 // ------------------------------------------------------------
 export async function route(type, payload = {}) {
-  logEvent("routeCall", { type, payload });
+  logEvent("routeCall", {
+    type,
+    payload,
+    ...ROUTER_CONTEXT
+  });
 
   try {
     const res = await fetch("/.netlify/functions/endpoint", {
@@ -29,12 +34,22 @@ export async function route(type, payload = {}) {
 
     const json = await res.json();
 
-    logEvent("routeResponse", { type, payload, json });
+    logEvent("routeResponse", {
+      type,
+      payload,
+      json,
+      ...ROUTER_CONTEXT
+    });
 
     return json;
 
   } catch (err) {
-    logEvent("routeError", { type, payload, error: String(err) });
+    logEvent("routeError", {
+      type,
+      payload,
+      error: String(err),
+      ...ROUTER_CONTEXT
+    });
 
     return {
       error: "Frontend connector failed",
@@ -62,12 +77,11 @@ export function logEvent(eventType, data) {
 // ⭐ HEALING ENTRY POINT (A2 → B)
 // ------------------------------------------------------------
 export async function heal(type, payload) {
-  logEvent("healingRequest", { type, payload });
+  logEvent("healingRequest", {
+    type,
+    payload,
+    ...ROUTER_CONTEXT
+  });
+
   return await route(type, payload);
 }
-
-// ============================================================================
-// NO getMap / getAuth / getHook / callHelper.
-// Router.js = INTELLIGENCE + LOGGING + HEALING ONLY.
-// ============================================================================
-

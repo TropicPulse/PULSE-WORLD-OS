@@ -1,11 +1,9 @@
+// ============================================================================
 // FILE: pulse-os/PulseOSHealer.js
+// LAYER: C‑LAYER (BACKEND OS-LEVEL HEALER)
 //
-// PulseOSHealer v6 — Deterministic OS-Level Drift & Misconfiguration Healer
+// PulseOSHealer v6.2 — Deterministic OS-Level Drift & Misconfiguration Healer
 // NO AI. NO COMPUTE. NO MARKETPLACE. PURE HEALING COORDINATION.
-//
-// ------------------------------------------------------
-// 📘 PAGE INDEX — Source of Truth for This File
-// ------------------------------------------------------
 //
 // ROLE:
 //   PulseOSHealer watches OS-level + subsystem logs and emits
@@ -26,16 +24,21 @@
 //   • NO GPU work
 //   • NO marketplace calls
 //   • NO AI model calls
-//
-// ------------------------------------------------------
-// 🔧 CONFIGURABLE COLLECTIONS
-// ------------------------------------------------------
-// FILE: pulse-os/PulseOSHealer.js
-//
-// PulseOSHealer v6.1 — Minimal Upgrade: hintCode + drift signatures
-// NO AI. NO COMPUTE. NO MARKETPLACE. PURE HEALING COORDINATION.
-//
+// ============================================================================
 
+// ------------------------------------------------------------
+// ⭐ HUMAN‑READABLE CONTEXT MAP
+// ------------------------------------------------------------
+const HEALER_CONTEXT = {
+  label: "OS_HEALER",
+  layer: "C‑Layer",
+  purpose: "Cross‑Subsystem Drift Detection + Healing Coordination",
+  context: "Watches OSEvents + SubsystemHealerLogs and emits FUNCTION_LOG hints"
+};
+
+// ------------------------------------------------------------
+// 🔧 CONFIGURABLE COLLECTIONS
+// ------------------------------------------------------------
 export const OS_EVENTS_COLLECTION = "OSEvents";
 export const SUBSYSTEM_HEALER_COLLECTION = "SubsystemHealerLogs";
 export const OS_HEALER_LOGS_COLLECTION = "OSHealerLogs";
@@ -49,26 +52,38 @@ import { recordDriftSignature } from "./PulseOSMemory.js";
 
 const db = getFirestore();
 
-// ------------------------------------------------------
-// writeOSHealerLog()
-// ------------------------------------------------------
+// ------------------------------------------------------------
+// writeOSHealerLog() — now includes context + color logs
+// ------------------------------------------------------------
 async function writeOSHealerLog(entry) {
   try {
     await db.collection(OS_HEALER_LOGS_COLLECTION).add({
       ts: Date.now(),
+      ...HEALER_CONTEXT,
       ...entry
     });
+
+    console.log(
+      `%c🟩 OS_HEALER LOG → ${entry.type}`,
+      "color:#4CAF50; font-weight:bold;"
+    );
+
   } catch (err) {
-    console.error("[PulseOSHealer] Failed to write OSHealer log:", err);
+    console.error(
+      `%c🟥 OS_HEALER LOG ERROR`,
+      "color:#FF5252; font-weight:bold;",
+      err
+    );
   }
 }
 
-// ------------------------------------------------------
-// emitFunctionLogHint() — now includes hintCode
-// ------------------------------------------------------
+// ------------------------------------------------------------
+// emitFunctionLogHint() — now includes context + color logs
+// ------------------------------------------------------------
 async function emitFunctionLogHint(entry) {
   try {
     await db.collection(FUNCTION_LOGS_COLLECTION).add({
+      ...HEALER_CONTEXT,
       ...entry,
       createdAt: Timestamp.now(),
       processed: false,
@@ -76,14 +91,24 @@ async function emitFunctionLogHint(entry) {
       severity: entry.severity ?? "info",
       hintCode: entry.hintCode ?? "UNSPECIFIED_HINT"
     });
+
+    console.log(
+      `%c🟦 HINT EMITTED → ${entry.hintCode}`,
+      "color:#03A9F4; font-weight:bold;"
+    );
+
   } catch (err) {
-    console.error("[PulseOSHealer] Failed to emit FUNCTION_LOG hint:", err);
+    console.error(
+      `%c🟥 HINT EMIT ERROR`,
+      "color:#FF5252; font-weight:bold;",
+      err
+    );
   }
 }
 
-// ------------------------------------------------------
-// scanOSEventsForHints()
-// ------------------------------------------------------
+// ------------------------------------------------------------
+// scanOSEventsForHints() — now logs context
+// ------------------------------------------------------------
 async function scanOSEventsForHints() {
   const snap = await db
     .collection(OS_EVENTS_COLLECTION)
@@ -95,6 +120,11 @@ async function scanOSEventsForHints() {
 
   for (const doc of snap.docs) {
     const ev = doc.data();
+
+    console.log(
+      `%c🟨 OSEVENT → ${ev.type}`,
+      "color:#FFC107; font-weight:bold;"
+    );
 
     if (ev.type === "function_log_ingested") {
       await writeOSHealerLog({
@@ -110,9 +140,9 @@ async function scanOSEventsForHints() {
   }
 }
 
-// ------------------------------------------------------
-// scanSubsystemHealerLogs()
-// ------------------------------------------------------
+// ------------------------------------------------------------
+// scanSubsystemHealerLogs() — now logs context + color
+// ------------------------------------------------------------
 async function scanSubsystemHealerLogs() {
   const snap = await db
     .collection(SUBSYSTEM_HEALER_COLLECTION)
@@ -127,6 +157,11 @@ async function scanSubsystemHealerLogs() {
     const subsystem = log.subsystem ?? "unknown";
     const type = log.type ?? "unknown";
 
+    console.log(
+      `%c🟨 SUBSYSTEM DRIFT → ${subsystem} / ${type}`,
+      "color:#FFC107; font-weight:bold;"
+    );
+
     // ------------------------------------------------------
     // PulseBand → latency/bar mismatch
     // ------------------------------------------------------
@@ -139,14 +174,12 @@ async function scanSubsystemHealerLogs() {
         bars: log.bars
       });
 
-      // NEW: drift signature
       await recordDriftSignature("PulseBand", {
         type: "latency_bar_mismatch",
         severity: "warning",
         details: { latency: log.latency, bars: log.bars }
       });
 
-      // NEW: hintCode
       await emitFunctionLogHint({
         hintCode: "PB_LATENCY_BAR_MISMATCH",
         subsystem: "PulseBand",
@@ -242,23 +275,34 @@ async function scanSubsystemHealerLogs() {
   }
 }
 
-// ------------------------------------------------------
+// ------------------------------------------------------------
 // PUBLIC: startPulseOSHealer()
-// ------------------------------------------------------
+// ------------------------------------------------------------
 export default function startPulseOSHealer() {
+  console.log(
+    `%c🟦 PulseOSHealer v6.2 started`,
+    "color:#03A9F4; font-weight:bold;"
+  );
+
   setInterval(() => {
     scanOSEventsForHints().catch((err) => {
-      console.error("[PulseOSHealer] OSEvents scan error:", err);
+      console.error(
+        `%c🟥 OSEvents scan error`,
+        "color:#FF5252; font-weight:bold;",
+        err
+      );
     });
   }, OS_EVENTS_SCAN_INTERVAL_MS);
 
   setInterval(() => {
     scanSubsystemHealerLogs().catch((err) => {
-      console.error("[PulseOSHealer] Subsystem scan error:", err);
+      console.error(
+        `%c🟥 Subsystem scan error`,
+        "color:#FF5252; font-weight:bold;",
+        err
+      );
     });
   }, SUBSYSTEM_SCAN_INTERVAL_MS);
-
-  console.log("[PulseOSHealer] v6.1 OS-level healer started.");
 }
 
 export {

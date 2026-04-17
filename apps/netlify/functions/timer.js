@@ -26,6 +26,16 @@ if (!admin.apps.length) {
 }
 const db = getFirestore();
 
+// ------------------------------------------------------------
+// ⭐ HUMAN‑READABLE CONTEXT MAP
+// ------------------------------------------------------------
+const TIMER_CONTEXT = {
+  label: "HEARTBEAT",
+  layer: "D‑Layer",
+  purpose: "Scheduled Executor",
+  context: "Runs periodic backend tasks and writes logs"
+};
+
 // ============================================================================
 // INTERNAL: TASK DEFINITIONS
 // ============================================================================
@@ -34,36 +44,48 @@ const TASKS = [
   {
     key: "logoutSweep",
     label: "Logout Sweep",
+    purpose: "Expire inactive sessions",
+    context: "Ensures security + session hygiene",
     intervalMs: 5 * 60 * 1000,
     runner: timerLogout
   },
   {
     key: "userScoring",
     label: "User Scoring",
+    purpose: "Recalculate user scores",
+    context: "Maintains deterministic scoring",
     intervalMs: 5 * 60 * 1000,
     runner: scheduledUserScoring
   },
   {
     key: "refreshEnvironmentSmart",
     label: "Environment Refresh",
+    purpose: "Refresh environment data",
+    context: "Ensures environment freshness",
     intervalMs: 30 * 60 * 1000,
     runner: refreshEnvironmentSmart
   },
   {
     key: "securitySweep",
     label: "Security Sweep",
+    purpose: "Scan for anomalies",
+    context: "Detects suspicious activity",
     intervalMs: 24 * 60 * 60 * 1000,
     runner: securitySweep
   },
   {
     key: "pulsebandCleanup",
     label: "Pulseband Cleanup",
+    purpose: "Clean expired Pulseband entries",
+    context: "Maintains badge integrity",
     intervalMs: 24 * 60 * 60 * 1000,
     runner: pulsebandCleanup
   },
   {
     key: "pulseHistoryRepair",
     label: "Pulse History Repair",
+    purpose: "Repair missing snapshots",
+    context: "Ensures deterministic lineage",
     intervalMs: 60 * 60 * 1000,
     runner: pulseHistoryRepair
   }
@@ -85,7 +107,8 @@ async function updateState(ref, updates) {
   await ref.set(
     {
       ...updates,
-      updatedAt: admin.firestore.FieldValue.serverTimestamp()
+      updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+      ...TIMER_CONTEXT
     },
     { merge: true }
   );
@@ -107,14 +130,18 @@ function shouldRunTask(nowMs, state, task) {
 
 export const handler = async () => {
   const runId = `HB_${Date.now()}`;
-  const logId = `HEARTBEAT_${runId}`;
-  const errorPrefix = `ERR_${runId}_`;
+
+  console.log(
+    `%c🟦 HEARTBEAT START → ${runId}`,
+    "color:#03A9F4; font-weight:bold;"
+  );
 
   const now = Date.now();
   const results = {
     runId,
     startedAt: now,
-    tasks: {}
+    tasks: {},
+    ...TIMER_CONTEXT
   };
 
   try {
@@ -125,12 +152,21 @@ export const handler = async () => {
       const taskResult = {
         ran: false,
         skipped: false,
-        error: null
+        error: null,
+        label: task.label,
+        purpose: task.purpose,
+        context: task.context
       };
 
       try {
         if (!shouldRunTask(now, state, task)) {
           taskResult.skipped = true;
+
+          console.log(
+            `%c🟨 SKIPPED → ${task.label}`,
+            "color:#FFC107; font-weight:bold;"
+          );
+
           results.tasks[task.key] = taskResult;
           continue;
         }
@@ -139,15 +175,27 @@ export const handler = async () => {
         taskResult.ran = true;
         lastRuns[task.key] = now;
 
+        console.log(
+          `%c🟩 RAN → ${task.label}`,
+          "color:#4CAF50; font-weight:bold;"
+        );
+
       } catch (err) {
         taskResult.error = String(err);
 
-        await db.collection("FUNCTION_ERRORS").doc(`${errorPrefix}${task.key}`).set({
+        console.error(
+          `%c🟥 ERROR → ${task.label}`,
+          "color:#FF5252; font-weight:bold;",
+          err
+        );
+
+        await db.collection("FUNCTION_ERRORS").doc(`ERR_${runId}_${task.key}`).set({
           fn: "timer",
           task: task.key,
           label: task.label,
           error: String(err),
           runId,
+          ...TIMER_CONTEXT,
           createdAt: admin.firestore.FieldValue.serverTimestamp()
         });
       }
@@ -157,28 +205,37 @@ export const handler = async () => {
 
     await updateState(stateRef, { lastRuns });
 
-    await db.collection("TIMER_LOGS").doc(logId).set({
+    await db.collection("TIMER_LOGS").doc(`HEARTBEAT_${runId}`).set({
       fn: "timer",
       runId,
       tasks: results.tasks,
+      ...TIMER_CONTEXT,
       createdAt: admin.firestore.FieldValue.serverTimestamp()
     });
 
+    console.log(
+      `%c🟩 HEARTBEAT COMPLETE → ${runId}`,
+      "color:#4CAF50; font-weight:bold;"
+    );
+
     return {
       statusCode: 200,
-      body: JSON.stringify({
-        ok: true,
-        runId,
-        tasks: results.tasks
-      })
+      body: JSON.stringify(results)
     };
 
   } catch (err) {
-    await db.collection("FUNCTION_ERRORS").doc(`${errorPrefix}FATAL`).set({
+    console.error(
+      `%c🟥 HEARTBEAT FATAL ERROR`,
+      "color:#FF5252; font-weight:bold;",
+      err
+    );
+
+    await db.collection("FUNCTION_ERRORS").doc(`ERR_${runId}_FATAL`).set({
       fn: "timer",
       stage: "fatal",
       error: String(err),
       runId,
+      ...TIMER_CONTEXT,
       createdAt: admin.firestore.FieldValue.serverTimestamp()
     });
 
@@ -187,7 +244,8 @@ export const handler = async () => {
       body: JSON.stringify({
         ok: false,
         runId,
-        error: String(err)
+        error: String(err),
+        ...TIMER_CONTEXT
       })
     };
   }

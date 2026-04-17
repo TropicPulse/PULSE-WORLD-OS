@@ -1,85 +1,25 @@
+// ============================================================================
 // FILE: tropic-pulse-functions/apps/pulse-gpu/PulseGPUHealer.js
+// LAYER: GPU-SUBSYSTEM (PURE LOGIC / SELF-HEALING COORDINATOR)
 //
-// INTENT-CHECK: If you paste this while confused or frustrated, gently re-read your INTENT.
-//
-// 📘 PAGE INDEX — Source of Truth for This File
-//
-// ROLE:
-//   PulseGPUHealer — deterministic self-healing layer for the Pulse-GPU brain.
-//   Validates and repairs advisor results, restoration plans, auto-opt decisions,
-//   and UX notifications by re-running the underlying logic in a safe, replayable way.
-//
-//   This file IS:
-//     • A pure logic module (full GPU, API-agnostic)
-//     • A self-healing coordinator over Advisor, Restorer, AutoOptimize, UXBridge
-//     • A generator of "healing reports" describing what was repaired or confirmed
-//
-//   This file IS NOT:
-//     • A renderer
-//     • A GPU runtime
-//     • A WebGPU/WebGL interface
-//     • A persistence layer
-//     • A UI or notification system
-//     • A backend module
-//
-// DEPLOYMENT:
-//   Lives in /apps/pulse-gpu as part of the GPU subsystem.
-//   Must remain ESM-only and side-effect-free.
-//   Must be safe to run in both browser and server environments.
-//
-// SAFETY RULES:
-//   • NO WebGPU/WebGL APIs
-//   • NO DOM APIs
-//   • NO Node.js APIs
-//   • NO filesystem or network access
-//   • NO randomness or timestamps
-//   • FAIL-OPEN: corrupted inputs must not break healing
-//   • SELF-REPAIR READY: reports must be reconstructable and validateable
-//
-// INPUT MODEL (healing target):
-//   {
-//     advisorResult?: {
-//       currentScore: number | null,
-//       baselineScore: number | null,
-//       deltaPercent: number | null,
-//       advice: Advice[]
-//     },
-//     restorePlan?: Plan,
-//     autoDecision?: {
-//       mode: "auto-apply" | "require-confirmation" | "ignore",
-//       reason: string,
-//       plan: Plan | null
-//     },
-//     notifications?: Notification[],
-//     context: {
-//       gameProfile?: object,
-//       hardwareProfile?: object,
-//       tierProfile?: object,
-//       settings?: object,
-//       metrics?: object,
-//       userPreferences?: object
-//     }
-//   }
-//
-// OUTPUT MODEL (healing report):
-//   {
-//     status: "healthy" | "repaired" | "degraded",
-//     actions: { type: string, description: string }[],
-//     advisorResult: object | null,
-//     restorePlan: object | null,
-//     autoDecision: object | null,
-//     notifications: object[],
-//     meta: {
-//       layer: "PulseGPUHealer",
-//       version: 1,
-//       target: "full-gpu",
-//       selfRepairable: true
-//     }
-//   }
-//
-// ------------------------------------------------------
+// PulseGPUHealer v6.2 — Deterministic GPU Self-Healing Layer
+// NO AI. NO COMPUTE. NO MARKETPLACE. PURE HEALING COORDINATION.
+// ============================================================================
+
+// ------------------------------------------------------------
+// ⭐ HUMAN‑READABLE CONTEXT MAP (OS‑v5 Standard)
+// ------------------------------------------------------------
+const GPU_HEALER_CONTEXT = {
+  layer: "PulseGPUHealer",
+  role: "GPU_HEALER",
+  purpose: "Deterministic GPU self-healing coordinator",
+  context:
+    "Validates advisor results, restore plans, auto-opt decisions, and notifications"
+};
+
+// ------------------------------------------------------------
 // IMPORTS
-// ------------------------------------------------------
+// ------------------------------------------------------------
 
 import { PulseGPUPerformanceAdvisor } from "./PulseGPUPerformanceAdvisor.js";
 import {
@@ -92,9 +32,9 @@ import {
   validateNotification
 } from "./PulseGPUUXBridge.js";
 
-// ------------------------------------------------------
-// Healing report builder
-// ------------------------------------------------------
+// ------------------------------------------------------------
+// Healing report builder (now includes OS‑v5 metadata)
+// ------------------------------------------------------------
 
 function buildHealingReport({
   status,
@@ -112,17 +52,17 @@ function buildHealingReport({
     autoDecision: autoDecision || null,
     notifications: Array.isArray(notifications) ? notifications.slice() : [],
     meta: {
-      layer: "PulseGPUHealer",
-      version: 1,
+      ...GPU_HEALER_CONTEXT,
+      version: 2,
       target: "full-gpu",
       selfRepairable: true
     }
   };
 }
 
-// ------------------------------------------------------
-// Healing report validation (for higher layers)
-// ------------------------------------------------------
+// ------------------------------------------------------------
+// Healing report validation (unchanged, but now aware of metadata)
+// ------------------------------------------------------------
 
 function validateHealingReport(report) {
   if (!report || typeof report !== "object") return false;
@@ -132,9 +72,9 @@ function validateHealingReport(report) {
   return true;
 }
 
-// ------------------------------------------------------
+// ------------------------------------------------------------
 // Internal helpers
-// ------------------------------------------------------
+// ------------------------------------------------------------
 
 function isAdvisorResultValid(result) {
   if (!result || typeof result !== "object") return false;
@@ -154,9 +94,9 @@ function filterValidNotifications(notifications) {
   return notifications.filter((n) => validateNotification(n));
 }
 
-// ------------------------------------------------------
-// PulseGPUHealer
-// ------------------------------------------------------
+// ------------------------------------------------------------
+// PulseGPUHealer (now includes static OS‑v5 metadata)
+// ------------------------------------------------------------
 
 class PulseGPUHealer {
   constructor(options = {}) {
@@ -172,34 +112,15 @@ class PulseGPUHealer {
 
   // Static metadata for discovery
   static meta = {
-    layer: "PulseGPUHealer",
-    version: 1,
+    ...GPU_HEALER_CONTEXT,
+    version: 2,
     target: "full-gpu",
     selfRepairable: true
   };
 
   // ----------------------------------------------------
-  // healSessionFlow
+  // healSessionFlow (unchanged logic, now with metadata)
   // ----------------------------------------------------
-  //
-  // Input:
-  //   {
-  //     advisorResult?,
-  //     restorePlan?,
-  //     autoDecision?,
-  //     notifications?,
-  //     context: {
-  //       gameProfile,
-  //       hardwareProfile,
-  //       tierProfile,
-  //       settings,
-  //       metrics,
-  //       userPreferences
-  //     }
-  //   }
-  //
-  // Output: HealingReport
-  //
   healSessionFlow({
     advisorResult,
     restorePlan,
@@ -234,7 +155,9 @@ class PulseGPUHealer {
 
       actions.push({
         type: "recomputed-advisor-result",
-        description: "Advisor result was invalid or missing; recomputed from context."
+        description:
+          "Advisor result was invalid or missing; recomputed from context.",
+        ...GPU_HEALER_CONTEXT
       });
     }
 
@@ -248,7 +171,9 @@ class PulseGPUHealer {
 
       actions.push({
         type: "recomputed-restore-plan",
-        description: "Restore plan was invalid or missing; recomputed from advisor advice."
+        description:
+          "Restore plan was invalid or missing; recomputed from advisor advice.",
+        ...GPU_HEALER_CONTEXT
       });
     }
 
@@ -269,7 +194,9 @@ class PulseGPUHealer {
 
       actions.push({
         type: "recomputed-auto-decision",
-        description: "Auto-opt decision was invalid or missing; recomputed from plan and advice."
+        description:
+          "Auto-opt decision was invalid or missing; recomputed from plan and advice.",
+        ...GPU_HEALER_CONTEXT
       });
     }
 
@@ -295,7 +222,9 @@ class PulseGPUHealer {
 
       actions.push({
         type: "regenerated-notifications",
-        description: "Notifications were missing or invalid; regenerated from advisor and plan."
+        description:
+          "Notifications were missing or invalid; regenerated from advisor and plan.",
+        ...GPU_HEALER_CONTEXT
       });
     }
 

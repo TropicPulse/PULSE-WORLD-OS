@@ -1,9 +1,24 @@
+// ============================================================================
 // FILE: pulse-os/GlobalHealer.js
+// LAYER: C‑LAYER (TOP‑LEVEL IMMUNE SYSTEM)
 //
-// GlobalHealer v6.1 — Minimal Upgrade: hintCode + drift signatures
+// GlobalHealer v6.2 — Deterministic, Drift‑Aware, OS‑Level Healing Coordinator
 // NO AI. NO COMPUTE. NO MARKETPLACE. PURE HEALING COORDINATION.
-//
+// ============================================================================
 
+// ------------------------------------------------------------
+// ⭐ OS‑v5 CONTEXT MAP
+// ------------------------------------------------------------
+const GLOBAL_HEALER_CONTEXT = {
+  layer: "C‑Layer",
+  role: "GLOBAL_HEALER",
+  purpose: "Cross‑OS drift detection + global healing coordination",
+  context: "Watches OSHealerLogs + SubsystemHealerLogs and emits FUNCTION_LOG hints"
+};
+
+// ------------------------------------------------------------
+// COLLECTIONS
+// ------------------------------------------------------------
 export const OS_HEALER_LOGS_COLLECTION = "OSHealerLogs";
 export const SUBSYSTEM_HEALER_COLLECTION = "SubsystemHealerLogs";
 export const GLOBAL_HEALER_LOGS_COLLECTION = "GlobalHealerLogs";
@@ -17,26 +32,38 @@ import { recordDriftSignature } from "./PulseOSMemory.js";
 
 const db = getFirestore();
 
-// ------------------------------------------------------
-// writeGlobalHealerLog()
-// ------------------------------------------------------
+// ------------------------------------------------------------
+// writeGlobalHealerLog() — now includes context + color logs
+// ------------------------------------------------------------
 async function writeGlobalHealerLog(entry) {
   try {
     await db.collection(GLOBAL_HEALER_LOGS_COLLECTION).add({
       ts: Date.now(),
+      ...GLOBAL_HEALER_CONTEXT,
       ...entry
     });
+
+    console.log(
+      `%c🟩 GLOBAL_HEALER LOG → ${entry.type}`,
+      "color:#4CAF50; font-weight:bold;"
+    );
+
   } catch (err) {
-    console.error("[GlobalHealer] Failed to write GlobalHealer log:", err);
+    console.error(
+      `%c🟥 GLOBAL_HEALER LOG ERROR`,
+      "color:#FF5252; font-weight:bold;",
+      err
+    );
   }
 }
 
-// ------------------------------------------------------
-// emitFunctionLogHint() — now includes hintCode
-// ------------------------------------------------------
+// ------------------------------------------------------------
+// emitFunctionLogHint() — now includes context + color logs
+// ------------------------------------------------------------
 async function emitFunctionLogHint(entry) {
   try {
     await db.collection(FUNCTION_LOGS_COLLECTION).add({
+      ...GLOBAL_HEALER_CONTEXT,
       ...entry,
       createdAt: Timestamp.now(),
       processed: false,
@@ -44,14 +71,24 @@ async function emitFunctionLogHint(entry) {
       severity: entry.severity ?? "info",
       hintCode: entry.hintCode ?? "UNSPECIFIED_HINT"
     });
+
+    console.log(
+      `%c🟦 GLOBAL HINT EMITTED → ${entry.hintCode}`,
+      "color:#03A9F4; font-weight:bold;"
+    );
+
   } catch (err) {
-    console.error("[GlobalHealer] Failed to emit FUNCTION_LOG hint:", err);
+    console.error(
+      `%c🟥 GLOBAL HINT EMIT ERROR`,
+      "color:#FF5252; font-weight:bold;",
+      err
+    );
   }
 }
 
-// ------------------------------------------------------
+// ------------------------------------------------------------
 // scanOSHealerLogsForGlobalHints()
-// ------------------------------------------------------
+// ------------------------------------------------------------
 async function scanOSHealerLogsForGlobalHints() {
   const snap = await db
     .collection(OS_HEALER_LOGS_COLLECTION)
@@ -63,6 +100,11 @@ async function scanOSHealerLogsForGlobalHints() {
 
   for (const doc of snap.docs) {
     const log = doc.data();
+
+    console.log(
+      `%c🟨 OS_HEALER EVENT → ${log.type}`,
+      "color:#FFC107; font-weight:bold;"
+    );
 
     if (log.type === "function_log_seen") {
       await writeGlobalHealerLog({
@@ -78,9 +120,9 @@ async function scanOSHealerLogsForGlobalHints() {
   }
 }
 
-// ------------------------------------------------------
+// ------------------------------------------------------------
 // scanSubsystemHealerLogsForGlobalHints()
-// ------------------------------------------------------
+// ------------------------------------------------------------
 async function scanSubsystemHealerLogsForGlobalHints() {
   const snap = await db
     .collection(SUBSYSTEM_HEALER_COLLECTION)
@@ -95,6 +137,11 @@ async function scanSubsystemHealerLogsForGlobalHints() {
     const subsystem = log.subsystem ?? "unknown";
     const type = log.type ?? "unknown";
 
+    console.log(
+      `%c🟨 SUBSYSTEM DRIFT → ${subsystem} / ${type}`,
+      "color:#FFC107; font-weight:bold;"
+    );
+
     // ------------------------------------------------------
     // PulseBand → latency/bar mismatch
     // ------------------------------------------------------
@@ -107,14 +154,12 @@ async function scanSubsystemHealerLogsForGlobalHints() {
         bars: log.bars
       });
 
-      // NEW: drift signature
       await recordDriftSignature("PulseBand", {
         type: "latency_bar_mismatch",
         severity: "warning",
         details: { latency: log.latency, bars: log.bars }
       });
 
-      // NEW: hintCode
       await emitFunctionLogHint({
         hintCode: "PB_LATENCY_BAR_MISMATCH",
         subsystem: "PulseBand",
@@ -210,23 +255,34 @@ async function scanSubsystemHealerLogsForGlobalHints() {
   }
 }
 
-// ------------------------------------------------------
+// ------------------------------------------------------------
 // PUBLIC: startGlobalHealer()
-// ------------------------------------------------------
+// ------------------------------------------------------------
 export default function startGlobalHealer() {
+  console.log(
+    `%c🟦 GlobalHealer v6.2 started`,
+    "color:#03A9F4; font-weight:bold;"
+  );
+
   setInterval(() => {
     scanOSHealerLogsForGlobalHints().catch((err) => {
-      console.error("[GlobalHealer] OSHealerLogs scan error:", err);
+      console.error(
+        `%c🟥 OSHealerLogs scan error`,
+        "color:#FF5252; font-weight:bold;",
+        err
+      );
     });
   }, OS_HEALER_SCAN_INTERVAL_MS);
 
   setInterval(() => {
     scanSubsystemHealerLogsForGlobalHints().catch((err) => {
-      console.error("[GlobalHealer] SubsystemHealerLogs scan error:", err);
+      console.error(
+        `%c🟥 SubsystemHealerLogs scan error`,
+        "color:#FF5252; font-weight:bold;",
+        err
+      );
     });
   }, SUBSYSTEM_SCAN_INTERVAL_MS);
-
-  console.log("[GlobalHealer] v6.1 global healer started.");
 }
 
 export {

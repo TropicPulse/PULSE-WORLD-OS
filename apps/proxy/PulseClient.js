@@ -30,7 +30,6 @@ async function pulseFetch(url) {
   const start = performance.now();
 
   try {
-    // Try Pulse route first
     const res = await fetch(
       `${PULSE_PROXY_URL}/TPProxy?url=${encodeURIComponent(url)}`,
       {
@@ -56,7 +55,7 @@ async function pulseFetch(url) {
     // Report to PulseBand
     pulseband?.setStatus({
       snapshot: {
-        advantage: 1.0, // placeholder until v6.1 fetch metrics
+        advantage: 1.0,
         timeSaved: 0
       },
       live: {
@@ -66,12 +65,11 @@ async function pulseFetch(url) {
     });
 
     // Report to PulseNet
-    window.pulsenet?.updateSignalFromPulseBand(pulseband.getStatus());
+    pulsenet?.updateSignalFromPulseBand(pulseband.getStatus());
 
     return { data, meta: { route: "Pulse", bytes, durationMs } };
 
   } catch (err) {
-    // Fallback to direct fetch
     const fbStart = performance.now();
     const fbRes = await fetch(url);
     const fbDuration = performance.now() - fbStart;
@@ -93,7 +91,7 @@ async function pulseFetch(url) {
     });
 
     // Report to PulseNet
-    window.pulsenet?.updateSignalFromPulseBand(pulseband.getStatus());
+    pulsenet?.updateSignalFromPulseBand(pulseband.getStatus());
 
     return { data, meta: { route: "Phone", bytes, durationMs: fbDuration } };
   }
@@ -102,6 +100,13 @@ async function pulseFetch(url) {
 /* ------------------------------------------------------------
    Public API
 ------------------------------------------------------------ */
-PulseClient = {
+export const PulseClient = {
   get: pulseFetch
 };
+
+/* ------------------------------------------------------------
+   Global Exposure (PulseBand v6 pattern)
+------------------------------------------------------------ */
+if (typeof globalThis !== "undefined") {
+  globalThis.pulseclient = PulseClient;
+}

@@ -1,40 +1,27 @@
+// ============================================================================
 // FILE: tropic-pulse-functions/apps/pulse-gpu/PulseGPUSessionTracer.js
+// LAYER: GPU-SUBSYSTEM (PURE LOGIC / SESSION TRACING)
 //
-// INTENT-CHECK: If you paste this while confused or frustrated, gently re-read your INTENT.
-//
-// 📘 PAGE INDEX — Source of Truth for This File
-//
-// ROLE:
-//   PulseGPUSessionTracer — deterministic, pure-logic tracer for GPU/game sessions.
-//   Records ordered "steps" within a session with durations + health signals.
-//
-//   This file IS:
-//     • A pure logic module (full GPU, API-agnostic)
-//     • A deterministic session trace builder
-//     • A source of structured traces for Memory + InsightsEngine
-//     • v5-ready: traces include metadata for self-healing + replay
-//
-//   This file IS NOT:
-//     • A renderer
-//     • A GPU runtime
-//     • A WebGPU/WebGL interface
-//     • A persistence layer
-//     • A UI or notification system
-//     • A backend module
-//
-// SAFETY RULES:
-//   • NO WebGPU/WebGL APIs
-//   • NO DOM APIs
-//   • NO Node.js APIs
-//   • NO filesystem or network access
-//   • NO randomness or timestamps
-//   • FAIL-OPEN: invalid steps or missing sessions must not break the tracer
-//   • SELF-REPAIR READY: traces must contain enough metadata for reconstruction
-//
-// ------------------------------------------------------
-// Utility: clamp helpers
-// ------------------------------------------------------
+// PulseGPUSessionTracer v5 — Deterministic, Pure-Logic Session Tracer
+// NO GPU. NO DOM. NO NODE. NO NETWORK. PURE HEALING + REPLAY.
+// ============================================================================
 
+// ------------------------------------------------------------
+// ⭐ OS‑v5 CONTEXT METADATA
+// ------------------------------------------------------------
+const TRACER_CONTEXT = {
+  layer: "PulseGPUSessionTracer",
+  role: "GPU_SESSION_TRACER",
+  purpose: "Deterministic GPU/game session tracing",
+  context: "Records ordered steps with durations + health signals",
+  target: "full-gpu",
+  selfRepairable: true,
+  version: 5
+};
+
+// ------------------------------------------------------------
+// Utility: clamp helpers
+// ------------------------------------------------------------
 function clamp(value, min, max) {
   if (typeof value !== "number" || Number.isNaN(value)) return min;
   if (value < min) return min;
@@ -42,10 +29,9 @@ function clamp(value, min, max) {
   return value;
 }
 
-// ------------------------------------------------------
-// Step normalization (v5-ready)
-// ------------------------------------------------------
-
+// ------------------------------------------------------------
+// Step normalization (v5-ready + OS‑v5 metadata)
+// ------------------------------------------------------------
 function normalizeStep(step = {}) {
   const {
     stepId = "unknown-step",
@@ -66,6 +52,7 @@ function normalizeStep(step = {}) {
     warnings: clamp(warnings, 0, 100000),
     errors: clamp(errors, 0, 100000),
     stutters: clamp(stutters, 0, 100000),
+
     gpuLoad:
       typeof gpuLoad === "number" ? clamp(gpuLoad, 0, 100) : undefined,
     cpuLoad:
@@ -75,19 +62,16 @@ function normalizeStep(step = {}) {
         ? clamp(vramUsageMB, 0, 4_000_000)
         : undefined,
 
-    // v5 metadata for healing + replay
+    // ⭐ OS‑v5 metadata
     meta: {
-      layer: "PulseGPUSessionTracer",
-      version: 4,
-      target: "full-gpu"
+      ...TRACER_CONTEXT
     }
   };
 }
 
-// ------------------------------------------------------
-// SessionTrace model (v5-ready)
-// ------------------------------------------------------
-
+// ------------------------------------------------------------
+// SessionTrace model (v5-ready + OS‑v5 metadata)
+// ------------------------------------------------------------
 class SessionTrace {
   constructor({ sessionId, gameProfile, hardwareProfile, tierProfile }) {
     this.sessionId = String(sessionId || "unknown-session");
@@ -96,12 +80,9 @@ class SessionTrace {
     this.tierProfile = tierProfile || {};
     this.steps = [];
 
-    // v5 metadata for healing + replay
+    // ⭐ OS‑v5 metadata
     this.meta = {
-      layer: "PulseGPUSessionTracer",
-      version: 4,
-      target: "full-gpu",
-      selfRepairable: true
+      ...TRACER_CONTEXT
     };
   }
 
@@ -129,23 +110,29 @@ class SessionTrace {
       totalWarnings,
       totalErrors,
       totalStutters,
-      stepCount: this.steps.length
+      stepCount: this.steps.length,
+
+      // ⭐ OS‑v5 metadata
+      meta: {
+        ...TRACER_CONTEXT
+      }
     };
   }
 }
 
-// ------------------------------------------------------
-// PulseGPUSessionTracer (v4/v5-ready)
-// ------------------------------------------------------
-
+// ------------------------------------------------------------
+// PulseGPUSessionTracer (v5-ready + OS‑v5 metadata)
+// ------------------------------------------------------------
 class PulseGPUSessionTracer {
   constructor() {
-    this.sessions = new Map(); // sessionId -> SessionTrace
+    this.sessions = new Map();
+
+    // ⭐ OS‑v5 metadata
+    this.meta = {
+      ...TRACER_CONTEXT
+    };
   }
 
-  // ----------------------------------------------------
-  // Start a new session (fail-open)
-  // ----------------------------------------------------
   startSession({ sessionId, gameProfile, hardwareProfile, tierProfile }) {
     const id = String(sessionId || "unknown-session");
 
@@ -160,25 +147,16 @@ class PulseGPUSessionTracer {
     return trace;
   }
 
-  // ----------------------------------------------------
-  // Record a step (fail-open)
-  // ----------------------------------------------------
   recordStep(sessionId, step) {
     const id = String(sessionId || "unknown-session");
     const trace = this.sessions.get(id);
 
-    if (!trace) {
-      // fail-open: ignore silently
-      return null;
-    }
+    if (!trace) return null; // fail-open
 
     trace.addStep(step || {});
     return trace;
   }
 
-  // ----------------------------------------------------
-  // End a session (fail-open)
-  // ----------------------------------------------------
   endSession(sessionId) {
     const id = String(sessionId || "unknown-session");
     const trace = this.sessions.get(id);
@@ -189,34 +167,24 @@ class PulseGPUSessionTracer {
     return trace;
   }
 
-  // ----------------------------------------------------
-  // Get current trace (fail-open)
-  // ----------------------------------------------------
   getSessionTrace(sessionId) {
     const id = String(sessionId || "unknown-session");
     return this.sessions.get(id) || null;
   }
 
-  // ----------------------------------------------------
-  // Clear a session
-  // ----------------------------------------------------
   clearSession(sessionId) {
     const id = String(sessionId || "unknown-session");
     this.sessions.delete(id);
   }
 
-  // ----------------------------------------------------
-  // Clear all sessions
-  // ----------------------------------------------------
   clearAllSessions() {
     this.sessions.clear();
   }
 }
 
-// ------------------------------------------------------
+// ------------------------------------------------------------
 // EXPORTS
-// ------------------------------------------------------
-
+// ------------------------------------------------------------
 export {
   PulseGPUSessionTracer,
   SessionTrace,

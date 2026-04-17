@@ -1,60 +1,33 @@
+// ============================================================================
 // FILE: tropic-pulse-functions/apps/pulse-gpu/PulseGPUSettingsMemory.js
+// LAYER: GPU-SUBSYSTEM (PURE LOGIC / MEMORY MODEL)
 //
-// INTENT-CHECK: If you paste this while confused or frustrated, gently re-read your INTENT.
-//
-// 📘 PAGE INDEX — Source of Truth for This File
-//
-// ROLE:
-//   PulseGPUSettingsMemory — deterministic, in-memory representation of GPU session memory
-//   for games. Stores known-good configurations, performance metrics, and optional traces,
-//   and exposes helpers to score sessions, detect regressions, and retrieve best configs.
-//
-//   This file IS:
-//     • A pure logic + memory model for Pulse-GPU (full GPU, API-agnostic)
-//     • A deterministic store for per-game/per-hardware/per-tier configs
-//     • A scoring + comparison engine for GPU sessions
-//     • A v5-ready memory layer (self-repair hooks, fail-open behavior)
-//
-//   This file IS NOT:
-//     • A renderer
-//     • A GPU runtime
-//     • A WebGPU/WebGL interface
-//     • A backend module
-//     • A persistence layer
-//     • A UI or notification system
-//
-// DEPLOYMENT:
-//   Lives in /apps/pulse-gpu as part of the GPU subsystem.
-//   Must remain ESM-only and side-effect-free.
-//   Persistence must be handled by callers using serialize()/deserialize().
-//
-// SAFETY RULES:
-//   • NO WebGPU/WebGL APIs
-//   • NO DOM APIs
-//   • NO Node.js APIs
-//   • NO filesystem or network access
-//   • NO randomness or timestamps in scoring logic
-//   • NO mutation of external state
-//   • FAIL-OPEN: corrupted entries or invalid JSON must not break the system
-//   • SELF-REPAIR READY: structure must allow future auto-healing of entries
-//
-// INTERNAL LOGIC SUMMARY (v4/v5-ready):
-//   • Deterministic hashing + scoring
-//   • Regression detection
-//   • Best-known config lookup
-//   • Full fail-open behavior
-//   • Structural validation for v5 self-repair layer
-//
-// ------------------------------------------------------
-// IMPORTS
-// ------------------------------------------------------
+// PulseGPUSettingsMemory v5 — Deterministic, Drift‑Proof GPU Memory Layer
+// NO GPU. NO DOM. NO NODE. NO NETWORK. PURE LOGIC + METADATA.
+// ============================================================================
 
+// ------------------------------------------------------------
+// ⭐ OS‑v5 CONTEXT METADATA
+// ------------------------------------------------------------
+const MEMORY_CONTEXT = {
+  layer: "PulseGPUSettingsMemory",
+  role: "GPU_SETTINGS_MEMORY",
+  purpose: "Deterministic memory model for GPU configs + scoring",
+  context:
+    "Stores best-known configs, metrics, traces, and supports regression detection",
+  target: "full-gpu",
+  version: 5,
+  selfRepairable: true
+};
+
+// ------------------------------------------------------------
+// IMPORTS
+// ------------------------------------------------------------
 import { SCORE_CONSTANTS } from "./PulseGPUConfig.js";
 
-// ------------------------------------------------------
+// ------------------------------------------------------------
 // Utility: stable JSON stringify for hashing
-// ------------------------------------------------------
-
+// ------------------------------------------------------------
 function stableStringify(value) {
   if (value === null || typeof value !== "object") {
     return JSON.stringify(value);
@@ -71,10 +44,9 @@ function stableStringify(value) {
   return "{" + parts.join(",") + "}";
 }
 
-// ------------------------------------------------------
-// Utility: simple deterministic hash (string → string)
-// ------------------------------------------------------
-
+// ------------------------------------------------------------
+// Utility: simple deterministic hash
+// ------------------------------------------------------------
 function simpleHash(str) {
   let hash = 0;
   for (let i = 0; i < str.length; i += 1) {
@@ -85,19 +57,17 @@ function simpleHash(str) {
   return (hash >>> 0).toString(16);
 }
 
-// ------------------------------------------------------
+// ------------------------------------------------------------
 // Settings hash
-// ------------------------------------------------------
-
+// ------------------------------------------------------------
 function computeSettingsHash(settings) {
   const serialized = stableStringify(settings || {});
   return simpleHash(serialized);
 }
 
-// ------------------------------------------------------
+// ------------------------------------------------------------
 // Session scoring (0.0 - 1.0) — deterministic, fail-open
-// ------------------------------------------------------
-
+// ------------------------------------------------------------
 function clamp(value, min, max) {
   if (typeof value !== "number" || Number.isNaN(value)) return min;
   if (value < min) return min;
@@ -133,10 +103,9 @@ function scoreSession(metrics = {}) {
   return clamp(score, 0, 1);
 }
 
-// ------------------------------------------------------
+// ------------------------------------------------------------
 // Regression detection
-// ------------------------------------------------------
-
+// ------------------------------------------------------------
 function detectRegression(currentMetrics, baselineMetrics) {
   const currentScore = scoreSession(currentMetrics);
   const baselineScore = scoreSession(baselineMetrics);
@@ -147,10 +116,9 @@ function detectRegression(currentMetrics, baselineMetrics) {
   return delta * 100;
 }
 
-// ------------------------------------------------------
+// ------------------------------------------------------------
 // Key building helpers
-// ------------------------------------------------------
-
+// ------------------------------------------------------------
 function buildGameKey(gameProfile = {}) {
   const { gameId = "unknown", buildVersion = "", contentHash = "" } =
     gameProfile;
@@ -198,13 +166,15 @@ function buildCompositeKey(
   return simpleHash(base);
 }
 
-// ------------------------------------------------------
-// Memory entry model (v4/v5-ready)
-// ------------------------------------------------------
-
+// ------------------------------------------------------------
+// Memory entry model (v5-ready + OS‑v5 metadata)
+// ------------------------------------------------------------
 class PulseGPUSettingsMemoryStore {
   constructor() {
     this.entries = new Map();
+
+    // store-level metadata
+    this.meta = { ...MEMORY_CONTEXT };
   }
 
   clear() {
@@ -241,12 +211,9 @@ class PulseGPUSettingsMemoryStore {
         bestMetrics: metrics || {},
         bestScore: score,
         bestTrace: Array.isArray(trace) ? trace.slice() : null,
-        meta: {
-          layer: "PulseGPUSettingsMemory",
-          version: 4,
-          target: "full-gpu",
-          selfRepairable: true
-        }
+
+        // ⭐ OS‑v5 metadata
+        meta: { ...MEMORY_CONTEXT }
       };
       this.entries.set(key, entry);
     }
@@ -305,12 +272,9 @@ class PulseGPUSettingsMemoryStore {
         bestScore:
           typeof entry.bestScore === "number" ? entry.bestScore : 0,
         bestTrace: Array.isArray(entry.bestTrace) ? entry.bestTrace : null,
-        meta: {
-          layer: "PulseGPUSettingsMemory",
-          version: 4,
-          target: "full-gpu",
-          selfRepairable: true
-        }
+
+        // ⭐ OS‑v5 metadata (override old versions)
+        meta: { ...MEMORY_CONTEXT }
       };
 
       this.entries.set(safeEntry.key, safeEntry);
@@ -318,13 +282,15 @@ class PulseGPUSettingsMemoryStore {
   }
 }
 
-// ------------------------------------------------------
-// Public API wrapper
-// ------------------------------------------------------
-
+// ------------------------------------------------------------
+// Public API wrapper (v5-ready + OS‑v5 metadata)
+// ------------------------------------------------------------
 class PulseGPUSettingsMemory {
   constructor() {
     this.store = new PulseGPUSettingsMemoryStore();
+
+    // wrapper-level metadata
+    this.meta = { ...MEMORY_CONTEXT };
   }
 
   recordSession(session) {
@@ -360,10 +326,9 @@ class PulseGPUSettingsMemory {
   }
 }
 
-// ------------------------------------------------------
+// ------------------------------------------------------------
 // EXPORTS
-// ------------------------------------------------------
-
+// ------------------------------------------------------------
 export {
   PulseGPUSettingsMemory,
   computeSettingsHash,
