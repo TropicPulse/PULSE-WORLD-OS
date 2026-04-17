@@ -14,15 +14,9 @@
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
 <!-- Google tag (gtag.js) -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-HSX89KS63P"></script>
-<!-- Pulse OS Core -->
-<script type="module" src="https://tropicpulse.bz/proxy/PulseUpdate.js"></script>
-<script type="module" src="https://tropicpulse.bz/proxy/PulseBand.js"></script>
-<script type="module" src="https://tropicpulse.bz/proxy/PulseClient.js"></script>
-<script type="module" src="https://tropicpulse.bz/proxy/PulseNet.js"></script>
-
 <!-- Backend Connector Layer -->
 <script type="module">
-  import { getAuth, getHook, getMap, callHelper } from "/lib/Connectors/PageRouter.js";
+  import { getAuth, getHook, getMap, callHelper } from "/lib/Connectors/PageScanner.js";
 </script>
 <script>
   window.dataLayer = window.dataLayer || [];
@@ -107,7 +101,7 @@ document.addEventListener("contextmenu", function(e) {
   justify-content: center;
 
   background: #000;
-  background-image: url('https://tropicpulse.bz/Mysterious.png');
+  background-image: url('https://www.tropicpulse.bz/Mysterious.png');
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
@@ -1089,7 +1083,7 @@ body::before {
   content: "";
   position: absolute;
   inset: 0;
-  background-image: url("https://tropicpulse.bz/ToucanLogo-Mini.png");
+  background-image: url("https://www.tropicpulse.bz/ToucanLogo-Mini.png");
   background-size: 180px;
   background-repeat: no-repeat;
   background-position: center 40%;
@@ -2565,7 +2559,7 @@ button:active,
 <body>
   
   <div id="t-loading">
-    <img src="https://tropicpulse.bz/ToucanLogo-Mini.png" id="t-loading-logo" />
+    <img src="https://www.tropicpulse.bz/ToucanLogo-Mini.png" id="t-loading-logo" />
   </div>
   <div id="pulseband-overlay">
   <div id="pulseband-badge">
@@ -2576,7 +2570,7 @@ button:active,
 
   <div id="pulseband-panel">
     <div class="pb-header">
-      <img class="pb-mini-badge" src="https://tropicpulse.bz/proxy/PulseBand.png"></img>
+      <img class="pb-mini-badge" src="https://www.tropicpulse.bz/proxy/PulseBand.png"></img>
     </div>
 
     <div class="pb-row"><label>PulseBand Bars</label><span id="pb-bars-text">0/4</span></div>
@@ -2703,7 +2697,7 @@ button:active,
       </div>
     </div>
     <div class="vaultButtonWrapper">
-    <a href="https://tropicpulse.bz/Wallet.html" class="vaultLinkPill">
+    <a href="https://www.tropicpulse.bz/Wallet.html" class="vaultLinkPill">
       <svg class="vaultIcon" viewBox="0 0 24 24">
         <defs>
           <linearGradient id="vaultMetal" x1="0%" y1="0%" x2="100%" y2="100%">
@@ -2794,7 +2788,7 @@ button:active,
     
     <!-- HEADER -->
     <div class="receipt-header">
-      <img src="https://tropicpulse.bz/ToucanLogo-Mini.png" class="receipt-logo" />
+      <img src="https://www.tropicpulse.bz/ToucanLogo-Mini.png" class="receipt-logo" />
       
       <div class="receipt-header-text">
         <div id="receiptTitle" class="receipt-title"></div>
@@ -2873,7 +2867,7 @@ let userID = null;
 let resizeTimeout;
 let token = localStorage.getItem("tp_token_v4") || null;
 let referralSortMode = "lifetime";
-let referralBaseUrl = "https://tropicpulse.bz/r/";
+let referralBaseUrl = "https://www.tropicpulse.bz/r/";
 let lastRenderedTier = null;
 let lastRenderedPoints = null;
 let lastRenderedLifetime = null;
@@ -4026,7 +4020,7 @@ function wireInteractions() {
     // -------------------------------
     document.addEventListener("DOMContentLoaded", () => {
       window.addEventListener("message", (e) => {
-        if (e.origin !== "https://tropicpulse.bz") return;
+        if (e.origin !== "https://www.tropicpulse.bz") return;
 
         const action = e.data?.action;
         if (!action) return;
@@ -6004,7 +5998,7 @@ async function loadUserDetails() {
 
 //   // 5️⃣ Update referrals + QR
 //   const referralLink =
-//     "https://tropicpulse.bz/r/" +
+//     "https://www.tropicpulse.bz/r/" +
 //     encodeURIComponent(loyalty.referralCode || "");
 
 //   referralCodeEl.textContent = loyalty.referralCode || "";
@@ -6243,7 +6237,7 @@ function openQRPage(referralLink) {
   // Safari requires visible before load
   setTimeout(() => {
     frame.src =
-      "https://tropicpulse.bz/qr-view.html?code=" +
+      "https://www.tropicpulse.bz/qr-view.html?code=" +
       encodeURIComponent(referralLink);
   }, 120);
 
@@ -6307,7 +6301,7 @@ function openTropicScanner() {
   if (!f) return;
 
   if (!f.src) {
-    f.src = "https://tropicpulse.bz/TropicScanner.html";
+    f.src = "https://www.tropicpulse.bz/TropicScanner.html";
   }
 
   f.classList.remove("hidden");

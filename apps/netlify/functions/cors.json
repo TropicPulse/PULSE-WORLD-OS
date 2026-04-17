@@ -2,7 +2,7 @@
   {
     "origin": [
       "https://tropic-pulse.web.app",
-      "https://tropicpulse.bz"
+      "https://www.tropicpulse.bz"
     ],
     "method": ["GET", "POST", "PUT", "HEAD", "DELETE"],
     "responseHeader": ["Content-Type", "x-goog-meta-*"],

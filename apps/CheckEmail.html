@@ -14,16 +14,9 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
 <!-- Google tag (gtag.js) -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-HSX89KS63P"></script>
-
-<!-- Pulse OS Core -->
-<script type="module" src="https://tropicpulse.bz/proxy/PulseUpdate.js"></script>
-<script type="module" src="https://tropicpulse.bz/proxy/PulseBand.js"></script>
-<script type="module" src="https://tropicpulse.bz/proxy/PulseClient.js"></script>
-<script type="module" src="https://tropicpulse.bz/proxy/PulseNet.js"></script>
-
 <!-- Backend Connector Layer -->
 <script type="module">
-  import { getAuth, getHook, getMap, callHelper } from "/lib/Connectors/PageRouter.js";
+  import { getAuth, getHook, getMap, callHelper } from "/lib/Connectors/PageScanner.js";
 </script>
 <script>
   window.dataLayer = window.dataLayer || [];
@@ -79,7 +72,7 @@
   justify-content: center;
 
   background: #000;
-  background-image: url('https://tropicpulse.bz/Mysterious.png');
+  background-image: url('https://www.tropicpulse.bz/Mysterious.png');
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
@@ -524,7 +517,7 @@ text-align: center;
 
 <body>
   <div id="t-loading">
-    <img src="https://tropicpulse.bz/ToucanLogo-Mini.png" id="t-loading-logo"></img>
+    <img src="https://www.tropicpulse.bz/ToucanLogo-Mini.png" id="t-loading-logo"></img>
   </div>
   <div id="pulseband-overlay">
     <div id="pulseband-badge">
@@ -537,7 +530,7 @@ text-align: center;
 
       <div class="pb-header">
       <img id="pb-mini-badge" class="pb-mini-badge"
-          src="https://tropicpulse.bz/proxy/PulseBand.png"
+          src="https://www.tropicpulse.bz/proxy/PulseBand.png"
           alt="PulseBand Badge">
     </div>
 
@@ -604,7 +597,7 @@ text-align: center;
   </div>
   <div class="auth-wrapper">
     <div class="auth-container">
-      <img src="https://tropicpulse.bz/ToucanLogo-Mini.png" class="auth-logo"></img>
+      <img src="https://www.tropicpulse.bz/ToucanLogo-Mini.png" class="auth-logo"></img>
 
       <h1 class="auth-title">Secure Login</h1>
       <div id="authMsg" class="auth-msg"></div>
@@ -624,7 +617,7 @@ text-align: center;
       </div>
       <label class="remember-row"><input type="checkbox" id="staySignedIn"></input><b>Stay Signed On This Device</b></label>
       <div id="rememberSection" class="remember-section" style="display:block;">
-        <div class="signup-link" onclick="window.location.href = `https://tropicpulse.bz/userrecord.html`">Create an Account</div>
+        <div class="signup-link" onclick="window.location.href = `https://www.tropicpulse.bz/userrecord.html`">Create an Account</div>
       </div>
     </div>
   </div>
@@ -782,7 +775,7 @@ userName  = identity.name  || null;
   }
 
   // 3️⃣ Session logic
-  const target = returnTo || "https://tropicpulse.bz/dashboard.html";
+  const target = returnTo || "https://www.tropicpulse.bz/dashboard.html";
 
   if (!inactive) {
     mark("SESSION ACTIVE → PREWARM + REDIRECT");
@@ -1027,7 +1020,7 @@ if (!window.__verifyPinBound) {
         const result = await restoreIdentityFlow("FRESH_LOGIN", data.token);
 
         if (result.ok) {
-          window.location.href = returnTo || "https://tropicpulse.bz/dashboard.html";
+          window.location.href = returnTo || "https://www.tropicpulse.bz/dashboard.html";
           return;
         }
 

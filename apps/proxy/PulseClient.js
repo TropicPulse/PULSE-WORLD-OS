@@ -9,7 +9,7 @@
      - Just: fetch → measure → report → return
    ============================================================ */
 
-const PULSE_PROXY_URL = "https://tropicpulse.bz";
+const PULSE_PROXY_URL = "https://www.tropicpulse.bz";
 
 /* ------------------------------------------------------------
    Basic metadata helpers

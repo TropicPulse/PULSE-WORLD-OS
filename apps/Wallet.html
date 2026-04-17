@@ -14,15 +14,9 @@
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
 <!-- Google tag (gtag.js) -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-HSX89KS63P"></script>
-<!-- Pulse OS Core -->
-<script type="module" src="https://tropicpulse.bz/proxy/PulseUpdate.js"></script>
-<script type="module" src="https://tropicpulse.bz/proxy/PulseBand.js"></script>
-<script type="module" src="https://tropicpulse.bz/proxy/PulseClient.js"></script>
-<script type="module" src="https://tropicpulse.bz/proxy/PulseNet.js"></script>
-
 <!-- Backend Connector Layer -->
 <script type="module">
-  import { getAuth, getHook, getMap, callHelper } from "/lib/Connectors/PageRouter.js";
+  import { getAuth, getHook, getMap, callHelper } from "/lib/Connectors/PageScanner.js";
 </script>
 <script>
   window.dataLayer = window.dataLayer || [];
@@ -97,7 +91,7 @@
   justify-content: center;
 
   background: #000;
-  background-image: url('https://tropicpulse.bz/Mysterious.png');
+  background-image: url('https://www.tropicpulse.bz/Mysterious.png');
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
@@ -2065,7 +2059,7 @@ body::before {
 
   <body>
     <div id="t-loading">
-      <img src="https://tropicpulse.bz/ToucanLogo-Mini.png" id="t-loading-logo" />
+      <img src="https://www.tropicpulse.bz/ToucanLogo-Mini.png" id="t-loading-logo" />
     </div>
     <div id="pulseband-overlay">
   <div id="pulseband-badge">
@@ -2076,7 +2070,7 @@ body::before {
 
   <div id="pulseband-panel">
     <div class="pb-header">
-      <img class="pb-mini-badge" src="https://tropicpulse.bz/proxy/PulseBand.png"></img>
+      <img class="pb-mini-badge" src="https://www.tropicpulse.bz/proxy/PulseBand.png"></img>
     </div>
 
     <div class="pb-row"><label>PulseBand Bars</label><span id="pb-bars-text">0/4</span></div>
@@ -2361,7 +2355,7 @@ let persistenceEnabled = true;
   let firstTime = null;
 
   
-const FALLBACK_PROFILE_URL = "https://tropicpulse.bz/ToucanGeneral.png";
+const FALLBACK_PROFILE_URL = "https://www.tropicpulse.bz/ToucanGeneral.png";
 const TOUCAN_SPIRIT_URL = "https://firebasestorage.googleapis.com/v0/b/tropic-pulse.firebasestorage.app/o/ToucanVaultSpirit.png?alt=media&token=3104cf3d-810a-419e-b33e-13bbe98a39fd";
 
 let token = localStorage.getItem("tp_token_v4") || null;
@@ -3290,7 +3284,7 @@ walletCard.classList.add("ready");
 
 function loadVaultCoinImage() {
 const img = document.getElementById("vaultCoinToucanImg");
-if (img && !img.src) img.src = "https://tropicpulse.bz/ToucanThumbsUp.png";
+if (img && !img.src) img.src = "https://www.tropicpulse.bz/ToucanThumbsUp.png";
 }
 
 // ───────────────────────────────────────────────
@@ -4475,7 +4469,7 @@ function initializeVaultButton() {
       return;
     }
 
-    window.location.href = "https://tropicpulse.bz/Vault.html";
+    window.location.href = "https://www.tropicpulse.bz/Vault.html";
   };
 
   // Attach listeners ONCE

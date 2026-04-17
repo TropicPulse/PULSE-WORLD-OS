@@ -8,6 +8,10 @@
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
 <!-- Google tag (gtag.js) -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-HSX89KS63P"></script>
+<!-- Backend Connector Layer -->
+<script type="module">
+  import { getAuth, getHook, getMap, callHelper } from "/lib/Connectors/PageScanner.js";
+</script>
 <script>
   window.dataLayer = window.dataLayer || [];
   function gtag(){dataLayer.push(arguments);}
@@ -62,7 +66,7 @@
     padding:20px;
     box-sizing:border-box;
   ">
-    <img src="https://tropicpulse.bz/ToucanLogo-Mini.png?v4" style="width:200px;margin-bottom:10px;" />
+    <img src="https://www.tropicpulse.bz/ToucanLogo-Mini.png?v4" style="width:200px;margin-bottom:10px;" />
     <div style="
       width:80px;
       height:80px;
@@ -87,7 +91,7 @@
       margin: 0;
       padding: 0;
       background: #000;
-      background-image: url('https://tropicpulse.bz/Mysterious.png?v4');
+      background-image: url('https://www.tropicpulse.bz/Mysterious.png?v4');
       background-size: cover;
       background-position: center;
       background-repeat: no-repeat;
@@ -170,7 +174,7 @@ console.log("🌞 Script loaded, attaching visibility listener…");
       localStorage.removeItem("tp_token_v3");
       localStorage.removeItem("tp_identity_v3");
       localStorage.removeItem("tp_device_token_v3");
-      window.location.replace("https://tropicpulse.bz/CheckEmail.html");
+      window.location.replace("https://www.tropicpulse.bz/CheckEmail.html");
     } else {
       localStorage.setItem("tp_device_token_v3", "1");
 
@@ -178,7 +182,7 @@ console.log("🌞 Script loaded, attaching visibility listener…");
         if (returnTo) {
           window.location.replace(returnTo);
         } else {
-          window.location.replace("https://tropicpulse.bz/loading.html?dest=appDashboard");
+          window.location.replace("https://www.tropicpulse.bz/loading.html?dest=appDashboard");
         }
     })}
   </script>

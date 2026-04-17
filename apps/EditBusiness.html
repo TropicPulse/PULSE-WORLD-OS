@@ -14,16 +14,9 @@
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
 <!-- Google tag (gtag.js) -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-HSX89KS63P"></script>
-
-<!-- Pulse OS Core -->
-<script type="module" src="https://tropicpulse.bz/proxy/PulseUpdate.js"></script>
-<script type="module" src="https://tropicpulse.bz/proxy/PulseBand.js"></script>
-<script type="module" src="https://tropicpulse.bz/proxy/PulseClient.js"></script>
-<script type="module" src="https://tropicpulse.bz/proxy/PulseNet.js"></script>
-
 <!-- Backend Connector Layer -->
 <script type="module">
-  import { getAuth, getHook, getMap, callHelper } from "/lib/Connectors/PageRouter.js";
+  import { getAuth, getHook, getMap, callHelper } from "/lib/Connectors/PageScanner.js";
 </script>
 <script>
   window.dataLayer = window.dataLayer || [];
@@ -92,7 +85,7 @@ body {
   justify-content: center;
 
   background: #000;
-  background-image: url('https://tropicpulse.bz/Mysterious.png');
+  background-image: url('https://www.tropicpulse.bz/Mysterious.png');
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
@@ -764,7 +757,7 @@ input[type="checkbox"] {
 </head>
 <body>
 <div id="t-loading">
-  <img src="https://tropicpulse.bz/ToucanLogo-Mini.png" id="t-loading-logo" />
+  <img src="https://www.tropicpulse.bz/ToucanLogo-Mini.png" id="t-loading-logo" />
 </div>
 <div id="pulseband-overlay">
   <div id="pulseband-badge">
@@ -775,7 +768,7 @@ input[type="checkbox"] {
 
   <div id="pulseband-panel">
     <div class="pb-header">
-      <img class="pb-mini-badge" src="https://tropicpulse.bz/proxy/PulseBand.png"></img>
+      <img class="pb-mini-badge" src="https://www.tropicpulse.bz/proxy/PulseBand.png"></img>
     </div>
 
     <div class="pb-row"><label>PulseBand Bars</label><span id="pb-bars-text">0/4</span></div>
@@ -2634,7 +2627,7 @@ function hideTPLoader() {
     showMessage(isEditing ? "Business updated!" : "Business created!", "success");
 
     setTimeout(() => {
-      window.location.href = `https://tropicpulse.bz/businessDetail.html?id=${encodeURIComponent(docId)}`;
+      window.location.href = `https://www.tropicpulse.bz/businessDetail.html?id=${encodeURIComponent(docId)}`;
     }, 600);
   });
 

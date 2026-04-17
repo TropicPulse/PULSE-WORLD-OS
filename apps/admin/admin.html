@@ -75,7 +75,7 @@
       }
     });
     const returnTo = encodeURIComponent(window.location.href);
-    window.location.replace(`https://tropicpulse.bz/CheckEmail.html?returnTo=${returnTo}`);
+    window.location.replace(`https://www.tropicpulse.bz/CheckEmail.html?returnTo=${returnTo}`);
     throw new Error("No identity — redirecting to CheckEmail");
   }
   // --- END SIMPLE IDENTITY CHECK ---
@@ -102,13 +102,13 @@
     const token = localStorage.getItem("tp_token_v4");
     if (!token) {
       const returnTo = encodeURIComponent(window.location.href);
-      window.location.replace(`https://tropicpulse.bz/CheckEmail.html?returnTo=${returnTo}`);
+      window.location.replace(`https://www.tropicpulse.bz/CheckEmail.html?returnTo=${returnTo}`);
     }
 
     const trusted = localStorage.getItem("tp_device_token_v4");
     if (trusted !== "1") {
       const returnTo = encodeURIComponent(window.location.href);
-      window.location.replace(`https://tropicpulse.bz/CheckEmail.html?returnTo=${returnTo}`);
+      window.location.replace(`https://www.tropicpulse.bz/CheckEmail.html?returnTo=${returnTo}`);
     }
 
     const response = await fetch("https://verifytoken-ilx3agka5q-uc.a.run.app", {
@@ -120,14 +120,14 @@
     const data = await response.json();
     if (!data.success) {
       const returnTo = encodeURIComponent(window.location.href);
-      window.location.replace(`https://tropicpulse.bz/CheckEmail.html?returnTo=${returnTo}`);
+      window.location.replace(`https://www.tropicpulse.bz/CheckEmail.html?returnTo=${returnTo}`);
     }
 
     const identity = data.identity;
     localStorage.setItem("tp_identity_v4", JSON.stringify(identity));
 
     if (!identity.role || identity.role.toLowerCase() !== "admin") {
-      window.location.replace("https://tropicpulse.bz/dashboard.html");
+      window.location.replace("https://www.tropicpulse.bz/dashboard.html");
     }
 
   })();
@@ -141,7 +141,7 @@
       margin: 0;
       padding: 0;
       background: #000;
-      background-image: url('https://tropicpulse.bz/Mysterious.png?v4');
+      background-image: url('https://www.tropicpulse.bz/Mysterious.png?v4');
       background-size: cover;
       background-position: center;
       background-repeat: no-repeat;
@@ -339,14 +339,14 @@
     .toucan-top-left {
         top: 30px;
         left: 30px;
-        background-image: url("https://tropicpulse.bz/ToucanLeft.png?v4");
+        background-image: url("https://www.tropicpulse.bz/ToucanLeft.png?v4");
     }
 
 /* Bottom-right toucan (looking up) */
     .toucan-bottom-right {
         bottom: 30px;
         right: 30px;
-        background-image: url("https://tropicpulse.bz/ToucanRight.png?v4");
+        background-image: url("https://www.tropicpulse.bz/ToucanRight.png?v4");
     }
 
     .user-row {
@@ -382,7 +382,7 @@
 
 <body>
   <div id="t-loading">
-  <img src="https://tropicpulse.bz/ToucanLogo-Mini.png?v4" id="t-loading-logo" />
+  <img src="https://www.tropicpulse.bz/ToucanLogo-Mini.png?v4" id="t-loading-logo" />
 </div>
   <div id="pulseband-overlay">
   <div id="pulseband-badge">
@@ -393,7 +393,7 @@
 
   <div id="pulseband-panel">
     <div class="pb-header">
-      <img class="pb-mini-badge" src="https://tropicpulse.bz/PulseBand.png?v4"></img>
+      <img class="pb-mini-badge" src="https://www.tropicpulse.bz/PulseBand.png?v4"></img>
     </div>
 
     <div class="pb-row"><label>PulseBand Bars</label><span id="pb-bars-text">0/4</span></div>
@@ -424,7 +424,7 @@
   <div class="toucan toucan-top-left"></div>
   <div class="toucan toucan-bottom-right"></div>
     <div style="text-align:center;margin-bottom:20px;">
-      <img src="https://tropicpulse.bz/ToucanLogo-Mini.png?v4" style="width:150px;border-radius:12px;">
+      <img src="https://www.tropicpulse.bz/ToucanLogo-Mini.png?v4" style="width:150px;border-radius:12px;">
       <h1 style="color:#008f5c;font-size:30px;margin-top:10px;">Email Admin Panel</h1>
     </div>
 
@@ -1606,7 +1606,7 @@ newUser: {
 	const { email, logId } = payload;
     const trackingPixel =
       logId && logId !== "Preview Mode"
-        ? `<img src="https://tropicpulse.bz/emailopen?logId=${encodeURIComponent(
+        ? `<img src="https://www.tropicpulse.bz/emailopen?logId=${encodeURIComponent(
             logId
           )}" width="1" height="1" alt="" style="display:block; opacity:0;">`
         : "";
@@ -1626,7 +1626,7 @@ newUser: {
             <!-- BIG HEADER IMAGE -->
             <tr>
               <td>
-                <img src="https://tropicpulse.bz/Welcome.png?v4"
+                <img src="https://www.tropicpulse.bz/Welcome.png?v4"
                      alt="Tropic Pulse Header"
                      width="600"
                      style="display:block; width:100%; max-width:600px;">
@@ -1656,7 +1656,7 @@ newUser: {
                   <!-- Toucan Image -->
                   <tr>
                     <td align="center" style="padding:25px 0;">
-                      <img src="https://tropicpulse.bz/ToucanLogo-Mini.png?v4"
+                      <img src="https://www.tropicpulse.bz/ToucanLogo-Mini.png?v4"
                            alt="Tropic Pulse Toucan"
                            width="180"
                            style="display:block; border-radius:12px;">
@@ -1680,7 +1680,7 @@ newUser: {
                         Enjoy these moments! Share your successes with Tropic Pulse on social media.
                       </div>
                       <a href="https://linktr.ee/tropicpulse" target="_blank">
-                        <img src="https://tropicpulse.bz/SocialMedia.png?v4"
+                        <img src="https://www.tropicpulse.bz/SocialMedia.png?v4"
                              alt="Social Media Icons"
                              width="180"
                              style="display:block; margin:auto;">
@@ -1710,7 +1710,7 @@ newUser: {
 	const { name, email, logId } = payload;
     const trackingPixel =
       logId && logId !== "Preview Mode"
-        ? `<img src="https://tropicpulse.bz/emailopen?logId=${encodeURIComponent(
+        ? `<img src="https://www.tropicpulse.bz/emailopen?logId=${encodeURIComponent(
             logId
           )}" width="1" height="1" alt="" style="opacity:0; width:1px; height:1px;">`
         : "";
@@ -1893,7 +1893,7 @@ newUser: {
             <div style="display:inline-block; text-align:center;">
               <div class="logo-circle" style="margin:0 auto 10px auto;">
                 <img 
-                  src="https://tropicpulse.bz/ToucanLogo-Mini.png?v4"
+                  src="https://www.tropicpulse.bz/ToucanLogo-Mini.png?v4"
                   alt="Tropic Pulse Toucan"
                   width="60"
                   style="display:block; border-radius:50%;">
@@ -2000,7 +2000,7 @@ return `Tropic Pulse: Payout for your Delivery: ${orderID}`;
     const formattedpending = formatDisplayAmount(displayCurrency,pendingBalance);
     const trackingPixel =
     logId && logId !== "Preview Mode"
-      ? `<img src="https://tropicpulse.bz/emailopen?logId=${encodeURIComponent(logId)}" width="32" height="32" style="opacity:0;">`
+      ? `<img src="https://www.tropicpulse.bz/emailopen?logId=${encodeURIComponent(logId)}" width="32" height="32" style="opacity:0;">`
       : "";
 return `<!DOCTYPE html>
 <html lang="en">
@@ -2101,7 +2101,7 @@ return `<!DOCTYPE html>
 
         <!-- Logo -->
         <img 
-          src="https://tropicpulse.bz/ToucanLogo-Mini.png?v4"
+          src="https://www.tropicpulse.bz/ToucanLogo-Mini.png?v4"
           alt="Tropic Pulse Logo"
           width="70"
           height="70"
@@ -2185,7 +2185,7 @@ return `<!DOCTYPE html>
 	const {email,getPaidLink,reSendLink,logId} = payload;
     const trackingPixel =
       logId && logId !== "Preview Mode"
-        ? `<img src="https://tropicpulse.bz/emailopen?logId=${encodeURIComponent(
+        ? `<img src="https://www.tropicpulse.bz/emailopen?logId=${encodeURIComponent(
             logId
           )}" width="1" height="1" alt="" style="opacity:0; display:block;">`
         : "";
@@ -2225,7 +2225,7 @@ return `<!DOCTYPE html>
                   <!-- Toucan Image -->
                   <tr>
                     <td align="center" style="padding:25px 0;">
-                      <img src="https://tropicpulse.bz/ToucanLogo-Mini.png?v4"
+                      <img src="https://www.tropicpulse.bz/ToucanLogo-Mini.png?v4"
                            alt="Tropic Pulse Toucan"
                            width="220"
                            style="display:block; border-radius:12px;">
@@ -2300,7 +2300,7 @@ return `<!DOCTYPE html>
                         Enjoy these moments! Share your successes with Tropic Pulse on social media.
                       </div>
                       <a href="https://linktr.ee/tropicpulse" target="_blank">
-                        <img src="https://tropicpulse.bz/SocialMedia.png?v4"
+                        <img src="https://www.tropicpulse.bz/SocialMedia.png?v4"
                              alt="Social Media Icons"
                              width="180"
                              style="display:block; margin:auto;">
@@ -2332,7 +2332,7 @@ return `<!DOCTYPE html>
 	const {email, getPaidLink, reSendLink, logId} = payload;
     const trackingPixel =
       logId && logId !== "Preview Mode"
-        ? `<img src="https://tropicpulse.bz/emailopen?logId=${encodeURIComponent(
+        ? `<img src="https://www.tropicpulse.bz/emailopen?logId=${encodeURIComponent(
             logId
           )}" width="1" height="1" alt="" style="opacity:0; display:block;">`
         : "";
@@ -2367,7 +2367,7 @@ return `<!DOCTYPE html>
             <!-- Toucan Image -->
             <tr>
               <td align="center" style="padding:25px 0;">
-                <img src="https://tropicpulse.bz/ToucanLogo-Mini.png?v4"
+                <img src="https://www.tropicpulse.bz/ToucanLogo-Mini.png?v4"
                      alt="Tropic Pulse Toucan"
                      width="220"
                      style="display:block; border-radius:12px;">
@@ -2441,7 +2441,7 @@ return `<!DOCTYPE html>
                   Enjoy these moments! Share your successes with Tropic Pulse on social media.
                 </div>
                 <a href="https://linktr.ee/tropicpulse" target="_blank">
-                  <img src="https://tropicpulse.bz/SocialMedia.png?v4"
+                  <img src="https://www.tropicpulse.bz/SocialMedia.png?v4"
                        alt="Social Media Icons"
                        width="180"
                        style="display:block; margin:auto;">
@@ -2478,7 +2478,7 @@ return `<!DOCTYPE html>
     const formattedpending = formatDisplayAmount(displayCurrency,pendingBalance);
     const trackingPixel =
       logId && logId !== "Preview Mode"
-        ? `<img src="https://tropicpulse.bz/emailopen?logId=${encodeURIComponent(
+        ? `<img src="https://www.tropicpulse.bz/emailopen?logId=${encodeURIComponent(
             logId
           )}" width="1" height="1" alt="" style="opacity:0; display:block;">`
         : "";
@@ -2606,7 +2606,7 @@ return `<!DOCTYPE html>
           <tr>
             <td align="center">
               <img 
-                src="https://tropicpulse.bz/ToucanLogo-Mini.png?v4"
+                src="https://www.tropicpulse.bz/ToucanLogo-Mini.png?v4"
                 alt="Tropic Pulse Logo"
                 width="70"
                 height="70"
@@ -2622,7 +2622,7 @@ return `<!DOCTYPE html>
           <tr>
             <td align="center">
               <img 
-                src="https://tropicpulse.bz/CointoWallet.png?v4"
+                src="https://www.tropicpulse.bz/CointoWallet.png?v4"
                 alt="Coin to Wallet"
                 width="120"
                 style="display:block; margin:0 auto 10px auto;">
@@ -2718,7 +2718,7 @@ pulsePointsGifted: {
     const formattedtax          = `BZ$${Number(taxAmount).toFixed(2)}`;
     const trackingPixel =
       logId && logId !== "Preview Mode"
-        ? `<img src="https://tropicpulse.bz/emailopen?logId=${encodeURIComponent(
+        ? `<img src="https://www.tropicpulse.bz/emailopen?logId=${encodeURIComponent(
             logId
           )}" width="1" height="1" alt="" style="opacity:0; display:block;">`
         : "";
@@ -2850,7 +2850,7 @@ pulsePointsGifted: {
             <div style="display:inline-block; text-align:center;">
               <div class="logo-circle" style="margin:0 auto 10px auto;">
                 <img 
-                  src="https://tropicpulse.bz/ToucanLogo-Mini.png?v4"
+                  src="https://www.tropicpulse.bz/ToucanLogo-Mini.png?v4"
                   alt="Tropic Pulse Toucan"
                   width="60"
                   style="display:block; border-radius:50%;">
@@ -2946,7 +2946,7 @@ rolechange: {
 	const { role, payFrequency, payDay, logId } = payload;
 const trackingPixel =
       logId && logId !== "Preview Mode"
-        ? `<img src="https://tropicpulse.bz/emailopen?logId=${encodeURIComponent(
+        ? `<img src="https://www.tropicpulse.bz/emailopen?logId=${encodeURIComponent(
             logId
           )}" width="1" height="1" alt="" style="opacity:0;display:block;">`
         : "";
@@ -2973,7 +2973,7 @@ const trackingPixel =
             <!-- Logo -->
             <tr>
               <td align="center" style="padding:20px 20px 10px 20px;">
-                <img src="https://tropicpulse.bz/ToucanLogo-Mini.png?v4" alt="Tropic Pulse" style="max-width:180px;height:auto;display:block;">
+                <img src="https://www.tropicpulse.bz/ToucanLogo-Mini.png?v4" alt="Tropic Pulse" style="max-width:180px;height:auto;display:block;">
               </td>
             </tr>
 
@@ -3035,7 +3035,7 @@ const trackingPixel =
 	const { title, Fromdate, Todate, Fromtime, Totime, Venue, description, summary, unsubscribeUrl, language, logId } = payload;
   const trackingPixel =
       logId && logId !== "Preview Mode"
-        ? `<img src="https://tropicpulse.bz/emailopen?logId=${encodeURIComponent(
+        ? `<img src="https://www.tropicpulse.bz/emailopen?logId=${encodeURIComponent(
             logId
           )}" width="1" height="1" alt="" style="opacity:0;display:block;">`
         : "";
@@ -3053,7 +3053,7 @@ const trackingPixel =
         <!-- Header -->
         <tr>
           <td align="center" style="background:#ffff99;padding:30px 20px;">
-            <img src="https://tropicpulse.bz/ToucanLogo-Mini.png?v4" 
+            <img src="https://www.tropicpulse.bz/ToucanLogo-Mini.png?v4" 
                  alt="Tropic Pulse Toucan" width="120" style="display:block;margin-bottom:10px;border-radius:50%;border:3px solid #000;">
             <h1 style="margin:0;font-size:26px;color:#000;">A New Event Just Hit Tropic Pulse!</h1>
           </td>
@@ -3062,7 +3062,7 @@ const trackingPixel =
         <!-- Cartoon Event Icon -->
         <tr>
           <td align="center" style="padding:20px;">
-            <img src="https://tropicpulse.bz/NewEvent.png?v4" 
+            <img src="https://www.tropicpulse.bz/NewEvent.png?v4" 
                  alt="New Event Illustration" width="160" 
                  style="display:block;margin:0 auto 10px;">
           </td>
@@ -3136,7 +3136,7 @@ const trackingPixel =
               <td align="center" style="padding:10px;">
 
                 <img 
-                  src="https://tropicpulse.bz/Welcome.png?v4"
+                  src="https://www.tropicpulse.bz/Welcome.png?v4"
                   alt="Tropic Pulse Logo"
                   width="120"
                   style="display:block; margin-bottom:10px; border-radius:12px;"
@@ -3177,7 +3177,7 @@ const trackingPixel =
 	  const { busname, summary, description, link, location, busemail, logId } = payload;
     const trackingPixel =
       logId && logId !== "Preview Mode"
-        ? `<img src="https://tropicpulse.bz/emailopen?logId=${encodeURIComponent(
+        ? `<img src="https://www.tropicpulse.bz/emailopen?logId=${encodeURIComponent(
             logId
           )}" width="1" height="1" alt="" style="opacity:0;display:block;">`
         : "";
@@ -3195,7 +3195,7 @@ const trackingPixel =
         <!-- Header -->
         <tr>
           <td align="center" style="background:#ffff99;padding:30px 20px;">
-            <img src="https://tropicpulse.bz/ToucanLogo-Mini.png?v4" 
+            <img src="https://www.tropicpulse.bz/ToucanLogo-Mini.png?v4" 
                  alt="Tropic Pulse Toucan" width="120" style="display:block;margin-bottom:10px;border-radius:50%;border:3px solid #000;">
             <h1 style="margin:0;font-size:26px;color:#000;">A New Business Just Joined Tropic Pulse!</h1>
           </td>
@@ -3204,7 +3204,7 @@ const trackingPixel =
         <!-- Cartoon Building -->
         <tr>
           <td align="center" style="padding:20px;">
-            <img src="https://tropicpulse.bz/NewBusiness.png?v4" 
+            <img src="https://www.tropicpulse.bz/NewBusiness.png?v4" 
                  alt="New Business Illustration" width="160" 
                  style="display:block;margin:0 auto 10px;">
           </td>
@@ -3274,7 +3274,7 @@ const trackingPixel =
               <td align="center" style="padding:10px;">
 
                 <img 
-                  src="https://tropicpulse.bz/Welcome.png?v4"
+                  src="https://www.tropicpulse.bz/Welcome.png?v4"
                   alt="Tropic Pulse Logo"
                   width="120"
                   style="display:block; margin-bottom:10px; border-radius:12px;"
@@ -3315,7 +3315,7 @@ NoCredits: {
 	  const { email, paymentLink, eventID, logId  } = payload;
     const trackingPixel =
       logId && logId !== "Preview Mode"
-        ? `<img src="https://tropicpulse.bz/emailopen?logId=${encodeURIComponent(
+        ? `<img src="https://www.tropicpulse.bz/emailopen?logId=${encodeURIComponent(
             logId
           )}" width="1" height="1" alt="" style="opacity:0;display:block;">`
         : "";
@@ -3328,7 +3328,7 @@ NoCredits: {
         <!-- Header -->
         <tr>
           <td style="background:linear-gradient(135deg,#00c6ff,#0072ff); padding:30px; text-align:center;">
-            <img src="https://tropicpulse.bz/ToucanLogo-Mini.png?v4" alt="Tropic Pulse" width="90" style="margin-bottom:10px;">
+            <img src="https://www.tropicpulse.bz/ToucanLogo-Mini.png?v4" alt="Tropic Pulse" width="90" style="margin-bottom:10px;">
             <h1 style="color:white; margin:0; font-size:26px; font-weight:bold;">
               You're Out of Credits
             </h1>
@@ -3466,7 +3466,7 @@ async function previewEmail() {
       userID,
       stripeAccountID,
       adminUser: "Preview",
-      unsubscribeUrl: "https://tropicpulse.bz/unsubscribe?token=PREVIEW",
+      unsubscribeUrl: "https://www.tropicpulse.bz/unsubscribe?token=PREVIEW",
       logId: "Preview Mode",
     };
 
@@ -3652,7 +3652,7 @@ async function createPaymentShortlink(userID, eventID) {
     type: "email"
   });
 
-  return `https://tropicpulse.bz/l/${code}`;
+  return `https://www.tropicpulse.bz/l/${code}`;
 }
 
 async function sendEmail() {
@@ -3712,7 +3712,7 @@ async function sendEmail() {
     userID,
     stripeAccountID,
     adminUser: "Aldwyn",
-    unsubscribeUrl: "https://tropicpulse.bz/unsubscribe?token=Admin",
+    unsubscribeUrl: "https://www.tropicpulse.bz/unsubscribe?token=Admin",
   };
   if (phone) {
   phone = normalizePhone(phone);

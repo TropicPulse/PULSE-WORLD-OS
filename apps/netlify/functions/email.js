@@ -135,8 +135,8 @@ export async function sendEmailToUser(email, emailType, payload = {}) {
     const resendToken = clean(user.TPIdentity?.resendToken);
 
     const unsubscribeUrl = resendToken
-      ? `https://tropicpulse.bz/unsubscribe?token=${encodeURIComponent(resendToken)}`
-      : `https://tropicpulse.bz/unsubscribe`;
+      ? `https://www.tropicpulse.bze.bz/unsubscribe?token=${encodeURIComponent(resendToken)}`
+      : `https://www.tropicpulse.bz/unsubscribe`;
 
     const finalPayload = {
       ...payload,
@@ -260,7 +260,7 @@ export async function sendPinEmail(email, pin, payload, emailPassword) {
       <div style="max-width: 480px; margin:auto; background:#ffffff; border-radius:16px; padding:28px; box-shadow:0 4px 14px rgba(0,0,0,0.08);">
 
         <div style="text-align:center; margin-bottom:20px;">
-          <img src="https://tropicpulse.bz/ToucanLogo-Mini.png?v8"
+          <img src="https://www.tropicpulse.bz/ToucanLogo-Mini.png?v8"
                alt="Tropic Pulse"
                style="width:120px; border-radius:12px;">
         </div>
@@ -292,7 +292,7 @@ export async function sendPinEmail(email, pin, payload, emailPassword) {
         </p>
 
         <div style="text-align:center; margin-top:20px;">
-          <img src="https://tropicpulse.bz/ToucanThumbsUp.png?v8"
+          <img src="https://www.tropicpulse.bz/ToucanThumbsUp.png?v8"
                alt="Toucan"
                style="width:110px;">
         </div>

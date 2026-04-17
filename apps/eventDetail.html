@@ -15,15 +15,9 @@
 <!-- Google tag (gtag.js) -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-HSX89KS63P"></script>
 
-<!-- Pulse OS Core -->
-<script type="module" src="https://tropicpulse.bz/proxy/PulseUpdate.js"></script>
-<script type="module" src="https://tropicpulse.bz/proxy/PulseBand.js"></script>
-<script type="module" src="https://tropicpulse.bz/proxy/PulseClient.js"></script>
-<script type="module" src="https://tropicpulse.bz/proxy/PulseNet.js"></script>
-
 <!-- Backend Connector Layer -->
 <script type="module">
-  import { getAuth, getHook, getMap, callHelper } from "/lib/Connectors/PageRouter.js";
+  import { getAuth, getHook, getMap, callHelper } from "/lib/Connectors/PageScanner.js";
 </script>
 <script>
   window.dataLayer = window.dataLayer || [];
@@ -90,7 +84,7 @@ document.addEventListener("contextmenu", function(e) {
   justify-content: center;
 
   background: #000;
-  background-image: url('https://tropicpulse.bz/Mysterious.png');
+  background-image: url('https://www.tropicpulse.bz/Mysterious.png');
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
@@ -765,7 +759,7 @@ body::before {
 
 <body>
 <div id="t-loading">
-  <img src="https://tropicpulse.bz/ToucanLogo-Mini.png" id="t-loading-logo" />
+  <img src="https://www.tropicpulse.bz/ToucanLogo-Mini.png" id="t-loading-logo" />
 </div>
 <div id="pulseband-overlay">
   <div id="pulseband-badge">
@@ -776,7 +770,7 @@ body::before {
 
   <div id="pulseband-panel">
     <div class="pb-header">
-      <img class="pb-mini-badge" src="https://tropicpulse.bz/proxy/PulseBand.png"></img>
+      <img class="pb-mini-badge" src="https://www.tropicpulse.bz/proxy/PulseBand.png"></img>
     </div>
 
     <div class="pb-row"><label>PulseBand Bars</label><span id="pb-bars-text">0/4</span></div>
@@ -1740,7 +1734,7 @@ function updateCarousel() {
 
     if (!Array.isArray(carouselImages) || carouselImages.length === 0) {
       console.warn("Carousel: No images found, using fallback.");
-      carouselImages = ["https://tropicpulse.bz/Frustrated.png"];
+      carouselImages = ["https://www.tropicpulse.bz/Frustrated.png"];
       currentIndex = 0;
     }
 
@@ -1751,7 +1745,7 @@ function updateCarousel() {
     setTimeout(() => {
       mainImage.src = carouselImages[currentIndex];
       mainImage.onerror = () => {
-        mainImage.src = "https://tropicpulse.bz/Frustrated.png";
+        mainImage.src = "https://www.tropicpulse.bz/Frustrated.png";
       };
       mainImage.style.opacity = 1;
     }, 150);
@@ -1770,7 +1764,7 @@ function updateCarousel() {
     console.error("updatCarousel error:", err);
     const mainImage = el("mainImage");
     if (mainImage) {
-      mainImage.src = "https://tropicpulse.bz/Frustrated.png";
+      mainImage.src = "https://www.tropicpulse.bz/Frustrated.png";
       mainImage.style.opacity = 1;
     }
   }
@@ -1863,7 +1857,7 @@ async function renderEvent(evRaw) {
     /* ---------- Images / Carousel ---------- */
     const images = Array.isArray(ev.images) && ev.images.length > 0
       ? ev.images
-      : ['https://tropicpulse.bz/Frustrated.png'];
+      : ['https://www.tropicpulse.bz/Frustrated.png'];
 
     carouselImages = images;
     currentIndex = 0;
@@ -1885,7 +1879,7 @@ async function renderEvent(evRaw) {
       badge.className = 'edit-badge-detail';
       badge.innerHTML = '✏️ Edit';
       badge.onclick = () => {
-        window.location.href = `https://tropicpulse.bz/EditEvent.html?id=${encodeURIComponent(ev.id)}`;
+        window.location.href = `https://www.tropicpulse.bz/EditEvent.html?id=${encodeURIComponent(ev.id)}`;
       };
       wrapperEl.appendChild(badge);
     }
@@ -1983,7 +1977,7 @@ async function renderEvent(evRaw) {
 
     // ⭐ FIXED: use canonical shortCode from CacheManager
     const shortCode = ev.shortCode || ev.id;
-    const shareUrl = `https://tropicpulse.bz/e/${shortCode}`;
+    const shareUrl = `https://www.tropicpulse.bz/e/${shortCode}`;
 
     shareBtn.onclick = async () => {
       try {

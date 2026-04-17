@@ -8,6 +8,10 @@
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
 <!-- Google tag (gtag.js) -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-HSX89KS63P"></script>
+<!-- Backend Connector Layer -->
+<script type="module">
+  import { getAuth, getHook, getMap, callHelper } from "/lib/Connectors/PageScanner.js";
+</script>
 <script>
   window.dataLayer = window.dataLayer || [];
   function gtag(){dataLayer.push(arguments);}
@@ -54,7 +58,7 @@
       margin: 0;
       padding: 0;
       background: #000;
-      background-image: url('https://tropicpulse.bz/Mysterious.png?v4');
+      background-image: url('https://www.tropicpulse.bz/Mysterious.png?v4');
       background-size: cover;
       background-position: center;
       background-repeat: no-repeat;
@@ -168,8 +172,8 @@ console.log("🌞 Script loaded, attaching visibility listener…");
       }
     });
 
-    const returnTo = encodeURIComponent("https://tropicpulse.bz/PulsePoints.html");
-    window.location.replace(`https://tropicpulse.bz/CheckEmail.html?returnTo=${returnTo}`);
+    const returnTo = encodeURIComponent("https://www.tropicpulse.bz/PulsePoints.html");
+    window.location.replace(`https://www.tropicpulse.bz/CheckEmail.html?returnTo=${returnTo}`);
     throw new Error("No identity — redirecting to CheckEmail");
   }
   // --- END SIMPLE IDENTITY CHECK ---

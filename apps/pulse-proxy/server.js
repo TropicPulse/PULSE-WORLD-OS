@@ -712,7 +712,7 @@ app.get("/pulse-proxy/ping", async (req, res) => {
 
   try {
     const b0 = Date.now();
-    const backendRes = await fetch("https://tropicpulse.bz/ping", {
+    const backendRes = await fetch("https://www.tropicpulse.bz/ping", {
       method: "GET",
       cache: "no-store"
     });

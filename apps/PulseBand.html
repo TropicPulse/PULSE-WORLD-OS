@@ -10,15 +10,9 @@
                user-scalable=no">
   <title>PulseBand Control Center</title>
 
- <!-- Pulse OS Core -->
-<script type="module" src="https://tropicpulse.bz/proxy/PulseUpdate.js"></script>
-<script type="module" src="https://tropicpulse.bz/proxy/PulseBand.js"></script>
-<script type="module" src="https://tropicpulse.bz/proxy/PulseClient.js"></script>
-<script type="module" src="https://tropicpulse.bz/proxy/PulseNet.js"></script>
-
 <!-- Backend Connector Layer -->
 <script type="module">
-  import { getAuth, getHook, getMap, callHelper } from "/lib/Connectors/PageRouter.js";
+  import { getAuth, getHook, getMap, callHelper } from "/lib/Connectors/PageScanner.js";
 </script>
 
   <style>
@@ -35,7 +29,7 @@
       justify-content: center;
       color: white;
       background: #000;
-      background-image: url('https://tropicpulse.bz/Mysterious.png');
+      background-image: url('https://www.tropicpulse.bz/Mysterious.png');
       background-size: cover;
       background-position: center;
       background-repeat: no-repeat;
@@ -63,7 +57,7 @@
     #hero {
       width: 100%;
       height: 260px;
-      background: url("https://tropicpulse.bz/proxy/PulseBand.png") center/contain no-repeat,
+      background: url("https://www.tropicpulse.bz/proxy/PulseBand.png") center/contain no-repeat,
                   linear-gradient(to bottom, rgba(0,255,200,0.15), rgba(0,0,0,0.6));
       background-blend-mode: screen;
       display: flex;
@@ -438,7 +432,7 @@
 
       <div class="pb-header">
       <img id="pb-mini-badge" class="pb-mini-badge"
-          src="https://tropicpulse.bz/proxy/PulseBand.png"
+          src="https://www.tropicpulse.bz/proxy/PulseBand.png"
           alt="PulseBand Badge">
     </div>
 

@@ -8,15 +8,9 @@
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
 <!-- Google tag (gtag.js) -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-HSX89KS63P"></script>
-<!-- Pulse OS Core -->
-<script type="module" src="https://tropicpulse.bz/proxy/PulseUpdate.js"></script>
-<script type="module" src="https://tropicpulse.bz/proxy/PulseBand.js"></script>
-<script type="module" src="https://tropicpulse.bz/proxy/PulseClient.js"></script>
-<script type="module" src="https://tropicpulse.bz/proxy/PulseNet.js"></script>
-
 <!-- Backend Connector Layer -->
 <script type="module">
-  import { getAuth, getHook, getMap, callHelper } from "/lib/Connectors/PageRouter.js";
+  import { getAuth, getHook, getMap, callHelper } from "/lib/Connectors/PageScanner.js";
 </script>
 <script>
   window.dataLayer = window.dataLayer || [];
@@ -456,7 +450,7 @@ html, body {
   position: fixed;
   inset: 0;
   background: #000;
-  background-image: url('https://tropicpulse.bz/Mysterious.png');
+  background-image: url('https://www.tropicpulse.bz/Mysterious.png');
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
@@ -708,8 +702,8 @@ if (!identityCheck || !identityCheck.uid) {
     }
   });
 
-  const returnTo = encodeURIComponent("https://tropicpulse.bz/PulsePoints.html");
-  window.location.replace(`https://tropicpulse.bz/CheckEmail.html?returnTo=${returnTo}`);
+  const returnTo = encodeURIComponent("https://www.tropicpulse.bz/PulsePoints.html");
+  window.location.replace(`https://www.tropicpulse.bz/CheckEmail.html?returnTo=${returnTo}`);
   throw new Error("No identity — redirecting to CheckEmail");
 }
 // --- END SIMPLE IDENTITY CHECK ---

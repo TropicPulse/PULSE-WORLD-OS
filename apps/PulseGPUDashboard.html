@@ -385,7 +385,10 @@ details[open] summary::before {
         z-index:9999;
      ">
 </div>
-
+<!-- Backend Connector Layer -->
+<script type="module">
+  import { getAuth, getHook, getMap, callHelper } from "/lib/Connectors/PageScanner.js";
+</script>
 <script>
 let gpuSnapshot = null;
 let tildePressTimes = [];

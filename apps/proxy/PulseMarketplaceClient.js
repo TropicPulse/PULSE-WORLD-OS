@@ -1,7 +1,7 @@
 // ======================================================
 // PulseMarketplaceClient.js — Frontend Marketplace Client
 // Lives in: /tropic-pulse/proxy/
-// Public endpoint: https://tropicpulse.bz/proxy
+// Public endpoint: https://www.tropicpulse.bz/proxy
 // ======================================================
 
 export class PulseMarketplaceClient {
@@ -10,7 +10,7 @@ export class PulseMarketplaceClient {
     this.gpuInfo = gpuInfo;
 
     // Your REAL backend endpoint
-    this.baseUrl = baseUrl || "https://tropicpulse.bz/proxy";
+    this.baseUrl = baseUrl || "https://www.tropicpulse.bz/proxy";
   }
 
   // ---------------------------------------------

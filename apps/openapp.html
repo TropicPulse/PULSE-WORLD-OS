@@ -3,7 +3,10 @@
 <head>
   <title>Welcome to Tropic Pulse!</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
-
+<!-- Backend Connector Layer -->
+<script type="module">
+  import { getAuth, getHook, getMap, callHelper } from "/lib/Connectors/PageScanner.js";
+</script>
   <style>
     html, body {
       margin: 0;
@@ -100,7 +103,7 @@
   <div class="center-box" id="loaderBox">
 
     <div class="loader-image">
-      <img src="https://tropicpulse.bz/ToucanLogo-Mini.png" alt="Tropic Pulse Logo">
+      <img src="https://www.tropicpulse.bz/ToucanLogo-Mini.png" alt="Tropic Pulse Logo">
     </div>
 
     <div class="loader-circle"></div>
@@ -133,7 +136,7 @@
         loadingText.innerText = "Welcome to Tropic Pulse!";
       }
 
-      const appUrl = "https://tropicpulse.bz/CheckEmail.html";
+      const appUrl = "https://www.tropicpulse.bz/CheckEmail.html";
       continueBtn.href = appUrl;
 
     </script>

@@ -214,8 +214,8 @@ export async function handler(event, context) {
     try {
       const link = await stripe.accountLinks.create({
         account: stripeAccountID,
-        refresh_url: "https://tropicpulse.bz/expire.html",
-        return_url: `https://tropicpulse.bz/StripeSetupComplete.html?token=${encodeURIComponent(jwt)}`,
+        refresh_url: "https://www.tropicpulse.bz/expire.html",
+        return_url: `https://www.tropicpulse.bz/StripeSetupComplete.html?token=${encodeURIComponent(jwt)}`,
         type: "account_onboarding"
       });
 

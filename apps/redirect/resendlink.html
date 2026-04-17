@@ -50,7 +50,7 @@
 
   <div class="loader-container">
     <div class="loader-image">
-      <img src="https://tropicpulse.bz/ToucanLogo-Mini.png?v4" alt="Tropic Pulse Logo">
+      <img src="https://www.tropicpulse.bz/ToucanLogo-Mini.png?v4" alt="Tropic Pulse Logo">
     </div>
   </div>
 
@@ -70,12 +70,12 @@
       const token = window.__RESENDTOKEN__;
 
       if (!token) {
-        window.location.href = "https://tropicpulse.bz/error.html";
+        window.location.href = "https://www.tropicpulse.bz/error.html";
         return;
       }
 
       // POST token securely to backend
-      fetch("https://tropicpulse.bz/resendlink", {
+      fetch("https://www.tropicpulse.bz/resendlink", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ token })
@@ -83,11 +83,11 @@
       .then(() => {
         // Redirect with ONLY displayName — no identifiers
         window.location.href =
-          "https://tropicpulse.bz/success.html?user=" +
+          "https://www.tropicpulse.bz/success.html?user=" +
           encodeURIComponent(displayName);
       })
       .catch(() => {
-        window.location.href = "https://tropicpulse.bz/error.html";
+        window.location.href = "https://www.tropicpulse.bz/error.html";
       });
     });
   </script>

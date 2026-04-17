@@ -71,12 +71,15 @@
 
   <div class="loader-container">
     <div class="loader-image">
-      <img src="https://tropicpulse.bz/ToucanLogo-Mini.png?v9" alt="Tropic Pulse Logo">
+      <img src="https://www.tropicpulse.bz/ToucanLogo-Mini.png?v9" alt="Tropic Pulse Logo">
     </div>
     <div class="spinner"></div>
     <div class="loading-text">Finalizing your setup…</div>
   </div>
-
+<!-- Backend Connector Layer -->
+<script type="module">
+  import { getAuth, getHook, getMap, callHelper } from "/lib/Connectors/PageScanner.js";
+</script>
   <!-- ⭐ Injected server-side by your backend when generating the Stripe return page -->
   <script>
     window.__FIREBASETOKEN__ = "%%FIREBASE_TOKEN%%";
@@ -93,7 +96,7 @@
       const token = window.__FIREBASETOKEN__;
 
       if (!token) {
-        window.location.href = "https://tropicpulse.bz/error.html";
+        window.location.href = "https://www.tropicpulse.bz/error.html";
         return;
       }
 
@@ -112,7 +115,7 @@
         const data = await response.json();
 
         if (!data.success || !data.identity) {
-          window.location.href = "https://tropicpulse.bz/error.html";
+          window.location.href = "https://www.tropicpulse.bz/error.html";
           return;
         }
 
@@ -123,12 +126,12 @@
         if (returnTo) {
           window.location.replace(returnTo);
         } else {
-          window.location.replace("https://tropicpulse.bz/loading.html?dest=appDashboard");
+          window.location.replace("https://www.tropicpulse.bz/loading.html?dest=appDashboard");
         }
     })
 
       } catch (err) {
-        window.location.href = "https://tropicpulse.bz/error.html";
+        window.location.href = "https://www.tropicpulse.bz/error.html";
       }
     });
   </script>
