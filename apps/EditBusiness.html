@@ -2085,10 +2085,10 @@ async function initiateBusiness() {
 
       if (disabled) {
         window.isIdle = true;
-        window.pulseband.engineDisabled = true;
+        
       } else {
         window.isIdle = false; // active by default
-        window.pulseband.engineDisabled = false;
+        
       }
 
       updatePulseBandImage();
@@ -2104,12 +2104,12 @@ async function initiateBusiness() {
         // Turn ON
         localStorage.removeItem("pulseband_disabled");
         window.isIdle = false;
-        window.pulseband.engineDisabled = false;
+        
       } else {
         // Turn OFF
         localStorage.setItem("pulseband_disabled", "1");
         window.isIdle = true;
-        window.pulseband.engineDisabled = true;
+        
       }
 
       updatePulseBandImage();

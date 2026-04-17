@@ -1467,7 +1467,7 @@ async function sessionCheck() {
   window.isIdle = true;
 
   // Engine is allowed to run unless the flag exists
-  window.pulseband.engineDisabled = false;
+  
 
   const badge = document.getElementById("pulseband-badge");
   const panel = document.getElementById("pulseband-panel");
@@ -1600,10 +1600,10 @@ async function sessionCheck() {
 
       if (disabled) {
         window.isIdle = true;
-        window.pulseband.engineDisabled = true;
+        
       } else {
         window.isIdle = false; // active by default
-        window.pulseband.engineDisabled = false;
+        
       }
 
       updatePulseBandImage();
@@ -1619,12 +1619,12 @@ async function sessionCheck() {
         // Turn ON
         localStorage.removeItem("pulseband_disabled");
         window.isIdle = false;
-        window.pulseband.engineDisabled = false;
+        
       } else {
         // Turn OFF
         localStorage.setItem("pulseband_disabled", "1");
         window.isIdle = true;
-        window.pulseband.engineDisabled = true;
+        
       }
 
       updatePulseBandImage();
