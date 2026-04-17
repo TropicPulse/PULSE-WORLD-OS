@@ -886,12 +886,7 @@ let resizeTimeout = null;   // UI-only
 // -----------------------------------------
 let lastTime = null;
 
-function markAuth(label) {
-  const now = nowMs();
-  const diff = lastTime ? now - lastTime : 0;
-  console.log(`${label}: +${diff.toFixed(1)}ms`);
-  lastTime = now;
-}
+
 
 // -----------------------------------------
 // ⭐ HERO HEADER ENTRANCE ANIMATION

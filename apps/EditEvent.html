@@ -860,12 +860,7 @@ input, select, textarea {
     }
 
 
-  function markAuth(label) {
-    const now = nowMs();
-    lastTime = now;
-    firstTime = now;
-    console.log(`${label}: +${(now - lastTime).toFixed(1)}ms`);
-  }
+  
 
   function showMessage(text, type = "error") {
     const msg = document.getElementById("msg");
@@ -1001,9 +996,7 @@ async function sessionCheck() {
 }
 
 function mark(label) {
-    const now = nowMs();
-    console.log(`${label}: +${(now - lastTime).toFixed(1)}ms`);
-    lastTime = now;
+    console.log("[CHECKEMAIL]", label);
   }
 
   function openConfirm(onYes) {

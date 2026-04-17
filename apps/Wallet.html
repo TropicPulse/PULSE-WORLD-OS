@@ -2440,12 +2440,6 @@ const pinError = document.getElementById("pinError");
 const resetPinLink = document.getElementById("resetPinLink");
 const dangerOverlay = document.getElementById("dangerOverlay");
 
-function markAuth(label) {
-  const now = nowMs();
-  lastTime = now;
-  firstTime = now;
-  console.log(`${label}: +${(now - lastTime).toFixed(1)}ms`);
-}
 // ───────────────────────────────────────────────
 // SOUNDS
 // ───────────────────────────────────────────────
@@ -2667,9 +2661,7 @@ async function loadBusinesses() {
 }
 
 function mark(label) {
-    const now = nowMs();
-    console.log(`${label}: +${(now - lastTime).toFixed(1)}ms`);
-    lastTime = now;
+    console.log("[CHECKEMAIL]", label);
   }
 
 function scrollToBottom() {

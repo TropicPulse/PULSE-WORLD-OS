@@ -903,14 +903,6 @@ function hideTPLoader() {
 // ============================================================================
 let lastTime = Date.now();
 
-function mark(label) {
-  const now = Date.now();
-  const diff = now - lastTime;
-  console.log(`${label}: +${diff.toFixed(1)}ms`);
-  lastTime = now;
-}
-
-
 // ============================================================================
 // ⭐ DESKTOP DETECTION (CLEAN VERSION)
 // ============================================================================

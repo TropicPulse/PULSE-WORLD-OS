@@ -1240,12 +1240,7 @@ const locationPreview = document.getElementById("locationPreview");
 const locationCache = new Map();
 
 
-function markAuth(label) {
-    const now = nowMs();
-    lastTime = now;
-    firstTime = now;
-    console.log(`${label}: +${(now - lastTime).toFixed(1)}ms`);
-  }
+
 
 
 function showMessage(text, type = "error") {
@@ -1295,9 +1290,7 @@ async function hardLogout(reason) {
 }
 
 function mark(label) {
-    const now = nowMs();
-    console.log(`${label}: +${(now - lastTime).toFixed(1)}ms`);
-    lastTime = now;
+    console.log("[CHECKEMAIL]", label);
   }
   
 /************************************************************

@@ -1715,12 +1715,7 @@ input::placeholder {
   let loyalty = null;
   let settings = null;
 
-  function markAuth(label) {
-    const now = nowMs();
-    lastTime = now;
-    firstTime = now;
-    console.log(`${label}: +${(now - lastTime).toFixed(1)}ms`);
-  }
+  
   let resizeTimeout;
   let datePickerOpen = false;
   let dateChangeFired = false;
@@ -1811,9 +1806,7 @@ async function hardLogout(reason) {
 }
 
 function mark(label) {
-    const now = nowMs();
-    console.log(`${label}: +${(now - lastTime).toFixed(1)}ms`);
-    lastTime = now;
+    console.log("[CHECKEMAIL]", label);
   }
  
 /************************************************************
