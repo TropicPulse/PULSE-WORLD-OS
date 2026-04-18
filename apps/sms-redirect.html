@@ -1,13 +1,14 @@
 <!DOCTYPE html>
 <html>
+<body>
 <head>
 <meta charset="UTF-8">
 <!-- Backend Connector Layer -->
 <script type="module">
 import { pulseband } from "./proxy/PulseBand.js";
+import { identity } from "./PulseIdentity.js";
 import { getAuth, getHook, getMap, callHelper, attachScanner } from "./lib/Connectors/PageScanner.js";
-</script>
-<script>
+
   const phone = new URLSearchParams(location.search).get("n");
   if (phone) {
     window.location.href = "sms:" + phone;
@@ -16,5 +17,5 @@ import { getAuth, getHook, getMap, callHelper, attachScanner } from "./lib/Conne
   }
 </script>
 </head>
-<body></body>
+</body>
 </html>

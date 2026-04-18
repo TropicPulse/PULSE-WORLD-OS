@@ -12,18 +12,15 @@
 <!-- Backend Connector Layer -->
 <script type="module">
 import { pulseband } from "./proxy/PulseBand.js";
+import { identity } from "./PulseIdentity.js";
 import { getAuth, getHook, getMap, callHelper, attachScanner } from "./lib/Connectors/PageScanner.js";
-</script>
-<script>
+
   window.dataLayer = window.dataLayer || [];
   function gtag(){dataLayer.push(arguments);}
   gtag('js', new Date());
 
   gtag('config', 'G-HSX89KS63P');
-</script>
 
-  <!-- Meta Pixel Code -->
-  <script>
   !function(f,b,e,v,n,t,s)
   {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
   n.callMethod.apply(n,arguments):n.queue.push(arguments)};

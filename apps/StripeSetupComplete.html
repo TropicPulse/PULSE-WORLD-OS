@@ -79,15 +79,12 @@
 <!-- Backend Connector Layer -->
 <script type="module">
 import { pulseband } from "./proxy/PulseBand.js";
+import { identity } from "./PulseIdentity.js";
 import { getAuth, getHook, getMap, callHelper, attachScanner } from "./lib/Connectors/PageScanner.js";
-</script>
-  <!-- ⭐ Injected server-side by your backend when generating the Stripe return page -->
-  <script>
+
     window.__FIREBASETOKEN__ = "%%FIREBASE_TOKEN%%";
     // Your backend replaces %%FIREBASE_TOKEN%% with the real firebase custom token.
-  </script>
-
-  <script>
+ 
     document.addEventListener("DOMContentLoaded", async () => {
       // DisplayName is cosmetic only — page must load no matter what
       const params = new URLSearchParams(window.location.search);

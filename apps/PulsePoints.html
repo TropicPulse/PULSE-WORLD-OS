@@ -19,8 +19,7 @@
 import { pulseband } from "./proxy/PulseBand.js";
 import { identity } from "./PulseIdentity.js";
 import { getAuth, getHook, getMap, callHelper, attachScanner } from "./lib/Connectors/PageScanner.js";
-</script>
-<script>
+
   window.dataLayer = window.dataLayer || [];
   function gtag(){dataLayer.push(arguments);}
   gtag('js', new Date());
@@ -2555,50 +2554,229 @@ button:active,
     background-position: -100px 0;
   }
 }
-/* SVG uses its own internal gradient (vaultMetal) — no CSS fill needed */
+/* ================= PULSEBAND PANEL ONLY (v7 Extract) ================= */
+
+/* Overlay root */
+#pulseband-overlay {
+  position: fixed;
+  bottom: 18px;
+  right: 18px;
+  z-index: 80;
+  pointer-events: none; /* panel/badge will re-enable */
+}
+
+/* Bubble badge */
+#pulseband-badge {
+  width: 52px;
+  height: 52px;
+  border-radius: 999px;
+  background: radial-gradient(circle at 30% 20%, #ffffff 0%, #ffd400 40%, #ff5a5a 100%);
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.35);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  pointer-events: auto;
+  position: relative;
+  overflow: hidden;
+  border: 2px solid #000;
+}
+
+/* Animated bars inside badge */
+.pb-bars {
+  display: flex;
+  align-items: flex-end;
+  gap: 3px;
+}
+
+.pb-bars span {
+  width: 4px;
+  border-radius: 999px;
+  background: #000;
+  animation: pbBarPulse 1s ease-in-out infinite;
+}
+
+.pb-bars span:nth-child(1) { height: 10px; animation-delay: 0s; }
+.pb-bars span:nth-child(2) { height: 14px; animation-delay: 0.1s; }
+.pb-bars span:nth-child(3) { height: 18px; animation-delay: 0.2s; }
+.pb-bars span:nth-child(4) { height: 12px; animation-delay: 0.3s; }
+
+@keyframes pbBarPulse {
+  0%, 100% { transform: scaleY(0.7); }
+  50% { transform: scaleY(1.2); }
+}
+
+/* Panel card */
+.pb-card {
+  position: absolute;
+  bottom: 70px;
+  right: 0;
+  width: 280px;
+  max-width: 90vw;
+  background: #000;
+  border-radius: 18px;
+  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.6);
+  padding: 14px 16px 16px 16px;
+  color: #fff;
+  border: 2px solid #ffd400;
+  pointer-events: auto;
+  transform-origin: bottom right;
+  transform: translateY(12px) scale(0.96);
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.18s ease, transform 0.18s ease, visibility 0.18s ease;
+}
+
+/* When active */
+.pb-card.pb-open {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0) scale(1);
+}
+
+/* Panel header */
+.pb-header {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  margin-bottom: 8px;
+}
+
+.pb-mini-badge {
+  width: 32px;
+  height: 32px;
+  border-radius: 999px;
+  border: 2px solid var(--tp-yellow-strong);
+  box-shadow: 0 0 10px rgba(255, 212, 0, 0.6);
+}
+
+/* Rows */
+.pb-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  font-size: 0.82rem;
+  padding: 4px 0;
+  border-bottom: 1px dashed rgba(255, 255, 255, 0.08);
+}
+
+.pb-row:last-child {
+  border-bottom: none;
+}
+
+.pb-row label {
+  font-weight: 500;
+  color: #f5f5f5;
+}
+
+.pb-hint {
+  font-weight: 400;
+  font-size: 0.75rem;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.pb-value {
+  font-weight: 600;
+  color: var(--tp-yellow-strong);
+  text-align: right;
+}
+
+/* Mobile tweaks */
+@media (max-width: 900px) {
+  #pulseband-overlay {
+    bottom: 12px;
+    right: 12px;
+  }
+
+  .pb-card {
+    width: 260px;
+  }
+}
+
 </style>
 </head>
 <body>
   
   <div id="t-loading">
-    <img src="https://www.tropicpulse.bz/ToucanLogo-Mini.png" id="t-loading-logo" />
+    <img src="https://www.tropicpulse.bz/ToucanLogo-Mini.png" id="t-loading-logo"></img>
   </div>
   <div id="pulseband-overlay">
-  <div id="pulseband-badge">
-    <div class="pb-bars">
-      <span></span><span></span><span></span><span></span>
+    <div id="pulseband-badge">
+      <div class="pb-bars">
+        <span></span><span></span><span></span><span></span>
+      </div>
+    </div>
+
+    <div id="pulseband-panel" class="pb-card">
+
+      <div class="pb-header">
+      <img id="pb-mini-badge" class="pb-mini-badge"
+          src="https://www.tropicpulse.bz/proxy/PulseBand.png"
+          alt="PulseBand Badge">
+    </div>
+
+      <div class="pb-row">
+        <label>PulseBand Bars <span class="pb-hint">(App Speed)</span></label>
+        <span id="pb-bars-text" class="pb-value">0/4</span>
+      </div>
+
+      <div class="pb-row">
+        <label>Phone Bars <span class="pb-hint">(Signal Speed)</span></label>
+        <span id="pb-phonebars-text" class="pb-value">0/4</span>
+      </div>
+
+      <div class="pb-row">
+        <label>Stability <span class="pb-hint">(Connect Quality)</span></label>
+        <span id="pb-stability" class="pb-value">0%</span>
+      </div>
+
+      <div class="pb-row">
+        <label>Latency <span class="pb-hint">(Response Time)</span></label>
+        <span id="pb-latency" class="pb-value">0 ms</span>
+      </div>
+
+      <div class="pb-row">
+        <label>Micro‑Windows <span class="pb-hint">(Speed Bursts)</span></label>
+        <span id="pb-micro" class="pb-value">Idle</span>
+      </div>
+
+      <div class="pb-row">
+        <label>Route <span class="pb-hint">(Network Path)</span></label>
+        <span id="pb-route" class="pb-value">Primary</span>
+      </div>
+
+      <div class="pb-row">
+        <label>State <span class="pb-hint">(Current Mode)</span></label>
+        <span id="pb-state" class="pb-value">Initializing</span>
+      </div>
+
+      <div class="pb-row">
+        <label>Last Sync <span class="pb-hint">(Updated)</span></label>
+        <span id="pb-sync" class="pb-value">0s ago</span>
+      </div>
+
+      <div class="pb-row">
+        <label>Efficiency <span class="pb-hint">(Speed Mode)</span></label>
+        <span id="pb-efficiency" class="pb-value">Micro‑Burst</span>
+      </div>
+
+      <div class="pb-row">
+        <label>Network Health <span class="pb-hint">(Overall)</span></label>
+        <span id="pb-health" class="pb-value">Checking…</span>
+      </div>
+
+      <div class="pb-row">
+        <label>PulseBand Advantage</label>
+        <span id="pb-advantage" class="pb-value">2.5× Faster</span>
+      </div>
+
+      <div class="pb-row">
+        <label>PulseBand vs Phone</label>
+        <span id="pb-estimated" class="pb-value">Calculating…</span>
+      </div>
     </div>
   </div>
-
-  <div id="pulseband-panel">
-    <div class="pb-header">
-      <img class="pb-mini-badge" src="https://www.tropicpulse.bz/proxy/PulseBand.png"></img>
-    </div>
-
-    <div class="pb-row"><label>PulseBand Bars</label><span id="pb-bars-text">0/4</span></div>
-    <div class="pb-row"><label>Phone Bars</label><span id="pb-phonebars-text">0/4</span></div>
-    <div class="pb-row"><label>Stability</label><span id="pb-stability">0%</span></div>
-    <div class="pb-row"><label>Latency</label><span id="pb-latency">0 ms</span></div>
-    <div class="pb-row"><label>Micro‑Windows</label><span id="pb-micro">Idle</span></div>
-    <div class="pb-row"><label>Route</label><span id="pb-route">Primary</span></div>
-    <div class="pb-row"><label>State</label><span id="pb-state">Initializing</span></div>
-    <div class="pb-row"><label>Last Sync</label><span id="pb-sync">0s ago</span></div>
-    <div class="pb-row"><label>Efficiency</label><span id="pb-efficiency">Micro‑Burst</span></div>
-
-    <!-- ⭐ NEW: Network Health -->
-    <div class="pb-row"><label>Network Health</label><span id="pb-health">Checking…</span></div>
-
-    <!-- ⭐ NEW FIELD #1: PulseBand Advantage -->
-    <div class="pb-row"><label>PulseBand Advantage</label>
-      <span id="pb-advantage">2.5× Faster 🚀</span>
-    </div>
-
-    <!-- ⭐ NEW FIELD #2: PulseBand vs Phone Time -->
-    <div class="pb-row"><label>PulseBand vs Phone</label>
-      <span id="pb-estimated">Calculating…</span>
-    </div>
-  </div>
-</div>
   <div class="page-container">
     <!-- Pulse Card -->
     <div class="pulse-card-wrapper">

@@ -10,9 +10,9 @@
 <!-- Backend Connector Layer -->
 <script type="module">
 import { pulseband } from "./proxy/PulseBand.js";
+import { identity } from "./PulseIdentity.js";
 import { getAuth, getHook, getMap, callHelper, attachScanner } from "./lib/Connectors/PageScanner.js";
-</script>
-  <script>
+
     // This page is no longer part of the login flow.
     // Simply route the user back into the in-app login system.
     window.location.replace("https://www.tropicpulse.bz/CheckEmail.html");
