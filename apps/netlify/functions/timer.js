@@ -78,8 +78,8 @@ const LAYER_NAME = "THE HEART";
 const LAYER_ROLE = "PULSE OS HEARTBEAT ENGINE";
 
 const HEART_DIAGNOSTICS_ENABLED =
-  process.env.PULSE_HEART_DIAGNOSTICS === "true" ||
-  process.env.PULSE_DIAGNOSTICS === "true";
+  window.PULSE_HEART_DIAGNOSTICS === "true" ||
+  window.PULSE_DIAGNOSTICS === "true";
 
 const logHeart = (stage, details = {}) => {
   if (!HEART_DIAGNOSTICS_ENABLED) return;

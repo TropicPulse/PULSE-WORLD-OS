@@ -74,8 +74,8 @@ const LAYER_NAME = "THE REPORTER";
 const LAYER_ROLE = "FORENSIC INCIDENT LOGGING";
 
 const REPORTER_DIAGNOSTICS_ENABLED =
-  process.env.PULSE_REPORTER_DIAGNOSTICS === "true" ||
-  process.env.PULSE_DIAGNOSTICS === "true";
+  window.PULSE_REPORTER_DIAGNOSTICS === "true" ||
+  window.PULSE_DIAGNOSTICS === "true";
 
 const logReporter = (stage, details = {}) => {
   if (!REPORTER_DIAGNOSTICS_ENABLED) return;

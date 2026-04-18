@@ -59,8 +59,8 @@ const LAYER_NAME = "THE PROTECTOR";
 const LAYER_ROLE = "ERROR GUARDIAN & HEALING TRIGGER";
 
 const PROTECTOR_DIAGNOSTICS_ENABLED =
-  process.env.PULSE_PROTECTOR_DIAGNOSTICS === "true" ||
-  process.env.PULSE_DIAGNOSTICS === "true";
+  window.PULSE_PROTECTOR_DIAGNOSTICS === "true" ||
+  window.PULSE_DIAGNOSTICS === "true";
 
 const logProtector = (stage, details = {}) => {
   if (!PROTECTOR_DIAGNOSTICS_ENABLED) return;

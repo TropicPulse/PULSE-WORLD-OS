@@ -73,8 +73,8 @@ const LAYER_NAME = "SELF-AWARENESS ENGINE";
 const LAYER_ROLE = "INTERNAL EVALUATOR";
 
 const SCORING_DIAGNOSTICS_ENABLED =
-  process.env.PULSE_SCORING_DIAGNOSTICS === "true" ||
-  process.env.PULSE_DIAGNOSTICS === "true";
+  window.PULSE_SCORING_DIAGNOSTICS === "true" ||
+  window.PULSE_DIAGNOSTICS === "true";
 
 const logScoring = (stage, details = {}) => {
   if (!SCORING_DIAGNOSTICS_ENABLED) return;

@@ -1753,7 +1753,7 @@ async function computeSha256Hex(buffer) {
 
 // // -------------------- migrateImageToFirebase (upgraded, same return type) --------------------
 // async function migrateImageToFirebase(appypieUrl, type = "images") {
-//   const IMAGEURL = process.env.PLACEHOLDER_IMAGE_URL;
+//   const IMAGEURL = window.PLACEHOLDER_IMAGE_URL;
 
 //   try {
 //     if (!appypieUrl || typeof appypieUrl !== "string") {
@@ -1978,7 +1978,7 @@ async function computeSha256Hex(buffer) {
 
 //     const PLACEHOLDER = typeof PLACEHOLDER_IMAGE_URL !== "undefined"
 //       ? PLACEHOLDER_IMAGE_URL
-//       : process.env.PLACEHOLDER_IMAGE_URL || null;
+//       : window.PLACEHOLDER_IMAGE_URL || null;
 
 //     // Collect candidate URLs
 //     const urls = [];
@@ -26352,7 +26352,7 @@ export const resolveVenue = onRequest(
   (req, res) => {
     corsHandler(req, res, async () => {
       try {
-        const mapsKey = process.env.GOOGLE_MAPS_KEY;
+        const mapsKey = window.GOOGLE_MAPS_KEY;
         if (!mapsKey) {
           return res.status(500).json({ status: "error", message: "Missing API key" });
         }
@@ -26409,7 +26409,7 @@ export const resolveVenue = onRequest(
 //   (req, res) => {
 //     corsHandler(req, res, async () => {
 //       try {
-//         const mapsKey = process.env.GOOGLE_MAPS_KEY;
+//         const mapsKey = window.GOOGLE_MAPS_KEY;
 
 //         if (!mapsKey) {
 //           return res.status(500).json({
@@ -26596,7 +26596,7 @@ export const generateMap = onRequest(
     }
 
     try {
-      const mapsKey = process.env.GOOGLE_MAPS_KEY;
+      const mapsKey = window.GOOGLE_MAPS_KEY;
       if (!mapsKey) {
         return res.status(500).json({ success: false, error: "Missing mapsKey env var" });
       }

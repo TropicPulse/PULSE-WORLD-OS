@@ -58,8 +58,8 @@ const LAYER_NAME = "THE NETWORK HEALER";
 const LAYER_ROLE = "B-LAYER MEMORY INTAKE + REPAIR";
 
 const NETWORK_DIAGNOSTICS_ENABLED =
-  process.env.PULSE_NETWORK_DIAGNOSTICS === "true" ||
-  process.env.PULSE_DIAGNOSTICS === "true";
+  window.PULSE_NETWORK_DIAGNOSTICS === "true" ||
+  window.PULSE_DIAGNOSTICS === "true";
 
 const logNetworkHealer = (stage, details = {}) => {
   if (!NETWORK_DIAGNOSTICS_ENABLED) return;

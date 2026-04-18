@@ -55,10 +55,10 @@
 // ======================================================
 
 export const PROXY_HEALTH_URL =
-  process.env.PULSE_PROXY_HEALTH_URL || "http://localhost:8080/pulse-proxy/health";
+  window.PULSE_PROXY_HEALTH_URL || "http://localhost:8080/pulse-proxy/health";
 
 export const PROXY_METRICS_URL =
-  process.env.PULSE_PROXY_METRICS_URL || "http://localhost:8080/pulse-proxy/metrics";
+  window.PULSE_PROXY_METRICS_URL || "http://localhost:8080/pulse-proxy/metrics";
 
 // Immune patrol frequency
 export const HEALTH_INTERVAL_MS = 30_000;

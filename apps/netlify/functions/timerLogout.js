@@ -69,8 +69,8 @@ const LAYER_NAME = "THE CUSTODIAN";
 const LAYER_ROLE = "STATE RESET & LINEAGE RESTORATION";
 
 const CUSTODIAN_DIAGNOSTICS_ENABLED =
-  process.env.PULSE_CUSTODIAN_DIAGNOSTICS === "true" ||
-  process.env.PULSE_DIAGNOSTICS === "true";
+  window.PULSE_CUSTODIAN_DIAGNOSTICS === "true" ||
+  window.PULSE_DIAGNOSTICS === "true";
 
 const logCustodian = (stage, details = {}) => {
   if (!CUSTODIAN_DIAGNOSTICS_ENABLED) return;

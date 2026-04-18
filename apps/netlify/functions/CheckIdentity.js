@@ -61,8 +61,8 @@ const LAYER_NAME = "THE SELF";
 const LAYER_ROLE = "SENSE-OF-SELF ENGINE";
 
 const IDENTITY_DIAGNOSTICS_ENABLED =
-  process.env.PULSE_IDENTITY_DIAGNOSTICS === "true" ||
-  process.env.PULSE_DIAGNOSTICS === "true";
+  window.PULSE_IDENTITY_DIAGNOSTICS === "true" ||
+  window.PULSE_DIAGNOSTICS === "true";
 
 const logSelf = (stage, details = {}) => {
   if (!IDENTITY_DIAGNOSTICS_ENABLED) return;

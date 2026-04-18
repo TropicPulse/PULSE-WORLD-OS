@@ -73,8 +73,8 @@ const LAYER_NAME = "THE RELIABILITY OFFICER";
 const LAYER_ROLE = "TRUST ENFORCEMENT ENGINE";
 
 const SECURITY_SWEEP_DIAGNOSTICS_ENABLED =
-  process.env.PULSE_SECURITY_SWEEP_DIAGNOSTICS === "true" ||
-  process.env.PULSE_DIAGNOSTICS === "true";
+  window.PULSE_SECURITY_SWEEP_DIAGNOSTICS === "true" ||
+  window.PULSE_DIAGNOSTICS === "true";
 
 const logReliability = (stage, details = {}) => {
   if (!SECURITY_SWEEP_DIAGNOSTICS_ENABLED) return;

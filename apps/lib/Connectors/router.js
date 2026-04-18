@@ -69,8 +69,8 @@ const LAYER_NAME = "THE WISDOM+";
 const LAYER_ROLE = "COMMUNICATION INTELLIGENCE";
 
 const WISDOM_DIAGNOSTICS_ENABLED =
-  process.env.PULSE_WISDOM_DIAGNOSTICS === "true" ||
-  process.env.PULSE_DIAGNOSTICS === "true";
+  window.PULSE_WISDOM_DIAGNOSTICS === "true" ||
+  window.PULSE_DIAGNOSTICS === "true";
 
 const logWisdom = (stage, details = {}) => {
   if (!WISDOM_DIAGNOSTICS_ENABLED) return;

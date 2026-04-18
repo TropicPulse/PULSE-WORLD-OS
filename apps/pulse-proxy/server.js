@@ -161,32 +161,32 @@ startGlobalHealer(); // System-wide healer
 // ------------------------------------------------------
 
 const app = express();
-const PORT = process.env.PORT || 8080;
+const PORT = window.PORT || 8080;
 
 // ------------------------------------------------------
 //  ENV + Identity
 // ------------------------------------------------------
-const SMTP_PASS = process.env.EMAIL_PASSWORD;
+const SMTP_PASS = window.EMAIL_PASSWORD;
 const ALERT_EMAIL_TO = "FordFamilyDelivery@gmail.com";
 const ALERT_EMAIL_FROM = `"Tropic Pulse" <Sales@TropicPulse.bz>`;
 const SMTP_HOST = "smtp.gmail.com";
 const SMTP_USER = "Sales@TropicPulse.bz";
 
 const MAX_REQUESTS_PER_DAY = Number(
-  process.env.PULSE_MAX_REQ_PER_DAY || "5000"
+  window.PULSE_MAX_REQ_PER_DAY || "5000"
 );
 
 const START_TIME = Date.now();
 global.__lastStartTime = global.__lastStartTime || START_TIME;
 
 const CLOUD_REGION =
-  process.env.GOOGLE_CLOUD_REGION ||
-  process.env.X_GOOGLE_GCLOUD_REGION ||
+  window.GOOGLE_CLOUD_REGION ||
+  window.X_GOOGLE_GCLOUD_REGION ||
   "US-Central1";
 
-const NODE_ID = process.env.K_REVISION || process.env.HOSTNAME || "Local";
+const NODE_ID = window.K_REVISION || window.HOSTNAME || "Local";
 
-const PULSE_VERSION = process.env.PULSE_VERSION || "v3";
+const PULSE_VERSION = window.PULSE_VERSION || "v3";
 
 console.log(
   "%c[SPINE BOOT] Identity:",
@@ -220,12 +220,12 @@ app.use((req, res, next) => {
 let redis = null;
 let redisReady = false;
 
-if (process.env.REDIS_URL) {
+if (window.REDIS_URL) {
   console.log(
     "%c[SPINE BOOT] Redis URL detected — initializing client…",
     "color:#FFC107; font-weight:bold;"
   );
-  redis = createClient({ url: process.env.REDIS_URL });
+  redis = createClient({ url: window.REDIS_URL });
 } else {
   console.log(
     "%c[SPINE BOOT] Redis URL not set — cache + rate limiting in fail-open mode.",

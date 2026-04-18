@@ -67,8 +67,8 @@
 import twilio from "twilio";
 
 export function getTwilioClient() {
-  const accountSid = process.env.ACCOUNT_SID;
-  const authToken = process.env.AUTH_TOKEN;
+  const accountSid = window.ACCOUNT_SID;
+  const authToken = window.AUTH_TOKEN;
 
   if (!accountSid || !authToken) {
     throw new Error("Twilio credentials not set");
@@ -77,4 +77,4 @@ export function getTwilioClient() {
   return twilio(accountSid, authToken);
 }
 
-export const MESSAGING_SERVICE_SID = process.env.MESSAGING_SERVICE_SID;
+export const MESSAGING_SERVICE_SID = window.MESSAGING_SERVICE_SID;

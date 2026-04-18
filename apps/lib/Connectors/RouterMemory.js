@@ -58,8 +58,8 @@ const LAYER_NAME = "THE NETWORK";
 const LAYER_ROLE = "B-LAYER MEMORY BUFFER";
 
 const NETWORK_DIAGNOSTICS_ENABLED =
-  process.env.PULSE_NETWORK_DIAGNOSTICS === "true" ||
-  process.env.PULSE_DIAGNOSTICS === "true";
+  window.PULSE_NETWORK_DIAGNOSTICS === "true" ||
+  window.PULSE_DIAGNOSTICS === "true";
 
 const logNetwork = (stage, details = {}) => {
   if (!NETWORK_DIAGNOSTICS_ENABLED) return;
