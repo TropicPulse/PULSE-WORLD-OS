@@ -1,39 +1,44 @@
 // ============================================================================
 // FILE: /apps/tropic-pulse/lib/Connectors/router.js
-// PULSE COMMUNICATION INTELLIGENCE — v6.3
-// “THE WISDOM / COMMUNICATION INTELLIGENCE LAYER”
+// PULSE COMMUNICATION INTELLIGENCE — v6.3+
+// “THE WISDOM+ / COMMUNICATION INTELLIGENCE LAYER”
 // ============================================================================
 //
-// ⭐ v6.3 COMMENT LOG
-// - THEME: “THE WISDOM / COMMUNICATION INTELLIGENCE LAYER”
-// - ROLE: Structured communication + logging + healing intelligence
-// - Added LAYER CONSTANTS + DIAGNOSTICS helper
-// - Added structured JSON logs (DOM-visible inspector compatible)
-// - Added explicit STAGE markers for route/log/heal
-// - ZERO logic changes to routing or logging behavior
+// ⭐ v6.3+ COMMENT LOG
+// - THEME: “THE WISDOM+ / COMMUNICATION INTELLIGENCE LAYER”
+// - ROLE: Structured communication + logging + healing + alert intelligence
+// - Added route‑down retry logic
+// - Added instant-but-verified alert trigger
+// - Added RouterMemory healing pre‑flush
+// - Added new diagnostics stages (RETRY, ALERT_TRIGGER, HEAL_APPLY)
+// - ZERO breaking changes to syscall structure
 //
 // ============================================================================
-// PERSONALITY + ROLE — “THE WISDOM”
+// PERSONALITY + ROLE — “THE WISDOM+”
 // ----------------------------------------------------------------------------
-// router.js is the **WISDOM** of the frontend.
+// router.js is the **WISDOM+** of the frontend.
 // It is the **COMMUNICATION INTELLIGENCE LAYER** — the subsystem that knows
 // how to speak to the backend, how to structure requests, how to log events,
+// how to retry intelligently, how to alert when communication fails,
 // and how to initiate healing.
 //
 //   • Sends structured syscalls to the backend
 //   • Logs events into RouterMemory (The Network)
-//   • Provides healing requests
+//   • Retries failed routes instantly
+//   • Triggers backend alerts when routes are truly down
+//   • Heals RouterMemory before Timer.js flush
 //   • Maintains communication order + structure
 //
 // This is the OS’s procedural wisdom — the intelligence that keeps
-// communication coherent and self-healing.
+// communication coherent, resilient, and self-healing.
 //
 // ============================================================================
 // WHAT THIS FILE IS
 // ----------------------------------------------------------------------------
 //   ✔ A structured syscall generator
-//   ✔ A logging + healing connector
+//   ✔ A logging + retry + healing connector
 //   ✔ A communication intelligence layer
+//   ✔ A route‑down detection + alert layer
 //
 // WHAT THIS FILE IS NOT
 // ----------------------------------------------------------------------------
@@ -43,12 +48,14 @@
 //   ✘ NOT a database writer
 //
 // ============================================================================
-// SAFETY CONTRACT (v6.3)
+// SAFETY CONTRACT (v6.3+)
 // ----------------------------------------------------------------------------
 //   • Never mutate payloads
 //   • Never bypass RouterMemory
 //   • Never call backend with malformed structure
 //   • Always log before and after syscalls
+//   • Always retry once before alerting
+//   • Always heal RouterMemory before Timer flush
 //
 // ============================================================================
 
@@ -58,7 +65,7 @@ import { RouterMemory } from "./RouterMemory.js";
 // LAYER CONSTANTS + DIAGNOSTICS
 // ============================================================================
 const LAYER_ID = "COMM-LAYER";
-const LAYER_NAME = "THE WISDOM";
+const LAYER_NAME = "THE WISDOM+";
 const LAYER_ROLE = "COMMUNICATION INTELLIGENCE";
 
 const WISDOM_DIAGNOSTICS_ENABLED =
@@ -80,7 +87,12 @@ const logWisdom = (stage, details = {}) => {
 };
 
 // ============================================================================
-// CONTEXT MAP
+// ROUTE FAILURE STATE (short‑term, safe, non‑top‑level execution)
+// ============================================================================
+let routeFailureCount = 0;
+
+// ============================================================================
+// ROUTER CONTEXT MAP
 // ============================================================================
 const ROUTER_CONTEXT = {
   label: "ROUTER",
@@ -88,6 +100,57 @@ const ROUTER_CONTEXT = {
   purpose: "Frontend → Backend Connector",
   context: "Sends structured requests to backend router"
 };
+
+// ============================================================================
+// ⭐ ROUTER MEMORY HEALING (pre‑flush)
+// ============================================================================
+async function healRouterMemoryIfNeeded() {
+  const logs = RouterMemory.getAll();
+  if (!logs || logs.length === 0) {
+    logWisdom("HEAL_SKIP_EMPTY", {});
+    return;
+  }
+
+  logWisdom("HEAL_REQUEST", { count: logs.length });
+
+  try {
+    const res = await fetch("/.netlify/functions/CheckRouterMemory", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ logs })
+    });
+
+    const data = await res.json();
+
+    if (Array.isArray(data.logs)) {
+      RouterMemory._logs = data.logs;
+      logWisdom("HEAL_APPLIED", { count: data.logs.length });
+    } else {
+      logWisdom("HEAL_DEGRADED", {});
+    }
+  } catch (err) {
+    logWisdom("HEAL_ERROR", { message: String(err) });
+  }
+}
+
+// ============================================================================
+// ⭐ ROUTE‑DOWN ALERT TRIGGER (backend email)
+// ============================================================================
+async function triggerRouteDownAlert(error, type) {
+  logWisdom("ALERT_TRIGGER", { error, type });
+
+  try {
+    await fetch("/.netlify/functions/RouteDownAlert", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ error, type })
+    });
+
+    logWisdom("ALERT_SENT", { type });
+  } catch (err) {
+    logWisdom("ALERT_ERROR", { message: String(err) });
+  }
+}
 
 // ============================================================================
 // ⭐ UNIVERSAL SYS‑CALL FUNCTION (A → B → C)
@@ -110,6 +173,9 @@ export async function route(type, payload = {}) {
 
     const json = await res.json();
 
+    // Reset failure counter on success
+    routeFailureCount = 0;
+
     logWisdom("ROUTE_RESPONSE", { type });
 
     logEvent("routeResponse", {
@@ -122,7 +188,11 @@ export async function route(type, payload = {}) {
     return json;
 
   } catch (err) {
-    logWisdom("ROUTE_ERROR", { type, message: String(err) });
+    // ------------------------------------------------------------
+    // ⭐ FIRST FAILURE DETECTED
+    // ------------------------------------------------------------
+    routeFailureCount++;
+    logWisdom("ROUTE_ERROR", { type, message: String(err), count: routeFailureCount });
 
     logEvent("routeError", {
       type,
@@ -131,13 +201,52 @@ export async function route(type, payload = {}) {
       ...ROUTER_CONTEXT
     });
 
-    // ⭐ NEW v6.3 DRIFT DETECTOR (3 lines)
+    // ⭐ v6.3 DRIFT DETECTOR
     if (String(err).includes("process is not defined")) {
       RouterMemory.push({
         eventType: "frontendEnvMismatch",
         repairHint: "Replace process.env.* with window.PULSE_*",
         timestamp: Date.now()
       });
+    }
+
+    // ------------------------------------------------------------
+    // ⭐ RETRY ONCE BEFORE ALERTING
+    // ------------------------------------------------------------
+    if (routeFailureCount === 1) {
+      logWisdom("ROUTE_RETRY", { type });
+
+      try {
+        const retryRes = await fetch("/.netlify/functions/endpoint", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ type, payload })
+        });
+
+        const retryJson = await retryRes.json();
+
+        // Retry succeeded → reset counter
+        routeFailureCount = 0;
+
+        logWisdom("ROUTE_RETRY_SUCCESS", { type });
+
+        logEvent("routeRetrySuccess", {
+          type,
+          payload,
+          retryJson,
+          ...ROUTER_CONTEXT
+        });
+
+        return retryJson;
+
+      } catch (retryErr) {
+        // Retry failed → trigger alert
+        logWisdom("ROUTE_RETRY_FAIL", { type, message: String(retryErr) });
+
+        await triggerRouteDownAlert(String(retryErr), type);
+
+        routeFailureCount = 0; // reset after alert
+      }
     }
 
     return {
@@ -150,7 +259,7 @@ export async function route(type, payload = {}) {
 // ============================================================================
 // ⭐ LOGGING ENTRY POINT (A2 → B)
 // ============================================================================
-export function logEvent(eventType, data) {
+export async function logEvent(eventType, data) {
   logWisdom("LOG_EVENT", { eventType });
 
   const entry = {
@@ -163,6 +272,9 @@ export function logEvent(eventType, data) {
   RouterMemory.push(entry);
 
   logWisdom("LOG_PUSHED", { eventType });
+
+  // ⭐ Heal RouterMemory BEFORE Timer flush
+  await healRouterMemoryIfNeeded();
 
   timer();
   logWisdom("TIMER_TRIGGERED", {});
