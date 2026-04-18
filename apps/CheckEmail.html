@@ -9,30 +9,29 @@
                minimum-scale=1,
                user-scalable=no">
   <title>Welcome to Tropic Pulse!</title>
+<!-- Google Font -->
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
 
-  <!-- Google Font -->
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
 <!-- Google tag (gtag.js) -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-HSX89KS63P"></script>
-<!-- Backend Connector Layer -->
-<script type="module">
-import { pulseband } from "./proxy/PulseBand.js";
-import { identity } from "./PulseIdentity.js";
-import { getAuth, getHook, getMap, callHelper, attachScanner } from "./lib/Connectors/PageScanner.js";
-</script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
 
+<!-- Unified Module Script (imports + login logic will go here later) -->
+<script type="module">
+  import { pulseband } from "./proxy/PulseBand.js";
+  import { identity } from "./PulseIdentity.js";
+  import { getAuth, getHook, getMap, callHelper, attachScanner } from "./lib/Connectors/PageScanner.js";
+
+  // Expose analytics globals (Google + FB Pixel) inside module
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){ dataLayer.push(arguments); }
+  gtag('js', new Date());
   gtag('config', 'G-HSX89KS63P');
-  document.addEventListener("contextmenu", function(e) {
-    e.preventDefault();
-  });
-  document.addEventListener("dragstart", function(e) {
-    e.preventDefault();
-  });
-  
+
+  // Disable right‑click + drag
+  document.addEventListener("contextmenu", e => e.preventDefault());
+  document.addEventListener("dragstart", e => e.preventDefault());
+
+  // Facebook Pixel
   !function(f,b,e,v,n,t,s){
     if(f.fbq) return;
     n = f.fbq = function(){
@@ -53,17 +52,19 @@ import { getAuth, getHook, getMap, callHelper, attachScanner } from "./lib/Conne
 
   fbq('init', '1651551349364459');
   fbq('track', 'PageView');
+
+  // NOTE:
+  // Your loginBootstrap() and page logic will also live inside THIS SAME MODULE.
+  // That ensures identity(), pulseband, PageScanner, etc. are all in scope.
 </script>
+
 <noscript>
-  <img
-    height="1"
-    width="1"
-    style="display:none"
-    src="https://www.facebook.com/tr?id=1651551349364459&ev=PageView&noscript=1"
-  />
+  <img height="1" width="1" style="display:none"
+       src="https://www.facebook.com/tr?id=1651551349364459&ev=PageView&noscript=1" />
 </noscript>
-<!-- End Meta Pixel Code -->
+
 <style>
+
  body {
   padding: 0;
   margin: 0;
