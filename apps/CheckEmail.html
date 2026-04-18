@@ -700,23 +700,28 @@ function showLoginUI() {
 }
 
 // ============================================================================
-// 1) LOGIN BOOTSTRAP — identity() decides if user is already logged in
+// 1) LOGIN BOOTSTRAP — Only check if identity variable exists (NO identity())
 // ============================================================================
 async function loginBootstrap() {
   showTPLoader();
   mark("BOOTSTRAP START");
 
-  const id = await identity(); // Load + validate + repair identity
+  // DO NOT CALL identity()
+  // Just check if identity is already in memory/localStorage
+  const id = window.PulseIdentity || null;
 
   if (!id) {
+    // No identity → show login UI
     hideTPLoader();
     showLoginUI();
     return;
   }
 
+  // Identity exists → returning user → redirect
   hideTPLoader();
   window.location.href = returnTo || "/dashboard.html";
 }
+
 
 // ============================================================================
 // 2) SEND PIN
