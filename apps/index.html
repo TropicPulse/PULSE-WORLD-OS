@@ -113,10 +113,11 @@ body {
   padding: 0;
   margin: 0;
 
-  /* Full viewport width WITHOUT overflow bugs */
-  width: 100vw;
+  /* Use normal flow width, avoid scrollbar overflow */
+  width: 100%;
+  max-width: 100%;
 
-  /* Full dynamic viewport height (correct usage) */
+  /* Full dynamic viewport height is fine */
   min-height: 100dvh;
 
   /* Centering is handled by .container, not body */
@@ -146,12 +147,12 @@ body {
   padding: var(--tp-section-padding) 0;
 }
 
-
 @media (min-width: 992px) {
   .section {
     padding: var(--tp-section-padding-lg) 0;
   }
 }
+
 
 /* BUTTONS */
 
