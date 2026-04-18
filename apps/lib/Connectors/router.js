@@ -131,6 +131,15 @@ export async function route(type, payload = {}) {
       ...ROUTER_CONTEXT
     });
 
+    // ⭐ NEW v6.3 DRIFT DETECTOR (3 lines)
+    if (String(err).includes("process is not defined")) {
+      RouterMemory.push({
+        eventType: "frontendEnvMismatch",
+        repairHint: "Replace process.env.* with window.PULSE_*",
+        timestamp: Date.now()
+      });
+    }
+
     return {
       error: "Frontend connector failed",
       details: String(err)

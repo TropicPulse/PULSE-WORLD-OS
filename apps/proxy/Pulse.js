@@ -56,9 +56,10 @@ const LAYER_ID = "SHADOW-LAYER";
 const LAYER_NAME = "THE SHADOWLAYER";
 const LAYER_ROLE = "SOUL-INTENT ILLUSION OF ONE LAYER";
 
+// Browser-safe diagnostics flags
 const SHADOW_DIAGNOSTICS_ENABLED =
-  process.env.PULSE_SHADOW_DIAGNOSTICS === "true" ||
-  process.env.PULSE_DIAGNOSTICS === "true";
+  (typeof window !== "undefined" && window.PULSE_SHADOW_DIAGNOSTICS === true) ||
+  (typeof window !== "undefined" && window.PULSE_DIAGNOSTICS === true);
 
 const logShadow = (stage, details = {}) => {
   if (!SHADOW_DIAGNOSTICS_ENABLED) return;

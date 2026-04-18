@@ -1,11 +1,11 @@
 // ============================================================================
 // FILE: /apps/lib/Connectors/PageScanner.js
 // PULSE ERROR GUARDIAN — v6.3
-// “THE PROTECTOR / ERROR GUARDIAN & HEALING TRIGGER”
+// “THE SENTINEL / THE IMMUNE SCOUT LAYER”
 // ============================================================================
 //
 // ⭐ v6.3 COMMENT LOG
-// - THEME: “THE PROTECTOR / ERROR GUARDIAN & HEALING TRIGGER”
+// - THEME: “THE SENTINEL / THE IMMUNE SCOUT LAYER”
 // - ROLE: Error interception + healing trigger + route tracing
 // - Added LAYER CONSTANTS + DIAGNOSTICS helper
 // - Added structured JSON logs (DOM-visible inspector compatible)
@@ -13,7 +13,7 @@
 // - ZERO logic changes to healing or parsing behavior
 //
 // ============================================================================
-// PERSONALITY + ROLE — “THE PROTECTOR”
+// PERSONALITY + ROLE — “THE SENTINEL"
 // ----------------------------------------------------------------------------
 // PageScanner is the **PROTECTOR** of the Pulse OS.
 // It is the **ERROR GUARDIAN & HEALING TRIGGER** — the subsystem that stands
