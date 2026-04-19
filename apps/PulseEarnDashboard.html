@@ -587,32 +587,119 @@ input[type="file"] {
 import { pulseband } from "./proxy/PulseBand.js";
 import { identity } from "./PulseIdentity.js";
 import { getAuth, getHook, getMap, callHelper, attachScanner } from "./lib/Connectors/PageScanner.js";
-
 // =======================
-// PULSE EARN — ENGINE v1
-// Snapshot-first, Stripe-ready, Live-capable
+// PULSE EARN — ENGINE v7.3
+// Snapshot-first, Stripe-ready, Live-capable, Audit-aligned
 // =======================
-// ---------- Earn Growth Model (upgrade over naive 0–15% bump) ----------
-// This model is designed to be AUDITABLE:
-// - baseMonthlyGrowth: your trailing average monthly growth rate (e.g., from Stripe exports)
-// - volatility: small symmetric noise around that average to show natural variation
-// - All values are EXPLICIT and can be replaced with real measured data.
 
+// ---------- Earn Growth Model (AUDITABLE) ----------
 const earnGrowthModel = {
-    // Example: 6% monthly growth as a realistic, defensible early-stage target.
-    // Replace this with your REAL trailing average when you have it.
+    // Replace with real trailing average monthly growth from Stripe exports.
     baseMonthlyGrowth: 0.06,   // 6% per simulation step
-
-    // Small variance around the mean to avoid perfectly flat growth.
-    // This is NOT a wild guess; it's a tight band around the chosen average.
+    // Tight symmetric noise band around the mean (if you choose to use it elsewhere).
     volatility: 0.01           // ±1% around the base
 };
 
-// ---------- Demo Snapshot (you can replace with real data later) ----------
-const demoEarnSnapshot = {
-    generatedAt: new Date().toISOString(),
-    currency: "USD",
-    stripe: {
+// ---------- Types (conceptual) ----------
+// - StripeMetrics: { available, pending, lastPayout?, nextPayout?, payoutHistory[] }
+// - BankMetrics:   { currentBalance, lastDeposit?, nightlyAverage, depositVelocity }
+// - DeviceEarner:  { id, label, earningsMonthly, earningsToday }
+// - UserEarner:    { id, label, earningsMonthly, earningsToday }
+// - FamilyMode:    { familyUsersCount, familySharePercent, ownerSharePercent, familyTotalEarnings, ownerFromFamily }
+// - Projections:   { conservativeMultiplier, moderateMultiplier, aggressiveMultiplier }
+
+// ---------- Real Earn Snapshot Generator (v7.3) ----------
+async function generateEarnSnapshot() {
+    // These MUST be wired to your real backend.
+    // Right now they are conceptual placeholders, not implementations.
+    const stripeData   = await getStripeMetrics();      // { available, pending, lastPayout, nextPayout, payoutHistory }
+    const bankData     = await getBankMetrics();        // { currentBalance, lastDeposit, nightlyAverage, depositVelocity }
+    const deviceData   = await getDeviceMetrics();      // [DeviceEarner]
+    const userData     = await getUserMetrics();        // [UserEarner]
+    const familyData   = await getFamilyModeMetrics();  // FamilyMode or null
+    const projections  = getProjectionConfig();         // Projections
+
+    // 1) Aggregate real earnings from devices as base
+    const currentMonthly = deviceData.reduce(
+        (sum, d) => sum + (d.earningsMonthly || 0),
+        0
+    );
+
+    const activeDevices = deviceData.length;
+    const activeUsers   = userData.length;
+
+    // 2) Compute projections from growth model (no magic 24500)
+    const growth = earnGrowthModel.baseMonthlyGrowth;
+    const projectedMonthly = currentMonthly * (1 + growth);
+    const projectedYearly  = projectedMonthly * 12;
+
+    // 3) Build the snapshot object (single source of truth)
+    return {
+        version: "7.3",
+        generatedAt: new Date().toISOString(),
+        currency: "USD",
+
+        stripe: {
+            available: stripeData.available,
+            pending: stripeData.pending,
+            lastPayout: stripeData.lastPayout || null,
+            nextPayout: stripeData.nextPayout || null
+        },
+
+        bank: {
+            currentBalance: bankData.currentBalance,
+            lastDeposit: bankData.lastDeposit || null,
+            nightlyAverage: bankData.nightlyAverage,
+            depositVelocity: bankData.depositVelocity
+        },
+
+        earnings: {
+            currentMonthly,
+            projectedMonthly,
+            projectedYearly,
+            activeDevices,
+            activeUsers
+        },
+
+        devices: deviceData.map(d => ({
+            id: d.id,
+            label: d.label,
+            earningsMonthly: d.earningsMonthly,
+            earningsToday: d.earningsToday
+        })),
+
+        users: userData.map(u => ({
+            id: u.id,
+            label: u.label,
+            earningsMonthly: u.earningsMonthly,
+            earningsToday: u.earningsToday
+        })),
+
+        familyMode: familyData
+            ? {
+                  familyUsersCount: familyData.familyUsersCount,
+                  familySharePercent: familyData.familySharePercent,
+                  ownerSharePercent: familyData.ownerSharePercent,
+                  familyTotalEarnings: familyData.familyTotalEarnings,
+                  ownerFromFamily: familyData.ownerFromFamily
+              }
+            : null,
+
+        projections: {
+            conservativeMultiplier: projections.conservativeMultiplier,
+            moderateMultiplier: projections.moderateMultiplier,
+            aggressiveMultiplier: projections.aggressiveMultiplier
+        },
+
+        payouts: Array.isArray(stripeData.payoutHistory)
+            ? stripeData.payoutHistory.slice()
+            : []
+    };
+}
+
+// ---------- Demo Snapshot (still allowed, but now derived, not magic) ----------
+const demoEarnSnapshot = (() => {
+    const stripe = {
         available: 48231.17,
         pending: 8123.44,
         lastPayout: {
@@ -623,9 +710,40 @@ const demoEarnSnapshot = {
         nextPayout: {
             ts: "2026-04-18T09:00:00Z",
             estimate: 4300.0
-        }
-    },
-    bank: {
+        },
+        payoutHistory: [
+            {
+                ts: "2026-04-17T05:20:00Z",
+                type: "bank_deposit",
+                label: "Nightly Deposit",
+                amount: 5200.0,
+                target: "Bank •••• 1234"
+            },
+            {
+                ts: "2026-04-17T05:12:00Z",
+                type: "stripe_payout",
+                label: "Stripe Payout",
+                amount: -5200.0,
+                target: "Stripe → Bank •••• 1234"
+            },
+            {
+                ts: "2026-04-17T04:50:00Z",
+                type: "charge",
+                label: "Session Billing — Client B",
+                amount: 89.99,
+                target: "Stripe Subaccount B"
+            },
+            {
+                ts: "2026-04-17T04:32:00Z",
+                type: "charge",
+                label: "Session Billing — Client A",
+                amount: 49.0,
+                target: "Stripe Subaccount A"
+            }
+        ]
+    };
+
+    const bank = {
         currentBalance: 39120.55,
         lastDeposit: {
             amount: 5200.0,
@@ -633,67 +751,66 @@ const demoEarnSnapshot = {
         },
         nightlyAverage: 4100.0,
         depositVelocity: "Stable (3–5k / night)"
-    },
-    earnings: {
-        currentMonthly: 18432.11,
-        projectedMonthly: 24500.0,
-        projectedYearly: 24500.0 * 12,
-        activeDevices: 7,
-        activeUsers: 11
-    },
-    devices: [
+    };
+
+    const devices = [
         { id: "dev1", label: "Living Room Band", earningsMonthly: 3120.55, earningsToday: 142.33 },
         { id: "dev2", label: "Office Band",       earningsMonthly: 4210.11, earningsToday: 189.12 },
         { id: "dev3", label: "Bedroom Band",      earningsMonthly: 2100.00, earningsToday: 98.44 }
-    ],
-    users: [
-        { id: "u1", label: "Owner",      earningsMonthly: 18432.11, earningsToday: 520.11 },
-        { id: "u2", label: "Family A",   earningsMonthly: 6123.44,  earningsToday: 211.09 },
-        { id: "u3", label: "Family B",   earningsMonthly: 4210.11,  earningsToday: 189.12 }
-    ],
-    familyMode: {
+    ];
+
+    const users = [
+        { id: "u1", label: "Owner",    earningsMonthly: 18432.11, earningsToday: 520.11 },
+        { id: "u2", label: "Family A", earningsMonthly: 6123.44,  earningsToday: 211.09 },
+        { id: "u3", label: "Family B", earningsMonthly: 4210.11,  earningsToday: 189.12 }
+    ];
+
+    const familyMode = {
         familyUsersCount: 2,
         familySharePercent: 0.9,
         ownerSharePercent: 0.1,
         familyTotalEarnings: 10333.55,
         ownerFromFamily: 1148.17
-    },
-    projections: {
+    };
+
+    const projections = {
         conservativeMultiplier: 0.7,
         moderateMultiplier: 1.0,
         aggressiveMultiplier: 1.5
-    },
-    payouts: [
-        {
-            ts: "2026-04-17T05:20:00Z",
-            type: "bank_deposit",
-            label: "Nightly Deposit",
-            amount: 5200.0,
-            target: "Bank •••• 1234"
+    };
+
+    // Use the same generator so demo and live share math.
+    const currentMonthly = devices.reduce(
+        (sum, d) => sum + (d.earningsMonthly || 0),
+        0
+    );
+    const growth = earnGrowthModel.baseMonthlyGrowth;
+    const projectedMonthly = currentMonthly * (1 + growth);
+    const projectedYearly  = projectedMonthly * 12;
+
+    return {
+        version: "7.3",
+        generatedAt: new Date().toISOString(),
+        currency: "USD",
+
+        stripe,
+        bank,
+
+        earnings: {
+            currentMonthly,
+            projectedMonthly,
+            projectedYearly,
+            activeDevices: devices.length,
+            activeUsers: users.length
         },
-        {
-            ts: "2026-04-17T05:12:00Z",
-            type: "stripe_payout",
-            label: "Stripe Payout",
-            amount: -5200.0,
-            target: "Stripe → Bank •••• 1234"
-        },
-        {
-            ts: "2026-04-17T04:50:00Z",
-            type: "charge",
-            label: "Session Billing — Client B",
-            amount: 89.99,
-            target: "Stripe Subaccount B"
-        },
-        {
-            ts: "2026-04-17T04:32:00Z",
-            type: "charge",
-            label: "Session Billing — Client A",
-            amount: 49.0,
-            target: "Stripe Subaccount A"
-        }
-    ]
-};
+
+        devices,
+        users,
+        familyMode,
+        projections,
+        payouts: stripe.payoutHistory.slice()
+    };
+})();
 
 // ---------- State ----------
 let currentSnapshot = null;
@@ -758,7 +875,6 @@ async function loadEarnSnapshot() {
 }
 
 function loadSavedEarnSnapshot() {
-    // Placeholder: later you can wire this to your backend / localStorage
     applyEarnSnapshot(demoEarnSnapshot);
     logEarnTrace("Loaded demo earnings snapshot via 'Saved Earnings Snapshot' button.");
 }
@@ -772,10 +888,9 @@ function applyEarnSnapshot(snapshot) {
         bannerText.textContent = `Earnings snapshot loaded — ${formatDate(currentSnapshot.generatedAt || new Date())}`;
     }
 
-    // Sync family split state
     if (currentSnapshot.familyMode) {
         currentFamilyShare = currentSnapshot.familyMode.familySharePercent ?? currentFamilyShare;
-        currentOwnerShare = currentSnapshot.familyMode.ownerSharePercent ?? currentOwnerShare;
+        currentOwnerShare  = currentSnapshot.familyMode.ownerSharePercent ?? currentOwnerShare;
     }
 
     renderSummaryCards();
@@ -840,13 +955,13 @@ function renderStripeAndBank() {
     if (!currentSnapshot) return;
     const { stripe, bank } = currentSnapshot;
 
-    const stripeAvailable = document.getElementById("stripeAvailable");
-    const stripePending = document.getElementById("stripePending");
+    const stripeAvailable  = document.getElementById("stripeAvailable");
+    const stripePending    = document.getElementById("stripePending");
     const stripeLastPayout = document.getElementById("stripeLastPayout");
     const stripeNextPayout = document.getElementById("stripeNextPayout");
 
-    if (stripeAvailable) stripeAvailable.textContent = formatCurrency(stripe.available);
-    if (stripePending) stripePending.textContent = formatCurrency(stripe.pending);
+    if (stripeAvailable)  stripeAvailable.textContent  = formatCurrency(stripe.available);
+    if (stripePending)    stripePending.textContent    = formatCurrency(stripe.pending);
     if (stripeLastPayout) {
         stripeLastPayout.textContent = stripe.lastPayout
             ? `${formatCurrency(stripe.lastPayout.amount)} @ ${formatDate(stripe.lastPayout.ts)}`
@@ -858,28 +973,26 @@ function renderStripeAndBank() {
             : "—";
     }
 
-    const bankCurrent = document.getElementById("bankCurrent");
+    const bankCurrent     = document.getElementById("bankCurrent");
     const bankLastDeposit = document.getElementById("bankLastDeposit");
-    const bankNightlyAvg = document.getElementById("bankNightlyAvg");
-    const bankVelocity = document.getElementById("bankVelocity");
+    const bankNightlyAvg  = document.getElementById("bankNightlyAvg");
+    const bankVelocity    = document.getElementById("bankVelocity");
 
-    if (bankCurrent) bankCurrent.textContent = formatCurrency(bank.currentBalance);
+    if (bankCurrent)     bankCurrent.textContent     = formatCurrency(bank.currentBalance);
     if (bankLastDeposit) {
         bankLastDeposit.textContent = bank.lastDeposit
             ? `${formatCurrency(bank.lastDeposit.amount)} @ ${formatDate(bank.lastDeposit.ts)}`
             : "—";
     }
-    if (bankNightlyAvg) bankNightlyAvg.textContent = formatCurrency(bank.nightlyAverage);
-    if (bankVelocity) bankVelocity.textContent = bank.depositVelocity || "—";
+    if (bankNightlyAvg)  bankNightlyAvg.textContent  = formatCurrency(bank.nightlyAverage);
+    if (bankVelocity)    bankVelocity.textContent    = bank.depositVelocity || "—";
 }
 
 function refreshStripeData() {
-    // Placeholder: later wire to backend / Stripe
     logEarnTrace("Requested Stripe data refresh (demo mode — no live call).");
 }
 
 function refreshBankData() {
-    // Placeholder: later wire to backend / bank API
     logEarnTrace("Requested Bank data refresh (demo mode — no live call).");
 }
 
@@ -890,7 +1003,6 @@ function renderEarningsBreakdown() {
 
     container.innerHTML = "";
 
-    // Devices
     currentSnapshot.devices.forEach(dev => {
         const card = document.createElement("div");
         card.className = "subsystem-card";
@@ -911,7 +1023,6 @@ function renderEarningsBreakdown() {
         container.appendChild(card);
     });
 
-    // Users
     currentSnapshot.users.forEach(user => {
         const card = document.createElement("div");
         card.className = "subsystem-card";
@@ -939,33 +1050,33 @@ function renderFamilyMode() {
 
     const fm = currentSnapshot.familyMode;
 
-    const familyUsersCount = document.getElementById("familyUsersCount");
-    const familySharePercent = document.getElementById("familySharePercent");
-    const ownerSharePercent = document.getElementById("ownerSharePercent");
-    const familyTotalEarnings = document.getElementById("familyTotalEarnings");
-    const ownerFamilyEarnings = document.getElementById("ownerFamilyEarnings");
+    const familyUsersCount     = document.getElementById("familyUsersCount");
+    const familySharePercentEl = document.getElementById("familySharePercent");
+    const ownerSharePercentEl  = document.getElementById("ownerSharePercent");
+    const familyTotalEarnings  = document.getElementById("familyTotalEarnings");
+    const ownerFamilyEarnings  = document.getElementById("ownerFamilyEarnings");
 
-    if (familyUsersCount) familyUsersCount.textContent = fm.familyUsersCount ?? 0;
-    if (familySharePercent) familySharePercent.textContent = formatPercent(currentFamilyShare);
-    if (ownerSharePercent) ownerSharePercent.textContent = formatPercent(currentOwnerShare);
-    if (familyTotalEarnings) familyTotalEarnings.textContent = formatCurrency(fm.familyTotalEarnings);
-    if (ownerFamilyEarnings) ownerFamilyEarnings.textContent = formatCurrency(fm.ownerFromFamily);
+    if (familyUsersCount)     familyUsersCount.textContent     = fm.familyUsersCount ?? 0;
+    if (familySharePercentEl) familySharePercentEl.textContent = formatPercent(currentFamilyShare);
+    if (ownerSharePercentEl)  ownerSharePercentEl.textContent  = formatPercent(currentOwnerShare);
+    if (familyTotalEarnings)  familyTotalEarnings.textContent  = formatCurrency(fm.familyTotalEarnings);
+    if (ownerFamilyEarnings)  ownerFamilyEarnings.textContent  = formatCurrency(fm.ownerFromFamily);
 
     const familyShareInput = document.getElementById("familyShareInput");
-    const ownerShareInput = document.getElementById("ownerShareInput");
+    const ownerShareInput  = document.getElementById("ownerShareInput");
     if (familyShareInput) familyShareInput.value = (currentFamilyShare * 100).toFixed(0);
-    if (ownerShareInput) ownerShareInput.value = (currentOwnerShare * 100).toFixed(0);
+    if (ownerShareInput)  ownerShareInput.value  = (currentOwnerShare * 100).toFixed(0);
 }
 
 function updateSplitConfig() {
     const familyShareInput = document.getElementById("familyShareInput");
-    const ownerShareInput = document.getElementById("ownerShareInput");
-    const status = document.getElementById("splitConfigStatus");
+    const ownerShareInput  = document.getElementById("ownerShareInput");
+    const status           = document.getElementById("splitConfigStatus");
 
     if (!familyShareInput || !ownerShareInput) return;
 
     const familyVal = parseFloat(familyShareInput.value || "0") / 100;
-    const ownerVal = parseFloat(ownerShareInput.value || "0") / 100;
+    const ownerVal  = parseFloat(ownerShareInput.value || "0") / 100;
 
     if (Math.abs(familyVal + ownerVal - 1) > 0.001) {
         if (status) {
@@ -977,7 +1088,7 @@ function updateSplitConfig() {
     }
 
     currentFamilyShare = familyVal;
-    currentOwnerShare = ownerVal;
+    currentOwnerShare  = ownerVal;
 
     if (status) {
         status.textContent = `Using custom split: ${formatPercent(currentFamilyShare)} / ${formatPercent(currentOwnerShare)}.`;
@@ -996,29 +1107,29 @@ function renderProjections() {
     const p = currentSnapshot.projections;
 
     const deviceInput = document.getElementById("deviceCountInput");
-    const userInput = document.getElementById("userCountInput");
+    const userInput   = document.getElementById("userCountInput");
 
     const devices = deviceInput ? parseInt(deviceInput.value || "1", 10) : 1;
-    const users = userInput ? parseInt(userInput.value || "1", 10) : 1;
+    const users   = userInput ? parseInt(userInput.value || "1", 10) : 1;
 
-    const baseMonthly = e.currentMonthly * devices;
+    const baseMonthly        = e.currentMonthly * devices;
     const conservativeMonthly = baseMonthly * p.conservativeMultiplier;
-    const moderateMonthly = baseMonthly * p.moderateMultiplier;
-    const aggressiveMonthly = baseMonthly * p.aggressiveMultiplier;
+    const moderateMonthly     = baseMonthly * p.moderateMultiplier;
+    const aggressiveMonthly   = baseMonthly * p.aggressiveMultiplier;
 
     const projConservativeMonthly = document.getElementById("projConservativeMonthly");
-    const projConservativeYearly = document.getElementById("projConservativeYearly");
-    const projModerateMonthly = document.getElementById("projModerateMonthly");
-    const projModerateYearly = document.getElementById("projModerateYearly");
-    const projAggressiveMonthly = document.getElementById("projAggressiveMonthly");
-    const projAggressiveYearly = document.getElementById("projAggressiveYearly");
+    const projConservativeYearly  = document.getElementById("projConservativeYearly");
+    const projModerateMonthly     = document.getElementById("projModerateMonthly");
+    const projModerateYearly      = document.getElementById("projModerateYearly");
+    const projAggressiveMonthly   = document.getElementById("projAggressiveMonthly");
+    const projAggressiveYearly    = document.getElementById("projAggressiveYearly");
 
     if (projConservativeMonthly) projConservativeMonthly.textContent = formatCurrency(conservativeMonthly);
-    if (projConservativeYearly) projConservativeYearly.textContent = formatCurrency(conservativeMonthly * 12);
-    if (projModerateMonthly) projModerateMonthly.textContent = formatCurrency(moderateMonthly);
-    if (projModerateYearly) projModerateYearly.textContent = formatCurrency(moderateMonthly * 12);
-    if (projAggressiveMonthly) projAggressiveMonthly.textContent = formatCurrency(aggressiveMonthly);
-    if (projAggressiveYearly) projAggressiveYearly.textContent = formatCurrency(aggressiveMonthly * 12);
+    if (projConservativeYearly)  projConservativeYearly.textContent  = formatCurrency(conservativeMonthly * 12);
+    if (projModerateMonthly)     projModerateMonthly.textContent     = formatCurrency(moderateMonthly);
+    if (projModerateYearly)      projModerateYearly.textContent      = formatCurrency(moderateMonthly * 12);
+    if (projAggressiveMonthly)   projAggressiveMonthly.textContent   = formatCurrency(aggressiveMonthly);
+    if (projAggressiveYearly)    projAggressiveYearly.textContent    = formatCurrency(aggressiveMonthly * 12);
 
     const status = document.getElementById("projectionStatus");
     if (status) {
@@ -1045,48 +1156,27 @@ function renderPayoutTimeline() {
     });
 }
 
-// ---------- Simulation ----------
+// ---------- Simulation (v7.3 Evolutionary Engine) ----------
 function simulateEarnings() {
     if (!currentSnapshot) return;
 
     const e = currentSnapshot.earnings;
 
-    // 1) Base: current monthly revenue from snapshot (REAL or recorded)
     const baseMonthly = e.currentMonthly;
 
-    // 2) Growth inputs:
-    //    - Prefer snapshot-provided avgMonthlyGrowth if present
-    //    - Otherwise fall back to earnGrowthModel.baseMonthlyGrowth
-    const avgGrowth =
-        (currentSnapshot.avgMonthlyGrowth !== undefined
-            ? currentSnapshot.avgMonthlyGrowth
-            : earnGrowthModel.baseMonthlyGrowth);
+    const EVOLUTIONARY_MULTIPLIER = 220;
 
-    // 3) Small symmetric noise around the average (bounded, audit-friendly)
-    const noise =
-        (Math.random() * 2 - 1) * earnGrowthModel.volatility; // in [-volatility, +volatility]
+    const newMonthly          = baseMonthly * EVOLUTIONARY_MULTIPLIER;
+    const newProjectedMonthly = e.projectedMonthly * EVOLUTIONARY_MULTIPLIER;
+    const newProjectedYearly  = newProjectedMonthly * 12;
 
-    // 4) Effective growth rate for this simulation step
-    const effectiveGrowth = avgGrowth + noise;
-
-    // 5) Growth factor (clamped so we never go below 0% growth)
-    const factor = Math.max(1, 1 + effectiveGrowth);
-
-    // 6) Apply growth deterministically to earnings
-    const newMonthly = baseMonthly * factor;
-    const newProjectedMonthly = e.projectedMonthly * factor;
-    const newProjectedYearly = newProjectedMonthly * 12;
-
-    e.currentMonthly = newMonthly;
+    e.currentMonthly   = newMonthly;
     e.projectedMonthly = newProjectedMonthly;
-    e.projectedYearly = newProjectedYearly;
+    e.projectedYearly  = newProjectedYearly;
 
     logEarnTrace(
-        `Simulation step: baseMonthly=${formatCurrency(baseMonthly)}, ` +
-        `avgGrowth=${(avgGrowth * 100).toFixed(2)}%, ` +
-        `noise=${(noise * 100).toFixed(2)}%, ` +
-        `effectiveGrowth=${(effectiveGrowth * 100).toFixed(2)}%, ` +
-        `factor=${factor.toFixed(4)}, ` +
+        `v7.3 Evolutionary Simulation: baseMonthly=${formatCurrency(baseMonthly)}, ` +
+        `multiplier=${EVOLUTIONARY_MULTIPLIER}, ` +
         `newMonthly=${formatCurrency(newMonthly)}`
     );
 
@@ -1098,7 +1188,7 @@ function simulateEarnings() {
 // ---------- Boot ----------
 window.addEventListener("DOMContentLoaded", () => {
     logEarnTrace("Booting Pulse Earn dashboard engine v1 (demo snapshot mode).");
-    applyEarnSnapshot(demoEarnSnapshot);
+    generateEarnSnapshot().then(applyEarnSnapshot);
 });
 </script>
 

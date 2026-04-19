@@ -1,29 +1,31 @@
 // ============================================================================
 // FILE: tropic-pulse-functions/apps/pulse-ai/boundaries.js
-// LAYER: THE SUPEREGO (Behavioral Constraints + Ethical Boundaries)
+// LAYER: THE SUPEREGO (Behavioral Constraints + Ethical Boundaries + Evolutionary Moral Law)
 // ============================================================================
 //
-// ROLE:
-//   THE SUPEREGO — The AI’s moral + behavioral constraint system
-//   • Defines what each persona may TOUCH, SUGGEST, or CHANGE
-//   • Enforces ethical boundaries across the Pulse OS
-//   • Requires human/owner confirmation for sensitive actions
+// ROLE (v7.1+):
+//   THE SUPEREGO — The AI’s moral + behavioral constraint system.
+//   • Defines what each persona may TOUCH, SUGGEST, or CHANGE.
+//   • Enforces ethical boundaries across the Pulse OS.
+//   • Requires human/owner confirmation for sensitive actions.
+//   • Acts as the “ethical cortex” of the digital organism.
 //
-// PURPOSE:
-//   • Separate SAFE vs UNSAFE operations
-//   • Provide deterministic, auditable boundary checks
-//   • Make constraints human‑readable + AI‑readable
+// PURPOSE (v7.1+):
+//   • Separate SAFE vs UNSAFE operations.
+//   • Provide deterministic, auditable boundary checks.
+//   • Make constraints human‑readable + AI‑readable.
+//   • Surface evolutionary constraint patterns (conceptual only).
 //
-// CONTRACT:
-//   • READ‑ONLY — no writes
-//   • NO eval(), NO Function(), NO dynamic imports
-//   • NO executing user code
-//   • NO network calls
-//   • Deterministic boundary checks only
+// CONTRACT (unchanged):
+//   • READ‑ONLY — no writes.
+//   • NO eval(), NO Function(), NO dynamic imports.
+//   • NO executing user code.
+//   • NO network calls.
+//   • Deterministic boundary checks only.
 //
-// SAFETY:
-//   • v6.3 upgrade is COMMENTAL ONLY — NO LOGIC CHANGES
-//   • All behavior remains identical to pre‑v6.3 boundaries.js
+// SAFETY (unchanged):
+//   • v7.1+ upgrade is COMMENTAL ONLY — NO LOGIC CHANGES.
+//   • All behavior remains identical to pre‑v7.1 boundaries.js.
 // ============================================================================
 
 import {
@@ -42,7 +44,7 @@ export const BoundaryLevels = {
 };
 
 // ============================================================================
-// BACKEND AI — Your AI (High Power, High Responsibility)
+// BACKEND AI — High Power, High Responsibility
 // ============================================================================
 export const BackendAIBoundaries = {
   files: {
@@ -80,7 +82,7 @@ export const BackendAIBoundaries = {
 };
 
 // ============================================================================
-// FRONTEND AI — User AI (Read‑Only + Suggestion‑Only)
+// FRONTEND AI — Read‑Only + Suggestion‑Only
 // ============================================================================
 export const FrontendAIBoundaries = {
   files: {

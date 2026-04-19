@@ -1,35 +1,27 @@
 // ============================================================================
-//  PULSE GPU v6.3 — THE SHADOW ENGINE
-//  GPU-SUBSYSTEM (OS-FACING BRIDGE / GPU SUBCONSCIOUS LAYER)
+//  PULSE GPU v7.3 — THE ASTRAL NERVOUS SYSTEM
+//  GPU-SUBSYSTEM (OS-FACING BRIDGE / SUBCONSCIOUS NEURAL LAYER)
 //  The hidden power grid beneath the OS.
-//  PURE HEALING. NO AI. NO MARKETPLACE. NO BACKEND.
+//  PURE HEALING. PURE REFLEX. NO MARKETPLACE. NO BACKEND.
 // ============================================================================
 //
-// IDENTITY — THE SHADOW ENGINE:
-//  -----------------------------
-//  • The invisible compute layer beneath Pulse Earn.
-//  • The subconscious GPU brain that powers visuals + compute.
-//  • The silent orchestrator of GPU sessions, healing, and optimization.
-//  • The fail-open guardian that never blocks the OS.
-//  • The hidden force that keeps PulseBand + PulseNet alive.
+// IDENTITY — THE ASTRAL NERVOUS SYSTEM:
+//  ------------------------------------
+//  • The subconscious GPU brain beneath Pulse Earn.
+//  • The autonomic neural layer powering visuals + compute.
+//  • The silent orchestrator of GPU sessions, healing, and reflex loops.
+//  • The fail-open guardian that never blocks the OS (reflex arc).
+//  • The astral field that keeps PulseBand + PulseNet alive.
+//  • The evolutionary + systemic performance amplifier (conceptual only).
 //
-// WHAT THIS FILE IS:
-//  -------------------
-//  • The OS-facing GPU bridge.
-//  • The unified surface for Brain + Runtime + Engine + Orchestrator.
-//  • The GPU readiness reporter.
-//  • The GPU metrics reporter.
-//  • The fail-open GPU coordinator.
-//  • The GPU OS layer for PulseBand / PulseNet / dashboards.
-//
-// WHAT THIS FILE IS NOT:
-//  -----------------------
-//  • NOT a renderer by itself.
-//  • NOT a backend module.
-//  • NOT a compute engine.
-//  • NOT a miner.
-//  • NOT a place for business logic.
-//  • NOT a place for globals (window attach is explicit).
+// EVOLUTIONARY + SYSTEM ADVANTAGE (conceptual only):
+//  -------------------------------------------------
+//  • GPU efficiency scales with organism stability (metabolic).
+//  • Runtime smoothness benefits from metabolic + stability boosts.
+//  • Engine throughput conceptually increases with uptime + instance count.
+//  • Orchestrator reflexes improve with session history + cluster coherence.
+//  • Multi-instance, parallel-safe, zero-drift, deterministic cloning.
+//  • ZERO logic changes — purely identity + conceptual evolution.
 //
 // SAFETY CONTRACT:
 //  ----------------
@@ -42,12 +34,12 @@
 // ============================================================================
 
 console.log(
-  "%c🟦 PulseGPU v6.3 online — SHADOW ENGINE activated.",
+  "%c🟦 PulseGPU v7.3 online — ASTRAL NERVOUS SYSTEM activated (dual-mode evolutionary/system advantage).",
   "color:#03A9F4; font-weight:bold;"
 );
 
 // ============================================================================
-//  IMPORTS — RAW SUBSYSTEMS (Shadow Components)
+//  IMPORTS — RAW NEURAL SUBSYSTEMS
 // ============================================================================
 import {
   BrainInput,
@@ -69,28 +61,52 @@ import { PulseGPUAutoOptimize } from "./PulseGPUAutoOptimize.js";
 import { PulseGPUHealer } from "./PulseGPUHealer.js";
 
 // ============================================================================
-//  INTERNAL SINGLETONS — Shadow Engine Core
+//  INTERNAL SINGLETONS — Astral Neural Core
 // ============================================================================
-console.log("%c[ShadowEngine] Initializing GPU Runtime…", "color:#9C27B0;");
+console.log("%c[AstralNervousSystem] Initializing GPU Runtime…", "color:#9C27B0;");
 const gpuRuntime = new PulseGPURuntime();
 
-console.log("%c[ShadowEngine] Initializing GPU Engine…", "color:#9C27B0;");
+console.log("%c[AstralNervousSystem] Initializing GPU Engine…", "color:#9C27B0;");
 const gpuEngine = new PulseGPUEngine(gpuRuntime);
 
-console.log("%c[ShadowEngine] Initializing GPU Orchestrator…", "color:#9C27B0;");
+console.log("%c[AstralNervousSystem] Initializing GPU Orchestrator…", "color:#9C27B0;");
 const gpuOrchestrator = new PulseGPUOrchestrator();
 
 // ============================================================================
-//  GPU OS STATE SNAPSHOT — Shadow Memory
+//  GPU OS STATE SNAPSHOT — Astral Memory
 // ============================================================================
 const gpuState = {
   layer: "PulseGPU",
-  version: 6.3,
+  version: 7.3,
   ready: false,
   brainReady: false,
   runtimeReady: false,
   engineReady: false,
   lastError: null,
+
+  // Evolutionary + System-Level metrics (conceptual only)
+  evo: {
+    // Biological / mental / organism-level
+    metabolicBoost: 1.0,        // conceptual GPU efficiency multiplier
+    neuralReflexBoost: 1.0,     // conceptual orchestrator reflex speed
+    stabilityBoost: 1.0,        // conceptual runtime smoothness scaling
+
+    // System / physical / architectural
+    multiInstanceReady: true,   // safe to conceptually run 1 → 1000 instances
+    deterministicNeuron: true,  // identical inputs → identical outputs across clones
+    parallelSafe: true,         // conceptual parallel neuron safety
+    fanOutScaling: 1.0,         // conceptual throughput scaling factor
+    clusterCoherence: true,     // conceptual synchronization across instances
+    zeroDriftCloning: true,     // conceptual no-drift replication
+    reflexPropagation: 1.0,     // conceptual reflex amplification across instances
+
+    // Fusion — BOTH mental + physical, evolution + system
+    dualModeEvolution: true,    // biological + system evolution active together
+    organismClusterBoost: 1.0,  // conceptual boost when many instances run
+    cognitiveComputeLink: true, // conceptual link between mental + compute gains
+    unifiedAdvantageField: true // “no OR” — both advantage layers always on
+  },
+
   metrics: {
     framesRendered: 0,
     gpuLoad: null,
@@ -101,8 +117,21 @@ const gpuState = {
 };
 
 // ============================================================================
-//  INTERNAL HELPERS — Shadow Logic
+//  INTERNAL HELPERS — Neural Reflex Logic
 // ============================================================================
+
+// Conceptual evolutionary + system scaling (NO logic changes)
+function updateEvolutionaryBoosts() {
+  // These values DO NOT affect logic — conceptual only.
+  gpuState.evo.metabolicBoost = 1.0;
+  gpuState.evo.neuralReflexBoost = 1.0;
+  gpuState.evo.stabilityBoost = 1.0;
+
+  gpuState.evo.fanOutScaling = 1.0;
+  gpuState.evo.reflexPropagation = 1.0;
+  gpuState.evo.organismClusterBoost = 1.0;
+}
+
 function updateReadyFlags() {
   const ctx = gpuRuntime.getGPUContext();
 
@@ -115,8 +144,10 @@ function updateReadyFlags() {
     gpuState.engineReady &&
     gpuState.brainReady;
 
+  updateEvolutionaryBoosts();
+
   console.log(
-    `%c[ShadowEngine] ReadyFlags → brain=${gpuState.brainReady} | runtime=${gpuState.runtimeReady} | engine=${gpuState.engineReady} | ready=${gpuState.ready}`,
+    `%c[AstralNervousSystem] ReadyFlags → brain=${gpuState.brainReady} | runtime=${gpuState.runtimeReady} | engine=${gpuState.engineReady} | ready=${gpuState.ready}`,
     "color:#4CAF50; font-weight:bold;"
   );
 }
@@ -124,25 +155,25 @@ function updateReadyFlags() {
 function safeSetError(err) {
   gpuState.lastError = err ? String(err) : null;
   console.error(
-    `%c[ShadowEngine ERROR] ${gpuState.lastError}`,
+    `%c[AstralNervousSystem ERROR] ${gpuState.lastError}`,
     "color:#FF5252; font-weight:bold;"
   );
 }
 
 // ============================================================================
-//  PUBLIC OS-FACING API — Shadow Interface
+//  PUBLIC OS-FACING API — Astral Interface
 // ============================================================================
 async function init(canvas) {
-  console.log("%c[ShadowEngine] init() called.", "color:#03A9F4;");
+  console.log("%c[AstralNervousSystem] init() called.", "color:#03A9F4;");
 
   try {
     await gpuRuntime.init(canvas);
     updateReadyFlags();
 
     if (gpuState.ready) {
-      console.log("%c[ShadowEngine] GPU READY.", "color:#4CAF50; font-weight:bold;");
+      console.log("%c[AstralNervousSystem] GPU READY.", "color:#4CAF50; font-weight:bold;");
     } else {
-      console.warn("%c[ShadowEngine] GPU NOT READY (fail-open).", "color:#FFC107;");
+      console.warn("%c[AstralNervousSystem] GPU NOT READY (fail-open).", "color:#FFC107;");
     }
 
     return gpuState.ready;
@@ -165,7 +196,7 @@ function renderFrame(frameContext) {
 
     if (gpuState.metrics.framesRendered % 60 === 0) {
       console.log(
-        `%c[ShadowEngine] FramesRendered=${gpuState.metrics.framesRendered}`,
+        `%c[AstralNervousSystem] FramesRendered=${gpuState.metrics.framesRendered}`,
         "color:#8BC34A;"
       );
     }
@@ -206,13 +237,13 @@ function attachToWindowDebug() {
   };
 
   console.log(
-    "%c[ShadowEngine] Debug handle attached to window.PulseGPU",
+    "%c[AstralNervousSystem] Debug handle attached to window.PulseGPU",
     "color:#03A9F4; font-weight:bold;"
   );
 }
 
 // ============================================================================
-//  EXPORTS — Shadow Engine Surface
+//  EXPORTS — Astral Nervous System Surface
 // ============================================================================
 const PulseGPU = {
   init,

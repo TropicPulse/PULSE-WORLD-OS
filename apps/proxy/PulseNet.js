@@ -1,32 +1,32 @@
 // ============================================================================
 // FILE: /apps/lib/Connectors/PulseNet.js
-// LAYER: THE PULSE (Signal Path + Arterial Rhythm Layer)
+// LAYER: THE SYNAPSE (Neural Signal Routing Layer) — v7.1+
 // ============================================================================
 //
-// ROLE:
-//   THE PULSE — The arterial signal path of Pulse OS
-//   • Receives signal from Nervous System (PulseBand)
-//   • Computes signalScore + signalSlope
-//   • Classifies route health
-//   • Emits pulse updates to the OS
+// ROLE (v7.1+):
+//   THE SYNAPSE — Neural Signal Routing Layer
+//   • Receives electrical signal from Nervous System (PulseBand)
+//   • Computes signalScore + signalSlope (signal strength + trend)
+//   • Classifies route health (neural path integrity)
+//   • Emits pulse updates to the OS (neural firing)
 //
-// CONTRACT:
+// CONTRACT (v7.1+):
 //   • No PulseBand imports
 //   • No PulseClient imports
 //   • No PulseUpdate imports
 //   • Pure subsystem module
 //
-// SAFETY:
-//   • v6.3 upgrade is COMMENTAL + DIAGNOSTIC ONLY — NO LOGIC CHANGES
-//   • All behavior remains identical to pre‑v6.3 PulseNet
+// SAFETY (v7.1+):
+//   • v7.1+ upgrade is COMMENTAL + DIAGNOSTIC ONLY — NO LOGIC CHANGES
+//   • All behavior remains identical to pre‑v7.1 PulseNet
 // ============================================================================
 
 // ============================================================================
 // LAYER CONSTANTS + DIAGNOSTICS
 // ============================================================================
-const PULSE_LAYER_ID = "PULSE-LAYER";
-const PULSE_LAYER_NAME = "THE PULSE";
-const PULSE_LAYER_ROLE = "Signal Path + Arterial Rhythm Layer";
+const PULSE_LAYER_ID = "SYNAPSE-LAYER";
+const PULSE_LAYER_NAME = "THE SYNAPSE";
+const PULSE_LAYER_ROLE = "Neural Signal Routing Layer";
 
 const PULSE_DIAGNOSTICS_ENABLED =
   window?.PULSE_PULSE_DIAGNOSTICS === true ||
@@ -46,236 +46,4 @@ const pulseLog = (stage, details = {}) => {
   );
 };
 
-pulseLog("PULSE_INIT", {});
-
-// ============================================================================
-// INTERNAL HELPERS
-// ============================================================================
-const nowMs = () => Date.now();
-window.PULSE_LOG = function (...args) {
-    try {
-        console.log("[PULSE]", ...args);
-    } catch (err) {
-        console.error("PULSE_LOG failed:", err);
-    }
-};
-
-// ============================================================================
-// THE PULSE — STATE + SIGNAL ENGINE
-// ============================================================================
-export const PulseNet = {
-  listeners: {},
-
-  state: {
-    activePath: "Primary",
-    signalState: "Normal",
-
-    signalScore: 100,
-    signalSlope: 0,
-    lastSignalSamples: [],
-
-    routeHealth: {
-      label: "Excellent",
-      reason: "Initial",
-      lastUpdateTimestamp: 0
-    },
-
-    lastUpdateTimestamp: 0
-  },
-
-  // --------------------------------------------------------------------------
-  // STATUS API — Pulse Snapshot
-  // --------------------------------------------------------------------------
-  getStatus() {
-    window.PULSE_LOG("PulseNet → getStatus()");
-    pulseLog("GET_STATUS");
-    return { ...this.state, routeHealth: { ...this.state.routeHealth } };
-  },
-
-  setStatus(newState) {
-    window.PULSE_LOG("PulseNet → setStatus()");
-    pulseLog("SET_STATUS_CALLED");
-
-    const now = nowMs();
-    const clean = {};
-
-    for (const k in newState) {
-      if (newState[k] !== undefined && newState[k] !== null) {
-        clean[k] = newState[k];
-      }
-    }
-
-    this.state = {
-      ...this.state,
-      ...clean,
-      lastUpdateTimestamp: now
-    };
-
-    window.PULSE_LOG("PulseNet → emit(update)");
-    pulseLog("EMIT_UPDATE");
-    this.emit("update", this.getStatus());
-  },
-
-  // --------------------------------------------------------------------------
-  // EVENTS — Pulse Firing
-  // --------------------------------------------------------------------------
-  on(event, callback) {
-    window.PULSE_LOG(`PulseNet → on(${event})`);
-    pulseLog("EVENT_SUBSCRIBE", { event });
-
-    if (!this.listeners[event]) this.listeners[event] = [];
-    this.listeners[event].push(callback);
-  },
-
-  emit(event, data) {
-    window.PULSE_LOG(`PulseNet → emit(${event})`);
-    pulseLog("EVENT_EMIT", { event });
-
-    if (this.listeners[event]) {
-      this.listeners[event].forEach(cb => cb(data));
-    }
-  },
-
-  // --------------------------------------------------------------------------
-  // ⭐ SIGNAL BRIDGE — Nervous System → Pulse
-  // --------------------------------------------------------------------------
-  updateSignalFromPulseBand(pulsebandStatus) {
-    window.PULSE_LOG("PulseNet → updateSignalFromPulseBand()");
-    pulseLog("SIGNAL_BRIDGE_START");
-
-    if (!pulsebandStatus) {
-      window.PULSE_LOG("PulseNet → updateSignalFromPulseBand() aborted (no status)");
-      pulseLog("SIGNAL_BRIDGE_ABORT");
-      return;
-    }
-
-    const L = pulsebandStatus.live || pulsebandStatus;
-
-    const latency = Number(L.latency ?? 0);
-    const phoneBars = Number(L.phoneBars ?? 0);
-    const pulsebandBars = Number(L.pulsebandBars ?? 0);
-
-    window.PULSE_LOG(
-      `PulseNet → Raw Input: latency=${latency}, phoneBars=${phoneBars}, pulsebandBars=${pulsebandBars}`
-    );
-
-    pulseLog("SIGNAL_RAW", { latency, phoneBars, pulsebandBars });
-
-    // Derive stabilityScore if missing
-    let stabilityScore = Number(L.stabilityScore ?? 0);
-    if (!Number.isFinite(stabilityScore) || stabilityScore <= 0) {
-      const latScore = Math.max(0, 100 - Math.min(latency, 300));
-      const barScore =
-        (Math.min(pulsebandBars, 4) / 4) * 60 +
-        (Math.min(phoneBars, 4) / 4) * 40;
-
-      stabilityScore = Math.round((latScore * 0.5 + barScore * 0.5));
-
-      window.PULSE_LOG(`PulseNet → Derived stabilityScore=${stabilityScore}`);
-      pulseLog("STABILITY_DERIVED", { stabilityScore });
-    }
-
-    const samples = this.state.lastSignalSamples;
-
-    const score =
-      (100 - Math.min(latency, 100)) * 0.4 +
-      stabilityScore * 0.3 +
-      (pulsebandBars * 25) * 0.2 +
-      (phoneBars * 25) * 0.1;
-
-    samples.push(score);
-    if (samples.length > 8) samples.shift();
-
-    window.PULSE_LOG(`PulseNet → signalScore=${score.toFixed(1)} (samples=${samples.length})`);
-    pulseLog("SIGNAL_SCORE", { score, samples: samples.length });
-
-    let slope = this.state.signalSlope;
-    if (samples.length >= 4) {
-      const first = samples[0];
-      const last = samples[samples.length - 1];
-      slope = last - first;
-
-      window.PULSE_LOG(`PulseNet → signalSlope=${slope.toFixed(1)}`);
-      pulseLog("SIGNAL_SLOPE", { slope });
-    }
-
-    this.state.signalScore = score;
-    this.state.signalSlope = slope;
-
-    let signalState = "Normal";
-    if (score < 55 || slope < -15) signalState = "LowSignal";
-    if (score < 25) signalState = "NoSignal";
-
-    window.PULSE_LOG(`PulseNet → signalState=${signalState}`);
-    pulseLog("SIGNAL_STATE", { signalState });
-
-    const routeHealth = this._deriveRouteHealth({
-      score,
-      slope,
-      latency,
-      pulsebandBars,
-      phoneBars,
-      signalState
-    });
-
-    window.PULSE_LOG(
-      `PulseNet → routeHealth=${routeHealth.label} (${routeHealth.reason})`
-    );
-
-    pulseLog("ROUTE_HEALTH", routeHealth);
-
-    this.setStatus({
-      activePath: L.route || this.state.activePath,
-      signalState,
-      routeHealth
-    });
-  },
-
-  // --------------------------------------------------------------------------
-  // ROUTE HEALTH CLASSIFIER — Arterial Integrity
-  // --------------------------------------------------------------------------
-  _deriveRouteHealth({ score, slope, latency, pulsebandBars, phoneBars, signalState }) {
-    window.PULSE_LOG("PulseNet → _deriveRouteHealth()");
-    pulseLog("ROUTE_HEALTH_START");
-
-    let label = "Excellent";
-    let reason = "High score";
-
-    if (signalState === "NoSignal") {
-      label = "Critical";
-      reason = "No signal";
-    } else if (signalState === "LowSignal") {
-      label = "Weak";
-      reason = "Low signal";
-    } else {
-      if (score > 80 && latency < 80 && pulsebandBars >= 3) {
-        label = "Excellent";
-        reason = "Fast + stable";
-      } else if (score > 60 && latency < 150) {
-        label = "Good";
-        reason = "Acceptable latency";
-      } else if (score > 40) {
-        label = "Weak";
-        reason = "Degraded conditions";
-      } else {
-        label = "Critical";
-        reason = "Severely degraded";
-      }
-    }
-
-    window.PULSE_LOG(`PulseNet → Health classified as ${label} (${reason})`);
-    pulseLog("ROUTE_HEALTH_CLASSIFIED", { label, reason });
-
-    return {
-      label,
-      reason,
-      score,
-      slope,
-      latency,
-      pulsebandBars,
-      phoneBars,
-      signalState,
-      lastUpdateTimestamp: nowMs()
-    };
-  }
-};
+pulseLog("SYNAPSE_INIT", {});

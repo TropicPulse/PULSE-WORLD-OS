@@ -1,27 +1,28 @@
 // ============================================================================
 // FILE: /apps/netlify/functions/endpoint.js
-// PULSE BACKEND ENDPOINT — VERSION 6.3
-// “THE BODYGUARD / GUARDIAN SECURITY LAYER”
+// PULSE BACKEND ENDPOINT — VERSION 7.1+
+// “THE EPITHELIAL GATE / IMMUNE BARRIER LAYER”
 // ============================================================================
 //
-// PAGE INDEX (v6.3 Source of Truth)
-// ---------------------------------
+// PAGE INDEX (v7.1+ Source of Truth)
+// ----------------------------------
 // ROLE:
-//   This file is the **BODYGUARD** of the backend — the Guardian Security Layer.
-//   It stands between the outside world and all backend logic.
+//   This file is the **EPITHELIAL GATE** of the backend — the Immune Barrier Layer.
+//   It is the organism’s first line of defense, filtering all incoming signals.
 //
-//   • Intercepts every request
+//   • Intercepts every request entering the organism
 //   • Validates intent (type)
-//   • Routes to modular handlers
-//   • Falls back to legacy handlers
-//   • Reports missing handlers for healing
+//   • Routes to modular backend organs
+//   • Falls back to legacy organs
+//   • Reports missing organs for healing
 //
-//   Nothing touches backend logic without going through this guard.
+//   Nothing touches backend organs without passing through this gate.
 //
-// WHAT THIS FILE *IS*:
-//   • The kernel dispatcher for all backend calls
-//   • A deterministic, fail‑open routing layer
-//   • A security gate that protects backend logic from invalid calls
+// WHAT THIS FILE *IS* (v7.1+):
+//   • The immune barrier + epithelial checkpoint of the backend
+//   • A deterministic, fail‑open routing membrane
+//   • A biological security organ that filters invalid signals
+//   • Version‑aware, drift‑safe, AND‑architecture compliant
 //
 // WHAT THIS FILE *IS NOT*:
 //   • NOT business logic
@@ -29,50 +30,39 @@
 //   • NOT a GPU subsystem
 //   • NOT a persistence layer
 //
-// SAFETY CONTRACT (v6.3):
-//   • Fail‑open: missing handlers → healing path
+// SAFETY CONTRACT (v7.1+):
+//   • Fail‑open: missing organs → healing path
 //   • No randomness
 //   • No timestamps
 //   • No external side effects beyond logging
 //   • No mutation of payload or event
 //   • No new imports without architectural approval
 //
-// STRUCTURE RULES:
-//   • Modular handlers take priority
+// STRUCTURE RULES (v7.1+):
+//   • Modular backend organs take priority
 //   • Legacy index.js is fallback only
-//   • Unknown handlers must return healing metadata
+//   • Unknown organs must return healing metadata
 //
 // VERSION TAG:
-//   version: 6.3
-//
-// ============================================================================
-// ⭐ v6.3 COMMENT LOG
-// ---------------------------------------------------------------------------
-// • Added full v6.3 PAGE INDEX
-// • Added metaphor layer (BODYGUARD / GUARDIAN SECURITY LAYER)
-// • Added safety contract + structure rules
-// • Added v6.3 context map
-// • No logic changes
-// • No renames
-// • No behavior drift
+//   version: 7.1+
 // ============================================================================
 
 import * as LegacyLogic from "./index.js";
 
 // ------------------------------------------------------------
-// ⭐ HUMAN‑READABLE CONTEXT MAP (v6.3)
+// ⭐ HUMAN‑READABLE CONTEXT MAP (v7.1+)
 // ------------------------------------------------------------
 const ENDPOINT_CONTEXT = {
   label: "ENDPOINT",
   layer: "C‑Layer",
-  role: "Guardian Security Layer",
+  role: "Epithelial Gate / Immune Barrier",
   purpose: "Backend Kernel Dispatcher",
-  context: "Routes modular handlers, falls back to legacy, heals missing functions",
-  version: "6.3"
+  context: "Routes backend organs, falls back to legacy, heals missing organs",
+  version: "7.1+"
 };
 
 // ------------------------------------------------------------
-// ⭐ DYNAMIC MODULAR BACKEND LOADER
+// ⭐ DYNAMIC MODULAR BACKEND ORGAN LOADER (v7.1+)
 // ------------------------------------------------------------
 async function loadModularHandler(type) {
   try {
@@ -81,21 +71,21 @@ async function loadModularHandler(type) {
       return module.handler;
     }
   } catch (err) {
-    // Missing or invalid module → fallback
+    // Missing or invalid organ → fallback
   }
   return null;
 }
 
 // ------------------------------------------------------------
-// ⭐ MAIN HANDLER — THE BODYGUARD
+// ⭐ MAIN HANDLER — THE EPITHELIAL GATE (v7.1+)
 // ------------------------------------------------------------
 export const handler = async (event) => {
   let type;
   let payload = {};
 
   // ------------------------------------------------------------
-  // 0. NORMALIZE INPUT
-  // ------------------------------------------------------------
+  // 0. NORMALIZE INPUT (v7.1+)
+// ------------------------------------------------------------
   if (event.httpMethod === "POST") {
     try {
       const body = JSON.parse(event.body || "{}");
@@ -115,22 +105,19 @@ export const handler = async (event) => {
     payload = event.queryStringParameters || {};
   }
 
-  // ------------------------------------------------------------
-  // ⭐ DEV LOGGING (COLOR‑CODED)
-// ------------------------------------------------------------
   console.log(
-    `%c🛡️ BODYGUARD CALL → type: ${type}`,
-    "color:#03A9F4; font-weight:bold;"
+    `%c🧬 EPITHELIAL GATE CALL → type: ${type}`,
+    "color:#00BCD4; font-weight:bold;"
   );
 
   // ------------------------------------------------------------
-  // 1. TRY MODULAR BACKEND FILE FIRST
-  // ------------------------------------------------------------
+  // 1. TRY MODULAR BACKEND ORGAN FIRST (v7.1+)
+// ------------------------------------------------------------
   const modularFn = await loadModularHandler(type);
 
   if (modularFn) {
     console.log(
-      `%c🟩 MODULAR HANDLER FOUND → ${type}.js`,
+      `%c🟩 ORGAN FOUND → ${type}.js`,
       "color:#4CAF50; font-weight:bold;"
     );
 
@@ -147,7 +134,7 @@ export const handler = async (event) => {
 
     } catch (err) {
       console.error(
-        `%c🟥 MODULAR HANDLER ERROR`,
+        `%c🟥 ORGAN FAILURE`,
         "color:#FF5252; font-weight:bold;",
         err
       );
@@ -155,7 +142,7 @@ export const handler = async (event) => {
       return {
         statusCode: 500,
         body: JSON.stringify({
-          error: "Modular backend execution failed",
+          error: "Backend organ execution failed",
           details: String(err),
           ...ENDPOINT_CONTEXT
         })
@@ -164,10 +151,10 @@ export const handler = async (event) => {
   }
 
   // ------------------------------------------------------------
-  // 2. FALLBACK TO LEGACY index.js
-  // ------------------------------------------------------------
+  // 2. FALLBACK TO LEGACY ORGAN (index.js)
+// ------------------------------------------------------------
   console.warn(
-    `%c🟨 NO MODULAR HANDLER → Falling back to legacy index.js`,
+    `%c🟨 NO ORGAN FOUND → Falling back to legacy index.js`,
     "color:#FFC107; font-weight:bold;"
   );
 
@@ -187,7 +174,7 @@ export const handler = async (event) => {
 
     } catch (err) {
       console.error(
-        `%c🟥 LEGACY HANDLER ERROR`,
+        `%c🟥 LEGACY ORGAN FAILURE`,
         "color:#FF5252; font-weight:bold;",
         err
       );
@@ -195,7 +182,7 @@ export const handler = async (event) => {
       return {
         statusCode: 500,
         body: JSON.stringify({
-          error: "Legacy backend execution failed",
+          error: "Legacy organ execution failed",
           details: String(err),
           ...ENDPOINT_CONTEXT
         })
@@ -204,18 +191,18 @@ export const handler = async (event) => {
   }
 
   // ------------------------------------------------------------
-  // 3. NOTHING FOUND → LET ROUTER HEAL IT
+  // 3. NOTHING FOUND → IMMUNE HEALING PATH
   // ------------------------------------------------------------
   console.error(
-    `%c🟥 UNKNOWN BACKEND FUNCTION → ${type}`,
+    `%c🟥 UNKNOWN ORGAN REQUEST → ${type}`,
     "color:#FF5252; font-weight:bold;"
   );
 
   return {
     statusCode: 200,
     body: JSON.stringify({
-      error: "Backend function not found",
-      missingFunction: type,
+      error: "Backend organ not found",
+      missingOrgan: type,
       allowPageFallback: true,
       ...ENDPOINT_CONTEXT
     })

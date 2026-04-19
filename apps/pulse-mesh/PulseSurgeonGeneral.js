@@ -1,16 +1,18 @@
 // ============================================================================
 // FILE: /apps/organs/immune/PulseSurgeonGeneral.js
-// PULSE OS — v6.4+
+// PULSE OS — v7.0
 // IMMUNE SYSTEM COMMANDER — “THE SURGEON GENERAL”
+// LOCAL‑FIRST • OFFLINE‑CAPABLE • ZERO DRIFT • PURE LOGIC
 // ============================================================================
 //
-// ROLE (v6.4+):
+// ROLE (v7.0):
 //   • Receives analysis from PulseImmunity
 //   • Identifies root causes
 //   • Prioritizes repair order (A → B → A)
 //   • Activates the correct healer subsystem
-//   • Coordinates backend immune responders
+//   • Coordinates backend immune responders (optional)
 //   • Ensures safe, ordered, non-destructive healing
+//   • Operates fully offline when backend is unavailable
 //
 // This file does NOT heal anything directly.
 // It LEADS the healers.
@@ -25,26 +27,37 @@
 //   • IdentityHealer (identity/BBB immune response)
 //   • Any future healers added to the registry
 //
+// v7.0: Surgeon General now supports explicit offline mode.
+// ============================================================================
+
 // ============================================================================
 // IMPORTS
 // ============================================================================
-
 import { PulseImmunity } from "./PulseImmunity.js";
 
-// Local immune responders (may live in different folders)
+// Local immune responders
 import { GPUHealer } from "../../../pulse-gpu/GPUHealer.js";
 import { IdentityHealer } from "../identity/IdentityHealer.js";
 
-// Wrap Netlify function as responder
+// Backend immune responder (optional)
 import { handler as RouteDownResponder } from "../../../../netlify/functions/RouteDownAlert.js";
 
 // ============================================================================
-// HEALER REGISTRY (v6.4+)
+// MODE — v7.0 LOCAL-FIRST IMMUNE COMMANDER
 // ----------------------------------------------------------------------------
-// This makes the system evolvable without rewriting dispatch().
-// Add new healers here and the commander auto-detects them.
+// If PULSE_OFFLINE_MODE = "1", backend responders are skipped.
+// All local healers still run normally.
 // ============================================================================
+const OFFLINE_MODE =
+  (typeof window !== "undefined" && window.PULSE_OFFLINE_MODE === "1") ||
+  false;
 
+// ============================================================================
+// HEALER REGISTRY (v7.0)
+// ----------------------------------------------------------------------------
+// Evolvable registry. Add new healers here.
+// v7.0: RouteDownResponder is now optional in offline mode.
+// ============================================================================
 const HEALER_REGISTRY = [
   {
     name: "GPUHealer",
@@ -54,7 +67,17 @@ const HEALER_REGISTRY = [
   {
     name: "RouteDownResponder",
     match: /route|network|down|offline|timeout/i,
-    handler: (issue) => RouteDownResponder({ body: JSON.stringify(issue) })
+    handler: (issue) => {
+      if (OFFLINE_MODE) {
+        return {
+          ok: false,
+          skipped: true,
+          reason: "offline-mode",
+          issue
+        };
+      }
+      return RouteDownResponder({ body: JSON.stringify(issue) });
+    }
   },
   {
     name: "IdentityHealer",
@@ -64,18 +87,16 @@ const HEALER_REGISTRY = [
 ];
 
 // ============================================================================
-// SURGEON GENERAL — COMMANDER ORGAN
+// SURGEON GENERAL — COMMANDER ORGAN (v7.0)
 // ============================================================================
-
 export const PulseSurgeonGeneral = {
 
   // ----------------------------------------------------------
-  // TRIAGE (v6.4+)
+  // TRIAGE (v7.0)
   // ----------------------------------------------------------
   triage(analysis) {
     const { issues } = analysis;
 
-    // Rank by severity → probability → systemic impact
     return issues.sort((a, b) => {
       const sa = a.severity || 1;
       const sb = b.severity || 1;
@@ -84,7 +105,7 @@ export const PulseSurgeonGeneral = {
   },
 
   // ----------------------------------------------------------
-  // DISPATCH (v6.4+)
+  // DISPATCH (v7.0)
   // ----------------------------------------------------------
   async dispatch(issue) {
     const msg = issue.message || "";
@@ -95,7 +116,6 @@ export const PulseSurgeonGeneral = {
       }
     }
 
-    // Default fallback
     return {
       ok: false,
       message: "No healer found for issue",
@@ -104,18 +124,15 @@ export const PulseSurgeonGeneral = {
   },
 
   // ----------------------------------------------------------
-  // COMMAND CYCLE (v6.4+)
+  // COMMAND CYCLE (v7.0)
   // ----------------------------------------------------------
   async command(diagSnapshot) {
-    // Step 1: Analyze
     const analysis = PulseImmunity.analyze(diagSnapshot);
 
-    // Step 2: Triage
     const orderedIssues = this.triage(analysis);
 
     const results = [];
 
-    // Step 3: Dispatch each issue to correct healer
     for (const issue of orderedIssues) {
       const res = await this.dispatch(issue);
       results.push({ issue, result: res });
@@ -123,6 +140,7 @@ export const PulseSurgeonGeneral = {
 
     return {
       commander: "PulseSurgeonGeneral",
+      mode: OFFLINE_MODE ? "offline" : "online",
       analysis,
       orderedIssues,
       results

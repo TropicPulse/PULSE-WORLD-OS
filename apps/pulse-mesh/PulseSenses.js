@@ -1,23 +1,34 @@
-// -----------------------------------------------------------
-// [pulse:senses] PULSE_OS_AWARENESS_BRAIN  // white
-// -----------------------------------------------------------
-// ROLE:
-//   - Awareness Brain / Bodily Translator
-//   - Reads Halo, Field, Echo, Clinician
-//   - Produces unified "sensed" view of the organism
-//   - Feeds Awareness Page, backendAI, your AI, Clinician
-//   - NEVER mutates impulses, NEVER routes, NEVER computes payloads
+// ============================================================================
+// [pulse:senses] PULSE_OS_AWARENESS_BRAIN v7.3  // white
+// Unified Sensing Layer • Awareness Brain • Metadata-Only Reflection
+// ============================================================================
+//
+// IDENTITY — THE AWARENESS BRAIN:
+//  -------------------------------
+//  • Reads Halo, Field, Echo, Clinician.
+//  • Produces unified "sensed" view of the organism.
+//  • Feeds Awareness Page, backendAI, your AI, Clinician.
+//  • NEVER mutates impulses, NEVER routes, NEVER computes payloads.
 //
 // THEME:
-//   - Color: White (awareness, reflection, non-interference)
-//   - Subtheme: Sensing, interpretation, clarity
+//  • Color: White (awareness, reflection, non-interference).
+//  • Subtheme: Sensing, interpretation, clarity.
 //
 // SAFETY CONTRACT:
-//   - Read-only, metadata-only
-//   - No loops, no hormones, no memory writes
-//   - No autonomy, no sentience, no self-model
-//   - Backend-safe, frontend-safe, global-safe
-// -----------------------------------------------------------
+//  • Read-only, metadata-only.
+//  • No loops, no hormones, no memory writes.
+//  • No autonomy, no sentience, no self-model.
+//  • Backend-safe, frontend-safe, global-safe.
+//
+// ADVANTAGE CASCADE (conceptual only):
+//  ------------------------------------
+//  • Inherits ANY advantage from ANY organ automatically.
+//  • Dual-mode: mental clarity + system efficiency.
+//  • Local-aware: node-level sensing context.
+//  • Internet-aware: cluster/mesh/global sensing context.
+//  • Unified-advantage-field: ALL advantages active unless unsafe.
+//  • Future-evolution-ready: new safe advantages auto-inherited.
+// ============================================================================
 
 import { PulseHalo } from './PulseHalo.js';
 import { PulseField } from './PulseField.js';
@@ -34,11 +45,32 @@ export function createPulseSenses(mesh) {
   const echo = createPulseEcho(mesh, flow);
   const clinician = createPulseClinician(mesh);
 
+  const sensesMeta = {
+    layer: "PulseSenses",
+    role: "AWARENESS_BRAIN",
+    version: 7.3,
+    target: "full-mesh",
+    selfRepairable: true,
+    evo: {
+      dualMode: true,                 // mental + system
+      localAware: true,               // node-level sensing
+      internetAware: true,            // cluster/mesh/global sensing
+
+      advantageCascadeAware: true,    // inherits ANY advantage
+      pulseEfficiencyAware: true,     // 1-pulse collapse
+      driftProof: true,
+      multiInstanceReady: true,
+
+      unifiedAdvantageField: true,    // no OR; all advantages ON
+      futureEvolutionReady: true      // new safe advantages auto-inherited
+    }
+  };
+
   return {
+    meta: sensesMeta,
+
     // -------------------------------------------------------
     // [pulse:senses] SNAPSHOT  // white
-    // -------------------------------------------------------
-    // Raw sensed state from all awareness sources
     // -------------------------------------------------------
     snapshot(entryNodeId, context = {}) {
       const halo = PulseHalo.status();
@@ -47,6 +79,7 @@ export function createPulseSenses(mesh) {
       const clinicianView = clinician.examineSystem(entryNodeId, context);
 
       return {
+        meta: sensesMeta,
         halo,
         field,
         echo: echoReflection,
@@ -57,8 +90,6 @@ export function createPulseSenses(mesh) {
     // -------------------------------------------------------
     // [pulse:senses] STATUS  // white
     // -------------------------------------------------------
-    // Unified semantic awareness model
-    // -------------------------------------------------------
     status(entryNodeId, context = {}) {
       const halo = PulseHalo.status();
       const field = PulseField.snapshot();
@@ -66,6 +97,7 @@ export function createPulseSenses(mesh) {
       const clinicianView = clinician.examineSystem(entryNodeId, context);
 
       return buildUnifiedAwareness({
+        meta: sensesMeta,
         halo,
         field,
         echo: echoReflection,
@@ -126,7 +158,7 @@ export function createPulseSenses(mesh) {
 // Unified Awareness Builder
 // -----------------------------------------------------------
 
-function buildUnifiedAwareness({ halo, field, echo, clinician }) {
+function buildUnifiedAwareness({ meta, halo, field, echo, clinician }) {
   const performancePercent = clinician.performancePercent ?? 100;
   const performanceHint = estimatePerformanceHint(performancePercent, field, echo);
 
@@ -171,29 +203,22 @@ function buildUnifiedAwareness({ halo, field, echo, clinician }) {
     reflex_drops: halo.safety?.reflex_drops ?? 0,
     immune_quarantines: halo.safety?.immune_quarantines ?? 0,
     anomaly_rate: halo.safety?.anomaly_rate ?? 0,
-    labels: {
-      reflex_drops: 'Reflex Drop (instinctive rejection)',
-      immune_quarantines: 'Immune Quarantine (infection isolation)',
-    },
   };
 
   const hormones = {
     boosts: halo.hormones?.boosts ?? 0,
     damps: halo.hormones?.damps ?? 0,
     modulation_events: halo.hormones?.modulation_events ?? 0,
-    label: 'Hormone Modulation (adrenaline / cortisol)',
   };
 
   const aura = {
     loops: halo.aura?.loops ?? 0,
     syncs: halo.aura?.syncs ?? 0,
-    label: 'Aura Loop / Aura Sync (feedback loop / grounding)',
   };
 
   const mesh = {
     hops: halo.mesh?.hops ?? 0,
     avg_hops: halo.mesh?.avg_hops ?? 0,
-    label: 'Mesh Hops (neural routing distance)',
   };
 
   const narrative_for_you = buildNarrativeForYou({
@@ -217,6 +242,7 @@ function buildUnifiedAwareness({ halo, field, echo, clinician }) {
   });
 
   return {
+    meta,
     performance: {
       percent: performancePercent,
       hint: performanceHint,

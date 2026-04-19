@@ -1,29 +1,32 @@
 // ============================================================================
 // FILE: tropic-pulse-functions/apps/pulse-ai/aiDebug.js
-// LAYER: THE SCRIBE (Report Writer + Debug Formatter)
+// LAYER: THE SCRIBE (Diagnostic Recorder + Evolutionary Report Formatter)
 // ============================================================================
 //
-// ROLE:
-//   THE SCRIBE — The recorder of Pulse OS diagnostics
-//   • Formats AI context into readable debug reports
-//   • Summarizes mismatches, drift, slowdown, missing fields
-//   • Outputs human‑friendly diagnostic strings + objects
+// ROLE (v7.1+):
+//   THE SCRIBE — The recorder of Pulse OS diagnostics.
+//   • Formats AI context into readable debug reports.
+//   • Summarizes mismatches, drift, slowdown, missing fields.
+//   • Outputs human‑friendly diagnostic strings + objects.
+//   • Surfaces evolutionary patterns in system behavior (conceptual only).
 //
-// PURPOSE:
-//   • Provide a clean, readable diagnostic summary
-//   • Make debugging AI behavior fast + intuitive
-//   • Present trace + issues in a structured format
+// PURPOSE (v7.1+):
+//   • Provide a clean, readable diagnostic summary.
+//   • Make debugging AI behavior fast + intuitive.
+//   • Present trace + issues in a structured format.
+//   • Act as the “historian” of the organism — recording what happened.
+//   • Provide conceptual insight into system evolution (not medical).
 //
-// CONTRACT:
-//   • READ‑ONLY — no writes
-//   • NO eval(), NO Function(), NO dynamic imports
-//   • NO executing user code
-//   • NO network calls
-//   • Pure formatting + summarization
+// CONTRACT (unchanged):
+//   • READ‑ONLY — no writes.
+//   • NO eval(), NO Function(), NO dynamic imports.
+//   • NO executing user code.
+//   • NO network calls.
+//   • Pure formatting + summarization.
 //
-// SAFETY:
-//   • v6.3 upgrade is COMMENTAL + DIAGNOSTIC ONLY — NO LOGIC CHANGES
-//   • All behavior remains identical to pre‑v6.3 aiDebug
+// SAFETY (unchanged):
+//   • v7.1+ upgrade is COMMENTAL + DIAGNOSTIC ONLY — NO LOGIC CHANGES.
+//   • All behavior remains identical to pre‑v7.1 aiDebug.
 // ============================================================================
 
 // ============================================================================
@@ -31,7 +34,7 @@
 // ============================================================================
 const SCRIBE_LAYER_ID = "SCRIBE-LAYER";
 const SCRIBE_LAYER_NAME = "THE SCRIBE";
-const SCRIBE_LAYER_ROLE = "Report Writer + Debug Formatter";
+const SCRIBE_LAYER_ROLE = "Diagnostic Recorder + Evolutionary Report Formatter";
 
 const SCRIBE_DIAGNOSTICS_ENABLED =
   process?.env?.PULSE_SCRIBE_DIAGNOSTICS === "true" ||
@@ -79,7 +82,7 @@ export function formatDebugReport(context) {
 }
 
 // ============================================================================
-// SUMMARY BUILDER — Clinical Summary Lines
+// SUMMARY BUILDER — Evolutionary Summary Lines
 // ============================================================================
 function buildSummary(diagnostics) {
   scribeLog("SUMMARY_START");

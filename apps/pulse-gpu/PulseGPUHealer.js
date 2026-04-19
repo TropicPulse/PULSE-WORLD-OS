@@ -1,5 +1,5 @@
 // ============================================================================
-//  PULSE GPU HEALER v6.3 — THE LYMPH NODE NETWORK
+//  PULSE GPU HEALER v7.3 — THE LYMPH NODE NETWORK
 //  Systemic GPU Immune Layer (Deterministic, Pure Logic, Drift‑Proof, Fail‑Open)
 // ============================================================================
 //
@@ -11,14 +11,15 @@
 //  • Regenerates missing components (immune response).
 //  • Ensures the entire GPU organism stays drift‑free and healthy.
 //  • Distributed, systemic, always-on — the GPU’s internal defense grid.
+//  • Dual‑mode evolved: biological + system‑level immune advantage.
 //
 // ROLE IN THE GPU NATION:
 //  ------------------------
-//  • Analyst  → Intelligence (precompute brain)
-//  • Nerve Network → Runtime (memory + context)
-//  • Motor Hall → Engine (motion + execution)
-//  • Guardian → Permissions (auto-opt policy)
-//  • Lymph Node Network → Immune System (validation + repair)
+//  • Analyst        → Intelligence (precompute brain)
+//  • Nerve Network  → Runtime (memory + context)
+//  • Motor Hall     → Engine (motion + execution)
+//  • Guardian       → Permissions (auto-opt policy)
+//  • Lymph Network  → Immune System (validation + repair)
 //
 // WHAT THIS FILE IS:
 //  -------------------
@@ -44,6 +45,25 @@
 //  • No DOM
 //  • Fail-open: invalid inputs → repaired or ignored, never crash
 //  • Self-repair-ready: all outputs include metadata
+//
+// DUAL‑MODE ADVANTAGE (conceptual only):
+//  --------------------------------------
+//  • Biological / mental:
+//      - metabolicBoost: conceptual immune efficiency
+//      - neuralReflexBoost: conceptual response speed
+//      - stabilityBoost: conceptual systemic calm under drift
+//  • System / physical:
+//      - multiInstanceReady: many healers can run in parallel safely
+//      - deterministicNeuron: same inputs → same healing outputs
+//      - parallelSafe: conceptual multi-node immune scaling
+//      - fanOutScaling: conceptual throughput scaling across sessions
+//      - clusterCoherence: conceptual sync across healer instances
+//      - zeroDriftCloning: conceptual no‑drift replication of logic
+//  • Fusion (AND‑architecture):
+//      - dualModeEvolution: mental + physical evolution together
+//      - organismClusterBoost: conceptual boost when many nodes run
+//      - cognitiveComputeLink: conceptual link to Brain/Runtime/Guardian
+//      - unifiedAdvantageField: no OR, both layers always on
 // ============================================================================
 
 const GPU_HEALER_CONTEXT = {
@@ -51,7 +71,25 @@ const GPU_HEALER_CONTEXT = {
   role: "LYMPH_NODE_NETWORK",
   purpose: "Systemic GPU immune filter + drift purifier",
   context:
-    "Validates advisor results, restore plans, auto-opt decisions, and notifications"
+    "Validates advisor results, restore plans, auto-opt decisions, and notifications",
+  evo: {
+    metabolicBoost: 1.0,
+    neuralReflexBoost: 1.0,
+    stabilityBoost: 1.0,
+
+    multiInstanceReady: true,
+    deterministicNeuron: true,
+    parallelSafe: true,
+    fanOutScaling: 1.0,
+    clusterCoherence: true,
+    zeroDriftCloning: true,
+    reflexPropagation: 1.0,
+
+    dualModeEvolution: true,
+    organismClusterBoost: 1.0,
+    cognitiveComputeLink: true,
+    unifiedAdvantageField: true
+  }
 };
 
 // ============================================================================
@@ -69,7 +107,7 @@ import {
 } from "./PulseGPUUXBridge.js";
 
 // ============================================================================
-// HEALING REPORT BUILDER (v6-ready)
+// HEALING REPORT BUILDER (v7-ready, logic unchanged)
 // ============================================================================
 function buildHealingReport({
   status,
@@ -88,7 +126,7 @@ function buildHealingReport({
     notifications: Array.isArray(notifications) ? notifications.slice() : [],
     meta: {
       ...GPU_HEALER_CONTEXT,
-      version: 6.3,
+      version: 7.3,
       target: "full-gpu",
       selfRepairable: true
     }
@@ -144,7 +182,7 @@ class PulseGPUHealer {
 
   static meta = {
     ...GPU_HEALER_CONTEXT,
-    version: 6.3,
+    version: 7.3,
     target: "full-gpu",
     selfRepairable: true
   };

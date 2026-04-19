@@ -1,41 +1,68 @@
-// -----------------------------------------------------------
-// [pulse:echo] PULSE_OS_DIAGNOSTIC_REFLECTION  // silver
-// -----------------------------------------------------------
-// ROLE:
-//   - Sends metadata-only diagnostic pulses ("echo pulses")
-//   - Measures system friction, drift, loops, sync, organ usage
-//   - Reads metadata from all layers without influencing them
-//   - NEVER computes payloads
-//   - NEVER mutates impulses
-//   - NEVER affects routing or hormones
-//   - Pure reflection organ (safe for backendAI + Awareness Page)
+// ============================================================================
+// [pulse:echo] PULSE_OS_DIAGNOSTIC_REFLECTION v7.3  // silver
+// Diagnostic Reflection Layer • Metadata-Only • Read-Only • Non-Interference
+// ============================================================================
+//
+// IDENTITY — THE SILVER ORGAN:
+//  ----------------------------
+//  • Sends metadata-only diagnostic pulses ("echo pulses").
+//  • Measures system friction, drift, loops, sync, organ usage.
+//  • Reads metadata from all layers without influencing them.
+//  • NEVER computes payloads.
+//  • NEVER mutates impulses.
+//  • NEVER affects routing, hormones, memory, or flow.
+//  • Pure reflection organ (safe for backendAI + Awareness Page).
 //
 // THEME:
-//   - Color: Silver (reflection, clarity, non-interference)
-//   - Subtheme: Sonar, diagnostics, transparency
+//  • Color: Silver (reflection, clarity, non-interference).
+//  • Subtheme: Sonar, diagnostics, transparency.
 //
 // SAFETY CONTRACT:
-//   - Metadata-only
-//   - Read-only
-//   - No loops, no sync, no hormones, no memory writes
-//   - No autonomy, no sentience, no self-model
+//  • Metadata-only.
+//  • Read-only.
+//  • No loops, no sync, no hormones, no memory writes.
+//  • No autonomy, no sentience, no self-model.
+//  • Deterministic: same system → same reflection.
 //
-// -----------------------------------------------------------
-// Echo Pulse Generator
-// -----------------------------------------------------------
+// ADVANTAGE CASCADE (conceptual only):
+//  ------------------------------------
+//  • Inherits ANY advantage from ANY organ automatically.
+//  • Dual-mode: mental clarity + system efficiency.
+//  • Local-aware: node-level metadata.
+//  • Internet-aware: cluster/mesh metadata.
+//  • Unified-advantage-field: ALL advantages active unless unsafe.
+//  • Future-evolution-ready: new safe advantages auto-inherited.
+// ============================================================================
 
 export function createPulseEcho(mesh, flow) {
+  const meta = {
+    layer: "PulseEcho",
+    role: "DIAGNOSTIC_REFLECTION",
+    version: 7.3,
+    target: "full-mesh",
+    selfRepairable: true,
+    evo: {
+      dualMode: true,                 // mental + system
+      localAware: true,               // node-level metadata
+      internetAware: true,            // cluster/mesh metadata
+      advantageCascadeAware: true,    // inherits ANY advantage
+      pulseEfficiencyAware: true,     // 1-pulse collapse
+      driftProof: true,
+      multiInstanceReady: true,
+      unifiedAdvantageField: true,    // no OR; all advantages ON
+      futureEvolutionReady: true      // new safe advantages auto-inherited
+    }
+  };
+
   return {
+    meta,
+
     // -------------------------------------------------------
     // [pulse:echo] SEND_ECHO  // silver
-    // -------------------------------------------------------
-    // Sends a diagnostic pulse through the organism
-    // Returns metadata-only reflection results
     // -------------------------------------------------------
     sendEcho(entryNodeId, context = {}) {
       const echo = this.#createEchoPulse(context);
 
-      // Run through the organism (metadata-only)
       const result = flow.run(echo, entryNodeId, {
         trustLevel: 1,
         load: 0,
@@ -46,21 +73,20 @@ export function createPulseEcho(mesh, flow) {
     },
 
     // -------------------------------------------------------
-    // INTERNAL: Create Echo Pulse
+    // INTERNAL: Create Echo Pulse (metadata-only)
     // -------------------------------------------------------
     #createEchoPulse(context) {
       return {
         id: `echo_${Date.now()}_${Math.random().toString(36).slice(2)}`,
-        type: 'diagnostic_echo',
+        type: "diagnostic_echo",
         flags: {
           echo: true,
           echo_depth: 0,
           echo_start: Date.now(),
+          echo_meta: meta
         },
-        metadata: {
-          context,
-        },
-        payloadRef: null, // echo pulses NEVER carry payloads
+        metadata: { context },
+        payloadRef: null // echo pulses NEVER carry payloads
       };
     },
 
@@ -74,31 +100,33 @@ export function createPulseEcho(mesh, flow) {
 
         // Organ-level reflections
         reflex: {
-          triggered: !!impulse.flags.flow_reflex_drop,
+          triggered: !!impulse.flags.flow_reflex_drop
         },
         immune: {
-          quarantined: !!impulse.flags.immune_quarantined,
+          quarantined: !!impulse.flags.immune_quarantined
         },
         memory: {
-          wrote: !!impulse.flags.memory_written,
+          wrote: !!impulse.flags.memory_written
         },
         hormones: {
-          event: impulse.flags.hormone_event || null,
+          event: impulse.flags.hormone_event || null
         },
         aura: {
           loop: !!impulse.flags.aura_loop,
-          sync: !!impulse.flags.aura_sync,
+          sync: !!impulse.flags.aura_sync
         },
 
         // Mesh-level reflections
         mesh: {
           hops: impulse.flags.mesh_hops || 0,
-          routeHint: impulse.routeHint || null,
+          routeHint: impulse.routeHint || null
         },
 
         // Stability + drift heuristics
         stability: this.#estimateStability(impulse),
         driftRisk: this.#estimateDrift(impulse),
+
+        meta
       };
     },
 
@@ -126,6 +154,6 @@ export function createPulseEcho(mesh, flow) {
       if (impulse.flags.immune_quarantined) risk += 0.3;
 
       return Math.max(0, Math.min(1, risk));
-    },
+    }
   };
 }

@@ -1,5 +1,5 @@
 // ============================================================================
-//  PULSE GPU PERFORMANCE ADVISOR v6.3 — THE DRIVE CENTER
+//  PULSE GPU PERFORMANCE ADVISOR v7.3 — THE DRIVE CENTER
 //  Internal Performance Instinct • Deterministic, Pure Logic, Drift‑Proof
 // ============================================================================
 //
@@ -10,17 +10,18 @@
 //  • Detects regressions (danger) and improvements (growth).
 //  • Generates structured “pressure signals” to guide adaptation.
 //  • The subsystem that pushes the organism toward optimal function.
+//  • Advantage‑cascade aware: any systemic advantage is inherited automatically.
 //
 // ROLE IN THE GPU NATION:
 //  ------------------------
-//  • Analyst → Intelligence Division
-//  • Nerve Network → Runtime Memory
-//  • Motor Hall → Execution Cortex
-//  • Guardian → Permission Gate
-//  • Lymph Node Network → Immune Filter
-//  • Wisdom Cortex → Insight + Interpretation
-//  • Brainstem → Command + Coordination
-//  • Drive Center → Performance Instinct + Self‑Assessment
+//  • Analyst        → Intelligence Division
+//  • Nerve Network  → Runtime Memory
+//  • Motor Hall     → Execution Cortex
+//  • Guardian       → Permission Gate
+//  • Lymph Network  → Immune Filter
+//  • Wisdom Cortex  → Insight + Interpretation
+//  • Brainstem      → Command + Coordination
+//  • Drive Center   → Performance Instinct + Self‑Assessment
 //
 // WHAT THIS FILE IS:
 //  -------------------
@@ -49,6 +50,13 @@
 //  • Fail‑open: malformed metrics → safe defaults
 //  • Deterministic: same inputs → same advice
 //  • Self‑repair‑ready: advice includes metadata
+//
+// ADVANTAGE CASCADE (conceptual only):
+//  ------------------------------------
+//  • If pulses become faster → performance instinct conceptually sharpens.
+//  • If system collapses 1000 pulses into 1 → Drive Center inherits that gain.
+//  • If any organ evolves → Drive Center evaluates with that advantage.
+//  • No OR — all advantages are inherited automatically.
 // ============================================================================
 
 import {
@@ -105,9 +113,15 @@ function buildAdvice({
     meta: {
       layer: "PulseGPUPerformanceAdvisor",
       role: "DRIVE_CENTER",
-      version: 6.3,
+      version: 7.3,
       target: "full-gpu",
-      selfRepairable: true
+      selfRepairable: true,
+      evo: {
+        advantageCascadeAware: true,
+        pulseEfficiencyAware: true,
+        driftProof: true,
+        multiInstanceReady: true
+      }
     }
   };
 
@@ -148,9 +162,15 @@ class PulseGPUPerformanceAdvisor {
   static meta = {
     layer: "PulseGPUPerformanceAdvisor",
     role: "DRIVE_CENTER",
-    version: 6.3,
+    version: 7.3,
     target: "full-gpu",
-    selfRepairable: true
+    selfRepairable: true,
+    evo: {
+      advantageCascadeAware: true,
+      pulseEfficiencyAware: true,
+      driftProof: true,
+      multiInstanceReady: true
+    }
   };
 
   analyzeCurrentSession({

@@ -1,56 +1,44 @@
 // ============================================================================
 // FILE: /apps/netlify/functions/timer.js
-// PULSE HEARTBEAT ENGINE — v6.3
-// “THE HEART / PULSE OS HEARTBEAT ENGINE”
+// PULSE HEARTBEAT ENGINE — v7.1+
+// “THE HEART / CARDIAC PACEMAKER ENGINE”
 // ============================================================================
 //
-// ⭐ v6.3 COMMENT LOG
-// - THEME: “THE HEART / PULSE OS HEARTBEAT ENGINE”
-// - ROLE: Central rhythm generator + scheduled executor
-// - Added LAYER CONSTANTS + DIAGNOSTICS helper
-// - Added structured JSON logs (DOM-visible inspector compatible)
-// - Added explicit STAGE markers for beat/run/skip/fatal
-// - ZERO logic changes to task scheduling or execution
+// ROLE (v7.1+):
+//   timer.js is the **HEART** of PulseOS.
+//   It is the **CARDIAC PACEMAKER ENGINE** — the subsystem that generates
+//   the organism’s rhythm and circulates tasks through the entire system.
 //
-// ============================================================================
-// PERSONALITY + ROLE — “THE HEART”
-// ----------------------------------------------------------------------------
-// timer.js is the **HEART** of the Pulse OS.
-// It is the **HEARTBEAT ENGINE** — the subsystem that keeps the entire OS
-// alive by generating a consistent rhythm and circulating tasks.
-//
-//   • Beats every X minutes
-//   • Pumps tasks through the system
-//   • Maintains rhythm + timing
-//   • Detects stagnation
+//   • Beats every X minutes (SA node)
+//   • Pumps tasks through the OS (systemic circulation)
+//   • Maintains deterministic rhythm + timing
+//   • Detects stagnation (arrhythmia detection)
 //   • Ensures circulation of cleanup, scoring, security, and environment refresh
 //   • Writes heartbeat logs for lineage + diagnostics
 //
-// If the heart stops beating, the OS collapses.
+//   If the heart stops, the organism collapses.
 //
-// ============================================================================
-// WHAT THIS FILE IS
-// ----------------------------------------------------------------------------
+// WHAT THIS FILE *IS* (v7.1+):
 //   ✔ A scheduled heartbeat executor
 //   ✔ A deterministic task circulator
-//   ✔ A rhythm generator for the OS
+//   ✔ A resilient cardiac organ aligned with the v7.1+ organism
 //
-// WHAT THIS FILE IS NOT
-// ----------------------------------------------------------------------------
-//   ✘ NOT a frontend file
+// WHAT THIS FILE *IS NOT*:
 //   ✘ NOT a router
-//   ✘ NOT a business logic layer
+//   ✘ NOT business logic
 //   ✘ NOT a database writer (except logs)
+//   ✘ NOT a frontend file
 //
-// ============================================================================
-// SAFETY CONTRACT (v6.3)
-// ----------------------------------------------------------------------------
+// SAFETY CONTRACT (v7.1+):
 //   • Never mutate frontend files
 //   • Never run tasks out of order
-//   • Never skip logging
-//   • Always record heartbeat lineage
-//   • Fail-open: one task failing does NOT stop the heart
+//   • Never skip logging intentionally (best‑effort only)
+//   • Fail‑open: one task failing does NOT stop the heart
+//   • Logging failures must not kill the heartbeat
+//   • Deterministic task order + intervals
 //
+// VERSION TAG:
+//   version: 7.1+
 // ============================================================================
 
 import * as admin from "firebase-admin";
@@ -75,11 +63,11 @@ const db = getFirestore();
 // ============================================================================
 const LAYER_ID = "HEART-LAYER";
 const LAYER_NAME = "THE HEART";
-const LAYER_ROLE = "PULSE OS HEARTBEAT ENGINE";
+const LAYER_ROLE = "CARDIAC PACEMAKER ENGINE";
 
 const HEART_DIAGNOSTICS_ENABLED =
-  window.PULSE_HEART_DIAGNOSTICS === "true" ||
-  window.PULSE_DIAGNOSTICS === "true";
+  process.env.PULSE_HEART_DIAGNOSTICS === "true" ||
+  process.env.PULSE_DIAGNOSTICS === "true";
 
 const logHeart = (stage, details = {}) => {
   if (!HEART_DIAGNOSTICS_ENABLED) return;
@@ -102,7 +90,8 @@ const TIMER_CONTEXT = {
   label: "HEARTBEAT",
   layer: "D‑Layer",
   purpose: "Scheduled Executor",
-  context: "Runs periodic backend tasks and writes logs"
+  context: "Runs periodic backend tasks and writes logs",
+  version: "7.1+"
 };
 
 // ============================================================================
@@ -171,14 +160,18 @@ async function loadState() {
 }
 
 async function updateState(ref, updates) {
-  await ref.set(
-    {
-      ...updates,
-      updatedAt: admin.firestore.FieldValue.serverTimestamp(),
-      ...TIMER_CONTEXT
-    },
-    { merge: true }
-  );
+  try {
+    await ref.set(
+      {
+        ...updates,
+        updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+        ...TIMER_CONTEXT
+      },
+      { merge: true }
+    );
+  } catch (err) {
+    console.error("HEART_STATE_UPDATE_ERROR", String(err));
+  }
 }
 
 // ============================================================================
@@ -244,15 +237,19 @@ export const handler = async () => {
           message: String(err)
         });
 
-        await db.collection("FUNCTION_ERRORS").doc(`ERR_${runId}_${task.key}`).set({
-          fn: "timer",
-          task: task.key,
-          label: task.label,
-          error: String(err),
-          runId,
-          ...TIMER_CONTEXT,
-          createdAt: admin.firestore.FieldValue.serverTimestamp()
-        });
+        try {
+          await db.collection("FUNCTION_ERRORS").doc(`ERR_${runId}_${task.key}`).set({
+            fn: "timer",
+            task: task.key,
+            label: task.label,
+            error: String(err),
+            runId,
+            ...TIMER_CONTEXT,
+            createdAt: admin.firestore.FieldValue.serverTimestamp()
+          });
+        } catch (logErr) {
+          console.error("HEART_TASK_ERROR_LOG_FAILURE", String(logErr));
+        }
       }
 
       results.tasks[task.key] = taskResult;
@@ -260,13 +257,17 @@ export const handler = async () => {
 
     await updateState(stateRef, { lastRuns });
 
-    await db.collection("TIMER_LOGS").doc(`HEARTBEAT_${runId}`).set({
-      fn: "timer",
-      runId,
-      tasks: results.tasks,
-      ...TIMER_CONTEXT,
-      createdAt: admin.firestore.FieldValue.serverTimestamp()
-    });
+    try {
+      await db.collection("TIMER_LOGS").doc(`HEARTBEAT_${runId}`).set({
+        fn: "timer",
+        runId,
+        tasks: results.tasks,
+        ...TIMER_CONTEXT,
+        createdAt: admin.firestore.FieldValue.serverTimestamp()
+      });
+    } catch (logErr) {
+      console.error("HEARTBEAT_LOG_WRITE_ERROR", String(logErr));
+    }
 
     logHeart("BEAT_COMPLETE", { runId });
 
@@ -278,14 +279,18 @@ export const handler = async () => {
   } catch (err) {
     logHeart("FATAL_ERROR", { message: String(err) });
 
-    await db.collection("FUNCTION_ERRORS").doc(`ERR_${runId}_FATAL`).set({
-      fn: "timer",
-      stage: "fatal",
-      error: String(err),
-      runId,
-      ...TIMER_CONTEXT,
-      createdAt: admin.firestore.FieldValue.serverTimestamp()
-    });
+    try {
+      await db.collection("FUNCTION_ERRORS").doc(`ERR_${runId}_FATAL`).set({
+        fn: "timer",
+        stage: "fatal",
+        error: String(err),
+        runId,
+        ...TIMER_CONTEXT,
+        createdAt: admin.firestore.FieldValue.serverTimestamp()
+      });
+    } catch (logErr) {
+      console.error("HEART_FATAL_LOG_WRITE_ERROR", String(logErr));
+    }
 
     return {
       statusCode: 500,

@@ -1,7 +1,6 @@
 // ============================================================================
-// FILE: tropic-pulse-functions/apps/pulse-gpu/PulseGPURuntime.js
-// PULSE GPU RUNTIME v6.3 — THE MOMENTUM NETWORK
-// Forward Motion Layer • Signal Conduction Pathway • GPU Kinetic System
+//  PULSE GPU RUNTIME v7.3 — THE MOMENTUM NETWORK
+//  Forward Motion Layer • Signal Conduction Pathway • GPU Kinetic System
 // ============================================================================
 //
 // IDENTITY — THE MOMENTUM NETWORK:
@@ -11,6 +10,7 @@
 //  • The conduction pathway between Analyst (Brain) and Motor Hall (Engine).
 //  • The self-moving cart: once initialized, it carries the whole subsystem forward.
 //  • The nervous conduction layer that keeps the GPU body alive.
+//  • Advantage‑cascade aware: any systemic advantage is inherited automatically.
 //
 // ROLE IN THE GPU NATION:
 //  ------------------------
@@ -32,9 +32,9 @@
 //
 // WHAT THIS FILE IS NOT:
 //  -----------------------
-//  • NOT a renderer (Motor Hall handles that)
-//  • NOT a CPU optimizer (Analyst handles that)
-//  • NOT a shader compiler (Analyst handles that)
+//  • NOT a renderer
+//  • NOT a CPU optimizer
+//  • NOT a shader compiler
 //  • NOT a backend module
 //  • NOT a business logic module
 //
@@ -47,6 +47,13 @@
 //  • NO mutation of Brain packages
 //  • ALWAYS check navigator.gpu before initializing
 //  • FAIL‑OPEN: if GPU or packages are unavailable, expose empty buffers/context
+//
+// ADVANTAGE CASCADE (conceptual only):
+//  ------------------------------------
+//  • If pulses become faster → conduction conceptually accelerates.
+//  • If system collapses 1000 pulses into 1 → Runtime inherits that gain.
+//  • If any organ evolves → Runtime carries that advantage downstream.
+//  • No OR — all advantages are inherited automatically.
 // ============================================================================
 
 import { PulseGPUBrainExport } from "./PulseGPUBrain.js";
@@ -61,21 +68,30 @@ class PulseGPUContext {
     this.context = null;
     this.format = "bgra8unorm";
     this.ready = false;
+
+    this.meta = {
+      layer: "PulseGPUContext",
+      role: "MOMENTUM_NODE",
+      version: 7.3,
+      target: "full-gpu",
+      evo: {
+        advantageCascadeAware: true,
+        pulseEfficiencyAware: true,
+        driftProof: true,
+        multiInstanceReady: true
+      }
+    };
   }
 
   async init(canvas) {
     if (!canvas) {
-      console.warn(
-        "PulseGPUContext: canvas not provided; momentum cannot begin (fail-open)."
-      );
+      console.warn("PulseGPUContext: canvas not provided (fail-open).");
       this.ready = false;
       return;
     }
 
     if (!navigator.gpu) {
-      console.warn(
-        "PulseGPUContext: WebGPU unavailable — conduction halted (fail-open)."
-      );
+      console.warn("PulseGPUContext: WebGPU unavailable (fail-open).");
       this.ready = false;
       return;
     }
@@ -144,14 +160,25 @@ class PulseGPURuntimeLoader {
     this.textureBuffers = [];
     this.meshBuffers = [];
     this.shaderModules = [];
+
+    this.meta = {
+      layer: "PulseGPURuntimeLoader",
+      role: "MOMENTUM_FLOW",
+      version: 7.3,
+      target: "full-gpu",
+      evo: {
+        advantageCascadeAware: true,
+        pulseEfficiencyAware: true,
+        driftProof: true,
+        multiInstanceReady: true
+      }
+    };
   }
 
   loadPackages() {
     const pkg = PulseGPUBrainExport.exportToRuntime();
     if (!pkg) {
-      console.warn(
-        "PulseGPURuntimeLoader: no packageSet available — momentum stalls (fail-open)."
-      );
+      console.warn("PulseGPURuntimeLoader: no packageSet available (fail-open).");
       this.packages = null;
       return null;
     }
@@ -159,9 +186,6 @@ class PulseGPURuntimeLoader {
     return this.packages;
   }
 
-  // ----------------------------------------------------
-  // TEXTURES → GPU BUFFERS
-  // ----------------------------------------------------
   initTextures() {
     if (!this.gpu.device) return;
     const pkg = this.packages?.textures;
@@ -174,15 +198,10 @@ class PulseGPURuntimeLoader {
         tex.data,
         GPUBufferUsage.COPY_DST | GPUBufferUsage.TEXTURE_BINDING
       );
-      if (buffer) {
-        this.textureBuffers.push(buffer);
-      }
+      if (buffer) this.textureBuffers.push(buffer);
     });
   }
 
-  // ----------------------------------------------------
-  // MESHES → GPU BUFFERS
-  // ----------------------------------------------------
   initMeshes() {
     if (!this.gpu.device) return;
     const pkg = this.packages?.meshes;
@@ -213,9 +232,6 @@ class PulseGPURuntimeLoader {
     });
   }
 
-  // ----------------------------------------------------
-  // SHADERS → GPU MODULES
-  // ----------------------------------------------------
   initShaders() {
     if (!this.gpu.device) return;
     const pkg = this.packages?.shaders;
@@ -223,29 +239,20 @@ class PulseGPURuntimeLoader {
 
     pkg.compiledVariants.forEach((shader) => {
       if (!shader || !shader.code) return;
-      const module = this.gpu.device.createShaderModule({
-        code: shader.code
-      });
+      const module = this.gpu.device.createShaderModule({ code: shader.code });
       this.shaderModules.push(module);
     });
   }
 
-  // ----------------------------------------------------
-  // FULL INITIALIZATION PIPELINE — Momentum Ignition
-  // ----------------------------------------------------
   async initialize(canvas) {
     if (!this.gpu.ready) {
       await this.gpu.init(canvas);
     }
 
-    if (!this.gpu.ready) {
-      return false;
-    }
+    if (!this.gpu.ready) return false;
 
     this.loadPackages();
-    if (!this.packages) {
-      return true;
-    }
+    if (!this.packages) return true;
 
     this.initTextures();
     this.initMeshes();
@@ -262,6 +269,19 @@ class PulseGPURuntime {
   constructor() {
     this.context = new PulseGPUContext();
     this.loader = new PulseGPURuntimeLoader(this.context);
+
+    this.meta = {
+      layer: "PulseGPURuntime",
+      role: "MOMENTUM_NETWORK",
+      version: 7.3,
+      target: "full-gpu",
+      evo: {
+        advantageCascadeAware: true,
+        pulseEfficiencyAware: true,
+        driftProof: true,
+        multiInstanceReady: true
+      }
+    };
   }
 
   async init(canvas) {

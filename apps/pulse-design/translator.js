@@ -1,31 +1,33 @@
 // ============================================================================
 // FILE: tropic-pulse-functions/apps/pulse-design/translator.js
-// LAYER: THE ARCHITECT (Master Orchestrator + System Translator)
+// LAYER: THE ARCHITECT (Master Orchestrator + System Translator + Evolutionary Blueprint Conductor)
 // ============================================================================
 //
-// ROLE:
-//   THE ARCHITECT — Top‑level orchestrator for the Pulse‑Design pipeline
-//   • Coordinates the Cartographer (RepoWalker)
-//   • Delegates classification to the Anatomist (FileClassifier)
-//   • Hands results to the Surveyor (ManifestWriter)
-//   • Produces the canonical pulse_project.json manifest
+// ROLE (v7.1+):
+//   THE ARCHITECT — Top‑level orchestrator for the Pulse‑Design pipeline.
+//   • Coordinates the Cartographer (RepoWalker).
+//   • Delegates classification to the Anatomist (FileClassifier).
+//   • Hands results to the Surveyor (ManifestWriter).
+//   • Produces the canonical pulse_project.json manifest.
+//   • Acts as the “chief architect” of the digital organism.
 //
-// PURPOSE:
-//   • Provide a single entry point for generating the architecture snapshot
-//   • Translate raw filesystem structure → unified manifest
-//   • Make the entire system AI‑readable + human‑readable
-//   • Guarantee deterministic, drift‑proof output
+// PURPOSE (v7.1+):
+//   • Provide a single entry point for generating the architecture snapshot.
+//   • Translate raw filesystem structure → unified manifest.
+//   • Make the entire system AI‑readable + human‑readable.
+//   • Guarantee deterministic, drift‑proof output.
+//   • Preserve the organism’s architectural lineage (conceptual only).
 //
-// CONTRACT:
-//   • READ‑ONLY except for writing manifest output
-//   • NO eval(), NO Function(), NO dynamic imports
-//   • NO executing scanned code
-//   • NO network calls
-//   • Deterministic orchestration only
+// CONTRACT (unchanged):
+//   • READ‑ONLY except for writing manifest output.
+//   • NO eval(), NO Function(), NO dynamic imports.
+//   • NO executing scanned code.
+//   • NO network calls.
+//   • Deterministic orchestration only.
 //
-// SAFETY:
-//   • v6.3 upgrade is COMMENTAL ONLY — NO LOGIC CHANGES
-//   • All behavior remains identical to pre‑v6.3 translator.js
+// SAFETY (unchanged):
+//   • v7.1+ upgrade is COMMENTAL ONLY — NO LOGIC CHANGES.
+//   • All behavior remains identical to pre‑v7.1 translator.js.
 // ============================================================================
 
 import path from "path";
@@ -33,7 +35,7 @@ import { walkRepo } from "./repoWalker.js";
 import { writeManifest } from "./manifestWriter.js";
 
 // ============================================================================
-// PUBLIC API — Architectural Translation Pipeline
+// PUBLIC API — Architectural Translation Pipeline (Master Orchestration)
 // ============================================================================
 export async function buildPulseManifest(rootDir) {
   if (!rootDir) {

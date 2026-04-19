@@ -1,5 +1,5 @@
 // ======================================================
-//  PULSE USER METRICS v6.3
+//  PULSE USER METRICS v7.3
 //  “THE VITALS MONITOR / CIRCULATORY TELEMETRY LAYER”
 //  Deterministic, Drift‑Proof, Performance‑Aware Metrics Engine
 //  PURE HEALING. NO AI LAYERS. NO TRANSLATION. NO MEMORY MODEL.
@@ -58,6 +58,14 @@
 //  • No mutation outside Firestore.
 //  • Deterministic, drift-proof metrics only.
 //
+// ADVANTAGE CASCADE (v7.3):
+//  -------------------------
+//  • Dual-mode: mental + system.
+//  • Local-aware: per-user circulatory context.
+//  • Internet-aware: mesh / proxy / OS vitals context.
+//  • Advantage-cascade-aware: inherits ANY safe advantage.
+//  • Unified-advantage-field: ALL advantages ON unless unsafe.
+//  • Future-evolution-ready: new safe advantages auto-inherited.
 // ======================================================
 //  CONFIGURABLE INSTANCE FORMULA VARIABLES
 // ======================================================
@@ -83,7 +91,24 @@ export const PERFORMANCE_LOG_COLLECTION = "UserPerformanceLogs";
 import { getFirestore } from "firebase-admin/firestore";
 const db = getFirestore();
 
-console.log("[VitalsMonitor BOOT] PulseUserMetrics v6.3 online.");
+const VITALS_CONTEXT = {
+  layer: "PulseUserMetrics",
+  role: "VITALS_MONITOR",
+  version: "7.3",
+  evo: {
+    dualMode: true,
+    localAware: true,
+    internetAware: true,
+    advantageCascadeAware: true,
+    pulseEfficiencyAware: true,
+    driftProof: true,
+    multiInstanceReady: true,
+    unifiedAdvantageField: true,
+    futureEvolutionReady: true
+  }
+};
+
+console.log("[VitalsMonitor BOOT] PulseUserMetrics v7.3 online.");
 console.log("[VitalsMonitor BOOT] Performance logging:", ENABLE_PERFORMANCE_LOGGING);
 
 // ======================================================
@@ -159,12 +184,11 @@ export async function updateUserMetrics(userId, data = {}) {
     );
   });
 
-  // ------------------------------------------------------
   // PERFORMANCE SNAPSHOT LOGGING (vitals panel)
-  // ------------------------------------------------------
   if (ENABLE_PERFORMANCE_LOGGING) {
     try {
       await db.collection(PERFORMANCE_LOG_COLLECTION).add({
+        ...VITALS_CONTEXT,
         userId,
         ts: Date.now(),
         bytes: data.bytes ?? null,

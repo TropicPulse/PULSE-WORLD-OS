@@ -1,5 +1,5 @@
 // ======================================================
-//  PULSE INSTANCE ORCHESTRATOR v5.2
+//  PULSE INSTANCE ORCHESTRATOR v7.3
 //  “THE ADRENAL SYSTEM / FIGHT‑OR‑FLIGHT SCALING LAYER”
 //  Deterministic, Drift‑Proof, Device‑Aware Scaling
 //  WITH PERFORMANCE LOGGING + USER INSTANCE SNAPSHOTS
@@ -17,11 +17,6 @@
 //  • It kills excess “cells” when demand drops.
 //  • It never guesses — it reacts deterministically to signals.
 //  • It keeps the organism efficient, not over‑inflamed.
-//
-//  Think of this as the **adrenal glands** for the proxy:
-//  • Adrenaline = more instances, fast.
-//  • Calm baseline = fewer instances, stable.
-//  • Hard caps = physiological limits.
 //
 // WHAT THIS FILE IS:
 //  -------------------
@@ -55,6 +50,14 @@
 //  • Deterministic scaling only.
 //  • Drift-proof instance counts.
 //
+// ADVANTAGE CASCADE (v7.3):
+//  -------------------------
+//  • Dual-mode: mental + system.
+//  • Local-aware: per-user, per-device adrenal context.
+//  • Internet-aware: cluster/mesh/global scaling context.
+//  • Advantage-cascade-aware: inherits ANY safe advantage.
+//  • Unified-advantage-field: ALL advantages ON unless unsafe.
+//  • Future-evolution-ready: new safe advantages auto-inherited.
 // ======================================================
 //  CONFIGURABLE INSTANCE FORMULA VARIABLES
 // ======================================================
@@ -83,8 +86,25 @@ const db = getFirestore();
 // In-memory worker registry — active “cells” per user
 const activeWorkers = new Map();
 
+const ADRENAL_CONTEXT = {
+  layer: "PulseInstanceOrchestrator",
+  role: "ADRENAL_SYSTEM",
+  version: "7.3",
+  evo: {
+    dualMode: true,
+    localAware: true,
+    internetAware: true,
+    advantageCascadeAware: true,
+    pulseEfficiencyAware: true,
+    driftProof: true,
+    multiInstanceReady: true,
+    unifiedAdvantageField: true,
+    futureEvolutionReady: true
+  }
+};
+
 console.log(
-  "[ADRENAL BOOT] PulseInstanceOrchestrator v5.2 online — fight-or-flight scaling layer active."
+  "[ADRENAL BOOT] PulseInstanceOrchestrator v7.3 online — fight-or-flight scaling layer active."
 );
 console.log("[ADRENAL BOOT] Hard caps (physiological limits):", {
   NORMAL_MAX,
@@ -144,6 +164,7 @@ async function logUserInstanceSnapshot(userId, snapshot) {
 
   try {
     await db.collection(INSTANCE_LOG_COLLECTION).add({
+      ...ADRENAL_CONTEXT,
       userId,
       ts: Date.now(),
       ...snapshot
@@ -219,9 +240,7 @@ export async function runInstanceOrchestrator() {
       `[ADRENAL STATE] User=${userId} | Base=${baseInstances} | Tier=${deviceTier} | EarnMode=${earnMode} | TestEarn=${testEarnActive} | Current=${currentWorkers.length} | Final=${finalInstances}`
     );
 
-    // ======================================================
-    //  SCALE UP — acute stress response (adrenaline surge)
-    // ======================================================
+    // SCALE UP — acute stress response (adrenaline surge)
     if (currentWorkers.length < finalInstances) {
       const needed = finalInstances - currentWorkers.length;
 
@@ -236,9 +255,7 @@ export async function runInstanceOrchestrator() {
       }
     }
 
-    // ======================================================
-    //  SCALE DOWN — recovery phase (return to baseline)
-// ======================================================
+    // SCALE DOWN — recovery phase (return to baseline)
     if (currentWorkers.length > finalInstances) {
       const extra = currentWorkers.length - finalInstances;
 
@@ -252,10 +269,7 @@ export async function runInstanceOrchestrator() {
       }
     }
 
-    // ======================================================
-    //  PERFORMANCE SNAPSHOT LOGGING
-    //  (How much “hormone” we actually produced)
-// ======================================================
+    // PERFORMANCE SNAPSHOT LOGGING
     await logUserInstanceSnapshot(userId, {
       baseInstances,
       finalInstances,

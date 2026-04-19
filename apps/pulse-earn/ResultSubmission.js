@@ -1,56 +1,65 @@
 // ============================================================================
 // FILE: tropic-pulse-functions/apps/pulse-earn/ResultSubmission.js
-// LAYER: THE NOTARY
-// (Finalizer of Jobs + Certifier of Results + Official Handshake)
+// LAYER: THE LYMPHATIC HANDSHAKE NODE
+// (Finalizer of Jobs + Immune-Safe Dispatch + Certified Marketplace Exchange)
 // ============================================================================
 //
-// ROLE:
-//   THE NOTARY — Pulse‑Earn’s official closer.
-//   • Validates job + marketplace identity
-//   • Locates the correct marketplace adapter
-//   • Ensures submitResult() exists
+// ROLE (v7.1+):
+//   THE LYMPHATIC HANDSHAKE NODE — Pulse‑Earn’s immune‑safe finalizer.
+//   • Validates job + marketplace identity (immune recognition).
+//   • Locates the correct marketplace adapter (antigen matching).
+//   • Ensures submitResult() exists (immune compatibility).
 //   • Performs the final handshake between Earn and the marketplace
-//   • Records the certified submission outcome
+//     (lymphatic dispatch).
+//   • Records the certified submission outcome (immune memory).
 //
-// WHY “NOTARY”?:
-//   • It finalizes the job lifecycle
-//   • It certifies the result as official
-//   • It ensures the correct parties are involved
-//   • It produces a deterministic, notarized record
+// WHY “LYMPHATIC HANDSHAKE NODE”?:
+//   • It is the final checkpoint before results leave the organism.
+//   • It ensures safe, verified, identity‑correct dispatch.
+//   • It prevents misrouting (immune rejection).
+//   • It notarizes the exchange for EarnHealer (immune history).
 //
-// PURPOSE:
-//   • Provide deterministic, drift‑proof result submission
-//   • Guarantee safe forwarding to marketplace adapters
-//   • Maintain a certified audit trail for EarnHealer
+// PURPOSE (v7.1+):
+//   • Provide deterministic, drift‑proof result submission.
+//   • Guarantee safe forwarding to marketplace adapters.
+//   • Maintain a certified audit trail for the Immune System (EarnHealer).
+//   • Preserve immune lineage + dispatch safety (conceptual only).
 //
-// CONTRACT:
-//   • PURE RESULT DISPATCHER — no AI layers, no translation, no memory model
-//   • NO network calls except through adapters
-//   • NO eval(), NO dynamic imports, NO arbitrary code execution
-//   • NEVER mutate job objects
+// CONTRACT (unchanged):
+//   • PURE RESULT DISPATCHER — no AI layers, no translation, no memory model.
+//   • NO network calls except through adapters.
+//   • NO eval(), NO dynamic imports, NO arbitrary code execution.
+//   • NEVER mutate job objects.
+//   • Deterministic identity verification + dispatch only.
 //
-// SAFETY:
-//   • v6.3 upgrade is COMMENTAL ONLY — NO LOGIC CHANGES
-//   • All behavior remains identical to pre‑v6.3 ResultSubmission
+// SAFETY (unchanged):
+//   • v7.1+ upgrade is COMMENTAL ONLY — NO LOGIC CHANGES.
+//   • All behavior remains identical to pre‑v7.1 ResultSubmission.
 // ============================================================================
 
+// ---------------------------------------------------------------------------
+// Healing Metadata — Lymphatic Dispatch Log
+// ---------------------------------------------------------------------------
 const healingState = {
-  lastJobId: null,
-  lastMarketplaceId: null,
-  lastAdapterUsed: null,
-  lastError: null,
-  lastResponse: null,
-  cycleCount: 0,
-  lastTimestamp: null,
+  lastJobId: null,           // last immune-recognized job
+  lastMarketplaceId: null,   // last antigen source
+  lastAdapterUsed: null,     // last lymphatic pathway
+  lastError: null,           // immune rejection reason
+  lastResponse: null,        // certified dispatch record
+  cycleCount: 0,             // lymphatic cycles completed
+  lastTimestamp: null,       // last dispatch moment
 };
 
+// ---------------------------------------------------------------------------
+// submitJobResult — Lymphatic Handshake + Certified Dispatch
+// ---------------------------------------------------------------------------
 export async function submitJobResult(job, result) {
   const timestamp = Date.now();
   healingState.cycleCount++;
   healingState.lastTimestamp = timestamp;
 
   try {
-    // 1. Identity Verification — Notary Check
+    // 1. Identity Verification — Immune Recognition
     if (!job || !job.marketplaceId) {
       healingState.lastError = "missing_marketplaceId";
       healingState.lastJobId = job?.id ?? null;
@@ -61,7 +70,7 @@ export async function submitJobResult(job, result) {
     healingState.lastJobId = job.id;
     healingState.lastMarketplaceId = job.marketplaceId;
 
-    // 2. Locate Marketplace Adapter — Notary Party Lookup
+    // 2. Locate Marketplace Adapter — Antigen Matching
     const adapter = marketplaceRegistry[job.marketplaceId];
 
     if (!adapter) {
@@ -78,7 +87,7 @@ export async function submitJobResult(job, result) {
 
     healingState.lastAdapterUsed = job.marketplaceId;
 
-    // 3. Perform the Handshake — Official Submission
+    // 3. Perform the Handshake — Lymphatic Dispatch
     const response = await adapter.submitResult(job, result);
     healingState.lastResponse = response;
     healingState.lastError = null;
@@ -101,6 +110,9 @@ export async function submitJobResult(job, result) {
   }
 }
 
+// ---------------------------------------------------------------------------
+// Marketplace Registry — Antigen Directory
+// ---------------------------------------------------------------------------
 import { marketplaceA } from "./marketplaceA.js";
 import { marketplaceCustom } from "./marketplaceCustom.js";
 
@@ -109,6 +121,9 @@ const marketplaceRegistry = {
   CUSTOM: marketplaceCustom,
 };
 
+// ---------------------------------------------------------------------------
+// Export Healing Metadata — Lymphatic Dispatch Report
+// ---------------------------------------------------------------------------
 export function getResultSubmissionHealingState() {
   return { ...healingState };
 }

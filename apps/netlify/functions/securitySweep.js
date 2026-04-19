@@ -1,64 +1,50 @@
 // ============================================================================
 // FILE: /apps/netlify/functions/securitySweep.js
-// PULSE SECURITY SWEEP — v6.3
-// “THE RELIABILITY OFFICER / TRUST ENFORCEMENT ENGINE”
+// PULSE SECURITY SWEEP — v7.1+
+// “THE ADAPTIVE IMMUNE INSPECTOR / T‑CELL TRUST SWEEP”
 // ============================================================================
 //
-// ⭐ v6.3 COMMENT LOG
-// - THEME: “THE RELIABILITY OFFICER / TRUST ENFORCEMENT ENGINE”
-// - ROLE: Scheduled identity integrity + trust enforcement across the graph
-// - Added LAYER CONSTANTS + DIAGNOSTICS helper
-// - Added structured JSON logs (for inspector / DOM-visible pipelines)
-// - Added explicit STAGE markers for sweep phases
-// - Preserved deterministic rotation + flagging behavior
-// - ZERO logic changes to security rules, Firestore writes, or rotation logic
+// ROLE (v7.1+):
+//   securitySweep is the **ADAPTIVE IMMUNE INSPECTOR** of PulseOS.
+//   It is the **T‑CELL TRUST SWEEP** — the subsystem that walks the entire
+//   identity graph, validates trust markers, detects anomalies, rotates
+//   session tokens, and enforces long‑term identity integrity.
 //
-// ============================================================================
-// PERSONALITY + ROLE — “THE RELIABILITY OFFICER”
-// ----------------------------------------------------------------------------
-// securitySweep is the **RELIABILITY OFFICER** of the Pulse OS.
-// It is the **TRUST ENFORCEMENT ENGINE** — responsible for walking the
-// entire identity graph on a schedule and ensuring that tokens, flags,
-// and security state remain trustworthy, consistent, and safe.
+//   • Performs daily + weekly + bi‑weekly immune sweeps
+//   • Detects danger flags (vaultLockdown, hackerFlag, appLocked…)
+//   • Detects IP jumps + device jumps (identity drift)
+//   • Determines early refresh vs. 30‑day rotation
+//   • Rotates session tokens deterministically
+//   • Logs immune events to TPIdentityHistory
+//   • Updates Users with corrected trust state
+//   • Produces rotatedUsers + flaggedUsers for immune analytics
 //
-//   • Performs daily + weekly + bi‑weekly integrity sweeps
-//   • Detects danger flags (vaultLockdown, appLocked, hackerFlag, etc.)
-//   • Detects IP jumps + device jumps
-//   • Decides when identities need early refresh vs. 30‑day rotation
-//   • Rotates session tokens (resendToken) deterministically
-//   • Logs identity changes to TPIdentityHistory
-//   • Updates Users records with corrected security state
-//   • Produces rotatedUsers + flaggedUsers for downstream monitoring
-//
-// ============================================================================
-// WHAT THIS FILE IS
-// ----------------------------------------------------------------------------
+// WHAT THIS FILE *IS* (v7.1+):
 //   ✔ A deterministic identity integrity sweep
-//   ✔ A trust maintenance + reliability enforcement layer
-//   ✔ A heartbeat‑driven backend function (no external scheduler)
+//   ✔ A trust enforcement organ
+//   ✔ A heartbeat‑driven adaptive immune function
 //
-// WHAT THIS FILE IS NOT
-// ----------------------------------------------------------------------------
+// WHAT THIS FILE *IS NOT*:
 //   ✘ NOT a router
 //   ✘ NOT a scoring engine
-//   ✘ NOT a generic cleanup function
+//   ✘ NOT a cleanup function
 //   ✘ NOT a personality or memory layer
 //
-// ============================================================================
-// SAFETY CONTRACT (v6.3)
-// ----------------------------------------------------------------------------
+// SAFETY CONTRACT (v7.1+):
 //   • Never mutate root tokens (UserToken)
 //   • Only rotate session tokens (TPIdentity.resendToken)
-//   • Always log identity changes to TPIdentityHistory
+//   • Always log immune events to TPIdentityHistory
 //   • Always record danger flags + sweep metadata in TIMER_LOGS
-//   • Fail‑open per user: errors are logged, sweep continues
+//   • Fail‑open per user: errors logged, sweep continues
 //
+// VERSION TAG:
+//   version: 7.1+
 // ============================================================================
 
 import * as admin from "firebase-admin";
 import { getFirestore } from "firebase-admin/firestore";
-import jwt from "jsonwebtoken"; // ensure this is installed
-import { JWT_SECRET } from "./secrets.js"; // adjust path as needed
+import jwt from "jsonwebtoken";
+import { JWT_SECRET } from "./secrets.js";
 
 if (!admin.apps.length) {
   admin.initializeApp();
@@ -68,13 +54,13 @@ const db = getFirestore();
 // ============================================================================
 // LAYER CONSTANTS + DIAGNOSTICS
 // ============================================================================
-const LAYER_ID = "SECURITY-SWEEP-LAYER";
-const LAYER_NAME = "THE RELIABILITY OFFICER";
-const LAYER_ROLE = "TRUST ENFORCEMENT ENGINE";
+const LAYER_ID = "IMMUNE-INSPECTION-LAYER";
+const LAYER_NAME = "ADAPTIVE IMMUNE INSPECTOR";
+const LAYER_ROLE = "T-CELL TRUST SWEEP";
 
 const SECURITY_SWEEP_DIAGNOSTICS_ENABLED =
-  window.PULSE_SECURITY_SWEEP_DIAGNOSTICS === "true" ||
-  window.PULSE_DIAGNOSTICS === "true";
+  process.env.PULSE_SECURITY_SWEEP_DIAGNOSTICS === "true" ||
+  process.env.PULSE_DIAGNOSTICS === "true";
 
 const logReliability = (stage, details = {}) => {
   if (!SECURITY_SWEEP_DIAGNOSTICS_ENABLED) return;
@@ -91,7 +77,7 @@ const logReliability = (stage, details = {}) => {
 };
 
 // ============================================================================
-// BACKEND ENTRY POINT (CALLED BY HEARTBEAT)
+// BACKEND ENTRY POINT — THE T‑CELL TRUST SWEEP
 // ============================================================================
 export async function securitySweep() {
   const runId = crypto.randomUUID();
@@ -124,7 +110,7 @@ export async function securitySweep() {
     });
 
     // ---------------------------------------------------------
-    // ⭐ 1. IDENTITY SWEEP (PER‑USER RELIABILITY PASS)
+    // ⭐ 1. IMMUNE INSPECTION (PER‑USER TRUST PASS)
     // ---------------------------------------------------------
     try {
       for (const doc of usersSnap.docs) {
@@ -154,7 +140,7 @@ export async function securitySweep() {
           const needs30DayRefresh = age > THIRTY_DAYS;
 
           // -----------------------------
-          // SECURITY FLAGS
+          // IMMUNE FLAGS
           // -----------------------------
           const danger =
             TPSecurity.vaultLockdown ||
@@ -245,7 +231,7 @@ export async function securitySweep() {
             : "30_day_rotation";
 
           // -----------------------------
-          // WRITE TO TPIdentityHistory
+          // IMMUNE MEMORY LOGGING
           // -----------------------------
           try {
             await db.collection("TPIdentityHistory").add({
@@ -362,7 +348,7 @@ export async function securitySweep() {
     }
 
     // ---------------------------------------------------------
-    // ⭐ 2. TIMER LOG (SWEEP SUMMARY)
+    // ⭐ 2. IMMUNE SUMMARY LOG
     // ---------------------------------------------------------
     await db.collection("TIMER_LOGS").doc(logId).set({
       fn: "securitySweep",

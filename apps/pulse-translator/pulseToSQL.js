@@ -1,5 +1,5 @@
 // FILE: tropic-pulse-functions/apps/pulse-translator/pulseToSQL.js
-
+// VERSION: 7.3
 //
 // ------------------------------------------------------
 // 📘 PAGE INDEX — Source of Truth for This File
@@ -35,32 +35,58 @@
 //   • Deterministic translation only
 //
 // ------------------------------------------------------
-// Pulse → SQL Translator
+// Pulse → SQL Translator (v7.3)
 // ------------------------------------------------------
 
-import { PulseToSQL, validatePulseField } from "../pulse-specs/pulseFields.js";
+import {
+  PulseToSQL,
+  PulseFieldTypes,
+  validatePulseField
+} from "../pulse-specs/pulseFields.js";
 
 /**
  * translatePulseField(field)
  * Converts a PulseField object into a SQL column definition.
+ * v7.3: supports:
+ *   • nullable wrapper
+ *   • enum
+ *   • currency (DECIMAL)
+//   • percent (DOUBLE)
+//   • deterministic fallback rules
  */
 export function translatePulseField(field) {
   validatePulseField(field);
 
-  const sqlType = PulseToSQL[field.type] || "VARCHAR(255)";
   const columnName = normalizeSQLName(field.name);
 
+  // v7.3: nullable wrapper → JSON column storing { isNull, value }
+  if (field.type === PulseFieldTypes.NULLABLE) {
+    return `${columnName} JSON`;
+  }
+
+  // v7.3: enum → VARCHAR(255)
+  if (field.type === PulseFieldTypes.ENUM) {
+    return `${columnName} VARCHAR(255)`;
+  }
+
+  // v7.3: currency → DECIMAL(18,2)
+  if (field.type === PulseFieldTypes.CURRENCY) {
+    return `${columnName} DECIMAL(18,${field.scale ?? 2})`;
+  }
+
+  // v7.3: percent → DOUBLE
+  if (field.type === PulseFieldTypes.PERCENT) {
+    return `${columnName} DOUBLE`;
+  }
+
+  // Default mapping from PulseFields v1.3
+  const sqlType = PulseToSQL[field.type] || "VARCHAR(255)";
   return `${columnName} ${sqlType}`;
 }
 
 /**
  * translatePulseSchema(schemaObject)
- * Example input:
- * {
- *   id: { name: "id", type: "id" },
- *   name: { name: "name", type: "string" },
- *   created_at: { name: "created_at", type: "timestamp" }
- * }
+ * Converts a PulseField schema into an array of SQL column definitions.
  */
 export function translatePulseSchema(schemaObject = {}) {
   const columns = [];

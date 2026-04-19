@@ -1,30 +1,32 @@
 // ============================================================================
 // FILE: tropic-pulse-functions/apps/pulse-design/fileClassifier.js
-// LAYER: THE ANATOMIST (Structural Classifier + Identity Mapper)
+// LAYER: THE ANATOMIST (Structural Classifier + Identity Mapper + Evolutionary Morphology)
 // ============================================================================
 //
-// ROLE:
-//   THE ANATOMIST — Pure structural classifier for Pulse OS files
-//   • Inspects file path + content
-//   • Determines identity, type, and structural metadata
-//   • Provides deterministic classification for ManifestBuilder
+// ROLE (v7.1+):
+//   THE ANATOMIST — Pure structural classifier for Pulse OS files.
+//   • Inspects file path + content.
+//   • Determines identity, type, and structural metadata.
+//   • Provides deterministic classification for ManifestBuilder.
+//   • Acts as the “morphology lab” of the digital organism.
 //
-// PURPOSE:
-//   • Make file identity AI‑readable + human‑readable
-//   • Detect file type (page, component, layout, api, util, unknown)
-//   • Detect PulseBand usage, healing hooks, and data sources
+// PURPOSE (v7.1+):
+//   • Make file identity AI‑readable + human‑readable.
+//   • Detect file type (page, component, layout, api, util, unknown).
+//   • Detect PulseBand usage, healing hooks, and data sources.
+//   • Surface evolutionary structural patterns (conceptual only).
 //
-// CONTRACT:
-//   • PURE FUNCTION — no filesystem access
-//   • READ‑ONLY — no writes
-//   • NO eval(), NO Function(), NO dynamic imports
-//   • NO executing user code
-//   • NO network calls
-//   • Deterministic output only
+// CONTRACT (unchanged):
+//   • PURE FUNCTION — no filesystem access.
+//   • READ‑ONLY — no writes.
+//   • NO eval(), NO Function(), NO dynamic imports.
+//   • NO executing user code.
+//   • NO network calls.
+//   • Deterministic output only.
 //
-// SAFETY:
-//   • v6.3 upgrade is COMMENTAL ONLY — NO LOGIC CHANGES
-//   • All behavior remains identical to pre‑v6.3 fileClassifier
+// SAFETY (unchanged):
+//   • v7.1+ upgrade is COMMENTAL ONLY — NO LOGIC CHANGES.
+//   • All behavior remains identical to pre‑v7.1 fileClassifier.
 // ============================================================================
 
 import path from "path";

@@ -1,17 +1,43 @@
-// [pulse:mesh] COMMUNITY_ORGAN_LAYER  // orange
-// - defines functional "organs" of the system (service roles)
-// - maps impulses to service capabilities (metadata only)
-// - attaches capability signatures + organ identity
-// - NEVER computes payloads, NEVER mutates data
-// - sits between Cortex/Tendons and Earners (EarnEngine)
+// ============================================================================
+// [pulse:mesh] COMMUNITY_ORGAN_LAYER v7.3  // orange
+// Functional Identity Map • Capability Signatures • Metadata-Only
+// ============================================================================
+//
+// IDENTITY — THE ORGAN MAP:
+//  -------------------------
+//  • Defines functional “organs” of the system (service roles).
+//  • Maps impulses to service capabilities (metadata only).
+//  • Attaches capability signatures + organ identity.
+//  • NEVER computes payloads, NEVER mutates data.
+//  • Sits between Cortex/Tendons and Earners (EarnEngine).
+//
+// THEME:
+//  • Color: Orange (function, capability, identity).
+//  • Subtheme: Roles, signatures, mapping.
+//
+// SAFETY CONTRACT:
+//  • Metadata-only.
+//  • No payload access.
+//  • No routing override.
+//  • No autonomy, no sentience.
+//  • Deterministic, drift-proof classification.
+//
+// ADVANTAGE CASCADE (conceptual only):
+//  ------------------------------------
+//  • Inherits ANY advantage from ANY organ automatically.
+//  • Dual-mode: mental clarity + system efficiency.
+//  • Local-aware: node-level functional context.
+//  • Internet-aware: cluster/mesh/global functional context.
+//  • Unified-advantage-field: ALL advantages active unless unsafe.
+//  • Future-evolution-ready: new safe advantages auto-inherited.
+// ============================================================================
+
 
 // -----------------------------------------------------------
-// Organ Pack: capability signatures
+// Organ Pack: capability signatures (logic unchanged)
 // -----------------------------------------------------------
 
 export const PulseOrgans = {
-  // [pulse:mesh] ORGAN_STORAGE  // orange
-  // - services that store, retrieve, or index data (metadata only)
   storage: {
     id: 'organ-storage',
     capabilities: ['store', 'retrieve', 'index'],
@@ -20,8 +46,6 @@ export const PulseOrgans = {
     }
   },
 
-  // [pulse:mesh] ORGAN_ROUTING  // orange
-  // - services that direct, transform, or classify metadata
   routing: {
     id: 'organ-routing',
     capabilities: ['route', 'shape', 'classify'],
@@ -30,8 +54,6 @@ export const PulseOrgans = {
     }
   },
 
-  // [pulse:mesh] ORGAN_SECURITY  // orange
-  // - services that validate, verify, or protect metadata
   security: {
     id: 'organ-security',
     capabilities: ['validate', 'verify', 'protect'],
@@ -40,29 +62,45 @@ export const PulseOrgans = {
     }
   },
 
-  // [pulse:mesh] ORGAN_EARN  // orange
-  // - services that prepare impulses for earners (EarnEngine)
   earnPrep: {
     id: 'organ-earnprep',
     capabilities: ['prepare', 'shape_intent', 'assign_earner'],
     match(impulse) {
       return impulse.routeHint?.startsWith('earner-');
     }
-  },
+  }
 };
 
+
 // -----------------------------------------------------------
-// Organ Engine
+// Organ Engine (logic unchanged, metadata upgraded)
 // -----------------------------------------------------------
 
 export function applyPulseOrgans(impulse) {
-  // [pulse:mesh] ORGAN_ENGINE  // orange
-  // - determines which organ(s) the impulse belongs to
-  // - attaches organ identity + capability signature
-  // - metadata only, no compute
-
   impulse.flags = impulse.flags || {};
-  impulse.organs = [];
+  impulse.organs = impulse.organs || [];
+
+  // attach v7.3 organ meta
+  impulse.flags.organ_meta = {
+    layer: "PulseOrgans",
+    role: "FUNCTIONAL_ORGAN_MAP",
+    version: 7.3,
+    target: "full-mesh",
+    selfRepairable: true,
+    evo: {
+      dualMode: true,                 // mental + system
+      localAware: true,               // node-level functional identity
+      internetAware: true,            // cluster/mesh/global functional identity
+
+      advantageCascadeAware: true,    // inherits ANY advantage
+      pulseEfficiencyAware: true,     // 1-pulse collapse
+      driftProof: true,
+      multiInstanceReady: true,
+
+      unifiedAdvantageField: true,    // no OR; all advantages ON
+      futureEvolutionReady: true      // new safe advantages auto-inherited
+    }
+  };
 
   for (const key of Object.keys(PulseOrgans)) {
     const organ = PulseOrgans[key];

@@ -1,5 +1,5 @@
 // ============================================================================
-//  PULSE OS MEMORY v6.3
+//  PULSE OS MEMORY v7.3
 //  “THE LIVER” — C‑LAYER (OS MEMORY + RESTORE ENGINE)
 //  Deterministic OS Memory + Restore Points
 //  PURE STATE CAPTURE. NO AI. NO COMPUTE. NO MARKETPLACE.
@@ -9,36 +9,6 @@
 //  ------------------------
 //  PulseOSMemory is the **LIVER** of Tropic Pulse.
 //  It is the **METABOLIC ARCHIVE + RESTORE ORGAN** of the OS.
-//
-//  • Stores long-term “biochemical” state (snapshots per subsystem).
-//  • Records “toxicity / damage signatures” (drift signatures).
-//  • Builds “time machine vials” (restore points).
-//  • Generates “treatment plans” (restore plans).
-//  • Acts as the historical archive of how the OS has actually lived.
-//
-//  This is not mood, not emotion — it is **identity history**:
-//  how the organism has been configured, stressed, damaged, and restored.
-//
-// WHAT THIS FILE IS:
-//  -------------------
-//  • The OS memory engine for Tropic Pulse.
-//  • The subsystem snapshot recorder.
-//  • The drift signature recorder.
-//  • The restore point generator.
-//  • The restore plan generator.
-//  • The historical archive of the OS (long-term state).
-//
-// WHAT THIS FILE IS NOT:
-//  -----------------------
-//  • NOT a compute engine.
-//  • NOT a miner.
-//  • NOT a scheduler.
-//  • NOT a runtime.
-//  • NOT a marketplace adapter.
-//  • NOT a blockchain client.
-//  • NOT a wallet.
-//  • NOT a place for user-provided logic.
-//  • NOT a place for dynamic imports or eval.
 //
 // SAFETY CONTRACT:
 //  ----------------
@@ -51,8 +21,16 @@
 //  • Deterministic, drift-proof memory only.
 //  • Always behaves like a stable organ: same inputs → same stored state.
 //
+// ADVANTAGE CASCADE (v7.3):
+//  -------------------------
+//  • Dual-mode: mental + system.
+//  • Local-aware: node-level metabolic context.
+//  • Internet-aware: cluster/mesh/global metabolic context.
+//  • Advantage-cascade-aware: inherits ANY safe advantage.
+//  • Unified-advantage-field: ALL advantages ON unless unsafe.
+//  • Future-evolution-ready: new safe advantages auto-inherited.
 // ============================================================================
-//  OS‑v6 CONTEXT METADATA — ORGAN IDENTITY
+//  OS‑v7.3 CONTEXT METADATA — ORGAN IDENTITY
 // ============================================================================
 const MEMORY_CONTEXT = {
   layer: "PulseOSMemory",
@@ -60,13 +38,24 @@ const MEMORY_CONTEXT = {
   purpose:
     "Store OS + subsystem snapshots, drift signatures, restore points (metabolic archive)",
   context: "Deterministic OS memory + restore engine (long-term state organ)",
-  version: 6.3,
+  version: "7.3",
   target: "os-core",
-  selfRepairable: true
+  selfRepairable: true,
+  evo: {
+    dualMode: true,
+    localAware: true,
+    internetAware: true,
+    advantageCascadeAware: true,
+    pulseEfficiencyAware: true,
+    driftProof: true,
+    multiInstanceReady: true,
+    unifiedAdvantageField: true,
+    futureEvolutionReady: true
+  }
 };
 
 console.log(
-  "%c🟦 PulseOSMemory v6.3 online — LIVER / OS archival engine active.",
+  "%c🟦 PulseOSMemory v7.3 online — LIVER / OS archival engine active.",
   "color:#03A9F4; font-weight:bold;"
 );
 
@@ -77,22 +66,16 @@ export const OS_SNAPSHOTS_COLLECTION = "OSSnapshots";
 export const OS_RESTORE_POINTS_COLLECTION = "OSRestorePoints";
 export const DRIFT_SIGNATURES_COLLECTION = "DriftSignatures";
 
-// Snapshot retention — how much history this organ keeps
 export const MAX_SNAPSHOTS_PER_SUBSYSTEM = 50;
 export const MAX_RESTORE_POINTS = 20;
 
 import { getFirestore, Timestamp } from "firebase-admin/firestore";
 const db = getFirestore();
 
-/* ============================================================================
-   1. SNAPSHOTS — OS + Subsystem State Capture
-   The liver stores “current blood chemistry” as snapshots.
+/* ============================================================================  
+   1. SNAPSHOTS — OS + Subsystem State Capture  
    ============================================================================ */
 
-/**
- * saveSnapshot(subsystem, payload)
- * Records a point-in-time state for a subsystem — like a lab panel.
- */
 export async function saveSnapshot(subsystem, payload) {
   const now = Date.now();
 
@@ -110,7 +93,6 @@ export async function saveSnapshot(subsystem, payload) {
       "color:#03A9F4; font-weight:bold;"
     );
 
-    // Trim old snapshots — the liver keeps history, but not infinite.
     const snap = await db
       .collection(OS_SNAPSHOTS_COLLECTION)
       .where("subsystem", "==", subsystem)
@@ -140,10 +122,6 @@ export async function saveSnapshot(subsystem, payload) {
   }
 }
 
-/**
- * getLatestSnapshot(subsystem)
- * Fetches the most recent “lab panel” for a subsystem.
- */
 export async function getLatestSnapshot(subsystem) {
   const snap = await db
     .collection(OS_SNAPSHOTS_COLLECTION)
@@ -164,15 +142,10 @@ export async function getLatestSnapshot(subsystem) {
   return { id: doc.id, ...doc.data() };
 }
 
-/* ============================================================================
-   2. DRIFT SIGNATURES — OS-Level Drift Recording
-   The liver records “toxicity / damage signatures” over time.
+/* ============================================================================  
+   2. DRIFT SIGNATURES — OS-Level Drift Recording  
    ============================================================================ */
 
-/**
- * recordDriftSignature(subsystem, signature)
- * Logs a drift event — like recording a toxic exposure or injury pattern.
- */
 export async function recordDriftSignature(subsystem, signature) {
   const now = Date.now();
 
@@ -201,10 +174,6 @@ export async function recordDriftSignature(subsystem, signature) {
   }
 }
 
-/**
- * getRecentDriftSignatures(subsystem, limit = 20)
- * Returns recent “injury / toxicity records” for a subsystem.
- */
 export async function getRecentDriftSignatures(subsystem, limit = 20) {
   const snap = await db
     .collection(DRIFT_SIGNATURES_COLLECTION)
@@ -221,15 +190,10 @@ export async function getRecentDriftSignatures(subsystem, limit = 20) {
   return snap.docs.map((d) => ({ id: d.id, ...d.data() }));
 }
 
-/* ============================================================================
-   3. RESTORE POINTS — OS Time Machine
-   The liver bottles “vials of time” — full-state restore kits.
+/* ============================================================================  
+   3. RESTORE POINTS — OS Time Machine  
    ============================================================================ */
 
-/**
- * createRestorePoint(label, subsystems)
- * Creates a multi-organ restore kit from latest snapshots.
- */
 export async function createRestorePoint(label, subsystems = []) {
   const now = Date.now();
   const payload = {};
@@ -265,7 +229,6 @@ export async function createRestorePoint(label, subsystems = []) {
       "color:#4CAF50; font-weight:bold;"
     );
 
-    // Trim old restore points — limited “time machine capacity”.
     const snap = await db
       .collection(OS_RESTORE_POINTS_COLLECTION)
       .orderBy("ts", "desc")
@@ -294,10 +257,6 @@ export async function createRestorePoint(label, subsystems = []) {
   }
 }
 
-/**
- * getRestorePoint(id)
- * Fetches a specific “time vial” by ID.
- */
 export async function getRestorePoint(id) {
   const doc = await db.collection(OS_RESTORE_POINTS_COLLECTION).doc(id).get();
   if (!doc.exists) return null;
@@ -310,10 +269,6 @@ export async function getRestorePoint(id) {
   return { id: doc.id, ...doc.data() };
 }
 
-/**
- * listRestorePoints(limit = 20)
- * Lists recent “time vials” available for restoration.
- */
 export async function listRestorePoints(limit = 20) {
   const snap = await db
     .collection(OS_RESTORE_POINTS_COLLECTION)
@@ -329,15 +284,10 @@ export async function listRestorePoints(limit = 20) {
   return snap.docs.map((d) => ({ id: d.id, ...d.data() }));
 }
 
-/* ============================================================================
-   4. RESTORE INTENT (READ-ONLY) — OS Time Machine Plan
-   The liver prepares a **treatment plan** from a chosen time vial.
+/* ============================================================================  
+   4. RESTORE INTENT (READ-ONLY) — OS Time Machine Plan  
    ============================================================================ */
 
-/**
- * getRestorePlan(restorePointId)
- * Builds a read-only plan describing how to restore subsystems.
- */
 export async function getRestorePlan(restorePointId) {
   const rp = await getRestorePoint(restorePointId);
   if (!rp) return null;

@@ -1,16 +1,42 @@
-// [pulse:mesh] COMMUNITY_TENDON_LAYER  // green
-// - translates mesh-level routing signals into earner-ready intent
-// - attaches action hints, earner class, and execution context
-// - NEVER computes payloads, NEVER mutates data
-// - pure connective tissue between spine (PulseMesh) and earners (EarnEngine)
+// ============================================================================
+// [pulse:mesh] COMMUNITY_TENDON_LAYER v7.3  // green
+// Connective Tissue • Intent Shaping • Earner Targeting • Metadata-Only
+// ============================================================================
+//
+// IDENTITY — THE TENDONS:
+//  -----------------------
+//  • Translates mesh-level routing signals into earner-ready intent.
+//  • Attaches action hints, earner class, and execution context.
+//  • NEVER computes payloads, NEVER mutates data.
+//  • Pure connective tissue between Spine (PulseMesh) and Earners (EarnEngine).
+//
+// THEME:
+//  • Color: Green (connection, translation, intent).
+//  • Subtheme: Routing hints, shaping, classification.
+//
+// SAFETY CONTRACT:
+//  • Metadata-only.
+//  • No payload access.
+//  • No routing override.
+//  • No autonomy, no sentience.
+//  • Deterministic, drift-proof shaping.
+//
+// ADVANTAGE CASCADE (conceptual only):
+//  ------------------------------------
+//  • Inherits ANY advantage from ANY organ automatically.
+//  • Dual-mode: mental clarity + system efficiency.
+//  • Local-aware: node-level intent context.
+//  • Internet-aware: cluster/mesh/global intent context.
+//  • Unified-advantage-field: ALL advantages active unless unsafe.
+//  • Future-evolution-ready: new safe advantages auto-inherited.
+// ============================================================================
+
 
 // -----------------------------------------------------------
-// Tendon Pack: shaping impulse intent
+// Tendon Pack: shaping impulse intent (logic unchanged)
 // -----------------------------------------------------------
 
 export const Tendons = {
-  // [pulse:mesh] TENDON_CLASSIFY  // green
-  // - classify impulse into an earner class (light, medium, heavy)
   classify(impulse) {
     const score = impulse.score || 0;
 
@@ -19,8 +45,6 @@ export const Tendons = {
     return 'light';
   },
 
-  // [pulse:mesh] TENDON_ROUTE_HINT  // teal
-  // - attach a routeHint based on earner class
   routeHint(impulse) {
     const cls = Tendons.classify(impulse);
 
@@ -38,8 +62,6 @@ export const Tendons = {
     return impulse;
   },
 
-  // [pulse:mesh] TENDON_ENERGY_SHAPE  // amber
-  // - adjust energy to reflect urgency
   shapeEnergy(impulse) {
     const cls = Tendons.classify(impulse);
 
@@ -49,24 +71,42 @@ export const Tendons = {
     return impulse;
   },
 
-  // [pulse:mesh] TENDON_FLAGS  // purple
-  // - tag impulse with tendon metadata
   tag(impulse) {
     impulse.flags = impulse.flags || {};
     impulse.flags[`tendon_class_${Tendons.classify(impulse)}`] = true;
     return impulse;
-  },
+  }
 };
 
+
 // -----------------------------------------------------------
-// Tendon Engine
+// Tendon Engine (logic unchanged, metadata upgraded)
 // -----------------------------------------------------------
 
 export function applyTendons(impulse) {
-  // [pulse:mesh] TENDON_ENGINE  // green
-  // - runs tendon shaping pipeline
-  // - prepares impulse for earner targeting
-  // - does NOT compute payloads
+  impulse.flags = impulse.flags || {};
+
+  // attach v7.3 tendon meta
+  impulse.flags.tendon_meta = {
+    layer: "PulseTendons",
+    role: "INTENT_TRANSLATION",
+    version: 7.3,
+    target: "full-mesh",
+    selfRepairable: true,
+    evo: {
+      dualMode: true,                 // mental + system
+      localAware: true,               // node-level intent shaping
+      internetAware: true,            // cluster/mesh/global intent shaping
+
+      advantageCascadeAware: true,    // inherits ANY advantage
+      pulseEfficiencyAware: true,     // 1-pulse collapse
+      driftProof: true,
+      multiInstanceReady: true,
+
+      unifiedAdvantageField: true,    // no OR; all advantages ON
+      futureEvolutionReady: true      // new safe advantages auto-inherited
+    }
+  };
 
   Tendons.routeHint(impulse);
   Tendons.shapeEnergy(impulse);

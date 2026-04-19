@@ -1,11 +1,46 @@
 // ============================================================================
 // FILE: /apps/netlify/functions/refreshEnvironmentSmart.js
-// LAYER: D‑LAYER (BACKEND FUNCTION)
+// PULSE ENVIRONMENT SENSOR — VERSION 7.1+
+// “THE SENSORY PERCEPTION LAYER / ENVIRONMENTAL SENSE ORGAN”
+// ============================================================================
 //
-// PURPOSE:
-// • Direct Netlify backend function for refreshEnvironmentSmart.
-// • Single file, name matches function, logs use fn: "refreshEnvironmentSmart".
-// • Ported from the original onSchedule version (no scheduling wrapper here).
+// ROLE (v7.1+):
+//   refreshEnvironmentSmart is the **SENSORY PERCEPTION LAYER** of PulseOS.
+//   It is the **ENVIRONMENTAL SENSE ORGAN** — the subsystem that samples,
+//   interprets, and updates the organism’s understanding of the outside world.
+//
+//   • Reads external environmental signals (weather, waves, storms, wildlife…)
+//   • Determines whether to refresh or skip based on timing + drift
+//   • Updates the environment collection with fresh perception data
+//   • Logs perception events for lineage + diagnostics
+//   • Runs automatically via heartbeat (Timer.js)
+//
+// WHAT THIS FILE *IS* (v7.1+):
+//   • A deterministic sensory organ
+//   • A perception + sampling layer for external environment
+//   • A biological analog to peripheral sensory receptors
+//   • A zero‑drift, zero‑ambiguity subsystem
+//
+// WHAT THIS FILE *IS NOT*:
+//   • NOT memory (RouterMemory, pulseHistoryRepair)
+//   • NOT identity (CheckIdentity)
+//   • NOT purification (pulsebandCleanup)
+//   • NOT routing (endpoint.js)
+//
+// SAFETY CONTRACT (v7.1+):
+//   • Fail‑open: errors logged, never fatal
+//   • No randomness in perception logic
+//   • No mutation outside intended collections
+//   • Always logs perception + failures for traceability
+//   • No cross‑subsystem writes
+//
+// STRUCTURE RULES (v7.1+):
+//   • Perceive → Validate → Update → Log
+//   • No new sensors without architectural approval
+//   • No drift from environment storage contract
+//
+// VERSION TAG:
+//   version: 7.1+
 // ============================================================================
 
 import * as admin from "firebase-admin";
@@ -16,7 +51,9 @@ if (!admin.apps.length) {
 }
 const db = getFirestore();
 
-// If Netlify calls `handler`, we just run the logic once.
+// ============================================================================
+// NETLIFY ENTRY POINT (single-run perception)
+// ============================================================================
 export const handler = async () => {
   const result = await refreshEnvironmentSmart();
   return {
@@ -25,7 +62,9 @@ export const handler = async () => {
   };
 };
 
-// Core logic, same as original onSchedule body, just wrapped in a function.
+// ============================================================================
+// CORE SENSORY ORGAN LOGIC (heartbeat-driven)
+// ============================================================================
 export async function refreshEnvironmentSmart() {
   const runId = Date.now();
   const logId = `ENV_${runId}`;
@@ -40,8 +79,8 @@ export async function refreshEnvironmentSmart() {
   const failed = [];
 
   // ---------------------------------------------------------
-  // SAFE WRAPPER
-  // ---------------------------------------------------------
+  // ⭐ SAFE WRAPPER (v7.1+)
+// ---------------------------------------------------------
   async function safeMaybeUpdate(docName, intervalMs, fn) {
     try {
       await maybeUpdate(docName, intervalMs, fn);
@@ -74,8 +113,8 @@ export async function refreshEnvironmentSmart() {
   }
 
   // ---------------------------------------------------------
-  // CORE maybeUpdate
-  // ---------------------------------------------------------
+  // ⭐ CORE PERCEPTION LOGIC (v7.1+)
+// ---------------------------------------------------------
   async function maybeUpdate(docName, intervalMs, fn) {
     const snap = await envRef.doc(docName).get();
     const data = snap.data() || {};
@@ -93,16 +132,16 @@ export async function refreshEnvironmentSmart() {
       last > nowMs ||
       Object.keys(data.raw || {}).length === 0;
 
+    // Skip if interval not reached and no drift
     if (!force && nowMs - last < intervalMs) {
       skipped.push(docName);
       return;
     }
 
     try {
-      // ⭐ CALL INTERNAL BACKEND FUNCTION DIRECTLY
+      // ⭐ CALL INTERNAL SENSOR FUNCTION DIRECTLY
       await fn(); // fetchWeather(), fetchWaves(), etc.
 
-      // Helper already wrote to Firestore + history
       refreshed.push(docName);
 
     } catch (err) {
@@ -132,9 +171,8 @@ export async function refreshEnvironmentSmart() {
   }
 
   // ---------------------------------------------------------
-  // CALL ALL HELPERS DIRECTLY (NO HTTP ANYWHERE)
-  // ---------------------------------------------------------
-  // These must already exist in this file's scope (import them above if needed)
+  // ⭐ CALL ALL SENSOR SUB‑ORGANS (v7.1+)
+// ---------------------------------------------------------
   await safeMaybeUpdate("weather",       30 * 60 * 1000, fetchWeather);
   await safeMaybeUpdate("heatIndex",     30 * 60 * 1000, fetchHeatIndex);
   await safeMaybeUpdate("waves",          2 * 60 * 60 * 1000, fetchWaves);
@@ -146,8 +184,8 @@ export async function refreshEnvironmentSmart() {
   await safeMaybeUpdate("power",         15 * 60 * 1000, fetchPowerOutages);
 
   // ---------------------------------------------------------
-  // TIMER LOG
-  // ---------------------------------------------------------
+  // ⭐ TIMER LOG (v7.1+)
+// ---------------------------------------------------------
   try {
     await db.collection("TIMER_LOGS").doc(logId).set({
       fn: "refreshEnvironmentSmart",

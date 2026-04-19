@@ -1,31 +1,33 @@
 // ============================================================================
 // FILE: tropic-pulse-functions/apps/pulse-design/manifestBuilder.js
-// LAYER: THE ARCHIVIST (System Historian + Canonical Recorder)
+// LAYER: THE ARCHIVIST (System Historian + Canonical Recorder + Evolutionary Genome Builder)
 // ============================================================================
 //
-// ROLE:
-//   THE ARCHIVIST — Deterministic repo‑wide scanner + cataloger
-//   • Walks the entire project directory
-//   • Classifies files using the Anatomist
-//   • Extracts structural + behavioral metadata
-//   • Produces the canonical architecture snapshot
+// ROLE (v7.1+):
+//   THE ARCHIVIST — Deterministic repo‑wide scanner + cataloger.
+//   • Walks the entire project directory.
+//   • Classifies files using the Anatomist.
+//   • Extracts structural + behavioral metadata.
+//   • Produces the canonical architecture snapshot.
+//   • Acts as the “genome archivist” of the digital organism.
 //
-// PURPOSE:
-//   • Make the entire system AI‑readable + human‑readable
-//   • Provide a single source of truth for pages, components, layouts, APIs
-//   • Detect PulseBand usage, healing hooks, and data sources
-//   • Output pulse_project.json — the official architecture manifest
+// PURPOSE (v7.1+):
+//   • Make the entire system AI‑readable + human‑readable.
+//   • Provide a single source of truth for pages, components, layouts, APIs.
+//   • Detect PulseBand usage, healing hooks, and data sources.
+//   • Output pulse_project.json — the official architecture manifest.
+//   • Preserve the organism’s structural lineage (conceptual only).
 //
-// CONTRACT:
-//   • READ‑ONLY — no writes except manifest output
-//   • NO eval(), NO Function(), NO dynamic imports
-//   • NO executing user code
-//   • NO network calls
-//   • Deterministic output only
+// CONTRACT (unchanged):
+//   • READ‑ONLY — no writes except manifest output.
+//   • NO eval(), NO Function(), NO dynamic imports.
+//   • NO executing user code.
+//   • NO network calls.
+//   • Deterministic output only.
 //
-// SAFETY:
-//   • v6.3 upgrade is COMMENTAL ONLY — NO LOGIC CHANGES
-//   • All behavior remains identical to pre‑v6.3 manifestBuilder
+// SAFETY (unchanged):
+//   • v7.1+ upgrade is COMMENTAL ONLY — NO LOGIC CHANGES.
+//   • All behavior remains identical to pre‑v7.1 manifestBuilder.
 // ============================================================================
 
 import fs from "fs";
@@ -83,7 +85,7 @@ export async function buildManifest(rootDir) {
 }
 
 // ============================================================================
-// DIRECTORY WALKER — Deterministic Traversal
+// DIRECTORY WALKER — Deterministic Traversal (Genome Scan)
 // ============================================================================
 function walk(dir, callback) {
   const entries = fs.readdirSync(dir, { withFileTypes: true });

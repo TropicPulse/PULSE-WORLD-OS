@@ -1,36 +1,38 @@
 // ============================================================================
 // FILE: tropic-pulse-functions/apps/pulse-design/manifestWriter.js
-// LAYER: THE SURVEYOR (Blueprint Generator + Canonical Output Layer)
+// LAYER: THE SURVEYOR (Blueprint Generator + Canonical Output Layer + Evolutionary Cartographer)
 // ============================================================================
 //
-// ROLE:
-//   THE SURVEYOR — Produces the official architectural blueprint of Pulse OS
-//   • Accepts classified file metadata from the Archivist
-//   • Sorts and structures the manifest deterministically
-//   • Writes the canonical pulse_project.json snapshot
+// ROLE (v7.1+):
+//   THE SURVEYOR — Produces the official architectural blueprint of Pulse OS.
+//   • Accepts classified file metadata from the Archivist.
+//   • Sorts and structures the manifest deterministically.
+//   • Writes the canonical pulse_project.json snapshot.
+//   • Acts as the “cartographer” of the digital organism.
 //
-// PURPOSE:
-//   • Generate a stable, drift‑proof architecture manifest
-//   • Make the system AI‑readable + human‑readable
-//   • Provide the authoritative blueprint for the entire repo
+// PURPOSE (v7.1+):
+//   • Generate a stable, drift‑proof architecture manifest.
+//   • Make the system AI‑readable + human‑readable.
+//   • Provide the authoritative blueprint for the entire repo.
+//   • Preserve the organism’s structural genome (conceptual only).
 //
-// CONTRACT:
-//   • READ‑ONLY except for writing manifest output
-//   • NO eval(), NO Function(), NO dynamic imports
-//   • NO executing user code
-//   • NO network calls
-//   • Deterministic output only
+// CONTRACT (unchanged):
+//   • READ‑ONLY except for writing manifest output.
+//   • NO eval(), NO Function(), NO dynamic imports.
+//   • NO executing user code.
+//   • NO network calls.
+//   • Deterministic output only.
 //
-// SAFETY:
-//   • v6.3 upgrade is COMMENTAL ONLY — NO LOGIC CHANGES
-//   • All behavior remains identical to pre‑v6.3 manifestWriter
+// SAFETY (unchanged):
+//   • v7.1+ upgrade is COMMENTAL ONLY — NO LOGIC CHANGES.
+//   • All behavior remains identical to pre‑v7.1 manifestWriter.
 // ============================================================================
 
 import fs from "fs";
 import path from "path";
 
 // ============================================================================
-// PUBLIC API — Surveyor Output
+// PUBLIC API — Surveyor Output (Canonical Blueprint)
 // ============================================================================
 export function writeManifest(rootDir, classifiedFiles = []) {
   if (!rootDir) {
@@ -73,7 +75,7 @@ export function writeManifest(rootDir, classifiedFiles = []) {
 }
 
 // ============================================================================
-// SORTING — Deterministic Ordering
+// SORTING — Deterministic Ordering (Blueprint Stability)
 // ============================================================================
 function sortByPath(list) {
   return [...list].sort((a, b) => a.path.localeCompare(b.path));

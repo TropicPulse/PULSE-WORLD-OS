@@ -1,30 +1,32 @@
 // ============================================================================
 // FILE: tropic-pulse-functions/apps/pulse-ai/aiRouter.js
-// LAYER: THE INTERPRETER (Intent Decoder + Persona Selector)
+// LAYER: THE INTERPRETER (Intent Decoder + Persona Selector + Language Cortex)
 // ============================================================================
 //
-// ROLE:
-//   THE INTERPRETER — Decodes intent + selects the correct AI persona
-//   • Inspects request intent + flags
-//   • Chooses backend‑ai vs frontend‑ai
-//   • Attaches permissions + boundaries
-//   • Produces a SAFE reasoning trace (not chain‑of‑thought)
+// ROLE (v7.1+):
+//   THE INTERPRETER — Decodes intent + selects the correct AI persona.
+//   • Inspects request intent + flags.
+//   • Chooses backend‑ai vs frontend‑ai.
+//   • Attaches permissions + boundaries.
+//   • Produces a SAFE reasoning trace (not chain‑of‑thought).
+//   • Acts as the “language cortex” of Pulse AI — decoding meaning.
 //
-// PURPOSE:
-//   • Provide deterministic persona routing
-//   • Make routing logic explicit + inspectable
-//   • Explain routing decisions in human‑readable form
+// PURPOSE (v7.1+):
+//   • Provide deterministic persona routing.
+//   • Make routing logic explicit + inspectable.
+//   • Explain routing decisions in human‑readable form.
+//   • Surface evolutionary patterns in how intent is interpreted.
 //
-// CONTRACT:
-//   • READ‑ONLY — no writes
-//   • NO eval(), NO Function(), NO dynamic imports
-//   • NO executing user code
-//   • NO network calls
-//   • Deterministic routing only
+// CONTRACT (unchanged):
+//   • READ‑ONLY — no writes.
+//   • NO eval(), NO Function(), NO dynamic imports.
+//   • NO executing user code.
+//   • NO network calls.
+//   • Deterministic routing only.
 //
-// SAFETY:
-//   • v6.3 upgrade is COMMENTAL + DIAGNOSTIC ONLY — NO LOGIC CHANGES
-//   • All behavior remains identical to pre‑v6.3 aiRouter
+// SAFETY (unchanged):
+//   • v7.1+ upgrade is COMMENTAL + DIAGNOSTIC ONLY — NO LOGIC CHANGES.
+//   • All behavior remains identical to pre‑v7.1 aiRouter.
 // ============================================================================
 
 import { Personas, getPersona } from "./persona.js";
@@ -38,7 +40,7 @@ export function routeAIRequest(request = {}) {
   const reasoning = [];
 
   // --------------------------------------------------------------------------
-  // 1) Normalize Intent — Interpreter Step
+  // 1) Normalize Intent — Interpreter Step (Language Cortex)
   // --------------------------------------------------------------------------
   const intent = (request.intent || "analyze").toLowerCase();
   reasoning.push(`Intent detected: "${intent}"`);

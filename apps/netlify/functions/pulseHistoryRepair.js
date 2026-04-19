@@ -1,57 +1,46 @@
 // ============================================================================
 // FILE: /apps/netlify/functions/pulseHistoryRepair.js
-// PULSE HISTORY REPAIR — VERSION 6.3
-// “THE SHORT‑TERM MEMORY LAYER / WORKING MEMORY REPAIR ENGINE”
+// PULSE HISTORY REPAIR — VERSION 7.1+
+// “THE SHORT‑TERM MEMORY LAYER / WORKING MEMORY REPAIR ENGINE+”
 // ============================================================================
 //
-// PAGE INDEX (v6.3 Source of Truth)
-// ---------------------------------
-// ROLE:
-//   pulseHistoryRepair is the **SHORT‑TERM MEMORY LAYER** of the Pulse OS.
-//   It is the **WORKING MEMORY REPAIR ENGINE** — responsible for keeping
-//   recent history coherent, normalized, and free of drift.
+// ROLE (v7.1+):
+//   pulseHistoryRepair is the **SHORT‑TERM MEMORY LAYER** of PulseOS.
+//   It is the **WORKING MEMORY REPAIR ENGINE+** — the organ responsible for
+//   keeping recent history coherent, normalized, and evolution‑safe.
 //
 //   • Repairs missing or malformed fields in recent history
-//   • Prunes dead or expired entries older than 30 days
+//   • Prunes expired or dead entries older than 30 days
 //   • Ensures deterministic lineage for scoring + insights
-//   • Runs automatically via heartbeat (timer.js)
+//   • Runs automatically via heartbeat (Timer.js)
+//   • Fully aligned with PulseOS v7.1+ evolutionary memory contracts
 //
-// WHAT THIS FILE *IS*:
-//   • A deterministic short‑term memory repair engine
+// WHAT THIS FILE *IS* (v7.1+):
+//   • A deterministic short‑term memory repair organ
 //   • A cleanup + normalization layer for active history
-//   • A stability mechanism for scoring + insights
+//   • A biological analog to hippocampal working‑memory correction
+//   • A zero‑drift, zero‑ambiguity subsystem
 //
 // WHAT THIS FILE *IS NOT*:
-//   • NOT long‑term memory (that’s index.js)
+//   • NOT long‑term memory (index.js)
 //   • NOT personality (SettingsMemory)
 //   • NOT identity (CheckIdentity)
-//   • NOT sanity cleanup (pulsebandCleanup)
+//   • NOT purification (pulsebandCleanup)
 //
-// SAFETY CONTRACT (v6.3):
-//   • Fail‑open: errors logged, not fatal
+// SAFETY CONTRACT (v7.1+):
+//   • Fail‑open: errors logged, never fatal
 //   • No randomness in repair logic
 //   • No mutation outside intended collections
 //   • Always logs repairs + deletions for traceability
 //   • No cross‑subsystem writes
 //
-// STRUCTURE RULES:
+// STRUCTURE RULES (v7.1+):
 //   • Repair → Normalize → Prune → Log
-//   • No new fields added without architectural approval
-//   • No reclassification logic inside this file
+//   • No new fields without architectural approval
+//   • No reclassification logic inside this organ
 //
 // VERSION TAG:
-//   version: 6.3
-//
-// ============================================================================
-// ⭐ v6.3 COMMENT LOG
-// ---------------------------------------------------------------------------
-// • Added full v6.3 PAGE INDEX
-// • Added metaphor layer (SHORT‑TERM MEMORY / WORKING MEMORY REPAIR ENGINE)
-// • Added safety contract + structure rules
-// • Added v6.3 context map
-// • No logic changes
-// • No renames
-// • No behavior drift
+//   version: 7.1+
 // ============================================================================
 
 import * as admin from "firebase-admin";
@@ -63,7 +52,7 @@ if (!admin.apps.length) {
 const db = getFirestore();
 
 // ------------------------------------------------------------
-// ⭐ HUMAN‑READABLE CONTEXT MAP (v6.3)
+// ⭐ HUMAN‑READABLE CONTEXT MAP (v7.1+)
 // ------------------------------------------------------------
 const REPAIR_CONTEXT = {
   label: "PULSE_HISTORY_REPAIR",
@@ -71,7 +60,7 @@ const REPAIR_CONTEXT = {
   role: "Short‑Term Memory Repair",
   purpose: "Pulse History Normalization + Cleanup",
   context: "Repairs missing fields, prunes dead entries, ensures deterministic lineage",
-  version: "6.3"
+  version: "7.1+"
 };
 
 // ============================================================================
@@ -105,14 +94,14 @@ export async function pulseHistoryRepair() {
         const createdAt = data.createdAt?.toMillis?.() || 0;
 
         // ---------------------------------------------------------
-        // ⭐ DELETE: very old + dead
+        // ⭐ DELETE: expired + dead entries
         // ---------------------------------------------------------
         if (createdAt && createdAt < cutoff30d && data.status === "dead") {
           await h.ref.delete();
           deletedDocs.push(id);
 
           console.log(
-            `%c🟨 FORGOT (expired) → ${id}`,
+            `%c🟨 PRUNED (expired memory) → ${id}`,
             "color:#FFC107; font-weight:bold;"
           );
 
@@ -122,8 +111,8 @@ export async function pulseHistoryRepair() {
         const updates = {};
 
         // ---------------------------------------------------------
-        // ⭐ NORMALIZE MISSING FIELDS
-        // ---------------------------------------------------------
+        // ⭐ NORMALIZE MISSING FIELDS (evolutionary repair)
+// ---------------------------------------------------------
         if (!data.userId && data.uid) {
           updates.userId = data.uid;
         }
@@ -134,6 +123,11 @@ export async function pulseHistoryRepair() {
 
         if (!data.source) {
           updates.source = "legacy";
+        }
+
+        // v7.1+: ensure lineage metadata exists
+        if (!data.lineage) {
+          updates.lineage = "v7.1+";
         }
 
         if (Object.keys(updates).length > 0) {

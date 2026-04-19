@@ -1,32 +1,17 @@
 // ============================================================================
 // FILE: tropic-pulse-functions/apps/pulse-gpu/PulseGPUUXBridge.js
-// PULSE GPU UX BRIDGE v6.3
+// PULSE GPU UX BRIDGE v7.3
 // “INTELLIGENCE LAYER / COGNITIVE COMMUNICATION BRIDGE”
 // ============================================================================
-//
-// INTENT-CHECK: If you paste this while confused or frustrated, gently re-read your INTENT.
 //
 // PERSONALITY + ROLE:
 //   PulseGPUUXBridge is the **INTELLIGENCE LAYER** of the GPU subsystem.
 //   It is the **COGNITIVE COMMUNICATION BRIDGE** — the part that translates
 //   internal objects (advice, plans, insights) into human-readable notifications.
 //
-//   • Consumes advice (The Coach), plans (Cognitive Recognition), insights (The Sage)
+//   • Consumes advice (Drive Center), plans (Recognition Layer), insights (Wisdom Cortex)
 //   • Produces UI-ready notifications with titles, messages, severity, and actions
 //   • Speaks “human” on behalf of the GPU OS
-//
-// WHAT THIS FILE IS:
-//   • A deterministic formatter/adapter for UX messages
-//   • A pure logic module (API-agnostic, full GPU)
-//   • A bridge between engine intelligence and human-readable output
-//
-// WHAT THIS FILE IS NOT:
-//   • NOT a renderer
-//   • NOT a GPU runtime
-//   • NOT a WebGPU/WebGL interface
-//   • NOT a persistence layer
-//   • NOT a UI or notification system
-//   • NOT a backend module
 //
 // SAFETY RULES:
 //   • NO randomness or timestamps
@@ -34,10 +19,16 @@
 //   • FAIL-OPEN: malformed advice/plan/insight must not break UXBridge
 //   • SELF-REPAIR READY: notifications must be reconstructable + validateable
 //
-// ------------------------------------------------------
-// Notification builder (v6-ready)
-// ------------------------------------------------------
+// ADVANTAGE CASCADE (conceptual only):
+//   • If pulses become faster → communication conceptually accelerates.
+//   • If system collapses 1000 pulses into 1 → UXBridge inherits that gain.
+//   • If any organ evolves → UXBridge expresses that advantage.
+//   • No OR — all advantages are inherited automatically.
+// ============================================================================
 
+// ------------------------------------------------------
+// ⭐ OS‑v7 Notification builder
+// ------------------------------------------------------
 function buildNotification({
   kind,
   severity,
@@ -53,9 +44,15 @@ function buildNotification({
     message: message || "",
     meta: {
       layer: "PulseGPUUXBridge",
-      version: 6.3,
+      version: 7.3,
       target: "full-gpu",
       selfRepairable: true,
+      evo: {
+        advantageCascadeAware: true,
+        pulseEfficiencyAware: true,
+        driftProof: true,
+        multiInstanceReady: true
+      },
       ...(meta || {})
     }
   };
@@ -70,7 +67,6 @@ function buildNotification({
 // ------------------------------------------------------
 // Notification validation (for healing layer)
 // ------------------------------------------------------
-
 function validateNotification(n) {
   if (!n || typeof n !== "object") return false;
   if (typeof n.kind !== "string") return false;
@@ -80,18 +76,22 @@ function validateNotification(n) {
 }
 
 // ------------------------------------------------------
-// PulseGPUUXBridge (v6-ready)
+// PulseGPUUXBridge (v7-ready)
 // ------------------------------------------------------
-
 class PulseGPUUXBridge {
   constructor() {}
 
-  // Static metadata for healing layer
   static meta = {
     layer: "PulseGPUUXBridge",
-    version: 6.3,
+    version: 7.3,
     target: "full-gpu",
-    selfRepairable: true
+    selfRepairable: true,
+    evo: {
+      advantageCascadeAware: true,
+      pulseEfficiencyAware: true,
+      driftProof: true,
+      multiInstanceReady: true
+    }
   };
 
   // ----------------------------------------------------
@@ -381,7 +381,6 @@ class PulseGPUUXBridge {
 // ------------------------------------------------------
 // EXPORTS
 // ------------------------------------------------------
-
 export {
   PulseGPUUXBridge,
   buildNotification,

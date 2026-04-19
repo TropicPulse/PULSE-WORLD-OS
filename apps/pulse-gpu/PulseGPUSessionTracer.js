@@ -1,5 +1,5 @@
 // ============================================================================
-//  PULSE GPU SESSION TRACER v6.3 — THE SENSORY ARCHIVE
+//  PULSE GPU SESSION TRACER v7.3 — THE SENSORY ARCHIVE
 //  Afferent Nervous System • Deterministic Perception Layer • Pure Recording
 // ============================================================================
 //
@@ -10,6 +10,7 @@
 //  • Never judges, never interprets — only perceives and preserves.
 //  • The black box of the GPU body.
 //  • The raw sensory feed for the Wisdom Cortex, Brainstem, Lymph Nodes, Drive Center.
+//  • Advantage‑cascade aware: any systemic advantage is inherited automatically.
 //
 // ROLE IN THE GPU NATION:
 //  ------------------------
@@ -47,10 +48,17 @@
 //  • No network or filesystem access
 //  • Fail-open: invalid steps → normalized safely
 //  • Self-repair-ready: traces include metadata
+//
+// ADVANTAGE CASCADE (conceptual only):
+//  ------------------------------------
+//  • If pulses become faster → perception conceptually accelerates.
+//  • If system collapses 1000 pulses into 1 → tracing inherits that gain.
+//  • If any organ evolves → Sensory Archive records with that advantage.
+//  • No OR — all advantages are inherited automatically.
 // ============================================================================
 
 // ------------------------------------------------------------
-// ⭐ OS‑v6 CONTEXT METADATA — Sensory Archive Identity
+// ⭐ OS‑v7 CONTEXT METADATA — Sensory Archive Identity
 // ------------------------------------------------------------
 const TRACER_CONTEXT = {
   layer: "PulseGPUSessionTracer",
@@ -59,7 +67,13 @@ const TRACER_CONTEXT = {
   context: "Records ordered steps with durations + health signals",
   target: "full-gpu",
   selfRepairable: true,
-  version: 6.3
+  version: 7.3,
+  evo: {
+    advantageCascadeAware: true,
+    pulseEfficiencyAware: true,
+    driftProof: true,
+    multiInstanceReady: true
+  }
 };
 
 // ------------------------------------------------------------
@@ -105,9 +119,7 @@ function normalizeStep(step = {}) {
         ? clamp(vramUsageMB, 0, 4_000_000)
         : undefined,
 
-    meta: {
-      ...TRACER_CONTEXT
-    }
+    meta: { ...TRACER_CONTEXT }
   };
 }
 
@@ -122,9 +134,7 @@ class SessionTrace {
     this.tierProfile = tierProfile || {};
     this.steps = [];
 
-    this.meta = {
-      ...TRACER_CONTEXT
-    };
+    this.meta = { ...TRACER_CONTEXT };
   }
 
   addStep(step) {
@@ -152,10 +162,7 @@ class SessionTrace {
       totalErrors,
       totalStutters,
       stepCount: this.steps.length,
-
-      meta: {
-        ...TRACER_CONTEXT
-      }
+      meta: { ...TRACER_CONTEXT }
     };
   }
 }
@@ -166,10 +173,7 @@ class SessionTrace {
 class PulseGPUSessionTracer {
   constructor() {
     this.sessions = new Map();
-
-    this.meta = {
-      ...TRACER_CONTEXT
-    };
+    this.meta = { ...TRACER_CONTEXT };
   }
 
   startSession({ sessionId, gameProfile, hardwareProfile, tierProfile }) {

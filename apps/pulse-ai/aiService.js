@@ -1,29 +1,31 @@
 // ============================================================================
 // FILE: tropic-pulse-functions/apps/pulse-ai/aiService.js
-// LAYER: THE GATEWAY (AI Service Layer + Safe Entry Point)
+// LAYER: THE GATEWAY (AI Service Layer + Safe Entry Point + Evolutionary Relay)
 // ============================================================================
 //
-// ROLE:
-//   THE GATEWAY — The public API for all Pulse AI operations
-//   • Wraps the Cortex (aiEngine)
-//   • Exposes high‑level AI services
-//   • Ensures diagnostics + trace for every operation
+// ROLE (v7.1+):
+//   THE GATEWAY — The public API for all Pulse AI operations.
+//   • Wraps the Cortex (aiEngine).
+//   • Exposes high‑level AI services.
+//   • Ensures diagnostics + trace for every operation.
+//   • Acts as the “thalamus” of the digital organism — safe relay + routing.
 //
-// PURPOSE:
-//   • Provide simple, deterministic AI analysis functions
-//   • Detect mismatches, drift, missing fields, slowdown causes
-//   • Return { result, context } for debugging + admin tools
+// PURPOSE (v7.1+):
+//   • Provide simple, deterministic AI analysis functions.
+//   • Detect mismatches, drift, missing fields, slowdown causes.
+//   • Return { result, context } for debugging + admin tools.
+//   • Serve as the safe, controlled entry point for all AI tasks.
 //
-// CONTRACT:
-//   • READ‑ONLY — no writes
-//   • NO eval(), NO Function(), NO dynamic imports
-//   • NO executing user code
-//   • NO network calls
-//   • Deterministic analysis only
+// CONTRACT (unchanged):
+//   • READ‑ONLY — no writes.
+//   • NO eval(), NO Function(), NO dynamic imports.
+//   • NO executing user code.
+//   • NO network calls.
+//   • Deterministic analysis only.
 //
-// SAFETY:
-//   • v6.3 upgrade is COMMENTAL + DIAGNOSTIC ONLY — NO LOGIC CHANGES
-//   • All behavior remains identical to pre‑v6.3 aiService
+// SAFETY (unchanged):
+//   • v7.1+ upgrade is COMMENTAL + DIAGNOSTIC ONLY — NO LOGIC CHANGES.
+//   • All behavior remains identical to pre‑v7.1 aiService.
 // ============================================================================
 
 import { runAI } from "./aiEngine.js";

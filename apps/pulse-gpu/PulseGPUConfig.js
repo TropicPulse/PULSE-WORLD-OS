@@ -48,12 +48,36 @@
 
 const PULSE_GPU_CONFIG_META = {
   layer: "PulseGPUConfig",
-  version: 6.3,
+  version: 7.3,
   target: "full-gpu",
   selfRepairable: true,
   doctrine: "These constants form the immutable commandments of Pulse-GPU.",
-  description: "Central configuration + policy constants for Pulse-GPU."
+  description: "Central configuration + policy constants for Pulse-GPU.",
+
+  // Dual‑mode advantage (conceptual only)
+  evo: {
+    // Biological / mental
+    metabolicBoost: 1.0,
+    neuralReflexBoost: 1.0,
+    stabilityBoost: 1.0,
+
+    // System / physical
+    multiInstanceReady: true,
+    deterministicNeuron: true,
+    parallelSafe: true,
+    fanOutScaling: 1.0,
+    clusterCoherence: true,
+    zeroDriftCloning: true,
+    reflexPropagation: 1.0,
+
+    // Fusion — BOTH layers active
+    dualModeEvolution: true,
+    organismClusterBoost: 1.0,
+    cognitiveComputeLink: true,
+    unifiedAdvantageField: true
+  }
 };
+
 
 // ============================================================================
 // SCORING CONSTANTS — COMMANDMENT I: PERFORMANCE TRUTH

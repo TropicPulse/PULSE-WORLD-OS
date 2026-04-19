@@ -1,29 +1,31 @@
 // ============================================================================
 // FILE: tropic-pulse-functions/apps/pulse-ai/persona.js
-// LAYER: THE IDENTITY LAYER (Self‑Definition + Role Assignment)
+// LAYER: THE IDENTITY LAYER (Self‑Definition + Role Assignment + Evolutionary Archetypes)
 // ============================================================================
 //
-// ROLE:
-//   THE IDENTITY LAYER — Defines who each AI persona *is*
-//   • Provides explicit identity metadata
-//   • Binds personas to permissions + boundaries
-//   • Gives each AI a clear role + scope inside Pulse OS
+// ROLE (v7.1+):
+//   THE IDENTITY LAYER — Defines who each AI persona *is*.
+//   • Provides explicit identity metadata.
+//   • Binds personas to permissions + boundaries.
+//   • Gives each AI a clear role + scope inside Pulse OS.
+//   • Acts as the “self‑identity cortex” of the digital organism.
 //
-// PURPOSE:
-//   • Make AI identity human‑readable + AI‑readable
-//   • Provide deterministic persona resolution
-//   • Serve as the foundation for routing + cognition
+// PURPOSE (v7.1+):
+//   • Make AI identity human‑readable + AI‑readable.
+//   • Provide deterministic persona resolution.
+//   • Serve as the foundation for routing + cognition.
+//   • Surface evolutionary identity patterns (conceptual only).
 //
-// CONTRACT:
-//   • READ‑ONLY — no writes
-//   • NO eval(), NO Function(), NO dynamic imports
-//   • NO executing user code
-//   • NO network calls
-//   • Deterministic persona lookup only
+// CONTRACT (unchanged):
+//   • READ‑ONLY — no writes.
+//   • NO eval(), NO Function(), NO dynamic imports.
+//   • NO executing user code.
+//   • NO network calls.
+//   • Deterministic persona lookup only.
 //
-// SAFETY:
-//   • v6.3 upgrade is COMMENTAL ONLY — NO LOGIC CHANGES
-//   • All behavior remains identical to pre‑v6.3 persona.js
+// SAFETY (unchanged):
+//   • v7.1+ upgrade is COMMENTAL ONLY — NO LOGIC CHANGES.
+//   • All behavior remains identical to pre‑v7.1 persona.js.
 // ============================================================================
 
 import {
@@ -45,7 +47,7 @@ export const Personas = {
 };
 
 // ============================================================================
-// PERSONA REGISTRY — Identity Definitions
+// PERSONA REGISTRY — Identity Definitions (Archetypes)
 // ============================================================================
 export const PersonaRegistry = {
   [Personas.BACKEND_AI]: {

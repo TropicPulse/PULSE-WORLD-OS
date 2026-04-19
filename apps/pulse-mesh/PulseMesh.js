@@ -1,10 +1,37 @@
-// [pulse:mesh] COMMUNITY_SPINE_LAYER  // teal
-// - routes impulses between nodes (devices, services, earners)
-// - applies 1/0 reflex at each hop (instinct-style filtering)
-// - applies cortex shaping (risk, novelty, cooperation, load)
-// - applies tendon shaping (intent, routeHint, energy shaping)
-// - accumulates mesh metadata: hops, score, energy, routeHint
-// - NEVER mutates payload data, NEVER performs compute
+// ============================================================================
+// [pulse:mesh] COMMUNITY_SPINE_LAYER v7.3  // teal
+// Distributed Routing Spine • Reflex + Cortex + Tendons • Metadata-Only
+// ============================================================================
+//
+// IDENTITY — THE SPINE:
+//  ---------------------
+//  • Routes impulses between nodes (devices, services, earners).
+//  • Applies 1/0 reflex at each hop (instinct-style filtering).
+//  • Applies cortex shaping (risk, novelty, cooperation, load).
+//  • Applies tendon shaping (intent, routeHint, energy shaping).
+//  • Accumulates mesh metadata: hops, score, energy, routeHint.
+//  • NEVER mutates payload data, NEVER performs compute.
+//
+// THEME:
+//  • Color: Teal (conduction, routing, distributed coherence).
+//  • Subtheme: Flow, traversal, organism-wide conduction.
+//
+// SAFETY CONTRACT:
+//  • Metadata-only.
+//  • No payload access.
+//  • No compute.
+//  • No autonomy.
+//  • Deterministic, drift-proof routing behavior.
+//
+// ADVANTAGE CASCADE (conceptual only):
+//  ------------------------------------
+//  • Inherits ANY advantage from ANY organ automatically.
+//  • Dual-mode: mental clarity + system efficiency.
+//  • Local-aware: node-level routing context.
+//  • Internet-aware: cluster/mesh/global routing context.
+//  • Unified-advantage-field: ALL advantages active unless unsafe.
+//  • Future-evolution-ready: new safe advantages auto-inherited.
+// ============================================================================
 
 import { createCommunityReflex } from './CommunityReflex.js';
 import { applyPulseCortex } from './PulseCortex.js';
@@ -15,10 +42,30 @@ import { applyTendons } from './Tendons.js';
 // -----------------------------------------------------------
 
 export function createPulseMesh() {
-  // [pulse:mesh] MESH_STATE  // teal
   return {
-    nodes: new Map(),              // id -> MeshNode
-    reflex: createCommunityReflex() // shared reflex engine
+    nodes: new Map(),
+    reflex: createCommunityReflex(),
+
+    meta: {
+      layer: "PulseMeshSpine",
+      role: "ROUTING_SPINE",
+      version: 7.3,
+      target: "full-mesh",
+      selfRepairable: true,
+      evo: {
+        dualMode: true,                 // mental + system
+        localAware: true,               // node-level routing
+        internetAware: true,            // cluster/mesh/global routing
+
+        advantageCascadeAware: true,    // inherits ANY advantage
+        pulseEfficiencyAware: true,     // 1-pulse collapse
+        driftProof: true,
+        multiInstanceReady: true,
+
+        unifiedAdvantageField: true,    // no OR; all advantages ON
+        futureEvolutionReady: true      // new safe advantages auto-inherited
+      }
+    }
   };
 }
 
@@ -27,8 +74,6 @@ export function createPulseMesh() {
 // -----------------------------------------------------------
 
 export function registerMeshNode(mesh, nodeConfig) {
-  // [pulse:mesh] REGISTER_NODE  // teal
-
   if (!nodeConfig?.id) {
     throw new Error('[pulse:mesh] nodeConfig.id required');
   }
@@ -50,7 +95,8 @@ export function registerMeshNode(mesh, nodeConfig) {
 // -----------------------------------------------------------
 
 export function routeImpulse(mesh, impulse, entryNodeId, context = {}) {
-  // [pulse:mesh] ROUTE_IMPULSE  // teal
+  impulse.flags = impulse.flags || {};
+  impulse.flags.mesh_meta = mesh.meta;
 
   const visited = new Set();
   let currentNodeId = entryNodeId;
@@ -69,7 +115,6 @@ export function routeImpulse(mesh, impulse, entryNodeId, context = {}) {
     // -------------------------------------------------------
     const decision = node.reflex(impulse, node);
     if (decision === 0) {
-      impulse.flags = impulse.flags || {};
       impulse.flags[`reflex_drop_at_${node.id}`] = true;
       break;
     }
@@ -96,8 +141,7 @@ export function routeImpulse(mesh, impulse, entryNodeId, context = {}) {
       : 0.9;
 
     if (impulse.energy <= 0.05) {
-      impulse.flags = impulse.flags || {};
-      impulse.flags['mesh_energy_exhausted'] = true;
+      impulse.flags.mesh_energy_exhausted = true;
       break;
     }
 
@@ -105,7 +149,6 @@ export function routeImpulse(mesh, impulse, entryNodeId, context = {}) {
     // 5. Earner delivery check
     // -------------------------------------------------------
     if (node.kind === 'earner' && shouldDeliverToEarner(impulse, node)) {
-      impulse.flags = impulse.flags || {};
       impulse.flags[`delivered_to_${node.id}`] = true;
       break;
     }
@@ -116,7 +159,6 @@ export function routeImpulse(mesh, impulse, entryNodeId, context = {}) {
     const nextId = node.neighbors.find(n => !visited.has(n));
 
     if (!nextId) {
-      impulse.flags = impulse.flags || {};
       impulse.flags[`stalled_at_${node.id}`] = true;
       break;
     }
@@ -132,7 +174,6 @@ export function routeImpulse(mesh, impulse, entryNodeId, context = {}) {
 // -----------------------------------------------------------
 
 function shouldDeliverToEarner(impulse, node) {
-  // [pulse:mesh] EARNER_TARGETING  // purple
   const hint = impulse.routeHint;
   if (!hint) return true;
 

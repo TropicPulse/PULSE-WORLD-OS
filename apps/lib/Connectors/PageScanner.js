@@ -1,56 +1,33 @@
 // ============================================================================
 // FILE: /apps/lib/Connectors/PageScanner.js
-// PULSE ERROR GUARDIAN — v6.3
+// PULSE ERROR GUARDIAN — v7.0
 // “THE SENTINEL / THE IMMUNE SCOUT LAYER”
 // ============================================================================
 //
-// ⭐ v6.3 COMMENT LOG
-// - THEME: “THE SENTINEL / THE IMMUNE SCOUT LAYER”
-// - ROLE: Error interception + healing trigger + route tracing
-// - Added LAYER CONSTANTS + DIAGNOSTICS helper
-// - Added structured JSON logs (DOM-visible inspector compatible)
-// - Added explicit STAGE markers for attach/scan/heal
-// - ZERO logic changes to healing or parsing behavior
+// THEME v7.0:
+//   • Same organ, new nervous system
+//   • Drops hard‑coded FILE_MAP
+//   • Treats every error as a living route sample
+//   • Builds + remembers route traces dynamically
+//   • Lets evolutionary layers learn from real traffic
 //
-// ============================================================================
-// PERSONALITY + ROLE — “THE SENTINEL"
-// ----------------------------------------------------------------------------
-// PageScanner is the **PROTECTOR** of the Pulse OS.
-// It is the **ERROR GUARDIAN & HEALING TRIGGER** — the subsystem that stands
-// between the UI and runtime chaos.
-//
+// ROLE — “THE SENTINEL”
 //   • Intercepts JS errors
-//   • Extracts stack frames + file context
-//   • Builds a route trace for backend healing
-//   • Detects missing fields
-//   • Triggers backend healing requests
-//   • Prevents UI crashes
+//   • Extracts stack frames + route context
+//   • Builds a dynamic route trace (no file-name hardcoding)
+//   • Triggers backend healing deterministically
+//   • Feeds RouteMemory for future analysis
 //
-// This is the OS’s **shield** — the reflex that protects the system from
-// breaking and initiates self-repair.
-//
-// ============================================================================
-// WHAT THIS FILE IS
-// ----------------------------------------------------------------------------
-//   ✔ A2-layer error interceptor
-//   ✔ A healing trigger
-//   ✔ A route-trace generator
-//
-// WHAT THIS FILE IS NOT
-// ----------------------------------------------------------------------------
-//   ✘ NOT a router  
-//   ✘ NOT a backend connector  
-//   ✘ NOT a business logic layer  
-//   ✘ NOT a security layer  
-//
-// ============================================================================
-// SAFETY CONTRACT (v6.3)
-// ----------------------------------------------------------------------------
+// CONTRACT (v7.0):
 //   • Never mutate identity
 //   • Never modify backend logic
 //   • Never swallow errors silently
-//   • Always trigger healing deterministically
-//
+//   • Always trigger healing deterministically when parser matches
+//   • Never depend on specific filenames or folder structures
+//   • Treat routeTrace as organism telemetry, not config
+// ============================================================================
+
+
 // ============================================================================
 // LAYER CONSTANTS + DIAGNOSTICS
 // ============================================================================
@@ -76,53 +53,53 @@ const logProtector = (stage, details = {}) => {
   );
 };
 
+
 // ============================================================================
-// FILE MAP (unchanged, but now part of THE PROTECTOR)
+// ROUTE MEMORY (v7.0) — LIVING MAP, NOT CONFIG
+// ----------------------------------------------------------------------------
+//   • Keyed by errorSignature (message + top frame)
+//   • Stores last observed routeTrace for that signature
+//   • Lets evolutionary layers learn from real stack shapes
+//   • No assumptions about filenames, layers, or folders
 // ============================================================================
-const FILE_MAP = {
-  "router.js": {
-    label: "ROUTER",
-    layer: "C‑Layer",
-    purpose: "Frontend → Backend Connector",
-    context: "Sends structured requests to backend router"
+const RouteMemory = {
+  store: {},
+
+  makeKey(message, frames) {
+    const top = frames[0] || "NO_FRAME";
+    return message + "::" + top;
   },
-  "PageScanner.js": {
-    label: "PROTECTOR",
-    layer: "A2‑Layer",
-    purpose: "Error Capture + Healing",
-    context: "Intercepts JS errors, extracts route, triggers healing"
+
+  remember(message, frames, routeTrace) {
+    const key = this.makeKey(message, frames);
+    this.store[key] = {
+      ts: Date.now(),
+      message,
+      frames,
+      routeTrace
+    };
+
+    logProtector("ROUTE_MEMORY_SAVED", {
+      key,
+      frames: frames.length
+    });
   },
-  "PulseIdentity.js": {
-    label: "IDENTITY",
-    layer: "B‑Layer",
-    purpose: "Auth + UID + User Context",
-    context: "Resolves identity, tokens, and user state"
-  },
-  "PulseClient.js": {
-    label: "CLIENT",
-    layer: "B‑Layer",
-    purpose: "Data Fetch / Hooks / Maps",
-    context: "Fetches user data, maps, hooks, and dynamic fields"
-  },
-  "PulseNet.js": {
-    label: "NETWORK",
-    layer: "B‑Layer",
-    purpose: "Low‑Level Fetch Wrapper",
-    context: "Handles raw network requests + retries"
-  },
-  "PulseUpdate.js": {
-    label: "UPDATE",
-    layer: "B‑Layer",
-    purpose: "Writes",
-    context: "Writes user data and system updates"
-  },
-  "PulseGPU.js": {
-    label: "GPU",
-    layer: "B‑Layer",
-    purpose: "Heavy Compute Ops",
-    context: "Runs expensive calculations"
+
+  recall(message, frames) {
+    const key = this.makeKey(message, frames);
+    const entry = this.store[key];
+
+    if (!entry) return null;
+
+    logProtector("ROUTE_MEMORY_HIT", {
+      key,
+      frames: entry.frames.length
+    });
+
+    return entry.routeTrace;
   }
 };
+
 
 // ============================================================================
 // PUBLIC API (C‑LAYER)
@@ -149,6 +126,7 @@ export async function callHelper(helperName, payload = {}) {
   return await route("helper", { helperName, payload });
 }
 
+
 // ============================================================================
 // ATTACH SCANNER
 // ============================================================================
@@ -168,78 +146,103 @@ export function attachScanner(id) {
   );
 }
 
+
 // ============================================================================
 // GLOBAL ERROR INTERCEPTOR (A → A2)
 // ============================================================================
 let healingInProgress = false;
 
-window.addEventListener("error", async (event) => {
-  if (healingInProgress) return;
+window.addEventListener(
+  "error",
+  async (event) => {
+    if (healingInProgress) return;
 
-  logProtector("ERROR_INTERCEPTED", { message: event.message });
+    const msg = event.message || "";
+    logProtector("ERROR_INTERCEPTED", { message: msg });
 
-  const msg = event.message || "";
-  const stack = event.error?.stack || "";
-  const frames = stack.split("\n").map(s => s.trim());
+    const stack = event.error?.stack || "";
+    const frames = stack.split("\n").map((s) => s.trim());
 
-  const rawFrames = frames
-    .filter(f => f.includes(".js"))
-    .map(f => f.replace(/^at\s+/, ""));
+    const rawFrames = frames
+      .filter((f) => f.includes(".js"))
+      .map((f) => f.replace(/^at\s+/, ""));
 
-  // ------------------------------------------------------------
-  // ⭐ ROUTE TRACE
-  // ------------------------------------------------------------
-  const routeTrace = rawFrames.map((frame) => {
-    const file = frame.split("/").pop().split(":")[0];
-    const info = FILE_MAP[file] || {
-      label: "UNKNOWN",
-      layer: "⚠️ Unknown Layer",
-      purpose: "Unknown Purpose",
-      context: "No mapping found — inspect manually"
-    };
-    return { frame, ...info };
-  });
+    // If we have no frames, we still log and bail safely
+    if (!rawFrames.length) {
+      logProtector("NO_FRAMES_FOUND", {});
+    }
 
-  logProtector("ROUTE_TRACE_BUILT", { frames: routeTrace.length });
+    // ------------------------------------------------------------------------
+    // ROUTE TRACE v7.0 — LIVING, NOT HARD-CODED
+    // ------------------------------------------------------------------------
+    // 1. Try to recall from RouteMemory (same message + top frame)
+    // 2. If none, build a simple structural trace and remember it
+    // ------------------------------------------------------------------------
+    let routeTrace = RouteMemory.recall(msg, rawFrames);
 
-  // ------------------------------------------------------------
-  // ⭐ HEALING LOGIC
-  // ------------------------------------------------------------
-  const parsed = parseMissingField(msg);
-  if (!parsed) {
-    logProtector("NO_MISSING_FIELD", {});
-    return;
-  }
+    if (!routeTrace) {
+      routeTrace = rawFrames.map((frame, index) => {
+        const file = frame.split("/").pop().split(":")[0];
 
-  const { table, field } = parsed;
+        return {
+          frame,
+          file,
+          index,
+          // These are descriptive only — no behavior depends on them.
+          label: "UNKNOWN",
+          layer: "UNKNOWN",
+          purpose: "Observed frame — classification deferred",
+          context: "Dynamic route sample — evolutionary layer may annotate"
+        };
+      });
 
-  logProtector("HEALING_TRIGGERED", { table, field });
+      logProtector("ROUTE_TRACE_BUILT_DYNAMIC", {
+        frames: routeTrace.length
+      });
 
-  healingInProgress = true;
+      RouteMemory.remember(msg, rawFrames, routeTrace);
+    }
 
-  try {
-    await route("fetchField", {
-      table,
-      field,
-      message: msg,
-      page: window.location.pathname,
-      routeTrace
-    });
+    // ------------------------------------------------------------------------
+    // HEALING LOGIC (unchanged core behavior)
+// ------------------------------------------------------------------------
+    const parsed = parseMissingField(msg);
+    if (!parsed) {
+      logProtector("NO_MISSING_FIELD", {});
+      return;
+    }
 
-    logProtector("HEALING_SUCCESS", { table, field });
+    const { table, field } = parsed;
 
-  } catch (err) {
-    logProtector("HEALING_FAILED", { error: String(err) });
-    console.error("[PageScanner] Router fetch failed:", err);
-  }
+    logProtector("HEALING_TRIGGERED", { table, field });
 
-  healingInProgress = false;
+    healingInProgress = true;
 
-  event.preventDefault();
-}, true);
+    try {
+      await route("fetchField", {
+        table,
+        field,
+        message: msg,
+        page: window.location.pathname,
+        routeTrace
+      });
+
+      logProtector("HEALING_SUCCESS", { table, field });
+    } catch (err) {
+      logProtector("HEALING_FAILED", { error: String(err) });
+      console.error("[PageScanner] Router fetch failed:", err);
+    }
+
+    healingInProgress = false;
+
+    event.preventDefault();
+  },
+  true
+);
+
 
 // ============================================================================
-// PARSER
+// PARSER (v7.0 — same behavior, clearer intent)
 // ============================================================================
 function parseMissingField(message) {
   logProtector("PARSER_INVOKED", {});
@@ -255,3 +258,7 @@ function parseMissingField(message) {
 
   return null;
 }
+
+// ============================================================================
+// END OF FILE — THE SENTINEL / LIVING ROUTE MEMORY  [v7.0]
+// ============================================================================

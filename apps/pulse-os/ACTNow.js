@@ -1,24 +1,41 @@
 // ============================================================================
 // FILE: /apps/organs/loop/ACTNow.js
-// PULSE OS — v6.4+
+// PULSE OS — v7.3
 // AUTO-REFRESH LOOP — “ACT NOW”
 // ============================================================================
 //
-// ROLE:
-//   • Provides a safe, timed refresh cycle for the organism
-//   • Re-runs PulseImmunity at intervals
-//   • Re-runs PulseSurgeonGeneral for healing
-//   • Broadcasts updates to dashboards
-//   • Ensures no drift, no stale state, no memory corruption
-//   • Rebuilds state cleanly between cycles
+// IDENTITY — THE HEARTBEAT:
+//  -------------------------
+//  • Provides a safe, timed refresh cycle for the organism.
+//  • Re-runs PulseImmunity at intervals.
+//  • Re-runs PulseSurgeonGeneral for healing.
+//  • Broadcasts updates to dashboards.
+//  • Ensures no drift, no stale state, no memory corruption.
+//  • Rebuilds state cleanly between cycles.
+//  • Metadata-only, no payload compute.
 //
-// This is the heartbeat of Pulse OS.
+// THEME:
+//  • Color: White/Silver (heartbeat, rhythm, non-interference).
+//  • Subtheme: Renewal, refresh, systemic coherence.
+//
+// SAFETY CONTRACT:
+//  • No payload access.
+//  • No routing override.
+//  • No autonomy, no sentience.
+//  • Deterministic, drift-proof timed loop.
+//
+// ADVANTAGE CASCADE (conceptual only):
+//  ------------------------------------
+//  • Inherits ANY advantage from ANY organ automatically.
+//  • Dual-mode: mental clarity + system efficiency.
+//  • Local-aware: node-level cycle context.
+//  • Internet-aware: cluster/mesh/global cycle context.
+//  • Unified-advantage-field: ALL advantages active unless unsafe.
+//  • Future-evolution-ready: new safe advantages auto-inherited.
 // ============================================================================
 
 import { PulseImmunity } from "../immune/PulseImmunity.js";
 import { PulseSurgeonGeneral } from "../immune/PulseSurgeonGeneral.js";
-
-// Optional: event bus for dashboards
 import { PulseEventBus } from "../events/PulseEventBus.js";
 
 export const ACTNow = {
@@ -26,9 +43,30 @@ export const ACTNow = {
   // ----------------------------------------------------------
   // CONFIG — timing + safety
   // ----------------------------------------------------------
-  intervalMs: 5000, // 5 seconds (your 2010 pattern reborn)
+  intervalMs: 5000,
   running: false,
   timer: null,
+
+  meta: {
+    layer: "ACTNow",
+    role: "HEARTBEAT_LOOP",
+    version: 7.3,
+    target: "full-mesh",
+    selfRepairable: true,
+    evo: {
+      dualMode: true,                 // mental + system
+      localAware: true,               // node-level cycle awareness
+      internetAware: true,            // cluster/mesh/global cycle awareness
+
+      advantageCascadeAware: true,    // inherits ANY advantage
+      pulseEfficiencyAware: true,     // 1-pulse collapse
+      driftProof: true,
+      multiInstanceReady: true,
+
+      unifiedAdvantageField: true,    // no OR; all advantages ON
+      futureEvolutionReady: true      // new safe advantages auto-inherited
+    }
+  },
 
   // ----------------------------------------------------------
   // START LOOP
@@ -69,14 +107,15 @@ export const ACTNow = {
     const snapshot = await snapshotProvider();
     if (!snapshot) return;
 
-    // Step 2: Analyze
+    // Step 2: Analyze (metadata-only)
     const analysis = PulseImmunity.analyze(snapshot);
 
-    // Step 3: Command immune system
+    // Step 3: Command immune system (healing)
     const report = await PulseSurgeonGeneral.command(analysis);
 
     // Step 4: Broadcast to dashboards
     PulseEventBus.emit("immune:update", {
+      meta: this.meta,
       analysis,
       report,
       timestamp: Date.now()

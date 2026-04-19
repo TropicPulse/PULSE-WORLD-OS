@@ -1,5 +1,5 @@
 // FILE: tropic-pulse-functions/apps/pulse-translator/sqlToPulse.js
-
+// VERSION: 7.3
 //
 // ------------------------------------------------------
 // 📘 PAGE INDEX — Source of Truth for This File
@@ -36,29 +36,76 @@
 //   • Deterministic translation only
 //
 // ------------------------------------------------------
-// SQL → Pulse Translator
+// SQL → Pulse Translator (v7.3)
 // ------------------------------------------------------
 
-import { SQLToPulse, PulseFieldTypes, validatePulseField } from "../pulse-specs/pulseFields.js";
+import {
+  SQLToPulse,
+  PulseFieldTypes,
+  validatePulseField
+} from "../pulse-specs/pulseFields.js";
+
+/**
+ * normalizeSQLType(sqlType)
+ * v7.3: handles DECIMAL(x,y), NUMERIC(x,y), VARCHAR(n), etc.
+ */
+function normalizeSQLType(sqlType = "") {
+  const upper = sqlType.toUpperCase().trim();
+
+  // Strip parameters: VARCHAR(255) → VARCHAR
+  const base = upper.replace(/\(.+\)/g, "");
+
+  return base;
+}
 
 /**
  * translateSQLColumn(sqlType, columnName)
  * Converts a SQL column definition into a PulseField object.
+ * v7.3: supports:
+ *   • DECIMAL → currency
+ *   • NUMERIC → number
+ *   • ENUM → enum
+ *   • JSON → json
+ *   • NULLABLE → nullable wrapper (if SQL says NULL)
  */
 export function translateSQLColumn(sqlType, columnName) {
   if (!sqlType || !columnName) {
     throw new Error("sqlToPulse: missing sqlType or columnName");
   }
 
-  const normalized = sqlType.toUpperCase().trim();
-  const pulseType = SQLToPulse[normalized] || PulseFieldTypes.STRING;
+  const normalizedType = normalizeSQLType(sqlType);
+  let pulseType = SQLToPulse[normalizedType] || PulseFieldTypes.STRING;
+
+  // v7.3: DECIMAL → currency
+  if (normalizedType === "DECIMAL") {
+    pulseType = PulseFieldTypes.CURRENCY;
+  }
+
+  // v7.3: ENUM → enum
+  if (normalizedType === "ENUM") {
+    pulseType = PulseFieldTypes.ENUM;
+  }
+
+  // v7.3: JSON → json
+  if (normalizedType === "JSON") {
+    pulseType = PulseFieldTypes.JSON;
+  }
+
+  // v7.3: detect NULLABLE (SQL: "columnName TYPE NULL")
+  const isNullable = /\bNULL\b/i.test(sqlType);
 
   const field = {
     name: normalizeFieldName(columnName),
     type: pulseType,
     source: "sql",
-    originalType: normalized,
+    originalType: sqlType.trim(),
   };
+
+  // v7.3: wrap nullable fields
+  if (isNullable) {
+    field.type = PulseFieldTypes.NULLABLE;
+    field.innerType = pulseType;
+  }
 
   validatePulseField(field);
   return field;
@@ -69,8 +116,9 @@ export function translateSQLColumn(sqlType, columnName) {
  * Example input:
  * {
  *   id: "INT",
- *   name: "VARCHAR",
- *   created_at: "TIMESTAMP"
+ *   name: "VARCHAR(255)",
+ *   price: "DECIMAL(18,2)",
+ *   created_at: "TIMESTAMP NULL"
  * }
  */
 export function translateSQLSchema(schemaObject = {}) {
@@ -86,10 +134,11 @@ export function translateSQLSchema(schemaObject = {}) {
 /**
  * translateSQLQuery(queryString)
  * Extracts SELECT fields and infers PulseField types.
- * This is a lightweight parser — NOT a SQL executor.
+ * v7.3: still lightweight — does NOT execute SQL.
  */
 export function translateSQLQuery(queryString = "") {
   const fields = extractSelectFields(queryString);
+
   return fields.map((f) => ({
     name: normalizeFieldName(f),
     type: PulseFieldTypes.STRING, // default inference

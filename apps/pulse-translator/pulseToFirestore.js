@@ -1,5 +1,5 @@
 // FILE: tropic-pulse-functions/apps/pulse-translator/pulseToFirestore.js
-
+// VERSION: 7.3
 //
 // ------------------------------------------------------
 // 📘 PAGE INDEX — Source of Truth for This File
@@ -35,7 +35,7 @@
 //   • Deterministic translation only
 //
 // ------------------------------------------------------
-// Pulse → Firestore Translator
+// Pulse → Firestore Translator (v7.3)
 // ------------------------------------------------------
 
 import {
@@ -47,25 +47,73 @@ import {
 /**
  * translatePulseFieldToFirestore(field, value)
  * Converts a PulseField + value into a Firestore‑safe value.
+ * v7.3: supports:
+ *   • nullable wrapper
+ *   • enum (string)
+ *   • currency (number)
+ *   • percent (number)
+ *   • deterministic timestamp handling
  */
 export function translatePulseFieldToFirestore(field, value) {
   validatePulseField(field);
+
+  // v7.3: explicit null wrapper
+  if (field.type === PulseFieldTypes.NULLABLE) {
+    if (value === null || value === undefined) {
+      return { isNull: true, value: null };
+    }
+    return {
+      isNull: false,
+      value: translatePulseFieldToFirestore(
+        { type: field.innerType || PulseFieldTypes.JSON },
+        value
+      ),
+    };
+  }
+
+  // v7.3: enum → string
+  if (field.type === PulseFieldTypes.ENUM) {
+    return String(value ?? "");
+  }
+
+  // v7.3: currency → number (fixed scale)
+  if (field.type === PulseFieldTypes.CURRENCY) {
+    const num = Number(value);
+    return isNaN(num) ? 0 : Number(num.toFixed(field.scale ?? 2));
+  }
+
+  // v7.3: percent → number (0–100 or normalized)
+  if (field.type === PulseFieldTypes.PERCENT) {
+    const num = Number(value);
+    if (isNaN(num)) return 0;
+    return field.normalized ? Math.max(0, Math.min(1, num)) : Math.max(0, Math.min(100, num));
+  }
 
   const fsType = PulseToFirestore[field.type] || "string";
 
   switch (fsType) {
     case "string":
       return value != null ? String(value) : "";
+
     case "number":
       return Number(value) || 0;
+
     case "boolean":
       return Boolean(value);
+
     case "timestamp":
-      return value instanceof Date ? value : new Date(value || Date.now());
+      // v7.3: deterministic timestamp conversion
+      if (value instanceof Date) return value;
+      if (typeof value === "number") return new Date(value);
+      if (typeof value === "string") return new Date(value);
+      return new Date();
+
     case "array":
       return Array.isArray(value) ? value : [];
+
     case "map":
       return typeof value === "object" && value !== null ? value : {};
+
     default:
       return value;
   }
@@ -74,17 +122,6 @@ export function translatePulseFieldToFirestore(field, value) {
 /**
  * translatePulseSchemaToFirestore(schemaObject, dataObject)
  * Converts a PulseField schema + data into a Firestore document.
- *
- * Example:
- * schema = {
- *   id: { name: "id", type: "id" },
- *   name: { name: "name", type: "string" }
- * }
- *
- * data = {
- *   id: "123",
- *   name: "Aldwyn"
- * }
  */
 export function translatePulseSchemaToFirestore(schemaObject = {}, dataObject = {}) {
   const out = {};

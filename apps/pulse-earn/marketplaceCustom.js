@@ -1,54 +1,56 @@
 // ============================================================================
 // FILE: tropic-pulse-functions/apps/pulse-earn/marketplaceCustom.js
-// LAYER: THE STANDARDS BUREAU
-// (Dynamic Marketplace Interpreter + Database‑Driven Adapter Loader)
+// LAYER: THE GENETIC REGULATOR
+// (Dynamic Marketplace Interpreter + Receptor Builder)
 // ============================================================================
 //
-// ROLE:
-//   THE STANDARDS BUREAU — Pulse‑Earn’s dynamic marketplace interpreter.
-//   • Loads marketplace definitions from Firebase
-//   • Interprets config into a working marketplace adapter
-//   • Enforces the universal interface (ping, fetchJobs, submitResult)
+// ROLE (v7.1+):
+//   THE GENETIC REGULATOR — Pulse‑Earn’s dynamic marketplace interpreter.
+//   • Loads marketplace definitions from Firestore (genetic code).
+//   • Interprets config into a working marketplace receptor.
+//   • Enforces the universal interface (ping, fetchJobs, submitResult).
+//   • Acts as the “gene expression” layer for new marketplaces.
 //
-// WHY “STANDARDS BUREAU”?:
-//   • It reads marketplace standards from the database
-//   • It interprets them into a functional adapter
-//   • It enforces the universal protocol defined by the Standard Bearer
-//   • It allows infinite marketplaces without code changes
+// WHY “GENETIC REGULATOR”?:
+//   • It reads marketplace DNA from the database.
+//   • It expresses that DNA into a functional receptor.
+//   • It enforces the universal protocol defined by the Standard Receptor.
+//   • It allows infinite marketplaces without code changes (evolution).
 //
-// PURPOSE:
-//   • Provide a deterministic, drift‑proof dynamic marketplace adapter
-//   • Allow runtime marketplace creation from Firestore
-//   • Guarantee safe HTTP behavior + fallback values
+// PURPOSE (v7.1+):
+//   • Provide a deterministic, drift‑proof dynamic marketplace adapter.
+//   • Allow runtime marketplace creation from Firestore.
+//   • Guarantee safe HTTP behavior + fallback values.
+//   • Preserve genetic lineage + receptor evolution (conceptual only).
 //
-// CONTRACT:
-//   • PURE NETWORK ADAPTER — no AI layers, no translation, no memory model
-//   • READ‑ONLY except for config caching
-//   • NO eval(), NO Function(), NO dynamic imports
-//   • NO executing user code
-//   • Deterministic fetch‑based wrapper only
+// CONTRACT (unchanged):
+//   • PURE NETWORK ADAPTER — no AI layers, no translation, no memory model.
+//   • READ‑ONLY except for config caching.
+//   • NO eval(), NO Function(), NO dynamic imports.
+//   • NO executing user code.
+//   • Deterministic fetch‑based wrapper only.
 //
-// SAFETY:
-//   • v6.3 upgrade is COMMENTAL ONLY — NO LOGIC CHANGES
-//   • All behavior remains identical to pre‑v6.3 marketplaceCustom
+// SAFETY (unchanged):
+//   • v7.1+ upgrade is COMMENTAL ONLY — NO LOGIC CHANGES.
+//   • All behavior remains identical to pre‑v7.1 marketplaceCustom.
 // ============================================================================
 
 import { getFirestore, doc, getDoc } from "firebase/firestore";
 
 // ---------------------------------------------------------------------------
-// Standards Bureau Cache — prevents repeated DB reads
+// Genetic Cache — prevents repeated DNA reads
 // ---------------------------------------------------------------------------
 let cachedConfig = null;
 
 // ---------------------------------------------------------------------------
-// loadMarketplaceConfig — Reads marketplace standards from Firestore
+// loadMarketplaceConfig — Reads receptor DNA from Firestore
 // ---------------------------------------------------------------------------
 async function loadMarketplaceConfig() {
   if (cachedConfig) return cachedConfig;
 
   try {
     const db = getFirestore();
-    const ref = doc(db, "marketplaces", "custom"); // dynamic marketplace doc
+    const ref = doc(db, "marketplaces", "custom"); // dynamic receptor DNA
     const snap = await getDoc(ref);
 
     if (!snap.exists()) {
@@ -59,7 +61,7 @@ async function loadMarketplaceConfig() {
     return cachedConfig;
 
   } catch (err) {
-    // Deterministic fallback — empty marketplace
+    // Deterministic fallback — receptor with no sensitivity
     return {
       baseUrl: "",
       endpoints: { ping: "", jobs: "", submit: "" },
@@ -69,7 +71,7 @@ async function loadMarketplaceConfig() {
 }
 
 // ---------------------------------------------------------------------------
-// URL Builder — interprets standards into usable endpoints
+// URL Builder — interprets genetic code into receptor pathways
 // ---------------------------------------------------------------------------
 function buildUrl(config, key) {
   const base = config.baseUrl || "";
@@ -78,8 +80,10 @@ function buildUrl(config, key) {
 }
 
 // ---------------------------------------------------------------------------
-// Standards Bureau Client — ping(), fetchJobs(), submitResult()
+// Genetic Regulator Client — ping(), fetchJobs(), submitResult()
+// NOTE: These are the receptor functions expressed from DNA.
 // ---------------------------------------------------------------------------
+
 async function ping() {
   try {
     const config = await loadMarketplaceConfig();
@@ -89,6 +93,8 @@ async function ping() {
     const res = await fetch(url, { headers: config.headers || {} });
 
     if (!res.ok) return null;
+
+    // NOTE: Lower latency = stronger receptor expression
     return Date.now() - start;
 
   } catch {
@@ -104,8 +110,10 @@ async function fetchJobs() {
     const res = await fetch(url, { headers: config.headers || {} });
 
     if (!res.ok) return [];
+
     const data = await res.json();
 
+    // NOTE: More jobs = stronger environmental stimulus
     return Array.isArray(data) ? data : [];
 
   } catch {
@@ -137,6 +145,7 @@ async function submitResult(job, result) {
       };
     }
 
+    // NOTE: Successful submission = completed metabolic exchange
     return await res.json();
 
   } catch (err) {
@@ -148,7 +157,7 @@ async function submitResult(job, result) {
 }
 
 // ---------------------------------------------------------------------------
-// Export — The Standards Bureau Adapter
+// Export — The Genetic Regulator Adapter
 // ---------------------------------------------------------------------------
 export const marketplaceA = {
   id: "CUSTOM",

@@ -1,70 +1,75 @@
 // ============================================================================
 // FILE: tropic-pulse-functions/apps/pulse-earn/Earner.js
-// LAYER: THE CITIZEN (Deterministic Worker + Safe Compute Participant)
+// LAYER: THE CELL (Deterministic Worker + Safe Compute Participant)
 // ============================================================================
 //
-// ROLE:
-//   THE CITIZEN — Pulse‑Earn’s sandboxed compute participant.
-//   • Receives assigned jobs from the Foreman (EarnEngine)
-//   • Executes deterministic, rule‑bound compute tasks
-//   • Returns safe, structured results
-//   • Maintains personal healing metadata
+// ROLE (v7.1+):
+//   THE CELL — Pulse‑Earn’s sandboxed metabolic labor unit.
+//   • Receives assigned jobs from the Muscle System (EarnEngine).
+//   • Executes deterministic, rule‑bound compute tasks (cellular metabolism).
+//   • Returns safe, structured results (ATP output).
+//   • Maintains personal healing metadata (cell health).
 //
-// WHY “CITIZEN”?:
-//   • Operates inside strict laws (no network, no mutation, no side effects)
-//   • Performs labor assigned by the Foreman
-//   • Maintains personal state + work history
-//   • Represents a single worker in the Pulse‑Earn economy
+// WHY “CELL”?:
+//   • Operates inside strict biological laws (no mutation, no side effects).
+//   • Performs metabolic labor assigned by the organism.
+//   • Maintains its own health + cycle history.
+//   • Represents a single productive unit in the Pulse‑Earn economy.
 //
-// PURPOSE:
-//   • Provide a deterministic, drift‑proof compute engine
-//   • Guarantee safe execution of text/math/data/json operations
-//   • Maintain healing metadata for Earn healers
+// PURPOSE (v7.1+):
+//   • Provide a deterministic, drift‑proof compute engine.
+//   • Guarantee safe execution of text/math/data/json operations.
+//   • Maintain healing metadata for Earn healers.
+//   • Track metabolic cycles + cell health (conceptual only).
 //
-// CONTRACT:
-//   • PURE COMPUTE — no AI layers, no translation, no memory model
-//   • READ‑ONLY except for healing metadata
-//   • NO eval(), NO Function(), NO dynamic imports
-//   • NO network access
-//   • NO executing user code
-//   • Deterministic output only
+// CONTRACT (unchanged):
+//   • PURE COMPUTE — no AI layers, no translation, no memory model.
+//   • READ‑ONLY except for healing metadata.
+//   • NO eval(), NO Function(), NO dynamic imports.
+//   • NO network access.
+//   • NO executing user code.
+//   • Deterministic output only.
 //
-// SAFETY:
-//   • v6.3 upgrade is COMMENTAL ONLY — NO LOGIC CHANGES
-//   • All behavior remains identical to pre‑v6.3 Earner
+// SAFETY (unchanged):
+//   • v7.1+ upgrade is COMMENTAL ONLY — NO LOGIC CHANGES.
+//   • All behavior remains identical to pre‑v7.1 Earner.
 // ============================================================================
 
 // ------------------------------------------------------------
-// CITIZEN CONTEXT METADATA
+// CELL CONTEXT METADATA
 // ------------------------------------------------------------
 const EARNER_CONTEXT = {
   layer: "Earner",
-  role: "CITIZEN_WORKER",
+  role: "CELL_WORKER",
   purpose: "Execute deterministic, sandboxed compute operations for Earn jobs",
-  context: "Safe compute participant + healing metadata"
+  context: "Safe compute participant + healing metadata (cell health)"
 };
 
 // ------------------------------------------------------------
-// Healing Metadata — Citizen Work Log
+// Healing Metadata — Cell Health Log
 // ------------------------------------------------------------
 const healingState = {
   lastJobType: null,
   lastError: null,
   lastOutput: null,
-  cycleCount: 0,
-  lastTimestamp: null,
+  cycleCount: 0,          // metabolic cycles completed
+  lastTimestamp: null,    // last ATP cycle timestamp
   executionState: "idle", // idle | dispatching | executing | returning | error
+  // NOTE: This metadata is used by Earn‑Healers to maintain cell health.
   ...EARNER_CONTEXT
 };
 
 // ------------------------------------------------------------
-// computeWork(job) — Citizen performs assigned labor
+// computeWork(job) — Cell performs metabolic labor
 // ------------------------------------------------------------
 export async function computeWork(job) {
   const start = performance.now();
   healingState.cycleCount++;
   healingState.lastTimestamp = Date.now();
   healingState.executionState = "dispatching";
+
+  // NOTE: Each successful job = ATP produced (conceptual only)
+  //       This is where the organism "makes money" in the Earn economy.
 
   try {
     if (!job || !job.type || !job.payload) {
@@ -108,6 +113,7 @@ export async function computeWork(job) {
       success: true,
       output,
       durationMs: performance.now() - start,
+      // NOTE: Successful return = ATP cycle completed
       ...EARNER_CONTEXT
     };
 
@@ -119,13 +125,14 @@ export async function computeWork(job) {
       success: false,
       error: err.message,
       durationMs: performance.now() - start,
+      // NOTE: Error = metabolic failure (cell flagged for healing)
       ...EARNER_CONTEXT
     };
   }
 }
 
 // ------------------------------------------------------------
-// SAFE COMPUTE MODULES — Citizen Skillset
+// SAFE COMPUTE MODULES — Cell Skillset
 // ------------------------------------------------------------
 function textTransform({ text = "", mode = "upper" }) {
   switch (mode) {
@@ -168,7 +175,7 @@ function jsonTransform({ json, pick }) {
 }
 
 // ------------------------------------------------------------
-// Export healing metadata — Citizen Work History
+// Export healing metadata — Cell Health Snapshot
 // ------------------------------------------------------------
 export function getEarnerHealingState() {
   return { ...healingState };

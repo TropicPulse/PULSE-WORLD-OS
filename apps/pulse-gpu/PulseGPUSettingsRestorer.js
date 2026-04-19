@@ -1,33 +1,22 @@
 // ============================================================================
 // FILE: tropic-pulse-functions/apps/pulse-gpu/PulseGPUSettingsRestorer.js
-// PULSE GPU SETTINGS RESTORER v6.3
+// PULSE GPU SETTINGS RESTORER v7.3
 // “COGNITIVE RECOGNITION LAYER / RESTORATION PLANNER”
 // ============================================================================
 //
-// INTENT-CHECK: If you paste this while confused or frustrated, gently re-read your INTENT.
-//
 // PERSONALITY + ROLE:
-//   PulseGPUSettingsRestorer is the **COGNITIVE RECOGNITION LAYER** of the GPU subsystem.
-//   It is the **RESTORATION PLANNER** — the part that reads advice and
-//   recognizes what concrete action should be taken.
+//   PulseGPUSettingsRestorer is the **COGNITIVE RECOGNITION LAYER**.
+//   It is the **RESTORATION PLANNER** — the subsystem that reads advice
+//   and recognizes what concrete action should be taken.
 //
-//   • Consumes advisor insights (The Coach) + memory entries (Personality Layer)
-//   • Recognizes whether we should restore, apply optimal, upgrade tier, or do nothing
+//   • Consumes advisor insights (Drive Center) + memory entries (Evolution Core)
+//   • Recognizes whether to restore, apply optimal, upgrade tier, or noop
 //   • Produces deterministic restoration plans for the Healer + Orchestrator
-//
-//   It does not guess. It does not execute. It **recognizes** and **plans**.
 //
 // WHAT THIS FILE IS:
 //   • A deterministic planner for GPU settings restoration
 //   • A pure logic module (API-agnostic, full GPU)
 //   • A bridge between advice objects and concrete restore actions
-//
-// WHAT THIS FILE IS NOT:
-//   • NOT a renderer
-//   • NOT a GPU runtime
-//   • NOT a WebGPU/WebGL interface
-//   • NOT a persistence layer
-//   • NOT a backend module
 //
 // SAFETY CONTRACT:
 //   • No randomness
@@ -39,10 +28,15 @@
 //   • Fail-open: invalid advice → noop plan
 //   • Self-repair-ready: plans include OS metadata
 //
+// ADVANTAGE CASCADE (conceptual only):
+//   • If pulses become faster → recognition/planning conceptually accelerates.
+//   • If system collapses 1000 pulses into 1 → planning inherits that gain.
+//   • If any organ evolves → Restorer recognizes with that advantage.
+//   • No OR — all advantages are inherited automatically.
 // ============================================================================
 
 // ------------------------------------------------------------
-// ⭐ OS‑v6 CONTEXT METADATA
+// ⭐ OS‑v7 CONTEXT METADATA
 // ------------------------------------------------------------
 const RESTORER_CONTEXT = {
   layer: "PulseGPUSettingsRestorer",
@@ -51,12 +45,18 @@ const RESTORER_CONTEXT = {
   context:
     "Consumes advisor insights + memory entries to produce restoration plans",
   target: "full-gpu",
-  version: 6.3,
-  selfRepairable: true
+  version: 7.3,
+  selfRepairable: true,
+  evo: {
+    advantageCascadeAware: true,
+    pulseEfficiencyAware: true,
+    driftProof: true,
+    multiInstanceReady: true
+  }
 };
 
 // ------------------------------------------------------------
-// Restoration plan builder (v6-ready + OS‑v6 metadata)
+// Restoration plan builder (v7-ready + OS‑v7 metadata)
 // ------------------------------------------------------------
 function buildPlan({
   action,
@@ -87,12 +87,11 @@ function validatePlan(plan) {
 }
 
 // ------------------------------------------------------------
-// PulseGPUSettingsRestorer (v6-ready + OS‑v6 metadata)
+// PulseGPUSettingsRestorer (v7-ready + OS‑v7 metadata)
 // ------------------------------------------------------------
 class PulseGPUSettingsRestorer {
   constructor() {}
 
-  // Static metadata for discovery + healing
   static meta = { ...RESTORER_CONTEXT };
 
   // ----------------------------------------------------

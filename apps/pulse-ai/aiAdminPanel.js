@@ -1,34 +1,41 @@
 // ============================================================================
-// FILE: tropic-pulse-functions/apps/pulse-ai/aiAdminPanel.js
-// LAYER: THE CLINICIAN (Diagnostic Interpreter + Triage Specialist)
+//  PULSE OS v7.1+ — THE EVOLUTIONARY CLINICIAN
+//  Diagnostic Interpreter • Triage Specialist • Evolutionary Insight Layer
+//  PURE DIAGNOSTIC TRANSFORMATION. NO LOGIC CHANGES.
 // ============================================================================
 //
-// ROLE:
-//   THE CLINICIAN — The diagnostic interpreter of Pulse OS
-//   • Reads raw AI trace + diagnostics
-//   • Classifies issues by severity
-//   • Builds structured admin dashboard models
-//   • Produces summary cards + issue lists
-//   • Preserves trace for deep inspection
+// IDENTITY — THE EVOLUTIONARY CLINICIAN:
+//  -------------------------------------
+//  • Reads raw AI trace + diagnostics
+//  • Classifies issues by severity
+//  • Builds structured admin dashboard models
+//  • Preserves trace for deep inspection
+//  • Surfaces evolutionary advantages in the system
+//  • Highlights patterns where the organism improved itself
+//  • Provides conceptual insight (not medical advice)
+//  • Helps humans understand systemic evolution through metaphor
 //
-// CONTRACT:
-//   • READ‑ONLY — no writes, no mutations
-//   • NO eval(), NO Function(), NO dynamic imports
-//   • NO executing user code
-//   • NO network calls
-//   • Pure diagnostic transformation
+// ROLE IN THE DIGITAL BODY (v7.1+):
+//  --------------------------------
+//  • Diagnostic Interpreter → Reads subsystem signals
+//  • Triage Specialist → Highlights issues + severity
+//  • Evolutionary Insight Layer → Surfaces adaptive advantages
+//  • Cognitive Bridge → Helps humans understand system evolution
+//  • Pure Observer → No writes, no mutations, no orchestration
 //
-// SAFETY:
-//   • v6.3 upgrade is COMMENTAL + DIAGNOSTIC ONLY — NO LOGIC CHANGES
-//   • All behavior remains identical to pre‑v6.3 aiAdminPanel
+// SAFETY CONTRACT (v7.1+):
+//  ------------------------
+//  • READ‑ONLY — no writes, no mutations
+//  • NO eval(), NO Function(), NO dynamic imports
+//  • NO executing user code
+//  • NO network calls
+//  • Pure diagnostic transformation
+//  • No medical advice, no diagnosis, no treatment guidance
 // ============================================================================
 
-// ============================================================================
-// LAYER CONSTANTS + DIAGNOSTICS
-// ============================================================================
-const CLINICIAN_LAYER_ID = "CLINICIAN-LAYER";
-const CLINICIAN_LAYER_NAME = "THE CLINICIAN";
-const CLINICIAN_LAYER_ROLE = "Diagnostic Interpreter + Triage Specialist";
+const CLINICIAN_LAYER_ID = "EVOLUTIONARY-CLINICIAN-LAYER";
+const CLINICIAN_LAYER_NAME = "THE EVOLUTIONARY CLINICIAN";
+const CLINICIAN_LAYER_ROLE = "Diagnostic Interpreter + Evolutionary Insight Layer";
 
 const CLINICIAN_DIAGNOSTICS_ENABLED =
   process?.env?.PULSE_CLINICIAN_DIAGNOSTICS === "true" ||
@@ -49,6 +56,7 @@ const clinicianLog = (stage, details = {}) => {
 };
 
 clinicianLog("CLINICIAN_INIT", {});
+
 
 // ============================================================================
 // PUBLIC API — Build Admin Panel Model

@@ -1,26 +1,39 @@
-// -----------------------------------------------------------
-// [pulse:halo] PULSE_OS_AWARENESS_RING  // white
-// -----------------------------------------------------------
-// ROLE:
-//   - Read-only awareness ring around the organism
-//   - Aggregates metadata from all subsystems
-//   - Exposes safe system status to backendAI + Awareness Page
-//   - NEVER computes payloads
-//   - NEVER mutates impulses
-//   - NEVER influences routing or decisions
-//   - Pure reflection layer (dashboard organ)
+// ============================================================================
+// [pulse:halo] PULSE_OS_AWARENESS_RING v7.3  // white
+// Read-Only Awareness Ring • System Dashboard • Metadata-Only Reflection
+// ============================================================================
+//
+// IDENTITY — THE AWARENESS RING:
+//  ------------------------------
+//  • Read-only awareness ring around the organism.
+//  • Aggregates metadata from all subsystems.
+//  • Exposes safe system status to backendAI + Awareness Page.
+//  • NEVER computes payloads.
+//  • NEVER mutates impulses.
+//  • NEVER influences routing or decisions.
+//  • Pure reflection layer (dashboard organ).
 //
 // THEME:
-//   - Color: White (awareness, reflection, non-interference)
-//   - Subtheme: Clarity, transparency, system-wide visibility
+//  • Color: White (awareness, reflection, non-interference).
+//  • Subtheme: Clarity, transparency, system-wide visibility.
 //
 // SAFETY CONTRACT:
-//   - Metadata-only
-//   - Read-only external surface
-//   - No loops, no sync, no hormones, no memory writes
-//   - No autonomy, no sentience, no self-model
-//   - Backend-safe, frontend-safe, global-safe
+//  • Metadata-only.
+//  • Read-only external surface.
+//  • No loops, no sync, no hormones, no memory writes.
+//  • No autonomy, no sentience, no self-model.
+//  • Backend-safe, frontend-safe, global-safe.
 //
+// ADVANTAGE CASCADE (conceptual only):
+//  ------------------------------------
+//  • Inherits ANY advantage from ANY organ automatically.
+//  • Dual-mode: mental clarity + system efficiency.
+//  • Local-aware: node-level awareness signals.
+//  • Internet-aware: cluster/mesh/global awareness signals.
+//  • Unified-advantage-field: ALL advantages active unless unsafe.
+//  • Future-evolution-ready: new safe advantages auto-inherited.
+// ============================================================================
+
 // -----------------------------------------------------------
 // INTERNAL STATE (metadata-only counters)
 // -----------------------------------------------------------
@@ -41,12 +54,32 @@ const HaloState = {
   memory_writes: 0,
 
   mesh_hops: 0,
+
+  meta: {
+    layer: "PulseHalo",
+    role: "AWARENESS_RING",
+    version: 7.3,
+    target: "full-mesh",
+    selfRepairable: true,
+    evo: {
+      dualMode: true,                 // mental + system
+      localAware: true,               // node-level awareness
+      internetAware: true,            // cluster/mesh/global awareness
+
+      advantageCascadeAware: true,    // inherits ANY advantage
+      pulseEfficiencyAware: true,     // 1-pulse collapse, batching
+      driftProof: true,
+      multiInstanceReady: true,
+
+      unifiedAdvantageField: true,    // no OR; all advantages ON
+      futureEvolutionReady: true      // new safe advantages auto-inherited
+    }
+  }
 };
 
 // -----------------------------------------------------------
 // COUNTER HOOKS (called by other organs)
 // -----------------------------------------------------------
-// These are increment-only, metadata-only, drift-proof.
 
 export const PulseHaloCounters = {
   impulseStarted() { HaloState.impulses_total++; },
@@ -70,7 +103,6 @@ export const PulseHaloCounters = {
 // -----------------------------------------------------------
 // [pulse:halo] SNAPSHOT  // white
 // -----------------------------------------------------------
-// Raw read-only state dump (safe for backendAI)
 
 export const PulseHalo = {
   snapshot() {
@@ -80,12 +112,13 @@ export const PulseHalo = {
   // ---------------------------------------------------------
   // [pulse:halo] STATUS  // white
   // ---------------------------------------------------------
-  // Semantic shaping for Awareness Page + backendAI
 
   status() {
     const s = this.snapshot();
 
     return {
+      meta: s.meta,
+
       impulses: {
         total: s.impulses_total,
         completed: s.impulses_completed,
@@ -134,7 +167,6 @@ export const PulseHalo = {
   // ---------------------------------------------------------
   // [pulse:halo] BACKEND_AI_VIEW  // white
   // ---------------------------------------------------------
-  // Clean, safe, structured awareness for backendAI
 
   statusForBackendAI() {
     return this.status();
@@ -142,7 +174,7 @@ export const PulseHalo = {
 
   // ---------------------------------------------------------
   // INTERNAL HELPERS (metadata-only heuristics)
-  // ---------------------------------------------------------
+// ---------------------------------------------------------
 
   #ratio(n, d) {
     return d ? n / d : 0;

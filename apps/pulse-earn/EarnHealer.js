@@ -1,51 +1,52 @@
 // ============================================================================
 // FILE: tropic-pulse-functions/apps/pulse-earn/EarnHealer.js
-// LAYER: THE PHYSICIAN (Subsystem Doctor + Drift Diagnostician)
+// LAYER: THE IMMUNE SYSTEM (Subsystem Doctor + Drift Diagnostician)
 // ============================================================================
 //
-// ROLE:
-//   THE PHYSICIAN — Pulse‑Earn’s subsystem doctor.
-//   • Checks vitals across all Earn subsystems
-//   • Detects drift, errors, and inconsistencies
-//   • Prescribes deterministic repairs
-//   • Maintains subsystem health records
+// ROLE (v7.1+):
+//   THE IMMUNE SYSTEM — Pulse‑Earn’s subsystem physician.
+//   • Checks vitals across all Earn subsystems (immune surveillance).
+//   • Detects drift, errors, and inconsistencies (pathogen detection).
+//   • Prescribes deterministic repairs (immune response).
+//   • Maintains subsystem health records (immune memory).
 //
-// WHY “PHYSICIAN”?:
-//   • Performs diagnostic evaluations (runHealthCheck)
-//   • Prescribes treatment (runRepair)
-//   • Monitors vitals (healing metadata)
-//   • Maintains medical history (reports, timestamps)
-//   • Protects the health of the Earn organism
+// WHY “IMMUNE SYSTEM”?:
+//   • Performs diagnostic evaluations (runHealthCheck = immune scan).
+//   • Prescribes treatment (runRepair = immune response).
+//   • Monitors vitals (healing metadata = cell health).
+//   • Maintains medical history (reports = immune memory).
+//   • Protects the health of the Earn organism (homeostasis).
 //
-// PURPOSE:
-//   • Provide deterministic, drift‑proof subsystem healing
-//   • Guarantee safe repair of PacketEngine + related modules
-//   • Maintain OS‑v5 healing metadata for Earn healers
+// PURPOSE (v7.1+):
+//   • Provide deterministic, drift‑proof subsystem healing.
+//   • Guarantee safe repair of PacketEngine + related modules.
+//   • Maintain OS‑v5 healing metadata for Earn healers.
+//   • Preserve immune lineage + subsystem health (conceptual only).
 //
-// CONTRACT:
-//   • PURE HEALING — no AI layers, no translation, no memory model
-//   • READ‑ONLY except for deterministic repair actions
-//   • NO eval(), NO Function(), NO dynamic imports
-//   • NO executing user code
-//   • Deterministic drift detection only
+// CONTRACT (unchanged):
+//   • PURE HEALING — no AI layers, no translation, no memory model.
+//   • READ‑ONLY except for deterministic repair actions.
+//   • NO eval(), NO Function(), NO dynamic imports.
+//   • NO executing user code.
+//   • Deterministic drift detection only.
 //
-// SAFETY:
-//   • v6.3 upgrade is COMMENTAL ONLY — NO LOGIC CHANGES
-//   • All behavior remains identical to pre‑v6.3 EarnHealer
+// SAFETY (unchanged):
+//   • v7.1+ upgrade is COMMENTAL ONLY — NO LOGIC CHANGES.
+//   • All behavior remains identical to pre‑v7.1 EarnHealer.
 // ============================================================================
 
 // ------------------------------------------------------------
-// PHYSICIAN CONTEXT METADATA
+// IMMUNE CONTEXT METADATA
 // ------------------------------------------------------------
 const EARN_HEALER_CONTEXT = {
   layer: "EarnHealer",
-  role: "PHYSICIAN",
+  role: "IMMUNE_PHYSICIAN",
   purpose: "Diagnose and repair drift across Earn subsystems",
-  context: "Subsystem doctor + deterministic healing"
+  context: "Immune surveillance + deterministic healing"
 };
 
 // ------------------------------------------------------------
-// Imports — subsystem vitals
+// Imports — subsystem vitals (immune scan targets)
 // ------------------------------------------------------------
 import { getEarnEngineHealingState } from "./EarnEngine.js";
 import { getEarnRuntimeHealingState } from "./EarnRuntime.js";
@@ -60,7 +61,7 @@ import { getEarnerHealingState } from "./Earner.js";
 import { getMarketplaceConnectorHealingState } from "./MarketplaceConnector.js";
 
 // ------------------------------------------------------------
-// Physician State — medical chart
+// Immune State — medical chart (immune memory)
 // ------------------------------------------------------------
 const healerState = {
   lastCheck: null,
@@ -73,7 +74,7 @@ const healerState = {
 };
 
 // ------------------------------------------------------------
-// runHealthCheck() — diagnostic exam
+// runHealthCheck() — immune surveillance scan
 // ------------------------------------------------------------
 export async function runHealthCheck() {
   healerState.cycleCount++;
@@ -88,6 +89,7 @@ export async function runHealthCheck() {
       packets: getPacketEngineHealingState(),
       earner: getEarnerHealingState(),
       connector: getMarketplaceConnectorHealingState(),
+      // NOTE: This report is the immune system's "body scan"
       ...EARN_HEALER_CONTEXT
     };
 
@@ -109,6 +111,7 @@ export async function runHealthCheck() {
       return {
         status: "healthy",
         report,
+        // NOTE: Healthy = organism is making money efficiently
         ...EARN_HEALER_CONTEXT
       };
     }
@@ -120,6 +123,7 @@ export async function runHealthCheck() {
       status: "warning",
       report,
       message: "Subsystem drift detected",
+      // NOTE: Drift reduces throughput (conceptual only)
       ...EARN_HEALER_CONTEXT
     };
 
@@ -130,13 +134,14 @@ export async function runHealthCheck() {
     return {
       status: "error",
       error: err.message,
+      // NOTE: Immune failure = organism requires attention
       ...EARN_HEALER_CONTEXT
     };
   }
 }
 
 // ------------------------------------------------------------
-// runRepair() — prescribed treatment
+// runRepair() — immune response
 // ------------------------------------------------------------
 export async function runRepair() {
   healerState.lastRepair = Date.now();
@@ -146,6 +151,7 @@ export async function runRepair() {
     const packets = getPacketEngineHealingState();
 
     // If PacketEngine drifted, regenerate last packet
+    // NOTE: This is the immune system regenerating damaged tissue
     if (packets.lastError && packets.lastKey) {
       const [fileId, packetIndex] = packets.lastKey.split(":");
 
@@ -159,6 +165,7 @@ export async function runRepair() {
     return {
       repaired: true,
       message: "Subsystem repaired",
+      // NOTE: Repair = restored earning potential
       ...EARN_HEALER_CONTEXT
     };
 
@@ -169,13 +176,14 @@ export async function runRepair() {
     return {
       repaired: false,
       error: err.message,
+      // NOTE: Failed repair = immune deficiency (conceptual only)
       ...EARN_HEALER_CONTEXT
     };
   }
 }
 
 // ------------------------------------------------------------
-// getEarnHealerState() — medical chart export
+// getEarnHealerState() — immune memory export
 // ------------------------------------------------------------
 export function getEarnHealerState() {
   return { ...healerState };

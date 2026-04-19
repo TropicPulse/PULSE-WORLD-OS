@@ -1,5 +1,5 @@
 // ============================================================================
-//  PULSE GPU INSIGHTS ENGINE v6.3 — THE WISDOM CORTEX
+//  PULSE GPU INSIGHTS ENGINE v7.3 — THE WISDOM CORTEX
 //  Deterministic, Pure Logic, Drift‑Proof Analytics Over Session Traces
 // ============================================================================
 //
@@ -12,15 +12,16 @@
 //  • Reveals meaning — the “wisdom” already hidden in the data.
 //  • No guessing. No prediction. No speculation.
 //  • Pure interpretation. Pure understanding.
+//  • Advantage‑cascade aware: any systemic speed/efficiency gain benefits insight flow.
 //
 // ROLE IN THE GPU NATION:
 //  ------------------------
-//  • Analyst → Intelligence (precompute brain)
-//  • Nerve Network → Runtime (memory + context)
-//  • Motor Hall → Execution (motion)
-//  • Guardian → Permissions (auto-opt policy)
-//  • Lymph Node Network → Immune System (validation + repair)
-//  • Wisdom Cortex → Insight + Interpretation (meaning)
+//  • Analyst        → Intelligence (precompute brain)
+//  • Nerve Network  → Runtime (memory + context)
+//  • Motor Hall     → Execution (motion)
+//  • Guardian       → Permissions (auto-opt policy)
+//  • Lymph Network  → Immune System (validation + repair)
+//  • Wisdom Cortex  → Insight + Interpretation (meaning)
 //
 // WHAT THIS FILE IS:
 //  -------------------
@@ -49,6 +50,12 @@
 //  • Fail‑open: malformed traces → ignored, never crash
 //  • Deterministic: same traces → same insights
 //  • Self‑repair‑ready: insights include metadata
+//
+// ADVANTAGE CASCADE (conceptual only):
+//  ------------------------------------
+//  • If pulses get faster, insight extraction conceptually accelerates.
+//  • If system collapses 1000 pulses into 1, insight flow conceptually inherits that gain.
+//  • No OR: any organism‑level advantage is assumed available to the cortex.
 // ============================================================================
 
 import { SessionTrace } from "./PulseGPUSessionTracer.js";
@@ -102,9 +109,14 @@ function buildInsight({
     meta: {
       layer: "PulseGPUInsightsEngine",
       role: "WISDOM_CORTEX",
-      version: 6.3,
+      version: 7.3,
       target: "full-gpu",
-      selfRepairable: true
+      selfRepairable: true,
+      evo: {
+        advantageCascadeAware: true,
+        pulseEfficiencyAware: true,
+        driftProof: true
+      }
     }
   };
 

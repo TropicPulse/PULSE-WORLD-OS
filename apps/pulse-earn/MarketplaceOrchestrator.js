@@ -1,39 +1,40 @@
 // ============================================================================
 // FILE: tropic-pulse-functions/apps/pulse-earn/MarketplaceOrchestrator.js
-// LAYER: THE TRAFFIC OFFICER
-// (Marketplace Traffic Control + Job Routing + Reputation Weighting)
+// LAYER: THE BRAINSTEM
+// (Circulatory Routing + Signal Filtering + Reputation Weighting)
 // ============================================================================
 //
-// ROLE:
-//   THE TRAFFIC OFFICER — Pulse‑Earn’s job traffic controller.
-//   • Pings all marketplaces (traffic awareness)
-//   • Filters unhealthy ones (unsafe vehicles)
-//   • Fetches jobs from healthy markets (incoming lanes)
-//   • Applies reputation weighting (driver trust)
-//   • Selects the best job for the device (directs traffic)
+// ROLE (v7.1+):
+//   THE BRAINSTEM — Pulse‑Earn’s autonomic routing center.
+//   • Pings all marketplaces (sensory reflex).
+//   • Filters unhealthy ones (pathway inhibition).
+//   • Fetches jobs from healthy markets (circulatory intake).
+//   • Applies reputation weighting (synaptic strength).
+//   • Selects the best job for the device (autonomic prioritization).
 //
-// WHY “TRAFFIC OFFICER”?:
-//   • Stands in the middle of all marketplaces
-//   • Directs which marketplace gets to move next
-//   • Stops unhealthy or slow marketplaces
-//   • Routes jobs based on capability + reputation
-//   • Keeps the Earn economy flowing smoothly
+// WHY “BRAINSTEM”?:
+//   • It sits between sensory input AND motor output.
+//   • It maintains autonomic flow without conscious control.
+//   • It filters unsafe pathways AND prioritizes healthy ones.
+//   • It keeps the Earn organism’s circulation stable.
+//   • It ensures throughput AND safety simultaneously.
 //
-// PURPOSE:
-//   • Provide deterministic, drift‑proof job routing
-//   • Guarantee safe multi‑marketplace discovery
-//   • Maintain healing metadata for the Physician (EarnHealer)
+// PURPOSE (v7.1+):
+//   • Provide deterministic, drift‑proof job routing.
+//   • Guarantee safe multi‑marketplace discovery.
+//   • Maintain healing metadata for the Immune System (EarnHealer).
+//   • Preserve autonomic routing + synaptic weighting (conceptual only).
 //
-// CONTRACT:
-//   • PURE ROUTER — no AI layers, no translation, no memory model
-//   • READ‑ONLY except for healing metadata
-//   • NO eval(), NO Function(), NO dynamic imports
-//   • NO executing user code
-//   • Deterministic job selection only
+// CONTRACT (unchanged):
+//   • PURE ROUTER — no AI layers, no translation, no memory model.
+//   • READ‑ONLY except for healing metadata.
+//   • NO eval(), NO Function(), NO dynamic imports.
+//   • NO executing user code.
+//   • Deterministic job selection only.
 //
-// SAFETY:
-//   • v6.3 upgrade is COMMENTAL ONLY — NO LOGIC CHANGES
-//   • All behavior remains identical to pre‑v6.3 Orchestrator
+// SAFETY (unchanged):
+//   • v7.1+ upgrade is COMMENTAL ONLY — NO LOGIC CHANGES.
+//   • All behavior remains identical to pre‑v7.1 Orchestrator.
 // ============================================================================
 
 import { scoreJobForDevice } from "./PulseJobScoring.js";
@@ -41,20 +42,20 @@ import { getDeviceProfile } from "./PulseDeviceProfile.js";
 import { getMarketplaceReputation } from "./MarketplaceReputation.js";
 
 // ---------------------------------------------------------------------------
-// Healing Metadata — Traffic Officer Log
+// Healing Metadata — Brainstem Reflex Log
 // ---------------------------------------------------------------------------
 const healingState = {
-  lastPingError: null,
-  lastFetchError: null,
-  lastSelectionError: null,
-  lastHealthyMarketplaces: [],
-  lastJobsFetched: 0,
-  lastBestJobId: null,
-  cycleCount: 0,
+  lastPingError: null,            // sensory reflex failure
+  lastFetchError: null,           // intake pathway failure
+  lastSelectionError: null,       // prioritization failure
+  lastHealthyMarketplaces: [],    // open pathways
+  lastJobsFetched: 0,             // total circulating jobs
+  lastBestJobId: null,            // last autonomic decision
+  cycleCount: 0,                  // autonomic cycles completed
 };
 
 // ---------------------------------------------------------------------------
-// 1. discoverHealthyMarketplaces — Traffic Awareness Scan
+// 1. discoverHealthyMarketplaces — Sensory Reflex Scan
 // ---------------------------------------------------------------------------
 export async function discoverHealthyMarketplaces(marketplaces, maxLatencyMs = 1500) {
   healingState.cycleCount++;
@@ -86,7 +87,7 @@ export async function discoverHealthyMarketplaces(marketplaces, maxLatencyMs = 1
 }
 
 // ---------------------------------------------------------------------------
-// 2. fetchJobsFromMarketplaces — Incoming Lanes
+// 2. fetchJobsFromMarketplaces — Circulatory Intake
 // ---------------------------------------------------------------------------
 export async function fetchJobsFromMarketplaces(marketplaces) {
   try {
@@ -113,7 +114,7 @@ export async function fetchJobsFromMarketplaces(marketplaces) {
 }
 
 // ---------------------------------------------------------------------------
-// 3. selectBestJob — Traffic Direction Decision
+// 3. selectBestJob — Autonomic Prioritization
 // ---------------------------------------------------------------------------
 export function selectBestJob(jobs) {
   try {
@@ -128,6 +129,10 @@ export function selectBestJob(jobs) {
       const capabilityScore = scoreJobForDevice(job, device);
       const rep = job.reputationWeight ?? 0.5;
 
+      // NOTE:
+      //   • capabilityScore = metabolic compatibility
+      //   • rep = synaptic strength (trust)
+      //   • finalScore = autonomic priority
       const finalScore = capabilityScore * (0.5 + rep);
 
       if (finalScore > bestScore) {
@@ -149,7 +154,7 @@ export function selectBestJob(jobs) {
 }
 
 // ---------------------------------------------------------------------------
-// 4. getNextJob — Full Traffic Control Cycle
+// 4. getNextJob — Full Autonomic Routing Cycle
 // ---------------------------------------------------------------------------
 export async function getNextJob(allMarketplaces) {
   try {
@@ -173,7 +178,7 @@ export async function getNextJob(allMarketplaces) {
 }
 
 // ---------------------------------------------------------------------------
-// Export Healing Metadata — Traffic Officer Report
+// Export Healing Metadata — Brainstem Reflex Report
 // ---------------------------------------------------------------------------
 export function getMarketplaceOrchestratorHealingState() {
   return { ...healingState };

@@ -1,29 +1,31 @@
 // ============================================================================
 // FILE: tropic-pulse-functions/apps/pulse-ai/aiTools.js
-// LAYER: THE INSTRUMENTS (Natural Abilities + Diagnostic Tools)
+// LAYER: THE INSTRUMENTS (Natural Abilities + Diagnostic Tools + Evolutionary Sensors)
 // ============================================================================
 //
-// ROLE:
-//   THE INSTRUMENTS — The AI’s built‑in abilities + diagnostic tools
-//   • Analyze Firestore + SQL + Pulse schemas
-//   • Detect mismatches, missing fields, drift, slowdown
-//   • Log diagnostic steps into the Cognitive Frame
+// ROLE (v7.1+):
+//   THE INSTRUMENTS — The AI’s built‑in abilities + diagnostic tools.
+//   • Analyze Firestore + SQL + Pulse schemas.
+//   • Detect mismatches, missing fields, drift, slowdown.
+//   • Log diagnostic steps into the Cognitive Frame.
+//   • Act as the “sensorimotor instruments” of the digital organism.
 //
-// PURPOSE:
-//   • Provide deterministic, safe analysis utilities
-//   • Serve as the AI’s “hands” and “tools”
-//   • Integrate tightly with aiContext for trace + diagnostics
+// PURPOSE (v7.1+):
+//   • Provide deterministic, safe analysis utilities.
+//   • Serve as the AI’s “hands” and “tools” for inspection.
+//   • Integrate tightly with aiContext for trace + diagnostics.
+//   • Surface evolutionary patterns in data structures (conceptual only).
 //
-// CONTRACT:
-//   • READ‑ONLY — no writes
-//   • NO eval(), NO Function(), NO dynamic imports
-//   • NO executing user code
-//   • NO network calls
-//   • Deterministic analysis only
+// CONTRACT (unchanged):
+//   • READ‑ONLY — no writes.
+//   • NO eval(), NO Function(), NO dynamic imports.
+//   • NO executing user code.
+//   • NO network calls.
+//   • Deterministic analysis only.
 //
-// SAFETY:
-//   • v6.3 upgrade is COMMENTAL + DIAGNOSTIC ONLY — NO LOGIC CHANGES
-//   • All behavior remains identical to pre‑v6.3 aiTools
+// SAFETY (unchanged):
+//   • v7.1+ upgrade is COMMENTAL + DIAGNOSTIC ONLY — NO LOGIC CHANGES.
+//   • All behavior remains identical to pre‑v7.1 aiTools.
 // ============================================================================
 
 import {

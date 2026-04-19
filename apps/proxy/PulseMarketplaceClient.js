@@ -1,34 +1,34 @@
 // ============================================================================
 // FILE: /tropic-pulse/proxy/PulseMarketplaceClient.js
-// LAYER: THE AGENT (External Negotiator + Job Courier)
+// LAYER: THE OUTER AGENT (External Interface + Job Courier) — v7.1+
 // ============================================================================
 //
-// ROLE:
-//   THE AGENT — The external negotiator of Pulse OS
-//   • Registers the device with backend
-//   • Requests compute jobs
-//   • Submits job results
-//   • Syncs credits/tokens
+// ROLE (v7.1+):
+//   THE OUTER AGENT — The OS’s outward‑facing interface.
+//   • Introduces the device to the outside world (register)
+//   • Requests compute jobs (incoming tasks)
+//   • Submits job results (outgoing work)
+//   • Syncs credits/tokens (external exchange)
 //   • Acts as the OS’s ambassador to the compute marketplace
 //
-// CONTRACT:
+// CONTRACT (v7.1+):
 //   • No PulseBand imports
 //   • No PulseNet imports
 //   • No PulseUpdate imports
 //   • No global state
 //   • Pure subsystem module
 //
-// SAFETY:
-//   • v6.3 upgrade is COMMENTAL + DIAGNOSTIC ONLY — NO LOGIC CHANGES
-//   • All behavior remains identical to pre‑v6.3 PulseMarketplaceClient
+// SAFETY (v7.1+):
+//   • v7.1+ upgrade is COMMENTAL + DIAGNOSTIC ONLY — NO LOGIC CHANGES
+//   • All behavior remains identical to pre‑v7.1 PulseMarketplaceClient
 // ============================================================================
 
 // ============================================================================
 // LAYER CONSTANTS + DIAGNOSTICS
 // ============================================================================
-const AGENT_LAYER_ID = "AGENT-LAYER";
-const AGENT_LAYER_NAME = "THE AGENT";
-const AGENT_LAYER_ROLE = "External Negotiator + Job Courier";
+const AGENT_LAYER_ID = "OUTER-AGENT-LAYER";
+const AGENT_LAYER_NAME = "THE OUTER AGENT";
+const AGENT_LAYER_ROLE = "External Interface + Job Courier";
 
 const AGENT_DIAGNOSTICS_ENABLED =
   window?.PULSE_AGENT_DIAGNOSTICS === true ||
@@ -51,14 +51,14 @@ const agentLog = (stage, details = {}) => {
 agentLog("AGENT_INIT", {});
 
 // ============================================================================
-// AGENT CLASS — External Negotiator
+// OUTER AGENT CLASS — External Negotiator
 // ============================================================================
 export class PulseMarketplaceClient {
   constructor({ deviceId, gpuInfo, baseUrl }) {
     this.deviceId = deviceId;
     this.gpuInfo = gpuInfo;
 
-    // Your REAL backend endpoint
+    // External endpoint
     this.baseUrl = baseUrl || "https://www.tropicpulse.bz/proxy";
 
     agentLog("AGENT_CONSTRUCTED", {
@@ -69,7 +69,7 @@ export class PulseMarketplaceClient {
   }
 
   // --------------------------------------------------------------------------
-  // REGISTER DEVICE — Agent Identity Introduction
+  // REGISTER DEVICE — Introduce identity outward
   // --------------------------------------------------------------------------
   async register() {
     agentLog("REGISTER_START", { deviceId: this.deviceId });
@@ -96,7 +96,7 @@ export class PulseMarketplaceClient {
   }
 
   // --------------------------------------------------------------------------
-  // REQUEST JOB — Agent Requests Work
+  // REQUEST JOB — Ask the outside world for work
   // --------------------------------------------------------------------------
   async requestJob() {
     agentLog("REQUEST_JOB_START", { deviceId: this.deviceId });
@@ -118,7 +118,7 @@ export class PulseMarketplaceClient {
   }
 
   // --------------------------------------------------------------------------
-  // SUBMIT RESULT — Agent Returns Completed Work
+  // SUBMIT RESULT — Hand completed work back outward
   // --------------------------------------------------------------------------
   async submitResult(jobId, result) {
     agentLog("SUBMIT_RESULT_START", { jobId });
@@ -146,7 +146,7 @@ export class PulseMarketplaceClient {
   }
 
   // --------------------------------------------------------------------------
-  // SYNC CREDITS — Agent Syncs Rewards
+  // SYNC CREDITS — Exchange tokens with the outside world
   // --------------------------------------------------------------------------
   async syncCredits() {
     agentLog("SYNC_CREDITS_START", { deviceId: this.deviceId });

@@ -1,58 +1,50 @@
 // ============================================================================
 // FILE: /apps/netlify/functions/pulsebandCleanup.js
-// PULSEBAND CLEANUP — VERSION 6.3
-// “THE SANITY LAYER / PURIFIER / ORDER‑KEEPER”
+// PULSEBAND CLEANUP — VERSION 7.1+
+// “THE PURIFIER / SANITY LAYER / ORDER‑KEEPER”
 // ============================================================================
 //
-// PAGE INDEX (v6.3 Source of Truth)
-// ---------------------------------
-// ROLE:
-//   pulsebandCleanup is the **SANITY LAYER** of the PulseBand subsystem.
-//   It is the **PURIFIER / ORDER‑KEEPER** — the subsystem that prevents
-//   chaos, clutter, and corruption by removing expired sessions, chunks,
-//   errors, and redownload logs.
+// ROLE (v7.1+):
+//   pulsebandCleanup is the **PURIFIER** of the PulseBand subsystem.
+//   It is the **SANITY LAYER / ORDER‑KEEPER** — the organ that removes
+//   expired sessions, chunks, errors, and redownload logs before they
+//   accumulate into systemic drift.
 //
-//   • Clears old data before it becomes a problem
+//   • Eliminates stale or expired kinetic data
 //   • Maintains structural integrity of PulseBand storage
 //   • Ensures deterministic, stable, predictable behavior
-//   • Runs automatically via heartbeat (timer.js)
+//   • Runs automatically via heartbeat (Timer.js)
+//   • Fully aligned with PulseOS v7.1+ stability + organism contracts
 //
-// WHAT THIS FILE *IS*:
-//   • A deterministic cleanup engine
-//   • A pure backend maintenance function
-//   • A stability + order enforcement layer
+// WHAT THIS FILE *IS* (v7.1+):
+//   • A deterministic cleanup organ
+//   • A backend purification + waste‑removal layer
+//   • A zero‑drift, zero‑ambiguity subsystem
+//   • A biological “liver/kidney” analog for PulseBand
 //
 // WHAT THIS FILE *IS NOT*:
+//   • NOT business logic
 //   • NOT a renderer
 //   • NOT a GPU subsystem
-//   • NOT a business logic module
 //   • NOT a user-facing endpoint
+//   • NOT a dynamic or self‑modifying subsystem
 //
-// SAFETY CONTRACT (v6.3):
-//   • Fail-open: errors are logged, not fatal
+// SAFETY CONTRACT (v7.1+):
+//   • Fail-open: errors are logged, never fatal
 //   • No randomness in cleanup logic
 //   • No mutation outside intended collections
 //   • Always logs actions for traceability
 //   • No external side effects beyond Firestore writes
+//   • No cross-subsystem mutations
+//   • Deterministic cleanup order
 //
-// STRUCTURE RULES:
+// STRUCTURE RULES (v7.1+):
 //   • Cleanup order must remain deterministic
-//   • No new collections may be added without architectural approval
-//   • No cross-subsystem mutations allowed
+//   • No new collections without architectural approval
+//   • No drift from the PulseBand storage contract
 //
 // VERSION TAG:
-//   version: 6.3
-//
-// ============================================================================
-// ⭐ v6.3 COMMENT LOG
-// ---------------------------------------------------------------------------
-// • Added full v6.3 PAGE INDEX
-// • Added metaphor layer (SANITY LAYER / PURIFIER / ORDER‑KEEPER)
-// • Added safety contract + structure rules
-// • Added v6.3 context map
-// • No logic changes
-// • No renames
-// • No behavior drift
+//   version: 7.1+
 // ============================================================================
 
 import * as admin from "firebase-admin";
@@ -64,15 +56,15 @@ if (!admin.apps.length) {
 const db = getFirestore();
 
 // ------------------------------------------------------------
-// ⭐ HUMAN‑READABLE CONTEXT MAP (v6.3)
+// ⭐ HUMAN‑READABLE CONTEXT MAP (v7.1+)
 // ------------------------------------------------------------
 const CLEANUP_CONTEXT = {
   label: "PULSEBAND_CLEANUP",
   layer: "D‑Layer",
-  role: "Sanity Layer / Purifier",
-  purpose: "Pulseband Session + Error Cleanup",
-  context: "Deletes expired sessions, chunks, errors, and redownload logs",
-  version: "6.3"
+  role: "Purifier / Sanity Layer / Order‑Keeper",
+  purpose: "PulseBand Session + Error Cleanup",
+  context: "Removes expired sessions, chunks, errors, and redownload logs",
+  version: "7.1+"
 };
 
 // ============================================================================
@@ -83,7 +75,7 @@ export async function pulsebandCleanup() {
   const errorPrefix = `ERR_${runId}_`;
 
   console.log(
-    `%c🧹 START SANITY CLEANUP → ${runId}`,
+    `%c🧹 START PURIFIER CLEANUP → ${runId}`,
     "color:#03A9F4; font-weight:bold;"
   );
 
@@ -159,7 +151,7 @@ export async function pulsebandCleanup() {
     });
 
     console.log(
-      `%c🟩 SANITY CLEANUP COMPLETE → ${runId}`,
+      `%c🟩 PURIFIER CLEANUP COMPLETE → ${runId}`,
       "color:#4CAF50; font-weight:bold;"
     );
 
@@ -167,7 +159,7 @@ export async function pulsebandCleanup() {
 
   } catch (err) {
     console.error(
-      `%c🟥 SANITY CLEANUP ERROR`,
+      `%c🟥 PURIFIER CLEANUP ERROR`,
       "color:#FF5252; font-weight:bold;",
       err
     );

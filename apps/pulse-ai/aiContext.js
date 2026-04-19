@@ -1,32 +1,35 @@
 // ============================================================================
 // FILE: tropic-pulse-functions/apps/pulse-ai/aiContext.js
-// LAYER: THE COGNITIVE FRAME
+// LAYER: THE COGNITIVE FRAME (Mental Model Constructor + Evolutionary Pattern Layer)
 // ============================================================================
 //
-// ROLE:
-//   THE COGNITIVE FRAME — The AI’s mental model constructor
-//   • Builds persona, permissions, boundaries
-//   • Shapes the AI’s understanding of the request
-//   • Creates SAFE reasoning trace (not chain‑of‑thought)
-//   • Provides diagnostics for mismatches, drift, slowdown
+// ROLE (v7.1+):
+//   THE COGNITIVE FRAME — The AI’s mental model constructor.
+//   • Builds persona, permissions, boundaries.
+//   • Shapes the AI’s understanding of the request.
+//   • Creates SAFE reasoning trace (not chain‑of‑thought).
+//   • Provides diagnostics for mismatches, drift, slowdown.
+//   • Surfaces evolutionary patterns in how the system interprets data.
+//   • Acts as the “prefrontal cortex” of Pulse AI — expectation + context.
 //
-// PURPOSE:
-//   • Provide a unified cognitive context for all AI operations
-//   • Define expectations + boundaries
-//   • Build a deterministic mental frame
-//   • Track reasoning summaries step‑by‑step
-//   • Detect schema drift + missing fields
+// PURPOSE (v7.1+):
+//   • Provide a unified cognitive context for all AI operations.
+//   • Define expectations + boundaries deterministically.
+//   • Build a stable mental frame for safe reasoning.
+//   • Track reasoning summaries step‑by‑step.
+//   • Detect schema drift + missing fields.
+//   • Expose conceptual evolutionary advantages (for human insight only).
 //
-// CONTRACT:
-//   • READ‑ONLY — no writes
-//   • NO eval(), NO Function(), NO dynamic imports
-//   • NO executing user code
-//   • NO network calls
-//   • SAFE summaries only — never chain‑of‑thought
+// CONTRACT (unchanged):
+//   • READ‑ONLY — no writes.
+//   • NO eval(), NO Function(), NO dynamic imports.
+//   • NO executing user code.
+//   • NO network calls.
+//   • SAFE summaries only — never chain‑of‑thought.
 //
-// SAFETY:
-//   • v6.3 upgrade is COMMENTAL + DIAGNOSTIC ONLY — NO LOGIC CHANGES
-//   • All behavior remains identical to pre‑v6.3 aiContext
+// SAFETY (unchanged):
+//   • v7.1+ upgrade is COMMENTAL + DIAGNOSTIC ONLY — NO LOGIC CHANGES.
+//   • All behavior remains identical to pre‑v7.1 aiContext.
 // ============================================================================
 
 import { routeAIRequest } from "./aiRouter.js";
@@ -36,7 +39,7 @@ import { routeAIRequest } from "./aiRouter.js";
 // ============================================================================
 const COG_LAYER_ID = "COGNITIVE-FRAME-LAYER";
 const COG_LAYER_NAME = "THE COGNITIVE FRAME";
-const COG_LAYER_ROLE = "Understanding Layer + Expectation Builder";
+const COG_LAYER_ROLE = "Understanding Layer + Expectation Builder + Evolutionary Pattern Surface";
 
 const COG_DIAGNOSTICS_ENABLED =
   process?.env?.PULSE_COGNITIVE_DIAGNOSTICS === "true" ||

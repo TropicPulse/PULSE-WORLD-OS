@@ -1,5 +1,5 @@
 // ============================================================================
-//  PULSE GPU BRAIN v6.3 — THE ANALYST
+//  PULSE GPU BRAIN v7.3 — THE ANALYST CORTEX
 //  CPU-SIDE INTELLIGENCE DIVISION (FULL-GPU, API-AGNOSTIC)
 //  PURE LOGIC. PURE DETERMINISM. ZERO SIDE EFFECTS.
 // ============================================================================
@@ -16,28 +16,32 @@
 //  • No mutation outside the export holder
 //  • Deterministic: same input → same output
 //
-// IDENTITY — THE ANALYST:
-//  ------------------------
-//  • The intelligence layer of the GPU OS.
+// IDENTITY — THE ANALYST CORTEX:
+//  ------------------------------
+//  • The intelligence cortex of the GPU OS.
 //  • Gathers raw assets → produces GPU-ready intelligence packages.
 //  • Pure preprocessing, pure logic, pure determinism.
-//  • The strategist that prepares the Shadow Engine for execution.
+//  • The strategist that prepares the Astral Nervous System for execution.
+//  • Dual-mode evolved: biological + system-level advantage active together.
 //
-// WHAT THIS FILE IS:
-//  -------------------
-//  • A CPU-side precompute engine
-//  • A deterministic asset packager
-//  • A pure logic module for preparing GPU-ready structures
-//  • A stable, predictable transformation layer
-//
-// WHAT THIS FILE IS NOT:
-//  -----------------------
-//  • NOT a renderer
-//  • NOT a GPU runtime
-//  • NOT a WebGPU/WebGL interface
-//  • NOT a backend module
-//  • NOT a network or filesystem client
-//  • NOT a compute engine
+// DUAL-MODE ADVANTAGE (conceptual only):
+//  --------------------------------------
+//  • Biological (mental) evolution:
+//      - metabolicBoost
+//      - neuralReflexBoost
+//      - stabilityBoost
+//  • System (physical) evolution:
+//      - multiInstanceReady
+//      - deterministicNeuron
+//      - parallelSafe
+//      - fanOutScaling
+//      - clusterCoherence
+//      - zeroDriftCloning
+//  • Fusion (AND-architecture):
+//      - dualModeEvolution
+//      - organismClusterBoost
+//      - cognitiveComputeLink
+//      - unifiedAdvantageField
 //
 // SAFETY:
 //  -------
@@ -48,7 +52,7 @@
 // ============================================================================
 
 console.log(
-  "%c🧠 PulseGPUBrain v6.3 — ANALYST active (schema v4).",
+  "%c🧠 PulseGPUBrain v7.3 — ANALYST CORTEX active (dual-mode evolution).",
   "color:#03A9F4; font-weight:bold;"
 );
 
@@ -57,6 +61,32 @@ console.log(
 // ------------------------------------------------------
 
 const PULSE_GPU_BRAIN_SCHEMA_VERSION = 4;
+
+// ------------------------------------------------------
+// DUAL-MODE ADVANTAGE BLOCK (conceptual only)
+// ------------------------------------------------------
+
+const DUAL_MODE_EVO = {
+  // Biological / mental
+  metabolicBoost: 1.0,
+  neuralReflexBoost: 1.0,
+  stabilityBoost: 1.0,
+
+  // System / physical
+  multiInstanceReady: true,
+  deterministicNeuron: true,
+  parallelSafe: true,
+  fanOutScaling: 1.0,
+  clusterCoherence: true,
+  zeroDriftCloning: true,
+  reflexPropagation: 1.0,
+
+  // Fusion — BOTH layers active
+  dualModeEvolution: true,
+  organismClusterBoost: 1.0,
+  cognitiveComputeLink: true,
+  unifiedAdvantageField: true
+};
 
 // ------------------------------------------------------
 // PACKAGE DEFINITIONS (STRUCTURAL ONLY)
@@ -80,6 +110,7 @@ class PulseTexturePackage {
       layer: "PulseGPUBrain",
       kind: "texture-package",
       target: "full-gpu",
+      evo: DUAL_MODE_EVO,
       ...metadata
     };
   }
@@ -105,6 +136,7 @@ class PulseMeshPackage {
       layer: "PulseGPUBrain",
       kind: "mesh-package",
       target: "full-gpu",
+      evo: DUAL_MODE_EVO,
       ...metadata
     };
   }
@@ -130,6 +162,7 @@ class PulseLightingPackage {
       layer: "PulseGPUBrain",
       kind: "lighting-package",
       target: "full-gpu",
+      evo: DUAL_MODE_EVO,
       ...metadata
     };
   }
@@ -153,6 +186,7 @@ class PulseAnimationPackage {
       layer: "PulseGPUBrain",
       kind: "animation-package",
       target: "full-gpu",
+      evo: DUAL_MODE_EVO,
       ...metadata
     };
   }
@@ -174,6 +208,7 @@ class PulseShaderPackage {
       layer: "PulseGPUBrain",
       kind: "shader-package",
       target: "full-gpu",
+      evo: DUAL_MODE_EVO,
       ...metadata
     };
   }
@@ -199,6 +234,7 @@ class PulseRenderPlanPackage {
       layer: "PulseGPUBrain",
       kind: "render-plan-package",
       target: "full-gpu",
+      evo: DUAL_MODE_EVO,
       ...metadata
     };
   }
@@ -227,6 +263,7 @@ class BrainInput {
     this.rawScenes = rawScenes;
     this.usagePatterns = usagePatterns;
     this.predictionHints = predictionHints;
+    this.evo = DUAL_MODE_EVO;
   }
 }
 
@@ -383,7 +420,8 @@ class PulseGPUBrainController {
       lighting,
       animation,
       shaders,
-      renderPlan
+      renderPlan,
+      evo: DUAL_MODE_EVO
     };
 
     console.log(

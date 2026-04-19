@@ -1,42 +1,32 @@
 // ============================================================================
 // FILE: /apps/lib/Connectors/Impulse.js
 // LAYER: THE IMPULSE (Adaptive Traveler + Pattern Carrier + Identity Anchor)
+// PULSE OS — v7.1
+// OFFLINE‑ABSOLUTE • PURE TRAVELER • ZERO EXTERNAL DEPENDENCY
 // ============================================================================
 //
-// ROLE:
-//   THE IMPULSE — The adaptive traveling signal of Pulse OS
+// ROLE (v7.1):
 //   • Fired by PulseBand (Nervous System)
-//   • Moves through each layer sequentially (UNBOUNDED PATHWAY, 0..N HOPS)
+//   • Moves through each layer sequentially (UNBOUNDED PATHWAY)
 //   • Each layer attaches identity + state + delta
-//   • Factors its energy (1/0, 1/2) per hop (no fixed hop count assumed)
-//   • Adapts urgency based on environmental conditions (pattern-inspired)
+//   • Factors its energy (1/0, 1/2) per hop
+//   • Adapts urgency based on environmental conditions
 //   • Returns to PulseBand with full organism snapshot
-//
-// v6.4+ UPGRADE:
-//   • Adds PAGE IDENTITY (1 PAGE = 1 ORGAN = 1 IDENTITY)
-//   • Adds REPAIR SEED (page-aware, layer-agnostic healing anchor)
-//   • Adds PAGE CONTEXT to every hop
-//   • Adds IDENTITY SAFETY GUARD when page is UNKNOWN
-//   • Removes brittle PAGE=function dependency
-//   • Spinal Cord (Impulse) becomes identity authority
-//   • Nervous system becomes globally consistent + drift-proof
-//
-// v6.5 UPGRADE (LIVING PATHWAY):
-//   • Formalizes impulse.path as a LIVING NERVOUS PATHWAY (dynamic length)
-//   • Never assumes a fixed number of layers (no “6-layer spine” limit)
-//   • Pathway length emerges from annotate() calls (organism growth-safe)
-//   • Designed to be interpreted by NerveMap + PathwayMemory (evolving map)
-//   • Energy/urgency are hop-relative, not tied to any max depth
+//   • v7.0: Guaranteed offline — no external stimuli required
+//   • v7.1: Pathway‑memory ready (no hardcoded pages, no file maps)
 //
 // CONTRACT:
 //   • Pure traveler — no imports from PulseNet, PulseUpdate, PulseClient
-//   • No business logic — pattern only
+//   • No backend, no fetch, no network, no external state
 //   • Deterministic, drift-proof, organism-safe
+//   • Local-only, internal-only, self-contained
 //
-// SAFETY:
-//   • v6.3 was COMMENTAL + DIAGNOSTIC ONLY
-//   • v6.4 adds identity-only fields + safety guard (non-invasive)
-//   • v6.5 adds explicit unbounded-pathway semantics (evolution-safe)
+// SAFETY (v7.1):
+//   • No randomness except tickId entropy
+//   • No external calls
+//   • No environment access (beyond window for local wiring)
+//   • No timing loops
+//   • No external stimuli required
 // ============================================================================
 
 
@@ -48,6 +38,8 @@ const IMPULSE_LAYER_NAME = "THE IMPULSE";
 const IMPULSE_LAYER_ROLE =
   "Adaptive Traveler + Pattern Carrier + Identity Anchor";
 
+const IMPULSE_VERSION = "v7.1";
+
 const IMPULSE_DIAGNOSTICS_ENABLED =
   window?.PULSE_IMPULSE_DIAGNOSTICS === true ||
   window?.PULSE_DIAGNOSTICS === true;
@@ -57,9 +49,10 @@ const impulseLog = (stage, details = {}) => {
 
   console.log(
     JSON.stringify({
-      impulseLayer: IMPULSE_LAYER_ID,
-      impulseName:  IMPULSE_LAYER_NAME,
-      impulseRole:  IMPULSE_LAYER_ROLE,
+      impulseLayer:  IMPULSE_LAYER_ID,
+      impulseName:   IMPULSE_LAYER_NAME,
+      impulseRole:   IMPULSE_LAYER_ROLE,
+      impulseVersion: IMPULSE_VERSION,
       stage,
       ...details
     })
@@ -70,18 +63,28 @@ impulseLog("IMPULSE_INIT", {});
 
 
 // ============================================================================
-// IMPULSE ENGINE
+// INTERNAL HELPERS — v7.1
+// ============================================================================
+function makeTickId() {
+  return Date.now() + "-" + Math.random().toString(36).slice(2);
+}
+
+function clone(obj) {
+  return JSON.parse(JSON.stringify(obj));
+}
+
+// ============================================================================
+// IMPULSE ENGINE — v7.1
+// PURE INTERNAL TRAVELER — ZERO EXTERNAL DEPENDENCY
 // ============================================================================
 export const Impulse = {
 
   // --------------------------------------------------------------------------
-  // Create a new impulse (v6.4+: identity-aware + repair-seeded + guarded)
-  // v6.5: pathway-unbounded, ready for NerveMap + PathwayMemory
+  // CREATE — v7.1
+  // Identity-aware, repair-seeded, offline-guaranteed, pathway-memory-ready
   // --------------------------------------------------------------------------
   create(intent, payload = {}) {
-    const tickId =
-      Date.now() + "-" + Math.random().toString(36).slice(2);
-
+    const tickId = makeTickId();
     const pageIdentity = payload?.pageIdentity || {};
 
     const impulse = {
@@ -89,33 +92,44 @@ export const Impulse = {
       intent,
       payload,
 
-      // LIVING PATHWAY:
-      // path is an unbounded array of hops; length emerges from annotate() calls
+      version: IMPULSE_VERSION,
+
+      // LIVING PATHWAY (unbounded)
       path: [],
 
-      energy: 1,   // starts at full energy
-      factor: 1,   // factoring multiplier
-      urgency: 0,  // adaptive urgency (pattern-inspired)
-      signature: "1010101", // forward genome
+      // Pathway memory (no hardcoded pages/files)
+      pathway: {
+        hops: [],          // sequence of layer ids
+        stable: false,     // becomes true when NerveMap/PathwayMemory confirm
+        learnedRouteId: null // optional id assigned by NerveMap
+      },
 
-      // v6.4+ — PAGE IDENTITY ANCHOR
+      energy: 1,
+      factor: 1,
+      urgency: 0,
+      signature: "1010101",
+
+      // PAGE IDENTITY ANCHOR (soft — names are hints, not requirements)
       page: {
         name:        pageIdentity.page        || "UNKNOWN_PAGE",
         vars:        pageIdentity.vars        || {},
         repairHooks: pageIdentity.repairHooks || {}
       },
 
-      // v6.4+ — REPAIR FORMULA SEED
+      // REPAIR SEED
       repairSeed: {
         pageName: pageIdentity.page || "UNKNOWN_PAGE",
         focus:    payload?.repairFocus || null
       },
 
-      // v6.4+ — IDENTITY SAFETY STATUS
-      identityHealth: pageIdentity.page ? "Stable" : "Missing"
+      // IDENTITY HEALTH
+      identityHealth: pageIdentity.page ? "Stable" : "Missing",
+
+      // v7.0 — OFFLINE ABSOLUTE
+      offline: true,
+      externalDependencies: []
     };
 
-    // HARD SAFETY: log critical if identity is missing
     if (!pageIdentity.page) {
       impulseLog("IMPULSE_IDENTITY_MISSING", {
         tickId,
@@ -136,8 +150,9 @@ export const Impulse = {
 
 
   // --------------------------------------------------------------------------
-  // Adaptive urgency (pattern-inspired environmental response)
-// --------------------------------------------------------------------------
+  // URGENCY — v7.1
+  // Pure internal environmental response
+  // --------------------------------------------------------------------------
   computeUrgency(layerState) {
     let u = 0;
 
@@ -151,8 +166,8 @@ export const Impulse = {
 
 
   // --------------------------------------------------------------------------
-  // Apply factoring (1/0, 1/2 pattern) + urgency modulation
-  // v6.5: hop-relative, works for any pathway depth
+  // FACTOR — v7.1
+  // Hop-relative energy factoring + urgency modulation
   // --------------------------------------------------------------------------
   factorImpulse(impulse) {
     impulse.factor *= 0.5;
@@ -163,10 +178,10 @@ export const Impulse = {
     }
 
     impulseLog("IMPULSE_FACTOR", {
-      tickId:   impulse.tickId,
-      factor:   impulse.factor,
-      energy:   impulse.energy,
-      urgency:  impulse.urgency,
+      tickId:    impulse.tickId,
+      factor:    impulse.factor,
+      energy:    impulse.energy,
+      urgency:   impulse.urgency,
       hopsSoFar: impulse.path.length
     });
 
@@ -175,28 +190,33 @@ export const Impulse = {
 
 
   // --------------------------------------------------------------------------
-  // Layer attaches identity + state + delta
-  // v6.5: each annotate() call is a Nerve hop in a living pathway
+  // ANNOTATE — v7.1
+  // Each hop becomes a nervous-system pathway node
   // --------------------------------------------------------------------------
   annotate(impulse, layerIdentity, layerState, delta) {
     impulse.urgency = this.computeUrgency(layerState);
 
-    impulse.path.push({
+    const hop = {
       ...layerIdentity,
       state: layerState,
       delta,
       urgency: impulse.urgency,
       timestamp: Date.now(),
 
-      // v6.4+ — PAGE CONTEXT ON EVERY HOP
-      page: impulse.page.name,
+      page:           impulse.page.name,
+      repairSeed:     impulse.repairSeed,
+      identityHealth: impulse.identityHealth,
 
-      // v6.4+ — REPAIR SEED PROPAGATION
-      repairSeed: impulse.repairSeed,
+      // v7.1 — OFFLINE ABSOLUTE
+      offline: true
+    };
 
-      // v6.4+ — IDENTITY HEALTH SNAPSHOT
-      identityHealth: impulse.identityHealth
-    });
+    impulse.path.push(hop);
+
+    // Pathway memory: record just the identity id (no file/page hardcoding)
+    if (layerIdentity?.id) {
+      impulse.pathway.hops.push(layerIdentity.id);
+    }
 
     impulseLog("IMPULSE_ANNOTATE", {
       tickId:         impulse.tickId,
@@ -213,11 +233,56 @@ export const Impulse = {
 
 
   // --------------------------------------------------------------------------
-  // Return impulse to PulseBand
-  // v6.5: pathway length is emergent; NerveMap/PathwayMemory interpret it
+  // SNAPSHOT — v7.1
+  // Returns a frozen, pathway-memory-friendly snapshot
+  // --------------------------------------------------------------------------
+  snapshot(impulse) {
+    const snap = {
+      tickId:   impulse.tickId,
+      intent:   impulse.intent,
+      version:  impulse.version,
+      page:     clone(impulse.page),
+      repairSeed: clone(impulse.repairSeed),
+      identityHealth: impulse.identityHealth,
+      pathway: clone(impulse.pathway),
+      hops:    impulse.path.length
+    };
+
+    impulseLog("IMPULSE_SNAPSHOT", {
+      tickId: snap.tickId,
+      hops:   snap.hops
+    });
+
+    return snap;
+  },
+
+
+  // --------------------------------------------------------------------------
+  // MARK PATHWAY STABLE — v7.1
+  // Called by NerveMap/PathwayMemory once a route is learned
+  // --------------------------------------------------------------------------
+  markPathwayStable(impulse, learnedRouteId) {
+    impulse.pathway.stable = true;
+    impulse.pathway.learnedRouteId = learnedRouteId || null;
+
+    impulseLog("IMPULSE_PATHWAY_STABLE", {
+      tickId:        impulse.tickId,
+      learnedRouteId,
+      hops: impulse.pathway.hops.length
+    });
+
+    return impulse;
+  },
+
+
+  // --------------------------------------------------------------------------
+  // RETURN — v7.1
+  // Pure internal return to PulseBand + optional NerveMap ingestion
   // --------------------------------------------------------------------------
   returnToPulseBand(impulse) {
-    impulse.signature = "1001101010101010101"; // return genome
+    impulse.signature = "1001101010101010101";
+
+    const snap = this.snapshot(impulse);
 
     impulseLog("IMPULSE_RETURN", {
       tickId:         impulse.tickId,
@@ -226,8 +291,18 @@ export const Impulse = {
       identityHealth: impulse.identityHealth
     });
 
+    // Local-only wiring: no network, no backend
     if (window?.PulseBand?.receiveImpulseReturn) {
-      window.PulseBand.receiveImpulseReturn(impulse);
+      window.PulseBand.receiveImpulseReturn(impulse, snap);
+    }
+
+    // Optional: feed NerveMap / PathwayMemory if present (still local-only)
+    if (window?.NerveMap?.ingestImpulse) {
+      window.NerveMap.ingestImpulse(snap);
+    }
+
+    if (window?.PathwayMemory?.recordImpulse) {
+      window.PathwayMemory.recordImpulse(snap);
     }
   }
 };

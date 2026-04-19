@@ -1,5 +1,5 @@
 // ======================================================
-//  PULSE OS v3.2 — THE THYMUS
+//  PULSE OS v7.3 — THE THYMUS
 //  Immune Command Organ • Integrity Sentinel • Root Healing Authority
 //  PURE HEALING. NO AI. NO COMPUTE. NO MARKETPLACE.
 // ======================================================
@@ -13,19 +13,6 @@
 //  • Generates restore points (immune memory).
 //  • Supervises every subsystem from above.
 //  • The first organ to activate, the last to shut down.
-//
-// ROLE IN THE DIGITAL BODY:
-//  --------------------------
-//  • Sensory Archive → Perception
-//  • Analyst → Intelligence
-//  • Momentum Network → Forward Motion
-//  • Motor Hall → Execution
-//  • Guardian → Permission Gate
-//  • Lymph Node Network → Immune Filter
-//  • Wisdom Cortex → Insight
-//  • Brainstem → Command
-//  • Evolution Core → Identity + Adaptation
-//  • **Thymus → Immune Command + Integrity Sentinel**
 //
 // WHAT THIS FILE IS:
 //  -------------------
@@ -59,6 +46,14 @@
 //  • No marketplace calls.
 //  • Deterministic, drift-proof OS behavior only.
 //
+// ADVANTAGE CASCADE (v7.3):
+//  -------------------------
+//  • Dual-mode: mental + system.
+//  • Local-aware: node-level immune context.
+//  • Internet-aware: cluster/mesh/global immune context.
+//  • Advantage-cascade-aware: inherits ANY safe advantage.
+//  • Unified-advantage-field: ALL advantages ON unless unsafe.
+//  • Future-evolution-ready: new safe advantages auto-inherited.
 // ======================================================
 //  CONFIG — Thymus Constants
 // ======================================================
@@ -70,7 +65,7 @@ export const OS_EVENTS_COLLECTION = "OSEvents";
 export const OS_HEARTBEAT_INTERVAL_MS = 30_000;
 export const FUNCTION_LOG_SCAN_INTERVAL_MS = 60_000;
 
-export const PULSE_OS_ID = "PulseOS-v3.2";
+export const PULSE_OS_ID = "PulseOS-v7.3";
 export const PULSE_OS_ROLE = "immune_command_organ";
 
 import { getFirestore, Timestamp } from "firebase-admin/firestore";
@@ -82,7 +77,24 @@ import {
 
 const db = getFirestore();
 
-console.log("[Thymus BOOT] PulseOS v3.2 immune kernel online.");
+const THYMUS_CONTEXT = {
+  osId: PULSE_OS_ID,
+  role: PULSE_OS_ROLE,
+  version: "7.3",
+  evo: {
+    dualMode: true,
+    localAware: true,
+    internetAware: true,
+    advantageCascadeAware: true,
+    pulseEfficiencyAware: true,
+    driftProof: true,
+    multiInstanceReady: true,
+    unifiedAdvantageField: true,
+    futureEvolutionReady: true
+  }
+};
+
+console.log("[Thymus BOOT] PulseOS v7.3 immune kernel online.");
 console.log("[Thymus BOOT] Heartbeat interval:", OS_HEARTBEAT_INTERVAL_MS, "ms");
 console.log("[Thymus BOOT] FUNCTION_LOG scan interval:", FUNCTION_LOG_SCAN_INTERVAL_MS, "ms");
 
@@ -96,8 +108,7 @@ async function writeOSEvent(entry) {
     );
 
     await db.collection(OS_EVENTS_COLLECTION).add({
-      osId: PULSE_OS_ID,
-      role: PULSE_OS_ROLE,
+      ...THYMUS_CONTEXT,
       ts: Date.now(),
       hintCode: entry.hintCode ?? "UNSPECIFIED_HINT",
       ...entry
@@ -118,8 +129,7 @@ async function updateOSHealth(extra = {}) {
 
     await db.collection(OS_HEALTH_COLLECTION).doc(PULSE_OS_ID).set(
       {
-        osId: PULSE_OS_ID,
-        role: PULSE_OS_ROLE,
+        ...THYMUS_CONTEXT,
         heartbeatAt: now,
         ...extra
       },
@@ -165,7 +175,6 @@ async function processFunctionLogs() {
       `[Thymus] Ingest | id=${doc.id} | subsystem=${log.subsystem ?? "unknown"} | severity=${log.severity ?? "info"}`
     );
 
-    // Emit immune signal
     await writeOSEvent({
       type: "function_log_ingested",
       hintCode: log.hintCode ?? "FUNCTION_LOG_INGESTED",
@@ -178,7 +187,6 @@ async function processFunctionLogs() {
       severity: log.severity ?? "info"
     });
 
-    // Save subsystem snapshot
     if (log.subsystem) {
       await saveSnapshot(log.subsystem, {
         fileName: log.fileName,
@@ -189,7 +197,6 @@ async function processFunctionLogs() {
       });
     }
 
-    // Drift detection → immune response
     if (log.severity === "error" || log.severity === "critical") {
       console.warn(
         `[Thymus] Drift signature recorded | subsystem=${log.subsystem ?? "unknown"}`
@@ -217,7 +224,6 @@ async function processFunctionLogs() {
 
   console.log("[Thymus] FUNCTION_LOG ingestion complete.");
 
-  // Immune memory rule
   if (snap.size >= 50) {
     console.warn("[Thymus] Large immune stimulus — creating restore point.");
     await createRestorePoint("auto_after_large_ingest", ["OS"]);
@@ -230,21 +236,19 @@ async function processFunctionLogs() {
 export default function startPulseOS() {
   console.log("[Thymus] Starting immune supervisor loops…");
 
-  // Heartbeat loop
   setInterval(() => {
     updateOSHealth().catch((err) => {
       console.error("[Thymus] Heartbeat loop error:", err);
     });
   }, OS_HEARTBEAT_INTERVAL_MS);
 
-  // FUNCTION_LOG ingestion loop
   setInterval(() => {
     processFunctionLogs().catch((err) => {
       console.error("[Thymus] FUNCTION_LOGS loop error:", err);
     });
   }, FUNCTION_LOG_SCAN_INTERVAL_MS);
 
-  console.log("[Thymus] v3.2 immune kernel active.");
+  console.log("[Thymus] v7.3 immune kernel active.");
 }
 
 export { updateOSHealth, processFunctionLogs, writeOSEvent };

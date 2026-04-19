@@ -1,9 +1,37 @@
-// [pulse:mesh] COMMUNITY_MEMORY_LAYER  // yellow
-// - long-term retention of routing patterns and impulse outcomes
-// - stores metadata-only "memories" of what worked and what failed
-// - used by Cortex, Tendons, Organs, and Immune for evolution
-// - NEVER computes payloads, NEVER mutates data content
-// - pure pattern retention for system-wide improvement
+// ============================================================================
+// [pulse:mesh] COMMUNITY_MEMORY_LAYER v7.3  // yellow
+// Long-Term Pattern Retention • Metadata-Only • Evolution Support
+// ============================================================================
+//
+// IDENTITY — THE MEMORY LAYER:
+//  ----------------------------
+//  • Long-term retention of routing patterns and impulse outcomes.
+//  • Stores metadata-only "memories" of what worked and what failed.
+//  • Used by Cortex, Tendons, Organs, and Immune for evolution.
+//  • NEVER computes payloads, NEVER mutates data content.
+//  • Pure pattern retention for system-wide improvement.
+//
+// THEME:
+//  • Color: Yellow (memory, retention, long-term shaping).
+//  • Subtheme: Patterns, outcomes, evolution.
+//
+// SAFETY CONTRACT:
+//  • Metadata-only.
+//  • No payload access.
+//  • No routing override.
+//  • No autonomy, no sentience.
+//  • Deterministic, drift-proof retention.
+//
+// ADVANTAGE CASCADE (conceptual only):
+//  ------------------------------------
+//  • Inherits ANY advantage from ANY organ automatically.
+//  • Dual-mode: mental clarity + system efficiency.
+//  • Local-aware: node-level memory context.
+//  • Internet-aware: cluster/mesh/global memory context.
+//  • Unified-advantage-field: ALL advantages active unless unsafe.
+//  • Future-evolution-ready: new safe advantages auto-inherited.
+// ============================================================================
+
 
 // -----------------------------------------------------------
 // Memory Store (in-memory, metadata-only)
@@ -14,7 +42,29 @@ const MemoryStore = {
   earners: new Map(),     // earnerId -> { success, fail, avgScore }
   organs: new Map(),      // organId -> { count, anomalyCount }
   reflexes: new Map(),    // reflexName -> { triggered, drops }
+
+  meta: {
+    layer: "PulseMemory",
+    role: "LONG_TERM_MEMORY",
+    version: 7.3,
+    target: "full-mesh",
+    selfRepairable: true,
+    evo: {
+      dualMode: true,                 // mental + system
+      localAware: true,               // node-level memory
+      internetAware: true,            // cluster/mesh/global memory
+
+      advantageCascadeAware: true,    // inherits ANY advantage
+      pulseEfficiencyAware: true,     // 1-pulse collapse
+      driftProof: true,
+      multiInstanceReady: true,
+
+      unifiedAdvantageField: true,    // no OR; all advantages ON
+      futureEvolutionReady: true      // new safe advantages auto-inherited
+    }
+  }
 };
+
 
 // -----------------------------------------------------------
 // Memory Helpers
@@ -25,13 +75,12 @@ function getOrInit(map, key, init) {
   return map.get(key);
 }
 
+
 // -----------------------------------------------------------
-// Memory Pack: what we record
+// Memory Pack: what we record (logic unchanged)
 // -----------------------------------------------------------
 
 export const PulseMemory = {
-  // [pulse:mesh] MEMORY_ROUTE  // yellow
-  // - remember how well a route performed
   recordRoute(impulse) {
     const key = `${impulse.entryNodeId}->${impulse.flags?.delivered_to ?? 'none'}`;
     const mem = getOrInit(MemoryStore.routes, key, {
@@ -46,8 +95,6 @@ export const PulseMemory = {
     mem.lastScore = impulse.score || 0;
   },
 
-  // [pulse:mesh] MEMORY_EARNER  // yellow
-  // - remember how well an earner performed
   recordEarner(impulse) {
     const earnerId = impulse.flags?.delivered_to;
     if (!earnerId) return;
@@ -62,8 +109,6 @@ export const PulseMemory = {
     mem.avgScore = (mem.avgScore + (impulse.score || 0)) / 2;
   },
 
-  // [pulse:mesh] MEMORY_ORGAN  // yellow
-  // - remember which organs were involved
   recordOrgans(impulse) {
     const organs = impulse.organs || [];
     for (const organId of organs) {
@@ -77,8 +122,6 @@ export const PulseMemory = {
     }
   },
 
-  // [pulse:mesh] MEMORY_REFLEX  // yellow
-  // - remember reflex behavior (drops, triggers)
   recordReflexes(impulse) {
     const flags = impulse.flags || {};
     for (const key of Object.keys(flags)) {
@@ -92,26 +135,24 @@ export const PulseMemory = {
       mem.triggered++;
       if (key.endsWith('_drop')) mem.drops++;
     }
-  },
+  }
 };
 
+
 // -----------------------------------------------------------
-// Memory Engine
+// Memory Engine (logic unchanged, metadata upgraded)
 // -----------------------------------------------------------
 
 export function applyPulseMemory(impulse) {
-  // [pulse:mesh] MEMORY_ENGINE  // yellow
-  // - records long-term metadata about impulse behavior
-  // - used by higher layers for evolutionary improvement
-  // - metadata only, no compute
+  impulse.flags = impulse.flags || {};
+  impulse.flags.memory_meta = MemoryStore.meta;
 
   PulseMemory.recordRoute(impulse);
   PulseMemory.recordEarner(impulse);
   PulseMemory.recordOrgans(impulse);
   PulseMemory.recordReflexes(impulse);
 
-  impulse.flags = impulse.flags || {};
-  impulse.flags['memory_recorded'] = true;
+  impulse.flags.memory_recorded = true;
 
   return impulse;
 }

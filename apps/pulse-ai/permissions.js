@@ -1,30 +1,32 @@
 // ============================================================================
 // FILE: tropic-pulse-functions/apps/pulse-ai/permissions.js
-// LAYER: THE EGO (Capability Contract + Self‑Regulation Layer)
+// LAYER: THE EGO (Capability Contract + Self‑Regulation Layer + Evolutionary Control)
 // ============================================================================
 //
-// ROLE:
-//   THE EGO — Defines what each AI persona *can* do
-//   • Mediates between desire (intent) and law (Superego)
-//   • Provides the capability map for backend‑ai vs frontend‑ai
-//   • Enforces strict separation of power
+// ROLE (v7.1+):
+//   THE EGO — Defines what each AI persona *can* do.
+//   • Mediates between desire (intent) and law (Superego).
+//   • Provides the capability map for backend‑ai vs frontend‑ai.
+//   • Enforces strict separation of power.
+//   • Acts as the “executive ego” of the digital organism.
 //
-// PURPOSE:
-//   • Prevent unauthorized mutation or backend access
-//   • Allow safe read‑only operations for user AI
-//   • Allow full creation + mutation for owner AI
-//   • Provide deterministic, human‑readable permissions
+// PURPOSE (v7.1+):
+//   • Prevent unauthorized mutation or backend access.
+//   • Allow safe read‑only operations for user AI.
+//   • Allow full creation + mutation for owner AI.
+//   • Provide deterministic, human‑readable permissions.
+//   • Surface evolutionary capability patterns (conceptual only).
 //
-// CONTRACT:
-//   • READ‑ONLY — no writes
-//   • NO eval(), NO Function(), NO dynamic imports
-//   • NO executing user code
-//   • NO network calls
-//   • Deterministic permission checks only
+// CONTRACT (unchanged):
+//   • READ‑ONLY — no writes.
+//   • NO eval(), NO Function(), NO dynamic imports.
+//   • NO executing user code.
+//   • NO network calls.
+//   • Deterministic permission checks only.
 //
-// SAFETY:
-//   • v6.3 upgrade is COMMENTAL ONLY — NO LOGIC CHANGES
-//   • All behavior remains identical to pre‑v6.3 permissions.js
+// SAFETY (unchanged):
+//   • v7.1+ upgrade is COMMENTAL ONLY — NO LOGIC CHANGES.
+//   • All behavior remains identical to pre‑v7.1 permissions.js.
 // ============================================================================
 
 // ============================================================================

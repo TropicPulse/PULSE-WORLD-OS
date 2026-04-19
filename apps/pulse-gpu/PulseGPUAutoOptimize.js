@@ -1,12 +1,24 @@
 // ============================================================================
-//  PULSE GPU AUTO OPTIMIZE v6.3 — THE GUARDIAN
+//  PULSE GPU AUTO OPTIMIZE v7.1 — THE GUARDIAN NERVOUS SYSTEM
 //  GPU POLICY ENGINE (PURE LOGIC, ZERO SIDE EFFECTS)
 //  Determines WHEN Pulse-GPU should auto-apply settings vs require confirmation.
 //  PURE HEALING. NO GPU. NO DOM. NO NODE. NO MARKETPLACE.
 // ============================================================================
 //
+// IDENTITY — THE GUARDIAN NERVOUS SYSTEM:
+//  --------------------------------------
+//  • The GPU subsystem’s policy cortex.
+//  • The decider for auto-apply vs require-confirmation vs ignore.
+//  • A deterministic evaluator of restore plans + advisor context.
+//  • A trust-first, fail-open safety layer.
+//  • A pure logic module safe for browser + server.
+//  • The permission guardian for GPU behavior.
+//  • A multi-instance-ready policy neuron: safe to run 1 or 1000 instances
+//    in parallel, all producing deterministic, identical decisions for
+//    identical inputs (conceptual throughput advantage).
+//
 // WHAT THIS FILE IS:
-//  -------------------
+//  ------------------
 //  • The GPU subsystem’s policy engine.
 //  • The decider for auto-apply vs require-confirmation vs ignore.
 //  • A deterministic evaluator of restore plans + advisor context.
@@ -15,7 +27,7 @@
 //  • The permission guardian for GPU behavior.
 //
 // WHAT THIS FILE IS NOT:
-//  -----------------------
+//  ----------------------
 //  • NOT a renderer.
 //  • NOT a GPU runtime.
 //  • NOT a WebGPU/WebGL interface.
@@ -33,15 +45,16 @@
 //  • No randomness.
 //  • No timestamps.
 //  • Fail-open: invalid plans/advice → require confirmation or ignore.
+//  • Multi-instance safe: no shared mutable global state in decisions.
 // ============================================================================
 
 console.log(
-  "%c🟦 PulseGPUAutoOptimize v6.3 online — GUARDIAN policy engine active.",
+  "%c🟦 PulseGPUAutoOptimize v7.1 online — GUARDIAN nervous system active.",
   "color:#03A9F4; font-weight:bold;"
 );
 
 // ============================================================================
-//  Utility: build decision (v6-ready)
+//  Utility: build decision (v7-ready, logic unchanged)
 // ============================================================================
 function buildDecision({ mode, reason, plan }) {
   console.log(
@@ -55,14 +68,17 @@ function buildDecision({ mode, reason, plan }) {
     plan: plan || null,
     meta: {
       layer: "PulseGPUAutoOptimize",
-      version: 6.3,
-      target: "full-gpu"
+      version: 7.1,
+      target: "full-gpu",
+      // Evolutionary hints (conceptual only, no logic impact):
+      multiInstanceReady: true,   // safe to fan out many Guardians
+      deterministicPolicy: true   // same inputs → same outputs, always
     }
   };
 }
 
 // ============================================================================
-//  Severity ranking helper
+//  Severity ranking helper — Guardian’s Risk Map
 // ============================================================================
 const SEVERITY_RANK = {
   low: 1,
@@ -98,14 +114,16 @@ function getHighestSeverity(adviceList = []) {
 }
 
 // ============================================================================
-//  PulseGPUAutoOptimize (v6.3)
+//  PulseGPUAutoOptimize (v7.1) — Guardian Policy Cortex
+//  NOTE: All decision logic preserved from v6.3.
 // ============================================================================
 class PulseGPUAutoOptimize {
-  constructor(userPreferences) {
+  constructor(userPreferences, instanceId) {
     this.userPreferences = userPreferences || {};
+    this.instanceId = instanceId || "guardian-instance";
 
     console.log(
-      "%c[Guardian] User preferences loaded.",
+      "%c[Guardian] User preferences loaded for " + this.instanceId + ".",
       "color:#9C27B0;"
     );
   }
@@ -116,7 +134,7 @@ class PulseGPUAutoOptimize {
   // ----------------------------------------------------
   decide(plan, context = {}) {
     console.log(
-      "%c[Guardian] decide() called.",
+      "%c[Guardian] decide() called for " + this.instanceId + ".",
       "color:#03A9F4;"
     );
 
@@ -196,11 +214,11 @@ class PulseGPUAutoOptimize {
   }
 
   // ----------------------------------------------------
-  // Restore plan policy
+  // Restore plan policy — Regression Healer
   // ----------------------------------------------------
   decideForRestore(plan, severity, prefs) {
     console.log(
-      `%c[Guardian] decideForRestore() severity=${severity}`,
+      `%c[Guardian] decideForRestore() severity=${severity} | instance=${this.instanceId}`,
       "color:#03A9F4;"
     );
 
@@ -265,11 +283,11 @@ class PulseGPUAutoOptimize {
   }
 
   // ----------------------------------------------------
-  // Apply-optimal plan policy
+  // Apply-optimal plan policy — Optimization Reflex
   // ----------------------------------------------------
   decideForApplyOptimal(plan, severity, prefs) {
     console.log(
-      "%c[Guardian] decideForApplyOptimal()",
+      "%c[Guardian] decideForApplyOptimal() instance=" + this.instanceId,
       "color:#03A9F4;"
     );
 
@@ -289,11 +307,11 @@ class PulseGPUAutoOptimize {
   }
 
   // ----------------------------------------------------
-  // Tier upgrade plan policy
+  // Tier upgrade plan policy — Tier Ascent Logic
   // ----------------------------------------------------
   decideForTierUpgrade(plan, severity, prefs) {
     console.log(
-      "%c[Guardian] decideForTierUpgrade()",
+      "%c[Guardian] decideForTierUpgrade() instance=" + this.instanceId,
       "color:#03A9F4;"
     );
 

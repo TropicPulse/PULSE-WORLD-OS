@@ -1,31 +1,19 @@
 // ============================================================================
-//  GLOBAL HEALER v6.3
+//  GLOBAL HEALER v7.3
 //  C‑LAYER (TOP‑LEVEL IMMUNE SYSTEM)
 //  Deterministic, Drift‑Aware, OS‑Level Healing Coordinator
 //  PURE HEALING. NO AI. NO COMPUTE. NO MARKETPLACE.
 // ============================================================================
 //
-// WHAT THIS FILE IS:
-//  -------------------
-//  • The top-level immune system of Tropic Pulse.
-//  • The global healer that watches all subsystem healers.
-//  • The cross‑OS drift detector.
-//  • The contradiction detector.
-//  • The global FUNCTION_LOG hint emitter.
-//  • The GlobalHealerLogs emitter.
-//  • The commander of the OS healing layer.
-//
-// WHAT THIS FILE IS NOT:
-//  -----------------------
-//  • NOT a compute engine.
-//  • NOT a miner.
-//  • NOT a scheduler.
-//  • NOT a runtime.
-//  • NOT a marketplace adapter.
-//  • NOT a blockchain client.
-//  • NOT a wallet.
-//  • NOT a place for user-provided logic.
-//  • NOT a place for dynamic imports or eval.
+// IDENTITY — THE GLOBAL HEALER:
+//  -----------------------------
+//  • Top-level immune system of Tropic Pulse.
+//  • Watches all subsystem healers.
+//  • Cross‑OS drift detector.
+//  • Contradiction detector.
+//  • Global FUNCTION_LOG hint emitter.
+//  • GlobalHealerLogs emitter.
+//  • Commander of the OS healing layer.
 //
 // SAFETY CONTRACT:
 //  ----------------
@@ -37,21 +25,44 @@
 //  • No marketplace calls.
 //  • Deterministic, drift-proof global healing only.
 //
+// ADVANTAGE CASCADE (conceptual only):
+//  ------------------------------------
+//  • Inherits ANY advantage from ANY organ automatically.
+//  • Dual-mode: mental clarity + system efficiency.
+//  • Local-aware: node-level healing context.
+//  • Internet-aware: cluster/mesh/global healing context.
+//  • Unified-advantage-field: ALL advantages active unless unsafe.
+//  • Future-evolution-ready: new safe advantages auto-inherited.
 // ============================================================================
-//  OS‑v6 CONTEXT MAP
+
+
+// ============================================================================
+//  OS‑v7.3 CONTEXT MAP
 // ============================================================================
 const GLOBAL_HEALER_CONTEXT = {
   layer: "C‑Layer",
   role: "GLOBAL_HEALER",
   purpose: "Cross‑OS drift detection + global healing coordination",
   context: "Watches OSHealerLogs + SubsystemHealerLogs and emits FUNCTION_LOG hints",
-  version: 6.3
+  version: 7.3,
+  evo: {
+    dualMode: true,
+    localAware: true,
+    internetAware: true,
+    advantageCascadeAware: true,
+    pulseEfficiencyAware: true,
+    driftProof: true,
+    multiInstanceReady: true,
+    unifiedAdvantageField: true,
+    futureEvolutionReady: true
+  }
 };
 
 console.log(
-  "%c🟦 GlobalHealer v6.3 online — Top‑Level Immune System Activated.",
+  "%c🟦 GlobalHealer v7.3 online — Top‑Level Immune System Activated.",
   "color:#03A9F4; font-weight:bold;"
 );
+
 
 // ============================================================================
 //  COLLECTIONS
@@ -69,13 +80,11 @@ import { recordDriftSignature } from "./PulseOSMemory.js";
 
 const db = getFirestore();
 
-/* ============================================================================
-   LOGGING HELPERS
-   ============================================================================ */
 
-// ------------------------------------------------------------
-// writeGlobalHealerLog() — GlobalHealerLogs emitter
-// ------------------------------------------------------------
+// ============================================================================
+//  LOGGING HELPERS
+// ============================================================================
+
 async function writeGlobalHealerLog(entry) {
   try {
     await db.collection(GLOBAL_HEALER_LOGS_COLLECTION).add({
@@ -98,9 +107,6 @@ async function writeGlobalHealerLog(entry) {
   }
 }
 
-// ------------------------------------------------------------
-// emitFunctionLogHint() — FUNCTION_LOGS emitter
-// ------------------------------------------------------------
 async function emitFunctionLogHint(entry) {
   try {
     await db.collection(FUNCTION_LOGS_COLLECTION).add({
@@ -127,10 +133,10 @@ async function emitFunctionLogHint(entry) {
   }
 }
 
-/* ============================================================================
-   OS HEALER LOG SCAN — watches OSHealerLogs
-   ============================================================================ */
 
+// ============================================================================
+//  OS HEALER LOG SCAN
+// ============================================================================
 async function scanOSHealerLogsForGlobalHints() {
   console.log(
     "%c🟪 Scanning OSHealerLogs…",
@@ -170,10 +176,10 @@ async function scanOSHealerLogsForGlobalHints() {
   }
 }
 
-/* ============================================================================
-   SUBSYSTEM HEALER LOG SCAN — watches SubsystemHealerLogs
-   ============================================================================ */
 
+// ============================================================================
+//  SUBSYSTEM HEALER LOG SCAN
+// ============================================================================
 async function scanSubsystemHealerLogsForGlobalHints() {
   console.log(
     "%c🟪 Scanning SubsystemHealerLogs…",
@@ -201,9 +207,7 @@ async function scanSubsystemHealerLogsForGlobalHints() {
       "color:#FFC107; font-weight:bold;"
     );
 
-    // ------------------------------------------------------
     // PulseBand → latency/bar mismatch
-    // ------------------------------------------------------
     if (subsystem === "PulseBand" && type === "latency_bar_mismatch") {
       await writeGlobalHealerLog({
         source: "PulseBand",
@@ -229,9 +233,7 @@ async function scanSubsystemHealerLogsForGlobalHints() {
       });
     }
 
-    // ------------------------------------------------------
     // PulseNet → unstable signal slope
-    // ------------------------------------------------------
     if (subsystem === "PulseNet" && type === "unstable_signal_slope") {
       await writeGlobalHealerLog({
         source: "PulseNet",
@@ -257,9 +259,7 @@ async function scanSubsystemHealerLogsForGlobalHints() {
       });
     }
 
-    // ------------------------------------------------------
     // PulseClient → fallback spike
-    // ------------------------------------------------------
     if (subsystem === "PulseClient" && type === "fallback_spike") {
       await writeGlobalHealerLog({
         source: "PulseClient",
@@ -284,9 +284,7 @@ async function scanSubsystemHealerLogsForGlobalHints() {
       });
     }
 
-    // ------------------------------------------------------
     // Proxy → instance out-of-bounds
-    // ------------------------------------------------------
     if (subsystem === "Proxy" && type === "instance_out_of_bounds") {
       await writeGlobalHealerLog({
         source: "Proxy",
@@ -314,13 +312,13 @@ async function scanSubsystemHealerLogsForGlobalHints() {
   }
 }
 
-/* ============================================================================
-   PUBLIC: startGlobalHealer()
-   ============================================================================ */
 
+// ============================================================================
+//  PUBLIC: startGlobalHealer()
+// ============================================================================
 export default function startGlobalHealer() {
   console.log(
-    "%c🟦 GlobalHealer v6.3 started — Global immune system active.",
+    "%c🟦 GlobalHealer v7.3 started — Global immune system active.",
     "color:#03A9F4; font-weight:bold;"
   );
 

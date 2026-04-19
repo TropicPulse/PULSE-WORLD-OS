@@ -1,33 +1,33 @@
 // ============================================================================
 // FILE: /apps/lib/Connectors/PulseUpdate.js
-// LAYER: BLOOD PRESSURE (Circulatory Pressure + Vital Signs Layer)
+// LAYER: HEMODYNAMIC MONITOR (Pressure + Flow + Reflex Trigger Layer) — v7.1+
 // ============================================================================
 //
-// ROLE:
-//   BLOOD PRESSURE — The vital-signs subsystem of Pulse OS
+// ROLE (v7.1+):
+//   THE HEMODYNAMIC MONITOR — The organism’s circulatory vital‑signs layer.
 //   • Measures upstream pressure (latency)
 //   • Measures flow rate (kbps)
 //   • Classifies circulatory health
 //   • Builds normalized telemetry packets
-//   • Feeds the Nervous System (PulseBand)
+//   • Triggers reflex responses in the Nervous System (PulseBand)
 //
-// CONTRACT:
+// CONTRACT (v7.1+):
 //   • No PulseBand imports
 //   • No PulseNet imports
 //   • No global state
 //   • Pure subsystem module
 //
-// SAFETY:
-//   • v6.3 upgrade is COMMENTAL + DIAGNOSTIC ONLY — NO LOGIC CHANGES
-//   • All behavior remains identical to pre‑v6.3 PulseUpdate
+// SAFETY (v7.1+):
+//   • v7.1+ upgrade is COMMENTAL + DIAGNOSTIC ONLY — NO LOGIC CHANGES
+//   • All behavior remains identical to pre‑v7.1 PulseUpdate
 // ============================================================================
 
 // ============================================================================
 // LAYER CONSTANTS + DIAGNOSTICS
 // ============================================================================
-const BLOODPRESSURE_LAYER_ID = "BLOOD-PRESSURE-LAYER";
-const BLOODPRESSURE_LAYER_NAME = "THE BLOOD PRESSURE";
-const BLOODPRESSURE_LAYER_ROLE = "Circulatory Pressure + Vital Signs Layer";
+const BLOODPRESSURE_LAYER_ID = "HEMODYNAMIC-LAYER";
+const BLOODPRESSURE_LAYER_NAME = "THE HEMODYNAMIC MONITOR";
+const BLOODPRESSURE_LAYER_ROLE = "Pressure + Flow + Reflex Trigger Layer";
 
 const BLOODPRESSURE_DIAGNOSTICS_ENABLED =
   window?.PULSE_BLOODPRESSURE_DIAGNOSTICS === true ||
@@ -47,17 +47,17 @@ const bpLog = (stage, details = {}) => {
   );
 };
 
-bpLog("BLOODPRESSURE_INIT", {});
+bpLog("HEMODYNAMIC_INIT", {});
 window.PULSE_LOG = function (...args) {
-    try {
-        console.log("[PULSE]", ...args);
-    } catch (err) {
-        console.error("PULSE_LOG failed:", err);
-    }
+  try {
+    console.log("[PULSE]", ...args);
+  } catch (err) {
+    console.error("PULSE_LOG failed:", err);
+  }
 };
 
 // ============================================================================
-// 1. Simple upstream latency probe — PRESSURE MEASUREMENT
+// 1. Upstream latency probe — PRESSURE MEASUREMENT
 // ============================================================================
 async function measureLatency(url = "/pulse-proxy/ping") {
   window.PULSE_LOG(`PulseUpdate → measureLatency() called (${url})`);
@@ -105,7 +105,7 @@ async function measureLatency(url = "/pulse-proxy/ping") {
 }
 
 // ============================================================================
-// 2. Classifiers — BLOOD PRESSURE INTERPRETATION
+// 2. Classifiers — PRESSURE & FLOW INTERPRETATION
 // ============================================================================
 function classifyBars(latency) {
   window.PULSE_LOG(`PulseUpdate → classifyBars(${latency})`);
@@ -183,7 +183,7 @@ async function getPulseTelemetry() {
 }
 
 // ============================================================================
-// Exported API — BLOOD PRESSURE
+// Exported API — HEMODYNAMIC MONITOR
 // ============================================================================
 export const PulseUpdate = {
   measureLatency,

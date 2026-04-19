@@ -1,56 +1,41 @@
 // ============================================================================
 // FILE: /apps/netlify/functions/timerLogout.js
-// PULSE RESET ENGINE — v6.3
-// “THE CUSTODIAN / STATE RESET & LINEAGE RESTORATION ENGINE”
+// PULSE RESET ENGINE — v7.1+
+// “THE AUTONOMIC RESET ORGAN / HOMEOSTATIC RESTORATION ENGINE”
 // ============================================================================
 //
-// ⭐ v6.3 COMMENT LOG
-// - THEME: “THE CUSTODIAN / STATE RESET & LINEAGE RESTORATION ENGINE”
-// - ROLE: Daily population reset + lineage repair
-// - Added LAYER CONSTANTS + DIAGNOSTICS helper
-// - Added structured JSON logs (DOM-visible inspector compatible)
-// - Added explicit STAGE markers for settings/logout/history/fatal
-// - ZERO logic changes to logout or repair behavior
+// ROLE (v7.1+):
+//   timerLogout is the **AUTONOMIC RESET ORGAN** of PulseOS.
+//   It is the **HOMEOSTATIC RESTORATION ENGINE** — the subsystem that
+//   restores baseline state, resets inactive users, repairs lineage,
+//   and reconstructs missing pulse history snapshots.
 //
-// ============================================================================
-// PERSONALITY + ROLE — “THE CUSTODIAN”
-// ----------------------------------------------------------------------------
-// timerLogout is the **CUSTODIAN** of the Pulse OS.
-// It is the **STATE RESET & LINEAGE RESTORATION ENGINE** — the subsystem that
-// performs daily cleanup, resets inactive users, repairs loyalty state,
-// and restores missing pulse history snapshots.
-//
-//   • Logs out inactive users
-//   • Repairs loyalty state
-//   • Fixes missing pulse history snapshots
-//   • Ensures lineage integrity
+//   • Logs out inactive users (parasympathetic reset)
+//   • Repairs loyalty state (homeostasis)
+//   • Fixes missing pulse history snapshots (memory recollection)
+//   • Ensures lineage integrity (baseline restoration)
 //   • Writes reset logs for diagnostics
 //
-// This is the OS’s **ritual maintenance layer** — the daily purification pass.
-//
-// ============================================================================
-// WHAT THIS FILE IS
-// ----------------------------------------------------------------------------
-//   ✔ A deterministic reset engine
-//   ✔ A lineage repair subsystem
+// WHAT THIS FILE *IS* (v7.1+):
+//   ✔ A deterministic autonomic reset engine
+//   ✔ A lineage repair + recollection subsystem
 //   ✔ A population integrity maintainer
 //
-// WHAT THIS FILE IS NOT
-// ----------------------------------------------------------------------------
+// WHAT THIS FILE *IS NOT*:
 //   ✘ NOT a scheduler (The Heart calls this)
 //   ✘ NOT a scoring engine
 //   ✘ NOT a security sweep
 //   ✘ NOT a router
 //
-// ============================================================================
-// SAFETY CONTRACT (v6.3)
-// ----------------------------------------------------------------------------
+// SAFETY CONTRACT (v7.1+):
 //   • Never mutate root tokens
-//   • Only reset session state + loyalty state
+//   • Only reset session + loyalty state
 //   • Always repair missing snapshots deterministically
 //   • Always log lineage corrections
-//   • Fail-open per user: errors logged, reset continues
+//   • Fail‑open per user: errors logged, reset continues
 //
+// VERSION TAG:
+//   version: 7.1+
 // ============================================================================
 
 import * as admin from "firebase-admin";
@@ -64,13 +49,13 @@ const db = getFirestore();
 // ============================================================================
 // LAYER CONSTANTS + DIAGNOSTICS
 // ============================================================================
-const LAYER_ID = "CUSTODIAN-LAYER";
-const LAYER_NAME = "THE CUSTODIAN";
-const LAYER_ROLE = "STATE RESET & LINEAGE RESTORATION";
+const LAYER_ID = "AUTONOMIC-RESET-LAYER";
+const LAYER_NAME = "THE AUTONOMIC RESET ORGAN";
+const LAYER_ROLE = "HOMEOSTATIC RESTORATION ENGINE";
 
 const CUSTODIAN_DIAGNOSTICS_ENABLED =
-  window.PULSE_CUSTODIAN_DIAGNOSTICS === "true" ||
-  window.PULSE_DIAGNOSTICS === "true";
+  process.env.PULSE_CUSTODIAN_DIAGNOSTICS === "true" ||
+  process.env.PULSE_DIAGNOSTICS === "true";
 
 const logCustodian = (stage, details = {}) => {
   if (!CUSTODIAN_DIAGNOSTICS_ENABLED) return;
@@ -87,7 +72,7 @@ const logCustodian = (stage, details = {}) => {
 };
 
 // ============================================================================
-// BACKEND ENTRY POINT (CALLED BY HEARTBEAT)
+// BACKEND ENTRY POINT — “AUTONOMIC RESET REFLEX”
 // ============================================================================
 export async function timerLogout() {
   const runId = crypto.randomUUID();
@@ -104,7 +89,7 @@ export async function timerLogout() {
     const cutoff = new Date(now - 15 * 60 * 1000);
 
     // ---------------------------------------------------------
-    // ⭐ 1. LOAD SETTINGS
+    // ⭐ 1. LOAD SETTINGS (homeostatic parameters)
     // ---------------------------------------------------------
     let settings = {};
     let seasonalActive = false;
@@ -138,8 +123,8 @@ export async function timerLogout() {
     }
 
     // ---------------------------------------------------------
-    // ⭐ 2. LOGOUT USERS
-    // ---------------------------------------------------------
+    // ⭐ 2. LOGOUT USERS (parasympathetic reset)
+// ---------------------------------------------------------
     try {
       const snap = await db.collection("Users")
         .where("TPSecurity.lastAppActive", "<", cutoff)
@@ -205,8 +190,8 @@ export async function timerLogout() {
     }
 
     // ---------------------------------------------------------
-    // ⭐ 3. FIX PULSE HISTORY
-    // ---------------------------------------------------------
+    // ⭐ 3. FIX PULSE HISTORY (memory recollection)
+// ---------------------------------------------------------
     try {
       const usersSnap = await db.collection("Users").get();
 

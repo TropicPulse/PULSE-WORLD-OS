@@ -1,6 +1,6 @@
 // ============================================================================
 // FILE: tropic-pulse-functions/apps/pulse-gpu/PulseGPUSettingsMemory.js
-// PULSE GPU SETTINGS MEMORY v6.3 — THE EVOLUTION CORE
+// PULSE GPU SETTINGS MEMORY v7.3 — THE EVOLUTION CORE
 // Adaptive Identity Layer • Genetic Memory • Best‑Self Preservation Engine
 // ============================================================================
 //
@@ -12,6 +12,7 @@
 //  • Detects regressions (degeneration) and improvements (evolution).
 //  • Promotes stronger configurations into the organism’s identity.
 //  • Ensures the GPU body evolves toward optimal performance.
+//  • Advantage‑cascade aware: any systemic advantage is inherited automatically.
 //
 // ROLE IN THE GPU NATION:
 //  ------------------------
@@ -50,10 +51,17 @@
 //  • No network or filesystem access
 //  • Fail-open: malformed metrics/settings → safe defaults
 //  • Self-repair-ready: entries include OS metadata
+//
+// ADVANTAGE CASCADE (conceptual only):
+//  ------------------------------------
+//  • If pulses become faster → evolution cycles conceptually accelerate.
+//  • If system collapses 1000 pulses into 1 → memory promotion inherits that gain.
+//  • If any organ evolves → Evolution Core updates identity with that advantage.
+//  • No OR — all advantages are inherited automatically.
 // ============================================================================
 
 // ------------------------------------------------------------
-// ⭐ OS‑v6 CONTEXT METADATA — Evolution Core Identity
+// ⭐ OS‑v7 CONTEXT METADATA — Evolution Core Identity
 // ------------------------------------------------------------
 const MEMORY_CONTEXT = {
   layer: "PulseGPUSettingsMemory",
@@ -62,8 +70,14 @@ const MEMORY_CONTEXT = {
   context:
     "Stores best-known configs, metrics, traces, and supports regression detection",
   target: "full-gpu",
-  version: 6.3,
-  selfRepairable: true
+  version: 7.3,
+  selfRepairable: true,
+  evo: {
+    advantageCascadeAware: true,
+    pulseEfficiencyAware: true,
+    driftProof: true,
+    multiInstanceReady: true
+  }
 };
 
 // ------------------------------------------------------------
@@ -218,7 +232,6 @@ function buildCompositeKey(
 class PulseGPUSettingsMemoryStore {
   constructor() {
     this.entries = new Map();
-
     this.meta = { ...MEMORY_CONTEXT };
   }
 
@@ -256,7 +269,6 @@ class PulseGPUSettingsMemoryStore {
         bestMetrics: metrics || {},
         bestScore: score,
         bestTrace: Array.isArray(trace) ? trace.slice() : null,
-
         meta: { ...MEMORY_CONTEXT }
       };
       this.entries.set(key, entry);
@@ -316,7 +328,6 @@ class PulseGPUSettingsMemoryStore {
         bestScore:
           typeof entry.bestScore === "number" ? entry.bestScore : 0,
         bestTrace: Array.isArray(entry.bestTrace) ? entry.bestTrace : null,
-
         meta: { ...MEMORY_CONTEXT }
       };
 
@@ -331,7 +342,6 @@ class PulseGPUSettingsMemoryStore {
 class PulseGPUSettingsMemory {
   constructor() {
     this.store = new PulseGPUSettingsMemoryStore();
-
     this.meta = { ...MEMORY_CONTEXT };
   }
 

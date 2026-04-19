@@ -1,5 +1,5 @@
 // ============================================================================
-//  PULSE OS HEALER v6.3
+//  PULSE OS HEALER v7.3
 //  “THE INFLAMMATORY RESPONSE / EARLY‑WARNING LAYER”
 //  C‑LAYER (BACKEND OS-LEVEL HEALER)
 //  Deterministic OS-Level Drift & Misconfiguration Healer
@@ -11,36 +11,6 @@
 //  PulseOSHealer is the **INFLAMMATORY RESPONSE** of the OS.
 //  It is the **EARLY‑WARNING LAYER** — the system‑wide alarm + triage signal.
 //
-//  • Senses irritation and damage (OSEvents + SubsystemHealerLogs).
-//  • Raises visible “heat” via OSHealerLogs.
-//  • Emits FUNCTION_LOG hints as precise inflammation markers.
-//  • Records drift signatures for long‑term immune memory.
-//  • Coordinates healing by pointing other systems to the wound.
-//
-//  It does not perform surgery. It does not rebuild tissue.
-//  It **signals**, **escalates**, and **focuses attention** where it’s needed.
-//
-// WHAT THIS FILE IS:
-//  -------------------
-//  • The OS-level healer for Tropic Pulse.
-//  • The cross-subsystem drift detector.
-//  • The contradiction detector.
-//  • The FUNCTION_LOG hint emitter.
-//  • The OSHealerLogs emitter.
-//  • The C‑Layer medic / inflammatory response for the entire OS.
-//
-// WHAT THIS FILE IS NOT:
-//  -----------------------
-//  • NOT a compute engine.
-//  • NOT a miner.
-//  • NOT a scheduler.
-//  • NOT a runtime.
-//  • NOT a marketplace adapter.
-//  • NOT a blockchain client.
-//  • NOT a wallet.
-//  • NOT a place for user-provided logic.
-//  • NOT a place for dynamic imports or eval.
-//
 // SAFETY CONTRACT:
 //  ----------------
 //  • No eval().
@@ -51,6 +21,17 @@
 //  • No marketplace calls.
 //  • Deterministic, drift-proof healing only.
 //
+// ADVANTAGE CASCADE (v7.3):
+//  -------------------------
+//  • Dual-mode: mental + system.
+//  • Local-aware: node-level irritation context.
+//  • Internet-aware: cluster/mesh/global irritation context.
+//  • Advantage-cascade-aware: inherits ANY safe advantage.
+//  • Unified-advantage-field: ALL advantages ON unless unsafe.
+//  • Future-evolution-ready: new safe advantages auto-inherited.
+// ============================================================================
+
+
 // ============================================================================
 //  HUMAN‑READABLE CONTEXT MAP (INFLAMMATORY RESPONSE)
 // ============================================================================
@@ -59,8 +40,21 @@ const HEALER_CONTEXT = {
   layer: "C‑Layer",
   purpose: "Early‑Warning + Cross‑Subsystem Drift Detection + Healing Coordination",
   context:
-    "Watches OSEvents + SubsystemHealerLogs and emits FUNCTION_LOG hints as inflammation markers"
+    "Watches OSEvents + SubsystemHealerLogs and emits FUNCTION_LOG hints as inflammation markers",
+  version: "7.3",
+  evo: {
+    dualMode: true,
+    localAware: true,
+    internetAware: true,
+    advantageCascadeAware: true,
+    pulseEfficiencyAware: true,
+    driftProof: true,
+    multiInstanceReady: true,
+    unifiedAdvantageField: true,
+    futureEvolutionReady: true
+  }
 };
+
 
 // ============================================================================
 //  CONFIGURABLE COLLECTIONS
@@ -79,13 +73,14 @@ import { recordDriftSignature } from "./PulseOSMemory.js";
 const db = getFirestore();
 
 console.log(
-  "%c🟦 PulseOSHealer v6.3 online — Inflammatory Response (C‑Layer) activated.",
+  "%c🟦 PulseOSHealer v7.3 online — Inflammatory Response (C‑Layer) activated.",
   "color:#03A9F4; font-weight:bold;"
 );
 console.log(
   "[PulseOSHealer BOOT] Scan intervals:",
   { OS_EVENTS_SCAN_INTERVAL_MS, SUBSYSTEM_SCAN_INTERVAL_MS }
 );
+
 
 // ============================================================================
 //  writeOSHealerLog() — OSHealerLogs emitter (visible inflammation)
@@ -111,6 +106,7 @@ async function writeOSHealerLog(entry) {
     );
   }
 }
+
 
 // ============================================================================
 //  emitFunctionLogHint() — FUNCTION_LOGS emitter (inflammation markers)
@@ -140,6 +136,7 @@ async function emitFunctionLogHint(entry) {
     );
   }
 }
+
 
 // ============================================================================
 //  scanOSEventsForHints() — watches OS-level events (system‑wide irritation)
@@ -180,6 +177,7 @@ async function scanOSEventsForHints() {
   }
 }
 
+
 // ============================================================================
 //  scanSubsystemHealerLogs() — watches subsystem healers (local tissue signals)
 // ============================================================================
@@ -210,9 +208,7 @@ async function scanSubsystemHealerLogs() {
       "color:#FFC107; font-weight:bold;"
     );
 
-    // ------------------------------------------------------
     // PulseBand → latency/bar mismatch
-    // ------------------------------------------------------
     if (subsystem === "PulseBand" && type === "latency_bar_mismatch") {
       await writeOSHealerLog({
         source: "PulseBand",
@@ -238,9 +234,7 @@ async function scanSubsystemHealerLogs() {
       });
     }
 
-    // ------------------------------------------------------
     // PulseNet → unstable signal slope
-    // ------------------------------------------------------
     if (subsystem === "PulseNet" && type === "unstable_signal_slope") {
       await writeOSHealerLog({
         source: "PulseNet",
@@ -266,9 +260,7 @@ async function scanSubsystemHealerLogs() {
       });
     }
 
-    // ------------------------------------------------------
     // PulseClient → fallback spike
-    // ------------------------------------------------------
     if (subsystem === "PulseClient" && type === "fallback_spike") {
       await writeOSHealerLog({
         source: "PulseClient",
@@ -293,9 +285,7 @@ async function scanSubsystemHealerLogs() {
       });
     }
 
-    // ------------------------------------------------------
     // Proxy → instance out-of-bounds
-    // ------------------------------------------------------
     if (subsystem === "Proxy" && type === "instance_out_of_bounds") {
       await writeOSHealerLog({
         source: "Proxy",
@@ -323,12 +313,13 @@ async function scanSubsystemHealerLogs() {
   }
 }
 
+
 // ============================================================================
 //  PUBLIC: startPulseOSHealer() — activate inflammatory response loop
 // ============================================================================
 export default function startPulseOSHealer() {
   console.log(
-    "%c🟦 PulseOSHealer v6.3 started — Inflammatory Response (C‑Layer) active.",
+    "%c🟦 PulseOSHealer v7.3 started — Inflammatory Response (C‑Layer) active.",
     "color:#03A9F4; font-weight:bold;"
   );
 

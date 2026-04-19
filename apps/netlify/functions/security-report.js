@@ -1,63 +1,43 @@
 // ============================================================================
 // FILE: tropic-pulse-functions/functions/security-report.js
-// PULSE SECURITY REPORTER — v6.3
-// “THE REPORTER / FORENSIC INCIDENT LOGGING LAYER”
+// PULSE SECURITY REPORTER — v7.1+
+// “THE IMMUNE SENTINEL / FORENSIC ANTIGEN CAPTURE LAYER”
 // ============================================================================
 //
-// ⭐ v6.3 COMMENT LOG
-// - THEME: “THE REPORTER / FORENSIC INCIDENT LOGGING LAYER”
-// - ROLE: Passive forensic recorder for suspicious client activity
-// - Added LAYER CONSTANTS + DIAGNOSTICS helper
-// - Added structured JSON logs (for DOM-visible inspector pipelines)
-// - Added explicit STAGE markers for forensic traceability
-// - Preserved legacy Firebase behavior (no Netlify migration)
-// - ZERO logic changes to payload, Firestore writes, or endpoint behavior
-//
-// ============================================================================
-// PERSONALITY + ROLE — “THE REPORTER”
-// ----------------------------------------------------------------------------
-// reportSuspiciousClient is the **REPORTER** of the security subsystem.
-// It is the **FORENSIC INCIDENT LOGGING LAYER** — responsible for observing,
-// capturing, and recording suspicious or malicious client behavior.
+// ROLE (v7.1+):
+//   reportSuspiciousClient is the **IMMUNE SENTINEL** of PulseOS.
+//   It is the **FORENSIC ANTIGEN CAPTURE LAYER** — the subsystem that
+//   passively observes suspicious client behavior and records it for
+//   downstream immune analysis.
 //
 //   • Captures forensic metadata (identity, token, device, browser, IP)
-//   • Logs incidents to CHANGES (global) and IdentityHistory/{uid}/danger (per-user)
+//   • Logs incidents to CHANGES (global immune memory)
+//   • Logs per‑user danger events (IdentityHistory/{uid}/danger)
 //   • Never mutates identity documents
-//   • Never exposes forensic data to clients
-//   • Never blocks or intervenes — it only reports
+//   • Never exposes forensic metadata to clients
+//   • Never blocks or intervenes — pure antigen capture
 //
-// This is the OS’s “black box” for security events.
+// WHAT THIS FILE *IS* (v7.1+):
+//   • A deterministic immune surveillance organ
+//   • A passive forensic recorder
+//   • A stable, backward‑compatible Firebase endpoint
 //
-// ============================================================================
-// WHAT THIS FILE IS
-// ----------------------------------------------------------------------------
-//   ✔ A legacy Firebase HTTPS endpoint for security reporting
-//   ✔ A deterministic forensic logger
-//   ✔ A stable, backward-compatible security component
+// WHAT THIS FILE *IS NOT*:
+//   • NOT a Netlify function
+//   • NOT identity mutation
+//   • NOT a scoring engine
+//   • NOT a router
 //
-// WHAT THIS FILE IS NOT
-// ----------------------------------------------------------------------------
-//   ✘ NOT a Netlify function
-//   ✘ NOT a scoring engine
-//   ✘ NOT business logic
-//   ✘ NOT identity mutation
-//
-// ============================================================================
-// DEPLOYMENT
-// ----------------------------------------------------------------------------
-//   • Runs ONLY on Firebase Functions (legacy).
-//   • Must remain stable until fully migrated.
-//   • No new Firebase Functions should be added.
-//
-// ============================================================================
-// SAFETY CONTRACT (v6.3)
-// ----------------------------------------------------------------------------
+// SAFETY CONTRACT (v7.1+):
 //   • Always validate “reason”
 //   • Never mutate identity documents
 //   • Never expose forensic metadata
 //   • IP extraction must remain defensive
-//   • This endpoint is security-critical — changes ripple across identity + fraud systems
+//   • Never trust frontend payloads
+//   • Never throw unhandled errors
 //
+// VERSION TAG:
+//   version: 7.1+
 // ============================================================================
 
 import { onRequest } from "firebase-functions/v2/https";
@@ -69,13 +49,13 @@ const db = admin.firestore();
 // ============================================================================
 // LAYER CONSTANTS + DIAGNOSTICS
 // ============================================================================
-const LAYER_ID = "SECURITY-LAYER";
-const LAYER_NAME = "THE REPORTER";
-const LAYER_ROLE = "FORENSIC INCIDENT LOGGING";
+const LAYER_ID = "IMMUNE-LAYER";
+const LAYER_NAME = "IMMUNE SENTINEL";
+const LAYER_ROLE = "FORENSIC ANTIGEN CAPTURE";
 
 const REPORTER_DIAGNOSTICS_ENABLED =
-  window.PULSE_REPORTER_DIAGNOSTICS === "true" ||
-  window.PULSE_DIAGNOSTICS === "true";
+  process.env.PULSE_REPORTER_DIAGNOSTICS === "true" ||
+  process.env.PULSE_DIAGNOSTICS === "true";
 
 const logReporter = (stage, details = {}) => {
   if (!REPORTER_DIAGNOSTICS_ENABLED) return;
@@ -92,7 +72,7 @@ const logReporter = (stage, details = {}) => {
 };
 
 // ============================================================================
-// BACKEND ENTRY POINT — “THE REPORTER’S NOTEBOOK”
+// BACKEND ENTRY POINT — “IMMUNE SENTINEL CAPTURE”
 // ============================================================================
 export const reportSuspiciousClient = onRequest(
   { cors: true, maxInstances: 10 },
@@ -120,7 +100,7 @@ export const reportSuspiciousClient = onRequest(
       } = req.body || {};
 
       // -----------------------------------------------------------------------
-      // ⭐ VALIDATION
+      // ⭐ VALIDATION — immune sentinel never trusts foreign payloads
       // -----------------------------------------------------------------------
       if (!reason) {
         logReporter("MISSING_REASON", {});
@@ -131,7 +111,7 @@ export const reportSuspiciousClient = onRequest(
       }
 
       // -----------------------------------------------------------------------
-      // ⭐ FORENSIC IP EXTRACTION
+      // ⭐ FORENSIC IP EXTRACTION — defensive
       // -----------------------------------------------------------------------
       const ip =
         req.headers["x-forwarded-for"]?.split(",")[0]?.trim() ||
@@ -144,7 +124,7 @@ export const reportSuspiciousClient = onRequest(
           : null;
 
       // -----------------------------------------------------------------------
-      // ⭐ FORENSIC PAYLOAD CONSTRUCTION
+      // ⭐ FORENSIC PAYLOAD CONSTRUCTION — antigen capture
       // -----------------------------------------------------------------------
       const payload = {
         reason,
@@ -175,7 +155,7 @@ export const reportSuspiciousClient = onRequest(
       });
 
       // -----------------------------------------------------------------------
-      // ⭐ GLOBAL LOG (CHANGES)
+      // ⭐ GLOBAL IMMUNE MEMORY (CHANGES)
       // -----------------------------------------------------------------------
       await db.collection("CHANGES").add({
         type: "suspiciousClient",
@@ -185,7 +165,7 @@ export const reportSuspiciousClient = onRequest(
       logReporter("GLOBAL_LOG_WRITTEN", { uid });
 
       // -----------------------------------------------------------------------
-      // ⭐ PER-USER LOG (IdentityHistory/{uid}/danger)
+      // ⭐ PER‑USER IMMUNE MEMORY (IdentityHistory/{uid}/danger)
       // -----------------------------------------------------------------------
       if (uid) {
         await db

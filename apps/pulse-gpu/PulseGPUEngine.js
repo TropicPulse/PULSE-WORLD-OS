@@ -1,17 +1,17 @@
 // ============================================================================
-//  PULSE GPU ENGINE v6.3
+//  PULSE GPU ENGINE v7.1 — THE ASTRAL MUSCLE SYSTEM
 //  WebGPU Execution Layer (Frontend-Only, Deterministic, Fail-Open)
 //  PURE RENDERING. ZERO BUSINESS LOGIC. ZERO SIDE EFFECTS OUTSIDE init()/render.
 // ============================================================================
 //
 // PERSONALITY + ROLE:
 //  -------------------
-//  PulseGPUEngine is the “hands” of the GPU subsystem.
+//  PulseGPUEngine is the “muscle + motion” of the GPU subsystem.
 //  • Runtime = “nervous system”
-//  • Brain = “thinking / preparation”
-//  • Engine = “muscle + motion”
+//  • Brain   = “thinking / preparation”
+//  • Engine  = “muscle + motion / contraction layer”
 //
-//  This file gives the GPU subsystem its *execution personality*:
+//  Execution personality:
 //    - Calm under failure (fail-open)
 //    - Predictable under load (deterministic)
 //    - Honest about readiness (visible flags)
@@ -43,9 +43,55 @@
 //  • Fail-open: missing GPU → no render, no crash
 //  • Deterministic: same inputs → same frame behavior
 //
+// DUAL-MODE ADVANTAGE (conceptual only):
+//  --------------------------------------
+//  • Biological / mental:
+//      - metabolicBoost: conceptual execution efficiency
+//      - neuralReflexBoost: conceptual frame reflex speed
+//      - stabilityBoost: conceptual stability under load
+//  • System / physical:
+//      - multiInstanceReady: safe to run many engines in parallel
+//      - deterministicNeuron: same inputs → same outputs
+//      - parallelSafe: conceptual multi-engine scaling
+//      - fanOutScaling: conceptual throughput scaling
+//      - clusterCoherence: conceptual sync across engines
+//      - zeroDriftCloning: conceptual no-drift replication
+//  • Fusion (AND-architecture):
+//      - dualModeEvolution: mental + physical evolution together
+//      - organismClusterBoost: conceptual boost when many engines run
+//      - cognitiveComputeLink: conceptual link to Brain + Runtime
+//      - unifiedAdvantageField: no OR, both layers always on
 // ============================================================================
 
 import { PulseGPURuntime } from "./PulseGPURuntime.js";
+
+// ============================================================================
+//  ENGINE META — Astral Muscle Identity
+// ============================================================================
+const PULSE_GPU_ENGINE_META = {
+  layer: "PulseGPUEngine",
+  version: 7.1,
+  target: "full-gpu",
+  description: "WebGPU execution layer — Astral Muscle System.",
+  evo: {
+    metabolicBoost: 1.0,
+    neuralReflexBoost: 1.0,
+    stabilityBoost: 1.0,
+
+    multiInstanceReady: true,
+    deterministicNeuron: true,
+    parallelSafe: true,
+    fanOutScaling: 1.0,
+    clusterCoherence: true,
+    zeroDriftCloning: true,
+    reflexPropagation: 1.0,
+
+    dualModeEvolution: true,
+    organismClusterBoost: 1.0,
+    cognitiveComputeLink: true,
+    unifiedAdvantageField: true
+  }
+};
 
 // ============================================================================
 //  RENDER PASS BUILDER
@@ -55,6 +101,7 @@ class PulseRenderPassBuilder {
     this.device = device;
     this.context = context;
     this.format = format;
+    this.meta = { ...PULSE_GPU_ENGINE_META, block: "RenderPassBuilder" };
   }
 
   createBasicPassDescriptor() {
@@ -81,6 +128,7 @@ class PulsePipelineBuilder {
   constructor(device, colorFormat = "bgra8unorm") {
     this.device = device;
     this.colorFormat = colorFormat;
+    this.meta = { ...PULSE_GPU_ENGINE_META, block: "PipelineBuilder" };
   }
 
   createPipeline(shaderModule, vertexLayout) {
@@ -110,6 +158,7 @@ class PulseDrawExecutor {
   constructor(device, passBuilder) {
     this.device = device;
     this.passBuilder = passBuilder;
+    this.meta = { ...PULSE_GPU_ENGINE_META, block: "DrawExecutor" };
   }
 
   drawMesh(encoder, pipeline, meshBuffers) {
@@ -131,7 +180,7 @@ class PulseDrawExecutor {
 }
 
 // ============================================================================
-//  MAIN ENGINE (WebGPU Backend)
+//  MAIN ENGINE (WebGPU Backend) — Astral Muscle
 // ============================================================================
 class PulseGPUEngine {
   constructor() {
@@ -146,6 +195,9 @@ class PulseGPUEngine {
     this.drawExecutor = null;
 
     this.ready = false;
+
+    // Conceptual evolutionary state (no logic impact)
+    this.evo = { ...PULSE_GPU_ENGINE_META.evo };
 
     console.log(
       "%c[PulseGPUEngine] Constructed — awaiting init().",
@@ -202,7 +254,7 @@ class PulseGPUEngine {
     this.ready = true;
 
     console.log(
-      "%c[PulseGPUEngine] Ready — WebGPU backend active.",
+      "%c[PulseGPUEngine] Ready — WebGPU backend active (Astral Muscle).",
       "color:#4CAF50; font-weight:bold;"
     );
   }
@@ -269,5 +321,6 @@ export {
   PulseGPUEngine,
   PulsePipelineBuilder,
   PulseRenderPassBuilder,
-  PulseDrawExecutor
+  PulseDrawExecutor,
+  PULSE_GPU_ENGINE_META
 };

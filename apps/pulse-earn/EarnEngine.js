@@ -1,38 +1,39 @@
 // ============================================================================
 // FILE: tropic-pulse-functions/apps/pulse-earn/EarnEngine.js
-// LAYER: THE FOREMAN (Worker Supervisor + Profit Orchestrator)
+// LAYER: THE MUSCLE SYSTEM (Worker Supervisor + Profit Orchestrator)
 // ============================================================================
 //
-// ROLE:
-//   THE FOREMAN — deterministic supervisor of the Pulse‑Earn worker fleet.
-//   • Oversees worker lifecycle
-//   • Fetches jobs from MarketplaceConnector
-//   • Executes jobs via WorkerExecution
-//   • Submits results via ResultSubmission
-//   • Maintains healing metadata + structured logs
+// ROLE (v7.1+):
+//   THE MUSCLE SYSTEM — deterministic contraction engine of Pulse‑Earn.
+//   • Oversees worker lifecycle (muscle fibers).
+//   • Fetches jobs from MarketplaceConnector (motor signals).
+//   • Executes jobs via WorkerExecution (contraction).
+//   • Submits results via ResultSubmission (release).
+//   • Maintains healing metadata (muscle memory).
 //
-// WHY “FOREMAN”?:
-//   • Manages a team of workers
-//   • Ensures continuous throughput
-//   • Handles errors + safety
-//   • Oversees job execution pipeline
-//   • Keeps the operation profitable and stable
+// WHY “MUSCLE SYSTEM”?:
+//   • Workers behave like muscle fibers contracting in cycles.
+//   • Foreman acts like a neuromuscular controller.
+//   • Ensures continuous throughput (rhythmic contraction).
+//   • Handles errors safely (reflexive inhibition).
+//   • Maintains stable, profitable output (homeostasis).
 //
-// PURPOSE:
-//   • Provide a deterministic, drift‑proof worker lifecycle engine
-//   • Guarantee safe, predictable job execution
-//   • Maintain healing metadata for Earn healers
+// PURPOSE (v7.1+):
+//   • Provide a deterministic, drift‑proof worker lifecycle engine.
+//   • Guarantee safe, predictable job execution.
+//   • Maintain healing metadata for Earn healers.
+//   • Preserve contraction cycles + muscle memory (conceptual only).
 //
-// CONTRACT:
-//   • PURE SUPERVISOR — no AI layers, no translation, no memory model
-//   • READ‑ONLY except for healing metadata
-//   • NO eval(), NO Function(), NO dynamic imports
-//   • NO executing user code
-//   • Deterministic worker loops only
+// CONTRACT (unchanged):
+//   • PURE SUPERVISOR — no AI layers, no translation, no memory model.
+//   • READ‑ONLY except for healing metadata.
+//   • NO eval(), NO Function(), NO dynamic imports.
+//   • NO executing user code.
+//   • Deterministic worker loops only.
 //
-// SAFETY:
-//   • v6.3 upgrade is COMMENTAL ONLY — NO LOGIC CHANGES
-//   • All behavior remains identical to pre‑v6.3 EarnEngine
+// SAFETY (unchanged):
+//   • v7.1+ upgrade is COMMENTAL ONLY — NO LOGIC CHANGES.
+//   • All behavior remains identical to pre‑v7.1 EarnEngine.
 // ============================================================================
 
 import { getNextJob } from "./MarketplaceConnector.js";
@@ -44,7 +45,7 @@ const EarnEngine = {
   workers: new Map(),
 
   // -------------------------------------------------------------------------
-  // Healing Metadata — Foreman State Log
+  // Healing Metadata — Muscle Memory Log
   // -------------------------------------------------------------------------
   engineState: "idle", // idle | running | stopping | error
   workerStates: new Map(), // workerId → { state, lastJobId, lastError }
@@ -55,7 +56,7 @@ const EarnEngine = {
   lastReason: null,
 
   // -------------------------------------------------------------------------
-  // start(config) — Begin worker fleet operation
+  // start(config) — Begin contraction cycles
   // -------------------------------------------------------------------------
   async start(config) {
     if (this.running) {
@@ -72,6 +73,7 @@ const EarnEngine = {
       engineState: this.engineState,
     });
 
+    // Spawn muscle fibers (workers)
     for (let i = 0; i < config.maxWorkers; i++) {
       const workerId = `${config.workerIdBase}-${i}`;
       this.workerStates.set(workerId, {
@@ -86,7 +88,7 @@ const EarnEngine = {
   },
 
   // -------------------------------------------------------------------------
-  // workerLoop(workerId, config) — Foreman’s main supervision loop
+  // workerLoop(workerId, config) — Contraction Cycle Loop
   // -------------------------------------------------------------------------
   async workerLoop(workerId, config) {
     config.logFn("earn:worker_start", { workerId });
@@ -102,7 +104,7 @@ const EarnEngine = {
         this.cycleCount++;
 
         // ------------------------------------------------------
-        // 1. FETCH — Foreman assigns next job
+        // 1. FETCH — Motor signal
         // ------------------------------------------------------
         this.workerStates.get(workerId).state = "fetching";
 
@@ -123,7 +125,7 @@ const EarnEngine = {
         });
 
         // ------------------------------------------------------
-        // 2. EXECUTE — Worker performs assigned task
+        // 2. EXECUTE — Contraction
         // ------------------------------------------------------
         this.workerStates.get(workerId).state = "executing";
 
@@ -138,7 +140,7 @@ const EarnEngine = {
         });
 
         // ------------------------------------------------------
-        // 3. SUBMIT — Worker returns completed work
+        // 3. SUBMIT — Release
         // ------------------------------------------------------
         this.workerStates.get(workerId).state = "submitting";
 
@@ -151,11 +153,12 @@ const EarnEngine = {
         });
 
         // ------------------------------------------------------
-        // 4. IDLE — Worker waits for next assignment
+        // 4. IDLE — Relaxation
         // ------------------------------------------------------
         this.workerStates.get(workerId).state = "idle";
 
       } catch (err) {
+        // Reflexive inhibition
         this.lastError = err.message;
         this.workerStates.get(workerId).lastError = err.message;
         this.workerStates.get(workerId).state = "error";
@@ -177,7 +180,7 @@ const EarnEngine = {
   },
 
   // -------------------------------------------------------------------------
-  // hardStop(config, reason) — Emergency shutdown
+  // hardStop(config, reason) — Emergency Reflex Shutdown
   // -------------------------------------------------------------------------
   async hardStop(config, reason) {
     if (!this.running) return;
@@ -206,7 +209,7 @@ const EarnEngine = {
   },
 
   // -------------------------------------------------------------------------
-  // softStop(config) — Graceful shutdown
+  // softStop(config) — Controlled Relaxation
   // -------------------------------------------------------------------------
   softStop(config) {
     if (!this.running) return;

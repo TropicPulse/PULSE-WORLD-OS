@@ -1,5 +1,5 @@
 // FILE: tropic-pulse-functions/apps/pulse-translator/firestoreToPulse.js
-
+// VERSION: 7.3
 //
 // ------------------------------------------------------
 // 📘 PAGE INDEX — Source of Truth for This File
@@ -35,7 +35,7 @@
 //   • Deterministic translation only
 //
 // ------------------------------------------------------
-// Firestore → Pulse Translator
+// Firestore → Pulse Translator (v7.3)
 // ------------------------------------------------------
 
 import {
@@ -47,14 +47,29 @@ import {
 /**
  * inferPulseTypeFromFirestore(value)
  * Determines the PulseField type based on Firestore runtime value.
+ * v7.3: extended to support:
+ *   • nullable wrapper
+ *   • enum detection (string with allowedValues provided externally)
+ *   • currency / percent semantic hints (numeric)
  */
 export function inferPulseTypeFromFirestore(value) {
-  if (value === null || value === undefined) return PulseFieldTypes.JSON;
+  if (value === null || value === undefined) {
+    return PulseFieldTypes.NULLABLE; // explicit null wrapper
+  }
 
   const t = typeof value;
 
-  if (t === "string") return PulseFieldTypes.STRING;
-  if (t === "number") return PulseFieldTypes.NUMBER;
+  if (t === "string") {
+    // ENUM detection is handled by translators that supply allowedValues.
+    return PulseFieldTypes.STRING;
+  }
+
+  if (t === "number") {
+    // Currency/percent semantics are NOT inferred automatically.
+    // Translator layers may wrap these later.
+    return PulseFieldTypes.NUMBER;
+  }
+
   if (t === "boolean") return PulseFieldTypes.BOOLEAN;
 
   // Firestore Timestamp
@@ -74,6 +89,7 @@ export function inferPulseTypeFromFirestore(value) {
 /**
  * translateFirestoreField(fieldName, value)
  * Converts a Firestore field into a PulseField object.
+ * v7.3: supports nullable wrapper + preserves original Firestore type.
  */
 export function translateFirestoreField(fieldName, value) {
   const pulseType = inferPulseTypeFromFirestore(value);
@@ -83,7 +99,14 @@ export function translateFirestoreField(fieldName, value) {
     type: pulseType,
     source: "firestore",
     originalValueType: typeof value,
+    nullable: value === null || value === undefined,
   };
+
+  // v7.3: nullable wrapper
+  if (field.nullable && field.type !== PulseFieldTypes.NULLABLE) {
+    field.type = PulseFieldTypes.NULLABLE;
+    field.innerType = inferPulseTypeFromFirestore(null); // JSON fallback
+  }
 
   validatePulseField(field);
   return field;

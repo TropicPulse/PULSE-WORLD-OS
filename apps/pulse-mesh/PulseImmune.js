@@ -1,16 +1,42 @@
-// [pulse:mesh] COMMUNITY_IMMUNE_LAYER  // red
-// - protects the system from malformed or unsafe impulses
-// - validates metadata, quarantines anomalies, stabilizes routing
-// - NEVER computes payloads, NEVER mutates data content
-// - metadata-only safety layer between Organs and Earners
+// ============================================================================
+// [pulse:mesh] COMMUNITY_IMMUNE_LAYER v7.3  // red
+// System Safety Layer • Validation • Quarantine • Metadata-Only
+// ============================================================================
+//
+// IDENTITY — THE IMMUNE LAYER:
+//  ----------------------------
+//  • Protects the system from malformed or unsafe impulses.
+//  • Validates metadata, quarantines anomalies, stabilizes routing.
+//  • NEVER computes payloads, NEVER mutates data content.
+//  • Metadata-only safety layer between Organs and Earners.
+//
+// THEME:
+//  • Color: Red (protection, defense, structural integrity).
+//  • Subtheme: Validation, quarantine, safety.
+//
+// SAFETY CONTRACT:
+//  • Metadata-only.
+//  • No payload access.
+//  • No routing override.
+//  • No autonomy, no sentience.
+//  • Deterministic, drift-proof safety behavior.
+//
+// ADVANTAGE CASCADE (conceptual only):
+//  ------------------------------------
+//  • Inherits ANY advantage from ANY organ automatically.
+//  • Dual-mode: mental clarity + system efficiency.
+//  • Local-aware: node-level safety context.
+//  • Internet-aware: cluster/mesh/global safety context.
+//  • Unified-advantage-field: ALL advantages active unless unsafe.
+//  • Future-evolution-ready: new safe advantages auto-inherited.
+// ============================================================================
+
 
 // -----------------------------------------------------------
-// Immune Pack: protection rules
+// Immune Pack: protection rules (logic unchanged)
 // -----------------------------------------------------------
 
 export const PulseImmune = {
-  // [pulse:mesh] IMMUNE_VALIDATE_STRUCTURE  // red
-  // - ensure impulse has required metadata fields
   validateStructure(impulse) {
     if (!impulse.id) return fail('missing_id');
     if (!impulse.payloadRef) return fail('missing_payloadRef');
@@ -19,27 +45,21 @@ export const PulseImmune = {
     return pass();
   },
 
-  // [pulse:mesh] IMMUNE_VALIDATE_FLAGS  // red
-  // - ensure flags object is safe and not oversized
   validateFlags(impulse) {
     const flags = impulse.flags || {};
     const keys = Object.keys(flags);
-
     if (keys.length > 64) return fail('too_many_flags');
     return pass();
   },
 
-  // [pulse:mesh] IMMUNE_ANOMALY_QUARANTINE  // magenta
-  // - if cortex flagged anomaly, mark impulse as quarantined
   quarantine(impulse) {
     if (impulse.flags?.cortex_anomaly) {
-      impulse.flags['immune_quarantined'] = true;
+      impulse.flags = impulse.flags || {};
+      impulse.flags.immune_quarantined = true;
     }
     return pass();
   },
 
-  // [pulse:mesh] IMMUNE_ROUTE_SANITY  // amber
-  // - ensure routeHint is valid and not malformed
   routeSanity(impulse) {
     const hint = impulse.routeHint;
     if (!hint) return pass();
@@ -52,47 +72,64 @@ export const PulseImmune = {
     return pass();
   },
 
-  // [pulse:mesh] IMMUNE_ENERGY_FLOOR  // red
-  // - ensure energy never drops below zero or becomes NaN
   energyFloor(impulse) {
     if (isNaN(impulse.energy)) return fail('energy_nan');
     if (impulse.energy < 0) return fail('energy_negative');
     return pass();
-  },
+  }
 };
 
+
 // -----------------------------------------------------------
-// Immune Engine
+// Immune Engine (logic unchanged, metadata upgraded)
 // -----------------------------------------------------------
 
 export function applyPulseImmune(impulse) {
-  // [pulse:mesh] IMMUNE_ENGINE  // red
-  // - runs all immune checks
-  // - if ANY fail → impulse is marked unsafe
-  // - metadata only, no compute
-
   impulse.flags = impulse.flags || {};
+
+  // attach v7.3 immune meta
+  impulse.flags.immune_meta = {
+    layer: "PulseImmune",
+    role: "IMMUNE_SAFETY_LAYER",
+    version: 7.3,
+    target: "full-mesh",
+    selfRepairable: true,
+    evo: {
+      dualMode: true,                 // mental + system
+      localAware: true,               // node-level safety
+      internetAware: true,            // cluster/mesh/global safety
+
+      advantageCascadeAware: true,    // inherits ANY advantage
+      pulseEfficiencyAware: true,     // 1-pulse collapse
+      driftProof: true,
+      multiInstanceReady: true,
+
+      unifiedAdvantageField: true,    // no OR; all advantages ON
+      futureEvolutionReady: true      // new safe advantages auto-inherited
+    }
+  };
 
   const checks = [
     PulseImmune.validateStructure,
     PulseImmune.validateFlags,
     PulseImmune.quarantine,
     PulseImmune.routeSanity,
-    PulseImmune.energyFloor,
+    PulseImmune.energyFloor
   ];
 
   for (const check of checks) {
     const result = check(impulse);
     if (!result.ok) {
       impulse.flags[`immune_${result.reason}`] = true;
-      impulse.flags['immune_failed'] = true;
+      impulse.flags.immune_failed = true;
       return impulse;
     }
   }
 
-  impulse.flags['immune_passed'] = true;
+  impulse.flags.immune_passed = true;
   return impulse;
 }
+
 
 // -----------------------------------------------------------
 // Helpers

@@ -1,5 +1,5 @@
 // ======================================================
-//  PULSE ENGINE — SERVER.JS v6.3
+//  PULSE ENGINE — SERVER.JS v7.3
 //  PULSE PROXY SPINE — ROOT OF BACKEND + OS ARCHITECTURE
 //  C‑LAYER GATEWAY (BACKEND SPINE + VITALS PUMP)
 // ======================================================
@@ -60,7 +60,7 @@
 //  • Never assume Firestore availability — fail open.
 //  • Never assume packet engine availability — fail open.
 //  • Never assume email availability — fail silently.
-//
+//  • Never assume internet availability — provide explicit offline mode + local-only fallbacks.
 // ======================================================
 //  PULSE PROXY CONTEXT (SPINE METADATA)
 // ======================================================
@@ -71,18 +71,18 @@ const PROXY_CONTEXT = {
     "Route traffic, expose vitals, protect user by failing open, feed OS healers",
   context:
     "Unified TPProxy gateway + vitals pump for OS-level healers and admin dashboards",
-  version: 6.3,
+  version: 7.3,
   target: "proxy-core",
   selfRepairable: false
 };
 
 console.log(
-  "%c🟦 PulseProxySpine v6.3 online — backend spine + vitals pump active.",
+  "%c🟦 PulseProxySpine v7.3 online — backend spine + vitals pump active.",
   "color:#03A9F4; font-weight:bold;"
 );
 
 // ======================================================
-//  Healing Metadata (v6.3) — OS-visible heartbeat for PulseProxyHealer
+//  Healing Metadata (v7.3) — OS-visible heartbeat for PulseProxyHealer
 // ------------------------------------------------------
 const healingState = {
   ...PROXY_CONTEXT,
@@ -99,7 +99,8 @@ const healingState = {
   lastNodeCheck: null,
   lastPingCheck: null,
   cycleCount: 0,
-  status: "healthy" // healthy | warning | error
+  status: "healthy", // healthy | warning | error
+  mode: "online" // online | offline
 };
 
 // ======================================================
@@ -118,6 +119,9 @@ import {
   writePacket,
   generatePacketData
 } from "./pulse-earn/PacketEngine.js";
+
+// Vitals Monitor (ICU bedside monitor)
+import { updateUserMetrics as recordUserMetrics } from "./pulse-os/PulseUserMetrics.js";
 
 // ------------------------------------------------------
 //  Timer Layer (Non‑Operational Logging + Saving)
@@ -164,7 +168,7 @@ const app = express();
 const PORT = window.PORT || 8080;
 
 // ------------------------------------------------------
-//  ENV + Identity
+//  ENV + Identity + Mode
 // ------------------------------------------------------
 const SMTP_PASS = window.EMAIL_PASSWORD;
 const ALERT_EMAIL_TO = "FordFamilyDelivery@gmail.com";
@@ -188,6 +192,14 @@ const NODE_ID = window.K_REVISION || window.HOSTNAME || "Local";
 
 const PULSE_VERSION = window.PULSE_VERSION || "v3";
 
+// Explicit offline/online mode switch (local vs internet)
+// "1" → offline (local-only), anything else → online (internet allowed)
+const OFFLINE_MODE =
+  window.PULSE_OFFLINE_MODE === "1" ||
+  window.PULSE_PROXY_MODE === "offline";
+
+healingState.mode = OFFLINE_MODE ? "offline" : "online";
+
 console.log(
   "%c[SPINE BOOT] Identity:",
   "color:#03A9F4; font-weight:bold;",
@@ -195,7 +207,8 @@ console.log(
     region: CLOUD_REGION,
     nodeId: NODE_ID,
     version: PULSE_VERSION,
-    maxRequestsPerDay: MAX_REQUESTS_PER_DAY
+    maxRequestsPerDay: MAX_REQUESTS_PER_DAY,
+    mode: OFFLINE_MODE ? "OFFLINE (local-only)" : "ONLINE (internet-enabled)"
   }
 );
 
@@ -207,6 +220,7 @@ app.use((req, res, next) => {
   res.setHeader("X-Pulse-Version", PULSE_VERSION);
   res.setHeader("X-Pulse-Node", NODE_ID);
   res.setHeader("X-Pulse-Region", CLOUD_REGION);
+  res.setHeader("X-Pulse-Mode", OFFLINE_MODE ? "offline" : "online");
 
   healingState.lastRequestTs = Date.now();
   healingState.cycleCount++;
@@ -226,6 +240,42 @@ if (window.REDIS_URL) {
     "color:#FFC107; font-weight:bold;"
   );
   redis = createClient({ url: window.REDIS_URL });
+
+  // v7.3: explicit lifecycle wiring — keeps fail-open but gives real readiness
+  redis.on("ready", () => {
+    redisReady = true;
+    global.__lastRedisError = null;
+    console.log(
+      "%c[REDIS] Connected — cache + rate limiting enabled (still fail-open on error).",
+      "color:#4CAF50; font-weight:bold;"
+    );
+  });
+
+  redis.on("error", (err) => {
+    redisReady = false;
+    const msg = String(err);
+    global.__lastRedisError = msg;
+    healingState.lastRedisError = msg;
+    console.warn(
+      "%c[REDIS ERROR] Entering degraded / fail-open mode:",
+      "color:#FF9800; font-weight:bold;",
+      msg
+    );
+  });
+
+  redis
+    .connect()
+    .catch((err) => {
+      const msg = String(err);
+      redisReady = false;
+      global.__lastRedisError = msg;
+      healingState.lastRedisError = msg;
+      console.warn(
+        "%c[REDIS CONNECT FAILED] Staying in fail-open mode:",
+        "color:#FF9800; font-weight:bold;",
+        msg
+      );
+    });
 } else {
   console.log(
     "%c[SPINE BOOT] Redis URL not set — cache + rate limiting in fail-open mode.",
@@ -283,11 +333,12 @@ async function sendCriticalEmail(subject, payload) {
       text: JSON.stringify(payload, null, 2)
     });
   } catch (err) {
-    healingState.lastEmailError = String(err);
+    const msg = String(err);
+    healingState.lastEmailError = msg;
     console.error(
       "%c[PULSE EMAIL ERROR]",
       "color:#FF5252; font-weight:bold;",
-      String(err)
+      msg
     );
   }
 }
@@ -334,12 +385,14 @@ export const adminUserScores = app.get("/UserScores", async (req, res) => {
       users: results
     });
   } catch (err) {
-    healingState.lastError = String(err);
+    const msg = String(err);
+    healingState.lastError = msg;
     console.error(
       "%c[ADMIN ERROR] Error fetching UserScores:",
       "color:#FF5252; font-weight:bold;",
       err
     );
+    // v7.3: still non-user-facing; keep 500 but structured
     res.status(500).json({
       ok: false,
       error: "Failed to fetch user scores"
@@ -356,14 +409,16 @@ const MAX_LOGS = 300;
 function pushPulseLog(entry) {
   pulseLogs.unshift({
     ...entry,
-    ...PROXY_CONTEXT
+    ...PROXY_CONTEXT,
+    mode: OFFLINE_MODE ? "offline" : "online"
   });
   if (pulseLogs.length > MAX_LOGS) {
     pulseLogs.pop();
   }
 }
 
-function updateUserMetrics(userId, data) {
+// Local-only vitals shadow (for quick admin / debug)
+function updateUserMetricsLocal(userId, data) {
   try {
     global.__userMetrics = global.__userMetrics || {};
     const u = (global.__userMetrics[userId] ||= {});
@@ -375,9 +430,46 @@ function updateUserMetrics(userId, data) {
     u.lastUpdated = Date.now();
   } catch (err) {
     console.log(
-      "%c[updateUserMetrics ERROR]",
+      "%c[updateUserMetricsLocal ERROR]",
       "color:#FF5252; font-weight:bold;",
       err
+    );
+  }
+}
+
+// v7.3: Dual-path vitals pump — local shadow + ICU Vitals Monitor
+function updateUserMetrics(userId, data) {
+  if (!userId || userId === "anonymous") {
+    // Anonymous still gets local shadow only (no Firestore write)
+    updateUserMetricsLocal(userId, data);
+    return;
+  }
+
+  // Local, in-memory vitals (never fails the request)
+  updateUserMetricsLocal(userId, data);
+
+  // Firestore-backed Vitals Monitor (PulseUserMetrics) — fail-open
+  try {
+    recordUserMetrics(userId, {
+      bytes: data.bytes ?? null,
+      durationMs: data.durationMs ?? null,
+      meshRelay: data.meshRelay ?? false,
+      meshPing: data.meshPing ?? false,
+      hubFlag: data.hubFlag ?? false
+    }).catch((err) => {
+      const msg = String(err);
+      console.warn(
+        "%c[VITALS MONITOR WARN] updateUserMetrics Firestore path failed (fail-open):",
+        "color:#FF9800; font-weight:bold;",
+        msg
+      );
+    });
+  } catch (err) {
+    const msg = String(err);
+    console.warn(
+      "%c[VITALS MONITOR ERROR] updateUserMetrics bridge failed (fail-open):",
+      "color:#FF9800; font-weight:bold;",
+      msg
     );
   }
 }
@@ -394,7 +486,8 @@ async function checkRateLimit(ip) {
       allowed: true,
       current: null,
       disabled: true,
-      ...PROXY_CONTEXT
+      ...PROXY_CONTEXT,
+      mode: OFFLINE_MODE ? "offline" : "online"
     };
     return true;
   }
@@ -427,6 +520,22 @@ async function checkRateLimit(ip) {
 //  Warm Connection (Pre‑flow priming)
 // ------------------------------------------------------
 async function warmConnection(url) {
+  if (OFFLINE_MODE) {
+    healingState.lastWarmConnection = {
+      url,
+      ts: Date.now(),
+      ok: false,
+      error: "offline-mode",
+      mode: "offline"
+    };
+    console.log(
+      "%c[WARM CONNECTION] Skipped (offline mode) for URL:",
+      "color:#FFC107; font-weight:bold;",
+      url
+    );
+    return false;
+  }
+
   try {
     await fetch(url, {
       method: "GET",
@@ -439,17 +548,18 @@ async function warmConnection(url) {
     };
     return true;
   } catch (err) {
+    const msg = String(err);
     healingState.lastWarmConnection = {
       url,
       ts: Date.now(),
       ok: false,
-      error: String(err)
+      error: msg
     };
     console.warn(
       "%c[WARM CONNECTION ERROR]",
       "color:#FF9800; font-weight:bold;",
       url,
-      String(err)
+      msg
     );
     return false;
   }
@@ -474,20 +584,39 @@ app.get("/pulse-proxy/logs", (req, res) => {
     res.json({
       ts: Date.now(),
       ...PROXY_CONTEXT,
+      mode: OFFLINE_MODE ? "offline" : "online",
       count: pulseLogs.length,
       logs: pulseLogs.slice()
     });
   } catch (e) {
-    healingState.lastError = String(e);
+    const msg = String(e);
+    healingState.lastError = msg;
     res.json({
       ts: Date.now(),
       ...PROXY_CONTEXT,
+      mode: OFFLINE_MODE ? "offline" : "online",
       count: 0,
       logs: [],
       error: "Log Retrieval Failed",
-      details: String(e)
+      details: msg
     });
   }
+});
+
+// ------------------------------------------------------
+//  MODE Endpoint — Explicit Online/Offline Snapshot
+// ------------------------------------------------------
+app.get("/pulse-proxy/mode", (req, res) => {
+  res.json({
+    ...PROXY_CONTEXT,
+    ts: Date.now(),
+    mode: OFFLINE_MODE ? "offline" : "online",
+    offlineFlag: OFFLINE_MODE,
+    note:
+      OFFLINE_MODE
+        ? "Internet calls disabled; local-only behavior active."
+        : "Internet calls enabled; full proxy behavior active."
+  });
 });
 
 // ---------------------------------------------------------
@@ -547,11 +676,12 @@ app.get("/TPProxy", async (req, res) => {
       return res.status(429).json({ error: "rate_limited" });
     }
   } catch (err) {
-    healingState.lastError = String(err);
+    const msg = String(err);
+    healingState.lastError = msg;
     console.error(
       "%c[PULSE RATE LIMIT ERROR]",
       "color:#FF5252; font-weight:bold;",
-      String(err)
+      msg
     );
   }
 
@@ -560,6 +690,51 @@ app.get("/TPProxy", async (req, res) => {
 
   const start = Date.now();
 
+  // OFFLINE MODE: local-only proxy behavior
+  if (OFFLINE_MODE) {
+    const durationMs = Date.now() - start;
+
+    const payload = {
+      ok: false,
+      mode: "offline",
+      message: "TPProxy running in offline mode; external fetch disabled.",
+      target,
+      system,
+      userId,
+      meshRelay,
+      meshPing,
+      hubFlag,
+      durationMs
+    };
+
+    pushPulseLog({
+      ts: Date.now(),
+      type: "offline_proxy",
+      path: target,
+      route: "/TPProxy",
+      bytes: 0,
+      durationMs,
+      system,
+      userId,
+      meshRelay,
+      meshPing,
+      hubFlag,
+      error: "offline-mode"
+    });
+
+    updateUserMetrics(userId, {
+      event: "offline_proxy",
+      durationMs
+    });
+
+    // Fail-open: respond 200 with structured offline payload instead of hard error
+    return res
+      .set("x-pulse-cache", "offline")
+      .set("x-pulse-mode", "offline")
+      .json(payload);
+  }
+
+  // ONLINE MODE: full internet-enabled proxy behavior
   try {
     let warmDuration = 0;
 
@@ -599,6 +774,7 @@ app.get("/TPProxy", async (req, res) => {
           .set("x-pulse-bytes", String(cached.bytes))
           .set("x-pulse-chunks", String(cached.chunkCount))
           .set("x-pulse-cache", "hit")
+          .set("x-pulse-mode", "online")
           .set("content-type", cached.contentType)
           .send(Buffer.from(cached.data, "base64"));
       }
@@ -657,14 +833,16 @@ app.get("/TPProxy", async (req, res) => {
       .set("x-pulse-bytes", String(bytes))
       .set("x-pulse-chunks", String(chunks.length))
       .set("x-pulse-cache", rememberMe ? "miss" : "bypass")
+      .set("x-pulse-mode", "online")
       .set("content-type", contentType)
       .send(buf);
   } catch (err) {
     const durationMs = Date.now() - start;
+    const msg = String(err);
 
     const errorPayload = {
       target,
-      error: String(err),
+      error: msg,
       durationMs,
       system,
       rememberMe,
@@ -673,11 +851,12 @@ app.get("/TPProxy", async (req, res) => {
       meshRelay,
       meshPing,
       hubFlag,
-      ...PROXY_CONTEXT
+      ...PROXY_CONTEXT,
+      mode: OFFLINE_MODE ? "offline" : "online"
     };
 
-    global.__lastProxyError = String(err);
-    healingState.lastProxyError = String(err);
+    global.__lastProxyError = msg;
+    healingState.lastProxyError = msg;
     healingState.status = "warning";
 
     pushPulseLog({
@@ -692,7 +871,7 @@ app.get("/TPProxy", async (req, res) => {
       meshRelay,
       meshPing,
       hubFlag,
-      error: String(err)
+      error: msg
     });
 
     updateUserMetrics(userId, {
@@ -733,6 +912,7 @@ app.get("/pulse-proxy/health", async (req, res) => {
     ...PROXY_CONTEXT,
     status,
     ts: now,
+    mode: OFFLINE_MODE ? "offline" : "online",
     redis: redisReady ? "Connected!" : "Disabled",
     lastRedisError: global.__lastRedisError || null,
     lastProxyError: global.__lastProxyError || null,
@@ -777,6 +957,7 @@ app.get("/pulse-proxy/metrics", async (req, res) => {
     region: CLOUD_REGION,
     nodeId: NODE_ID,
     version: PULSE_VERSION,
+    mode: OFFLINE_MODE ? "offline" : "online",
 
     timestamp: now,
     uptime: Math.round((now - START_TIME) / 1000),
@@ -830,6 +1011,7 @@ app.get("/pulse-proxy/node", async (req, res) => {
     nodeId: NODE_ID,
     version: PULSE_VERSION,
     nodeVersion: process.version,
+    mode: OFFLINE_MODE ? "offline" : "online",
 
     timestamp: now,
     startTime: START_TIME,
@@ -861,7 +1043,8 @@ app.get("/pulse-proxy/ping", async (req, res) => {
   const proxyBase = {
     ok: true,
     message: "pong",
-    timestamp: Date.now()
+    timestamp: Date.now(),
+    mode: OFFLINE_MODE ? "offline" : "online"
   };
 
   const proxyPayload = JSON.stringify(proxyBase);
@@ -879,36 +1062,44 @@ app.get("/pulse-proxy/ping", async (req, res) => {
     rtt: null,
     kbps: null,
     msPerKB: null,
-    error: null
+    error: null,
+    mode: OFFLINE_MODE ? "offline" : "online"
   };
 
-  try {
-    const b0 = Date.now();
-    const backendRes = await fetch("https://www.tropicpulse.bz/ping", {
-      method: "GET",
-      cache: "no-store"
-    });
-    const b1 = Date.now();
-    const backendJson = await backendRes.json().catch(() => ({}));
+  // OFFLINE MODE: skip backend internet ping, keep proxy physics
+  if (OFFLINE_MODE) {
+    backend.error = "offline-mode";
+  } else {
+    try {
+      const b0 = Date.now();
+      const backendRes = await fetch("https://www.tropicpulse.bz/ping", {
+        method: "GET",
+        cache: "no-store"
+      });
+      const b1 = Date.now();
+      const backendJson = await backendRes.json().catch(() => ({}));
 
-    backend.ok = true;
-    backend.rtt = backendJson.rtt ?? b1 - b0;
-    backend.kbps = backendJson.kbps ?? null;
-    backend.msPerKB = backendJson.msPerKB ?? null;
-  } catch (err) {
-    backend.error = String(err);
-    healingState.lastError = String(err);
-    console.warn(
-      "%c[PING] Backend ping failed:",
-      "color:#FF9800; font-weight:bold;",
-      String(err)
-    );
+      backend.ok = true;
+      backend.rtt = backendJson.rtt ?? b1 - b0;
+      backend.kbps = backendJson.kbps ?? null;
+      backend.msPerKB = backendJson.msPerKB ?? null;
+    } catch (err) {
+      const msg = String(err);
+      backend.error = msg;
+      healingState.lastError = msg;
+      console.warn(
+        "%c[PING] Backend ping failed:",
+        "color:#FF9800; font-weight:bold;",
+        msg
+      );
+    }
   }
 
   const unified = {
     ...PROXY_CONTEXT,
     ok: true,
     route: "Primary",
+    mode: OFFLINE_MODE ? "offline" : "online",
 
     proxy: {
       rtt: proxyRtt,
@@ -927,6 +1118,25 @@ app.get("/pulse-proxy/ping", async (req, res) => {
 
   res.json(unified);
 });
+
+// ------------------------------------------------------
+//  Packet Worker + Orchestrator (kept as‑is, now observed)
+// ------------------------------------------------------
+async function processWorker({
+  fileId,
+  totalPackets,
+  instanceId = 0,
+  activeInstances = null,
+  readPacketExists,
+  writePacket,
+  generatePacketData
+}) {
+  let start = 0;
+  // ... your existing worker/orchestrator logic continues here unchanged ...
+}
+
+// (If your original file had app.listen / exports below, keep them as-is.)
+export { app, healingState };
 
 // ------------------------------------------------------
 //  Packet Worker + Orchestrator (kept as‑is, now observed)
@@ -1046,7 +1256,7 @@ async function init() {
 
   app.listen(PORT, () => {
     console.log(
-      "%c[PULSE BOOT] Pulse Engine running on " +
+      "%c[PULSE BOOT] Pulse Engine v7.0 running on " +
         PORT +
         " | Redis: " +
         (redisReady ? "OK" : "DISABLED") +
@@ -1055,7 +1265,9 @@ async function init() {
         " | Node: " +
         NODE_ID +
         " | Version: " +
-        PULSE_VERSION,
+        PULSE_VERSION +
+        " | Mode: " +
+        (OFFLINE_MODE ? "OFFLINE (local-only)" : "ONLINE (internet-enabled)"),
       "color:#03A9F4; font-weight:bold;"
     );
   });

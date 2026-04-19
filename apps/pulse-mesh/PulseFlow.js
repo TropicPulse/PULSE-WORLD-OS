@@ -1,27 +1,38 @@
-// -----------------------------------------------------------
-// [pulse:mesh] COMMUNITY_FLOW_LAYER  // rainbow
-// -----------------------------------------------------------
-// ROLE:
-//   - Orchestrates the full impulse lifecycle through all layers
-//   - Ensures smooth, frictionless, self-repairing pulse flow
-//   - Sequences Skin → Reflex → Cortex → Tendons → Organs → Immune
-//               → Memory → Hormones → Aura → Mesh → Skin(exit)
-//   - NEVER computes payloads
-//   - NEVER mutates data content
-//   - Metadata-only orchestration for system-wide harmony
+// ============================================================================
+// [pulse:mesh] COMMUNITY_FLOW_LAYER v7.3  // rainbow
+// Full-Spectrum Coordination • Metadata-Only • Self-Repairing Flow Engine
+// ============================================================================
+//
+// IDENTITY — THE FLOW ORGAN:
+//  --------------------------
+//  • Orchestrates the full impulse lifecycle through all layers.
+//  • Ensures smooth, frictionless, self-repairing pulse flow.
+//  • Sequences Skin → Reflex → Cortex → Tendons → Organs → Immune
+//               → Memory → Hormones → Aura → Mesh → Skin(exit).
+//  • NEVER computes payloads.
+//  • NEVER mutates data content.
+//  • Metadata-only orchestration for organism-wide harmony.
 //
 // THEME:
-//   - Color: Rainbow (full-spectrum coordination)
-//   - Subtheme: Flow, continuity, organism-wide coherence
+//  • Color: Rainbow (full-spectrum coordination).
+//  • Subtheme: Flow, continuity, coherence.
 //
 // SAFETY CONTRACT:
-//   - No payload access
-//   - No compute
-//   - No autonomy
-//   - No routing override
-//   - No mutation outside metadata
+//  • No payload access.
+//  • No compute.
+//  • No autonomy.
+//  • No routing override.
+//  • No mutation outside metadata.
 //
-// -----------------------------------------------------------
+// ADVANTAGE CASCADE (conceptual only):
+//  ------------------------------------
+//  • Inherits ANY advantage from ANY organ automatically.
+//  • Dual-mode: mental clarity + system efficiency.
+//  • Local-aware: node-level flow conditions.
+//  • Internet-aware: cluster/mesh flow conditions.
+//  • Unified-advantage-field: ALL advantages active unless unsafe.
+//  • Future-evolution-ready: new safe advantages auto-inherited.
+// ============================================================================
 
 import { applyPulseSkin } from './PulseSkin.js';
 import { createCommunityReflex } from './CommunityReflex.js';
@@ -42,27 +53,45 @@ import { PulseHaloCounters } from './PulseHalo.js';
 export function PulseFlow(mesh) {
   const reflex = createCommunityReflex();
 
+  const meta = {
+    layer: "PulseFlow",
+    role: "FLOW_ORCHESTRATOR",
+    version: 7.3,
+    target: "full-mesh",
+    selfRepairable: true,
+    evo: {
+      dualMode: true,                 // mental + system
+      localAware: true,               // node-level flow
+      internetAware: true,            // cluster/mesh flow
+      advantageCascadeAware: true,    // inherits ANY advantage
+      pulseEfficiencyAware: true,     // 1-pulse collapse
+      driftProof: true,
+      multiInstanceReady: true,
+      unifiedAdvantageField: true,    // no OR; all advantages ON
+      futureEvolutionReady: true      // new safe advantages auto-inherited
+    }
+  };
+
   return {
+    meta,
+
     // -------------------------------------------------------
     // [pulse:mesh] FLOW_RUN  // rainbow
     // -------------------------------------------------------
-    // Runs a full impulse through the entire pipeline
-    // Metadata-only shaping, no payload access
-    // -------------------------------------------------------
     run(impulse, entryNodeId, context = {}) {
       impulse.flags = impulse.flags || {};
-      impulse.flags['flow_started'] = true;
+      impulse.flags.flow_meta = meta;
+      impulse.flags.flow_started = true;
 
-      // HALO: impulse started
       PulseHaloCounters.impulseStarted();
 
       // -----------------------------------------------------
-      // 1. SKIN ENTRY (normalize + boundary shaping)
+      // 1. SKIN ENTRY
       // -----------------------------------------------------
       applyPulseSkin(impulse, 'entry');
 
       // -----------------------------------------------------
-      // 2. REFLEX (instinctive keep/drop)
+      // 2. REFLEX
       // -----------------------------------------------------
       const reflexDecision = reflex(impulse, {
         trustLevel: context.trustLevel,
@@ -77,22 +106,22 @@ export function PulseFlow(mesh) {
       }
 
       // -----------------------------------------------------
-      // 3. CORTEX (strategic shaping)
+      // 3. CORTEX
       // -----------------------------------------------------
       applyPulseCortex(impulse, context);
 
       // -----------------------------------------------------
-      // 4. TENDONS (intent + routeHint + energy shaping)
+      // 4. TENDONS
       // -----------------------------------------------------
       applyTendons(impulse);
 
       // -----------------------------------------------------
-      // 5. ORGANS (functional identity)
+      // 5. ORGANS
       // -----------------------------------------------------
       applyPulseOrgans(impulse);
 
       // -----------------------------------------------------
-      // 6. IMMUNE (safety + validation)
+      // 6. IMMUNE
       // -----------------------------------------------------
       const immuneBefore = impulse.flags?.immune_quarantined;
       applyPulseImmune(impulse);
@@ -101,7 +130,7 @@ export function PulseFlow(mesh) {
       }
 
       // -----------------------------------------------------
-      // 7. MEMORY (long-term pattern retention)
+      // 7. MEMORY
       // -----------------------------------------------------
       const memoryBefore = impulse.flags?.memory_written;
       applyPulseMemory(impulse);
@@ -110,7 +139,7 @@ export function PulseFlow(mesh) {
       }
 
       // -----------------------------------------------------
-      // 8. HORMONES (global modulation)
+      // 8. HORMONES
       // -----------------------------------------------------
       const hormoneBefore = impulse.flags?.hormone_event;
       applyPulseHormones(impulse);
@@ -123,7 +152,7 @@ export function PulseFlow(mesh) {
       }
 
       // -----------------------------------------------------
-      // 9. AURA (loop + sync field)
+      // 9. AURA
       // -----------------------------------------------------
       const auraBeforeLoop = impulse.flags?.aura_loop;
       const auraBeforeSync = impulse.flags?.aura_sync;
@@ -138,17 +167,16 @@ export function PulseFlow(mesh) {
       }
 
       // -----------------------------------------------------
-      // 10. MESH ROUTING (spine traversal)
+      // 10. MESH ROUTING
       // -----------------------------------------------------
       const routed = mesh.routeImpulse(mesh, impulse, entryNodeId, context);
 
-      // HALO: mesh hops (if mesh exposes hop count)
       if (routed.flags?.mesh_hops) {
         PulseHaloCounters.meshHops(routed.flags.mesh_hops);
       }
 
       // -----------------------------------------------------
-      // 11. SKIN EXIT (clean + boundary-safe)
+      // 11. SKIN EXIT
       // -----------------------------------------------------
       applyPulseSkin(routed, 'exit');
 
@@ -163,9 +191,8 @@ export function PulseFlow(mesh) {
 
 function finalize(impulse) {
   impulse.flags = impulse.flags || {};
-  impulse.flags['flow_completed'] = true;
+  impulse.flags.flow_completed = true;
 
-  // HALO: impulse completed
   PulseHaloCounters.impulseCompleted();
 
   return impulse;

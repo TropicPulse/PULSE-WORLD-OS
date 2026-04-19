@@ -1,49 +1,27 @@
 // ============================================================================
 // FILE: /apps/tropic-pulse/lib/Connectors/Gate.js
-// PULSE OS — v6.3+
+// PULSE OS — v7.0
 // “THE GATE / HEARTBEAT SIGNAL LAYER”
+// LOCAL‑FIRST • OFFLINE‑CAPABLE • ZERO TIMING • ZERO STATE
 // ============================================================================
 //
-// ⭐ v6.3+ COMMENT LOG  [OS‑LEVEL — WHITE]
-// - THEME: “THE GATE / PROTECTIVE HEARTBEAT SIGNAL”
-// - ROLE: Protect backend heartbeat from direct frontend access
-// - Added: Safe, one‑way heartbeat signal wrapper
-// - Added: Strict separation of timing (backend) vs signaling (frontend)
-// - Added: Zero‑risk, zero‑state, zero‑timing frontend design
-// - ZERO timing logic on frontend
-// - ZERO intervals, loops, or scheduling
-//
-// ============================================================================
-// PERSONALITY + ROLE — “THE GATE”  [PURPLE — SUBSYSTEM IDENTITY]
-// ----------------------------------------------------------------------------
-// Gate.js is the **protective membrane** between the frontend (BLUE) and the
-// backend heartbeat (RED). It ensures the frontend NEVER:
-//
-//   • runs timing logic
-//   • schedules anything
-//   • loops or intervals
-//   • touches backend timing directly
-//
-// The Gate’s ONLY job:
-//   • Accept a request from router.js (BLUE)
-//   • Forward a SAFE, ONE‑WAY SIGNAL to the backend heartbeat (RED)
+// ROLE (v7.0):
+//   • Protect backend heartbeat from direct frontend access
+//   • Provide a safe, one‑way signal path
+//   • Never run timers, loops, or scheduling
 //   • Never store state
-//   • Never run timers
-//   • Never retry
-//   • Never mutate anything
+//   • Never mutate payloads
+//   • Never depend on internet
+//   • When offline → provide safe local fallback
 //
-// The Gate is the **nerve ending** that touches the heart without becoming one.
-//
-// ============================================================================
-// WHAT THIS FILE IS  [GREEN — CLARITY]
-// ----------------------------------------------------------------------------
+// WHAT THIS FILE IS:
 //   ✔ A protective wrapper around backend heartbeat
 //   ✔ A safe, one‑way signal sender
 //   ✔ A strict boundary between router.js and backend timer
 //   ✔ A frontend → backend communication gate
+//   ✔ v7.0: LOCAL‑FIRST, OFFLINE‑SAFE
 //
-// WHAT THIS FILE IS NOT  [GREEN — CLARITY]
-// ----------------------------------------------------------------------------
+// WHAT THIS FILE IS NOT:
 //   ✘ NOT a timer
 //   ✘ NOT a heartbeat
 //   ✘ NOT a scheduler
@@ -51,43 +29,58 @@
 //   ✘ NOT a backend logic layer
 //   ✘ NOT a state machine
 //
-// ============================================================================
-// SAFETY CONTRACT (v6.3+)  [CYAN — SAFETY RULES]
-// ----------------------------------------------------------------------------
+// SAFETY CONTRACT (v7.0):
 //   • Never run timing logic on frontend
 //   • Never store state
 //   • Never retry or loop
 //   • Never mutate payloads
 //   • Never expose backend heartbeat directly
 //   • Always send a one‑way, best‑effort signal
+//   • v7.0: If offline → return safe local signal instead of fetch
 //
 // ============================================================================
-// ⭐ HEARTBEAT SIGNAL FUNCTION (Frontend → Backend)  [GOLD — CROSS‑SYSTEM]
+// MODE — v7.0 LOCAL-FIRST
+// ----------------------------------------------------------------------------
+// If window.PULSE_OFFLINE_MODE === "1", GateHeartbeat will NOT call fetch.
+// It will still return a safe, valid heartbeat signal object.
+// ============================================================================
+const OFFLINE_MODE =
+  typeof window !== "undefined" &&
+  window.PULSE_OFFLINE_MODE === "1";
+
+// ============================================================================
+// HEARTBEAT SIGNAL FUNCTION (Frontend → Backend)
 // ============================================================================
 
 export function GateHeartbeat() {
-  // [BLUE] FRONTEND SIDE:
-  // The Gate sends a one‑way signal to the backend heartbeat.
-  // It does NOT wait for a response.
-  // It does NOT retry.
-  // It does NOT schedule.
-  // It does NOT loop.
-  // It does NOT keep time.
-  // It is a pure, safe, fire‑and‑forget signal.
+  const payload = {
+    source: "frontend-gate",
+    timestamp: Date.now(),
+    mode: OFFLINE_MODE ? "offline" : "online"
+  };
 
+  // OFFLINE MODE — v7.0 local-only safe fallback
+  if (OFFLINE_MODE) {
+    return {
+      ok: false,
+      offline: true,
+      reason: "Gate running in offline mode; backend heartbeat skipped.",
+      payload
+    };
+  }
+
+  // ONLINE MODE — original v6.x behavior (unchanged)
   fetch("/.netlify/functions/timer", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      source: "frontend-gate",
-      timestamp: Date.now()
-    })
+    body: JSON.stringify(payload)
   }).catch(() => {
-    // [BLUE] Silent by design — the Gate NEVER throws.
-    // [RED] Backend heartbeat is authoritative.
+    // Silent by design — the Gate NEVER throws.
   });
+
+  return { ok: true, offline: false, payload };
 }
 
 // ============================================================================
-// END OF FILE — THE GATE  [PURPLE — SUBSYSTEM CLOSE]
+// END OF FILE — THE GATE
 // ============================================================================
