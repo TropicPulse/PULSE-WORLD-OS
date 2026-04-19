@@ -1,5 +1,5 @@
 // ============================================================================
-// FILE: /apps/tropic-pulse/lib/Connectors/PulseNet.js
+// FILE: /apps/lib/Connectors/PulseNet.js
 // LAYER: THE PULSE (Signal Path + Arterial Rhythm Layer)
 // ============================================================================
 //

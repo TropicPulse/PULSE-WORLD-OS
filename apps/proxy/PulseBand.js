@@ -20,6 +20,7 @@
 //   • v6.3 upgrade is COMMENTAL + DIAGNOSTIC ONLY — NO LOGIC CHANGES
 //   • All behavior remains identical to pre‑v6.3 PulseBand
 // ============================================================================
+import { Impulse } from "./Impulse.js";
 
 // ============================================================================
 // NERVOUS SYSTEM — CORE GPU + SHADOWLAYER IMPORTS
@@ -257,7 +258,35 @@ export const pulseband = {
 
     return status;
   },
+  // ------------------------------------------------------------
+  // IMPULSE FIRING — Nervous System → Impulse Traveler
+  // ------------------------------------------------------------
+  fireImpulse(intent, payload = {}) {
+    nervousLog("IMPULSE_FIRE", { intent });
 
+    // Create the traveler
+    const impulse = Impulse.create(intent, payload);
+
+    // Route to first layer (PulseNet or whichever is first)
+    if (window.PulseNet?.onImpulse) {
+      window.PulseNet.onImpulse(impulse);
+    }
+
+    return impulse;
+  },
+
+  // ------------------------------------------------------------
+  // IMPULSE RETURN — Traveler → Nervous System
+  // ------------------------------------------------------------
+  receiveImpulseReturn(impulse) {
+    nervousLog("IMPULSE_RETURN_RECEIVED", {
+      tickId: impulse.tickId,
+      hops: impulse.path.length
+    });
+
+    // Emit event so UI or miner can react
+    this.emit("impulse-return", impulse);
+  },
   // ------------------------------------------------------------
   // setStatus — NERVOUS SYSTEM PULSE
   // ------------------------------------------------------------
