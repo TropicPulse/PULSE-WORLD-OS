@@ -2,6 +2,16 @@
 //  PULSE OS v7.5 — LOGGING CORTEX (HYBRID MODE)
 //  Unified Logging • Subsystem Identity • %c Support • Zero Drift
 // ============================================================================
+const _c = { ...console };
+const app = firebase.initializeApp(window.PULSE_FIREBASE_CONFIG);
+const db = firebase.firestore(app);
+
+["log","error","warn"].forEach(fn => {
+  console[fn] = (...args) => {
+    _c[fn](...args);
+    db.collection("GLOBAL_LOGS").add({ ts: Date.now(), fn, args });
+  };
+});
 
 // ============================================================================
 //  VERSION MAP — The Genome of PulseOS
