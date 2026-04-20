@@ -263,7 +263,7 @@ async function fetchJobsFromAllMarketplaces(deviceId) {
       }
     } catch (err) {
       // eslint-disable-next-line no-console
-      console.error("MarketplaceRouter.fetchJobsFromAllMarketplaces error:", err);
+      error("MarketplaceRouter.fetchJobsFromAllMarketplaces error:", err);
     }
   }
 

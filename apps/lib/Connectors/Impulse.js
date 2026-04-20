@@ -47,7 +47,7 @@ const IMPULSE_DIAGNOSTICS_ENABLED =
 const impulseLog = (stage, details = {}) => {
   if (!IMPULSE_DIAGNOSTICS_ENABLED) return;
 
-  console.log(
+  log(
     JSON.stringify({
       impulseLayer:  IMPULSE_LAYER_ID,
       impulseName:   IMPULSE_LAYER_NAME,

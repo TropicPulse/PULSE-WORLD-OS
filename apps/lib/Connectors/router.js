@@ -64,7 +64,7 @@ const WISDOM_DIAGNOSTICS_ENABLED =
 
 const logWisdom = (stage, details = {}) => {
   if (!WISDOM_DIAGNOSTICS_ENABLED) return;
-  console.log(JSON.stringify({
+  log(JSON.stringify({
     pulseLayer: LAYER_ID,
     pulseName:  LAYER_NAME,
     pulseRole:  LAYER_ROLE,

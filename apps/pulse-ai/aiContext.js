@@ -48,7 +48,7 @@ const COG_DIAGNOSTICS_ENABLED =
 const cogLog = (stage, details = {}) => {
   if (!COG_DIAGNOSTICS_ENABLED) return;
 
-  console.log(
+  log(
     JSON.stringify({
       pulseLayer: COG_LAYER_ID,
       pulseName: COG_LAYER_NAME,

@@ -143,7 +143,7 @@ import { getAuth, getHook, getMap, callHelper, attachScanner } from "./lib/Conne
         window.location.replace(`https://www.tropicpulse.bz/eventDetail.html?id=${eventID}&payment=success`);
 
       } catch (err) {
-        console.error("Payment success flow error:", err);
+        error("Payment success flow error:", err);
         window.location.replace("https://www.tropicpulse.bz/eventspage.html");
       }
     }

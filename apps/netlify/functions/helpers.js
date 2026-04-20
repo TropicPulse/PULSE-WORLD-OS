@@ -462,7 +462,7 @@ export function calculateReleaseDate(deliveredAt, delayDays = 3) {
    NEW: parseIncomingRequest
 ---------------------------------------------------- */
 export async function parseIncomingRequest(req, db) {
-  console.log("🔵 [parseIncomingRequest] START");
+  log("🔵 [parseIncomingRequest] START");
 
   let payload = {};
   let email = null;
@@ -576,7 +576,7 @@ export async function parseIncomingRequest(req, db) {
     }
   };
 
-  console.log("✅ FINAL PARSED:", { email, emailType, logId, payload: finalPayload });
+  log("✅ FINAL PARSED:", { email, emailType, logId, payload: finalPayload });
 
   return { email, emailType, logId, payload: finalPayload };
 }
@@ -585,7 +585,7 @@ export async function parseIncomingRequest(req, db) {
    Allows Belize banks by disabling instant payouts
 ---------------------------------------------------- */
 export async function configurePayoutSettings(stripe, accountId, payFrequency, payDay, admin, db) {
-  console.log("🔵 [configurePayoutSettings] START");
+  log("🔵 [configurePayoutSettings] START");
 
   const cleanLower = (v, fallback = null) => {
     if (!v) return fallback;
@@ -685,7 +685,7 @@ export async function configurePayoutSettings(stripe, accountId, payFrequency, p
       { merge: true }
     );
 
-    console.log("✅ [configurePayoutSettings] COMPLETE");
+    log("✅ [configurePayoutSettings] COMPLETE");
 
     return {
       country,
@@ -693,7 +693,7 @@ export async function configurePayoutSettings(stripe, accountId, payFrequency, p
     };
 
   } catch (err) {
-    console.error("❌ configurePayoutSettings error:", err.message);
+    error("❌ configurePayoutSettings error:", err.message);
     throw err;
   }
 }
@@ -761,7 +761,7 @@ export async function computeSha256Hex(buffer) {
 
     return crypto.createHash("sha256").update(nodeBuf).digest("hex");
   } catch (err) {
-    console.warn("⚠️ computeSha256Hex fallback failed:", err);
+    warn("⚠️ computeSha256Hex fallback failed:", err);
     return null;
   }
 }

@@ -36,7 +36,7 @@ const BLOODPRESSURE_DIAGNOSTICS_ENABLED =
 const bpLog = (stage, details = {}) => {
   if (!BLOODPRESSURE_DIAGNOSTICS_ENABLED) return;
 
-  console.log(
+  log(
     JSON.stringify({
       pulseLayer: BLOODPRESSURE_LAYER_ID,
       pulseName: BLOODPRESSURE_LAYER_NAME,
@@ -50,9 +50,9 @@ const bpLog = (stage, details = {}) => {
 bpLog("HEMODYNAMIC_INIT", {});
 window.PULSE_LOG = function (...args) {
   try {
-    console.log("[PULSE]", ...args);
+    log("[PULSE]", ...args);
   } catch (err) {
-    console.error("PULSE_LOG failed:", err);
+    error("PULSE_LOG failed:", err);
   }
 };
 

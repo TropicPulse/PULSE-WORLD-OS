@@ -144,13 +144,13 @@ import { getAuth, getHook, getMap, callHelper, attachScanner } from "./lib/Conne
   logBox.style.whiteSpace = "pre-wrap";
   document.body.appendChild(logBox);
 
-  const oldLog = console.log;
-  console.log = function (...args) {
+  const oldLog = log;
+  log = function (...args) {
     oldLog.apply(console, args);
     logBox.textContent += args.join(" ") + "\n";
   };
 })();
-console.log("🌞 Script loaded, attaching visibility listener…");
+log("🌞 Script loaded, attaching visibility listener…");
   // --- SIMPLE IDENTITY CHECK ---
   let identityCheck = null;
   try {

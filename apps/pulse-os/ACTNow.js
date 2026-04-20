@@ -80,11 +80,11 @@ export const ACTNow = {
       try {
         await this.cycle(snapshotProvider);
       } catch (err) {
-        console.error("[ACTNow] Cycle error:", err);
+        error("[ACTNow] Cycle error:", err);
       }
     }, this.intervalMs);
 
-    console.log("[ACTNow] Auto-refresh loop started.");
+    log("[ACTNow] Auto-refresh loop started.");
   },
 
   // ----------------------------------------------------------
@@ -96,7 +96,7 @@ export const ACTNow = {
     clearInterval(this.timer);
     this.running = false;
 
-    console.log("[ACTNow] Auto-refresh loop stopped.");
+    log("[ACTNow] Auto-refresh loop stopped.");
   },
 
   // ----------------------------------------------------------
@@ -121,6 +121,6 @@ export const ACTNow = {
       timestamp: Date.now()
     });
 
-    console.log("[ACTNow] Cycle complete.");
+    log("[ACTNow] Cycle complete.");
   }
 };

@@ -622,7 +622,7 @@ function loadAllLogs(email) {
       const token = localStorage.getItem("tp_token_v4");
 
       if (!token) {
-        console.error("❌ No Auth Token Found in LocalStorage!");
+         No Auth Token Found in LocalStorage!");
         orderSelect.innerHTML = `<option>Auth Error</option>`;
         return;
       }
@@ -638,13 +638,13 @@ function loadAllLogs(email) {
       );
       
       const data = await resp.json();
-      console.log("Polling logs for:", email);
+      ling logs for:", email);
       if (data.success) {
         allLogs = data.logs;
         renderLogs();
       }
     } catch (err) {
-      console.error("Polling error:", err);
+      rror:", err);
     }
   }
 
@@ -662,7 +662,7 @@ function showOrders() {
   document.getElementById("orders").style.display = "block";
   const selectedEmail = document.getElementById("users")?.value.toLowerCase();
   if (!selectedEmail || selectedEmail === "Loading Users...") {
-    console.warn("No valid user selected yet.");
+    warn("No valid user selected yet.");
     return;
   }
 
@@ -695,9 +695,9 @@ function formatDisplayAmount(displayCurrency, amount) {
   // If amount is null, undefined, empty string, or NaN → force 0.00
   const safeAmount = Number(amount);
   const finalAmount = isNaN(safeAmount) ? "0.00" : safeAmount.toFixed(2);
-  console.log(displayCurrency);
+  log(displayCurrency);
   displayCurrency = String(displayCurrency || "$").toUpperCase();
-  console.log(displayCurrency);
+  log(displayCurrency);
   if (displayCurrency === "USD" || displayCurrency === "$") {
     displayCurrency = "$";
   } else {
@@ -746,7 +746,7 @@ async function loadEvents() {
     }
 
   } catch (err) {
-    console.error("Error loading events:", err);
+    error("Error loading events:", err);
     eventSelect.innerHTML = `<option>Error Loading Events</option>`;
   }
 }
@@ -790,7 +790,7 @@ async function loadBus() {
     }
 
   } catch (err) {
-    console.error("Error loading businesses:", err);
+    error("Error loading businesses:", err);
     busSelect.innerHTML = `<option>Error Loading Businesses</option>`;
   }
 }
@@ -822,7 +822,7 @@ async function loadUsers() {
     const token = localStorage.getItem("tp_token_v4");
 
     if (!token) {
-      console.error("❌ No Auth Token Found in LocalStorage!");
+      error("❌ No Auth Token Found in LocalStorage!");
       usersDropdown.innerHTML = `<option value="">Auth Error</option>`;
       return;
     }
@@ -852,7 +852,7 @@ async function loadUsers() {
     }
 
   } catch (err) {
-    console.error("❌ [loadUsers] Failed to load users", err);
+    error("❌ [loadUsers] Failed to load users", err);
     usersDropdown.innerHTML = `<option value="">Error Loading Users</option>`;
   }
 }
@@ -866,7 +866,7 @@ async function loadOrdersForUser(email) {
     const token = localStorage.getItem("tp_token_v4");
 
     if (!token) {
-      console.error("❌ No Auth Token Found in LocalStorage!");
+      error("❌ No Auth Token Found in LocalStorage!");
       orderSelect.innerHTML = `<option>Auth Error</option>`;
       return;
     }
@@ -930,7 +930,7 @@ async function loadOrdersForUser(email) {
     }
 
   } catch (err) {
-    console.error("loadOrdersForUser error:", err);
+    error("loadOrdersForUser error:", err);
     orderSelect.innerHTML = `<option>Error loading orders</option>`;
   }
 }
@@ -1240,7 +1240,7 @@ document.getElementById("orderlogs").addEventListener("change", async (e) => {
 
   selectedOrder = allOrders.find(o => o.id === selectedId);
 
-  console.log("Selected order:", selectedOrder);
+  log("Selected order:", selectedOrder);
 
 });
 
@@ -1265,14 +1265,14 @@ document.getElementById("eventSelect").addEventListener("change", (e) => {
   const selectedId = e.target.value;
   selectedEvent = allEvents.find(ev => ev.id === selectedId);
 
-  console.log("Selected event:", selectedEvent);
+  log("Selected event:", selectedEvent);
 });
 
 document.getElementById("busSelect").addEventListener("change", (e) => {
   const selectedId = e.target.value;
   selectedBus = allBus.find(ev => ev.id === selectedId);
 
-  console.log("Selected business:", selectedBus);
+  log("Selected business:", selectedBus);
 });
 
 document.addEventListener("click", async (e) => {
@@ -1309,7 +1309,7 @@ document.addEventListener("click", async (e) => {
     htmlToShow = data.html || getEmailHTML(currentPayload.emailType, currentPayload);
     
   } catch (err) {
-    console.error("Error loading HTML from EmailLogs:", err);
+    error("Error loading HTML from EmailLogs:", err);
     htmlToShow = getEmailHTML(currentPayload.emailType, currentPayload);
   }
 
@@ -1348,7 +1348,7 @@ const sortBtn = document.getElementById("sortUsersBtn");
 
 sortBtn.addEventListener("click", () => {
   if (!allUsers || allUsers.length === 0) {
-    console.log("⏳ Users not loaded yet — ignoring sort click");
+    log("⏳ Users not loaded yet — ignoring sort click");
     return;
   }
 
@@ -1435,7 +1435,7 @@ function parsePayload(raw) {
   try {
     return JSON.parse(raw);
   } catch (e) {
-    console.error("Payload JSON parse failed:", e, raw);
+    error("Payload JSON parse failed:", e, raw);
     return {};
   }
 }
@@ -3442,7 +3442,7 @@ async function previewEmail() {
       const token = localStorage.getItem("tp_token_v4");
 
       if (!token) {
-        console.error("❌ No Auth Token Found in LocalStorage!");
+        error("❌ No Auth Token Found in LocalStorage!");
         orderSelect.innerHTML = `<option>Auth Error</option>`;
         return;
       }
@@ -3613,7 +3613,7 @@ async function previewEmail() {
 
     document.getElementById("modal-bg").style.display = "flex";
   } catch (err) {
-    console.error(err);
+    error(err);
     return;
   }
 }
@@ -3677,7 +3677,7 @@ async function createPaymentShortlink(userID, eventID) {
 }
 
 async function sendEmail() {
-  console.log("SEND EMAIL CLICKED");
+  log("SEND EMAIL CLICKED");
 
   const sendBtn = document.getElementById("sendEmailBtn");
   const status = document.getElementById("status");
@@ -3808,7 +3808,7 @@ async function sendEmail() {
     const token = localStorage.getItem("tp_token_v4");
 
     if (!token) {
-      console.error("❌ No Auth Token Found in LocalStorage!");
+      error("❌ No Auth Token Found in LocalStorage!");
       orderSelect.innerHTML = `<option>Auth Error</option>`;
       return;
     }
@@ -3914,7 +3914,7 @@ try {
   try {
     data = JSON.parse(text);
   } catch (e) {
-    console.warn("Non-JSON response from backend:", text);
+    warn("Non-JSON response from backend:", text);
   }
 
   // Backend explicitly says failure

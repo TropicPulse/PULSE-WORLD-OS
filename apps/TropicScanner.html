@@ -889,13 +889,13 @@ window.onerror = function (msg, src, line, col, err) {
   logBox.style.whiteSpace = "pre-wrap";
   document.body.appendChild(logBox);
 
-  const oldLog = console.log;
-  console.log = function (...args) {
+  const oldLog = log;
+  log = function (...args) {
     oldLog.apply(console, args);
     logBox.textContent += args.join(" ") + "\n";
   };
 })();
-console.log("🌞 Script loaded, attaching visibility listener…");
+log("🌞 Script loaded, attaching visibility listener…");
   // --- SIMPLE IDENTITY CHECK ---
 let identityCheck = null;
 try {
@@ -1161,18 +1161,18 @@ async function startCamera() {
       if (capabilities.focusMode && capabilities.focusMode.includes("continuous")) {
         try {
           await track.applyConstraints({ advanced: [{ focusMode: "continuous" }] });
-          console.log("Refocus: continuous autofocus refreshed");
+          log("Refocus: continuous autofocus refreshed");
           return;
         } catch (e) {
-          console.warn("Refocus failed, using fallback", e);
+          warn("Refocus failed, using fallback", e);
         }
       }
 
       try {
         await track.applyConstraints({ advanced: [{}] });
-        console.log("Refocus: fallback pulse applied");
+        log("Refocus: fallback pulse applied");
       } catch (e) {
-        console.warn("Fallback refocus failed", e);
+        warn("Fallback refocus failed", e);
       }
     });
 
@@ -1215,11 +1215,11 @@ async function requestBestCamera() {
   for (const constraints of constraintsList) {
     try {
       const stream = await navigator.mediaDevices.getUserMedia(constraints);
-      console.log("Camera started with:", constraints);
-      console.log("Actual settings:", stream.getVideoTracks()[0].getSettings());
+      log("Camera started with:", constraints);
+      log("Actual settings:", stream.getVideoTracks()[0].getSettings());
       return stream;
     } catch (err) {
-      console.warn("Failed constraints:", constraints, err);
+      warn("Failed constraints:", constraints, err);
     }
   }
 
@@ -1322,7 +1322,7 @@ async function loadProfilePhoto() {
     };
 
   } catch (e) {
-    console.warn("Could not load profile photo", e);
+    warn("Could not load profile photo", e);
   }
 }
 

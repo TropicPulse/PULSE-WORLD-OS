@@ -93,7 +93,7 @@ export async function fetchJobFromMarketplace() {
 
   } catch (err) {
     healingState.lastFetchError = err.message;
-    console.error("fetchJobFromMarketplace() error:", err);
+    error("fetchJobFromMarketplace() error:", err);
     return null;
   }
 }
@@ -172,7 +172,7 @@ export async function submitMarketplaceResult(job, result) {
 
   } catch (err) {
     healingState.lastSubmitError = err.message;
-    console.error("submitMarketplaceResult() error:", err);
+    error("submitMarketplaceResult() error:", err);
     return null;
   }
 }

@@ -58,7 +58,7 @@ const GLOBAL_HEALER_CONTEXT = {
   }
 };
 
-console.log(
+log(
   "%c🟦 GlobalHealer v7.3 online — Top‑Level Immune System Activated.",
   "color:#03A9F4; font-weight:bold;"
 );
@@ -93,13 +93,13 @@ async function writeGlobalHealerLog(entry) {
       ...entry
     });
 
-    console.log(
+    log(
       `%c🟩 GLOBAL_HEALER LOG → ${entry.type}`,
       "color:#4CAF50; font-weight:bold;"
     );
 
   } catch (err) {
-    console.error(
+    error(
       `%c🟥 GLOBAL_HEALER LOG ERROR`,
       "color:#FF5252; font-weight:bold;",
       err
@@ -119,13 +119,13 @@ async function emitFunctionLogHint(entry) {
       hintCode: entry.hintCode ?? "UNSPECIFIED_HINT"
     });
 
-    console.log(
+    log(
       `%c🟦 GLOBAL HINT EMITTED → ${entry.hintCode}`,
       "color:#03A9F4; font-weight:bold;"
     );
 
   } catch (err) {
-    console.error(
+    error(
       `%c🟥 GLOBAL HINT EMIT ERROR`,
       "color:#FF5252; font-weight:bold;",
       err
@@ -138,7 +138,7 @@ async function emitFunctionLogHint(entry) {
 //  OS HEALER LOG SCAN
 // ============================================================================
 async function scanOSHealerLogsForGlobalHints() {
-  console.log(
+  log(
     "%c🟪 Scanning OSHealerLogs…",
     "color:#9C27B0; font-weight:bold;"
   );
@@ -150,14 +150,14 @@ async function scanOSHealerLogsForGlobalHints() {
     .get();
 
   if (snap.empty) {
-    console.log("[GlobalHealer] No OSHealerLogs found.");
+    log("[GlobalHealer] No OSHealerLogs found.");
     return;
   }
 
   for (const doc of snap.docs) {
     const log = doc.data();
 
-    console.log(
+    log(
       `%c🟨 OS_HEALER EVENT → ${log.type}`,
       "color:#FFC107; font-weight:bold;"
     );
@@ -181,7 +181,7 @@ async function scanOSHealerLogsForGlobalHints() {
 //  SUBSYSTEM HEALER LOG SCAN
 // ============================================================================
 async function scanSubsystemHealerLogsForGlobalHints() {
-  console.log(
+  log(
     "%c🟪 Scanning SubsystemHealerLogs…",
     "color:#9C27B0; font-weight:bold;"
   );
@@ -193,7 +193,7 @@ async function scanSubsystemHealerLogsForGlobalHints() {
     .get();
 
   if (snap.empty) {
-    console.log("[GlobalHealer] No SubsystemHealerLogs found.");
+    log("[GlobalHealer] No SubsystemHealerLogs found.");
     return;
   }
 
@@ -202,7 +202,7 @@ async function scanSubsystemHealerLogsForGlobalHints() {
     const subsystem = log.subsystem ?? "unknown";
     const type = log.type ?? "unknown";
 
-    console.log(
+    log(
       `%c🟨 SUBSYSTEM DRIFT → ${subsystem} / ${type}`,
       "color:#FFC107; font-weight:bold;"
     );
@@ -317,14 +317,14 @@ async function scanSubsystemHealerLogsForGlobalHints() {
 //  PUBLIC: startGlobalHealer()
 // ============================================================================
 export default function startGlobalHealer() {
-  console.log(
+  log(
     "%c🟦 GlobalHealer v7.3 started — Global immune system active.",
     "color:#03A9F4; font-weight:bold;"
   );
 
   setInterval(() => {
     scanOSHealerLogsForGlobalHints().catch((err) => {
-      console.error(
+      error(
         "%c🟥 OSHealerLogs scan error",
         "color:#FF5252; font-weight:bold;",
         err
@@ -334,7 +334,7 @@ export default function startGlobalHealer() {
 
   setInterval(() => {
     scanSubsystemHealerLogsForGlobalHints().catch((err) => {
-      console.error(
+      error(
         "%c🟥 SubsystemHealerLogs scan error",
         "color:#FF5252; font-weight:bold;",
         err

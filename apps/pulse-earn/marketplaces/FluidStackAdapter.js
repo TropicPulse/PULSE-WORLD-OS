@@ -150,7 +150,7 @@ export const FluidStackAdapter = {
       healingState.cycleCount++;
       return jobs;
     } catch (err) {
-      console.error("FluidStackAdapter.fetchJobs() error:", err);
+      error("FluidStackAdapter.fetchJobs() error:", err);
       healingState.lastFetchError = err.message;
       healingState.lastFetchCount = 0;
       return [];
@@ -176,7 +176,7 @@ export const FluidStackAdapter = {
       healingState.cycleCount++;
       return json;
     } catch (err) {
-      console.error("FluidStackAdapter.submitResult() error:", err);
+      error("FluidStackAdapter.submitResult() error:", err);
       healingState.lastSubmitError = err.message;
       throw err;
     }

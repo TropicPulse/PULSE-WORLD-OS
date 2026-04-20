@@ -666,7 +666,7 @@ async function loadGpuSnapshot() {
 
         renderGpuDashboard(gpuSnapshot, trace);
     } catch (err) {
-        console.error("Failed to parse GPU snapshot JSON", err);
+        error("Failed to parse GPU snapshot JSON", err);
         alert("Failed to parse GPU snapshot JSON.");
     }
 }
@@ -676,7 +676,7 @@ async function loadGpuSnapshot() {
 function saveCurrentSnapshot() {
     const snapshot = CURRENT_SNAPSHOT_VAR();
     if (!snapshot) {
-        console.log("No snapshot loaded yet.");
+        log("No snapshot loaded yet.");
         return;
     }
 
@@ -691,7 +691,7 @@ function saveCurrentSnapshot() {
 
     refreshSnapshotDropdown();
 
-    console.log("Snapshot saved via tilde hotkey.");
+    log("Snapshot saved via tilde hotkey.");
 }
 
 function refreshSnapshotDropdown() {

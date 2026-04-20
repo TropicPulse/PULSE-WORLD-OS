@@ -54,7 +54,7 @@ const MEMORY_CONTEXT = {
   }
 };
 
-console.log(
+log(
   "%c🟦 PulseOSMemory v7.3 online — LIVER / OS archival engine active.",
   "color:#03A9F4; font-weight:bold;"
 );
@@ -88,7 +88,7 @@ export async function saveSnapshot(subsystem, payload) {
       ...MEMORY_CONTEXT
     });
 
-    console.log(
+    log(
       `%c🟦 SNAPSHOT SAVED → ${subsystem}`,
       "color:#03A9F4; font-weight:bold;"
     );
@@ -101,7 +101,7 @@ export async function saveSnapshot(subsystem, payload) {
       .get();
 
     if (!snap.empty) {
-      console.log(
+      log(
         `%c🟧 SNAPSHOT TRIM → ${subsystem} | removing ${snap.size} old snapshots`,
         "color:#FF9800; font-weight:bold;"
       );
@@ -113,7 +113,7 @@ export async function saveSnapshot(subsystem, payload) {
 
     return ref.id;
   } catch (err) {
-    console.error(
+    error(
       `%c🟥 SNAPSHOT ERROR`,
       "color:#FF5252; font-weight:bold;",
       err
@@ -134,7 +134,7 @@ export async function getLatestSnapshot(subsystem) {
 
   const doc = snap.docs[0];
 
-  console.log(
+  log(
     `%c🟦 LATEST SNAPSHOT FETCHED → ${subsystem}`,
     "color:#03A9F4; font-weight:bold;"
   );
@@ -161,12 +161,12 @@ export async function recordDriftSignature(subsystem, signature) {
       ...MEMORY_CONTEXT
     });
 
-    console.log(
+    log(
       `%c🟨 DRIFT SIGNATURE → ${subsystem} / ${signature.type}`,
       "color:#FFC107; font-weight:bold;"
     );
   } catch (err) {
-    console.error(
+    error(
       `%c🟥 DRIFT SIGNATURE ERROR`,
       "color:#FF5252; font-weight:bold;",
       err
@@ -182,7 +182,7 @@ export async function getRecentDriftSignatures(subsystem, limit = 20) {
     .limit(limit)
     .get();
 
-  console.log(
+  
     `%c🟨 FETCH DRIFT SIGNATURES → ${subsystem} (${snap.size})`,
     "color:#FFC107; font-weight:bold;"
   );
@@ -199,7 +199,7 @@ export async function createRestorePoint(label, subsystems = []) {
   const payload = {};
 
   try {
-    console.log(
+    
       `%c🟦 CREATING RESTORE POINT → ${label}`,
       "color:#03A9F4; font-weight:bold;"
     );
@@ -224,7 +224,7 @@ export async function createRestorePoint(label, subsystems = []) {
       ...MEMORY_CONTEXT
     });
 
-    console.log(
+    log(
       `%c🟩 RESTORE POINT CREATED → ${label}`,
       "color:#4CAF50; font-weight:bold;"
     );
@@ -236,7 +236,7 @@ export async function createRestorePoint(label, subsystems = []) {
       .get();
 
     if (!snap.empty) {
-      console.log(
+      
         `%c🟧 RESTORE POINT TRIM → removing ${snap.size} old restore points`,
         "color:#FF9800; font-weight:bold;"
       );
@@ -248,7 +248,7 @@ export async function createRestorePoint(label, subsystems = []) {
 
     return ref.id;
   } catch (err) {
-    console.error(
+    
       `%c🟥 RESTORE POINT ERROR`,
       "color:#FF5252; font-weight:bold;",
       err
@@ -261,7 +261,7 @@ export async function getRestorePoint(id) {
   const doc = await db.collection(OS_RESTORE_POINTS_COLLECTION).doc(id).get();
   if (!doc.exists) return null;
 
-  console.log(
+  
     `%c🟦 RESTORE POINT FETCHED → ${id}`,
     "color:#03A9F4; font-weight:bold;"
   );
@@ -276,7 +276,7 @@ export async function listRestorePoints(limit = 20) {
     .limit(limit)
     .get();
 
-  console.log(
+  
     `%c🟦 RESTORE POINT LIST FETCHED (${snap.size})`,
     "color:#03A9F4; font-weight:bold;"
   );
@@ -292,7 +292,7 @@ export async function getRestorePlan(restorePointId) {
   const rp = await getRestorePoint(restorePointId);
   if (!rp) return null;
 
-  console.log(
+  
     `%c🟦 RESTORE PLAN GENERATED → ${restorePointId}`,
     "color:#03A9F4; font-weight:bold;"
   );

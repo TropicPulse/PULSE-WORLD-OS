@@ -120,7 +120,7 @@ export const parseReminder = onRequest(
       return res.json({ success: true, parsed });
 
     } catch (err) {
-      console.error("parseReminder error:", err);
+      error("parseReminder error:", err);
       return res.json({
         success: false,
         error: "Server error: " + err.message,

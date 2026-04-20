@@ -72,7 +72,7 @@ const HEART_DIAGNOSTICS_ENABLED =
 const logHeart = (stage, details = {}) => {
   if (!HEART_DIAGNOSTICS_ENABLED) return;
 
-  console.log(
+  log(
     JSON.stringify({
       pulseLayer: LAYER_ID,
       pulseName: LAYER_NAME,
@@ -170,7 +170,7 @@ async function updateState(ref, updates) {
       { merge: true }
     );
   } catch (err) {
-    console.error("HEART_STATE_UPDATE_ERROR", String(err));
+    error("HEART_STATE_UPDATE_ERROR", String(err));
   }
 }
 
@@ -248,7 +248,7 @@ export const handler = async () => {
             createdAt: admin.firestore.FieldValue.serverTimestamp()
           });
         } catch (logErr) {
-          console.error("HEART_TASK_ERROR_LOG_FAILURE", String(logErr));
+          error("HEART_TASK_ERROR_LOG_FAILURE", String(logErr));
         }
       }
 
@@ -266,7 +266,7 @@ export const handler = async () => {
         createdAt: admin.firestore.FieldValue.serverTimestamp()
       });
     } catch (logErr) {
-      console.error("HEARTBEAT_LOG_WRITE_ERROR", String(logErr));
+      error("HEARTBEAT_LOG_WRITE_ERROR", String(logErr));
     }
 
     logHeart("BEAT_COMPLETE", { runId });
@@ -289,7 +289,7 @@ export const handler = async () => {
         createdAt: admin.firestore.FieldValue.serverTimestamp()
       });
     } catch (logErr) {
-      console.error("HEART_FATAL_LOG_WRITE_ERROR", String(logErr));
+      error("HEART_FATAL_LOG_WRITE_ERROR", String(logErr));
     }
 
     return {

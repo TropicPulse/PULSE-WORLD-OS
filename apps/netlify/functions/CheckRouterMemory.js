@@ -37,13 +37,13 @@ const NETWORK_DIAGNOSTICS_ENABLED =
 const logNetworkHealer = (stage, details = {}) => {
   if (!NETWORK_DIAGNOSTICS_ENABLED) return;
 
-  console.log(
+  log(
     `%c(${LAYER_NAME} ${LAYER_ROLE}) %c${stage}`,
     "color:#00eaff;font-weight:bold;",
     "color:#fff;font-weight:bold;"
   );
 
-  console.log(JSON.stringify({
+  log(JSON.stringify({
     pulseLayer: LAYER_ID,
     pulseName:  LAYER_NAME,
     pulseRole:  LAYER_ROLE,
@@ -212,7 +212,7 @@ export const handler = async (event, context) => {
     };
 
   } catch (err) {
-    console.error("CheckRouterMemory error:", err);
+    error("CheckRouterMemory error:", err);
 
     logNetworkHealer("FATAL_ERROR", { message: err?.message });
 

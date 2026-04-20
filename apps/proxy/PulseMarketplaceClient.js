@@ -37,7 +37,7 @@ const AGENT_DIAGNOSTICS_ENABLED =
 const agentLog = (stage, details = {}) => {
   if (!AGENT_DIAGNOSTICS_ENABLED) return;
 
-  console.log(
+  log(
     JSON.stringify({
       pulseLayer: AGENT_LAYER_ID,
       pulseName: AGENT_LAYER_NAME,
@@ -89,7 +89,7 @@ export class PulseMarketplaceClient {
       return json;
 
     } catch (err) {
-      console.error("PulseMarketplaceClient.register() failed:", err);
+      error("PulseMarketplaceClient.register() failed:", err);
       agentLog("REGISTER_FAIL", { error: String(err) });
       return { error: true, message: err.message };
     }
@@ -111,7 +111,7 @@ export class PulseMarketplaceClient {
       return json;
 
     } catch (err) {
-      console.error("PulseMarketplaceClient.requestJob() failed:", err);
+      error("PulseMarketplaceClient.requestJob() failed:", err);
       agentLog("REQUEST_JOB_FAIL", { error: String(err) });
       return { error: true, message: err.message };
     }
@@ -139,7 +139,7 @@ export class PulseMarketplaceClient {
       return json;
 
     } catch (err) {
-      console.error("PulseMarketplaceClient.submitResult() failed:", err);
+      error("PulseMarketplaceClient.submitResult() failed:", err);
       agentLog("SUBMIT_RESULT_FAIL", { error: String(err) });
       return { error: true, message: err.message };
     }
@@ -161,7 +161,7 @@ export class PulseMarketplaceClient {
       return json;
 
     } catch (err) {
-      console.error("PulseMarketplaceClient.syncCredits() failed:", err);
+      error("PulseMarketplaceClient.syncCredits() failed:", err);
       agentLog("SYNC_CREDITS_FAIL", { error: String(err) });
       return { error: true, message: err.message };
     }

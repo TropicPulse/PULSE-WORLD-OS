@@ -253,7 +253,7 @@ export const redeemPulsePoints = onRequest(
       });
 
     } catch (err) {
-      console.error("redeemPulsePoints error:", err);
+      error("redeemPulsePoints error:", err);
       return res.json({
         success: false,
         error: "Server error: " + err.message

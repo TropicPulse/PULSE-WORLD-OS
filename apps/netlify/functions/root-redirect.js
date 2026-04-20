@@ -79,7 +79,7 @@ export async function handler(event, context) {
     };
 
   } catch (err) {
-    console.error("Payment redirect error:", err.message);
+    error("Payment redirect error:", err.message);
     return {
       statusCode: 500,
       body: "Payment redirect failed"

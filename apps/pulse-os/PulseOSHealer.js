@@ -72,11 +72,11 @@ import { recordDriftSignature } from "./PulseOSMemory.js";
 
 const db = getFirestore();
 
-console.log(
+log(
   "%c🟦 PulseOSHealer v7.3 online — Inflammatory Response (C‑Layer) activated.",
   "color:#03A9F4; font-weight:bold;"
 );
-console.log(
+
   "[PulseOSHealer BOOT] Scan intervals:",
   { OS_EVENTS_SCAN_INTERVAL_MS, SUBSYSTEM_SCAN_INTERVAL_MS }
 );
@@ -93,13 +93,13 @@ async function writeOSHealerLog(entry) {
       ...entry
     });
 
-    console.log(
+    
       `%c🟩 OS_HEALER LOG → ${entry.type}`,
       "color:#4CAF50; font-weight:bold;"
     );
 
   } catch (err) {
-    console.error(
+    
       `%c🟥 OS_HEALER LOG ERROR`,
       "color:#FF5252; font-weight:bold;",
       err
@@ -123,13 +123,13 @@ async function emitFunctionLogHint(entry) {
       hintCode: entry.hintCode ?? "UNSPECIFIED_HINT"
     });
 
-    console.log(
+    log(
       `%c🟦 HINT EMITTED → ${entry.hintCode}`,
       "color:#03A9F4; font-weight:bold;"
     );
 
   } catch (err) {
-    console.error(
+    error(
       `%c🟥 HINT EMIT ERROR`,
       "color:#FF5252; font-weight:bold;",
       err
@@ -142,7 +142,7 @@ async function emitFunctionLogHint(entry) {
 //  scanOSEventsForHints() — watches OS-level events (system‑wide irritation)
 // ============================================================================
 async function scanOSEventsForHints() {
-  console.log("%c🟪 Scanning OSEvents…", "color:#9C27B0; font-weight:bold;");
+  log("%c🟪 Scanning OSEvents…", "color:#9C27B0; font-weight:bold;");
 
   const snap = await db
     .collection(OS_EVENTS_COLLECTION)
@@ -151,14 +151,14 @@ async function scanOSEventsForHints() {
     .get();
 
   if (snap.empty) {
-    console.log("[PulseOSHealer] No OSEvents found.");
+    log("[PulseOSHealer] No OSEvents found.");
     return;
   }
 
   for (const doc of snap.docs) {
     const ev = doc.data();
 
-    console.log(
+    log(
       `%c🟨 OSEVENT → ${ev.type}`,
       "color:#FFC107; font-weight:bold;"
     );
@@ -182,7 +182,7 @@ async function scanOSEventsForHints() {
 //  scanSubsystemHealerLogs() — watches subsystem healers (local tissue signals)
 // ============================================================================
 async function scanSubsystemHealerLogs() {
-  console.log(
+  log(
     "%c🟪 Scanning SubsystemHealerLogs…",
     "color:#9C27B0; font-weight:bold;"
   );
@@ -194,7 +194,7 @@ async function scanSubsystemHealerLogs() {
     .get();
 
   if (snap.empty) {
-    console.log("[PulseOSHealer] No subsystem healer logs found.");
+    log("[PulseOSHealer] No subsystem healer logs found.");
     return;
   }
 
@@ -203,7 +203,7 @@ async function scanSubsystemHealerLogs() {
     const subsystem = log.subsystem ?? "unknown";
     const type = log.type ?? "unknown";
 
-    console.log(
+    log(
       `%c🟨 SUBSYSTEM DRIFT → ${subsystem} / ${type}`,
       "color:#FFC107; font-weight:bold;"
     );
@@ -318,14 +318,14 @@ async function scanSubsystemHealerLogs() {
 //  PUBLIC: startPulseOSHealer() — activate inflammatory response loop
 // ============================================================================
 export default function startPulseOSHealer() {
-  console.log(
+  log(
     "%c🟦 PulseOSHealer v7.3 started — Inflammatory Response (C‑Layer) active.",
     "color:#03A9F4; font-weight:bold;"
   );
 
   setInterval(() => {
     scanOSEventsForHints().catch((err) => {
-      console.error(
+      error(
         "%c🟥 OSEvents scan error",
         "color:#FF5252; font-weight:bold;",
         err
@@ -335,7 +335,7 @@ export default function startPulseOSHealer() {
 
   setInterval(() => {
     scanSubsystemHealerLogs().catch((err) => {
-      console.error(
+      error(
         "%c🟥 Subsystem scan error",
         "color:#FF5252; font-weight:bold;",
         err

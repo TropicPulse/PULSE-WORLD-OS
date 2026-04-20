@@ -778,7 +778,7 @@ text-align: center;
     div.textContent = `🔥 JS ERROR:\n${msg}\n${src}:${line}:${col}`;
     document.body.appendChild(div);
   };
-console.log("🌞 Script loaded, attaching visibility listener…");
+log("🌞 Script loaded, attaching visibility listener…");
   // ============================================================================
 // LOGIN PAGE — PULSE OS v6
 // Pure UI + Identity Bootstrap + Send PIN + Verify PIN
@@ -804,7 +804,7 @@ const returnTo = params.get("returnTo");
 // DEBUG MARKER
 // -----------------------------
 function mark(msg) {
-  console.log("[LOGIN]", msg);
+  log("[LOGIN]", msg);
 }
 
 // -----------------------------
@@ -842,7 +842,7 @@ function showLoginUI() {
 // ============================================================================
 async function loginBootstrap() {
   showTPLoader();
-  console.log("[LOGIN DOM] BOOTSTRAP START");
+  log("[LOGIN DOM] BOOTSTRAP START");
 
   const id = window.PulseIdentity || null;
 
@@ -999,7 +999,7 @@ if (!window.__pulsebandListenersAttached) {
 // 5) DOM WRAPPER — NO pipelines, NO system layers
 // ============================================================================
 (async () => {
-  console.log("[LOGIN DOM] DOM LOAD START");
+  log("[LOGIN DOM] DOM LOAD START");
 
   await loginBootstrap();
 
@@ -1019,7 +1019,7 @@ if (!window.__pulsebandListenersAttached) {
     });
   }
 
-  console.log("[LOGIN DOM] DOM LOAD END");
+  log("[LOGIN DOM] DOM LOAD END");
 })();
 
 </script>

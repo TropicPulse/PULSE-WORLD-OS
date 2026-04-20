@@ -1240,7 +1240,7 @@ function safeLogout() {
   localStorage.removeItem("tp_token_v4");
   localStorage.removeItem("tp_device_token_v4");
   localStorage.removeItem("tp_identity_v4");
-  console.log("[DASHBOARD] SAFE LOGOUT");
+  log("[DASHBOARD] SAFE LOGOUT");
   window.location.replace("/CheckEmail.html");
 }
 
@@ -1291,7 +1291,7 @@ async function renderDashboard(identity, trusted, user) {
   const info = document.getElementById("info");
 
   if (!shimmer || !img || !info) {
-    console.warn("[DASHBOARD] Elements missing");
+    warn("[DASHBOARD] Elements missing");
     return;
   }
 
@@ -1326,12 +1326,12 @@ async function renderDashboard(identity, trusted, user) {
     if (!identity.photoURL && user?.photoURL) {
       identity.photoURL = user.photoURL;
       localStorage.setItem("tp_identity_v4", JSON.stringify(identity));
-      console.log("[DASHBOARD] IDENTITY PHOTO UPDATED FROM CACHE");
+      log("[DASHBOARD] IDENTITY PHOTO UPDATED FROM CACHE");
     }
   };
 
   img.onerror = () => {
-    console.warn("[DASHBOARD] PHOTO LOAD ERROR → FALLBACK");
+    warn("[DASHBOARD] PHOTO LOAD ERROR → FALLBACK");
     img.src = "https://www.tropicpulse.bz/Frustrated.png";
     shimmer.style.display = "none";
     img.style.display = "block";
@@ -1404,7 +1404,7 @@ async function renderDashboard(identity, trusted, user) {
   function mark(label, absolute = false) {
     const now = nowMs();
     const diff = now - lastTime;
-    console.log(
+    log(
       absolute
         ? `${label}: @${now.toFixed(1)}ms`
         : `${label}: +${diff.toFixed(1)}ms`
@@ -1455,7 +1455,7 @@ async function renderDashboard(identity, trusted, user) {
   const user = getUsersCache().find(u => u.id === userID);
 
   if (!user) {
-    console.warn("[DASHBOARD] User missing in cache, rendering with identity only");
+    warn("[DASHBOARD] User missing in cache, rendering with identity only");
   }
 
   // -----------------------------------------

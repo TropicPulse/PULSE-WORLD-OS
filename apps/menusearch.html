@@ -73,9 +73,9 @@ function log(msg, type = "info") {
   logEl.innerHTML += `<div style="color:${c}; white-space:pre-wrap;">${formatted}</div>`;
   logEl.scrollTop = logEl.scrollHeight;
 
-  if (type === "error") console.error(formatted);
-  else if (type === "warn") console.warn(formatted);
-  else console.log(formatted);
+  if (type === "error") error(formatted);
+  else if (type === "warn") warn(formatted);
+  else log(formatted);
 }
 
 /* -------------------------------------------------------
@@ -611,7 +611,7 @@ function normalizeMenuText(rawHtml) {
 
   text = text.replace(/\s+/g, " ").trim();
 
-  console.log("🔧 NORMALIZED TEXT:", text.substring(0, 500));
+  log("🔧 NORMALIZED TEXT:", text.substring(0, 500));
 
   return text;
 }
@@ -662,7 +662,7 @@ const MENU_SECTION_MARKERS = [
 ];
 
 function parseSegmentedMenu(text) {
-  console.log("🔍 START SEGMENT PARSE");
+  log("🔍 START SEGMENT PARSE");
 
   // Use all known menu categories as markers
   const markers = MENU_SECTION_MARKERS;
@@ -671,12 +671,12 @@ function parseSegmentedMenu(text) {
 
   markers.forEach(marker => {
     const idx = text.indexOf(marker);
-    console.log(`🔎 Searching for marker "${marker}" → index:`, idx);
+    log(`🔎 Searching for marker "${marker}" → index:`, idx);
     if (idx !== -1) positions.push({ marker, index: idx });
   });
 
   if (positions.length === 0) {
-    console.log("❌ No category markers found");
+    log("❌ No category markers found");
     return fallbackMenu("No category markers found");
   }
 
@@ -689,11 +689,11 @@ function parseSegmentedMenu(text) {
     const { marker, index } = positions[i];
     const nextIndex = i + 1 < positions.length ? positions[i + 1].index : text.length;
 
-    console.log(`\n📦 CATEGORY SEGMENT: "${marker}"`);
-    console.log("   Segment start:", index, "end:", nextIndex);
+    log(`\n📦 CATEGORY SEGMENT: "${marker}"`);
+    log("   Segment start:", index, "end:", nextIndex);
 
     const segment = text.substring(index, nextIndex).trim();
-    console.log("   Raw segment:", segment.substring(0, 300));
+    log("   Raw segment:", segment.substring(0, 300));
 
     const items = extractItemsFromSegment(segment);
 
@@ -712,7 +712,7 @@ function parseSegmentedMenu(text) {
 }
 // 🔧 High-level entry
 function parseMenuPage(rawHtml, businessId, businessName) {
-  console.log("🌴 parseMenuPage for:", businessName, businessId);
+  log("🌴 parseMenuPage for:", businessName, businessId);
 
   const text = normalizeMenuText(rawHtml);
   const segments = segmentByCategories(text);
@@ -756,7 +756,7 @@ function normalizeMenuText(html) {
   text = text.replace(/\u00A0/g, " "); // NBSP → space
   text = text.replace(/\s+/g, " ").trim();
 
-  console.log("🧹 Normalized text (first 300):", text.substring(0, 300));
+  log("🧹 Normalized text (first 300):", text.substring(0, 300));
   return text;
 }
 
@@ -784,12 +784,12 @@ function segmentByCategories(text) {
     const idx = text.indexOf(marker);
     if (idx !== -1) {
       positions.push({ marker, index: idx });
-      console.log("🔎 Found category marker:", marker, "at index:", idx);
+      log("🔎 Found category marker:", marker, "at index:", idx);
     }
   });
 
   if (positions.length === 0) {
-    console.log("⚠️ No category markers found, returning single Uncategorized segment");
+    log("⚠️ No category markers found, returning single Uncategorized segment");
     return [{ category: "Uncategorized", segment: text }];
   }
 
@@ -800,9 +800,9 @@ function segmentByCategories(text) {
     const nextIndex = i + 1 < positions.length ? positions[i + 1].index : text.length;
 
     const segment = text.substring(index, nextIndex).trim();
-    console.log("\n📦 CATEGORY SEGMENT:", `"${marker}"`);
-    console.log("   Segment start:", index, "end:", nextIndex);
-    console.log("   Raw segment:", segment.substring(0, 200));
+    log("\n📦 CATEGORY SEGMENT:", `"${marker}"`);
+    log("   Segment start:", index, "end:", nextIndex);
+    log("   Raw segment:", segment.substring(0, 200));
 
     segments.push({ category: marker, segment });
   }
@@ -812,7 +812,7 @@ function segmentByCategories(text) {
 
 // 🔧 Extract items from a category segment
 function extractItemsFromSegment(segment, categoryMarker = null) {
-  console.log("🔧 Extracting items from segment:", segment.substring(0, 200));
+  log("🔧 Extracting items from segment:", segment.substring(0, 200));
 
   const items = [];
 
@@ -825,7 +825,7 @@ function extractItemsFromSegment(segment, categoryMarker = null) {
     const escaped = categoryMarker.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
     const stripRegex = new RegExp("^" + escaped + "\\s+", "i");
     segment = segment.replace(stripRegex, "").trim();
-    console.log("   ✂️ After stripping category:", segment.substring(0, 200));
+    log("   ✂️ After stripping category:", segment.substring(0, 200));
   }
 
   // Hard stop: footer / info phrases (we'll cut the segment before these)
@@ -841,7 +841,7 @@ function extractItemsFromSegment(segment, categoryMarker = null) {
   for (const marker of FOOTER_MARKERS) {
     const idx = segment.indexOf(marker);
     if (idx !== -1) {
-      console.log("   ✂️ Truncating segment at footer marker:", marker);
+      log("   ✂️ Truncating segment at footer marker:", marker);
       segment = segment.substring(0, idx).trim();
       break;
     }
@@ -869,20 +869,20 @@ function extractItemsFromSegment(segment, categoryMarker = null) {
     let rawDesc = match[2].trim();
     let price = parseFloat(match[3]);
 
-    console.log("   🟢 RAW ITEM MATCH:");
-    console.log("      rawName:", rawName);
-    console.log("      rawDesc:", rawDesc);
-    console.log("      rawPrice:", price);
+    log("   🟢 RAW ITEM MATCH:");
+    log("      rawName:", rawName);
+    log("      rawDesc:", rawDesc);
+    log("      rawPrice:", price);
 
     // Reject obvious junk: phone/time/huge numbers
     if (price > 200) {
-      console.log("      ❌ Rejecting match: price looks like phone/time:", price);
+      log("      ❌ Rejecting match: price looks like phone/time:", price);
       continue;
     }
 
     // Reject if name is exactly the category
     if (categoryMarker && rawName.toLowerCase() === categoryMarker.toLowerCase()) {
-      console.log("      ❌ Rejecting match: name equals category marker");
+      log("      ❌ Rejecting match: name equals category marker");
       continue;
     }
 
@@ -890,17 +890,17 @@ function extractItemsFromSegment(segment, categoryMarker = null) {
     const name = smartExtractItemName(fullLine, categoryMarker);
     const description = smartExtractDescription(fullLine, name);
 
-    console.log("   🎯 SMART PARSE:");
-    console.log("      Name:", name);
-    console.log("      Desc:", description);
-    console.log("      Price:", price);
+    log("   🎯 SMART PARSE:");
+    log("      Name:", name);
+    log("      Desc:", description);
+    log("      Price:", price);
 
     items.push({ name, description, price });
   }
 
   // If nothing matched but we have a category, fallback: treat segment as one item
   if (items.length === 0 && categoryMarker) {
-    console.log("   ⚠️ No items matched — using category as single item");
+    log("   ⚠️ No items matched — using category as single item");
     const price = extractTrailingPrice(segment);
     const desc = segment.replace(/(?:~\s*)?\$?\s*\d{1,3}(?:\.\d{2})?\s*$/, "").trim();
     items.push({
@@ -915,7 +915,7 @@ function extractItemsFromSegment(segment, categoryMarker = null) {
 
 // 🔧 Sashimi special handling
 function extractSingleSashimiItem(segment, categoryMarker) {
-  console.log("   🧪 Sashimi fallback for segment:", segment.substring(0, 200));
+  log("   🧪 Sashimi fallback for segment:", segment.substring(0, 200));
 
   const price = extractTrailingPrice(segment);
   const desc = segment.replace(/(?:~\s*)?\$?\s*\d{1,3}(?:\.\d{2})?\s*$/, "").trim();
@@ -934,13 +934,13 @@ function extractTrailingPrice(text) {
   const priceMatch = /(?:~\s*)?\$?\s*(\d{1,3}(?:\.\d{2})?)\s*$/.exec(text);
   if (!priceMatch) return null;
   const price = parseFloat(priceMatch[1]);
-  console.log("   💰 Extracted trailing price:", price, "from:", text.substring(text.length - 40));
+  log("   💰 Extracted trailing price:", price, "from:", text.substring(text.length - 40));
   return price;
 }
 
 // 🔧 Smart item name extraction
 function smartExtractItemName(fullLine, categoryMarker) {
-  console.log("      🔍 smartExtractItemName input:", fullLine);
+  log("      🔍 smartExtractItemName input:", fullLine);
 
   // If line ends with known item endings, use that chunk
   const ENDINGS = [
@@ -961,7 +961,7 @@ function smartExtractItemName(fullLine, categoryMarker) {
     );
     const m = fullLine.match(regex);
     if (m) {
-      console.log("      🟢 Name detected by ending:", m[1]);
+      log("      🟢 Name detected by ending:", m[1]);
       return m[1].trim();
     }
   }
@@ -981,18 +981,18 @@ function smartExtractItemName(fullLine, categoryMarker) {
 
   if (nameWords.length) {
     const fallback = nameWords.join(" ");
-    console.log("      🟡 Fallback name:", fallback);
+    log("      🟡 Fallback name:", fallback);
     return fallback;
   }
 
   // Last resort: category marker
-  console.log("      🔻 Using category as name fallback:", categoryMarker || fullLine);
+  log("      🔻 Using category as name fallback:", categoryMarker || fullLine);
   return categoryMarker || fullLine;
 }
 
 // 🔧 Smart description extraction
 function smartExtractDescription(fullLine, name) {
-  console.log("      🔍 smartExtractDescription:", fullLine, " | name:", name);
+  log("      🔍 smartExtractDescription:", fullLine, " | name:", name);
   if (!name) return fullLine;
 
   const idx = fullLine.indexOf(name);
@@ -1003,7 +1003,7 @@ function smartExtractDescription(fullLine, name) {
 }
 
 function fallbackMenu(reason) {
-  console.log("❌ FALLBACK MENU:", reason);
+  log("❌ FALLBACK MENU:", reason);
   return [
     {
       category: "Uncategorized",

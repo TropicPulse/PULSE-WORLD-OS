@@ -121,7 +121,7 @@ export async function handler(event, context) {
         STRIPE_WEBHOOK_SECRET
       );
     } catch (err) {
-      console.error("Webhook signature verification failed:", err.message);
+      error("Webhook signature verification failed:", err.message);
       return {
         statusCode: 400,
         body: JSON.stringify({
@@ -210,7 +210,7 @@ export async function handler(event, context) {
             }
           });
 
-          console.log(`Vendor updated: ${email} → weekly payouts`);
+          log(`Vendor updated: ${email} → weekly payouts`);
         }
       }
     }
@@ -259,9 +259,9 @@ export async function handler(event, context) {
           createdAt: admin.firestore.FieldValue.serverTimestamp()
         });
 
-        console.log(`Reserve added: Vendor ${vendorId} +${reserveAmount} cents`);
+        log(`Reserve added: Vendor ${vendorId} +${reserveAmount} cents`);
       } else {
-        console.warn("Payment succeeded but missing vendorId or reserveAmount");
+        warn("Payment succeeded but missing vendorId or reserveAmount");
       }
     }
 
@@ -273,7 +273,7 @@ export async function handler(event, context) {
 
       const eventID = session.metadata?.eventID;
       if (!eventID) {
-        console.error("❌ checkout.session.completed missing eventID in metadata");
+        error("❌ checkout.session.completed missing eventID in metadata");
         return {
           statusCode: 400,
           body: JSON.stringify({ error: "Missing eventID" })
@@ -284,7 +284,7 @@ export async function handler(event, context) {
       const eventSnap = await eventRef.get();
 
       if (!eventSnap.exists) {
-        console.error("❌ Event not found:", eventID);
+        error("❌ Event not found:", eventID);
         return {
           statusCode: 404,
           body: JSON.stringify({ error: "Event not found" })
@@ -331,7 +331,7 @@ export async function handler(event, context) {
         createdAt: admin.firestore.FieldValue.serverTimestamp()
       });
 
-      console.log(`Added ${quantity} credits to user ${userID} for event ${eventID}`);
+      log(`Added ${quantity} credits to user ${userID} for event ${eventID}`);
     }
 
     return {
@@ -340,7 +340,7 @@ export async function handler(event, context) {
     };
 
   } catch (err) {
-    console.error("stripeWebhook error:", err.message);
+    error("stripeWebhook error:", err.message);
     return {
       statusCode: 500,
       body: JSON.stringify({ success: false })

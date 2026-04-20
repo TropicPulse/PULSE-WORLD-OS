@@ -2352,22 +2352,22 @@ body::before {
   logBox.style.whiteSpace = "pre-wrap";
   document.body.appendChild(logBox);
 
-  const oldLog = console.log;
-  console.log = function (...args) {
+  const oldLog = log;
+  log = function (...args) {
     oldLog.apply(console, args);
     logBox.textContent += args.join(" ") + "\n";
   };
 })();
-console.log("🌞 Script loaded, attaching visibility listener…");
+log("🌞 Script loaded, attaching visibility listener…");
 
 if (window.__vaultScriptLoaded) {
-  console.warn("🔥 VAULT SCRIPT EXECUTED TWICE — ABORTING SECOND RUN");
+  warn("🔥 VAULT SCRIPT EXECUTED TWICE — ABORTING SECOND RUN");
   // Do NOTHING — just skip the rest of the file
 } else {
-  console.log("🌞 Vault script executing for the FIRST time");
+  log("🌞 Vault script executing for the FIRST time");
   window.__vaultScriptLoaded = true;
 {
-console.log("🌞 Vault script CONTINUING AS IS");
+log("🌞 Vault script CONTINUING AS IS");
 let vaultOpened = false;
 let visibilityArmed = false;
 let vaultStart = null;
@@ -2498,8 +2498,8 @@ soundMagicPulse:        { el: null, src: "/sounds/magic-pulse.mp3",         base
 let soundsLoaded = false;
 const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
 
-console.log("🌞 Vault Script Booting…");
-console.log("Initial Flags:", {
+log("🌞 Vault Script Booting…");
+log("Initial Flags:", {
 vaultStart,
 vaultOpened,
 visibilityArmed,
@@ -2584,7 +2584,7 @@ async function loadEvents() {
     return normalized;
 
   } catch (err) {
-    console.error("❌ Failed to load unified events:", err);
+    error("❌ Failed to load unified events:", err);
     return null;
   }
 }
@@ -2693,14 +2693,14 @@ async function loadBusinesses() {
     return cleaned;
 
   } catch (err) {
-    console.error("❌ Failed to load businesses:", err);
+    error("❌ Failed to load businesses:", err);
     window.allBusinesses = [];
     return [];
   }
 }
 
 function mark(label) {
-    console.log("[CHECKEMAIL]", label);
+    log("[CHECKEMAIL]", label);
   }
 
 function scrollToBottom() {
@@ -2728,7 +2728,7 @@ audio.volume = isMobile ? s.base * s.mobile : s.base;
 s.el = audio;
 }
 
-console.log("✨ Sounds lazy-loaded at vault sequence");
+log("✨ Sounds lazy-loaded at vault sequence");
 }
 
 // 🌊 Safe sound playback helper
@@ -2738,7 +2738,7 @@ if (!s?.el) return;
 
 s.el.currentTime = 0;
 s.el.play().catch(() => {
-console.warn("Audio play blocked until user gesture");
+warn("Audio play blocked until user gesture");
 });
 }
 
@@ -2812,7 +2812,7 @@ async function hardLogout(reason) {
 }
 
 async function loadIdentity() {
-  console.log("🔐 VAULT: Loading identity…");
+  log("🔐 VAULT: Loading identity…");
 
   // 1️⃣ Load local identity + tokens
   try {
@@ -2831,7 +2831,7 @@ async function loadIdentity() {
 
   // 2️⃣ Vault requires: identity + token + trusted device
   if (!identity || !userID || !token || !trusted) {
-    console.warn("❌ VAULT: Missing identity/token/trusted → HARD LOGOUT");
+    warn("❌ VAULT: Missing identity/token/trusted → HARD LOGOUT");
     hardLogout("vault_missing_identity_or_trusted");
     return null;
   }
@@ -2840,13 +2840,13 @@ async function loadIdentity() {
   const data = await getAuth(token);
 
   if (data.hardLogout) {
-    console.warn("❌ VAULT: Backend flagged danger → HARD LOGOUT");
+    warn("❌ VAULT: Backend flagged danger → HARD LOGOUT");
     hardLogout("vault_backend_danger");
     return null;
   }
 
   if (!data.identity) {
-    console.warn("❌ VAULT: Missing identity from backend");
+    warn("❌ VAULT: Missing identity from backend");
     hardLogout("vault_missing_identity");
     return null;
   }
@@ -2855,7 +2855,7 @@ async function loadIdentity() {
   if (data.newJwtToken) {
     token = data.newJwtToken;
     localStorage.setItem("tp_token_v4", token);
-    console.log("🔄 VAULT: Updated JWT lineage");
+    log("🔄 VAULT: Updated JWT lineage");
   }
 
   // 5️⃣ Update identity cache
@@ -2867,7 +2867,7 @@ async function loadIdentity() {
     userAvatarUrl = getProfilephotoURL();
   } catch {}
 
-  console.log("✅ VAULT: Identity loaded:", identity.uid);
+  log("✅ VAULT: Identity loaded:", identity.uid);
   return identity;
 }
 // ───────────────────────────────────────────────
@@ -3039,7 +3039,7 @@ async function loadLoyalty(uid) {
     const userSnap = await getDoc(userRef);
 
     if (!userSnap.exists()) {
-      console.warn("⚠️ User not found — using safe fallback");
+      warn("⚠️ User not found — using safe fallback");
       return { pointsBalance: 0, lifetimePoints: 0, history: [] };
     }
 
@@ -3160,7 +3160,7 @@ async function loadLoyalty(uid) {
     return loyalty;
 
   } catch (err) {
-    console.error("❌ Loyalty load failed:", err);
+    error("❌ Loyalty load failed:", err);
     return { pointsBalance: 0, lifetimePoints: 0, history: [] };
   }
 }
@@ -3169,7 +3169,7 @@ async function loadWallet() {
   try {
     const uid = identity?.uid;
     if (!uid) {
-      console.warn("⚠️ No UID available for wallet load");
+      warn("⚠️ No UID available for wallet load");
       return null;
     }
 
@@ -3180,7 +3180,7 @@ async function loadWallet() {
     const snap = await getDoc(userRef);
 
     if (!snap.exists()) {
-      console.warn("⚠️ User not found for wallet load");
+      warn("⚠️ User not found for wallet load");
       return null;
     }
 
@@ -3212,7 +3212,7 @@ async function loadWallet() {
     };
 
   } catch (err) {
-    console.error("❌ Wallet load failed:", err);
+    error("❌ Wallet load failed:", err);
     return null;
   }
 }
@@ -3228,19 +3228,19 @@ row = document.querySelector(`[data-bubble-id="${bubbleOrId}"]`);
 }
 
 if (!row) {
-console.warn("updateBubble: bubble not found:", bubbleOrId);
+warn("updateBubble: bubble not found:", bubbleOrId);
 return;
 }
 
 const bubble = row.querySelector(".helperBubble");
 if (!bubble) {
-console.warn("updateBubble: .helperBubble not found:", bubbleOrId);
+warn("updateBubble: .helperBubble not found:", bubbleOrId);
 return;
 }
 
 const textEl = bubble.querySelector(".helperBubbleText");
 if (!textEl) {
-console.warn("updateBubble: .helperBubbleText not found:", bubbleOrId);
+warn("updateBubble: .helperBubbleText not found:", bubbleOrId);
 return;
 }
 
@@ -3289,7 +3289,7 @@ pointBalance.classList.add("shimmer");
 function closeWallet() {
 // 1. Hide card first (so wrapper can collapse cleanly)
 walletCard.classList.remove("ready");
-console.log("Closing wallet");
+log("Closing wallet");
 // 2. Collapse wrapper
 walletWrapper.classList.remove("open");
 
@@ -3299,7 +3299,7 @@ void walletWrapper.offsetHeight;
 
 function openWallet() {
 walletWrapper.classList.add("open");
-console.log("Opening wallet");
+log("Opening wallet");
 // 2. THEN reveal card on the next frame
 requestAnimationFrame(() => {
 walletCard.classList.add("ready");
@@ -3434,7 +3434,7 @@ async function askVaultSpirit(message) {
       pendingData: ctx.pendingData || {}
     });
   } catch (err) {
-    console.error("AI error:", err);
+    error("AI error:", err);
     return {
       text: "🌿 The Vault Intelligence is having Trouble Responding!",
       optionsHtml: ""
@@ -3547,7 +3547,7 @@ fadeOutLastBubble();
 
 // Send YES to backend
 const reply = await askVaultSpirit("yes");
-console.log("🟢 vaultYes() reply:", reply);
+log("🟢 vaultYes() reply:", reply);
 
 if (typeof reply === "string") {
 addBubble("Vault Spirit", reply, false);
@@ -3576,7 +3576,7 @@ fadeOutLastBubble();
 
 // Send NO to backend
 const reply = await askVaultSpirit("no");
-console.log("🔴 vaultNo() reply:", reply);
+log("🔴 vaultNo() reply:", reply);
 
 if (typeof reply === "string") {
 addBubble("Vault Spirit", reply, false);
@@ -3982,7 +3982,7 @@ async function checkReminders(userContext) {
     }
 
   } catch (err) {
-    console.error("checkReminders error:", err);
+    error("checkReminders error:", err);
   }
 }
 async function handleReminder(text, userContext, forceSave = false) {
@@ -4019,7 +4019,7 @@ async function handleReminder(text, userContext, forceSave = false) {
         }
       );
     } catch (err) {
-      console.error("addReminder error:", err);
+      error("addReminder error:", err);
       return "🔥 The Vault hesitated… I couldn’t store that reminder just now.";
     }
 
@@ -4077,7 +4077,7 @@ async function handleReminder(text, userContext, forceSave = false) {
       }
     );
   } catch (err) {
-    console.error("addReminder error:", err);
+    error("addReminder error:", err);
     return "🔥 The Vault hesitated… I couldn’t store that reminder just now.";
   }
 
@@ -4115,7 +4115,7 @@ async function fetchSecurityState(uid) {
 
     return snap.data() || {};
   } catch (err) {
-    console.error("fetchSecurityState error:", err);
+    error("fetchSecurityState error:", err);
     return {};
   }
 }
@@ -4137,7 +4137,7 @@ async function handleLockApp(userContext) {
       { merge: true }
     );
   } catch (err) {
-    console.error("handleLockApp error:", err);
+    error("handleLockApp error:", err);
     return "🔥 The Vault hesitated… I couldn’t lock the realm.";
   }
 
@@ -4345,7 +4345,7 @@ async function runVaultSpiritIntro(loyalty) {
     }
 
   } catch (err) {
-    console.error("Vault intro error:", err);
+    error("Vault intro error:", err);
   }
 }
 
@@ -4356,7 +4356,7 @@ async function runVaultSpiritIntro(loyalty) {
 function initProfileVisuals() {
   // If identity isn't ready yet, retry shortly (mobile fix)
   if (!identity) {
-    console.warn("⏳ identity not ready — retrying initProfileVisuals");
+    warn("⏳ identity not ready — retrying initProfileVisuals");
     setTimeout(initProfileVisuals, 120);
     return;
   }
@@ -4420,10 +4420,10 @@ async function startApp() {
   initProfileVisuals();
 
   requestAnimationFrame(() => {
-    checkReminders(identity).catch(console.warn);
+    checkReminders(identity).catch(warn);
   });
 
-  console.log("StartApp Flags:", {
+  log("StartApp Flags:", {
     vaultStart,
     vaultOpened,
     visibilityArmed,
@@ -4632,7 +4632,7 @@ function runVaultSequence() {
 
 async function safeIntro(loyalty) {
   if (window.__vaultIntroShown) {
-    console.log("✨ Intro already shown — skipping");
+    log("✨ Intro already shown — skipping");
     return;
   }
 
@@ -4641,7 +4641,7 @@ async function safeIntro(loyalty) {
   try {
     await runVaultSpiritIntro(loyalty);
   } catch (err) {
-    console.error("Intro failed, skipping:", err);
+    error("Intro failed, skipping:", err);
     // Optional: allow retry if intro never actually started
     // window.__vaultIntroShown = false;
   }
@@ -4821,7 +4821,7 @@ async function onSendClick(e) {
   try {
     reply = await askVaultSpirit(text);
   } catch (err) {
-    console.error("askVaultSpirit failed:", err);
+    error("askVaultSpirit failed:", err);
     addBubble("Vault Spirit", "🌺 The winds were noisy… try again.", false);
     return;
   }
@@ -4843,7 +4843,7 @@ async function onSendClick(e) {
 
   // Timing log
   bubbleDelay = nowMs() - bubbleDelay;
-  console.log("⏱ Bubble appeared after:", bubbleDelay, "ms");
+  log("⏱ Bubble appeared after:", bubbleDelay, "ms");
 
   // Save context (single write)
   saveVaultContext({
@@ -4888,11 +4888,11 @@ function tryInitVault(source = "unknown") {
 
   // Guard FIRST — no wasted logs, no wasted work
   if (window.__vaultInitStarted) {
-    console.log(`⛔ tryInitVault blocked (${source}) — init already started`);
+    log(`⛔ tryInitVault blocked (${source}) — init already started`);
     return;
   }
 
-  console.log(`🔍 tryInitVault from: ${source}`, {
+  log(`🔍 tryInitVault from: ${source}`, {
     now,
     __vaultInitStarted: window.__vaultInitStarted
   });
@@ -4900,7 +4900,7 @@ function tryInitVault(source = "unknown") {
   // No debounce needed — initVaultPage owns the flag
   tryInitVault.lastInitAttempt = now;
 
-  console.log("🚀 Running initVaultPage (from tryInitVault)");
+  log("🚀 Running initVaultPage (from tryInitVault)");
   initVaultPage();
 }
 
@@ -4916,7 +4916,7 @@ if (!window.__vaultLoadListenerAttached) {
 
     // Guard FIRST — no wasted work
     if (appStarted || window.__vaultInitStarted) {
-      console.log("⛔ window.load: vault already started — skipping reset/init");
+      log("⛔ window.load: vault already started — skipping reset/init");
       return;
     }
 
@@ -4941,7 +4941,7 @@ if (!window.__vaultLoadListenerAttached) {
     vaultIntroStarted = false;
     vaultStart = null;
 
-    console.log("Load Flags (after reset):", {
+    log("Load Flags (after reset):", {
       vaultStart,
       vaultOpened,
       visibilityArmed,
@@ -4962,7 +4962,7 @@ if (!window.__vaultLoadListenerAttached) {
   mark("DOM ENDING");
 }
 function rebuildVaultUI() {
-  console.log("🔧 rebuildVaultUI() — visual reset only");
+  log("🔧 rebuildVaultUI() — visual reset only");
 
   // Batch class resets
   sessionContainer.classList.remove("minimized", "vaultSessionContainer-reopen", "reopenAnim");

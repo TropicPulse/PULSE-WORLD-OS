@@ -418,8 +418,8 @@ async function refreshAwareness() {
         renderTrace(snapshot, awareness);
 
     } catch (err) {
-        console.error("[AwarenessDashboard] Refresh failed:", err);
-        setPipelineBanner("error", "Awareness pipeline error — see console.");
+        error("[AwarenessDashboard] Refresh failed:", err);
+        setPipelineBanner("error", "Awareness pipeline error — see ");
     }
 }
 

@@ -74,7 +74,7 @@ export async function pulsebandCleanup() {
   const runId = `PB_CLEANUP_${Date.now()}`;
   const errorPrefix = `ERR_${runId}_`;
 
-  console.log(
+  log(
     `%c🧹 START PURIFIER CLEANUP → ${runId}`,
     "color:#03A9F4; font-weight:bold;"
   );
@@ -91,7 +91,7 @@ export async function pulsebandCleanup() {
       const createdAt = data.createdAt?.toMillis?.() || 0;
 
       if (createdAt < cutoff24h) {
-        console.log(
+        log(
           `%c🟨 DELETE SESSION → ${s.id}`,
           "color:#FFC107; font-weight:bold;"
         );
@@ -115,7 +115,7 @@ export async function pulsebandCleanup() {
       const createdAt = e.data()?.createdAt?.toMillis?.() || 0;
 
       if (createdAt < cutoff7d) {
-        console.log(
+        log(
           `%c🟨 DELETE ERROR → ${e.id}`,
           "color:#FFC107; font-weight:bold;"
         );
@@ -132,7 +132,7 @@ export async function pulsebandCleanup() {
       const createdAt = r.data()?.createdAt?.toMillis?.() || 0;
 
       if (createdAt < cutoff7d) {
-        console.log(
+        log(
           `%c🟨 DELETE REDOWNLOAD → ${r.id}`,
           "color:#FFC107; font-weight:bold;"
         );
@@ -150,7 +150,7 @@ export async function pulsebandCleanup() {
       createdAt: admin.firestore.FieldValue.serverTimestamp()
     });
 
-    console.log(
+    log(
       `%c🟩 PURIFIER CLEANUP COMPLETE → ${runId}`,
       "color:#4CAF50; font-weight:bold;"
     );
@@ -158,7 +158,7 @@ export async function pulsebandCleanup() {
     return { ok: true, runId, ...CLEANUP_CONTEXT };
 
   } catch (err) {
-    console.error(
+    error(
       `%c🟥 PURIFIER CLEANUP ERROR`,
       "color:#FF5252; font-weight:bold;",
       err

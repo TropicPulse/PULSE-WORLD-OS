@@ -777,7 +777,7 @@ export async function getEnvironmentState() {
     };
 
   } catch (err) {
-    console.error("getEnvironmentState failed:", err);
+    error("getEnvironmentState failed:", err);
 
     return {
       weather: { data: { current: {}, daily: null } },

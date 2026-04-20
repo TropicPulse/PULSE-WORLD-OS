@@ -109,11 +109,11 @@ const WBC_CONTEXT = {
   }
 };
 
-console.log("[WBC BOOT] PulseProxyHealer v7.3 online — immune patrol active.");
-console.log("[WBC BOOT] Health URL:", PROXY_HEALTH_URL);
-console.log("[WBC BOOT] Metrics URL:", PROXY_METRICS_URL);
-console.log("[WBC BOOT] Patrol interval:", HEALTH_INTERVAL_MS, "ms");
-console.log("[WBC BOOT] Score scan interval:", SCORES_SCAN_INTERVAL_MS, "ms");
+log("[WBC BOOT] PulseProxyHealer v7.3 online — immune patrol active.");
+log("[WBC BOOT] Health URL:", PROXY_HEALTH_URL);
+log("[WBC BOOT] Metrics URL:", PROXY_METRICS_URL);
+log("[WBC BOOT] Patrol interval:", HEALTH_INTERVAL_MS, "ms");
+log("[WBC BOOT] Score scan interval:", SCORES_SCAN_INTERVAL_MS, "ms");
 
 // ======================================================
 //  Helper: write FUNCTION_LOGS entry (immune alert)
@@ -127,7 +127,7 @@ async function writeFunctionLog(entry) {
       processed: false
     });
   } catch (err) {
-    console.error("[WBC] Failed to write FUNCTION_LOGS entry:", err);
+    WBC] Failed to write FUNCTION_LOGS entry:", err);
   }
 }
 
@@ -142,7 +142,7 @@ async function writeHealerLog(entry) {
       ts: Date.now()
     });
   } catch (err) {
-    console.error("[WBC] Failed to write healer log:", err);
+    led to write healer log:", err);
   }
 }
 
@@ -150,7 +150,7 @@ async function writeHealerLog(entry) {
 //  Health + metrics check (immune pressure scan)
 // ======================================================
 async function checkProxyHealthAndMetrics() {
-  console.log("[WBC] Running health + metrics scan…");
+  C] Running health + metrics scan…");
 
   let health = null;
   let metrics = null;
@@ -160,7 +160,7 @@ async function checkProxyHealthAndMetrics() {
     const res = await fetch(PROXY_HEALTH_URL, { method: "GET" });
     health = await res.json().catch(() => null);
   } catch (err) {
-    console.warn("[WBC] Health fetch failed:", String(err));
+    BC] Health fetch failed:", String(err));
     await writeHealerLog({
       type: "health_error",
       error: String(err),
@@ -173,7 +173,7 @@ async function checkProxyHealthAndMetrics() {
     const res = await fetch(PROXY_METRICS_URL, { method: "GET" });
     metrics = await res.json().catch(() => null);
   } catch (err) {
-    console.warn("[WBC] Metrics fetch failed:", String(err));
+    BC] Metrics fetch failed:", String(err));
     await writeHealerLog({
       type: "metrics_error",
       error: String(err),
@@ -182,7 +182,7 @@ async function checkProxyHealthAndMetrics() {
   }
 
   if (!metrics) {
-    console.warn("[WBC] Metrics unavailable — skipping pressure analysis.");
+    BC] Metrics unavailable — skipping pressure analysis.");
     return;
   }
 
@@ -198,7 +198,7 @@ async function checkProxyHealthAndMetrics() {
     warnings.push("event_loop_lag_high");
 
   if (warnings.length) {
-    console.warn("[WBC] Pressure warning:", warnings);
+    warn("[WBC] Pressure warning:", warnings);
 
     await writeHealerLog({
       type: "proxy_pressure_warning",
@@ -208,7 +208,7 @@ async function checkProxyHealthAndMetrics() {
       warnings
     });
   } else {
-    console.log("[WBC] Proxy pressure normal.");
+    log("[WBC] Proxy pressure normal.");
   }
 }
 
@@ -216,7 +216,7 @@ async function checkProxyHealthAndMetrics() {
 //  UserScores scan — detect instance misconfigurations
 // ======================================================
 async function scanUserScoresForInstanceHints() {
-  console.log("[WBC] Scanning UserScores for immune hints…");
+  log("[WBC] Scanning UserScores for immune hints…");
 
   const snap = await db.collection("UserScores").get();
 
@@ -232,7 +232,7 @@ async function scanUserScoresForInstanceHints() {
 
     // OUT OF BOUNDS — abnormal cell count
     if (instances < MIN_INSTANCES || instances > MAX_INSTANCES) {
-      console.warn(
+      warn(
         `[WBC] Instance out of bounds for user=${userId} | instances=${instances}`
       );
 
@@ -260,7 +260,7 @@ async function scanUserScoresForInstanceHints() {
 
     // HIGH TRUST + LOW INSTANCES — underactive tissue
     if (trustScore > 80 && instances < 4) {
-      console.log(
+      log(
         `[WBC] Upgrade hint for user=${userId} | high trust, low instances`
       );
 
@@ -278,7 +278,7 @@ async function scanUserScoresForInstanceHints() {
 
     // LOW TRUST + HIGH INSTANCES — overactive tissue
     if (trustScore < 20 && instances > 4) {
-      console.log(
+      log(
         `[WBC] Review hint for user=${userId} | low trust, high instances`
       );
 
@@ -295,28 +295,28 @@ async function scanUserScoresForInstanceHints() {
     }
   }
 
-  console.log("[WBC] UserScores scan complete.");
+  log("[WBC] UserScores scan complete.");
 }
 
 // ======================================================
 //  PUBLIC: startPulseProxyHealer()
 // ======================================================
 export default function startPulseProxyHealer() {
-  console.log("[WBC] Starting immune patrol loops…");
+  log("[WBC] Starting immune patrol loops…");
 
   // HEALTH + METRICS LOOP
   setInterval(() => {
     checkProxyHealthAndMetrics().catch((err) => {
-      console.error("[WBC] Health/metrics loop error:", err);
+      error("[WBC] Health/metrics loop error:", err);
     });
   }, HEALTH_INTERVAL_MS);
 
   // USER SCORES LOOP
   setInterval(() => {
     scanUserScoresForInstanceHints().catch((err) => {
-      console.error("[WBC] Scores scan loop error:", err);
+      error("[WBC] Scores scan loop error:", err);
     });
   }, SCORES_SCAN_INTERVAL_MS);
 
-  console.log("[WBC] v7.3 immune patrol active.");
+  log("[WBC] v7.3 immune patrol active.");
 }

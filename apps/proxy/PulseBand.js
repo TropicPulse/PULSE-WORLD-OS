@@ -46,7 +46,7 @@ const NERVOUS_DIAGNOSTICS_ENABLED =
 const nervousLog = (stage, details = {}) => {
   if (!NERVOUS_DIAGNOSTICS_ENABLED) return;
 
-  console.log(
+  log(
     JSON.stringify({
       pulseLayer: NERVOUS_LAYER_ID,
       pulseName: NERVOUS_LAYER_NAME,
@@ -62,9 +62,9 @@ nervousLog("NERVOUS_INIT", {});
 if (typeof window !== "undefined") {
   window.PULSE_LOG = function (...args) {
     try {
-      console.log("[PULSE]", ...args);
+      log("[PULSE]", ...args);
     } catch (err) {
-      console.error("PULSE_LOG failed:", err);
+      error("PULSE_LOG failed:", err);
     }
   };
 }
@@ -198,7 +198,7 @@ export const pulseband = {
       if (typeof window !== "undefined" && window.PULSE_LOG) {
         window.PULSE_LOG("PulseBand → GPU Brain ready");
       }
-      console.log("[PulseBand] GPU Brain ready:", packages);
+      log("[PulseBand] GPU Brain ready:", packages);
 
       this.gpu.packages = packages;
       this.gpu.ready = !!packages;
@@ -209,7 +209,7 @@ export const pulseband = {
       if (typeof window !== "undefined" && window.PULSE_LOG) {
         window.PULSE_LOG("PulseBand → GPU Brain FAILED");
       }
-      console.error("[PulseBand] GPU Brain failed:", err);
+      error("[PulseBand] GPU Brain failed:", err);
       this.gpu.ready = false;
 
       nervousLog("GPU_INIT_FAILED", { error: String(err) });
@@ -249,7 +249,6 @@ export const pulseband = {
     }
     nervousLog("ENGINE_INIT_READY", { initialized: true });
   },
-
   // ------------------------------------------------------------
   // Page Toggle — Local Nervous System Enable/Disable
   // ------------------------------------------------------------
@@ -320,6 +319,67 @@ export const pulseband = {
   },
 
   // ------------------------------------------------------------
+  // v7.4 — PulseNet + Mesh Integration (Pulse-Once Organ)
+  // ------------------------------------------------------------
+  pulseStatus: {
+    lastPulseTs: null,
+    lastPulseOk: false,
+    lastError: null
+  },
+
+  onPulseSuccess(payload = {}) {
+    this.pulseStatus.lastPulseTs = Date.now();
+    this.pulseStatus.lastPulseOk = true;
+    this.pulseStatus.lastError = null;
+
+    // A successful pulse means we had some path online
+    this.setConnectivity({ online: true, source: "pulse" });
+
+    this.emit("pulse-success", {
+      ts: this.pulseStatus.lastPulseTs,
+      payload
+    });
+  },
+
+  onPulseFailure(reason = "unknown") {
+    this.pulseStatus.lastPulseTs = Date.now();
+    this.pulseStatus.lastPulseOk = false;
+    this.pulseStatus.lastError = reason;
+
+    // Do NOT force offline; mesh / cached path may still exist
+    this.emit("pulse-failure", {
+      ts: this.pulseStatus.lastPulseTs,
+      reason
+    });
+  },
+
+  estimateMeshReach() {
+    // Placeholder for native / PulseMesh integration
+    return {
+      hops: 0,
+      estimatedMeters: 0,
+      mode: "direct"
+    };
+  },
+
+  async requestPulse(deviceId) {
+    if (!window?.PulseNet?.pulseOnce) {
+      warn("[PulseBand] PulseNet not available");
+      return { ok: false, reason: "no-pulsenet" };
+    }
+
+    const res = await window.PulseNet.pulseOnce(deviceId);
+
+    if (res.ok) {
+      this.onPulseSuccess(res.payload);
+    } else {
+      this.onPulseFailure(res.error || res.reason);
+    }
+
+    return res;
+  },
+
+  // ------------------------------------------------------------
   // Status API — Nervous System Snapshot
   // ------------------------------------------------------------
   getStatus() {
@@ -340,6 +400,9 @@ export const pulseband = {
       online: this.connectivity.online,
       source: this.connectivity.source
     };
+
+    // v7.4: expose pulse status
+    status.pulseStatus = { ...this.pulseStatus };
 
     return status;
   },
@@ -480,6 +543,7 @@ export const pulseband = {
     nervousLog("EMIT_UPDATE");
     this.emit("update", this.getStatus());
   },
+
 
   // ------------------------------------------------------------
   // Events — Neural Firing

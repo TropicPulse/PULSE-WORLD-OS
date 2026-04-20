@@ -75,7 +75,7 @@
    PRIORITY: BZD → USD → fallback to default
 ------------------------------------------------------ */
 export async function determinePayoutCurrency(stripe, stripeAccountID, payoutAmountCents) {
-  console.log("🔵 [determinePayoutCurrency] START");
+  log("🔵 [determinePayoutCurrency] START");
 
   const payoutAmountUSD = payoutAmountCents / 100;
 
@@ -83,7 +83,7 @@ export async function determinePayoutCurrency(stripe, stripeAccountID, payoutAmo
   try {
     account = await stripe.accounts.retrieve(stripeAccountID);
   } catch (err) {
-    console.error("❌ Stripe account retrieval failed:", err.message);
+    error("❌ Stripe account retrieval failed:", err.message);
     return {
       accountCurrency: "usd",
       transferCurrency: "usd",
@@ -161,7 +161,7 @@ export function calculateReleaseDate(deliveredAt, delayDays = 3, admin) {
 
     return admin.firestore.Timestamp.fromDate(date);
   } catch (err) {
-    console.log("❌ calculateReleaseDate error:", err.message);
+    log("❌ calculateReleaseDate error:", err.message);
     return null;
   }
 }

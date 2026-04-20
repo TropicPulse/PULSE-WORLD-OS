@@ -58,7 +58,7 @@ export const handler = async (event) => {
     // ------------------------------------------------------------
     // ⭐ IMMUNE EVENT LOG
     // ------------------------------------------------------------
-    console.log("🧬 IMMUNE ALERT — ROUTE FAILURE DETECTED:", {
+    log("🧬 IMMUNE ALERT — ROUTE FAILURE DETECTED:", {
       error,
       type,
       organ: "RouteDownAlert",
@@ -89,7 +89,7 @@ export const handler = async (event) => {
     };
 
   } catch (err) {
-    console.error("🟥 IMMUNE ALERT NODE ERROR:", err);
+    error("🟥 IMMUNE ALERT NODE ERROR:", err);
 
     return {
       statusCode: 500,

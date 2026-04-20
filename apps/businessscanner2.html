@@ -381,11 +381,11 @@
     if (!isNaN(idNum) && idNum >= 14009271) {
       await db.collection("Businesses").doc(doc.id).delete();
       deleted++;
-      console.log("🗑️ Deleted bad doc:", doc.id);
+      log("🗑️ Deleted bad doc:", doc.id);
     }
   }
 
-  console.log("✅ DONE. Deleted:", deleted);
+  log("✅ DONE. Deleted:", deleted);
 }
 async function saveMappedBusinesses(mappedList) {
 
@@ -400,15 +400,15 @@ async function saveMappedBusinesses(mappedList) {
     if (d.busIndex && d.busIndex > maxBusIndex) maxBusIndex = d.busIndex;
   });
 
-  console.log("📌 Existing placeIds:", existingPlaceIds.size);
-  console.log("📌 Highest busIndex:", maxBusIndex);
+  log("📌 Existing placeIds:", existingPlaceIds.size);
+  log("📌 Highest busIndex:", maxBusIndex);
 
   // 2. Start values YOU defined
   let nextListingId = 14009271;
   let nextBusIndex = maxBusIndex + 1;
 
-  console.log("➡️ Starting listing_id:", nextListingId);
-  console.log("➡️ Starting busIndex:", nextBusIndex);
+  log("➡️ Starting listing_id:", nextListingId);
+  log("➡️ Starting busIndex:", nextBusIndex);
 
   let insertedCount = 0;
 
@@ -417,13 +417,13 @@ async function saveMappedBusinesses(mappedList) {
 
     // MUST have placeId
     if (!mock.placeId) {
-      console.log("⏭ SKIPPED (no placeId):", mock.busname);
+      log("⏭ SKIPPED (no placeId):", mock.busname);
       continue;
     }
 
     // Dedupe by placeId
     if (existingPlaceIds.has(mock.placeId)) {
-      console.log("⏭ SKIPPED (duplicate placeId):", mock.busname);
+      log("⏭ SKIPPED (duplicate placeId):", mock.busname);
       continue;
     }
 
@@ -438,10 +438,10 @@ async function saveMappedBusinesses(mappedList) {
     await db.collection("Businesses").doc(docId).set(mock, { merge: true });
 
     insertedCount++;
-    console.log(`✔ INSERTED: ${mock.busname} → docId ${docId}, busIndex ${mock.busIndex}`);
+    log(`✔ INSERTED: ${mock.busname} → docId ${docId}, busIndex ${mock.busIndex}`);
   }
 
-  console.log(`🎉 DONE — Inserted ${insertedCount} new businesses.`);
+  log(`🎉 DONE — Inserted ${insertedCount} new businesses.`);
 }
 
     function buildMockBusinessFromPending(p) {

@@ -973,7 +973,7 @@ async function loadEarnSnapshot() {
         applyEarnSnapshot(json);
         logEarnTrace(`Loaded earnings snapshot from file: ${file.name}`);
     } catch (err) {
-        console.error(err);
+        error(err);
         alert("Failed to parse earnings snapshot JSON.");
         logEarnTrace("ERROR: Failed to parse earnings snapshot JSON from file.");
     }

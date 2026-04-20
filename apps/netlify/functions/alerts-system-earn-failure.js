@@ -73,7 +73,7 @@ export async function handler(event, context) {
 
     const payload = JSON.parse(event.body || "{}");
 
-    console.error("SYSTEM Earn FAILURE:", payload);
+    error("SYSTEM Earn FAILURE:", payload);
 
     // TODO: send email, log to DB, etc.
 
@@ -83,7 +83,7 @@ export async function handler(event, context) {
     };
 
   } catch (err) {
-    console.error("Earn failure alert error:", err);
+    error("Earn failure alert error:", err);
     return {
       statusCode: 500,
       body: JSON.stringify({

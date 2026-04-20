@@ -62,7 +62,7 @@ const SCORING_DIAGNOSTICS_ENABLED =
 const logScoring = (stage, details = {}) => {
   if (!SCORING_DIAGNOSTICS_ENABLED) return;
 
-  console.log(
+  log(
     JSON.stringify({
       pulseLayer: LAYER_ID,
       pulseName: LAYER_NAME,

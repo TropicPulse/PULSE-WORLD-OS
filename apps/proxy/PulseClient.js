@@ -36,7 +36,7 @@ const CIRCULATION_DIAGNOSTICS_ENABLED =
 const circulationLog = (stage, details = {}) => {
   if (!CIRCULATION_DIAGNOSTICS_ENABLED) return;
 
-  console.log(
+  log(
     JSON.stringify({
       pulseLayer: CIRCULATION_LAYER_ID,
       pulseName: CIRCULATION_LAYER_NAME,
@@ -50,9 +50,9 @@ const circulationLog = (stage, details = {}) => {
 circulationLog("CIRCULATION_INIT", {});
 window.PULSE_LOG = function (...args) {
   try {
-    console.log("[PULSE]", ...args);
+    log("[PULSE]", ...args);
   } catch (err) {
-    console.error("PULSE_LOG failed:", err);
+    error("PULSE_LOG failed:", err);
   }
 };
 

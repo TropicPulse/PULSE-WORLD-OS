@@ -49,11 +49,11 @@ import { fileURLToPath } from "url";
 //   const job = await getNextJob(marketplaces, capacity);
 
 //   if (!job) {
-//     console.log("No jobs available right now.");
+//     log("No jobs available right now.");
 //     return;
 //   }
 
-//   console.log("Selected job:", job);
+//   log("Selected job:", job);
 
 //   // TODO: hand this job to your worker execution layer
 // }

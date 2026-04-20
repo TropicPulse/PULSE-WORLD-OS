@@ -60,7 +60,7 @@ const REPORTER_DIAGNOSTICS_ENABLED =
 const logReporter = (stage, details = {}) => {
   if (!REPORTER_DIAGNOSTICS_ENABLED) return;
 
-  console.log(
+  log(
     JSON.stringify({
       pulseLayer: LAYER_ID,
       pulseName: LAYER_NAME,
@@ -182,7 +182,7 @@ export const reportSuspiciousClient = onRequest(
       return res.json({ success: true });
 
     } catch (err) {
-      console.error("reportSuspiciousClient error", err);
+      error("reportSuspiciousClient error", err);
 
       logReporter("FATAL_ERROR", {
         message: err?.message || "Unknown error"

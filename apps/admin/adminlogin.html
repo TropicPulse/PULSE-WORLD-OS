@@ -98,7 +98,7 @@
     firebase.auth().getRedirectResult().then(async (result) => {
       if (result.user) {
         const token = await result.user.getIdToken();
-        console.log("Mobile login token:", token);
+        log("Mobile login token:", token);
         window.location.href = "/admin.html";
       }
     });
@@ -112,7 +112,7 @@
         // Desktop → popup
         await firebase.auth().signInWithPopup(provider);
         const token = await firebase.auth().currentUser.getIdToken();
-        console.log("Desktop login token:", token);
+        log("Desktop login token:", token);
         window.location.href = "/admin.html";
       }
     }

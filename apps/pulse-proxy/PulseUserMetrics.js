@@ -108,8 +108,8 @@ const VITALS_CONTEXT = {
   }
 };
 
-console.log("[VitalsMonitor BOOT] PulseUserMetrics v7.3 online.");
-console.log("[VitalsMonitor BOOT] Performance logging:", ENABLE_PERFORMANCE_LOGGING);
+log("[VitalsMonitor BOOT] PulseUserMetrics v7.3 online.");
+talsMonitor BOOT] Performance logging:", ENABLE_PERFORMANCE_LOGGING);
 
 // ======================================================
 //  updateUserMetrics()
@@ -119,7 +119,7 @@ console.log("[VitalsMonitor BOOT] Performance logging:", ENABLE_PERFORMANCE_LOGG
 export async function updateUserMetrics(userId, data = {}) {
   if (!userId || userId === "anonymous") return;
 
-  console.log(
+  
     `[VitalsMonitor] Update | user=${userId} | bytes=${data.bytes ?? 0} | duration=${data.durationMs ?? 0}ms | meshRelay=${!!data.meshRelay} | meshPing=${!!data.meshPing} | hubFlag=${!!data.hubFlag}`
   );
 
@@ -160,7 +160,7 @@ export async function updateUserMetrics(userId, data = {}) {
 
     const lastSeen = now;
 
-    console.log(
+    
       `[VitalsMonitor] user=${userId} | heartbeats=${totalRequests} | bloodFlow=${totalBytes} | bloodPressure=${avgLatency.toFixed(
         2
       )}ms | relays=${meshRelays} | pings=${meshPings} | hubSignals=${hubSignals}`
@@ -198,9 +198,9 @@ export async function updateUserMetrics(userId, data = {}) {
         hubFlag: data.hubFlag ?? false
       });
 
-      console.log(`[VitalsMonitor] Snapshot logged for user=${userId}`);
+      talsMonitor] Snapshot logged for user=${userId}`);
     } catch (err) {
-      console.error("[VitalsMonitor] Failed to log performance:", err);
+      VitalsMonitor] Failed to log performance:", err);
     }
   }
 }
@@ -231,7 +231,7 @@ export function calculateTrustScore(metrics) {
 
   const final = Math.min(score, 100);
 
-  console.log(
+  
     `[VitalsMonitor] HealthIndex computed | user=${metrics.userId ?? "?"} | score=${final}`
   );
 
@@ -250,7 +250,7 @@ export function calculatePhase(trustScore) {
   else if (trustScore < 75) phase = 3;
   else phase = 4;
 
-  console.log(`[VitalsMonitor] Phase computed | trustScore=${trustScore} | phase=${phase}`);
+  talsMonitor] Phase computed | trustScore=${trustScore} | phase=${phase}`);
 
   return phase;
 }
@@ -268,7 +268,7 @@ export function isHub(metrics) {
     metrics.totalRequests > 500;
 
   if (hub) {
-    console.log(
+    
       `[VitalsMonitor] HIGH-FLOW ORGAN DETECTED | user=${metrics.userId ?? "?"} | relays=${metrics.meshRelays} | hubSignals=${metrics.hubSignals} | totalRequests=${metrics.totalRequests}`
     );
   }
@@ -303,7 +303,7 @@ export function allocateInstances(phase, hubFlag, deviceTier, earnMode, testEarn
 
   const final = Math.max(1, Math.min(base, max));
 
-  console.log(
+  
     `[VitalsMonitor] Circulatory capacity allocated | phase=${phase} | hub=${hubFlag} | tier=${deviceTier} | earnMode=${earnMode} | testEarn=${testEarnActive} | final=${final}`
   );
 

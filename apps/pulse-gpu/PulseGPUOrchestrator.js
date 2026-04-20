@@ -124,7 +124,7 @@ class PulseGPUOrchestrator {
       }
     };
 
-    console.log(
+    log(
       "%c[Brainstem] Command spine online — autonomic coordination active (v7.3).",
       "color:#03A9F4; font-weight:bold;"
     );

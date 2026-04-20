@@ -44,7 +44,7 @@ const CLINICIAN_DIAGNOSTICS_ENABLED =
 const clinicianLog = (stage, details = {}) => {
   if (!CLINICIAN_DIAGNOSTICS_ENABLED) return;
 
-  console.log(
+  log(
     JSON.stringify({
       pulseLayer: CLINICIAN_LAYER_ID,
       pulseName: CLINICIAN_LAYER_NAME,

@@ -78,7 +78,7 @@ if (!admin.apps.length) admin.initializeApp();
 const db = admin.firestore();
 
 export async function handler(event, context) {
-  console.log("🔵 [/create-order-payment] START");
+  log("🔵 [/create-order-payment] START");
 
   try {
     if (event.httpMethod !== "POST") {
@@ -193,7 +193,7 @@ export async function handler(event, context) {
       }
     });
 
-    console.log("✅ PaymentIntent created:", paymentIntent.id);
+    log("✅ PaymentIntent created:", paymentIntent.id);
 
     return {
       statusCode: 200,
@@ -205,7 +205,7 @@ export async function handler(event, context) {
     };
 
   } catch (err) {
-    console.error("❌ Error creating PaymentIntent:", err);
+    error("❌ Error creating PaymentIntent:", err);
     return {
       statusCode: 500,
       body: JSON.stringify({

@@ -60,7 +60,7 @@ const CUSTODIAN_DIAGNOSTICS_ENABLED =
 const logCustodian = (stage, details = {}) => {
   if (!CUSTODIAN_DIAGNOSTICS_ENABLED) return;
 
-  console.log(
+  log(
     JSON.stringify({
       pulseLayer: LAYER_ID,
       pulseName: LAYER_NAME,

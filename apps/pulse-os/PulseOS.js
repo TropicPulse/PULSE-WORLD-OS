@@ -94,16 +94,16 @@ const THYMUS_CONTEXT = {
   }
 };
 
-console.log("[Thymus BOOT] PulseOS v7.3 immune kernel online.");
-console.log("[Thymus BOOT] Heartbeat interval:", OS_HEARTBEAT_INTERVAL_MS, "ms");
-console.log("[Thymus BOOT] FUNCTION_LOG scan interval:", FUNCTION_LOG_SCAN_INTERVAL_MS, "ms");
+log("[Thymus BOOT] PulseOS v7.3 immune kernel online.");
+log("[Thymus BOOT] Heartbeat interval:", OS_HEARTBEAT_INTERVAL_MS, "ms");
+log("[Thymus BOOT] FUNCTION_LOG scan interval:", FUNCTION_LOG_SCAN_INTERVAL_MS, "ms");
 
 // ======================================================
 //  writeOSEvent() — Immune Signal Emitter
 // ======================================================
 async function writeOSEvent(entry) {
   try {
-    console.log(
+    log(
       `[Thymus] ImmuneSignal | type=${entry.type} | hintCode=${entry.hintCode ?? "UNSPECIFIED_HINT"}`
     );
 
@@ -114,7 +114,7 @@ async function writeOSEvent(entry) {
       ...entry
     });
   } catch (err) {
-    console.error("[Thymus] Failed to emit immune signal:", err);
+    error("[Thymus] Failed to emit immune signal:", err);
   }
 }
 
@@ -125,7 +125,7 @@ async function updateOSHealth(extra = {}) {
   try {
     const now = Timestamp.now();
 
-    console.log("[Thymus] Heartbeat emitted.");
+    ymus] Heartbeat emitted.");
 
     await db.collection(OS_HEALTH_COLLECTION).doc(PULSE_OS_ID).set(
       {
@@ -143,7 +143,7 @@ async function updateOSHealth(extra = {}) {
     });
 
   } catch (err) {
-    console.error("[Thymus] Failed to update vital signs:", err);
+    error("[Thymus] Failed to update vital signs:", err);
   }
 }
 
@@ -151,7 +151,7 @@ async function updateOSHealth(extra = {}) {
 //  processFunctionLogs() — Immune Training + Drift Detection
 // ======================================================
 async function processFunctionLogs() {
-  console.log("[Thymus] Scanning FUNCTION_LOGS…");
+  log("[Thymus] Scanning FUNCTION_LOGS…");
 
   const snap = await db
     .collection(FUNCTION_LOGS_COLLECTION)
@@ -160,18 +160,18 @@ async function processFunctionLogs() {
     .get();
 
   if (snap.empty) {
-    console.log("[Thymus] No new immune stimuli.");
+    log("[Thymus] No new immune stimuli.");
     return;
   }
 
-  console.log(`[Thymus] Ingesting ${snap.size} FUNCTION_LOGS…`);
+  log(`[Thymus] Ingesting ${snap.size} FUNCTION_LOGS…`);
 
   const batch = db.batch();
 
   for (const doc of snap.docs) {
     const log = doc.data();
 
-    console.log(
+    log(
       `[Thymus] Ingest | id=${doc.id} | subsystem=${log.subsystem ?? "unknown"} | severity=${log.severity ?? "info"}`
     );
 
@@ -198,7 +198,7 @@ async function processFunctionLogs() {
     }
 
     if (log.severity === "error" || log.severity === "critical") {
-      console.warn(
+      
         `[Thymus] Drift signature recorded | subsystem=${log.subsystem ?? "unknown"}`
       );
 
@@ -222,10 +222,10 @@ async function processFunctionLogs() {
 
   await batch.commit();
 
-  console.log("[Thymus] FUNCTION_LOG ingestion complete.");
+  ymus] FUNCTION_LOG ingestion complete.");
 
   if (snap.size >= 50) {
-    console.warn("[Thymus] Large immune stimulus — creating restore point.");
+    warn("[Thymus] Large immune stimulus — creating restore point.");
     await createRestorePoint("auto_after_large_ingest", ["OS"]);
   }
 }
@@ -234,21 +234,21 @@ async function processFunctionLogs() {
 //  PUBLIC: startPulseOS() — Activate Immune Organ
 // ======================================================
 export default function startPulseOS() {
-  console.log("[Thymus] Starting immune supervisor loops…");
+  ymus] Starting immune supervisor loops…");
 
   setInterval(() => {
     updateOSHealth().catch((err) => {
-      console.error("[Thymus] Heartbeat loop error:", err);
+      error("[Thymus] Heartbeat loop error:", err);
     });
   }, OS_HEARTBEAT_INTERVAL_MS);
 
   setInterval(() => {
     processFunctionLogs().catch((err) => {
-      console.error("[Thymus] FUNCTION_LOGS loop error:", err);
+      error("[Thymus] FUNCTION_LOGS loop error:", err);
     });
   }, FUNCTION_LOG_SCAN_INTERVAL_MS);
 
-  console.log("[Thymus] v7.3 immune kernel active.");
+  log("[Thymus] v7.3 immune kernel active.");
 }
 
 export { updateOSHealth, processFunctionLogs, writeOSEvent };

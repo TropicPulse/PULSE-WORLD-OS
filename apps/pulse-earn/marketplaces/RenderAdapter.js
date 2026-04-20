@@ -143,7 +143,7 @@ export const RenderAdapter = {
       healingState.cycleCount++;
       return jobs;
     } catch (err) {
-      console.error("RenderAdapter.fetchJobs() error:", err);
+      error("RenderAdapter.fetchJobs() error:", err);
       healingState.lastFetchError = err.message;
       healingState.lastFetchCount = 0;
       return [];
@@ -169,7 +169,7 @@ export const RenderAdapter = {
       healingState.cycleCount++;
       return json;
     } catch (err) {
-      console.error("RenderAdapter.submitResult() error:", err);
+      error("RenderAdapter.submitResult() error:", err);
       healingState.lastSubmitError = err.message;
       throw err;
     }

@@ -65,7 +65,7 @@ const SECURITY_SWEEP_DIAGNOSTICS_ENABLED =
 const logReliability = (stage, details = {}) => {
   if (!SECURITY_SWEEP_DIAGNOSTICS_ENABLED) return;
 
-  console.log(
+  log(
     JSON.stringify({
       pulseLayer: LAYER_ID,
       pulseName: LAYER_NAME,

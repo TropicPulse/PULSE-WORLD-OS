@@ -1960,7 +1960,7 @@ async function updateUserRecordFromUI(payloadOverride = null) {
     return true;
 
   } catch (err) {
-    console.error("updateUserRecordFromUI error:", err);
+    error("updateUserRecordFromUI error:", err);
     showMessage("Unable to update profile.", "error");
     return false;
   }
@@ -2034,7 +2034,7 @@ window.attemptStripeRedirect = function (url) {
   function mark(label, absolute = false) {
     const now = nowMs();
     const diff = now - lastTime;
-    console.log(
+    log(
       absolute
         ? `${label}: @${now.toFixed(1)}ms`
         : `${label}: +${diff.toFixed(1)}ms`

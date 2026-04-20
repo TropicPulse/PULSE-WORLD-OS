@@ -99,7 +99,7 @@ export function sendPixel(res) {
  * Retrieve a user's Stripe balance (pending + available).
  */
 export async function findUserStripeBalance(stripeAccountID, stripeSecret) {
-  console.log("🔵 [findUserStripeBalance] START", { stripeAccountID });
+  log("🔵 [findUserStripeBalance] START", { stripeAccountID });
 
   const stripe = new Stripe(stripeSecret);
 
@@ -121,11 +121,11 @@ export async function findUserStripeBalance(stripeAccountID, stripeSecret) {
       availableBalance: toBZD(available)
     };
 
-    console.log("🟢 [findUserStripeBalance] RESULT", result);
+    log("🟢 [findUserStripeBalance] RESULT", result);
     return result;
 
   } catch (err) {
-    console.error("❌ [findUserStripeBalance] ERROR:", {
+    error("❌ [findUserStripeBalance] ERROR:", {
       message: err.message,
       type: err.type,
       code: err.code
@@ -167,9 +167,9 @@ export async function logSecurityPatch(uid, patch, reason = "auto") {
       createdAt: admin.firestore.FieldValue.serverTimestamp()
     });
 
-    console.log("🧾 Security patch logged:", uid, patch.signature);
+    log("🧾 Security patch logged:", uid, patch.signature);
   } catch (err) {
-    console.error("🔥 logSecurityPatch failed:", err);
+    error("🔥 logSecurityPatch failed:", err);
   }
 }
 
@@ -190,7 +190,7 @@ export async function applyTwilightPatch(uid, reason = "auto") {
     const snap = await userRef.get();
 
     if (!snap.exists) {
-      console.log("❌ User not found:", uid);
+      log("❌ User not found:", uid);
       return;
     }
 
@@ -220,10 +220,10 @@ export async function applyTwilightPatch(uid, reason = "auto") {
 
     await userRef.update({ TPSecurity: updatedSecurity });
 
-    console.log("🌒 Twilight Patch applied to:", uid, updatedSecurity);
+    log("🌒 Twilight Patch applied to:", uid, updatedSecurity);
 
     await logSecurityPatch(uid, patch, reason);
   } catch (err) {
-    console.error("🔥 applyTwilightPatch failed:", err);
+    error("🔥 applyTwilightPatch failed:", err);
   }
 }

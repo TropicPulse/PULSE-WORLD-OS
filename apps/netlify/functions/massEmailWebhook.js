@@ -69,7 +69,7 @@ export const massEmailWebhook = onRequest(
   (req, res) => {
     corsHandler(req, res, async () => {
       try {
-        console.log("🔵 [massEmailWebhook] START");
+        log("🔵 [massEmailWebhook] START");
 
         const EMAIL_PASSWORD_VALUE = EMAIL_PASSWORD.value();
         const ACCOUNT_SID_VALUE = ACCOUNT_SID.value();
@@ -256,7 +256,7 @@ export const massEmailWebhook = onRequest(
         return res.json({ status: "failed" });
 
       } catch (err) {
-        console.error("❌ Mass Email Webhook Error:", err);
+        error("❌ Mass Email Webhook Error:", err);
         return res.status(500).send({ error: "Internal error" });
       }
     });
@@ -273,7 +273,7 @@ export const massEmailWebhook = onRequest(
    BROADCAST EMAIL FOR NEW STUFF
 =========================== */
 async function sendMASSemail(reqBody) {
-  console.log("🔵 [sendMASSemail] START");
+  log("🔵 [sendMASSemail] START");
 
   const ACCOUNT_SID_VALUE = ACCOUNT_SID.value();
   const AUTH_TOKEN_VALUE = AUTH_TOKEN.value();
@@ -388,7 +388,7 @@ async function sendMASSemail(reqBody) {
       .get();
 
     if (userSnap.empty) {
-      console.log("❌ User not found:", useremail);
+      log("❌ User not found:", useremail);
       return { success: false, error: "user_not_found" };
     }
 
@@ -516,7 +516,7 @@ async function sendMASSemail(reqBody) {
         doc.ref.update({
           "TPIdentity.resendToken": resendToken
         }).catch((err) => {
-          console.error("⚠️ Failed to set TPIdentity.resendToken for", uEmail, err.message);
+          error("⚠️ Failed to set TPIdentity.resendToken for", uEmail, err.message);
         });
       }
 
@@ -531,7 +531,7 @@ async function sendMASSemail(reqBody) {
 
       sendPromises.push(
         sendEmailToUser(uEmail, emailType, userPayload).catch((err) => {
-          console.error("❌ Failed to send to:", uEmail, err.message);
+          error("❌ Failed to send to:", uEmail, err.message);
         })
       );
     });
@@ -544,7 +544,7 @@ async function sendMASSemail(reqBody) {
     };
 
   } catch (err) {
-    console.error("❌ broadcastEmail error:", err);
+    error("❌ broadcastEmail error:", err);
     return {
       success: false,
       error: "Broadcast email failed",

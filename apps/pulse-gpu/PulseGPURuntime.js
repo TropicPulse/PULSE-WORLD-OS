@@ -85,34 +85,34 @@ class PulseGPUContext {
 
   async init(canvas) {
     if (!canvas) {
-      console.warn("PulseGPUContext: canvas not provided (fail-open).");
+      warn("PulseGPUContext: canvas not provided (fail-open).");
       this.ready = false;
       return;
     }
 
     if (!navigator.gpu) {
-      console.warn("PulseGPUContext: WebGPU unavailable (fail-open).");
+      warn("PulseGPUContext: WebGPU unavailable (fail-open).");
       this.ready = false;
       return;
     }
 
     this.adapter = await navigator.gpu.requestAdapter();
     if (!this.adapter) {
-      console.warn("PulseGPUContext: adapter unavailable (fail-open).");
+      warn("PulseGPUContext: adapter unavailable (fail-open).");
       this.ready = false;
       return;
     }
 
     this.device = await this.adapter.requestDevice();
     if (!this.device) {
-      console.warn("PulseGPUContext: device unavailable (fail-open).");
+      warn("PulseGPUContext: device unavailable (fail-open).");
       this.ready = false;
       return;
     }
 
     const context = canvas.getContext("webgpu");
     if (!context) {
-      console.warn("PulseGPUContext: cannot acquire WebGPU context (fail-open).");
+      warn("PulseGPUContext: cannot acquire WebGPU context (fail-open).");
       this.ready = false;
       return;
     }
@@ -178,7 +178,7 @@ class PulseGPURuntimeLoader {
   loadPackages() {
     const pkg = PulseGPUBrainExport.exportToRuntime();
     if (!pkg) {
-      console.warn("PulseGPURuntimeLoader: no packageSet available (fail-open).");
+      warn("PulseGPURuntimeLoader: no packageSet available (fail-open).");
       this.packages = null;
       return null;
     }

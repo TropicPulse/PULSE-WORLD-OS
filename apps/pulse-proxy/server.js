@@ -76,7 +76,7 @@ const PROXY_CONTEXT = {
   selfRepairable: false
 };
 
-console.log(
+log(
   "%c🟦 PulseProxySpine v7.3 online — backend spine + vitals pump active.",
   "color:#03A9F4; font-weight:bold;"
 );
@@ -135,7 +135,7 @@ import startPulseOSHealer from "./pulse-os/PulseOSHealer.js";
 import startGlobalHealer from "./pulse-os/GlobalHealer.js";
 
 // Start the background timer loop (kept to avoid behavior change)
-console.log(
+log(
   "%c[SPINE BOOT] Starting Pulse Timer loop…",
   "color:#9C27B0; font-weight:bold;"
 );
@@ -144,19 +144,19 @@ startPulseTimer();
 // ------------------------------------------------------
 //  Start Pulse‑OS (Global Supervisor + Healers)
 // ------------------------------------------------------
-console.log(
+log(
   "%c[SPINE BOOT] Starting PulseOS (global supervisor / brainstem)…",
   "color:#4CAF50; font-weight:bold;"
 );
 startPulseOS(); // OS brain — heartbeat + FUNCTION_LOG ingestion
 
-console.log(
+log(
   "%c[SPINE BOOT] Starting PulseOSHealer (OS-level immune scan)…",
   "color:#4CAF50; font-weight:bold;"
 );
 startPulseOSHealer(); // OS-level drift detector
 
-console.log(
+log(
   "%c[SPINE BOOT] Starting GlobalHealer (system-wide immune response)…",
   "color:#4CAF50; font-weight:bold;"
 );
@@ -200,7 +200,7 @@ const OFFLINE_MODE =
 
 healingState.mode = OFFLINE_MODE ? "offline" : "online";
 
-console.log(
+log(
   "%c[SPINE BOOT] Identity:",
   "color:#03A9F4; font-weight:bold;",
   {
@@ -235,7 +235,7 @@ let redis = null;
 let redisReady = false;
 
 if (window.REDIS_URL) {
-  console.log(
+  log(
     "%c[SPINE BOOT] Redis URL detected — initializing client…",
     "color:#FFC107; font-weight:bold;"
   );
@@ -245,7 +245,7 @@ if (window.REDIS_URL) {
   redis.on("ready", () => {
     redisReady = true;
     global.__lastRedisError = null;
-    console.log(
+    log(
       "%c[REDIS] Connected — cache + rate limiting enabled (still fail-open on error).",
       "color:#4CAF50; font-weight:bold;"
     );
@@ -256,7 +256,7 @@ if (window.REDIS_URL) {
     const msg = String(err);
     global.__lastRedisError = msg;
     healingState.lastRedisError = msg;
-    console.warn(
+    warn(
       "%c[REDIS ERROR] Entering degraded / fail-open mode:",
       "color:#FF9800; font-weight:bold;",
       msg
@@ -270,14 +270,14 @@ if (window.REDIS_URL) {
       redisReady = false;
       global.__lastRedisError = msg;
       healingState.lastRedisError = msg;
-      console.warn(
+      warn(
         "%c[REDIS CONNECT FAILED] Staying in fail-open mode:",
         "color:#FF9800; font-weight:bold;",
         msg
       );
     });
 } else {
-  console.log(
+  log(
     "%c[SPINE BOOT] Redis URL not set — cache + rate limiting in fail-open mode.",
     "color:#FFC107; font-weight:bold;"
   );
@@ -311,12 +311,12 @@ const transporter =
     : null;
 
 if (transporter) {
-  console.log(
+  log(
     "%c[SPINE BOOT] Mailer enabled — critical alerts will be sent.",
     "color:#4CAF50; font-weight:bold;"
   );
 } else {
-  console.log(
+  log(
     "%c[SPINE BOOT] Mailer disabled — EMAIL_PASSWORD / SMTP config missing. Failing silently on alerts.",
     "color:#FFC107; font-weight:bold;"
   );
@@ -335,7 +335,7 @@ async function sendCriticalEmail(subject, payload) {
   } catch (err) {
     const msg = String(err);
     healingState.lastEmailError = msg;
-    console.error(
+    error(
       "%c[PULSE EMAIL ERROR]",
       "color:#FF5252; font-weight:bold;",
       msg
@@ -348,7 +348,7 @@ async function sendCriticalEmail(subject, payload) {
 // ------------------------------------------------------
 export const adminUserScores = app.get("/UserScores", async (req, res) => {
   try {
-    console.log(
+    log(
       "%c[ADMIN] /UserScores requested",
       "color:#03A9F4; font-weight:bold;"
     );
@@ -373,7 +373,7 @@ export const adminUserScores = app.get("/UserScores", async (req, res) => {
 
     results.sort((a, b) => b.trustScore - a.trustScore);
 
-    console.log(
+    log(
       "%c[ADMIN] /UserScores response count:",
       "color:#03A9F4; font-weight:bold;",
       results.length
@@ -387,7 +387,7 @@ export const adminUserScores = app.get("/UserScores", async (req, res) => {
   } catch (err) {
     const msg = String(err);
     healingState.lastError = msg;
-    console.error(
+    error(
       "%c[ADMIN ERROR] Error fetching UserScores:",
       "color:#FF5252; font-weight:bold;",
       err
@@ -429,7 +429,7 @@ function updateUserMetricsLocal(userId, data) {
     u.lastEvent = data.event;
     u.lastUpdated = Date.now();
   } catch (err) {
-    console.log(
+    log(
       "%c[updateUserMetricsLocal ERROR]",
       "color:#FF5252; font-weight:bold;",
       err
@@ -458,7 +458,7 @@ function updateUserMetrics(userId, data) {
       hubFlag: data.hubFlag ?? false
     }).catch((err) => {
       const msg = String(err);
-      console.warn(
+      warn(
         "%c[VITALS MONITOR WARN] updateUserMetrics Firestore path failed (fail-open):",
         "color:#FF9800; font-weight:bold;",
         msg
@@ -466,7 +466,7 @@ function updateUserMetrics(userId, data) {
     });
   } catch (err) {
     const msg = String(err);
-    console.warn(
+    warn(
       "%c[VITALS MONITOR ERROR] updateUserMetrics bridge failed (fail-open):",
       "color:#FF9800; font-weight:bold;",
       msg
@@ -504,7 +504,7 @@ async function checkRateLimit(ip) {
   healingState.lastRateLimitDecision = { ip, day, allowed, current };
 
   if (!allowed) {
-    console.warn(
+    warn(
       "%c[RATE LIMIT] IP blocked for the day:",
       "color:#FF9800; font-weight:bold;",
       ip,
@@ -528,7 +528,7 @@ async function warmConnection(url) {
       error: "offline-mode",
       mode: "offline"
     };
-    console.log(
+    log(
       "%c[WARM CONNECTION] Skipped (offline mode) for URL:",
       "color:#FFC107; font-weight:bold;",
       url
@@ -555,7 +555,7 @@ async function warmConnection(url) {
       ok: false,
       error: msg
     };
-    console.warn(
+    warn(
       "%c[WARM CONNECTION ERROR]",
       "color:#FF9800; font-weight:bold;",
       url,
@@ -627,7 +627,7 @@ app.get("/TPProxy", async (req, res) => {
 
   const target = req.query.url;
   if (!target) {
-    console.warn(
+    warn(
       "%c[TPProxy] Missing_URL",
       "color:#FF9800; font-weight:bold;"
     );
@@ -678,7 +678,7 @@ app.get("/TPProxy", async (req, res) => {
   } catch (err) {
     const msg = String(err);
     healingState.lastError = msg;
-    console.error(
+    error(
       "%c[PULSE RATE LIMIT ERROR]",
       "color:#FF5252; font-weight:bold;",
       msg
@@ -779,7 +779,7 @@ app.get("/TPProxy", async (req, res) => {
           .send(Buffer.from(cached.data, "base64"));
       }
     } else if (rememberMe && !redisReady) {
-      console.log(
+      log(
         "%c[TPProxy] rememberMe=1 but Redis disabled — cache bypass (fail-open).",
         "color:#FFC107; font-weight:bold;"
       );
@@ -902,7 +902,7 @@ app.get("/pulse-proxy/health", async (req, res) => {
   const status = redisReady ? "OK!" : "Degraded";
 
   if (status !== "OK!") {
-    console.warn(
+    warn(
       "%c[HEALTH] Degraded state detected — Redis disabled or unavailable.",
       "color:#FF9800; font-weight:bold;"
     );
@@ -1087,7 +1087,7 @@ app.get("/pulse-proxy/ping", async (req, res) => {
       const msg = String(err);
       backend.error = msg;
       healingState.lastError = msg;
-      console.warn(
+      warn(
         "%c[PING] Backend ping failed:",
         "color:#FF9800; font-weight:bold;",
         msg
@@ -1189,7 +1189,7 @@ async function runInstanceOrchestrator() {
   const instanceId = 0;
 
   try {
-    console.log(
+    log(
       "%c[PACKET WORKER] Starting instance:",
       "color:#03A9F4; font-weight:bold;",
       instanceId,
@@ -1205,14 +1205,14 @@ async function runInstanceOrchestrator() {
       writePacket,
       generatePacketData
     });
-    console.log(
+    log(
       "%c[PACKET WORKER] Completed instance:",
       "color:#03A9F4; font-weight:bold;",
       result
     );
   } catch (err) {
     healingState.lastError = String(err);
-    console.error(
+    error(
       "%c[InstanceOrchestrator ERROR]",
       "color:#FF5252; font-weight:bold;",
       err
@@ -1224,7 +1224,7 @@ async function runInstanceOrchestrator() {
 // START — ALWAYS RUN — NEVER REMOVE ABILITIES
 // ------------------------------------------------------
 async function init() {
-  console.log(
+  log(
     "%c[PULSE BOOT] Initializing Pulse Engine (Proxy Spine)…",
     "color:#03A9F4; font-weight:bold;"
   );
@@ -1233,19 +1233,19 @@ async function init() {
     try {
       await redis.connect();
       redisReady = true;
-      console.log(
+      log(
         "%c[REDIS] Connected",
         "color:#4CAF50; font-weight:bold;"
       );
     } catch (err) {
       global.__lastRedisError = String(err);
       healingState.lastRedisError = String(err);
-      console.error(
+      error(
         "%c[REDIS INIT ERROR]",
         "color:#FF5252; font-weight:bold;",
         err
       );
-      console.log(
+      log(
         "%c[REDIS] Failing open — continuing without Redis.",
         "color:#FFC107; font-weight:bold;"
       );
@@ -1255,7 +1255,7 @@ async function init() {
   setInterval(runInstanceOrchestrator, 1000);
 
   app.listen(PORT, () => {
-    console.log(
+    log(
       "%c[PULSE BOOT] Pulse Engine v7.0 running on " +
         PORT +
         " | Redis: " +

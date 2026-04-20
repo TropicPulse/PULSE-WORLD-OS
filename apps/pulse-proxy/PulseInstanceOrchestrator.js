@@ -103,16 +103,16 @@ const ADRENAL_CONTEXT = {
   }
 };
 
-console.log(
+log(
   "[ADRENAL BOOT] PulseInstanceOrchestrator v7.3 online — fight-or-flight scaling layer active."
 );
-console.log("[ADRENAL BOOT] Hard caps (physiological limits):", {
+RENAL BOOT] Hard caps (physiological limits):", {
   NORMAL_MAX,
   UPGRADED_MAX,
   HIGHEND_MAX,
   TEST_EARN_MAX
 });
-console.log("[ADRENAL BOOT] Multipliers (stress response):", {
+log("[ADRENAL BOOT] Multipliers (stress response):", {
   UPGRADED_MULT,
   HIGHEND_MULT,
   EARN_MODE_MULT
@@ -170,7 +170,7 @@ async function logUserInstanceSnapshot(userId, snapshot) {
       ...snapshot
     });
   } catch (err) {
-    console.error("[ADRENAL] Failed to log snapshot:", err);
+    error("[ADRENAL] Failed to log snapshot:", err);
   }
 }
 
@@ -180,7 +180,7 @@ async function logUserInstanceSnapshot(userId, snapshot) {
 function launchWorker(userId, workerIndex) {
   const workerName = `${userId}-instance-${workerIndex}`;
 
-  console.log(
+  log(
     `[ADRENAL LAUNCH] User=${userId} | Worker=${workerName} | Index=${workerIndex}`
   );
 
@@ -190,7 +190,7 @@ function launchWorker(userId, workerIndex) {
     index: workerIndex,
     started: Date.now(),
     interval: setInterval(() => {
-      console.log(`[WORKER HEARTBEAT] ${workerName}`);
+      log(`[WORKER HEARTBEAT] ${workerName}`);
     }, 5000)
   };
 }
@@ -199,7 +199,7 @@ function launchWorker(userId, workerIndex) {
 //  Kill a worker — reabsorb / shut down a “cell”
 // ======================================================
 function killWorker(worker) {
-  console.log(`[ADRENAL SHUTDOWN] ${worker.name}`);
+  log(`[ADRENAL SHUTDOWN] ${worker.name}`);
   clearInterval(worker.interval);
 }
 
@@ -208,7 +208,7 @@ function killWorker(worker) {
 //  Periodic stress assessment + hormone adjustment
 // ======================================================
 export async function runInstanceOrchestrator() {
-  console.log(
+  log(
     "[ADRENAL TICK] Running fight-or-flight scaling cycle for all users…"
   );
 
@@ -236,7 +236,7 @@ export async function runInstanceOrchestrator() {
 
     const currentWorkers = activeWorkers.get(userId);
 
-    console.log(
+    log(
       `[ADRENAL STATE] User=${userId} | Base=${baseInstances} | Tier=${deviceTier} | EarnMode=${earnMode} | TestEarn=${testEarnActive} | Current=${currentWorkers.length} | Final=${finalInstances}`
     );
 
@@ -244,7 +244,7 @@ export async function runInstanceOrchestrator() {
     if (currentWorkers.length < finalInstances) {
       const needed = finalInstances - currentWorkers.length;
 
-      console.log(
+      log(
         `[ADRENAL SCALE UP] User=${userId} | Need=${needed} | From=${currentWorkers.length} → To=${finalInstances}`
       );
 
@@ -259,7 +259,7 @@ export async function runInstanceOrchestrator() {
     if (currentWorkers.length > finalInstances) {
       const extra = currentWorkers.length - finalInstances;
 
-      console.log(
+      log(
         `[ADRENAL SCALE DOWN] User=${userId} | Remove=${extra} | From=${currentWorkers.length} → To=${finalInstances}`
       );
 
@@ -281,6 +281,6 @@ export async function runInstanceOrchestrator() {
     });
   }
 
-  console.log("[ADRENAL TICK COMPLETE]");
+  log("[ADRENAL TICK COMPLETE]");
   return true;
 }

@@ -158,7 +158,7 @@ export async function handler(event, context) {
     };
 
   } catch (err) {
-    console.error("Create-payment error:", err);
+    error("Create-payment error:", err);
     return {
       statusCode: 500,
       body: JSON.stringify({ success: false, error: err.message })

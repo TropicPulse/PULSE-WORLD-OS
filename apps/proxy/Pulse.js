@@ -67,7 +67,7 @@ const SHADOW_DIAGNOSTICS_ENABLED =
 const logShadow = (stage, details = {}) => {
   if (!SHADOW_DIAGNOSTICS_ENABLED) return;
 
-  console.log(
+  log(
     JSON.stringify({
       pulseLayer: LAYER_ID,
       pulseName: LAYER_NAME,

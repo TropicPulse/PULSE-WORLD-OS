@@ -145,7 +145,7 @@ export const VastAdapter = {
       return jobs;
 
     } catch (err) {
-      console.error("VastAdapter.fetchJobs() error:", err);
+      error("VastAdapter.fetchJobs() error:", err);
       healingState.lastFetchError = err.message;
       healingState.lastFetchCount = 0;
       return [];
@@ -171,7 +171,7 @@ export const VastAdapter = {
       healingState.cycleCount++;
       return json;
     } catch (err) {
-      console.error("VastAdapter.submitResult() error:", err);
+      error("VastAdapter.submitResult() error:", err);
       healingState.lastSubmitError = err.message;
       throw err;
     }

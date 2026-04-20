@@ -3146,7 +3146,7 @@ async function hardLogout(reason) {
 }
 
 function mark(label) {
-    console.log("[CHECKEMAIL]", label);
+    log("[CHECKEMAIL]", label);
   }
   
 /************************************************************
@@ -3334,7 +3334,7 @@ async function fetchOrderByEmail(orderID, userEmail) {
   const snap2 = await getDocs(q2);
   if (!snap2.empty) return { id: snap2.docs[0].id, ...snap2.docs[0].data() };
 
-  console.warn("Order not found or not authorized:", orderID);
+  warn("Order not found or not authorized:", orderID);
   return null;
 }
 
@@ -3474,7 +3474,7 @@ try {
               item.payoutAmount = order.payoutAmount ?? null;
             }
           } catch (err) {
-            console.warn("Failed to hydrate order for history item", item.id, err);
+            warn("Failed to hydrate order for history item", item.id, err);
           }
         }
 
@@ -3730,7 +3730,7 @@ function getTierBadgeURL(tierName) {
 function setTierBadges(tierName) {
   mark("setTierBadges");
   if (!bigTierIcon) {
-    console.warn("⛔ bigTierIcon missing — DOM not ready yet");
+    warn("⛔ bigTierIcon missing — DOM not ready yet");
     return;
   }
 
@@ -3751,7 +3751,7 @@ function setTierBadges(tierName) {
 
   img.onerror = () => {
     const fallback = getTierBadgeURL("Seashell");
-    console.warn("⚠️ Badge failed to load, using fallback:", fallback);
+    warn("⚠️ Badge failed to load, using fallback:", fallback);
     bigTierIcon.innerHTML = `<img src="${fallback}" class="tier-icon-big" />`;
   };
   preloadImage(badgeURL);
@@ -3981,7 +3981,7 @@ function getCurrentReferrals() {
   mark("getCurrentReferrals");
 
   if (!currentUser || !currentUser.referralCode) {
-    console.warn("❌ No currentUser or no referralCode", { currentUser });
+    warn("❌ No currentUser or no referralCode", { currentUser });
     return [];
   }
 
@@ -4573,7 +4573,7 @@ const loadOrderAndOpenReceipt = (entry) => {
     openReceiptPopup(enriched);
 
   } catch (err) {
-    console.error("Error enriching order for receipt:", err);
+    error("Error enriching order for receipt:", err);
     openReceiptPopup(entry);
   }
 };
@@ -5087,7 +5087,7 @@ async function fetchOrder(userEmail) {
   mark("fetchOrder");
   try {
     if (!userEmail) {
-      console.error("❌ fetchOrder called without userEmail");
+      error("❌ fetchOrder called without userEmail");
       return [];
     }
 
@@ -5150,7 +5150,7 @@ async function fetchOrder(userEmail) {
     });
 
   } catch (err) {
-    console.error("Error filtering cached orders:", err);
+    error("Error filtering cached orders:", err);
     return [];
   }
 }
@@ -6104,14 +6104,14 @@ async function loadUserDetails() {
 // }
 
 // async function reloadLoyaltyDataOnly() {
-//   console.log("🔄 reloadLoyatyDataOnly()");
+//   log("🔄 reloadLoyatyDataOnly()");
 
 //   // 1️⃣ Load identity snapshot (do NOT override global identity)
 //   const storedIdentity = JSON.parse(localStorage.getItem("tp_identity_v4") || "{}");
 //   tokn = localStorage.getItem("tp_token_v4");
 
 //   if (!storedIdentity?.uid || !token) {
-//     console.warn("❌ Cannot reload loyalty — missing identity or token");
+//     warn("❌ Cannot reload loyalty — missing identity or token");
 //     return;
 //   }
 
@@ -6125,11 +6125,11 @@ async function loadUserDetails() {
 //     ]);
 
 //     if (!loyalty) {
-//       console.warn("❌ Loyalty reload failed");
+//       warn("❌ Loyalty reload failed");
 //       return;
 //     }
 //   } catch (err) {
-//     console.error("❌ reloadLoaltyDataOnly error:", err);
+//     error("❌ reloadLoaltyDataOnly error:", err);
 //     return;
 //   }
 
@@ -6201,7 +6201,7 @@ async function loadUserDetails() {
 //   window.currentLoyalty = loyalty;
 //   window.userLoyalty = loyalty;
 
-//   console.log("✅ reloadLoaltyDataOnly complete");
+//   log("✅ reloadLoaltyDataOnly complete");
 // }
 
 function updatePointsUI(points, animate = true, mode = "current") {
@@ -6496,9 +6496,9 @@ document.addEventListener("DOMContentLoaded", async () => {
   function mark(label, position = false) {
       const now = nowMs();
       if (position) {
-        console.log(`${label}: +${(now - firstTime).toFixed(1)}ms`);
+        log(`${label}: +${(now - firstTime).toFixed(1)}ms`);
       } else {
-        console.log(`${label}: +${(now - lastTime).toFixed(1)}ms`);
+        log(`${label}: +${(now - lastTime).toFixed(1)}ms`);
       }
       lastTime = now;
     }

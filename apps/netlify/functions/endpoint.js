@@ -105,7 +105,7 @@ export const handler = async (event) => {
     payload = event.queryStringParameters || {};
   }
 
-  console.log(
+  log(
     `%c🧬 EPITHELIAL GATE CALL → type: ${type}`,
     "color:#00BCD4; font-weight:bold;"
   );
@@ -116,7 +116,7 @@ export const handler = async (event) => {
   const modularFn = await loadModularHandler(type);
 
   if (modularFn) {
-    console.log(
+    log(
       `%c🟩 ORGAN FOUND → ${type}.js`,
       "color:#4CAF50; font-weight:bold;"
     );
@@ -133,7 +133,7 @@ export const handler = async (event) => {
       };
 
     } catch (err) {
-      console.error(
+      error(
         `%c🟥 ORGAN FAILURE`,
         "color:#FF5252; font-weight:bold;",
         err
@@ -153,7 +153,7 @@ export const handler = async (event) => {
   // ------------------------------------------------------------
   // 2. FALLBACK TO LEGACY ORGAN (index.js)
 // ------------------------------------------------------------
-  console.warn(
+  warn(
     `%c🟨 NO ORGAN FOUND → Falling back to legacy index.js`,
     "color:#FFC107; font-weight:bold;"
   );
@@ -173,7 +173,7 @@ export const handler = async (event) => {
       };
 
     } catch (err) {
-      console.error(
+      error(
         `%c🟥 LEGACY ORGAN FAILURE`,
         "color:#FF5252; font-weight:bold;",
         err
@@ -193,7 +193,7 @@ export const handler = async (event) => {
   // ------------------------------------------------------------
   // 3. NOTHING FOUND → IMMUNE HEALING PATH
   // ------------------------------------------------------------
-  console.error(
+  error(
     `%c🟥 UNKNOWN ORGAN REQUEST → ${type}`,
     "color:#FF5252; font-weight:bold;"
   );

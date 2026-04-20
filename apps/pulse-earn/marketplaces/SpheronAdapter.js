@@ -143,7 +143,7 @@ export const SpheronAdapter = {
       healingState.cycleCount++;
       return jobs;
     } catch (err) {
-      console.error("SpheronAdapter.fetchJobs() error:", err);
+      error("SpheronAdapter.fetchJobs() error:", err);
       healingState.lastFetchError = err.message;
       healingState.lastFetchCount = 0;
       return [];
@@ -169,7 +169,7 @@ export const SpheronAdapter = {
       healingState.cycleCount++;
       return json;
     } catch (err) {
-      console.error("SpheronAdapter.submitResult() error:", err);
+      error("SpheronAdapter.submitResult() error:", err);
       healingState.lastSubmitError = err.message;
       throw err;
     }

@@ -36,7 +36,7 @@ const BAND_DIAGNOSTICS_ENABLED =
 const logBandHealer = (stage, details = {}) => {
   if (!BAND_DIAGNOSTICS_ENABLED) return;
 
-  console.log(JSON.stringify({
+  log(JSON.stringify({
     pulseLayer: LAYER_ID,
     pulseName:  LAYER_NAME,
     pulseRole:  LAYER_ROLE,
@@ -185,7 +185,7 @@ export const handler = async (event, context) => {
     };
 
   } catch (err) {
-    console.error("CheckBand error:", err);
+    error("CheckBand error:", err);
 
     logBandHealer("FATAL_ERROR", { message: err?.message });
 

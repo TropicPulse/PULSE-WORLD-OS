@@ -42,7 +42,7 @@ const PROTECTOR_DIAGNOSTICS_ENABLED =
 const logProtector = (stage, details = {}) => {
   if (!PROTECTOR_DIAGNOSTICS_ENABLED) return;
 
-  console.log(
+  log(
     JSON.stringify({
       pulseLayer: LAYER_ID,
       pulseName: LAYER_NAME,
@@ -140,7 +140,7 @@ export function attachScanner(id) {
 
   logProtector("ATTACH_OK", { uid: id.uid });
 
-  console.log(
+  log(
     "%c[PageScanner] Attached with identity: " + id.uid,
     "color: #4CAF50; font-weight: bold;"
   );
@@ -230,7 +230,7 @@ window.addEventListener(
       logProtector("HEALING_SUCCESS", { table, field });
     } catch (err) {
       logProtector("HEALING_FAILED", { error: String(err) });
-      console.error("[PageScanner] Router fetch failed:", err);
+      error("[PageScanner] Router fetch failed:", err);
     }
 
     healingInProgress = false;

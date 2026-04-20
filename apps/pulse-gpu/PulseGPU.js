@@ -33,7 +33,7 @@
 //  • ESM-only.
 // ============================================================================
 
-console.log(
+log(
   "%c🟦 PulseGPU v7.3 online — ASTRAL NERVOUS SYSTEM activated (dual-mode evolutionary/system advantage).",
   "color:#03A9F4; font-weight:bold;"
 );
@@ -63,13 +63,13 @@ import { PulseGPUHealer } from "./PulseGPUHealer.js";
 // ============================================================================
 //  INTERNAL SINGLETONS — Astral Neural Core
 // ============================================================================
-console.log("%c[AstralNervousSystem] Initializing GPU Runtime…", "color:#9C27B0;");
+log("%c[AstralNervousSystem] Initializing GPU Runtime…", "color:#9C27B0;");
 const gpuRuntime = new PulseGPURuntime();
 
-console.log("%c[AstralNervousSystem] Initializing GPU Engine…", "color:#9C27B0;");
+log("%c[AstralNervousSystem] Initializing GPU Engine…", "color:#9C27B0;");
 const gpuEngine = new PulseGPUEngine(gpuRuntime);
 
-console.log("%c[AstralNervousSystem] Initializing GPU Orchestrator…", "color:#9C27B0;");
+log("%c[AstralNervousSystem] Initializing GPU Orchestrator…", "color:#9C27B0;");
 const gpuOrchestrator = new PulseGPUOrchestrator();
 
 // ============================================================================
@@ -146,7 +146,7 @@ function updateReadyFlags() {
 
   updateEvolutionaryBoosts();
 
-  console.log(
+  log(
     `%c[AstralNervousSystem] ReadyFlags → brain=${gpuState.brainReady} | runtime=${gpuState.runtimeReady} | engine=${gpuState.engineReady} | ready=${gpuState.ready}`,
     "color:#4CAF50; font-weight:bold;"
   );
@@ -154,7 +154,7 @@ function updateReadyFlags() {
 
 function safeSetError(err) {
   gpuState.lastError = err ? String(err) : null;
-  console.error(
+  error(
     `%c[AstralNervousSystem ERROR] ${gpuState.lastError}`,
     "color:#FF5252; font-weight:bold;"
   );
@@ -164,16 +164,16 @@ function safeSetError(err) {
 //  PUBLIC OS-FACING API — Astral Interface
 // ============================================================================
 async function init(canvas) {
-  console.log("%c[AstralNervousSystem] init() called.", "color:#03A9F4;");
+  log("%c[AstralNervousSystem] init() called.", "color:#03A9F4;");
 
   try {
     await gpuRuntime.init(canvas);
     updateReadyFlags();
 
     if (gpuState.ready) {
-      console.log("%c[AstralNervousSystem] GPU READY.", "color:#4CAF50; font-weight:bold;");
+      log("%c[AstralNervousSystem] GPU READY.", "color:#4CAF50; font-weight:bold;");
     } else {
-      console.warn("%c[AstralNervousSystem] GPU NOT READY (fail-open).", "color:#FFC107;");
+      warn("%c[AstralNervousSystem] GPU NOT READY (fail-open).", "color:#FFC107;");
     }
 
     return gpuState.ready;
@@ -195,7 +195,7 @@ function renderFrame(frameContext) {
     gpuState.metrics.framesRendered += 1;
 
     if (gpuState.metrics.framesRendered % 60 === 0) {
-      console.log(
+      log(
         `%c[AstralNervousSystem] FramesRendered=${gpuState.metrics.framesRendered}`,
         "color:#8BC34A;"
       );
@@ -236,7 +236,7 @@ function attachToWindowDebug() {
     getOrchestrator
   };
 
-  console.log(
+  log(
     "%c[AstralNervousSystem] Debug handle attached to window.PulseGPU",
     "color:#03A9F4; font-weight:bold;"
   );

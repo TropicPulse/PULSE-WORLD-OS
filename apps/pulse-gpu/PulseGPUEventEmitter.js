@@ -94,7 +94,7 @@ class PulseGPUEventEmitter {
     this.listeners = {};
     this.meta = { ...PULSE_GPU_EVENT_EMITTER_META };
 
-    console.log(
+    
       "%c[Synapse] Online — electrical junction layer active (dual‑mode evolution).",
       "color:#9C27B0; font-weight:bold;"
     );

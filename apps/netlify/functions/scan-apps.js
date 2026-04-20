@@ -16,20 +16,20 @@ function listHtmlFiles(dir, prefix = "") {
     if (entry.isDirectory()) {
       listHtmlFiles(full, prefix + "  ");
     } else if (entry.name.endsWith(".html")) {
-      console.log(prefix + "- " + full.replace(ROOT, ""));
+      log(prefix + "- " + full.replace(ROOT, ""));
     }
   }
 }
 
 function scanApps() {
-  console.log("📁 /apps directory scan\n");
+  log("📁 /apps directory scan\n");
 
   const folders = fs.readdirSync(ROOT, { withFileTypes: true })
     .filter(e => e.isDirectory());
 
   for (const folder of folders) {
     const folderPath = path.join(ROOT, folder.name);
-    console.log("📂 " + folder.name);
+    log("📂 " + folder.name);
 
     const files = fs.readdirSync(folderPath, { withFileTypes: true });
 
@@ -39,17 +39,17 @@ function scanApps() {
       .map(f => f.name);
 
     if (jsFiles.length > 0) {
-      console.log("  JS Files:");
-      jsFiles.forEach(f => console.log("    - " + f));
+      log("  JS Files:");
+      jsFiles.forEach(f => log("    - " + f));
     } else {
-      console.log("  (no JS files in first level)");
+      log("  (no JS files in first level)");
     }
 
     // HTML files (any depth)
-    console.log("  HTML Files:");
+    log("  HTML Files:");
     listHtmlFiles(folderPath, "    ");
 
-    console.log("");
+    log("");
   }
 }
 

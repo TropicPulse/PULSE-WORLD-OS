@@ -1599,7 +1599,7 @@ function detectThrottling(callback) {
     lastLag = lag;
 
     if (state !== lastState || bigChange) {
-      console.log(
+      log(
         `%c[PulseBand] Throttle event → ${state} (lag=${lag.toFixed(1)}ms, big=${bigChange})`,
         state === "Throttled"
           ? "color:red;font-weight:bold;"
@@ -2281,45 +2281,45 @@ function renderCriticalErrors() {
 
 function debugPulseBandState() {
   if (!pulseband) {
-    console.warn("❌ PulseBand not loaded at all.");
+    warn("❌ PulseBand not loaded at all.");
     return;
   }
 
   const s = pulseband.getStatus?.();
   if (!s) {
-    console.warn("❌ getStatus() returned null or undefined.");
+    warn("❌ getStatus() returned null or undefined.");
     return;
   }
 
   const f = (v) =>
     v === undefined || v === null || Number.isNaN(v) ? "—" : v;
 
-  console.group("🔍 PulseBand Engine State Debug");
+  group("🔍 PulseBand Engine State Debug");
 
-  console.log("pulseband exists:", !!pulseband);
-  console.log("getStatus exists:", !!pulseband.getStatus);
-  console.log("setStatus exists:", !!pulseband.setStatus);
-  console.log("emit exists:", !!pulseband.emit);
-  console.log("on exists:", !!pulseband.on);
+  log("pulseband exists:", !!pulseband);
+  log("getStatus exists:", !!pulseband.getStatus);
+  log("setStatus exists:", !!pulseband.setStatus);
+  log("emit exists:", !!pulseband.emit);
+  log("on exists:", !!pulseband.on);
 
   // -----------------------------
   // CORE ENGINE STATE
   // -----------------------------
-  console.log("Engine State:", f(s.state));
-  console.log("Bars:", f(s.pulsebandBars), "/4");
-  console.log("Phone Bars:", f(s.phoneBars), "/4");
-  console.log("Latency:", f(s.latency), "ms");
-  console.log("Network Health:", f(s.networkHealth));
-  console.log("Route:", f(s.route));
-  console.log("isLive:", f(s.isLive));
-  console.log("isIdle:", f(s.isIdle));
-  console.log("Engine Disabled:", f(s.engineDisabled));
-  console.log("Last Sync Seconds:", f(s.lastSyncSeconds));
+  log("Engine State:", f(s.state));
+  log("Bars:", f(s.pulsebandBars), "/4");
+  log("Phone Bars:", f(s.phoneBars), "/4");
+  log("Latency:", f(s.latency), "ms");
+  log("Network Health:", f(s.networkHealth));
+  log("Route:", f(s.route));
+  log("isLive:", f(s.isLive));
+  log("isIdle:", f(s.isIdle));
+  log("Engine Disabled:", f(s.engineDisabled));
+  log("Last Sync Seconds:", f(s.lastSyncSeconds));
 
   // -----------------------------
   // PHYSICS
   // -----------------------------
-  console.group("⚡ Physics");
+  group("⚡ Physics");
 
   const physicsFields = [
     "lastChunkKbps",
@@ -2342,31 +2342,31 @@ function debugPulseBandState() {
   physicsFields.forEach((key) => {
     const val = s[key];
     if (val === undefined || val === null) missingPhysics = true;
-    console.log(`${key}:`, f(val));
+    log(`${key}:`, f(val));
   });
 
   if (missingPhysics) {
-    console.warn("⚠️ Physics not initialized — no throughput data yet");
+    warn("⚠️ Physics not initialized — no throughput data yet");
   }
 
-  console.groupEnd(); // physics
+  groupEnd(); // physics
 
   // -----------------------------
   // SNAPSHOT (if exists)
   // -----------------------------
   if (s.snapshot) {
-    console.group("📦 Snapshot (Historical)");
-    console.log("Latency:", f(s.snapshot.latency));
-    console.log("Throughput:", f(s.snapshot.lastChunkKbps));
-    console.log("Chunk Size:", f(s.snapshot.lastChunkSizeKB));
-    console.log("Chunk Duration:", f(s.snapshot.lastChunkDurationMs));
-    console.log("Capacity:", f(s.snapshot.capacity));
-    console.log("Efficiency:", f(s.snapshot.efficiency));
-    console.log("Advantage:", f(s.snapshot.advantage));
-    console.groupEnd();
+    group("📦 Snapshot (Historical)");
+    log("Latency:", f(s.snapshot.latency));
+    log("Throughput:", f(s.snapshot.lastChunkKbps));
+    log("Chunk Size:", f(s.snapshot.lastChunkSizeKB));
+    log("Chunk Duration:", f(s.snapshot.lastChunkDurationMs));
+    log("Capacity:", f(s.snapshot.capacity));
+    log("Efficiency:", f(s.snapshot.efficiency));
+    log("Advantage:", f(s.snapshot.advantage));
+    groupEnd();
   }
 
-  console.groupEnd(); // main
+  groupEnd(); // main
 }
 
 async function waitForPulseBand() {
@@ -2384,12 +2384,12 @@ async function waitForPulseBand() {
 }
 
 (async () => {
-  console.log("PulseBand Dashboard: Loading Redis historical data...");
+  log("PulseBand Dashboard: Loading Redis historical data...");
 
   try {
-    console.log("⏳ Waiting for PulseBand to initialize...");
+    log("⏳ Waiting for PulseBand to initialize...");
     await waitForPulseBand();   // ⭐ THIS FIXES EVERYTHING
-    console.warn("🔥 PulseBand ready.");
+    warn("🔥 PulseBand ready.");
     function startProxyRefreshLoop() {
       refreshProxyHealth();
       refreshProxyNode();
@@ -2404,7 +2404,7 @@ async function waitForPulseBand() {
 
     startProxyRefreshLoop();
 
-    console.warn("🔥 Redis historical data loaded into PulseBand snapshot.");
+    warn("🔥 Redis historical data loaded into PulseBand snapshot.");
     
     setInterval(async () => {
       let status = pulseband.getStatus();
@@ -2426,15 +2426,15 @@ async function waitForPulseBand() {
       });
     }, 1000);
     
-    console.warn("🔥 PulseBand SYNC STATUS UPDATED");
+    warn("🔥 PulseBand SYNC STATUS UPDATED");
     document.getElementById("hero").addEventListener("click", () => {
-      console.log("🟦 Header clicked — dumping PulseBand state...");
+      log("🟦 Header clicked — dumping PulseBand state...");
       debugPulseBandState();
     });
     /* ---------------------------------------------------------
       AUTO REFRESH LOOP (Pulse‑Physics Edition)
     --------------------------------------------------------- */
-    console.log("⏳ Waiting for PulseBand Dashboard to Render...");
+    log("⏳ Waiting for PulseBand Dashboard to Render...");
     setInterval(() => {
       let s = pulseband.getStatus();
       renderPulseStatusUnified(s);
@@ -2446,9 +2446,9 @@ async function waitForPulseBand() {
       
     }, 1000);
     
-    console.warn("⏳ FINISHING PulseBand Dashboard Render!");
+    warn("⏳ FINISHING PulseBand Dashboard Render!");
   } catch (err) {
-    console.error("❌ Failed to load Redis data:", err);
+    error("❌ Failed to load Redis data:", err);
   }
 })();
 </script>

@@ -277,7 +277,7 @@ import { getAuth, getHook, getMap, callHelper, attachScanner } from "./lib/Conne
     const token = params.get("token");
 
     if (!token) {
-      console.error("No token found");
+      error("No token found");
       document.getElementById("email-target").textContent = "Unknown";
       return;
     }
@@ -292,7 +292,7 @@ import { getAuth, getHook, getMap, callHelper, attachScanner } from "./lib/Conne
     const data = await response.json();
     const email = data.email || data.Email || null;
     if (!data.success) {
-      console.error("Token invalid:", data.error);
+      error("Token invalid:", data.error);
       document.getElementById("email-target").textContent = "Invalid token";
       return;
     }

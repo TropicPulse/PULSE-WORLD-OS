@@ -199,7 +199,7 @@ class PulseGPUEngine {
     // Conceptual evolutionary state (no logic impact)
     this.evo = { ...PULSE_GPU_ENGINE_META.evo };
 
-    console.log(
+    log(
       "%c[PulseGPUEngine] Constructed — awaiting init().",
       "color:#03A9F4; font-weight:bold;"
     );
@@ -210,7 +210,7 @@ class PulseGPUEngine {
   // ----------------------------------------------------
   async init(canvas) {
     if (!canvas) {
-      console.warn(
+      warn(
         "[PulseGPUEngine] No canvas provided — engine will remain inactive (fail-open)."
       );
       this.ready = false;
@@ -220,7 +220,7 @@ class PulseGPUEngine {
     try {
       await this.runtime.init(canvas);
     } catch (err) {
-      console.warn("[PulseGPUEngine] Runtime init failed (fail-open).", err);
+      warn("[PulseGPUEngine] Runtime init failed (fail-open).", err);
       this.ready = false;
       return;
     }
@@ -229,7 +229,7 @@ class PulseGPUEngine {
       this.runtime.getGPUContext?.() || this.runtime.context;
 
     if (!gpuContext || !gpuContext.device || !gpuContext.context) {
-      console.warn(
+      warn(
         "[PulseGPUEngine] GPU context unavailable — engine inactive (fail-open)."
       );
       this.ready = false;
@@ -253,7 +253,7 @@ class PulseGPUEngine {
 
     this.ready = true;
 
-    console.log(
+    
       "%c[PulseGPUEngine] Ready — WebGPU backend active (Astral Muscle).",
       "color:#4CAF50; font-weight:bold;"
     );

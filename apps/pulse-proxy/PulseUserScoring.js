@@ -66,8 +66,8 @@ const HYPOTHALAMUS_CONTEXT = {
   }
 };
 
-console.log("[Hypothalamus BOOT] PulseUserScoring v7.3 online.");
-console.log("[Hypothalamus BOOT] Scoring logging:", ENABLE_SCORING_LOGGING);
+pothalamus BOOT] PulseUserScoring v7.3 online.");
+pothalamus BOOT] Scoring logging:", ENABLE_SCORING_LOGGING);
 
 // ======================================================
 //  calculateTrustScore()
@@ -85,7 +85,7 @@ function calculateTrustScore(m) {
 
   const final = Math.min(score, 100);
 
-  console.log(
+  
     `[Hypothalamus] HealthIndex | user=${m.userId ?? "?"} | score=${final}`
   );
 
@@ -107,7 +107,7 @@ function calculateMeshScore(m) {
 
   const final = Math.min(score, 100);
 
-  console.log(
+  
     `[Hypothalamus] MeshHealth | user=${m.userId ?? "?"} | score=${final}`
   );
 
@@ -125,7 +125,7 @@ function calculatePhase(trustScore) {
   else if (trustScore < 75) phase = 3;
   else phase = 4;
 
-  console.log(
+  
     `[Hypothalamus] Phase | trustScore=${trustScore} | phase=${phase}`
   );
 
@@ -144,7 +144,7 @@ function isHub(m) {
     m.totalRequests > 500;
 
   if (hub) {
-    console.log(
+    log(
       `[Hypothalamus] HIGH-FLOW ORGAN | user=${m.userId ?? "?"} | relays=${m.meshRelays} | hubSignals=${m.hubSignals} | totalRequests=${m.totalRequests}`
     );
   }
@@ -178,7 +178,7 @@ function allocateInstances(phase, hubFlag, deviceTier, earnMode, testEarnActive)
 
   const final = Math.max(1, Math.min(base, max));
 
-  console.log(
+  
     `[Hypothalamus] Resource allocation | phase=${phase} | hub=${hubFlag} | tier=${deviceTier} | earnMode=${earnMode} | testEarn=${testEarnActive} | final=${final}`
   );
 
@@ -199,9 +199,9 @@ async function logScoringSnapshot(userId, snapshot) {
       ...snapshot
     });
 
-    console.log(`[Hypothalamus] Snapshot logged | user=${userId}`);
+    pothalamus] Snapshot logged | user=${userId}`);
   } catch (err) {
-    console.error("[Hypothalamus] Failed to log scoring snapshot:", err);
+    Hypothalamus] Failed to log scoring snapshot:", err);
   }
 }
 
@@ -209,7 +209,7 @@ async function logScoringSnapshot(userId, snapshot) {
 //  runUserScoring()
 // ======================================================
 export async function runUserScoring() {
-  console.log("[Hypothalamus] Running homeostasis scoring pass…");
+  pothalamus] Running homeostasis scoring pass…");
 
   const snap = await db.collection("UserMetrics").get();
   const batch = db.batch();
@@ -235,7 +235,7 @@ export async function runUserScoring() {
       testEarnActive
     );
 
-    console.log(
+    log(
       `[Hypothalamus] Final State | user=${doc.id} | trust=${trustScore} | mesh=${meshScore} | phase=${phase} | hub=${hubFlag} | tier=${deviceTier} | earnMode=${earnMode} | testEarn=${testEarnActive} | instances=${instances}`
     );
 
@@ -273,7 +273,7 @@ export async function runUserScoring() {
 
   await batch.commit();
 
-  console.log("[Hypothalamus] Homeostasis scoring pass complete.");
+  log("[Hypothalamus] Homeostasis scoring pass complete.");
 }
 
 export {

@@ -1,5 +1,5 @@
 // ============================================================================
-// [pulse:mesh] COMMUNITY_SPINE_LAYER v7.3  // teal
+// [pulse:mesh] COMMUNITY_SPINE_LAYER v7.4  // teal
 // Distributed Routing Spine • Reflex + Cortex + Tendons • Metadata-Only
 // ============================================================================
 //
@@ -33,9 +33,9 @@
 //  • Future-evolution-ready: new safe advantages auto-inherited.
 // ============================================================================
 
-import { createCommunityReflex } from './CommunityReflex.js';
-import { applyPulseCortex } from './PulseCortex.js';
-import { applyTendons } from './Tendons.js';
+import { createCommunityReflex } from "./CommunityReflex.js";
+import { applyPulseCortex } from "./PulseCortex.js";
+import { applyTendons } from "./Tendons.js";
 
 // -----------------------------------------------------------
 // Mesh Factory
@@ -49,7 +49,7 @@ export function createPulseMesh() {
     meta: {
       layer: "PulseMeshSpine",
       role: "ROUTING_SPINE",
-      version: 7.3,
+      version: 7.4,
       target: "full-mesh",
       selfRepairable: true,
       evo: {
@@ -64,6 +64,13 @@ export function createPulseMesh() {
 
         unifiedAdvantageField: true,    // no OR; all advantages ON
         futureEvolutionReady: true      // new safe advantages auto-inherited
+      },
+
+      // v7.4: conceptual reach metadata (for dashboards / PulseBand)
+      reach: {
+        estimatedHops: 0,
+        estimatedMeters: 0,
+        mode: "direct" // "direct" | "cluster" | "wide"
       }
     }
   };
@@ -75,16 +82,16 @@ export function createPulseMesh() {
 
 export function registerMeshNode(mesh, nodeConfig) {
   if (!nodeConfig?.id) {
-    throw new Error('[pulse:mesh] nodeConfig.id required');
+    throw new Error("[pulse:mesh] nodeConfig.id required");
   }
 
   mesh.nodes.set(nodeConfig.id, {
     id: nodeConfig.id,
-    kind: nodeConfig.kind || 'service',
+    kind: nodeConfig.kind || "service",
     neighbors: nodeConfig.neighbors || [],
     reflex: nodeConfig.reflex || mesh.reflex,
     trustLevel: nodeConfig.trustLevel ?? 0.5,
-    load: nodeConfig.load ?? 0.0,
+    load: nodeConfig.load ?? 0.0
   });
 
   return mesh;
@@ -125,7 +132,7 @@ export function routeImpulse(mesh, impulse, entryNodeId, context = {}) {
     applyPulseCortex(impulse, {
       ...context,
       globalLoad: node.load,
-      trustLevel: node.trustLevel,
+      trustLevel: node.trustLevel
     });
 
     // -------------------------------------------------------
@@ -136,9 +143,8 @@ export function routeImpulse(mesh, impulse, entryNodeId, context = {}) {
     // -------------------------------------------------------
     // 4. Energy decay (instinctive fatigue)
     // -------------------------------------------------------
-    impulse.energy = typeof impulse.energy === 'number'
-      ? impulse.energy * 0.9
-      : 0.9;
+    impulse.energy =
+      typeof impulse.energy === "number" ? impulse.energy * 0.9 : 0.9;
 
     if (impulse.energy <= 0.05) {
       impulse.flags.mesh_energy_exhausted = true;
@@ -148,7 +154,7 @@ export function routeImpulse(mesh, impulse, entryNodeId, context = {}) {
     // -------------------------------------------------------
     // 5. Earner delivery check
     // -------------------------------------------------------
-    if (node.kind === 'earner' && shouldDeliverToEarner(impulse, node)) {
+    if (node.kind === "earner" && shouldDeliverToEarner(impulse, node)) {
       impulse.flags[`delivered_to_${node.id}`] = true;
       break;
     }
@@ -156,7 +162,7 @@ export function routeImpulse(mesh, impulse, entryNodeId, context = {}) {
     // -------------------------------------------------------
     // 6. Next hop selection
     // -------------------------------------------------------
-    const nextId = node.neighbors.find(n => !visited.has(n));
+    const nextId = node.neighbors.find((n) => !visited.has(n));
 
     if (!nextId) {
       impulse.flags[`stalled_at_${node.id}`] = true;
@@ -181,4 +187,42 @@ function shouldDeliverToEarner(impulse, node) {
   if (hint === node.kind) return true;
 
   return false;
+}
+
+// -----------------------------------------------------------
+// v7.4 — Mesh Reach Snapshot (Metadata-Only)
+// -----------------------------------------------------------
+
+export function getMeshReachSnapshot(mesh) {
+  const nodeCount = mesh.nodes.size;
+  const avgDegree =
+    nodeCount === 0
+      ? 0
+      : Array.from(mesh.nodes.values()).reduce(
+          (sum, n) => sum + (n.neighbors?.length || 0),
+          0
+        ) / nodeCount;
+
+  // Conceptual estimates only — no real RF / geo compute
+  const estimatedHops = Math.max(1, Math.round(avgDegree || 1));
+  const estimatedMeters = estimatedHops * 30; // conceptual: ~30m per hop
+
+  let mode = "direct";
+  if (estimatedHops >= 3 && estimatedHops < 6) mode = "cluster";
+  if (estimatedHops >= 6) mode = "wide";
+
+  const reach = {
+    estimatedHops,
+    estimatedMeters,
+    mode
+  };
+
+  return {
+    layer: mesh.meta.layer,
+    role: mesh.meta.role,
+    version: mesh.meta.version,
+    nodeCount,
+    avgDegree,
+    reach
+  };
 }

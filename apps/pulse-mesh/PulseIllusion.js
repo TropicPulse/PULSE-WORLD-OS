@@ -72,13 +72,13 @@ const ThalamusMeta = {
 // ======================================================
 
 export function interpretShellSignal(input) {
-  console.groupCollapsed(
+  groupCollapsed(
     "%c[PulseIllusion v7.3] Thalamic Relay",
     "color:#BA68C8; font-weight:bold;"
   );
 
   try {
-    console.log(
+    log(
       "%c[Layer] ShadowGuard → Thalamus (PulseIllusion)",
       "color:#CE93D8"
     );
@@ -87,11 +87,11 @@ export function interpretShellSignal(input) {
     // VALIDATION — Ensure input is well-formed
     // ------------------------------------------------------------
     if (!input || typeof input !== "object") {
-      console.warn(
+      warn(
         "%c[Warning] Malformed shell signal received.",
         "color:#FFB74D"
       );
-      console.groupEnd();
+      ();
       return null;
     }
 
@@ -101,11 +101,11 @@ export function interpretShellSignal(input) {
     const { shellState, allowPulseBand, allowIdentity } = input;
 
     if (!shellState) {
-      console.error(
+      
         "%c[Error] Missing shellState in thalamic relay.",
         "color:#E57373; font-weight:bold;"
       );
-      console.groupEnd();
+      ();
       return null;
     }
 
@@ -120,22 +120,22 @@ export function interpretShellSignal(input) {
       enableIdentity: allowIdentity === true
     };
 
-    console.log(
+    log(
       "%c[Success] Thalamic signal prepared for PulseBand.",
       "color:#81C784"
     );
-    console.log("%c[Output]:", "color:#AED581", output);
+    log("%c[Output]:", "color:#AED581", output);
 
-    console.groupEnd();
+    groupEnd();
     return output;
 
   } catch (err) {
-    console.error(
+    error(
       "%c[Critical] Thalamic relay failure:",
       "color:#E57373; font-weight:bold;",
       err
     );
-    console.groupEnd();
+    groupEnd();
     return null;
   }
 }

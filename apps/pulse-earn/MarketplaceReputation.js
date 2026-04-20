@@ -80,7 +80,7 @@ export function loadMarketplaceReputation() {
     reputation = new Map(Object.entries(json));
     healingState.lastLoadError = null;
   } catch (err) {
-    console.error("Failed to load marketplace reputation:", err);
+    error("Failed to load marketplace reputation:", err);
     healingState.lastLoadError = err.message;
     reputation = new Map();
   }
@@ -96,7 +96,7 @@ function saveMarketplaceReputation() {
     fs.writeFileSync(REPUTATION_FILE, JSON.stringify(obj, null, 2));
     healingState.lastSaveError = null;
   } catch (err) {
-    console.error("Failed to save marketplace reputation:", err);
+    error("Failed to save marketplace reputation:", err);
     healingState.lastSaveError = err.message;
   }
 }

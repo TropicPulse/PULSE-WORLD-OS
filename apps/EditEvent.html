@@ -1175,7 +1175,7 @@ async function sessionCheck() {
 }
 
 function mark(label) {
-    console.log("[CHECKEMAIL]", label);
+    log("[CHECKEMAIL]", label);
   }
 
   function openConfirm(onYes) {
@@ -1474,15 +1474,15 @@ if (eventForm && !eventForm.__bound) {
       const idx = arr.findIndex(x => x.id === docId);
       if (idx >= 0) {
         arr[idx] = updatedEvent;
-        console.log("CACHE: Updated existing cached event");
+        log("CACHE: Updated existing cached event");
       } else {
         arr.push(updatedEvent);
-        console.log("CACHE: Added new event to cache");
+        log("CACHE: Added new event to cache");
       }
 
       localStorage.setItem("cachedEvents", JSON.stringify(arr));
     } catch (err) {
-      console.error("CACHE UPDATE ERROR:", err);
+      error("CACHE UPDATE ERROR:", err);
     }
     formIsDirty = false;
     showMessage(isEditing ? "Event updated!" : "Event created!", "success");
@@ -1593,7 +1593,7 @@ function hideTPLoader() {
           if (doc.migratedUrl) return doc.migratedUrl;
         }
       } catch (err) {
-        console.error("CategoryIconCache lookup failed:", err);
+        error("CategoryIconCache lookup failed:", err);
       }
 
       return null;
@@ -1953,7 +1953,7 @@ function attachMapOverlayHandler(name, iconUrl = null) {
   const mapImage = document.getElementById("mapImage");
 
   if (!mapImage) {
-    console.warn("❌ No #mapImage found — overlay cannot attach");
+    warn("❌ No #mapImage found — overlay cannot attach");
     return;
   }
 
@@ -1979,7 +1979,7 @@ function applyTropicOverlay(name, iconUrl = null) {
   const mapImg    = document.getElementById("mapImage");
 
   if (!overlay || !dot || !label || !mapImg || !labelText) {
-    console.warn("❌ Missing overlay elements — cannot apply overlay");
+    warn("❌ Missing overlay elements — cannot apply overlay");
     return;
   }
 
@@ -2020,9 +2020,9 @@ function applyTropicOverlay(name, iconUrl = null) {
     function mark(label, position = false) {
       const now = nowMs();
       if (position) {
-        console.log(`${label}: +${(now - firstTime).toFixed(1)}ms`);
+        log(`${label}: +${(now - firstTime).toFixed(1)}ms`);
       } else {
-        console.log(`${label}: +${(now - lastTime).toFixed(1)}ms`);
+        log(`${label}: +${(now - lastTime).toFixed(1)}ms`);
       }
       lastTime = now;
     }

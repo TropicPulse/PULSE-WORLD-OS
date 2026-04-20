@@ -48,7 +48,7 @@
 //  • Multi-instance safe: no shared mutable global state in decisions.
 // ============================================================================
 
-console.log(
+log(
   "%c🟦 PulseGPUAutoOptimize v7.3 online — GUARDIAN neural lattice stabilized.",
   "color:#03A9F4; font-weight:bold;"
 );
@@ -58,7 +58,7 @@ console.log(
 //  EVOLUTION: Added Guardian lineage + nervous-system metadata.
 // ============================================================================
 function buildDecision({ mode, reason, plan }) {
-  console.log(
+  log(
     `%c[Guardian] Decision → mode=${mode} | reason=${reason}`,
     "color:#4CAF50; font-weight:bold;"
   );
@@ -113,12 +113,12 @@ function getHighestSeverity(adviceList = []) {
   });
 
   if (highest) {
-    console.log(
+    log(
       `%c[Guardian] Highest severity advice → ${highest.severity}`,
       "color:#FFC107; font-weight:bold;"
     );
   } else {
-    console.log(
+    log(
       "%c[Guardian] No advisor severity found.",
       "color:#FFC107;"
     );
@@ -137,12 +137,12 @@ class PulseGPUAutoOptimize {
     this.userPreferences = userPreferences || {};
     this.instanceId = instanceId || "guardian-instance";
 
-    console.log(
+    log(
       `%c[Guardian] Instance ${this.instanceId} initialized.`,
       "color:#9C27B0;"
     );
 
-    console.log(
+    
       "%c[Guardian] Identity: policy-cortex | lineage: guardian-core | role: optimization arbiter.",
       "color:#7E57C2;"
     );
@@ -153,7 +153,7 @@ class PulseGPUAutoOptimize {
   //   decide(plan, context) → decision
   // ----------------------------------------------------
   decide(plan, context = {}) {
-    console.log(
+    
       `%c[Guardian] decide() invoked for ${this.instanceId}.`,
       "color:#03A9F4;"
     );
@@ -171,7 +171,7 @@ class PulseGPUAutoOptimize {
       ...(context.userPreferences || {})
     };
 
-    console.log(
+    log(
       "%c[Guardian] Merged preferences:",
       "color:#9C27B0;",
       mergedPrefs
@@ -201,7 +201,7 @@ class PulseGPUAutoOptimize {
 
     const severity = topAdvice.severity || "low";
 
-    console.log(
+    log(
       `%c[Guardian] Plan action=${plan.action} | severity=${severity}`,
       "color:#8BC34A;"
     );
@@ -237,7 +237,7 @@ class PulseGPUAutoOptimize {
   // Restore plan policy — Regression Healer
   // ----------------------------------------------------
   decideForRestore(plan, severity, prefs) {
-    console.log(
+    log(
       `%c[Guardian] decideForRestore() severity=${severity} | instance=${this.instanceId}`,
       "color:#03A9F4;"
     );
@@ -306,7 +306,7 @@ class PulseGPUAutoOptimize {
   // Apply-optimal plan policy — Optimization Reflex
   // ----------------------------------------------------
   decideForApplyOptimal(plan, severity, prefs) {
-    console.log(
+    log(
       "%c[Guardian] decideForApplyOptimal() instance=" + this.instanceId,
       "color:#03A9F4;"
     );
@@ -330,7 +330,7 @@ class PulseGPUAutoOptimize {
   // Tier upgrade plan policy — Tier Ascent Logic
   // ----------------------------------------------------
   decideForTierUpgrade(plan, severity, prefs) {
-    console.log(
+    log(
       "%c[Guardian] decideForTierUpgrade() instance=" + this.instanceId,
       "color:#03A9F4;"
     );

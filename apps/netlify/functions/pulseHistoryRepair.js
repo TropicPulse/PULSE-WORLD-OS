@@ -70,7 +70,7 @@ export async function pulseHistoryRepair() {
   const runId = `PB_REPAIR_${Date.now()}`;
   const errorPrefix = `ERR_${runId}_`;
 
-  console.log(
+  log(
     `%c🧠 START SHORT‑TERM MEMORY REPAIR → ${runId}`,
     "color:#03A9F4; font-weight:bold;"
   );
@@ -100,7 +100,7 @@ export async function pulseHistoryRepair() {
           await h.ref.delete();
           deletedDocs.push(id);
 
-          console.log(
+          log(
             `%c🟨 PRUNED (expired memory) → ${id}`,
             "color:#FFC107; font-weight:bold;"
           );
@@ -137,14 +137,14 @@ export async function pulseHistoryRepair() {
           await h.ref.set(updates, { merge: true });
           repairedDocs.push(id);
 
-          console.log(
+          log(
             `%c🟩 REPAIRED MEMORY → ${id}`,
             "color:#4CAF50; font-weight:bold;"
           );
         }
 
       } catch (err) {
-        console.error(
+        error(
           `%c🟥 MEMORY ERROR (doc) → ${id}`,
           "color:#FF5252; font-weight:bold;",
           err
@@ -176,7 +176,7 @@ export async function pulseHistoryRepair() {
       createdAt: admin.firestore.FieldValue.serverTimestamp()
     });
 
-    console.log(
+    log(
       `%c🟩 SHORT‑TERM MEMORY REPAIR COMPLETE → ${runId}`,
       "color:#4CAF50; font-weight:bold;"
     );
@@ -190,7 +190,7 @@ export async function pulseHistoryRepair() {
     };
 
   } catch (err) {
-    console.error(
+    error(
       `%c🟥 FATAL SHORT‑TERM MEMORY ERROR`,
       "color:#FF5252; font-weight:bold;",
       err

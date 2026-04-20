@@ -86,7 +86,7 @@ export async function handler(event, context) {
       return { statusCode: 405, body: "Method Not Allowed" };
     }
 
-    console.log("🔵 [/resend-link] START");
+    log("🔵 [/resend-link] START");
 
     const stripe = getStripe();
     const twilioClient = getTwilioClient();
@@ -243,7 +243,7 @@ export async function handler(event, context) {
       };
 
     } catch (err) {
-      console.error("Resend-Link error:", err.message);
+      error("Resend-Link error:", err.message);
       return {
         statusCode: 500,
         body: JSON.stringify({
@@ -254,7 +254,7 @@ export async function handler(event, context) {
     }
 
   } catch (err) {
-    console.error("Resend-Link fatal error:", err);
+    error("Resend-Link fatal error:", err);
     return {
       statusCode: 500,
       body: JSON.stringify({ success: false, error: err.message })

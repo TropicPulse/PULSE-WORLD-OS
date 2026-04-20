@@ -51,7 +51,7 @@
 //  • Always side-effect-free
 // ============================================================================
 
-console.log(
+
   "%c🧠 PulseGPUBrain v7.3 — ANALYST CORTEX active (dual-mode evolution).",
   "color:#03A9F4; font-weight:bold;"
 );
@@ -273,7 +273,7 @@ class BrainInput {
 
 class TextureOptimizer {
   static process(rawTextures) {
-    console.log(
+    log(
       "%c[Analyst] TextureOptimizer → pass-through",
       "color:#8BC34A;",
       { count: rawTextures.length }
@@ -291,7 +291,7 @@ class TextureOptimizer {
 
 class MeshOptimizer {
   static process(rawMeshes) {
-    console.log(
+    log(
       "%c[Analyst] MeshOptimizer → pass-through",
       "color:#8BC34A;",
       { count: rawMeshes.length }
@@ -309,7 +309,7 @@ class MeshOptimizer {
 
 class LightingBaker {
   static process(rawScenes) {
-    console.log(
+    log(
       "%c[Analyst] LightingBaker → placeholder",
       "color:#8BC34A;",
       { sceneCount: rawScenes.length }
@@ -326,7 +326,7 @@ class LightingBaker {
 
 class AnimationBaker {
   static process(rawAnimations) {
-    console.log(
+    log(
       "%c[Analyst] AnimationBaker → pass-through",
       "color:#8BC34A;",
       { clipCount: rawAnimations.length }
@@ -344,7 +344,7 @@ class AnimationBaker {
 
 class ShaderCompiler {
   static process(rawShaders) {
-    console.log(
+    log(
       "%c[Analyst] ShaderCompiler → pass-through",
       "color:#8BC34A;",
       { shaderCount: rawShaders.length }
@@ -362,7 +362,7 @@ class ShaderCompiler {
 
 class RenderPlanner {
   static process(rawScenes, usagePatterns) {
-    console.log(
+    
       "%c[Analyst] RenderPlanner → placeholder",
       "color:#8BC34A;",
       {
@@ -389,7 +389,7 @@ class RenderPlanner {
 
 class PulseGPUBrainController {
   static buildPackages(brainInput) {
-    console.log(
+    log(
       "%c[Analyst] buildPackages() — starting",
       "color:#03A9F4;",
       {
@@ -424,7 +424,7 @@ class PulseGPUBrainController {
       evo: DUAL_MODE_EVO
     };
 
-    console.log(
+    log(
       "%c[Analyst] buildPackages() — complete",
       "color:#4CAF50;",
       { schemaVersion: packageSet.schemaVersion }
@@ -442,14 +442,14 @@ class PulseGPUBrainExport {
   static packageSet = null;
 
   static buildAndStore(brainInput) {
-    console.log(
+    log(
       "%c[Analyst] buildAndStore()",
       "color:#03A9F4;"
     );
 
     this.packageSet = PulseGPUBrainController.buildPackages(brainInput);
 
-    console.log(
+    log(
       "%c[Analyst] packageSet stored",
       "color:#4CAF50;"
     );
@@ -458,7 +458,7 @@ class PulseGPUBrainExport {
   }
 
   static exportToRuntime() {
-    console.log(
+    log(
       "%c[Analyst] exportToRuntime()",
       "color:#03A9F4;",
       { hasPackageSet: !!this.packageSet }

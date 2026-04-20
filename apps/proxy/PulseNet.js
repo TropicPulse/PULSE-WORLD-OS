@@ -1,26 +1,34 @@
 // ============================================================================
 // FILE: /apps/lib/Connectors/PulseNet.js
-// LAYER: THE SYNAPSE (Neural Signal Routing Layer) — v7.1+
+// LAYER: THE SYNAPSE + PULSE-ONCE CONNECTIVITY ORGAN — v7.4
 // ============================================================================
 //
-// ROLE (v7.1+):
+// ROLE (v7.4):
 //   THE SYNAPSE — Neural Signal Routing Layer
 //   • Receives electrical signal from Nervous System (PulseBand)
 //   • Computes signalScore + signalSlope (signal strength + trend)
 //   • Classifies route health (neural path integrity)
 //   • Emits pulse updates to the OS (neural firing)
 //
-// CONTRACT (v7.1+):
+//   PULSE-ONCE CONNECTIVITY ORGAN — Tiny Sync + Offline-First
+//   • Attempts one tiny connectivity pulse using any legal path
+//   • Syncs identity + config + jobs (1–2 KB)
+//   • Stores everything locally for fully offline operation
+//   • Does NOT require continuous internet
+//
+// CONTRACT (v7.4):
 //   • No PulseBand imports
 //   • No PulseClient imports
 //   • No PulseUpdate imports
-//   • Pure subsystem module
+//   • Pure subsystem module (only uses browser APIs + fetch + localStorage)
 //
-// SAFETY (v7.1+):
-//   • v7.1+ upgrade is COMMENTAL + DIAGNOSTIC ONLY — NO LOGIC CHANGES
-//   • All behavior remains identical to pre‑v7.1 PulseNet (where behavior existed)
-//   • If you wire new callers, do so via these exported pure functions only.
+// SAFETY (v7.4):
+//   • No illegal network access
+//   • Only uses legal/open/saved connectivity paths (where implemented)
+//   • Deterministic math for signal routing
+//   • Tiny, bounded sync payload
 // ============================================================================
+
 
 // ============================================================================
 // LAYER CONSTANTS + DIAGNOSTICS
@@ -38,7 +46,7 @@ const PULSE_DIAGNOSTICS_ENABLED =
 const pulseLog = (stage, details = {}) => {
   if (!PULSE_DIAGNOSTICS_ENABLED) return;
 
-  console.log(
+  log(
     JSON.stringify({
       pulseLayer: PULSE_LAYER_ID,
       pulseName: PULSE_LAYER_NAME,
@@ -50,6 +58,7 @@ const pulseLog = (stage, details = {}) => {
 };
 
 pulseLog("SYNAPSE_INIT", {});
+
 
 // ============================================================================
 // CORE PURE HELPERS (NO IMPORTS, NO SIDE EFFECTS EXCEPT OPTIONAL LOGGING)
@@ -106,7 +115,6 @@ function classifyRouteHealth(signalScore, signalSlope) {
   const score = Number(signalScore ?? 0);
   const slope = Number(signalSlope ?? 0);
 
-  // You can tune these thresholds; they are symmetric and simple.
   if (score >= 0.8 && slope >= 0) return "healthy";
   if (score >= 0.5 && slope >= -0.1) return "stable";
   if (score >= 0.3 && slope >= -0.3) return "degrading";
@@ -117,7 +125,6 @@ function classifyRouteHealth(signalScore, signalSlope) {
 
 /**
  * Build a pure "pulse update" object that the OS / higher layers can consume.
- * This is the only thing PulseNet "emits".
  */
 function buildPulseUpdate({
   rawSignal,
@@ -140,12 +147,10 @@ function buildPulseUpdate({
     signalSlope,
     routeHealth,
 
-    // Optional metadata passthrough (device id, route id, etc.)
     meta: {
       ...meta
     },
 
-    // Timestamp for lineage / debugging
     ts: new Date().toISOString()
   };
 
@@ -184,13 +189,12 @@ function processPulseSignal(rawSignal, previousSignal, meta = {}) {
 
 /**
  * Optional: build a small diagnostic snapshot for dashboards.
- * This is read-only, derived from the same logic.
  */
 function buildPulseNetSnapshot(rawSignal, previousSignal, meta = {}) {
   const update = buildPulseUpdate({ rawSignal, previousSignal, meta });
 
   return {
-    version: "7.1",
+    version: "7.4",
     layerId: PULSE_LAYER_ID,
     layerName: PULSE_LAYER_NAME,
     layerRole: PULSE_LAYER_ROLE,
@@ -208,8 +212,185 @@ function buildPulseNetSnapshot(rawSignal, previousSignal, meta = {}) {
   };
 }
 
+
 // ============================================================================
-// EXPORTED SYNAPSE API (WHAT OTHER LAYERS SHOULD IMPORT)
+// PULSE-ONCE CONNECTIVITY ORGAN (OFFLINE-FIRST SYNC)
+// ============================================================================
+
+const PulseNetState = {
+  lastPulseTs: null,
+  lastPulseOk: false,
+  lastError: null,
+  minPulseIntervalMs: 5 * 60 * 1000 // 5 minutes (tunable)
+};
+
+/**
+ * Multi-gateway reachout:
+ *  • Satellite (if available)
+ *  • Open WiFi (where supported)
+ *  • Saved WiFi (OS-level, where supported)
+ *  • Carrier WiFi (where supported)
+ *  • Last known gateway (conceptual mesh / cached path)
+ *
+ * NOTE: In browser JS we cannot actually scan WiFi or force connections.
+ * These are stubs/placeholders for native / host integrations.
+ */
+async function multiGatewayReachout() {
+  pulseLog("PULSE_REACHOUT_START", {});
+
+  // 1) Satellite (if connection type is exposed as such)
+  try {
+    if (typeof navigator !== "undefined" && navigator.connection?.type === "satellite") {
+      pulseLog("PULSE_REACHOUT_SATELLITE_TRY", {});
+      const ok = await trySatellitePing();
+      if (ok) {
+        pulseLog("PULSE_REACHOUT_SATELLITE_OK", {});
+        return true;
+      }
+    }
+  } catch (e) {
+    pulseLog("PULSE_REACHOUT_SATELLITE_ERR", { error: String(e) });
+  }
+
+  // 2) Open WiFi / Saved WiFi / Carrier WiFi:
+  //    In browser JS, we cannot enumerate or join networks directly.
+  //    These are placeholders for native app / OS-level integrations.
+  pulseLog("PULSE_REACHOUT_WIFI_PLACEHOLDER", {
+    note: "WiFi scanning/joining requires native/OS integration."
+  });
+
+  // 3) Last known gateway (conceptual: try a tiny ping to a known endpoint)
+  try {
+    const ok = await tryLastKnownGateway();
+    if (ok) {
+      pulseLog("PULSE_REACHOUT_LAST_GATEWAY_OK", {});
+      return true;
+    }
+  } catch (e) {
+    pulseLog("PULSE_REACHOUT_LAST_GATEWAY_ERR", { error: String(e) });
+  }
+
+  pulseLog("PULSE_REACHOUT_NO_PATH", {});
+  return false;
+}
+
+async function trySatellitePing() {
+  try {
+    const res = await fetch("https://example-satellite-check.com/ping", {
+      method: "GET",
+      cache: "no-store"
+    });
+    return res.ok;
+  } catch {
+    return false;
+  }
+}
+
+async function tryLastKnownGateway() {
+  try {
+    const res = await fetch("/pulse-gateway-ping", {
+      method: "GET",
+      cache: "no-store"
+    });
+    return res.ok;
+  } catch {
+    return false;
+  }
+}
+
+/**
+ * Pulse once:
+ *  • Respects minPulseIntervalMs
+ *  • Uses multiGatewayReachout() to find ANY legal path
+ *  • Performs tiny sync: identity + config + jobs
+ *  • Stores everything in localStorage for offline-first operation
+ */
+async function pulseOnce(deviceId) {
+  pulseLog("PULSE_ONCE_CALLED", { deviceId });
+
+  const now = Date.now();
+  if (
+    PulseNetState.lastPulseTs &&
+    now - PulseNetState.lastPulseTs < PulseNetState.minPulseIntervalMs
+  ) {
+    pulseLog("PULSE_ONCE_SKIPPED_MIN_INTERVAL", {
+      lastPulseTs: PulseNetState.lastPulseTs,
+      now,
+      minPulseIntervalMs: PulseNetState.minPulseIntervalMs
+    });
+    return { skipped: true, reason: "min-interval" };
+  }
+
+  try {
+    const pathOk = await multiGatewayReachout();
+    if (!pathOk) {
+      PulseNetState.lastPulseTs = now;
+      PulseNetState.lastPulseOk = false;
+      PulseNetState.lastError = "no-path";
+
+      pulseLog("PULSE_ONCE_NO_PATH", {});
+      return { ok: false, reason: "no-path" };
+    }
+
+    pulseLog("PULSE_ONCE_TINY_SYNC_START", {});
+
+    const res = await fetch("/pulse-sync", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      cache: "no-store",
+      body: JSON.stringify({ deviceId })
+    });
+
+    if (!res.ok) {
+      throw new Error("non_ok_status_" + res.status);
+    }
+
+    const payload = await res.json();
+
+    try {
+      if (typeof localStorage !== "undefined") {
+        if (payload.identity) {
+          localStorage.setItem("tp_identity_v7", JSON.stringify(payload.identity));
+        }
+        if (payload.config) {
+          localStorage.setItem("tp_earn_config_v7", JSON.stringify(payload.config));
+        }
+        if (payload.jobs) {
+          localStorage.setItem("tp_jobs_seed_v7", JSON.stringify(payload.jobs));
+        }
+      }
+    } catch (storageErr) {
+      pulseLog("PULSE_ONCE_STORAGE_ERR", { error: String(storageErr) });
+    }
+
+    PulseNetState.lastPulseTs = now;
+    PulseNetState.lastPulseOk = true;
+    PulseNetState.lastError = null;
+
+    pulseLog("PULSE_ONCE_TINY_SYNC_DONE", {
+      bytes: JSON.stringify(payload).length,
+      hasJobs: Array.isArray(payload.jobs) && payload.jobs.length > 0
+    });
+
+    return { ok: true, payload };
+
+  } catch (err) {
+    PulseNetState.lastPulseTs = Date.now();
+    PulseNetState.lastPulseOk = false;
+    PulseNetState.lastError = err?.message || "unknown";
+
+    pulseLog("PULSE_ONCE_ERR", { error: String(err) });
+    return { ok: false, error: err?.message || "unknown" };
+  }
+}
+
+function getPulseNetState() {
+  return { ...PulseNetState };
+}
+
+
+// ============================================================================
+// EXPORTED SYNAPSE + PULSE-ONCE API
 // ============================================================================
 
 export const PulseNet = {
@@ -230,5 +411,9 @@ export const PulseNet = {
   // Main routing primitives
   buildPulseUpdate,
   processPulseSignal,
-  buildPulseNetSnapshot
+  buildPulseNetSnapshot,
+
+  // Pulse-once connectivity
+  pulseOnce,
+  getPulseNetState
 };

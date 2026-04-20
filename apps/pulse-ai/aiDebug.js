@@ -43,7 +43,7 @@ const SCRIBE_DIAGNOSTICS_ENABLED =
 const scribeLog = (stage, details = {}) => {
   if (!SCRIBE_DIAGNOSTICS_ENABLED) return;
 
-  console.log(
+  log(
     JSON.stringify({
       pulseLayer: SCRIBE_LAYER_ID,
       pulseName: SCRIBE_LAYER_NAME,
