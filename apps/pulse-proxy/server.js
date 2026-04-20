@@ -114,11 +114,7 @@ import { getFirestore } from "firebase-admin/firestore";
 import dotenv from "dotenv";
 dotenv.config();
 
-import {
-  readPacketExists,
-  writePacket,
-  generatePacketData
-} from "./pulse-earn/PacketEngine.js";
+import { readPacketExists, writePacket, generatePacketData} from "./pulse-earn/PacketEngine.js";
 
 // Vitals Monitor (ICU bedside monitor)
 import { updateUserMetrics as recordUserMetrics } from "./pulse-os/PulseUserMetrics.js";
