@@ -36,6 +36,7 @@
 //   • All prior behavior remains intact; only additive capabilities
 //   • Explicit support for LOCAL-ONLY / OFFLINE nervous operation
 // ============================================================================
+import { PulseVersion, PulseRoles, makeTelemetryPacket, log, warn, error, logger } from "../PulseLogger.js";
 import { Impulse } from "./Impulse.js";
 
 // ============================================================================
@@ -43,11 +44,6 @@ import { Impulse } from "./Impulse.js";
 // ============================================================================
 import * as PulseGPU from "../pulse-gpu/PulseGPU.js";
 import * as Pulse from "./Pulse.js"; // SHADOWLAYER side-effects only
-
-// ============================================================================
-// LAYER LOGGER (REAL LOGGER FROM THE OVERALL LAYER)
-// ============================================================================
-import { logger } from "../PulseLogger.js";
 
 // ============================================================================
 // LAYER CONSTANTS + DIAGNOSTICS

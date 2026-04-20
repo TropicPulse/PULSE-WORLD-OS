@@ -3,9 +3,6 @@
 //  Starts the GPU Brain. Nothing else.
 // ============================================================================
 
-import { PulseVersion, PulseRoles, makeTelemetryPacket, log, warn, error, logger } from "../PulseLogger.js";
-
-
 // --- BRAIN LAYER (B) --------------------------------------------------------
 import { BrainInput, PulseGPUBrainExport, PulseGPUBrainController} from "./PulseGPUBrain.js";
 import { PulseGPUOrchestrator } from "./PulseGPUOrchestrator.js";
