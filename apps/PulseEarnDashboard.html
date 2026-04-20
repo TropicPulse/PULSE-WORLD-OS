@@ -691,7 +691,8 @@ import { identity } from "./PulseIdentity.js";
 import { getAuth, getHook, getMap, callHelper, attachScanner } from "./lib/Connectors/PageScanner.js";
 
 // THE REAL IMPORT YOU WANT — ALL METRICS COME FROM HERE
-const metrics = await pulseband.getMetrics();
+const metrics = await callHelper("earn:getSnapshot");
+
 
 
 // =======================
