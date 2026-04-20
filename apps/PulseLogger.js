@@ -8,33 +8,33 @@
 // ---------------------------------------------------------------------------
 const _c = { ...console };
 
-/* -------------------------------------------------------
-   FIREBASE INIT
-------------------------------------------------------- */
-const cfg = {
-  apiKey: "AIzaSyD4I5YDtZMMC_tDuwR9CEjhs_iAdrLzthQ",
-  authDomain: "tropic-pulse.firebaseapp.com",
-  projectId: "tropic-pulse",
-  storageBucket: "tropic-pulse.firebasestorage.app",
-  messagingSenderId: "642785071979",
-  appId: "1:642785071979:web:4287c6bdf51f5233db722e"
-};
-// ---------------------------------------------------------------------------
-//  FIREBASE INITIALIZATION (FRONTEND DURABLE LOGGING)
-// ---------------------------------------------------------------------------
-const app = firebase.initializeApp(cfg);
-const db = firebase.firestore(app);
+// /* -------------------------------------------------------
+//    FIREBASE INIT
+// ------------------------------------------------------- */
+// const cfg = {
+//   apiKey: "AIzaSyD4I5YDtZMMC_tDuwR9CEjhs_iAdrLzthQ",
+//   authDomain: "tropic-pulse.firebaseapp.com",
+//   projectId: "tropic-pulse",
+//   storageBucket: "tropic-pulse.firebasestorage.app",
+//   messagingSenderId: "642785071979",
+//   appId: "1:642785071979:web:4287c6bdf51f5233db722e"
+// };
+// // ---------------------------------------------------------------------------
+// //  FIREBASE INITIALIZATION (FRONTEND DURABLE LOGGING)
+// // ---------------------------------------------------------------------------
+// const app = firebase.initializeApp(cfg);
+// const db = firebase.firestore(app);
 
-async function writeToFirebaseLog(entry) {
-  try {
-    await db.collection("GLOBAL_LOGS").add({
-      ts: Date.now(),
-      ...entry
-    });
-  } catch (err) {
-    _c.error("Firebase logging failed:", err);
-  }
-}
+// async function writeToFirebaseLog(entry) {
+//   try {
+//     await db.collection("GLOBAL_LOGS").add({
+//       ts: Date.now(),
+//       ...entry
+//     });
+//   } catch (err) {
+//     _c.error("Firebase logging failed:", err);
+//   }
+// }
 
 // ============================================================================
 //  VERSION MAP — The Genome of PulseOS
