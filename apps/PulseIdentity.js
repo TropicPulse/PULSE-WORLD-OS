@@ -54,7 +54,11 @@ export async function identity() {
 
       if (missing.length === 0) {
         log("identity", "Local identity validated (offline-capable)");
-        return localIdentity;
+        return {
+          ...localIdentity,
+          lineage: PulseLineage.identity
+        };
+
       }
 
       warn("identity", "Local identity incomplete", missing);
@@ -73,8 +77,10 @@ export async function identity() {
       userEmail: null,
       sessionToken: null,
       offline: true,
-      reason: "No valid local identity and remote verification disabled."
+      reason: "No valid local identity and remote verification disabled.",
+      lineage: PulseLineage.identity
     };
+
 
     log("identity", "Returning offline identity fallback");
     return offlineIdentity;
@@ -90,7 +96,9 @@ export async function identity() {
       userEmail: null,
       sessionToken: null,
       offline: true,
-      reason: "Identity loader crashed; safe offline fallback."
+      reason: "Identity loader crashed; safe offline fallback.",
+      lineage: PulseLineage.identity
     };
+
   }
 }
