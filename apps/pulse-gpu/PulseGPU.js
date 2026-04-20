@@ -33,11 +33,6 @@
 //  • ESM-only.
 // ============================================================================
 
-log(
-  "%c🟦 PulseGPU v7.3 online — ASTRAL NERVOUS SYSTEM activated (dual-mode evolutionary/system advantage).",
-  "color:#03A9F4; font-weight:bold;"
-);
-
 // ============================================================================
 //  IMPORTS — RAW NEURAL SUBSYSTEMS
 // ============================================================================
@@ -59,6 +54,11 @@ import { PulseGPUEventEmitter } from "./PulseGPUEventEmitter.js";
 import { PulseGPUUXBridge } from "./PulseGPUUXBridge.js";
 import { PulseGPUAutoOptimize } from "./PulseGPUAutoOptimize.js";
 import { PulseGPUHealer } from "./PulseGPUHealer.js";
+
+log(
+  "%c🟦 PulseGPU v7.3 online — ASTRAL NERVOUS SYSTEM activated (dual-mode evolutionary/system advantage).",
+  "color:#03A9F4; font-weight:bold;"
+);
 
 // ============================================================================
 //  INTERNAL SINGLETONS — Astral Neural Core
