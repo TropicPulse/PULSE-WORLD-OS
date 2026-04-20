@@ -1,14 +1,15 @@
 // ============================================================================
 // FILE: /apps/lib/Connectors/PageScanner.js
-// PULSE ERROR GUARDIAN — v7.1
+// PULSE ERROR GUARDIAN — v7.2
 // “THE SENTINEL / THE IMMUNE SCOUT LAYER”
 // ============================================================================
 //
-// THEME v7.1:
+// THEME v7.2:
 //   • Same organ, smarter nervous system
 //   • Adds router-style guards at page level
 //   • Classifies page errors before they ever hit the router
 //   • Keeps healing behavior unchanged for missing-field patterns
+//   • NEW: symbol → ownerModule resolution for smarter healing
 //
 // ROLE — “THE PROTECTOR”
 //   • Intercepts JS errors
@@ -18,6 +19,27 @@
 //   • Classifies page-level failures (import/env/recursion) early
 // ============================================================================
 
+// ============================================================================
+// SYMBOL → OWNER MODULE RESOLUTION (v7.2)
+// ============================================================================
+function resolveOwnerModule(symbol) {
+  try {
+    const subsystems = window?.PULSE_SUBSYSTEMS;
+    if (!subsystems) return null;
+
+    for (const [moduleName, moduleExports] of Object.entries(subsystems)) {
+      if (moduleExports && typeof moduleExports === "object") {
+        if (symbol in moduleExports) {
+          return moduleName;
+        }
+      }
+    }
+  } catch (err) {
+    logProtector("OWNER_RESOLUTION_FAILED", { error: String(err) });
+  }
+
+  return null;
+}
 
 // ============================================================================
 // LAYER CONSTANTS + DIAGNOSTICS
@@ -223,7 +245,7 @@ window.addEventListener(
     }
 
     // ------------------------------------------------------------------------
-    // HEALING LOGIC (unchanged core behavior)
+    // HEALING LOGIC (v7.2 — same core, smarter targeting)
 // ------------------------------------------------------------------------
     const parsed = parseMissingField(msg);
     if (!parsed) {
@@ -233,7 +255,14 @@ window.addEventListener(
 
     const { table, field } = parsed;
 
-    logProtector("HEALING_TRIGGERED", { table, field });
+    // NEW: resolve which module owns this symbol (field)
+    const ownerModule = resolveOwnerModule(field);
+
+    logProtector("HEALING_TRIGGERED", {
+      table,
+      field,
+      ownerModule: ownerModule || "UNKNOWN"
+    });
 
     healingInProgress = true;
 
@@ -241,12 +270,13 @@ window.addEventListener(
       await route("fetchField", {
         table,
         field,
+        ownerModule,
         message: msg,
         page: window.location.pathname,
         routeTrace
       });
 
-      logProtector("HEALING_SUCCESS", { table, field });
+      logProtector("HEALING_SUCCESS", { table, field, ownerModule });
     } catch (err) {
       logProtector("HEALING_FAILED", { error: String(err) });
       error("[PageScanner] Router fetch failed:", err);
@@ -279,5 +309,5 @@ function parseMissingField(message) {
 }
 
 // ============================================================================
-// END OF FILE — THE SENTINEL / LIVING ROUTE MEMORY  [v7.1]
+// END OF FILE — THE SENTINEL / LIVING ROUTE MEMORY  [v7.2]
 // ============================================================================

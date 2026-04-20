@@ -46,11 +46,10 @@
 // VERSION TAG:
 //   version: 7.1+
 // ============================================================================
-
 import * as LegacyLogic from "./index.js";
 
 // ------------------------------------------------------------
-// ⭐ HUMAN‑READABLE CONTEXT MAP (v7.1+)
+// ⭐ HUMAN‑READABLE CONTEXT MAP (v7.3)
 // ------------------------------------------------------------
 const ENDPOINT_CONTEXT = {
   label: "ENDPOINT",
@@ -58,7 +57,7 @@ const ENDPOINT_CONTEXT = {
   role: "Epithelial Gate / Immune Barrier",
   purpose: "Backend Kernel Dispatcher",
   context: "Routes backend organs, falls back to legacy, heals missing organs",
-  version: "7.1+"
+  version: "7.3"
 };
 
 // ------------------------------------------------------------
@@ -77,7 +76,7 @@ async function loadModularHandler(type) {
 }
 
 // ------------------------------------------------------------
-// ⭐ MAIN HANDLER — THE EPITHELIAL GATE (v7.1+)
+// ⭐ MAIN HANDLER — THE EPITHELIAL GATE (v7.3)
 // ------------------------------------------------------------
 export const handler = async (event) => {
   let type;
@@ -85,7 +84,7 @@ export const handler = async (event) => {
 
   // ------------------------------------------------------------
   // 0. NORMALIZE INPUT (v7.1+)
-// ------------------------------------------------------------
+  // ------------------------------------------------------------
   if (event.httpMethod === "POST") {
     try {
       const body = JSON.parse(event.body || "{}");
@@ -111,8 +110,64 @@ export const handler = async (event) => {
   );
 
   // ------------------------------------------------------------
+  // ⭐ 0.5 — OWNER‑AWARE HEALING PATH (v7.3)
+  // ------------------------------------------------------------
+  // If PageScanner detected a missing field inside a specific module,
+  // Endpoint must grab that module and heal it.
+  // This is the “HEY OHHHHHHHHHHHH GRAB THAT” logic.
+  // ------------------------------------------------------------
+  if (payload.ownerModule) {
+    log(
+      `%c🩹 OWNER‑AWARE HEALING → ${payload.ownerModule}`,
+      "color:#FF9800; font-weight:bold;"
+    );
+
+    try {
+      // Dynamically import the module that owns the broken symbol
+      const organ = await import(`./${payload.ownerModule}.js`);
+
+      if (organ && typeof organ.heal === "function") {
+        const result = await organ.heal(payload);
+
+        return {
+          statusCode: 200,
+          body: JSON.stringify({
+            healed: true,
+            ownerModule: payload.ownerModule,
+            ...result,
+            ...ENDPOINT_CONTEXT
+          })
+        };
+      }
+
+      // If no heal() exists, fall through to normal organ loading
+      log(
+        `%c⚠️ OWNER MODULE HAS NO heal() → ${payload.ownerModule}`,
+        "color:#FFC107; font-weight:bold;"
+      );
+
+    } catch (err) {
+      error(
+        `%c🟥 OWNER‑AWARE HEALING FAILURE`,
+        "color:#FF5252; font-weight:bold;",
+        err
+      );
+
+      return {
+        statusCode: 500,
+        body: JSON.stringify({
+          error: "Owner‑aware healing failed",
+          ownerModule: payload.ownerModule,
+          details: String(err),
+          ...ENDPOINT_CONTEXT
+        })
+      };
+    }
+  }
+
+  // ------------------------------------------------------------
   // 1. TRY MODULAR BACKEND ORGAN FIRST (v7.1+)
-// ------------------------------------------------------------
+  // ------------------------------------------------------------
   const modularFn = await loadModularHandler(type);
 
   if (modularFn) {
@@ -152,7 +207,7 @@ export const handler = async (event) => {
 
   // ------------------------------------------------------------
   // 2. FALLBACK TO LEGACY ORGAN (index.js)
-// ------------------------------------------------------------
+  // ------------------------------------------------------------
   warn(
     `%c🟨 NO ORGAN FOUND → Falling back to legacy index.js`,
     "color:#FFC107; font-weight:bold;"

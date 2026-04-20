@@ -112,6 +112,7 @@ const Transport = {
 
       if (window.PulseLocalEndpoint?.handle) {
         try {
+          // ⭐ PASS THROUGH EXACTLY
           const result = await window.PulseLocalEndpoint.handle({ type, payload });
           logWisdom("TRANSPORT_OFFLINE_RESPONSE", { type });
           return result;
@@ -124,7 +125,6 @@ const Transport = {
         }
       }
 
-      // No local endpoint available — organism still intact, just no external comms
       logWisdom("TRANSPORT_OFFLINE_NO_HANDLER", { type });
       return { error: "Offline mode: no local endpoint handler registered" };
     }
@@ -132,10 +132,11 @@ const Transport = {
     // ONLINE MODE (network fetch)
     logWisdom("TRANSPORT_ONLINE_CALL", { type });
 
+    // ⭐ PASS THROUGH EXACTLY — NO MUTATION
     const res = await fetch("/.netlify/functions/endpoint", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ type, payload })
+      body: JSON.stringify({ type, payload })  // ⭐ EXACT PASS-THROUGH
     });
 
     const json = await res.json();
@@ -147,7 +148,6 @@ const Transport = {
     const offlineMode = window.PULSE_OFFLINE_MODE === true;
 
     if (offlineMode) {
-      // In offline mode, we cannot call backend healer; logs remain local.
       logWisdom("HEAL_SKIP_OFFLINE", { count: logs.length });
       return null;
     }
@@ -165,7 +165,6 @@ const Transport = {
     const offlineMode = window.PULSE_OFFLINE_MODE === true;
 
     if (offlineMode) {
-      // In offline mode, we can only log the condition locally.
       logWisdom("ALERT_SKIP_OFFLINE", { error, type });
       return;
     }
@@ -177,6 +176,7 @@ const Transport = {
     });
   }
 };
+
 
 
 // ============================================================================
