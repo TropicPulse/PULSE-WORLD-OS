@@ -33,6 +33,7 @@ import { createCommunityReflex } from "./CommunityReflex.js";
 import { applyPulseCortex } from "./PulseCortex.js";
 import { applyTendons } from "./Tendons.js";
 import { recordMeshDriftEvent } from "./GlobalHealer.js";
+import "./MeshScanner.js";
 
 // ============================================================================
 // MeshMemory — lineage + drift + flow (metadata-only)

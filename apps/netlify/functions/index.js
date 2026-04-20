@@ -49,6 +49,7 @@ import { identity, PulseLineage } from "./PulseIdentity.js";
 import { getAuth, getHook, getMap, callHelper, attachScanner } from "./lib/Connectors/PageScanner.js";
 // UI + presentation metadata comes from Logger
 import { PulseVersion, PulseRoles, makeTelemetryPacket, log, warn, error } from "./PulseLogger.js";
+import "./LayerScanner.js";
 
 
 async function logSecurityPatch(uid, patch, reason = "auto") {
