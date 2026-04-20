@@ -3,7 +3,7 @@
 //  Starts the GPU Brain. Nothing else.
 // ============================================================================
 
-import { PulseVersion, PulseRoles, makeTelemetryPacket, log, warn, error } from "../PulseLogger.js";
+import { PulseVersion, PulseRoles, makeTelemetryPacket, log, warn, error, logger } from "../PulseLogger.js";
 import { initPulseBand } from "./PulseBand.js";
 
 // Start PulseBand (nervous system)
