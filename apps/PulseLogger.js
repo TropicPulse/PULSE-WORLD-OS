@@ -1,40 +1,12 @@
 // ============================================================================
-//  PULSE OS v7.7 — VITALS LOGGER (HYBRID + FIREBASE DURABLE MODE)
-//  Hospital‑Grade Logging • Subsystem Identity • Connection Vitals • Zero Drift
+//  PULSE OS v7.7 — VITALS LOGGER (RENDERER ONLY)
+//  Subsystem Identity • Connection Vitals • Zero Drift • No Firebase
 // ============================================================================
 
 // ---------------------------------------------------------------------------
 //  CAPTURE ORIGINAL CONSOLE (prevents recursion)
 // ---------------------------------------------------------------------------
 const _c = { ...console };
-
-// /* -------------------------------------------------------
-//    FIREBASE INIT
-// ------------------------------------------------------- */
-// const cfg = {
-//   apiKey: "AIzaSyD4I5YDtZMMC_tDuwR9CEjhs_iAdrLzthQ",
-//   authDomain: "tropic-pulse.firebaseapp.com",
-//   projectId: "tropic-pulse",
-//   storageBucket: "tropic-pulse.firebasestorage.app",
-//   messagingSenderId: "642785071979",
-//   appId: "1:642785071979:web:4287c6bdf51f5233db722e"
-// };
-// // ---------------------------------------------------------------------------
-// //  FIREBASE INITIALIZATION (FRONTEND DURABLE LOGGING)
-// // ---------------------------------------------------------------------------
-// const app = firebase.initializeApp(cfg);
-// const db = firebase.firestore(app);
-
-// async function writeToFirebaseLog(entry) {
-//   try {
-//     await db.collection("GLOBAL_LOGS").add({
-//       ts: Date.now(),
-//       ...entry
-//     });
-//   } catch (err) {
-//     _c.error("Firebase logging failed:", err);
-//   }
-// }
 
 // ============================================================================
 //  VERSION MAP — The Genome of PulseOS
@@ -102,96 +74,30 @@ function normalizeArgs(args) {
   let message = "";
   let rest = [];
 
-  // CASE 1 — %c Chrome-style logs
   if (typeof args[0] === "string" && args[0].startsWith("%c")) {
-    subsystem = "legacy";
-    message = args[0];
-    rest = args.slice(1);
-    return { subsystem, message, rest, raw: true };
+    return { subsystem, message: args[0], rest: args.slice(1), raw: true };
   }
 
-  // CASE 2 — log("gpu", "message")
   if (args.length >= 2 && typeof args[0] === "string" && typeof args[1] === "string") {
-    subsystem = args[0];
-    message = args[1];
-    rest = args.slice(2);
-    return { subsystem, message, rest, raw: false };
+    return { subsystem: args[0], message: args[1], rest: args.slice(2), raw: false };
   }
 
-  // CASE 3 — JSON logs (PulseBand, GPU, etc.)
   if (typeof args[0] === "object") {
     const obj = args[0];
-
     if (obj.pulseLayer === "NERVOUS-SYSTEM") subsystem = "band";
     if (obj.schemaVersion && obj.textures !== undefined) subsystem = "gpu";
-
-    message = JSON.stringify(obj);
-    return { subsystem, message, rest: [], raw: false };
+    return { subsystem, message: JSON.stringify(obj), rest: [], raw: false };
   }
 
-  // CASE 4 — log("message")
   if (args.length === 1) {
-    message = args[0];
-    return { subsystem, message, rest: [], raw: false };
+    return { subsystem, message: args[0], rest: [], raw: false };
   }
 
-  // fallback
-  message = args.join(" ");
-  return { subsystem, message, rest, raw: false };
+  return { subsystem, message: args.join(" "), rest, raw: false };
 }
 
 // ============================================================================
-//  VITALS — CONNECTION STATUS (✓ / ✗)
-// ============================================================================
-export async function logConnection(subsystem, status, details = {}) {
-  const ok = status === "ok" || status === true;
-  const symbol = ok ? "✓" : "✗";
-  const color = ok ? "#4CAF50" : "#EF5350";
-  const prefix = formatPrefix(subsystem);
-
-  _c.log(
-    `%c${prefix} — ${symbol} CONNECTION — ${subsystem}`,
-    `color:${color}; font-weight:bold;`,
-    details
-  );
-
-  await writeToFirebaseLog({
-    level: "connection",
-    subsystem,
-    status: ok ? "ok" : "fail",
-    symbol,
-    details,
-    prefix,
-    version: PulseVersion[subsystem],
-    role: PulseRoles[subsystem]
-  });
-}
-
-// ============================================================================
-//  VITALS — HEARTBEAT (latency, uptime, subsystem health)
-// ============================================================================
-export async function logHeartbeat(subsystem, ms, details = {}) {
-  const prefix = formatPrefix(subsystem);
-
-  _c.log(
-    `%c${prefix} — ❤️ HEARTBEAT — ${ms}ms`,
-    "color:#EC407A; font-weight:bold;",
-    details
-  );
-
-  await writeToFirebaseLog({
-    level: "heartbeat",
-    subsystem,
-    latency: ms,
-    details,
-    prefix,
-    version: PulseVersion[subsystem],
-    role: PulseRoles[subsystem]
-  });
-}
-
-// ============================================================================
-//  CORE LOGGING FUNCTIONS — HYBRID + FIREBASE DURABLE MODE
+//  CORE LOGGING FUNCTIONS — RENDERER ONLY
 // ============================================================================
 
 export function log(...args) {
@@ -199,7 +105,6 @@ export function log(...args) {
 
   if (raw) {
     _c.log(message, ...rest);
-    writeToFirebaseLog({ level: "log", subsystem, message, rest, raw });
     return;
   }
 
@@ -207,16 +112,6 @@ export function log(...args) {
   const prefix = formatPrefix(subsystem);
 
   _c.log(`%c${prefix} — ${message}`, `color:${color}; font-weight:bold;`, ...rest);
-
-  writeToFirebaseLog({
-    level: "log",
-    subsystem,
-    message,
-    rest,
-    prefix,
-    version: PulseVersion[subsystem],
-    role: PulseRoles[subsystem]
-  });
 }
 
 export function warn(...args) {
@@ -224,16 +119,6 @@ export function warn(...args) {
   const prefix = formatPrefix(subsystem);
 
   _c.warn(`%c${prefix} [WARN] — ${message}`, "color:#FFEE58; font-weight:bold;", ...rest);
-
-  writeToFirebaseLog({
-    level: "warn",
-    subsystem,
-    message,
-    rest,
-    prefix,
-    version: PulseVersion[subsystem],
-    role: PulseRoles[subsystem]
-  });
 }
 
 export function error(...args) {
@@ -241,16 +126,6 @@ export function error(...args) {
   const prefix = formatPrefix(subsystem);
 
   _c.error(`%c${prefix} [ERROR] — ${message}`, "color:#EF5350; font-weight:bold;", ...rest);
-
-  writeToFirebaseLog({
-    level: "error",
-    subsystem,
-    message,
-    rest,
-    prefix,
-    version: PulseVersion[subsystem],
-    role: PulseRoles[subsystem]
-  });
 }
 
 export function critical(...args) {
@@ -263,16 +138,6 @@ export function critical(...args) {
   );
   _c.error(`%c${message}`, "color:#D32F2F; font-weight:bold;", ...rest);
   _c.groupEnd();
-
-  writeToFirebaseLog({
-    level: "critical",
-    subsystem,
-    message,
-    rest,
-    prefix,
-    version: PulseVersion[subsystem],
-    role: PulseRoles[subsystem]
-  });
 }
 
 // ============================================================================
@@ -317,7 +182,5 @@ export const logger = {
   critical,
   group,
   groupEnd,
-  makeTelemetryPacket,
-  logConnection,
-  logHeartbeat
+  makeTelemetryPacket
 };
