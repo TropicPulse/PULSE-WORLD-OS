@@ -34,15 +34,16 @@ import * as Pulse from "./Pulse.js"; // SHADOWLAYER side-effects only
 // ============================================================================
 // LAYER CONSTANTS + DIAGNOSTICS
 // ============================================================================
-const NERVOUS_LAYER_ID = "NERVOUS-SYSTEM";
-const NERVOUS_LAYER_NAME = "PULSEBAND";
-const NERVOUS_LAYER_ROLE = "Sensorimotor Integration Layer";
-
 let logger = {
   log: () => {},
   warn: () => {},
   error: () => {}
 };
+const NERVOUS_LAYER_ID = "NERVOUS-SYSTEM";
+const NERVOUS_LAYER_NAME = "PULSEBAND";
+const NERVOUS_LAYER_ROLE = "Sensorimotor Integration Layer";
+
+
 
 const NERVOUS_DIAGNOSTICS_ENABLED =
   (typeof window !== "undefined" && window?.PULSE_NERVOUS_DIAGNOSTICS === true) ||
