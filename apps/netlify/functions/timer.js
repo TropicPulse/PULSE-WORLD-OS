@@ -61,27 +61,45 @@ const db = getFirestore();
 // ============================================================================
 // LAYER CONSTANTS + DIAGNOSTICS
 // ============================================================================
+// ============================================================================
+// LAYER CONSTANTS + DIAGNOSTICS (v7.4 UPGRADED)
+// ============================================================================
 const LAYER_ID = "HEART-LAYER";
 const LAYER_NAME = "THE HEART";
 const LAYER_ROLE = "CARDIAC PACEMAKER ENGINE";
 
-const HEART_DIAGNOSTICS_ENABLED =
-  process.env.PULSE_HEART_DIAGNOSTICS === "true" ||
-  process.env.PULSE_DIAGNOSTICS === "true";
+// Global layer status (frontend can read this)
+global.PULSE_LAYER_STATE = global.PULSE_LAYER_STATE || {};
+global.PULSE_LAYER_STATE[3] = { name: "Heart", ok: true };
 
-const logHeart = (stage, details = {}) => {
-  if (!HEART_DIAGNOSTICS_ENABLED) return;
+// Sequence counter for heartbeat events
+let HEART_EVENT_SEQ = 0;
 
-  log(
-    JSON.stringify({
-      pulseLayer: LAYER_ID,
-      pulseName: LAYER_NAME,
-      pulseRole: LAYER_ROLE,
-      stage,
-      ...details
-    })
-  );
+// UPGRADED LOGGER — writes to console + Firestore
+const logHeart = async (stage, details = {}) => {
+  HEART_EVENT_SEQ++;
+
+  const payload = {
+    seq: HEART_EVENT_SEQ,
+    pulseLayer: LAYER_ID,
+    pulseName: LAYER_NAME,
+    pulseRole: LAYER_ROLE,
+    stage,
+    ...details,
+    ts: Date.now()
+  };
+
+  // Always console log
+  console.log(`[HEART #${HEART_EVENT_SEQ}]`, payload);
+
+  // Fire-and-forget Firestore write
+  try {
+    await db.collection("HEART_LOGS").add(payload);
+  } catch (err) {
+    console.error("HEART_LOG_WRITE_FAILURE", String(err));
+  }
 };
+
 
 // ============================================================================
 // HUMAN‑READABLE CONTEXT MAP
