@@ -47,7 +47,7 @@
 //  • Fail-open: invalid plans/advice → require confirmation or ignore.
 //  • Multi-instance safe: no shared mutable global state in decisions.
 // ============================================================================
-
+import { PulseVersion, PulseRoles, makeTelemetryPacket, log, warn, error } from "../PulseLogger.js";
 log(
   "%c🟦 PulseGPUAutoOptimize v7.3 online — GUARDIAN neural lattice stabilized.",
   "color:#03A9F4; font-weight:bold;"
