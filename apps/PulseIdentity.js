@@ -19,7 +19,21 @@
 // ============================================================================
 
 import { log, warn, error } from "./PulseLogger.js";
-
+// ============================================================================
+//  LINEAGE MAP — Evolutionary Identity
+// ============================================================================
+export const PulseLineage = {
+  identity: "bbb-core",
+  brain: "analysis-core",
+  gpu: "astral-core",
+  orchestrator: "autonomic-core",
+  engine: "execution-core",
+  optimizer: "guardian-core",
+  synapse: "junction-core",
+  band: "interface-core",
+  router: "consulate-core",
+  marketplaces: "embassy-core"
+};
 // ============================================================================
 //  IDENTITY LOADER — BBB Verification Engine (v7.4)
 //  LOCAL-FIRST. REMOTE OPTIONAL. ZERO DEPENDENCY.
