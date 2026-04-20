@@ -54,9 +54,9 @@
 //  • Deterministic, drift‑proof facade behavior.
 //
 import { PulseVersion, PulseRoles, makeTelemetryPacket, log, warn, error } from "../PulseLogger.js";
+import { pulseband } from "./PulseBand.js";
 
-
-PulseBand.init({
+pulseBand.init({
     logger: { log, warn, error }
 });
 
