@@ -4,8 +4,6 @@
 //  Backward + Forward Compatible (OLD + NEW log calls)
 // ============================================================================
 
-import { PulseColors, PulseRoles, PulseVersion } from "./PulseIdentity.js";
-
 // ============================================================================
 //  INTERNAL — Format a subsystem log prefix
 // ============================================================================
