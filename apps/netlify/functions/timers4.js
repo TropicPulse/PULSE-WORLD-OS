@@ -1,4 +1,7 @@
 
+import { onSchedule } from "@netlify/functions";
+
+
 
 export const timerLogout = onSchedule("every 5 minutes", async () => {
   const runId = crypto.randomUUID();
