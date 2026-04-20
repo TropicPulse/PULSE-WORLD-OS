@@ -3,7 +3,7 @@
 // LAYER: THE MUSCLE SYSTEM (Worker Supervisor + Profit Orchestrator)
 // ============================================================================
 //
-// ROLE (v7.5):
+// ROLE (v7.5+):
 //   THE MUSCLE SYSTEM — deterministic contraction engine of Pulse‑Earn.
 //   • Oversees worker lifecycle (muscle fibers).
 //   • Fetches jobs from MarketplaceConnector (motor signals).
@@ -11,26 +11,13 @@
 //   • Submits results via ResultSubmission (release).
 //   • Maintains healing + pressure metadata (muscle memory).
 //
-// WHY “MUSCLE SYSTEM”?:
-//   • Workers behave like muscle fibers contracting in cycles.
-//   • Foreman acts like a neuromuscular controller.
-//   • Ensures continuous throughput (rhythmic contraction).
-//   • Handles errors safely (reflexive inhibition).
-//   • Maintains stable, profitable output (homeostasis).
-//
-// PURPOSE (v7.5):
-//   • Provide a deterministic, drift‑proof worker lifecycle engine.
-//   • Guarantee safe, predictable job execution.
-//   • Maintain healing + pressure metadata for Earn healers.
-//   • Preserve contraction cycles + muscle memory (conceptual only).
-//
-// CONTRACT (unchanged in spirit):
+// CONTRACT:
 //   • PURE SUPERVISOR — no AI layers, no translation, no memory model.
 //   • READ‑ONLY except for healing metadata.
 //   • NO eval(), NO Function(), NO dynamic imports.
 //   • NO executing user code.
 //   • Deterministic worker loops only.
-//   • v7.5 adds metadata-only awareness of tendon/field context.
+//   • v7.5+ adds metadata-only awareness of tendon/field context.
 // ============================================================================
 
 import { getNextJob } from "./MarketplaceConnector.js";
@@ -56,12 +43,56 @@ const EarnEngine = {
   lastTendonContext: null,   // earner_context from job, if present
   lastVolatility: null,      // earner_volatility from job, if present
 
+  // v7.5+: event sequencing for deterministic logs
+  eventSeq: 0,
+
+  // -------------------------------------------------------------------------
+  // Internal: unified event logger
+  // -------------------------------------------------------------------------
+  logEvent(config, stage, details = {}) {
+    this.eventSeq++;
+
+    const base = {
+      seq: this.eventSeq,
+      stage,
+      engineState: this.engineState,
+      cycleCount: this.cycleCount,
+      lastJobId: this.lastJob?.id || null,
+      lastError: this.lastError || null,
+      lastReason: this.lastReason || null,
+      lastTendonContext: this.lastTendonContext,
+      lastVolatility: this.lastVolatility,
+    };
+
+    config.logFn(stage, {
+      ...base,
+      ...details,
+    });
+  },
+
+  // -------------------------------------------------------------------------
+  // Internal: snapshot logger — earn:snapshot
+  // -------------------------------------------------------------------------
+  logSnapshot(config, reason = "periodic") {
+    const workers = Array.from(this.workerStates.entries()).map(
+      ([workerId, state]) => ({
+        workerId,
+        ...state,
+      })
+    );
+
+    this.logEvent(config, "earn:snapshot", {
+      reason,
+      workers,
+    });
+  },
+
   // -------------------------------------------------------------------------
   // start(config) — Begin contraction cycles
   // -------------------------------------------------------------------------
   async start(config) {
     if (this.running) {
-      config.logFn("earn:already_running");
+      this.logEvent(config, "earn:already_running");
       return;
     }
 
@@ -69,10 +100,12 @@ const EarnEngine = {
     this.engineState = "running";
     this.lastReason = null;
 
-    config.logFn("earn:engine_start", {
+    this.logEvent(config, "earn:engine_start", {
       maxWorkers: config.maxWorkers,
-      engineState: this.engineState,
     });
+
+    // Initial snapshot at start
+    this.logSnapshot(config, "engine_start");
 
     // Spawn muscle fibers (workers)
     for (let i = 0; i < config.maxWorkers; i++) {
@@ -94,7 +127,7 @@ const EarnEngine = {
   // workerLoop(workerId, config) — Contraction Cycle Loop
   // -------------------------------------------------------------------------
   async workerLoop(workerId, config) {
-    config.logFn("earn:worker_start", { workerId });
+    this.logEvent(config, "earn:worker_start", { workerId });
 
     this.workerStates.set(workerId, {
       state: "running",
@@ -116,6 +149,10 @@ const EarnEngine = {
         const job = await getNextJob(config.marketplaces, config.capacity);
 
         if (!job) {
+          this.logEvent(config, "earn:no_job_available", {
+            workerId,
+            cycle: this.cycleCount,
+          });
           await new Promise(r => setTimeout(r, config.idleDelayMs));
           continue;
         }
@@ -137,7 +174,7 @@ const EarnEngine = {
           this.workerStates.get(workerId).lastVolatility = volatility;
         }
 
-        config.logFn("earn:job_selected", {
+        this.logEvent(config, "earn:job_selected", {
           workerId,
           jobId: job.id,
           cycle: this.cycleCount,
@@ -153,7 +190,7 @@ const EarnEngine = {
         const result = await executeJob(job);
         this.lastResult = result;
 
-        config.logFn("earn:job_executed", {
+        this.logEvent(config, "earn:job_executed", {
           workerId,
           jobId: job.id,
           success: result.success,
@@ -169,13 +206,18 @@ const EarnEngine = {
 
         const submission = await submitJobResult(job, result);
 
-        config.logFn("earn:job_submitted", {
+        this.logEvent(config, "earn:job_submitted", {
           workerId,
           jobId: job.id,
           submission,
           tendonClass: tendonContext?.class,
           earnerVolatility: volatility,
         });
+
+        // Optional: snapshot after each successful cycle
+        if (config.snapshotEveryCycle) {
+          this.logSnapshot(config, "post_cycle");
+        }
 
         // ------------------------------------------------------
         // 4. IDLE — Relaxation
@@ -188,10 +230,12 @@ const EarnEngine = {
         this.workerStates.get(workerId).lastError = err.message;
         this.workerStates.get(workerId).state = "error";
 
-        config.logFn("earn:worker_error", {
+        this.logEvent(config, "earn:worker_error", {
           workerId,
           error: err.message,
         });
+
+        this.logSnapshot(config, "worker_error");
 
         if (config.stopOnError) {
           await this.hardStop(config, err.message);
@@ -201,7 +245,7 @@ const EarnEngine = {
     }
 
     this.workerStates.get(workerId).state = "stopped";
-    config.logFn("earn:worker_exit", { workerId });
+    this.logEvent(config, "earn:worker_exit", { workerId });
   },
 
   // -------------------------------------------------------------------------
@@ -214,12 +258,12 @@ const EarnEngine = {
     this.engineState = "error";
     this.lastReason = reason;
 
-    config.logFn("earn:engine_hard_stop", {
+    this.logEvent(config, "earn:engine_hard_stop", {
       reason,
       workers: Array.from(this.workers.keys()),
-      lastTendonContext: this.lastTendonContext,
-      lastVolatility: this.lastVolatility,
     });
+
+    this.logSnapshot(config, "engine_hard_stop");
 
     try {
       await config.sendFailureEmailFn({
@@ -230,7 +274,7 @@ const EarnEngine = {
         lastVolatility: this.lastVolatility,
       });
     } catch (err) {
-      config.logFn("earn:email_failed", { err });
+      this.logEvent(config, "earn:email_failed", { err: err.message });
     }
 
     await Promise.allSettled(this.workers.values());
@@ -246,9 +290,11 @@ const EarnEngine = {
     this.running = false;
     this.engineState = "stopping";
 
-    config.logFn("earn:engine_soft_stop", {
+    this.logEvent(config, "earn:engine_soft_stop", {
       workers: Array.from(this.workers.keys()),
     });
+
+    this.logSnapshot(config, "engine_soft_stop");
   },
 };
 
