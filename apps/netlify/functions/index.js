@@ -44,7 +44,9 @@
 //
 //  ↓↓↓  ALL LEGACY BACKEND FUNCTIONS LIVE BELOW THIS LINE  ↓↓↓
 // ============================================================================
-
+import { pulseband } from "./proxy/PulseBand.js";
+import { identity } from "./PulseIdentity.js";
+import { getAuth, getHook, getMap, callHelper, attachScanner } from "./lib/Connectors/PageScanner.js";
 
 
 async function logSecurityPatch(uid, patch, reason = "auto") {
