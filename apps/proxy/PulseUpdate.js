@@ -1,9 +1,9 @@
 // ============================================================================
 // FILE: /apps/lib/Connectors/PulseUpdate.js
-// LAYER: HEMODYNAMIC MONITOR (Pressure + Flow + Reflex Trigger Layer) — v7.1+
+// LAYER: HEMODYNAMIC MONITOR (Pressure + Flow + Reflex Trigger Layer) — v7.4
 // ============================================================================
 //
-// ROLE (v7.1+):
+// ROLE (v7.4):
 //   THE HEMODYNAMIC MONITOR — The organism’s circulatory vital‑signs layer.
 //   • Measures upstream pressure (latency)
 //   • Measures flow rate (kbps)
@@ -11,16 +11,25 @@
 //   • Builds normalized telemetry packets
 //   • Triggers reflex responses in the Nervous System (PulseBand)
 //
-// CONTRACT (v7.1+):
+// CONTRACT (v7.4):
 //   • No PulseBand imports
 //   • No PulseNet imports
 //   • No global state
 //   • Pure subsystem module
 //
-// SAFETY (v7.1+):
-//   • v7.1+ upgrade is COMMENTAL + DIAGNOSTIC ONLY — NO LOGIC CHANGES
-//   • All behavior remains identical to pre‑v7.1 PulseUpdate
+// SAFETY (v7.4):
+//   • No console.*
+//   • All logs routed through PulseLogger
+//   • All metrics routed through PulseTelemetry
 // ============================================================================
+
+import { log, warn, error } from "../PulseLogger.js";
+import { emitTelemetry } from "../PulseTelemetry.js";
+
+// ============================================================================
+// SUBSYSTEM IDENTITY
+// ============================================================================
+const SUBSYSTEM = "hemodynamics";
 
 // ============================================================================
 // LAYER CONSTANTS + DIAGNOSTICS
@@ -33,34 +42,27 @@ const BLOODPRESSURE_DIAGNOSTICS_ENABLED =
   window?.PULSE_BLOODPRESSURE_DIAGNOSTICS === true ||
   window?.PULSE_DIAGNOSTICS === true;
 
+// v7.4: bpLog now uses proper subsystem logging + telemetry
 const bpLog = (stage, details = {}) => {
   if (!BLOODPRESSURE_DIAGNOSTICS_ENABLED) return;
 
-  log(
-    JSON.stringify({
-      pulseLayer: BLOODPRESSURE_LAYER_ID,
-      pulseName: BLOODPRESSURE_LAYER_NAME,
-      pulseRole: BLOODPRESSURE_LAYER_ROLE,
-      stage,
-      ...details
-    })
-  );
+  log(SUBSYSTEM, stage, {
+    pulseLayer: BLOODPRESSURE_LAYER_ID,
+    pulseName: BLOODPRESSURE_LAYER_NAME,
+    pulseRole: BLOODPRESSURE_LAYER_ROLE,
+    ...details
+  });
+
+  emitTelemetry(SUBSYSTEM, stage, details);
 };
 
-bpLog("HEMODYNAMIC_INIT", {});
-window.PULSE_LOG = function (...args) {
-  try {
-    log("[PULSE]", ...args);
-  } catch (err) {
-    error("PULSE_LOG failed:", err);
-  }
-};
+bpLog("HEMODYNAMIC_INIT");
 
 // ============================================================================
 // 1. Upstream latency probe — PRESSURE MEASUREMENT
 // ============================================================================
 async function measureLatency(url = "/pulse-proxy/ping") {
-  window.PULSE_LOG(`PulseUpdate → measureLatency() called (${url})`);
+  log(SUBSYSTEM, "measureLatency() called", { url });
   bpLog("MEASURE_LATENCY_START", { url });
 
   const start = performance.now();
@@ -69,16 +71,16 @@ async function measureLatency(url = "/pulse-proxy/ping") {
     const res = await fetch(url, { cache: "no-store" });
     const t = performance.now() - start;
 
-    window.PULSE_LOG(`PulseUpdate → ping returned in ${t.toFixed(1)}ms`);
+    log(SUBSYSTEM, "Ping returned", { durationMs: t });
     bpLog("PING_SUCCESS", { durationMs: t });
 
     let data = {};
     try {
       data = await res.json();
-      window.PULSE_LOG("PulseUpdate → ping JSON parsed");
+      log(SUBSYSTEM, "Ping JSON parsed");
       bpLog("PING_JSON_PARSED");
     } catch {
-      window.PULSE_LOG("PulseUpdate → ping JSON parse failed (ignored)");
+      warn(SUBSYSTEM, "Ping JSON parse failed (ignored)");
       bpLog("PING_JSON_PARSE_FAILED");
     }
 
@@ -91,7 +93,7 @@ async function measureLatency(url = "/pulse-proxy/ping") {
     };
 
   } catch (err) {
-    window.PULSE_LOG("PulseUpdate → ping FAILED");
+    warn(SUBSYSTEM, "Ping FAILED", { error: String(err) });
     bpLog("PING_FAILED", { error: String(err) });
 
     return {
@@ -108,7 +110,7 @@ async function measureLatency(url = "/pulse-proxy/ping") {
 // 2. Classifiers — PRESSURE & FLOW INTERPRETATION
 // ============================================================================
 function classifyBars(latency) {
-  window.PULSE_LOG(`PulseUpdate → classifyBars(${latency})`);
+  log(SUBSYSTEM, "classifyBars()", { latency });
   bpLog("CLASSIFY_BARS", { latency });
 
   if (latency == null) return 1;
@@ -119,7 +121,7 @@ function classifyBars(latency) {
 }
 
 function classifyNetworkHealth(latency) {
-  window.PULSE_LOG(`PulseUpdate → classifyNetworkHealth(${latency})`);
+  log(SUBSYSTEM, "classifyNetworkHealth()", { latency });
   bpLog("CLASSIFY_HEALTH", { latency });
 
   if (latency == null) return "Unknown";
@@ -133,7 +135,7 @@ function classifyNetworkHealth(latency) {
 // 3. Public API — NORMALIZED VITAL SIGNS PACKET
 // ============================================================================
 async function getPulseTelemetry() {
-  window.PULSE_LOG("PulseUpdate → getPulseTelemetry()");
+  log(SUBSYSTEM, "getPulseTelemetry()");
   bpLog("TELEMETRY_START");
 
   const ping = await measureLatency();
@@ -141,13 +143,13 @@ async function getPulseTelemetry() {
   const latency = ping.rtt;
   const kbps = ping.kbps;
 
-  window.PULSE_LOG(`PulseUpdate → latency=${latency}, kbps=${kbps}`);
+  log(SUBSYSTEM, "Telemetry values", { latency, kbps });
   bpLog("TELEMETRY_VALUES", { latency, kbps });
 
   const pulsebandBars = classifyBars(latency);
   const networkHealth = classifyNetworkHealth(latency);
 
-  window.PULSE_LOG(`PulseUpdate → bars=${pulsebandBars}, health=${networkHealth}`);
+  log(SUBSYSTEM, "Telemetry classified", { pulsebandBars, networkHealth });
   bpLog("TELEMETRY_CLASSIFIED", { pulsebandBars, networkHealth });
 
   const snapshot = {
@@ -157,7 +159,7 @@ async function getPulseTelemetry() {
     lastChunkIndex: Date.now()
   };
 
-  window.PULSE_LOG("PulseUpdate → snapshot built");
+  log(SUBSYSTEM, "Snapshot built", snapshot);
   bpLog("SNAPSHOT_BUILT", snapshot);
 
   const result = {
@@ -176,7 +178,7 @@ async function getPulseTelemetry() {
     snapshot
   };
 
-  window.PULSE_LOG("PulseUpdate → telemetry ready");
+  log(SUBSYSTEM, "Telemetry ready");
   bpLog("TELEMETRY_READY", result);
 
   return result;

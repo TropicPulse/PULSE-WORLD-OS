@@ -622,7 +622,7 @@ function loadAllLogs(email) {
       const token = localStorage.getItem("tp_token_v4");
 
       if (!token) {
-         No Auth Token Found in LocalStorage!");
+        console.warn("No Auth Token Found in LocalStorage!");
         orderSelect.innerHTML = `<option>Auth Error</option>`;
         return;
       }
@@ -636,21 +636,24 @@ function loadAllLogs(email) {
           }
         }
       );
-      
+
       const data = await resp.json();
-      ling logs for:", email);
+
+      console.log("Fetching logs for:", email);
+
       if (data.success) {
         allLogs = data.logs;
         renderLogs();
       }
     } catch (err) {
-      rror:", err);
+      console.error("loadAllLogs error:", err);
     }
   }
 
   fetchLogs();
   logPoller = setInterval(fetchLogs, 1200);
 }
+
 
 function handlePreview() {
   const payload = buildPayload();

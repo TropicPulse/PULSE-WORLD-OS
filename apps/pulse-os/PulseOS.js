@@ -1,61 +1,6 @@
 // ======================================================
 //  PULSE OS v7.3 — THE THYMUS
 //  Immune Command Organ • Integrity Sentinel • Root Healing Authority
-//  PURE HEALING. NO AI. NO COMPUTE. NO MARKETPLACE.
-// ======================================================
-//
-// IDENTITY — THE THYMUS:
-//  ----------------------
-//  • The root immune organ of the Pulse ecosystem.
-//  • Trains the healing system by ingesting FUNCTION_LOGS.
-//  • Defines “self” vs “drift” through signature recording.
-//  • Maintains the OS heartbeat (vital signs).
-//  • Generates restore points (immune memory).
-//  • Supervises every subsystem from above.
-//  • The first organ to activate, the last to shut down.
-//
-// WHAT THIS FILE IS:
-//  -------------------
-//  • The OS kernel of Tropic Pulse.
-//  • The global supervisor for all subsystems.
-//  • The FUNCTION_LOG ingestion engine.
-//  • The drift signature recorder.
-//  • The snapshot + restore-point generator.
-//  • The OS heartbeat + health reporter.
-//  • The root of all healing.
-//
-// WHAT THIS FILE IS NOT:
-//  -----------------------
-//  • NOT a compute engine.
-//  • NOT a miner.
-//  • NOT a scheduler.
-//  • NOT a runtime.
-//  • NOT a marketplace adapter.
-//  • NOT a blockchain client.
-//  • NOT a wallet.
-//  • NOT a place for user-provided logic.
-//  • NOT a place for dynamic imports or eval.
-//
-// SAFETY CONTRACT:
-//  ----------------
-//  • No eval().
-//  • No dynamic imports.
-//  • No arbitrary code execution.
-//  • No compute.
-//  • No GPU work.
-//  • No marketplace calls.
-//  • Deterministic, drift-proof OS behavior only.
-//
-// ADVANTAGE CASCADE (v7.3):
-//  -------------------------
-//  • Dual-mode: mental + system.
-//  • Local-aware: node-level immune context.
-//  • Internet-aware: cluster/mesh/global immune context.
-//  • Advantage-cascade-aware: inherits ANY safe advantage.
-//  • Unified-advantage-field: ALL advantages ON unless unsafe.
-//  • Future-evolution-ready: new safe advantages auto-inherited.
-// ======================================================
-//  CONFIG — Thymus Constants
 // ======================================================
 
 export const FUNCTION_LOGS_COLLECTION = "FUNCTION_LOGS";
@@ -94,9 +39,9 @@ const THYMUS_CONTEXT = {
   }
 };
 
-log("[Thymus BOOT] PulseOS v7.3 immune kernel online.");
-log("[Thymus BOOT] Heartbeat interval:", OS_HEARTBEAT_INTERVAL_MS, "ms");
-log("[Thymus BOOT] FUNCTION_LOG scan interval:", FUNCTION_LOG_SCAN_INTERVAL_MS, "ms");
+log("thymus", "PulseOS v7.3 immune kernel online.");
+log("thymus", "Heartbeat interval", OS_HEARTBEAT_INTERVAL_MS, "ms");
+log("thymus", "FUNCTION_LOG scan interval", FUNCTION_LOG_SCAN_INTERVAL_MS, "ms");
 
 // ======================================================
 //  writeOSEvent() — Immune Signal Emitter
@@ -104,7 +49,9 @@ log("[Thymus BOOT] FUNCTION_LOG scan interval:", FUNCTION_LOG_SCAN_INTERVAL_MS, 
 async function writeOSEvent(entry) {
   try {
     log(
-      `[Thymus] ImmuneSignal | type=${entry.type} | hintCode=${entry.hintCode ?? "UNSPECIFIED_HINT"}`
+      "thymus",
+      `ImmuneSignal | type=${entry.type} | hintCode=${entry.hintCode ?? "UNSPECIFIED_HINT"}`,
+      entry
     );
 
     await db.collection(OS_EVENTS_COLLECTION).add({
@@ -114,7 +61,7 @@ async function writeOSEvent(entry) {
       ...entry
     });
   } catch (err) {
-    error("[Thymus] Failed to emit immune signal:", err);
+    error("thymus", "Failed to emit immune signal", err);
   }
 }
 
@@ -125,7 +72,7 @@ async function updateOSHealth(extra = {}) {
   try {
     const now = Timestamp.now();
 
-    ymus] Heartbeat emitted.");
+    log("thymus", "Heartbeat emitted.");
 
     await db.collection(OS_HEALTH_COLLECTION).doc(PULSE_OS_ID).set(
       {
@@ -143,7 +90,7 @@ async function updateOSHealth(extra = {}) {
     });
 
   } catch (err) {
-    error("[Thymus] Failed to update vital signs:", err);
+    error("thymus", "Failed to update vital signs", err);
   }
 }
 
@@ -151,7 +98,7 @@ async function updateOSHealth(extra = {}) {
 //  processFunctionLogs() — Immune Training + Drift Detection
 // ======================================================
 async function processFunctionLogs() {
-  log("[Thymus] Scanning FUNCTION_LOGS…");
+  log("thymus", "Scanning FUNCTION_LOGS…");
 
   const snap = await db
     .collection(FUNCTION_LOGS_COLLECTION)
@@ -160,56 +107,60 @@ async function processFunctionLogs() {
     .get();
 
   if (snap.empty) {
-    log("[Thymus] No new immune stimuli.");
+    log("thymus", "No new immune stimuli.");
     return;
   }
 
-  log(`[Thymus] Ingesting ${snap.size} FUNCTION_LOGS…`);
+  log("thymus", `Ingesting ${snap.size} FUNCTION_LOGS…`);
 
   const batch = db.batch();
 
   for (const doc of snap.docs) {
-    const log = doc.data();
+    const entry = doc.data();
 
     log(
-      `[Thymus] Ingest | id=${doc.id} | subsystem=${log.subsystem ?? "unknown"} | severity=${log.severity ?? "info"}`
+      "thymus",
+      `Ingest | id=${doc.id} | subsystem=${entry.subsystem ?? "unknown"} | severity=${entry.severity ?? "info"}`,
+      entry
     );
 
     await writeOSEvent({
       type: "function_log_ingested",
-      hintCode: log.hintCode ?? "FUNCTION_LOG_INGESTED",
+      hintCode: entry.hintCode ?? "FUNCTION_LOG_INGESTED",
       functionLogId: doc.id,
-      subsystem: log.subsystem ?? null,
-      fileName: log.fileName ?? null,
-      functionName: log.functionName ?? null,
-      fieldName: log.fieldName ?? null,
-      note: log.note ?? null,
-      severity: log.severity ?? "info"
+      subsystem: entry.subsystem ?? null,
+      fileName: entry.fileName ?? null,
+      functionName: entry.functionName ?? null,
+      fieldName: entry.fieldName ?? null,
+      note: entry.note ?? null,
+      severity: entry.severity ?? "info"
     });
 
-    if (log.subsystem) {
-      await saveSnapshot(log.subsystem, {
-        fileName: log.fileName,
-        functionName: log.functionName,
-        fieldName: log.fieldName,
-        note: log.note,
-        severity: log.severity
+    if (entry.subsystem) {
+      await saveSnapshot(entry.subsystem, {
+        fileName: entry.fileName,
+        functionName: entry.functionName,
+        fieldName: entry.fieldName,
+        note: entry.note,
+        severity: entry.severity
       });
     }
 
-    if (log.severity === "error" || log.severity === "critical") {
-      
-        `[Thymus] Drift signature recorded | subsystem=${log.subsystem ?? "unknown"}`
+    if (entry.severity === "error" || entry.severity === "critical") {
+      log(
+        "thymus",
+        `Drift signature recorded | subsystem=${entry.subsystem ?? "unknown"}`,
+        entry
       );
 
-      await recordDriftSignature(log.subsystem ?? "unknown", {
+      await recordDriftSignature(entry.subsystem ?? "unknown", {
         type: "function_error",
-        severity: log.severity,
+        severity: entry.severity,
         details: {
-          fileName: log.fileName,
-          functionName: log.functionName,
-          fieldName: log.fieldName,
-          note: log.note
+          fileName: entry.fileName,
+          functionName: entry.functionName,
+          fieldName: entry.fieldName,
+          note: entry.note
         }
       });
     }
@@ -222,10 +173,10 @@ async function processFunctionLogs() {
 
   await batch.commit();
 
-  ymus] FUNCTION_LOG ingestion complete.");
+  log("thymus", "FUNCTION_LOG ingestion complete.");
 
   if (snap.size >= 50) {
-    warn("[Thymus] Large immune stimulus — creating restore point.");
+    warn("thymus", "Large immune stimulus — creating restore point.");
     await createRestorePoint("auto_after_large_ingest", ["OS"]);
   }
 }
@@ -234,21 +185,21 @@ async function processFunctionLogs() {
 //  PUBLIC: startPulseOS() — Activate Immune Organ
 // ======================================================
 export default function startPulseOS() {
-  ymus] Starting immune supervisor loops…");
+  log("thymus", "Starting immune supervisor loops…");
 
   setInterval(() => {
     updateOSHealth().catch((err) => {
-      error("[Thymus] Heartbeat loop error:", err);
+      error("thymus", "Heartbeat loop error", err);
     });
   }, OS_HEARTBEAT_INTERVAL_MS);
 
   setInterval(() => {
     processFunctionLogs().catch((err) => {
-      error("[Thymus] FUNCTION_LOGS loop error:", err);
+      error("thymus", "FUNCTION_LOGS loop error", err);
     });
   }, FUNCTION_LOG_SCAN_INTERVAL_MS);
 
-  log("[Thymus] v7.3 immune kernel active.");
+  log("thymus", "v7.3 immune kernel active.");
 }
 
 export { updateOSHealth, processFunctionLogs, writeOSEvent };

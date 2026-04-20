@@ -104,19 +104,31 @@ const ADRENAL_CONTEXT = {
 };
 
 log(
-  "[ADRENAL BOOT] PulseInstanceOrchestrator v7.3 online — fight-or-flight scaling layer active."
+  "adrenal",
+  "PulseInstanceOrchestrator v7.3 online — fight‑or‑flight scaling layer active."
 );
-RENAL BOOT] Hard caps (physiological limits):", {
-  NORMAL_MAX,
-  UPGRADED_MAX,
-  HIGHEND_MAX,
-  TEST_EARN_MAX
-});
-log("[ADRENAL BOOT] Multipliers (stress response):", {
-  UPGRADED_MULT,
-  HIGHEND_MULT,
-  EARN_MODE_MULT
-});
+
+log(
+  "adrenal",
+  "Hard caps (physiological limits):",
+  {
+    NORMAL_MAX,
+    UPGRADED_MAX,
+    HIGHEND_MAX,
+    TEST_EARN_MAX
+  }
+);
+
+log(
+  "adrenal",
+  "Multipliers (stress response):",
+  {
+    UPGRADED_MULT,
+    HIGHEND_MULT,
+    EARN_MODE_MULT
+  }
+);
+
 
 // ======================================================
 //  Device tier → max instances (body capacity)

@@ -2,70 +2,11 @@
 //  PULSE USER METRICS v7.3
 //  “THE VITALS MONITOR / CIRCULATORY TELEMETRY LAYER”
 //  Deterministic, Drift‑Proof, Performance‑Aware Metrics Engine
-//  PURE HEALING. NO AI LAYERS. NO TRANSLATION. NO MEMORY MODEL.
 // ======================================================
 //
-// BODY THEME — ORGANISM MAPPING:
-//  ------------------------------
-//  PulseUserMetrics is the **VITALS MONITOR** of Tropic Pulse.
-//  It is the **CIRCULATORY TELEMETRY LAYER** — the bedside monitor.
+//  This subsystem monitors circulatory activity across the organism.
+//  It does NOT heal, command, scale, or compute. It only measures.
 //
-//  • Records request “heartbeats” (totalRequests).
-//  • Measures bandwidth “blood flow” (totalBytes).
-//  • Tracks latency as “blood pressure” (avgLatency).
-//  • Tracks mesh relays as “circulatory routing signals”.
-//  • Tracks hub behavior as “high‑flow organ activity”.
-//  • Computes trustScore as an overall “health index”.
-//  • Computes phase as the “functional fitness tier”.
-//  • Logs performance snapshots as “vitals panels”.
-//
-//  This subsystem does NOT heal — it **monitors**.
-//  It does NOT command — it **reports**.
-//  It does NOT scale — it **measures**.
-//
-//  It is the ICU monitor of the Pulse organism.
-//
-// WHAT THIS FILE IS:
-//  -------------------
-//  • The centralized metrics engine for Tropic Pulse.
-//  • The authoritative source of user activity metrics.
-//  • The trustScore + phase calculator.
-//  • The hub detector.
-//  • The base instance allocator.
-//  • The performance snapshot logger.
-//  • The vitals monitor reporting circulatory conditions.
-//
-// WHAT THIS FILE IS NOT:
-//  -----------------------
-//  • NOT a compute engine.
-//  • NOT a miner.
-//  • NOT a marketplace adapter.
-//  • NOT a trust engine (scores only).
-//  • NOT a scheduler.
-//  • NOT a runtime.
-//  • NOT a blockchain client.
-//  • NOT a wallet.
-//  • NOT a place for user-provided logic.
-//  • NOT a place for dynamic imports or eval.
-//
-// SAFETY CONTRACT:
-//  ----------------
-//  • No compute.
-//  • No eval().
-//  • No dynamic imports.
-//  • No user logic.
-//  • No marketplace calls.
-//  • No mutation outside Firestore.
-//  • Deterministic, drift-proof metrics only.
-//
-// ADVANTAGE CASCADE (v7.3):
-//  -------------------------
-//  • Dual-mode: mental + system.
-//  • Local-aware: per-user circulatory context.
-//  • Internet-aware: mesh / proxy / OS vitals context.
-//  • Advantage-cascade-aware: inherits ANY safe advantage.
-//  • Unified-advantage-field: ALL advantages ON unless unsafe.
-//  • Future-evolution-ready: new safe advantages auto-inherited.
 // ======================================================
 //  CONFIGURABLE INSTANCE FORMULA VARIABLES
 // ======================================================
@@ -88,9 +29,12 @@ export const PERFORMANCE_LOG_COLLECTION = "UserPerformanceLogs";
 // ======================================================
 //  Imports
 // ======================================================
-import { getFirestore } from "firebase-admin/firestore";
+import { getFirestore, Timestamp } from "firebase-admin/firestore";
 const db = getFirestore();
 
+// ======================================================
+//  CONTEXT — Vitals Monitor Identity
+// ======================================================
 const VITALS_CONTEXT = {
   layer: "PulseUserMetrics",
   role: "VITALS_MONITOR",
@@ -108,19 +52,19 @@ const VITALS_CONTEXT = {
   }
 };
 
-log("[VitalsMonitor BOOT] PulseUserMetrics v7.3 online.");
-talsMonitor BOOT] Performance logging:", ENABLE_PERFORMANCE_LOGGING);
+log("vitals", "PulseUserMetrics v7.3 online.");
+log("vitals", "Performance logging:", ENABLE_PERFORMANCE_LOGGING);
 
 // ======================================================
 //  updateUserMetrics()
-//  Called from server.js (TPProxy) on every request
 //  “Record a heartbeat + vitals panel”
 // ======================================================
 export async function updateUserMetrics(userId, data = {}) {
   if (!userId || userId === "anonymous") return;
 
-  
-    `[VitalsMonitor] Update | user=${userId} | bytes=${data.bytes ?? 0} | duration=${data.durationMs ?? 0}ms | meshRelay=${!!data.meshRelay} | meshPing=${!!data.meshPing} | hubFlag=${!!data.hubFlag}`
+  log(
+    "vitals",
+    `Update | user=${userId} | bytes=${data.bytes ?? 0} | duration=${data.durationMs ?? 0}ms | meshRelay=${!!data.meshRelay} | meshPing=${!!data.meshPing} | hubFlag=${!!data.hubFlag}`
   );
 
   const ref = db.collection("UserMetrics").doc(userId);
@@ -160,8 +104,9 @@ export async function updateUserMetrics(userId, data = {}) {
 
     const lastSeen = now;
 
-    
-      `[VitalsMonitor] user=${userId} | heartbeats=${totalRequests} | bloodFlow=${totalBytes} | bloodPressure=${avgLatency.toFixed(
+    log(
+      "vitals",
+      `user=${userId} | heartbeats=${totalRequests} | bloodFlow=${totalBytes} | bloodPressure=${avgLatency.toFixed(
         2
       )}ms | relays=${meshRelays} | pings=${meshPings} | hubSignals=${hubSignals}`
     );
@@ -198,9 +143,9 @@ export async function updateUserMetrics(userId, data = {}) {
         hubFlag: data.hubFlag ?? false
       });
 
-      talsMonitor] Snapshot logged for user=${userId}`);
+      log("vitals", `Snapshot logged for user=${userId}`);
     } catch (err) {
-      VitalsMonitor] Failed to log performance:", err);
+      error("vitals", "Failed to log performance", err);
     }
   }
 }
@@ -231,8 +176,9 @@ export function calculateTrustScore(metrics) {
 
   const final = Math.min(score, 100);
 
-  
-    `[VitalsMonitor] HealthIndex computed | user=${metrics.userId ?? "?"} | score=${final}`
+  log(
+    "vitals",
+    `HealthIndex computed | user=${metrics.userId ?? "?"} | score=${final}`
   );
 
   return final;
@@ -250,7 +196,7 @@ export function calculatePhase(trustScore) {
   else if (trustScore < 75) phase = 3;
   else phase = 4;
 
-  talsMonitor] Phase computed | trustScore=${trustScore} | phase=${phase}`);
+  log("vitals", `Phase computed | trustScore=${trustScore} | phase=${phase}`);
 
   return phase;
 }
@@ -268,8 +214,9 @@ export function isHub(metrics) {
     metrics.totalRequests > 500;
 
   if (hub) {
-    
-      `[VitalsMonitor] HIGH-FLOW ORGAN DETECTED | user=${metrics.userId ?? "?"} | relays=${metrics.meshRelays} | hubSignals=${metrics.hubSignals} | totalRequests=${metrics.totalRequests}`
+    log(
+      "vitals",
+      `HIGH-FLOW ORGAN DETECTED | user=${metrics.userId ?? "?"} | relays=${metrics.meshRelays} | hubSignals=${metrics.hubSignals} | totalRequests=${metrics.totalRequests}`
     );
   }
 
@@ -280,7 +227,13 @@ export function isHub(metrics) {
 //  allocateInstances()
 //  “Circulatory capacity allocation”
 // ======================================================
-export function allocateInstances(phase, hubFlag, deviceTier, earnMode, testEarnActive) {
+export function allocateInstances(
+  phase,
+  hubFlag,
+  deviceTier,
+  earnMode,
+  testEarnActive
+) {
   let base = phase >= 2 ? 2 : 1;
 
   if (hubFlag) base = base * 2;
@@ -303,8 +256,9 @@ export function allocateInstances(phase, hubFlag, deviceTier, earnMode, testEarn
 
   const final = Math.max(1, Math.min(base, max));
 
-  
-    `[VitalsMonitor] Circulatory capacity allocated | phase=${phase} | hub=${hubFlag} | tier=${deviceTier} | earnMode=${earnMode} | testEarn=${testEarnActive} | final=${final}`
+  log(
+    "vitals",
+    `Circulatory capacity allocated | phase=${phase} | hub=${hubFlag} | tier=${deviceTier} | earnMode=${earnMode} | testEarn=${testEarnActive} | final=${final}`
   );
 
   return final;

@@ -51,10 +51,11 @@
 //  • Always side-effect-free
 // ============================================================================
 
-
-  "%c🧠 PulseGPUBrain v7.3 — ANALYST CORTEX active (dual-mode evolution).",
-  "color:#03A9F4; font-weight:bold;"
+log(
+  "gpu",
+  "PulseGPUBrain v7.3 — Analyst Cortex active (dual‑mode evolution)."
 );
+
 
 // ------------------------------------------------------
 // GLOBAL SCHEMA VERSION (v4)
@@ -362,9 +363,10 @@ class ShaderCompiler {
 
 class RenderPlanner {
   static process(rawScenes, usagePatterns) {
-    
-      "%c[Analyst] RenderPlanner → placeholder",
-      "color:#8BC34A;",
+
+    log(
+      "gpu",
+      "RenderPlanner → placeholder",
       {
         sceneCount: rawScenes.length,
         hasUsagePatterns:
@@ -382,6 +384,7 @@ class RenderPlanner {
     });
   }
 }
+
 
 // ------------------------------------------------------
 // BRAIN ORCHESTRATOR (PURE, SYNCHRONOUS)

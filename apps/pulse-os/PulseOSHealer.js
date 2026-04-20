@@ -72,15 +72,29 @@ import { recordDriftSignature } from "./PulseOSMemory.js";
 
 const db = getFirestore();
 
+// ============================================================================
+//  HEALER CONTEXT (missing in your snippet — required for writeOSHealerLog)
+// ============================================================================
+const HEALER_CONTEXT = {
+  organ: "PulseOSHealer",
+  version: "7.3",
+  layer: "C-Layer",
+  role: "Inflammatory Response"
+};
+
+// ============================================================================
+//  BOOT LOGS
+// ============================================================================
 log(
-  "%c🟦 PulseOSHealer v7.3 online — Inflammatory Response (C‑Layer) activated.",
-  "color:#03A9F4; font-weight:bold;"
+  "oshealer",
+  "🟦 PulseOSHealer v7.3 online — Inflammatory Response (C‑Layer) activated."
 );
 
-  "[PulseOSHealer BOOT] Scan intervals:",
+log(
+  "oshealer",
+  "Scan intervals",
   { OS_EVENTS_SCAN_INTERVAL_MS, SUBSYSTEM_SCAN_INTERVAL_MS }
 );
-
 
 // ============================================================================
 //  writeOSHealerLog() — OSHealerLogs emitter (visible inflammation)
@@ -93,19 +107,21 @@ async function writeOSHealerLog(entry) {
       ...entry
     });
 
-    
-      `%c🟩 OS_HEALER LOG → ${entry.type}`,
-      "color:#4CAF50; font-weight:bold;"
+    log(
+      "oshealer",
+      `🟩 OS_HEALER LOG → ${entry.type}`,
+      entry
     );
 
   } catch (err) {
-    
-      `%c🟥 OS_HEALER LOG ERROR`,
-      "color:#FF5252; font-weight:bold;",
+    error(
+      "oshealer",
+      "🟥 OS_HEALER LOG ERROR",
       err
     );
   }
 }
+
 
 
 // ============================================================================

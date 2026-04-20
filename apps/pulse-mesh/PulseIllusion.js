@@ -79,8 +79,8 @@ export function interpretShellSignal(input) {
 
   try {
     log(
-      "%c[Layer] ShadowGuard → Thalamus (PulseIllusion)",
-      "color:#CE93D8"
+      "thalamus",
+      "ShadowGuard → Thalamus (PulseIllusion) relay initiated."
     );
 
     // ------------------------------------------------------------
@@ -88,10 +88,10 @@ export function interpretShellSignal(input) {
     // ------------------------------------------------------------
     if (!input || typeof input !== "object") {
       warn(
-        "%c[Warning] Malformed shell signal received.",
-        "color:#FFB74D"
+        "thalamus",
+        "Malformed shell signal received."
       );
-      ();
+      groupEnd();
       return null;
     }
 
@@ -101,11 +101,11 @@ export function interpretShellSignal(input) {
     const { shellState, allowPulseBand, allowIdentity } = input;
 
     if (!shellState) {
-      
-        "%c[Error] Missing shellState in thalamic relay.",
-        "color:#E57373; font-weight:bold;"
+      error(
+        "thalamus",
+        "Missing shellState in thalamic relay."
       );
-      ();
+      groupEnd();
       return null;
     }
 
@@ -114,25 +114,29 @@ export function interpretShellSignal(input) {
     // ------------------------------------------------------------
     const output = {
       thalamus_meta: ThalamusMeta,
-
       neuralState: shellState,
       enablePulse: allowPulseBand === true,
       enableIdentity: allowIdentity === true
     };
 
     log(
-      "%c[Success] Thalamic signal prepared for PulseBand.",
-      "color:#81C784"
+      "thalamus",
+      "Thalamic signal prepared for PulseBand."
     );
-    log("%c[Output]:", "color:#AED581", output);
+
+    log(
+      "thalamus",
+      "Output payload",
+      output
+    );
 
     groupEnd();
     return output;
 
   } catch (err) {
     error(
-      "%c[Critical] Thalamic relay failure:",
-      "color:#E57373; font-weight:bold;",
+      "thalamus",
+      "Critical thalamic relay failure",
       err
     );
     groupEnd();

@@ -138,13 +138,13 @@ class PulseGPUAutoOptimize {
     this.instanceId = instanceId || "guardian-instance";
 
     log(
-      `%c[Guardian] Instance ${this.instanceId} initialized.`,
-      "color:#9C27B0;"
+      "guardian",
+      `Instance ${this.instanceId} initialized.`
     );
 
-    
-      "%c[Guardian] Identity: policy-cortex | lineage: guardian-core | role: optimization arbiter.",
-      "color:#7E57C2;"
+    log(
+      "guardian",
+      "Identity: policy-cortex | lineage: guardian-core | role: optimization arbiter."
     );
   }
 
@@ -153,9 +153,10 @@ class PulseGPUAutoOptimize {
   //   decide(plan, context) → decision
   // ----------------------------------------------------
   decide(plan, context = {}) {
-    
-      `%c[Guardian] decide() invoked for ${this.instanceId}.`,
-      "color:#03A9F4;"
+
+    log(
+      "guardian",
+      `decide() invoked for ${this.instanceId}.`
     );
 
     if (!plan || typeof plan !== "object") {
@@ -172,8 +173,8 @@ class PulseGPUAutoOptimize {
     };
 
     log(
-      "%c[Guardian] Merged preferences:",
-      "color:#9C27B0;",
+      "guardian",
+      "Merged preferences",
       mergedPrefs
     );
 
@@ -202,8 +203,8 @@ class PulseGPUAutoOptimize {
     const severity = topAdvice.severity || "low";
 
     log(
-      `%c[Guardian] Plan action=${plan.action} | severity=${severity}`,
-      "color:#8BC34A;"
+      "guardian",
+      `Plan action=${plan.action} | severity=${severity}`
     );
 
     if (plan.action === "restore") {
@@ -232,6 +233,8 @@ class PulseGPUAutoOptimize {
       plan
     });
   }
+
+
 
   // ----------------------------------------------------
   // Restore plan policy — Regression Healer

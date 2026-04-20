@@ -109,11 +109,11 @@ const WBC_CONTEXT = {
   }
 };
 
-log("[WBC BOOT] PulseProxyHealer v7.3 online — immune patrol active.");
-log("[WBC BOOT] Health URL:", PROXY_HEALTH_URL);
-log("[WBC BOOT] Metrics URL:", PROXY_METRICS_URL);
-log("[WBC BOOT] Patrol interval:", HEALTH_INTERVAL_MS, "ms");
-log("[WBC BOOT] Score scan interval:", SCORES_SCAN_INTERVAL_MS, "ms");
+log("wbc", "PulseProxyHealer v7.3 online — immune patrol active.");
+log("wbc", "Health URL:", PROXY_HEALTH_URL);
+log("wbc", "Metrics URL:", PROXY_METRICS_URL);
+log("wbc", "Patrol interval:", HEALTH_INTERVAL_MS, "ms");
+log("wbc", "Score scan interval:", SCORES_SCAN_INTERVAL_MS, "ms");
 
 // ======================================================
 //  Helper: write FUNCTION_LOGS entry (immune alert)
@@ -127,7 +127,7 @@ async function writeFunctionLog(entry) {
       processed: false
     });
   } catch (err) {
-    WBC] Failed to write FUNCTION_LOGS entry:", err);
+    error("wbc", "Failed to write FUNCTION_LOGS entry", err);
   }
 }
 
@@ -142,7 +142,7 @@ async function writeHealerLog(entry) {
       ts: Date.now()
     });
   } catch (err) {
-    led to write healer log:", err);
+    error("wbc", "Failed to write healer log", err);
   }
 }
 
@@ -150,7 +150,7 @@ async function writeHealerLog(entry) {
 //  Health + metrics check (immune pressure scan)
 // ======================================================
 async function checkProxyHealthAndMetrics() {
-  C] Running health + metrics scan…");
+  log("wbc", "Running health + metrics scan…");
 
   let health = null;
   let metrics = null;
@@ -160,7 +160,7 @@ async function checkProxyHealthAndMetrics() {
     const res = await fetch(PROXY_HEALTH_URL, { method: "GET" });
     health = await res.json().catch(() => null);
   } catch (err) {
-    BC] Health fetch failed:", String(err));
+    error("wbc", "Health fetch failed", String(err));
     await writeHealerLog({
       type: "health_error",
       error: String(err),
@@ -173,7 +173,7 @@ async function checkProxyHealthAndMetrics() {
     const res = await fetch(PROXY_METRICS_URL, { method: "GET" });
     metrics = await res.json().catch(() => null);
   } catch (err) {
-    BC] Metrics fetch failed:", String(err));
+    error("wbc", "Metrics fetch failed", String(err));
     await writeHealerLog({
       type: "metrics_error",
       error: String(err),
@@ -182,7 +182,7 @@ async function checkProxyHealthAndMetrics() {
   }
 
   if (!metrics) {
-    BC] Metrics unavailable — skipping pressure analysis.");
+    warn("wbc", "Metrics unavailable — skipping pressure analysis.");
     return;
   }
 
@@ -198,7 +198,7 @@ async function checkProxyHealthAndMetrics() {
     warnings.push("event_loop_lag_high");
 
   if (warnings.length) {
-    warn("[WBC] Pressure warning:", warnings);
+    warn("wbc", "Pressure warning", warnings);
 
     await writeHealerLog({
       type: "proxy_pressure_warning",
@@ -208,9 +208,10 @@ async function checkProxyHealthAndMetrics() {
       warnings
     });
   } else {
-    log("[WBC] Proxy pressure normal.");
+    log("wbc", "Proxy pressure normal.");
   }
 }
+
 
 // ======================================================
 //  UserScores scan — detect instance misconfigurations

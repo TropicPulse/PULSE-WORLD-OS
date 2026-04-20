@@ -173,7 +173,6 @@ export async function recordDriftSignature(subsystem, signature) {
     );
   }
 }
-
 export async function getRecentDriftSignatures(subsystem, limit = 20) {
   const snap = await db
     .collection(DRIFT_SIGNATURES_COLLECTION)
@@ -182,9 +181,9 @@ export async function getRecentDriftSignatures(subsystem, limit = 20) {
     .limit(limit)
     .get();
 
-  
-    `%c🟨 FETCH DRIFT SIGNATURES → ${subsystem} (${snap.size})`,
-    "color:#FFC107; font-weight:bold;"
+  log(
+    "osmemory",
+    `🟨 FETCH DRIFT SIGNATURES → ${subsystem} (${snap.size})`
   );
 
   return snap.docs.map((d) => ({ id: d.id, ...d.data() }));
@@ -199,10 +198,7 @@ export async function createRestorePoint(label, subsystems = []) {
   const payload = {};
 
   try {
-    
-      `%c🟦 CREATING RESTORE POINT → ${label}`,
-      "color:#03A9F4; font-weight:bold;"
-    );
+    log("osmemory", `🟦 CREATING RESTORE POINT → ${label}`);
 
     for (const subsystem of subsystems) {
       const snap = await getLatestSnapshot(subsystem);
@@ -224,10 +220,7 @@ export async function createRestorePoint(label, subsystems = []) {
       ...MEMORY_CONTEXT
     });
 
-    log(
-      `%c🟩 RESTORE POINT CREATED → ${label}`,
-      "color:#4CAF50; font-weight:bold;"
-    );
+    log("osmemory", `🟩 RESTORE POINT CREATED → ${label}`);
 
     const snap = await db
       .collection(OS_RESTORE_POINTS_COLLECTION)
@@ -236,9 +229,9 @@ export async function createRestorePoint(label, subsystems = []) {
       .get();
 
     if (!snap.empty) {
-      
-        `%c🟧 RESTORE POINT TRIM → removing ${snap.size} old restore points`,
-        "color:#FF9800; font-weight:bold;"
+      warn(
+        "osmemory",
+        `🟧 RESTORE POINT TRIM → removing ${snap.size} old restore points`
       );
     }
 
@@ -247,12 +240,9 @@ export async function createRestorePoint(label, subsystems = []) {
     if (!snap.empty) await batch.commit();
 
     return ref.id;
+
   } catch (err) {
-    
-      `%c🟥 RESTORE POINT ERROR`,
-      "color:#FF5252; font-weight:bold;",
-      err
-    );
+    error("osmemory", "🟥 RESTORE POINT ERROR", err);
     throw err;
   }
 }
@@ -261,10 +251,7 @@ export async function getRestorePoint(id) {
   const doc = await db.collection(OS_RESTORE_POINTS_COLLECTION).doc(id).get();
   if (!doc.exists) return null;
 
-  
-    `%c🟦 RESTORE POINT FETCHED → ${id}`,
-    "color:#03A9F4; font-weight:bold;"
-  );
+  log("osmemory", `🟦 RESTORE POINT FETCHED → ${id}`);
 
   return { id: doc.id, ...doc.data() };
 }
@@ -276,10 +263,7 @@ export async function listRestorePoints(limit = 20) {
     .limit(limit)
     .get();
 
-  
-    `%c🟦 RESTORE POINT LIST FETCHED (${snap.size})`,
-    "color:#03A9F4; font-weight:bold;"
-  );
+  log("osmemory", `🟦 RESTORE POINT LIST FETCHED (${snap.size})`);
 
   return snap.docs.map((d) => ({ id: d.id, ...d.data() }));
 }
@@ -292,10 +276,7 @@ export async function getRestorePlan(restorePointId) {
   const rp = await getRestorePoint(restorePointId);
   if (!rp) return null;
 
-  
-    `%c🟦 RESTORE PLAN GENERATED → ${restorePointId}`,
-    "color:#03A9F4; font-weight:bold;"
-  );
+  log("osmemory", `🟦 RESTORE PLAN GENERATED → ${restorePointId}`);
 
   const plan = {
     restorePointId: rp.id,
