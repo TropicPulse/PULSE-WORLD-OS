@@ -73,7 +73,7 @@ function formatPrefix(subsystem) {
 // ============================================================================
 //  ARGUMENT NORMALIZER — HYBRID MODE
 //  Supports:
-//    • log("gpu", "msg")
+//    • log("gpu", "msg") 
 //    • log("%c[GPU] msg", "color:...;")
 //    • log({json})
 //    • log("[PULSE]", "...")

@@ -26,7 +26,7 @@ const gpuState = {
 // ============================================================================
 function startBrain(rawAssets) {
   try {
-    log("%c[PulseGPU] Starting GPU Brain…", "color:#03A9F4;");
+    log("gpu", "[PulseGPU] Starting GPU Brain…", "color:#03A9F4;");
 
     // 1. Build brain input
     const brainInput = new BrainInput(rawAssets);
@@ -37,7 +37,7 @@ function startBrain(rawAssets) {
     // 3. Export the package set
     const brainExport = new PulseGPUBrainExport(packageSet);
 
-    log("%c[PulseGPU] Brain packages built.", "color:#4CAF50;");
+    log("gpu", "[PulseGPU] Brain packages built.", "color:#4CAF50;");
 
     gpuState.brainReady = true;
     return brainExport;
@@ -54,7 +54,7 @@ function startBrain(rawAssets) {
 // ============================================================================
 async function init(rawAssets) {
   try {
-    log("%c[PulseGPU] init() called.", "color:#03A9F4;");
+    log("gpu", "[PulseGPU] init() called.", "color:#03A9F4;");
 
     // 1. Start the brain (THIS IS THE CORE YOU WANTED)
     const brain = startBrain(rawAssets);

@@ -158,7 +158,7 @@ async function emitFunctionLogHint(entry) {
 //  scanOSEventsForHints() — watches OS-level events (system‑wide irritation)
 // ============================================================================
 async function scanOSEventsForHints() {
-  log("%c🟪 Scanning OSEvents…", "color:#9C27B0; font-weight:bold;");
+  log("os", "🟪 Scanning OSEvents…", "color:#9C27B0; font-weight:bold;");
 
   const snap = await db
     .collection(OS_EVENTS_COLLECTION)
