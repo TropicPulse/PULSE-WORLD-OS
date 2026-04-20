@@ -7,7 +7,7 @@ import { PulseVersion, PulseRoles, makeTelemetryPacket, log, warn, error } from 
 
 // --- BRAIN LAYER (B) --------------------------------------------------------
 import { BrainInput, PulseGPUBrainExport, PulseGPUBrainController} from "./PulseGPUBrain.js";
-
+import { PulseGPUOrchestrator } from "./PulseGPUOrchestrator.js";
 // --- HEALER -----------------------------------------------------------------
 import { PulseGPUHealer } from "./PulseGPUHealer.js";
 
