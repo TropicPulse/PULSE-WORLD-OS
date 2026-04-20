@@ -1,30 +1,21 @@
 // ============================================================================
 // FILE: /apps/lib/Connectors/PageScanner.js
-// PULSE ERROR GUARDIAN — v7.0
+// PULSE ERROR GUARDIAN — v7.1
 // “THE SENTINEL / THE IMMUNE SCOUT LAYER”
 // ============================================================================
 //
-// THEME v7.0:
-//   • Same organ, new nervous system
-//   • Drops hard‑coded FILE_MAP
-//   • Treats every error as a living route sample
-//   • Builds + remembers route traces dynamically
-//   • Lets evolutionary layers learn from real traffic
+// THEME v7.1:
+//   • Same organ, smarter nervous system
+//   • Adds router-style guards at page level
+//   • Classifies page errors before they ever hit the router
+//   • Keeps healing behavior unchanged for missing-field patterns
 //
-// ROLE — “THE SENTINEL”
+// ROLE — “THE PROTECTOR”
 //   • Intercepts JS errors
 //   • Extracts stack frames + route context
 //   • Builds a dynamic route trace (no file-name hardcoding)
-//   • Triggers backend healing deterministically
-//   • Feeds RouteMemory for future analysis
-//
-// CONTRACT (v7.0):
-//   • Never mutate identity
-//   • Never modify backend logic
-//   • Never swallow errors silently
-//   • Always trigger healing deterministically when parser matches
-//   • Never depend on specific filenames or folder structures
-//   • Treat routeTrace as organism telemetry, not config
+//   • Triggers backend healing deterministically (for missing fields)
+//   • Classifies page-level failures (import/env/recursion) early
 // ============================================================================
 
 
@@ -56,11 +47,6 @@ const logProtector = (stage, details = {}) => {
 
 // ============================================================================
 // ROUTE MEMORY (v7.0) — LIVING MAP, NOT CONFIG
-// ----------------------------------------------------------------------------
-//   • Keyed by errorSignature (message + top frame)
-//   • Stores last observed routeTrace for that signature
-//   • Lets evolutionary layers learn from real stack shapes
-//   • No assumptions about filenames, layers, or folders
 // ============================================================================
 const RouteMemory = {
   store: {},
@@ -160,6 +146,43 @@ window.addEventListener(
     const msg = event.message || "";
     logProtector("ERROR_INTERCEPTED", { message: msg });
 
+    // ------------------------------------------------------------------------
+    // v7.1 — PAGE-LEVEL CLASSIFICATION (router-style guards)
+    // ------------------------------------------------------------------------
+    // These never touch backend logic or identity; they just classify and
+    // prevent page-level failures from becoming organism killers.
+    // ------------------------------------------------------------------------
+
+    // 1) Import / module conflict (double import, circular, missing module)
+    if (msg.includes("Cannot find module") || msg.includes("already been declared")) {
+      logProtector("PAGE_IMPORT_CONFLICT", {
+        error: "importConflict",
+        details: msg
+      });
+      // Page-level classification only; router still has its own guard.
+      return;
+    }
+
+    // 2) Env mismatch (process.env used in frontend)
+    if (msg.includes("process is not defined")) {
+      logProtector("PAGE_ENV_MISMATCH", {
+        error: "frontendEnvMismatch",
+        hint: "Replace process.env.* with window.PULSE_*"
+      });
+      // We don't push to RouterMemory here; this is a pure page-level signal.
+      return;
+    }
+
+    // 3) Recursion / thrash at page level (above router)
+    if (msg.includes("Maximum call stack size exceeded")) {
+      logProtector("PAGE_RECURSION_LOOP", {
+        error: "pageRecursionLoop",
+        details: msg
+      });
+      // Router cannot see this; PageScanner is the only safe place to stop it.
+      return;
+    }
+
     const stack = event.error?.stack || "";
     const frames = stack.split("\n").map((s) => s.trim());
 
@@ -175,9 +198,6 @@ window.addEventListener(
     // ------------------------------------------------------------------------
     // ROUTE TRACE v7.0 — LIVING, NOT HARD-CODED
     // ------------------------------------------------------------------------
-    // 1. Try to recall from RouteMemory (same message + top frame)
-    // 2. If none, build a simple structural trace and remember it
-    // ------------------------------------------------------------------------
     let routeTrace = RouteMemory.recall(msg, rawFrames);
 
     if (!routeTrace) {
@@ -188,7 +208,6 @@ window.addEventListener(
           frame,
           file,
           index,
-          // These are descriptive only — no behavior depends on them.
           label: "UNKNOWN",
           layer: "UNKNOWN",
           purpose: "Observed frame — classification deferred",
@@ -260,5 +279,5 @@ function parseMissingField(message) {
 }
 
 // ============================================================================
-// END OF FILE — THE SENTINEL / LIVING ROUTE MEMORY  [v7.0]
+// END OF FILE — THE SENTINEL / LIVING ROUTE MEMORY  [v7.1]
 // ============================================================================

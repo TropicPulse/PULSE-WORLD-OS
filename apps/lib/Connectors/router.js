@@ -225,18 +225,39 @@ async function triggerRouteDownAlert(error, type) {
 
 
 // ============================================================================
-// ⭐ UNIVERSAL SYS‑CALL FUNCTION  [BLUE → RED — GOLD]
+// ⭐ UNIVERSAL SYS‑CALL FUNCTION  [BLUE → RED → GOLD] — Router v7.1
 // ============================================================================
-export async function route(type, payload = {}) {
-  logWisdom("ROUTE_CALL", { type });
 
+// Prevent recursive routing storms
+let routingInProgress = false;
+
+// Simple signature generator (PageScanner-inspired)
+function makeErrorSignature(err) {
+  const msg = String(err);
+  const stack = err?.stack || "";
+  const top = stack.split("\n")[1] || "NO_FRAME";
+  return msg + "::" + top.trim();
+}
+
+export async function route(type, payload = {}) {
+  // Prevent recursive route → error → route → error loops
+  if (routingInProgress) {
+    return {
+      error: "routeRecursionDetected",
+      details: "Routing attempted while routing already in progress"
+    };
+  }
+
+  routingInProgress = true;
+
+  logWisdom("ROUTE_CALL", { type });
   logEvent("routeCall", { type, payload, ...ROUTER_CONTEXT });
 
   try {
     const json = await Transport.callEndpoint(type, payload);
 
-    // In offline mode, json may be simulated; we still treat it as a response.
     routeFailureCount = 0;
+    routingInProgress = false;
 
     logWisdom("ROUTE_RESPONSE", { type });
     logEvent("routeResponse", { type, payload, json, ...ROUTER_CONTEXT });
@@ -244,32 +265,57 @@ export async function route(type, payload = {}) {
     return json;
 
   } catch (err) {
+    const msg = String(err);
+    const signature = makeErrorSignature(err);
+
     routeFailureCount++;
+
     logWisdom("ROUTE_ERROR", {
       type,
-      message: String(err),
+      message: msg,
+      signature,
       count: routeFailureCount
     });
 
     logEvent("routeError", {
       type,
       payload,
-      error: String(err),
+      error: msg,
+      signature,
       ...ROUTER_CONTEXT
     });
-    if (String(err).includes("Cannot find module") || String(err).includes("already been declared")) {
-        return { error: "importConflict", details: String(err) };
+
+    // ------------------------------------------------------------------------
+    // ⭐ v7.1 — PageScanner-inspired classification
+    // ------------------------------------------------------------------------
+
+    // 1) Import / module conflict
+    if (msg.includes("Cannot find module") || msg.includes("already been declared")) {
+      routingInProgress = false;
+      return { error: "importConflict", details: msg, signature };
     }
 
-    if (String(err).includes("process is not defined")) {
+    // 2) Env mismatch
+    if (msg.includes("process is not defined")) {
       RouterMemory.push({
         eventType: "frontendEnvMismatch",
         repairHint: "Replace process.env.* with window.PULSE_*",
-        timestamp: Date.now()
+        timestamp: Date.now(),
+        signature
       });
+      routingInProgress = false;
+      return { error: "frontendEnvMismatch", details: msg, signature };
     }
 
-    // Retry only makes sense in online mode
+    // 3) Recursion / thrash detection (backend-level)
+    if (msg.includes("Maximum call stack size exceeded")) {
+      routingInProgress = false;
+      return { error: "routeRecursionLoop", details: msg, signature };
+    }
+
+    // ------------------------------------------------------------------------
+    // Retry logic (unchanged)
+    // ------------------------------------------------------------------------
     const offlineMode = window.PULSE_OFFLINE_MODE === true;
 
     if (!offlineMode && routeFailureCount === 1) {
@@ -279,12 +325,14 @@ export async function route(type, payload = {}) {
         const retryJson = await Transport.callEndpoint(type, payload);
 
         routeFailureCount = 0;
+        routingInProgress = false;
 
         logWisdom("ROUTE_RETRY_SUCCESS", { type });
         logEvent("routeRetrySuccess", {
           type,
           payload,
           retryJson,
+          signature,
           ...ROUTER_CONTEXT
         });
 
@@ -293,14 +341,17 @@ export async function route(type, payload = {}) {
       } catch (retryErr) {
         logWisdom("ROUTE_RETRY_FAIL", {
           type,
-          message: String(retryErr)
+          message: String(retryErr),
+          signature
         });
+
         await triggerRouteDownAlert(String(retryErr), type);
         routeFailureCount = 0;
       }
     }
 
-    return { error: "Frontend connector failed", details: String(err) };
+    routingInProgress = false;
+    return { error: "Frontend connector failed", details: msg, signature };
   }
 }
 
