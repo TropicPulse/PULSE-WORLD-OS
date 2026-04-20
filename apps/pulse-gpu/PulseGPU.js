@@ -12,10 +12,6 @@ import { PulseGPUOrchestrator } from "./PulseGPUOrchestrator.js";
 // --- HEALER -----------------------------------------------------------------
 import { PulseGPUHealer } from "./PulseGPUHealer.js";
 
-// Start PulseBand (nervous system)
-initPulseBand({
-  logger: { log, warn, error }
-});
 // ============================================================================
 //  GPU STATE — Barrel Only Tracks Brain + Controller
 // ============================================================================
