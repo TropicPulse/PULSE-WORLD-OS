@@ -11,37 +11,36 @@
 //  PulseOSHealer is the **INFLAMMATORY RESPONSE** of the OS.
 //  It is the **EARLY‑WARNING LAYER** — the system‑wide alarm + triage signal.
 //
-// SAFETY CONTRACT:
-//  ----------------
-//  • No eval().
-//  • No dynamic imports.
-//  • No arbitrary code execution.
-//  • No compute.
-//  • No GPU work.
-//  • No marketplace calls.
-//  • Deterministic, drift-proof healing only.
+// SAFETY CONTRACT (unchanged):
+//  ----------------------------
+//  • No eval()
+//  • No dynamic imports
+//  • No arbitrary code execution
+//  • No compute
+//  • No GPU work
+//  • No marketplace calls
+//  • Deterministic, drift-proof healing only
 //
 // ADVANTAGE CASCADE (v7.3):
 //  -------------------------
-//  • Dual-mode: mental + system.
-//  • Local-aware: node-level irritation context.
-//  • Internet-aware: cluster/mesh/global irritation context.
-//  • Advantage-cascade-aware: inherits ANY safe advantage.
-//  • Unified-advantage-field: ALL advantages ON unless unsafe.
-//  • Future-evolution-ready: new safe advantages auto-inherited.
+//  • Dual-mode: mental + system
+//  • Local-aware: node-level irritation context
+//  • Internet-aware: cluster/mesh/global irritation context
+//  • Advantage-cascade-aware: inherits ANY safe advantage
+//  • Unified-advantage-field: ALL advantages ON unless unsafe
+//  • Future-evolution-ready: new safe advantages auto-inherited
 // ============================================================================
 
 
 // ============================================================================
-//  HUMAN‑READABLE CONTEXT MAP (INFLAMMATORY RESPONSE)
+//  ORGAN IDENTITY — v7.x aligned
 // ============================================================================
 const HEALER_CONTEXT = {
-  label: "OS_HEALER_INFLAMMATORY_RESPONSE",
-  layer: "C‑Layer",
-  purpose: "Early‑Warning + Cross‑Subsystem Drift Detection + Healing Coordination",
-  context:
-    "Watches OSEvents + SubsystemHealerLogs and emits FUNCTION_LOG hints as inflammation markers",
+  organ: "PulseOSHealer",
+  layer: "C-Layer",
+  role: "Inflammatory Response",
   version: "7.3",
+  generation: "v7",
   evo: {
     dualMode: true,
     localAware: true,
@@ -72,15 +71,6 @@ import { recordDriftSignature } from "./PulseOSMemory.js";
 
 const db = getFirestore();
 
-// ============================================================================
-//  HEALER CONTEXT (missing in your snippet — required for writeOSHealerLog)
-// ============================================================================
-const HEALER_CONTEXT = {
-  organ: "PulseOSHealer",
-  version: "7.3",
-  layer: "C-Layer",
-  role: "Inflammatory Response"
-};
 
 // ============================================================================
 //  BOOT LOGS
@@ -95,6 +85,7 @@ log(
   "Scan intervals",
   { OS_EVENTS_SCAN_INTERVAL_MS, SUBSYSTEM_SCAN_INTERVAL_MS }
 );
+
 
 // ============================================================================
 //  writeOSHealerLog() — OSHealerLogs emitter (visible inflammation)
@@ -121,7 +112,6 @@ async function writeOSHealerLog(entry) {
     );
   }
 }
-
 
 
 // ============================================================================
@@ -215,9 +205,9 @@ async function scanSubsystemHealerLogs() {
   }
 
   for (const doc of snap.docs) {
-    const log = doc.data();
-    const subsystem = log.subsystem ?? "unknown";
-    const type = log.type ?? "unknown";
+    const logEntry = doc.data();
+    const subsystem = logEntry.subsystem ?? "unknown";
+    const type = logEntry.type ?? "unknown";
 
     log(
       `%c🟨 SUBSYSTEM DRIFT → ${subsystem} / ${type}`,
@@ -230,14 +220,16 @@ async function scanSubsystemHealerLogs() {
         source: "PulseBand",
         eventId: doc.id,
         type: "latency_bar_mismatch_seen",
-        latency: log.latency,
-        bars: log.bars
+        latency: logEntry.latency,
+        bars: logEntry.bars
       });
 
       await recordDriftSignature("PulseBand", {
         type: "latency_bar_mismatch",
         severity: "warning",
-        details: { latency: log.latency, bars: log.bars }
+        details: { latency: logEntry.latency, bars: logEntry.bars },
+        version: "7.3",
+        generation: "v7"
       });
 
       await emitFunctionLogHint({
@@ -256,14 +248,16 @@ async function scanSubsystemHealerLogs() {
         source: "PulseNet",
         eventId: doc.id,
         type: "unstable_signal_slope_seen",
-        slope: log.slope,
-        score: log.score
+        slope: logEntry.slope,
+        score: logEntry.score
       });
 
       await recordDriftSignature("PulseNet", {
         type: "unstable_signal_slope",
         severity: "warning",
-        details: { slope: log.slope, score: log.score }
+        details: { slope: logEntry.slope, score: logEntry.score },
+        version: "7.3",
+        generation: "v7"
       });
 
       await emitFunctionLogHint({
@@ -282,13 +276,15 @@ async function scanSubsystemHealerLogs() {
         source: "PulseClient",
         eventId: doc.id,
         type: "fallback_spike_seen",
-        count: log.count
+        count: logEntry.count
       });
 
       await recordDriftSignature("PulseClient", {
         type: "fallback_spike",
         severity: "warning",
-        details: { count: log.count }
+        details: { count: logEntry.count },
+        version: "7.3",
+        generation: "v7"
       });
 
       await emitFunctionLogHint({
@@ -307,14 +303,16 @@ async function scanSubsystemHealerLogs() {
         source: "Proxy",
         eventId: doc.id,
         type: "instance_out_of_bounds_seen",
-        userId: log.userId,
-        instances: log.instances
+        userId: logEntry.userId,
+        instances: logEntry.instances
       });
 
       await recordDriftSignature("Proxy", {
         type: "instance_out_of_bounds",
         severity: "critical",
-        details: { userId: log.userId, instances: log.instances }
+        details: { userId: logEntry.userId, instances: logEntry.instances },
+        version: "7.3",
+        generation: "v7"
       });
 
       await emitFunctionLogHint({

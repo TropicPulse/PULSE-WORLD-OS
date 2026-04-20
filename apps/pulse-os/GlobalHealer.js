@@ -1,12 +1,12 @@
 // ============================================================================
-//  GLOBAL HEALER v7.3
+//  GLOBAL HEALER — PULSE OS v7.3
 //  C‑LAYER (TOP‑LEVEL IMMUNE SYSTEM)
 //  Deterministic, Drift‑Aware, OS‑Level Healing Coordinator
 //  PURE HEALING. NO AI. NO COMPUTE. NO MARKETPLACE.
 // ============================================================================
 //
-// IDENTITY — THE GLOBAL HEALER:
-//  -----------------------------
+// IDENTITY — THE GLOBAL HEALER (v7.x aligned):
+//  -------------------------------------------
 //  • Top-level immune system of Tropic Pulse.
 //  • Watches all subsystem healers.
 //  • Cross‑OS drift detector.
@@ -15,15 +15,22 @@
 //  • GlobalHealerLogs emitter.
 //  • Commander of the OS healing layer.
 //
-// SAFETY CONTRACT:
-//  ----------------
-//  • No eval().
-//  • No dynamic imports.
-//  • No arbitrary code execution.
-//  • No compute.
-//  • No GPU work.
-//  • No marketplace calls.
-//  • Deterministic, drift-proof global healing only.
+// VERSION + GENERATION:
+//  ---------------------
+//  • version: "7.3"
+//  • generation: "v7"
+//  • organ: "GlobalHealer"
+//  • organism: PulseOS v7.x
+//
+// SAFETY CONTRACT (unchanged):
+//  ----------------------------
+//  • No eval()
+//  • No dynamic imports
+//  • No arbitrary code execution
+//  • No compute
+//  • No GPU work
+//  • No marketplace calls
+//  • Deterministic, drift-proof global healing only
 //
 // ADVANTAGE CASCADE (conceptual only):
 //  ------------------------------------
@@ -35,11 +42,14 @@
 //  • Future-evolution-ready: new safe advantages auto-inherited.
 // ============================================================================
 
+
 // ============================================================================
 //  MESH → GLOBAL HEALER ATTACHMENT
 //  (Called by RouterMemory / CheckRouterMemory / PathwayMemory)
 // ============================================================================
 export async function recordMeshDriftEvent(entry) {
+
+  // ⭐ Base identity + mesh metadata (v7.x aligned)
   const base = {
     source: "Mesh",
     subsystem: entry.subsystem ?? "Mesh",
@@ -48,17 +58,26 @@ export async function recordMeshDriftEvent(entry) {
     pathwayId: entry.pathwayId ?? null,
     severity: entry.severity ?? "info",
     driftType: entry.driftType ?? "unspecified",
-    note: entry.note ?? null
+    note: entry.note ?? null,
+
+    // ⭐ v7.x identity alignment
+    version: "7.3",
+    generation: "v7",
+    organ: "GlobalHealer"
   };
 
-  // 1) Global log
+  // --------------------------------------------------------------------------
+  // 1) GLOBAL HEALER LOG (unchanged behavior)
+  // --------------------------------------------------------------------------
   await writeGlobalHealerLog({
     type: "mesh_drift_detected",
     ...base,
     details: entry.details ?? null
   });
 
-  // 2) Drift signature (organism memory)
+  // --------------------------------------------------------------------------
+  // 2) DRIFT SIGNATURE (unchanged behavior)
+  // --------------------------------------------------------------------------
   await recordDriftSignature("Mesh", {
     type: entry.driftType ?? "mesh_drift",
     severity: entry.severity ?? "info",
@@ -67,10 +86,16 @@ export async function recordMeshDriftEvent(entry) {
       pathwayId: entry.pathwayId ?? null,
       meshNodeId: entry.meshNodeId ?? null,
       ...entry.details
-    }
+    },
+
+    // ⭐ v7.x identity alignment
+    version: "7.3",
+    generation: "v7"
   });
 
-  // 3) FUNCTION_LOG hint for local healers
+  // --------------------------------------------------------------------------
+  // 3) FUNCTION_LOG HINT (unchanged behavior)
+  // --------------------------------------------------------------------------
   await emitFunctionLogHint({
     hintCode: entry.hintCode ?? "MESH_DRIFT_DETECTED",
     subsystem: "Mesh",
@@ -78,6 +103,10 @@ export async function recordMeshDriftEvent(entry) {
     functionName: entry.functionName ?? "unknown",
     fieldName: entry.fieldName ?? "unknown",
     severity: entry.severity ?? "info",
-    note: entry.note ?? "Mesh drift detected; review mesh routing / memory alignment."
+    note: entry.note ?? "Mesh drift detected; review mesh routing / memory alignment.",
+
+    // ⭐ v7.x identity alignment
+    version: "7.3",
+    generation: "v7"
   });
 }

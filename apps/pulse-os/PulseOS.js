@@ -10,8 +10,11 @@ export const OS_EVENTS_COLLECTION = "OSEvents";
 export const OS_HEARTBEAT_INTERVAL_MS = 30_000;
 export const FUNCTION_LOG_SCAN_INTERVAL_MS = 60_000;
 
+// ⭐ Version + Generation + Organ Identity (v7.x aligned)
 export const PULSE_OS_ID = "PulseOS-v7.3";
 export const PULSE_OS_ROLE = "immune_command_organ";
+export const PULSE_OS_GENERATION = "v7";
+export const PULSE_OS_ORGAN = "Thymus";
 
 import { getFirestore, Timestamp } from "firebase-admin/firestore";
 import {
@@ -22,9 +25,12 @@ import {
 
 const db = getFirestore();
 
+// ⭐ Thymus identity block (aligned with v7.x organism)
 const THYMUS_CONTEXT = {
   osId: PULSE_OS_ID,
   role: PULSE_OS_ROLE,
+  organ: PULSE_OS_ORGAN,
+  generation: PULSE_OS_GENERATION,
   version: "7.3",
   evo: {
     dualMode: true,
@@ -86,6 +92,8 @@ async function updateOSHealth(extra = {}) {
     await saveSnapshot("OS", {
       heartbeatAt: now.toMillis(),
       role: PULSE_OS_ROLE,
+      generation: PULSE_OS_GENERATION,
+      organ: PULSE_OS_ORGAN,
       ...extra
     });
 
@@ -161,7 +169,9 @@ async function processFunctionLogs() {
           functionName: entry.functionName,
           fieldName: entry.fieldName,
           note: entry.note
-        }
+        },
+        version: "7.3",
+        generation: "v7"
       });
     }
 

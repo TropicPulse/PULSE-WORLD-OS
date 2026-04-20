@@ -1,11 +1,11 @@
 // ============================================================================
-// FILE: /apps/organs/loop/ACTNow.js
+// FILE: /apps/pulse-os/ACTNow.js
 // PULSE OS — v7.3
 // AUTO-REFRESH LOOP — “ACT NOW”
 // ============================================================================
 //
-// IDENTITY — THE HEARTBEAT:
-//  -------------------------
+// IDENTITY — THE HEARTBEAT (v7.x aligned):
+//  --------------------------------------
 //  • Provides a safe, timed refresh cycle for the organism.
 //  • Re-runs PulseImmunity at intervals.
 //  • Re-runs PulseSurgeonGeneral for healing.
@@ -18,7 +18,7 @@
 //  • Color: White/Silver (heartbeat, rhythm, non-interference).
 //  • Subtheme: Renewal, refresh, systemic coherence.
 //
-// SAFETY CONTRACT:
+// SAFETY CONTRACT (v7.x):
 //  • No payload access.
 //  • No routing override.
 //  • No autonomy, no sentience.
@@ -50,21 +50,23 @@ export const ACTNow = {
   meta: {
     layer: "ACTNow",
     role: "HEARTBEAT_LOOP",
-    version: 7.3,
+    version: "7.3",               // ⭐ Version aligned to organism
+    generation: "v7",             // ⭐ New: explicit organism generation
     target: "full-mesh",
     selfRepairable: true,
-    evo: {
-      dualMode: true,                 // mental + system
-      localAware: true,               // node-level cycle awareness
-      internetAware: true,            // cluster/mesh/global cycle awareness
 
-      advantageCascadeAware: true,    // inherits ANY advantage
-      pulseEfficiencyAware: true,     // 1-pulse collapse
+    evo: {
+      dualMode: true,
+      localAware: true,
+      internetAware: true,
+
+      advantageCascadeAware: true,
+      pulseEfficiencyAware: true,
       driftProof: true,
       multiInstanceReady: true,
 
-      unifiedAdvantageField: true,    // no OR; all advantages ON
-      futureEvolutionReady: true      // new safe advantages auto-inherited
+      unifiedAdvantageField: true,
+      futureEvolutionReady: true
     }
   },
 
