@@ -37,7 +37,7 @@
 //   • Explicit support for LOCAL-ONLY / OFFLINE nervous operation
 // ============================================================================
 
-import { PulseVersion, PulseRoles, makeTelemetryPacket, log, warn, error, logger } from "../PulseLogger.js";
+
 import { Impulse } from "./Impulse.js";
 
 // ============================================================================

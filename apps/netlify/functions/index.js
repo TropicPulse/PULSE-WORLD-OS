@@ -44,11 +44,10 @@
 //
 //  ↓↓↓  ALL LEGACY BACKEND FUNCTIONS LIVE BELOW THIS LINE  ↓↓↓
 // ============================================================================
-import { pulseband } from "./proxy/PulseBand.js";
+import { PulseVersion, PulseRoles, makeTelemetryPacket, log, warn, error, logger } from "../PulseLogger.js";
 import { identity, PulseLineage } from "./PulseIdentity.js";
 import { getAuth, getHook, getMap, callHelper, attachScanner } from "./lib/Connectors/PageScanner.js";
 // UI + presentation metadata comes from Logger
-import { PulseVersion, PulseRoles, makeTelemetryPacket, log, warn, error } from "./PulseLogger.js";
 import "./LayerScanner.js";
 
 

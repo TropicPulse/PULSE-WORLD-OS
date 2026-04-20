@@ -686,7 +686,7 @@ input[type="file"] {
 
 <!-- Backend Connector Layer -->
 <script type="module">
-import { pulseband } from "./proxy/PulseBand.js";
+import { PulseVersion, PulseRoles, makeTelemetryPacket, log, warn, error, logger } from "../PulseLogger.js";
 import { identity } from "./PulseIdentity.js";
 import { getAuth, getHook, getMap, callHelper, attachScanner } from "./lib/Connectors/PageScanner.js";
 
