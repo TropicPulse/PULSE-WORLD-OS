@@ -3,7 +3,69 @@
 //  Unified Logging • Subsystem Identity • Zero Drift
 //  Backward + Forward Compatible (OLD + NEW log calls)
 // ============================================================================
+// ============================================================================
+//  VERSION MAP — The Genome of PulseOS
+// ============================================================================
+export const PulseVersion = {
+  identity: "7.4",
+  brain: "7.4",
+  gpu: "7.4",
+  orchestrator: "7.4",
+  engine: "7.4",
+  optimizer: "7.4",
+  synapse: "7.4",
+  band: "7.4",
+  router: "7.4",
+  marketplaces: "7.4"
+};
 
+// ============================================================================
+//  ROLE MAP — The Organ Metaphors (Subsystem Identity)
+// ============================================================================
+export const PulseRoles = {
+  identity: "BLOOD–BRAIN BARRIER (BBB)",
+  brain: "ANALYST CORTEX",
+  gpu: "ASTRAL NERVOUS SYSTEM",
+  orchestrator: "BRAINSTEM",
+  engine: "MOTOR CORTEX",
+  optimizer: "GUARDIAN",
+  synapse: "ELECTRICAL JUNCTION",
+  band: "BODY INTERFACE",
+  router: "CONSULATE",
+  marketplaces: "EMBASSY LEDGER"
+};
+
+// ============================================================================
+//  COLOR MAP — Console Identity Palette
+// ============================================================================
+export const PulseColors = {
+  identity: "#4FC3F7",
+  brain: "#8B5CF6",
+  gpu: "#03A9F4",
+  orchestrator: "#4ADE80",
+  engine: "#F59E0B",
+  optimizer: "#03A9F4",
+  synapse: "#38BDF8",
+  band: "#E11D48",
+  router: "#0EA5E9",
+  marketplaces: "#14B8A6"
+};
+
+// ============================================================================
+//  LINEAGE MAP — Evolutionary Identity
+// ============================================================================
+export const PulseLineage = {
+  identity: "bbb-core",
+  brain: "analysis-core",
+  gpu: "astral-core",
+  orchestrator: "autonomic-core",
+  engine: "execution-core",
+  optimizer: "guardian-core",
+  synapse: "junction-core",
+  band: "interface-core",
+  router: "consulate-core",
+  marketplaces: "embassy-core"
+};
 // ============================================================================
 //  INTERNAL — Format a subsystem log prefix
 // ============================================================================
