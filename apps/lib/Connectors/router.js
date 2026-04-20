@@ -257,6 +257,9 @@ export async function route(type, payload = {}) {
       error: String(err),
       ...ROUTER_CONTEXT
     });
+    if (String(err).includes("Cannot find module") || String(err).includes("already been declared")) {
+        return { error: "importConflict", details: String(err) };
+    }
 
     if (String(err).includes("process is not defined")) {
       RouterMemory.push({
