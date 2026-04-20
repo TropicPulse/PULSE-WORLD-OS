@@ -11,6 +11,19 @@
 //   • Controls: GPU warmup, engine init, micro-window activity
 //   • Adapts: online/local connectivity modes
 //
+// CONTRACT (v7.1+):// ============================================================================
+// FILE: /apps/tropic-pulse/lib/Connectors/PulseBand.js
+// LAYER: NERVOUS SYSTEM (PULSEBAND v7.1+)
+// ============================================================================
+//
+// ROLE (v7.1+):
+//   THE NERVOUS SYSTEM — Sensorimotor Integration Layer
+//   • Senses: latency, network health, GPU readiness, pacing, stalls
+//   • Integrates: live + snapshot + GPU performance into a unified neural mirror
+//   • Fires: impulses + reflex events to the rest of the OS
+//   • Controls: GPU warmup, engine init, micro-window activity
+//   • Adapts: online/local connectivity modes
+//
 // CONTRACT (v7.1+):
 //   • No backend calls
 //   • No routing logic
@@ -43,8 +56,6 @@ const NERVOUS_LAYER_ID = "NERVOUS-SYSTEM";
 const NERVOUS_LAYER_NAME = "PULSEBAND";
 const NERVOUS_LAYER_ROLE = "Sensorimotor Integration Layer";
 
-
-
 const NERVOUS_DIAGNOSTICS_ENABLED =
   (typeof window !== "undefined" && window?.PULSE_NERVOUS_DIAGNOSTICS === true) ||
   (typeof window !== "undefined" && window?.PULSE_DIAGNOSTICS === true);
@@ -68,9 +79,8 @@ export function initPulseBand(options = {}) {
     logger = options.logger;
   }
 
-  nervousLog("NERVOUS_INIT", {});  // NOW SAFE
+  nervousLog("NERVOUS_INIT", {});
 }
-
 
 // ============================================================================
 // GLOBAL DEBUG HOOK (SAFE)
@@ -84,7 +94,6 @@ if (typeof window !== "undefined") {
     }
   };
 }
-
 
 // ------------------------------------------------------------
 // Utility helpers
@@ -128,11 +137,10 @@ export const pulseband = {
     globalEnabled: true
   },
 
-  // NEW v7.0: explicit connectivity + mode (online/local/auto)
   connectivity: {
-    mode: "auto",          // "auto" | "online" | "local"
-    online: true,          // last known online/offline flag
-    source: "unknown"      // "browser", "manual", "inferred"
+    mode: "auto",
+    online: true,
+    source: "unknown"
   },
 
   state: {
@@ -169,7 +177,6 @@ export const pulseband = {
       load: 0
     },
 
-    // Flat mirror — nervous system summary
     latency: 0,
     latencyClass: "Unknown",
     networkHealth: "Unknown",
@@ -187,11 +194,9 @@ export const pulseband = {
     advantage: 1.0,
     timeSaved: 0,
 
-    // NEW v7.0: connectivity mirror
-    connectivityMode: "auto", // mirrors connectivity.mode
-    online: true              // mirrors connectivity.online
+    connectivityMode: "auto",
+    online: true
   },
-
   // ------------------------------------------------------------
   // GPU Brain Init — Motor Cortex Warmup
   // ------------------------------------------------------------
@@ -215,7 +220,7 @@ export const pulseband = {
       if (typeof window !== "undefined" && window.PULSE_LOG) {
         window.PULSE_LOG("PulseBand → GPU Brain ready");
       }
-      log("[PulseBand] GPU Brain ready:", packages);
+      logger.log("[PulseBand] GPU Brain ready:", packages);
 
       this.gpu.packages = packages;
       this.gpu.ready = !!packages;
@@ -226,7 +231,7 @@ export const pulseband = {
       if (typeof window !== "undefined" && window.PULSE_LOG) {
         window.PULSE_LOG("PulseBand → GPU Brain FAILED");
       }
-      error("[PulseBand] GPU Brain failed:", err);
+      logger.error("[PulseBand] GPU Brain failed:", err);
       this.gpu.ready = false;
 
       nervousLog("GPU_INIT_FAILED", { error: String(err) });
@@ -343,7 +348,6 @@ export const pulseband = {
     lastPulseOk: false,
     lastError: null
   },
-
   onPulseSuccess(payload = {}) {
     this.pulseStatus.lastPulseTs = Date.now();
     this.pulseStatus.lastPulseOk = true;
@@ -381,7 +385,7 @@ export const pulseband = {
 
   async requestPulse(deviceId) {
     if (!window?.PulseNet?.pulseOnce) {
-      warn("[PulseBand] PulseNet not available");
+      logger.warn("[PulseBand] PulseNet not available");
       return { ok: false, reason: "no-pulsenet" };
     }
 
@@ -503,7 +507,8 @@ export const pulseband = {
       };
     }
 
-    // SNAPSHOT merge — short-term memory
+
+      // SNAPSHOT merge — short-term memory
     if (clean.snapshot) {
       if (typeof window !== "undefined" && window.PULSE_LOG) {
         window.PULSE_LOG("PulseBand → SNAPSHOT merge");
@@ -615,7 +620,7 @@ export const pulseband = {
 // ------------------------------------------------------------
 // GPU + Engine Warmup — Nervous System Boot on DOM Ready
 // ------------------------------------------------------------
-if (typeof document !== "undefined") {
+
   document.addEventListener("DOMContentLoaded", async () => {
     if (typeof window !== "undefined" && window.PULSE_LOG) {
       window.PULSE_LOG("PulseBand → DOM ready — warming up…");
@@ -642,4 +647,4 @@ if (typeof document !== "undefined") {
     }
     nervousLog("WARMUP_COMPLETE");
   });
-}
+
