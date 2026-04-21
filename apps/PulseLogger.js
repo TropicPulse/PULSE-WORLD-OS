@@ -184,3 +184,13 @@ export const logger = {
   groupEnd,
   makeTelemetryPacket
 };
+// ============================================================================
+//  GLOBAL BROADCAST — Makes primitives available to all subsystems
+// ============================================================================
+window.log = log;
+window.warn = warn;
+window.error = error;
+window.critical = critical;
+window.group = group;
+window.groupEnd = groupEnd;
+
