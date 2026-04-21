@@ -61,7 +61,7 @@ const diagnosticsEnabled = () =>
 const nervousLog = (stage, details = {}) => {
   if (!diagnosticsEnabled()) return;
 
-  logger.log(
+  log(
     JSON.stringify({
       pulseLayer: NERVOUS_LAYER_ID,
       pulseName: NERVOUS_LAYER_NAME,
@@ -83,9 +83,9 @@ nervousLog("NERVOUS_INIT", {});
 if (typeof window !== "undefined") {
   window.PULSE_LOG = function (...args) {
     try {
-      logger.log("[PULSE]", ...args);
+      log("[PULSE]", ...args);
     } catch (err) {
-      logger.error("PULSE_LOG failed:", err);
+      error("PULSE_LOG failed:", err);
     }
   };
 }
@@ -216,7 +216,7 @@ export const pulseband = {
       if (typeof window !== "undefined" && window.PULSE_LOG) {
         window.PULSE_LOG("PulseBand → GPU Brain ready");
       }
-      logger.log("[PulseBand] GPU Brain ready:", packages);
+      log("[PulseBand] GPU Brain ready:", packages);
 
       this.gpu.packages = packages;
       this.gpu.ready = !!packages;
@@ -227,7 +227,7 @@ export const pulseband = {
       if (typeof window !== "undefined" && window.PULSE_LOG) {
         window.PULSE_LOG("PulseBand → GPU Brain FAILED");
       }
-      logger.error("[PulseBand] GPU Brain failed:", err);
+      error("[PulseBand] GPU Brain failed:", err);
       this.gpu.ready = false;
 
       nervousLog("GPU_INIT_FAILED", { error: String(err) });
@@ -381,7 +381,7 @@ export const pulseband = {
 
   async requestPulse(deviceId) {
     if (!window?.PulseNet?.pulseOnce) {
-      logger.warn("[PulseBand] PulseNet not available");
+      warn("[PulseBand] PulseNet not available");
       return { ok: false, reason: "no-pulsenet" };
     }
 
