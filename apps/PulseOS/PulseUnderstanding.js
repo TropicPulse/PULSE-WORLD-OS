@@ -18,7 +18,7 @@
 
 // Band / Nervous System
 import { pulseband } from "./pulse-proxy/PulseProxyPNSNervousSystem.js";
-import { pulseband } from "./pulse-proxy/PulseOSCNSNervousSystem.js";
+import { pulseband } from "./pulse-os/PulseOSCNSNervousSystem.js";
 // GPU OS (astral nervous system)
 import * as PulseGPU from "./pulse-gpu/PulseGPUAstralNervousSystem.js";
 import * as PulseGPU from "./pulse-gpu/PulseGPUAstralMuscleSystem.js";
