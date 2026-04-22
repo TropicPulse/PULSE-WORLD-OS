@@ -192,7 +192,7 @@
 import { log, warn, error as logError } from "../pulse-proxy/PulseProxyVitalsLogger.js";
 
 // Kernel / BrainStem
-import { PulseKernel } from "./PulseOSBrainStem.js";
+import { PulseKernel } from "./PulseOSBoot.js";
 
 // Firebase (full access)
 import * as firebase from "../netlify/functions/firebase.js";
