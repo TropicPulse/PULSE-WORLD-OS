@@ -1,49 +1,17 @@
 // ============================================================================
 // FILE: /apps/PulseOS/Organs/Skin/PulseOSSkinReflex.js
-// PULSE OS — v10.1
+// PULSE OS — v10.2
 // “THE SKIN REFLEX / SURFACE EPITHELIAL MEMBRANE”
 // A1 BARRIER • PAGE-LEVEL REFLEX • ZERO TIMING • ZERO STATE
 // ============================================================================
 //
-// ORGAN IDENTITY (v10.1):
+// ORGAN IDENTITY (v10.2):
 //   • Organ Type: Skin / Surface Membrane / Reflex Layer
 //   • Layer: A1 (Page-Level Reflex)
 //   • Biological Analog: Skin + surface epithelial membrane + nociceptors
 //   • System Role: First-line error intake + classification at the page surface
 //
-// PURPOSE (v10.1):
-//   ✔ Intercept JS errors at the page/surface level
-//   ✔ Extract stack frames + route context
-//   ✔ Build dynamic route traces (living map, not config)
-//   ✔ Mark route degradation (degraded + healthScore + tier)
-//   ✔ Tag route DNA at the surface (A1_SURFACE)
-//   ✔ Trigger healing deterministically for missing-field patternsGot you—no moralizing, no second‑guessing. You’re designing an organism; I’m just helping you articulate it.
-
-// Here’s a **full v10.1 upgrade** of `PulseOSSkinReflex.js`, written exactly like your existing organ, but:
-
-// - version bumped to **v10.1**  
-// - adds **degradation tiers** (aligned with Router v10.1)  
-// - adds **route DNA tagging** at the surface (A1)  
-// - keeps **import behavior identical** (only `route` from CNS)  
-// - keeps **behavioral contract** the same: intercept → classify → mark degradation → log → heal (if missing field) → never block  
-
-// You can drop this in and run it **outside** this environment.
-
-// ```js
-// ============================================================================
-// FILE: /apps/PulseOS/Organs/Skin/PulseOSSkinReflex.js
-// PULSE OS — v10.1
-// “THE SKIN REFLEX / SURFACE EPITHELIAL MEMBRANE”
-// A1 BARRIER • PAGE-LEVEL REFLEX • ZERO TIMING • ZERO STATE
-// ============================================================================
-//
-// ORGAN IDENTITY (v10.1):
-//   • Organ Type: Skin / Surface Membrane / Reflex Layer
-//   • Layer: A1 (Page-Level Reflex)
-//   • Biological Analog: Skin + surface epithelial membrane
-//   • System Role: First-line error intake + classification at the page surface
-//
-// PURPOSE (v10.1):
+// PURPOSE (v10.2):
 //   ✔ Intercept JS errors at the page/surface level
 //   ✔ Extract stack frames + route context
 //   ✔ Build dynamic route traces (living map, not config)
@@ -52,13 +20,15 @@
 //   ✔ Trigger healing deterministically for missing-field patterns
 //   ✔ Always pipe errors to Router/backend for logging + lineage
 //   ✔ Never block the organism; always route forward
+//   ✔ ⭐ ALWAYS EMIT LOCAL DIAGNOSTICS (comments/logs) BEFORE ROUTING
 //
 // WHAT THIS ORGAN IS:
 //   ✔ The skin reflex of PulseOS
 //   ✔ The lowest / outermost membrane (A1 barrier)
 //   ✔ A universal error intake at the surface
 //   ✔ A living route sampler and classifier
-//   ✔ A degradation + DNA annotator for Router v10.1
+//   ✔ A degradation + DNA annotator for Router v10.x
+//   ✔ A local, non-routing diagnostic surface for humans
 //
 // WHAT THIS ORGAN IS NOT:
 //   ✘ NOT a router
@@ -67,7 +37,7 @@
 //   ✘ NOT a scheduler or timer
 //   ✘ NOT an IQ/import organ
 //
-// SAFETY CONTRACT (v10.1):
+// SAFETY CONTRACT (v10.2):
 //   • Never run timers, loops, or scheduling
 //   • Never hold long-lived state (only ephemeral route memory)
 //   • Never mutate payloads
@@ -75,6 +45,7 @@
 //   • Always forward healing triggers via Router
 //   • Never block CNS or Mesh; import errors are degradation, not fatal
 //   • Errors are signals, not fatal stops — reflex must always continue forward
+//   • ⭐ Local diagnostics must never depend on routing or backend
 // ============================================================================
 
 
@@ -107,7 +78,7 @@ function resolveOwnerModule(symbol) {
 const LAYER_ID   = "SKIN-REFLEX";
 const LAYER_NAME = "THE SKIN REFLEX";
 const LAYER_ROLE = "SURFACE ERROR GUARDIAN & HEALING TRIGGER";
-const LAYER_VER  = "10.1";
+const LAYER_VER  = "10.2";
 
 const PROTECTOR_DIAGNOSTICS_ENABLED =
   window.PULSE_PROTECTOR_DIAGNOSTICS === "true" ||
@@ -130,13 +101,13 @@ const logProtector = (stage, details = {}) => {
 
 
 // ============================================================================
-// PULSE OS v10.1 — SKIN REFLEX (A1 → A2 → Router → Backend)
+// PULSE OS v10.2 — SKIN REFLEX (A1 → A2 → Router → Backend)
 // ============================================================================
 import { route } from "./PulseOSCNSNervousSystem.js";
 
 
 // ============================================================================
-// ROUTE MEMORY — LIVING MAP, NOW WITH DEGRADATION + TIER + DNA TAG
+// ROUTE MEMORY — LIVING MAP, WITH DEGRADATION + TIER + DNA TAG
 // ============================================================================
 const RouteMemory = {
   store: {},
@@ -291,6 +262,31 @@ window.addEventListener(
 
     logProtector("ERROR_INTERCEPTED", { message: msg });
 
+    // ========================================================================
+    // A1 LOCAL DIAGNOSTICS — ALWAYS PRINT, NEVER ROUTE, NEVER FAIL
+    // ========================================================================
+    (function emitA1LocalDiagnostics() {
+      const top = rawFrames[0] || "unknown";
+      const file = top.split("/").pop().split(":")[0] || "unknown";
+      const line = top.split(":")[1] || "unknown";
+
+      console.groupCollapsed(
+        `%cA1 DIAGNOSTIC — ${msg}`,
+        "color:#FF7043; font-weight:bold;"
+      );
+
+      console.log("• message:", msg);
+      console.log("• file:", file);
+      console.log("• line:", line);
+      console.log("• top frame:", top);
+      console.log("• raw frames:", rawFrames);
+      console.log("• page:", window.location.pathname);
+      console.log("• layer:", "A1 (SkinReflex)");
+      console.log("• note:", "LOCAL ONLY — does NOT depend on routing or backend.");
+
+      console.groupEnd();
+    })();
+
     // ------------------------------------------------------------------------
     // ROUTE TRACE — LIVING, NOT HARD-CODED
     // ------------------------------------------------------------------------
@@ -383,7 +379,7 @@ window.addEventListener(
 
     // ------------------------------------------------------------------------
     // HEALING LOGIC (missing-field patterns only)
-    // ------------------------------------------------------------------------
+// ------------------------------------------------------------------------
     const parsed = parseMissingField(msg);
     if (!parsed) {
       logProtector("NO_MISSING_FIELD", {
@@ -474,5 +470,5 @@ function parseMissingField(message) {
 }
 
 // ============================================================================
-// END OF FILE — THE SKIN REFLEX / SURFACE EPITHELIAL MEMBRANE  [v10.1]
+// END OF FILE — THE SKIN REFLEX / SURFACE EPITHELIAL MEMBRANE  [v10.2]
 // ============================================================================
