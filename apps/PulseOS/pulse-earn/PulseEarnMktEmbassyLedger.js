@@ -30,11 +30,11 @@
 // ---------------------------------------------------------------------------
 // Imports — Marketplace Representatives (Organism‑Aligned)
 // ---------------------------------------------------------------------------
-import { PulseEarnMktAmbassador } from "./PulseEarnMktAmbassador.js";     // Akash — Ambassador
-import { PulseEarnMktBroker } from "./PulseEarnMktBroker.js";             // FluidStack — Broker
-import { RenderAdapter } from "./PulseEarnMktArtisan.js";                       // Render — Artisan
-import { SpheronAdapter } from "./PulseEarnMktCourier.js";                     // Spheron — Courier
-import { VastAdapter } from "./PulseEarnMktAuctioneer.js";                           // Vast — Auctioneer
+// import { PulseEarnMktAmbassador } from "./PulseEarnMktAmbassador.js";     // Akash — Ambassador
+import { PulseEarnMktBroker } from "./PulseEarnMktBroker.js";             // RUnUp — Broker
+import { PulseEarnMktForager } from "./PulseEarnMktForager.js";                       // Render — Artisan
+// import { SpheronAdapter } from "./PulseEarnMktCourier.js";                     // Spheron — Courier
+import { PulseEarnMktAuctioneer } from "./PulseEarnMktAuctioneer.js";                           // Vast — Auctioneer
 
 
 // ---------------------------------------------------------------------------

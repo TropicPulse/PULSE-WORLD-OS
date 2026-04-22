@@ -1,21 +1,21 @@
 // ============================================================================
-// FILE: tropic-pulse-functions/apps/pulse-earn/PulseEarnMktArtisan.js
-// LAYER: THE ARTISAN (GPU Rendering Specialist + Creative Compute Interpreter)
+// FILE: tropic-pulse-functions/apps/pulse-earn/PulseEarnMktForager.js
+// LAYER: THE FORAGER (General GPU Compute Harvester)
 // PULSE‑EARN v9.x — COMMENTAL / IDENTITY UPGRADE ONLY (NO LOGIC CHANGES)
 // ============================================================================
 //
 // ROLE:
-//   THE ARTISAN — Pulse‑Earn’s rendering‑focused marketplace agent.
-//   • Interfaces with the Render Network GPU marketplace
-//   • Fetches creative compute jobs (frames, scenes, assets)
-//   • Normalizes raw render tasks into Pulse‑Earn job schema
-//   • Submits completed render outputs
+//   THE FORAGER — Pulse‑Earn’s general‑purpose compute marketplace agent.
+//   • Interfaces with the Salad GPU compute marketplace
+//   • Fetches generic compute workloads (AI, ML, rendering, video tasks)
+//   • Normalizes raw Salad tasks into Pulse‑Earn job schema
+//   • Submits completed outputs
 //   • Maintains healing metadata for Earn healers
 //
 // PURPOSE:
-//   • Provide a deterministic, drift‑proof adapter for Render Network
+//   • Provide a deterministic, drift‑proof adapter for Salad workloads
 //   • Maintain strict protocol boundaries
-//   • Ensure safe, predictable rendering job communication
+//   • Ensure safe, predictable compute job communication
 //
 // CONTRACT:
 //   • PURE NETWORK ADAPTER — no AI layers, no translation, no memory model
@@ -26,11 +26,12 @@
 //
 // SAFETY:
 //   • v9.x upgrade is COMMENTAL / IDENTITY ONLY — NO LOGIC CHANGES
-//   • All behavior remains identical to pre‑v9.x RenderAdapter
+//   • All behavior remains identical to pre‑v9.x adapter patterns
 // ============================================================================
 
+
 // ---------------------------------------------------------------------------
-// Healing Metadata — Artisan Interaction Log
+// Healing Metadata — Forager Interaction Log
 // ---------------------------------------------------------------------------
 const healingState = {
   lastPingMs: null,
@@ -42,10 +43,9 @@ const healingState = {
   lastNormalizedJobId: null,
   lastNormalizationError: null,
 
-  // Render-specific metadata (allowed)
+  // Salad-specific metadata (allowed)
   lastPayloadVersion: null,
   lastJobType: null,
-  lastAssetSizeMB: null,
   lastGpuTier: null,
   lastResourceShape: null,
   payoutVolatility: 0,
@@ -53,8 +53,9 @@ const healingState = {
   cycleCount: 0,
 };
 
+
 // ---------------------------------------------------------------------------
-// INTERNAL — Render-Specific Helpers
+// INTERNAL — Safe Getter
 // ---------------------------------------------------------------------------
 function safeGet(obj, path, fallback = null) {
   try {
@@ -84,18 +85,19 @@ function updateVolatility(jobs) {
   }
 }
 
+
 // ---------------------------------------------------------------------------
-// ARTISAN CLIENT — Render Network Interface
+// FORAGER CLIENT — Salad Marketplace Interface
 // ---------------------------------------------------------------------------
-export const PulseEarnMktArtisan = {
-  id: "render",
-  name: "Render Network",
+export const PulseEarnMktForager = {
+  id: "salad",
+  name: "Salad Marketplace",
 
   // -------------------------------------------------------------------------
-  // Ping — Measure creative marketplace latency
+  // Ping — Measure marketplace latency
   // -------------------------------------------------------------------------
   async ping() {
-    const url = "https://api.rendernetwork.com/ping";
+    const url = "https://api.salad.com/ping"; // placeholder
     const start = Date.now();
 
     try {
@@ -117,10 +119,10 @@ export const PulseEarnMktArtisan = {
   },
 
   // -------------------------------------------------------------------------
-  // Fetch Jobs — Retrieve creative GPU tasks
+  // Fetch Jobs — Retrieve Salad compute tasks
   // -------------------------------------------------------------------------
   async fetchJobs(deviceId) {
-    const url = "https://api.rendernetwork.com/jobs";
+    const url = "https://api.salad.com/jobs"; // placeholder
 
     try {
       const res = await fetch(url);
@@ -132,7 +134,6 @@ export const PulseEarnMktArtisan = {
 
       const data = await res.json();
 
-      // Track schema drift
       healingState.lastPayloadVersion =
         typeof data === "object" ? Object.keys(data).join(",") : "unknown";
 
@@ -153,8 +154,6 @@ export const PulseEarnMktArtisan = {
       healingState.cycleCount++;
       return jobs;
     } catch (err) {
-      // eslint-disable-next-line no-console
-      error("PulseEarnMktArtisan.fetchJobs() error:", err);
       healingState.lastFetchError = err.message;
       healingState.lastFetchCount = 0;
       return [];
@@ -162,10 +161,10 @@ export const PulseEarnMktArtisan = {
   },
 
   // -------------------------------------------------------------------------
-  // Submit Result — Return completed render outputs
+  // Submit Result — Return completed outputs
   // -------------------------------------------------------------------------
   async submitResult(job, result) {
-    const url = `https://api.rendernetwork.com/jobs/${job.id}/submit`;
+    const url = `https://api.salad.com/jobs/${job.id}/submit`; // placeholder
     healingState.lastSubmitJobId = job?.id ?? null;
 
     try {
@@ -180,15 +179,13 @@ export const PulseEarnMktArtisan = {
       healingState.cycleCount++;
       return json;
     } catch (err) {
-      // eslint-disable-next-line no-console
-      error("PulseEarnMktArtisan.submitResult() error:", err);
       healingState.lastSubmitError = err.message;
       throw err;
     }
   },
 
   // -------------------------------------------------------------------------
-  // Normalize Job — Convert Render job → Pulse‑Earn job schema
+  // Normalize Job — Convert Salad job → Pulse‑Earn job schema
   // -------------------------------------------------------------------------
   normalizeJob(raw) {
     try {
@@ -201,7 +198,6 @@ export const PulseEarnMktArtisan = {
         return null;
       }
 
-      // Track job type (Render often includes this)
       healingState.lastJobType = safeGet(raw, "type", "unknown");
 
       const payout = Number(raw.reward ?? raw.payout ?? 0);
@@ -212,7 +208,7 @@ export const PulseEarnMktArtisan = {
 
       const cpuRequired = Number(raw.cpu ?? 2);
       const memoryRequired = Number(raw.memory ?? 2048);
-      const estimatedSeconds = Number(raw.estimatedSeconds ?? 900);
+      const estimatedSeconds = Number(raw.estimatedSeconds ?? 600);
 
       healingState.lastResourceShape = {
         cpu: cpuRequired,
@@ -225,9 +221,7 @@ export const PulseEarnMktArtisan = {
         return null;
       }
 
-      // GPU tier inference
-      const gpuRequired = !!raw.gpuRequired || !!raw.gpuTier;
-      const gpuTier = raw.gpuTier ?? (gpuRequired ? "mid" : "none");
+      const gpuTier = raw.gpuTier ?? "mid";
       healingState.lastGpuTier = gpuTier;
 
       const minGpuScore =
@@ -239,16 +233,11 @@ export const PulseEarnMktArtisan = {
           ? 250
           : 150;
 
-      // Asset size → bandwidth inference
-      const assetSizeMB = Number(raw.assetSizeMB ?? raw.sceneSizeMB ?? 0);
-      healingState.lastAssetSizeMB = assetSizeMB;
-
-      const bandwidthNeededMbps =
-        assetSizeMB > 0 ? Math.max(10, assetSizeMB / 10) : 10;
+      const bandwidthNeededMbps = Number(raw.bandwidth ?? 10);
 
       const normalized = {
         id: String(raw.id),
-        marketplaceId: "render",
+        marketplaceId: "salad",
 
         payout,
         cpuRequired,
@@ -269,9 +258,10 @@ export const PulseEarnMktArtisan = {
   },
 };
 
+
 // ---------------------------------------------------------------------------
-// Healing State Export — Artisan Interaction Log
+// Healing State Export — Forager Interaction Log
 // ---------------------------------------------------------------------------
-export function getPulseEarnMktArtisanHealingState() {
+export function getPulseEarnMktForagerHealingState() {
   return { ...healingState };
 }

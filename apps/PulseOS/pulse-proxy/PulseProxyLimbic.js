@@ -94,8 +94,8 @@ logShadow("SHADOW_INIT");
 //  NO LOGIC. NO STATE. NO SIDE‑EFFECTS.
 // ============================================================================
 export { PulseNet }    from "./PulseProxySynapse.js";        // Synapse Layer
-export { PulseClient } from "./PulseClient.js";              // Circulatory System
-export { PulseUpdate } from "./PulseCirculationMonitor.js";  // Hemodynamic Monitor
+export { PulseClient } from "./PulseProxyCirculatorySystem.js";              // Circulatory System
+export { PulseUpdate } from "./PulseProxyVitalsMonitor.js";  // Hemodynamic Monitor
 
 
 // ============================================================================
