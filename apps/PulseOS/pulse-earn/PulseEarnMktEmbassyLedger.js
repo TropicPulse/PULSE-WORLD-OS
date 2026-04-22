@@ -8,7 +8,7 @@
 // ROLE (v9.x):
 //   THE EMBASSY LEDGER — The official registry of all Pulse‑Earn marketplace
 //   representatives. Maintains a deterministic roster of foreign marketplace
-//   agents (Ambassador, Broker, Artisan, Courier, Auctioneer).
+//   agents (Broker, Forager, Auctioneer).
 //
 // PURPOSE (v9.x):
 //   • Provide Earn Engine with a clean, stable list of marketplace receptors
@@ -30,11 +30,11 @@
 // ---------------------------------------------------------------------------
 // Imports — Marketplace Representatives (Organism‑Aligned)
 // ---------------------------------------------------------------------------
-// import { PulseEarnMktAmbassador } from "./PulseEarnMktAmbassador.js";     // Akash — Ambassador
-import { PulseEarnMktBroker } from "./PulseEarnMktBroker.js";             // RUnUp — Broker
-import { PulseEarnMktForager } from "./PulseEarnMktForager.js";                       // Render — Artisan
-// import { SpheronAdapter } from "./PulseEarnMktCourier.js";                     // Spheron — Courier
-import { PulseEarnMktAuctioneer } from "./PulseEarnMktAuctioneer.js";                           // Vast — Auctioneer
+// import { PulseEarnMktAmbassador } from "./PulseEarnMktAmbassador.js"; // Akash — Ambassador (removed)
+import { RunPodAdapter } from "./PulseEarnMktBroker.js";           // RunUp — Broker
+import { PulseEarnMktForager } from "./PulseEarnMktForager.js";         // Salad — Forager
+// import { SpheronAdapter } from "./PulseEarnMktCourier.js";            // Spheron — Courier (removed)
+import { PulseEarnMktAuctioneer } from "./PulseEarnMktAuctioneer.js";   // Vast — Auctioneer
 
 
 // ---------------------------------------------------------------------------
@@ -76,24 +76,20 @@ function validateAdapter(name, adapter) {
 
 
 // ---------------------------------------------------------------------------
-// Validate All Marketplace Representatives
+// Validate All Marketplace Representatives (v9.x‑correct)
 // ---------------------------------------------------------------------------
-validateAdapter("VastAdapter", VastAdapter);
-validateAdapter("PulseEarnMktAmbassador", PulseEarnMktAmbassador);
-validateAdapter("RenderAdapter", RenderAdapter);
-validateAdapter("SpheronAdapter", SpheronAdapter);
-validateAdapter("PulseEarnMktBroker", PulseEarnMktBroker);
+validateAdapter("PulseEarnMktAuctioneer", PulseEarnMktAuctioneer); // Vast
+validateAdapter("PulseEarnMktBroker",     RunPodAdapter);     // RunUp
+validateAdapter("PulseEarnMktForager",    PulseEarnMktForager);    // Salad
 
 
 // ---------------------------------------------------------------------------
-// Deterministic Marketplace Roster
+// Deterministic Marketplace Roster (v9.x‑correct)
 // ---------------------------------------------------------------------------
 const marketplaces = [
-  VastAdapter,               // Auctioneer
-  PulseEarnMktAmbassador,    // Ambassador (Akash)
-  RenderAdapter,             // Artisan (Render)
-  SpheronAdapter,            // Courier (Spheron)
-  PulseEarnMktBroker,        // Broker (FluidStack)
+  PulseEarnMktAuctioneer,   // Vast — Auctioneer
+  RunPodAdapter,       // RunUp — Broker
+  PulseEarnMktForager,      // Salad — Forager
 ];
 
 
@@ -109,6 +105,6 @@ function getPulseEarnMktEmbassyHealingState() {
 // Exported API — EMBASSY LEDGER (Diplomatic Roster)
 // ============================================================================
 export const PulseEarnMktEmbassyLedger = {
-  marketplaces,                     // Deterministic roster
+  marketplaces,
   getHealingState: getPulseEarnMktEmbassyHealingState
 };
