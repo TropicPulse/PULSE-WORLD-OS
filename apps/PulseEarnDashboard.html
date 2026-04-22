@@ -686,9 +686,7 @@ input[type="file"] {
 
 <!-- Backend Connector Layer -->
 <script type="module">
-import { PulseVersion, PulseRoles, makeTelemetryPacket, log, warn, error, logger } from "../PulseLogger.js";
-import { identity } from "./PulseIdentity.js";
-import { getAuth, getHook, getMap, callHelper, attachScanner } from "./lib/Connectors/PageScanner.js";
+import "/PulseUnderstanding.js";
 
 // THE REAL IMPORT YOU WANT — ALL METRICS COME FROM HERE
 const metrics = await callHelper("earn:getSnapshot");

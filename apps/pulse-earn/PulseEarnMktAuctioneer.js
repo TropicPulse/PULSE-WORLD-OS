@@ -132,9 +132,10 @@ export const PulseEarnMktAuctioneer = {
       healingState.cycleCount++;
       return latency;
     } catch (err) {
-      healingState.lastPingError = err.message;
+      healingState.lastPingError = err?.message || String(err);
       return null;
     }
+
   },
 
   // -------------------------------------------------------------------------
@@ -171,10 +172,11 @@ export const PulseEarnMktAuctioneer = {
       healingState.cycleCount++;
       return jobs;
     } catch (err) {
-      healingState.lastFetchError = err.message;
+      healingState.lastFetchError = err?.message || String(err);
       healingState.lastFetchCount = 0;
       return [];
     }
+
   },
 
   // -------------------------------------------------------------------------
