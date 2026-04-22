@@ -55,7 +55,7 @@ export const PulseRole = {
 // ============================================================================
 //  1) ORIGIN — Logger (side-effect import ONLY)
 // ============================================================================
-import "../pulse-proxy/PulseProxyVitalsLogger.js";
+import "../pulse-proxy/PulseProxyVitalsMonitor.js";
 
 
 // ============================================================================
