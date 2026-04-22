@@ -81,7 +81,7 @@ const PulseIdentity = {
 
 // Vitals
 import { VitalsMonitor } from "./pulse-proxy/PulseProxyVitalsMonitor.js";
-import { VitalsLogger } from "./pulse-proxy/PulseProxyVitalsLogger.js";
+import { log, warn, error, critical, logger, VitalsLogger } from "./pulse-proxy/PulseProxyVitalsLogger.js";
 // Band / Nervous System
 import { pulseband } from "./pulse-proxy/PulseProxyPNSNervousSystem.js";
 
