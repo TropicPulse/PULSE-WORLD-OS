@@ -1,267 +1,277 @@
 // ============================================================================
-// FILE: tropic-pulse-functions/apps/pulse-earn/PulseEarnMktBroker.js
-// LAYER: THE BROKER
-// (Opportunistic Job Trader + Elastic Flow Agent)
-// PULSE EARN — v9.2
+//  RunPodAdapter.js — v9.3
+//  PulseOS Marketplace Organ • RunPod Bare-Metal / GPU Jobs
 // ============================================================================
 //
-// ROLE (v9.2):
-//   THE BROKER — Pulse‑Earn’s fast‑flow, opportunistic marketplace agent.
-//   • Interfaces with the FluidStack compute marketplace
-//   • Fetches high‑volume, fluid jobs
-//   • Normalizes raw offers into Pulse‑Earn job schema
-//   • Submits completed results
-//   • Maintains healing metadata for Earn healers
+//  WHAT THIS ORGAN IS:
+//  --------------------
+//  • Marketplace adapter for RunPod.
+//  • Knows how to:
+//      - register device (logical identity)
+//      - request jobs
+//      - submit job results
+//      - normalize RunPod jobs into Pulse-native shape
+//  • Deterministic, importless, marketplace-only.
 //
-// PURPOSE (v9.2):
-//   • Provide a deterministic, drift‑proof adapter for FluidStack
-//   • Maintain strict protocol boundaries
-//   • Ensure safe, predictable marketplace communication
+//  WHAT THIS ORGAN IS NOT:
+//  ------------------------
+//  • Not EarnEngine.
+//  • Not a router.
+//  • Not a mesh layer.
+//  • Not a GPU driver.
+//  • Not OS / business logic.
+//  • Not a scaling brain.
 //
-// CONTRACT (unchanged):
-//   • PURE NETWORK ADAPTER — no AI layers, no translation, no memory model
-//   • READ‑ONLY except for healing metadata
-//   • NO eval(), NO Function(), NO dynamic imports
-//   • NO executing user code
-//   • Deterministic normalization only
-//
-// SAFETY (unchanged):
-//   • v9.2 upgrade is COMMENTAL / IDENTITY ONLY — NO LOGIC CHANGES
+//  SAFETY CONTRACT (v9.3):
+//  ------------------------
+//  • No imports.
+//  • No randomness.
+//  • No timestamps for logic decisions.
+//  • No external mutation beyond RunPod HTTP calls.
+//  • Pure, deterministic marketplace organ.
 // ============================================================================
 
+// ⭐ PulseRole — identifies this as the RunPod v9.3 Marketplace Organ
+export const PulseRole = {
+  type: "MarketplaceAdapter",
+  subsystem: "Marketplace",
+  layer: "RunPod",
+  version: "9.3",
+  identity: "RunPodAdapter-v9.3",
 
-// ---------------------------------------------------------------------------
-// Healing Metadata — Broker Interaction Log
-// ---------------------------------------------------------------------------
-const brokerHealing = {
-  lastPingMs: null,
-  lastPingError: null,
-  lastFetchCount: 0,
-  lastFetchError: null,
-  lastSubmitJobId: null,
-  lastSubmitError: null,
-  lastNormalizedJobId: null,
-  lastNormalizationError: null,
+  evo: {
+    driftProof: true,
+    marketplaceAware: true,
+    gpuAware: true,
+    earnEngineReady: true,
+    routerAwareReady: true,
+    futureEvolutionReady: true,
+    unifiedAdvantageField: true
+  },
 
-  // FluidStack-specific metadata (allowed)
-  lastPayloadVersion: null,
-  lastJobType: null,
-  lastResourceShape: null,
-  lastGpuRequirement: null,
-  lastBandwidthInference: null,
-  liquidityScore: 0,
-  payoutVolatility: 0,
-  cycleCount: 0,
+  marketplace: "RunPod",
+  contract: "RunPod-v1",
+  earnCompatibility: "PulseEarn-v9",
+  pulseContract: "Pulse-v2.1"
 };
 
+// ============================================================================
+//  CONFIG — You wire these via env / secrets
+// ============================================================================
 
-// ---------------------------------------------------------------------------
-// INTERNAL — FluidStack-Specific Helpers
-// ---------------------------------------------------------------------------
-function safeGet(obj, path, fallback = null) {
+const RUNPOD_API_KEY =
+  process.env.RUNPOD_API_KEY || "<PUT_YOUR_RUNPOD_API_KEY_HERE>";
+
+const RUNPOD_BASE_URL = "https://api.runpod.io";
+
+// Typical v2 endpoints (adjust if your account uses different paths)
+const RUNPOD_REGISTER_URL = `${RUNPOD_BASE_URL}/provider/register`;
+const RUNPOD_REQUEST_JOB_URL = `${RUNPOD_BASE_URL}/provider/job/next`;
+const RUNPOD_SUBMIT_JOB_URL = `${RUNPOD_BASE_URL}/provider/job/submit`;
+
+// Safe logger hooks (injected by outer layer)
+const _log = global?.log || console.log;
+const _error = global?.error || console.error;
+
+// ============================================================================
+//  INTERNAL — HTTP helper (deterministic, no retries, no randomness)
+// ============================================================================
+async function runpodRequest(path, body) {
+  const url = path;
+  const headers = {
+    "Content-Type": "application/json",
+    "Authorization": `Bearer ${RUNPOD_API_KEY}`
+  };
+
+  const res = await fetch(url, {
+    method: "POST",
+    headers,
+    body: JSON.stringify(body || {})
+  });
+
+  if (!res.ok) {
+    const text = await res.text().catch(() => "");
+    throw new Error(`RunPod HTTP ${res.status}: ${text}`);
+  }
+
+  return res.json().catch(() => ({}));
+}
+
+// ============================================================================
+//  normalizeJob() — Convert RunPod job → Pulse-native job shape
+// ============================================================================
+export function normalizeJob(runpodJob) {
+  if (!runpodJob) return null;
+
+  const jobId = runpodJob.id || runpodJob.jobId || null;
+  const payload = runpodJob.input || runpodJob.payload || {};
+  const priority = runpodJob.priority || "normal";
+
+  return {
+    marketplace: "RunPod",
+    jobId,
+    payload,
+    priority,
+    raw: runpodJob
+  };
+}
+
+// ============================================================================
+//  registerDevice() — Logical provider registration
+//  NOTE: Some providers don't require explicit registration; this is a
+//        deterministic wrapper so EarnEngine can treat all marketplaces the same.
+// ============================================================================
+export async function registerDevice({ deviceId, gpuInfo = {}, meta = {} } = {}) {
+  _log("marketplace", "runpod_register_start", {
+    marketplace: "RunPod",
+    deviceId: deviceId || null
+  });
+
+  // If RunPod doesn't require explicit registration, this can be a no-op
+  // or a simple "ping" to validate the API key.
+  const body = {
+    deviceId: deviceId || null,
+    gpu: gpuInfo,
+    meta
+  };
+
   try {
-    return path
-      .split(".")
-      .reduce((o, k) => (o && o[k] !== undefined ? o[k] : null), obj) ?? fallback;
-  } catch {
-    return fallback;
+    const result = await runpodRequest(RUNPOD_REGISTER_URL, body);
+
+    _log("marketplace", "runpod_register_success", {
+      marketplace: "RunPod",
+      deviceId: deviceId || null
+    });
+
+    return {
+      ok: true,
+      result
+    };
+  } catch (err) {
+    _error("marketplace", "runpod_register_failed", {
+      marketplace: "RunPod",
+      deviceId: deviceId || null,
+      error: String(err)
+    });
+
+    return {
+      ok: false,
+      error: String(err)
+    };
   }
 }
 
-function updateVolatility(jobs) {
-  const count = jobs.length;
-  const payouts = jobs
-    .map(j => Number(j.payout ?? 0))
-    .filter(n => Number.isFinite(n));
+// ============================================================================
+//  requestJob() — Ask RunPod for the next job
+// ============================================================================
+export async function requestJob({ deviceId, filters = {} } = {}) {
+  _log("marketplace", "runpod_request_job_start", {
+    marketplace: "RunPod",
+    deviceId: deviceId || null
+  });
 
-  brokerHealing.liquidityScore = Math.abs(count - (brokerHealing.lastFetchCount || 0));
+  const body = {
+    deviceId: deviceId || null,
+    filters
+  };
 
-  if (payouts.length > 1) {
-    const avg = payouts.reduce((a, b) => a + b, 0) / payouts.length;
-    const variance =
-      payouts.reduce((a, b) => a + Math.pow(b - avg, 2), 0) / payouts.length;
-    brokerHealing.payoutVolatility = variance;
-  }
-}
+  try {
+    const result = await runpodRequest(RUNPOD_REQUEST_JOB_URL, body);
 
+    const job = result.job || result || null;
+    const normalized = normalizeJob(job);
 
-// ---------------------------------------------------------------------------
-// BROKER CLIENT — FluidStack Marketplace Interface
-// ---------------------------------------------------------------------------
-export const PulseEarnMktBroker = {
-  id: "fluidstack",
-  name: "FluidStack",
-
-  // -------------------------------------------------------------------------
-  // Ping — Market Channel Latency
-  // -------------------------------------------------------------------------
-  async ping() {
-    const url = "https://api.fluidstack.io/ping";
-    const start = Date.now();
-
-    try {
-      const res = await fetch(url);
-      if (!res.ok) {
-        brokerHealing.lastPingError = `non_ok_status_${res.status}`;
-        return null;
-      }
-
-      const latency = Date.now() - start;
-      brokerHealing.lastPingMs = latency;
-      brokerHealing.lastPingError = null;
-      brokerHealing.cycleCount++;
-      return latency;
-
-    } catch (err) {
-      brokerHealing.lastPingError = err.message;
-      return null;
-    }
-  },
-
-  // -------------------------------------------------------------------------
-  // Fetch Jobs — Retrieve fluid job offers
-  // -------------------------------------------------------------------------
-  async fetchJobs(deviceId) {
-    const url = "https://api.fluidstack.io/jobs";
-
-    try {
-      const res = await fetch(url);
-      if (!res.ok) {
-        brokerHealing.lastFetchError = `non_ok_status_${res.status}`;
-        brokerHealing.lastFetchCount = 0;
-        return [];
-      }
-
-      const data = await res.json();
-
-      brokerHealing.lastPayloadVersion =
-        typeof data === "object" ? Object.keys(data).join(",") : "unknown";
-
-      if (!data || !Array.isArray(data.jobs)) {
-        brokerHealing.lastFetchError = "invalid_jobs_payload";
-        brokerHealing.lastFetchCount = 0;
-        return [];
-      }
-
-      const jobs = data.jobs
-        .map(raw => this.normalizeJob(raw))
-        .filter(j => j !== null);
-
-      updateVolatility(jobs);
-
-      brokerHealing.lastFetchError = null;
-      brokerHealing.lastFetchCount = jobs.length;
-      brokerHealing.cycleCount++;
-      return jobs;
-
-    } catch (err) {
-      brokerHealing.lastFetchError = err.message;
-      brokerHealing.lastFetchCount = 0;
-      return [];
-    }
-  },
-
-  // -------------------------------------------------------------------------
-  // Submit Result — Certified Marketplace Dispatch
-  // -------------------------------------------------------------------------
-  async submitResult(job, result) {
-    const url = `https://api.fluidstack.io/jobs/${job.id}/submit`;
-    brokerHealing.lastSubmitJobId = job?.id ?? null;
-
-    try {
-      const res = await fetch(url, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ result }),
+    if (!normalized) {
+      _log("marketplace", "runpod_request_job_empty", {
+        marketplace: "RunPod",
+        deviceId: deviceId || null
       });
 
-      const json = await res.json();
-      brokerHealing.lastSubmitError = null;
-      brokerHealing.cycleCount++;
-      return json;
-
-    } catch (err) {
-      brokerHealing.lastSubmitError = err.message;
-      throw err;
-    }
-  },
-
-  // -------------------------------------------------------------------------
-  // Normalize Job — Convert FluidStack job → Pulse‑Earn job schema
-  // -------------------------------------------------------------------------
-  normalizeJob(raw) {
-    try {
-      if (!raw || typeof raw !== "object") {
-        brokerHealing.lastNormalizationError = "invalid_raw_job";
-        return null;
-      }
-      if (!raw.id) {
-        brokerHealing.lastNormalizationError = "missing_id";
-        return null;
-      }
-
-      brokerHealing.lastJobType = safeGet(raw, "type", "unknown");
-
-      const payout = Number(raw.payout ?? raw.price ?? 0);
-      if (!Number.isFinite(payout) || payout <= 0) {
-        brokerHealing.lastNormalizationError = "non_positive_payout";
-        return null;
-      }
-
-      const cpuRequired = Number(raw.cpu ?? raw.vcpu ?? 2);
-      const memoryRequired = Number(raw.memory ?? raw.ram ?? 2048);
-      const estimatedSeconds = Number(raw.estimatedSeconds ?? raw.duration ?? 1200);
-
-      brokerHealing.lastResourceShape = {
-        cpu: cpuRequired,
-        mem: memoryRequired,
-        duration: estimatedSeconds
+      return {
+        ok: true,
+        job: null
       };
-
-      if (!Number.isFinite(estimatedSeconds) || estimatedSeconds <= 0) {
-        brokerHealing.lastNormalizationError = "non_positive_duration";
-        return null;
-      }
-
-      const gpuRequired = !!raw.gpuRequired || !!raw.gpu;
-      brokerHealing.lastGpuRequirement = gpuRequired ? "gpu" : "cpu";
-
-      const minGpuScore = gpuRequired ? 500 : 150;
-
-      const dataSizeMB = Number(raw.dataSizeMB ?? 0);
-      const bandwidthNeededMbps =
-        dataSizeMB > 0 ? Math.max(5, dataSizeMB / 20) : 5;
-
-      brokerHealing.lastBandwidthInference = bandwidthNeededMbps;
-
-      const normalized = {
-        id: String(raw.id),
-        marketplaceId: "fluidstack",
-
-        payout,
-        cpuRequired,
-        memoryRequired,
-        estimatedSeconds,
-
-        minGpuScore,
-        bandwidthNeededMbps,
-      };
-
-      brokerHealing.lastNormalizedJobId = normalized.id;
-      brokerHealing.lastNormalizationError = null;
-      return normalized;
-
-    } catch (err) {
-      brokerHealing.lastNormalizationError = err.message;
-      return null;
     }
-  },
-};
 
+    _log("marketplace", "runpod_request_job_success", {
+      marketplace: "RunPod",
+      deviceId: deviceId || null,
+      jobId: normalized.jobId
+    });
 
-// ---------------------------------------------------------------------------
-// Healing State Export — Broker Interaction Log
-// ---------------------------------------------------------------------------
-export function getPulseEarnMktBrokerHealingState() {
-  return { ...brokerHealing };
+    return {
+      ok: true,
+      job: normalized
+    };
+  } catch (err) {
+    _error("marketplace", "runpod_request_job_failed", {
+      marketplace: "RunPod",
+      deviceId: deviceId || null,
+      error: String(err)
+    });
+
+    return {
+      ok: false,
+      error: String(err),
+      job: null
+    };
+  }
 }
+
+// ============================================================================
+//  submitJob() — Submit job result back to RunPod
+// ============================================================================
+export async function submitJob({ jobId, result, error: jobError = null } = {}) {
+  _log("marketplace", "runpod_submit_job_start", {
+    marketplace: "RunPod",
+    jobId: jobId || null
+  });
+
+  const body = {
+    jobId,
+    result: jobError ? null : result,
+    error: jobError ? String(jobError) : null
+  };
+
+  try {
+    const res = await runpodRequest(RUNPOD_SUBMIT_JOB_URL, body);
+
+    _log("marketplace", "runpod_submit_job_success", {
+      marketplace: "RunPod",
+      jobId: jobId || null
+    });
+
+    return {
+      ok: true,
+      result: res
+    };
+  } catch (err) {
+    _error("marketplace", "runpod_submit_job_failed", {
+      marketplace: "RunPod",
+      jobId: jobId || null,
+      error: String(err)
+    });
+
+    return {
+      ok: false,
+      error: String(err)
+    };
+  }
+}
+
+// ============================================================================
+//  EXPORT — Marketplace organ surface
+// ============================================================================
+export const RunPodAdapter = {
+  PulseRole,
+  registerDevice,
+  requestJob,
+  submitJob,
+  normalizeJob,
+  meta: {
+    marketplace: "RunPod",
+    version: "9.3",
+    layer: "MarketplaceAdapter",
+    identity: "RunPodAdapter-v9.3"
+  }
+};
