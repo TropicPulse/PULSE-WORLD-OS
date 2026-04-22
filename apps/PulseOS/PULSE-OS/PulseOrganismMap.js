@@ -369,6 +369,113 @@ export const PulseOrganismMap = {
     PulseMeshSurvivalInstincts:  { bio: "Survival",                     system: "pulse-mesh", file: "pulse-mesh/PulseMeshSurvivalInstincts.js" },
     PulseMeshTendons:            { bio: "Tendons",                      system: "pulse-mesh", file: "pulse-mesh/PulseMeshTendons.js" },
     PulseMeshThalamus:           { bio: "Thalamus",                     system: "pulse-mesh", file: "pulse-mesh/PulseMeshThalamus.js" },
+  },
+  // ============================================================================
+  // BASE LAYER + ROUTING LAYER — OLD NAMES → NEW ORGANISM NAMES
+  // This allows the organism to understand old references like "router.js"
+  // and map them to the correct modern organs.
+  // ============================================================================
+
+  aliases = {
+
+    // ------------------------------------------------------------------------
+    // BASE LAYERS — The original Pulse foundation (old → new)
+    // ------------------------------------------------------------------------
+    base: {
+      PulseBand: {
+        old: ["PulseBand.js", "PulseBand"],
+        now: [
+          "PulseOSSkinReflex",
+          "PulseOSSensoryCortex",
+          "PulseProxyImpulse"
+        ],
+        note: "UI → Pulse entry point (touch, senses, impulse)"
+      },
+
+      PulseNet: {
+        old: ["PulseNet.js", "PulseNet"],
+        now: ["PulseOSCNSNervousSystem"],
+        note: "Network intelligence → CNS nervous system"
+      },
+
+      PulseClient: {
+        old: ["PulseClient.js", "PulseClient"],
+        now: ["PulseProxyImpulse", "PulseProxySpine"],
+        note: "Frontend router → Impulse + backend spine"
+      },
+
+      PulseUpdate: {
+        old: ["PulseUpdate.js", "PulseUpdate"],
+        now: ["PulseOSBrainEvolution", "PulseIQ"],
+        note: "Self‑update → Brain evolution + intelligence"
+      },
+
+      PulseIdentity: {
+        old: ["PulseIdentity.js", "PulseIdentity"],
+        now: ["CheckIdentity", "PulseOSOrganMembrane"],
+        note: "Identity → Membrane + validator"
+      }
+    },
+
+    // ------------------------------------------------------------------------
+    // ROUTING LAYERS — The original routing chain (old → new)
+    // ------------------------------------------------------------------------
+    routing: {
+      Router: {
+        old: ["router.js", "Router", "PulseRouter.js"],
+        now: ["PulseRouterEvolutionaryThought", "PulseRouter"],
+        note: "Routing engine → Evolutionary routing thought"
+      },
+
+      RouterMemory: {
+        old: ["RouterMemory.js", "RouterMemory"],
+        now: ["PulseOSShortTermMemory", "PulseOSTissueMembrane"],
+        note: "Routing memory → Reflex memory + tissue membrane"
+      },
+
+      CheckRouterMemory: {
+        old: ["CheckRouterMemory.js", "CheckRouterMemory"],
+        now: ["CheckRouterMemory"],
+        note: "Backend memory healer (same name)"
+      },
+
+      BackendEndpoint: {
+        old: ["endpoint.js", "Endpoint"],
+        now: ["PulseProxyOuterAgent"],
+        note: "Backend entry → Outer agent"
+      },
+
+      BackendRouter: {
+        old: ["index.js", "BackendRouter"],
+        now: ["PulseProxySpine"],
+        note: "Backend router → Proxy spine"
+      }
+    },
+
+    // ------------------------------------------------------------------------
+    // ROUTE CHAIN — Old → New (for humans + AI)
+    // ------------------------------------------------------------------------
+    routeChain: {
+      old: [
+        "PulseBand",
+        "PulseNet",
+        "PulseClient",
+        "router.js",
+        "organ",
+        "PulseSend",
+        "backend"
+      ],
+      now: [
+        "PulseOSSkinReflex / PulseOSSensoryCortex",
+        "PulseOSCNSNervousSystem",
+        "PulseProxyImpulse",
+        "PulseRouter (via PulseOSBrain + PulseIQ)",
+        "Organ (from PulseOrganismMap)",
+        "PulseSendSystem",
+        "PulseProxySpine"
+      ],
+      note: "This is the true nervous system route chain."
+    }
   }
 
 };
