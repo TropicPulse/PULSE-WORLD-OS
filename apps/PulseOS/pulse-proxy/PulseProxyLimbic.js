@@ -95,8 +95,6 @@ logShadow("SHADOW_INIT");
 // ============================================================================
 export { PulseNet }    from "./PulseProxySynapse.js";        // Synapse Layer
 export { PulseClient } from "./PulseProxyCirculatorySystem.js";              // Circulatory System
-export { PulseUpdate } from "./PulseProxyVitalsMonitor.js";  // Hemodynamic Monitor
-
 
 // ============================================================================
 //  OPTIONAL META EXPORT — SAFE FOR INTROSPECTION
