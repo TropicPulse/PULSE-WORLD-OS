@@ -1,72 +1,80 @@
 // ============================================================================
-// PulseOS Brain — v9.2 (CNS Master Brain)
-// “Central Nervous System: Imports → Evolution → Routing → Validation → Attach”
+// FILE: /apps/PulseOS/Brain/PulseOSBrain.js
+// PULSE OS — v10.0
+// “THE CNS BRAIN / CENTRAL NERVOUS SYSTEM / INTELLIGENCE LAYER 1”
 // ============================================================================
 //
-// THIS IS THE MASTER ORGANISM BRAIN.
-// • Imports EVERYTHING the organism ever uses
-// • Provides ALL access to ALL subsystems
-// • Evolves with the filesystem
-// • Routes backend organs
-// • Validates PulseRole identity
-// • Prevents structural mutation
-// • Provides Firebase access
-// • Provides Kernel access (but is NOT the kernel itself)
-// • Provides Evolution access
-// • Provides BBB access
-// • Provides Memory access
+//  ORGAN IDENTITY (v10.0):
+//  ------------------------
+//  • Organ Type: Brain / CNS
+//  • Layer: BRAINSTEM + LOW CORTEX
+//  • Biological Analog: Medulla + Pons + Thalamus (NOT Neocortex)
+//  • System Role:
+//      - Attach IQ (PulseIQ.js)
+//      - Validate organ identity
+//      - Route CNS-level decisions
+//      - Provide evolution access
+//      - Provide memory access
+//      - Provide kernel access
+//      - Provide Firebase access
+//      - Provide BBB access
+//      - Provide deterministic CNS intelligence
 //
-// ALL OTHER ORGANS MUST IMPORT ONLY FROM THIS FILE.
+//  PURPOSE (v10.0):
+//  ----------------
+//  ✔ Attach PulseIQ (the full import warehouse)
+//  ✔ Provide CNS-level intelligence (NOT full IQ)
+//  ✔ Validate PulseRole identity for all organs
+//  ✔ Provide structural error intelligence
+//  ✔ Provide deterministic organ loading via evolution
+//  ✔ Provide safe access to Kernel, Memory, Firebase, BBB
+//  ✔ Expose a clean CNS surface for the entire organism
+//  ✔ Guarantee all organs import ONLY from Brain
+//
+//  WHAT THIS ORGAN IS:
+//  --------------------
+//  ✔ The CNS brainstem + low cortex
+//  ✔ The router of intelligence (NOT the intelligence itself)
+//  ✔ The identity validator
+//  ✔ The structural integrity guardian
+//  ✔ The evolution orchestrator
+//  ✔ The memory + kernel + Firebase access point
+//
+//  WHAT THIS ORGAN IS NOT:
+//  ------------------------
+//  ✘ NOT the IQ cortex (PulseIQ.js is the cortex)
+//  ✘ NOT a reflex layer
+//  ✘ NOT a membrane
+//  ✘ NOT a GPU organ
+//  ✘ NOT a Mesh organ
+//  ✘ NOT a backend organ
+//  ✘ NOT a state machine
+//  ✘ NOT a scheduler
+//
+//  SAFETY CONTRACT (v10.0):
+//  -------------------------
+//  • This file may import ONLY PulseIQ.js
+//  • All other imports must live inside PulseIQ.js
+//  • Never mutate IQ modules
+//  • Never expose raw IQ modules directly to organs
+//  • Always validate PulseRole identity
+//  • Always remain deterministic and drift-proof
+//  • Always route CNS decisions through IQ
+//
 // ============================================================================
-
-// ---------------------------------------------------------------------------
-// GLOBAL IMPORTS (ALL ACCESS) — PRESERVED FOR IQ (NO DELETIONS)
-// ---------------------------------------------------------------------------
-import { log, warn, error as logError } from "../pulse-proxy/PulseProxyVitalsLogger.js";
-
-
-
-// Kernel / BrainStem (OS kernel lives here, Brain only routes to it)
-import { PulseOSKernel } from "./PulseOSBrainStem.js";
-
-// Firebase (full access)
-import * as firebase from "../netlify/functions/firebase.js";
-
-// BBB (identity + shell + permissions)
-import * as BBB from "./PulseOSBBB.js";
-
-// Long-term memory fallback
-import * as LongTermMemory from "./PulseOSLongTermMemory.js";
-
-// Evolution (raw scanning)
-import { evolveRaw } from "./PulseOSBrainEvolution.js";
-
-// Any other global utilities
-import { nanoid } from "nanoid";
+//  IMPORTS — v10 LAW: BRAIN MAY IMPORT ONLY PULSEIQ
+// ============================================================================
+import { PulseIQ } from "./PulseIQ.js";
 
 
 // ============================================================================
-//  IMPORTS — (unchanged, allowed for Spine)
-// ============================================================================
-import express from "express";
-import fetch from "node-fetch";
-import crypto from "crypto";
-import nodemailer from "nodemailer";
-import { createClient } from "redis";
-import { getFirestore } from "firebase-admin/firestore";
-import dotenv from "dotenv";
-dotenv.config();
-
-import { readdirSync, statSync } from "fs";
-import { join } from "path";
-// ============================================================================
-// 0) BRAIN IDENTITY (PulseRole) — v9.2
+// 0) BRAIN IDENTITY (PulseRole) — v10.0
 // ============================================================================
 export const PulseRole = {
   type: "Brain",
   subsystem: "OS",
   layer: "CNS",
-  version: "9.2",
+  version: "10.0",
   identity: "PulseOSBrain",
 
   evo: {
@@ -76,12 +84,11 @@ export const PulseRole = {
     advantageCascadeAware: true,
     unifiedAdvantageField: true,
 
-    // Conceptual compatibility (no logic impact)
-    routingContract: "PulseSend-v9.2",
-    osOrganContract: "PulseOS-v9.2",
-    earnCompatibility: "PulseEarn-v9.2",
-    proxyCompatibility: "PulseProxySpine-v9.2",
-    gpuCompatibility: "PulseGPU-v9.2"
+    routingContract: "PulseSend-v10",
+    osOrganContract: "PulseOS-v10",
+    earnCompatibility: "PulseEarn-v10",
+    proxyCompatibility: "PulseProxySpine-v10",
+    gpuCompatibility: "PulseGPU-v10"
   }
 };
 
@@ -122,16 +129,45 @@ export function structuralError(expected, found, extraContext = {}) {
     ...extraContext
   };
 
-  warn("[STRUCTURAL_ERROR]", payload);
+  PulseIQ.warn("[STRUCTURAL_ERROR]", payload);
   return payload;
 }
 
 
 // ============================================================================
-// 3) EVOLUTION + INTELLIGENCE — Design-Driven Organ Loading
+// 3) CNS INTELLIGENCE LAYER — “IQ-lite”
+//    (Brain-level intelligence, NOT full IQ)
+// ============================================================================
+export const BrainIntel = {
+  // Lightweight CNS reasoning (NOT full IQ)
+  classifyDegradation(healthScore) {
+    if (healthScore >= 0.85) return "direct";
+    if (healthScore >= 0.15) return "bypass";
+    return "routeAround";
+  },
+
+  // CNS-level identity scoring
+  scoreIdentityMatch(signature, module) {
+    let score = 0;
+
+    if (module?.PulseRole?.type === signature.type) score += 1;
+    if (module?.PulseRole?.subsystem === signature.subsystem) score += 1;
+
+    return score;
+  },
+
+  // CNS-level fallback logic
+  fallbackToMemory() {
+    return PulseIQ.LongTermMemory;
+  }
+};
+
+
+// ============================================================================
+// 4) EVOLUTION + ORGAN LOADING — Design-Driven CNS Logic
 // ============================================================================
 export async function loadOrganByDesign(designIdentity, expectedType, expectedSubsys) {
-  const raw = await evolveRaw(designIdentity);
+  const raw = await PulseIQ.evolveRaw(designIdentity);
   const expected = { type: expectedType, subsystem: expectedSubsys };
 
   const candidates = raw.filter(({ module }) =>
@@ -140,7 +176,7 @@ export async function loadOrganByDesign(designIdentity, expectedType, expectedSu
 
   if (candidates.length > 0) {
     const chosen = candidates[0];
-    log(`🧠 [PulseOSBrain] Attached organ from ${chosen.path}`);
+    PulseIQ.log(`🧠 [PulseOSBrain] Attached organ from ${chosen.path}`);
     return chosen.module;
   }
 
@@ -149,30 +185,24 @@ export async function loadOrganByDesign(designIdentity, expectedType, expectedSu
 
 
 // ============================================================================
-//– 4) EXPORT EVERYTHING THE BODY NEEDS — CNS Surface (NOT Kernel)
+// 5) EXPORT EVERYTHING THE BODY NEEDS — CNS Surface (NOT Kernel)
 // ============================================================================
 export const Brain = {
   // Logging
-  log,
-  warn,
-  logError,
+  log: PulseIQ.log,
+  warn: PulseIQ.warn,
+  logError: PulseIQ.logError,
 
   // Core infrastructure
-  firebase,
-  BBB,
-  PulseOSKernel,
-  LongTermMemory,
-  evolveRaw,
+  firebase: PulseIQ.firebase,
+  BBB: PulseIQ.BBB,
+  PulseOSKernel: PulseIQ.PulseOSKernel,
+  LongTermMemory: PulseIQ.LongTermMemory,
+  evolveRaw: PulseIQ.evolveRaw,
   loadOrganByDesign,
 
-  // Utilities (kept for historical IQ)
-  nanoid,
-  crypto,
-
-  // FS primitives (preserved; used by evolution layer)
-  readdirSync,
-  statSync,
-  join,
+  // CNS Intelligence Layer
+  BrainIntel,
 
   // Identity
   PulseRole

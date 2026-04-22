@@ -64,8 +64,6 @@ export const DRIFT_SIGNATURES_COLLECTION = "DriftSignatures";
 export const MAX_SNAPSHOTS_PER_SUBSYSTEM = 50;
 export const MAX_RESTORE_POINTS = 20;
 
-import { getFirestore, Timestamp } from "firebase-admin/firestore";
-const db = getFirestore();
 
 /* ============================================================================  
    1. SNAPSHOTS — OS + Subsystem State Capture  

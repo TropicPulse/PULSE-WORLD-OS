@@ -1,11 +1,11 @@
 // ============================================================================
 // FILE: /apps/PulseOS/Organs/Skin/PulseOSSkinReflex.js
-// PULSE OS — v9.1
+// PULSE OS — v10.0
 // “THE SKIN REFLEX / SURFACE EPITHELIAL MEMBRANE”
 // A1 BARRIER • PAGE-LEVEL REFLEX • ZERO TIMING • ZERO STATE
 // ============================================================================
 //
-// ORGAN IDENTITY (v9.1):
+// ORGAN IDENTITY (v10.0):
 //   • Organ Type: Skin / Surface Membrane / Reflex Layer
 //   • Layer: A1 (Page-Level Reflex)
 //   • Biological Analog: Skin + surface epithelial membrane
@@ -15,9 +15,10 @@
 //   ✔ Intercept JS errors at the page/surface level
 //   ✔ Extract stack frames + route context
 //   ✔ Build dynamic route traces (living map, not config)
-//   ✔ Classify page-level failures (import/env/recursion) early
-//   ✔ Trigger backend healing deterministically for missing-field patterns
-//   ✔ Always pipe errors to backend for logging + lineage
+//   ✔ Mark route degradation (degraded + healthScore)
+//   ✔ Trigger healing deterministically for missing-field patterns
+//   ✔ Always pipe errors to Router/backend for logging + lineage
+//   ✔ Never block the organism; always route forward
 //
 // WHAT THIS ORGAN IS:
 //   ✔ The skin reflex of PulseOS
@@ -30,37 +31,20 @@
 //   ✘ NOT a backend logic layer
 //   ✘ NOT a state machine
 //   ✘ NOT a scheduler or timer
+//   ✘ NOT an IQ/import organ
 //
-// SAFETY CONTRACT (v9.1):
+// SAFETY CONTRACT (v10.0):
 //   • Never run timers, loops, or scheduling
 //   • Never hold long-lived state (only ephemeral route memory)
 //   • Never mutate payloads
-//   • Always classify before escalating
+//   • Always classify before escalating when possible
 //   • Always forward healing triggers via Router
-// ============================================================================
-// ============================================================================
-// FILE: /apps/PulseOS/Organs/Barriers/PulseOSSkinReflex.js
-// PULSE OS — v9.2
-// “THE SKIN REFLEX / SURFACE EPITHELIAL MEMBRANE”
-// UNIVERSAL ERROR INTAKE • ROUTE TRACE • HEALING TRIGGERS • BACKEND PIPE
-// ============================================================================
-//
-// ORGAN IDENTITY (v9.2):
-//   • Organ Type: Barrier / Reflex Membrane
-//   • Layer: A / A2 (Surface Reflex)
-//   • Biological Analog: Skin-level epithelial reflex
-//   • System Role: Universal surface error intake + healing trigger
-//
-// SAFETY CONTRACT (v9.2):
-//   • Never block CNS or Mesh
-//   • Never mutate payloads
-//   • Never run timers or schedulers
-//   • Always classify errors before healing when possible
-//   • Always remain frontend-only (no direct backend wiring outside Router)
+//   • Never block CNS or Mesh; import errors are degradation, not fatal
 // ============================================================================
 
+
 // ============================================================================
-// SYMBOL → OWNER MODULE RESOLUTION (v9.2 — unchanged behavior)
+// SYMBOL → OWNER MODULE RESOLUTION (unchanged behavior)
 // ============================================================================
 function resolveOwnerModule(symbol) {
   try {
@@ -88,7 +72,7 @@ function resolveOwnerModule(symbol) {
 const LAYER_ID   = "SKIN-REFLEX";
 const LAYER_NAME = "THE SKIN REFLEX";
 const LAYER_ROLE = "SURFACE ERROR GUARDIAN & HEALING TRIGGER";
-const LAYER_VER  = "9.2";
+const LAYER_VER  = "10.0";
 
 const PROTECTOR_DIAGNOSTICS_ENABLED =
   window.PULSE_PROTECTOR_DIAGNOSTICS === "true" ||
@@ -111,13 +95,13 @@ const logProtector = (stage, details = {}) => {
 
 
 // ============================================================================
-// PULSE OS v9.2 — SKIN REFLEX (A → A2 → Router → Backend)
+// PULSE OS v10.0 — SKIN REFLEX (A1 → A2 → Router → Backend)
 // ============================================================================
 import { route } from "./PulseOSCNSNervousSystem.js";
 
 
 // ============================================================================
-// ROUTE MEMORY — LIVING MAP, NOT CONFIG
+// ROUTE MEMORY — LIVING MAP, NOW WITH DEGRADATION
 // ============================================================================
 const RouteMemory = {
   store: {},
@@ -127,18 +111,38 @@ const RouteMemory = {
     return message + "::" + top;
   },
 
-  remember(message, frames, routeTrace) {
+  remember(message, frames, routeTrace, overrides = {}) {
     const key = this.makeKey(message, frames);
     this.store[key] = {
       ts: Date.now(),
       message,
       frames,
-      routeTrace
+      routeTrace,
+      degraded: false,
+      healthScore: 1.0,
+      ...overrides
     };
 
     logProtector("ROUTE_MEMORY_SAVED", {
       key,
-      frames: frames.length
+      frames: frames.length,
+      degraded: this.store[key].degraded,
+      healthScore: this.store[key].healthScore
+    });
+  },
+
+  markDegraded(message, frames, healthScore = 0.85) {
+    const key = this.makeKey(message, frames);
+    const entry = this.store[key];
+
+    if (!entry) return;
+
+    entry.degraded = true;
+    entry.healthScore = healthScore;
+
+    logProtector("ROUTE_MEMORY_DEGRADED", {
+      key,
+      healthScore
     });
   },
 
@@ -150,10 +154,17 @@ const RouteMemory = {
 
     logProtector("ROUTE_MEMORY_HIT", {
       key,
-      frames: entry.frames.length
+      frames: entry.frames.length,
+      degraded: entry.degraded,
+      healthScore: entry.healthScore
     });
 
     return entry.routeTrace;
+  },
+
+  getEntry(message, frames) {
+    const key = this.makeKey(message, frames);
+    return this.store[key] || null;
   }
 };
 
@@ -163,22 +174,22 @@ const RouteMemory = {
 // ============================================================================
 export async function getAuth(jwtToken) {
   logProtector("GET_AUTH", {});
-  return await route("auth", { jwtToken });
+  return await route("auth", { jwtToken, reflexOrigin: "SkinReflex", layer: "A1" });
 }
 
 export async function getHook(name, payload = {}) {
   logProtector("GET_HOOK", { name });
-  return await route("hook", { name, payload });
+  return await route("hook", { name, payload, reflexOrigin: "SkinReflex", layer: "A1" });
 }
 
 export async function getMap(mapName) {
   logProtector("GET_MAP", { mapName });
-  return await route("map", { mapName });
+  return await route("map", { mapName, reflexOrigin: "SkinReflex", layer: "A1" });
 }
 
 export async function callHelper(helperName, payload = {}) {
   logProtector("CALL_HELPER", { helperName });
-  return await route("helper", { helperName, payload });
+  return await route("helper", { helperName, payload, reflexOrigin: "SkinReflex", layer: "A1" });
 }
 
 
@@ -203,7 +214,7 @@ export function attachScanner(id) {
 
 
 // ============================================================================
-// GLOBAL ERROR INTERCEPTOR (A → A2 → Router → Backend)
+// GLOBAL ERROR INTERCEPTOR (A1 → A2 → Router → Backend)
 // ============================================================================
 let healingInProgress = false;
 
@@ -223,63 +234,6 @@ window.addEventListener(
     logProtector("ERROR_INTERCEPTED", { message: msg });
 
     // ------------------------------------------------------------------------
-    // PAGE-LEVEL CLASSIFICATION (v9.3 evolutionary import law)
-    // ------------------------------------------------------------------------
-
-    // v9.3 — Only treat TRUE missing modules as import conflicts
-    if (msg.includes("Cannot find module")) {
-      // extract the module path the browser actually tried
-      let attemptedPath = null;
-      const m = msg.match(/Cannot find module ['"]([^'"]+)['"]/);
-      if (m && m[1]) attemptedPath = m[1];
-
-      logProtector("PAGE_IMPORT_CONFLICT_DETECTED", {
-        error: "importConflict",
-        details: msg,
-        attemptedPath
-      });
-
-      // Escalate to CNS for full-import identity resolution
-      // CNS will scan ALL folders; this page does NOT hardcode or repair.
-      await route("importConflict", {
-        message: msg,
-        frames: rawFrames,
-        reflexOrigin: "SkinReflex",
-        layer: "A1",
-        attemptedPath,
-        evo: {
-          identity: "organ-level",
-          importLaw: "v9.3",
-          behavior: "full-import",
-          driftProof: true,
-          wholeOrgan: true,
-          noSymbolChecks: true,
-          noSubimportChecks: true
-        }
-      });
-
-      // DO NOT return — allow organism to continue
-    }
-
-    if (msg.includes("process is not defined")) {
-      logProtector("PAGE_ENV_MISMATCH", {
-        error: "frontendEnvMismatch",
-        hint: "Replace process.env.* with window.PULSE_*"
-      });
-      await route("logError", { type: "envMismatch", message: msg, frames: rawFrames });
-      return;
-    }
-
-    if (msg.includes("Maximum call stack size exceeded")) {
-      logProtector("PAGE_RECURSION_LOOP", {
-        error: "pageRecursionLoop",
-        details: msg
-      });
-      await route("logError", { type: "recursionLoop", message: msg, frames: rawFrames });
-      return;
-    }
-
-    // ------------------------------------------------------------------------
     // ROUTE TRACE — LIVING, NOT HARD-CODED
     // ------------------------------------------------------------------------
     let routeTrace = RouteMemory.recall(msg, rawFrames);
@@ -292,10 +246,10 @@ window.addEventListener(
           frame,
           file,
           index,
-          label: "UNKNOWN",
-          layer: "UNKNOWN",
-          purpose: "Observed frame — classification deferred",
-          context: "Dynamic route sample — evolutionary layer may annotate"
+          label: "A1_FRAME",
+          layer: "A1",
+          purpose: "Surface observed frame",
+          context: "SkinReflex dynamic trace"
         };
       });
 
@@ -307,22 +261,78 @@ window.addEventListener(
     }
 
     // ------------------------------------------------------------------------
-    // ALWAYS PIPE ERROR TO BACKEND
+    // PAGE-LEVEL CLASSIFICATION → MARK DEGRADATION, NEVER BLOCK
+    // ------------------------------------------------------------------------
+    // Default: healthy unless classified otherwise
+    let classified = false;
+
+    if (msg.includes("Cannot find module")) {
+      // Import errors = IQ issues → degradation, not conflict
+      let attemptedPath = null;
+      const m = msg.match(/Cannot find module ['"]([^'"]+)['"]/);
+      if (m && m[1]) attemptedPath = m[1];
+
+      logProtector("PAGE_IMPORT_DEGRADATION", {
+        error: "importDegradation",
+        details: msg,
+        attemptedPath
+      });
+
+      RouteMemory.markDegraded(msg, rawFrames, 0.85);
+      classified = true;
+      // No importConflict route call here — Brain/IQ handles imports elsewhere
+    }
+
+    if (msg.includes("process is not defined")) {
+      logProtector("PAGE_ENV_MISMATCH", {
+        error: "frontendEnvMismatch",
+        hint: "Replace process.env.* with window.PULSE_*"
+      });
+
+      RouteMemory.markDegraded(msg, rawFrames, 0.7);
+      classified = true;
+    }
+
+    if (msg.includes("Maximum call stack size exceeded")) {
+      logProtector("PAGE_RECURSION_LOOP", {
+        error: "pageRecursionLoop",
+        details: msg
+      });
+
+      RouteMemory.markDegraded(msg, rawFrames, 0.5);
+      classified = true;
+    }
+
+    const memoryEntry = RouteMemory.getEntry(msg, rawFrames);
+    const degraded = memoryEntry?.degraded || false;
+    const healthScore = memoryEntry?.healthScore ?? 1.0;
+
+    // ------------------------------------------------------------------------
+    // ALWAYS PIPE ERROR TO BACKEND VIA ROUTER
     // ------------------------------------------------------------------------
     await route("logError", {
-      type: "unclassified",
+      type: classified ? "classified" : "unclassified",
       message: msg,
       frames: rawFrames,
       routeTrace,
-      page: window.location.pathname
+      page: window.location.pathname,
+      reflexOrigin: "SkinReflex",
+      layer: "A1",
+      degraded,
+      healthScore
     });
 
     // ------------------------------------------------------------------------
-    // HEALING LOGIC
-    // ------------------------------------------------------------------------
+    // HEALING LOGIC (missing-field patterns only)
+// ------------------------------------------------------------------------
     const parsed = parseMissingField(msg);
     if (!parsed) {
-      logProtector("NO_MISSING_FIELD", {});
+      logProtector("NO_MISSING_FIELD", {
+        degraded,
+        healthScore
+      });
+      // Let the organism continue; no specific healing
+      event.preventDefault();
       return;
     }
 
@@ -332,7 +342,9 @@ window.addEventListener(
     logProtector("HEALING_TRIGGERED", {
       table,
       field,
-      ownerModule: ownerModule || "UNKNOWN"
+      ownerModule: ownerModule || "UNKNOWN",
+      degraded,
+      healthScore
     });
 
     healingInProgress = true;
@@ -344,12 +356,26 @@ window.addEventListener(
         ownerModule,
         message: msg,
         page: window.location.pathname,
-        routeTrace
+        routeTrace,
+        reflexOrigin: "SkinReflex",
+        layer: "A1",
+        degraded,
+        healthScore
       });
 
-      logProtector("HEALING_SUCCESS", { table, field, ownerModule });
+      logProtector("HEALING_SUCCESS", {
+        table,
+        field,
+        ownerModule,
+        degraded,
+        healthScore
+      });
     } catch (err) {
-      logProtector("HEALING_FAILED", { error: String(err) });
+      logProtector("HEALING_FAILED", {
+        error: String(err),
+        degraded,
+        healthScore
+      });
       error("[PulseOSSkinReflex] Router fetch failed:", err);
     }
 
@@ -380,5 +406,5 @@ function parseMissingField(message) {
 }
 
 // ============================================================================
-// END OF FILE — THE SKIN REFLEX / SURFACE EPITHELIAL MEMBRANE  [v9.2]
+// END OF FILE — THE SKIN REFLEX / SURFACE EPITHELIAL MEMBRANE  [v10.0]
 // ============================================================================
