@@ -44,7 +44,7 @@ import * as PulseGPU from "./pulse-gpu/PulseGPUAstralNervousSystem.js";
 
 
 // Earn Engine (frontend-facing hooks, if present)
-import * as PulseEarn from "./pulse-earn/PulesEarnSendSystem.js";
+import * as PulseEarn from "./pulse-earn/PulseEarnSendSystem.js";
 
 // Mesh / routing / overlay (if present)
 import * as PulseMesh from "./pulse-mesh/PulseMeshCortex.js";
