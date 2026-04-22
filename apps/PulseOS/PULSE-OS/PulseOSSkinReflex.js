@@ -50,9 +50,10 @@
 // ============================================================================
 // OWNER MODULE RESOLUTION — v10.3 (Brain-map based, no degradation)
 // ============================================================================
-import { PulseOrganismMap } from "/apps/PulseOS/PulseBrainMap.js";
-PulseOSBrain.map = PulseOrganismMap;
-
+import { PulseOrganismMap } from "./PULSE-OS/PulseOrganismMap.js";
+PulseOSBrain.PulseOrganismMap = PulseOrganismMap;
+PulseOSBrain.PulseIntentMap = PulseIntentMap;
+PulseOSBrain.PulseIQMap = PulseIQMap;
 function resolveOwnerModule(symbol) {
   try {
     if (typeof symbol !== "string") return null;

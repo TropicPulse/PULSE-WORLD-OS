@@ -50,9 +50,10 @@
 // ============================================================================
 // LAYER CONSTANTS + DIAGNOSTICS
 // ============================================================================
-import { PulseOrganismMap } from "/apps/PulseOS/PulseBrainMap.js";
+import { PulseOrganismMap } from "./PULSE-OS/PulseOrganismMap.js";
 PulseOSBrain.PulseOrganismMap = PulseOrganismMap;
-
+PulseOSBrain.PulseIntentMap = PulseIntentMap;
+PulseOSBrain.PulseIQMap = PulseIQMap;
 const LAYER_ID   = "LAYER-REFLEX";
 const LAYER_NAME = "THE TISSUE MEMBRANE";
 const LAYER_ROLE = "MID-LAYER ERROR GUARDIAN & HEALING TRIGGER";
