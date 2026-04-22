@@ -1,14 +1,27 @@
 // ============================================================================
-//  PULSE OS v9.3 — USER METRICS (VITALS MONITOR)
+//  PULSE OS v9.3 — USER METRICS (VITALS MONITOR) — SAFE UPGRADE
 //  “The Vitals Monitor / Circulatory Telemetry Layer”
 //  PURE MEASUREMENT. NO HEALING. NO COMMAND. NO SCALING.
+//  SAFE IN ANY RUNTIME: NODE (REAL) / BROWSER (NO-OP, NO CRASH)
 // ============================================================================
 
-// Safe globals (backend-only)
-const db    = global.db;
-const log   = global.log   || console.log;
-const warn  = global.warn  || console.warn;
-const error = global.error || console.error;
+// ============================================================================
+//  UNIVERSAL GLOBAL RESOLVER — NEVER THROWS
+// ============================================================================
+const g =
+  typeof global !== "undefined"
+    ? global
+    : typeof globalThis !== "undefined"
+    ? globalThis
+    : typeof window !== "undefined"
+    ? window
+    : {};
+
+// Backend-only globals (db only exists on backend)
+const db    = g.db || null;
+const log   = g.log   || console.log;
+const warn  = g.warn  || console.warn;
+const error = g.error || console.error;
 
 // ============================================================================
 //  ORGAN IDENTITY — v9.3
@@ -65,6 +78,8 @@ export const PERFORMANCE_LOG_COLLECTION = "UserPerformanceLogs";
 //  updateUserMetrics() — PURE MEASUREMENT
 // ============================================================================
 export async function updateUserMetrics(userId, data = {}) {
+  // If db is not present, we’re in a non-backend runtime → clean no-op
+  if (!db) return;
   if (!userId || userId === "anonymous") return;
 
   log("vitals", "update", {
@@ -245,6 +260,7 @@ export function allocateInstances(
 
   return final;
 }
+
 // ============================================================================
 //  ORGAN EXPORT — ⭐ VitalsMonitor (v9.3)
 // ============================================================================
@@ -269,7 +285,7 @@ export const VitalsMonitor = {
   ENABLE_PERFORMANCE_LOGGING,
   PERFORMANCE_LOG_COLLECTION,
 
-  // Metadata (same pattern as VitalsLogger)
+  // Metadata
   meta: {
     layer: PulseRole.layer,
     subsystem: PulseRole.subsystem,
