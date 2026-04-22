@@ -1,22 +1,22 @@
 // ============================================================================
 // FILE: /apps/PulseOS/Organs/Skin/PulseOSSkinReflex.js
-// PULSE OS — v10.2
+// PULSE OS — v10.3
 // “THE SKIN REFLEX / SURFACE EPITHELIAL MEMBRANE”
 // A1 BARRIER • PAGE-LEVEL REFLEX • ZERO TIMING • ZERO STATE
 // ============================================================================
 //
-// ORGAN IDENTITY (v10.2):
+// ORGAN IDENTITY (v10.3):
 //   • Organ Type: Skin / Surface Membrane / Reflex Layer
 //   • Layer: A1 (Page-Level Reflex)
 //   • Biological Analog: Skin + surface epithelial membrane + nociceptors
 //   • System Role: First-line error intake + classification at the page surface
 //
-// PURPOSE (v10.2):
+// PURPOSE (v10.3):
 //   ✔ Intercept JS errors at the page/surface level
 //   ✔ Extract stack frames + route context
 //   ✔ Build dynamic route traces (living map, not config)
 //   ✔ Mark route degradation (degraded + healthScore + tier)
-//   ✔ Tag route DNA at the surface (A1_SURFACE)
+//   ✔ Tag route DNA at the surface (A1_SURFACE / A1_SURFACE_DEGRADED)
 //   ✔ Trigger healing deterministically for missing-field patterns
 //   ✔ Always pipe errors to Router/backend for logging + lineage
 //   ✔ Never block the organism; always route forward
@@ -37,7 +37,7 @@
 //   ✘ NOT a scheduler or timer
 //   ✘ NOT an IQ/import organ
 //
-// SAFETY CONTRACT (v10.2):
+// SAFETY CONTRACT (v10.3):
 //   • Never run timers, loops, or scheduling
 //   • Never hold long-lived state (only ephemeral route memory)
 //   • Never mutate payloads
@@ -48,9 +48,13 @@
 //   • ⭐ Local diagnostics must never depend on routing or backend
 // ============================================================================
 
+console.log(
+  "%c[PulseOSSkinReflex v10.3] Loaded — A1 Surface Membrane Active",
+  "color:#4CAF50; font-weight:bold;"
+);
 
 // ============================================================================
-// SYMBOL → OWNER MODULE RESOLUTION (unchanged behavior)
+// SYMBOL → OWNER MODULE RESOLUTION
 // ============================================================================
 function resolveOwnerModule(symbol) {
   try {
@@ -71,14 +75,13 @@ function resolveOwnerModule(symbol) {
   return null;
 }
 
-
 // ============================================================================
 // LAYER CONSTANTS + DIAGNOSTICS
 // ============================================================================
 const LAYER_ID   = "SKIN-REFLEX";
 const LAYER_NAME = "THE SKIN REFLEX";
 const LAYER_ROLE = "SURFACE ERROR GUARDIAN & HEALING TRIGGER";
-const LAYER_VER  = "10.2";
+const LAYER_VER  = "10.3";
 
 const PROTECTOR_DIAGNOSTICS_ENABLED =
   window.PULSE_PROTECTOR_DIAGNOSTICS === "true" ||
@@ -99,12 +102,10 @@ const logProtector = (stage, details = {}) => {
   );
 };
 
-
 // ============================================================================
-// PULSE OS v10.2 — SKIN REFLEX (A1 → A2 → Router → Backend)
+// PULSE OS v10.3 — SKIN REFLEX (A1 → A2 → Router → Backend)
 // ============================================================================
 import { route } from "./PulseOSCNSNervousSystem.js";
-
 
 // ============================================================================
 // ROUTE MEMORY — LIVING MAP, WITH DEGRADATION + TIER + DNA TAG
@@ -197,7 +198,6 @@ const RouteMemory = {
   }
 };
 
-
 // ============================================================================
 // PUBLIC API (C‑LAYER passthrough)
 // ============================================================================
@@ -221,26 +221,50 @@ export async function callHelper(helperName, payload = {}) {
   return await route("helper", { helperName, payload, reflexOrigin: "SkinReflex", layer: "A1" });
 }
 
-
 // ============================================================================
-// ATTACH SKIN REFLEX
+// ATTACH SKIN REFLEX — v10.3 (Robust Identity Resolver)
 // ============================================================================
 export function attachScanner(id) {
-  if (!id) {
-    logProtector("ATTACH_NO_ID", {});
+  console.groupCollapsed(
+    "%c[SkinReflex v10.3] attachScanner() invoked",
+    "color:#4CAF50; font-weight:bold;"
+  );
+  console.log("• raw id received:", id);
+  console.groupEnd();
+
+  if (!id || typeof id !== "object") {
+    logProtector("ATTACH_NO_ID", { received: id });
+    console.warn("[SkinReflex] attachScanner received invalid id:", id);
     return;
   }
 
-  window.tp_identity = id;
+  const uid =
+    id.uid ||
+    id.id ||
+    id.userId ||
+    id.identity ||
+    id.sessionId ||
+    id.token ||
+    id.uuid ||
+    id.key ||
+    "UNKNOWN_ID";
 
-  logProtector("ATTACH_OK", { uid: id.uid });
+  window.tp_identity = {
+    raw: id,
+    uid,
+    resolvedAt: Date.now(),
+    layer: "A1",
+    organ: "SkinReflex"
+  };
 
-  log(
-    "%c[PulseOSSkinReflex] Attached with identity: " + id.uid,
-    "color: #4CAF50; font-weight: bold;"
+  logProtector("ATTACH_OK", { uid });
+
+  console.log(
+    "%c[PulseOSSkinReflex] Attached with identity:",
+    "color:#4CAF50; font-weight:bold;",
+    uid
   );
 }
-
 
 // ============================================================================
 // GLOBAL ERROR INTERCEPTOR (A1 → A2 → Router → Backend)
@@ -379,7 +403,7 @@ window.addEventListener(
 
     // ------------------------------------------------------------------------
     // HEALING LOGIC (missing-field patterns only)
-// ------------------------------------------------------------------------
+    // ------------------------------------------------------------------------
     const parsed = parseMissingField(msg);
     if (!parsed) {
       logProtector("NO_MISSING_FIELD", {
@@ -450,7 +474,6 @@ window.addEventListener(
   true
 );
 
-
 // ============================================================================
 // PARSER — same behavior, clearer intent
 // ============================================================================
@@ -470,5 +493,5 @@ function parseMissingField(message) {
 }
 
 // ============================================================================
-// END OF FILE — THE SKIN REFLEX / SURFACE EPITHELIAL MEMBRANE  [v10.2]
+// END OF FILE — THE SKIN REFLEX / SURFACE EPITHELIAL MEMBRANE  [v10.3]
 // ============================================================================
