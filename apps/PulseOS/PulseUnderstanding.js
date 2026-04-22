@@ -1,79 +1,18 @@
 // ============================================================================
-//  PULSE OS v9.2 — PULSE UNDERSTANDING (KERNEL OPENER)
+//  PULSE OS v9.3 — PULSE UNDERSTANDING (KERNEL OPENER)
 //  “CORTICAL OPENER / ORGANISM LOADER / COGNITIVE BOOTSTRAP”
 //  FRONTEND-ONLY • NO BACKEND CALLS ON LOAD • PURE WIRING
 // ============================================================================
 //
 //  ROLE:
 //    • Single entrypoint for the entire organism in the browser
-//    • Loads Nervous System, GPU, Earn, Mesh, Transport, Router
+//    • Loads Nervous System, GPU, Earn, Transport, Router
 //    • Provides Identity + Environment snapshot
 //    • Exposes a unified, stable API on window.Pulse
+//    • Exposes FAST, ADAPTIVE hooks to attach backend healers
+//      (CheckBand, CheckIdentity, CheckRouterMemory) AFTER the door/lock decide
+//      it’s safe.
 // ============================================================================
-
-
-// ============================================================================
-//  IMPORTS — FRONTEND BARREL (adjust paths per repo layout)
-// ============================================================================
-// ============================================================================
-//  v9.3 — FRONTEND SENSORY-INTELLIGENCE LOCK + CNS IMPORT LINK
-//  Prevents import binding death AND connects skin → CNS import router.
-// ============================================================================
-
-// ============================================================================
-//  v9.3 — FRONTEND SENSORY-INTELLIGENCE LOCK
-//  Prevents import binding death. Does NOT define routes.
-//  The CNS will build routes dynamically AFTER boot.
-// ============================================================================
-
-// Band / Nervous System
-import * as pulseband from "./pulse-proxy/PulseProxyPNSNervousSystem.js";
-import * as route from "./pulse-os/PulseOSCNSNervousSystem.js";
-import { attachScanner } from "./PULSE-OS/PulseOSSkinReflex.js";
-
-const PulseIdentity = {
-  deviceId: getOrCreateDeviceId(),
-  userId: getUserId()
-};
-
-// ⭐ CORRECT — attach the Skin Reflex with the FULL identity object
-attachScanner(PulseIdentity);
-
-// GPU OS (astral nervous system)
-import * as PulseGPU from "./pulse-gpu/PulseGPUAstralNervousSystem.js";
-
-
-// Earn Engine (frontend-facing hooks, if present)
-import * as PulseEarn from "./pulse-earn/PulseEarnSendSystem.js";
-
-
-// PulseSend (transport organ)
-import * as PulseSend from "./pulse-send/PulseSendSystem.js";
-
-// Router / CNS nervous system
-import * as PulseRouter from "./pulse-router/PulseRouterEvolutionaryThought.js";
-import { VitalsMonitor } from "./pulse-proxy/PulseProxyVitalsMonitor.js";
-import { VitalsLogger } from "./pulse-proxy/PulseProxyVitalsLogger.js";
-
-// ============================================================================
-//  CONTEXT — KERNEL IDENTITY (v9.2)
-// ============================================================================
-const PULSE_UNDERSTANDING_CONTEXT = {
-  layer: "PulseUnderstanding",
-  role: "KERNEL_OPENER",
-  version: "9.2",
-  lineage: "cortical-opener",
-  evo: {
-    dualMode: true,
-    browserOnly: true,
-    advantageCascadeAware: true,
-    driftProof: true,
-    unifiedAdvantageField: true,
-    organismLoader: true,
-    cognitiveBootstrap: true,
-    zeroDriftIdentity: true
-  }
-};
 
 
 // ============================================================================
@@ -85,7 +24,10 @@ function getOrCreateDeviceId() {
     const key = "tp_device_id_v9";
     let id = localStorage.getItem(key);
     if (!id) {
-      id = "dev_" + Math.random().toString(36).slice(2) + Date.now().toString(36);
+      id =
+        "dev_" +
+        Math.random().toString(36).slice(2) +
+        Date.now().toString(36);
       localStorage.setItem(key, id);
     }
     return id;
@@ -102,6 +44,64 @@ function getUserId() {
     return "anonymous";
   }
 }
+
+const PulseIdentity = {
+  deviceId: getOrCreateDeviceId(),
+  userId: getUserId()
+};
+
+
+// ============================================================================
+//  IMPORTS — FRONTEND BARREL
+// ============================================================================
+
+// Band / Nervous System
+import { pulseband } from "./pulse-proxy/PulseProxyPNSNervousSystem.js";
+
+// CNS / Router nervous system (if needed)
+import * as PulseRouter from "./pulse-router/PulseRouterEvolutionaryThought.js";
+
+// Skin reflex (PageScanner / door)
+import { attachScanner } from "./PULSE-OS/PulseOSSkinReflex.js";
+
+// GPU OS (astral nervous system)
+import * as PulseGPU from "./pulse-gpu/PulseGPUAstralNervousSystem.js";
+
+// Earn Engine (frontend-facing hooks, if present)
+import * as PulseEarn from "./pulse-earn/PulseEarnSendSystem.js";
+
+// Transport
+import * as PulseSend from "./pulse-send/PulseSendSystem.js";
+
+// Vitals
+import { VitalsMonitor } from "./pulse-proxy/PulseProxyVitalsMonitor.js";
+import { VitalsLogger } from "./pulse-proxy/PulseProxyVitalsLogger.js";
+
+
+// ⭐ Attach the Skin Reflex with the FULL identity object (door sees identity)
+attachScanner(PulseIdentity);
+
+
+// ============================================================================
+//  CONTEXT — KERNEL IDENTITY (v9.3)
+// ============================================================================
+const PULSE_UNDERSTANDING_CONTEXT = {
+  layer: "PulseUnderstanding",
+  role: "KERNEL_OPENER",
+  version: "9.3",
+  lineage: "cortical-opener",
+  evo: {
+    dualMode: true,
+    browserOnly: true,
+    advantageCascadeAware: true,
+    driftProof: true,
+    unifiedAdvantageField: true,
+    organismLoader: true,
+    cognitiveBootstrap: true,
+    zeroDriftIdentity: true
+  }
+};
+
 
 // ============================================================================
 //  ENVIRONMENT SNAPSHOT (NO NETWORK)
@@ -128,9 +128,12 @@ function buildEnvironmentSnapshot() {
 
 const PulseEnvironment = buildEnvironmentSnapshot();
 
+const hasWindow = typeof window !== "undefined";
+const hasFetch = typeof fetch === "function";
+
 
 // ============================================================================
-//  KERNEL BOOTSTRAP — PURE WIRING, NO BACKEND CALLS
+//  KERNEL BOOTSTRAP — PURE WIRING, NO BACKEND CALLS ON LOAD
 // ============================================================================
 function buildPulseKernel() {
   const kernelTs = Date.now();
@@ -142,7 +145,6 @@ function buildPulseKernel() {
     environment: PulseEnvironment
   };
 
-  // Unified organism surface
   const Pulse = {
     // Meta
     meta,
@@ -160,14 +162,17 @@ function buildPulseKernel() {
     // Economic organs
     Earn: PulseEarn || null,
 
-    // Mesh / overlay
-    Mesh: PulseMesh || null,
-
     // Transport
     Send: PulseSend || null,
 
-    // Routing
-    Router: PulseRouter || null
+    // Routing / CNS
+    Router: PulseRouter || null,
+
+    // Vitals
+    Vitals: {
+      Monitor: VitalsMonitor || null,
+      Logger: VitalsLogger || null
+    }
   };
 
   return Pulse;
@@ -177,9 +182,124 @@ const PulseKernel = buildPulseKernel();
 
 
 // ============================================================================
+//  BACKEND HEALER WIRING HOOKS (FAST, ADAPTIVE, DOOR-LEVEL, OPT-IN)
+//  These DO NOT run on load. The door/lock calls them when ready.
+//  They are smart about:
+//    • window existence
+//    • fetch availability
+//    • online/offline state
+//    • double-wiring
+// ============================================================================
+
+let bandHealerWired = false;
+let identityHealerWired = false;
+let routerMemoryHealerWired = false;
+
+// Small helper: only run backend if we actually can
+function canUseBackend() {
+  if (!hasWindow || !hasFetch) return false;
+  // if navigator is missing, we still allow (Node-like browser env)
+  if (!window.navigator) return true;
+  // prefer not to fire when explicitly offline
+  if (window.navigator.onLine === false) return false;
+  return true;
+}
+
+// 1) CheckBand — attach to PulseBand nervous updates
+export function wireCheckBandHealer() {
+  if (bandHealerWired) return;
+  bandHealerWired = true;
+
+  if (!pulseband || typeof pulseband.on !== "function") return;
+
+  // Smart: only attach if backend is usable
+  if (!canUseBackend()) return;
+
+  // Smart: first update triggers healing; subsequent updates reuse wiring
+  pulseband.on("update", async (status) => {
+    if (!canUseBackend()) return;
+
+    try {
+      const res = await fetch("/.netlify/functions/CheckBand", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ band: status })
+      });
+
+      const { band: healed } = await res.json();
+      if (healed) {
+        pulseband.setStatus?.({ live: healed });
+      }
+    } catch {
+      // fail-open: door must never break
+    }
+  });
+}
+
+// 2) CheckIdentity — lock/door can call once when it’s safe
+export async function wireCheckIdentityHealer() {
+  if (identityHealerWired) return;
+  identityHealerWired = true;
+
+  if (!canUseBackend()) return;
+
+  try {
+    const res = await fetch("/.netlify/functions/CheckIdentity", {
+      method: "POST",
+      credentials: "include"
+    });
+    const identity = await res.json();
+
+    if (hasWindow) {
+      if (window.PulseIdentity && typeof window.PulseIdentity.load === "function") {
+        window.PulseIdentity.load(identity);
+      } else if (window.Pulse && window.Pulse.Identity) {
+        window.Pulse.Identity.backend = identity;
+      }
+    }
+  } catch {
+    // fail-open
+  }
+}
+
+// 3) CheckRouterMemory — attach to RouterMemory flush (door-level logs)
+export function wireCheckRouterMemoryHealer() {
+  if (routerMemoryHealerWired) return;
+  routerMemoryHealerWired = true;
+
+  if (!hasWindow || !window.RouterMemory || typeof window.RouterMemory.onFlush !== "function") {
+    return;
+  }
+
+  if (!canUseBackend()) return;
+
+  window.RouterMemory.onFlush(async (logs) => {
+    if (!canUseBackend()) return;
+
+    try {
+      await fetch("/.netlify/functions/CheckRouterMemory", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ logs })
+      });
+    } catch {
+      // fail-open
+    }
+  });
+}
+
+// Convenience: wire all three in one fast call
+export function wirePulseHealers() {
+  wireCheckBandHealer();
+  wireCheckIdentityHealer();
+  wireCheckRouterMemoryHealer();
+}
+
+
+// ============================================================================
 //  GLOBAL BROADCAST — MAKE KERNEL AVAILABLE TO FRONTEND
 // ============================================================================
-if (typeof window !== "undefined") {
+if (hasWindow) {
   if (!window.Pulse) {
     window.Pulse = PulseKernel;
   } else {
@@ -188,6 +308,14 @@ if (typeof window !== "undefined") {
       meta: PulseKernel.meta
     };
   }
+
+  // Expose healer wiring on window for door/lock
+  window.PulseHealers = {
+    wireAll: wirePulseHealers,
+    wireBand: wireCheckBandHealer,
+    wireIdentity: wireCheckIdentityHealer,
+    wireRouterMemory: wireCheckRouterMemoryHealer
+  };
 }
 
 
@@ -198,7 +326,11 @@ export const PulseUnderstanding = {
   ...PULSE_UNDERSTANDING_CONTEXT,
   Identity: PulseIdentity,
   Environment: PulseEnvironment,
-  Kernel: PulseKernel
+  Kernel: PulseKernel,
+  wireHealers: wirePulseHealers,
+  wireCheckBandHealer,
+  wireCheckIdentityHealer,
+  wireCheckRouterMemoryHealer
 };
 
 export default PulseKernel;
