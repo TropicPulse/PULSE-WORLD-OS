@@ -106,70 +106,70 @@ export const PulseEarnMktAuctioneer = {
   // PING — Vast API health check
   // -------------------------------------------------------------------------
   async ping() {
-    const key = getKey();
-    const url = `https://cloud.vast.ai/api/v1/users/current`;
+  const key = getKey();
+  const url = `https://cloud.vast.ai/api/v1/users/current`;
 
-    const start = Date.now();
-    try {
-      const res = await fetch(url, {
-        headers: { Authorization: `Bearer ${key}` }
-      });
+  const start = Date.now();
+  try {
+    const res = await fetch(url, {
+      headers: { Authorization: `Bearer ${key}` }
+    });
 
-      if (!res.ok) {
-        healingState.lastPingError = `non_ok_status_${res.status}`;
-        return null;
-      }
-
-      const latency = Date.now() - start;
-      healingState.lastPingMs = latency;
-      healingState.lastPingError = null;
-      healingState.cycleCount++;
-      return latency;
-    } catch (err) {
-      healingState.lastPingError = err.message;
+    if (!res.ok) {
+      healingState.lastPingError = `non_ok_status_${res.status}`;
       return null;
     }
-  },
+
+    const latency = Date.now() - start;
+    healingState.lastPingMs = latency;
+    healingState.lastPingError = null;
+    healingState.cycleCount++;
+    return latency;
+  } catch (err) {
+    healingState.lastPingError = err.message;
+    return null;
+  }
+},
 
   // -------------------------------------------------------------------------
   // FETCH JOBS — Vast.ai "jobs" = GPU offers
   // -------------------------------------------------------------------------
   async fetchJobs(deviceId) {
-    const key = getKey();
-    const url = `https://cloud.vast.ai/api/v1/bundles/?q={}`;
+  const key = getKey();
+  const url = `https://cloud.vast.ai/api/v1/bundles/?q={}`;
 
-    try {
-      const res = await fetch(url, {
-        headers: { Authorization: `Bearer ${key}` }
-      });
+  try {
+    const res = await fetch(url, {
+      headers: { Authorization: `Bearer ${key}` }
+    });
 
-      if (!res.ok) {
-        healingState.lastFetchError = `non_ok_status_${res.status}`;
-        healingState.lastFetchCount = 0;
-        return [];
-      }
-
-      const data = await res.json();
-      const offers = data.offers || [];
-
-      healingState.lastPayloadVersion = Object.keys(data).join(",");
-
-      const jobs = offers
-        .map(raw => this.normalizeJob(raw))
-        .filter(j => j !== null);
-
-      updateVolatility(jobs);
-
-      healingState.lastFetchError = null;
-      healingState.lastFetchCount = jobs.length;
-      healingState.cycleCount++;
-      return jobs;
-    } catch (err) {
-      healingState.lastFetchError = err.message;
+    if (!res.ok) {
+      healingState.lastFetchError = `non_ok_status_${res.status}`;
       healingState.lastFetchCount = 0;
       return [];
     }
-  },
+
+    const data = await res.json();
+    const offers = data.offers || [];
+
+    healingState.lastPayloadVersion = Object.keys(data).join(",");
+
+    const jobs = offers
+      .map(raw => this.normalizeJob(raw))
+      .filter(j => j !== null);
+
+    updateVolatility(jobs);
+
+    healingState.lastFetchError = null;
+    healingState.lastFetchCount = jobs.length;
+    healingState.cycleCount++;
+    return jobs;
+  } catch (err) {
+    healingState.lastFetchError = err.message;
+    healingState.lastFetchCount = 0;
+    return [];
+  }
+},
 
   // -------------------------------------------------------------------------
   // SUBMIT RESULT — Vast.ai does NOT accept compute results
