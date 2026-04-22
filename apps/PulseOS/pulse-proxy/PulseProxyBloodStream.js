@@ -29,8 +29,6 @@
 // ============================================================================
 //  CNS‑SAFE IMPORTS (Heartbeat‑only, allowed in v9.1)
 // ============================================================================
-import { logger } from "../OSKernel/PulseLogger.js";
-import { PulseVersion, PulseRoles, PulseLineage } from "../OSKernel/PulseIdentity.js";
 
 
 // ============================================================================

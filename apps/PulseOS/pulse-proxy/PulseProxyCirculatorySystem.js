@@ -24,7 +24,6 @@
 //   • Deterministic, drift‑proof, AND‑architecture aligned
 // ============================================================================
 
-import { log, warn, error } from "./PulseProxyVitalsLogger.js";
 import { emitTelemetry } from "./PulseProxyBloodStream.js";
 
 

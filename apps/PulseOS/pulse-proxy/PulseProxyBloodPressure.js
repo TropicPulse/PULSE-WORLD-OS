@@ -27,9 +27,6 @@
 // ============================================================================
 //  Logger + Telemetry (heartbeat‑safe, no IQ)
 // ============================================================================
-import { logger } from "../OSKernel/PulseLogger.js";
-import { emitTelemetry } from "../OSKernel/PulseTelemetry.js";
-
 
 // ============================================================================
 //  ORGAN IDENTITY — v9.1
