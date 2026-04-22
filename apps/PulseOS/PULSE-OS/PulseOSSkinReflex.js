@@ -255,9 +255,6 @@ window.addEventListener(
       // DO NOT return — allow organism to continue
     }
 
-
-
-
     if (msg.includes("process is not defined")) {
       logProtector("PAGE_ENV_MISMATCH", {
         error: "frontendEnvMismatch",
