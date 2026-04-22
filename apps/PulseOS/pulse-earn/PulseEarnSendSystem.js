@@ -1,25 +1,26 @@
 // ============================================================================
 //  PulseEarnSendSystem.js — Earn Nervous System Conductor (v1.0)
-//  Tries Earn v2 → falls back to Earn v1 → delegates to PulseSendSystem
+//  Tries Earn v2 → falls back to Earn v1 (via legacy Pulse) → delegates to PulseSendSystem
 // ============================================================================
 //
 //  ROLE:
 //    • Accept an Impulse
 //    • Try to build Earn v2 (evolved organism)
-//    • If Earn v2 fails → fallback to LegacyEarn v1
+//    • If Earn v2 fails → fallback to Earn v1 (legacy pulse-style)
 //    • Wrap Earn organism into Pulse-compatible payload
 //    • Delegate ALL routing/mesh/send to PulseSendSystem
 //
 //  SAFETY:
 //    • No network
-//    • No GPU
+    //    • No GPU
 //    • No miner
 //    • No compute
 //    • Pure internal orchestration
 // ============================================================================
 
 import { createEarn, evolveEarn } from "./PulseEarn.js";
-import { createLegacyEarn, legacyEarnFromImpulse } from "./LegacyEarn.js";
+import { createLegacyPulse, legacyPulseFromImpulse } from "./PulseSendLegacyPulse.js";
+import { PulseRouter } from "./PulseRouterEvolutionaryThought.js";
 import { PulseSendSystem } from "./PulseSendSystem.js";
 
 
@@ -28,7 +29,7 @@ import { PulseSendSystem } from "./PulseSendSystem.js";
 // ============================================================================
 function tryEarnV2(impulse) {
   try {
-    const earn = createEarn({
+    const baseEarn = createEarn({
       jobId: impulse.tickId,
       pattern: impulse.intent || impulse.payload?.pattern || "UNKNOWN_EARN_PATTERN",
       payload: impulse.payload || {},
@@ -37,7 +38,15 @@ function tryEarnV2(impulse) {
       parentLineage: impulse.payload?.parentLineage || null
     });
 
-    return { ok: true, earn };
+    const evolved = typeof evolveEarn === "function"
+      ? evolveEarn(baseEarn, {
+          source: "PulseEarnSendSystem",
+          intent: impulse.intent,
+          lineage: impulse.payload?.parentLineage || null
+        })
+      : baseEarn;
+
+    return { ok: true, earn: evolved || baseEarn };
   } catch (err) {
     return { ok: false, error: err };
   }
@@ -45,10 +54,26 @@ function tryEarnV2(impulse) {
 
 
 // ============================================================================
-//  INTERNAL: Build Earn v1 fallback
+//  INTERNAL: Build Earn v1 fallback (via legacy Pulse)
 // ============================================================================
 function buildEarnV1(impulse) {
-  return legacyEarnFromImpulse(impulse);
+  // reuse legacy pulse builder as Earn v1 carrier
+  const legacyPulse = legacyPulseFromImpulse(impulse);
+
+  return {
+    // minimal Earn-shaped wrapper around legacy pulse
+    EarnRole: {
+      kind: "Earn",
+      version: legacyPulse.PulseRole?.version || "1.0"
+    },
+    jobId: legacyPulse.jobId,
+    pattern: legacyPulse.pattern,
+    payload: legacyPulse.payload,
+    priority: legacyPulse.priority,
+    returnTo: legacyPulse.returnTo,
+    lineage: legacyPulse.lineage,
+    meta: legacyPulse.meta || {}
+  };
 }
 
 
@@ -95,7 +120,7 @@ export const PulseEarnSendSystem = {
     if (v2.ok) {
       earn = v2.earn;
     } else {
-      // 2. Fallback to Earn v1
+      // 2. Fallback to Earn v1 (wrapped legacy pulse)
       earn = buildEarnV1(impulse);
       usedFallback = true;
     }
@@ -107,7 +132,7 @@ export const PulseEarnSendSystem = {
     const result = await PulseSendSystem.send({
       ...impulse,
       payload: {
-        ...impulse.payload,
+        ...(impulse.payload || {}),
         earn: pulseCompatibleEarn
       }
     });

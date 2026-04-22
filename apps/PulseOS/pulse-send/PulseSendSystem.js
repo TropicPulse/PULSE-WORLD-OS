@@ -1,30 +1,32 @@
 // ============================================================================
-//  PulseSendSystem.js — Nervous System Conductor (v1.0)
-//  Unifies: Impulse → Pulse v2 / Pulse v1 → Router → Mesh → Send
+//  PulseSendSystem.js — Nervous System Conductor (v2.0)
+//  Impulse → Pulse v2 (evolved) / Pulse v1 (legacy) → Router → Mesh → Send
 // ============================================================================
 //
 //  ROLE:
 //    • Accept an Impulse
-//    • Try Pulse v2 (evolved organism)
+//    • Try Pulse v2 (evolved organism via PulseShifterEvolutionaryPulse)
 //    • If Pulse v2 fails → fallback to LegacyPulse v1
 //    • Route → Mesh → Send
 //    • Return result to PulseBand
 //
 //  SAFETY:
-//    • No network
+//    • No direct network
 //    • No GPU
 //    • No Earn
-//    • No backend
-//    • Pure internal routing
+//    • Pure internal routing + transport
 // ============================================================================
 
-// External organs (you already have these)
+// Evolutionary + legacy pulse builders
 import { createPulse, evolvePulse } from "./PulseShifterEvolutionaryPulse.js";
 import { createLegacyPulse, legacyPulseFromImpulse } from "./PulseSendLegacyPulse.js";
 
+// Router
 import { PulseRouter } from "./PulseRouterEvolutionaryThought.js";
 
-import { PulseSend }   from "./PulseSend.js";
+// Mesh + Send (single, version‑aware organs)
+import { PulseMesh } from "./PulseMesh.js";
+import { PulseSend } from "./PulseSend.js";
 
 
 // ============================================================================
@@ -32,7 +34,7 @@ import { PulseSend }   from "./PulseSend.js";
 // ============================================================================
 function tryPulseV2(impulse) {
   try {
-    const p = createPulse({
+    const basePulse = createPulse({
       jobId: impulse.tickId,
       pattern: impulse.intent,
       payload: impulse.payload,
@@ -41,7 +43,13 @@ function tryPulseV2(impulse) {
       parentLineage: impulse.payload?.parentLineage || null
     });
 
-    return { ok: true, pulse: p };
+    const evolved = evolvePulse(basePulse, {
+      source: "PulseSendSystem",
+      intent: impulse.intent,
+      lineage: impulse.payload?.parentLineage || null
+    });
+
+    return { ok: true, pulse: evolved || basePulse };
   } catch (err) {
     return { ok: false, error: err };
   }
@@ -52,6 +60,16 @@ function tryPulseV2(impulse) {
 //  INTERNAL: Build Pulse v1 (fallback)
 // ============================================================================
 function buildPulseV1(impulse) {
+  // Prefer explicit legacy builder if available
+  if (typeof createLegacyPulse === "function") {
+    return createLegacyPulse({
+      jobId: impulse.tickId,
+      intent: impulse.intent,
+      payload: impulse.payload || {}
+    });
+  }
+
+  // Fallback: direct impulse → legacy pulse
   return legacyPulseFromImpulse(impulse);
 }
 
@@ -63,15 +81,19 @@ async function processPulse(pulse, impulse) {
   // 1. Route
   const route = PulseRouter.route(pulse, impulse);
 
-  // 2. Mesh (v3 for Pulse v2, v2 for Pulse v1)
-  const meshResult = pulse.PulseRole.version === "2.0"
-    ? PulseMesh.process(pulse, route, impulse)
-    : PulseMeshV2.process(pulse, route, impulse);
+  // 2. Mesh — version‑aware inside PulseMesh
+  const meshResult = await PulseMesh.process({
+    pulse,
+    route,
+    impulse
+  });
 
-  // 3. Send (v3 for Pulse v2, v2 for Pulse v1)
-  const sendResult = pulse.PulseRole.version === "2.0"
-    ? await PulseSend.send(meshResult, impulse)
-    : await PulseSendV2.send(meshResult, impulse);
+  // 3. Send — version‑aware inside PulseSend
+  const sendResult = await PulseSend.send({
+    pulse,
+    meshResult,
+    impulse
+  });
 
   return sendResult;
 }
@@ -86,7 +108,7 @@ export const PulseSendSystem = {
   //  SEND — entry point for the entire nervous system
   // --------------------------------------------------------------------------
   async send(impulse) {
-    // 1. Try Pulse v2
+    // 1. Try Pulse v2 (evolutionary)
     const v2 = tryPulseV2(impulse);
 
     let pulse = null;
@@ -95,7 +117,7 @@ export const PulseSendSystem = {
     if (v2.ok) {
       pulse = v2.pulse;
     } else {
-      // 2. Fallback to Pulse v1
+      // 2. Fallback to Pulse v1 (legacy)
       pulse = buildPulseV1(impulse);
       usedFallback = true;
     }
@@ -103,7 +125,7 @@ export const PulseSendSystem = {
     // 3. Process through nervous system
     const result = await processPulse(pulse, impulse);
 
-    // 4. Return to PulseBand
+    // 4. Return to PulseBand (if present)
     if (typeof window !== "undefined" && window.PulseBand?.receivePulseSendResult) {
       window.PulseBand.receivePulseSendResult({
         impulse,
