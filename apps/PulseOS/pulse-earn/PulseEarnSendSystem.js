@@ -19,9 +19,9 @@
 // ============================================================================
 
 import { createEarn, evolveEarn } from "./PulseEarn.js";
-import { createLegacyPulse, legacyPulseFromImpulse } from "./PulseSendLegacyPulse.js";
-import { PulseRouter } from "./PulseRouterEvolutionaryThought.js";
-import { PulseSendSystem } from "./PulseSendSystem.js";
+import { createLegacyPulse, legacyPulseFromImpulse } from "../pulse-send/PulseSendLegacyPulse.js";
+import { PulseRouter } from "../pulse-router/PulseRouterEvolutionaryThought.js";
+import { PulseSendSystem } from "../pulse-send/PulseSendSystem.js";
 
 
 // ============================================================================
