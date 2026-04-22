@@ -1,22 +1,23 @@
 // ============================================================================
 // FILE: /apps/PulseOS/Organs/Barriers/PulseOSTissueMembrane.js
-// PULSE OS — v10.0
+// PULSE OS — v10.1
 // “THE TISSUE MEMBRANE / MID‑LAYER EPITHELIAL REFLEX”
 // A2 REFLEX LAYER • MID‑LAYER SENTINEL • ZERO TIMING • ZERO STATE
 // ============================================================================
 //
-// ORGAN IDENTITY (v10.0):
+// ORGAN IDENTITY (v10.1):
 //   • Organ Type: Barrier / Reflex Membrane
 //   • Layer: A2 (Mid‑Layer Reflex)
 //   • Biological Analog: Tissue membrane between skin + organs
 //   • System Role: Intercept mid‑layer structural failures before they reach Mesh
 //
-// PURPOSE:
-//   ✔ Catch mid‑layer JS errors (A → A2 → A3 chain)
+// PURPOSE (v10.1):
+//   ✔ Catch mid‑layer JS errors (A1 → A2 → A3 chain)
 //   ✔ Detect import drift, recursion, env mismatches
-//   ✔ Build dynamic route traces (same as PageScanner)
-//   ✔ Track route degradation (healthScore, degraded flag)
-//   ✔ Forward lineage + context + degradation to Router (nervous system)
+//   ✔ Build dynamic route traces (living map, not config)
+//   ✔ Track route degradation (healthScore + tier + degraded flag)
+//   ✔ Tag route DNA at A2 (A2_TISSUE / A2_TISSUE_DEGRADED)
+//   ✔ Forward lineage + context + degradation to Router v10.1
 //   ✔ Prevent mid‑layer failures from reaching Mesh (organ layer)
 //   ✔ Trigger healing via Router without blocking forward progress
 //
@@ -25,6 +26,7 @@
 //   ✔ A mid‑layer reflex interceptor
 //   ✔ A structural integrity sentinel
 //   ✔ A healing trigger for A2‑level failures
+//   ✔ A DNA annotator for Router v10.1
 //
 // WHAT THIS ORGAN IS NOT:
 //   ✘ NOT a connector
@@ -34,7 +36,7 @@
 //   ✘ NOT a state machine
 //   ✘ NOT a timing system
 //
-// SAFETY CONTRACT (v10.0):
+// SAFETY CONTRACT (v10.1):
 //   • Never run timers, loops, or scheduling
 //   • Never store state (except ephemeral route memory)
 //   • Never mutate payloads
@@ -51,7 +53,7 @@
 const LAYER_ID   = "LAYER-REFLEX";
 const LAYER_NAME = "THE TISSUE MEMBRANE";
 const LAYER_ROLE = "MID-LAYER ERROR GUARDIAN & HEALING TRIGGER";
-const LAYER_VER  = "10.0";
+const LAYER_VER  = "10.1";
 
 const LAYER_DIAGNOSTICS_ENABLED =
   window.PULSE_LAYER_DIAGNOSTICS === "true" ||
@@ -74,7 +76,7 @@ const logLayer = (stage, details = {}) => {
 
 
 // ============================================================================
-// ROUTE MEMORY (living map — same as PageScanner, now with degradation)
+// ROUTE MEMORY — NOW WITH DEGRADATION TIERS + DNA TAGGING
 // ============================================================================
 const LayerRouteMemory = {
   store: {},
@@ -84,15 +86,30 @@ const LayerRouteMemory = {
     return message + "::" + top;
   },
 
+  classifyTier(healthScore) {
+    const h = typeof healthScore === "number" ? healthScore : 1.0;
+
+    if (h >= 0.95) return "microDegrade";
+    if (h >= 0.85) return "softDegrade";
+    if (h >= 0.50) return "midDegrade";
+    if (h >= 0.15) return "hardDegrade";
+    return "criticalDegrade";
+  },
+
   remember(message, frames, routeTrace, overrides = {}) {
     const key = this.makeKey(message, frames);
+    const baseHealth = overrides.healthScore ?? 1.0;
+    const tier = this.classifyTier(baseHealth);
+
     this.store[key] = {
       ts: Date.now(),
       message,
       frames,
       routeTrace,
-      degraded: false,
-      healthScore: 1.0, // 1.0 = perfect, 0.0 = unusable
+      degraded: !!overrides.degraded,
+      healthScore: baseHealth,
+      tier,
+      dnaTag: "A2_TISSUE",
       ...overrides
     };
 
@@ -100,36 +117,42 @@ const LayerRouteMemory = {
       key,
       frames: frames.length,
       degraded: this.store[key].degraded,
-      healthScore: this.store[key].healthScore
+      healthScore: this.store[key].healthScore,
+      tier: this.store[key].tier,
+      dnaTag: this.store[key].dnaTag
     });
   },
 
   markDegraded(message, frames, healthScore = 0.85) {
     const key = this.makeKey(message, frames);
     const entry = this.store[key];
-
     if (!entry) return;
 
     entry.degraded = true;
     entry.healthScore = healthScore;
+    entry.tier = this.classifyTier(healthScore);
+    entry.dnaTag = "A2_TISSUE_DEGRADED";
 
     logLayer("ROUTE_MEMORY_DEGRADED", {
       key,
-      healthScore
+      healthScore,
+      tier: entry.tier,
+      dnaTag: entry.dnaTag
     });
   },
 
   recall(message, frames) {
     const key = this.makeKey(message, frames);
     const entry = this.store[key];
-
     if (!entry) return null;
 
     logLayer("ROUTE_MEMORY_HIT", {
       key,
       frames: entry.frames.length,
       degraded: entry.degraded,
-      healthScore: entry.healthScore
+      healthScore: entry.healthScore,
+      tier: entry.tier,
+      dnaTag: entry.dnaTag
     });
 
     return entry.routeTrace;
@@ -249,17 +272,20 @@ window.addEventListener(
     const memoryEntry = LayerRouteMemory.getEntry(msg, rawFrames);
     const degraded = memoryEntry?.degraded || false;
     const healthScore = memoryEntry?.healthScore ?? 1.0;
+    const tier = memoryEntry?.tier || "microDegrade";
+    const dnaTag = memoryEntry?.dnaTag || "A2_TISSUE";
 
     // ------------------------------------------------------------------------
     // HEALING LOGIC (A2 reflex → Router)
-    // ------------------------------------------------------------------------
+// ------------------------------------------------------------------------
     const parsed = parseMissingField(msg);
     if (!parsed) {
       logLayer("NO_MISSING_FIELD", {
         degraded,
-        healthScore
+        healthScore,
+        tier,
+        dnaTag
       });
-      // Still prevent default so the organism handles it, but we don't heal a specific field
       event.preventDefault();
       return;
     }
@@ -270,7 +296,9 @@ window.addEventListener(
       table,
       field,
       degraded,
-      healthScore
+      healthScore,
+      tier,
+      dnaTag
     });
 
     layerHealing = true;
@@ -284,7 +312,9 @@ window.addEventListener(
         table,
         field,
         degraded,
-        healthScore
+        healthScore,
+        tier,
+        dnaTag
       });
 
       await route("fetchField", {
@@ -295,20 +325,26 @@ window.addEventListener(
         layer: "A2",
         routeTrace,
         degraded,
-        healthScore
+        healthScore,
+        tier,
+        dnaTag
       });
 
       logLayer("LAYER_HEALING_SUCCESS", {
         table,
         field,
         degraded,
-        healthScore
+        healthScore,
+        tier,
+        dnaTag
       });
     } catch (err) {
       logLayer("LAYER_HEALING_FAILED", {
         error: String(err),
         degraded,
-        healthScore
+        healthScore,
+        tier,
+        dnaTag
       });
       error("[LayerScanner] Router fetch failed:", err);
     }
@@ -340,5 +376,5 @@ function parseMissingField(message) {
 }
 
 // ============================================================================
-// END OF FILE — THE TISSUE MEMBRANE / MID‑LAYER EPITHELIAL REFLEX  [v10.0]
+// END OF FILE — THE TISSUE MEMBRANE / MID‑LAYER EPITHELIAL REFLEX  [v10.1]
 // ============================================================================

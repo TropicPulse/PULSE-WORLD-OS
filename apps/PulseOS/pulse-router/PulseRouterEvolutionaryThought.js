@@ -1,6 +1,6 @@
 // ============================================================================
-//  EvolutionaryThought.js — v10.0
-//  PulseRouter v10 • Pattern Brainstem • Degradation-Aware Reflex Router
+//  EvolutionaryThought.js — v10.1
+//  PulseRouter v10.1 • Pattern Brainstem • Degradation + Route DNA Router
 // ============================================================================
 //
 //  WHAT THIS ORGAN IS:
@@ -9,6 +9,7 @@
 //  • Chooses target organs based on pattern + lineage + degradation.
 //  • Remembers successful routes (reflex arcs).
 //  • Remembers degraded routes and bypasses (avoidance arcs).
+//  • Builds and maintains "route DNA" for each pattern/lineage/page.
 //  • Deterministic, pattern‑native, lineage‑aware, degradation‑aware.
 //
 //  WHAT THIS ORGAN IS NOT:
@@ -20,7 +21,7 @@
 //  • Not a GPU/Earn/OS organ.
 //  • Not an IQ/import organ.
 //
-//  SAFETY CONTRACT (v10.0):
+//  SAFETY CONTRACT (v10.1):
 //  ------------------------
 //  • No imports.
 //  • No network.
@@ -29,15 +30,16 @@
 //  • Pure deterministic string/shape logic.
 //  • Internal memory only (no external mutation).
 //  • Degradation-aware, but always routes forward.
+//  • Route DNA is internal only, never mutates external state.
 // ============================================================================
 
-// ⭐ PulseRole — identifies this as the PulseRouter v10.0 Organ
+// ⭐ PulseRole — identifies this as the PulseRouter v10.1 Organ
 export const PulseRole = {
   type: "Router",
   subsystem: "PulseRouter",
   layer: "Brainstem",
-  version: "10.0",
-  identity: "PulseRouter-v10.0",
+  version: "10.1",
+  identity: "PulseRouter-v10.1",
 
   evo: {
     driftProof: true,
@@ -50,6 +52,7 @@ export const PulseRole = {
     pulseRouter10Ready: true,
     degradationAware: true,
     routeAroundReady: true,
+    routeDNAReady: true,
     futureEvolutionReady: true
   },
 
@@ -74,6 +77,18 @@ function buildRouteKey(pulse) {
   return `${pattern}::d${depth}::p${pageId}`;
 }
 
+// ⭐ Build a simple pattern ancestry (e.g., "gpu/insights/detail" → ["gpu","insights","detail"])
+function buildPatternAncestry(pattern) {
+  if (!pattern || typeof pattern !== "string") return [];
+  return pattern.split("/").filter(Boolean);
+}
+
+// ⭐ Build a lineage signature (compressed representation of lineage array)
+function buildLineageSignature(lineage) {
+  if (!Array.isArray(lineage) || lineage.length === 0) return "NO_LINEAGE";
+  return lineage.join(">");
+}
+
 // ⭐ Very small, deterministic organ hint from pattern
 function inferOrganHint(pattern) {
   const p = (pattern || "").toLowerCase();
@@ -92,21 +107,40 @@ function defaultRoute(pulse) {
   return inferOrganHint(pulse.pattern);
 }
 
-// ⭐ Classify degradation into routing mode
-//    • direct      → ideal route
-//    • bypass      → keep route but mark as degraded
-//    • routeAround → route around this segment (fallback to OS)
-function classifyDegradation(healthScore) {
+// ⭐ Degradation tier classification
+//    • microDegrade     → 0.95–1.0
+//    • softDegrade      → 0.85–0.95
+//    • midDegrade       → 0.50–0.85
+//    • hardDegrade      → 0.15–0.50
+//    • criticalDegrade  → 0.00–0.15
+function classifyDegradationTier(healthScore) {
   const h = typeof healthScore === "number" ? healthScore : 1.0;
 
-  if (h >= 0.85) return "direct";
-  if (h >= 0.15) return "bypass";
-  return "routeAround";
+  if (h >= 0.95) return "microDegrade";
+  if (h >= 0.85) return "softDegrade";
+  if (h >= 0.50) return "midDegrade";
+  if (h >= 0.15) return "hardDegrade";
+  return "criticalDegrade";
+}
+
+// ⭐ Map degradation tier to routing mode
+//    • direct       → ideal route
+//    • microBypass  → minor degradation, same organ
+//    • softBypass   → moderate degradation, same organ
+//    • midBypass    → heavier degradation, same organ
+//    • hardBypass   → severe degradation, same organ
+//    • routeAround  → route around this segment (fallback to OS)
+function mapTierToMode(tier) {
+  if (tier === "microDegrade") return "direct";
+  if (tier === "softDegrade") return "microBypass";
+  if (tier === "midDegrade") return "softBypass";
+  if (tier === "hardDegrade") return "midBypass";
+  return "routeAround"; // criticalDegrade
 }
 
 
 // ============================================================================
-//  FACTORY — Create PulseRouter v10.0
+//  FACTORY — Create PulseRouter v10.1
 // ============================================================================
 //
 //  Behavior:
@@ -117,39 +151,50 @@ function classifyDegradation(healthScore) {
 //           - pageId
 //           - degraded (boolean)
 //           - healthScore (0.0–1.0)
+//           - nextPageCandidates (array of pageIds) [optional, for higher layers]
+//           - previousPageId [optional]
+//           - routeTrace [optional, for DNA annotation]
 //    • remember(pulse, targetOrgan, outcome?, healthScore?) → stores reflex memory
+//    • exportRouteDNA(routeKey) → returns route DNA snapshot
 //
 //  Memory model:
 //    • internal map: routeKey → {
-//          idealOrgan,      // best known organ for this pattern/lineage/page
-//          currentOrgan,    // organ used under current degradation
+//          idealOrgan,        // best known organ for this pattern/lineage/page
+//          currentOrgan,      // organ used under current degradation
 //          successCount,
 //          failureCount,
 //          degraded,
-//          healthScore,     // last observed healthScore
-//          mode             // "direct" | "bypass" | "routeAround"
+//          healthScore,       // last observed healthScore
+//          tier,              // degradation tier
+//          mode,              // routing mode
+//          patternAncestry,   // ["gpu","insights","detail"]
+//          lineageSignature,  // "page>membrane>router"
+//          degradationHistory,// array of { tier, mode, healthScore, outcome }
+//          bypassHistory,     // array of { pageId, mode }
+//          stabilityScore,    // 0.0–1.0, higher = more stable
+//          healingScore       // 0.0–1.0, higher = more healed
 //      }
 //    • no randomness, no timestamps
 // ============================================================================
 
 export function createPulseRouter({ log } = {}) {
-  const memory = {}; // routeKey → { idealOrgan, currentOrgan, successCount, failureCount, degraded, healthScore, mode }
+  const memory = {}; // routeKey → route DNA entry
 
-  function route(pulse) {
+  function ensureEntry(pulse, healthScore) {
     const key = buildRouteKey(pulse);
-    const incomingHealth = typeof pulse.healthScore === "number" ? pulse.healthScore : 1.0;
-    const incomingDegraded = !!pulse.degraded;
-
     let entry = memory[key];
 
-    // Initialize memory entry if none exists
+    const patternAncestry = buildPatternAncestry(pulse.pattern);
+    const lineageSignature = buildLineageSignature(pulse.lineage);
+    const h = typeof healthScore === "number" ? healthScore : 1.0;
+    const tier = classifyDegradationTier(h);
+    const mode = mapTierToMode(tier);
+
     if (!entry) {
       const idealOrgan = defaultRoute(pulse);
-      const mode = classifyDegradation(incomingHealth);
       let currentOrgan = idealOrgan;
 
       if (mode === "routeAround") {
-        // Full route-around: OS as global safe fallback
         currentOrgan = "OS";
       }
 
@@ -158,83 +203,124 @@ export function createPulseRouter({ log } = {}) {
         currentOrgan,
         successCount: 0,
         failureCount: 0,
-        degraded: incomingDegraded || mode !== "direct",
-        healthScore: incomingHealth,
-        mode
+        degraded: mode !== "direct",
+        healthScore: h,
+        tier,
+        mode,
+        patternAncestry,
+        lineageSignature,
+        degradationHistory: [],
+        bypassHistory: [],
+        stabilityScore: 0.5,
+        healingScore: h
       };
 
       memory[key] = entry;
     } else {
-      // Update degradation state based on latest healthScore
-      const mode = classifyDegradation(incomingHealth);
-      entry.healthScore = incomingHealth;
-      entry.degraded = incomingDegraded || mode !== "direct";
-      entry.mode = mode;
+      entry.patternAncestry = patternAncestry;
+      entry.lineageSignature = lineageSignature;
+      entry.healthScore = h;
+      entry.tier = tier;
+      entry.mode = mapTierToMode(tier);
+      entry.degraded = entry.mode !== "direct";
+    }
 
-      if (mode === "direct") {
-        // Use ideal route when healthy
-        entry.currentOrgan = entry.idealOrgan;
-      } else if (mode === "bypass") {
-        // Bypass but keep same organ; higher layers decide how to "go around page"
-        // Router stays deterministic: same organ, different mode.
-        entry.currentOrgan = entry.currentOrgan || entry.idealOrgan;
-      } else {
-        // routeAround: full bypass to OS
-        entry.currentOrgan = "OS";
-      }
+    return { key, entry };
+  }
 
-      memory[key] = entry;
+  function updateRoutingMode(entry) {
+    if (entry.mode === "direct") {
+      entry.currentOrgan = entry.idealOrgan;
+    } else if (
+      entry.mode === "microBypass" ||
+      entry.mode === "softBypass" ||
+      entry.mode === "midBypass" ||
+      entry.mode === "hardBypass"
+    ) {
+      entry.currentOrgan = entry.currentOrgan || entry.idealOrgan;
+    } else {
+      entry.currentOrgan = "OS";
+    }
+  }
+
+  function adjustStabilityAndHealing(entry, outcome) {
+    if (outcome === "success") {
+      entry.stabilityScore = Math.min(1.0, entry.stabilityScore + 0.05);
+      entry.healingScore = Math.min(1.0, entry.healingScore + 0.1);
+    } else if (outcome === "failure") {
+      entry.stabilityScore = Math.max(0.0, entry.stabilityScore - 0.1);
+      entry.healingScore = Math.max(0.0, entry.healingScore - 0.1);
+    }
+
+    if (entry.healingScore >= 0.99) {
+      entry.mode = "direct";
+      entry.tier = "microDegrade";
+      entry.degraded = false;
+      entry.currentOrgan = entry.idealOrgan;
+      entry.bypassHistory = [];
+    }
+  }
+
+  function route(pulse) {
+    const incomingHealth =
+      typeof pulse.healthScore === "number" ? pulse.healthScore : 1.0;
+    const incomingDegraded = !!pulse.degraded;
+
+    const { key, entry } = ensureEntry(pulse, incomingHealth);
+
+    entry.degraded = incomingDegraded || entry.mode !== "direct";
+
+    updateRoutingMode(entry);
+
+    if (entry.mode !== "direct" && pulse.pageId) {
+      entry.bypassHistory.push({
+        pageId: pulse.pageId,
+        mode: entry.mode
+      });
     }
 
     const targetOrgan = entry.currentOrgan;
 
-    log && log("[PulseRouter-v10.0] Routing pulse", {
-      jobId: pulse.jobId,
-      pattern: pulse.pattern,
-      pageId: pulse.pageId || "NO_PAGE",
-      lineageDepth: Array.isArray(pulse.lineage) ? pulse.lineage.length : 0,
-      routeKey: key,
-      targetOrgan,
-      mode: entry.mode,
-      degraded: entry.degraded,
-      healthScore: entry.healthScore
-    });
+    log &&
+      log("[PulseRouter-v10.1] Routing pulse", {
+        jobId: pulse.jobId,
+        pattern: pulse.pattern,
+        pageId: pulse.pageId || "NO_PAGE",
+        lineageDepth: Array.isArray(pulse.lineage) ? pulse.lineage.length : 0,
+        routeKey: key,
+        targetOrgan,
+        mode: entry.mode,
+        tier: entry.tier,
+        degraded: entry.degraded,
+        healthScore: entry.healthScore,
+        stabilityScore: entry.stabilityScore,
+        healingScore: entry.healingScore
+      });
 
     return targetOrgan;
   }
 
   function remember(pulse, targetOrgan, outcome = "success", healthScore) {
-    const key = buildRouteKey(pulse);
-    let entry = memory[key];
-
-    if (!entry) {
-      const idealOrgan = targetOrgan || defaultRoute(pulse);
-      const mode = classifyDegradation(healthScore);
-      entry = {
-        idealOrgan,
-        currentOrgan: idealOrgan,
-        successCount: 0,
-        failureCount: 0,
-        degraded: mode !== "direct",
-        healthScore: typeof healthScore === "number" ? healthScore : 1.0,
-        mode
-      };
-    }
+    const { key, entry } = ensureEntry(pulse, healthScore);
 
     if (outcome === "success") {
       entry.successCount += 1;
 
-      // On success with good health, we can safely treat this as the ideal route
       if (typeof healthScore === "number") {
         entry.healthScore = healthScore;
-        const mode = classifyDegradation(healthScore);
-        entry.mode = mode;
-        entry.degraded = mode !== "direct";
+        entry.tier = classifyDegradationTier(healthScore);
+        entry.mode = mapTierToMode(entry.tier);
+        entry.degraded = entry.mode !== "direct";
 
-        if (mode === "direct") {
+        if (entry.mode === "direct") {
           entry.idealOrgan = targetOrgan;
           entry.currentOrgan = targetOrgan;
-        } else if (mode === "bypass") {
+        } else if (
+          entry.mode === "microBypass" ||
+          entry.mode === "softBypass" ||
+          entry.mode === "midBypass" ||
+          entry.mode === "hardBypass"
+        ) {
           entry.currentOrgan = targetOrgan;
         } else {
           entry.currentOrgan = "OS";
@@ -243,48 +329,81 @@ export function createPulseRouter({ log } = {}) {
         entry.idealOrgan = targetOrgan;
         entry.currentOrgan = targetOrgan;
       }
-
     } else if (outcome === "failure") {
       entry.failureCount += 1;
 
-      // If failures dominate, treat this route as degraded and prefer OS as route-around
       if (entry.failureCount > entry.successCount && targetOrgan !== "OS") {
         entry.degraded = true;
         entry.mode = "routeAround";
+        entry.tier = "criticalDegrade";
         entry.currentOrgan = "OS";
       }
     }
 
-    memory[key] = entry;
-
-    log && log("[PulseRouter-v10.0] Remembering route", {
-      jobId: pulse.jobId,
-      pattern: pulse.pattern,
-      pageId: pulse.pageId || "NO_PAGE",
-      routeKey: key,
-      idealOrgan: entry.idealOrgan,
-      currentOrgan: entry.currentOrgan,
+    entry.degradationHistory.push({
+      tier: entry.tier,
       mode: entry.mode,
-      degraded: entry.degraded,
       healthScore: entry.healthScore,
-      successCount: entry.successCount,
-      failureCount: entry.failureCount,
       outcome
     });
 
+    adjustStabilityAndHealing(entry, outcome);
+
+    memory[key] = entry;
+
+    log &&
+      log("[PulseRouter-v10.1] Remembering route", {
+        jobId: pulse.jobId,
+        pattern: pulse.pattern,
+        pageId: pulse.pageId || "NO_PAGE",
+        routeKey: key,
+        idealOrgan: entry.idealOrgan,
+        currentOrgan: entry.currentOrgan,
+        mode: entry.mode,
+        tier: entry.tier,
+        degraded: entry.degraded,
+        healthScore: entry.healthScore,
+        stabilityScore: entry.stabilityScore,
+        healingScore: entry.healingScore,
+        successCount: entry.successCount,
+        failureCount: entry.failureCount,
+        outcome
+      });
+
     return entry;
+  }
+
+  function exportRouteDNA(routeKey) {
+    const entry = memory[routeKey];
+    if (!entry) return null;
+
+    return {
+      idealOrgan: entry.idealOrgan,
+      currentOrgan: entry.currentOrgan,
+      patternAncestry: entry.patternAncestry,
+      lineageSignature: entry.lineageSignature,
+      degradationHistory: entry.degradationHistory.slice(),
+      bypassHistory: entry.bypassHistory.slice(),
+      stabilityScore: entry.stabilityScore,
+      healingScore: entry.healingScore,
+      tier: entry.tier,
+      mode: entry.mode,
+      degraded: entry.degraded,
+      healthScore: entry.healthScore
+    };
   }
 
   return {
     PulseRole,
     route,
-    remember
+    remember,
+    exportRouteDNA
   };
 }
 
 
 // ============================================================================
-//  ORGAN EXPORT — ⭐ PulseRouter (v10.0)
+//  ORGAN EXPORT — ⭐ PulseRouter (v10.1)
 //  Provides BOTH:
 //    • createPulseRouter() factory
 //    • Unified organ object (PulseRouter) for Kernel/Understanding
@@ -292,18 +411,24 @@ export function createPulseRouter({ log } = {}) {
 export const PulseRouter = {
   PulseRole,
 
-  // Placeholder until wired by PulseUnderstanding
   route(...args) {
     throw new Error(
-      "[PulseRouter-v10.0] PulseRouter.route() was called before initialization. " +
-      "Use createPulseRouter(...) to wire dependencies."
+      "[PulseRouter-v10.1] PulseRouter.route() was called before initialization. " +
+        "Use createPulseRouter(...) to wire dependencies."
     );
   },
 
   remember(...args) {
     throw new Error(
-      "[PulseRouter-v10.0] PulseRouter.remember() was called before initialization. " +
-      "Use createPulseRouter(...) to wire dependencies."
+      "[PulseRouter-v10.1] PulseRouter.remember() was called before initialization. " +
+        "Use createPulseRouter(...) to wire dependencies."
+    );
+  },
+
+  exportRouteDNA(...args) {
+    throw new Error(
+      "[PulseRouter-v10.1] PulseRouter.exportRouteDNA() was called before initialization. " +
+        "Use createPulseRouter(...) to wire dependencies."
     );
   }
 };
