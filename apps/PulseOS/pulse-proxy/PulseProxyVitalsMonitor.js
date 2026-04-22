@@ -7,6 +7,7 @@
 // Safe globals (backend-only)
 const db    = global.db;
 const log   = global.log   || console.log;
+const warn  = global.warn  || console.warn;
 const error = global.error || console.error;
 
 // ============================================================================
@@ -193,7 +194,7 @@ export function isHub(metrics) {
     metrics.totalRequests > 500;
 
   if (hub) {
-    log("vitals", "hub_detected", {
+    warn("vitals", "hub_detected", {
       userId: metrics.userId ?? "?",
       relays: metrics.meshRelays,
       hubSignals: metrics.hubSignals,

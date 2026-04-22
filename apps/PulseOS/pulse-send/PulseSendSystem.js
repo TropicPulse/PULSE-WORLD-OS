@@ -20,8 +20,11 @@
 import { createPulse, evolvePulse } from "../pulse-shifter/PulseShifterEvolutionaryPulse.js";
 import { createLegacyPulse, legacyPulseFromImpulse } from "../pulse-send/PulseSendLegacyPulse.js";
 
+// Router
+import { route } from "../pulse-router/PulseRouterEvolutionaryThought.js";
 
-import { PulseSend } from "./PulseSend.js";
+import { createPulseSend } from "./PulseSend.js";
+
 
 
 // ============================================================================

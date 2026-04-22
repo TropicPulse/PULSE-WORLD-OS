@@ -81,14 +81,17 @@ function normalizeArgs(args) {
   let message = "";
   let rest = [];
 
+  // Raw %c logs
   if (typeof args[0] === "string" && args[0].startsWith("%c")) {
     return { subsystem, message: args[0], rest: args.slice(1), raw: true };
   }
 
+  // subsystem + message
   if (args.length >= 2 && typeof args[0] === "string" && typeof args[1] === "string") {
     return { subsystem: args[0], message: args[1], rest: args.slice(2), raw: false };
   }
 
+  // object logs
   if (typeof args[0] === "object") {
     const obj = args[0];
 
@@ -98,10 +101,12 @@ function normalizeArgs(args) {
     return { subsystem, message: JSON.stringify(obj), rest: [], raw: false };
   }
 
+  // single arg
   if (args.length === 1) {
     return { subsystem, message: args[0], rest: [], raw: false };
   }
 
+  // fallback
   return { subsystem, message: args.join(" "), rest, raw: false };
 }
 
@@ -175,7 +180,7 @@ export function makeTelemetryPacket(subsystem, event, data = {}) {
     data,
     meta: {
       layer: "PulseLogger",
-      version: "9.3",   // ⭐ upgraded
+      version: "9.3",
       subsystem,
       event
     }
@@ -190,9 +195,9 @@ console.warn = (...args) => warn(...args);
 console.error = (...args) => error(...args);
 
 // ============================================================================
-//  LOGGER EXPORT
+//  LOGGER EXPORT — ⭐ THIS IS WHAT VITALS MONITOR NEEDS
 // ============================================================================
-export const logger = {
+export const VitalsLogger = {
   log,
   warn,
   error,
@@ -202,7 +207,7 @@ export const logger = {
   makeTelemetryPacket,
   meta: {
     layer: "PulseLogger",
-    version: "9.3"   // ⭐ upgraded
+    version: "9.3"
   }
 };
 
