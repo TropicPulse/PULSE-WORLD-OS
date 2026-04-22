@@ -79,11 +79,14 @@ const PulseIdentity = {
 //  IMPORTS — FRONTEND BARREL
 // ============================================================================
 
+// Vitals
+import { VitalsMonitor } from "./pulse-proxy/PulseProxyVitalsMonitor.js";
+import { VitalsLogger } from "./pulse-proxy/PulseProxyVitalsLogger.js";
 // Band / Nervous System
 import { pulseband } from "./pulse-proxy/PulseProxyPNSNervousSystem.js";
 
 // CNS / Router nervous system (if needed)
-import * as PulseRouter from "./pulse-router/PulseRouterEvolutionaryThought.js";
+import * as route from "./pulse-router/PulseRouterEvolutionaryThought.js";
 
 // Skin reflex (PageScanner / door)
 import { attachScanner } from "./PULSE-OS/PulseOSSkinReflex.js";
@@ -97,9 +100,6 @@ import * as PulseEarn from "./pulse-earn/PulseEarnSendSystem.js";
 // Transport
 import * as PulseSend from "./pulse-send/PulseSendSystem.js";
 
-// Vitals
-import { VitalsMonitor } from "./pulse-proxy/PulseProxyVitalsMonitor.js";
-import { VitalsLogger } from "./pulse-proxy/PulseProxyVitalsLogger.js";
 
 // ⭐ Global loop + multi-instance governor (frontend-safe)
 import { withOrganGuard } from "./PULSE-OS/PulseOSGovernor.js";
