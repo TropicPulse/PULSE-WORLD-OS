@@ -18,14 +18,14 @@
 // ============================================================================
 
 // Evolutionary + legacy pulse builders
-import { createPulse, evolvePulse } from "./PulseShifterEvolutionaryPulse.js";
-import { createLegacyPulse, legacyPulseFromImpulse } from "./PulseSendLegacyPulse.js";
+import { createPulse, evolvePulse } from "../pulse-shifter/PulseShifterEvolutionaryPulse.js";
+import { createLegacyPulse, legacyPulseFromImpulse } from "../pulse-send/PulseSendLegacyPulse.js";
 
 // Router
-import { PulseRouter } from "./PulseRouterEvolutionaryThought.js";
+import { PulseRouter } from "../pulse-router/PulseRouterEvolutionaryThought.js";
 
 // Mesh + Send (single, version‑aware organs)
-import { PulseMesh } from "./PulseMesh.js";
+import { PulseMesh } from "../pulse-mesh/PulseMesh.js";
 import { PulseSend } from "./PulseSend.js";
 
 
