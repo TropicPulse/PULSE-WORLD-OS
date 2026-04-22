@@ -245,12 +245,16 @@ window.addEventListener(
           identity: "organ-level",
           importLaw: "v9.3",
           behavior: "full-import",
-          driftProof: true
+          driftProof: true,
+          wholeOrgan: true,
+          noSymbolChecks: true,
+          noSubimportChecks: true
         }
       });
 
       // DO NOT return — allow organism to continue
     }
+
 
 
 
