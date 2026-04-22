@@ -54,7 +54,8 @@ import * as PulseSend from "./pulse-send/PulseSendSystem.js";
 
 // Router / CNS nervous system
 import * as PulseRouter from "./pulse-router/PulseRouterEvolutionaryThought.js";
-
+import { VitalsMonitor } from "../pulse-proxy/PulseProxyVitalsMonitor.js";
+import { VitalsLogger } from "../pulse-proxy/PulseProxyVitalsLogger.js";
 
 // ============================================================================
 //  CONTEXT — KERNEL IDENTITY (v9.2)
