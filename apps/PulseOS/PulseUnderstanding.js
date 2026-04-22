@@ -20,7 +20,7 @@
 import { pulseband } from "./pulse-proxy/PulseProxyPNSNervousSystem.js";
 
 // GPU OS (astral nervous system)
-import * as PulseGPU from "./pulse-gpu/PulseGPUBrain.js";
+import * as PulseGPU from "./pulse-gpu/PulseGPUAstralNervousSystem.js";
 
 // Earn Engine (frontend-facing hooks, if present)
 import * as PulseEarn from "./pulse-earn/PulseEarn.js";

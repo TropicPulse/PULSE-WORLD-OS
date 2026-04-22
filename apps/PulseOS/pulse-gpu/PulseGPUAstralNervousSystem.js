@@ -44,7 +44,7 @@ export * from "./PulseGPUDrive.js";
 // --- GPU ENGINE -------------------------------------------------------------
 //  ASTRAL MUSCLE — WebGPU execution layer, frame conductor
 //  Version: PulseGPUEngine v9.2 — PulseSend‑2.0‑ready, Earn-compatible
-export * from "./PulseGPUEngine.js";
+export * from "./PulseGPUDriveCenter.js";
 
 // --- GPU AUTO-OPTIMIZE -----------------------------------------------------
 //  GUARDIAN CORTEX — Permission, safety, optimization, self-healing triggers
