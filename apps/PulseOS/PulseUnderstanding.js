@@ -18,18 +18,19 @@
 
 // Band / Nervous System
 import { pulseband } from "./pulse-proxy/PulseProxyPNSNervousSystem.js";
-
+import { pulseband } from "./pulse-proxy/PulseOSCNSNervousSystem.js";
 // GPU OS (astral nervous system)
 import * as PulseGPU from "./pulse-gpu/PulseGPUAstralNervousSystem.js";
+import * as PulseGPU from "./pulse-gpu/PulseGPUAstralMuscleSystem.js";
 
 // Earn Engine (frontend-facing hooks, if present)
-import * as PulseEarn from "./pulse-earn/PulseEarn.js";
+import * as PulseEarn from "./pulse-earn/PulesEarnSendSystem.js";
 
 // Mesh / routing / overlay (if present)
 import * as PulseMesh from "./pulse-mesh/PulseMeshCortex.js";
 
 // PulseSend (transport organ)
-import * as PulseSend from "./pulse-send/PulseSend.js";
+import * as PulseSend from "./pulse-send/PulseSendSystem.js";
 
 // Router / CNS nervous system
 import * as PulseRouter from "./pulse-router/PulseRouterEvolutionaryThought.js";

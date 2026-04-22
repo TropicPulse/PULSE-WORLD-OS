@@ -45,10 +45,6 @@ const SURVIVAL_CONTEXT = {
   }
 };
 
-// ------------------------------------------------------------
-// IMPORTS
-// ------------------------------------------------------------
-import { SCORE_CONSTANTS } from "./PulseGPUCommandments.js";
 
 // ------------------------------------------------------------
 // Utility: stable JSON stringify for hashing

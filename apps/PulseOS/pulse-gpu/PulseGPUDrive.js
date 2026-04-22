@@ -60,7 +60,6 @@
 //      - gpuOrganContract: "PulseGPU-v9.1"
 //      - earnCompatibility: "PulseEarn-v9"
 // ============================================================================
-import { PulseGPUBrainExport } from "./PulseGPUBrain.js";
 
 const PULSE_GPU_RUNTIME_VERSION = 9.2;
 

@@ -27,9 +27,7 @@
 //  • Deterministic: same inputs → same healing result
 // ============================================================================
 
-import { PulseGPUPerformanceAdvisor } from "./PulseGPUDriveCenter.js";
 import { PulseGPUSettingsRestorer } from "./PulseGPUCognitiveLayer.js";
-import { PulseGPUAutoOptimize } from "./PulseGPUGuardianCortex.js";
 import { PulseGPUUXBridge } from "./PulseGPUCognitiveIntelligence.js";
 
 const GPU_HEALER_CONTEXT = {
