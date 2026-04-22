@@ -70,9 +70,9 @@ const PulseIdentity = {
 // ============================================================================
 //  IMPORTS — FRONTEND BARREL (ALL ORGANS ROUTE THROUGH HERE)
 // ============================================================================
-import { PulseIntentMap } from "./PULSE-OS/PulseIntentMap";
+import { PulseIntentMap } from "./PULSE-OS/PulseIntentMap.js";
 import { PulseIQMap } from "./PULSE-OS/PulseIQMap.js";
-import { PulseOrganismMap } from "./PULSE-OS/PulseOrganismMap";
+import { PulseOrganismMap } from "./PULSE-OS/PulseOrganismMap.js";
 import { cognitiveBootstrap } from "./PULSE-OS/PulseOSBrain.js";
 import { VitalsMonitor } from "./pulse-proxy/PulseProxyVitalsMonitor.js";
 import { pulseband } from "./pulse-proxy/PulseProxyPNSNervousSystem.js";
