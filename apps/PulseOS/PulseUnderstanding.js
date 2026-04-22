@@ -10,29 +10,24 @@
 //    • Provides Identity + Environment snapshot
 //    • Exposes a unified, stable API on window.Pulse
 //    • Exposes FAST, ADAPTIVE hooks to attach backend healers
-//      (CheckBand, CheckIdentity, CheckRouterMemory) AFTER the door/lock decide
-//      it’s safe.
-//    • Exposes a GOVERNED execution surface (PulseOSGovernor) so all organs
-//      can run under loop + multi-instance law.
+//    • Exposes a GOVERNED execution surface (PulseOSGovernor)
 // ============================================================================
 
 
 // ============================================================================
-//  GLOBAL LOGGER ATTACHMENT — v9.3
-//  Ensures all organs have a working logger (frontend-safe).
-//  PURE SIDE-EFFECT: logging only, no backend calls.
+//  GLOBAL LOGGER ATTACHMENT — v9.3 (MUST RUN FIRST)
 // ============================================================================
-if (typeof global !== "undefined") {
-  if (typeof global.log !== "function") {
-    global.log = (...args) => console.log("[PULSE]", ...args);
-  }
-  if (typeof global.error !== "function") {
-    global.error = (...args) => console.error("[PULSE-ERR]", ...args);
-  }
-}
+import { VitalsLogger } from "./pulse-proxy/PulseProxyVitalsLogger.js";
 
-// Route trace for this layer (Kernel Opener)
-global?.log?.("route", {
+globalThis.log    = VitalsLogger.log;
+globalThis.warn   = VitalsLogger.warn;
+globalThis.error  = VitalsLogger.error;
+globalThis.critical = VitalsLogger.critical;
+globalThis.group  = VitalsLogger.group;
+globalThis.groupEnd = VitalsLogger.groupEnd;
+globalThis.makeTelemetryPacket = VitalsLogger.makeTelemetryPacket;
+
+log("route", {
   layer: "PulseUnderstanding",
   organ: "KERNEL_OPENER",
   version: "9.3"
@@ -48,10 +43,7 @@ function getOrCreateDeviceId() {
     const key = "tp_device_id_v9";
     let id = localStorage.getItem(key);
     if (!id) {
-      id =
-        "dev_" +
-        Math.random().toString(36).slice(2) +
-        Date.now().toString(36);
+      id = "dev_" + Math.random().toString(36).slice(2) + Date.now().toString(36);
       localStorage.setItem(key, id);
     }
     return id;
@@ -76,37 +68,21 @@ const PulseIdentity = {
 
 
 // ============================================================================
-//  IMPORTS — FRONTEND BARREL
+//  IMPORTS — FRONTEND BARREL (ALL ORGANS ROUTE THROUGH HERE)
 // ============================================================================
-
-// Vitals
-
-
 import { VitalsMonitor } from "./pulse-proxy/PulseProxyVitalsMonitor.js";
-// Band / Nervous System
 import { pulseband } from "./pulse-proxy/PulseProxyPNSNervousSystem.js";
-
-// CNS / Router nervous system (if needed)
 import * as PulseRouter from "./pulse-router/PulseRouterEvolutionaryThought.js";
-
-// Skin reflex (PageScanner / door)
 import { attachScanner } from "./PULSE-OS/PulseOSSkinReflex.js";
-
-// GPU OS (astral nervous system)
 import * as PulseGPU from "./pulse-gpu/PulseGPUAstralNervousSystem.js";
-
-// Earn Engine (frontend-facing hooks, if present)
 import * as PulseEarn from "./pulse-earn/PulseEarn.js";
-
-// Transport
 import * as PulseSend from "./pulse-send/PulseSend.js";
-
-
-// ⭐ Global loop + multi-instance governor (frontend-safe)
 import { withOrganGuard } from "./PULSE-OS/PulseOSGovernor.js";
 
 
-// ⭐ Attach the Skin Reflex with the FULL identity object (door sees identity)
+// ============================================================================
+//  ATTACH SKIN REFLEX (AFTER LOGGER IS READY)
+// ============================================================================
 attachScanner(PulseIdentity);
 
 
@@ -162,11 +138,9 @@ const hasFetch = typeof fetch === "function";
 
 // ============================================================================
 //  GOVERNED EXECUTION — Run any organ through PulseOSGovernor
-//  This does NOT auto-run anything; it just exposes a safe wrapper.
 // ============================================================================
 function runThroughGovernor(organName, pulseOrImpulse, fn) {
   return withOrganGuard(organName, pulseOrImpulse, (instanceContext) => {
-    // fn gets instanceContext so it can slice work if it wants
     return fn(instanceContext);
   });
 }
@@ -186,35 +160,18 @@ function buildPulseKernel() {
   };
 
   const Pulse = {
-    // Meta
     meta,
-
-    // Identity
     Identity: PulseIdentity,
     Environment: PulseEnvironment,
-
-    // Nervous system
     Band: pulseband || null,
-
-    // GPU / Astral nervous system
     GPU: PulseGPU || null,
-
-    // Economic organs
     Earn: PulseEarn || null,
-
-    // Transport
     Send: PulseSend || null,
-
-    // Routing / CNS
     Router: PulseRouter || null,
-
-    // Vitals
     Vitals: {
       Monitor: VitalsMonitor || null,
       Logger: VitalsLogger || null
     },
-
-    // ⭐ Governed execution surface (global loop + multi-instance law)
     Governed: {
       run: runThroughGovernor
     }
@@ -227,39 +184,26 @@ const PulseKernel = buildPulseKernel();
 
 
 // ============================================================================
-//  BACKEND HEALER WIRING HOOKS (FAST, ADAPTIVE, DOOR-LEVEL, OPT-IN)
-//  These DO NOT run on load. The door/lock calls them when ready.
-//  They are smart about:
-//    • window existence
-//    • fetch availability
-//    • online/offline state
-//    • double-wiring
+//  BACKEND HEALER WIRING HOOKS (DOOR-LEVEL, OPT-IN)
 // ============================================================================
 let bandHealerWired = false;
 let identityHealerWired = false;
 let routerMemoryHealerWired = false;
 
-// Small helper: only run backend if we actually can
 function canUseBackend() {
   if (!hasWindow || !hasFetch) return false;
-  // if navigator is missing, we still allow (Node-like browser env)
   if (!window.navigator) return true;
-  // prefer not to fire when explicitly offline
   if (window.navigator.onLine === false) return false;
   return true;
 }
 
-// 1) CheckBand — attach to PulseBand nervous updates
 export function wireCheckBandHealer() {
   if (bandHealerWired) return;
   bandHealerWired = true;
 
   if (!pulseband || typeof pulseband.on !== "function") return;
-
-  // Smart: only attach if backend is usable
   if (!canUseBackend()) return;
 
-  // Smart: first update triggers healing; subsequent updates reuse wiring
   pulseband.on("update", async (status) => {
     if (!canUseBackend()) return;
 
@@ -271,16 +215,11 @@ export function wireCheckBandHealer() {
       });
 
       const { band: healed } = await res.json();
-      if (healed) {
-        pulseband.setStatus?.({ live: healed });
-      }
-    } catch {
-      // fail-open: door must never break
-    }
+      if (healed) pulseband.setStatus?.({ live: healed });
+    } catch {}
   });
 }
 
-// 2) CheckIdentity — lock/door can call once when it’s safe
 export async function wireCheckIdentityHealer() {
   if (identityHealerWired) return;
   identityHealerWired = true;
@@ -295,26 +234,20 @@ export async function wireCheckIdentityHealer() {
     const identity = await res.json();
 
     if (hasWindow) {
-      if (window.PulseIdentity && typeof window.PulseIdentity.load === "function") {
+      if (window.PulseIdentity?.load) {
         window.PulseIdentity.load(identity);
-      } else if (window.Pulse && window.Pulse.Identity) {
+      } else if (window.Pulse?.Identity) {
         window.Pulse.Identity.backend = identity;
       }
     }
-  } catch {
-    // fail-open
-  }
+  } catch {}
 }
 
-// 3) CheckRouterMemory — attach to RouterMemory flush (door-level logs)
 export function wireCheckRouterMemoryHealer() {
   if (routerMemoryHealerWired) return;
   routerMemoryHealerWired = true;
 
-  if (!hasWindow || !window.RouterMemory || typeof window.RouterMemory.onFlush !== "function") {
-    return;
-  }
-
+  if (!hasWindow || !window.RouterMemory?.onFlush) return;
   if (!canUseBackend()) return;
 
   window.RouterMemory.onFlush(async (logs) => {
@@ -326,13 +259,10 @@ export function wireCheckRouterMemoryHealer() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ logs })
       });
-    } catch {
-      // fail-open
-    }
+    } catch {}
   });
 }
 
-// Convenience: wire all three in one fast call
 export function wirePulseHealers() {
   wireCheckBandHealer();
   wireCheckIdentityHealer();
@@ -344,18 +274,10 @@ export function wirePulseHealers() {
 //  GLOBAL BROADCAST — MAKE KERNEL AVAILABLE TO FRONTEND
 // ============================================================================
 if (hasWindow) {
-  if (!window.Pulse) {
-    window.Pulse = PulseKernel;
-  } else {
-    window.Pulse = {
-      ...window.Pulse,
-      meta: PulseKernel.meta,
-      // ensure Governed is present even if Pulse existed before
-      Governed: PulseKernel.Governed
-    };
-  }
+  window.Pulse = window.Pulse
+    ? { ...window.Pulse, meta: PulseKernel.meta, Governed: PulseKernel.Governed }
+    : PulseKernel;
 
-  // Expose healer wiring on window for door/lock
   window.PulseHealers = {
     wireAll: wirePulseHealers,
     wireBand: wireCheckBandHealer,
@@ -364,13 +286,6 @@ if (hasWindow) {
   };
 }
 
-globalThis.log    = VitalsLogger.log;
-globalThis.warn   = VitalsLogger.warn;
-globalThis.error  = VitalsLogger.error;
-globalThis.critical = VitalsLogger.critical;
-globalThis.group  = VitalsLogger.group;
-globalThis.groupEnd = VitalsLogger.groupEnd;
-globalThis.makeTelemetryPacket = VitalsLogger.makeTelemetryPacket;
 
 // ============================================================================
 //  EXPORTS — PRIMARY ENTRYPOINT
@@ -384,9 +299,7 @@ export const PulseUnderstanding = {
   wireCheckBandHealer,
   wireCheckIdentityHealer,
   wireCheckRouterMemoryHealer,
-  // ⭐ expose governed runner for direct use
   runThroughGovernor
 };
-
 
 export default PulseKernel;
