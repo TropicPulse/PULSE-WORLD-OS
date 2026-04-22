@@ -51,6 +51,7 @@
 // OWNER MODULE RESOLUTION — v10.3 (Brain-map based, no degradation)
 // ============================================================================
 import { PulseOrganismMap } from "/apps/PulseOS/PulseBrainMap.js";
+PulseOSBrain.map = PulseOrganismMap;
 
 function resolveOwnerModule(symbol) {
   try {

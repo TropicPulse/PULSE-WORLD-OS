@@ -65,7 +65,8 @@
 //  IMPORTS — v10 LAW: BRAIN MAY IMPORT ONLY PULSEIQ
 // ============================================================================
 import { PulseIQ } from "./PulseIQ.js";
-
+import { PulseOrganismMap } from "/apps/PulseOS/PulseBrainMap.js";
+PulseOSBrain.map = PulseOrganismMap;
 
 // ============================================================================
 // 0) BRAIN IDENTITY (PulseRole) — v10.0
