@@ -29,6 +29,16 @@
 // Band / Nervous System
 import * as pulseband from "./pulse-proxy/PulseProxyPNSNervousSystem.js";
 import * as route from "./pulse-os/PulseOSCNSNervousSystem.js";
+import { attachScanner } from "./PULSE-OS/PulseOSSkinReflex.js";
+
+const PulseIdentity = {
+  deviceId: getOrCreateDeviceId(),
+  userId: getUserId()
+};
+
+// ⭐ CORRECT — attach the Skin Reflex with the FULL identity object
+attachScanner(PulseIdentity);
+
 // GPU OS (astral nervous system)
 import * as PulseGPU from "./pulse-gpu/PulseGPUAstralNervousSystem.js";
 import * as PulseGPU from "./pulse-gpu/PulseGPUAstralMuscleSystem.js";
@@ -44,7 +54,6 @@ import * as PulseSend from "./pulse-send/PulseSendSystem.js";
 
 // Router / CNS nervous system
 import * as PulseRouter from "./pulse-router/PulseRouterEvolutionaryThought.js";
-import { attachScanner } from "./PULSE-OS/PulseOSSkinReflex.js";
 
 
 // ============================================================================
@@ -94,12 +103,6 @@ function getUserId() {
     return "anonymous";
   }
 }
-
-const PulseIdentity = {
-  deviceId: getOrCreateDeviceId(),
-  userId: getUserId()
-};
-attachScanner(PulseIdentity.userId);
 
 // ============================================================================
 //  ENVIRONMENT SNAPSHOT (NO NETWORK)
