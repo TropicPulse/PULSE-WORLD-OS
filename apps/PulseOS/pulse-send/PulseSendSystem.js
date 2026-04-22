@@ -19,15 +19,12 @@
 // ============================================================================
 
 // External organs (you already have these)
-import { createPulse, evolvePulse } from "./EvolutionaryPulse.js";
-import { createLegacyPulse, legacyPulseFromImpulse } from "./LegacyPulse.js";
+import { createPulse, evolvePulse } from "./PulseShifterEvolutionaryPulse.js";
+import { createLegacyPulse, legacyPulseFromImpulse } from "./PulseSendLegacyPulse.js";
 
-import { PulseRouter } from "./PulseRouter-v3.js";
-import { PulseMesh }   from "./PulseMesh-v3.js";
-import { PulseMeshV2 } from "./PulseMesh-v2.js";
+import { PulseRouter } from "./PulseRouterEvolutionaryThought.js";
 
-import { PulseSend }   from "./PulseSend-v3.js";
-import { PulseSendV2 } from "./PulseSend-v2.js";
+import { PulseSend }   from "./PulseSend.js";
 
 
 // ============================================================================
