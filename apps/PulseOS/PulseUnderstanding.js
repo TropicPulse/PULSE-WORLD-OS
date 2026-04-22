@@ -18,6 +18,28 @@
 
 
 // ============================================================================
+//  GLOBAL LOGGER ATTACHMENT — v9.3
+//  Ensures all organs have a working logger (frontend-safe).
+//  PURE SIDE-EFFECT: logging only, no backend calls.
+// ============================================================================
+if (typeof global !== "undefined") {
+  if (typeof global.log !== "function") {
+    global.log = (...args) => console.log("[PULSE]", ...args);
+  }
+  if (typeof global.error !== "function") {
+    global.error = (...args) => console.error("[PULSE-ERR]", ...args);
+  }
+}
+
+// Route trace for this layer (Kernel Opener)
+global?.log?.("route", {
+  layer: "PulseUnderstanding",
+  organ: "KERNEL_OPENER",
+  version: "9.3"
+});
+
+
+// ============================================================================
 //  DEVICE + USER IDENTITY (FRONTEND-ONLY, NO BACKEND)
 // ============================================================================
 function getOrCreateDeviceId() {
@@ -141,7 +163,6 @@ const hasFetch = typeof fetch === "function";
 //  GOVERNED EXECUTION — Run any organ through PulseOSGovernor
 //  This does NOT auto-run anything; it just exposes a safe wrapper.
 // ============================================================================
-
 function runThroughGovernor(organName, pulseOrImpulse, fn) {
   return withOrganGuard(organName, pulseOrImpulse, (instanceContext) => {
     // fn gets instanceContext so it can slice work if it wants
@@ -213,7 +234,6 @@ const PulseKernel = buildPulseKernel();
 //    • online/offline state
 //    • double-wiring
 // ============================================================================
-
 let bandHealerWired = false;
 let identityHealerWired = false;
 let routerMemoryHealerWired = false;
