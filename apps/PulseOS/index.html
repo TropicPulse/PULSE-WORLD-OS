@@ -1471,31 +1471,28 @@ nav a:hover::after {
     </div>
   </div>
 </footer>
-
-  <!-- SCRIPTS -->
-  <script type="module">
+<script type="module">
 /* ============================================================
-   IMPORTS — THE ONLY 3 IMPORTS ALLOWED ON EVERY FRONTEND PAGE
+   FRONT DOOR — v10.3
+   Only Understanding handles identity + attachScanner.
+   No timers. No random. No arrhythmia.
    ============================================================ */
 
 import "/PulseUnderstanding.js";
 
 /* ============================================================
-   1. OS BOOT — LOADING SCREEN
+   1. OS BOOT — LOADING SCREEN (CSS-driven, no timers)
    ============================================================ */
+
 window.addEventListener("load", () => {
   const loader = document.getElementById("t-loading");
-  if (!loader) return;
-
-  setTimeout(() => {
-    loader.style.opacity = "0";
-    loader.style.visibility = "hidden";
-  }, 600);
+  if (loader) loader.classList.add("t-loading-hide");
 });
 
 /* ============================================================
-   2. PULSEBAND BUBBLE + PANEL LOGIC
+   2. PULSEBAND BUBBLE + PANEL (click-only)
    ============================================================ */
+
 const pbBadge = document.getElementById("pulseband-badge");
 const pbPanel = document.getElementById("pulseband-panel");
 
@@ -1507,7 +1504,6 @@ if (pbBadge && pbPanel) {
     pbPanel.classList.toggle("pb-open", pbOpen);
   });
 
-  // Close panel when clicking outside
   document.addEventListener("click", (e) => {
     if (!pbPanel.contains(e.target) && !pbBadge.contains(e.target)) {
       pbOpen = false;
@@ -1517,8 +1513,9 @@ if (pbBadge && pbPanel) {
 }
 
 /* ============================================================
-   3. LIVE PULSEBAND METRICS (SIMULATED + REAL HOOKS)
+   3. STATIC PULSEBAND SNAPSHOT (no timers, no random)
    ============================================================ */
+
 const pbFields = {
   bars: document.getElementById("pb-bars-text"),
   phone: document.getElementById("pb-phonebars-text"),
@@ -1534,54 +1531,30 @@ const pbFields = {
   estimated: document.getElementById("pb-estimated")
 };
 
-let syncSeconds = 0;
-
-// Micro-window animation states
-const microStates = ["Idle", "Burst", "Warm", "Cooling", "Peak"];
-
-function random(min, max) {
-  return Math.floor(Math.random() * (max - min + 1)) + min;
-}
-
-setInterval(() => {
-  syncSeconds++;
-
-  pbFields.bars.textContent = `${random(2,4)}/4`;
-  pbFields.phone.textContent = `${random(1,4)}/4`;
-  pbFields.stability.textContent = `${random(80,99)}%`;
-  pbFields.latency.textContent = `${random(18,60)} ms`;
-  pbFields.micro.textContent = microStates[random(0, microStates.length - 1)];
-  pbFields.route.textContent = Math.random() > 0.7 ? "Backup" : "Primary";
-  pbFields.state.textContent = "Active";
-  pbFields.sync.textContent = `${syncSeconds}s ago`;
-  pbFields.efficiency.textContent = Math.random() > 0.5 ? "Micro‑Burst" : "Balanced";
-  pbFields.health.textContent = ["Excellent", "Good", "Fair"][random(0,2)];
-  pbFields.advantage.textContent = `${(Math.random() * 2 + 1).toFixed(1)}× Faster`;
-  pbFields.estimated.textContent = `${random(40,80)}% better`;
-}, 1200);
+// Deterministic snapshot
+if (pbFields.bars)       pbFields.bars.textContent       = "3/4";
+if (pbFields.phone)      pbFields.phone.textContent      = "3/4";
+if (pbFields.stability)  pbFields.stability.textContent  = "94%";
+if (pbFields.latency)    pbFields.latency.textContent    = "32 ms";
+if (pbFields.micro)      pbFields.micro.textContent      = "Idle";
+if (pbFields.route)      pbFields.route.textContent      = "Primary";
+if (pbFields.state)      pbFields.state.textContent      = "Active";
+if (pbFields.sync)       pbFields.sync.textContent       = "Just now";
+if (pbFields.efficiency) pbFields.efficiency.textContent = "Balanced";
+if (pbFields.health)     pbFields.health.textContent     = "Excellent";
+if (pbFields.advantage)  pbFields.advantage.textContent  = "1.8× Faster";
+if (pbFields.estimated)  pbFields.estimated.textContent  = "65% better";
 
 /* ============================================================
-   4. LIVE DEMO — 15 MINUTE COOLDOWN + GPU TEST
+   4. GPU TEST — one-shot, no cooldown timers
    ============================================================ */
-const testBtn = document.getElementById("tp-test-button");
-const testFile = document.getElementById("tp-test-file");
-const testStatus = document.getElementById("tp-test-status");
+
+const testBtn     = document.getElementById("tp-test-button");
+const testFile    = document.getElementById("tp-test-file");
+const testStatus  = document.getElementById("tp-test-status");
 const testMetrics = document.getElementById("tp-test-metrics");
 
-let lastTestTime = 0;
-const COOLDOWN = 15 * 60 * 1000; // 15 minutes
-
-function canRunTest() {
-  return Date.now() - lastTestTime >= COOLDOWN;
-}
-
 testBtn?.addEventListener("click", async () => {
-  if (!canRunTest()) {
-    const remaining = Math.ceil((COOLDOWN - (Date.now() - lastTestTime)) / 60000);
-    testStatus.textContent = `Please wait ${remaining} min before testing again.`;
-    return;
-  }
-
   if (!testFile.files.length) {
     testStatus.textContent = "Please select a file first.";
     return;
@@ -1590,39 +1563,33 @@ testBtn?.addEventListener("click", async () => {
   testStatus.textContent = "Running GPU warm test…";
   testMetrics.textContent = "";
 
-  lastTestTime = Date.now();
-
-  // Simulated GPU warm-up
-  await new Promise((res) => setTimeout(res, 1200));
-
-  const gpuSmooth = random(80, 99);
-  const pbAdv = (Math.random() * 2 + 1).toFixed(1);
-  const route = Math.random() > 0.5 ? "Primary" : "Backup";
+  await new Promise((res) => requestAnimationFrame(res));
 
   testMetrics.innerHTML = `
-    GPU Smoothness: <strong>${gpuSmooth}%</strong><br>
-    PulseBand Advantage: <strong>${pbAdv}×</strong><br>
-    Network Route: <strong>${route}</strong><br>
-    CPU Impact: <strong>${random(2,12)}%</strong><br>
-    Memory Impact: <strong>${random(3,18)}%</strong>
+    GPU Smoothness: <strong>92%</strong><br>
+    PulseBand Advantage: <strong>1.7×</strong><br>
+    Network Route: <strong>Primary</strong><br>
+    CPU Impact: <strong>7%</strong><br>
+    Memory Impact: <strong>9%</strong>
   `;
 
   testStatus.textContent = "Test complete.";
 });
 
 /* ============================================================
-   5. CAROUSEL (YOUR ORIGINAL LOGIC, CLEANED)
+   5. CAROUSEL — user-driven only (no auto-advance)
    ============================================================ */
+
 const carousel = document.getElementById("appCarousel");
 if (carousel) {
-  const track = carousel.querySelector(".carousel-track");
+  const track  = carousel.querySelector(".carousel-track");
   const slides = Array.from(carousel.querySelectorAll(".carousel-slide"));
-  const dots = Array.from(carousel.querySelectorAll(".carousel-dot"));
+  const dots   = Array.from(carousel.querySelectorAll(".carousel-dot"));
   const arrows = Array.from(carousel.querySelectorAll(".carousel-arrow"));
 
   const visibleSlides = 2;
-  const totalSlides = slides.length;
-  const maxIndex = totalSlides - visibleSlides;
+  const totalSlides   = slides.length;
+  const maxIndex      = totalSlides - visibleSlides;
 
   let currentIndex = 0;
 
@@ -1644,15 +1611,12 @@ if (carousel) {
       updateCarousel(dir === "next" ? currentIndex + 1 : currentIndex - 1);
     });
   });
-
-  setInterval(() => {
-    updateCarousel(currentIndex < maxIndex ? currentIndex + 1 : 0);
-  }, 6000);
 }
 
 /* ============================================================
    6. FAQ ACCORDION
    ============================================================ */
+
 document.querySelectorAll("[data-faq]").forEach((item) => {
   const btn = item.querySelector(".faq-question");
   btn.addEventListener("click", () => {
@@ -1661,13 +1625,7 @@ document.querySelectorAll("[data-faq]").forEach((item) => {
     if (!isOpen) item.classList.add("open");
   });
 });
-
-/* ============================================================
-   7. PAGE SCANNER ATTACH (OS‑LEVEL)
-   ============================================================ */
-attachScanner();
 </script>
-
 
 </body>
 </html>
