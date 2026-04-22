@@ -172,3 +172,21 @@ export function createPulseSend({
     send
   };
 }
+// ============================================================================
+//  ORGAN EXPORT — ⭐ PulseSend (v3.0)
+//  Provides BOTH:
+//    • createPulseSend() factory
+//    • Unified organ object (PulseSend) for PulseKernel
+// ============================================================================
+
+export const PulseSend = {
+  PulseRole,
+
+  // Placeholder until wired by PulseUnderstanding or PulseSendSystem
+  send(...args) {
+    throw new Error(
+      "[PulseSend-v3] PulseSend.send() was called before initialization. " +
+      "Use createPulseSend(...) to wire dependencies."
+    );
+  }
+};

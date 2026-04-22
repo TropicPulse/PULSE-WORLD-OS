@@ -96,10 +96,10 @@ import { attachScanner } from "./PULSE-OS/PulseOSSkinReflex.js";
 import * as PulseGPU from "./pulse-gpu/PulseGPUAstralNervousSystem.js";
 
 // Earn Engine (frontend-facing hooks, if present)
-import * as PulseEarnSystem from "./pulse-earn/PulseEarnSendSystem.js";
+import * as PulseEarn from "./pulse-earn/PulseEarn.js";
 
 // Transport
-import * as PulseSendSystem from "./pulse-send/PulseSendSystem.js";
+import * as PulseSend from "./pulse-send/PulseSend.js";
 
 
 // ⭐ Global loop + multi-instance governor (frontend-safe)

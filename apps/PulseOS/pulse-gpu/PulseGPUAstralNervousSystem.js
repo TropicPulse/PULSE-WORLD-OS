@@ -60,3 +60,33 @@ export * from "./PulseGPUSpine.js";
 //  IMMUNE SYSTEM — Fault detection, recovery, stabilization
 //  Version: PulseGPULymphNodes v9.2 (to be aligned)
 export * from "./PulseGPULymphNodes.js";
+// ============================================================================
+//  ORGAN EXPORT — ⭐ PulseGPU (v9.2)
+//  Unified GPU Astral Nervous System Organ
+//  Provides a single identity + placeholder boot surface
+// ============================================================================
+export const PulseGPU = {
+  PulseRole: {
+    type: "Organ",
+    subsystem: "PulseGPU",
+    layer: "AstralNervousSystem",
+    version: "9.2",
+    identity: "PulseGPUAstralNervousSystem-v9.2",
+
+    evo: {
+      driftProof: true,
+      unifiedOrganReady: true,
+      multiOrganReady: true,
+      futureEvolutionReady: true,
+      astralBoundary: true
+    }
+  },
+
+  // Placeholder until GPU Brain/Runtime/Engine are wired
+  start(...args) {
+    throw new Error(
+      "[PulseGPU-v9.2] PulseGPU.start() was called before initialization. " +
+      "Wire GPU Brain/Runtime/Engine in PulseUnderstanding."
+    );
+  }
+};

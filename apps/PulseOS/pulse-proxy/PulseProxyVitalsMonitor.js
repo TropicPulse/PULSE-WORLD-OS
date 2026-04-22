@@ -245,3 +245,35 @@ export function allocateInstances(
 
   return final;
 }
+// ============================================================================
+//  ORGAN EXPORT — ⭐ VitalsMonitor (v9.3)
+// ============================================================================
+export const VitalsMonitor = {
+  PulseRole,
+
+  // Core measurement functions
+  updateUserMetrics,
+  calculateTrustScore,
+  calculatePhase,
+  isHub,
+  allocateInstances,
+
+  // Constants
+  NORMAL_MAX,
+  UPGRADED_MAX,
+  HIGHEND_MAX,
+  TEST_EARN_MAX,
+  UPGRADED_MULT,
+  HIGHEND_MULT,
+  EARN_MODE_MULT,
+  ENABLE_PERFORMANCE_LOGGING,
+  PERFORMANCE_LOG_COLLECTION,
+
+  // Metadata (same pattern as VitalsLogger)
+  meta: {
+    layer: PulseRole.layer,
+    subsystem: PulseRole.subsystem,
+    version: PulseRole.version,
+    identity: PulseRole.identity
+  }
+};
