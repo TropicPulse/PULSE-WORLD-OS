@@ -1,33 +1,7 @@
 // ============================================================================
-//  PULSE OS v9.1 — HYPOTHALAMUS
+//  PULSE OS v9.3 — HYPOTHALAMUS
 //  PulseUserScoring — Homeostasis Regulation Organ
 //  Backend‑Only • Deterministic • Drift‑Proof • No IQ
-// ============================================================================
-//
-//  WHAT THIS ORGAN IS (v9.1):
-//  --------------------------
-//  • The Hypothalamus regulates homeostasis for the organism.
-//  • Reads UserMetrics → computes trustScore, meshScore, phase, hubFlag.
-//  • Allocates instance capacity (suggested worker count).
-//  • Writes results to UserScores.
-//  • Logs scoring snapshots for immune‑safe telemetry.
-//
-//  WHAT THIS ORGAN IS NOT:
-//  ------------------------
-//  • Not a Brain organ (no IQ, no reasoning).
-//  • Not a Cortex organ (no decision‑making).
-//  • Not a Mesh/Earn/GPU organ.
-//  • Not allowed in frontend.
-//  • Not allowed to mutate global state except layer health.
-//
-//  SAFETY CONTRACT (v9.1):
-//  ------------------------
-//  • Backend‑only (global.db, global.admin).
-//  • No imports except globals.
-//  • Deterministic scoring.
-//  • Drift‑proof formulas.
-//  • No dynamic behavior.
-//  • No routing, no compute, no AI.
 // ============================================================================
 
 
@@ -40,13 +14,13 @@ const error = global.error || console.error;
 
 
 // ============================================================================
-// LAYER IDENTITY — v9.1
+// LAYER IDENTITY — v9.3
 // ============================================================================
 export const PulseRole = {
   type: "Organ",
   subsystem: "PulseProxy",
   layer: "Hypothalamus",
-  version: "9.1",
+  version: "9.3",
   identity: "PulseUserScoring",
 
   evo: {
@@ -85,7 +59,7 @@ if (!db) {
 
 
 // ============================================================================
-// CONFIG — Instance Formula Limits (unchanged, but v9.1 aligned)
+// CONFIG — Instance Formula Limits (unchanged, but v9.3 aligned)
 // ============================================================================
 export const NORMAL_MAX    = 4;
 export const UPGRADED_MAX  = 8;
@@ -101,7 +75,7 @@ export const SCORING_LOG_COLLECTION = "UserScoringLogs";
 
 
 // ============================================================================
-// TRUST SCORE — “Overall health index” (v9.1 deterministic)
+// TRUST SCORE — deterministic (unchanged)
 // ============================================================================
 function calculateTrustScore(m) {
   if (!m) return 0;
@@ -128,7 +102,7 @@ function calculateTrustScore(m) {
 
 
 // ============================================================================
-// MESH SCORE — “Mesh health index” (v9.1 deterministic)
+// MESH SCORE — deterministic (unchanged)
 // ============================================================================
 function calculateMeshScore(m) {
   if (!m) return 0;
@@ -153,7 +127,7 @@ function calculateMeshScore(m) {
 
 
 // ============================================================================
-// PHASE — “Functional fitness tier” (v9.1 deterministic)
+// PHASE — deterministic (unchanged)
 // ============================================================================
 function calculatePhase(trustScore) {
   const t = Number(trustScore || 0);
@@ -170,7 +144,7 @@ function calculatePhase(trustScore) {
 
 
 // ============================================================================
-// HUB DETECTION — “High‑flow organ” (v9.1 deterministic)
+// HUB DETECTION — deterministic (unchanged)
 // ============================================================================
 function isHub(m) {
   if (!m) return false;
@@ -196,7 +170,7 @@ function isHub(m) {
 
 
 // ============================================================================
-// INSTANCE FORMULA — “Capacity suggestion” (v9.1 deterministic)
+// INSTANCE FORMULA — deterministic (unchanged)
 // ============================================================================
 function allocateInstances(
   phase,
@@ -234,7 +208,7 @@ function allocateInstances(
 
 
 // ============================================================================
-// SNAPSHOT LOGGING — “Scoring telemetry snapshot” (v9.1)
+// SNAPSHOT LOGGING — unchanged
 // ============================================================================
 async function logScoringSnapshot(userId, snapshot) {
   if (!ENABLE_SCORING_LOGGING || !db) return;
@@ -255,7 +229,7 @@ async function logScoringSnapshot(userId, snapshot) {
 
 
 // ============================================================================
-// MAIN PASS — runUserScoring() (v9.1)
+// MAIN PASS — runUserScoring() (unchanged logic)
 // ============================================================================
 export async function runUserScoring() {
   log("hypothalamus", "Running homeostasis scoring pass…");

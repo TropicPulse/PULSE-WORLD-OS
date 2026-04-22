@@ -1,5 +1,5 @@
 // ============================================================================
-//  EvolutionaryThought.js — v3.0
+//  EvolutionaryThought.js — v3.1
 //  PulseRouter v3 • Pattern Brainstem • Reflexive Route Memory
 // ============================================================================
 //
@@ -19,7 +19,7 @@
 //  • Not a network client.
 //  • Not a GPU/Earn/OS organ.
 //
-//  SAFETY CONTRACT (v3.0):
+//  SAFETY CONTRACT (v3.1):
 //  ------------------------
 //  • No imports.
 //  • No network.
@@ -29,13 +29,13 @@
 //  • Internal memory only (no external mutation).
 // ============================================================================
 
-// ⭐ PulseRole — identifies this as the PulseRouter v3 Organ
+// ⭐ PulseRole — identifies this as the PulseRouter v3.1 Organ
 export const PulseRole = {
   type: "Router",
   subsystem: "PulseRouter",
   layer: "Brainstem",
-  version: "3.0",
-  identity: "PulseRouter-v3",
+  version: "3.1",
+  identity: "PulseRouter-v3.1",
 
   evo: {
     driftProof: true,
@@ -43,16 +43,17 @@ export const PulseRole = {
     lineageAware: true,
     reflexReady: true,
     memoryReady: true,
-    futureEvolutionReady: true,
-
+    deterministicImpulseFlow: true,
     unifiedAdvantageField: true,
-    pulseRouter3Ready: true
+    pulseRouter3Ready: true,
+    futureEvolutionReady: true
   },
 
+  // Contract alignment for OS‑v9.3
   pulseContract: "Pulse-v2",
   sendContract: "PulseSend-v3",
   meshContract: "PulseMesh-v3",
-  gpuOrganContract: "PulseGPU-v9.2",
+  gpuOrganContract: "PulseGPU-v9.3",
   earnCompatibility: "PulseEarn-v9"
 };
 
@@ -89,7 +90,7 @@ function defaultRoute(pulse) {
 }
 
 // ============================================================================
-//  FACTORY — Create PulseRouter v3
+//  FACTORY — Create PulseRouter v3.1
 // ============================================================================
 //
 //  Behavior:
@@ -121,7 +122,7 @@ export function createPulseRouter({ log } = {}) {
       };
     }
 
-    log && log("[PulseRouter-v3] Routing pulse", {
+    log && log("[PulseRouter-v3.1] Routing pulse", {
       jobId: pulse.jobId,
       pattern: pulse.pattern,
       lineageDepth: Array.isArray(pulse.lineage) ? pulse.lineage.length : 0,
@@ -155,7 +156,7 @@ export function createPulseRouter({ log } = {}) {
 
     memory[key] = entry;
 
-    log && log("[PulseRouter-v3] Remembering route", {
+    log && log("[PulseRouter-v3.1] Remembering route", {
       jobId: pulse.jobId,
       pattern: pulse.pattern,
       routeKey: key,

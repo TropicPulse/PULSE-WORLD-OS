@@ -1,24 +1,9 @@
 // ============================================================================
-//  PULSE OS v9.1 — THE HEART
+//  PULSE OS v9.3 — THE HEART
 //  PulseProxyHeart — Cardiac Pacemaker Engine
 //  ONE IMPORT ONLY (Pacemaker / SA Node)
 //  Backend‑Only • Deterministic • Drift‑Proof • No IQ
 // ============================================================================
-//
-// ROLE:
-//   • Beats when the platform calls `handler`
-//   • Circulates backend tasks through the body (via globals)
-//   • Maintains deterministic rhythm + timing via state doc
-//   • Writes heartbeat logs + task results only
-//
-// CONTRACT:
-//   • ONE import allowed: pacemaker definition (heartbeat.js)
-//   • No firebase-admin imports
-//   • No @netlify/functions imports
-//   • No direct task imports (logout, security, env, scoring)
-//   • All tasks resolved from globals wired by OSKernel / route
-// ============================================================================
-
 
 import * as heartbeat from "./PulseProxyHeartBeat.js";
 
@@ -37,13 +22,13 @@ const refreshEnvironmentSmart = global.refreshEnvironmentSmart;
 const runUserScoring          = global.runUserScoring;
 
 // ============================================================================
-// HEART IDENTITY — v9.1
+// HEART IDENTITY — v9.3
 // ============================================================================
 export const PulseRole = {
   type: "Organ",
   subsystem: "PulseProxy",
   layer: "Heart",
-  version: "9.1",
+  version: "9.3",
   identity: "PulseProxyHeart",
 
   evo: {
@@ -65,7 +50,7 @@ const HEART_CONTEXT = {
   version: PulseRole.version,
   pacemaker: {
     source: "heartbeat.js",
-    version: heartbeat?.VERSION || "9.1",
+    version: heartbeat?.VERSION || "9.3",
     label: heartbeat?.LABEL || "HEARTBEAT_PACEMAKER"
   },
   evo: PulseRole.evo
@@ -81,7 +66,6 @@ const LAYER_ROLE = "CARDIAC PACEMAKER ENGINE";
 global.PULSE_LAYER_STATE = global.PULSE_LAYER_STATE || {};
 global.PULSE_LAYER_STATE[3] = { name: "Heart", ok: true };
 
-// Sequence counter for heartbeat events
 let HEART_EVENT_SEQ = 0;
 
 // ============================================================================
@@ -115,7 +99,7 @@ async function logHeart(stage, details = {}) {
 }
 
 // ============================================================================
-// HUMAN‑READABLE CONTEXT MAP — v9.1
+// HUMAN‑READABLE CONTEXT MAP — v9.3
 // ============================================================================
 const TIMER_CONTEXT = {
   label: "HEARTBEAT",

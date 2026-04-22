@@ -1,7 +1,7 @@
 // ============================================================================
-//  PULSE OS v9.2 — PNS NERVOUS SYSTEM (PULSEBAND)
+//  PULSE OS v9.3 — PNS NERVOUS SYSTEM (PULSEBAND)
 //  Sensorimotor Integration • Connectivity Mirror • GPU Warmup Control
-//  PURE NERVOUS SYSTEM ORGAN — NO MARKETPLACE, NO BUSINESS LOGIC, NO STATE MUTATION OUTSIDE SELF
+//  PURE NERVOUS SYSTEM ORGAN — NO MARKETPLACE, NO BUSINESS LOGIC
 // ============================================================================
 //
 //  WHAT THIS ORGAN IS (v9.2):
@@ -39,16 +39,13 @@
 //  • Pure nervous‑system behavior.
 // ============================================================================
 
+
 import { Impulse } from "./PulseProxyImpulse.js";
-
-// ============================================================================
-// NERVOUS SYSTEM — CORE GPU + SHADOWLAYER IMPORTS
-// ============================================================================
 import * as PulseGPU from "../pulse-gpu/PulseGPUAstralNervousSystem.js";
-import * as Pulse from "./PulseProxyLimbic.js"; // SHADOWLAYER side-effects only
+import * as Pulse from "./PulseProxyLimbic.js"; // facade side-effects only
 
 // ============================================================================
-// OS‑v9.2 CONTEXT METADATA — Nervous System Identity
+// OS‑v9.3 CONTEXT METADATA — Nervous System Identity
 // ============================================================================
 const PULSEBAND_CONTEXT = {
   layer: "PulseBand",
@@ -57,7 +54,7 @@ const PULSEBAND_CONTEXT = {
   context:
     "Maintains live/snapshot/gpuPerformance mirrors and fires nervous events",
   target: "full-os",
-  version: "9.2",
+  version: "9.3",
   selfRepairable: true,
   evo: {
     advantageCascadeAware: true,
@@ -83,7 +80,6 @@ const NERVOUS_LAYER_ID = "NERVOUS-SYSTEM";
 const NERVOUS_LAYER_NAME = "PULSEBAND";
 const NERVOUS_LAYER_ROLE = "Sensorimotor Integration Layer";
 
-// Diagnostics must be DYNAMIC — not frozen at load
 const diagnosticsEnabled = () =>
   (typeof window !== "undefined" && window.PULSE_NERVOUS_DIAGNOSTICS === true) ||
   (typeof window !== "undefined" && window.PULSE_DIAGNOSTICS === true);
@@ -104,30 +100,19 @@ const nervousLog = (stage, details = {}) => {
         })
       );
     }
-  } catch {
-    // diagnostics must never break the nervous system
-  }
+  } catch {}
 };
 
-// ============================================================================
-// AUTO-START (NO INIT NEEDED) — DIAGNOSTIC ONLY
-// ============================================================================
 nervousLog("NERVOUS_INIT", { meta: PULSEBAND_CONTEXT });
 
 // ============================================================================
-/* GLOBAL DEBUG HOOK (SAFE, FRONTEND‑ONLY)
-   v9.2: This is the ONLY place that touches console.*,
-   and only as a debug facade for humans. The nervous
-   system itself never depends on console behavior. */
+// DEBUG HOOK — unchanged
+// ============================================================================
 if (typeof window !== "undefined") {
   window.PULSE_LOG = function (...args) {
     try {
-      // Human‑facing debug only; not part of organism logic.
-      // eslint-disable-next-line no-console
       console.log("[PULSE]", ...args);
-    } catch {
-      // fail‑open
-    }
+    } catch {}
   };
 }
 

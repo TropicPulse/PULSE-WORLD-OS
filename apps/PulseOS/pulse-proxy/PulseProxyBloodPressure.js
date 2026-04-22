@@ -1,5 +1,5 @@
 // ============================================================================
-//  PULSE OS v9.1 — CIRCULATION MONITOR
+//  PULSE OS v9.3 — CIRCULATION MONITOR
 //  “Blood Pressure + Blood Flow Sensor”
 //  Measures latency (pressure) and speed (flow) and sends simple vital signs.
 //  PURE SENSOR. NO THINKING. NO DECISIONS. NO GLOBAL STATE.
@@ -13,7 +13,7 @@
 //  • Builds a clean vital‑signs packet for the Nervous System (PulseBand)
 //  • Never makes decisions — only measures and reports
 //
-//  SAFETY RULES (v9.1):
+//  SAFETY RULES (v9.3):
 //  ---------------------
 //  • No PulseBand imports
 //  • No PulseNet imports
@@ -26,16 +26,18 @@
 
 // ============================================================================
 //  Logger + Telemetry (heartbeat‑safe, no IQ)
+//  (logger / emitTelemetry expected as safe globals in this environment)
 // ============================================================================
 
+
 // ============================================================================
-//  ORGAN IDENTITY — v9.1
+//  ORGAN IDENTITY — v9.3
 // ============================================================================
 export const PulseRole = {
   type: "Organ",
   subsystem: "PulseBand",
   layer: "CirculationMonitor",
-  version: "9.1",
+  version: "9.3",
   identity: "PulseCirculationMonitor",
   evo: {
     driftProof: true,
@@ -206,7 +208,7 @@ async function getPulseTelemetry() {
 
 
 // ============================================================================
-//  EXPORT — CIRCULATION MONITOR v9.1
+//  EXPORT — CIRCULATION MONITOR v9.3
 // ============================================================================
 export const PulseUpdate = {
   measureLatency,

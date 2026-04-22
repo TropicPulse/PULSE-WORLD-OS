@@ -1,5 +1,5 @@
 // ============================================================================
-//  PULSE OS v9.2 — PROXY HEALER
+//  PULSE OS v9.3 — PROXY HEALER
 //  “WHITE BLOOD CELL LAYER / IMMUNE PATROL”
 //  Deterministic • Drift‑Proof • Proxy‑Only Healing Layer
 //  PURE DETECTION. NO AI. NO COMPUTE. NO MUTATION.
@@ -9,34 +9,44 @@ const db    = global.db;
 const log   = global.log   || console.log;
 const error = global.error || console.error;
 
-
 // ============================================================================
-//  ORGAN CONTEXT — v9.2
+//  ORGAN IDENTITY — v9.3
 // ============================================================================
-const WBC_CONTEXT = {
-  layer: "PulseProxyHealer",
-  role: "WHITE_BLOOD_CELL_LAYER",
-  version: "9.2",
-  lineage: PulseLineage.optimizer,   // immune lineage
+export const PulseRole = {
+  type: "Organ",
+  subsystem: "PulseProxy",
+  layer: "ImmuneLayer",
+  version: "9.3",
+  identity: "PulseProxyHealer",
 
   evo: {
-    dualMode: true,
-    localAware: true,
-    internetAware: true,
-    advantageCascadeAware: true,
-    pulseEfficiencyAware: true,
     driftProof: true,
+    deterministicImmuneScan: true,
+    zeroDriftPressure: true,
+    backendOnly: true,
+    noIQ: true,
+    noRouting: true,
+    noCompute: true,
     multiInstanceReady: true,
     unifiedAdvantageField: true,
-    futureEvolutionReady: true,
-    deterministicImmuneScan: true,
-    zeroDriftPressure: true
+    pulseEfficiencyAware: true,
+    futureEvolutionReady: true
   }
 };
 
+// ============================================================================
+//  ORGAN CONTEXT — v9.3
+// ============================================================================
+const WBC_CONTEXT = {
+  layer: PulseRole.layer,
+  role: PulseRole.identity,
+  version: PulseRole.version,
+  lineage: "immune-core",
+  evo: PulseRole.evo
+};
 
 // ============================================================================
-//  IMMUNE CONFIG — v9.2
+//  IMMUNE CONFIG — unchanged
 // ============================================================================
 export const PROXY_HEALTH_URL  =
   process.env.PULSE_PROXY_HEALTH_URL  || "http://localhost:8080/pulse-proxy/health";
@@ -44,8 +54,8 @@ export const PROXY_HEALTH_URL  =
 export const PROXY_METRICS_URL =
   process.env.PULSE_PROXY_METRICS_URL || "http://localhost:8080/pulse-proxy/metrics";
 
-export const HEALTH_INTERVAL_MS      = 30_000;  // immune heartbeat
-export const SCORES_SCAN_INTERVAL_MS = 60_000;  // immune tissue scan
+export const HEALTH_INTERVAL_MS      = 30_000;
+export const SCORES_SCAN_INTERVAL_MS = 60_000;
 
 export const CPU_PRESSURE_WARN     = 80;
 export const MEM_PRESSURE_WARN     = 80;
@@ -57,9 +67,8 @@ export const MAX_INSTANCES = 32;
 export const FUNCTION_LOGS_COLLECTION     = "FUNCTION_LOGS";
 export const PROXY_HEALER_LOGS_COLLECTION = "ProxyHealerLogs";
 
-
 // ============================================================================
-//  IMMUNE LOGGING HELPERS — v9.2
+//  IMMUNE LOGGING HELPERS — unchanged
 // ============================================================================
 async function writeFunctionLog(entry) {
   try {
@@ -86,10 +95,8 @@ async function writeHealerLog(entry) {
   }
 }
 
-
 // ============================================================================
-//  HEALTH + METRICS SCAN — v9.2
-//  Immune patrol of proxy vitals (pressure, lag, irritation).
+//  HEALTH + METRICS SCAN — unchanged
 // ============================================================================
 async function checkProxyHealthAndMetrics() {
   log("wbc", "scan_start");
@@ -97,7 +104,6 @@ async function checkProxyHealthAndMetrics() {
   let health = null;
   let metrics = null;
 
-  // HEALTH
   try {
     const res = await fetch(PROXY_HEALTH_URL);
     health = await res.json().catch(() => null);
@@ -106,7 +112,6 @@ async function checkProxyHealthAndMetrics() {
     await writeHealerLog({ type: "health_error", error: String(err), url: PROXY_HEALTH_URL });
   }
 
-  // METRICS
   try {
     const res = await fetch(PROXY_METRICS_URL);
     metrics = await res.json().catch(() => null);
@@ -145,10 +150,8 @@ async function checkProxyHealthAndMetrics() {
   }
 }
 
-
 // ============================================================================
-//  USER SCORES SCAN — v9.2
-//  Immune patrol of user scoring tissue (instance sanity).
+//  USER SCORES SCAN — unchanged
 // ============================================================================
 async function scanUserScoresForInstanceHints() {
   log("wbc", "scores_scan_start");
@@ -165,7 +168,6 @@ async function scanUserScoresForInstanceHints() {
     const hub        = !!s.hub;
     const instances  = s.instances ?? 1;
 
-    // OUT OF BOUNDS
     if (instances < MIN_INSTANCES || instances > MAX_INSTANCES) {
       log("wbc", "instance_out_of_bounds", { userId, instances });
 
@@ -191,7 +193,6 @@ async function scanUserScoresForInstanceHints() {
       continue;
     }
 
-    // HIGH TRUST + LOW INSTANCES
     if (trustScore > 80 && instances < 4) {
       log("wbc", "upgrade_hint", { userId });
 
@@ -207,7 +208,6 @@ async function scanUserScoresForInstanceHints() {
       });
     }
 
-    // LOW TRUST + HIGH INSTANCES
     if (trustScore < 20 && instances > 4) {
       log("wbc", "review_hint", { userId });
 
@@ -227,10 +227,8 @@ async function scanUserScoresForInstanceHints() {
   log("wbc", "scores_scan_complete");
 }
 
-
 // ============================================================================
-//  PUBLIC: startPulseProxyHealer() — v9.2
-//  Activates immune patrol loops (health + scoring).
+//  PUBLIC: startPulseProxyHealer() — unchanged
 // ============================================================================
 export default function startPulseProxyHealer() {
   log("wbc", "immune_patrol_start", WBC_CONTEXT);
@@ -247,5 +245,5 @@ export default function startPulseProxyHealer() {
     );
   }, SCORES_SCAN_INTERVAL_MS);
 
-  log("wbc", "immune_patrol_active_v9_2");
+  log("wbc", "immune_patrol_active_v9_3");
 }

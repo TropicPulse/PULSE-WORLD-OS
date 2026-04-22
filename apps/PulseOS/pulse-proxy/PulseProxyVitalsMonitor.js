@@ -1,5 +1,5 @@
 // ============================================================================
-//  PULSE OS v9.2 — USER METRICS (VITALS MONITOR)
+//  PULSE OS v9.3 — USER METRICS (VITALS MONITOR)
 //  “The Vitals Monitor / Circulatory Telemetry Layer”
 //  PURE MEASUREMENT. NO HEALING. NO COMMAND. NO SCALING.
 // ============================================================================
@@ -9,34 +9,44 @@ const db    = global.db;
 const log   = global.log   || console.log;
 const error = global.error || console.error;
 
-
 // ============================================================================
-//  ORGAN CONTEXT — v9.2
+//  ORGAN IDENTITY — v9.3
 // ============================================================================
-const VITALS_CONTEXT = {
-  layer: "PulseUserMetrics",
-  role: "VITALS_MONITOR",
-  version: "9.2",
-  lineage: "interface-core",   // circulatory telemetry lineage
+export const PulseRole = {
+  type: "Organ",
+  subsystem: "PulseProxy",
+  layer: "VitalsMonitor",
+  version: "9.3",
+  identity: "PulseUserMetrics",
 
   evo: {
-    dualMode: true,
-    localAware: true,
-    internetAware: true,
-    advantageCascadeAware: true,
-    pulseEfficiencyAware: true,
     driftProof: true,
+    deterministicVitals: true,
+    zeroDriftAverages: true,
+    backendOnly: true,
+    noIQ: true,
+    noRouting: true,
+    noCompute: true,
     multiInstanceReady: true,
     unifiedAdvantageField: true,
-    futureEvolutionReady: true,
-    deterministicVitals: true,
-    zeroDriftAverages: true
+    pulseEfficiencyAware: true,
+    futureEvolutionReady: true
   }
 };
 
+// ============================================================================
+//  ORGAN CONTEXT — v9.3
+// ============================================================================
+const VITALS_CONTEXT = {
+  layer: PulseRole.layer,
+  role: PulseRole.identity,
+  version: PulseRole.version,
+  lineage: "interface-core",
+  evo: PulseRole.evo
+};
 
 // ============================================================================
-//  CONFIG — Physiological Limits (unchanged behavior, v9.2 identity)
+//  CONFIG — Physiological Limits (unchanged behavior)
 // ============================================================================
 export const NORMAL_MAX     = 4;
 export const UPGRADED_MAX   = 8;
@@ -50,10 +60,8 @@ export const EARN_MODE_MULT = 1.5;
 export const ENABLE_PERFORMANCE_LOGGING = true;
 export const PERFORMANCE_LOG_COLLECTION = "UserPerformanceLogs";
 
-
 // ============================================================================
-//  updateUserMetrics() — “Record a heartbeat + vitals panel”
-//  PURE MEASUREMENT. Deterministic. Drift‑proof.
+//  updateUserMetrics() — PURE MEASUREMENT
 // ============================================================================
 export async function updateUserMetrics(userId, data = {}) {
   if (!userId || userId === "anonymous") return;
@@ -74,11 +82,9 @@ export async function updateUserMetrics(userId, data = {}) {
     const snap = await tx.get(ref);
     const existing = snap.exists ? snap.data() : {};
 
-    // Basic counters
     const totalRequests = (existing.totalRequests || 0) + 1;
     const totalBytes    = (existing.totalBytes || 0) + (data.bytes || 0);
 
-    // Rolling average latency (zero‑drift)
     let avgLatency = existing.avgLatency || 0;
     if (data.durationMs != null) {
       if (!existing.totalRequests) {
@@ -90,13 +96,11 @@ export async function updateUserMetrics(userId, data = {}) {
       }
     }
 
-    // Mesh + hub activity
     const meshRelays     = (existing.meshRelays || 0) + (data.meshRelay ? 1 : 0);
     const meshPings      = (existing.meshPings || 0) + (data.meshPing ? 1 : 0);
     const hubSignals     = (existing.hubSignals || 0) + (data.hubFlag ? 1 : 0);
     const stabilityScore = existing.stabilityScore || 0;
 
-    // Write updated vitals
     tx.set(
       ref,
       {
@@ -115,7 +119,6 @@ export async function updateUserMetrics(userId, data = {}) {
     );
   });
 
-  // Optional performance snapshot
   if (ENABLE_PERFORMANCE_LOGGING) {
     try {
       await db.collection(PERFORMANCE_LOG_COLLECTION).add({
@@ -136,10 +139,8 @@ export async function updateUserMetrics(userId, data = {}) {
   }
 }
 
-
 // ============================================================================
-//  calculateTrustScore() — “Overall health index”
-//  Deterministic scoring. Zero‑drift. v9.2 identity.
+//  calculateTrustScore() — unchanged logic
 // ============================================================================
 export function calculateTrustScore(metrics) {
   if (!metrics) return 0;
@@ -164,10 +165,8 @@ export function calculateTrustScore(metrics) {
   return final;
 }
 
-
 // ============================================================================
-//  calculatePhase() — “Functional fitness tier”
-//  1–4 tier. Deterministic. No behavior change.
+//  calculatePhase() — unchanged logic
 // ============================================================================
 export function calculatePhase(trustScore) {
   let phase = 1;
@@ -182,10 +181,8 @@ export function calculatePhase(trustScore) {
   return phase;
 }
 
-
 // ============================================================================
-//  isHub() — “High‑flow organ detection”
-//  Same logic, v9.2 identity.
+//  isHub() — unchanged logic
 // ============================================================================
 export function isHub(metrics) {
   if (!metrics) return false;
@@ -207,10 +204,8 @@ export function isHub(metrics) {
   return hub;
 }
 
-
 // ============================================================================
-//  allocateInstances() — “Circulatory capacity allocation”
-//  PURE COMPUTE. No scaling. No command. No healing.
+//  allocateInstances() — unchanged logic
 // ============================================================================
 export function allocateInstances(
   phase,
@@ -222,12 +217,9 @@ export function allocateInstances(
   let base = phase >= 2 ? 2 : 1;
 
   if (hubFlag) base *= 2;
-
   if (deviceTier === "upgraded") base *= UPGRADED_MULT;
   if (deviceTier === "highend")  base *= HIGHEND_MULT;
-
   if (earnMode) base = Math.floor(base * EARN_MODE_MULT);
-
   if (testEarnActive) base = TEST_EARN_MAX;
 
   const max =

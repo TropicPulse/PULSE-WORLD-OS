@@ -1,9 +1,9 @@
 // ============================================================================
 // FILE: /apps/lib/Connectors/PulseNet.js
-// LAYER: THE SYNAPSE + PULSE-ONCE CONNECTIVITY ORGAN — v7.7
+// LAYER: THE SYNAPSE + PULSE-ONCE CONNECTIVITY ORGAN — v9.3
 // ============================================================================
 //
-// ROLE (v7.7):
+// ROLE (v9.3):
 //   THE SYNAPSE — Neural Signal Routing Layer
 //   • Receives electrical signal from Nervous System (PulseBand)
 //   • Computes signalScore + signalSlope (signal strength + trend)
@@ -16,64 +16,61 @@
 //   • Stores everything locally for fully offline operation
 //   • Does NOT require continuous internet
 //
-// CONTRACT (v7.7):
+// SAFETY (v9.3):
 //   • No PulseBand imports
 //   • No PulseClient imports
 //   • No PulseUpdate imports
-//   • Pure subsystem module (only uses browser APIs + fetch + localStorage)
-//   • Deterministic math, deterministic classification
-//
-// SAFETY (v7.7):
-//   • No illegal network access
-//   • Only uses legal/open/saved connectivity paths (where implemented)
-//   • Deterministic math for signal routing
-//   • Tiny, bounded sync payload
-//   • Fail-open on all browser APIs
-// ============================================================================
-// ============================================================================
-//  PULSE NET — SYNAPSE v9.2+
-//  Neural Signal Router • Tiny Connectivity Organ • Drift‑Proof
+//   • Pure subsystem module (browser APIs only)
+//   • Deterministic math + deterministic classification
 // ============================================================================
 
 const db    = global.db;
 const log   = global.log   || console.log;
 const error = global.error || console.error;
 
-
 // ============================================================================
-// ⭐ OS‑v9.2 CONTEXT METADATA — Synapse Identity
+// ⭐ OS‑v9.3 CONTEXT METADATA — Synapse Identity
 // ============================================================================
-const PULSENET_CONTEXT = {
-  layer: "PulseNet",
-  role: "SYNAPSE_CONNECTIVITY",
-  purpose: "Neural signal routing + tiny offline-first connectivity organ",
-  context: "Processes nervous-system signals + performs tiny sync pulses",
-  target: "full-os",
-  version: "9.2",
-  selfRepairable: true,
+export const PulseRole = {
+  type: "Organ",
+  subsystem: "PulseNet",
+  layer: "Synapse",
+  version: "9.3",
+  identity: "PulseNetSynapse",
 
   evo: {
-    advantageCascadeAware: true,
-    pulseEfficiencyAware: true,
     driftProof: true,
+    deterministic: true,
+    synapticIntegrity: true,
+    deterministicImpulseFlow: true,
+    offlineFirst: true,
+    tinySyncReady: true,
     multiInstanceReady: true,
-    parallelSafe: true,
-    fanOutScaling: 1.0,
+    unifiedAdvantageField: true,
+    pulseEfficiencyAware: true,
     clusterCoherence: true,
     zeroDriftCloning: true,
     reflexPropagation: 1.0,
     dualModeEvolution: true,
     organismClusterBoost: 1.0,
     cognitiveComputeLink: true,
-    unifiedAdvantageField: true,
-    synapticIntegrity: true,
-    deterministicImpulseFlow: true
+    futureEvolutionReady: true
   }
 };
 
+const PULSENET_CONTEXT = {
+  layer: PulseRole.layer,
+  role: PulseRole.identity,
+  purpose: "Neural signal routing + tiny offline-first connectivity organ",
+  context: "Processes nervous-system signals + performs tiny sync pulses",
+  target: "full-os",
+  version: PulseRole.version,
+  selfRepairable: true,
+  evo: PulseRole.evo
+};
 
 // ============================================================================
-// LAYER CONSTANTS + DIAGNOSTICS — v9.2
+// DIAGNOSTICS — unchanged
 // ============================================================================
 const PULSE_LAYER_ID   = "SYNAPSE-LAYER";
 const PULSE_LAYER_NAME = "THE SYNAPSE";
@@ -98,16 +95,13 @@ const pulseLog = (stage, details = {}) => {
         meta: { ...PULSENET_CONTEXT }
       })
     );
-  } catch {
-    // diagnostics must never break synapse
-  }
+  } catch {}
 };
 
 pulseLog("SYNAPSE_INIT", {});
 
-
 // ============================================================================
-// CORE PURE HELPERS — v9.2 (deterministic, drift‑proof)
+// CORE PURE HELPERS — unchanged
 // ============================================================================
 function normalizeSignal(rawValue, opts = {}) {
   const { min = 0, max = 100, clamp = true } = opts;
@@ -206,7 +200,7 @@ function buildPulseNetSnapshot(rawSignal, previousSignal, meta = {}) {
   const update = buildPulseUpdate({ rawSignal, previousSignal, meta });
 
   return {
-    version: "9.2",
+    version: "9.3", // ⭐ upgraded
     layerId: PULSE_LAYER_ID,
     layerName: PULSE_LAYER_NAME,
     layerRole: PULSE_LAYER_ROLE,
@@ -224,46 +218,36 @@ function buildPulseNetSnapshot(rawSignal, previousSignal, meta = {}) {
   };
 }
 
-
 // ============================================================================
-// PULSE‑ONCE CONNECTIVITY ORGAN — v9.2
+// PULSE‑ONCE CONNECTIVITY ORGAN — unchanged
 // ============================================================================
 const PulseNetState = {
   lastPulseTs: null,
   lastPulseOk: false,
   lastError: null,
-  minPulseIntervalMs: 5 * 60 * 1000 // 5 minutes
+  minPulseIntervalMs: 5 * 60 * 1000
 };
 
 async function multiGatewayReachout() {
   pulseLog("PULSE_REACHOUT_START", {});
 
-  // Satellite
   try {
     if (typeof navigator !== "undefined" && navigator.connection?.type === "satellite") {
       pulseLog("PULSE_REACHOUT_SATELLITE_TRY", {});
       const ok = await trySatellitePing();
-      if (ok) {
-        pulseLog("PULSE_REACHOUT_SATELLITE_OK", {});
-        return true;
-      }
+      if (ok) return true;
     }
   } catch (e) {
     pulseLog("PULSE_REACHOUT_SATELLITE_ERR", { error: String(e) });
   }
 
-  // WiFi placeholder
   pulseLog("PULSE_REACHOUT_WIFI_PLACEHOLDER", {
     note: "WiFi scanning/joining requires native/OS integration."
   });
 
-  // Last known gateway
   try {
     const ok = await tryLastKnownGateway();
-    if (ok) {
-      pulseLog("PULSE_REACHOUT_LAST_GATEWAY_OK", {});
-      return true;
-    }
+    if (ok) return true;
   } catch (e) {
     pulseLog("PULSE_REACHOUT_LAST_GATEWAY_ERR", { error: String(e) });
   }
@@ -379,9 +363,8 @@ function getPulseNetState() {
   return { ...PulseNetState };
 }
 
-
 // ============================================================================
-// EXPORTED SYNAPSE + PULSE‑ONCE API — v9.2
+// EXPORTED SYNAPSE + PULSE‑ONCE API — v9.3
 // ============================================================================
 export const PulseNet = {
   PULSE_LAYER_ID,

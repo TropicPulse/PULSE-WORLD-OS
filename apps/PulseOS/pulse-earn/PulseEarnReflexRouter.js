@@ -11,7 +11,7 @@
 const routedReflexes = new Map(); // reflexId -> state
 
 // ---------------------------------------------------------------------------
-//  INTERNAL: Build a stable reflex routing state
+//  INTERNAL: Build or retrieve reflex routing state
 // ---------------------------------------------------------------------------
 function getOrCreateReflexRouteState(reflexId) {
   let state = routedReflexes.get(reflexId);
@@ -29,9 +29,6 @@ function getOrCreateReflexRouteState(reflexId) {
 
 // ---------------------------------------------------------------------------
 //  PUBLIC API — PulseEarnReflexRouter
-//  - Accepts an EarnReflex organism
-//  - Hands it to EarnSystem safely (no loops, no recursion)
-//  - Does NOT send, does NOT route, does NOT mutate pulse
 // ---------------------------------------------------------------------------
 export const PulseEarnReflexRouter = {
   /**
@@ -48,9 +45,9 @@ export const PulseEarnReflexRouter = {
       };
     }
 
-    const reflexId = earnReflex.meta.sourcePulseId
-      ? `${earnReflex.meta.sourcePulseId}::${earnReflex.meta.sourceOrgan}::${earnReflex.meta.sourceReason}`
-      : earnReflex.meta.reflexId || "UNKNOWN_REFLEX";
+    const reflexId =
+      earnReflex.meta.reflexId ||
+      `${earnReflex.meta.sourcePulseId}::${earnReflex.meta.sourceOrgan}::${earnReflex.meta.sourceReason}`;
 
     const state = getOrCreateReflexRouteState(reflexId);
     state.count += 1;

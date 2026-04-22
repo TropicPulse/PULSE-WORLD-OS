@@ -1,64 +1,31 @@
 // ============================================================================
-//  PULSE OS v9.2 — VITALS LOGGER (RENDERER ONLY)
+//  PULSE OS v9.3 — VITALS LOGGER (RENDERER ONLY)
 //  Subsystem Identity • Connection Vitals • Zero Drift • No Backend
 //  PURE RENDERING. NO NETWORK. NO STORAGE. NO COMPUTE.
 // ============================================================================
-//
-//  ORGAN DESCRIPTION — WHAT THIS IS (v9.2):
-//  ----------------------------------------
-//  PulseLogger is the **vitals renderer** of PulseOS. It is NOT a backend
-//  logger, NOT a telemetry sender, NOT a storage layer. It is a **pure,
-//  deterministic renderer-only organ** that:
-//
-//    • formats subsystem identity (role + version + color)
-//    • renders logs in a drift-proof, deterministic format
-//    • normalizes arguments from all subsystems (hybrid mode)
-//    • provides safe console overrides (no recursion)
-//    • generates telemetry packets (but does NOT send them)
-//
-//  ROLE IN THE DIGITAL BODY (v9.2):
-//  --------------------------------
-//    • Renderer → human-readable vitals surface
-//    • Identity Surface → subsystem role + version
-//    • Telemetry Formatter → packet generator (not sender)
-//    • Zero Drift Layer → stable console identity
-//
-//  SAFETY CONTRACT (v9.2):
-//  ------------------------
-//    • No backend calls
-//    • No Firebase
-//    • No network
-//    • No compute
-//    • No mutation of global state (except safe console override)
-//    • Deterministic rendering only
-//
-// ============================================================================
-
 
 // ============================================================================
 //  CAPTURE ORIGINAL CONSOLE (prevents recursion)
 // ============================================================================
 const _c = { ...console };
 
-
 // ============================================================================
-//  VERSION MAP — The Genome of PulseOS (v9.2)
+//  VERSION MAP — The Genome of PulseOS (v9.3)
 // ============================================================================
 export const PulseVersion = {
-  identity: "9.2",
-  brain: "9.2",
-  gpu: "9.2",
-  orchestrator: "9.2",
-  engine: "9.2",
-  optimizer: "9.2",
-  synapse: "9.2",
-  band: "9.2",
-  router: "9.2",
-  marketplaces: "9.2",
-  telemetry: "9.2",
-  limbic: "9.2"
+  identity: "9.3",
+  brain: "9.3",
+  gpu: "9.3",
+  orchestrator: "9.3",
+  engine: "9.3",
+  optimizer: "9.3",
+  synapse: "9.3",
+  band: "9.3",
+  router: "9.3",
+  marketplaces: "9.3",
+  telemetry: "9.3",
+  limbic: "9.3"
 };
-
 
 // ============================================================================
 //  ROLE MAP — Organ Metaphors (Subsystem Identity)
@@ -78,9 +45,8 @@ export const PulseRoles = {
   limbic: "LIMBIC SHADOW"
 };
 
-
 // ============================================================================
-//  COLOR MAP — Console Identity Palette (v9.2)
+//  COLOR MAP — Console Identity Palette (v9.3)
 // ============================================================================
 export const PulseColors = {
   identity: "#4DD0E1",
@@ -98,7 +64,6 @@ export const PulseColors = {
   legacy: "#BDBDBD"
 };
 
-
 // ============================================================================
 //  INTERNAL — Format a subsystem log prefix
 // ============================================================================
@@ -108,50 +73,40 @@ function formatPrefix(subsystem) {
   return `${role} v${version}`;
 }
 
-
 // ============================================================================
-//  ARGUMENT NORMALIZER — HYBRID MODE (v9.2)
+//  ARGUMENT NORMALIZER — HYBRID MODE (v9.3)
 // ============================================================================
 function normalizeArgs(args) {
   let subsystem = "legacy";
   let message = "";
   let rest = [];
 
-  // Raw %c logs (Chrome-style)
   if (typeof args[0] === "string" && args[0].startsWith("%c")) {
     return { subsystem, message: args[0], rest: args.slice(1), raw: true };
   }
 
-  // Standard: log("gpu", "message", ...)
   if (args.length >= 2 && typeof args[0] === "string" && typeof args[1] === "string") {
     return { subsystem: args[0], message: args[1], rest: args.slice(2), raw: false };
   }
 
-  // Object logs (PulseBand, GPU packages, etc.)
   if (typeof args[0] === "object") {
     const obj = args[0];
 
-    // Nervous system packets
     if (obj.pulseLayer === "NERVOUS-SYSTEM") subsystem = "band";
-
-    // GPU schema packets
     if (obj.schemaVersion && obj.textures !== undefined) subsystem = "gpu";
 
     return { subsystem, message: JSON.stringify(obj), rest: [], raw: false };
   }
 
-  // Single argument
   if (args.length === 1) {
     return { subsystem, message: args[0], rest: [], raw: false };
   }
 
-  // Fallback
   return { subsystem, message: args.join(" "), rest, raw: false };
 }
 
-
 // ============================================================================
-//  CORE LOGGING FUNCTIONS — RENDERER ONLY (v9.2)
+//  CORE LOGGING FUNCTIONS — RENDERER ONLY (v9.3)
 // ============================================================================
 export function log(...args) {
   const { subsystem, message, rest, raw } = normalizeArgs(args);
@@ -193,9 +148,8 @@ export function critical(...args) {
   _c.groupEnd();
 }
 
-
 // ============================================================================
-//  GROUPING HELPERS — v9.2
+//  GROUPING HELPERS — v9.3
 // ============================================================================
 export function group(subsystem, label) {
   const color = PulseColors[subsystem] || "#fff";
@@ -208,9 +162,8 @@ export function groupEnd() {
   _c.groupEnd();
 }
 
-
 // ============================================================================
-//  TELEMETRY PACKET FORMATTER (v9.2)
+//  TELEMETRY PACKET FORMATTER (v9.3)
 // ============================================================================
 export function makeTelemetryPacket(subsystem, event, data = {}) {
   return {
@@ -222,13 +175,12 @@ export function makeTelemetryPacket(subsystem, event, data = {}) {
     data,
     meta: {
       layer: "PulseLogger",
-      version: "9.2",
+      version: "9.3",   // ⭐ upgraded
       subsystem,
       event
     }
   };
 }
-
 
 // ============================================================================
 //  LEGACY CONSOLE REDIRECTS (SAFE — no recursion)
@@ -236,7 +188,6 @@ export function makeTelemetryPacket(subsystem, event, data = {}) {
 console.log = (...args) => log(...args);
 console.warn = (...args) => warn(...args);
 console.error = (...args) => error(...args);
-
 
 // ============================================================================
 //  LOGGER EXPORT
@@ -251,10 +202,9 @@ export const logger = {
   makeTelemetryPacket,
   meta: {
     layer: "PulseLogger",
-    version: "9.2"
+    version: "9.3"   // ⭐ upgraded
   }
 };
-
 
 // ============================================================================
 //  GLOBAL BROADCAST — Makes primitives available to all subsystems

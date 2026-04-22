@@ -1,25 +1,7 @@
 // ============================================================================
-//  PULSE OS v9.2 — PULSE PROXY SPINE (BACKEND SPINE)
+//  PULSE OS v9.3 — PULSE PROXY SPINE (BACKEND SPINE)
 //  Unified TPProxy Gateway • Vitals Pump • OS‑Healer Feed
 //  ORGANISM‑CORRECT BACKEND ORGAN — NO BUSINESS LOGIC.
-// ============================================================================
-//
-//  ROLE IN THE DIGITAL BODY (v9.2):
-//  --------------------------------
-//  • Backend Spine → central routing column for all proxy traffic
-//  • Vitals Pump → emits rich vitals for OS-level healers + dashboards
-//  • Safety Buffer → fails open where possible, never traps the organism
-//  • Healer Feeder → continuously feeds PulseOSHealer + GlobalHealer
-//  • Boundary Organ → sits between internet, Redis, Firestore, and OS
-//
-//  v9.2 ORGANISM LAWS APPLIED:
-//  ---------------------------
-//  • Zero‑drift identity block
-//  • Deterministic metadata surface
-//  • Unified‑advantage‑field (all safe advantages ON)
-//  • No mutation outside organ boundaries
-//  • No dynamic imports, no eval
-//  • Fail‑open everywhere except explicit security boundaries
 // ============================================================================
 
 const log   = global.log   || console.log;
@@ -27,43 +9,55 @@ const warn  = global.warn  || console.warn;
 const error = global.error || console.error;
 
 // ============================================================================
-//  SPINE IDENTITY — v9.2
+//  SPINE IDENTITY — v9.3
 // ============================================================================
-const PROXY_CONTEXT = {
-  layer: "PulseProxySpine",
-  role: "BACKEND_SPINE",
-  purpose:
-    "Route traffic, expose vitals, protect user by failing open, feed OS healers",
-  context:
-    "Unified TPProxy gateway + vitals pump for OS-level healers and admin dashboards",
-  version: "9.2",
-  target: "proxy-core",
-  selfRepairable: true,
+export const PulseRole = {
+  type: "Organ",
+  subsystem: "PulseProxy",
+  layer: "BackendSpine",
+  version: "9.3",
+  identity: "PulseProxySpine",
+
   evo: {
-    // Unified-advantage-field: all safe advantages ON by default
-    advantageCascadeAware: true,
-    pulseEfficiencyAware: true,
     driftProof: true,
+    deterministic: true,
+    backendOnly: true,
+    noIQ: true,
+    noRouting: true,
+    noCompute: true,
     multiInstanceReady: true,
-    parallelSafe: true,
-    fanOutScaling: 1.0,
+    unifiedAdvantageField: true,
+    pulseEfficiencyAware: true,
     clusterCoherence: true,
     zeroDriftCloning: true,
     reflexPropagation: 1.0,
     dualModeEvolution: true,
     organismClusterBoost: 1.0,
     cognitiveComputeLink: true,
-    unifiedAdvantageField: true
+    futureEvolutionReady: true
   }
 };
 
+const PROXY_CONTEXT = {
+  layer: PulseRole.layer,
+  role: PulseRole.identity,
+  purpose:
+    "Route traffic, expose vitals, protect user by failing open, feed OS healers",
+  context:
+    "Unified TPProxy gateway + vitals pump for OS-level healers and admin dashboards",
+  version: PulseRole.version,
+  target: "proxy-core",
+  selfRepairable: true,
+  evo: PulseRole.evo
+};
+
 log(
-  "%c🟦 PulseProxySpine v9.2 online — backend spine + vitals pump active.",
+  "%c🟦 PulseProxySpine v9.3 online — backend spine + vitals pump active.",
   "color:#03A9F4; font-weight:bold;"
 );
 
 // ============================================================================
-//  HEALING METADATA — OS-visible heartbeat for PulseProxyHealer (v9.2)
+//  HEALING METADATA — OS-visible heartbeat for PulseProxyHealer (v9.3)
 // ============================================================================
 const healingState = {
   ...PROXY_CONTEXT,
@@ -80,12 +74,12 @@ const healingState = {
   lastNodeCheck: null,
   lastPingCheck: null,
   cycleCount: 0,
-  status: "healthy", // healthy | warning | error
-  mode: "online"     // online | offline
+  status: "healthy",
+  mode: "online"
 };
 
 // ============================================================================
-//  IMPORTS — v9.2 (Spine is allowed to import organs)
+//  IMPORTS — (unchanged, allowed for Spine)
 // ============================================================================
 import express from "express";
 import fetch from "node-fetch";
@@ -113,7 +107,7 @@ import startPulseOSHealer from "./pulse-os/PulseOSHealer.js";
 import startGlobalHealer from "./pulse-os/GlobalHealer.js";
 
 // ============================================================================
-//  SINGLE‑BOOT GUARDS — v9.2 (Serverless‑safe, drift‑proof)
+//  SINGLE‑BOOT GUARDS — unchanged
 // ============================================================================
 if (!global.__pulseTimerStarted) {
   log("%c[SPINE BOOT] Starting Pulse Timer loop…", "color:#9C27B0; font-weight:bold;");
@@ -140,13 +134,13 @@ if (!global.__globalHealerStarted) {
 }
 
 // ============================================================================
-//  APP + ENV — v9.2 (No window.* ever)
+//  APP + ENV — unchanged
 // ============================================================================
 const app = express();
 const PORT = process.env.PORT || 8080;
 
 // ============================================================================
-//  ENV + IDENTITY + MODE — v9.2
+//  ENV + IDENTITY + MODE — v9.3
 // ============================================================================
 const SMTP_PASS = process.env.EMAIL_PASSWORD;
 const ALERT_EMAIL_TO = "FordFamilyDelivery@gmail.com";
@@ -166,9 +160,8 @@ const CLOUD_REGION =
 
 const NODE_ID = process.env.K_REVISION || process.env.HOSTNAME || "Local";
 
-const PULSE_VERSION = process.env.PULSE_VERSION || "v9.2";
+const PULSE_VERSION = "v9.3"; // ⭐ upgraded
 
-// Explicit offline/online mode switch
 const OFFLINE_MODE =
   process.env.PULSE_OFFLINE_MODE === "1" ||
   process.env.PULSE_PROXY_MODE === "offline";
@@ -191,7 +184,7 @@ app.use(express.json({ limit: "2mb" }));
 app.use(express.urlencoded({ extended: true }));
 
 // ============================================================================
-//  GLOBAL REQUEST MIDDLEWARE — v9.2 (Identity headers + heartbeat)
+//  GLOBAL REQUEST MIDDLEWARE — v9.3
 // ============================================================================
 app.use((req, res, next) => {
   res.setHeader("X-Pulse-Version", PULSE_VERSION);

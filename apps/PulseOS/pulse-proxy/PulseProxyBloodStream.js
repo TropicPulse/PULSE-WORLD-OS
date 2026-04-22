@@ -1,44 +1,19 @@
 // ============================================================================
-//  PULSE OS v9.1 — TELEMETRY ORGAN
+//  PULSE OS v9.3 — TELEMETRY ORGAN
 //  Unified Metrics • Subsystem Heartbeats • Drift Detection
 //  Mesh‑Aware Telemetry Propagation (Mini‑Pulse Distance Engine)
 //  PURE NERVOUS‑SYSTEM ORGAN — NO BACKEND, NO DOM, NO GPU
 // ============================================================================
-//
-//  WHAT THIS ORGAN IS (v9.1):
-//  --------------------------
-//  • Bloodstream → circulates telemetry packets
-//  • Heartbeat Layer → periodic subsystem pulses
-//  • Drift Sentinel → detects version mismatches
-//  • Mesh Mini‑Pulse Engine → bounded propagation (MAX_HOPS)
-//  • Nervous‑System Organ → renderer‑only, no backend
-//
-//  SAFETY CONTRACT (v9.1):
-//  ------------------------
-//  • No console.* (uses logger only)
-//  • No external dependencies except OSKernel logger (heartbeat exception)
-//  • No backend calls
-//  • No DOM
-//  • No GPU
-//  • No unbounded propagation
-//  • Deterministic packet structure
-//  • Pure telemetry — no healing, no mutation
-// ============================================================================
 
 
 // ============================================================================
-//  CNS‑SAFE IMPORTS (Heartbeat‑only, allowed in v9.1)
-// ============================================================================
-
-
-// ============================================================================
-//  ORGAN IDENTITY — v9.1
+//  ORGAN IDENTITY — v9.3
 // ============================================================================
 export const PulseRole = {
   type: "Organ",
   subsystem: "PulseTelemetry",
   layer: "Bloodstream",
-  version: "9.1",
+  version: "9.3",
   identity: "PulseTelemetryOrgan",
 
   evo: {
@@ -66,7 +41,7 @@ const DEFAULT_DISTANCE = 1;
 
 
 // ============================================================================
-// EMIT TELEMETRY — Universal signal emitter (v9.1)
+// EMIT TELEMETRY — Universal signal emitter (v9.3)
 // ============================================================================
 export function emitTelemetry(subsystem, event, data = {}) {
   try {
@@ -98,7 +73,7 @@ export function emitTelemetry(subsystem, event, data = {}) {
 
 
 // ============================================================================
-// MINI‑PULSE BROADCAST — Mesh‑safe propagation (v9.1)
+// MINI‑PULSE BROADCAST — Mesh‑safe propagation (v9.3)
 // ============================================================================
 export function broadcastTelemetry(packet) {
   try {
@@ -120,7 +95,7 @@ export function broadcastTelemetry(packet) {
 
 
 // ============================================================================
-// MINI‑PULSE AMPLIFIER — Increase distance + hop count (v9.1)
+// MINI‑PULSE AMPLIFIER — Increase distance + hop count (v9.3)
 // ============================================================================
 export function amplifyPulse(packet) {
   return {
@@ -132,7 +107,7 @@ export function amplifyPulse(packet) {
 
 
 // ============================================================================
-// RECEIVE MESH PULSE — Accept telemetry from other nodes (v9.1)
+// RECEIVE MESH PULSE — Accept telemetry from other nodes (v9.3)
 // ============================================================================
 export function receiveMeshPulse(packet) {
   try {
@@ -151,7 +126,7 @@ export function receiveMeshPulse(packet) {
 
 
 // ============================================================================
-// HEARTBEAT — Subsystem periodic pulse (v9.1)
+// HEARTBEAT — Subsystem periodic pulse (v9.3)
 // ============================================================================
 export function heartbeat(subsystem, extra = {}) {
   return emitTelemetry(subsystem, "heartbeat", {
@@ -163,7 +138,7 @@ export function heartbeat(subsystem, extra = {}) {
 
 
 // ============================================================================
-// DRIFT DETECTION (v9.1)
+// DRIFT DETECTION (v9.3)
 // ============================================================================
 export function detectDrift(subsystem, expectedVersion) {
   const actual = PulseVersion[subsystem];
@@ -178,7 +153,7 @@ export function detectDrift(subsystem, expectedVersion) {
 
 
 // ============================================================================
-// ANOMALY (v9.1)
+// ANOMALY (v9.3)
 // ============================================================================
 export function anomaly(subsystem, description, details = {}) {
   return emitTelemetry(subsystem, "anomaly", {
@@ -189,7 +164,7 @@ export function anomaly(subsystem, description, details = {}) {
 
 
 // ============================================================================
-// PERFORMANCE METRICS (v9.1)
+// PERFORMANCE METRICS (v9.3)
 // ============================================================================
 export function metric(subsystem, name, value, extra = {}) {
   return emitTelemetry(subsystem, "metric", {
@@ -201,7 +176,7 @@ export function metric(subsystem, name, value, extra = {}) {
 
 
 // ============================================================================
-// STREAM ACCESS (v9.1)
+// STREAM ACCESS (v9.3)
 // ============================================================================
 export function getStream(limit = 500) {
   if (limit <= 0) return [...telemetryStream];
@@ -210,7 +185,7 @@ export function getStream(limit = 500) {
 
 
 // ============================================================================
-// SNAPSHOT (v9.1)
+// SNAPSHOT (v9.3)
 // ============================================================================
 export function getTelemetrySnapshot() {
   const latest = telemetryStream.slice(-200);
@@ -235,7 +210,7 @@ export function getTelemetrySnapshot() {
 
 
 // ============================================================================
-// EXPORTS — Telemetry Organ API (v9.1)
+// EXPORTS — Telemetry Organ API (v9.3)
 // ============================================================================
 export const PulseTelemetry = {
   emit: emitTelemetry,

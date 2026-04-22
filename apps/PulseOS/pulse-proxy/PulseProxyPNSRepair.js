@@ -5,15 +5,9 @@
 // ============================================================================
 //
 // ROLE (v9.3):
-//   pulseHistoryRepair is the **SHORT‑TERM MEMORY LAYER** of PulseOS.
-//   It is the **WORKING MEMORY REPAIR ENGINE++** — the organ responsible for
+//   pulseHistoryRepair is the SHORT‑TERM MEMORY LAYER of PulseOS.
+//   It is the WORKING MEMORY REPAIR ENGINE — the organ responsible for
 //   keeping recent history coherent, normalized, lineage‑safe, and evolution‑safe.
-//
-//   • Repairs missing or malformed fields in recent history
-//   • Prunes expired or dead entries older than 30 days
-//   • Ensures deterministic lineage for scoring + insights
-//   • Runs automatically via heartbeat (Heart.js / OSKernel)
-//   • Fully aligned with PulseOS v9.3 evolutionary memory contracts
 //
 // SAFETY CONTRACT (v9.3):
 //   • Fail‑open: errors logged, never fatal
@@ -32,16 +26,41 @@ if (!admin.apps.length) {
 }
 const db = getFirestore();
 
+// ============================================================================
+// ORGAN IDENTITY — v9.3
+// ============================================================================
+export const PulseRole = {
+  type: "Organ",
+  subsystem: "PulseProxy",
+  layer: "ShortTermMemory",
+  version: "9.3",
+  identity: "PulseHistoryRepair",
+
+  evo: {
+    driftProof: true,
+    deterministic: true,
+    backendOnly: true,
+    noIQ: true,
+    noRouting: true,
+    noCompute: true,
+    multiInstanceReady: true,
+    memoryRepairEngine: true,
+    lineageSafe: true,
+    futureEvolutionReady: true
+  }
+};
+
 // ------------------------------------------------------------
 // HUMAN‑READABLE CONTEXT MAP (v9.3)
 // ------------------------------------------------------------
 const REPAIR_CONTEXT = {
   label: "PULSE_HISTORY_REPAIR",
-  layer: "D‑Layer",
+  layer: PulseRole.layer,
   role: "Short‑Term Memory Repair",
   purpose: "Pulse History Normalization + Cleanup",
   context: "Repairs missing fields, prunes dead entries, ensures deterministic lineage",
-  version: "9.3"
+  version: PulseRole.version,
+  evo: PulseRole.evo
 };
 
 // ============================================================================
@@ -64,7 +83,7 @@ export async function pulseHistoryRepair() {
 
     // ---------------------------------------------------------
     // ⭐ REPAIR: pulse_history (normalize + prune)
-// ---------------------------------------------------------
+    // ---------------------------------------------------------
     const histSnap = await db.collection("pulse_history").get();
 
     for (const h of histSnap.docs) {
@@ -93,7 +112,7 @@ export async function pulseHistoryRepair() {
 
         // ---------------------------------------------------------
         // ⭐ NORMALIZE MISSING FIELDS (v9.3 evolutionary repair)
-// ---------------------------------------------------------
+        // ---------------------------------------------------------
 
         // v9.3 identity unification
         if (!data.userId && data.uid) {

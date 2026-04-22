@@ -1,44 +1,17 @@
 // ============================================================================
-//  PULSE OS v9.2 — IMPULSE ORGAN (Shape‑Unified)
+//  PULSE OS v9.3 — IMPULSE ORGAN (Shape‑Unified)
 //  Adaptive Traveler • Pattern Carrier • Identity Anchor
 //  PURE INTERNAL ORGAN — ZERO IMPORTS — ZERO DEPENDENCIES
 // ============================================================================
-//
-//  WHAT THIS ORGAN IS (v9.2):
-//  --------------------------
-//  • Same Impulse traveler as v9.1 (path, pathway, energy, page, repairSeed).
-//  • PLUS: exposes a Pulse v2–compatible shape for the rest of the body.
-//  • That means: { jobId, pattern, payload, priority, returnTo, lineage, meta }.
-//  • No routing, no movement, no mesh logic — still pure metadata carrier.
-//
-//  WHAT THIS ORGAN IS NOT:
-//  ------------------------
-//  • Not a router
-//  • Not a compute engine
-//  • Not a decision-maker
-//  • Not a network packet
-//  • Not a backend request
-//  • Not a mesh relay
-//
-//  SAFETY CONTRACT (v9.2):
-//  ------------------------
-//  • ZERO imports
-//  • ZERO external dependencies
-//  • ZERO backend calls
-//  • ZERO DOM usage
-//  • ZERO GPU usage
-//  • Deterministic, drift‑proof, offline‑absolute
-//  • Pure metadata carrier — no logic, no reasoning
-// ============================================================================
 
 
 // ============================================================================
-// ⭐ IMPULSE CONTEXT — v9.2 Identity
+// ⭐ IMPULSE CONTEXT — v9.3 Identity
 // ============================================================================
 const IMPULSE_CONTEXT = {
   layer: "Impulse",
   role: "IMPULSE_TRAVELER",
-  version: "9.2",
+  version: "9.3",
   purpose: "Adaptive traveler + pattern carrier + identity anchor",
   evo: {
     driftProof: true,
@@ -56,7 +29,7 @@ const IMPULSE_CONTEXT = {
 
 
 // ============================================================================
-// INTERNAL HELPERS — v9.2
+// INTERNAL HELPERS — unchanged
 // ============================================================================
 function nowMs() {
   return Date.now();
@@ -85,7 +58,7 @@ function impulseLog(stage, details = {}) {
   } catch {}
 }
 
-// ⭐ Pulse‑v2 compatible helpers (tiny, deterministic)
+// Pulse‑v2 compatible helpers
 function buildLineage(parentLineage, pattern) {
   const base = Array.isArray(parentLineage) ? parentLineage : [];
   return [...base, pattern];
@@ -115,13 +88,13 @@ function computeEvolutionStage(pattern, lineage) {
 
 
 // ============================================================================
-// ⭐ IMPULSE ENGINE — v9.2
+// ⭐ IMPULSE ENGINE — v9.3
 // PURE INTERNAL TRAVELER — ZERO EXTERNAL DEPENDENCY
 // ============================================================================
 export const Impulse = {
 
   // --------------------------------------------------------------------------
-  // CREATE — v9.2
+  // CREATE — v9.3
   // Identity‑anchored, repair‑seeded, offline‑absolute, pathway‑ready
   // PLUS: embeds Pulse v2–compatible shape
   // --------------------------------------------------------------------------
@@ -129,7 +102,6 @@ export const Impulse = {
     const tickId = makeTickId();
     const pageIdentity = payload?.pageIdentity || {};
 
-    // Pulse‑v2 compatible fields (derived, not “smart”)
     const jobId       = payload.jobId || tickId;
     const pattern     = payload.pattern || intent || "UNKNOWN_PATTERN";
     const priority    = payload.priority || "normal";
@@ -144,7 +116,7 @@ export const Impulse = {
       tickId,
       intent,
       payload,
-      version: "v9.2",
+      version: "v9.3",
 
       // PATHWAY MEMORY
       path: [],
@@ -211,8 +183,7 @@ export const Impulse = {
 
 
   // --------------------------------------------------------------------------
-  // URGENCY — v9.2
-  // Pure environmental modulation
+  // URGENCY — unchanged
   // --------------------------------------------------------------------------
   computeUrgency(layerState) {
     let u = 0;
@@ -227,8 +198,7 @@ export const Impulse = {
 
 
   // --------------------------------------------------------------------------
-  // FACTOR — v9.2
-  // Hop-relative energy factoring + urgency modulation
+  // FACTOR — unchanged
   // --------------------------------------------------------------------------
   factorImpulse(impulse) {
     impulse.factor *= 0.5;
@@ -251,8 +221,7 @@ export const Impulse = {
 
 
   // --------------------------------------------------------------------------
-  // ANNOTATE — v9.2
-  // Each hop becomes a nervous-system pathway node
+  // ANNOTATE — unchanged
   // --------------------------------------------------------------------------
   annotate(impulse, layerIdentity, layerState, delta) {
     impulse.urgency = this.computeUrgency(layerState);
@@ -292,8 +261,7 @@ export const Impulse = {
 
 
   // --------------------------------------------------------------------------
-  // SNAPSHOT — v9.2
-  // Frozen, pathway-memory-friendly snapshot
+  // SNAPSHOT — unchanged
   // --------------------------------------------------------------------------
   snapshot(impulse) {
     const snap = {
@@ -320,8 +288,7 @@ export const Impulse = {
 
 
   // --------------------------------------------------------------------------
-  // MARK PATHWAY STABLE — v9.2
-  // Called by NerveMap/PathwayMemory once a route is learned
+  // MARK PATHWAY STABLE — unchanged
   // --------------------------------------------------------------------------
   markPathwayStable(impulse, learnedRouteId) {
     impulse.pathway.stable = true;
@@ -338,8 +305,7 @@ export const Impulse = {
 
 
   // --------------------------------------------------------------------------
-  // RETURN — v9.2
-  // Pure internal return to PulseBand + optional NerveMap ingestion
+  // RETURN — unchanged
   // --------------------------------------------------------------------------
   returnToPulseBand(impulse) {
     impulse.signature = "1001101010101010101";

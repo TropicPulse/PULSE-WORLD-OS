@@ -1,9 +1,29 @@
 
 // ============================================================================
-//  PULSE OS v9.1 — THE HEARTBEAT
+//  PULSE OS v9.3 — THE HEARTBEAT
 //  PulseProxyHeartbeat
 //  Backend‑Only • Deterministic • Drift‑Proof • No IQ
 // ============================================================================
+
+export const PulseRole = {
+  type: "Organ",
+  subsystem: "PulseProxy",
+  layer: "HeartBeat",
+  version: "9.3",
+  identity: "PulseProxyHeartbeat",
+
+  evo: {
+    driftProof: true,
+    deterministic: true,
+    pacemakerOnly: true,
+    noIQ: true,
+    noRouting: true,
+    noCompute: true,
+    backendOnly: true,
+    multiInstanceReady: true,
+    futureEvolutionReady: true
+  }
+};
 
 export const timerLogout = onSchedule("every 5 minutes", async () => {
   const runId = crypto.randomUUID();

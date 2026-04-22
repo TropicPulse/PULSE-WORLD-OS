@@ -1,5 +1,5 @@
 // ============================================================================
-//  EvolutionaryPulse.js — v2.0
+//  EvolutionaryPulse.js — v2.1
 //  Pulse v2 Organism • Evolution Engine • Pattern + Lineage + Shape
 // ============================================================================
 //
@@ -10,7 +10,7 @@
 //  • Carries pattern, lineage, payload, priority, returnTo.
 //  • Evolves deterministically based on context (no randomness).
 //  • Generates shape signatures + evolution stages.
-//  • Designed to be used by PulseSend v3, PulseRouter v3, PulseMesh v3.
+//  • Designed to be used by PulseSend v3, PulseRouter v3.1, PulseMesh v3.
 //
 //  WHAT THIS ORGAN IS NOT:
 //  ------------------------
@@ -19,9 +19,9 @@
 //  • Not a mesh layer.
 //  • Not a network client.
 //  • Not a GPU/Earn/OS organ.
-//  • Not a compute engine (no heavy logic).
+//  • Not a compute engine.
 //
-//  SAFETY CONTRACT (v2.0):
+//  SAFETY CONTRACT (v2.1):
 //  ------------------------
 //  • No imports.
 //  • No network.
@@ -31,13 +31,13 @@
 //  • Zero mutation outside instance.
 // ============================================================================
 
-// ⭐ PulseRole — identifies this as the Pulse v2 Organism + Evolution Engine
+// ⭐ PulseRole — identifies this as the Pulse v2.1 Organism + Evolution Engine
 export const PulseRole = {
   type: "Pulse",
   subsystem: "Pulse",
   layer: "Organ",
-  version: "2.0",
-  identity: "Pulse-v2",
+  version: "2.1",
+  identity: "Pulse-v2.1",
 
   evo: {
     driftProof: true,
@@ -53,10 +53,11 @@ export const PulseRole = {
     pulseV2Ready: true
   },
 
-  routingContract: "PulseRouter-v3",
+  // Contract alignment for OS‑v9.3
+  routingContract: "PulseRouter-v3.1",
   meshContract: "PulseMesh-v3",
   sendContract: "PulseSend-v3",
-  gpuOrganContract: "PulseGPU-v9.2",
+  gpuOrganContract: "PulseGPU-v9.3",
   earnCompatibility: "PulseEarn-v9"
 };
 
@@ -70,12 +71,11 @@ function buildLineage(parentLineage, pattern) {
   return [...base, pattern];
 }
 
-// ⭐ Compute a simple, deterministic shape signature from pattern + lineage
+// ⭐ Compute a deterministic shape signature from pattern + lineage
 function computeShapeSignature(pattern, lineage) {
   const lineageKey = lineage.join("::");
   const raw = `${pattern}::${lineageKey}`;
 
-  // Tiny deterministic hash‑like reducer (no randomness, no crypto)
   let acc = 0;
   for (let i = 0; i < raw.length; i++) {
     acc = (acc + raw.charCodeAt(i) * (i + 1)) % 100000;
@@ -104,7 +104,7 @@ function computeEvolutionStage(pattern, lineage) {
   return "mature";
 }
 
-// ⭐ Deterministic pattern evolution based on context (no randomness)
+// ⭐ Deterministic pattern evolution based on context
 function evolvePattern(pattern, context = {}) {
   const { routerHint, meshHint, organHint } = context;
 
@@ -118,27 +118,8 @@ function evolvePattern(pattern, context = {}) {
 }
 
 // ============================================================================
-//  FACTORY — Create a Pulse v2 Organism
+//  FACTORY — Create a Pulse v2.1 Organism
 // ============================================================================
-//
-//  Input:
-//    • jobId        → unique job identifier
-//    • pattern      → pattern identity (string)
-//    • payload      → what it carries
-//    • priority     → low / normal / high
-//    • returnTo     → optional return target
-//    • parentLineage → optional lineage array from previous pulse
-//
-//  Output:
-//    • Pulse v2 organism with:
-//        - pattern
-//        - lineage
-//        - payload
-//        - priority
-//        - returnTo
-//        - meta: { shapeSignature, evolutionStage }
-// ============================================================================
-
 export function createPulse({
   jobId,
   pattern,
@@ -169,23 +150,6 @@ export function createPulse({
 // ============================================================================
 //  EVOLUTION ENGINE — evolve an existing Pulse deterministically
 // ============================================================================
-//
-//  Input:
-//    • pulse    → existing Pulse v2 organism
-//    • context  → { routerHint, meshHint, organHint }
-//
-//  Output:
-//    • newPulse → evolved Pulse v2 organism with:
-//        - updated pattern
-//        - extended lineage
-//        - updated shapeSignature + evolutionStage
-//
-//  Notes:
-//    • No randomness.
-//    • No external mutation.
-//    • Pure function: returns a NEW pulse object.
-// ============================================================================
-
 export function evolvePulse(pulse, context = {}) {
   const nextPattern = evolvePattern(pulse.pattern, context);
   const nextLineage = buildLineage(pulse.lineage, nextPattern);

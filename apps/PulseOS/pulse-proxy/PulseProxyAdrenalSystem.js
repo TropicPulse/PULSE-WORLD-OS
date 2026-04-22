@@ -1,26 +1,19 @@
 // ============================================================================
-//  PULSE OS v9.1 — ADRENAL SYSTEM
+//  PULSE OS v9.3 — ADRENAL SYSTEM
 //  PulseInstanceOrchestrator — Fight‑or‑Flight Scaling Layer
 //  Deterministic • Drift‑Proof • Device‑Aware • Reflex‑Safe
 //  Backend‑Only Organ (Proxy Spine)
 // ============================================================================
 //
-//  WHAT THIS ORGAN IS (v9.1):
-//  --------------------------
-//  • A backend reflex organ that scales worker “cells” per user.
+//  ROLE (v9.3):
+//  ------------
+//  • Backend reflex organ that scales worker “cells” per user.
 //  • Reads UserScores → computes deterministic instance counts.
 //  • Launches or reabsorbs workers.
 //  • Logs snapshots for admin dashboards.
+//  • Ready to be wrapped by PulseOSGovernor (multi‑instance law) if desired.
 //
-//  WHAT THIS ORGAN IS NOT:
-//  ------------------------
-//  • Not a Brain organ (no IQ, no reasoning).
-//  • Not a Cortex organ (no decision‑making).
-//  • Not a PulseSend organ (but PulseSend‑aware).
-//  • Not a Mesh/Earn/GPU organ.
-//  • Not allowed in frontend.
-//
-//  SAFETY CONTRACT (v9.1):
+//  SAFETY CONTRACT (v9.3):
 //  ------------------------
 //  • Imports allowed (backend‑only).
 //  • No eval / Function().
@@ -44,13 +37,13 @@ const db = getFirestore();
 
 
 // ============================================================================
-//  PULSE ROLE — v9.1 Identity
+//  PULSE ROLE — v9.3 Identity
 // ============================================================================
 export const PulseRole = {
   type: "Organ",
   subsystem: "PulseProxy",
   layer: "AdrenalSystem",
-  version: "9.1",
+  version: "9.3",
   identity: "PulseInstanceOrchestrator",
 
   evo: {
@@ -62,14 +55,14 @@ export const PulseRole = {
     driftProof: true,
     multiInstanceReady: true,
     unifiedAdvantageField: true,
-    pulseSendAware: true,     // ⭐ can integrate with PulseSend later
+    pulseSendAware: true,
     futureEvolutionReady: true
   }
 };
 
 
 // ============================================================================
-//  ORGAN CONTEXT — v9.1
+//  ORGAN CONTEXT — v9.3
 // ============================================================================
 const ADRENAL_CONTEXT = {
   layer: PulseRole.layer,
@@ -81,7 +74,7 @@ const ADRENAL_CONTEXT = {
 
 
 // ============================================================================
-//  CONFIG — Physiological Limits (v9.1)
+//  CONFIG — Physiological Limits (v9.3)
 // ============================================================================
 export const NORMAL_MAX     = 4;
 export const UPGRADED_MAX   = 8;
@@ -99,7 +92,7 @@ export const INSTANCE_LOG_COLLECTION = "UserInstanceLogs";
 // ============================================================================
 //  INTERNAL STATE — Active “cells” per user
 // ============================================================================
-const activeWorkers = new Map();
+const activeWorkers = new Map(); // userId -> worker[]
 
 
 // ============================================================================
@@ -117,7 +110,7 @@ function getDeviceMax(deviceTier, testEarnActive) {
 
 
 // ============================================================================
-//  COMPUTE FINAL INSTANCE COUNT — Deterministic v9.1
+//  COMPUTE FINAL INSTANCE COUNT — Deterministic v9.3
 // ============================================================================
 function computeFinalInstances(base, deviceTier, earnMode, testEarnActive) {
   let final = base;
@@ -135,7 +128,7 @@ function computeFinalInstances(base, deviceTier, earnMode, testEarnActive) {
 
 
 // ============================================================================
-//  LOG USER SNAPSHOT — v9.1
+//  LOG USER SNAPSHOT — v9.3
 // ============================================================================
 async function logUserInstanceSnapshot(userId, snapshot) {
   if (!ENABLE_INSTANCE_LOGGING) return;
@@ -183,10 +176,15 @@ function killWorker(worker) {
 
 
 // ============================================================================
-//  MAIN ORCHESTRATOR LOOP — v9.1
+//  MAIN ORCHESTRATOR LOOP — v9.3
+//  Optional pulse envelope for future Governor wrapping:
+//    pulse = { jobId, lineage, meta... } (not required)
 // ============================================================================
-export async function runInstanceOrchestrator() {
-  logger.log("adrenal", "tick_start", ADRENAL_CONTEXT);
+export async function runInstanceOrchestrator(pulse) {
+  logger.log("adrenal", "tick_start", {
+    ...ADRENAL_CONTEXT,
+    pulseId: pulse?.jobId || pulse?.id || null
+  });
 
   const snap = await db.collection("UserScores").get();
 

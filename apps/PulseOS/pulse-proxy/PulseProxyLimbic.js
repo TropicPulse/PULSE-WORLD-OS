@@ -1,10 +1,10 @@
 // ============================================================================
-//  PULSE OS v9.1 — THE LIMBIC SHADOW
+//  PULSE OS v9.3 — THE LIMBIC SHADOW
 //  Unified Projection Layer • Instinct Surface • Meta‑Facade
 //  PURE FACADE. NO LOGIC. NO STATE. NO SIDE‑EFFECTS.
 // ============================================================================
 //
-//  WHAT THIS LAYER IS (v9.1):
+//  WHAT THIS LAYER IS (v9.3):
 //  --------------------------
 //  • The illusion of a single Pulse organ.
 //  • A merged silhouette of PulseNet, PulseClient, and PulseUpdate.
@@ -26,7 +26,7 @@
 //  • NOT a dynamic importer
 //  • NOT allowed to mutate anything
 //
-//  SAFETY CONTRACT (v9.1):
+//  SAFETY CONTRACT (v9.3):
 //  ------------------------
 //  • No logic
 //  • No state
@@ -38,12 +38,12 @@
 
 
 // ============================================================================
-//  LIMBIC SHADOW CONTEXT — v9.1
+//  LIMBIC SHADOW CONTEXT — v9.3
 // ============================================================================
 export const LIMBIC_SHADOW_CONTEXT = {
   layer: "LimbicShadow",
   role: "UNIFIED_PROJECTION_INSTINCT",
-  version: "9.1",
+  version: "9.3",
   purpose: "Unified projection + instinct surface for Pulse organs",
   evo: {
     driftProof: true,
@@ -90,12 +90,12 @@ logShadow("SHADOW_INIT");
 
 
 // ============================================================================
-//  PURE RE‑EXPORTS — THE SHADOW PROJECTION (v9.1)
+//  PURE RE‑EXPORTS — THE SHADOW PROJECTION (v9.3)
 //  NO LOGIC. NO STATE. NO SIDE‑EFFECTS.
 // ============================================================================
-export { PulseNet }    from "./PulseProxySynapse.js";            // Synapse Layer
-export { PulseClient } from "./PulseProxyCirculatorySystem.js";  // Circulatory System
-export { PulseUpdate } from "./PulseProxyBloodPressure.js";      // Hemodynamic Monitor
+export { PulseNet }    from "./PulseProxySynapse.js";        // Synapse Layer
+export { PulseClient } from "./PulseClient.js";              // Circulatory System
+export { PulseUpdate } from "./PulseCirculationMonitor.js";  // Hemodynamic Monitor
 
 
 // ============================================================================

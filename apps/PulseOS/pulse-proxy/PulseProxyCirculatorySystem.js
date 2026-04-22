@@ -1,23 +1,23 @@
 // ============================================================================
 // FILE: /apps/tropic-pulse/lib/Connectors/PulseClient.js
-// LAYER: CIRCULATORY SYSTEM (Arterial Fetch Layer) — v9.1
+// LAYER: CIRCULATORY SYSTEM (Arterial Fetch Layer) — v9.3
 // ============================================================================
 //
-// ROLE (v9.1):
+// ROLE (v9.3):
 //   THE CIRCULATORY SYSTEM — Arterial Fetch Layer
 //   • Moves data outward through the organism
 //   • Attempts accelerated PULSE route first (arterial path)
 //   • Falls back to PHONE route if needed (venous path)
 //   • Returns clean { data, meta } packets (oxygenated payloads)
 //
-// CONTRACT (v9.1):
+// CONTRACT (v9.3):
 //   • No PulseBand imports
 //   • No PulseNet imports
 //   • No global state
 //   • No side effects
 //   • Pure circulatory subsystem
 //
-// SAFETY (v9.1):
+// SAFETY (v9.3):
 //   • No console.*
 //   • All logs routed through PulseProxyVitalsLogger
 //   • All metrics routed through PulseProxyBloodStream
@@ -28,13 +28,13 @@ import { emitTelemetry } from "./PulseProxyBloodStream.js";
 
 
 // ============================================================================
-// ⭐ OS‑v9.1 CONTEXT METADATA — Circulatory Identity
+// ⭐ OS‑v9.3 CONTEXT METADATA — Circulatory Identity
 // ============================================================================
 export const PulseRole = {
   type: "Organ",
   subsystem: "PulseClient",
   layer: "CirculatorySystem",
-  version: "9.1",
+  version: "9.3",
   identity: "PulseClientArterialLayer",
 
   evo: {
@@ -121,7 +121,7 @@ function getDeviceInfo() {
 
 
 // ============================================================================
-// CORE FETCH WRAPPER — ARTERIAL FLOW (v9.1)
+// CORE FETCH WRAPPER — ARTERIAL FLOW (v9.3)
 // ============================================================================
 async function pulseFetch(url) {
   circulationLog("FETCH_START", { url });
@@ -201,7 +201,7 @@ async function pulseFetch(url) {
 
 
 // ============================================================================
-// PUBLIC API — CIRCULATORY SYSTEM v9.1
+// PUBLIC API — CIRCULATORY SYSTEM v9.3
 // ============================================================================
 export const PulseClient = {
   get: pulseFetch,

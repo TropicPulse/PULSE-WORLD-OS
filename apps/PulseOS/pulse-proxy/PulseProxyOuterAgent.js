@@ -1,48 +1,8 @@
 // ============================================================================
-//  PULSE OS v9.1 — PROXY OUTER AGENT
+//  PULSE OS v9.3 — PROXY OUTER AGENT
 //  “THE OUTER AGENT / EXTERNAL NEGOTIATOR”
 //  External Interface • Job Courier • Device Ambassador
 //  PURE NEGOTIATION. NO COMPUTE. NO MARKETPLACE LOGIC. NO STATE MUTATION.
-// ============================================================================
-//
-//  WHAT THIS ORGAN IS (v9.1):
-//  --------------------------
-//  PulseProxyOuterAgent is the **ambassador organ** of PulseOS. It is the
-//  outermost interface between the OS and the external compute marketplace.
-//
-//  It does NOT:
-//    • compute jobs
-//    • select jobs
-//    • score jobs
-//    • mutate OS state
-//    • access PulseBand / PulseNet / PulseBrain
-//    • perform orchestration
-//
-//  It ONLY:
-//    • registers the device outward
-//    • requests compute jobs
-//    • submits completed results
-//    • syncs credits/tokens
-//    • emits diagnostics (optional)
-//
-//  ROLE IN THE DIGITAL BODY (v9.1):
-//  --------------------------------
-//    • Ambassador → introduces device to the outside world
-//    • Courier → carries jobs in and results out
-//    • Exchange Organ → syncs credits/tokens
-//    • Boundary Organ → sits between proxy and external world
-//
-//  SAFETY CONTRACT (v9.1):
-//  ------------------------
-//    • No imports (wiring comes from OSKernel / Brain)
-//    • No PulseBand / PulseNet / PulseBrain access
-//    • No global state mutation outside this instance
-//    • No compute logic, no marketplace logic
-//    • Deterministic, pure courier behavior
-//
-//  LAYER:
-//    • Lives under /tropic-pulse/proxy
-//    • Called by Proxy → NOT by frontend
 // ============================================================================
 
 
@@ -52,7 +12,6 @@
 const log   = (global && global.log)   || console.log;
 const error = (global && global.error) || console.error;
 
-// Prefer global fetch (Node 18+ / runtime), fallback to globalThis.fetch
 const fetchFn =
   (typeof global !== "undefined" && global.fetch) ||
   (typeof globalThis !== "undefined" && globalThis.fetch) ||
@@ -60,7 +19,7 @@ const fetchFn =
 
 
 // ============================================================================
-//  LAYER CONSTANTS + DIAGNOSTICS (v9.1)
+//  LAYER CONSTANTS + DIAGNOSTICS (v9.3)
 // ============================================================================
 const AGENT_LAYER_ID   = "PROXY-OUTER-AGENT";
 const AGENT_LAYER_NAME = "THE OUTER AGENT";
@@ -69,7 +28,7 @@ const AGENT_LAYER_ROLE = "External Interface + Job Courier";
 export const PROXY_OUTER_AGENT_CONTEXT = {
   layer: "PulseProxyOuterAgent",
   role: "OUTER_AGENT",
-  version: "9.1",
+  version: "9.3",
   purpose: "External interface + job courier + credit sync",
   evo: {
     driftProof: true,
@@ -108,14 +67,13 @@ agentLog("AGENT_INIT");
 
 
 // ============================================================================
-//  OUTER AGENT CLASS — External Negotiator (v9.1)
+//  OUTER AGENT CLASS — External Negotiator (v9.3)
 // ============================================================================
 export class PulseProxyOuterAgent {
   constructor({ deviceId, gpuInfo, baseUrl }) {
     this.deviceId = deviceId;
     this.gpuInfo  = gpuInfo || null;
 
-    // External endpoint (proxy boundary)
     this.baseUrl =
       baseUrl ||
       (typeof global !== "undefined" && global.PULSE_PROXY_BASE_URL) ||

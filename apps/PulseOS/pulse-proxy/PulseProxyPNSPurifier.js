@@ -1,33 +1,14 @@
 // ============================================================================
 // FILE: /apps/netlify/functions/pulsebandCleanup.js
 // PULSEBAND CLEANUP — VERSION 9.3
-// “THE PURIFIER++ / SANITY LAYER++ / ORDER‑KEEPER”
+// “THE PURIFIER / SANITY LAYER / ORDER‑KEEPER”
 // ============================================================================
 //
 // ROLE (v9.3):
-//   pulsebandCleanup is the **PURIFIER** of the PulseBand subsystem.
-//   It is the **SANITY LAYER / ORDER‑KEEPER** — the organ that removes
+//   pulsebandCleanup is the PURIFIER of the PulseBand subsystem.
+//   It is the SANITY LAYER / ORDER‑KEEPER — the organ that removes
 //   expired sessions, chunks, errors, and redownload logs before they
 //   accumulate into systemic drift.
-//
-//   • Eliminates stale or expired kinetic data
-//   • Maintains structural integrity of PulseBand storage
-//   • Ensures deterministic, stable, predictable behavior
-//   • Runs automatically via heartbeat (Heart.js / OSKernel)
-//   • Aligned with PulseBand Nervous System v9.2+ + CheckBand v9.3
-//
-// WHAT THIS FILE *IS* (v9.3):
-//   • A deterministic cleanup organ
-//   • A backend purification + waste‑removal layer
-//   • A zero‑drift, zero‑ambiguity subsystem
-//   • A biological “liver/kidney” analog for PulseBand
-//
-// WHAT THIS FILE *IS NOT*:
-//   • NOT business logic
-//   • NOT a renderer
-//   • NOT a GPU subsystem
-//   • NOT a user-facing endpoint
-//   • NOT a dynamic or self‑modifying subsystem
 //
 // SAFETY CONTRACT (v9.3):
 //   • Fail-open: errors are logged, never fatal
@@ -35,13 +16,7 @@
 //   • No mutation outside intended collections
 //   • Always logs actions for traceability
 //   • No external side effects beyond Firestore writes
-//   • No cross-subsystem mutations
 //   • Deterministic cleanup order
-//
-// STRUCTURE RULES (v9.3):
-//   • Cleanup order must remain deterministic
-//   • No new collections without architectural approval
-//   • No drift from the PulseBand storage contract
 // ============================================================================
 
 import * as admin from "firebase-admin";
@@ -52,16 +27,40 @@ if (!admin.apps.length) {
 }
 const db = getFirestore();
 
-// ------------------------------------------------------------
+// ============================================================================
+// ORGAN IDENTITY — v9.3
+// ============================================================================
+export const PulseRole = {
+  type: "Organ",
+  subsystem: "PulseProxy",
+  layer: "PulseBandPurifier",
+  version: "9.3",
+  identity: "PulseBandCleanup",
+
+  evo: {
+    driftProof: true,
+    deterministic: true,
+    backendOnly: true,
+    noIQ: true,
+    noRouting: true,
+    noCompute: true,
+    multiInstanceReady: true,
+    pulseBandAware: true,
+    futureEvolutionReady: true
+  }
+};
+
+// ============================================================================
 // HUMAN‑READABLE CONTEXT MAP (v9.3)
-// ------------------------------------------------------------
+// ============================================================================
 const CLEANUP_CONTEXT = {
   label: "PULSEBAND_CLEANUP",
-  layer: "D‑Layer",
+  layer: PulseRole.layer,
   role: "Purifier / Sanity Layer / Order‑Keeper",
   purpose: "PulseBand Session + Error Cleanup",
   context: "Removes expired sessions, chunks, errors, and redownload logs",
-  version: "9.3"
+  version: PulseRole.version,
+  evo: PulseRole.evo
 };
 
 const CLEANUP_DIAGNOSTICS_ENABLED =
