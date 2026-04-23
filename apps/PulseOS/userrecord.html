@@ -2019,13 +2019,42 @@ window.attemptStripeRedirect = function (url) {
     row.style.display = "none";
   };
 };
+async function sessionCheck() {
+  let id = null;
 
+  try {
+    const raw = localStorage.getItem("tp_identity_v9");
+    if (raw) {
+      id = JSON.parse(raw);
+    }
+  } catch (e) {
+    // Corrupt identity → treat as missing
+    id = null;
+  }
 
+  // Fallback: if some global understanding layer identity() exists,
+  // we can try to hydrate from there once, but we do NOT depend on it.
+  if (!id && typeof identity === "function") {
+    try {
+      id = await identity();
+    } catch (e) {
+      id = null;
+    }
+  }
+
+  // No identity or not trusted → go to login
+  if (!id || !id.trustedDevice) {
+    const here = encodeURIComponent(location.pathname + location.search);
+    window.location.href = `/CheckEmail.html?returnTo=${here}`;
+    return null;
+  }
+
+  // Expose canonical identity for the rest of the page
+  window.PulseIdentity = id;
+  return id;
+}
 // -----------------------------
-// USERRECORD BOOTSTRAP (NEW, SAFE, FINAL)
-// -----------------------------
-// -----------------------------
-// USERRECORD BOOTSTRAP (FINAL — CLEAN, SAFE)
+// USERRECORD BOOTSTRAP — v11 (CLEAN, SAFE, FINAL)
 // -----------------------------
 (async () => {
   // Minimal timing marker
@@ -2050,32 +2079,41 @@ window.attemptStripeRedirect = function (url) {
   window.isAdmin      = window.isAdmin      || false;
 
   // -----------------------------
-  // 1. LOAD IDENTITY (SINGLE SOURCE OF TRUTH)
+  // 1. v11 SESSION CHECK + IDENTITY
   // -----------------------------
-  mark("USERRECORD: STARTING IDENTITY()");
-  identityUser = await identity(); // existing contract
+  mark("USERRECORD: STARTING sessionCheck()");
+  const id = await sessionCheck();   // v11: returns canonical identity or null
+  if (!id) return;                   // redirected to login if not trusted/valid
 
-  if (!identityUser) {
+  // Canonical identity for this page
+  window.identityUser = id;
+  window.currentUser  = window.currentUser || id;
+  window.isAdmin      = (id.role === "Admin");
+
+  // If somehow still missing, hard fail to email check
+  if (!window.identityUser) {
     window.location.replace("/CheckEmail.html");
     return;
   }
 
-  isAdmin = identityUser.role === "Admin";
-
   // -----------------------------
   // 2. DETERMINE CURRENT USER (CONSUME CACHES ONLY)
-  // -----------------------------
-  if (isAdmin) {
+// -----------------------------
+  if (window.isAdmin) {
     // Uses existing contract: setupAdminUserDropdown() with no args.
-    setupAdminUserDropdown(); // uses getUsersCache + populateUserUI
+    if (typeof setupAdminUserDropdown === "function") {
+      setupAdminUserDropdown(); // uses getUsersCache + populateUserUI
+    }
   } else {
     const users = (typeof getUsersCache === "function") ? getUsersCache() : null;
 
-    currentUser =
-      (Array.isArray(users) && users.find(u => u.id === identityUser.uid)) ||
-      identityUser;
+    window.currentUser =
+      (Array.isArray(users) && users.find(u => u.id === window.identityUser.uid)) ||
+      window.identityUser;
 
-    populateUserUI(currentUser);
+    if (typeof populateUserUI === "function") {
+      populateUserUI(window.currentUser);
+    }
   }
 
   // -----------------------------
@@ -2101,7 +2139,9 @@ window.attemptStripeRedirect = function (url) {
   // 4. HIDE LOADER + STRIPE STATUS
   // -----------------------------
   hideTPLoader();
-  await loadStripeStatus(); // existing signature
+  if (typeof loadStripeStatus === "function") {
+    await loadStripeStatus(); // existing signature
+  }
 
   // -----------------------------
   // 5. HERO HEADER ANIMATION

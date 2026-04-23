@@ -1175,88 +1175,38 @@ function mark(label) {
  * SESSION CHECK (ALL PAGES EXCEPT LOGIN)
  ************************************************************/
 async function sessionCheck() {
-  mark("sessionCheck");
-
-  // -----------------------------------------
-  // 1. LOAD LOCAL VARIABLES
-  // -----------------------------------------
-  autologin = localStorage.getItem("tp_stay_signed_v4") === "1";
-  trusted   = localStorage.getItem("tp_device_token_v4") === "1";
+  let id = null;
 
   try {
-    identity = JSON.parse(localStorage.getItem("tp_identity_v4") || "{}");
-  } catch {
-    identity = null;
-  }
-
-  token     = localStorage.getItem("tp_token_v4");
-  userID    = identity?.uid   || null;
-  userEmail = identity?.email || null;
-  userName  = identity?.displayName || null;
-
-  // -----------------------------------------
-  // 2. IDENTITY + TOKEN MUST EXIST
-  // -----------------------------------------
-  if (!identity || !userID || !token) {
-    mark("Missing identity or token → HARD LOGOUT");
-    hardLogout("missing_identity_or_token");
-    return false;
-  }
-
-  // -----------------------------------------
-  // 3. LOCAL INACTIVITY CHECK
-  // -----------------------------------------
-  const now       = nowMs();
-  const lastLocal = Number(localStorage.getItem("tp_last_active_v4")) || 0;
-  const diff      = now - lastLocal;
-
-  const inactive15 = diff > 15 * 60 * 1000; // > 15 minutes
-
-  if (inactive15 && !trusted) {
-    if (!autologin) {
-      mark("Inactive >15 min AND not autologin/trusted → HARD LOGOUT");
-      hardLogout("inactive_and_not_remembered");
-    } else {
-      mark("Inactive >15 min AND autologin → SOFT LOGOUT");
-      safeLogout();
+    const raw = localStorage.getItem("tp_identity_v9");
+    if (raw) {
+      id = JSON.parse(raw);
     }
-    return false;
+  } catch (e) {
+    // Corrupt identity → treat as missing
+    id = null;
   }
 
-  // -----------------------------------------
-  // 4. BACKEND AUTH REFRESH (THE ONLY REAL STEP)
-  // -----------------------------------------
-  const data = await getAuth(token);
-
-  if (data.hardLogout) {
-    mark("Backend flagged danger → HARD LOGOUT");
-    hardLogout("backend_danger_flag");
-    return false;
+  // Fallback: if some global understanding layer identity() exists,
+  // we can try to hydrate from there once, but we do NOT depend on it.
+  if (!id && typeof identity === "function") {
+    try {
+      id = await identity();
+    } catch (e) {
+      id = null;
+    }
   }
 
-  if (!data.identity) {
-    mark("Backend returned no identity → HARD LOGOUT");
-    hardLogout("missing_identity_from_backend");
-    return false;
+  // No identity or not trusted → go to login
+  if (!id || !id.trustedDevice) {
+    const here = encodeURIComponent(location.pathname + location.search);
+    window.location.href = `/CheckEmail.html?returnTo=${here}`;
+    return null;
   }
 
-  // Update JWT lineage if provided
-  if (data.newJwtToken) {
-    token = data.newJwtToken;
-    localStorage.setItem("tp_token_v4", token);
-    mark("Updated JWT lineage from backend");
-  }
-
-  // Update identity cache
-  identity = data.identity;
-  localStorage.setItem("tp_identity_v4", JSON.stringify(identity));
-
-  // -----------------------------------------
-  // 5. UPDATE LAST ACTIVE
-  // -----------------------------------------
-  localStorage.setItem("tp_last_active_v4", now);
-
-  return true;
+  // Expose canonical identity for the rest of the page
+  window.PulseIdentity = id;
+  return id;
 }
 
 function initializeOverlays() {
@@ -2633,72 +2583,61 @@ function applyTropicOverlay(name, iconUrl = null) {
 
   window.addEventListener("resize", window.__tp_overlay_resize_handler);
 }
-
 (async () => {
-    function mark(label, position = false) {
-      const now = nowMs();
-      if (position) {
-        log(`${label}: +${(now - firstTime).toFixed(1)}ms`);
-      } else {
-        log(`${label}: +${(now - lastTime).toFixed(1)}ms`);
-      }
-      lastTime = now;
-    }
-    mark("EVENT DOM STARTS");
-    
-    currentUserLocation = await getInstantLocationWithBackgroundUpdate(newLoc => {
-      mark("SETTING CURRENT LOCATION IF AVAILABLE");
-      currentUserLocation = newLoc;
-    });
-    mark("EVENT LOCATION READY");
+  // -----------------------------------------
+  // MARKER (CLEAN + SAFE)
+  // -----------------------------------------
+  let lastTime = nowMs();
+  function mark(label, absolute = false) {
+    const now = nowMs();
+    const diff = now - lastTime;
+    log(
+      absolute
+        ? `${label}: @${now.toFixed(1)}ms`
+        : `${label}: +${diff.toFixed(1)}ms`
+    );
+    lastTime = now;
+  }
 
-    await loadEvent();
-    mark("EVENT LOADED");
+  mark("EVENT DOM STARTS");
 
-    await runWakeUpHeartbeat();
-    mark("EVENT HEARTBEAT STARTED");
-    
-    initializeOverlays();
-    mark("EVENT OVERLAYS LOADED");
-    // -----------------------------
-  // LIVE PULSEBAND UPDATE LOOP
-  // -----------------------------
-  setInterval(async () => {
-    const inactiveFlag = localStorage.getItem("pulseband_disabled") === "1";
-    const disabled = (window.isIdle === true && inactiveFlag === true);
-    if (disabled) return;
+  // -----------------------------------------
+  // 1️⃣ LOCATION (ONE-TIME, NO LOOPS)
+  // -----------------------------------------
+  currentUserLocation = await getInstantLocationWithBackgroundUpdate(newLoc => {
+    currentUserLocation = newLoc;
+    mark("SETTING CURRENT LOCATION IF AVAILABLE");
+  });
 
-    const status = pulseband.getStatus();
-    const data = await window.getPulseBandRate();
+  mark("EVENT LOCATION READY");
 
-    pulseband.setStatus({
-      ...status,
-      ...data,
-      lastSyncTimestamp: nowMs(),
-      lastSyncSeconds: 0
-    });
-  }, 3000);
+  // -----------------------------------------
+  // 2️⃣ LOAD EVENT (ONE-TIME)
+  // -----------------------------------------
+  await loadEvent();
+  mark("EVENT LOADED");
 
-  // -----------------------------
-  // LAST SYNC COUNTER LOOP
-  // -----------------------------
-  setInterval(() => {
-    const inactiveFlag = localStorage.getItem("pulseband_disabled") === "1";
-    const disabled = (window.isIdle === true && inactiveFlag === true);
+  // -----------------------------------------
+  // 3️⃣ HEARTBEAT INIT (ONE-TIME)
+  // -----------------------------------------
+  await runWakeUpHeartbeat();
+  mark("EVENT HEARTBEAT STARTED");
 
-    const status = pulseband.getStatus();
-    const ts = getSafeTimestamp(status);
-    const seconds = safeSeconds((nowMs() - ts) / 1000);
+  // -----------------------------------------
+  // 4️⃣ OVERLAYS (ONE-TIME)
+  // -----------------------------------------
+  initializeOverlays();
+  mark("EVENT OVERLAYS LOADED");
 
-    pulseband.setStatus({
-      ...status,
-      lastSyncTimestamp: ts,
-      lastSyncSeconds: seconds
-    });
-  }, 1000);
-    hideTPLoader();
-    mark("EVENT DOM ENDS", true);
-  })();
+  // -----------------------------------------
+  // ⭐ NO TIMERS. NO INTERVALS. NO LOOPS.
+  // PulseBand is UI-only on this page.
+  // -----------------------------------------
+
+  hideTPLoader();
+  mark("EVENT DOM ENDS", true);
+})();
+
 
 </script>
 </body>

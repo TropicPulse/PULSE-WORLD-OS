@@ -1126,24 +1126,39 @@ body::before {
    * SESSION CHECK — PulseOS v9.3 (immune synapse)
    ************************************************************/
   async function sessionCheck() {
-    mark("sessionCheck");
+  let id = null;
 
-    // Identity is illusion — only trustedDevice matters
-    const id = await identity();
-
-    if (!id.trustedDevice) {
-      const here = encodeURIComponent(location.pathname + location.search);
-      window.location.href = `/login.html?returnTo=${here}`;
-      return false;
+  try {
+    const raw = localStorage.getItem("tp_identity_v9");
+    if (raw) {
+      id = JSON.parse(raw);
     }
-
-    // v9.3 — set globals once, never re-check identity again
-    window.userEmail = id.email || null;
-    window.userName  = id.displayName || null;
-    window.tpNotifications = id.notifications || {};
-
-    return true;
+  } catch (e) {
+    // Corrupt identity → treat as missing
+    id = null;
   }
+
+  // Fallback: if some global understanding layer identity() exists,
+  // we can try to hydrate from there once, but we do NOT depend on it.
+  if (!id && typeof identity === "function") {
+    try {
+      id = await identity();
+    } catch (e) {
+      id = null;
+    }
+  }
+
+  // No identity or not trusted → go to login
+  if (!id || !id.trustedDevice) {
+    const here = encodeURIComponent(location.pathname + location.search);
+    window.location.href = `/CheckEmail.html?returnTo=${here}`;
+    return null;
+  }
+
+  // Expose canonical identity for the rest of the page
+  window.PulseIdentity = id;
+  return id;
+}
 
   /************************************************************
    * CAROUSEL OVERLAYS (UNCHANGED)
@@ -2407,72 +2422,69 @@ function applyTropicOverlay(name, iconUrl = null) {
 
   window.addEventListener("resize", window.__tp_overlay_resize_handler);
 }
-
+// -----------------------------
+// BUSINESS PAGE BOOTSTRAP — v11 CLEAN
+// -----------------------------
 (async () => {
-    function mark(label, position = false) {
-      const now = nowMs();
-      if (position) {
-        log(`${label}: +${(now - firstTime).toFixed(1)}ms`);
-      } else {
-        log(`${label}: +${(now - lastTime).toFixed(1)}ms`);
-      }
-      lastTime = now;
-    }
-    mark("BUSINESS DOM STARTS");
-    
-    currentUserLocation = await getInstantLocationWithBackgroundUpdate(newLoc => {
-      mark("SETTING CURRENT LOCATION IF AVAILABLE");
-      currentUserLocation = newLoc;
-    });
-    mark("BUSINESS LOCATION READY");
+  // -----------------------------------------
+  // MARKER (CLEAN + SAFE)
+  // -----------------------------------------
+  let lastTime = nowMs();
+  function mark(label, absolute = false) {
+    const now = nowMs();
+    const diff = now - lastTime;
+    log(
+      absolute
+        ? `${label}: @${now.toFixed(1)}ms`
+        : `${label}: +${diff.toFixed(1)}ms`
+    );
+    lastTime = now;
+  }
 
-    await loadBusiness();
-    mark("BUSINESS LOADED");
+  mark("BUSINESS DOM STARTS");
 
-    await runWakeUpHeartbeat();
-    mark("BUSINESS HEARTBEAT STARTED");
-    
-    initializeOverlays();
-    mark("BUSINESS OVERLAYS LOADED");
-    // -----------------------------
-  // LIVE PULSEBAND UPDATE LOOP
-  // -----------------------------
-  setInterval(async () => {
-    const inactiveFlag = localStorage.getItem("pulseband_disabled") === "1";
-    const disabled = (window.isIdle === true && inactiveFlag === true);
-    if (disabled) return;
+  // -----------------------------------------
+  // 1️⃣ v11 SESSION CHECK (ONE-TIME)
+  // -----------------------------------------
+  const id = await sessionCheck();
+  if (!id) return; // redirected to login if invalid
+  mark("BUSINESS SESSIONCHECK OK");
 
-    const status = pulseband.getStatus();
-    const data = await window.getPulseBandRate();
+  // -----------------------------------------
+  // 2️⃣ LOCATION ENGINE (ONE-TIME)
+  // -----------------------------------------
+  currentUserLocation = await getInstantLocationWithBackgroundUpdate(newLoc => {
+    currentUserLocation = newLoc;
+    mark("SETTING CURRENT LOCATION IF AVAILABLE");
+  });
 
-    pulseband.setStatus({
-      ...status,
-      ...data,
-      lastSyncTimestamp: nowMs(),
-      lastSyncSeconds: 0
-    });
-  }, 3000);
+  mark("BUSINESS LOCATION READY");
 
-  // -----------------------------
-  // LAST SYNC COUNTER LOOP
-  // -----------------------------
-  setInterval(() => {
-    const inactiveFlag = localStorage.getItem("pulseband_disabled") === "1";
-    const disabled = (window.isIdle === true && inactiveFlag === true);
+  // -----------------------------------------
+  // 3️⃣ LOAD BUSINESS (ONE-TIME)
+  // -----------------------------------------
+  await loadBusiness();
+  mark("BUSINESS LOADED");
 
-    const status = pulseband.getStatus();
-    const ts = getSafeTimestamp(status);
-    const seconds = safeSeconds((nowMs() - ts) / 1000);
+  // -----------------------------------------
+  // 4️⃣ HEARTBEAT INIT (ONE-TIME)
+  // -----------------------------------------
+  await runWakeUpHeartbeat();
+  mark("BUSINESS HEARTBEAT STARTED");
 
-    pulseband.setStatus({
-      ...status,
-      lastSyncTimestamp: ts,
-      lastSyncSeconds: seconds
-    });
-  }, 1000);
-    hideTPLoader();
-    mark("BUSINESS DOM ENDS", true);
-  })();
+  // -----------------------------------------
+  // 5️⃣ INIT BUSINESS UI (ONE-TIME)
+  // -----------------------------------------
+  initiateBusiness();
+  mark("BUSINESS OVERLAYS LOADED");
+
+  // -----------------------------------------
+  // ⭐ NO TIMERS. NO INTERVALS. NO LOOPS.
+// -----------------------------------------
+
+  hideTPLoader();
+  mark("BUSINESS DOM ENDS", true);
+})();
 
 </script>
 </body>

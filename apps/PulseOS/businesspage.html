@@ -2133,15 +2133,38 @@ function mark(label) {
 // ⭐ PAGE DOOR — TRUST CHECK ONLY
 // -----------------------------------------
 async function sessionCheck() {
-  const id = await identity(); // Provided by Understanding
+  let id = null;
 
-  if (!id.trustedDevice) {
-    const here = encodeURIComponent(location.pathname + location.search);
-    window.location.href = `/login.html?returnTo=${here}`;
-    return false;
+  try {
+    const raw = localStorage.getItem("tp_identity_v9");
+    if (raw) {
+      id = JSON.parse(raw);
+    }
+  } catch (e) {
+    // Corrupt identity → treat as missing
+    id = null;
   }
 
-  return true;
+  // Fallback: if some global understanding layer identity() exists,
+  // we can try to hydrate from there once, but we do NOT depend on it.
+  if (!id && typeof identity === "function") {
+    try {
+      id = await identity();
+    } catch (e) {
+      id = null;
+    }
+  }
+
+  // No identity or not trusted → go to login
+  if (!id || !id.trustedDevice) {
+    const here = encodeURIComponent(location.pathname + location.search);
+    window.location.href = `/CheckEmail.html?returnTo=${here}`;
+    return null;
+  }
+
+  // Expose canonical identity for the rest of the page
+  window.PulseIdentity = id;
+  return id;
 }
 
 // -----------------------------------------
@@ -5001,123 +5024,95 @@ async function runWakeUpHeartbeat() {
   // It already runs at bootstrap and on visibilitychange.
   return;
 }
-
 // -----------------------------
-// BUSINESSES BOOTSTRAP
+// BUSINESSES BOOTSTRAP — v11 CLEAN
 // -----------------------------
 (async () => {
-  function mark(label, position = false) {
+  // -----------------------------------------
+  // MARKER (CLEAN + SAFE)
+  // -----------------------------------------
+  let lastTime = nowMs();
+  function mark(label, absolute = false) {
     const now = nowMs();
-    if (position) {
-      log(`${label}: +${(now - firstTime).toFixed(1)}ms`);
-    } else {
-      log(`${label}: +${(now - lastTime).toFixed(1)}ms`);
-    }
+    const diff = now - lastTime;
+    log(
+      absolute
+        ? `${label}: @${now.toFixed(1)}ms`
+        : `${label}: +${diff.toFixed(1)}ms`
+    );
     lastTime = now;
   }
 
-  // Visibility → re-run sessionCheck
+  // -----------------------------------------
+  // VISIBILITY → SESSIONCHECK (ONE-SHOT)
+  // -----------------------------------------
   if (!document.__businessesVisibilityBound) {
     document.__businessesVisibilityBound = true;
+
     document.addEventListener("visibilitychange", () => {
       if (document.visibilityState === "visible") {
         setTimeout(async () => await sessionCheck(), 250);
-        mark("✅ VisibilityChange RERAN SESSIONCHECK AND LET THE FUNCTION DO THE LOGIC");
+        mark("VisibilityChange → sessionCheck()");
       }
     });
   }
 
   mark("BUSINESSES DOM STARTS");
 
-  // ---------------------------------
-  // 1) SESSION CHECK
-  // ---------------------------------
-  mark("BUSINESSES: STARTING SESSIONCHECK");
-  await sessionCheck();
-  mark("BUSINESSES: SESSIONCHECK COMPLETE");
+  // -----------------------------------------
+  // 1️⃣ v11 SESSION CHECK (ONE-TIME)
+  // -----------------------------------------
+  mark("BUSINESSES: sessionCheck()");
+  const id = await sessionCheck();
+  if (!id) return; // redirected to login
+  mark("BUSINESSES: sessionCheck() COMPLETE");
 
-  // ---------------------------------
-  // 2) LOAD BUSINESSES
-  // ---------------------------------
-  mark("BUSINESSES DOM loadBusinesses START");
+  // -----------------------------------------
+  // 2️⃣ LOAD BUSINESSES (ONE-TIME)
+  // -----------------------------------------
+  mark("BUSINESSES: loadBusinesses()");
   await loadBusinesses();
-  mark("BUSINESSES DOM loadBusinesses LOADED");
+  mark("BUSINESSES: BUSINESSES LOADED");
 
-  // ---------------------------------
-  // 3) LOCATION ENGINE
-  // ---------------------------------
+  // -----------------------------------------
+  // 3️⃣ LOCATION ENGINE (ONE-TIME)
+  // -----------------------------------------
   currentUserLocation = await getInstantLocationWithBackgroundUpdate(newLoc => {
-    mark("SETTING CURRENT LOCATION IF AVAILABLE");
     currentUserLocation = newLoc;
-    refreshDistances();
+    mark("SETTING CURRENT LOCATION IF AVAILABLE");
+    refreshDistances(); // distance-only update
   });
 
   mark("BUSINESSES LOCATION READY");
 
-  // ---------------------------------
-  // 4) (OPTIONAL) WAKE SESSION HEARTBEAT
-  // ---------------------------------
+  // -----------------------------------------
+  // 4️⃣ HEARTBEAT INIT (ONE-TIME)
+  // -----------------------------------------
   await runWakeUpHeartbeat();
   mark("BUSINESSES HEARTBEAT STARTED");
 
-  // ---------------------------------
-  // 5) LOAD CATEGORIES
-  // ---------------------------------
+  // -----------------------------------------
+  // 5️⃣ LOAD CATEGORIES (ONE-TIME)
+  // -----------------------------------------
   await loadBusinessCategories();
   mark("BUSINESSES CATEGORIES LOADED");
 
-  // ---------------------------------
-  // 6) INITIAL DISTANCE REFRESH + RENDER
-  // ---------------------------------
+  // -----------------------------------------
+  // 6️⃣ DISTANCES + RENDER (ONE-TIME)
+// -----------------------------------------
   refreshDistances();
   mark("BUSINESSES DISTANCES REFRESHED");
 
   renderBusinessCategoryCards();
-  mark("BUSINESSES CATEGORIES RENDERED");
+  mark("BUSINESSES CATEGORY CARDS RENDERED");
 
   showBusinessFilters();
-  mark("BUSINESSES FILTERS/BUTTONS LOADED");
+  mark("BUSINESSES FILTERS LOADED");
 
-  // -----------------------------
-  // LIVE PULSEBAND UPDATE LOOP
-  // -----------------------------
-  setInterval(async () => {
-    const inactiveFlag = localStorage.getItem("pulseband_disabled") === "1";
-    const disabled = (window.isIdle === true && inactiveFlag === true);
-    if (disabled) return;
+  // -----------------------------------------
+  // ⭐ NO TIMERS. NO INTERVALS. NO LOOPS.
+// -----------------------------------------
 
-    const status = pulseband.getStatus();
-    const data = await window.getPulseBandRate();
-
-    pulseband.setStatus({
-      ...status,
-      ...data,
-      lastSyncTimestamp: nowMs(),
-      lastSyncSeconds: 0
-    });
-  }, 3000);
-
-  // -----------------------------
-  // LAST SYNC COUNTER LOOP
-  // -----------------------------
-  setInterval(() => {
-    const inactiveFlag = localStorage.getItem("pulseband_disabled") === "1";
-    const disabled = (window.isIdle === true && inactiveFlag === true);
-
-    const status = pulseband.getStatus();
-    const ts = getSafeTimestamp(status);
-    const seconds = safeSeconds((nowMs() - ts) / 1000);
-
-    pulseband.setStatus({
-      ...status,
-      lastSyncTimestamp: ts,
-      lastSyncSeconds: seconds
-    });
-  }, 1000);
-
-  // ---------------------------------
-  // 7) FINAL UI SNAP
-  // ---------------------------------
   hideTPLoader();
 
   showFloatingCategoryIcon("businesses");

@@ -1001,7 +1001,7 @@ import "/PulseUnderstanding.js";
   </div>
     <script type="module">
 /* ============================================================================
-   DASHBOARD — TOP OF SCRIPT (Pulse‑OS‑v9.3)
+   DASHBOARD — TOP OF SCRIPT (Pulse‑OS‑v11 FRONTEND)
    Understanding‑Only • No imports • No caches • No v4 logic
    Pure UI + Page Door + Identity + Hero Animation
 ============================================================================ */
@@ -1029,18 +1029,48 @@ function mark(label, absolute = false) {
 }
 
 // -----------------------------------------
-// ⭐ PAGE DOOR — TRUST CHECK ONLY
+// ⭐ PAGE DOOR — v11 SESSION CHECK (LOCAL + STABLE)
 // -----------------------------------------
+// v11 rule: sessionCheck owns identity for this page.
+// It:
+//   - reads canonical identity from localStorage
+//   - validates trustedDevice
+//   - exposes window.PulseIdentity
+//   - redirects to login with returnTo if not valid
+//   - returns the identity object on success
 async function sessionCheck() {
-  const id = await identity(); // Understanding layer
+  let id = null;
 
-  if (!id.trustedDevice) {
-    const here = encodeURIComponent(location.pathname + location.search);
-    window.location.href = `/login.html?returnTo=${here}`;
-    return false;
+  try {
+    const raw = localStorage.getItem("tp_identity_v9");
+    if (raw) {
+      id = JSON.parse(raw);
+    }
+  } catch (e) {
+    // Corrupt identity → treat as missing
+    id = null;
   }
 
-  return true;
+  // Fallback: if some global understanding layer identity() exists,
+  // we can try to hydrate from there once, but we do NOT depend on it.
+  if (!id && typeof identity === "function") {
+    try {
+      id = await identity();
+    } catch (e) {
+      id = null;
+    }
+  }
+
+  // No identity or not trusted → go to login
+  if (!id || !id.trustedDevice) {
+    const here = encodeURIComponent(location.pathname + location.search);
+    window.location.href = `/CheckEmail.html?returnTo=${here}`;
+    return null;
+  }
+
+  // Expose canonical identity for the rest of the page
+  window.PulseIdentity = id;
+  return id;
 }
 
 // -----------------------------------------
@@ -1104,7 +1134,6 @@ async function runHeroHeaderEntrance() {
 // ⭐ SIMPLE LOCAL LOGOUT (UI-ONLY)
 // -----------------------------------------
 function safeLogout() {
-  // v9.3 logout = remove trust + identity
   localStorage.removeItem("tp_identity_v9");
   localStorage.removeItem("tp_device_token_v9");
   window.location.replace("/login.html");
@@ -1119,6 +1148,7 @@ function hideTPLoader() {
   el.classList.add("hide");
   setTimeout(() => el.remove(), 700);
 }
+
 // -----------------------------------------
 // ⭐ DASHBOARD POP ANIMATION
 // -----------------------------------------
@@ -1145,7 +1175,7 @@ function applyDashboardPop(identity) {
 }
 
 // -----------------------------------------
-// ⭐ MAIN DASHBOARD RENDER (PulseOS v9.3)
+// ⭐ MAIN DASHBOARD RENDER (v11, IDENTITY-ONLY INPUT)
 // -----------------------------------------
 async function renderDashboard(identity) {
   const shimmer = document.getElementById("shimmer");
@@ -1226,12 +1256,13 @@ async function renderDashboard(identity) {
 
   hideTPLoader();
 }
-
 // -----------------------------
-// DASHBOARD BOOTSTRAP — PulseOS v9.3 (UNDERSTANDING-ONLY)
+// DASHBOARD BOOTSTRAP — v11 (UNDERSTANDING-ONLY)
 // -----------------------------
 (async () => {
-  // Minimal timing marker (no firstTime dependency)
+  // -----------------------------------------
+  // MARKER (CLEAN + SAFE)
+  // -----------------------------------------
   let lastTime = nowMs();
   function mark(label, absolute = false) {
     const now = nowMs();
@@ -1244,45 +1275,40 @@ async function renderDashboard(identity) {
     lastTime = now;
   }
 
-  // Always start visually idle (UI-only)
+  mark("DASHBOARD DOM START");
+
+  // -----------------------------------------
+  // GLOBAL UI STATE
+  // -----------------------------------------
   window.isIdle = true;
 
-  const badge = document.getElementById("pulseband-badge");
-  const panel = document.getElementById("pulseband-panel");
-
   // -----------------------------------------
-  // 1. PAGE DOOR — TRUST CHECK ONLY
+  // 1️⃣ v11 SESSION CHECK (ONE-TIME)
   // -----------------------------------------
   mark("DASHBOARD: sessionCheck()");
-  const ok = await sessionCheck();
-  if (!ok) return; // redirected to login if not trusted
+  const id = await sessionCheck();
+  if (!id) return; // redirected to login if invalid
 
   // -----------------------------------------
-  // 2. LOAD IDENTITY FROM BBB (SINGLE SOURCE OF TRUTH)
-  // -----------------------------------------
-  mark("DASHBOARD: identity()");
-  const id = await identity();
-
-  // -----------------------------------------
-  // 3. UI PREP
+  // 2️⃣ UI PREP
   // -----------------------------------------
   document.body.classList.add("hero-header-intro");
   hideTPLoader();
 
   // -----------------------------------------
-  // 4. HERO HEADER ANIMATION
+  // 3️⃣ HERO HEADER ANIMATION
   // -----------------------------------------
-  mark("DASHBOARD: STARTING HERO ENTRANCE");
+  mark("DASHBOARD: HERO ENTRANCE");
   await runHeroHeaderEntrance();
 
   // -----------------------------------------
-  // 5. RENDER DASHBOARD (IDENTITY-ONLY INPUT)
+  // 4️⃣ RENDER DASHBOARD (IDENTITY-ONLY INPUT)
   // -----------------------------------------
-  mark("DASHBOARD: STARTING RENDER DASHBOARD");
+  mark("DASHBOARD: RENDER START");
   await renderDashboard(id);
 
   // -----------------------------------------
-  // ⭐ PULSEBAND INITIAL RESTORE (NO LOOPS, UI-ONLY)
+  // ⭐ PULSEBAND UI RESTORE (NO LOOPS)
 // -----------------------------------------
   if (!window.__pulsebandListenersAttached) {
     window.__pulsebandListenersAttached = true;
@@ -1293,19 +1319,17 @@ async function renderDashboard(identity) {
       window.isIdle = !!inactiveFlag;
     });
 
-    // Badge toggle listener (mini badge)
+    // Mini badge toggle
     const miniBadge = document.getElementById("pb-mini-badge");
     if (miniBadge) {
       miniBadge.addEventListener("click", () => {
         const inactiveFlag = localStorage.getItem("pulseband_disabled") === "1";
-        const disabled = inactiveFlag === true && window.isIdle === true;
+        const disabled = inactiveFlag && window.isIdle;
 
         if (disabled) {
-          // Turn ON
           localStorage.removeItem("pulseband_disabled");
           window.isIdle = false;
         } else {
-          // Turn OFF
           localStorage.setItem("pulseband_disabled", "1");
           window.isIdle = true;
         }
@@ -1313,10 +1337,8 @@ async function renderDashboard(identity) {
     }
   }
 
-  mark("DASHBOARD: ENDING DOM BOOTSTRAP");
-  mark("DASHBOARD: ENDING DOM LOAD", true);
+  mark("DASHBOARD DOM END", true);
 })();
-
 
 
   </script>
