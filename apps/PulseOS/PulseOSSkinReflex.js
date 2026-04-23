@@ -1,6 +1,6 @@
 // ============================================================================
 // FILE: /apps/PulseOS/Organs/Skin/PulseOSSkinReflex.js
-// PULSE OS — v10.3 → v11 DESIGN
+// PULSE OS — v10.3 → v11 DESIGN (UPGRADED)
 // “THE SKIN REFLEX / SURFACE EPITHELIAL MEMBRANE”
 // A1 BARRIER • PAGE-LEVEL REFLEX • ZERO TIMING • ZERO STATE
 // ============================================================================
@@ -27,7 +27,7 @@
 //   ✔ The lowest / outermost membrane (A1 barrier)
 //   ✔ A universal error intake at the surface
 //   ✔ A living route sampler and classifier
-//   ✔ A degradation + DNA annotator for Router v10.x
+//   ✔ A degradation + DNA annotator for Router v10.x+
 //   ✔ A local, non-routing diagnostic surface for humans
 //
 // WHAT THIS ORGAN IS NOT:
@@ -47,6 +47,40 @@
 //   • Errors are signals, not fatal stops — reflex must always continue forward
 //   • Guarded access to globals (window, console, PulseOSBrain) for portability
 // ============================================================================
+
+
+// ============================================================================
+// ORGAN ROLE EXPORT — v11 (for organism-wide compatibility maps)
+// ============================================================================
+export const PulseRole = {
+  type: "Skin",
+  subsystem: "PulseOSSkinReflex",
+  layer: "A1-SurfaceReflex",
+  version: "11.0",
+  identity: "PulseOSSkinReflex-v11",
+
+  evo: {
+    driftProof: true,
+    deterministicReflex: true,
+    zeroState: true,
+    zeroTiming: true,
+    surfaceOnly: true,
+    classificationFirst: true,
+    healingTriggerOnly: true,
+    futureEvolutionReady: true
+  },
+
+  reflex: {
+    pageLevel: true,
+    errorIntake: true,
+    routeSampler: true,
+    degradationAnnotator: true
+  },
+
+  pulseContract: "Pulse-v1/v2/v3",
+  meshContract: "PulseMesh-v11-ready",
+  sendContract: "PulseSend-v11-ready"
+};
 
 
 // ============================================================================
@@ -90,7 +124,7 @@ function resolveOwnerModule(symbol) {
 
 if (typeof console !== "undefined" && typeof console.log === "function") {
   console.log(
-    "%c[PulseOSSkinReflex v10.3→v11] Loaded — A1 Surface Membrane Active",
+    "%c[PulseOSSkinReflex v11.0] Loaded — A1 Surface Membrane Active",
     "color:#4CAF50; font-weight:bold;"
   );
 }
@@ -102,7 +136,7 @@ if (typeof console !== "undefined" && typeof console.log === "function") {
 const LAYER_ID   = "SKIN-REFLEX";
 const LAYER_NAME = "THE SKIN REFLEX";
 const LAYER_ROLE = "SURFACE ERROR GUARDIAN & HEALING TRIGGER";
-const LAYER_VER  = "10.3";
+const LAYER_VER  = "11.0";
 
 const PROTECTOR_DIAGNOSTICS_ENABLED =
   hasWindow &&
@@ -125,11 +159,43 @@ const logProtector = (stage, details = {}) => {
   );
 };
 
+// ============================================================================
+// SENSE REPORT — surface “senses” for richer local diagnostics
+// ============================================================================
+function emitReflexSenseReport(context = {}) {
+  if (typeof console === "undefined" || !console.groupCollapsed) return;
+
+  console.groupCollapsed(
+    "%c[SkinReflex SENSE REPORT]",
+    "color:#FF9800; font-weight:bold;"
+  );
+
+  console.log("• layer:", "A1 (Surface Reflex)");
+  console.log("• role:", LAYER_ROLE);
+  console.log("• version:", LAYER_VER);
+
+  console.log("• sensedMessage:", context.message || "none");
+  console.log("• sensedFile:", context.file || "unknown");
+  console.log("• sensedLine:", context.line || "unknown");
+  console.log("• sensedFrames:", context.frames ?? 0);
+
+  console.log("• degradation:", context.degraded);
+  console.log("• healthScore:", context.healthScore);
+  console.log("• tier:", context.tier);
+  console.log("• dnaTag:", context.dnaTag);
+
+  console.log("• page:", context.page || "unknown");
+  console.log("• reflexSeq:", context.seq || "n/a");
+
+  console.groupEnd();
+}
+
 
 // ============================================================================
-// PULSE OS v10.3 — SKIN REFLEX (A1 → A2 → Router → Backend)
+// PULSE OS v11 — SKIN REFLEX (A1 → A2 → Router → Backend)
 // ============================================================================
 import { route } from "./PULSE-OS/PulseOSCNSNervousSystem.js";
+
 
 // ============================================================================
 // ROUTE MEMORY — LIVING MAP, WITH DEGRADATION + TIER + DNA TAG (v11 upgrade)
@@ -306,6 +372,7 @@ export function attachScanner(id) {
   return identityPayload;
 }
 
+
 // ============================================================================
 // GLOBAL ERROR INTERCEPTOR (A1 → A2 → Router → Backend) — v11 DESIGN
 // ============================================================================
@@ -327,14 +394,14 @@ if (hasWindow && typeof window.addEventListener === "function") {
 
       logProtector("ERROR_INTERCEPTED", { message: msg });
 
+      const top = rawFrames[0] || "unknown";
+      const file = top.split("/").pop().split(":")[0] || "unknown";
+      const line = top.split(":")[1] || "unknown";
+
       // ======================================================================
       // A1 LOCAL DIAGNOSTICS — ALWAYS PRINT, NEVER ROUTE, NEVER FAIL
       // ======================================================================
       (function emitA1LocalDiagnostics() {
-        const top = rawFrames[0] || "unknown";
-        const file = top.split("/").pop().split(":")[0] || "unknown";
-        const line = top.split(":")[1] || "unknown";
-
         if (typeof console !== "undefined" && console.groupCollapsed) {
           console.groupCollapsed(
             `%cA1 DIAGNOSTIC — ${msg}`,
@@ -367,11 +434,11 @@ if (hasWindow && typeof window.addEventListener === "function") {
 
       if (!routeTrace) {
         routeTrace = rawFrames.map((frame, index) => {
-          const file = frame.split("/").pop().split(":")[0];
+          const fFile = frame.split("/").pop().split(":")[0];
 
           return {
             frame,
-            file,
+            file: fFile,
             index,
             label: "A1_FRAME",
             layer: "A1",
@@ -432,6 +499,22 @@ if (hasWindow && typeof window.addEventListener === "function") {
 
       const pagePath =
         hasWindow && window.location ? window.location.pathname : null;
+
+      // ----------------------------------------------------------------------
+      // SENSE REPORT — surface “senses” for this error
+      // ----------------------------------------------------------------------
+      emitReflexSenseReport({
+        message: msg,
+        file,
+        line,
+        frames: rawFrames.length,
+        degraded,
+        healthScore,
+        tier,
+        dnaTag,
+        page: pagePath,
+        seq: skinSeq
+      });
 
       // ----------------------------------------------------------------------
       // ALWAYS PIPE ERROR TO BACKEND VIA ROUTER
@@ -546,5 +629,5 @@ function parseMissingField(message) {
 }
 
 // ============================================================================
-// END OF FILE — THE SKIN REFLEX / SURFACE EPITHELIAL MEMBRANE  [v10.3 → v11]
+// END OF FILE — THE SKIN REFLEX / SURFACE EPITHELIAL MEMBRANE  [v11.0]
 // ============================================================================

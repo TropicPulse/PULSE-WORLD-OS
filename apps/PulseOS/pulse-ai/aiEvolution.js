@@ -122,7 +122,7 @@ export function createEvolutionAPI(fsAPI, routeAPI, schemaAPI) {
   }
 
   function detectPulseEarnDrift(files) {
-    const earn = files.find(f => f.name === "PulseEarn.js");
+    const earn = files.find(f => f.name === "PulseEarn-v11-Evo.js");
     if (!earn) return null;
 
     return {

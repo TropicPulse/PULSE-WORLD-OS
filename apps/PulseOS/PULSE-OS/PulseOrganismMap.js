@@ -269,7 +269,7 @@ export const PulseOrganismMap = {
     // ======================================================================
     // pulse-earn — Economy, Market, Rewards, Biological Earn Engine
     // ======================================================================
-    PulseEarn:                   { bio: "Economy / Core",               system: "pulse-earn", file: "pulse-earn/PulseEarn.js" },
+    PulseEarn:                   { bio: "Economy / Core",               system: "pulse-earn", file: "pulse-earn/PulseEarn-v11-Evo.js" },
     PulseEarnCell:               { bio: "Cellular / Earn Cell",         system: "pulse-earn", file: "pulse-earn/PulseEarnCell.js" },
     PulseEarnCirculatorySystem:  { bio: "Circulatory",                  system: "pulse-earn", file: "pulse-earn/PulseEarnCirculatorySystem.js" },
     PulseEarnCustomReceptor:     { bio: "Receptor / Custom",            system: "pulse-earn", file: "pulse-earn/PulseEarnCustomReceptor.js" },

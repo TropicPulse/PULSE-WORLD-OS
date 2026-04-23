@@ -1,5 +1,5 @@
 // ============================================================================
-//  PulseUnderstanding.js — v11
+//  PulseUnderstanding.js — v11-EVO
 //  Cortical Opener • Kernel Boot • Deterministic Frontend Brainstem
 //
 //  METAPHOR:
@@ -10,47 +10,31 @@
 
 
 // ============================================================================
-//  IMPORTS — OS BOOT + MAPS (DOWNSTREAM OF WINDOW MEMBRANE)
-//
-//  METAPHOR:
-//  - These are the "house blueprints" and "neural maps" the cortex uses
-//    to understand what the organism *is* and how it should behave.
+//  IMPORTS — MAPS + OS KERNEL (DOWNSTREAM OF WINDOW MEMBRANE)
 // ============================================================================
 import { PulseIntentMap } from "./PULSE-OS/PulseIntentMap.js";
 import { PulseOrganismMap } from "./PULSE-OS/PulseOrganismMap.js";
 import { PulseIQMap } from "./PULSE-OS/PulseIQMap.js";
 
-// Governor (frontend AI wrapper)
-// METAPHOR: The "house rules" — nothing inside runs without supervision.
-import { withOrganGuard } from "./PULSE-OS/PulseOSGovernor.js";
+// OS kernel (v11-EVO handles Evolution + Brain + SpinalCord + Governor)
+import { PulseOSv11Evo } from "./PulseOS-v11-Evo.js";
 
-// OS-level organs (top-layer boot)
-// METAPHOR:
-// - Identity: pressure sensors INSIDE the house (not outside).
-// - Brain: the central processor.
-// - Evolution: the organism's growth engine.
-// - SpinalCord: wiring between brain and body.
+// Cortex-level / page-level organs
+// - Proxy/Identity: external I/O + pressure sensors INSIDE the house.
 // - Router: nervous system pathways.
 // - GPU: visual cortex / sensory acceleration.
-import * as PulseIdentity from "./PULSE-PROXY/PulseProxyBBB.js";
-import * as PulseOSBrain from "./PULSE-OS/PulseOSBrain.js";
-import * as PulseOSEvolution from "./PULSE-OS/PulseOSBrainEvolution.js";
-import * as PulseSpinalCord from "./PULSE-OS/PulseOSSpinalCord.js";
-import * as PulseRouter from "./pulse-router/PulseRouter-v10.4.js";
-import * as PulseGPU from "./pulse-gpu/PulseGPU-v10.4.js";
+import * as PulseProxy from "./PULSE-PROXY/PulseProxy-v11-EVO.js";
+import * as PulseRouter from "./pulse-router/PulseRouter-v11-EVO.js";
+import * as PulseGPU from "./pulse-gpu/PulseGPU-v11-EVO.js";
 
 
 // ============================================================================
-//  CONTEXT — KERNEL IDENTITY (v11)
-//
-//  METAPHOR:
-//  - This is the "room you just walked into" — the cortex's self-description.
-//  - Understanding knows WHAT it is and WHY it exists.
+//  CONTEXT — KERNEL IDENTITY (v11-EVO)
 // ============================================================================
 const PULSE_UNDERSTANDING_CONTEXT = {
   layer: "PulseUnderstanding",
   role: "KERNEL_OPENER",
-  version: "11.0",
+  version: "11.0-EVO",
   lineage: "cortical-opener-core",
   evo: {
     dualMode: true,
@@ -62,16 +46,14 @@ const PULSE_UNDERSTANDING_CONTEXT = {
     cognitiveBootstrap: false,
     zeroDriftIdentity: true,
     continuanceAware: true,
-    legacyBridgeCapable: true
+    legacyBridgeCapable: true,
+    proxyEvoReady: true
   }
 };
 
 
 // ============================================================================
 //  ENVIRONMENT SNAPSHOT
-//
-//  METAPHOR:
-//  - The cortex looks around the room: "Where am I? What environment am I in?"
 // ============================================================================
 function buildEnvironmentSnapshot() {
   if (typeof window === "undefined") {
@@ -97,86 +79,54 @@ const PulseEnvironment = buildEnvironmentSnapshot();
 
 
 // ============================================================================
-//  GOVERNED EXECUTION — FRONTEND AI LOGGING WRAPPER
-//
-//  METAPHOR:
-//  - Every organ action inside the house is logged by the "security cameras".
+//  GOVERNED EXECUTION — DELEGATE TO OS KERNEL GOVERNOR
 // ============================================================================
 function runThroughGovernor(organName, pulseOrImpulse, fn) {
-  return withOrganGuard(organName, pulseOrImpulse, async (instanceContext) => {
-    const result = await fn(instanceContext);
-
-    try {
-      const timestamp = Date.now();
-      const docId = `${organName}-${timestamp}`;
-
-      const safe = {
-        organ: organName,
-        timestamp,
-        personaId: instanceContext.personaId || null,
-        boundaries: instanceContext.boundaries || null,
-        permissions: instanceContext.permissions || null,
-        trace: [...(instanceContext.trace || [])],
-        diagnostics: instanceContext.diagnostics || null,
-        result
-      };
-
-      await instanceContext?.organs?.diagnosticsWrite?.writeRun({
-        docId,
-        payload: safe
-      });
-    } catch (err) {
-      console.warn("[PulseUnderstanding] AI_LOGS write failed:", err);
-    }
-
-    return result;
-  });
+  // Delegate to OS-level governor so all runs share the same guard pattern
+  return PulseOSv11Evo.runThroughGovernor(organName, pulseOrImpulse, fn);
 }
 
 
 // ============================================================================
-//  KERNEL BOOTSTRAP — FULL OS BOOT FROM UNDERSTANDING
+//  KERNEL BOOTSTRAP — UNDERSTANDING LAYER
 //
 //  METAPHOR:
-//  - This is the moment the house "wakes up":
-//      1. Pressure sensors activate (Identity check).
-//      2. The organism grows its brain (Evolution).
-//      3. The brain comes online (Brain).
-//      4. Nervous system wiring connects (SpinalCord).
-//      5. Pathways activate (Router).
-//      6. Visual cortex spins up (GPU).
+//  - OS-Evo has already booted Evolution + Brain + SpinalCord + Governor.
+//  - Understanding now:
+//      1. Attaches Router + GPU.
+//      2. Attaches Proxy v11-EVO (external I/O spine).
+//      3. Wraps everything in a cortical meta context.
 // ============================================================================
 async function buildPulseKernel() {
-  // 1) Identity (pressure sensors inside the house)
+  // 0) Get OS kernel (Evolution + Brain + SpinalCord + Governor)
+  const OSKernel = await PulseOSv11Evo.Kernel;
+
+  const Brain = OSKernel.Brain;
+  const Evolution = OSKernel.Evolution;
+  const SpinalCord = OSKernel.SDN;
+
+  // 1) Identity via Proxy v11-EVO (pressure sensors inside the house)
   let identity = null;
   try {
-    identity = await PulseIdentity.identity("hybrid");
+    identity = await PulseProxy.identity?.("hybrid");
   } catch {
     identity = null;
   }
 
-  // 2) Evolution + Brain (organism grows its neural core)
-  const Evolution = PulseOSEvolution.PulseOSEvolution({
-    intent: PulseIntentMap,
-    organism: PulseOrganismMap,
-    iq: PulseIQMap,
-    understanding: PULSE_UNDERSTANDING_CONTEXT
-  });
-
-  const Brain = Evolution.bootBrain(PulseOSBrain.PulseOSBrain);
-
-  // 3) Router + GPU (nervous system + visual cortex)
+  // 2) Router + GPU (nervous system + visual cortex)
   const Router = PulseRouter;
   const GPU = PulseGPU;
 
-  // 4) Spinal Cord (wiring between brain and body)
-  const SpinalCord = PulseSpinalCord.createPulseOSSpinalCord({
-    Router,
-    Brain,
-    Evolution,
-    log: Brain.log,
-    warn: Brain.warn
-  });
+  // 3) Proxy v11-EVO (external I/O spine)
+  const Proxy = PulseProxy.createProxy
+    ? PulseProxy.createProxy({
+        Router,
+        Brain,
+        Evolution,
+        Identity: identity,
+        Environment: PulseEnvironment
+      })
+    : PulseProxy;
 
   const meta = {
     ...PULSE_UNDERSTANDING_CONTEXT,
@@ -190,9 +140,11 @@ async function buildPulseKernel() {
     Environment: PulseEnvironment,
 
     Brain,
+    Evolution,
     Router,
     GPU,
     SDN: SpinalCord,
+    Proxy,
 
     Governed: {
       run: runThroughGovernor
@@ -207,10 +159,6 @@ const PulseKernelPromise = buildPulseKernel();
 
 // ============================================================================
 //  GLOBAL BROADCAST (ASYNC-AWARE)
-//
-//  METAPHOR:
-//  - The house announces: "The organism is awake. Here is the brain, router,
-//    GPU, spinal cord, and identity sensors."
 // ============================================================================
 if (typeof window !== "undefined") {
   PulseKernelPromise.then((PulseKernel) => {
@@ -219,10 +167,14 @@ if (typeof window !== "undefined") {
           ...window.Pulse,
           meta: PulseKernel.meta,
           Brain: PulseKernel.Brain,
+          Evolution: PulseKernel.Evolution,
           Router: PulseKernel.Router,
           GPU: PulseKernel.GPU,
           SDN: PulseKernel.SDN,
-          Governed: PulseKernel.Governed
+          Proxy: PulseKernel.Proxy,
+          Governed: PulseKernel.Governed,
+          Environment: PulseKernel.Environment,
+          Identity: PulseKernel.Identity
         }
       : PulseKernel;
   }).catch((err) => {
@@ -233,14 +185,6 @@ if (typeof window !== "undefined") {
 
 // ============================================================================
 //  EXPORTS — FULL BOOT LAYER
-//
-//  METAPHOR:
-//  - Understanding exports the entire "house interior":
-//      • maps
-//      • environment
-//      • identity accessor
-//      • kernel promise
-//      • governor
 // ============================================================================
 export const PulseUnderstanding = {
   ...PULSE_UNDERSTANDING_CONTEXT,
@@ -249,7 +193,8 @@ export const PulseUnderstanding = {
   OrganismMap: PulseOrganismMap,
   IQMap: PulseIQMap,
   Kernel: PulseKernelPromise,
-  Identity: () => (typeof window !== "undefined" ? window?.Pulse?.Identity ?? null : null),
+  Identity: () =>
+    typeof window !== "undefined" ? window?.Pulse?.Identity ?? null : null,
   runThroughGovernor
 };
 

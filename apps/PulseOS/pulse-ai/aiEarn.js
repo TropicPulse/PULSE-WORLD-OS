@@ -182,7 +182,7 @@ export function createEarnAPI(db, evolutionAPI) {
 
     async analyzeEarnFiles(context) {
       if (!context.userIsOwner || !evolutionAPI?.analyzeFile) return null;
-      return evolutionAPI.analyzeFile(context, "PulseEarn.js");
+      return evolutionAPI.analyzeFile(context, "PulseEarn-v11-Evo.js");
     },
 
     async analyzeEarnRoutes(context) {
