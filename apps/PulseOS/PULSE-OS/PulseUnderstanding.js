@@ -1,64 +1,52 @@
 // ============================================================================
-//  PulseUnderstanding.js — v10.4 (Upgraded with Global AI Logging)
-//  Kernel Opener • Organism Loader • Deterministic Frontend Brainstem
+//  PulseUnderstanding.js — v11
+//  Cortical Opener • Page-Aware Kernel View • Deterministic Frontend Brainstem
 // ============================================================================
 
 // ============================================================================
-//  IMPORTS — FRONTEND BARREL (ALL ORGANS ROUTE THROUGH HERE)
+//  IMPORTS — DOWNSTREAM OF EVOLUTIONARY WINDOW
 // ============================================================================
 
-// Core OS Maps (unchanged)
-import { PulseIntentMap } from "./PULSE-OS/PulseIntentMap.js";
-import { PulseOrganismMap } from "./PULSE-OS/PulseOrganismMap.js";
-import { PulseIQMap } from "./PULSE-OS/PulseIQMap.js";
-import { PulseIdentity } from "./PULSE-OS/PulseProxyBBB.js";
+// Core OS Maps (design-time only, no organs here)
+import { PulseIntentMap } from "./PulseIntentMap.js";
+import { PulseOrganismMap } from "./PulseOrganismMap.js";
+import { PulseIQMap } from "./PulseIQMap.js";
 
-// OS Brain + Evolution
-import { PulseOSEvolution } from "./PULSE-OS/PulseOSBrainEvolution.js";
-import { PulseOSBrain } from "./PULSE-OS/PulseOSBrain.js";
+// A1 Skin Reflex (page-level error membrane)
+import { attachScanner } from "./PulseOSSkinReflex.js";
 
-// Reflex + Vitals
-import { VitalsMonitor } from "./pulse-proxy/PulseProxyVitalsMonitor.js";
-import { attachScanner } from "./PULSE-OS/PulseOSSkinReflex.js";
+// v11 Ignition Organ (top-level boot)
+import EvolutionaryWindow from "../PulseEvolutionaryWindow.js";
 
-// Router (v10.4)
-import * as PulseRouter from "./pulse-router/PulseRouter-v10.4.js";
-
-// GPU (v10.4)
-import * as PulseGPU from "./pulse-gpu/PulseGPU-v10.4.js";
-
-// Send System
-import { PulseSendSystem } from "./pulse-send/PulseSendSystem.js";
-
-// Earn System
-import * as PulseEarn from "./pulse-earn/PulseEarn.js";
-import { PulseEarnSendSystem } from "./pulse-earn/PulseEarnSendSystem.js";
-import { PulseEarnContinuancePulse } from "./pulse-earn/PulseEarnContinuancePulse.js";
-
-// ⭐ NEW — OS Spinal Cord (replaces SDN)
-import { createPulseOSSpinalCord } from "./PULSE-OS/PulseOSSpinalCord.js";
-
-// Governor
-import { withOrganGuard } from "./PULSE-OS/PulseOSGovernor.js";
-
-// Diagnostics
-import { createDiagnosticsWriteAPI } from "./pulse-ai/aiDiagnosticsWrite.js";
+// Governor (for AI logging wrapper only)
+import { withOrganGuard } from "./PulseOSGovernor.js";
 
 
 // ============================================================================
-//  ATTACH SKIN REFLEX
+//  ATTACH SKIN REFLEX WITH IDENTITY SNAPSHOT
 // ============================================================================
-attachScanner(PulseIdentity);
+
+let PulseIdentitySnapshot = null;
+
+(async () => {
+  try {
+    PulseIdentitySnapshot = await EvolutionaryWindow.igniteIdentity("hybrid");
+    attachScanner(PulseIdentitySnapshot);
+  } catch (err) {
+    console.warn("[PulseUnderstanding] Identity ignition failed, SkinReflex attached with null identity");
+    attachScanner({});
+  }
+})();
 
 
 // ============================================================================
-//  CONTEXT — KERNEL IDENTITY (v10.4)
+//  CONTEXT — KERNEL IDENTITY (v11)
 // ============================================================================
 const PULSE_UNDERSTANDING_CONTEXT = {
   layer: "PulseUnderstanding",
   role: "KERNEL_OPENER",
-  version: "10.4",
-  lineage: "cortical-opener",
+  version: "11.0",
+  lineage: "cortical-opener-core",
   evo: {
     dualMode: true,
     browserOnly: true,
@@ -101,11 +89,10 @@ const PulseEnvironment = buildEnvironmentSnapshot();
 
 
 // ============================================================================
-//  GOVERNED EXECUTION — GLOBAL AI LOGGING
+//  GOVERNED EXECUTION — GLOBAL AI LOGGING (FRONTEND WRAPPER ONLY)
 // ============================================================================
 function runThroughGovernor(organName, pulseOrImpulse, fn) {
   return withOrganGuard(organName, pulseOrImpulse, async (instanceContext) => {
-
     const result = await fn(instanceContext);
 
     try {
@@ -128,7 +115,7 @@ function runThroughGovernor(organName, pulseOrImpulse, fn) {
         payload: safe
       });
     } catch (err) {
-      console.warn("AI_LOGS write failed:", err);
+      console.warn("[PulseUnderstanding] AI_LOGS write failed:", err);
     }
 
     return result;
@@ -137,35 +124,45 @@ function runThroughGovernor(organName, pulseOrImpulse, fn) {
 
 
 // ============================================================================
-//  KERNEL BOOTSTRAP
+//  KERNEL BOOTSTRAP — DOWNSTREAM OF EVOLUTIONARY WINDOW
 // ============================================================================
-function buildPulseKernel() {
+async function buildPulseKernel() {
+  // 1) Ignite Brain (loads organism via maps)
+  const Evolution = EvolutionaryWindow.igniteBrain({
+    intent: PulseIntentMap,
+    organism: PulseOrganismMap,
+    iq: PulseIQMap,
+    understanding: PULSE_UNDERSTANDING_CONTEXT
+  });
+
+  const Brain = Evolution; // igniteBrain already returns a booted brain
+
+  // 2) Ignite Router + GPU
+  const Router = EvolutionaryWindow.igniteRouter();
+  const GPU = EvolutionaryWindow.igniteGPU();
+
+  // 3) Ignite Spinal Cord (wires Brain + Router + GPU)
+  const SpinalCord = EvolutionaryWindow.igniteSpinalCord({
+    Router,
+    Brain,
+    Evolution
+  });
+
   const meta = {
     ...PULSE_UNDERSTANDING_CONTEXT,
-    identity: PulseIdentity,
+    identity: PulseIdentitySnapshot,
     environment: PulseEnvironment
   };
 
   const Pulse = {
     meta,
-    Identity: PulseIdentity,
+    Identity: PulseIdentitySnapshot,
     Environment: PulseEnvironment,
 
-    GPU: PulseGPU,
-    Router: PulseRouter,
-    Send: PulseSendSystem,
-
-    Earn: {
-      Organism: PulseEarn,
-      SendSystem: PulseEarnSendSystem,
-      Continuance: PulseEarnContinuancePulse
-    },
-
-    Vitals: {
-      Monitor: VitalsMonitor
-    },
-
-    SDN: null, // will become SpinalCord
+    Brain,
+    Router,
+    GPU,
+    SDN: SpinalCord,
 
     Governed: {
       run: runThroughGovernor
@@ -175,48 +172,25 @@ function buildPulseKernel() {
   return Pulse;
 }
 
-const PulseKernel = buildPulseKernel();
-
-
-// ============================================================================  
-//  EVOLUTION BOOTSTRAP  
-// ============================================================================  
-const Evolution = PulseOSEvolution({
-  intent: PulseIntentMap,
-  organism: PulseOrganismMap,
-  iq: PulseIQMap,
-  understanding: PULSE_UNDERSTANDING_CONTEXT
-});
-
-const Brain = Evolution.bootBrain(PulseOSBrain);
-PulseKernel.Brain = Brain;
+const PulseKernelPromise = buildPulseKernel();
 
 
 // ============================================================================
-//  SPINAL CORD BOOTSTRAP (formerly SDN)
-// ============================================================================
-PulseKernel.SDN = createPulseOSSpinalCord({
-  Router: PulseRouter,
-  EventBus: PulseKernel.Earn?.Organism?.EventBus || null,
-  Brain,
-  Evolution,
-  log: Brain.log,
-  warn: Brain.warn
-});
-
-
-// ============================================================================
-//  GLOBAL BROADCAST
+//  GLOBAL BROADCAST (ASYNC-AWARE)
 // ============================================================================
 if (typeof window !== "undefined") {
-  window.Pulse = window.Pulse
-    ? {
-        ...window.Pulse,
-        meta: PulseKernel.meta,
-        Governed: PulseKernel.Governed,
-        SDN: PulseKernel.SDN
-      }
-    : PulseKernel;
+  PulseKernelPromise.then((PulseKernel) => {
+    window.Pulse = window.Pulse
+      ? {
+          ...window.Pulse,
+          meta: PulseKernel.meta,
+          Governed: PulseKernel.Governed,
+          SDN: PulseKernel.SDN
+        }
+      : PulseKernel;
+  }).catch((err) => {
+    console.error("[PulseUnderstanding] Kernel bootstrap failed:", err);
+  });
 }
 
 
@@ -225,10 +199,10 @@ if (typeof window !== "undefined") {
 // ============================================================================
 export const PulseUnderstanding = {
   ...PULSE_UNDERSTANDING_CONTEXT,
-  Identity: PulseIdentity,
+  Identity: () => PulseIdentitySnapshot,
   Environment: PulseEnvironment,
-  Kernel: PulseKernel,
+  Kernel: PulseKernelPromise,
   runThroughGovernor
 };
 
-export default PulseKernel;
+export default PulseKernelPromise;
