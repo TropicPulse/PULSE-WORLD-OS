@@ -1,22 +1,27 @@
 // ============================================================================
 //  PulseUnderstanding.js — v11
-//  Cortical Opener • Page-Aware Kernel View • Deterministic Frontend Brainstem
+//  Cortical Opener • Kernel Boot • Deterministic Frontend Brainstem
 // ============================================================================
 
 // ============================================================================
-//  IMPORTS — DOWNSTREAM OF EVOLUTIONARY WINDOW
+//  IMPORTS — OS BOOT + MAPS (DOWNSTREAM OF WINDOW MEMBRANE)
 // ============================================================================
 
-// Core OS Maps (design-time only, no organs here)
+// Core OS Maps (design-time only)
 import { PulseIntentMap } from "./PULSE-OS/PulseIntentMap.js";
 import { PulseOrganismMap } from "./PULSE-OS/PulseOrganismMap.js";
 import { PulseIQMap } from "./PULSE-OS/PulseIQMap.js";
 
-// v11 Ignition Organ (top-level boot)
-import EvolutionaryWindow from "./PULSEEvolutionaryWindow.js";
-
-// Governor (for AI logging wrapper only)
+// Governor (frontend AI wrapper)
 import { withOrganGuard } from "./PULSE-OS/PulseOSGovernor.js";
+
+// OS-level organs (top-layer boot)
+import * as PulseIdentity from "./PULSE-PROXY/PulseProxyBBB.js";
+import * as PulseOSBrain from "./PULSE-OS/PulseOSBrain.js";
+import * as PulseOSEvolution from "./PULSE-OS/PulseOSBrainEvolution.js";
+import * as PulseSpinalCord from "./PULSE-OS/PulseOSSpinalCord.js";
+import * as PulseRouter from "./pulse-router/PulseRouter-v10.4.js";
+import * as PulseGPU from "./pulse-gpu/PulseGPU-v10.4.js";
 
 
 // ============================================================================
@@ -69,7 +74,7 @@ const PulseEnvironment = buildEnvironmentSnapshot();
 
 
 // ============================================================================
-//  GOVERNED EXECUTION — GLOBAL AI LOGGING (FRONTEND WRAPPER ONLY)
+//  GOVERNED EXECUTION — FRONTEND AI LOGGING WRAPPER
 // ============================================================================
 function runThroughGovernor(organName, pulseOrImpulse, fn) {
   return withOrganGuard(organName, pulseOrImpulse, async (instanceContext) => {
@@ -104,37 +109,49 @@ function runThroughGovernor(organName, pulseOrImpulse, fn) {
 
 
 // ============================================================================
-//  KERNEL BOOTSTRAP — DOWNSTREAM OF EVOLUTIONARY WINDOW
+//  KERNEL BOOTSTRAP — FULL OS BOOT FROM UNDERSTANDING
 // ============================================================================
 async function buildPulseKernel() {
-  // 1) Ignite Brain (loads organism via maps)
-  const Brain = EvolutionaryWindow.igniteBrain({
+  // 1) Identity (if needed at this layer)
+  let identity = null;
+  try {
+    identity = await PulseIdentity.identity("hybrid");
+  } catch {
+    identity = null;
+  }
+
+  // 2) Evolution + Brain (loads organism via maps)
+  const Evolution = PulseOSEvolution.PulseOSEvolution({
     intent: PulseIntentMap,
     organism: PulseOrganismMap,
     iq: PulseIQMap,
     understanding: PULSE_UNDERSTANDING_CONTEXT
   });
 
-  // 2) Ignite Router + GPU
-  const Router = EvolutionaryWindow.igniteRouter();
-  const GPU = EvolutionaryWindow.igniteGPU();
+  const Brain = Evolution.bootBrain(PulseOSBrain.PulseOSBrain);
 
-  // 3) Ignite Spinal Cord (wires Brain + Router)
-  const SpinalCord = EvolutionaryWindow.igniteSpinalCord({
+  // 3) Router + GPU
+  const Router = PulseRouter;
+  const GPU = PulseGPU;
+
+  // 4) Spinal Cord (wires Brain + Router + Evolution)
+  const SpinalCord = PulseSpinalCord.createPulseOSSpinalCord({
     Router,
     Brain,
-    Evolution: null // if needed later, adjust igniteBrain to return { Brain, Evolution }
+    Evolution,
+    log: Brain.log,
+    warn: Brain.warn
   });
 
   const meta = {
     ...PULSE_UNDERSTANDING_CONTEXT,
-    identity: null, // identity is handled at the window/ignition layer
+    identity,
     environment: PulseEnvironment
   };
 
   const Pulse = {
     meta,
-    Identity: null,
+    Identity: identity,
     Environment: PulseEnvironment,
 
     Brain,
@@ -162,8 +179,11 @@ if (typeof window !== "undefined") {
       ? {
           ...window.Pulse,
           meta: PulseKernel.meta,
-          Governed: PulseKernel.Governed,
-          SDN: PulseKernel.SDN
+          Brain: PulseKernel.Brain,
+          Router: PulseKernel.Router,
+          GPU: PulseKernel.GPU,
+          SDN: PulseKernel.SDN,
+          Governed: PulseKernel.Governed
         }
       : PulseKernel;
   }).catch((err) => {
@@ -173,14 +193,17 @@ if (typeof window !== "undefined") {
 
 
 // ============================================================================
-//  EXPORTS
+//  EXPORTS — FULL BOOT LAYER
 // ============================================================================
 export const PulseUnderstanding = {
   ...PULSE_UNDERSTANDING_CONTEXT,
-  Identity: () => window?.Pulse?.Identity ?? null,
   Environment: PulseEnvironment,
+  IntentMap: PulseIntentMap,
+  OrganismMap: PulseOrganismMap,
+  IQMap: PulseIQMap,
   Kernel: PulseKernelPromise,
+  Identity: () => (typeof window !== "undefined" ? window?.Pulse?.Identity ?? null : null),
   runThroughGovernor
 };
 
-export default PulseKernelPromise;
+export default PulseUnderstanding;

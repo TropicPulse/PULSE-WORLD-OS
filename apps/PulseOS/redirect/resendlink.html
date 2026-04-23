@@ -54,16 +54,17 @@
     </div>
   </div>
 
-  <!-- ⭐ Injected server-side by your email template engine -->
-  <!-- ⭐ Injected server-side by your email template engine -->
-<script>
-  // Server sets this to true ONLY if the token was embedded successfully.
-  // Browser never sees the token itself.
+<script type="module">
+  import * as PulseEvolutionary from "./PulseEvolutionaryWindow.js";
+
+  // optional: start the OS
+  const Brain = PulseEvolutionary.igniteBrain({
+    intent: PulseIntentMap,
+    organism: PulseOrganismMap,
+    iq: PulseIQMap
+  });
   window.__SERVER_HAS_TOKEN__ = true;
-</script>
 
-
-  <script>
     document.addEventListener("DOMContentLoaded", () => {
   const params = new URLSearchParams(window.location.search);
 
