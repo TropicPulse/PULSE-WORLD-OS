@@ -1,33 +1,24 @@
 // ============================================================================
-// FILE: /apps/PulseOS/Organs/NervousSystem/PulseOSNervousSystem.js
-// PULSE OS — v9.2
+// CENTRAL NERVOUS SYSTEM — PulseOSCNSNervousSystem — v10.4
 // “THE CENTRAL NERVOUS SYSTEM / COMMUNICATION INTELLIGENCE ORGAN”
 // ============================================================================
 //
-// ORGAN IDENTITY (v9.2):
-//   • Organ Type: Central Nervous System (CNS)
-//   • Layer: B‑Layer (Core Communication Intelligence)
-//   • Biological Analog: Brainstem + Spinal Relay
-//   • System Role: Structured signaling, healing coordination, memory integration
+// ROLE IN THE ORGANISM (v10.4):
+// -----------------------------
+// • B‑Layer CNS: frontend ↔ backend communication organ.
+// • Sends structured requests to backend via Proxy Spine gateway.
+// • Records route events into RouterMemory for healing + drift analysis.
+// • Triggers router healing and route‑down alerts when degradation appears.
+// • Respects offline mode and local endpoints (local‑first, network as injection).
 //
-// PURPOSE:
-//   ✔ Receive structured signals from membranes + reflex layers
-//   ✔ Forward signals to backend organs via Proxy Spine (endpoint gateway)
-//   ✔ Integrate with Short‑Term Memory (RouterMemory)
-//   ✔ Integrate with Survival Instincts / diagnostics organs
-//   ✔ Integrate with Heartbeat (GateHeartbeat)
-//   ✔ Provide retry + alert logic (CNS‑level resilience)
-//   ✔ Operate identically offline + online (environment‑agnostic)
-//
-// SAFETY CONTRACT (v9.2):
-//   • Never mutate payloads
-//   • Never bypass RouterMemory
-//   • Never call backend with malformed structure
-//   • Always log before and after syscalls
-//   • Always retry once before alerting (when online)
-//   • Always heal RouterMemory before GateHeartbeat
-//   • Never run timing logic on frontend
-//   • Never break offline mode
+// SAFETY CONTRACT (v10.4):
+// ------------------------
+// • No dynamic eval.
+// • No direct filesystem access.
+// • Network only via well‑defined proxy endpoints.
+// • Deterministic routing behavior (no random branching).
+// • RouterMemory is the single source of CNS event history.
+// • CNS never hard‑kills the organism; it reports, retries, and alerts.
 // ============================================================================
 
 
@@ -43,7 +34,7 @@ import { PulseOSShortTermMemory } from "../PULSE-OS/PulseOSShortTermMemory.js";
 const LAYER_ID   = "CNS-LAYER";
 const LAYER_NAME = "THE CENTRAL NERVOUS SYSTEM";
 const LAYER_ROLE = "COMMUNICATION INTELLIGENCE ORGAN";
-const LAYER_VER  = "9.2";
+const LAYER_VER  = "10.4";
 
 const CNS_DIAGNOSTICS_ENABLED =
   window.PULSE_CNS_DIAGNOSTICS === "true" ||
@@ -78,7 +69,7 @@ const CNS_CONTEXT = {
   layer: "B‑Layer",
   purpose: "Frontend → Backend Communication Organ",
   context: "Sends structured requests to backend via Proxy Spine gateway",
-  version: "9.2"
+  version: "10.4"
 };
 
 
@@ -199,7 +190,7 @@ async function triggerRouteDownAlert(error, type) {
 
 
 // ============================================================================
-// UNIVERSAL SYS‑CALL FUNCTION — CNS v9.2
+// UNIVERSAL SYS‑CALL FUNCTION — CNS v10.4
 // ============================================================================
 let routingInProgress = false;
 

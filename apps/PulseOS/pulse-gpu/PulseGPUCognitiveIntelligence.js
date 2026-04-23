@@ -1,22 +1,23 @@
 // ============================================================================
 // FILE: tropic-pulse-functions/apps/pulse-gpu/PulseGPUUXBridge.js
-// PULSE GPU UX BRIDGE v9.2
+// PULSE GPU UX BRIDGE v10.4
 // “INTELLIGENCE LAYER / COGNITIVE COMMUNICATION BRIDGE”
 // ============================================================================
 //
-// SAFETY RULES (v9.2):
+// SAFETY RULES (v10.4):
 //   • NO randomness or timestamps
 //   • NO DOM, WebGPU, Node, filesystem, or network APIs
 //   • FAIL-OPEN: malformed advice/plan/insight must not break UXBridge
 //   • SELF-REPAIR READY: notifications must be reconstructable + validateable
 //   • DETERMINISTIC: same advice → same notifications
-//   • PulseSend‑2.0‑ready: notifications routable by compute router
-//   • Earn-ready: compatible with PulseEarn v9
+//   • PulseSend‑10.4‑ready: notifications routable by compute router
+//   • Earn-ready: compatible with Earn-v2
 //   • Zero autonomy, zero compute, zero mutation outside notif object
 // ============================================================================
 
+
 // ------------------------------------------------------
-// ⭐ OS‑v9.2 Notification builder
+// ⭐ OS‑v10.4 Notification builder
 // ------------------------------------------------------
 function buildNotification({
   kind,
@@ -33,7 +34,7 @@ function buildNotification({
     message: message || "",
     meta: {
       layer: "PulseGPUUXBridge",
-      version: 9.2,
+      version: 10.4,
       target: "full-gpu",
       selfRepairable: true,
 
@@ -43,12 +44,12 @@ function buildNotification({
         driftProof: true,
         multiInstanceReady: true,
         unifiedAdvantageField: true,
-        pulseSend2Ready: true,
+        pulseSend10Ready: true,
 
         // PulseSend / Earn contracts (conceptual only)
-        routingContract: "PulseSend-v2",
-        gpuOrganContract: "PulseGPU-v9.2",
-        earnCompatibility: "PulseEarn-v9"
+        routingContract: "PulseSend-v10.4",
+        gpuOrganContract: "PulseGPU-v10.4",
+        earnCompatibility: "Earn-v2"
       },
 
       ...(meta || {})
@@ -62,6 +63,7 @@ function buildNotification({
   return notif;
 }
 
+
 // ------------------------------------------------------
 // Notification validation (for healing layer)
 // ------------------------------------------------------
@@ -73,15 +75,16 @@ function validateNotification(n) {
   return true;
 }
 
+
 // ------------------------------------------------------
-// PulseGPUUXBridge v9.2 — Cognitive Communication Layer
+// PulseGPUUXBridge v10.4 — Cognitive Communication Layer
 // ------------------------------------------------------
 class PulseGPUUXBridge {
   constructor() {}
 
   static meta = {
     layer: "PulseGPUUXBridge",
-    version: 9.2,
+    version: 10.4,
     target: "full-gpu",
     selfRepairable: true,
     evo: {
@@ -90,14 +93,13 @@ class PulseGPUUXBridge {
       driftProof: true,
       multiInstanceReady: true,
       unifiedAdvantageField: true,
-      pulseSend2Ready: true,
+      pulseSend10Ready: true,
 
-      routingContract: "PulseSend-v2",
-      gpuOrganContract: "PulseGPU-v9.2",
-      earnCompatibility: "PulseEarn-v9"
+      routingContract: "PulseSend-v10.4",
+      gpuOrganContract: "PulseGPU-v10.4",
+      earnCompatibility: "Earn-v2"
     }
   };
-
   // ----------------------------------------------------
   // Advisor result → notifications
   // ----------------------------------------------------
@@ -246,150 +248,149 @@ class PulseGPUUXBridge {
     return notifications.filter(validateNotification);
   }
 
-// ----------------------------------------------------
-// Restore plan → notification  (v9.2)
-// ----------------------------------------------------
-fromRestorePlan(plan) {
-  if (!plan || typeof plan !== "object") return null;
+  // ----------------------------------------------------
+  // Restore plan → notification  (v10.4)
+  // ----------------------------------------------------
+  fromRestorePlan(plan) {
+    if (!plan || typeof plan !== "object") return null;
 
-  const { action, reason, extra } = plan;
+    const { action, reason, extra } = plan;
 
-  if (action === "noop") return null;
+    if (action === "noop") return null;
 
-  if (action === "restore") {
-    return buildNotification({
-      kind: "settings",
-      severity: "high",
-      title: "Restore best-known settings",
-      message:
-        reason ||
-        "Performance regressed; restoring best-known configuration is recommended.",
-      actions: [
-        {
-          label: "Restore now",
-          actionType: "apply-settings",
-          payload: {
-            mode: "restore",
-            targetSettings: plan.targetSettings
+    if (action === "restore") {
+      return buildNotification({
+        kind: "settings",
+        severity: "high",
+        title: "Restore best-known settings",
+        message:
+          reason ||
+          "Performance regressed; restoring best-known configuration is recommended.",
+        actions: [
+          {
+            label: "Restore now",
+            actionType: "apply-settings",
+            payload: {
+              mode: "restore",
+              targetSettings: plan.targetSettings
+            }
           }
+        ],
+        meta: {
+          extra,
+          repairHint: "restore-baseline-settings",
+          routingContract: "PulseSend-v10.4",
+          gpuOrganContract: "PulseGPU-v10.4"
         }
-      ],
-      meta: {
-        extra,
-        repairHint: "restore-baseline-settings",
-        routingContract: "PulseSend-v2",
-        gpuOrganContract: "PulseGPU-v9.2"
-      }
-    });
-  }
-
-  if (action === "apply-optimal") {
-    return buildNotification({
-      kind: "settings",
-      severity: "medium",
-      title: "Apply optimal settings",
-      message:
-        reason ||
-        "Better settings are available based on your best-known performance.",
-      actions: [
-        {
-          label: "Apply optimal settings",
-          actionType: "apply-settings",
-          payload: {
-            mode: "optimal",
-            targetSettings: plan.targetSettings
-          }
-        }
-      ],
-      meta: {
-        extra,
-        repairHint: "suggest-baseline-settings",
-        routingContract: "PulseSend-v2",
-        gpuOrganContract: "PulseGPU-v9.2"
-      }
-    });
-  }
-
-  if (action === "upgrade-tier") {
-    return buildNotification({
-      kind: "tier",
-      severity: "medium",
-      title: "Tier upgrade opportunity",
-      message:
-        reason ||
-        "A higher tier configuration has historically delivered better performance.",
-      actions: [
-        {
-          label: "View tier options",
-          actionType: "open-tier-upgrade-panel",
-          payload: {
-            oldTierProfile: extra?.oldTierProfile,
-            newTierProfile: extra?.newTierProfile
-          }
-        }
-      ],
-      meta: {
-        extra,
-        repairHint: "upgrade-tier",
-        routingContract: "PulseSend-v2",
-        gpuOrganContract: "PulseGPU-v9.2"
-      }
-    });
-  }
-
-  return null;
-}
-
-// ----------------------------------------------------
-// Insights → notifications  (v9.2)
-// ----------------------------------------------------
-fromInsights(insights = []) {
-  if (!Array.isArray(insights) || insights.length === 0) return [];
-
-  const notifications = [];
-
-  insights.forEach((insight) => {
-    if (!insight || typeof insight !== "object") return;
-
-    const { type, severity, message, stepId, deltaPercent } = insight;
-    const gameId = insight.gameProfile?.gameId || "this game";
-
-    if (type === "step-duration-change") {
-      const faster = typeof deltaPercent === "number" && deltaPercent > 0;
-      const title = faster
-        ? "Faster experience detected"
-        : "Slower experience detected";
-
-      const msg =
-        typeof deltaPercent === "number"
-          ? `${message} For ${gameId}, step "${stepId}" changed by ${deltaPercent.toFixed(1)}%.`
-          : `${message} For ${gameId}, step "${stepId}" changed.`;
-
-      notifications.push(
-        buildNotification({
-          kind: "insight",
-          severity,
-          title,
-          message: msg,
-          meta: {
-            stepId,
-            deltaPercent,
-            baselineAvgDurationMs: insight.baselineAvgDurationMs,
-            currentAvgDurationMs: insight.currentAvgDurationMs,
-            extra: insight.extra,
-            repairHint: "recompute-insight",
-
-            // v9.2 identity upgrades
-            routingContract: "PulseSend-v2",
-            gpuOrganContract: "PulseGPU-v9.2"
-          }
-        })
-      );
+      });
     }
-  });
 
-  return notifications.filter(validateNotification);
-}
+    if (action === "apply-optimal") {
+      return buildNotification({
+        kind: "settings",
+        severity: "medium",
+        title: "Apply optimal settings",
+        message:
+          reason ||
+          "Better settings are available based on your best-known performance.",
+        actions: [
+          {
+            label: "Apply optimal settings",
+            actionType: "apply-settings",
+            payload: {
+              mode: "optimal",
+              targetSettings: plan.targetSettings
+            }
+          }
+        ],
+        meta: {
+          extra,
+          repairHint: "suggest-baseline-settings",
+          routingContract: "PulseSend-v10.4",
+          gpuOrganContract: "PulseGPU-v10.4"
+        }
+      });
+    }
+
+    if (action === "upgrade-tier") {
+      return buildNotification({
+        kind: "tier",
+        severity: "medium",
+        title: "Tier upgrade opportunity",
+        message:
+          reason ||
+          "A higher tier configuration has historically delivered better performance.",
+        actions: [
+          {
+            label: "View tier options",
+            actionType: "open-tier-upgrade-panel",
+            payload: {
+              oldTierProfile: extra?.oldTierProfile,
+              newTierProfile: extra?.newTierProfile
+            }
+          }
+        ],
+        meta: {
+          extra,
+          repairHint: "upgrade-tier",
+          routingContract: "PulseSend-v10.4",
+          gpuOrganContract: "PulseGPU-v10.4"
+        }
+      });
+    }
+
+    return null;
+  }
+
+  // ----------------------------------------------------
+  // Insights → notifications  (v10.4)
+  // ----------------------------------------------------
+  fromInsights(insights = []) {
+    if (!Array.isArray(insights) || insights.length === 0) return [];
+
+    const notifications = [];
+
+    insights.forEach((insight) => {
+      if (!insight || typeof insight !== "object") return;
+
+      const { type, severity, message, stepId, deltaPercent } = insight;
+      const gameId = insight.gameProfile?.gameId || "this game";
+
+      if (type === "step-duration-change") {
+        const faster = typeof deltaPercent === "number" && deltaPercent > 0;
+        const title = faster
+          ? "Faster experience detected"
+          : "Slower experience detected";
+
+        const msg =
+          typeof deltaPercent === "number"
+            ? `${message} For ${gameId}, step "${stepId}" changed by ${deltaPercent.toFixed(1)}%.`
+            : `${message} For ${gameId}, step "${stepId}" changed.`;
+
+        notifications.push(
+          buildNotification({
+            kind: "insight",
+            severity,
+            title,
+            message: msg,
+            meta: {
+              stepId,
+              deltaPercent,
+              baselineAvgDurationMs: insight.baselineAvgDurationMs,
+              currentAvgDurationMs: insight.currentAvgDurationMs,
+              extra: insight.extra,
+              repairHint: "recompute-insight",
+
+              routingContract: "PulseSend-v10.4",
+              gpuOrganContract: "PulseGPU-v10.4"
+            }
+          })
+        );
+      }
+    });
+
+    return notifications.filter(validateNotification);
+  }
 }
 
 // ------------------------------------------------------

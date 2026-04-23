@@ -1,64 +1,56 @@
 // ============================================================================
-//  PULSE OS HEALER v7.7 — “THE INFLAMMATORY RESPONSE”
-//  C‑LAYER (BACKEND OS-LEVEL HEALER)
-//  Deterministic OS-Level Drift & Misconfiguration Healer
-//  PURE HEALING. NO AI. NO COMPUTE. NO MARKETPLACE.
+//  PULSE OS HEALER — “THE INFLAMMATORY RESPONSE”
+//  C‑LAYER • OS‑LEVEL IMMUNE ORGAN • v9.2 LINEAGE
+//  Deterministic Irritation Scanner • Drift Detector • Immune Signal Emitter
 // ============================================================================
 //
-//  DESCRIPTION — WHAT THIS ORGAN IS (v7.7):
-//  ----------------------------------------
-//  PulseOSHealer is the **inflammatory response** of the organism — the
-//  early-warning layer that detects irritation, drift, misalignment, and
-//  subsystem distress. It does NOT think, decide, or compute. It simply
-//  emits inflammation markers, logs irritation, and forwards signals to the
-//  Thymus + GlobalHealer for deeper immune action.
+//  WHAT THIS ORGAN IS:
+//  --------------------
+//  The PulseOS Healer is the organism’s **inflammatory response** — the
+//  early‑warning immune layer that detects irritation, drift, misalignment,
+//  and subsystem distress across the OS. It does NOT compute, decide, or
+//  repair. It simply:
 //
-//  ROLE IN THE DIGITAL BODY (v7.7):
-//  --------------------------------
-//    • Early-Warning Layer → detects irritation + drift
-//    • Inflammation Marker Emitter → FUNCTION_LOG hints
-//    • Subsystem Irritation Scanner → watches local tissue signals
-//    • OS Event Irritation Scanner → watches global irritation signals
-//    • Drift Signature Forwarder → hands off to immune memory
+//    • Scans OS‑level irritation signals (OSEvents)
+//    • Scans subsystem irritation signals (SubsystemHealerLogs)
+//    • Emits inflammation markers (FUNCTION_LOG hints)
+//    • Records drift signatures for immune memory
+//    • Forwards immune signals to the GlobalHealer
 //
-//  SAFETY CONTRACT (v7.7):
+//  ROLE IN THE DIGITAL BODY:
+//  --------------------------
+//    • Early‑Warning Layer — detects irritation + drift
+//    • Inflammation Marker Emitter — FUNCTION_LOG hints
+//    • OS‑Level Irritation Scanner — watches global + subsystem signals
+//    • Drift Signature Forwarder — hands off to immune memory
+//    • Immune Escalation Trigger — signals GlobalHealer
+//
+//  SAFETY CONTRACT (v9.2):
 //  ------------------------
-//    • No eval()
-//    • No dynamic imports
-//    • No arbitrary code execution
-//    • No compute
-//    • No GPU work
-//    • No marketplace calls
-//    • Deterministic, drift-proof healing only
+//    • ZERO imports
+//    • ZERO network
+//    • ZERO backend
+//    • ZERO compute
+//    • ZERO marketplace calls
+//    • Deterministic, drift‑proof healing only
+//    • No eval(), no dynamic imports, no arbitrary execution
+//    • Pure immune signaling — never mutates external state
 //
-//  IDENTITY (v7.7):
+//  IDENTITY (v9.2):
 //  ----------------
 //    • organ: PulseOSHealer
-//    • layer: C-Layer
+//    • layer: C‑Layer (immune surface)
 //    • role: Inflammatory Response
-//    • version: 7.7
-//    • generation: v7
+//    • version: 9.2
+//    • generation: v9
 //    • organism: PulseOS
 //
-// ============================================================================
-// ============================================================================
-//  PULSE OS HEALER v9.0 — “THE INFLAMMATORY RESPONSE”
-//  C‑LAYER (BACKEND OS-LEVEL IMMUNE ORGAN)
-//  PURE HEALING. NO IMPORTS. NO BACKEND. NO NETWORK.
-// ============================================================================
-//
-//  THIS ORGAN HAS ZERO IMPORTS.
-//  ALL dependencies are injected by the CNS Brain.
-// ============================================================================
-// ============================================================================
-//  PULSE OS — Inflammatory Response v9.2
-//  C‑LAYER (TOP‑LEVEL INFLAMMATORY RESPONSE ORGAN)
-//  Deterministic, Drift‑Aware, OS‑Level Irritation Scanner
-//  PURE HEALING COORDINATION. NO AI. NO MARKETPLACE. NO DYNAMIC IMPORTS.
-// ============================================================================
-//
-//  THIS ORGAN HAS ZERO IMPORTS.
-//  ALL dependencies are injected by the CNS Brain.
+//  NOTES:
+//  ------
+//    • This organ is intentionally stable across v7.7 → v9.0 → v9.2.
+//    • PulseOS v10.x uses the SAME immune organ — no rewrite required.
+//    • All dependencies are injected by the CNS Brain.
+//    • This organ must remain PURE and import‑free.
 // ============================================================================
 
 export function createPulseOSHealer({
@@ -88,9 +80,6 @@ export function createPulseOSHealer({
   const OS_EVENTS_SCAN_INTERVAL_MS    = 45_000;
   const SUBSYSTEM_SCAN_INTERVAL_MS    = 45_000;
 
-  // ---------------------------------------------------------------------------
-  // writeOSHealerLog — metadata-only inflammation log
-  // ---------------------------------------------------------------------------
   async function writeOSHealer(entry) {
     try {
       await db.collection(OS_HEALER_LOGS_COLLECTION).add({
@@ -106,9 +95,6 @@ export function createPulseOSHealer({
     }
   }
 
-  // ---------------------------------------------------------------------------
-  // emitFunctionLogHint — inflammation markers
-  // ---------------------------------------------------------------------------
   async function emitHint(entry) {
     try {
       await db.collection(FUNCTION_LOGS_COLLECTION).add({
@@ -128,9 +114,6 @@ export function createPulseOSHealer({
     }
   }
 
-  // ---------------------------------------------------------------------------
-  // scanOSEventsForHints — watches OS-level irritation
-  // ---------------------------------------------------------------------------
   async function scanOSEventsForHints() {
     log("oshealer", "Scanning OSEvents…");
 
@@ -159,9 +142,6 @@ export function createPulseOSHealer({
     }
   }
 
-  // ---------------------------------------------------------------------------
-  // scanSubsystemHealerLogs — watches subsystem irritation
-  // ---------------------------------------------------------------------------
   async function scanSubsystemHealerLogs() {
     log("oshealer", "Scanning SubsystemHealerLogs…");
 
@@ -185,7 +165,6 @@ export function createPulseOSHealer({
         timestamp: Date.now()
       };
 
-      // PulseBand → latency/bar mismatch
       if (subsystem === "PulseBand" && type === "latency_bar_mismatch") {
         await writeOSHealer({
           source: "PulseBand",
@@ -212,7 +191,6 @@ export function createPulseOSHealer({
         });
       }
 
-      // PulseNet → unstable signal slope
       if (subsystem === "PulseNet" && type === "unstable_signal_slope") {
         await writeOSHealer({
           source: "PulseNet",
@@ -239,7 +217,6 @@ export function createPulseOSHealer({
         });
       }
 
-      // PulseClient → fallback spike
       if (subsystem === "PulseClient" && type === "fallback_spike") {
         await writeOSHealer({
           source: "PulseClient",
@@ -265,7 +242,6 @@ export function createPulseOSHealer({
         });
       }
 
-      // Proxy → instance out-of-bounds
       if (subsystem === "Proxy" && type === "instance_out_of_bounds") {
         await writeOSHealer({
           source: "Proxy",
@@ -294,9 +270,6 @@ export function createPulseOSHealer({
     }
   }
 
-  // ---------------------------------------------------------------------------
-  // PUBLIC: startPulseOSHealer — activate inflammatory response loop
-  // ---------------------------------------------------------------------------
   function startPulseOSHealer() {
     log("oshealer", "PulseOSHealer v9.2 started — Inflammatory Response active.");
 

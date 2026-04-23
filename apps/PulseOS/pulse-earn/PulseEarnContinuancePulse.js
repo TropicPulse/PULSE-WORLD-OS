@@ -1,13 +1,18 @@
 // ============================================================================
-//  PulseEarnLegacyPulse.js — Earn v1 Fallback Wrapper (v4.0 HARD-SAFE)
+//  PulseEarnContinuancePulse.js — Earn v1 Continuance Wrapper (v10.4 SAFE)
 //  NO PulseSendSystem, NO network, NO routing, NO loops.
 //  Only: build LegacyEarn v1 + Pulse-compatible envelope and return it.
 // ============================================================================
+
+// Deterministic cycle counter (replaces timestamps)
+let continuanceCycle = 0;
 
 // ============================================================================
 //  INTERNAL: Build LegacyEarn v1 directly from impulse (NO IMPORTS)
 // ============================================================================
 function buildLegacyEarnFromImpulse(impulse) {
+  continuanceCycle++;
+
   const payload = impulse?.payload || {};
 
   return {
@@ -25,8 +30,8 @@ function buildLegacyEarnFromImpulse(impulse) {
     meta: {
       ...(payload.meta || {}),
       legacy: true,
-      origin: "LegacyEarn",
-      timestamp: Date.now()
+      origin: "ContinuancePulse",
+      cycleIndex: continuanceCycle
     }
   };
 }
@@ -47,10 +52,11 @@ function buildPulseCompatibleEarn(earn) {
     lineage: earn.lineage,
     meta: {
       ...(earn.meta || {}),
-      origin: "LegacyEarn",
+      origin: "ContinuancePulse",
       earnVersion: "1.0",
       earnIdentity: "Earn-v1",
-      earnEnvelope: true
+      earnEnvelope: true,
+      cycleIndex: earn.meta.cycleIndex
     },
     earn: {
       role: earn.EarnRole,
@@ -63,21 +69,21 @@ function buildPulseCompatibleEarn(earn) {
 }
 
 // ============================================================================
-//  PUBLIC API — PulseEarnLegacyPulse (v4.0 HARD-SAFE)
+//  PUBLIC API — PulseEarnContinuancePulse (v10.4 SAFE)
 //  NOTE: This module DOES NOT SEND ANYTHING.
 //        It only returns the legacy Earn + envelope.
 //        Caller decides if/where to send, under a governor.
 // ============================================================================
-export const PulseEarnLegacyPulse = {
+export const PulseEarnContinuancePulse = {
 
-  async build(impulse) {
+  build(impulse) {
     // 1. Build Earn v1 from Impulse
     const earnV1 = buildLegacyEarnFromImpulse(impulse);
 
     // 2. Wrap Earn v1 in Pulse-compatible shape
     const pulseCompatibleEarn = buildPulseCompatibleEarn(earnV1);
 
-    // 3. Optionally notify EarnBand (local only, no routing)
+    // 3. Optional local-only observer hook
     if (typeof window !== "undefined" && window.EarnBand?.receiveEarnResult) {
       window.EarnBand.receiveEarnResult({
         impulse,

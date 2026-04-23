@@ -1,40 +1,27 @@
 // ============================================================================
 // FILE: tropic-pulse-functions/apps/pulse-earn/PulseEarnGenome.js
-// LAYER: THE GENOME CORE
+// LAYER: THE GENOME CORE (v10.4)
 // (Immutable DNA Sequence + Cross‑Organism Law + Eternal Job Contract)
-// PULSE EARN — v9.2
 // ============================================================================
 //
-// ROLE (v9.2):
+// ROLE (v10.4):
 //   THE GENOME CORE — the immutable DNA of Pulse‑Earn.
 //   • Defines the canonical job structure (genetic sequence).
 //   • Establishes the cross‑organism treaty all subsystems must obey.
 //   • Guarantees compatibility across every organ in the Earn organism.
 //   • Serves as the constitutional backbone of job identity.
 //
-// WHY “GENOME CORE”?:
-//   • It is the highest authority in the biological architecture.
-//   • It cannot drift, mutate, fork, or adapt dynamically.
-//   • All organs (Heart, Muscle, Nervous System, Immune System, Cells)
-//     must obey it without exception.
-//   • It defines the structure of every job — permanently.
-//
-// PURPOSE (v9.2):
+// PURPOSE (v10.4):
 //   • Provide a deterministic, drift‑proof job format.
 //   • Ensure universal compatibility across all Earn layers.
 //   • Serve as the legal + biological foundation for job execution,
 //     routing, metabolism, healing, and archival reconstruction.
 //
-// CONTRACT (unchanged):
+// CONTRACT (v10.4):
 //   • PURE STATIC SCHEMA — no logic, no runtime behavior.
 //   • NO dynamic fields, NO optional structural keys.
-//   • NO environment‑specific or marketplace‑specific fields.
-//   • Immutable across versions unless explicitly ratified
-//     (constitutional amendment).
-//
-// SAFETY (unchanged):
-//   • v9.2 upgrade is COMMENTAL / IDENTITY ONLY — NO LOGIC CHANGES.
-//   • This file is the *one place* where immutability is required.
+//   • NO timestamps, NO environment‑dependent fields.
+//   • Immutable across versions unless explicitly ratified.
 // ============================================================================
 
 export const PulseEarnJobSchema = {
@@ -53,5 +40,7 @@ export const PulseEarnJobSchema = {
 
   marketplace: "string", // Job origin (environmental source)
   assignedTo: "deviceId", // Worker device ID (cell assignment)
-  timestamp: "number"     // Job assignment time (genetic activation moment)
+
+  // v10.4: deterministic cycle index replaces nondeterministic timestamp
+  cycleIndex: "number" // Genetic activation cycle (deterministic)
 };

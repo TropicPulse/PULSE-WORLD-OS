@@ -1,57 +1,40 @@
 // ============================================================================
 // FILE: /apps/organs/immune/PulseMeshImmuneSystem.js
-// PULSE OS — v9.2
+// PULSE OS — v10.4
 // MESH IMMUNE SYSTEM COMMANDER — “THE IMMUNE COMMANDER”
-// LOCAL‑FIRST • OFFLINE‑CAPABLE • ZERO DRIFT • PURE LOGIC
+// Deterministic • Declarative • Zero Drift • Pure Logic
 // ============================================================================
 //
-// ROLE (v9.2):
-//   • Receives analysis from PulseImmunity (mesh + global drift).
-//   • Prioritizes issues (triage).
-//   • Dispatches to real healers (GPU, routing, backend).
-//   • Emits declarative repair directives (mesh, identity).
-//   • Ensures safe, ordered, non-destructive healing.
-//   • Operates fully offline when backend is unavailable.
-//
-// This organ does NOT heal anything directly.
-// It COMMANDS the healers.
-// ============================================================================
-//
-// SUBSYSTEM IDENTITY — “IMMUNE SYSTEM”  [PURPLE]
-// ----------------------------------------------------------------------------
-// This organ is the TOP of the immune hierarchy.
-// It commands (via directives):
-//   • GPUHealer (muscular immune response)
-//   • RouteDownResponder (router immune response)
-//   • Mesh layer (PulseMesh routing spine) via mesh directives
-//   • Identity (self-healing) via declarative identity directives
-//   • Any future healers added to the registry
-//
-// v9.2: Identity is self-repairing — commander emits declarative directives.
+// ROLE (v10.4):
+//   • Receives diagnostic snapshots (Halo, Echo, Field, SDN).
+//   • Performs deterministic triage (no pressure thresholds).
+//   • Emits declarative repair directives for:
+//        - GPUHealer (GPU immune response)
+//        - RouteResponder (router immune response)
+//        - Identity (self-repair directives)
+//        - Mesh (pathway diagnostics)
+//   • Never heals directly — only commands healers.
+//   • Fully offline-capable (OFFLINE_MODE).
+//   • Zero randomness, zero timestamps, zero mutation.
 // ============================================================================
 
-
-// ============================================================================
-// FACTORY — ALL DEPENDENCIES INJECTED BY THE CNS BRAIN
-// IMMUNE COMMANDER MUST HAVE ZERO IMPORTS
-// ============================================================================
 export function createPulseMeshImmuneSystem({
-  PulseImmunity,
-  GPUHealer,
-  RouteDownResponder,
+  PulseImmunity,        // v10.4 analysis engine
+  GPUHealer,            // updated GPU immune organ
+  RouteResponder,       // updated router immune organ
   OFFLINE_MODE = false,
   log,
   warn,
   error
 }) {
 
-  // ========================================================================
-  // IMMUNE COMMANDER META (v9.2)
-  // ========================================================================
+  // ---------------------------------------------------------------------------
+  // META — v10.4 identity
+  // ---------------------------------------------------------------------------
   const meta = {
     layer: "PulseMeshImmuneSystem",
     role: "IMMUNE_COMMANDER",
-    version: 9.2,
+    version: "10.4",
     target: "full-mesh",
     selfRepairable: true,
     evo: {
@@ -74,13 +57,14 @@ export function createPulseMeshImmuneSystem({
     }
   };
 
-  // ========================================================================
-  // HEALER REGISTRY (v9.2)
-  // ========================================================================
+  // ---------------------------------------------------------------------------
+  // HEALER REGISTRY (v10.4)
+  // Pure declarative directives — no direct mutation.
+  // ---------------------------------------------------------------------------
   const HEALER_REGISTRY = [
     {
       name: "GPUHealer",
-      match: /gpu|render|frame|canvas|advisor|auto_opt/i,
+      match: /gpu|render|advisor|auto_opt/i,
       handler: (issue) => ({
         ok: true,
         type: "gpu_repair_directive",
@@ -89,15 +73,15 @@ export function createPulseMeshImmuneSystem({
         details: {
           driftType: issue.driftType ?? "unspecified",
           severity: issue.severity ?? "info",
-          note: issue.message ?? issue.note ?? null
+          note: issue.message ?? null
         },
         result: GPUHealer.repair(issue),
         issue
       })
     },
     {
-      name: "RouteDownResponder",
-      match: /route|network|down|offline|timeout|stall/i,
+      name: "RouteResponder",
+      match: /route|network|timeout|stall|down/i,
       handler: (issue) => {
         if (OFFLINE_MODE) {
           return {
@@ -110,22 +94,21 @@ export function createPulseMeshImmuneSystem({
         return {
           ok: true,
           type: "routing_repair_directive",
-          target: "PulseMesh",
+          target: "PulseRouter",
           action: "route_repair",
           details: {
             driftType: issue.driftType ?? "unspecified",
             severity: issue.severity ?? "info",
-            note: issue.message ?? issue.note ?? null
+            note: issue.message ?? null
           },
-          result: RouteDownResponder(issue),
+          result: RouteResponder(issue),
           issue
         };
       }
     },
     {
-      // Identity is self-healing — commander emits a directive only
       name: "IdentityDirective",
-      match: /identity|auth|token|session|bbb/i,
+      match: /identity|auth|token|session/i,
       handler: (issue) => ({
         ok: true,
         type: "identity_repair_directive",
@@ -134,116 +117,109 @@ export function createPulseMeshImmuneSystem({
         details: {
           driftType: issue.driftType ?? "unspecified",
           severity: issue.severity ?? "info",
-          note: issue.message ?? issue.note ?? null
+          note: issue.message ?? null
         },
         issue
       })
     },
     {
-      // Mesh routing / spine / reflex / stall / missing node / factoring
-      name: "MeshRoutingDirective",
-      match: /mesh|routing|routing_stall|missing_node|reflex_drop|PulseMesh|factoring/i,
+      name: "MeshDirective",
+      match: /mesh|pathway|factoring|missing_node|stall/i,
       handler: (issue) => ({
         ok: true,
         type: "mesh_repair_directive",
         target: "PulseMesh",
-        action: "analyze_and_repair_route",
+        action: "analyze_pathway",
         details: {
-          meshNodeId: issue.meshNodeId ?? null,
-          routeId: issue.routeId ?? null,
           driftType: issue.driftType ?? "unspecified",
           factoringDepth: issue.factoringDepth ?? null,
+          meshNodeId: issue.meshNodeId ?? null,
           severity: issue.severity ?? "info",
-          note: issue.message ?? issue.note ?? null
+          note: issue.message ?? null
         },
         issue
       })
     }
   ];
 
+  // ---------------------------------------------------------------------------
+  // TRIAGE (v10.4)
+  // Deterministic ordering — no pressure thresholds.
+  // ---------------------------------------------------------------------------
+  function triage(analysis) {
+    const { issues } = analysis;
 
-  // ========================================================================
-  // IMMUNE COMMANDER — TOP OF IMMUNE SYSTEM (v9.2)
-  // ========================================================================
-  const PulseMeshImmuneSystem = {
+    return issues.slice().sort((a, b) => {
+      const sa = a.severity || 1;
+      const sb = b.severity || 1;
 
-    meta,
+      // Higher severity first
+      if (sb !== sa) return sb - sa;
 
-    // ----------------------------------------------------------
-    // TRIAGE (v9.2)
-    // ----------------------------------------------------------
-    triage(analysis) {
-      const { issues } = analysis;
+      // Mesh issues always prioritized secondarily
+      const aIsMesh = /mesh|pathway|factoring|stall|missing_node/i.test(a.message || "");
+      const bIsMesh = /mesh|pathway|factoring|stall|missing_node/i.test(b.message || "");
 
-      return issues.slice().sort((a, b) => {
-        const sa = a.severity || 1;
-        const sb = b.severity || 1;
+      if (aIsMesh && !bIsMesh) return -1;
+      if (!aIsMesh && bIsMesh) return 1;
 
-        // Higher severity first
-        if (sb !== sa) return sb - sa;
+      return 0;
+    });
+  }
 
-        const aMsg = a.message || "";
-        const bMsg = b.message || "";
+  // ---------------------------------------------------------------------------
+  // DISPATCH (v10.4)
+  // Declarative — no direct healing.
+  // ---------------------------------------------------------------------------
+  async function dispatch(issue) {
+    const msg = issue.message || "";
 
-        const aIsMesh =
-          /mesh|PulseMesh|routing|routing_stall|missing_node|reflex_drop|factoring/i.test(aMsg) ||
-          a.subsystem === "Mesh";
-
-        const bIsMesh =
-          /mesh|PulseMesh|routing|routing_stall|missing_node|reflex_drop|factoring/i.test(bMsg) ||
-          b.subsystem === "Mesh";
-
-        if (aIsMesh && !bIsMesh) return -1;
-        if (!aIsMesh && bIsMesh) return 1;
-
-        return 0;
-      });
-    },
-
-    // ----------------------------------------------------------
-    // DISPATCH (v9.2)
-    // ----------------------------------------------------------
-    async dispatch(issue) {
-      const msg = issue.message || "";
-
-      for (const healer of HEALER_REGISTRY) {
-        if (healer.match.test(msg)) {
-          return healer.handler(issue);
-        }
+    for (const healer of HEALER_REGISTRY) {
+      if (healer.match.test(msg)) {
+        return healer.handler(issue);
       }
-
-      return {
-        ok: false,
-        message: "No healer found for issue",
-        issue
-      };
-    },
-
-    // ----------------------------------------------------------
-    // COMMAND CYCLE (v9.2)
-    // ----------------------------------------------------------
-    async command(diagSnapshot) {
-      const analysis = PulseImmunity.analyze(diagSnapshot);
-
-      const orderedIssues = this.triage(analysis);
-
-      const results = [];
-
-      for (const issue of orderedIssues) {
-        const res = await this.dispatch(issue);
-        results.push({ issue, result: res });
-      }
-
-      return {
-        commander: "PulseMeshImmuneSystem",
-        mode: OFFLINE_MODE ? "offline" : "online",
-        meta,
-        analysis,
-        orderedIssues,
-        results
-      };
     }
-  };
 
-  return PulseMeshImmuneSystem;
+    return {
+      ok: false,
+      message: "No healer found for issue",
+      issue
+    };
+  }
+
+  // ---------------------------------------------------------------------------
+  // COMMAND CYCLE (v10.4)
+  // Pure triage + directive emission.
+  // ---------------------------------------------------------------------------
+  async function command(diagSnapshot) {
+    const analysis = PulseImmunity.analyze(diagSnapshot);
+
+    const orderedIssues = triage(analysis);
+
+    const results = [];
+
+    for (const issue of orderedIssues) {
+      const res = await dispatch(issue);
+      results.push({ issue, result: res });
+    }
+
+    return {
+      commander: "PulseMeshImmuneSystem",
+      mode: OFFLINE_MODE ? "offline" : "online",
+      meta,
+      analysis,
+      orderedIssues,
+      results
+    };
+  }
+
+  // ---------------------------------------------------------------------------
+  // PUBLIC INTERFACE
+  // ---------------------------------------------------------------------------
+  return {
+    meta,
+    triage,
+    dispatch,
+    command
+  };
 }

@@ -11,6 +11,7 @@
 //  • Remembers degraded routes and bypasses (avoidance arcs).
 //  • Builds and maintains "route DNA" for each pattern/lineage/page.
 //  • Deterministic, pattern‑native, lineage‑aware, degradation‑aware.
+//  • Page‑inheritance‑aware: can derive imports/settings from prior pages.
 //
 //  WHAT THIS ORGAN IS NOT:
 //  ------------------------
@@ -19,7 +20,7 @@
 //  • Not a compute engine.
 //  • Not a network client.
 //  • Not a GPU/Earn/OS organ.
-//  • Not an IQ/import organ.
+//  • Not an IQ/import organ (it only routes + derives).
 //
 //  SAFETY CONTRACT (v10.4‑Evo):
 //  ----------------------------
@@ -31,6 +32,7 @@
 //  • Internal memory only (no external mutation).
 //  • Degradation-aware, but always routes forward.
 //  • Route DNA is internal only, never mutates external state.
+//  • Page inheritance is internal only, never mutates external state.
 // ============================================================================
 
 
@@ -58,7 +60,8 @@ export const PulseRole = {
     routeDNAReady: true,
     modeTransitionAware: true,
     healingLadderAware: true,
-    futureEvolutionReady: true
+    futureEvolutionReady: true,
+    pageInheritanceReady: true
   },
 
   // Contract alignment for OS‑v10.4 unified organism
@@ -233,11 +236,130 @@ function updateStabilityOnFailure(entry) {
 
 
 // ============================================================================
+//  PAGE INHERITANCE LAYER — pattern + lineage + pageId aware
+//  • Pulls imports/settings from last page + skipped pages until next page
+//  • Purely internal, deterministic, no external mutation
+// ============================================================================
+
+// ⭐ Build a page key from pattern + pageId
+function buildPageKey(pulse) {
+  const pattern = pulse.pattern || "";
+  const pageId = pulse.pageId || "NO_PAGE";
+  return `${pattern}::p${pageId}`;
+}
+
+// ⭐ Internal page memory: pageKey → { imports, settings, lineageSignature, patternAncestry }
+function ensurePageEntry(pageMemory, pulse, context = {}) {
+  const key = buildPageKey(pulse);
+  let entry = pageMemory[key];
+
+  const patternAncestry = buildPatternAncestry(pulse.pattern);
+  const lineageSignature = buildLineageSignature(pulse.lineage);
+
+  if (!entry) {
+    entry = {
+      key,
+      pattern: pulse.pattern || "",
+      pageId: pulse.pageId || "NO_PAGE",
+      patternAncestry,
+      lineageSignature,
+      imports: Array.isArray(context.imports) ? context.imports.slice() : [],
+      settings:
+        context.settings && typeof context.settings === "object"
+          ? { ...context.settings }
+          : {}
+    };
+    pageMemory[key] = entry;
+  } else {
+    // Update ancestry + lineage; only overwrite imports/settings if explicitly provided
+    entry.patternAncestry = patternAncestry;
+    entry.lineageSignature = lineageSignature;
+
+    if (Array.isArray(context.imports)) {
+      entry.imports = context.imports.slice();
+    }
+    if (context.settings && typeof context.settings === "object") {
+      entry.settings = { ...context.settings };
+    }
+  }
+
+  return entry;
+}
+
+// ⭐ Resolve inherited imports/settings from:
+//    • current page (if any)
+//    • previous lineage pages (in order)
+//    • pattern ancestry pages (in order)
+//    Deterministic merge: earlier sources first, later override/append.
+function resolveInheritedPageContext(pageMemory, pulse) {
+  const lineage = Array.isArray(pulse.lineage) ? pulse.lineage : [];
+  const patternAncestry = buildPatternAncestry(pulse.pattern);
+
+  const mergedImports = [];
+  const mergedSettings = {};
+
+  function mergeFromEntry(entry) {
+    if (!entry) return;
+    if (Array.isArray(entry.imports)) {
+      for (let i = 0; i < entry.imports.length; i++) {
+        const value = entry.imports[i];
+        if (!mergedImports.includes(value)) {
+          mergedImports.push(value);
+        }
+      }
+    }
+    if (entry.settings && typeof entry.settings === "object") {
+      const keys = Object.keys(entry.settings);
+      for (let i = 0; i < keys.length; i++) {
+        const k = keys[i];
+        mergedSettings[k] = entry.settings[k];
+      }
+    }
+  }
+
+  // 1) Pattern ancestry pages (broadest → most specific)
+  for (let i = 0; i < patternAncestry.length; i++) {
+    const subPattern = patternAncestry.slice(0, i + 1).join("/");
+    const ancestorPulse = {
+      pattern: subPattern,
+      pageId: "NO_PAGE",
+      lineage: []
+    };
+    const key = buildPageKey(ancestorPulse);
+    mergeFromEntry(pageMemory[key]);
+  }
+
+  // 2) Lineage pages (oldest → newest)
+  for (let i = 0; i < lineage.length; i++) {
+    const ancestorPageId = lineage[i];
+    const ancestorPulse = {
+      pattern: pulse.pattern,
+      pageId: ancestorPageId,
+      lineage: lineage.slice(0, i)
+    };
+    const key = buildPageKey(ancestorPulse);
+    mergeFromEntry(pageMemory[key]);
+  }
+
+  // 3) Current page (most specific, final override)
+  const currentKey = buildPageKey(pulse);
+  mergeFromEntry(pageMemory[currentKey]);
+
+  return {
+    imports: mergedImports,
+    settings: mergedSettings
+  };
+}
+
+
+
+// ============================================================================
 //  FACTORY — createPulseRouter (v10.4‑Evo)
 //  Pulse‑agnostic (v1/v2/v3), deterministic, degradation‑aware brainstem
 // ============================================================================
 export function createPulseRouter({ log } = {}) {
-  const memory = {}; // routeKey → route DNA entry
+  const memory = {};     // routeKey → route DNA entry
+  const pageMemory = {}; // pageKey → page inheritance entry
 
   function ensureEntry(pulse, healthScore) {
     const key = buildRouteKey(pulse);
@@ -299,6 +421,7 @@ export function createPulseRouter({ log } = {}) {
   //  route(pulse, context)
   //  • Main routing decision
   //  • Pure, deterministic, pulse‑agnostic
+  //  • Now page‑inheritance‑aware (imports/settings)
   // --------------------------------------------------------------------------
   function route(pulse, context = {}) {
     if (!pulse || typeof pulse !== "object") {
@@ -307,6 +430,12 @@ export function createPulseRouter({ log } = {}) {
 
     const healthScore = deriveHealthScore(pulse, context);
     const { key, entry } = ensureEntry(pulse, healthScore);
+
+    // Update page memory with any explicit imports/settings from context
+    ensurePageEntry(pageMemory, pulse, context);
+
+    // Resolve inherited imports/settings from last page + skipped pages
+    const inherited = resolveInheritedPageContext(pageMemory, pulse);
 
     const targetOrgan = entry.currentOrgan || entry.idealOrgan || "OS";
 
@@ -322,7 +451,9 @@ export function createPulseRouter({ log } = {}) {
       stabilityScore: entry.stabilityScore,
       healingScore: entry.healingScore,
       patternAncestry: entry.patternAncestry,
-      lineageSignature: entry.lineageSignature
+      lineageSignature: entry.lineageSignature,
+      inheritedImports: inherited.imports,
+      inheritedSettings: inherited.settings
     };
 
     if (typeof log === "function") {
@@ -430,7 +561,7 @@ export function createPulseRouter({ log } = {}) {
 
   // --------------------------------------------------------------------------
   //  getMemorySnapshot()
-//  • Returns a shallow snapshot of all route DNA entries
+  //  • Returns a shallow snapshot of all route DNA entries
   // --------------------------------------------------------------------------
   function getMemorySnapshot() {
     const out = {};
@@ -453,6 +584,25 @@ export function createPulseRouter({ log } = {}) {
     return out;
   }
 
+  // --------------------------------------------------------------------------
+  //  getPageInheritanceSnapshot()
+  //  • Introspect page‑level inheritance memory (for debugging/verification)
+// --------------------------------------------------------------------------
+  function getPageInheritanceSnapshot() {
+    const out = {};
+    for (const [key, entry] of Object.entries(pageMemory)) {
+      out[key] = {
+        pattern: entry.pattern,
+        pageId: entry.pageId,
+        patternAncestry: entry.patternAncestry.slice(),
+        lineageSignature: entry.lineageSignature,
+        imports: entry.imports.slice(),
+        settings: { ...entry.settings }
+      };
+    }
+    return out;
+  }
+
   return {
     PulseRole,
     version: ROUTER_VERSION,
@@ -460,6 +610,7 @@ export function createPulseRouter({ log } = {}) {
     recordSuccess,
     recordFailure,
     getRouteDNA,
-    getMemorySnapshot
+    getMemorySnapshot,
+    getPageInheritanceSnapshot
   };
 }

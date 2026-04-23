@@ -1,10 +1,10 @@
 // ============================================================================
-//  PULSE GPU INSIGHTS ENGINE v9.2 — THE WISDOM CORTEX
+//  PULSE GPU INSIGHTS ENGINE v10.4 — THE WISDOM CORTEX
 //  Deterministic, Pure Logic, Drift‑Proof Analytics Over Session Traces
 // ============================================================================
 //
-// IDENTITY — THE WISDOM CORTEX:
-//  -----------------------------
+// IDENTITY — THE WISDOM CORTEX (v10.4):
+//  ------------------------------------
 //  • The interpretive cortex of the GPU organism.
 //  • Observes the past (baseline traces).
 //  • Studies the present (current traces).
@@ -13,11 +13,11 @@
 //  • No guessing. No prediction. No speculation.
 //  • Pure interpretation. Pure understanding.
 //  • Advantage‑cascade aware: systemic gains improve insight flow.
-//  • PulseSend‑2.0‑ready: insights can be routed through the compute router.
-//  • Earn‑ready: compatible with PulseEarn v9 job payloads.
+//  • PulseSend‑10.4‑ready: insights can be routed through the compute router.
+//  • Earn‑ready: compatible with Earn‑v2 job payloads.
 //
-// SAFETY CONTRACT (v9.2):
-//  -----------------------
+// SAFETY CONTRACT (v10.4):
+//  ------------------------
 //  • No randomness
 //  • No timestamps
 //  • No GPU calls
@@ -29,6 +29,7 @@
 //  • Self‑repair‑ready: insights include metadata
 // ============================================================================
 
+
 // ============================================================================
 // UTILITY: clamp — Wisdom requires boundaries
 // ============================================================================
@@ -38,6 +39,7 @@ function clamp(value, min, max) {
   if (value > max) return max;
   return value;
 }
+
 
 // ============================================================================
 // DELTA CLASSIFICATION — Wisdom about change
@@ -54,6 +56,7 @@ function classifyDelta(deltaPercent) {
   if (absDelta < 40) return "high";
   return "critical";
 }
+
 
 // ============================================================================
 // INSIGHT BUILDER — Structured understanding
@@ -78,7 +81,7 @@ function buildInsight({
     meta: {
       layer: "PulseGPUInsightsEngine",
       role: "WISDOM_CORTEX",
-      version: 9.2,
+      version: 10.4,
       target: "full-gpu",
       selfRepairable: true,
 
@@ -87,12 +90,11 @@ function buildInsight({
         pulseEfficiencyAware: true,
         driftProof: true,
         unifiedAdvantageField: true,
-        pulseSend2Ready: true,
+        pulseSend10Ready: true,
 
-        // PulseSend / Earn contracts (conceptual only)
-        routingContract: "PulseSend-v2",
-        gpuOrganContract: "PulseGPU-v9.2",
-        earnCompatibility: "PulseEarn-v9"
+        routingContract: "PulseSend-v10.4",
+        gpuOrganContract: "PulseGPU-v10.4",
+        earnCompatibility: "Earn-v2"
       }
     }
   };
@@ -114,6 +116,7 @@ function buildInsight({
 
   return insight;
 }
+
 
 // ============================================================================
 // GROUP STEPS — The Cortex organizes the story
@@ -150,6 +153,7 @@ function groupStepsById(traces = []) {
   return groups;
 }
 
+
 // ============================================================================
 // COMPUTE AVERAGES — The Cortex finds the pattern
 // ============================================================================
@@ -178,6 +182,7 @@ function computeStepAverages(groups) {
 
   return result;
 }
+
 
 // ============================================================================
 //  PULSE GPU INSIGHTS ENGINE — THE WISDOM CORTEX
@@ -268,6 +273,7 @@ class PulseGPUInsightsEngine {
     return this.analyzeStepDurations(filteredBaseline, filteredCurrent);
   }
 }
+
 
 // ============================================================================
 // EXPORTS

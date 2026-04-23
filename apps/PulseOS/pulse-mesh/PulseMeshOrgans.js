@@ -1,123 +1,95 @@
 // ============================================================================
-//  PULSE OS v9.2 — SURVIVAL ORGANS LAYER  // orange
+//  PULSE OS v10.4 — SURVIVAL ORGANS LAYER  // orange
 //  “Functional Organ Map of the Mesh Body”
-//  Capability Signatures • Pressure-Aware Organ Matching • Metadata-Only
+//  Capability Signatures • Deterministic Organ Matching • Metadata-Only
 // ============================================================================
 //
-//  IDENTITY (v9.2):
-//  ----------------
-//  • Maps impulses to functional organs (storage, routing, security, earnPrep).
-//  • Pure metadata-only classification — zero payload mutation.
-//  • Pressure-aware: avoids heavy organs when the system is under tension.
-//  • Factoring-aware: avoids deep-path organs when factoring pressure is high.
-//  • Deterministic-field, drift-proof, AND-architecture aligned.
-//  • Multi-instance-ready, unified-advantage-field, future-evolution-ready.
+// IDENTITY (v10.4):
+// -----------------
+// • Maps impulses to functional organs (storage, routing, security, earnPrep).
+// • Pure metadata-only classification — zero payload mutation.
+// • Deterministic-field, drift-proof, SDN-aligned.
+// • No pressure gating (v9.2 behavior removed).
+// • Multi-instance-ready, unified-advantage-field, future-evolution-ready.
 //
-//  ROLE IN THE DIGITAL BODY (v9.2):
-//  --------------------------------
-//  • Organ Map → assigns impulses to the correct functional organ.
-//  • Pressure Guard → avoids heavy organs under stress.
-//  • Mesh Body Layer → sits between Reflex (skin) and Earners (muscles).
-//  • Zero Compute → classification only, no transformation.
-//
-//  NEW IN v9.2:
-//  -------------
-//  • Organ matching considers:
-//      - flowPressure
-//      - driftPressure
-//      - throttleRate
-//      - auraTension
-//      - factoringPressure
-//      - hormoneStabilityTag
-//      - meshStormPressure (v9.2)
-//  • Deterministic-field: same snapshot → same organ match.
-//  • Unified-advantage-field: inherits all safe advantages automatically.
+// ROLE IN THE DIGITAL BODY (v10.4):
+// ---------------------------------
+// • Organ Map → assigns impulses to the correct functional organ.
+// • Zero Compute → classification only, no transformation.
+// • No pressure thresholds, no load avoidance, no tension logic.
+// • Pure intent-based and flag-based organ selection.
 // ============================================================================
 
-export function createPulseOrgans({ getPressureSnapshot }) {
+export function createPulseOrgans() {
 
   // -------------------------------------------------------
-  // ORGAN DEFINITIONS (v9.2)
+  // ORGAN DEFINITIONS (v10.4)
+  // Deterministic, pressure-free, SDN-aligned.
   // -------------------------------------------------------
   const PulseOrgans = {
 
     // -------------------------------------------------------
-    // STORAGE ORGAN — safe under most conditions
+    // STORAGE ORGAN — deterministic, safe default
     // -------------------------------------------------------
     storage: {
       id: "organ-storage",
       capabilities: ["store", "retrieve", "index"],
-      match(impulse, field) {
-        if (field.flowPressure > 0.7) return false;
-        if (field.factoringPressure > 0.6) return false;
-        if (field.meshStormPressure > 0.4) return false;
+      match(impulse) {
         return impulse.flags?.cortex_intent === "normal";
       }
     },
 
     // -------------------------------------------------------
-    // ROUTING ORGAN — expensive, avoid under pressure
+    // ROUTING ORGAN — deterministic, based on intent + score
     // -------------------------------------------------------
     routing: {
       id: "organ-routing",
       capabilities: ["route", "shape", "classify"],
-      match(impulse, field) {
-        if (field.flowPressure > 0.5) return false;
-        if (field.driftPressure > 0.4) return false;
-        if (field.auraTension > 0.4) return false;
-        if (field.factoringPressure > 0.5) return false;
-        if (field.meshStormPressure > 0.4) return false;
-        return impulse.score >= 0.5;
+      match(impulse) {
+        return impulse.flags?.cortex_intent === "push_hard" ||
+               impulse.score >= 0.7;
       }
     },
 
     // -------------------------------------------------------
-    // SECURITY ORGAN — anomaly-first, but avoid heavy checks
+    // SECURITY ORGAN — anomaly-first
     // -------------------------------------------------------
     security: {
       id: "organ-security",
       capabilities: ["validate", "verify", "protect"],
-      match(impulse, field) {
-        if (impulse.flags?.cortex_anomaly) return true;
-        if (impulse.flags?.cortex_factoring_anomaly) return true;
-        if (field.throttleRate > 0.3) return false;
-        if (field.meshStormPressure > 0.4) return false;
-        return false;
+      match(impulse) {
+        return impulse.flags?.cortex_anomaly ||
+               impulse.flags?.cortex_factoring_anomaly;
       }
     },
 
     // -------------------------------------------------------
-    // EARN PREP ORGAN — heavy, avoid under tension
+    // EARN PREP ORGAN — deterministic, based on routeHint
     // -------------------------------------------------------
     earnPrep: {
       id: "organ-earnprep",
       capabilities: ["prepare", "shape_intent", "assign_earner"],
-      match(impulse, field) {
-        if (field.flowPressure > 0.4) return false;
-        if (field.auraTension > 0.4) return false;
-        if (field.factoringPressure > 0.5) return false;
-        if (field.meshStormPressure > 0.4) return false;
-        return impulse.routeHint?.startsWith("earner-");
+      match(impulse) {
+        return typeof impulse.routeHint === "string" &&
+               impulse.routeHint.startsWith("earner-");
       }
     }
   };
 
 
   // ========================================================================
-  // ORGAN ENGINE (v9.2)
+  // ORGAN ENGINE (v10.4)
   // “Attach functional organ identity to the impulse”
   // ========================================================================
   function applyPulseOrgans(impulse) {
     impulse.flags = impulse.flags || {};
     impulse.organs = impulse.organs || [];
 
-    const field = getPressureSnapshot() || {};
-
-    // attach v9.2 organ meta
+    // attach v10.4 organ meta
     impulse.flags.organ_meta = {
       layer: "PulseOrgans",
       role: "FUNCTIONAL_ORGAN_MAP",
-      version: 9.2,
+      version: "10.4",
       target: "full-mesh",
       selfRepairable: true,
       evo: {
@@ -137,9 +109,10 @@ export function createPulseOrgans({ getPressureSnapshot }) {
       }
     };
 
+    // deterministic organ matching (no pressure)
     for (const key of Object.keys(PulseOrgans)) {
       const organ = PulseOrgans[key];
-      if (organ.match(impulse, field)) {
+      if (organ.match(impulse)) {
         impulse.organs.push(organ.id);
         impulse.flags[`organ_${organ.id}`] = true;
       }

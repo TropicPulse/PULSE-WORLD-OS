@@ -1,12 +1,40 @@
 // ============================================================================
 // FILE: /apps/PulseOS/Brain/PulseOSBrain.js
-// PULSE OS — v10.0
+// PULSE OS — v10.4
 // “THE CNS BRAIN / CENTRAL NERVOUS SYSTEM / INTELLIGENCE LAYER 1”
 // ============================================================================
+//
+//  ORGAN IDENTITY (v10.4):
+//  ------------------------
+//  • Organ Type: Brain / CNS Core
+//  • Layer: CENTRAL NERVOUS SYSTEM (CNS)
+//  • Biological Analog: Brain + Executive Cortex
+//  • System Role: Attach IQ, load organs by design, boot Cortex, govern CNS.
+//
+//  PURPOSE (v10.4):
+//  ----------------
+//  ✔ Attach PulseIQ (the only import cortex) to the organism.
+//  ✔ Interpret PulseOrganismMap as the genome-level truth.
+//  ✔ Load organs by design identity (deterministic, design-driven).
+//  ✔ Boot the Cortex and initialize nervous system + organs.
+//  ✔ Classify degradation and route around damage (continuance).
+//  ✔ Provide structural error intelligence (drift surface).
+//
+//  SAFETY CONTRACT (v10.4):
+//  -------------------------
+//  • May import ONLY:
+//      - PulseIQMap (IQ cortex / imports)
+//      - PulseOrganismMap (genome map)
+//      - Cortex boot (PulseOSBrainCortex)
+//  • No dynamic imports, no eval, no Function.
+//  • No network law here — network is handled by other organs.
+//  • Deterministic behavior only.
+//  • No mutation of external modules (IQ, OrganismMap).
+// ============================================================================
 
 
 // ============================================================================
-//  IMPORTS — v10 LAW: BRAIN MAY IMPORT ONLY PULSEIQ (+ Cortex wiring)
+//  IMPORTS — v10.4 LAW: BRAIN MAY IMPORT ONLY PULSEIQ (+ Cortex wiring)
 // ============================================================================
 import { PulseIQMap } from "./PULSE-OS/PulseIQMap.js";
 import { PulseOrganismMap } from "./PULSE-OS/PulseOrganismMap.js";
@@ -23,7 +51,7 @@ export const PulseOSBrain = {
     type: "Brain",
     subsystem: "OS",
     layer: "CNS",
-    version: "10.0",
+    version: "10.4",
     identity: "PulseOSBrain",
     evo: {
       deterministicNeuron: true,
@@ -31,33 +59,44 @@ export const PulseOSBrain = {
       multiInstanceReady: true,
       advantageCascadeAware: true,
       unifiedAdvantageField: true,
-      routingContract: "PulseSend-v10",
-      osOrganContract: "PulseOS-v10",
-      earnCompatibility: "PulseEarn-v10",
-      proxyCompatibility: "PulseProxySpine-v10",
-      gpuCompatibility: "PulseGPU-v10"
+
+      // Contracts — v10.4 organism-wide
+      routingContract: "PulseRouter-v10.4",
+      osOrganContract: "PulseOS-v10.4",
+      earnCompatibility: "PulseEarn-v10.4",
+      proxyCompatibility: "PulseProxySpine-v10.4",
+      gpuCompatibility: "PulseGPU-v10.4",
+
+      // Continuance / loop-theory awareness (conceptual only)
+      loopTheoryAware: true,
+      continuanceAware: true
     }
   },
 
   // CNS Intelligence Layer
   BrainIntel: {
+    // Degradation classifier → how CNS should route around damage
     classifyDegradation(healthScore) {
       if (healthScore >= 0.85) return "direct";
       if (healthScore >= 0.15) return "bypass";
       return "routeAround";
     },
+
+    // Identity scoring for design-loaded organs
     scoreIdentityMatch(signature, module) {
       let score = 0;
       if (module?.PulseRole?.type === signature.type) score += 1;
       if (module?.PulseRole?.subsystem === signature.subsystem) score += 1;
       return score;
     },
+
+    // Fallback to long-term memory (IQ-provided)
     fallbackToMemory() {
       return PulseIQMap.LongTermMemory;
     }
   },
 
-  // CNS Infrastructure
+  // CNS Infrastructure (wired from IQ)
   log: PulseIQMap.log,
   warn: PulseIQMap.warn,
   logError: PulseIQMap.logError,
@@ -122,7 +161,7 @@ export function structuralError(expected, found, extraContext = {}) {
 
 
 // ============================================================================
-/* 3) EVOLUTION + ORGAN LOADING — Design-Driven CNS Logic (still uses IQMap) */
+// 3) EVOLUTION + ORGAN LOADING — Design-Driven CNS Logic (still uses IQMap)
 // ============================================================================
 export async function loadOrganByDesign(designIdentity, expectedType, expectedSubsys) {
   const raw = await PulseIQMap.evolveRaw(designIdentity);
@@ -144,7 +183,7 @@ export async function loadOrganByDesign(designIdentity, expectedType, expectedSu
 
 // ============================================================================
 // 4) COGNITIVE BOOTSTRAP — Evolution → PulseOSBrain → Cortex
-//    (Evolution calls this; Understanding never does directly)
+//    (Evolution calls this; Understanding does NOT boot Brain directly in v10.4)
 // ============================================================================
 export function cognitiveBootstrap({ intent, organism, iqMap, understanding }) {
 

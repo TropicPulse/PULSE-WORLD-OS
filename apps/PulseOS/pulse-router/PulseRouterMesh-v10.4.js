@@ -1,0 +1,129 @@
+// ============================================================================
+//  PulseMeshRouter-v10.4-Evo-A2 — MESH ROUTING ORGAN
+//  Deterministic Mesh Path Selection • Pattern/Lineage/Page-Ancestry Aware
+// ============================================================================
+
+export const PulseMeshRole = {
+  type: "MeshRouter",
+  subsystem: "PulseMesh",
+  layer: "Routing",
+  version: "10.4",
+  identity: "PulseMeshRouter-v10.4-Evo-A2",
+
+  evo: {
+    driftProof: true,
+    patternAware: true,
+    lineageAware: true,
+    pageAware: true,
+    deterministicRouting: true,
+    unifiedAdvantageField: true,
+    pulseRouter10Ready: true,
+    loopTheoryAware: true
+  },
+
+  loopTheory: {
+    routingCompletion: true,
+    allowLoopfieldPropulsion: true,
+    pulseComputeContinuity: true,
+    errorRouteAround: true
+  },
+
+  meshContract: "PulseMesh-v10.4",
+  sendContract: "PulseSend-v10.4"
+};
+
+function buildPatternAncestry(pattern) {
+  if (!pattern || typeof pattern !== "string") return [];
+  return pattern.split("/").filter(Boolean);
+}
+function buildLineageSignature(lineage) {
+  if (!Array.isArray(lineage) || lineage.length === 0) return "NO_LINEAGE";
+  return lineage.join(">");
+}
+function buildPageAncestrySignature({ pattern, lineage, pageId }) {
+  const safePattern = typeof pattern === "string" ? pattern : "";
+  const safeLineage = Array.isArray(lineage) ? lineage : [];
+  const safePageId = pageId || "NO_PAGE";
+
+  const patternAncestry = buildPatternAncestry(safePattern);
+  const lineageSig = buildLineageSignature(safeLineage);
+
+  const shape = {
+    pattern: safePattern,
+    patternAncestry,
+    lineageSignature: lineageSig,
+    pageId: safePageId
+  };
+
+  let raw = JSON.stringify(shape);
+  let hash = 0;
+  for (let i = 0; i < raw.length; i++) {
+    const chr = raw.charCodeAt(i);
+    hash = (hash << 5) - hash + chr;
+    hash |= 0;
+  }
+  return (hash >>> 0).toString(16);
+}
+
+function classifyDegradationTier(healthScore) {
+  const h = typeof healthScore === "number" ? healthScore : 1.0;
+  if (h >= 0.95) return "microDegrade";
+  if (h >= 0.85) return "softDegrade";
+  if (h >= 0.50) return "midDegrade";
+  if (h >= 0.15) return "hardDegrade";
+  return "criticalDegrade";
+}
+
+// deterministic mesh path chooser
+function chooseMeshPath(pulse) {
+  const pattern = pulse.pattern || "UNKNOWN_PATTERN";
+  const lineageDepth = Array.isArray(pulse.lineage) ? pulse.lineage.length : 0;
+  const raw = `${pattern}::${lineageDepth}`;
+  let acc = 0;
+  for (let i = 0; i < raw.length; i++) {
+    acc = (acc + raw.charCodeAt(i) * (i + 11)) % 6151;
+  }
+  const paths = ["mesh-local", "mesh-remote", "mesh-os-fallback"];
+  return paths[acc % paths.length];
+}
+
+export const PulseMeshRouter = {
+  PulseMeshRole,
+
+  routeMesh(pulse) {
+    const pattern = pulse.pattern || "UNKNOWN_PATTERN";
+    const lineage = Array.isArray(pulse.lineage) ? pulse.lineage.slice() : [];
+    const pageId = pulse.pageId || "NO_PAGE";
+
+    const patternAncestry =
+      Array.isArray(pulse.patternAncestry) && pulse.patternAncestry.length
+        ? pulse.patternAncestry.slice()
+        : buildPatternAncestry(pattern);
+
+    const lineageSignature =
+      typeof pulse.lineageSignature === "string"
+        ? pulse.lineageSignature
+        : buildLineageSignature(lineage);
+
+    const pageAncestrySignature =
+      typeof pulse.pageAncestrySignature === "string"
+        ? pulse.pageAncestrySignature
+        : buildPageAncestrySignature({ pattern, lineage, pageId });
+
+    const tier = classifyDegradationTier(pulse.healthScore ?? 1);
+
+    const meshPath = chooseMeshPath(pulse);
+
+    return {
+      meshPath,
+      tier,
+      pattern,
+      patternAncestry,
+      lineage,
+      lineageSignature,
+      pageId,
+      pageAncestrySignature,
+      loopTheory: { ...PulseMeshRole.loopTheory }
+    };
+  }
+};

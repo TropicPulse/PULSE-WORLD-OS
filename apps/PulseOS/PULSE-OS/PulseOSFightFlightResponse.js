@@ -1,5 +1,5 @@
 // ============================================================================
-//  PULSE OS — ACTNow v9.2
+//  PULSE OS — ACTNow v10.4
 //  ADRENAL REFLEX LOOP — “ACT NOW”
 //  White/Silver Organ • Reflex • Renewal • Non‑Interference
 // ============================================================================
@@ -7,6 +7,7 @@
 //  THIS ORGAN HAS ZERO IMPORTS.
 //  ALL dependencies are injected by the CNS Brain.
 //  PURE REFLEX. ZERO COGNITION. ZERO NETWORK. ZERO BACKEND.
+//  DETERMINISTIC LOOP-THEORY COMPLIANT.
 // ============================================================================
 
 export function createACTNow({
@@ -26,8 +27,8 @@ export function createACTNow({
     meta: {
       layer: "ACTNow",
       role: "HEARTBEAT_LOOP",
-      version: "9.2",
-      generation: "v9",
+      version: "10.4",
+      generation: "v10",
       color: "white-silver",
       theme: "renewal",
 
@@ -38,6 +39,7 @@ export function createACTNow({
       reflexPure: true,
       zeroNetwork: true,
       zeroBackend: true,
+      zeroCognition: true,
 
       evo: {
         deterministicNeuron: true,
@@ -45,13 +47,14 @@ export function createACTNow({
         advantageCascadeAware: true,
         unifiedAdvantageField: true,
         pulseEfficiencyAware: true,
-        zeroCognition: true,
         zeroMutationOutsideOrgan: true,
+        loopTheoryAware: true,
+        continuanceAware: true,
 
         // Conceptual compatibility (no logic impact)
-        routingContract: "PulseSend-v9.2",
-        osOrganContract: "PulseOS-v9.2",
-        earnCompatibility: "PulseEarn-v9.2"
+        routingContract: "PulseSendSystem-v10.4",
+        osOrganContract: "PulseOS-v10.4",
+        earnCompatibility: "PulseEarn-v10.4"
       }
     },
 

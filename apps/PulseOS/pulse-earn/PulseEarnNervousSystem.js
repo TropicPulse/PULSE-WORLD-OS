@@ -1,40 +1,30 @@
 // ============================================================================
 // FILE: tropic-pulse-functions/apps/pulse-earn/PulseEarnNervousSystem.js
-// LAYER: THE NERVOUS SYSTEM + EXCHANGE OFFICE
-// (Job Intake + Result Forwarding + Reputation Updating + Signal Routing)
-// PULSE EARN — v9.2
+// LAYER: THE NERVOUS SYSTEM + EXCHANGE OFFICE (v10.4)
+// (Deterministic Job Intake + Result Forwarding + Reputation Updating)
 // ============================================================================
 //
-// ROLE (v9.2):
-//   THE NERVOUS SYSTEM — Pulse‑Earn’s sensory + motor signal router.
-//   • Fetches next job from all marketplaces (via MarketplaceOrchestrator).
+// ROLE (v10.4):
+//   THE NERVOUS SYSTEM — deterministic sensory + motor signal router.
+//   • Fetches next job from deterministic marketplaces.
 //   • Converts marketplace jobs into PulseJobSchema-like structures.
-//   • Submits completed results back to the correct marketplace.
-//   • Updates marketplace reputation based on job outcomes.
-//   • Logs neural/economic activity for healing (PulseEarnImmuneSystem).
+//   • Submits completed results back to deterministic receptors.
+//   • Updates marketplace reputation deterministically.
+//   • Maintains healing metadata for Earn healers.
 //
-// WHY “NERVOUS SYSTEM + EXCHANGE OFFICE”?:
-//   • Biological: Routes sensory input (jobs) AND motor output (results).
-//   • Biological: Adjusts reputation (synaptic weighting).
-//   • Economic: Handles job intake (incoming currency) AND result submission.
-//   • Economic: Updates marketplace trust (exchange rate).
-//
-// PURPOSE (v9.2):
-//   • Provide a deterministic, drift‑proof interface between Earn AND external markets.
-//   • Normalize jobs AND forward results safely.
+// PURPOSE (v10.4):
+//   • Provide deterministic, drift‑proof interface between Earn and markets.
+//   • Normalize jobs + forward results safely.
 //   • Maintain healing metadata for the Immune System.
-//   • Make economic AND biological routing explicit and human‑readable.
+//   • Make economic + biological routing explicit.
 //
-// CONTRACT (unchanged):
+// CONTRACT (v10.4):
 //   • PURE INTERFACE — no AI layers, no translation, no memory model.
-//   • READ‑ONLY except for healing metadata + reputation updates.
+//   • READ‑ONLY except for healing metadata + deterministic reputation updates.
 //   • NO eval(), NO Function(), NO dynamic imports.
 //   • NO executing user code.
+//   • NO async, NO timestamps, NO network.
 //   • Deterministic job intake + result forwarding only.
-//
-// SAFETY (unchanged):
-//   • v9.2 upgrade is COMMENTAL / IDENTITY ONLY — NO LOGIC CHANGES.
-//   • All behavior remains identical to pre‑v9.2 MarketplaceConnector.
 // ============================================================================
 
 import {
@@ -44,36 +34,45 @@ import {
 
 import { getNextJob } from "./PulseEarnCirculatorySystem.js";
 import { PulseJobSchema } from "./PulseEarnGenome.js";
-import { getDeviceProfile } from "./PulseEarnSkeletalSystem.js";
+import { getPulseEarnDeviceProfile } from "./PulseEarnSkeletalSystem.js";
 import { marketplaces } from "./RegisteredMarketplaces.js";
 import { sendResultToMarketplace } from "./PulseEarnLymphNodes.js";
+
 
 // ---------------------------------------------------------------------------
 // Healing Metadata — Neural Activity Log
 // ---------------------------------------------------------------------------
 const nervousHealing = {
-  lastFetchError: null,       // sensory / intake failure
-  lastSubmitError: null,      // motor / output failure
-  lastJobId: null,            // last neural signal ID
-  lastMarketplaceId: null,    // last external sensory source
-  cycleCount: 0,              // total neural firings (intake cycles)
+  lastFetchError: null,
+  lastSubmitError: null,
+  lastJobId: null,
+  lastMarketplaceId: null,
+  cycleCount: 0,
+
+  loopTheory: {
+    routingCompletion: true,
+    allowLoopfieldPropulsion: true,
+    pulseComputeContinuity: true,
+    errorRouteAround: true
+  }
 };
 
+
 // ---------------------------------------------------------------------------
-// fetchJobFromMarketplace — Sensory Intake
+// fetchJobFromMarketplace — Sensory Intake (deterministic)
 // ---------------------------------------------------------------------------
-export async function fetchJobFromMarketplace() {
+export function fetchJobFromMarketplace() {
   nervousHealing.cycleCount++;
 
   try {
-    const device = getDeviceProfile();
+    const device = getPulseEarnDeviceProfile();
 
     const capacity = {
-      cpuAvailable: device.cpuCores ?? 4,
-      memoryAvailable: device.memoryMB ?? 8192
+      cpuAvailable: device.cpuCores,
+      memoryAvailable: device.memoryMB
     };
 
-    const job = await getNextJob(marketplaces, capacity);
+    const job = getNextJob(marketplaces, capacity);
 
     if (job) {
       nervousHealing.lastJobId = job.id;
@@ -84,16 +83,16 @@ export async function fetchJobFromMarketplace() {
 
   } catch (err) {
     nervousHealing.lastFetchError = err.message;
-    error("fetchJobFromMarketplace() error:", err);
     return null;
   }
 }
 
+
 // ---------------------------------------------------------------------------
-// getNextMarketplaceJob — Neural Encoding Layer
+// getNextMarketplaceJob — Neural Encoding Layer (deterministic)
 // ---------------------------------------------------------------------------
-export async function getNextMarketplaceJob(deviceId) {
-  const job = await fetchJobFromMarketplace();
+export function getNextMarketplaceJob(deviceId) {
+  const job = fetchJobFromMarketplace();
   if (!job) return null;
 
   if (!job.id || !job.marketplaceId) {
@@ -121,14 +120,17 @@ export async function getNextMarketplaceJob(deviceId) {
 
     marketplace: job.marketplaceId,
     assignedTo: deviceId,
-    timestamp: Date.now()
+
+    // v10.4: NO timestamps → deterministic cycle index
+    cycleIndex: nervousHealing.cycleCount
   };
 }
 
+
 // ---------------------------------------------------------------------------
-// submitMarketplaceResult — Motor Output + Synaptic Update
+// submitMarketplaceResult — Motor Output + Synaptic Update (deterministic)
 // ---------------------------------------------------------------------------
-export async function submitMarketplaceResult(job, result) {
+export function submitMarketplaceResult(job, result) {
   try {
     if (!job || !job.marketplaceId) {
       nervousHealing.lastSubmitError = "invalid_job_for_submission";
@@ -146,15 +148,15 @@ export async function submitMarketplaceResult(job, result) {
 
     updateMarketplaceReputation(job.marketplaceId, signals);
 
-    const submission = await sendResultToMarketplace(job, result);
+    const submission = sendResultToMarketplace(job, result);
     return submission;
 
   } catch (err) {
     nervousHealing.lastSubmitError = err.message;
-    error("submitMarketplaceResult() error:", err);
     return null;
   }
 }
+
 
 // ---------------------------------------------------------------------------
 // Export Healing Metadata — Nervous System Health Report

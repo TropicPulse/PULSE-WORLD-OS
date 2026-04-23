@@ -1,35 +1,31 @@
 // ============================================================================
-// [pulse:mesh] COMMUNITY_FLOW_LAYER v9.2  // rainbow
-// Full-Spectrum Coordination • Metadata-Only • Self-Repairing Flow Engine
+// [pulse:mesh] COMMUNITY_FLOW_LAYER v10.4  // rainbow
+// Full-Spectrum Coordination • Deterministic Lifecycle Sequencer
+// Metadata-Only • Zero Recursion • Zero Routing • SDN-Aligned
 // ============================================================================
 //
-// IDENTITY — THE FLOW ORGAN (v9.2):
-// ---------------------------------
-// • Orchestrates the full impulse lifecycle through all layers.
-// • Ensures smooth, frictionless, self-repairing pulse flow.
-// • Sequences Skin → Reflex → Cortex → Tendons → Organs → Immune
-//               → Memory → Hormones → Aura → Mesh → Skin(exit).
-// • NEVER computes payloads.
-// • NEVER mutates data content.
-// • Metadata-only orchestration for organism-wide harmony.
+// IDENTITY — THE FLOW ORGAN (v10.4):
+// ----------------------------------
+// • Pure lifecycle sequencer for impulses.
+// • Coordinates Skin → Reflex → Cortex → Tendons → Organs → Immune
+//               → Memory → Hormones → Aura → Router → SendSystem.
+// • No recursion, no timestamps, no rate limiting.
+// • No routing logic — Router v10.4 handles all routing.
+// • No movement logic — SendSystem v10.4 handles all movement.
+// • No mesh routing — Mesh v10.4 is deterministic pathway engine.
+// • Metadata-only shaping + sequencing.
+// • SDN-aware: receives impulses from SDN, returns shaped impulses.
 //
-// THEME:
-// • Color: Rainbow (full-spectrum coordination).
-// • Subtheme: Flow, continuity, coherence.
-//
-// SAFETY CONTRACT (v9.2):
+// SAFETY CONTRACT (v10.4):
 // • No payload access.
 // • No compute.
-// • No autonomy.
+// • No recursion.
+// • No timestamps.
 // • No routing override.
 // • No mutation outside metadata.
 // • Deterministic-field, unified-advantage-field, drift-proof.
 // ============================================================================
 
-
-// ============================================================================
-//  FACTORY — ALL DEPENDENCIES INJECTED BY THE CNS BRAIN
-// ============================================================================
 export function createPulseMeshFlow({
   applyPulseSkin,
   createCommunityReflex,
@@ -41,100 +37,59 @@ export function createPulseMeshFlow({
   applyPulseHormones,
   applyPulseAura,
   PulseHaloCounters,
-  performance,
-  meshRouteImpulse,
+  Router,          // NEW v10.4 — Router handles routing
+  SendSystem,      // NEW v10.4 — SendSystem handles movement
   log,
   warn,
   error
 }) {
 
-  // -----------------------------------------------------------
-  // Flow Guard — recursion + soft rate limiting (metadata-only)
-  // -----------------------------------------------------------
-  const FlowGuard = {
-    activeImpulses: 0,
-    maxActiveImpulsesSoft: 5000,
-    maxDepth: 128,
-    timeSliceMs: 16,
-    sliceStart: performance.now()
+  // ---------------------------------------------------------------------------
+  // META — v10.4 identity
+  // ---------------------------------------------------------------------------
+  const meta = {
+    layer: "PulseFlow",
+    role: "FLOW_ORCHESTRATOR",
+    version: "10.4",
+    target: "full-mesh",
+    selfRepairable: true,
+    evo: {
+      dualMode: true,
+      localAware: true,
+      internetAware: true,
+
+      advantageCascadeAware: true,
+      pulseEfficiencyAware: true,
+      driftProof: true,
+      multiInstanceReady: true,
+
+      unifiedAdvantageField: true,
+      deterministicField: true,
+      futureEvolutionReady: true,
+
+      signalFactoringAware: true,
+      meshPressureAware: true,
+      auraPressureAware: true
+    }
   };
 
-  function shouldThrottle(impulse, depth) {
-    impulse.flags = impulse.flags || {};
-
-    if (depth > FlowGuard.maxDepth) {
-      impulse.flags.flow_throttled = true;
-      impulse.flags.flow_throttled_reason = "max_depth";
-      return true;
-    }
-
-    const now = performance.now();
-    if (now - FlowGuard.sliceStart > FlowGuard.timeSliceMs) {
-      FlowGuard.sliceStart = now;
-      FlowGuard.activeImpulses = 0;
-    }
-
-    if (FlowGuard.activeImpulses > FlowGuard.maxActiveImpulsesSoft) {
-      impulse.flags.flow_throttled = true;
-      impulse.flags.flow_throttled_reason = "max_active_impulses_soft";
-      return true;
-    }
-
-    return false;
-  }
-
-
-  // -----------------------------------------------------------
-  // Flow Engine (v9.2)
-  // -----------------------------------------------------------
-  function PulseFlow(mesh) {
+  // ---------------------------------------------------------------------------
+  // FLOW ENGINE (v10.4)
+  // ---------------------------------------------------------------------------
+  function PulseFlow() {
     const reflex = createCommunityReflex();
-
-    const meta = {
-      layer: "PulseFlow",
-      role: "FLOW_ORCHESTRATOR",
-      version: 9.2,
-      target: "full-mesh",
-      selfRepairable: true,
-      evo: {
-        dualMode: true,
-        localAware: true,
-        internetAware: true,
-
-        advantageCascadeAware: true,
-        pulseEfficiencyAware: true,
-        driftProof: true,
-        multiInstanceReady: true,
-
-        unifiedAdvantageField: true,
-        deterministicField: true,
-        futureEvolutionReady: true,
-
-        signalFactoringAware: true,
-        meshPressureAware: true,
-        auraPressureAware: true
-      }
-    };
 
     return {
       meta,
 
-      // -------------------------------------------------------
-      // [pulse:mesh] FLOW_RUN  // rainbow
-      // -------------------------------------------------------
-      run(impulse, entryNodeId, context = {}) {
+      // -----------------------------------------------------------------------
+      // FLOW_RUN (v10.4)
+      // -----------------------------------------------------------------------
+      async run(impulse, entryNodeId, context = {}) {
         impulse.flags = impulse.flags || {};
         impulse.flags.flow_meta = meta;
         impulse.flags.flow_started = true;
 
-        const depth = context.flowDepth ?? 0;
-
-        if (shouldThrottle(impulse, depth)) {
-          PulseHaloCounters?.impulseThrottled?.();
-          return finalize(impulse);
-        }
-
-        FlowGuard.activeImpulses++;
         PulseHaloCounters?.impulseStarted?.();
 
         try {
@@ -188,7 +143,7 @@ export function createPulseMeshFlow({
             }
           }
 
-          // 9. AURA (v9.2: loop + tension + factoring-aware)
+          // 9. AURA
           const auraBeforeLoop = impulse.flags.aura_in_loop;
           const auraBeforeTension = impulse.flags.aura_system_under_tension;
 
@@ -201,38 +156,33 @@ export function createPulseMeshFlow({
             PulseHaloCounters?.auraTensionTagged?.();
           }
 
-          // 10. MESH ROUTING (v9.2 MeshSpine)
-          const routed = meshRouteImpulse
-            ? meshRouteImpulse(mesh, impulse, entryNodeId, {
-                ...context,
-                flowDepth: depth + 1
-              })
-            : mesh.routeImpulse(mesh, impulse, entryNodeId, {
-                ...context,
-                flowDepth: depth + 1
-              });
+          // 10. ROUTER v10.4 — deterministic routing
+          const routed = await Router.route("pulse", {
+            impulse,
+            entryNodeId,
+            sdnContext: context.sdnContext
+          });
 
-          const hops = typeof routed.hops === "number" ? routed.hops : 0;
-          if (hops > 0) {
-            PulseHaloCounters?.meshHops?.(hops);
-          }
+          // 11. SEND SYSTEM v10.4 — deterministic movement
+          const moved = await SendSystem.move(routed);
 
-          // 11. SKIN EXIT
-          applyPulseSkin(routed, "exit");
+          // 12. SKIN EXIT
+          applyPulseSkin(moved, "exit");
 
-          return finalize(routed);
+          return finalize(moved);
 
-        } finally {
-          FlowGuard.activeImpulses--;
+        } catch (err) {
+          warn?.("[PulseFlow v10.4] Flow error:", err);
+          impulse.flags.flow_error = String(err);
+          return finalize(impulse);
         }
       }
     };
   }
 
-
-  // -----------------------------------------------------------
-  // Finalizer
-  // -----------------------------------------------------------
+  // ---------------------------------------------------------------------------
+  // FINALIZER
+  // ---------------------------------------------------------------------------
   function finalize(impulse) {
     impulse.flags = impulse.flags || {};
     impulse.flags.flow_completed = true;
@@ -242,10 +192,9 @@ export function createPulseMeshFlow({
     return impulse;
   }
 
-
-  // -----------------------------------------------------------
+  // ---------------------------------------------------------------------------
   // PUBLIC INTERFACE
-  // -----------------------------------------------------------
+  // ---------------------------------------------------------------------------
   return {
     create: PulseFlow
   };

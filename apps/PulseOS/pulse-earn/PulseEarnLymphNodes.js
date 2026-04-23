@@ -1,39 +1,27 @@
 // ============================================================================
 // FILE: tropic-pulse-functions/apps/pulse-earn/PulseEarnLymphNodes.js
-// LAYER: THE LYMPHATIC HANDSHAKE NODES
+// LAYER: THE LYMPHATIC HANDSHAKE NODES (v10.4)
 // (Finalizer of Jobs + Immune-Safe Dispatch + Certified Marketplace Exchange)
-// PULSE EARN — v9.2
 // ============================================================================
 //
-// ROLE (v9.2):
+// ROLE (v10.4):
 //   THE LYMPHATIC HANDSHAKE NODES — Pulse‑Earn’s immune‑safe finalizers.
 //   • Validate job + marketplace identity (immune recognition).
 //   • Locate the correct marketplace receptor (antigen matching).
 //   • Ensure submitResult() exists (immune compatibility).
-//   • Perform the final handshake between Earn and the marketplace
-//     (lymphatic dispatch).
-//   • Record the certified submission outcome (immune memory).
+//   • Perform deterministic Earn → Marketplace handshake.
+//   • Record certified submission outcome (immune memory).
 //
-// PURPOSE (v9.2):
-//   • Provide deterministic, drift‑proof result submission.
-//   • Guarantee safe forwarding to marketplace receptors.
-//   • Maintain a certified audit trail for the Immune System.
-//   • Preserve immune lineage + dispatch safety.
-//
-// CONTRACT (unchanged):
+// CONTRACT (v10.4):
 //   • PURE RESULT DISPATCHER — no AI layers, no translation, no memory model.
-//   • NO network calls except through receptors.
-//   • NO eval(), NO dynamic imports, NO arbitrary code execution.
+//   • NO async, NO timestamps, NO nondeterministic behavior.
 //   • NEVER mutate job objects.
 //   • Deterministic identity verification + dispatch only.
-//
-// SAFETY (unchanged):
-//   • v9.2 upgrade is COMMENTAL / IDENTITY ONLY — NO LOGIC CHANGES.
 // ============================================================================
 
 
 // ---------------------------------------------------------------------------
-// Healing Metadata — Lymphatic Dispatch Log
+// Healing Metadata — Lymphatic Dispatch Log (deterministic)
 // ---------------------------------------------------------------------------
 const lymphHealing = {
   lastJobId: null,
@@ -42,17 +30,20 @@ const lymphHealing = {
   lastError: null,
   lastResponse: null,
   cycleCount: 0,
-  lastTimestamp: null,
+  lastCycleIndex: null
 };
 
+// Deterministic cycle counter
+let lymphCycle = 0;
+
 
 // ---------------------------------------------------------------------------
-// submitPulseEarnResult — Lymphatic Handshake + Certified Dispatch
+// submitPulseEarnResult — Deterministic Lymphatic Handshake
 // ---------------------------------------------------------------------------
-export async function submitPulseEarnResult(job, result) {
-  const timestamp = Date.now();
+export function submitPulseEarnResult(job, result) {
+  lymphCycle++;
   lymphHealing.cycleCount++;
-  lymphHealing.lastTimestamp = timestamp;
+  lymphHealing.lastCycleIndex = lymphCycle;
 
   try {
     // 1. Identity Verification — Immune Recognition
@@ -60,7 +51,17 @@ export async function submitPulseEarnResult(job, result) {
       lymphHealing.lastError = "missing_marketplaceId";
       lymphHealing.lastJobId = job?.id ?? null;
       lymphHealing.lastMarketplaceId = job?.marketplaceId ?? null;
-      throw new Error("Job missing marketplaceId");
+
+      const failure = {
+        success: false,
+        error: "Job missing marketplaceId",
+        jobId: job?.id ?? null,
+        marketplaceId: job?.marketplaceId ?? null,
+        cycleIndex: lymphCycle
+      };
+
+      lymphHealing.lastResponse = failure;
+      return failure;
     }
 
     lymphHealing.lastJobId = job.id;
@@ -71,20 +72,39 @@ export async function submitPulseEarnResult(job, result) {
 
     if (!adapter) {
       lymphHealing.lastError = "unknown_marketplace";
-      throw new Error(`Unknown marketplace: ${job.marketplaceId}`);
+
+      const failure = {
+        success: false,
+        error: `Unknown marketplace: ${job.marketplaceId}`,
+        jobId: job.id,
+        marketplaceId: job.marketplaceId,
+        cycleIndex: lymphCycle
+      };
+
+      lymphHealing.lastResponse = failure;
+      return failure;
     }
 
     if (typeof adapter.submitResult !== "function") {
       lymphHealing.lastError = "adapter_missing_submitResult";
-      throw new Error(
-        `Marketplace ${job.marketplaceId} does not support result submission`
-      );
+
+      const failure = {
+        success: false,
+        error: `Marketplace ${job.marketplaceId} does not support result submission`,
+        jobId: job.id,
+        marketplaceId: job.marketplaceId,
+        cycleIndex: lymphCycle
+      };
+
+      lymphHealing.lastResponse = failure;
+      return failure;
     }
 
     lymphHealing.lastAdapterUsed = job.marketplaceId;
 
-    // 3. Perform the Handshake — Lymphatic Dispatch
-    const response = await adapter.submitResult(job, result);
+    // 3. Perform the Handshake — Deterministic Dispatch
+    const response = adapter.submitResult(job, result);
+
     lymphHealing.lastResponse = response;
     lymphHealing.lastError = null;
 
@@ -98,7 +118,7 @@ export async function submitPulseEarnResult(job, result) {
       error: err.message,
       jobId: job?.id ?? null,
       marketplaceId: job?.marketplaceId ?? null,
-      timestamp,
+      cycleIndex: lymphCycle
     };
 
     lymphHealing.lastResponse = failure;
@@ -110,12 +130,12 @@ export async function submitPulseEarnResult(job, result) {
 // ---------------------------------------------------------------------------
 // Marketplace Receptor Registry — Antigen Directory
 // ---------------------------------------------------------------------------
-import { marketplaceA as PulseEarnReceptor } from "./PulseEarnReceptor.js";
-import { PulseEarnCustomReceptor } from "./PulseEarnCustomReceptor.js";
+import { PulseEarnReceptor } from "./PulseEarnReceptorMkt.js";
+import { PulseEarnCustomReceptor } from "./PulseEarnCustomReceptorMkt.js";
 
 const receptorRegistry = {
   A: PulseEarnReceptor,
-  CUSTOM: PulseEarnCustomReceptor,
+  CUSTOM: PulseEarnCustomReceptor
 };
 
 

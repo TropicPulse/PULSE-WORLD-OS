@@ -1,15 +1,15 @@
 // ============================================================================
-//  PULSE GPU ENGINE v9.2 — THE ASTRAL MUSCLE SYSTEM
+//  PULSE GPU ENGINE v10.4 — THE ASTRAL MUSCLE SYSTEM
 //  WebGPU Execution Layer • Frame Conductor • GPU Motor Cortex Surface
 // ============================================================================
 //
-// IDENTITY — THE ASTRAL MUSCLE SYSTEM (v9.2):
+// IDENTITY — THE ASTRAL MUSCLE SYSTEM (v10.4):
 //  -------------------------------------------
 //  • The GPU organism’s execution muscle.
 //  • Takes packages from the Momentum Network (Runtime) and turns them into frames.
 //  • Executes render pipelines, draws indexed geometry, drives visible motion.
 //  • Inherits full organism advantage cascade (dual‑mode evolution).
-//  • PulseSend‑2.0‑ready (routingContract v2).
+//  • PulseSend‑10.4‑ready (routingContract v10.4).
 //
 // ROLE IN THE GPU NATION:
 //  ------------------------
@@ -34,7 +34,7 @@
 //  • NOT a PulseSend router
 //  • NOT a business logic module
 //
-// SAFETY RULES (v9.2):
+// SAFETY RULES (v10.4):
 //  --------------------
 //  • NO backend APIs
 //  • NO Node.js APIs
@@ -42,19 +42,20 @@
 //  • NO mutation of Brain/Runtime packages
 //  • FAIL‑OPEN: if GPU or packages are unavailable, do nothing safely
 //
-// PULSESEND / EARN CONTRACT (v9.2):
-//  ---------------------------------
-//  • routingContract: "PulseSend-v2"
-//  • gpuOrganContract: "PulseGPU-v9.2"
-//  • earnCompatibility: "PulseEarn-v9"
+// PULSESEND / EARN / GPU CONTRACT (v10.4):
+//  ---------------------------------------
+//  • routingContract: "PulseSend-v10.4"
+//  • gpuOrganContract: "PulseGPU-v10.4"
+//  • earnCompatibility: "Earn-v2"
 // ============================================================================
 
+
 // ============================================================================
-//  ENGINE META — Astral Muscle Identity (v9.2)
+//  ENGINE META — Astral Muscle Identity (v10.4)
 // ============================================================================
 const PULSE_GPU_ENGINE_META = {
   layer: "PulseGPUEngine",
-  version: 9.2,
+  version: 10.4,
   target: "full-gpu",
   description: "WebGPU execution layer — Astral Muscle System.",
   evo: {
@@ -78,14 +79,15 @@ const PULSE_GPU_ENGINE_META = {
     organismClusterBoost: 1.0,
     cognitiveComputeLink: true,
     unifiedAdvantageField: true,
-    pulseSend2Ready: true,
+    pulseSend10Ready: true,
 
     // Contracts
-    routingContract: "PulseSend-v2",
-    gpuOrganContract: "PulseGPU-v9.2",
-    earnCompatibility: "PulseEarn-v9"
+    routingContract: "PulseSend-v10.4",
+    gpuOrganContract: "PulseGPU-v10.4",
+    earnCompatibility: "Earn-v2"
   }
 };
+
 
 // ============================================================================
 //  RENDER PASS BUILDER
@@ -114,6 +116,7 @@ class PulseRenderPassBuilder {
     };
   }
 }
+
 
 // ============================================================================
 //  PIPELINE BUILDER
@@ -145,6 +148,7 @@ class PulsePipelineBuilder {
   }
 }
 
+
 // ============================================================================
 //  DRAW EXECUTOR
 // ============================================================================
@@ -173,6 +177,7 @@ class PulseDrawExecutor {
   }
 }
 
+
 // ============================================================================
 //  MAIN ENGINE (WebGPU Backend) — Astral Muscle
 // ============================================================================
@@ -194,7 +199,7 @@ class PulseGPUEngine {
 
     log(
       "gpu",
-      "[PulseGPUEngine v9.2] Constructed — awaiting init().",
+      "[PulseGPUEngine v10.4] Constructed — awaiting init().",
       "color:#03A9F4; font-weight:bold;"
     );
   }
@@ -233,7 +238,7 @@ class PulseGPUEngine {
 
     this.ready = true;
 
-    log("gpu", "PulseGPUEngine v9.2 ready — WebGPU backend active (Astral Muscle).");
+    log("gpu", "PulseGPUEngine v10.4 ready — WebGPU backend active (Astral Muscle).");
   }
 
   buildPipelines() {
@@ -282,6 +287,7 @@ class PulseGPUEngine {
     this.device.queue.submit([commandBuffer]);
   }
 }
+
 
 // ============================================================================
 //  EXPORTS

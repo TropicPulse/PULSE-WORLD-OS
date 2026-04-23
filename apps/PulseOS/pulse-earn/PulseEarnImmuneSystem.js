@@ -1,39 +1,23 @@
 // ============================================================================
 // FILE: tropic-pulse-functions/apps/pulse-earn/PulseEarnImmuneSystem.js
-// LAYER: THE IMMUNE SYSTEM (Subsystem Doctor + Drift Diagnostician)
-// PULSE EARN — v9.2
+// LAYER: THE IMMUNE SYSTEM (v10.4)
+// (Subsystem Doctor + Drift Diagnostician)
 // ============================================================================
 //
-// ROLE (v9.2):
+// ROLE (v10.4):
 //   THE IMMUNE SYSTEM — Pulse‑Earn’s subsystem physician.
 //   • Checks vitals across all Earn subsystems (immune surveillance).
 //   • Detects drift, errors, and inconsistencies (pathogen detection).
 //   • Prescribes deterministic repairs (immune response).
 //   • Maintains subsystem health records (immune memory).
 //
-// WHY “IMMUNE SYSTEM”?:
-//   • Performs diagnostic evaluations (runHealthCheck = immune scan).
-//   • Prescribes treatment (runRepair = immune response).
-//   • Monitors vitals (healing metadata = cell health).
-//   • Maintains medical history (reports = immune memory).
-//   • Protects the health of the Earn organism (homeostasis).
-//
-// PURPOSE (v9.2):
-//   • Provide deterministic, drift‑proof subsystem healing.
-//   • Guarantee safe repair of PacketEngine + related modules.
-//   • Maintain OS‑v5 healing metadata for Earn healers.
-//   • Preserve immune lineage + subsystem health (conceptual only).
-//
-// CONTRACT (unchanged):
+// CONTRACT (v10.4):
 //   • PURE HEALING — no AI layers, no translation, no memory model.
-//   • READ‑ONLY except for deterministic repair actions.
+//   • READ‑ONLY except deterministic repair actions.
 //   • NO eval(), NO Function(), NO dynamic imports.
 //   • NO executing user code.
+//   • NO timestamps, NO async.
 //   • Deterministic drift detection only.
-//
-// SAFETY (unchanged):
-//   • v9.2 upgrade is COMMENTAL / IDENTITY ONLY — NO LOGIC CHANGES.
-//   • All behavior remains identical to pre‑v9.2 EarnHealer.
 // ============================================================================
 
 
@@ -54,7 +38,7 @@ const PULSE_EARN_IMMUNE_CONTEXT = {
 
 // Engine + Runtime
 import { getEarnEngineHealingState } from "./EarnEngine.js";
-import { getEarnRuntimeHealingState } from "./PulseEarnHeart.js";
+import { getPulseEarnHeartHealingState } from "./PulseEarnHeart.js";
 
 // Worker + Submission
 import { getWorkerExecutionHealingState } from "./PulseEarnMetabolism.js";
@@ -62,12 +46,12 @@ import { getResultSubmissionHealingState } from "./PulseEarnLymphNodes.js";
 
 // Packet Engine (repair target)
 import {
-  getPacketEngineHealingState,
-  generatePacketData,
-  writePacket
+  getPulseEarnGeneticMemoryHealingState,
+  synthesizePulseEarnGene,
+  writePulseEarnGene
 } from "./PulseEarnGeneticMemory.js";
 
-// Cell (formerly Earner.js)
+// Cell
 import { getPulseEarnCellHealingState } from "./PulseEarnCell.js";
 
 // Marketplace Connector
@@ -84,26 +68,32 @@ const immuneState = {
   cycleCount: 0,
   status: "healthy", // healthy | warning | error | repairing
   lastReport: null,
+  lastCycleIndex: null,
   ...PULSE_EARN_IMMUNE_CONTEXT
 };
 
+// Deterministic immune cycle counter
+let immuneCycle = 0;
+
 
 // ------------------------------------------------------------
-// runHealthCheck() — immune surveillance scan
+// runHealthCheck() — immune surveillance scan (deterministic)
 // ------------------------------------------------------------
-export async function runHealthCheck() {
+export function runHealthCheck() {
+  immuneCycle++;
   immuneState.cycleCount++;
-  immuneState.lastCheck = Date.now();
+  immuneState.lastCycleIndex = immuneCycle;
 
   try {
     const report = {
       engine: getEarnEngineHealingState(),
-      runtime: getEarnRuntimeHealingState(),
+      runtime: getPulseEarnHeartHealingState(),
       worker: getWorkerExecutionHealingState(),
       submission: getResultSubmissionHealingState(),
-      packets: getPacketEngineHealingState(),
+      packets: getPulseEarnGeneticMemoryHealingState(),
       cell: getPulseEarnCellHealingState(),
       connector: getMarketplaceConnectorHealingState(),
+      cycleIndex: immuneCycle,
       ...PULSE_EARN_IMMUNE_CONTEXT
     };
 
@@ -125,6 +115,7 @@ export async function runHealthCheck() {
       return {
         status: "healthy",
         report,
+        cycleIndex: immuneCycle,
         ...PULSE_EARN_IMMUNE_CONTEXT
       };
     }
@@ -136,6 +127,7 @@ export async function runHealthCheck() {
       status: "warning",
       report,
       message: "Subsystem drift detected",
+      cycleIndex: immuneCycle,
       ...PULSE_EARN_IMMUNE_CONTEXT
     };
 
@@ -146,6 +138,7 @@ export async function runHealthCheck() {
     return {
       status: "error",
       error: err.message,
+      cycleIndex: immuneCycle,
       ...PULSE_EARN_IMMUNE_CONTEXT
     };
   }
@@ -153,21 +146,22 @@ export async function runHealthCheck() {
 
 
 // ------------------------------------------------------------
-// runRepair() — immune response
+// runRepair() — immune response (deterministic)
 // ------------------------------------------------------------
-export async function runRepair() {
-  immuneState.lastRepair = Date.now();
+export function runRepair() {
+  immuneCycle++;
+  immuneState.lastCycleIndex = immuneCycle;
   immuneState.status = "repairing";
 
   try {
-    const packets = getPacketEngineHealingState();
+    const packets = getPulseEarnGeneticMemoryHealingState();
 
-    // If PacketEngine drifted, regenerate last packet
+    // If PacketEngine drifted, regenerate last packet deterministically
     if (packets.lastError && packets.lastKey) {
       const [fileId, packetIndex] = packets.lastKey.split(":");
 
-      const regenerated = await generatePacketData(fileId, packetIndex);
-      await writePacket(fileId, packetIndex, regenerated);
+      const regenerated = synthesizePulseEarnGene(fileId, packetIndex);
+      writePulseEarnGene(fileId, packetIndex, regenerated);
     }
 
     immuneState.status = "healthy";
@@ -176,6 +170,7 @@ export async function runRepair() {
     return {
       repaired: true,
       message: "Subsystem repaired",
+      cycleIndex: immuneCycle,
       ...PULSE_EARN_IMMUNE_CONTEXT
     };
 
@@ -186,6 +181,7 @@ export async function runRepair() {
     return {
       repaired: false,
       error: err.message,
+      cycleIndex: immuneCycle,
       ...PULSE_EARN_IMMUNE_CONTEXT
     };
   }

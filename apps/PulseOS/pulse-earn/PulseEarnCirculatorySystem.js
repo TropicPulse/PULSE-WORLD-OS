@@ -1,14 +1,14 @@
 // ============================================================================
 // FILE: tropic-pulse-functions/apps/pulse-earn/PulseEarnCirculatorySystem.js
-// LAYER: THE CIRCULATORY SYSTEM (Brainstem Reflex + Routing + Weighting)
-// PULSE EARN — v9.2
+// LAYER: THE CIRCULATORY SYSTEM (Deterministic Reflex + Routing + Weighting)
+// PULSE EARN — v10.4 (UPGRADED)
 // ============================================================================
 //
-// ROLE (v9.2):
+// ROLE (v10.4):
 //   THE CIRCULATORY SYSTEM — Pulse‑Earn’s autonomic routing center.
-//   • Pings all marketplaces (sensory reflex).
-//   • Filters unhealthy ones (pathway inhibition).
-//   • Fetches jobs from healthy markets (circulatory intake).
+//   • Evaluates marketplaces deterministically (no real ping).
+//   • Filters unhealthy ones using deterministic healthScore.
+//   • Fetches jobs deterministically (no async, no network).
 //   • Applies reputation weighting (synaptic strength).
 //   • Selects the best job for the device (autonomic prioritization).
 //
@@ -17,24 +17,20 @@
 //   • It filters unsafe pathways and prioritizes healthy ones.
 //   • It keeps the Earn organism’s circulation stable.
 //   • It ensures throughput AND safety simultaneously.
-//   • It is the autonomic layer between sensory input and motor output.
 //
-// PURPOSE (v9.2):
+// PURPOSE (v10.4):
 //   • Provide deterministic, drift‑proof job routing.
 //   • Guarantee safe multi‑marketplace discovery.
 //   • Maintain healing metadata for the Immune System.
-//   • Preserve autonomic routing + synaptic weighting (conceptual only).
+//   • Preserve autonomic routing + synaptic weighting.
 //
-// CONTRACT (unchanged):
+// CONTRACT (v10.4):
 //   • PURE ROUTER — no AI layers, no translation, no memory model.
 //   • READ‑ONLY except for healing metadata.
 //   • NO eval(), NO Function(), NO dynamic imports.
 //   • NO executing user code.
+//   • NO timestamps, NO randomness, NO async.
 //   • Deterministic job selection only.
-//
-// SAFETY (unchanged):
-//   • v9.2 upgrade is COMMENTAL / IDENTITY ONLY — NO LOGIC CHANGES.
-//   • All behavior remains identical to pre‑v9.2 MarketplaceOrchestrator.
 // ============================================================================
 
 import { scoreJobForDevice } from "./PulseEarnSurvivalInstincts.js";
@@ -45,67 +41,78 @@ import { getMarketplaceReputation } from "./PulseEarnEndocrineSystem.js";
 // Healing Metadata — Circulatory Reflex Log
 // ---------------------------------------------------------------------------
 const circulatoryHealing = {
-  lastPingError: null,            // sensory reflex failure
-  lastFetchError: null,           // intake pathway failure
-  lastSelectionError: null,       // prioritization failure
-  lastHealthyMarketplaces: [],    // open pathways
-  lastJobsFetched: 0,             // total circulating jobs
-  lastBestJobId: null,            // last autonomic decision
-  cycleCount: 0,                  // autonomic cycles completed
+  lastHealthError: null,
+  lastFetchError: null,
+  lastSelectionError: null,
+  lastHealthyMarketplaces: [],
+  lastJobsFetched: 0,
+  lastBestJobId: null,
+  cycleCount: 0
 };
 
 // ---------------------------------------------------------------------------
-// 1. discoverHealthyMarketplaces — Sensory Reflex Scan
+// Deterministic Marketplace Health Evaluation (NO NETWORK)
 // ---------------------------------------------------------------------------
-export async function discoverHealthyMarketplaces(marketplaces, maxLatencyMs = 1500) {
+function evaluateMarketplaceHealth(marketplace) {
+  // v10.4: healthScore must be deterministic, no ping()
+  const h = typeof marketplace.healthScore === "number"
+    ? marketplace.healthScore
+    : 1.0;
+
+  // same tier logic as Router v10.4
+  if (h >= 0.95) return "healthy";
+  if (h >= 0.85) return "soft";
+  if (h >= 0.50) return "mid";
+  if (h >= 0.15) return "hard";
+  return "critical";
+}
+
+// ---------------------------------------------------------------------------
+// 1. discoverHealthyMarketplaces — Deterministic Sensory Reflex
+// ---------------------------------------------------------------------------
+export function discoverHealthyMarketplaces(marketplaces) {
   circulatoryHealing.cycleCount++;
 
   try {
-    const results = await Promise.all(
-      marketplaces.map(async (m) => {
-        try {
-          const latency = await m.ping();
-          return { m, latency };
-        } catch {
-          return { m, latency: null };
-        }
-      })
-    );
+    const healthy = [];
 
-    const healthy = results
-      .filter(r => r.latency !== null && r.latency <= maxLatencyMs)
-      .map(r => r.m);
+    for (const m of marketplaces) {
+      const tier = evaluateMarketplaceHealth(m);
+      if (tier === "healthy" || tier === "soft") {
+        healthy.push(m);
+      }
+    }
 
     circulatoryHealing.lastHealthyMarketplaces = healthy.map(m => m.id);
-
     return healthy;
 
   } catch (err) {
-    circulatoryHealing.lastPingError = err.message;
+    circulatoryHealing.lastHealthError = err.message;
     return [];
   }
 }
 
 // ---------------------------------------------------------------------------
-// 2. fetchJobsFromMarketplaces — Circulatory Intake
+// 2. fetchJobsFromMarketplaces — Deterministic Intake
 // ---------------------------------------------------------------------------
-export async function fetchJobsFromMarketplaces(marketplaces) {
+export function fetchJobsFromMarketplaces(marketplaces) {
   try {
-    const allJobsArrays = await Promise.all(
-      marketplaces.map(async (m) => {
-        try {
-          const jobs = await m.fetchJobs();
-          return jobs.map(j => ({ ...j, marketplaceId: m.id }));
-        } catch {
-          return [];
-        }
-      })
-    );
+    const allJobs = [];
 
-    const flat = allJobsArrays.flat();
-    circulatoryHealing.lastJobsFetched = flat.length;
+    for (const m of marketplaces) {
+      // v10.4: NO async, NO network — marketplace must expose deterministic jobs[]
+      const jobs = Array.isArray(m.jobs) ? m.jobs : [];
 
-    return flat;
+      for (const j of jobs) {
+        allJobs.push({
+          ...j,
+          marketplaceId: m.id
+        });
+      }
+    }
+
+    circulatoryHealing.lastJobsFetched = allJobs.length;
+    return allJobs;
 
   } catch (err) {
     circulatoryHealing.lastFetchError = err.message;
@@ -114,7 +121,7 @@ export async function fetchJobsFromMarketplaces(marketplaces) {
 }
 
 // ---------------------------------------------------------------------------
-// 3. selectBestJob — Autonomic Prioritization
+// 3. selectBestJob — Deterministic Autonomic Prioritization
 // ---------------------------------------------------------------------------
 export function selectBestJob(jobs) {
   try {
@@ -129,10 +136,7 @@ export function selectBestJob(jobs) {
       const capabilityScore = scoreJobForDevice(job, device);
       const rep = job.reputationWeight ?? 0.5;
 
-      // NOTE:
-      //   • capabilityScore = metabolic compatibility
-      //   • rep = synaptic strength (trust)
-//   • finalScore = autonomic priority
+      // deterministic final score
       const finalScore = capabilityScore * (0.5 + rep);
 
       if (finalScore > bestScore) {
@@ -154,14 +158,14 @@ export function selectBestJob(jobs) {
 }
 
 // ---------------------------------------------------------------------------
-// 4. getNextJob — Full Autonomic Routing Cycle
+// 4. getNextJob — Full Autonomic Routing Cycle (Deterministic)
 // ---------------------------------------------------------------------------
-export async function getNextJob(allMarketplaces) {
+export function getNextJob(allMarketplaces) {
   try {
-    const healthy = await discoverHealthyMarketplaces(allMarketplaces);
+    const healthy = discoverHealthyMarketplaces(allMarketplaces);
     if (healthy.length === 0) return null;
 
-    const jobs = await fetchJobsFromMarketplaces(healthy);
+    const jobs = fetchJobsFromMarketplaces(healthy);
     if (jobs.length === 0) return null;
 
     const weightedJobs = jobs.map(job => {

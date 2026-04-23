@@ -1,11 +1,11 @@
 // ============================================================================
-// PulseOrganismMap.js
+// PulseOrganismMap.js — v10.4
 // Evolutionary Intelligence Blueprint for the PulseOS Organism
 // Deterministic • Static • Zero-Call • Zero-Discovery • Genome-Level Truth
 // ============================================================================
 
 export const PulseOrganismMap = {
-  version: "10.0-evolutionary",
+  version: "10.4-deterministic",
 
   // ========================================================================
   // SYSTEMS — The organism’s macro-structure
@@ -25,7 +25,8 @@ export const PulseOrganismMap = {
         "PulseOSBrain",
         "PulseOSBrainCortex",
         "PulseOSBrainEvolution",
-        "PulseOSCNSNervousSystem",
+        "PulseOSBrainStem",
+        "PulseSDN",                     // NEW — Software-Defined Nervous System
         "PulseOSFightFlightResponse",
         "PulseOSGovernor",
         "PulseOSImmuneSystem",
@@ -75,7 +76,6 @@ export const PulseOrganismMap = {
         "PulseEarnGenome",
         "PulseEarnHeart",
         "PulseEarnImmuneSystem",
-        "PulseEarnLegacyPulse",
         "PulseEarnLymphNodes",
         "PulseEarnMetabolism",
         "PulseEarnMktAmbassador",
@@ -92,34 +92,20 @@ export const PulseOrganismMap = {
         "PulseEarnReflexRouter",
         "PulseEarnSkeletalSystem",
         "PulseEarnSurvivalInstincts",
-        "PulseEarnSendSystem",
+        "PulseEarnSendSystem",          // v10.4 governed Earn → Pulse → Send
+        "PulseEarnContinuancePulse",    // v10.4 Earn continuance / legacy bridge
         "PulseEarnTest"
       ]
     },
 
     // ----------------------------------------------------------------------
-    // pulse-gpu — Acceleration, Cognitive, Astral, Survival
+    // pulse-gpu — v10.4 Deterministic GPU Organ
     // ----------------------------------------------------------------------
     "pulse-gpu": {
-      role: "GPU / Acceleration / Warmth / Cognitive / Astral / Survival",
+      role: "GPU / Acceleration / Deterministic Compute",
       root: "pulse-gpu",
       organs: [
-        "PulseGPUAstralMuscleSystem",
-        "PulseGPUAstralNervousSystem",
-        "PulseGPUBrain",
-        "PulseGPUCognitiveIntelligence",
-        "PulseGPUCognitiveLayer",
-        "PulseGPUCommandments",
-        "PulseGPUDrive",
-        "PulseGPUDriveCenter",
-        "PulseGPUGuardianCortex",
-        "PulseGPUHeart",
-        "PulseGPULymphNodes",
-        "PulseGPUNervousSystem",
-        "PulseGPUSpine",
-        "PulseGPUSurvivalInstincts",
-        "PulseGPUSynapses",
-        "PulseGPUWisdomCortex"
+        "PulseGPUv10"                   // replaces all astral GPU stack
       ]
     },
 
@@ -153,10 +139,10 @@ export const PulseOrganismMap = {
     },
 
     // ----------------------------------------------------------------------
-    // pulse-proxy — Edge, Adrenal, Pressure, Vitals, PNS, Spine, Blood
+    // pulse-proxy — Edge, Adrenal, Pressure, Vitals, Spine, Blood
     // ----------------------------------------------------------------------
     "pulse-proxy": {
-      role: "Proxy / Edge / Adrenal / Pressure / Vitals / PNS / Spine / Blood",
+      role: "Proxy / Edge / Adrenal / Pressure / Vitals / Spine / Blood",
       root: "pulse-proxy",
       organs: [
         "CheckBand",
@@ -173,9 +159,6 @@ export const PulseOrganismMap = {
         "PulseProxyImpulse",
         "PulseProxyLimbic",
         "PulseProxyOuterAgent",
-        "PulseProxyPNSNervousSystem",
-        "PulseProxyPNSPurifier",
-        "PulseProxyPNSRepair",
         "PulseProxySpine",
         "PulseProxySynapse",
         "PulseProxyVitalsLogger",
@@ -196,19 +179,13 @@ export const PulseOrganismMap = {
     },
 
     // ----------------------------------------------------------------------
-    // pulse-send — Outbound Delivery, Legacy, Return
+    // pulse-send — Outbound Delivery (v10.4 Deterministic)
     // ----------------------------------------------------------------------
     "pulse-send": {
-      role: "Outbound / Delivery / Legacy / Return",
+      role: "Outbound / Delivery / Deterministic Send",
       root: "pulse-send",
       organs: [
-        "PulseSend",
-        "PulseSendAdapter",
-        "PulseSendEngine",
-        "PulseSendImpulse",
-        "PulseSendLegacyPulse",
-        "PulseSendReturn",
-        "PulseSendSystem"
+        "PulseSendSystem"               // replaces legacy send stack
       ]
     },
 
@@ -249,12 +226,10 @@ export const PulseOrganismMap = {
     }
   },
 
-  
   // ========================================================================
   // ORGANS — Evolutionary Biological + System-Level Intelligence Map
   // ========================================================================
   organs: {
-
     // ======================================================================
     // pulse-os — Core CNS, Reflex, Memory, Immune, Membranes, Survival
     // ======================================================================
@@ -265,7 +240,7 @@ export const PulseOrganismMap = {
     PulseOSBrainCortex:         { bio: "CNS / Cortex",                   system: "pulse-os", file: "pulse-os/PulseOSBrainCortex.js" },
     PulseOSBrainEvolution:      { bio: "CNS / Evolution Layer",          system: "pulse-os", file: "pulse-os/PulseOSBrainEvolution.js" },
     PulseOSBrainStem:           { bio: "CNS / Brain Stem",               system: "pulse-os", file: "pulse-os/PulseOSBrainStem.js" },
-    PulseOSCNSNervousSystem:    { bio: "CNS / Nervous System",           system: "pulse-os", file: "pulse-os/PulseOSCNSNervousSystem.js" },
+    PulseSDN:                   { bio: "CNS / Software-Defined Nervous System", system: "pulse-os", file: "pulse-sdn/PulseSDN.js" },
     PulseOSFightFlightResponse: { bio: "Reflex / Adrenal / Survival",    system: "pulse-os", file: "pulse-os/PulseOSFightFlightResponse.js" },
     PulseOSGovernor:            { bio: "CNS / Executive Function",       system: "pulse-os", file: "pulse-os/PulseOSGovernor.js" },
     PulseOSImmuneSystem:        { bio: "Immune System",                  system: "pulse-os", file: "pulse-os/PulseOSImmuneSystem.js" },
@@ -282,7 +257,6 @@ export const PulseOrganismMap = {
     PulseOSTissueMembrane:      { bio: "Membrane / Tissue Layer",        system: "pulse-os", file: "pulse-os/PulseOSTissueMembrane.js" },
     RouteDownAlert:             { bio: "Alert / System Down",            system: "pulse-os", file: "pulse-os/RouteDownAlert.js" },
 
-
     // ======================================================================
     // pulse-design — Repo, Manifest, Classification, Translation
     // ======================================================================
@@ -291,7 +265,6 @@ export const PulseOrganismMap = {
     manifestWriter:   { bio: "Design / Manifest Write", system: "pulse-design", file: "pulse-design/manifestWriter.js" },
     translator:       { bio: "Design / Translator",     system: "pulse-design", file: "pulse-design/translator.js" },
     repoWalker:       { bio: "Design / Repo Walker",    system: "pulse-design", file: "pulse-design/repoWalker.js" },
-
 
     // ======================================================================
     // pulse-earn — Economy, Market, Rewards, Biological Earn Engine
@@ -305,7 +278,6 @@ export const PulseOrganismMap = {
     PulseEarnGenome:             { bio: "Genome",                       system: "pulse-earn", file: "pulse-earn/PulseEarnGenome.js" },
     PulseEarnHeart:              { bio: "Circulatory / Heart",          system: "pulse-earn", file: "pulse-earn/PulseEarnHeart.js" },
     PulseEarnImmuneSystem:       { bio: "Immune",                       system: "pulse-earn", file: "pulse-earn/PulseEarnImmuneSystem.js" },
-    PulseEarnLegacyPulse:        { bio: "Legacy / Pulse",               system: "pulse-earn", file: "pulse-earn/PulseEarnLegacyPulse.js" },
     PulseEarnLymphNodes:         { bio: "Immune / Lymph Nodes",         system: "pulse-earn", file: "pulse-earn/PulseEarnLymphNodes.js" },
     PulseEarnMetabolism:         { bio: "Metabolism",                   system: "pulse-earn", file: "pulse-earn/PulseEarnMetabolism.js" },
     PulseEarnMktAmbassador:      { bio: "Market / Ambassador",          system: "pulse-earn", file: "pulse-earn/PulseEarnMktAmbassador.js" },
@@ -322,30 +294,14 @@ export const PulseOrganismMap = {
     PulseEarnReflexRouter:       { bio: "Reflex / Router",              system: "pulse-earn", file: "pulse-earn/PulseEarnReflexRouter.js" },
     PulseEarnSkeletalSystem:     { bio: "Skeletal",                     system: "pulse-earn", file: "pulse-earn/PulseEarnSkeletalSystem.js" },
     PulseEarnSurvivalInstincts:  { bio: "Survival",                     system: "pulse-earn", file: "pulse-earn/PulseEarnSurvivalInstincts.js" },
-    PulseEarnSendSystem:         { bio: "Outbound",                     system: "pulse-earn", file: "pulse-earn/PulseEarnSendSystem.js" },
+    PulseEarnSendSystem:         { bio: "Outbound / Earn → Pulse → Send", system: "pulse-earn", file: "pulse-earn/PulseEarnSendSystem.js" },
+    PulseEarnContinuancePulse:   { bio: "Continuance / Legacy Bridge",  system: "pulse-earn", file: "pulse-earn/PulseEarnContinuancePulse.js" },
     PulseEarnTest:               { bio: "Testing",                      system: "pulse-earn", file: "pulse-earn/PulseEarnTest.js" },
 
-
     // ======================================================================
-    // pulse-gpu — Cognitive, Astral, Acceleration
+    // pulse-gpu — v10.4 Deterministic GPU Organ
     // ======================================================================
-    PulseGPUAstralMuscleSystem:  { bio: "Astral / Muscle",              system: "pulse-gpu", file: "pulse-gpu/PulseGPUAstralMuscleSystem.js" },
-    PulseGPUAstralNervousSystem: { bio: "Astral / Nervous",             system: "pulse-gpu", file: "pulse-gpu/PulseGPUAstralNervousSystem.js" },
-    PulseGPUBrain:               { bio: "Cognitive / Brain",            system: "pulse-gpu", file: "pulse-gpu/PulseGPUBrain.js" },
-    PulseGPUCognitiveIntelligence:{ bio: "Cognitive / Intelligence",     system: "pulse-gpu", file: "pulse-gpu/PulseGPUCognitiveIntelligence.js" },
-    PulseGPUCognitiveLayer:      { bio: "Cognitive / Layer",            system: "pulse-gpu", file: "pulse-gpu/PulseGPUCognitiveLayer.js" },
-    PulseGPUCommandments:        { bio: "Cognitive / Rules",            system: "pulse-gpu", file: "pulse-gpu/PulseGPUCommandments.js" },
-    PulseGPUDrive:               { bio: "Drive / Motivation",           system: "pulse-gpu", file: "pulse-gpu/PulseGPUDrive.js" },
-    PulseGPUDriveCenter:         { bio: "Drive / Center",               system: "pulse-gpu", file: "pulse-gpu/PulseGPUDriveCenter.js" },
-    PulseGPUGuardianCortex:      { bio: "Cortex / Guardian",            system: "pulse-gpu", file: "pulse-gpu/PulseGPUGuardianCortex.js" },
-    PulseGPUHeart:               { bio: "Circulatory / Heart",          system: "pulse-gpu", file: "pulse-gpu/PulseGPUHeart.js" },
-    PulseGPULymphNodes:          { bio: "Immune / Lymph Nodes",         system: "pulse-gpu", file: "pulse-gpu/PulseGPULymphNodes.js" },
-    PulseGPUNervousSystem:       { bio: "Nervous",                      system: "pulse-gpu", file: "pulse-gpu/PulseGPUNervousSystem.js" },
-    PulseGPUSpine:               { bio: "Spine",                        system: "pulse-gpu", file: "pulse-gpu/PulseGPUSpine.js" },
-    PulseGPUSurvivalInstincts:   { bio: "Survival",                     system: "pulse-gpu", file: "pulse-gpu/PulseGPUSurvivalInstincts.js" },
-    PulseGPUSynapses:            { bio: "Synapses",                     system: "pulse-gpu", file: "pulse-gpu/PulseGPUSynapses.js" },
-    PulseGPUWisdomCortex:        { bio: "Cortex / Wisdom",              system: "pulse-gpu", file: "pulse-gpu/PulseGPUWisdomCortex.js" },
-
+    PulseGPUv10:                 { bio: "GPU / Deterministic Organ",    system: "pulse-gpu", file: "pulse-gpu/PulseGPUv10.js" },
 
     // ======================================================================
     // pulse-mesh — Aura, Cognition, Endocrine, Immune, Cortex, Senses
@@ -369,18 +325,98 @@ export const PulseOrganismMap = {
     PulseMeshSurvivalInstincts:  { bio: "Survival",                     system: "pulse-mesh", file: "pulse-mesh/PulseMeshSurvivalInstincts.js" },
     PulseMeshTendons:            { bio: "Tendons",                      system: "pulse-mesh", file: "pulse-mesh/PulseMeshTendons.js" },
     PulseMeshThalamus:           { bio: "Thalamus",                     system: "pulse-mesh", file: "pulse-mesh/PulseMeshThalamus.js" },
+
+    // ======================================================================
+    // pulse-proxy — Edge, Adrenal, Pressure, Vitals, Spine, Blood
+    // ======================================================================
+    CheckBand:                   { bio: "Healer / Band Check",          system: "pulse-proxy", file: "pulse-proxy/CheckBand.js" },
+    CheckIdentity:               { bio: "Healer / Identity Check",      system: "pulse-proxy", file: "pulse-proxy/CheckIdentity.js" },
+    CheckRouterMemory:           { bio: "Healer / Router Memory Check", system: "pulse-proxy", file: "pulse-proxy/CheckRouterMemory.js" },
+    PulseProxyAdrenalSystem:     { bio: "Adrenal / Stress",             system: "pulse-proxy", file: "pulse-proxy/PulseProxyAdrenalSystem.js" },
+    PulseProxyBBB:               { bio: "Proxy / BBB",                  system: "pulse-proxy", file: "pulse-proxy/PulseProxyBBB.js" },
+    PulseProxyBloodPressure:     { bio: "Proxy / Blood Pressure",       system: "pulse-proxy", file: "pulse-proxy/PulseProxyBloodPressure.js" },
+    PulseProxyBloodStream:       { bio: "Proxy / Blood Stream",         system: "pulse-proxy", file: "pulse-proxy/PulseProxyBloodStream.js" },
+    PulseProxyCirculatorySystem: { bio: "Proxy / Circulatory",          system: "pulse-proxy", file: "pulse-proxy/PulseProxyCirculatorySystem.js" },
+    PulseProxyHeart:             { bio: "Proxy / Heart",                system: "pulse-proxy", file: "pulse-proxy/PulseProxyHeart.js" },
+    PulseProxyHeartBeat:         { bio: "Proxy / HeartBeat",            system: "pulse-proxy", file: "pulse-proxy/PulseProxyHeartBeat.js" },
+    PulseProxyHypothalamus:      { bio: "Proxy / Hypothalamus",         system: "pulse-proxy", file: "pulse-proxy/PulseProxyHypothalamus.js" },
+    PulseProxyImpulse:           { bio: "Proxy / Impulse",              system: "pulse-proxy", file: "pulse-proxy/PulseProxyImpulse.js" },
+    PulseProxyLimbic:            { bio: "Proxy / Limbic",               system: "pulse-proxy", file: "pulse-proxy/PulseProxyLimbic.js" },
+    PulseProxyOuterAgent:        { bio: "Proxy / Outer Agent",          system: "pulse-proxy", file: "pulse-proxy/PulseProxyOuterAgent.js" },
+    PulseProxySpine:             { bio: "Proxy / Spine",                system: "pulse-proxy", file: "pulse-proxy/PulseProxySpine.js" },
+    PulseProxySynapse:           { bio: "Proxy / Synapse",              system: "pulse-proxy", file: "pulse-proxy/PulseProxySynapse.js" },
+    PulseProxyVitalsLogger:      { bio: "Proxy / Vitals Logger",        system: "pulse-proxy", file: "pulse-proxy/PulseProxyVitalsLogger.js" },
+    PulseProxyVitalsMonitor:     { bio: "Proxy / Vitals Monitor",       system: "pulse-proxy", file: "pulse-proxy/PulseProxyVitalsMonitor.js" },
+    PulseProxyWBCells:           { bio: "Proxy / White Blood Cells",    system: "pulse-proxy", file: "pulse-proxy/PulseProxyWBCells.js" },
+
+    // ======================================================================
+    // pulse-router — Evolutionary Routing Thought
+    // ======================================================================
+    PulseRouterEvolutionaryThought: {
+      bio: "Routing / Evolutionary Thought",
+      system: "pulse-router",
+      file: "pulse-router/PulseRouterEvolutionaryThought.js"
+    },
+
+    // ======================================================================
+    // pulse-send — Outbound / Deterministic Send
+    // ======================================================================
+    PulseSendSystem: {
+      bio: "Outbound / Deterministic Send System",
+      system: "pulse-send",
+      file: "pulse-send/PulseSendSystem.js"
+    },
+
+    // ======================================================================
+    // pulse-shifter — Evolutionary Pulse Shifting
+    // ======================================================================
+    PulseShifterEvolutionaryPulse: {
+      bio: "Shifting / Evolutionary Pulse",
+      system: "pulse-shifter",
+      file: "pulse-shifter/PulseShifterEvolutionaryPulse.js"
+    },
+
+    // ======================================================================
+    // pulse-specs — DNA, Genome, Specs
+    // ======================================================================
+    PulseSpecsDNAGenome: {
+      bio: "Specs / DNA / Genome",
+      system: "pulse-specs",
+      file: "pulse-specs/PulseSpecsDNAGenome.js"
+    },
+
+    // ======================================================================
+    // pulse-translator — RNA, Intake, Output
+    // ======================================================================
+    PulseTranslatorRNAIntake: {
+      bio: "Translator / RNA Intake",
+      system: "pulse-translator",
+      file: "pulse-translator/PulseTranslatorRNAIntake.js"
+    },
+    PulseTranslatorRNAOutput: {
+      bio: "Translator / RNA Output",
+      system: "pulse-translator",
+      file: "pulse-translator/PulseTranslatorRNAOutput.js"
+    },
+    PulseTranslatorSkeletalIntake: {
+      bio: "Translator / Skeletal Intake",
+      system: "pulse-translator",
+      file: "pulse-translator/PulseTranslatorSkeletalIntake.js"
+    },
+    PulseTranslatorSkeletalOutput: {
+      bio: "Translator / Skeletal Output",
+      system: "pulse-translator",
+      file: "pulse-translator/PulseTranslatorSkeletalOutput.js"
+    }
   },
-  // ============================================================================
+
+  // ========================================================================
   // BASE LAYER + ROUTING LAYER — OLD NAMES → NEW ORGANISM NAMES
-  // This allows the organism to understand old references like "router.js"
-  // and map them to the correct modern organs.
-  // ============================================================================
-
-  aliases = {
-
-    // ------------------------------------------------------------------------
+  // ========================================================================
+  aliases: {
+    // ----------------------------------------------------------------------
     // BASE LAYERS — The original Pulse foundation (old → new)
-    // ------------------------------------------------------------------------
+    // ----------------------------------------------------------------------
     base: {
       PulseBand: {
         old: ["PulseBand.js", "PulseBand"],
@@ -394,8 +430,8 @@ export const PulseOrganismMap = {
 
       PulseNet: {
         old: ["PulseNet.js", "PulseNet"],
-        now: ["PulseOSCNSNervousSystem"],
-        note: "Network intelligence → CNS nervous system"
+        now: ["PulseSDN"],
+        note: "Network intelligence → Software-Defined Nervous System"
       },
 
       PulseClient: {
@@ -417,13 +453,13 @@ export const PulseOrganismMap = {
       }
     },
 
-    // ------------------------------------------------------------------------
+    // ----------------------------------------------------------------------
     // ROUTING LAYERS — The original routing chain (old → new)
-    // ------------------------------------------------------------------------
+    // ----------------------------------------------------------------------
     routing: {
       Router: {
         old: ["router.js", "Router", "PulseRouter.js"],
-        now: ["PulseRouterEvolutionaryThought", "PulseRouter"],
+        now: ["PulseRouterEvolutionaryThought"],
         note: "Routing engine → Evolutionary routing thought"
       },
 
@@ -452,9 +488,9 @@ export const PulseOrganismMap = {
       }
     },
 
-    // ------------------------------------------------------------------------
+    // ----------------------------------------------------------------------
     // ROUTE CHAIN — Old → New (for humans + AI)
-    // ------------------------------------------------------------------------
+    // ----------------------------------------------------------------------
     routeChain: {
       old: [
         "PulseBand",
@@ -467,9 +503,9 @@ export const PulseOrganismMap = {
       ],
       now: [
         "PulseOSSkinReflex / PulseOSSensoryCortex",
-        "PulseOSCNSNervousSystem",
+        "PulseSDN",
         "PulseProxyImpulse",
-        "PulseRouter (via PulseOSBrain + PulseIQ)",
+        "PulseRouterEvolutionaryThought",
         "Organ (from PulseOrganismMap)",
         "PulseSendSystem",
         "PulseProxySpine"
@@ -477,5 +513,4 @@ export const PulseOrganismMap = {
       note: "This is the true nervous system route chain."
     }
   }
-
 };

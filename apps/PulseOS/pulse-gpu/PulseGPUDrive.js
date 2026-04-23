@@ -1,17 +1,17 @@
 // ============================================================================
-//  PULSE GPU RUNTIME v9.1 — THE MOMENTUM NETWORK
+//  PULSE GPU RUNTIME v10.4 — THE MOMENTUM NETWORK
 //  Forward Motion Layer • Signal Conduction Pathway • GPU Kinetic System
 // ============================================================================
 //
-// IDENTITY — THE MOMENTUM NETWORK:
-//  --------------------------------
+// IDENTITY — THE MOMENTUM NETWORK (v10.4):
+//  ---------------------------------------
 //  • The GPU organism’s forward-motion layer.
 //  • The kinetic system that moves data, buffers, and packages downstream.
 //  • The conduction pathway between Analyst (Brain) and Motor Hall (Engine).
 //  • The self-moving cart: once initialized, it carries the whole subsystem forward.
 //  • The nervous conduction layer that keeps the GPU body alive.
-//  • Advantage‑cascade aware: any systemic advantage is inherited automatically.
-//  • PulseSend-ready: exposes a clean, deterministic surface for the compute router.
+//  • Advantage‑cascade aware: inherits all systemic advantages automatically.
+//  • PulseSend‑10.4‑ready: exposes a clean, deterministic surface for the compute router.
 //
 // ROLE IN THE GPU NATION:
 //  ------------------------
@@ -39,8 +39,8 @@
 //  • NOT a backend module
 //  • NOT a business logic module
 //
-// SAFETY RULES (v9.1):
-//  --------------------
+// SAFETY RULES (v10.4):
+//  ---------------------
 //  • NO backend APIs
 //  • NO DOM manipulation outside WebGPU canvas/context
 //  • NO Node.js APIs
@@ -51,17 +51,17 @@
 //
 // ADVANTAGE CASCADE (conceptual only):
 //  ------------------------------------
-//  • If pulses become faster → conduction conceptually accelerates.
+//  • If pulses accelerate → conduction conceptually accelerates.
 //  • If system collapses 1000 pulses into 1 → Runtime inherits that gain.
 //  • If any organ evolves → Runtime carries that advantage downstream.
 //  • No OR — all advantages are inherited automatically.
 //  • PulseSend contract (conceptual only):
-//      - routingContract: "PulseSend-v1"
-//      - gpuOrganContract: "PulseGPU-v9.1"
-//      - earnCompatibility: "PulseEarn-v9"
+//      - routingContract: "PulseSend-v10.4"
+//      - gpuOrganContract: "PulseGPU-v10.4"
+//      - earnCompatibility: "Earn-v2"
 // ============================================================================
 
-const PULSE_GPU_RUNTIME_VERSION = 9.2;
+const PULSE_GPU_RUNTIME_VERSION = 10.4;
 
 // ============================================================================
 // GPU CONTEXT WRAPPER — Momentum Network: Conduction Node
@@ -86,11 +86,11 @@ class PulseGPUContext {
         multiInstanceReady: true,
 
         unifiedAdvantageField: true,
-        pulseSend2Ready: true,
+        pulseSend10Ready: true,
 
-        routingContract: "PulseSend-v2",
-        gpuOrganContract: "PulseGPU-v9.2",
-        earnCompatibility: "PulseEarn-v9"
+        routingContract: "PulseSend-v10.4",
+        gpuOrganContract: "PulseGPU-v10.4",
+        earnCompatibility: "Earn-v2"
       }
     };
   }
@@ -185,16 +185,15 @@ class PulseGPURuntimeLoader {
         multiInstanceReady: true,
 
         unifiedAdvantageField: true,
-        pulseSend2Ready: true,
+        pulseSend10Ready: true,
 
-        routingContract: "PulseSend-v2",
-        gpuOrganContract: "PulseGPU-v9.2",
-        earnCompatibility: "PulseEarn-v9"
+        routingContract: "PulseSend-v10.4",
+        gpuOrganContract: "PulseGPU-v10.4",
+        earnCompatibility: "Earn-v2"
       }
     };
   }
 
-  // Pulls the packageSet from the Analyst Cortex (Brain)
   loadPackages() {
     const pkg = PulseGPUBrainExport.exportToRuntime();
     if (!pkg) {
@@ -272,7 +271,7 @@ class PulseGPURuntimeLoader {
     if (!this.gpu.ready) return false;
 
     this.loadPackages();
-    if (!this.packages) return true; // fail-open: GPU ready, no packages
+    if (!this.packages) return true;
 
     this.initTextures();
     this.initMeshes();
@@ -302,11 +301,11 @@ class PulseGPURuntime {
         multiInstanceReady: true,
 
         unifiedAdvantageField: true,
-        pulseSend2Ready: true,
+        pulseSend10Ready: true,
 
-        routingContract: "PulseSend-v2",
-        gpuOrganContract: "PulseGPU-v9.2",
-        earnCompatibility: "PulseEarn-v9"
+        routingContract: "PulseSend-v10.4",
+        gpuOrganContract: "PulseGPU-v10.4",
+        earnCompatibility: "Earn-v2"
       }
     };
   }
@@ -341,7 +340,6 @@ class PulseGPURuntime {
     return this.loader.packages;
   }
 
-  // Backwards-compat aliases
   getMeshesFromPackages() {
     return this.loader.meshBuffers;
   }

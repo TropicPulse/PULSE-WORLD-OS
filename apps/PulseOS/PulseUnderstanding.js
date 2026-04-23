@@ -1,23 +1,53 @@
 // ============================================================================
+//  PulseUnderstanding.js — v10.4
+//  Kernel Opener • Organism Loader • Deterministic Frontend Brainstem
+// ============================================================================
+//
+//  WHAT THIS IS:
+//  • The unified loader for all PulseOS v10.4 organs.
+//  • Loads SDN (Software‑Defined Nervous System), GPU‑v10.4,
+//    Router‑v10.4, Send‑v10.4, Earn‑v10.4, ContinuancePulse‑v10.4.
+//  • Boots Evolution → which boots Brain → which attaches to Kernel.
+//  • No astral nervous system. No PNS. No legacy GPU.
+//  • Deterministic, browser‑safe, zero drift.
+// ============================================================================
+
+
+// ============================================================================
 //  IMPORTS — FRONTEND BARREL (ALL ORGANS ROUTE THROUGH HERE)
 // ============================================================================
+
+// OS Maps
 import { PulseIntentMap } from "./PULSE-OS/PulseIntentMap.js";
 import { PulseOrganismMap } from "./PULSE-OS/PulseOrganismMap.js";
 import { PulseIQMap } from "./PULSE-OS/PulseIQMap.js";
 
+// OS Evolution + Brain
 import { PulseOSEvolution } from "./PULSE-OS/PulseOSEvolution.js";
 import { PulseOSBrain } from "./PULSE-OS/PulseOSBrain.js";
 
+// Reflex + Vitals
 import { VitalsMonitor } from "./pulse-proxy/PulseProxyVitalsMonitor.js";
-import { pulseband } from "./pulse-proxy/PulseProxyPNSNervousSystem.js";
-
-import * as PulseRouter from "./pulse-router/PulseRouterEvolutionaryThought.js";
 import { attachScanner } from "./PULSE-OS/PulseOSSkinReflex.js";
 
-import * as PulseGPU from "./pulse-gpu/PulseGPUAstralNervousSystem.js";
-import * as PulseEarn from "./pulse-earn/PulseEarn.js";
-import * as PulseSend from "./pulse-send/PulseSend.js";
+// ROUTER (v10.4 deterministic)
+import * as PulseRouter from "./pulse-router/PulseRouterEvolutionaryThought.js";
 
+// GPU ORGAN (v10.4 deterministic)
+import * as PulseGPU from "./pulse-gpu/PulseGPU-v10.4.js";
+
+// SEND SYSTEM (v10.4 deterministic)
+import { PulseSendSystem } from "./pulse-send/PulseSendSystem.js";
+
+// EARN ORGANISM (v10.4 deterministic)
+import * as PulseEarn from "./pulse-earn/PulseEarn.js";
+import { PulseEarnSendSystem } from "./pulse-earn/PulseEarnSendSystem.js";
+import { PulseEarnContinuancePulse } from "./pulse-earn/PulseEarnContinuancePulse.js";
+
+// SDN (Software‑Defined Nervous System)
+import { createPulseSDN } from "./pulse-sdn/PulseSDN.js";
+
+// GOVERNOR
 import { withOrganGuard } from "./PULSE-OS/PulseOSGovernor.js";
 
 
@@ -28,12 +58,12 @@ attachScanner(PulseIdentity);
 
 
 // ============================================================================
-//  CONTEXT — KERNEL IDENTITY (v10)
+//  CONTEXT — KERNEL IDENTITY (v10.4)
 // ============================================================================
 const PULSE_UNDERSTANDING_CONTEXT = {
   layer: "PulseUnderstanding",
   role: "KERNEL_OPENER",
-  version: "10.0",
+  version: "10.4",
   lineage: "cortical-opener",
   evo: {
     dualMode: true,
@@ -42,8 +72,10 @@ const PULSE_UNDERSTANDING_CONTEXT = {
     driftProof: true,
     unifiedAdvantageField: true,
     organismLoader: true,
-    cognitiveBootstrap: false,   // ❌ Understanding no longer boots Brain
-    zeroDriftIdentity: true
+    cognitiveBootstrap: false,
+    zeroDriftIdentity: true,
+    continuanceAware: true,
+    legacyBridgeCapable: true
   }
 };
 
@@ -88,11 +120,8 @@ function runThroughGovernor(organName, pulseOrImpulse, fn) {
 //  KERNEL BOOTSTRAP — PURE WIRING, NO BACKEND CALLS ON LOAD
 // ============================================================================
 function buildPulseKernel() {
-  const kernelTs = Date.now();
-
   const meta = {
     ...PULSE_UNDERSTANDING_CONTEXT,
-    ts: kernelTs,
     identity: PulseIdentity,
     environment: PulseEnvironment
   };
@@ -101,15 +130,23 @@ function buildPulseKernel() {
     meta,
     Identity: PulseIdentity,
     Environment: PulseEnvironment,
-    Band: pulseband || null,
-    GPU: PulseGPU || null,
-    Earn: PulseEarn || null,
-    Send: PulseSend || null,
-    Router: PulseRouter || null,
-    Vitals: {
-      Monitor: VitalsMonitor || null,
-      Logger: VitalsLogger || null
+
+    GPU: PulseGPU,
+    Router: PulseRouter,
+    Send: PulseSendSystem,
+
+    Earn: {
+      Organism: PulseEarn,
+      SendSystem: PulseEarnSendSystem,
+      Continuance: PulseEarnContinuancePulse
     },
+
+    Vitals: {
+      Monitor: VitalsMonitor
+    },
+
+    SDN: null,  // will be attached after Brain boots
+
     Governed: {
       run: runThroughGovernor
     }
@@ -139,19 +176,30 @@ PulseKernel.Brain = Brain;
 
 
 // ============================================================================
+//  SDN BOOTSTRAP — Nervous System attaches AFTER Brain exists
+// ============================================================================
+PulseKernel.SDN = createPulseSDN({
+  Router: PulseRouter,
+  EventBus: PulseKernel.Earn?.Organism?.EventBus || null,
+  Brain,
+  Evolution,
+  log: Brain.log,
+  warn: Brain.warn
+});
+
+
+// ============================================================================
 //  GLOBAL BROADCAST — MAKE KERNEL AVAILABLE TO FRONTEND
 // ============================================================================
 if (typeof window !== "undefined") {
   window.Pulse = window.Pulse
-    ? { ...window.Pulse, meta: PulseKernel.meta, Governed: PulseKernel.Governed }
+    ? {
+        ...window.Pulse,
+        meta: PulseKernel.meta,
+        Governed: PulseKernel.Governed,
+        SDN: PulseKernel.SDN
+      }
     : PulseKernel;
-
-  window.PulseHealers = {
-    wireAll: wirePulseHealers,
-    wireBand: wireCheckBandHealer,
-    wireIdentity: wireCheckIdentityHealer,
-    wireRouterMemory: wireCheckRouterMemoryHealer
-  };
 }
 
 
@@ -163,10 +211,6 @@ export const PulseUnderstanding = {
   Identity: PulseIdentity,
   Environment: PulseEnvironment,
   Kernel: PulseKernel,
-  wireHealers: wirePulseHealers,
-  wireCheckBandHealer,
-  wireCheckIdentityHealer,
-  wireCheckRouterMemoryHealer,
   runThroughGovernor
 };
 

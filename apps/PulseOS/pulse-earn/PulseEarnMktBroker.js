@@ -1,17 +1,16 @@
 // ============================================================================
-//  RunPodAdapter.js — v9.3
-//  PulseOS Marketplace Organ • RunPod Bare-Metal / GPU Jobs
+//  RunPodAdapter.js — v10.4
+//  PulseOS Marketplace Organ • RunPod Deterministic Receptor DNA
 // ============================================================================
 //
 //  WHAT THIS ORGAN IS:
 //  --------------------
-//  • Marketplace adapter for RunPod.
+//  • Deterministic RunPod receptor.
 //  • Knows how to:
-//      - register device (logical identity)
-//      - request jobs
-//      - submit job results
+//      - register device (deterministic no-op)
+//      - request jobs (deterministic receptor DNA)
+//      - submit job results (deterministic stub)
 //      - normalize RunPod jobs into Pulse-native shape
-//  • Deterministic, importless, marketplace-only.
 //
 //  WHAT THIS ORGAN IS NOT:
 //  ------------------------
@@ -21,23 +20,25 @@
 //  • Not a GPU driver.
 //  • Not OS / business logic.
 //  • Not a scaling brain.
+//  • Not a network client.
 //
-//  SAFETY CONTRACT (v9.3):
+//  SAFETY CONTRACT (v10.4):
 //  ------------------------
 //  • No imports.
 //  • No randomness.
-//  • No timestamps for logic decisions.
-//  • No external mutation beyond RunPod HTTP calls.
-//  • Pure, deterministic marketplace organ.
+//  • No timestamps.
+//  • No network.
+//  • Pure deterministic marketplace organ.
 // ============================================================================
 
-// ⭐ PulseRole — identifies this as the RunPod v9.3 Marketplace Organ
+
+// ⭐ PulseRole — identifies this as the RunPod v10.4 Marketplace Organ
 export const PulseRole = {
   type: "MarketplaceAdapter",
   subsystem: "Marketplace",
   layer: "RunPod",
-  version: "9.3",
-  identity: "RunPodAdapter-v9.3",
+  version: "10.4",
+  identity: "RunPodAdapter-v10.4",
 
   evo: {
     driftProof: true,
@@ -51,55 +52,50 @@ export const PulseRole = {
 
   marketplace: "RunPod",
   contract: "RunPod-v1",
-  earnCompatibility: "PulseEarn-v9",
-  pulseContract: "Pulse-v2.1"
+  earnCompatibility: "PulseEarn-v10.4",
+  pulseContract: "Pulse-v3"
 };
 
-// ============================================================================
-//  CONFIG — You wire these via env / secrets
-// ============================================================================
 
-const RUNPOD_API_KEY =
-  process.env.RUNPOD_API_KEY || "<PUT_YOUR_RUNPOD_API_KEY_HERE>";
+// ---------------------------------------------------------------------------
+// Healing Metadata — Deterministic Ambassador Log
+// ---------------------------------------------------------------------------
+const runpodHealing = {
+  lastRegister: null,
+  lastRequest: null,
+  lastSubmit: null,
+  lastNormalizedJobId: null,
+  lastNormalizationError: null,
+  cycleCount: 0
+};
 
-const RUNPOD_BASE_URL = "https://api.runpod.io";
+// Deterministic cycle counter
+let runpodCycle = 0;
 
-// Typical v2 endpoints (adjust if your account uses different paths)
-const RUNPOD_REGISTER_URL = `${RUNPOD_BASE_URL}/provider/register`;
-const RUNPOD_REQUEST_JOB_URL = `${RUNPOD_BASE_URL}/provider/job/next`;
-const RUNPOD_SUBMIT_JOB_URL = `${RUNPOD_BASE_URL}/provider/job/submit`;
 
-// Safe logger hooks (injected by outer layer)
-const _log = global?.log || console.log;
-const _error = global?.error || console.error;
+// ---------------------------------------------------------------------------
+// DETERMINISTIC RUNPOD RECEPTOR DNA (replaces network calls)
+// ---------------------------------------------------------------------------
+const RUNPOD_RECEPTOR_DNA = {
+  pingLatency: 64,
+  jobs: [
+    {
+      id: "runpod-001",
+      input: { task: "compute", value: 42 },
+      priority: "normal"
+    },
+    {
+      id: "runpod-002",
+      input: { task: "image-processing", value: "img://sample" },
+      priority: "high"
+    }
+  ]
+};
 
-// ============================================================================
-//  INTERNAL — HTTP helper (deterministic, no retries, no randomness)
-// ============================================================================
-async function runpodRequest(path, body) {
-  const url = path;
-  const headers = {
-    "Content-Type": "application/json",
-    "Authorization": `Bearer ${RUNPOD_API_KEY}`
-  };
 
-  const res = await fetch(url, {
-    method: "POST",
-    headers,
-    body: JSON.stringify(body || {})
-  });
-
-  if (!res.ok) {
-    const text = await res.text().catch(() => "");
-    throw new Error(`RunPod HTTP ${res.status}: ${text}`);
-  }
-
-  return res.json().catch(() => ({}));
-}
-
-// ============================================================================
-//  normalizeJob() — Convert RunPod job → Pulse-native job shape
-// ============================================================================
+// ---------------------------------------------------------------------------
+// normalizeJob() — Convert RunPod job → Pulse-native job shape
+// ---------------------------------------------------------------------------
 export function normalizeJob(runpodJob) {
   if (!runpodJob) return null;
 
@@ -107,161 +103,103 @@ export function normalizeJob(runpodJob) {
   const payload = runpodJob.input || runpodJob.payload || {};
   const priority = runpodJob.priority || "normal";
 
-  return {
-    marketplace: "RunPod",
-    jobId,
+  const normalized = {
+    id: jobId,
+    marketplaceId: "runpod",
+    payout: 0.1, // deterministic placeholder
+    cpuRequired: 4,
+    memoryRequired: 4096,
+    estimatedSeconds: 600,
+    minGpuScore: 200,
+    bandwidthNeededMbps: 10,
     payload,
-    priority,
-    raw: runpodJob
+    priority
   };
+
+  runpodHealing.lastNormalizedJobId = jobId;
+  runpodHealing.lastNormalizationError = null;
+
+  return normalized;
 }
 
-// ============================================================================
-//  registerDevice() — Logical provider registration
-//  NOTE: Some providers don't require explicit registration; this is a
-//        deterministic wrapper so EarnEngine can treat all marketplaces the same.
-// ============================================================================
-export async function registerDevice({ deviceId, gpuInfo = {}, meta = {} } = {}) {
-  _log("marketplace", "runpod_register_start", {
-    marketplace: "RunPod",
-    deviceId: deviceId || null
-  });
 
-  // If RunPod doesn't require explicit registration, this can be a no-op
-  // or a simple "ping" to validate the API key.
-  const body = {
-    deviceId: deviceId || null,
-    gpu: gpuInfo,
-    meta
+// ---------------------------------------------------------------------------
+// registerDevice() — Deterministic no-op
+// ---------------------------------------------------------------------------
+export function registerDevice({ deviceId, gpuInfo = {}, meta = {} } = {}) {
+  runpodCycle++;
+  runpodHealing.cycleCount++;
+
+  runpodHealing.lastRegister = {
+    deviceId,
+    gpuInfo,
+    meta,
+    cycleIndex: runpodCycle
   };
 
-  try {
-    const result = await runpodRequest(RUNPOD_REGISTER_URL, body);
-
-    _log("marketplace", "runpod_register_success", {
-      marketplace: "RunPod",
-      deviceId: deviceId || null
-    });
-
-    return {
-      ok: true,
-      result
-    };
-  } catch (err) {
-    _error("marketplace", "runpod_register_failed", {
-      marketplace: "RunPod",
-      deviceId: deviceId || null,
-      error: String(err)
-    });
-
-    return {
-      ok: false,
-      error: String(err)
-    };
-  }
-}
-
-// ============================================================================
-//  requestJob() — Ask RunPod for the next job
-// ============================================================================
-export async function requestJob({ deviceId, filters = {} } = {}) {
-  _log("marketplace", "runpod_request_job_start", {
-    marketplace: "RunPod",
-    deviceId: deviceId || null
-  });
-
-  const body = {
-    deviceId: deviceId || null,
-    filters
-  };
-
-  try {
-    const result = await runpodRequest(RUNPOD_REQUEST_JOB_URL, body);
-
-    const job = result.job || result || null;
-    const normalized = normalizeJob(job);
-
-    if (!normalized) {
-      _log("marketplace", "runpod_request_job_empty", {
-        marketplace: "RunPod",
-        deviceId: deviceId || null
-      });
-
-      return {
-        ok: true,
-        job: null
-      };
+  return {
+    ok: true,
+    result: {
+      registered: true,
+      cycleIndex: runpodCycle
     }
-
-    _log("marketplace", "runpod_request_job_success", {
-      marketplace: "RunPod",
-      deviceId: deviceId || null,
-      jobId: normalized.jobId
-    });
-
-    return {
-      ok: true,
-      job: normalized
-    };
-  } catch (err) {
-    _error("marketplace", "runpod_request_job_failed", {
-      marketplace: "RunPod",
-      deviceId: deviceId || null,
-      error: String(err)
-    });
-
-    return {
-      ok: false,
-      error: String(err),
-      job: null
-    };
-  }
+  };
 }
 
-// ============================================================================
-//  submitJob() — Submit job result back to RunPod
-// ============================================================================
-export async function submitJob({ jobId, result, error: jobError = null } = {}) {
-  _log("marketplace", "runpod_submit_job_start", {
-    marketplace: "RunPod",
-    jobId: jobId || null
-  });
 
-  const body = {
-    jobId,
-    result: jobError ? null : result,
-    error: jobError ? String(jobError) : null
+// ---------------------------------------------------------------------------
+// requestJob() — Deterministic job retrieval
+// ---------------------------------------------------------------------------
+export function requestJob({ deviceId, filters = {} } = {}) {
+  runpodCycle++;
+  runpodHealing.cycleCount++;
+
+  const job = RUNPOD_RECEPTOR_DNA.jobs[runpodCycle % RUNPOD_RECEPTOR_DNA.jobs.length];
+  const normalized = normalizeJob(job);
+
+  runpodHealing.lastRequest = {
+    deviceId,
+    filters,
+    jobId: normalized?.id ?? null,
+    cycleIndex: runpodCycle
   };
 
-  try {
-    const res = await runpodRequest(RUNPOD_SUBMIT_JOB_URL, body);
-
-    _log("marketplace", "runpod_submit_job_success", {
-      marketplace: "RunPod",
-      jobId: jobId || null
-    });
-
-    return {
-      ok: true,
-      result: res
-    };
-  } catch (err) {
-    _error("marketplace", "runpod_submit_job_failed", {
-      marketplace: "RunPod",
-      jobId: jobId || null,
-      error: String(err)
-    });
-
-    return {
-      ok: false,
-      error: String(err)
-    };
-  }
+  return {
+    ok: true,
+    job: normalized
+  };
 }
 
-// ============================================================================
-//  EXPORT — Marketplace organ surface
-// ============================================================================
+
+// ---------------------------------------------------------------------------
+// submitJob() — Deterministic submission stub
+// ---------------------------------------------------------------------------
+export function submitJob({ jobId, result, error: jobError = null } = {}) {
+  runpodCycle++;
+  runpodHealing.cycleCount++;
+
+  runpodHealing.lastSubmit = {
+    jobId,
+    result,
+    jobError,
+    cycleIndex: runpodCycle
+  };
+
+  return {
+    ok: true,
+    result: {
+      submitted: true,
+      jobId,
+      cycleIndex: runpodCycle,
+      note: "RunPod submission simulated deterministically in v10.4."
+    }
+  };
+}
+
+
+// ---------------------------------------------------------------------------
+// EXPORT — Marketplace organ surface
+// ---------------------------------------------------------------------------
 export const RunPodAdapter = {
   PulseRole,
   registerDevice,
@@ -270,8 +208,16 @@ export const RunPodAdapter = {
   normalizeJob,
   meta: {
     marketplace: "RunPod",
-    version: "9.3",
+    version: "10.4",
     layer: "MarketplaceAdapter",
-    identity: "RunPodAdapter-v9.3"
+    identity: "RunPodAdapter-v10.4"
   }
 };
+
+
+// ---------------------------------------------------------------------------
+// Healing State Export
+// ---------------------------------------------------------------------------
+export function getRunPodHealingState() {
+  return { ...runpodHealing };
+}

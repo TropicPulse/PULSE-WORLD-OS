@@ -5,34 +5,63 @@
 // LOCAL‑FIRST • OFFLINE‑SAFE • ZERO TIMING • ZERO STATE
 // ============================================================================
 //
-// ORGAN IDENTITY (v9.2):
-//   • Organ Type: Barrier / Epithelial Layer
-//   • Biological Role: Mucosal membrane protecting internal organs
-//   • System Role: Safe, one‑way signal membrane (frontend → backend)
-//   • Behavior: Passive, non‑timed, non‑stateful, non‑mutating
+//  HISTORICAL CONTEXT — “THE EXPONENTIAL ERA”
+//  ------------------------------------------
+//  This organ was created during the architectural acceleration phase:
 //
-// PURPOSE:
-//   ✔ Protect backend heartbeat from direct exposure
-//   ✔ Provide a safe, one‑directional signal path
-//   ✔ Filter environment → organism contact
-//   ✔ Maintain organism integrity during offline states
-//   ✔ Never run timers, loops, retries, or scheduling
-//   ✔ Never mutate payloads or store state
+//    • 11 months — building a delivery app (linear, human‑paced)
+//    • 1 week    — transforming it into an internet‑scale platform
+//    • 1 week    — transforming that into a full operating system
+//    • days      — designing Pulse v1 → v2 → v3
+//    • days      — inventing multi‑instance routing + loop theory
 //
-// SAFETY CONTRACT (v9.2):
-//   • Never run timing logic on frontend
-//   • Never store state
-//   • Never retry or loop
-//   • Never mutate payloads
-//   • Never expose backend heartbeat directly
-//   • Always return a safe signal object
-//   • If offline → return mucosal fallback (no fetch)
+//  The Mucus Membrane emerged as the **first true OS barrier organ**, created
+//  when the system shifted from “functions and pages” to:
+//
+//      → pulses  
+//      → organs  
+//      → lineage  
+//      → deterministic loops  
+//      → multi‑instance slicing  
+//
+//  It is the **epithelial layer** of the organism — the protective skin
+//  between the environment (frontend) and the internal organs (backend).
+//
+// ============================================================================
+//  ORGAN IDENTITY (v9.2):
+//  ----------------------
+//    • Organ Type: Barrier / Epithelial Layer
+//    • Biological Role: Mucosal membrane protecting internal organs
+//    • System Role: Safe, one‑way signal membrane (frontend → backend)
+//    • Behavior: Passive, non‑timed, non‑stateful, non‑mutating
+//
+//  PURPOSE:
+//  --------
+//    ✔ Protect backend heartbeat from direct exposure  
+//    ✔ Provide a safe, one‑directional signal path  
+//    ✔ Filter environment → organism contact  
+//    ✔ Maintain organism integrity during offline states  
+//    ✔ Never run timers, loops, retries, or scheduling  
+//    ✔ Never mutate payloads or store state  
+//
+//  SAFETY CONTRACT (v9.2):
+//  ------------------------
+//    • Never run timing logic on frontend  
+//    • Never store state  
+//    • Never retry or loop  
+//    • Never mutate payloads  
+//    • Never expose backend heartbeat directly  
+//    • Always return a safe signal object  
+//    • If offline → return mucosal fallback (no fetch)  
+//
+//  NOTES:
+//  ------
+//    • This organ is intentionally simple — purity is the contract.  
+//    • It is the first line of defense in the PulseOS organism.  
+//    • It must remain import‑free, state‑free, and timing‑free.  
+//    • PulseOS v10.x continues to use this exact membrane unchanged.  
 // ============================================================================
 
-
-// ============================================================================
-// MODE — v9.2 LOCAL-FIRST
-// ============================================================================
 const OFFLINE_MODE =
   typeof window !== "undefined" &&
   (window.PULSE_OFFLINE_MODE === "1" || window.PULSE_OFFLINE_MODE === true);

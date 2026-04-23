@@ -1,21 +1,21 @@
 // ============================================================================
-//  PULSE GPU SESSION TRACER v9.2 — THE SENSORY ARCHIVE
+//  PULSE GPU SESSION TRACER v10.4 — THE SENSORY ARCHIVE
 //  Afferent Nervous System • Deterministic Perception Layer • Pure Recording
 // ============================================================================
 //
-// IDENTITY — THE SENSORY ARCHIVE:
-//  -------------------------------
+// IDENTITY — THE SENSORY ARCHIVE (v10.4):
+//  --------------------------------------
 //  • The afferent nervous system of the GPU organism.
 //  • Records every sensation: duration, warnings, errors, stutters, load.
 //  • Never judges, never interprets — only perceives and preserves.
 //  • The black box of the GPU body.
 //  • The raw sensory feed for Insights, Brainstem, Healer, Advisor.
 //  • Advantage‑cascade aware: inherits all systemic advantages.
-//  • PulseSend‑2.0‑ready: sensory traces can be routed by the compute router.
-//  • Earn‑ready: compatible with PulseEarn v9 job payloads.
+//  • PulseSend‑10.4‑ready: sensory traces can be routed by the compute router.
+//  • Earn‑ready: compatible with Earn‑v2 job payloads.
 //
-// SAFETY CONTRACT (v9.2):
-//  -----------------------
+// SAFETY CONTRACT (v10.4):
+//  ------------------------
 //  • No randomness
 //  • No timestamps
 //  • No GPU calls
@@ -27,8 +27,9 @@
 //  • Deterministic: same steps → same trace
 // ============================================================================
 
+
 // ------------------------------------------------------------
-// ⭐ OS‑v9.2 CONTEXT METADATA — Sensory Archive Identity
+// ⭐ OS‑v10.4 CONTEXT METADATA — Sensory Archive Identity
 // ------------------------------------------------------------
 const TRACER_CONTEXT = {
   layer: "PulseGPUSessionTracer",
@@ -37,7 +38,7 @@ const TRACER_CONTEXT = {
   context: "Records ordered steps with durations + health signals",
   target: "full-gpu",
   selfRepairable: true,
-  version: 9.2,
+  version: 10.4,
 
   evo: {
     advantageCascadeAware: true,
@@ -45,13 +46,14 @@ const TRACER_CONTEXT = {
     driftProof: true,
     multiInstanceReady: true,
     unifiedAdvantageField: true,
-    pulseSend2Ready: true,
+    pulseSend10Ready: true,
 
-    routingContract: "PulseSend-v2",
-    gpuOrganContract: "PulseGPU-v9.2",
-    earnCompatibility: "PulseEarn-v9"
+    routingContract: "PulseSend-v10.4",
+    gpuOrganContract: "PulseGPU-v10.4",
+    earnCompatibility: "Earn-v2"
   }
 };
+
 
 // ------------------------------------------------------------
 // Utility: clamp helpers
@@ -62,6 +64,7 @@ function clamp(value, min, max) {
   if (value > max) return max;
   return value;
 }
+
 
 // ------------------------------------------------------------
 // Step normalization — Sensory Input Normalization
@@ -99,6 +102,7 @@ function normalizeStep(step = {}) {
     meta: { ...TRACER_CONTEXT }
   };
 }
+
 
 // ------------------------------------------------------------
 // SessionTrace — Sensory Recording Unit
@@ -143,6 +147,7 @@ class SessionTrace {
     };
   }
 }
+
 
 // ------------------------------------------------------------
 // PulseGPUSessionTracer — Sensory Archive Controller
@@ -201,6 +206,7 @@ class PulseGPUSessionTracer {
     this.sessions.clear();
   }
 }
+
 
 // ------------------------------------------------------------
 // EXPORTS

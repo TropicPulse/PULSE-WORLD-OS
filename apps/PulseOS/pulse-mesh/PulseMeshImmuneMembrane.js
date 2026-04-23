@@ -1,30 +1,34 @@
 // ============================================================================
-//  PULSE OS v9.2 — IMMUNE MEMBRANE LAYER  // red
-//  “System Safety Membrane / Validation / Quarantine / Metadata‑Only”
+//  PULSE OS v10.4 — IMMUNE MEMBRANE LAYER  // red
+//  “System Safety Membrane / Structural Validation / Quarantine / Metadata‑Only”
 // ============================================================================
 //
-//  IDENTITY — IMMUNE MEMBRANE (v9.2):
-//  ----------------------------------
-//  • First immune filter — blocks malformed or unsafe impulses.
-//  • Pure metadata-only — zero payload mutation.
-//  • Zero imports — CNS injects pressure snapshot.
-//  • Factoring-aware, aura-aware, drift-aware, flow-aware, mesh-aware.
-//  • Deterministic-field, drift-proof, AND-architecture aligned.
+// IDENTITY — IMMUNE MEMBRANE (v10.4):
+// -----------------------------------
+// • First-line safety membrane for all impulses.
+// • Pure structural validation — no pressure gating.
+// • Pure metadata-only — zero payload mutation.
+// • No routing logic, no compute, no shaping.
+// • Quarantines unsafe or malformed impulses deterministically.
+// • SDN-aligned: validates impulses before Router v10.4 receives them.
 //
-//  SAFETY CONTRACT (v9.2):
-//  -----------------------
-//  • No routing, no compute, no shaping.
-//  • No payload mutation.
-//  • No healing — only blocking/quarantine.
-//  • Pure metadata-only, reversible, safe.
+// SAFETY CONTRACT (v10.4):
+// ------------------------
+// • No payload access.
+// • No score/energy mutation.
+// • No routing override.
+// • No pressure-based gating.
+// • No autonomy.
+// • Deterministic-field, drift-proof.
+// • Unified-advantage-field, multi-instance-ready.
 // ============================================================================
 
-export function createPulseImmune({ getPressureSnapshot }) {
+export function createPulseImmune() {
 
   const meta = {
     layer: "PulseImmune",
     role: "IMMUNE_MEMBRANE",
-    version: 9.2,
+    version: "10.4",
     target: "full-mesh",
     selfRepairable: true,
     evo: {
@@ -47,9 +51,10 @@ export function createPulseImmune({ getPressureSnapshot }) {
     }
   };
 
-  // ---------------------------------------------------------
-  // STRUCTURAL VALIDATION
-  // ---------------------------------------------------------
+  // ---------------------------------------------------------------------------
+  // STRUCTURAL VALIDATION (v10.4)
+  // Pure structural checks — no pressure gating.
+  // ---------------------------------------------------------------------------
   function validateStructure(impulse) {
     if (!impulse.id) return fail("missing_id");
     if (!impulse.payloadRef) return fail("missing_payloadRef");
@@ -64,46 +69,30 @@ export function createPulseImmune({ getPressureSnapshot }) {
     return pass();
   }
 
-  // ---------------------------------------------------------
-  // v9.2 PRESSURE CHECKS (CNS-injected)
-  // ---------------------------------------------------------
-  function pressureCheck(impulse) {
-    const p = getPressureSnapshot() || {};
-
-    const flow = p.flowPressure || 0;
-    const drift = p.driftPressure || 0;
-    const throttle = p.throttleRate || 0;
-    const aura = p.auraTension || 0;
-    const factoring = p.factoringPressure || 0;
-    const storm = p.meshStormPressure || 0;
-
-    // v9.2 thresholds (aligned with Hormones + Field + Flow)
-    if (flow > 0.7) return fail("flow_pressure_high");
-    if (drift > 0.5) return fail("drift_pressure_high");
-    if (throttle > 0.3) return fail("throttle_rate_high");
-    if (aura > 0.4) return fail("aura_tension_high");
-    if (factoring > 0.6) return fail("factoring_pressure_high");
-    if (storm > 0.4) return fail("mesh_storm_pressure");
-
-    return pass();
-  }
-
-  // ---------------------------------------------------------
-  // ANOMALY QUARANTINE
-  // ---------------------------------------------------------
+  // ---------------------------------------------------------------------------
+  // ANOMALY QUARANTINE (v10.4)
+  // Only Cortex anomalies or explicit flags can quarantine.
+  // ---------------------------------------------------------------------------
   function quarantine(impulse) {
-    if (impulse.flags?.cortex_anomaly) {
+    const f = impulse.flags || {};
+
+    if (f.cortex_anomaly) {
       impulse.flags.immune_quarantined = true;
+      return fail("cortex_anomaly");
     }
-    if (impulse.flags?.cortex_factoring_anomaly) {
+
+    if (f.cortex_factoring_anomaly) {
       impulse.flags.immune_quarantined = true;
+      return fail("factoring_anomaly");
     }
+
     return pass();
   }
 
-  // ---------------------------------------------------------
-  // ROUTE SANITY
-  // ---------------------------------------------------------
+  // ---------------------------------------------------------------------------
+  // ROUTE HINT SANITY (v10.4)
+  // Still allowed, but simplified — no pressure gating.
+  // ---------------------------------------------------------------------------
   function routeSanity(impulse) {
     const hint = impulse.routeHint;
     if (!hint) return pass();
@@ -116,18 +105,21 @@ export function createPulseImmune({ getPressureSnapshot }) {
     return pass();
   }
 
-  // ---------------------------------------------------------
-  // ENERGY FLOOR
-  // ---------------------------------------------------------
+  // ---------------------------------------------------------------------------
+  // ENERGY FLOOR (v10.4)
+  // Same as v9.2 — but no pressure gating.
+  // ---------------------------------------------------------------------------
   function energyFloor(impulse) {
     if (isNaN(impulse.energy)) return fail("energy_nan");
     if (impulse.energy < 0) return fail("energy_negative");
     return pass();
   }
 
-  // ---------------------------------------------------------
-  // IMMUNE ENGINE (v9.2)
-  // ---------------------------------------------------------
+  // ---------------------------------------------------------------------------
+  // IMMUNE ENGINE (v10.4)
+  // Pure structural validation + anomaly quarantine.
+  // No pressure gating. No dynamic thresholds.
+  // ---------------------------------------------------------------------------
   function applyPulseImmune(impulse) {
     impulse.flags = impulse.flags || {};
     impulse.flags.immune_meta = meta;
@@ -135,7 +127,6 @@ export function createPulseImmune({ getPressureSnapshot }) {
     const checks = [
       validateStructure,
       validateFlags,
-      pressureCheck,
       quarantine,
       routeSanity,
       energyFloor
@@ -157,8 +148,8 @@ export function createPulseImmune({ getPressureSnapshot }) {
   return applyPulseImmune;
 }
 
-// -----------------------------------------------------------
+// ---------------------------------------------------------------------------
 // HELPERS
-// -----------------------------------------------------------
+// ---------------------------------------------------------------------------
 function pass() { return { ok: true }; }
 function fail(reason) { return { ok: false, reason }; }

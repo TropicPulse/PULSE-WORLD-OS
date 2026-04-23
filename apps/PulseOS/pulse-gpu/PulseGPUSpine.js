@@ -1,14 +1,16 @@
 // ============================================================================
-//  PULSE GPU ORCHESTRATOR v9.2 — MINIMAL BRAINSTEM
+//  PULSE GPU ORCHESTRATOR v10.4 — MINIMAL BRAINSTEM
 //  Autonomic Command Spine • Deterministic • Zero Compute • Zero Mutation
 // ============================================================================
 //
-//  WHAT THIS IS:
+//  WHAT THIS IS (v10.4):
 //    • The pure autonomic command spine of the GPU organism.
 //    • Routes signals between GPU subsystems.
 //    • Emits deterministic neural events.
 //    • Consults the Wisdom Cortex for insights.
 //    • Fail‑open, drift‑proof, self‑repair‑ready.
+//    • PulseSend‑10.4‑ready: events can be routed by the compute router.
+//    • Earn‑v2‑ready.
 //
 //  WHAT THIS IS NOT:
 //    • Not a renderer
@@ -21,7 +23,7 @@ import { PulseGPUEventEmitter } from "./PulseGPUSynapses.js";
 import { PulseGPUInsightsEngine } from "./PulseGPUWisdomCortex.js";
 
 // ============================================================================
-//  ORCHESTRATOR — MINIMAL BRAINSTEM (v9.2)
+//  ORCHESTRATOR — MINIMAL BRAINSTEM (v10.4)
 // ============================================================================
 class PulseGPUOrchestrator {
   constructor() {
@@ -35,13 +37,18 @@ class PulseGPUOrchestrator {
     this.meta = {
       layer: "PulseGPUOrchestrator",
       role: "BRAINSTEM",
-      version: 9.2,
+      version: 10.4,
       target: "full-gpu",
       selfRepairable: true,
       evo: {
         driftProof: true,
         unifiedAdvantageField: true,
-        advantageCascadeAware: true
+        advantageCascadeAware: true,
+        pulseSend10Ready: true,
+
+        routingContract: "PulseSend-v10.4",
+        gpuOrganContract: "PulseGPU-v10.4",
+        earnCompatibility: "Earn-v2"
       }
     };
   }
@@ -76,7 +83,7 @@ class PulseGPUOrchestrator {
           gpuModel
         }) || [];
     } catch {
-      // fail-open
+      // fail-open: insights remain empty
     }
 
     this.eventEmitter.emit("insights-available", {

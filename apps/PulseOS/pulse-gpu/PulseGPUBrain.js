@@ -1,10 +1,10 @@
 // ============================================================================
-//  PULSE GPU BRAIN v9.2 — THE ANALYST CORTEX
+//  PULSE GPU BRAIN v10.4 — THE ANALYST CORTEX
 //  CPU-SIDE INTELLIGENCE DIVISION (FULL-GPU, API-AGNOSTIC)
 //  PURE LOGIC. PURE DETERMINISM. ZERO SIDE EFFECTS.
 // ============================================================================
 //
-// TRUST-SAFE CONTRACT (v9.2):
+// TRUST-SAFE CONTRACT (v10.4):
 //  ---------------------------
 //  • No GPU calls
 //  • No rendering
@@ -16,31 +16,31 @@
 //  • No mutation outside the export holder
 //  • Deterministic: same input → same output
 //  • Fail-open: invalid input → empty packages, never throw
-//  • PulseSend‑2.0‑ready (routingContract v2)
-//  • GPU Organ Contract v9.2
+//  • PulseSend‑10.4‑ready (routingContract v10.4)
+//  • GPU Organ Contract v10.4
 //
-// IDENTITY — THE ANALYST CORTEX (v9.2):
+// IDENTITY — THE ANALYST CORTEX (v10.4):
 //  -------------------------------------
 //  • The intelligence cortex of the GPU OS.
 //  • Gathers raw assets → produces GPU-ready intelligence packages.
 //  • Pure preprocessing, pure logic, pure determinism.
 //  • The strategist that prepares the Astral Nervous System for execution.
 //  • Dual-mode evolved: biological + system-level advantage active together.
-//  • PulseSend‑2.0‑ready: packages are routable by the compute nervous system.
+//  • PulseSend‑10.4‑ready: packages are routable by the compute nervous system.
 //
-// LAYER POSITION (v9.2):
+// LAYER POSITION (v10.4):
 //  ----------------------
 //  PulseBand → PulseGPU Astral Nervous System → PulseGPUBrain (this file)
 //  This organ THINKS. It does not render, route, or execute frames.
 //  It does not import Runtime, Engine, Orchestrator, Healer, or AutoOptimize.
 //
-// DUAL-MODE ADVANTAGE (v9.2):
+// DUAL-MODE ADVANTAGE (v10.4):
 //  ---------------------------
 //  • Biological (mental) evolution:
 //      - metabolicBoost
 //      - neuralReflexBoost
 //      - stabilityBoost
-//      - cognitiveStabilityField (NEW)
+//      - cognitiveStabilityField
 //  • System (physical) evolution:
 //      - multiInstanceReady
 //      - deterministicNeuron
@@ -48,21 +48,21 @@
 //      - fanOutScaling
 //      - clusterCoherence
 //      - zeroDriftCloning
-//      - shaderPipelinePurity (NEW)
+//      - shaderPipelinePurity
 //  • Fusion (AND-architecture):
 //      - dualModeEvolution
 //      - organismClusterBoost
 //      - cognitiveComputeLink
 //      - unifiedAdvantageField
-//      - pulseSend2Ready (NEW)
-//  • PulseSend contract (conceptual only):
-//      - routingContract: "PulseSend-v2"
-//      - gpuOrganContract: "PulseGPU-v9.2"
-//      - earnCompatibility: "PulseEarn-v9"
+//      - pulseSend10Ready
+//  • PulseSend / GPU contracts (conceptual only):
+//      - routingContract: "PulseSend-v10.4"
+//      - gpuOrganContract: "PulseGPU-v10.4"
+//      - earnCompatibility: "Earn-v2"
 //      - workgroupLawVersion: 10
 //      - zeroImportShaderPipeline: true
 //
-// SAFETY (v9.2):
+// SAFETY (v10.4):
 //  --------------
 //  • Always fail-open (invalid input → empty packages, never errors)
 //  • Always deterministic
@@ -73,18 +73,18 @@
 // ✔ Logging via global primitive is allowed
 log(
   "gpu",
-  "PulseGPUBrain v9.2 — Analyst Cortex active (dual‑mode evolution, PulseSend‑2.0‑ready)."
+  "PulseGPUBrain v10.4 — Analyst Cortex active (dual‑mode evolution, PulseSend‑10.4‑ready)."
 );
 
 // ------------------------------------------------------
 // GLOBAL VERSIONS
 // ------------------------------------------------------
 
-const PULSE_GPU_BRAIN_VERSION = 9.2;
-const PULSE_GPU_BRAIN_SCHEMA_VERSION = 5;
+const PULSE_GPU_BRAIN_VERSION = 10.4;
+const PULSE_GPU_BRAIN_SCHEMA_VERSION = 6;
 
 // ------------------------------------------------------
-// DUAL-MODE ADVANTAGE BLOCK (v9.2)
+// DUAL-MODE ADVANTAGE BLOCK (v10.4)
 // ------------------------------------------------------
 
 const DUAL_MODE_EVO = {
@@ -109,12 +109,12 @@ const DUAL_MODE_EVO = {
   organismClusterBoost: 1.0,
   cognitiveComputeLink: true,
   unifiedAdvantageField: true,
-  pulseSend2Ready: true,
+  pulseSend10Ready: true,
 
   // PulseSend / organism contracts (conceptual only)
-  routingContract: "PulseSend-v2",
-  gpuOrganContract: "PulseGPU-v9.2",
-  earnCompatibility: "PulseEarn-v9",
+  routingContract: "PulseSend-v10.4",
+  gpuOrganContract: "PulseGPU-v10.4",
+  earnCompatibility: "Earn-v2",
   workgroupLawVersion: 10,
   zeroImportShaderPipeline: true
 };
@@ -250,11 +250,12 @@ class PulseShaderPackage {
       evo: DUAL_MODE_EVO,
       brainVersion: PULSE_GPU_BRAIN_VERSION,
       schemaVersion: PULSE_GPU_BRAIN_SCHEMA_VERSION,
-      shaderContract: "WGSL-v9.2",
+      shaderContract: "WGSL-v10.4",
       ...metadata
     };
   }
 }
+
 class PulseRenderPlanPackage {
   constructor({
     id = "render-plan",
@@ -279,10 +280,9 @@ class PulseRenderPlanPackage {
       brainVersion: PULSE_GPU_BRAIN_VERSION,
       schemaVersion: PULSE_GPU_BRAIN_SCHEMA_VERSION,
 
-      // UPDATED FOR v9.2
-      routingContract: "PulseSend-v2",
-      renderPlanContract: "PulseGPU-RenderPlan-v9.2",
-      frameGraphContract: "FrameGraph-v3",
+      routingContract: "PulseSend-v10.4",
+      renderPlanContract: "PulseGPU-RenderPlan-v10.4",
+      frameGraphContract: "FrameGraph-v4",
 
       ...metadata
     };
@@ -313,11 +313,10 @@ class BrainInput {
     this.usagePatterns = usagePatterns;
     this.predictionHints = predictionHints;
 
-    // UPDATED FOR v9.2
     this.evo = DUAL_MODE_EVO;
     this.brainVersion = PULSE_GPU_BRAIN_VERSION;
-    this.routingContract = "PulseSend-v2";
-    this.gpuOrganContract = "PulseGPU-v9.2";
+    this.routingContract = "PulseSend-v10.4";
+    this.gpuOrganContract = "PulseGPU-v10.4";
   }
 }
 
@@ -338,7 +337,7 @@ class TextureOptimizer {
       optimizedTextures: rawTextures,
       metadata: {
         sourceCount: rawTextures.length,
-        optimizerContract: "TextureOptimizer-v9.2"
+        optimizerContract: "TextureOptimizer-v10.4"
       }
     });
   }
@@ -357,7 +356,7 @@ class MeshOptimizer {
       simplifiedMeshes: rawMeshes,
       metadata: {
         sourceCount: rawMeshes.length,
-        optimizerContract: "MeshOptimizer-v9.2"
+        optimizerContract: "MeshOptimizer-v10.4"
       }
     });
   }
@@ -375,7 +374,7 @@ class LightingBaker {
     return new PulseLightingPackage({
       metadata: {
         sceneCount: rawScenes.length,
-        bakerContract: "LightingBaker-v9.2"
+        bakerContract: "LightingBaker-v10.4"
       }
     });
   }
@@ -394,7 +393,7 @@ class AnimationBaker {
       bakedFrames: rawAnimations,
       metadata: {
         clipCount: rawAnimations.length,
-        bakerContract: "AnimationBaker-v9.2"
+        bakerContract: "AnimationBaker-v10.4"
       }
     });
   }
@@ -413,7 +412,7 @@ class ShaderCompiler {
       compiledVariants: rawShaders,
       metadata: {
         shaderCount: rawShaders.length,
-        compilerContract: "ShaderCompiler-v9.2"
+        compilerContract: "ShaderCompiler-v10.4"
       }
     });
   }
@@ -436,7 +435,7 @@ class RenderPlanner {
         sceneCount: rawScenes.length,
         hasUsagePatterns:
           !!usagePatterns && Object.keys(usagePatterns).length > 0,
-        plannerContract: "RenderPlanner-v9.2"
+        plannerContract: "RenderPlanner-v10.4"
       }
     });
   }
@@ -463,11 +462,11 @@ class PulseGPUBrainController {
       }
     );
 
-    const textures = TextureOptimizer.process(brainInput.rawTextures);
-    const meshes = MeshOptimizer.process(brainInput.rawMeshes);
-    const lighting = LightingBaker.process(brainInput.rawScenes);
-    const animation = AnimationBaker.process(brainInput.rawAnimations);
-    const shaders = ShaderCompiler.process(brainInput.rawShaders);
+    const textures   = TextureOptimizer.process(brainInput.rawTextures);
+    const meshes     = MeshOptimizer.process(brainInput.rawMeshes);
+    const lighting   = LightingBaker.process(brainInput.rawScenes);
+    const animation  = AnimationBaker.process(brainInput.rawAnimations);
+    const shaders    = ShaderCompiler.process(brainInput.rawShaders);
     const renderPlan = RenderPlanner.process(
       brainInput.rawScenes,
       brainInput.usagePatterns
@@ -486,15 +485,18 @@ class PulseGPUBrainController {
       renderPlan,
 
       evo: DUAL_MODE_EVO,
-      routingContract: "PulseSend-v2",
-      gpuOrganContract: "PulseGPU-v9.2"
+      routingContract: "PulseSend-v10.4",
+      gpuOrganContract: "PulseGPU-v10.4"
     };
 
     log(
       "gpu",
       "[Analyst] buildPackages() — complete",
       "color:#4CAF50;",
-      { schemaVersion: packageSet.schemaVersion, brainVersion: packageSet.brainVersion }
+      {
+        schemaVersion: packageSet.schemaVersion,
+        brainVersion: packageSet.brainVersion
+      }
     );
 
     return packageSet;

@@ -1,36 +1,25 @@
 // ============================================================================
 // FILE: tropic-pulse-functions/apps/pulse-earn/PulseEarnMktCourier.js
-// LAYER: THE COURIER (Fast‑Turnaround Compute Runner + Job Delivery Agent)
-// PULSE‑EARN v9.x — COMMENTAL / IDENTITY UPGRADE ONLY (NO LOGIC CHANGES)
+// LAYER: THE COURIER (v10.4)
+// (Fast‑Turnaround Compute Runner + Job Delivery Agent — Deterministic)
 // ============================================================================
 //
-// ROLE:
-//   THE COURIER — Pulse‑Earn’s lightweight, fast‑turnaround marketplace agent.
-//   • Interfaces with the Spheron Compute marketplace
-//   • Fetches simple compute jobs
-//   • Normalizes them into Pulse‑Earn job schema
-//   • Submits completed results
-//   • Maintains healing metadata for Earn healers
+// ROLE (v10.4):
+//   THE COURIER — Pulse‑Earn’s deterministic Spheron marketplace receptor.
+//   • Represents Spheron compute jobs as stable receptor DNA.
+//   • Normalizes raw Spheron-like tasks into Pulse‑Earn job schema.
+//   • Provides deterministic ping(), fetchJobs(), submitResult().
+//   • Maintains healing metadata for Earn healers.
 //
-// PURPOSE:
-//   • Provide a deterministic, drift‑proof adapter for Spheron Compute
-//   • Maintain strict protocol boundaries
-//   • Ensure safe, predictable job delivery communication
-//
-// CONTRACT:
-//   • PURE NETWORK ADAPTER — no AI layers, no translation, no memory model
-//   • READ‑ONLY except for healing metadata
-//   • NO eval(), NO Function(), NO dynamic imports
-//   • NO executing user code
-//   • Deterministic normalization only
-//
-// SAFETY:
-//   • v9.x upgrade is COMMENTAL / IDENTITY ONLY — NO LOGIC CHANGES
-//   • All behavior remains identical to pre‑v9.x SpheronAdapter
+// CONTRACT (v10.4):
+//   • PURE RECEPTOR — no network, no async, no timestamps.
+//   • READ‑ONLY except for healing metadata.
+//   • Deterministic normalization only.
 // ============================================================================
 
+
 // ---------------------------------------------------------------------------
-// Healing Metadata — Courier Interaction Log
+// Healing Metadata — Courier Interaction Log (deterministic)
 // ---------------------------------------------------------------------------
 const healingState = {
   lastPingMs: null,
@@ -42,7 +31,6 @@ const healingState = {
   lastNormalizedJobId: null,
   lastNormalizationError: null,
 
-  // Spheron-specific metadata
   lastPayloadVersion: null,
   lastJobType: null,
   lastResourceShape: null,
@@ -51,10 +39,15 @@ const healingState = {
   payoutVolatility: 0,
 
   cycleCount: 0,
+  lastCycleIndex: null
 };
 
+// Deterministic cycle counter
+let courierCycle = 0;
+
+
 // ---------------------------------------------------------------------------
-// INTERNAL — Spheron-Specific Helpers
+// INTERNAL — Safe Getter
 // ---------------------------------------------------------------------------
 function safeGet(obj, path, fallback = null) {
   try {
@@ -66,75 +59,67 @@ function safeGet(obj, path, fallback = null) {
   }
 }
 
-function updateVolatility(jobs) {
-  const count = jobs.length;
-  const payouts = jobs
-    .map(j => Number(j.payout ?? 0))
-    .filter(n => Number.isFinite(n));
-
-  healingState.liquidityScore = Math.abs(
-    count - (healingState.lastFetchCount || 0)
-  );
-
-  if (payouts.length > 1) {
-    const avg = payouts.reduce((a, b) => a + b, 0) / payouts.length;
-    const variance =
-      payouts.reduce((a, b) => a + Math.pow(b - avg, 2), 0) / payouts.length;
-    healingState.payoutVolatility = variance;
-  }
-}
 
 // ---------------------------------------------------------------------------
-// COURIER CLIENT — Spheron Compute Interface
+// DETERMINISTIC SPHERON RECEPTOR DNA (replaces network calls)
+// ---------------------------------------------------------------------------
+const SPHERON_RECEPTOR_DNA = {
+  pingLatency: 42,
+  jobs: [
+    {
+      id: "spheron-001",
+      payout: 0.05,
+      cpu: 2,
+      memory: 2048,
+      estimatedSeconds: 300,
+      gpu: false,
+      type: "compute"
+    },
+    {
+      id: "spheron-002",
+      payout: 0.12,
+      cpu: 4,
+      memory: 4096,
+      estimatedSeconds: 600,
+      gpu: true,
+      type: "compute"
+    }
+  ]
+};
+
+
+// ---------------------------------------------------------------------------
+// COURIER CLIENT — Deterministic Spheron Interface
 // ---------------------------------------------------------------------------
 export const PulseEarnMktCourier = {
   id: "spheron",
   name: "Spheron Compute",
 
   // -------------------------------------------------------------------------
-  // Ping — Measure courier route latency
+  // Ping — Deterministic courier route latency
   // -------------------------------------------------------------------------
-  async ping() {
-    const url = "https://api-v2.spheron.network/health";
-    const start = Date.now();
+  ping() {
+    courierCycle++;
+    healingState.cycleCount++;
+    healingState.lastCycleIndex = courierCycle;
 
-    try {
-      const res = await fetch(url);
-      if (!res.ok) {
-        healingState.lastPingError = `non_ok_status_${res.status}`;
-        return null;
-      }
+    healingState.lastPingMs = SPHERON_RECEPTOR_DNA.pingLatency;
+    healingState.lastPingError = null;
 
-      const latency = Date.now() - start;
-      healingState.lastPingMs = latency;
-      healingState.lastPingError = null;
-      healingState.cycleCount++;
-      return latency;
-    } catch (err) {
-      healingState.lastPingError = err.message;
-      return null;
-    }
+    return SPHERON_RECEPTOR_DNA.pingLatency;
   },
 
   // -------------------------------------------------------------------------
-  // Fetch Jobs — Pick up compute tasks from Spheron
+  // Fetch Jobs — Deterministic compute task retrieval
   // -------------------------------------------------------------------------
-  async fetchJobs(deviceId) {
-    const url = "https://api-v2.spheron.network/compute/jobs";
+  fetchJobs() {
+    courierCycle++;
+    healingState.cycleCount++;
+    healingState.lastCycleIndex = courierCycle;
 
     try {
-      const res = await fetch(url);
-      if (!res.ok) {
-        healingState.lastFetchError = `non_ok_status_${res.status}`;
-        healingState.lastFetchCount = 0;
-        return [];
-      }
-
-      const data = await res.json();
-
-      // Track schema drift
-      healingState.lastPayloadVersion =
-        typeof data === "object" ? Object.keys(data).join(",") : "unknown";
+      const data = { jobs: SPHERON_RECEPTOR_DNA.jobs };
+      healingState.lastPayloadVersion = "10.4-spheron-dna";
 
       if (!data || !Array.isArray(data.jobs)) {
         healingState.lastFetchError = "invalid_jobs_payload";
@@ -146,15 +131,28 @@ export const PulseEarnMktCourier = {
         .map(raw => this.normalizeJob(raw))
         .filter(j => j !== null);
 
-      updateVolatility(jobs);
+      // deterministic volatility
+      const count = jobs.length;
+      const payouts = jobs.map(j => j.payout);
+
+      healingState.liquidityScore = Math.abs(
+        count - (healingState.lastFetchCount || 0)
+      );
+
+      if (payouts.length > 1) {
+        const avg = payouts.reduce((a, b) => a + b, 0) / payouts.length;
+        const variance =
+          payouts.reduce((a, b) => a + (b - avg) * (b - avg), 0) /
+          payouts.length;
+        healingState.payoutVolatility = variance;
+      }
 
       healingState.lastFetchError = null;
       healingState.lastFetchCount = jobs.length;
-      healingState.cycleCount++;
+
       return jobs;
+
     } catch (err) {
-      // eslint-disable-next-line no-console
-      error("PulseEarnMktCourier.fetchJobs() error:", err);
       healingState.lastFetchError = err.message;
       healingState.lastFetchCount = 0;
       return [];
@@ -162,29 +160,24 @@ export const PulseEarnMktCourier = {
   },
 
   // -------------------------------------------------------------------------
-  // Submit Result — Deliver completed work back to Spheron
+  // Submit Result — Deterministic delivery back to Spheron
   // -------------------------------------------------------------------------
-  async submitResult(job, result) {
-    const url = `https://api-v2.spheron.network/compute/jobs/${job.id}/submit`;
+  submitResult(job, result) {
+    courierCycle++;
+    healingState.cycleCount++;
+    healingState.lastCycleIndex = courierCycle;
+
     healingState.lastSubmitJobId = job?.id ?? null;
+    healingState.lastSubmitError = null;
 
-    try {
-      const res = await fetch(url, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ result }),
-      });
-
-      const json = await res.json();
-      healingState.lastSubmitError = null;
-      healingState.cycleCount++;
-      return json;
-    } catch (err) {
-      // eslint-disable-next-line no-console
-      error("PulseEarnMktCourier.submitResult() error:", err);
-      healingState.lastSubmitError = err.message;
-      throw err;
-    }
+    return {
+      ok: true,
+      marketplace: "spheron",
+      jobId: job?.id ?? null,
+      cycleIndex: courierCycle,
+      note: "Spheron submission simulated deterministically in v10.4.",
+      result
+    };
   },
 
   // -------------------------------------------------------------------------
@@ -201,10 +194,9 @@ export const PulseEarnMktCourier = {
         return null;
       }
 
-      // Track job type (Spheron sometimes includes this)
       healingState.lastJobType = safeGet(raw, "type", "unknown");
 
-      const payout = Number(raw.payout ?? raw.price ?? 0);
+      const payout = Number(raw.payout ?? 0);
       if (!Number.isFinite(payout) || payout <= 0) {
         healingState.lastNormalizationError = "non_positive_payout";
         return null;
@@ -217,7 +209,7 @@ export const PulseEarnMktCourier = {
       healingState.lastResourceShape = {
         cpu: cpuRequired,
         mem: memoryRequired,
-        duration: estimatedSeconds,
+        duration: estimatedSeconds
       };
 
       if (!Number.isFinite(estimatedSeconds) || estimatedSeconds <= 0) {
@@ -225,14 +217,8 @@ export const PulseEarnMktCourier = {
         return null;
       }
 
-      // GPU flag inference
       const gpuFlag = !!raw.gpu;
       healingState.lastGpuFlag = gpuFlag ? "gpu" : "cpu";
-
-      const minGpuScore = gpuFlag ? 300 : 100;
-
-      // Spheron jobs are tiny → fixed bandwidth
-      const bandwidthNeededMbps = 5;
 
       const normalized = {
         id: String(raw.id),
@@ -243,19 +229,22 @@ export const PulseEarnMktCourier = {
         memoryRequired,
         estimatedSeconds,
 
-        minGpuScore,
-        bandwidthNeededMbps,
+        minGpuScore: gpuFlag ? 300 : 100,
+        bandwidthNeededMbps: 5
       };
 
       healingState.lastNormalizedJobId = normalized.id;
       healingState.lastNormalizationError = null;
+
       return normalized;
+
     } catch (err) {
       healingState.lastNormalizationError = err.message;
       return null;
     }
-  },
+  }
 };
+
 
 // ---------------------------------------------------------------------------
 // Healing State Export — Courier Interaction Log

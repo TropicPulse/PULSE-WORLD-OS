@@ -1,10 +1,10 @@
 // ============================================================================
-// PulseOS Evolution Engine — v10
+// PulseOS Evolution Engine — v10.4
 // “Evolution that evolves the organism, not the filesystem”
 // ============================================================================
 //
-// ROLE IN THE ORGANISM (v10):
-// ---------------------------
+// ROLE IN THE ORGANISM (v10.4):
+// -----------------------------
 // • FIRST organ after Understanding
 // • Attaches Intent, OrganismMap, IQMap to Brain
 // • Attaches Evolution to Brain
@@ -12,29 +12,30 @@
 // • Provides drift detection + lineage tracking
 // • Provides organ evolution + organism evolution
 // • Provides CNS evolution + structural drift scanning
-// • Pure frontend, deterministic, zero network, zero filesystem
+// • Pure frontend, deterministic wiring, zero network, zero filesystem
 //
-// SAFETY CONTRACT (v10):
-// -----------------------
+// SAFETY CONTRACT (v10.4):
+// -------------------------
 // • No dynamic eval
 // • No backend calls
 // • No filesystem access
 // • No import.meta.glob
 // • Deterministic, drift‑proof wiring only
+// • Time usage is for lineage tagging only, not logic branching
 //
-// IDENTITY (v10):
-// ---------------
+// IDENTITY (v10.4):
+// -----------------
 // • organ: Evolution
 // • layer: CNS
 // • subsystem: OS
-// • version: 10.0
+// • version: 10.4
 // ============================================================================
 
 export const PulseRole = {
   type: "Evolution",
   subsystem: "OS",
   layer: "CNS",
-  version: "10.0",
+  version: "10.4",
   identity: "PulseOSEvolution",
 
   evo: {
@@ -43,7 +44,15 @@ export const PulseRole = {
     multiInstanceReady: true,
     unifiedAdvantageField: true,
     zeroNetwork: true,
-    zeroFilesystem: true
+    zeroFilesystem: true,
+
+    loopTheoryAware: true,
+    continuanceAware: true,
+    routingContract: "PulseRouter-v10.4",
+    osOrganContract: "PulseOS-v10.4",
+    earnCompatibility: "PulseEarn-v10.4",
+    gpuCompatibility: "PulseGPU-v10.4",
+    sendCompatibility: "PulseSendSystem-v10.4"
   }
 };
 

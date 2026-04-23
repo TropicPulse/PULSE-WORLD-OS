@@ -1,16 +1,19 @@
 // ============================================================================
-//  PulseEarnReflex.js — Side-Attached Earn Reflex (v2.0)
+//  PulseEarnReflex.js — Side-Attached Earn Reflex (v10.4)
 //  - No imports
 //  - No sending, no routing
-//  - Pure reflex builder
-//  - Fully aligned with PulseOSGovernor v3 (dynamic slicing)
+//  - Pure deterministic reflex builder
+//  - Fully aligned with PulseOSGovernor v3.2 (dynamic slicing)
 // ============================================================================
 
 // In-memory registry of reflex instances (multi-instance law)
 const reflexInstances = new Map(); // reflexId -> state
 
+// Deterministic cycle counter (replaces timestamps)
+let reflexCycle = 0;
+
 // ---------------------------------------------------------------------------
-//  INTERNAL: Build a Reflex Earn organism from a governor event
+//  INTERNAL: Build a Reflex Earn organism from a governor event (deterministic)
 // ---------------------------------------------------------------------------
 function buildReflexEarnFromGovernorEvent(event, pulseOrImpulse, instanceContext) {
   const pulseId =
@@ -31,16 +34,16 @@ function buildReflexEarnFromGovernorEvent(event, pulseOrImpulse, instanceContext
     lineageDepth: event.lineageDepth,
     returnToDepth: event.returnToDepth,
     fallbackDepth: event.fallbackDepth,
-    instanceContext,       // ⭐ NEW: dynamic slice context
-    timestamp: Date.now(),
+    instanceContext,       // dynamic slice context
+    cycleIndex: reflexCycle,
     rawEvent: event
   };
 
   return {
     EarnRole: {
       kind: "EarnReflex",
-      version: "2.0",
-      identity: "EarnReflex-v2"
+      version: "10.4",
+      identity: "EarnReflex-v10.4"
     },
     jobId: pulseId,
     pattern: `EarnReflex:${organ}:${reason}`,
@@ -54,14 +57,14 @@ function buildReflexEarnFromGovernorEvent(event, pulseOrImpulse, instanceContext
       sourceOrgan: organ,
       sourceReason: reason,
       sourcePulseId: pulseId,
-      instanceContext,      // ⭐ NEW
-      timestamp: Date.now()
+      instanceContext,
+      cycleIndex: reflexCycle
     }
   };
 }
 
 // ---------------------------------------------------------------------------
-//  INTERNAL: Multi-instance reflex identity
+//  INTERNAL: Multi-instance reflex identity (deterministic)
 // ---------------------------------------------------------------------------
 function getReflexId(event, pulseOrImpulse) {
   const pulseId =
@@ -78,11 +81,13 @@ function getReflexId(event, pulseOrImpulse) {
 }
 
 // ---------------------------------------------------------------------------
-//  PUBLIC API — PulseEarnReflex v2.0
+//  PUBLIC API — PulseEarnReflex v10.4
 // ---------------------------------------------------------------------------
 export const PulseEarnReflex = {
   // Called when the governor blocks or detects a loop-like condition
-  async fromGovernorEvent(event, pulseOrImpulse, instanceContext) {
+  fromGovernorEvent(event, pulseOrImpulse, instanceContext) {
+    reflexCycle++;
+
     const reflexId = getReflexId(event, pulseOrImpulse);
 
     // Multi-instance reflex law:
@@ -93,14 +98,14 @@ export const PulseEarnReflex = {
       state = {
         reflexId,
         count: 0,
-        firstSeenAt: Date.now(),
-        lastSeenAt: null
+        firstSeenCycle: reflexCycle,
+        lastSeenCycle: null
       };
       reflexInstances.set(reflexId, state);
     }
 
     state.count += 1;
-    state.lastSeenAt = Date.now();
+    state.lastSeenCycle = reflexCycle;
 
     // Build the EarnReflex organism with dynamic slice context
     const earnReflex = buildReflexEarnFromGovernorEvent(

@@ -1,19 +1,19 @@
 // ============================================================================
 // FILE: /apps/organs/gpu/PulseGPUAstralNervousSystem.js
-// [pulse:gpu] PULSE_GPU_ASTRAL_NERVOUS_SYSTEM v9.2  // indigo-silver
+// [pulse:gpu] PULSE_GPU_ASTRAL_NERVOUS_SYSTEM v10.4  // indigo-silver
 // GPU Organ Export Layer • Pure Barrel • Zero Logic • Zero State • Zero Boot
 // ============================================================================
 //
-// IDENTITY — THE GPU ASTRAL NERVOUS SYSTEM (v9.2):
+// IDENTITY — THE GPU ASTRAL NERVOUS SYSTEM (v10.4):
 //  -----------------------------------------------
 //  • Defines the boundary between PulseBand (nervous system)
 //    and the GPU subsystem (Brain, Runtime, Orchestrator, Guardian, Healer).
 //  • Pure re-export layer — exposes GPU organs without performing any work.
 //  • No logic, no state, no routing, no mutation, no execution.
 //  • Metadata-only identity for subsystem clarity.
-//  • PulseSend‑2.0‑ready: single GPU export surface for the compute router.
+//  • PulseSend‑10.4‑ready: single GPU export surface for the compute router.
 //
-// ROLE (v9.2):
+// ROLE (v10.4):
 //  • Nervous System (PulseBand) → CPU-side routing + organism logic
 //  • Astral Nervous System → GPU organ boundary + subsystem identity
 //  • GPU Organs → Brain, Runtime, Orchestrator, Guardian, Healer, Engine
@@ -33,59 +33,61 @@
 
 // --- GPU BRAIN --------------------------------------------------------------
 //  ANALYST CORTEX — Precomputation, package building, deterministic logic
-//  Version: PulseGPUBrain v9.2 — PulseSend‑2.0‑ready, Earn-compatible
+//  Version: PulseGPUBrain v10.4 — PulseSend‑10.4‑ready, Earn-compatible
 export * from "./PulseGPUBrain.js";
 
 // --- GPU RUNTIME ------------------------------------------------------------
 //  MOMENTUM NETWORK — Frame conduction, buffer setup, runtime surface
-//  Version: PulseGPURuntime v9.2 — PulseSend‑2.0‑ready, Earn-compatible
+//  Version: PulseGPURuntime v10.4 — PulseSend‑10.4‑ready, Earn-compatible
 export * from "./PulseGPUDrive.js";
 
 // --- GPU ENGINE -------------------------------------------------------------
 //  ASTRAL MUSCLE — WebGPU execution layer, frame conductor
-//  Version: PulseGPUEngine v9.2 — PulseSend‑2.0‑ready, Earn-compatible
+//  Version: PulseGPUEngine v10.4 — PulseSend‑10.4‑ready, Earn-compatible
 export * from "./PulseGPUDriveCenter.js";
 
 // --- GPU AUTO-OPTIMIZE -----------------------------------------------------
 //  GUARDIAN CORTEX — Permission, safety, optimization, self-healing triggers
-//  Version: PulseGPUGuardianCortex v9.2 (to be aligned)
+//  Version: PulseGPUGuardianCortex v10.4 (to be aligned)
 export * from "./PulseGPUGuardianCortex.js";
 
 // --- GPU ORCHESTRATOR ------------------------------------------------------
 //  BRAINSTEM — Routing, coordination, subsystem linking
-//  Version: PulseGPUOrchestrator v9.2 (to be aligned)
+//  Version: PulseGPUOrchestrator v10.4 (to be aligned)
 export * from "./PulseGPUSpine.js";
 
 // --- GPU HEALER ------------------------------------------------------------
 //  IMMUNE SYSTEM — Fault detection, recovery, stabilization
-//  Version: PulseGPULymphNodes v9.2 (to be aligned)
+//  Version: PulseGPULymphNodes v10.4 (to be aligned)
 export * from "./PulseGPULymphNodes.js";
+
 // ============================================================================
-//  ORGAN EXPORT — ⭐ PulseGPU (v9.2)
+//  ORGAN EXPORT — ⭐ PulseGPUAstralNervousSystem (v10.4)
 //  Unified GPU Astral Nervous System Organ
 //  Provides a single identity + placeholder boot surface
 // ============================================================================
-export const PulseGPU = {
+export const PulseGPUAstralNervousSystem = {
   PulseRole: {
     type: "Organ",
     subsystem: "PulseGPU",
     layer: "AstralNervousSystem",
-    version: "9.2",
-    identity: "PulseGPUAstralNervousSystem-v9.2",
+    version: "10.4",
+    identity: "PulseGPUAstralNervousSystem-v10.4",
 
     evo: {
       driftProof: true,
       unifiedOrganReady: true,
       multiOrganReady: true,
       futureEvolutionReady: true,
-      astralBoundary: true
+      astralBoundary: true,
+      pulseSend10Ready: true
     }
   },
 
   // Placeholder until GPU Brain/Runtime/Engine are wired
   start(...args) {
     throw new Error(
-      "[PulseGPU-v9.2] PulseGPU.start() was called before initialization. " +
+      "[PulseGPUAstralNervousSystem-v10.4] start() was called before initialization. " +
       "Wire GPU Brain/Runtime/Engine in PulseUnderstanding."
     );
   }

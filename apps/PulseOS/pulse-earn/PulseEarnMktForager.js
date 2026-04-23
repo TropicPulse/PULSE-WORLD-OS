@@ -1,32 +1,26 @@
 // ============================================================================
 // FILE: tropic-pulse-functions/apps/pulse-earn/PulseEarnMktForager.js
-// LAYER: THE FORAGER (General GPU Compute Harvester)
-// PULSE‑EARN v9.x — COMMENTAL / IDENTITY UPGRADE ONLY (NO LOGIC CHANGES)
+// LAYER: THE FORAGER (General GPU Compute Harvester) — v10.4
 // ============================================================================
 //
-// ROLE:
-//   THE FORAGER — Pulse‑Earn’s general‑purpose compute marketplace agent.
-//   • Interfaces with the Salad GPU compute marketplace
-//   • Fetches generic compute workloads (AI, ML, rendering, video tasks)
-//   • Normalizes raw Salad tasks into Pulse‑Earn job schema
-//   • Submits completed outputs
-//   • Maintains healing metadata for Earn healers
+// ROLE (v10.4):
+//   THE FORAGER — Pulse‑Earn’s deterministic Salad marketplace receptor.
+//   • Represents Salad GPU compute workloads as stable receptor DNA.
+//   • Normalizes raw Salad-like tasks into Pulse‑Earn job schema.
+//   • Provides deterministic ping(), fetchJobs(), submitResult().
+//   • Maintains healing metadata for Earn healers.
 //
-// PURPOSE:
-//   • Provide a deterministic, drift‑proof adapter for Salad workloads
-//   • Maintain strict protocol boundaries
-//   • Ensure safe, predictable compute job communication
+// PURPOSE (v10.4):
+//   • Replace all network behavior with deterministic receptor DNA.
+//   • Maintain strict protocol boundaries.
+//   • Ensure safe, predictable compute job communication.
 //
-// CONTRACT:
-//   • PURE NETWORK ADAPTER — no AI layers, no translation, no memory model
-//   • READ‑ONLY except for healing metadata
-//   • NO eval(), NO Function(), NO dynamic imports
-//   • NO executing user code
-//   • Deterministic normalization only
-//
-// SAFETY:
-//   • v9.x upgrade is COMMENTAL / IDENTITY ONLY — NO LOGIC CHANGES
-//   • All behavior remains identical to pre‑v9.x adapter patterns
+// CONTRACT (v10.4):
+//   • PURE RECEPTOR — no network, no async, no timestamps.
+//   • READ‑ONLY except for healing metadata.
+//   • NO eval(), NO Function(), NO dynamic imports.
+//   • NO executing user code.
+//   • Deterministic normalization only.
 // ============================================================================
 
 
@@ -43,14 +37,13 @@ const healingState = {
   lastNormalizedJobId: null,
   lastNormalizationError: null,
 
-  // Salad-specific metadata (allowed)
-  lastPayloadVersion: null,
+  lastPayloadVersion: "10.4",
   lastJobType: null,
   lastGpuTier: null,
   lastResourceShape: null,
   payoutVolatility: 0,
   liquidityScore: 0,
-  cycleCount: 0,
+  cycleCount: 0
 };
 
 
@@ -67,6 +60,40 @@ function safeGet(obj, path, fallback = null) {
   }
 }
 
+
+// ---------------------------------------------------------------------------
+// DETERMINISTIC SALAD DNA — replaces all network calls
+// ---------------------------------------------------------------------------
+const SALAD_RECEPTOR_DNA = {
+  pingLatency: 55, // deterministic
+  jobs: [
+    {
+      id: "salad-001",
+      reward: 0.08,
+      cpu: 4,
+      memory: 4096,
+      estimatedSeconds: 900,
+      gpuTier: "mid",
+      bandwidth: 20,
+      type: "generic-compute"
+    },
+    {
+      id: "salad-002",
+      reward: 0.15,
+      cpu: 8,
+      memory: 8192,
+      estimatedSeconds: 1800,
+      gpuTier: "high",
+      bandwidth: 50,
+      type: "ai-task"
+    }
+  ]
+};
+
+
+// ---------------------------------------------------------------------------
+// Volatility — deterministic (no real variance)
+// ---------------------------------------------------------------------------
 function updateVolatility(jobs) {
   const count = jobs.length;
   const payouts = jobs
@@ -80,62 +107,36 @@ function updateVolatility(jobs) {
   if (payouts.length > 1) {
     const avg = payouts.reduce((a, b) => a + b, 0) / payouts.length;
     const variance =
-      payouts.reduce((a, b) => a + Math.pow(b - avg, 2), 0) / payouts.length;
+      payouts.reduce((a, b) => a + (b - avg) * (b - avg), 0) / payouts.length;
     healingState.payoutVolatility = variance;
   }
 }
 
 
 // ---------------------------------------------------------------------------
-// FORAGER CLIENT — Salad Marketplace Interface
+// FORAGER CLIENT — Salad Marketplace Interface (deterministic)
 // ---------------------------------------------------------------------------
 export const PulseEarnMktForager = {
   id: "salad",
   name: "Salad Marketplace",
 
   // -------------------------------------------------------------------------
-  // Ping — Measure marketplace latency
+  // Ping — deterministic marketplace latency
   // -------------------------------------------------------------------------
-  async ping() {
-    const url = "https://api.salad.com/ping"; // placeholder
-    const start = Date.now();
-
-    try {
-      const res = await fetch(url);
-      if (!res.ok) {
-        healingState.lastPingError = `non_ok_status_${res.status}`;
-        return null;
-      }
-
-      const latency = Date.now() - start;
-      healingState.lastPingMs = latency;
-      healingState.lastPingError = null;
-      healingState.cycleCount++;
-      return latency;
-    } catch (err) {
-      healingState.lastPingError = err.message;
-      return null;
-    }
+  ping() {
+    healingState.lastPingMs = SALAD_RECEPTOR_DNA.pingLatency;
+    healingState.lastPingError = null;
+    healingState.cycleCount++;
+    return SALAD_RECEPTOR_DNA.pingLatency;
   },
 
   // -------------------------------------------------------------------------
-  // Fetch Jobs — Retrieve Salad compute tasks
+  // Fetch Jobs — Retrieve deterministic Salad compute tasks
   // -------------------------------------------------------------------------
-  async fetchJobs(deviceId) {
-    const url = "https://api.salad.com/jobs"; // placeholder
-
+  fetchJobs() {
     try {
-      const res = await fetch(url);
-      if (!res.ok) {
-        healingState.lastFetchError = `non_ok_status_${res.status}`;
-        healingState.lastFetchCount = 0;
-        return [];
-      }
-
-      const data = await res.json();
-
-      healingState.lastPayloadVersion =
-        typeof data === "object" ? Object.keys(data).join(",") : "unknown";
+      const data = { jobs: SALAD_RECEPTOR_DNA.jobs };
+      healingState.lastPayloadVersion = "10.4-salad-dna";
 
       if (!data || !Array.isArray(data.jobs)) {
         healingState.lastFetchError = "invalid_jobs_payload";
@@ -161,27 +162,20 @@ export const PulseEarnMktForager = {
   },
 
   // -------------------------------------------------------------------------
-  // Submit Result — Return completed outputs
+  // Submit Result — Return completed outputs (deterministic stub)
   // -------------------------------------------------------------------------
-  async submitResult(job, result) {
-    const url = `https://api.salad.com/jobs/${job.id}/submit`; // placeholder
+  submitResult(job, result) {
     healingState.lastSubmitJobId = job?.id ?? null;
+    healingState.lastSubmitError = null;
+    healingState.cycleCount++;
 
-    try {
-      const res = await fetch(url, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ result }),
-      });
-
-      const json = await res.json();
-      healingState.lastSubmitError = null;
-      healingState.cycleCount++;
-      return json;
-    } catch (err) {
-      healingState.lastSubmitError = err.message;
-      throw err;
-    }
+    return {
+      ok: true,
+      marketplace: "salad",
+      jobId: job?.id ?? null,
+      note: "Salad submission simulated deterministically in v10.4.",
+      result
+    };
   },
 
   // -------------------------------------------------------------------------
@@ -213,7 +207,7 @@ export const PulseEarnMktForager = {
       healingState.lastResourceShape = {
         cpu: cpuRequired,
         mem: memoryRequired,
-        duration: estimatedSeconds,
+        duration: estimatedSeconds
       };
 
       if (!Number.isFinite(estimatedSeconds) || estimatedSeconds <= 0) {
@@ -245,7 +239,7 @@ export const PulseEarnMktForager = {
         estimatedSeconds,
 
         minGpuScore,
-        bandwidthNeededMbps,
+        bandwidthNeededMbps
       };
 
       healingState.lastNormalizedJobId = normalized.id;
@@ -255,7 +249,7 @@ export const PulseEarnMktForager = {
       healingState.lastNormalizationError = err.message;
       return null;
     }
-  },
+  }
 };
 
 

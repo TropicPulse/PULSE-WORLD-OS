@@ -1,25 +1,26 @@
 // ============================================================================
 // FILE: /apps/pulse-os/PulseOSCortex.js
-// PULSE OS — v10.1
+// PULSE OS — v10.4
 // “THE CORTEX ORGAN — HIGH‑LEVEL COGNITION + ORGAN SUPERVISOR”
 // ============================================================================
 //
-// ROLE (v10.1):
+// ROLE (v10.4):
 // -------------
 // • Receives PulseOSBrain (CNS) directly
 // • Reads Intent, IQ, OrganismMap from Brain
 // • Reads Evolution from Brain.evolution
-// • Initializes Nervous System + Organs
+// • Initializes Nervous System (SDN) + Organs
 // • Reports lineage + drift to Evolution
 // • Maintains OS‑level conscious state
 // • Pure frontend, deterministic, no backend
+// • Continuance-aware (never halts organism)
 // ============================================================================
 
 export const PulseRole = {
   type: "Brain",
   subsystem: "OS",
   layer: "Cortex",
-  version: "10.1",
+  version: "10.4",
   identity: "PulseOSCortex",
 
   evo: {
@@ -28,7 +29,16 @@ export const PulseRole = {
     multiInstanceReady: true,
     advantageCascadeAware: true,
     unifiedAdvantageField: true,
-    pulseEfficiencyAware: true
+    pulseEfficiencyAware: true,
+
+    // NEW — v10.4 organism-wide contracts
+    loopTheoryAware: true,
+    continuanceAware: true,
+    routingContract: "PulseRouter-v10.4",
+    gpuCompatibility: "PulseGPU-v10.4",
+    sdnCompatibility: "PulseSDN-v10.4",
+    earnCompatibility: "PulseEarn-v10.4",
+    sendCompatibility: "PulseSendSystem-v10.4"
   }
 };
 
@@ -72,7 +82,7 @@ export function createPulseOSCortex({ Brain }) {
     // Evolution lineage
     Evolution?.recordLineage?.("cortex-boot");
 
-    // Initialize Nervous System if Brain provided it
+    // Initialize Nervous System (SDN) if Brain provided it
     if (Brain.cortex?.initializeNervousSystem) {
       Brain.cortex.initializeNervousSystem();
     }
@@ -87,7 +97,7 @@ export function createPulseOSCortex({ Brain }) {
     // Evolution drift scan
     Evolution?.scanDrift?.(Brain);
 
-    Brain.log("[Cortex v10.1] Boot complete", { CortexState });
+    Brain.log("[Cortex v10.4] Boot complete", { CortexState });
     return CortexState;
   }
 

@@ -1,10 +1,10 @@
 // ============================================================================
-//  PULSE GPU HEALER v9.2 — THE LYMPH NODE NETWORK
+//  PULSE GPU HEALER v10.4 — THE LYMPH NODE NETWORK
 //  Systemic GPU Immune Layer (Deterministic, Pure Logic, Drift‑Proof, Fail‑Open)
 // ============================================================================
 //
-// IDENTITY — THE LYMPH NODE NETWORK:
-//  ---------------------------------
+// IDENTITY — THE LYMPH NODE NETWORK (v10.4):
+//  -----------------------------------------
 //  • The immune filtration system of the GPU subsystem.
 //  • Validates every signal flowing through the GPU body.
 //  • Filters out invalid advisor results, plans, decisions, notifications.
@@ -12,11 +12,11 @@
 //  • Ensures the entire GPU organism stays drift‑free and healthy.
 //  • Distributed, systemic, always-on — the GPU’s internal defense grid.
 //  • Dual‑mode evolved: biological + system‑level immune advantage.
-//  • PulseSend‑2.0‑ready: immune validation before compute routing.
-//  • Earn‑ready: compatible with PulseEarn v9 job payloads.
+//  • PulseSend‑10.4‑ready: immune validation before compute routing.
+//  • Earn‑ready: compatible with Earn‑v2 job payloads.
 //
-// SAFETY CONTRACT (v9.2):
-//  -----------------------
+// SAFETY CONTRACT (v10.4):
+//  ------------------------
 //  • No randomness
 //  • No timestamps
 //  • No environment access
@@ -54,11 +54,11 @@ const GPU_HEALER_CONTEXT = {
     organismClusterBoost: 1.0,
     cognitiveComputeLink: true,
     unifiedAdvantageField: true,
-    pulseSend2Ready: true,
+    pulseSend10Ready: true,
 
-    routingContract: "PulseSend-v2",
-    gpuOrganContract: "PulseGPU-v9.2",
-    earnCompatibility: "PulseEarn-v9"
+    routingContract: "PulseSend-v10.4",
+    gpuOrganContract: "PulseGPU-v10.4",
+    earnCompatibility: "Earn-v2"
   }
 };
 
@@ -82,7 +82,7 @@ function buildHealingReport({
     notifications: Array.isArray(notifications) ? notifications.slice() : [],
     meta: {
       ...GPU_HEALER_CONTEXT,
-      version: 9.2,
+      version: 10.4,
       target: "full-gpu",
       selfRepairable: true
     }
@@ -134,7 +134,7 @@ function filterValidNotifications(notifications) {
 }
 
 // ============================================================================
-//  PULSE GPU HEALER — THE LYMPH NODE NETWORK
+//  PULSE GPU HEALER v10.4 — THE LYMPH NODE NETWORK
 // ============================================================================
 class PulseGPUHealer {
   constructor(options = {}) {
@@ -150,7 +150,7 @@ class PulseGPUHealer {
 
   static meta = {
     ...GPU_HEALER_CONTEXT,
-    version: 9.2,
+    version: 10.4,
     target: "full-gpu",
     selfRepairable: true
   };

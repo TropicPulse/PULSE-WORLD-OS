@@ -1,14 +1,15 @@
 // ============================================================================
-//  PulseSend.js — v10.4
+//  PulseSend.js — v10.4 + SDN‑Aware
 //  Pulse‑Agnostic Transport Organ • Evolution‑Aware • Mode‑Aware
 // ============================================================================
 //
-//  NEW BEHAVIOR (v10.4‑Evo):
-//  -------------------------
+//  NEW BEHAVIOR (v10.4‑Evo + SDN):
+//  -------------------------------
 //  • Try Pulse v3 (unified organism).
 //  • If v3 creation fails → try Pulse v2 (evolution engine).
 //  • If v2 creation fails → try Pulse v1 (stable fallback).
 //  • Always succeed.
+//  • Emits non‑blocking nervous‑system impulses into PulseSDN (if provided).
 // ============================================================================
 
 
@@ -48,23 +49,35 @@ export const PulseRole = {
 
 
 // ============================================================================
-//  FACTORY — Build the Full PulseSend v10.4 Organism
+//  FACTORY — Build the Full PulseSend v10.4 Organism (SDN‑aware)
 // ============================================================================
 export function createPulseSend({
-  createPulseV3,         // ⭐ NEW: Pulse v3 creator
-  createPulseV2,         // ⭐ NEW: Pulse v2 creator
-  createPulseV1,         // ⭐ NEW: Pulse v1 creator
+  createPulseV3,         // Pulse v3 creator
+  createPulseV2,         // Pulse v2 creator
+  createPulseV1,         // Pulse v1 creator
   pulseRouter,
   pulseMesh,
   createPulseSendMover,
   createPulseSendImpulse,
   createPulseSendReturn,
-  log
+  log,
+  sdn                    // ⭐ OPTIONAL: PulseSDN instance (active nervous system)
 }) {
   // ⭐ Build sub‑organs
   const mover = createPulseSendMover({ pulseMesh, log });
   const impulse = createPulseSendImpulse({ mover, log });
   const returnArc = createPulseSendReturn({ impulse, pulseRouter, pulseMesh, log });
+
+  // small helper to emit SDN impulses safely
+  function emitSDN(source, payload) {
+    if (!sdn || typeof sdn.emitImpulse !== "function") return;
+    try {
+      sdn.emitImpulse(source, payload);
+    } catch (e) {
+      // SDN must never break transport; ignore errors
+      log && log("[PulseSend-v10.4] SDN emit failed (non‑fatal)", { source, error: e });
+    }
+  }
 
   // ========================================================================
   //  PUBLIC API — send()
@@ -81,6 +94,14 @@ export function createPulseSend({
     let pulse = null;
     let pulseType = null;
 
+    emitSDN("send:begin", {
+      jobId,
+      pattern,
+      priority,
+      returnTo,
+      mode
+    });
+
     // ================================================================
     // ⭐ Tier 1 — Try Pulse v3 (Unified Organism)
     // ================================================================
@@ -91,6 +112,13 @@ export function createPulseSend({
       pulseType = "Pulse-v3";
     } catch (errV3) {
       log && log("[PulseSend-v10.4] Pulse v3 failed, falling back to v2", { errV3 });
+      emitSDN("send:pulse-fallback", {
+        jobId,
+        pattern,
+        from: "v3",
+        to: "v2",
+        error: String(errV3 && errV3.message || "unknown")
+      });
     }
 
     // ================================================================
@@ -104,6 +132,13 @@ export function createPulseSend({
         pulseType = "Pulse-v2";
       } catch (errV2) {
         log && log("[PulseSend-v10.4] Pulse v2 failed, falling back to v1", { errV2 });
+        emitSDN("send:pulse-fallback", {
+          jobId,
+          pattern,
+          from: "v2",
+          to: "v1",
+          error: String(errV2 && errV2.message || "unknown")
+        });
       }
     }
 
@@ -116,7 +151,21 @@ export function createPulseSend({
       });
       pulseType = "Pulse-v1";
       log && log("[PulseSend-v10.4] Using Pulse v1 fallback", { jobId, pattern });
+      emitSDN("send:pulse-fallback", {
+        jobId,
+        pattern,
+        from: "none",
+        to: "v1",
+        error: "v3/v2 creation failed"
+      });
     }
+
+    emitSDN("send:pulse-created", {
+      jobId,
+      pattern,
+      mode,
+      pulseType
+    });
 
     // ================================================================
     // ⭐ Continue normal transport chain
@@ -127,6 +176,15 @@ export function createPulseSend({
 
     // Step 3 — pathway
     const pathway = pulseMesh.pathwayFor(targetOrgan, mode);
+
+    emitSDN("send:routed", {
+      jobId,
+      pattern,
+      targetOrgan,
+      pathway,
+      mode,
+      pulseType
+    });
 
     log && log("[PulseSend-v10.4] Routing pulse", {
       jobId,
@@ -145,8 +203,30 @@ export function createPulseSend({
       mode
     });
 
+    emitSDN("send:movement", {
+      jobId,
+      pattern,
+      targetOrgan,
+      pathway,
+      mode,
+      pulseType,
+      movementMeta: {
+        hasPacket: !!movement && !!movement.packet
+      }
+    });
+
     // Step 5 — return arc
     const result = returnArc.handle(movement.packet, mode);
+
+    emitSDN("send:return", {
+      jobId,
+      pattern,
+      mode,
+      pulseType,
+      resultMeta: {
+        ok: result && result.ok !== false
+      }
+    });
 
     // Step 6 — memory
     pulseRouter.remember(
@@ -155,6 +235,14 @@ export function createPulseSend({
       "success",
       pulse.healthScore || 1
     );
+
+    emitSDN("send:complete", {
+      jobId,
+      pattern,
+      targetOrgan,
+      mode,
+      pulseType
+    });
 
     return {
       PulseRole,

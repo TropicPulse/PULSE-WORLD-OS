@@ -1,19 +1,19 @@
 // ============================================================================
 // FILE: /apps/organs/gpu/PulseGPUGuardianCortex.js
-// [pulse:gpu] PULSE_GPU_GUARDIAN_CORTEX v9.2  // blue-gold
+// [pulse:gpu] PULSE_GPU_GUARDIAN_CORTEX v10.4  // blue-gold
 // GPU Permission Cortex • Deterministic Policy Engine • Zero Imports
 // ============================================================================
 //
-// IDENTITY — THE GPU GUARDIAN CORTEX:
-//  ----------------------------------
+// IDENTITY — THE GPU GUARDIAN CORTEX (v10.4):
+//  ------------------------------------------
 //  • The decision-making cortex of the GPU subsystem.
 //  • Determines when GPU actions may auto-apply vs require confirmation.
 //  • Pure logic: deterministic, stateless, zero-entropy, zero randomness.
 //  • Reads advisor severity + user preferences + plan type.
 //  • Produces a final decision object (mode + reason + plan).
-//  • PulseSend‑2.0‑ready: decisions can be routed by the compute router.
+//  • PulseSend‑10.4‑ready: decisions can be routed by the compute router.
 //
-// ROLE (v9.2):
+// ROLE (v10.4):
 //  • Permission arbiter for GPU healing + optimization.
 //  • Safety cortex for GPU actions.
 //  • Policy cortex for auto-apply vs confirmation.
@@ -37,8 +37,9 @@
 //  • Inherits ANY advantage from ANY GPU organ automatically.
 //  • Zero-entropy decision surface.
 //  • Multi-instance ready.
-//  • PulseSend contract: routingContract: "PulseSend-v2"
+//  • PulseSend contract: routingContract: "PulseSend-v10.4"
 // ============================================================================
+
 
 // ============================================================================
 //  Utility: build decision — Guardian lineage + nervous-system metadata
@@ -50,7 +51,7 @@ function buildDecision({ mode, reason, plan }) {
     plan: plan || null,
     meta: {
       layer: "PulseGPUGuardianCortex",
-      version: 9.2,
+      version: 10.4,
       target: "full-gpu",
 
       // Evolutionary metadata (no logic impact)
@@ -69,17 +70,18 @@ function buildDecision({ mode, reason, plan }) {
       driftResistance: "high",
       mutationRisk: "none",
 
-      // v9.2 unified advantage + PulseSend‑2.0 identity
+      // v10.4 unified advantage + PulseSend‑10.4 identity
       unifiedAdvantageField: true,
-      pulseSend2Ready: true,
+      pulseSend10Ready: true,
 
       // PulseSend / Earn contracts (conceptual only)
-      routingContract: "PulseSend-v2",
-      gpuOrganContract: "PulseGPU-v9.2",
-      earnCompatibility: "PulseEarn-v9"
+      routingContract: "PulseSend-v10.4",
+      gpuOrganContract: "PulseGPU-v10.4",
+      earnCompatibility: "Earn-v2"
     }
   };
 }
+
 
 // ============================================================================
 //  Severity ranking helper — Guardian’s Risk Map
@@ -105,8 +107,9 @@ function getHighestSeverity(adviceList = []) {
   return highest;
 }
 
+
 // ============================================================================
-//  PulseGPUGuardianCortex v9.2 — GPU Permission Cortex
+//  PulseGPUGuardianCortex v10.4 — GPU Permission Cortex
 // ============================================================================
 class PulseGPUGuardianCortex {
   constructor(userPreferences, instanceId) {

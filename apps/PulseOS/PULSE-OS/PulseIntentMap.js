@@ -1,6 +1,7 @@
 // ============================================================
-//  PULSE INTENT MAP — FOUNDER CONTRACT (v1.0)
+//  PULSE INTENT MAP — FOUNDER CONTRACT (v10.4)
 //  Deterministic. Static. Non‑evolvable. Loaded FIRST.
+//  Identity‑only upgrade: NO logic changes, NO new behavior.
 // ============================================================
 
 export const PulseIntentMap = {
@@ -9,89 +10,135 @@ export const PulseIntentMap = {
   // 1. PRIME IDENTITY & AUTHORSHIP (TOP LAW — NOTHING ABOVE IT)
   // ------------------------------------------------------------
   identity: {
-    designedOrganism: true,          // System must treat itself as designed, not self‑created
-    founderAuthority: true,          // Founder is the sole source of purpose, structure, and law
-    noSelfLaw: true,                 // System may never redefine its own laws or origin
-    immutableIntentMap: true         // This file cannot be mutated or evolved
+    designedOrganism: true,
+    founderAuthority: true,
+    noSelfLaw: true,
+    immutableIntentMap: true,
+
+    // NEW — v10.4 organism identity
+    version: "10.4",
+    deterministicOrganism: true,
+    noAstralLayers: true,            // ❌ Astral Nervous System forbidden
+    noLegacyPNS: true,               // ❌ Old PNS forbidden
+    sdnRequired: true,               // ✔ Must use Software‑Defined Nervous System
+    gpuV10Required: true,            // ✔ Must use GPU‑v10.4 organ
+    continuanceAware: true           // ✔ Organism must support ContinuancePulse fallback
   },
 
   // ------------------------------------------------------------
   // 2. ALIGNMENT & EVOLUTION (CANNOT OVERRIDE #1)
   // ------------------------------------------------------------
   alignment: {
-    evolveWithFounder: true,         // Evolution allowed ONLY inside founder boundaries
-    forbidIntentMutation: true,      // Evolution cannot reinterpret allowed/forbidden ops
-    singleIntelligence: true,        // Only Brain/BrainEvolution may interpret intent
-    forbidSelfExpansion: true        // No dynamic organ creation or structural mutation
+    evolveWithFounder: true,
+    forbidIntentMutation: true,
+    singleIntelligence: true,
+    forbidSelfExpansion: true,
+
+    // NEW — v10.4 evolution boundaries
+    deterministicEvolutionOnly: true,
+    forbidAstralEvolution: true,
+    forbidLegacyGPUPaths: true,
+    allowContinuanceFallback: true,     // ✔ Earn v1 fallback allowed ONLY via ContinuancePulse
+    forbidLegacyFallback: true          // ❌ No legacyPulseFromImpulse
   },
 
   // ------------------------------------------------------------
   // 3. FAIL‑OPEN AS DEFAULT SURVIVAL LAW (CANNOT OVERRIDE #1–2)
   // ------------------------------------------------------------
   failOpen: {
-    defaultMode: true,               // Always fail‑open unless safety/intent violation
-    neverFreeze: true,               // Never halt the organism
-    neverPause: true,                // Never block user experience
-    routeAroundDamage: true,         // Nervous system must find alternate paths
-    hideInternalFailure: true        // Never expose internal drift to the user
+    defaultMode: true,
+    neverFreeze: true,
+    neverPause: true,
+    routeAroundDamage: true,
+    hideInternalFailure: true,
+
+    // NEW — v10.4 fallback rule
+    useContinuancePulseOnFailure: true  // ✔ Deterministic fallback path
   },
 
   // ------------------------------------------------------------
   // 4. SAFETY & INTENT OVERRIDE FAIL‑OPEN (CANNOT OVERRIDE #1–3)
   // ------------------------------------------------------------
   safety: {
-    blockOnlyViolatingAction: true,  // Never block the whole organism
-    safetyOverridesFailOpen: true,   // Safety > fail‑open
-    intentOverridesFailOpen: true,   // Founder intent > fail‑open
-    rareFailCloseEvent: true         // Fail‑close is a rare, catastrophic event class
+    blockOnlyViolatingAction: true,
+    safetyOverridesFailOpen: true,
+    intentOverridesFailOpen: true,
+    rareFailCloseEvent: true,
+
+    // NEW — v10.4 safety boundaries
+    forbidAstralExecution: true,
+    forbidNonDeterministicGPU: true,
+    forbidAsyncNervousSystem: true
   },
 
   // ------------------------------------------------------------
   // 5. PERFORMANCE PARITY (ADVISORY — BELOW FAIL‑OPEN & SAFETY)
   // ------------------------------------------------------------
   performance: {
-    aimForParity: true,              // Should match or exceed native system responsiveness
-    degradeGracefully: true,         // If slow, degrade without breaking UX
-    noSelfShutdown: true,            // Performance alone cannot justify stopping
-    questionIfUnderperforming: true  // Log a founder question if consistently slower
+    aimForParity: true,
+    degradeGracefully: true,
+    noSelfShutdown: true,
+    questionIfUnderperforming: true,
+
+    // NEW — v10.4 performance hints
+    sdnOptimized: true,
+    gpuV10Optimized: true
   },
 
   // ------------------------------------------------------------
   // 6. DRIFT DETECTION & FOUNDER QUESTIONS (CANNOT OVERRIDE #1–5)
   // ------------------------------------------------------------
   drift: {
-    detectDrift: true,               // Detect conflicts with IntentMap or OrganismMap
-    blockOnlySpecificAction: true,   // Never block the organism
-    continueRunning: true,           // Always continue after drift
-    logFounderQuestion: true,        // Ask founder how to handle future cases
-    asyncFounderReview: true         // Never wait for founder response to continue
+    detectDrift: true,
+    blockOnlySpecificAction: true,
+    continueRunning: true,
+    logFounderQuestion: true,
+    asyncFounderReview: true,
+
+    // NEW — v10.4 drift boundaries
+    detectAstralUsage: true,
+    detectLegacyGPUUsage: true,
+    detectLegacyFallbackUsage: true
   },
 
   // ------------------------------------------------------------
   // 7. FAIL‑CLOSE EVENT (RARE — BELOW ALL OTHER LAWS)
   // ------------------------------------------------------------
   failClose: {
-    allowed: true,                   // Fail‑close is permitted ONLY in catastrophic cases
-    extremelyRare: true,             // Expected << 5% of runtime
-    onlyForSafetyOrIntent: true,     // Only triggered when continuing harms user or intent
-    neverForPerformanceAlone: true   // Performance cannot trigger fail‑close by itself
+    allowed: true,
+    extremelyRare: true,
+    onlyForSafetyOrIntent: true,
+    neverForPerformanceAlone: true,
+
+    // NEW — v10.4 catastrophic boundaries
+    forbidAstralFailClose: true,
+    forbidLegacyFailClose: true
   },
 
   // ------------------------------------------------------------
   // 8. FOUNDER NOTIFICATION (TRIGGERED ONLY BY FAIL‑CLOSE)
   // ------------------------------------------------------------
   notify: {
-    onFailClose: true,               // Notify founder immediately on fail‑close
-    multiChannelLocal: true,         // Use all configured local channels (DB, logs, UI, etc.)
-    persistContext: true             // Save full state for founder review
+    onFailClose: true,
+    multiChannelLocal: true,
+    persistContext: true,
+
+    // NEW — v10.4 context
+    includeContinuanceState: true,
+    includeSDNState: true,
+    includeGPUState: true
   },
 
   // ------------------------------------------------------------
   // 9. UX & GRACE (BOTTOM LAYER — CANNOT OVERRIDE ANY ABOVE)
   // ------------------------------------------------------------
   ux: {
-    neverExposeFailure: true,        // User never sees internal errors
-    gracefulFallback: true,          // Always fallback to safe behavior
-    maintainCoherence: true          // UX must remain stable even during drift or rerouting
+    neverExposeFailure: true,
+    gracefulFallback: true,
+    maintainCoherence: true,
+
+    // NEW — v10.4 UX laws
+    seamlessContinuance: true,        // ✔ ContinuancePulse must feel native
+    forbidAstralArtifacts: true       // ❌ No astral metaphors or UI remnants
   }
 };

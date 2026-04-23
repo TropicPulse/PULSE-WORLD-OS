@@ -1,19 +1,19 @@
 // ============================================================================
-//  PULSE GPU PERFORMANCE ADVISOR v9.2 — THE DRIVE CENTER
+//  PULSE GPU PERFORMANCE ADVISOR v10.4 — THE DRIVE CENTER
 //  Internal Performance Instinct • Deterministic, Pure Logic, Drift‑Proof
 // ============================================================================
 //
-// IDENTITY — THE DRIVE CENTER:
-//  ----------------------------
+// IDENTITY — THE DRIVE CENTER (v10.4):
+//  -----------------------------------
 //  • The GPU organism’s internal performance instinct.
 //  • Evaluates current performance vs historical best.
 //  • Detects regressions (danger) and improvements (growth).
 //  • Generates structured “pressure signals” to guide adaptation.
 //  • The subsystem that pushes the organism toward optimal function.
-//  • Advantage‑cascade aware: any systemic advantage is inherited automatically.
+//  • Advantage‑cascade aware: inherits all systemic advantages automatically.
 //
-// SAFETY CONTRACT (v9.2):
-//  -----------------------
+// SAFETY CONTRACT (v10.4):
+//  ------------------------
 //  • No randomness
 //  • No timestamps
 //  • No GPU calls
@@ -53,7 +53,7 @@ function isRegression(deltaPercent) {
 }
 
 // ============================================================================
-// ADVICE BUILDER — Structured Drive Signals
+// ADVICE BUILDER — Structured Drive Signals (v10.4)
 // ============================================================================
 function buildAdvice({
   type,
@@ -76,7 +76,7 @@ function buildAdvice({
     meta: {
       layer: "PulseGPUPerformanceAdvisor",
       role: "DRIVE_CENTER",
-      version: 9.2,
+      version: 10.4,
       target: "full-gpu",
       selfRepairable: true,
       evo: {
@@ -85,11 +85,11 @@ function buildAdvice({
         driftProof: true,
         multiInstanceReady: true,
         unifiedAdvantageField: true,
-        pulseSend2Ready: true,
+        pulseSend10Ready: true,
 
-        routingContract: "PulseSend-v2",
-        gpuOrganContract: "PulseGPU-v9.2",
-        earnCompatibility: "PulseEarn-v9"
+        routingContract: "PulseSend-v10.4",
+        gpuOrganContract: "PulseGPU-v10.4",
+        earnCompatibility: "Earn-v2"
       }
     }
   };
@@ -108,7 +108,7 @@ function buildAdvice({
 }
 
 // ============================================================================
-// ADVICE VALIDATION — For Immune Layer
+// ADVICE VALIDATION — For Immune Layer (v10.4)
 // ============================================================================
 function validateAdvice(advice) {
   if (!advice || typeof advice !== "object") return false;
@@ -121,7 +121,7 @@ function validateAdvice(advice) {
 }
 
 // ============================================================================
-// SCORING + REGRESSION DETECTION HELPERS
+// SCORING + REGRESSION DETECTION HELPERS (v10.4)
 // ============================================================================
 function scoreSession(metrics = {}) {
   if (!metrics || typeof metrics !== "object") return 0;
@@ -146,9 +146,8 @@ function detectRegression(currentMetrics = {}, baselineMetrics = {}) {
 
   return ((currentScore - baselineScore) / baselineScore) * 100;
 }
-
 // ============================================================================
-//  PULSE GPU PERFORMANCE ADVISOR — THE DRIVE CENTER
+//  PULSE GPU PERFORMANCE ADVISOR — THE DRIVE CENTER (v10.4)
 // ============================================================================
 class PulseGPUPerformanceAdvisor {
   constructor(settingsMemory) {
@@ -158,7 +157,7 @@ class PulseGPUPerformanceAdvisor {
   static meta = {
     layer: "PulseGPUPerformanceAdvisor",
     role: "DRIVE_CENTER",
-    version: 9.2,
+    version: 10.4,
     target: "full-gpu",
     selfRepairable: true,
     evo: {
@@ -167,13 +166,14 @@ class PulseGPUPerformanceAdvisor {
       driftProof: true,
       multiInstanceReady: true,
       unifiedAdvantageField: true,
-      pulseSend2Ready: true,
+      pulseSend10Ready: true,
 
-      routingContract: "PulseSend-v2",
-      gpuOrganContract: "PulseGPU-v9.2",
-      earnCompatibility: "PulseEarn-v9"
+      routingContract: "PulseSend-v10.4",
+      gpuOrganContract: "PulseGPU-v10.4",
+      earnCompatibility: "Earn-v2"
     }
   };
+
   // ----------------------------------------------------
   // MAIN ANALYSIS — CURRENT SESSION
   // ----------------------------------------------------

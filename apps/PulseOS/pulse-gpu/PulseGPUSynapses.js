@@ -1,19 +1,19 @@
 // ============================================================================
-//  PULSE GPU EVENT EMITTER v9.2 — THE SYNAPSE LAYER
+//  PULSE GPU EVENT EMITTER v10.4 — THE SYNAPSE LAYER
 //  Deterministic, Fail‑Open, Zero‑Side‑Effects Signal Relay
 // ============================================================================
 //
-// IDENTITY — THE SYNAPSE LAYER:
-//  -----------------------------
+// IDENTITY — THE SYNAPSE LAYER (v10.4):
+//  ------------------------------------
 //  • The electrical junctions of the GPU organism.
 //  • Where impulses jump between GPU subsystems.
 //  • Ordered, calm, deterministic — no chaos, no randomness.
 //  • The layer that lets the organism communicate internally.
 //  • Dual‑mode evolved: biological + system‑level advantage active together.
-//  • PulseSend‑2.0‑ready: synaptic impulses can be routed by the compute router.
+//  • PulseSend‑10.4‑ready: synaptic impulses can be routed by the compute router.
 //
-// SAFETY CONTRACT (v9.2):
-//  -----------------------
+// SAFETY CONTRACT (v10.4):
+//  ------------------------
 //  • No randomness
 //  • No timestamps
 //  • No async
@@ -26,19 +26,19 @@
 
 const PULSE_GPU_EVENT_EMITTER_META = {
   layer: "PulseGPUEventEmitter",
-  version: 9.2,
+  version: 10.4,
   target: "full-gpu",
   description: "Synaptic signal relay for GPU subsystem communication.",
 
-  // v9.2 unified identity
+  // v10.4 unified identity
   selfRepairable: true,
   unifiedAdvantageField: true,
-  pulseSend2Ready: true,
+  pulseSend10Ready: true,
 
   // PulseSend / Earn contracts (conceptual only)
-  routingContract: "PulseSend-v2",
-  gpuOrganContract: "PulseGPU-v9.2",
-  earnCompatibility: "PulseEarn-v9",
+  routingContract: "PulseSend-v10.4",
+  gpuOrganContract: "PulseGPU-v10.4",
+  earnCompatibility: "Earn-v2",
 
   evo: {
     metabolicBoost: 1.0,
@@ -66,7 +66,7 @@ class PulseGPUEventEmitter {
 
     log(
       "synapse",
-      "PulseGPUEventEmitter v9.2 — electrical junction layer active (dual‑mode evolution, PulseSend‑2.0‑ready)."
+      "PulseGPUEventEmitter v10.4 — electrical junction layer active (dual‑mode evolution, PulseSend‑10.4‑ready)."
     );
   }
 

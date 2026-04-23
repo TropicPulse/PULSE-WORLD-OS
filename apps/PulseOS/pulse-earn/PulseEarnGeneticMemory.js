@@ -1,50 +1,34 @@
 // ============================================================================
 // FILE: tropic-pulse-functions/apps/pulse-earn/PulseEarnGeneticMemory.js
-// LAYER: THE GENETIC MEMORY
+// LAYER: THE GENETIC MEMORY (v10.4)
 // (Keeper of Packets + Guardian of Determinism + DNA Repair Substrate)
-// PULSE EARN — v9.2
 // ============================================================================
 //
-// ROLE (v9.2):
+// ROLE (v10.4):
 //   THE GENETIC MEMORY — Pulse‑Earn’s deterministic packet genome.
 //   • Stores packet data in a safe, in‑memory gene archive.
-//   • Generates deterministic packet values (genetic identity → future).
+//   • Generates deterministic packet values (genetic identity).
 //   • Ensures reproducibility for healing + compute (DNA stability).
 //   • Maintains packet‑level healing metadata (genetic health).
 //
-// WHY “GENETIC MEMORY”?:
-//   • Packets behave like genes: smallest units of truth.
-//   • Deterministic hashing = genetic identity function.
-//   • Regeneration = DNA repair (PulseEarnImmuneSystem uses this).
-//   • PacketStore = genome map (in‑memory chromosome).
-//
-// PURPOSE (v9.2):
-//   • Provide a deterministic, drift‑proof genetic layer.
-//   • Guarantee safe read/write/compute operations.
-//   • Serve as the foundation for DNA repair logic.
-//   • Preserve genetic lineage + deterministic reconstruction.
-//
-// CONTRACT (unchanged):
+// CONTRACT (v10.4):
 //   • PURE PACKET ENGINE — no AI layers, no translation, no memory model.
 //   • NO eval(), NO Function(), NO dynamic imports.
-//   • NO network calls, NO filesystem, NO external mutation.
+//   • NO network calls, NO filesystem, NO timestamps.
 //   • Deterministic hashing + safe in‑memory storage only.
-//
-// SAFETY (unchanged):
-//   • v9.2 upgrade is COMMENTAL / IDENTITY ONLY — NO LOGIC CHANGES.
 // ============================================================================
 
 
 // ---------------------------------------------------------------------------
-// Healing Metadata — Genetic Health Log
+// Healing Metadata — Genetic Health Log (deterministic)
 // ---------------------------------------------------------------------------
 const geneticHealing = {
-  lastKey: null,           // last gene accessed
-  lastWrite: null,         // last gene written
-  lastGenerated: null,     // last gene synthesized
-  lastError: null,         // genetic fault
-  cycleCount: 0,           // DNA cycles completed
-  lastTimestamp: null,     // last genetic event
+  lastKey: null,
+  lastWrite: null,
+  lastGenerated: null,
+  lastError: null,
+  cycleCount: 0,
+  lastCycleIndex: null
 };
 
 
@@ -53,13 +37,17 @@ const geneticHealing = {
 // ---------------------------------------------------------------------------
 const genome = new Map();
 
+// Deterministic cycle counter (replaces timestamps)
+let geneCycle = 0;
+
 
 // ---------------------------------------------------------------------------
-// 1. readPacketExists — Genome Lookup
+// 1. readPulseEarnGeneExists — Genome Lookup (deterministic)
 // ---------------------------------------------------------------------------
-export async function readPulseEarnGeneExists(fileId, packetIndex) {
+export function readPulseEarnGeneExists(fileId, packetIndex) {
+  geneCycle++;
   geneticHealing.cycleCount++;
-  geneticHealing.lastTimestamp = Date.now();
+  geneticHealing.lastCycleIndex = geneCycle;
 
   try {
     const key = `${fileId}:${packetIndex}`;
@@ -75,11 +63,12 @@ export async function readPulseEarnGeneExists(fileId, packetIndex) {
 
 
 // ---------------------------------------------------------------------------
-// 2. writePacket — DNA Write (Gene Expression)
+// 2. writePulseEarnGene — DNA Write (Gene Expression)
 // ---------------------------------------------------------------------------
-export async function writePulseEarnGene(fileId, packetIndex, data) {
+export function writePulseEarnGene(fileId, packetIndex, data) {
+  geneCycle++;
   geneticHealing.cycleCount++;
-  geneticHealing.lastTimestamp = Date.now();
+  geneticHealing.lastCycleIndex = geneCycle;
 
   try {
     const key = `${fileId}:${packetIndex}`;
@@ -87,7 +76,11 @@ export async function writePulseEarnGene(fileId, packetIndex, data) {
 
     genome.set(key, structuredClone(data));
 
-    geneticHealing.lastWrite = { key, size: JSON.stringify(data).length };
+    geneticHealing.lastWrite = {
+      key,
+      size: JSON.stringify(data).length,
+      cycleIndex: geneCycle
+    };
     geneticHealing.lastError = null;
 
     return true;
@@ -100,11 +93,12 @@ export async function writePulseEarnGene(fileId, packetIndex, data) {
 
 
 // ---------------------------------------------------------------------------
-// 3. generatePacketData — Deterministic DNA Synthesis
+// 3. synthesizePulseEarnGene — Deterministic DNA Synthesis
 // ---------------------------------------------------------------------------
-export async function synthesizePulseEarnGene(fileId, packetIndex) {
+export function synthesizePulseEarnGene(fileId, packetIndex) {
+  geneCycle++;
   geneticHealing.cycleCount++;
-  geneticHealing.lastTimestamp = Date.now();
+  geneticHealing.lastCycleIndex = geneCycle;
 
   try {
     const key = `${fileId}:${packetIndex}`;
@@ -124,7 +118,7 @@ export async function synthesizePulseEarnGene(fileId, packetIndex) {
       packetIndex,
       key,
       value,
-      generatedAt: Date.now(), // DNA synthesis timestamp
+      cycleIndex: geneCycle
     };
 
     geneticHealing.lastGenerated = gene;

@@ -1,6 +1,6 @@
 // ============================================================================
 // FILE: tropic-pulse-functions/apps/pulse-gpu/PulseGPUSettingsRestorer.js
-// PULSE GPU SETTINGS RESTORER v9.2
+// PULSE GPU SETTINGS RESTORER v10.4
 // “COGNITIVE RECOGNITION LAYER / RESTORATION PLANNER”
 // ============================================================================
 //
@@ -12,10 +12,10 @@
 //   • Consumes advisor insights (Drive Center) + memory entries (Evolution Core)
 //   • Recognizes whether to restore, apply optimal, upgrade tier, or noop
 //   • Produces deterministic restoration plans for the Healer + Orchestrator
-//   • PulseSend‑2.0‑ready: plans can be routed by the compute router
-//   • Earn‑ready: compatible with PulseEarn v9 job payloads
+//   • PulseSend‑10.4‑ready: plans can be routed by the compute router
+//   • Earn‑ready: compatible with Earn-v2 job payloads
 //
-// SAFETY CONTRACT (v9.2):
+// SAFETY CONTRACT (v10.4):
 //   • No randomness
 //   • No timestamps
 //   • No GPU calls
@@ -28,7 +28,7 @@
 // ============================================================================
 
 // ------------------------------------------------------------
-// ⭐ OS‑v9.2 CONTEXT METADATA
+// ⭐ OS‑v10.4 CONTEXT METADATA
 // ------------------------------------------------------------
 const RESTORER_CONTEXT = {
   layer: "PulseGPUSettingsRestorer",
@@ -37,7 +37,7 @@ const RESTORER_CONTEXT = {
   context:
     "Consumes advisor insights + memory entries to produce restoration plans",
   target: "full-gpu",
-  version: 9.2,
+  version: 10.4,
   selfRepairable: true,
 
   evo: {
@@ -46,17 +46,17 @@ const RESTORER_CONTEXT = {
     driftProof: true,
     multiInstanceReady: true,
     unifiedAdvantageField: true,
-    pulseSend2Ready: true,
+    pulseSend10Ready: true,
 
     // PulseSend / Earn contracts (conceptual only)
-    routingContract: "PulseSend-v2",
-    gpuOrganContract: "PulseGPU-v9.2",
-    earnCompatibility: "PulseEarn-v9"
+    routingContract: "PulseSend-v10.4",
+    gpuOrganContract: "PulseGPU-v10.4",
+    earnCompatibility: "Earn-v2"
   }
 };
 
 // ------------------------------------------------------------
-// Restoration plan builder (v9.2 + OS‑v9 metadata)
+// Restoration plan builder (v10.4 + OS‑v10.4 metadata)
 // ------------------------------------------------------------
 function buildPlan({
   action,
@@ -87,7 +87,7 @@ function validatePlan(plan) {
 }
 
 // ------------------------------------------------------------
-// PulseGPUSettingsRestorer v9.2 — Cognitive Recognition Layer
+// PulseGPUSettingsRestorer v10.4 — Cognitive Recognition Layer
 // ------------------------------------------------------------
 class PulseGPUSettingsRestorer {
   constructor() {}

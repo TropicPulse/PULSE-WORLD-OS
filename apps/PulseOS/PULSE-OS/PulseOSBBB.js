@@ -1,14 +1,14 @@
 // ============================================================================
-//  PULSE OS v9.2 — OUTER BLOOD–BRAIN BARRIER (BBB)
+//  PULSE OS v10.4 — OUTER BLOOD–BRAIN BARRIER (Outer BBB)
 //  Perivascular Shield • Shell Gatekeeper • Environmental Filter
 //  PURE PERMISSION. NO BACKEND. NO NETWORK. NO UI.
 // ============================================================================
 //
-//  IDENTITY — OUTER BBB (v9.2):
-//  ----------------------------
+//  IDENTITY — OUTER BBB (v10.4):
+//  -----------------------------
 //  • First defensive membrane of the PulseOS organism.
-//  • Filters environmental context before it reaches the cortex (PulseBrain).
-//  • Determines whether PulseBand (nervous system) may exist on this route.
+//  • Filters environmental context before it reaches the cortex (PulseOSBrain).
+//  • Determines whether PulseBand / PNS nervous system may exist on this route.
 //  • Distinguishes SAFE vs UNSAFE environments.
 //  • Blocks identity access unless conditions are met.
 //  • Protects the inner BBB (Identity Organ) from contamination.
@@ -16,18 +16,18 @@
 //  • Drift-proof, deterministic, offline-capable.
 //  • Pure shell-state engine — no side effects.
 //
-//  ROLE IN THE DIGITAL BODY (v9.2):
-//  --------------------------------
+//  ROLE IN THE DIGITAL BODY (v10.4):
+//  ---------------------------------
 //  • Environmental Filter → Screens unsafe routes.
 //  • Shell Gatekeeper → Controls PulseBand existence.
 //  • Identity Sentinel → Blocks unauthorized identity flow.
 //  • Permission Valve → Determines anon/auth/no-shell modes.
-//  • Cortex Perimeter → Protects PulseBrain + Identity Organ.
+//  • Cortex Perimeter → Protects PulseOSBrain + Identity Organ.
 //  • Offline Autonomy → Works even with WiFi OFF.
-//  • **Outer BBB = Shell Permission + Trust Boundary**.
+//  • **Outer BBB = Shell Permission + Trust Boundary + Continuance Guard**.
 //
-//  WHAT THIS FILE IS (v9.2):
-//  --------------------------
+//  WHAT THIS FILE IS (v10.4):
+//  ---------------------------
 //  • Global shell boundary for PulseOS.
 //  • Single source of truth for shell state.
 //  • Permission engine for PulseBand existence.
@@ -36,9 +36,10 @@
 //  • First line of defense in the trust chain.
 //  • Fully local — no backend calls required.
 //  • Pure logic — no side effects, no mutations.
+//  • Deterministic continuance membrane (never blocks the organism, only shapes access).
 //
-//  WHAT THIS FILE IS NOT (v9.2):
-//  ------------------------------
+//  WHAT THIS FILE IS NOT (v10.4):
+//  -------------------------------
 //  • NOT a backend module.
 //  • NOT an identity loader.
 //  • NOT a UI renderer.
@@ -49,8 +50,8 @@
 //  • NOT dependent on network state.
 //  • NOT allowed to mutate identity or memory.
 //
-//  SAFETY CONTRACT (v9.2):
-//  ------------------------
+//  SAFETY CONTRACT (v10.4):
+//  -------------------------
 //  • No backend calls.
 //  • No identity mutation.
 //  • No UI logic.
@@ -60,6 +61,7 @@
 //  • Local-only permission logic.
 //  • Offline continuity guaranteed.
 //  • Pure function purity — no side effects.
+//  • Compatible with PulseOS v10.4, PulseRouter-v10.4, PulseSend-v10.4.
 // ============================================================================
 
 
@@ -70,7 +72,8 @@
 export function createPulseOSBBB({ log }) {
 
   // ========================================================================
-  //  SHELL STATE ENUM (v9.2)
+  //  SHELL STATE ENUM (v10.4)
+  //  Deterministic shell modes for PulseBand + identity access
   // ========================================================================
   const SHELL_STATES = {
     NO_SHELL:  "no-shell",     // PulseBand forbidden
@@ -79,9 +82,10 @@ export function createPulseOSBBB({ log }) {
   };
 
   // ========================================================================
-  //  ROUTE CLASSIFICATION (v9.2)
+  //  ROUTE CLASSIFICATION (v10.4)
   //  Pure local classification of environment → SAFE / UNSAFE
-  // ========================================================================
+  //  NOTE: This is a deterministic, static map — no network, no IO.
+// ========================================================================
   const HARD_NO_SHELL_ROUTES = new Set([
     "login",
     "404",
@@ -102,8 +106,11 @@ export function createPulseOSBBB({ log }) {
   ]);
 
   // ========================================================================
-  //  determineShellState (v9.2)
+  //  determineShellState (v10.4)
   //  Pure, deterministic, local-first shell-state engine.
+  //  • No side effects
+  //  • No network
+  //  • No identity mutation
   // ========================================================================
   function determineShellState({ routeName, hasIdentity }) {
     const route = (routeName || "").toLowerCase();
@@ -123,14 +130,15 @@ export function createPulseOSBBB({ log }) {
       return SHELL_STATES.AUTH_SHELL;
     }
 
-    // 4. Fallback — anon-shell by default
+    // 4. Fallback — anon-shell by default (continuance > shutdown)
     return SHELL_STATES.ANON_SHELL;
   }
 
   // ========================================================================
-  //  guardPulseBand (v9.2)
+  //  guardPulseBand (v10.4)
   //  Convenience helper for PulseBand + connectors.
-  // ========================================================================
+  //  • Shapes access, never halts organism.
+// ========================================================================
   function guardPulseBand(ctx) {
     const shellState = determineShellState(ctx);
 
@@ -146,8 +154,9 @@ export function createPulseOSBBB({ log }) {
   }
 
   // ========================================================================
-  //  PUBLIC BBB INTERFACE (v9.2)
-  // ========================================================================
+  //  PUBLIC BBB INTERFACE (v10.4)
+  //  Deterministic, importless, CNS-injected membrane.
+// ========================================================================
   return {
     SHELL_STATES,
     determineShellState,

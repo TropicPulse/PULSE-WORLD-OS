@@ -2,31 +2,26 @@
 // FILE: tropic-pulse-functions/apps/pulse-earn/PulseEarnMktConsulate.js
 // LAYER: THE CONSULATE
 // (Cross‑Marketplace Intelligence + Job Prioritizer + Result Reuse Organ)
+// PULSE‑EARN v10.4 — DETERMINISTIC INTELLIGENCE LAYER
 // ============================================================================
 //
-// ROLE (v9.x):
+// ROLE (v10.4):
 //   THE CONSULATE — Intelligence layer over all marketplace ambassadors.
-//   • Fetches jobs from all registered marketplaces
-//   • Eliminates structural duplicates via fingerprinting
-//   • Factors jobs into reusable substructures (resource bands)
-//   • Computes money‑per‑second and composite priority scores
-//   • Exposes a prioritized job list for Earn Engine
-//   • Caches completed results for future reuse
+//   • Ingests jobs from all registered marketplaces (deterministic adapters).
+//   • Eliminates structural duplicates via fingerprinting.
+//   • Factors jobs into reusable substructures (resource bands).
+//   • Computes money‑per‑second and composite priority scores.
+//   • Exposes a prioritized job list for Earn Engine.
+//   • Caches completed results for future reuse (cycle‑indexed).
 //
-// CONTRACT (unchanged):
-//   • PURE INTELLIGENCE LAYER — no network beyond adapters, no AI
-//   • READ‑WRITE only to its own in‑memory consulateState
-//   • NO eval(), NO Function(), NO dynamic imports
-//   • NO executing user code
-//   • Deterministic, explainable heuristics only
-//
-// SAFETY (unchanged):
-//   • v9.x upgrade is COMMENTAL / IDENTITY ONLY — NO LOGIC CHANGES
+// CONTRACT (v10.4):
+//   • PURE INTELLIGENCE LAYER — no network, no async, no timestamps.
+//   • READ‑WRITE only to its own in‑memory consulateState.
+//   • NO eval(), NO Function(), NO dynamic imports.
+//   • NO executing user code.
+//   • Deterministic, explainable heuristics only.
 // ============================================================================
 
-// ---------------------------------------------------------------------------
-// Imports — Embassy Ledger (Registry of Ambassadors)
-// ---------------------------------------------------------------------------
 import { RegisteredMarketplaces } from "./PulseEarnMktEmbassyLedger.js";
 
 // ---------------------------------------------------------------------------
@@ -55,6 +50,9 @@ const consulateState = {
     lastCycleJobsIn: 0,
     lastCycleJobsOut: 0,
   },
+
+  // Deterministic cycle index (replaces timestamps)
+  cycleIndex: 0,
 };
 
 // ---------------------------------------------------------------------------
@@ -143,7 +141,7 @@ function indexFactors(fingerprint, factors) {
 }
 
 // ---------------------------------------------------------------------------
-//– Money Slope — Simple Money-Per-Second Heuristic
+// Money Slope — Simple Money-Per-Second Heuristic
 // ---------------------------------------------------------------------------
 function computeMoneySlope(job) {
   const payout = Number(job.payout ?? 0);
@@ -259,15 +257,15 @@ function updateMarketplaceStats(jobs) {
 }
 
 // ---------------------------------------------------------------------------
-// Core: Ingest Jobs from All Marketplaces
+// Core: Ingest Jobs from All Marketplaces (deterministic, sync)
 // ---------------------------------------------------------------------------
-async function fetchJobsFromAllMarketplaces(deviceId) {
+function fetchJobsFromAllMarketplaces(deviceId) {
   const { marketplaces } = RegisteredMarketplaces;
   const allJobs = [];
 
   for (const adapter of marketplaces) {
     try {
-      const jobs = await adapter.fetchJobs(deviceId);
+      const jobs = adapter.fetchJobs(deviceId);
       if (Array.isArray(jobs) && jobs.length) {
         allJobs.push(
           ...jobs.map((j) => ({
@@ -277,8 +275,7 @@ async function fetchJobsFromAllMarketplaces(deviceId) {
         );
       }
     } catch (err) {
-      // eslint-disable-next-line no-console
-      error("MarketplaceRouter.fetchJobsFromAllMarketplaces error:", err);
+      // deterministic ignore; no logging side‑effects here
     }
   }
 
@@ -310,7 +307,7 @@ function processJobsIntelligently(jobs) {
             fingerprint: fp,
             hasCachedResult: true,
             cachedResultMeta: {
-              ts: cached.ts,
+              cycleIndex: cached.cycleIndex,
               marketplaceId: cached.marketplaceId ?? null,
             },
           },
@@ -321,7 +318,7 @@ function processJobsIntelligently(jobs) {
 
     fingerprintIndex.set(fp, {
       fingerprint: fp,
-      firstSeenTs: Date.now(),
+      firstSeenCycle: consulateState.cycleIndex,
     });
     stats.totalUniqueJobs++;
 
@@ -357,17 +354,19 @@ function sortJobsByPriority(jobs) {
 }
 
 // ---------------------------------------------------------------------------
-// Public: Fetch + Process + Prioritize Jobs
+// – Public: Fetch + Process + Prioritize Jobs (deterministic, sync)
 // ---------------------------------------------------------------------------
-async function getRoutedJobs(deviceId) {
-  const rawJobs = await fetchJobsFromAllMarketplaces(deviceId);
+function getRoutedJobs(deviceId) {
+  consulateState.cycleIndex++;
+
+  const rawJobs = fetchJobsFromAllMarketplaces(deviceId);
   const uniqueJobs = processJobsIntelligently(rawJobs);
   const sorted = sortJobsByPriority(uniqueJobs);
   return sorted;
 }
 
 // ---------------------------------------------------------------------------
-// Public: Record Completed Result for Future Reuse
+// Public: Record Completed Result for Future Reuse (cycle‑indexed)
 // ---------------------------------------------------------------------------
 function recordJobResult(job, result) {
   if (!job || typeof job !== "object") return;
@@ -376,7 +375,7 @@ function recordJobResult(job, result) {
 
   consulateState.resultCache.set(fp, {
     result,
-    ts: Date.now(),
+    cycleIndex: consulateState.cycleIndex,
     marketplaceId: job.marketplaceId || job._sourceMarketplaceId || null,
   });
 }
@@ -396,15 +395,16 @@ function getPulseEarnMktConsulateHealingState() {
     fingerprintCount: consulateState.fingerprintIndex.size,
     factorKeyCount: consulateState.factorIndex.size,
     marketplaceStats,
+    cycleIndex: consulateState.cycleIndex,
   };
 }
 
 // ============================================================================
-// Exported API — PULSE EARN MARKETPLACE CONSULATE
+// Exported API — PULSE EARN MARKETPLACE CONSULATE (v10.4)
 // ============================================================================
 export const PulseEarnMktConsulate = {
   // Core routing
-  getRoutedJobs, // async (deviceId) → prioritized jobs
+  getRoutedJobs, // (deviceId) → prioritized jobs (sync, deterministic)
 
   // Result memory
   recordJobResult, // (job, result) → cache for future reuse

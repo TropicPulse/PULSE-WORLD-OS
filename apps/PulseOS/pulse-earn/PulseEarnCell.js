@@ -1,10 +1,10 @@
 // ============================================================================
 // FILE: tropic-pulse-functions/apps/pulse-earn/PulseEarnCell.js
 // LAYER: THE CELL (Deterministic Worker + Safe Compute Participant)
-// PULSE EARN — v9.2
+// PULSE EARN — v10.4
 // ============================================================================
 //
-// ROLE (v9.2):
+// ROLE (v10.4):
 //   THE CELL — Pulse‑Earn’s sandboxed metabolic labor unit.
 //   • Receives assigned jobs from the Muscle System (EarnEngine) or PulseSend.
 //   • Executes deterministic, rule‑bound compute tasks (cellular metabolism).
@@ -17,23 +17,20 @@
 //   • Maintains its own health + cycle history.
 //   • Represents a single productive unit in the Pulse‑Earn economy.
 //
-// PURPOSE (v9.2):
+// PURPOSE (v10.4):
 //   • Provide a deterministic, drift‑proof compute engine.
 //   • Guarantee safe execution of text/math/data/json operations.
 //   • Maintain healing metadata for Earn healers.
 //   • Track metabolic cycles + cell health (conceptual only).
 //
-// CONTRACT (unchanged):
+// CONTRACT (v10.4):
 //   • PURE COMPUTE — no AI layers, no translation, no memory model.
 //   • READ‑ONLY except for healing metadata.
 //   • NO eval(), NO Function(), NO dynamic imports.
 //   • NO network access.
 //   • NO executing user code.
 //   • Deterministic output only.
-//
-// SAFETY (unchanged):
-//   • v9.2 upgrade is COMMENTAL / IDENTITY ONLY — NO LOGIC CHANGES.
-//   • All behavior remains identical to pre‑v9.2 Earner.
+//   • No timestamps, no randomness, no async.
 // ============================================================================
 
 // ------------------------------------------------------------
@@ -43,7 +40,8 @@ const EARN_CELL_CONTEXT = {
   layer: "PulseEarnCell",
   role: "CELL_WORKER",
   purpose: "Execute deterministic, sandboxed compute operations for Earn jobs",
-  context: "Safe compute participant + healing metadata (cell health)"
+  context: "Safe compute participant + healing metadata (cell health)",
+  version: "10.4"
 };
 
 // ------------------------------------------------------------
@@ -53,20 +51,22 @@ const healingState = {
   lastJobType: null,
   lastError: null,
   lastOutput: null,
+  // Add this field to healingState:
+  continuanceFallback: false,
+
   cycleCount: 0,          // metabolic cycles completed
-  lastTimestamp: null,    // last ATP cycle timestamp
+  lastCycleIndex: 0,      // deterministic cycle marker (no timestamps)
   executionState: "idle", // idle | dispatching | executing | returning | error
   // NOTE: This metadata is used by Earn‑Healers to maintain cell health.
   ...EARN_CELL_CONTEXT
 };
 
 // ------------------------------------------------------------
-// computeWork(job) — Cell performs metabolic labor
+// computeWork(job) — Cell performs metabolic labor (synchronous, deterministic)
 // ------------------------------------------------------------
-export async function computeWork(job) {
-  const start = performance.now();
+export function computeWork(job) {
   healingState.cycleCount++;
-  healingState.lastTimestamp = Date.now();
+  healingState.lastCycleIndex = healingState.cycleCount;
   healingState.executionState = "dispatching";
 
   try {
@@ -80,6 +80,7 @@ export async function computeWork(job) {
 
     let output;
     healingState.executionState = "executing";
+    healingState.continuanceFallback = false;
 
     switch (type) {
       case "text.transform":
@@ -110,7 +111,8 @@ export async function computeWork(job) {
     return {
       success: true,
       output,
-      durationMs: performance.now() - start,
+      // deterministic pseudo-duration: cycles only, no real time
+      durationCycles: healingState.cycleCount,
       ...EARN_CELL_CONTEXT
     };
 
@@ -121,7 +123,7 @@ export async function computeWork(job) {
     return {
       success: false,
       error: err.message,
-      durationMs: performance.now() - start,
+      durationCycles: healingState.cycleCount,
       ...EARN_CELL_CONTEXT
     };
   }
@@ -141,11 +143,16 @@ function textTransform({ text = "", mode = "upper" }) {
 
 function mathCompute({ operation, values = [] }) {
   switch (operation) {
-    case "sum": return values.reduce((a, b) => a + b, 0);
-    case "avg": return values.length ? values.reduce((a, b) => a + b, 0) / values.length : 0;
-    case "max": return Math.max(...values);
-    case "min": return Math.min(...values);
-    default: throw new Error(`Unknown math operation: ${operation}`);
+    case "sum":
+      return values.reduce((a, b) => a + b, 0);
+    case "avg":
+      return values.length ? values.reduce((a, b) => a + b, 0) / values.length : 0;
+    case "max":
+      return values.length ? Math.max(...values) : -Infinity;
+    case "min":
+      return values.length ? Math.min(...values) : Infinity;
+    default:
+      throw new Error(`Unknown math operation: ${operation}`);
   }
 }
 

@@ -1,34 +1,39 @@
 // ============================================================================
-//  PulseEarnReflexRouter.js — Reflex → Earn Synapse (v1.0)
+//  PulseEarnReflexRouter.js — Reflex → Earn Synapse (v10.4)
 //  - No imports
 //  - No routing, no sending
 //  - Pure, deterministic EarnReflex → Earn handoff
-//  - Fully aligned with PulseOSGovernor v3 (instance slicing safe)
+//  - Fully aligned with PulseOSGovernor v3.2 (instance slicing safe)
 //  - Designed to run ONLY when explicitly called
 // ============================================================================
 
 // Local registry of routed reflexes (drift-proof, no loops)
 const routedReflexes = new Map(); // reflexId -> state
 
+// Deterministic cycle counter (replaces timestamps)
+let reflexRouteCycle = 0;
+
 // ---------------------------------------------------------------------------
-//  INTERNAL: Build or retrieve reflex routing state
+//  INTERNAL: Build or retrieve reflex routing state (deterministic)
 // ---------------------------------------------------------------------------
 function getOrCreateReflexRouteState(reflexId) {
   let state = routedReflexes.get(reflexId);
+
   if (!state) {
     state = {
       reflexId,
       count: 0,
-      firstSeenAt: Date.now(),
-      lastSeenAt: null
+      firstSeenCycle: reflexRouteCycle,
+      lastSeenCycle: null
     };
     routedReflexes.set(reflexId, state);
   }
+
   return state;
 }
 
 // ---------------------------------------------------------------------------
-//  PUBLIC API — PulseEarnReflexRouter
+//  PUBLIC API — PulseEarnReflexRouter v10.4
 // ---------------------------------------------------------------------------
 export const PulseEarnReflexRouter = {
   /**
@@ -36,7 +41,9 @@ export const PulseEarnReflexRouter = {
    * - earnReflex: the organism built by PulseEarnReflex
    * - EarnSystem: the frontend Earn engine (PulseEarn)
    */
-  async route(earnReflex, EarnSystem) {
+  route(earnReflex, EarnSystem) {
+    reflexRouteCycle++;
+
     if (!earnReflex || !earnReflex.meta?.reflex) {
       return {
         ok: false,
@@ -51,7 +58,7 @@ export const PulseEarnReflexRouter = {
 
     const state = getOrCreateReflexRouteState(reflexId);
     state.count += 1;
-    state.lastSeenAt = Date.now();
+    state.lastSeenCycle = reflexRouteCycle;
 
     // If EarnSystem is missing or not ready, fail-open (immune-safe)
     if (!EarnSystem || typeof EarnSystem.handle !== "function") {
@@ -64,19 +71,21 @@ export const PulseEarnReflexRouter = {
     }
 
     // -----------------------------------------------------------------------
-    //  SAFE HANDOFF:
+    //  SAFE HANDOFF (v10.4):
     //  - No routing
     //  - No sending
     //  - No returnTo
     //  - No lineage mutation
+    //  - No async
     //  - Pure EarnSystem.handle() call
     // -----------------------------------------------------------------------
     try {
-      const result = await EarnSystem.handle(earnReflex, {
+      const result = EarnSystem.handle(earnReflex, {
         reflex: true,
         reflexId,
         state,
-        instanceContext: earnReflex.meta.instanceContext || null
+        instanceContext: earnReflex.meta.instanceContext || null,
+        cycleIndex: reflexRouteCycle
       });
 
       return {

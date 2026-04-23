@@ -2,7 +2,7 @@
 // FILE: tropic-pulse-functions/apps/pulse-gpu/PulseGPUConfig.js
 // LAYER: THE COMMANDMENTS — GPU-SUBSYSTEM (CONFIG + POLICY CONSTANTS)
 //
-// PulseGPUConfig v9.1 — Deterministic, Drift‑Proof, PulseSend‑Ready, Self‑Repair‑Ready
+// PulseGPUConfig v10.4 — Deterministic, Drift‑Proof, PulseSend‑Ready, Self‑Repair‑Ready
 // PURE CONFIG. NO GPU. NO DOM. NO NODE. NO SIDE EFFECTS.
 // ============================================================================
 //
@@ -15,7 +15,7 @@
 //  • The single source of truth for all GPU constants.
 //  • PulseSend/Earn‑aligned: contracts are explicit, but conceptual only.
 //
-// SAFETY CONTRACT (v9.1):
+// SAFETY CONTRACT (v10.4):
 //  -----------------------
 //  • No DOM APIs
 //  • No WebGPU/WebGL APIs
@@ -29,11 +29,11 @@
 // ============================================================================
 
 // ============================================================================
-// METADATA — v9.1 COMMANDMENTS IDENTITY
+// METADATA — v10.4 COMMANDMENTS IDENTITY
 // ============================================================================
 const PULSE_GPU_CONFIG_META = {
   layer: "PulseGPUConfig",
-  version: 9.1,
+  version: 10.4,
   target: "full-gpu",
   selfRepairable: true,
   doctrine: "These constants form the immutable commandments of Pulse-GPU.",
@@ -58,9 +58,9 @@ const PULSE_GPU_CONFIG_META = {
     unifiedAdvantageField: true,
 
     // PulseSend / Earn contracts (conceptual only)
-    routingContract: "PulseSend-v1",
-    gpuOrganContract: "PulseGPU-v9.1",
-    earnCompatibility: "PulseEarn-v9"
+    routingContract: "PulseSend-v10.4",
+    gpuOrganContract: "PulseGPU-v10.4",
+    earnCompatibility: "Earn-v2"
   }
 };
 

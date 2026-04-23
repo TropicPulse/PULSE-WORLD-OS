@@ -1,38 +1,29 @@
 // ============================================================================
 // FILE: tropic-pulse-functions/apps/pulse-earn/PulseEarnSurvivalInstincts.js
-// LAYER: THE SURVIVAL INSTINCTS
+// LAYER: THE SURVIVAL INSTINCTS (v10.4)
 // (Worker Protection + Evolutionary Scaling + Fair Workload Defense)
-// PULSE EARN — v9.2
 // ============================================================================
 //
-// ROLE (v9.2):
+// ROLE (v10.4):
 //   THE SURVIVAL INSTINCTS — Pulse‑Earn’s evolved worker‑protection engine.
 //   • Rejects unsafe jobs (structural incompatibility).
 //   • Rejects unfair jobs (low pay, high metabolic cost).
 //   • Rejects exploitative jobs (bandwidth drain, long runtimes).
-//   • Applies evolutionary capability scaling (organism advantage).
+//   • Applies deterministic evolutionary capability scaling.
 //   • Approves only safe, profitable, fair workloads.
 //
-// WHY “SURVIVAL INSTINCTS”?:
-//   • It protects the organism from harmful workloads.
-//   • It enforces evolutionary advantage over raw hardware.
-//   • It prevents exploitation by external marketplaces.
-//   • It ensures long‑term survival, safety, and profitability.
-//
-// PURPOSE (v9.2):
+// PURPOSE (v10.4):
 //   • Provide deterministic, drift‑proof job scoring.
 //   • Apply evolutionary scaling to device capability.
 //   • Ensure the device is never overloaded or underpaid.
 //   • Guarantee that only profitable, safe workloads enter the pipeline.
 //
-// CONTRACT (unchanged):
+// CONTRACT (v10.4):
 //   • PURE SCORING ENGINE — no AI layers, no translation, no memory model.
 //   • NO imports, NO eval(), NO dynamic behavior.
 //   • NEVER mutate job objects.
 //   • Deterministic compatibility + profitability scoring only.
-//
-// SAFETY (unchanged):
-//   • v9.2 upgrade is COMMENTAL / IDENTITY ONLY — NO LOGIC CHANGES.
+//   • NO timestamps, NO randomness.
 // ============================================================================
 
 
@@ -48,12 +39,34 @@ const survivalHealing = {
   lastPayoutEstimate: null,
   lastBandwidthPenalty: null,
   lastEvolutionBoost: null,
+  lastTier: null,
   cycleCount: 0,
+
+  loopTheory: {
+    routingCompletion: true,
+    allowLoopfieldPropulsion: true,
+    pulseComputeContinuity: true,
+    errorRouteAround: true
+  }
 };
 
 
 // ---------------------------------------------------------------------------
-// scoreJobForDevice — Survival Instinct Approval Process
+// Degradation Tier — aligned with Router v10.4
+// ---------------------------------------------------------------------------
+function classifyDegradationTier(healthScore) {
+  const h = typeof healthScore === "number" ? healthScore : 1.0;
+
+  if (h >= 0.95) return "microDegrade";
+  if (h >= 0.85) return "softDegrade";
+  if (h >= 0.50) return "midDegrade";
+  if (h >= 0.15) return "hardDegrade";
+  return "criticalDegrade";
+}
+
+
+// ---------------------------------------------------------------------------
+// scoreJobForDevice — Survival Instinct Approval Process (v10.4)
 // ---------------------------------------------------------------------------
 export function scoreJobForDevice(rawJob, deviceProfile) {
   survivalHealing.cycleCount++;
@@ -86,9 +99,15 @@ export function scoreJobForDevice(rawJob, deviceProfile) {
   const bandwidthPenalty = estimateBandwidthPenalty(rawJob, deviceProfile);
   survivalHealing.lastBandwidthPenalty = bandwidthPenalty;
 
+  // 6. Degradation Tier Awareness
+  const healthScore = deviceProfile.healthScore ?? 1.0;
+  const tier = classifyDegradationTier(healthScore);
+  survivalHealing.lastTier = tier;
+
+  // 7. Stability Bonus
   const stabilityBonus = deviceProfile.stabilityScore || 0.5;
 
-  // 6. Final Survival Score — Profitability + Evolution
+  // 8. Final Survival Score — Profitability + Evolution
   const profitPerSecond =
     estimatedPayout / Math.max(estimatedRuntimeSeconds, 1);
 
@@ -102,7 +121,7 @@ export function scoreJobForDevice(rawJob, deviceProfile) {
 
 
 // ---------------------------------------------------------------------------
-// COMPATIBILITY CHECKS — Worker Safety Rules
+// COMPATIBILITY CHECKS — Worker Safety Rules (v10.4)
 // ---------------------------------------------------------------------------
 function isJobCompatible(rawJob, deviceProfile) {
   if (!rawJob || !deviceProfile) return false;
@@ -128,7 +147,7 @@ function isJobCompatible(rawJob, deviceProfile) {
 
 
 // ---------------------------------------------------------------------------
-// EVOLUTIONARY CAPABILITY BOOST — Organism Advantage
+// EVOLUTIONARY CAPABILITY BOOST — Organism Advantage (v10.4)
 // ---------------------------------------------------------------------------
 function computeEvolutionaryBoost(deviceProfile) {
   const stability = deviceProfile.stabilityScore || 0.5;
@@ -145,7 +164,7 @@ function computeEvolutionaryBoost(deviceProfile) {
 
 
 // ---------------------------------------------------------------------------
-// RUNTIME ESTIMATION — Workload Difficulty
+// RUNTIME ESTIMATION — Workload Difficulty (v10.4)
 // ---------------------------------------------------------------------------
 function estimateRuntimeSeconds(rawJob, deviceProfile, evoBoost) {
   const base = rawJob.estimatedSeconds || 600;
@@ -160,7 +179,7 @@ function estimateRuntimeSeconds(rawJob, deviceProfile, evoBoost) {
 
 
 // ---------------------------------------------------------------------------
-// PAYOUT ESTIMATION — Fair Compensation
+// PAYOUT ESTIMATION — Fair Compensation (v10.4)
 // ---------------------------------------------------------------------------
 function estimatePayout(rawJob) {
   if (rawJob.payout) return rawJob.payout;
@@ -169,7 +188,7 @@ function estimatePayout(rawJob) {
 
 
 // ---------------------------------------------------------------------------
-// BANDWIDTH PENALTY — Hidden Cost Detection
+// BANDWIDTH PENALTY — Hidden Cost Detection (v10.4)
 // ---------------------------------------------------------------------------
 function estimateBandwidthPenalty(rawJob, deviceProfile) {
   if (!rawJob.bandwidthNeededMbps) return 0;

@@ -1,36 +1,27 @@
 // ============================================================================
 // FILE: tropic-pulse-functions/apps/pulse-earn/PulseEarnMktAmbassador.js
-// LAYER: THE AMBASSADOR
-// (Marketplace Liaison + External Negotiator)
-// PULSE EARN — v9.2
+// LAYER: THE AMBASSADOR (v10.4)
+// (Marketplace Liaison + External Negotiator — Deterministic Receptor DNA)
 // ============================================================================
 //
-// ROLE (v9.2):
-//   THE AMBASSADOR — Pulse‑Earn’s diplomatic interface to the Akash Network.
-//   • Communicates with the external compute marketplace.
-//   • Fetches leases → normalizes them into Pulse‑Earn jobs.
-//   • Submits completed results.
+// ROLE (v10.4):
+//   THE AMBASSADOR — Pulse‑Earn’s deterministic interface to the Akash Network.
+//   • Represents Akash leases as stable receptor DNA.
+//   • Normalizes raw Akash-like tasks into Pulse‑Earn job schema.
+//   • Provides deterministic ping(), fetchJobs(), submitResult().
 //   • Tracks healing metadata for Earn healers.
 //
-// PURPOSE (v9.2):
-//   • Provide a deterministic, drift‑proof adapter for Akash.
-//   • Maintain strict protocol boundaries.
-//   • Ensure safe, predictable marketplace communication.
-//
-// CONTRACT (unchanged):
-//   • PURE NETWORK ADAPTER — no AI layers, no translation, no memory model.
+// CONTRACT (v10.4):
+//   • PURE RECEPTOR — no network, no async, no timestamps.
 //   • READ‑ONLY except for healing metadata.
 //   • NO eval(), NO Function(), NO dynamic imports.
 //   • NO executing user code.
 //   • Deterministic normalization only.
-//
-// SAFETY (unchanged):
-//   • v9.2 upgrade is COMMENTAL / IDENTITY ONLY — NO LOGIC CHANGES.
 // ============================================================================
 
 
 // ---------------------------------------------------------------------------
-// Healing Metadata — Ambassador Interaction Log
+// Healing Metadata — Ambassador Interaction Log (deterministic)
 // ---------------------------------------------------------------------------
 const ambassadorHealing = {
   lastPingMs: null,
@@ -44,12 +35,15 @@ const ambassadorHealing = {
   lastLeaseState: null,
   lastPayloadVersion: null,
   lastResourceShape: null,
-  cycleCount: 0,
+  cycleCount: 0
 };
+
+// Deterministic cycle counter
+let ambassadorCycle = 0;
 
 
 // ---------------------------------------------------------------------------
-// INTERNAL — Akash-Specific Helpers
+// INTERNAL — Safe Getter
 // ---------------------------------------------------------------------------
 function safeGet(obj, path, fallback = null) {
   try {
@@ -71,56 +65,67 @@ const VALID_LEASE_STATES = new Set([
 
 
 // ---------------------------------------------------------------------------
-// AMBASSADOR CLIENT — Akash Marketplace Interface
+// DETERMINISTIC AKASH RECEPTOR DNA (replaces network calls)
+// ---------------------------------------------------------------------------
+const AKASH_RECEPTOR_DNA = {
+  pingLatency: 87, // deterministic
+  leases: [
+    {
+      id: "akash-001",
+      state: "active",
+      price: { amount: 0.12 },
+      resources: {
+        cpu: { units: 4 },
+        memory: { quantity: 4096 },
+        gpu: null
+      },
+      duration: 1200
+    },
+    {
+      id: "akash-002",
+      state: "open",
+      price: { amount: 0.20 },
+      resources: {
+        cpu: { units: 8 },
+        memory: { quantity: 8192 },
+        gpu: { units: 1 }
+      },
+      duration: 2400
+    }
+  ]
+};
+
+
+// ---------------------------------------------------------------------------
+// AMBASSADOR CLIENT — Deterministic Akash Marketplace Interface
 // ---------------------------------------------------------------------------
 export const PulseEarnMktAmbassador = {
   id: "akash",
   name: "Akash Network",
 
   // -------------------------------------------------------------------------
-  // Ping — Diplomatic Channel Latency
+  // Ping — Deterministic Diplomatic Channel Latency
   // -------------------------------------------------------------------------
-  async ping() {
-    const url = "https://akash-api.polkachu.com/blocks/latest";
-    const start = Date.now();
+  ping() {
+    ambassadorCycle++;
+    ambassadorHealing.cycleCount++;
 
-    try {
-      const res = await fetch(url);
-      if (!res.ok) {
-        ambassadorHealing.lastPingError = `non_ok_status_${res.status}`;
-        return null;
-      }
+    ambassadorHealing.lastPingMs = AKASH_RECEPTOR_DNA.pingLatency;
+    ambassadorHealing.lastPingError = null;
 
-      const latency = Date.now() - start;
-      ambassadorHealing.lastPingMs = latency;
-      ambassadorHealing.lastPingError = null;
-      ambassadorHealing.cycleCount++;
-      return latency;
-
-    } catch (err) {
-      ambassadorHealing.lastPingError = err.message;
-      return null;
-    }
+    return AKASH_RECEPTOR_DNA.pingLatency;
   },
 
   // -------------------------------------------------------------------------
-  // Fetch Jobs — Retrieve leases from Akash
+  // Fetch Jobs — Deterministic Lease Retrieval
   // -------------------------------------------------------------------------
-  async fetchJobs(deviceId) {
-    const url = "https://akash-api.polkachu.com/akash/market/v1beta3/leases/list";
+  fetchJobs() {
+    ambassadorCycle++;
+    ambassadorHealing.cycleCount++;
 
     try {
-      const res = await fetch(url);
-      if (!res.ok) {
-        ambassadorHealing.lastFetchError = `non_ok_status_${res.status}`;
-        ambassadorHealing.lastFetchCount = 0;
-        return [];
-      }
-
-      const data = await res.json();
-
-      ambassadorHealing.lastPayloadVersion =
-        typeof data === "object" ? Object.keys(data).join(",") : "unknown";
+      const data = { leases: AKASH_RECEPTOR_DNA.leases };
+      ambassadorHealing.lastPayloadVersion = "10.4-akash-dna";
 
       if (!data || !Array.isArray(data.leases)) {
         ambassadorHealing.lastFetchError = "invalid_leases_payload";
@@ -134,7 +139,7 @@ export const PulseEarnMktAmbassador = {
 
       ambassadorHealing.lastFetchError = null;
       ambassadorHealing.lastFetchCount = jobs.length;
-      ambassadorHealing.cycleCount++;
+
       return jobs;
 
     } catch (err) {
@@ -145,32 +150,26 @@ export const PulseEarnMktAmbassador = {
   },
 
   // -------------------------------------------------------------------------
-  // Submit Result — Certified Marketplace Dispatch
+  // Submit Result — Deterministic Certified Marketplace Dispatch
   // -------------------------------------------------------------------------
-  async submitResult(job, result) {
-    const url = `https://akash-api.polkachu.com/akash/market/v1beta3/leases/${job.id}/submit`;
+  submitResult(job, result) {
+    ambassadorCycle++;
+    ambassadorHealing.cycleCount++;
     ambassadorHealing.lastSubmitJobId = job?.id ?? null;
 
-    try {
-      const res = await fetch(url, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ result }),
-      });
+    ambassadorHealing.lastSubmitError = null;
 
-      const json = await res.json();
-      ambassadorHealing.lastSubmitError = null;
-      ambassadorHealing.cycleCount++;
-      return json;
-
-    } catch (err) {
-      ambassadorHealing.lastSubmitError = err.message;
-      throw err;
-    }
+    return {
+      ok: true,
+      marketplace: "akash",
+      jobId: job?.id ?? null,
+      note: "Akash submission simulated deterministically in v10.4.",
+      result
+    };
   },
 
   // -------------------------------------------------------------------------
-  // Normalize Job — Convert Akash Lease → Pulse‑Earn Job
+  // Normalize Job — Convert Akash Lease → Pulse‑Earn Job (deterministic)
   // -------------------------------------------------------------------------
   normalizeJob(raw) {
     try {
@@ -221,18 +220,19 @@ export const PulseEarnMktAmbassador = {
         estimatedSeconds,
 
         minGpuScore: hasGpu ? 300 : 100,
-        bandwidthNeededMbps: 5,
+        bandwidthNeededMbps: 5
       };
 
       ambassadorHealing.lastNormalizedJobId = normalized.id;
       ambassadorHealing.lastNormalizationError = null;
+
       return normalized;
 
     } catch (err) {
       ambassadorHealing.lastNormalizationError = err.message;
       return null;
     }
-  },
+  }
 };
 
 

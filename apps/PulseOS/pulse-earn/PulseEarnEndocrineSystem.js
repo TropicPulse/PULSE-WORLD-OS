@@ -2,44 +2,30 @@
 // FILE: tropic-pulse-functions/apps/pulse-earn/PulseEarnEndocrineSystem.js
 // LAYER: THE ENDOCRINE SYSTEM
 // (Performance Intelligence + Reputation Hormones + Trust Regulation)
-// PULSE EARN — v9.2
+// PULSE EARN — v10.4 (DETERMINISTIC, IN-MEMORY)
 // ============================================================================
 //
-// ROLE (v9.2):
+// ROLE (v10.4):
 //   THE ENDOCRINE SYSTEM — Pulse‑Earn’s long-term performance regulator.
 //   • Tracks marketplace reliability and profitability (hormone sensing).
 //   • Computes normalized performance signals (signal transduction).
 //   • Applies weighted scoring to determine trust (hormonal modulation).
 //   • Blends historical + recent performance (half-life / EMA).
-//   • Persists reputation for long-term intelligence (endocrine memory).
+//   • Maintains in‑memory reputation for long-term intelligence.
 //
-// PURPOSE (v9.2):
-//   • Provide deterministic, drift-proof trust scoring.
-//   • Maintain persistent marketplace reputation (hormonal memory).
-//   • Supply the Circulatory System with trust hormones.
-//   • Preserve endocrine lineage + signal weighting.
-//
-// CONTRACT (unchanged):
+// CONTRACT (v10.4):
 //   • PURE INTELLIGENCE ENGINE — no AI layers, no translation, no memory model.
 //   • READ-ONLY except for deterministic reputation updates.
 //   • NO eval(), NO Function(), NO dynamic imports.
 //   • NO executing user code.
+//   • NO filesystem, NO timestamps.
 //   • Deterministic scoring only.
-//
-// SAFETY (unchanged):
-//   • v9.2 upgrade is COMMENTAL / IDENTITY ONLY — NO LOGIC CHANGES.
 // ============================================================================
-
-import fs from "fs";
-import path from "path";
 
 // ---------------------------------------------------------------------------
 // Constants — Endocrine Baselines
 // ---------------------------------------------------------------------------
 const DEFAULT_REPUTATION = 0.5;
-const REPUTATION_FILE = path.resolve(
-  "pulse-earn/data/marketplace-reputation.json"
-);
 
 // In-memory endocrine hormone store
 let reputation = new Map();
@@ -58,40 +44,20 @@ const endocrineHealing = {
 };
 
 // ---------------------------------------------------------------------------
-// Load reputation from disk — Endocrine Memory Recall
+// Load reputation — Endocrine Memory Recall (v10.4: in-memory only)
 // ---------------------------------------------------------------------------
 export function loadPulseEarnReputation() {
-  try {
-    if (!fs.existsSync(REPUTATION_FILE)) {
-      reputation = new Map();
-      return;
-    }
-
-    const raw = fs.readFileSync(REPUTATION_FILE, "utf8");
-    const json = JSON.parse(raw);
-
-    reputation = new Map(Object.entries(json));
-    endocrineHealing.lastLoadError = null;
-  } catch (err) {
-    error("Failed to load marketplace reputation:", err);
-    endocrineHealing.lastLoadError = err.message;
-    reputation = new Map();
-  }
+  // v10.4: no filesystem; reputation starts empty and grows deterministically
+  reputation = reputation || new Map();
+  endocrineHealing.lastLoadError = null;
 }
 
 // ---------------------------------------------------------------------------
-// Save reputation to disk — Endocrine Persistence
+// Save reputation — Endocrine Persistence (v10.4: no-op, deterministic)
 // ---------------------------------------------------------------------------
 function savePulseEarnReputation() {
-  try {
-    const obj = Object.fromEntries(reputation);
-    fs.mkdirSync(path.dirname(REPUTATION_FILE), { recursive: true });
-    fs.writeFileSync(REPUTATION_FILE, JSON.stringify(obj, null, 2));
-    endocrineHealing.lastSaveError = null;
-  } catch (err) {
-    error("Failed to save marketplace reputation:", err);
-    endocrineHealing.lastSaveError = err.message;
-  }
+  // v10.4: no filesystem; keep in-memory only
+  endocrineHealing.lastSaveError = null;
 }
 
 // ---------------------------------------------------------------------------
@@ -203,4 +169,17 @@ function normalizeProfit(p) {
 // ---------------------------------------------------------------------------
 export function getPulseEarnReputationHealingState() {
   return { ...endocrineHealing };
+}
+
+// ---------------------------------------------------------------------------
+// v10.4 COMPAT ALIASES — for Nervous System imports
+// ---------------------------------------------------------------------------
+// Nervous System expects: updateMarketplaceReputation, computeReputationSignals
+
+export function updateMarketplaceReputation(id, signals) {
+  return updatePulseEarnReputation(id, signals);
+}
+
+export function computeReputationSignals(args) {
+  return computePulseEarnReputationSignals(args);
 }

@@ -1,11 +1,11 @@
 // ============================================================================
 // FILE: tropic-pulse-functions/apps/pulse-gpu/PulseGPUSurvivalInstincts.js
-// PULSE GPU SURVIVAL INSTINCTS v9.2 — THE EVOLUTION CORE
+// PULSE GPU SURVIVAL INSTINCTS v10.4 — THE EVOLUTION CORE
 // Adaptive Identity Layer • Genetic Memory • Best‑Self Preservation Engine
 // ============================================================================
 //
-// SAFETY CONTRACT (v9.2):
-//  -----------------------
+// SAFETY CONTRACT (v10.4):
+//  ------------------------
 //  • No randomness
 //  • No timestamps
 //  • No GPU calls
@@ -17,8 +17,9 @@
 //  • Deterministic: same inputs → same evolutionary memory
 // ============================================================================
 
+
 // ------------------------------------------------------------
-// ⭐ OS‑v9.2 CONTEXT METADATA — Survival Instincts Identity
+// ⭐ OS‑v10.4 CONTEXT METADATA — Survival Instincts Identity
 // ------------------------------------------------------------
 const SURVIVAL_CONTEXT = {
   layer: "PulseGPUSurvivalInstincts",
@@ -27,7 +28,7 @@ const SURVIVAL_CONTEXT = {
   context:
     "Stores best-known configs, metrics, traces, and supports regression detection",
   target: "full-gpu",
-  version: 9.2,
+  version: 10.4,
   selfRepairable: true,
 
   evo: {
@@ -36,12 +37,11 @@ const SURVIVAL_CONTEXT = {
     driftProof: true,
     multiInstanceReady: true,
     unifiedAdvantageField: true,
-    pulseSend2Ready: true,
+    pulseSend10Ready: true,
 
-    // PulseSend / Earn contracts (conceptual only)
-    routingContract: "PulseSend-v2",
-    gpuOrganContract: "PulseGPU-v9.2",
-    earnCompatibility: "PulseEarn-v9"
+    routingContract: "PulseSend-v10.4",
+    gpuOrganContract: "PulseGPU-v10.4",
+    earnCompatibility: "Earn-v2"
   }
 };
 
@@ -65,6 +65,7 @@ function stableStringify(value) {
   return "{" + parts.join(",") + "}";
 }
 
+
 // ------------------------------------------------------------
 // Utility: simple deterministic hash
 // ------------------------------------------------------------
@@ -78,6 +79,7 @@ function simpleHash(str) {
   return (hash >>> 0).toString(16);
 }
 
+
 // ------------------------------------------------------------
 // Settings hash — Genetic Fingerprint
 // ------------------------------------------------------------
@@ -85,6 +87,7 @@ function computeSettingsHash(settings) {
   const serialized = stableStringify(settings || {});
   return simpleHash(serialized);
 }
+
 
 // ------------------------------------------------------------
 // Session scoring — Evolutionary Fitness Score
@@ -124,6 +127,7 @@ function scoreSession(metrics = {}) {
   return clamp(score, 0, 1);
 }
 
+
 // ------------------------------------------------------------
 // Regression detection — Evolutionary Delta
 // ------------------------------------------------------------
@@ -136,6 +140,7 @@ function detectRegression(currentMetrics, baselineMetrics) {
   const delta = (currentScore - baselineScore) / baselineScore;
   return delta * 100;
 }
+
 
 // ------------------------------------------------------------
 // Key building helpers — Genetic Indexing
@@ -186,6 +191,7 @@ function buildCompositeKey(
   });
   return simpleHash(base);
 }
+
 
 // ------------------------------------------------------------
 // Memory entry model — Evolutionary Record
@@ -297,6 +303,7 @@ class PulseGPUSurvivalInstinctsStore {
   }
 }
 
+
 // ------------------------------------------------------------
 // Public API wrapper — Evolution Core Surface
 // ------------------------------------------------------------
@@ -338,6 +345,7 @@ class PulseGPUSurvivalInstincts {
     this.store.clear();
   }
 }
+
 
 // ------------------------------------------------------------
 // EXPORTS
