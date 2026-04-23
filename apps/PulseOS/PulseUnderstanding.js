@@ -1,61 +1,41 @@
 // ============================================================================
-//  PulseUnderstanding.js — v10.4
+//  PulseUnderstanding.js — v10.4 (Upgraded with Global AI Logging)
 //  Kernel Opener • Organism Loader • Deterministic Frontend Brainstem
 // ============================================================================
-//
-//  WHAT THIS IS:
-//  • The unified loader for all PulseOS v10.4 organs.
-//  • Loads SDN (Software‑Defined Nervous System), GPU‑v10.4,
-//    Router‑v10.4, Send‑v10.4, Earn‑v10.4, ContinuancePulse‑v10.4.
-//  • Boots Evolution → which boots Brain → which attaches to Kernel.
-//  • No astral nervous system. No PNS. No legacy GPU.
-//  • Deterministic, browser‑safe, zero drift.
-// ============================================================================
-
 
 // ============================================================================
 //  IMPORTS — FRONTEND BARREL (ALL ORGANS ROUTE THROUGH HERE)
 // ============================================================================
-
-// OS Maps
 import { PulseIntentMap } from "./PULSE-OS/PulseIntentMap.js";
 import { PulseOrganismMap } from "./PULSE-OS/PulseOrganismMap.js";
 import { PulseIQMap } from "./PULSE-OS/PulseIQMap.js";
-// ADD THIS LINE:
 import { PulseIdentity } from "./PULSE-OS/PulseIdentity.js";
 
-// OS Evolution + Brain
 import { PulseOSEvolution } from "./PULSE-OS/PulseOSEvolution.js";
 import { PulseOSBrain } from "./PULSE-OS/PulseOSBrain.js";
-
-// Reflex + Vitals
 
 import { VitalsMonitor } from "./pulse-proxy/PulseProxyVitalsMonitor.js";
 import { attachScanner } from "./PULSE-OS/PulseOSSkinReflex.js";
 
-// ROUTER (v10.4 deterministic)
 import * as PulseRouter from "./pulse-router/PulseRouterEvolutionaryThought.js";
-
-// GPU ORGAN (v10.4 deterministic)
 import * as PulseGPU from "./pulse-gpu/PulseGPU-v10.4.js";
 
-// SEND SYSTEM (v10.4 deterministic)
 import { PulseSendSystem } from "./pulse-send/PulseSendSystem.js";
 
-// EARN ORGANISM (v10.4 deterministic)
 import * as PulseEarn from "./pulse-earn/PulseEarn.js";
 import { PulseEarnSendSystem } from "./pulse-earn/PulseEarnSendSystem.js";
 import { PulseEarnContinuancePulse } from "./pulse-earn/PulseEarnContinuancePulse.js";
 
-// SDN (Software‑Defined Nervous System)
 import { createPulseSDN } from "./pulse-sdn/PulseSDN.js";
 
-// GOVERNOR
 import { withOrganGuard } from "./PULSE-OS/PulseOSGovernor.js";
+
+// ⭐ NEW — Logging organ (frontend-safe)
+import { createDiagnosticsWriteAPI } from "./aiDiagnosticsWrite.js";
 
 
 // ============================================================================
-//  ATTACH SKIN REFLEX (AFTER LOGGER IS READY)
+//  ATTACH SKIN REFLEX
 // ============================================================================
 attachScanner(PulseIdentity);
 
@@ -84,7 +64,7 @@ const PULSE_UNDERSTANDING_CONTEXT = {
 
 
 // ============================================================================
-//  ENVIRONMENT SNAPSHOT (NO NETWORK)
+//  ENVIRONMENT SNAPSHOT
 // ============================================================================
 function buildEnvironmentSnapshot() {
   if (typeof window === "undefined") {
@@ -110,17 +90,46 @@ const PulseEnvironment = buildEnvironmentSnapshot();
 
 
 // ============================================================================
-//  GOVERNED EXECUTION — Run any organ through PulseOSGovernor
+//  GOVERNED EXECUTION — NOW WITH GLOBAL AI LOGGING
 // ============================================================================
 function runThroughGovernor(organName, pulseOrImpulse, fn) {
-  return withOrganGuard(organName, pulseOrImpulse, (instanceContext) => {
-    return fn(instanceContext);
+  return withOrganGuard(organName, pulseOrImpulse, async (instanceContext) => {
+
+    // Execute organ logic
+    const result = await fn(instanceContext);
+
+    // ⭐ NEW: Global AI Logging (Option A)
+    try {
+      const timestamp = Date.now();
+      const docId = `${organName}-${timestamp}`;
+
+      const safe = {
+        organ: organName,
+        timestamp,
+        personaId: instanceContext.personaId || null,
+        boundaries: instanceContext.boundaries || null,
+        permissions: instanceContext.permissions || null,
+        trace: [...(instanceContext.trace || [])],
+        diagnostics: instanceContext.diagnostics || null,
+        result
+      };
+
+      // Write to AI_LOGS
+      await instanceContext?.organs?.diagnosticsWrite?.writeRun({
+        docId,
+        payload: safe
+      });
+    } catch (err) {
+      console.warn("AI_LOGS write failed:", err);
+    }
+
+    return result;
   });
 }
 
 
 // ============================================================================
-//  KERNEL BOOTSTRAP — PURE WIRING, NO BACKEND CALLS ON LOAD
+//  KERNEL BOOTSTRAP
 // ============================================================================
 function buildPulseKernel() {
   const meta = {
@@ -148,7 +157,7 @@ function buildPulseKernel() {
       Monitor: VitalsMonitor
     },
 
-    SDN: null,  // will be attached after Brain boots
+    SDN: null,
 
     Governed: {
       run: runThroughGovernor
@@ -162,7 +171,7 @@ const PulseKernel = buildPulseKernel();
 
 
 // ============================================================================
-//  EVOLUTION BOOTSTRAP — Understanding boots Evolution (NOT Brain)
+//  EVOLUTION BOOTSTRAP
 // ============================================================================
 const Evolution = PulseOSEvolution({
   intent: PulseIntentMap,
@@ -171,15 +180,12 @@ const Evolution = PulseOSEvolution({
   understanding: PULSE_UNDERSTANDING_CONTEXT
 });
 
-// ⭐ Evolution boots the Brain
 const Brain = Evolution.bootBrain(PulseOSBrain);
-
-// ⭐ Attach Brain to Kernel
 PulseKernel.Brain = Brain;
 
 
 // ============================================================================
-//  SDN BOOTSTRAP — Nervous System attaches AFTER Brain exists
+//  SDN BOOTSTRAP
 // ============================================================================
 PulseKernel.SDN = createPulseSDN({
   Router: PulseRouter,
@@ -192,7 +198,7 @@ PulseKernel.SDN = createPulseSDN({
 
 
 // ============================================================================
-//  GLOBAL BROADCAST — MAKE KERNEL AVAILABLE TO FRONTEND
+//  GLOBAL BROADCAST
 // ============================================================================
 if (typeof window !== "undefined") {
   window.Pulse = window.Pulse
@@ -207,7 +213,7 @@ if (typeof window !== "undefined") {
 
 
 // ============================================================================
-//  EXPORTS — PRIMARY ENTRYPOINT
+//  EXPORTS
 // ============================================================================
 export const PulseUnderstanding = {
   ...PULSE_UNDERSTANDING_CONTEXT,

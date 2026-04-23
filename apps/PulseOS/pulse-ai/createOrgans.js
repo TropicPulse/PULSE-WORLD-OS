@@ -10,9 +10,8 @@
 //   • Enforce identity safety + owner gating at the organ level.
 //
 // CONTRACT:
-//   • READ‑ONLY — no writes, no deletes, no updates.
+//   • READ‑ONLY — except for the diagnosticsWrite organ.
 //   • NO eval(), NO Function(), NO dynamic imports.
-//   • NO executing user code.
 //   • Deterministic organ assembly only.
 // ============================================================================
 
@@ -22,17 +21,12 @@ import { createEnvironmentAPI } from "./aiEnvironment.js";
 import { createPowerAPI } from "./aiPower.js";
 import { createEvolutionAPI } from "./aiEvolution.js";
 import { createEarnAPI } from "./aiEarn.js";
+import { createDiagnosticsWriteAPI } from "./aiDiagnosticsWrite.js";
 
 // --------------------------------------------------------------------------
 // ORGAN ASSEMBLY
 // --------------------------------------------------------------------------
 export function createOrgans(context, db, fsAPI, routeAPI, schemaAPI) {
-  // All organs receive the same context + injected environment APIs.
-  // No organ is allowed to mutate the environment.
-  // No organ is allowed to execute user code.
-  // No organ is allowed to write to DB or FS.
-  // All organs must be deterministic.
-
   return {
     // High‑level architectural reasoning
     architect: createArchitectAPI({
@@ -70,6 +64,14 @@ export function createOrgans(context, db, fsAPI, routeAPI, schemaAPI) {
 
     // Earn / economics organ (read‑only)
     earn: createEarnAPI({
+      context,
+      db
+    }),
+
+    // ----------------------------------------------------------------------
+    // NEW: AI LOGGING ORGAN (writes to AI_LOGS)
+    // ----------------------------------------------------------------------
+    diagnosticsWrite: createDiagnosticsWriteAPI({
       context,
       db
     })
