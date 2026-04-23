@@ -28,7 +28,6 @@
 //   • v7.1+ upgrade is COMMENTAL ONLY — NO LOGIC CHANGES.
 //   • All behavior remains identical to pre‑v7.1 repoWalker.
 // ============================================================================
-
 import fs from "fs";
 import path from "path";
 import { classifyFile } from "./fileClassifier.js";

@@ -55,41 +55,43 @@
   </div>
 
   <!-- ⭐ Injected server-side by your email template engine -->
-  <script>
-    window.__RESENDTOKEN__ = "%%RESENDTOKEN%%";
-    // Your email template replaces %%RESENDTOKEN%% with the real token.
-  </script>
+  <!-- ⭐ Injected server-side by your email template engine -->
+<script>
+  // Server sets this to true ONLY if the token was embedded successfully.
+  // Browser never sees the token itself.
+  window.__SERVER_HAS_TOKEN__ = true;
+</script>
+
 
   <script>
     document.addEventListener("DOMContentLoaded", () => {
-      // DisplayName is cosmetic only — page must load no matter what
-      const params = new URLSearchParams(window.location.search);
-      const displayName = params.get("user") || "Friend";
+  const params = new URLSearchParams(window.location.search);
 
-      // Real token is embedded privately in HTML
-      const token = window.__RESENDTOKEN__;
+  // ⭐ Use displayName — the official public identity layer
+  const displayName = params.get("displayName") || "Friend";
 
-      if (!token) {
-        window.location.href = "https://www.tropicpulse.bz/error.html";
-        return;
-      }
+  // Server-side token presence check
+  if (!window.__SERVER_HAS_TOKEN__) {
+    window.location.href = "https://www.tropicpulse.bz/error.html";
+    return;
+  }
 
-      // POST token securely to backend
-      fetch("https://www.tropicpulse.bz/resendlink", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ token })
-      })
-      .then(() => {
-        // Redirect with ONLY displayName — no identifiers
-        window.location.href =
-          "https://www.tropicpulse.bz/success.html?user=" +
-          encodeURIComponent(displayName);
-      })
-      .catch(() => {
-        window.location.href = "https://www.tropicpulse.bz/error.html";
-      });
-    });
+  // Browser sends NO TOKEN — only a trigger
+  fetch("https://www.tropicpulse.bz/resendlink-trigger", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ request: true })
+  })
+  .then(() => {
+    window.location.href =
+      "https://www.tropicpulse.bz/success.html?displayName=" +
+      encodeURIComponent(displayName);
+  })
+  .catch(() => {
+    window.location.href = "https://www.tropicpulse.bz/error.html";
+  });
+});
+
   </script>
 
 </body>
