@@ -9,7 +9,7 @@
 //   • Detect evolutionary patterns (“new limb”, “overgrowth”, “starvation”).
 //   • Provide owner‑only deep organism insight.
 //   • Integrates with Architect + Earn + Power + Environment organs.
-//   • Never mutate anything.
+//   • Never mutates anything.
 //
 // CONTRACT:
 //   • READ‑ONLY.
@@ -20,21 +20,45 @@
 
 import { Personas } from "./persona.js";
 
+// ============================================================================
+//  IDENTITY — EVOLUTION ORGAN META (v10.4)
+// ============================================================================
+export const AI_EVOLUTION_META = Object.freeze({
+  layer: "PulseAIEvolution",
+  role: "EVOLUTION",
+  version: "10.4",
+  evo: Object.freeze({
+    driftProof: true,
+    deterministicField: true,
+    multiInstanceReady: true,
+    organismAware: true,
+    lineageAware: true,
+    patternAware: true,
+    architectOnly: true
+  })
+});
+
+// ============================================================================
+//  FACTORY — Evolution Organ
+// ============================================================================
 export function createEvolutionAPI(fsAPI, routeAPI, schemaAPI) {
 
   // --------------------------------------------------------------------------
-  // ACCESS CONTROL
+  // ACCESS CONTROL — Owner + Architect Only
   // --------------------------------------------------------------------------
   function assertOwnerArchitect(context) {
-    if (!context.userIsOwner || context.personaId !== Personas.ARCHITECT) {
-      context.logStep("aiEvolution: access denied (not owner+architect).");
-      return false;
+    const allowed =
+      context.userIsOwner &&
+      context.personaId === Personas.ARCHITECT;
+
+    if (!allowed) {
+      context.logStep?.("aiEvolution: access denied (requires owner + architect).");
     }
-    return true;
+    return allowed;
   }
 
   // --------------------------------------------------------------------------
-  // HELPERS
+  // HELPERS — Identity‑Safe Cloning
   // --------------------------------------------------------------------------
   function stripIdentityAnchors(record) {
     if (!record || typeof record !== "object") return record;
@@ -48,14 +72,12 @@ export function createEvolutionAPI(fsAPI, routeAPI, schemaAPI) {
     return clone;
   }
 
+  // --------------------------------------------------------------------------
+  // DETECTORS — Pure, Deterministic Analysis
+  // --------------------------------------------------------------------------
   function detectUnusedImports(file) {
-    const unused = [];
-    for (const imp of file.imports) {
-      if (!file.references.includes(imp.name)) {
-        unused.push(imp);
-      }
-    }
-    return unused;
+    if (!file?.imports || !file?.references) return [];
+    return file.imports.filter(imp => !file.references.includes(imp.name));
   }
 
   function detectOrphanedRoutes(routeMap) {
@@ -63,24 +85,28 @@ export function createEvolutionAPI(fsAPI, routeAPI, schemaAPI) {
   }
 
   function detectDeadComponents(files) {
-    return files.filter(f => f.type === "component" && f.references.length === 0);
+    return files.filter(
+      f => f.type === "component" && Array.isArray(f.references) && f.references.length === 0
+    );
   }
 
   function detectSchemaDrift(schemas) {
     const drift = [];
+
     for (const s of schemas) {
-      if (s.expectedFields && s.actualFields) {
-        for (const key of Object.keys(s.expectedFields)) {
-          if (!s.actualFields[key]) {
-            drift.push({
-              schema: s.name,
-              field: key,
-              issue: "missing"
-            });
-          }
+      if (!s.expectedFields || !s.actualFields) continue;
+
+      for (const key of Object.keys(s.expectedFields)) {
+        if (!s.actualFields[key]) {
+          drift.push({
+            schema: s.name,
+            field: key,
+            issue: "missing"
+          });
         }
       }
     }
+
     return drift;
   }
 
@@ -110,7 +136,7 @@ export function createEvolutionAPI(fsAPI, routeAPI, schemaAPI) {
   // --------------------------------------------------------------------------
   // PUBLIC API — Evolutionary Insight
   // --------------------------------------------------------------------------
-  return {
+  return Object.freeze({
 
     // ----------------------------------------------------------------------
     // FULL ORGANISM OVERVIEW
@@ -124,21 +150,21 @@ export function createEvolutionAPI(fsAPI, routeAPI, schemaAPI) {
         schemaAPI.getAllSchemas()
       ]);
 
-      const unusedImports   = files.flatMap(f => detectUnusedImports(f));
-      const orphanedRoutes  = detectOrphanedRoutes(routes);
-      const deadComponents  = detectDeadComponents(files);
-      const schemaDrift     = detectSchemaDrift(schemas);
-      const organDrift      = detectOrganDrift(files);
-      const pulseEarnDrift  = detectPulseEarnDrift(files);
+      const unusedImports  = files.flatMap(f => detectUnusedImports(f));
+      const orphanedRoutes = detectOrphanedRoutes(routes);
+      const deadComponents = detectDeadComponents(files);
+      const schemaDrift    = detectSchemaDrift(schemas);
+      const organDrift     = detectOrganDrift(files);
+      const pulseEarnDrift = detectPulseEarnDrift(files);
 
-      return {
+      return Object.freeze({
         unusedImports: unusedImports.map(stripIdentityAnchors),
         orphanedRoutes: orphanedRoutes.map(stripIdentityAnchors),
         deadComponents: deadComponents.map(stripIdentityAnchors),
         schemaDrift: schemaDrift.map(stripIdentityAnchors),
         organDrift: organDrift.map(stripIdentityAnchors),
-        pulseEarnDrift: pulseEarnDrift
-      };
+        pulseEarnDrift
+      });
     },
 
     // ----------------------------------------------------------------------
@@ -150,12 +176,12 @@ export function createEvolutionAPI(fsAPI, routeAPI, schemaAPI) {
       const file = await fsAPI.getFile(filePath);
       if (!file) return null;
 
-      return {
+      return Object.freeze({
         unusedImports: detectUnusedImports(file),
-        references: file.references,
-        exports: file.exports,
+        references: file.references || [],
+        exports: file.exports || [],
         deadPaths: file.deadPaths || []
-      };
+      });
     },
 
     // ----------------------------------------------------------------------
@@ -167,11 +193,11 @@ export function createEvolutionAPI(fsAPI, routeAPI, schemaAPI) {
       const route = await routeAPI.getRoute(routeId);
       if (!route) return null;
 
-      return {
+      return Object.freeze({
         inbound: route.inbound,
         outbound: route.outbound,
         orphaned: !route.inbound && !route.outbound
-      };
+      });
     },
 
     // ----------------------------------------------------------------------
@@ -185,10 +211,10 @@ export function createEvolutionAPI(fsAPI, routeAPI, schemaAPI) {
 
       const drift = detectSchemaDrift([schema]);
 
-      return {
+      return Object.freeze({
         schema: stripIdentityAnchors(schema),
         drift
-      };
+      });
     }
-  };
+  });
 }

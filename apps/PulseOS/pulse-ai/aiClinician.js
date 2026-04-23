@@ -1,73 +1,52 @@
 // ============================================================================
-// FILE: tropic-pulse-functions/apps/pulse-ai/aiClinician.js
-// LAYER: CLINICIAN ORGAN (Diagnostics + System Health + Trace Model)
-// ============================================================================
-//
-// ROLE:
-//   • Convert AI context into a structured diagnostic model.
-//   • Feed the Admin Panel with safe, non‑identity system insights.
-//   • Never expose UID, resendToken, or identity anchors.
-//   • Never mutate anything.
-//   • Pure read‑only diagnostics.
-//
-// CONTRACT:
-//   • READ‑ONLY.
-//   • ZERO MUTATION.
-//   • ZERO RANDOMNESS.
-//   • ZERO IDENTITY LEAKAGE.
+//  PULSE OS v10.4 — EVOLUTIONARY CLINICIAN (INTERNAL)
+//  Diagnostic Interpreter • Triage Specialist • Evolutionary Insight Layer
 // ============================================================================
 
-export function buildAdminPanelModel(context) {
-  if (!context) return {};
+export const CLINICIAN_META = Object.freeze({
+  layer: "PulseClinician",
+  role: "DIAGNOSTIC_INTERPRETER",
+  version: "10.4",
+  target: "full-mesh",
+  selfRepairable: true,
+  evo: Object.freeze({
+    driftProof: true,
+    deterministicField: true,
+    multiInstanceReady: true,
+    unifiedAdvantageField: true,
+    futureEvolutionReady: true,
+    observerOnly: true
+  })
+});
 
-  // --------------------------------------------------------------------------
-  // SAFE CONTEXT SNAPSHOT (identity‑safe)
-  // --------------------------------------------------------------------------
-  const safeContext = {
-    personaId: context.personaId,
-    persona: context.persona?.label || context.personaId,
-    userIsOwner: context.userIsOwner || false,
-    syncVariance: context.syncVariance || 0,
-    sillyMode: context.personality?.sillyMode || false,
-    seriousMode: context.personality?.seriousMode || false,
-    permissions: context.permissions || null,
-    boundaries: context.boundaries || null,
-    steps: context.steps || [],
-    flags: context.flags || []
-  };
+export function buildClinicianModel(context) {
+  const diagnostics = context.diagnostics || {};
+  const trace = Array.isArray(context.trace) ? [...context.trace] : [];
 
-  // --------------------------------------------------------------------------
-  // DIAGNOSTIC SUMMARY
-  // --------------------------------------------------------------------------
-  const summary = {
-    mode: context.personaId,
-    owner: context.userIsOwner ? "owner" : "user",
-    sync: context.syncVariance <= 0.10 ? "aligned" : "misaligned",
-    tone: context.personality?.sillyMode ? "playful" : "serious",
-    permissionState: context.permissions ? "granted" : "restricted"
-  };
+  return Object.freeze({
+    summary: Object.freeze({
+      mismatches: diagnostics.mismatches?.length || 0,
+      missingFields: diagnostics.missingFields?.length || 0,
+      slowdown: diagnostics.slowdownCauses?.length || 0,
+      drift: diagnostics.driftDetected === true
+    }),
 
-  // --------------------------------------------------------------------------
-  // TRACE MODEL (execution steps)
-  // --------------------------------------------------------------------------
-  const trace = Array.isArray(context.steps)
-    ? context.steps.map((s) => ({ message: s }))
-    : [];
+    safeContext: Object.freeze({
+      personaId: context.personaId,
+      userIsOwner: context.userIsOwner === true,
+      permissions: context.permissions || null,
+      boundaries: context.boundaries || null
+    }),
 
-  // --------------------------------------------------------------------------
-  // FLAGS (slowdown, warnings, etc.)
-  // --------------------------------------------------------------------------
-  const flags = Array.isArray(context.flags)
-    ? context.flags.map((f) => ({ type: f }))
-    : [];
-
-  // --------------------------------------------------------------------------
-  // FINAL DIAGNOSTIC MODEL
-  // --------------------------------------------------------------------------
-  return {
-    summary,
-    safeContext,
     trace,
-    flags
-  };
+
+    flags: Object.freeze([
+      ...(diagnostics.mismatches?.length ? [{ type: "mismatch" }] : []),
+      ...(diagnostics.missingFields?.length ? [{ type: "missing" }] : []),
+      ...(diagnostics.slowdownCauses?.length ? [{ type: "slowdown" }] : []),
+      ...(diagnostics.driftDetected ? [{ type: "drift" }] : [])
+    ]),
+
+    meta: CLINICIAN_META
+  });
 }

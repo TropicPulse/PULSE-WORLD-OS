@@ -1,5 +1,6 @@
 // ============================================================================
 //  PULSE OS v10.4 — AI CORTEX (FINAL CLEAN VERSION)
+//  Cognitive Frame • Persona Execution • Deterministic Relay
 // ============================================================================
 
 import { createAIContext } from "./aiContext.js";
@@ -23,7 +24,7 @@ export async function runAI(request = {}, operation, deps = {}) {
   // 1) Build Cognitive Frame — Cortex Initialization
   // --------------------------------------------------------------------------
   const context = createAIContext(request);
-  context.logStep("AI context initialized.");
+  context.logStep?.("AI context initialized.");
 
   // --------------------------------------------------------------------------
   // 2) Build Brainstem (Persona + Organs + Personality)
@@ -36,7 +37,7 @@ export async function runAI(request = {}, operation, deps = {}) {
   // Attach organs to context
   context.organs = brainstem.organs;
 
-  context.logStep(`Persona selected: ${context.personaId}`);
+  context.logStep?.(`Persona selected: ${context.personaId}`);
 
   // --------------------------------------------------------------------------
   // 3) Permission Enforcement — Executive Control
@@ -47,13 +48,13 @@ export async function runAI(request = {}, operation, deps = {}) {
   );
 
   if (!allowed) {
-    context.logStep(
+    context.logStep?.(
       `Permission denied for persona "${context.personaId}" on intent "${request.intent}".`
     );
     return buildAIResponse(null, context);
   }
 
-  context.logStep(
+  context.logStep?.(
     `Permission granted for persona "${context.personaId}" to perform intent "${request.intent}".`
   );
 
@@ -63,7 +64,7 @@ export async function runAI(request = {}, operation, deps = {}) {
   let result = null;
 
   try {
-    context.logStep("Executing AI operation...");
+    context.logStep?.("Executing AI operation...");
 
     switch (context.personaId) {
       case "architect":
@@ -84,11 +85,11 @@ export async function runAI(request = {}, operation, deps = {}) {
         break;
     }
 
-    context.logStep("AI operation completed successfully.");
+    context.logStep?.("AI operation completed successfully.");
 
   } catch (err) {
-    context.flagSlowdown("Operation threw an exception.");
-    context.logStep(`Error: ${err.message}`);
+    context.flagSlowdown?.("Operation threw an exception.");
+    context.logStep?.(`Error: ${err.message}`);
     result = null;
   }
 
@@ -102,7 +103,7 @@ export async function runAI(request = {}, operation, deps = {}) {
 // INTERNAL — Build Full AI Response (v10.4)
 // ============================================================================
 function buildAIResponse(result, context) {
-  return {
+  return Object.freeze({
     result,
     context,
 
@@ -119,5 +120,5 @@ function buildAIResponse(result, context) {
     persona: context.persona,
     permissions: context.permissions,
     boundaries: context.boundaries
-  };
+  });
 }

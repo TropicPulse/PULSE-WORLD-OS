@@ -5,6 +5,7 @@
 // ============================================================================
 
 import { runAI } from "./aiEngine.js";
+
 import {
   analyzeFirestoreDoc,
   analyzeSQLSchema,
@@ -14,15 +15,15 @@ import {
 } from "./aiTools.js";
 
 // ============================================================================
-// INTERNAL — Helper to wrap runAI with correct flags
+// INTERNAL — Deterministic Relay Wrapper
 // ============================================================================
 function callAI(intent, flags, operation, request = {}) {
   return runAI(
-    {
+    Object.freeze({
       ...request,
       intent,
       ...flags
-    },
+    }),
     operation
   );
 }
@@ -33,7 +34,7 @@ function callAI(intent, flags, operation, request = {}) {
 export async function runAnalyzeFirestore(docData, request = {}) {
   return callAI(
     "analyze",
-    { touchesSchemas: true },
+    Object.freeze({ touchesSchemas: true }),
     async (context) => {
       const pulseSchema = analyzeFirestoreDoc(context, docData);
       detectSlowdownPatterns(context, docData);
@@ -49,7 +50,7 @@ export async function runAnalyzeFirestore(docData, request = {}) {
 export async function runAnalyzeSQL(sqlSchema, request = {}) {
   return callAI(
     "analyze",
-    { touchesSchemas: true },
+    Object.freeze({ touchesSchemas: true }),
     async (context) => {
       const pulseSchema = analyzeSQLSchema(context, sqlSchema);
       detectSlowdownPatterns(context, sqlSchema);
@@ -65,10 +66,10 @@ export async function runAnalyzeSQL(sqlSchema, request = {}) {
 export async function runDetectDrift(pulseSchema, firestoreSchema, request = {}) {
   return callAI(
     "analyze",
-    { touchesSchemas: true },
+    Object.freeze({ touchesSchemas: true }),
     async (context) => {
       const drift = detectDrift(context, pulseSchema, firestoreSchema);
-      return { drift };
+      return Object.freeze({ drift });
     },
     request
   );
@@ -80,10 +81,12 @@ export async function runDetectDrift(pulseSchema, firestoreSchema, request = {})
 export async function runValidatePulse(pulseSchema, request = {}) {
   return callAI(
     "analyze",
-    { touchesSchemas: true },
+    Object.freeze({ touchesSchemas: true }),
     async (context) => {
       validatePulseSchema(context, pulseSchema);
-      return { valid: context.diagnostics.mismatches.length === 0 };
+      return Object.freeze({
+        valid: context.diagnostics.mismatches.length === 0
+      });
     },
     request
   );
@@ -95,24 +98,24 @@ export async function runValidatePulse(pulseSchema, request = {}) {
 export async function runFullAudit(pulseSchema, firestoreDoc, request = {}) {
   return callAI(
     "analyze",
-    { touchesSchemas: true },
+    Object.freeze({ touchesSchemas: true }),
     async (context) => {
-      context.logStep("Starting full audit...");
+      context.logStep?.("Starting full audit...");
 
       const fsPulse = analyzeFirestoreDoc(context, firestoreDoc);
       validatePulseSchema(context, pulseSchema);
       detectDrift(context, pulseSchema, fsPulse);
       detectSlowdownPatterns(context, firestoreDoc);
 
-      context.logStep("Full audit completed.");
+      context.logStep?.("Full audit completed.");
 
-      return {
+      return Object.freeze({
         pulseFromFirestore: fsPulse,
         driftDetected: context.diagnostics.driftDetected,
         mismatches: context.diagnostics.mismatches,
         missingFields: context.diagnostics.missingFields,
         slowdownCauses: context.diagnostics.slowdownCauses
-      };
+      });
     },
     request
   );
@@ -121,14 +124,13 @@ export async function runFullAudit(pulseSchema, firestoreDoc, request = {}) {
 // ============================================================================
 // NEW v10.4 — SYSTEM ANALYSIS SERVICES
 // ============================================================================
-
 export async function runAnalyzeRoutes(routeData, request = {}) {
   return callAI(
     "analyze",
-    { touchesRoutes: true },
+    Object.freeze({ touchesRoutes: true }),
     async (context) => {
-      context.logStep("Analyzing routing decisions...");
-      return { routeData };
+      context.logStep?.("Analyzing routing decisions...");
+      return Object.freeze({ routeData });
     },
     request
   );
@@ -137,10 +139,10 @@ export async function runAnalyzeRoutes(routeData, request = {}) {
 export async function runAnalyzeLogs(logs, request = {}) {
   return callAI(
     "analyze",
-    { touchesLogs: true },
+    Object.freeze({ touchesLogs: true }),
     async (context) => {
-      context.logStep("Analyzing logs...");
-      return { logs };
+      context.logStep?.("Analyzing logs...");
+      return Object.freeze({ logs });
     },
     request
   );
@@ -149,10 +151,10 @@ export async function runAnalyzeLogs(logs, request = {}) {
 export async function runAnalyzeErrors(errors, request = {}) {
   return callAI(
     "analyze",
-    { touchesErrors: true },
+    Object.freeze({ touchesErrors: true }),
     async (context) => {
-      context.logStep("Analyzing errors...");
-      return { errors };
+      context.logStep?.("Analyzing errors...");
+      return Object.freeze({ errors });
     },
     request
   );
@@ -164,10 +166,10 @@ export async function runAnalyzeErrors(errors, request = {}) {
 export async function runExplainOrgan(organMeta, request = {}) {
   return callAI(
     "explain",
-    { touchesArchitecture: true },
+    Object.freeze({ touchesArchitecture: true }),
     async (context) => {
-      context.logStep("Explaining organ...");
-      return { organMeta };
+      context.logStep?.("Explaining organ...");
+      return Object.freeze({ organMeta });
     },
     request
   );
@@ -176,10 +178,10 @@ export async function runExplainOrgan(organMeta, request = {}) {
 export async function runExplainPathway(pathway, request = {}) {
   return callAI(
     "explain",
-    { touchesArchitecture: true },
+    Object.freeze({ touchesArchitecture: true }),
     async (context) => {
-      context.logStep("Explaining pathway...");
-      return { pathway };
+      context.logStep?.("Explaining pathway...");
+      return Object.freeze({ pathway });
     },
     request
   );
@@ -191,10 +193,10 @@ export async function runExplainPathway(pathway, request = {}) {
 export async function runTourGuideQuery(query, request = {}) {
   return callAI(
     "analyze",
-    { touchesTourism: true },
+    Object.freeze({ touchesTourism: true }),
     async (context) => {
-      context.logStep("Running tour guide query...");
-      return { query };
+      context.logStep?.("Running tour guide query...");
+      return Object.freeze({ query });
     },
     request
   );

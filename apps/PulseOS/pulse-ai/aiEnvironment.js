@@ -9,11 +9,11 @@
 //   • Owner: internal flags, settings, history, anomalies, drift.
 //   • Integrates with aiEvolution for schema + file + route drift.
 //   • Never exposes UID, resendToken, or identity anchors.
-//   • Never mutates anything.
+//   • Never mutates anything outside its own return values.
 //
 // CONTRACT:
 //   • READ‑ONLY.
-//   • ZERO MUTATION.
+//   • ZERO MUTATION (of external systems).
 //   • ZERO RANDOMNESS.
 //   • DETERMINISTIC ANALYSIS ONLY.
 // ============================================================================
@@ -35,14 +35,14 @@ export function createEnvironmentAPI(db, evolutionAPI) {
     return clone;
   }
 
-  async function fetchPublic(context, collection, options = {}) {
+  async function fetchPublic(_context, collection, options = {}) {
     const rows = await db.getCollection(collection, options);
     return rows.map(stripIdentity);
   }
 
   async function fetchOwner(context, collection, options = {}) {
     if (!context.userIsOwner) {
-      context.logStep(`aiEnvironment: owner‑only "${collection}" blocked.`);
+      context.logStep?.(`aiEnvironment: owner‑only "${collection}" blocked.`);
       return [];
     }
     const rows = await db.getCollection(collection, options);
@@ -52,7 +52,7 @@ export function createEnvironmentAPI(db, evolutionAPI) {
   // --------------------------------------------------------------------------
   // PUBLIC API — Environment Insight
   // --------------------------------------------------------------------------
-  return {
+  return Object.freeze({
 
     // ----------------------------------------------------------------------
     // TOURIST‑SAFE SNAPSHOT
@@ -80,7 +80,7 @@ export function createEnvironmentAPI(db, evolutionAPI) {
         fetchPublic(context, "holidays", { limit: 1 })
       ]);
 
-      return {
+      return Object.freeze({
         weather: weather[0] || null,
         heatIndex: heatIndex[0] || null,
         waves: waves[0] || null,
@@ -90,7 +90,7 @@ export function createEnvironmentAPI(db, evolutionAPI) {
         wildlife: wildlife[0] || null,
         seasons: seasons[0] || null,
         holidays: holidays[0] || null
-      };
+      });
     },
 
     // ----------------------------------------------------------------------
@@ -98,25 +98,21 @@ export function createEnvironmentAPI(db, evolutionAPI) {
     // ----------------------------------------------------------------------
     async getInternalEnvironment(context) {
       if (!context.userIsOwner) {
-        context.logStep("aiEnvironment: internal environment blocked for non‑owner.");
+        context.logStep?.("aiEnvironment: internal environment blocked for non‑owner.");
         return null;
       }
 
-      const [
-        internal,
-        settings,
-        history
-      ] = await Promise.all([
+      const [internal, settings, history] = await Promise.all([
         fetchOwner(context, "environment", { where: { scope: "internal" } }),
         fetchOwner(context, "environmentSettings"),
         fetchOwner(context, "environmentHistory")
       ]);
 
-      return {
+      return Object.freeze({
         internal: internal[0] || null,
         settings,
         history
-      };
+      });
     },
 
     // ----------------------------------------------------------------------
@@ -135,13 +131,15 @@ export function createEnvironmentAPI(db, evolutionAPI) {
 
       // Simple anomaly detection: sudden jumps
       function detectJumps(arr, label) {
+        if (!Array.isArray(arr)) return;
         for (let i = 1; i < arr.length; i++) {
           const prev = arr[i - 1];
           const curr = arr[i];
           if (!prev || !curr) continue;
 
+          const base = prev.value === 0 ? 1 : prev.value;
           const diff = Math.abs(curr.value - prev.value);
-          const pct = (diff / (prev.value || 1)) * 100;
+          const pct = (diff / base) * 100;
 
           if (pct >= 25) {
             anomalies.push({
@@ -159,25 +157,25 @@ export function createEnvironmentAPI(db, evolutionAPI) {
       detectJumps(heatHistory, "heatIndex");
       detectJumps(waveHistory, "waves");
 
-      return { anomalies };
+      return Object.freeze({ anomalies });
     },
 
     // ----------------------------------------------------------------------
     // OWNER‑ONLY — EVOLUTIONARY DRIFT (via aiEvolution)
     // ----------------------------------------------------------------------
     async getEnvironmentEvolutionOverview(context) {
-      if (!context.userIsOwner) return null;
+      if (!context.userIsOwner || !evolutionAPI?.analyzeSchema) return null;
       return evolutionAPI.analyzeSchema(context, "environment");
     },
 
     async analyzeEnvironmentFiles(context) {
-      if (!context.userIsOwner) return null;
+      if (!context.userIsOwner || !evolutionAPI?.analyzeFile) return null;
       return evolutionAPI.analyzeFile(context, "environment.js");
     },
 
     async analyzeEnvironmentRoutes(context) {
-      if (!context.userIsOwner) return null;
+      if (!context.userIsOwner || !evolutionAPI?.analyzeRoute) return null;
       return evolutionAPI.analyzeRoute(context, "environment");
     }
-  };
+  });
 }

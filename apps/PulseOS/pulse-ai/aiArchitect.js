@@ -15,6 +15,7 @@
 //   • READ‑ONLY — no writes, no deletes, no updates.
 //   • NO eval(), NO Function(), NO dynamic imports.
 //   • Deterministic analysis only.
+//   • ZERO IDENTITY LEAKAGE.
 // ============================================================================
 
 import { Personas } from "./persona.js";
@@ -25,8 +26,11 @@ export function createArchitectAPI(db, evolutionAPI) {
   // HELPERS
   // --------------------------------------------------------------------------
   function assertOwnerArchitect(context) {
-    if (!context.userIsOwner || context.personaId !== Personas.ARCHITECT) {
-      context.logStep("aiArchitect: access denied (not owner+architect).");
+    const isOwner = context.userIsOwner === true;
+    const isArchitect = context.personaId === Personas.ARCHITECT;
+
+    if (!isOwner || !isArchitect) {
+      context.logStep?.("aiArchitect: access denied (not owner+architect).");
       return false;
     }
     return true;
@@ -53,85 +57,96 @@ export function createArchitectAPI(db, evolutionAPI) {
   // --------------------------------------------------------------------------
   // PUBLIC API — Owner‑Only System / Identity / Evolution Insight
   // --------------------------------------------------------------------------
-  return {
+  return Object.freeze({
 
     // ----------------------------------------------------------------------
     // IDENTITY + SECURITY
     // ----------------------------------------------------------------------
     async getIdentityHistory(context, options = {}) {
-      return fetchOwnerCollection(context, "identityHistory", options);
+      const rows = await fetchOwnerCollection(context, "identityHistory", options);
+      return Object.freeze(rows);
     },
 
     async getSecurityViolations(context, options = {}) {
-      return fetchOwnerCollection(context, "securityViolations", options);
+      const rows = await fetchOwnerCollection(context, "securityViolations", options);
+      return Object.freeze(rows);
     },
 
     // ----------------------------------------------------------------------
     // SYSTEM LOGS (DESIGN‑TIME)
     // ----------------------------------------------------------------------
     async getFunctionErrors(context, options = {}) {
-      return fetchOwnerCollection(context, "functionErrors", options);
+      const rows = await fetchOwnerCollection(context, "functionErrors", options);
+      return Object.freeze(rows);
     },
 
     async getEmailLogs(context, options = {}) {
-      return fetchOwnerCollection(context, "emailLogs", options);
+      const rows = await fetchOwnerCollection(context, "emailLogs", options);
+      return Object.freeze(rows);
     },
 
     async getChangeLogs(context, options = {}) {
-      return fetchOwnerCollection(context, "CHANGES", options);
+      const rows = await fetchOwnerCollection(context, "CHANGES", options);
+      return Object.freeze(rows);
     },
 
     async getCacheControl(context, options = {}) {
-      return fetchOwnerCollection(context, "CACHE_CONTROL", options);
+      const rows = await fetchOwnerCollection(context, "CACHE_CONTROL", options);
+      return Object.freeze(rows);
     },
 
     // ----------------------------------------------------------------------
     // SYSTEM SETTINGS
     // ----------------------------------------------------------------------
     async getSystemSettings(context, options = {}) {
-      return fetchOwnerCollection(context, "settings", options);
+      const rows = await fetchOwnerCollection(context, "settings", options);
+      return Object.freeze(rows);
     },
 
     // ----------------------------------------------------------------------
     // ENVIRONMENT + POWER (OWNER VIEW)
     // ----------------------------------------------------------------------
     async getEnvironmentInternal(context, options = {}) {
-      return fetchOwnerCollection(context, "environment", options);
+      const rows = await fetchOwnerCollection(context, "environment", options);
+      return Object.freeze(rows);
     },
 
     async getPowerInternal(context, options = {}) {
-      return fetchOwnerCollection(context, "power", options);
+      const rows = await fetchOwnerCollection(context, "power", options);
+      return Object.freeze(rows);
     },
 
     async getPowerHistoryInternal(context, options = {}) {
-      return fetchOwnerCollection(context, "powerHistory", options);
+      const rows = await fetchOwnerCollection(context, "powerHistory", options);
+      return Object.freeze(rows);
     },
 
     async getPulseHistoryInternal(context, options = {}) {
-      return fetchOwnerCollection(context, "pulseHistory", options);
+      const rows = await fetchOwnerCollection(context, "pulseHistory", options);
+      return Object.freeze(rows);
     },
 
     // ----------------------------------------------------------------------
     // EVOLUTIONARY ANALYSIS (via aiEvolution)
     // ----------------------------------------------------------------------
     async getOrganismOverview(context) {
-      if (!assertOwnerArchitect(context)) return null;
+      if (!assertOwnerArchitect(context) || !evolutionAPI?.getOrganismOverview) return null;
       return evolutionAPI.getOrganismOverview(context);
     },
 
     async analyzeFile(context, filePath) {
-      if (!assertOwnerArchitect(context)) return null;
+      if (!assertOwnerArchitect(context) || !evolutionAPI?.analyzeFile) return null;
       return evolutionAPI.analyzeFile(context, filePath);
     },
 
     async analyzeRoute(context, routeId) {
-      if (!assertOwnerArchitect(context)) return null;
+      if (!assertOwnerArchitect(context) || !evolutionAPI?.analyzeRoute) return null;
       return evolutionAPI.analyzeRoute(context, routeId);
     },
 
     async analyzeSchema(context, schemaName) {
-      if (!assertOwnerArchitect(context)) return null;
+      if (!assertOwnerArchitect(context) || !evolutionAPI?.analyzeSchema) return null;
       return evolutionAPI.analyzeSchema(context, schemaName);
     }
-  };
+  });
 }

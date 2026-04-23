@@ -6,13 +6,13 @@
 
 import { routeAIRequest } from "./aiRouter.js";
 
-const COGNITIVE_META = {
+export const COGNITIVE_META = Object.freeze({
   layer: "PulseAICognitiveFrame",
   role: "COGNITIVE_FRAME",
   version: "10.4",
   target: "full-mesh",
   selfRepairable: true,
-  evo: {
+  evo: Object.freeze({
     driftProof: true,
     deterministicField: true,
     multiInstanceReady: true,
@@ -22,16 +22,18 @@ const COGNITIVE_META = {
     personaAware: true,
     boundaryAware: true,
     permissionAware: true
-  }
-};
+  })
+});
 
 // ============================================================================
 // PUBLIC API — Build Cognitive Frame (v10.4)
 // ============================================================================
 export function createAIContext(request = {}) {
-
   const routing = routeAIRequest(request);
 
+  // --------------------------------------------------------------------------
+  // BASE CONTEXT — Deterministic, Zero Mutation
+  // --------------------------------------------------------------------------
   const context = {
     meta: COGNITIVE_META,
 
@@ -43,13 +45,16 @@ export function createAIContext(request = {}) {
     // SAFE reasoning trace (not chain‑of‑thought)
     trace: [...routing.reasoning],
 
-    // Diagnostics the AI can fill in during processing
+    // Diagnostics (v10.4 standard)
     diagnostics: {
       mismatches: [],
       missingFields: [],
-      driftDetected: false,
-      slowdownCauses: []
+      slowdownCauses: [],
+      driftEvents: [],
+      driftDetected: false
     },
+
+    routing, // full routing snapshot for Scribe
 
     // ------------------------------------------------------------------------
     // TRACE HELPERS — Cognitive Breadcrumbs
@@ -61,26 +66,25 @@ export function createAIContext(request = {}) {
     // ------------------------------------------------------------------------
     // DIAGNOSTIC HELPERS — Cognitive Integrity Checks
     // ------------------------------------------------------------------------
-    flagMismatch(field, expected, actual) {
-      this.diagnostics.mismatches.push({ field, expected, actual });
-      this.trace.push(
-        `Mismatch detected on "${field}": expected ${expected}, got ${actual}`
-      );
+    flagMismatch(key, expected, actual) {
+      this.diagnostics.mismatches.push({ key, expected, actual });
+      this.trace.push(`Mismatch: "${key}" expected ${expected}, got ${actual}`);
     },
 
-    flagMissingField(field) {
-      this.diagnostics.missingFields.push(field);
-      this.trace.push(`Missing field detected: "${field}"`);
+    flagMissingField(key) {
+      this.diagnostics.missingFields.push({ key });
+      this.trace.push(`Missing field: "${key}"`);
     },
 
     flagSlowdown(reason) {
-      this.diagnostics.slowdownCauses.push(reason);
-      this.trace.push(`Potential slowdown cause: ${reason}`);
+      this.diagnostics.slowdownCauses.push({ reason });
+      this.trace.push(`Slowdown cause: ${reason}`);
     },
 
-    flagDrift(reason) {
+    flagDrift(description) {
       this.diagnostics.driftDetected = true;
-      this.trace.push(`Drift detected: ${reason}`);
+      this.diagnostics.driftEvents.push({ description });
+      this.trace.push(`Drift detected: ${description}`);
     }
   };
 

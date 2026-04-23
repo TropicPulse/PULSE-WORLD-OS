@@ -8,6 +8,7 @@
 //   • Respect owner‑only, user‑only, and tourist‑safe boundaries.
 //   • Never expose UID, resendToken, or identity anchors in AI output.
 //   • Act as the “data pantry” for Tour Guide AI.
+//   • Provide cache-control metadata for each collection.
 //
 // CONTRACT:
 //   • READ‑ONLY — no writes, no deletes, no updates.
@@ -19,10 +20,47 @@
 import { Personas } from "./persona.js";
 
 export function createTouristAPI(db) {
+
+  // --------------------------------------------------------------------------
+  // CACHE CONTROL — deterministic, per-collection caching rules
+  // --------------------------------------------------------------------------
+  const CACHE_CONTROL = Object.freeze({
+    // PUBLIC / TOURIST-SAFE (can be cached)
+    businesses:        "public,max-age=300",
+    events:            "public,max-age=300",
+    categoryIconCache: "public,max-age=600",
+    duplicateImages:   "public,max-age=600",
+    menuSources:       "public,max-age=120",
+    pendingBusinesses: "public,max-age=60",
+    pendingMenus:      "public,max-age=60",
+    pulseHistory:      "public,max-age=120",
+    environment:       "public,max-age=30",
+    power:             "public,max-age=30",
+    powerData:         "public,max-age=30",
+    powerHistory:      "public,max-age=60",
+    powerSettings:     "public,max-age=120",
+
+    // USER-SCOPED (private cache)
+    orders:            "private,max-age=60",
+    referrals:         "private,max-age=60",
+    referralClicks:    "private,max-age=60",
+    vaultHistory:      "private,max-age=60",
+    timerLogsUserTried:"private,max-age=30",
+    timerLogsUserSaved:"private,max-age=30",
+
+    // OWNER-ONLY (no caching)
+    functionErrors:    "no-store",
+    identityHistory:   "no-store",
+    securityViolations:"no-store",
+    settings:          "no-store",
+    timerLogsSystem:   "no-store",
+    emailLogs:         "no-store"
+  });
+
   // --------------------------------------------------------------------------
   // ACCESS MAP — Who can see what?
   // --------------------------------------------------------------------------
-  const ACCESS = {
+  const ACCESS = Object.freeze({
     // PUBLIC / TOURIST‑SAFE
     businesses:        { scope: "tourist" },
     events:            { scope: "tourist" },
@@ -46,14 +84,14 @@ export function createTouristAPI(db) {
     timerLogsUserTried:{ scope: "user" },
     timerLogsUserSaved:{ scope: "user" },
 
-    // OWNER‑ONLY (you only)
+    // OWNER‑ONLY
     functionErrors:    { scope: "owner" },
     identityHistory:   { scope: "owner" },
     securityViolations:{ scope: "owner" },
     settings:          { scope: "owner" },
     timerLogsSystem:   { scope: "owner" },
     emailLogs:         { scope: "owner" }
-  };
+  });
 
   // --------------------------------------------------------------------------
   // HELPERS
@@ -75,36 +113,38 @@ export function createTouristAPI(db) {
     const access = ACCESS[key];
 
     if (!access) {
-      context.logStep(`aiTourist: unknown collection "${key}".`);
-      return [];
+      context.logStep?.(`aiTourist: unknown collection "${key}".`);
+      return { data: [], cache: "no-store" };
     }
+
+    const cache = CACHE_CONTROL[key] || "no-store";
 
     // OWNER‑ONLY
     if (access.scope === "owner") {
       if (!userIsOwner) {
-        context.logStep(`aiTourist: owner‑only "${key}" blocked for non‑owner.`);
-        return [];
+        context.logStep?.(`aiTourist: owner‑only "${key}" blocked for non‑owner.`);
+        return { data: [], cache };
       }
       const rows = await db.getCollection(key, options);
-      return rows.map(stripIdentity);
+      return { data: rows.map(stripIdentity), cache };
     }
 
     // USER‑SCOPED
     if (access.scope === "user") {
       if (!userId) {
-        context.logStep(`aiTourist: user‑scoped "${key}" requested without userId.`);
-        return [];
+        context.logStep?.(`aiTourist: user‑scoped "${key}" requested without userId.`);
+        return { data: [], cache };
       }
       const rows = await db.getCollection(key, {
         ...options,
         where: { userId }
       });
-      return rows.map(stripIdentity);
+      return { data: rows.map(stripIdentity), cache };
     }
 
     // TOURIST‑SAFE
     const rows = await db.getCollection(key, options);
-    return rows.map(stripIdentity);
+    return { data: rows.map(stripIdentity), cache };
   }
 
   // --------------------------------------------------------------------------
@@ -127,10 +167,25 @@ export function createTouristAPI(db) {
         fetchCollection(context, "pulseHistory")
       ]);
 
-      return { businesses, events, environment, power, pulseHistory };
+      return {
+        data: {
+          businesses: businesses.data,
+          events: events.data,
+          environment: environment.data,
+          power: power.data,
+          pulseHistory: pulseHistory.data
+        },
+        cache: {
+          businesses: businesses.cache,
+          events: events.cache,
+          environment: environment.cache,
+          power: power.cache,
+          pulseHistory: pulseHistory.cache
+        }
+      };
     },
 
-    // Business + menus + pending menus + duplicate images
+    // Business bundle
     async getBusinessBundle(context, businessId) {
       const [
         businesses,
@@ -145,10 +200,18 @@ export function createTouristAPI(db) {
       ]);
 
       return {
-        business: businesses[0] || null,
-        menus,
-        pendingMenus,
-        duplicateImages
+        data: {
+          business: businesses.data[0] || null,
+          menus: menus.data,
+          pendingMenus: pendingMenus.data,
+          duplicateImages: duplicateImages.data
+        },
+        cache: {
+          business: businesses.cache,
+          menus: menus.cache,
+          pendingMenus: pendingMenus.cache,
+          duplicateImages: duplicateImages.cache
+        }
       };
     },
 
@@ -159,22 +222,37 @@ export function createTouristAPI(db) {
         fetchCollection(context, "referralClicks")
       ]);
 
-      return { referrals, referralClicks };
+      return {
+        data: {
+          referrals: referrals.data,
+          referralClicks: referralClicks.data
+        },
+        cache: {
+          referrals: referrals.cache,
+          referralClicks: referralClicks.cache
+        }
+      };
     },
 
     // User orders
     async getUserOrders(context) {
       const orders = await fetchCollection(context, "orders");
-      return { orders };
+      return {
+        data: { orders: orders.data },
+        cache: { orders: orders.cache }
+      };
     },
 
     // User vault history
     async getUserVaultHistory(context) {
       const vaultHistory = await fetchCollection(context, "vaultHistory");
-      return { vaultHistory };
+      return {
+        data: { vaultHistory: vaultHistory.data },
+        cache: { vaultHistory: vaultHistory.cache }
+      };
     },
 
-    // User timer logs (their own attempts/saves)
+    // User timer logs
     async getUserTimerLogs(context) {
       const [tried, saved] = await Promise.all([
         fetchCollection(context, "timerLogsUserTried"),
@@ -182,12 +260,18 @@ export function createTouristAPI(db) {
       ]);
 
       return {
-        tried,
-        saved
+        data: {
+          tried: tried.data,
+          saved: saved.data
+        },
+        cache: {
+          tried: tried.cache,
+          saved: saved.cache
+        }
       };
     },
 
-    // Owner‑only “attention needed” bundle
+    // Owner‑only bundle
     async getOwnerAttentionBundle(context) {
       const [
         pendingBusinesses,
@@ -206,12 +290,22 @@ export function createTouristAPI(db) {
       ]);
 
       return {
-        pendingBusinesses,
-        pendingMenus,
-        functionErrors,
-        identityHistory,
-        securityViolations,
-        emailLogs
+        data: {
+          pendingBusinesses: pendingBusinesses.data,
+          pendingMenus: pendingMenus.data,
+          functionErrors: functionErrors.data,
+          identityHistory: identityHistory.data,
+          securityViolations: securityViolations.data,
+          emailLogs: emailLogs.data
+        },
+        cache: {
+          pendingBusinesses: pendingBusinesses.cache,
+          pendingMenus: pendingMenus.cache,
+          functionErrors: functionErrors.cache,
+          identityHistory: identityHistory.cache,
+          securityViolations: securityViolations.cache,
+          emailLogs: emailLogs.cache
+        }
       };
     }
   };

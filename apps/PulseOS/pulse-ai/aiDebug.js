@@ -4,13 +4,13 @@
 //  PURE FORMATTING + SUMMARIZATION. ZERO MUTATION. ZERO TIME. ZERO RANDOMNESS.
 // ============================================================================
 
-const SCRIBE_META = {
+export const SCRIBE_META = Object.freeze({
   layer: "PulseAIScribe",
   role: "SCRIBE",
   version: "10.4",
   target: "full-mesh",
   selfRepairable: true,
-  evo: {
+  evo: Object.freeze({
     driftProof: true,
     deterministicField: true,
     multiInstanceReady: true,
@@ -18,30 +18,30 @@ const SCRIBE_META = {
     futureEvolutionReady: true,
     observerOnly: true,
     historian: true
-  }
-};
+  })
+});
 
 // ============================================================================
 // PUBLIC API — Build Debug Report (Object)
 // ============================================================================
 export function formatDebugReport(context) {
-  const { trace, diagnostics } = context;
+  const { trace = [], diagnostics = {} } = context;
 
-  return {
+  return Object.freeze({
     meta: SCRIBE_META,
     summary: buildSummary(diagnostics),
     trace: [...trace],
-    mismatches: [...diagnostics.mismatches],
-    missingFields: [...diagnostics.missingFields],
-    slowdownCauses: [...diagnostics.slowdownCauses],
-    driftDetected: diagnostics.driftDetected,
+    mismatches: [...(diagnostics.mismatches || [])],
+    missingFields: [...(diagnostics.missingFields || [])],
+    slowdownCauses: [...(diagnostics.slowdownCauses || [])],
+    driftDetected: diagnostics.driftDetected === true,
 
     // NEW v10.4 — Evolutionary Layers
     evolution: buildEvolutionaryNotes(context),
     organs: buildOrganSnapshot(context),
     routing: buildRoutingSnapshot(context),
     pulse: buildPulseSnapshot(context)
-  };
+  });
 }
 
 // ============================================================================
@@ -50,17 +50,17 @@ export function formatDebugReport(context) {
 function buildSummary(diagnostics) {
   const summary = [];
 
-  if (diagnostics.mismatches.length > 0)
+  if (diagnostics.mismatches?.length > 0)
     summary.push(`⚠️ ${diagnostics.mismatches.length} field mismatches detected`);
 
-  if (diagnostics.missingFields.length > 0)
+  if (diagnostics.missingFields?.length > 0)
     summary.push(`⚠️ ${diagnostics.missingFields.length} missing fields detected`);
 
   if (diagnostics.driftDetected)
     summary.push(`⚠️ Schema drift detected`);
 
-  if (diagnostics.slowdownCauses.length > 0)
-    summary.push(`🐢 Slowdown causes: ${diagnostics.slowdownCauses.join(", ")}`);
+  if (diagnostics.slowdownCauses?.length > 0)
+    summary.push(`🐢 Slowdown causes: ${diagnostics.slowdownCauses.map(s => s.reason).join(", ")}`);
 
   if (summary.length === 0)
     summary.push("✅ No issues detected");
@@ -74,25 +74,20 @@ function buildSummary(diagnostics) {
 function buildEvolutionaryNotes(context) {
   const notes = [];
 
-  // Pattern evolution
   if (context.pulse?.pattern)
     notes.push(`Pattern: ${context.pulse.pattern}`);
 
-  // Lineage depth
-  if (context.pulse?.lineage)
+  if (Array.isArray(context.pulse?.lineage))
     notes.push(`Lineage depth: ${context.pulse.lineage.length}`);
 
-  // Advantage field
   if (context.pulse?.advantageField)
-    notes.push(`Advantage field active`);
+    notes.push("Advantage field active");
 
-  // Organ improvements
   if (context.organs)
-    notes.push(`Organ snapshot included`);
+    notes.push("Organ snapshot included");
 
-  // Drift awareness
   if (context.diagnostics?.driftDetected)
-    notes.push(`Evolutionary drift detected`);
+    notes.push("Evolutionary drift detected");
 
   return notes;
 }
@@ -101,16 +96,11 @@ function buildEvolutionaryNotes(context) {
 // ORGAN SNAPSHOT — Which organs were involved (v10.4)
 // ============================================================================
 function buildOrganSnapshot(context) {
-  return {
-    persona: context.persona,
-    permissions: context.permissions,
-    boundaries: context.boundaries,
-    cognitiveFrame: context.meta,
-    clinician: context.clinicianMeta || null,
-    mesh: context.meshMeta || null,
-    router: context.routerMeta || null,
-    send: context.sendMeta || null
-  };
+  return Object.freeze({
+    persona: context.persona || null,
+    permissions: context.permissions || null,
+    boundaries: context.boundaries || null
+  });
 }
 
 // ============================================================================
@@ -119,12 +109,10 @@ function buildOrganSnapshot(context) {
 function buildRoutingSnapshot(context) {
   if (!context.routing) return null;
 
-  return {
-    targetOrgan: context.routing.targetOrgan,
-    mode: context.routing.mode,
-    pathway: context.routing.pathway,
-    routerPersona: context.routing.persona
-  };
+  return Object.freeze({
+    personaId: context.routing.personaId,
+    reasoning: [...(context.routing.reasoning || [])]
+  });
 }
 
 // ============================================================================
@@ -133,13 +121,13 @@ function buildRoutingSnapshot(context) {
 function buildPulseSnapshot(context) {
   if (!context.pulse) return null;
 
-  return {
-    pulseType: context.pulse.pulseType,
-    pattern: context.pulse.pattern,
+  return Object.freeze({
+    pulseType: context.pulse.pulseType || null,
+    pattern: context.pulse.pattern || null,
     lineageDepth: Array.isArray(context.pulse.lineage)
       ? context.pulse.lineage.length
       : 0
-  };
+  });
 }
 
 // ============================================================================
@@ -151,7 +139,7 @@ export function formatDebugString(context) {
   let out = "\n=== AI DEBUG REPORT (v10.4) ===\n\n";
 
   out += "SUMMARY:\n";
-  report.summary.forEach((line) => {
+  report.summary.forEach(line => {
     out += `  - ${line}\n`;
   });
 
@@ -162,29 +150,29 @@ export function formatDebugString(context) {
 
   if (report.mismatches.length > 0) {
     out += "\nMISMATCHES:\n";
-    report.mismatches.forEach((m) => {
-      out += `  - Field "${m.field}": expected ${m.expected}, got ${m.actual}\n`;
+    report.mismatches.forEach(m => {
+      out += `  - Field "${m.key}": expected ${m.expected}, got ${m.actual}\n`;
     });
   }
 
   if (report.missingFields.length > 0) {
     out += "\nMISSING FIELDS:\n";
-    report.missingFields.forEach((f) => {
-      out += `  - ${f}\n`;
+    report.missingFields.forEach(f => {
+      out += `  - ${f.key}\n`;
     });
   }
 
   if (report.slowdownCauses.length > 0) {
     out += "\nSLOWDOWN CAUSES:\n";
-    report.slowdownCauses.forEach((s) => {
-      out += `  - ${s}\n`;
+    report.slowdownCauses.forEach(s => {
+      out += `  - ${s.reason}\n`;
     });
   }
 
   out += `\nDRIFT DETECTED: ${report.driftDetected ? "YES" : "NO"}\n`;
 
   out += "\nEVOLUTIONARY NOTES:\n";
-  report.evolution.forEach((n) => {
+  report.evolution.forEach(n => {
     out += `  - ${n}\n`;
   });
 

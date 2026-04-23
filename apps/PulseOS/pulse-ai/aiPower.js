@@ -9,19 +9,16 @@
 //   • Owner: deep diagnostics, fluctuation patterns, outage windows.
 //   • Integrates with aiEvolution for drift + schema mismatch.
 //   • Never exposes UID, resendToken, or identity anchors.
-//   • Never mutates anything.
+//   • Never mutates anything outside its own return values.
 //
 // CONTRACT:
 //   • READ‑ONLY.
-//   • ZERO MUTATION.
+//   • ZERO MUTATION (of external systems).
 //   • ZERO RANDOMNESS.
 //   • DETERMINISTIC ANALYSIS ONLY.
 // ============================================================================
 
-import { Personas } from "./persona.js";
-
 export function createPowerAPI(db, evolutionAPI) {
-
   // --------------------------------------------------------------------------
   // HELPERS
   // --------------------------------------------------------------------------
@@ -39,7 +36,7 @@ export function createPowerAPI(db, evolutionAPI) {
 
   async function fetchOwner(context, collection, options = {}) {
     if (!context.userIsOwner) {
-      context.logStep(`aiPower: owner‑only "${collection}" blocked.`);
+      context.logStep?.(`aiPower: owner‑only "${collection}" blocked.`);
       return [];
     }
     const rows = await db.getCollection(collection, options);
@@ -55,7 +52,6 @@ export function createPowerAPI(db, evolutionAPI) {
   // PUBLIC API — Power Insight
   // --------------------------------------------------------------------------
   return {
-
     // ----------------------------------------------------------------------
     // TOURIST‑SAFE SNAPSHOT
     // ----------------------------------------------------------------------
@@ -75,12 +71,7 @@ export function createPowerAPI(db, evolutionAPI) {
     // OWNER‑ONLY — FULL GRID DIAGNOSTICS
     // ----------------------------------------------------------------------
     async getOwnerPowerDiagnostics(context) {
-      const [
-        power,
-        history,
-        settings,
-        rawData
-      ] = await Promise.all([
+      const [power, history, settings, rawData] = await Promise.all([
         fetchOwner(context, "power"),
         fetchOwner(context, "powerHistory"),
         fetchOwner(context, "powerSettings"),
@@ -106,9 +97,10 @@ export function createPowerAPI(db, evolutionAPI) {
         fetchOwner(context, "powerSettings")
       ]);
 
-      const baseline = settings[0]?.baselineWindow || 10;
-      const minDeviation = settings[0]?.minDeviationPercent || 15;
-      const outageWindow = settings[0]?.minOutageWindow || 3;
+      const config = settings[0] || {};
+      const baseline = config.baselineWindow || 10;          // currently unused, kept for future logic
+      const minDeviation = config.minDeviationPercent || 15;
+      const outageWindow = config.minOutageWindow || 3;
 
       const fluctuations = [];
       const outages = [];
@@ -117,7 +109,7 @@ export function createPowerAPI(db, evolutionAPI) {
         const prev = history[i - 1];
         const curr = history[i];
 
-        if (!prev || !curr) continue;
+        if (!prev || !curr || prev.value === 0) continue;
 
         const diff = Math.abs(curr.value - prev.value);
         const pct = (diff / prev.value) * 100;
@@ -133,9 +125,9 @@ export function createPowerAPI(db, evolutionAPI) {
       }
 
       // Outage detection (simple window)
-      for (let i = 0; i < history.length - outageWindow; i++) {
+      for (let i = 0; i <= history.length - outageWindow; i++) {
         const window = history.slice(i, i + outageWindow);
-        const allZero = window.every(h => h.value === 0);
+        const allZero = window.length > 0 && window.every(h => h.value === 0);
 
         if (allZero) {
           outages.push({
@@ -148,25 +140,25 @@ export function createPowerAPI(db, evolutionAPI) {
       return {
         fluctuations,
         outages,
-        settings: settings[0] || null
+        settings: config
       };
     },
 
     // ----------------------------------------------------------------------
     // OWNER‑ONLY — EVOLUTIONARY DRIFT (via aiEvolution)
-// ----------------------------------------------------------------------
+    // ----------------------------------------------------------------------
     async getPowerEvolutionOverview(context) {
-      if (!context.userIsOwner) return null;
+      if (!context.userIsOwner || !evolutionAPI?.analyzeSchema) return null;
       return evolutionAPI.analyzeSchema(context, "power");
     },
 
     async analyzePowerFiles(context) {
-      if (!context.userIsOwner) return null;
+      if (!context.userIsOwner || !evolutionAPI?.analyzeFile) return null;
       return evolutionAPI.analyzeFile(context, "power.js");
     },
 
     async analyzePowerRoutes(context) {
-      if (!context.userIsOwner) return null;
+      if (!context.userIsOwner || !evolutionAPI?.analyzeRoute) return null;
       return evolutionAPI.analyzeRoute(context, "power");
     }
   };

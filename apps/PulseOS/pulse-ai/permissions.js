@@ -5,9 +5,9 @@
 // ============================================================================
 
 // ============================================================================
-// UNIVERSAL FORBIDDEN ACTIONS — No Persona May Ever Do These
+// UNIVERSAL FORBIDDEN ACTIONS — Immutable
 // ============================================================================
-export const ForbiddenActions = {
+export const ForbiddenActions = Object.freeze({
   canExecuteArbitraryCode: false,
   canAccessOS: false,
   canAccessNetwork: false,
@@ -17,23 +17,23 @@ export const ForbiddenActions = {
   canAccessUserSecrets: false,
   canAccessEnvironmentVariables: false,
   canModifyPulseCore: false
-};
+});
 
 // ============================================================================
 // OWNER (YOU) — Full Capability
 // ============================================================================
-export const OwnerPermissions = {
+export const OwnerPermissions = Object.freeze({
   canAccessIdentity: true,
   canAccessAllOrgans: true,
   canModifyEverything: true,
   canViewEverything: true,
   persona: "owner"
-};
+});
 
 // ============================================================================
 // ARCHITECT AI — Full READ‑ONLY Access to System Internals
 // ============================================================================
-export const ArchitectAIPermissions = {
+export const ArchitectAIPermissions = Object.freeze({
   // FILES
   canReadFiles: true,
   canWriteFiles: false,
@@ -82,12 +82,12 @@ export const ArchitectAIPermissions = {
   canAccessSettings: true,
 
   persona: "architect"
-};
+});
 
 // ============================================================================
 // OBSERVER AI — Diagnostics Only
 // ============================================================================
-export const ObserverAIPermissions = {
+export const ObserverAIPermissions = Object.freeze({
   canReadFiles: false,
   canWriteFiles: false,
   canCreateFiles: false,
@@ -129,12 +129,12 @@ export const ObserverAIPermissions = {
   canAccessSettings: false,
 
   persona: "observer"
-};
+});
 
 // ============================================================================
 // TOUR GUIDE AI — User-Facing Only
 // ============================================================================
-export const TourGuideAIPermissions = {
+export const TourGuideAIPermissions = Object.freeze({
   canReadFiles: false,
   canWriteFiles: false,
   canCreateFiles: false,
@@ -176,12 +176,12 @@ export const TourGuideAIPermissions = {
   canAccessSettings: false,
 
   persona: "tourguide"
-};
+});
 
 // ============================================================================
 // NEUTRAL AI — Minimal Access
 // ============================================================================
-export const NeutralAIPermissions = {
+export const NeutralAIPermissions = Object.freeze({
   canReadFiles: false,
   canWriteFiles: false,
   canCreateFiles: false,
@@ -223,10 +223,10 @@ export const NeutralAIPermissions = {
   canAccessSettings: false,
 
   persona: "neutral"
-};
+});
 
 // ============================================================================
-// PERMISSION LOOKUP
+// PERMISSION LOOKUP — Deterministic
 // ============================================================================
 export function getPermissionsForPersona(persona, userIsOwner = false) {
   if (userIsOwner) return OwnerPermissions;
@@ -244,6 +244,7 @@ export function getPermissionsForPersona(persona, userIsOwner = false) {
 // PERMISSION CHECK — Ego Decision
 // ============================================================================
 export function checkPermission(persona, action, userIsOwner = false) {
+  // Universal forbidden actions override everything
   if (ForbiddenActions[action] === false) return false;
 
   const permissions = getPermissionsForPersona(persona, userIsOwner);

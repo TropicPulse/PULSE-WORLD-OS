@@ -76,10 +76,10 @@ export function routeAIRequest(request = {}) {
     touchesSchemas ||
     touchesBackend ||
     touchesFiles ||
-    touchesEnvironment && userIsOwner ||
-    touchesPower && userIsOwner ||
-    touchesEarn && userIsOwner ||
-    touchesSettings && userIsOwner
+    (touchesEnvironment && userIsOwner) ||
+    (touchesPower && userIsOwner) ||
+    (touchesEarn && userIsOwner) ||
+    (touchesSettings && userIsOwner)
   ) {
     if (userIsOwner) {
       personaId = Personas.ARCHITECT;
@@ -128,13 +128,13 @@ export function routeAIRequest(request = {}) {
 
   reasoning.push(`Persona selected: ${personaId}`);
 
-  return {
+  return Object.freeze({
     personaId,
     persona,
     permissions,
     boundaries,
     reasoning
-  };
+  });
 }
 
 // ============================================================================
@@ -143,8 +143,8 @@ export function routeAIRequest(request = {}) {
 export function explainRoutingDecision(request = {}) {
   const result = routeAIRequest(request);
 
-  return {
+  return Object.freeze({
     personaId: result.personaId,
     reasoning: result.reasoning
-  };
+  });
 }
