@@ -1,5 +1,5 @@
 // ============================================================================
-//  PulseSendSystem.js — Nervous System Conductor (v11‑Evo + SDN‑Aware)
+//  PulseSendSystem-v11-Evo.js — Nervous System Conductor (v11‑Evo + SDN‑Aware)
 //  Impulse → Pulse v3 → Pulse v2 → Pulse v1 → Router → Mesh → Send
 // ============================================================================
 //
@@ -10,7 +10,7 @@
 //    • If v2 fails → fallback to Pulse v1 (EvoStable)
 //    • Route → Mesh → Send → ReturnArc
 //    • Emit SDN impulses at every stage (non‑blocking)
-//    • Return result to PulseBand
+//    • Return result to PulseBand (if present)
 //
 //  SAFETY:
 //    • No network
@@ -23,14 +23,17 @@
 // ============================================================================
 //  IMPORTS — Pulse v1 / v2 / v3 creators
 // ============================================================================
-import { createPulseV3 } from "../pulse-send/PulseV3UnifiedOrganism.js";
-import { createPulseV2 } from "../pulse-send/PulseV2EvolutionEngine.js";
-import { createLegacyPulse } from "../pulse-send/PulseSendLegacyPulse.js";
+import { createPulseV3 } from "./PulseV3UnifiedOrganism-v11-Evo.js";
+import { createPulseV2 } from "./PulseV2EvolutionEngine-v11-Evo.js";
+import { createLegacyPulse } from "./PulseSendLegacyPulse-v11-EvoStable.js";
 
 // Router + Mesh + Send
 import { PulseRouter } from "../pulse-router/PulseRouter-v11.js";
 import { PulseMesh } from "../pulse-mesh/PulseMesh-v11.js";
-import { createPulseSend } from "./pulse-send/PulseSend.js";
+import { createPulseSend } from "./pulse-send/PulseSend-v11-Evo.js";
+import { createPulseSendMover } from "./pulse-send/PulseSendMover-v11-Evo.js";
+import { createPulseSendImpulse } from "./pulse-send/PulseSendImpulse-v11-Evo.js";
+import { createPulseSendReturn } from "./pulse-send/PulseSendReturn-v11-Evo.js";
 
 
 // ============================================================================
@@ -47,7 +50,7 @@ export function createPulseSendSystem({
     try {
       sdn.emitImpulse(event, payload);
     } catch (err) {
-      log && log("[PulseSendSystem] SDN emit failed (non‑fatal)", { event, err });
+      log && log("[PulseSendSystem-v11-Evo] SDN emit failed (non‑fatal)", { event, err });
     }
   }
 
@@ -67,7 +70,7 @@ export function createPulseSendSystem({
 
   // ========================================================================
   //  INTERNAL: Try Pulse v3 (Unified Organism)
-  // ========================================================================
+// ========================================================================
   function tryPulseV3(impulse) {
     try {
       const pulse = createPulseV3({
@@ -88,7 +91,7 @@ export function createPulseSendSystem({
 
   // ========================================================================
   //  INTERNAL: Try Pulse v2 (Evolution Engine)
-  // ========================================================================
+// ========================================================================
   function tryPulseV2(impulse) {
     try {
       const pulse = createPulseV2({
@@ -109,7 +112,7 @@ export function createPulseSendSystem({
 
   // ========================================================================
   //  INTERNAL: Build Pulse v1 (EvoStable)
-  // ========================================================================
+// ========================================================================
   function buildPulseV1(impulse) {
     return createLegacyPulse({
       jobId: impulse.tickId,
@@ -118,16 +121,21 @@ export function createPulseSendSystem({
       priority: impulse.payload?.priority || "normal",
       returnTo: impulse.payload?.returnTo || null,
       parentLineage: impulse.payload?.parentLineage || null,
-      mode: impulse.payload?.mode || "normal"
+      mode: impulse.payload?.mode || "normal",
+      pageId: impulse.payload?.pageId || "NO_PAGE"
     });
   }
 
   // ========================================================================
   //  PUBLIC API — PulseSendSystem (v11‑Evo + SDN‑Aware)
-// ========================================================================
+  // ========================================================================
   return {
     async send(impulse) {
-      emitSDN("sendSystem:begin", { impulse });
+      emitSDN("sendSystem:begin", {
+        impulseIntent: impulse.intent,
+        tickId: impulse.tickId,
+        mode: impulse.payload?.mode || "normal"
+      });
 
       let pulse = null;
       let fallbackTier = null;
@@ -139,9 +147,18 @@ export function createPulseSendSystem({
       if (v3.ok) {
         pulse = v3.pulse;
         fallbackTier = "v3";
-        emitSDN("sendSystem:pulse-v3", { impulse, pulse });
+        emitSDN("sendSystem:pulse-v3", {
+          tickId: impulse.tickId,
+          intent: impulse.intent,
+          pulseType: pulse.pulseType,
+          healthScore: pulse.healthScore
+        });
       } else {
-        emitSDN("sendSystem:v3-failed", { impulse, error: String(v3.error) });
+        emitSDN("sendSystem:v3-failed", {
+          tickId: impulse.tickId,
+          intent: impulse.intent,
+          error: String(v3.error)
+        });
       }
 
       // ================================================================
@@ -152,9 +169,18 @@ export function createPulseSendSystem({
         if (v2.ok) {
           pulse = v2.pulse;
           fallbackTier = "v2";
-          emitSDN("sendSystem:pulse-v2", { impulse, pulse });
+          emitSDN("sendSystem:pulse-v2", {
+            tickId: impulse.tickId,
+            intent: impulse.intent,
+            pulseType: pulse.pulseType,
+            healthScore: pulse.healthScore
+          });
         } else {
-          emitSDN("sendSystem:v2-failed", { impulse, error: String(v2.error) });
+          emitSDN("sendSystem:v2-failed", {
+            tickId: impulse.tickId,
+            intent: impulse.intent,
+            error: String(v2.error)
+          });
         }
       }
 
@@ -164,13 +190,24 @@ export function createPulseSendSystem({
       if (!pulse) {
         pulse = buildPulseV1(impulse);
         fallbackTier = "v1";
-        emitSDN("sendSystem:pulse-v1", { impulse, pulse });
+        emitSDN("sendSystem:pulse-v1", {
+          tickId: impulse.tickId,
+          intent: impulse.intent,
+          pulseType: pulse.pulseType,
+          healthScore: pulse.healthScore
+        });
       }
 
       // ================================================================
       // ⭐ Transport Chain — Router → Mesh → Send → ReturnArc
       // ================================================================
-      emitSDN("sendSystem:transport-begin", { impulse, pulse });
+      emitSDN("sendSystem:transport-begin", {
+        tickId: impulse.tickId,
+        intent: impulse.intent,
+        fallbackTier,
+        pulseType: pulse.pulseType,
+        mode: pulse.mode
+      });
 
       const result = PulseSend.send({
         jobId: pulse.jobId,
@@ -182,15 +219,17 @@ export function createPulseSendSystem({
       });
 
       emitSDN("sendSystem:transport-complete", {
-        impulse,
-        pulse,
-        result,
-        fallbackTier
+        tickId: impulse.tickId,
+        intent: impulse.intent,
+        fallbackTier,
+        pulseType: pulse.pulseType,
+        mode: pulse.mode,
+        ok: !!result && result.result && result.result.ok !== false
       });
 
       // ================================================================
-      // ⭐ Return to PulseBand (if present)
-      // ================================================================
+      // ⭐ Return to PulseBand (if present, browser‑only)
+// ================================================================
       if (typeof window !== "undefined" && window.PulseBand?.receivePulseSendResult) {
         window.PulseBand.receivePulseSendResult({
           impulse,
@@ -201,10 +240,11 @@ export function createPulseSendSystem({
       }
 
       emitSDN("sendSystem:complete", {
-        impulse,
-        pulse,
-        result,
-        fallbackTier
+        tickId: impulse.tickId,
+        intent: impulse.intent,
+        fallbackTier,
+        pulseType: pulse.pulseType,
+        mode: pulse.mode
       });
 
       return {

@@ -1,17 +1,18 @@
 // ============================================================================
-// FILE: tropic-pulse-functions/apps/pulse-earn/PulseEarnGeneticMemory.js
-// LAYER: THE GENETIC MEMORY (v10.4)
+// FILE: tropic-pulse-functions/apps/pulse-earn/PulseEarnGeneticMemory-v11-Evo.js
+// LAYER: THE GENETIC MEMORY (v11-Evo)
 // (Keeper of Packets + Guardian of Determinism + DNA Repair Substrate)
 // ============================================================================
 //
-// ROLE (v10.4):
+// ROLE (v11-Evo):
 //   THE GENETIC MEMORY — Pulse‑Earn’s deterministic packet genome.
 //   • Stores packet data in a safe, in‑memory gene archive.
 //   • Generates deterministic packet values (genetic identity).
 //   • Ensures reproducibility for healing + compute (DNA stability).
 //   • Maintains packet‑level healing metadata (genetic health).
+//   • Emits v11‑Evo genetic signatures.
 //
-// CONTRACT (v10.4):
+// CONTRACT (v11-Evo):
 //   • PURE PACKET ENGINE — no AI layers, no translation, no memory model.
 //   • NO eval(), NO Function(), NO dynamic imports.
 //   • NO network calls, NO filesystem, NO timestamps.
@@ -19,31 +20,64 @@
 // ============================================================================
 
 
-// ---------------------------------------------------------------------------
-// Healing Metadata — Genetic Health Log (deterministic)
-// ---------------------------------------------------------------------------
+// ============================================================================
+// Healing Metadata — Genetic Health Log (v11-Evo)
+// ============================================================================
 const geneticHealing = {
   lastKey: null,
   lastWrite: null,
   lastGenerated: null,
   lastError: null,
   cycleCount: 0,
-  lastCycleIndex: null
+  lastCycleIndex: null,
+
+  lastGeneSignature: null,
+  lastWriteSignature: null,
+  lastSynthesisSignature: null
 };
 
 
-// ---------------------------------------------------------------------------
+// ============================================================================
 // In‑Memory Genome — Packet Store (Chromosome Map)
-// ---------------------------------------------------------------------------
+// ============================================================================
 const genome = new Map();
 
-// Deterministic cycle counter (replaces timestamps)
+// Deterministic cycle counter
 let geneCycle = 0;
 
 
-// ---------------------------------------------------------------------------
+// ============================================================================
+// Deterministic Hash Helper — v11-Evo
+// ============================================================================
+function computeHash(str) {
+  let h = 0;
+  const s = String(str || "");
+  for (let i = 0; i < s.length; i++) {
+    h = (h + s.charCodeAt(i) * (i + 1)) % 100000;
+  }
+  return `h${h}`;
+}
+
+
+// ============================================================================
+// Signature Builders — v11-Evo
+// ============================================================================
+function buildGeneSignature(key, cycle) {
+  return computeHash(`GENE::${key}::${cycle}`);
+}
+
+function buildWriteSignature(key, data) {
+  return computeHash(`WRITE::${key}::${JSON.stringify(data).length}`);
+}
+
+function buildSynthesisSignature(key, value) {
+  return computeHash(`SYNTH::${key}::${value}`);
+}
+
+
+// ============================================================================
 // 1. readPulseEarnGeneExists — Genome Lookup (deterministic)
-// ---------------------------------------------------------------------------
+// ============================================================================
 export function readPulseEarnGeneExists(fileId, packetIndex) {
   geneCycle++;
   geneticHealing.cycleCount++;
@@ -52,6 +86,8 @@ export function readPulseEarnGeneExists(fileId, packetIndex) {
   try {
     const key = `${fileId}:${packetIndex}`;
     geneticHealing.lastKey = key;
+
+    geneticHealing.lastGeneSignature = buildGeneSignature(key, geneCycle);
 
     return genome.has(key);
 
@@ -62,9 +98,9 @@ export function readPulseEarnGeneExists(fileId, packetIndex) {
 }
 
 
-// ---------------------------------------------------------------------------
+// ============================================================================
 // 2. writePulseEarnGene — DNA Write (Gene Expression)
-// ---------------------------------------------------------------------------
+// ============================================================================
 export function writePulseEarnGene(fileId, packetIndex, data) {
   geneCycle++;
   geneticHealing.cycleCount++;
@@ -81,6 +117,8 @@ export function writePulseEarnGene(fileId, packetIndex, data) {
       size: JSON.stringify(data).length,
       cycleIndex: geneCycle
     };
+
+    geneticHealing.lastWriteSignature = buildWriteSignature(key, data);
     geneticHealing.lastError = null;
 
     return true;
@@ -92,9 +130,9 @@ export function writePulseEarnGene(fileId, packetIndex, data) {
 }
 
 
-// ---------------------------------------------------------------------------
-// 3. synthesizePulseEarnGene — Deterministic DNA Synthesis
-// ---------------------------------------------------------------------------
+// ============================================================================
+// 3. synthesizePulseEarnGene — Deterministic DNA Synthesis (v11-Evo)
+// ============================================================================
 export function synthesizePulseEarnGene(fileId, packetIndex) {
   geneCycle++;
   geneticHealing.cycleCount++;
@@ -122,6 +160,7 @@ export function synthesizePulseEarnGene(fileId, packetIndex) {
     };
 
     geneticHealing.lastGenerated = gene;
+    geneticHealing.lastSynthesisSignature = buildSynthesisSignature(key, value);
     geneticHealing.lastError = null;
 
     return gene;
@@ -133,9 +172,9 @@ export function synthesizePulseEarnGene(fileId, packetIndex) {
 }
 
 
-// ---------------------------------------------------------------------------
-// Export Healing Metadata — Genetic Health Report
-// ---------------------------------------------------------------------------
+// ============================================================================
+// Export Healing Metadata — Genetic Health Report (v11-Evo)
+// ============================================================================
 export function getPulseEarnGeneticMemoryHealingState() {
   return { ...geneticHealing };
 }

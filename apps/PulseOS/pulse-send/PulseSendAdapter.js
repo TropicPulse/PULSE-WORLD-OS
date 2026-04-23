@@ -1,34 +1,29 @@
 // ============================================================================
-//  PulseSendAdapter.js — v10.4‑Evo
+//  PulseSendAdapter-v11-Evo.js
 //  Pattern‑Shape Adapter • Pulse‑Agnostic Translator • Pre‑Delivery Adapter
+//  v11: Diagnostics + Signatures + Pattern Surface + Lineage Surface
 // ============================================================================
 //
-//  WHAT THIS ORGAN IS:
-//  --------------------
-//  • Takes a Pulse v1/v2/v3 organism.
-//  • Adapts it into the shape the target organ expects.
-//  • Pure deterministic translation.
-//  • Pattern‑aware, identity‑aware, lineage‑aware, mode‑aware.
-//  • Zero compute, zero mutation, zero randomness.
-//
-//  WHAT THIS ORGAN IS NOT:
-//  ------------------------
-//  • Not a router.
-//  • Not a mesh layer.
-//  • Not a compute engine.
-//  • Not a healer or brain.
+//  SAFETY CONTRACT (v11-Evo):
+//  --------------------------
+//  • No imports.
+//  • No network.
+//  • No compute.
+//  • Zero randomness.
+//  • Zero timestamps.
+//  • Zero mutation outside instance.
 // ============================================================================
 
 
 // ============================================================================
-// ⭐ PulseRole — identifies this as the PulseSend Adapter Organ (v10.4‑Evo)
+// ⭐ PulseRole — identifies this as the PulseSend Adapter Organ (v11-Evo)
 // ============================================================================
 export const PulseRole = {
   type: "Messenger",
   subsystem: "PulseSend",
   layer: "Adapter",
-  version: "10.4‑Evo",
-  identity: "PulseSendAdapter-v10.4‑Evo",
+  version: "11.0",
+  identity: "PulseSendAdapter-v11-Evo",
 
   evo: {
     driftProof: true,
@@ -43,29 +38,56 @@ export const PulseRole = {
     futureEvolutionReady: true,
 
     unifiedAdvantageField: true,
-    pulseSend10Ready: true
+    pulseSend11Ready: true,
+
+    diagnosticsReady: true,
+    signatureReady: true,
+    adapterSurfaceReady: true
   },
 
-  routingContract: "PulseRouter-v10.4",
-  meshContract: "PulseMesh-v10.4",
-
-  // ⭐ Pulse‑agnostic
+  routingContract: "PulseRouter-v11",
+  meshContract: "PulseMesh-v11",
   pulseContract: "Pulse-v1/v2/v3",
-
-  gpuOrganContract: "PulseGPU-v10",
-  earnCompatibility: "PulseEarn-v10"
+  gpuOrganContract: "PulseGPU-v11",
+  earnCompatibility: "PulseEarn-v11"
 };
+
+
+// ============================================================================
+//  INTERNAL HELPERS — deterministic, tiny, pure
+// ============================================================================
+function computeHash(str) {
+  let h = 0;
+  for (let i = 0; i < str.length; i++) {
+    h = (h + str.charCodeAt(i) * (i + 1)) % 100000;
+  }
+  return `h${h}`;
+}
+
+function buildAdapterDiagnostics({ pulse, targetOrgan, mode }) {
+  const pattern = pulse?.pattern || "NO_PATTERN";
+  const lineageDepth = Array.isArray(pulse?.lineage) ? pulse.lineage.length : 0;
+  const pulseType = pulse?.pulseType || pulse?.PulseRole?.identity || "UNKNOWN_PULSE_TYPE";
+
+  return {
+    pattern,
+    lineageDepth,
+    pulseType,
+    targetOrgan: targetOrgan || "NO_ORGAN",
+    mode,
+
+    patternHash: computeHash(pattern),
+    lineageHash: computeHash(String(lineageDepth)),
+    pulseTypeHash: computeHash(pulseType),
+    organHash: computeHash(String(targetOrgan)),
+    modeHash: computeHash(mode)
+  };
+}
 
 
 // ============================================================================
 //  ADAPTER RULES — how each organ wants to receive a Pulse organism
 // ============================================================================
-//
-//  Each organ has its own “coat” or “shape.”
-//  The adapter wraps the Pulse organism into the correct shape.
-//  Pulse‑agnostic, mode‑aware, lineage‑aware, pattern‑aware.
-// ============================================================================
-
 const ORGAN_ADAPTERS = {
   GPU: (pulse, targetOrgan, mode) => ({
     target: targetOrgan,
@@ -125,18 +147,35 @@ const ORGAN_ADAPTERS = {
 //  FACTORY — Create an Adapter for ANY Pulse organism (v1/v2/v3)
 // ============================================================================
 export function adaptPulseSendPacket(pulse, targetOrgan, mode = "normal") {
-  const adapter = ORGAN_ADAPTERS[targetOrgan];
-
-  // ⭐ Extract identity + advantage
   const pulseType = pulse?.pulseType || pulse?.PulseRole?.identity || "UNKNOWN_PULSE_TYPE";
   const advantageField = pulse?.advantageField || null;
 
+  const diagnostics = buildAdapterDiagnostics({
+    pulse,
+    targetOrgan,
+    mode
+  });
+
+  const adapterSignature = computeHash(
+    diagnostics.pattern +
+    "::" +
+    diagnostics.targetOrgan +
+    "::" +
+    diagnostics.mode
+  );
+
+  const adapter = ORGAN_ADAPTERS[targetOrgan];
+
   if (typeof adapter === "function") {
-    return adapter(
-      { ...pulse, pulseType, advantageField },
-      targetOrgan,
-      mode
-    );
+    return {
+      ...adapter(
+        { ...pulse, pulseType, advantageField },
+        targetOrgan,
+        mode
+      ),
+      adapterSignature,
+      diagnostics
+    };
   }
 
   // ⭐ fallback: neutral shape
@@ -150,6 +189,8 @@ export function adaptPulseSendPacket(pulse, targetOrgan, mode = "normal") {
     mode,
     pulseType,
     advantageField,
-    neutral: true
+    neutral: true,
+    adapterSignature,
+    diagnostics
   };
 }

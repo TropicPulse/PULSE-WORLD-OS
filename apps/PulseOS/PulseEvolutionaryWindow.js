@@ -7,7 +7,7 @@
 // ============================================================================
 //  SURFACE REFLEXES (ALWAYS SAFE, ALWAYS PRESENT)
 // ============================================================================
-import * as PulseSkinReflex from "./PULSE-OS/PulseOSSkinReflex.js";
+
 import * as PulseVitals from "./pulse-proxy/PulseProxyVitalsMonitor.js";
 import * as PulseLogger from "./pulse-proxy/PulseProxyVitalsLogger.js";
 
@@ -21,13 +21,12 @@ import * as PulseUnderstanding from "./PulseUnderstanding.js";
 // ============================================================================
 PulseVitals.start();
 PulseLogger.init();
-PulseSkinReflex.attachScanner({});
+
 
 // ============================================================================
 //  EXPORT — WINDOW ONLY EXPOSES MEMBRANE + UNDERSTANDING
 // ============================================================================
 export default {
-  Reflex: PulseSkinReflex,
   Vitals: PulseVitals,
   Logger: PulseLogger,
   Understanding: PulseUnderstanding

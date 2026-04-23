@@ -1,67 +1,75 @@
 // ============================================================================
-// FILE: tropic-pulse-functions/apps/pulse-earn/PulseEarnCustomReceptor.js
-// LAYER: THE GENETIC REGULATOR (v10.4)
+// FILE: tropic-pulse-functions/apps/pulse-earn/PulseEarnCustomReceptor-v11-Evo.js
+// LAYER: THE GENETIC REGULATOR (v11-Evo)
 // (Deterministic Marketplace Interpreter + Receptor Builder)
 // ============================================================================
 //
-// ROLE (v10.4):
-//   THE GENETIC REGULATOR — Pulse‑Earn’s deterministic marketplace interpreter.
-//   • Reads receptor DNA from a static deterministic config (no network).
-//   • Expresses that DNA into a functional receptor.
+// ROLE (v11-Evo):
+//   THE GENETIC REGULATOR — deterministic marketplace interpreter.
+//   • Reads receptor DNA from static deterministic config (no network).
+//   • Expresses that DNA into a functional receptor phenotype.
 //   • Enforces the universal interface (ping, fetchJobs, submitResult).
-//   • Provides drift‑proof receptor behavior for 10.4 organisms.
+//   • Emits v11‑Evo receptor signatures + lineage metadata.
 //
-// WHY “GENETIC REGULATOR”?:
-//   • It expresses marketplace DNA into a receptor phenotype.
-//   • It enforces the universal receptor protocol.
-//   • It allows infinite marketplaces through deterministic DNA.
-//
-// PURPOSE (v10.4):
+// PURPOSE (v11-Evo):
 //   • Provide a deterministic, drift‑proof dynamic marketplace adapter.
 //   • Remove all nondeterministic behavior (no async, no fetch, no Firestore).
-//   • Guarantee safe receptor behavior for Earn v10.4.
+//   • Guarantee safe receptor behavior for Earn v11‑Evo.
 //   • Preserve genetic lineage + receptor evolution (conceptual only).
 //
-// CONTRACT (v10.4):
+// CONTRACT (v11-Evo):
 //   • PURE RECEPTOR — no network, no async, no timestamps.
-//   • READ‑ONLY except for deterministic config caching.
+//   • READ‑ONLY except deterministic config caching.
 //   • NO eval(), NO Function(), NO dynamic imports.
 //   • NO executing user code.
 //   • Deterministic receptor behavior only.
 // ============================================================================
 
-// ---------------------------------------------------------------------------
-// Deterministic Genetic DNA — replaces Firestore + network
-// ---------------------------------------------------------------------------
-//
-// In v10.4, receptors CANNOT depend on external nondeterministic systems.
-// Therefore, receptor DNA must be deterministic and local.
-//
-// This DNA can be updated by the organism, but NOT at runtime.
-// ---------------------------------------------------------------------------
 
+// ============================================================================
+// Deterministic Hash Helper — v11-Evo
+// ============================================================================
+function computeHash(str) {
+  let h = 0;
+  const s = String(str || "");
+  for (let i = 0; i < s.length; i++) {
+    h = (h + s.charCodeAt(i) * (i + 1)) % 100000;
+  }
+  return `h${h}`;
+}
+
+
+// ============================================================================
+// Deterministic Genetic DNA — v11-Evo
+// ============================================================================
 const DETERMINISTIC_RECEPTOR_DNA = {
   id: "CUSTOM",
   name: "Custom Marketplace",
-  healthScore: 1.0, // deterministic receptor health
+  version: "11-Evo",
+  healthScore: 1.0,
+
   endpoints: {
     ping: "PING_OK",
     jobs: [],
     submit: "SUBMIT_OK"
   },
+
   headers: {},
-  version: "10.4"
+
+  // v11‑Evo receptor identity
+  lineage: "Receptor-GeneticRegulator-v11-Evo",
+  phenotype: "MarketplaceReceptor"
 };
 
-// ---------------------------------------------------------------------------
+
+// ============================================================================
 // Genetic Cache — deterministic, no async
-// ---------------------------------------------------------------------------
+// ============================================================================
 let cachedDNA = null;
 
 function loadMarketplaceDNA() {
   if (cachedDNA) return cachedDNA;
 
-  // deterministic clone
   cachedDNA = {
     ...DETERMINISTIC_RECEPTOR_DNA,
     endpoints: { ...DETERMINISTIC_RECEPTOR_DNA.endpoints }
@@ -70,69 +78,98 @@ function loadMarketplaceDNA() {
   return cachedDNA;
 }
 
-// ---------------------------------------------------------------------------
-// Receptor Expression — ping(), fetchJobs(), submitResult()
-// ---------------------------------------------------------------------------
-//
-// These functions MUST be deterministic.
-// They CANNOT perform network operations.
-// They CANNOT use async.
-// They CANNOT use timestamps.
-// ---------------------------------------------------------------------------
 
+// ============================================================================
+// Signature Builders — v11-Evo
+// ============================================================================
+function buildReceptorSignature(dna) {
+  return computeHash(`RECEPTOR::${dna.id}::${dna.version}`);
+}
+
+function buildPingSignature(latency) {
+  return computeHash(`PING::${latency}`);
+}
+
+function buildJobListSignature(jobs) {
+  return computeHash(`JOBS::${jobs.length}`);
+}
+
+function buildSubmissionSignature(jobId, status) {
+  return computeHash(`SUBMIT::${jobId}::${status}`);
+}
+
+
+// ============================================================================
+// Receptor Expression — ping(), fetchJobs(), submitResult()
+// ============================================================================
 function ping() {
   const dna = loadMarketplaceDNA();
 
-  // deterministic receptor expression:
-  // healthy receptor returns a fixed latency score
-  if (dna.healthScore >= 0.85) return 10; // fixed deterministic latency
-  if (dna.healthScore >= 0.50) return 50;
-  if (dna.healthScore >= 0.15) return 150;
-  return null; // unhealthy receptor
+  let latency;
+  if (dna.healthScore >= 0.85) latency = 10;
+  else if (dna.healthScore >= 0.50) latency = 50;
+  else if (dna.healthScore >= 0.15) latency = 150;
+  else latency = null;
+
+  return {
+    latency,
+    receptorId: dna.id,
+    signature: buildPingSignature(latency)
+  };
 }
 
 function fetchJobs() {
   const dna = loadMarketplaceDNA();
+  const jobs = Array.isArray(dna.endpoints.jobs) ? dna.endpoints.jobs : [];
 
-  // deterministic job list
-  const jobs = dna.endpoints.jobs;
-
-  if (!Array.isArray(jobs)) return [];
-
-  // attach marketplaceId deterministically
-  return jobs.map(j => ({
+  const expressed = jobs.map(j => ({
     ...j,
     marketplaceId: dna.id
   }));
+
+  return {
+    jobs: expressed,
+    receptorId: dna.id,
+    signature: buildJobListSignature(expressed)
+  };
 }
 
 function submitResult(job, result) {
   const dna = loadMarketplaceDNA();
 
-  // deterministic submission response
   if (!job || !job.id) {
     return {
       success: false,
-      error: "invalid_job"
+      error: "invalid_job",
+      receptorId: dna.id,
+      signature: buildSubmissionSignature("NONE", "INVALID")
     };
   }
 
+  const status = dna.endpoints.submit;
+
   return {
     success: true,
-    receptor: dna.id,
+    receptorId: dna.id,
     jobId: job.id,
     result,
-    status: dna.endpoints.submit
+    status,
+    signature: buildSubmissionSignature(job.id, status)
   };
 }
 
-// ---------------------------------------------------------------------------
-// Export — The Genetic Regulator Adapter (v10.4)
-// ---------------------------------------------------------------------------
+
+// ============================================================================
+// Export — The Genetic Regulator Adapter (v11-Evo)
+// ============================================================================
 export const PulseEarnCustomReceptor = {
   id: "CUSTOM",
   name: "Custom Marketplace",
-  version: "10.4",
+  version: "11-Evo",
+  lineage: "Receptor-GeneticRegulator-v11-Evo",
+
+  receptorSignature: buildReceptorSignature(DETERMINISTIC_RECEPTOR_DNA),
+
   ping,
   fetchJobs,
   submitResult

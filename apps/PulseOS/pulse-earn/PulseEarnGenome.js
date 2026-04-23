@@ -1,29 +1,49 @@
 // ============================================================================
-// FILE: tropic-pulse-functions/apps/pulse-earn/PulseEarnGenome.js
-// LAYER: THE GENOME CORE (v10.4)
+// FILE: tropic-pulse-functions/apps/pulse-earn/PulseEarnGenome-v11-Evo.js
+// LAYER: THE GENOME CORE (v11-Evo)
 // (Immutable DNA Sequence + Cross‑Organism Law + Eternal Job Contract)
 // ============================================================================
 //
-// ROLE (v10.4):
+// ROLE (v11-Evo):
 //   THE GENOME CORE — the immutable DNA of Pulse‑Earn.
 //   • Defines the canonical job structure (genetic sequence).
 //   • Establishes the cross‑organism treaty all subsystems must obey.
 //   • Guarantees compatibility across every organ in the Earn organism.
 //   • Serves as the constitutional backbone of job identity.
+//   • Emits v11‑Evo genome signatures (non‑structural).
 //
-// PURPOSE (v10.4):
+// PURPOSE (v11-Evo):
 //   • Provide a deterministic, drift‑proof job format.
 //   • Ensure universal compatibility across all Earn layers.
 //   • Serve as the legal + biological foundation for job execution,
 //     routing, metabolism, healing, and archival reconstruction.
+//   • Provide signature‑rich constitutional metadata.
 //
-// CONTRACT (v10.4):
+// CONTRACT (v11-Evo):
 //   • PURE STATIC SCHEMA — no logic, no runtime behavior.
 //   • NO dynamic fields, NO optional structural keys.
 //   • NO timestamps, NO environment‑dependent fields.
 //   • Immutable across versions unless explicitly ratified.
+//   • v11‑Evo adds ONLY metadata + signatures OUTSIDE the schema.
 // ============================================================================
 
+
+// ============================================================================
+// INTERNAL: Deterministic Hash Helper (v11-Evo)
+// ============================================================================
+function computeHash(str) {
+  let h = 0;
+  const s = String(str);
+  for (let i = 0; i < s.length; i++) {
+    h = (h + s.charCodeAt(i) * (i + 1)) % 100000;
+  }
+  return `h${h}`;
+}
+
+
+// ============================================================================
+// THE IMMUTABLE GENOME CORE — STRUCTURE CANNOT CHANGE
+// ============================================================================
 export const PulseEarnJobSchema = {
   id: "string", // Unique job ID (genetic locus)
 
@@ -41,6 +61,37 @@ export const PulseEarnJobSchema = {
   marketplace: "string", // Job origin (environmental source)
   assignedTo: "deviceId", // Worker device ID (cell assignment)
 
-  // v10.4: deterministic cycle index replaces nondeterministic timestamp
+  // Deterministic cycle index (constitutional replacement for timestamps)
   cycleIndex: "number" // Genetic activation cycle (deterministic)
+};
+
+
+// ============================================================================
+// v11‑Evo GENOME METADATA (NON‑STRUCTURAL, SAFE, IMMUTABLE)
+// ============================================================================
+export const PulseEarnGenomeMetadata = {
+  genomeVersion: "11-Evo",
+  genomeIdentity: "PulseEarn-GenomeCore-v11-Evo",
+  genomeLayer: "GENOME_CORE",
+  genomeRole: "Immutable DNA Sequence + Cross‑Organism Law",
+
+  // Deterministic constitutional pattern
+  constitutionalPattern:
+    "GENOME::id:string::payload:type:string::payload:data:any::payload:gpu::*::marketplace:string::assignedTo:deviceId::cycleIndex:number",
+
+  // Deterministic signatures
+  genomeSignature: computeHash(
+    JSON.stringify(PulseEarnJobSchema)
+  ),
+
+  fieldSignatures: {
+    id: computeHash("id:string"),
+    payload: computeHash("payload"),
+    payload_type: computeHash("payload.type:string"),
+    payload_data: computeHash("payload.data:any"),
+    payload_gpu: computeHash("payload.gpu"),
+    marketplace: computeHash("marketplace:string"),
+    assignedTo: computeHash("assignedTo:deviceId"),
+    cycleIndex: computeHash("cycleIndex:number")
+  }
 };

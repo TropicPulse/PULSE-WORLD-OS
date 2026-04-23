@@ -1,83 +1,89 @@
 // ============================================================================
-//  RunPodAdapter.js — v10.4
-//  PulseOS Marketplace Organ • RunPod Deterministic Receptor DNA
+// FILE: tropic-pulse-functions/apps/pulse-earn/RunPodAdapter-v11-Evo.js
+// LAYER: THE RUNPOD AMBASSADOR (v11-Evo)
+// (Deterministic RunPod Receptor DNA + Signature-Rich Marketplace Organ)
 // ============================================================================
 //
-//  WHAT THIS ORGAN IS:
-//  --------------------
-//  • Deterministic RunPod receptor.
-//  • Knows how to:
-//      - register device (deterministic no-op)
-//      - request jobs (deterministic receptor DNA)
-//      - submit job results (deterministic stub)
-//      - normalize RunPod jobs into Pulse-native shape
+// ROLE (v11-Evo):
+//   THE RUNPOD AMBASSADOR — deterministic RunPod receptor phenotype.
+//   • Represents RunPod jobs as stable receptor DNA.
+//   • Normalizes RunPod tasks into Pulse‑Earn job schema.
+//   • Provides deterministic registerDevice(), requestJob(), submitJob().
+//   • Emits v11‑Evo signatures for all receptor actions.
 //
-//  WHAT THIS ORGAN IS NOT:
-//  ------------------------
-//  • Not EarnEngine.
-//  • Not a router.
-//  • Not a mesh layer.
-//  • Not a GPU driver.
-//  • Not OS / business logic.
-//  • Not a scaling brain.
-//  • Not a network client.
-//
-//  SAFETY CONTRACT (v10.4):
-//  ------------------------
-//  • No imports.
-//  • No randomness.
-//  • No timestamps.
-//  • No network.
-//  • Pure deterministic marketplace organ.
+// CONTRACT (v11-Evo):
+//   • PURE RECEPTOR — no network, no async, no timestamps.
+//   • READ‑ONLY except for healing metadata.
+//   • NO eval(), NO Function(), NO dynamic imports.
+//   • NO executing user code.
+//   • Deterministic normalization only.
 // ============================================================================
 
 
-// ⭐ PulseRole — identifies this as the RunPod v10.4 Marketplace Organ
-export const PulseRole = {
-  type: "MarketplaceAdapter",
-  subsystem: "Marketplace",
-  layer: "RunPod",
-  version: "10.4",
-  identity: "RunPodAdapter-v10.4",
-
-  evo: {
-    driftProof: true,
-    marketplaceAware: true,
-    gpuAware: true,
-    earnEngineReady: true,
-    routerAwareReady: true,
-    futureEvolutionReady: true,
-    unifiedAdvantageField: true
-  },
-
-  marketplace: "RunPod",
-  contract: "RunPod-v1",
-  earnCompatibility: "PulseEarn-v10.4",
-  pulseContract: "Pulse-v3"
-};
-
-
-// ---------------------------------------------------------------------------
-// Healing Metadata — Deterministic Ambassador Log
-// ---------------------------------------------------------------------------
+// ============================================================================
+// Healing Metadata — Deterministic RunPod Log (v11-Evo)
+// ============================================================================
 const runpodHealing = {
   lastRegister: null,
   lastRequest: null,
   lastSubmit: null,
+
   lastNormalizedJobId: null,
   lastNormalizationError: null,
-  cycleCount: 0
+
+  cycleCount: 0,
+
+  lastRegisterSignature: null,
+  lastRequestSignature: null,
+  lastNormalizationSignature: null,
+  lastSubmitSignature: null,
+  lastRunPodCycleSignature: null
 };
 
-// Deterministic cycle counter
-let runpodCycle = 0;
+
+// ============================================================================
+// Deterministic Hash Helper — v11-Evo
+// ============================================================================
+function computeHash(str) {
+  let h = 0;
+  const s = String(str || "");
+  for (let i = 0; i < s.length; i++) {
+    h = (h + s.charCodeAt(i) * (i + 1)) % 100000;
+  }
+  return `h${h}`;
+}
 
 
-// ---------------------------------------------------------------------------
-// DETERMINISTIC RUNPOD RECEPTOR DNA (replaces network calls)
-// ---------------------------------------------------------------------------
+// ============================================================================
+// Signature Builders — v11-Evo
+// ============================================================================
+function buildRegisterSignature(deviceId) {
+  return computeHash(`REGISTER::${deviceId}`);
+}
+
+function buildRequestSignature(jobId) {
+  return computeHash(`REQUEST::${jobId || "NONE"}`);
+}
+
+function buildNormalizationSignature(jobId) {
+  return computeHash(`NORM::${jobId || "NONE"}`);
+}
+
+function buildSubmitSignature(jobId) {
+  return computeHash(`SUBMIT::${jobId || "NONE"}`);
+}
+
+function buildRunPodCycleSignature(cycle) {
+  return computeHash(`RUNPOD_CYCLE::${cycle}`);
+}
+
+
+// ============================================================================
+// Deterministic RunPod Receptor DNA (v11-Evo)
+// ============================================================================
 const RUNPOD_RECEPTOR_DNA = {
   pingLatency: 64,
+
   jobs: [
     {
       id: "runpod-001",
@@ -89,15 +95,32 @@ const RUNPOD_RECEPTOR_DNA = {
       input: { task: "image-processing", value: "img://sample" },
       priority: "high"
     }
-  ]
+  ],
+
+  version: "11-Evo",
+  lineage: "RunPodAdapter-v11-Evo",
+  phenotype: "MarketplaceReceptor"
 };
 
 
-// ---------------------------------------------------------------------------
-// normalizeJob() — Convert RunPod job → Pulse-native job shape
-// ---------------------------------------------------------------------------
+// ============================================================================
+// Deterministic Cycle Counter
+// ============================================================================
+let runpodCycle = 0;
+
+
+// ============================================================================
+// normalizeJob() — Convert RunPod job → Pulse-native job shape (v11-Evo)
+// ============================================================================
 export function normalizeJob(runpodJob) {
-  if (!runpodJob) return null;
+  runpodCycle++;
+  runpodHealing.cycleCount++;
+
+  if (!runpodJob) {
+    runpodHealing.lastNormalizationError = "invalid_job";
+    runpodHealing.lastNormalizationSignature = buildNormalizationSignature(null);
+    return null;
+  }
 
   const jobId = runpodJob.id || runpodJob.jobId || null;
   const payload = runpodJob.input || runpodJob.payload || {};
@@ -106,26 +129,31 @@ export function normalizeJob(runpodJob) {
   const normalized = {
     id: jobId,
     marketplaceId: "runpod",
-    payout: 0.1, // deterministic placeholder
+
+    payout: 0.1,
     cpuRequired: 4,
     memoryRequired: 4096,
     estimatedSeconds: 600,
+
     minGpuScore: 200,
     bandwidthNeededMbps: 10,
+
     payload,
     priority
   };
 
   runpodHealing.lastNormalizedJobId = jobId;
   runpodHealing.lastNormalizationError = null;
+  runpodHealing.lastNormalizationSignature = buildNormalizationSignature(jobId);
+  runpodHealing.lastRunPodCycleSignature = buildRunPodCycleSignature(runpodCycle);
 
   return normalized;
 }
 
 
-// ---------------------------------------------------------------------------
-// registerDevice() — Deterministic no-op
-// ---------------------------------------------------------------------------
+// ============================================================================
+// registerDevice() — Deterministic no-op (v11-Evo)
+// ============================================================================
 export function registerDevice({ deviceId, gpuInfo = {}, meta = {} } = {}) {
   runpodCycle++;
   runpodHealing.cycleCount++;
@@ -137,24 +165,32 @@ export function registerDevice({ deviceId, gpuInfo = {}, meta = {} } = {}) {
     cycleIndex: runpodCycle
   };
 
+  runpodHealing.lastRegisterSignature = buildRegisterSignature(deviceId);
+  runpodHealing.lastRunPodCycleSignature = buildRunPodCycleSignature(runpodCycle);
+
   return {
     ok: true,
     result: {
       registered: true,
-      cycleIndex: runpodCycle
+      cycleIndex: runpodCycle,
+      signature: runpodHealing.lastRegisterSignature
     }
   };
 }
 
 
-// ---------------------------------------------------------------------------
-// requestJob() — Deterministic job retrieval
-// ---------------------------------------------------------------------------
+// ============================================================================
+// requestJob() — Deterministic job retrieval (v11-Evo)
+// ============================================================================
 export function requestJob({ deviceId, filters = {} } = {}) {
   runpodCycle++;
   runpodHealing.cycleCount++;
 
-  const job = RUNPOD_RECEPTOR_DNA.jobs[runpodCycle % RUNPOD_RECEPTOR_DNA.jobs.length];
+  const job =
+    RUNPOD_RECEPTOR_DNA.jobs[
+      runpodCycle % RUNPOD_RECEPTOR_DNA.jobs.length
+    ];
+
   const normalized = normalizeJob(job);
 
   runpodHealing.lastRequest = {
@@ -164,16 +200,20 @@ export function requestJob({ deviceId, filters = {} } = {}) {
     cycleIndex: runpodCycle
   };
 
+  runpodHealing.lastRequestSignature = buildRequestSignature(normalized?.id);
+  runpodHealing.lastRunPodCycleSignature = buildRunPodCycleSignature(runpodCycle);
+
   return {
     ok: true,
-    job: normalized
+    job: normalized,
+    signature: runpodHealing.lastRequestSignature
   };
 }
 
 
-// ---------------------------------------------------------------------------
-// submitJob() — Deterministic submission stub
-// ---------------------------------------------------------------------------
+// ============================================================================
+// submitJob() — Deterministic submission stub (v11-Evo)
+// ============================================================================
 export function submitJob({ jobId, result, error: jobError = null } = {}) {
   runpodCycle++;
   runpodHealing.cycleCount++;
@@ -185,39 +225,41 @@ export function submitJob({ jobId, result, error: jobError = null } = {}) {
     cycleIndex: runpodCycle
   };
 
+  runpodHealing.lastSubmitSignature = buildSubmitSignature(jobId);
+  runpodHealing.lastRunPodCycleSignature = buildRunPodCycleSignature(runpodCycle);
+
   return {
     ok: true,
     result: {
       submitted: true,
       jobId,
       cycleIndex: runpodCycle,
-      note: "RunPod submission simulated deterministically in v10.4."
+      signature: runpodHealing.lastSubmitSignature,
+      note: "RunPod submission simulated deterministically (v11-Evo)."
     }
   };
 }
 
 
-// ---------------------------------------------------------------------------
-// EXPORT — Marketplace organ surface
-// ---------------------------------------------------------------------------
+// ============================================================================
+// EXPORT — Marketplace organ surface (v11-Evo)
+// ============================================================================
 export const RunPodAdapter = {
-  PulseRole,
+  id: "runpod",
+  name: "RunPod",
+  version: "11-Evo",
+  lineage: "RunPodAdapter-v11-Evo",
+
   registerDevice,
   requestJob,
   submitJob,
-  normalizeJob,
-  meta: {
-    marketplace: "RunPod",
-    version: "10.4",
-    layer: "MarketplaceAdapter",
-    identity: "RunPodAdapter-v10.4"
-  }
+  normalizeJob
 };
 
 
-// ---------------------------------------------------------------------------
-// Healing State Export
-// ---------------------------------------------------------------------------
+// ============================================================================
+// Healing State Export (v11-Evo)
+// ============================================================================
 export function getRunPodHealingState() {
   return { ...runpodHealing };
 }

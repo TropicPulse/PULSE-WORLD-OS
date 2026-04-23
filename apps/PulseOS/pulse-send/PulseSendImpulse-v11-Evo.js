@@ -1,6 +1,6 @@
 // ============================================================================
-//  PulseSendReturn-v11-Evo.js
-//  Return Arc • Pulse‑Agnostic Bounce‑Back Organ • Handles returnTo Logic
+//  PulseSendImpulse-v11-Evo.js
+//  Nerve‑Spark • Pulse‑Agnostic Trigger Organ • Fires the Movement
 //  v11: Diagnostics + Signatures + Pattern Surface + Lineage Surface
 // ============================================================================
 //
@@ -16,21 +16,23 @@
 
 
 // ============================================================================
-// ⭐ PulseRole — identifies this as the PulseSend Return Organ (v11-Evo)
+// ⭐ PulseRole — identifies this as the PulseSend Impulse Organ (v11-Evo)
 // ============================================================================
 export const PulseRole = {
   type: "Messenger",
   subsystem: "PulseSend",
-  layer: "Return",
+  layer: "Impulse",
   version: "11.0",
-  identity: "PulseSendReturn-v11-Evo",
+  identity: "PulseSendImpulse-v11-Evo",
 
   evo: {
     driftProof: true,
-    returnArcReady: true,
+    reflexReady: true,
+    sparkReady: true,
     patternAware: true,
     lineageAware: true,
     modeAware: true,
+    identityAware: true,
     multiOrganReady: true,
     deterministicImpulseFlow: true,
     futureEvolutionReady: true,
@@ -40,12 +42,14 @@ export const PulseRole = {
 
     diagnosticsReady: true,
     signatureReady: true,
-    returnSurfaceReady: true
+    impulseSurfaceReady: true
   },
 
   routingContract: "PulseRouter-v11",
   meshContract: "PulseMesh-v11",
+
   pulseContract: "Pulse-v1/v2/v3",
+
   gpuOrganContract: "PulseGPU-v11",
   earnCompatibility: "PulseEarn-v11"
 };
@@ -54,6 +58,7 @@ export const PulseRole = {
 // ============================================================================
 //  INTERNAL HELPERS — deterministic, tiny, pure
 // ============================================================================
+
 function computeHash(str) {
   let h = 0;
   for (let i = 0; i < str.length; i++) {
@@ -62,7 +67,7 @@ function computeHash(str) {
   return `h${h}`;
 }
 
-function buildReturnDiagnostics({ pulse, returnTo, targetOrgan, pathway, mode }) {
+function buildImpulseDiagnostics({ pulse, targetOrgan, pathway, mode }) {
   const pattern = pulse?.pattern || "NO_PATTERN";
   const lineageDepth = Array.isArray(pulse?.lineage) ? pulse.lineage.length : 0;
   const pulseType = pulse?.pulseType || pulse?.PulseRole?.identity || "UNKNOWN_PULSE_TYPE";
@@ -71,15 +76,12 @@ function buildReturnDiagnostics({ pulse, returnTo, targetOrgan, pathway, mode })
     pattern,
     lineageDepth,
     pulseType,
-    returnTo: returnTo || "NO_RETURN_TARGET",
     targetOrgan: targetOrgan || "NO_ORGAN",
     pathway: pathway || "NO_PATHWAY",
     mode,
-
     patternHash: computeHash(pattern),
     lineageHash: computeHash(String(lineageDepth)),
     pulseTypeHash: computeHash(pulseType),
-    returnTargetHash: computeHash(String(returnTo)),
     organHash: computeHash(String(targetOrgan)),
     pathwayHash: computeHash(JSON.stringify(pathway || {}))
   };
@@ -87,100 +89,51 @@ function buildReturnDiagnostics({ pulse, returnTo, targetOrgan, pathway, mode })
 
 
 // ============================================================================
-//  FACTORY — Create the Return Organ (v11-Evo)
+//  FACTORY — Create the Impulse Organ (v11-Evo)
 // ============================================================================
-export function createPulseSendReturn({ impulse, pulseRouter, pulseMesh, log }) {
+export function createPulseSendImpulse({ mover, log }) {
   return {
     PulseRole,
 
-    handle(pulse, mode = "normal") {
-      const {
-        returnTo,
-        pattern = "UNKNOWN_PATTERN",
-        lineage = []
-      } = pulse;
+    fire({ pulse, targetOrgan, pathway, mode = "normal" }) {
 
-      const lineageDepth = Array.isArray(lineage) ? lineage.length : 0;
-      const pulseType = pulse.PulseRole?.identity || "UNKNOWN_PULSE_TYPE";
-
-      // ⭐ No return target → end of chain
-      if (!returnTo) {
-        const diagnostics = buildReturnDiagnostics({
-          pulse,
-          returnTo: null,
-          targetOrgan: null,
-          pathway: null,
-          mode
-        });
-
-        log && log("[PulseSendReturn-v11-Evo] No returnTo target — chain complete", {
-          jobId: pulse.jobId,
-          diagnostics
-        });
-
-        return {
-          completed: true,
-          returned: false,
-          diagnostics,
-          pulse
-        };
-      }
-
-      // ⭐ Return target exists → route the return pulse
-      log && log("[PulseSendReturn-v11-Evo] Returning pulse", {
-        jobId: pulse.jobId,
-        pattern,
-        returnTo,
-        lineageDepth,
-        mode,
-        pulseType
-      });
-
-      // ⭐ Step 1 — determine return target via Router
-      const targetOrgan = pulseRouter.route({
-        ...pulse,
-        targetHint: returnTo,
-        mode
-      });
-
-      // ⭐ Step 2 — determine pathway via Mesh
-      const pathway = pulseMesh.pathwayFor(targetOrgan, mode);
-
-      const diagnostics = buildReturnDiagnostics({
+      const diagnostics = buildImpulseDiagnostics({
         pulse,
-        returnTo,
         targetOrgan,
         pathway,
         mode
       });
 
-      // ⭐ v11 return signature
-      const returnSignature = computeHash(
+      const advantageField = pulse?.advantageField || null;
+
+      // ⭐ v11 logging surface
+      log && log("[PulseSendImpulse-v11-Evo] Spark fired", {
+        jobId: pulse.jobId,
+        diagnostics,
+        advantageField
+      });
+
+      // ⭐ v11 signatures
+      const impulseSignature = computeHash(
         diagnostics.pattern +
         "::" +
-        diagnostics.returnTo +
+        diagnostics.lineageDepth +
         "::" +
         diagnostics.targetOrgan +
         "::" +
         diagnostics.mode
       );
 
-      // ⭐ Step 3 — fire impulse back (prevent infinite loops)
-      const movement = impulse.fire({
-        pulse: {
-          ...pulse,
-          returnTo: null, // ⭐ prevent infinite loops
-          mode
-        },
+      // ⭐ Trigger the mover (pure spark)
+      const movement = mover.move({
+        pulse,
         targetOrgan,
         pathway,
         mode
       });
 
       return {
-        completed: true,
-        returned: true,
-        returnSignature,
+        impulseSignature,
         diagnostics,
         movement
       };

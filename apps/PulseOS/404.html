@@ -12,15 +12,24 @@
 <!-- Backend Connector Layer -->
  
 <script type="module">
-import * as PulseEvolutionary from "./PulseEvolutionaryWindow.js";
+// Auto‑derive page name
+const pageName = import.meta.url.split('/').pop().replace('.js', '');
+
+// A1 Skin Reflex
+import * as PulseSkinReflex from "./PULSE-OS/PulseOSSkinReflex.js";
+PulseSkinReflex.attachScanner(pageName);
+
+// A0 Window / Evolutionary ignition
+import * as PulseEvolutionarySight from "./PulseEvolutionaryWindow.js";
+
 
   // optional: start the OS
-  const Brain = PulseEvolutionary.igniteBrain({
+  const Brain = PulseEvolutionarySight.igniteBrain({
     intent: PulseIntentMap,
     organism: PulseOrganismMap,
     iq: PulseIQMap
   });
-
+  
   window.dataLayer = window.dataLayer || [];
   function gtag(){dataLayer.push(arguments);}
   gtag('js', new Date());

@@ -1,18 +1,19 @@
 // ============================================================================
-// FILE: tropic-pulse-functions/apps/pulse-earn/PulseEarnMetabolism.js
-// LAYER: THE METABOLIC ENGINEER (v10.4)
+// FILE: tropic-pulse-functions/apps/pulse-earn/PulseEarnMetabolism-v11-Evo.js
+// LAYER: THE METABOLIC ENGINEER (v11-Evo)
 // (Interpreter of Jobs + Safe Executor + Deterministic Throughput Engine)
 // ============================================================================
 //
-// ROLE (v10.4):
+// ROLE (v11-Evo):
 //   THE METABOLIC ENGINEER — Pulse‑Earn’s deterministic execution organ.
 //   • Reads the blueprint (job payload).
 //   • Selects the correct safe tool (compute/image/script handler).
 //   • Applies deterministic metabolic scaling (conceptual only).
 //   • Produces deterministic, drift‑proof results.
+//   • Emits v11‑Evo signatures + diagnostics.
 //   • Never improvises, never executes unsafe code.
 //
-// CONTRACT (v10.4):
+// CONTRACT (v11-Evo):
 //   • PURE EXECUTION BRIDGE — no AI layers, no translation, no memory model.
 //   • NO eval(), NO Function(), NO dynamic imports.
 //   • NO user scripts, NO network calls, NO filesystem access.
@@ -21,9 +22,9 @@
 // ============================================================================
 
 
-// ---------------------------------------------------------------------------
-// Healing Metadata — Metabolic Work Log (deterministic)
-// ---------------------------------------------------------------------------
+// ============================================================================
+// Healing Metadata — Metabolic Work Log (v11-Evo)
+// ============================================================================
 const metabolicHealing = {
   lastJobId: null,
   lastPayloadType: null,
@@ -32,25 +33,67 @@ const metabolicHealing = {
   cycleCount: 0,
   executionState: "idle", // idle | validating | executing | returning | error
   lastCycleIndex: null,
-  lastEvolutionBoost: null
+  lastEvolutionBoost: null,
+
+  lastMetabolicSignature: null,
+  lastJobSignature: null,
+  lastPayloadSignature: null
 };
+
 
 // Deterministic cycle counter
 let metabolismCycle = 0;
 
 
-// ---------------------------------------------------------------------------
-// Deterministic Evolutionary Metabolic Boost
-// ---------------------------------------------------------------------------
+// ============================================================================
+// Deterministic Hash Helper — v11-Evo
+// ============================================================================
+function computeHash(str) {
+  let h = 0;
+  const s = String(str || "");
+  for (let i = 0; i < s.length; i++) {
+    h = (h + s.charCodeAt(i) * (i + 1)) % 100000;
+  }
+  return `h${h}`;
+}
+
+
+// ============================================================================
+// Deterministic Evolutionary Metabolic Boost (v11-Evo)
+// ============================================================================
 function computeMetabolicBoost() {
-  // v10.4: deterministic, no randomness
+  // v11-Evo: deterministic, conceptual metabolic scaling
   return 1.0;
 }
 
 
-// ---------------------------------------------------------------------------
-// executePulseEarnJob(job) — Deterministic Metabolic Workflow
-// ---------------------------------------------------------------------------
+// ============================================================================
+// INTERNAL: Signature Builders (v11-Evo)
+// ============================================================================
+function buildJobSignature(job) {
+  if (!job) return "JOB::NONE";
+  return computeHash(
+    `JOB::${job.id}::${job.payload?.type || "NO_TYPE"}`
+  );
+}
+
+function buildPayloadSignature(payload) {
+  if (!payload) return "PAYLOAD::NONE";
+  return computeHash(
+    `PAYLOAD::${payload.type}::${Object.keys(payload).join("::")}`
+  );
+}
+
+function buildMetabolicSignature(job, cycle) {
+  return computeHash(
+    `META::${job?.id || "NO_JOB"}::${cycle}`
+  );
+}
+
+
+// ============================================================================
+// executePulseEarnJob(job) — Deterministic Metabolic Workflow (v11-Evo)
+// ============================================================================
 export function executePulseEarnJob(job) {
   metabolismCycle++;
   metabolicHealing.cycleCount++;
@@ -72,8 +115,13 @@ export function executePulseEarnJob(job) {
     }
 
     const { payload } = job;
+
     metabolicHealing.lastJobId = job.id;
     metabolicHealing.lastPayloadType = payload.type;
+
+    // v11-Evo signatures
+    metabolicHealing.lastJobSignature = buildJobSignature(job);
+    metabolicHealing.lastPayloadSignature = buildPayloadSignature(payload);
 
     // 2. Deterministic Metabolic Boost
     const evoBoost = computeMetabolicBoost();
@@ -115,12 +163,20 @@ export function executePulseEarnJob(job) {
     // 4. Deliver Finished Product
     metabolicHealing.executionState = "returning";
 
+    metabolicHealing.lastMetabolicSignature = buildMetabolicSignature(
+      job,
+      metabolismCycle
+    );
+
     return {
       success: true,
       jobId: job.id,
       result,
       evoBoost,
-      cycleIndex: metabolismCycle
+      cycleIndex: metabolismCycle,
+      metabolicSignature: metabolicHealing.lastMetabolicSignature,
+      jobSignature: metabolicHealing.lastJobSignature,
+      payloadSignature: metabolicHealing.lastPayloadSignature
     };
 
   } catch (err) {
@@ -137,9 +193,9 @@ export function executePulseEarnJob(job) {
 }
 
 
-// ---------------------------------------------------------------------------
-// SAFE workload handlers — Deterministic Metabolic Tools
-// ---------------------------------------------------------------------------
+// ============================================================================
+// SAFE workload handlers — Deterministic Metabolic Tools (v11-Evo)
+// ============================================================================
 function runComputeTask(data) {
   return {
     output: "compute-result",
@@ -163,9 +219,9 @@ function runScriptTask(script, input) {
 }
 
 
-// ---------------------------------------------------------------------------
-// Export healing metadata — Metabolic Ledger
-// ---------------------------------------------------------------------------
+// ============================================================================
+// Export healing metadata — Metabolic Ledger (v11-Evo)
+// ============================================================================
 export function getPulseEarnMetabolismHealingState() {
   return { ...metabolicHealing };
 }

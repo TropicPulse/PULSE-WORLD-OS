@@ -1,21 +1,33 @@
 // ============================================================================
-//  PulseEarnReflexRouter.js — Reflex → Earn Synapse (v10.4)
+//  PulseEarnReflexRouter-v11-Evo.js
+//  Reflex → Earn Synapse (v11-Evo)
 //  - No imports
 //  - No routing, no sending
-//  - Pure, deterministic EarnReflex → Earn handoff
-//  - Fully aligned with PulseOSGovernor v3.2 (instance slicing safe)
+//  - Pure deterministic EarnReflex → Earn handoff
+//  - Fully aligned with PulseOSGovernor v3.3 (instance slicing safe)
 //  - Designed to run ONLY when explicitly called
+//  - v11: Diagnostics + Signatures + Pattern Surface
 // ============================================================================
 
-// Local registry of routed reflexes (drift-proof, no loops)
+
+// ============================================================================
+//  INTERNAL STATE — deterministic, drift-proof
+// ============================================================================
 const routedReflexes = new Map(); // reflexId -> state
+let reflexRouteCycle = 0;         // deterministic cycle counter
 
-// Deterministic cycle counter (replaces timestamps)
-let reflexRouteCycle = 0;
 
-// ---------------------------------------------------------------------------
-//  INTERNAL: Build or retrieve reflex routing state (deterministic)
-// ---------------------------------------------------------------------------
+// ============================================================================
+//  INTERNAL HELPERS — deterministic, tiny, pure
+// ============================================================================
+function computeHash(str) {
+  let h = 0;
+  for (let i = 0; i < str.length; i++) {
+    h = (h + str.charCodeAt(i) * (i + 1)) % 100000;
+  }
+  return `h${h}`;
+}
+
 function getOrCreateReflexRouteState(reflexId) {
   let state = routedReflexes.get(reflexId);
 
@@ -32,10 +44,39 @@ function getOrCreateReflexRouteState(reflexId) {
   return state;
 }
 
-// ---------------------------------------------------------------------------
-//  PUBLIC API — PulseEarnReflexRouter v10.4
-// ---------------------------------------------------------------------------
+function buildReflexDiagnostics(earnReflex, reflexId, state) {
+  const pattern = earnReflex?.pattern || "NO_PATTERN";
+  const lineageDepth = Array.isArray(earnReflex?.lineage)
+    ? earnReflex.lineage.length
+    : 0;
+
+  const sourcePulseId = earnReflex?.meta?.sourcePulseId || "NO_SOURCE_PULSE";
+  const sourceOrgan   = earnReflex?.meta?.sourceOrgan   || "NO_SOURCE_ORGAN";
+  const sourceReason  = earnReflex?.meta?.sourceReason  || "NO_SOURCE_REASON";
+
+  return {
+    reflexId,
+    pattern,
+    lineageDepth,
+    sourcePulseId,
+    sourceOrgan,
+    sourceReason,
+    cycleIndex: reflexRouteCycle,
+
+    patternHash: computeHash(pattern),
+    lineageHash: computeHash(String(lineageDepth)),
+    sourceHash: computeHash(sourcePulseId + "::" + sourceOrgan),
+    reflexHash: computeHash(reflexId),
+    cycleHash: computeHash(String(reflexRouteCycle))
+  };
+}
+
+
+// ============================================================================
+//  PUBLIC API — PulseEarnReflexRouter v11-Evo
+// ============================================================================
 export const PulseEarnReflexRouter = {
+
   /**
    * route(earnReflex, EarnSystem)
    * - earnReflex: the organism built by PulseEarnReflex
@@ -60,18 +101,31 @@ export const PulseEarnReflexRouter = {
     state.count += 1;
     state.lastSeenCycle = reflexRouteCycle;
 
+    const diagnostics = buildReflexDiagnostics(earnReflex, reflexId, state);
+
+    // v11 reflexRouteSignature
+    const reflexRouteSignature = computeHash(
+      diagnostics.pattern +
+      "::" +
+      diagnostics.reflexId +
+      "::" +
+      diagnostics.cycleIndex
+    );
+
     // If EarnSystem is missing or not ready, fail-open (immune-safe)
     if (!EarnSystem || typeof EarnSystem.handle !== "function") {
       return {
         ok: false,
         reason: "earn_system_unavailable",
         reflexId,
-        state
+        state,
+        diagnostics,
+        reflexRouteSignature
       };
     }
 
     // -----------------------------------------------------------------------
-    //  SAFE HANDOFF (v10.4):
+    //  SAFE HANDOFF (v11-Evo):
     //  - No routing
     //  - No sending
     //  - No returnTo
@@ -85,7 +139,9 @@ export const PulseEarnReflexRouter = {
         reflexId,
         state,
         instanceContext: earnReflex.meta.instanceContext || null,
-        cycleIndex: reflexRouteCycle
+        cycleIndex: reflexRouteCycle,
+        diagnostics,
+        reflexRouteSignature
       });
 
       return {
@@ -93,6 +149,8 @@ export const PulseEarnReflexRouter = {
         routed: true,
         reflexId,
         state,
+        diagnostics,
+        reflexRouteSignature,
         result
       };
     } catch (error) {
@@ -101,6 +159,8 @@ export const PulseEarnReflexRouter = {
         routed: false,
         reflexId,
         state,
+        diagnostics,
+        reflexRouteSignature,
         error
       };
     }

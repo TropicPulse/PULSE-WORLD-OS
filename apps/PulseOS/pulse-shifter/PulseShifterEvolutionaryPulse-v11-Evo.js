@@ -1,26 +1,11 @@
 // ============================================================================
-//  PulseV2EvolutionEngine.js — v10.4
+//  PulseV2EvolutionEngine-v11-Evo.js
 //  Pulse v2 Organism • Evolution Engine • Pattern + Lineage + Shape
+//  v11: Diagnostics + Signatures + Ancestry + Evolution Surface
 // ============================================================================
 //
-//  WHAT THIS ORGAN IS:
-//  --------------------
-//  • The Pulse v2 evolution engine organism.
-//  • Same external shape as Pulse v1 (EvoStable) and Pulse v3 (Unified).
-//  • Experimental evolution tier: stronger internal compute loop.
-//  • Pattern‑aware, lineage‑aware, mode‑aware, identity‑aware.
-//  • Provides advantageField + healthScore for Router/Mesh/Send.
-//
-//  WHAT THIS ORGAN IS NOT:
-//  ------------------------
-//  • Not a router.
-//  • Not a mesh layer.
-//  • Not a transport organ.
-//  • Not a GPU/Earn/OS organ.
-//  • Not a healer or brain.
-//
-//  SAFETY CONTRACT (v10.4):
-//  ------------------------
+//  SAFETY CONTRACT (v11-Evo):
+//  --------------------------
 //  • No imports.
 //  • No network.
 //  • No randomness.
@@ -31,14 +16,14 @@
 
 
 // ============================================================================
-// ⭐ PulseRole — identifies this as the Pulse v2 evolution engine (v10.4)
+// ⭐ PulseRole — identifies this as the Pulse v2 evolution engine (v11)
 // ============================================================================
 export const PulseRole = {
   type: "Pulse",
   subsystem: "Pulse",
   layer: "Organ",
-  version: "10.4",
-  identity: "Pulse-v2-EvolutionEngine",
+  version: "11.0",
+  identity: "Pulse-v2-EvolutionEngine-v11-Evo",
 
   evo: {
     driftProof: true,
@@ -49,25 +34,36 @@ export const PulseRole = {
     routerAwareReady: true,
     meshAwareReady: true,
 
-    // ⭐ Evolution engine ON (experimental tier)
     evolutionEngineReady: true,
 
     unifiedAdvantageField: true,
     pulseV2Ready: true,
-    futureEvolutionReady: true
+    futureEvolutionReady: true,
+
+    diagnosticsReady: true,
+    signatureReady: true,
+    evolutionSurfaceReady: true
   },
 
-  routingContract: "PulseRouter-v10.4",
-  meshContract: "PulseMesh-v10.4",
-  sendContract: "PulseSend-v10.4",
-  gpuOrganContract: "PulseGPU-v10",
-  earnCompatibility: "PulseEarn-v10"
+  routingContract: "PulseRouter-v11",
+  meshContract: "PulseMesh-v11",
+  sendContract: "PulseSend-v11",
+  gpuOrganContract: "PulseGPU-v11",
+  earnCompatibility: "PulseEarn-v11"
 };
 
 
 // ============================================================================
 //  INTERNAL HELPERS — deterministic, tiny, pure
 // ============================================================================
+
+function computeHash(str) {
+  let h = 0;
+  for (let i = 0; i < str.length; i++) {
+    h = (h + str.charCodeAt(i) * (i + 3)) % 100000; // v2-specific weight
+  }
+  return `h${h}`;
+}
 
 function buildLineage(parentLineage, pattern) {
   const base = Array.isArray(parentLineage) ? parentLineage : [];
@@ -77,13 +73,7 @@ function buildLineage(parentLineage, pattern) {
 function computeShapeSignature(pattern, lineage) {
   const lineageKey = lineage.join("::");
   const raw = `${pattern}::${lineageKey}`;
-
-  let acc = 0;
-  for (let i = 0; i < raw.length; i++) {
-    acc = (acc + raw.charCodeAt(i) * (i + 3)) % 100000; // v2-specific weight
-  }
-
-  return `shape-${acc}`;
+  return `shape-${computeHash(raw)}`;
 }
 
 function computeEvolutionStage(pattern, lineage) {
@@ -109,11 +99,44 @@ function evolvePattern(pattern, context = {}) {
   return parts.join("|");
 }
 
+function buildPatternAncestry(pattern) {
+  if (!pattern || typeof pattern !== "string") return [];
+  return pattern.split("/").filter(Boolean);
+}
+
+function buildLineageSignature(lineage) {
+  if (!Array.isArray(lineage) || lineage.length === 0) return "NO_LINEAGE";
+  return lineage.join(">");
+}
+
+function buildPageAncestrySignature({ pattern, lineage, pageId }) {
+  const shape = {
+    pattern,
+    patternAncestry: buildPatternAncestry(pattern),
+    lineageSignature: buildLineageSignature(lineage),
+    pageId: pageId || "NO_PAGE"
+  };
+
+  return computeHash(JSON.stringify(shape));
+}
+
+function buildDiagnostics(pattern, lineage, healthScore, tier) {
+  return {
+    patternLength: pattern.length,
+    lineageDepth: lineage.length,
+    healthBucket:
+      healthScore >= 0.9 ? "elite" :
+      healthScore >= 0.75 ? "high" :
+      healthScore >= 0.5 ? "medium" : "low",
+    tier,
+    lineageDensity: lineage.length === 0 ? 0 : pattern.length / lineage.length
+  };
+}
+
 
 // ============================================================================
 //  INTERNAL: Deterministic evolution compute loop (v2 — experimental tier)
 // ============================================================================
-
 function runEvolutionComputeLoopV2({ pattern, lineage, payload, mode }) {
   const lineageDepth = Array.isArray(lineage) ? lineage.length : 0;
   const payloadSize = payload && typeof payload === "object"
@@ -131,7 +154,7 @@ function runEvolutionComputeLoopV2({ pattern, lineage, payload, mode }) {
       mode === "drain"    ? 3 :
       mode === "recovery" ? 2 :
       1,
-    experimentalTier: "v2-evolution-engine"
+    experimentalTier: "v2-evolution-engine-v11"
   };
 
   const maxPattern = 64;
@@ -156,7 +179,7 @@ function runEvolutionComputeLoopV2({ pattern, lineage, payload, mode }) {
 
 
 // ============================================================================
-//  FACTORY — Create a Pulse v2 Evolution Engine Organism (v10.4)
+//  FACTORY — Create a Pulse v2 Evolution Engine Organism (v11)
 // ============================================================================
 export function createPulseV2({
   jobId,
@@ -165,11 +188,20 @@ export function createPulseV2({
   priority = "normal",
   returnTo = null,
   parentLineage = null,
-  mode = "normal"
+  mode = "normal",
+  pageId = "NO_PAGE"
 }) {
   const lineage        = buildLineage(parentLineage, pattern);
   const shapeSignature = computeShapeSignature(pattern, lineage);
   const evolutionStage = computeEvolutionStage(pattern, lineage);
+
+  const patternAncestry       = buildPatternAncestry(pattern);
+  const lineageSignature      = buildLineageSignature(lineage);
+  const pageAncestrySignature = buildPageAncestrySignature({
+    pattern,
+    lineage,
+    pageId
+  });
 
   const { advantageField, healthScore } = runEvolutionComputeLoopV2({
     pattern,
@@ -177,6 +209,15 @@ export function createPulseV2({
     payload,
     mode
   });
+
+  const tier =
+    healthScore >= 0.95 ? "microDegrade" :
+    healthScore >= 0.85 ? "softDegrade" :
+    healthScore >= 0.50 ? "midDegrade" :
+    healthScore >= 0.15 ? "hardDegrade" :
+    "criticalDegrade";
+
+  const diagnostics = buildDiagnostics(pattern, lineage, healthScore, tier);
 
   return {
     PulseRole,
@@ -187,14 +228,29 @@ export function createPulseV2({
     returnTo,
     lineage,
     mode,
+    pageId,
 
-    pulseType: "Pulse-v2-EvolutionEngine",
+    pulseType: "Pulse-v2-EvolutionEngine-v11",
     advantageField,
     healthScore,
+    tier,
 
     meta: {
       shapeSignature,
-      evolutionStage
+      evolutionStage,
+
+      patternAncestry,
+      lineageSignature,
+      pageAncestrySignature,
+
+      diagnostics,
+
+      evolutionSignature: computeHash(pattern + "::" + lineageSignature),
+      patternSignature: computeHash(pattern),
+      lineageSurface: computeHash(String(lineage.length)),
+      advantageSignature: computeHash(JSON.stringify(advantageField)),
+      healthSignature: computeHash(String(healthScore)),
+      tierSignature: computeHash(tier)
     }
   };
 }
@@ -209,12 +265,30 @@ export function evolvePulseV2(pulse, context = {}) {
   const shapeSignature = computeShapeSignature(nextPattern, nextLineage);
   const evolutionStage = computeEvolutionStage(nextPattern, nextLineage);
 
+  const patternAncestry       = buildPatternAncestry(nextPattern);
+  const lineageSignature      = buildLineageSignature(nextLineage);
+  const pageId                = pulse.pageId || "NO_PAGE";
+  const pageAncestrySignature = buildPageAncestrySignature({
+    pattern: nextPattern,
+    lineage: nextLineage,
+    pageId
+  });
+
   const { advantageField, healthScore } = runEvolutionComputeLoopV2({
     pattern: nextPattern,
     lineage: nextLineage,
     payload: pulse.payload,
     mode: pulse.mode || "normal"
   });
+
+  const tier =
+    healthScore >= 0.95 ? "microDegrade" :
+    healthScore >= 0.85 ? "softDegrade" :
+    healthScore >= 0.50 ? "midDegrade" :
+    healthScore >= 0.15 ? "hardDegrade" :
+    "criticalDegrade";
+
+  const diagnostics = buildDiagnostics(nextPattern, nextLineage, healthScore, tier);
 
   return {
     PulseRole,
@@ -225,14 +299,29 @@ export function evolvePulseV2(pulse, context = {}) {
     returnTo: pulse.returnTo,
     lineage: nextLineage,
     mode: pulse.mode || "normal",
+    pageId,
 
-    pulseType: "Pulse-v2-EvolutionEngine",
+    pulseType: "Pulse-v2-EvolutionEngine-v11",
     advantageField,
     healthScore,
+    tier,
 
     meta: {
       shapeSignature,
-      evolutionStage
+      evolutionStage,
+
+      patternAncestry,
+      lineageSignature,
+      pageAncestrySignature,
+
+      diagnostics,
+
+      evolutionSignature: computeHash(nextPattern + "::" + lineageSignature),
+      patternSignature: computeHash(nextPattern),
+      lineageSurface: computeHash(String(nextLineage.length)),
+      advantageSignature: computeHash(JSON.stringify(advantageField)),
+      healthSignature: computeHash(String(healthScore)),
+      tierSignature: computeHash(tier)
     }
   };
 }

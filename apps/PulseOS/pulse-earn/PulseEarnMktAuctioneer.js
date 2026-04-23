@@ -1,22 +1,17 @@
 // ============================================================================
-// FILE: tropic-pulse-functions/apps/pulse-earn/PulseEarnMktAuctioneer.js
-// LAYER: THE AUCTIONEER (v10.4)
+// FILE: tropic-pulse-functions/apps/pulse-earn/PulseEarnMktAuctioneer-v11-Evo.js
+// LAYER: THE AUCTIONEER (v11-Evo)
 // (Bid‑Floor Interpreter + Volatility Handler + Market Chaos Normalizer)
 // ============================================================================
 //
-// ROLE (v10.4):
+// ROLE (v11-Evo):
 //   THE AUCTIONEER — deterministic Vast.ai receptor phenotype.
 //   • Provides a stable, drift‑proof representation of Vast.ai offers.
 //   • Normalizes inconsistent metadata into Pulse‑Earn job schema.
 //   • Supplies deterministic ping(), fetchJobs(), submitResult().
-//   • Maintains healing metadata for Earn healers.
+//   • Emits v11‑Evo signatures for all receptor actions.
 //
-// PURPOSE (v10.4):
-//   • Replace all network behavior with deterministic receptor DNA.
-//   • Guarantee stable job normalization.
-//   • Provide predictable, safe, reproducible marketplace behavior.
-//
-// CONTRACT (v10.4):
+// CONTRACT (v11-Evo):
 //   • PURE RECEPTOR — no network, no async, no timestamps.
 //   • READ‑ONLY except for healing metadata.
 //   • NO eval(), NO Function(), NO dynamic imports.
@@ -25,20 +20,23 @@
 // ============================================================================
 
 
-// ---------------------------------------------------------------------------
-// Healing Metadata — deterministic receptor log
-// ---------------------------------------------------------------------------
+// ============================================================================
+// Healing Metadata — deterministic receptor log (v11-Evo)
+// ============================================================================
 const healingState = {
   lastPingMs: null,
   lastPingError: null,
+
   lastFetchCount: 0,
   lastFetchError: null,
+
   lastSubmitJobId: null,
   lastSubmitError: null,
+
   lastNormalizedJobId: null,
   lastNormalizationError: null,
 
-  lastPayloadVersion: "10.4",
+  lastPayloadVersion: "11-Evo",
   lastJobType: null,
   lastGpuScore: null,
   lastResourceShape: null,
@@ -49,20 +47,71 @@ const healingState = {
 
   cycleCount: 0,
 
-  loopTheory: {
-    routingCompletion: true,
-    allowLoopfieldPropulsion: true,
-    pulseComputeContinuity: true,
-    errorRouteAround: true
-  }
+  lastPingSignature: null,
+  lastFetchSignature: null,
+  lastNormalizationSignature: null,
+  lastSubmitSignature: null,
+  lastAuctioneerCycleSignature: null
 };
 
 
-// ---------------------------------------------------------------------------
-// DETERMINISTIC VAST.AI DNA — replaces all network calls
-// ---------------------------------------------------------------------------
+// ============================================================================
+// Deterministic Hash Helper — v11-Evo
+// ============================================================================
+function computeHash(str) {
+  let h = 0;
+  const s = String(str || "");
+  for (let i = 0; i < s.length; i++) {
+    h = (h + s.charCodeAt(i) * (i + 1)) % 100000;
+  }
+  return `h${h}`;
+}
+
+
+// ============================================================================
+// Signature Builders — v11-Evo
+// ============================================================================
+function buildPingSignature(latency) {
+  return computeHash(`PING::${latency}`);
+}
+
+function buildFetchSignature(count) {
+  return computeHash(`FETCH::${count}`);
+}
+
+function buildNormalizationSignature(jobId) {
+  return computeHash(`NORM::${jobId || "NONE"}`);
+}
+
+function buildSubmitSignature(jobId) {
+  return computeHash(`SUBMIT::${jobId || "NONE"}`);
+}
+
+function buildAuctioneerCycleSignature(cycle) {
+  return computeHash(`AUCTIONEER_CYCLE::${cycle}`);
+}
+
+
+// ============================================================================
+// SAFE GET — deterministic path reader
+// ============================================================================
+function safeGet(obj, path, fallback = null) {
+  try {
+    return path
+      .split(".")
+      .reduce((o, k) => (o && o[k] !== undefined ? o[k] : null), obj) ?? fallback;
+  } catch {
+    return fallback;
+  }
+}
+
+
+// ============================================================================
+// DETERMINISTIC VAST.AI DNA — v11-Evo
+// ============================================================================
 const VAST_RECEPTOR_DNA = {
-  pingLatency: 42, // deterministic
+  pingLatency: 42,
+
   offers: [
     {
       id: "vast-001",
@@ -80,27 +129,23 @@ const VAST_RECEPTOR_DNA = {
       gpu_ram: 16,
       net_up: 100
     }
-  ]
+  ],
+
+  version: "11-Evo",
+  lineage: "Auctioneer-Vast-v11-Evo",
+  phenotype: "MarketplaceAuctioneer"
 };
 
 
-// ---------------------------------------------------------------------------
-// SAFE GET — deterministic path reader
-// ---------------------------------------------------------------------------
-function safeGet(obj, path, fallback = null) {
-  try {
-    return path
-      .split(".")
-      .reduce((o, k) => (o && o[k] !== undefined ? o[k] : null), obj) ?? fallback;
-  } catch {
-    return fallback;
-  }
-}
+// ============================================================================
+// Deterministic Cycle Counter
+// ============================================================================
+let auctioneerCycle = 0;
 
 
-// ---------------------------------------------------------------------------
+// ============================================================================
 // VOLATILITY — deterministic (no real variance)
-// ---------------------------------------------------------------------------
+// ============================================================================
 function updateVolatility(jobs) {
   const count = jobs.length;
 
@@ -108,7 +153,6 @@ function updateVolatility(jobs) {
     count - (healingState.lastFetchCount || 0)
   );
 
-  // deterministic price variance
   const payouts = jobs.map(j => j.payout);
   if (payouts.length > 1) {
     const avg = payouts.reduce((a, b) => a + b, 0) / payouts.length;
@@ -120,26 +164,42 @@ function updateVolatility(jobs) {
 
 
 // ============================================================================
-// AUCTIONEER — Vast.ai Marketplace Adapter (v10.4 deterministic)
+// AUCTIONEER — Vast.ai Marketplace Adapter (v11-Evo)
 // ============================================================================
 export const PulseEarnMktAuctioneer = {
   id: "vast",
   name: "Vast.ai",
+  version: "11-Evo",
+  lineage: "Auctioneer-Vast-v11-Evo",
 
   // -------------------------------------------------------------------------
   // PING — deterministic latency
   // -------------------------------------------------------------------------
   ping() {
-    healingState.lastPingMs = VAST_RECEPTOR_DNA.pingLatency;
-    healingState.lastPingError = null;
+    auctioneerCycle++;
     healingState.cycleCount++;
-    return VAST_RECEPTOR_DNA.pingLatency;
+
+    const latency = VAST_RECEPTOR_DNA.pingLatency;
+
+    healingState.lastPingMs = latency;
+    healingState.lastPingError = null;
+    healingState.lastPingSignature = buildPingSignature(latency);
+    healingState.lastAuctioneerCycleSignature =
+      buildAuctioneerCycleSignature(auctioneerCycle);
+
+    return {
+      latency,
+      signature: healingState.lastPingSignature
+    };
   },
 
   // -------------------------------------------------------------------------
   // FETCH JOBS — deterministic offers
   // -------------------------------------------------------------------------
   fetchJobs() {
+    auctioneerCycle++;
+    healingState.cycleCount++;
+
     try {
       const offers = VAST_RECEPTOR_DNA.offers || [];
 
@@ -151,29 +211,42 @@ export const PulseEarnMktAuctioneer = {
 
       healingState.lastFetchError = null;
       healingState.lastFetchCount = jobs.length;
-      healingState.cycleCount++;
+      healingState.lastFetchSignature = buildFetchSignature(jobs.length);
+      healingState.lastAuctioneerCycleSignature =
+        buildAuctioneerCycleSignature(auctioneerCycle);
 
       return jobs;
+
     } catch (err) {
       healingState.lastFetchError = err?.message || String(err);
       healingState.lastFetchCount = 0;
+      healingState.lastFetchSignature = buildFetchSignature(0);
       return [];
     }
   },
 
   // -------------------------------------------------------------------------
-  // SUBMIT RESULT — Vast.ai does NOT accept compute results (deterministic)
+  // SUBMIT RESULT — Vast.ai does NOT accept compute results
   // -------------------------------------------------------------------------
   submitResult(job, result) {
-    healingState.lastSubmitJobId = job?.id ?? null;
-    healingState.lastSubmitError = null;
+    auctioneerCycle++;
     healingState.cycleCount++;
+
+    const jobId = job?.id ?? null;
+
+    healingState.lastSubmitJobId = jobId;
+    healingState.lastSubmitError = null;
+    healingState.lastSubmitSignature = buildSubmitSignature(jobId);
+    healingState.lastAuctioneerCycleSignature =
+      buildAuctioneerCycleSignature(auctioneerCycle);
 
     return {
       ok: true,
       marketplace: "vast",
-      jobId: job?.id ?? null,
-      note: "Vast.ai does not accept compute results. Pulse‑Earn internal only."
+      jobId,
+      result,
+      signature: healingState.lastSubmitSignature,
+      note: "Vast.ai does not accept compute results (v11-Evo deterministic)."
     };
   },
 
@@ -184,10 +257,15 @@ export const PulseEarnMktAuctioneer = {
     try {
       if (!raw || typeof raw !== "object") {
         healingState.lastNormalizationError = "invalid_raw_job";
+        healingState.lastNormalizationSignature =
+          buildNormalizationSignature(null);
         return null;
       }
+
       if (!raw.id) {
         healingState.lastNormalizationError = "missing_id";
+        healingState.lastNormalizationSignature =
+          buildNormalizationSignature(null);
         return null;
       }
 
@@ -196,6 +274,8 @@ export const PulseEarnMktAuctioneer = {
       const payout = Number(raw.dph_total ?? raw.price_per_hour ?? 0);
       if (!Number.isFinite(payout) || payout <= 0) {
         healingState.lastNormalizationError = "non_positive_payout";
+        healingState.lastNormalizationSignature =
+          buildNormalizationSignature(null);
         return null;
       }
 
@@ -230,18 +310,24 @@ export const PulseEarnMktAuctioneer = {
 
       healingState.lastNormalizedJobId = normalized.id;
       healingState.lastNormalizationError = null;
+      healingState.lastNormalizationSignature =
+        buildNormalizationSignature(normalized.id);
+
       return normalized;
+
     } catch (err) {
       healingState.lastNormalizationError = err.message;
+      healingState.lastNormalizationSignature =
+        buildNormalizationSignature(null);
       return null;
     }
   }
 };
 
 
-// ---------------------------------------------------------------------------
-// HEALING STATE EXPORT
-// ---------------------------------------------------------------------------
+// ============================================================================
+// HEALING STATE EXPORT — v11-Evo
+// ============================================================================
 export function getPulseEarnMktAuctioneerHealingState() {
   return { ...healingState };
 }

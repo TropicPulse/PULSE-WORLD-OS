@@ -1,17 +1,17 @@
 // ============================================================================
 // FILE: tropic-pulse-functions/apps/pulse-earn/PulseEarnMktCourier.js
-// LAYER: THE COURIER (v10.4)
+// LAYER: THE COURIER (v11)
 // (Fast‑Turnaround Compute Runner + Job Delivery Agent — Deterministic)
 // ============================================================================
 //
-// ROLE (v10.4):
+// ROLE (v11):
 //   THE COURIER — Pulse‑Earn’s deterministic Spheron marketplace receptor.
 //   • Represents Spheron compute jobs as stable receptor DNA.
 //   • Normalizes raw Spheron-like tasks into Pulse‑Earn job schema.
 //   • Provides deterministic ping(), fetchJobs(), submitResult().
-//   • Maintains healing metadata for Earn healers.
+//   • Maintains healing metadata + v11 signatures for Earn healers.
 //
-// CONTRACT (v10.4):
+// CONTRACT (v11):
 //   • PURE RECEPTOR — no network, no async, no timestamps.
 //   • READ‑ONLY except for healing metadata.
 //   • Deterministic normalization only.
@@ -19,7 +19,40 @@
 
 
 // ---------------------------------------------------------------------------
-// Healing Metadata — Courier Interaction Log (deterministic)
+// Deterministic Hash Helper — v11
+// ---------------------------------------------------------------------------
+function computeHash(str) {
+  let h = 0;
+  const s = String(str || "");
+  for (let i = 0; i < s.length; i++) {
+    h = (h + s.charCodeAt(i) * (i + 1)) % 100000;
+  }
+  return `h${h}`;
+}
+
+function buildPingSignature(latency) {
+  return computeHash(`PING::SPHERON::${latency}`);
+}
+
+function buildFetchSignature(count) {
+  return computeHash(`FETCH::SPHERON::${count}`);
+}
+
+function buildNormalizationSignature(jobId) {
+  return computeHash(`NORM::SPHERON::${jobId || "NONE"}`);
+}
+
+function buildSubmitSignature(jobId) {
+  return computeHash(`SUBMIT::SPHERON::${jobId || "NONE"}`);
+}
+
+function buildCourierCycleSignature(cycle) {
+  return computeHash(`COURIER_CYCLE::${cycle}`);
+}
+
+
+// ---------------------------------------------------------------------------
+// Healing Metadata — Courier Interaction Log (deterministic, v11)
 // ---------------------------------------------------------------------------
 const healingState = {
   lastPingMs: null,
@@ -31,7 +64,7 @@ const healingState = {
   lastNormalizedJobId: null,
   lastNormalizationError: null,
 
-  lastPayloadVersion: null,
+  lastPayloadVersion: "11-spheron-dna",
   lastJobType: null,
   lastResourceShape: null,
   lastGpuFlag: null,
@@ -39,7 +72,14 @@ const healingState = {
   payoutVolatility: 0,
 
   cycleCount: 0,
-  lastCycleIndex: null
+  lastCycleIndex: null,
+
+  // v11 signatures
+  lastPingSignature: null,
+  lastFetchSignature: null,
+  lastNormalizationSignature: null,
+  lastSubmitSignature: null,
+  lastCourierCycleSignature: null
 };
 
 // Deterministic cycle counter
@@ -84,16 +124,21 @@ const SPHERON_RECEPTOR_DNA = {
       gpu: true,
       type: "compute"
     }
-  ]
+  ],
+  version: "11",
+  lineage: "Courier-Spheron-v11",
+  phenotype: "MarketplaceReceptor"
 };
 
 
 // ---------------------------------------------------------------------------
-// COURIER CLIENT — Deterministic Spheron Interface
+// COURIER CLIENT — Deterministic Spheron Interface (v11)
 // ---------------------------------------------------------------------------
 export const PulseEarnMktCourier = {
   id: "spheron",
   name: "Spheron Compute",
+  version: "11",
+  lineage: "Courier-Spheron-v11",
 
   // -------------------------------------------------------------------------
   // Ping — Deterministic courier route latency
@@ -103,10 +148,18 @@ export const PulseEarnMktCourier = {
     healingState.cycleCount++;
     healingState.lastCycleIndex = courierCycle;
 
-    healingState.lastPingMs = SPHERON_RECEPTOR_DNA.pingLatency;
-    healingState.lastPingError = null;
+    const latency = SPHERON_RECEPTOR_DNA.pingLatency;
 
-    return SPHERON_RECEPTOR_DNA.pingLatency;
+    healingState.lastPingMs = latency;
+    healingState.lastPingError = null;
+    healingState.lastPingSignature = buildPingSignature(latency);
+    healingState.lastCourierCycleSignature = buildCourierCycleSignature(courierCycle);
+
+    // v11: structured ping result
+    return {
+      latency,
+      signature: healingState.lastPingSignature
+    };
   },
 
   // -------------------------------------------------------------------------
@@ -119,11 +172,12 @@ export const PulseEarnMktCourier = {
 
     try {
       const data = { jobs: SPHERON_RECEPTOR_DNA.jobs };
-      healingState.lastPayloadVersion = "10.4-spheron-dna";
+      healingState.lastPayloadVersion = "11-spheron-dna";
 
       if (!data || !Array.isArray(data.jobs)) {
         healingState.lastFetchError = "invalid_jobs_payload";
         healingState.lastFetchCount = 0;
+        healingState.lastFetchSignature = buildFetchSignature(0);
         return [];
       }
 
@@ -149,12 +203,15 @@ export const PulseEarnMktCourier = {
 
       healingState.lastFetchError = null;
       healingState.lastFetchCount = jobs.length;
+      healingState.lastFetchSignature = buildFetchSignature(jobs.length);
+      healingState.lastCourierCycleSignature = buildCourierCycleSignature(courierCycle);
 
       return jobs;
 
     } catch (err) {
       healingState.lastFetchError = err.message;
       healingState.lastFetchCount = 0;
+      healingState.lastFetchSignature = buildFetchSignature(0);
       return [];
     }
   },
@@ -167,15 +224,20 @@ export const PulseEarnMktCourier = {
     healingState.cycleCount++;
     healingState.lastCycleIndex = courierCycle;
 
-    healingState.lastSubmitJobId = job?.id ?? null;
+    const jobId = job?.id ?? null;
+
+    healingState.lastSubmitJobId = jobId;
     healingState.lastSubmitError = null;
+    healingState.lastSubmitSignature = buildSubmitSignature(jobId);
+    healingState.lastCourierCycleSignature = buildCourierCycleSignature(courierCycle);
 
     return {
       ok: true,
       marketplace: "spheron",
-      jobId: job?.id ?? null,
+      jobId,
       cycleIndex: courierCycle,
-      note: "Spheron submission simulated deterministically in v10.4.",
+      signature: healingState.lastSubmitSignature,
+      note: "Spheron submission simulated deterministically in v11.",
       result
     };
   },
@@ -187,10 +249,12 @@ export const PulseEarnMktCourier = {
     try {
       if (!raw || typeof raw !== "object") {
         healingState.lastNormalizationError = "invalid_raw_job";
+        healingState.lastNormalizationSignature = buildNormalizationSignature(null);
         return null;
       }
       if (!raw.id) {
         healingState.lastNormalizationError = "missing_id";
+        healingState.lastNormalizationSignature = buildNormalizationSignature(null);
         return null;
       }
 
@@ -199,6 +263,7 @@ export const PulseEarnMktCourier = {
       const payout = Number(raw.payout ?? 0);
       if (!Number.isFinite(payout) || payout <= 0) {
         healingState.lastNormalizationError = "non_positive_payout";
+        healingState.lastNormalizationSignature = buildNormalizationSignature(null);
         return null;
       }
 
@@ -214,6 +279,7 @@ export const PulseEarnMktCourier = {
 
       if (!Number.isFinite(estimatedSeconds) || estimatedSeconds <= 0) {
         healingState.lastNormalizationError = "non_positive_duration";
+        healingState.lastNormalizationSignature = buildNormalizationSignature(null);
         return null;
       }
 
@@ -235,11 +301,14 @@ export const PulseEarnMktCourier = {
 
       healingState.lastNormalizedJobId = normalized.id;
       healingState.lastNormalizationError = null;
+      healingState.lastNormalizationSignature =
+        buildNormalizationSignature(normalized.id);
 
       return normalized;
 
     } catch (err) {
       healingState.lastNormalizationError = err.message;
+      healingState.lastNormalizationSignature = buildNormalizationSignature(null);
       return null;
     }
   }

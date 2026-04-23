@@ -1,11 +1,11 @@
 // ============================================================================
 // FILE: tropic-pulse-functions/apps/pulse-earn/PulseEarnMktConsulate.js
-// LAYER: THE CONSULATE
+// LAYER: THE CONSULATE (v11)
 // (Cross‑Marketplace Intelligence + Job Prioritizer + Result Reuse Organ)
-// PULSE‑EARN v10.4 — DETERMINISTIC INTELLIGENCE LAYER
+// PULSE‑EARN v11 — DETERMINISTIC INTELLIGENCE LAYER
 // ============================================================================
 //
-// ROLE (v10.4):
+// ROLE (v11):
 //   THE CONSULATE — Intelligence layer over all marketplace ambassadors.
 //   • Ingests jobs from all registered marketplaces (deterministic adapters).
 //   • Eliminates structural duplicates via fingerprinting.
@@ -13,19 +13,59 @@
 //   • Computes money‑per‑second and composite priority scores.
 //   • Exposes a prioritized job list for Earn Engine.
 //   • Caches completed results for future reuse (cycle‑indexed).
+//   • Emits deterministic intelligence signatures for each cycle.
 //
-// CONTRACT (v10.4):
+// CONTRACT (v11):
 //   • PURE INTELLIGENCE LAYER — no network, no async, no timestamps.
 //   • READ‑WRITE only to its own in‑memory consulateState.
 //   • NO eval(), NO Function(), NO dynamic imports.
 //   • NO executing user code.
-//   • Deterministic, explainable heuristics only.
+//   • Deterministic, explainable heuristics + signatures only.
 // ============================================================================
 
 import { RegisteredMarketplaces } from "./PulseEarnMktEmbassyLedger.js";
 
 // ---------------------------------------------------------------------------
-// In-Memory Intelligence State — Consulate Genome
+// Deterministic Hash Helper — v11
+// ---------------------------------------------------------------------------
+function computeHash(str) {
+  let h = 0;
+  const s = String(str || "");
+  for (let i = 0; i < s.length; i++) {
+    h = (h + s.charCodeAt(i) * (i + 1)) % 100000;
+  }
+  return `h${h}`;
+}
+
+// ---------------------------------------------------------------------------
+// Signature Builders — v11
+// ---------------------------------------------------------------------------
+function buildFingerprintSignature(fp) {
+  return computeHash(`FP::${fp}`);
+}
+
+function buildFactorSignature(factors) {
+  return computeHash(`FACTORS::${factors.sort().join("|")}`);
+}
+
+function buildPrioritySignature(jobId, score) {
+  return computeHash(`PRIORITY::${jobId || "NONE"}::${score}`);
+}
+
+function buildCycleSignature(cycleIndex) {
+  return computeHash(`CYCLE::${cycleIndex}`);
+}
+
+function buildMarketplaceStatsSignature(statsObj) {
+  return computeHash(`MKT_STATS::${JSON.stringify(statsObj)}`);
+}
+
+function buildResultCacheSignature(size) {
+  return computeHash(`RESULT_CACHE::${size}`);
+}
+
+// ---------------------------------------------------------------------------
+// In-Memory Intelligence State — Consulate Genome (v11)
 // ---------------------------------------------------------------------------
 const consulateState = {
   // Job fingerprint → cached result (if any)
@@ -53,6 +93,14 @@ const consulateState = {
 
   // Deterministic cycle index (replaces timestamps)
   cycleIndex: 0,
+
+  // v11 intelligence signatures
+  lastCycleSignature: null,
+  lastFingerprintSignature: null,
+  lastFactorSignature: null,
+  lastPrioritySignature: null,
+  lastMarketplaceStatsSignature: null,
+  lastResultCacheSignature: null,
 };
 
 // ---------------------------------------------------------------------------
@@ -79,7 +127,7 @@ function fingerprintJob(job) {
   if (!job || typeof job !== "object") return "invalid_job";
 
   const coreShape = {
-    marketplaceId: job.marketplaceId || null,
+    marketplaceId: job.marketplaceId || job._sourceMarketplaceId || null,
     cpuRequired: job.cpuRequired ?? null,
     memoryRequired: job.memoryRequired ?? null,
     estimatedSeconds: job.estimatedSeconds ?? null,
@@ -87,7 +135,9 @@ function fingerprintJob(job) {
     bandwidthNeededMbps: job.bandwidthNeededMbps ?? null,
   };
 
-  return stableStringify(coreShape);
+  const fp = stableStringify(coreShape);
+  consulateState.lastFingerprintSignature = buildFingerprintSignature(fp);
+  return fp;
 }
 
 // ---------------------------------------------------------------------------
@@ -122,11 +172,19 @@ function extractFactors(job) {
       ? `bw:${Math.round(Number(job.bandwidthNeededMbps) || 0)}`
       : null;
 
-  const mktBand = job.marketplaceId ? `mkt:${job.marketplaceId}` : null;
+  const mktBand = job.marketplaceId
+    ? `mkt:${job.marketplaceId}`
+    : job._sourceMarketplaceId
+    ? `mkt:${job._sourceMarketplaceId}`
+    : null;
 
   [cpuBand, memBand, timeBand, gpuBand, bwBand, mktBand].forEach((f) => {
     if (f) factors.push(f);
   });
+
+  if (factors.length) {
+    consulateState.lastFactorSignature = buildFactorSignature(factors);
+  }
 
   return factors;
 }
@@ -196,7 +254,7 @@ function computeResourceModifiers(job) {
 }
 
 // ---------------------------------------------------------------------------
-// Composite Priority Score
+// – Composite Priority Score
 // ---------------------------------------------------------------------------
 function computePriorityScore(job) {
   const slope = computeMoneySlope(job);
@@ -214,6 +272,13 @@ function computePriorityScore(job) {
     Math.pow(profile.shortJobBias, durationFactor - 1) *
     Math.pow(profile.bwBias, bwFactor - 1);
 
+  if (job.id) {
+    consulateState.lastPrioritySignature = buildPrioritySignature(
+      job.id,
+      score
+    );
+  }
+
   return score;
 }
 
@@ -229,6 +294,8 @@ function updateMarketplaceStats(jobs) {
     if (!grouped.has(id)) grouped.set(id, []);
     grouped.get(id).push(job);
   }
+
+  const statsSnapshot = {};
 
   for (const [id, list] of grouped.entries()) {
     const slopes = list.map(computeMoneySlope).filter((s) => s > 0);
@@ -248,12 +315,18 @@ function updateMarketplaceStats(jobs) {
         ? (prev.avgSlope * prev.jobsSeen + avgSlope * list.length) / jobsSeen
         : avgSlope;
 
-    map.set(id, {
+    const entry = {
       jobsSeen,
       avgSlope: blendedAvg,
       lastCycleJobs: list.length,
-    });
+    };
+
+    map.set(id, entry);
+    statsSnapshot[id] = { ...entry };
   }
+
+  consulateState.lastMarketplaceStatsSignature =
+    buildMarketplaceStatsSignature(statsSnapshot);
 }
 
 // ---------------------------------------------------------------------------
@@ -274,7 +347,7 @@ function fetchJobsFromAllMarketplaces(deviceId) {
           }))
         );
       }
-    } catch (err) {
+    } catch (_err) {
       // deterministic ignore; no logging side‑effects here
     }
   }
@@ -346,11 +419,21 @@ function processJobsIntelligently(jobs) {
 // Core: Prioritize Jobs by Composite Score
 // ---------------------------------------------------------------------------
 function sortJobsByPriority(jobs) {
-  return [...jobs].sort((a, b) => {
-    const sa = computePriorityScore(a);
-    const sb = computePriorityScore(b);
-    return sb - sa; // highest score first
+  const scored = jobs.map((job) => {
+    const score = computePriorityScore(job);
+    return { job, score };
   });
+
+  scored.sort((a, b) => b.score - a.score);
+
+  if (scored.length > 0 && scored[0].job.id) {
+    consulateState.lastPrioritySignature = buildPrioritySignature(
+      scored[0].job.id,
+      scored[0].score
+    );
+  }
+
+  return scored.map((s) => s.job);
 }
 
 // ---------------------------------------------------------------------------
@@ -362,6 +445,14 @@ function getRoutedJobs(deviceId) {
   const rawJobs = fetchJobsFromAllMarketplaces(deviceId);
   const uniqueJobs = processJobsIntelligently(rawJobs);
   const sorted = sortJobsByPriority(uniqueJobs);
+
+  consulateState.lastCycleSignature = buildCycleSignature(
+    consulateState.cycleIndex
+  );
+  consulateState.lastResultCacheSignature = buildResultCacheSignature(
+    consulateState.resultCache.size
+  );
+
   return sorted;
 }
 
@@ -378,6 +469,10 @@ function recordJobResult(job, result) {
     cycleIndex: consulateState.cycleIndex,
     marketplaceId: job.marketplaceId || job._sourceMarketplaceId || null,
   });
+
+  consulateState.lastResultCacheSignature = buildResultCacheSignature(
+    consulateState.resultCache.size
+  );
 }
 
 // ---------------------------------------------------------------------------
@@ -396,11 +491,19 @@ function getPulseEarnMktConsulateHealingState() {
     factorKeyCount: consulateState.factorIndex.size,
     marketplaceStats,
     cycleIndex: consulateState.cycleIndex,
+
+    // v11 signatures
+    lastCycleSignature: consulateState.lastCycleSignature,
+    lastFingerprintSignature: consulateState.lastFingerprintSignature,
+    lastFactorSignature: consulateState.lastFactorSignature,
+    lastPrioritySignature: consulateState.lastPrioritySignature,
+    lastMarketplaceStatsSignature: consulateState.lastMarketplaceStatsSignature,
+    lastResultCacheSignature: consulateState.lastResultCacheSignature,
   };
 }
 
 // ============================================================================
-// Exported API — PULSE EARN MARKETPLACE CONSULATE (v10.4)
+// Exported API — PULSE EARN MARKETPLACE CONSULATE (v11)
 // ============================================================================
 export const PulseEarnMktConsulate = {
   // Core routing

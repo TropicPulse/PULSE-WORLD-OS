@@ -1,21 +1,21 @@
 // ============================================================================
 // FILE: tropic-pulse-functions/apps/pulse-earn/PulseEarnMktForager.js
-// LAYER: THE FORAGER (General GPU Compute Harvester) — v10.4
+// LAYER: THE FORAGER (General GPU Compute Harvester) — v11
 // ============================================================================
 //
-// ROLE (v10.4):
+// ROLE (v11):
 //   THE FORAGER — Pulse‑Earn’s deterministic Salad marketplace receptor.
 //   • Represents Salad GPU compute workloads as stable receptor DNA.
 //   • Normalizes raw Salad-like tasks into Pulse‑Earn job schema.
 //   • Provides deterministic ping(), fetchJobs(), submitResult().
-//   • Maintains healing metadata for Earn healers.
+//   • Maintains healing metadata + v11 signatures for Earn healers.
 //
-// PURPOSE (v10.4):
+// PURPOSE (v11):
 //   • Replace all network behavior with deterministic receptor DNA.
 //   • Maintain strict protocol boundaries.
 //   • Ensure safe, predictable compute job communication.
 //
-// CONTRACT (v10.4):
+// CONTRACT (v11):
 //   • PURE RECEPTOR — no network, no async, no timestamps.
 //   • READ‑ONLY except for healing metadata.
 //   • NO eval(), NO Function(), NO dynamic imports.
@@ -25,7 +25,36 @@
 
 
 // ---------------------------------------------------------------------------
-// Healing Metadata — Forager Interaction Log
+// Deterministic Hash Helper — v11
+// ---------------------------------------------------------------------------
+function computeHash(str) {
+  let h = 0;
+  const s = String(str || "");
+  for (let i = 0; i < s.length; i++) {
+    h = (h + s.charCodeAt(i) * (i + 1)) % 100000;
+  }
+  return `h${h}`;
+}
+
+function buildPingSignature(latency) {
+  return computeHash(`PING::SALAD::${latency}`);
+}
+
+function buildFetchSignature(count) {
+  return computeHash(`FETCH::SALAD::${count}`);
+}
+
+function buildNormalizationSignature(jobId) {
+  return computeHash(`NORM::SALAD::${jobId || "NONE"}`);
+}
+
+function buildSubmitSignature(jobId) {
+  return computeHash(`SUBMIT::SALAD::${jobId || "NONE"}`);
+}
+
+
+// ---------------------------------------------------------------------------
+// Healing Metadata — Forager Interaction Log (v11)
 // ---------------------------------------------------------------------------
 const healingState = {
   lastPingMs: null,
@@ -37,13 +66,19 @@ const healingState = {
   lastNormalizedJobId: null,
   lastNormalizationError: null,
 
-  lastPayloadVersion: "10.4",
+  lastPayloadVersion: "11-salad-dna",
   lastJobType: null,
   lastGpuTier: null,
   lastResourceShape: null,
   payoutVolatility: 0,
   liquidityScore: 0,
-  cycleCount: 0
+  cycleCount: 0,
+
+  // v11 signatures
+  lastPingSignature: null,
+  lastFetchSignature: null,
+  lastNormalizationSignature: null,
+  lastSubmitSignature: null
 };
 
 
@@ -87,7 +122,10 @@ const SALAD_RECEPTOR_DNA = {
       bandwidth: 50,
       type: "ai-task"
     }
-  ]
+  ],
+  version: "11",
+  lineage: "Forager-Salad-v11",
+  phenotype: "MarketplaceReceptor"
 };
 
 
@@ -114,20 +152,24 @@ function updateVolatility(jobs) {
 
 
 // ---------------------------------------------------------------------------
-// FORAGER CLIENT — Salad Marketplace Interface (deterministic)
+// FORAGER CLIENT — Salad Marketplace Interface (deterministic, v11)
 // ---------------------------------------------------------------------------
 export const PulseEarnMktForager = {
   id: "salad",
   name: "Salad Marketplace",
+  version: "11",
+  lineage: "Forager-Salad-v11",
 
   // -------------------------------------------------------------------------
   // Ping — deterministic marketplace latency
   // -------------------------------------------------------------------------
   ping() {
-    healingState.lastPingMs = SALAD_RECEPTOR_DNA.pingLatency;
+    const latency = SALAD_RECEPTOR_DNA.pingLatency;
+    healingState.lastPingMs = latency;
     healingState.lastPingError = null;
     healingState.cycleCount++;
-    return SALAD_RECEPTOR_DNA.pingLatency;
+    healingState.lastPingSignature = buildPingSignature(latency);
+    return latency; // keep v10.4 shape for compatibility
   },
 
   // -------------------------------------------------------------------------
@@ -136,11 +178,12 @@ export const PulseEarnMktForager = {
   fetchJobs() {
     try {
       const data = { jobs: SALAD_RECEPTOR_DNA.jobs };
-      healingState.lastPayloadVersion = "10.4-salad-dna";
+      healingState.lastPayloadVersion = "11-salad-dna";
 
       if (!data || !Array.isArray(data.jobs)) {
         healingState.lastFetchError = "invalid_jobs_payload";
         healingState.lastFetchCount = 0;
+        healingState.lastFetchSignature = buildFetchSignature(0);
         return [];
       }
 
@@ -153,27 +196,31 @@ export const PulseEarnMktForager = {
       healingState.lastFetchError = null;
       healingState.lastFetchCount = jobs.length;
       healingState.cycleCount++;
+      healingState.lastFetchSignature = buildFetchSignature(jobs.length);
       return jobs;
     } catch (err) {
       healingState.lastFetchError = err.message;
       healingState.lastFetchCount = 0;
+      healingState.lastFetchSignature = buildFetchSignature(0);
       return [];
     }
   },
 
   // -------------------------------------------------------------------------
   // Submit Result — Return completed outputs (deterministic stub)
-  // -------------------------------------------------------------------------
+// -------------------------------------------------------------------------
   submitResult(job, result) {
-    healingState.lastSubmitJobId = job?.id ?? null;
+    const jobId = job?.id ?? null;
+    healingState.lastSubmitJobId = jobId;
     healingState.lastSubmitError = null;
     healingState.cycleCount++;
+    healingState.lastSubmitSignature = buildSubmitSignature(jobId);
 
     return {
       ok: true,
       marketplace: "salad",
-      jobId: job?.id ?? null,
-      note: "Salad submission simulated deterministically in v10.4.",
+      jobId,
+      note: "Salad submission simulated deterministically in v11.",
       result
     };
   },
@@ -185,10 +232,12 @@ export const PulseEarnMktForager = {
     try {
       if (!raw || typeof raw !== "object") {
         healingState.lastNormalizationError = "invalid_raw_job";
+        healingState.lastNormalizationSignature = buildNormalizationSignature(null);
         return null;
       }
       if (!raw.id) {
         healingState.lastNormalizationError = "missing_id";
+        healingState.lastNormalizationSignature = buildNormalizationSignature(null);
         return null;
       }
 
@@ -197,6 +246,7 @@ export const PulseEarnMktForager = {
       const payout = Number(raw.reward ?? raw.payout ?? 0);
       if (!Number.isFinite(payout) || payout <= 0) {
         healingState.lastNormalizationError = "non_positive_payout";
+        healingState.lastNormalizationSignature = buildNormalizationSignature(null);
         return null;
       }
 
@@ -212,6 +262,7 @@ export const PulseEarnMktForager = {
 
       if (!Number.isFinite(estimatedSeconds) || estimatedSeconds <= 0) {
         healingState.lastNormalizationError = "non_positive_duration";
+        healingState.lastNormalizationSignature = buildNormalizationSignature(null);
         return null;
       }
 
@@ -244,9 +295,13 @@ export const PulseEarnMktForager = {
 
       healingState.lastNormalizedJobId = normalized.id;
       healingState.lastNormalizationError = null;
+      healingState.lastNormalizationSignature =
+        buildNormalizationSignature(normalized.id);
+
       return normalized;
     } catch (err) {
       healingState.lastNormalizationError = err.message;
+      healingState.lastNormalizationSignature = buildNormalizationSignature(null);
       return null;
     }
   }

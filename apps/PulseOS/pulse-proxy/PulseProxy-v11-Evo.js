@@ -1,11 +1,11 @@
 // ============================================================================
-//  PulseEarn.js — Earn Organism v10.4
-//  Evolutionary Earn Organ • Pattern + Lineage + Shape • Compute‑Ready
-//  10.4: Ancestry + Loop-Theory + Tier + Advantage Field + Continuance Hint
+//  PulseProxy-v11-Evo.js — Proxy Organism v11.0
+//  Evolutionary Proxy Organ • Pattern + Lineage + Shape • Route-Assist
+//  11.0: Ancestry + Loop-Theory + Tier + Advantage Field + Continuance Hint
 // ============================================================================
 //
-//  SAFETY CONTRACT (v10.4):
-//  ------------------------
+//  SAFETY CONTRACT (v11-Evo):
+//  --------------------------
 //  • No imports.
 //  • No randomness.
 //  • No timestamps.
@@ -15,14 +15,14 @@
 
 
 // ============================================================================
-//  EarnRole — identifies this as the Earn v10.4 Organism
+//  ProxyRole — identifies this as the Proxy v11 Organism
 // ============================================================================
-export const EarnRole = {
-  type: "Earn",
-  subsystem: "Earn",
-  layer: "Organ",
-  version: "10.4",
-  identity: "Earn-v10.4",
+export const ProxyRole = {
+  type: "Proxy",
+  subsystem: "Proxy",
+  layer: "NervousSystem",
+  version: "11.0",
+  identity: "PulseProxy-v11-Evo",
 
   evo: {
     driftProof: true,
@@ -30,30 +30,30 @@ export const EarnRole = {
     lineageAware: true,
     shapeAware: true,
     evolutionEngineReady: true,
-    gpuAwareReady: true,
-    minerAwareReady: true,
-    offlineAwareReady: true,
+    routerAwareReady: true,
+    meshAwareReady: true,
+    sendAwareReady: true,
     futureEvolutionReady: true,
 
     unifiedAdvantageField: true,
-    earnV2Ready: true,
+    proxyV2Ready: true,
 
     ancestryAware: true,
     loopTheoryAware: true,
     tierAware: true,
     advantageFieldAware: true,
 
-    // NEW — explicit continuance awareness (shape-level only)
+    // explicit continuance awareness (shape-level only)
     continuanceAware: true,
     legacyBridgeCapable: true
   },
 
-  routingContract: "PulseRouter-v10.4",
-  meshContract: "PulseMesh-v10.4",
-  sendContract: "PulseSend-v10.4",
-  gpuOrganContract: "PulseGPU-v10",
-  minerContract: "PulseMiner-v10",
-  pulseCompatibility: "Pulse-v2/v3"
+  routingContract: "PulseRouter-v11-Evo-A2",
+  meshContract: "PulseMesh-v11",
+  sendContract: "PulseSend-v11",
+  gpuOrganContract: "PulseGPU-v11",
+  minerContract: "PulseMiner-v11",
+  pulseCompatibility: "Pulse-v1/v2/v3"
 };
 
 
@@ -75,7 +75,7 @@ function computeShapeSignature(pattern, lineage) {
     acc = (acc + raw.charCodeAt(i) * (i + 1)) % 100000;
   }
 
-  return `earn-shape-${acc}`;
+  return `proxy-shape-${acc}`;
 }
 
 function computeEvolutionStage(pattern, lineage) {
@@ -85,21 +85,21 @@ function computeEvolutionStage(pattern, lineage) {
   if (depth === 2) return "sprout";
   if (depth === 3) return "branch";
 
-  if (pattern.includes("gpu")) return "gpu-aware";
-  if (pattern.includes("miner")) return "miner-aware";
-  if (pattern.includes("air")) return "air-compute";
+  if (pattern.includes("router")) return "router-aware";
+  if (pattern.includes("mesh")) return "mesh-aware";
+  if (pattern.includes("send")) return "send-aware";
 
   return "mature";
 }
 
 function evolvePattern(pattern, context = {}) {
-  const { gpuHint, minerHint, airHint } = context;
+  const { routerHint, meshHint, sendHint } = context;
 
   const parts = [pattern];
 
-  if (gpuHint) parts.push(`g:${gpuHint}`);
-  if (minerHint) parts.push(`m:${minerHint}`);
-  if (airHint) parts.push(`a:${airHint}`);
+  if (routerHint) parts.push(`r:${routerHint}`);
+  if (meshHint) parts.push(`m:${meshHint}`);
+  if (sendHint) parts.push(`s:${sendHint}`);
 
   return parts.join("|");
 }
@@ -157,11 +157,44 @@ function buildAdvantageField(pattern, lineage) {
   };
 }
 
+// Proxy-specific diagnostics + mode
+
+function computeProxyMode(tier, pattern) {
+  if (tier === "criticalDegrade") return "routeAround";
+  if (tier === "hardDegrade") return "heavyAssist";
+  if (tier === "midDegrade") return "assist";
+  if (tier === "softDegrade") return "lightAssist";
+
+  if (pattern.includes("router")) return "routerAssist";
+  if (pattern.includes("mesh")) return "meshAssist";
+  if (pattern.includes("send")) return "sendAssist";
+
+  return "transparent";
+}
+
+function buildProxyDiagnostics(pattern, lineage, healthScore, tier) {
+  const lineageDepth = lineage.length;
+  const patternLength = pattern.length;
+
+  let healthBucket = "low";
+  if (healthScore >= 0.9) healthBucket = "elite";
+  else if (healthScore >= 0.75) healthBucket = "high";
+  else if (healthScore >= 0.5) healthBucket = "medium";
+
+  return {
+    lineageDepth,
+    patternLength,
+    healthBucket,
+    degradationTier: tier,
+    lineageDensity: lineageDepth === 0 ? 0 : patternLength / lineageDepth
+  };
+}
+
 
 // ============================================================================
-//  FACTORY — Create an Earn v10.4 Organism
+//  FACTORY — Create a Proxy v11 Organism
 // ============================================================================
-export function createEarn({
+export function createProxy({
   jobId,
   pattern,
   payload = {},
@@ -185,9 +218,11 @@ export function createEarn({
   const healthScore    = computeHealthScore(pattern, lineage);
   const tier           = classifyDegradationTier(healthScore);
   const advantageField = buildAdvantageField(pattern, lineage);
+  const proxyMode      = computeProxyMode(tier, pattern);
+  const diagnostics    = buildProxyDiagnostics(pattern, lineage, healthScore, tier);
 
   return {
-    EarnRole,
+    ProxyRole,
     jobId,
     pattern,
     payload,
@@ -207,13 +242,18 @@ export function createEarn({
       tier,
       advantageField,
 
+      proxyMode,
+      returnArcAssist: true,
+      preferProxyBeforeMesh: true,
+      diagnostics,
+
       loopTheory: {
         routingCompletion: true,
         allowLoopfieldPropulsion: true,
         pulseComputeContinuity: true,
         errorRouteAround: true,
 
-        // NEW — explicit continuance hint for runtime / routers
+        // explicit continuance hint for runtime / routers
         continuanceCapable: true,
         preferContinuanceOnOrganFailure: true
       }
@@ -223,17 +263,17 @@ export function createEarn({
 
 
 // ============================================================================
-//  EVOLUTION ENGINE — evolve an existing Earn deterministically
+//  EVOLUTION ENGINE — evolve an existing Proxy deterministically
 // ============================================================================
-export function evolveEarn(earn, context = {}) {
-  const nextPattern = evolvePattern(earn.pattern, context);
-  const nextLineage = buildLineage(earn.lineage, nextPattern);
+export function evolveProxy(proxy, context = {}) {
+  const nextPattern = evolvePattern(proxy.pattern, context);
+  const nextLineage = buildLineage(proxy.lineage, nextPattern);
   const shapeSignature = computeShapeSignature(nextPattern, nextLineage);
   const evolutionStage = computeEvolutionStage(nextPattern, nextLineage);
 
   const patternAncestry       = buildPatternAncestry(nextPattern);
   const lineageSignature      = buildLineageSignature(nextLineage);
-  const pageId                = earn.pageId || "NO_PAGE";
+  const pageId                = proxy.pageId || "NO_PAGE";
   const pageAncestrySignature = buildPageAncestrySignature({
     pattern: nextPattern,
     lineage: nextLineage,
@@ -243,14 +283,18 @@ export function evolveEarn(earn, context = {}) {
   const healthScore    = computeHealthScore(nextPattern, nextLineage);
   const tier           = classifyDegradationTier(healthScore);
   const advantageField = buildAdvantageField(nextPattern, nextLineage);
+  const proxyMode      = computeProxyMode(tier, nextPattern);
+  const diagnostics    = buildProxyDiagnostics(nextPattern, nextLineage, healthScore, tier);
+
+  const { routerHint, meshHint, sendHint, healthHint, tierHint } = context || {};
 
   return {
-    EarnRole,
-    jobId: earn.jobId,
+    ProxyRole,
+    jobId: proxy.jobId,
     pattern: nextPattern,
-    payload: earn.payload,
-    priority: earn.priority,
-    returnTo: earn.returnTo,
+    payload: proxy.payload,
+    priority: proxy.priority,
+    returnTo: proxy.returnTo,
     lineage: nextLineage,
     pageId,
     meta: {
@@ -264,6 +308,19 @@ export function evolveEarn(earn, context = {}) {
       healthScore,
       tier,
       advantageField,
+
+      proxyMode,
+      returnArcAssist: true,
+      preferProxyBeforeMesh: true,
+      diagnostics,
+
+      proxyHints: {
+        routerHint: routerHint || null,
+        meshHint: meshHint || null,
+        sendHint: sendHint || null,
+        healthHint: typeof healthHint === "number" ? healthHint : null,
+        tierHint: tierHint || null
+      },
 
       loopTheory: {
         routingCompletion: true,

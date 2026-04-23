@@ -1,98 +1,151 @@
 // ============================================================================
-//  PulseEarnReflex.js — Side-Attached Earn Reflex (v10.4)
+//  PulseEarnReflex-v11-Evo.js
+//  Side-Attached Earn Reflex (v11-Evo)
 //  - No imports
 //  - No sending, no routing
 //  - Pure deterministic reflex builder
-//  - Fully aligned with PulseOSGovernor v3.2 (dynamic slicing)
+//  - Fully aligned with PulseOSGovernor v3.3 (dynamic slicing safe)
+//  - v11: Diagnostics + Signatures + Pattern Surface
 // ============================================================================
 
-// In-memory registry of reflex instances (multi-instance law)
+
+// ============================================================================
+// INTERNAL STATE — deterministic, drift-proof
+// ============================================================================
 const reflexInstances = new Map(); // reflexId -> state
+let reflexCycle = 0;               // deterministic cycle counter
 
-// Deterministic cycle counter (replaces timestamps)
-let reflexCycle = 0;
 
-// ---------------------------------------------------------------------------
-//  INTERNAL: Build a Reflex Earn organism from a governor event (deterministic)
-// ---------------------------------------------------------------------------
-function buildReflexEarnFromGovernorEvent(event, pulseOrImpulse, instanceContext) {
-  const pulseId =
+// ============================================================================
+// HELPERS — deterministic, tiny, pure
+// ============================================================================
+function computeHash(str) {
+  let h = 0;
+  const s = String(str || "");
+  for (let i = 0; i < s.length; i++) {
+    h = (h + s.charCodeAt(i) * (i + 1)) % 100000;
+  }
+  return `h${h}`;
+}
+
+function getPulseId(pulseOrImpulse) {
+  return (
     pulseOrImpulse?.pulseId ||
     pulseOrImpulse?.id ||
     pulseOrImpulse?.tickId ||
     pulseOrImpulse?.jobId ||
-    "UNKNOWN_PULSE";
+    "UNKNOWN_PULSE"
+  );
+}
 
-  const organ  = event.organ  || event.module || "UNKNOWN_ORGAN";
-  const reason = event.reason || "unknown_reason";
+function getOrgan(event) {
+  return event.organ || event.module || "UNKNOWN_ORGAN";
+}
 
-  const payload = {
+function getReason(event) {
+  return event.reason || "unknown_reason";
+}
+
+
+// ============================================================================
+// REFLEX IDENTITY (v11-Evo)
+// ============================================================================
+function getReflexId(event, pulseOrImpulse) {
+  const pulseId = getPulseId(pulseOrImpulse);
+  const organ   = getOrgan(event);
+  const reason  = getReason(event);
+  return `${pulseId}::${organ}::${reason}`;
+}
+
+function buildReflexDiagnostics(event, pulseOrImpulse, reflexId, state) {
+  const pulseId = getPulseId(pulseOrImpulse);
+  const organ   = getOrgan(event);
+  const reason  = getReason(event);
+
+  return {
+    reflexId,
     pulseId,
     organ,
     reason,
-    blocked: !!event.blocked,
     lineageDepth: event.lineageDepth,
     returnToDepth: event.returnToDepth,
     fallbackDepth: event.fallbackDepth,
-    instanceContext,       // dynamic slice context
+    instanceContext: event.instanceContext || null,
     cycleIndex: reflexCycle,
-    rawEvent: event
+
+    reflexHash: computeHash(reflexId),
+    pulseHash: computeHash(pulseId),
+    organHash: computeHash(organ),
+    reasonHash: computeHash(reason),
+    cycleHash: computeHash(String(reflexCycle))
   };
+}
+
+
+// ============================================================================
+// REFLEX ORGANISM BUILDER (v11-Evo)
+// ============================================================================
+function buildReflexEarnFromGovernorEvent(event, pulseOrImpulse, instanceContext) {
+  const pulseId = getPulseId(pulseOrImpulse);
+  const organ   = getOrgan(event);
+  const reason  = getReason(event);
+
+  const pattern = `EarnReflex:${organ}:${reason}`;
+  const patternSignature = computeHash(pattern);
 
   return {
     EarnRole: {
       kind: "EarnReflex",
-      version: "10.4",
-      identity: "EarnReflex-v10.4"
+      version: "11.0",
+      identity: "EarnReflex-v11-Evo"
     },
+
     jobId: pulseId,
-    pattern: `EarnReflex:${organ}:${reason}`,
-    payload,
+    pattern,
+    patternSignature,
+
+    payload: {
+      pulseId,
+      organ,
+      reason,
+      blocked: !!event.blocked,
+      lineageDepth: event.lineageDepth,
+      returnToDepth: event.returnToDepth,
+      fallbackDepth: event.fallbackDepth,
+      instanceContext,
+      cycleIndex: reflexCycle,
+      rawEvent: event
+    },
+
     priority: "low",
     returnTo: null,
     lineage: [],
+
     meta: {
       reflex: true,
-      origin: "PulseEarnReflex",
+      origin: "PulseEarnReflex-v11-Evo",
       sourceOrgan: organ,
       sourceReason: reason,
       sourcePulseId: pulseId,
       instanceContext,
-      cycleIndex: reflexCycle
+      cycleIndex: reflexCycle,
+      patternSignature
     }
   };
 }
 
-// ---------------------------------------------------------------------------
-//  INTERNAL: Multi-instance reflex identity (deterministic)
-// ---------------------------------------------------------------------------
-function getReflexId(event, pulseOrImpulse) {
-  const pulseId =
-    pulseOrImpulse?.pulseId ||
-    pulseOrImpulse?.id ||
-    pulseOrImpulse?.tickId ||
-    pulseOrImpulse?.jobId ||
-    "UNKNOWN_PULSE";
 
-  const organ  = event.organ  || event.module || "UNKNOWN_ORGAN";
-  const reason = event.reason || "unknown_reason";
-
-  return `${pulseId}::${organ}::${reason}`;
-}
-
-// ---------------------------------------------------------------------------
-//  PUBLIC API — PulseEarnReflex v10.4
-// ---------------------------------------------------------------------------
+// ============================================================================
+// PUBLIC API — PulseEarnReflex v11-Evo
+// ============================================================================
 export const PulseEarnReflex = {
-  // Called when the governor blocks or detects a loop-like condition
+
   fromGovernorEvent(event, pulseOrImpulse, instanceContext) {
     reflexCycle++;
 
     const reflexId = getReflexId(event, pulseOrImpulse);
 
-    // Multi-instance reflex law:
-    // - Track how many reflexes of this type have appeared
-    // - Provide slice context for reflex distribution
+    // Multi-instance reflex law
     let state = reflexInstances.get(reflexId);
     if (!state) {
       state = {
@@ -107,14 +160,26 @@ export const PulseEarnReflex = {
     state.count += 1;
     state.lastSeenCycle = reflexCycle;
 
-    // Build the EarnReflex organism with dynamic slice context
+    // Build reflex organism
     const earnReflex = buildReflexEarnFromGovernorEvent(
       event,
       pulseOrImpulse,
       instanceContext
     );
 
-    // Optional: local-only observer hook (no routing, no send)
+    // v11-Evo diagnostics
+    const diagnostics = buildReflexDiagnostics(
+      event,
+      pulseOrImpulse,
+      reflexId,
+      state
+    );
+
+    const reflexSignature = computeHash(
+      `${reflexId}::${diagnostics.cycleIndex}`
+    );
+
+    // Optional local observer (no routing, no send)
     if (typeof window !== "undefined" && window.EarnBand?.receiveEarnReflex) {
       window.EarnBand.receiveEarnReflex({
         event,
@@ -122,6 +187,8 @@ export const PulseEarnReflex = {
         reflexId,
         state,
         instanceContext,
+        diagnostics,
+        reflexSignature,
         earnReflex
       });
     }
@@ -131,11 +198,13 @@ export const PulseEarnReflex = {
       reflexId,
       state,
       instanceContext,
+      diagnostics,
+      reflexSignature,
       earnReflex
     };
   },
 
-  // Expose current reflex instances (for dashboards / debugging)
+  // Dashboard / debugging
   getReflexState(reflexId) {
     if (reflexId) return reflexInstances.get(reflexId) || null;
     return Array.from(reflexInstances.values());

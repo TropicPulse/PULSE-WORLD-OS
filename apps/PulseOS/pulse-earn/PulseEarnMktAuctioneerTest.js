@@ -1,24 +1,27 @@
 // ============================================================================
-// TEST SCRIPT — Vast.ai Adapter Test (v10.4 Deterministic)
-// Pulse‑Earn v10.4
+// TEST SCRIPT — Vast.ai Adapter Test (v11‑Evo Deterministic)
+// Pulse‑Earn v11‑Evo
 // ============================================================================
 
-import { PulseEarnMktAuctioneer, getPulseEarnMktAuctioneerHealingState} from "./PulseEarnMktAuctioneer.js";
+import {
+  PulseEarnMktAuctioneer,
+  getPulseEarnMktAuctioneerHealingState
+} from "./PulseEarnMktAuctioneer.js";
 
 function run() {
   console.log("==============================================");
-  console.log(" PULSE‑EARN VAST.AI ADAPTER — TEST RUN (v10.4)");
+  console.log(" PULSE‑EARN VAST.AI ADAPTER — TEST RUN (v11‑Evo)");
   console.log("==============================================\n");
 
   // ---------------------------------------------------------
-  // 1. PING TEST (deterministic)
+  // 1. PING TEST (deterministic, signature‑rich)
   // ---------------------------------------------------------
   console.log("🔹 Testing ping()...");
   const ping = PulseEarnMktAuctioneer.ping();
   console.log("Ping result:", ping, "\n");
 
   // ---------------------------------------------------------
-  // 2. FETCH JOBS TEST (deterministic)
+  // 2. FETCH JOBS TEST (deterministic, signature‑rich)
   // ---------------------------------------------------------
   console.log("🔹 Testing fetchJobs()...");
   const jobs = PulseEarnMktAuctioneer.fetchJobs();
@@ -29,7 +32,7 @@ function run() {
   }
 
   // ---------------------------------------------------------
-  // 3. NORMALIZATION CHECK (deterministic)
+  // 3. NORMALIZATION CHECK (deterministic, signature‑rich)
   // ---------------------------------------------------------
   if (jobs.length > 0 && typeof PulseEarnMktAuctioneer.normalizeJob === "function") {
     console.log("🔹 Testing normalizeJob()...");
@@ -38,13 +41,13 @@ function run() {
   }
 
   // ---------------------------------------------------------
-  // 4. HEALING STATE (deterministic)
+  // 4. HEALING STATE (v11‑Evo signatures)
   // ---------------------------------------------------------
   console.log("🔹 Healing State:");
   console.log(getPulseEarnMktAuctioneerHealingState());
 
   console.log("\n==============================================");
-  console.log(" TEST COMPLETE (v10.4)");
+  console.log(" TEST COMPLETE (v11‑Evo)");
   console.log("==============================================");
 }
 

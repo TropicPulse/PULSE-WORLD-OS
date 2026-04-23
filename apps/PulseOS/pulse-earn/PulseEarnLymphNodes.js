@@ -1,27 +1,30 @@
 // ============================================================================
-// FILE: tropic-pulse-functions/apps/pulse-earn/PulseEarnLymphNodes.js
-// LAYER: THE LYMPHATIC HANDSHAKE NODES (v10.4)
+// FILE: tropic-pulse-functions/apps/pulse-earn/PulseEarnLymphNodes-v11-Evo.js
+// LAYER: THE LYMPHATIC HANDSHAKE NODES (v11-Evo)
 // (Finalizer of Jobs + Immune-Safe Dispatch + Certified Marketplace Exchange)
 // ============================================================================
 //
-// ROLE (v10.4):
+// ROLE (v11-Evo):
 //   THE LYMPHATIC HANDSHAKE NODES — Pulse‑Earn’s immune‑safe finalizers.
 //   • Validate job + marketplace identity (immune recognition).
 //   • Locate the correct marketplace receptor (antigen matching).
 //   • Ensure submitResult() exists (immune compatibility).
 //   • Perform deterministic Earn → Marketplace handshake.
-//   • Record certified submission outcome (immune memory).
+//   • Record certified submission outcome (immune memory + signatures).
 //
-// CONTRACT (v10.4):
+// CONTRACT (v11-Evo):
 //   • PURE RESULT DISPATCHER — no AI layers, no translation, no memory model.
 //   • NO async, NO timestamps, NO nondeterministic behavior.
 //   • NEVER mutate job objects.
 //   • Deterministic identity verification + dispatch only.
 // ============================================================================
 
+import { PulseEarnReceptor } from "./PulseEarnReceptor.js";
+import { PulseEarnCustomReceptor } from "./PulseEarnCustomReceptorMkt.js";
+
 
 // ---------------------------------------------------------------------------
-// Healing Metadata — Lymphatic Dispatch Log (deterministic)
+// Healing Metadata — Lymphatic Dispatch Log (v11-Evo)
 // ---------------------------------------------------------------------------
 const lymphHealing = {
   lastJobId: null,
@@ -30,7 +33,11 @@ const lymphHealing = {
   lastError: null,
   lastResponse: null,
   cycleCount: 0,
-  lastCycleIndex: null
+  lastCycleIndex: null,
+
+  lastHandshakeSignature: null,
+  lastJobSignature: null,
+  lastMarketplaceSignature: null
 };
 
 // Deterministic cycle counter
@@ -38,7 +45,48 @@ let lymphCycle = 0;
 
 
 // ---------------------------------------------------------------------------
-// submitPulseEarnResult — Deterministic Lymphatic Handshake
+// Deterministic Hash Helper — v11-Evo
+// ---------------------------------------------------------------------------
+function computeHash(str) {
+  let h = 0;
+  const s = String(str || "");
+  for (let i = 0; i < s.length; i++) {
+    h = (h + s.charCodeAt(i) * (i + 1)) % 100000;
+  }
+  return `h${h}`;
+}
+
+
+// ---------------------------------------------------------------------------
+// Signature Builders — v11-Evo
+// ---------------------------------------------------------------------------
+function buildJobSignature(job) {
+  if (!job) return "JOB::NONE";
+  return computeHash(`JOB::${job.id}::${job.marketplaceId || "NO_MKT"}`);
+}
+
+function buildMarketplaceSignature(marketplaceId) {
+  return computeHash(`MKT::${marketplaceId || "NO_MKT"}`);
+}
+
+function buildHandshakeSignature(job, cycleIndex) {
+  return computeHash(
+    `HS::${job?.id || "NO_JOB"}::${job?.marketplaceId || "NO_MKT"}::${cycleIndex}`
+  );
+}
+
+
+// ---------------------------------------------------------------------------
+// Marketplace Receptor Registry — Antigen Directory
+// ---------------------------------------------------------------------------
+const receptorRegistry = {
+  A: PulseEarnReceptor,
+  CUSTOM: PulseEarnCustomReceptor
+};
+
+
+// ---------------------------------------------------------------------------
+// submitPulseEarnResult — Deterministic Lymphatic Handshake (v11-Evo)
 // ---------------------------------------------------------------------------
 export function submitPulseEarnResult(job, result) {
   lymphCycle++;
@@ -61,11 +109,22 @@ export function submitPulseEarnResult(job, result) {
       };
 
       lymphHealing.lastResponse = failure;
+      lymphHealing.lastJobSignature = buildJobSignature(job);
+      lymphHealing.lastMarketplaceSignature = buildMarketplaceSignature(
+        job?.marketplaceId
+      );
+      lymphHealing.lastHandshakeSignature = buildHandshakeSignature(job, lymphCycle);
+
       return failure;
     }
 
     lymphHealing.lastJobId = job.id;
     lymphHealing.lastMarketplaceId = job.marketplaceId;
+
+    lymphHealing.lastJobSignature = buildJobSignature(job);
+    lymphHealing.lastMarketplaceSignature = buildMarketplaceSignature(
+      job.marketplaceId
+    );
 
     // 2. Locate Marketplace Receptor — Antigen Matching
     const adapter = receptorRegistry[job.marketplaceId];
@@ -82,6 +141,8 @@ export function submitPulseEarnResult(job, result) {
       };
 
       lymphHealing.lastResponse = failure;
+      lymphHealing.lastHandshakeSignature = buildHandshakeSignature(job, lymphCycle);
+
       return failure;
     }
 
@@ -97,6 +158,8 @@ export function submitPulseEarnResult(job, result) {
       };
 
       lymphHealing.lastResponse = failure;
+      lymphHealing.lastHandshakeSignature = buildHandshakeSignature(job, lymphCycle);
+
       return failure;
     }
 
@@ -107,6 +170,7 @@ export function submitPulseEarnResult(job, result) {
 
     lymphHealing.lastResponse = response;
     lymphHealing.lastError = null;
+    lymphHealing.lastHandshakeSignature = buildHandshakeSignature(job, lymphCycle);
 
     return response;
 
@@ -122,25 +186,23 @@ export function submitPulseEarnResult(job, result) {
     };
 
     lymphHealing.lastResponse = failure;
+    lymphHealing.lastHandshakeSignature = buildHandshakeSignature(job, lymphCycle);
+
     return failure;
   }
 }
 
 
 // ---------------------------------------------------------------------------
-// Marketplace Receptor Registry — Antigen Directory
+// sendResultToMarketplace — v11-Evo alias for Nervous System
 // ---------------------------------------------------------------------------
-import { PulseEarnReceptor } from "./PulseEarnReceptorMkt.js";
-import { PulseEarnCustomReceptor } from "./PulseEarnCustomReceptorMkt.js";
-
-const receptorRegistry = {
-  A: PulseEarnReceptor,
-  CUSTOM: PulseEarnCustomReceptor
-};
+export function sendResultToMarketplace(job, result) {
+  return submitPulseEarnResult(job, result);
+}
 
 
 // ---------------------------------------------------------------------------
-// Export Healing Metadata — Lymphatic Dispatch Report
+// Export Healing Metadata — Lymphatic Dispatch Report (v11-Evo)
 // ---------------------------------------------------------------------------
 export function getPulseEarnLymphHealingState() {
   return { ...lymphHealing };

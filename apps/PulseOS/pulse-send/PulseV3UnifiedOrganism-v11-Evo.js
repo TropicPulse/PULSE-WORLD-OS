@@ -1,27 +1,11 @@
 // ============================================================================
-//  PulseV3UnifiedOrganism.js — v10.4
-//  Pulse v3 • Unified Organism • Evolution‑Aware • Deterministic Compute Loop
+//  PulseV3UnifiedOrganism-v11-Evo.js
+//  Pulse v3 • Unified Organism • Evolution-Aware • Deterministic Compute Loop
+//  v11: Diagnostics + Signatures + Evolution Surface + Advantage Surface
 // ============================================================================
 //
-//  WHAT THIS ORGAN IS:
-//  --------------------
-//  • The Pulse v3 unified organism.
-//  • Full organism: pattern‑aware, lineage‑aware, mode‑aware, identity‑aware.
-//  • Contains an internal, deterministic compute loop (evolution engine).
-//  • Shape‑compatible with Pulse v1 (EvoStable) and Pulse v2.
-//  • Provides advantageField + healthScore for Router/Mesh/Send.
-//  • Safe for A→B→A loops (mode‑aware).
-//
-//  WHAT THIS ORGAN IS NOT:
-//  ------------------------
-//  • Not a router.
-//  • Not a mesh layer.
-//  • Not a transport organ.
-//  • Not a GPU/Earn/OS organ.
-//  • Not a healer or brain.
-//
-//  SAFETY CONTRACT (v10.4):
-//  ------------------------
+//  SAFETY CONTRACT (v11-Evo):
+//  --------------------------
 //  • No imports.
 //  • No randomness.
 //  • No timestamps.
@@ -31,14 +15,14 @@
 
 
 // ============================================================================
-// ⭐ PulseRole — identifies this as the Pulse v3 unified organism (v10.4)
+// ⭐ PulseRole — identifies this as the Pulse v3 unified organism (v11)
 // ============================================================================
 export const PulseRole = {
   type: "Pulse",
   subsystem: "Pulse",
   layer: "Organ",
-  version: "10.4",
-  identity: "Pulse-v3-Unified",
+  version: "11.0",
+  identity: "Pulse-v3-Unified-v11-Evo",
 
   evo: {
     driftProof: true,
@@ -49,19 +33,21 @@ export const PulseRole = {
     routerAwareReady: true,
     meshAwareReady: true,
 
-    // ⭐ Evolution engine ON for v3
     evolutionEngineReady: true,
-
     unifiedAdvantageField: true,
     pulseV3Ready: true,
-    futureEvolutionReady: true
+    futureEvolutionReady: true,
+
+    diagnosticsReady: true,
+    signatureReady: true,
+    evolutionSurfaceReady: true
   },
 
-  routingContract: "PulseRouter-v10.4",
-  meshContract: "PulseMesh-v10.4",
-  sendContract: "PulseSend-v10.4",
-  gpuOrganContract: "PulseGPU-v10",
-  earnCompatibility: "PulseEarn-v10"
+  routingContract: "PulseRouter-v11",
+  meshContract: "PulseMesh-v11",
+  sendContract: "PulseSend-v11",
+  gpuOrganContract: "PulseGPU-v11",
+  earnCompatibility: "PulseEarn-v11"
 };
 
 
@@ -69,23 +55,24 @@ export const PulseRole = {
 //  INTERNAL HELPERS — deterministic, tiny, pure
 // ============================================================================
 
+function computeHash(str) {
+  let h = 0;
+  for (let i = 0; i < str.length; i++) {
+    h = (h + str.charCodeAt(i) * (i + 1)) % 100000;
+  }
+  return `h${h}`;
+}
+
 // Build lineage chain (v3 can extend lineage deterministically)
 function buildLineage(parentLineage, pattern) {
   const base = Array.isArray(parentLineage) ? parentLineage : [];
   return [...base, pattern];
 }
 
-// Deterministic shape signature (shared with v1/v2)
+// Deterministic shape signature
 function computeShapeSignature(pattern, lineage) {
-  const lineageKey = lineage.join("::");
-  const raw = `${pattern}::${lineageKey}`;
-
-  let acc = 0;
-  for (let i = 0; i < raw.length; i++) {
-    acc = (acc + raw.charCodeAt(i) * (i + 1)) % 100000;
-  }
-
-  return `shape-${acc}`;
+  const raw = `${pattern}::${lineage.join("::")}`;
+  return `shape-${computeHash(raw)}`;
 }
 
 // Evolution stage classification
@@ -98,35 +85,49 @@ function computeEvolutionStage(pattern, lineage) {
   return "mature";
 }
 
-// ============================================================================
-//  INTERNAL: Deterministic evolution compute loop (v3)
-// ============================================================================
-//
-//  This is the ONLY place where v3 "thinks":
-//    • No randomness
-//    • No timestamps
-//    • No external I/O
-//    • Purely derived from pattern, lineage, payload, mode
-// ============================================================================
+function buildPatternAncestry(pattern) {
+  if (!pattern || typeof pattern !== "string") return [];
+  return pattern.split("/").filter(Boolean);
+}
 
+function buildLineageSignature(lineage) {
+  if (!Array.isArray(lineage) || lineage.length === 0) return "NO_LINEAGE";
+  return lineage.join(">");
+}
+
+function buildPageAncestrySignature({ pattern, lineage, pageId }) {
+  const shape = {
+    pattern,
+    patternAncestry: buildPatternAncestry(pattern),
+    lineageSignature: buildLineageSignature(lineage),
+    pageId: pageId || "NO_PAGE"
+  };
+
+  return computeHash(JSON.stringify(shape));
+}
+
+function buildDiagnostics(pattern, lineage, healthScore) {
+  return {
+    patternLength: pattern.length,
+    lineageDepth: lineage.length,
+    healthBucket:
+      healthScore >= 0.9 ? "elite" :
+      healthScore >= 0.75 ? "high" :
+      healthScore >= 0.5 ? "medium" : "low",
+    lineageDensity: lineage.length === 0 ? 0 : pattern.length / lineage.length
+  };
+}
+
+
+// ============================================================================
+//  INTERNAL: Deterministic evolution compute loop (v3, v11 surface)
+// ============================================================================
 function runEvolutionComputeLoop({ pattern, lineage, payload, mode }) {
   const lineageDepth = Array.isArray(lineage) ? lineage.length : 0;
   const payloadSize = payload && typeof payload === "object"
     ? Object.keys(payload).length
     : 0;
 
-  // ⭐ Deterministic advantage field
-  const advantageField = {
-    patternStrength: pattern.length,
-    lineageDepth,
-    payloadSize,
-    modeBias:
-      mode === "stress" ? 3 :
-      mode === "drain"  ? 2 :
-      1
-  };
-
-  // ⭐ Deterministic healthScore in [0, 1]
   const maxPattern = 64;
   const maxLineage = 16;
   const maxPayload = 32;
@@ -134,6 +135,18 @@ function runEvolutionComputeLoop({ pattern, lineage, payload, mode }) {
   const patternScore = Math.min(pattern.length / maxPattern, 1);
   const lineageScore = Math.min(lineageDepth / maxLineage, 1);
   const payloadScore = Math.min(payloadSize / maxPayload, 1);
+
+  const advantageField = {
+    patternStrength: pattern.length,
+    lineageDepth,
+    payloadSize,
+    modeBias:
+      mode === "stress"   ? 3 :
+      mode === "drain"    ? 2 :
+      mode === "recovery" ? 2 :
+      1,
+    unifiedTier: "v3-unified-v11"
+  };
 
   const healthScore = (
     patternScore * 0.4 +
@@ -149,35 +162,8 @@ function runEvolutionComputeLoop({ pattern, lineage, payload, mode }) {
 
 
 // ============================================================================
-//  FACTORY — Create a Pulse v3 Unified Organism (v10.4)
+//  FACTORY — Create a Pulse v3 Unified Organism (v11)
 // ============================================================================
-//
-//  Input:
-//    • jobId
-//    • pattern
-//    • payload
-//    • priority
-//    • returnTo
-//    • parentLineage
-//    • mode
-//
-//  Output (shape‑compatible with v1/v2):
-//    • {
-//        PulseRole,
-//        jobId,
-//        pattern,
-//        payload,
-//        priority,
-//        returnTo,
-//        lineage,
-//        mode,
-//        pulseType,
-//        advantageField,
-//        healthScore,
-//        meta: { shapeSignature, evolutionStage }
-//      }
-// ============================================================================
-
 export function createPulseV3({
   jobId,
   pattern,
@@ -185,19 +171,29 @@ export function createPulseV3({
   priority = "normal",
   returnTo = null,
   parentLineage = null,
-  mode = "normal"
+  mode = "normal",
+  pageId = "NO_PAGE"
 }) {
   const lineage        = buildLineage(parentLineage, pattern);
   const shapeSignature = computeShapeSignature(pattern, lineage);
   const evolutionStage = computeEvolutionStage(pattern, lineage);
 
-  // ⭐ Run deterministic evolution compute loop
+  const patternAncestry       = buildPatternAncestry(pattern);
+  const lineageSignature      = buildLineageSignature(lineage);
+  const pageAncestrySignature = buildPageAncestrySignature({
+    pattern,
+    lineage,
+    pageId
+  });
+
   const { advantageField, healthScore } = runEvolutionComputeLoop({
     pattern,
     lineage,
     payload,
     mode
   });
+
+  const diagnostics = buildDiagnostics(pattern, lineage, healthScore);
 
   return {
     PulseRole,
@@ -208,17 +204,28 @@ export function createPulseV3({
     returnTo,
     lineage,
     mode,
+    pageId,
 
-    // ⭐ Unified organism identity
-    pulseType: "Pulse-v3-Unified",
+    pulseType: "Pulse-v3-Unified-v11",
 
-    // ⭐ Evolutionary intelligence (deterministic)
     advantageField,
     healthScore,
 
     meta: {
       shapeSignature,
-      evolutionStage
+      evolutionStage,
+
+      patternAncestry,
+      lineageSignature,
+      pageAncestrySignature,
+
+      diagnostics,
+
+      evolutionSignature: computeHash(pattern + "::" + lineageSignature),
+      patternSignature: computeHash(pattern),
+      lineageSurface: computeHash(String(lineage.length)),
+      advantageSignature: computeHash(JSON.stringify(advantageField)),
+      healthSignature: computeHash(String(healthScore))
     }
   };
 }
