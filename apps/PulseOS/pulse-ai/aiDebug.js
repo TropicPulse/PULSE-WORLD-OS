@@ -1,127 +1,154 @@
 // ============================================================================
-// FILE: tropic-pulse-functions/apps/pulse-ai/aiDebug.js
-// LAYER: THE SCRIBE (Diagnostic Recorder + Evolutionary Report Formatter)
-// ============================================================================
-//
-// ROLE (v7.1+):
-//   THE SCRIBE — The recorder of Pulse OS diagnostics.
-//   • Formats AI context into readable debug reports.
-//   • Summarizes mismatches, drift, slowdown, missing fields.
-//   • Outputs human‑friendly diagnostic strings + objects.
-//   • Surfaces evolutionary patterns in system behavior (conceptual only).
-//
-// PURPOSE (v7.1+):
-//   • Provide a clean, readable diagnostic summary.
-//   • Make debugging AI behavior fast + intuitive.
-//   • Present trace + issues in a structured format.
-//   • Act as the “historian” of the organism — recording what happened.
-//   • Provide conceptual insight into system evolution (not medical).
-//
-// CONTRACT (unchanged):
-//   • READ‑ONLY — no writes.
-//   • NO eval(), NO Function(), NO dynamic imports.
-//   • NO executing user code.
-//   • NO network calls.
-//   • Pure formatting + summarization.
-//
-// SAFETY (unchanged):
-//   • v7.1+ upgrade is COMMENTAL + DIAGNOSTIC ONLY — NO LOGIC CHANGES.
-//   • All behavior remains identical to pre‑v7.1 aiDebug.
+//  PULSE OS v10.4 — THE SCRIBE
+//  Diagnostic Recorder • Forensic Historian • Evolutionary Report Formatter
+//  PURE FORMATTING + SUMMARIZATION. ZERO MUTATION. ZERO TIME. ZERO RANDOMNESS.
 // ============================================================================
 
-// ============================================================================
-// LAYER CONSTANTS + DIAGNOSTICS
-// ============================================================================
-const SCRIBE_LAYER_ID = "SCRIBE-LAYER";
-const SCRIBE_LAYER_NAME = "THE SCRIBE";
-const SCRIBE_LAYER_ROLE = "Diagnostic Recorder + Evolutionary Report Formatter";
-
-const SCRIBE_DIAGNOSTICS_ENABLED =
-  process?.env?.PULSE_SCRIBE_DIAGNOSTICS === "true" ||
-  process?.env?.PULSE_DIAGNOSTICS === "true";
-
-const scribeLog = (stage, details = {}) => {
-  if (!SCRIBE_DIAGNOSTICS_ENABLED) return;
-
-  log(
-    JSON.stringify({
-      pulseLayer: SCRIBE_LAYER_ID,
-      pulseName: SCRIBE_LAYER_NAME,
-      pulseRole: SCRIBE_LAYER_ROLE,
-      stage,
-      ...details
-    })
-  );
+const SCRIBE_META = {
+  layer: "PulseAIScribe",
+  role: "SCRIBE",
+  version: "10.4",
+  target: "full-mesh",
+  selfRepairable: true,
+  evo: {
+    driftProof: true,
+    deterministicField: true,
+    multiInstanceReady: true,
+    unifiedAdvantageField: true,
+    futureEvolutionReady: true,
+    observerOnly: true,
+    historian: true
+  }
 };
-
-scribeLog("SCRIBE_INIT", {});
 
 // ============================================================================
 // PUBLIC API — Build Debug Report (Object)
 // ============================================================================
 export function formatDebugReport(context) {
-  scribeLog("FORMAT_REPORT_START");
-
   const { trace, diagnostics } = context;
 
-  const report = {
+  return {
+    meta: SCRIBE_META,
     summary: buildSummary(diagnostics),
     trace: [...trace],
     mismatches: [...diagnostics.mismatches],
     missingFields: [...diagnostics.missingFields],
     slowdownCauses: [...diagnostics.slowdownCauses],
     driftDetected: diagnostics.driftDetected,
+
+    // NEW v10.4 — Evolutionary Layers
+    evolution: buildEvolutionaryNotes(context),
+    organs: buildOrganSnapshot(context),
+    routing: buildRoutingSnapshot(context),
+    pulse: buildPulseSnapshot(context)
   };
-
-  scribeLog("FORMAT_REPORT_COMPLETE", {
-    summaryLines: report.summary.length,
-    traceLength: report.trace.length
-  });
-
-  return report;
 }
 
 // ============================================================================
-// SUMMARY BUILDER — Evolutionary Summary Lines
+// SUMMARY BUILDER — Evolutionary Summary Lines (v10.4)
 // ============================================================================
 function buildSummary(diagnostics) {
-  scribeLog("SUMMARY_START");
-
   const summary = [];
 
-  if (diagnostics.mismatches.length > 0) {
+  if (diagnostics.mismatches.length > 0)
     summary.push(`⚠️ ${diagnostics.mismatches.length} field mismatches detected`);
-  }
 
-  if (diagnostics.missingFields.length > 0) {
+  if (diagnostics.missingFields.length > 0)
     summary.push(`⚠️ ${diagnostics.missingFields.length} missing fields detected`);
-  }
 
-  if (diagnostics.driftDetected) {
+  if (diagnostics.driftDetected)
     summary.push(`⚠️ Schema drift detected`);
-  }
 
-  if (diagnostics.slowdownCauses.length > 0) {
+  if (diagnostics.slowdownCauses.length > 0)
     summary.push(`🐢 Slowdown causes: ${diagnostics.slowdownCauses.join(", ")}`);
-  }
 
-  if (summary.length === 0) {
+  if (summary.length === 0)
     summary.push("✅ No issues detected");
-  }
 
-  scribeLog("SUMMARY_COMPLETE", { lines: summary.length });
   return summary;
 }
 
 // ============================================================================
-// STRING FORMATTER — Pretty Printed Debug Report
+// EVOLUTIONARY NOTES — The Historian Layer (v10.4)
+// ============================================================================
+function buildEvolutionaryNotes(context) {
+  const notes = [];
+
+  // Pattern evolution
+  if (context.pulse?.pattern)
+    notes.push(`Pattern: ${context.pulse.pattern}`);
+
+  // Lineage depth
+  if (context.pulse?.lineage)
+    notes.push(`Lineage depth: ${context.pulse.lineage.length}`);
+
+  // Advantage field
+  if (context.pulse?.advantageField)
+    notes.push(`Advantage field active`);
+
+  // Organ improvements
+  if (context.organs)
+    notes.push(`Organ snapshot included`);
+
+  // Drift awareness
+  if (context.diagnostics?.driftDetected)
+    notes.push(`Evolutionary drift detected`);
+
+  return notes;
+}
+
+// ============================================================================
+// ORGAN SNAPSHOT — Which organs were involved (v10.4)
+// ============================================================================
+function buildOrganSnapshot(context) {
+  return {
+    persona: context.persona,
+    permissions: context.permissions,
+    boundaries: context.boundaries,
+    cognitiveFrame: context.meta,
+    clinician: context.clinicianMeta || null,
+    mesh: context.meshMeta || null,
+    router: context.routerMeta || null,
+    send: context.sendMeta || null
+  };
+}
+
+// ============================================================================
+// ROUTING SNAPSHOT — Pathway + Router Decisions (v10.4)
+// ============================================================================
+function buildRoutingSnapshot(context) {
+  if (!context.routing) return null;
+
+  return {
+    targetOrgan: context.routing.targetOrgan,
+    mode: context.routing.mode,
+    pathway: context.routing.pathway,
+    routerPersona: context.routing.persona
+  };
+}
+
+// ============================================================================
+// PULSE SNAPSHOT — Pulse lineage + pattern (v10.4)
+// ============================================================================
+function buildPulseSnapshot(context) {
+  if (!context.pulse) return null;
+
+  return {
+    pulseType: context.pulse.pulseType,
+    pattern: context.pulse.pattern,
+    lineageDepth: Array.isArray(context.pulse.lineage)
+      ? context.pulse.lineage.length
+      : 0
+  };
+}
+
+// ============================================================================
+// STRING FORMATTER — Pretty Printed Debug Report (v10.4)
 // ============================================================================
 export function formatDebugString(context) {
-  scribeLog("FORMAT_STRING_START");
-
   const report = formatDebugReport(context);
 
-  let out = "\n=== AI DEBUG REPORT ===\n\n";
+  let out = "\n=== AI DEBUG REPORT (v10.4) ===\n\n";
 
   out += "SUMMARY:\n";
   report.summary.forEach((line) => {
@@ -156,8 +183,12 @@ export function formatDebugString(context) {
 
   out += `\nDRIFT DETECTED: ${report.driftDetected ? "YES" : "NO"}\n`;
 
+  out += "\nEVOLUTIONARY NOTES:\n";
+  report.evolution.forEach((n) => {
+    out += `  - ${n}\n`;
+  });
+
   out += "\n========================\n";
 
-  scribeLog("FORMAT_STRING_COMPLETE");
   return out;
 }

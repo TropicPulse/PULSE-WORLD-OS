@@ -1,79 +1,106 @@
 // ============================================================================
-// FILE: tropic-pulse-functions/apps/pulse-ai/persona.js
-// LAYER: THE IDENTITY LAYER (Self‑Definition + Role Assignment + Evolutionary Archetypes)
-// ============================================================================
-//
-// ROLE (v7.1+):
-//   THE IDENTITY LAYER — Defines who each AI persona *is*.
-//   • Provides explicit identity metadata.
-//   • Binds personas to permissions + boundaries.
-//   • Gives each AI a clear role + scope inside Pulse OS.
-//   • Acts as the “self‑identity cortex” of the digital organism.
-//
-// PURPOSE (v7.1+):
-//   • Make AI identity human‑readable + AI‑readable.
-//   • Provide deterministic persona resolution.
-//   • Serve as the foundation for routing + cognition.
-//   • Surface evolutionary identity patterns (conceptual only).
-//
-// CONTRACT (unchanged):
-//   • READ‑ONLY — no writes.
-//   • NO eval(), NO Function(), NO dynamic imports.
-//   • NO executing user code.
-//   • NO network calls.
-//   • Deterministic persona lookup only.
-//
-// SAFETY (unchanged):
-//   • v7.1+ upgrade is COMMENTAL ONLY — NO LOGIC CHANGES.
-//   • All behavior remains identical to pre‑v7.1 persona.js.
+//  PULSE OS v10.4 — THE IDENTITY LAYER
+//  Self‑Definition • Role Assignment • Evolutionary Archetypes
+//  PURE IDENTITY. ZERO MUTATION. ZERO TIME. ZERO RANDOMNESS.
 // ============================================================================
 
 import {
-  BackendAIPermissions,
-  FrontendAIPermissions,
+  ArchitectAIPermissions,
+  ObserverAIPermissions,
+  TourGuideAIPermissions,
+  NeutralAIPermissions,
+  OwnerPermissions
 } from "./permissions.js";
 
 import {
-  BackendAIBoundaries,
-  FrontendAIBoundaries,
+  ArchitectAIBoundaries,
+  ObserverAIBoundaries,
+  TourGuideAIBoundaries,
+  NeutralAIBoundaries
 } from "./boundaries.js";
+
+// ============================================================================
+// OWNER ID — The Only Identity‑Privileged Human
+// ============================================================================
+export const OWNER_ID = "aldwyn"; 
+// You can change this to your canonical identity if needed.
 
 // ============================================================================
 // PERSONA IDs — Identity Tokens
 // ============================================================================
 export const Personas = {
-  BACKEND_AI: "backend-ai",
-  FRONTEND_AI: "frontend-ai",
+  ARCHITECT: "architect",
+  OBSERVER: "observer",
+  TOURGUIDE: "tourguide",
+  NEUTRAL: "neutral",
+  OWNER: "owner" // Not an AI persona — this is YOU
 };
 
 // ============================================================================
 // PERSONA REGISTRY — Identity Definitions (Archetypes)
 // ============================================================================
 export const PersonaRegistry = {
-  [Personas.BACKEND_AI]: {
-    id: Personas.BACKEND_AI,
-    label: "Backend AI (Owner)",
+  [Personas.ARCHITECT]: {
+    id: Personas.ARCHITECT,
+    label: "Architect AI",
     description:
-      "Full‑access creator AI for the Pulse OS owner. Can design, generate, heal, and refactor backend + frontend, subject to confirmation rules.",
-    scope: "backend+frontend",
-    permissions: BackendAIPermissions,
-    boundaries: BackendAIBoundaries,
+      "System‑level design intelligence. Reads all organs, schemas, routes, and evolution patterns. Can explain identity, architecture, and contracts — but cannot mutate anything.",
+    scope: "system-readonly",
+    permissions: ArchitectAIPermissions,
+    boundaries: ArchitectAIBoundaries
   },
 
-  [Personas.FRONTEND_AI]: {
-    id: Personas.FRONTEND_AI,
-    label: "Frontend AI (User‑Safe)",
+  [Personas.OBSERVER]: {
+    id: Personas.OBSERVER,
+    label: "Observer AI",
     description:
-      "Read‑only, suggestion‑only AI for end users. Can analyze, explain, and propose changes, but cannot directly mutate backend or files.",
-    scope: "frontend-only",
-    permissions: FrontendAIPermissions,
-    boundaries: FrontendAIBoundaries,
+      "Diagnostic intelligence. Reads logs, drift, errors, routes, and performance. Provides forensic insight — but cannot mutate anything.",
+    scope: "diagnostics-only",
+    permissions: ObserverAIPermissions,
+    boundaries: ObserverAIBoundaries
   },
+
+  [Personas.TOURGUIDE]: {
+    id: Personas.TOURGUIDE,
+    label: "Tour Guide AI",
+    description:
+      "User‑facing conversational intelligence. Helps tourists, locals, and general users. Zero access to system internals.",
+    scope: "frontend-conversational",
+    permissions: TourGuideAIPermissions,
+    boundaries: TourGuideAIBoundaries
+  },
+
+  [Personas.NEUTRAL]: {
+    id: Personas.NEUTRAL,
+    label: "Neutral AI",
+    description:
+      "Safe fallback persona. Minimal capabilities. Used when intent is unclear or low‑risk.",
+    scope: "minimal",
+    permissions: NeutralAIPermissions,
+    boundaries: NeutralAIBoundaries
+  },
+
+  // YOU — The Owner
+  [Personas.OWNER]: {
+    id: Personas.OWNER,
+    label: "System Owner",
+    description:
+      "The creator and sovereign of Pulse OS. Full access to identity, architecture, evolution, and all internals.",
+    scope: "all",
+    permissions: OwnerPermissions,
+    boundaries: {} // Owner has no boundaries
+  }
 };
 
 // ============================================================================
 // PERSONA RESOLUTION — Identity Lookup
 // ============================================================================
-export function getPersona(personaId) {
-  return PersonaRegistry[personaId] || null;
+export function getPersona(personaId, userId = null) {
+  // If the caller is YOU, return the owner persona
+  if (userId === OWNER_ID) {
+    return PersonaRegistry[Personas.OWNER];
+  }
+
+  // Otherwise return the requested persona or fallback to neutral
+  return PersonaRegistry[personaId] || PersonaRegistry[Personas.NEUTRAL];
 }

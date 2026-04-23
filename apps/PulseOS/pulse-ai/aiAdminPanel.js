@@ -1,172 +1,121 @@
 // ============================================================================
-//  PULSE OS v7.1+ — THE EVOLUTIONARY CLINICIAN
+//  PULSE OS v10.4 — THE EVOLUTIONARY CLINICIAN
 //  Diagnostic Interpreter • Triage Specialist • Evolutionary Insight Layer
-//  PURE DIAGNOSTIC TRANSFORMATION. NO LOGIC CHANGES.
-// ============================================================================
-//
-// IDENTITY — THE EVOLUTIONARY CLINICIAN:
-//  -------------------------------------
-//  • Reads raw AI trace + diagnostics
-//  • Classifies issues by severity
-//  • Builds structured admin dashboard models
-//  • Preserves trace for deep inspection
-//  • Surfaces evolutionary advantages in the system
-//  • Highlights patterns where the organism improved itself
-//  • Provides conceptual insight (not medical advice)
-//  • Helps humans understand systemic evolution through metaphor
-//
-// ROLE IN THE DIGITAL BODY (v7.1+):
-//  --------------------------------
-//  • Diagnostic Interpreter → Reads subsystem signals
-//  • Triage Specialist → Highlights issues + severity
-//  • Evolutionary Insight Layer → Surfaces adaptive advantages
-//  • Cognitive Bridge → Helps humans understand system evolution
-//  • Pure Observer → No writes, no mutations, no orchestration
-//
-// SAFETY CONTRACT (v7.1+):
-//  ------------------------
-//  • READ‑ONLY — no writes, no mutations
-//  • NO eval(), NO Function(), NO dynamic imports
-//  • NO executing user code
-//  • NO network calls
-//  • Pure diagnostic transformation
-//  • No medical advice, no diagnosis, no treatment guidance
+//  PURE DIAGNOSTIC TRANSFORMATION. ZERO MUTATION. ZERO TIME. ZERO RANDOMNESS.
 // ============================================================================
 
-const CLINICIAN_LAYER_ID = "EVOLUTIONARY-CLINICIAN-LAYER";
-const CLINICIAN_LAYER_NAME = "THE EVOLUTIONARY CLINICIAN";
-const CLINICIAN_LAYER_ROLE = "Diagnostic Interpreter + Evolutionary Insight Layer";
-
-const CLINICIAN_DIAGNOSTICS_ENABLED =
-  process?.env?.PULSE_CLINICIAN_DIAGNOSTICS === "true" ||
-  process?.env?.PULSE_DIAGNOSTICS === "true";
-
-const clinicianLog = (stage, details = {}) => {
-  if (!CLINICIAN_DIAGNOSTICS_ENABLED) return;
-
-  log(
-    JSON.stringify({
-      pulseLayer: CLINICIAN_LAYER_ID,
-      pulseName: CLINICIAN_LAYER_NAME,
-      pulseRole: CLINICIAN_LAYER_ROLE,
-      stage,
-      ...details
-    })
-  );
+const CLINICIAN_META = {
+  layer: "PulseClinician",
+  role: "DIAGNOSTIC_INTERPRETER",
+  version: "10.4",
+  target: "full-mesh",
+  selfRepairable: true,
+  evo: {
+    driftProof: true,
+    deterministicField: true,
+    multiInstanceReady: true,
+    unifiedAdvantageField: true,
+    futureEvolutionReady: true,
+    observerOnly: true
+  }
 };
 
-clinicianLog("CLINICIAN_INIT", {});
-
-
 // ============================================================================
-// PUBLIC API — Build Admin Panel Model
+// PUBLIC API — Build Admin Panel Model (v10.4)
 // ============================================================================
 export function buildAdminPanelModel(context, options = {}) {
-  clinicianLog("BUILD_MODEL_START");
-
   const { trace, diagnostics } = context;
 
   const summaryCards = buildSummaryCards(diagnostics);
   const issueList = buildIssueList(diagnostics);
 
-  const model = {
+  return {
     summaryCards,
     issueList,
-    trace: [...trace],
+    trace: [...trace], // preserve lineage
     meta: {
+      clinician: CLINICIAN_META,
       personaId: context.personaId,
       driftDetected: diagnostics.driftDetected,
       totalIssues: issueList.length,
-      generatedAt: new Date().toISOString(),
-      ...options.meta,
-    },
+      // v10.4: no timestamps, no randomness
+      ...options.meta
+    }
   };
-
-  clinicianLog("BUILD_MODEL_COMPLETE", {
-    totalIssues: model.meta.totalIssues
-  });
-
-  return model;
 }
 
 // ============================================================================
-// SUMMARY CARDS — Clinical Overview
+// SUMMARY CARDS — Clinical Overview (v10.4)
 // ============================================================================
 function buildSummaryCards(diagnostics) {
-  clinicianLog("SUMMARY_CARDS_START");
-
-  const cards = [];
-
   const mismatchCount = diagnostics.mismatches.length;
   const missingCount = diagnostics.missingFields.length;
   const slowdownCount = diagnostics.slowdownCauses.length;
   const drift = diagnostics.driftDetected;
 
-  cards.push({
-    id: "overall-health",
-    title: "Overall Health",
-    icon: drift || mismatchCount || missingCount ? "warning" : "check",
-    severity: drift || mismatchCount || missingCount ? "warning" : "ok",
-    description: drift
-      ? "Schema drift detected. Review issues below."
-      : mismatchCount || missingCount
-      ? "Some data issues detected. Review details below."
-      : "No major issues detected.",
-  });
-
-  cards.push({
-    id: "mismatches",
-    title: "Field Mismatches",
-    icon: mismatchCount ? "error" : "check",
-    severity: mismatchCount ? "error" : "ok",
-    count: mismatchCount,
-    description: mismatchCount
-      ? `${mismatchCount} fields have type or schema mismatches.`
-      : "No mismatched fields detected.",
-  });
-
-  cards.push({
-    id: "missing-fields",
-    title: "Missing Fields",
-    icon: missingCount ? "warning" : "check",
-    severity: missingCount ? "warning" : "ok",
-    count: missingCount,
-    description: missingCount
-      ? `${missingCount} expected fields are missing.`
-      : "No missing fields detected.",
-  });
-
-  cards.push({
-    id: "performance",
-    title: "Performance Signals",
-    icon: slowdownCount ? "turtle" : "bolt",
-    severity: slowdownCount ? "warning" : "ok",
-    count: slowdownCount,
-    description: slowdownCount
-      ? `${slowdownCount} potential slowdown causes detected.`
-      : "No slowdown patterns detected.",
-  });
-
-  cards.push({
-    id: "drift",
-    title: "Schema Drift",
-    icon: drift ? "split" : "link",
-    severity: drift ? "error" : "ok",
-    description: drift
-      ? "Schema drift detected between Pulse and data source."
-      : "No schema drift detected.",
-  });
-
-  clinicianLog("SUMMARY_CARDS_COMPLETE", { count: cards.length });
-  return cards;
+  return [
+    {
+      id: "overall-health",
+      title: "Overall Health",
+      icon: drift || mismatchCount || missingCount ? "warning" : "check",
+      severity: drift || mismatchCount || missingCount ? "warning" : "ok",
+      description:
+        drift
+          ? "Schema drift detected."
+          : mismatchCount || missingCount
+          ? "Data issues detected."
+          : "No major issues detected."
+    },
+    {
+      id: "mismatches",
+      title: "Field Mismatches",
+      icon: mismatchCount ? "error" : "check",
+      severity: mismatchCount ? "error" : "ok",
+      count: mismatchCount,
+      description:
+        mismatchCount
+          ? `${mismatchCount} mismatched fields.`
+          : "No mismatched fields."
+    },
+    {
+      id: "missing-fields",
+      title: "Missing Fields",
+      icon: missingCount ? "warning" : "check",
+      severity: missingCount ? "warning" : "ok",
+      count: missingCount,
+      description:
+        missingCount
+          ? `${missingCount} missing fields.`
+          : "No missing fields."
+    },
+    {
+      id: "performance",
+      title: "Performance Signals",
+      icon: slowdownCount ? "turtle" : "bolt",
+      severity: slowdownCount ? "warning" : "ok",
+      count: slowdownCount,
+      description:
+        slowdownCount
+          ? `${slowdownCount} slowdown patterns detected.`
+          : "No slowdown patterns."
+    },
+    {
+      id: "drift",
+      title: "Schema Drift",
+      icon: drift ? "split" : "link",
+      severity: drift ? "error" : "ok",
+      description:
+        drift
+          ? "Schema drift detected."
+          : "No schema drift."
+    }
+  ];
 }
 
 // ============================================================================
-// ISSUE LIST — Clinical Triage Table
+// ISSUE LIST — Clinical Triage Table (v10.4)
 // ============================================================================
 function buildIssueList(diagnostics) {
-  clinicianLog("ISSUE_LIST_START");
-
   const issues = [];
 
   diagnostics.mismatches.forEach((m) => {
@@ -175,7 +124,7 @@ function buildIssueList(diagnostics) {
       severity: "error",
       field: m.field,
       message: `Field "${m.field}" mismatch: expected ${m.expected}, got ${m.actual}`,
-      hint: "Align this field's type/value with the Pulse schema.",
+      hint: "Align this field with the Pulse schema."
     });
   });
 
@@ -185,7 +134,7 @@ function buildIssueList(diagnostics) {
       severity: "warning",
       field: f,
       message: `Missing field "${f}"`,
-      hint: "Add this field or update the schema if it's no longer required.",
+      hint: "Add this field or update the schema."
     });
   });
 
@@ -195,8 +144,8 @@ function buildIssueList(diagnostics) {
       severity: "warning",
       field: null,
       message: `Potential slowdown cause: ${reason}`,
-      hint: "Consider simplifying or splitting this data to improve AI performance.",
-      id: `slowdown-${index}`,
+      hint: "Consider simplifying this data.",
+      id: `slowdown-${index}`
     });
   });
 
@@ -205,11 +154,10 @@ function buildIssueList(diagnostics) {
       type: "drift",
       severity: "error",
       field: null,
-      message: "Schema drift detected between Pulse and data source.",
-      hint: "Run a full audit and align schemas before deploying changes.",
+      message: "Schema drift detected.",
+      hint: "Run a full audit and align schemas."
     });
   }
 
-  clinicianLog("ISSUE_LIST_COMPLETE", { count: issues.length });
   return issues;
 }

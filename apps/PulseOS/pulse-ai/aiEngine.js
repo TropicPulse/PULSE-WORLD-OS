@@ -1,42 +1,24 @@
 // ============================================================================
-// FILE: tropic-pulse-functions/apps/pulse-ai/aiEngine.js
-// LAYER: THE CORTEX (Execution Layer + Safety Enforcer + Evolutionary Control Center)
-// ============================================================================
-//
-// ROLE (v7.1+):
-//   THE CORTEX — The execution + control center of Pulse AI.
-//   • Builds the cognitive frame (persona, permissions, boundaries).
-//   • Enforces safety + permissions deterministically.
-//   • Executes AI operations in a controlled environment.
-//   • Captures diagnostics: drift, mismatches, slowdown.
-//   • Returns result + trace for debugging + evolutionary insight.
-//
-// PURPOSE (v7.1+):
-//   • Central orchestrator for all AI tasks.
-//   • Provide a safe, deterministic execution environment.
-//   • Log reasoning summaries (SAFE, not chain‑of‑thought).
-//   • Guarantee auditable, predictable behavior.
-//   • Act as the “motor cortex” of the digital organism.
-//
-// CONTRACT (unchanged):
-//   • READ‑ONLY — no writes.
-//   • NO eval(), NO Function(), NO dynamic imports.
-//   • NO executing user code.
-//   • NO network calls.
-//   • SAFE summaries only — never chain‑of‑thought.
-//
-// SAFETY (unchanged):
-//   • v7.1+ upgrade is COMMENTAL + DIAGNOSTIC ONLY — NO LOGIC CHANGES.
-//   • All behavior remains identical to pre‑v7.1 aiEngine.
+//  PULSE OS v10.4 — AI CORTEX (FINAL CLEAN VERSION)
 // ============================================================================
 
 import { createAIContext } from "./aiContext.js";
 import { checkPermission } from "./permissions.js";
+import { formatDebugReport } from "./aiDebug.js";
+import { buildAdminPanelModel } from "./aiClinician.js";
+
+import { runArchitectMode } from "./modes/architect.js";
+import { runObserverMode } from "./modes/observer.js";
+import { runTourGuideMode } from "./modes/tourguide.js";
+
+import { createBrainstem } from "./aiBrainstem.js";
 
 // ============================================================================
-// PUBLIC API — Cortex Execution Wrapper
+// PUBLIC API — Cortex Execution Wrapper (v10.4)
 // ============================================================================
-export async function runAI(request = {}, operation) {
+export async function runAI(request = {}, operation, deps = {}) {
+  const { db, fsAPI, routeAPI, schemaAPI } = deps;
+
   // --------------------------------------------------------------------------
   // 1) Build Cognitive Frame — Cortex Initialization
   // --------------------------------------------------------------------------
@@ -44,7 +26,20 @@ export async function runAI(request = {}, operation) {
   context.logStep("AI context initialized.");
 
   // --------------------------------------------------------------------------
-  // 2) Permission Enforcement — Executive Control
+  // 2) Build Brainstem (Persona + Organs + Personality)
+  // --------------------------------------------------------------------------
+  const brainstem = createBrainstem(request, db, fsAPI, routeAPI, schemaAPI);
+
+  // Merge brainstem context into cortex context
+  Object.assign(context, brainstem.context);
+
+  // Attach organs to context
+  context.organs = brainstem.organs;
+
+  context.logStep(`Persona selected: ${context.personaId}`);
+
+  // --------------------------------------------------------------------------
+  // 3) Permission Enforcement — Executive Control
   // --------------------------------------------------------------------------
   const allowed = checkPermission(
     context.personaId,
@@ -55,10 +50,7 @@ export async function runAI(request = {}, operation) {
     context.logStep(
       `Permission denied for persona "${context.personaId}" on intent "${request.intent}".`
     );
-    return {
-      result: null,
-      context,
-    };
+    return buildAIResponse(null, context);
   }
 
   context.logStep(
@@ -66,14 +58,34 @@ export async function runAI(request = {}, operation) {
   );
 
   // --------------------------------------------------------------------------
-  // 3) Execute Operation — Cortex Action Pathway
+  // 4) Persona-Specific Execution Pathway
   // --------------------------------------------------------------------------
   let result = null;
 
   try {
     context.logStep("Executing AI operation...");
-    result = await operation(context);
+
+    switch (context.personaId) {
+      case "architect":
+        result = await runArchitectMode(request, context, operation);
+        break;
+
+      case "observer":
+        result = await runObserverMode(request, context, operation);
+        break;
+
+      case "tourguide":
+        result = await runTourGuideMode(request, context, operation);
+        break;
+
+      default:
+        // Neutral mode
+        result = await operation(context);
+        break;
+    }
+
     context.logStep("AI operation completed successfully.");
+
   } catch (err) {
     context.flagSlowdown("Operation threw an exception.");
     context.logStep(`Error: ${err.message}`);
@@ -81,10 +93,31 @@ export async function runAI(request = {}, operation) {
   }
 
   // --------------------------------------------------------------------------
-  // 4) Return Result + Cognitive Trace — Cortex Output
+  // 5) Return Full AI Output — Cortex Output Contract (v10.4)
   // --------------------------------------------------------------------------
+  return buildAIResponse(result, context);
+}
+
+// ============================================================================
+// INTERNAL — Build Full AI Response (v10.4)
+// ============================================================================
+function buildAIResponse(result, context) {
   return {
     result,
     context,
+
+    // Historian (Scribe)
+    scribeReport: formatDebugReport(context),
+
+    // Diagnostics (Clinician)
+    clinicianReport: buildAdminPanelModel(context),
+
+    // Observer (optional)
+    observerReport: context.observerReport || null,
+
+    // Identity + Boundaries
+    persona: context.persona,
+    permissions: context.permissions,
+    boundaries: context.boundaries
   };
 }

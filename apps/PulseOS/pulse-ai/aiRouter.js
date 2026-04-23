@@ -1,91 +1,121 @@
 // ============================================================================
-// FILE: tropic-pulse-functions/apps/pulse-ai/aiRouter.js
-// LAYER: THE INTERPRETER (Intent Decoder + Persona Selector + Language Cortex)
-// ============================================================================
-//
-// ROLE (v7.1+):
-//   THE INTERPRETER — Decodes intent + selects the correct AI persona.
-//   • Inspects request intent + flags.
-//   • Chooses backend‑ai vs frontend‑ai.
-//   • Attaches permissions + boundaries.
-//   • Produces a SAFE reasoning trace (not chain‑of‑thought).
-//   • Acts as the “language cortex” of Pulse AI — decoding meaning.
-//
-// PURPOSE (v7.1+):
-//   • Provide deterministic persona routing.
-//   • Make routing logic explicit + inspectable.
-//   • Explain routing decisions in human‑readable form.
-//   • Surface evolutionary patterns in how intent is interpreted.
-//
-// CONTRACT (unchanged):
-//   • READ‑ONLY — no writes.
-//   • NO eval(), NO Function(), NO dynamic imports.
-//   • NO executing user code.
-//   • NO network calls.
-//   • Deterministic routing only.
-//
-// SAFETY (unchanged):
-//   • v7.1+ upgrade is COMMENTAL + DIAGNOSTIC ONLY — NO LOGIC CHANGES.
-//   • All behavior remains identical to pre‑v7.1 aiRouter.
+//  PULSE OS v10.4 — AI ROUTER (FINAL VERSION)
+//  Intent Decoder • Persona Selector • Language Cortex
+//  PURE ROUTING. ZERO MUTATION. ZERO TIME. ZERO RANDOMNESS.
 // ============================================================================
 
 import { Personas, getPersona } from "./persona.js";
-import { checkPermission } from "./permissions.js";
-import { BoundaryLevels, canPerform } from "./boundaries.js";
 
 // ============================================================================
-// PUBLIC API — Interpret + Route
+// PUBLIC API — Interpret + Route (v10.4)
 // ============================================================================
 export function routeAIRequest(request = {}) {
   const reasoning = [];
 
   // --------------------------------------------------------------------------
-  // 1) Normalize Intent — Interpreter Step (Language Cortex)
+  // 1) Normalize Intent — Language Cortex
   // --------------------------------------------------------------------------
   const intent = (request.intent || "analyze").toLowerCase();
   reasoning.push(`Intent detected: "${intent}"`);
 
+  // Extract flags (default false)
   const {
     touchesBackend = false,
     touchesFrontend = false,
     touchesSchemas = false,
     touchesFiles = false,
-    userIsOwner = false,
+    touchesLogs = false,
+    touchesRoutes = false,
+    touchesErrors = false,
+    touchesTourism = false,
+    touchesUsers = false,
+    touchesArchitecture = false,
+    touchesEvolution = false,
+    touchesEnvironment = false,
+    touchesPower = false,
+    touchesEarn = false,
+    touchesPulse = false,
+    touchesHistory = false,
+    touchesSettings = false,
+    userIsOwner = false
   } = request;
 
-  if (touchesBackend) reasoning.push("Request touches BACKEND.");
-  if (touchesFrontend) reasoning.push("Request touches FRONTEND.");
-  if (touchesSchemas) reasoning.push("Request touches SCHEMAS.");
-  if (touchesFiles) reasoning.push("Request touches FILES.");
-  if (userIsOwner) reasoning.push("User is OWNER (has elevated rights).");
+  // Record flags
+  Object.entries({
+    touchesBackend,
+    touchesFrontend,
+    touchesSchemas,
+    touchesFiles,
+    touchesLogs,
+    touchesRoutes,
+    touchesErrors,
+    touchesTourism,
+    touchesUsers,
+    touchesArchitecture,
+    touchesEvolution,
+    touchesEnvironment,
+    touchesPower,
+    touchesEarn,
+    touchesPulse,
+    touchesHistory,
+    touchesSettings,
+    userIsOwner
+  }).forEach(([k, v]) => {
+    if (v) reasoning.push(`Flag: ${k.toUpperCase()}`);
+  });
 
   // --------------------------------------------------------------------------
-  // 2) Persona Selection — Interpreter Decision
+  // 2) Persona Selection — Interpreter Decision (v10.4)
   // --------------------------------------------------------------------------
-  let personaId = Personas.FRONTEND_AI;
+  let personaId = Personas.NEUTRAL;
 
-  const wantsMutation =
-    intent === "generate" ||
-    intent === "heal" ||
-    intent === "migrate" ||
-    intent === "modify" ||
-    intent === "create";
-
-  if ((touchesBackend || touchesSchemas || touchesFiles) && wantsMutation) {
+  // ARCHITECT MODE — system-level, owner-only
+  if (
+    touchesArchitecture ||
+    touchesEvolution ||
+    touchesSchemas ||
+    touchesBackend ||
+    touchesFiles ||
+    touchesEnvironment && userIsOwner ||
+    touchesPower && userIsOwner ||
+    touchesEarn && userIsOwner ||
+    touchesSettings && userIsOwner
+  ) {
     if (userIsOwner) {
-      personaId = Personas.BACKEND_AI;
-      reasoning.push(
-        "Routing to BACKEND AI: mutation requested on backend/schemas/files and user is owner."
-      );
+      personaId = Personas.ARCHITECT;
+      reasoning.push("Routing to ARCHITECT persona (system-level request).");
     } else {
-      reasoning.push(
-        "Staying on FRONTEND AI: mutation requested but user is NOT owner."
-      );
+      reasoning.push("User not owner — cannot route to ARCHITECT persona.");
     }
-  } else {
-    reasoning.push(
-      "Routing to FRONTEND AI: intent is read‑only (analyze/explain) or frontend‑only."
-    );
+  }
+
+  // OBSERVER MODE — diagnostics
+  else if (
+    touchesLogs ||
+    touchesRoutes ||
+    touchesErrors ||
+    touchesHistory ||
+    touchesPulse
+  ) {
+    personaId = Personas.OBSERVER;
+    reasoning.push("Routing to OBSERVER persona (diagnostic request).");
+  }
+
+  // TOUR GUIDE MODE — user-facing + tourism
+  else if (
+    touchesTourism ||
+    touchesUsers ||
+    touchesEarn ||
+    touchesPulse
+  ) {
+    personaId = Personas.TOURGUIDE;
+    reasoning.push("Routing to TOUR GUIDE persona (user-facing request).");
+  }
+
+  // NEUTRAL MODE — fallback
+  else {
+    personaId = Personas.NEUTRAL;
+    reasoning.push("Routing to NEUTRAL persona (generic request).");
   }
 
   const persona = getPersona(personaId);
@@ -103,7 +133,7 @@ export function routeAIRequest(request = {}) {
     persona,
     permissions,
     boundaries,
-    reasoning,
+    reasoning
   };
 }
 
@@ -115,6 +145,6 @@ export function explainRoutingDecision(request = {}) {
 
   return {
     personaId: result.personaId,
-    reasoning: result.reasoning,
+    reasoning: result.reasoning
   };
 }

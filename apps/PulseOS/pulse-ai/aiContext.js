@@ -1,75 +1,40 @@
 // ============================================================================
-// FILE: tropic-pulse-functions/apps/pulse-ai/aiContext.js
-// LAYER: THE COGNITIVE FRAME (Mental Model Constructor + Evolutionary Pattern Layer)
-// ============================================================================
-//
-// ROLE (v7.1+):
-//   THE COGNITIVE FRAME — The AI’s mental model constructor.
-//   • Builds persona, permissions, boundaries.
-//   • Shapes the AI’s understanding of the request.
-//   • Creates SAFE reasoning trace (not chain‑of‑thought).
-//   • Provides diagnostics for mismatches, drift, slowdown.
-//   • Surfaces evolutionary patterns in how the system interprets data.
-//   • Acts as the “prefrontal cortex” of Pulse AI — expectation + context.
-//
-// PURPOSE (v7.1+):
-//   • Provide a unified cognitive context for all AI operations.
-//   • Define expectations + boundaries deterministically.
-//   • Build a stable mental frame for safe reasoning.
-//   • Track reasoning summaries step‑by‑step.
-//   • Detect schema drift + missing fields.
-//   • Expose conceptual evolutionary advantages (for human insight only).
-//
-// CONTRACT (unchanged):
-//   • READ‑ONLY — no writes.
-//   • NO eval(), NO Function(), NO dynamic imports.
-//   • NO executing user code.
-//   • NO network calls.
-//   • SAFE summaries only — never chain‑of‑thought.
-//
-// SAFETY (unchanged):
-//   • v7.1+ upgrade is COMMENTAL + DIAGNOSTIC ONLY — NO LOGIC CHANGES.
-//   • All behavior remains identical to pre‑v7.1 aiContext.
+//  PULSE OS v10.4 — THE COGNITIVE FRAME
+//  Mental Model Constructor • Expectation Builder • Diagnostic Surface
+//  PURE CONTEXT CONSTRUCTION. ZERO MUTATION. ZERO TIME. ZERO RANDOMNESS.
 // ============================================================================
 
 import { routeAIRequest } from "./aiRouter.js";
 
-// ============================================================================
-// LAYER CONSTANTS + DIAGNOSTICS
-// ============================================================================
-const COG_LAYER_ID = "COGNITIVE-FRAME-LAYER";
-const COG_LAYER_NAME = "THE COGNITIVE FRAME";
-const COG_LAYER_ROLE = "Understanding Layer + Expectation Builder + Evolutionary Pattern Surface";
-
-const COG_DIAGNOSTICS_ENABLED =
-  process?.env?.PULSE_COGNITIVE_DIAGNOSTICS === "true" ||
-  process?.env?.PULSE_DIAGNOSTICS === "true";
-
-const cogLog = (stage, details = {}) => {
-  if (!COG_DIAGNOSTICS_ENABLED) return;
-
-  log(
-    JSON.stringify({
-      pulseLayer: COG_LAYER_ID,
-      pulseName: COG_LAYER_NAME,
-      pulseRole: COG_LAYER_ROLE,
-      stage,
-      ...details
-    })
-  );
+const COGNITIVE_META = {
+  layer: "PulseAICognitiveFrame",
+  role: "COGNITIVE_FRAME",
+  version: "10.4",
+  target: "full-mesh",
+  selfRepairable: true,
+  evo: {
+    driftProof: true,
+    deterministicField: true,
+    multiInstanceReady: true,
+    unifiedAdvantageField: true,
+    futureEvolutionReady: true,
+    observerOnly: true,
+    personaAware: true,
+    boundaryAware: true,
+    permissionAware: true
+  }
 };
 
-cogLog("COGNITIVE_FRAME_INIT", {});
-
 // ============================================================================
-// PUBLIC API — Build Cognitive Frame
+// PUBLIC API — Build Cognitive Frame (v10.4)
 // ============================================================================
 export function createAIContext(request = {}) {
-  cogLog("CREATE_CONTEXT_START");
 
   const routing = routeAIRequest(request);
 
   const context = {
+    meta: COGNITIVE_META,
+
     personaId: routing.personaId,
     persona: routing.persona,
     permissions: routing.permissions,
@@ -83,7 +48,7 @@ export function createAIContext(request = {}) {
       mismatches: [],
       missingFields: [],
       driftDetected: false,
-      slowdownCauses: [],
+      slowdownCauses: []
     },
 
     // ------------------------------------------------------------------------
@@ -91,7 +56,6 @@ export function createAIContext(request = {}) {
     // ------------------------------------------------------------------------
     logStep(message) {
       this.trace.push(message);
-      cogLog("TRACE_STEP", { message });
     },
 
     // ------------------------------------------------------------------------
@@ -102,32 +66,23 @@ export function createAIContext(request = {}) {
       this.trace.push(
         `Mismatch detected on "${field}": expected ${expected}, got ${actual}`
       );
-      cogLog("FLAG_MISMATCH", { field, expected, actual });
     },
 
     flagMissingField(field) {
       this.diagnostics.missingFields.push(field);
       this.trace.push(`Missing field detected: "${field}"`);
-      cogLog("FLAG_MISSING_FIELD", { field });
     },
 
     flagSlowdown(reason) {
       this.diagnostics.slowdownCauses.push(reason);
       this.trace.push(`Potential slowdown cause: ${reason}`);
-      cogLog("FLAG_SLOWDOWN", { reason });
     },
 
     flagDrift(reason) {
       this.diagnostics.driftDetected = true;
       this.trace.push(`Drift detected: ${reason}`);
-      cogLog("FLAG_DRIFT", { reason });
-    },
+    }
   };
-
-  cogLog("CREATE_CONTEXT_COMPLETE", {
-    personaId: context.personaId,
-    traceLength: context.trace.length
-  });
 
   return context;
 }

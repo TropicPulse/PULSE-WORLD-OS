@@ -1,151 +1,123 @@
 // ============================================================================
-// FILE: tropic-pulse-functions/apps/pulse-ai/boundaries.js
-// LAYER: THE SUPEREGO (Behavioral Constraints + Ethical Boundaries + Evolutionary Moral Law)
-// ============================================================================
-//
-// ROLE (v7.1+):
-//   THE SUPEREGO — The AI’s moral + behavioral constraint system.
-//   • Defines what each persona may TOUCH, SUGGEST, or CHANGE.
-//   • Enforces ethical boundaries across the Pulse OS.
-//   • Requires human/owner confirmation for sensitive actions.
-//   • Acts as the “ethical cortex” of the digital organism.
-//
-// PURPOSE (v7.1+):
-//   • Separate SAFE vs UNSAFE operations.
-//   • Provide deterministic, auditable boundary checks.
-//   • Make constraints human‑readable + AI‑readable.
-//   • Surface evolutionary constraint patterns (conceptual only).
-//
-// CONTRACT (unchanged):
-//   • READ‑ONLY — no writes.
-//   • NO eval(), NO Function(), NO dynamic imports.
-//   • NO executing user code.
-//   • NO network calls.
-//   • Deterministic boundary checks only.
-//
-// SAFETY (unchanged):
-//   • v7.1+ upgrade is COMMENTAL ONLY — NO LOGIC CHANGES.
-//   • All behavior remains identical to pre‑v7.1 boundaries.js.
+//  PULSE OS v10.4 — THE SUPEREGO
+//  Behavioral Constraints • Ethical Boundaries • Evolutionary Moral Law
+//  PURE CONSTRAINTS. ZERO MUTATION. ZERO TIME. ZERO RANDOMNESS.
 // ============================================================================
 
-import {
-  BackendAIPermissions,
-  FrontendAIPermissions,
-} from "./permissions.js";
-
-// ============================================================================
-// BOUNDARY LEVELS — Moral Law
-// ============================================================================
 export const BoundaryLevels = {
   NONE: "none",     // Allowed freely
   HUMAN: "human",   // Requires human confirmation
   OWNER: "owner",   // Requires owner (you)
-  NEVER: "never",   // Forbidden
+  NEVER: "never"    // Forbidden
 };
 
 // ============================================================================
-// BACKEND AI — High Power, High Responsibility
+//  ARCHITECT AI — System-Level Insight, Zero Mutation
 // ============================================================================
-export const BackendAIBoundaries = {
-  files: {
-    read: BoundaryLevels.NONE,
-    write: BoundaryLevels.HUMAN,
-    create: BoundaryLevels.HUMAN,
-    delete: BoundaryLevels.OWNER,
-    rewriteSubsystem: BoundaryLevels.OWNER,
-  },
-  schemas: {
-    read: BoundaryLevels.NONE,
-    modify: BoundaryLevels.HUMAN,
-    migrate: BoundaryLevels.OWNER,
-  },
-  backend: {
-    read: BoundaryLevels.NONE,
-    modify: BoundaryLevels.HUMAN,
-  },
-  frontend: {
-    read: BoundaryLevels.NONE,
-    modify: BoundaryLevels.HUMAN,
-  },
-  routing: {
-    read: BoundaryLevels.NONE,
-    modify: BoundaryLevels.OWNER,
-  },
-  security: {
-    read: BoundaryLevels.OWNER,
-    modify: BoundaryLevels.OWNER,
-  },
-  healing: {
-    suggest: BoundaryLevels.NONE,
-    apply: BoundaryLevels.HUMAN,
-  },
+export const ArchitectAIBoundaries = {
+  system: { read: BoundaryLevels.NONE, modify: BoundaryLevels.NEVER },
+  organs: { read: BoundaryLevels.NONE, modify: BoundaryLevels.NEVER },
+  routing:{ read: BoundaryLevels.NONE, modify: BoundaryLevels.NEVER },
+  files:  { read: BoundaryLevels.NONE, write: BoundaryLevels.NEVER, create: BoundaryLevels.NEVER, delete: BoundaryLevels.NEVER },
+  schemas:{ read: BoundaryLevels.NONE, modify: BoundaryLevels.NEVER, migrate: BoundaryLevels.NEVER },
+  healing:{ suggest: BoundaryLevels.NONE, apply: BoundaryLevels.NEVER },
+  evolution:{ read: BoundaryLevels.NONE, modify: BoundaryLevels.NEVER },
+
+  // NEW v10.4 DOMAINS
+  environment:{ read: BoundaryLevels.NONE, modify: BoundaryLevels.NEVER },
+  power:{ read: BoundaryLevels.NONE, modify: BoundaryLevels.NEVER },
+  earn:{ read: BoundaryLevels.NONE, modify: BoundaryLevels.NEVER },
+  drift:{ read: BoundaryLevels.NONE, modify: BoundaryLevels.NEVER },
+  history:{ read: BoundaryLevels.NONE, modify: BoundaryLevels.NEVER },
+  settings:{ read: BoundaryLevels.NONE, modify: BoundaryLevels.NEVER }
 };
 
 // ============================================================================
-// FRONTEND AI — Read‑Only + Suggestion‑Only
+//  OBSERVER AI — Diagnostics, Logs, Drift, Errors
 // ============================================================================
-export const FrontendAIBoundaries = {
-  files: {
-    read: BoundaryLevels.NONE,
-    write: BoundaryLevels.NEVER,
-    create: BoundaryLevels.NEVER,
-    delete: BoundaryLevels.NEVER,
-    rewriteSubsystem: BoundaryLevels.NEVER,
-  },
-  schemas: {
-    read: BoundaryLevels.NONE,
-    modify: BoundaryLevels.NEVER,
-    migrate: BoundaryLevels.NEVER,
-  },
-  backend: {
-    read: BoundaryLevels.NEVER,
-    modify: BoundaryLevels.NEVER,
-  },
-  frontend: {
-    read: BoundaryLevels.NONE,
-    modify: BoundaryLevels.NEVER,
-  },
-  routing: {
-    read: BoundaryLevels.NEVER,
-    modify: BoundaryLevels.NEVER,
-  },
-  security: {
-    read: BoundaryLevels.NEVER,
-    modify: BoundaryLevels.NEVER,
-  },
-  healing: {
-    suggest: BoundaryLevels.NONE,
-    apply: BoundaryLevels.NEVER,
-  },
+export const ObserverAIBoundaries = {
+  logs:{ read: BoundaryLevels.NONE, modify: BoundaryLevels.NEVER },
+  errors:{ read: BoundaryLevels.NONE, modify: BoundaryLevels.NEVER },
+  routes:{ read: BoundaryLevels.NONE, modify: BoundaryLevels.NEVER },
+  performance:{ read: BoundaryLevels.NONE, modify: BoundaryLevels.NEVER },
+  drift:{ read: BoundaryLevels.NONE, modify: BoundaryLevels.NEVER },
+  schemas:{ read: BoundaryLevels.NONE, modify: BoundaryLevels.NEVER },
+  healing:{ suggest: BoundaryLevels.NONE, apply: BoundaryLevels.NEVER },
+
+  // NEW v10.4 DOMAINS
+  environment:{ read: BoundaryLevels.NONE, modify: BoundaryLevels.NEVER },
+  power:{ read: BoundaryLevels.NONE, modify: BoundaryLevels.NEVER },
+  earn:{ read: BoundaryLevels.NONE, modify: BoundaryLevels.NEVER },
+  history:{ read: BoundaryLevels.NONE, modify: BoundaryLevels.NEVER }
 };
 
 // ============================================================================
-// BOUNDARY LOOKUP — Superego Query
+//  TOUR GUIDE AI — User-Facing, Zero System Access
+// ============================================================================
+export const TourGuideAIBoundaries = {
+  conversation:{ read: BoundaryLevels.NONE, modify: BoundaryLevels.NONE },
+  tourism:{ read: BoundaryLevels.NONE, modify: BoundaryLevels.NONE },
+  users:{ read: BoundaryLevels.NONE, modify: BoundaryLevels.NONE },
+
+  // SYSTEM DOMAINS — BLOCKED
+  system:{ read: BoundaryLevels.NEVER, modify: BoundaryLevels.NEVER },
+  routing:{ read: BoundaryLevels.NEVER, modify: BoundaryLevels.NEVER },
+  schemas:{ read: BoundaryLevels.NEVER, modify: BoundaryLevels.NEVER },
+  files:{ read: BoundaryLevels.NEVER, modify: BoundaryLevels.NEVER },
+  environment:{ read: BoundaryLevels.NEVER, modify: BoundaryLevels.NEVER },
+  power:{ read: BoundaryLevels.NEVER, modify: BoundaryLevels.NEVER },
+  earn:{ read: BoundaryLevels.NEVER, modify: BoundaryLevels.NEVER },
+  drift:{ read: BoundaryLevels.NEVER, modify: BoundaryLevels.NEVER },
+  history:{ read: BoundaryLevels.NEVER, modify: BoundaryLevels.NEVER },
+  settings:{ read: BoundaryLevels.NEVER, modify: BoundaryLevels.NEVER }
+};
+
+// ============================================================================
+//  NEUTRAL AI — Generic, Safe, Minimal Access
+// ============================================================================
+export const NeutralAIBoundaries = {
+  conversation:{ read: BoundaryLevels.NONE, modify: BoundaryLevels.NONE },
+  analysis:{ read: BoundaryLevels.NONE, modify: BoundaryLevels.NEVER },
+
+  // SYSTEM DOMAINS — BLOCKED
+  system:{ read: BoundaryLevels.NEVER, modify: BoundaryLevels.NEVER },
+  routing:{ read: BoundaryLevels.NEVER, modify: BoundaryLevels.NEVER },
+  schemas:{ read: BoundaryLevels.NEVER, modify: BoundaryLevels.NEVER },
+  environment:{ read: BoundaryLevels.NEVER, modify: BoundaryLevels.NEVER },
+  power:{ read: BoundaryLevels.NEVER, modify: BoundaryLevels.NEVER },
+  earn:{ read: BoundaryLevels.NEVER, modify: BoundaryLevels.NEVER },
+  drift:{ read: BoundaryLevels.NEVER, modify: BoundaryLevels.NEVER },
+  history:{ read: BoundaryLevels.NEVER, modify: BoundaryLevels.NEVER },
+  settings:{ read: BoundaryLevels.NEVER, modify: BoundaryLevels.NEVER }
+};
+
+// ============================================================================
+//  BOUNDARY LOOKUP — Superego Query
 // ============================================================================
 export function getBoundariesForPersona(persona) {
-  if (persona === "backend-ai") return BackendAIBoundaries;
-  if (persona === "frontend-ai") return FrontendAIBoundaries;
-  return null;
+  switch (persona) {
+    case "architect": return ArchitectAIBoundaries;
+    case "observer": return ObserverAIBoundaries;
+    case "tourguide": return TourGuideAIBoundaries;
+    case "neutral": return NeutralAIBoundaries;
+    default: return NeutralAIBoundaries;
+  }
 }
 
 // ============================================================================
-// BOUNDARY CHECK — Moral Enforcement
+//  BOUNDARY CHECK — Moral Enforcement
 // ============================================================================
 export function canPerform(persona, domain, action) {
   const boundaries = getBoundariesForPersona(persona);
-  if (!boundaries) {
-    return { allowed: false, level: BoundaryLevels.NEVER };
-  }
+  if (!boundaries) return { allowed: false, level: BoundaryLevels.NEVER };
 
   const domainRules = boundaries[domain];
-  if (!domainRules) {
-    return { allowed: false, level: BoundaryLevels.NEVER };
-  }
+  if (!domainRules) return { allowed: false, level: BoundaryLevels.NEVER };
 
   const level = domainRules[action] || BoundaryLevels.NEVER;
 
   return {
     allowed: level === BoundaryLevels.NONE,
-    level,
+    level
   };
 }

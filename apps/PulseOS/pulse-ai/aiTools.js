@@ -1,48 +1,38 @@
 // ============================================================================
-// FILE: tropic-pulse-functions/apps/pulse-ai/aiTools.js
-// LAYER: THE INSTRUMENTS (Natural Abilities + Diagnostic Tools + Evolutionary Sensors)
-// ============================================================================
-//
-// ROLE (v7.1+):
-//   THE INSTRUMENTS — The AI’s built‑in abilities + diagnostic tools.
-//   • Analyze Firestore + SQL + Pulse schemas.
-//   • Detect mismatches, missing fields, drift, slowdown.
-//   • Log diagnostic steps into the Cognitive Frame.
-//   • Act as the “sensorimotor instruments” of the digital organism.
-//
-// PURPOSE (v7.1+):
-//   • Provide deterministic, safe analysis utilities.
-//   • Serve as the AI’s “hands” and “tools” for inspection.
-//   • Integrate tightly with aiContext for trace + diagnostics.
-//   • Surface evolutionary patterns in data structures (conceptual only).
-//
-// CONTRACT (unchanged):
-//   • READ‑ONLY — no writes.
-//   • NO eval(), NO Function(), NO dynamic imports.
-//   • NO executing user code.
-//   • NO network calls.
-//   • Deterministic analysis only.
-//
-// SAFETY (unchanged):
-//   • v7.1+ upgrade is COMMENTAL + DIAGNOSTIC ONLY — NO LOGIC CHANGES.
-//   • All behavior remains identical to pre‑v7.1 aiTools.
+//  PULSE OS v10.4 — THE INSTRUMENTS
+//  Natural Abilities • Diagnostic Tools • Evolutionary Sensors
+//  PURE ANALYSIS. ZERO MUTATION. ZERO TIME. ZERO RANDOMNESS.
 // ============================================================================
 
-import {
-  translateFirestoreDocument,
-} from "../pulse-translator/firestoreToPulse.js";
-
-import {
-  translateSQLSchema,
-} from "../pulse-translator/sqlToPulse.js";
-
-import {
-  PulseFieldTypes,
-  validatePulseField,
-} from "../pulse-specs/pulseFields.js";
+import { translateFirestoreDocument } from "../pulse-translator/firestoreToPulse.js";
+import { translateSQLSchema } from "../pulse-translator/sqlToPulse.js";
+import { PulseFieldTypes, validatePulseField } from "../pulse-specs/pulseFields.js";
 
 // ============================================================================
-// FIRESTORE ANALYSIS — Instrument Procedure
+//  IDENTITY — THE INSTRUMENTS (v10.4)
+// ============================================================================
+export const AI_INSTRUMENTS_META = {
+  layer: "PulseAIInstruments",
+  role: "INSTRUMENTS",
+  version: "10.4",
+  target: "full-mesh",
+  selfRepairable: true,
+  evo: {
+    driftProof: true,
+    deterministicField: true,
+    multiInstanceReady: true,
+    unifiedAdvantageField: true,
+    futureEvolutionReady: true,
+    observerOnly: true,
+    architectAware: true,
+    schemaAware: true,
+    lineageAware: true,
+    patternAware: true
+  }
+};
+
+// ============================================================================
+//  FIRESTORE ANALYSIS — Instrument Procedure
 // ============================================================================
 export function analyzeFirestoreDoc(context, docData = {}) {
   context.logStep("Analyzing Firestore document...");
@@ -50,11 +40,11 @@ export function analyzeFirestoreDoc(context, docData = {}) {
   const pulseSchema = translateFirestoreDocument(docData);
   context.logStep("Translated Firestore → PulseFields.");
 
-  // Detect mismatches + missing fields
+  // Validate fields
   for (const [key, field] of Object.entries(pulseSchema)) {
     try {
       validatePulseField(field);
-    } catch (err) {
+    } catch {
       context.flagMismatch(key, "valid PulseField", "invalid PulseField");
     }
 
@@ -63,16 +53,12 @@ export function analyzeFirestoreDoc(context, docData = {}) {
     }
   }
 
-  // Slowdown detection
-  if (Object.keys(docData).length > 50) {
-    context.flagSlowdown("Large Firestore document with many fields.");
-  }
-
+  detectSlowdownPatterns(context, docData);
   return pulseSchema;
 }
 
 // ============================================================================
-// SQL ANALYSIS — Instrument Procedure
+//  SQL ANALYSIS — Instrument Procedure
 // ============================================================================
 export function analyzeSQLSchema(context, sqlSchema = {}) {
   context.logStep("Analyzing SQL schema...");
@@ -83,16 +69,17 @@ export function analyzeSQLSchema(context, sqlSchema = {}) {
   for (const [key, field] of Object.entries(pulseSchema)) {
     try {
       validatePulseField(field);
-    } catch (err) {
+    } catch {
       context.flagMismatch(key, "valid PulseField", "invalid PulseField");
     }
   }
 
+  detectSlowdownPatterns(context, sqlSchema);
   return pulseSchema;
 }
 
 // ============================================================================
-// DRIFT DETECTION — Instrument Procedure
+//  DRIFT DETECTION — Instrument Procedure
 // ============================================================================
 export function detectDrift(context, pulseSchema = {}, firestoreSchema = {}) {
   context.logStep("Checking for schema drift...");
@@ -117,7 +104,7 @@ export function detectDrift(context, pulseSchema = {}, firestoreSchema = {}) {
 }
 
 // ============================================================================
-// SLOWDOWN DETECTION — Instrument Procedure
+//  SLOWDOWN DETECTION — Instrument Procedure
 // ============================================================================
 export function detectSlowdownPatterns(context, data) {
   context.logStep("Checking for slowdown patterns...");
@@ -141,7 +128,7 @@ export function detectSlowdownPatterns(context, data) {
 }
 
 // ============================================================================
-// PULSE SCHEMA VALIDATION — Instrument Procedure
+//  PULSE SCHEMA VALIDATION — Instrument Procedure
 // ============================================================================
 export function validatePulseSchema(context, schema = {}) {
   context.logStep("Validating Pulse schema...");
@@ -149,8 +136,84 @@ export function validatePulseSchema(context, schema = {}) {
   for (const [key, field] of Object.entries(schema)) {
     try {
       validatePulseField(field);
-    } catch (err) {
+    } catch {
       context.flagMismatch(key, "valid PulseField", "invalid PulseField");
     }
   }
+}
+
+// ============================================================================
+//  NEW v10.4 — ROUTE ANALYSIS
+// ============================================================================
+export function analyzeRoute(context, pathway = {}) {
+  context.logStep("Analyzing pathway descriptor...");
+
+  if (!pathway || typeof pathway !== "object") {
+    context.flagMismatch("pathway", "valid object", "invalid object");
+    return null;
+  }
+
+  if (!Array.isArray(pathway.hops)) {
+    context.flagMismatch("hops", "array", typeof pathway.hops);
+  }
+
+  if (pathway.reliability < 0.9) {
+    context.flagSlowdown("Low reliability pathway detected.");
+  }
+
+  return pathway;
+}
+
+// ============================================================================
+//  NEW v10.4 — LOG ANALYSIS
+// ============================================================================
+export function analyzeLogs(context, logs = []) {
+  context.logStep("Analyzing logs...");
+
+  if (!Array.isArray(logs)) {
+    context.flagMismatch("logs", "array", typeof logs);
+    return [];
+  }
+
+  if (logs.length > 500) {
+    context.flagSlowdown("Large log set detected.");
+  }
+
+  return logs;
+}
+
+// ============================================================================
+//  NEW v10.4 — ERROR ANALYSIS
+// ============================================================================
+export function analyzeErrors(context, errors = []) {
+  context.logStep("Analyzing errors...");
+
+  if (!Array.isArray(errors)) {
+    context.flagMismatch("errors", "array", typeof errors);
+    return [];
+  }
+
+  const critical = errors.filter(e => e?.severity === "critical");
+  if (critical.length > 0) {
+    context.flagDrift("Critical errors detected in system logs.");
+  }
+
+  return errors;
+}
+
+// ============================================================================
+//  NEW v10.4 — EVOLUTIONARY PATTERN DETECTORS
+// ============================================================================
+export function detectEvolutionaryPatterns(context, pulse = {}) {
+  context.logStep("Detecting evolutionary patterns...");
+
+  if (pulse?.lineage && pulse.lineage.length > 20) {
+    context.flagSlowdown("Deep lineage chain detected.");
+  }
+
+  if (pulse?.advantageField) {
+    context.logStep("Advantage field active.");
+  }
+
+  return pulse;
 }
