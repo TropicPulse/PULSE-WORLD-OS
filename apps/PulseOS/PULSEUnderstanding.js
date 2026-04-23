@@ -8,35 +8,15 @@
 // ============================================================================
 
 // Core OS Maps (design-time only, no organs here)
-import { PulseIntentMap } from "./PulseIntentMap.js";
-import { PulseOrganismMap } from "./PulseOrganismMap.js";
-import { PulseIQMap } from "./PulseIQMap.js";
-
-// A1 Skin Reflex (page-level error membrane)
-import { attachScanner } from "./PulseOSSkinReflex.js";
+import { PulseIntentMap } from "./PULSE-OS/PulseIntentMap.js";
+import { PulseOrganismMap } from "./PULSE-OS/PulseOrganismMap.js";
+import { PulseIQMap } from "./PULSE-OS/PulseIQMap.js";
 
 // v11 Ignition Organ (top-level boot)
-import EvolutionaryWindow from "../PulseEvolutionaryWindow.js";
+import EvolutionaryWindow from "./PULSEEvolutionaryWindow.js";
 
 // Governor (for AI logging wrapper only)
-import { withOrganGuard } from "./PulseOSGovernor.js";
-
-
-// ============================================================================
-//  ATTACH SKIN REFLEX WITH IDENTITY SNAPSHOT
-// ============================================================================
-
-let PulseIdentitySnapshot = null;
-
-(async () => {
-  try {
-    PulseIdentitySnapshot = await EvolutionaryWindow.igniteIdentity("hybrid");
-    attachScanner(PulseIdentitySnapshot);
-  } catch (err) {
-    console.warn("[PulseUnderstanding] Identity ignition failed, SkinReflex attached with null identity");
-    attachScanner({});
-  }
-})();
+import { withOrganGuard } from "./PULSE-OS/PulseOSGovernor.js";
 
 
 // ============================================================================
@@ -128,35 +108,33 @@ function runThroughGovernor(organName, pulseOrImpulse, fn) {
 // ============================================================================
 async function buildPulseKernel() {
   // 1) Ignite Brain (loads organism via maps)
-  const Evolution = EvolutionaryWindow.igniteBrain({
+  const Brain = EvolutionaryWindow.igniteBrain({
     intent: PulseIntentMap,
     organism: PulseOrganismMap,
     iq: PulseIQMap,
     understanding: PULSE_UNDERSTANDING_CONTEXT
   });
 
-  const Brain = Evolution; // igniteBrain already returns a booted brain
-
   // 2) Ignite Router + GPU
   const Router = EvolutionaryWindow.igniteRouter();
   const GPU = EvolutionaryWindow.igniteGPU();
 
-  // 3) Ignite Spinal Cord (wires Brain + Router + GPU)
+  // 3) Ignite Spinal Cord (wires Brain + Router)
   const SpinalCord = EvolutionaryWindow.igniteSpinalCord({
     Router,
     Brain,
-    Evolution
+    Evolution: null // if needed later, adjust igniteBrain to return { Brain, Evolution }
   });
 
   const meta = {
     ...PULSE_UNDERSTANDING_CONTEXT,
-    identity: PulseIdentitySnapshot,
+    identity: null, // identity is handled at the window/ignition layer
     environment: PulseEnvironment
   };
 
   const Pulse = {
     meta,
-    Identity: PulseIdentitySnapshot,
+    Identity: null,
     Environment: PulseEnvironment,
 
     Brain,
@@ -199,7 +177,7 @@ if (typeof window !== "undefined") {
 // ============================================================================
 export const PulseUnderstanding = {
   ...PULSE_UNDERSTANDING_CONTEXT,
-  Identity: () => PulseIdentitySnapshot,
+  Identity: () => window?.Pulse?.Identity ?? null,
   Environment: PulseEnvironment,
   Kernel: PulseKernelPromise,
   runThroughGovernor
