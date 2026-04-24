@@ -27,7 +27,6 @@
 //   admin.initializeApp();
 // }
 // const db = getFirestore();
-
 // ============================================================================
 // ORGAN IDENTITY — v11.0
 // ============================================================================
@@ -41,18 +40,24 @@ export const PulseRole = {
   evo: {
     driftProof: true,
     deterministic: true,
+
     backendOnly: true,
+    symbolicBackend: true,        // explicit: symbolic-only backend organ
     noIQ: true,
     noRouting: true,
     noCompute: true,
+
     multiInstanceReady: true,
     memoryRepairEngine: true,
     lineageSafe: true,
     futureEvolutionReady: true,
+
     boundedScan: true,
-    timerSafe: true
+    timerSafe: true,
+    organismClusterBoost: true    // contributes to organism-wide stability
   }
 };
+
 
 // ------------------------------------------------------------
 // HUMAN‑READABLE CONTEXT MAP (v11.0)

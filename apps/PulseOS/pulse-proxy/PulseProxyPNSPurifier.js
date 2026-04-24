@@ -358,7 +358,6 @@ export async function pulsebandCleanup() {
       deletedRedownloads,
       ...CLEANUP_CONTEXT
     };
- 
   } catch (err) {
     error(
       `%c🟥 PURIFIER CLEANUP ERROR`,
