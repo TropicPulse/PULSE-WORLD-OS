@@ -142,7 +142,7 @@ export const timerLogout = onSchedule("every 5 minutes", async () => {
     let calculationVersion = 1;
 
     try {
-      const settingsSnap = await db.collection("TPSettings").doc("global").get();
+      const settingsSnap = await db.collection("Settings").doc("global").get();
       settings = settingsSnap.exists ? settingsSnap.data() : {};
 
       const season = getSeasonFromSettings(settings);
@@ -553,7 +553,7 @@ export const securitySweep = onSchedule("every 24 hours", async () => {
           // WRITE TO TPIdentityHistory
           // -----------------------------
           try {
-            await db.collection("TPIdentityHistory").add({
+            await db.collection("IdentityHistory").add({
               uid,
               rootResendToken,
               oldSessionToken,

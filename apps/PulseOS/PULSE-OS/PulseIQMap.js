@@ -50,10 +50,10 @@ import { log, warn, error as logError } from "../PULSEX/PULSEProofLogger.js";
 import { boot } from "./PulseOSBrainCortex.js";
 
 
-// ============================================================================
-//  EXTERNAL SERVICE IQ (ALLOWED)
-// ============================================================================
-import { admin } from "../netlify/functions/firebase.js";
+// // ============================================================================
+// //  EXTERNAL SERVICE IQ (ALLOWED)
+// // ============================================================================
+// import { admin } from "../netlify/functions/firebase.js";
 
 
 // ============================================================================
