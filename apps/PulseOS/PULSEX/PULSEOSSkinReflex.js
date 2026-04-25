@@ -1,5 +1,5 @@
 // ============================================================================
-// FILE: /apps/PulseOS/Organs/Skin/PulseOSSkinReflex.js
+// FILE: /apps/PulseOS/PulseOSSkinReflex.js
 // PULSE OS — v11‑EVO‑BINARY‑MAX
 // “THE SKIN REFLEX / UNIVERSAL SURFACE MEMBRANE / ERROR CATCHER”
 // A1 BARRIER • PAGE-LEVEL REFLEX • ZERO TIMING • ZERO STATE • BINARY-AWARE

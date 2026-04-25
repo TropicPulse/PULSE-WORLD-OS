@@ -1467,8 +1467,8 @@ nav a:hover::after {
 // Auto‑derive page name
 const pageName = import.meta.url.split('/').pop().replace('.js', '');
 
-// A1 Skin Reflex (scanner only)
-import * as PulseSkinReflex from "./PULSEX/PulseOSSkinReflex.js";
+// A1 Skin Reflex — MUST BE EXPORTED UPWARD
+export * as PulseSkinReflex from "./PULSEX/PulseOSSkinReflex.js";
 PulseSkinReflex.attachScanner(pageName);
 
 // A0 Evolutionary Window (membrane + binary boot + understanding)
