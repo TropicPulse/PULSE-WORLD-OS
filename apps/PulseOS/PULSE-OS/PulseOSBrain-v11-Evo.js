@@ -1,39 +1,18 @@
 // ============================================================================
-// FILE: /apps/PulseOS/PULSE-OS/PulseOSBrain.js
-// PULSE OS — v11.0 DUAL-MODE UPGRADE
-// “THE CNS BRAIN / CENTRAL NERVOUS SYSTEM / INTELLIGENCE LAYER 1”
+// FILE: /apps/PulseOS/Brain/PulseOSBrain.js
+// PULSE OS BRAIN — v11‑EVO‑BINARY‑MAX
+// “THE REAL CNS / ORGANISM-WIDE IDENTITY + INTELLIGENCE KERNEL”
 // ============================================================================
 //
-//  ORGAN IDENTITY (v11.0):
-//  ------------------------
-//  • Organ Type: Brain / CNS Core
-//  • Layer: CENTRAL NERVOUS SYSTEM (CNS)
-//  • Biological Analog: Brain + Executive Cortex
-//  • System Role: Attach IQ, load organs by design, boot Cortex, govern CNS.
-//  • Dual-Mode: Symbolic-Primary + Binary-Post-Render (no pre-render binary)
-//
-//  PURPOSE (v10.4 → v11.0):
-//  ------------------------
-//  ✔ Attach PulseIQ (TEXT + DESIGN ONLY) to the organism.
-//  ✔ Interpret PulseOrganismMap as the genome-level truth.
-//  ✔ Load organs by design identity via Evolution (not IQ).
-//  ✔ Boot the Cortex and initialize nervous system + organs.
-//  ✔ Classify degradation and route around damage (continuance).
-//  ✔ Provide structural error intelligence (drift surface).
-//  ✔ Expose dual-mode surfaces: symbolic view + binary view (post-render).
-//  ✔ Keep binary as compression/transport surface only (no logic branching).
-//
-//  SAFETY CONTRACT (v11.0):
-//  ------------------------
-//  • May import ONLY:
-//      - PulseIQMap (IQ cortex / design + logging + appendages)
-//      - PulseOrganismMap (genome map)
-//      - Cortex boot (PulseOSBrainCortex)
-//  • No dynamic imports, no eval, no Function.
-//  • No network law here — network is handled by other organs.
-//  • Deterministic behavior only.
-//  • No mutation of external modules (IQ, OrganismMap).
-//  • Binary surfaces are metadata/encoding only, not executable logic.
+// LAWS:
+//   • Brain may import ONLY:
+//       - PulseIQMap        (design + logging + long-term memory)
+//       - PulseOrganismMap  (organ layout + organs + lineage)
+//       - PulseOSBrainCortex (Cortex boot wiring)
+//   • Brain NEVER executes binary payloads.
+//   • Brain is binary‑aware, dualband, but symbolic‑primary.
+//   • Binary is always post‑render, handled by GPU / Send / Binary organs.
+//   • Brain is the CNS identity + contract kernel, not a router, not a GPU.
 // ============================================================================
 
 
@@ -47,10 +26,14 @@ import { boot } from "./PulseOSBrainCortex.js";
 
 // ============================================================================
 // 0) THE REAL CNS BRAIN — EXPORTED AS PulseOSBrain
+//    • Symbolic-primary CNS kernel
+//    • Binary-aware, dualband, non-executable
 // ============================================================================
 export const PulseOSBrain = {
 
-  // Identity
+  // -------------------------------------------------------------------------
+  // Identity — Organism-wide CNS contract
+  // -------------------------------------------------------------------------
   PulseRole: {
     type: "Brain",
     subsystem: "OS",
@@ -75,17 +58,19 @@ export const PulseOSBrain = {
       loopTheoryAware: true,
       continuanceAware: true,
 
-      // NEW — v11 dual-mode contracts
-      dualMode: true,
-      symbolicPrimary: true,
-      binaryPostRenderOnly: true,
-      binaryCompressionAware: true,
-      binaryNonExecutable: true,
-      organismWideIdentityField: true
+      // v11‑EVO‑BINARY‑MAX — dualband CNS
+      dualMode: true,                 // symbolic + binary surfaces
+      symbolicPrimary: true,          // SYMBOLIC is source of truth
+      binaryPostRenderOnly: true,     // binary only after render
+      binaryCompressionAware: true,   // knows compression contracts
+      binaryNonExecutable: true,      // NEVER executes binary
+      organismWideIdentityField: true // single CNS identity field
     }
   },
 
-  // CNS Intelligence Layer
+  // -------------------------------------------------------------------------
+  // CNS Intelligence Layer — structural reasoning, not routing
+  // -------------------------------------------------------------------------
   BrainIntel: {
     // Degradation classifier → how CNS should route around damage
     classifyDegradation(healthScore) {
@@ -129,8 +114,10 @@ export const PulseOSBrain = {
     },
 
     // Binary view — NON-EXECUTABLE, post-render compression surface
-    // This is intentionally simple: JSON → Uint8Array-like payload descriptor.
-    // Actual encoding is delegated to GPU / Send organs, not executed here.
+    // This is intentionally descriptive only:
+    //   • Brain does NOT encode bytes
+    //   • Brain does NOT send packets
+    //   • Brain only describes what GPU/Send/Binary organs may compress.
     getBinaryOrganismDescriptor() {
       const symbolic = this.getSymbolicOrganismIdentity();
 
@@ -140,9 +127,14 @@ export const PulseOSBrain = {
         identity: PulseOSBrain.PulseRole.identity,
         subsystem: PulseOSBrain.PulseRole.subsystem,
         layer: PulseOSBrain.PulseRole.layer,
+
+        // Dualband CNS flags
         dualMode: true,
         symbolicPrimary: true,
-        binaryPostRenderOnly: true,
+        binaryFirst: true,          // binary-first transport in the organism
+        binaryPostRenderOnly: true, // but only after symbolic render
+        binaryNonExecutable: true,
+
         // We do NOT compute bytes here; we just describe the shape.
         encoding: {
           format: "application/pulse-organism+json",
@@ -154,13 +146,15 @@ export const PulseOSBrain = {
 
       return {
         descriptor,
-        // Symbolic snapshot is included so GPU/send can compress it later.
+        // Symbolic snapshot is included so GPU/Send/Binary can compress it later.
         symbolicSnapshot: symbolic
       };
     }
   },
 
+  // -------------------------------------------------------------------------
   // CNS Infrastructure (wired from IQ — TEXT + LOGGING + APPENDAGES)
+  // -------------------------------------------------------------------------
   log: PulseIQMap.log,
   warn: PulseIQMap.warn,
   logError: PulseIQMap.logError,
@@ -181,6 +175,7 @@ export const PulseOSBrain = {
 
 // ============================================================================
 // 1) ROLE VALIDATION — CNS Gatekeeper
+//    Ensures only correct organs attach to CNS surfaces.
 // ============================================================================
 export function validatePulseRole(module, expectedType, expectedSubsystem) {
   if (!module?.PulseRole) return false;
@@ -201,6 +196,7 @@ export function validatePulseRole(module, expectedType, expectedSubsystem) {
 
 // ============================================================================
 // 2) STRUCTURAL ERROR INTELLIGENCE — Drift Surface
+//    CNS-level structural mismatch reporting (non-fatal, drift-aware).
 // ============================================================================
 export function structuralError(expected, found, extraContext = {}) {
   const payload = {
@@ -222,7 +218,8 @@ export function structuralError(expected, found, extraContext = {}) {
 
 
 // ============================================================================
-// 3) EVOLUTION + ORGAN LOADING — Design-Driven CNS Logic (v11: via Evolution)
+// 3) EVOLUTION + ORGAN LOADING — Design-Driven CNS Logic
+//    v11‑EVO: Evolution decides which organs to attach; Brain validates.
 // ============================================================================
 export async function loadOrganByDesign(designIdentity, expectedType, expectedSubsys) {
   const evolveRaw =
@@ -252,7 +249,10 @@ export async function loadOrganByDesign(designIdentity, expectedType, expectedSu
 
 // ============================================================================
 // 4) COGNITIVE BOOTSTRAP — Evolution → PulseOSBrain → Cortex
-//    (Evolution calls this; Understanding does NOT boot Brain directly)
+//    • Evolution calls this (NOT Understanding).
+//    • Boots Cortex with Brain as CNS parent.
+//    • Initializes Nervous System + organs.
+//    • Records lineage + scans drift.
 // ============================================================================
 export function cognitiveBootstrap({ intent, organism, iqMap, understanding }) {
 

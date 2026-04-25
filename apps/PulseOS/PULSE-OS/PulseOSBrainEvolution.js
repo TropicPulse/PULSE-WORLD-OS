@@ -1,43 +1,47 @@
 // ============================================================================
-// PulseOS Evolution Engine — v10.4 (DualBand Evo)
-// “Evolution that evolves the organism, not the filesystem”
+// FILE: /apps/pulse-os/PulseOSEvolution.js
+// PULSE OS — v11‑EVO‑BINARY‑MAX
+// “THE EVOLUTION ENGINE — ORGANISM-WIDE CNS GROWTH + DRIFT INTELLIGENCE”
 // ============================================================================
 //
-// ROLE IN THE ORGANISM (v10.4):
-// -----------------------------
+// ROLE IN THE ORGANISM (v11‑EVO‑BINARY‑MAX):
+// ------------------------------------------
 // • FIRST organ after Understanding
 // • Attaches Intent, OrganismMap, IQMap to Brain
 // • Attaches Evolution to Brain
 // • Boots the Brain (which boots Cortex)
-// • Provides drift detection + lineage tracking
+// • Provides drift detection (symbolic + binary + dualband)
+// • Provides lineage tracking (deterministic seq, no timestamps)
 // • Provides organ evolution + organism evolution
 // • Provides CNS evolution + structural drift scanning
 // • Pure frontend, deterministic wiring, zero network, zero filesystem
+// • Symbolic-primary, binary-aware, dualband-tagging
 //
-// SAFETY CONTRACT (v10.4 DualBand):
-// ---------------------------------
+// SAFETY CONTRACT (v11‑EVO‑BINARY‑MAX):
+// -------------------------------------
 // • No dynamic eval
 // • No backend calls
 // • No filesystem access
 // • No import.meta.glob
 // • Deterministic, drift‑proof wiring only
-// • Time usage is for lineage tagging only, not logic branching
-// • Band usage is for tagging only, not branching
+// • NO Date.now() — deterministic seq counters only
+// • Band usage is tagging-only, never branching
+// • Binary is tagging-only, never executed
 //
-// IDENTITY (v10.4):
-// -----------------
+// IDENTITY (v11‑EVO‑BINARY‑MAX):
+// ------------------------------
 // • organ: Evolution
 // • layer: CNS
 // • subsystem: OS
-// • version: 10.4
+// • version: 11.0
 // ============================================================================
 
 export const PulseRole = {
   type: "Evolution",
   subsystem: "OS",
   layer: "CNS",
-  version: "10.4",
-  identity: "PulseOSEvolution",
+  version: "11.0",
+  identity: "PulseOSEvolution-v11-EVO-BINARY",
 
   evo: {
     deterministic: true,
@@ -49,16 +53,19 @@ export const PulseRole = {
 
     loopTheoryAware: true,
     continuanceAware: true,
-    routingContract: "PulseRouter-v10.4",
-    osOrganContract: "PulseOS-v10.4",
-    earnCompatibility: "PulseEarn-v10.4",
-    gpuCompatibility: "PulseGPU-v10.4",
-    sendCompatibility: "PulseSendSystem-v10.4",
+
+    // v11 organism-wide contracts
+    routingContract: "PulseRouter-v11",
+    osOrganContract: "PulseOS-v11",
+    earnCompatibility: "PulseEarn-v11",
+    gpuCompatibility: "PulseGPU-v11",
+    sendCompatibility: "PulseSendSystem-v11",
 
     // Dual-band evolution surface (tag-only)
     dualMode: true,
-    localAware: true,
-    internetAware: true,
+    symbolicPrimary: true,
+    binaryAware: true,
+    binaryNonExecutable: true,
     advantageCascadeAware: true,
     pulseEfficiencyAware: true,
     futureEvolutionReady: true
@@ -67,22 +74,27 @@ export const PulseRole = {
 
 
 // ============================================================================
-//  EVOLUTION ENGINE — The CNS growth organ (DualBand)
+//  EVOLUTION ENGINE — The CNS growth organ (v11‑EVO‑BINARY‑MAX)
 // ============================================================================
 export function PulseOSEvolution({ intent, organism, iq, understanding }) {
 
+  // Deterministic sequence counter (NO Date.now)
+  let seq = 0;
+  const nextSeq = () => ++seq;
+
   // Internal drift + lineage state
   const DriftState = {
-    lineage: [],        // [{ ts, event, band }]
+    lineage: [],        // [{ seq, event, band, dnaTag }]
     driftEvents: [],    // [string]
     organHealth: {},    // { organName: score }
     organismHealth: 1.0,
-    lastScan: null,
-    lastScanBand: "dual"
+    lastScanSeq: null,
+    lastScanBand: "dual",
+    binaryDescriptor: null
   };
 
   // --------------------------------------------------------------------------
-  // Band normalizer — tag-only, no branching on band
+  // Band normalizer — tag-only, no branching
   // --------------------------------------------------------------------------
   function normalizeBand(band) {
     if (band === "binary" || band === "symbolic" || band === "dual") return band;
@@ -92,7 +104,7 @@ export function PulseOSEvolution({ intent, organism, iq, understanding }) {
   // --------------------------------------------------------------------------
   // DRIFT SCANNER — Detect structural drift in maps + Brain surface
   // --------------------------------------------------------------------------
-  function scanDrift(Brain, { band = "dual" } = {}) {
+  function scanDrift(Brain, { band = "dual", dnaTag = null } = {}) {
     const normBand = normalizeBand(band);
     const drift = [];
 
@@ -100,9 +112,20 @@ export function PulseOSEvolution({ intent, organism, iq, understanding }) {
     if (!Brain.PulseOrganismMap) drift.push("missing-organism-map");
     if (!Brain.PulseIQMap)       drift.push("missing-iq-map");
 
-    DriftState.lastScan = Date.now();
+    // Binary descriptor drift
+    const descriptor = Brain.BrainIntel?.getBinaryOrganismDescriptor?.();
+    DriftState.binaryDescriptor = descriptor || null;
+
+    DriftState.lastScanSeq = nextSeq();
     DriftState.lastScanBand = normBand;
     DriftState.driftEvents.push(...drift);
+
+    DriftState.lineage.push({
+      seq: DriftState.lastScanSeq,
+      band: normBand,
+      dnaTag,
+      event: "drift-scan"
+    });
 
     return drift;
   }
@@ -110,10 +133,11 @@ export function PulseOSEvolution({ intent, organism, iq, understanding }) {
   // --------------------------------------------------------------------------
   // LINEAGE ENGINE — Track organism evolution lineage
   // --------------------------------------------------------------------------
-  function recordLineage(event, { band = "dual" } = {}) {
+  function recordLineage(event, { band = "dual", dnaTag = null } = {}) {
     DriftState.lineage.push({
-      ts: Date.now(),
+      seq: nextSeq(),
       band: normalizeBand(band),
+      dnaTag,
       event
     });
   }
@@ -121,13 +145,13 @@ export function PulseOSEvolution({ intent, organism, iq, understanding }) {
   // --------------------------------------------------------------------------
   // ORGAN HEALTH ENGINE — Track health of each organ
   // --------------------------------------------------------------------------
-  function updateOrganHealth(organName, score, { band = "dual" } = {}) {
-    // band is tagging-only; we keep a single health score per organ
+  function updateOrganHealth(organName, score, { band = "dual", dnaTag = null } = {}) {
     DriftState.organHealth[organName] = score;
-    // optional lineage tag for health updates
+
     DriftState.lineage.push({
-      ts: Date.now(),
+      seq: nextSeq(),
       band: normalizeBand(band),
+      dnaTag,
       event: `organ-health-update:${organName}`
     });
   }
@@ -135,29 +159,29 @@ export function PulseOSEvolution({ intent, organism, iq, understanding }) {
   // --------------------------------------------------------------------------
   // ORGANISM HEALTH ENGINE — Aggregate organ health
   // --------------------------------------------------------------------------
-  function computeOrganismHealth({ band = "dual" } = {}) {
+  function computeOrganismHealth({ band = "dual", dnaTag = null } = {}) {
     const values = Object.values(DriftState.organHealth);
     if (values.length === 0) {
       DriftState.organismHealth = 1.0;
-      return 1.0;
+    } else {
+      DriftState.organismHealth =
+        values.reduce((a, b) => a + b, 0) / values.length;
     }
 
-    const avg = values.reduce((a, b) => a + b, 0) / values.length;
-    DriftState.organismHealth = avg;
-
     DriftState.lineage.push({
-      ts: Date.now(),
+      seq: nextSeq(),
       band: normalizeBand(band),
+      dnaTag,
       event: "organism-health-computed"
     });
 
-    return avg;
+    return DriftState.organismHealth;
   }
 
   // --------------------------------------------------------------------------
-  // EVOLUTION → BRAIN BOOTSTRAP
+  // EVOLUTION → BRAIN BOOTSTRAP (v11‑EVO‑BINARY‑MAX)
   // --------------------------------------------------------------------------
-  function bootBrain(Brain, { band = "dual" } = {}) {
+  function bootBrain(Brain, { band = "dual", dnaTag = null } = {}) {
     const normBand = normalizeBand(band);
 
     // Attach maps to Brain
@@ -169,7 +193,7 @@ export function PulseOSEvolution({ intent, organism, iq, understanding }) {
     Brain.evolution = Evolution;
 
     // Record lineage
-    recordLineage("brain-boot", { band: normBand });
+    recordLineage("brain-boot", { band: normBand, dnaTag });
 
     // Boot Brain (this boots Cortex internally)
     const bootedBrain = Brain.cognitiveBootstrap({
@@ -179,8 +203,8 @@ export function PulseOSEvolution({ intent, organism, iq, understanding }) {
       understanding
     });
 
-    // Initial drift scan
-    scanDrift(bootedBrain, { band: normBand });
+    // Initial drift scan (binary-aware)
+    scanDrift(bootedBrain, { band: normBand, dnaTag });
 
     return bootedBrain;
   }

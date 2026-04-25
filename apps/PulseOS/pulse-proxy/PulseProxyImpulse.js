@@ -1,11 +1,88 @@
 // ============================================================================
-//  IMPULSE CONTEXT — keep as-is, bump when you move fully to v11
+// FILE: PulseOSImpulseEngine.js
+// PULSE OS — v11-Evo-Prime
+// “THE IMPULSE ENGINE / NEURAL IMPULSE LIFECYCLE ORGAN”
 // ============================================================================
-const IMPULSE_CONTEXT = { /* ...your existing object... */ };
+//
+// ROLE (v11-Evo-Prime):
+// ---------------------
+// • Binary-first impulse core (no window, no JSON, no random).
+// • Symbolic wrapper for logs + window hooks.
+// • Legacy v9.3 surface kept frozen for backward compatibility.
+// • Deterministic lineage, shape signatures, and evolution stages.
+// • Unified return endpoint: PulseBand / NerveMap / PathwayMemory.
+//
+// SAFETY CONTRACT (v11-Evo-Prime):
+// --------------------------------
+// • No randomness.
+// • No dynamic eval.
+// • No network calls.
+// • No filesystem.
+// • Deterministic impulse IDs and lineage.
+// ============================================================================
 
-// internal helpers: nowMs, buildLineage, computeShapeSignature, computeEvolutionStage
-// keep them shared for all three versions
 
+// ============================================================================
+//  IMPULSE CONTEXT — v11-Evo-Prime
+// ============================================================================
+const IMPULSE_CONTEXT = {
+  version: "11.0-Evo-Prime",
+  layer: "ImpulseEngine",
+  role: "NeuralImpulseLifecycle",
+  evo: {
+    deterministic: true,
+    driftProof: true,
+    binaryAware: true,
+    symbolicAware: true,
+    dualModeReady: true,
+    unifiedAdvantageField: true
+  }
+};
+
+
+// ============================================================================
+//  SHARED HELPERS — nowMs, buildLineage, computeShapeSignature, computeEvolutionStage
+// ============================================================================
+function nowMs() {
+  // Ordering only; no branching on time.
+  return Date.now();
+}
+
+function buildLineage(parentLineage, pattern) {
+  const base = Array.isArray(parentLineage) ? parentLineage.slice() : [];
+  base.push(pattern || "UNKNOWN_PATTERN");
+  return base;
+}
+
+function computeShapeSignature(pattern, lineage) {
+  const p = String(pattern || "");
+  const l = Array.isArray(lineage) ? lineage.join("|") : "";
+  let h = 0;
+  const s = `${p}::${p.length}::${l}`;
+  for (let i = 0; i < s.length; i++) {
+    h = (h + s.charCodeAt(i) * (i + 1)) % 100000;
+  }
+  return `shape-${h}`;
+}
+
+function computeEvolutionStage(pattern, lineage) {
+  const depth = Array.isArray(lineage) ? lineage.length : 0;
+  if (depth === 0) return "seed";
+  if (depth < 3)  return "early";
+  if (depth < 6)  return "mature";
+  return "stable";
+}
+
+function impulseLog(event, data) {
+  if (typeof window === "undefined") return;
+  if (!window.PULSE_IMPULSE_DIAGNOSTICS) return;
+  if (typeof console?.log !== "function") return;
+
+  console.log("[ImpulseEngine]", event, {
+    ...data,
+    ctx: IMPULSE_CONTEXT
+  });
+}
 
 
 // ============================================================================
@@ -132,7 +209,7 @@ function annotateBinary(impulse, layerIdentity, layerState, delta, now) {
 export const ImpulseBinary = {
   create: createBinaryImpulse,
   computeUrgency: computeUrgencyBinary,
-  annotate: annotateBinary,
+  annotate: annotateBinary
   // factor/snapshot/markPathwayStable can be added here as pure transforms too
 };
 
@@ -182,7 +259,13 @@ export const Impulse = {
   },
 
   annotate(impulse, layerIdentity, layerState, delta) {
-    const updated = ImpulseBinary.annotate(impulse, layerIdentity, layerState, delta, nowMs());
+    const updated = ImpulseBinary.annotate(
+      impulse,
+      layerIdentity,
+      layerState,
+      delta,
+      nowMs()
+    );
 
     impulseLog("IMPULSE_ANNOTATE", {
       tickId: updated.tickId,
@@ -232,6 +315,7 @@ export const Impulse = {
     return impulse;
   },
 
+  // Endpoint in organism terms: PulseBand / NerveMap / PathwayMemory
   returnToPulseBand(impulse) {
     impulse.signature = "1001101010101010101";
 

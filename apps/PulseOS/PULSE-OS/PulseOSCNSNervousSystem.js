@@ -1,27 +1,29 @@
 // ============================================================================
-// CENTRAL NERVOUS SYSTEM — PulseOSCNSNervousSystem — v11.0
+// CENTRAL NERVOUS SYSTEM — PulseOSCNSNervousSystem — v11‑EVO‑BINARY‑MAX
 // “THE CENTRAL NERVOUS SYSTEM / COMMUNICATION INTELLIGENCE ORGAN”
 // ============================================================================
 //
-// ROLE IN THE ORGANISM (v11.0):
-// -----------------------------
+// ROLE IN THE ORGANISM (v11‑EVO‑BINARY‑MAX):
+// -----------------------------------------
 // • B‑Layer CNS: frontend ↔ backend communication organ.
-// • Dual‑band: OFFLINE (local endpoints) + ONLINE (proxy spine) as two bands.
+// • Dual‑band: OFFLINE (local endpoints) + ONLINE (proxy spine) as bands.
+// • Symbolic‑primary: routes, types, context are symbolic; binary is tagging only.
 // • Sends structured requests to backend via Proxy Spine gateway.
-// • Records route events into RouterMemory for healing + drift analysis.
+// • Records route events into RouterMemory (via callers) for healing + drift analysis.
 // • Triggers router healing and route‑down alerts when degradation appears.
 // • Respects offline mode and local endpoints (local‑first, network as injection).
 //
-// SAFETY CONTRACT (v11.0):
-// ------------------------
+// SAFETY CONTRACT (v11‑EVO‑BINARY‑MAX):
+// -------------------------------------
 // • No dynamic eval.
 // • No direct filesystem access.
 // • Network only via well‑defined proxy endpoints.
 // • Deterministic routing behavior (no random branching).
-// • RouterMemory is the single source of CNS event history.
+// • RouterMemory is the single source of CNS event history (owned by callers).
 // • CNS never hard‑kills the organism; it reports, retries, and alerts.
 // • Guarded access to globals (window, fetch) for environment‑agnostic behavior.
-// • Dual‑band is MODE ONLY (offline/online), not two codepaths of logic mutation.
+// • Dual‑band is MODE ONLY (offline/online), not logic mutation.
+// • Binary‑aware but NEVER executes binary logic directly.
 // ============================================================================
 
 
@@ -32,14 +34,14 @@ import { PulseOSShortTermMemory } from "../PULSE-OS/PulseOSShortTermMemory.js";
 
 
 // ============================================================================
-// ORGAN IDENTITY — v11.0 CNS COMMUNICATION ORGAN
+// ORGAN IDENTITY — v11‑EVO‑BINARY‑MAX CNS COMMUNICATION ORGAN
 // ============================================================================
 export const PulseRole = {
   type: "NervousSystem",
   subsystem: "CNS",
   layer: "B-Layer",
   version: "11.0",
-  identity: "PulseOSCNSNervousSystem",
+  identity: "PulseOSCNSNervousSystem-v11-EVO-BINARY",
 
   evo: {
     deterministic: true,
@@ -51,6 +53,8 @@ export const PulseRole = {
     // Dual‑band: symbolic (routes, types) + binary (payload bytes) as modes, not mutation
     dualBand: true,
     binaryAware: true,
+    symbolicPrimary: true,
+    binaryNonExecutable: true,
     zeroFilesystem: true,
 
     // Contracts — v11 organism‑wide
@@ -104,7 +108,7 @@ let routeFailureCount = 0;
 
 
 // ============================================================================
-// CNS CONTEXT MAP — v11 dual‑band aware
+// CNS CONTEXT MAP — v11 dual‑band + binary‑aware
 // ============================================================================
 const CNS_CONTEXT = {
   label: "CNS",
@@ -112,7 +116,12 @@ const CNS_CONTEXT = {
   purpose: "Frontend → Backend Communication Organ",
   context: "Sends structured requests to backend via Proxy Spine gateway",
   version: LAYER_VER,
-  band: "dual", // offline band + online band
+
+  // Dual‑band tagging (symbolic‑primary, binary‑aware)
+  band: "dual",
+  symbolicPrimary: true,
+  binaryAware: true,
+
   modes: {
     offline: "local-endpoint",
     online: "proxy-spine"
@@ -121,10 +130,13 @@ const CNS_CONTEXT = {
 
 
 // ============================================================================
-// TRANSPORT LAYER — OFFLINE + ONLINE (GUARDED GLOBALS, DUAL‑BAND)
+/** TRANSPORT LAYER — OFFLINE + ONLINE (GUARDED GLOBALS, DUAL‑BAND)
+ *
+ * Dual‑band here is MODE SELECTION ONLY (offline vs online).
+ * Logic remains deterministic; no random branching, no contract mutation.
+ * Binary payloads (if any) are treated as opaque data; CNS does not execute them.
+ */
 // ============================================================================
-// NOTE: Dual‑band here is MODE SELECTION ONLY (offline vs online).
-//       Logic remains deterministic; no random branching, no mutation of contracts.
 const Transport = {
   async callEndpoint(type, payload) {
     const offlineMode =
@@ -222,11 +234,13 @@ const Transport = {
     });
   }
 };
-
 // (You can wire Transport + PulseOSShortTermMemory into the rest of the CNS organ
 // in part 2 without changing this contract.)
 // ============================================================================
-// ROUTER MEMORY HEALING — v11 Dual‑Band Aware
+// ROUTER MEMORY HEALING — v11‑EVO‑BINARY‑MAX Dual‑Band Aware
+//  • Symbolic‑primary, binary‑aware
+//  • Uses RouterMemory as single source of route history
+//  • Deterministic, no random branching
 // ============================================================================
 async function healRouterMemoryIfNeeded() {
   if (!RouterMemory || typeof RouterMemory.getAll !== "function") {
@@ -264,7 +278,9 @@ async function healRouterMemoryIfNeeded() {
 
 
 // ============================================================================
-// ROUTE‑DOWN ALERT — v11 Continuance‑First
+// ROUTE‑DOWN ALERT — v11‑EVO‑BINARY‑MAX Continuance‑First
+//  • Never halts organism; only signals degradation
+//  • Band is tagging‑only (symbolic | binary)
 // ============================================================================
 async function triggerRouteDownAlert(error, type, band = "symbolic") {
   logCNS("ALERT_TRIGGER", { error, type, band });
@@ -279,7 +295,9 @@ async function triggerRouteDownAlert(error, type, band = "symbolic") {
 
 
 // ============================================================================
-// UNIVERSAL SYS‑CALL FUNCTION — CNS v11 Dual‑Band
+// UNIVERSAL SYS‑CALL FUNCTION — CNS v11‑EVO‑BINARY‑MAX Dual‑Band
+//  • Symbolic‑primary routing
+//  • Binary‑aware via __band tag (no binary execution)
 // ============================================================================
 const ROUTE_BANDS = {
   SYMBOLIC: "symbolic",
@@ -296,6 +314,12 @@ function resolveBandFromPayload(payload) {
   return band === ROUTE_BANDS.BINARY ? ROUTE_BANDS.BINARY : ROUTE_BANDS.SYMBOLIC;
 }
 
+function resolveDnaTagFromPayload(payload) {
+  return payload && typeof payload.__dnaTag === "string"
+    ? payload.__dnaTag
+    : null;
+}
+
 function makeErrorSignature(err) {
   const msg = String(err);
   const stack = err?.stack || "";
@@ -305,6 +329,7 @@ function makeErrorSignature(err) {
 
 export async function route(type, payload = {}) {
   const band = resolveBandFromPayload(payload);
+  const dnaTag = resolveDnaTagFromPayload(payload);
 
   if (routingInProgressBands.has(band)) {
     return {
@@ -316,9 +341,9 @@ export async function route(type, payload = {}) {
 
   routingInProgressBands.add(band);
 
-  logCNS("ROUTE_CALL", { type, band });
+  logCNS("ROUTE_CALL", { type, band, dnaTag });
 
-  await logEvent("routeCall", { type, payload, band, ...CNS_CONTEXT });
+  await logEvent("routeCall", { type, payload, band, dnaTag, ...CNS_CONTEXT });
   await healRouterMemoryIfNeeded();
 
   try {
@@ -327,8 +352,8 @@ export async function route(type, payload = {}) {
     routeFailureCount = 0;
     routingInProgressBands.delete(band);
 
-    logCNS("ROUTE_RESPONSE", { type, band });
-    logEvent("routeResponse", { type, payload, json, band, ...CNS_CONTEXT });
+    logCNS("ROUTE_RESPONSE", { type, band, dnaTag });
+    logEvent("routeResponse", { type, payload, json, band, dnaTag, ...CNS_CONTEXT });
 
     return json;
 
@@ -343,7 +368,8 @@ export async function route(type, payload = {}) {
       message: msg,
       signature,
       count: routeFailureCount,
-      band
+      band,
+      dnaTag
     });
 
     logEvent("routeError", {
@@ -352,12 +378,13 @@ export async function route(type, payload = {}) {
       error: msg,
       signature,
       band,
+      dnaTag,
       ...CNS_CONTEXT
     });
 
     if (msg.includes("Cannot find module") || msg.includes("already been declared")) {
       routingInProgressBands.delete(band);
-      return { error: "importConflict", details: msg, signature, band };
+      return { error: "importConflict", details: msg, signature, band, dnaTag };
     }
 
     if (msg.includes("process is not defined")) {
@@ -367,23 +394,24 @@ export async function route(type, payload = {}) {
           repairHint: "Replace process.env.* with window.PULSE_*",
           timestamp: ++routerEventSeq,
           signature,
-          band
+          band,
+          dnaTag
         });
       }
       routingInProgressBands.delete(band);
-      return { error: "frontendEnvMismatch", details: msg, signature, band };
+      return { error: "frontendEnvMismatch", details: msg, signature, band, dnaTag };
     }
 
     if (msg.includes("Maximum call stack size exceeded")) {
       routingInProgressBands.delete(band);
-      return { error: "routeRecursionLoop", details: msg, signature, band };
+      return { error: "routeRecursionLoop", details: msg, signature, band, dnaTag };
     }
 
     const offlineMode =
       hasWindow && window.PULSE_OFFLINE_MODE === true;
 
     if (!offlineMode && routeFailureCount === 1) {
-      logCNS("ROUTE_RETRY", { type, band });
+      logCNS("ROUTE_RETRY", { type, band, dnaTag });
 
       try {
         const retryJson = await Transport.callEndpoint(type, payload);
@@ -391,13 +419,14 @@ export async function route(type, payload = {}) {
         routeFailureCount = 0;
         routingInProgressBands.delete(band);
 
-        logCNS("ROUTE_RETRY_SUCCESS", { type, band });
+        logCNS("ROUTE_RETRY_SUCCESS", { type, band, dnaTag });
         logEvent("routeRetrySuccess", {
           type,
           payload,
           retryJson,
           signature,
           band,
+          dnaTag,
           ...CNS_CONTEXT
         });
 
@@ -408,7 +437,8 @@ export async function route(type, payload = {}) {
           type,
           message: String(retryErr),
           signature,
-          band
+          band,
+          dnaTag
         });
 
         await triggerRouteDownAlert(String(retryErr), type, band);
@@ -421,20 +451,24 @@ export async function route(type, payload = {}) {
       error: "Frontend connector failed",
       details: msg,
       signature,
-      band
+      band,
+      dnaTag
     };
   }
 }
 
 
 // ============================================================================
-// LOGGING ENTRY POINT — v11 Dual‑Band
+// LOGGING ENTRY POINT — v11‑EVO‑BINARY‑MAX Dual‑Band
+//  • Deterministic seq (routerEventSeq) instead of Date.now
+//  • Band + dnaTag tagging for RouterMemory
 // ============================================================================
 let routerEventSeq = 0;
 
 export async function logEvent(eventType, data) {
   const band = resolveBandFromPayload(data || {});
-  logCNS("LOG_EVENT", { eventType, band });
+  const dnaTag = resolveDnaTagFromPayload(data || {});
+  logCNS("LOG_EVENT", { eventType, band, dnaTag });
 
   const page =
     hasWindow && window.location
@@ -447,29 +481,32 @@ export async function logEvent(eventType, data) {
       data,
       page,
       band,
+      dnaTag,
       timestamp: ++routerEventSeq
     });
   }
 
-  logCNS("LOG_PUSHED", { eventType, band });
+  logCNS("LOG_PUSHED", { eventType, band, dnaTag });
 
   await healRouterMemoryIfNeeded();
 
   if (typeof GateHeartbeat === "function") {
     GateHeartbeat();
-    logCNS("GATE_HEARTBEAT_SIGNAL_SENT", { band });
+    logCNS("GATE_HEARTBEAT_SIGNAL_SENT", { band, dnaTag });
   }
 }
 
 
 // ============================================================================
-// HEALING ENTRY POINT — v11 Dual‑Band
+// HEALING ENTRY POINT — v11‑EVO‑BINARY‑MAX Dual‑Band
+//  • Symbolic‑primary, binary‑aware
 // ============================================================================
 export async function heal(type, payload) {
   const band = resolveBandFromPayload(payload || {});
-  logCNS("HEAL_CALL", { type, band });
+  const dnaTag = resolveDnaTagFromPayload(payload || {});
+  logCNS("HEAL_CALL", { type, band, dnaTag });
 
-  logEvent("healingRequest", { type, payload, band, ...CNS_CONTEXT });
+  logEvent("healingRequest", { type, payload, band, dnaTag, ...CNS_CONTEXT });
 
   return await route(type, payload);
 }

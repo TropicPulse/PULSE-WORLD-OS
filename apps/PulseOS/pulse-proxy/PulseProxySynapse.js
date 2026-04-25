@@ -1,4 +1,4 @@
-```js
+
 // ============================================================================
 //  PULSE OS v11 — PULSENET SYNAPSE
 //  Neural Signal Routing Organ • Binary Core + Symbolic Wrapper
@@ -494,4 +494,3 @@ export const PulseNet = {
   // expose binary core for other organs (GPU, Cortex, Mesh)
   binary: PulseNetBinary
 };
-```

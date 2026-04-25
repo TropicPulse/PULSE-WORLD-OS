@@ -1,15 +1,25 @@
 // ============================================================================
-//  PulseProxyFront-v11-Evo.js
+//  PulseProxyFront-v11-EVO-BINARY-MAX.js
 //  Binary-First Proxy Front • Legacy Fallback • Earned Route Memory
-//  Connects Proxy → Field (binary) OR Proxy → Legacy Router (symbolic)
+//  Connects Proxy → Field (binary descriptor) OR Proxy → Legacy Router (symbolic)
 // ============================================================================
 //
+//  ROLE (v11-EVO-BINARY-MAX):
+//  --------------------------
+//  • Binary-first route planner at the proxy front.
+//  • Treats binary as a DATA SURFACE ONLY (non-executable).
+//  • Falls back to legacy symbolic router when bits are not pure binary.
+//  • Uses earned route memory (previousRouteMemory) deterministically.
+//  • Emits band + dnaTag so CNS/Brain can classify routes.
+//
 //  SAFETY CONTRACT:
+//  ----------------
 //  • No imports.
 //  • No randomness.
 //  • No timestamps.
 //  • Pure deterministic logic.
 //  • Zero mutation outside instance.
+//  • Binary is NEVER executed, only described (phenotype/surface fields).
 // ============================================================================
 
 
@@ -137,7 +147,12 @@ export function planProxyRoute({
     binaryField,
     waveField,
     frontCycle,
-    frontCycleSignature
+    frontCycleSignature,
+    band: decision.mode === "binary" ? "binary" : "symbolic",
+    dnaTag:
+      decision.mode === "binary"
+        ? "PROXY_FRONT_BINARY"
+        : "PROXY_FRONT_LEGACY"
   };
 
   return {
@@ -151,8 +166,10 @@ export function planProxyRoute({
 
 // ============================================================================
 //  PROXY FRONT — orchestrates binary-first routing with fallback
+//  • mode: "binary"  → fieldIngest(bits) (binary descriptor path)
+//  • mode: "legacy"  → legacyCreate(...) (symbolic router path)
+//  • band + dnaTag emitted for CNS/Brain
 // ============================================================================
-
 export function proxyFrontRoute({
   bits,
   pattern,
@@ -161,7 +178,7 @@ export function proxyFrontRoute({
   previousRouteMemory = null,
 
   // external wiring (you pass these in)
-  fieldIngest,     // function(bits) → packet
+  fieldIngest,     // function(bits) → packet (non-executable binary descriptor)
   legacyCreate     // function(params) → proxyObject
 }) {
   const plan = planProxyRoute({
@@ -177,6 +194,8 @@ export function proxyFrontRoute({
 
     return {
       mode: "binary",
+      band: "binary",
+      dnaTag: "PROXY_FRONT_BINARY",
       routeKey: plan.routeKey,
       packet,
       routeMemory: plan.routeMemory,
@@ -196,6 +215,8 @@ export function proxyFrontRoute({
 
   return {
     mode: "legacy",
+    band: "symbolic",
+    dnaTag: "PROXY_FRONT_LEGACY",
     routeKey: plan.routeKey,
     proxy,
     routeMemory: plan.routeMemory,

@@ -1,27 +1,29 @@
 // ============================================================================
 // FILE: /apps/pulse-os/PulseOSCortex.js
-// PULSE OS — v11-Evo
+// PULSE OS — v11‑EVO‑BINARY‑MAX
 // “THE CORTEX ORGAN — HIGH‑LEVEL COGNITION + ORGAN SUPERVISOR”
 // ============================================================================
 //
-// ROLE (v11-Evo):
-// ---------------
+// ROLE (v11‑EVO‑BINARY‑MAX):
+// --------------------------
 // • Receives PulseOSBrain (CNS) directly
 // • Reads Intent, IQ, OrganismMap from Brain
 // • Reads Evolution from Brain.evolution
 // • Initializes Nervous System + Organs (delegated to CNS Brain)
+// • Maintains OS-level conscious state (symbolic-primary)
 // • Reports lineage + drift to Evolution (band-tagged)
-// • Maintains OS-level conscious state
 // • Pure frontend, deterministic, zero timing, zero backend
 // • Continuance-aware (never halts organism)
 // • Dual-band aware (symbolic | binary | dual) — tagging only
+// • Binary-aware but NEVER executes binary logic
+// • Symbolic-primary: Cortex always thinks in symbolic mode
 // ============================================================================
 
 export const PulseRole = {
   type: "Brain",
   subsystem: "OS",
   layer: "Cortex",
-  version: "11.0-Evo",
+  version: "11.0-Evo-BinaryMax",
   identity: "PulseOSCortex",
 
   evo: {
@@ -41,10 +43,12 @@ export const PulseRole = {
     earnCompatibility: "PulseEarn-v11",
     sendCompatibility: "PulseSendSystem-v11",
 
-    // Dual-band
+    // Dual-band CNS
     dualMode: true,
     symbolicAware: true,
-    binaryAware: true
+    binaryAware: true,
+    symbolicPrimary: true,     // Cortex always thinks symbolically
+    binaryNonExecutable: true  // Cortex NEVER executes binary
   }
 };
 
@@ -70,7 +74,7 @@ export function createPulseOSCortex({ Brain }) {
 
   // --------------------------------------------------------------------------
   // Cortex State (zero timing, zero backend)
-// --------------------------------------------------------------------------
+  // --------------------------------------------------------------------------
   const CortexState = {
     booted: false,
     routeName: "main",
@@ -85,7 +89,11 @@ export function createPulseOSCortex({ Brain }) {
     understanding: Brain.understanding || null,
 
     // v11 band tagging
-    band: "dual"
+    band: "dual",
+
+    // v11‑EVO‑BINARY‑MAX: symbolic-primary cognition
+    symbolicPrimary: true,
+    binaryAware: true
   };
 
 
@@ -116,14 +124,14 @@ export function createPulseOSCortex({ Brain }) {
     // Drift scan (band-tagged)
     Evolution?.scanDrift?.(Brain, { band: normBand });
 
-    Brain.log("[Cortex v11-Evo] Boot complete", { CortexState });
+    Brain.log("[Cortex v11‑EVO‑BINARY‑MAX] Boot complete", { CortexState });
     return CortexState;
   }
 
 
   // ========================================================================
   //  UPDATE — Route or identity changed (band-tagged)
-// ========================================================================
+  // ========================================================================
   function updateCortex(ctx = {}, { band = "dual" } = {}) {
     const normBand = normalizeBand(band);
     CortexState.band = normBand;
