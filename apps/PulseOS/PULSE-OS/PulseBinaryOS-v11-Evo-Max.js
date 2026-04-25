@@ -33,9 +33,9 @@
 //  ORGANISM BOOTSTRAP SET — v11-EVO (SYMBOLIC KERNEL)
 // ============================================================================
 import { withOrganGuard } from "./PulseOSGovernor.js";           // Supervisor organ
-import * as PulseOSBrain from "./PulseOSBrain.js";              // CNS brain organ
+import * as PulseOSBrain from "./PulseOSBrain-v11-Evo.js";              // CNS brain organ
 import * as PulseOSEvolution from "./PulseOSBrainEvolution.js"; // Evolution organ
-import * as PulseSpinalCord from "./PulseOSSpinalCord.js";      // Wiring organ
+import * as PulseSpinalCord from "./PulseOSSpinalCord-v12-Evo.js";      // Wiring organ
 
 
 
