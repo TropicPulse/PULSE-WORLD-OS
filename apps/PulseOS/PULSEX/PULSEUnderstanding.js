@@ -7,28 +7,30 @@ import { PulseIntentMap } from "../PULSE-OS/PulseIntentMap.js";
 import { PulseOrganismMap } from "../PULSE-OS/PulseOrganismMap.js";
 import { PulseIQMap } from "../PULSE-OS/PulseIQMap.js";
 
-// Symbolic OS kernel v11
+// ---------------- SYMBOLIC OS KERNEL ----------------
 import { PulseOSv11Evo } from "../PULSE-OS/PulseOS-v11-Evo.js";
 
-// Binary OS kernel v11 (pure organism core)
+// ---------------- BINARY OS KERNEL ------------------
 import { PulseBinaryOSv11Evo } from "../PULSE-OS/PulseBinaryOS-v11-EVO-MAX.js";
 
-// ---------------- SYMBOLIC ORGANS ----------------
+// ---------------- SYMBOLIC ORGANS -------------------
 import * as PulseProxySym from "../PULSE-PROXY/PulseProxy-v11-EVO.js";
 import * as PulseRouterSym from "../pulse-router/PulseRouter-v11-EVO.js";
 import * as PulseGPUSym from "../PULSE-GPU/PulseGPU-v11-EVO.js";
 import * as PulseMeshSym from "../PULSE-MESH/PulseMesh-v11-EVO.js";
-import * as PulseAISym from "../PULSE-AI/aiBinary-v11-Evo.js";
 import * as PulseSendSym from "../PULSE-SEND/PulseSend-v11-EVO.js";
+import * as PulseEarnSym from "../PULSE-EARN/PulseEarn-v11-EVO.js";
+import * as PulseBinaryOrganismBoot from "../PULSE-AI/aiBinary-v11-Evo.js";
 
-// ---------------- BINARY ORGANS ------------------
+// ---------------- BINARY ORGANS ---------------------
 import { createBinaryProxy } from "../PULSE-PROXY/PulseBinaryProxy-v11-EVO.js";
 import * as PulseRouterBin from "../pulse-router/PulseBinaryRouter-v11-EVO.js";
 import * as PulseGPUBin from "../PULSE-GPU/PulseBinaryGPU-v11-Evo.js";
-// (If you have binary Mesh/AI/SendEarn, import them similarly)
+import * as PulseMeshBin from "../PULSE-MESH/PulseBinaryMesh-v11-EVO.js";
+import * as PulseSendBin from "../PULSE-SEND/PulseBinarySend-v11-EVO.js";
+import * as PulseEarnBin from "../PULSE-EARN/PulseBinaryEarn-v11-EVO.js";
 
 // ============================================================================
-
 const PULSE_UNDERSTANDING_CONTEXT = {
   layer: "PulseUnderstanding",
   role: "KERNEL_OPENER",
@@ -150,19 +152,27 @@ async function buildPulseKernel() {
     SymbolicKernel.SemanticMemory ??
     (MemoryCore && MemoryCore.Semantic ? MemoryCore.Semantic : null);
 
-  // ---- Mesh / AI / Send-Earn (symbolic, but binary-aware) ----
-  const Mesh = PulseMeshSym;
-  const AI = PulseAISym;
-  const SendEarn = PulseSendEarnSym;
+  // ---- Mesh / Send / Earn (binary-first, fallback symbolic) ----
+  const Mesh =
+    (PulseMeshBin && Object.keys(PulseMeshBin).length ? PulseMeshBin : null) ||
+    PulseMeshSym;
+
+  const Send =
+    (PulseSendBin && Object.keys(PulseSendBin).length ? PulseSendBin : null) ||
+    PulseSendSym;
+
+  const Earn =
+    (PulseEarnBin && Object.keys(PulseEarnBin).length ? PulseEarnBin : null) ||
+    PulseEarnSym;
 
   // ---- Router / GPU: binary-first, fallback symbolic ----
-  const Router = Object.keys(PulseRouterBin || {}).length
-    ? PulseRouterBin
-    : PulseRouterSym;
+  const Router =
+    (PulseRouterBin && Object.keys(PulseRouterBin).length ? PulseRouterBin : null) ||
+    PulseRouterSym;
 
-  const GPU = Object.keys(PulseGPUBin || {}).length
-    ? PulseGPUBin
-    : PulseGPUSym;
+  const GPU =
+    (PulseGPUBin && Object.keys(PulseGPUBin).length ? PulseGPUBin : null) ||
+    PulseGPUSym;
 
   // ---- symbolic proxy base (for fallback + non-binary paths) ----
   const ProxySym = PulseProxySym.createProxy
@@ -176,13 +186,12 @@ async function buildPulseKernel() {
         MemoryCore,
         BinaryOverlay: BinaryOverlayFinal,
         Mesh,
-        AI,
-        SendEarn
+        Send,
+        Earn
       })
     : PulseProxySym;
 
   // ---- binary proxy (pure binary, with symbolic fallback) ----
-  // NOTE: you must provide a BinaryAgent encoder here.
   const encoder = SymbolicKernel.BinaryAgent ?? null;
   let ProxyBin = null;
 
@@ -227,7 +236,7 @@ async function buildPulseKernel() {
     });
   } catch {}
 
-  // ---- optional Mesh / AI / Send-Earn boot ----
+  // ---- optional Mesh / Send / Earn / BinaryOrganism boot ----
   try {
     if (Mesh && typeof Mesh.boot === "function") {
       Mesh.boot({
@@ -241,8 +250,8 @@ async function buildPulseKernel() {
   } catch {}
 
   try {
-    if (AI && typeof AI.boot === "function") {
-      AI.boot({
+    if (Send && typeof Send.boot === "function") {
+      Send.boot({
         Brain,
         Evolution,
         SDN: SpinalCord,
@@ -254,16 +263,22 @@ async function buildPulseKernel() {
   } catch {}
 
   try {
-    if (SendEarn && typeof SendEarn.boot === "function") {
-      SendEarn.boot({
+    if (Earn && typeof Earn.boot === "function") {
+      Earn.boot({
         Brain,
         Evolution,
         SDN: SpinalCord,
         MemoryCore,
         BinaryOverlay: BinaryOverlayFinal,
         Mesh,
-        AI
+        Send
       });
+    }
+  } catch {}
+
+  try {
+    if (typeof PulseBinaryOrganismBoot.boot === "function") {
+      PulseBinaryOrganismBoot.boot({ trace: false });
     }
   } catch {}
 
@@ -312,8 +327,8 @@ async function buildPulseKernel() {
     SemanticMemory,
 
     Mesh,
-    AI,
-    SendEarn,
+    Send,
+    Earn,
 
     Governed: {
       run: runThroughGovernor
@@ -350,8 +365,8 @@ if (typeof window !== "undefined") {
             EpisodicMemory: PulseKernel.EpisodicMemory,
             SemanticMemory: PulseKernel.SemanticMemory,
             Mesh: PulseKernel.Mesh,
-            AI: PulseKernel.AI,
-            SendEarn: PulseKernel.SendEarn
+            Send: PulseKernel.Send,
+            Earn: PulseKernel.Earn
           }
         : PulseKernel;
     })
