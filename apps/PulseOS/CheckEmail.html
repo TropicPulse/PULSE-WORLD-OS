@@ -17,23 +17,14 @@
 
 <!-- Unified Module Script (imports + login logic will go here later) -->
 <script type="module">
-  // Auto‑derive page name
-const pageName = import.meta.url.split('/').pop().replace('.js', '');
+  
+import * as PulseSkinReflex from "./PulseOSSkinReflex.js";
 
-// A1 Skin Reflex
-export * as PulseSkinReflex from "./PulseOSSkinReflex.js";
-PulseSkinReflex.attachScanner(pageName);
+// Use the identity Window already computed
+PulseSkinReflex.attachScanner(window.Pulse.pageName);
 
-// A0 Window / Evolutionary ignition
-import * as PulseEvolutionarySight from "./PulseEvolutionaryWindow.js";
-
-
-  // optional: start the OS
-  const Brain = PulseEvolutionarySight.igniteBrain({
-    intent: PulseIntentMap,
-    organism: PulseOrganismMap,
-    iq: PulseIQMap
-  });
+// Boot membrane
+import PulseWindow from "./PulseEvolutionaryWindow.js";
 
   // Expose analytics globals (Google + FB Pixel) inside module
   window.dataLayer = window.dataLayer || [];

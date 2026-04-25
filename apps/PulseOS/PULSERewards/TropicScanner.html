@@ -11,23 +11,14 @@
 <!-- Backend Connector Layer -->
  
 <script type="module">
-// Auto‑derive page name
-const pageName = import.meta.url.split('/').pop().replace('.js', '');
 
-// A1 Skin Reflex
-export * as PulseSkinReflex from "./PulseOSSkinReflex.js";
-PulseSkinReflex.attachScanner(pageName);
+import * as PulseSkinReflex from "./PulseOSSkinReflex.js";
 
-// A0 Window / Evolutionary ignition
-import * as PulseEvolutionarySight from "./PulseEvolutionaryWindow.js";
+// Use the identity Window already computed
+PulseSkinReflex.attachScanner(window.Pulse.pageName);
 
-
-  // optional: start the OS
-  const Brain = PulseEvolutionarySight.igniteBrain({
-    intent: PulseIntentMap,
-    organism: PulseOrganismMap,
-    iq: PulseIQMap
-  });
+// Boot membrane
+import PulseWindow from "./PulseEvolutionaryWindow.js";
 
   window.dataLayer = window.dataLayer || [];
   function gtag(){dataLayer.push(arguments);}

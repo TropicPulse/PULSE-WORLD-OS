@@ -55,23 +55,14 @@
   </div>
 
 <script type="module">
-  // Auto‑derive page name
-const pageName = import.meta.url.split('/').pop().replace('.js', '');
+  
+import * as PulseSkinReflex from "./PulseOSSkinReflex.js";
 
-// A1 Skin Reflex
-export * as PulseSkinReflex from "./PulseOSSkinReflex.js";
-PulseSkinReflex.attachScanner(pageName);
+// Use the identity Window already computed
+PulseSkinReflex.attachScanner(window.Pulse.pageName);
 
-// A0 Window / Evolutionary ignition
-import * as PulseEvolutionarySight from "./PulseEvolutionaryWindow.js";
-
-
-  // optional: start the OS
-  const Brain = PulseEvolutionarySight.igniteBrain({
-    intent: PulseIntentMap,
-    organism: PulseOrganismMap,
-    iq: PulseIQMap
-  });
+// Boot membrane
+import PulseWindow from "./PulseEvolutionaryWindow.js";
   window.__SERVER_HAS_TOKEN__ = true;
 
     document.addEventListener("DOMContentLoaded", () => {
