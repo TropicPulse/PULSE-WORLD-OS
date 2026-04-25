@@ -32,9 +32,9 @@
 // ============================================================================
 //  ORGANISM BOOTSTRAP SET — v11-EVO (BINARY KERNEL)
 // ============================================================================
-import * as PulseOSBrain from "./PULSE-OS/PulseOSBrain.js";              // CNS brain organ
-import * as PulseOSEvolution from "./PULSE-OS/PulseOSBrainEvolution.js"; // Evolution organ
-import * as PulseSpinalCord from "./PULSE-OS/PulseOSSpinalCord.js";      // Wiring organ
+import * as PulseOSBrain from "./PulseOSBrain.js";              // CNS brain organ
+import * as PulseOSEvolution from "./PulseOSBrainEvolution.js"; // Evolution organ
+import * as PulseSpinalCord from "./PulseOSSpinalCord.js";      // Wiring organ
 // Optional: if you have a dedicated MemoryCore organ, it will be wired via Evolution/Brain
 
 
