@@ -19,7 +19,10 @@ import * as PulseRouterSym from "../pulse-router/PulseRouter-v11-EVO.js";
 import * as PulseGPUSym from "../PULSE-GPU/PulseGPU-v11-EVO.js";
 import * as PulseMeshSym from "../PULSE-MESH/PulseMesh-v11-EVO.js";
 import * as PulseSendSym from "../PULSE-SEND/PulseSend-v11-EVO.js";
+
+// *** Earn is dual-band ONLY — this is the ONLY Earn organ ***
 import * as PulseEarnSym from "../PULSE-EARN/PulseEarn-v11-EVO.js";
+
 import * as PulseBinaryOrganismBoot from "../PULSE-AI/aiBinary-v11-Evo.js";
 
 // ---------------- BINARY ORGANS ---------------------
@@ -28,7 +31,9 @@ import * as PulseRouterBin from "../pulse-router/PulseBinaryRouter-v11-EVO.js";
 import * as PulseGPUBin from "../PULSE-GPU/PulseBinaryGPU-v11-Evo.js";
 import * as PulseMeshBin from "../PULSE-MESH/PulseBinaryMesh-v11-EVO.js";
 import * as PulseSendBin from "../PULSE-SEND/PulseBinarySend-v11-EVO.js";
-import * as PulseEarnBin from "../PULSE-EARN/PulseBinaryEarn-v11-EVO.js";
+
+// *** REMOVE THIS — Earn has no binary organ ***
+// import * as PulseEarnBin from "../PULSE-EARN/PulseBinaryEarn-v11-EVO.js";
 
 // ============================================================================
 const PULSE_UNDERSTANDING_CONTEXT = {
@@ -59,6 +64,7 @@ const PULSE_UNDERSTANDING_CONTEXT = {
     binaryKernelAware: true
   }
 };
+
 
 function buildEnvironmentSnapshot() {
   if (typeof window === "undefined") {
@@ -161,9 +167,9 @@ async function buildPulseKernel() {
     (PulseSendBin && Object.keys(PulseSendBin).length ? PulseSendBin : null) ||
     PulseSendSym;
 
-  const Earn =
-    (PulseEarnBin && Object.keys(PulseEarnBin).length ? PulseEarnBin : null) ||
-    PulseEarnSym;
+  // *** Earn is dual-band ONLY — no binary organ exists ***
+  const Earn = PulseEarnSym;
+
 
   // ---- Router / GPU: binary-first, fallback symbolic ----
   const Router =
