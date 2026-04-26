@@ -133,20 +133,50 @@ const PageScannerV12 = Object.freeze({
   },
 
   // ---------------------------------------------------------
-  // Detect structural drift (shape mismatches)
+  // Detect structural drift (shape + field mismatches) — UPGRADE 1/4
   // ---------------------------------------------------------
   detectStructural(sourceA = "", sourceB = "") {
     try {
-      const shapeA = [...sourceA.matchAll(/return\s+{([^}]+)}/g)]
-        .map((m) => m[1].split(",").map((s) => s.trim()));
+      const extractShape = (src) => {
+        const matches = [...src.matchAll(/return\s+{([^}]+)}/gs)];
+        return matches.map((m) => {
+          return m[1]
+            .split(",")
+            .map((s) => s.trim())
+            .filter(Boolean)
+            .map((field) => {
+              const [key] = field.split(":").map((x) => x.trim());
+              return key;
+            });
+        });
+      };
 
-      const shapeB = [...sourceB.matchAll(/return\s+{([^}]+)}/g)]
-        .map((m) => m[1].split(",").map((s) => s.trim()));
+      const shapeA = extractShape(sourceA);
+      const shapeB = extractShape(sourceB);
+
+      const flatA = shapeA.flat();
+      const flatB = shapeB.flat();
+
+      const missingInB = flatA.filter((f) => !flatB.includes(f));
+      const missingInA = flatB.filter((f) => !flatA.includes(f));
+
+      const substructureMismatch =
+        JSON.stringify(shapeA) !== JSON.stringify(shapeB);
+
+      const severity =
+        missingInA.length +
+        missingInB.length +
+        Math.abs(flatA.length - flatB.length) +
+        (substructureMismatch ? 1 : 0);
 
       return Object.freeze({
         shapeA,
         shapeB,
-        mismatch: JSON.stringify(shapeA) !== JSON.stringify(shapeB)
+        missingInA,
+        missingInB,
+        substructureMismatch,
+        severity,
+        mismatch: severity > 0
       });
     } catch (err) {
       try {
@@ -157,6 +187,10 @@ const PageScannerV12 = Object.freeze({
       return Object.freeze({
         shapeA: [],
         shapeB: [],
+        missingInA: [],
+        missingInB: [],
+        substructureMismatch: false,
+        severity: 0,
         mismatch: false
       });
     }
@@ -225,13 +259,29 @@ const PageScannerV12 = Object.freeze({
   },
 
   // ---------------------------------------------------------
-  // Build drift intelligence packet (adapter-ready)
+  // Build drift intelligence packet (adapter-ready) — UPGRADE 2/4
   // ---------------------------------------------------------
   buildDriftPacket(context = {}) {
     try {
+      const structural = context.structural || {};
+      const severity = typeof structural.severity === "number"
+        ? structural.severity
+        : 0;
+
+      const tooFar = severity >= 3; // threshold: "off by too much"
+
       return Object.freeze({
         type: "pagescanner-drift-intel",
         timestamp: Date.now(),
+        severity,
+        tooFar,
+        structural: {
+          shapeA: structural.shapeA || [],
+          shapeB: structural.shapeB || [],
+          missingInA: structural.missingInA || [],
+          missingInB: structural.missingInB || [],
+          substructureMismatch: !!structural.substructureMismatch
+        },
         ...context
       });
     } catch (err) {
@@ -537,7 +587,6 @@ const RouteMemory = {
   }
 };
 
-
 // ============================================================================
 // v12 — SESSION CHECK (trustedDevice barrier + identity exposure)
 // ============================================================================
@@ -747,13 +796,22 @@ export function membraneAlive(origin = "unknown") {
 
 
 // ============================================================================
-// v12 — PAGE SCANNER INTELLIGENCE HOOKS (A1/A2 Hybrid)
+// v12 — PAGE SCANNER INTELLIGENCE HOOKS (A1/A2 Hybrid) — UPGRADE 3/4
 // ============================================================================
 function emitPageScannerIntel(context = {}) {
   try {
-    if (!window || !window.PageScannerAdapter) return;
+    if (typeof window === "undefined" || !window.PageScannerAdapter) return;
 
     const packet = PageScannerV12.buildDriftPacket(context);
+
+    // Log structural severity when present
+    if (packet && typeof packet.severity === "number") {
+      logProtector("PAGESCANNER_DRIFT_INTEL", {
+        severity: packet.severity,
+        tooFar: !!packet.tooFar,
+        hasStructural: !!packet.structural
+      });
+    }
 
     if (typeof window.PageScannerAdapter.onEvent === "function") {
       window.PageScannerAdapter.onEvent(packet);
@@ -837,7 +895,6 @@ if (hasWindow && typeof window.addEventListener === "function") {
       } catch (spineErr) {
         console.warn("[PulseUIErrors] failed to broadcast A1 error:", spineErr);
       }
-
       const top = rawFrames[0] || "unknown";
       const file = top.split("/").pop().split(":")[0] || "unknown";
       const line = top.split(":")[1] || "unknown";
@@ -989,7 +1046,7 @@ if (hasWindow && typeof window.addEventListener === "function") {
       });
 
       // ========================================================================
-      // v12‑EVO — DRIFT INTELLIGENCE ENGINE (A1/A2 Hybrid)
+      // v12‑EVO — DRIFT INTELLIGENCE ENGINE (A1/A2 Hybrid) — UPGRADE 4/4
       // ========================================================================
       try {
         const sourceA = event?.error?.sourceA || "";
@@ -1004,6 +1061,10 @@ if (hasWindow && typeof window.addEventListener === "function") {
         const exportDrift = PageScannerV12.detectExportDrift(sourceB, varsB);
         const structural = PageScannerV12.detectStructural(sourceA, sourceB);
         const contract = PageScannerV12.detectContract(sourceA, sourceB);
+
+        const severity =
+          typeof structural.severity === "number" ? structural.severity : 0;
+        const tooFar = severity >= 3;
 
         emitPageScannerIntel({
           event: "page-error-drift-detected",
@@ -1023,6 +1084,8 @@ if (hasWindow && typeof window.addEventListener === "function") {
           exportDrift,
           structural,
           contract,
+          severity,
+          tooFar,
           page: pagePath,
           seq: skinSeq,
           layer: "A1/A2",
@@ -1038,6 +1101,8 @@ if (hasWindow && typeof window.addEventListener === "function") {
           exportMissingESM: exportDrift.missingESM,
           exportMissingCJS: exportDrift.missingCJS,
           structuralMismatch: structural.mismatch,
+          structuralSeverity: severity,
+          structuralTooFar: tooFar,
           contractMismatch: contract.mismatch
         });
 
@@ -1048,7 +1113,7 @@ if (hasWindow && typeof window.addEventListener === "function") {
       }
 
       // ========================================================================
-      // HEALING TRIGGER (v12‑EVO)
+      // HEALING TRIGGER (v12‑EVO) — now respects "too far" structural drift
       // ========================================================================
       const parsed = parseMissingField(msg);
       if (!parsed) {
@@ -1060,6 +1125,25 @@ if (hasWindow && typeof window.addEventListener === "function") {
         });
         event.preventDefault();
         return;
+      }
+
+      // If structural drift is too far, skip healing attempt
+      if (typeof structural !== "undefined") {
+        const severity =
+          typeof structural.severity === "number" ? structural.severity : 0;
+        const tooFar = severity >= 3;
+
+        if (tooFar) {
+          logProtector("HEALING_SKIPPED_TOO_FAR_STRUCTURAL_DRIFT", {
+            severity,
+            degraded,
+            healthScore,
+            tier,
+            dnaTag
+          });
+          event.preventDefault();
+          return;
+        }
       }
 
       const { table, field } = parsed;
