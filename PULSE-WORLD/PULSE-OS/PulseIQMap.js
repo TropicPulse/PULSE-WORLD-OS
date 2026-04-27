@@ -47,7 +47,7 @@ import { log, warn, error as logError } from "../PULSEProofLogger.js";
 // ============================================================================
 //  CORTEX BOOT (ACCESS IMPORT)
 // ============================================================================
-import { createPulseOSCortex } from "./PulseOSBrainCortex.js";
+import { bootCortex } from "./PulseOSBrainCortex.js";
 
 const firebase = "EXTERNAL-FIREBASE-APPENDAGE";
 
