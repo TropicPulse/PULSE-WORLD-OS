@@ -294,25 +294,28 @@ body {
 
 /* ================= PULSEBAND + LOADING ================= */
 
-/* Loading splash */
+
+/* Fullscreen overlay */
 #t-loading {
   position: fixed;
   inset: 0;
-  background: radial-gradient(circle at center, #ffffcc 0%, #000000 70%);
+  background: rgba(0,0,0,0.22);
+  backdrop-filter: blur(16px) saturate(180%);
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 9999;
-  transition: opacity 0.4s ease, visibility 0.4s ease;
+  z-index: 9999999;
+  opacity: 1;
+  transition: opacity 0.6s ease-out;
 }
 
+/* Logo */
 #t-loading-logo {
-  width: 96px;
-  height: 96px;
-  border-radius: 50%;
-  border: 3px solid var(--tp-teal);
-  box-shadow: 0 0 18px rgba(0, 0, 0, 0.4);
-  animation: tpLogoPulse 1.4s ease-in-out infinite;
+  width: 250px;
+  height: 250px;
+  object-fit: contain;
+  animation: tpShimmer 3.5s ease-in-out infinite;
+  
 }
 
 @keyframes tpLogoPulse {
@@ -1684,7 +1687,7 @@ window.addEventListener("load", () => {
       if (!isOpen) item.classList.add("open");
     });
   });
-  hideTPLoader();
+  
   mark("WINDOW DOM ENDED INDEX PAGE");
 });
 </script>
