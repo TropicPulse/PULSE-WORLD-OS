@@ -634,37 +634,53 @@ async function sessionCheck() {
 
 
 // ============================================================================
-// v12 — ROUTE CHECK (page continuity)
+// v12 — ROUTE CHECK (page continuity) — ONLY HEAL WHEN NEEDED
 // ============================================================================
 function routeCheck() {
   try {
     if (!hasWindow) {
       logProtector("ROUTECHECK_SKIPPED_NO_WINDOW", {});
-      return null;
+      return { needsHealing: false };
     }
 
     if (!window.Pulse) window.Pulse = {};
 
     const lastPage = window.Pulse.pageName || null;
     const pageName =
-      (window.location && window.location.pathname) || "unknown";
+      (window.location && window.location.pathname) || null;
 
+    // Update identity
     window.Pulse.lastPage = lastPage;
     window.Pulse.pageName = pageName;
 
+    // ------------------------------------------------------------------
+    // ⭐ ONLY FLAG HEALING WHEN PAGE STATE IS ACTUALLY BROKEN
+    // ------------------------------------------------------------------
+    const needsHealing =
+      !pageName ||                     // null, undefined, empty
+      pageName === "unknown" ||        // invalid
+      pageName.trim() === "" ||        // empty string
+      pageName.includes("undefined") ||// malformed
+      pageName.includes("//") ||       // malformed
+      lastPage === "unknown" ||        // invalid previous state
+      lastPage === null && hasBootedOnce; // null AFTER first boot = broken
+
     logProtector("ROUTECHECK_UPDATED", {
       pageName,
-      lastPage
+      lastPage,
+      needsHealing
     });
 
-    return { pageName, lastPage };
+    return { pageName, lastPage, needsHealing };
+
   } catch (err) {
     PulseUIErrors.broadcast(
       PulseUIErrors.normalize(err, "skinreflex.routeCheck")
     );
-    return null;
+    return { needsHealing: false };
   }
 }
+
 
 
 // ============================================================================
@@ -760,33 +776,49 @@ export async function attachScanner() {
       return null;
     }
 
-    // FIRST LOAD → DO NOT ROUTE
+    // FIRST LOAD → ATTACH ONLY (NO ROUTE, NO HEAL)
     if (!hasBootedOnce) {
       hasBootedOnce = true;
 
-      logProtector("SCANNER_FIRST_BOOT_NO_ROUTING", {
+      logProtector("SCANNER_FIRST_BOOT_ATTACH_ONLY", {
         pageName: window.Pulse?.pageName || null
       });
 
       return {
         identity,
-        route: null
+        route: null,
+        healed: false
       };
     }
 
-    // AFTER FIRST LOAD → ROUTE NORMALLY
-    const routeInfo = routeCheck();
+    // AFTER FIRST LOAD → CHECK IF HEALING IS NEEDED
+    const routeInfo = routeCheck();   // <-- this will be updated next
+    const needsHealing = routeInfo?.needsHealing === true;
 
-    logProtector("SCANNER_ATTACH_COMPLETE", {
-      pageName: routeInfo?.pageName || "unknown",
-      lastPage: routeInfo?.lastPage || null,
-      trustedDevice: !!identity.trustedDevice
+    if (!needsHealing) {
+      // continuity OK → DO NOT HEAL
+      logProtector("SCANNER_CONTINUITY_OK", routeInfo);
+      return {
+        identity,
+        route: routeInfo,
+        healed: false
+      };
+    }
+
+    // continuity broken → HEAL ONLY NOW
+    const healResult = routeHeal(routeInfo);
+
+    logProtector("SCANNER_ROUTE_HEAL_APPLIED", {
+      routeInfo,
+      healResult
     });
 
     return {
       identity,
-      route: routeInfo
+      route: routeInfo,
+      healed: true
     };
+
   } catch (err) {
     PulseUIErrors.broadcast(
       PulseUIErrors.normalize(err, "skinreflex.attachScanner")
@@ -794,7 +826,6 @@ export async function attachScanner() {
     return null;
   }
 }
-
 
 
 // ============================================================================
