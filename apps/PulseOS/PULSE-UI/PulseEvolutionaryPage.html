@@ -31,22 +31,26 @@
        UNIFIED MODULE SCRIPT (OS ignition + analytics)
        ============================================================================ -->
   <script type="module">
-    // Auto‑derive page name
-    const pageName = window.location.pathname.split('/').pop() || "PulseEvolutionaryPage";
+    /* ============================================================
+   0. SKIN REFLEX — UNIVERSAL FRONT DOOR
+============================================================ */
+import * as PulseSkinReflex from "./PulseOSSkinReflex.js";
 
-    // A1 Skin Reflex
-    import * as PulseSkinReflex from "./PulseOSSkinReflex.js";
-    PulseSkinReflex.attachScanner(pageName);
+/* ⭐ attachScanner handles:
+      • sessionCheck
+      • routeCheck
+      • pageName / lastPageU
+      • identity exposure
+*/
+await PulseSkinReflex.attachScanner();
 
-    // A0 Window / Evolutionary ignition
-    import * as PulseEvolutionarySight from "./PulseEvolutionaryWindow.js";
-
-    // optional: start the OS
-    const Brain = PulseEvolutionarySight.igniteBrain({
-      intent: PulseIntentMap,
-      organism: PulseOrganismMap,
-      iq: PulseIQMap
-    });
+/* ============================================================
+   1. BOOT MEMBRANE
+============================================================ */
+import PulseWindow from "./PulseEvolutionaryWindow.js";
+/* ============================================================
+   1. UI HELPERS
+   ============================================================ */
 
     // Analytics
     window.dataLayer = window.dataLayer || [];

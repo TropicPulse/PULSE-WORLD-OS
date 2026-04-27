@@ -748,6 +748,8 @@ export async function callHelper(helperName, payload = {}) {
 // ============================================================================
 // v12 — PAGE SCANNER ENTRYPOINT (sessionCheck → routeCheck → reflex ready)
 // ============================================================================
+let hasBootedOnce = false;
+
 export async function attachScanner() {
   try {
     logProtector("SCANNER_ATTACH_START", {});
@@ -758,6 +760,21 @@ export async function attachScanner() {
       return null;
     }
 
+    // FIRST LOAD → DO NOT ROUTE
+    if (!hasBootedOnce) {
+      hasBootedOnce = true;
+
+      logProtector("SCANNER_FIRST_BOOT_NO_ROUTING", {
+        pageName: window.Pulse?.pageName || null
+      });
+
+      return {
+        identity,
+        route: null
+      };
+    }
+
+    // AFTER FIRST LOAD → ROUTE NORMALLY
     const routeInfo = routeCheck();
 
     logProtector("SCANNER_ATTACH_COMPLETE", {
@@ -777,6 +794,7 @@ export async function attachScanner() {
     return null;
   }
 }
+
 
 
 // ============================================================================
