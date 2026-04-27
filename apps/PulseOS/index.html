@@ -1485,7 +1485,12 @@ import PulseWindow from "./PulseEvolutionaryWindow.js";
 function mark(label) {
   log("[INDEX]", label);
 }
-
+function hideTPLoader() {
+  const el = document.getElementById("t-loading");
+  if (!el) return;
+  el.classList.add("hide");
+  setTimeout(() => el.remove(), 700);
+}
 /* ============================================================
    2. LOADING SCREEN — CSS-driven fade-out
 ============================================================ */
