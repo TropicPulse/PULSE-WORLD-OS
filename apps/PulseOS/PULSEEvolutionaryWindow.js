@@ -32,14 +32,7 @@
 //  - No frontend evolution.
 //  - No timers, no intervals, no async nervous system (only one boot IIFE).
 //  - Only: ProofMonitor, ProofLogger, Understanding, BinaryBoot, SurfaceEnv.
-//
-// EXTERNAL VIEW (WHAT OUTSIDERS SEE):
-// -----------------------------------
-//  - Vitals        → via PulseProofMonitor (read‑only telemetry).
-//  - Logs          → via PulseProofLogger (append‑only, no control).
-//  - Understanding → via PulseUnderstanding (explanations, not control).
-//  - Binary Shadow → read‑only projection of the binary organism.
-//  - SurfaceEnv    → read‑only snapshot of user/device/browser context.
+//  - (Plus membrane‑safe transport nerves like PulseBand.)
 // ============================================================================
 
 
@@ -76,6 +69,12 @@ import * as PulseUIErrors from "../PULSE-UI/PulseUIErrors-v12-EVO.js";
 //  - UI flow coordinator, UI-only, safe to expose at membrane.
 // ============================================================================
 import * as PulseUIFlow from "../PULSE-UI/PulseUIFlow-v12-EVO.js";
+
+// ============================================================================
+//  PULSEBAND CLIENT (v12-EVO)
+//  - Membrane-level transport nerve for chunked payloads.
+// ============================================================================
+import PulseBandClient from "../PULSE-BAND/PulseBandClient-v12-EVO.js";
 
 
 // ============================================================================
@@ -215,6 +214,7 @@ if (typeof window !== "undefined") {
 // ============================================================================
 PulseVitals.start();
 PulseLogger.init();
+
 // ============================================================================
 //  ERROR SPINE INITIALIZATION (membrane-level, safe)
 // ============================================================================
@@ -230,15 +230,19 @@ if (typeof window !== "undefined" && window.PulseSkinReflex?.membraneAlive) {
 
 
 // ============================================================================
-//  BINARY ORGANISM + UI FLOW BOOTSTRAP (BEHIND THE GLASS)
-//  - Single boot IIFE: binary kernel + UI flow context.
+//  BINARY ORGANISM + UI FLOW + PULSEBAND BOOTSTRAP (BEHIND THE GLASS)
+//  - Single boot IIFE: binary kernel + UI flow context + transport nerve.
 // ============================================================================
 if (typeof window !== "undefined") {
   (async () => {
     try {
-      // Prevent double‑boot if the Window is re‑mounted
+      let binaryKernel = null;
+
+      // -------------------------------------------------------------------
+      // BINARY ORGANISM BOOT
+      // -------------------------------------------------------------------
       if (!window.__PulseBinaryBooted) {
-        const binaryKernel =
+        binaryKernel =
           typeof PulseBinaryOrganismBoot?.boot === "function"
             ? await PulseBinaryOrganismBoot.boot({ trace: false })
             : null;
@@ -299,6 +303,86 @@ if (typeof window !== "undefined") {
       } catch (flowErr) {
         console.error("[PulseEvolutionaryWindow] UIFlow boot failed:", flowErr);
       }
+
+      // -------------------------------------------------------------------
+      // PULSEBAND BOOT — v12-EVO transport nerve (membrane-level, global)
+      // -------------------------------------------------------------------
+      try {
+        if (!window.PulseBand) {
+          const band = new PulseBandClient({
+            proxyBase: "/PULSE-PROXY/pulseband",
+            userId: window.__pulseUserId || "anonymous"
+          });
+
+          // Bridge PulseBand requests to proxy endpoints
+          band.on("request", async (packet) => {
+            let url;
+            let method;
+            let bodyOrQuery;
+
+            switch (packet.type) {
+              case "start":
+                url = "/PULSE-PROXY/pulseband/session";
+                method = "POST";
+                bodyOrQuery = packet;
+                break;
+
+              case "next":
+                url = "/PULSE-PROXY/pulseband/next";
+                method = "GET";
+                bodyOrQuery = {
+                  sessionId: packet.sessionId,
+                  userId: packet.userId
+                };
+                break;
+
+              case "ack":
+                url = "/PULSE-PROXY/pulseband/ack";
+                method = "POST";
+                bodyOrQuery = packet;
+                break;
+
+              case "redownload":
+                url = "/PULSE-PROXY/pulseband/redownload";
+                method = "POST";
+                bodyOrQuery = packet;
+                break;
+
+              default:
+                return;
+            }
+
+            const isGet = method === "GET";
+
+            const query = isGet
+              ? "?" + new URLSearchParams(bodyOrQuery).toString()
+              : "";
+
+            const opts = isGet
+              ? { method: "GET" }
+              : {
+                  method: "POST",
+                  headers: { "content-type": "application/json" },
+                  body: JSON.stringify(bodyOrQuery)
+                };
+
+            const res = await fetch(url + query, opts);
+            const data = await res.json();
+
+            band.emit("response:" + packet.sessionId, data);
+          });
+
+          // Expose global PulseBand nerve
+          window.PulseBand = band;
+
+          // Optional: helper to start sessions from anywhere
+          window.PulseBandStart = function PulseBandStart(options) {
+            return band.start(options);
+          };
+        }
+      } catch (bandErr) {
+        console.error("[PulseEvolutionaryWindow] PulseBand boot failed:", bandErr);
+      }
     } catch (err) {
       console.error(
         "[PulseEvolutionaryWindow] Binary organism boot failed:",
@@ -320,4 +404,3 @@ export default Object.freeze({
   UIFlow: PulseUIFlow,
   Errors: PulseUIErrors
 });
-

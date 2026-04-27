@@ -561,10 +561,12 @@ const cores = navigator.hardwareConcurrency || "Unknown";
 async function generatePulsebandActivity(s) {
   const start = performance.now();
 
-  const active = window.__pulseCurrentActivity;
-  const targetUrl = active
-  ? `/TPProxy?url=${encodeURIComponent(active.url)}`
-  : `/TPProxy?url=${encodeURIComponent("https://jsonplaceholder.typicode.com/photos")}`;
+  pulseband.start({
+  userId: window.__pulseUserId || "anonymous",
+  payload: active ? active.payloadType : "REQUEST_USERS_CACHE",
+  chunkSize: 500
+});
+
 
   try {
     const { data, meta } = await PulseClient.get(targetUrl);
