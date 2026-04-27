@@ -16510,217 +16510,217 @@ export const getsettings = onRequest(
   }
 );
 
-async function generateSettingsCache({ sizeOnly = false, deltaRequest = false } = {}) {
+// async function generateSettingsCache({ sizeOnly = false, deltaRequest = false } = {}) {
 
-  // ---------------------------------------------------------
-  // ⭐ LOAD VERSION FROM Cache_Control/<autoDocId>
-  // ---------------------------------------------------------
-  const controlRef = db.collection("Cache_Control").doc("KCQFBaFpjSaPRDTAhJBg");
-  const controlSnap = await controlRef.get();
-  const control = controlSnap.data() || {};
-  const currentVersion = control.settingsVersion ?? 1;
+//   // ---------------------------------------------------------
+//   // ⭐ LOAD VERSION FROM Cache_Control/<autoDocId>
+//   // ---------------------------------------------------------
+//   const controlRef = db.collection("Cache_Control").doc("KCQFBaFpjSaPRDTAhJBg");
+//   const controlSnap = await controlRef.get();
+//   const control = controlSnap.data() || {};
+//   const currentVersion = control.settingsVersion ?? 1;
 
-  // ---------------------------------------------------------
-  // ⭐ LOAD EXISTING SNAPSHOT FROM Cache_Meta/settings
-  // ---------------------------------------------------------
-  const metaRef = db.collection("Cache_Meta").doc("settings");
-  const metaSnap = await metaRef.get();
-  const meta = metaSnap.data() || {};
+//   // ---------------------------------------------------------
+//   // ⭐ LOAD EXISTING SNAPSHOT FROM Cache_Meta/settings
+//   // ---------------------------------------------------------
+//   const metaRef = db.collection("Cache_Meta").doc("settings");
+//   const metaSnap = await metaRef.get();
+//   const meta = metaSnap.data() || {};
 
-  const now = Date.now();
-  const lastGenerated = meta.lastGenerated || 0;
-  const cachedVersion = meta.version || 0;
-  const cachedData = meta.data || {};
+//   const now = Date.now();
+//   const lastGenerated = meta.lastGenerated || 0;
+//   const cachedVersion = meta.version || 0;
+//   const cachedData = meta.data || {};
 
-  const ONE_DAY = 24 * 60 * 60 * 1000;
-  const isFresh = (now - lastGenerated < ONE_DAY) && (cachedVersion === currentVersion);
-  const hasData = cachedData && Object.keys(cachedData).length > 0;
+//   const ONE_DAY = 24 * 60 * 60 * 1000;
+//   const isFresh = (now - lastGenerated < ONE_DAY) && (cachedVersion === currentVersion);
+//   const hasData = cachedData && Object.keys(cachedData).length > 0;
 
-  // ---------------------------------------------------------
-  // ⭐ CASE 1 — Fully fresh
-  // ---------------------------------------------------------
-  if (hasData && isFresh) {
+//   // ---------------------------------------------------------
+//   // ⭐ CASE 1 — Fully fresh
+//   // ---------------------------------------------------------
+//   if (hasData && isFresh) {
 
-    if (deltaRequest) {
-      const delta = { version: currentVersion, added: {}, removed: {}, changed: {} };
+//     if (deltaRequest) {
+//       const delta = { version: currentVersion, added: {}, removed: {}, changed: {} };
 
-      if (sizeOnly) {
-        const json = JSON.stringify(delta);
-        return Buffer.byteLength(json, "utf8") / 1024;
-      }
+//       if (sizeOnly) {
+//         const json = JSON.stringify(delta);
+//         return Buffer.byteLength(json, "utf8") / 1024;
+//       }
 
-      return delta;
-    }
+//       return delta;
+//     }
 
-    if (sizeOnly) {
-      const json = JSON.stringify(cachedData);
-      return Buffer.byteLength(json, "utf8") / 1024;
-    }
+//     if (sizeOnly) {
+//       const json = JSON.stringify(cachedData);
+//       return Buffer.byteLength(json, "utf8") / 1024;
+//     }
 
-    return cachedData;
-  }
+//     return cachedData;
+//   }
 
-  // ---------------------------------------------------------
-  // ⭐ CASE 2 — Build NEW full settings snapshot
-  // ---------------------------------------------------------
-  const settingsDoc = await admin
-    .firestore()
-    .collection("TPSettings")
-    .doc("global")
-    .get();
+//   // ---------------------------------------------------------
+//   // ⭐ CASE 2 — Build NEW full settings snapshot
+//   // ---------------------------------------------------------
+//   const settingsDoc = await admin
+//     .firestore()
+//     .collection("TPSettings")
+//     .doc("global")
+//     .get();
 
-  const root = settingsDoc.data() || {};
+//   const root = settingsDoc.data() || {};
 
-  // -----------------------------
-  // VALIDATE seasonalPeriods
-  // -----------------------------
-  const seasonalPeriods = {};
-  const rawPeriods = root.environment?.seasonalPeriods || {};
+//   // -----------------------------
+//   // VALIDATE seasonalPeriods
+//   // -----------------------------
+//   const seasonalPeriods = {};
+//   const rawPeriods = root.environment?.seasonalPeriods || {};
 
-  for (const key in rawPeriods) {
-    const p = rawPeriods[key];
-    if (!p?.start || !p?.end) continue;
+//   for (const key in rawPeriods) {
+//     const p = rawPeriods[key];
+//     if (!p?.start || !p?.end) continue;
 
-    const valid =
-      /^\d{2}-\d{2}$/.test(p.start) &&
-      /^\d{2}-\d{2}$/.test(p.end) &&
-      !isNaN(Number(p.multiplier));
+//     const valid =
+//       /^\d{2}-\d{2}$/.test(p.start) &&
+//       /^\d{2}-\d{2}$/.test(p.end) &&
+//       !isNaN(Number(p.multiplier));
 
-    if (!valid) continue;
+//     if (!valid) continue;
 
-    seasonalPeriods[key] = p;
-  }
+//     seasonalPeriods[key] = p;
+//   }
 
-  // -----------------------------
-  // BASE ENVIRONMENT SETTINGS
-  // -----------------------------
-  const env = root.environment || {};
+//   // -----------------------------
+//   // BASE ENVIRONMENT SETTINGS
+//   // -----------------------------
+//   const env = root.environment || {};
 
-  const fullSettings = {
-    enabled: env.enabled ?? true,
-    calculationVersion: root.calculationVersion ?? 26,
-    delayPenalty: root.delayPenalty ?? 15,
+//   const fullSettings = {
+//     enabled: env.enabled ?? true,
+//     calculationVersion: root.calculationVersion ?? 26,
+//     delayPenalty: root.delayPenalty ?? 15,
 
-    ui: env.ui ?? {},
-    weather: env.weather ?? {},
-    perfectWeather: env.perfectWeather ?? {},
-    seasons: env.seasons ?? {},
-    marine: env.marine ?? {},
-    holidays: env.holidays ?? {},
-    sargassum: env.sargassum ?? {},
-    storm: env.storm ?? {},
-    sea: env.sea ?? {},
-    moon: env.moon ?? {},
-    multipliers: env.multipliers ?? {},
+//     ui: env.ui ?? {},
+//     weather: env.weather ?? {},
+//     perfectWeather: env.perfectWeather ?? {},
+//     seasons: env.seasons ?? {},
+//     marine: env.marine ?? {},
+//     holidays: env.holidays ?? {},
+//     sargassum: env.sargassum ?? {},
+//     storm: env.storm ?? {},
+//     sea: env.sea ?? {},
+//     moon: env.moon ?? {},
+//     multipliers: env.multipliers ?? {},
 
-    seasonalPeriods,
+//     seasonalPeriods,
 
-    tierMultiplier_Seashell: root.tierMultiplier_Seashell ?? 1,
-    tierMultiplier_ReefDiver: root.tierMultiplier_ReefDiver ?? 1.07,
-    tierMultiplier_ToucanSpirit: root.tierMultiplier_ToucanSpirit ?? 1.17,
-    tierMultiplier_VolcanoHeart: root.tierMultiplier_VolcanoHeart ?? 1.30,
-    tierMultiplier_HurricaneLegend: root.tierMultiplier_HurricaneLegend ?? 1.50,
+//     tierMultiplier_Seashell: root.tierMultiplier_Seashell ?? 1,
+//     tierMultiplier_ReefDiver: root.tierMultiplier_ReefDiver ?? 1.07,
+//     tierMultiplier_ToucanSpirit: root.tierMultiplier_ToucanSpirit ?? 1.17,
+//     tierMultiplier_VolcanoHeart: root.tierMultiplier_VolcanoHeart ?? 1.30,
+//     tierMultiplier_HurricaneLegend: root.tierMultiplier_HurricaneLegend ?? 1.50,
 
-    maxTotalMultiplier: root.maxTotalMultiplier ?? 3,
+//     maxTotalMultiplier: root.maxTotalMultiplier ?? 3,
 
-    tierThreshold_ReefDiver: Number(root.tierThreshold_ReefDiver) || 2500,
-    tierThreshold_ToucanSpirit: Number(root.tierThreshold_ToucanSpirit) || 5000,
-    tierThreshold_VolcanoHeart: Number(root.tierThreshold_VolcanoHeart) || 9000,
-    tierThreshold_HurricaneLegend: Number(root.tierThreshold_HurricaneLegend) || 15000,
+//     tierThreshold_ReefDiver: Number(root.tierThreshold_ReefDiver) || 2500,
+//     tierThreshold_ToucanSpirit: Number(root.tierThreshold_ToucanSpirit) || 5000,
+//     tierThreshold_VolcanoHeart: Number(root.tierThreshold_VolcanoHeart) || 9000,
+//     tierThreshold_HurricaneLegend: Number(root.tierThreshold_HurricaneLegend) || 15000,
 
-    referralBaseBonus_NewUser: root.referralBaseBonus_NewUser ?? 25,
-    referralBaseBonus_Referrer: root.referralBaseBonus_Referrer ?? 50,
-    referralEarningRate: root.referralEarningRate ?? 15,
-    referralStreakDurationHours: root.referralStreakDurationHours ?? 6,
-    referralStreakMultiplier: root.referralStreakMultiplier ?? 1.1,
-    seasonalReferralBonus_NewUser: root.seasonalReferralBonus_NewUser ?? 10,
-    seasonalReferralBonus_Referrer: root.seasonalReferralBonus_Referrer ?? 20,
+//     referralBaseBonus_NewUser: root.referralBaseBonus_NewUser ?? 25,
+//     referralBaseBonus_Referrer: root.referralBaseBonus_Referrer ?? 50,
+//     referralEarningRate: root.referralEarningRate ?? 15,
+//     referralStreakDurationHours: root.referralStreakDurationHours ?? 6,
+//     referralStreakMultiplier: root.referralStreakMultiplier ?? 1.1,
+//     seasonalReferralBonus_NewUser: root.seasonalReferralBonus_NewUser ?? 10,
+//     seasonalReferralBonus_Referrer: root.seasonalReferralBonus_Referrer ?? 20,
 
-    streakDurationDays: root.streakDurationDays ?? 1,
-    streakMaxMultiplier: root.streakMaxMultiplier ?? 2,
-    streakMultiplierBase: root.streakMultiplierBase ?? 1,
-    streakMultiplierPerDay: root.streakMultiplierPerDay ?? 0.1,
+//     streakDurationDays: root.streakDurationDays ?? 1,
+//     streakMaxMultiplier: root.streakMaxMultiplier ?? 2,
+//     streakMultiplierBase: root.streakMultiplierBase ?? 1,
+//     streakMultiplierPerDay: root.streakMultiplierPerDay ?? 0.1,
 
-    fastDeliveryBonusEnabled: root.fastDeliveryBonusEnabled ?? false,
-    fastDeliveryBonusMinutes: root.fastDeliveryBonusMinutes ?? 60,
-    fastDeliveryBonusPoints: root.fastDeliveryBonusPoints ?? 15
-  };
+//     fastDeliveryBonusEnabled: root.fastDeliveryBonusEnabled ?? false,
+//     fastDeliveryBonusMinutes: root.fastDeliveryBonusMinutes ?? 60,
+//     fastDeliveryBonusPoints: root.fastDeliveryBonusPoints ?? 15
+//   };
 
-  // -----------------------------
-  // ENVIRONMENTAL SIGNALS
-  // -----------------------------
-  const stormsSnap = await db.collection("environment").doc("storms").get();
-  const sargSnap = await db.collection("environment").doc("sargassum").get();
-  const wildlifeSnap = await db.collection("environment").doc("wildlife").get();
+//   // -----------------------------
+//   // ENVIRONMENTAL SIGNALS
+//   // -----------------------------
+//   const stormsSnap = await db.collection("environment").doc("storms").get();
+//   const sargSnap = await db.collection("environment").doc("sargassum").get();
+//   const wildlifeSnap = await db.collection("environment").doc("wildlife").get();
 
-  const storms = stormsSnap.exists ? stormsSnap.data().data || {} : {};
-  const sargassum = sargSnap.exists ? sargSnap.data().data || {} : {};
-  const wildlife = wildlifeSnap.exists ? wildlifeSnap.data().data || {} : {};
+//   const storms = stormsSnap.exists ? stormsSnap.data().data || {} : {};
+//   const sargassum = sargSnap.exists ? sargSnap.data().data || {} : {};
+//   const wildlife = wildlifeSnap.exists ? wildlifeSnap.data().data || {} : {};
 
-  const finalSnapshot = {
-    TPSettings: fullSettings,
-    seasonal: getSeasonFromSettings(fullSettings),
-    TPEnvironmentSignals: { storms, sargassum, wildlife }
-  };
+//   const finalSnapshot = {
+//     TPSettings: fullSettings,
+//     seasonal: getSeasonFromSettings(fullSettings),
+//     TPEnvironmentSignals: { storms, sargassum, wildlife }
+//   };
 
-  // ---------------------------------------------------------
-  // ⭐ WRITE BACK FULL SNAPSHOT
-  // ---------------------------------------------------------
-  await metaRef.set({
-    lastGenerated: now,
-    version: currentVersion,
-    data: finalSnapshot
-  });
+//   // ---------------------------------------------------------
+//   // ⭐ WRITE BACK FULL SNAPSHOT
+//   // ---------------------------------------------------------
+//   await metaRef.set({
+//     lastGenerated: now,
+//     version: currentVersion,
+//     data: finalSnapshot
+//   });
 
-  // ---------------------------------------------------------
-  // ⭐ DELTA MODE
-  // ---------------------------------------------------------
-  if (deltaRequest) {
-    const oldKeys = new Set(Object.keys(cachedData));
-    const newKeys = new Set(Object.keys(finalSnapshot));
+//   // ---------------------------------------------------------
+//   // ⭐ DELTA MODE
+//   // ---------------------------------------------------------
+//   if (deltaRequest) {
+//     const oldKeys = new Set(Object.keys(cachedData));
+//     const newKeys = new Set(Object.keys(finalSnapshot));
 
-    const delta = {
-      version: currentVersion,
-      added: {},
-      removed: {},
-      changed: {}
-    };
+//     const delta = {
+//       version: currentVersion,
+//       added: {},
+//       removed: {},
+//       changed: {}
+//     };
 
-    for (const key of newKeys) {
-      if (!oldKeys.has(key)) {
-        delta.added[key] = finalSnapshot[key];
-        continue;
-      }
+//     for (const key of newKeys) {
+//       if (!oldKeys.has(key)) {
+//         delta.added[key] = finalSnapshot[key];
+//         continue;
+//       }
 
-      if (JSON.stringify(cachedData[key]) !== JSON.stringify(finalSnapshot[key])) {
-        delta.changed[key] = finalSnapshot[key];
-      }
-    }
+//       if (JSON.stringify(cachedData[key]) !== JSON.stringify(finalSnapshot[key])) {
+//         delta.changed[key] = finalSnapshot[key];
+//       }
+//     }
 
-    for (const key of oldKeys) {
-      if (!newKeys.has(key)) {
-        delta.removed[key] = cachedData[key];
-      }
-    }
+//     for (const key of oldKeys) {
+//       if (!newKeys.has(key)) {
+//         delta.removed[key] = cachedData[key];
+//       }
+//     }
 
-    if (sizeOnly) {
-      const json = JSON.stringify(delta);
-      return Buffer.byteLength(json, "utf8") / 1024;
-    }
+//     if (sizeOnly) {
+//       const json = JSON.stringify(delta);
+//       return Buffer.byteLength(json, "utf8") / 1024;
+//     }
 
-    return delta;
-  }
+//     return delta;
+//   }
 
-  // ---------------------------------------------------------
-  // ⭐ SIZE ONLY (full)
-  // ---------------------------------------------------------
-  if (sizeOnly) {
-    const json = JSON.stringify(finalSnapshot);
-    return Buffer.byteLength(json, "utf8") / 1024;
-  }
+//   // ---------------------------------------------------------
+//   // ⭐ SIZE ONLY (full)
+//   // ---------------------------------------------------------
+//   if (sizeOnly) {
+//     const json = JSON.stringify(finalSnapshot);
+//     return Buffer.byteLength(json, "utf8") / 1024;
+//   }
 
-  return finalSnapshot;
-}
+//   return finalSnapshot;
+// }
 
 function envResponse({ success, error = null, raw = null, data = null }) {
   return {
@@ -16920,378 +16920,378 @@ const classifyPriceSignal = (zone, rate, baselineRate, deviationPct, settings) =
   return { status: 'suspect', confidenceScore: 0.5 };
 };
 
-async function generateUsersCache({ sizeOnly = false, deltaRequest = false } = {}) {
-
-  // ---------------------------------------------------------
-  // ⭐ LOAD VERSION FROM Cache_Control/<autoDocId>
-  // ---------------------------------------------------------
-  const controlRef = db.collection("Cache_Control").doc("KCQFBaFpjSaPRDTAhJBg");
-  const controlSnap = await controlRef.get();
-  const control = controlSnap.data() || {};
-  const currentVersion = control.usersVersion ?? 1;
-
-  // ---------------------------------------------------------
-  // ⭐ LOAD EXISTING SNAPSHOT FROM Cache_Meta/users
-  // ---------------------------------------------------------
-  const metaRef = db.collection("Cache_Meta").doc("users");
-  const metaSnap = await metaRef.get();
-  const meta = metaSnap.data() || {};
-
-  const now = Date.now();
-  const lastGenerated = meta.lastGenerated || 0;
-  const cachedVersion = meta.version || 0;
-  const cachedData = meta.data || [];
-
-  const ONE_DAY = 24 * 60 * 60 * 1000;
-
-  const isFreshByTime = now - lastGenerated < ONE_DAY;
-  const isFreshByVersion = cachedVersion === currentVersion;
-  const hasData = Array.isArray(cachedData) && cachedData.length > 0;
-
-  // ---------------------------------------------------------
-  // ⭐ CASE 1 — Cache fully fresh
-  // ---------------------------------------------------------
-  if (hasData && isFreshByTime && isFreshByVersion) {
-
-    if (deltaRequest) {
-      const delta = { version: currentVersion, added: [], removed: [], changed: [] };
-
-      if (sizeOnly) {
-        const json = JSON.stringify(delta);
-        return Buffer.byteLength(json, "utf8") / 1024;
-      }
-
-      return delta;
-    }
-
-    if (sizeOnly) {
-      const json = JSON.stringify(cachedData);
-      return Buffer.byteLength(json, "utf8") / 1024;
-    }
-
-    return cachedData;
-  }
-
-  // ---------------------------------------------------------
-  // ⭐ CASE 2 — Version changed → micro-hydrate
-  // ---------------------------------------------------------
-  let merged = hasData ? [...cachedData] : [];
-
-  if (hasData && cachedVersion !== currentVersion) {
-    const freshUsers = await getAllUsersCache();
-
-    const freshMap = new Map(freshUsers.map(u => [u.id, u]));
-    const mergedMap = new Map(merged.map(u => [u.id, u]));
-
-    for (const [id, freshUser] of freshMap.entries()) {
-      const oldUser = mergedMap.get(id);
-
-      if (!oldUser) {
-        mergedMap.set(id, freshUser);
-        continue;
-      }
-
-      const updatedUser = { ...oldUser };
-
-      if (freshUser.updatedAt > oldUser.updatedAt) {
-        updatedUser.email = freshUser.email;
-        updatedUser.name = freshUser.name;
-        updatedUser.displayName = freshUser.displayName;
-        updatedUser.photoURL = freshUser.photoURL;
-        updatedUser.role = freshUser.role;
-        updatedUser.phone = freshUser.phone;
-        updatedUser.country = freshUser.country;
-      }
-
-      if (freshUser.lastEarnedDate !== oldUser.lastEarnedDate) {
-        updatedUser.loyalty = { ...freshUser.loyalty };
-      }
-
-      if (freshUser.notifications.lastPushSent !== oldUser.notifications.lastPushSent) {
-        updatedUser.notifications = { ...freshUser.notifications };
-      }
-
-      if (freshUser.wallet.walletBalance !== oldUser.wallet.walletBalance) {
-        updatedUser.wallet = { ...freshUser.wallet };
-      }
-
-      if (freshUser.lastActive !== oldUser.lastActive) {
-        updatedUser.lastActive = freshUser.lastActive;
-      }
-
-      mergedMap.set(id, updatedUser);
-    }
-
-    merged = [...mergedMap.values()];
-  }
-
-  // ---------------------------------------------------------
-  // ⭐ CASE 3 — Too old → full rebuild
-  // ---------------------------------------------------------
-  if (!hasData || !isFreshByTime) {
-    merged = await getAllUsersCache();
-  }
-
-  // ---------------------------------------------------------
-  // ⭐ ALWAYS WRITE BACK FULL SNAPSHOT
-  // ---------------------------------------------------------
-  await metaRef.set({
-    lastGenerated: now,
-    version: currentVersion,
-    data: merged
-  });
-
-  // ---------------------------------------------------------
-  // ⭐ DELTA MODE
-  // ---------------------------------------------------------
-  if (deltaRequest) {
-    const oldMap = new Map(cachedData.map(u => [u.id, u]));
-    const newMap = new Map(merged.map(u => [u.id, u]));
-
-    const added = [];
-    const removed = [];
-    const changed = [];
-
-    for (const [id, newUser] of newMap.entries()) {
-      const oldUser = oldMap.get(id);
-
-      if (!oldUser) {
-        added.push(newUser);
-        continue;
-      }
-
-      if (JSON.stringify(oldUser) !== JSON.stringify(newUser)) {
-        changed.push(newUser);
-      }
-    }
-
-    for (const [id, oldUser] of oldMap.entries()) {
-      if (!newMap.has(id)) {
-        removed.push(oldUser);
-      }
-    }
-
-    const delta = { version: currentVersion, added, removed, changed };
-
-    if (sizeOnly) {
-      const json = JSON.stringify(delta);
-      return Buffer.byteLength(json, "utf8") / 1024;
-    }
-
-    return delta;
-  }
-
-  // ---------------------------------------------------------
-  // ⭐ SIZE ONLY MODE (full)
-  // ---------------------------------------------------------
-  if (sizeOnly) {
-    const json = JSON.stringify(merged);
-    return Buffer.byteLength(json, "utf8") / 1024;
-  }
-
-  return merged;
-}
-async function generateBusinessesCache({ sizeOnly = false, deltaRequest = false } = {}) {
-
-  // ---------------------------------------------------------
-  // ⭐ LOAD VERSION FROM Cache_Control/<autoDocId>
-  // ---------------------------------------------------------
-  const controlRef = db.collection("Cache_Control").doc("KCQFBaFpjSaPRDTAhJBg");
-  const controlSnap = await controlRef.get();
-  const control = controlSnap.data() || {};
-  const currentVersion = control.businessVersion ?? 1;
-
-  // ---------------------------------------------------------
-  // ⭐ LOAD EXISTING SNAPSHOT FROM Cache_Meta/businesses
-  // ---------------------------------------------------------
-  const metaRef = db.collection("Cache_Meta").doc("businesses");
-  const metaSnap = await metaRef.get();
-  const meta = metaSnap.data() || {};
-
-  const now = Date.now();
-  const lastGenerated = meta.lastGenerated || 0;
-  const cachedVersion = meta.version || 0;
-  const cachedData = meta.data || [];
-
-  const TWO_WEEKS = 14 * 24 * 60 * 60 * 1000;
-
-  const isFreshByTime = now - lastGenerated < TWO_WEEKS;
-  const isFreshByVersion = cachedVersion === currentVersion;
-  const hasData = Array.isArray(cachedData) && cachedData.length > 0;
-
-  // ---------------------------------------------------------
-  // ⭐ CASE 1 — Fully fresh
-  // ---------------------------------------------------------
-  if (hasData && isFreshByTime && isFreshByVersion) {
-
-    if (deltaRequest) {
-      const delta = { version: currentVersion, added: [], removed: [], changed: [] };
-
-      if (sizeOnly) {
-        const json = JSON.stringify(delta);
-        return Buffer.byteLength(json, "utf8") / 1024;
-      }
-
-      return delta;
-    }
-
-    if (sizeOnly) {
-      const json = JSON.stringify(cachedData);
-      return Buffer.byteLength(json, "utf8") / 1024;
-    }
-
-    return cachedData;
-  }
-
-  // ---------------------------------------------------------
-  // ⭐ CASE 2 — Version matches but time expired → micro-hydrate
-  // ---------------------------------------------------------
-  let merged = hasData ? [...cachedData] : [];
-
-  if (hasData && isFreshByVersion && !isFreshByTime) {
-    const fresh = await getAllBusinesses(null);
-
-    const mergedMap = new Map(cachedData.map(b => [b.id, b]));
-
-    for (const freshBiz of fresh) {
-      const oldBiz = mergedMap.get(freshBiz.id);
-
-      if (!oldBiz) {
-        mergedMap.set(freshBiz.id, freshBiz);
-        continue;
-      }
-
-      if (freshBiz.updatedAt > oldBiz.updatedAt) {
-        mergedMap.set(freshBiz.id, freshBiz);
-      }
-    }
-
-    merged = [...mergedMap.values()];
-  }
-
-  // ---------------------------------------------------------
-  // ⭐ CASE 3 — Version changed OR too old → full rebuild
-  // ---------------------------------------------------------
-  if (!hasData || !isFreshByTime) {
-    merged = await getAllBusinesses(null);
-  }
-
-  // ---------------------------------------------------------
-  // ⭐ ALWAYS WRITE BACK FULL SNAPSHOT
-  // ---------------------------------------------------------
-  await metaRef.set({
-    lastGenerated: now,
-    version: currentVersion,
-    data: merged
-  });
-
-  // ---------------------------------------------------------
-  // ⭐ DELTA MODE
-  // ---------------------------------------------------------
-  if (deltaRequest) {
-    const oldMap = new Map(cachedData.map(b => [b.id, b]));
-    const newMap = new Map(merged.map(b => [b.id, b]));
-
-    const added = [];
-    const removed = [];
-    const changed = [];
-
-    for (const [id, newBiz] of newMap.entries()) {
-      const oldBiz = oldMap.get(id);
-
-      if (!oldBiz) {
-        added.push(newBiz);
-        continue;
-      }
-
-      if (JSON.stringify(oldBiz) !== JSON.stringify(newBiz)) {
-        changed.push(newBiz);
-      }
-    }
-
-    for (const [id, oldBiz] of oldMap.entries()) {
-      if (!newMap.has(id)) {
-        removed.push(oldBiz);
-      }
-    }
-
-    const delta = { version: currentVersion, added, removed, changed };
-
-    if (sizeOnly) {
-      const json = JSON.stringify(delta);
-      return Buffer.byteLength(json, "utf8") / 1024;
-    }
-
-    return delta;
-  }
-
-  // ---------------------------------------------------------
-  // ⭐ SIZE ONLY (full)
-  // ---------------------------------------------------------
-  if (sizeOnly) {
-    const json = JSON.stringify(merged);
-    return Buffer.byteLength(json, "utf8") / 1024;
-  }
-
-  return merged;
-}
-
-async function processWorker({
-  fileId,
-  totalPackets,
-  instanceId = 0,
-  activeInstances = null, // null = cannot detect
-  readPacketExists,
-  writePacket,
-  generatePacketData,
-}) {
-  let start = 0;
-  let step = 1;
-
-  // ---------------------------------------------------
-  // 1. DYNAMIC MODE (we CAN detect active instances)
-  // ---------------------------------------------------
-  if (typeof activeInstances === "number" && activeInstances > 0) {
-    const sliceSize = Math.floor(totalPackets / activeInstances);
-    start = sliceSize * instanceId;
-    step = 1;
-  }
-
-  // ---------------------------------------------------
-  // 2. FALLBACK MODE (we CANNOT detect instances)
-  // ---------------------------------------------------
-  else {
-    // Your rule: skip 4 packets per instance
-    start = instanceId * 4;
-    step = 4;
-  }
-
-  // ---------------------------------------------------
-  // 3. MAIN LOOP (auto‑exit when done)
-  // ---------------------------------------------------
-  for (let packetIndex = start; packetIndex < totalPackets; packetIndex += step) {
-    const exists = await readPacketExists(fileId, packetIndex);
-
-    if (exists) {
-      continue;
-    }
-
-    const packetData = await generatePacketData(fileId, packetIndex);
-
-    await writePacket(fileId, packetIndex, packetData);
-  }
-
-  // ---------------------------------------------------
-  // 4. AUTO‑SPIN‑DOWN (function ends → instance ends)
-  // ---------------------------------------------------
-  return {
-    instanceId,
-    mode: activeInstances ? "dynamic" : "fallback",
-    start,
-    step,
-    status: "complete",
-  };
-}
+// async function generateUsersCache({ sizeOnly = false, deltaRequest = false } = {}) {
+
+//   // ---------------------------------------------------------
+//   // ⭐ LOAD VERSION FROM Cache_Control/<autoDocId>
+//   // ---------------------------------------------------------
+//   const controlRef = db.collection("Cache_Control").doc("KCQFBaFpjSaPRDTAhJBg");
+//   const controlSnap = await controlRef.get();
+//   const control = controlSnap.data() || {};
+//   const currentVersion = control.usersVersion ?? 1;
+
+//   // ---------------------------------------------------------
+//   // ⭐ LOAD EXISTING SNAPSHOT FROM Cache_Meta/users
+//   // ---------------------------------------------------------
+//   const metaRef = db.collection("Cache_Meta").doc("users");
+//   const metaSnap = await metaRef.get();
+//   const meta = metaSnap.data() || {};
+
+//   const now = Date.now();
+//   const lastGenerated = meta.lastGenerated || 0;
+//   const cachedVersion = meta.version || 0;
+//   const cachedData = meta.data || [];
+
+//   const ONE_DAY = 24 * 60 * 60 * 1000;
+
+//   const isFreshByTime = now - lastGenerated < ONE_DAY;
+//   const isFreshByVersion = cachedVersion === currentVersion;
+//   const hasData = Array.isArray(cachedData) && cachedData.length > 0;
+
+//   // ---------------------------------------------------------
+//   // ⭐ CASE 1 — Cache fully fresh
+//   // ---------------------------------------------------------
+//   if (hasData && isFreshByTime && isFreshByVersion) {
+
+//     if (deltaRequest) {
+//       const delta = { version: currentVersion, added: [], removed: [], changed: [] };
+
+//       if (sizeOnly) {
+//         const json = JSON.stringify(delta);
+//         return Buffer.byteLength(json, "utf8") / 1024;
+//       }
+
+//       return delta;
+//     }
+
+//     if (sizeOnly) {
+//       const json = JSON.stringify(cachedData);
+//       return Buffer.byteLength(json, "utf8") / 1024;
+//     }
+
+//     return cachedData;
+//   }
+
+//   // ---------------------------------------------------------
+//   // ⭐ CASE 2 — Version changed → micro-hydrate
+//   // ---------------------------------------------------------
+//   let merged = hasData ? [...cachedData] : [];
+
+//   if (hasData && cachedVersion !== currentVersion) {
+//     const freshUsers = await getAllUsersCache();
+
+//     const freshMap = new Map(freshUsers.map(u => [u.id, u]));
+//     const mergedMap = new Map(merged.map(u => [u.id, u]));
+
+//     for (const [id, freshUser] of freshMap.entries()) {
+//       const oldUser = mergedMap.get(id);
+
+//       if (!oldUser) {
+//         mergedMap.set(id, freshUser);
+//         continue;
+//       }
+
+//       const updatedUser = { ...oldUser };
+
+//       if (freshUser.updatedAt > oldUser.updatedAt) {
+//         updatedUser.email = freshUser.email;
+//         updatedUser.name = freshUser.name;
+//         updatedUser.displayName = freshUser.displayName;
+//         updatedUser.photoURL = freshUser.photoURL;
+//         updatedUser.role = freshUser.role;
+//         updatedUser.phone = freshUser.phone;
+//         updatedUser.country = freshUser.country;
+//       }
+
+//       if (freshUser.lastEarnedDate !== oldUser.lastEarnedDate) {
+//         updatedUser.loyalty = { ...freshUser.loyalty };
+//       }
+
+//       if (freshUser.notifications.lastPushSent !== oldUser.notifications.lastPushSent) {
+//         updatedUser.notifications = { ...freshUser.notifications };
+//       }
+
+//       if (freshUser.wallet.walletBalance !== oldUser.wallet.walletBalance) {
+//         updatedUser.wallet = { ...freshUser.wallet };
+//       }
+
+//       if (freshUser.lastActive !== oldUser.lastActive) {
+//         updatedUser.lastActive = freshUser.lastActive;
+//       }
+
+//       mergedMap.set(id, updatedUser);
+//     }
+
+//     merged = [...mergedMap.values()];
+//   }
+
+//   // ---------------------------------------------------------
+//   // ⭐ CASE 3 — Too old → full rebuild
+//   // ---------------------------------------------------------
+//   if (!hasData || !isFreshByTime) {
+//     merged = await getAllUsersCache();
+//   }
+
+//   // ---------------------------------------------------------
+//   // ⭐ ALWAYS WRITE BACK FULL SNAPSHOT
+//   // ---------------------------------------------------------
+//   await metaRef.set({
+//     lastGenerated: now,
+//     version: currentVersion,
+//     data: merged
+//   });
+
+//   // ---------------------------------------------------------
+//   // ⭐ DELTA MODE
+//   // ---------------------------------------------------------
+//   if (deltaRequest) {
+//     const oldMap = new Map(cachedData.map(u => [u.id, u]));
+//     const newMap = new Map(merged.map(u => [u.id, u]));
+
+//     const added = [];
+//     const removed = [];
+//     const changed = [];
+
+//     for (const [id, newUser] of newMap.entries()) {
+//       const oldUser = oldMap.get(id);
+
+//       if (!oldUser) {
+//         added.push(newUser);
+//         continue;
+//       }
+
+//       if (JSON.stringify(oldUser) !== JSON.stringify(newUser)) {
+//         changed.push(newUser);
+//       }
+//     }
+
+//     for (const [id, oldUser] of oldMap.entries()) {
+//       if (!newMap.has(id)) {
+//         removed.push(oldUser);
+//       }
+//     }
+
+//     const delta = { version: currentVersion, added, removed, changed };
+
+//     if (sizeOnly) {
+//       const json = JSON.stringify(delta);
+//       return Buffer.byteLength(json, "utf8") / 1024;
+//     }
+
+//     return delta;
+//   }
+
+//   // ---------------------------------------------------------
+//   // ⭐ SIZE ONLY MODE (full)
+//   // ---------------------------------------------------------
+//   if (sizeOnly) {
+//     const json = JSON.stringify(merged);
+//     return Buffer.byteLength(json, "utf8") / 1024;
+//   }
+
+//   return merged;
+// }
+// async function generateBusinessesCache({ sizeOnly = false, deltaRequest = false } = {}) {
+
+//   // ---------------------------------------------------------
+//   // ⭐ LOAD VERSION FROM Cache_Control/<autoDocId>
+//   // ---------------------------------------------------------
+//   const controlRef = db.collection("Cache_Control").doc("KCQFBaFpjSaPRDTAhJBg");
+//   const controlSnap = await controlRef.get();
+//   const control = controlSnap.data() || {};
+//   const currentVersion = control.businessVersion ?? 1;
+
+//   // ---------------------------------------------------------
+//   // ⭐ LOAD EXISTING SNAPSHOT FROM Cache_Meta/businesses
+//   // ---------------------------------------------------------
+//   const metaRef = db.collection("Cache_Meta").doc("businesses");
+//   const metaSnap = await metaRef.get();
+//   const meta = metaSnap.data() || {};
+
+//   const now = Date.now();
+//   const lastGenerated = meta.lastGenerated || 0;
+//   const cachedVersion = meta.version || 0;
+//   const cachedData = meta.data || [];
+
+//   const TWO_WEEKS = 14 * 24 * 60 * 60 * 1000;
+
+//   const isFreshByTime = now - lastGenerated < TWO_WEEKS;
+//   const isFreshByVersion = cachedVersion === currentVersion;
+//   const hasData = Array.isArray(cachedData) && cachedData.length > 0;
+
+//   // ---------------------------------------------------------
+//   // ⭐ CASE 1 — Fully fresh
+//   // ---------------------------------------------------------
+//   if (hasData && isFreshByTime && isFreshByVersion) {
+
+//     if (deltaRequest) {
+//       const delta = { version: currentVersion, added: [], removed: [], changed: [] };
+
+//       if (sizeOnly) {
+//         const json = JSON.stringify(delta);
+//         return Buffer.byteLength(json, "utf8") / 1024;
+//       }
+
+//       return delta;
+//     }
+
+//     if (sizeOnly) {
+//       const json = JSON.stringify(cachedData);
+//       return Buffer.byteLength(json, "utf8") / 1024;
+//     }
+
+//     return cachedData;
+//   }
+
+//   // ---------------------------------------------------------
+//   // ⭐ CASE 2 — Version matches but time expired → micro-hydrate
+//   // ---------------------------------------------------------
+//   let merged = hasData ? [...cachedData] : [];
+
+//   if (hasData && isFreshByVersion && !isFreshByTime) {
+//     const fresh = await getAllBusinesses(null);
+
+//     const mergedMap = new Map(cachedData.map(b => [b.id, b]));
+
+//     for (const freshBiz of fresh) {
+//       const oldBiz = mergedMap.get(freshBiz.id);
+
+//       if (!oldBiz) {
+//         mergedMap.set(freshBiz.id, freshBiz);
+//         continue;
+//       }
+
+//       if (freshBiz.updatedAt > oldBiz.updatedAt) {
+//         mergedMap.set(freshBiz.id, freshBiz);
+//       }
+//     }
+
+//     merged = [...mergedMap.values()];
+//   }
+
+//   // ---------------------------------------------------------
+//   // ⭐ CASE 3 — Version changed OR too old → full rebuild
+//   // ---------------------------------------------------------
+//   if (!hasData || !isFreshByTime) {
+//     merged = await getAllBusinesses(null);
+//   }
+
+//   // ---------------------------------------------------------
+//   // ⭐ ALWAYS WRITE BACK FULL SNAPSHOT
+//   // ---------------------------------------------------------
+//   await metaRef.set({
+//     lastGenerated: now,
+//     version: currentVersion,
+//     data: merged
+//   });
+
+//   // ---------------------------------------------------------
+//   // ⭐ DELTA MODE
+//   // ---------------------------------------------------------
+//   if (deltaRequest) {
+//     const oldMap = new Map(cachedData.map(b => [b.id, b]));
+//     const newMap = new Map(merged.map(b => [b.id, b]));
+
+//     const added = [];
+//     const removed = [];
+//     const changed = [];
+
+//     for (const [id, newBiz] of newMap.entries()) {
+//       const oldBiz = oldMap.get(id);
+
+//       if (!oldBiz) {
+//         added.push(newBiz);
+//         continue;
+//       }
+
+//       if (JSON.stringify(oldBiz) !== JSON.stringify(newBiz)) {
+//         changed.push(newBiz);
+//       }
+//     }
+
+//     for (const [id, oldBiz] of oldMap.entries()) {
+//       if (!newMap.has(id)) {
+//         removed.push(oldBiz);
+//       }
+//     }
+
+//     const delta = { version: currentVersion, added, removed, changed };
+
+//     if (sizeOnly) {
+//       const json = JSON.stringify(delta);
+//       return Buffer.byteLength(json, "utf8") / 1024;
+//     }
+
+//     return delta;
+//   }
+
+//   // ---------------------------------------------------------
+//   // ⭐ SIZE ONLY (full)
+//   // ---------------------------------------------------------
+//   if (sizeOnly) {
+//     const json = JSON.stringify(merged);
+//     return Buffer.byteLength(json, "utf8") / 1024;
+//   }
+
+//   return merged;
+// }
+
+// async function processWorker({
+//   fileId,
+//   totalPackets,
+//   instanceId = 0,
+//   activeInstances = null, // null = cannot detect
+//   readPacketExists,
+//   writePacket,
+//   generatePacketData,
+// }) {
+//   let start = 0;
+//   let step = 1;
+
+//   // ---------------------------------------------------
+//   // 1. DYNAMIC MODE (we CAN detect active instances)
+//   // ---------------------------------------------------
+//   if (typeof activeInstances === "number" && activeInstances > 0) {
+//     const sliceSize = Math.floor(totalPackets / activeInstances);
+//     start = sliceSize * instanceId;
+//     step = 1;
+//   }
+
+//   // ---------------------------------------------------
+//   // 2. FALLBACK MODE (we CANNOT detect instances)
+//   // ---------------------------------------------------
+//   else {
+//     // Your rule: skip 4 packets per instance
+//     start = instanceId * 4;
+//     step = 4;
+//   }
+
+//   // ---------------------------------------------------
+//   // 3. MAIN LOOP (auto‑exit when done)
+//   // ---------------------------------------------------
+//   for (let packetIndex = start; packetIndex < totalPackets; packetIndex += step) {
+//     const exists = await readPacketExists(fileId, packetIndex);
+
+//     if (exists) {
+//       continue;
+//     }
+
+//     const packetData = await generatePacketData(fileId, packetIndex);
+
+//     await writePacket(fileId, packetIndex, packetData);
+//   }
+
+//   // ---------------------------------------------------
+//   // 4. AUTO‑SPIN‑DOWN (function ends → instance ends)
+//   // ---------------------------------------------------
+//   return {
+//     instanceId,
+//     mode: activeInstances ? "dynamic" : "fallback",
+//     start,
+//     step,
+//     status: "complete",
+//   };
+// }
 
 // export const scheduledUserScoring = onSchedule(
 //   {
@@ -17310,1154 +17310,1155 @@ async function processWorker({
 //   }
 // );
 
-async function generateEventsCache({ sizeOnly = false, deltaRequest = false } = {}) {
-
-  // ---------------------------------------------------------
-  // ⭐ LOAD VERSION FROM Cache_Control/<autoDocId>
-  // ---------------------------------------------------------
-  const controlRef = db.collection("Cache_Control").doc("KCQFBaFpjSaPRDTAhJBg");
-  const controlSnap = await controlRef.get();
-  const control = controlSnap.data() || {};
-  const currentVersion = control.eventVersion ?? 1;
-
-  // ---------------------------------------------------------
-  // ⭐ LOAD EXISTING SNAPSHOT FROM Cache_Meta/events
-  // ---------------------------------------------------------
-  const metaRef = db.collection("Cache_Meta").doc("events");
-  const metaSnap = await metaRef.get();
-  const meta = metaSnap.data() || {};
-
-  const now = Date.now();
-  const lastGenerated = meta.lastGenerated || 0;
-  const cachedVersion = meta.version || 0;
-  const cachedData = meta.data || [];
-
-  const FOUR_DAYS = 4 * 24 * 60 * 60 * 1000;
-
-  const isFreshByTime = now - lastGenerated < FOUR_DAYS;
-  const isFreshByVersion = cachedVersion === currentVersion;
-  const hasData = Array.isArray(cachedData) && cachedData.length > 0;
-
-  // ---------------------------------------------------------
-  // ⭐ CASE 1 — Fully fresh
-  // ---------------------------------------------------------
-  if (hasData && isFreshByTime && isFreshByVersion) {
-
-    if (deltaRequest) {
-      const delta = { version: currentVersion, added: [], removed: [], changed: [] };
-
-      if (sizeOnly) {
-        const json = JSON.stringify(delta);
-        return Buffer.byteLength(json, "utf8") / 1024;
-      }
-
-        return delta;
-    }
-
-    if (sizeOnly) {
-      const json = JSON.stringify(cachedData);
-      return Buffer.byteLength(json, "utf8") / 1024;
-    }
-
-    return cachedData;
-  }
-
-  // ---------------------------------------------------------
-  // ⭐ CASE 2 — Version matches but time expired → micro-hydrate
-  // ---------------------------------------------------------
-  let merged = hasData ? [...cachedData] : [];
-
-  if (hasData && isFreshByVersion && !isFreshByTime) {
-    const fresh = await getAllEventsCache();
-
-    const mergedMap = new Map(cachedData.map(ev => [ev.id, ev]));
-
-    for (const freshEvent of fresh) {
-      const oldEvent = mergedMap.get(freshEvent.id);
-
-      if (!oldEvent) {
-        mergedMap.set(freshEvent.id, freshEvent);
-        continue;
-      }
-
-      if (freshEvent.updatedAt > oldEvent.updatedAt) {
-        mergedMap.set(freshEvent.id, freshEvent);
-      }
-    }
-
-    merged = [...mergedMap.values()];
-  }
-
-  // ---------------------------------------------------------
-  // ⭐ CASE 3 — Version changed OR too old → full rebuild
-  // ---------------------------------------------------------
-  if (!hasData || !isFreshByTime) {
-    merged = await getAllEventsCache();
-  }
-
-  // ---------------------------------------------------------
-  // ⭐ ALWAYS WRITE BACK FULL SNAPSHOT
-  // ---------------------------------------------------------
-  await metaRef.set({
-    lastGenerated: now,
-    version: currentVersion,
-    data: merged
-  });
-
-  // ---------------------------------------------------------
-  // ⭐ DELTA MODE
-  // ---------------------------------------------------------
-  if (deltaRequest) {
-    const oldMap = new Map(cachedData.map(ev => [ev.id, ev]));
-    const newMap = new Map(merged.map(ev => [ev.id, ev]));
-
-    const added = [];
-    const removed = [];
-    const changed = [];
-
-    for (const [id, newEvent] of newMap.entries()) {
-      const oldEvent = oldMap.get(id);
-
-      if (!oldEvent) {
-        added.push(newEvent);
-        continue;
-      }
-
-      if (JSON.stringify(oldEvent) !== JSON.stringify(newEvent)) {
-        changed.push(newEvent);
-      }
-    }
-
-    for (const [id, oldEvent] of oldMap.entries()) {
-      if (!newMap.has(id)) {
-        removed.push(oldEvent);
-      }
-    }
-
-    const delta = { version: currentVersion, added, removed, changed };
-
-    if (sizeOnly) {
-      const json = JSON.stringify(delta);
-      return Buffer.byteLength(json, "utf8") / 1024;
-    }
-
-    return delta;
-  }
-
-  // ---------------------------------------------------------
-  // ⭐ SIZE ONLY (full)
-  // ---------------------------------------------------------
-  if (sizeOnly) {
-    const json = JSON.stringify(merged);
-    return Buffer.byteLength(json, "utf8") / 1024;
-  }
-
-  return merged;
-}
-
-async function getAllEventsCache() {
-  const today = new Date();
-  const todayStr = formatEventDate(today);
-
-  const snap = await db.collection("Events")
-    .where("toDate", ">=", todayStr)
-    .orderBy("toDate")
-    .limit(20)
-    .get();
-
-  return snap.docs.map(doc => {
-    const data = doc.data() || {};
-
-    const coords =
-      data.coords ||
-      (data.lat && data.lng ? { lat: data.lat, lng: data.lng } : null);
-
-    return {
-      id: doc.id,
-      title: data.title || "Untitled Event",
-
-      fromDate: data.fromDate || todayStr,
-      toDate: data.toDate || data.fromDate || todayStr,
-
-      venue: data.venue || data.resolvedName || "Unknown Venue",
-      address: data.address || data.resolvedAddress || "Unknown Address",
-
-      category: data.category || null,
-      price: data.price ?? 0,
-
-      coords,
-
-      mapImageUrl: data.mapImageUrl || null,
-      mapsWebUrl: data.mapsWebUrl || null,
-      placeId: data.placeId || null,
-      resolvedName: data.resolvedName || null,
-      resolvedAddress: data.resolvedAddress || null,
-
-      images: data.images || [],
-
-      ...data
-    };
-  });
-}
-
-async function getAllUsersCache() {
-  const snap = await db
-    .collection("Users")
-    .orderBy("TPIdentity.createdAt", "desc")
-    .get();
-
-  const safeMillis = (ts) => {
-    if (!ts) return null;
-    if (typeof ts.toMillis === "function") return ts.toMillis();
-    if (ts?._seconds) return ts._seconds * 1000;
-    if (typeof ts === "number") return ts;
-    return null;
-  };
-
-  const safeNum = (v) =>
-    Number.isFinite(Number(v)) ? Number(v) : 0;
-
-  return snap.docs.map((doc) => {
-    const data = doc.data() || {};
-    const id = doc.id;
-
-    const TPIdentity = data.TPIdentity || {};
-    const TPLoyalty = data.TPLoyalty || {};
-    const TPNotifications = data.TPNotifications || {};
-    const TPWallet = data.TPWallet || {};
-    const TPSecurity = data.TPSecurity || {};
-
-    return {
-      id,
-
-      // ⭐ Identity (flattened)
-      email: TPIdentity.email || null,
-      name: TPIdentity.name || null,
-      displayName: TPIdentity.displayName || null,
-      photoURL: TPIdentity.photoURL || null,
-      role: TPIdentity.role || "Customer",
-      phone: TPIdentity.phone || null,
-      country: TPIdentity.country || null,
-
-      // ⭐ Loyalty
-      loyalty: {
-        pointsBalance: safeNum(TPLoyalty.pointsBalance),
-        lifetimePoints: safeNum(TPLoyalty.lifetimePoints),
-        referralCode: TPLoyalty.referralCode || null,
-        referredBy: TPLoyalty.referredBy || null
-      },
-
-      // ⭐ Notifications
-      notifications: {
-        receiveMassEmails: TPNotifications.receiveMassEmails ?? true,
-        receiveSMS: TPNotifications.receiveSMS ?? false,
-        lastPushSent: safeMillis(TPNotifications.lastPushSent)
-      },
-
-      // ⭐ Wallet
-      wallet: {
-        walletBalance: safeNum(TPWallet.walletBalance)
-      },
-
-      // ⭐ Timestamps
-      createdAt: safeMillis(TPIdentity.createdAt),
-      updatedAt: safeMillis(TPIdentity.updatedAt),
-      lastActive: safeMillis(TPSecurity.lastActive),
-      lastEarnedDate: safeMillis(TPLoyalty.lastEarnedDate)
-    };
-  });
-}
-
-async function generateHistoryCache({ sizeOnly = false, deltaRequest = false } = {}) {
-
-  // ---------------------------------------------------------
-  // ⭐ LOAD VERSION FROM Cache_Control/<autoDocId>
-  // ---------------------------------------------------------
-  const controlRef = db.collection("Cache_Control").doc("KCQFBaFpjSaPRDTAhJBg");
-  const controlSnap = await controlRef.get();
-  const control = controlSnap.data() || {};
-  const currentVersion = control.historyVersion ?? 1;
-
-  // ---------------------------------------------------------
-  // ⭐ LOAD EXISTING SNAPSHOT FROM Cache_Meta/history
-  // ---------------------------------------------------------
-  const metaRef = db.collection("Cache_Meta").doc("history");
-  const metaSnap = await metaRef.get();
-  const meta = metaSnap.data() || {};
-
-  const now = Date.now();
-  const lastGenerated = meta.lastGenerated || 0;
-  const cachedVersion = meta.version || 0;
-  const cachedData = meta.data || [];
-
-  const ONE_DAY = 24 * 60 * 60 * 1000;
-
-  const isFreshByTime = now - lastGenerated < ONE_DAY;
-  const isFreshByVersion = cachedVersion === currentVersion;
-  const hasData = Array.isArray(cachedData) && cachedData.length > 0;
-
-  // ---------------------------------------------------------
-  // ⭐ CASE 1 — Fully fresh
-  // ---------------------------------------------------------
-  if (hasData && isFreshByTime && isFreshByVersion) {
-
-    if (deltaRequest) {
-      const delta = { version: currentVersion, added: [], removed: [], changed: [] };
-
-      if (sizeOnly) {
-        const json = JSON.stringify(delta);
-        return Buffer.byteLength(json, "utf8") / 1024;
-      }
-
-      return delta;
-    }
-
-    if (sizeOnly) {
-      const json = JSON.stringify(cachedData);
-      return Buffer.byteLength(json, "utf8") / 1024;
-    }
-
-    return cachedData;
-  }
-
-  // ---------------------------------------------------------
-  // ⭐ CASE 2 — Build NEW full history snapshot
-  // ---------------------------------------------------------
-  const usersSnap = await db.collection("Users").get();
-  const allHistory = [];
-
-  for (const userDoc of usersSnap.docs) {
-    const uid = userDoc.id;
-    const userData = userDoc.data() || {};
-    const loyalty = userData.loyalty || {};
-
-    const histSnap = await db
-      .collection("PulseHistory")
-      .doc(uid)
-      .collection("entries")
-      .orderBy("createdAt", "desc")
-      .limit(200)
-      .get();
-
-    for (const entry of histSnap.docs) {
-      const h = entry.data();
-
-      // -----------------------------------------
-      // ⭐ Build unified snapshot (history + loyalty)
-      // -----------------------------------------
-      const snapshot = h.pointsSnapshot || {
-        seasonalName: loyalty.seasonalName ?? null,
-        seasonalMultiplier: loyalty.seasonalMultiplier ?? 1,
-        seasonalActive: loyalty.seasonalActive ?? false,
-
-        tier: loyalty.tier ?? null,
-        tierKey: loyalty.tierKey ?? null,
-        tierMultiplier: loyalty.tierMultiplier ?? 1,
-
-        streakCount: loyalty.streakCount ?? 0,
-        streakMultiplier: loyalty.streakMultiplier ?? 1,
-        streakExpires: loyalty.streakExpires ?? null,
-
-        calculationVersion: loyalty.calculationVersion ?? 1,
-
-        pointsBefore: h.pulsepointsBefore ?? null,
-        pointsAfter: h.pulsepointsAfter ?? null
-      };
-
-      allHistory.push({
-        uid,
-        id: entry.id,
-        type: h.type,
-        label: h.label,
-        amount: h.amount,
-        ts: h.ts,
-        createdAt: h.createdAt,
-        orderID: h.orderID ?? null,
-        pointsSnapshot: snapshot
-      });
-    }
-  }
-
-  // ---------------------------------------------------------
-  // ⭐ WRITE BACK FULL SNAPSHOT
-  // ---------------------------------------------------------
-  await metaRef.set({
-    lastGenerated: now,
-    version: currentVersion,
-    data: allHistory
-  });
-
-  // ---------------------------------------------------------
-  // ⭐ DELTA MODE
-  // ---------------------------------------------------------
-  if (deltaRequest) {
-    const oldMap = new Map(cachedData.map(h => [`${h.uid}_${h.id}`, h]));
-    const newMap = new Map(allHistory.map(h => [`${h.uid}_${h.id}`, h]));
-
-    const added = [];
-    const removed = [];
-    const changed = [];
-
-    for (const [key, newEntry] of newMap.entries()) {
-      const oldEntry = oldMap.get(key);
-
-      if (!oldEntry) {
-        added.push(newEntry);
-        continue;
-      }
-
-      if (JSON.stringify(oldEntry) !== JSON.stringify(newEntry)) {
-        changed.push(newEntry);
-      }
-    }
-
-    for (const [key, oldEntry] of oldMap.entries()) {
-      if (!newMap.has(key)) {
-        removed.push(oldEntry);
-      }
-    }
-
-    const delta = { version: currentVersion, added, removed, changed };
-
-    if (sizeOnly) {
-      const json = JSON.stringify(delta);
-      return Buffer.byteLength(json, "utf8") / 1024;
-    }
-
-    return delta;
-  }
-
-  // ---------------------------------------------------------
-  // ⭐ SIZE ONLY (full)
-  // ---------------------------------------------------------
-  if (sizeOnly) {
-    const json = JSON.stringify(allHistory);
-    return Buffer.byteLength(json, "utf8") / 1024;
-  }
-
-  return allHistory;
-}
-async function generateLoyaltyCache({ sizeOnly = false } = {}) {
-
-  // ---------------------------------------------------------
-  // ⭐ LOAD VERSION FROM Cache_Control/<autoDocId>
-  // ---------------------------------------------------------
-  const controlRef = db.collection("Cache_Control").doc("KCQFBaFpjSaPRDTAhJBg");
-  const controlSnap = await controlRef.get();
-  const control = controlSnap.data() || {};
-  const currentVersion = control.loyaltyVersion ?? 1;
-
-  // ---------------------------------------------------------
-  // ⭐ LOAD EXISTING SNAPSHOT FROM Cache_Meta/loyalty
-  // ---------------------------------------------------------
-  const metaRef = db.collection("Cache_Meta").doc("loyalty");
-  const metaSnap = await metaRef.get();
-  const meta = metaSnap.data() || {};
-
-  const now = Date.now();
-  const lastGenerated = meta.lastGenerated || 0;
-  const cachedVersion = meta.version || 0;
-  const cachedData = meta.data || [];
-
-  const ONE_DAY = 24 * 60 * 60 * 1000;
-
-  const isFreshByTime = now - lastGenerated < ONE_DAY;
-  const isFreshByVersion = cachedVersion === currentVersion;
-  const hasData = Array.isArray(cachedData) && cachedData.length > 0;
-
-  // ---------------------------------------------------------
-  // ⭐ CASE 1 — Fully fresh
-  // ---------------------------------------------------------
-  if (hasData && isFreshByTime && isFreshByVersion) {
-
-    if (sizeOnly) {
-      const json = JSON.stringify(cachedData);
-      return Buffer.byteLength(json, "utf8") / 1024;
-    }
-
-    return cachedData;
-  }
-
-  // ---------------------------------------------------------
-  // ⭐ CASE 2 — Build NEW full loyalty snapshot
-  // ---------------------------------------------------------
-  const usersSnap = await db.collection("Users").get();
-  const loyaltyList = [];
-
-  // Load global settings once
-  const settingsSnap = await db.collection("TPSettings").doc("global").get();
-  const settings = settingsSnap.data() || {};
-
-  for (const userDoc of usersSnap.docs) {
-    const uid = userDoc.id;
-    const userData = userDoc.data() || {};
-
-    const TPIdentity = userData.TPIdentity || {};
-    const TPLoyalty = userData.TPLoyalty || {};
-
-    // -----------------------------------------
-    // ⭐ DISPLAY NAME
-    // -----------------------------------------
-    const displayName = TPIdentity.displayName || "Explorer";
-
-    // -----------------------------------------
-    // ⭐ STREAK LOGIC
-    // -----------------------------------------
-    const lastEarnedDate = TPLoyalty.lastEarnedDate || null;
-    let streakCount = Number(TPLoyalty.streakCount) || 0;
-
-    const windowHours = (settings.streakDurationDays ?? 1) * 24;
-
-    if (!lastEarnedDate) {
-      streakCount = 0;
-    } else {
-      const lastMs = lastEarnedDate.toMillis();
-      const expiresMs = lastMs + windowHours * 3600000;
-
-      if (Date.now() >= expiresMs) {
-        streakCount = 0;
-      }
-    }
-
-    // -----------------------------------------
-    // ⭐ TIER LOGIC
-    // -----------------------------------------
-    const lifetimePoints = Number(TPLoyalty.lifetimePoints) || 0;
-
-    const tierThresholds = {
-      Seashell: 0,
-      ReefDiver: settings.tierThreshold_ReefDiver,
-      ToucanSpirit: settings.tierThreshold_ToucanSpirit,
-      VolcanoHeart: settings.tierThreshold_VolcanoHeart,
-      HurricaneLegend: settings.tierThreshold_HurricaneLegend
-    };
-
-    let tierKey = "Seashell";
-    for (const [name, threshold] of Object.entries(tierThresholds)) {
-      if (lifetimePoints >= threshold) tierKey = name;
-    }
-
-    const tierNameMap = {
-      Seashell: "Seashell",
-      ReefDiver: "Reef Diver",
-      ToucanSpirit: "Toucan Spirit",
-      VolcanoHeart: "Volcano Heart",
-      HurricaneLegend: "Hurricane Legend"
-    };
-
-    const tier = tierNameMap[tierKey];
-    const tierMultiplier = settings[`tierMultiplier_${tierKey}`] ?? 1;
-
-    // -----------------------------------------
-    // ⭐ STREAK MULTIPLIER
-    // -----------------------------------------
-    const streakMultiplier = Math.min(
-      settings.streakMultiplierBase +
-        streakCount * settings.streakMultiplierPerDay,
-      settings.streakMaxMultiplier
-    );
-
-    // -----------------------------------------
-    // ⭐ SEASONAL LOGIC
-    // -----------------------------------------
-    const {
-      seasonalActive,
-      seasonalName,
-      seasonalMultiplier
-    } = getSeasonFromSettings(settings);
-
-    // -----------------------------------------
-    // ⭐ REFERRAL CODE
-    // -----------------------------------------
-    const referralCode = TPLoyalty.referralCode || null;
-
-    // -----------------------------------------
-    // ⭐ BUILD LOYALTY SNAPSHOT
-    // -----------------------------------------
-    loyaltyList.push({
-      uid,
-      displayName,
-      lifetimePoints,
-      streakCount,
-      tier,
-      tierKey,
-      tierMultiplier,
-      streakMultiplier,
-      seasonalMultiplier,
-      seasonalActive,
-      seasonalName,
-      referralCode,
-      calculationVersion: TPLoyalty.calculationVersion ?? 1
-    });
-  }
-
-  // ---------------------------------------------------------
-  // ⭐ WRITE BACK FULL SNAPSHOT
-  // ---------------------------------------------------------
-  await metaRef.set({
-    lastGenerated: now,
-    version: currentVersion,
-    data: loyaltyList
-  });
-
-  // ---------------------------------------------------------
-  // ⭐ SIZE ONLY
-  // ---------------------------------------------------------
-  if (sizeOnly) {
-    const json = JSON.stringify(loyaltyList);
-    return Buffer.byteLength(json, "utf8") / 1024;
-  }
-
-  return loyaltyList;
-}
-function signChunk(userId, sessionId, index, dataBase64) {
-  const h = crypto.createHash("sha256");
-  h.update(userId + sessionId + index + dataBase64);
-  return h.digest("hex");
-}
-// -------------------------------------------------------
-// ⭐ INTELLIGENT CACHE RESOLVER (FULL / DELTA / SIZE)
-// -------------------------------------------------------
-async function resolveCacheRequest(payload, baseVersion, sizeOnly) {
-
-  // Helper: detect cache type
-  const isDelta = payload.endsWith("_DELTA");
-  const isFull = payload.endsWith("_CACHE");
-
-  // Helper: map payload → generator
-  const generators = {
-    REQUEST_USERS_CACHE: generateUsersCache,
-    REQUEST_USERS_CACHE_DELTA: generateUsersCache,
-
-    REQUEST_BUSINESS_CACHE: generateBusinessesCache,
-    REQUEST_BUSINESS_CACHE_DELTA: generateBusinessesCache,
-
-    REQUEST_EVENTS_CACHE: generateEventsCache,
-    REQUEST_EVENTS_CACHE_DELTA: generateEventsCache,
-
-    REQUEST_ORDERS_CACHE: generateOrdersCache,
-    REQUEST_ORDERS_CACHE_DELTA: generateOrdersCache,
-
-    REQUEST_LOYALTY_CACHE: generateLoyaltyCache,
-    REQUEST_LOYALTY_CACHE_DELTA: generateLoyaltyCache,
-
-    REQUEST_HISTORY_CACHE: generateHistoryCache,
-    REQUEST_HISTORY_CACHE_DELTA: generateHistoryCache,
-
-    REQUEST_SETTINGS_CACHE: generateSettingsCache,
-    REQUEST_SETTINGS_CACHE_DELTA: generateSettingsCache
-  };
-
-  const fn = generators[payload];
-  if (!fn) return payload; // raw fallback
-
-  // -------------------------------------------------------
-  // ⭐ 1. DELTA REQUESTS
-  // -------------------------------------------------------
-  if (isDelta) {
-
-    // Missing baseVersion → fallback to full
-    if (!baseVersion) {
-      return sizeOnly
-        ? await fn({ sizeOnly: true })
-        : await fn();
-    }
-
-    // Try delta
-    const delta = await fn({ deltaRequest: true, sizeOnly });
-
-    // If sizeOnly → return size immediately
-    if (sizeOnly) return delta;
-
-    // If delta empty → fallback to full
-    const isEmpty =
-      (Array.isArray(delta.added) && delta.added.length === 0 &&
-       Array.isArray(delta.removed) && delta.removed.length === 0 &&
-       Array.isArray(delta.changed) && delta.changed.length === 0) ||
-      (Object.keys(delta.added || {}).length === 0 &&
-       Object.keys(delta.removed || {}).length === 0 &&
-       Object.keys(delta.changed || {}).length === 0);
-
-    if (isEmpty) {
-      return await fn(); // full
-    }
-
-    return delta;
-  }
-
-  // -------------------------------------------------------
-  // ⭐ 2. FULL REQUESTS
-  // -------------------------------------------------------
-  if (isFull) {
-    return sizeOnly
-      ? await fn({ sizeOnly: true })
-      : await fn();
-  }
-
-  // -------------------------------------------------------
-  // ⭐ 3. SIZE ONLY (no delta/full specified)
-  // -------------------------------------------------------
-  if (sizeOnly) {
-    // Try delta size first
-    const delta = await fn({ deltaRequest: true, sizeOnly: true });
-
-    const deltaSize = Number(delta);
-    if (deltaSize > 0) return deltaSize;
-
-    // Fallback to full size
-    return await fn({ sizeOnly: true });
-  }
-
-  // -------------------------------------------------------
-  // ⭐ 4. RAW PAYLOAD
-  // -------------------------------------------------------
-  return payload;
-}
-export const createPulseBandSession = onRequest(
-  { region: "us-central1", timeoutSeconds: 300, memory: "1GiB" },
-  async (req, res) => {
-    res.set("Access-Control-Allow-Origin", "*");
-    res.set("Access-Control-Allow-Headers", "Content-Type, Authorization");
-    res.set("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
-    if (req.method === "OPTIONS") return res.status(204).send("");
-
-    try {
-      let { userId, payload, chunkSize = 500, baseVersion, sizeOnly } = req.body;
-
-      if (!userId || !payload) {
-        return res.json({ success: false, error: "Missing userId or payload" });
-      }
-
-      // ⭐ Log session creation request
-      await db.collection("pulseband_logs").add({
-        type: "session_create_request",
-        userId,
-        payload,
-        chunkSize,
-        createdAt: admin.firestore.FieldValue.serverTimestamp()
-      });
-
-      // -------------------------------------------------------
-      // ⭐ INTELLIGENT CACHE RESOLVER
-      // -------------------------------------------------------
-      async function resolveCacheRequest(payload, baseVersion, sizeOnly) {
-        const isDelta = payload.endsWith("_DELTA");
-        const isFull = payload.endsWith("_CACHE");
-
-        const generators = {
-          REQUEST_USERS_CACHE: generateUsersCache,
-          REQUEST_USERS_CACHE_DELTA: generateUsersCache,
-
-          REQUEST_BUSINESS_CACHE: generateBusinessesCache,
-          REQUEST_BUSINESS_CACHE_DELTA: generateBusinessesCache,
-
-          REQUEST_EVENTS_CACHE: generateEventsCache,
-          REQUEST_EVENTS_CACHE_DELTA: generateEventsCache,
-
-          REQUEST_ORDERS_CACHE: generateOrdersCache,
-          REQUEST_ORDERS_CACHE_DELTA: generateOrdersCache,
-
-          REQUEST_HISTORY_CACHE: generateHistoryCache,
-          REQUEST_HISTORY_CACHE_DELTA: generateHistoryCache,
-
-          REQUEST_SETTINGS_CACHE: generateSettingsCache,
-          REQUEST_SETTINGS_CACHE_DELTA: generateSettingsCache
-        };
-
-        const fn = generators[payload];
-        if (!fn) return payload; // raw fallback
-
-        // -------------------------------------------------------
-        // ⭐ 1. DELTA REQUESTS
-        // -------------------------------------------------------
-        if (isDelta) {
-          if (!baseVersion) {
-            return sizeOnly
-              ? await fn({ sizeOnly: true })
-              : await fn();
-          }
-
-          const delta = await fn({ deltaRequest: true, sizeOnly });
-
-          if (sizeOnly) return delta;
-
-          const isEmpty =
-            (Array.isArray(delta.added) && delta.added.length === 0 &&
-             Array.isArray(delta.removed) && delta.removed.length === 0 &&
-             Array.isArray(delta.changed) && delta.changed.length === 0) ||
-            (Object.keys(delta.added || {}).length === 0 &&
-             Object.keys(delta.removed || {}).length === 0 &&
-             Object.keys(delta.changed || {}).length === 0);
-
-          if (isEmpty) {
-            return await fn(); // fallback to full
-          }
-
-          return delta;
-        }
-
-        // -------------------------------------------------------
-        // ⭐ 2. FULL REQUESTS
-        // -------------------------------------------------------
-        if (isFull) {
-          return sizeOnly
-            ? await fn({ sizeOnly: true })
-            : await fn();
-        }
-
-        // -------------------------------------------------------
-        // ⭐ 3. SIZE ONLY (no delta/full specified)
-        // -------------------------------------------------------
-        if (sizeOnly) {
-          const delta = await fn({ deltaRequest: true, sizeOnly: true });
-          const deltaSize = Number(delta);
-
-          if (deltaSize > 0) return deltaSize;
-
-          return await fn({ sizeOnly: true });
-        }
-
-        // -------------------------------------------------------
-        // ⭐ 4. RAW PAYLOAD
-        // -------------------------------------------------------
-        return payload;
-      }
-
-      // -------------------------------------------------------
-      // ⭐ 1. Resolve payload intelligently
-      // -------------------------------------------------------
-      let rawPayload;
-
-      try {
-        rawPayload = await resolveCacheRequest(payload, baseVersion, sizeOnly === true);
-      } catch (err) {
-        await db.collection("pulseband_errors").add({
-          type: "payload_generation_error",
-          userId,
-          payload,
-          error: err.message,
-          createdAt: admin.firestore.FieldValue.serverTimestamp()
-        });
-        return res.json({ success: false, error: "Payload generation failed" });
-      }
-
-      const jsonString =
-        typeof rawPayload === "string"
-          ? rawPayload
-          : JSON.stringify(rawPayload);
-
-      // -------------------------------------------------------
-      // ⭐ 2. Convert payload to buffer
-      // -------------------------------------------------------
-      const buffer = Buffer.from(jsonString, "utf8");
-      const totalChunks = Math.ceil(buffer.length / chunkSize);
-      const sessionId = `PB_${userId}_${Date.now()}`;
-
-      const payloadHash = crypto
-        .createHash("sha256")
-        .update(buffer)
-        .digest("hex");
-
-      const sessionRef = db.collection("pulseband_sessions").doc(sessionId);
-      const chunksRef = sessionRef.collection("chunks");
-
-      // -------------------------------------------------------
-      // ⭐ 3. Create session metadata
-      // -------------------------------------------------------
-      await sessionRef.set({
-        sessionId,
-        userId,
-        totalChunks,
-        chunkSize,
-        createdAt: admin.firestore.FieldValue.serverTimestamp(),
-        status: "pending",
-        retries: 0,
-        failures: 0,
-        restarts: 0,
-        payloadBytes: buffer.length,
-        payloadHash,
-        payloadType: payload
-      });
-
-      await db.collection("pulseband_logs").add({
-        type: "session_created",
-        sessionId,
-        userId,
-        totalChunks,
-        chunkSize,
-        payloadBytes: buffer.length,
-        payloadHash,
-        createdAt: admin.firestore.FieldValue.serverTimestamp()
-      });
-
-      // -------------------------------------------------------
-      // ⭐ 4. Chunk + batch write
-      // -------------------------------------------------------
-      let batch = db.batch();
-      let batchCount = 0;
-
-      for (let i = 0; i < totalChunks; i++) {
-        try {
-          const start = i * chunkSize;
-          const end = start + chunkSize;
-          const dataBase64 = buffer.slice(start, end).toString("base64");
-
-          const signature = signChunk(userId, sessionId, i, dataBase64);
-
-          const chunkDoc = chunksRef.doc(i.toString().padStart(5, "0"));
-          batch.set(chunkDoc, {
-            index: i,
-            data: dataBase64,
-            signature,
-            status: "pending",
-            createdAt: admin.firestore.FieldValue.serverTimestamp()
-          });
-
-          batchCount++;
-          if (batchCount === 400) {
-            await batch.commit();
-            batch = db.batch();
-            batchCount = 0;
-          }
-        } catch (err) {
-          await db.collection("pulseband_errors").add({
-            type: "chunk_generation_error",
-            sessionId,
-            userId,
-            index: i,
-            error: err.message,
-            createdAt: admin.firestore.FieldValue.serverTimestamp()
-          });
-          return res.json({ success: false, error: "Chunk generation failed" });
-        }
-      }
-
-      if (batchCount > 0) await batch.commit();
-
-      // -------------------------------------------------------
-      // ⭐ 5. Return session info
-      // -------------------------------------------------------
-      return res.json({ success: true, sessionId, totalChunks });
-
-    } catch (err) {
-      await db.collection("pulseband_errors").add({
-        type: "session_creation_error",
-        error: err.message,
-        createdAt: admin.firestore.FieldValue.serverTimestamp()
-      });
-
-      return res.json({ success: false, error: err.message });
-    }
-  }
-);
-
-export const getNextPulseBandChunk = onRequest(
-  { region: "us-central1" },
-  async (req, res) => {
-    res.set("Access-Control-Allow-Origin", "*");
-    res.set("Access-Control-Allow-Headers", "Content-Type, Authorization");
-    res.set("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
-    if (req.method === "OPTIONS") return res.status(204).send("");
-
-    try {
-      const { sessionId, userId } = req.query;
-
-      if (!sessionId || !userId) {
-        return res.json({ success: false, error: "Missing sessionId or userId" });
-      }
-
-      const sessionRef = db.collection("pulseband_sessions").doc(sessionId);
-      const sessionSnap = await sessionRef.get();
-
-      if (!sessionSnap.exists || sessionSnap.data().userId !== userId) {
-        return res.json({ success: false, error: "Invalid session or user" });
-      }
-
-      const session = sessionSnap.data();
-
-      // ⭐ If too many failures → abort session
-      if (session.failures >= 5) {
-        await sessionRef.set(
-          { status: "aborted", abortedAt: Date.now() },
-          { merge: true }
-        );
-
-        await db.collection("pulseband_errors").add({
-          sessionId,
-          userId,
-          type: "session_aborted",
-          reason: "Too many failures",
-          createdAt: admin.firestore.FieldValue.serverTimestamp()
-        });
-
-        return res.json({ success: false, error: "Session aborted" });
-      }
-
-      const chunksRef = sessionRef.collection("chunks");
-
-      const snap = await chunksRef
-        .where("status", "==", "pending")
-        .orderBy("index", "asc")
-        .limit(1)
-        .get();
-
-      // ⭐ No pending chunks → complete
-      if (snap.empty) {
-        await sessionRef.set(
-          { status: "complete", completedAt: Date.now() },
-          { merge: true }
-        );
-
-        await db.collection("pulseband_logs").add({
-          sessionId,
-          userId,
-          type: "session_complete",
-          createdAt: admin.firestore.FieldValue.serverTimestamp()
-        });
-
-        return res.json({ success: true, done: true });
-      }
-
-      const doc = snap.docs[0];
-      const data = doc.data();
-
-      // ⭐ Mark as sent
-      await doc.ref.set({ status: "sent", sentAt: Date.now() }, { merge: true });
-
-      return res.json({
-        success: true,
-        chunk: {
-          index: data.index,
-          data: data.data,
-          signature: data.signature,
-          sentAt: Date.now()
-        }
-      });
-
-    } catch (err) {
-      await db.collection("pulseband_errors").add({
-        type: "getNextChunk_error",
-        error: err.message,
-        createdAt: admin.firestore.FieldValue.serverTimestamp()
-      });
-
-      return res.json({ success: false, error: err.message });
-    }
-  }
-);
-
-export const ackPulseBandChunk = onRequest(
-  { region: "us-central1" },
-  async (req, res) => {
-    res.set("Access-Control-Allow-Origin", "*");
-    res.set("Access-Control-Allow-Headers", "Content-Type, Authorization");
-    res.set("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
-    if (req.method === "OPTIONS") return res.status(204).send("");
-
-    try {
-      const { sessionId, userId, index, signature, latencyMs, kbps } = req.body;
-
-      if (!sessionId || !userId || index == null || !signature) {
-        return res.json({ success: false, error: "Missing params" });
-      }
-
-      const sessionRef = db.collection("pulseband_sessions").doc(sessionId);
-      const chunkRef = sessionRef.collection("chunks").doc(index.toString().padStart(5, "0"));
-
-      const snap = await chunkRef.get();
-      if (!snap.exists) {
-        return res.json({ success: false, error: "Chunk not found" });
-      }
-
-      const data = snap.data();
-
-      // ⭐ Signature mismatch = corrupted chunk
-      if (data.signature !== signature) {
-        await db.collection("pulseband_errors").add({
-          sessionId,
-          userId,
-          index,
-          latencyMs,
-          kbps,
-          type: "signature_mismatch",
-          expected: data.signature,
-          got: signature,
-          createdAt: admin.firestore.FieldValue.serverTimestamp()
-        });
-
-        // ⭐ Increment session failure count
-        await sessionRef.set(
-          { failures: admin.firestore.FieldValue.increment(1) },
-          { merge: true }
-        );
-
-        return res.json({ success: false, error: "Signature mismatch" });
-      }
-
-      // ⭐ Mark chunk as acked
-      await chunkRef.set(
-        {
-          status: "acked",
-          latencyMs,
-          kbps,
-          ackedAt: admin.firestore.FieldValue.serverTimestamp()
-        },
-        { merge: true }
-      );
-
-      return res.json({ success: true });
-
-    } catch (err) {
-      await db.collection("pulseband_errors").add({
-        type: "ackChunk_error",
-        error: err.message,
-        createdAt: admin.firestore.FieldValue.serverTimestamp()
-      });
-
-      return res.json({ success: false, error: err.message });
-    }
-  }
-);
-
-export const logPulseBandRedownload = onRequest(
-  { region: "us-central1" },
-  async (req, res) => {
-    res.set("Access-Control-Allow-Origin", "*");
-    res.set("Access-Control-Allow-Headers", "Content-Type, Authorization");
-    res.set("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
-    if (req.method === "OPTIONS") return res.status(204).send("");
-
-    try {
-      const { sessionId, userId, reason } = req.body;
-
-      const sessionRef = db.collection("pulseband_sessions").doc(sessionId);
-
-      await db.collection("pulseband_redownloads").add({
-        sessionId,
-        userId,
-        reason,
-        createdAt: admin.firestore.FieldValue.serverTimestamp()
-      });
-
-      // ⭐ Track redownloads as failures
-      await sessionRef.set(
-        { failures: admin.firestore.FieldValue.increment(1) },
-        { merge: true }
-      );
-
-      return res.json({ success: true });
-
-    } catch (err) {
-      await db.collection("pulseband_errors").add({
-        type: "redownload_error",
-        error: err.message,
-        createdAt: admin.firestore.FieldValue.serverTimestamp()
-      });
-
-      return res.json({ success: false, error: err.message });
-    }
-  }
-);
+// async function generateEventsCache({ sizeOnly = false, deltaRequest = false } = {}) {
+
+//   // ---------------------------------------------------------
+//   // ⭐ LOAD VERSION FROM Cache_Control/<autoDocId>
+//   // ---------------------------------------------------------
+//   const controlRef = db.collection("Cache_Control").doc("KCQFBaFpjSaPRDTAhJBg");
+//   const controlSnap = await controlRef.get();
+//   const control = controlSnap.data() || {};
+//   const currentVersion = control.eventVersion ?? 1;
+
+//   // ---------------------------------------------------------
+//   // ⭐ LOAD EXISTING SNAPSHOT FROM Cache_Meta/events
+//   // ---------------------------------------------------------
+//   const metaRef = db.collection("Cache_Meta").doc("events");
+//   const metaSnap = await metaRef.get();
+//   const meta = metaSnap.data() || {};
+
+//   const now = Date.now();
+//   const lastGenerated = meta.lastGenerated || 0;
+//   const cachedVersion = meta.version || 0;
+//   const cachedData = meta.data || [];
+
+//   const FOUR_DAYS = 4 * 24 * 60 * 60 * 1000;
+
+//   const isFreshByTime = now - lastGenerated < FOUR_DAYS;
+//   const isFreshByVersion = cachedVersion === currentVersion;
+//   const hasData = Array.isArray(cachedData) && cachedData.length > 0;
+
+//   // ---------------------------------------------------------
+//   // ⭐ CASE 1 — Fully fresh
+//   // ---------------------------------------------------------
+//   if (hasData && isFreshByTime && isFreshByVersion) {
+
+//     if (deltaRequest) {
+//       const delta = { version: currentVersion, added: [], removed: [], changed: [] };
+
+//       if (sizeOnly) {
+//         const json = JSON.stringify(delta);
+//         return Buffer.byteLength(json, "utf8") / 1024;
+//       }
+
+//         return delta;
+//     }
+
+//     if (sizeOnly) {
+//       const json = JSON.stringify(cachedData);
+//       return Buffer.byteLength(json, "utf8") / 1024;
+//     }
+
+//     return cachedData;
+//   }
+
+//   // ---------------------------------------------------------
+//   // ⭐ CASE 2 — Version matches but time expired → micro-hydrate
+//   // ---------------------------------------------------------
+//   let merged = hasData ? [...cachedData] : [];
+
+//   if (hasData && isFreshByVersion && !isFreshByTime) {
+//     const fresh = await getAllEventsCache();
+
+//     const mergedMap = new Map(cachedData.map(ev => [ev.id, ev]));
+
+//     for (const freshEvent of fresh) {
+//       const oldEvent = mergedMap.get(freshEvent.id);
+
+//       if (!oldEvent) {
+//         mergedMap.set(freshEvent.id, freshEvent);
+//         continue;
+//       }
+
+//       if (freshEvent.updatedAt > oldEvent.updatedAt) {
+//         mergedMap.set(freshEvent.id, freshEvent);
+//       }
+//     }
+
+//     merged = [...mergedMap.values()];
+//   }
+
+//   // ---------------------------------------------------------
+//   // ⭐ CASE 3 — Version changed OR too old → full rebuild
+//   // ---------------------------------------------------------
+//   if (!hasData || !isFreshByTime) {
+//     merged = await getAllEventsCache();
+//   }
+
+//   // ---------------------------------------------------------
+//   // ⭐ ALWAYS WRITE BACK FULL SNAPSHOT
+//   // ---------------------------------------------------------
+//   await metaRef.set({
+//     lastGenerated: now,
+//     version: currentVersion,
+//     data: merged
+//   });
+
+//   // ---------------------------------------------------------
+//   // ⭐ DELTA MODE
+//   // ---------------------------------------------------------
+//   if (deltaRequest) {
+//     const oldMap = new Map(cachedData.map(ev => [ev.id, ev]));
+//     const newMap = new Map(merged.map(ev => [ev.id, ev]));
+
+//     const added = [];
+//     const removed = [];
+//     const changed = [];
+
+//     for (const [id, newEvent] of newMap.entries()) {
+//       const oldEvent = oldMap.get(id);
+
+//       if (!oldEvent) {
+//         added.push(newEvent);
+//         continue;
+//       }
+
+//       if (JSON.stringify(oldEvent) !== JSON.stringify(newEvent)) {
+//         changed.push(newEvent);
+//       }
+//     }
+
+//     for (const [id, oldEvent] of oldMap.entries()) {
+//       if (!newMap.has(id)) {
+//         removed.push(oldEvent);
+//       }
+//     }
+
+//     const delta = { version: currentVersion, added, removed, changed };
+
+//     if (sizeOnly) {
+//       const json = JSON.stringify(delta);
+//       return Buffer.byteLength(json, "utf8") / 1024;
+//     }
+
+//     return delta;
+//   }
+
+//   // ---------------------------------------------------------
+//   // ⭐ SIZE ONLY (full)
+//   // ---------------------------------------------------------
+//   if (sizeOnly) {
+//     const json = JSON.stringify(merged);
+//     return Buffer.byteLength(json, "utf8") / 1024;
+//   }
+
+//   return merged;
+// }
+
+// async function getAllEventsCache() {
+//   const today = new Date();
+//   const todayStr = formatEventDate(today);
+
+//   const snap = await db.collection("Events")
+//     .where("toDate", ">=", todayStr)
+//     .orderBy("toDate")
+//     .limit(20)
+//     .get();
+
+//   return snap.docs.map(doc => {
+//     const data = doc.data() || {};
+
+//     const coords =
+//       data.coords ||
+//       (data.lat && data.lng ? { lat: data.lat, lng: data.lng } : null);
+
+//     return {
+//       id: doc.id,
+//       title: data.title || "Untitled Event",
+
+//       fromDate: data.fromDate || todayStr,
+//       toDate: data.toDate || data.fromDate || todayStr,
+
+//       venue: data.venue || data.resolvedName || "Unknown Venue",
+//       address: data.address || data.resolvedAddress || "Unknown Address",
+
+//       category: data.category || null,
+//       price: data.price ?? 0,
+
+//       coords,
+
+//       mapImageUrl: data.mapImageUrl || null,
+//       mapsWebUrl: data.mapsWebUrl || null,
+//       placeId: data.placeId || null,
+//       resolvedName: data.resolvedName || null,
+//       resolvedAddress: data.resolvedAddress || null,
+
+//       images: data.images || [],
+
+//       ...data
+//     };
+//   });
+// }
+
+// async function getAllUsersCache() {
+//   const snap = await db
+//     .collection("Users")
+//     .orderBy("TPIdentity.createdAt", "desc")
+//     .get();
+
+//   const safeMillis = (ts) => {
+//     if (!ts) return null;
+//     if (typeof ts.toMillis === "function") return ts.toMillis();
+//     if (ts?._seconds) return ts._seconds * 1000;
+//     if (typeof ts === "number") return ts;
+//     return null;
+//   };
+
+//   const safeNum = (v) =>
+//     Number.isFinite(Number(v)) ? Number(v) : 0;
+
+//   return snap.docs.map((doc) => {
+//     const data = doc.data() || {};
+//     const id = doc.id;
+
+//     const TPIdentity = data.TPIdentity || {};
+//     const TPLoyalty = data.TPLoyalty || {};
+//     const TPNotifications = data.TPNotifications || {};
+//     const TPWallet = data.TPWallet || {};
+//     const TPSecurity = data.TPSecurity || {};
+
+//     return {
+//       id,
+
+//       // ⭐ Identity (flattened)
+//       email: TPIdentity.email || null,
+//       name: TPIdentity.name || null,
+//       displayName: TPIdentity.displayName || null,
+//       photoURL: TPIdentity.photoURL || null,
+//       role: TPIdentity.role || "Customer",
+//       phone: TPIdentity.phone || null,
+//       country: TPIdentity.country || null,
+
+//       // ⭐ Loyalty
+//       loyalty: {
+//         pointsBalance: safeNum(TPLoyalty.pointsBalance),
+//         lifetimePoints: safeNum(TPLoyalty.lifetimePoints),
+//         referralCode: TPLoyalty.referralCode || null,
+//         referredBy: TPLoyalty.referredBy || null
+//       },
+
+//       // ⭐ Notifications
+//       notifications: {
+//         receiveMassEmails: TPNotifications.receiveMassEmails ?? true,
+//         receiveSMS: TPNotifications.receiveSMS ?? false,
+//         lastPushSent: safeMillis(TPNotifications.lastPushSent)
+//       },
+
+//       // ⭐ Wallet
+//       wallet: {
+//         walletBalance: safeNum(TPWallet.walletBalance)
+//       },
+
+//       // ⭐ Timestamps
+//       createdAt: safeMillis(TPIdentity.createdAt),
+//       updatedAt: safeMillis(TPIdentity.updatedAt),
+//       lastActive: safeMillis(TPSecurity.lastActive),
+//       lastEarnedDate: safeMillis(TPLoyalty.lastEarnedDate)
+//     };
+//   });
+// }
+
+// async function generateHistoryCache({ sizeOnly = false, deltaRequest = false } = {}) {
+
+//   // ---------------------------------------------------------
+//   // ⭐ LOAD VERSION FROM Cache_Control/<autoDocId>
+//   // ---------------------------------------------------------
+//   const controlRef = db.collection("Cache_Control").doc("KCQFBaFpjSaPRDTAhJBg");
+//   const controlSnap = await controlRef.get();
+//   const control = controlSnap.data() || {};
+//   const currentVersion = control.historyVersion ?? 1;
+
+//   // ---------------------------------------------------------
+//   // ⭐ LOAD EXISTING SNAPSHOT FROM Cache_Meta/history
+//   // ---------------------------------------------------------
+//   const metaRef = db.collection("Cache_Meta").doc("history");
+//   const metaSnap = await metaRef.get();
+//   const meta = metaSnap.data() || {};
+
+//   const now = Date.now();
+//   const lastGenerated = meta.lastGenerated || 0;
+//   const cachedVersion = meta.version || 0;
+//   const cachedData = meta.data || [];
+
+//   const ONE_DAY = 24 * 60 * 60 * 1000;
+
+//   const isFreshByTime = now - lastGenerated < ONE_DAY;
+//   const isFreshByVersion = cachedVersion === currentVersion;
+//   const hasData = Array.isArray(cachedData) && cachedData.length > 0;
+
+//   // ---------------------------------------------------------
+//   // ⭐ CASE 1 — Fully fresh
+//   // ---------------------------------------------------------
+//   if (hasData && isFreshByTime && isFreshByVersion) {
+
+//     if (deltaRequest) {
+//       const delta = { version: currentVersion, added: [], removed: [], changed: [] };
+
+//       if (sizeOnly) {
+//         const json = JSON.stringify(delta);
+//         return Buffer.byteLength(json, "utf8") / 1024;
+//       }
+
+//       return delta;
+//     }
+
+//     if (sizeOnly) {
+//       const json = JSON.stringify(cachedData);
+//       return Buffer.byteLength(json, "utf8") / 1024;
+//     }
+
+//     return cachedData;
+//   }
+
+//   // ---------------------------------------------------------
+//   // ⭐ CASE 2 — Build NEW full history snapshot
+//   // ---------------------------------------------------------
+//   const usersSnap = await db.collection("Users").get();
+//   const allHistory = [];
+
+//   for (const userDoc of usersSnap.docs) {
+//     const uid = userDoc.id;
+//     const userData = userDoc.data() || {};
+//     const loyalty = userData.loyalty || {};
+
+//     const histSnap = await db
+//       .collection("PulseHistory")
+//       .doc(uid)
+//       .collection("entries")
+//       .orderBy("createdAt", "desc")
+//       .limit(200)
+//       .get();
+
+//     for (const entry of histSnap.docs) {
+//       const h = entry.data();
+
+//       // -----------------------------------------
+//       // ⭐ Build unified snapshot (history + loyalty)
+//       // -----------------------------------------
+//       const snapshot = h.pointsSnapshot || {
+//         seasonalName: loyalty.seasonalName ?? null,
+//         seasonalMultiplier: loyalty.seasonalMultiplier ?? 1,
+//         seasonalActive: loyalty.seasonalActive ?? false,
+
+//         tier: loyalty.tier ?? null,
+//         tierKey: loyalty.tierKey ?? null,
+//         tierMultiplier: loyalty.tierMultiplier ?? 1,
+
+//         streakCount: loyalty.streakCount ?? 0,
+//         streakMultiplier: loyalty.streakMultiplier ?? 1,
+//         streakExpires: loyalty.streakExpires ?? null,
+
+//         calculationVersion: loyalty.calculationVersion ?? 1,
+
+//         pointsBefore: h.pulsepointsBefore ?? null,
+//         pointsAfter: h.pulsepointsAfter ?? null
+//       };
+
+//       allHistory.push({
+//         uid,
+//         id: entry.id,
+//         type: h.type,
+//         label: h.label,
+//         amount: h.amount,
+//         ts: h.ts,
+//         createdAt: h.createdAt,
+//         orderID: h.orderID ?? null,
+//         pointsSnapshot: snapshot
+//       });
+//     }
+//   }
+
+//   // ---------------------------------------------------------
+//   // ⭐ WRITE BACK FULL SNAPSHOT
+//   // ---------------------------------------------------------
+//   await metaRef.set({
+//     lastGenerated: now,
+//     version: currentVersion,
+//     data: allHistory
+//   });
+
+//   // ---------------------------------------------------------
+//   // ⭐ DELTA MODE
+//   // ---------------------------------------------------------
+//   if (deltaRequest) {
+//     const oldMap = new Map(cachedData.map(h => [`${h.uid}_${h.id}`, h]));
+//     const newMap = new Map(allHistory.map(h => [`${h.uid}_${h.id}`, h]));
+
+//     const added = [];
+//     const removed = [];
+//     const changed = [];
+
+//     for (const [key, newEntry] of newMap.entries()) {
+//       const oldEntry = oldMap.get(key);
+
+//       if (!oldEntry) {
+//         added.push(newEntry);
+//         continue;
+//       }
+
+//       if (JSON.stringify(oldEntry) !== JSON.stringify(newEntry)) {
+//         changed.push(newEntry);
+//       }
+//     }
+
+//     for (const [key, oldEntry] of oldMap.entries()) {
+//       if (!newMap.has(key)) {
+//         removed.push(oldEntry);
+//       }
+//     }
+
+//     const delta = { version: currentVersion, added, removed, changed };
+
+//     if (sizeOnly) {
+//       const json = JSON.stringify(delta);
+//       return Buffer.byteLength(json, "utf8") / 1024;
+//     }
+
+//     return delta;
+//   }
+
+//   // ---------------------------------------------------------
+//   // ⭐ SIZE ONLY (full)
+//   // ---------------------------------------------------------
+//   if (sizeOnly) {
+//     const json = JSON.stringify(allHistory);
+//     return Buffer.byteLength(json, "utf8") / 1024;
+//   }
+
+//   return allHistory;
+// }
+// async function generateLoyaltyCache({ sizeOnly = false } = {}) {
+
+//   // ---------------------------------------------------------
+//   // ⭐ LOAD VERSION FROM Cache_Control/<autoDocId>
+//   // ---------------------------------------------------------
+//   const controlRef = db.collection("Cache_Control").doc("KCQFBaFpjSaPRDTAhJBg");
+//   const controlSnap = await controlRef.get();
+//   const control = controlSnap.data() || {};
+//   const currentVersion = control.loyaltyVersion ?? 1;
+
+//   // ---------------------------------------------------------
+//   // ⭐ LOAD EXISTING SNAPSHOT FROM Cache_Meta/loyalty
+//   // ---------------------------------------------------------
+//   const metaRef = db.collection("Cache_Meta").doc("loyalty");
+//   const metaSnap = await metaRef.get();
+//   const meta = metaSnap.data() || {};
+
+//   const now = Date.now();
+//   const lastGenerated = meta.lastGenerated || 0;
+//   const cachedVersion = meta.version || 0;
+//   const cachedData = meta.data || [];
+
+//   const ONE_DAY = 24 * 60 * 60 * 1000;
+
+//   const isFreshByTime = now - lastGenerated < ONE_DAY;
+//   const isFreshByVersion = cachedVersion === currentVersion;
+//   const hasData = Array.isArray(cachedData) && cachedData.length > 0;
+
+//   // ---------------------------------------------------------
+//   // ⭐ CASE 1 — Fully fresh
+//   // ---------------------------------------------------------
+//   if (hasData && isFreshByTime && isFreshByVersion) {
+
+//     if (sizeOnly) {
+//       const json = JSON.stringify(cachedData);
+//       return Buffer.byteLength(json, "utf8") / 1024;
+//     }
+
+//     return cachedData;
+//   }
+
+//   // ---------------------------------------------------------
+//   // ⭐ CASE 2 — Build NEW full loyalty snapshot
+//   // ---------------------------------------------------------
+//   const usersSnap = await db.collection("Users").get();
+//   const loyaltyList = [];
+
+//   // Load global settings once
+//   const settingsSnap = await db.collection("TPSettings").doc("global").get();
+//   const settings = settingsSnap.data() || {};
+
+//   for (const userDoc of usersSnap.docs) {
+//     const uid = userDoc.id;
+//     const userData = userDoc.data() || {};
+
+//     const TPIdentity = userData.TPIdentity || {};
+//     const TPLoyalty = userData.TPLoyalty || {};
+
+//     // -----------------------------------------
+//     // ⭐ DISPLAY NAME
+//     // -----------------------------------------
+//     const displayName = TPIdentity.displayName || "Explorer";
+
+//     // -----------------------------------------
+//     // ⭐ STREAK LOGIC
+//     // -----------------------------------------
+//     const lastEarnedDate = TPLoyalty.lastEarnedDate || null;
+//     let streakCount = Number(TPLoyalty.streakCount) || 0;
+
+//     const windowHours = (settings.streakDurationDays ?? 1) * 24;
+
+//     if (!lastEarnedDate) {
+//       streakCount = 0;
+//     } else {
+//       const lastMs = lastEarnedDate.toMillis();
+//       const expiresMs = lastMs + windowHours * 3600000;
+
+//       if (Date.now() >= expiresMs) {
+//         streakCount = 0;
+//       }
+//     }
+
+//     // -----------------------------------------
+//     // ⭐ TIER LOGIC
+//     // -----------------------------------------
+//     const lifetimePoints = Number(TPLoyalty.lifetimePoints) || 0;
+
+//     const tierThresholds = {
+//       Seashell: 0,
+//       ReefDiver: settings.tierThreshold_ReefDiver,
+//       ToucanSpirit: settings.tierThreshold_ToucanSpirit,
+//       VolcanoHeart: settings.tierThreshold_VolcanoHeart,
+//       HurricaneLegend: settings.tierThreshold_HurricaneLegend
+//     };
+
+//     let tierKey = "Seashell";
+//     for (const [name, threshold] of Object.entries(tierThresholds)) {
+//       if (lifetimePoints >= threshold) tierKey = name;
+//     }
+
+//     const tierNameMap = {
+//       Seashell: "Seashell",
+//       ReefDiver: "Reef Diver",
+//       ToucanSpirit: "Toucan Spirit",
+//       VolcanoHeart: "Volcano Heart",
+//       HurricaneLegend: "Hurricane Legend"
+//     };
+
+//     const tier = tierNameMap[tierKey];
+//     const tierMultiplier = settings[`tierMultiplier_${tierKey}`] ?? 1;
+
+//     // -----------------------------------------
+//     // ⭐ STREAK MULTIPLIER
+//     // -----------------------------------------
+//     const streakMultiplier = Math.min(
+//       settings.streakMultiplierBase +
+//         streakCount * settings.streakMultiplierPerDay,
+//       settings.streakMaxMultiplier
+//     );
+
+//     // -----------------------------------------
+//     // ⭐ SEASONAL LOGIC
+//     // -----------------------------------------
+//     const {
+//       seasonalActive,
+//       seasonalName,
+//       seasonalMultiplier
+//     } = getSeasonFromSettings(settings);
+
+//     // -----------------------------------------
+//     // ⭐ REFERRAL CODE
+//     // -----------------------------------------
+//     const referralCode = TPLoyalty.referralCode || null;
+
+//     // -----------------------------------------
+//     // ⭐ BUILD LOYALTY SNAPSHOT
+//     // -----------------------------------------
+//     loyaltyList.push({
+//       uid,
+//       displayName,
+//       lifetimePoints,
+//       streakCount,
+//       tier,
+//       tierKey,
+//       tierMultiplier,
+//       streakMultiplier,
+//       seasonalMultiplier,
+//       seasonalActive,
+//       seasonalName,
+//       referralCode,
+//       calculationVersion: TPLoyalty.calculationVersion ?? 1
+//     });
+//   }
+
+//   // ---------------------------------------------------------
+//   // ⭐ WRITE BACK FULL SNAPSHOT
+//   // ---------------------------------------------------------
+//   await metaRef.set({
+//     lastGenerated: now,
+//     version: currentVersion,
+//     data: loyaltyList
+//   });
+
+//   // ---------------------------------------------------------
+//   // ⭐ SIZE ONLY
+//   // ---------------------------------------------------------
+//   if (sizeOnly) {
+//     const json = JSON.stringify(loyaltyList);
+//     return Buffer.byteLength(json, "utf8") / 1024;
+//   }
+
+//   return loyaltyList;
+// }
+// function signChunk(userId, sessionId, index, dataBase64) {
+//   const h = crypto.createHash("sha256");
+//   h.update(userId + sessionId + index + dataBase64);
+//   return h.digest("hex");
+// }
+// // -------------------------------------------------------
+// // ⭐ INTELLIGENT CACHE RESOLVER (FULL / DELTA / SIZE)
+// // -------------------------------------------------------
+// async function resolveCacheRequest(payload, baseVersion, sizeOnly) {
+
+//   // Helper: detect cache type
+//   const isDelta = payload.endsWith("_DELTA");
+//   const isFull = payload.endsWith("_CACHE");
+
+//   // Helper: map payload → generator
+//   const generators = {
+//     REQUEST_USERS_CACHE: generateUsersCache,
+//     REQUEST_USERS_CACHE_DELTA: generateUsersCache,
+
+//     REQUEST_BUSINESS_CACHE: generateBusinessesCache,
+//     REQUEST_BUSINESS_CACHE_DELTA: generateBusinessesCache,
+
+//     REQUEST_EVENTS_CACHE: generateEventsCache,
+//     REQUEST_EVENTS_CACHE_DELTA: generateEventsCache,
+
+//     REQUEST_ORDERS_CACHE: generateOrdersCache,
+//     REQUEST_ORDERS_CACHE_DELTA: generateOrdersCache,
+
+//     REQUEST_LOYALTY_CACHE: generateLoyaltyCache,
+//     REQUEST_LOYALTY_CACHE_DELTA: generateLoyaltyCache,
+
+//     REQUEST_HISTORY_CACHE: generateHistoryCache,
+//     REQUEST_HISTORY_CACHE_DELTA: generateHistoryCache,
+
+//     REQUEST_SETTINGS_CACHE: generateSettingsCache,
+//     REQUEST_SETTINGS_CACHE_DELTA: generateSettingsCache
+//   };
+
+//   const fn = generators[payload];
+//   if (!fn) return payload; // raw fallback
+
+//   // -------------------------------------------------------
+//   // ⭐ 1. DELTA REQUESTS
+//   // -------------------------------------------------------
+//   if (isDelta) {
+
+//     // Missing baseVersion → fallback to full
+//     if (!baseVersion) {
+//       return sizeOnly
+//         ? await fn({ sizeOnly: true })
+//         : await fn();
+//     }
+
+//     // Try delta
+//     const delta = await fn({ deltaRequest: true, sizeOnly });
+
+//     // If sizeOnly → return size immediately
+//     if (sizeOnly) return delta;
+
+//     // If delta empty → fallback to full
+//     const isEmpty =
+//       (Array.isArray(delta.added) && delta.added.length === 0 &&
+//        Array.isArray(delta.removed) && delta.removed.length === 0 &&
+//        Array.isArray(delta.changed) && delta.changed.length === 0) ||
+//       (Object.keys(delta.added || {}).length === 0 &&
+//        Object.keys(delta.removed || {}).length === 0 &&
+//        Object.keys(delta.changed || {}).length === 0);
+
+//     if (isEmpty) {
+//       return await fn(); // full
+//     }
+
+//     return delta;
+//   }
+
+//   // -------------------------------------------------------
+//   // ⭐ 2. FULL REQUESTS
+//   // -------------------------------------------------------
+//   if (isFull) {
+//     return sizeOnly
+//       ? await fn({ sizeOnly: true })
+//       : await fn();
+//   }
+
+//   // -------------------------------------------------------
+//   // ⭐ 3. SIZE ONLY (no delta/full specified)
+//   // -------------------------------------------------------
+//   if (sizeOnly) {
+//     // Try delta size first
+//     const delta = await fn({ deltaRequest: true, sizeOnly: true });
+
+//     const deltaSize = Number(delta);
+//     if (deltaSize > 0) return deltaSize;
+
+//     // Fallback to full size
+//     return await fn({ sizeOnly: true });
+//   }
+
+//   // -------------------------------------------------------
+//   // ⭐ 4. RAW PAYLOAD
+//   // -------------------------------------------------------
+//   return payload;
+// }
+
+// export const createPulseBandSession = onRequest(
+//   { region: "us-central1", timeoutSeconds: 300, memory: "1GiB" },
+//   async (req, res) => {
+//     res.set("Access-Control-Allow-Origin", "*");
+//     res.set("Access-Control-Allow-Headers", "Content-Type, Authorization");
+//     res.set("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
+//     if (req.method === "OPTIONS") return res.status(204).send("");
+
+//     try {
+//       let { userId, payload, chunkSize = 500, baseVersion, sizeOnly } = req.body;
+
+//       if (!userId || !payload) {
+//         return res.json({ success: false, error: "Missing userId or payload" });
+//       }
+
+//       // ⭐ Log session creation request
+//       await db.collection("pulseband_logs").add({
+//         type: "session_create_request",
+//         userId,
+//         payload,
+//         chunkSize,
+//         createdAt: admin.firestore.FieldValue.serverTimestamp()
+//       });
+
+//       // -------------------------------------------------------
+//       // ⭐ INTELLIGENT CACHE RESOLVER
+//       // -------------------------------------------------------
+//       async function resolveCacheRequest(payload, baseVersion, sizeOnly) {
+//         const isDelta = payload.endsWith("_DELTA");
+//         const isFull = payload.endsWith("_CACHE");
+
+//         const generators = {
+//           REQUEST_USERS_CACHE: generateUsersCache,
+//           REQUEST_USERS_CACHE_DELTA: generateUsersCache,
+
+//           REQUEST_BUSINESS_CACHE: generateBusinessesCache,
+//           REQUEST_BUSINESS_CACHE_DELTA: generateBusinessesCache,
+
+//           REQUEST_EVENTS_CACHE: generateEventsCache,
+//           REQUEST_EVENTS_CACHE_DELTA: generateEventsCache,
+
+//           REQUEST_ORDERS_CACHE: generateOrdersCache,
+//           REQUEST_ORDERS_CACHE_DELTA: generateOrdersCache,
+
+//           REQUEST_HISTORY_CACHE: generateHistoryCache,
+//           REQUEST_HISTORY_CACHE_DELTA: generateHistoryCache,
+
+//           REQUEST_SETTINGS_CACHE: generateSettingsCache,
+//           REQUEST_SETTINGS_CACHE_DELTA: generateSettingsCache
+//         };
+
+//         const fn = generators[payload];
+//         if (!fn) return payload; // raw fallback
+
+//         // -------------------------------------------------------
+//         // ⭐ 1. DELTA REQUESTS
+//         // -------------------------------------------------------
+//         if (isDelta) {
+//           if (!baseVersion) {
+//             return sizeOnly
+//               ? await fn({ sizeOnly: true })
+//               : await fn();
+//           }
+
+//           const delta = await fn({ deltaRequest: true, sizeOnly });
+
+//           if (sizeOnly) return delta;
+
+//           const isEmpty =
+//             (Array.isArray(delta.added) && delta.added.length === 0 &&
+//              Array.isArray(delta.removed) && delta.removed.length === 0 &&
+//              Array.isArray(delta.changed) && delta.changed.length === 0) ||
+//             (Object.keys(delta.added || {}).length === 0 &&
+//              Object.keys(delta.removed || {}).length === 0 &&
+//              Object.keys(delta.changed || {}).length === 0);
+
+//           if (isEmpty) {
+//             return await fn(); // fallback to full
+//           }
+
+//           return delta;
+//         }
+
+//         // -------------------------------------------------------
+//         // ⭐ 2. FULL REQUESTS
+//         // -------------------------------------------------------
+//         if (isFull) {
+//           return sizeOnly
+//             ? await fn({ sizeOnly: true })
+//             : await fn();
+//         }
+
+//         // -------------------------------------------------------
+//         // ⭐ 3. SIZE ONLY (no delta/full specified)
+//         // -------------------------------------------------------
+//         if (sizeOnly) {
+//           const delta = await fn({ deltaRequest: true, sizeOnly: true });
+//           const deltaSize = Number(delta);
+
+//           if (deltaSize > 0) return deltaSize;
+
+//           return await fn({ sizeOnly: true });
+//         }
+
+//         // -------------------------------------------------------
+//         // ⭐ 4. RAW PAYLOAD
+//         // -------------------------------------------------------
+//         return payload;
+//       }
+
+//       // -------------------------------------------------------
+//       // ⭐ 1. Resolve payload intelligently
+//       // -------------------------------------------------------
+//       let rawPayload;
+
+//       try {
+//         rawPayload = await resolveCacheRequest(payload, baseVersion, sizeOnly === true);
+//       } catch (err) {
+//         await db.collection("pulseband_errors").add({
+//           type: "payload_generation_error",
+//           userId,
+//           payload,
+//           error: err.message,
+//           createdAt: admin.firestore.FieldValue.serverTimestamp()
+//         });
+//         return res.json({ success: false, error: "Payload generation failed" });
+//       }
+
+//       const jsonString =
+//         typeof rawPayload === "string"
+//           ? rawPayload
+//           : JSON.stringify(rawPayload);
+
+//       // -------------------------------------------------------
+//       // ⭐ 2. Convert payload to buffer
+//       // -------------------------------------------------------
+//       const buffer = Buffer.from(jsonString, "utf8");
+//       const totalChunks = Math.ceil(buffer.length / chunkSize);
+//       const sessionId = `PB_${userId}_${Date.now()}`;
+
+//       const payloadHash = crypto
+//         .createHash("sha256")
+//         .update(buffer)
+//         .digest("hex");
+
+//       const sessionRef = db.collection("pulseband_sessions").doc(sessionId);
+//       const chunksRef = sessionRef.collection("chunks");
+
+//       // -------------------------------------------------------
+//       // ⭐ 3. Create session metadata
+//       // -------------------------------------------------------
+//       await sessionRef.set({
+//         sessionId,
+//         userId,
+//         totalChunks,
+//         chunkSize,
+//         createdAt: admin.firestore.FieldValue.serverTimestamp(),
+//         status: "pending",
+//         retries: 0,
+//         failures: 0,
+//         restarts: 0,
+//         payloadBytes: buffer.length,
+//         payloadHash,
+//         payloadType: payload
+//       });
+
+//       await db.collection("pulseband_logs").add({
+//         type: "session_created",
+//         sessionId,
+//         userId,
+//         totalChunks,
+//         chunkSize,
+//         payloadBytes: buffer.length,
+//         payloadHash,
+//         createdAt: admin.firestore.FieldValue.serverTimestamp()
+//       });
+
+//       // -------------------------------------------------------
+//       // ⭐ 4. Chunk + batch write
+//       // -------------------------------------------------------
+//       let batch = db.batch();
+//       let batchCount = 0;
+
+//       for (let i = 0; i < totalChunks; i++) {
+//         try {
+//           const start = i * chunkSize;
+//           const end = start + chunkSize;
+//           const dataBase64 = buffer.slice(start, end).toString("base64");
+
+//           const signature = signChunk(userId, sessionId, i, dataBase64);
+
+//           const chunkDoc = chunksRef.doc(i.toString().padStart(5, "0"));
+//           batch.set(chunkDoc, {
+//             index: i,
+//             data: dataBase64,
+//             signature,
+//             status: "pending",
+//             createdAt: admin.firestore.FieldValue.serverTimestamp()
+//           });
+
+//           batchCount++;
+//           if (batchCount === 400) {
+//             await batch.commit();
+//             batch = db.batch();
+//             batchCount = 0;
+//           }
+//         } catch (err) {
+//           await db.collection("pulseband_errors").add({
+//             type: "chunk_generation_error",
+//             sessionId,
+//             userId,
+//             index: i,
+//             error: err.message,
+//             createdAt: admin.firestore.FieldValue.serverTimestamp()
+//           });
+//           return res.json({ success: false, error: "Chunk generation failed" });
+//         }
+//       }
+
+//       if (batchCount > 0) await batch.commit();
+
+//       // -------------------------------------------------------
+//       // ⭐ 5. Return session info
+//       // -------------------------------------------------------
+//       return res.json({ success: true, sessionId, totalChunks });
+
+//     } catch (err) {
+//       await db.collection("pulseband_errors").add({
+//         type: "session_creation_error",
+//         error: err.message,
+//         createdAt: admin.firestore.FieldValue.serverTimestamp()
+//       });
+
+//       return res.json({ success: false, error: err.message });
+//     }
+//   }
+// );
+
+// export const getNextPulseBandChunk = onRequest(
+//   { region: "us-central1" },
+//   async (req, res) => {
+//     res.set("Access-Control-Allow-Origin", "*");
+//     res.set("Access-Control-Allow-Headers", "Content-Type, Authorization");
+//     res.set("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
+//     if (req.method === "OPTIONS") return res.status(204).send("");
+
+//     try {
+//       const { sessionId, userId } = req.query;
+
+//       if (!sessionId || !userId) {
+//         return res.json({ success: false, error: "Missing sessionId or userId" });
+//       }
+
+//       const sessionRef = db.collection("pulseband_sessions").doc(sessionId);
+//       const sessionSnap = await sessionRef.get();
+
+//       if (!sessionSnap.exists || sessionSnap.data().userId !== userId) {
+//         return res.json({ success: false, error: "Invalid session or user" });
+//       }
+
+//       const session = sessionSnap.data();
+
+//       // ⭐ If too many failures → abort session
+//       if (session.failures >= 5) {
+//         await sessionRef.set(
+//           { status: "aborted", abortedAt: Date.now() },
+//           { merge: true }
+//         );
+
+//         await db.collection("pulseband_errors").add({
+//           sessionId,
+//           userId,
+//           type: "session_aborted",
+//           reason: "Too many failures",
+//           createdAt: admin.firestore.FieldValue.serverTimestamp()
+//         });
+
+//         return res.json({ success: false, error: "Session aborted" });
+//       }
+
+//       const chunksRef = sessionRef.collection("chunks");
+
+//       const snap = await chunksRef
+//         .where("status", "==", "pending")
+//         .orderBy("index", "asc")
+//         .limit(1)
+//         .get();
+
+//       // ⭐ No pending chunks → complete
+//       if (snap.empty) {
+//         await sessionRef.set(
+//           { status: "complete", completedAt: Date.now() },
+//           { merge: true }
+//         );
+
+//         await db.collection("pulseband_logs").add({
+//           sessionId,
+//           userId,
+//           type: "session_complete",
+//           createdAt: admin.firestore.FieldValue.serverTimestamp()
+//         });
+
+//         return res.json({ success: true, done: true });
+//       }
+
+//       const doc = snap.docs[0];
+//       const data = doc.data();
+
+//       // ⭐ Mark as sent
+//       await doc.ref.set({ status: "sent", sentAt: Date.now() }, { merge: true });
+
+//       return res.json({
+//         success: true,
+//         chunk: {
+//           index: data.index,
+//           data: data.data,
+//           signature: data.signature,
+//           sentAt: Date.now()
+//         }
+//       });
+
+//     } catch (err) {
+//       await db.collection("pulseband_errors").add({
+//         type: "getNextChunk_error",
+//         error: err.message,
+//         createdAt: admin.firestore.FieldValue.serverTimestamp()
+//       });
+
+//       return res.json({ success: false, error: err.message });
+//     }
+//   }
+// );
+
+// export const ackPulseBandChunk = onRequest(
+//   { region: "us-central1" },
+//   async (req, res) => {
+//     res.set("Access-Control-Allow-Origin", "*");
+//     res.set("Access-Control-Allow-Headers", "Content-Type, Authorization");
+//     res.set("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
+//     if (req.method === "OPTIONS") return res.status(204).send("");
+
+//     try {
+//       const { sessionId, userId, index, signature, latencyMs, kbps } = req.body;
+
+//       if (!sessionId || !userId || index == null || !signature) {
+//         return res.json({ success: false, error: "Missing params" });
+//       }
+
+//       const sessionRef = db.collection("pulseband_sessions").doc(sessionId);
+//       const chunkRef = sessionRef.collection("chunks").doc(index.toString().padStart(5, "0"));
+
+//       const snap = await chunkRef.get();
+//       if (!snap.exists) {
+//         return res.json({ success: false, error: "Chunk not found" });
+//       }
+
+//       const data = snap.data();
+
+//       // ⭐ Signature mismatch = corrupted chunk
+//       if (data.signature !== signature) {
+//         await db.collection("pulseband_errors").add({
+//           sessionId,
+//           userId,
+//           index,
+//           latencyMs,
+//           kbps,
+//           type: "signature_mismatch",
+//           expected: data.signature,
+//           got: signature,
+//           createdAt: admin.firestore.FieldValue.serverTimestamp()
+//         });
+
+//         // ⭐ Increment session failure count
+//         await sessionRef.set(
+//           { failures: admin.firestore.FieldValue.increment(1) },
+//           { merge: true }
+//         );
+
+//         return res.json({ success: false, error: "Signature mismatch" });
+//       }
+
+//       // ⭐ Mark chunk as acked
+//       await chunkRef.set(
+//         {
+//           status: "acked",
+//           latencyMs,
+//           kbps,
+//           ackedAt: admin.firestore.FieldValue.serverTimestamp()
+//         },
+//         { merge: true }
+//       );
+
+//       return res.json({ success: true });
+
+//     } catch (err) {
+//       await db.collection("pulseband_errors").add({
+//         type: "ackChunk_error",
+//         error: err.message,
+//         createdAt: admin.firestore.FieldValue.serverTimestamp()
+//       });
+
+//       return res.json({ success: false, error: err.message });
+//     }
+//   }
+// );
+
+// export const logPulseBandRedownload = onRequest(
+//   { region: "us-central1" },
+//   async (req, res) => {
+//     res.set("Access-Control-Allow-Origin", "*");
+//     res.set("Access-Control-Allow-Headers", "Content-Type, Authorization");
+//     res.set("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
+//     if (req.method === "OPTIONS") return res.status(204).send("");
+
+//     try {
+//       const { sessionId, userId, reason } = req.body;
+
+//       const sessionRef = db.collection("pulseband_sessions").doc(sessionId);
+
+//       await db.collection("pulseband_redownloads").add({
+//         sessionId,
+//         userId,
+//         reason,
+//         createdAt: admin.firestore.FieldValue.serverTimestamp()
+//       });
+
+//       // ⭐ Track redownloads as failures
+//       await sessionRef.set(
+//         { failures: admin.firestore.FieldValue.increment(1) },
+//         { merge: true }
+//       );
+
+//       return res.json({ success: true });
+
+//     } catch (err) {
+//       await db.collection("pulseband_errors").add({
+//         type: "redownload_error",
+//         error: err.message,
+//         createdAt: admin.firestore.FieldValue.serverTimestamp()
+//       });
+
+//       return res.json({ success: false, error: err.message });
+//     }
+//   }
+// );
 
 const inferOutagesAndNotify = async (zoneResults, settings, nowMs) => {
   const outageCandidates = [];
