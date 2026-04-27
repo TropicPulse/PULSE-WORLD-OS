@@ -41,19 +41,19 @@
 // ============================================================================
 //  SAFE LOGGING (ACCESS IMPORT)
 // ============================================================================
-import { log, warn, error as logError } from "../../PULSEProofLogger.js";
+import { log, warn, error as logError } from "../PULSEProofLogger.js";
 
 
 // ============================================================================
 //  CORTEX BOOT (ACCESS IMPORT)
 // ============================================================================
-import { bootCortex } from "./PulseOSBrainCortex.js";
+import { bootCortex } from "../PulseOSBrainCortex.js";
 
 
 // // ============================================================================
 // //  EXTERNAL SERVICE IQ (ALLOWED)
 // // ============================================================================
-import { admin as firebase }  from "../../NETLIFY/FUNCTIONS/firebase.js";
+import { admin as firebase }  from "../NETLIFY/FUNCTIONS/firebase.js";
 
 
 // ============================================================================
