@@ -303,16 +303,15 @@ if (typeof window !== "undefined") {
       // PULSEBAND BOOT — v12-EVO transport nerve (membrane-level, global)
       // -------------------------------------------------------------------
       try {
-        // Import your REAL PulseBand (PNS Nervous System)
-        // NOTE: adjust path if needed
-        const { pulseband } = await import("../PULSE-PROXY/PulseProxyPNSNervousSystem-v11-Evo.js");
+        // Your PNS file already created this:
+        // window.pulseband   ← THIS IS THE REAL PULSEBAND
+        if (window.pulseband && !window.PulseBand) {
 
-        if (!window.PulseBand) {
-          // Expose your real PulseBand globally
-          window.PulseBand = pulseband;
+          // Expose globally under the correct name
+          window.PulseBand = window.pulseband;
 
           // Bridge PulseBand → Proxy Spine
-          pulseband.on("request", async (packet) => {
+          window.PulseBand.on("request", async (packet) => {
             let url, method, bodyOrQuery;
 
             switch (packet.type) {
@@ -365,15 +364,16 @@ if (typeof window !== "undefined") {
             const data = await res.json();
 
             // Send response back into PulseBand
-            pulseband.emit("response:" + packet.sessionId, data);
+            window.PulseBand.emit("response:" + packet.sessionId, data);
           });
 
           // Optional helper
-          window.PulseBandStart = (opts) => pulseband.start(opts);
+          window.PulseBandStart = (opts) => window.PulseBand.start(opts);
         }
       } catch (err) {
         console.error("[PulseEvolutionaryWindow] PulseBand boot failed:", err);
       }
+
     } catch (err) {
       console.error(
         "[PulseEvolutionaryWindow] Binary organism boot failed:",
