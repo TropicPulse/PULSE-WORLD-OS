@@ -1470,24 +1470,6 @@ nav a:hover::after {
 ============================================================ */
 
 /* ============================================================
-   LOCAL ERROR SURFACE (unchanged)
-   ============================================================ */
-window.onerror = function (msg, src, line, col) {
-  const div = document.createElement("div");
-  div.style.position = "fixed";
-  div.style.bottom = "0";
-  div.style.left = "0";
-  div.style.right = "0";
-  div.style.background = "rgba(255,0,0,0.85)";
-  div.style.color = "white";
-  div.style.padding = "10px";
-  div.style.fontSize = "14px";
-  div.style.zIndex = "9999";
-  div.style.whiteSpace = "pre-wrap";
-  div.textContent = `🔥 JS ERROR:\n${msg}\n${src}:${line}:${col}`;
-  document.body.appendChild(div);
-};
-/* ============================================================
    0. SKIN REFLEX — UNIVERSAL FRONT DOOR
 ============================================================ */
 import * as PulseSkinReflex from "./PulseOSSkinReflex.js";
