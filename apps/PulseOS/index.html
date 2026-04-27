@@ -1115,8 +1115,7 @@ nav a:hover::after {
 }
 
 
-    /* ================= (HALF 2 SECTIONS BELOW) ================= */
-  </style>
+</style>
 </head>
 
 <body>
@@ -1471,6 +1470,24 @@ nav a:hover::after {
 ============================================================ */
 
 /* ============================================================
+   LOCAL ERROR SURFACE (unchanged)
+   ============================================================ */
+window.onerror = function (msg, src, line, col) {
+  const div = document.createElement("div");
+  div.style.position = "fixed";
+  div.style.bottom = "0";
+  div.style.left = "0";
+  div.style.right = "0";
+  div.style.background = "rgba(255,0,0,0.85)";
+  div.style.color = "white";
+  div.style.padding = "10px";
+  div.style.fontSize = "14px";
+  div.style.zIndex = "9999";
+  div.style.whiteSpace = "pre-wrap";
+  div.textContent = `🔥 JS ERROR:\n${msg}\n${src}:${line}:${col}`;
+  document.body.appendChild(div);
+};
+/* ============================================================
    0. SKIN REFLEX — UNIVERSAL FRONT DOOR
 ============================================================ */
 import * as PulseSkinReflex from "./PulseOSSkinReflex.js";
@@ -1489,13 +1506,7 @@ await PulseSkinReflex.attachScanner();
 import PulseWindow from "./PulseEvolutionaryWindow.js";
 
 function mark(label) {
-  log("[INDEX]", label);
-}
-function hideTPLoader() {
-  const el = document.getElementById("t-loading");
-  if (!el) return;
-  el.classList.add("hide");
-  setTimeout(() => el.remove(), 700);
+  console.log("[INDEX]", label);
 }
 /* ============================================================
    2. LOADING SCREEN — CSS-driven fade-out
