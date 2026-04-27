@@ -110,7 +110,7 @@ export const OrganismKernelMeta = Object.freeze({
 //  IMPORT ALL BINARY ORGANS
 // ============================================================================
 import { AIBinaryAgent } from "./aiBinaryAgent.js";
-import { AIBinaryMemory } from "./aiMemory.js";
+import { AIBinaryMemory } from "./aiMemory-v11-Evo.js";
 import { AIBinaryAnatomy } from "./aiAnatomy.js";
 import { AIBinaryGenome } from "./aiGenome.js";
 import { AIBinaryVitals } from "./aiVitals.js";
