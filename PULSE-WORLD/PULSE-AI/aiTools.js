@@ -100,9 +100,9 @@ export const AI_INSTRUMENTS_META = Object.freeze({
 // ============================================================================
 // SECTION 1 — IMPORTS
 // ============================================================================
-import { translateFirestoreDocument } from "../pulse-translator/firestoreToPulse.js";
-import { translateSQLSchema } from "../pulse-translator/sqlToPulse.js";
-import { validatePulseField } from "../PULSE-SPECS/pulseFields.js";
+import { translateFirestoreDocument } from "../PULSE-WORLD/PULSE-translator/firestoreToPulse.js";
+import { translateSQLSchema } from "../PULSE-WORLD/PULSE-translator/sqlToPulse.js";
+import { validatePulseField } from "../PULSE-WORLD/PULSE-SPECS/pulseFields.js";
 
 
 // ============================================================================
