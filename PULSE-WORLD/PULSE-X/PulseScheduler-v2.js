@@ -92,7 +92,7 @@ import { routeAIRequest } from "../AI/aiRouter-v11-EVO.js";
 import { createOvermindOrgan } from "../AI/aiOvermind-v11.2-EVO.js";
 
 // Runtime
-import PulseRuntimeAPI from "../PULSE-X/PulseRuntime-v1-Evo.js";
+import PulseRuntimeAPI from "./PulseRuntime-v1-Evo.js";
 
 const {
   runPulseTick,
