@@ -354,11 +354,10 @@ export function createAIBinaryConsciousness(config) {
 //  DUAL‑MODE EXPORTS (ESM + CommonJS)
 // ---------------------------------------------------------
 
-// ESM
 export {
-  AIBinaryConsciousness,
-  createAIBinaryConsciousness
+  AIBinaryConsciousness
 };
+
 
 // CommonJS
 if (typeof module !== "undefined") {
