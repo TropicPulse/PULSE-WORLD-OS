@@ -21,7 +21,7 @@
 //      and lower layers — organism‑wide, not per‑organ.
 // ============================================================================
 
-import { PulseCoreMemory } from "./pulseCoreMemory.js";
+import { PulseCoreMemory } from "../PULSE-CORE/PulseCoreMemory.js";
 
 // ---------------------------------------------------------
 //  META BLOCK — v11.3‑EVO
