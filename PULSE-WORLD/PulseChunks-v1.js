@@ -1,72 +1,98 @@
 // ============================================================================
-//  PulseChunks-v1.5-EVO
+//  PulseChunks-v1.6-EVO+
 //  FRONTEND CHUNK MEMBRANE — 2026 Transport Layer
 //  Chunking • Caching • Prewarm • Zero-Latency Surface
-//  Prevents backend + long-term memory from EVER being chunked
+//  Now with: LORE HEADER INJECTION (text chunks only)
 // ============================================================================
 
-console.log("[PulseChunks-v1.5-EVO] Membrane chunker loading...");
+console.log("[PulseChunks-v1.6-EVO+] Membrane chunker loading...");
+
+// ============================================================================
+//  LORE TRANSLATOR — Injects story based on metadata
+// ============================================================================
+function generateLoreHeader({ meta, context, pulseRole, route }) {
+  if (!meta || !context || !pulseRole) return "";
+
+  const evoFlags = Object.keys(meta.evo || {}).filter(k => meta.evo[k]);
+  const neverRules = meta.contract?.never || [];
+  const alwaysRules = meta.contract?.always || [];
+
+  return `
+/*
+  ────────────────────────────────────────────────────────────────
+  LORE FRAGMENT — ROUTE: ${route}
+  ORGAN: ${meta.identity}
+  LAYER: ${meta.layer}
+  ROLE: ${meta.role}
+  VERSION: ${meta.version}
+  LINEAGE: ${context.lineage}
+  ────────────────────────────────────────────────────────────────
+
+  The ${meta.role.replace(/_/g, " ").toLowerCase()} stirs beneath the surface.
+  Wrapped in the ${meta.layer}, it bridges worlds the traveler cannot see.
+
+  Evolution Traits:
+    • ${evoFlags.join("\n    • ")}
+
+  Boundaries:
+    ✘ NEVER:
+      ${neverRules.map(r => "• " + r).join("\n      ")}
+
+    ✔ ALWAYS:
+      ${alwaysRules.map(r => "• " + r).join("\n      ")}
+
+  PulseRole Archetype — ${pulseRole.identity}
+    Type: ${pulseRole.type}
+    Subsystem: ${pulseRole.subsystem}
+    Layer: ${pulseRole.layer}
+    Version: ${pulseRole.version}
+
+  Purpose:
+    ${pulseRole.contract.purpose}
+
+  Tone: ${pulseRole.voice.tone}
+  Style: ${pulseRole.voice.style}
+
+  The organism reveals only its story,
+  never its mechanisms.
+  ────────────────────────────────────────────────────────────────
+*/
+`;
+}
 
 // ============================================================================
 //  SAFETY FENCE — OUTLIER RULES
-//  (This is the firewall. Nothing backend EVER crosses this line.)
 // ============================================================================
 function shouldSkipChunk(filePath, fileSize = 0) {
   if (!filePath) return true;
 
-  // Never chunk backend long-term memory
-  if (filePath.includes("PulseOSLongTermMemory.js")) {
-    console.warn("[PulseChunks] BLOCKED: Long-term memory file");
-    return true;
-  }
+  if (filePath.includes("PulseOSLongTermMemory.js")) return true;
+  if (filePath.includes("index.js")) return true;
+  if (filePath.includes("firebase-admin")) return true;
 
-  // Never chunk backend index.js (firebase-admin lives here)
-  if (filePath.includes("index.js")) {
-    console.warn("[PulseChunks] BLOCKED: Backend index.js");
-    return true;
-  }
-
-  // Never chunk firebase-admin or server imports
-  if (filePath.includes("firebase-admin")) {
-    console.warn("[PulseChunks] BLOCKED: firebase-admin");
-    return true;
-  }
-
-  // Only chunk frontend assets
   if (
     !filePath.startsWith("/public") &&
     !filePath.startsWith("/frontend") &&
     !filePath.startsWith("/assets")
-  ) {
-    console.warn("[PulseChunks] BLOCKED: Outside frontend scope");
-    return true;
-  }
+  ) return true;
 
-  // Never chunk huge files (>1MB)
-  if (fileSize > 1024 * 1024) {
-    console.warn("[PulseChunks] BLOCKED: File too large");
-    return true;
-  }
+  if (fileSize > 1024 * 1024) return true;
 
   return false;
 }
 
 // ============================================================================
-//  UNIVERSAL FRONTEND CACHE (Images, CSS, JS, JSON, Fonts)
+//  UNIVERSAL FRONTEND CACHE
 // ============================================================================
 const chunkCache = new Map();
 
 // ============================================================================
 //  UNIVERSAL CHUNK FETCHER
-//  (This is the real 2026 engine. Everything visible flows through here.)
 // ============================================================================
 async function fetchChunk(url) {
   if (!url) return url;
 
-  // Cached? Instant 0–1ms return.
-  if (chunkCache.has(url)) {
-    return chunkCache.get(url);
-  }
+  if (chunkCache.has(url)) return chunkCache.get(url);
 
   try {
     const res = await fetch(url);
@@ -94,28 +120,36 @@ async function fetchChunk(url) {
 
   } catch (err) {
     console.error("[PulseChunks] Failed to fetch chunk:", url, err);
-    return url; // fallback
+    return url;
   }
 }
 
 // ============================================================================
-//  IMAGE-SPECIFIC CHUNKER (Used by Window Portal)
+//  IMAGE-SPECIFIC CHUNKER
 // ============================================================================
 export async function getImage(url) {
   return await fetchChunk(url);
 }
 
 // ============================================================================
-//  GENERIC CHUNKER ENTRY — SAFE WRAPPER
+//  GENERIC CHUNKER ENTRY — NOW WITH LORE INJECTION
 // ============================================================================
-export async function PulseChunker(filePath, fileSize = 0) {
-  if (shouldSkipChunk(filePath, fileSize)) {
-    return null;
-  }
+export async function PulseChunker(filePath, fileSize = 0, metaPack = null) {
+  if (shouldSkipChunk(filePath, fileSize)) return null;
 
   console.log("[PulseChunks] Chunking allowed:", filePath);
 
   const chunk = await fetchChunk(filePath);
+
+  // Only inject lore into TEXT chunks
+  if (typeof chunk === "string" && metaPack) {
+    const lore = generateLoreHeader(metaPack);
+    return {
+      chunk: lore + "\n" + chunk,
+      chunked: true,
+      safe: true
+    };
+  }
 
   return {
     chunk,
@@ -125,18 +159,16 @@ export async function PulseChunker(filePath, fileSize = 0) {
 }
 
 // ============================================================================
-//  PREWARM ENGINE — Preload assets BEFORE the browser asks
+//  PREWARM ENGINE
 // ============================================================================
 export function prewarm(urls = []) {
   urls.forEach((url) => {
-    if (!chunkCache.has(url)) {
-      fetchChunk(url);
-    }
+    if (!chunkCache.has(url)) fetchChunk(url);
   });
 }
 
 // ============================================================================
-//  EXPOSE TO WINDOW (Membrane-safe)
+//  EXPOSE TO WINDOW
 // ============================================================================
 window.PulseChunks = {
   getImage,
@@ -145,4 +177,4 @@ window.PulseChunks = {
   PulseChunker
 };
 
-console.log("[PulseChunks-v1.5-EVO] Ready — membrane chunker active.");
+console.log("[PulseChunks-v1.6-EVO+] Ready — membrane chunker active.");

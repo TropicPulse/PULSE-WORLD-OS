@@ -62,6 +62,48 @@ export const PulseChunkerMeta = Object.freeze({
     ]
   })
 });
+// ============================================================================
+// LORE TRANSLATOR — ORGAN-AWARE LORE HEADER
+// ============================================================================
+function generateLoreHeader({ meta, payloadType, baseVersion }) {
+  if (!meta) return "";
+
+  const guarantees = Object.keys(meta.guarantees || {}).filter(k => meta.guarantees[k]);
+  const inputs = meta.contract?.input || [];
+  const outputs = meta.contract?.output || [];
+
+  return `
+/*
+  ────────────────────────────────────────────────────────────────
+  PULSE LORE — ORGAN: ${meta.identity}
+  LAYER: ${meta.layer}
+  ROLE: ${meta.role}
+  VERSION: ${meta.version}
+  PAYLOAD TYPE: ${payloadType || "unknown"}
+  BASE VERSION: ${baseVersion || "none"}
+  ────────────────────────────────────────────────────────────────
+
+  The ${meta.role.toLowerCase().replace(/_/g, " ")} awakens in the backend artery.
+  It never touches the DOM. It never sees the browser.
+  It only shapes streams into PulseBand segments.
+
+  Guarantees:
+    • ${guarantees.join("\n    • ")}
+
+  Contract — INPUT:
+    • ${inputs.join("\n    • ")}
+
+  Contract — OUTPUT:
+    • ${outputs.join("\n    • ")}
+
+  Every session is bound to a deterministic hash.
+  Every chunk is signed.
+  The organism reveals only its story,
+  never its mechanisms.
+  ────────────────────────────────────────────────────────────────
+*/
+`;
+}
 
 // ============================================================================
 // CENTRAL GENERATOR REGISTRY
@@ -251,10 +293,22 @@ export const createPulseBandSession = onRequest(
         });
       }
 
-      const jsonString =
+      let jsonString =
         typeof rawPayload === "string"
           ? rawPayload
           : JSON.stringify(rawPayload);
+
+      // -------------------------------------------------------
+      // LORE INJECTION — prepend organ-aware lore to ALL payloads
+      // -------------------------------------------------------
+      const loreHeader = generateLoreHeader({
+        meta: PulseChunkerMeta,
+        payloadType: payload,
+        baseVersion
+      });
+
+      jsonString = `${loreHeader}\n${jsonString}`;
+
 
       // -------------------------------------------------------
       // 2. Convert payload to buffer + deterministic session ID
