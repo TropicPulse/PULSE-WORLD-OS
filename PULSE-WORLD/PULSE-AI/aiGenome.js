@@ -314,8 +314,3 @@ export class AIBinaryGenome {
 export function createAIBinaryGenome(config) {
   return new AIBinaryGenome(config);
 }
-
-// ============================================================================
-//  EXPORTS
-// ============================================================================
-export { GenomeMeta };
