@@ -51,8 +51,7 @@ export const OrganismKernelMeta = Object.freeze({
 //  IMPORT ALL BINARY ORGANS
 // ============================================================================
 import { AIBinaryAgent } from "./aiBinaryAgent.js";
-import { AIBinaryMemory } from "./aiMemory-v11-Evo.js";        // legacy memory
-import { AIMemory as AIPulseCoreMemory } from "./aiMemory.js"; // new PulseCoreMemory-based memory
+import { AIBinaryMemory, AIMemory as AIPulseCoreMemory } from "./aiMemory-v11-Evo.js";        // legacy memory
 
 import { AIBinaryAnatomy } from "./aiAnatomy.js";
 import { AIBinaryGenome } from "./aiGenome.js";
