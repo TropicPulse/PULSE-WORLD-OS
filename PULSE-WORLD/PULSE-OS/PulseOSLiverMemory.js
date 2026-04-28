@@ -1,11 +1,11 @@
 // ============================================================================
 // FILE: /apps/PulseOS/Organs/Memory/PulseOSMemory.js
-// PULSE OS — v11-Evo-Prime
+// PULSE OS — v12.3-EVO-BINARY-MAX
 // “THE LIVER” — C‑LAYER METABOLIC ARCHIVE
-// PURE METADATA • ZERO TIMING • ZERO NETWORK • ZERO AUTONOMY
+// PURE METADATA • ZERO TIMING • ZERO NETWORK • ZERO AUTONOMY • ZERO LOOPS
 // ============================================================================
 //
-// ROLE (v11-Evo-Prime):
+// ROLE (v12.3-EVO-BINARY-MAX):
 //   • Build OS + subsystem snapshot metadata
 //   • Build drift signature metadata
 //   • Build restore point metadata
@@ -15,21 +15,23 @@
 //   • NEVER mutate external state
 //   • NEVER generate timestamps
 //   • NEVER run loops or timers
-//   • Pure metabolic archive builder
+//   • NEVER derive previews or summaries
+//   • Pure metabolic archive builder (pass-through metadata only)
 //
-// SAFETY CONTRACT (v11-Evo-Prime):
+// SAFETY CONTRACT (v12.3-EVO-BINARY-MAX):
 //   • Zero timing (no Date.now, no Timestamp.now)
 //   • Zero network (no db, no fetch)
 //   • Zero state (no internal memory)
 //   • Zero mutation
-//   • Zero compute
+//   • Zero compute (no aggregation, no reduction, no previews)
 //   • Zero trimming logic
+//   • Zero loops (no for/while/forEach/map/filter/reduce)
 //   • Pure metadata only
 // ============================================================================
 
 
 // ============================================================================
-// ORGAN IDENTITY — v11-Evo-Prime
+// ORGAN IDENTITY — v12.3-EVO-BINARY-MAX
 // ============================================================================
 export const MEMORY_CONTEXT = {
   organ: "PulseOSMemory",
@@ -37,8 +39,8 @@ export const MEMORY_CONTEXT = {
   role: "OS_LIVER",
   purpose: "Metabolic archive: snapshots, drift signatures, restore metadata",
   context: "Pure metadata builder (long-term state organ)",
-  version: "11.0-Evo-Prime",
-  generation: "v11",
+  version: "12.3-EVO-BINARY-MAX",
+  generation: "v12.3",
   target: "os-core",
   selfRepairable: true,
   evo: {
@@ -52,9 +54,9 @@ export const MEMORY_CONTEXT = {
     unifiedAdvantageField: true,
     futureEvolutionReady: true,
 
-    routingContract: "PulseSend-v11",
-    osOrganContract: "PulseOS-v11-Evo",
-    earnCompatibility: "PulseEarn-v11",
+    routingContract: "PulseSend-v12.3",
+    osOrganContract: "PulseOS-v12.3-EVO",
+    earnCompatibility: "PulseEarn-v12.3",
 
     zeroTiming: true,
     zeroNetwork: true,
@@ -67,8 +69,8 @@ export const MEMORY_CONTEXT = {
 export const PulseOSMemoryMeta = Object.freeze({
   layer: "PulseOSMemory",
   role: "OS_LIVER_ORGAN",
-  version: "v11.2-EVO-BINARY-MAX",
-  identity: "PulseOSMemory-v11.2-EVO-BINARY-MAX",
+  version: "v12.3-EVO-BINARY-MAX",
+  identity: "PulseOSMemory-v12.3-EVO-BINARY-MAX",
 
   guarantees: Object.freeze({
     deterministic: true,
@@ -127,14 +129,15 @@ export const PulseOSMemoryMeta = Object.freeze({
   }),
 
   lineage: Object.freeze({
-    root: "PulseOS-v11-EVO",
-    parent: "PulseOS-v11.2-EVO",
+    root: "PulseOS-v12.3-EVO",
+    parent: "PulseOS-v12.3-EVO",
     ancestry: [
       "PulseOSMemory-v9",
       "PulseOSMemory-v10",
       "PulseOSMemory-v11",
       "PulseOSMemory-v11-Evo",
-      "PulseOSMemory-v11-Evo-Prime"
+      "PulseOSMemory-v11-Evo-Prime",
+      "PulseOSMemory-v12.3-EVO-BINARY-MAX"
     ]
   }),
 
@@ -152,8 +155,10 @@ export const PulseOSMemoryMeta = Object.freeze({
   })
 });
 
+
 // ============================================================================
 // 1. SNAPSHOT METADATA — OS + Subsystem State Capture
+//    Pure pass-through: no compute, no derivation
 // ============================================================================
 export function buildSnapshot(subsystem, payload = {}) {
   return {
@@ -168,6 +173,7 @@ export function buildSnapshot(subsystem, payload = {}) {
 
 // ============================================================================
 // 2. DRIFT SIGNATURE METADATA — OS-Level Drift Recording
+//    Pure pass-through: no compute, no derivation
 // ============================================================================
 export function buildDriftSignature(subsystem, signature = {}) {
   return {
@@ -185,6 +191,7 @@ export function buildDriftSignature(subsystem, signature = {}) {
 
 // ============================================================================
 // 3. RESTORE POINT METADATA — OS Time Machine
+//    Pure pass-through: subsystems + snapshotMap as-is
 // ============================================================================
 export function buildRestorePoint(label, subsystems = [], snapshotMap = {}) {
   return {
@@ -200,32 +207,23 @@ export function buildRestorePoint(label, subsystems = [], snapshotMap = {}) {
 
 // ============================================================================
 // 4. RESTORE PLAN METADATA — OS Time Machine Plan (Read-Only)
+//    ZERO LOOPS, ZERO PREVIEW COMPUTE
+//    • We do NOT iterate or derive payloadPreview
+//    • We only echo structural references from the restorePoint
 // ============================================================================
 export function buildRestorePlan(restorePoint) {
   if (!restorePoint) return null;
 
-  const plan = {
+  return {
     ...MEMORY_CONTEXT,
     kind: "restorePlan",
     restorePointId: restorePoint.id,
     label: restorePoint.label,
-    subsystems: []
+    // Subsystems + payload are passed through; workers derive previews/indexes
+    subsystems: restorePoint.subsystems || [],
+    payload: restorePoint.payload || null
     // No timestamps — backend attaches them
   };
-
-  for (const subsystem of restorePoint.subsystems || []) {
-    const entry = restorePoint.payload?.[subsystem];
-    if (!entry) continue;
-
-    plan.subsystems.push({
-      subsystem,
-      snapshotId: entry.snapshotId,
-      payloadPreview: entry.payload ? Object.keys(entry.payload) : [],
-      ...MEMORY_CONTEXT
-    });
-  }
-
-  return plan;
 }
 
 
@@ -249,5 +247,5 @@ export const PulseOSMemory = {
 };
 
 // ============================================================================
-// END OF FILE — PULSE OS MEMORY (v11-Evo-Prime)
+// END OF FILE — PULSE OS MEMORY (v12.3-EVO-BINARY-MAX)
 // ============================================================================

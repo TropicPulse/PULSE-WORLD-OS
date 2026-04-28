@@ -1,10 +1,10 @@
 // ============================================================================
-//  PULSE OS v11.0 — PULSEBAND PURIFIER (BACKEND CLEANUP ORGAN)
+//  PULSE OS v12.3-EVO-PRESENCE — PULSEBAND PURIFIER (BACKEND CLEANUP ORGAN)
 //  “THE PURIFIER / SANITY LAYER / ORDER‑KEEPER”
 //  Backend‑Only • Drift Control • Session/Error/Redownload Cleanup
 // ============================================================================
 //
-//  WHAT THIS ORGAN IS (v11.0):
+//  WHAT THIS ORGAN IS (v12.3):
 //  ---------------------------
 //  • Backend‑only organ for the PulseBand subsystem.
 //  • Periodically cleans up:
@@ -24,7 +24,7 @@
 //  • NOT allowed to introduce randomness or non‑deterministic scans.
 //  • NOT allowed to mutate anything outside its Firestore collections.
 //
-//  SAFETY CONTRACT (v11.0):
+//  SAFETY CONTRACT (v12.3):
 //  ------------------------
 //  • Fail‑open: errors are logged, never fatal to the OS.
 //  • No randomness in cleanup logic.
@@ -37,14 +37,14 @@
 
 
 // ============================================================================
-// ORGAN IDENTITY — v11.0
+// ORGAN IDENTITY — v12.3-EVO-PRESENCE
 // ============================================================================
 export const PulseRole = {
   type: "Organ",
   subsystem: "PulseProxy",
   layer: "PulseBandPurifier",
-  version: "11.0",
-  identity: "PulseBandCleanup",
+  version: "12.3-EVO-PRESENCE",
+  identity: "PulseBandCleanup-v12.3-EVO-PRESENCE",
 
   evo: {
     driftProof: true,
@@ -64,13 +64,22 @@ export const PulseRole = {
 
     boundedScan: true,
     timerSafe: true,
-    organismClusterBoost: true
+    organismClusterBoost: true,
+
+    // 12.3 presence + advantage (meta-only)
+    unifiedAdvantageField: true,
+    pulseEfficiencyAware: true,
+    bandAware: true,
+    waveFieldAware: true,
+    presenceAware: true,
+    presenceFieldAware: false,
+    binaryFieldAware: false
   }
 };
 
 
 // ============================================================================
-// HUMAN‑READABLE CONTEXT MAP (v11.0)
+// HUMAN‑READABLE CONTEXT MAP (v12.3)
 // ============================================================================
 const CLEANUP_CONTEXT = {
   label: "PULSEBAND_CLEANUP",
@@ -96,11 +105,12 @@ const logCleanup = (stage, details = {}) => {
     })}`
   );
 };
+
 export const PulseBandPurifierMeta = Object.freeze({
   layer: "PulseBandPurifier",
   role: "PULSEBAND_PURIFIER_ORGAN",
-  version: "v11.2-EVO-BINARY-MAX",
-  identity: "PulseBandPurifier-v11.2-EVO-BINARY-MAX",
+  version: "v12.3-EVO-BINARY-MAX-ABA-PRESENCE",
+  identity: "PulseBandPurifier-v12.3-EVO-BINARY-MAX-ABA-PRESENCE",
 
   guarantees: Object.freeze({
     deterministic: true,
@@ -121,7 +131,7 @@ export const PulseBandPurifierMeta = Object.freeze({
     zeroRouting: true,
     zeroCompute: true,              // no business logic
     zeroRandomness: true,
-    zeroDateNow: true,
+    zeroDateNow: false,             // Date.now() used deterministically for cutoffs
     zeroTimers: true,               // caller provides timing
     zeroAsyncLoops: true,
     zeroNetwork: true,              // Firestore allowed
@@ -139,6 +149,8 @@ export const PulseBandPurifierMeta = Object.freeze({
     bandAware: true,                // symbolic band only
     waveFieldAware: true,
     binaryFieldAware: false,
+    presenceAware: true,
+    presenceFieldAware: false,
 
     // Environment
     worldLensAware: false
@@ -162,7 +174,7 @@ export const PulseBandPurifierMeta = Object.freeze({
 
   lineage: Object.freeze({
     root: "PulseProxy-v11",
-    parent: "PulseProxy-v11.2-EVO",
+    parent: "PulseProxy-v12.3-EVO",
     ancestry: [
       "PulseBandPurifier-v7",
       "PulseBandPurifier-v8",
@@ -170,7 +182,8 @@ export const PulseBandPurifierMeta = Object.freeze({
       "PulseBandPurifier-v10",
       "PulseBandPurifier-v11",
       "PulseBandPurifier-v11-Evo",
-      "PulseBandPurifier-v11-Evo-Prime"
+      "PulseBandPurifier-v11-Evo-Prime",
+      "PulseBandPurifier-v12.3-EVO-PRESENCE"
     ]
   }),
 
@@ -187,7 +200,6 @@ export const PulseBandPurifierMeta = Object.freeze({
     return: "deterministic cleanup surfaces + signatures"
   })
 });
-
 
 // ============================================================================
 // INTERNAL CONSTANTS (v11.0)

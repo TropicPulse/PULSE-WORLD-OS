@@ -1,58 +1,42 @@
 // ============================================================================
-//  PulseRouter-v11-Evo-A3 — SYMBOLIC EVOLUTION ROUTER (Pre-Binary Top Layer)
-//  Deterministic Routing Spine • Pulse-Agnostic • Evolution-Aware
-//  Pattern/Lineage/Page-Ancestry + Loop-Theory Aware
+//  PulseRouter-v13-COSMOS-MULTIVERSE
+//  SYMBOLIC EVOLUTION ROUTER — Multiverse-Aware Routing Spine
 // ============================================================================
 //
-//  WHAT THIS ORGAN IS:
-//  --------------------
-//  • The symbolic routing spine of the organism.
-//  • Works with Pulse v1, Pulse v2, Pulse v3.
-//  • Deterministic routing: NO randomness, NO timestamps.
-//  • Pattern-aware, lineage-aware, mode-aware, identity-aware.
-//  • Uses advantageField + healthScore when available.
-//  • Integrates Commandments, Instincts, Design, Thought.
-//  • Maintains routing memory (success/failure).
-//  • Ancestry-aware: patternAncestry, lineageSignature, pageAncestrySignature.
-//  • Pure symbolic — NO binary logic.
+//  ROLE:
+//    - Deterministic symbolic routing across universes/timelines/branches.
+//    - Pattern-aware, lineage-aware, page-aware, ancestry-aware.
+//    - Integrates Commandments, Instincts, Design, Thought.
+//    - Zero randomness, zero mutation, zero drift.
+//    - Pure symbolic (no binary).
+//    - Reversible routing signatures.
+//    - Cosmos-aware routing metadata.
 //
-//  SAFETY CONTRACT (v11-Evo-A3):
-//  -----------------------------
-//  • No imports.
-//  • No randomness.
-//  • No timestamps.
-//  • No external mutation.
-//  • Pure deterministic routing.
 // ============================================================================
 
 
 // ============================================================================
-// ⭐ PulseRole — identifies this as the PulseRouter Organ (v11-Evo-A3)
+// ⭐ PulseRole — identifies this as the PulseRouter Organ (v13-COSMOS)
 // ============================================================================
 export const PulseRole = {
   type: "Router",
   subsystem: "PulseRouter",
   layer: "RoutingSpine",
-  version: "11.0",
-  identity: "PulseRouter-v11-Evolution-A3",
+  version: "13.0",
+  identity: "PulseRouter-v13-COSMOS-MULTIVERSE",
 
   evo: {
     driftProof: true,
     patternAware: true,
     lineageAware: true,
+    pageAware: true,
+    cosmosAware: true,
     modeAware: true,
     identityAware: true,
     advantageAware: true,
     deterministicRouting: true,
     memoryReady: true,
-    futureEvolutionReady: true,
-
-    unifiedAdvantageField: true,
-    pulseRouter11Ready: true,
-    commandmentsAware: true,
-    instinctsAware: true,
-    designAware: true,
-    thoughtAware: true
+    futureEvolutionReady: true
   },
 
   loopTheory: {
@@ -63,8 +47,8 @@ export const PulseRole = {
   },
 
   pulseContract: "Pulse-v1/v2/v3",
-  meshContract: "PulseMesh-v11",
-  sendContract: "PulseSend-v11"
+  meshContract: "PulseMesh-v13",
+  sendContract: "PulseSend-v13"
 };
 
 
@@ -88,36 +72,23 @@ function rememberFailure(pattern, target) {
 
 
 // ============================================================================
-// FALLBACK deterministic routing algorithm (legacy spine)
+// COSMOS CONTEXT HELPERS
 // ============================================================================
-function fallbackRouteTarget(pulse) {
-  const pattern = pulse.pattern || "UNKNOWN_PATTERN";
-  const lineageDepth = Array.isArray(pulse.lineage) ? pulse.lineage.length : 0;
-  const mode = pulse.mode || "normal";
-  const health = pulse.healthScore ?? 1;
-
-  const raw = `${pattern}::${lineageDepth}::${mode}::${health}`;
-  let acc = 0;
-
-  for (let i = 0; i < raw.length; i++) {
-    acc = (acc + raw.charCodeAt(i) * (i + 5)) % 9973;
-  }
-
-  const organs = ["GPU", "Earn", "OS", "Mesh"];
-  return organs[acc % organs.length];
+function normalizeCosmos(cosmos = {}) {
+  return {
+    universeId: cosmos.universeId || "u:default",
+    timelineId: cosmos.timelineId || "t:main",
+    branchId: cosmos.branchId || "b:root"
+  };
 }
 
-
-// ============================================================================
-// Degradation tier helper
-// ============================================================================
-function classifyDegradationTier(h) {
-  const v = typeof h === "number" ? h : 1.0;
-  if (v >= 0.95) return "microDegrade";
-  if (v >= 0.85) return "softDegrade";
-  if (v >= 0.50) return "midDegrade";
-  if (v >= 0.15) return "hardDegrade";
-  return "criticalDegrade";
+function cosmosSignature(cosmos) {
+  const raw = `${cosmos.universeId}|${cosmos.timelineId}|${cosmos.branchId}`;
+  let h = 0;
+  for (let i = 0; i < raw.length; i++) {
+    h = (h * 31 + raw.charCodeAt(i)) >>> 0;
+  }
+  return `cx${h.toString(16)}`;
 }
 
 
@@ -134,19 +105,16 @@ function buildLineageSignature(lineage) {
   return lineage.join(">");
 }
 
-function buildPageAncestrySignature({ pattern, lineage, pageId }) {
-  const safePattern = typeof pattern === "string" ? pattern : "";
-  const safeLineage = Array.isArray(lineage) ? lineage : [];
-  const safePageId = pageId || "NO_PAGE";
-
+function buildPageAncestrySignature({ pattern, lineage, pageId, cosmos }) {
   const shape = {
-    pattern: safePattern,
-    patternAncestry: buildPatternAncestry(safePattern),
-    lineageSignature: buildLineageSignature(safeLineage),
-    pageId: safePageId
+    pattern: pattern || "",
+    patternAncestry: buildPatternAncestry(pattern || ""),
+    lineageSignature: buildLineageSignature(lineage || []),
+    pageId: pageId || "NO_PAGE",
+    cosmosSignature: cosmosSignature(cosmos)
   };
 
-  let raw = JSON.stringify(shape);
+  const raw = JSON.stringify(shape);
   let hash = 0;
   for (let i = 0; i < raw.length; i++) {
     hash = (hash << 5) - hash + raw.charCodeAt(i);
@@ -157,9 +125,44 @@ function buildPageAncestrySignature({ pattern, lineage, pageId }) {
 
 
 // ============================================================================
-// Evolution-aware routing decision (SYMBOLIC ONLY)
+// degradation tier helper
+// ============================================================================
+function classifyDegradationTier(h) {
+  const v = typeof h === "number" ? h : 1.0;
+  if (v >= 0.95) return "microDegrade";
+  if (v >= 0.85) return "softDegrade";
+  if (v >= 0.50) return "midDegrade";
+  if (v >= 0.15) return "hardDegrade";
+  return "criticalDegrade";
+}
+
+
+// ============================================================================
+// fallback deterministic routing (legacy spine)
+// ============================================================================
+function fallbackRouteTarget(pulse) {
+  const pattern = pulse.pattern || "UNKNOWN_PATTERN";
+  const lineageDepth = Array.isArray(pulse.lineage) ? pulse.lineage.length : 0;
+  const mode = pulse.mode || "normal";
+  const health = pulse.healthScore ?? 1;
+
+  const raw = `${pattern}::${lineageDepth}::${mode}::${health}`;
+  let acc = 0;
+
+  for (let i = 0; i < raw.length; i++) {
+    acc = (acc + raw.charCodeAt(i) * (i + 7)) % 12289;
+  }
+
+  const organs = ["GPU", "Earn", "OS", "Mesh"];
+  return organs[acc % organs.length];
+}
+
+
+// ============================================================================
+// evolution-aware routing (COSMOS v13)
 // ============================================================================
 function evolutionAwareRouteTarget(pulse) {
+  const cosmos = normalizeCosmos(pulse.cosmos || {});
   const pattern = pulse.pattern || "UNKNOWN_PATTERN";
   const lineage = Array.isArray(pulse.lineage) ? pulse.lineage.slice() : [];
   const pageId = pulse.pageId || "NO_PAGE";
@@ -180,27 +183,60 @@ function evolutionAwareRouteTarget(pulse) {
   const pageAncestrySignature =
     typeof pulse.pageAncestrySignature === "string"
       ? pulse.pageAncestrySignature
-      : buildPageAncestrySignature({ pattern, lineage, pageId });
+      : buildPageAncestrySignature({ pattern, lineage, pageId, cosmos });
 
   // 1) Commandments
   if (pulse.commandmentsDecision?.targetOrgan) {
     const target = pulse.commandmentsDecision.targetOrgan;
     rememberSuccess(pattern, target);
-    return { targetOrgan: target, source: "Commandments", tier, pattern, patternAncestry, lineage, lineageSignature, pageId, pageAncestrySignature };
+    return {
+      targetOrgan: target,
+      source: "Commandments",
+      tier,
+      cosmos,
+      pattern,
+      patternAncestry,
+      lineage,
+      lineageSignature,
+      pageId,
+      pageAncestrySignature
+    };
   }
 
   // 2) Instincts
   if (pulse.instinctsDecision?.targetOrgan) {
     const target = pulse.instinctsDecision.targetOrgan;
     rememberSuccess(pattern, target);
-    return { targetOrgan: target, source: "Instincts", tier, pattern, patternAncestry, lineage, lineageSignature, pageId, pageAncestrySignature };
+    return {
+      targetOrgan: target,
+      source: "Instincts",
+      tier,
+      cosmos,
+      pattern,
+      patternAncestry,
+      lineage,
+      lineageSignature,
+      pageId,
+      pageAncestrySignature
+    };
   }
 
   // 3) Design
   if (pulse.designDecision?.targetOrgan) {
     const target = pulse.designDecision.targetOrgan;
     rememberSuccess(pattern, target);
-    return { targetOrgan: target, source: "Design", tier, pattern, patternAncestry, lineage, lineageSignature, pageId, pageAncestrySignature };
+    return {
+      targetOrgan: target,
+      source: "Design",
+      tier,
+      cosmos,
+      pattern,
+      patternAncestry,
+      lineage,
+      lineageSignature,
+      pageId,
+      pageAncestrySignature
+    };
   }
 
   // 4) Thought
@@ -211,24 +247,38 @@ function evolutionAwareRouteTarget(pulse) {
       targetOrgan: target,
       source: "Thought",
       tier: pulse.thoughtDecision.tier || tier,
+      cosmos,
       pattern,
       patternAncestry: pulse.thoughtDecision.patternAncestry || patternAncestry,
       lineage,
       lineageSignature: pulse.thoughtDecision.lineageSignature || lineageSignature,
       pageId: pulse.thoughtDecision.pageId || pageId,
-      pageAncestrySignature: pulse.thoughtDecision.pageAncestrySignature || pageAncestrySignature
+      pageAncestrySignature:
+        pulse.thoughtDecision.pageAncestrySignature || pageAncestrySignature
     };
   }
 
-  // 5) Fallback deterministic router
+  // 5) Fallback
   const fallbackTarget = fallbackRouteTarget(pulse);
   rememberSuccess(pattern, fallbackTarget);
-  return { targetOrgan: fallbackTarget, source: "Fallback", tier, pattern, patternAncestry, lineage, lineageSignature, pageId, pageAncestrySignature };
+
+  return {
+    targetOrgan: fallbackTarget,
+    source: "Fallback",
+    tier,
+    cosmos,
+    pattern,
+    patternAncestry,
+    lineage,
+    lineageSignature,
+    pageId,
+    pageAncestrySignature
+  };
 }
 
 
 // ============================================================================
-// PUBLIC API — PulseRouter (v11 Evolution-A3)
+// PUBLIC API — PulseRouter (v13 COSMOS)
 // ============================================================================
 export const PulseRouter = {
 
@@ -250,6 +300,7 @@ export const PulseRouter = {
       const pattern = pulse.pattern || "UNKNOWN_PATTERN";
       rememberSuccess(pattern, pulse.targetHint);
 
+      const cosmos = normalizeCosmos(pulse.cosmos || {});
       const lineage = pulse.lineage || [];
       const pageId = pulse.pageId || "NO_PAGE";
 
@@ -257,12 +308,18 @@ export const PulseRouter = {
         targetOrgan: pulse.targetHint,
         source: "Hint",
         tier: classifyDegradationTier(pulse.healthScore ?? 1),
+        cosmos,
         pattern,
         patternAncestry: buildPatternAncestry(pattern),
         lineage,
         lineageSignature: buildLineageSignature(lineage),
         pageId,
-        pageAncestrySignature: buildPageAncestrySignature({ pattern, lineage, pageId })
+        pageAncestrySignature: buildPageAncestrySignature({
+          pattern,
+          lineage,
+          pageId,
+          cosmos
+        })
       };
     }
 

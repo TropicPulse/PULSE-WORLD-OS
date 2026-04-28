@@ -1,37 +1,15 @@
 // ============================================================================
-// FILE: tropic-pulse-functions/apps/PULSE-EARN/EarnEngine-v11-Evo.js
-// LAYER: THE MUSCLE SYSTEM (v11-Evo + Dual-Band + Binary + Wave)
-// (Deterministic Worker Supervisor + Profit Orchestrator)
+//  PulseEarnMuscleSystem-v12.3-PRESENCE-EVO+.js
+//  THE MUSCLE SYSTEM (v12.3 Presence + Advantage‑C + Triple Presence)
+//  Deterministic Worker Supervisor + Profit Orchestrator
+//  Zero async, zero compute, zero mutation, zero routing
 // ============================================================================
-//
-// ROLE (v11-Evo):
-//   THE MUSCLE SYSTEM — deterministic contraction engine of Pulse‑Earn.
-//   • Executes a single contraction cycle per invocation.
-//   • Fetches deterministic jobs from Nervous System.
-//   • Executes deterministic compute via injected PulseSendSystem.
-//   • Submits deterministic results via Lymph Nodes.
-//   • Maintains healing + pressure metadata (muscle memory + signatures).
-//   • Emits dual-band, binary, and wave metadata (structural only).
-//
-// PURPOSE (v11-Evo):
-//   • Replace async worker loops with deterministic single‑cycle contraction.
-//   • Remove nondeterminism, concurrency, timestamps, sleeps.
-//   • Guarantee drift‑proof Earn → Pulse → Send execution.
-//   • Maintain muscle memory + signatures for healers.
-//
-// CONTRACT (v11-Evo):
-//   • PURE SUPERVISOR — no AI layers, no translation, no memory model.
-//   • NO async, NO await, NO timers, NO concurrency.
-//   • NO eval(), NO Function(), NO dynamic imports.
-//   • Deterministic contraction only.
-//   • PulseSendSystem is injected, not imported.
-//   • Dual-band + binary + wave metadata are structural-only.
-// ============================================================================
+
 export const PulseEarnMuscleSystemMeta = Object.freeze({
   layer: "PulseEarnMuscleSystem",
   role: "EARN_MUSCLE_ORGAN",
-  version: "v11.2-EVO",
-  identity: "PulseEarnMuscleSystem-v11.2-EVO",
+  version: "v12.3-PRESENCE-EVO+",
+  identity: "PulseEarnMuscleSystem-v12.3-PRESENCE-EVO+",
 
   guarantees: Object.freeze({
     deterministic: true,
@@ -39,15 +17,21 @@ export const PulseEarnMuscleSystemMeta = Object.freeze({
     noRealTime: true,
     noExternalIO: true,
     pureSupervisor: true,
+
     dualBandAware: true,
     binaryAware: true,
     waveFieldAware: true,
+    presenceAware: true,
+    advantageAware: true,
+    chunkPrewarmAware: true,
     healingMetadataAware: true,
+
     worldLensAware: false,
     zeroNetwork: true,
     zeroAsync: true,
     zeroAI: true,
     zeroUserCode: true,
+
     injectedPulseSendSystem: true,
     injectedLymphNodes: true,
     injectedNervousSystem: true
@@ -58,65 +42,43 @@ export const PulseEarnMuscleSystemMeta = Object.freeze({
       "NextMarketplaceJob",
       "PulseSendSystemExecutor",
       "LymphNodeSubmitter",
-      "DualBandContext"
+      "DualBandContext",
+      "DevicePhenotypePresence"
     ],
     output: [
       "ContractionResult",
       "MuscleDiagnostics",
       "MuscleSignatures",
-      "MuscleHealingState"
+      "MuscleHealingState",
+      "MusclePresenceField",
+      "MuscleAdvantageField",
+      "MuscleChunkPrewarmPlan"
     ]
-  }),
-
-  lineage: Object.freeze({
-    root: "PulseOS-v11-EVO",
-    parent: "PulseEarn-v11.2-EVO",
-    ancestry: [
-      "PulseEarnMuscleSystem-v9",
-      "PulseEarnMuscleSystem-v10",
-      "PulseEarnMuscleSystem-v11",
-      "PulseEarnMuscleSystem-v11-Evo"
-    ]
-  }),
-
-  bands: Object.freeze({
-    supported: ["symbolic", "binary"],
-    default: "symbolic",
-    behavior: "metadata-only"
-  }),
-
-  architecture: Object.freeze({
-    pattern: "A-B-A",
-    baseline: "deterministic contraction cycle (fetch → execute → submit)",
-    adaptive: "binary/wave surfaces + dual-band signatures",
-    return: "deterministic contraction output + healing metadata"
   })
 });
 
-import { fetchJobFromMarketplace } from "./PulseEarnNervousSystem-v11-Evo.js";
-import { submitMarketplaceResult } from "./PulseEarnLymphNodes-v11-Evo.js";
-
+import { fetchJobFromMarketplace } from "./PulseEarnNervousSystem-v12.3-PRESENCE-EVO+.js";
+import { submitMarketplaceResult } from "./PulseEarnLymphNodes-v12.3-PRESENCE-EVO+.js";
+import { getPulseEarnDeviceProfile } from "./PulseEarnSkeletalSystem-v12.3-PRESENCE-EVO+.js";
 
 // ============================================================================
-// Deterministic Hash Helper — v11-Evo
+// Deterministic Hash Helper
 // ============================================================================
 function computeHash(str) {
   let h = 0;
   const s = String(str || "");
-  for (let i = 0; i < s.length; i++) {
+  for (let i = 0; i < s.length; i++)
     h = (h + s.charCodeAt(i) * (i + 1)) % 100000;
-  }
   return `h${h}`;
 }
 
-function normalizeBand(band) {
-  const b = String(band || "symbolic").toLowerCase();
-  return b === "binary" ? "binary" : "symbolic";
+function normalizeBand(b) {
+  const x = String(b || "symbolic").toLowerCase();
+  return x === "binary" ? "binary" : "symbolic";
 }
 
-
 // ============================================================================
-// Healing Metadata — Muscle Memory Log (v11-Evo)
+// Healing Metadata — Muscle Memory Log (v12.3-PRESENCE)
 // ============================================================================
 const engineHealing = {
   running: false,
@@ -136,19 +98,168 @@ const engineHealing = {
   lastJobSignature: null,
   lastResultSignature: null,
 
-  // v11+ Dual-Band + Binary + Wave
+  // A-B-A + Presence
   lastBand: "symbolic",
   lastBandSignature: null,
   lastBinaryField: null,
-  lastWaveField: null
+  lastWaveField: null,
+
+  // Triple Presence
+  lastPresencePreFetch: null,
+  lastPresencePreExecute: null,
+  lastPresencePostExecute: null,
+
+  lastAdvantagePreFetch: null,
+  lastAdvantagePreExecute: null,
+  lastAdvantagePostExecute: null,
+
+  lastChunkPlanPreFetch: null,
+  lastChunkPlanPreExecute: null,
+  lastChunkPlanPostExecute: null
 };
 
-// Deterministic engine cycle counter
 let engineCycle = 0;
 
+// ============================================================================
+// Presence Field (v12.3)
+// ============================================================================
+function buildPresenceField(job, device, cycleIndex) {
+  const jobLen = (job?.id || "").length;
+  const marketLen = (job?.marketplaceId || "").length;
+  const stability = device?.stabilityScore || 0.7;
+
+  const composite =
+    jobLen * 0.001 +
+    marketLen * 0.001 +
+    stability * 0.01;
+
+  const presenceTier =
+    composite >= 0.02 ? "presence_high" :
+    composite >= 0.005 ? "presence_mid" :
+    "presence_low";
+
+  return {
+    presenceVersion: "v12.3",
+    presenceTier,
+    jobLen,
+    marketLen,
+    stability,
+    cycleIndex,
+    presenceSignature: computeHash(
+      `MUSCLE_PRESENCE::${presenceTier}::${jobLen}::${marketLen}::${cycleIndex}`
+    )
+  };
+}
 
 // ============================================================================
-// INTERNAL: Signature Builders
+// Advantage‑C Field (v12.3)
+// ============================================================================
+function buildAdvantageField(job, device, bandPack, presenceField) {
+  const gpuScore = device?.gpuScore || 0;
+  const bandwidth = device?.bandwidthMbps || 0;
+  const density = bandPack.binaryField.density;
+  const amplitude = bandPack.waveField.amplitude;
+
+  const advantageScore =
+    gpuScore * 0.0005 +
+    bandwidth * 0.0002 +
+    density * 0.00001 +
+    amplitude * 0.00001 +
+    (presenceField.presenceTier === "presence_high" ? 0.01 : 0);
+
+  return {
+    advantageVersion: "C",
+    band: bandPack.band,
+    gpuScore,
+    bandwidth,
+    binaryDensity: density,
+    waveAmplitude: amplitude,
+    presenceTier: presenceField.presenceTier,
+    advantageScore
+  };
+}
+
+// ============================================================================
+// Chunk / Cache / Prewarm Plan (v12.3)
+// ============================================================================
+function buildChunkPrewarmPlan(job, device, presenceField) {
+  const basePriority =
+    presenceField.presenceTier === "presence_high"
+      ? 3
+      : presenceField.presenceTier === "presence_mid"
+      ? 2
+      : 1;
+
+  const gpuBoost = (device?.gpuScore || 0) > 600 ? 1 : 0;
+  const priority = basePriority + gpuBoost;
+
+  return {
+    planVersion: "v12.3-AdvantageC",
+    priority,
+    band: presenceField.presenceTier,
+    chunks: {
+      jobEnvelope: true,
+      metabolismBlueprint: true,
+      marketplaceHandshake: true
+    },
+    cache: {
+      deviceProfile: true,
+      muscleDiagnostics: true
+    },
+    prewarm: {
+      pulseSendSystem: presenceField.presenceTier !== "presence_low",
+      lymphNodes: presenceField.presenceTier !== "presence_low",
+      nervousSystem: presenceField.presenceTier !== "presence_low"
+    }
+  };
+}
+
+// ============================================================================
+// A-B-A Band/Binary/Wave
+// ============================================================================
+function buildEngineBandBinaryWave(job, result, cycleIndex) {
+  const band = normalizeBand(
+    result?.band ||
+    job?.band ||
+    job?.meta?.band ||
+    "symbolic"
+  );
+  engineHealing.lastBand = band;
+  engineHealing.lastBandSignature = computeHash(`BAND::MUSCLE::${band}`);
+
+  const jobIdLength = (job?.id || "").length;
+  const marketLength = (job?.marketplaceId || "").length;
+  const surface = jobIdLength + marketLength + cycleIndex;
+
+  const binaryField = {
+    binaryEngineSignature: computeHash(`BENGINE::${surface}`),
+    binarySurfaceSignature: computeHash(`BSURF_ENGINE::${surface}`),
+    binarySurface: {
+      jobIdLength,
+      marketLength,
+      cycle: cycleIndex,
+      surface
+    },
+    parity: surface % 2 === 0 ? 0 : 1,
+    density: jobIdLength + marketLength,
+    shiftDepth: Math.max(0, Math.floor(Math.log2(surface || 1)))
+  };
+  engineHealing.lastBinaryField = binaryField;
+
+  const waveField = {
+    amplitude: jobIdLength + marketLength,
+    wavelength: cycleIndex,
+    phase: (jobIdLength + cycleIndex) % 16,
+    band,
+    mode: band === "binary" ? "compression-wave" : "symbolic-wave"
+  };
+  engineHealing.lastWaveField = waveField;
+
+  return { band, binaryField, waveField };
+}
+
+// ============================================================================
+// Signature Builders
 // ============================================================================
 function buildEngineSignature() {
   return computeHash(
@@ -158,9 +269,7 @@ function buildEngineSignature() {
 
 function buildJobSignature(job) {
   if (!job) return "JOB::NONE";
-  return computeHash(
-    `JOB::${job.id}::${job.marketplaceId || "NO_MARKET"}`
-  );
+  return computeHash(`JOB::${job.id}::${job.marketplaceId || "NO_MARKET"}`);
 }
 
 function buildResultSignature(job, result) {
@@ -173,131 +282,32 @@ function buildResultSignature(job, result) {
   );
 }
 
-function buildEngineBandBinaryWave(job, result, cycleIndex) {
-  const band = normalizeBand(
-    result?.band ||
-    job?.band ||
-    job?.meta?.band ||
-    "symbolic"
-  );
-  engineHealing.lastBand = band;
-  engineHealing.lastBandSignature = computeHash(`BAND::${band}`);
-
-  const jobIdLength = (job?.id || "").length;
-  const marketplaceLength = (job?.marketplaceId || "").length;
-  const surface = jobIdLength + marketplaceLength + cycleIndex;
-
-  const binaryField = {
-    binaryEngineSignature: computeHash(`BENGINE::${surface}`),
-    binarySurfaceSignature: computeHash(`BSURF_ENGINE::${surface}`),
-    binarySurface: {
-      jobIdLength,
-      marketplaceLength,
-      cycle: cycleIndex,
-      surface
-    },
-    parity: surface % 2 === 0 ? 0 : 1,
-    density: jobIdLength,
-    shiftDepth: Math.max(0, Math.floor(Math.log2(surface || 1)))
-  };
-  engineHealing.lastBinaryField = binaryField;
-
-  const waveField = {
-    amplitude: jobIdLength,
-    wavelength: cycleIndex,
-    phase: (jobIdLength + cycleIndex) % 8,
-    band,
-    mode: band === "binary" ? "compression-wave" : "symbolic-wave"
-  };
-  engineHealing.lastWaveField = waveField;
-
-  return { band, binaryField, waveField };
-}
-
-
 // ============================================================================
-// FACTORY — createEarnEngine (v11-Evo + Dual-Band + Binary + Wave)
+// FACTORY — createEarnEngine (v12.3-PRESENCE-EVO+)
 // ============================================================================
 export function createEarnEngine({
-  pulseSendSystem,      // required: injected PulseSendSystem (must expose compute(job, ctx))
-  log = console.log     // optional: deterministic logger
+  pulseSendSystem,
+  log = console.log
 } = {}) {
   if (!pulseSendSystem || typeof pulseSendSystem.compute !== "function") {
-    throw new Error(
-      "[EarnEngine-v11-Evo] pulseSendSystem with compute(job, ctx) is required."
-    );
+    throw new Error("[EarnEngine-v12.3-PRESENCE] pulseSendSystem.compute(job, ctx) required.");
   }
 
   const engine = {
-    // mirror healing state for external introspection
-    running: engineHealing.running,
-    engineState: engineHealing.engineState,
-    cycleCount: engineHealing.cycleCount,
-    lastJob: engineHealing.lastJob,
-    lastResult: engineHealing.lastResult,
-    lastError: engineHealing.lastError,
-    lastReason: engineHealing.lastReason,
-
-    lastTendonContext: engineHealing.lastTendonContext,
-    lastVolatility: engineHealing.lastVolatility,
-
-    eventSeq: engineHealing.eventSeq,
-
-    lastEngineSignature: engineHealing.lastEngineSignature,
-    lastJobSignature: engineHealing.lastJobSignature,
-    lastResultSignature: engineHealing.lastResultSignature,
-
-    // -----------------------------------------------------------------------
-    // Internal: unified event logger
-    // -----------------------------------------------------------------------
-    logEvent(stage, details = {}) {
-      engineHealing.eventSeq++;
-      this.eventSeq = engineHealing.eventSeq;
-
-      const base = {
-        seq: engineHealing.eventSeq,
-        stage,
-        engineState: engineHealing.engineState,
-        cycleCount: engineHealing.cycleCount,
-        lastJobId: engineHealing.lastJob?.id || null,
-        lastError: engineHealing.lastError || null,
-        lastReason: engineHealing.lastReason || null,
-        lastTendonContext: engineHealing.lastTendonContext,
-        lastVolatility: engineHealing.lastVolatility,
-        lastEngineSignature: engineHealing.lastEngineSignature,
-        lastJobSignature: engineHealing.lastJobSignature,
-        lastResultSignature: engineHealing.lastResultSignature,
-        band: engineHealing.lastBand,
-        binaryField: engineHealing.lastBinaryField,
-        waveField: engineHealing.lastWaveField
-      };
-
-      log(stage, { ...base, ...details });
-    },
 
     // -----------------------------------------------------------------------
     // start() — Begin deterministic contraction mode
     // -----------------------------------------------------------------------
     start() {
-      if (engineHealing.running) {
-        this.logEvent("earn:already_running");
-        return;
-      }
+      if (engineHealing.running) return;
 
       engineHealing.running = true;
       engineHealing.engineState = "running";
-      engineHealing.lastReason = null;
-
       engineHealing.lastEngineSignature = buildEngineSignature();
 
-      // mirror
-      this.running = engineHealing.running;
-      this.engineState = engineHealing.engineState;
+      this.running = true;
+      this.engineState = "running";
       this.lastEngineSignature = engineHealing.lastEngineSignature;
-
-      this.logEvent("earn:engine_start", {
-        mode: "deterministic_single_cycle"
-      });
     },
 
     // -----------------------------------------------------------------------
@@ -308,158 +318,169 @@ export function createEarnEngine({
 
       engineHealing.running = false;
       engineHealing.engineState = "stopped";
-
       engineHealing.lastEngineSignature = buildEngineSignature();
 
-      // mirror
-      this.running = engineHealing.running;
-      this.engineState = engineHealing.engineState;
+      this.running = false;
+      this.engineState = "stopped";
       this.lastEngineSignature = engineHealing.lastEngineSignature;
-
-      this.logEvent("earn:engine_stop");
     },
 
     // -----------------------------------------------------------------------
-    // cycle() — ONE deterministic contraction cycle
-    // -----------------------------------------------------------------------
-    cycle() {
-      if (!engineHealing.running) {
-        this.logEvent("earn:cycle_ignored_not_running");
-        return null;
-      }
+    // cycle() — ONE deterministic contraction cycle (TRIPLE PRESENCE)
+// -----------------------------------------------------------------------
+cycle() {
+  if (!engineHealing.running) return null;
 
-      try {
-        engineCycle++;
-        engineHealing.cycleCount++;
-        this.cycleCount = engineHealing.cycleCount;
+  try {
+    engineCycle++;
+    engineHealing.cycleCount++;
 
-        // ------------------------------------------------------
-        // 1. FETCH — Motor signal (deterministic)
-        // ------------------------------------------------------
-        const job = fetchJobFromMarketplace();
+    // ============================================================
+    // 0. PRE-FETCH PRESENCE (deviceProfile A)
+    // ============================================================
+    const deviceA = getPulseEarnDeviceProfile();
+    const preFetchPresence = buildPresenceField(null, deviceA, engineHealing.cycleCount);
+    const preFetchAdvantage = buildAdvantageField(null, deviceA, {
+      band: "symbolic",
+      binaryField: { density: 0 },
+      waveField: { amplitude: 0 }
+    }, preFetchPresence);
+    const preFetchChunk = buildChunkPrewarmPlan(null, deviceA, preFetchPresence);
 
-        if (!job) {
-          this.logEvent("earn:no_job_available", {
-            cycle: engineHealing.cycleCount
-          });
-          engineHealing.lastEngineSignature = buildEngineSignature();
-          this.lastEngineSignature = engineHealing.lastEngineSignature;
-          return null;
-        }
+    engineHealing.lastPresencePreFetch = preFetchPresence;
+    engineHealing.lastAdvantagePreFetch = preFetchAdvantage;
+    engineHealing.lastChunkPlanPreFetch = preFetchChunk;
 
-        engineHealing.lastJob = job;
-        engineHealing.lastJobSignature = buildJobSignature(job);
-        this.lastJob = job;
-        this.lastJobSignature = engineHealing.lastJobSignature;
+    // ============================================================
+    // 1. FETCH JOB
+    // ============================================================
+    const job = fetchJobFromMarketplace();
+    if (!job) return null;
 
-        const tendonContext = job.impulse?.flags?.earner_context || null;
-        const volatility = job.impulse?.flags?.earner_volatility ?? null;
+    engineHealing.lastJob = job;
+    engineHealing.lastJobSignature = buildJobSignature(job);
 
-        engineHealing.lastTendonContext = tendonContext;
-        engineHealing.lastVolatility = volatility;
-        this.lastTendonContext = tendonContext;
-        this.lastVolatility = volatility;
+    const tendonContext = job.impulse?.flags?.earner_context || null;
+    const volatility = job.impulse?.flags?.earner_volatility ?? null;
 
-        this.logEvent("earn:job_selected", {
-          jobId: job.id,
-          tendonClass: tendonContext?.class,
-          earnerVolatility: volatility
-        });
+    engineHealing.lastTendonContext = tendonContext;
+    engineHealing.lastVolatility = volatility;
 
-        // ------------------------------------------------------
-        // 2. EXECUTE — Contraction (PulseSend deterministic)
-        // ------------------------------------------------------
-        const result = pulseSendSystem.compute(job, {
-          tendonContext,
-          volatility
-        });
+    // ============================================================
+    // 2. PRE-EXECUTE PRESENCE (deviceProfile B)
+    // ============================================================
+    const deviceB = getPulseEarnDeviceProfile();
+    const preExecutePresence = buildPresenceField(job, deviceB, engineHealing.cycleCount);
+    const preExecuteBandPack = buildEngineBandBinaryWave(job, null, engineHealing.cycleCount);
+    const preExecuteAdvantage = buildAdvantageField(job, deviceB, preExecuteBandPack, preExecutePresence);
+    const preExecuteChunk = buildChunkPrewarmPlan(job, deviceB, preExecutePresence);
 
-        engineHealing.lastResult = result;
-        engineHealing.lastResultSignature = buildResultSignature(job, result);
-        this.lastResult = result;
-        this.lastResultSignature = engineHealing.lastResultSignature;
+    engineHealing.lastPresencePreExecute = preExecutePresence;
+    engineHealing.lastAdvantagePreExecute = preExecuteAdvantage;
+    engineHealing.lastChunkPlanPreExecute = preExecuteChunk;
 
-        const { band, binaryField, waveField } = buildEngineBandBinaryWave(
-          job,
-          result,
-          engineHealing.cycleCount
-        );
+    // ============================================================
+    // 3. EXECUTE JOB
+    // ============================================================
+    const result = pulseSendSystem.compute(job, {
+      tendonContext,
+      volatility
+    });
 
-        this.logEvent("earn:job_executed", {
-          jobId: job.id,
-          success: result?.success,
-          tendonClass: tendonContext?.class,
-          earnerVolatility: volatility
-        });
+    engineHealing.lastResult = result;
+    engineHealing.lastResultSignature = buildResultSignature(job, result);
 
-        // ------------------------------------------------------
-        // 3. SUBMIT — Release (deterministic)
-        // ------------------------------------------------------
-        const submission = submitMarketplaceResult(job, result);
+    const postExecuteBandPack = buildEngineBandBinaryWave(job, result, engineHealing.cycleCount);
 
-        engineHealing.lastEngineSignature = buildEngineSignature();
-        this.lastEngineSignature = engineHealing.lastEngineSignature;
+    // ============================================================
+    // 4. POST-EXECUTE PRESENCE (deviceProfile B reused)
+    // ============================================================
+    const postExecutePresence = buildPresenceField(job, deviceB, engineHealing.cycleCount);
+    const postExecuteAdvantage = buildAdvantageField(job, deviceB, postExecuteBandPack, postExecutePresence);
+    const postExecuteChunk = buildChunkPrewarmPlan(job, deviceB, postExecutePresence);
 
-        this.logEvent("earn:job_submitted", {
-          jobId: job.id,
-          submission,
-          tendonClass: tendonContext?.class,
-          earnerVolatility: volatility
-        });
+    engineHealing.lastPresencePostExecute = postExecutePresence;
+    engineHealing.lastAdvantagePostExecute = postExecuteAdvantage;
+    engineHealing.lastChunkPlanPostExecute = postExecuteChunk;
 
-        return {
-          job,
-          result,
-          submission,
-          band,
-          binaryField,
-          waveField,
-          cycleIndex: engineHealing.cycleCount
-        };
+    // ============================================================
+    // 5. SUBMIT RESULT
+    // ============================================================
+    const submission = submitMarketplaceResult(job, result);
 
-      } catch (err) {
-        engineHealing.lastError = err.message;
-        this.lastError = engineHealing.lastError;
+    engineHealing.lastEngineSignature = buildEngineSignature();
 
-        this.logEvent("earn:cycle_error", {
-          error: err.message
-        });
+    return {
+      job,
+      result,
+      submission,
 
-        engineHealing.lastEngineSignature = buildEngineSignature();
-        this.lastEngineSignature = engineHealing.lastEngineSignature;
+      // A-B-A
+      band: postExecuteBandPack.band,
+      binaryField: postExecuteBandPack.binaryField,
+      waveField: postExecuteBandPack.waveField,
 
-        return null;
-      }
-    },
+      // Triple Presence
+      presencePreFetch: preFetchPresence,
+      presencePreExecute: preExecutePresence,
+      presencePostExecute: postExecutePresence,
 
-    // -----------------------------------------------------------------------
-    // diagnostics() — v11-Evo muscle diagnostics
-    // -----------------------------------------------------------------------
-    diagnostics() {
-      return {
-        engineState: engineHealing.engineState,
-        cycleCount: engineHealing.cycleCount,
-        lastJobId: engineHealing.lastJob?.id || null,
-        lastError: engineHealing.lastError || null,
-        lastReason: engineHealing.lastReason || null,
-        lastTendonContext: engineHealing.lastTendonContext,
-        lastVolatility: engineHealing.lastVolatility,
-        lastEngineSignature: engineHealing.lastEngineSignature,
-        lastJobSignature: engineHealing.lastJobSignature,
-        lastResultSignature: engineHealing.lastResultSignature,
-        band: engineHealing.lastBand,
-        binaryField: engineHealing.lastBinaryField,
-        waveField: engineHealing.lastWaveField
-      };
-    }
+      advantagePreFetch: preFetchAdvantage,
+      advantagePreExecute: preExecuteAdvantage,
+      advantagePostExecute: postExecuteAdvantage,
+
+      chunkPrewarmPreFetch: preFetchChunk,
+      chunkPrewarmPreExecute: preExecuteChunk,
+      chunkPrewarmPostExecute: postExecuteChunk,
+
+      cycleIndex: engineHealing.cycleCount
+    };
+
+  } catch (err) {
+    engineHealing.lastError = err.message;
+    return null;
+  }
+},
+
+// -----------------------------------------------------------------------
+// diagnostics()
+// -----------------------------------------------------------------------
+diagnostics() {
+  return {
+    engineState: engineHealing.engineState,
+    cycleCount: engineHealing.cycleCount,
+    lastJobId: engineHealing.lastJob?.id || null,
+    lastError: engineHealing.lastError || null,
+    lastTendonContext: engineHealing.lastTendonContext,
+    lastVolatility: engineHealing.lastVolatility,
+
+    // A-B-A
+    band: engineHealing.lastBand,
+    binaryField: engineHealing.lastBinaryField,
+    waveField: engineHealing.lastWaveField,
+
+    // Triple Presence
+    presencePreFetch: engineHealing.lastPresencePreFetch,
+    presencePreExecute: engineHealing.lastPresencePreExecute,
+    presencePostExecute: engineHealing.lastPresencePostExecute,
+
+    advantagePreFetch: engineHealing.lastAdvantagePreFetch,
+    advantagePreExecute: engineHealing.lastAdvantagePreExecute,
+    advantagePostExecute: engineHealing.lastAdvantagePostExecute,
+
+    chunkPrewarmPreFetch: engineHealing.lastChunkPlanPreFetch,
+    chunkPrewarmPreExecute: engineHealing.lastChunkPlanPreExecute,
+    chunkPrewarmPostExecute: engineHealing.lastChunkPlanPostExecute
   };
-
-  return engine;
 }
 
+};
+
+return engine;
+}
 
 // ============================================================================
-// Export healing metadata — Muscle System Report (v11-Evo)
+// Export healing metadata
 // ============================================================================
 export function getEarnEngineHealingState() {
   return { ...engineHealing };

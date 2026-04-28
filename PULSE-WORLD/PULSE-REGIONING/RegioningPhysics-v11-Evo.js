@@ -4,14 +4,14 @@
  *   root: "PULSE-WORLD",
  *   mode: "substrate",
  *   target: "regioning-physics",
- *   version: "v11-EVO",
+ *   version: "v13-COSMOS-MULTIVERSE",
  *
- *   role: "Defines the spatial world of Pulse OS. Regions, boundaries, affinities, and stability.",
+ *   role: "Defines the multiverse spatial world of Pulse OS: universes, timelines, branches, regions, affinities, stability.",
  *
  *   guarantees: {
  *     deterministic: true,
  *     symbolic: true,
- *     hostAgnostic: true,
+ *     multiverseAware: true,
  *     schemaAware: true,
  *     regionGraphReversible: true,
  *     noRandomness: true
@@ -21,7 +21,8 @@
  *     input: [
  *       "RegionDescriptor[]",
  *       "RegionAffinityRules",
- *       "RegionStabilitySignals"
+ *       "RegionStabilitySignals",
+ *       "CosmosContext { universeId, timelineId, branchId }"
  *     ],
  *     output: [
  *       "RegionGraph",
@@ -36,52 +37,38 @@
  *   ],
  *
  *   downstream: [
- *     "RegionMeshRouting",
- *     "PulseContinuance",
+ *     "RegionMeshRouting-v13",
+ *     "PulseContinuance-v13",
  *     "EnvironmentPhysics",
- *     "DeploymentPhysics"
+ *     "DeploymentPhysics-v13"
  *   ],
  *
  *   notes: [
- *     "Regioning Physics defines the world the organism lives in.",
- *     "Regions are symbolic, not geographic.",
- *     "RegionGraph is deterministic and reversible.",
- *     "Region stability feeds directly into Continuance Physics.",
- *     "Region affinities determine movement cost and routing preference."
+ *     "Regioning Physics defines the multiverse world the organism lives in.",
+ *     "Regions are symbolic sectors, not geographic.",
+ *     "RegionGraph is deterministic and reversible across universes.",
+ *     "Stability feeds cosmic turbulence into Continuance Physics.",
+ *     "Affinities determine gravitational routing preference."
  *   ]
  * }
  */
 
-/**
- * RegioningPhysics-v11-Evo.js
- * PULSE-WORLD / PULSE-REGIONING
- *
- * ROLE:
- *   Defines the symbolic world map for Pulse OS.
- *   Regions, boundaries, affinities, stability, and relationships.
- *
- * NEVER:
- *   - Never use real geography.
- *   - Never embed host-specific logic.
- *   - Never introduce randomness.
- *
- * ALWAYS:
- *   - Always be symbolic.
- *   - Always be deterministic.
- *   - Always produce reversible region graphs.
- */
+// -------------------------
+// Cosmos Context
+// -------------------------
+
+function normalizeCosmosContext(context = {}) {
+  return {
+    universeId: context.universeId || "u:default",
+    timelineId: context.timelineId || "t:main",
+    branchId: context.branchId || "b:root"
+  };
+}
 
 // -------------------------
 // Region Descriptor
 // -------------------------
 
-/**
- * RegionDescriptor
- *
- * regionId: string
- * label: human-friendly name
- * meta: free-form metadata
- */
 export class RegionDescriptor {
   constructor({ regionId, label = "", meta = {} }) {
     this.regionId = regionId;
@@ -94,17 +81,6 @@ export class RegionDescriptor {
 // Region Affinity Rules
 // -------------------------
 
-/**
- * RegionAffinityRules
- *
- * Defines symbolic "distance" or "cost" between regions.
- *
- * Example:
- * {
- *   "us-west": { "us-east": 0.3, "eu-central": 0.7 },
- *   "us-east": { "us-west": 0.3, "eu-central": 0.5 }
- * }
- */
 export class RegionAffinityRules {
   constructor(rules = {}) {
     this.rules = rules;
@@ -115,13 +91,6 @@ export class RegionAffinityRules {
 // Region Stability Signals
 // -------------------------
 
-/**
- * RegionStabilitySignal
- *
- * regionId: string
- * instability: number (0.0 - 1.0)
- * trend: "rising" | "falling" | "stable"
- */
 export class RegionStabilitySignal {
   constructor({ regionId, instability = 0, trend = "stable" }) {
     this.regionId = regionId;
@@ -134,14 +103,9 @@ export class RegionStabilitySignal {
 // Region Graph
 // -------------------------
 
-/**
- * RegionGraph
- *
- * nodes: regionIds
- * edges: adjacency list with affinity weights
- */
 export class RegionGraph {
-  constructor({ nodes = [], edges = {} }) {
+  constructor({ cosmos, nodes = [], edges = {} }) {
+    this.cosmos = cosmos; // multiverse placement
     this.nodes = nodes;
     this.edges = edges;
   }
@@ -152,31 +116,16 @@ export class RegionGraph {
 // -------------------------
 
 function clamp01(v) {
-  if (v < 0) return 0;
-  if (v > 1) return 1;
-  return v;
+  return v < 0 ? 0 : v > 1 ? 1 : v;
 }
 
 // -------------------------
-// Region Graph Builder
+// Region Graph Builder (v13 Multiverse)
 // -------------------------
 
-/**
- * buildRegionGraph
- *
- * Input:
- *   - regionDescriptors: RegionDescriptor[]
- *   - affinityRules: RegionAffinityRules
- *
- * Output:
- *   - RegionGraph
- *
- * Logic:
- *   - Every region becomes a node.
- *   - Affinity rules define weighted edges.
- *   - Missing edges default to weight = 1.0 (max cost).
- */
-export function buildRegionGraph(regionDescriptors, affinityRules) {
+export function buildRegionGraph(regionDescriptors, affinityRules, cosmosContext = {}) {
+  const cosmos = normalizeCosmosContext(cosmosContext);
+
   const nodes = regionDescriptors.map((r) => r.regionId);
   const edges = {};
 
@@ -195,23 +144,15 @@ export function buildRegionGraph(regionDescriptors, affinityRules) {
     }
   }
 
-  return new RegionGraph({ nodes, edges });
+  return new RegionGraph({ cosmos, nodes, edges });
 }
 
 // -------------------------
-// Region Stability Map
+// Region Stability Map (v13 Multiverse)
 // -------------------------
 
-/**
- * buildRegionStabilityMap
- *
- * Input:
- *   - stabilitySignals: RegionStabilitySignal[]
- *
- * Output:
- *   - { [regionId: string]: number }
- */
-export function buildRegionStabilityMap(stabilitySignals) {
+export function buildRegionStabilityMap(stabilitySignals, cosmosContext = {}) {
+  const cosmos = normalizeCosmosContext(cosmosContext);
   const map = {};
 
   for (const sig of stabilitySignals) {
@@ -224,26 +165,23 @@ export function buildRegionStabilityMap(stabilitySignals) {
     map[sig.regionId] = score;
   }
 
-  return map;
+  return {
+    cosmos,
+    map
+  };
 }
 
 // -------------------------
-// Region Affinity Map
+// Region Affinity Map (v13 Multiverse)
 // -------------------------
 
-/**
- * buildRegionAffinityMap
- *
- * Input:
- *   - regionGraph: RegionGraph
- *
- * Output:
- *   - { [regionId: string]: { [otherRegionId: string]: number } }
- *
- * This is just a normalized view of the graph edges.
- */
-export function buildRegionAffinityMap(regionGraph) {
-  return regionGraph.edges;
+export function buildRegionAffinityMap(regionGraph, cosmosContext = {}) {
+  const cosmos = normalizeCosmosContext(cosmosContext);
+
+  return {
+    cosmos,
+    affinities: regionGraph.edges
+  };
 }
 
 // -------------------------
@@ -255,6 +193,7 @@ const RegioningPhysicsAPI = {
   RegionAffinityRules,
   RegionStabilitySignal,
   RegionGraph,
+
   buildRegionGraph,
   buildRegionStabilityMap,
   buildRegionAffinityMap

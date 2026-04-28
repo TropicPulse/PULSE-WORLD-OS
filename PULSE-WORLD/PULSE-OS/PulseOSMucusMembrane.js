@@ -1,17 +1,17 @@
 // ============================================================================
-// FILE: /apps/PulseOS/Organs/Barriers/PulseOSMucusMembrane.js
-// PULSE OS — v11-Evo-Prime
+// FILE: /apps/PulseOS/Organs/Barriers/PulseOSMucusMembrane.v12.3.js
+// PULSE OS — v12.3-Evo-Binary-Max
 // “THE MUCUS MEMBRANE / EPITHELIAL BARRIER”
 // PURE BARRIER • OFFLINE-ABSOLUTE • ZERO TIMING • ZERO NETWORK
 // ============================================================================
 //
-// ORGAN IDENTITY (v11-Evo-Prime):
+// ORGAN IDENTITY (v12.3-Evo-Binary-Max):
 //   • Organ Type: Barrier / Epithelial Layer
 //   • Biological Role: Mucosal membrane protecting internal organs
 //   • System Role: Safe, one‑way signal membrane (frontend → organism)
 //   • Behavior: Passive, non‑timed, non‑stateful, non‑mutating
 //
-// PURPOSE (v11-Evo-Prime):
+// PURPOSE (v12.3-Evo-Binary-Max):
 //   ✔ Provide a safe, deterministic, one‑directional signal object
 //   ✔ Filter environment → organism contact
 //   ✔ Protect backend heartbeat from direct exposure
@@ -20,25 +20,27 @@
 //   ✔ Never mutate payloads or store state
 //   ✔ Never depend on window or environment
 //
-// SAFETY CONTRACT (v11-Evo-Prime):
+// SAFETY CONTRACT (v12.3-Evo-Binary-Max):
 //   • Zero timing (no Date.now, no timestamps)
 //   • Zero network (no fetch)
 //   • Zero state
 //   • Zero retries
 //   • Zero mutation
 //   • Zero window access
+//   • Zero randomness
+//   • Zero async
 //   • Pure deterministic signal builder
 // ============================================================================
 
 // ============================================================================
-// ORGAN IDENTITY — v11‑EVO‑PRIME (A0 Mucus Membrane)
+// ORGAN IDENTITY — v12.3-EVO-BINARY-MAX (A0 Mucus Membrane)
 // ============================================================================
 export const PulseRole = {
   type: "Barrier",
   subsystem: "PulseOSMucusMembrane",
   layer: "A0-MucusBarrier",
-  version: "11.0-Evo-Prime",
-  identity: "PulseOSMucusMembrane-v11-Evo-Prime",
+  version: "12.3-Evo-Binary-Max",
+  identity: "PulseOSMucusMembrane-v12.3-Evo-Binary-Max",
 
   evo: {
     // Core invariants
@@ -46,6 +48,7 @@ export const PulseRole = {
     deterministicField: true,
     unifiedAdvantageField: true,
     futureEvolutionReady: true,
+    multiInstanceReady: true,
 
     // Barrier laws
     zeroTiming: true,
@@ -72,14 +75,19 @@ export const PulseRole = {
 
     // Safety + environment
     environmentAgnostic: true,
-    multiInstanceReady: true
+
+    // Dual-band CNS contract
+    dualBand: true,
+    symbolicPrimary: true,
+    binaryNonExecutable: true
   }
 };
+
 export const PulseOSMucusMembraneMeta = Object.freeze({
   layer: "PulseOSMucusMembrane",
   role: "A0_MUCUS_BARRIER_ORGAN",
-  version: "v11.2-EVO-BINARY-MAX",
-  identity: "PulseOSMucusMembrane-v11.2-EVO-BINARY-MAX",
+  version: "v12.3-EVO-BINARY-MAX",
+  identity: "PulseOSMucusMembrane-v12.3-EVO-BINARY-MAX",
 
   guarantees: Object.freeze({
     deterministic: true,
@@ -110,11 +118,12 @@ export const PulseOSMucusMembraneMeta = Object.freeze({
     zeroEval: true,
     zeroWindowAccess: true,
 
-    // Awareness
+    // Dual-band awareness
     symbolicAware: true,
     binaryAware: true,
-    dualModeAware: true,
-    pressureAware: true,
+    dualBandAware: true,
+    binaryNonExecutable: true,
+    symbolicPrimary: true,
 
     // Environment
     worldLensAware: false
@@ -135,14 +144,15 @@ export const PulseOSMucusMembraneMeta = Object.freeze({
   }),
 
   lineage: Object.freeze({
-    root: "PulseOS-v11-EVO",
-    parent: "PulseOS-v11.2-EVO",
+    root: "PulseOS-v12-EVO",
+    parent: "PulseOS-v12.3-EVO",
     ancestry: [
       "PulseOSMucusMembrane-v9",
       "PulseOSMucusMembrane-v10",
       "PulseOSMucusMembrane-v11",
       "PulseOSMucusMembrane-v11-Evo",
-      "PulseOSMucusMembrane-v11-Evo-Prime"
+      "PulseOSMucusMembrane-v11-Evo-Prime",
+      "PulseOSMucusMembrane-v11.2-EVO-BINARY-MAX"
     ]
   }),
 
@@ -173,11 +183,12 @@ export function PulseOSMucusMembrane({
   // Pure deterministic signal object
   const payload = {
     source: "frontend-mucus-membrane",
-    version: "11.0-Evo-Prime",
+    version: "12.3-Evo-Binary-Max",
     organ: "PulseOSMucusMembrane",
     layer: "Barrier",
 
     modeKind,
+    band: modeKind === "binary" ? "binary" : modeKind === "symbolic" ? "symbolic" : "dual",
     executionContext,
     pressureSnapshot,
 
@@ -195,7 +206,9 @@ export function PulseOSMucusMembrane({
       symbolicAware: true,
       dualModeAware: true,
       executionContextAware: true,
-      pressureAware: true
+      pressureAware: true,
+      binaryNonExecutable: true,
+      symbolicPrimary: true
     }
   };
 
@@ -209,5 +222,5 @@ export function PulseOSMucusMembrane({
 }
 
 // ============================================================================
-// END OF FILE — THE MUCUS MEMBRANE (v11-Evo-Prime)
+// END OF FILE — THE MUCUS MEMBRANE (v12.3-Evo-Binary-Max)
 // ============================================================================

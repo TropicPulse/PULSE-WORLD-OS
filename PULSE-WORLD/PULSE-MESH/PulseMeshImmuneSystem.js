@@ -1,11 +1,11 @@
 // ============================================================================
 // FILE: /apps/organs/immune/PulseMeshImmuneSystem.js
-// PULSE OS — v11-Evo
+// PULSE OS — v12.3-PRESENCE-EVO-MAX-PRIME
 // MESH IMMUNE SYSTEM COMMANDER — “THE IMMUNE COMMANDER”
 // Deterministic • Declarative • Zero Drift • Pure Logic
 // ============================================================================
 //
-// ROLE (v11-Evo):
+// ROLE (v12.3):
 //   • Receives diagnostic snapshots (Halo, Echo, Field, SDN).
 //   • Performs deterministic triage (no pressure thresholds).
 //   • Emits declarative repair directives for:
@@ -15,15 +15,14 @@
 //        - Mesh (pathway diagnostics)
 //   • Never heals directly — only commands healers.
 //   • Fully offline-capable (OFFLINE_MODE).
+//   • Presence-aware, binary-aware, dual-band-ready.
 //   • Zero randomness, zero timestamps, zero mutation.
-//   • v11-Evo: binary-aware, dual-mode-ready, deterministic-field,
-//              unified-advantage-field, drift-aware, mesh-pressure-aware.
 // ============================================================================
 
 export function createPulseMeshImmuneSystem({
-  PulseImmunity,        // analysis engine
-  GPUHealer,            // GPU immune organ
-  RouteResponder,       // router immune organ
+  PulseImmunity,
+  GPUHealer,
+  RouteResponder,
   OFFLINE_MODE = false,
   log,
   warn,
@@ -31,18 +30,20 @@ export function createPulseMeshImmuneSystem({
 }) {
 
   // ---------------------------------------------------------------------------
-  // META — v11-Evo identity
+  // META — v12.3 identity
   // ---------------------------------------------------------------------------
   const meta = {
     layer: "PulseMeshImmuneSystem",
     role: "IMMUNE_COMMANDER",
-    version: "11.0-Evo",
+    version: "12.3-PRESENCE-EVO-MAX-PRIME",
     target: "full-mesh",
     selfRepairable: true,
     evo: {
       dualMode: true,
       binaryAware: true,
       symbolicAware: true,
+      presenceAware: true,
+      bandAware: true,
       localAware: true,
       internetAware: true,
 
@@ -67,9 +68,10 @@ export function createPulseMeshImmuneSystem({
     }
   };
 
+
   // ---------------------------------------------------------------------------
-  // HEALER REGISTRY (v11-Evo)
-  // Pure declarative directives — no direct mutation.
+  // HEALER REGISTRY (v12.3)
+  // Declarative — no direct mutation.
   // ---------------------------------------------------------------------------
   const HEALER_REGISTRY = [
     {
@@ -83,7 +85,8 @@ export function createPulseMeshImmuneSystem({
         details: {
           driftType: issue.driftType ?? "unspecified",
           severity: issue.severity ?? "info",
-          note: issue.message ?? null
+          note: issue.message ?? null,
+          presenceBand: issue.presenceBand ?? null
         },
         result: GPUHealer.repair(issue),
         issue
@@ -109,7 +112,8 @@ export function createPulseMeshImmuneSystem({
           details: {
             driftType: issue.driftType ?? "unspecified",
             severity: issue.severity ?? "info",
-            note: issue.message ?? null
+            note: issue.message ?? null,
+            presenceBand: issue.presenceBand ?? null
           },
           result: RouteResponder(issue),
           issue
@@ -127,7 +131,8 @@ export function createPulseMeshImmuneSystem({
         details: {
           driftType: issue.driftType ?? "unspecified",
           severity: issue.severity ?? "info",
-          note: issue.message ?? null
+          note: issue.message ?? null,
+          presenceBand: issue.presenceBand ?? null
         },
         issue
       })
@@ -145,15 +150,17 @@ export function createPulseMeshImmuneSystem({
           factoringDepth: issue.factoringDepth ?? null,
           meshNodeId: issue.meshNodeId ?? null,
           severity: issue.severity ?? "info",
-          note: issue.message ?? null
+          note: issue.message ?? null,
+          presenceBand: issue.presenceBand ?? null
         },
         issue
       })
     }
   ];
 
+
   // ---------------------------------------------------------------------------
-  // TRIAGE (v11-Evo)
+  // TRIAGE (v12.3)
   // Deterministic ordering — no pressure thresholds.
   // ---------------------------------------------------------------------------
   function triage(analysis) {
@@ -166,7 +173,7 @@ export function createPulseMeshImmuneSystem({
       // Higher severity first
       if (sb !== sa) return sb - sa;
 
-      // Mesh issues always prioritized secondarily
+      // Mesh issues prioritized secondarily
       const aIsMesh = /mesh|pathway|factoring|stall|missing_node/i.test(a.message || "");
       const bIsMesh = /mesh|pathway|factoring|stall|missing_node/i.test(b.message || "");
 
@@ -177,8 +184,9 @@ export function createPulseMeshImmuneSystem({
     });
   }
 
+
   // ---------------------------------------------------------------------------
-  // DISPATCH (v11-Evo)
+  // DISPATCH (v12.3)
   // Declarative — no direct healing.
   // ---------------------------------------------------------------------------
   async function dispatch(issue) {
@@ -197,14 +205,16 @@ export function createPulseMeshImmuneSystem({
     };
   }
 
+
   // ---------------------------------------------------------------------------
-  // COMMAND CYCLE (v11-Evo)
+  // COMMAND CYCLE (v12.3)
   // Pure triage + directive emission.
   // ---------------------------------------------------------------------------
   async function command(diagSnapshot, context = {}) {
     const analysis = PulseImmunity.analyze(diagSnapshot, {
       binaryMode: context.binaryMode,
-      dualMode: context.dualMode
+      dualMode: context.dualMode,
+      presenceBand: context.presenceBand
     });
 
     const orderedIssues = triage(analysis);
@@ -221,12 +231,14 @@ export function createPulseMeshImmuneSystem({
       mode: OFFLINE_MODE ? "offline" : "online",
       binaryMode: !!context.binaryMode,
       dualMode: !!context.dualMode,
+      presenceBand: context.presenceBand || "symbolic",
       meta,
       analysis,
       orderedIssues,
       results
     };
   }
+
 
   // ---------------------------------------------------------------------------
   // PUBLIC INTERFACE

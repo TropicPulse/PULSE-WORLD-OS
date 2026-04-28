@@ -1,20 +1,21 @@
 // ============================================================================
-//  PULSE OS v11‑Evo — TELEMETRY ORGAN
+//  PULSE OS v12.3‑EVO — TELEMETRY ORGAN
 //  Unified Metrics • Subsystem Heartbeats • Drift Detection
 //  Mesh‑Aware Telemetry Propagation (Mini‑Pulse Distance Engine)
 //  PURE NERVOUS‑SYSTEM ORGAN — NO BACKEND, NO DOM, NO GPU, NO STATE MUTATION
+//  v12.3‑EVO‑BINARY‑MAX‑ABA + CACHE/CHUNK/PRESENCE ADVANTAGE
 // ============================================================================
 
 
 // ============================================================================
-//  ORGAN IDENTITY — v11‑Evo A‑B‑A
+//  ORGAN IDENTITY — v12.3‑EVO A‑B‑A
 // ============================================================================
 export const PulseRole = {
   type: "Organ",
   subsystem: "PulseTelemetry",
   layer: "Bloodstream",
-  version: "11-Evo",
-  identity: "PulseTelemetryOrgan-v11-Evo-ABA",
+  version: "12.3-EVO",
+  identity: "PulseTelemetryOrgan-v12.3-EVO-ABA",
 
   evo: {
     driftProof: true,
@@ -26,17 +27,25 @@ export const PulseRole = {
     noDecisionMaking: true,
     futureEvolutionReady: true,
 
+    // A‑B‑A awareness
     bandAware: true,
     waveFieldAware: true,
-    binaryFieldAware: true
+    binaryFieldAware: true,
+
+    // 12.3+ presence / cache / chunk advantages
+    cacheChunkAware: true,
+    prewarmAware: true,
+    presenceAware: true,
+    meshPresenceAware: true,
+    chunkTelemetryAware: true
   }
 };
 
 export const PulseTelemetryOrganMeta = Object.freeze({
   layer: "PulseTelemetryBloodstream",
   role: "TELEMETRY_ORGAN",
-  version: "v11.2-EVO-BINARY-MAX",
-  identity: "PulseTelemetryOrgan-v11.2-EVO-BINARY-MAX",
+  version: "v12.3-EVO-BINARY-MAX-ABA",
+  identity: "PulseTelemetryOrgan-v12.3-EVO-BINARY-MAX-ABA",
 
   guarantees: Object.freeze({
     deterministic: true,
@@ -72,6 +81,15 @@ export const PulseTelemetryOrganMeta = Object.freeze({
     unifiedAdvantageField: true,
     pulseEfficiencyAware: true,
 
+    // 12.3+ cache/chunk/presence guarantees
+    cacheChunkAware: true,
+    cacheSafe: true,
+    chunkSafe: true,
+    prewarmSafe: true,
+    presenceSafe: true,
+    noCacheMutation: true,
+    noChunkMutation: true,
+
     // Awareness
     symbolicAware: true,
     binaryAware: true,
@@ -100,7 +118,7 @@ export const PulseTelemetryOrganMeta = Object.freeze({
 
   lineage: Object.freeze({
     root: "PulseTelemetry-v11",
-    parent: "PulseTelemetry-v11.2-EVO",
+    parent: "PulseTelemetry-v12.3-EVO",
     ancestry: [
       "PulseTelemetryOrgan-v7",
       "PulseTelemetryOrgan-v8",
@@ -108,7 +126,8 @@ export const PulseTelemetryOrganMeta = Object.freeze({
       "PulseTelemetryOrgan-v10",
       "PulseTelemetryOrgan-v11",
       "PulseTelemetryOrgan-v11-Evo",
-      "PulseTelemetryOrgan-v11-Evo-ABA"
+      "PulseTelemetryOrgan-v11-Evo-ABA",
+      "PulseTelemetryOrgan-v11.2-EVO-BINARY-MAX"
     ]
   }),
 
@@ -125,6 +144,7 @@ export const PulseTelemetryOrganMeta = Object.freeze({
     return: "deterministic telemetry surfaces + signatures"
   })
 });
+
 
 // ============================================================================
 // INTERNAL STATE — Telemetry Bloodstream (bounded)
@@ -192,7 +212,7 @@ function buildTelemetryCycleSignature() {
 
 
 // ============================================================================
-// EMIT TELEMETRY — Universal signal emitter (v11‑Evo A‑B‑A)
+// EMIT TELEMETRY — Universal signal emitter (v12.3‑EVO A‑B‑A)
 // ============================================================================
 export function emitTelemetry(subsystem, event, data = {}) {
   try {
@@ -238,7 +258,7 @@ export function emitTelemetry(subsystem, event, data = {}) {
 
 
 // ============================================================================
-// MINI‑PULSE BROADCAST — Mesh‑safe propagation (v11‑Evo)
+// MINI‑PULSE BROADCAST — Mesh‑safe propagation (v12.3‑EVO)
 // ============================================================================
 export function broadcastTelemetry(packet) {
   try {
@@ -260,7 +280,7 @@ export function broadcastTelemetry(packet) {
 
 
 // ============================================================================
-// MINI‑PULSE AMPLIFIER — Increase distance + hop count (v11‑Evo)
+// MINI‑PULSE AMPLIFIER — Increase distance + hop count (v12.3‑EVO)
 // ============================================================================
 export function amplifyPulse(packet) {
   const nextHops = (packet.hops ?? 0) + 1;
@@ -284,7 +304,7 @@ export function amplifyPulse(packet) {
 
 
 // ============================================================================
-// RECEIVE MESH PULSE — Accept telemetry from other nodes (v11‑Evo)
+// RECEIVE MESH PULSE — Accept telemetry from other nodes (v12.3‑EVO)
 // ============================================================================
 export function receiveMeshPulse(packet) {
   try {
@@ -303,7 +323,7 @@ export function receiveMeshPulse(packet) {
 
 
 // ============================================================================
-// HEARTBEAT — Subsystem periodic pulse (v11‑Evo)
+// HEARTBEAT — Subsystem periodic pulse (v12.3‑EVO)
 // ============================================================================
 export function heartbeat(subsystem, extra = {}) {
   return emitTelemetry(subsystem, "heartbeat", {
@@ -315,7 +335,7 @@ export function heartbeat(subsystem, extra = {}) {
 
 
 // ============================================================================
-// DRIFT DETECTION (v11‑Evo)
+// DRIFT DETECTION (v12.3‑EVO)
 // ============================================================================
 export function detectDrift(subsystem, expectedVersion) {
   const actual = PulseVersion[subsystem];
@@ -330,7 +350,7 @@ export function detectDrift(subsystem, expectedVersion) {
 
 
 // ============================================================================
-// ANOMALY (v11‑Evo)
+// ANOMALY (v12.3‑EVO)
 // ============================================================================
 export function anomaly(subsystem, description, details = {}) {
   return emitTelemetry(subsystem, "anomaly", {
@@ -341,7 +361,7 @@ export function anomaly(subsystem, description, details = {}) {
 
 
 // ============================================================================
-// PERFORMANCE METRICS (v11‑Evo)
+// PERFORMANCE METRICS (v12.3‑EVO)
 // ============================================================================
 export function metric(subsystem, name, value, extra = {}) {
   return emitTelemetry(subsystem, "metric", {
@@ -353,7 +373,7 @@ export function metric(subsystem, name, value, extra = {}) {
 
 
 // ============================================================================
-// STREAM ACCESS (v11‑Evo)
+// STREAM ACCESS (v12.3‑EVO)
 // ============================================================================
 export function getStream(limit = 500) {
   if (limit <= 0) return [...telemetryStream];
@@ -362,7 +382,7 @@ export function getStream(limit = 500) {
 
 
 // ============================================================================
-// SNAPSHOT (v11‑Evo)
+// SNAPSHOT (v12.3‑EVO)
 // ============================================================================
 export function getTelemetrySnapshot() {
   const latest = telemetryStream.slice(-200);
@@ -387,7 +407,7 @@ export function getTelemetrySnapshot() {
 
 
 // ============================================================================
-// EXPORTS — Telemetry Organ API (v11‑Evo A‑B‑A)
+// EXPORTS — Telemetry Organ API (v12.3‑EVO BINARY‑MAX‑ABA)
 // ============================================================================
 export const PulseTelemetry = {
   emit: emitTelemetry,

@@ -1,6 +1,6 @@
 // ============================================================================
-//  PulseOSGovernor.v11.js
-//  Global Loop, Re-entry & Multi-Instance Governor (v11-Evo)
+//  PulseOSGovernor.v12.3-SPINE-DUALBAND-PRESENCE.js
+//  Global Loop, Re-entry & Multi-Instance Governor (v12.3-SPINE)
 //  - No imports
 //  - No routing
 //  - No sending
@@ -8,13 +8,16 @@
 //  - Optional EarnReflex hook (window.PulseEarnReflex)
 //  - Optional ReflexRouter hook (window.PulseEarnReflexRouter)
 //  - Dual-band aware (symbolic + binary pulses)
+//  - Presence-aware (metadata only)
+//  - Chunk/prewarm-aware (metadata only)
 // ============================================================================
-export const GOVERNOR_CONTEXT_V11 = {
+
+export const GOVERNOR_CONTEXT_V12 = {
   organ: "PulseOSGovernor",
   layer: "C-Layer",
   role: "Global Loop & Re-entry Governor",
-  version: "11.0-Evo",
-  generation: "v11",
+  version: "12.3-SPINE",
+  generation: "v12",
   organism: "PulseOS",
   evo: {
     dualMode: true,
@@ -28,15 +31,22 @@ export const GOVERNOR_CONTEXT_V11 = {
     zeroBackend: true,
     zeroRouting: true,
     zeroMarketplace: true,
-    zeroTiming: true
+    zeroTiming: true,
+
+    // Presence / mesh / chunking (metadata-only)
+    presenceFieldAware: true,
+    bluetoothPresenceAware: true,
+    meshPresenceRelayAware: true,
+    cortexChunkingAware: true,
+    cortexPrewarmAware: true
   }
 };
 
 export const PulseOSGovernorMeta = Object.freeze({
   layer: "PulseOSGovernor",
   role: "GLOBAL_LOOP_GOVERNOR_ORGAN",
-  version: "v11.2-EVO-BINARY-MAX",
-  identity: "PulseOSGovernor-v11.2-EVO-BINARY-MAX",
+  version: "v12.3-SPINE-DUALBAND-PRESENCE",
+  identity: "PulseOSGovernor-v12.3-SPINE-DUALBAND-PRESENCE",
 
   guarantees: Object.freeze({
     deterministic: true,
@@ -73,6 +83,13 @@ export const PulseOSGovernorMeta = Object.freeze({
     binaryAware: true,
     binaryNonExecutable: true,
 
+    // Presence / mesh / chunking (metadata-only)
+    presenceFieldAware: true,
+    bluetoothPresenceAware: true,
+    meshPresenceRelayAware: true,
+    cortexChunkingAware: true,
+    cortexPrewarmAware: true,
+
     // Environment
     worldLensAware: false
   }),
@@ -92,13 +109,14 @@ export const PulseOSGovernorMeta = Object.freeze({
   }),
 
   lineage: Object.freeze({
-    root: "PulseOS-v11-EVO",
-    parent: "PulseOS-v11.2-EVO",
+    root: "PulseOS-v12.3-SPINE",
+    parent: "PulseOS-v12.0-SPINE",
     ancestry: [
       "PulseOSGovernor-v9",
       "PulseOSGovernor-v10",
       "PulseOSGovernor-v11",
-      "PulseOSGovernor-v11-Evo"
+      "PulseOSGovernor-v11-Evo",
+      "PulseOSGovernor-v11.2-EVO-BINARY-MAX"
     ]
   }),
 
@@ -111,7 +129,7 @@ export const PulseOSGovernorMeta = Object.freeze({
   architecture: Object.freeze({
     pattern: "A-B-A",
     baseline: "global loop guard → re-entry firewall → multi-instance slicing",
-    adaptive: "binary-tagged metadata surfaces",
+    adaptive: "binary-tagged metadata surfaces + presence/chunking metadata",
     return: "deterministic governed pulse + signatures"
   })
 });
@@ -219,7 +237,7 @@ export async function withOrganGuard(organName, pulseOrImpulse, fn) {
   const instanceIndex   = state.count - 1;
   const totalInstances  = state.count;
   const instanceContext = {
-    ...GOVERNOR_CONTEXT_V11,
+    ...GOVERNOR_CONTEXT_V12,
     band,
     organ: organName,
     pulseId,
@@ -233,7 +251,7 @@ export async function withOrganGuard(organName, pulseOrImpulse, fn) {
       ok: false,
       blocked: true,
       reason,
-      ...GOVERNOR_CONTEXT_V11,
+      ...GOVERNOR_CONTEXT_V12,
       band,
       organ: organName,
       pulseId,
@@ -291,7 +309,7 @@ export async function withOrganGuard(organName, pulseOrImpulse, fn) {
     return {
       ok: true,
       blocked: false,
-      ...GOVERNOR_CONTEXT_V11,
+      ...GOVERNOR_CONTEXT_V12,
       band,
       organ: organName,
       pulseId,
@@ -302,7 +320,7 @@ export async function withOrganGuard(organName, pulseOrImpulse, fn) {
     return {
       ok: false,
       blocked: false,
-      ...GOVERNOR_CONTEXT_V11,
+      ...GOVERNOR_CONTEXT_V12,
       band,
       organ: organName,
       pulseId,
@@ -323,7 +341,7 @@ export async function withModuleInitGuard(moduleName, fn) {
       ok: false,
       blocked: true,
       reason: "module_init_reentry",
-      ...GOVERNOR_CONTEXT_V11,
+      ...GOVERNOR_CONTEXT_V12,
       module: moduleName
     };
   }
@@ -334,7 +352,7 @@ export async function withModuleInitGuard(moduleName, fn) {
     return {
       ok: true,
       blocked: false,
-      ...GOVERNOR_CONTEXT_V11,
+      ...GOVERNOR_CONTEXT_V12,
       module: moduleName,
       result
     };
@@ -342,7 +360,7 @@ export async function withModuleInitGuard(moduleName, fn) {
     return {
       ok: false,
       blocked: false,
-      ...GOVERNOR_CONTEXT_V11,
+      ...GOVERNOR_CONTEXT_V12,
       module: moduleName,
       error
     };

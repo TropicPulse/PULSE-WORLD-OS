@@ -1,14 +1,14 @@
 // ============================================================================
-//  PULSE OS v12.3‑EVO+ — POWER‑PRIME CONTINUANCE ENGINE
-//  Continuance v3 • Fluctuations v3 • Outages v3 • Deterministic
-//  PURE COMPUTE. ZERO MUTATION. ZERO RANDOMNESS.
+//  PULSE OS v12.3‑PRESENCE‑EVO+ — POWER‑PRIME CONTINUANCE ENGINE
+//  Continuance v3 • Fluctuations v3 • Outages v3 • Presence • Advantage
+//  PURE COMPUTE. ZERO MUTATION. ZERO RANDOMNESS. ZERO I/O.
 // ============================================================================
 
 export const PowerContinuanceEngineMeta = Object.freeze({
   layer: "PulseAIPowerPrime",
   role: "POWER_CONTINUANCE_ENGINE",
-  version: "12.3-EVO+",
-  identity: "powerContinuanceEngine-v12.3-EVO+",
+  version: "12.3-PRESENCE-EVO+",
+  identity: "powerContinuanceEngine-v12.3-PRESENCE-EVO+",
 
   evo: Object.freeze({
     deterministic: true,
@@ -19,8 +19,44 @@ export const PowerContinuanceEngineMeta = Object.freeze({
     metabolicAware: true,
     pipelineAware: true,
     nervousAware: true,
+    presenceAware: true,
+    bandPresenceAware: true,
+    routerPresenceAware: true,
+    advantageAware: true,
+    fallbackBandAware: true,
+    chunkAware: true,
+    cacheAware: true,
+    prewarmAware: true,
+    coldStartAware: true,
     readOnly: true,
-    epoch: "12.3-EVO+"
+    epoch: "12.3-PRESENCE-EVO+"
+  }),
+
+  guarantees: Object.freeze({
+    pureCompute: true,
+    zeroMutation: true,
+    zeroRandomness: true,
+    zeroTimers: true,
+    zeroDateNow: true,
+    zeroIO: true,
+    zeroNetwork: true,
+    zeroSideEffects: true
+  }),
+
+  contract: Object.freeze({
+    input: [
+      "PowerHistorySnapshot",
+      "FusedArteriesSnapshot",
+      "OrganismSnapshot",
+      "PresenceContext",
+      "AdvantageContext"
+    ],
+    output: [
+      "ContinuanceMetricsV3",
+      "FluctuationWindowsV3",
+      "OutageWindowsV3",
+      "ContinuancePresencePlanV3"
+    ]
   })
 });
 
@@ -35,6 +71,14 @@ function norm(v) {
 
 function safeHistory(history) {
   return Array.isArray(history) ? history : [];
+}
+
+function safeNum(v, d = 0) {
+  return typeof v === "number" && !isNaN(v) ? v : d;
+}
+
+function safeObj(v, d = {}) {
+  return v && typeof v === "object" ? v : d;
 }
 
 // ============================================================================
@@ -52,16 +96,24 @@ export function computeContinuanceMetricsV3({
   const latest = power?.[0] || null;
 
   const metabolicPressure = norm(
-    fusedArteries?.metabolic?.pressure ?? organismSnapshot?.binary?.metabolic?.pressure ?? 0
+    fusedArteries?.metabolic?.pressure ??
+      organismSnapshot?.binary?.metabolic?.pressure ??
+      0
   );
   const metabolicLoad = norm(
-    fusedArteries?.metabolic?.load ?? organismSnapshot?.binary?.metabolic?.load ?? 0
+    fusedArteries?.metabolic?.load ??
+      organismSnapshot?.binary?.metabolic?.load ??
+      0
   );
   const pipelinePressure = norm(
-    fusedArteries?.pipeline?.pressure ?? organismSnapshot?.binary?.pipeline?.pressure ?? 0
+    fusedArteries?.pipeline?.pressure ??
+      organismSnapshot?.binary?.pipeline?.pressure ??
+      0
   );
   const routingPressure = norm(
-    fusedArteries?.nervous?.routingPressure ?? organismSnapshot?.binary?.nervous?.routingPressure ?? 0
+    fusedArteries?.nervous?.routingPressure ??
+      organismSnapshot?.binary?.nervous?.routingPressure ??
+      0
   );
 
   // Basic stability score from history (0–1)
@@ -160,7 +212,8 @@ export function detectOutagesV3(history, config = {}, context = {}) {
 
   for (let i = 0; i <= h.length - outageWindow; i++) {
     const window = h.slice(i, i + outageWindow);
-    const allZero = window.length > 0 && window.every((entry) => entry.value === 0);
+    const allZero =
+      window.length > 0 && window.every((entry) => entry.value === 0);
 
     if (allZero) {
       outages.push({
@@ -175,4 +228,127 @@ export function detectOutagesV3(history, config = {}, context = {}) {
   }
 
   return Object.freeze(outages);
+}
+
+// ============================================================================
+/*  CONTINUANCE PRESENCE PLAN v3
+    “Backbone of identity + PulseBand fallback / chunk / cache / prewarm hints”
+    Pure compute: takes metrics + fluctuations + outages + presence/advantage
+    and returns a deterministic plan for:
+      • fallbackBandLevel (0–3)
+      • pulseBandAggression (0–1)
+      • prewarmHints (routes/chunks to prewarm)
+      • cacheHints (what to keep hot)
+      • presenceField (band + router presence snapshot)
+*/
+// ============================================================================
+
+export function computeContinuancePresencePlanV3({
+  powerHistory,
+  fusedArteries,
+  organismSnapshot,
+  presenceContext = {},
+  advantageContext = {},
+  config = {}
+}) {
+  const metrics = computeContinuanceMetricsV3({
+    power: powerHistory,
+    history: powerHistory,
+    fusedArteries,
+    organismSnapshot
+  });
+
+  const fluctuations = detectFluctuationsV3(
+    powerHistory,
+    safeObj(config.fluctuationsConfig),
+    {}
+  );
+  const outages = detectOutagesV3(
+    powerHistory,
+    safeObj(config.outagesConfig),
+    {}
+  );
+
+  const fluctuationSeverity = norm(fluctuations.length / (powerHistory?.length || 1));
+  const outageSeverity = norm(outages.length / (powerHistory?.length || 1));
+
+  // Fallback band level: 0 = full, 3 = deepest fallback
+  let fallbackBandLevel = 0;
+  const c = metrics.continuanceScore;
+  const l = metrics.loadFactor;
+
+  if (c >= 0.8 || outageSeverity > 0.3) {
+    fallbackBandLevel = 3;
+  } else if (c >= 0.6 || outageSeverity > 0.15 || fluctuationSeverity > 0.3) {
+    fallbackBandLevel = 2;
+  } else if (c >= 0.4 || fluctuationSeverity > 0.15) {
+    fallbackBandLevel = 1;
+  }
+
+  // PulseBand aggression: how “hard” we’re allowed to push (0–1)
+  const pulseBandAggression = norm(1 - c);
+
+  // Presence field (band + router)
+  const bandPresence = {
+    band: presenceContext.band || "pulseband",
+    deviceId: presenceContext.deviceId || null,
+    hydraNodeId: presenceContext.hydraNodeId || null
+  };
+
+  const routerPresence = {
+    routerHealthy: safeBool(organismSnapshot?.binary?.router?.healthy, true),
+    proxyHealthy: safeBool(organismSnapshot?.binary?.proxy?.healthy, true)
+  };
+
+  // Chunk / cache / prewarm hints
+  const advantageScore = safeNum(advantageContext.advantageScore, 1.0);
+  const route = presenceContext.route || "/";
+
+  const prewarmHints = {
+    shouldPrewarm: c >= 0.4 || outageSeverity > 0,
+    targetRoutes: [route],
+    targetBands: ["pulseband"],
+    reason:
+      c >= 0.4
+        ? "high_continuance_urgency"
+        : outageSeverity > 0
+        ? "recent_outages"
+        : "steady_state"
+  };
+
+  const cacheHints = {
+    keepHot: c >= 0.4 || l >= 0.5,
+    priority: c >= 0.7 ? "critical" : c >= 0.4 ? "high" : "normal",
+    advantageScore
+  };
+
+  const chunkHints = {
+    chunkAggression: pulseBandAggression,
+    preferBinaryChunks: true,
+    preferPresenceChunks: c >= 0.4
+  };
+
+  return Object.freeze({
+    meta: {
+      ...PowerContinuanceEngineMeta,
+      mode: "presence-plan-v3"
+    },
+    metrics,
+    fluctuations,
+    outages,
+    fallbackBandLevel,
+    pulseBandAggression,
+    presenceField: {
+      bandPresence,
+      routerPresence
+    },
+    prewarmHints,
+    cacheHints,
+    chunkHints
+  });
+}
+
+// small helper used above
+function safeBool(v, d = false) {
+  return typeof v === "boolean" ? v : d;
 }

@@ -1,21 +1,17 @@
 // ============================================================================
-//  PulseSendImpulse-v11-Evo.js
+//  PulseSendImpulse-v12.3-Evo.js
 //  Nerve‑Spark • Pulse‑Agnostic Trigger Organ • Fires the Movement
-//  v11: Diagnostics + Signatures + Pattern Surface + Lineage Surface
-//  v11-Binary: Binary-Aware Impulse Surface (Optional, Non-Breaking)
+//  v12.3: Binary + CacheChunk + Prewarm + Presence Surfaces
 // ============================================================================
 //
 //  ROLE:
 //    • Pulse‑agnostic spark organ (v1/v2/v3).
 //    • Fires the movement via the mover organ.
 //    • Emits diagnostics + signatures for the impulse arc.
-//    • Now *binary-aware*:
-//        - If the pulse carries binary metadata (binaryPattern, binaryMode, etc.),
-//          it is surfaced in diagnostics and in the impulseSignature.
-//        - If not, behavior is unchanged.
+//    • Binary‑aware + cacheChunk‑aware + prewarm‑aware + multi‑presence‑aware.
 //
-//  SAFETY CONTRACT (v11-Evo):
-//  --------------------------
+//  SAFETY CONTRACT (v12.3-Evo):
+//  ----------------------------
 //  • No imports.
 //  • No network.
 //  • No compute beyond local helpers.
@@ -26,14 +22,14 @@
 
 
 // ============================================================================
-// ⭐ PulseRole — identifies this as the PulseSend Impulse Organ (v11-Evo)
+// ⭐ PulseRole — identifies this as the PulseSend Impulse Organ (v12.3-Evo)
 // ============================================================================
 export const PulseRole = {
   type: "Messenger",
   subsystem: "PulseSend",
   layer: "Impulse",
-  version: "11.0",
-  identity: "PulseSendImpulse-v11-Evo",
+  version: "12.3",
+  identity: "PulseSendImpulse-v12.3-Evo",
 
   evo: {
     driftProof: true,
@@ -54,32 +50,33 @@ export const PulseRole = {
     signatureReady: true,
     impulseSurfaceReady: true,
 
-    // Binary-aware impulse surface:
-    //  - understands binaryPattern / binaryMode / binaryStrength if present
-    //  - does not require them
-    binaryAwareImpulseReady: true
-  },
+    // Binary-aware impulse surface
+    binaryAwareImpulseReady: true,
 
-  routingContract: "PulseRouter-v11",
-  meshContract: "PulseMesh-v11",
-
-  pulseContract: "Pulse-v1/v2/v3",
-
-  gpuOrganContract: "PulseGPU-v11",
-  earnCompatibility: "PulseEarn-v11"
+    // 12.3+: cacheChunk / prewarm / presence
+    cacheChunkAware: true,
+    prewarmAware: true,
+    multiPresenceAware: true
+  }
 };
 
 
 // ============================================================================
 //  INTERNAL HELPERS — deterministic, tiny, pure
 // ============================================================================
-
 function computeHash(str) {
   let h = 0;
   for (let i = 0; i < str.length; i++) {
-    h = (h + str.charCodeAt(i) * (i + 1)) % 100000;
+    h = (h + str.charCodeAt(i) * (i + 5)) % 131072;
   }
-  return `h${h}`;
+  return `h12_${h}`;
+}
+
+function stableStringify(v) {
+  if (v === null || typeof v !== "object") return JSON.stringify(v);
+  if (Array.isArray(v)) return "[" + v.map(stableStringify).join(",") + "]";
+  const keys = Object.keys(v).sort();
+  return "{" + keys.map(k => JSON.stringify(k) + ":" + stableStringify(v[k])).join(",") + "}";
 }
 
 function extractBinarySurfaceFromPulse(pulse) {
@@ -110,6 +107,64 @@ function extractBinarySurfaceFromPulse(pulse) {
   };
 }
 
+
+// ============================================================================
+//  12.3+ Surfaces — cacheChunk / prewarm / presence
+// ============================================================================
+function buildCacheChunkSurface({ pulse, targetOrgan, pathway, mode }) {
+  const shape = {
+    pattern: pulse.pattern || "",
+    lineageDepth: Array.isArray(pulse.lineage) ? pulse.lineage.length : 0,
+    targetOrgan,
+    pathway,
+    mode
+  };
+  const raw = stableStringify(shape);
+  const cacheChunkKey = "impulse-cache::" + computeHash(raw);
+
+  return {
+    cacheChunkKey,
+    cacheChunkSignature: computeHash(cacheChunkKey)
+  };
+}
+
+function buildPrewarmSurface({ pulse, targetOrgan }) {
+  const priority = pulse.priority || "normal";
+  let level = "none";
+
+  if (priority === "critical" || priority === "high") level = "aggressive";
+  else if (priority === "normal") level = "medium";
+  else if (priority === "low") level = "light";
+
+  const raw = stableStringify({ priority, targetOrgan });
+  const prewarmKey = "impulse-prewarm::" + computeHash(raw);
+
+  return {
+    level,
+    prewarmKey
+  };
+}
+
+function buildPresenceSurface({ pulse, targetOrgan }) {
+  const pattern = pulse.pattern || "";
+  let scope = "local";
+
+  if (pattern.includes("/global")) scope = "global";
+  else if (pattern.includes("/page")) scope = "page";
+
+  const raw = stableStringify({ pattern, targetOrgan, scope });
+  const presenceKey = "impulse-presence::" + computeHash(raw);
+
+  return {
+    scope,
+    presenceKey
+  };
+}
+
+
+// ============================================================================
+//  IMPULSE DIAGNOSTICS (symbolic + binary + 12.3 surfaces)
+// ============================================================================
 function buildImpulseDiagnostics({ pulse, targetOrgan, pathway, mode }) {
   const pattern = pulse?.pattern || "NO_PATTERN";
   const lineageDepth = Array.isArray(pulse?.lineage) ? pulse.lineage.length : 0;
@@ -118,7 +173,6 @@ function buildImpulseDiagnostics({ pulse, targetOrgan, pathway, mode }) {
   const binarySurface = extractBinarySurfaceFromPulse(pulse);
 
   return {
-    // Core symbolic surface
     pattern,
     lineageDepth,
     pulseType,
@@ -126,17 +180,14 @@ function buildImpulseDiagnostics({ pulse, targetOrgan, pathway, mode }) {
     pathway: pathway || "NO_PATHWAY",
     mode,
 
-    // Binary surface (optional, non-breaking)
     binary: binarySurface,
 
-    // Hashes for quick indexing / SDN / logging
     patternHash: computeHash(pattern),
     lineageHash: computeHash(String(lineageDepth)),
     pulseTypeHash: computeHash(pulseType),
     organHash: computeHash(String(targetOrgan)),
-    pathwayHash: computeHash(JSON.stringify(pathway || {})),
+    pathwayHash: computeHash(stableStringify(pathway || {})),
 
-    // Binary hashes (only meaningful if hasBinary === true)
     binaryPatternHash: binarySurface.binaryPattern
       ? computeHash(binarySurface.binaryPattern)
       : null,
@@ -148,7 +199,7 @@ function buildImpulseDiagnostics({ pulse, targetOrgan, pathway, mode }) {
 
 
 // ============================================================================
-//  FACTORY — Create the Impulse Organ (v11-Evo + Binary-Aware)
+//  FACTORY — Create the Impulse Organ (v12.3-Evo + Binary/CacheChunk/Presence)
 // ============================================================================
 export function createPulseSendImpulse({ mover, log }) {
   return {
@@ -163,16 +214,34 @@ export function createPulseSendImpulse({ mover, log }) {
         mode
       });
 
+      const cacheChunkSurface = buildCacheChunkSurface({
+        pulse,
+        targetOrgan,
+        pathway,
+        mode
+      });
+
+      const prewarmSurface = buildPrewarmSurface({
+        pulse,
+        targetOrgan
+      });
+
+      const presenceSurface = buildPresenceSurface({
+        pulse,
+        targetOrgan
+      });
+
       const advantageField = pulse?.advantageField || null;
 
-      // ⭐ v11 logging surface
-      log && log("[PulseSendImpulse-v11-Evo] Spark fired", {
+      log && log("[PulseSendImpulse-v12.3-Evo] Spark fired", {
         jobId: pulse.jobId,
         diagnostics,
+        cacheChunkSurface,
+        prewarmSurface,
+        presenceSurface,
         advantageField
       });
 
-      // ⭐ v11 impulse signature (now implicitly binary-aware via diagnostics)
       const impulseSignature = computeHash(
         diagnostics.pattern +
         "::" +
@@ -182,10 +251,11 @@ export function createPulseSendImpulse({ mover, log }) {
         "::" +
         diagnostics.mode +
         "::" +
-        (diagnostics.binary.binaryPattern || "NO_BINARY_PATTERN")
+        (diagnostics.binary.binaryPattern || "NO_BINARY") +
+        "::" +
+        cacheChunkSurface.cacheChunkKey
       );
 
-      // ⭐ Trigger the mover (pure spark)
       const movement = mover.move({
         pulse,
         targetOrgan,
@@ -196,6 +266,9 @@ export function createPulseSendImpulse({ mover, log }) {
       return {
         impulseSignature,
         diagnostics,
+        cacheChunkSurface,
+        prewarmSurface,
+        presenceSurface,
         movement
       };
     }

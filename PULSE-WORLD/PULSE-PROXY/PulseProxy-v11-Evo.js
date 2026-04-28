@@ -1,26 +1,29 @@
 // ============================================================================
-//  PulseProxy-v11-Evo.js — Proxy Organism v11.0 (NON-BINARY EDITION)
+//  PulseProxy-v12.3-EVO.js — Proxy Organism v12.3+ (NON-BINARY EDITION)
 //  Evolutionary Proxy Organ • Pattern + Lineage + Shape • Route-Assist
-//  11.0: Ancestry + Loop-Theory + Tier + Advantage Field + Continuance Hint
+//  12.3: Ancestry + Loop-Theory + Tier + Advantage Field + Presence/Harmonics
+//        + DualBand Awareness + Passive Prewarm/Cache/Chunk/Remember Hints
 // ============================================================================
 //
-//  SAFETY CONTRACT (v11-Evo):
-//  --------------------------
+//  SAFETY CONTRACT (v12.3-Evo):
+//  ----------------------------
 //  • No imports.
 //  • No randomness.
 //  • No timestamps.
 //  • Pure deterministic string/shape operations.
 //  • Zero mutation outside instance.
 // ============================================================================
+
+
 // ============================================================================
-//  ProxyRole — identifies this as the Proxy v11-Evo A‑B‑A Organism (symbolic)
+//  ProxyRole — identifies this as the Proxy v12.3-Evo A‑B‑A Organism (symbolic)
 // ============================================================================
 export const ProxyRole = {
   type: "Proxy",
   subsystem: "Proxy",
   layer: "NervousSystem",
-  version: "11.0",
-  identity: "PulseProxy-v11-Evo",
+  version: "12.3-EVO",
+  identity: "PulseProxy-v12.3-Evo",
 
   evo: {
     driftProof: true,
@@ -47,21 +50,34 @@ export const ProxyRole = {
     // A‑B‑A awareness
     bandAware: true,
     waveFieldAware: true,
-    binaryFieldAware: true
+    binaryFieldAware: true,
+
+    // 12.3+ dual-band + presence/harmonics
+    dualBandCompatible: true,
+    presenceAware: true,
+    harmonicsAware: true,
+    epochStable: true,
+
+    // Passive band abilities (symbolic hints only)
+    passivePrewarm: true,
+    passiveCache: true,
+    passiveChunk: true,
+    passiveRemember: true
   },
 
-  routingContract: "PulseRouter-v11-Evo-A2",
-  meshContract: "PulseMesh-v11",
-  sendContract: "PulseSend-v11",
-  gpuOrganContract: "PulseGPU-v11",
-  minerContract: "PulseMiner-v11",
-  pulseCompatibility: "Pulse-v1/v2/v3"
+  routingContract: "PulseRouter-v12.3-Evo-A2",
+  meshContract: "PulseMesh-v12.3",
+  sendContract: "PulseSend-v12.3",
+  gpuOrganContract: "PulseGPU-v12.3",
+  minerContract: "PulseMiner-v12.3",
+  pulseCompatibility: "Pulse-v1/v2/v3/v4"
 };
+
 export const PulseProxyOrganismMeta = Object.freeze({
   layer: "PulseProxyOrganism",
   role: "SYMBOLIC_PROXY_ORGANISM",
-  version: "v11.2-EVO-MAX",
-  identity: "PulseProxy-v11.2-EVO-MAX",
+  version: "v12.3-EVO-MAX",
+  identity: "PulseProxy-v12.3-EVO-MAX",
 
   guarantees: Object.freeze({
     deterministic: true,
@@ -85,6 +101,18 @@ export const PulseProxyOrganismMeta = Object.freeze({
     bandAware: true,
     waveFieldAware: true,
     binaryFieldAware: true,
+
+    // 12.3+ dual-band + presence/harmonics
+    dualBandCompatible: true,
+    presenceAware: true,
+    harmonicsAware: true,
+    epochStable: true,
+
+    // Passive band abilities (symbolic hints only)
+    passivePrewarm: true,
+    passiveCache: true,
+    passiveChunk: true,
+    passiveRemember: true,
 
     // Safety prohibitions
     zeroRandomness: true,
@@ -123,14 +151,15 @@ export const PulseProxyOrganismMeta = Object.freeze({
 
   lineage: Object.freeze({
     root: "PulseProxy-v11",
-    parent: "PulseProxy-v11.2-EVO",
+    parent: "PulseProxy-v12.3-EVO",
     ancestry: [
       "PulseProxy-v7",
       "PulseProxy-v8",
       "PulseProxy-v9",
       "PulseProxy-v10",
       "PulseProxy-v11",
-      "PulseProxy-v11-Evo"
+      "PulseProxy-v11-Evo",
+      "PulseProxy-v11.2-EVO-MAX"
     ]
   }),
 
@@ -143,7 +172,7 @@ export const PulseProxyOrganismMeta = Object.freeze({
   architecture: Object.freeze({
     pattern: "A-B-A",
     baseline: "pattern → lineage → shape → advantage field",
-    adaptive: "binary-field + wave-field overlays",
+    adaptive: "binary-field + wave-field + presence/harmonics overlays",
     return: "deterministic organism snapshot + signatures"
   })
 });
@@ -252,8 +281,6 @@ function buildAdvantageField(pattern, lineage) {
   };
 }
 
-// Proxy-specific diagnostics + mode
-
 function computeProxyMode(tier, pattern) {
   if (tier === "criticalDegrade") return "routeAround";
   if (tier === "hardDegrade") return "heavyAssist";
@@ -287,7 +314,7 @@ function buildProxyDiagnostics(pattern, lineage, healthScore, tier) {
 
 
 // ============================================================================
-//  A‑B‑A SURFACES (symbolic proxy band)
+//  A‑B‑A SURFACES (symbolic proxy band + 12.3 presence/harmonics)
 // ============================================================================
 
 function buildBand(pattern) {
@@ -355,9 +382,59 @@ function buildWaveField(pattern, lineage) {
   };
 }
 
+// 12.3+ presence/harmonics + passive band hints (purely derived)
+function buildPresenceAndHarmonics(pattern, lineage) {
+  const depth = lineage.length || 1;
+  const patternLen = pattern.length || 1;
+
+  const presenceBandState =
+    depth > 4 ? "deep-presence" :
+    depth > 2 ? "stable-presence" :
+    "light-presence";
+
+  const harmonicDrift = Math.max(
+    0,
+    Math.min(1, (patternLen % 17) / 16)
+  );
+
+  const coherenceScore = Math.max(
+    0.2,
+    Math.min(1.0, 0.6 + depth * 0.03 - harmonicDrift * 0.1)
+  );
+
+  const pulsePrewarm = pattern.includes("send") || pattern.includes("router")
+    ? "preferred"
+    : "optional";
+
+  const pulseCacheMode = pattern.includes("mesh")
+    ? "mesh-cache"
+    : "direct-cache";
+
+  const pulseChunkMode = patternLen > 32
+    ? "multi-chunk"
+    : "single-chunk";
+
+  const pulseRemember = depth >= 3 ? "remember-strong" : "remember-weak";
+
+  const dualBandMode = pattern.includes("binary")
+    ? "binary"
+    : "symbolic";
+
+  return {
+    presenceBandState,
+    harmonicDrift,
+    coherenceScore,
+    pulsePrewarm,
+    pulseCacheMode,
+    pulseChunkMode,
+    pulseRemember,
+    dualBandMode
+  };
+}
+
 
 // ============================================================================
-//  FACTORY — Create a Proxy v11-Evo A‑B‑A Organism (symbolic)
+//  FACTORY — Create a Proxy v12.3-Evo A‑B‑A Organism (symbolic)
 // ============================================================================
 export function createProxy({
   jobId,
@@ -395,6 +472,8 @@ export function createProxy({
   const binaryField = buildBinaryField(pattern, lineage);
   const waveField   = buildWaveField(pattern, lineage);
 
+  const presence = buildPresenceAndHarmonics(pattern, lineage);
+
   return {
     ProxyRole,
     jobId,
@@ -431,6 +510,16 @@ export function createProxy({
       _abaBand: band,
       _abaBinaryDensity: binaryField.binarySurface.density,
       _abaWaveAmplitude: waveField.amplitude,
+
+      // 12.3+ presence/harmonics + passive band hints
+      presenceBandState: presence.presenceBandState,
+      harmonicDrift: presence.harmonicDrift,
+      coherenceScore: presence.coherenceScore,
+      pulsePrewarm: presence.pulsePrewarm,
+      pulseCacheMode: presence.pulseCacheMode,
+      pulseChunkMode: presence.pulseChunkMode,
+      pulseRemember: presence.pulseRemember,
+      dualBandMode: presence.dualBandMode,
 
       loopTheory: {
         routingCompletion: true,
@@ -479,6 +568,8 @@ export function evolveProxy(proxy, context = {}) {
   const binaryField = buildBinaryField(nextPattern, nextLineage);
   const waveField   = buildWaveField(nextPattern, nextLineage);
 
+  const presence = buildPresenceAndHarmonics(nextPattern, nextLineage);
+
   const { routerHint, meshHint, sendHint, healthHint, tierHint } = context || {};
 
   return {
@@ -524,6 +615,16 @@ export function evolveProxy(proxy, context = {}) {
       _abaBand: band,
       _abaBinaryDensity: binaryField.binarySurface.density,
       _abaWaveAmplitude: waveField.amplitude,
+
+      // 12.3+ presence/harmonics + passive band hints
+      presenceBandState: presence.presenceBandState,
+      harmonicDrift: presence.harmonicDrift,
+      coherenceScore: presence.coherenceScore,
+      pulsePrewarm: presence.pulsePrewarm,
+      pulseCacheMode: presence.pulseCacheMode,
+      pulseChunkMode: presence.pulseChunkMode,
+      pulseRemember: presence.pulseRemember,
+      dualBandMode: presence.dualBandMode,
 
       loopTheory: {
         routingCompletion: true,

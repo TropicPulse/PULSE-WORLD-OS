@@ -1,30 +1,32 @@
 // ============================================================================
-//  EvolutionaryThought-v11-Evo-DualStack
-//  PulseRouter v11 • Pattern + Binary Brainstem • Degradation + Route DNA Router
+//  EvolutionaryThought-v12.3-Evo-DualStack
+//  PulseRouter v12.3 • Pattern + Binary + Presence + CacheChunk Brainstem
+//  Degradation + Route DNA Router • Multi-Presence + Prewarm/Cache-Aware
 // ============================================================================
 //
 //  ROLE:
 //    • The routing brainstem for Pulse organisms.
-//    • Symbolic + Binary dual-stack ancestry.
-//    • Chooses target organs based on pattern, lineage, page, binary hints.
+//    • Symbolic + Binary + Presence + CacheChunk dual-stack ancestry.
+//    • Chooses target organs based on pattern, lineage, page, binary hints,
+//      presence hints, cacheChunk/prewarm hints, advantageField.
 //    • Maintains reflex arcs + avoidance arcs.
-//    • Maintains route DNA (symbolic + binary).
+//    • Maintains route DNA (symbolic + binary + presence + cacheChunk).
 //    • Deterministic, drift-proof, degradation-aware.
-//    • Page inheritance + binary inheritance.
+//    • Page inheritance + binary/presence/cache inheritance.
 //    • Pure memory organ — NO external mutation.
 //
 // ============================================================================
 
 
 // ============================================================================
-// ⭐ PulseRole — identifies this as the PulseRouter v11‑Evo DualStack Organ
+// ⭐ PulseRole — identifies this as the PulseRouter v12.3-Evo DualStack Organ
 // ============================================================================
 export const PulseRole = {
   type: "Router",
   subsystem: "PulseRouter",
   layer: "Brainstem",
-  version: "11.0",
-  identity: "PulseRouter-v11-Evo-DualStack",
+  version: "12.3",
+  identity: "PulseRouter-v12.3-Evo-DualStack",
 
   evo: {
     driftProof: true,
@@ -44,7 +46,15 @@ export const PulseRole = {
     pageInheritanceReady: true,
 
     // ⭐ NEW: binary-aware routing brainstem
-    binaryAware: true
+    binaryAware: true,
+
+    // ⭐ NEW: presence-aware routing brainstem
+    presenceAware: true,
+    multiPresenceAware: true,
+
+    // ⭐ NEW: cacheChunk/prewarm-aware routing brainstem
+    cacheChunkAware: true,
+    prewarmAware: true
   },
 
   pulseContract: "Pulse-v-unified",
@@ -59,7 +69,7 @@ export const PulseRole = {
 // INTERNAL HELPERS — deterministic, pure
 // ============================================================================
 
-const ROUTER_VERSION = "11.0-Evo-DualStack";
+const ROUTER_VERSION = "12.3-Evo-DualStack";
 
 function extractBinarySurface(payload = {}) {
   const binaryPattern  = payload.binaryPattern || null;
@@ -87,14 +97,115 @@ function extractBinarySurface(payload = {}) {
   };
 }
 
+// ---------------------------------------------------------------------------
+// Presence / Multi-Presence surface
+// ---------------------------------------------------------------------------
+function extractPresenceSurface(payload = {}) {
+  const presenceId       = payload.presenceId || null;
+  const presenceMode     = payload.presenceMode || null;
+  const presenceHints    = payload.presenceHints || null;
+  const multiPresence    = Array.isArray(payload.multiPresence)
+    ? payload.multiPresence.slice()
+    : (payload.multiPresence || null);
+  const presenceStrength = typeof payload.presenceStrength === "number"
+    ? payload.presenceStrength
+    : null;
+
+  const hasPresence =
+    !!presenceId ||
+    !!presenceMode ||
+    !!presenceHints ||
+    (multiPresence && (
+      (Array.isArray(multiPresence) && multiPresence.length > 0) ||
+      (!Array.isArray(multiPresence))
+    )) ||
+    presenceStrength !== null;
+
+  return {
+    hasPresence,
+    presenceId,
+    presenceMode,
+    presenceHints,
+    multiPresence,
+    presenceStrength
+  };
+}
+
+// ---------------------------------------------------------------------------
+// CacheChunk / Prewarm surface
+// ---------------------------------------------------------------------------
+function extractCacheChunkSurface(payload = {}) {
+  const cacheChunkId   = payload.cacheChunkId || null;
+  const cacheMode      = payload.cacheMode || null;
+  const cacheTier      = payload.cacheTier || null;
+  const prewarmHints   = payload.prewarmHints || null;
+  const cacheStrength  = typeof payload.cacheStrength === "number"
+    ? payload.cacheStrength
+    : null;
+
+  const hasCacheChunk =
+    !!cacheChunkId ||
+    !!cacheMode ||
+    !!cacheTier ||
+    !!prewarmHints ||
+    cacheStrength !== null;
+
+  return {
+    hasCacheChunk,
+    cacheChunkId,
+    cacheMode,
+    cacheTier,
+    prewarmHints,
+    cacheStrength
+  };
+}
+
+// ---------------------------------------------------------------------------
+// AdvantageField surface (symbolic + numeric)
+// ---------------------------------------------------------------------------
+function extractAdvantageSurface(pulse = {}) {
+  const adv = pulse.advantageField || {};
+
+  const healthScoreHint   = typeof adv.healthScore === "number" ? adv.healthScore : null;
+  const lineageDepth      = typeof adv.lineageDepth === "number" ? adv.lineageDepth : null;
+  const patternStrength   = typeof adv.patternStrength === "number" ? adv.patternStrength : null;
+  const cacheAffinity     = typeof adv.cacheAffinity === "number" ? adv.cacheAffinity : null;
+  const gpuAffinity       = typeof adv.gpuAffinity === "number" ? adv.gpuAffinity : null;
+  const presenceAffinity  = typeof adv.presenceAffinity === "number" ? adv.presenceAffinity : null;
+
+  const hasAdvantage =
+    healthScoreHint !== null ||
+    lineageDepth !== null ||
+    patternStrength !== null ||
+    cacheAffinity !== null ||
+    gpuAffinity !== null ||
+    presenceAffinity !== null;
+
+  return {
+    hasAdvantage,
+    healthScoreHint,
+    lineageDepth,
+    patternStrength,
+    cacheAffinity,
+    gpuAffinity,
+    presenceAffinity
+  };
+}
+
 function buildRouteKey(pulse) {
   const pattern = pulse.pattern || "";
   const depth = Array.isArray(pulse.lineage) ? pulse.lineage.length : 0;
   const pageId = pulse.pageId || "NO_PAGE";
 
-  const binary = extractBinarySurface(pulse.payload || {});
+  const binary    = extractBinarySurface(pulse.payload || {});
+  const presence  = extractPresenceSurface(pulse.payload || {});
+  const cacheSurf = extractCacheChunkSurface(pulse.payload || {});
 
-  return `${pattern}::d${depth}::p${pageId}::b${binary.binaryPattern || "NONE"}`;
+  const binaryKey    = binary.binaryPattern || "NONE";
+  const presenceKey  = presence.presenceId || "NONE";
+  const cacheKey     = cacheSurf.cacheChunkId || "NONE";
+
+  return `${pattern}::d${depth}::p${pageId}::b${binaryKey}::pr${presenceKey}::cc${cacheKey}`;
 }
 
 function buildPatternAncestry(pattern) {
@@ -107,11 +218,23 @@ function buildLineageSignature(lineage) {
   return lineage.join(">");
 }
 
-function inferOrganHint(pattern, binary) {
+function inferOrganHint(pattern, binary, presence, cacheSurf) {
+  // 1) Binary organHint wins
   if (binary.hasBinary && binary.binaryHints?.organHint) {
     return binary.binaryHints.organHint;
   }
 
+  // 2) Presence hints
+  if (presence.hasPresence && presence.presenceHints?.organHint) {
+    return presence.presenceHints.organHint;
+  }
+
+  // 3) CacheChunk hints (e.g., GPU-heavy cache, OS prewarm, etc.)
+  if (cacheSurf.hasCacheChunk && cacheSurf.prewarmHints?.organHint) {
+    return cacheSurf.prewarmHints.organHint;
+  }
+
+  // 4) Pattern-based inference
   const p = (pattern || "").toLowerCase();
   if (p.includes("gpu")) return "GPU";
   if (p.includes("earn")) return "Earn";
@@ -121,8 +244,10 @@ function inferOrganHint(pattern, binary) {
 }
 
 function defaultRoute(pulse) {
-  const binary = extractBinarySurface(pulse.payload || {});
-  return inferOrganHint(pulse.pattern, binary);
+  const binary    = extractBinarySurface(pulse.payload || {});
+  const presence  = extractPresenceSurface(pulse.payload || {});
+  const cacheSurf = extractCacheChunkSurface(pulse.payload || {});
+  return inferOrganHint(pulse.pattern, binary, presence, cacheSurf);
 }
 
 function classifyDegradationTier(h) {
@@ -150,8 +275,11 @@ function setRoutingMode(entry, newMode) {
 }
 
 function deriveHealthScore(pulse, context = {}) {
+  const advSurface = extractAdvantageSurface(pulse);
+
   if (typeof context.healthScore === "number") return context.healthScore;
   if (typeof pulse.healthScore === "number") return pulse.healthScore;
+  if (advSurface.healthScoreHint !== null) return advSurface.healthScoreHint;
 
   const adv = pulse.advantageField || {};
   const lineageDepth = typeof adv.lineageDepth === "number"
@@ -168,13 +296,20 @@ function deriveHealthScore(pulse, context = {}) {
 
 
 // ============================================================================
-// PAGE INHERITANCE (symbolic + binary)
+// PAGE INHERITANCE (symbolic + binary + presence + cacheChunk)
 // ============================================================================
 function buildPageKey(pulse) {
   const pattern = pulse.pattern || "";
   const pageId = pulse.pageId || "NO_PAGE";
-  const binary = extractBinarySurface(pulse.payload || {});
-  return `${pattern}::p${pageId}::b${binary.binaryPattern || "NONE"}`;
+  const binary    = extractBinarySurface(pulse.payload || {});
+  const presence  = extractPresenceSurface(pulse.payload || {});
+  const cacheSurf = extractCacheChunkSurface(pulse.payload || {});
+
+  const binaryKey    = binary.binaryPattern || "NONE";
+  const presenceKey  = presence.presenceId || "NONE";
+  const cacheKey     = cacheSurf.cacheChunkId || "NONE";
+
+  return `${pattern}::p${pageId}::b${binaryKey}::pr${presenceKey}::cc${cacheKey}`;
 }
 
 function ensurePageEntry(pageMemory, pulse, context = {}) {
@@ -183,7 +318,10 @@ function ensurePageEntry(pageMemory, pulse, context = {}) {
 
   const patternAncestry = buildPatternAncestry(pulse.pattern);
   const lineageSignature = buildLineageSignature(pulse.lineage);
-  const binary = extractBinarySurface(pulse.payload || {});
+  const binary    = extractBinarySurface(pulse.payload || {});
+  const presence  = extractPresenceSurface(pulse.payload || {});
+  const cacheSurf = extractCacheChunkSurface(pulse.payload || {});
+  const advantage = extractAdvantageSurface(pulse);
 
   if (!entry) {
     entry = {
@@ -192,7 +330,13 @@ function ensurePageEntry(pageMemory, pulse, context = {}) {
       pageId: pulse.pageId || "NO_PAGE",
       patternAncestry,
       lineageSignature,
+
+      // dual-stack surfaces
       binary,
+      presence,
+      cacheChunk: cacheSurf,
+      advantage,
+
       imports: Array.isArray(context.imports) ? context.imports.slice() : [],
       settings:
         context.settings && typeof context.settings === "object"
@@ -204,6 +348,9 @@ function ensurePageEntry(pageMemory, pulse, context = {}) {
     entry.patternAncestry = patternAncestry;
     entry.lineageSignature = lineageSignature;
     entry.binary = binary;
+    entry.presence = presence;
+    entry.cacheChunk = cacheSurf;
+    entry.advantage = advantage;
 
     if (Array.isArray(context.imports)) entry.imports = context.imports.slice();
     if (context.settings && typeof context.settings === "object") {
@@ -237,21 +384,21 @@ function resolveInheritedPageContext(pageMemory, pulse) {
     }
   }
 
-  // Pattern ancestry pages
+  // Pattern ancestry pages (symbolic-only key for inheritance baseline)
   for (let i = 0; i < patternAncestry.length; i++) {
     const subPattern = patternAncestry.slice(0, i + 1).join("/");
-    const key = `${subPattern}::pNO_PAGE::bNONE`;
+    const key = `${subPattern}::pNO_PAGE::bNONE::prNONE::ccNONE`;
     merge(pageMemory[key]);
   }
 
-  // Lineage pages
+  // Lineage pages (symbolic-only key for inheritance baseline)
   for (let i = 0; i < lineage.length; i++) {
     const ancestorPageId = lineage[i];
-    const key = `${pulse.pattern}::p${ancestorPageId}::bNONE`;
+    const key = `${pulse.pattern}::p${ancestorPageId}::bNONE::prNONE::ccNONE`;
     merge(pageMemory[key]);
   }
 
-  // Current page
+  // Current page (full dual-stack key)
   merge(pageMemory[buildPageKey(pulse)]);
 
   return { imports: mergedImports, settings: mergedSettings };
@@ -259,7 +406,7 @@ function resolveInheritedPageContext(pageMemory, pulse) {
 
 
 // ============================================================================
-// FACTORY — createPulseRouter (DualStack)
+// FACTORY — createPulseRouter (DualStack v12.3)
 // ============================================================================
 export function createPulseRouter({ log } = {}) {
   const memory = {};     // routeKey → route DNA entry
@@ -271,7 +418,11 @@ export function createPulseRouter({ log } = {}) {
 
     const patternAncestry = buildPatternAncestry(pulse.pattern);
     const lineageSignature = buildLineageSignature(pulse.lineage);
-    const binary = extractBinarySurface(pulse.payload || {});
+
+    const binary    = extractBinarySurface(pulse.payload || {});
+    const presence  = extractPresenceSurface(pulse.payload || {});
+    const cacheSurf = extractCacheChunkSurface(pulse.payload || {});
+    const advantage = extractAdvantageSurface(pulse);
 
     const h = typeof healthScore === "number" ? healthScore : 1.0;
     const tier = classifyDegradationTier(h);
@@ -296,7 +447,13 @@ export function createPulseRouter({ log } = {}) {
         modeTransition: "init",
         patternAncestry,
         lineageSignature,
+
+        // dual-stack surfaces
         binary,
+        presence,
+        cacheChunk: cacheSurf,
+        advantage,
+
         degradationHistory: [],
         bypassHistory: [],
         stabilityScore: 0.5,
@@ -308,7 +465,12 @@ export function createPulseRouter({ log } = {}) {
     } else {
       entry.patternAncestry = patternAncestry;
       entry.lineageSignature = lineageSignature;
+
       entry.binary = binary;
+      entry.presence = presence;
+      entry.cacheChunk = cacheSurf;
+      entry.advantage = advantage;
+
       entry.healthScore = h;
       entry.tier = tier;
       setRoutingMode(entry, mapTierToMode(tier));
@@ -348,7 +510,12 @@ export function createPulseRouter({ log } = {}) {
 
       patternAncestry: entry.patternAncestry,
       lineageSignature: entry.lineageSignature,
+
+      // dual-stack ancestry surfaces
       binary: entry.binary,
+      presence: entry.presence,
+      cacheChunk: entry.cacheChunk,
+      advantage: entry.advantage,
 
       inheritedImports: inherited.imports,
       inheritedSettings: inherited.settings
@@ -418,7 +585,13 @@ export function createPulseRouter({ log } = {}) {
       modeTransition: entry.modeTransition,
       patternAncestry: entry.patternAncestry.slice(),
       lineageSignature: entry.lineageSignature,
+
+      // dual-stack ancestry
       binary: entry.binary,
+      presence: entry.presence,
+      cacheChunk: entry.cacheChunk,
+      advantage: entry.advantage,
+
       stabilityScore: entry.stabilityScore,
       healingScore: entry.healingScore,
       degradationHistory: entry.degradationHistory.slice(),
@@ -446,7 +619,12 @@ export function createPulseRouter({ log } = {}) {
         modeTransition: entry.modeTransition,
         stabilityScore: entry.stabilityScore,
         healingScore: entry.healingScore,
-        binary: entry.binary
+
+        // dual-stack ancestry
+        binary: entry.binary,
+        presence: entry.presence,
+        cacheChunk: entry.cacheChunk,
+        advantage: entry.advantage
       };
     }
     return out;
@@ -460,7 +638,13 @@ export function createPulseRouter({ log } = {}) {
         pageId: entry.pageId,
         patternAncestry: entry.patternAncestry.slice(),
         lineageSignature: entry.lineageSignature,
+
+        // dual-stack ancestry
         binary: entry.binary,
+        presence: entry.presence,
+        cacheChunk: entry.cacheChunk,
+        advantage: entry.advantage,
+
         imports: entry.imports.slice(),
         settings: { ...entry.settings }
       };

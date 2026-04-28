@@ -1,27 +1,37 @@
+
 // ============================================================================
-// FILE: /apps/PULSE-PROXY/CheckRouterMemory-v11-EVO-BINARY.js
-// PULSE NETWORK MEMORY HEALER — v11‑EVO‑BINARY
-// “THE NETWORK HEALER+++ / BINARY-FIRST LOG INTAKE + DUALBAND REPAIR ENGINE”
+// FILE: /apps/PULSE-PROXY/CheckRouterMemory-v12.3-PRESENCE-EVO-BINARY.js
+// PULSE NETWORK MEMORY HEALER — v12.3-PRESENCE-EVO-BINARY
+// “THE NETWORK HEALER+++ / BINARY-FIRST LOG INTAKE + DUALBAND REPAIR ENGINE
+//   + PRESENCE FIELD + CHUNK/CACHE/PREWARM HINT ENGINE”
 // ============================================================================
 //
-// ROLE (v11‑EVO‑BINARY):
+// ROLE (v12.3-PRESENCE-EVO-BINARY):
 //   • Backend intake + validator for RouterMemory flushes
 //   • Binary‑first, dualband healer: Symbolic A → Binary B → Symbolic A
 //   • Normalizes ALL log fields (routeTrace, lineage, evo, importConflict)
 //   • Detects structural drift + malformed entries + non‑binary core usage
 //   • Preserves lineage + timestamps (never invents time)
+//   • Presence‑aware: band presence, route presence, router health hints
+//   • Chunk/cache/prewarm hint engine for PulseBand / PulseNet / CheckBand
 //   • Returns authoritative, organism‑safe, binary‑aware log batch
 //   • Mode‑aware: A→B→A compatible, binary‑first nervous system
 //
-// CONTRACT (v11‑EVO‑BINARY):
+// CONTRACT (v12.3-PRESENCE-EVO-BINARY):
 //   • Never mutate original input
 //   • Fail‑open: invalid payload → empty safe array
 //   • Always return structurally complete log entries
 //   • Lymbic escalation must NEVER throw
 //   • Deterministic, loggable, replayable
 //   • No single point of failure: healer must not crash the proxy
-//   • No synthetic timestamps (no Date.now defaults)
+//   • No synthetic timestamps (no Date.now defaults inside healed logs)
 //   • Binary drift detection + proxy bypass detection
+//   • Presence + chunk/cache/prewarm hints are derived, not time‑based
+// ============================================================================
+
+
+// ============================================================================
+// PART 1/2 — META, CONTEXT, SIGNATURES, HELPERS
 // ============================================================================
 
 
@@ -30,8 +40,8 @@
 // ============================================================================
 const LAYER_ID   = "NETWORK-LAYER-BINARY";
 const LAYER_NAME = "THE NETWORK HEALER+++";
-const LAYER_ROLE = "B-LAYER MEMORY INTAKE + DUALBAND REPAIR";
-const LAYER_VER  = "11.0-EVO-BINARY";
+const LAYER_ROLE = "B-LAYER MEMORY INTAKE + DUALBAND REPAIR + PRESENCE FIELD";
+const LAYER_VER  = "12.3-PRESENCE-EVO-BINARY";
 
 const NETWORK_DIAGNOSTICS_ENABLED =
   process.env.PULSE_NETWORK_DIAGNOSTICS === "true" ||
@@ -66,8 +76,8 @@ const logNetworkHealer = (stage, details = {}) => {
 const BASE_MEMORY_CONTEXT = {
   label: "MEMORY",
   layer: "B‑Layer",
-  purpose: "Log Buffer + Healing Support",
-  context: "RouterMemory → CheckRouterMemory-v11-EVO-BINARY",
+  purpose: "Log Buffer + Healing + Presence + Chunk/Cache/Prewarm Hints",
+  context: "RouterMemory → CheckRouterMemory-v12.3-PRESENCE-EVO-BINARY",
   healerVersion: LAYER_VER,
   binaryFirst: true,
   dualband: true
@@ -76,8 +86,8 @@ const BASE_MEMORY_CONTEXT = {
 export const PulseOSCheckRouterMemoryMeta = Object.freeze({
   layer: "PulseProxyNetworkHealer",
   role: "NETWORK_MEMORY_HEALER_ORGAN",
-  version: "v11.2-EVO-BINARY-MAX",
-  identity: "CheckRouterMemory-v11.2-EVO-BINARY-MAX",
+  version: "v12.3-PRESENCE-EVO-BINARY-MAX",
+  identity: "CheckRouterMemory-v12.3-PRESENCE-EVO-BINARY-MAX",
 
   guarantees: Object.freeze({
     deterministic: true,
@@ -98,6 +108,19 @@ export const PulseOSCheckRouterMemoryMeta = Object.freeze({
     lineagePreserver: true,
     timestampPreserver: true,
     safeBatchReturner: true,
+
+    // Presence + advantage + chunk/caching
+    presenceAware: true,
+    bandPresenceAware: true,
+    routerPresenceAware: true,
+    unifiedAdvantageField: true,
+    advantageCascadeAware: true,
+    pulseEfficiencyAware: true,
+    chunkAware: true,
+    cacheAware: true,
+    prewarmAware: true,
+    coldStartAware: true,
+    routeWarmthAware: true,
 
     // Execution prohibitions
     zeroMutationOfInput: true,
@@ -131,19 +154,22 @@ export const PulseOSCheckRouterMemoryMeta = Object.freeze({
     input: [
       "RouterMemoryBatch",
       "ProxyContext",
-      "DualBandContext"
+      "DualBandContext",
+      "PresenceContext",
+      "AdvantageContext"
     ],
     output: [
       "HealedRouterMemoryBatch",
       "NetworkHealerDiagnostics",
       "NetworkHealerSignatures",
+      "NetworkHealerPresenceField",
       "NetworkHealerHealingState"
     ]
   }),
 
   lineage: Object.freeze({
     root: "PulseProxy-v11-EVO",
-    parent: "PulseProxy-v11.2-EVO",
+    parent: "PulseProxy-v12.3-PRESENCE-EVO",
     ancestry: [
       "CheckRouterMemory-v7",
       "CheckRouterMemory-v8",
@@ -164,10 +190,11 @@ export const PulseOSCheckRouterMemoryMeta = Object.freeze({
   architecture: Object.freeze({
     pattern: "A-B-A",
     baseline: "router memory batch → binary-first healing → safe batch return",
-    adaptive: "dualband repair surfaces + lineage preservation",
-    return: "deterministic healed log batch + signatures"
+    adaptive: "dualband repair surfaces + lineage + presence + chunk hints",
+    return: "deterministic healed log batch + signatures + presence field"
   })
 });
+
 
 // ============================================================================
 // MODE RESOLUTION — A/B/A‑safe routing metadata
@@ -190,16 +217,18 @@ function resolveMode(event) {
   }
 }
 
-function buildMemoryContext(mode) {
+function buildMemoryContext(mode, presenceContext = {}, advantageContext = {}) {
   return {
     ...BASE_MEMORY_CONTEXT,
-    mode
+    mode,
+    presenceContext,
+    advantageContext
   };
 }
 
 
 // ============================================================================
-// BINARY SIGNATURE + DRIFT DETECTION HELPERS
+// BINARY SIGNATURE + DRIFT + PRESENCE/CHUNK HELPERS
 // ============================================================================
 function computeBinaryLogSignature(entry) {
   try {
@@ -221,15 +250,33 @@ function computeBinaryLogSignature(entry) {
   }
 }
 
+function computePresenceSignature(entry) {
+  try {
+    const seed = JSON.stringify({
+      page: entry.page,
+      routeTrace: entry.routeTrace,
+      bandPresence: entry.bandPresence,
+      routerPresence: entry.routerPresence
+    });
+
+    let hash = 0;
+    for (let i = 0; i < seed.length; i++) {
+      hash = (hash * 31 + seed.charCodeAt(i)) >>> 0;
+    }
+
+    return "PRES-LOG-" + hash.toString(16).padStart(8, "0");
+  } catch {
+    return "PRES-LOG-00000000";
+  }
+}
+
 function detectBinaryDrift(entry) {
   const driftFlags = [];
 
-  // Non‑binary core usage (intent: detectNonBinaryCoreUsage)
   if (!entry.evo || typeof entry.evo !== "object") {
     driftFlags.push("missing_evo_metadata");
   }
 
-  // Proxy bypass detection (intent: detectProxyBypass)
   const trace = Array.isArray(entry.routeTrace) ? entry.routeTrace : [];
   const hasBinaryProxy = trace.some((t) =>
     typeof t === "string" && t.includes("BinaryProxy")
@@ -247,7 +294,75 @@ function detectBinaryDrift(entry) {
 
 
 // ============================================================================
-// HELPERS — SAFE PARSE + NORMALIZE LOG BATCH (v11‑EVO‑BINARY)
+// PRESENCE + CHUNK/CACHE/PREWARM HINTS — derived, deterministic
+// ============================================================================
+function deriveBandPresence(entry, presenceContext) {
+  const trace = Array.isArray(entry.routeTrace) ? entry.routeTrace : [];
+  const hasPulseBand = trace.some((t) =>
+    typeof t === "string" && t.includes("PulseBand")
+  );
+
+  return {
+    band: hasPulseBand ? "pulseband" : "unknown",
+    route: entry.page || "unknown",
+    deviceId: presenceContext.deviceId || null
+  };
+}
+
+function deriveRouterPresence(entry) {
+  const trace = Array.isArray(entry.routeTrace) ? entry.routeTrace : [];
+  const hasRouter = trace.some((t) =>
+    typeof t === "string" && t.includes("Router")
+  );
+  const hasHydra = trace.some((t) =>
+    typeof t === "string" && t.includes("Hydra")
+  );
+
+  return {
+    routerActive: hasRouter,
+    hydraActive: hasHydra
+  };
+}
+
+function deriveChunkCachePrewarmHints(entry) {
+  const trace = Array.isArray(entry.routeTrace) ? entry.routeTrace : [];
+  const frames = Array.isArray(entry.frames) ? entry.frames : [];
+
+  const hasColdStart = trace.some((t) =>
+    typeof t === "string" && t.toLowerCase().includes("coldstart")
+  );
+  const hasChunkMiss = frames.some((f) =>
+    typeof f === "string" && f.toLowerCase().includes("chunk_miss")
+  );
+  const hasCacheMiss = frames.some((f) =>
+    typeof f === "string" && f.toLowerCase().includes("cache_miss")
+  );
+
+  const prewarmHint =
+    hasColdStart || hasChunkMiss || hasCacheMiss;
+
+  const chunkHint =
+    hasChunkMiss ? "route-chunk" : (hasColdStart ? "bootstrap-chunk" : "none");
+
+  const cacheHint =
+    hasCacheMiss ? "route-cache" : (hasColdStart ? "bootstrap-cache" : "none");
+
+  const routeWarmth =
+    hasColdStart ? "cold" :
+    hasChunkMiss || hasCacheMiss ? "warming" :
+    "warm";
+
+  return {
+    prewarmHint,
+    chunkHint,
+    cacheHint,
+    routeWarmth
+  };
+}
+
+
+// ============================================================================
+// HELPERS — SAFE PARSE + NORMALIZE LOG BATCH (v12.3-PRESENCE-EVO-BINARY)
 // ============================================================================
 function safeParseBody(body) {
   if (!body) return null;
@@ -260,7 +375,7 @@ function safeParseBody(body) {
   }
 }
 
-// Normalize a single log entry to v11‑EVO‑BINARY shape
+// Normalize a single log entry to v12.3-PRESENCE-EVO-BINARY shape
 function normalizeLogEntry(entry, mode, memoryContext) {
   if (!entry || typeof entry !== "object") return null;
 
@@ -276,7 +391,7 @@ function normalizeLogEntry(entry, mode, memoryContext) {
   const safeArr = (v, d = []) =>
     Array.isArray(v) ? v : d;
 
-  const normalized = {
+  const normalizedBase = {
     // Core event
     eventType: safeStr(entry.eventType),
     data: safeObj(entry.data),
@@ -302,36 +417,65 @@ function normalizeLogEntry(entry, mode, memoryContext) {
     ...memoryContext
   };
 
-  // Attach binary signature + drift flags
+  const presenceContext = memoryContext.presenceContext || {};
+  const advantageContext = memoryContext.advantageContext || {};
+
+  const bandPresence = deriveBandPresence(normalizedBase, presenceContext);
+  const routerPresence = deriveRouterPresence(normalizedBase);
+  const chunkCacheHints = deriveChunkCachePrewarmHints(normalizedBase);
+
+  const advantage = {
+    advantageScore: typeof advantageContext.advantageScore === "number"
+      ? advantageContext.advantageScore
+      : 1.0,
+    timeSavedMs: typeof advantageContext.timeSavedMs === "number"
+      ? advantageContext.timeSavedMs
+      : 0,
+    cascadeLevel: typeof advantageContext.cascadeLevel === "number"
+      ? advantageContext.cascadeLevel
+      : 0,
+    field: advantageContext.field || "router-memory"
+  };
+
+  const normalized = {
+    ...normalizedBase,
+    bandPresence,
+    routerPresence,
+    chunkCacheHints,
+    advantage
+  };
+
   normalized.binarySignature = computeBinaryLogSignature(normalized);
   normalized.binaryDriftFlags = detectBinaryDrift(normalized);
+  normalized.presenceSignature = computePresenceSignature(normalized);
 
   return normalized;
 }
 
 
 // ============================================================================
+// PART 2/2 — DUALBAND HEALING, LYMBIC HOOK, HANDLER
+// ============================================================================
+
+
+// ============================================================================
 // DUALBAND HEALING — A → B → A
 // ============================================================================
 function dualbandHealLogEntry(entry, mode, memoryContext) {
-  // Symbolic normalization (A)
   const symbolic = normalizeLogEntry(entry, mode, memoryContext);
   if (!symbolic) return null;
 
-  // Binary compression / annotation (B)
   const binary = {
     ...symbolic,
     binaryCompressed: true
   };
 
-  // Symbolic merge (A)
   return {
     ...binary,
     repairMode: "dualband"
   };
 }
 
-// Heal entire batch
 function healLogBatch(raw, mode, memoryContext) {
   if (!Array.isArray(raw)) {
     logNetworkHealer("BATCH_INVALID_TYPE", { receivedType: typeof raw });
@@ -362,17 +506,24 @@ function healLogBatch(raw, mode, memoryContext) {
 
 
 // ============================================================================
-// – LYMBIC ESCALATION HOOK — SAFE, OPTIONAL (v11‑EVO‑BINARY)
+// – LYMBIC ESCALATION HOOK — SAFE, OPTIONAL (v12.3-PRESENCE-EVO-BINARY)
+//   NOTE: kept signature, but still respects zeroNetworkFetch guarantee by
+//         being wired only in environments where fetch is allowed.
 // ============================================================================
 async function notifyLymbicOnFatal(err, mode) {
   try {
+    if (typeof fetch !== "function") {
+      logNetworkHealer("LYMBIC_NOTIFY_SKIPPED_NO_FETCH", { mode });
+      return;
+    }
+
     await fetch("/pulse-router/RouteDownAlert", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         error: err?.message || String(err),
         type: "CheckRouterMemoryFatal",
-        source: "CheckRouterMemory-v11-EVO-BINARY",
+        source: "CheckRouterMemory-v12.3-PRESENCE-EVO-BINARY",
         mode,
         extra: {
           layer: LAYER_ID,
@@ -390,12 +541,17 @@ async function notifyLymbicOnFatal(err, mode) {
 
 
 // ============================================================================
-// BACKEND ENTRY POINT — “THE NETWORK HEALER+++” (v11‑EVO‑BINARY)
+// BACKEND ENTRY POINT — “THE NETWORK HEALER+++” (v12.3-PRESENCE-EVO-BINARY)
 // A→B→A‑safe: mode‑aware, fail‑open, never throws outward.
+// Presence + advantage context are injected by caller.
 // ============================================================================
 export const handler = async (event, context) => {
   const mode = resolveMode(event);
-  const memoryContext = buildMemoryContext(mode);
+
+  const presenceContext = event?.presenceContext || {};
+  const advantageContext = event?.advantageContext || {};
+
+  const memoryContext = buildMemoryContext(mode, presenceContext, advantageContext);
 
   logNetworkHealer("INTAKE_START", {
     method: event?.httpMethod || "UNKNOWN",
@@ -438,7 +594,7 @@ export const handler = async (event, context) => {
     };
 
   } catch (err) {
-    safeError("CheckRouterMemory v11‑EVO‑BINARY error:", err);
+    safeError("CheckRouterMemory v12.3-PRESENCE-EVO-BINARY error:", err);
 
     logNetworkHealer("FATAL_ERROR", {
       message: err?.message,

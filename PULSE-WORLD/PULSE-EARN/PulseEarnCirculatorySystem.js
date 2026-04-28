@@ -1,27 +1,29 @@
 // ============================================================================
-// FILE: tropic-pulse-functions/apps/PULSE-EARN/PulseEarnCirculatorySystem-v11-Evo.js
-// LAYER: THE CIRCULATORY SYSTEM (v11-Evo)
-// (Deterministic Reflex + Routing + Weighting + Dual-Band + Loop/Wave Fields)
+// FILE: tropic-pulse-functions/apps/PULSE-EARN/PulseEarnCirculatorySystem-v12.3-PRESENCE-EVO+.js
+// LAYER: THE CIRCULATORY SYSTEM (v12.3-PRESENCE-EVO+)
+// (Deterministic Reflex + Routing + Weighting + Presence + Advantage + Multi-Instance)
 // ============================================================================
 //
-// ROLE (v11-Evo):
+// ROLE (v12.3-PRESENCE-EVO+):
 //   THE CIRCULATORY SYSTEM — Pulse‑Earn’s autonomic routing center.
-//   • Evaluates marketplaces deterministically (no real ping).
+//   • Deterministically evaluates marketplaces (no real ping).
 //   • Filters unhealthy ones using deterministic healthScore.
 //   • Fetches jobs deterministically (no async, no network).
 //   • Applies reputation weighting (synaptic strength).
+//   • Applies presence/mesh/castle/expansion/globalHints advantage.
+//   • Applies multi-instance + factoring-aware routing.
 //   • Selects the best job for the device (autonomic prioritization).
-//   • Emits v11‑Evo routing signatures + loop/wave fields.
+//   • Emits v12.3‑Presence‑EVO+ routing signatures + loop/wave fields.
 //   • Supports dual-band routing (symbolic + binary) as metadata-only.
 //
-// PURPOSE (v11-Evo):
+// PURPOSE (v12.3-PRESENCE-EVO+):
 //   • Provide deterministic, drift‑proof job routing.
 //   • Guarantee safe multi‑marketplace discovery.
 //   • Maintain healing metadata for the Immune System.
 //   • Preserve autonomic routing + synaptic weighting.
-//   • Expose routing loop/wave fields + band-aware advantage.
+//   • Expose routing loop/wave fields + presence/advantage surfaces.
 //
-// CONTRACT (v11-Evo):
+// CONTRACT (v12.3-PRESENCE-EVO+):
 //   • PURE ROUTER — no AI layers, no translation, no memory model.
 //   • READ‑ONLY except for healing metadata.
 //   • NO eval(), NO Function(), NO dynamic imports.
@@ -29,12 +31,14 @@
 //   • NO timestamps, NO randomness, NO async.
 //   • Deterministic job selection only.
 //   • Dual-band is metadata-only (no non-deterministic branching).
+//   • Presence/advantage/globalHints are metadata-only.
 // ============================================================================
+
 export const PulseEarnCirculatorySystemMeta = Object.freeze({
   layer: "PulseEarnCirculatorySystem",
   role: "CIRCULATORY_ORGAN",
-  version: "v11.2-EVO",
-  identity: "PulseEarnCirculatorySystem-v11.2-EVO",
+  version: "v12.3-PRESENCE-EVO+",
+  identity: "PulseEarnCirculatorySystem-v12.3-PRESENCE-EVO+",
 
   guarantees: Object.freeze({
     deterministic: true,
@@ -48,7 +52,20 @@ export const PulseEarnCirculatorySystemMeta = Object.freeze({
     healingMetadataAware: true,
     loopFieldAware: true,
     waveFieldAware: true,
-    worldLensAware: false
+
+    // Presence-EVO+ advantages
+    presenceAware: true,
+    advantageAware: true,
+    fallbackBandAware: true,
+    chunkAware: true,
+    cacheAware: true,
+    prewarmAware: true,
+    coldStartAware: true,
+    expansionAware: true,
+    meshAware: true,
+    castleAware: true,
+    regionAware: true,
+    dualbandSafe: true
   }),
 
   contract: Object.freeze({
@@ -57,18 +74,22 @@ export const PulseEarnCirculatorySystemMeta = Object.freeze({
       "MarketplaceHealth",
       "DualBandContext",
       "ReputationWeights",
-      "RoutingCycleState"
+      "RoutingCycleState",
+      "GlobalHintsPresenceField"
     ],
     output: [
       "BestJobSelection",
       "RoutingDiagnostics",
-      "RoutingSignatures"
+      "RoutingSignatures",
+      "RoutingPresenceField",
+      "RoutingAdvantageField",
+      "RoutingComputeProfile"
     ]
   }),
 
   lineage: Object.freeze({
     root: "PulseOS-v11-EVO",
-    parent: "PulseEarn-v11.2-EVO",
+    parent: "PulseEarn-v12.3-PRESENCE-EVO+",
     ancestry: [
       "PulseEarnCirculatorySystem-v10",
       "PulseEarnCirculatorySystem-v11",
@@ -85,11 +106,10 @@ export const PulseEarnCirculatorySystemMeta = Object.freeze({
   architecture: Object.freeze({
     pattern: "A-B-A",
     baseline: "deterministic routing + health evaluation",
-    adaptive: "reputation weighting + advantage surfaces",
+    adaptive: "presence/advantage-aware weighting + multi-instance factoring",
     return: "deterministic best-job selection"
   })
 });
-
 
 // ============================================================================
 // Dual-Band Constants — Symbolic + Binary (metadata-only)
@@ -104,9 +124,8 @@ function normalizeBand(band) {
   return b === CIRC_BANDS.BINARY ? CIRC_BANDS.BINARY : CIRC_BANDS.SYMBOLIC;
 }
 
-
 // ============================================================================
-// Healing Metadata — Circulatory Reflex Log (v11-Evo)
+// Healing Metadata — Circulatory Reflex Log (v12.3-PRESENCE-EVO+)
 // ============================================================================
 const circulatoryHealing = {
   lastHealthError: null,
@@ -124,16 +143,20 @@ const circulatoryHealing = {
   lastSelectionSignature: null,
   lastRoutingCycleSignature: null,
 
-  // v11-Evo+ — band + loop/wave/advantage fields
   lastBand: CIRC_BANDS.SYMBOLIC,
   lastLoopField: null,
   lastWaveField: null,
-  lastAdvantageField: null
+  lastAdvantageField: null,
+
+  // Presence-EVO+ additions
+  lastPresenceField: null,
+  lastAdvantagePresenceField: null,
+  lastHintsField: null,
+  lastComputeProfile: null
 };
 
-
 // ============================================================================
-// Deterministic Hash Helper — v11-Evo
+// Deterministic Hash Helper
 // ============================================================================
 function computeHash(str) {
   let h = 0;
@@ -144,9 +167,8 @@ function computeHash(str) {
   return `h${h}`;
 }
 
-
 // ============================================================================
-// Signature Builders — v11-Evo
+// Signature Builders
 // ============================================================================
 function buildHealthSignature(list) {
   return computeHash(`HEALTH::${list.join(",")}`);
@@ -163,7 +185,6 @@ function buildSelectionSignature(jobId) {
 function buildRoutingCycleSignature(cycle, band) {
   return computeHash(`ROUTE_CYCLE::${cycle}::${normalizeBand(band)}`);
 }
-
 
 // ============================================================================
 // Loop / Wave / Advantage Fields (Routing-Level)
@@ -205,9 +226,107 @@ function buildAdvantageFieldForRouting(jobs, band) {
   };
 }
 
+// ============================================================================
+// Presence / Advantage / Hints / Compute Profile (v12.3)
+// ============================================================================
+function buildPresenceField(context = {}) {
+  const gh = context.globalHints || {};
+  const pf = context.presenceField || {};
+  const mesh = context.meshSignals || {};
+  const castle = context.castleSignals || {};
+  const region = gh.regionContext || {};
+
+  return Object.freeze({
+    bandPresence: pf.bandPresence || gh.presenceContext?.bandPresence || "unknown",
+    routerPresence: pf.routerPresence || gh.presenceContext?.routerPresence || "unknown",
+    devicePresence: pf.devicePresence || gh.presenceContext?.devicePresence || "unknown",
+    meshPresence: pf.meshPresence || mesh.meshStrength || "unknown",
+    castlePresence: pf.castlePresence || castle.castlePresence || "unknown",
+    regionPresence: pf.regionPresence || region.regionTag || "unknown",
+    regionId: region.regionId || "unknown-region",
+    castleId: castle.castleId || "unknown-castle",
+    castleLoadLevel: castle.loadLevel || "unknown",
+    meshStrength: mesh.meshStrength || "unknown",
+    meshPressureIndex: mesh.meshPressureIndex || 0
+  });
+}
+
+function buildAdvantagePresenceField(context = {}) {
+  const gh = context.globalHints || {};
+  const adv = gh.advantageContext || {};
+
+  return Object.freeze({
+    advantageScore: adv.score ?? null,
+    advantageBand: adv.band ?? "neutral",
+    advantageTier: adv.tier ?? "unknown"
+  });
+}
+
+function buildHintsField(context = {}) {
+  const gh = context.globalHints || {};
+  return Object.freeze({
+    fallbackBandLevel: gh.fallbackBandLevel ?? 0,
+    chunkHints: gh.chunkHints || {},
+    cacheHints: gh.cacheHints || {},
+    prewarmHints: gh.prewarmHints || {},
+    coldStartHints: gh.coldStartHints || {}
+  });
+}
+
+function clamp01(x) {
+  if (x == null || Number.isNaN(x)) return 0;
+  return Math.max(0, Math.min(1, x));
+}
+
+function normalizeCachePriority(p) {
+  if (!p) return "normal";
+  const v = String(p).toLowerCase();
+  if (v === "critical" || v === "high" || v === "low") return v;
+  return "normal";
+}
+
+function deriveFactoringSignal({ meshPressureIndex = 0, cachePriority = "normal", prewarmNeeded = false }) {
+  const pressure = clamp01(meshPressureIndex / 100);
+  const highPressure = pressure >= 0.7;
+  const criticalCache = cachePriority === "critical";
+  if (criticalCache || prewarmNeeded) return 1;
+  if (highPressure) return 1;
+  return 0;
+}
+
+function buildComputeProfile({ band, context = {} }) {
+  const b = normalizeBand(band);
+  const hintsField = buildHintsField(context);
+  const cachePriority = normalizeCachePriority(hintsField.cacheHints.priority);
+  const prewarmNeeded = !!hintsField.prewarmHints.shouldPrewarm;
+  const meshPressureIndex = (context.meshSignals && context.meshSignals.meshPressureIndex) || 0;
+
+  const factoringSignal = deriveFactoringSignal({
+    meshPressureIndex,
+    cachePriority,
+    prewarmNeeded
+  });
+
+  const serverHints = context.serverAdvantageHints || {};
+
+  return Object.freeze({
+    routeBand: b,
+    fallbackBandLevel: hintsField.fallbackBandLevel,
+    chunkAggression: hintsField.chunkHints.chunkAggression ?? 0,
+    cachePriority,
+    prewarmNeeded,
+    binaryPreferred: b === CIRC_BANDS.BINARY,
+    symbolicPreferred: b === CIRC_BANDS.SYMBOLIC,
+    factoringSignal,
+    hotStateReuse: serverHints.hotStateReuse ?? true,
+    multiInstanceBatching: serverHints.multiInstanceBatching ?? true,
+    serverPlanCache: serverHints.planCache ?? true,
+    serverBinaryReuse: serverHints.binaryReuse ?? true
+  });
+}
 
 // ============================================================================
-// Deterministic Marketplace Health Evaluation (NO NETWORK)
+// Deterministic Marketplace Health Evaluation
 // ============================================================================
 function evaluateMarketplaceHealth(marketplace) {
   const h = typeof marketplace.healthScore === "number"
@@ -220,7 +339,6 @@ function evaluateMarketplaceHealth(marketplace) {
   if (h >= 0.15) return "hard";
   return "critical";
 }
-
 
 // ============================================================================
 // 1. discoverHealthyMarketplaces — Deterministic Sensory Reflex
@@ -249,7 +367,6 @@ export function discoverHealthyMarketplaces(marketplaces) {
     return [];
   }
 }
-
 
 // ============================================================================
 // 2. fetchJobsFromMarketplaces — Deterministic Intake
@@ -280,9 +397,8 @@ export function fetchJobsFromMarketplaces(marketplaces) {
   }
 }
 
-
 // ============================================================================
-// INTERNAL: Deterministic Device Profile (v11-Evo)
+// INTERNAL: Deterministic Device Profile
 // ============================================================================
 function getDeviceProfile() {
   return {
@@ -292,9 +408,8 @@ function getDeviceProfile() {
   };
 }
 
-
 // ============================================================================
-// INTERNAL: Deterministic Job Capability Scoring (v11-Evo)
+// INTERNAL: Deterministic Job Capability Scoring
 // ============================================================================
 function scoreJobForDevice(job, device) {
   const cpu = job.cpuRequired ?? 0;
@@ -306,26 +421,31 @@ function scoreJobForDevice(job, device) {
   return (cpuScore + memScore) / 2;
 }
 
-
 // ============================================================================
-// INTERNAL: Deterministic Band-Aware Job Score (v11-Evo)
+// INTERNAL: Deterministic Band-Aware Job Score
 // ============================================================================
-function scoreJobWithBand(job, device, band) {
+function scoreJobWithBand(job, device, band, context = {}) {
   const baseCapability = scoreJobForDevice(job, device);
   const rep = job.reputationWeight ?? 0.5;
 
   const b = normalizeBand(band);
   const bandBias = b === CIRC_BANDS.BINARY ? 1.1 : 1.0;
 
-  // deterministic, multiplicative advantage field
-  return baseCapability * (0.5 + rep) * bandBias;
+  // Presence-EVO+ advantage multipliers
+  const presenceField = buildPresenceField(context);
+  const meshPressure = presenceField.meshPressureIndex || 0;
+  const fallbackBandLevel = (context.globalHints && context.globalHints.fallbackBandLevel) || 0;
+
+  const pressureBias = 1 + (meshPressure / 300); // small deterministic bias
+  const fallbackBias = 1 - (fallbackBandLevel * 0.05);
+
+  return baseCapability * (0.5 + rep) * bandBias * pressureBias * fallbackBias;
 }
 
-
 // ============================================================================
-// 3. selectBestJob — Deterministic Autonomic Prioritization (Band-Aware)
+// 3. selectBestJob — Deterministic Autonomic Prioritization (Presence-EVO+)
 // ============================================================================
-export function selectBestJob(jobs, band = CIRC_BANDS.SYMBOLIC) {
+export function selectBestJob(jobs, band = CIRC_BANDS.SYMBOLIC, context = {}) {
   try {
     const device = getDeviceProfile();
     const normalizedBand = normalizeBand(band);
@@ -336,7 +456,7 @@ export function selectBestJob(jobs, band = CIRC_BANDS.SYMBOLIC) {
     for (const job of jobs) {
       if (!job.id || !job.marketplaceId) continue;
 
-      const finalScore = scoreJobWithBand(job, device, normalizedBand);
+      const finalScore = scoreJobWithBand(job, device, normalizedBand, context);
 
       if (finalScore > bestScore) {
         bestScore = finalScore;
@@ -357,24 +477,29 @@ export function selectBestJob(jobs, band = CIRC_BANDS.SYMBOLIC) {
   }
 }
 
-
 // ============================================================================
-// 4. getNextJob — Full Autonomic Routing Cycle (Deterministic + Dual-Band)
+// 4. getNextJob — Full Autonomic Routing Cycle (Presence-EVO+)
 // ============================================================================
-//
-// band parameter:
-//   • "symbolic" — planning-first routing
-//   • "binary"   — compression-first routing (metadata-only bias)
-//
-export function getNextJob(allMarketplaces, getMarketplaceReputation, band = CIRC_BANDS.SYMBOLIC) {
+export function getNextJob(allMarketplaces, getMarketplaceReputation, band = CIRC_BANDS.SYMBOLIC, context = {}) {
   const normalizedBand = normalizeBand(band);
   circulatoryHealing.lastBand = normalizedBand;
 
   try {
+    const presenceField = buildPresenceField(context);
+    const advantagePresenceField = buildAdvantagePresenceField(context);
+    const hintsField = buildHintsField(context);
+    const computeProfile = buildComputeProfile({ band: normalizedBand, context });
+
     const healthy = discoverHealthyMarketplaces(allMarketplaces);
     if (healthy.length === 0) {
       circulatoryHealing.lastRoutingCycleSignature =
         buildRoutingCycleSignature(circulatoryHealing.cycleCount, normalizedBand);
+
+      circulatoryHealing.lastPresenceField = presenceField;
+      circulatoryHealing.lastAdvantagePresenceField = advantagePresenceField;
+      circulatoryHealing.lastHintsField = hintsField;
+      circulatoryHealing.lastComputeProfile = computeProfile;
+
       return null;
     }
 
@@ -382,25 +507,38 @@ export function getNextJob(allMarketplaces, getMarketplaceReputation, band = CIR
     if (jobs.length === 0) {
       circulatoryHealing.lastRoutingCycleSignature =
         buildRoutingCycleSignature(circulatoryHealing.cycleCount, normalizedBand);
+
+      circulatoryHealing.lastPresenceField = presenceField;
+      circulatoryHealing.lastAdvantagePresenceField = advantagePresenceField;
+      circulatoryHealing.lastHintsField = hintsField;
+      circulatoryHealing.lastComputeProfile = computeProfile;
+
       return null;
     }
-
     const weightedJobs = jobs.map(job => {
       const rep = getMarketplaceReputation(job.marketplaceId);
       return { ...job, reputationWeight: rep };
     });
 
-    const best = selectBestJob(weightedJobs, normalizedBand);
+    // --- Presence‑EVO+ Autonomic Prioritization ---
+    const best = selectBestJob(weightedJobs, normalizedBand, context);
 
     // loop/wave/advantage fields for this routing cycle
     const loopField = buildLoopField(weightedJobs, normalizedBand);
     const waveField = buildWaveField(weightedJobs, normalizedBand);
     const advantageField = buildAdvantageFieldForRouting(weightedJobs, normalizedBand);
 
+    // store presence‑EVO+ surfaces
     circulatoryHealing.lastLoopField = loopField;
     circulatoryHealing.lastWaveField = waveField;
     circulatoryHealing.lastAdvantageField = advantageField;
 
+    circulatoryHealing.lastPresenceField = presenceField;
+    circulatoryHealing.lastAdvantagePresenceField = advantagePresenceField;
+    circulatoryHealing.lastHintsField = hintsField;
+    circulatoryHealing.lastComputeProfile = computeProfile;
+
+    // routing cycle signature
     circulatoryHealing.lastRoutingCycleSignature =
       buildRoutingCycleSignature(circulatoryHealing.cycleCount, normalizedBand);
 
@@ -408,15 +546,21 @@ export function getNextJob(allMarketplaces, getMarketplaceReputation, band = CIR
 
   } catch (err) {
     circulatoryHealing.lastSelectionError = err.message;
+
     circulatoryHealing.lastRoutingCycleSignature =
       buildRoutingCycleSignature(circulatoryHealing.cycleCount, normalizedBand);
+
+    // preserve presence‑EVO+ surfaces even on failure
+    circulatoryHealing.lastPresenceField = buildPresenceField(context);
+    circulatoryHealing.lastAdvantagePresenceField = buildAdvantagePresenceField(context);
+    circulatoryHealing.lastHintsField = buildHintsField(context);
+    circulatoryHealing.lastComputeProfile = buildComputeProfile({ band: normalizedBand, context });
+
     return null;
   }
 }
-
-
 // ============================================================================
-// Export Healing Metadata — Circulatory Reflex Report (v11-Evo)
+// Export Healing Metadata — Circulatory Reflex Report (v12.3-PRESENCE-EVO+)
 // ============================================================================
 export function getPulseEarnCirculatorySystemHealingState() {
   return { ...circulatoryHealing };

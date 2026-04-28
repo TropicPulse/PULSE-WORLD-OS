@@ -1,13 +1,13 @@
 // ============================================================================
-// FILE: tropic-pulse-functions/apps/PULSE-EARN/PulseEarnMktAuctioneer-v11-Evo.js
-// LAYER: MARKETPLACE AUCTIONEER (v11‑Evo A‑B‑A)
-// Vast.ai Deterministic Adapter
+// FILE: tropic-pulse-functions/apps/PULSE-EARN/PulseEarnMktAuctioneer-v12.3-PRESENCE-EVO+.js
+// LAYER: MARKETPLACE AUCTIONEER (v12.3‑PRESENCE‑EVO+ A‑B‑A)
+// Vast.ai Deterministic Adapter + Presence/Advantage/Hints Surfaces
 // ============================================================================
 //
-// ROLE (v11‑Evo A‑B‑A):
+// ROLE (v12.3‑PRESENCE‑EVO+ A‑B‑A):
 //   • Deterministic Vast.ai → Pulse‑Earn adapter.
 //   • Pure receptor phenotype: ping(), fetchJobs(), normalizeJob(), submitResult().
-//   • Emits A‑B‑A bandSignature + binaryField + waveField surfaces.
+//   • Emits A‑B‑A bandSignature + binaryField + waveField + presence/advantage/hints.
 //   • Emits deterministic volatility + healing metadata.
 //   • Zero async, zero randomness, zero timestamps.
 //
@@ -15,12 +15,13 @@
 //   • PURE RECEPTOR — deterministic, drift‑proof.
 //   • NO network, NO fetch, NO async, NO randomness.
 //   • NEVER mutate external objects.
+//   • Presence/advantage/hints are metadata-only.
 // ============================================================================
 export const PulseEarnMktAuctioneerMeta = Object.freeze({
   layer: "PulseEarnMktAuctioneer",
   role: "EARN_MARKETPLACE_RECEPTOR",
-  version: "v11.2-EVO",
-  identity: "PulseEarnMktAuctioneer-v11.2-EVO",
+  version: "v12.3-PRESENCE-EVO+",
+  identity: "PulseEarnMktAuctioneer-v12.3-PRESENCE-EVO+",
 
   guarantees: Object.freeze({
     deterministic: true,
@@ -32,6 +33,12 @@ export const PulseEarnMktAuctioneerMeta = Object.freeze({
     binaryAware: true,
     waveFieldAware: true,
     healingMetadataAware: true,
+    presenceAware: true,
+    advantageAware: true,
+    hintsAware: true,
+    meshAware: true,
+    castleAware: true,
+    regionAware: true,
     worldLensAware: false,
     zeroNetwork: true,
     zeroAsync: true,
@@ -44,7 +51,8 @@ export const PulseEarnMktAuctioneerMeta = Object.freeze({
     input: [
       "VastAIDNA",
       "DualBandContext",
-      "ReceptorNormalizationRules"
+      "ReceptorNormalizationRules",
+      "GlobalHintsPresenceField"
     ],
     output: [
       "ReceptorPingResult",
@@ -58,7 +66,7 @@ export const PulseEarnMktAuctioneerMeta = Object.freeze({
 
   lineage: Object.freeze({
     root: "PulseOS-v11-EVO",
-    parent: "PulseEarn-v11.2-EVO",
+    parent: "PulseEarn-v12.3-PRESENCE-EVO+",
     ancestry: [
       "PulseEarnMktAuctioneer-v9",
       "PulseEarnMktAuctioneer-v10",
@@ -76,14 +84,14 @@ export const PulseEarnMktAuctioneerMeta = Object.freeze({
   architecture: Object.freeze({
     pattern: "A-B-A",
     baseline: "deterministic Vast.ai receptor phenotype",
-    adaptive: "binary/wave surfaces + volatility inference",
+    adaptive: "binary/wave surfaces + volatility + presence/advantage/hints",
     return: "deterministic ping/fetchJobs/normalizeJob/submitResult"
   })
 });
 
 
 // ============================================================================
-// Healing Metadata — deterministic receptor log (v11-Evo A‑B‑A)
+// Healing Metadata — deterministic receptor log (v12.3‑PRESENCE‑EVO+ A‑B‑A)
 // ============================================================================
 const healingState = {
   lastPingMs: null,
@@ -119,12 +127,20 @@ const healingState = {
   lastBand: "symbolic",
   lastBandSignature: null,
   lastBinaryField: null,
-  lastWaveField: null
+  lastWaveField: null,
+
+  // Presence‑EVO+ additions
+  lastPresenceField: null,
+  lastAdvantageField: null,
+  lastHintsField: null,
+  lastAuctioneerPresenceProfile: null,
+  lastBinaryProfile: null,
+  lastWaveProfile: null
 };
 
 
 // ============================================================================
-// Deterministic Hash Helper — v11-Evo
+// Deterministic Hash Helper — v12.3‑EVO
 // ============================================================================
 function computeHash(str) {
   let h = 0;
@@ -142,7 +158,7 @@ function normalizeBand(band) {
 
 
 // ============================================================================
-// Signature Builders — v11-Evo
+// Signature Builders — v12.3‑EVO
 // ============================================================================
 function buildPingSignature(latency) {
   return computeHash(`PING::${latency}`);
@@ -160,8 +176,8 @@ function buildSubmitSignature(jobId) {
   return computeHash(`SUBMIT::${jobId || "NONE"}`);
 }
 
-function buildAuctioneerCycleSignature(cycle) {
-  return computeHash(`AUCTIONEER_CYCLE::${cycle}`);
+function buildAuctioneerCycleSignature(cycle, presenceTier) {
+  return computeHash(`AUCTIONEER_CYCLE::${cycle}::PTIER:${presenceTier}`);
 }
 
 function buildBandSignature(band) {
@@ -184,14 +200,19 @@ function safeGet(obj, path, fallback = null) {
 
 
 // ============================================================================
-// A‑B‑A Binary + Wave Surfaces (v11‑Evo)
+// A‑B‑A Binary + Wave Surfaces (Presence‑aware)
 // ============================================================================
-function buildBinaryField() {
-  const patternLen = 8; // deterministic constant
+function buildBinaryField(presenceField) {
+  const patternLen = 8;
+  const mesh = Number(presenceField?.meshPressureIndex || 0);
+  const castle = Number(presenceField?.castleLoadLevel || 0);
+
   const density =
     patternLen +
     healingState.lastFetchCount +
-    (healingState.lastPingMs || 0);
+    (healingState.lastPingMs || 0) +
+    mesh +
+    castle;
 
   const surface = density + patternLen;
 
@@ -201,6 +222,8 @@ function buildBinaryField() {
     binarySurface: {
       patternLen,
       density,
+      meshPressureIndex: mesh,
+      castleLoadLevel: castle,
       surface
     },
     parity: surface % 2 === 0 ? 0 : 1,
@@ -211,10 +234,12 @@ function buildBinaryField() {
   return field;
 }
 
-function buildWaveField(band) {
-  const amplitude = (healingState.lastFetchCount || 1) * 10;
+function buildWaveField(band, presenceField) {
+  const amplitudeBase = (healingState.lastFetchCount || 1) * 10;
+  const mesh = Number(presenceField?.meshStrength || 0);
+  const amplitude = amplitudeBase + mesh;
   const wavelength = (healingState.lastPingMs || 10) + 1;
-  const phase = amplitude % 16;
+  const phase = (amplitude + (presenceField?.meshPressureIndex || 0)) % 16;
 
   const field = {
     amplitude,
@@ -230,7 +255,7 @@ function buildWaveField(band) {
 
 
 // ============================================================================
-// DETERMINISTIC VAST.AI DNA — v11-Evo
+// DETERMINISTIC VAST.AI DNA — v11-Evo baseline
 // ============================================================================
 const VAST_RECEPTOR_DNA = {
   pingLatency: 42,
@@ -263,6 +288,63 @@ const VAST_RECEPTOR_DNA = {
 
 
 // ============================================================================
+// Presence / Advantage / Hints Surfaces (auctioneer-level)
+// ============================================================================
+function buildPresenceField(globalHints = {}) {
+  const ghP = globalHints.presenceContext || {};
+  const mesh = globalHints.meshSignals || {};
+  const castle = globalHints.castleSignals || {};
+  const region = globalHints.regionContext || {};
+
+  return {
+    bandPresence: ghP.bandPresence || "unknown",
+    routerPresence: ghP.routerPresence || "unknown",
+    devicePresence: ghP.devicePresence || "unknown",
+    meshPresence: ghP.meshPresence || mesh.meshStrength || "unknown",
+    castlePresence: ghP.castlePresence || castle.castlePresence || "unknown",
+    regionPresence: ghP.regionPresence || region.regionTag || "unknown",
+    regionId: region.regionId || "unknown-region",
+    castleId: castle.castleId || "unknown-castle",
+    castleLoadLevel: castle.loadLevel || 0,
+    meshStrength: mesh.meshStrength || 0,
+    meshPressureIndex: mesh.meshPressureIndex || 0
+  };
+}
+
+function buildAdvantageField(globalHints = {}) {
+  const gh = globalHints.advantageContext || {};
+
+  return {
+    advantageScore: gh.score ?? 0,
+    advantageBand: gh.band ?? "neutral",
+    advantageTier: gh.tier ?? 0
+  };
+}
+
+function buildHintsField(globalHints = {}) {
+  return {
+    fallbackBandLevel: globalHints.fallbackBandLevel ?? 0,
+    chunkHints: { ...(globalHints.chunkHints || {}) },
+    cacheHints: { ...(globalHints.cacheHints || {}) },
+    prewarmHints: { ...(globalHints.prewarmHints || {}) },
+    coldStartHints: { ...(globalHints.coldStartHints || {}) }
+  };
+}
+
+function classifyAuctioneerPresenceTier(presenceField) {
+  const mesh = Number(presenceField.meshPressureIndex || 0);
+  const castle = Number(presenceField.castleLoadLevel || 0);
+  const pressure = mesh + castle;
+
+  if (pressure >= 150) return "critical";
+  if (pressure >= 100) return "high";
+  if (pressure >= 50) return "elevated";
+  if (pressure > 0) return "soft";
+  return "idle";
+}
+
+
+// ============================================================================
 // Deterministic Cycle Counter
 // ============================================================================
 let auctioneerCycle = 0;
@@ -289,23 +371,29 @@ function updateVolatility(jobs) {
 
 
 // ============================================================================
-// AUCTIONEER — Vast.ai Marketplace Adapter (v11-Evo A‑B‑A)
+// AUCTIONEER — Vast.ai Marketplace Adapter (v12.3‑PRESENCE‑EVO+ A‑B‑A)
+// globalHints is optional; if omitted, defaults to {}
 // ============================================================================
 export const PulseEarnMktAuctioneer = {
   id: "vast",
   name: "Vast.ai",
-  version: "11-Evo",
-  lineage: "Auctioneer-Vast-v11-Evo",
+  version: "12.3-PRESENCE-EVO+",
+  lineage: "Auctioneer-Vast-v12.3-PRESENCE-EVO+",
 
   // -------------------------------------------------------------------------
-  // PING — deterministic latency + A‑B‑A surfaces
+  // PING — deterministic latency + A‑B‑A + presence surfaces
   // -------------------------------------------------------------------------
-  ping() {
+  ping(globalHints = {}) {
     auctioneerCycle++;
     healingState.cycleCount++;
 
     const latency = VAST_RECEPTOR_DNA.pingLatency;
     const band = normalizeBand(VAST_RECEPTOR_DNA.band);
+
+    const presenceField = buildPresenceField(globalHints);
+    const advantageField = buildAdvantageField(globalHints);
+    const hintsField = buildHintsField(globalHints);
+    const presenceTier = classifyAuctioneerPresenceTier(presenceField);
 
     healingState.lastBand = band;
     healingState.lastPingMs = latency;
@@ -314,35 +402,67 @@ export const PulseEarnMktAuctioneer = {
     healingState.lastPingSignature = buildPingSignature(latency);
     healingState.lastBandSignature = buildBandSignature(band);
     healingState.lastAuctioneerCycleSignature =
-      buildAuctioneerCycleSignature(auctioneerCycle);
+      buildAuctioneerCycleSignature(auctioneerCycle, presenceTier);
 
-    const binaryField = buildBinaryField();
-    const waveField = buildWaveField(band);
+    const binaryField = buildBinaryField(presenceField);
+    const waveField = buildWaveField(band, presenceField);
+
+    const auctioneerPresenceProfile = {
+      presenceTier,
+      band,
+      meshPressureIndex: presenceField.meshPressureIndex,
+      castleLoadLevel: presenceField.castleLoadLevel,
+      advantageTier: advantageField.advantageTier,
+      fallbackBandLevel: hintsField.fallbackBandLevel
+    };
+
+    const binaryProfile = { binaryField, presenceTier };
+    const waveProfile = { waveField, presenceTier };
+
+    healingState.lastBinaryField = binaryField;
+    healingState.lastWaveField = waveField;
+    healingState.lastPresenceField = presenceField;
+    healingState.lastAdvantageField = advantageField;
+    healingState.lastHintsField = hintsField;
+    healingState.lastAuctioneerPresenceProfile = auctioneerPresenceProfile;
+    healingState.lastBinaryProfile = binaryProfile;
+    healingState.lastWaveProfile = waveProfile;
 
     return {
       latency,
       signature: healingState.lastPingSignature,
       bandSignature: healingState.lastBandSignature,
       binaryField,
-      waveField
+      waveField,
+      presenceField,
+      advantageField,
+      hintsField,
+      auctioneerPresenceProfile,
+      binaryProfile,
+      waveProfile
     };
   },
 
   // -------------------------------------------------------------------------
-  // FETCH JOBS — deterministic offers + A‑B‑A surfaces
+  // FETCH JOBS — deterministic offers + A‑B‑A + presence surfaces
   // -------------------------------------------------------------------------
-  fetchJobs() {
+  fetchJobs(globalHints = {}) {
     auctioneerCycle++;
     healingState.cycleCount++;
 
     const band = normalizeBand(VAST_RECEPTOR_DNA.band);
+    const presenceField = buildPresenceField(globalHints);
+    const advantageField = buildAdvantageField(globalHints);
+    const hintsField = buildHintsField(globalHints);
+    const presenceTier = classifyAuctioneerPresenceTier(presenceField);
+
     healingState.lastBand = band;
 
     try {
       const offers = VAST_RECEPTOR_DNA.offers || [];
 
       const jobs = offers
-        .map(raw => this.normalizeJob(raw))
+        .map(raw => this.normalizeJob(raw, globalHints))
         .filter(j => j !== null);
 
       updateVolatility(jobs);
@@ -352,49 +472,121 @@ export const PulseEarnMktAuctioneer = {
       healingState.lastFetchSignature = buildFetchSignature(jobs.length);
       healingState.lastBandSignature = buildBandSignature(band);
       healingState.lastAuctioneerCycleSignature =
-        buildAuctioneerCycleSignature(auctioneerCycle);
+        buildAuctioneerCycleSignature(auctioneerCycle, presenceTier);
 
-      const binaryField = buildBinaryField();
-      const waveField = buildWaveField(band);
+      const binaryField = buildBinaryField(presenceField);
+      const waveField = buildWaveField(band, presenceField);
+
+      const auctioneerPresenceProfile = {
+        presenceTier,
+        band,
+        meshPressureIndex: presenceField.meshPressureIndex,
+        castleLoadLevel: presenceField.castleLoadLevel,
+        advantageTier: advantageField.advantageTier,
+        fallbackBandLevel: hintsField.fallbackBandLevel
+      };
+
+      const binaryProfile = { binaryField, presenceTier };
+      const waveProfile = { waveField, presenceTier };
+
+      healingState.lastBinaryField = binaryField;
+      healingState.lastWaveField = waveField;
+      healingState.lastPresenceField = presenceField;
+      healingState.lastAdvantageField = advantageField;
+      healingState.lastHintsField = hintsField;
+      healingState.lastAuctioneerPresenceProfile = auctioneerPresenceProfile;
+      healingState.lastBinaryProfile = binaryProfile;
+      healingState.lastWaveProfile = waveProfile;
 
       return {
         jobs,
         signature: healingState.lastFetchSignature,
         bandSignature: healingState.lastBandSignature,
         binaryField,
-        waveField
+        waveField,
+        presenceField,
+        advantageField,
+        hintsField,
+        auctioneerPresenceProfile,
+        binaryProfile,
+        waveProfile
       };
 
     } catch (err) {
       healingState.lastFetchError = err?.message || String(err);
       healingState.lastFetchCount = 0;
       healingState.lastFetchSignature = buildFetchSignature(0);
+
+      const auctioneerPresenceProfile = {
+        presenceTier,
+        band,
+        meshPressureIndex: presenceField.meshPressureIndex,
+        castleLoadLevel: presenceField.castleLoadLevel,
+        advantageTier: advantageField.advantageTier,
+        fallbackBandLevel: hintsField.fallbackBandLevel
+      };
+
       return {
         jobs: [],
-        signature: healingState.lastFetchSignature
+        signature: healingState.lastFetchSignature,
+        bandSignature: null,
+        binaryField: null,
+        waveField: null,
+        presenceField,
+        advantageField,
+        hintsField,
+        auctioneerPresenceProfile,
+        binaryProfile: null,
+        waveProfile: null
       };
     }
   },
 
   // -------------------------------------------------------------------------
-  // SUBMIT RESULT — Vast.ai does NOT accept compute results
-  // -------------------------------------------------------------------------
-  submitResult(job, result) {
+  // SUBMIT RESULT — Vast.ai does NOT accept compute results (presence‑aware)
+// -------------------------------------------------------------------------
+  submitResult(job, result, globalHints = {}) {
     auctioneerCycle++;
     healingState.cycleCount++;
 
-    const jobId = job?.id ?? null;
     const band = normalizeBand(VAST_RECEPTOR_DNA.band);
+    const presenceField = buildPresenceField(globalHints);
+    const advantageField = buildAdvantageField(globalHints);
+    const hintsField = buildHintsField(globalHints);
+    const presenceTier = classifyAuctioneerPresenceTier(presenceField);
+
+    const jobId = job?.id ?? null;
 
     healingState.lastSubmitJobId = jobId;
     healingState.lastSubmitError = null;
     healingState.lastSubmitSignature = buildSubmitSignature(jobId);
     healingState.lastBandSignature = buildBandSignature(band);
     healingState.lastAuctioneerCycleSignature =
-      buildAuctioneerCycleSignature(auctioneerCycle);
+      buildAuctioneerCycleSignature(auctioneerCycle, presenceTier);
 
-    const binaryField = buildBinaryField();
-    const waveField = buildWaveField(band);
+    const binaryField = buildBinaryField(presenceField);
+    const waveField = buildWaveField(band, presenceField);
+
+    const auctioneerPresenceProfile = {
+      presenceTier,
+      band,
+      meshPressureIndex: presenceField.meshPressureIndex,
+      castleLoadLevel: presenceField.castleLoadLevel,
+      advantageTier: advantageField.advantageTier,
+      fallbackBandLevel: hintsField.fallbackBandLevel
+    };
+
+    const binaryProfile = { binaryField, presenceTier };
+    const waveProfile = { waveField, presenceTier };
+
+    healingState.lastBinaryField = binaryField;
+    healingState.lastWaveField = waveField;
+    healingState.lastPresenceField = presenceField;
+    healingState.lastAdvantageField = advantageField;
+    healingState.lastHintsField = hintsField;
+    healingState.lastAuctioneerPresenceProfile = auctioneerPresenceProfile;
+    healingState.lastBinaryProfile = binaryProfile;
+    healingState.lastWaveProfile = waveProfile;
 
     return {
       ok: true,
@@ -405,15 +597,26 @@ export const PulseEarnMktAuctioneer = {
       bandSignature: healingState.lastBandSignature,
       binaryField,
       waveField,
-      note: "Vast.ai does not accept compute results (v11-Evo deterministic)."
+      presenceField,
+      advantageField,
+      hintsField,
+      auctioneerPresenceProfile,
+      binaryProfile,
+      waveProfile,
+      note: "Vast.ai does not accept compute results (v12.3-PRESENCE-EVO+ deterministic)."
     };
   },
 
   // -------------------------------------------------------------------------
-  // NORMALIZE JOB — Vast → Pulse‑Earn schema (deterministic)
-  // -------------------------------------------------------------------------
-  normalizeJob(raw) {
+  // NORMALIZE JOB — Vast → Pulse‑Earn schema (deterministic + presence hints)
+// -------------------------------------------------------------------------
+  normalizeJob(raw, globalHints = {}) {
     try {
+      const presenceField = buildPresenceField(globalHints);
+      const advantageField = buildAdvantageField(globalHints);
+      const hintsField = buildHintsField(globalHints);
+      const presenceTier = classifyAuctioneerPresenceTier(presenceField);
+
       if (!raw || typeof raw !== "object") {
         healingState.lastNormalizationError = "invalid_raw_job";
         healingState.lastNormalizationSignature =
@@ -464,7 +667,13 @@ export const PulseEarnMktAuctioneer = {
         estimatedSeconds,
 
         minGpuScore: gpuScore,
-        bandwidthNeededMbps: bandwidth
+        bandwidthNeededMbps: bandwidth,
+
+        // Presence-aware metadata for Consulate / Nervous System
+        presenceField,
+        advantageField,
+        hintsField,
+        presenceTier
       };
 
       healingState.lastNormalizedJobId = normalized.id;
@@ -485,7 +694,7 @@ export const PulseEarnMktAuctioneer = {
 
 
 // ============================================================================
-// HEALING STATE EXPORT — v11-Evo A‑B‑A
+// HEALING STATE EXPORT — v12.3‑PRESENCE‑EVO+ A‑B‑A
 // ============================================================================
 export function getPulseEarnMktAuctioneerHealingState() {
   return { ...healingState };

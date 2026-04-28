@@ -1,50 +1,18 @@
 // ============================================================================
-//  PULSE OS v11 — THE LIMBIC SHADOW
+//  PULSE OS v12.3‑EVO‑PRESENCE — THE LIMBIC SHADOW
 //  Unified Projection Layer • Instinct Surface • Meta‑Facade
 //  PURE FACADE. NO LOGIC. NO STATE. NO SIDE‑EFFECTS.
-//  DUAL‑BAND: Binary + Symbolic projection, routing hidden.
-// ============================================================================
-//
-//  WHAT THIS LAYER IS (v11):
-//  -------------------------
-//  • The illusion of a single Pulse organ.
-//  • A merged silhouette of PulseNet + PulseClient (no PulseUpdate in v11).
-//  • Provides ONE unified surface for the entire frontend.
-//  • Hides subsystem boundaries and routing behind a single doorway.
-//  • Acts as the OS’s “limbic projection” — instinctual meta‑layer.
-//  • Reflects all evolutionary advantages of the organism.
-//  • Knows nothing about how routing or loading actually works.
-//  • Dual‑band: projects both binary + symbolic organs if present.
-//
-//  WHAT THIS LAYER IS NOT:
-//  ------------------------
-//  • NOT a router
-//  • NOT a coordinator
-//  • NOT a logic layer
-//  • NOT a wrapper
-//  • NOT a state machine
-//  • NOT a healer
-//  • NOT a dynamic importer
-//  • NOT allowed to mutate anything
-//
-//  SAFETY CONTRACT (v11):
-//  ----------------------
-//  • No logic
-//  • No state
-//  • No orchestration
-//  • No side‑effects
-//  • Only pure projection of already‑wired organs
-//  • Deterministic, drift‑proof facade behavior
+//  DUAL‑BAND + PRESENCE: Binary + Symbolic + Presence projection.
 // ============================================================================
 
 
 // ============================================================================
-//  LIMBIC SHADOW CONTEXT — v11
+//  LIMBIC SHADOW CONTEXT — v12.3‑EVO‑PRESENCE
 // ============================================================================
 export const LIMBIC_SHADOW_CONTEXT = {
   layer: "LimbicShadow",
   role: "UNIFIED_PROJECTION_INSTINCT",
-  version: "11.0",
+  version: "12.3-EVO-PRESENCE",
   purpose: "Unified projection + instinct surface for Pulse organs",
   evo: {
     driftProof: true,
@@ -53,37 +21,50 @@ export const LIMBIC_SHADOW_CONTEXT = {
     instinctSurface: true,
     unifiedAdvantageField: true,
     multiInstanceReady: true,
-    dualBandProjection: true,      // binary + symbolic
+
+    // Dual-band + presence
+    dualBandProjection: true,
     binaryAware: true,
     symbolicAware: true,
-    routingOpaque: true,           // routing is hidden from this layer
+    presenceAware: true,
+    presenceFieldAware: true,
+
+    // A‑B‑A surfaces
+    bandAware: true,
+    waveFieldAware: true,
+    binaryFieldAware: true,
+
+    routingOpaque: true,
+    subsystemBoundaryHidden: true,
     futureEvolutionReady: true
   }
 };
+
 export const PulseLimbicShadowMeta = Object.freeze({
   layer: "PulseLimbicShadow",
   role: "UNIFIED_PROJECTION_INSTINCT_LAYER",
-  version: "v11.2-EVO-BINARY-MAX",
-  identity: "PulseLimbicShadow-v11.2-EVO-BINARY-MAX",
+  version: "v12.3-EVO-BINARY-MAX-ABA-PRESENCE",
+  identity: "PulseLimbicShadow-v12.3-EVO-BINARY-MAX-ABA-PRESENCE",
 
   guarantees: Object.freeze({
     deterministic: true,
     driftProof: true,
     multiInstanceReady: true,
 
-    // Limbic Shadow laws
     pureFacade: true,
     projectionOnly: true,
     instinctSurface: true,
     unifiedProjectionLayer: true,
     unifiedAdvantageField: true,
+
     dualBandProjection: true,
     binaryAware: true,
     symbolicAware: true,
+    presenceAware: true,
+    presenceFieldAware: true,
     routingOpaque: true,
     subsystemBoundaryHidden: true,
 
-    // Execution prohibitions
     zeroLogic: true,
     zeroState: true,
     zeroSideEffects: true,
@@ -102,12 +83,10 @@ export const PulseLimbicShadowMeta = Object.freeze({
     zeroDOM: true,
     zeroGPU: true,
 
-    // Awareness
     bandAware: true,
     waveFieldAware: true,
     binaryFieldAware: true,
 
-    // Environment
     worldLensAware: false
   }),
 
@@ -115,13 +94,15 @@ export const PulseLimbicShadowMeta = Object.freeze({
     input: [
       "ProjectionContext",
       "DualBandContext",
-      "AdvantageContext"
+      "AdvantageContext",
+      "PresenceContext"
     ],
     output: [
       "UnifiedProjectionSurface",
       "LimbicBandSignature",
       "LimbicBinaryField",
       "LimbicWaveField",
+      "LimbicPresenceField",
       "LimbicDiagnostics",
       "LimbicHealingState"
     ]
@@ -129,7 +110,7 @@ export const PulseLimbicShadowMeta = Object.freeze({
 
   lineage: Object.freeze({
     root: "PulseOS-v11",
-    parent: "PulseOS-v11.2-EVO",
+    parent: "PulseOS-v12.3-EVO",
     ancestry: [
       "PulseLimbicShadow-v7",
       "PulseLimbicShadow-v8",
@@ -137,7 +118,8 @@ export const PulseLimbicShadowMeta = Object.freeze({
       "PulseLimbicShadow-v10",
       "PulseLimbicShadow-v11",
       "PulseLimbicShadow-v11-Evo",
-      "PulseLimbicShadow-v11-Evo-Prime"
+      "PulseLimbicShadow-v11-Evo-Prime",
+      "PulseLimbicShadow-v12.3-EVO-PRESENCE"
     ]
   }),
 
@@ -150,15 +132,14 @@ export const PulseLimbicShadowMeta = Object.freeze({
   architecture: Object.freeze({
     pattern: "A-B-A",
     baseline: "wired organs → unified projection → instinct surface",
-    adaptive: "binary-field + wave-field overlays",
+    adaptive: "binary-field + wave-field + presence overlays",
     return: "deterministic projection surfaces + signatures"
   })
 });
 
 
 // ============================================================================
-//  GLOBAL RESOLVER — PROJECTION ONLY (NO IMPORTS)
-//  Assumes routing / wiring has already attached organs to global space.
+//  GLOBAL RESOLVER — PURE PROJECTION ONLY
 // ============================================================================
 const G = typeof globalThis !== "undefined"
   ? globalThis
@@ -170,12 +151,8 @@ const G = typeof globalThis !== "undefined"
 
 
 // ============================================================================
-//  OPTIONAL DIAGNOSTICS — NO SIDE EFFECTS
+//  OPTIONAL DIAGNOSTICS — ZERO SIDE EFFECTS
 // ============================================================================
-const LAYER_ID   = "LIMBIC-SHADOW";
-const LAYER_NAME = "THE LIMBIC SHADOW";
-const LAYER_ROLE = "UNIFIED PROJECTION + INSTINCT LAYER";
-
 const SHADOW_DIAGNOSTICS_ENABLED =
   typeof window !== "undefined" &&
   (window.PULSE_SHADOW_DIAGNOSTICS === true ||
@@ -183,18 +160,15 @@ const SHADOW_DIAGNOSTICS_ENABLED =
 
 function logShadow(stage, details = {}) {
   if (!SHADOW_DIAGNOSTICS_ENABLED) return;
-
   try {
-    console.log(
-      JSON.stringify({
-        pulseLayer: LAYER_ID,
-        pulseName: LAYER_NAME,
-        pulseRole: LAYER_ROLE,
-        stage,
-        ...details,
-        meta: { ...LIMBIC_SHADOW_CONTEXT }
-      })
-    );
+    console.log(JSON.stringify({
+      pulseLayer: "LIMBIC-SHADOW",
+      pulseName: "THE LIMBIC SHADOW",
+      pulseRole: "UNIFIED PROJECTION + INSTINCT LAYER",
+      stage,
+      ...details,
+      meta: { ...LIMBIC_SHADOW_CONTEXT }
+    }));
   } catch {}
 }
 
@@ -202,15 +176,15 @@ logShadow("SHADOW_INIT");
 
 
 // ============================================================================
-//  PURE PROJECTION — THE SHADOW SURFACE (v11)
+//  PURE PROJECTION — THE SHADOW SURFACE (v12.3‑EVO‑PRESENCE)
 //  NO LOGIC. NO STATE. NO SIDE‑EFFECTS.
 //  Just reflect whatever the organism has already wired.
 // ============================================================================
 
-// Synapse Layer (PulseNet) — dual‑band ready
+// Synapse Layer (PulseNet) — dual‑band + presence ready
 export const PulseNet = G.PulseNet || null;
 
-// Circulatory System (PulseClient) — dual‑band ready
+// Circulatory System (PulseClient) — dual‑band + presence ready
 export const PulseClient = G.PulseClient || null;
 
 

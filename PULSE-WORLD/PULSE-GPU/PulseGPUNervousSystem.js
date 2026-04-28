@@ -1,22 +1,23 @@
 // ============================================================================
-//  PULSE GPU SESSION TRACER v11-Evo-binary — THE SENSORY ARCHIVE
+//  PULSE GPU SESSION TRACER v12.3-Continuum-binary — THE SENSORY ARCHIVE
 //  Afferent Nervous System • Deterministic Perception Layer • Pure Recording
 // ============================================================================
 //
-// IDENTITY — THE SENSORY ARCHIVE (v11-Evo-binary):
-//  ----------------------------------------------
+// IDENTITY — THE SENSORY ARCHIVE (v12.3-Continuum-binary):
+//  ------------------------------------------------------
 //  • The afferent nervous system of the GPU organism.
 //  • Records every sensation: duration, warnings, errors, stutters, load.
 //  • Records binary/symbolic mode, dispatch lineage, shape signatures.
+//  • Records extended v12.3+ pressure + frame-time + thermal vectors.
 //  • Never judges, never interprets — only perceives and preserves.
 //  • The black box of the GPU body.
 //  • The raw sensory feed for Insights, Brainstem, Healer, Advisor, GeneticMemory.
 //  • Advantage‑cascade aware: inherits all systemic advantages.
-//  • PulseSend‑v11‑ready: sensory traces can be routed by the compute router.
+//  • PulseSend‑v12‑ready: sensory traces can be routed by the compute router.
 //  • Earn‑v3‑ready: compatible with Earn‑v3 job payloads.
 //
-// SAFETY CONTRACT (v11-Evo-binary):
-//  --------------------------------
+// SAFETY CONTRACT (v12.3-Continuum-binary):
+//  ---------------------------------------
 //  • No randomness
 //  • No timestamps
 //  • No GPU calls
@@ -30,17 +31,17 @@
 
 
 // ------------------------------------------------------------
-// ⭐ OS‑v11-Evo-binary CONTEXT METADATA — Sensory Archive Identity
+// ⭐ OS‑v12.3-Continuum-binary CONTEXT METADATA — Sensory Archive Identity
 // ------------------------------------------------------------
 const TRACER_CONTEXT = {
   layer: "PulseGPUSessionTracer",
   role: "SENSORY_ARCHIVE",
   purpose: "Afferent nervous system — deterministic perception + recording",
   context:
-    "Records ordered steps with durations + health signals + GPU mode/dispatch info",
+    "Records ordered steps with durations + health signals + GPU mode/dispatch info + v12.3+ vectors",
   target: "full-gpu+binary",
   selfRepairable: true,
-  version: "11.0-Evo-binary",
+  version: "12.3-Continuum-binary",
 
   evo: {
     advantageCascadeAware: true,
@@ -48,24 +49,31 @@ const TRACER_CONTEXT = {
     driftProof: true,
     multiInstanceReady: true,
     unifiedAdvantageField: true,
-    pulseSend11Ready: true,
+    pulseSend12Ready: true,
 
-    // v11-Evo-binary awareness
+    // v12.3-Continuum awareness
     binaryAware: true,
     symbolicAware: true,
     gpuDispatchAware: true,
     gpuMemoryAware: true,
     gpuAdvantageAware: true,
+    dualModeEvolution: true,
+    dualBandAware: true,
+    organismLoaderAware: true,
+    geneticMemoryLink: true,
+    healerLink: true,
 
-    routingContract: "PulseSend-v11",
-    gpuOrganContract: "PulseGPU-v11-Evo",
-    binaryGpuOrganContract: "PulseBinaryGPU-v11-Evo",
+    routingContract: "PulseSend-v12",
+    gpuOrganContract: "PulseGPU-v12-Continuum",
+    binaryGpuOrganContract: "PulseBinaryGPU-v12-Continuum",
     earnCompatibility: "Earn-v3",
 
     // Legacy compatibility (metadata only)
     legacyRoutingContract: "PulseSend-v10.4",
     legacyGPUOrganContract: "PulseGPU-v10.4",
-    legacyEarnCompatibility: "Earn-v2"
+    legacyEarnCompatibility: "Earn-v2",
+    legacyRoutingContractV11: "PulseSend-v11",
+    legacyGPUOrganContractV11: "PulseGPU-v11-Evo"
   }
 };
 
@@ -82,7 +90,7 @@ function clamp(value, min, max) {
 
 
 // ------------------------------------------------------------
-// Step normalization — Sensory Input Normalization (v11-Evo-binary)
+// Step normalization — Sensory Input Normalization (v12.3-Continuum-binary)
 // ------------------------------------------------------------
 function normalizeStep(step = {}) {
   const {
@@ -96,6 +104,15 @@ function normalizeStep(step = {}) {
     gpuLoad,
     cpuLoad,
     vramUsageMB,
+
+    // v12.3+ extended telemetry (optional)
+    frameTimeAvgMs,
+    frameTimeP95Ms,
+    frameTimeP99Ms,
+    gpuTempC,
+    gpuPowerW,
+    gpuFanRpm,
+    memoryBandwidthGBs,
 
     // v11-Evo-binary sensory fields
     binaryModeObserved,
@@ -126,6 +143,36 @@ function normalizeStep(step = {}) {
         ? clamp(vramUsageMB, 0, 4_000_000)
         : undefined,
 
+    // v12.3+ extended telemetry (pure recording)
+    frameTimeAvgMs:
+      typeof frameTimeAvgMs === "number"
+        ? clamp(frameTimeAvgMs, 0, 1000)
+        : undefined,
+    frameTimeP95Ms:
+      typeof frameTimeP95Ms === "number"
+        ? clamp(frameTimeP95Ms, 0, 2000)
+        : undefined,
+    frameTimeP99Ms:
+      typeof frameTimeP99Ms === "number"
+        ? clamp(frameTimeP99Ms, 0, 5000)
+        : undefined,
+    gpuTempC:
+      typeof gpuTempC === "number"
+        ? clamp(gpuTempC, 0, 130)
+        : undefined,
+    gpuPowerW:
+      typeof gpuPowerW === "number"
+        ? clamp(gpuPowerW, 0, 1000)
+        : undefined,
+    gpuFanRpm:
+      typeof gpuFanRpm === "number"
+        ? clamp(gpuFanRpm, 0, 20000)
+        : undefined,
+    memoryBandwidthGBs:
+      typeof memoryBandwidthGBs === "number"
+        ? clamp(memoryBandwidthGBs, 0, 3000)
+        : undefined,
+
     // v11-Evo-binary sensory fields (pure recording)
     binaryModeObserved:
       typeof binaryModeObserved === "boolean" ? binaryModeObserved : false,
@@ -154,7 +201,7 @@ function normalizeStep(step = {}) {
 
 
 // ------------------------------------------------------------
-// SessionTrace — Sensory Recording Unit (v11-Evo-binary)
+// SessionTrace — Sensory Recording Unit (v12.3-Continuum-binary)
 // ------------------------------------------------------------
 class SessionTrace {
   constructor({
@@ -169,7 +216,7 @@ class SessionTrace {
     this.hardwareProfile = hardwareProfile || {};
     this.tierProfile = tierProfile || {};
 
-    // v11-Evo-binary: session-level GPU context snapshot
+    // v12.3-Continuum-binary: session-level GPU context snapshot
     this.gpuContext = gpuContext || null;
 
     this.steps = [];
@@ -207,7 +254,7 @@ class SessionTrace {
       totalStutters,
       stepCount: this.steps.length,
 
-      // v11-Evo-binary: mode counts for GeneticMemory / Insights
+      // v12.3-Continuum-binary: mode counts for GeneticMemory / Insights
       binaryStepCount: binarySteps,
       symbolicStepCount: symbolicSteps,
 
@@ -221,7 +268,7 @@ class SessionTrace {
 
 
 // ------------------------------------------------------------
-// PulseGPUSessionTracer — Sensory Archive Controller (v11-Evo-binary)
+// PulseGPUSessionTracer — Sensory Archive Controller (v12.3-Continuum-binary)
 // ------------------------------------------------------------
 class PulseGPUSessionTracer {
   constructor() {

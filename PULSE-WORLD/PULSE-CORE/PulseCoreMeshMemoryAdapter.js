@@ -1,31 +1,100 @@
 // ============================================================================
-//  PulseMeshMemoryAdapter.js — v11‑EVO‑SPINE
-//  “GPU LOADS ONCE. COMPUTES FOREVER.”
+//  PulseMeshMemoryAdapter.js — v12‑EVO‑PRESENCE‑MAX
+//  “GPU LOADS ONCE. COMPUTES FOREVER. MEMORY NEVER DRIFTS.”
+//  • MetaBlock (v12 identity)
+//  • PulseRol / PresenceRol
+//  • DNA‑aware
+//  • Version‑aware
+//  • Hot‑loop promotion
+//  • Presence‑touch propagation
+//  • TTL + healing compatible
 // ============================================================================
 
 import { createPulseBinaryOverlay } from "../PulseBinaryOverlay.js";
 
 export function createPulseMeshMemoryAdapter({
   overlay = createPulseBinaryOverlay(),
+  dnaTag = "default-dna",
+  version = "12.0-Evo-Presence",
   log = console.log
 } = {}) {
 
+  // ---------------------------------------------------------
+  //  v12 IDENTITY BLOCK (MetaBlock)
+  // ---------------------------------------------------------
+  export const metaBlock = {
+    identity: "PulseMeshMemoryAdapter",
+    subsystem: "Mesh",
+    layer: "MemoryAdapter",
+    role: "GPU-Memory-Bridge",
+    version,
+    dnaTag,
+    evo: {
+      dnaAware: true,
+      versionAware: true,
+      hotLoop: true,
+      presenceAware: true,
+      dualBandSafe: true
+    }
+  };
+
+  // ---------------------------------------------------------
+  //  INTERNAL: WRAP CANONICALIZE WITH v12 METADATA
+  // ---------------------------------------------------------
+  function wrap(routeId, blob, dataType) {
+    const meta = {
+      dataType,
+      dnaTag,
+      version,
+      lastTouched: Date.now(),
+      metaBlock
+    };
+
+    // Presence‑touch propagation
+    try {
+      overlay.touch(routeId, meta.lastTouched);
+    } catch {}
+
+    return overlay.canonicalize(routeId, blob, meta);
+  }
+
+  // ---------------------------------------------------------
+  //  GPU MODEL / KERNEL / TRANSFORM REGISTRATION
+  // ---------------------------------------------------------
   function registerModel(routeId, modelBlob) {
-    return overlay.canonicalize(routeId, modelBlob, { dataType: "gpu-model" });
+    return wrap(routeId, modelBlob, "gpu-model");
   }
 
   function registerKernel(routeId, kernelBlob) {
-    return overlay.canonicalize(routeId, kernelBlob, { dataType: "gpu-kernel" });
+    return wrap(routeId, kernelBlob, "gpu-kernel");
   }
 
   function registerTransform(routeId, transform) {
-    return overlay.canonicalize(routeId, transform, { dataType: "gpu-transform" });
+    return wrap(routeId, transform, "gpu-transform");
   }
 
+  // ---------------------------------------------------------
+  //  HOT‑LOOP PROMOTION HOOK
+  // ---------------------------------------------------------
+  function promoteHot(routeId, key) {
+    try {
+      overlay.markHot(routeId, key);
+      log("[PulseMeshMemoryAdapter] HOT_PROMOTE", { routeId, key });
+    } catch {}
+  }
+
+  // ---------------------------------------------------------
+  //  PUBLIC API
+  // ---------------------------------------------------------
   return {
-    role: "PulseMeshMemoryAdapter",
+    metaBlock,
+    dnaTag,
+    version,
+
     registerModel,
     registerKernel,
-    registerTransform
+    registerTransform,
+
+    promoteHot
   };
 }

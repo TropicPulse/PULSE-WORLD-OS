@@ -1,28 +1,29 @@
 // ============================================================================
-// FILE: tropic-pulse-functions/apps/PULSE-EARN/PulseEarnGeneticMemory-v11-Evo.js
-// LAYER: THE GENETIC MEMORY (v11-Evo + Dual-Band + Binary + Wave)
+// FILE: tropic-pulse-functions/apps/PULSE-EARN/PulseEarnGeneticMemory-v12.3-PRESENCE-EVO+.js
+// LAYER: THE GENIUS-ETIC MEMORY (v12.3-PRESENCE-EVO+ + Dual-Band + Binary + Wave)
 // (Keeper of Packets + Guardian of Determinism + DNA Repair Substrate)
 // ============================================================================
 //
-// ROLE (v11-Evo):
-//   THE GENETIC MEMORY — Pulse‑Earn’s deterministic packet genome.
+// ROLE (v12.3-PRESENCE-EVO+):
+//   THE GENIUS-ETIC MEMORY — Pulse‑Earn’s deterministic packet genome.
 //   • Stores packet data in a safe, in‑memory gene archive.
 //   • Generates deterministic packet values (genetic identity).
 //   • Maintains packet‑level healing metadata (genetic health).
-//   • Emits v11‑Evo genetic signatures.
-//   • NOW dual-band, binary-aware, wave-aware.
+//   • Emits v12.3‑Presence‑EVO+ genetic signatures.
+//   • Dual-band, binary-aware, wave-aware, presence/advantage/hints-aware (metadata-only).
 //
-// CONTRACT (v11-Evo):
+// CONTRACT (v12.3-PRESENCE-EVO+):
 //   • PURE PACKET ENGINE — no AI layers, no translation, no memory model.
 //   • NO eval(), NO Function(), NO dynamic imports.
 //   • NO network calls, NO filesystem, NO timestamps.
 //   • Deterministic hashing + safe in‑memory storage only.
+//   • Presence/advantage/hints are metadata-only, never affect behavior.
 // ============================================================================
 export const PulseEarnGeneticMemoryMeta = Object.freeze({
   layer: "PulseEarnGeneticMemory",
   role: "EARN_GENETIC_MEMORY_ORGAN",
-  version: "v11.2-EVO",
-  identity: "PulseEarnGeneticMemory-v11.2-EVO",
+  version: "v12.3-PRESENCE-EVO+",
+  identity: "PulseEarnGeneticMemory-v12.3-PRESENCE-EVO+",
 
   guarantees: Object.freeze({
     deterministic: true,
@@ -34,6 +35,9 @@ export const PulseEarnGeneticMemoryMeta = Object.freeze({
     binaryAware: true,
     waveFieldAware: true,
     healingMetadataAware: true,
+    presenceAware: true,
+    advantageAware: true,
+    hintsAware: true,
     genomeSafe: true,
     worldLensAware: false
   }),
@@ -43,7 +47,8 @@ export const PulseEarnGeneticMemoryMeta = Object.freeze({
       "fileId",
       "packetIndex",
       "PacketData",
-      "DualBandContext"
+      "DualBandContext",
+      "GlobalHintsPresenceField"
     ],
     output: [
       "GeneExistsFlag",
@@ -56,7 +61,7 @@ export const PulseEarnGeneticMemoryMeta = Object.freeze({
 
   lineage: Object.freeze({
     root: "PulseOS-v11-EVO",
-    parent: "PulseEarn-v11.2-EVO",
+    parent: "PulseEarn-v12.3-PRESENCE-EVO+",
     ancestry: [
       "PulseEarnGeneticMemory-v10",
       "PulseEarnGeneticMemory-v11",
@@ -73,14 +78,14 @@ export const PulseEarnGeneticMemoryMeta = Object.freeze({
   architecture: Object.freeze({
     pattern: "A-B-A",
     baseline: "deterministic genome lookup + hashing",
-    adaptive: "binary/wave surfaces + dual-band signatures",
+    adaptive: "binary/wave surfaces + dual-band + presence/advantage/hints signatures",
     return: "deterministic gene existence/write/synthesis result"
   })
 });
 
 
 // ============================================================================
-// Healing Metadata — Genetic Health Log (v11-Evo)
+// Healing Metadata — Genetic Health Log (v12.3-PRESENCE-EVO+)
 // ============================================================================
 const geneticHealing = {
   lastKey: null,
@@ -94,11 +99,16 @@ const geneticHealing = {
   lastWriteSignature: null,
   lastSynthesisSignature: null,
 
-  // v11+ Dual-Band + Binary + Wave
+  // Dual-Band + Binary + Wave
   lastBand: "symbolic",
   lastBandSignature: null,
   lastBinaryField: null,
-  lastWaveField: null
+  lastWaveField: null,
+
+  // Presence-EVO+ metadata
+  lastPresenceField: null,
+  lastAdvantageField: null,
+  lastHintsField: null
 };
 
 
@@ -112,7 +122,7 @@ let geneCycle = 0;
 
 
 // ============================================================================
-// Deterministic Hash Helper — v11-Evo
+// Deterministic Hash Helper
 // ============================================================================
 function computeHash(str) {
   let h = 0;
@@ -130,7 +140,51 @@ function normalizeBand(band) {
 
 
 // ============================================================================
-// Signature Builders — v11-Evo
+// Presence / Advantage / Hints Surfaces (metadata-only)
+// ============================================================================
+function buildPresenceField(globalHints = {}) {
+  const gh = globalHints.presenceContext || {};
+  const mesh = globalHints.meshSignals || {};
+  const castle = globalHints.castleSignals || {};
+  const region = globalHints.regionContext || {};
+
+  return {
+    bandPresence: gh.bandPresence || "unknown",
+    routerPresence: gh.routerPresence || "unknown",
+    devicePresence: gh.devicePresence || "unknown",
+    meshPresence: mesh.meshStrength || "unknown",
+    castlePresence: castle.castlePresence || "unknown",
+    regionPresence: region.regionTag || "unknown",
+    regionId: region.regionId || "unknown-region",
+    castleId: castle.castleId || "unknown-castle",
+    castleLoadLevel: castle.loadLevel || 0,
+    meshStrength: mesh.meshStrength || 0,
+    meshPressureIndex: mesh.meshPressureIndex || 0
+  };
+}
+
+function buildAdvantageField(globalHints = {}) {
+  const adv = globalHints.advantageContext || {};
+  return {
+    advantageScore: adv.score ?? 0,
+    advantageBand: adv.band ?? "neutral",
+    advantageTier: adv.tier ?? 0
+  };
+}
+
+function buildHintsField(globalHints = {}) {
+  return {
+    fallbackBandLevel: globalHints.fallbackBandLevel ?? 0,
+    chunkHints: globalHints.chunkHints || {},
+    cacheHints: globalHints.cacheHints || {},
+    prewarmHints: globalHints.prewarmHints || {},
+    coldStartHints: globalHints.coldStartHints || {}
+  };
+}
+
+
+// ============================================================================
+// Signature Builders
 // ============================================================================
 function buildGeneSignature(key, cycle) {
   return computeHash(`GENE::${key}::${cycle}`);
@@ -148,7 +202,7 @@ function buildSynthesisSignature(key, value) {
 // ============================================================================
 // 1. readPulseEarnGeneExists — Genome Lookup (deterministic + dual-band)
 // ============================================================================
-export function readPulseEarnGeneExists(fileId, packetIndex, band = "symbolic") {
+export function readPulseEarnGeneExists(fileId, packetIndex, band = "symbolic", globalHints = {}) {
   geneCycle++;
   geneticHealing.cycleCount++;
   geneticHealing.lastCycleIndex = geneCycle;
@@ -156,6 +210,14 @@ export function readPulseEarnGeneExists(fileId, packetIndex, band = "symbolic") 
   const normalizedBand = normalizeBand(band);
   geneticHealing.lastBand = normalizedBand;
   geneticHealing.lastBandSignature = computeHash(`BAND::${normalizedBand}`);
+
+  const presenceField = buildPresenceField(globalHints);
+  const advantageField = buildAdvantageField(globalHints);
+  const hintsField = buildHintsField(globalHints);
+
+  geneticHealing.lastPresenceField = presenceField;
+  geneticHealing.lastAdvantageField = advantageField;
+  geneticHealing.lastHintsField = hintsField;
 
   try {
     const key = `${fileId}:${packetIndex}:${normalizedBand}`;
@@ -175,7 +237,7 @@ export function readPulseEarnGeneExists(fileId, packetIndex, band = "symbolic") 
 // ============================================================================
 // 2. writePulseEarnGene — DNA Write (Gene Expression + dual-band)
 // ============================================================================
-export function writePulseEarnGene(fileId, packetIndex, data, band = "symbolic") {
+export function writePulseEarnGene(fileId, packetIndex, data, band = "symbolic", globalHints = {}) {
   geneCycle++;
   geneticHealing.cycleCount++;
   geneticHealing.lastCycleIndex = geneCycle;
@@ -184,15 +246,25 @@ export function writePulseEarnGene(fileId, packetIndex, data, band = "symbolic")
   geneticHealing.lastBand = normalizedBand;
   geneticHealing.lastBandSignature = computeHash(`BAND::${normalizedBand}`);
 
+  const presenceField = buildPresenceField(globalHints);
+  const advantageField = buildAdvantageField(globalHints);
+  const hintsField = buildHintsField(globalHints);
+
+  geneticHealing.lastPresenceField = presenceField;
+  geneticHealing.lastAdvantageField = advantageField;
+  geneticHealing.lastHintsField = hintsField;
+
   try {
     const key = `${fileId}:${packetIndex}:${normalizedBand}`;
     geneticHealing.lastKey = key;
 
     genome.set(key, structuredClone(data));
 
+    const size = JSON.stringify(data).length;
+
     geneticHealing.lastWrite = {
       key,
-      size: JSON.stringify(data).length,
+      size,
       cycleIndex: geneCycle
     };
 
@@ -202,17 +274,17 @@ export function writePulseEarnGene(fileId, packetIndex, data, band = "symbolic")
     // -------------------------------
     // BINARY FIELD (structural only)
     // -------------------------------
-    const surface = JSON.stringify(data).length + geneCycle;
+    const surface = size + geneCycle;
     const binaryField = {
       binaryGeneSignature: computeHash(`BGENE::${key}`),
       binarySurfaceSignature: computeHash(`BSURF::${surface}`),
       binarySurface: {
-        size: JSON.stringify(data).length,
+        size,
         cycle: geneCycle,
         surface
       },
       parity: surface % 2 === 0 ? 0 : 1,
-      density: JSON.stringify(data).length,
+      density: size,
       shiftDepth: Math.max(0, Math.floor(Math.log2(surface || 1)))
     };
     geneticHealing.lastBinaryField = binaryField;
@@ -221,9 +293,9 @@ export function writePulseEarnGene(fileId, packetIndex, data, band = "symbolic")
     // WAVE FIELD (structural only)
     // -------------------------------
     const waveField = {
-      amplitude: JSON.stringify(data).length,
+      amplitude: size,
       wavelength: geneCycle,
-      phase: (JSON.stringify(data).length + geneCycle) % 8,
+      phase: (size + geneCycle) % 8,
       band: normalizedBand,
       mode: normalizedBand === "binary" ? "compression-wave" : "symbolic-wave"
     };
@@ -239,9 +311,9 @@ export function writePulseEarnGene(fileId, packetIndex, data, band = "symbolic")
 
 
 // ============================================================================
-// 3. synthesizePulseEarnGene — Deterministic DNA Synthesis (v11-Evo + dual-band)
+// 3. synthesizePulseEarnGene — Deterministic DNA Synthesis (dual-band)
 // ============================================================================
-export function synthesizePulseEarnGene(fileId, packetIndex, band = "symbolic") {
+export function synthesizePulseEarnGene(fileId, packetIndex, band = "symbolic", globalHints = {}) {
   geneCycle++;
   geneticHealing.cycleCount++;
   geneticHealing.lastCycleIndex = geneCycle;
@@ -249,6 +321,14 @@ export function synthesizePulseEarnGene(fileId, packetIndex, band = "symbolic") 
   const normalizedBand = normalizeBand(band);
   geneticHealing.lastBand = normalizedBand;
   geneticHealing.lastBandSignature = computeHash(`BAND::${normalizedBand}`);
+
+  const presenceField = buildPresenceField(globalHints);
+  const advantageField = buildAdvantageField(globalHints);
+  const hintsField = buildHintsField(globalHints);
+
+  geneticHealing.lastPresenceField = presenceField;
+  geneticHealing.lastAdvantageField = advantageField;
+  geneticHealing.lastHintsField = hintsField;
 
   try {
     const key = `${fileId}:${packetIndex}:${normalizedBand}`;
@@ -316,7 +396,7 @@ export function synthesizePulseEarnGene(fileId, packetIndex, band = "symbolic") 
 
 
 // ============================================================================
-// Export Healing Metadata — Genetic Health Report (v11-Evo)
+// Export Healing Metadata — Genetic Health Report (v12.3-PRESENCE-EVO+)
 // ============================================================================
 export function getPulseEarnGeneticMemoryHealingState() {
   return { ...geneticHealing };

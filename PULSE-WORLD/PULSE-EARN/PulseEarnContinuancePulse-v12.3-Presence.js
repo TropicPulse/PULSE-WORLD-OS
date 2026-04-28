@@ -1,14 +1,16 @@
 // ============================================================================
-//  PulseEarnContinuancePulse-v11-Evo.js
-//  Earn v1 Continuance Wrapper (v11-Evo SAFE)
+//  PulseEarnContinuancePulse-v12.3-PRESENCE-EVO+-SAFE.js
+//  Earn v1 Continuance Wrapper (v12.3-PRESENCE-EVO+ SAFE)
 //  NO PulseSendSystem, NO network, NO routing, NO loops.
 //  Only: build LegacyEarn v1 + Pulse-compatible envelope and return it.
+//  Presence/Advantage/Band/Factoring/Binary/Wave aware as METADATA ONLY.
 // ============================================================================
+
 export const PulseEarnContinuancePulseMeta = Object.freeze({
   layer: "PulseEarnContinuancePulse",
   role: "EARN_CONTINUANCE_ORGAN",
-  version: "v11.2-EVO",
-  identity: "PulseEarnContinuancePulse-v11.2-EVO",
+  version: "v12.3-PRESENCE-EVO+",
+  identity: "PulseEarnContinuancePulse-v12.3-PRESENCE-EVO+",
 
   guarantees: Object.freeze({
     deterministic: true,
@@ -21,8 +23,11 @@ export const PulseEarnContinuancePulseMeta = Object.freeze({
     binaryAware: true,
     waveFieldAware: true,
     factoringAware: true,
-    worldLensAware: false,
-    loopTheorySafe: true
+    presenceAware: true,
+    advantageAware: true,
+    hintsAware: true,
+    loopTheorySafe: true,
+    worldLensAware: false
   }),
 
   contract: Object.freeze({
@@ -30,7 +35,8 @@ export const PulseEarnContinuancePulseMeta = Object.freeze({
       "EarnImpulse",
       "DualBandContext",
       "LegacyLineage",
-      "PatternShape"
+      "PatternShape",
+      "GlobalHintsPresenceField"
     ],
     output: [
       "LegacyEarnV1",
@@ -41,7 +47,7 @@ export const PulseEarnContinuancePulseMeta = Object.freeze({
 
   lineage: Object.freeze({
     root: "PulseOS-v11-EVO",
-    parent: "PulseEarn-v11.2-EVO",
+    parent: "PulseEarn-v12.3-PRESENCE-EVO+",
     ancestry: [
       "PulseEarnContinuancePulse-v10",
       "PulseEarnContinuancePulse-v11",
@@ -58,7 +64,7 @@ export const PulseEarnContinuancePulseMeta = Object.freeze({
   architecture: Object.freeze({
     pattern: "A-B-A",
     baseline: "deterministic legacy Earn v1 builder",
-    adaptive: "binary/wave/factoring surfaces",
+    adaptive: "band/binary/wave/factoring/presence/advantage surfaces",
     return: "deterministic Pulse-compatible envelope"
   })
 });
@@ -66,9 +72,8 @@ export const PulseEarnContinuancePulseMeta = Object.freeze({
 // Deterministic cycle counter (replaces timestamps)
 let continuanceCycle = 0;
 
-
 // ============================================================================
-//  INTERNAL: Deterministic Hash Helper (v11-Evo)
+//  INTERNAL: Deterministic Hash Helper
 // ============================================================================
 function computeHash(str) {
   let h = 0;
@@ -79,12 +84,77 @@ function computeHash(str) {
   return `h${h}`;
 }
 
+// ============================================================================
+//  INTERNAL: Presence / Advantage / Hints Surfaces (METADATA ONLY)
+//  NOTE: These are carried through, NOT acted upon.
+// ============================================================================
+function buildPresenceFieldFromImpulse(impulse = {}, globalHints = {}) {
+  const pf = impulse.presenceField || {};
+  const gh = globalHints.presenceContext || {};
+  const mesh = globalHints.meshSignals || {};
+  const castle = globalHints.castleSignals || {};
+  const region = globalHints.regionContext || {};
+
+  return Object.freeze({
+    bandPresence: pf.bandPresence || gh.bandPresence || "unknown",
+    routerPresence: pf.routerPresence || gh.routerPresence || "unknown",
+    devicePresence: pf.devicePresence || gh.devicePresence || "unknown",
+    meshPresence: pf.meshPresence || mesh.meshStrength || "unknown",
+    castlePresence: pf.castlePresence || castle.castlePresence || "unknown",
+    regionPresence: pf.regionPresence || region.regionTag || "unknown",
+    regionId: region.regionId || "unknown-region",
+    castleId: castle.castleId || "unknown-castle",
+    castleLoadLevel: castle.loadLevel || "unknown",
+    meshStrength: mesh.meshStrength || "unknown",
+    meshPressureIndex: mesh.meshPressureIndex || 0
+  });
+}
+
+function buildAdvantagePresenceFieldFromImpulse(globalHints = {}) {
+  const adv = globalHints.advantageContext || {};
+  return Object.freeze({
+    advantageScore: adv.score ?? null,
+    advantageBand: adv.band ?? "neutral",
+    advantageTier: adv.tier ?? "unknown"
+  });
+}
+
+function buildHintsFieldFromImpulse(globalHints = {}) {
+  // SAFE MODE: we only carry hints, we do NOT act on them.
+  return Object.freeze({
+    fallbackBandLevel: globalHints.fallbackBandLevel ?? 0,
+    chunkHints: globalHints.chunkHints || {},
+    cacheHints: globalHints.cacheHints || {},
+    prewarmHints: globalHints.prewarmHints || {},
+    coldStartHints: globalHints.coldStartHints || {}
+  });
+}
+
+function buildContinuanceProfile({ band, globalHints = {} }) {
+  const b = (band === "binary" ? "binary" : "symbolic");
+  const hintsField = buildHintsFieldFromImpulse(globalHints);
+
+  // SAFE MODE: factoringSignal is allowed, but we do NOT use it to branch.
+  const fallbackBandLevel = hintsField.fallbackBandLevel;
+  const factoringSignal = 1; // always "on" for continuance: always build Earn v1
+
+  return Object.freeze({
+    continuanceBand: b,
+    fallbackBandLevel,
+    factoringSignal,
+    // carried-only hints; no behavior:
+    chunkHints: hintsField.chunkHints,
+    cacheHints: hintsField.cacheHints,
+    prewarmHints: hintsField.prewarmHints,
+    coldStartHints: hintsField.coldStartHints
+  });
+}
 
 // ============================================================================
 //  INTERNAL: Build LegacyEarn v1 directly from impulse (NO IMPORTS)
-//  Now dual-band + binary/wave/factoring aware (structural only).
+//  Now dual-band + binary/wave/factoring + presence/advantage aware (structural only).
 // ============================================================================
-function buildLegacyEarnFromImpulse(impulse) {
+function buildLegacyEarnFromImpulse(impulse, globalHints = {}) {
   continuanceCycle++;
 
   const payload = impulse?.payload || {};
@@ -93,12 +163,13 @@ function buildLegacyEarnFromImpulse(impulse) {
   const pattern = impulse.intent || payload.pattern || "UNKNOWN_PATTERN";
   const lineage = payload.parentLineage || [];
 
-  // Dual-band + factoring inputs (metadata-only)
+  // Dual-band (metadata-only)
   const band =
     (payload.band && String(payload.band).toLowerCase() === "binary")
       ? "binary"
       : "symbolic";
 
+  // FactoringSignal (metadata-only, always normalized to 0/1)
   const factoringSignal =
     typeof payload.factoringSignal === "number"
       ? (payload.factoringSignal ? 1 : 0)
@@ -131,11 +202,17 @@ function buildLegacyEarnFromImpulse(impulse) {
     mode: band === "binary" ? "compression-wave" : "symbolic-wave"
   };
 
+  // Presence / Advantage / Hints / ContinuanceProfile (metadata-only)
+  const presenceField = buildPresenceFieldFromImpulse(impulse, globalHints);
+  const advantagePresenceField = buildAdvantagePresenceFieldFromImpulse(globalHints);
+  const hintsField = buildHintsFieldFromImpulse(globalHints);
+  const continuanceProfile = buildContinuanceProfile({ band, globalHints });
+
   return {
     EarnRole: {
       kind: "Earn",
       version: "1.0",
-      identity: "Earn-v1-Continuance-v11-Evo"
+      identity: "Earn-v1-Continuance-v12.3-PRESENCE-EVO+"
     },
 
     jobId,
@@ -153,10 +230,15 @@ function buildLegacyEarnFromImpulse(impulse) {
     binaryField,
     waveField,
 
+    presenceField,
+    advantagePresenceField,
+    hintsField,
+    continuanceProfile,
+
     meta: {
       ...(payload.meta || {}),
       legacy: true,
-      origin: "ContinuancePulse-v11-Evo",
+      origin: "ContinuancePulse-v12.3-PRESENCE-EVO+",
       cycleIndex: continuanceCycle,
       patternSignature,
       lineageSignature
@@ -164,10 +246,9 @@ function buildLegacyEarnFromImpulse(impulse) {
   };
 }
 
-
 // ============================================================================
-//  INTERNAL: Build Pulse-Compatible Earn Wrapper (v11-Evo)
-//  Now carries band + factoring + binary/wave surfaces through the envelope.
+//  INTERNAL: Build Pulse-Compatible Earn Wrapper (v12.3-PRESENCE-EVO+ SAFE)
+//  Carries band + factoring + binary/wave + presence/advantage/hints surfaces.
 // ============================================================================
 function buildPulseCompatibleEarn(earn) {
   if (!earn) return null;
@@ -199,6 +280,11 @@ function buildPulseCompatibleEarn(earn) {
     mode: band === "binary" ? "compression-wave" : "symbolic-wave"
   };
 
+  const presenceField = earn.presenceField || null;
+  const advantagePresenceField = earn.advantagePresenceField || null;
+  const hintsField = earn.hintsField || null;
+  const continuanceProfile = earn.continuanceProfile || null;
+
   return {
     PulseRole: earn.EarnRole,
 
@@ -217,11 +303,16 @@ function buildPulseCompatibleEarn(earn) {
     binaryField,
     waveField,
 
+    presenceField,
+    advantagePresenceField,
+    hintsField,
+    continuanceProfile,
+
     meta: {
       ...(earn.meta || {}),
-      origin: "ContinuancePulse-v11-Evo",
+      origin: "ContinuancePulse-v12.3-PRESENCE-EVO+",
       earnVersion: "1.0",
-      earnIdentity: "Earn-v1-Continuance-v11-Evo",
+      earnIdentity: "Earn-v1-Continuance-v12.3-PRESENCE-EVO+",
       earnEnvelope: true,
       cycleIndex: earn.meta.cycleIndex,
       continuanceSignature,
@@ -241,29 +332,32 @@ function buildPulseCompatibleEarn(earn) {
       factoringSignal,
       binaryField,
       waveField,
+      presenceField,
+      advantagePresenceField,
+      hintsField,
+      continuanceProfile,
       meta: earn.meta,
       __earnEnvelope: true
     }
   };
 }
 
-
 // ============================================================================
-//  PUBLIC API — PulseEarnContinuancePulse (v11-Evo SAFE)
+//  PUBLIC API — PulseEarnContinuancePulse (v12.3-PRESENCE-EVO+ SAFE)
 //  NOTE: This module DOES NOT SEND ANYTHING.
 //        It only returns the legacy Earn + envelope.
 //        Caller decides if/where to send, under a governor.
 // ============================================================================
 export const PulseEarnContinuancePulse = {
 
-  build(impulse) {
-    // 1. Build Earn v1 from Impulse (now dual-band + binary/wave/factoring aware)
-    const earnV1 = buildLegacyEarnFromImpulse(impulse);
+  build(impulse, globalHints = {}) {
+    // 1. Build Earn v1 from Impulse (band/binary/wave/factoring/presence/advantage aware)
+    const earnV1 = buildLegacyEarnFromImpulse(impulse, globalHints);
 
     // 2. Wrap Earn v1 in Pulse-compatible shape
     const pulseCompatibleEarn = buildPulseCompatibleEarn(earnV1);
 
-    // 3. Optional local-only observer hook
+    // 3. Optional local-only observer hook (unchanged, safe)
     if (typeof window !== "undefined" && window.EarnBand?.receiveEarnResult) {
       window.EarnBand.receiveEarnResult({
         impulse,

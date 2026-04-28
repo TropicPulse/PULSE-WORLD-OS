@@ -1,37 +1,21 @@
 // ============================================================================
-//  PULSE GPU RUNTIME v11-Evo — THE MOMENTUM NETWORK
-//  Forward Motion Layer • Signal Conduction Pathway • GPU Kinetic System
+// FILE: tropic-pulse-functions/apps/PULSE-GPU/PulseGPUDrive.js
+// LAYER: MOMENTUM NETWORK — GPU RUNTIME (BRAIN → ENGINE FLOW)
+//
+// PulseGPURuntime v12-Evo-Presence-Max
+// Deterministic, Drift‑Proof, PulseSend‑v12‑Ready, Presence‑Aware
 // ============================================================================
 //
-// IDENTITY — THE MOMENTUM NETWORK (v11-Evo):
-//  -----------------------------------------
-//  • The GPU organism’s forward-motion layer.
-//  • The kinetic system that moves data, buffers, and packages downstream.
-//  • The conduction pathway between Analyst (Brain) and Motor Hall (Engine).
-//  • The self-moving cart: once initialized, it carries the whole subsystem forward.
-//  • Advantage‑cascade aware: inherits all systemic advantages automatically.
-//  • Binary-aware, symbolic-aware, dispatch-aware, memory-aware.
-//  • PulseSend‑v11‑ready: exposes a clean, deterministic surface for the compute router.
-//
-// SAFETY RULES (v11-Evo):
-//  -----------------------
-//  • NO backend APIs
-//  • NO DOM manipulation outside WebGPU canvas/context
-//  • NO Node.js APIs
-//  • NO randomness or timestamps in GPU initialization logic
-//  • NO mutation of Brain packages
-//  • ALWAYS check navigator.gpu before initializing
-//  • FAIL‑OPEN: if GPU or packages are unavailable, expose empty buffers/context
-//
-// CONTRACTS (conceptual only):
-//  ----------------------------
-//  • routingContract: "PulseSend-v11"
-//  • gpuOrganContract: "PulseGPU-v11-Evo"
-//  • binaryGpuOrganContract: "PulseBinaryGPU-v11-Evo"
-//  • earnCompatibility: "Earn-v3"
+// ROLE — MOMENTUM NETWORK:
+//  ------------------------
+//  • Wraps WebGPU context (adapter/device/context/format).
+//  • Loads GPU Brain packages → creates GPU buffers + shader modules.
+//  • Exposes meshes/shaders/textures/dispatch hints to Astral Muscle Engine.
+//  • Binary-aware, symbolic-aware, dispatch-aware, memory-aware, presence-aware.
+//  • Fail-open: if anything is missing, surfaces stay empty but never throw.
 // ============================================================================
 
-const PULSE_GPU_RUNTIME_VERSION = "11.0-Evo";
+const PULSE_GPU_RUNTIME_VERSION = "12.0-Evo-Presence-Max";
 
 // ============================================================================
 // GPU CONTEXT WRAPPER — Momentum Network: Conduction Node
@@ -55,19 +39,25 @@ class PulseGPUContext {
         driftProof: true,
         multiInstanceReady: true,
         unifiedAdvantageField: true,
-        pulseSend11Ready: true,
+        pulseSend12Ready: true,
 
-        // NEW v11-Evo awareness
+        // v12 Presence Evolution
+        presenceAware: true,
+        dnaAware: true,
+        versionAware: true,
+        instanceAware: true,
+
+        // GPU awareness
         binaryAware: true,
         symbolicAware: true,
         gpuDispatchAware: true,
         gpuMemoryAware: true,
         gpuAdvantageAware: true,
 
-        routingContract: "PulseSend-v11",
-        gpuOrganContract: "PulseGPU-v11-Evo",
-        binaryGpuOrganContract: "PulseBinaryGPU-v11-Evo",
-        earnCompatibility: "Earn-v3"
+        routingContract: "PulseSend-v12",
+        gpuOrganContract: "PulseGPU-v12-Evo-Presence-Max",
+        binaryGpuOrganContract: "PulseBinaryGPU-v12-Evo-Presence-Max",
+        earnCompatibility: "Earn-v4-Presence"
       }
     };
   }
@@ -150,8 +140,8 @@ class PulseGPURuntimeLoader {
     this.meshBuffers = [];
     this.shaderModules = [];
 
-    this.dispatchHints = null; // NEW v11-Evo
-    this.gpuMemorySnapshot = null; // NEW v11-Evo
+    this.dispatchHints = null;      // v12: still metadata-only
+    this.gpuMemorySnapshot = null;  // v12: optional, metadata-only
 
     this.meta = {
       layer: "PulseGPURuntimeLoader",
@@ -164,19 +154,25 @@ class PulseGPURuntimeLoader {
         driftProof: true,
         multiInstanceReady: true,
         unifiedAdvantageField: true,
-        pulseSend11Ready: true,
+        pulseSend12Ready: true,
 
-        // NEW v11-Evo awareness
+        // v12 Presence Evolution
+        presenceAware: true,
+        dnaAware: true,
+        versionAware: true,
+        instanceAware: true,
+
+        // GPU awareness
         binaryAware: true,
         symbolicAware: true,
         gpuDispatchAware: true,
         gpuMemoryAware: true,
         gpuAdvantageAware: true,
 
-        routingContract: "PulseSend-v11",
-        gpuOrganContract: "PulseGPU-v11-Evo",
-        binaryGpuOrganContract: "PulseBinaryGPU-v11-Evo",
-        earnCompatibility: "Earn-v3"
+        routingContract: "PulseSend-v12",
+        gpuOrganContract: "PulseGPU-v12-Evo-Presence-Max",
+        binaryGpuOrganContract: "PulseBinaryGPU-v12-Evo-Presence-Max",
+        earnCompatibility: "Earn-v4-Presence"
       }
     };
   }
@@ -191,7 +187,7 @@ class PulseGPURuntimeLoader {
 
     this.packages = pkg;
 
-    // NEW v11-Evo: load dispatch hints + memory snapshot if present
+    // v12: load dispatch hints + memory snapshot if present
     this.dispatchHints = pkg.dispatchHints || null;
     this.gpuMemorySnapshot = pkg.gpuMemorySnapshot || null;
 
@@ -293,19 +289,25 @@ class PulseGPURuntime {
         driftProof: true,
         multiInstanceReady: true,
         unifiedAdvantageField: true,
-        pulseSend11Ready: true,
+        pulseSend12Ready: true,
 
-        // NEW v11-Evo awareness
+        // v12 Presence Evolution
+        presenceAware: true,
+        dnaAware: true,
+        versionAware: true,
+        instanceAware: true,
+
+        // GPU awareness
         binaryAware: true,
         symbolicAware: true,
         gpuDispatchAware: true,
         gpuMemoryAware: true,
         gpuAdvantageAware: true,
 
-        routingContract: "PulseSend-v11",
-        gpuOrganContract: "PulseGPU-v11-Evo",
-        binaryGpuOrganContract: "PulseBinaryGPU-v11-Evo",
-        earnCompatibility: "Earn-v3"
+        routingContract: "PulseSend-v12",
+        gpuOrganContract: "PulseGPU-v12-Evo-Presence-Max",
+        binaryGpuOrganContract: "PulseBinaryGPU-v12-Evo-Presence-Max",
+        earnCompatibility: "Earn-v4-Presence"
       }
     };
   }
@@ -340,7 +342,7 @@ class PulseGPURuntime {
     return this.loader.packages;
   }
 
-  // NEW v11-Evo: expose dispatch hints + memory snapshot
+  // v12: expose dispatch hints + memory snapshot
   getDispatchHints() {
     return this.loader.dispatchHints;
   }
@@ -349,12 +351,27 @@ class PulseGPURuntime {
     return this.loader.gpuMemorySnapshot;
   }
 
+  // v12: compatibility surfaces for Astral Muscle / Spine
   getMeshesFromPackages() {
     return this.loader.meshBuffers;
   }
 
   getShadersFromPackages() {
     return this.loader.shaderModules;
+  }
+
+  // v12: optional dispatch surfaces (fail-open, empty)
+  getGPUDispatchesFromPackages() {
+    return this.loader.packages?.gpuDispatches || [];
+  }
+
+  getGPUDispatches() {
+    return this.getGPUDispatchesFromPackages();
+  }
+
+  // v12: optional Earn frame surface (for Spine planning) — fail-open
+  getCurrentEarnFrame() {
+    return this.loader.packages?.earnFrame || null;
   }
 }
 

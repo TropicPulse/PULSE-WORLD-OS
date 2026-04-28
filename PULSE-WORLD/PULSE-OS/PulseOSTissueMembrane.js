@@ -1,32 +1,34 @@
 // ============================================================================
 // FILE: /apps/PulseOS/PULSE-OS/PulseOSTissueMembrane.js
-// PULSE OS — v10.1 → v11 DESIGN
+// PULSE OS — v10.1 → v12.3-Presence
 // “THE TISSUE MEMBRANE / MID‑LAYER EPITHELIAL REFLEX”
 // A2 REFLEX LAYER • MID‑LAYER SENTINEL • ZERO TIMING • ZERO STATE
 // ============================================================================
 //
-// v11 UPGRADE RULES APPLIED:
+// v12.3+ PRESENCE / PREWARM / MULTI-PRESENCE UPGRADE:
 //   ✔ Zero timing (no Date.now → deterministic seq counter)
 //   ✔ Zero global mutation (no PulseOSBrain.* writes)
 //   ✔ Guarded window access (environment‑agnostic)
-//   ✔ Deterministic route memory
+//   ✔ Deterministic route memory (now presence‑band aware)
+//   ✔ Prewarmable route cache (pure, deterministic)
+//   ✔ Chunked route memory snapshot for diagnostics / presence overlays
 //   ✔ Preserve ALL abilities (degradation, DNA, healing, trace)
 //   ✔ No compute, no payload mutation, no scheduling
-//   ✔ Dual‑band awareness (symbolic + binary) via __band tagging
+//   ✔ Dual‑band + presence awareness via __band tagging
 // ============================================================================
 
 // ============================================================================
-// ORGAN IDENTITY — v11‑EVO‑PRIME (A2 Tissue Membrane)
+// ORGAN IDENTITY — v12.3-PRESENCE (A2 Tissue Membrane)
 // ============================================================================
 export const PulseRole = {
   type: "Barrier",
   subsystem: "PulseOSTissueMembrane",
   layer: "A2-TissueReflex",
-  version: "11.0-Evo-Prime",
-  identity: "PulseOSTissueMembrane-v11-Evo-Prime",
+  version: "12.3-Evo-Presence",
+  identity: "PulseOSTissueMembrane-v12.3-Evo-Presence",
 
   evo: {
-    // Core v11‑EVO invariants
+    // Core invariants
     driftProof: true,
     deterministicField: true,
     unifiedAdvantageField: true,
@@ -41,11 +43,13 @@ export const PulseRole = {
     zeroAsync: true,
     zeroRandomness: true,
 
-    // Dualband + binary-first metadata
+    // Dualband + presence metadata
     dualBand: true,
     binaryAware: true,
     symbolicAware: true,
     bandNormalizationAware: true,
+    presenceAware: true,
+    multiPresenceReady: true,
 
     // Reflex lineage
     membraneLayer: "A2",
@@ -57,14 +61,19 @@ export const PulseRole = {
     // Environment + safety
     guardedWindowAccess: true,
     environmentAgnostic: true,
-    multiInstanceReady: true
+    multiInstanceReady: true,
+
+    // Prewarm / cache / chunk
+    prewarmCacheAware: true,
+    chunkedRouteMemory: true
   }
 };
+
 export const PulseOSTissueMembraneMeta = Object.freeze({
   layer: "PulseOSTissueMembrane",
   role: "A2_TISSUE_REFLEX_MEMBRANE",
-  version: "v11.2-EVO-BINARY-MAX",
-  identity: "PulseOSTissueMembrane-v11.2-EVO-BINARY-MAX",
+  version: "v12.3-EVO-PRESENCE",
+  identity: "PulseOSTissueMembrane-v12.3-EVO-PRESENCE",
 
   guarantees: Object.freeze({
     deterministic: true,
@@ -96,9 +105,14 @@ export const PulseOSTissueMembraneMeta = Object.freeze({
     symbolicAware: true,
     binaryAware: true,
     dualBandAware: true,
+    presenceBandAware: true,
     bandNormalizationAware: true,
     environmentAgnostic: true,
     guardedWindowAccess: true,
+
+    // Prewarm / cache / chunk
+    prewarmCacheAware: true,
+    chunkedRouteMemory: true,
 
     // Environment
     worldLensAware: false
@@ -119,19 +133,20 @@ export const PulseOSTissueMembraneMeta = Object.freeze({
   }),
 
   lineage: Object.freeze({
-    root: "PulseOS-v11-EVO",
-    parent: "PulseOS-v11.2-EVO",
+    root: "PulseOS-v12-EVO",
+    parent: "PulseOS-v12.3-EVO-PRESENCE",
     ancestry: [
       "PulseOSTissueMembrane-v9",
       "PulseOSTissueMembrane-v10",
       "PulseOSTissueMembrane-v11",
       "PulseOSTissueMembrane-v11-Evo",
-      "PulseOSTissueMembrane-v11-Evo-Prime"
+      "PulseOSTissueMembrane-v11-Evo-Prime",
+      "PulseOSTissueMembrane-v12.3-Evo-Presence"
     ]
   }),
 
   bands: Object.freeze({
-    supported: ["symbolic", "binary"],
+    supported: ["symbolic", "binary", "presence"],
     default: "symbolic",
     behavior: "tissue-reflex"
   }),
@@ -139,20 +154,20 @@ export const PulseOSTissueMembraneMeta = Object.freeze({
   architecture: Object.freeze({
     pattern: "A-B-A",
     baseline: "mid-layer error → reflex classification → healing trigger",
-    adaptive: "binary-tagged reflex surfaces",
+    adaptive: "binary/presence-tagged reflex surfaces",
     return: "deterministic tissue reflex event + signatures"
   })
 });
 
 // ============================================================================
-// LAYER CONSTANTS + DIAGNOSTICS (v11‑safe)
+// LAYER CONSTANTS + DIAGNOSTICS (v12.3‑safe)
 // ============================================================================
 const hasWindow = typeof window !== "undefined";
 
 const LAYER_ID   = "LAYER-REFLEX";
 const LAYER_NAME = "THE TISSUE MEMBRANE";
 const LAYER_ROLE = "MID-LAYER ERROR GUARDIAN & HEALING TRIGGER";
-const LAYER_VER  = "11.0";
+const LAYER_VER  = "12.3-Presence";
 
 const LAYER_DIAGNOSTICS_ENABLED =
   hasWindow &&
@@ -177,21 +192,24 @@ const logLayer = (stage, details = {}) => {
 
 
 // ============================================================================
-// DUAL‑BAND CONSTANTS (symbolic + binary)
+// DUAL‑BAND + PRESENCE CONSTANTS
 // ============================================================================
 const ROUTE_BANDS = {
   SYMBOLIC: "symbolic",
-  BINARY: "binary"
+  BINARY: "binary",
+  PRESENCE: "presence"
 };
 
 function normalizeBand(band) {
   const b = (band || ROUTE_BANDS.SYMBOLIC).toLowerCase();
-  return b === ROUTE_BANDS.BINARY ? ROUTE_BANDS.BINARY : ROUTE_BANDS.SYMBOLIC;
+  if (b === ROUTE_BANDS.BINARY) return ROUTE_BANDS.BINARY;
+  if (b === ROUTE_BANDS.PRESENCE) return ROUTE_BANDS.PRESENCE;
+  return ROUTE_BANDS.SYMBOLIC;
 }
 
 
 // ============================================================================
-// ROUTE MEMORY — v11 deterministic, zero timing, DNA tagging preserved
+// ROUTE MEMORY — deterministic, zero timing, DNA tagging + presence-aware
 // ============================================================================
 
 // deterministic sequence counter (replaces Date.now)
@@ -230,7 +248,7 @@ const LayerRouteMemory = {
       healthScore: baseHealth,
       tier,
       band,
-      dnaTag: "A2_TISSUE",
+      dnaTag: band === ROUTE_BANDS.PRESENCE ? "A2_TISSUE_PRESENCE" : "A2_TISSUE",
       ...overrides
     };
 
@@ -254,7 +272,10 @@ const LayerRouteMemory = {
     entry.healthScore = healthScore;
     entry.tier = this.classifyTier(healthScore);
     entry.band = normalizeBand(band);
-    entry.dnaTag = "A2_TISSUE_DEGRADED";
+    entry.dnaTag =
+      entry.band === ROUTE_BANDS.PRESENCE
+        ? "A2_TISSUE_PRESENCE_DEGRADED"
+        : "A2_TISSUE_DEGRADED";
 
     logLayer("ROUTE_MEMORY_DEGRADED", {
       key,
@@ -286,12 +307,37 @@ const LayerRouteMemory = {
   getEntry(message, frames, band = ROUTE_BANDS.SYMBOLIC) {
     const key = this.makeKey(message, frames, band);
     return this.store[key] || null;
+  },
+
+  snapshot() {
+    // Pure structural snapshot for diagnostics / presence overlays
+    const entries = Object.keys(this.store)
+      .sort((a, b) => this.store[a].seq - this.store[b].seq)
+      .map((key) => {
+        const e = this.store[key];
+        return {
+          key,
+          seq: e.seq,
+          degraded: e.degraded,
+          healthScore: e.healthScore,
+          tier: e.tier,
+          band: e.band,
+          dnaTag: e.dnaTag,
+          framesCount: e.frames.length
+        };
+      });
+
+    return {
+      version: "12.3-Presence",
+      count: entries.length,
+      entries
+    };
   }
 };
 
 
 // ============================================================================
-// PUBLIC API (C‑LAYER passthrough — dual‑band aware)
+// PUBLIC API (C‑LAYER passthrough — dual‑band + presence aware)
 // ============================================================================
 import { route, Router } from "./PulseOSCNSNervousSystem.js";
 
@@ -323,8 +369,10 @@ export async function layerHelper(helperName, payload = {}, band = payload.__ban
   logLayer("LAYER_HELPER", { helperName, band: b });
   return await route("helper", attachBand({ helperName, payload, reflexOrigin: "LayerScanner" }, b));
 }
+
+
 // ============================================================================
-// MID‑LAYER ERROR INTERCEPTOR (A2 → A3) — v11 dual‑band
+// MID‑LAYER ERROR INTERCEPTOR (A2 → A3) — v12.3 dual‑band + presence
 // ============================================================================
 let layerHealing = false;
 
@@ -427,7 +475,7 @@ if (hasWindow && typeof window.addEventListener === "function") {
       const degraded = memoryEntry?.degraded || false;
       const healthScore = memoryEntry?.healthScore ?? 1.0;
       const tier = memoryEntry?.tier || "microDegrade";
-      const dnaTag = memoryEntry?.dnaTag || "A2_TISSUE";
+      const dnaTag = memoryEntry?.dnaTag || (band === ROUTE_BANDS.PRESENCE ? "A2_TISSUE_PRESENCE" : "A2_TISSUE");
 
       // ----------------------------------------------------------------------
       // ALWAYS PIPE ERROR TO BACKEND VIA ROUTER
@@ -556,6 +604,65 @@ function parseMissingField(message) {
   return null;
 }
 
+
 // ============================================================================
-// END OF FILE — THE TISSUE MEMBRANE / MID‑LAYER EPITHELIAL REFLEX  [v11]
+// PREWARM + SNAPSHOT SURFACE — presence / cache / chunk (pure, deterministic)
+// ============================================================================
+
+/**
+ * Prewarm the tissue membrane route memory with known mid-layer error patterns.
+ * routes: Array<{
+ *   message: string,
+ *   frames: string[],
+ *   routeTrace?: any[],
+ *   band?: "symbolic" | "binary" | "presence",
+ *   healthScore?: number,
+ *   degraded?: boolean
+ * }>
+ */
+export function prewarmTissueMembrane(routes = []) {
+  for (const r of routes) {
+    if (!r || !r.message || !Array.isArray(r.frames)) continue;
+    const band = normalizeBand(r.band);
+    const trace =
+      Array.isArray(r.routeTrace) && r.routeTrace.length > 0
+        ? r.routeTrace
+        : r.frames.map((frame, index) => {
+            const file = frame.split("/").pop().split(":")[0];
+            return {
+              frame,
+              file,
+              index,
+              label: "LAYER_FRAME",
+              layer: "A2",
+              purpose: "Prewarmed mid-layer frame",
+              context: "LayerScanner prewarm trace",
+              band
+            };
+          });
+
+    LayerRouteMemory.remember(r.message, r.frames, trace, {
+      band,
+      healthScore: r.healthScore,
+      degraded: !!r.degraded
+    });
+  }
+
+  logLayer("TISSUE_PREWARM_COMPLETE", {
+    prewarmCount: Array.isArray(routes) ? routes.length : 0
+  });
+}
+
+/**
+ * Get a deterministic snapshot of tissue route memory for diagnostics /
+ * presence overlays / multi-presence dashboards.
+ */
+export function getTissueRouteMemorySnapshot() {
+  const snap = LayerRouteMemory.snapshot();
+  logLayer("TISSUE_ROUTE_MEMORY_SNAPSHOT", { count: snap.count });
+  return snap;
+}
+
+// ============================================================================
+// END OF FILE — THE TISSUE MEMBRANE / MID‑LAYER EPITHELIAL REFLEX  [v12.3]
 // ============================================================================

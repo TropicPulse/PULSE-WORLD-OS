@@ -16,7 +16,7 @@
  */
 
 import LineageEngineAPI from "./LineageEngine-v11-Evo.js";
-import { createPulseCoreMemory } from "../../PULSECORE/PulseCoreMemory.js";
+import { createPulseCoreMemory } from "../PULSE-CORE/PulseCoreMemory.js";
 
 const {
   LineageEventType,

@@ -31,15 +31,14 @@
 //  • All outputs must be JSON‑serializable.
 //  • Drift‑proof, parallel‑safe, multi‑instance‑safe.
 // ============================================================================
-
 export const PulseProxyPNSNervousSystemBinary = {
   // --------------------------------------------------------------------------
-  // ORGAN META — v11 identity
+  // ORGAN META — v12.3‑EVO‑PRESENCE identity
   // --------------------------------------------------------------------------
   meta: {
     layer: "PulseBand",
     role: "NERVOUS_SYSTEM_BINARY",
-    version: "11.0",
+    version: "12.3-EVO-PRESENCE",
     mode: "binary-core",
     purpose: "Deterministic nervous math for PNS (PulseBand)",
     evo: {
@@ -50,11 +49,29 @@ export const PulseProxyPNSNervousSystemBinary = {
       unifiedAdvantageField: true,
       parallelSafe: true,
       multiInstanceReady: true,
+
+      // strict binary organ prohibitions
       noWindow: true,
       noDOM: true,
       noGPU: true,
       noFetch: true,
-      noImports: true
+      noImports: true,
+      noSideEffects: true,
+      noLogs: true,
+      noTimers: true,
+      noAsync: true,
+      noRandomness: true,
+      noExternalMutation: true,
+      noDynamicImports: true,
+      noEval: true,
+
+      // awareness (binary‑only, presence via consumers)
+      binaryAware: true,
+      symbolicAware: false,
+      bandAware: true,
+      binaryFieldAware: true,
+      waveFieldAware: false,
+      presenceAware: false
     }
   },
 
@@ -74,7 +91,7 @@ export const PulseProxyPNSNervousSystemBinary = {
   // --------------------------------------------------------------------------
   detectSpike(prevLatency, nextLatency) {
     if (!Number.isFinite(prevLatency) || !Number.isFinite(nextLatency)) return false;
-    return nextLatency - prevLatency > 120; // same threshold as symbolic
+    return nextLatency - prevLatency > 120;
   },
 
   // --------------------------------------------------------------------------
@@ -136,8 +153,8 @@ export const PulseProxyPNSNervousSystemBinary = {
 export const PulseProxyPNSNervousSystemBinaryMeta = Object.freeze({
   layer: "PulseBandBinaryCore",
   role: "PNS_NERVOUS_SYSTEM_BINARY",
-  version: "v11.2-EVO-BINARY-MAX",
-  identity: "PulseProxyPNSNervousSystemBinary-v11.2-EVO-BINARY-MAX",
+  version: "v12.3-EVO-BINARY-MAX",
+  identity: "PulseProxyPNSNervousSystemBinary-v12.3-EVO-BINARY-MAX",
 
   guarantees: Object.freeze({
     deterministic: true,
@@ -172,9 +189,11 @@ export const PulseProxyPNSNervousSystemBinaryMeta = Object.freeze({
 
     // Awareness
     binaryAware: true,
-    symbolicAware: false,       // symbolic PulseBand reads from this, not vice‑versa
+    symbolicAware: false,
     dualModeEvolution: true,
     unifiedAdvantageField: true,
+    bandAware: true,
+    binaryFieldAware: true,
 
     // Environment
     worldLensAware: false
@@ -198,13 +217,14 @@ export const PulseProxyPNSNervousSystemBinaryMeta = Object.freeze({
 
   lineage: Object.freeze({
     root: "PulseBand-v11",
-    parent: "PulseBand-v11.2-EVO",
+    parent: "PulseBand-v12.3-EVO",
     ancestry: [
       "PulseProxyPNSNervousSystemBinary-v9",
       "PulseProxyPNSNervousSystemBinary-v10",
       "PulseProxyPNSNervousSystemBinary-v11",
       "PulseProxyPNSNervousSystemBinary-v11-Evo",
-      "PulseProxyPNSNervousSystemBinary-v11-Evo-Prime"
+      "PulseProxyPNSNervousSystemBinary-v11-Evo-Prime",
+      "PulseProxyPNSNervousSystemBinary-v12.3-EVO-PRESENCE"
     ]
   }),
 
@@ -221,4 +241,3 @@ export const PulseProxyPNSNervousSystemBinaryMeta = Object.freeze({
     return: "pure binary nervous metadata + signatures"
   })
 });
-

@@ -1,7 +1,10 @@
 // ============================================================================
 //  PulseEarnRouter-v11-Evo-DualStack — EARN ROUTING ORGAN (Symbolic + Binary)
 //  Deterministic Earn Routing • Pattern/Lineage/Page/Binary-Aware
+//  + CoreMemory Integration: hot patterns/pages/binary surfaces
 // ============================================================================
+
+import { createPulseCoreMemory } from "../PULSE-CORE/PulseCoreMemory.js";
 
 export const PulseEarnRole = {
   type: "EarnRouter",
@@ -20,7 +23,13 @@ export const PulseEarnRole = {
     loopTheoryAware: true,
 
     // ⭐ NEW: binary-aware earn routing
-    binaryAware: true
+    binaryAware: true,
+
+    // ⭐ NEW: core-memory-aware
+    coreMemoryAware: true,
+    hotPatternAware: true,
+    hotPageAware: true,
+    hotBinarySurfaceAware: true
   },
 
   loopTheory: {
@@ -33,6 +42,49 @@ export const PulseEarnRole = {
   earnContract: "PulseEarn-v11",
   sendContract: "PulseSend-v11"
 };
+
+
+// ============================================================================
+//  CORE MEMORY — hot caching / presence
+// ============================================================================
+const CoreMemory = createPulseCoreMemory();
+const ROUTE = "earn-router-global";
+
+const KEY_LAST_DECISION = "last-decision";
+const KEY_LAST_PULSE_SURFACE = "last-pulse-surface";
+const KEY_HOT_PATTERNS = "hot-patterns";
+const KEY_HOT_PAGES = "hot-pages";
+const KEY_HOT_BINARY = "hot-binary-patterns";
+
+function trackPattern(pattern) {
+  if (!pattern) return;
+  const hot = CoreMemory.get(ROUTE, KEY_HOT_PATTERNS) || {};
+  hot[pattern] = (hot[pattern] || 0) + 1;
+  CoreMemory.set(ROUTE, KEY_HOT_PATTERNS, hot);
+}
+
+function trackPage(pageId) {
+  if (!pageId) return;
+  const hot = CoreMemory.get(ROUTE, KEY_HOT_PAGES) || {};
+  hot[pageId] = (hot[pageId] || 0) + 1;
+  CoreMemory.set(ROUTE, KEY_HOT_PAGES, hot);
+}
+
+function trackBinary(binary) {
+  if (!binary || !binary.hasBinary) return;
+  const key = binary.binaryPattern || binary.binaryMode || "generic-binary";
+  const hot = CoreMemory.get(ROUTE, KEY_HOT_BINARY) || {};
+  hot[key] = (hot[key] || 0) + 1;
+  CoreMemory.set(ROUTE, KEY_HOT_BINARY, hot);
+}
+
+function storeDecision(decision, pulseSurface) {
+  CoreMemory.set(ROUTE, KEY_LAST_DECISION, decision);
+  CoreMemory.set(ROUTE, KEY_LAST_PULSE_SURFACE, pulseSurface);
+  trackPattern(pulseSurface.pattern);
+  trackPage(pulseSurface.pageId);
+  trackBinary(pulseSurface.binary);
+}
 
 
 // ============================================================================
@@ -140,38 +192,35 @@ function chooseEarnPath(pulse) {
 
 
 // ============================================================================
-//  PUBLIC API — PulseEarnRouter (DualStack)
+//  INTERNAL — pure decision builder (no CoreMemory side effects)
 // ============================================================================
-export const PulseEarnRouter = {
+function buildEarnDecision(pulse) {
+  const pattern = pulse.pattern || "UNKNOWN_PATTERN";
+  const lineage = Array.isArray(pulse.lineage) ? pulse.lineage.slice() : [];
+  const pageId = pulse.pageId || "NO_PAGE";
 
-  PulseEarnRole,
+  const patternAncestry =
+    pulse.patternAncestry?.length
+      ? pulse.patternAncestry.slice()
+      : buildPatternAncestry(pattern);
 
-  routeEarn(pulse) {
-    const pattern = pulse.pattern || "UNKNOWN_PATTERN";
-    const lineage = Array.isArray(pulse.lineage) ? pulse.lineage.slice() : [];
-    const pageId = pulse.pageId || "NO_PAGE";
+  const lineageSignature =
+    typeof pulse.lineageSignature === "string"
+      ? pulse.lineageSignature
+      : buildLineageSignature(lineage);
 
-    const patternAncestry =
-      pulse.patternAncestry?.length
-        ? pulse.patternAncestry.slice()
-        : buildPatternAncestry(pattern);
+  const pageAncestrySignature =
+    typeof pulse.pageAncestrySignature === "string"
+      ? pulse.pageAncestrySignature
+      : buildPageAncestrySignature({ pattern, lineage, pageId });
 
-    const lineageSignature =
-      typeof pulse.lineageSignature === "string"
-        ? pulse.lineageSignature
-        : buildLineageSignature(lineage);
+  const binary = extractBinarySurface(pulse.payload || {});
+  const tier = classifyDegradationTier(pulse.healthScore ?? 1);
 
-    const pageAncestrySignature =
-      typeof pulse.pageAncestrySignature === "string"
-        ? pulse.pageAncestrySignature
-        : buildPageAncestrySignature({ pattern, lineage, pageId });
+  const targetPath = chooseEarnPath(pulse);
 
-    const binary = extractBinarySurface(pulse.payload || {});
-    const tier = classifyDegradationTier(pulse.healthScore ?? 1);
-
-    const targetPath = chooseEarnPath(pulse);
-
-    return {
+  return {
+    decision: {
       targetPath,
       tier,
 
@@ -187,6 +236,48 @@ export const PulseEarnRouter = {
       binary,
 
       loopTheory: { ...PulseEarnRole.loopTheory }
+    },
+    surface: {
+      pattern,
+      patternAncestry,
+      lineage,
+      lineageSignature,
+      pageId,
+      pageAncestrySignature,
+      binary
+    }
+  };
+}
+
+
+// ============================================================================
+//  PUBLIC API — PulseEarnRouter (DualStack + CoreMemory)
+// ============================================================================
+export const PulseEarnRouter = {
+
+  PulseEarnRole,
+
+  routeEarn(pulse) {
+    CoreMemory.prewarm();
+
+    const { decision, surface } = buildEarnDecision(pulse);
+    storeDecision(decision, surface);
+
+    return decision;
+  },
+
+  // Hot memory diagnostics / presence
+  getEarnRoutingState() {
+    CoreMemory.prewarm();
+
+    return {
+      lastDecision: CoreMemory.get(ROUTE, KEY_LAST_DECISION),
+      lastPulseSurface: CoreMemory.get(ROUTE, KEY_LAST_PULSE_SURFACE),
+      hotPatterns: CoreMemory.get(ROUTE, KEY_HOT_PATTERNS),
+      hotPages: CoreMemory.get(ROUTE, KEY_HOT_PAGES),
+      hotBinaryPatterns: CoreMemory.get(ROUTE, KEY_HOT_BINARY)
     };
-  }
+  },
+
+  CoreMemory
 };

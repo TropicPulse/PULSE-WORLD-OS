@@ -1,23 +1,24 @@
 // ============================================================================
-//  PULSE OS v11-Evo — SURVIVAL ORGANS LAYER  // orange
+//  PULSE OS v12.3-PRESENCE-EVO-MAX-PRIME — SURVIVAL ORGANS LAYER  // orange
 //  “Functional Organ Map of the Mesh Body”
 //  Capability Signatures • Deterministic Organ Matching • Metadata-Only
 // ============================================================================
 //
-// IDENTITY (v11-Evo):
-// -------------------
+// IDENTITY (v12.3):
+// ------------------
 // • Maps impulses to functional organs (storage, routing, security, earnPrep).
 // • Pure metadata-only classification — zero payload mutation.
 // • Deterministic-field, drift-proof, SDN-aligned.
 // • No pressure gating.
-// • Multi-instance-ready, unified-advantage-field, binary-aware, dual-mode-ready.
+// • Multi-instance-ready, unified-advantage-field,
+//   binary-aware, dual-mode-ready, presence-aware.
 // ============================================================================
 
 export function createPulseOrgans() {
 
   // -------------------------------------------------------
-  // ORGAN DEFINITIONS (v11-Evo)
-  // Deterministic, pressure-free, SDN-aligned.
+  // ORGAN DEFINITIONS (v12.3)
+  // Deterministic, pressure-free, SDN-aligned, presence-aware.
   // -------------------------------------------------------
   const PulseOrgans = {
 
@@ -70,20 +71,21 @@ export function createPulseOrgans() {
     },
 
     // -------------------------------------------------------
-    // NEW v11-Evo — BINARY PREP ORGAN
-    // Activated when binary mode is active
+    // BINARY PREP ORGAN — v12.3
+    // Activated when binary mode or binary presence-band is active
     // -------------------------------------------------------
     binaryPrep: {
       id: "organ-binaryprep",
       capabilities: ["binary_prepare", "binary_shape", "binary_assign"],
       match(impulse) {
-        return impulse.flags?.binary_mode === true;
+        return impulse.flags?.binary_mode === true ||
+               impulse.band === "binary";
       }
     },
 
     // -------------------------------------------------------
-    // NEW v11-Evo — MESH SIGNAL ORGAN
-    // Activated when mesh-level signals are present
+    // MESH SIGNAL ORGAN — v12.3
+    // Activated when mesh-level signals or presence-band signals appear
     // -------------------------------------------------------
     meshSignal: {
       id: "organ-meshsignal",
@@ -91,31 +93,47 @@ export function createPulseOrgans() {
       match(impulse) {
         return impulse.flags?.aura_prefers_factored_paths ||
                impulse.flags?.mesh_signal ||
-               impulse.flags?.aura_system_under_tension;
+               impulse.flags?.aura_system_under_tension ||
+               impulse.band === "dual";
+      }
+    },
+
+    // -------------------------------------------------------
+    // PRESENCE ORGAN — v12.3
+    // Activated when presence-band metadata is present
+    // -------------------------------------------------------
+    presence: {
+      id: "organ-presence",
+      capabilities: ["presence_shape", "presence_tag", "presence_band"],
+      match(impulse) {
+        return typeof impulse.band === "string" &&
+               ["binary", "symbolic", "dual"].includes(impulse.band);
       }
     }
   };
 
 
   // ========================================================================
-  // ORGAN ENGINE (v11-Evo)
+  // ORGAN ENGINE (v12.3)
   // “Attach functional organ identity to the impulse”
   // ========================================================================
   function applyPulseOrgans(impulse) {
     impulse.flags = impulse.flags || {};
     impulse.organs = impulse.organs || [];
 
-    // attach v11-Evo organ meta
+    // attach v12.3 organ meta
     impulse.flags.organ_meta = {
       layer: "PulseOrgans",
       role: "FUNCTIONAL_ORGAN_MAP",
-      version: "11.0-Evo",
+      version: "12.3-PRESENCE-EVO-MAX-PRIME",
       target: "full-mesh",
       selfRepairable: true,
       evo: {
         dualMode: true,
         binaryAware: true,
         symbolicAware: true,
+        presenceAware: true,
+        bandAware: true,
         localAware: true,
         internetAware: true,
         advantageCascadeAware: true,

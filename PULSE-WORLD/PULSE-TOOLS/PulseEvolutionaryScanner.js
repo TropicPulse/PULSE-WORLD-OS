@@ -1,64 +1,33 @@
 // ============================================================================
-// FILE: /apps/PulseOS/Scanner/PulseScannerPage-v11-EVO.js
-// PULSE OS — v11-EVO
-// SCANNER PAGE ORGAN — 4-LAYER, MULTI-SPIN, BINARY-THROUGHPUT VISUALIZER
+// FILE: /apps/PulseOS/Scanner/PulseScannerCortex-v12.3-EVO.js
+// PULSE OS — v12.3‑EVO
+// SCANNER CORTEX ORGAN — PRESENCE + HARMONICS + DUAL-BAND + ADAPTIVE LAYERS
 // ============================================================================
-// ROLE:
-//   - Act as the synthetic “scanner cortex” UI organ.
-//   - Drive 4 synthetic layers (body/home/town/nodeAdmin) from binary pulses.
-//   - Apply loop theory (sweeps), wave theory (contrast/energy), and multi-spin
-//     (multiple binary lenses) to evolve each grid over time.
-//   - Emit compact JSON summaries to PageEvo for visualization.
-//   - Remain strictly NON-MEDICAL and purely synthetic.
-// ---------------------------------------------------------------------------
-// LAYERS (ALL SYNTHETIC, NON-MEDICAL):
-//   1) BODY LAYER   — User/body grid
-//        • Loop: slow sweep across body grid rows
-//        • Wave: contrast/depth modulation
-//        • Slow pulse: higher detail, “MRI-like” synthetic density
-//
-//   2) HOME LAYER   — House/room grid
-//        • Loop: row sweep, containment
-//        • Wave: highlight tagged objects (e.g. "key")
-//        • Slow pulse: deliberate search, “find my keys” style
-//
-//   3) TOWN LAYER   — Area/town/island grid
-//        • Loop: column/sector sweep
-//        • Wave: emphasize cars, signs, reflections, colors
-//        • Slow pulse: broad, methodical area scan
-//
-//   4) NODEADMIN LAYER — NodeAdmin pulse field
-//        • Loop: meta-sweep over node grid
-//        • Wave: energy field, repair/assist emphasis
-//        • Fast+slow combined: bounce, repel, repair, assist
-// ---------------------------------------------------------------------------
-// SAFETY / SCOPE:
-//   - This is NOT a medical device.
-//   - This does NOT diagnose, treat, or detect real biological conditions.
-//   - All “body”, “home”, “town” concepts are synthetic data grids.
-//   - All “density”, “contrast”, “wave” values are synthetic visualization
-//     parameters, not real-world measurements.
+// ROLE (12.3‑EVO):
+//   - The organism’s visual cortex.
+//   - Dynamically creates/destroys layers based on presence + harmonics.
+//   - Fuses binary, pulse, presence, and harmonic signals.
+//   - Produces adaptive layer sets for PageEvo‑12.3.
+//   - Balanced adaptive mode: stable unless meaningful change detected.
 // ============================================================================
 
-import { PageEvo } from "../ui/PageEvo.js";
-
-// Binary signal organs (v11-EVO style)
-import { createBinaryPulse } from "../PULSE-TECH/PulseBinaryTech-v11-Evo.js";
-import { createBinaryWaveScanner } from "../PULSE-TOOLS/PulseBinaryWaveScanner.js";
-import { createBinaryLoopScanner } from "../PULSE-TOOLS/PulseBinaryLoopScanner.js";
-import { createPulseAdminInspector } from "../PULSE-TOOLS/PulseAdminInspector.js";
+import { createBinaryPulse } from "../PULSE-TECH/PulseBinaryTech-v12.3-EVO.js";
+import { createBinaryWaveScanner } from "../PULSE-TOOLS/PulseBinaryWaveScanner-v12.3-EVO.js";
+import { createBinaryLoopScanner } from "../PULSE-TOOLS/PulseBinaryLoopScanner-v12.3-EVO.js";
+import { createPulseAdminInspector } from "../PULSE-TOOLS/PulseAdminInspector-v12.3-EVO.js";
+import { PageEvo } from "../ui/PageEvo-v12.3-EVO.js";
 
 // ============================================================================
-// GRID HELPERS — SYNTHETIC “TISSUE” FOR ALL LAYERS
+// GRID HELPERS
 // ============================================================================
-
-function createGrid(width, height) {
-  return Array.from({ length: height }, () =>
-    Array.from({ length: width }, () => ({
-      density: 0,   // synthetic “mass / presence”
-      contrast: 0,  // synthetic “visibility / edge clarity”
-      wave: 0,      // synthetic “signal amplitude / energy”
-      tags: []      // semantic hints (e.g. "key", "car", "sign")
+function createGrid(w, h) {
+  return Array.from({ length: h }, () =>
+    Array.from({ length: w }, () => ({
+      density: 0,
+      contrast: 0,
+      wave: 0,
+      presence: 0,
+      tags: []
     }))
   );
 }
@@ -67,382 +36,277 @@ function clamp(v, min, max) {
   return Math.max(min, Math.min(max, v));
 }
 
-// Binary → number, cheap and deterministic
-function bitsToNumber(bits) {
-  let n = 0;
-  for (let i = 0; i < bits.length; i++) {
-    n = (n << 1) | (bits[i] & 1);
-  }
-  return n >>> 0;
-}
-
 function avg(grid, key) {
-  let sum = 0;
-  let count = 0;
+  let sum = 0, count = 0;
   for (let y = 0; y < grid.length; y++) {
-    const row = grid[y];
-    for (let x = 0; x < row.length; x++) {
-      sum += row[x][key];
+    for (let x = 0; x < grid[0].length; x++) {
+      sum += grid[y][x][key] ?? 0;
       count++;
     }
   }
-  return count ? (sum / count).toFixed(3) : "0.000";
+  return count ? sum / count : 0;
 }
 
-function snapshotGrid(grid) {
+function snapshot(grid) {
   return grid.map(row =>
-    row.map(cell => ({
-      density: cell.density,
-      contrast: cell.contrast,
-      wave: cell.wave,
-      tags: cell.tags
+    row.map(c => ({
+      density: c.density,
+      contrast: c.contrast,
+      wave: c.wave,
+      presence: c.presence,
+      tags: c.tags
     }))
   );
 }
 
 // ============================================================================
-// MAIN FACTORY — PULSE SCANNER PAGE (4-LAYER ENGINE + MULTI-SPIN)
+// MAIN FACTORY — PULSE SCANNER CORTEX (DYNAMIC ADAPTIVE)
 // ============================================================================
+export function createPulseScannerCortex({
+  trace = false,
+  spins = 3
+} = {}) {
 
-export function createPulseScannerPage({ trace = false, spins = 3 } = {}) {
   // -------------------------------------------------------------------------
-  // SHARED SIGNAL ORGANS — PULSE / WAVE / LOOP / ADMIN
+  // CORE ORGANS (12.3‑EVO)
   // -------------------------------------------------------------------------
   const pulse    = createBinaryPulse({ trace });
   const waveScan = createBinaryWaveScanner({ trace });
   const loopScan = createBinaryLoopScanner({ trace });
-  const admin    = createAdminInspector();
+  const admin    = createPulseAdminInspector({ trace });
 
   // -------------------------------------------------------------------------
-  // LAYER GRIDS — SYNTHETIC “TISSUE” FOR EACH SCALE
+  // BASE GRIDS (v11 → v12.3 presence-aware)
   // -------------------------------------------------------------------------
-  const bodyGrid = createGrid(32, 32);  // Layer 1: body/user
-  const homeGrid = createGrid(24, 24);  // Layer 2: home/rooms
-  const townGrid = createGrid(40, 40);  // Layer 3: town/area/island
-  const nodeGrid = createGrid(16, 16);  // Layer 4: nodeAdmin field
-
-  // Seed synthetic objects for home/town scanning
-  seedHomeObjects(homeGrid);
-  seedTownObjects(townGrid);
+  const bodyGrid = createGrid(32, 32);
+  const homeGrid = createGrid(24, 24);
+  const townGrid = createGrid(40, 40);
+  const nodeGrid = createGrid(16, 16);
 
   // -------------------------------------------------------------------------
-  // MULTI-SPIN ENGINE — MULTIPLE BINARY LENSES (EVO-TUNED)
+  // SPIN ENGINES (multi-sentinel, multi-presence)
   // -------------------------------------------------------------------------
-  const spinEngines = createSpinEngines(spins);
+  const spinEngines = Array.from({ length: spins }, (_, i) => ({
+    id: i,
+    phaseOffset: (Math.PI * 2 * i) / spins,
+    speed: 0.45 + i * 0.33,
+    weight: 0.55 + i * 0.18
+  }));
 
-  function createSpinEngines(count) {
-    const engines = [];
-    for (let i = 0; i < count; i++) {
-      engines.push({
-        id: i,
-        phaseOffset: (Math.PI * 2 * i) / count,
-        // Slightly staggered speeds and weights to avoid symmetry lock
-        speed: 0.45 + i * 0.33,
-        bodyWeight: 0.55 + i * 0.18,
-        homeWeight: 0.35 + i * 0.14,
-        townWeight: 0.45 + i * 0.14,
-        nodeWeight: 0.25 + i * 0.18
+  // -------------------------------------------------------------------------
+  // PRESENCE + HARMONICS STATE
+  // -------------------------------------------------------------------------
+  let presenceHistory = [];
+  let harmonics = [];
+
+  function updatePresence(grid) {
+    const p = avg(grid, "presence");
+    presenceHistory.push(p);
+    if (presenceHistory.length > 32) presenceHistory.shift();
+    return p;
+  }
+
+  function updateHarmonics(bits) {
+    const ones = bits.reduce((a,b)=>a+b,0);
+    const ratio = ones / bits.length;
+
+    const drift = Math.abs(Math.sin(ratio * Math.PI * 2));
+    const coherence = 1 - drift;
+
+    harmonics = [{ phaseDrift: drift, coherenceScore: coherence }];
+    return { drift, coherence };
+  }
+
+  // -------------------------------------------------------------------------
+  // ADAPTIVE LAYER ENGINE (BALANCED MODE)
+// -------------------------------------------------------------------------
+  function buildAdaptiveLayers({
+    bodySnap,
+    homeSnap,
+    townSnap,
+    nodeSnap,
+    presenceAvg,
+    harmonicDrift,
+    coherenceScore,
+    adminFlags
+  }) {
+    const layers = [];
+
+    // Always include body + node layers
+    layers.push({
+      id: "bodyPresence",
+      type: "bodyPresence",
+      summary: {
+        densityAvg: avg(bodySnap, "density"),
+        contrastAvg: avg(bodySnap, "contrast"),
+        waveAvg: avg(bodySnap, "wave"),
+        presenceAvg
+      },
+      presence: presenceAvg,
+      harmonics: coherenceScore,
+      anomalies: adminFlags.filter(f => f.layer === "body"),
+      mood: presenceAvg > 0.6 ? "focused" : "calm",
+      weight: 1.0
+    });
+
+    layers.push({
+      id: "nodeHarmonics",
+      type: "nodeHarmonics",
+      summary: {
+        densityAvg: avg(nodeSnap, "density"),
+        contrastAvg: avg(nodeSnap, "contrast"),
+        waveAvg: avg(nodeSnap, "wave")
+      },
+      presence: presenceAvg,
+      harmonics: coherenceScore,
+      anomalies: adminFlags.filter(f => f.layer === "node"),
+      mood: harmonicDrift > 0.4 ? "alert" : "steady",
+      weight: 1.0
+    });
+
+    // Balanced adaptive: include home/town only when meaningful
+    if (presenceAvg > 0.15 || harmonicDrift > 0.15) {
+      layers.push({
+        id: "homePresence",
+        type: "homePresence",
+        summary: {
+          densityAvg: avg(homeSnap, "density"),
+          contrastAvg: avg(homeSnap, "contrast"),
+          waveAvg: avg(homeSnap, "wave")
+        },
+        presence: presenceAvg,
+        harmonics: coherenceScore,
+        anomalies: adminFlags.filter(f => f.layer === "home"),
+        mood: "aware",
+        weight: 0.8
       });
     }
-    return engines;
-  }
 
-  // ========================================================================
-  // LAYER 1 — BODY SCAN (LOOP + WAVE + SLOW PULSE + MULTI-SPIN)
-  // ========================================================================
-
-  function stepBodyLayer(bits, spinPhase, weight = 1) {
-    const H = bodyGrid.length;
-    const W = bodyGrid[0].length;
-
-    // LOOP THEORY: use loop organ to derive a row index (binary throughput)
-    const loopIndex = loopScan.nextIndex(bits, H, spinPhase) % H;
-
-    // Slightly stronger density evolution for “MRI-like” feel
-    for (let x = 0; x < W; x++) {
-      const cell = bodyGrid[loopIndex][x];
-      cell.density = clamp(cell.density + 0.035 * weight, 0, 1);
+    if (presenceAvg > 0.25 || harmonicDrift > 0.25) {
+      layers.push({
+        id: "townPresence",
+        type: "townPresence",
+        summary: {
+          densityAvg: avg(townSnap, "density"),
+          contrastAvg: avg(townSnap, "contrast"),
+          waveAvg: avg(townSnap, "wave")
+        },
+        presence: presenceAvg,
+        harmonics: coherenceScore,
+        anomalies: adminFlags.filter(f => f.layer === "town"),
+        mood: "scanning",
+        weight: 0.7
+      });
     }
 
-    // WAVE THEORY: compute wave from bits, phase-shifted by spinPhase
-    const wave = waveScan.nextWave(bits);
-
-    for (let y = 0; y < H; y++) {
-      for (let x = 0; x < W; x++) {
-        const cell = bodyGrid[y][x];
-        const phaseTerm = wave.phase + spinPhase + (x + y) * 0.045;
-        const baseContrast = Math.abs(Math.sin(phaseTerm));
-        cell.contrast = clamp(
-          cell.contrast * 0.68 + baseContrast * 0.32 * weight,
-          0,
-          1
-        );
-        cell.wave = wave.amplitude;
-      }
-    }
+    return layers;
   }
 
-  // ========================================================================
-  // LAYER 2 — HOME SCAN (CONTAINMENT + SEARCH / “FIND KEYS”)
-  // ========================================================================
-
-  function stepHomeLayer(bits, spinPhase, weight = 1) {
-    const H = homeGrid.length;
-    const W = homeGrid[0].length;
-
-    const loopIndex = loopScan.nextIndex(bits, H, spinPhase) % H;
-
-    for (let x = 0; x < W; x++) {
-      const cell = homeGrid[loopIndex][x];
-      cell.density = clamp(cell.density + 0.028 * weight, 0, 1);
-    }
-
-    const wave = waveScan.nextWave(bits);
-
-    for (let y = 0; y < H; y++) {
-      for (let x = 0; x < W; x++) {
-        const cell = homeGrid[y][x];
-        const hasKey = cell.tags.includes("key");
-
-        const base = Math.abs(Math.sin(wave.phase + spinPhase + x * 0.11));
-        const boosted = hasKey ? clamp(base + 0.38 * weight, 0, 1) : base;
-
-        cell.contrast = clamp(
-          cell.contrast * 0.68 + boosted * 0.32,
-          0,
-          1
-        );
-        cell.wave = wave.amplitude;
-      }
-    }
-  }
-
-  // ========================================================================
-  // LAYER 3 — TOWN SCAN (CARS, SIGNS, COLORS, REFLECTIONS)
-  // ========================================================================
-
-  function stepTownLayer(bits, spinPhase, weight = 1) {
-    const H = townGrid.length;
-    const W = townGrid[0].length;
-
-    const loopIndex = loopScan.nextIndex(bits, W, spinPhase) % W;
-
-    for (let y = 0; y < H; y++) {
-      const cell = townGrid[y][loopIndex];
-      cell.density = clamp(cell.density + 0.022 * weight, 0, 1);
-    }
-
-    const wave = waveScan.nextWave(bits);
-
-    for (let y = 0; y < H; y++) {
-      for (let x = 0; x < W; x++) {
-        const cell = townGrid[y][x];
-        const isCar  = cell.tags.includes("car");
-        const isSign = cell.tags.includes("sign");
-
-        const base = Math.abs(
-          Math.sin(wave.phase + spinPhase + (x * 0.055) + (y * 0.045))
-        );
-
-        let c = base;
-        if (isCar) {
-          c = clamp(base + 0.28 * weight, 0, 1);
-        } else if (isSign) {
-          c = clamp(base + 0.20 * weight, 0, 1);
-        }
-
-        cell.contrast = clamp(
-          cell.contrast * 0.68 + c * 0.32,
-          0,
-          1
-        );
-        cell.wave = wave.amplitude;
-      }
-    }
-  }
-
-  // ========================================================================
-  // LAYER 4 — NODEADMIN PULSE (FAST+SLOW BOUNCING REPAIR FIELD)
-  // ========================================================================
-
-  function stepNodeAdminLayer(bits, spinPhase, weight = 1) {
-    const H = nodeGrid.length;
-    const W = nodeGrid[0].length;
-
-    // Binary energy: fraction of 1s
-    let ones = 0;
-    for (let i = 0; i < bits.length; i++) if (bits[i] === 1) ones++;
-    const energy = bits.length ? ones / bits.length : 0;
-
-    for (let y = 0; y < H; y++) {
-      for (let x = 0; x < W; x++) {
-        const cell = nodeGrid[y][x];
-
-        const dx = x - W / 2;
-        const dy = y - H / 2;
-        const dist = Math.sqrt(dx * dx + dy * dy);
-
-        const waveField = Math.abs(
-          Math.sin(dist * 0.33 + energy * Math.PI * 2 + spinPhase)
-        );
-
-        cell.density = clamp(
-          cell.density * 0.88 + waveField * 0.20 * weight,
-          0,
-          1
-        );
-        cell.contrast = clamp(
-          cell.contrast * 0.78 + energy * 0.28 * weight,
-          0,
-          1
-        );
-        cell.wave = energy;
-      }
-    }
-  }
-
-  // ========================================================================
-  // SEEDERS — SYNTHETIC OBJECTS FOR HOME/TOWN
-  // ========================================================================
-
-  function seedHomeObjects(grid) {
-    if (grid[5] && grid[5][7]) grid[5][7].tags.push("key");
-    if (grid[10] && grid[10][3]) grid[10][3].tags.push("key");
-  }
-
-  function seedTownObjects(grid) {
-    if (grid[8] && grid[8][12]) grid[8][12].tags.push("car");
-    if (grid[9] && grid[9][13]) grid[9][13].tags.push("car");
-    if (grid[15] && grid[15][30]) grid[15][30].tags.push("car");
-
-    if (grid[4] && grid[4][5]) grid[4][5].tags.push("sign");
-    if (grid[20] && grid[20][10]) grid[20][10].tags.push("sign");
-  }
-
-  // ========================================================================
-  // MAIN FRAME STEP — SLOW PULSE + MULTI-SPIN + 4-LAYER UPDATE
-  // ========================================================================
-
+  // -------------------------------------------------------------------------
+  // MAIN FRAME STEP
+  // -------------------------------------------------------------------------
   function nextFrame() {
-    const bits = typeof pulse.nextPulseSlow === "function"
-      ? pulse.nextPulseSlow()
-      : pulse.nextPulse();
+    const bits = pulse.nextPulseSlow();
+    const { drift: harmonicDrift, coherence: coherenceScore } = updateHarmonics(bits);
 
-    const baseNumber = bitsToNumber(bits);
+    const baseNumber = bits.reduce((a,b)=>a+b,0);
 
-    // Multi-spin: each engine gets its own phase and weights
-    for (let i = 0; i < spinEngines.length; i++) {
-      const engine = spinEngines[i];
+    for (const engine of spinEngines) {
       const spinPhase = baseNumber * engine.speed + engine.phaseOffset;
 
-      stepBodyLayer(bits, spinPhase, engine.bodyWeight);
-      stepHomeLayer(bits, spinPhase, engine.homeWeight);
-      stepTownLayer(bits, spinPhase, engine.townWeight);
-      stepNodeAdminLayer(bits, spinPhase, engine.nodeWeight);
+      stepLayer(bodyGrid, bits, spinPhase, engine.weight);
+      stepLayer(homeGrid, bits, spinPhase, engine.weight);
+      stepLayer(townGrid, bits, spinPhase, engine.weight);
+      stepLayer(nodeGrid, bits, spinPhase, engine.weight);
     }
 
-    const bodySnap = snapshotGrid(bodyGrid);
-    const homeSnap = snapshotGrid(homeGrid);
-    const townSnap = snapshotGrid(townGrid);
-    const nodeSnap = snapshotGrid(nodeGrid);
+    const bodySnap = snapshot(bodyGrid);
+    const homeSnap = snapshot(homeGrid);
+    const townSnap = snapshot(townGrid);
+    const nodeSnap = snapshot(nodeGrid);
 
-    const adminFlags = [
-      ...admin.inspect(bodySnap),
-      ...admin.inspect(homeSnap),
-      ...admin.inspect(townSnap),
-      ...admin.inspect(nodeSnap)
-    ];
+    const presenceAvg = updatePresence(bodyGrid);
 
-    if (trace) {
-      console.log("[PulseScannerPage-v11-EVO] frame", {
-        bits,
-        spins: spinEngines.length,
-        adminFlagsCount: adminFlags.length
-      });
-    }
+    const adminFlags = admin.inspectAll({
+      body: bodySnap,
+      home: homeSnap,
+      town: townSnap,
+      node: nodeSnap,
+      bits,
+      spins: [],
+      loopHistory: [],
+      waveHistory: [],
+      nodeEnergy: coherenceScore,
+      harmonics,
+      presenceHistory
+    });
 
-    render({ bodySnap, homeSnap, townSnap, nodeSnap, adminFlags });
+    const layers = buildAdaptiveLayers({
+      bodySnap,
+      homeSnap,
+      townSnap,
+      nodeSnap,
+      presenceAvg,
+      harmonicDrift,
+      coherenceScore,
+      adminFlags
+    });
+
+    PageEvo.evolve({
+      blocks: layers,
+      loopIndex: baseNumber,
+      wave: { phase: harmonicDrift * Math.PI * 2, amplitude: coherenceScore },
+      flags: adminFlags,
+      energy: coherenceScore,
+      presence: presenceAvg
+    });
   }
 
-  // ========================================================================
-  // UI RENDER — COMPACT JSON TO PageEvo
-  // ========================================================================
+  // -------------------------------------------------------------------------
+  // LAYER STEP (presence-aware, dual-band)
+  // -------------------------------------------------------------------------
+  function stepLayer(grid, bits, spinPhase, weight) {
+    const H = grid.length;
+    const W = grid[0].length;
 
-  function render({ bodySnap, homeSnap, townSnap, nodeSnap, adminFlags }) {
-    PageEvo.evolve([
-      {
-        title: "Body Scan (Layer 1 — User Grid)",
-        content: JSON.stringify({
-          summary: {
-            densityAvg: avg(bodySnap, "density"),
-            contrastAvg: avg(bodySnap, "contrast"),
-            waveAvg: avg(bodySnap, "wave")
-          },
-          flags: adminFlags
-        })
-      },
-      {
-        title: "Home Scan (Layer 2 — House Grid)",
-        content: JSON.stringify({
-          summary: {
-            densityAvg: avg(homeSnap, "density"),
-            contrastAvg: avg(homeSnap, "contrast"),
-            waveAvg: avg(homeSnap, "wave")
-          }
-        })
-      },
-      {
-        title: "Town Scan (Layer 3 — Area Grid)",
-        content: JSON.stringify({
-          summary: {
-            densityAvg: avg(townSnap, "density"),
-            contrastAvg: avg(townSnap, "contrast"),
-            waveAvg: avg(townSnap, "wave")
-          }
-        })
-      },
-      {
-        title: "NodeAdmin Pulse (Layer 4 — Meta Field)",
-        content: JSON.stringify({
-          summary: {
-            densityAvg: avg(nodeSnap, "density"),
-            contrastAvg: avg(nodeSnap, "contrast"),
-            waveAvg: avg(nodeSnap, "wave")
-          }
-        })
+    const loopIndex = loopScan.nextIndex(bits, H, spinPhase, avg(grid,"presence"), harmonics[0]?.phaseDrift);
+
+    const wave = waveScan.nextWave(bits, avg(grid,"presence"), harmonics[0]?.phaseDrift);
+
+    for (let y = 0; y < H; y++) {
+      for (let x = 0; x < W; x++) {
+        const cell = grid[y][x];
+
+        const phaseTerm = wave.phase + spinPhase + (x + y) * 0.045;
+        const baseContrast = Math.abs(Math.sin(phaseTerm));
+
+        cell.density = clamp(cell.density * 0.9 + 0.03 * weight, 0, 1);
+        cell.contrast = clamp(cell.contrast * 0.7 + baseContrast * 0.3 * weight, 0, 1);
+        cell.wave = wave.amplitude;
+        cell.presence = clamp(cell.presence * 0.85 + wave.amplitude * 0.15, 0, 1);
       }
-    ]);
+    }
   }
 
-  // ========================================================================
-  // PUBLIC API — START + SNAPSHOT
-  // ========================================================================
-
+  // -------------------------------------------------------------------------
+  // PUBLIC API
+  // -------------------------------------------------------------------------
   return {
-    /**
-     * Start the 4-layer scanning loop.
-     * @param {number} interval - ms between frames (e.g. 150–300 for slow scan)
-     */
     start(interval = 200) {
       setInterval(nextFrame, interval);
     },
-
-    /**
-     * Get a full snapshot of all 4 layers.
-     */
     snapshot() {
       return {
-        body: snapshotGrid(bodyGrid),
-        home: snapshotGrid(homeGrid),
-        town: snapshotGrid(townGrid),
-        node: snapshotGrid(nodeGrid)
+        body: snapshot(bodyGrid),
+        home: snapshot(homeGrid),
+        town: snapshot(townGrid),
+        node: snapshot(nodeGrid)
       };
     }
   };
 }
 
 // ============================================================================
-// END OF FILE — PulseScannerPage-v11-EVO
-// 4-LAYER LOOP+WAVE SCANNING ENGINE / MULTI-SPIN / BINARY-THROUGHPUT
-// NON-MEDICAL / SYNTHETIC VISUALIZER
+// END OF FILE — PulseScannerCortex-v12.3-EVO
+// Dynamic Adaptive Presence Cortex / Harmonics Cortex / Dual-Band Visual Cortex
 // ============================================================================

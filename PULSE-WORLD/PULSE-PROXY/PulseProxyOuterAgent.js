@@ -1,14 +1,15 @@
 // ============================================================================
-//  PULSE OS v11 — PROXY OUTER AGENT
+//  PULSE OS v12.3‑EVO‑PRESENCE — PROXY OUTER AGENT
 //  “THE OUTER AGENT / EXTERNAL NEGOTIATOR”
 //  External Interface • Job Courier • Device Ambassador
 //  PURE NEGOTIATION. NO MARKETPLACE LOGIC. NO OS STATE MUTATION.
 //  DUAL‑MODE: Binary Core (pure descriptors) + Symbolic Wrapper (fetch + logs)
+//  PRESENCE‑AWARE + BAND / WAVE / BINARY FIELD META (NO LOGIC CHANGE).
 // ============================================================================
 
 
 // ============================================================================
-//  GLOBAL WIRING — v11 (Safe, boundary‑first, no hard global dependency)
+//  GLOBAL WIRING — Safe, boundary‑first, no hard global dependency
 // ============================================================================
 const G =
   typeof globalThis !== "undefined"
@@ -29,14 +30,14 @@ const fetchFn =
 
 
 // ============================================================================
-//  ORGAN IDENTITY — v11
+//  ORGAN IDENTITY — v12.3‑EVO‑PRESENCE
 // ============================================================================
 export const PulseRole = {
   type: "Organ",
   subsystem: "PulseProxy",
   layer: "OuterAgent",
-  version: "11.0",
-  identity: "PulseProxyOuterAgent",
+  version: "12.3-EVO-PRESENCE",
+  identity: "PulseProxyOuterAgent-v12.3-EVO-PRESENCE",
 
   evo: {
     driftProof: true,
@@ -48,6 +49,15 @@ export const PulseRole = {
 
     dualModeEvolution: true,       // binary + symbolic
     binaryFirst: true,             // descriptors first, IO second
+
+    // Awareness / presence
+    binaryAware: true,
+    symbolicAware: true,
+    bandAware: true,
+    waveFieldAware: true,
+    binaryFieldAware: true,
+    presenceAware: true,
+    presenceFieldAware: true,
 
     noIQ: true,
     noRouting: true,
@@ -61,7 +71,7 @@ export const PulseRole = {
 
 
 // ============================================================================
-//  LAYER CONSTANTS + CONTEXT (v11)
+//  LAYER CONSTANTS + CONTEXT (v12.3‑EVO‑PRESENCE)
 // ============================================================================
 const AGENT_LAYER_ID   = "PROXY-OUTER-AGENT";
 const AGENT_LAYER_NAME = "THE OUTER AGENT";
@@ -74,11 +84,12 @@ export const PROXY_OUTER_AGENT_CONTEXT = {
   purpose: "External interface + job courier + credit sync",
   evo: PulseRole.evo
 };
+
 export const PulseProxyOuterAgentMeta = Object.freeze({
   layer: "PulseProxyOuterAgent",
   role: "EXTERNAL_NEGOTIATOR_BOUNDARY_ORGAN",
-  version: "v11.2-EVO-BINARY-MAX",
-  identity: "PulseProxyOuterAgent-v11.2-EVO-BINARY-MAX",
+  version: "v12.3-EVO-BINARY-MAX-ABA-PRESENCE",
+  identity: "PulseProxyOuterAgent-v12.3-EVO-BINARY-MAX-ABA-PRESENCE",
 
   guarantees: Object.freeze({
     deterministic: true,
@@ -97,7 +108,7 @@ export const PulseProxyOuterAgentMeta = Object.freeze({
     unifiedAdvantageField: true,
     pulseEfficiencyAware: true,
 
-    // Execution prohibitions
+    // Execution prohibitions (network allowed, but bounded)
     zeroIQ: true,
     zeroRouting: true,
     zeroCompute: true,
@@ -106,7 +117,7 @@ export const PulseProxyOuterAgentMeta = Object.freeze({
     zeroRandomness: true,
     zeroDateNow: true,
     zeroTimers: true,
-    zeroAsync: true,
+    zeroAsync: false,              // async allowed for fetch
     zeroNetworkMutation: true,
     zeroExternalMutation: true,
     zeroDynamicImports: true,
@@ -121,6 +132,8 @@ export const PulseProxyOuterAgentMeta = Object.freeze({
     bandAware: true,
     waveFieldAware: true,
     binaryFieldAware: true,
+    presenceAware: true,
+    presenceFieldAware: true,
 
     // Environment
     worldLensAware: false
@@ -131,13 +144,15 @@ export const PulseProxyOuterAgentMeta = Object.freeze({
       "NegotiationPayload",
       "BinaryDescriptor",
       "SymbolicPayload",
-      "DualBandContext"
+      "DualBandContext",
+      "PresenceContext"
     ],
     output: [
       "OuterAgentNegotiationResult",
       "OuterAgentBandSignature",
       "OuterAgentBinaryField",
       "OuterAgentWaveField",
+      "OuterAgentPresenceField",
       "OuterAgentDiagnostics",
       "OuterAgentHealingState"
     ]
@@ -145,7 +160,7 @@ export const PulseProxyOuterAgentMeta = Object.freeze({
 
   lineage: Object.freeze({
     root: "PulseProxy-v11",
-    parent: "PulseProxy-v11.2-EVO",
+    parent: "PulseProxy-v12.3-EVO",
     ancestry: [
       "PulseProxyOuterAgent-v7",
       "PulseProxyOuterAgent-v8",
@@ -153,7 +168,8 @@ export const PulseProxyOuterAgentMeta = Object.freeze({
       "PulseProxyOuterAgent-v10",
       "PulseProxyOuterAgent-v11",
       "PulseProxyOuterAgent-v11-Evo",
-      "PulseProxyOuterAgent-v11-Evo-Prime"
+      "PulseProxyOuterAgent-v11-Evo-Prime",
+      "PulseProxyOuterAgent-v12.3-EVO-PRESENCE"
     ]
   }),
 
@@ -166,7 +182,7 @@ export const PulseProxyOuterAgentMeta = Object.freeze({
   architecture: Object.freeze({
     pattern: "A-B-A",
     baseline: "binary descriptor → negotiation → symbolic fallback",
-    adaptive: "dual-band overlays + boundary-safe negotiation",
+    adaptive: "dual-band overlays + boundary-safe negotiation + presence surfaces",
     return: "deterministic negotiation surfaces + signatures"
   })
 });
@@ -194,13 +210,12 @@ function agentLog(stage, details = {}) {
   } catch {}
 }
 
-agentLog("AGENT_INIT_V11");
+agentLog("AGENT_INIT_V12_3_EVO_PRESENCE");
 
 
 // ============================================================================
-//  BINARY CORE — v11
-//  Pure, deterministic, no fetch, no JSON, no timestamps.
-//  Only builds request descriptors for the symbolic layer.
+//  BINARY CORE — Pure, deterministic descriptor builder
+//  (no behavior change vs v11; still JSON + URLs for fetch layer)
 // ============================================================================
 
 function buildBaseUrlBinary(envBaseUrl) {
@@ -208,6 +223,7 @@ function buildBaseUrlBinary(envBaseUrl) {
   if (typeof G.PULSE_PROXY_BASE_URL === "string" && G.PULSE_PROXY_BASE_URL) {
     return G.PULSE_PROXY_BASE_URL;
   }
+  // still compatible with remote or local proxy; caller controls baseUrl
   return "https://www.tropicpulse.bz/proxy";
 }
 
@@ -281,9 +297,8 @@ export const PulseProxyOuterAgentBinary = {
 
 
 // ============================================================================
-//  SYMBOLIC WRAPPER — v11
-//  Uses binary descriptors + fetchFn + diagnostics.
-//  No OS state mutation, no marketplace logic.
+//  SYMBOLIC WRAPPER — Uses binary descriptors + fetchFn + diagnostics
+//  (behavior unchanged; now just lives under 12.3‑EVO‑PRESENCE identity)
 // ============================================================================
 
 async function doFetchSymbolic(descriptor) {
@@ -316,8 +331,8 @@ async function doFetchSymbolic(descriptor) {
 
 
 // ============================================================================
-//  OUTER AGENT CLASS — External Negotiator (v11)
-//  Instance fields are boundary‑local, no global mutation.
+//  OUTER AGENT CLASS — External Negotiator
+//  (instance fields are boundary‑local, no global mutation)
 // ============================================================================
 export class PulseProxyOuterAgent {
   constructor({ deviceId, gpuInfo, baseUrl } = {}) {
@@ -325,7 +340,7 @@ export class PulseProxyOuterAgent {
     this.gpuInfo  = gpuInfo || null;
     this.baseUrl  = buildBaseUrlBinary(baseUrl);
 
-    agentLog("AGENT_CONSTRUCTED_V11", {
+    agentLog("AGENT_CONSTRUCTED_V12_3", {
       deviceId: this.deviceId,
       gpuInfo: this.gpuInfo,
       baseUrl: this.baseUrl

@@ -1,5 +1,5 @@
 // ============================================================================
-//  GLOBAL HEALER — PULSE OS v11-Evo
+//  GLOBAL HEALER — PULSE OS v12.3-PRESENCE-MESH
 //  C-LAYER (TOP-LEVEL IMMUNE SYSTEM)
 //  Deterministic, Drift-Aware, OS-Level Healing Coordinator
 //  PURE HEALING. NO AI. NO COMPUTE. NO MARKETPLACE. NO IMPORTS. NO TIMERS.
@@ -7,14 +7,15 @@
 //
 //  THIS ORGAN HAS ZERO IMPORTS.
 //  ALL dependencies are external workers (DB, time, network).
-//  This organ ONLY builds immune artifacts from mesh drift events.
+//  This organ ONLY builds immune artifacts from mesh + presence drift events.
 // ============================================================================
-export const GLOBAL_HEALER_CONTEXT_V11 = Object.freeze({
+
+export const GLOBAL_HEALER_CONTEXT_V12 = Object.freeze({
   organ: "GlobalHealer",
   layer: "C-Layer",
   role: "Top-Level Immune Coordinator",
-  version: "11.0-Evo",
-  generation: "v11",
+  version: "12.3-PRESENCE-MESH",
+  generation: "v12",
   organism: "PulseOS",
   band: "dualband",
   intent: "global_immune_coordination",
@@ -39,22 +40,31 @@ export const GLOBAL_HEALER_CONTEXT_V11 = Object.freeze({
     futureEvolutionReady: true,
     multiInstanceReady: true,
 
+    // Presence / mesh / chunking (metadata-only)
+    presenceFieldAware: true,
+    bluetoothPresenceAware: true,
+    meshPresenceRelayAware: true,
+    meshDriftAware: true,
+    cortexChunkingAware: true,
+    cortexPrewarmAware: true,
+
     zeroNetwork: true,
     zeroBackend: true,
     zeroTiming: true,
     zeroState: true,
     zeroMutationOutsideOrgan: true,
 
-    routingContract: "PulseSend-v11.0",
-    osOrganContract: "PulseOS-v11.0",
-    earnCompatibility: "PulseEarn-v11.0"
+    routingContract: "PulseSend-v12.3",
+    osOrganContract: "PulseOS-v12.3",
+    earnCompatibility: "PulseEarn-v12.3"
   })
 });
+
 export const PulseOSGlobalHealerMeta = Object.freeze({
   layer: "GlobalHealer",
   role: "IMMUNE_COORDINATOR_ORGAN",
-  version: "v11.2-EVO-BINARY-MAX",
-  identity: "PulseOS-GlobalHealer-v11.2-EVO-BINARY-MAX",
+  version: "v12.3-PRESENCE-MESH",
+  identity: "PulseOS-GlobalHealer-v12.3-PRESENCE-MESH",
 
   guarantees: Object.freeze({
     deterministic: true,
@@ -88,6 +98,14 @@ export const PulseOSGlobalHealerMeta = Object.freeze({
     binaryAware: true,
     binaryNonExecutable: true,
 
+    // Presence / mesh / chunking (metadata-only)
+    presenceFieldAware: true,
+    bluetoothPresenceAware: true,
+    meshPresenceRelayAware: true,
+    meshDriftAware: true,
+    cortexChunkingAware: true,
+    cortexPrewarmAware: true,
+
     // Environment
     localAware: true,
     internetAware: true,
@@ -97,6 +115,7 @@ export const PulseOSGlobalHealerMeta = Object.freeze({
   contract: Object.freeze({
     input: [
       "MeshDriftEvent",
+      "PresenceDriftEvent",
       "ImmuneContext",
       "DualBandContext"
     ],
@@ -109,13 +128,14 @@ export const PulseOSGlobalHealerMeta = Object.freeze({
   }),
 
   lineage: Object.freeze({
-    root: "PulseOS-v11-EVO",
-    parent: "PulseOS-v11.2-EVO",
+    root: "PulseOS-v12.3-SPINE",
+    parent: "PulseOS-v12.0-SPINE",
     ancestry: [
       "GlobalHealer-v9",
       "GlobalHealer-v10",
       "GlobalHealer-v11",
-      "GlobalHealer-v11-Evo"
+      "GlobalHealer-v11-Evo",
+      "PulseOS-GlobalHealer-v11.2-EVO-BINARY-MAX"
     ]
   }),
 
@@ -128,7 +148,7 @@ export const PulseOSGlobalHealerMeta = Object.freeze({
   architecture: Object.freeze({
     pattern: "A-B-A",
     baseline: "drift event → immune artifact → organism healing",
-    adaptive: "binary-tagged metadata surfaces",
+    adaptive: "binary-tagged metadata surfaces + presence/mesh metadata",
     return: "deterministic immune artifact + signatures"
   })
 });
@@ -140,7 +160,7 @@ export const PulseOSGlobalHealerMeta = Object.freeze({
 
 function buildGlobalHealerLog(base) {
   return {
-    ...GLOBAL_HEALER_CONTEXT_V11,
+    ...GLOBAL_HEALER_CONTEXT_V12,
     kind: "GlobalHealerLog",
     ...base
     // Worker attaches timestamp, ids, etc.
@@ -149,7 +169,7 @@ function buildGlobalHealerLog(base) {
 
 function buildDriftSignature(subsystem, base) {
   return {
-    ...GLOBAL_HEALER_CONTEXT_V11,
+    ...GLOBAL_HEALER_CONTEXT_V12,
     kind: "DriftSignature",
     subsystem,
     type: base.type || "unknown",
@@ -161,7 +181,7 @@ function buildDriftSignature(subsystem, base) {
 
 function buildFunctionLogHint(base) {
   return {
-    ...GLOBAL_HEALER_CONTEXT_V11,
+    ...GLOBAL_HEALER_CONTEXT_V12,
     kind: "FunctionLogHint",
     processed: false,
     subsystem: base.subsystem || "unknown",
@@ -175,17 +195,18 @@ function buildFunctionLogHint(base) {
   };
 }
 
+
 // ============================================================================
-// FACTORY — PURE GLOBAL HEALER ORGAN (v11-Evo)
+// FACTORY — PURE GLOBAL HEALER ORGAN (v12.3-PRESENCE-MESH)
 // ============================================================================
-export function createGlobalHealerV11({ modeKind = "dual" } = {}) {
+export function createGlobalHealerV12({ modeKind = "dual" } = {}) {
   const identity = Object.freeze({
-    ...GLOBAL_HEALER_CONTEXT_V11,
+    ...GLOBAL_HEALER_CONTEXT_V12,
     modeKind
   });
 
   // --------------------------------------------------------------------------
-  // transformMeshDriftEvent — top-level immune reflex for Mesh drift
+  // transformMeshDriftEvent — immune reflex for Mesh drift
   // Returns: { globalHealerLog, driftSignature, functionLogHint }
   // --------------------------------------------------------------------------
   function transformMeshDriftEvent(entry = {}) {
@@ -240,8 +261,71 @@ export function createGlobalHealerV11({ modeKind = "dual" } = {}) {
     };
   }
 
+  // --------------------------------------------------------------------------
+  // transformPresenceDriftEvent — immune reflex for Presence / Bluetooth / Mesh
+  // Returns: { globalHealerLog, driftSignature, functionLogHint }
+  // --------------------------------------------------------------------------
+  function transformPresenceDriftEvent(entry = {}) {
+    const base = {
+      source: "Presence",
+      subsystem: entry.subsystem ?? "Presence",
+      presenceNodeId: entry.presenceNodeId ?? null,
+      deviceId: entry.deviceId ?? null,
+      meshNodeId: entry.meshNodeId ?? null,
+      routeId: entry.routeId ?? null,
+      severity: entry.severity ?? "info",
+      driftType: entry.driftType ?? "unspecified",
+      note: entry.note ?? null,
+      loopId: entry.loopId ?? null,
+      fpinId: entry.fpinId ?? null,
+      presenceBand: entry.presenceBand ?? "bluetooth",
+      presenceField: entry.presenceField ?? "unknown"
+    };
+
+    const globalHealerLog = buildGlobalHealerLog({
+      type: "presence_drift_detected",
+      ...base,
+      details: entry.details ?? null
+    });
+
+    const driftSignature = buildDriftSignature("Presence", {
+      type: entry.driftType ?? "presence_drift",
+      severity: entry.severity ?? "info",
+      details: {
+        presenceNodeId: entry.presenceNodeId ?? null,
+        deviceId: entry.deviceId ?? null,
+        meshNodeId: entry.meshNodeId ?? null,
+        routeId: entry.routeId ?? null,
+        presenceBand: entry.presenceBand ?? "bluetooth",
+        presenceField: entry.presenceField ?? "unknown",
+        loopId: entry.loopId ?? null,
+        fpinId: entry.fpinId ?? null,
+        ...(entry.details || {})
+      }
+    });
+
+    const functionLogHint = buildFunctionLogHint({
+      hintCode: entry.hintCode ?? "PRESENCE_DRIFT_DETECTED",
+      subsystem: "Presence",
+      fileName: entry.fileName ?? "PresenceMesh.js",
+      functionName: entry.functionName ?? "unknown",
+      fieldName: entry.fieldName ?? "unknown",
+      severity: entry.severity ?? "info",
+      note:
+        entry.note ??
+        "Presence drift detected; review presence/mesh alignment and Bluetooth presence field."
+    });
+
+    return {
+      globalHealerLog,
+      driftSignature,
+      functionLogHint
+    };
+  }
+
   return {
     meta: identity,
-    transformMeshDriftEvent
+    transformMeshDriftEvent,
+    transformPresenceDriftEvent
   };
 }

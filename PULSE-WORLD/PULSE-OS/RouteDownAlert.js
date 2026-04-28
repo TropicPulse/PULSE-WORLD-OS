@@ -1,61 +1,60 @@
 // ============================================================================
 // FILE: /PULSE-PROXY/RouteDownAlert.js
-// PULSE OS — v11-Evo-Prime
+// PULSE OS — v12.3-Presence-EVO-MAX
 // “IMMUNE ALERT NODE / ROUTE FAILURE SENTINEL”
 // ============================================================================
 //
-// ROLE (v11-Evo-Prime):
-//   RouteDownAlert is a backend **IMMUNE ORGAN**.
-//   It is the **IMMUNE ALERT NODE** — the sentinel that receives
-//   route‑failure signals from router.js and triggers an immune reflex.
+// ROLE (v12.3-Presence):
+//   Backend IMMUNE ORGAN that receives route‑failure alerts from router.js.
+//   Pure metadata emitter — deterministic, drift‑proof, presence‑aware.
 //
 //   • Accepts route‑down alerts from the frontend
-//   • Validates and sanitizes all incoming payloads
-//   • Logs the immune event (safe logging only)
-//   • Optionally notifies the operator (email/SMS/Discord/etc.)
+//   • Validates + sanitizes all incoming payloads
+//   • Emits immune alert metadata (safe logging only)
 //   • Never exposes backend internals
 //   • Never trusts frontend input
 //   • Never mutates organism state
+//   • Never performs network calls
+//   • Presence‑tagged + dual‑band aware
 //
-// WHAT THIS FILE *IS* (v11-Evo-Prime):
+// WHAT THIS FILE *IS* (v12.3):
 //   • A backend immune‑response organ
 //   • A deterministic alert receiver
 //   • A drift‑proof sentinel
-//   • Binary + symbolic aware
-//   • Organism‑aware (OS + GPU + Router)
+//   • Binary + symbolic + presence aware
+//   • Spinal‑firewall aligned
 //
 // WHAT THIS FILE *IS NOT*:
 //   • NOT a router
 //   • NOT a scheduler
-//   • NOT a heartbeat
 //   • NOT a retry system
 //   • NOT a GPU organ
+//   • NOT a network client
 //
-// SAFETY CONTRACT (v11-Evo-Prime):
-//   • Never trust frontend payloads
-//   • Always validate + sanitize input
-//   • Never expose backend internals
-//   • Never throw unhandled errors
-//   • Always return a safe JSON response
-//   • No randomness
-//   • No timing logic
-//   • No environment access
+// SAFETY CONTRACT (v12.3):
+//   • Zero randomness
+//   • Zero timing logic
+//   • Zero environment access
+//   • Zero external mutation
+//   • Zero dynamic imports
+//   • Zero eval
+//   • Always return deterministic JSON
 //
 // VERSION TAG:
-//   version: 11.0-Evo-Prime
+//   version: 12.3-Presence-EVO-MAX
 // ============================================================================
+
 export const PulseOSRouteDownAlertMeta = Object.freeze({
   layer: "PulseOSRouteDownAlert",
   role: "IMMUNE_ALERT_NODE",
-  version: "v11.2-EVO-BINARY-MAX",
-  identity: "PulseOSRouteDownAlert-v11.2-EVO-BINARY-MAX",
+  version: "v12.3-PRESENCE-EVO-MAX",
+  identity: "PulseOSRouteDownAlert-v12.3-PRESENCE-EVO-MAX",
 
   guarantees: Object.freeze({
     deterministic: true,
     driftProof: true,
     multiInstanceReady: true,
 
-    // Immune alert laws
     immuneAlertNode: true,
     routeFailureSentinel: true,
     immuneEventReceiver: true,
@@ -65,8 +64,9 @@ export const PulseOSRouteDownAlertMeta = Object.freeze({
     routerAware: true,
     gpuAware: true,
     proxyAware: true,
+    presenceAware: true,
+    dualBandAware: true,
 
-    // Safety prohibitions
     zeroTiming: true,
     zeroRandomness: true,
     zeroNetworkCalls: true,
@@ -76,12 +76,9 @@ export const PulseOSRouteDownAlertMeta = Object.freeze({
     zeroEval: true,
     zeroEnvironmentAccess: true,
 
-    // Awareness
     symbolicAware: true,
     binaryAware: true,
-    dualBandAware: true,
 
-    // Environment
     worldLensAware: false
   }),
 
@@ -89,7 +86,8 @@ export const PulseOSRouteDownAlertMeta = Object.freeze({
     input: [
       "RouteFailureEvent",
       "FrontendPayload",
-      "DualBandContext"
+      "DualBandContext",
+      "PresenceContext"
     ],
     output: [
       "ImmuneAlert",
@@ -100,19 +98,20 @@ export const PulseOSRouteDownAlertMeta = Object.freeze({
   }),
 
   lineage: Object.freeze({
-    root: "PulseOS-v11-EVO",
-    parent: "PulseOS-v11.2-EVO",
+    root: "PulseOS-v12-EVO",
+    parent: "PulseOS-v12.3-PRESENCE",
     ancestry: [
       "RouteDownAlert-v9",
       "RouteDownAlert-v10",
       "RouteDownAlert-v11",
       "RouteDownAlert-v11-Evo",
-      "RouteDownAlert-v11-Evo-Prime"
+      "RouteDownAlert-v11-Evo-Prime",
+      "RouteDownAlert-v11.2-EVO-BINARY-MAX"
     ]
   }),
 
   bands: Object.freeze({
-    supported: ["symbolic", "binary"],
+    supported: ["symbolic", "binary", "dual"],
     default: "symbolic",
     behavior: "immune-alert"
   }),
@@ -120,15 +119,18 @@ export const PulseOSRouteDownAlertMeta = Object.freeze({
   architecture: Object.freeze({
     pattern: "A-B-A",
     baseline: "route failure → immune alert → safe JSON response",
-    adaptive: "binary-tagged immune surfaces",
+    adaptive: "binary + presence tagged immune surfaces",
     return: "deterministic immune alert metadata + signatures"
   })
 });
 
+// ============================================================================
+// IMMUNE ALERT HANDLER — v12.3 Presence
+// ============================================================================
 export const handler = async (event) => {
   try {
     // ------------------------------------------------------------
-    // ⭐ SAFE PARSE — immune system never trusts foreign payloads
+    // SAFE PARSE — immune system never trusts foreign payloads
     // ------------------------------------------------------------
     let body = {};
     try {
@@ -151,13 +153,23 @@ export const handler = async (event) => {
         ? body.context
         : {};
 
+    const band =
+      typeof body.__band === "string" ? body.__band : "symbolic";
+
+    const presenceTag =
+      typeof body.__presence === "string"
+        ? body.__presence
+        : "RouteDownAlert";
+
     // ------------------------------------------------------------
-    // ⭐ IMMUNE EVENT LOG — drift-proof, safe metadata only
+    // IMMUNE EVENT LOG — deterministic, drift-proof metadata only
     // ------------------------------------------------------------
-    log("🧬 IMMUNE ALERT (v11-Evo-Prime) — ROUTE FAILURE DETECTED", {
+    log("🧬 IMMUNE ALERT (v12.3-Presence) — ROUTE FAILURE DETECTED", {
       error,
       type,
       routeId,
+      band,
+      presenceTag,
       context: {
         binaryMode: context.binaryMode || "unknown",
         pipelineId: context.pipelineId || "",
@@ -165,19 +177,11 @@ export const handler = async (event) => {
         workloadClass: context.workloadClass || ""
       },
       organ: "RouteDownAlert",
-      version: "11.0-Evo-Prime"
+      version: "12.3-Presence-EVO-MAX"
     });
 
     // ------------------------------------------------------------
-    // ⭐ OPTIONAL: NOTIFY OPERATOR (email/SMS/Discord/etc.)
-    // ------------------------------------------------------------
-    // await sendEmail({
-    //   subject: `[PulseOS] Route Failure: ${type}`,
-    //   message: `Error: ${error}\nRoute: ${routeId}`
-    // });
-
-    // ------------------------------------------------------------
-    // ⭐ IMMUNE RESPONSE ACK — deterministic, safe
+    // IMMUNE RESPONSE ACK — deterministic, safe
     // ------------------------------------------------------------
     return {
       statusCode: 200,
@@ -187,16 +191,18 @@ export const handler = async (event) => {
         type,
         error,
         routeId,
+        band,
+        presenceTag,
         organ: "Immune Alert Node",
-        version: "11.0-Evo-Prime"
+        version: "12.3-Presence-EVO-MAX"
       })
     };
 
   } catch (err) {
     // ------------------------------------------------------------
-    // ⭐ IMMUNE FAILURE — safe fallback
+    // IMMUNE FAILURE — safe fallback
     // ------------------------------------------------------------
-    error("🟥 IMMUNE ALERT NODE ERROR (v11-Evo-Prime):", err);
+    error("🟥 IMMUNE ALERT NODE ERROR (v12.3-Presence):", err);
 
     return {
       statusCode: 500,
@@ -204,12 +210,12 @@ export const handler = async (event) => {
         ok: false,
         message: "RouteDownAlert internal error",
         organ: "Immune Alert Node",
-        version: "11.0-Evo-Prime"
+        version: "12.3-Presence-EVO-MAX"
       })
     };
   }
 };
 
 // ============================================================================
-// END OF FILE — IMMUNE ALERT NODE / ROUTE FAILURE SENTINEL (v11-Evo-Prime)
+// END OF FILE — IMMUNE ALERT NODE / ROUTE FAILURE SENTINEL (v12.3-Presence)
 // ============================================================================

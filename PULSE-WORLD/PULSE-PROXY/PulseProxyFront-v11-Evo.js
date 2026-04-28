@@ -1,16 +1,16 @@
 // ============================================================================
-//  PulseProxyFront-v11-EVO-BINARY-MAX.js
+//  PulseProxyFront-v12.3-EVO-BINARY-MAX-ABA.js
 //  Binary-First Proxy Front • Legacy Fallback • Earned Route Memory
 //  Connects Proxy → Field (binary descriptor) OR Proxy → Legacy Router (symbolic)
 // ============================================================================
 //
-//  ROLE (v11-EVO-BINARY-MAX):
-//  --------------------------
+//  ROLE (v12.3-EVO-BINARY-MAX-ABA):
+//  -------------------------------
 //  • Binary-first route planner at the proxy front.
 //  • Treats binary as a DATA SURFACE ONLY (non-executable).
 //  • Falls back to legacy symbolic router when bits are not pure binary.
 //  • Uses earned route memory (previousRouteMemory) deterministically.
-//  • Emits band + dnaTag so CNS/Brain can classify routes.
+//  • Emits band + dnaTag + A‑B‑A surfaces so CNS/Brain can classify routes.
 //
 //  SAFETY CONTRACT:
 //  ----------------
@@ -24,8 +24,8 @@
 export const PulseProxyFrontMeta = Object.freeze({
   layer: "PulseProxyFront",
   role: "BINARY_FIRST_PROXY_FRONT",
-  version: "v11.2-EVO-BINARY-MAX",
-  identity: "PulseProxyFront-v11.2-EVO-BINARY-MAX",
+  version: "v12.3-EVO-BINARY-MAX-ABA",
+  identity: "PulseProxyFront-v12.3-EVO-BINARY-MAX-ABA",
 
   guarantees: Object.freeze({
     deterministic: true,
@@ -42,6 +42,20 @@ export const PulseProxyFrontMeta = Object.freeze({
     dnaTagEmitter: true,
     binaryPhenotypeEmitter: true,
     binarySurfaceEmitter: true,
+
+    // Advantage / A‑B‑A awareness (pulled from organism)
+    unifiedAdvantageField: true,
+    pulseEfficiencyAware: true,
+    advantageCascadeAware: true,
+    meshPulseReady: true,
+    bandAware: true,
+    waveFieldAware: true,
+    binaryFieldAware: true,
+    dualBandAware: true,
+    dualMode: true,
+    localAware: true,
+    internetAware: true,
+    abaBandAware: true,
 
     // Execution prohibitions
     zeroImports: true,
@@ -61,14 +75,6 @@ export const PulseProxyFrontMeta = Object.freeze({
     zeroWindow: true,
     zeroDOM: true,
 
-    // Awareness
-    bandAware: true,
-    waveFieldAware: true,
-    binaryFieldAware: true,
-    dualMode: true,
-    localAware: true,
-    internetAware: true,
-
     // Environment
     worldLensAware: false
   }),
@@ -86,7 +92,10 @@ export const PulseProxyFrontMeta = Object.freeze({
       "ProxyFrontDecision",
       "RouteKey",
       "BinaryField",
+      "BinaryWaveField",
       "BandSignature",
+      "FrontCycleSignature",
+      "AdvantageField",
       "DnaTag",
       "ProxyFrontDiagnostics",
       "ProxyFrontHealingState"
@@ -95,7 +104,7 @@ export const PulseProxyFrontMeta = Object.freeze({
 
   lineage: Object.freeze({
     root: "PulseProxy-v11",
-    parent: "PulseProxy-v11.2-EVO",
+    parent: "PulseProxy-v12.3-EVO",
     ancestry: [
       "PulseProxyFront-v7",
       "PulseProxyFront-v8",
@@ -104,7 +113,8 @@ export const PulseProxyFrontMeta = Object.freeze({
       "PulseProxyFront-v11",
       "PulseProxyFront-v11-Evo",
       "PulseProxyFront-v11-Evo-Binary",
-      "PulseProxyFront-v11-Evo-Binary-Max"
+      "PulseProxyFront-v11-Evo-Binary-Max",
+      "PulseProxyFront-v11.2-EVO-BINARY-MAX"
     ]
   }),
 
@@ -117,7 +127,7 @@ export const PulseProxyFrontMeta = Object.freeze({
   architecture: Object.freeze({
     pattern: "A-B-A",
     baseline: "binary descriptor → route plan → symbolic fallback",
-    adaptive: "earned route memory + binary phenotype surfaces",
+    adaptive: "earned route memory + binary phenotype + wave + advantage surfaces",
     return: "deterministic proxy-front surfaces + signatures"
   })
 });
@@ -196,6 +206,33 @@ function buildFrontCycleSignature(cycle) {
   return computeHash(`FRONT_CYCLE::${cycle}`);
 }
 
+function buildBandSignature(band, routeKey) {
+  return computeHash(`FRONT_BAND::${band}::${routeKey}`);
+}
+
+function buildAdvantageField(binaryField, waveField, band) {
+  const density = binaryField.density || 0;
+  const amplitude = waveField.amplitude || 0;
+  const wavelength = waveField.wavelength || 0;
+
+  const efficiency = density === 0 ? 0 : (amplitude + 1) / (wavelength + 1);
+  const stress = Math.min(1, density * 2);
+  const advantageScore = efficiency * (1 + stress);
+
+  return {
+    band,
+    density,
+    amplitude,
+    wavelength,
+    efficiency,
+    stress,
+    advantageScore,
+    advantageSignature: computeHash(
+      `ADVANTAGE::${band}::${density}::${amplitude}::${wavelength}::${advantageScore}`
+    )
+  };
+}
+
 function isPureBinary(bits) {
   if (!Array.isArray(bits)) return false;
   for (let i = 0; i < bits.length; i++) {
@@ -206,7 +243,7 @@ function isPureBinary(bits) {
 
 
 // ============================================================================
-//  ROUTE PLANNER — binary-first, fallback-safe, deterministic
+//  ROUTE PLANNER — binary-first, fallback-safe, deterministic (A‑B‑A surfaces)
 // ============================================================================
 
 let frontCycle = 0;
@@ -241,14 +278,20 @@ export function planProxyRoute({
     }
   }
 
+  const band = decision.mode === "binary" ? "binary" : "symbolic";
+  const bandSignature = buildBandSignature(band, routeKey);
+  const advantageField = buildAdvantageField(binaryField, waveField, band);
+
   const routeMemory = {
     routeKey,
     decision,
     binaryField,
     waveField,
+    band,
+    bandSignature,
+    advantageField,
     frontCycle,
     frontCycleSignature,
-    band: decision.mode === "binary" ? "binary" : "symbolic",
     dnaTag:
       decision.mode === "binary"
         ? "PROXY_FRONT_BINARY"
@@ -259,16 +302,18 @@ export function planProxyRoute({
     routeKey,
     decision,
     routeMemory,
-    usedMemory
+    usedMemory,
+    binaryField,
+    waveField,
+    bandSignature,
+    frontCycleSignature,
+    advantageField
   };
 }
 
 
 // ============================================================================
 //  PROXY FRONT — orchestrates binary-first routing with fallback
-//  • mode: "binary"  → fieldIngest(bits) (binary descriptor path)
-//  • mode: "legacy"  → legacyCreate(...) (symbolic router path)
-//  • band + dnaTag emitted for CNS/Brain
 // ============================================================================
 export function proxyFrontRoute({
   bits,
@@ -298,6 +343,11 @@ export function proxyFrontRoute({
       dnaTag: "PROXY_FRONT_BINARY",
       routeKey: plan.routeKey,
       packet,
+      binaryField: plan.binaryField,
+      binaryWaveField: plan.waveField,
+      bandSignature: plan.bandSignature,
+      frontCycleSignature: plan.frontCycleSignature,
+      advantageField: plan.advantageField,
       routeMemory: plan.routeMemory,
       usedMemory: plan.usedMemory
     };
@@ -319,6 +369,11 @@ export function proxyFrontRoute({
     dnaTag: "PROXY_FRONT_LEGACY",
     routeKey: plan.routeKey,
     proxy,
+    binaryField: plan.binaryField,
+    binaryWaveField: plan.waveField,
+    bandSignature: plan.bandSignature,
+    frontCycleSignature: plan.frontCycleSignature,
+    advantageField: plan.advantageField,
     routeMemory: plan.routeMemory,
     usedMemory: plan.usedMemory
   };

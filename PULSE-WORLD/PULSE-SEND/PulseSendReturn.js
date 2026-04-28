@@ -1,39 +1,17 @@
 // ============================================================================
-//  PulseSendReturn-v11-Evo.js
+//  PulseSendReturn-v11-Evo-12_4_Upgrade.js
 //  Return Arc • Pulse‑Agnostic Bounce‑Back Organ • Handles returnTo Logic
 //  v11: Diagnostics + Signatures + Pattern Surface + Lineage Surface
 //  v11-Binary: Binary-Aware + Symbolic-Aware Return Surface
-// ============================================================================
-//
-//  ROLE:
-//    • Pulse‑agnostic return organ (v1/v2/v3).
-//    • Handles returnTo logic and routes the pulse back via Router + Mesh.
-//    • Emits rich diagnostics + signatures for the return arc.
-//    • Now *binary-aware*:
-//        - If pulse carries binary metadata (binaryPattern, binaryMode, etc.),
-//          it is surfaced in diagnostics and returnSignature.
-//        - Works equally well for purely symbolic pulses.
-//
-//  SAFETY CONTRACT (v11-Evo):
-//  --------------------------
-//  • No imports.
-//  • No network.
-//  • No compute beyond local helpers.
-//  • Zero randomness.
-//  • Zero timestamps.
-//  • Zero mutation outside instance.
+//  12.4-Upgrade: Movement-aware, packet-aware, backward-compatible
 // ============================================================================
 
-
-// ============================================================================
-// ⭐ PulseRole — identifies this as the PulseSend Return Organ (v11-Evo)
-// ============================================================================
 export const PulseRole = {
   type: "Messenger",
   subsystem: "PulseSend",
   layer: "Return",
   version: "11.0",
-  identity: "PulseSendReturn-v11-Evo",
+  identity: "PulseSendReturn-v11-Evo-12.4-Upgrade",
 
   evo: {
     driftProof: true,
@@ -53,9 +31,10 @@ export const PulseRole = {
     returnSurfaceReady: true,
 
     // Binary-aware return surface:
-    //  - understands binaryPattern / binaryMode / binaryStrength if present
-    //  - but does not require them
-    binaryAwareReturnReady: true
+    binaryAwareReturnReady: true,
+
+    // 12.4+: movement/packet aware
+    movementPacketAware: true
   },
 
   routingContract: "PulseRouter-v11",
@@ -79,8 +58,6 @@ function computeHash(str) {
 }
 
 function extractBinarySurfaceFromPulse(pulse) {
-  // We treat binary metadata as *optional* and non-breaking.
-  // If present, we surface it; if not, we stay purely symbolic.
   const payload = pulse?.payload || {};
 
   const binaryPattern  = payload.binaryPattern || null;
@@ -108,12 +85,22 @@ function extractBinarySurfaceFromPulse(pulse) {
   };
 }
 
-function buildReturnDiagnostics({ pulse, returnTo, targetOrgan, pathway, mode }) {
+function buildReturnDiagnostics({
+  pulse,
+  movementPacket,
+  returnTo,
+  targetOrgan,
+  pathway,
+  mode
+}) {
   const pattern = pulse?.pattern || "NO_PATTERN";
   const lineageDepth = Array.isArray(pulse?.lineage) ? pulse.lineage.length : 0;
   const pulseType = pulse?.pulseType || pulse?.PulseRole?.identity || "UNKNOWN_PULSE_TYPE";
 
   const binarySurface = extractBinarySurfaceFromPulse(pulse);
+
+  const movementSignature = movementPacket?.movementSignature || null;
+  const movementDiagnostics = movementPacket?.diagnostics || null;
 
   return {
     // Core symbolic surface
@@ -128,7 +115,11 @@ function buildReturnDiagnostics({ pulse, returnTo, targetOrgan, pathway, mode })
     // Binary surface (optional, non-breaking)
     binary: binarySurface,
 
-    // Hashes for quick indexing / SDN / logging
+    // Movement packet surface (12.4+)
+    movementSignature,
+    movementDiagnostics,
+
+    // Hashes
     patternHash: computeHash(pattern),
     lineageHash: computeHash(String(lineageDepth)),
     pulseTypeHash: computeHash(pulseType),
@@ -136,7 +127,7 @@ function buildReturnDiagnostics({ pulse, returnTo, targetOrgan, pathway, mode })
     organHash: computeHash(String(targetOrgan)),
     pathwayHash: computeHash(JSON.stringify(pathway || {})),
 
-    // Binary hashes (only meaningful if hasBinary === true)
+    // Binary hashes
     binaryPatternHash: binarySurface.binaryPattern
       ? computeHash(binarySurface.binaryPattern)
       : null,
@@ -148,13 +139,22 @@ function buildReturnDiagnostics({ pulse, returnTo, targetOrgan, pathway, mode })
 
 
 // ============================================================================
-//  FACTORY — Create the Return Organ (v11-Evo + Binary-Aware)
+//  FACTORY — Create the Return Organ (v11-Evo + Binary-Aware + 12.4 Packet)
 // ============================================================================
 export function createPulseSendReturn({ impulse, pulseRouter, pulseMesh, log }) {
   return {
     PulseRole,
 
-    handle(pulse, mode = "normal") {
+    // movementOrPulse is usually movement.packet from Impulse/Mover,
+    // but we stay backward-compatible with a raw pulse.
+    handle(movementOrPulse, modeOverride = "normal") {
+      const movementPacket = movementOrPulse && movementOrPulse.packet
+        ? movementOrPulse.packet
+        : movementOrPulse;
+
+      const packet = movementPacket || {};
+      const pulse = packet.pulse || movementOrPulse || {};
+
       const {
         returnTo,
         pattern = "UNKNOWN_PATTERN",
@@ -163,18 +163,20 @@ export function createPulseSendReturn({ impulse, pulseRouter, pulseMesh, log }) 
 
       const lineageDepth = Array.isArray(lineage) ? lineage.length : 0;
       const pulseType = pulse.PulseRole?.identity || "UNKNOWN_PULSE_TYPE";
+      const mode = modeOverride || packet.mode || pulse.mode || "normal";
 
       // ⭐ No return target → end of chain
       if (!returnTo) {
         const diagnostics = buildReturnDiagnostics({
           pulse,
+          movementPacket: packet,
           returnTo: null,
           targetOrgan: null,
           pathway: null,
           mode
         });
 
-        log && log("[PulseSendReturn-v11-Evo] No returnTo target — chain complete", {
+        log && log("[PulseSendReturn-v11-Evo-12.4] No returnTo target — chain complete", {
           jobId: pulse.jobId,
           diagnostics
         });
@@ -183,12 +185,13 @@ export function createPulseSendReturn({ impulse, pulseRouter, pulseMesh, log }) 
           completed: true,
           returned: false,
           diagnostics,
-          pulse
+          pulse,
+          movementIn: packet
         };
       }
 
       // ⭐ Return target exists → route the return pulse
-      log && log("[PulseSendReturn-v11-Evo] Returning pulse", {
+      log && log("[PulseSendReturn-v11-Evo-12.4] Returning pulse", {
         jobId: pulse.jobId,
         pattern,
         returnTo,
@@ -209,13 +212,14 @@ export function createPulseSendReturn({ impulse, pulseRouter, pulseMesh, log }) 
 
       const diagnostics = buildReturnDiagnostics({
         pulse,
+        movementPacket: packet,
         returnTo,
         targetOrgan,
         pathway,
         mode
       });
 
-      // ⭐ v11 return signature (now implicitly binary-aware via diagnostics)
+      // ⭐ v11/12.4 return signature (binary + movement aware)
       const returnSignature = computeHash(
         diagnostics.pattern +
         "::" +
@@ -225,14 +229,16 @@ export function createPulseSendReturn({ impulse, pulseRouter, pulseMesh, log }) 
         "::" +
         diagnostics.mode +
         "::" +
-        (diagnostics.binary.binaryPattern || "NO_BINARY_PATTERN")
+        (diagnostics.binary.binaryPattern || "NO_BINARY_PATTERN") +
+        "::" +
+        (diagnostics.movementSignature || "NO_MOVEMENT_SIGNATURE")
       );
 
       // ⭐ Step 3 — fire impulse back (prevent infinite loops)
-      const movement = impulse.fire({
+      const backMovement = impulse.fire({
         pulse: {
           ...pulse,
-          returnTo: null, // ⭐ prevent infinite loops
+          returnTo: null, // prevent infinite loops
           mode
         },
         targetOrgan,
@@ -245,7 +251,8 @@ export function createPulseSendReturn({ impulse, pulseRouter, pulseMesh, log }) 
         returned: true,
         returnSignature,
         diagnostics,
-        movement
+        movement: backMovement,
+        movementIn: packet
       };
     }
   };

@@ -72,11 +72,17 @@
 //      - PulseSendSystem-v11
 //      - PulseGPU-v11 (metadata only, no GPU calls)
 // ============================================================================
+// ============================================================================
+//  PulseOSOuterBBB-v12.3-Spine.js
+//  OUTER BLOOD–BRAIN BARRIER — OS SHELL PERIMETER (v12.3-SPINE)
+//  Dualband, Presence-Aware, Chunk/Prewarm-Aware, Deterministic Shell Gate
+// ============================================================================
+
 export const PulseOSOuterBBBMeta = Object.freeze({
   layer: "PulseOSOuterBBB",
   role: "OS_OUTER_BBB_ORGAN",
-  version: "v11.2-EVO",
-  identity: "PulseOSOuterBBB-v11.2-EVO",
+  version: "v12.3-SPINE",
+  identity: "PulseOSOuterBBB-v12.3-SPINE",
 
   guarantees: Object.freeze({
     deterministic: true,
@@ -104,11 +110,16 @@ export const PulseOSOuterBBBMeta = Object.freeze({
     zeroBinaryExecution: true,
     zeroMutationOutsideOrgan: true,
 
-    // Dualband awareness
+    // Dualband + presence + performance awareness
     dualBandAware: true,
     symbolicSurface: true,
     binaryCompressionSurface: true,
-    healingMetadataAware: false,
+    presenceFieldAware: true,
+    bluetoothPresenceAware: true,
+    meshPresenceRelayAware: true,
+    routeChunkingAware: true,
+    routePrewarmAware: true,
+    cachePolicyAware: true,
 
     // Continuance + loop
     loopTheoryAware: true,
@@ -122,23 +133,29 @@ export const PulseOSOuterBBBMeta = Object.freeze({
     input: [
       "RouteContext",
       "ShellEnvironment",
-      "DualBandContext"
+      "DualBandContext",
+      "PresenceContext",      // presence field + bluetooth presence
+      "MeshPresenceContext"   // mesh presence relay / topology
     ],
     output: [
       "OuterBBBPermissionState",
       "OuterBBBRouteClassification",
       "OuterBBBDiagnostics",
-      "OuterBBBSignatures"
+      "OuterBBBSignatures",
+      "OuterBBBCacheHints",        // chunk/prewarm hints for shell
+      "OuterBBBPresenceDirectives" // presence/mesh directives (metadata only)
     ]
   }),
 
   lineage: Object.freeze({
-    root: "PulseOS-v11-EVO",
-    parent: "PulseOS-v11.2-EVO",
+    root: "PulseOS-v12.3-SPINE",
+    parent: "PulseOS-v12.0-SPINE",
     ancestry: [
       "PulseOSOuterBBB-v9",
       "PulseOSOuterBBB-v10",
-      "PulseOSOuterBBB-v11"
+      "PulseOSOuterBBB-v11",
+      "PulseOSOuterBBB-v11.2-EVO",
+      "PulseOSOuterBBB-v12.3-SPINE"
     ]
   }),
 
@@ -151,21 +168,23 @@ export const PulseOSOuterBBBMeta = Object.freeze({
   architecture: Object.freeze({
     pattern: "A-B-A",
     baseline: "environmental filter → shell permission → identity gate",
-    adaptive: "dualband metadata surfaces (symbolic + binary compression)",
-    return: "deterministic shell permission + route classification"
+    adaptive:
+      "dualband metadata surfaces (symbolic + binary compression) + presence/mesh hints + chunk/prewarm hints",
+    return:
+      "deterministic shell permission + route classification + cache/presence directives"
   })
 });
 
 
 // ============================================================================
-//  OUTER BBB ROLE — Dualband, organism-wide contract surface (v11)
+//  OUTER BBB ROLE — Dualband, organism-wide contract surface (v12.3-SPINE)
 //  (Metadata only; no imports, no side effects)
 // ============================================================================
 export const PulseRole = {
   type: "Barrier",
   subsystem: "OS",
   layer: "OuterBBB",
-  version: "11.0",
+  version: "12.3-SPINE",
   identity: "PulseOSOuterBBB",
 
   evo: {
@@ -181,19 +200,27 @@ export const PulseRole = {
     // Dualband awareness (symbolic + binary metadata)
     dualBand: true,
     symbolicSurface: true,
-    binaryCompressionSurface: true, // metadata only; no binary execution here
+    binaryCompressionSurface: true,
+
+    // Presence / mesh / performance metadata
+    presenceFieldAware: true,
+    bluetoothPresenceAware: true,
+    meshPresenceRelayAware: true,
+    routeChunkingAware: true,
+    routePrewarmAware: true,
+    cachePolicyAware: true,
 
     // Loop + continuance
     loopTheoryAware: true,
     continuanceAware: true,
 
-    // Organism-wide contracts (v11)
-    routingContract: "PulseRouter-v11",
-    osOrganContract: "PulseOS-v11",
-    earnCompatibility: "PulseEarn-v11",
-    sendCompatibility: "PulseSendSystem-v11",
-    gpuCompatibility: "PulseGPU-v11",
-    bbbCompatibility: "PulseOSOuterBBB-v11"
+    // Organism-wide contracts (v12.3-SPINE)
+    routingContract: "PulseRouter-v12.3",
+    osOrganContract: "PulseOS-v12.3-SPINE",
+    earnCompatibility: "PulseEarn-v12",
+    sendCompatibility: "PulseSendSystem-v12",
+    gpuCompatibility: "PulseGPU-v12.3",
+    bbbCompatibility: "PulseOSOuterBBB-v12.3-SPINE"
   }
 };
 
@@ -203,34 +230,28 @@ export const PulseRole = {
 //  (BBB MUST HAVE ZERO IMPORTS)
 // ============================================================================
 export function createPulseOSBBB({ log }) {
-
-  // Optional: local meta surface for logging / introspection
   const BBBMeta = {
     PulseRole,
     layer: "OuterBBB",
-    version: "11.0",
-    generation: "v11",
+    version: "12.3-SPINE",
+    generation: "v12.3",
     dualBand: true,
     symbolicSurface: true,
-    binaryCompressionSurface: true // again: metadata only
+    binaryCompressionSurface: true
   };
 
   // ========================================================================
-  //  SHELL STATE ENUM (v11)
-  //  Deterministic shell modes for PulseBand + identity access
-  //  (unchanged semantics; upgraded version + meta only)
-// ========================================================================
+  //  SHELL STATE ENUM (v12.3-SPINE)
+  // ========================================================================
   const SHELL_STATES = {
-    NO_SHELL:  "no-shell",     // PulseBand forbidden
-    ANON_SHELL:"anon-shell",   // PulseBand allowed, identity blocked
-    AUTH_SHELL:"auth-shell"    // PulseBand + identity allowed
+    NO_SHELL: "no-shell",      // PulseBand forbidden
+    ANON_SHELL: "anon-shell",  // PulseBand allowed, identity blocked
+    AUTH_SHELL: "auth-shell"   // PulseBand + identity allowed
   };
 
   // ========================================================================
-  //  ROUTE CLASSIFICATION (v11)
-  //  Pure local classification of environment → SAFE / UNSAFE
-  //  NOTE: Deterministic, static maps — no network, no IO.
-// ========================================================================
+  //  ROUTE CLASSIFICATION (v12.3-SPINE)
+  // ========================================================================
   const HARD_NO_SHELL_ROUTES = new Set([
     "login",
     "404",
@@ -250,41 +271,47 @@ export function createPulseOSBBB({ log }) {
     "welcome"
   ]);
 
+  const PRESENCE_PRIORITY_ROUTES = new Set([
+    "main",
+    "home",
+    "dashboard",
+    "play",
+    "session",
+    "party"
+  ]);
+
+  const PREFETCH_PRIORITY_ROUTES = new Set([
+    "main",
+    "home",
+    "dashboard",
+    "library",
+    "store"
+  ]);
+
   // ========================================================================
-  //  determineShellState (v11)
-  //  Pure, deterministic, local-first shell-state engine.
-  //  • No side effects
-  //  • No network
-  //  • No identity mutation
-  //  • Dualband-aware only at metadata level (no binary logic)
-// ========================================================================
+  //  determineShellState — pure shell-state engine
+  // ========================================================================
   function determineShellState({ routeName, hasIdentity }) {
     const route = (routeName || "").toLowerCase();
 
-    // 1. Hard NO_SHELL routes — PulseBand forbidden
     if (HARD_NO_SHELL_ROUTES.has(route)) {
       return SHELL_STATES.NO_SHELL;
     }
 
-    // 2. ANON_SHELL routes — PulseBand allowed, identity blocked
     if (ANON_SHELL_ROUTES.has(route)) {
       return SHELL_STATES.ANON_SHELL;
     }
 
-    // 3. AUTH_SHELL routes — PulseBand + identity allowed
     if (hasIdentity) {
       return SHELL_STATES.AUTH_SHELL;
     }
 
-    // 4. Fallback — anon-shell by default (continuance > shutdown)
     return SHELL_STATES.ANON_SHELL;
   }
 
   // ========================================================================
-  //  guardPulseBand (v11)
-  //  Convenience helper for PulseBand + connectors.
-  //  • Shapes access, never halts organism.
-// ========================================================================
+  //  guardPulseBand — shapes PulseBand + identity access
+  // ========================================================================
   function guardPulseBand(ctx) {
     const shellState = determineShellState(ctx);
 
@@ -293,21 +320,69 @@ export function createPulseOSBBB({ log }) {
       allowPulseBand:
         shellState === SHELL_STATES.ANON_SHELL ||
         shellState === SHELL_STATES.AUTH_SHELL,
-
-      allowIdentity:
-        shellState === SHELL_STATES.AUTH_SHELL
+      allowIdentity: shellState === SHELL_STATES.AUTH_SHELL
     };
   }
 
   // ========================================================================
-  //  PUBLIC BBB INTERFACE (v11)
-  //  Deterministic, importless, CNS-injected membrane.
+  //  buildCacheHints — route-level chunk/prewarm hints (metadata only)
+// ========================================================================
+  function buildCacheHints({ routeName }) {
+    const route = (routeName || "").toLowerCase();
+
+    const prewarm = PREFETCH_PRIORITY_ROUTES.has(route);
+    const presenceCritical = PRESENCE_PRIORITY_ROUTES.has(route);
+
+    return {
+      route,
+      prewarmChunks: prewarm,
+      prewarmPresence: presenceCritical,
+      suggestedBands: {
+        symbolic: true,
+        binary: true
+      }
+    };
+  }
+
+  // ========================================================================
+  //  buildPresenceDirectives — presence/mesh directives (metadata only)
+// ========================================================================
+  function buildPresenceDirectives({
+    routeName,
+    hasIdentity,
+    bluetoothAvailable,
+    meshAvailable
+  }) {
+    const route = (routeName || "").toLowerCase();
+    const presenceCritical = PRESENCE_PRIORITY_ROUTES.has(route);
+
+    const enablePresenceField =
+      presenceCritical && (hasIdentity || route === "party");
+
+    const enableBluetoothPresence =
+      enablePresenceField && !!bluetoothAvailable;
+
+    const enableMeshPresence =
+      enablePresenceField && !!meshAvailable;
+
+    return {
+      route,
+      enablePresenceField,
+      enableBluetoothPresence,
+      enableMeshPresence
+    };
+  }
+
+  // ========================================================================
+  //  PUBLIC BBB INTERFACE (v12.3-SPINE)
 // ========================================================================
   return {
     PulseRole,
     BBBMeta,
     SHELL_STATES,
     determineShellState,
-    guardPulseBand
+    guardPulseBand,
+    buildCacheHints,
+    buildPresenceDirectives
   };
 }

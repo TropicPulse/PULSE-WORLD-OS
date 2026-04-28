@@ -1,16 +1,15 @@
 // ============================================================================
-//  PulseBinaryOS-v11-EVO-MAX.js
-//  THE FIRST BINARY-NATIVE ORGANISM KERNEL IN COMPUTING HISTORY (v11-EVO-MAX)
+//  PulseBinaryOS-v12.3-Spine-Binary.js
+//  BINARY-NATIVE ORGANISM KERNEL — SPINE / REFLEX ENGINE (v12.3-SPINE-BINARY)
 // ============================================================================
 //  ROLE:
-//    - This is the *binary-native* OS kernel of PulseOS v11-EVO-MAX.
-//    - It boots the organism using pure binary cognition, reflex, and wiring.
-//    - It contains ZERO symbolic logic, ZERO browser impurities, ZERO drift
-//      inside the organism core.
-//    - It is the reflex organism: the fast, deterministic, mutation-proof core.
+//    - Binary-native OS kernel of PulseOS v12.3-SPINE-BINARY.
+//    - Boots the organism using pure binary cognition, reflex, and wiring.
+//    - ZERO symbolic logic, ZERO browser impurities, ZERO drift inside core.
+//    - Reflex organism: fast, deterministic, mutation-proof, presence-aware.
 //
 //  SYMBOLIC RELATION:
-//    - The symbolic kernel (PulseOS-v11-Evo.js) is the cortex.
+//    - Symbolic kernel (PulseOS-v12.3-Spine.js) is the cortex.
 //    - THIS binary kernel is the spinal brainstem + reflex engine.
 //    - Together they form the dual-mode organism.
 //
@@ -27,11 +26,12 @@
 //    - When THIS file runs, the *binary creature* comes online.
 //    - This is the reflex ignition — the organism’s heartbeat.
 // ============================================================================
+
 export const PulseBinaryOSMeta = Object.freeze({
   layer: "PulseBinaryOSKernel",
   role: "BINARY_ORGANISM_BOOTLOADER",
-  version: "v11.2-EVO-MAX",
-  identity: "PulseBinaryOS-v11-EVO-MAX",
+  version: "v12.3-SPINE-BINARY",
+  identity: "PulseBinaryOS-v12.3-Spine-Binary",
 
   guarantees: Object.freeze({
     deterministic: true,
@@ -60,6 +60,19 @@ export const PulseBinaryOSMeta = Object.freeze({
     spinalCordAware: true,
     symbolicCortexAware: true,
 
+    // Presence + Mesh awareness
+    presenceFieldAware: true,
+    bluetoothPresenceAware: true,
+    meshPresenceRelayAware: true,
+    meshTopologyAware: true,
+
+    // Chunking / prewarm / multi-instance
+    kernelChunkingReady: true,
+    kernelPrewarmReady: true,
+    multiInstanceKernel: true,
+    clusterCoherence: true,
+    zeroDriftCloning: true,
+
     // Safety
     zeroUserCode: true,
     zeroDynamicImports: true,
@@ -72,24 +85,29 @@ export const PulseBinaryOSMeta = Object.freeze({
       "PulseOSGovernor",
       "PulseOSBrain",
       "PulseOSEvolution",
-      "PulseSpinalCord"
+      "PulseSpinalCord",
+      "PulseOSPresence",
+      "PulseMeshPresence"
     ],
     output: [
       "BinaryOrganismKernel",
       "BinaryBootDiagnostics",
-      "BinaryBootSignatures"
+      "BinaryBootSignatures",
+      "BinaryPresenceField",
+      "BinaryMeshPresenceRelay"
     ]
   }),
 
   lineage: Object.freeze({
-    root: "PulseOS-v11-EVO",
-    parent: "PulseOS-v11.2-EVO",
+    root: "PulseOS-v12.3-SPINE",
+    parent: "PulseOS-v12.0-SPINE",
     ancestry: [
       "PulseBinaryOS-v9",
       "PulseBinaryOS-v10",
       "PulseBinaryOS-v11",
       "PulseBinaryOS-v11-EVO",
-      "PulseBinaryOS-v11-EVO-MAX"
+      "PulseBinaryOS-v11-EVO-MAX",
+      "PulseBinaryOS-v12.3-Spine-Binary"
     ]
   }),
 
@@ -102,30 +120,33 @@ export const PulseBinaryOSMeta = Object.freeze({
   architecture: Object.freeze({
     pattern: "A-B-A",
     baseline: "binary-native organism bootloader (reflex ignition)",
-    adaptive: "symbolic-aware dual-mode overlay",
-    return: "online binary organism kernel + boot signatures"
+    adaptive: "symbolic-aware dual-mode overlay + presence field",
+    return:
+      "online binary organism kernel + boot signatures + presence field + mesh relay"
   })
 });
 
 
 // ============================================================================
-//  ORGANISM BOOTSTRAP SET — v11-EVO (SYMBOLIC KERNEL)
+//  ORGANISM BOOTSTRAP SET — v12.3 (SYMBOLIC KERNEL SIDE)
 // ============================================================================
-import { withOrganGuard } from "./PulseOSGovernor.js";           // Supervisor organ
-import * as PulseOSBrain from "./PulseOSBrain-v11-Evo.js";              // CNS brain organ
-import * as PulseOSEvolution from "./PulseOSBrainEvolution.js"; // Evolution organ
-import * as PulseSpinalCord from "./PulseOSSpinalCord-v12-Evo.js";      // Wiring organ
-
+import { withOrganGuard } from "./PulseOSGovernor.js";                    // Supervisor organ
+import * as PulseOSBrain from "./PulseOSBrain-v11-Evo.js";               // CNS brain organ
+import * as PulseOSEvolution from "./PulseOSBrainEvolution.js";          // Evolution organ
+import * as PulseSpinalCord from "./PulseOSSpinalCord-v12-Evo.js";       // Wiring organ
+// Presence / Mesh presence (symbolic/OS side, optional)
+import * as PulseOSPresence from "./PulseOSPresence.js";                 // OS Presence Organ (optional)
+import * as PulseMeshPresence from "./PulseMeshPresenceRelay.js";        // Mesh Presence Relay (optional)
 
 
 // ============================================================================
-//  CONTEXT — BINARY OS KERNEL IDENTITY (v11-EVO-MAX)
+//  CONTEXT — BINARY OS KERNEL IDENTITY (v12.3-SPINE-BINARY)
 // ============================================================================
 const PULSE_BINARY_OS_CONTEXT = Object.freeze({
   layer: "PulseBinaryOSKernel",
   role: "BINARY_ORGANISM_BOOTLOADER",
-  version: "11.0-EVO-BINARY-MAX",
-  lineage: "pulse-os-v11-evo-kernel-binary-max",
+  version: "12.3-SPINE-BINARY",
+  lineage: "pulse-os-v12.3-spine-kernel-binary",
   evo: {
     binaryNative: true,
     symbolicAware: true,
@@ -138,7 +159,25 @@ const PULSE_BINARY_OS_CONTEXT = Object.freeze({
     deterministic: true,
     memoryCoreAware: true,
     binaryOverlayAware: true,
-    spinalCordAware: true
+    spinalCordAware: true,
+
+    // Presence + Mesh
+    presenceFieldAware: true,
+    bluetoothPresenceAware: true,
+    meshPresenceRelayAware: true,
+    meshTopologyAware: true,
+
+    // Chunking / prewarm / multi-instance
+    kernelChunkingReady: true,
+    kernelPrewarmReady: true,
+    multiInstanceReady: true,
+    clusterCoherence: true,
+    zeroDriftCloning: true,
+
+    // Advantage field
+    unifiedAdvantageField: true,
+    advantageCascadeAware: true,
+    pulseEfficiencyAware: true
   }
 });
 
@@ -169,7 +208,7 @@ async function buildPulseBinaryOSKernel() {
       })
     : PulseSpinalCord;
 
-  // 4) CORE MEMORY (if your v11 stack exposes it via Evolution or Brain)
+  // 4) CORE MEMORY (if v12.3 stack exposes it via Evolution or Brain)
   let MemoryCore = null;
   if (Evolution && typeof Evolution.bootMemoryCore === "function") {
     MemoryCore = Evolution.bootMemoryCore(Brain);
@@ -185,6 +224,58 @@ async function buildPulseBinaryOSKernel() {
     BinaryOverlay = Brain.getBinaryOverlay();
   }
 
+  // 6) PRESENCE FIELD (OS-level presence organ, optional)
+  let PresenceField = null;
+  if (PulseOSPresence && typeof PulseOSPresence.buildPresenceField === "function") {
+    PresenceField = PulseOSPresence.buildPresenceField({
+      Brain,
+      Evolution,
+      SpinalCord,
+      MemoryCore,
+      BinaryOverlay,
+      meta
+    });
+  } else if (PulseOSPresence && typeof PulseOSPresence.PulseOSPresence === "function") {
+    PresenceField = PulseOSPresence.PulseOSPresence({
+      Brain,
+      Evolution,
+      SpinalCord,
+      MemoryCore,
+      BinaryOverlay,
+      meta
+    });
+  }
+
+  // 7) MESH PRESENCE RELAY (Mesh-level presence organ, optional)
+  let MeshPresenceRelay = null;
+  if (
+    PulseMeshPresence &&
+    typeof PulseMeshPresence.buildMeshPresenceRelay === "function"
+  ) {
+    MeshPresenceRelay = PulseMeshPresence.buildMeshPresenceRelay({
+      Brain,
+      Evolution,
+      SpinalCord,
+      MemoryCore,
+      BinaryOverlay,
+      PresenceField,
+      meta
+    });
+  } else if (
+    PulseMeshPresence &&
+    typeof PulseMeshPresence.PulseMeshPresenceRelay === "function"
+  ) {
+    MeshPresenceRelay = PulseMeshPresence.PulseMeshPresenceRelay({
+      Brain,
+      Evolution,
+      SpinalCord,
+      MemoryCore,
+      BinaryOverlay,
+      PresenceField,
+      meta
+    });
+  }
+
   // PURE BINARY ORGANISM KERNEL
   return {
     meta,
@@ -193,6 +284,8 @@ async function buildPulseBinaryOSKernel() {
     SDN: SpinalCord,
     MemoryCore,
     BinaryOverlay,
+    PresenceField,
+    MeshPresenceRelay,
 
     // Binary kernel does NOT have symbolic governor
     Governed: {
@@ -216,28 +309,29 @@ const PulseBinaryOSKernelPromise = buildPulseBinaryOSKernel();
 // ============================================================================
 if (typeof window !== "undefined") {
   PulseBinaryOSKernelPromise.then((Kernel) => {
-    // Attach binary kernel under window.PulseBinaryKernel (non-invasive)
     const exposed = {
       meta: Kernel.meta,
       SDN: Kernel.SDN,
       Brain: Kernel.Brain,
       Evolution: Kernel.Evolution,
       MemoryCore: Kernel.MemoryCore,
-      BinaryOverlay: Kernel.BinaryOverlay
+      BinaryOverlay: Kernel.BinaryOverlay,
+      PresenceField: Kernel.PresenceField,
+      MeshPresenceRelay: Kernel.MeshPresenceRelay
     };
 
     window.PulseBinaryKernel = window.PulseBinaryKernel
       ? Object.freeze({ ...window.PulseBinaryKernel, ...exposed })
       : Object.freeze(exposed);
-  }).catch((err) => {
-    // OUTSIDE the organism, so console is allowed here if you want:
-    // console.error("[PulseBinaryOS-v11-EVO-MAX] Kernel bootstrap failed:", err);
+  }).catch((_err) => {
+    // Outside organism: optional symbolic logging if desired.
+    // console.error("[PulseBinaryOS-v12.3-Spine-Binary] Kernel bootstrap failed:", _err);
   });
 }
 
 
 // ============================================================================
-//  EXPORTS — FULL BINARY OS KERNEL
+//  EXPORTS — FULL BINARY OS KERNEL (v12.3-SPINE-BINARY)
 // ============================================================================
 export const PulseBinaryOSv11Evo = {
   ...PULSE_BINARY_OS_CONTEXT,

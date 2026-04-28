@@ -1,117 +1,122 @@
 // ============================================================================
-// FILE: /apps/PulseOS/core/PulseLoopScanner-v11-EVO.js
-// PULSE OS — v11-EVO
-// GENERIC LOOP ORGAN — NON-BINARY, DETERMINISTIC, MULTI-SPIN, ZERO-DRIFT
+// FILE: /apps/PulseOS/core/PulseLoopScanner-v12.3-EVO.js
+// PULSE OS — v12.3-EVO
+// GENERIC LOOP ORGAN — PRESENCE + HARMONICS + DUAL-BAND + MULTI-SPIN-EVO
 // ============================================================================
-// ROLE:
+// ROLE (12.3-EVO):
 //   - Convert ANY numeric signal → deterministic loop indices.
-//   - Drive sweep lines for ALL PulseOS layers (body/home/town/node).
+//   - Presence-aware (presenceAvg, presenceGradient).
+//   - Harmonics-aware (phaseDrift, coherenceScore).
+//   - Dual-band aware (binary + pulse + presence).
+//   - Multi-spin-EVO aware (phase-offset loop paths).
 //   - Zero randomness, zero timestamps, zero mutation.
-//   - Multi-spin aware (phase-offset loop paths).
-//   - Designed to pair with ANY scanner (Behavior, Binary, NodeAdmin, UI).
-//
-// LOOP PERSONALITIES (v11-EVO):
-//   • nextIndex       → standard loop index (fast, responsive)
-//   • nextIndexDeep   → slower, deeper, stable sweep
-//   • nextIndexMulti  → 3-phase multi-spin loop indices
-//   • nextIndexEdge   → edge-biased sweep (outline emphasis)
-//   • nextIndexFlat   → low-variance, stable sweep
-//
-// NOTES:
-//   - This is the GENERIC version (NOT binary).
-//   - Accepts ANY numeric array or scalar signal.
-//   - No binary validation.
-//   - No bit restrictions.
+//   - API-compatible with v11-EVO.
 // ============================================================================
 
 export function createLoopScanner({ trace = false } = {}) {
 
   // ---------------------------------------------------------------------------
-  // CORE: SIGNAL → NUMBER (GENERIC)
+  // CORE: SIGNAL → NUMBER (GENERIC, DETERMINISTIC)
   // ---------------------------------------------------------------------------
   function signalToNumber(signal) {
     if (Array.isArray(signal)) {
-      // Sum + weighted index → stable number
       let n = 0;
       for (let i = 0; i < signal.length; i++) {
         n += (signal[i] || 0) * (i + 1);
       }
       return Math.abs(Math.floor(n));
     }
-
-    // Scalar fallback
     return Math.abs(Math.floor(signal || 0));
   }
 
-  // ========================================================================
-  // MODE 1 — STANDARD LOOP INDEX (FAST, RESPONSIVE)
-  // ========================================================================
-  function nextIndex(signal, max, spinPhase = 0) {
-    const base = signalToNumber(signal);
-    const idx = Math.abs(base + Math.floor(spinPhase)) % max;
+  // ---------------------------------------------------------------------------
+  // DUAL-BAND OFFSET (presence + harmonics)
+  // ---------------------------------------------------------------------------
+  function dualBandOffset(max, presence = 0, harmonicDrift = 0) {
+    const p = clamp(presence, 0, 1);
+    const h = clamp(harmonicDrift, 0, 1);
 
-    if (trace) console.log("[LoopScanner-GENERIC] STANDARD:", idx);
+    // presence stabilizes, harmonics destabilize
+    const combined = (h * 0.6) - (p * 0.3);
+
+    // bounded offset: ±10% of max
+    return Math.floor(combined * max * 0.1);
+  }
+
+  // ========================================================================
+  // MODE 1 — STANDARD LOOP INDEX (FAST, RESPONSIVE, DUAL-BAND AWARE)
+  // ========================================================================
+  function nextIndex(signal, max, spinPhase = 0, presence = 0, harmonicDrift = 0) {
+    const base = signalToNumber(signal);
+    const band = dualBandOffset(max, presence, harmonicDrift);
+
+    const idx = Math.abs(base + Math.floor(spinPhase) + band) % max;
+
+    if (trace) console.log("[LoopScanner‑12.3] STANDARD:", { idx, presence, harmonicDrift });
     return idx;
   }
 
   // ========================================================================
   // MODE 2 — DEEP LOOP INDEX (SLOW, STABLE, MRI-LIKE)
   // ========================================================================
-  function nextIndexDeep(signal, max, spinPhase = 0) {
+  function nextIndexDeep(signal, max, spinPhase = 0, presence = 0, harmonicDrift = 0) {
     const base = Math.floor(signalToNumber(signal) * 0.25);
-    const idx = Math.abs(base + Math.floor(spinPhase)) % max;
+    const band = dualBandOffset(max, presence, harmonicDrift);
 
-    if (trace) console.log("[LoopScanner-GENERIC] DEEP:", idx);
+    const idx = Math.abs(base + Math.floor(spinPhase) + band) % max;
+
+    if (trace) console.log("[LoopScanner‑12.3] DEEP:", { idx, presence, harmonicDrift });
     return idx;
   }
 
   // ========================================================================
-  // MODE 3 — MULTI LOOP INDEX (3-PHASE MULTI-SPIN)
+  // MODE 3 — MULTI LOOP INDEX (3-PHASE MULTI-SPIN-EVO)
   // ========================================================================
-  function nextIndexMulti(signal, max) {
+  function nextIndexMulti(signal, max, presence = 0, harmonicDrift = 0) {
     const base = signalToNumber(signal);
+    const band = dualBandOffset(max, presence, harmonicDrift);
 
     const indices = [0, 1, 2].map(i => {
       const phase = (Math.PI * 2 * i) / 3;
-      const idx = Math.abs(base + Math.floor(phase * 10)) % max;
-      return idx;
+      return Math.abs(base + Math.floor(phase * 10) + band) % max;
     });
 
-    if (trace) console.log("[LoopScanner-GENERIC] MULTI:", indices);
+    if (trace) console.log("[LoopScanner‑12.3] MULTI:", { indices, presence, harmonicDrift });
     return indices;
   }
 
   // ========================================================================
   // MODE 4 — EDGE LOOP INDEX (OUTLINE EMPHASIS)
   // ========================================================================
-  function nextIndexEdge(signal, max, spinPhase = 0) {
+  function nextIndexEdge(signal, max, spinPhase = 0, presence = 0, harmonicDrift = 0) {
     const base = signalToNumber(signal);
+    const band = dualBandOffset(max, presence, harmonicDrift);
 
-    // Even → left/top edge, Odd → right/bottom edge
     const edgeBias = (base % 2 === 0) ? 0 : max - 1;
 
-    const idx = Math.abs(edgeBias + Math.floor(spinPhase)) % max;
+    const idx = Math.abs(edgeBias + Math.floor(spinPhase) + band) % max;
 
-    if (trace) console.log("[LoopScanner-GENERIC] EDGE:", idx);
+    if (trace) console.log("[LoopScanner‑12.3] EDGE:", { idx, presence, harmonicDrift });
     return idx;
   }
 
   // ========================================================================
   // MODE 5 — FLAT LOOP INDEX (LOW-VARIANCE, CALMING)
   // ========================================================================
-  function nextIndexFlat(signal, max) {
+  function nextIndexFlat(signal, max, presence = 0, harmonicDrift = 0) {
     const base = signalToNumber(signal);
+    const band = dualBandOffset(max, presence, harmonicDrift);
 
-    // Flatten movement: only 10% of normal range
-    const idx = Math.floor((base % max) * 0.1);
+    const flatBase = Math.floor((base % max) * 0.1);
+    const idx = (flatBase + band) % max;
 
-    if (trace) console.log("[LoopScanner-GENERIC] FLAT:", idx);
+    if (trace) console.log("[LoopScanner‑12.3] FLAT:", { idx, presence, harmonicDrift });
     return idx;
   }
 
   // ========================================================================
-  // ORGAN EXPORT
-  // ========================================================================
+  // ORGAN EXPORT (API-COMPATIBLE)
+// ========================================================================
   return {
     nextIndex,
     nextIndexDeep,
@@ -119,4 +124,11 @@ export function createLoopScanner({ trace = false } = {}) {
     nextIndexEdge,
     nextIndexFlat
   };
+}
+
+// ---------------------------------------------------------------------------
+// HELPERS
+// ---------------------------------------------------------------------------
+function clamp(v, min, max) {
+  return Math.max(min, Math.min(max, v));
 }

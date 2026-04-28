@@ -1,18 +1,20 @@
 // ============================================================================
-//  BinaryProxy-v11-EVO-MAX-ABA.js
-//  PURE BINARY NERVE ROOT — FINAL v11‑EVO‑A‑B‑A MAX EDITION
+//  BinaryProxy-v12.3-EVO-MAX-ABA.js
+//  PURE BINARY NERVE ROOT — v12.3‑EVO‑A‑B‑A MAX EDITION
+//  + CACHE/CHUNK/PRESENCE ENVELOPES (DETERMINISTIC, BINARY-ONLY META)
 // ============================================================================
 //  ROLE:
 //    - Accept ONLY pure binary arrays (0/1).
 //    - Encode using BinaryAgent (encoder).
 //    - Exchange using BinaryAgent.process().
 //    - Emit A‑B‑A bandSignature + binaryField + waveField + cycleSignature.
-//    - Deterministic fallback to PulseProxy-v11-Evo (or any symbolic proxy).
+//    - Emit cacheChunk + presence envelopes (deterministic, meta-only).
+//    - Deterministic fallback to PulseProxy (or any symbolic proxy).
 //
-//  ARCHITECTURE LAW (v11‑EVO‑A‑B‑A):
-//    - Binary adds ONLY binary representation.
+//  ARCHITECTURE LAW (v12.3‑EVO‑A‑B‑A):
+//    - Binary adds ONLY binary representation + binary meta envelopes.
 //    - No symbolic logic.
-//    - No routing, no lineage, no patterns, no evolution.
+//    - No routing, no lineage, no patterns, no evolution logic here.
 //    - No JSON except internal ops.
 //    - No objects except internal ops.
 //    - No randomness, no drift, no mutation.
@@ -21,8 +23,8 @@
 export const BinaryProxyRole = {
   layer: "BinaryProxy",
   role: "PURE_BINARY_NERVE_ROOT",
-  version: "11.0-EVO-MAX-ABA",
-  lineage: "binary-proxy-v11-aba",
+  version: "12.3-EVO-MAX-ABA",
+  lineage: "binary-proxy-v12.3-aba",
   evo: {
     binaryOnly: true,
     symbolicFallback: true,
@@ -32,14 +34,25 @@ export const BinaryProxyRole = {
     noOrgans: true,
     noEvolution: true,
     noRandomness: true,
-    abaBandAware: true
+    abaBandAware: true,
+
+    // 12.3+ cache/chunk/presence advantages (meta-only)
+    cacheChunkAware: true,
+    cacheChunkFirst: true,
+    cacheChunkDeterministic: true,
+    presenceAware: true,
+    presenceDeterministic: true,
+    prewarmAware: true,
+    unifiedAdvantageField: true,
+    pulseEfficiencyAware: true
   }
 };
+
 export const PulseOSBinaryProxyMeta = Object.freeze({
   layer: "BinaryProxy",
   role: "PURE_BINARY_NERVE_ROOT",
-  version: "v11.2-EVO-BINARY-MAX-ABA",
-  identity: "BinaryProxy-v11.2-EVO-BINARY-MAX-ABA",
+  version: "v12.3-EVO-BINARY-MAX-ABA",
+  identity: "BinaryProxy-v12.3-EVO-BINARY-MAX-ABA",
 
   guarantees: Object.freeze({
     // Absolute binary laws
@@ -71,6 +84,17 @@ export const PulseOSBinaryProxyMeta = Object.freeze({
     symbolicFallback: true,
     deterministicFallback: true,
 
+    // 12.3+ cache/chunk/presence guarantees (meta-only)
+    cacheChunkAware: true,
+    cacheChunkSafe: true,
+    cacheChunkDeterministic: true,
+    presenceAware: true,
+    presenceDeterministic: true,
+    prewarmAware: true,
+    unifiedAdvantageField: true,
+    pulseEfficiencyAware: true,
+    chunkEnvelopeEmitter: true,
+
     // Environment
     worldLensAware: false
   }),
@@ -85,20 +109,23 @@ export const PulseOSBinaryProxyMeta = Object.freeze({
       "BinarySignature",
       "BinaryCycleSignature",
       "BinaryWaveField",
-      "BinaryField"
+      "BinaryField",
+      "BinaryCacheChunkEnvelope",
+      "BinaryPresenceEnvelope"
     ]
   }),
 
   lineage: Object.freeze({
     root: "BinaryOrganism-v11",
-    parent: "BinaryOrganism-v11.2-EVO",
+    parent: "BinaryOrganism-v12.3-EVO",
     ancestry: [
       "BinaryProxy-v9",
       "BinaryProxy-v10",
       "BinaryProxy-v11",
       "BinaryProxy-v11-Evo",
       "BinaryProxy-v11-Evo-Max",
-      "BinaryProxy-v11-Evo-Max-ABA"
+      "BinaryProxy-v11-Evo-Max-ABA",
+      "BinaryProxy-v11.2-EVO-BINARY-MAX-ABA"
     ]
   }),
 
@@ -111,8 +138,8 @@ export const PulseOSBinaryProxyMeta = Object.freeze({
   architecture: Object.freeze({
     pattern: "A-B-A",
     baseline: "binary input → binary exchange → binary output",
-    adaptive: "ABA band signatures only",
-    return: "pure binary nerve output + signatures"
+    adaptive: "ABA band signatures + cacheChunk/presence envelopes",
+    return: "pure binary nerve output + signatures + deterministic chunk envelopes"
   })
 });
 
@@ -148,7 +175,7 @@ export function createBinaryProxy({
 
   // ---------------------------------------------------------------------------
   //  A‑B‑A SURFACES (binary-only phenotype, deterministic)
-// ---------------------------------------------------------------------------
+  // ---------------------------------------------------------------------------
   function buildBandSignature() {
     return encoder.hash("binary-band-v11-aba");
   }
@@ -185,11 +212,40 @@ export function createBinaryProxy({
     return encoder.hash(`BINARY_PROXY_CYCLE::${cycle}`);
   }
 
+  // ---------------------------------------------------------------------------
+  //  12.3+ CACHE/CHUNK/PRESENCE ENVELOPES (META-ONLY, DETERMINISTIC)
+// ---------------------------------------------------------------------------
+  function buildCacheChunkEnvelope(dir) {
+    const chunkId = encoder.hash(`BINARY_CHUNK_ID::${dir}::${cycle}`);
+    const chunkBandSignature = encoder.hash(`BINARY_CHUNK_BAND::${cycle}`);
+    const chunkSurface = encoder.hash(`BINARY_CHUNK_SURF::${cycle}`);
+
+    return {
+      cacheChunkId: chunkId,
+      cacheChunkBandSignature: chunkBandSignature,
+      cacheChunkSurfaceSignature: chunkSurface
+    };
+  }
+
+  function buildPresenceEnvelope(dir) {
+    const presenceId = encoder.hash(`BINARY_PRESENCE_ID::${dir}::${cycle}`);
+    const presenceSignature = encoder.hash(`BINARY_PRESENCE_SIG::${cycle}`);
+    const prewarmSignature = encoder.hash(`BINARY_PREWARM_SIG::${cycle}`);
+
+    return {
+      presenceId,
+      presenceSignature,
+      prewarmSignature
+    };
+  }
+
   function buildBinaryEnvelope(dir, bits, encoded, extra = null) {
     const bandSignature = buildBandSignature();
     const binaryField = buildBinaryField();
     const waveField = buildWaveField();
     const cycleSignature = buildCycleSignature();
+    const cacheChunkEnvelope = buildCacheChunkEnvelope(dir);
+    const presenceEnvelope = buildPresenceEnvelope(dir);
 
     const record = {
       dir,
@@ -198,7 +254,9 @@ export function createBinaryProxy({
       bandSignature,
       binaryField,
       waveField,
-      cycleSignature
+      cycleSignature,
+      cacheChunkEnvelope,
+      presenceEnvelope
     };
 
     if (extra) {
@@ -212,13 +270,15 @@ export function createBinaryProxy({
       bandSignature,
       binaryField,
       waveField,
-      cycleSignature
+      cycleSignature,
+      cacheChunkEnvelope,
+      presenceEnvelope
     };
   }
 
   // ---------------------------------------------------------------------------
   //  RECEIVE (binary → encoded)
-// ---------------------------------------------------------------------------
+  // ---------------------------------------------------------------------------
   function receive(bits) {
     cycle++;
 
@@ -235,7 +295,7 @@ export function createBinaryProxy({
 
   // ---------------------------------------------------------------------------
   //  SEND (binary → encoded)
-// ---------------------------------------------------------------------------
+  // ---------------------------------------------------------------------------
   function send(bits) {
     cycle++;
 
@@ -252,7 +312,7 @@ export function createBinaryProxy({
 
   // ---------------------------------------------------------------------------
   //  EXCHANGE (binary → cortex → binary)
-// ---------------------------------------------------------------------------
+  // ---------------------------------------------------------------------------
   function exchange(bits) {
     cycle++;
 
@@ -299,7 +359,6 @@ export function createBinaryProxy({
       console.warn(`[BinaryProxy] FALLBACK (${op}):`, reason, bits);
     }
 
-    // This is the ONLY symbolic bridge: we hand off to a v11 Proxy.
     return fallbackProxyFactory({
       jobId: `fallback-${op}`,
       pattern: "binary-fallback",

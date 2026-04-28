@@ -1,7 +1,7 @@
 // ============================================================================
-//  FILE: PulseShifterEvolutionaryPulse-v11-Evo.js
+//  FILE: PulseShifterEvolutionaryPulse-v12-3-Evo.js
 //  Pulse v2 Organism • Evolution Engine • Pattern + Lineage + Shape
-//  v11-Evo: Diagnostics + Signatures + Ancestry + Evolution Surface
+//  v12.3-Evo: Diagnostics + Signatures + Ancestry + Evolution Surface
 // ============================================================================
 //
 //  ROLE:
@@ -18,14 +18,14 @@
 //    - tier: a coarse degradation tier based on healthScore
 //
 //  This engine is designed to sit BEHIND a binary front-end such as
-//  PulseBinaryShifterEvolutionaryPulse-v11-Evo, which will:
+//  PulseBinaryShifterEvolutionaryPulse-v12-3-Evo, which will:
 //    - accept bits
 //    - derive pattern/mode/payload hints
 //    - call createPulseV2 / evolvePulseV2
 //    - emit compact, binary-friendly summaries
 //
-//  SAFETY CONTRACT (v11-Evo):
-//  --------------------------
+//  SAFETY CONTRACT (v12.3-Evo):
+//  ----------------------------
 //  • No imports.
 //  • No network.
 //  • No randomness.
@@ -36,14 +36,14 @@
 
 
 // ============================================================================
-// ⭐ PulseRole — identifies this as the Pulse v2 evolution engine (v11-Evo)
+// ⭐ PulseRole — identifies this as the Pulse v2 evolution engine (v12.3-Evo)
 // ============================================================================
 export const PulseRole = {
   type: "Pulse",
   subsystem: "Pulse",
   layer: "Organ",
-  version: "11.0",
-  identity: "PulseShifterEvolutionaryPulse-v11-Evo",
+  version: "12.3",
+  identity: "PulseShifterEvolutionaryPulse-v12.3-Evo",
 
   evo: {
     // Core evolution capabilities
@@ -72,17 +72,17 @@ export const PulseRole = {
 
     // Binary integration flags:
     //   - This file is the *back-end* evolution engine.
-    //   - A separate binary organ (PulseBinaryShifterEvolutionaryPulse-v11-Evo)
+    //   - A separate binary organ (PulseBinaryShifterEvolutionaryPulse-v12.3-Evo)
     //     will act as the front-end that speaks in bits.
     binaryBackEndReady: true,
-    binaryFrontEndContract: "PulseBinaryShifterEvolutionaryPulse-v11-Evo"
+    binaryFrontEndContract: "PulseBinaryShifterEvolutionaryPulse-v12.3-Evo"
   },
 
-  routingContract: "PulseRouter-v11",
-  meshContract: "PulseMesh-v11",
-  sendContract: "PulseSend-v11",
-  gpuOrganContract: "PulseGPU-v11",
-  earnCompatibility: "PulseEarn-v11"
+  routingContract: "PulseRouter-v12.3",
+  meshContract: "PulseMesh-v12.3",
+  sendContract: "PulseSend-v12.3",
+  gpuOrganContract: "PulseGPU-v12.3",
+  earnCompatibility: "PulseEarn-v12.3"
 };
 
 
@@ -209,7 +209,7 @@ function runEvolutionComputeLoopV2({ pattern, lineage, payload, mode }) {
       mode === "drain"    ? 3 :
       mode === "recovery" ? 2 :
       1,
-    experimentalTier: "v2-evolution-engine-v11"
+    experimentalTier: "v2-evolution-engine-v12.3"
   };
 
   const maxPattern = 64;
@@ -234,7 +234,7 @@ function runEvolutionComputeLoopV2({ pattern, lineage, payload, mode }) {
 
 
 // ============================================================================
-//  FACTORY — Create a Pulse v2 Evolution Engine Organism (v11-Evo)
+//  FACTORY — Create a Pulse v2 Evolution Engine Organism (v12.3-Evo)
 // ============================================================================
 //  This is the "birth" function for a Pulse v2 evolution instance.
 //  A binary front-end will typically call this after deriving:
@@ -296,7 +296,7 @@ export function createPulseV2({
     pageId,
 
     // Evolution engine type
-    pulseType: "Pulse-v2-EvolutionEngine-v11",
+    pulseType: "Pulse-v2-EvolutionEngine-v12.3",
 
     // Advantage + health
     advantageField,
@@ -380,7 +380,7 @@ export function evolvePulseV2(pulse, context = {}) {
     pageId,
 
     // Evolution engine type
-    pulseType: "Pulse-v2-EvolutionEngine-v11",
+    pulseType: "Pulse-v2-EvolutionEngine-v12.3",
 
     // Advantage + health
     advantageField,

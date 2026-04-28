@@ -1,31 +1,34 @@
+
 // ============================================================================
-// FILE: tropic-pulse-functions/apps/PULSE-EARN/PulseEarnEndocrineSystem-v11-Evo.js
-// LAYER: THE ENDOCRINE SYSTEM (v11-Evo)
+// FILE: tropic-pulse-functions/apps/PULSE-EARN/PulseEarnEndocrineSystem-v12.3-PRESENCE-EVO+-AGGRESSIVE.js
+// LAYER: THE ENDOCRINE SYSTEM (v12.3-PRESENCE-EVO+ AGGRESSIVE)
 // (Performance Intelligence + Reputation Hormones + Trust Regulation)
 // ============================================================================
 //
-// ROLE (v11-Evo):
+// ROLE (v12.3-PRESENCE-EVO+ AGGRESSIVE):
 //   THE ENDOCRINE SYSTEM — Pulse‑Earn’s long-term performance regulator.
 //   • Tracks marketplace reliability and profitability (hormone sensing).
 //   • Computes normalized performance signals (signal transduction).
 //   • Applies weighted scoring to determine trust (hormonal modulation).
 //   • Blends historical + recent performance (EMA).
+//   • Modulates EMA aggressively using presence/advantage/hints surfaces.
 //   • Maintains in‑memory reputation for long-term intelligence.
-//   • Emits v11‑Evo hormonal signatures.
+//   • Emits v12.3‑Presence‑EVO+ hormonal signatures + binary/wave fields.
 //
-// CONTRACT (v11-Evo):
+// CONTRACT (v12.3-PRESENCE-EVO+):
 //   • PURE INTELLIGENCE ENGINE — no AI layers, no translation, no memory model.
 //   • READ-ONLY except deterministic reputation updates.
 //   • NO eval(), NO Function(), NO dynamic imports.
 //   • NO executing user code.
 //   • NO filesystem, NO timestamps.
 //   • Deterministic scoring only.
+//   • Presence/advantage/hints are deterministic inputs.
 // ============================================================================
 export const PulseEarnEndocrineSystemMeta = Object.freeze({
   layer: "PulseEarnEndocrineSystem",
   role: "EARN_ENDOCRINE_ORGAN",
-  version: "v11.2-EVO",
-  identity: "PulseEarnEndocrineSystem-v11.2-EVO",
+  version: "v12.3-PRESENCE-EVO+",
+  identity: "PulseEarnEndocrineSystem-v12.3-PRESENCE-EVO+-AGGRESSIVE",
 
   guarantees: Object.freeze({
     deterministic: true,
@@ -38,6 +41,12 @@ export const PulseEarnEndocrineSystemMeta = Object.freeze({
     binaryAware: true,
     waveFieldAware: true,
     healingMetadataAware: true,
+    presenceAware: true,
+    advantageAware: true,
+    hintsAware: true,
+    meshAware: true,
+    castleAware: true,
+    regionAware: true,
     worldLensAware: false
   }),
 
@@ -45,7 +54,8 @@ export const PulseEarnEndocrineSystemMeta = Object.freeze({
     input: [
       "MarketplaceId",
       "EndocrineSignals",
-      "DualBandContext"
+      "DualBandContext",
+      "GlobalHintsPresenceField"
     ],
     output: [
       "ReputationScore",
@@ -56,7 +66,7 @@ export const PulseEarnEndocrineSystemMeta = Object.freeze({
 
   lineage: Object.freeze({
     root: "PulseOS-v11-EVO",
-    parent: "PulseEarn-v11.2-EVO",
+    parent: "PulseEarn-v12.3-PRESENCE-EVO+",
     ancestry: [
       "PulseEarnEndocrineSystem-v10",
       "PulseEarnEndocrineSystem-v11",
@@ -73,11 +83,10 @@ export const PulseEarnEndocrineSystemMeta = Object.freeze({
   architecture: Object.freeze({
     pattern: "A-B-A",
     baseline: "deterministic reputation scoring",
-    adaptive: "EMA blending + binary/wave endocrine surfaces",
+    adaptive: "EMA blending + binary/wave + presence/advantage modulation",
     return: "stable reputation signal for routing/selection"
   })
 });
-
 
 // ============================================================================
 // Constants — Endocrine Baselines
@@ -87,9 +96,8 @@ const DEFAULT_REPUTATION = 0.5;
 // In-memory endocrine hormone store (now keyed by `${id}::${band}`)
 let reputation = new Map();
 
-
 // ============================================================================
-// Healing Metadata — Endocrine Activity Log (v11-Evo)
+// Healing Metadata — Endocrine Activity Log (v12.3-PRESENCE-EVO+)
 // ============================================================================
 const endocrineHealing = {
   lastMarketplaceId: null,
@@ -108,12 +116,17 @@ const endocrineHealing = {
   lastBandSignature: null,
 
   lastBinaryField: null,
-  lastWaveField: null
+  lastWaveField: null,
+
+  // Presence-EVO+ aggressive additions
+  lastPresenceField: null,
+  lastAdvantageField: null,
+  lastHintsField: null,
+  lastHormonalFactors: null
 };
 
-
 // ============================================================================
-// Deterministic Hash Helper — v11-Evo
+// Deterministic Hash Helper
 // ============================================================================
 function computeHash(str) {
   let h = 0;
@@ -133,9 +146,91 @@ function makeReputationKey(id, band) {
   return `${id}::${band}`;
 }
 
+// ============================================================================
+// Presence / Advantage / Hints Surfaces (metadata-only inputs)
+// ============================================================================
+function buildPresenceField(globalHints = {}) {
+  const gh = globalHints.presenceContext || {};
+  const mesh = globalHints.meshSignals || {};
+  const castle = globalHints.castleSignals || {};
+  const region = globalHints.regionContext || {};
+
+  return {
+    bandPresence: gh.bandPresence || "unknown",
+    routerPresence: gh.routerPresence || "unknown",
+    devicePresence: gh.devicePresence || "unknown",
+    meshPresence: mesh.meshStrength || "unknown",
+    castlePresence: castle.castlePresence || "unknown",
+    regionPresence: region.regionTag || "unknown",
+    regionId: region.regionId || "unknown-region",
+    castleId: castle.castleId || "unknown-castle",
+    castleLoadLevel: castle.loadLevel || 0,
+    meshStrength: mesh.meshStrength || 0,
+    meshPressureIndex: mesh.meshPressureIndex || 0
+  };
+}
+
+function buildAdvantageField(globalHints = {}) {
+  const adv = globalHints.advantageContext || {};
+  return {
+    advantageScore: adv.score ?? 0,
+    advantageBand: adv.band ?? "neutral",
+    advantageTier: adv.tier ?? 0
+  };
+}
+
+function buildHintsField(globalHints = {}) {
+  return {
+    fallbackBandLevel: globalHints.fallbackBandLevel ?? 0,
+    chunkHints: globalHints.chunkHints || {},
+    cacheHints: globalHints.cacheHints || {},
+    prewarmHints: globalHints.prewarmHints || {},
+    coldStartHints: globalHints.coldStartHints || {}
+  };
+}
+
+// Aggressive hormonal factor computation (B2 profile)
+function computeHormonalFactors({ band, presenceField, advantageField, hintsField }) {
+  const meshPressure = presenceField.meshPressureIndex || 0;      // 0–100
+  const castleLoad = presenceField.castleLoadLevel || 0;          // 0–100
+  const regionPresence = presenceField.regionPresence || "unknown";
+
+  const advantageTier = Number(advantageField.advantageTier || 0);
+  const fallbackBandLevel = Number(hintsField.fallbackBandLevel || 0);
+
+  // 1. Mesh Pressure → strong amplification
+  const meshFactor = 1 + (meshPressure / 50); // 0..100 → 1..3
+
+  // 2. Castle Load → strong dampening
+  const castleFactor = 1 - (castleLoad / 100); // 0..100 → 1..0
+
+  // 3. Advantage Tier → strong amplification
+  const advantageFactor = 1 + (advantageTier * 0.15); // tier 3 → +45%
+
+  // 4. Fallback Band Level → strong stabilizer
+  const fallbackFactor = 1 - (fallbackBandLevel * 0.1); // level 3 → -30%
+
+  // 5. Region Presence → bias
+  let regionFactor = 1.0;
+  if (regionPresence === "home") regionFactor = 1.1;
+  else if (regionPresence === "foreign") regionFactor = 0.9;
+  else regionFactor = 0.95;
+
+  // 6. EMA blend based on band
+  const emaBlend = band === "binary" ? 0.5 : 0.7;
+
+  return {
+    meshFactor,
+    castleFactor,
+    advantageFactor,
+    fallbackFactor,
+    regionFactor,
+    emaBlend
+  };
+}
 
 // ============================================================================
-// Signature Builders — v11-Evo
+// Signature Builders
 // ============================================================================
 function buildHormoneSignature(id, cycle) {
   return computeHash(`ENDO::${id}::${cycle}`);
@@ -149,30 +244,27 @@ function buildReputationSignature(id, rep, band) {
   return computeHash(`REP::${id}::${band}::${rep}`);
 }
 
-function buildEndocrineCycleSignature(cycle) {
-  return computeHash(`ENDO_CYCLE::${cycle}`);
+function buildEndocrineCycleSignature(cycle, band) {
+  return computeHash(`ENDO_CYCLE::${cycle}::${band}`);
 }
 
-
 // ============================================================================
-// Load reputation — Endocrine Memory Recall (v11-Evo: in-memory only)
+// Load reputation — Endocrine Memory Recall (in-memory only)
 // ============================================================================
 export function loadPulseEarnReputation() {
   reputation = reputation || new Map();
   endocrineHealing.lastLoadError = null;
 }
 
-
 // ============================================================================
-// Save reputation — Endocrine Persistence (v11-Evo: no-op)
+// Save reputation — Endocrine Persistence (no-op)
 // ============================================================================
 function savePulseEarnReputation() {
   endocrineHealing.lastSaveError = null;
 }
 
-
 // ============================================================================
-// Get current reputation — Hormone Level Lookup (now band-aware)
+// Get current reputation — Hormone Level Lookup (band-aware)
 // ============================================================================
 export function getPulseEarnReputation(id, band = "symbolic") {
   const normalizedBand = normalizeBand(band);
@@ -180,11 +272,12 @@ export function getPulseEarnReputation(id, band = "symbolic") {
   return Number(reputation.get(key)) || DEFAULT_REPUTATION;
 }
 
-
 // ============================================================================
-// Update reputation — Endocrine Regulation Cycle (v11-Evo, dual-band)
+// Update reputation — Endocrine Regulation Cycle (v12.3-PRESENCE-EVO+ AGGRESSIVE)
+// signals: { latency, apiSuccess, jobQuality, profitability, jobSuccess, band? }
+// globalHints: Presence/Advantage/Hints surfaces
 // ============================================================================
-export function updatePulseEarnReputation(id, signals) {
+export function updatePulseEarnReputation(id, signals, globalHints = {}) {
   endocrineHealing.cycleCount++;
   endocrineHealing.lastMarketplaceId = id;
   endocrineHealing.lastSignals = { ...signals };
@@ -198,7 +291,7 @@ export function updatePulseEarnReputation(id, signals) {
 
   endocrineHealing.lastSignalSignature = buildSignalSignature(signals);
 
-  // Hormonal weighting coefficients (v11-Evo: unchanged)
+  // Hormonal weighting coefficients (unchanged core endocrine math)
   const weights = {
     latency: 0.15,
     apiSuccess: 0.2,
@@ -207,7 +300,7 @@ export function updatePulseEarnReputation(id, signals) {
     jobSuccess: 0.15
   };
 
-  // Hormonal signal transduction
+  // Hormonal signal transduction (base score)
   const score =
     (signals.latency ?? 0) * weights.latency +
     (signals.apiSuccess ?? 0) * weights.apiSuccess +
@@ -215,8 +308,30 @@ export function updatePulseEarnReputation(id, signals) {
     (signals.profitability ?? 0) * weights.profitability +
     (signals.jobSuccess ?? 0) * weights.jobSuccess;
 
-  // EMA = hormonal half-life blending
-  const updated = current * 0.7 + score * 0.3;
+  // Presence/Advantage/Hints surfaces
+  const presenceField = buildPresenceField(globalHints);
+  const advantageField = buildAdvantageField(globalHints);
+  const hintsField = buildHintsField(globalHints);
+
+  // Aggressive hormonal factors
+  const hormonalFactors = computeHormonalFactors({
+    band,
+    presenceField,
+    advantageField,
+    hintsField
+  });
+
+  // EMA blending with band-aware aggressiveness
+  const emaBlend = hormonalFactors.emaBlend;
+  let updated = current * emaBlend + score * (1 - emaBlend);
+
+  // Aggressive modulation
+  updated *= hormonalFactors.meshFactor;
+  updated *= hormonalFactors.castleFactor;
+  updated *= hormonalFactors.advantageFactor;
+  updated *= hormonalFactors.fallbackFactor;
+  updated *= hormonalFactors.regionFactor;
+
   const clamped = clamp(updated, 0, 1);
 
   const key = makeReputationKey(id, band);
@@ -235,7 +350,8 @@ export function updatePulseEarnReputation(id, signals) {
   );
 
   endocrineHealing.lastEndocrineCycleSignature = buildEndocrineCycleSignature(
-    endocrineHealing.cycleCount
+    endocrineHealing.cycleCount,
+    band
   );
 
   // Binary surface for endocrine reputation (structural only)
@@ -267,11 +383,16 @@ export function updatePulseEarnReputation(id, signals) {
   };
   endocrineHealing.lastWaveField = waveField;
 
+  // Store presence/advantage/hints + hormonal factors in healing
+  endocrineHealing.lastPresenceField = presenceField;
+  endocrineHealing.lastAdvantageField = advantageField;
+  endocrineHealing.lastHintsField = hintsField;
+  endocrineHealing.lastHormonalFactors = hormonalFactors;
+
   savePulseEarnReputation();
 
   return clamped;
 }
-
 
 // ============================================================================
 // Normalization Helpers — Endocrine Signal Processing
@@ -297,7 +418,6 @@ export function computePulseEarnReputationSignals({
     jobSuccess: jobSuccessRate != null ? clamp(jobSuccessRate, 0, 1) : 0.5
   };
 }
-
 
 // ============================================================================
 // Normalizers — Endocrine Signal Processing
@@ -331,20 +451,18 @@ function normalizeProfit(p) {
   return 0.3;
 }
 
-
 // ============================================================================
-// Export Healing Metadata — Endocrine Report (v11-Evo)
+// Export Healing Metadata — Endocrine Report (v12.3-PRESENCE-EVO+)
 // ============================================================================
 export function getPulseEarnReputationHealingState() {
   return { ...endocrineHealing };
 }
 
-
 // ============================================================================
-// v11-Evo COMPAT ALIASES — for Nervous System imports
+// v12.3 COMPAT ALIASES — for Nervous System imports
 // ============================================================================
-export function updateMarketplaceReputation(id, signals) {
-  return updatePulseEarnReputation(id, signals);
+export function updateMarketplaceReputation(id, signals, globalHints = {}) {
+  return updatePulseEarnReputation(id, signals, globalHints);
 }
 
 export function computeReputationSignals(args) {

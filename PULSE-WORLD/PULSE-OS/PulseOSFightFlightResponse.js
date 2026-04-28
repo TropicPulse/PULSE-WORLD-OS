@@ -1,43 +1,69 @@
 // ============================================================================
-//  PULSE OS — ACTNow v11-Evo
+//  PULSE OS — ACTNow v12.3‑SPINE‑DUALBAND‑PRESENCE
 //  ADRENAL REFLEX LOOP — “ACT NOW”
 //  White/Silver Organ • Reflex • Renewal • Non‑Interference
 //  PURE REFLEX. ZERO COGNITION. ZERO NETWORK. ZERO BACKEND.
-//  NO TIMERS. NO AUTONOMY. CNS-TRIGGERED ONLY.
+//  NO TIMERS. NO AUTONOMY. CNS‑TRIGGERED ONLY.
 // ============================================================================
-export const ACTNOW_CONTEXT_V11 = {
+
+export const ACTNOW_CONTEXT_V12 = Object.freeze({
   organ: "ACTNow",
   layer: "Reflex",
   role: "Adrenal Reflex Loop",
-  version: "11.0-Evo",
-  generation: "v11",
-  color: "white-silver",
+  version: "12.3‑Spine",
+  generation: "v12",
+  color: "white‑silver",
   theme: "renewal",
-  evo: {
+
+  evo: Object.freeze({
     reflexPure: true,
     deterministicNeuron: true,
     deterministicCycle: true,
+
     unifiedAdvantageField: true,
     advantageCascadeAware: true,
     pulseEfficiencyAware: true,
+
     loopTheoryAware: true,
     continuanceAware: true,
     driftProof: true,
     selfRepairable: true,
     multiInstanceReady: true,
+
+    // Zero‑everything reflex laws
     zeroNetwork: true,
     zeroBackend: true,
     zeroCognition: true,
     zeroTiming: true,
-    zeroAutonomy: true
-  }
-};
+    zeroAutonomy: true,
+    zeroUserCode: true,
+    zeroDynamicImports: true,
+    zeroEval: true,
 
+    // Dual‑band + metadata surfaces
+    dualBandAware: true,
+    symbolicPrimary: true,
+    binaryAware: true,
+    binaryNonExecutable: true,
+
+    // Presence / mesh / chunking (metadata‑only)
+    presenceFieldAware: true,
+    bluetoothPresenceAware: true,
+    meshPresenceRelayAware: true,
+    cortexChunkingAware: true,
+    cortexPrewarmAware: true
+  })
+});
+
+
+// ============================================================================
+//  ORGAN META — v12.3 SPINE
+// ============================================================================
 export const PulseOSACTNowMeta = Object.freeze({
   layer: "ACTNow",
   role: "ADRENAL_REFLEX_ORGAN",
-  version: "v11.2-EVO-BINARY-MAX",
-  identity: "PulseOS-ACTNow-v11.2-EVO-BINARY-MAX",
+  version: "v12.3‑SPINE‑DUALBAND‑PRESENCE",
+  identity: "PulseOS‑ACTNow‑v12.3‑SPINE‑DUALBAND‑PRESENCE",
 
   guarantees: Object.freeze({
     deterministic: true,
@@ -68,6 +94,13 @@ export const PulseOSACTNowMeta = Object.freeze({
     binaryAware: true,
     binaryNonExecutable: true,
 
+    // Presence / mesh / chunking (metadata‑only)
+    presenceFieldAware: true,
+    bluetoothPresenceAware: true,
+    meshPresenceRelayAware: true,
+    cortexChunkingAware: true,
+    cortexPrewarmAware: true,
+
     // Loop + continuance
     loopTheoryAware: true,
     continuanceAware: true,
@@ -94,26 +127,27 @@ export const PulseOSACTNowMeta = Object.freeze({
   }),
 
   lineage: Object.freeze({
-    root: "PulseOS-v11-EVO",
-    parent: "PulseOS-v11.2-EVO",
+    root: "PulseOS‑v12.3‑SPINE",
+    parent: "PulseOS‑v12.0‑SPINE",
     ancestry: [
-      "ACTNow-v9",
-      "ACTNow-v10",
-      "ACTNow-v11",
-      "ACTNow-v11-Evo"
+      "ACTNow‑v9",
+      "ACTNow‑v10",
+      "ACTNow‑v11",
+      "ACTNow‑v11‑Evo",
+      "ACTNow‑v11‑EVO‑BINARY‑MAX"
     ]
   }),
 
   bands: Object.freeze({
     supported: ["symbolic", "binary"],
     default: "symbolic",
-    behavior: "reflex-only"
+    behavior: "reflex‑only"
   }),
 
   architecture: Object.freeze({
-    pattern: "A-B-A",
-    baseline: "CNS-triggered adrenal reflex → renewal → organism update",
-    adaptive: "binary-tagged metadata surfaces",
+    pattern: "A‑B‑A",
+    baseline: "CNS‑triggered adrenal reflex → renewal → organism update",
+    adaptive: "binary‑tagged metadata surfaces + presence/chunking metadata",
     return: "deterministic reflex event + signatures"
   })
 });
@@ -122,14 +156,15 @@ export const PulseOSACTNowMeta = Object.freeze({
 // ============================================================================
 //  FACTORY — Pure Reflex Organ (no timers, no scheduling)
 // ============================================================================
-export function createACTNowV11({
+export function createACTNowV12({
   PulseImmunity,
   PulseSurgeonGeneral
 } = {}) {
 
   // --------------------------------------------------------------------------
   //  REFLEX: snapshot → { analysis, report, reflexEvent }
-// --------------------------------------------------------------------------
+  //  PURE REFLEX. ZERO COGNITION. ZERO TIMING. ZERO AUTONOMY.
+  // --------------------------------------------------------------------------
   function reflex(snapshot, { modeKind = "dual" } = {}) {
     if (!snapshot) return null;
 
@@ -138,17 +173,17 @@ export function createACTNowV11({
     const report   = PulseSurgeonGeneral.command(analysis);
 
     return {
-      ...ACTNOW_CONTEXT_V11,
+      ...ACTNOW_CONTEXT_V12,
       modeKind,
       kind: "AdrenalReflexEvent",
       analysis,
       report
-      // CNS attaches timestamp + routing metadata
+      // CNS attaches timestamp + routing metadata externally
     };
   }
 
   return {
-    meta: ACTNOW_CONTEXT_V11,
+    meta: ACTNOW_CONTEXT_V12,
     reflex
   };
 }

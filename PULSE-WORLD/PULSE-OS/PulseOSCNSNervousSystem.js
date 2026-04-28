@@ -1,33 +1,7 @@
 // ============================================================================
-// CENTRAL NERVOUS SYSTEM — PulseOSCNSNervousSystem — v11‑EVO‑BINARY‑MAX
+// FILE: /apps/PULSE-OS/PulseOSCNSNervousSystem-v11-EVO-BINARY-MAX.js
+// PULSE OS — v11‑EVO‑BINARY‑MAX
 // “THE CENTRAL NERVOUS SYSTEM / COMMUNICATION INTELLIGENCE ORGAN”
-// ============================================================================
-//
-// ROLE IN THE ORGANISM (v11‑EVO‑BINARY‑MAX):
-// -----------------------------------------
-// • B‑Layer CNS: frontend ↔ backend communication organ.
-// • Dual‑band: OFFLINE (local endpoints) + ONLINE (proxy spine) as bands.
-// • Symbolic‑primary: routes, types, context are symbolic; binary is tagging only.
-// • Sends structured requests to backend via Proxy Spine gateway.
-// • Records route events into RouterMemory (via callers) for healing + drift analysis.
-// • Triggers router healing and route‑down alerts when degradation appears.
-// • Respects offline mode and local endpoints (local‑first, network as injection).
-//
-// SAFETY CONTRACT (v11‑EVO‑BINARY‑MAX):
-// -------------------------------------
-// • No dynamic eval.
-// • No direct filesystem access.
-// • Network only via well‑defined proxy endpoints.
-// • Deterministic routing behavior (no random branching).
-// • RouterMemory is the single source of CNS event history (owned by callers).
-// • CNS never hard‑kills the organism; it reports, retries, and alerts.
-// • Guarded access to globals (window, fetch) for environment‑agnostic behavior.
-// • Dual‑band is MODE ONLY (offline/online), not logic mutation.
-// • Binary‑aware but NEVER executes binary logic directly.
-// ============================================================================
-
-// ============================================================================
-// ORGAN IDENTITY — v11‑EVO‑BINARY‑MAX CNS COMMUNICATION ORGAN
 // ============================================================================
 
 export const PulseRole = {
@@ -152,7 +126,6 @@ export const PulseOSCNSNervousSystemMeta = Object.freeze({
 import { PulseOSShortTermMemory } from "./PulseOSShortTermMemory.js";
 
 
-
 // ============================================================================
 // CNS CONSTANTS + DIAGNOSTICS
 // ============================================================================
@@ -163,6 +136,26 @@ const LAYER_VER  = "11.0";
 
 const hasWindow = typeof window !== "undefined";
 
+// Router memory + heartbeat surfaces from ShortTermMemory / window
+const RouterMemory =
+  (PulseOSShortTermMemory && PulseOSShortTermMemory.RouterMemory) ||
+  PulseOSShortTermMemory ||
+  (hasWindow && window.PulseRouterMemory) ||
+  null;
+
+const GateHeartbeat =
+  (PulseOSShortTermMemory && PulseOSShortTermMemory.GateHeartbeat) ||
+  (hasWindow && window.GateHeartbeat) ||
+  null;
+
+// Base logger (diagnostics only, non-contract)
+const baseLog =
+  (hasWindow && typeof window.PulseLog === "function")
+    ? window.PulseLog
+    : (typeof console !== "undefined" && typeof console.log === "function"
+        ? console.log
+        : () => {});
+
 const CNS_DIAGNOSTICS_ENABLED =
   hasWindow &&
   (window.PULSE_CNS_DIAGNOSTICS === "true" ||
@@ -170,9 +163,8 @@ const CNS_DIAGNOSTICS_ENABLED =
 
 const logCNS = (stage, details = {}) => {
   if (!CNS_DIAGNOSTICS_ENABLED) return;
-  if (typeof log !== "function") return;
 
-  log(JSON.stringify({
+  baseLog(JSON.stringify({
     pulseLayer: LAYER_ID,
     pulseName:  LAYER_NAME,
     pulseRole:  LAYER_ROLE,
@@ -214,12 +206,7 @@ const CNS_CONTEXT = {
 
 
 // ============================================================================
-/** TRANSPORT LAYER — OFFLINE + ONLINE (GUARDED GLOBALS, DUAL‑BAND)
- *
- * Dual‑band here is MODE SELECTION ONLY (offline vs online).
- * Logic remains deterministic; no random branching, no contract mutation.
- * Binary payloads (if any) are treated as opaque data; CNS does not execute them.
- */
+// TRANSPORT LAYER — OFFLINE + ONLINE (GUARDED GLOBALS, DUAL‑BAND)
 // ============================================================================
 const Transport = {
   async callEndpoint(type, payload) {
@@ -318,13 +305,10 @@ const Transport = {
     });
   }
 };
-// (You can wire Transport + PulseOSShortTermMemory into the rest of the CNS organ
-// in part 2 without changing this contract.)
+
+
 // ============================================================================
 // ROUTER MEMORY HEALING — v11‑EVO‑BINARY‑MAX Dual‑Band Aware
-//  • Symbolic‑primary, binary‑aware
-//  • Uses RouterMemory as single source of route history
-//  • Deterministic, no random branching
 // ============================================================================
 async function healRouterMemoryIfNeeded() {
   if (!RouterMemory || typeof RouterMemory.getAll !== "function") {
@@ -363,8 +347,6 @@ async function healRouterMemoryIfNeeded() {
 
 // ============================================================================
 // ROUTE‑DOWN ALERT — v11‑EVO‑BINARY‑MAX Continuance‑First
-//  • Never halts organism; only signals degradation
-//  • Band is tagging‑only (symbolic | binary)
 // ============================================================================
 async function triggerRouteDownAlert(error, type, band = "symbolic") {
   logCNS("ALERT_TRIGGER", { error, type, band });
@@ -380,8 +362,6 @@ async function triggerRouteDownAlert(error, type, band = "symbolic") {
 
 // ============================================================================
 // UNIVERSAL SYS‑CALL FUNCTION — CNS v11‑EVO‑BINARY‑MAX Dual‑Band
-//  • Symbolic‑primary routing
-//  • Binary‑aware via __band tag (no binary execution)
 // ============================================================================
 const ROUTE_BANDS = {
   SYMBOLIC: "symbolic",
@@ -410,6 +390,8 @@ function makeErrorSignature(err) {
   const top = stack.split("\n")[1] || "NO_FRAME";
   return msg + "::" + top.trim();
 }
+
+let routerEventSeq = 0;
 
 export async function route(type, payload = {}) {
   const band = resolveBandFromPayload(payload);
@@ -544,11 +526,7 @@ export async function route(type, payload = {}) {
 
 // ============================================================================
 // LOGGING ENTRY POINT — v11‑EVO‑BINARY‑MAX Dual‑Band
-//  • Deterministic seq (routerEventSeq) instead of Date.now
-//  • Band + dnaTag tagging for RouterMemory
 // ============================================================================
-let routerEventSeq = 0;
-
 export async function logEvent(eventType, data) {
   const band = resolveBandFromPayload(data || {});
   const dnaTag = resolveDnaTagFromPayload(data || {});
@@ -583,7 +561,6 @@ export async function logEvent(eventType, data) {
 
 // ============================================================================
 // HEALING ENTRY POINT — v11‑EVO‑BINARY‑MAX Dual‑Band
-//  • Symbolic‑primary, binary‑aware
 // ============================================================================
 export async function heal(type, payload) {
   const band = resolveBandFromPayload(payload || {});
@@ -594,6 +571,18 @@ export async function heal(type, payload) {
 
   return await route(type, payload);
 }
+
+
+// ============================================================================
+// PUBLIC ORGAN SURFACE
+// ============================================================================
+export const PulseOSCNSNervousSystem = {
+  PulseRole,
+  meta: PulseOSCNSNervousSystemMeta,
+  route,
+  logEvent,
+  heal
+};
 
 // ============================================================================
 // END OF FILE — THE CENTRAL NERVOUS SYSTEM / COMMUNICATION INTELLIGENCE ORGAN

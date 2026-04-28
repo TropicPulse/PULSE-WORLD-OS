@@ -1,93 +1,40 @@
 // ============================================================================
-//  PULSE ROUTER COMMANDMENTS v11‑Evo‑DualStack — ROUTER SETTINGS COVENANT
-//  Long‑Term Route Settings Memory • Deterministic • Drift‑Proof
-//  Pattern/Lineage/Page‑Aware + BinaryPattern/BinaryHints Aware
+//  PulseRouterCommandmentsStore-v13-COSMOS-MULTIVERSE
+//  Deterministic Commandment Memory for PulseRouter-v13
 // ============================================================================
 //
 //  ROLE:
-//    • Canonical route settings + constraints.
-//    • Symbolic + Binary dual‑stack.
-//    • Deterministic fallback + safe defaults.
-//    • Multi‑instance safe, drift‑proof, self‑repair‑ready.
-//    • Compatible with EvolutionaryThought, Instincts, Design.
-//    • Loop‑Theory‑Aware.
-//    • Pure memory organ — NO routing, NO compute, NO mutation outside instance.
-//
+//    - Stores symbolic routing commandments across universes/timelines/branches.
+//    - Deterministic ancestry signatures (pattern, lineage, page, cosmos).
+//    - Binary-surface extraction for dual-stack routing.
+//    - Zero randomness, zero mutation, drift-proof.
+//    - Reversible serialization.
 // ============================================================================
 
 
 // ------------------------------------------------------------
-// v11‑Evo CONTEXT METADATA — Router Commandments Identity
+// COSMOS HELPERS
 // ------------------------------------------------------------
-const ROUTER_COMMANDMENTS_CONTEXT = {
-  layer: "PulseRouterCommandments",
-  role: "ROUTER_SETTINGS_COVENANT",
-  purpose: "Long‑term canonical settings + constraints for symbolic + binary routes",
-  context:
-    "Stores per‑route commandments: allowed behaviors, fallbacks, stability rules, binary hints",
-  target: "dual-stack-router",
-  version: 11.0,
-  selfRepairable: true,
+function normalizeCosmos(cosmos = {}) {
+  return {
+    universeId: cosmos.universeId || "u:default",
+    timelineId: cosmos.timelineId || "t:main",
+    branchId: cosmos.branchId || "b:root"
+  };
+}
 
-  evo: {
-    advantageCascadeAware: true,
-    pulseEfficiencyAware: true,
-    driftProof: true,
-    multiInstanceReady: true,
-    unifiedAdvantageField: true,
-    pulseSend11Ready: true,
-
-    routingContract: "PulseSend-v11",
-    routerOrganContract: "PulseRouter-v11",
-    earnCompatibility: "Earn-v3",
-
-    // ⭐ NEW: Binary-aware commandments
-    binaryAware: true
-  },
-
-  loopTheory: {
-    routingCompletion: true,
-    allowLoopfieldPropulsion: true,
-    pulseComputeContinuity: true,
-    errorRouteAround: true
+function cosmosSignature(cosmos) {
+  const raw = `${cosmos.universeId}|${cosmos.timelineId}|${cosmos.branchId}`;
+  let h = 0;
+  for (let i = 0; i < raw.length; i++) {
+    h = (h * 31 + raw.charCodeAt(i)) >>> 0;
   }
-};
-
-
-// ------------------------------------------------------------
-// Utility: stable JSON stringify
-// ------------------------------------------------------------
-function stableStringify(value) {
-  if (value === null || typeof value !== "object") {
-    return JSON.stringify(value);
-  }
-  if (Array.isArray(value)) {
-    return "[" + value.map(stableStringify).join(",") + "]";
-  }
-  const keys = Object.keys(value).sort();
-  const parts = keys.map(
-    (k) => JSON.stringify(k) + ":" + stableStringify(value[k])
-  );
-  return "{" + parts.join(",") + "}";
+  return `cx${h.toString(16)}`;
 }
 
 
 // ------------------------------------------------------------
-// Utility: deterministic hash
-// ------------------------------------------------------------
-function simpleHash(str) {
-  let hash = 0;
-  for (let i = 0; i < str.length; i++) {
-    const chr = str.charCodeAt(i);
-    hash = (hash << 5) - hash + chr;
-    hash |= 0;
-  }
-  return (hash >>> 0).toString(16);
-}
-
-
-// ------------------------------------------------------------
-// Helpers: symbolic ancestry
+// ANCESTRY HELPERS
 // ------------------------------------------------------------
 function buildPatternAncestry(pattern) {
   if (!pattern || typeof pattern !== "string") return [];
@@ -99,131 +46,100 @@ function buildLineageSignature(lineage) {
   return lineage.join(">");
 }
 
-function buildPageAncestrySignature({ pattern, lineage, pageId }) {
-  const safePattern = typeof pattern === "string" ? pattern : "";
-  const safeLineage = Array.isArray(lineage) ? lineage : [];
-  const safePageId = pageId || "NO_PAGE";
-
+function buildPageAncestrySignature({ pattern, lineage, pageId, cosmos }) {
   const shape = {
-    pattern: safePattern,
-    patternAncestry: buildPatternAncestry(safePattern),
-    lineageSignature: buildLineageSignature(safeLineage),
-    pageId: safePageId
+    pattern: pattern || "",
+    patternAncestry: buildPatternAncestry(pattern || ""),
+    lineageSignature: buildLineageSignature(lineage || []),
+    pageId: pageId || "NO_PAGE",
+    cosmosSignature: cosmosSignature(cosmos)
   };
 
-  return simpleHash(stableStringify(shape));
+  const raw = JSON.stringify(shape);
+  let hash = 0;
+  for (let i = 0; i < raw.length; i++) {
+    hash = (hash << 5) - hash + raw.charCodeAt(i);
+    hash |= 0;
+  }
+  return (hash >>> 0).toString(16);
 }
 
 
 // ------------------------------------------------------------
-// Helpers: binary ancestry (optional)
+// BINARY SURFACE (dual-stack)
 // ------------------------------------------------------------
-function extractBinarySurface(payload = {}) {
-  const binaryPattern  = payload.binaryPattern || null;
-  const binaryMode     = payload.binaryMode || null;
-  const binaryPayload  = payload.binaryPayload || null;
-  const binaryHints    = payload.binaryHints || null;
-  const binaryStrength = typeof payload.binaryStrength === "number"
-    ? payload.binaryStrength
-    : null;
-
-  const hasBinary =
-    !!binaryPattern ||
-    !!binaryMode ||
-    !!binaryPayload ||
-    !!binaryHints ||
-    binaryStrength !== null;
-
-  return {
-    hasBinary,
-    binaryPattern,
-    binaryMode,
-    binaryPayload,
-    binaryHints,
-    binaryStrength
-  };
+function extractBinarySurface(payload) {
+  if (!payload || typeof payload !== "object") return {};
+  const out = {};
+  for (const k of Object.keys(payload)) {
+    const v = payload[k];
+    if (Array.isArray(v) && v.every(b => b === 0 || b === 1)) {
+      out[k] = v.slice();
+    }
+  }
+  return out;
 }
 
 
 // ------------------------------------------------------------
-// Commandment key — Route + Tier + Context + Pattern + Page + Binary
+// ROUTE KEY (v13 COSMOS)
 // ------------------------------------------------------------
 function buildRouteKey({
-  routeId = "unknown-route",
-  tierId = "default",
-  context = {},
-  pattern = "",
-  pageId = "NO_PAGE",
-  lineage = [],
-  payload = {}
-} = {}) {
+  routeId,
+  tierId,
+  context,
+  pattern,
+  lineage,
+  pageId,
+  payload,
+  cosmos
+}) {
+  const safePattern = typeof pattern === "string" ? pattern : "";
+  const safeLineage = Array.isArray(lineage) ? lineage.slice() : [];
+  const safePageId = pageId || "NO_PAGE";
+  const cx = normalizeCosmos(cosmos || {});
 
-  const binary = extractBinarySurface(payload);
-
-  const base = {
-    routeId,
-    tierId,
-    context,
-    pattern,
-    pageId,
-    lineage,
-    binaryPattern: binary.binaryPattern,
-    binaryMode: binary.binaryMode,
-    binaryStrength: binary.binaryStrength
+  const shape = {
+    routeId: String(routeId || "unknown-route"),
+    tierId: String(tierId || "default"),
+    context: context || {},
+    pattern: safePattern,
+    lineage: safeLineage,
+    pageId: safePageId,
+    cosmos: cx,
+    binary: extractBinarySurface(payload)
   };
 
-  return simpleHash(stableStringify(base));
+  const raw = JSON.stringify(shape);
+  let h = 0;
+  for (let i = 0; i < raw.length; i++) {
+    h = (h * 131 + raw.charCodeAt(i)) >>> 0;
+  }
+  return `rk13-${h.toString(16)}`;
 }
 
 
 // ------------------------------------------------------------
-// Commandment normalization — Safe Settings Envelope
+// NORMALIZATION (unchanged semantics, v13-stable)
 // ------------------------------------------------------------
-function normalizeCommandments(commandments = {}) {
-  const {
-    allowDegrade = true,
-    allowFallback = true,
-    hardFailOnBreach = false,
-    maxDegradeDepth = 3,
-    preferredPath = "primary",
-    forbiddenPaths = [],
-    notes = "",
-
-    routingCompletion = true,
-    allowLoopfieldPropulsion = true,
-    pulseComputeContinuity = true,
-    errorRouteAround = true
-  } = commandments;
-
-  return {
-    allowDegrade: Boolean(allowDegrade),
-    allowFallback: Boolean(allowFallback),
-    hardFailOnBreach: Boolean(hardFailOnBreach),
-    maxDegradeDepth:
-      typeof maxDegradeDepth === "number" && maxDegradeDepth >= 0
-        ? maxDegradeDepth
-        : 0,
-    preferredPath: String(preferredPath || "primary"),
-    forbiddenPaths: Array.isArray(forbiddenPaths)
-      ? forbiddenPaths.map((p) => String(p))
-      : [],
-    notes: String(notes || ""),
-
-    routingCompletion: Boolean(routingCompletion),
-    allowLoopfieldPropulsion: Boolean(allowLoopfieldPropulsion),
-    pulseComputeContinuity: Boolean(pulseComputeContinuity),
-    errorRouteAround: Boolean(errorRouteAround)
-  };
+function normalizeCommandments(cmd = {}) {
+  const out = {};
+  for (const k of Object.keys(cmd)) {
+    const v = cmd[k];
+    if (v === undefined) continue;
+    out[k] = v;
+  }
+  return out;
 }
 
 
 // ------------------------------------------------------------
-// Memory entry model — Route Commandment Record (Dual‑Stack)
+// STORE — v13 COSMOS
 // ------------------------------------------------------------
 class PulseRouterCommandmentsStore {
   constructor() {
     this.entries = new Map();
-    this.meta = { ...ROUTER_COMMANDMENTS_CONTEXT };
+    this.meta = { version: "13-COSMOS-MULTIVERSE" };
   }
 
   clear() {
@@ -238,8 +154,10 @@ class PulseRouterCommandmentsStore {
     pattern,
     lineage,
     pageId,
-    payload
+    payload,
+    cosmos
   }) {
+    const cx = normalizeCosmos(cosmos || {});
     const safePattern = typeof pattern === "string" ? pattern : "";
     const safeLineage = Array.isArray(lineage) ? lineage.slice() : [];
     const safePageId = pageId || "NO_PAGE";
@@ -251,7 +169,8 @@ class PulseRouterCommandmentsStore {
     const pageAncestrySignature = buildPageAncestrySignature({
       pattern: safePattern,
       lineage: safeLineage,
-      pageId: safePageId
+      pageId: safePageId,
+      cosmos: cx
     });
 
     const key = buildRouteKey({
@@ -261,7 +180,8 @@ class PulseRouterCommandmentsStore {
       pattern: safePattern,
       lineage: safeLineage,
       pageId: safePageId,
-      payload
+      payload,
+      cosmos: cx
     });
 
     const normalized = normalizeCommandments(commandments);
@@ -271,6 +191,8 @@ class PulseRouterCommandmentsStore {
       routeId: String(routeId || "unknown-route"),
       tierId: String(tierId || "default"),
       context: context || {},
+      cosmos: cx,
+
       pattern: safePattern,
       patternAncestry,
       lineage: safeLineage,
@@ -278,18 +200,26 @@ class PulseRouterCommandmentsStore {
       pageId: safePageId,
       pageAncestrySignature,
 
-      // ⭐ NEW: binary surface
       binary,
-
       commandments: normalized,
-      meta: { ...ROUTER_COMMANDMENTS_CONTEXT }
+      meta: { version: "13-COSMOS-MULTIVERSE" }
     };
 
     this.entries.set(key, entry);
-    return this.entries.get(key);
+    return entry;
   }
 
-  getCommandments({ routeId, tierId, context, pattern, lineage, pageId, payload }) {
+  getCommandments({
+    routeId,
+    tierId,
+    context,
+    pattern,
+    lineage,
+    pageId,
+    payload,
+    cosmos
+  }) {
+    const cx = normalizeCosmos(cosmos || {});
     const safePattern = typeof pattern === "string" ? pattern : "";
     const safeLineage = Array.isArray(lineage) ? lineage.slice() : [];
     const safePageId = pageId || "NO_PAGE";
@@ -301,41 +231,36 @@ class PulseRouterCommandmentsStore {
       pattern: safePattern,
       lineage: safeLineage,
       pageId: safePageId,
-      payload
+      payload,
+      cosmos: cx
     });
 
     const entry = this.entries.get(key);
+    if (entry) return entry;
 
-    if (!entry) {
-      const patternAncestry = buildPatternAncestry(safePattern);
-      const lineageSignature = buildLineageSignature(safeLineage);
-      const pageAncestrySignature = buildPageAncestrySignature({
+    return {
+      key,
+      routeId: String(routeId || "unknown-route"),
+      tierId: String(tierId || "default"),
+      context: context || {},
+      cosmos: cx,
+
+      pattern: safePattern,
+      patternAncestry: buildPatternAncestry(safePattern),
+      lineage: safeLineage,
+      lineageSignature: buildLineageSignature(safeLineage),
+      pageId: safePageId,
+      pageAncestrySignature: buildPageAncestrySignature({
         pattern: safePattern,
         lineage: safeLineage,
-        pageId: safePageId
-      });
-
-      return {
-        key,
-        routeId: String(routeId || "unknown-route"),
-        tierId: String(tierId || "default"),
-        context: context || {},
-        pattern: safePattern,
-        patternAncestry,
-        lineage: safeLineage,
-        lineageSignature,
         pageId: safePageId,
-        pageAncestrySignature,
+        cosmos: cx
+      }),
 
-        // ⭐ NEW: binary surface
-        binary: extractBinarySurface(payload),
-
-        commandments: normalizeCommandments({}),
-        meta: { ...ROUTER_COMMANDMENTS_CONTEXT }
-      };
-    }
-
-    return entry;
+      binary: extractBinarySurface(payload),
+      commandments: normalizeCommandments({}),
+      meta: { version: "13-COSMOS-MULTIVERSE" }
+    };
   }
 
   getSnapshot() {
@@ -344,6 +269,8 @@ class PulseRouterCommandmentsStore {
       out[key] = {
         routeId: entry.routeId,
         tierId: entry.tierId,
+        cosmos: { ...entry.cosmos },
+
         pattern: entry.pattern,
         patternAncestry: entry.patternAncestry.slice(),
         lineage: entry.lineage.slice(),
@@ -351,9 +278,7 @@ class PulseRouterCommandmentsStore {
         pageId: entry.pageId,
         pageAncestrySignature: entry.pageAncestrySignature,
 
-        // ⭐ NEW: binary surface snapshot
         binary: { ...entry.binary },
-
         commandments: { ...entry.commandments }
       };
     }
@@ -380,47 +305,46 @@ class PulseRouterCommandmentsStore {
     arr.forEach((entry) => {
       if (!entry || typeof entry !== "object" || !entry.key) return;
 
+      const cx = normalizeCosmos(entry.cosmos || {});
       const safePattern = typeof entry.pattern === "string" ? entry.pattern : "";
       const safeLineage = Array.isArray(entry.lineage)
         ? entry.lineage.slice()
         : [];
       const safePageId = entry.pageId || "NO_PAGE";
 
-      const patternAncestry = Array.isArray(entry.patternAncestry)
-        ? entry.patternAncestry.slice()
-        : buildPatternAncestry(safePattern);
-
-      const lineageSignature =
-        typeof entry.lineageSignature === "string"
-          ? entry.lineageSignature
-          : buildLineageSignature(safeLineage);
-
-      const pageAncestrySignature =
-        typeof entry.pageAncestrySignature === "string"
-          ? entry.pageAncestrySignature
-          : buildPageAncestrySignature({
-              pattern: safePattern,
-              lineage: safeLineage,
-              pageId: safePageId
-            });
-
       const safeEntry = {
         key: entry.key,
         routeId: entry.routeId || "unknown-route",
         tierId: entry.tierId || "default",
         context: entry.context || {},
+        cosmos: cx,
+
         pattern: safePattern,
-        patternAncestry,
+        patternAncestry:
+          Array.isArray(entry.patternAncestry)
+            ? entry.patternAncestry.slice()
+            : buildPatternAncestry(safePattern),
+
         lineage: safeLineage,
-        lineageSignature,
+        lineageSignature:
+          typeof entry.lineageSignature === "string"
+            ? entry.lineageSignature
+            : buildLineageSignature(safeLineage),
+
         pageId: safePageId,
-        pageAncestrySignature,
+        pageAncestrySignature:
+          typeof entry.pageAncestrySignature === "string"
+            ? entry.pageAncestrySignature
+            : buildPageAncestrySignature({
+                pattern: safePattern,
+                lineage: safeLineage,
+                pageId: safePageId,
+                cosmos: cx
+              }),
 
-        // ⭐ NEW: binary surface
         binary: entry.binary || extractBinarySurface({}),
-
         commandments: normalizeCommandments(entry.commandments || {}),
-        meta: { ...ROUTER_COMMANDMENTS_CONTEXT }
+        meta: { version: "13-COSMOS-MULTIVERSE" }
       };
 
       this.entries.set(safeEntry.key, safeEntry);
@@ -430,12 +354,12 @@ class PulseRouterCommandmentsStore {
 
 
 // ------------------------------------------------------------
-// Public API wrapper — Commandment Surface
+// PUBLIC API WRAPPER
 // ------------------------------------------------------------
 class PulseRouterCommandments {
   constructor() {
     this.store = new PulseRouterCommandmentsStore();
-    this.meta = { ...ROUTER_COMMANDMENTS_CONTEXT };
+    this.meta = { version: "13-COSMOS-MULTIVERSE" };
   }
 
   setCommandments(payload) {

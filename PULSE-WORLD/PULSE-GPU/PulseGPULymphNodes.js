@@ -1,10 +1,10 @@
 // ============================================================================
-//  PULSE GPU HEALER v11-Evo — THE LYMPH NODE NETWORK
+//  PULSE GPU HEALER v12.3-Evo — THE LYMPH NODE NETWORK
 //  Systemic GPU Immune Layer (Deterministic, Pure Logic, Drift‑Proof, Fail‑Open)
 // ============================================================================
 //
-// IDENTITY — THE LYMPH NODE NETWORK (v11-Evo):
-//  -------------------------------------------
+// IDENTITY — THE LYMPH NODE NETWORK (v12.3-Evo):
+//  ---------------------------------------------
 //  • The immune filtration system of the GPU subsystem.
 //  • Validates every signal flowing through the GPU body.
 //  • Filters out invalid advisor results, plans, decisions, notifications.
@@ -12,11 +12,11 @@
 //  • Ensures the entire GPU organism stays drift‑free and healthy.
 //  • Distributed, systemic, always-on — the GPU’s internal defense grid.
 //  • Dual‑mode + binary‑aware: biological + system‑level immune advantage.
-//  • PulseSend‑v11‑ready: immune validation before compute routing.
-//  • Earn‑ready: compatible with Earn‑v3 job payloads.
+//  • PulseSend‑v12.3‑ready: immune validation before compute routing.
+//  • Earn‑ready: compatible with Earn‑v4 job payloads.
 //
-// SAFETY CONTRACT (v11-Evo):
-//  -------------------------
+// SAFETY CONTRACT (v12.3-Evo):
+//  ---------------------------
 //  • No randomness
 //  • No timestamps
 //  • No environment access
@@ -39,39 +39,48 @@ const GPU_HEALER_CONTEXT = {
   context:
     "Validates advisor results, restore plans, auto-opt decisions, and notifications",
   target: "full-gpu+binary",
-  version: "11.0-Evo",
+  version: "12.3-Evo",
   selfRepairable: true,
 
   evo: {
-    metabolicBoost: 1.0,
-    neuralReflexBoost: 1.0,
-    stabilityBoost: 1.0,
+    metabolicBoost: 1.2,
+    neuralReflexBoost: 1.3,
+    stabilityBoost: 1.4,
 
     multiInstanceReady: true,
     deterministicNeuron: true,
     parallelSafe: true,
-    fanOutScaling: 1.0,
+    fanOutScaling: 1.2,
     clusterCoherence: true,
     zeroDriftCloning: true,
-    reflexPropagation: 1.0,
+    reflexPropagation: 1.1,
 
     dualModeEvolution: true,
-    organismClusterBoost: 1.0,
+    organismClusterBoost: 1.2,
     cognitiveComputeLink: true,
     unifiedAdvantageField: true,
 
-    // v11-Evo awareness
+    // v12.3-Evo awareness
     binaryAware: true,
     dualModeAware: true,
     gpuDispatchAware: true,
     gpuMemoryAware: true,
+    gpuAdvantageAware: true,
+    immuneFieldAware: true,
+    geneticMemoryAware: true,
 
     // PulseSend / Earn contracts (conceptual only)
-    pulseSend11Ready: true,
-    routingContract: "PulseSend-v11",
-    gpuOrganContract: "PulseGPU-v11-Evo",
-    binaryGpuOrganContract: "PulseBinaryGPU-v11-Evo",
-    earnCompatibility: "Earn-v3"
+    pulseSend12Ready: true,
+    routingContract: "PulseSend-v12.3",
+    gpuOrganContract: "PulseGPU-v12.3-Evo",
+    binaryGpuOrganContract: "PulseBinaryGPU-v12.3-Evo",
+    earnCompatibility: "Earn-v4",
+
+    // Legacy compatibility (conceptual only)
+    legacyRoutingContract: "PulseSend-v11",
+    legacyGPUOrganContract: "PulseGPU-v11-Evo",
+    legacyBinaryGpuOrganContract: "PulseBinaryGPU-v11-Evo",
+    legacyEarnCompatibility: "Earn-v3"
   }
 };
 
@@ -146,7 +155,7 @@ function filterValidNotifications(notifications) {
 }
 
 // ============================================================================
-//  PULSE GPU HEALER v11-Evo — THE LYMPH NODE NETWORK
+//  PULSE GPU HEALER v12.3-Evo — THE LYMPH NODE NETWORK
 // ============================================================================
 class PulseGPUHealer {
   constructor(options = {}) {
@@ -167,7 +176,7 @@ class PulseGPUHealer {
   };
 
   // ----------------------------------------------------
-  // healSessionFlow — IMMUNE RESPONSE CYCLE (v11-Evo)
+  // healSessionFlow — IMMUNE RESPONSE CYCLE (v12.3-Evo)
   // ----------------------------------------------------
   healSessionFlow({
     advisorResult,
@@ -197,7 +206,8 @@ class PulseGPUHealer {
         hardwareProfile,
         tierProfile,
         settings,
-        metrics
+        metrics,
+        gpuContext
       });
 
       actions.push({
@@ -212,7 +222,12 @@ class PulseGPUHealer {
     let healedPlan = restorePlan;
 
     if (!healedPlan || !validatePlan(healedPlan)) {
-      healedPlan = this.restorer.buildRestorePlan(healedAdvisor.advice);
+      healedPlan = this.restorer.buildRestorePlan(healedAdvisor.advice, {
+        gameProfile,
+        hardwareProfile,
+        tierProfile,
+        gpuContext
+      });
 
       actions.push({
         type: "recomputed-restore-plan",
@@ -254,8 +269,12 @@ class PulseGPUHealer {
       healedPlan && healedPlan.action && healedPlan.action !== "noop";
 
     if (healedNotifications.length === 0 && (needAdvisorNotifs || needPlanNotif)) {
-      const advisorNotifs = this.uxBridge.fromAdvisorResult(healedAdvisor);
-      const planNotif = this.uxBridge.fromRestorePlan(healedPlan);
+      const advisorNotifs = this.uxBridge.fromAdvisorResult(healedAdvisor, {
+        gpuContext
+      });
+      const planNotif = this.uxBridge.fromRestorePlan(healedPlan, {
+        gpuContext
+      });
 
       healedNotifications = advisorNotifs.slice();
       if (planNotif) healedNotifications.push(planNotif);

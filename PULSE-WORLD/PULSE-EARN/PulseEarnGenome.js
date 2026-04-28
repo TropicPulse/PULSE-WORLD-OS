@@ -1,36 +1,36 @@
 // ============================================================================
-// FILE: tropic-pulse-functions/apps/PULSE-EARN/PulseEarnGenome-v11-Evo.js
-// LAYER: THE GENOME CORE (v11-Evo)
-// (Immutable DNA Sequence + Cross‑Organism Law + Eternal Job Contract)
+// FILE: tropic-pulse-functions/apps/PULSE-EARN/PulseEarnGenome-v12.3-PRESENCE-EVO+.js
+// LAYER: THE GENOME CORE (v12.3-PRESENCE-EVO+)
+// (Immutable DNA Sequence + Cross‑Organism Law + Presence Surfaces)
 // ============================================================================
 //
-// ROLE (v11-Evo):
+// ROLE (v12.3-PRESENCE-EVO+):
 //   THE GENOME CORE — the immutable DNA of Pulse‑Earn.
 //   • Defines the canonical job structure (genetic sequence).
 //   • Establishes the cross‑organism treaty all subsystems must obey.
 //   • Guarantees compatibility across every organ in the Earn organism.
 //   • Serves as the constitutional backbone of job identity.
-//   • Emits v11‑Evo genome signatures (non‑structural).
+//   • Emits v12.3‑Presence‑EVO+ genome signatures + presence/advantage/hints surfaces.
 //
-// PURPOSE (v11-Evo):
+// PURPOSE (v12.3-PRESENCE-EVO+):
 //   • Provide a deterministic, drift‑proof job format.
 //   • Ensure universal compatibility across all Earn layers.
 //   • Serve as the legal + biological foundation for job execution,
 //     routing, metabolism, healing, and archival reconstruction.
-//   • Provide signature‑rich constitutional metadata.
+//   • Provide signature‑rich constitutional metadata, now presence‑aware (metadata-only).
 //
-// CONTRACT (v11-Evo):
+// CONTRACT (v12.3-PRESENCE-EVO+):
 //   • PURE STATIC SCHEMA — no logic, no runtime behavior.
 //   • NO dynamic fields, NO optional structural keys.
 //   • NO timestamps, NO environment‑dependent fields.
 //   • Immutable across versions unless explicitly ratified.
-//   • v11‑Evo adds ONLY metadata + signatures OUTSIDE the schema.
+//   • v12.3‑Presence‑EVO+ adds ONLY metadata + signatures OUTSIDE the schema.
 // ============================================================================
 export const PulseEarnGenomeCoreMeta = Object.freeze({
   layer: "PulseEarnGenomeCore",
   role: "EARN_GENOME_CORE",
-  version: "v11.2-EVO",
-  identity: "PulseEarnGenomeCore-v11.2-EVO",
+  version: "v12.3-PRESENCE-EVO+",
+  identity: "PulseEarnGenomeCore-v12.3-PRESENCE-EVO+",
 
   guarantees: Object.freeze({
     deterministic: true,
@@ -43,6 +43,9 @@ export const PulseEarnGenomeCoreMeta = Object.freeze({
     dualBandAware: true,
     binaryAware: true,
     waveFieldAware: true,
+    presenceAware: true,
+    advantageAware: true,
+    hintsAware: true,
     worldLensAware: false,
     constitutional: true
   }),
@@ -50,19 +53,21 @@ export const PulseEarnGenomeCoreMeta = Object.freeze({
   contract: Object.freeze({
     input: [
       "PulseEarnJobSchema (immutable)",
-      "DualBandContext (metadata-only)"
+      "DualBandContext (metadata-only)",
+      "GlobalHintsPresenceField (metadata-only)"
     ],
     output: [
       "GenomeSignatures",
       "BinaryFieldSignatures",
       "WaveFieldSignatures",
+      "PresenceFieldSignatures",
       "ConstitutionalMetadata"
     ]
   }),
 
   lineage: Object.freeze({
     root: "PulseOS-v11-EVO",
-    parent: "PulseEarn-v11.2-EVO",
+    parent: "PulseEarn-v12.3-PRESENCE-EVO+",
     ancestry: [
       "PulseEarnGenomeCore-v9",
       "PulseEarnGenomeCore-v10",
@@ -80,14 +85,13 @@ export const PulseEarnGenomeCoreMeta = Object.freeze({
   architecture: Object.freeze({
     pattern: "A-B-A",
     baseline: "immutable static schema",
-    adaptive: "signature surfaces (binary + wave)",
+    adaptive: "signature surfaces (binary + wave + presence/advantage/hints)",
     return: "deterministic constitutional metadata"
   })
 });
 
-
 // ============================================================================
-// INTERNAL: Deterministic Hash Helper (v11-Evo)
+// INTERNAL: Deterministic Hash Helper (v12.3-PRESENCE-EVO+)
 // ============================================================================
 function computeHash(str) {
   let h = 0;
@@ -97,7 +101,6 @@ function computeHash(str) {
   }
   return `h${h}`;
 }
-
 
 // ============================================================================
 // THE IMMUTABLE GENOME CORE — STRUCTURE CANNOT CHANGE
@@ -123,13 +126,12 @@ export const PulseEarnJobSchema = {
   cycleIndex: "number" // Genetic activation cycle (deterministic)
 };
 
-
 // ============================================================================
-// v11‑Evo GENOME METADATA (NON‑STRUCTURAL, SAFE, IMMUTABLE)
+// v12.3‑PRESENCE‑EVO+ GENOME METADATA (NON‑STRUCTURAL, SAFE, IMMUTABLE)
 // ============================================================================
 export const PulseEarnGenomeMetadata = {
-  genomeVersion: "11-Evo",
-  genomeIdentity: "PulseEarn-GenomeCore-v11-Evo",
+  genomeVersion: "12.3-PRESENCE-EVO+",
+  genomeIdentity: "PulseEarn-GenomeCore-v12.3-PRESENCE-EVO+",
   genomeLayer: "GENOME_CORE",
   genomeRole: "Immutable DNA Sequence + Cross‑Organism Law",
 
@@ -167,7 +169,7 @@ export const PulseEarnGenomeMetadata = {
   },
 
   // -----------------------------
-  // A — Wave-Theory Metadata
+  // C — Wave-Theory Metadata
   // -----------------------------
   waveSignature: computeHash(
     "wave::" + computeHash(JSON.stringify(PulseEarnJobSchema))
@@ -178,6 +180,39 @@ export const PulseEarnGenomeMetadata = {
     amplitude: 3,
     phase: (9 + 3) % 8,
     mode: "symbolic-wave"
+  },
+
+  // -----------------------------
+  // D — Presence / Advantage / Hints Surfaces (metadata-only)
+//   These DO NOT change the schema; they describe how the genome
+//   is seen by presence-aware organs.
+// -----------------------------
+  presenceFieldSignatures: {
+    bandPresenceSignature: computeHash("presence::bandPresence"),
+    routerPresenceSignature: computeHash("presence::routerPresence"),
+    devicePresenceSignature: computeHash("presence::devicePresence"),
+    meshPresenceSignature: computeHash("presence::meshPresence"),
+    castlePresenceSignature: computeHash("presence::castlePresence"),
+    regionPresenceSignature: computeHash("presence::regionPresence"),
+    regionIdSignature: computeHash("presence::regionId"),
+    castleIdSignature: computeHash("presence::castleId"),
+    castleLoadLevelSignature: computeHash("presence::castleLoadLevel"),
+    meshStrengthSignature: computeHash("presence::meshStrength"),
+    meshPressureIndexSignature: computeHash("presence::meshPressureIndex")
+  },
+
+  advantageFieldSignatures: {
+    advantageScoreSignature: computeHash("advantage::score"),
+    advantageBandSignature: computeHash("advantage::band"),
+    advantageTierSignature: computeHash("advantage::tier")
+  },
+
+  hintsFieldSignatures: {
+    fallbackBandLevelSignature: computeHash("hints::fallbackBandLevel"),
+    chunkHintsSignature: computeHash("hints::chunkHints"),
+    cacheHintsSignature: computeHash("hints::cacheHints"),
+    prewarmHintsSignature: computeHash("hints::prewarmHints"),
+    coldStartHintsSignature: computeHash("hints::coldStartHints")
   },
 
   // Original field signatures (unchanged)
@@ -192,4 +227,3 @@ export const PulseEarnGenomeMetadata = {
     cycleIndex: computeHash("cycleIndex:number")
   }
 };
-

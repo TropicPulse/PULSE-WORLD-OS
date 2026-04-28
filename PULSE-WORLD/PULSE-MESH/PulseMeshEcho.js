@@ -1,10 +1,11 @@
 // ============================================================================
-// [pulse:echo] PULSE_OS_DIAGNOSTIC_REFLECTION v11-Evo  // silver
+// [pulse:echo] PULSE_OS_DIAGNOSTIC_REFLECTION v12.3-PRESENCE-EVO-MAX-PRIME // silver
 // Diagnostic Reflection Layer • Metadata-Only • Read-Only • Non-Interference
+// Presence-Aware • Binary-Aware • Dual-Band • Drift-Proof
 // ============================================================================
 //
-// IDENTITY — THE SILVER ORGAN (v11-Evo):
-// --------------------------------------
+// IDENTITY — THE SILVER ORGAN (v12.3):
+// ------------------------------------
 // • Sends metadata-only diagnostic pulses ("echo pulses").
 // • Measures system friction, drift, loops, sync, organ usage.
 // • Reads metadata from all layers without influencing them.
@@ -12,12 +13,12 @@
 // • NEVER mutates impulses.
 // • NEVER affects routing, hormones, memory, or flow.
 // • Pure reflection organ (safe for backendAI + Awareness Page).
-// • v11-Evo: binary-aware, dual-mode-ready, deterministic-field,
-//            unified-advantage-field, mesh-pressure-aware,
-//            flow-aware, drift-aware, multi-instance-ready.
+// • Presence-aware, binary-aware, dual-band-ready, deterministic-field,
+//   unified-advantage-field, mesh-pressure-aware, flow-aware, drift-aware,
+//   multi-instance-ready.
 //
-// SAFETY CONTRACT (v11-Evo):
-// ---------------------------
+// SAFETY CONTRACT (v12.3):
+// -------------------------
 // • Metadata-only
 // • Read-only
 // • No loops, no sync, no hormones, no memory writes
@@ -41,7 +42,7 @@ export function createPulseEcho({
   const meta = {
     layer: "PulseEcho",
     role: "DIAGNOSTIC_REFLECTION",
-    version: "11.0-Evo",
+    version: "12.3-PRESENCE-EVO-MAX-PRIME",
     target: "full-mesh",
     selfRepairable: true,
     evo: {
@@ -66,6 +67,9 @@ export function createPulseEcho({
       flowAware: true,
       driftAware: true,
 
+      presenceAware: true,
+      bandAware: true,
+
       zeroCompute: true,
       zeroMutation: true,
       zeroRoutingInfluence: true
@@ -84,7 +88,9 @@ export function createPulseEcho({
       load: 0,
       echoMode: true,     // signals all organs to stay read-only
       binaryMode: false,  // symbolic echo by default
-      dualMode: true
+      dualMode: true,
+      presenceBand: context.presenceBand || "symbolic",
+      presenceTag: context.presenceTag || "PulseEcho-v12.3"
     });
 
     return extractReflection(result);
@@ -100,7 +106,9 @@ export function createPulseEcho({
       type: "diagnostic_echo",
       flags: {
         echo: true,
-        echo_meta: meta
+        echo_meta: meta,
+        presence_band: context.presenceBand || "symbolic",
+        presence_tag: context.presenceTag || "PulseEcho-v12.3"
       },
       metadata: { context },
       payloadRef: null
@@ -121,6 +129,11 @@ export function createPulseEcho({
         binary: !!flags.binary_mode,
         symbolic: !flags.binary_mode,
         dual: !!flags.dual_mode
+      },
+
+      presence: {
+        band: flags.presence_band || "symbolic",
+        tag: flags.presence_tag || "PulseEcho-v12.3"
       },
 
       flow: {

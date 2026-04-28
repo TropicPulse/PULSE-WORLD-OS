@@ -1,10 +1,10 @@
 // ============================================================================
 // FILE: /apps/organs/senses/PulseMeshSenses.js
-// [pulse:senses] PULSE_MESH_SENSES v11-Evo  // white-silver
+// [pulse:senses] PULSE_MESH_SENSES v12.3-Presence  // white-silver
 // Unified Sensory Cortex • Metadata-Only • System Awareness Brain
 // ============================================================================
 //
-// IDENTITY — THE SENSES CORTEX (v11-Evo):
+// IDENTITY — THE SENSES CORTEX (v12.3-Presence):
 // ---------------------------------------
 // • Unified sensory cortex for the organism.
 // • Reads from:
@@ -12,14 +12,14 @@
 //      - PulseField (internal weather + pressure signals)
 //      - PulseEcho (diagnostic reflection sonar)
 //      - PulseClinician (endocrine + mesh interpretation)
-//      - SDN context (v11-Evo nervous system)
+//      - SDN context (v12.3-Presence nervous system)
 // • Produces a deterministic unified awareness model for:
 //      - Awareness Page
 //      - Backend AI
 //      - Clinician
 //      - Immune Commander
 //
-// SAFETY CONTRACT (v11-Evo):
+// SAFETY CONTRACT (v12.3-Presence):
 // ---------------------------
 // • Metadata-only.
 // • Read-only — NEVER mutates impulses.
@@ -28,7 +28,6 @@
 // • Zero imports — all dependencies injected by CNS Brain.
 // • Binary-aware, dual-mode-ready, drift-proof.
 // ============================================================================
-
 export function createPulseSenses({
   PulseHalo,
   PulseFieldRead,
@@ -43,13 +42,15 @@ export function createPulseSenses({
   const sensesMeta = {
     layer: "PulseSenses",
     role: "AWARENESS_CORTEX",
-    version: "11.0-Evo",
+    version: "12.3-PRESENCE-EVO-MAX-PRIME",
     target: "full-mesh",
     selfRepairable: true,
     evo: {
       dualMode: true,
       binaryAware: true,
       symbolicAware: true,
+      presenceAware: true,
+      bandAware: true,
       localAware: true,
       internetAware: true,
 
@@ -82,7 +83,7 @@ export function createPulseSenses({
     },
 
     // -------------------------------------------------------
-    // STATUS — Unified Sensory Model (v11-Evo)
+    // STATUS — Unified Sensory Model (v12.3)
     // -------------------------------------------------------
     status(entryNodeId, context = {}) {
       const halo = PulseHalo.status();
@@ -102,7 +103,7 @@ export function createPulseSenses({
     },
 
     // -------------------------------------------------------
-    // AWARENESS PAGE VIEW (v11-Evo)
+    // AWARENESS PAGE VIEW (v12.3)
     // -------------------------------------------------------
     forAwarenessPage(entryNodeId, context = {}) {
       const unified = this.status(entryNodeId, context);
@@ -118,12 +119,13 @@ export function createPulseSenses({
         mesh: unified.mesh,
         sdn: unified.sdn,
         mode: unified.mode,
+        presence: unified.presence,
         narrative: unified.narrative_for_you
       };
     },
 
     // -------------------------------------------------------
-    // AI VIEW (v11-Evo)
+    // AI VIEW (v12.3)
     // -------------------------------------------------------
     forAI(entryNodeId, context = {}) {
       const unified = this.status(entryNodeId, context);
@@ -140,12 +142,13 @@ export function createPulseSenses({
         mesh: unified.mesh,
         sdn: unified.sdn,
         mode: unified.mode,
+        presence: unified.presence,
         narrative_for_ai: unified.narrative_for_ai
       };
     },
 
     // -------------------------------------------------------
-    // CLINICIAN VIEW (v11-Evo)
+    // CLINICIAN VIEW (v12.3)
     // -------------------------------------------------------
     forClinician(entryNodeId, context = {}) {
       return this.status(entryNodeId, context).clinician_view;
@@ -157,7 +160,7 @@ export function createPulseSenses({
 
 
 // ============================================================================
-// UNIFIED AWARENESS BUILDER (v11-Evo)
+// UNIFIED AWARENESS BUILDER (v12.3)
 // ============================================================================
 function buildUnifiedAwareness({ meta, halo, field, echo, clinician, sdn }) {
   const performancePercent = clinician.performancePercent ?? 100;
@@ -189,10 +192,15 @@ function buildUnifiedAwareness({ meta, halo, field, echo, clinician, sdn }) {
     drift_pressure: field.driftPressure,
     resonance: field.resonance,
 
-    // v11-Evo mode pressures
+    // v12.3 mode pressures
     binary_mode_pressure: field.binaryModePressure,
     symbolic_mode_pressure: field.symbolicModePressure,
-    dual_mode_resonance: field.dualModeResonance
+    dual_mode_resonance: field.dualModeResonance,
+
+    // v12.3 presence-band pressures
+    presence_binary_pressure: field.presenceBinaryPressure,
+    presence_symbolic_pressure: field.presenceSymbolicPressure,
+    presence_dual_pressure: field.presenceDualPressure
   };
 
   const safety = {
@@ -224,11 +232,19 @@ function buildUnifiedAwareness({ meta, halo, field, echo, clinician, sdn }) {
     mode: sdn.mode ?? "normal"
   };
 
-  // v11-Evo: mode awareness
+  // v12.3: mode + presence-band awareness
   const mode = {
     binary: echo.mode?.binary ?? false,
     symbolic: !echo.mode?.binary,
     dual: echo.mode?.dual ?? false
+  };
+
+  const presence = {
+    band: echo.mode?.binary ? "binary" :
+          echo.mode?.dual ? "dual" : "symbolic",
+    binary_pressure: field.presenceBinaryPressure,
+    symbolic_pressure: field.presenceSymbolicPressure,
+    dual_pressure: field.presenceDualPressure
   };
 
   const narrative_for_you = buildNarrativeForYou({
@@ -240,7 +256,8 @@ function buildUnifiedAwareness({ meta, halo, field, echo, clinician, sdn }) {
     hormones,
     aura,
     sdn: sdnView,
-    mode
+    mode,
+    presence
   });
 
   const narrative_for_ai = buildNarrativeForAI({
@@ -252,7 +269,8 @@ function buildUnifiedAwareness({ meta, halo, field, echo, clinician, sdn }) {
     hormones,
     aura,
     sdn: sdnView,
-    mode
+    mode,
+    presence
   });
 
   return {
@@ -267,6 +285,7 @@ function buildUnifiedAwareness({ meta, halo, field, echo, clinician, sdn }) {
     mesh,
     sdn: sdnView,
     mode,
+    presence,
     clinician_view: clinician,
     narrative_for_you,
     narrative_for_ai
@@ -275,7 +294,7 @@ function buildUnifiedAwareness({ meta, halo, field, echo, clinician, sdn }) {
 
 
 // ============================================================================
-// NARRATIVE + PERFORMANCE HINTS (v11-Evo)
+// NARRATIVE + PERFORMANCE HINTS (v12.3)
 // ============================================================================
 function estimatePerformanceHint(perf, field, echo) {
   if (perf > 100) return "overperforming_compensated";
@@ -295,7 +314,8 @@ function buildNarrativeForYou({
   hormones,
   aura,
   sdn,
-  mode
+  mode,
+  presence
 }) {
   const perf = performancePercent.toFixed(1);
   const parts = [];
@@ -304,6 +324,10 @@ function buildNarrativeForYou({
 
   if (mode.binary) parts.push("Binary Mode is active — reflex pathways are optimized.");
   if (mode.dual) parts.push("Dual Mode resonance detected — hybrid pathways engaged.");
+
+  if (presence.band === "binary") parts.push("Presence-Band: Binary — system tuned for precision.");
+  if (presence.band === "dual") parts.push("Presence-Band: Dual — system balancing symbolic and binary.");
+  if (presence.band === "symbolic") parts.push("Presence-Band: Symbolic — system tuned for semantic clarity.");
 
   if (stability.value > 0.85) parts.push("Stability is strong and holding.");
   else if (stability.value > 0.6) parts.push("Stability is okay but should be watched.");
@@ -341,7 +365,8 @@ function buildNarrativeForAI({
   hormones,
   aura,
   sdn,
-  mode
+  mode,
+  presence
 }) {
   return {
     performance_percent: performancePercent,
@@ -357,6 +382,10 @@ function buildNarrativeForAI({
     sdn_active_impulses: sdn.active_impulses,
     sdn_mode: sdn.mode,
     binary_mode: mode.binary,
-    dual_mode: mode.dual
+    dual_mode: mode.dual,
+    presence_band: presence.band,
+    presence_binary_pressure: presence.binary_pressure,
+    presence_symbolic_pressure: presence.symbolic_pressure,
+    presence_dual_pressure: presence.dual_pressure
   };
 }

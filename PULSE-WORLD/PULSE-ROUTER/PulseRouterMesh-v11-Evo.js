@@ -1,14 +1,15 @@
 // ============================================================================
-//  PulseMeshRouter-v11-Evo-DualStack — MESH ROUTING ORGAN (Symbolic + Binary)
+//  PulseMeshRouter-v12.3-Evo-DualStack — MESH ROUTING ORGAN (Symbolic + Binary)
 //  Deterministic Mesh Path Selection • Pattern/Lineage/Page/Binary-Aware
+//  12.3+: cacheChunkKey • prewarmHint • multiPresenceScope
 // ============================================================================
 
 export const PulseMeshRole = {
   type: "MeshRouter",
   subsystem: "PulseMesh",
   layer: "Routing",
-  version: "11.0",
-  identity: "PulseMeshRouter-v11-Evo-DualStack",
+  version: "12.3",
+  identity: "PulseMeshRouter-v12.3-Evo-DualStack",
 
   evo: {
     driftProof: true,
@@ -19,8 +20,13 @@ export const PulseMeshRole = {
     unifiedAdvantageField: true,
     loopTheoryAware: true,
 
-    // ⭐ NEW: binary-aware mesh routing
-    binaryAware: true
+    // ⭐ binary-aware mesh routing
+    binaryAware: true,
+
+    // ⭐ 12.3+: cache / prewarm / presence
+    cacheChunkAware: true,
+    prewarmAware: true,
+    multiPresenceAware: true
   },
 
   loopTheory: {
@@ -33,6 +39,30 @@ export const PulseMeshRole = {
   meshContract: "PulseMesh-v11",
   sendContract: "PulseSend-v11"
 };
+
+
+// ============================================================================
+//  HELPERS — stable stringify + hash (for ancestry/cache/presence)
+// ============================================================================
+function stableStringify(value) {
+  if (value === null || typeof value !== "object") return JSON.stringify(value);
+  if (Array.isArray(value)) return "[" + value.map(stableStringify).join(",") + "]";
+  const keys = Object.keys(value).sort();
+  return (
+    "{" +
+    keys.map((k) => JSON.stringify(k) + ":" + stableStringify(value[k])).join(",") +
+    "}"
+  );
+}
+
+function simpleHash(str) {
+  let hash = 0;
+  for (let i = 0; i < str.length; i++) {
+    hash = (hash << 5) - hash + str.charCodeAt(i);
+    hash |= 0;
+  }
+  return (hash >>> 0).toString(16);
+}
 
 
 // ============================================================================
@@ -60,13 +90,7 @@ function buildPageAncestrySignature({ pattern, lineage, pageId }) {
     pageId: safePageId
   };
 
-  let raw = JSON.stringify(shape);
-  let hash = 0;
-  for (let i = 0; i < raw.length; i++) {
-    hash = (hash << 5) - hash + raw.charCodeAt(i);
-    hash |= 0;
-  }
-  return (hash >>> 0).toString(16);
+  return simpleHash(stableStringify(shape));
 }
 
 
@@ -114,6 +138,50 @@ function classifyDegradationTier(healthScore) {
 
 
 // ============================================================================
+//  12.3+ — cacheChunkKey / prewarmHint / multiPresenceScope
+// ============================================================================
+function buildCacheChunkKey({ pattern, lineage, pageId, binary }) {
+  const shape = {
+    pattern,
+    lineage,
+    pageId,
+    binaryPattern: binary.binaryPattern,
+    binaryMode: binary.binaryMode
+  };
+  return "mesh-cache::" + simpleHash(stableStringify(shape));
+}
+
+function buildPrewarmHint({ pattern, pageId, binary }) {
+  const base = {
+    pattern,
+    pageId,
+    hasBinary: binary.hasBinary,
+    binaryPattern: binary.binaryPattern
+  };
+  const hash = simpleHash(stableStringify(base));
+  const bucket = parseInt(hash.slice(0, 2), 16) % 3;
+
+  const level = bucket === 0 ? "light" : bucket === 1 ? "aggressive" : "none";
+  return {
+    level,
+    hintKey: "mesh-prewarm::" + hash
+  };
+}
+
+function buildPresenceScope({ pattern, pageId, binary }) {
+  if (binary.hasBinary && binary.binaryPattern) {
+    const key =
+      "mesh-presence::page::" +
+      simpleHash(`${pattern}::${pageId}::${binary.binaryPattern}`);
+    return { scope: "page", presenceKey: key };
+  }
+
+  const key = "mesh-presence::local::" + simpleHash(`${pattern}::${pageId}`);
+  return { scope: "local", presenceKey: key };
+}
+
+
+// ============================================================================
 //  DETERMINISTIC MESH PATH SELECTION (Symbolic + Binary)
 // ============================================================================
 function chooseMeshPath(pulse) {
@@ -140,7 +208,7 @@ function chooseMeshPath(pulse) {
 
 
 // ============================================================================
-//  PUBLIC API — PulseMeshRouter (DualStack)
+//  PUBLIC API — PulseMeshRouter (DualStack, 12.3+)
 // ============================================================================
 export const PulseMeshRouter = {
 
@@ -171,6 +239,25 @@ export const PulseMeshRouter = {
 
     const meshPath = chooseMeshPath(pulse);
 
+    const cacheChunkKey = buildCacheChunkKey({
+      pattern,
+      lineage,
+      pageId,
+      binary
+    });
+
+    const prewarmHint = buildPrewarmHint({
+      pattern,
+      pageId,
+      binary
+    });
+
+    const presenceScope = buildPresenceScope({
+      pattern,
+      pageId,
+      binary
+    });
+
     return {
       meshPath,
       tier,
@@ -185,6 +272,11 @@ export const PulseMeshRouter = {
 
       // ⭐ NEW: binary ancestry
       binary,
+
+      // ⭐ 12.3+: cache / prewarm / presence
+      cacheChunkKey,
+      prewarmHint,
+      presenceScope,
 
       loopTheory: { ...PulseMeshRole.loopTheory }
     };

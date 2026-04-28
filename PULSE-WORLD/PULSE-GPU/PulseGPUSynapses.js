@@ -1,20 +1,22 @@
 // ============================================================================
-//  PULSE GPU EVENT EMITTER v11-Evo — THE SYNAPSE LAYER
+//  PULSE GPU EVENT EMITTER v12.3-Evo-binary-Spine — THE SYNAPSE LAYER
 //  Deterministic, Fail‑Open, Zero‑Side‑Effects Signal Relay
 // ============================================================================
 //
-// IDENTITY — THE SYNAPSE LAYER (v11-Evo):
-//  --------------------------------------
+// IDENTITY — THE SYNAPSE LAYER (v12.3-Evo-binary-Spine):
+//  -----------------------------------------------------
 //  • Electrical junctions of the GPU organism.
 //  • Pure deterministic relay between GPU subsystems.
-//  • Binary-aware, dual-mode-aware, dispatch-aware (metadata only).
+//  • Spine-aware: tuned for Orchestrator v12.3+
+//  • Dual-band-aware: binary + symbolic pathways (metadata only)
+//  • Chunking-aware + prewarm-ready
 //  • No randomness, no async, no timestamps, no GPU calls.
 //  • Fail‑open: a bad handler never breaks the relay.
-//  • PulseSend‑v11‑ready: impulses routable by compute router.
-//  • Earn‑v3‑ready.
+//  • PulseSend‑v12.3‑ready: impulses routable by compute router.
+//  • Earn‑v4‑ready.
 //
-// SAFETY CONTRACT (v11-Evo):
-//  --------------------------
+// SAFETY CONTRACT (v12.3):
+//  ------------------------
 //  • No randomness
 //  • No timestamps
 //  • No async
@@ -25,18 +27,18 @@
 //  • Deterministic: same impulses → same order → same results
 // ============================================================================
 
-const PULSE_GPU_EVENT_EMITTER_META_V11 = {
+const PULSE_GPU_EVENT_EMITTER_META_V12 = {
   layer: "PulseGPUEventEmitter",
-  version: "11.0-Evo-binary",
-  target: "full-gpu+binary",
+  version: "12.3-Evo-binary-Spine",
+  target: "full-gpu+binary+spine",
   description: "Synaptic signal relay for GPU subsystem communication.",
 
   selfRepairable: true,
   unifiedAdvantageField: true,
-  pulseSend11Ready: true,
+  pulseSend12Ready: true,
 
-  // v11-Evo awareness
   evo: {
+    // deterministic nervous system traits
     metabolicBoost: 1.0,
     neuralReflexBoost: 1.0,
     stabilityBoost: 1.0,
@@ -49,22 +51,25 @@ const PULSE_GPU_EVENT_EMITTER_META_V11 = {
     zeroDriftCloning: true,
     reflexPropagation: 1.0,
 
-    dualModeEvolution: true,
+    // v12.3 spine + dual-band + chunking
+    gpuSpineReady: true,
+    dualBandReady: true,
+    chunkingReady: true,
+    prewarmReady: true,
     organismClusterBoost: 1.0,
     cognitiveComputeLink: true,
-    unifiedAdvantageField: true,
 
-    // NEW v11-Evo
+    // awareness flags (metadata only)
     binaryAware: true,
     symbolicAware: true,
     gpuDispatchAware: true,
     gpuMemoryAware: true,
 
     // Contracts (conceptual only)
-    routingContract: "PulseSend-v11",
-    gpuOrganContract: "PulseGPU-v11-Evo",
-    binaryGpuOrganContract: "PulseBinaryGPU-v11-Evo",
-    earnCompatibility: "Earn-v3",
+    routingContract: "PulseSend-v12.3",
+    gpuOrganContract: "PulseGPU-v12.3-Spine",
+    binaryGpuOrganContract: "PulseBinaryGPU-v12.3-Spine",
+    earnCompatibility: "Earn-v4",
 
     // Legacy compatibility
     legacyRoutingContract: "PulseSend-v10.4",
@@ -74,14 +79,17 @@ const PULSE_GPU_EVENT_EMITTER_META_V11 = {
 };
 
 class PulseGPUEventEmitter {
-  constructor() {
+  constructor(logger) {
     this.listeners = {};
-    this.meta = { ...PULSE_GPU_EVENT_EMITTER_META_V11 };
+    this.meta = { ...PULSE_GPU_EVENT_EMITTER_META_V12 };
+    this.logger = typeof logger === "function" ? logger : null;
 
-    log(
-      "synapse",
-      "PulseGPUEventEmitter v11-Evo — synaptic junction layer active (binary-aware, dual-mode, PulseSend‑v11‑ready)."
-    );
+    if (this.logger) {
+      this.logger(
+        "synapse",
+        "PulseGPUEventEmitter v12.3 — synaptic junction layer active (spine-ready, dual-band, chunking-prewarm)."
+      );
+    }
   }
 
   // ------------------------------------------------------------------------
@@ -127,6 +135,21 @@ class PulseGPUEventEmitter {
         handler(payload);
       } catch {
         // fail‑open: synapse never breaks
+      }
+    }
+  }
+
+  // ------------------------------------------------------------------------
+  // PREWARM — Pre-create listener buckets for hot signals
+  // ------------------------------------------------------------------------
+  prewarm(signalNames) {
+    if (!Array.isArray(signalNames)) return;
+
+    for (let i = 0; i < signalNames.length; i++) {
+      const name = signalNames[i];
+      if (!name) continue;
+      if (!this.listeners[name]) {
+        this.listeners[name] = [];
       }
     }
   }

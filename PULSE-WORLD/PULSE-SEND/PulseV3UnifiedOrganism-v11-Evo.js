@@ -1,23 +1,25 @@
 // ============================================================================
-//  FILE: PulseV3UnifiedOrganism-v11-Evo.js
+//  FILE: PulseV3UnifiedOrganism-v12-4-Evo.js
 //  Pulse v3 • Unified Organism • Evolution-Aware • Deterministic Compute Loop
-//  v11: Diagnostics + Signatures + Evolution Surface + Advantage Surface
+//  v12.4: Unified Advantage Surface + Degradation Tier + Rich Diagnostics
+//         + Signature Surface + Binary-Front-End Ready
 // ============================================================================
 //
 //  ROLE (v3 vs v2):
 //  ----------------
-//  • Pulse v2 (your evolution engine) is a *specialized evolution core*.
+//  • Pulse v2 (evolution engine) is a *specialized evolution core*.
 //  • Pulse v3 is the *unified organism* view: it treats pattern+lineage+payload
 //    as a single organism surface with a unified advantage field.
 //
 //  This file is the *symbolic* v3 organism core:
 //    - It does NOT know about bits directly.
-//    - It is designed to sit behind a binary front-end (e.g. a future
-//      PulseBinaryUnifiedOrganism-v11-Evo).
-//    - It exposes a unified advantage surface that binary layers can read.
+//    - It is designed to sit behind a binary front-end (e.g.
+//      PulseBinaryUnifiedOrganism-v12-4-Evo).
+//    - It exposes a unified advantage surface + tier + diagnostics that
+//      binary layers can read without understanding all symbolic details.
 //
-//  SAFETY CONTRACT (v11-Evo):
-//  --------------------------
+//  SAFETY CONTRACT (v12-4-Evo):
+//  ----------------------------
 //  • No imports.
 //  • No randomness.
 //  • No timestamps.
@@ -27,14 +29,14 @@
 
 
 // ============================================================================
-// ⭐ PulseRole — identifies this as the Pulse v3 unified organism (v11-Evo)
+// ⭐ PulseRole — identifies this as the Pulse v3 unified organism (v12-4-Evo)
 // ============================================================================
 export const PulseRole = {
   type: "Pulse",
   subsystem: "Pulse",
   layer: "Organ",
-  version: "11.0",
-  identity: "Pulse-v3-Unified-v11-Evo",
+  version: "12.4",
+  identity: "Pulse-v3-Unified-v12-4-Evo",
 
   evo: {
     // Core evolution awareness
@@ -54,22 +56,27 @@ export const PulseRole = {
     pulseV3Ready: true,
     futureEvolutionReady: true,
 
+    // Diagnostics + signatures + evolution surface
     diagnosticsReady: true,
     signatureReady: true,
     evolutionSurfaceReady: true,
+    degradationTierReady: true,
+    healthScoreReady: true,
+    patternSurfaceReady: true,
+    lineageSurfaceReady: true,
 
     // Binary integration flags:
     //   - This file is the *back-end* unified organism engine.
     //   - A separate binary organ will act as the front-end that speaks in bits.
     binaryBackEndReady: true,
-    binaryFrontEndContract: "PulseBinaryUnifiedOrganism-v11-Evo"
+    binaryFrontEndContract: "PulseBinaryUnifiedOrganism-v12-4-Evo"
   },
 
-  routingContract: "PulseRouter-v11",
-  meshContract: "PulseMesh-v11",
-  sendContract: "PulseSend-v11",
-  gpuOrganContract: "PulseGPU-v11",
-  earnCompatibility: "PulseEarn-v11"
+  routingContract: "PulseRouter-v12-4",
+  meshContract: "PulseMesh-v12-4",
+  sendContract: "PulseSend-v12-4",
+  gpuOrganContract: "PulseGPU-v12-4",
+  earnCompatibility: "PulseEarn-v12-4"
 };
 
 
@@ -112,6 +119,7 @@ function computeEvolutionStage(pattern, lineage) {
   if (depth === 1) return "seed";
   if (depth === 2) return "sprout";
   if (depth === 3) return "branch";
+  if (depth === 4) return "canopy";
   return "mature";
 }
 
@@ -136,8 +144,18 @@ function buildPageAncestrySignature({ pattern, lineage, pageId }) {
   return computeHash(JSON.stringify(shape));
 }
 
-function buildDiagnostics(pattern, lineage, healthScore) {
-  // Diagnostics: unified organism view of health + structure.
+function computeDegradationTier(healthScore) {
+  return (
+    healthScore >= 0.95 ? "microDegrade" :
+    healthScore >= 0.85 ? "softDegrade"  :
+    healthScore >= 0.50 ? "midDegrade"   :
+    healthScore >= 0.15 ? "hardDegrade"  :
+    "criticalDegrade"
+  );
+}
+
+function buildDiagnostics({ pattern, lineage, healthScore, tier }) {
+  // Diagnostics: unified organism view of health + structure + tier.
   return {
     patternLength: pattern.length,
     lineageDepth: lineage.length,
@@ -145,13 +163,14 @@ function buildDiagnostics(pattern, lineage, healthScore) {
       healthScore >= 0.9 ? "elite" :
       healthScore >= 0.75 ? "high" :
       healthScore >= 0.5 ? "medium" : "low",
+    tier,
     lineageDensity: lineage.length === 0 ? 0 : pattern.length / lineage.length
   };
 }
 
 
 // ============================================================================
-//  INTERNAL: Deterministic evolution compute loop (v3, v11 surface)
+//  INTERNAL: Deterministic evolution compute loop (v3, v12.4 surface)
 // ============================================================================
 //  v3's compute loop is a *unified advantage surface*:
 //
@@ -186,7 +205,7 @@ function runEvolutionComputeLoop({ pattern, lineage, payload, mode }) {
       mode === "drain"    ? 2 :
       mode === "recovery" ? 2 :
       1,
-    unifiedTier: "v3-unified-v11"
+    unifiedTier: "v3-unified-v12-4"
   };
 
   const healthScore = (
@@ -203,7 +222,7 @@ function runEvolutionComputeLoop({ pattern, lineage, payload, mode }) {
 
 
 // ============================================================================
-//  FACTORY — Create a Pulse v3 Unified Organism (v11-Evo)
+//  FACTORY — Create a Pulse v3 Unified Organism (v12-4-Evo)
 // ============================================================================
 //  This is the "birth" function for a v3 unified organism instance.
 //  A binary front-end will typically:
@@ -216,7 +235,7 @@ function runEvolutionComputeLoop({ pattern, lineage, payload, mode }) {
 //  The result is a unified organism object with:
 //    - PulseRole
 //    - pattern/lineage/mode/payload
-//    - advantageField + healthScore
+//    - advantageField + healthScore + tier
 //    - meta: signatures + diagnostics
 // ============================================================================
 
@@ -249,7 +268,13 @@ export function createPulseV3({
     mode
   });
 
-  const diagnostics = buildDiagnostics(pattern, lineage, healthScore);
+  const tier = computeDegradationTier(healthScore);
+  const diagnostics = buildDiagnostics({
+    pattern,
+    lineage,
+    healthScore,
+    tier
+  });
 
   return {
     // Identity + contracts
@@ -266,11 +291,12 @@ export function createPulseV3({
     pageId,
 
     // Unified organism type
-    pulseType: "Pulse-v3-Unified-v11",
+    pulseType: "Pulse-v3-Unified-v12-4",
 
     // Advantage + health
     advantageField,
     healthScore,
+    tier,
 
     // Meta: signatures + diagnostics
     meta: {
@@ -287,7 +313,8 @@ export function createPulseV3({
       patternSignature: computeHash(pattern),
       lineageSurface: computeHash(String(lineage.length)),
       advantageSignature: computeHash(JSON.stringify(advantageField)),
-      healthSignature: computeHash(String(healthScore))
+      healthSignature: computeHash(String(healthScore)),
+      tierSignature: computeHash(tier)
     }
   };
 }

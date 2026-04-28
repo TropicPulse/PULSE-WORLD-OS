@@ -1,11 +1,11 @@
 // ============================================================================
 // FILE: /apps/PulseOS/Organs/Barriers/PulseOSOrganMembrane.js
-// PULSE OS — v11-Evo-Prime
+// PULSE OS — v12.3-Evo-Prime
 // “THE ORGAN MEMBRANE / A3 EPITHELIAL REFLEX”
 // GLOBAL SENTINEL • ORGAN-LEVEL PROTECTOR • ZERO TIMING • ZERO STATE
 // ============================================================================
 //
-// ORGAN IDENTITY (v11-Evo-Prime):
+// ORGAN IDENTITY (v12.3-Evo-Prime):
 //   • Organ Type: Barrier / Reflex Membrane
 //   • Layer: A3 (Organ-Level Reflex)
 //   • Biological Analog: Organ epithelial membrane (deep protective layer)
@@ -19,7 +19,7 @@
 //   ✔ Prevent mesh-level failures from destabilizing the organism
 //   ✔ Trigger healing via Router
 //
-// SAFETY CONTRACT (v11-Evo-Prime):
+// SAFETY CONTRACT (v12.3-Evo-Prime):
 //   • Never run timers, loops, or scheduling beyond direct event handling
 //   • Never store state (except ephemeral route memory)
 //   • Never mutate payloads
@@ -28,20 +28,21 @@
 //   • Always classify errors before healing
 //   • Guarded access to window / globals for environment-agnostic behavior
 //   • No timestamps, no randomness
+//   • Dual-band metadata ready (symbolic-primary, binary-non-executable)
 // ============================================================================
 
 // ============================================================================
-// ORGAN IDENTITY — v11‑EVO‑PRIME (A3 Organ Membrane)
+// ORGAN IDENTITY — v12.3‑EVO‑PRIME (A3 Organ Membrane)
 // ============================================================================
 export const PulseRole = {
   type: "Barrier",
   subsystem: "PulseOSOrganMembrane",
   layer: "A3-OrganReflex",
-  version: "11.0-Evo-Prime",
-  identity: "PulseOSOrganMembrane-v11-Evo-Prime",
+  version: "12.3-Evo-Prime",
+  identity: "PulseOSOrganMembrane-v12.3-Evo-Prime",
 
   evo: {
-    // Core v11‑EVO invariants
+    // Core v12.3‑EVO invariants
     driftProof: true,
     deterministicField: true,
     unifiedAdvantageField: true,
@@ -67,8 +68,9 @@ export const PulseRole = {
 
     // Mode + awareness
     symbolicAware: true,
-    binaryAware: false,          // this membrane runs symbolic-only today
+    binaryAware: true,          // dual-band aware, symbolic-primary
     dualBandReady: true,
+    binaryNonExecutable: true,
 
     // Environment + safety
     guardedWindowAccess: true,
@@ -76,11 +78,12 @@ export const PulseRole = {
     multiInstanceReady: true
   }
 };
+
 export const PulseOSOrganMembraneMeta = Object.freeze({
   layer: "PulseOSOrganMembrane",
   role: "A3_ORGAN_REFLEX_MEMBRANE",
-  version: "v11.2-EVO-BINARY-MAX",
-  identity: "PulseOSOrganMembrane-v11.2-EVO-BINARY-MAX",
+  version: "v12.3-EVO-BINARY-MAX",
+  identity: "PulseOSOrganMembrane-v12.3-EVO-BINARY-MAX",
 
   guarantees: Object.freeze({
     deterministic: true,
@@ -109,14 +112,15 @@ export const PulseOSOrganMembraneMeta = Object.freeze({
     zeroDynamicImports: true,
     zeroEval: true,
 
-    // Awareness
+    // Dual-band awareness
+    dualBandAware: true,
     symbolicAware: true,
-    binaryAware: false,          // A3 is symbolic-only today
-    dualBandReady: true,
-    environmentAgnostic: true,
-    guardedWindowAccess: true,
+    binaryAware: true,
+    binaryNonExecutable: true,
 
     // Environment
+    environmentAgnostic: true,
+    guardedWindowAccess: true,
     worldLensAware: false
   }),
 
@@ -135,19 +139,20 @@ export const PulseOSOrganMembraneMeta = Object.freeze({
   }),
 
   lineage: Object.freeze({
-    root: "PulseOS-v11-EVO",
-    parent: "PulseOS-v11.2-EVO",
+    root: "PulseOS-v12-EVO",
+    parent: "PulseOS-v12.3-EVO",
     ancestry: [
       "PulseOSOrganMembrane-v9",
       "PulseOSOrganMembrane-v10",
       "PulseOSOrganMembrane-v11",
       "PulseOSOrganMembrane-v11-Evo",
-      "PulseOSOrganMembrane-v11-Evo-Prime"
+      "PulseOSOrganMembrane-v11-Evo-Prime",
+      "PulseOSOrganMembrane-v12.3-Evo-Prime"
     ]
   }),
 
   bands: Object.freeze({
-    supported: ["symbolic"],
+    supported: ["symbolic", "binary"],
     default: "symbolic",
     behavior: "organ-reflex"
   }),
@@ -155,7 +160,7 @@ export const PulseOSOrganMembraneMeta = Object.freeze({
   architecture: Object.freeze({
     pattern: "A-B-A",
     baseline: "mesh error → reflex classification → healing trigger",
-    adaptive: "symbolic-only reflex with dual-band metadata",
+    adaptive: "symbolic-primary reflex with dual-band metadata",
     return: "deterministic organ reflex event + signatures"
   })
 });
@@ -166,7 +171,7 @@ export const PulseOSOrganMembraneMeta = Object.freeze({
 const LAYER_ID   = "MESH-REFLEX";
 const LAYER_NAME = "THE ORGAN MEMBRANE";
 const LAYER_ROLE = "MESH ERROR GUARDIAN & HEALING TRIGGER";
-const LAYER_VER  = "11.0-Evo-Prime";
+const LAYER_VER  = "12.3-Evo-Prime";
 
 const hasWindow = typeof window !== "undefined";
 
@@ -191,10 +196,9 @@ const logMesh = (stage, details = {}) => {
   );
 };
 
-
 // ============================================================================
 // ROUTE MEMORY (living map — same pattern as A1/A2 membranes)
-// v11: zero-timing → deterministic sequence counter instead of Date.now()
+// v12.3: zero-timing → deterministic sequence counter instead of Date.now()
 // ============================================================================
 let meshRouteSeq = 0;
 
@@ -236,9 +240,8 @@ const MeshRouteMemory = {
   }
 };
 
-
 // ============================================================================
-// PUBLIC API (C-LAYER passthrough — identical pattern, symbolic mode)
+// PUBLIC API (C-LAYER passthrough — symbolic-primary, dual-band metadata)
 // ============================================================================
 import { route, Router } from "./PulseOSCNSNervousSystem.js";
 
@@ -247,7 +250,8 @@ export async function meshAuth(jwtToken) {
   return await route("auth", {
     jwtToken,
     reflexOrigin: "MeshScanner",
-    modeKind: "symbolic"
+    modeKind: "symbolic",
+    __band: "symbolic"
   });
 }
 
@@ -257,7 +261,8 @@ export async function meshHook(name, payload = {}) {
     name,
     payload,
     reflexOrigin: "MeshScanner",
-    modeKind: "symbolic"
+    modeKind: "symbolic",
+    __band: "symbolic"
   });
 }
 
@@ -266,7 +271,8 @@ export async function meshMap(mapName) {
   return await route("map", {
     mapName,
     reflexOrigin: "MeshScanner",
-    modeKind: "symbolic"
+    modeKind: "symbolic",
+    __band: "symbolic"
   });
 }
 
@@ -276,10 +282,10 @@ export async function meshHelper(helperName, payload = {}) {
     helperName,
     payload,
     reflexOrigin: "MeshScanner",
-    modeKind: "symbolic"
+    modeKind: "symbolic",
+    __band: "symbolic"
   });
 }
-
 
 // ============================================================================
 // MESH-LEVEL ERROR INTERCEPTOR (A3 → Immune System / CNS)
@@ -392,7 +398,8 @@ if (hasWindow && typeof window.addEventListener === "function") {
             routeTrace,
             table,
             field,
-            modeKind: "symbolic"
+            modeKind: "symbolic",
+            __band: "symbolic"
           });
         }
 
@@ -403,7 +410,8 @@ if (hasWindow && typeof window.addEventListener === "function") {
           reflexOrigin: "MeshScanner",
           layer: "A3",
           routeTrace,
-          modeKind: "symbolic"
+          modeKind: "symbolic",
+          __band: "symbolic"
         });
 
         logMesh("MESH_HEALING_SUCCESS", { table, field });
@@ -422,9 +430,8 @@ if (hasWindow && typeof window.addEventListener === "function") {
   );
 }
 
-
 // ============================================================================
-// PARSER (same as Page/Layer)
+// PARSER (same as Page/Layer) — symbolic-only, deterministic
 // ============================================================================
 function parseMissingField(message) {
   logMesh("PARSER_INVOKED", {});
@@ -442,5 +449,5 @@ function parseMissingField(message) {
 }
 
 // ============================================================================
-// END OF FILE — THE ORGAN MEMBRANE / A3 EPITHELIAL REFLEX  [v11-Evo-Prime]
+// END OF FILE — THE ORGAN MEMBRANE / A3 EPITHELIAL REFLEX  [v12.3-Evo-Prime]
 // ============================================================================

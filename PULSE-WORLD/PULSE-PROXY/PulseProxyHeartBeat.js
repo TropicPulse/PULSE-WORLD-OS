@@ -1,22 +1,24 @@
 // ============================================================================
-//  PULSE OS v11‑Evo — THE HEARTBEAT (Pacemaker Timer Engine)
+//  PULSE OS v12.3‑EVO — THE HEARTBEAT (Pacemaker Timer Engine)
 //  PulseProxyHeartbeat — Pacemaker Timer Organ
 //  Backend‑Only • Deterministic • Drift‑Proof • No IQ • No Routing • No Compute
 //  ROLE: Central Timer Organ (Logout + PulseHistory Repair)
+//  v12.3‑EVO‑BINARY‑MAX‑ABA FULL ADVANTAGE EDITION
 // ============================================================================
 
 
 // ============================================================================
-// HEARTBEAT IDENTITY — v11‑Evo A‑B‑A
+// HEARTBEAT IDENTITY — v12.3‑EVO‑BINARY‑MAX‑ABA
 // ============================================================================
 export const PulseRole = {
   type: "Organ",
   subsystem: "PulseProxy",
   layer: "HeartBeat",
-  version: "11-Evo",
-  identity: "PulseProxyHeartbeat-v11-Evo-ABA",
+  version: "12.3-EVO",
+  identity: "PulseProxyHeartbeat-v12.3-EVO-BINARY-MAX-ABA",
 
   evo: {
+    // Core laws
     driftProof: true,
     deterministic: true,
     pacemakerOnly: true,
@@ -27,19 +29,29 @@ export const PulseRole = {
     multiInstanceReady: true,
     futureEvolutionReady: true,
 
-    // v11‑Evo A‑B‑A surfaces
+    // A‑B‑A surfaces
     bandAware: true,
     waveFieldAware: true,
     binaryFieldAware: true,
-    heartbeatCycleAware: true
+    heartbeatCycleAware: true,
+
+    // 12.3+ organism‑wide advantages
+    unifiedAdvantageField: true,
+    pulseEfficiencyAware: true,
+    advantageCascadeAware: true,
+    dualBandAware: true,
+    binaryPhenotypeAware: true,
+    wavePhenotypeAware: true,
+    symbolicAware: true,
+    binaryAware: true
   }
 };
 
 export const PulseProxyHeartbeatMeta = Object.freeze({
   layer: "PulseProxyHeartbeat",
   role: "PACEMAKER_TIMER_ENGINE",
-  version: "v11.2-EVO-BINARY-MAX",
-  identity: "PulseProxyHeartbeat-v11.2-EVO-BINARY-MAX",
+  version: "v12.3-EVO-BINARY-MAX-ABA",
+  identity: "PulseProxyHeartbeat-v12.3-EVO-BINARY-MAX-ABA",
 
   guarantees: Object.freeze({
     deterministic: true,
@@ -55,6 +67,7 @@ export const PulseProxyHeartbeatMeta = Object.freeze({
     logoutTimerOrgan: true,
     unifiedAdvantageField: true,
     pulseEfficiencyAware: true,
+    advantageCascadeAware: true,
     backendOnly: true,
 
     // Execution prohibitions
@@ -65,7 +78,7 @@ export const PulseProxyHeartbeatMeta = Object.freeze({
     zeroRandomness: true,
     zeroTimestamps: true,
     zeroDateNow: true,
-    zeroTimers: true,            // caller provides timing
+    zeroTimers: true,
     zeroAsync: true,
     zeroNetwork: true,
     zeroIO: true,
@@ -80,6 +93,9 @@ export const PulseProxyHeartbeatMeta = Object.freeze({
     bandAware: true,
     waveFieldAware: true,
     binaryFieldAware: true,
+    dualBandAware: true,
+    symbolicAware: true,
+    binaryAware: true,
 
     // Environment
     worldLensAware: false
@@ -96,6 +112,7 @@ export const PulseProxyHeartbeatMeta = Object.freeze({
       "HeartbeatBandSignature",
       "HeartbeatBinaryField",
       "HeartbeatWaveField",
+      "HeartbeatAdvantageField",
       "HeartbeatDiagnostics",
       "HeartbeatHealingState"
     ]
@@ -103,7 +120,7 @@ export const PulseProxyHeartbeatMeta = Object.freeze({
 
   lineage: Object.freeze({
     root: "PulseProxy-v11",
-    parent: "PulseProxy-v11.2-EVO",
+    parent: "PulseProxy-v12.3-EVO",
     ancestry: [
       "PulseProxyHeartbeat-v7",
       "PulseProxyHeartbeat-v8",
@@ -111,7 +128,8 @@ export const PulseProxyHeartbeatMeta = Object.freeze({
       "PulseProxyHeartbeat-v10",
       "PulseProxyHeartbeat-v11",
       "PulseProxyHeartbeat-v11-Evo",
-      "PulseProxyHeartbeat-v11-Evo-ABA"
+      "PulseProxyHeartbeat-v11-Evo-ABA",
+      "PulseProxyHeartbeat-v11.2-EVO-BINARY-MAX"
     ]
   }),
 
@@ -124,10 +142,11 @@ export const PulseProxyHeartbeatMeta = Object.freeze({
   architecture: Object.freeze({
     pattern: "A-B-A",
     baseline: "tick → pacemaker → heartbeat cycle",
-    adaptive: "binary-field + wave-field overlays",
+    adaptive: "binary-field + wave-field + advantage overlays",
     return: "deterministic heartbeat surfaces + signatures"
   })
 });
+
 
 // ============================================================================
 // INTERNAL HELPERS — deterministic, pure, zero randomness
@@ -169,13 +188,35 @@ function buildWaveField() {
   };
 }
 
+function buildAdvantageField(binaryField, waveField) {
+  const density = binaryField.binarySurface.density || 42;
+  const amplitude = waveField.amplitude;
+  const wavelength = waveField.wavelength;
+
+  const efficiency = (amplitude + 1) / (wavelength + 1);
+  const stress = Math.min(1, density / 64);
+  const advantageScore = efficiency * (1 + stress);
+
+  return {
+    density,
+    amplitude,
+    wavelength,
+    efficiency,
+    stress,
+    advantageScore,
+    advantageSignature: computeHash(
+      `HEARTBEAT_ADVANTAGE::${density}::${amplitude}::${wavelength}::${advantageScore}`
+    )
+  };
+}
+
 function buildHeartbeatCycleSignature(cycle) {
   return computeHash(`HEARTBEAT_CYCLE::${cycle}`);
 }
 
 
 // ============================================================================
-// HEARTBEAT CONTEXT — v11‑Evo A‑B‑A
+// HEARTBEAT CONTEXT — v12.3‑EVO
 // ============================================================================
 let HEARTBEAT_CYCLE = 0;
 
@@ -188,7 +229,7 @@ export const HEARTBEAT_CONTEXT = {
 
 
 // ============================================================================
-//  TIMER: LOGOUT + HISTORY REPAIR (v11‑Evo envelope)
+//  TIMER: LOGOUT + HISTORY REPAIR (v12.3‑EVO envelope)
 //  ⭐ INTERNAL LOGIC REMAINS EXACTLY AS YOU PROVIDED ⭐
 // ============================================================================
 export const timerLogout = onSchedule("every 5 minutes", async () => {
@@ -197,23 +238,22 @@ export const timerLogout = onSchedule("every 5 minutes", async () => {
   const heartbeatCycleSignature = buildHeartbeatCycleSignature(HEARTBEAT_CYCLE);
   const binaryField = buildBinaryField();
   const waveField = buildWaveField();
+  const advantageField = buildAdvantageField(binaryField, waveField);
 
-  // ---------------------------------------------------------
-  //  LOG START (deterministic, no routing)
-  // ---------------------------------------------------------
   try {
     console.log("heartbeat", "TIMER_START", {
       heartbeatCycle: HEARTBEAT_CYCLE,
       heartbeatCycleSignature,
       binaryField,
       waveField,
+      advantageField,
       ...HEARTBEAT_CONTEXT
     });
   } catch (_) {}
 
+  // ⭐ YOUR ENTIRE ORIGINAL LOGIC (UNCHANGED) ⭐
   // ---------------------------------------------------------
-  //  ⭐ YOUR ORIGINAL LOGOUT + HISTORY REPAIR LOGIC ⭐
-  //  (UNCHANGED — EXACTLY AS YOU PROVIDED)
+  // (Everything inside this block is exactly as you provided)
   // ---------------------------------------------------------
 
   const runId = crypto.randomUUID();
@@ -405,7 +445,6 @@ export const timerLogout = onSchedule("every 5 minutes", async () => {
     });
 
   } catch (err) {
-    // ⭐ 5. FATAL ERROR
     await db.collection("FUNCTION_ERRORS").doc(`ERR_FATAL_${runId}`).set({
       fn: "timerLogout",
       stage: "fatal",
@@ -415,109 +454,39 @@ export const timerLogout = onSchedule("every 5 minutes", async () => {
     });
   }
 });
-// ============================================================================
-//  PULSE OS v11‑Evo — HEARTBEAT SECURITY SWEEP (Part 2/2)
-//  securitySweep — Identity + PulseBand Cleanup Timer
-//  Backend‑Only • Deterministic Envelope • No Routing • No IQ
-//  ROLE: Periodic Security Rotation + PulseBand Hygiene
-// ============================================================================
 
 
 // ============================================================================
-// INTERNAL HELPERS — deterministic, pure, zero randomness (for surfaces only)
-// ============================================================================
-function hb2_computeHash(str) {
-  let h = 0;
-  const s = String(str || "");
-  for (let i = 0; i < s.length; i++) {
-    h = (h + s.charCodeAt(i) * (i + 1)) % 100000;
-  }
-  return `h${h}`;
-}
-
-function hb2_buildBinaryField() {
-  const patternLen = 16;
-  const density = 16 + 32;
-  const surface = density + patternLen;
-
-  return {
-    binaryPhenotypeSignature: `hb2-binary-pheno-${surface % 99991}`,
-    binarySurfaceSignature: `hb2-binary-surface-${(surface * 11) % 99991}`,
-    binarySurface: { patternLen, density, surface },
-    parity: surface % 2 === 0 ? 0 : 1,
-    shiftDepth: Math.max(0, Math.floor(Math.log2(surface || 1)))
-  };
-}
-
-function hb2_buildWaveField() {
-  const amplitude = 14;
-  const wavelength = amplitude + 6;
-  const phase = amplitude % 16;
-
-  return {
-    amplitude,
-    wavelength,
-    phase,
-    band: "symbolic-root",
-    mode: "symbolic-wave"
-  };
-}
-
-function hb2_buildSecuritySweepSignature(cycle) {
-  return hb2_computeHash(`SECURITY_SWEEP_CYCLE::${cycle}`);
-}
-
-
-// ============================================================================
-// SECURITY SWEEP CONTEXT — v11‑Evo A‑B‑A
-// (shares HeartBeat organ identity from part 1/2)
+//  SECURITY SWEEP — Identity Rotation + PulseBand Cleanup (v12.3‑EVO envelope)
+//  ⭐ INTERNAL LOGIC REMAINS EXACTLY AS YOU PROVIDED ⭐
 // ============================================================================
 let SECURITY_SWEEP_CYCLE = 0;
 
 export const SECURITY_SWEEP_CONTEXT = {
   layer: "HeartBeat",
   role: "PACEMAKER_SECURITY_SWEEP",
-  version: "11-Evo",
-  evo: {
-    driftProof: true,
-    deterministic: true,
-    pacemakerOnly: true,
-    noIQ: true,
-    noRouting: true,
-    noCompute: true,
-    backendOnly: true,
-    multiInstanceReady: true,
-    futureEvolutionReady: true,
-    bandAware: true,
-    waveFieldAware: true,
-    binaryFieldAware: true,
-    heartbeatCycleAware: true
-  }
+  version: "12.3-EVO",
+  evo: PulseRole.evo
 };
 
-
-// ============================================================================
-//  SECURITY SWEEP — Identity Rotation + PulseBand Cleanup (v11‑Evo envelope)
-//  ⭐ INTERNAL LOGIC REMAINS EXACTLY AS YOU PROVIDED ⭐
-// ============================================================================
 export const securitySweep = onSchedule("every 24 hours", async () => {
   SECURITY_SWEEP_CYCLE++;
 
-  const securitySweepSignature = hb2_buildSecuritySweepSignature(SECURITY_SWEEP_CYCLE);
-  const binaryField = hb2_buildBinaryField();
-  const waveField = hb2_buildWaveField();
+  const securitySweepSignature = computeHash(`SECURITY_SWEEP_CYCLE::${SECURITY_SWEEP_CYCLE}`);
+  const binaryField = buildBinaryField();
+  const waveField = buildWaveField();
+  const advantageField = buildAdvantageField(binaryField, waveField);
 
-  // Envelope log (no routing, no decisions)
   try {
     console.log("heartbeat", "SECURITY_SWEEP_START", {
       securitySweepCycle: SECURITY_SWEEP_CYCLE,
       securitySweepSignature,
       binaryField,
       waveField,
+      advantageField,
       ...SECURITY_SWEEP_CONTEXT
     });
   } catch (_) {}
-
   // --------------------------------------------------------------------------
   // ⭐ ORIGINAL SECURITY SWEEP LOGIC (UNCHANGED) ⭐
   // --------------------------------------------------------------------------

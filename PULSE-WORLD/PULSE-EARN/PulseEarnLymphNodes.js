@@ -1,45 +1,50 @@
 // ============================================================================
-// FILE: tropic-pulse-functions/apps/PULSE-EARN/PulseEarnLymphNodes-v11-Evo.js
-// LAYER: THE LYMPHATIC HANDSHAKE NODES (v11-Evo + Dual-Band + Binary + Wave)
-// (Finalizer of Jobs + Immune-Safe Dispatch + Certified Marketplace Exchange)
+// FILE: tropic-pulse-functions/apps/PULSE-EARN/PulseEarnLymphNodes-v12.3-PRESENCE-EVO+.js
+// LAYER: THE LYMPHATIC HANDSHAKE NODES (v12.3-PRESENCE-EVO+ + Dual-Band + Binary + Wave)
+// (Finalizer of Jobs + Immune-Safe Dispatch + Certified Marketplace Exchange + Presence Telemetry)
 // ============================================================================
 //
-// ROLE (v11-Evo):
+// ROLE (v12.3-PRESENCE-EVO+):
 //   THE LYMPHATIC HANDSHAKE NODES — Pulse‑Earn’s immune‑safe finalizers.
 //   • Validate job + marketplace identity (immune recognition).
 //   • Locate the correct marketplace receptor (antigen matching).
 //   • Ensure submitResult() exists (immune compatibility).
 //   • Perform deterministic Earn → Marketplace handshake.
 //   • Record certified submission outcome (immune memory + signatures).
+//   • Emit v12.3‑Presence‑EVO+ presence/advantage/hints surfaces (metadata-only).
 //
-// CONTRACT (v11-Evo):
+// CONTRACT (v12.3-PRESENCE-EVO+):
 //   • PURE RESULT DISPATCHER — no AI layers, no translation, no memory model.
 //   • NO async, NO timestamps, NO nondeterministic behavior.
 //   • NEVER mutate job objects.
 //   • Deterministic identity verification + dispatch only.
-//   • Dual-band + binary + wave metadata are structural-only.
+//   • Dual-band + binary + wave + presence metadata are structural-only.
 // ============================================================================
 // ============================================================================
-// ORGAN IDENTITY — v11‑EVO‑PRIME (C2 Lymphatic Immune Dispatch)
+// ORGAN IDENTITY — v12.3‑PRESENCE‑EVO+ (C2 Lymphatic Immune Dispatch)
 // ============================================================================
-export const PulseEarnImmuneSystemMeta = Object.freeze({
-  layer: "PulseEarnImmuneSystem",
-  role: "EARN_IMMUNE_ORGAN",
-  version: "v11.2-EVO",
-  identity: "PulseEarnImmuneSystem-v11.2-EVO",
+export const PulseEarnLymphNodesMeta = Object.freeze({
+  layer: "PulseEarnLymphNodes",
+  role: "EARN_LYMPHATIC_HANDSHAKE_ORGAN",
+  version: "v12.3-PRESENCE-EVO+",
+  identity: "PulseEarnLymphNodes-v12.3-PRESENCE-EVO+",
 
   guarantees: Object.freeze({
     deterministic: true,
     noRandomness: true,
     noRealTime: true,
     noExternalIO: true,
-    pureHealing: true,
-    driftDetectionOnly: true,
+    pureResultDispatcher: true,
     dualBandAware: true,
     binaryAware: true,
-    binaryFirst: true,
     waveFieldAware: true,
     healingMetadataAware: true,
+    presenceAware: true,
+    advantageAware: true,
+    hintsAware: true,
+    meshAware: true,
+    castleAware: true,
+    regionAware: true,
     worldLensAware: false,
     zeroAI: true,
     zeroUserCode: true,
@@ -48,42 +53,41 @@ export const PulseEarnImmuneSystemMeta = Object.freeze({
 
   contract: Object.freeze({
     input: [
-      "EarnSubsystemHealingStates",
+      "EarnJob",
+      "EarnJobResult",
       "DualBandContext",
-      "BinaryField",
-      "WaveField"
+      "GlobalHintsPresenceField"
     ],
     output: [
-      "ImmuneDiagnostics",
-      "ImmuneSignatures",
-      "DeterministicRepairActions",
-      "ImmuneHealingState"
+      "MarketplaceSubmissionResult",
+      "LymphaticDiagnostics",
+      "LymphaticSignatures",
+      "LymphaticHealingState"
     ]
   }),
 
   lineage: Object.freeze({
     root: "PulseOS-v11-EVO",
-    parent: "PulseEarn-v11.2-EVO",
+    parent: "PulseEarn-v12.3-PRESENCE-EVO+",
     ancestry: [
-      "PulseEarnImmuneSystem-v9",
-      "PulseEarnImmuneSystem-v10",
-      "PulseEarnImmuneSystem-v11",
-      "PulseEarnImmuneSystem-v11-Evo"
+      "PulseEarnLymphNodes-v9",
+      "PulseEarnLymphNodes-v10",
+      "PulseEarnLymphNodes-v11",
+      "PulseEarnLymphNodes-v11-Evo"
     ]
   }),
 
   bands: Object.freeze({
     supported: ["symbolic", "binary"],
-    default: "binary",
-    behavior: "metadata-only",
-    priority: "binary-first"
+    default: "symbolic",
+    behavior: "metadata-only"
   }),
 
   architecture: Object.freeze({
     pattern: "A-B-A",
-    baseline: "deterministic drift detection across Earn subsystems",
-    adaptive: "binary-first immune surfaces + wave metadata",
-    return: "deterministic repair actions + immune diagnostics"
+    baseline: "deterministic Earn → Marketplace handshake",
+    adaptive: "binary/wave + presence/advantage/hints surfaces",
+    return: "deterministic submission result + lymphatic diagnostics"
   })
 });
 
@@ -92,8 +96,8 @@ export const PulseRole = {
   type: "ImmuneDispatch",
   subsystem: "PulseEarnLymphNodes",
   layer: "C2-LymphaticHandshake",
-  version: "11.0-Evo-Prime",
-  identity: "PulseEarnLymphNodes-v11-Evo-Prime",
+  version: "12.3-PRESENCE-EVO+",
+  identity: "PulseEarnLymphNodes-v12.3-PRESENCE-EVO+",
 
   evo: {
     // Core invariants
@@ -142,7 +146,7 @@ import { PulseEarnCustomReceptor } from "./PulseEarnCustomReceptorMkt.js";
 
 
 // ---------------------------------------------------------------------------
-// Healing Metadata — Lymphatic Dispatch Log (v11-Evo)
+// Healing Metadata — Lymphatic Dispatch Log (v12.3-PRESENCE-EVO+)
 // ---------------------------------------------------------------------------
 const lymphHealing = {
   lastJobId: null,
@@ -157,11 +161,19 @@ const lymphHealing = {
   lastJobSignature: null,
   lastMarketplaceSignature: null,
 
-  // v11+ Dual-Band + Binary + Wave
+  // Dual-Band + Binary + Wave
   lastBand: "symbolic",
   lastBandSignature: null,
   lastBinaryField: null,
-  lastWaveField: null
+  lastWaveField: null,
+
+  // Presence-EVO+ additions
+  lastPresenceField: null,
+  lastAdvantageField: null,
+  lastHintsField: null,
+  lastLymphPresenceProfile: null,
+  lastBinaryProfile: null,
+  lastWaveProfile: null
 };
 
 // Deterministic cycle counter
@@ -169,7 +181,7 @@ let lymphCycle = 0;
 
 
 // ---------------------------------------------------------------------------
-// Deterministic Hash Helper — v11-Evo
+// Deterministic Hash Helper
 // ---------------------------------------------------------------------------
 function computeHash(str) {
   let h = 0;
@@ -187,7 +199,7 @@ function normalizeBand(band) {
 
 
 // ---------------------------------------------------------------------------
-// Signature Builders — v11-Evo
+// Signature Builders
 // ---------------------------------------------------------------------------
 function buildJobSignature(job) {
   if (!job) return "JOB::NONE";
@@ -215,16 +227,109 @@ const receptorRegistry = {
 
 
 // ---------------------------------------------------------------------------
+// Presence / Advantage / Hints Surfaces (job + global hints)
+// ---------------------------------------------------------------------------
+function buildPresenceField(job, globalHints = {}) {
+  const meta = job?.meta || {};
+  const jp = meta.presenceContext || meta.cardiacPresence || {};
+  const mesh = {
+    ...(globalHints.meshSignals || {}),
+    ...(meta.meshSignals || {})
+  };
+  const castle = {
+    ...(globalHints.castleSignals || {}),
+    ...(meta.castleSignals || {})
+  };
+  const region = {
+    ...(globalHints.regionContext || {}),
+    ...(meta.regionContext || {})
+  };
+
+  return {
+    bandPresence: jp.bandPresence || (globalHints.presenceContext || {}).bandPresence || "unknown",
+    routerPresence: jp.routerPresence || (globalHints.presenceContext || {}).routerPresence || "unknown",
+    devicePresence: jp.devicePresence || (globalHints.presenceContext || {}).devicePresence || "unknown",
+    meshPresence: jp.meshPresence || mesh.meshStrength || "unknown",
+    castlePresence: jp.castlePresence || castle.castlePresence || "unknown",
+    regionPresence: jp.regionPresence || region.regionTag || "unknown",
+    regionId: region.regionId || "unknown-region",
+    castleId: castle.castleId || "unknown-castle",
+    castleLoadLevel: castle.loadLevel || 0,
+    meshStrength: mesh.meshStrength || 0,
+    meshPressureIndex: mesh.meshPressureIndex || 0
+  };
+}
+
+function buildAdvantageField(job, globalHints = {}) {
+  const meta = job?.meta || {};
+  const ja = meta.advantageContext || {};
+  const gh = globalHints.advantageContext || {};
+
+  return {
+    advantageScore: ja.score ?? gh.score ?? 0,
+    advantageBand: ja.band ?? gh.band ?? "neutral",
+    advantageTier: ja.tier ?? gh.tier ?? 0
+  };
+}
+
+function buildHintsField(job, globalHints = {}) {
+  const meta = job?.meta || {};
+  const jh = meta.hintsContext || {};
+
+  return {
+    fallbackBandLevel:
+      jh.fallbackBandLevel ??
+      globalHints.fallbackBandLevel ??
+      0,
+    chunkHints: {
+      ...(globalHints.chunkHints || {}),
+      ...(jh.chunkHints || {})
+    },
+    cacheHints: {
+      ...(globalHints.cacheHints || {}),
+      ...(jh.cacheHints || {})
+    },
+    prewarmHints: {
+      ...(globalHints.prewarmHints || {}),
+      ...(jh.prewarmHints || {})
+    },
+    coldStartHints: {
+      ...(globalHints.coldStartHints || {}),
+      ...(jh.coldStartHints || {})
+    }
+  };
+}
+
+function classifyLymphPresenceTier(presenceField) {
+  const mesh = Number(presenceField.meshPressureIndex || 0);
+  const castle = Number(presenceField.castleLoadLevel || 0);
+  const pressure = mesh + castle;
+
+  if (pressure >= 150) return "critical";
+  if (pressure >= 100) return "high";
+  if (pressure >= 50) return "elevated";
+  if (pressure > 0) return "soft";
+  return "idle";
+}
+
+
+// ---------------------------------------------------------------------------
 // INTERNAL: Build dual-band + binary + wave metadata for a job/cycle
 // ---------------------------------------------------------------------------
-function buildLymphBandBinaryWave(job, cycleIndex) {
+function buildLymphBandBinaryWave(job, cycleIndex, presenceField) {
   const band = normalizeBand(job?.band || job?.meta?.band || "symbolic");
   lymphHealing.lastBand = band;
   lymphHealing.lastBandSignature = computeHash(`BAND::${band}`);
 
   const jobIdLength = (job?.id || "").length;
   const marketplaceLength = (job?.marketplaceId || "").length;
-  const surface = jobIdLength + marketplaceLength + cycleIndex;
+
+  const surface =
+    jobIdLength +
+    marketplaceLength +
+    cycleIndex +
+    (presenceField?.meshPressureIndex || 0) +
+    (presenceField?.castleLoadLevel || 0);
 
   const binaryField = {
     binaryLymphSignature: computeHash(`BLYMPH::${surface}`),
@@ -233,6 +338,8 @@ function buildLymphBandBinaryWave(job, cycleIndex) {
       jobIdLength,
       marketplaceLength,
       cycle: cycleIndex,
+      meshPressureIndex: presenceField?.meshPressureIndex || 0,
+      castleLoadLevel: presenceField?.castleLoadLevel || 0,
       surface
     },
     parity: surface % 2 === 0 ? 0 : 1,
@@ -242,9 +349,12 @@ function buildLymphBandBinaryWave(job, cycleIndex) {
   lymphHealing.lastBinaryField = binaryField;
 
   const waveField = {
-    amplitude: jobIdLength,
+    amplitude: jobIdLength + (presenceField?.meshStrength || 0),
     wavelength: cycleIndex,
-    phase: (jobIdLength + cycleIndex) % 8,
+    phase:
+      (jobIdLength +
+        cycleIndex +
+        (presenceField?.meshPressureIndex || 0)) % 8,
     band,
     mode: band === "binary" ? "compression-wave" : "symbolic-wave"
   };
@@ -255,17 +365,51 @@ function buildLymphBandBinaryWave(job, cycleIndex) {
 
 
 // ---------------------------------------------------------------------------
-// submitPulseEarnResult — Deterministic Lymphatic Handshake (v11-Evo + A-B-A)
+// submitPulseEarnResult — Deterministic Lymphatic Handshake (Presence-EVO+)
 // ---------------------------------------------------------------------------
-export function submitPulseEarnResult(job, result) {
+// globalHints is optional; if omitted, defaults to {}
+export function submitPulseEarnResult(job, result, globalHints = {}) {
   lymphCycle++;
   lymphHealing.cycleCount++;
   lymphHealing.lastCycleIndex = lymphCycle;
 
+  const presenceField = buildPresenceField(job, globalHints);
+  const advantageField = buildAdvantageField(job, globalHints);
+  const hintsField = buildHintsField(job, globalHints);
+  const presenceTier = classifyLymphPresenceTier(presenceField);
+
+  lymphHealing.lastPresenceField = presenceField;
+  lymphHealing.lastAdvantageField = advantageField;
+  lymphHealing.lastHintsField = hintsField;
+
   const { band, binaryField, waveField } = buildLymphBandBinaryWave(
     job,
-    lymphCycle
+    lymphCycle,
+    presenceField
   );
+
+  const lymphPresenceProfile = {
+    presenceTier,
+    band,
+    meshPressureIndex: presenceField.meshPressureIndex,
+    castleLoadLevel: presenceField.castleLoadLevel,
+    advantageTier: advantageField.advantageTier,
+    fallbackBandLevel: hintsField.fallbackBandLevel
+  };
+
+  const binaryProfile = {
+    binaryField,
+    presenceTier
+  };
+
+  const waveProfile = {
+    waveField,
+    presenceTier
+  };
+
+  lymphHealing.lastLymphPresenceProfile = lymphPresenceProfile;
+  lymphHealing.lastBinaryProfile = binaryProfile;
+  lymphHealing.lastWaveProfile = waveProfile;
 
   try {
     // 1. Identity Verification — Immune Recognition
@@ -282,6 +426,12 @@ export function submitPulseEarnResult(job, result) {
         band,
         binaryField,
         waveField,
+        presenceField,
+        advantageField,
+        hintsField,
+        lymphPresenceProfile,
+        binaryProfile,
+        waveProfile,
         cycleIndex: lymphCycle
       };
 
@@ -317,6 +467,12 @@ export function submitPulseEarnResult(job, result) {
         band,
         binaryField,
         waveField,
+        presenceField,
+        advantageField,
+        hintsField,
+        lymphPresenceProfile,
+        binaryProfile,
+        waveProfile,
         cycleIndex: lymphCycle
       };
 
@@ -337,6 +493,12 @@ export function submitPulseEarnResult(job, result) {
         band,
         binaryField,
         waveField,
+        presenceField,
+        advantageField,
+        hintsField,
+        lymphPresenceProfile,
+        binaryProfile,
+        waveProfile,
         cycleIndex: lymphCycle
       };
 
@@ -360,6 +522,12 @@ export function submitPulseEarnResult(job, result) {
       band,
       binaryField,
       waveField,
+      presenceField,
+      advantageField,
+      hintsField,
+      lymphPresenceProfile,
+      binaryProfile,
+      waveProfile,
       cycleIndex: lymphCycle
     };
 
@@ -374,6 +542,12 @@ export function submitPulseEarnResult(job, result) {
       band,
       binaryField,
       waveField,
+      presenceField,
+      advantageField,
+      hintsField,
+      lymphPresenceProfile,
+      binaryProfile,
+      waveProfile,
       cycleIndex: lymphCycle
     };
 
@@ -386,15 +560,15 @@ export function submitPulseEarnResult(job, result) {
 
 
 // ---------------------------------------------------------------------------
-// sendResultToMarketplace — v11-Evo alias for Nervous System
+// sendResultToMarketplace — alias for Nervous System (backwards compatible)
 // ---------------------------------------------------------------------------
-export function sendResultToMarketplace(job, result) {
-  return submitPulseEarnResult(job, result);
+export function sendResultToMarketplace(job, result, globalHints) {
+  return submitPulseEarnResult(job, result, globalHints);
 }
 
 
 // ---------------------------------------------------------------------------
-// Export Healing Metadata — Lymphatic Dispatch Report (v11-Evo)
+// Export Healing Metadata — Lymphatic Dispatch Report
 // ---------------------------------------------------------------------------
 export function getPulseEarnLymphHealingState() {
   return { ...lymphHealing };

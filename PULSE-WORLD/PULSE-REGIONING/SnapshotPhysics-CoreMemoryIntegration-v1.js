@@ -1,141 +1,194 @@
 /**
- * SnapshotPhysics-CoreMemoryIntegration-v1.js
- * PULSE-WORLD / PULSE-SNAPSHOT + CORE MEMORY
+ * SnapshotPhysics-CosmosMultiverse-v13.js
+ * PULSE-WORLD / PULSE-SNAPSHOT + MULTIVERSE COSMOS
  *
  * ROLE:
- *   Wraps SnapshotPhysics with PulseCoreMemory hot caching.
- *   - Caches last snapshot per instance
- *   - Caches last projected snapshot for Delta
- *   - Tracks hot instances (loop-theory friendly)
+ *   Multiverse-aware snapshot physics.
+ *
+ *   - Captures instance state across universes/timelines/branches
+ *   - Produces deterministic, reversible snapshots
+ *   - Produces projected snapshots for DeltaEngine-v13
  *
  *   ZERO mutation of physics.
  *   ZERO randomness.
- *   PURE symbolic caching.
+ *   PURE symbolic, deterministic snapshotting.
  */
 
-import SnapshotPhysicsAPI from "./SnapshotPhysics-v11-Evo.js";
-import { createPulseCoreMemory } from "../../PULSECORE/PulseCoreMemory.js";
-
-const {
-  SnapshotHeader,
-  SnapshotStateView,
-  SnapshotRecord,
-  buildSnapshotFromInstanceState,
-  cloneSnapshot,
-  projectSnapshotForDelta
-} = SnapshotPhysicsAPI;
+/**
+ * META {
+ *   organ: "SnapshotPhysics",
+ *   root: "PULSE-WORLD",
+ *   mode: "substrate",
+ *   target: "snapshot-physics",
+ *   version: "v13-COSMOS-MULTIVERSE",
+ *
+ *   role: "Captures symbolic snapshots across universes, timelines, and branches.",
+ *
+ *   guarantees: {
+ *     deterministic: true,
+ *     symbolic: true,
+ *     reversible: true,
+ *     multiverseAware: true,
+ *     noRandomness: true
+ *   },
+ *
+ *   contracts: {
+ *     input: [
+ *       "CurrentInstanceState",
+ *       "CosmosContext"
+ *     ],
+ *     output: [
+ *       "SnapshotRecord",
+ *       "ProjectedSnapshotRecord"
+ *     ]
+ *   },
+ *
+ *   upstream: [
+ *     "LineageEngine-v13"
+ *   ],
+ *
+ *   downstream: [
+ *     "DeltaEngine-v13",
+ *     "DeploymentPhysics-v13",
+ *     "ExecutionPhysics-v13"
+ *   ],
+ *
+ *   notes: [
+ *     "Snapshots are symbolic, not physical.",
+ *     "Snapshot IDs are deterministic and reversible.",
+ *     "Projected snapshots remove non-delta fields for stable diff surfaces."
+ *   ]
+ * }
+ */
 
 // -------------------------
-// Core Memory Setup
+// Cosmos Context
 // -------------------------
 
-const CoreMemory = createPulseCoreMemory();
-
-const ROUTE = "snapshot-global";
-
-const KEY_LAST_SNAPSHOT_PREFIX = "last-snapshot:";
-const KEY_LAST_PROJECTED_PREFIX = "last-projected:";
-const KEY_HOT_INSTANCES = "hot-instances";
-
-// -------------------------
-// Internal helpers
-// -------------------------
-
-function snapshotKey(instanceId) {
-  return `${KEY_LAST_SNAPSHOT_PREFIX}${instanceId}`;
+function normalizeCosmosContext(context = {}) {
+  return {
+    universeId: context.universeId || "u:default",
+    timelineId: context.timelineId || "t:main",
+    branchId: context.branchId || "b:root"
+  };
 }
 
-function projectedKey(instanceId) {
-  return `${KEY_LAST_PROJECTED_PREFIX}${instanceId}`;
+// -------------------------
+// Types
+// -------------------------
+
+export class SnapshotHeader {
+  constructor({ instanceId, snapshotId, cosmos }) {
+    this.instanceId = instanceId;
+    this.snapshotId = snapshotId;
+    this.cosmos = cosmos;
+  }
 }
 
-function trackInstance(instanceId) {
-  if (!instanceId) return;
-  const hot = CoreMemory.get(ROUTE, KEY_HOT_INSTANCES) || {};
-  hot[instanceId] = (hot[instanceId] || 0) + 1;
-  CoreMemory.set(ROUTE, KEY_HOT_INSTANCES, hot);
+export class SnapshotStateView {
+  constructor(state = {}) {
+    this.state = JSON.parse(JSON.stringify(state));
+  }
+}
+
+export class SnapshotRecord {
+  constructor({ header, state }) {
+    this.header = header;
+    this.state = state;
+  }
 }
 
 // -------------------------
-// Wrapped API
+// Helpers
 // -------------------------
 
-export function buildSnapshotFromInstanceStateWithMemory(args) {
-  CoreMemory.prewarm();
+function deterministicSnapshotId(instanceId, cosmos, state) {
+  const payload = JSON.stringify({
+    instanceId,
+    cosmos,
+    state
+  });
 
-  const snapshot = buildSnapshotFromInstanceState(args);
-  const instanceId = snapshot.header.instanceId;
+  let hash = 0;
+  for (let i = 0; i < payload.length; i++) {
+    hash = (hash * 31 + payload.charCodeAt(i)) >>> 0;
+  }
 
-  CoreMemory.set(ROUTE, snapshotKey(instanceId), snapshot);
-  trackInstance(instanceId);
-
-  return snapshot;
+  return `snap-${instanceId}-${hash.toString(16)}`;
 }
 
-export function cloneSnapshotWithMemory(snapshotRecord) {
-  CoreMemory.prewarm();
-
-  const cloned = cloneSnapshot(snapshotRecord);
-  const instanceId = cloned.header.instanceId;
-
-  CoreMemory.set(ROUTE, snapshotKey(instanceId), cloned);
-  trackInstance(instanceId);
-
-  return cloned;
+function clone(obj) {
+  return JSON.parse(JSON.stringify(obj));
 }
 
-export function projectSnapshotForDeltaWithMemory(snapshotRecord) {
-  CoreMemory.prewarm();
+// -------------------------
+// Core Snapshot Logic (v13 Multiverse)
+// -------------------------
 
-  const projected = projectSnapshotForDelta(snapshotRecord);
-  const instanceId = projected.header.instanceId;
+export function buildSnapshotFromInstanceState({ instanceId, currentState, cosmosContext = {} }) {
+  const cosmos = normalizeCosmosContext(cosmosContext);
 
-  CoreMemory.set(ROUTE, projectedKey(instanceId), projected);
-  trackInstance(instanceId);
+  const stateView = new SnapshotStateView({
+    instanceId,
+    active: currentState.active,
+    regionId: currentState.currentRegionId,
+    hostName: currentState.currentHostName,
+
+    universeId: currentState.universeId || cosmos.universeId,
+    timelineId: currentState.timelineId || cosmos.timelineId,
+    branchId: currentState.branchId || cosmos.branchId,
+
+    meta: clone(currentState.meta || {})
+  });
+
+  const snapshotId = deterministicSnapshotId(instanceId, cosmos, stateView.state);
+
+  const header = new SnapshotHeader({
+    instanceId,
+    snapshotId,
+    cosmos
+  });
+
+  return new SnapshotRecord({
+    header,
+    state: stateView.state
+  });
+}
+
+export function cloneSnapshot(snapshotRecord) {
+  return new SnapshotRecord({
+    header: clone(snapshotRecord.header),
+    state: clone(snapshotRecord.state)
+  });
+}
+
+/**
+ * projectSnapshotForDelta
+ *
+ * Produces a stable, minimal snapshot surface for DeltaEngine-v13.
+ * Removes fields that should not influence diffs.
+ */
+export function projectSnapshotForDelta(snapshotRecord) {
+  const projected = cloneSnapshot(snapshotRecord);
+
+  delete projected.state.meta;
+  delete projected.state.hostName;
 
   return projected;
 }
 
 // -------------------------
-// Hot Memory Accessors
+// Exported API
 // -------------------------
 
-export function getLastSnapshotForInstance(instanceId) {
-  CoreMemory.prewarm();
-  return CoreMemory.get(ROUTE, snapshotKey(instanceId));
-}
-
-export function getLastProjectedSnapshotForInstance(instanceId) {
-  CoreMemory.prewarm();
-  return CoreMemory.get(ROUTE, projectedKey(instanceId));
-}
-
-export function getSnapshotMemoryState() {
-  CoreMemory.prewarm();
-
-  return {
-    hotInstances: CoreMemory.get(ROUTE, KEY_HOT_INSTANCES)
-  };
-}
-
-// -------------------------
-// Exported Integration API
-// -------------------------
-
-const SnapshotPhysicsCoreMemory = {
+const SnapshotPhysicsAPI = {
   SnapshotHeader,
   SnapshotStateView,
   SnapshotRecord,
 
-  buildSnapshotFromInstanceStateWithMemory,
-  cloneSnapshotWithMemory,
-  projectSnapshotForDeltaWithMemory,
-
-  getLastSnapshotForInstance,
-  getLastProjectedSnapshotForInstance,
-  getSnapshotMemoryState,
-
-  CoreMemory
+  buildSnapshotFromInstanceState,
+  cloneSnapshot,
+  projectSnapshotForDelta
 };
 
-export default SnapshotPhysicsCoreMemory;
+export default SnapshotPhysicsAPI;

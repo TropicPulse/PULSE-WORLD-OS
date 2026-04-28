@@ -1,27 +1,31 @@
 // ============================================================================
 // FILE: /apps/PulseOS/Organs/Senses/PulseOSSensoryCortex.js
-// PULSE OS — v11-Evo-Prime
+// PULSE OS — v12.3-Presence
 // “THE SENSORY CORTEX / NERVE MAP ENGINE”
 // DUAL-BAND NERVE MAP • DRIFT SENTINEL • EXECUTION CONTEXT VISUALIZER
+// CHUNK/PREWARM-AWARE • MULTI-PRESENCE DIAGNOSTICS • CACHE SURFACE MAPPER
 // ============================================================================
 //
-// ORGAN IDENTITY (v11-Evo-Prime):
+// ORGAN IDENTITY (v12.3-Presence):
 //   • Organ Type: Sensory Cortex (Diagnostics / Perception)
 //   • Layer: Sensory Layer (S‑Layer)
 //   • Biological Analog: Cortical sensory interpretation of nerve signals
 //   • System Role: Interpret Impulse.path as a living nervous pathway,
-//                  now dual-band (binary + symbolic) and executionContext-aware.
+//                  now dual-band (binary + symbolic), executionContext-aware,
+//                  chunk/prewarm/cache-surface aware, and multi-presence aware.
 //
-// PURPOSE (v11-Evo-Prime):
+// PURPOSE (v12.3-Presence):
 //   ✔ Compute health, efficiency, degradation per hop
 //   ✔ Build forward + return directional nerve maps
 //   ✔ Compare forward vs return efficiency (repair insight)
 //   ✔ Detect version drift across layers
 //   ✔ Surface binary/symbolic mode + executionContext + pressureSnapshot
-//   ✔ Produce UI‑ready nerve chains for diagnostics
+//   ✔ Surface chunk/cache/prewarm hints per hop (no IO, metadata only)
+//   ✔ Surface presence identity (multi-presence, multi-instance overlays)
+//   ✔ Produce UI‑ready nerve chains for diagnostics + cache planning
 //   ✔ NEVER mutate the impulse or hops
 //
-// SAFETY CONTRACT (v11-Evo-Prime):
+// SAFETY CONTRACT (v12.3-Presence):
 //   • Pure diagnostics — metadata only
 //   • No business logic
 //   • No network, no fetch, no backend
@@ -29,17 +33,20 @@
 //   • No hardcoded pages — pathway is the truth
 //   • No mutation of impulse or hops
 //   • No timestamps generated here (may pass through existing hop timestamps)
+//   • No cache writes, no prewarm execution — hints only
 // ============================================================================
+
 export const PulseOSSensoryCortexMeta = Object.freeze({
   layer: "PulseOSSensoryCortex",
   role: "SENSORY_CORTEX_ORGAN",
-  version: "v11.2-EVO-BINARY-MAX",
-  identity: "PulseOSSensoryCortex-v11.2-EVO-BINARY-MAX",
+  version: "v12.3-PRESENCE-CHUNK",
+  identity: "PulseOSSensoryCortex-v12.3-PRESENCE-CHUNK",
 
   guarantees: Object.freeze({
     deterministic: true,
     driftProof: true,
     multiInstanceReady: true,
+    multiPresenceReady: true,
 
     // Sensory cortex laws
     sensoryCortexOrgan: true,
@@ -52,6 +59,14 @@ export const PulseOSSensoryCortexMeta = Object.freeze({
     versionDriftDetector: true,
     pressureSnapshotAware: true,
     executionContextAware: true,
+
+    // Chunk/cache/presence laws
+    chunkAware: true,
+    prewarmAware: true,
+    cacheSurfaceBuilder: true,
+    presenceAware: true,
+    multiPresenceOverlay: true,
+    gpuPressureAware: true,
 
     // Safety prohibitions
     zeroNetwork: true,
@@ -80,26 +95,32 @@ export const PulseOSSensoryCortexMeta = Object.freeze({
       "ImpulsePath",
       "DualBandContext",
       "ExecutionContext",
-      "PressureSnapshot"
+      "PressureSnapshot",
+      "ChunkContext",
+      "CacheContext",
+      "PresenceContext"
     ],
     output: [
       "NerveMapForward",
       "NerveMapReturn",
       "NerveMapDiagnostics",
       "NerveMapSignatures",
+      "NerveChunkPlan",
+      "NervePrewarmPlan",
       "SensoryHealingState"
     ]
   }),
 
   lineage: Object.freeze({
-    root: "PulseOS-v11-EVO",
-    parent: "PulseOS-v11.2-EVO",
+    root: "PulseOS-v12-Presence",
+    parent: "PulseOS-v12.3-Presence",
     ancestry: [
       "PulseOSSensoryCortex-v9",
       "PulseOSSensoryCortex-v10",
       "PulseOSSensoryCortex-v11",
       "PulseOSSensoryCortex-v11-Evo",
-      "PulseOSSensoryCortex-v11-Evo-Prime"
+      "PulseOSSensoryCortex-v11-Evo-Prime",
+      "PulseOSSensoryCortex-v12-Presence"
     ]
   }),
 
@@ -112,14 +133,14 @@ export const PulseOSSensoryCortexMeta = Object.freeze({
   architecture: Object.freeze({
     pattern: "A-B-A",
     baseline: "impulse.path → nerve scoring → forward/return maps",
-    adaptive: "binary-tagged pathways + executionContext overlays",
-    return: "UI-ready nerve chains + signatures"
+    adaptive: "binary-tagged pathways + executionContext + chunk/presence overlays",
+    return: "UI-ready nerve chains + signatures + chunk/prewarm hints"
   })
 });
 
 
 // ============================================================================
-// NERVE SCORING PACK (logic preserved, v11 identity)
+// NERVE SCORING PACK (logic preserved, v12.3 identity)
 // ============================================================================
 export const Nerves = {
 
@@ -165,26 +186,74 @@ export const Nerves = {
     if (prevHealth !== null && prevHealth < 0.3) return "X";
     if (currentHealth < 0.2) return "X";
     return "|";
+  },
+
+  // v12.3-Presence: chunk/cache/prewarm hint builder (pure metadata)
+  chunkHint(impulse, hop, index) {
+    const chunkContext   = impulse?.chunkContext   || {};
+    const cacheContext   = impulse?.cacheContext   || {};
+    const presence       = impulse?.presence       || {};
+    const presenceId     = presence.id            || presence.presenceId || null;
+    const presenceBand   = presence.band          || presence.modeKind   || impulse?.modeKind || "symbolic";
+    const presenceSlot   = presence.slot          || null;
+
+    const baseKeyParts = [
+      impulse?.id || "IMPULSE",
+      hop?.id || `HOP${index}`,
+      hop?.name || "LAYER",
+      presenceId || "NO_PRESENCE"
+    ];
+
+    const chunkKey = baseKeyParts.join("::");
+
+    const cacheTier =
+      cacheContext.preferredTier ||
+      hop?.cacheTier ||
+      "L2-shared";
+
+    const prewarmBand =
+      chunkContext.prewarmBand ||
+      presenceBand ||
+      "symbolic";
+
+    const multiPresence =
+      Array.isArray(presence.instances) ? presence.instances.length : null;
+
+    return {
+      chunkKey,
+      cacheTier,
+      prewarmBand,
+      presenceId,
+      presenceBand,
+      presenceSlot,
+      multiPresenceCount: multiPresence
+    };
   }
 };
 
 
 // ============================================================================
-// INTERNAL: BUILD A SINGLE DIRECTIONAL MAP (dual-band + context aware)
+// INTERNAL: BUILD A SINGLE DIRECTIONAL MAP (dual-band + context + chunk/presence)
 // ============================================================================
 function buildDirectionalMap(impulse, hops, directionLabel) {
   const nerves = [];
   let prevHealth = null;
 
-  const modeKind = impulse?.modeKind || "symbolic"; // "binary" | "symbolic" | "dual"
+  const modeKind         = impulse?.modeKind         || "symbolic"; // "binary" | "symbolic" | "dual"
   const executionContext = impulse?.executionContext || {};
   const pressureSnapshot = impulse?.pressureSnapshot || {};
+  const presence         = impulse?.presence         || {};
+  const presenceId       = presence.id              || presence.presenceId || null;
+  const presenceBand     = presence.band            || presence.modeKind   || modeKind;
+  const presenceInstance = presence.instanceId      || null;
 
   hops.forEach((hop, index) => {
-    const health = Nerves.healthScore(hop);
+    const health     = Nerves.healthScore(hop);
     const efficiency = Nerves.efficiency(impulse, index);
-    const visual = Nerves.visual(health, efficiency);
+    const visual     = Nerves.visual(health, efficiency);
     const connection = Nerves.connection(prevHealth, health);
+
+    const chunkMeta = Nerves.chunkHint(impulse, hop, index);
 
     nerves.push({
       nerve: `Nerve${index + 1}`,
@@ -205,10 +274,21 @@ function buildDirectionalMap(impulse, hops, directionLabel) {
       page: hop?.page || impulse?.page?.name || "UNKNOWN_PAGE",
       identityHealth: hop?.identityHealth || impulse?.identityHealth || null,
 
-      // v11-Evo-Prime: dual-band + execution context + pressure
+      // v12.3-Presence: dual-band + execution context + pressure + presence
       modeKind,
       executionContext,
       pressureSnapshot,
+
+      presenceId,
+      presenceBand,
+      presenceInstance,
+
+      // v12.3-Presence: chunk/cache/prewarm hints (metadata only)
+      chunkKey: chunkMeta.chunkKey,
+      cacheTier: chunkMeta.cacheTier,
+      prewarmBand: chunkMeta.prewarmBand,
+      presenceSlot: chunkMeta.presenceSlot || null,
+      multiPresenceCount: chunkMeta.multiPresenceCount,
 
       rawState: hop?.state || {},
       rawDelta: hop?.delta || null,
@@ -224,7 +304,7 @@ function buildDirectionalMap(impulse, hops, directionLabel) {
 
 
 // ============================================================================
-// SENSORY CORTEX ENGINE — v11-Evo-Prime
+// SENSORY CORTEX ENGINE — v12.3-Presence
 // ============================================================================
 export const PulseOSSensoryCortex = {
 
@@ -232,13 +312,14 @@ export const PulseOSSensoryCortex = {
     organ: "PulseOSSensoryCortex",
     layer: "S-Layer",
     role: "Sensory Cortex / Diagnostics",
-    version: "11.0-Evo-Prime",
-    generation: "v11",
+    version: "12.3-Presence",
+    generation: "v12",
     evo: {
       driftProof: true,
       deterministicNeuron: true,
       unifiedAdvantageField: true,
       multiInstanceReady: true,
+      multiPresenceReady: true,
       zeroNetwork: true,
       zeroMutation: true,
       zeroTiming: true,
@@ -247,7 +328,12 @@ export const PulseOSSensoryCortex = {
       symbolicAware: true,
       dualModeAware: true,
       executionContextAware: true,
-      pressureAware: true
+      pressureAware: true,
+
+      chunkAware: true,
+      cacheAware: true,
+      prewarmAware: true,
+      presenceAware: true
     }
   },
 
@@ -321,3 +407,7 @@ export const PulseOSSensoryCortex = {
     };
   }
 };
+
+// ============================================================================
+// END OF FILE — SENSORY CORTEX / NERVE MAP ENGINE  [v12.3-Presence]
+// ============================================================================

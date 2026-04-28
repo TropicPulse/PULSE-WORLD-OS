@@ -1,20 +1,20 @@
 // ============================================================================
 // FILE: /apps/organs/gpu/PulseGPUGuardianCortex.js
-// [pulse:gpu] PULSE_GPU_GUARDIAN_CORTEX v11-Evo  // blue-gold
+// [pulse:gpu] PULSE_GPU_GUARDIAN_CORTEX v12.3-Presence  // blue-gold
 // GPU Permission Cortex • Deterministic Policy Engine • Zero Imports
 // ============================================================================
 //
-// IDENTITY — THE GPU GUARDIAN CORTEX (v11-Evo):
-//  --------------------------------------------
+// IDENTITY — THE GPU GUARDIAN CORTEX (v12.3-Presence):
+//  ---------------------------------------------------
 //  • The decision-making cortex of the GPU subsystem.
 //  • Determines when GPU actions may auto-apply vs require confirmation.
 //  • Pure logic: deterministic, stateless, zero-entropy, zero randomness.
 //  • Reads advisor severity + user preferences + plan type + GPU context.
 //  • Produces a final decision object (mode + reason + plan).
-//  • PulseSend‑v11‑ready: decisions can be routed by the compute router.
+//  • PulseSend‑v12.3‑ready: decisions can be routed by the compute router.
 //  • Binary-aware, symbolic-aware, dispatch-aware, memory-aware.
 //
-// SAFETY CONTRACT (v11-Evo):
+// SAFETY CONTRACT (v12.3-Presence):
 //  • No imports (DI only).
 //  • No async.
 //  • No randomness.
@@ -37,7 +37,7 @@ function buildDecision({ mode, reason, plan, gpuContext }) {
     gpuContext: gpuContext || null,
     meta: {
       layer: "PulseGPUGuardianCortex",
-      version: "11.0-Evo",
+      version: "12.3-Presence",
       target: "full-gpu",
 
       // Evolutionary metadata (no logic impact)
@@ -56,11 +56,11 @@ function buildDecision({ mode, reason, plan, gpuContext }) {
       driftResistance: "high",
       mutationRisk: "none",
 
-      // v11-Evo unified advantage + PulseSend‑v11 identity
+      // Unified advantage + PulseSend identity
       unifiedAdvantageField: true,
       pulseSend11Ready: true,
 
-      // NEW v11-Evo awareness
+      // v12.3-Presence awareness
       binaryAware: true,
       symbolicAware: true,
       gpuDispatchAware: true,
@@ -68,10 +68,16 @@ function buildDecision({ mode, reason, plan, gpuContext }) {
       gpuAdvantageAware: true,
 
       // PulseSend / Earn contracts (conceptual only)
-      routingContract: "PulseSend-v11",
-      gpuOrganContract: "PulseGPU-v11-Evo",
-      binaryGpuOrganContract: "PulseBinaryGPU-v11-Evo",
-      earnCompatibility: "Earn-v3"
+      routingContract: "PulseSend-v12.3",
+      gpuOrganContract: "PulseGPU-v12.3-Presence",
+      binaryGpuOrganContract: "PulseBinaryGPU-v12.3-Presence",
+      earnCompatibility: "Earn-v3",
+
+      // Legacy compatibility
+      legacyRoutingContract: "PulseSend-v10.4",
+      legacyGPUOrganContract: "PulseGPU-v10.4",
+      legacyBinaryGPUOrganContract: "PulseBinaryGPU-v10.4",
+      legacyEarnCompatibility: "Earn-v2"
     }
   };
 }
@@ -103,7 +109,7 @@ function getHighestSeverity(adviceList = []) {
 
 
 // ============================================================================
-//  PulseGPUGuardianCortex v11-Evo — GPU Permission Cortex
+//  PulseGPUGuardianCortex v12.3-Presence — GPU Permission Cortex
 // ============================================================================
 class PulseGPUGuardianCortex {
   constructor(userPreferences, instanceId) {
@@ -118,7 +124,7 @@ class PulseGPUGuardianCortex {
   //     • adviceList
   //     • userPreferences
   //     • gpuContext (binary/symbolic/dispatch/memory hints)
-  // ----------------------------------------------------
+// ----------------------------------------------------
   decide(plan, context = {}) {
     if (!plan || typeof plan !== "object") {
       return buildDecision({
@@ -163,15 +169,30 @@ class PulseGPUGuardianCortex {
 
     // Dispatch to specific handlers
     if (plan.action === "restore") {
-      return this.decideForRestore(plan, severity, mergedPrefs, context.gpuContext);
+      return this.decideForRestore(
+        plan,
+        severity,
+        mergedPrefs,
+        context.gpuContext
+      );
     }
 
     if (plan.action === "apply-optimal") {
-      return this.decideForApplyOptimal(plan, severity, mergedPrefs, context.gpuContext);
+      return this.decideForApplyOptimal(
+        plan,
+        severity,
+        mergedPrefs,
+        context.gpuContext
+      );
     }
 
     if (plan.action === "upgrade-tier") {
-      return this.decideForTierUpgrade(plan, severity, mergedPrefs, context.gpuContext);
+      return this.decideForTierUpgrade(
+        plan,
+        severity,
+        mergedPrefs,
+        context.gpuContext
+      );
     }
 
     if (plan.action === "noop") {
@@ -192,7 +213,7 @@ class PulseGPUGuardianCortex {
   }
 
   // ----------------------------------------------------
-  // Restore plan policy — Regression Healer (v11-Evo)
+  // Restore plan policy — Regression Healer (v12.3-Presence)
   // ----------------------------------------------------
   decideForRestore(plan, severity, prefs, gpuContext) {
     const allowLow = !!prefs.allowAutoFixLowRegressions;
@@ -200,7 +221,7 @@ class PulseGPUGuardianCortex {
     const allowHigh = !!prefs.allowAutoFixHighRegressions;
     const allowCritical = !!prefs.allowAutoFixCriticalRegressions;
 
-    // v11-Evo: binary regressions get extra caution
+    // v12.3-Presence: binary regressions get extra caution
     const binaryPenalty =
       gpuContext?.binaryModeObserved && severity !== "low";
 
@@ -237,7 +258,7 @@ class PulseGPUGuardianCortex {
   }
 
   // ----------------------------------------------------
-  // Apply-optimal plan policy — Optimization Reflex (v11-Evo)
+  // Apply-optimal plan policy — Optimization Reflex (v12.3-Presence)
   // ----------------------------------------------------
   decideForApplyOptimal(plan, severity, prefs, gpuContext) {
     const allowAuto = !!prefs.allowAutoApplyOptimalSettings;
@@ -253,7 +274,7 @@ class PulseGPUGuardianCortex {
   }
 
   // ----------------------------------------------------
-  // Tier upgrade plan policy — Tier Ascent Logic (v11-Evo)
+  // Tier upgrade plan policy — Tier Ascent Logic (v12.3-Presence)
   // ----------------------------------------------------
   decideForTierUpgrade(plan, severity, prefs, gpuContext) {
     const allowAutoTier = !!prefs.allowAutoTierChanges;

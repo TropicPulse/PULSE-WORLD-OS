@@ -1,24 +1,24 @@
 // ============================================================================
 // FILE: tropic-pulse-functions/apps/PULSE-GPU/PulseGPUUXBridge.js
-// PULSE GPU UX BRIDGE v11-Evo
+// PULSE GPU UX BRIDGE v12-Evo-Presence-Max
 // “INTELLIGENCE LAYER / COGNITIVE COMMUNICATION BRIDGE”
 // ============================================================================
 //
-// SAFETY RULES (v11-Evo):
+// SAFETY RULES (v12-Evo-Presence-Max):
 //   • NO randomness or timestamps
 //   • NO DOM, WebGPU, Node, filesystem, or network APIs
 //   • FAIL-OPEN: malformed advice/plan/insight must not break UXBridge
 //   • SELF-REPAIR READY: notifications must be reconstructable + validateable
 //   • DETERMINISTIC: same advice → same notifications
-//   • PulseSend‑v11‑ready: notifications routable by compute router
-//   • Earn-ready: compatible with Earn-v3
+//   • PulseSend‑v12‑ready: notifications routable by compute router
+//   • Earn‑v4‑Presence‑ready
 //   • Zero autonomy, zero compute, zero mutation outside notif object
-//   • Binary-aware, symbolic-aware, dispatch-aware, memory-aware
+//   • Binary-aware, symbolic-aware, dispatch-aware, memory-aware, presence-aware
 // ============================================================================
 
 
 // ------------------------------------------------------
-// ⭐ OS‑v11-Evo Notification builder
+// ⭐ v12 Notification builder (presence-aware)
 // ------------------------------------------------------
 function buildNotification({
   kind,
@@ -35,7 +35,7 @@ function buildNotification({
     message: message || "",
     meta: {
       layer: "PulseGPUUXBridge",
-      version: "11.0-Evo",
+      version: "12.0-Evo-Presence-Max",
       target: "full-gpu",
       selfRepairable: true,
 
@@ -45,20 +45,26 @@ function buildNotification({
         driftProof: true,
         multiInstanceReady: true,
         unifiedAdvantageField: true,
-        pulseSend11Ready: true,
+        pulseSend12Ready: true,
 
-        // NEW v11-Evo awareness
+        // v12 Presence Evolution
+        presenceAware: true,
+        dnaAware: true,
+        versionAware: true,
+        instanceAware: true,
+
+        // GPU intelligence
         binaryAware: true,
         symbolicAware: true,
         gpuDispatchAware: true,
         gpuMemoryAware: true,
         gpuAdvantageAware: true,
 
-        // PulseSend / Earn contracts (conceptual only)
-        routingContract: "PulseSend-v11",
-        gpuOrganContract: "PulseGPU-v11-Evo",
-        binaryGpuOrganContract: "PulseBinaryGPU-v11-Evo",
-        earnCompatibility: "Earn-v3"
+        // Contracts
+        routingContract: "PulseSend-v12",
+        gpuOrganContract: "PulseGPU-v12-Evo-Presence-Max",
+        binaryGpuOrganContract: "PulseBinaryGPU-v12-Evo-Presence-Max",
+        earnCompatibility: "Earn-v4-Presence"
       },
 
       ...(meta || {})
@@ -86,14 +92,14 @@ function validateNotification(n) {
 
 
 // ------------------------------------------------------
-// PulseGPUUXBridge v11-Evo — Cognitive Communication Layer
+// PulseGPUUXBridge v12-Evo-Presence-Max — Cognitive Communication Layer
 // ------------------------------------------------------
 class PulseGPUUXBridge {
   constructor() {}
 
   static meta = {
     layer: "PulseGPUUXBridge",
-    version: "11.0-Evo",
+    version: "12.0-Evo-Presence-Max",
     target: "full-gpu",
     selfRepairable: true,
     evo: {
@@ -102,27 +108,42 @@ class PulseGPUUXBridge {
       driftProof: true,
       multiInstanceReady: true,
       unifiedAdvantageField: true,
-      pulseSend11Ready: true,
+      pulseSend12Ready: true,
 
-      // NEW v11-Evo awareness
+      // v12 Presence Evolution
+      presenceAware: true,
+      dnaAware: true,
+      versionAware: true,
+      instanceAware: true,
+
+      // GPU intelligence
       binaryAware: true,
       symbolicAware: true,
       gpuDispatchAware: true,
       gpuMemoryAware: true,
       gpuAdvantageAware: true,
 
-      routingContract: "PulseSend-v11",
-      gpuOrganContract: "PulseGPU-v11-Evo",
-      binaryGpuOrganContract: "PulseBinaryGPU-v11-Evo",
-      earnCompatibility: "Earn-v3"
+      routingContract: "PulseSend-v12",
+      gpuOrganContract: "PulseGPU-v12-Evo-Presence-Max",
+      binaryGpuOrganContract: "PulseBinaryGPU-v12-Evo-Presence-Max",
+      earnCompatibility: "Earn-v4-Presence"
     }
   };
 
 
   // ----------------------------------------------------
-  // Advisor result → notifications (v11-Evo)
+  // Advisor result → notifications (v12-Evo-Presence-Max)
   // ----------------------------------------------------
-  fromAdvisorResult({ currentScore, baselineScore, deltaPercent, advice, gpuDispatchHints }) {
+  fromAdvisorResult({
+    currentScore,
+    baselineScore,
+    deltaPercent,
+    advice,
+    gpuDispatchHints,
+    dnaTag,
+    instanceId,
+    version
+  }) {
     if (!Array.isArray(advice) || advice.length === 0) return [];
 
     const notifications = [];
@@ -133,16 +154,18 @@ class PulseGPUUXBridge {
       const { type, severity, deltaPercent: dp } = item;
       const gameId = item.gameProfile?.gameId || "this game";
 
-      // NEW: GPU-aware metadata injection
       const gpuMeta = {
         gpuDispatchHints,
         binaryModeObserved: item.binaryModeObserved,
         symbolicModeObserved: item.symbolicModeObserved,
         gpuPattern: item.gpuPattern,
-        gpuShapeSignature: item.gpuShapeSignature
+        gpuShapeSignature: item.gpuShapeSignature,
+        advantageScore: item.advantageScore,
+        dnaTag,
+        instanceId,
+        version
       };
 
-      // REGRESSION
       if (type === "regression") {
         const title = "Performance drop detected";
         const message =
@@ -178,7 +201,6 @@ class PulseGPUUXBridge {
         );
       }
 
-      // IMPROVEMENT
       else if (type === "improvement") {
         const title = "Performance improved";
         const message =
@@ -203,7 +225,6 @@ class PulseGPUUXBridge {
         );
       }
 
-      // SUBOPTIMAL
       else if (type === "suboptimal") {
         const title = "Better settings available";
         const message =
@@ -239,7 +260,6 @@ class PulseGPUUXBridge {
         );
       }
 
-      // TIER UPGRADE
       else if (type === "tier-upgrade-opportunity") {
         const title = "Higher tier performance available";
         const message =
@@ -282,9 +302,9 @@ class PulseGPUUXBridge {
 
 
   // ----------------------------------------------------
-  // Restore plan → notification  (v11-Evo)
+  // Restore plan → notification  (v12-Evo-Presence-Max)
   // ----------------------------------------------------
-  fromRestorePlan(plan) {
+  fromRestorePlan(plan, { dnaTag, instanceId, version } = {}) {
     if (!plan || typeof plan !== "object") return null;
 
     const { action, reason, extra } = plan;
@@ -295,7 +315,10 @@ class PulseGPUUXBridge {
       gpuPattern: plan.gpuPattern,
       gpuShapeSignature: plan.gpuShapeSignature,
       binaryModeObserved: plan.binaryModeObserved,
-      symbolicModeObserved: plan.symbolicModeObserved
+      symbolicModeObserved: plan.symbolicModeObserved,
+      dnaTag,
+      instanceId,
+      version
     };
 
     if (action === "restore") {
@@ -319,8 +342,8 @@ class PulseGPUUXBridge {
         meta: {
           extra,
           repairHint: "restore-baseline-settings",
-          routingContract: "PulseSend-v11",
-          gpuOrganContract: "PulseGPU-v11-Evo",
+          routingContract: "PulseSend-v12",
+          gpuOrganContract: "PulseGPU-v12-Evo-Presence-Max",
           ...gpuMeta
         }
       });
@@ -347,8 +370,8 @@ class PulseGPUUXBridge {
         meta: {
           extra,
           repairHint: "suggest-baseline-settings",
-          routingContract: "PulseSend-v11",
-          gpuOrganContract: "PulseGPU-v11-Evo",
+          routingContract: "PulseSend-v12",
+          gpuOrganContract: "PulseGPU-v12-Evo-Presence-Max",
           ...gpuMeta
         }
       });
@@ -375,8 +398,8 @@ class PulseGPUUXBridge {
         meta: {
           extra,
           repairHint: "upgrade-tier",
-          routingContract: "PulseSend-v11",
-          gpuOrganContract: "PulseGPU-v11-Evo",
+          routingContract: "PulseSend-v12",
+          gpuOrganContract: "PulseGPU-v12-Evo-Presence-Max",
           ...gpuMeta
         }
       });
@@ -387,9 +410,9 @@ class PulseGPUUXBridge {
 
 
   // ----------------------------------------------------
-  // Insights → notifications  (v11-Evo)
-// ----------------------------------------------------
-  fromInsights(insights = [], gpuDispatchHints = null) {
+  // Insights → notifications  (v12-Evo-Presence-Max)
+  // ----------------------------------------------------
+  fromInsights(insights = [], gpuDispatchHints = null, { dnaTag, instanceId, version } = {}) {
     if (!Array.isArray(insights) || insights.length === 0) return [];
 
     const notifications = [];
@@ -405,7 +428,10 @@ class PulseGPUUXBridge {
         gpuPattern: insight.gpuPattern,
         gpuShapeSignature: insight.gpuShapeSignature,
         binaryModeObserved: insight.binaryModeObserved,
-        symbolicModeObserved: insight.symbolicModeObserved
+        symbolicModeObserved: insight.symbolicModeObserved,
+        dnaTag,
+        instanceId,
+        version
       };
 
       if (type === "step-duration-change") {
@@ -432,9 +458,8 @@ class PulseGPUUXBridge {
               currentAvgDurationMs: insight.currentAvgDurationMs,
               extra: insight.extra,
               repairHint: "recompute-insight",
-
-              routingContract: "PulseSend-v11",
-              gpuOrganContract: "PulseGPU-v11-Evo",
+              routingContract: "PulseSend-v12",
+              gpuOrganContract: "PulseGPU-v12-Evo-Presence-Max",
               ...gpuMeta
             }
           })

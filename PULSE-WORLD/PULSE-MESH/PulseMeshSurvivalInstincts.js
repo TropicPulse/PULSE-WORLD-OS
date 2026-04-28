@@ -1,23 +1,37 @@
 // ============================================================================
-//  PULSE OS v11-Evo — SURVIVAL INSTINCTS LAYER  // amber
+//  PULSE OS v12.3+ — SURVIVAL INSTINCTS LAYER  // amber
 //  “Skin-Level Reflex Arc / Local Survival Gate”
 //  Deterministic Survival Arc • Fast Instinct Engine • Pure 1/0 Decisions
+//  Full Advantage Stack: Presence-Aware • Unified-Advantage-Field-Aligned
 // ============================================================================
 //
-//  IDENTITY (v11-Evo):
-//  -------------------
+//  IDENTITY (v12.3+):
+//  ------------------
 //  • Lowest-level survival organ (skin-level reflex).
 //  • Pure 1/0 instinct engine — no compute, no routing, no shaping.
 //  • Drops or keeps impulses instantly based on local state + anomaly flags.
 //  • Zero payload mutation — metadata-only.
 //  • Deterministic, drift-proof, AND-architecture aligned.
-//  • Binary-aware, dual-mode-ready.
+//  • Binary-aware, dual-mode-ready, presence-band-aware.
 //  • No pressure gating, no internet-mode logic, no factoring pressure.
+//  • Unified-advantage-field compliant (tags only, no side effects).
 // ============================================================================
 
 
 // -----------------------------------------------------------
-//  Instinct Pack (v11-Evo)
+//  Presence-Band Helper (v12.3+)
+// -----------------------------------------------------------
+function classifyPresenceBand(impulse) {
+  const f = impulse.flags || {};
+  if (f.binary_mode && f.dual_mode) return "dual";
+  if (f.binary_mode) return "binary";
+  if (f.dual_mode) return "dual";
+  return "symbolic";
+}
+
+
+// -----------------------------------------------------------
+//  Instinct Pack (v12.3+)
 // -----------------------------------------------------------
 
 export const SurvivalInstincts = {
@@ -65,7 +79,7 @@ export const SurvivalInstincts = {
   },
 
   // [pulse:mesh] INSTINCT_BINARY_MODE  // cyan
-  // v11-Evo: binary-mode reflex tightening
+  // v12.3+: binary-mode reflex tightening
   binaryMode(impulse) {
     if (!impulse.flags?.binary_mode) return 1;
     // binary mode requires higher structural integrity
@@ -75,7 +89,7 @@ export const SurvivalInstincts = {
   },
 
   // [pulse:mesh] INSTINCT_DUAL_MODE  // blue
-  // v11-Evo: dual-mode reflex softening
+  // v12.3+: dual-mode reflex softening
   dualMode(impulse) {
     if (!impulse.flags?.dual_mode) return 1;
     // dual mode tolerates slightly higher hop count
@@ -86,7 +100,8 @@ export const SurvivalInstincts = {
 
 
 // -----------------------------------------------------------
-//  Combined Survival Instinct Engine (v11-Evo)
+//  Combined Survival Instinct Engine (v12.3+)
+//  Presence-band aware, unified-advantage-field aligned
 // -----------------------------------------------------------
 
 export function createSurvivalInstincts() {
@@ -104,7 +119,7 @@ export function createSurvivalInstincts() {
   const meta = {
     layer: "SurvivalInstincts",
     role: "SURVIVAL_REFLEX",
-    version: "11.0-Evo",
+    version: "12.3+",
     target: "full-mesh",
     selfRepairable: true,
     evo: {
@@ -124,6 +139,15 @@ export function createSurvivalInstincts() {
       futureEvolutionReady: true,
 
       signalFactoringAware: true,
+      meshPressureAware: true,
+      auraPressureAware: true,
+
+      // v12.3+ advantage flags (tags only)
+      prewarmAware: true,
+      chunkAware: true,
+      cacheAware: true,
+      presenceAware: true,
+      dualBandReady: true,
 
       zeroCompute: true,
       zeroMutation: true,
@@ -135,6 +159,16 @@ export function createSurvivalInstincts() {
     impulse.meta = impulse.meta || {};
     impulse.meta.reflex = meta;
     impulse.flags = impulse.flags || {};
+
+    // v12.3+: presence-band tagging (metadata-only)
+    const presenceBand = classifyPresenceBand(impulse);
+    impulse.flags.survival_presence_band = presenceBand;
+    impulse.flags.survival_advantage_meta = {
+      prewarm_surface: true,
+      chunk_surface: true,
+      cache_surface: true,
+      presence_band: presenceBand
+    };
 
     for (const fn of instinctFns) {
       const decision = fn(impulse, node);

@@ -1,11 +1,12 @@
 // ============================================================================
 // FILE: /PULSE-OS/PulseOSSpinalCord.js
-// PULSE OS SPINAL CORD — v13-Evo-Max-Firewall
+// PULSE OS SPINAL CORD — v13-Evo-Max-Firewall-12.3-Presence
 // “ORGANISM-WIDE DUAL-BAND SPINE • ADVANTAGE FIELD CONDUCTOR • ROUTE ROOT”
+// CHUNK/PREWARM/CACHE-AWARE • MULTI-PRESENCE-AWARE • FIREWALL-GATED
 // ============================================================================
 //
-// ROLE (v13-Evo-Max-Firewall):
-// ----------------------------
+// ROLE (v13-Evo-Max-Firewall-12.3-Presence):
+// -----------------------------------------
 // • The ONE TRUE SPINE for the entire Pulse organism (route root).
 // • Dual-band (binary + symbolic) central nervous system wiring layer.
 // • Strict separation of binary, symbolic, and dual impulses.
@@ -14,9 +15,10 @@
 // • Conducts unified advantage field + loop theory across all extensions.
 // • Pure wiring — no cognition, no business logic, no compute.
 // • Enforces Firewall (PulseChunks-v1) at the nervous-system level.
+// • v12.3+ spine-aligned: chunk-aware, prewarm-aware, cache-aware, multi-presence-aware.
 //
-// SAFETY CONTRACT (v13-Evo-Max-Firewall):
-// ---------------------------------------
+// SAFETY CONTRACT (v13-Evo-Max-Firewall-12.3-Presence):
+// -----------------------------------------------------
 // • No timestamps (no Date.now()).
 // • No nondeterminism, no randomness.
 // • No mutation of external modules.
@@ -25,18 +27,19 @@
 // • Pure wiring — no decisions beyond modeKind + extensionId + firewall verdict.
 // • No direct GPU / FS / DOM / Network calls.
 // • Firewall-aware: refuses unsafe routes, sources, extensions, systems.
+// • Chunk/prewarm/cache/presence surfaces are context-only (no compute here).
 // ============================================================================
 import { prewarmSDN } from "./PulseSDN-Prewarm-v12-EVO.js";
 
 
 // ============================================================================
-// SPINAL CORD IDENTITY — v13-Evo-Max-Firewall
+// SPINAL CORD IDENTITY — v13-Evo-Max-Firewall-12.3-Presence
 // ============================================================================
 export const PulseRole = {
   type: "NervousSystem",
   subsystem: "OS",
   layer: "SpinalCord",
-  version: "13.0-Evo-Max-Firewall",
+  version: "13.0-Evo-Max-Firewall-12.3-Presence",
   identity: "PulseOSSpinalCord",
 
   evo: {
@@ -80,15 +83,23 @@ export const PulseRole = {
 
     // Firewall awareness
     firewallAware: true,
-    firewallEnforcedAtSpine: true
+    firewallEnforcedAtSpine: true,
+
+    // v12.3+ chunk / prewarm / cache / presence
+    chunkAware: true,
+    prewarmAware: true,
+    cacheAware: true,
+    routePrewarmAware: true,
+    multiPresenceAware: true,
+    presenceSpineAware: true
   }
 };
 
 export const PulseOSSpinalCordMeta = Object.freeze({
   layer: "PulseOSSpinalCord",
   role: "CENTRAL_SPINE_ORGAN",
-  version: "v13-EVO-MAX-FIREWALL",
-  identity: "PulseOSSpinalCord-v13-EVO-MAX-FIREWALL",
+  version: "v13-EVO-MAX-FIREWALL-12.3-PRESENCE",
+  identity: "PulseOSSpinalCord-v13-EVO-MAX-FIREWALL-12.3-PRESENCE",
 
   guarantees: Object.freeze({
     deterministic: true,
@@ -148,6 +159,13 @@ export const PulseOSSpinalCordMeta = Object.freeze({
     binaryOverlayAware: true,
     coreGovernorAware: true,
 
+    // v12.3+ chunk / prewarm / cache / presence guarantees
+    chunkPrewarmSpine: true,
+    cachePrewarmSpine: true,
+    routePrewarmSpine: true,
+    multiPresenceSpine: true,
+    presenceRouteAware: true,
+
     // Environment
     worldLensAware: false
   }),
@@ -178,7 +196,8 @@ export const PulseOSSpinalCordMeta = Object.freeze({
       "PulseOSSpinalCord-v11-Evo",
       "PulseOSSpinalCord-v11-Evo-Max",
       "PulseOSSpinalCord-v12-Evo-Max",
-      "PulseOSSpinalCord-v13-Evo-Max-Firewall"
+      "PulseOSSpinalCord-v13-Evo-Max-Firewall",
+      "PulseOSSpinalCord-v13-Evo-Max-Firewall-12.3-Presence"
     ]
   }),
 
@@ -191,7 +210,7 @@ export const PulseOSSpinalCordMeta = Object.freeze({
   architecture: Object.freeze({
     pattern: "A-B-A",
     baseline: "impulse → band separation → route root → Router/Cortex/Brain",
-    adaptive: "binary-overlay + extension-aware routing surfaces + firewall gating",
+    adaptive: "binary-overlay + extension-aware routing surfaces + firewall gating + route prewarm surfaces",
     return: "deterministic spine route + signatures"
   })
 });
@@ -207,7 +226,10 @@ export function createPulseOSSpinalCord({
   Evolution,     // Evolution organ for lineage stamping
   CoreGovernor,  // optional: CoreGovernor (for context-only, no compute)
   BinaryOverlay, // optional: PulseBinaryOverlay (for context-only, no compute)
-  Firewall,      // NEW: PulseChunks-v1 / firewall surface (optional but recommended)
+  Firewall,      // PulseChunks-v1 / firewall surface (optional but recommended)
+  Chunker,       // v12.3+ route chunk/prewarm surface (context-only)
+  PrewarmCache,  // v12.3+ cache prewarm surface (context-only)
+  PresenceMesh,  // v12.3+ multi-presence mesh (context-only)
   log = console.log,
   warn = console.warn
 }) {
@@ -241,6 +263,17 @@ export function createPulseOSSpinalCord({
       lastModeKind: "symbolic"
     },
 
+    // v12.3+ multi-presence + prewarm surfaces (pure metadata)
+    presence: {
+      sessions: Object.create(null), // { presenceId: { extensionId, systemId, modeKind } }
+      multiPresenceEnabled: true
+    },
+    prewarm: {
+      chunkPrewarmEnabled: true,
+      cachePrewarmEnabled: true,
+      routePrewarmEnabled: true
+    },
+
     healthScore: 1.0
   };
 
@@ -260,7 +293,8 @@ export function createPulseOSSpinalCord({
       ec.dispatchSignature || "",
       ec.shapeSignature || "",
       ec.extensionId || "",
-      ec.systemId || ""
+      ec.systemId || "",
+      ec.presenceId || ""
     ].join("|");
   }
 
@@ -278,6 +312,86 @@ export function createPulseOSSpinalCord({
       SpinalState.loopCounters.symbolic > SpinalState.loopCounters.binary;
     SpinalState.advantageField.dualHot =
       SpinalState.loopCounters.dual > 0;
+  }
+
+  // --------------------------------------------------------------------------
+  // v12.3+ PRESENCE REGISTRATION — multi-presence map (pure metadata)
+// --------------------------------------------------------------------------
+  function registerPresence(presenceId, { extensionId, systemId, modeKind } = {}) {
+    if (!presenceId) return;
+    SpinalState.presence.sessions[presenceId] = {
+      extensionId: extensionId || null,
+      systemId: systemId || null,
+      modeKind: modeKind || "symbolic"
+    };
+    Evolution?.recordLineage?.(`spinal-presence-register:${presenceId}`);
+    Brain?.log?.("[SpinalCord] Presence registered:", presenceId);
+  }
+
+  function unregisterPresence(presenceId) {
+    if (!presenceId) return;
+    if (SpinalState.presence.sessions[presenceId]) {
+      delete SpinalState.presence.sessions[presenceId];
+      Evolution?.recordLineage?.(`spinal-presence-unregister:${presenceId}`);
+      Brain?.log?.("[SpinalCord] Presence unregistered:", presenceId);
+    }
+  }
+
+  // --------------------------------------------------------------------------
+  // v12.3+ PREWARM HELPERS — chunk/cache/route prewarm (context-only)
+// --------------------------------------------------------------------------
+  function buildRoutePrewarmContext(source, impulse, impulseSignature) {
+    const modeKind = impulse.modeKind || "symbolic";
+    const executionContext = impulse.executionContext || {};
+    const pressureSnapshot = impulse.pressureSnapshot || {};
+    const presenceId = executionContext.presenceId || null;
+
+    return {
+      source,
+      modeKind,
+      impulseSignature,
+      executionContext,
+      pressureSnapshot,
+      presenceId,
+      spinalAdvantageField: SpinalState.advantageField,
+      spinalLoopCounters: SpinalState.loopCounters,
+      spinalExtensions: SpinalState.extensions,
+      spinalSystems: SpinalState.systems
+    };
+  }
+
+  function prewarmForImpulse(source, impulse, impulseSignature) {
+    const ctx = buildRoutePrewarmContext(source, impulse, impulseSignature);
+
+    // Chunker prewarm (no compute here, just delegation)
+    if (SpinalState.prewarm.chunkPrewarmEnabled && Chunker?.prewarmForRoute) {
+      try {
+        Chunker.prewarmForRoute(ctx);
+        Evolution?.recordLineage?.("spinal-prewarm-chunk");
+      } catch (err) {
+        warn?.("[SpinalCord] Chunker prewarm failed:", err);
+      }
+    }
+
+    // Cache prewarm
+    if (SpinalState.prewarm.cachePrewarmEnabled && PrewarmCache?.prewarm) {
+      try {
+        PrewarmCache.prewarm(ctx);
+        Evolution?.recordLineage?.("spinal-prewarm-cache");
+      } catch (err) {
+        warn?.("[SpinalCord] Cache prewarm failed:", err);
+      }
+    }
+
+    // Presence mesh notification (multi-presence awareness)
+    if (PresenceMesh?.notifySpineImpulse) {
+      try {
+        PresenceMesh.notifySpineImpulse(ctx);
+        Evolution?.recordLineage?.("spinal-presence-impulse");
+      } catch (err) {
+        warn?.("[SpinalCord] PresenceMesh notify failed:", err);
+      }
+    }
   }
 
 
@@ -397,6 +511,9 @@ export function createPulseOSSpinalCord({
       executionContext
     });
 
+    // v12.3+ route prewarm surfaces (chunk/cache/presence) — context-only
+    prewarmForImpulse(source, impulse, impulseSignature);
+
     // Emit spinal impulse event (no timestamps)
     EventBus?.emit?.("spinal:impulse", {
       source,
@@ -462,6 +579,7 @@ export function createPulseOSSpinalCord({
         loopCounters: SpinalState.loopCounters,
         extensions: SpinalState.extensions,
         systems: SpinalState.systems,
+        presence: SpinalState.presence,
         coreGovernorAware: !!CoreGovernor,
         binaryOverlayAware: !!BinaryOverlay
       }
@@ -504,6 +622,7 @@ export function createPulseOSSpinalCord({
         loopCounters: SpinalState.loopCounters,
         extensions: SpinalState.extensions,
         systems: SpinalState.systems,
+        presence: SpinalState.presence,
         coreGovernorAware: !!CoreGovernor,
         binaryOverlayAware: !!BinaryOverlay
       }
@@ -527,45 +646,49 @@ export function createPulseOSSpinalCord({
     return SpinalState.healthScore;
   }
 
-// --------------------------------------------------------------------------
-// PUBLIC SPINAL CORD SURFACE
-// --------------------------------------------------------------------------
-const PulseOSSpinalCord = {
-  PulseRole,
-  SpinalState,
+  // --------------------------------------------------------------------------
+  // PUBLIC SPINAL CORD SURFACE
+  // --------------------------------------------------------------------------
+  const PulseOSSpinalCord = {
+    PulseRole,
+    SpinalState,
 
-  // Extensions / systems
-  registerExtension,
-  registerSystem,
+    // Extensions / systems
+    registerExtension,
+    registerSystem,
 
-  // Receptors
-  registerReceptor,
-  unregisterReceptor,
+    // Presence (v12.3+)
+    registerPresence,
+    unregisterPresence,
 
-  // Impulses
-  emitImpulse,
+    // Receptors
+    registerReceptor,
+    unregisterReceptor,
 
-  // Routing
-  routeToOrgan,
-  routeToBackend,
+    // Impulses
+    emitImpulse,
 
-  // Health
-  updateHealth,
-  getHealth
-};
+    // Routing
+    routeToOrgan,
+    routeToBackend,
 
-// --------------------------------------------------------------------------
-// SDN PREWARM ENGINE — Spinal Reflex Ignition
-// --------------------------------------------------------------------------
-try {
-  prewarmSDN(PulseOSSpinalCord);
-  Brain?.log?.("[PulseOSSpinalCord] SDN prewarm complete (reflex arcs hot).");
-} catch (err) {
-  warn?.("[PulseOSSpinalCord] SDN prewarm failed:", err);
-}
+    // Health
+    updateHealth,
+    getHealth
+  };
 
-Brain?.log?.("[PulseOSSpinalCord v13-Evo-Max-Firewall] Initialized organism-wide dual-band spinal cord with firewall gating.");
-Evolution?.recordLineage?.("spinal-init-v13-firewall");
+  // --------------------------------------------------------------------------
+  // SDN PREWARM ENGINE — Spinal Reflex Ignition
+  // --------------------------------------------------------------------------
+  try {
+    prewarmSDN(PulseOSSpinalCord);
+    Brain?.log?.("[PulseOSSpinalCord] SDN prewarm complete (reflex arcs hot).");
+  } catch (err) {
+    warn?.("[PulseOSSpinalCord] SDN prewarm failed:", err);
+  }
 
-return PulseOSSpinalCord;
+  Brain?.log?.("[PulseOSSpinalCord v13-Evo-Max-Firewall-12.3-Presence] Initialized organism-wide dual-band spinal cord with firewall gating, chunk/cache prewarm, and multi-presence spine.");
+  Evolution?.recordLineage?.("spinal-init-v13-firewall-12.3-presence");
+
+  return PulseOSSpinalCord;
 }

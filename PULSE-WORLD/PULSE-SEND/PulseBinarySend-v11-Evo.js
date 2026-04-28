@@ -1,6 +1,6 @@
 // ============================================================================
-//  BinarySend-v11-PURE-EVO-Binary.js
-//  PURE BINARY SEND ORGAN — v11-EVO-BINARY EDITION
+//  BinarySend-v12.3-PURE-EVO-Binary.js
+//  PURE BINARY SEND ORGAN — v12.3 EVO BINARY EDITION
 // ============================================================================
 //  ROLE:
 //    - Accept ONLY pure binary arrays (0/1).
@@ -9,6 +9,7 @@
 //    - No lineage, no pattern, no routing hints.
 //    - No drift, no randomness, no mutation.
 //    - Binary-aware: emits binary diagnostics + signatures.
+//    - 12.3+: cacheChunk-aware, prewarm-aware, presence-aware.
 //    - Fallback-safe: deterministic fallback to proxy.
 // ============================================================================
 
@@ -28,14 +29,51 @@ export function createBinarySend({
     return true;
   }
 
-  function computeHash(bits) {
+  // ---------------------------------------------------------------------------
+  //  12.3+: deterministic binary signature (dual-band safe)
+  // ---------------------------------------------------------------------------
+  function computeSignature(bits) {
     let h = 0;
     for (let i = 0; i < bits.length; i++) {
-      h = (h + bits[i] * (i + 7)) % 65536;
+      h = (h + bits[i] * (i + 13)) % 131072; // 17-bit deterministic
     }
-    return `b${h}`;
+    return `b12_${h}`;
   }
 
+  // ---------------------------------------------------------------------------
+  //  12.3+: cacheChunk fingerprint (binary-only)
+  // ---------------------------------------------------------------------------
+  function computeCacheChunk(bits) {
+    let acc = 1;
+    for (let i = 0; i < bits.length; i++) {
+      acc = (acc * 31 + bits[i]) % 8191;
+    }
+    return `cc_${acc}`;
+  }
+
+  // ---------------------------------------------------------------------------
+  //  12.3+: prewarm hint (binary-only)
+  // ---------------------------------------------------------------------------
+  function computePrewarm(bits) {
+    if (bits.length >= 512) return "prewarm-aggressive";
+    if (bits.length >= 128) return "prewarm-medium";
+    if (bits.length >= 32)  return "prewarm-light";
+    return "prewarm-none";
+  }
+
+  // ---------------------------------------------------------------------------
+  //  12.3+: presence scope (binary-only)
+  // ---------------------------------------------------------------------------
+  function computePresence(bits) {
+    const len = bits.length;
+    if (len >= 1024) return "presence-global";
+    if (len >= 256)  return "presence-page";
+    return "presence-local";
+  }
+
+  // ---------------------------------------------------------------------------
+  //  INTERNAL: ensure pure binary or fallback
+  // ---------------------------------------------------------------------------
   function ensurePureBinaryOrFallback(op, bits, reason) {
     if (!isPureBinary(bits)) {
       return fallback(op, bits, reason);
@@ -49,16 +87,27 @@ export function createBinarySend({
   function send(bits) {
     const pure = ensurePureBinaryOrFallback("send", bits, "non-binary-output");
 
-    const signature = computeHash(pure);
+    const signature   = computeSignature(pure);
+    const cacheChunk  = computeCacheChunk(pure);
+    const prewarm     = computePrewarm(pure);
+    const presence    = computePresence(pure);
 
     if (trace) {
-      console.log("[BinarySend-v11] OUT:", pure, "signature:", signature);
+      console.log("[BinarySend-v12.3] OUT:", pure, {
+        signature,
+        cacheChunk,
+        prewarm,
+        presence
+      });
     }
 
     return {
       ok: true,
       bits: pure,
       signature,
+      cacheChunk,
+      prewarm,
+      presence,
       length: pure.length
     };
   }
@@ -74,20 +123,25 @@ export function createBinarySend({
     }
 
     if (trace) {
-      console.warn(`[BinarySend-v11] FALLBACK (${op}):`, reason, bits);
+      console.warn(`[BinarySend-v12.3] FALLBACK (${op}):`, reason, bits);
     }
 
     const result = fallbackProxy.exchange
       ? fallbackProxy.exchange(bits)
       : fallbackProxy(bits);
 
+    const safe = Array.isArray(result) ? result : [];
+
     return {
       ok: false,
       fallback: true,
       reason,
-      bits: result,
-      signature: computeHash(Array.isArray(result) ? result : []),
-      length: Array.isArray(result) ? result.length : 0
+      bits: safe,
+      signature: computeSignature(safe),
+      cacheChunk: computeCacheChunk(safe),
+      prewarm: computePrewarm(safe),
+      presence: computePresence(safe),
+      length: safe.length
     };
   }
 

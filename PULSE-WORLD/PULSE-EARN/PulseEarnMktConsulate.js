@@ -1,32 +1,13 @@
 // ============================================================================
-// FILE: tropic-pulse-functions/apps/PULSE-EARN/PulseEarnMktConsulate.js
-// LAYER: THE CONSULATE (v11)
-// (Cross‑Marketplace Intelligence + Job Prioritizer + Result Reuse Organ)
-// PULSE‑EARN v11 — DETERMINISTIC INTELLIGENCE LAYER
+// FILE: tropic-pulse-functions/apps/PULSE-EARN/PulseEarnMktConsulate-v12.3-PRESENCE-EVO+.js
+// LAYER: THE CONSULATE (v12.3 Presence + Advantage‑C + Prewarm)
 // ============================================================================
-//
-// ROLE (v11):
-//   THE CONSULATE — Intelligence layer over all marketplace ambassadors.
-//   • Ingests jobs from all registered marketplaces (deterministic adapters).
-//   • Eliminates structural duplicates via fingerprinting.
-//   • Factors jobs into reusable substructures (resource bands).
-//   • Computes money‑per‑second and composite priority scores.
-//   • Exposes a prioritized job list for Earn Engine.
-//   • Caches completed results for future reuse (cycle‑indexed).
-//   • Emits deterministic intelligence signatures for each cycle.
-//
-// CONTRACT (v11):
-//   • PURE INTELLIGENCE LAYER — no network, no async, no timestamps.
-//   • READ‑WRITE only to its own in‑memory consulateState.
-//   • NO eval(), NO Function(), NO dynamic imports.
-//   • NO executing user code.
-//   • Deterministic, explainable heuristics + signatures only.
-// ============================================================================
+
 export const PulseEarnMktConsulateMeta = Object.freeze({
   layer: "PulseEarnMktConsulate",
   role: "EARN_CONSULATE_ORGAN",
-  version: "v11.2-EVO",
-  identity: "PulseEarnMktConsulate-v11.2-EVO",
+  version: "v12.3-PRESENCE-EVO+",
+  identity: "PulseEarnMktConsulate-v12.3-PRESENCE-EVO+",
 
   guarantees: Object.freeze({
     deterministic: true,
@@ -34,10 +15,15 @@ export const PulseEarnMktConsulateMeta = Object.freeze({
     noRealTime: true,
     noExternalIO: true,
     pureIntelligenceLayer: true,
+
     dualBandAware: true,
     binaryAware: true,
     waveFieldAware: true,
+    presenceAware: true,
+    advantageAware: true,
+    chunkPrewarmAware: true,
     healingMetadataAware: true,
+
     worldLensAware: false,
     zeroNetwork: true,
     zeroAsync: true,
@@ -45,106 +31,120 @@ export const PulseEarnMktConsulateMeta = Object.freeze({
     zeroUserCode: true,
     driftProof: true,
     explainableHeuristics: true
-  }),
-
-  contract: Object.freeze({
-    input: [
-      "MarketplaceJobLists",
-      "MarketplaceReceptorMetadata",
-      "DualBandContext",
-      "ConsulateCacheState"
-    ],
-    output: [
-      "PrioritizedJobList",
-      "ConsulateDiagnostics",
-      "ConsulateSignatures",
-      "ConsulateHealingState"
-    ]
-  }),
-
-  lineage: Object.freeze({
-    root: "PulseOS-v11-EVO",
-    parent: "PulseEarn-v11.2-EVO",
-    ancestry: [
-      "PulseEarnMktConsulate-v9",
-      "PulseEarnMktConsulate-v10",
-      "PulseEarnMktConsulate-v11",
-      "PulseEarnMktConsulate-v11-Evo"
-    ]
-  }),
-
-  bands: Object.freeze({
-    supported: ["symbolic", "binary"],
-    default: "symbolic",
-    behavior: "metadata-only"
-  }),
-
-  architecture: Object.freeze({
-    pattern: "A-B-A",
-    baseline: "deterministic ingestion → fingerprinting → factoring",
-    adaptive: "money-per-second scoring + binary/wave surfaces",
-    return: "deterministic prioritized job list + signatures"
   })
 });
 
-import { RegisteredMarketplaces } from "./PulseEarnMktEmbassyLedger.js";
+import { PulseEarnMktEmbassyLedger } from "./PulseEarnMktEmbassyLedger.js";
 
-// ---------------------------------------------------------------------------
-// Deterministic Hash Helper — v11
-// ---------------------------------------------------------------------------
+// ============================================================================
+// Deterministic Hash Helper
+// ============================================================================
 function computeHash(str) {
   let h = 0;
   const s = String(str || "");
-  for (let i = 0; i < s.length; i++) {
+  for (let i = 0; i < s.length; i++)
     h = (h + s.charCodeAt(i) * (i + 1)) % 100000;
-  }
   return `h${h}`;
 }
 
-// ---------------------------------------------------------------------------
-// Signature Builders — v11
-// ---------------------------------------------------------------------------
-function buildFingerprintSignature(fp) {
-  return computeHash(`FP::${fp}`);
+// ============================================================================
+// Presence / Advantage / Chunk‑Prewarm Builders (v12.3)
+// ============================================================================
+function buildPresenceField(consulateState) {
+  const jobsIn = consulateState.stats.lastCycleJobsIn || 0;
+  const jobsOut = consulateState.stats.lastCycleJobsOut || 0;
+  const unique = consulateState.stats.totalUniqueJobs || 0;
+
+  const composite =
+    jobsIn * 0.0005 +
+    jobsOut * 0.0007 +
+    unique * 0.0001;
+
+  const presenceTier =
+    composite >= 0.05 ? "presence_high" :
+    composite >= 0.01 ? "presence_mid" :
+    "presence_low";
+
+  return {
+    presenceVersion: "v12.3",
+    presenceTier,
+    jobsIn,
+    jobsOut,
+    unique,
+    cycleIndex: consulateState.cycleIndex,
+    presenceSignature: computeHash(
+      `CONSULATE_PRESENCE::${presenceTier}::${jobsIn}::${jobsOut}::${unique}`
+    )
+  };
 }
 
-function buildFactorSignature(factors) {
-  return computeHash(`FACTORS::${factors.sort().join("|")}`);
+function buildAdvantageField(consulateState, presenceField) {
+  const fpCount = consulateState.fingerprintIndex.size;
+  const factorCount = consulateState.factorIndex.size;
+  const cacheSize = consulateState.resultCache.size;
+
+  const advantageScore =
+    fpCount * 0.00005 +
+    factorCount * 0.00003 +
+    cacheSize * 0.00002 +
+    (presenceField.presenceTier === "presence_high" ? 0.01 : 0);
+
+  return {
+    advantageVersion: "C",
+    fpCount,
+    factorCount,
+    cacheSize,
+    presenceTier: presenceField.presenceTier,
+    advantageScore
+  };
 }
 
-function buildPrioritySignature(jobId, score) {
-  return computeHash(`PRIORITY::${jobId || "NONE"}::${score}`);
+function buildChunkPrewarmPlan(consulateState, presenceField, advantageField) {
+  const basePriority =
+    presenceField.presenceTier === "presence_high"
+      ? 3
+      : presenceField.presenceTier === "presence_mid"
+      ? 2
+      : 1;
+
+  const advantageBoost = advantageField.advantageScore > 0.02 ? 1 : 0;
+  const priority = basePriority + advantageBoost;
+
+  return {
+    planVersion: "v12.3-Consulate-AdvantageC",
+    priority,
+    band: presenceField.presenceTier,
+    chunks: {
+      consulateEnvelope: true,
+      fingerprintIndex: true,
+      factorIndex: true,
+      resultCache: true
+    },
+    cache: {
+      consulateDiagnostics: true,
+      marketplaceStats: true
+    },
+    prewarm: {
+      nervousSystem: true,
+      muscleSystem: true,
+      foragerLayer: true,
+      courierLayer: true,
+      brokerLayer: true,
+      ambassadorLayer: true,
+      auctioneerLayer: true
+    }
+  };
 }
 
-function buildCycleSignature(cycleIndex) {
-  return computeHash(`CYCLE::${cycleIndex}`);
-}
-
-function buildMarketplaceStatsSignature(statsObj) {
-  return computeHash(`MKT_STATS::${JSON.stringify(statsObj)}`);
-}
-
-function buildResultCacheSignature(size) {
-  return computeHash(`RESULT_CACHE::${size}`);
-}
-
-// ---------------------------------------------------------------------------
-// In-Memory Intelligence State — Consulate Genome (v11)
-// ---------------------------------------------------------------------------
+// ============================================================================
+// Consulate State (v12.3 Presence)
+// ============================================================================
 const consulateState = {
-  // Job fingerprint → cached result (if any)
   resultCache: new Map(),
-
-  // Job fingerprint → structural info
   fingerprintIndex: new Map(),
-
-  // Substructure key → list of fingerprints that contain it
   factorIndex: new Map(),
+  marketplaceStats: new Map(),
 
-  // Marketplace-level stats
-  marketplaceStats: new Map(), // marketplaceId → { jobsSeen, avgSlope, lastCycleJobs }
-
-  // Basic stats
   stats: {
     totalJobsSeen: 0,
     totalUniqueJobs: 0,
@@ -152,322 +152,222 @@ const consulateState = {
     totalReusedResults: 0,
     totalFactoredJobs: 0,
     lastCycleJobsIn: 0,
-    lastCycleJobsOut: 0,
+    lastCycleJobsOut: 0
   },
 
-  // Deterministic cycle index (replaces timestamps)
   cycleIndex: 0,
 
-  // v11 intelligence signatures
   lastCycleSignature: null,
   lastFingerprintSignature: null,
   lastFactorSignature: null,
   lastPrioritySignature: null,
   lastMarketplaceStatsSignature: null,
   lastResultCacheSignature: null,
+
+  // NEW 12.3 Presence Surfaces
+  lastPresenceField: null,
+  lastAdvantageField: null,
+  lastChunkPrewarmPlan: null
 };
 
-// ---------------------------------------------------------------------------
-// Utility — Stable JSON Stringify (for deterministic fingerprints)
-// ---------------------------------------------------------------------------
+// ============================================================================
+// Stable JSON Stringify
+// ============================================================================
 function stableStringify(obj) {
-  if (obj === null || typeof obj !== "object") {
-    return JSON.stringify(obj);
-  }
-
-  if (Array.isArray(obj)) {
-    return `[${obj.map(stableStringify).join(",")}]`;
-  }
-
+  if (obj === null || typeof obj !== "object") return JSON.stringify(obj);
+  if (Array.isArray(obj)) return `[${obj.map(stableStringify).join(",")}]`;
   const keys = Object.keys(obj).sort();
-  const parts = keys.map((k) => `"${k}":${stableStringify(obj[k])}`);
-  return `{${parts.join(",")}}`;
+  return `{${keys.map(k => `"${k}":${stableStringify(obj[k])}`).join(",")}}`;
 }
 
-// ---------------------------------------------------------------------------
-// Job Fingerprinting — Structural Identity
-// ---------------------------------------------------------------------------
+// ============================================================================
+// Fingerprinting
+// ============================================================================
 function fingerprintJob(job) {
-  if (!job || typeof job !== "object") return "invalid_job";
-
-  const coreShape = {
+  const core = {
     marketplaceId: job.marketplaceId || job._sourceMarketplaceId || null,
     cpuRequired: job.cpuRequired ?? null,
     memoryRequired: job.memoryRequired ?? null,
     estimatedSeconds: job.estimatedSeconds ?? null,
     minGpuScore: job.minGpuScore ?? null,
-    bandwidthNeededMbps: job.bandwidthNeededMbps ?? null,
+    bandwidthNeededMbps: job.bandwidthNeededMbps ?? null
   };
 
-  const fp = stableStringify(coreShape);
-  consulateState.lastFingerprintSignature = buildFingerprintSignature(fp);
+  const fp = stableStringify(core);
+  consulateState.lastFingerprintSignature = computeHash(`FP::${fp}`);
   return fp;
 }
 
-// ---------------------------------------------------------------------------
-// Simple Factoring — Substructure Keys
-// ---------------------------------------------------------------------------
+// ============================================================================
+// Factoring
+// ============================================================================
 function extractFactors(job) {
-  const factors = [];
-  if (!job || typeof job !== "object") return factors;
+  const f = [];
 
-  const cpuBand =
-    job.cpuRequired != null
-      ? `cpu:${Math.round(Number(job.cpuRequired) || 0)}`
-      : null;
+  const cpu = job.cpuRequired != null ? `cpu:${job.cpuRequired}` : null;
+  const mem = job.memoryRequired != null ? `mem:${job.memoryRequired}` : null;
+  const sec = job.estimatedSeconds != null ? `sec:${job.estimatedSeconds}` : null;
+  const gpu = job.minGpuScore != null ? `gpu:${job.minGpuScore}` : null;
+  const bw = job.bandwidthNeededMbps != null ? `bw:${job.bandwidthNeededMbps}` : null;
+  const mkt = job.marketplaceId ? `mkt:${job.marketplaceId}` : null;
 
-  const memBand =
-    job.memoryRequired != null
-      ? `mem:${Math.round(Number(job.memoryRequired) || 0)}`
-      : null;
+  [cpu, mem, sec, gpu, bw, mkt].forEach(x => x && f.push(x));
 
-  const timeBand =
-    job.estimatedSeconds != null
-      ? `time:${Math.round(Number(job.estimatedSeconds) || 0)}`
-      : null;
-
-  const gpuBand =
-    job.minGpuScore != null
-      ? `gpu:${Math.round(Number(job.minGpuScore) || 0)}`
-      : null;
-
-  const bwBand =
-    job.bandwidthNeededMbps != null
-      ? `bw:${Math.round(Number(job.bandwidthNeededMbps) || 0)}`
-      : null;
-
-  const mktBand = job.marketplaceId
-    ? `mkt:${job.marketplaceId}`
-    : job._sourceMarketplaceId
-    ? `mkt:${job._sourceMarketplaceId}`
-    : null;
-
-  [cpuBand, memBand, timeBand, gpuBand, bwBand, mktBand].forEach((f) => {
-    if (f) factors.push(f);
-  });
-
-  if (factors.length) {
-    consulateState.lastFactorSignature = buildFactorSignature(factors);
+  if (f.length) {
+    consulateState.lastFactorSignature = computeHash(`FACTORS::${f.sort().join("|")}`);
   }
 
-  return factors;
+  return f;
 }
 
-function indexFactors(fingerprint, factors) {
-  factors.forEach((f) => {
+function indexFactors(fp, factors) {
+  for (const f of factors) {
     if (!consulateState.factorIndex.has(f)) {
       consulateState.factorIndex.set(f, new Set());
     }
-    consulateState.factorIndex.get(f).add(fingerprint);
-  });
+    consulateState.factorIndex.get(f).add(fp);
+  }
 }
 
-// ---------------------------------------------------------------------------
-// Money Slope — Simple Money-Per-Second Heuristic
-// ---------------------------------------------------------------------------
+// ============================================================================
+// Money Slope
+// ============================================================================
 function computeMoneySlope(job) {
   const payout = Number(job.payout ?? 0);
-  const seconds = Number(job.estimatedSeconds ?? 0);
-
-  if (!Number.isFinite(payout) || payout <= 0) return 0;
-  if (!Number.isFinite(seconds) || seconds <= 0) return 0;
-
-  return payout / seconds; // money per second
+  const sec = Number(job.estimatedSeconds ?? 0);
+  if (payout <= 0 || sec <= 0) return 0;
+  return payout / sec;
 }
 
-// ---------------------------------------------------------------------------
-// Marketplace Profile — Static Heuristics per Marketplace
-// ---------------------------------------------------------------------------
-function getMarketplaceProfile(marketplaceId) {
-  switch (marketplaceId) {
-    case "render":
-      return { baseWeight: 1.2, gpuBias: 1.3, shortJobBias: 1.0, bwBias: 1.0 };
-    case "vast":
-      return { baseWeight: 1.15, gpuBias: 1.2, shortJobBias: 1.1, bwBias: 1.0 };
-    case "fluidstack":
-      return { baseWeight: 1.1, gpuBias: 1.0, shortJobBias: 1.2, bwBias: 1.0 };
-    case "spheron":
-      return { baseWeight: 1.0, gpuBias: 0.9, shortJobBias: 1.3, bwBias: 1.0 };
-    case "akash":
-      return { baseWeight: 0.95, gpuBias: 1.0, shortJobBias: 1.0, bwBias: 1.0 };
-    default:
-      return { baseWeight: 1.0, gpuBias: 1.0, shortJobBias: 1.0, bwBias: 1.0 };
+// ============================================================================
+// Marketplace Profile
+// ============================================================================
+function getMarketplaceProfile(id) {
+  switch (id) {
+    case "runpod": return { base: 1.1, gpu: 1.2, short: 1.1, bw: 1.0 };
+    case "spheron": return { base: 1.0, gpu: 0.9, short: 1.3, bw: 1.0 };
+    case "salad": return { base: 1.05, gpu: 1.1, short: 1.0, bw: 1.0 };
+    case "akash": return { base: 0.95, gpu: 1.0, short: 1.0, bw: 1.0 };
+    case "vast": return { base: 1.15, gpu: 1.2, short: 1.1, bw: 1.0 };
+    default: return { base: 1.0, gpu: 1.0, short: 1.0, bw: 1.0 };
   }
 }
 
-// ---------------------------------------------------------------------------
-// Resource Fit — GPU / Duration / Bandwidth Modifiers
-// ---------------------------------------------------------------------------
-function computeResourceModifiers(job) {
-  const gpuScore = Number(job.minGpuScore ?? 0);
-  const seconds = Number(job.estimatedSeconds ?? 0);
-  const bw = Number(job.bandwidthNeededMbps ?? 0);
-
-  let gpuFactor = 1.0;
-  if (gpuScore >= 500) gpuFactor = 1.2;
-  else if (gpuScore >= 300) gpuFactor = 1.1;
-
-  let durationFactor = 1.0;
-  if (seconds > 0 && seconds <= 600) durationFactor = 1.1; // short
-  else if (seconds > 3600) durationFactor = 0.9; // very long
-
-  let bwFactor = 1.0;
-  if (bw > 50) bwFactor = 0.9; // penalize very heavy bandwidth
-
-  return { gpuFactor, durationFactor, bwFactor };
-}
-
-// ---------------------------------------------------------------------------
-// Light A‑B‑A Influence — Optional Advantage Modifiers
-// ---------------------------------------------------------------------------
+// ============================================================================
+// A‑B‑A Influence
+// ============================================================================
 function computeAbaModifiers(job) {
-  // These fields are optional; if absent, modifiers are neutral (1.0).
   const band = job._abaBand || null;
-  const binaryDensity = Number(job._abaBinaryDensity ?? 0);
-  const waveAmplitude = Number(job._abaWaveAmplitude ?? 0);
+  const density = Number(job._abaBinaryDensity ?? 0);
+  const amp = Number(job._abaWaveAmplitude ?? 0);
 
-  let bandFactor = 1.0;
-  if (band === "binary") {
-    bandFactor = 1.02; // +2% for binary band
-  }
-
-  let binaryFactor = 1.0;
-  if (binaryDensity > 0) {
-    // capped light influence
-    const bonus = Math.min(binaryDensity / 1000, 0.03); // up to +3%
-    binaryFactor = 1.0 + bonus;
-  }
-
-  let waveFactor = 1.0;
-  if (waveAmplitude > 0) {
-    const bonus = Math.min(waveAmplitude / 1000, 0.02); // up to +2%
-    waveFactor = 1.0 + bonus;
-  }
+  const bandFactor = band === "binary" ? 1.02 : 1.0;
+  const binaryFactor = 1.0 + Math.min(density / 1000, 0.03);
+  const waveFactor = 1.0 + Math.min(amp / 1000, 0.02);
 
   return { bandFactor, binaryFactor, waveFactor };
 }
 
-// ---------------------------------------------------------------------------
+// ============================================================================
 // Composite Priority Score
-// ---------------------------------------------------------------------------
+// ============================================================================
 function computePriorityScore(job) {
   const slope = computeMoneySlope(job);
   if (slope <= 0) return 0;
 
-  const profile = getMarketplaceProfile(
-    job.marketplaceId || job._sourceMarketplaceId || "unknown"
-  );
-  const { gpuFactor, durationFactor, bwFactor } = computeResourceModifiers(job);
+  const profile = getMarketplaceProfile(job.marketplaceId);
   const { bandFactor, binaryFactor, waveFactor } = computeAbaModifiers(job);
 
   const score =
     slope *
-    profile.baseWeight *
-    Math.pow(profile.gpuBias, gpuFactor - 1) *
-    Math.pow(profile.shortJobBias, durationFactor - 1) *
-    Math.pow(profile.bwBias, bwFactor - 1) *
+    profile.base *
     bandFactor *
     binaryFactor *
     waveFactor;
 
-  if (job.id) {
-    consulateState.lastPrioritySignature = buildPrioritySignature(
-      job.id,
-      score
-    );
-  }
+  consulateState.lastPrioritySignature =
+    computeHash(`PRIORITY::${job.id}::${score}`);
 
   return score;
 }
 
-// ---------------------------------------------------------------------------
-// Marketplace Stats Update
-// ---------------------------------------------------------------------------
+// ============================================================================
+// Marketplace Stats
+// ============================================================================
 function updateMarketplaceStats(jobs) {
-  const map = consulateState.marketplaceStats;
-
   const grouped = new Map();
+
   for (const job of jobs) {
-    const id = job.marketplaceId || job._sourceMarketplaceId || "unknown";
+    const id = job.marketplaceId || "unknown";
     if (!grouped.has(id)) grouped.set(id, []);
     grouped.get(id).push(job);
   }
 
-  const statsSnapshot = {};
+  const snapshot = {};
 
   for (const [id, list] of grouped.entries()) {
-    const slopes = list.map(computeMoneySlope).filter((s) => s > 0);
-    const avgSlope =
-      slopes.length > 0
-        ? slopes.reduce((a, b) => a + b, 0) / slopes.length
-        : 0;
+    const slopes = list.map(computeMoneySlope).filter(x => x > 0);
+    const avg = slopes.length ? slopes.reduce((a, b) => a + b, 0) / slopes.length : 0;
 
-    const prev = map.get(id) || {
+    const prev = consulateState.marketplaceStats.get(id) || {
       jobsSeen: 0,
       avgSlope: 0,
-      lastCycleJobs: 0,
+      lastCycleJobs: 0
     };
+
     const jobsSeen = prev.jobsSeen + list.length;
-    const blendedAvg =
+    const blended =
       jobsSeen > 0
-        ? (prev.avgSlope * prev.jobsSeen + avgSlope * list.length) / jobsSeen
-        : avgSlope;
+        ? (prev.avgSlope * prev.jobsSeen + avg * list.length) / jobsSeen
+        : avg;
 
     const entry = {
       jobsSeen,
-      avgSlope: blendedAvg,
-      lastCycleJobs: list.length,
+      avgSlope: blended,
+      lastCycleJobs: list.length
     };
 
-    map.set(id, entry);
-    statsSnapshot[id] = { ...entry };
+    consulateState.marketplaceStats.set(id, entry);
+    snapshot[id] = entry;
   }
 
   consulateState.lastMarketplaceStatsSignature =
-    buildMarketplaceStatsSignature(statsSnapshot);
+    computeHash(`MKT_STATS::${JSON.stringify(snapshot)}`);
 }
 
-// ---------------------------------------------------------------------------
-// Core: Ingest Jobs from All Marketplaces (deterministic, sync)
-// ---------------------------------------------------------------------------
+// ============================================================================
+// Fetch Jobs From All Marketplaces
+// ============================================================================
 function fetchJobsFromAllMarketplaces(deviceId) {
-  const { marketplaces } = RegisteredMarketplaces;
-  const allJobs = [];
+  const { marketplaces } = PulseEarnMktEmbassyLedger;
+  const all = [];
 
   for (const adapter of marketplaces) {
     try {
       const raw = adapter.fetchJobs(deviceId);
 
       let jobs;
-      if (Array.isArray(raw)) {
-        jobs = raw;
-      } else if (raw && Array.isArray(raw.jobs)) {
-        jobs = raw.jobs;
-      } else {
-        jobs = [];
-      }
+      if (Array.isArray(raw)) jobs = raw;
+      else if (raw && Array.isArray(raw.jobs)) jobs = raw.jobs;
+      else jobs = [];
 
-      if (jobs.length) {
-        allJobs.push(
-          ...jobs.map((j) => ({
-            ...j,
-            _sourceMarketplaceId: adapter.id || "unknown",
-          }))
-        );
+      for (const j of jobs) {
+        all.push({
+          ...j,
+          _sourceMarketplaceId: adapter.id
+        });
       }
-    } catch (_err) {
-      // deterministic ignore; no logging side‑effects here
-    }
+    } catch (_) {}
   }
 
-  return allJobs;
+  return all;
 }
 
-// ---------------------------------------------------------------------------
-// Core: Intelligence Pass (Fingerprint + Elimination + Factoring)
-// ---------------------------------------------------------------------------
+// ============================================================================
+// Intelligence Pass
+// ============================================================================
 function processJobsIntelligently(jobs) {
-  const uniqueJobs = [];
+  const unique = [];
   const { stats, resultCache, fingerprintIndex } = consulateState;
 
   stats.lastCycleJobsIn = jobs.length;
@@ -482,16 +382,16 @@ function processJobsIntelligently(jobs) {
       const cached = resultCache.get(fp);
       if (cached) {
         stats.totalReusedResults++;
-        uniqueJobs.push({
+        unique.push({
           ...job,
           _router: {
             fingerprint: fp,
             hasCachedResult: true,
             cachedResultMeta: {
               cycleIndex: cached.cycleIndex,
-              marketplaceId: cached.marketplaceId ?? null,
-            },
-          },
+              marketplaceId: cached.marketplaceId
+            }
+          }
         });
       }
       continue;
@@ -499,7 +399,7 @@ function processJobsIntelligently(jobs) {
 
     fingerprintIndex.set(fp, {
       fingerprint: fp,
-      firstSeenCycle: consulateState.cycleIndex,
+      firstSeenCycle: consulateState.cycleIndex
     });
     stats.totalUniqueJobs++;
 
@@ -509,87 +409,83 @@ function processJobsIntelligently(jobs) {
       stats.totalFactoredJobs++;
     }
 
-    uniqueJobs.push({
+    unique.push({
       ...job,
       _router: {
         fingerprint: fp,
-        hasCachedResult: false,
-      },
+        hasCachedResult: false
+      }
     });
   }
 
-  stats.lastCycleJobsOut = uniqueJobs.length;
-  updateMarketplaceStats(uniqueJobs);
-  return uniqueJobs;
+  stats.lastCycleJobsOut = unique.length;
+  updateMarketplaceStats(unique);
+
+  return unique;
 }
 
-// ---------------------------------------------------------------------------
-// Core: Prioritize Jobs by Composite Score
-// ---------------------------------------------------------------------------
+// ============================================================================
+// Priority Sorting
+// ============================================================================
 function sortJobsByPriority(jobs) {
-  const scored = jobs.map((job) => {
-    const score = computePriorityScore(job);
-    return { job, score };
-  });
-
+  const scored = jobs.map(j => ({ job: j, score: computePriorityScore(j) }));
   scored.sort((a, b) => b.score - a.score);
-
-  if (scored.length > 0 && scored[0].job.id) {
-    consulateState.lastPrioritySignature = buildPrioritySignature(
-      scored[0].job.id,
-      scored[0].score
-    );
-  }
-
-  return scored.map((s) => s.job);
+  return scored.map(s => s.job);
 }
 
-// ---------------------------------------------------------------------------
-// Public: Fetch + Process + Prioritize Jobs (deterministic, sync)
-// ---------------------------------------------------------------------------
+// ============================================================================
+// Public: getRoutedJobs
+// ============================================================================
 function getRoutedJobs(deviceId) {
   consulateState.cycleIndex++;
 
-  const rawJobs = fetchJobsFromAllMarketplaces(deviceId);
-  const uniqueJobs = processJobsIntelligently(rawJobs);
-  const sorted = sortJobsByPriority(uniqueJobs);
+  const raw = fetchJobsFromAllMarketplaces(deviceId);
+  const unique = processJobsIntelligently(raw);
+  const sorted = sortJobsByPriority(unique);
 
-  consulateState.lastCycleSignature = buildCycleSignature(
-    consulateState.cycleIndex
-  );
-  consulateState.lastResultCacheSignature = buildResultCacheSignature(
-    consulateState.resultCache.size
-  );
+  consulateState.lastCycleSignature =
+    computeHash(`CYCLE::${consulateState.cycleIndex}`);
+  consulateState.lastResultCacheSignature =
+    computeHash(`RESULT_CACHE::${consulateState.resultCache.size}`);
+
+  // NEW: Presence + Advantage + Chunk/Prewarm
+  const presenceField = buildPresenceField(consulateState);
+  const advantageField = buildAdvantageField(consulateState, presenceField);
+  const chunkPlan = buildChunkPrewarmPlan(consulateState, presenceField, advantageField);
+
+  consulateState.lastPresenceField = presenceField;
+  consulateState.lastAdvantageField = advantageField;
+  consulateState.lastChunkPrewarmPlan = chunkPlan;
 
   return sorted;
 }
 
-// ---------------------------------------------------------------------------
-// Public: Record Completed Result for Future Reuse (cycle‑indexed)
-// ---------------------------------------------------------------------------
+// ============================================================================
+// Public: recordJobResult
+// ============================================================================
 function recordJobResult(job, result) {
-  if (!job || typeof job !== "object") return;
+  if (!job) return;
+
   const fp = job._router?.fingerprint || fingerprintJob(job);
   if (!fp) return;
 
   consulateState.resultCache.set(fp, {
     result,
     cycleIndex: consulateState.cycleIndex,
-    marketplaceId: job.marketplaceId || job._sourceMarketplaceId || null,
+    marketplaceId: job.marketplaceId || job._sourceMarketplaceId
   });
 
-  consulateState.lastResultCacheSignature = buildResultCacheSignature(
-    consulateState.resultCache.size
-  );
+  consulateState.lastResultCacheSignature =
+    computeHash(`RESULT_CACHE::${consulateState.resultCache.size}`);
 }
 
-// ---------------------------------------------------------------------------
-// Public: Read-Only Consulate Healing / Intelligence State
-// ---------------------------------------------------------------------------
+// ============================================================================
+// Public: getHealingState
+// ============================================================================
 function getPulseEarnMktConsulateHealingState() {
   const marketplaceStats = {};
-  for (const [id, value] of consulateState.marketplaceStats.entries()) {
-    marketplaceStats[id] = { ...value };
+  for (const [id, v] of consulateState.marketplaceStats.entries()) {
+    marketplaceStats[id] = { ...v };
   }
 
   return {
@@ -600,26 +496,25 @@ function getPulseEarnMktConsulateHealingState() {
     marketplaceStats,
     cycleIndex: consulateState.cycleIndex,
 
-    // v11 signatures
     lastCycleSignature: consulateState.lastCycleSignature,
     lastFingerprintSignature: consulateState.lastFingerprintSignature,
     lastFactorSignature: consulateState.lastFactorSignature,
     lastPrioritySignature: consulateState.lastPrioritySignature,
     lastMarketplaceStatsSignature: consulateState.lastMarketplaceStatsSignature,
     lastResultCacheSignature: consulateState.lastResultCacheSignature,
+
+    // NEW 12.3 Presence Surfaces
+    lastPresenceField: consulateState.lastPresenceField,
+    lastAdvantageField: consulateState.lastAdvantageField,
+    lastChunkPrewarmPlan: consulateState.lastChunkPrewarmPlan
   };
 }
 
 // ============================================================================
-// Exported API — PULSE EARN MARKETPLACE CONSULATE (v11)
+// Exported API — unchanged external shape
 // ============================================================================
 export const PulseEarnMktConsulate = {
-  // Core routing
-  getRoutedJobs, // (deviceId) → prioritized jobs (sync, deterministic)
-
-  // Result memory
-  recordJobResult, // (job, result) → cache for future reuse
-
-  // Diagnostics / healing
-  getHealingState: getPulseEarnMktConsulateHealingState,
+  getRoutedJobs,
+  recordJobResult,
+  getHealingState: getPulseEarnMktConsulateHealingState
 };

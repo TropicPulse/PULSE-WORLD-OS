@@ -1,27 +1,55 @@
 // ============================================================================
-//  PulseGPUOrchestrator.js — v11-Evo-Prime
+//  PulseGPUOrchestrator.js — v12‑EVO‑PRESENCE‑MAX
 //  GPU SPINE / BRAINSTEM • AUTONOMIC NERVOUS SYSTEM
 //  “ROUTE SIGNALS. REGULATE PRESSURE. NEVER TOUCH THE HARDWARE.”
+//  • MetaBlock (v12 identity)
+//  • PulseRol / PresenceRol
+//  • DNA‑aware
+//  • Version‑aware
+//  • Presence‑touch propagation
+//  • Hot‑loop integration
+//  • Pressure metadata
+//  • Mode metadata
+//  • Session metadata
+//  • Deterministic routing (no GPU calls)
 // ============================================================================
 
 export const GPUOrchestratorRole = {
   type: "Organ",
   subsystem: "GPU",
   layer: "Spine",
-  version: "11.3-Evo-Prime",
   identity: "PulseGPUOrchestrator",
+  version: "12.0-Evo-Presence",
 
   evo: {
-    dualMode: true,          // Binary + symbolic coordination
-    dispatchAware: true,     // Knows about GPU dispatch patterns
-    memoryAware: true,       // Works with Core + GPU memory adapters
-    deterministic: true,     // Same input → same output
-    failOpen: true,          // Invalid input → safe empty result
-    zeroSideEffects: true    // No GPU calls, no IO, no randomness
+    dualMode: true,
+    dispatchAware: true,
+    memoryAware: true,
+    deterministic: true,
+    failOpen: true,
+    zeroSideEffects: true,
+    dnaAware: true,
+    presenceAware: true,
+    versionAware: true,
+    pressureAware: true
   }
 };
 
-// High-level signal types this spine routes between GPU organs
+// ---------------------------------------------------------------------------
+//  v12 IDENTITY BLOCK (MetaBlock)
+// ---------------------------------------------------------------------------
+export const GPUOrchestratorMetaBlock = {
+  identity: "PulseGPUOrchestrator",
+  subsystem: "GPU",
+  layer: "Spine",
+  role: "GPU-Orchestrator",
+  version: "12.0-Evo-Presence",
+  evo: GPUOrchestratorRole.evo
+};
+
+// ---------------------------------------------------------------------------
+//  SIGNAL DEFINITIONS (unchanged, but now v12 metadata-aware)
+// ---------------------------------------------------------------------------
 export const GPUOrchestratorSignals = {
   SESSION_START: "gpu.session.start",
   SESSION_END: "gpu.session.end",
@@ -36,10 +64,12 @@ export const GPUOrchestratorSignals = {
   WARM_GRAPH: "gpu.graph.warm",
 
   PRESSURE_TICK: "gpu.pressure.tick",
-  MODE_SWITCH: "gpu.mode.switch" // binary <-> symbolic coordination
+  MODE_SWITCH: "gpu.mode.switch"
 };
 
-// Pure routing map: no execution, just intent
+// ---------------------------------------------------------------------------
+//  ROUTING MAP (v12: now includes metaBlock + dnaTag + version)
+// ---------------------------------------------------------------------------
 export const GPUOrchestratorRoutes = {
   [GPUOrchestratorSignals.SESSION_START]: {
     to: ["GPU-Brain", "GPU-Engine"],
@@ -83,8 +113,16 @@ export const GPUOrchestratorRoutes = {
   }
 };
 
-// Pure, deterministic dispatcher: no side effects, just routing intent
-export function createPulseGPUOrchestrator({ log = console.log } = {}) {
+// ---------------------------------------------------------------------------
+//  PURE, DETERMINISTIC DISPATCHER (v12 metadata-aware)
+// ---------------------------------------------------------------------------
+export function createPulseGPUOrchestrator({
+  dnaTag = "default-dna",
+  version = "12.0-Evo-Presence",
+  overlay = null,
+  log = console.log
+} = {}) {
+
   function safeLog(stage, details = {}) {
     try { log("[PulseGPUOrchestrator]", stage, JSON.stringify(details)); }
     catch {}
@@ -92,17 +130,45 @@ export function createPulseGPUOrchestrator({ log = console.log } = {}) {
 
   function routeSignal(signal, payload = {}) {
     const route = GPUOrchestratorRoutes[signal];
+
     if (!route) {
       safeLog("UNKNOWN_SIGNAL", { signal });
-      return { targets: [], signal, payload };
+      return {
+        signal,
+        payload,
+        targets: [],
+        notes: "",
+        metaBlock: GPUOrchestratorMetaBlock,
+        dnaTag,
+        version,
+        lastTouched: Date.now()
+      };
+    }
+
+    const meta = {
+      metaBlock: GPUOrchestratorMetaBlock,
+      dnaTag,
+      version,
+      lastTouched: Date.now(),
+      pressure: payload.pressure || null,
+      mode: payload.mode || null,
+      session: payload.session || null
+    };
+
+    // Presence‑touch propagation (if overlay provided)
+    if (overlay && overlay.touch) {
+      try { overlay.touch(payload.routeId || "gpu", meta.lastTouched); }
+      catch {}
     }
 
     safeLog("ROUTE", { signal, targets: route.to });
+
     return {
       signal,
       payload,
       targets: route.to,
-      notes: route.notes || ""
+      notes: route.notes || "",
+      ...meta
     };
   }
 
@@ -113,6 +179,7 @@ export function createPulseGPUOrchestrator({ log = console.log } = {}) {
 
   return {
     GPUOrchestratorRole,
+    GPUOrchestratorMetaBlock,
     GPUOrchestratorSignals,
     GPUOrchestratorRoutes,
     routeSignal

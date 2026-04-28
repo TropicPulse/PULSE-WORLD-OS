@@ -1,10 +1,11 @@
 // ============================================================================
-// FILE: tropic-pulse-functions/apps/PULSE-EARN/PulseEarnSkeletalSystem-v11-Evo.js
-// LAYER: THE SKELETAL SYSTEM + VITAL SIGNS MONITOR (v11-Evo A-B-A)
-// (Deterministic Device Phenotype + Structural Limits + Physiological Baselines)
+// FILE: tropic-pulse-functions/apps/PULSE-EARN/PulseEarnSkeletalSystem-v12.3-Presence.js
+// LAYER: THE SKELETAL SYSTEM + VITAL SIGNS MONITOR (v12.3-Presence A-B-A)
+// (Deterministic Device Phenotype + Structural Limits + Physiological Baselines
+//  + Presence Field + Chunk/Cache/Prewarm Advantage Surfaces)
 // ============================================================================
 //
-// ROLE (v11-Evo):
+// ROLE (v12.3-Presence):
 //   THE SKELETAL SYSTEM — Pulse‑Earn’s structural capacity declaration.
 //   • CPU cores = bone density (deterministic)
 //   • Memory = marrow capacity (deterministic)
@@ -14,30 +15,27 @@
 //   • Bandwidth = circulatory throughput (deterministic)
 //   • Stability = organism homeostasis (deterministic)
 //
-//   A-B-A DUAL-BAND EXTENSION (v11+):
-//   • band = symbolic | binary (phenotype-declared)
+//   PRESENCE + A-B-A DUAL-BAND EXTENSION (v12.3):
+//   • band = symbolic | binary (phenotype-declared, binary-first capable)
+//   • presenceBand = organism presence field hint
 //   • binaryField = deterministic binary surface
 //   • waveField = deterministic wave surface
+//   • chunkField = deterministic chunk/cache/prewarm budget surface
 //
-// PURPOSE (v11-Evo):
+// PURPOSE (v12.3-Presence):
 //   • Provide deterministic, drift‑proof device profiling.
 //   • Guarantee safe capability declaration.
 //   • Supply Survival Instincts + Reflex + Earn + PulseSend with stable data.
-//   • Emit pattern + signature surfaces for v11‑Evo diagnostics.
-//   • Provide band + binary + wave metadata for organism-wide A-B-A field.
-//
-// CONTRACT (v11-Evo):
-//   • PURE CAPABILITY ENGINE — no AI layers, no translation, no memory model.
-//   • NO eval(), NO dynamic imports, NO arbitrary code execution.
-//   • NO network calls, NO filesystem access, NO crypto operations.
-//   • NO OS inspection, NO hardware probing.
-//   • Deterministic phenotype only.
+//   • Emit pattern + signature surfaces for v12.3‑Presence diagnostics.
+//   • Provide band + binary + wave + presence + chunk metadata
+//     for organism‑wide A‑B‑A + Presence field.
 // ============================================================================
+
 export const PulseEarnSkeletalSystemMeta = Object.freeze({
   layer: "PulseEarnSkeletalSystem",
   role: "EARN_SKELETAL_ORGAN",
-  version: "v11.2-EVO",
-  identity: "PulseEarnSkeletalSystem-v11.2-EVO",
+  version: "v12.3-PRESENCE",
+  identity: "PulseEarnSkeletalSystem-v12.3-PRESENCE",
 
   guarantees: Object.freeze({
     deterministic: true,
@@ -69,6 +67,13 @@ export const PulseEarnSkeletalSystemMeta = Object.freeze({
     waveFieldAware: true,
     healingMetadataAware: true,
 
+    // Presence + advantage
+    presenceAware: true,
+    presenceFieldAware: true,
+    chunkingAware: true,
+    cachePrewarmAware: true,
+    gpuFieldAware: true,
+
     // Environment
     worldLensAware: false,
     multiInstanceReady: true
@@ -77,25 +82,28 @@ export const PulseEarnSkeletalSystemMeta = Object.freeze({
   contract: Object.freeze({
     input: [
       "PhenotypeConfigOverride",
-      "DualBandContext"
+      "DualBandContext",
+      "PresenceContext"
     ],
     output: [
       "DevicePhenotype",
       "StructuralDiagnostics",
       "PhysiologicalDiagnostics",
+      "PresenceDiagnostics",
       "SkeletalSignatures",
       "SkeletalHealingState"
     ]
   }),
 
   lineage: Object.freeze({
-    root: "PulseOS-v11-EVO",
-    parent: "PulseEarn-v11.2-EVO",
+    root: "PulseOS-v12-Presence",
+    parent: "PulseEarn-v12.3-Presence",
     ancestry: [
       "PulseEarnSkeletalSystem-v9",
       "PulseEarnSkeletalSystem-v10",
       "PulseEarnSkeletalSystem-v11",
-      "PulseEarnSkeletalSystem-v11-Evo"
+      "PulseEarnSkeletalSystem-v11-Evo",
+      "PulseEarnSkeletalSystem-v12.3-Presence"
     ]
   }),
 
@@ -103,20 +111,20 @@ export const PulseEarnSkeletalSystemMeta = Object.freeze({
     supported: ["symbolic", "binary"],
     default: "symbolic",
     behavior: "metadata-only",
-    priority: "symbolic-first"
+    priority: "binary-first"
   }),
 
   architecture: Object.freeze({
     pattern: "A-B-A",
     baseline: "deterministic phenotype → structural limits → physiological baselines",
-    adaptive: "binary/wave surfaces + dual-band signatures",
-    return: "deterministic phenotype + structural + physiological signatures"
+    adaptive: "binary/wave/presence surfaces + dual-band signatures + chunkField",
+    return: "deterministic phenotype + structural + physiological + presence signatures"
   })
 });
 
 
 // ---------------------------------------------------------------------------
-// Healing Metadata — Structural + Physiological Log (v11-Evo)
+// Healing Metadata — Structural + Physiological + Presence Log (v12.3-Presence)
 // ---------------------------------------------------------------------------
 const skeletalHealing = {
   lastProfile: null,
@@ -128,12 +136,16 @@ const skeletalHealing = {
   lastPhenotypeSignature: null,
   lastStructuralSignature: null,
   lastPhysiologicalSignature: null,
+  lastPresenceSignature: null,
   lastDevicePattern: null,
 
   lastBand: null,
   lastBandSignature: null,
   lastBinaryField: null,
   lastWaveField: null,
+  lastPresenceBand: null,
+  lastPresenceField: null,
+  lastChunkField: null,
 
   cycleCount: 0,
 
@@ -147,7 +159,7 @@ const skeletalHealing = {
 
 
 // ---------------------------------------------------------------------------
-// Deterministic Hash Helper — v11-Evo
+// Deterministic Hash Helper — v12.3-Presence
 // ---------------------------------------------------------------------------
 function computeHash(str) {
   let h = 0;
@@ -163,20 +175,21 @@ function normalizeBand(band) {
   return b === "binary" ? "binary" : "symbolic";
 }
 
+function normalizePresenceBand(presenceBand) {
+  const p = String(presenceBand || "symbolic").toLowerCase();
+  return p === "binary" ? "binary" : "symbolic";
+}
+
 
 // ---------------------------------------------------------------------------
-// Deterministic Phenotype — v11-Evo
+// Deterministic Phenotype — v12.3-Presence
 // ---------------------------------------------------------------------------
 //
-// In v11-Evo, the Skeletal System STILL cannot read hardware.
-// It must declare a deterministic phenotype.
-//
-// These values may be overridden deterministically by configure(),
-// but NEVER detected dynamically.
+// Still no hardware probing; phenotype is deterministic and override‑only.
 // ---------------------------------------------------------------------------
 
 let phenotype = {
-  id: "DEVICE-11.0",
+  id: "DEVICE-12.3-PRESENCE",
 
   // Structural capacity (skeletal system)
   cpuCores: 8,
@@ -185,31 +198,41 @@ let phenotype = {
   // Muscular potential
   gpuModel: "deterministic-gpu",
   vramMB: 4096,
-  gpuScore: 600,
+  gpuScore: 800, // slight uplift for Presence generation
 
   // Physiological baselines
-  bandwidthMbps: 50,
-  stabilityScore: 0.7,
+  bandwidthMbps: 100,
+  stabilityScore: 0.8,
 
-  // A-B-A band identity (phenotype-declared)
-  band: "symbolic" // "symbolic" | "binary"
+  // A-B-A band identity (phenotype-declared, binary-first capable)
+  band: "binary", // Presence prefers binary-first surfaces
+
+  // Presence + chunk/cache/prewarm hints
+  presenceBand: "binary",
+  chunkBudgetKB: 512,       // deterministic chunk budget hint
+  cacheLines: 128,          // deterministic cache line hint
+  prewarmSlots: 8           // deterministic prewarm slot hint
 };
 
 
 // ---------------------------------------------------------------------------
-// configurePulseEarnPhenotype — deterministic override (v11-Evo)
+// configurePulseEarnPhenotype — deterministic override (v12.3-Presence)
 // ---------------------------------------------------------------------------
 export function configurePulseEarnPhenotype(config) {
+  const cfg = config || {};
   phenotype = {
     ...phenotype,
-    ...config,
-    band: normalizeBand(config && config.band != null ? config.band : phenotype.band)
+    ...cfg,
+    band: normalizeBand(cfg && cfg.band != null ? cfg.band : phenotype.band),
+    presenceBand: normalizePresenceBand(
+      cfg && cfg.presenceBand != null ? cfg.presenceBand : phenotype.presenceBand
+    )
   };
 }
 
 
 // ---------------------------------------------------------------------------
-// INTERNAL: Build Device Pattern (v11-Evo)
+// INTERNAL: Build Device Pattern (v12.3-Presence)
 // ---------------------------------------------------------------------------
 function buildDevicePattern(p) {
   return (
@@ -218,13 +241,17 @@ function buildDevicePattern(p) {
     `::gpu:${p.gpuScore}` +
     `::bw:${p.bandwidthMbps}` +
     `::stab:${p.stabilityScore}` +
-    `::band:${normalizeBand(p.band)}`
+    `::band:${normalizeBand(p.band)}` +
+    `::presence:${normalizePresenceBand(p.presenceBand)}` +
+    `::chunk:${p.chunkBudgetKB}` +
+    `::cache:${p.cacheLines}` +
+    `::prewarm:${p.prewarmSlots}`
   );
 }
 
 
 // ---------------------------------------------------------------------------
-// INTERNAL: Build Signatures (v11-Evo)
+// INTERNAL: Build Signatures (v12.3-Presence)
 // ---------------------------------------------------------------------------
 function buildStructuralSignature(p) {
   return computeHash(
@@ -240,7 +267,13 @@ function buildPhysiologicalSignature(p) {
 
 function buildPhenotypeSignature(p) {
   return computeHash(
-    `PHENO::${p.cpuCores}::${p.memoryMB}::${p.gpuScore}::${p.bandwidthMbps}::${p.stabilityScore}::${normalizeBand(p.band)}`
+    `PHENO::${p.cpuCores}::${p.memoryMB}::${p.gpuScore}::${p.bandwidthMbps}::${p.stabilityScore}::${normalizeBand(p.band)}::${normalizePresenceBand(p.presenceBand)}`
+  );
+}
+
+function buildPresenceSignature(p) {
+  return computeHash(
+    `PRESENCE::band:${normalizePresenceBand(p.presenceBand)}::chunk:${p.chunkBudgetKB}::cache:${p.cacheLines}::prewarm:${p.prewarmSlots}`
   );
 }
 
@@ -251,7 +284,7 @@ function buildBandSignature(p, cycleIndex) {
 
 
 // ---------------------------------------------------------------------------
-// INTERNAL: A-B-A Binary + Wave Surfaces (v11+)
+// INTERNAL: A-B-A Binary + Wave Surfaces (v12.3-Presence)
 // ---------------------------------------------------------------------------
 function buildBinaryField(p, cycleIndex) {
   const patternLen =
@@ -293,8 +326,39 @@ function buildWaveField(p, cycleIndex) {
 
 
 // ---------------------------------------------------------------------------
+// INTERNAL: Presence + Chunk/Cache/Prewarm Field (v12.3-Presence)
+// ---------------------------------------------------------------------------
+function buildPresenceField(p, cycleIndex) {
+  const presenceBand = normalizePresenceBand(p.presenceBand);
+  const chunkBudget = p.chunkBudgetKB;
+  const cacheLines = p.cacheLines;
+  const prewarmSlots = p.prewarmSlots;
+
+  const surface =
+    chunkBudget +
+    cacheLines * 2 +
+    prewarmSlots * 3 +
+    cycleIndex;
+
+  return {
+    presenceBand,
+    presenceSignature: computeHash(
+      `PRES_FIELD::${presenceBand}::${chunkBudget}::${cacheLines}::${prewarmSlots}::${surface}`
+    ),
+    chunkField: {
+      chunkBudgetKB: chunkBudget,
+      cacheLines,
+      prewarmSlots,
+      surface,
+      parity: surface % 2 === 0 ? 0 : 1
+    }
+  };
+}
+
+
+// ---------------------------------------------------------------------------
 // MAIN EXPORT — getPulseEarnDeviceProfile()
-// Phenotype Passport + Structural Identity (v11-Evo A-B-A)
+// Phenotype Passport + Structural Identity (v12.3-Presence A-B-A)
 // ---------------------------------------------------------------------------
 export function getPulseEarnDeviceProfile() {
   skeletalHealing.cycleCount++;
@@ -305,10 +369,12 @@ export function getPulseEarnDeviceProfile() {
   const structuralSignature = buildStructuralSignature(phenotype);
   const physiologicalSignature = buildPhysiologicalSignature(phenotype);
   const phenotypeSignature = buildPhenotypeSignature(phenotype);
+  const presenceSignature = buildPresenceSignature(phenotype);
   const devicePattern = buildDevicePattern(phenotype);
   const bandSignature = buildBandSignature(phenotype, cycleIndex);
   const binaryField = buildBinaryField(phenotype, cycleIndex);
   const waveField = buildWaveField(phenotype, cycleIndex);
+  const presenceField = buildPresenceField(phenotype, cycleIndex);
 
   const profile = {
     id: phenotype.id,
@@ -330,17 +396,24 @@ export function getPulseEarnDeviceProfile() {
     band,
     bandSignature,
 
-    // v11-Evo signatures
+    // Presence identity
+    presenceBand: presenceField.presenceBand,
+    presenceSignature,
+
+    // v12.3-Presence signatures
     structuralSignature,
     physiologicalSignature,
     phenotypeSignature,
 
-    // v11-Evo pattern surface
+    // v12.3-Presence pattern surface
     devicePattern,
 
     // A-B-A binary + wave surfaces
     binaryField,
-    waveField
+    waveField,
+
+    // Presence + chunk/cache/prewarm field
+    chunkField: presenceField.chunkField
   };
 
   // Update healing metadata
@@ -353,6 +426,7 @@ export function getPulseEarnDeviceProfile() {
   skeletalHealing.lastStructuralSignature = structuralSignature;
   skeletalHealing.lastPhysiologicalSignature = physiologicalSignature;
   skeletalHealing.lastPhenotypeSignature = phenotypeSignature;
+  skeletalHealing.lastPresenceSignature = presenceSignature;
   skeletalHealing.lastDevicePattern = devicePattern;
 
   skeletalHealing.lastBand = band;
@@ -360,12 +434,16 @@ export function getPulseEarnDeviceProfile() {
   skeletalHealing.lastBinaryField = binaryField;
   skeletalHealing.lastWaveField = waveField;
 
+  skeletalHealing.lastPresenceBand = presenceField.presenceBand;
+  skeletalHealing.lastPresenceField = presenceField;
+  skeletalHealing.lastChunkField = presenceField.chunkField;
+
   return profile;
 }
 
 
 // ---------------------------------------------------------------------------
-// Export Healing Metadata — Phenotype Health Report (v11-Evo)
+// Export Healing Metadata — Phenotype Health Report (v12.3-Presence)
 // ---------------------------------------------------------------------------
 export function getPulseEarnSkeletalHealingState() {
   return { ...skeletalHealing };

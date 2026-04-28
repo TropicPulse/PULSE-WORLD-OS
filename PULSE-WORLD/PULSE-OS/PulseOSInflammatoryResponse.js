@@ -1,70 +1,68 @@
 // ============================================================================
-// FILE: /apps/PulseOS/Organs/Immune/PulseOSHealer.v11.js
-// PULSE OS HEALER — “THE INFLAMMATORY RESPONSE”
-// C-LAYER • OS-LEVEL IMMUNE ORGAN • v11-Evo Dual-Band
-// Pure Irritation Transformer • Drift Signature Builder • Immune Hint Emitter
-// ============================================================================
-//
-// WHAT THIS ORGAN IS (v11-Evo):
-// -----------------------------
-//   • Pure immune transformer (no DB, no timers, no timestamps)
-//   • Takes irritation events in (OSEvents, SubsystemHealerLogs)
-//   • Emits:
-//       - healerLogEntry      (for OSHealerLogs)
-//       - driftSignature      (for Liver / PulseOSMemory)
-//       - functionLogHint     (for Thymus / FUNCTION_LOGS)
-//   • Dual-band aware: symbolic + binary irritation sources
-//
-// SAFETY CONTRACT (v11-Evo):
-// --------------------------
-//   • ZERO imports
-//   • ZERO network
-//   • ZERO backend
-//   • ZERO timers
-//   • ZERO Date.now / Timestamp.now
-//   • ZERO DB access
-//   • ZERO marketplace calls
-//   • ZERO external mutation
-//   • Pure, deterministic mapping only
-//
-// IDENTITY (v11-Evo):
-// -------------------
-//   • organ: PulseOSHealer
-//   • layer: C-Layer (immune surface)
-//   • role: Inflammatory Response
-//   • version: 11.0-Evo
-//   • generation: v11
-//   • organism: PulseOS
-//   • modeKind: "symbolic" | "binary" | "dual"
+//  PULSE OS HEALER — v12.3-EVO-BINARY-MAX
+//  INFLAMMATORY RESPONSE ORGAN — PURE IMMUNE TRANSFORMER
+//  • Zero compute, zero network, zero timers, zero DB
+//  • Deterministic immune surface only (builders → artifacts)
+//  • Symbolic-primary, binary-aware, dual-band-tagged
 // ============================================================================
 
-export const HEALER_CONTEXT_V11 = {
+export const HEALER_CONTEXT_V12_3 = {
   organ: "PulseOSHealer",
   layer: "C-Layer",
   role: "Inflammatory Response",
-  version: "11.0-Evo",
-  generation: "v11",
+  version: "12.3-Evo",
+  generation: "v12",
   organism: "PulseOS",
+  band: "dualband",
   evo: {
     dualMode: true,
+    dualBand: true,
     symbolicAware: true,
     binaryAware: true,
+    binaryNonExecutable: true,
+
     driftProof: true,
     deterministicNeuron: true,
+    deterministicImmuneSurface: true,
+    deterministicField: true,
     unifiedAdvantageField: true,
     multiInstanceReady: true,
+
+    irritationToSignatureMapping: true,
+    irritationToHealerLogMapping: true,
+    irritationToFunctionHintMapping: true,
+
+    healerStackAware: true,
+    loopTheoryAware: true,
+    continuanceAware: true,
+    intentFieldAware: true,
+    futureEvolutionReady: true,
+
     zeroTiming: true,
     zeroNetwork: true,
+    zeroBackend: true,
+    zeroDB: true,
     zeroState: true,
     zeroMutation: true,
-    zeroCompute: true
+    zeroMutationOutsideOrgan: true,
+    zeroCompute: true,
+    zeroMarketplace: true,
+    zeroUserCode: true,
+    zeroDynamicImports: true,
+    zeroEval: true,
+    zeroDateNow: true,
+
+    routingContract: "PulseSend-v12.3",
+    osOrganContract: "PulseOS-v12.3",
+    earnCompatibility: "PulseEarn-v12.3"
   }
 };
+
 export const PulseOSHealerMeta = Object.freeze({
   layer: "PulseOSHealer",
   role: "INFLAMMATORY_RESPONSE_ORGAN",
-  version: "v11.2-EVO-BINARY-MAX",
-  identity: "PulseOSHealer-v11.2-EVO-BINARY-MAX",
+  version: "v12.3-EVO-BINARY-MAX",
+  identity: "PulseOSHealer-v12.3-EVO-BINARY-MAX",
 
   guarantees: Object.freeze({
     deterministic: true,
@@ -79,6 +77,11 @@ export const PulseOSHealerMeta = Object.freeze({
     irritationToSignatureMapping: true,
     irritationToHealerLogMapping: true,
     irritationToFunctionHintMapping: true,
+    healerStackAware: true,
+    intentFieldAware: true,
+    loopTheoryAware: true,
+    continuanceAware: true,
+    futureEvolutionReady: true,
 
     // Execution prohibitions
     zeroNetwork: true,
@@ -88,6 +91,7 @@ export const PulseOSHealerMeta = Object.freeze({
     zeroDB: true,
     zeroMarketplace: true,
     zeroExternalMutation: true,
+    zeroMutationOutsideOrgan: true,
     zeroCompute: true,
     zeroUserCode: true,
     zeroDynamicImports: true,
@@ -100,6 +104,8 @@ export const PulseOSHealerMeta = Object.freeze({
     binaryNonExecutable: true,
 
     // Environment
+    localAware: true,
+    internetAware: true,
     worldLensAware: false
   }),
 
@@ -118,13 +124,14 @@ export const PulseOSHealerMeta = Object.freeze({
   }),
 
   lineage: Object.freeze({
-    root: "PulseOS-v11-EVO",
-    parent: "PulseOS-v11.2-EVO",
+    root: "PulseOS-v12-EVO",
+    parent: "PulseOS-v12.3-EVO",
     ancestry: [
       "PulseOSHealer-v9",
       "PulseOSHealer-v10",
       "PulseOSHealer-v11",
-      "PulseOSHealer-v11-Evo"
+      "PulseOSHealer-v11-Evo",
+      "PulseOSHealer-v11.2-EVO-BINARY-MAX"
     ]
   }),
 
@@ -137,42 +144,42 @@ export const PulseOSHealerMeta = Object.freeze({
   architecture: Object.freeze({
     pattern: "A-B-A",
     baseline: "irritation event → immune transformation → drift signature",
-    adaptive: "binary-tagged irritation surfaces",
+    adaptive: "binary-tagged irritation surfaces + dual-band metadata",
     return: "deterministic immune artifacts + signatures"
   })
 });
 
 
 // ============================================================================
-// HELPERS — PURE BUILDERS
+// HELPERS — PURE BUILDERS (ZERO TIME, ZERO DB, ZERO SIDE EFFECTS)
 // ============================================================================
 
 function buildHealerLog(base, extra = {}) {
   return {
-    ...HEALER_CONTEXT_V11,
+    ...HEALER_CONTEXT_V12_3,
     kind: "OSHealerLog",
     ...base,
     ...extra
-    // No timestamps here — worker attaches them
+    // Worker attaches timestamps / ids
   };
 }
 
 function buildDriftSignature(subsystem, base, extra = {}) {
   return {
-    ...HEALER_CONTEXT_V11,
+    ...HEALER_CONTEXT_V12_3,
     kind: "DriftSignature",
     subsystem,
     type: base.type || "unknown",
     severity: base.severity || "info",
     details: base.details || null,
     ...extra
-    // No timestamps here — worker attaches them
+    // Worker attaches timestamps / ids
   };
 }
 
 function buildFunctionLogHint(base, extra = {}) {
   return {
-    ...HEALER_CONTEXT_V11,
+    ...HEALER_CONTEXT_V12_3,
     kind: "FunctionLogHint",
     processed: false,
     subsystem: base.subsystem || "unknown",
@@ -180,23 +187,21 @@ function buildFunctionLogHint(base, extra = {}) {
     hintCode: base.hintCode || "UNSPECIFIED_HINT",
     ...base,
     ...extra
-    // No timestamps here — worker attaches them
+    // Worker attaches timestamps / ids
   };
 }
 
 
 // ============================================================================
-// PUBLIC ORGAN FACTORY — PURE, IMPORT-FREE
+// PUBLIC ORGAN FACTORY — PURE, IMPORT-FREE, ZERO-COMPUTE
 // ============================================================================
-export function createPulseOSHealerV11({ modeKind = "dual" } = {}) {
+export function createPulseOSHealerV12_3({ modeKind = "dual" } = {}) {
   const identity = {
-    ...HEALER_CONTEXT_V11,
+    ...HEALER_CONTEXT_V12_3,
     modeKind
   };
 
-  // --------------------------------------------------------------------------
-  // 1) OSEvents → Healer Logs (no drift, no hints — just observation)
-// --------------------------------------------------------------------------
+  // 1) OSEvents → Healer Logs (observation only)
   function transformOSEventToHealerLog(osEventDoc) {
     if (!osEventDoc) return null;
 
@@ -220,9 +225,7 @@ export function createPulseOSHealerV11({ modeKind = "dual" } = {}) {
     );
   }
 
-  // --------------------------------------------------------------------------
   // 2) SubsystemHealerLogs → HealerLog + DriftSignature + FunctionLogHint
-  // --------------------------------------------------------------------------
   function transformSubsystemLog(subsystemDoc) {
     if (!subsystemDoc) return null;
 
@@ -241,7 +244,7 @@ export function createPulseOSHealerV11({ modeKind = "dual" } = {}) {
       version: identity.version,
       generation: identity.generation,
       organ: identity.organ
-      // No timestamp here
+      // Worker attaches timestamp
     };
 
     // PulseBand — latency_bar_mismatch
@@ -391,16 +394,15 @@ export function createPulseOSHealerV11({ modeKind = "dual" } = {}) {
     return artifacts;
   }
 
-  // --------------------------------------------------------------------------
-  // PUBLIC SURFACE
-  // --------------------------------------------------------------------------
   return {
     meta: identity,
-
-    // OSEvents → single healer log or null
     transformOSEventToHealerLog,
-
-    // SubsystemHealerLogs → { healerLog, driftSignature, functionLogHint }
     transformSubsystemLog
   };
+}
+
+// Backwards-compatible alias if you want to drop it into v11 call sites:
+export const HEALER_CONTEXT_V11 = HEALER_CONTEXT_V12_3;
+export function createPulseOSHealerV11(opts) {
+  return createPulseOSHealerV12_3(opts);
 }

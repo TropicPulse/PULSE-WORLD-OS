@@ -1,29 +1,30 @@
 // ============================================================================
-// FILE: tropic-pulse-functions/apps/PULSE-EARN/PulseEarnCustomReceptor-v11-Evo.js
-// LAYER: THE GENETIC REGULATOR (v11-Evo A‑B‑A)
-// (Deterministic Marketplace Interpreter + Receptor Builder)
+// FILE: tropic-pulse-functions/apps/PULSE-EARN/PulseEarnCustomReceptor-v12.3-PRESENCE-EVO+.js
+// LAYER: THE GENETIC REGULATOR (v12.3-PRESENCE-EVO+ A‑B‑A)
+// (Deterministic Marketplace Interpreter + Receptor Builder + Presence Surfaces)
 // ============================================================================
 //
-// ROLE (v11-Evo A‑B‑A):
+// ROLE (v12.3-PRESENCE-EVO+ A‑B‑A):
 //   THE GENETIC REGULATOR — deterministic marketplace interpreter.
 //   • Reads receptor DNA from static deterministic config (no network).
 //   • Expresses that DNA into a functional receptor phenotype.
 //   • Enforces the universal interface (ping, fetchJobs, submitResult).
-//   • Emits v11‑Evo receptor signatures + lineage metadata.
-//   • Emits A‑B‑A bandSignature + binaryField + waveField surfaces.
+//   • Emits v12.3‑Presence‑EVO+ receptor signatures + lineage metadata.
+//   • Emits A‑B‑A bandSignature + binaryField + waveField + presence surfaces.
 //
-// CONTRACT (v11-Evo):
+// CONTRACT (v12.3-PRESENCE-EVO+):
 //   • PURE RECEPTOR — deterministic, drift‑proof.
 //   • NO async, NO network, NO randomness, NO timestamps.
 //   • NO eval(), NO Function(), NO dynamic imports.
 //   • NEVER mutate job objects.
 //   • READ‑ONLY except deterministic config caching.
+//   • Presence/advantage/hints are metadata-only.
 // ============================================================================
 export const PulseEarnCustomReceptorMeta = Object.freeze({
   layer: "PulseEarnCustomReceptor",
   role: "EARN_RECEPTOR_ORGAN",
-  version: "v11.2-EVO",
-  identity: "PulseEarnCustomReceptor-v11.2-EVO",
+  version: "v12.3-PRESENCE-EVO+",
+  identity: "PulseEarnCustomReceptor-v12.3-PRESENCE-EVO+",
 
   guarantees: Object.freeze({
     deterministic: true,
@@ -35,13 +36,17 @@ export const PulseEarnCustomReceptorMeta = Object.freeze({
     binaryAware: true,
     waveFieldAware: true,
     evolutionAware: true,
+    presenceAware: true,
+    advantageAware: true,
+    hintsAware: true,
     worldLensAware: false
   }),
 
   contract: Object.freeze({
     input: [
       "DeterministicMarketplaceConfig",
-      "DualBandContext"
+      "DualBandContext",
+      "GlobalHintsPresenceField"
     ],
     output: [
       "ReceptorPingResult",
@@ -53,7 +58,7 @@ export const PulseEarnCustomReceptorMeta = Object.freeze({
 
   lineage: Object.freeze({
     root: "PulseOS-v11-EVO",
-    parent: "PulseEarn-v11.2-EVO",
+    parent: "PulseEarn-v12.3-PRESENCE-EVO+",
     ancestry: [
       "PulseEarnCustomReceptor-v10",
       "PulseEarnCustomReceptor-v11",
@@ -70,14 +75,13 @@ export const PulseEarnCustomReceptorMeta = Object.freeze({
   architecture: Object.freeze({
     pattern: "A-B-A",
     baseline: "deterministic receptor expression from static DNA",
-    adaptive: "binaryField + waveField + band signatures",
+    adaptive: "binaryField + waveField + band + presence/advantage surfaces",
     return: "deterministic receptor interface (ping/fetchJobs/submitResult)"
   })
 });
 
-
 // ============================================================================
-// Deterministic Hash Helper — v11-Evo
+// Deterministic Hash Helper
 // ============================================================================
 function computeHash(str) {
   let h = 0;
@@ -93,14 +97,13 @@ function normalizeBand(band) {
   return b === "binary" ? "binary" : "symbolic";
 }
 
-
 // ============================================================================
-// Deterministic Genetic DNA — v11-Evo A‑B‑A
+// Deterministic Genetic DNA
 // ============================================================================
 const DETERMINISTIC_RECEPTOR_DNA = {
   id: "CUSTOM",
   name: "Custom Marketplace",
-  version: "11-Evo",
+  version: "12.3-PRESENCE-EVO+",
   healthScore: 1.0,
 
   band: "symbolic", // symbolic | binary
@@ -113,10 +116,9 @@ const DETERMINISTIC_RECEPTOR_DNA = {
 
   headers: {},
 
-  lineage: "Receptor-GeneticRegulator-v11-Evo",
+  lineage: "Receptor-GeneticRegulator-v12.3-PRESENCE-EVO+",
   phenotype: "MarketplaceReceptor"
 };
-
 
 // ============================================================================
 // Genetic Cache — deterministic, no async
@@ -135,9 +137,51 @@ function loadMarketplaceDNA() {
   return cachedDNA;
 }
 
+// ============================================================================
+// Presence / Advantage / Hints Surfaces (metadata-only)
+// ============================================================================
+function buildPresenceField(globalHints = {}) {
+  const gh = globalHints.presenceContext || {};
+  const mesh = globalHints.meshSignals || {};
+  const castle = globalHints.castleSignals || {};
+  const region = globalHints.regionContext || {};
+
+  return {
+    bandPresence: gh.bandPresence || "unknown",
+    routerPresence: gh.routerPresence || "unknown",
+    devicePresence: gh.devicePresence || "unknown",
+    meshPresence: mesh.meshStrength || "unknown",
+    castlePresence: castle.castlePresence || "unknown",
+    regionPresence: region.regionTag || "unknown",
+    regionId: region.regionId || "unknown-region",
+    castleId: castle.castleId || "unknown-castle",
+    castleLoadLevel: castle.loadLevel || "unknown",
+    meshStrength: mesh.meshStrength || "unknown",
+    meshPressureIndex: mesh.meshPressureIndex || 0
+  };
+}
+
+function buildAdvantagePresenceField(globalHints = {}) {
+  const adv = globalHints.advantageContext || {};
+  return {
+    advantageScore: adv.score ?? null,
+    advantageBand: adv.band ?? "neutral",
+    advantageTier: adv.tier ?? "unknown"
+  };
+}
+
+function buildHintsField(globalHints = {}) {
+  return {
+    fallbackBandLevel: globalHints.fallbackBandLevel ?? 0,
+    chunkHints: globalHints.chunkHints || {},
+    cacheHints: globalHints.cacheHints || {},
+    prewarmHints: globalHints.prewarmHints || {},
+    coldStartHints: globalHints.coldStartHints || {}
+  };
+}
 
 // ============================================================================
-// A‑B‑A Binary + Wave Surfaces (v11‑Evo)
+// A‑B‑A Binary + Wave Surfaces
 // ============================================================================
 function buildBinaryField(dna) {
   const patternLen =
@@ -178,9 +222,8 @@ function buildWaveField(dna) {
   };
 }
 
-
 // ============================================================================
-// Signature Builders — v11-Evo A‑B‑A
+// Signature Builders
 // ============================================================================
 function buildReceptorSignature(dna) {
   return computeHash(
@@ -204,11 +247,11 @@ function buildBandSignature(dna) {
   return computeHash(`RECEPTOR_BAND::${normalizeBand(dna.band)}::${dna.id}`);
 }
 
-
 // ============================================================================
 // Receptor Expression — ping(), fetchJobs(), submitResult()
+// All now accept optional globalHints for presence/advantage surfaces.
 // ============================================================================
-function ping() {
+function ping(globalHints = {}) {
   const dna = loadMarketplaceDNA();
 
   let latency;
@@ -217,17 +260,24 @@ function ping() {
   else if (dna.healthScore >= 0.15) latency = 150;
   else latency = null;
 
+  const presenceField = buildPresenceField(globalHints);
+  const advantagePresenceField = buildAdvantagePresenceField(globalHints);
+  const hintsField = buildHintsField(globalHints);
+
   return {
     latency,
     receptorId: dna.id,
     signature: buildPingSignature(latency),
     bandSignature: buildBandSignature(dna),
     binaryField: buildBinaryField(dna),
-    waveField: buildWaveField(dna)
+    waveField: buildWaveField(dna),
+    presenceField,
+    advantagePresenceField,
+    hintsField
   };
 }
 
-function fetchJobs() {
+function fetchJobs(globalHints = {}) {
   const dna = loadMarketplaceDNA();
   const jobs = Array.isArray(dna.endpoints.jobs) ? dna.endpoints.jobs : [];
 
@@ -236,18 +286,29 @@ function fetchJobs() {
     marketplaceId: dna.id
   }));
 
+  const presenceField = buildPresenceField(globalHints);
+  const advantagePresenceField = buildAdvantagePresenceField(globalHints);
+  const hintsField = buildHintsField(globalHints);
+
   return {
     jobs: expressed,
     receptorId: dna.id,
     signature: buildJobListSignature(expressed),
     bandSignature: buildBandSignature(dna),
     binaryField: buildBinaryField(dna),
-    waveField: buildWaveField(dna)
+    waveField: buildWaveField(dna),
+    presenceField,
+    advantagePresenceField,
+    hintsField
   };
 }
 
-function submitResult(job, result) {
+function submitResult(job, result, globalHints = {}) {
   const dna = loadMarketplaceDNA();
+
+  const presenceField = buildPresenceField(globalHints);
+  const advantagePresenceField = buildAdvantagePresenceField(globalHints);
+  const hintsField = buildHintsField(globalHints);
 
   if (!job || !job.id) {
     return {
@@ -257,7 +318,10 @@ function submitResult(job, result) {
       signature: buildSubmissionSignature("NONE", "INVALID"),
       bandSignature: buildBandSignature(dna),
       binaryField: buildBinaryField(dna),
-      waveField: buildWaveField(dna)
+      waveField: buildWaveField(dna),
+      presenceField,
+      advantagePresenceField,
+      hintsField
     };
   }
 
@@ -272,19 +336,21 @@ function submitResult(job, result) {
     signature: buildSubmissionSignature(job.id, status),
     bandSignature: buildBandSignature(dna),
     binaryField: buildBinaryField(dna),
-    waveField: buildWaveField(dna)
+    waveField: buildWaveField(dna),
+    presenceField,
+    advantagePresenceField,
+    hintsField
   };
 }
 
-
 // ============================================================================
-// Export — The Genetic Regulator Adapter (v11-Evo A‑B‑A)
+// Export — The Genetic Regulator Adapter (v12.3-PRESENCE-EVO+ A‑B‑A)
 // ============================================================================
 export const PulseEarnCustomReceptor = {
   id: "CUSTOM",
   name: "Custom Marketplace",
-  version: "11-Evo",
-  lineage: "Receptor-GeneticRegulator-v11-Evo",
+  version: "12.3-PRESENCE-EVO+",
+  lineage: "Receptor-GeneticRegulator-v12.3-PRESENCE-EVO+",
 
   receptorSignature: buildReceptorSignature(DETERMINISTIC_RECEPTOR_DNA),
   bandSignature: buildBandSignature(DETERMINISTIC_RECEPTOR_DNA),

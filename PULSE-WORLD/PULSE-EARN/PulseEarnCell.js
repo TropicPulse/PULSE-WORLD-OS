@@ -1,24 +1,18 @@
 // ============================================================================
-// FILE: tropic-pulse-functions/apps/PULSE-EARN/PulseEarnCell-v11-Evo.js
+// FILE: tropic-pulse-functions/apps/PULSE-EARN/PulseEarnCell-v12.3-PRESENCE-EVO+.js
 // LAYER: THE CELL (Deterministic Worker + Safe Compute Participant)
 // ============================================================================
 //
-// ROLE (v11-Evo):
+// ROLE (v12.3-PRESENCE-EVO+):
 //   THE CELL — Pulse‑Earn’s sandboxed metabolic labor unit.
 //   • Executes deterministic, rule‑bound compute tasks (cellular metabolism).
 //   • Returns safe, structured results (ATP output).
 //   • Maintains personal healing metadata (cell health).
-//   • Emits v11‑Evo metabolic signatures.
+//   • Emits v12.3‑Presence‑EVO+ metabolic signatures.
 //   • Dual-band aware (symbolic + binary) as metadata-only.
+//   • Presence/advantage/hints/computeProfile-aware via context/globalHints.
 //
-// PURPOSE (v11-Evo):
-//   • Provide a deterministic, drift‑proof compute engine.
-//   • Guarantee safe execution of text/math/data/json operations.
-//   • Maintain healing metadata for Earn healers.
-//   • Track metabolic cycles + cell health (conceptual only).
-//   • Expose loop/wave/advantage surfaces for Earn evolution engines.
-//
-// CONTRACT (v11-Evo):
+// CONTRACT (v12.3-PRESENCE-EVO+):
 //   • PURE COMPUTE — no AI layers, no translation, no memory model.
 //   • READ‑ONLY except for healing metadata.
 //   • NO eval(), NO Function(), NO dynamic imports.
@@ -32,8 +26,8 @@
 export const PulseEarnCellMeta = Object.freeze({
   layer: "PulseEarnCell",
   role: "CELL_WORKER",
-  version: "v11.2-EVO",
-  identity: "PulseEarnCell-v11.2-EVO",
+  version: "v12.3-PRESENCE-EVO+",
+  identity: "PulseEarnCell-v12.3-PRESENCE-EVO+",
 
   guarantees: Object.freeze({
     deterministic: true,
@@ -48,24 +42,42 @@ export const PulseEarnCellMeta = Object.freeze({
     healingMetadataAware: true,
     waveFieldAware: true,
     loopFieldAware: true,
-    worldLensAware: false
+    worldLensAware: false,
+
+    // Presence-EVO+ advantages
+    presenceAware: true,
+    advantageAware: true,
+    fallbackBandAware: true,
+    chunkAware: true,
+    cacheAware: true,
+    prewarmAware: true,
+    coldStartAware: true,
+    expansionAware: true,
+    meshAware: true,
+    castleAware: true,
+    regionAware: true,
+    dualbandSafe: true
   }),
 
   contract: Object.freeze({
     input: [
       "EarnCellJob",
-      "DualBandContext"
+      "DualBandContext",
+      "GlobalHintsPresenceField"
     ],
     output: [
       "EarnCellResult",
       "EarnCellDiagnostics",
-      "EarnCellSignatures"
+      "EarnCellSignatures",
+      "EarnCellPresenceField",
+      "EarnCellAdvantageField",
+      "EarnCellComputeProfile"
     ]
   }),
 
   lineage: Object.freeze({
     root: "PulseOS-v11-EVO",
-    parent: "PulseEarn-v11.2-EVO",
+    parent: "PulseEarn-v12.3-PRESENCE-EVO+",
     ancestry: [
       "PulseEarnCell-v10",
       "PulseEarnCell-v11",
@@ -82,22 +94,21 @@ export const PulseEarnCellMeta = Object.freeze({
   architecture: Object.freeze({
     pattern: "A-B-A",
     baseline: "deterministic compute",
-    adaptive: "healing metadata + advantage surfaces",
+    adaptive: "healing metadata + advantage surfaces + presence/hints surfaces",
     return: "deterministic structured output"
   })
 });
 
 // ============================================================================
-// CELL CONTEXT METADATA (v11-Evo)
+// CELL CONTEXT METADATA
 // ============================================================================
 const EARN_CELL_CONTEXT = {
-  layer: "PulseEarnCell-v11-Evo",
+  layer: "PulseEarnCell-v12.3-PRESENCE-EVO+",
   role: "CELL_WORKER",
   purpose: "Execute deterministic, sandboxed compute operations for Earn jobs",
   context: "Safe compute participant + healing metadata (cell health)",
-  version: "11-Evo"
+  version: "12.3-PRESENCE-EVO+"
 };
-
 
 // ============================================================================
 // Dual-band constants (symbolic + binary) — metadata-only
@@ -112,9 +123,8 @@ function normalizeBand(band) {
   return b === CELL_BANDS.BINARY ? CELL_BANDS.BINARY : CELL_BANDS.SYMBOLIC;
 }
 
-
 // ============================================================================
-// Healing Metadata — Cell Health Log (v11-Evo)
+// Healing Metadata — Cell Health Log
 // ============================================================================
 const healingState = {
   lastJobType: null,
@@ -141,9 +151,8 @@ const healingState = {
   ...EARN_CELL_CONTEXT
 };
 
-
 // ============================================================================
-// Deterministic Hash Helper — v11-Evo
+// Deterministic Hash Helper
 // ============================================================================
 function computeHash(str) {
   let h = 0;
@@ -154,9 +163,8 @@ function computeHash(str) {
   return `h${h}`;
 }
 
-
 // ============================================================================
-// Signature Builders — v11-Evo
+// Signature Builders
 // ============================================================================
 function buildCellSignature(cycle, band) {
   return computeHash(`CELL::${cycle}::${normalizeBand(band)}`);
@@ -172,9 +180,8 @@ function buildOutputSignature(output, band) {
   );
 }
 
-
 // ============================================================================
-// Health / Tier / Advantage / Loop / Wave — v11-Evo
+// Health / Tier / Advantage / Loop / Wave
 // ============================================================================
 function computeHealthScore(jobType, band) {
   const base = 0.8;
@@ -182,6 +189,8 @@ function computeHealthScore(jobType, band) {
     jobType === "math.compute" ? 0.05 :
     jobType === "data.aggregate" ? 0.03 :
     jobType === "json.transform" ? 0.02 :
+    jobType === "text.process" ? 0.01 :
+    jobType === "text.transform" ? 0.01 :
     0.0;
 
   const bandBias = normalizeBand(band) === CELL_BANDS.BINARY ? 0.02 : 0.0;
@@ -247,17 +256,168 @@ function buildWaveField(jobType, band) {
   };
 }
 
+// ============================================================================
+// Presence / Advantage / Hints / Compute Profile from globalHints/context
+// ============================================================================
+function cwClamp01(x) {
+  if (x == null || Number.isNaN(x)) return 0;
+  return Math.max(0, Math.min(1, x));
+}
+
+function cwNormalizeCachePriority(p) {
+  if (!p) return "normal";
+  const v = String(p).toLowerCase();
+  if (v === "critical" || v === "high" || v === "low") return v;
+  return "normal";
+}
+
+function buildPresenceFieldFromContext(context = {}) {
+  const gh = context.globalHints || {};
+  const pf = context.presenceField || {};
+  const mesh = context.meshSignals || {};
+  const castle = context.castleSignals || {};
+  const region = gh.regionContext || {};
+
+  return Object.freeze({
+    bandPresence: pf.bandPresence || gh.presenceContext?.bandPresence || "unknown",
+    routerPresence: pf.routerPresence || gh.presenceContext?.routerPresence || "unknown",
+    devicePresence: pf.devicePresence || gh.presenceContext?.devicePresence || "unknown",
+    meshPresence: pf.meshPresence || mesh.meshStrength || "unknown",
+    castlePresence: pf.castlePresence || castle.castlePresence || "unknown",
+    regionPresence: pf.regionPresence || region.regionTag || "unknown",
+    regionId: region.regionId || "unknown-region",
+    castleId: castle.castleId || "unknown-castle",
+    castleLoadLevel: castle.loadLevel || "unknown",
+    meshStrength: mesh.meshStrength || "unknown",
+    meshPressureIndex: mesh.meshPressureIndex || 0
+  });
+}
+
+function buildAdvantageFieldFromHints(context = {}) {
+  const gh = context.globalHints || {};
+  const adv = gh.advantageContext || {};
+
+  return Object.freeze({
+    advantageScore: adv.score ?? null,
+    advantageBand: adv.band ?? "neutral",
+    advantageTier: adv.tier ?? "unknown"
+  });
+}
+
+function buildHintsFieldFromHints(context = {}) {
+  const gh = context.globalHints || {};
+  return Object.freeze({
+    fallbackBandLevel: gh.fallbackBandLevel ?? 0,
+    chunkHints: gh.chunkHints || {},
+    cacheHints: gh.cacheHints || {},
+    prewarmHints: gh.prewarmHints || {},
+    coldStartHints: gh.coldStartHints || {}
+  });
+}
+
+function deriveFactoringSignal({ meshPressureIndex = 0, cachePriority = "normal", prewarmNeeded = false }) {
+  const pressure = cwClamp01(meshPressureIndex / 100);
+  const highPressure = pressure >= 0.7;
+  const criticalCache = cachePriority === "critical";
+  if (criticalCache || prewarmNeeded) return 1;
+  if (highPressure) return 1;
+  return 0;
+}
+
+function buildComputeProfile({ band, context = {} }) {
+  const b = normalizeBand(band);
+  const gh = context.globalHints || {};
+  const hintsField = buildHintsFieldFromHints(context);
+  const cachePriority = cwNormalizeCachePriority(hintsField.cacheHints.priority);
+  const prewarmNeeded = !!hintsField.prewarmHints.shouldPrewarm;
+  const meshPressureIndex = (context.meshSignals && context.meshSignals.meshPressureIndex) || 0;
+
+  const factoringSignal = deriveFactoringSignal({
+    meshPressureIndex,
+    cachePriority,
+    prewarmNeeded
+  });
+
+  const serverHints = context.serverAdvantageHints || {};
+
+  return Object.freeze({
+    routeBand: b,
+    fallbackBandLevel: hintsField.fallbackBandLevel,
+    chunkAggression: hintsField.chunkHints.chunkAggression ?? 0,
+    cachePriority,
+    prewarmNeeded,
+    binaryPreferred: b === CELL_BANDS.BINARY,
+    symbolicPreferred: b === CELL_BANDS.SYMBOLIC,
+    factoringSignal,
+    hotStateReuse: serverHints.hotStateReuse ?? true,
+    multiInstanceBatching: serverHints.multiInstanceBatching ?? true,
+    serverPlanCache: serverHints.planCache ?? true,
+    serverBinaryReuse: serverHints.binaryReuse ?? true
+  });
+}
 
 // ============================================================================
-// computeWork(job) — Deterministic Metabolic Labor
+// SAFE COMPUTE MODULES — Deterministic Cell Skillset
 // ============================================================================
-export function computeWork(job) {
+function textTransform({ text = "", mode = "upper" }) {
+  switch (mode) {
+    case "upper": return text.toUpperCase();
+    case "lower": return text.toLowerCase();
+    case "reverse": return text.split("").reverse().join("");
+    default: throw new Error(`Unknown text mode: ${mode}`);
+  }
+}
+
+function mathCompute({ operation, values = [] }) {
+  const nums = Array.isArray(values)
+    ? values.map((v) => Number(v)).filter((v) => Number.isFinite(v))
+    : [];
+  switch (operation) {
+    case "sum": return nums.reduce((a, b) => a + b, 0);
+    case "avg": return nums.length ? nums.reduce((a, b) => a + b, 0) / nums.length : 0;
+    case "max": return nums.length ? Math.max(...nums) : -Infinity;
+    case "min": return nums.length ? Math.min(...nums) : Infinity;
+    default: throw new Error(`Unknown math operation: ${operation}`);
+  }
+}
+
+function dataAggregate({ items = [], field }) {
+  if (!field) throw new Error("Missing field for data.aggregate");
+  return items.map(item => item[field]);
+}
+
+function jsonTransform({ json, pick }) {
+  if (!json || typeof json !== "object") {
+    throw new Error("Invalid JSON payload");
+  }
+
+  if (!pick) return json;
+
+  const out = {};
+  for (const key of pick) {
+    if (Object.prototype.hasOwnProperty.call(json, key)) {
+      out[key] = json[key];
+    }
+  }
+  return out;
+}
+
+// ============================================================================
+// computeWork(job, context) — Deterministic Metabolic Labor (Presence-EVO+)
+// context is optional: { presenceField, meshSignals, castleSignals, serverAdvantageHints, globalHints }
+// ============================================================================
+export function computeWork(job, context = {}) {
   healingState.cycleCount++;
   healingState.lastCycleIndex = healingState.cycleCount;
   healingState.executionState = "dispatching";
 
   const band = normalizeBand(job && job.band);
   healingState.lastBand = band;
+
+  const presenceField = buildPresenceFieldFromContext(context);
+  const presenceAdvantageField = buildAdvantageFieldFromHints(context);
+  const hintsField = buildHintsFieldFromHints(context);
+  const computeProfile = buildComputeProfile({ band, context });
 
   try {
     if (!job || !job.type || !job.payload) {
@@ -297,6 +457,10 @@ export function computeWork(job) {
         waveField,
         cellSignature: healingState.lastCellSignature,
         continuanceFallback: true,
+        presenceField,
+        presenceAdvantageField,
+        hintsField,
+        computeProfile,
         ...EARN_CELL_CONTEXT
       };
     }
@@ -364,6 +528,10 @@ export function computeWork(job) {
           waveField: uWaveField,
           cellSignature: healingState.lastCellSignature,
           continuanceFallback: true,
+          presenceField,
+          presenceAdvantageField,
+          hintsField,
+          computeProfile,
           ...EARN_CELL_CONTEXT
         };
     }
@@ -405,6 +573,10 @@ export function computeWork(job) {
       waveField,
       cellSignature: healingState.lastCellSignature,
       continuanceFallback: false,
+      presenceField,
+      presenceAdvantageField,
+      hintsField,
+      computeProfile,
       ...EARN_CELL_CONTEXT
     };
 
@@ -455,58 +627,17 @@ export function computeWork(job) {
       waveField,
       cellSignature: healingState.lastCellSignature,
       continuanceFallback: true,
+      presenceField,
+      presenceAdvantageField,
+      hintsField,
+      computeProfile,
       ...EARN_CELL_CONTEXT
     };
   }
 }
 
-
 // ============================================================================
-// SAFE COMPUTE MODULES — Deterministic Cell Skillset
-// ============================================================================
-function textTransform({ text = "", mode = "upper" }) {
-  switch (mode) {
-    case "upper": return text.toUpperCase();
-    case "lower": return text.toLowerCase();
-    case "reverse": return text.split("").reverse().join("");
-    default: throw new Error(`Unknown text mode: ${mode}`);
-  }
-}
-
-function mathCompute({ operation, values = [] }) {
-  switch (operation) {
-    case "sum": return values.reduce((a, b) => a + b, 0);
-    case "avg": return values.length ? values.reduce((a, b) => a + b, 0) / values.length : 0;
-    case "max": return values.length ? Math.max(...values) : -Infinity;
-    case "min": return values.length ? Math.min(...values) : Infinity;
-    default: throw new Error(`Unknown math operation: ${operation}`);
-  }
-}
-
-function dataAggregate({ items = [], field }) {
-  if (!field) throw new Error("Missing field for data.aggregate");
-  return items.map(item => item[field]);
-}
-
-function jsonTransform({ json, pick }) {
-  if (!json || typeof json !== "object") {
-    throw new Error("Invalid JSON payload");
-  }
-
-  if (!pick) return json;
-
-  const out = {};
-  for (const key of pick) {
-    if (Object.prototype.hasOwnProperty.call(json, key)) {
-      out[key] = json[key];
-    }
-  }
-  return out;
-}
-
-
-// ============================================================================
-// Export healing metadata — Cell Health Snapshot (v11-Evo)
+// Export healing metadata — Cell Health Snapshot
 // ============================================================================
 export function getPulseEarnCellHealingState() {
   return { ...healingState };

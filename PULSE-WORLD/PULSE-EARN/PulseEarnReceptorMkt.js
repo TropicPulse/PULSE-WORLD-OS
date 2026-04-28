@@ -1,29 +1,30 @@
 // ============================================================================
-// FILE: tropic-pulse-functions/apps/PULSE-EARN/PulseEarnReceptor-v11-Evo.js
+// FILE: tropic-pulse-functions/apps/PULSE-EARN/PulseEarnReceptor-v12.3-PRESENCE-EVO+.js
 // LAYER: THE STANDARD RECEPTOR (Marketplace Protocol + Universal Adapter)
-// PULSE EARN — v11-Evo A‑B‑A
+// PULSE EARN — v12.3-PRESENCE-EVO+ A‑B‑A
 // ============================================================================
 //
-// ROLE (v11-Evo A‑B‑A):
+// ROLE (v12.3-PRESENCE-EVO+ A‑B‑A):
 //   THE STANDARD RECEPTOR — Pulse‑Earn’s canonical marketplace interface.
 //   • Deterministic sensory receptor for marketplace signals.
 //   • Pure adapter: ping(), fetchJobs(), submitResult().
 //   • Configurable receptor DNA (no network).
 //   • Emits receptorPattern, receptorSignature, endpointSignature.
-//   • Emits A‑B‑A bandSignature + binaryField + waveField surfaces.
+//   • Emits A‑B‑A bandSignature + binaryField + waveField + presence surfaces.
 //
-// CONTRACT (v11-Evo):
+// CONTRACT (v12.3-PRESENCE-EVO+):
 //   • PURE RECEPTOR — deterministic, drift‑proof.
 //   • NO async, NO network, NO randomness, NO timestamps.
 //   • NO eval(), NO Function(), NO dynamic imports.
 //   • READ‑ONLY except deterministic config override.
 //   • NEVER mutate job objects.
+//   • Presence/advantage/hints are metadata-only.
 // ============================================================================
 export const PulseEarnReceptorMeta = Object.freeze({
   layer: "PulseEarnReceptor",
   role: "EARN_STANDARD_RECEPTOR",
-  version: "v11.2-EVO",
-  identity: "PulseEarnReceptor-v11.2-EVO",
+  version: "v12.3-PRESENCE-EVO+",
+  identity: "PulseEarnReceptor-v12.3-PRESENCE-EVO+",
 
   guarantees: Object.freeze({
     deterministic: true,
@@ -36,6 +37,9 @@ export const PulseEarnReceptorMeta = Object.freeze({
     binaryAware: true,
     waveFieldAware: true,
     healingMetadataAware: true,
+    presenceAware: true,
+    advantageAware: true,
+    hintsAware: true,
     worldLensAware: false,
     zeroNetwork: true,
     zeroAsync: true,
@@ -50,7 +54,8 @@ export const PulseEarnReceptorMeta = Object.freeze({
       "ReceptorConfigDNA",
       "DualBandContext",
       "MarketplaceSignal",
-      "ReceptorNormalizationRules"
+      "ReceptorNormalizationRules",
+      "GlobalHintsPresenceField"
     ],
     output: [
       "ReceptorPingResult",
@@ -63,7 +68,7 @@ export const PulseEarnReceptorMeta = Object.freeze({
 
   lineage: Object.freeze({
     root: "PulseOS-v11-EVO",
-    parent: "PulseEarn-v11.2-EVO",
+    parent: "PulseEarn-v12.3-PRESENCE-EVO+",
     ancestry: [
       "PulseEarnReceptor-v9",
       "PulseEarnReceptor-v10",
@@ -81,11 +86,10 @@ export const PulseEarnReceptorMeta = Object.freeze({
   architecture: Object.freeze({
     pattern: "A-B-A",
     baseline: "deterministic receptor DNA → stable phenotype",
-    adaptive: "binary/wave surfaces + band signatures",
+    adaptive: "binary/wave surfaces + band + presence/advantage surfaces",
     return: "deterministic ping/fetchJobs/submitResult"
   })
 });
-
 
 // ============================================================================
 // INTERNAL STATE — deterministic, drift-proof
@@ -105,9 +109,8 @@ let receptorConfig = {
   }
 };
 
-
 // ============================================================================
-// Deterministic Hash Helper — v11-Evo
+// Deterministic Hash Helper
 // ============================================================================
 function computeHash(str) {
   let h = 0;
@@ -123,9 +126,51 @@ function normalizeBand(band) {
   return b === "binary" ? "binary" : "symbolic";
 }
 
+// ============================================================================
+// Presence / Advantage / Hints Surfaces (metadata-only)
+// ============================================================================
+function buildPresenceField(globalHints = {}) {
+  const gh = globalHints.presenceContext || {};
+  const mesh = globalHints.meshSignals || {};
+  const castle = globalHints.castleSignals || {};
+  const region = globalHints.regionContext || {};
+
+  return {
+    bandPresence: gh.bandPresence || "unknown",
+    routerPresence: gh.routerPresence || "unknown",
+    devicePresence: gh.devicePresence || "unknown",
+    meshPresence: mesh.meshStrength || "unknown",
+    castlePresence: castle.castlePresence || "unknown",
+    regionPresence: region.regionTag || "unknown",
+    regionId: region.regionId || "unknown-region",
+    castleId: castle.castleId || "unknown-castle",
+    castleLoadLevel: castle.loadLevel || "unknown",
+    meshStrength: mesh.meshStrength || "unknown",
+    meshPressureIndex: mesh.meshPressureIndex || 0
+  };
+}
+
+function buildAdvantagePresenceField(globalHints = {}) {
+  const adv = globalHints.advantageContext || {};
+  return {
+    advantageScore: adv.score ?? null,
+    advantageBand: adv.band ?? "neutral",
+    advantageTier: adv.tier ?? "unknown"
+  };
+}
+
+function buildHintsField(globalHints = {}) {
+  return {
+    fallbackBandLevel: globalHints.fallbackBandLevel ?? 0,
+    chunkHints: globalHints.chunkHints || {},
+    cacheHints: globalHints.cacheHints || {},
+    prewarmHints: globalHints.prewarmHints || {},
+    coldStartHints: globalHints.coldStartHints || {}
+  };
+}
 
 // ============================================================================
-// A‑B‑A Binary + Wave Surfaces (v11‑Evo)
+// A‑B‑A Binary + Wave Surfaces
 // ============================================================================
 function buildBinaryField(cfg) {
   const patternLen =
@@ -166,9 +211,8 @@ function buildWaveField(cfg) {
   };
 }
 
-
 // ============================================================================
-// v11-Evo: Signature Builders
+// Signature Builders
 // ============================================================================
 function buildReceptorPattern(cfg) {
   return (
@@ -199,9 +243,8 @@ function buildBandSignature(cfg) {
   return computeHash(`RECEPTOR_BAND::${normalizeBand(cfg.band)}::${cfg.id}`);
 }
 
-
 // ============================================================================
-// Health Tier (v11-Evo)
+// Health Tier
 // ============================================================================
 function classifyHealth(healthScore) {
   const h = typeof healthScore === "number" ? healthScore : 1.0;
@@ -211,7 +254,6 @@ function classifyHealth(healthScore) {
   if (h >= 0.15) return "hard";
   return "critical";
 }
-
 
 // ============================================================================
 // CONFIG OVERRIDE — deterministic only
@@ -228,73 +270,125 @@ export function configurePulseEarnReceptor(config) {
   };
 }
 
-
 // ============================================================================
 // Sensory Functions — ping(), fetchJobs(), submitResult()
-// PURE deterministic behavior
+// PURE deterministic behavior, now presence-aware as metadata.
 // ============================================================================
-function ping() {
+function ping(globalHints = {}) {
   const tier = classifyHealth(receptorConfig.healthScore);
 
-  if (tier === "healthy") return 10;
-  if (tier === "soft") return 50;
-  if (tier === "mid") return 150;
-  if (tier === "hard") return 300;
-  return null; // critical → no signal
+  let latency;
+  if (tier === "healthy") latency = 10;
+  else if (tier === "soft") latency = 50;
+  else if (tier === "mid") latency = 150;
+  else if (tier === "hard") latency = 300;
+  else latency = null; // critical → no signal
+
+  const presenceField = buildPresenceField(globalHints);
+  const advantagePresenceField = buildAdvantagePresenceField(globalHints);
+  const hintsField = buildHintsField(globalHints);
+
+  return {
+    latency,
+    receptorId: receptorConfig.id,
+    signature: computeHash(`PING::${latency}`),
+    bandSignature: buildBandSignature(receptorConfig),
+    binaryField: buildBinaryField(receptorConfig),
+    waveField: buildWaveField(receptorConfig),
+    presenceField,
+    advantagePresenceField,
+    hintsField
+  };
 }
 
-function fetchJobs() {
+function fetchJobs(globalHints = {}) {
   const jobs = receptorConfig.endpoints.jobs;
-  if (!Array.isArray(jobs)) return [];
+  const safeJobs = Array.isArray(jobs) ? jobs : [];
 
-  return jobs.map(j => ({
+  const expressed = safeJobs.map(j => ({
     ...j,
     marketplaceId: receptorConfig.id
   }));
+
+  const presenceField = buildPresenceField(globalHints);
+  const advantagePresenceField = buildAdvantagePresenceField(globalHints);
+  const hintsField = buildHintsField(globalHints);
+
+  return {
+    jobs: expressed,
+    receptorId: receptorConfig.id,
+    signature: computeHash(`JOBS::${expressed.length}`),
+    bandSignature: buildBandSignature(receptorConfig),
+    binaryField: buildBinaryField(receptorConfig),
+    waveField: buildWaveField(receptorConfig),
+    presenceField,
+    advantagePresenceField,
+    hintsField
+  };
 }
 
-function submitResult(job, result) {
+function submitResult(job, result, globalHints = {}) {
+  const presenceField = buildPresenceField(globalHints);
+  const advantagePresenceField = buildAdvantagePresenceField(globalHints);
+  const hintsField = buildHintsField(globalHints);
+
   if (!job || !job.id) {
     return {
       success: false,
-      error: "invalid_job"
+      error: "invalid_job",
+      receptorId: receptorConfig.id,
+      signature: computeHash(`SUBMIT::NONE::INVALID`),
+      bandSignature: buildBandSignature(receptorConfig),
+      binaryField: buildBinaryField(receptorConfig),
+      waveField: buildWaveField(receptorConfig),
+      presenceField,
+      advantagePresenceField,
+      hintsField
     };
   }
+
+  const status = receptorConfig.endpoints.submitStatus;
 
   return {
     success: true,
     receptorId: receptorConfig.id,
     jobId: job.id,
     result,
-    status: receptorConfig.endpoints.submitStatus
+    status,
+    signature: computeHash(`SUBMIT::${job.id}::${status}`),
+    bandSignature: buildBandSignature(receptorConfig),
+    binaryField: buildBinaryField(receptorConfig),
+    waveField: buildWaveField(receptorConfig),
+    presenceField,
+    advantagePresenceField,
+    hintsField
   };
 }
 
-
 // ============================================================================
-// PUBLIC EXPORT — PulseEarnReceptor v11-Evo A‑B‑A
+// PUBLIC EXPORT — PulseEarnReceptor v12.3-PRESENCE-EVO+ A‑B‑A
 // ============================================================================
 export const PulseEarnReceptor = {
   id: () => receptorConfig.id,
   name: () => receptorConfig.name,
 
-  // v11-Evo signatures
   receptorSignature: () => buildReceptorSignature(receptorConfig),
   endpointSignature: () => buildEndpointSignature(receptorConfig),
   receptorPattern: () => buildReceptorPattern(receptorConfig),
   bandSignature: () => buildBandSignature(receptorConfig),
 
-  // A‑B‑A surfaces
   binaryField: () => buildBinaryField(receptorConfig),
   waveField: () => buildWaveField(receptorConfig),
 
-  // sensory functions
   ping,
   fetchJobs,
   submitResult,
 
-  // v11-Evo diagnostics bundle
-  diagnostics() {
+  diagnostics(globalHints = {}) {
+    const presenceField = buildPresenceField(globalHints);
+    const advantagePresenceField = buildAdvantagePresenceField(globalHints);
+    const hintsField = buildHintsField(globalHints);
+
     return {
       id: receptorConfig.id,
       name: receptorConfig.name,
@@ -313,7 +407,11 @@ export const PulseEarnReceptor = {
 
       jobCount: Array.isArray(receptorConfig.endpoints.jobs)
         ? receptorConfig.endpoints.jobs.length
-        : 0
+        : 0,
+
+      presenceField,
+      advantagePresenceField,
+      hintsField
     };
   }
 };

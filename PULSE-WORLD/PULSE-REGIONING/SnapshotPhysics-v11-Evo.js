@@ -1,17 +1,37 @@
 /**
+ * SnapshotPhysics-CosmosMultiverse-v13.js
+ * PULSE-WORLD / PULSE-SNAPSHOT
+ *
+ * ROLE:
+ *   Capture a symbolic, deterministic, multiverse-aware snapshot of an organism instance.
+ *
+ *   - Universe-aware
+ *   - Timeline-aware
+ *   - Branch-aware
+ *   - Region-aware
+ *   - Host-aware
+ *   - Delta-friendly
+ *
+ *   ZERO randomness.
+ *   ZERO mutation.
+ *   PURE symbolic snapshotting.
+ */
+
+/**
  * META {
  *   organ: "SnapshotPhysics",
  *   root: "PULSE-WORLD",
  *   mode: "substrate",
  *   target: "organism-snapshot",
- *   version: "v11-EVO",
+ *   version: "v13-COSMOS-MULTIVERSE",
  *
- *   role: "Captures symbolic snapshots of an organism instance for comparison, restore, and deployment.",
+ *   role: "Captures symbolic snapshots across universes, timelines, branches, and regions.",
  *
  *   guarantees: {
  *     deterministic: true,
  *     symbolic: true,
- *     hostAgnostic: true,
+ *     reversible: true,
+ *     multiverseAware: true,
  *     regionAware: true,
  *     noRandomness: true
  *   },
@@ -21,8 +41,7 @@
  *       "InstanceId",
  *       "CurrentInstanceState",
  *       "ConfigDescriptor",
- *       "RegionId",
- *       "HostName",
+ *       "CosmosContext",
  *       "LogicalClockToken"
  *     ],
  *     output: [
@@ -30,88 +49,42 @@
  *       "SnapshotHeader",
  *       "SnapshotStateView"
  *     ]
- *   },
- *
- *   upstream: [
- *     "LineageEngine",
- *     "RegioningPhysics",
- *     "PulseSchema",
- *     "PulseOmniHosting"
- *   ],
- *
- *   downstream: [
- *     "DeltaEngine",
- *     "DeploymentPhysics",
- *     "MultiOrganismSupport"
- *   ],
- *
- *   notes: [
- *     "Snapshots are symbolic, not full memory dumps.",
- *     "Snapshots are designed to be diffed by DeltaEngine.",
- *     "LogicalClockToken is caller-provided, not real time.",
- *     "SnapshotPhysics never talks to real hosts or storage."
- *   ]
+ *   }
  * }
  */
 
-/**
- * SnapshotPhysics-v11-Evo.js
- * PULSE-WORLD / PULSE-SNAPSHOT
- *
- * ROLE:
- *   Capture a compact, symbolic snapshot of an organism instance:
- *   - where it is (region, host)
- *   - what it is (config, version, role)
- *   - how it is (flags, health, mode)
- *
- * NEVER:
- *   - Never store heavy payloads.
- *   - Never depend on real time.
- *   - Never introduce randomness.
- *
- * ALWAYS:
- *   - Always be symbolic.
- *   - Always be deterministic.
- *   - Always be diff-friendly.
- */
+// -------------------------
+// Cosmos Context
+// -------------------------
+
+function normalizeCosmosContext(context = {}) {
+  return {
+    universeId: context.universeId || "u:default",
+    timelineId: context.timelineId || "t:main",
+    branchId: context.branchId || "b:root"
+  };
+}
 
 // -------------------------
 // Types
 // -------------------------
 
-/**
- * SnapshotHeader
- *
- * snapshotId: string          // deterministic id (caller-provided)
- * instanceId: string
- * lineageRootId?: string      // optional link to lineage root
- * logicalClock: string        // caller-provided logical token (e.g. seq, hash)
- */
 export class SnapshotHeader {
   constructor({
     snapshotId,
     instanceId,
     lineageRootId = null,
-    logicalClock
+    logicalClock,
+    cosmos
   }) {
     this.snapshotId = snapshotId;
     this.instanceId = instanceId;
     this.lineageRootId = lineageRootId;
     this.logicalClock = logicalClock;
+    this.cosmos = cosmos;
   }
 }
 
-/**
- * SnapshotStateView
- *
- * regionId: string | null
- * hostName: string | null
- * configVersion: string | null
- * role: string | null
- * mode: string | null
- * healthFlags: string[]       // symbolic flags only
- * meta: object                // small symbolic metadata
- */
 export class SnapshotStateView {
   constructor({
     regionId = null,
@@ -120,7 +93,8 @@ export class SnapshotStateView {
     role = null,
     mode = null,
     healthFlags = [],
-    meta = {}
+    meta = {},
+    cosmos
   }) {
     this.regionId = regionId;
     this.hostName = hostName;
@@ -131,15 +105,14 @@ export class SnapshotStateView {
       ? healthFlags.slice().sort()
       : [];
     this.meta = meta;
+
+    // multiverse placement
+    this.universeId = cosmos.universeId;
+    this.timelineId = cosmos.timelineId;
+    this.branchId = cosmos.branchId;
   }
 }
 
-/**
- * SnapshotRecord
- *
- * header: SnapshotHeader
- * state: SnapshotStateView
- */
 export class SnapshotRecord {
   constructor({ header, state }) {
     this.header = header;
@@ -148,107 +121,105 @@ export class SnapshotRecord {
 }
 
 // -------------------------
-// Builders
+// Helpers
 // -------------------------
 
-/**
- * buildSnapshotFromInstanceState
- *
- * Input:
- *   - snapshotId: string
- *   - logicalClock: string
- *   - currentInstanceState: CurrentInstanceState (from LineageEngine)
- *   - configDescriptor: {
- *       configVersion?: string,
- *       role?: string,
- *       mode?: string,
- *       healthFlags?: string[],
- *       meta?: object
- *     }
- *   - lineageRootId?: string
- *
- * Output:
- *   - SnapshotRecord
- */
-export function buildSnapshotFromInstanceState({
-  snapshotId,
-  logicalClock,
-  currentInstanceState,
-  configDescriptor = {},
-  lineageRootId = null
-}) {
-  const header = new SnapshotHeader({
-    snapshotId,
-    instanceId: currentInstanceState.instanceId,
-    lineageRootId,
-    logicalClock
+function clone(obj) {
+  return JSON.parse(JSON.stringify(obj));
+}
+
+function deterministicSnapshotId(instanceId, cosmos, logicalClock, state) {
+  const payload = JSON.stringify({
+    instanceId,
+    cosmos,
+    logicalClock,
+    state
   });
 
-  const state = new SnapshotStateView({
+  let hash = 0;
+  for (let i = 0; i < payload.length; i++) {
+    hash = (hash * 31 + payload.charCodeAt(i)) >>> 0;
+  }
+
+  return `snap-${instanceId}-${hash.toString(16)}`;
+}
+
+// -------------------------
+// Core Snapshot Logic (v13 Multiverse)
+// -------------------------
+
+export function buildSnapshotFromInstanceState({
+  instanceId,
+  currentInstanceState,
+  configDescriptor = {},
+  cosmosContext = {},
+  logicalClock,
+  lineageRootId = null
+}) {
+  const cosmos = normalizeCosmosContext(cosmosContext);
+
+  const stateView = new SnapshotStateView({
     regionId: currentInstanceState.currentRegionId,
     hostName: currentInstanceState.currentHostName,
     configVersion: configDescriptor.configVersion || null,
     role: configDescriptor.role || null,
     mode: configDescriptor.mode || null,
     healthFlags: configDescriptor.healthFlags || [],
-    meta: configDescriptor.meta || {}
+    meta: configDescriptor.meta || {},
+    cosmos
   });
 
-  return new SnapshotRecord({ header, state });
-}
+  const snapshotId = deterministicSnapshotId(
+    instanceId,
+    cosmos,
+    logicalClock,
+    stateView
+  );
 
-/**
- * cloneSnapshot
- *
- * Returns a deep, deterministic clone of a snapshot.
- */
-export function cloneSnapshot(snapshotRecord) {
   const header = new SnapshotHeader({
-    snapshotId: snapshotRecord.header.snapshotId,
-    instanceId: snapshotRecord.header.instanceId,
-    lineageRootId: snapshotRecord.header.lineageRootId,
-    logicalClock: snapshotRecord.header.logicalClock
+    snapshotId,
+    instanceId,
+    lineageRootId,
+    logicalClock,
+    cosmos
   });
 
-  const state = new SnapshotStateView({
-    regionId: snapshotRecord.state.regionId,
-    hostName: snapshotRecord.state.hostName,
-    configVersion: snapshotRecord.state.configVersion,
-    role: snapshotRecord.state.role,
-    mode: snapshotRecord.state.mode,
-    healthFlags: snapshotRecord.state.healthFlags,
-    meta: { ...snapshotRecord.state.meta }
+  return new SnapshotRecord({
+    header,
+    state: stateView
   });
-
-  return new SnapshotRecord({ header, state });
 }
 
-// -------------------------
-// Lightweight Views
-// -------------------------
+export function cloneSnapshot(snapshotRecord) {
+  return new SnapshotRecord({
+    header: clone(snapshotRecord.header),
+    state: clone(snapshotRecord.state)
+  });
+}
 
 /**
  * projectSnapshotForDelta
  *
- * Produces a minimal, stable object for DeltaEngine to diff.
- * No methods, no classes, just plain data.
+ * Produces a minimal, stable, deterministic surface for DeltaEngine-v13.
+ * Removes fields that should not influence diffs.
  */
 export function projectSnapshotForDelta(snapshotRecord) {
+  const s = snapshotRecord.state;
+
   return {
-    header: {
-      snapshotId: snapshotRecord.header.snapshotId,
-      instanceId: snapshotRecord.header.instanceId,
-      lineageRootId: snapshotRecord.header.lineageRootId,
-      logicalClock: snapshotRecord.header.logicalClock
-    },
+    header: clone(snapshotRecord.header),
     state: {
-      regionId: snapshotRecord.state.regionId,
-      hostName: snapshotRecord.state.hostName,
-      configVersion: snapshotRecord.state.configVersion,
-      role: snapshotRecord.state.role,
-      mode: snapshotRecord.state.mode,
-      healthFlags: snapshotRecord.state.healthFlags.slice().sort(),
-      meta: { ...snapshotRecord.state.meta }
+      regionId: s.regionId,
+      hostName: s.hostName,
+      configVersion: s.configVersion,
+      role: s.role,
+      mode: s.mode,
+      healthFlags: s.healthFlags.slice().sort(),
+      meta: clone(s.meta),
+
+      universeId: s.universeId,
+      timelineId: s.timelineId,
+      branchId: s.branchId
     }
   };
 }
@@ -261,6 +232,7 @@ const SnapshotPhysicsAPI = {
   SnapshotHeader,
   SnapshotStateView,
   SnapshotRecord,
+
   buildSnapshotFromInstanceState,
   cloneSnapshot,
   projectSnapshotForDelta

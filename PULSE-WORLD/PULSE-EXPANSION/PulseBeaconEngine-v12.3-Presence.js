@@ -1,41 +1,14 @@
 // ============================================================================
-// PULSE-WORLD : PulseBeaconEngine-v11-EVO.js
+// PULSE-WORLD : PulseBeaconEngine-v12.3-PRESENCE-EVO+.js
 // ORGAN TYPE: Bluetooth Presence / Membrane Organism
-// VERSION: v11-EVO (A-B-A Pattern, Overmind-Ready)
-// ============================================================================
-// ROLE:
-//   The PulseBeaconEngine is the Bluetooth membrane for PulseWorld.
-//   It broadcasts presence, advertises castles, signals mesh status,
-//   and provides the "tap to enter" entry point into PulseWorld.
-//
-// CONTRACT:
-//   - Must never auto-connect; user must always tap/opt-in.
-//   - Must only broadcast within SafetyFrame constraints.
-//   - Must adapt power + interval based on density + demand.
-//   - Must clearly distinguish new users vs known Pulse users.
-//   - Must expose clean hooks for PulseExpansion + PulseCastle + NodeAdmin.
-//   - Must remain deterministic, synthetic, and hardware-abstracted.
-//
-// ARCHITECTURE:
-//   A = Baseline beacon structure (modes, payload, opt-in).
-//   B = Adaptive behavior (density-aware, demand-aware,
-//       profile-aware, cost-aware, mesh-aware, pulse-aware).
-//   A = Return to stable, deterministic contracts.
-//
-// DEPENDENCIES (ABSTRACTED):
-//   - SafetyFrame (policy decisions, not direct calls here)
-//   - PulseExpansion (region + density + cost hints)
-//   - PulseCastle (castle state, readiness)
-//   - NodeAdmin (pulse modes, focus, intents)
-//   - Overmind (directives, global strategy)
-//   - bluetoothAdapter (injected, pure interface: no direct hardware here)
+// VERSION: v12.3-PRESENCE-EVO+ (Hybrid, Every-Advantage)
 // ============================================================================
 
 export const PulseBeaconMeta = Object.freeze({
-  organId: "PulseBeaconEngine-v11-EVO",
+  organId: "PulseBeaconEngine-v12.3-PRESENCE-EVO+",
   role: "BLUETOOTH_MEMBRANE",
-  version: "11.0-EVO",
-  epoch: "v11-EVO",
+  version: "12.3-PRESENCE-EVO+",
+  epoch: "v12.3-PRESENCE-EVO+",
   layer: "Membrane",
   safety: Object.freeze({
     deterministic: true,
@@ -45,6 +18,21 @@ export const PulseBeaconMeta = Object.freeze({
     noAutoConnect: true,
     userVisible: true,
     userControllable: true
+  }),
+  evo: Object.freeze({
+    presenceAware: true,
+    advantageAware: true,
+    fallbackBandAware: true,
+    chunkAware: true,
+    cacheAware: true,
+    prewarmAware: true,
+    coldStartAware: true,
+    multiInstanceAware: true,
+    expansionAware: true,
+    meshAware: true,
+    castleAware: true,
+    regionAware: true,
+    dualbandSafe: true
   }),
   contract: Object.freeze({
     purpose:
@@ -69,7 +57,8 @@ export const PulseBeaconMeta = Object.freeze({
 });
 
 // ============================================================================
-// FACTORY: createPulseBeaconEngine — v11-EVO
+// FACTORY: createPulseBeaconEngine — v12.3-PRESENCE-EVO+
+// Hybrid: consumes global hints, produces local presence field.
 // ============================================================================
 
 export function createPulseBeaconEngine({
@@ -77,9 +66,9 @@ export function createPulseBeaconEngine({
   regionID = null,
   boundCastleID = null,
   trace = false,
-  bluetoothAdapter = null, // optional: { broadcast(payload, profile) }
-// no hardware logic here; adapter is a pure interface.
-  safetyPolicy = null      // optional: fn({ mode, payload, signalProfile }) => { allowed: boolean }
+  bluetoothAdapter = null, // { broadcast(payload, profile) }
+  safetyPolicy = null,     // fn({ mode, payload, signalProfile }) => { allowed: boolean }
+  globalHints = null       // unified global hints object (hybrid C)
 } = {}) {
 
   // --------------------------------------------------------------------------
@@ -95,17 +84,21 @@ export function createPulseBeaconEngine({
     createdBy: "PulseExpansion"
   };
 
-  const payloadState = {
+    const payloadState = {
     regionTag: null,
     castlePresence: false,
-    meshStatus: "unknown", // unknown | weak | stable | strong
-    loadHint: "light",     // light | medium | heavy
+    meshStatus: "unknown",      // unknown | weak | stable | strong
+    loadHint: "light",          // light | medium | heavy
     experienceHint: "PulseWorld",
-    userProfile: "unknown" // unknown | new | known
+    userProfile: "unknown",     // unknown | new | known
+    advantageHint: "neutral",   // neutral | boost | protect | expand
+    fallbackBandLevel: 0,       // 0–3 symbolic band level
+    coldStartPhase: "unknown"   // unknown | warming | active | cooling
   };
 
+
   const signalState = {
-    powerLevel: "auto",   // low | medium | high | auto
+    powerLevel: "auto",      // low | medium | high | auto
     intervalProfile: "auto", // auto | frequent | steady | sparse
     maxRangeMeters: 50
   };
@@ -123,6 +116,9 @@ export function createPulseBeaconEngine({
     successfulJoins: 0,
     lastBroadcast: null
   };
+
+  // 12.3+ global → local hybrid hints
+  let lastGlobalHints = globalHints || null;
 
   // External bridges
   let overmind = null;
@@ -247,10 +243,26 @@ export function createPulseBeaconEngine({
   }
 
   // --------------------------------------------------------------------------
+  // GLOBAL HINTS (12.3+ HYBRID)
+// --------------------------------------------------------------------------
+  function setGlobalHints(hints) {
+    lastGlobalHints = hints || null;
+    emitToOvermind("global-hints-updated", { hints: lastGlobalHints });
+    emitToNodeAdmin("global-hints-updated", { hints: lastGlobalHints });
+    return { ok: true, hints: lastGlobalHints };
+  }
+
+  function getGlobalHints() {
+    return lastGlobalHints;
+  }
+
+  // --------------------------------------------------------------------------
   // MODE ENGINE
   // --------------------------------------------------------------------------
   function setMode(nextMode) {
-    if (!nextMode || typeof nextMode !== "string") return { ok: false, reason: "invalid-mode" };
+    if (!nextMode || typeof nextMode !== "string") {
+      return { ok: false, reason: "invalid-mode" };
+    }
 
     const known =
       Modes.baseline[nextMode] ||
@@ -273,20 +285,26 @@ export function createPulseBeaconEngine({
   }
 
   // --------------------------------------------------------------------------
-  // PAYLOAD ENGINE
-  // --------------------------------------------------------------------------
-  function updatePayloadFromContext({
+  // PAYLOAD ENGINE (LOCAL + GLOBAL HINTS)
+// --------------------------------------------------------------------------
+    function updatePayloadFromContext({
     regionTag = null,
     castlePresence = null,
     meshStatus = null,
     loadHint = null,
-    userProfile = null
+    userProfile = null,
+    advantageHint = null,
+    fallbackBandLevel = null,
+    coldStartPhase = null
   } = {}) {
     if (regionTag !== null) payloadState.regionTag = regionTag;
     if (castlePresence !== null) payloadState.castlePresence = !!castlePresence;
     if (meshStatus !== null) payloadState.meshStatus = meshStatus;
     if (loadHint !== null) payloadState.loadHint = loadHint;
     if (userProfile !== null) payloadState.userProfile = userProfile;
+    if (advantageHint !== null) payloadState.advantageHint = advantageHint;
+    if (fallbackBandLevel !== null) payloadState.fallbackBandLevel = fallbackBandLevel;
+    if (coldStartPhase !== null) payloadState.coldStartPhase = coldStartPhase;
 
     emitToOvermind("payload-updated", { payloadState });
     emitToNodeAdmin("payload-updated", { payloadState });
@@ -294,7 +312,62 @@ export function createPulseBeaconEngine({
     return { ok: true, payloadState: { ...payloadState } };
   }
 
-  function buildPayload() {
+
+      function buildPresenceField() {
+    const gh = lastGlobalHints || {};
+    const presenceCtx = gh.presenceContext || {};
+    const advantageCtx = gh.advantageContext || {};
+    const fallbackCtx = gh.fallbackContext || {};
+
+    return Object.freeze({
+      bandPresence: presenceCtx.bandPresence || "unknown",
+      routerPresence: presenceCtx.routerPresence || "unknown",
+      devicePresence: presenceCtx.devicePresence || "unknown",
+      meshPresence: payloadState.meshStatus,
+      castlePresence: payloadState.castlePresence ? "present" : "absent",
+      regionPresence: payloadState.regionTag || regionID || "unknown",
+      advantageBand: advantageCtx.advantageBand || payloadState.advantageHint || "neutral",
+      fallbackBandLevel:
+        fallbackCtx.fallbackBandLevel ??
+        payloadState.fallbackBandLevel ??
+        0,
+      coldStartPhase: payloadState.coldStartPhase
+    });
+  }
+
+
+
+    function buildAdvantageField() {
+    const gh = lastGlobalHints || {};
+    const advantageCtx = gh.advantageContext || {};
+
+    return Object.freeze({
+      advantageScore: advantageCtx.score ?? null,
+      advantageBand: advantageCtx.band || payloadState.advantageHint || "neutral"
+    });
+  }
+
+
+    function buildHintsField() {
+    const gh = lastGlobalHints || {};
+    const fallbackCtx = gh.fallbackContext || {};
+
+    const fallbackBandLevel =
+      fallbackCtx.fallbackBandLevel ??
+      gh.fallbackBandLevel ??
+      payloadState.fallbackBandLevel ??
+      0;
+
+    return Object.freeze({
+      fallbackBandLevel,
+      chunkHints: gh.chunkHints || {},
+      cacheHints: gh.cacheHints || {},
+      prewarmHints: gh.prewarmHints || {}
+    });
+  }
+
+
+    function buildPayload() {
     const base = {
       regionTag: payloadState.regionTag,
       castlePresence: payloadState.castlePresence,
@@ -310,15 +383,30 @@ export function createPulseBeaconEngine({
       profileHints = PayloadProfiles.knownUserProfile;
     }
 
+    const presenceField = buildPresenceField();
+    const advantageField = buildAdvantageField();
+    const hintsField = buildHintsField();
+
     return Object.freeze({
       ...base,
-      ...profileHints
+      ...profileHints,
+      presenceField,
+      advantageField,
+      hintsField,
+      // for NodeAdmin: beaconSnapshot.globalHints.fallbackBandLevel, etc.
+      globalHints: {
+        fallbackBandLevel: hintsField.fallbackBandLevel,
+        chunkHints: hintsField.chunkHints,
+        cacheHints: hintsField.cacheHints,
+        prewarmHints: hintsField.prewarmHints
+      }
     });
   }
 
+
   // --------------------------------------------------------------------------
-  // SIGNAL SHAPING ENGINE
-  // --------------------------------------------------------------------------
+  // SIGNAL SHAPING ENGINE (USES GLOBAL HINTS)
+// --------------------------------------------------------------------------
   function computeSignalProfile({ densityHint, demandHint, regionType, meshStatus } = {}) {
     // Start from baseline based on mode.
     let powerProfile = "medium";
@@ -338,7 +426,19 @@ export function createPulseBeaconEngine({
       intervalProfile = "auto";
     }
 
-    // B-layer: adaptive shaping.
+    const gh = lastGlobalHints || {};
+    const fallbackCtx = gh.fallbackContext || {};
+    const fallbackBandLevel =
+      fallbackCtx.fallbackBandLevel ??
+      gh.fallbackBandLevel ??
+      payloadState.fallbackBandLevel ??
+      0;
+
+    const chunkAggression = gh.chunkHints?.chunkAggression ?? 0;
+    const cachePriority = gh.cacheHints?.priority || "normal";
+    const prewarmNeeded = gh.prewarmHints?.shouldPrewarm || false;
+
+    // B-layer: adaptive shaping (local + global).
     if (Modes.adaptive.autoSwitchEnabled) {
       const dense = densityHint === "high";
       const sparse = densityHint === "low";
@@ -346,17 +446,14 @@ export function createPulseBeaconEngine({
       const meshStrong = meshStatus === "strong";
 
       if (dense) {
-        // Reduce power, keep presence.
         powerProfile = "low";
         intervalProfile = "steady";
       } else if (sparse) {
-        // Extend reach.
         powerProfile = "high";
         intervalProfile = "steady";
       }
 
       if (highDemand) {
-        // Short bursts.
         intervalProfile = "frequent";
       }
 
@@ -368,6 +465,31 @@ export function createPulseBeaconEngine({
       if (regionType === "home") {
         powerProfile = powerProfile === "high" ? "medium" : powerProfile;
       }
+    }
+
+    // Global hints influence:
+    // - fallbackBandLevel: higher → more conservative
+    if (fallbackBandLevel >= 2) {
+      powerProfile = powerProfile === "high" ? "medium" : powerProfile;
+      intervalProfile = intervalProfile === "frequent" ? "steady" : intervalProfile;
+    }
+
+    // - chunkAggression: higher → shorter bursts
+    if (chunkAggression > 0.5) {
+      intervalProfile = "frequent";
+    }
+
+    // - cachePriority: critical → keep presence strong
+    if (cachePriority === "critical") {
+      powerProfile = "high";
+      intervalProfile = "frequent";
+    } else if (cachePriority === "high") {
+      intervalProfile = "steady";
+    }
+
+    // - prewarmNeeded: if true, keep beacon more active
+    if (prewarmNeeded && intervalProfile === "sparse") {
+      intervalProfile = "steady";
     }
 
     // Enforce limits.
@@ -403,13 +525,11 @@ export function createPulseBeaconEngine({
       });
     }
 
-    // Default: allow if not auto-connect and user-visible.
     return { allowed: true };
   }
-
   // --------------------------------------------------------------------------
-  // BROADCAST ENGINE (ABSTRACTED)
-// --------------------------------------------------------------------------
+  // BROADCAST ENGINE
+  // --------------------------------------------------------------------------
   function broadcastOnce({ densityHint, demandHint, regionType, meshStatus } = {}) {
     tick++;
 
@@ -423,8 +543,10 @@ export function createPulseBeaconEngine({
 
     const safety = checkSafety(payload, signalProfile);
     if (!safety.allowed) {
-      emitToOvermind("broadcast-blocked", { reason: safety.reason || "safety-denied", payload, signalProfile });
-      emitToNodeAdmin("broadcast-blocked", { reason: safety.reason || "safety-denied", payload, signalProfile });
+      const reason = safety.reason || "safety-denied";
+      emitToOvermind("broadcast-blocked", { reason, payload, signalProfile });
+      emitToNodeAdmin("broadcast-blocked", { reason, payload, signalProfile });
+      log("Broadcast blocked:", { reason, payload, signalProfile });
       return { ok: false, reason: "safety-denied" };
     }
 
@@ -440,7 +562,6 @@ export function createPulseBeaconEngine({
     emitToNodeAdmin("broadcast", { payload, profile });
 
     if (bluetoothAdapter && typeof bluetoothAdapter.broadcast === "function") {
-      // Still deterministic: adapter is a pure side-effect boundary.
       bluetoothAdapter.broadcast(payload, profile);
     }
 
@@ -450,90 +571,99 @@ export function createPulseBeaconEngine({
 
   // --------------------------------------------------------------------------
   // DIRECTIVE ENGINE (OVERMIND + NODEADMIN)
-// --------------------------------------------------------------------------
+  // --------------------------------------------------------------------------
   function applyDirective(directive) {
     if (!directive || typeof directive !== "object") {
       return { ok: false, reason: "invalid-directive" };
     }
 
-    const { mode, payloadUpdate, broadcastNow, contextHints } = directive;
+    const { mode, payloadUpdate, broadcastNow, contextHints, globalHints: gh } = directive;
     let modeChanged = false;
     let payloadChanged = false;
+    let hintsChanged = false;
     let broadcastResult = null;
 
     if (mode) {
       const res = setMode(mode);
-      modeChanged = res.ok;
+      modeChanged = !!res.ok;
     }
 
     if (payloadUpdate) {
       const res = updatePayloadFromContext(payloadUpdate);
-      payloadChanged = res.ok;
+      payloadChanged = !!res.ok;
+    }
+
+    if (gh) {
+      const res = setGlobalHints(gh);
+      hintsChanged = !!res.ok;
     }
 
     if (broadcastNow) {
       broadcastResult = broadcastOnce(contextHints || {});
     }
 
-    const result = { ok: true, modeChanged, payloadChanged, broadcastResult };
+    const result = { ok: true, modeChanged, payloadChanged, hintsChanged, broadcastResult };
     emitToOvermind("directive-applied", { directive, result });
     emitToNodeAdmin("directive-applied", { directive, result });
+    log("Directive applied:", { directive, result });
     return result;
   }
 
   // --------------------------------------------------------------------------
-  // NODEADMIN INTENT SURFACE (ORGANISM LEVEL)
-// --------------------------------------------------------------------------
+  // BRIDGES
+  // --------------------------------------------------------------------------
   function attachNodeAdminBridge(bridge) {
     nodeAdmin = bridge || null;
-    emitToOvermind("nodeadmin-bridge-set", { hasBridge: !!bridge });
-    return { ok: true, hasBridge: !!bridge };
+    const hasBridge = !!bridge;
+    emitToOvermind("nodeadmin-bridge-set", { hasBridge });
+    log("NodeAdmin bridge set:", { hasBridge });
+    return { ok: true, hasBridge };
   }
 
-  // Optional helper for NodeAdmin: simple intent mapping.
   function handleNodeAdminIntent(intentName, payload = {}) {
     if (!intentName) return { ok: false, reason: "no-intent" };
 
+    const ctx = payload.contextHints || {};
+
     if (intentName === "broadcast-discovery") {
       setMode("discovery");
-      return broadcastOnce(payload.contextHints || {});
+      return broadcastOnce(ctx);
     }
 
     if (intentName === "broadcast-presence") {
       setMode("presence");
-      return broadcastOnce(payload.contextHints || {});
+      return broadcastOnce(ctx);
     }
 
     if (intentName === "pulse-reach") {
       setMode("pulse-reach");
-      return broadcastOnce(payload.contextHints || {});
+      return broadcastOnce(ctx);
     }
 
     if (intentName === "pulse-storm") {
       setMode("pulse-storm");
-      return broadcastOnce(payload.contextHints || {});
+      return broadcastOnce(ctx);
     }
 
     if (intentName === "pulse-mesh") {
       setMode("pulse-mesh");
-      return broadcastOnce(payload.contextHints || {});
+      return broadcastOnce(ctx);
     }
 
     if (intentName === "pulse-expand") {
       setMode("pulse-expand");
-      return broadcastOnce(payload.contextHints || {});
+      return broadcastOnce(ctx);
     }
 
     return { ok: false, reason: "unknown-intent" };
   }
 
-  // --------------------------------------------------------------------------
-  // OVERMIND BRIDGE
-  // --------------------------------------------------------------------------
   function attachOvermindBridge(bridge) {
     overmind = bridge || null;
-    emitToOvermind("overmind-bridge-set", { hasBridge: !!bridge });
-    return { ok: true, hasBridge: !!bridge };
+    const hasBridge = !!bridge;
+    emitToOvermind("overmind-bridge-set", { hasBridge });
+    log("Overmind bridge set:", { hasBridge });
+    return { ok: true, hasBridge };
   }
 
   // --------------------------------------------------------------------------
@@ -553,7 +683,11 @@ export function createPulseBeaconEngine({
       signalState: { ...signalState },
       telemetry: { ...telemetry },
       multiInstance: { ...MultiInstance },
-      contracts: { ...Contracts }
+      contracts: { ...Contracts },
+      globalHints: lastGlobalHints,
+      presenceField: buildPresenceField(),
+      advantageField: buildAdvantageField(),
+      hintsField: buildHintsField()
     });
   }
 
@@ -562,13 +696,22 @@ export function createPulseBeaconEngine({
       meta: PulseBeaconMeta,
       description: "PulseBeaconEngine is the Bluetooth membrane organ for PulseWorld.",
       usage: {
-        setMode: "beacon.setMode('discovery' | 'presence' | 'adaptive' | 'pulse-reach' | 'pulse-storm' | 'pulse-mesh' | 'pulse-expand')",
+        setMode:
+          "beacon.setMode('discovery' | 'presence' | 'adaptive' | 'pulse-reach' | 'pulse-storm' | 'pulse-mesh' | 'pulse-expand')",
         updatePayloadFromContext:
           "beacon.updatePayloadFromContext({ regionTag?, castlePresence?, meshStatus?, loadHint?, userProfile? })",
+        setGlobalHints:
+          "beacon.setGlobalHints({ presenceContext?, advantageContext?, fallbackBandLevel?, chunkHints?, cacheHints?, prewarmHints? })",
+        buildPresenceField: "beacon.buildPresenceField() → presenceField",
+        buildAdvantageField: "beacon.buildAdvantageField() → advantageField",
+        buildHintsField: "beacon.buildHintsField() → hintsField",
+        buildPayload: "beacon.buildPayload() → full broadcast payload",
+        computeSignalProfile:
+          "beacon.computeSignalProfile({ densityHint?, demandHint?, regionType?, meshStatus? }) → signalProfile",
         broadcastOnce:
           "beacon.broadcastOnce({ densityHint?, demandHint?, regionType?, meshStatus? })",
         applyDirective:
-          "beacon.applyDirective({ mode?, payloadUpdate?, broadcastNow?, contextHints? })",
+          "beacon.applyDirective({ mode?, payloadUpdate?, globalHints?, broadcastNow?, contextHints? })",
         attachOvermindBridge:
           "beacon.attachOvermindBridge({ emit? })",
         attachNodeAdminBridge:
@@ -582,38 +725,6 @@ export function createPulseBeaconEngine({
         "Hardware emission must be implemented via bluetoothAdapter.broadcast(payload, profile). This organ must remain deterministic, synthetic, and SafetyFrame-compliant."
     };
   }
-
-  function applyDirective(directive) {
-    if (!directive || typeof directive !== "object") return { ok: false };
-
-    const { mode, broadcastNow, payloadUpdate, contextHints } = directive;
-
-    // 1. Update mode
-    if (mode && typeof setMode === "function") {
-      setMode(mode);
-    }
-
-    // 2. Update payload
-    if (payloadUpdate && typeof updatePayload === "function") {
-      updatePayload(payloadUpdate);
-    }
-
-    // 3. Optional: update context hints
-    if (contextHints) {
-      remember("beacon-context-hints", {
-        ...contextHints,
-        ts: Date.now()
-      });
-    }
-
-    // 4. Broadcast immediately if requested
-    if (broadcastNow && typeof broadcast === "function") {
-      broadcast();
-    }
-
-    return { ok: true, applied: directive };
-  }
-
 
   // --------------------------------------------------------------------------
   // PUBLIC API
@@ -631,7 +742,14 @@ export function createPulseBeaconEngine({
     // payload
     updatePayloadFromContext,
     buildPayload,
-    applyDirective,   // ← NEW
+
+    // global hints (hybrid)
+    setGlobalHints,
+    getGlobalHints,
+    buildPresenceField,
+    buildAdvantageField,
+    buildHintsField,
+
     // signal
     computeSignalProfile,
 

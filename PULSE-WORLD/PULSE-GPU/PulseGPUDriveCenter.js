@@ -10,12 +10,23 @@ import { PulseGPUSurvivalInstincts } from "./PulseGPUSurvivalInstincts.js";
 // ============================================================================
 // DELTA CLASSIFICATION — DRIVE PRESSURE LOGIC (v11-Evo)
 // ============================================================================
-function classifyDelta(deltaPercent) {
+function classifyDelta(deltaPercent, gpuContext = null) {
   if (typeof deltaPercent !== "number" || Number.isNaN(deltaPercent)) {
     return "low";
   }
 
-  const absDelta = Math.abs(deltaPercent);
+  let absDelta = Math.abs(deltaPercent);
+
+  // v11-Evo: binary regression extra sensitivity (conceptual, deterministic)
+  const binarySensitive =
+    gpuContext &&
+    typeof gpuContext === "object" &&
+    gpuContext.binaryModeObserved === true;
+
+  if (binarySensitive && deltaPercent < 0) {
+    const extra = SEVERITY_THRESHOLDS.BINARY_REGRESSION_EXTRA_SENSITIVITY || 0;
+    absDelta += extra;
+  }
 
   if (absDelta < SEVERITY_THRESHOLDS.LOW) return "low";
   if (absDelta < SEVERITY_THRESHOLDS.MEDIUM) return "medium";
@@ -67,7 +78,7 @@ function buildAdvice({
         unifiedAdvantageField: true,
         pulseSend11Ready: true,
 
-        // NEW v11-Evo awareness
+        // v11-Evo awareness
         binaryAware: true,
         symbolicAware: true,
         gpuDispatchAware: true,
@@ -92,9 +103,25 @@ function buildAdvice({
   if (baselineSettings) advice.baselineSettings = baselineSettings;
   if (extra && typeof extra === "object") advice.extra = extra;
 
-  // NEW v11-Evo GPU context injection
+  // v11-Evo GPU context injection (symbolic + binary + pattern)
   if (gpuContext && typeof gpuContext === "object") {
     advice.gpuContext = { ...gpuContext };
+
+    if (gpuContext.gpuPattern) {
+      advice.gpuPattern = gpuContext.gpuPattern;
+    }
+    if (gpuContext.gpuShapeSignature) {
+      advice.gpuShapeSignature = gpuContext.gpuShapeSignature;
+    }
+    if (typeof gpuContext.binaryModeObserved === "boolean") {
+      advice.binaryModeObserved = gpuContext.binaryModeObserved;
+    }
+    if (typeof gpuContext.symbolicModeObserved === "boolean") {
+      advice.symbolicModeObserved = gpuContext.symbolicModeObserved;
+    }
+    if (gpuContext.gpuDispatchHints) {
+      advice.gpuDispatchHints = gpuContext.gpuDispatchHints;
+    }
   }
 
   return advice;
@@ -162,7 +189,7 @@ class PulseGPUPerformanceAdvisor {
       unifiedAdvantageField: true,
       pulseSend11Ready: true,
 
-      // NEW v11-Evo awareness
+      // v11-Evo awareness
       binaryAware: true,
       symbolicAware: true,
       gpuDispatchAware: true,
@@ -185,7 +212,7 @@ class PulseGPUPerformanceAdvisor {
     tierProfile,
     settings,
     metrics,
-    gpuContext // NEW v11-Evo
+    gpuContext // v11-Evo GPU context
   }) {
     const currentScore = scoreSession(metrics);
 
@@ -211,7 +238,7 @@ class PulseGPUPerformanceAdvisor {
 
     // NEGATIVE PRESSURE — REGRESSION
     if (isRegression(deltaPercent)) {
-      const severity = classifyDelta(deltaPercent);
+      const severity = classifyDelta(deltaPercent, gpuContext);
 
       advice.push(
         buildAdvice({
@@ -240,7 +267,7 @@ class PulseGPUPerformanceAdvisor {
 
     // POSITIVE PRESSURE — IMPROVEMENT
     else if (isImprovement(deltaPercent)) {
-      const severity = classifyDelta(deltaPercent);
+      const severity = classifyDelta(deltaPercent, gpuContext);
 
       advice.push(
         buildAdvice({
@@ -347,7 +374,7 @@ class PulseGPUPerformanceAdvisor {
         ? 0
         : ((baselineScore - currentScore) / baselineScore) * 100;
 
-    const severity = classifyDelta(deltaPercent);
+    const severity = classifyDelta(deltaPercent, gpuContext);
 
     return [
       buildAdvice({
@@ -403,7 +430,7 @@ class PulseGPUPerformanceAdvisor {
         ? 0
         : ((newTierScore - currentScore) / currentScore) * 100;
 
-    const severity = classifyDelta(deltaPercent);
+    const severity = classifyDelta(deltaPercent, gpuContext);
 
     return [
       buildAdvice({
@@ -438,5 +465,7 @@ export {
   PulseGPUPerformanceAdvisor,
   classifyDelta,
   buildAdvice,
-  validateAdvice
+  validateAdvice,
+  scoreSession,
+  detectRegression
 };

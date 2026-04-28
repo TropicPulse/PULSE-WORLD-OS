@@ -1,27 +1,13 @@
 // ============================================================================
-// FILE: tropic-pulse-functions/apps/PULSE-EARN/PulseEarnMktBroker.js
-// LAYER: THE RUNPOD BROKER (v11-Evo A‑B‑A)
-// (Deterministic RunPod Receptor DNA + Signature-Rich Marketplace Organ)
+// FILE: tropic-pulse-functions/apps/PULSE-EARN/PulseEarnMktBroker-v12.3-PRESENCE-EVO+.js
+// LAYER: THE RUNPOD BROKER (v12.3 Presence + Advantage‑C + Prewarm)
 // ============================================================================
-//
-// ROLE (v11‑Evo A‑B‑A):
-//   • Deterministic RunPod receptor phenotype.
-//   • Normalizes RunPod tasks into Pulse‑Earn job schema.
-//   • Provides deterministic registerDevice(), requestJob(), submitJob().
-//   • Emits A‑B‑A bandSignature + binaryField + waveField surfaces.
-//   • Emits v11‑Evo signatures for all receptor actions.
-//
-// CONTRACT:
-//   • PURE RECEPTOR — deterministic, drift‑proof.
-//   • NO network, NO async, NO randomness, NO timestamps.
-//   • READ‑ONLY except healing metadata.
-//   • NEVER mutate external objects.
-// ============================================================================
+
 export const PulseEarnMktBrokerMeta = Object.freeze({
   layer: "PulseEarnMktBroker",
   role: "EARN_MARKETPLACE_RECEPTOR",
-  version: "v11.2-EVO",
-  identity: "PulseEarnMktBroker-v11.2-EVO",
+  version: "v12.3-PRESENCE-EVO+",
+  identity: "PulseEarnMktBroker-v12.3-PRESENCE-EVO+",
 
   guarantees: Object.freeze({
     deterministic: true,
@@ -29,10 +15,15 @@ export const PulseEarnMktBrokerMeta = Object.freeze({
     noRealTime: true,
     noExternalIO: true,
     pureReceptor: true,
+
     dualBandAware: true,
     binaryAware: true,
     waveFieldAware: true,
+    presenceAware: true,
+    advantageAware: true,
+    chunkPrewarmAware: true,
     healingMetadataAware: true,
+
     worldLensAware: false,
     zeroNetwork: true,
     zeroAsync: true,
@@ -44,7 +35,8 @@ export const PulseEarnMktBrokerMeta = Object.freeze({
     input: [
       "RunPodTaskDNA",
       "DualBandContext",
-      "ReceptorNormalizationRules"
+      "ReceptorNormalizationRules",
+      "DevicePhenotypePresence"
     ],
     output: [
       "ReceptorRegisterResult",
@@ -52,94 +44,43 @@ export const PulseEarnMktBrokerMeta = Object.freeze({
       "ReceptorSubmissionResult",
       "ReceptorNormalizationResult",
       "ReceptorSignatures",
-      "RunPodHealingState"
+      "RunPodHealingState",
+      "BrokerPresenceField",
+      "BrokerAdvantageField",
+      "BrokerChunkPrewarmPlan"
     ]
-  }),
-
-  lineage: Object.freeze({
-    root: "PulseOS-v11-EVO",
-    parent: "PulseEarn-v11.2-EVO",
-    ancestry: [
-      "PulseEarnMktBroker-v9",
-      "PulseEarnMktBroker-v10",
-      "PulseEarnMktBroker-v11",
-      "PulseEarnMktBroker-v11-Evo"
-    ]
-  }),
-
-  bands: Object.freeze({
-    supported: ["symbolic", "binary"],
-    default: "symbolic",
-    behavior: "metadata-only"
-  }),
-
-  architecture: Object.freeze({
-    pattern: "A-B-A",
-    baseline: "deterministic RunPod receptor phenotype",
-    adaptive: "binary/wave surfaces + band signatures",
-    return: "deterministic registerDevice/requestJob/submitJob"
   })
 });
 
-
 // ============================================================================
-// Healing Metadata — Deterministic RunPod Log (v11-Evo A‑B‑A)
-// ============================================================================
-const runpodHealing = {
-  lastRegister: null,
-  lastRequest: null,
-  lastSubmit: null,
-
-  lastNormalizedJobId: null,
-  lastNormalizationError: null,
-
-  cycleCount: 0,
-
-  lastRegisterSignature: null,
-  lastRequestSignature: null,
-  lastNormalizationSignature: null,
-  lastSubmitSignature: null,
-  lastRunPodCycleSignature: null,
-
-  // A‑B‑A surfaces
-  lastBand: "symbolic",
-  lastBandSignature: null,
-  lastBinaryField: null,
-  lastWaveField: null
-};
-
-
-// ============================================================================
-// Deterministic Hash Helper — v11-Evo
+// Deterministic Hash Helper
 // ============================================================================
 function computeHash(str) {
   let h = 0;
   const s = String(str || "");
-  for (let i = 0; i < s.length; i++) {
+  for (let i = 0; i < s.length; i++)
     h = (h + s.charCodeAt(i) * (i + 1)) % 100000;
-  }
   return `h${h}`;
 }
 
-function normalizeBand(band) {
-  const b = String(band || "symbolic").toLowerCase();
-  return b === "binary" ? "binary" : "symbolic";
+function normalizeBand(b) {
+  const x = String(b || "symbolic").toLowerCase();
+  return x === "binary" ? "binary" : "symbolic";
 }
 
+function buildBandSignature(band) {
+  return computeHash(`RUNPOD_BAND::${normalizeBand(band)}`);
+}
 
 // ============================================================================
-// A‑B‑A Binary + Wave Surfaces (v11‑Evo)
+// A‑B‑A Binary + Wave Surfaces
 // ============================================================================
-function buildBinaryField() {
-  const patternLen = 12; // deterministic constant
-  const density =
-    patternLen +
-    (runpodHealing.lastNormalizedJobId ? 10 : 0) +
-    (runpodHealing.lastRegister ? 5 : 0);
-
+function buildBinaryField(cycle) {
+  const patternLen = 12;
+  const density = patternLen + cycle * 3;
   const surface = density + patternLen;
 
-  const field = {
+  return {
     binaryPhenotypeSignature: computeHash(`BRUNPOD::${surface}`),
     binarySurfaceSignature: computeHash(`BRUNPOD_SURF::${surface}`),
     binarySurface: {
@@ -150,111 +91,168 @@ function buildBinaryField() {
     parity: surface % 2 === 0 ? 0 : 1,
     shiftDepth: Math.max(0, Math.floor(Math.log2(surface || 1)))
   };
-
-  runpodHealing.lastBinaryField = field;
-  return field;
 }
 
-function buildWaveField(band) {
-  const amplitude = (runpodHealing.cycleCount || 1) * 7;
+function buildWaveField(cycle, band) {
+  const amplitude = (cycle + 1) * (band === "binary" ? 9 : 5);
   const wavelength = amplitude + 3;
   const phase = amplitude % 16;
 
-  const field = {
+  return {
     amplitude,
     wavelength,
     phase,
     band,
     mode: band === "binary" ? "compression-wave" : "symbolic-wave"
   };
-
-  runpodHealing.lastWaveField = field;
-  return field;
 }
-
 
 // ============================================================================
-// Signature Builders — v11-Evo A‑B‑A
+// Presence Field (v12.3)
 // ============================================================================
-function buildRegisterSignature(deviceId) {
-  return computeHash(`REGISTER::${deviceId}`);
-}
+function buildPresenceField(jobOrRaw, device, cycle) {
+  const idLen = (jobOrRaw?.id || "").length;
+  const typeLen = (jobOrRaw?.priority || "").length;
+  const stability = device?.stabilityScore || 0.7;
 
-function buildRequestSignature(jobId) {
-  return computeHash(`REQUEST::${jobId || "NONE"}`);
-}
+  const composite =
+    idLen * 0.001 +
+    typeLen * 0.001 +
+    stability * 0.01;
 
-function buildNormalizationSignature(jobId) {
-  return computeHash(`NORM::${jobId || "NONE"}`);
-}
+  const presenceTier =
+    composite >= 0.02 ? "presence_high" :
+    composite >= 0.005 ? "presence_mid" :
+    "presence_low";
 
-function buildSubmitSignature(jobId) {
-  return computeHash(`SUBMIT::${jobId || "NONE"}`);
+  return {
+    presenceVersion: "v12.3",
+    presenceTier,
+    idLen,
+    typeLen,
+    stability,
+    cycle,
+    presenceSignature: computeHash(
+      `RUNPOD_PRESENCE::${presenceTier}::${idLen}::${typeLen}::${cycle}`
+    )
+  };
 }
-
-function buildRunPodCycleSignature(cycle) {
-  return computeHash(`RUNPOD_CYCLE::${cycle}`);
-}
-
-function buildBandSignature(band) {
-  return computeHash(`RUNPOD_BAND::${normalizeBand(band)}`);
-}
-
 
 // ============================================================================
-// Deterministic RunPod Receptor DNA (v11-Evo A‑B‑A)
+// Advantage‑C Field (v12.3)
 // ============================================================================
-const RUNPOD_RECEPTOR_DNA = {
-  pingLatency: 64,
+function buildAdvantageField(jobOrRaw, device, bandPack, presenceField) {
+  const gpuScore = device?.gpuScore || 0;
+  const bandwidth = device?.bandwidthMbps || 0;
+  const density = bandPack.binaryField.binarySurface.density;
+  const amplitude = bandPack.waveField.amplitude;
 
-  band: "symbolic",
+  const advantageScore =
+    gpuScore * 0.0005 +
+    bandwidth * 0.0002 +
+    density * 0.00001 +
+    amplitude * 0.00001 +
+    (presenceField.presenceTier === "presence_high" ? 0.01 : 0);
 
-  jobs: [
-    {
-      id: "runpod-001",
-      input: { task: "compute", value: 42 },
-      priority: "normal"
+  return {
+    advantageVersion: "C",
+    band: bandPack.band,
+    gpuScore,
+    bandwidth,
+    binaryDensity: density,
+    waveAmplitude: amplitude,
+    presenceTier: presenceField.presenceTier,
+    advantageScore
+  };
+}
+
+// ============================================================================
+// Chunk / Cache / Prewarm Plan (v12.3)
+// ============================================================================
+function buildChunkPrewarmPlan(jobOrRaw, device, presenceField) {
+  const basePriority =
+    presenceField.presenceTier === "presence_high"
+      ? 3
+      : presenceField.presenceTier === "presence_mid"
+      ? 2
+      : 1;
+
+  const gpuBoost = (device?.gpuScore || 0) > 600 ? 1 : 0;
+  const priority = basePriority + gpuBoost;
+
+  return {
+    planVersion: "v12.3-AdvantageC",
+    priority,
+    band: presenceField.presenceTier,
+    chunks: {
+      receptorEnvelope: true,
+      normalizationBlueprint: true
     },
-    {
-      id: "runpod-002",
-      input: { task: "image-processing", value: "img://sample" },
-      priority: "high"
+    cache: {
+      deviceProfile: true,
+      brokerDiagnostics: true
+    },
+    prewarm: {
+      nervousSystem: presenceField.presenceTier !== "presence_low",
+      muscleSystem: presenceField.presenceTier !== "presence_low",
+      lymphNodes: presenceField.presenceTier !== "presence_low"
     }
-  ],
+  };
+}
 
-  version: "11-Evo",
-  lineage: "RunPodAdapter-v11-Evo",
-  phenotype: "MarketplaceReceptor"
+// ============================================================================
+// Healing Metadata
+// ============================================================================
+const runpodHealing = {
+  lastRegister: null,
+  lastRequest: null,
+  lastSubmit: null,
+
+  lastNormalizedJobId: null,
+  lastNormalizationError: null,
+
+  cycleCount: 0,
+  lastCycleIndex: null,
+
+  lastRegisterSignature: null,
+  lastRequestSignature: null,
+  lastNormalizationSignature: null,
+  lastSubmitSignature: null,
+  lastRunPodCycleSignature: null,
+
+  lastBand: "symbolic",
+  lastBandSignature: null,
+  lastBinaryField: null,
+  lastWaveField: null,
+
+  lastPresenceField: null,
+  lastAdvantageField: null,
+  lastChunkPrewarmPlan: null
 };
 
-
-// ============================================================================
-// Deterministic Cycle Counter
-// ============================================================================
 let runpodCycle = 0;
 
-
 // ============================================================================
-// normalizeJob() — Convert RunPod job → Pulse-native job shape (v11-Evo A‑B‑A)
+// normalizeJob — deterministic + Presence + Advantage‑C
 // ============================================================================
-export function normalizeJob(runpodJob) {
+function normalizeJob(raw, deviceProfile = {}) {
   runpodCycle++;
   runpodHealing.cycleCount++;
+  runpodHealing.lastCycleIndex = runpodCycle;
 
-  const band = normalizeBand(RUNPOD_RECEPTOR_DNA.band);
+  const band = normalizeBand("symbolic");
   runpodHealing.lastBand = band;
   runpodHealing.lastBandSignature = buildBandSignature(band);
 
-  if (!runpodJob) {
+  if (!raw) {
     runpodHealing.lastNormalizationError = "invalid_job";
-    runpodHealing.lastNormalizationSignature = buildNormalizationSignature(null);
-    runpodHealing.lastRunPodCycleSignature = buildRunPodCycleSignature(runpodCycle);
+    runpodHealing.lastNormalizationSignature = computeHash("NORM::NONE");
     return null;
   }
 
-  const jobId = runpodJob.id || runpodJob.jobId || null;
-  const payload = runpodJob.input || runpodJob.payload || {};
-  const priority = runpodJob.priority || "normal";
+  const jobId = raw.id || raw.jobId || null;
+  const payload = raw.input || raw.payload || {};
+  const priority = raw.priority || "normal";
 
   const normalized = {
     id: jobId,
@@ -274,24 +272,40 @@ export function normalizeJob(runpodJob) {
 
   runpodHealing.lastNormalizedJobId = jobId;
   runpodHealing.lastNormalizationError = null;
-  runpodHealing.lastNormalizationSignature = buildNormalizationSignature(jobId);
-  runpodHealing.lastRunPodCycleSignature = buildRunPodCycleSignature(runpodCycle);
+  runpodHealing.lastNormalizationSignature = computeHash(`NORM::${jobId}`);
+  runpodHealing.lastRunPodCycleSignature = computeHash(`RUNPOD_CYCLE::${runpodCycle}`);
 
-  buildBinaryField();
-  buildWaveField(band);
+  const binaryField = buildBinaryField(runpodCycle);
+  const waveField = buildWaveField(runpodCycle, band);
 
-  return normalized;
+  runpodHealing.lastBinaryField = binaryField;
+  runpodHealing.lastWaveField = waveField;
+
+  const presenceField = buildPresenceField(raw, deviceProfile, runpodCycle);
+  const advantageField = buildAdvantageField(raw, deviceProfile, { band, binaryField, waveField }, presenceField);
+  const chunkPlan = buildChunkPrewarmPlan(raw, deviceProfile, presenceField);
+
+  runpodHealing.lastPresenceField = presenceField;
+  runpodHealing.lastAdvantageField = advantageField;
+  runpodHealing.lastChunkPrewarmPlan = chunkPlan;
+
+  return {
+    ...normalized,
+    presenceField,
+    advantageField,
+    chunkPlan
+  };
 }
 
-
 // ============================================================================
-// registerDevice() — Deterministic no-op (v11-Evo A‑B‑A)
+// registerDevice — deterministic + Presence + Advantage‑C
 // ============================================================================
-export function registerDevice({ deviceId, gpuInfo = {}, meta = {} } = {}) {
+function registerDevice({ deviceId, gpuInfo = {}, meta = {} } = {}, deviceProfile = {}) {
   runpodCycle++;
   runpodHealing.cycleCount++;
+  runpodHealing.lastCycleIndex = runpodCycle;
 
-  const band = normalizeBand(RUNPOD_RECEPTOR_DNA.band);
+  const band = normalizeBand("symbolic");
   runpodHealing.lastBand = band;
   runpodHealing.lastBandSignature = buildBandSignature(band);
 
@@ -302,11 +316,19 @@ export function registerDevice({ deviceId, gpuInfo = {}, meta = {} } = {}) {
     cycleIndex: runpodCycle
   };
 
-  runpodHealing.lastRegisterSignature = buildRegisterSignature(deviceId);
-  runpodHealing.lastRunPodCycleSignature = buildRunPodCycleSignature(runpodCycle);
+  runpodHealing.lastRegisterSignature = computeHash(`REGISTER::${deviceId}`);
+  runpodHealing.lastRunPodCycleSignature = computeHash(`RUNPOD_CYCLE::${runpodCycle}`);
 
-  const binaryField = buildBinaryField();
-  const waveField = buildWaveField(band);
+  const binaryField = buildBinaryField(runpodCycle);
+  const waveField = buildWaveField(runpodCycle, band);
+
+  const presenceField = buildPresenceField(null, deviceProfile, runpodCycle);
+  const advantageField = buildAdvantageField(null, deviceProfile, { band, binaryField, waveField }, presenceField);
+  const chunkPlan = buildChunkPrewarmPlan(null, deviceProfile, presenceField);
+
+  runpodHealing.lastPresenceField = presenceField;
+  runpodHealing.lastAdvantageField = advantageField;
+  runpodHealing.lastChunkPrewarmPlan = chunkPlan;
 
   return {
     ok: true,
@@ -316,20 +338,23 @@ export function registerDevice({ deviceId, gpuInfo = {}, meta = {} } = {}) {
       signature: runpodHealing.lastRegisterSignature,
       bandSignature: runpodHealing.lastBandSignature,
       binaryField,
-      waveField
+      waveField,
+      presenceField,
+      advantageField,
+      chunkPlan
     }
   };
 }
 
-
 // ============================================================================
-// requestJob() — Deterministic job retrieval (v11-Evo A‑B‑A)
+// requestJob — deterministic + Presence + Advantage‑C
 // ============================================================================
-export function requestJob({ deviceId, filters = {} } = {}) {
+function requestJob({ deviceId, filters = {} } = {}, deviceProfile = {}) {
   runpodCycle++;
   runpodHealing.cycleCount++;
+  runpodHealing.lastCycleIndex = runpodCycle;
 
-  const band = normalizeBand(RUNPOD_RECEPTOR_DNA.band);
+  const band = normalizeBand("symbolic");
   runpodHealing.lastBand = band;
   runpodHealing.lastBandSignature = buildBandSignature(band);
 
@@ -338,7 +363,7 @@ export function requestJob({ deviceId, filters = {} } = {}) {
       runpodCycle % RUNPOD_RECEPTOR_DNA.jobs.length
     ];
 
-  const normalized = normalizeJob(job);
+  const normalized = normalizeJob(job, deviceProfile);
 
   runpodHealing.lastRequest = {
     deviceId,
@@ -347,11 +372,19 @@ export function requestJob({ deviceId, filters = {} } = {}) {
     cycleIndex: runpodCycle
   };
 
-  runpodHealing.lastRequestSignature = buildRequestSignature(normalized?.id);
-  runpodHealing.lastRunPodCycleSignature = buildRunPodCycleSignature(runpodCycle);
+  runpodHealing.lastRequestSignature = computeHash(`REQUEST::${normalized?.id}`);
+  runpodHealing.lastRunPodCycleSignature = computeHash(`RUNPOD_CYCLE::${runpodCycle}`);
 
-  const binaryField = buildBinaryField();
-  const waveField = buildWaveField(band);
+  const binaryField = buildBinaryField(runpodCycle);
+  const waveField = buildWaveField(runpodCycle, band);
+
+  const presenceField = buildPresenceField(job, deviceProfile, runpodCycle);
+  const advantageField = buildAdvantageField(job, deviceProfile, { band, binaryField, waveField }, presenceField);
+  const chunkPlan = buildChunkPrewarmPlan(job, deviceProfile, presenceField);
+
+  runpodHealing.lastPresenceField = presenceField;
+  runpodHealing.lastAdvantageField = advantageField;
+  runpodHealing.lastChunkPrewarmPlan = chunkPlan;
 
   return {
     ok: true,
@@ -359,19 +392,22 @@ export function requestJob({ deviceId, filters = {} } = {}) {
     signature: runpodHealing.lastRequestSignature,
     bandSignature: runpodHealing.lastBandSignature,
     binaryField,
-    waveField
+    waveField,
+    presenceField,
+    advantageField,
+    chunkPlan
   };
 }
 
-
 // ============================================================================
-// submitJob() — Deterministic submission stub (v11-Evo A‑B‑A)
+// submitJob — deterministic + Presence + Advantage‑C
 // ============================================================================
-export function submitJob({ jobId, result, error: jobError = null } = {}) {
+function submitJob({ jobId, result, error: jobError = null } = {}, deviceProfile = {}) {
   runpodCycle++;
   runpodHealing.cycleCount++;
+  runpodHealing.lastCycleIndex = runpodCycle;
 
-  const band = normalizeBand(RUNPOD_RECEPTOR_DNA.band);
+  const band = normalizeBand("symbolic");
   runpodHealing.lastBand = band;
   runpodHealing.lastBandSignature = buildBandSignature(band);
 
@@ -382,11 +418,19 @@ export function submitJob({ jobId, result, error: jobError = null } = {}) {
     cycleIndex: runpodCycle
   };
 
-  runpodHealing.lastSubmitSignature = buildSubmitSignature(jobId);
-  runpodHealing.lastRunPodCycleSignature = buildRunPodCycleSignature(runpodCycle);
+  runpodHealing.lastSubmitSignature = computeHash(`SUBMIT::${jobId}`);
+  runpodHealing.lastRunPodCycleSignature = computeHash(`RUNPOD_CYCLE::${runpodCycle}`);
 
-  const binaryField = buildBinaryField();
-  const waveField = buildWaveField(band);
+  const binaryField = buildBinaryField(runpodCycle);
+  const waveField = buildWaveField(runpodCycle, band);
+
+  const presenceField = buildPresenceField({ id: jobId }, deviceProfile, runpodCycle);
+  const advantageField = buildAdvantageField({ id: jobId }, deviceProfile, { band, binaryField, waveField }, presenceField);
+  const chunkPlan = buildChunkPrewarmPlan({ id: jobId }, deviceProfile, presenceField);
+
+  runpodHealing.lastPresenceField = presenceField;
+  runpodHealing.lastAdvantageField = advantageField;
+  runpodHealing.lastChunkPrewarmPlan = chunkPlan;
 
   return {
     ok: true,
@@ -398,20 +442,22 @@ export function submitJob({ jobId, result, error: jobError = null } = {}) {
       bandSignature: runpodHealing.lastBandSignature,
       binaryField,
       waveField,
-      note: "RunPod submission simulated deterministically (v11-Evo A‑B‑A)."
+      presenceField,
+      advantageField,
+      chunkPlan,
+      note: "RunPod submission simulated deterministically (v12.3-PRESENCE-EVO+)."
     }
   };
 }
 
-
 // ============================================================================
-// EXPORT — Marketplace organ surface (v11-Evo A‑B‑A)
+// Exported Marketplace Organ (Unified, like Forager/Courier)
 // ============================================================================
-export const RunPodAdapter = {
+export const PulseEarnMktBroker = {
   id: "runpod",
   name: "RunPod",
-  version: "11-Evo",
-  lineage: "RunPodAdapter-v11-Evo",
+  version: "12.3-PRESENCE-EVO+",
+  lineage: "RunPodAdapter-v12.3-PRESENCE-EVO+",
 
   registerDevice,
   requestJob,
@@ -419,9 +465,8 @@ export const RunPodAdapter = {
   normalizeJob
 };
 
-
 // ============================================================================
-// Healing State Export (v11-Evo A‑B‑A)
+// Healing State Export
 // ============================================================================
 export function getRunPodHealingState() {
   return { ...runpodHealing };

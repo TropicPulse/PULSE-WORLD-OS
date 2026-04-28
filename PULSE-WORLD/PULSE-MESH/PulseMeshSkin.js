@@ -1,22 +1,22 @@
 // ============================================================================
 // FILE: /apps/organs/skin/PulseMeshSkin.js
-// [pulse:mesh] PULSE_OS_SKIN_LAYER v11-Evo  // silver
+// [pulse:mesh] PULSE_OS_SKIN_LAYER v12.3-PRESENCE-EVO-MAX-PRIME  // silver
 // Boundary Membrane • Entry–Exit Normalization • Deterministic Skin
 // ============================================================================
 //
-// IDENTITY — THE SKIN (v11-Evo):
-// ------------------------------
+// IDENTITY — THE SKIN (v12.3):
+// ----------------------------
 // • First organ touched by every impulse entering the organism.
 // • Last organ to touch every impulse leaving the organism.
-// • Normalizes entry (score, energy).
+// • Normalizes entry (score, energy, mode, presence-band).
 // • Cleans exit (strips internal metadata).
 // • Pure metadata-only — zero payload mutation.
 // • No pressure reactivity, no friction, no noise.
 // • Deterministic-field, drift-proof, SDN-aligned.
-// • v11-Evo: binary-aware, dual-mode-ready, unified-advantage-field.
+// • Presence-aware, binary-aware, dual-band-ready.
 //
-// SAFETY CONTRACT (v11-Evo):
-// ---------------------------
+// SAFETY CONTRACT (v12.3):
+// -------------------------
 // • No routing, no compute, no shaping.
 // • No payload mutation.
 // • No async, no randomness.
@@ -31,13 +31,15 @@ export function createPulseSkin({ log, warn, error }) {
     meta: {
       layer: "PulseSkin",
       role: "BOUNDARY_MEMBRANE",
-      version: "11.0-Evo",
+      version: "12.3-PRESENCE-EVO-MAX-PRIME",
       target: "full-mesh",
       selfRepairable: true,
       evo: {
         dualMode: true,
         binaryAware: true,
         symbolicAware: true,
+        presenceAware: true,
+        bandAware: true,
         localAware: true,
         internetAware: true,
 
@@ -62,7 +64,7 @@ export function createPulseSkin({ log, warn, error }) {
   };
 
   // ========================================================================
-  //  SKIN PACK (v11-Evo)
+  //  SKIN PACK (v12.3)
   // ========================================================================
   const PulseSkin = {
 
@@ -73,18 +75,24 @@ export function createPulseSkin({ log, warn, error }) {
       impulse.flags = impulse.flags || {};
       impulse.flags.skin_entry_normalized = true;
 
-      // v11-Evo: dual-mode tagging
+      // v12.3: mode + presence-band tagging
       if (impulse.flags.binary_mode) {
         impulse.flags.skin_mode = "binary";
+        impulse.band = "binary";
       } else if (impulse.flags.dual_mode) {
         impulse.flags.skin_mode = "dual";
+        impulse.band = "dual";
       } else {
         impulse.flags.skin_mode = "symbolic";
+        impulse.band = "symbolic";
       }
 
       // deterministic normalization
       impulse.score = clamp01(impulse.score ?? 0.5);
       impulse.energy = Math.max(0.05, impulse.energy ?? 1);
+
+      // v12.3: presence-band metadata
+      impulse.flags.skin_presence_band = impulse.band;
 
       return impulse;
     },
@@ -96,7 +104,7 @@ export function createPulseSkin({ log, warn, error }) {
       impulse.flags = impulse.flags || {};
       impulse.flags.skin_exit_normalized = true;
 
-      // v11-Evo: strip internal metadata safely
+      // v12.3: strip internal metadata safely
       impulse.flags.internal_metadata_stripped = true;
 
       return impulse;
@@ -104,7 +112,7 @@ export function createPulseSkin({ log, warn, error }) {
   };
 
   // ========================================================================
-  //  SKIN ENGINE (v11-Evo)
+  //  SKIN ENGINE (v12.3)
   // ========================================================================
   function applyPulseSkin(impulse, phase = "entry") {
     impulse.flags = impulse.flags || {};
@@ -114,7 +122,7 @@ export function createPulseSkin({ log, warn, error }) {
       PulseSkin.normalizeEntry(impulse);
     }
 
-    // v11-Evo: NO friction, NO noise, NO boundary load modulation
+    // v12.3: NO friction, NO noise, NO boundary load modulation
     // Skin is pure normalization only.
 
     if (phase === "exit") {

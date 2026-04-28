@@ -1,20 +1,23 @@
 // ============================================================================
-//  PulseProxyAdrenalSystem-v11-Evo-ABA.js
-//  ADRENAL SYSTEM — v11‑Evo A‑B‑A
-//  (Dynamic Band Reflex Organ + Stress Scaling + Instance Orchestrator)
+//  PulseProxyAdrenalSystem-v12.3-EVO-ABA.js
+//  ADRENAL SYSTEM — v12.3‑Evo A‑B‑A
+//  Dynamic Band Reflex Organ + Stress Scaling + Instance Orchestrator
+//  12.3+: Dual‑Band + Presence/Harmonics + Prewarm/Cache/Chunk/Remember Hints
 // ============================================================================
 //
 //  ROLE:
-//    - Fight‑or‑flight reflex organ for Pulse‑Earn.
+//    - Fight‑or‑flight reflex organ for Pulse‑Earn / Pulse‑Proxy.
 //    - Scales worker “cells” based on stress, tier, and orchestrator mode.
 //    - Emits A‑B‑A surfaces: bandSignature, binaryField, waveField.
 //    - Dynamic band: low stress → symbolic, high stress → binary.
+//    - Dual‑band aware with presence/harmonics + passive prewarm/cache/chunk/remember hints.
 //    - Backend‑only, deterministic, drift‑proof.
 //
-//  CONTRACT (v11‑Evo A‑B‑A):
+//  CONTRACT (v12.3‑Evo A‑B‑A):
 //    - NO randomness.
 //    - NO nondeterminism.
-//    - NO mutation outside activeWorkers.
+//    - NO timers, NO intervals, NO Date.now in core logic.
+//    - NO mutation outside activeWorkers registry.
 //    - NO symbolic contamination in binary surfaces.
 //    - Firestore allowed (backend‑only).
 // ============================================================================
@@ -23,8 +26,8 @@
 // ============================================================================
 //  OSKernel imports (backend‑safe)
 // ============================================================================
-import { logger } from "../OSKernel/PulseLogger.js";
-import { PulseLineage } from "../OSKernel/PulseIdentity.js";
+import { logger } from "../PULSEProofLogger.js";
+import { PulseLineage } from "./PulseProxyBBB.js";
 
 // Firestore (backend‑only)
 import { getFirestore } from "firebase-admin/firestore";
@@ -32,14 +35,14 @@ const db = getFirestore();
 
 
 // ============================================================================
-//  PULSE ROLE — v11‑Evo A‑B‑A Identity
+//  PULSE ROLE — v12.3‑Evo A‑B‑A Identity
 // ============================================================================
 export const PulseRole = {
   type: "Organ",
   subsystem: "PulseProxy",
   layer: "AdrenalSystem",
-  version: "11-Evo",
-  identity: "PulseProxyAdrenalSystem-v11-Evo-ABA",
+  version: "12.3-EVO-ABA",
+  identity: "PulseProxyAdrenalSystem-v12.3-EVO-ABA",
 
   evo: {
     dualMode: true,
@@ -60,13 +63,25 @@ export const PulseRole = {
     bandAware: true,
     waveFieldAware: true,
     binaryFieldAware: true,
-    stressFieldAware: true
+    stressFieldAware: true,
+
+    // 12.3+ dual-band + presence/harmonics
+    dualBandCompatible: true,
+    presenceAware: true,
+    harmonicsAware: true,
+    epochStable: true,
+
+    // Passive band abilities (symbolic hints only)
+    passivePrewarm: true,
+    passiveCache: true,
+    passiveChunk: true,
+    passiveRemember: true
   }
 };
 
 
 // ============================================================================
-//  ORGAN CONTEXT — v11‑Evo
+//  ORGAN CONTEXT — v12.3‑Evo
 // ============================================================================
 const ADRENAL_CONTEXT = {
   layer: PulseRole.layer,
@@ -90,8 +105,8 @@ export const ORCHESTRATOR_MODES = {
 export const PulseProxyAdrenalSystemMeta = Object.freeze({
   layer: "PulseProxyAdrenalSystem",
   role: "ADRENAL_SYSTEM_ORGAN",
-  version: "v11.2-EVO-BINARY-MAX",
-  identity: "PulseProxyAdrenalSystem-v11.2-EVO-BINARY-MAX",
+  version: "v12.3-EVO-BINARY-MAX",
+  identity: "PulseProxyAdrenalSystem-v12.3-EVO-BINARY-MAX",
 
   guarantees: Object.freeze({
     deterministic: true,
@@ -115,6 +130,18 @@ export const PulseProxyAdrenalSystemMeta = Object.freeze({
     governorReady: true,
     reflexSafe: true,
     backendOnly: true,
+
+    // 12.3+ dual-band + presence/harmonics
+    dualBandCompatible: true,
+    presenceAware: true,
+    harmonicsAware: true,
+    epochStable: true,
+
+    // Passive band abilities (symbolic hints only)
+    passivePrewarm: true,
+    passiveCache: true,
+    passiveChunk: true,
+    passiveRemember: true,
 
     // Execution prohibitions
     zeroRandomness: true,
@@ -156,6 +183,8 @@ export const PulseProxyAdrenalSystemMeta = Object.freeze({
       "AdrenalBandSignature",
       "AdrenalBinaryField",
       "AdrenalWaveField",
+      "AdrenalPresenceField",
+      "AdrenalHarmonicsField",
       "AdrenalDiagnostics",
       "AdrenalHealingState"
     ]
@@ -163,13 +192,14 @@ export const PulseProxyAdrenalSystemMeta = Object.freeze({
 
   lineage: Object.freeze({
     root: "PulseProxy-v11",
-    parent: "PulseProxy-v11.2-EVO",
+    parent: "PulseProxy-v12.3-EVO",
     ancestry: [
       "PulseProxyAdrenalSystem-v9",
       "PulseProxyAdrenalSystem-v10",
       "PulseProxyAdrenalSystem-v11",
       "PulseProxyAdrenalSystem-v11-Evo",
-      "PulseProxyAdrenalSystem-v11-Evo-ABA"
+      "PulseProxyAdrenalSystem-v11-Evo-ABA",
+      "PulseProxyAdrenalSystem-v11.2-EVO-BINARY-MAX"
     ]
   }),
 
@@ -182,7 +212,7 @@ export const PulseProxyAdrenalSystemMeta = Object.freeze({
   architecture: Object.freeze({
     pattern: "A-B-A",
     baseline: "stress → band reflex → scaling plan",
-    adaptive: "dynamic symbolic→binary shift",
+    adaptive: "dynamic symbolic→binary shift + presence/harmonics overlays",
     return: "deterministic adrenal surfaces + signatures"
   })
 });
@@ -202,23 +232,25 @@ export const EARN_MODE_MULT = 1.5;
 export const ENABLE_INSTANCE_LOGGING = true;
 export const INSTANCE_LOG_COLLECTION = "UserInstanceLogs";
 
-const INSTANCE_HEARTBEAT_MS = 5000;
-
 
 // ============================================================================
 //  INTERNAL STATE — Active “cells” per user
 // ============================================================================
 const activeWorkers = new Map(); // userId -> worker[]
 
+// deterministic sequence counter (replaces Date.now / timers)
+let adrenalSeq = 0;
+
 
 // ============================================================================
 //  A‑B‑A SURFACES — Dynamic Band (stress-based)
 // ============================================================================
 function computeStressField(finalInstances, baseInstances) {
-  const delta = Math.max(0, finalInstances - baseInstances);
+  const safeBase = baseInstances <= 0 ? 1 : baseInstances;
+  const delta = Math.max(0, finalInstances - safeBase);
   return {
     stressLevel: delta,
-    stressRatio: baseInstances === 0 ? 1 : delta / baseInstances
+    stressRatio: safeBase === 0 ? 1 : delta / safeBase
   };
 }
 
@@ -267,6 +299,53 @@ function buildAdrenalCycleSignature(cycle) {
   return `adrenal-cycle-${(cycle * 7919) % 99991}`;
 }
 
+// 12.3+ presence/harmonics + passive band hints (purely derived)
+function buildPresenceAndHarmonics(stressField, band) {
+  const level = stressField.stressLevel;
+  const ratio = stressField.stressRatio;
+
+  const presenceBandState =
+    level > 8 ? "deep-presence" :
+    level > 4 ? "stable-presence" :
+    "light-presence";
+
+  const harmonicDrift = Math.max(
+    0,
+    Math.min(1, ratio)
+  );
+
+  const coherenceScore = Math.max(
+    0.2,
+    Math.min(1.0, 0.7 + ratio * 0.2 - level * 0.01)
+  );
+
+  const pulsePrewarm =
+    band === "binary" ? "preferred" : "optional";
+
+  const pulseCacheMode =
+    ratio >= 0.5 ? "stress-cache" : "normal-cache";
+
+  const pulseChunkMode =
+    level > 6 ? "multi-chunk" : "single-chunk";
+
+  const pulseRemember =
+    ratio >= 0.3 ? "remember-strong" : "remember-weak";
+
+  const dualBandMode =
+    band === "binary" ? "binary" : "symbolic";
+
+  return {
+    presenceBandState,
+    harmonicDrift,
+    coherenceScore,
+    pulsePrewarm,
+    pulseCacheMode,
+    pulseChunkMode,
+    pulseRemember,
+    dualBandMode
+  };
+}
+
 
 // ============================================================================
 //  DEVICE TIER → MAX INSTANCES
@@ -284,10 +363,11 @@ function getDeviceMax(deviceTier, testEarnActive, orchestratorMode) {
 
 
 // ============================================================================
-//  COMPUTE FINAL INSTANCE COUNT — v11‑Evo deterministic
+//  COMPUTE FINAL INSTANCE COUNT — v12.3‑Evo deterministic
 // ============================================================================
 function computeFinalInstances(base, deviceTier, earnMode, testEarnActive, orchestratorMode) {
-  let final = base || 1;
+  const safeBase = base && base > 0 ? base : 1;
+  let final = safeBase;
 
   if (orchestratorMode === ORCHESTRATOR_MODES.DRAIN) {
     final = 1;
@@ -298,19 +378,24 @@ function computeFinalInstances(base, deviceTier, earnMode, testEarnActive, orche
     if (earnMode) final = Math.floor(final * EARN_MODE_MULT);
 
     if (orchestratorMode === ORCHESTRATOR_MODES.EARN_STRESS) {
-      final = Math.max(final, (base || 1) * 2);
+      final = Math.max(final, safeBase * 2);
     }
 
     if (testEarnActive) final = TEST_EARN_MAX;
   }
 
   const max = getDeviceMax(deviceTier, testEarnActive, orchestratorMode);
-  return Math.max(1, Math.min(final, max));
+  const clamped = Math.max(1, Math.min(final, max));
+
+  return {
+    finalInstances: clamped,
+    maxAllowed: max
+  };
 }
 
 
 // ============================================================================
-//  LOG USER SNAPSHOT — v11‑Evo
+//  LOG USER SNAPSHOT — v12.3‑Evo (deterministic, no Date.now)
 // ============================================================================
 async function logUserInstanceSnapshot(userId, snapshot) {
   if (!ENABLE_INSTANCE_LOGGING) return;
@@ -319,7 +404,7 @@ async function logUserInstanceSnapshot(userId, snapshot) {
     await db.collection(INSTANCE_LOG_COLLECTION).add({
       ...ADRENAL_CONTEXT,
       userId,
-      ts: Date.now(),
+      seq: ++adrenalSeq,
       ...snapshot
     });
   } catch (err) {
@@ -329,7 +414,7 @@ async function logUserInstanceSnapshot(userId, snapshot) {
 
 
 // ============================================================================
-//  LAUNCH WORKER — Spawn a new “cell”
+//  LAUNCH WORKER — Spawn a new “cell” (no timers, no Date.now)
 // ============================================================================
 function launchWorker(userId, workerIndex, orchestratorMode) {
   const workerName = `${userId}-instance-${workerIndex}`;
@@ -339,25 +424,16 @@ function launchWorker(userId, workerIndex, orchestratorMode) {
     workerName,
     workerIndex,
     mode: orchestratorMode,
-    context: ADRENAL_CONTEXT
+    context: ADRENAL_CONTEXT,
+    seq: ++adrenalSeq
   });
-
-  const interval = setInterval(() => {
-    logger.log("adrenal", "worker_heartbeat", {
-      workerName,
-      userId,
-      index: workerIndex,
-      mode: orchestratorMode
-    });
-  }, INSTANCE_HEARTBEAT_MS);
 
   return {
     name: workerName,
     userId,
     index: workerIndex,
     mode: orchestratorMode,
-    started: Date.now(),
-    interval
+    seq: adrenalSeq
   };
 }
 
@@ -372,17 +448,14 @@ function killWorker(worker) {
     worker: worker.name,
     userId: worker.userId,
     index: worker.index,
-    mode: worker.mode
+    mode: worker.mode,
+    seq: ++adrenalSeq
   });
-
-  try {
-    clearInterval(worker.interval);
-  } catch {}
 }
 
 
 // ============================================================================
-//  MAIN ORCHESTRATOR LOOP — v11‑Evo A‑B‑A
+//  MAIN ORCHESTRATOR LOOP — v12.3‑Evo A‑B‑A
 // ============================================================================
 let adrenalCycle = 0;
 
@@ -400,7 +473,8 @@ export async function runInstanceOrchestrator(pulse) {
     pulseId: pulse?.jobId || pulse?.id || null,
     pulseLineage: pulse?.lineage || null,
     pulseMode: orchestratorMode,
-    adrenalCycleSignature: buildAdrenalCycleSignature(adrenalCycle)
+    adrenalCycleSignature: buildAdrenalCycleSignature(adrenalCycle),
+    seq: ++adrenalSeq
   });
 
   const snap = await db.collection("UserScores").get();
@@ -414,7 +488,10 @@ export async function runInstanceOrchestrator(pulse) {
     const earnMode        = data.earnMode ?? false;
     const testEarnActive  = data.testEarnActive ?? false;
 
-    const finalInstances = computeFinalInstances(
+    const {
+      finalInstances,
+      maxAllowed
+    } = computeFinalInstances(
       baseInstances,
       deviceTier,
       earnMode,
@@ -436,6 +513,7 @@ export async function runInstanceOrchestrator(pulse) {
     const bandSignature = buildBandSignature(band);
     const binaryField = buildBinaryField(stressField);
     const waveField = buildWaveField(stressField, band);
+    const presence = buildPresenceAndHarmonics(stressField, band);
 
     logger.log("adrenal", "state", {
       userId,
@@ -445,13 +523,25 @@ export async function runInstanceOrchestrator(pulse) {
       testEarnActive,
       current: currentWorkers.length,
       final: finalInstances,
+      maxAllowed,
       mode: orchestratorMode,
 
       band,
       bandSignature,
       binaryField,
       waveField,
-      stressField
+      stressField,
+
+      presenceBandState: presence.presenceBandState,
+      harmonicDrift: presence.harmonicDrift,
+      coherenceScore: presence.coherenceScore,
+      pulsePrewarm: presence.pulsePrewarm,
+      pulseCacheMode: presence.pulseCacheMode,
+      pulseChunkMode: presence.pulseChunkMode,
+      pulseRemember: presence.pulseRemember,
+      dualBandMode: presence.dualBandMode,
+
+      seq: ++adrenalSeq
     });
 
     // ------------------------------------------------------------
@@ -467,7 +557,8 @@ export async function runInstanceOrchestrator(pulse) {
         to: finalInstances,
         mode: orchestratorMode,
         band,
-        stressField
+        stressField,
+        seq: ++adrenalSeq
       });
 
       for (let i = 0; i < needed; i++) {
@@ -490,7 +581,8 @@ export async function runInstanceOrchestrator(pulse) {
         to: finalInstances,
         mode: orchestratorMode,
         band,
-        stressField
+        stressField,
+        seq: ++adrenalSeq
       });
 
       for (let i = 0; i < extra; i++) {
@@ -500,8 +592,8 @@ export async function runInstanceOrchestrator(pulse) {
     }
 
     // ------------------------------------------------------------
-    // SNAPSHOT — Immune‑Safe Logging
-    // ------------------------------------------------------------
+    // SNAPSHOT — Immune‑Safe Logging (deterministic, dual‑band aware)
+// ------------------------------------------------------------
     await logUserInstanceSnapshot(userId, {
       baseInstances,
       finalInstances,
@@ -509,7 +601,7 @@ export async function runInstanceOrchestrator(pulse) {
       earnMode,
       testEarnActive,
       currentWorkers: currentWorkers.length,
-      lastUpdated: Date.now(),
+      maxAllowed,
       mode: orchestratorMode,
 
       // A‑B‑A surfaces
@@ -517,13 +609,24 @@ export async function runInstanceOrchestrator(pulse) {
       bandSignature,
       binaryField,
       waveField,
-      stressField
+      stressField,
+
+      // 12.3+ presence/harmonics + passive band hints
+      presenceBandState: presence.presenceBandState,
+      harmonicDrift: presence.harmonicDrift,
+      coherenceScore: presence.coherenceScore,
+      pulsePrewarm: presence.pulsePrewarm,
+      pulseCacheMode: presence.pulseCacheMode,
+      pulseChunkMode: presence.pulseChunkMode,
+      pulseRemember: presence.pulseRemember,
+      dualBandMode: presence.dualBandMode
     });
   }
 
   logger.log("adrenal", "tick_complete", {
     mode: orchestratorMode,
-    adrenalCycleSignature: buildAdrenalCycleSignature(adrenalCycle)
+    adrenalCycleSignature: buildAdrenalCycleSignature(adrenalCycle),
+    seq: ++adrenalSeq
   });
 
   return true;

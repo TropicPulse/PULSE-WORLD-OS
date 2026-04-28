@@ -1,12 +1,13 @@
-
 // ============================================================================
-//  PULSE OS v11 — PULSENET SYNAPSE
+//  FILE: /apps/PULSE-PROXY/pulseNetSynapse.js
+//  PULSE OS v12.3-EVO-PRESENCE — PULSENET SYNAPSE
 //  Neural Signal Routing Organ • Binary Core + Symbolic Wrapper
-//  Dual-Mode: Binary (pure, deterministic) + Unbinary (browser / fetch / storage)
+//  Dual-Mode: Binary (pure, deterministic) + Symbolic (browser / fetch / storage)
 //  SAFETY:
 //    • Binary core: no window, no fetch, no JSON, no timestamps, no globals.
 //    • Symbolic wrapper: browser-aware, diagnostics, tiny-sync, storage.
 //    • No randomness. No autonomous routing. No business logic.
+//    • Presence overlays: band/wave/binary/presence fields at symbolic layer.
 // ============================================================================
 
 
@@ -28,14 +29,14 @@ const error = G.error || console.error;
 
 
 // ============================================================================
-//  ORGAN IDENTITY — v11 Synapse
+//  ORGAN IDENTITY — v12.3-EVO-PRESENCE Synapse
 // ============================================================================
 export const PulseRole = {
   type: "Organ",
   subsystem: "PulseNet",
   layer: "Synapse",
-  version: "11.0",
-  identity: "PulseNetSynapse",
+  version: "12.3-EVO-PRESENCE",
+  identity: "PulseNetSynapse-v12.3-EVO-PRESENCE",
 
   evo: {
     driftProof: true,
@@ -56,7 +57,19 @@ export const PulseRole = {
     reflexPropagation: 1.0,
     organismClusterBoost: 1.0,
     cognitiveComputeLink: true,
-    futureEvolutionReady: true
+    futureEvolutionReady: true,
+
+    // presence + advantage overlays (symbolic only)
+    bandAware: true,
+    waveFieldAware: true,
+    binaryFieldAware: true,
+    presenceAware: true,
+    presenceFieldAware: true,
+
+    // meta-only hints for higher layers (no logic here)
+    prewarmAware: true,
+    cacheAware: true,
+    chunkAware: true
   }
 };
 
@@ -70,11 +83,12 @@ const PULSENET_CONTEXT = {
   selfRepairable: true,
   evo: PulseRole.evo
 };
+
 export const PulseNetSynapseMeta = Object.freeze({
   layer: "PulseNetSynapse",
   role: "NEURAL_SIGNAL_ROUTING_ORGAN",
-  version: "v11.2-EVO-BINARY-MAX",
-  identity: "PulseNetSynapse-v11.2-EVO-BINARY-MAX",
+  version: "v12.3-EVO-BINARY-MAX-ABA-PRESENCE",
+  identity: "PulseNetSynapse-v12.3-EVO-BINARY-MAX-ABA-PRESENCE",
 
   guarantees: Object.freeze({
     deterministic: true,
@@ -123,6 +137,8 @@ export const PulseNetSynapseMeta = Object.freeze({
     waveFieldAware: true,
     binaryFieldAware: true,
     dualBandAware: true,
+    presenceAware: true,
+    presenceFieldAware: true,
 
     // Environment
     worldLensAware: false
@@ -141,6 +157,7 @@ export const PulseNetSynapseMeta = Object.freeze({
       "SynapseBandSignature",
       "SynapseBinaryField",
       "SynapseWaveField",
+      "SynapsePresenceField",
       "SynapseDiagnostics",
       "SynapseHealingState"
     ]
@@ -148,7 +165,7 @@ export const PulseNetSynapseMeta = Object.freeze({
 
   lineage: Object.freeze({
     root: "PulseNet-v11",
-    parent: "PulseNet-v11.2-EVO",
+    parent: "PulseNet-v12.3-EVO",
     ancestry: [
       "PulseNetSynapse-v7",
       "PulseNetSynapse-v8",
@@ -157,7 +174,8 @@ export const PulseNetSynapseMeta = Object.freeze({
       "PulseNetSynapse-v10",
       "PulseNetSynapse-v11",
       "PulseNetSynapse-v11-Evo",
-      "PulseNetSynapse-v11-Evo-Prime"
+      "PulseNetSynapse-v11-Evo-Prime",
+      "PulseNetSynapse-v12.3-EVO-PRESENCE"
     ]
   }),
 
@@ -170,19 +188,16 @@ export const PulseNetSynapseMeta = Object.freeze({
   architecture: Object.freeze({
     pattern: "A-B-A",
     baseline: "binary impulse → symbolic wrapper → unified neural flow",
-    adaptive: "tiny-sync + offline-first overlays",
+    adaptive: "tiny-sync + offline-first overlays + presence overlays",
     return: "deterministic synapse surfaces + signatures"
   })
 });
 
 
 // ============================================================================
-//  BINARY CORE — v11+
+//  BINARY CORE — v12.3 (unchanged logic, versioned surfaces)
 //  Pure, deterministic, no window, no fetch, no JSON, no timestamps.
-//  This is the compression / canonical logic for Synapse.
 // ============================================================================
-
-// NOTE: all helpers here must be pure and side-effect free.
 
 function normalizeSignalBinary(rawValue, opts) {
   const cfg = opts || {};
@@ -240,7 +255,6 @@ function buildPulseUpdateBinary(input) {
   const signalSlope = computeSlopeBinary(previousSignal, rawSignal, meta.slope || {});
   const routeHealth = classifyRouteHealthBinary(signalScore, signalSlope);
 
-  // Binary core does NOT attach timestamps or external context.
   return {
     layerId: "SYNAPSE-LAYER",
     layerName: "THE SYNAPSE",
@@ -253,7 +267,7 @@ function buildPulseUpdateBinary(input) {
     signalSlope,
     routeHealth,
 
-    meta: { ...meta } // symbolic wrapper can enrich with PULSENET_CONTEXT
+    meta: { ...meta }
   };
 }
 
@@ -265,7 +279,7 @@ function buildPulseNetSnapshotBinary(rawSignal, previousSignal, meta) {
   const update = buildPulseUpdateBinary({ rawSignal, previousSignal, meta: meta || {} });
 
   return {
-    version: "11-binary",
+    version: "12.3-binary",
     layerId: update.layerId,
     layerName: update.layerName,
     layerRole: update.layerRole,
@@ -294,15 +308,9 @@ export const PulseNetBinary = {
 
 
 // ============================================================================
-//  SYMBOLIC WRAPPER — v11 (browser / diagnostics / tiny-sync)
-//  Wraps binary core, adds:
-//    • Diagnostics logging
-//    • Timestamps
-//    • Connectivity reachout
-//    • Local storage tiny-sync
+//  SYMBOLIC WRAPPER — v12.3 (browser / diagnostics / tiny-sync / presence)
 // ============================================================================
 
-// Diagnostics toggle is symbolic-only (window-aware).
 const PULSE_LAYER_ID   = "SYNAPSE-LAYER";
 const PULSE_LAYER_NAME = "THE SYNAPSE";
 const PULSE_LAYER_ROLE = "Neural Signal Routing Layer";
@@ -347,6 +355,36 @@ function classifyRouteHealth(signalScore, signalSlope) {
   return PulseNetBinary.classifyRouteHealth(signalScore, signalSlope);
 }
 
+// Presence / band / wave / binary field builders (pure, symbolic-only)
+function buildBandSignature(update) {
+  return `synapse-dual-band-v12.3:${update.routeHealth || "unknown"}`;
+}
+
+function buildWaveField(update) {
+  return {
+    layer: PULSE_LAYER_ID,
+    slope: update.signalSlope,
+    routeHealth: update.routeHealth
+  };
+}
+
+function buildBinaryField(update) {
+  return {
+    score: update.signalScore,
+    raw: update.rawSignal,
+    previous: update.previousSignal
+  };
+}
+
+function buildPresenceField(update) {
+  return {
+    layer: PULSE_LAYER_ID,
+    role: PULSE_LAYER_ROLE,
+    routeHealth: update.routeHealth,
+    tsKind: "iso8601"
+  };
+}
+
 function buildPulseUpdate({ rawSignal, previousSignal, meta = {} } = {}) {
   const enrichedMeta = {
     ...meta,
@@ -361,16 +399,25 @@ function buildPulseUpdate({ rawSignal, previousSignal, meta = {} } = {}) {
 
   const ts = new Date().toISOString();
 
+  const bandSignature  = buildBandSignature(update);
+  const waveField      = buildWaveField(update);
+  const binaryField    = buildBinaryField(update);
+  const presenceField  = buildPresenceField(update);
+
   const withTs = {
     ...update,
-    ts
+    ts,
+    bandSignature,
+    waveField,
+    binaryField,
+    presenceField
   };
 
   pulseLog("SYNAPSE_PULSE_UPDATE", {
     routeHealth: withTs.routeHealth,
     signalScore: withTs.signalScore,
     signalSlope: withTs.signalSlope,
-    meta
+    bandSignature: withTs.bandSignature
   });
 
   return withTs;
@@ -388,7 +435,8 @@ function processPulseSignal(rawSignal, previousSignal, meta = {}) {
   pulseLog("SYNAPSE_PROCESS_DONE", {
     routeHealth: update.routeHealth,
     signalScore: update.signalScore,
-    signalSlope: update.signalSlope
+    signalSlope: update.signalSlope,
+    bandSignature: update.bandSignature
   });
 
   return update;
@@ -398,7 +446,7 @@ function buildPulseNetSnapshot(rawSignal, previousSignal, meta = {}) {
   const update = buildPulseUpdate({ rawSignal, previousSignal, meta });
 
   return {
-    version: "11.0",
+    version: "12.3",
     layerId: PULSE_LAYER_ID,
     layerName: PULSE_LAYER_NAME,
     layerRole: PULSE_LAYER_ROLE,
@@ -412,14 +460,18 @@ function buildPulseNetSnapshot(rawSignal, previousSignal, meta = {}) {
       routeHealth: update.routeHealth
     },
 
+    bandSignature: update.bandSignature,
+    waveField: update.waveField,
+    binaryField: update.binaryField,
+    presenceField: update.presenceField,
+
     meta: update.meta
   };
 }
 
 
 // ============================================================================
-//  PULSE-ONCE CONNECTIVITY ORGAN — symbolic only
-//  Tiny sync, browser-only, uses fetch + storage, never touches binary core.
+//  PULSE-ONCE CONNECTIVITY ORGAN — symbolic only (unchanged behavior)
 // ============================================================================
 
 const PulseNetState = {
@@ -526,13 +578,13 @@ async function pulseOnce(deviceId) {
     try {
       if (typeof localStorage !== "undefined") {
         if (payload.identity) {
-          localStorage.setItem("tp_identity_v11", JSON.stringify(payload.identity));
+          localStorage.setItem("tp_identity_v12_3", JSON.stringify(payload.identity));
         }
         if (payload.config) {
-          localStorage.setItem("tp_earn_config_v11", JSON.stringify(payload.config));
+          localStorage.setItem("tp_earn_config_v12_3", JSON.stringify(payload.config));
         }
         if (payload.jobs) {
-          localStorage.setItem("tp_jobs_seed_v11", JSON.stringify(payload.jobs));
+          localStorage.setItem("tp_jobs_seed_v12_3", JSON.stringify(payload.jobs));
         }
       }
     } catch (storageErr) {
@@ -566,8 +618,7 @@ function getPulseNetState() {
 
 
 // ============================================================================
-//  EXPORTED SYNAPSE API — v11
-//  Binary + Symbolic, clearly separated, organism-aware.
+//  EXPORTED SYNAPSE API — v12.3-EVO-PRESENCE
 // ============================================================================
 export const PulseNet = {
   // identity

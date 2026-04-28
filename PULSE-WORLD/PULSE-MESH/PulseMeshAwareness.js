@@ -1,31 +1,35 @@
 // ============================================================================
-// [pulse:halo] PULSE_OS_AWARENESS_RING v11-Evo  // white
+// FILE: /apps/organs/halo/PulseHalo-v12.3-PRESENCE-EVO-MAX-PRIME.js
+// [pulse:halo] PULSE_OS_AWARENESS_RING v12.3-PRESENCE-EVO-MAX-PRIME  // white
 // Read-Only Awareness Ring • System Dashboard • Metadata-Only Reflection
+// Presence-Aware • Binary-Aware • Advantage-Field-Aware
 // ============================================================================
 //
-// IDENTITY — THE AWARENESS RING (v11-Evo):
-//  ---------------------------------------
+// IDENTITY — THE AWARENESS RING (v12.3-PRESENCE-EVO-MAX-PRIME):
+//  ------------------------------------------------------------
 //  • Read-only awareness ring around the organism.
-//  • Aggregates metadata from all subsystems (symbolic + binary).
+//  • Aggregates metadata from all subsystems (symbolic + binary + dual).
 //  • Exposes safe system status to backendAI + Awareness Page.
 //  • NEVER computes payloads.
 //  • NEVER mutates impulses.
 //  • NEVER influences routing or decisions.
 //  • Pure reflection layer (dashboard organ).
 //
-// SAFETY CONTRACT (v11-Evo):
+// SAFETY CONTRACT (v12.3):
 //  • Metadata-only
 //  • Read-only external surface
 //  • No loops, no sync, no hormones, no memory writes (by itself)
 //  • No autonomy, no sentience, no self-model
 //  • Backend-safe, frontend-safe, global-safe
+//  • Presence-aware, but presence is metadata-only
 //
-// ADVANTAGE CASCADE (v11-Evo):
-//  • Inherits ANY advantage from ANY organ automatically
-//  • Unified-advantage-field: ALL advantages active unless unsafe
+// ADVANTAGE CASCADE (v12.3):
+//  • Inherits ANY advantage from ANY organ automatically (metadata reflection)
+//  • Unified-advantage-field: ALL advantages visible unless unsafe
 //  • Future-evolution-ready
 //  • Signal factoring awareness (metadata-only)
-//  • Binary-aware: can reflect binary vs symbolic activity (metadata-only)
+//  • Binary-aware: reflects binary vs symbolic vs dual activity (metadata-only)
+//  • Presence-aware: reflects band + presence tags (metadata-only)
 // ============================================================================
 
 
@@ -37,12 +41,12 @@ export function createPulseHalo({ log, warn, error }) {
 
   // -----------------------------------------------------------
   // INTERNAL STATE (metadata-only counters)
-  // -----------------------------------------------------------
+// -----------------------------------------------------------
   const HaloState = {
     impulses_total: 0,
     impulses_completed: 0,
 
-    // v11-Evo: dual-mode awareness (symbolic vs binary)
+    // dual-mode awareness (symbolic vs binary vs dual)
     impulses_symbolic: 0,
     impulses_binary: 0,
     impulses_dual_mode: 0,
@@ -67,10 +71,20 @@ export function createPulseHalo({ log, warn, error }) {
     factoring_bias_high: 0,
     factored_path_uses: 0,
 
+    // presence / band awareness (metadata-only)
+    presence_symbolic: 0,
+    presence_binary: 0,
+    presence_dual: 0,
+
+    // advantage-field awareness (metadata-only)
+    advantage_events: 0,
+    advantage_binary_pref: 0,
+    advantage_factored_paths: 0,
+
     meta: {
       layer: "PulseHalo",
       role: "AWARENESS_RING",
-      version: "11.0-Evo",
+      version: "12.3-PRESENCE-EVO-MAX-PRIME",
       target: "full-mesh",
       selfRepairable: true,
       evo: {
@@ -91,10 +105,12 @@ export function createPulseHalo({ log, warn, error }) {
         zeroMutation: true,
         zeroRoutingInfluence: true,
 
-        // v11-Evo additions
+        // binary + presence awareness
         binaryAware: true,
         binaryMeshReady: true,
-        binaryOSReady: true
+        binaryOSReady: true,
+        presenceAware: true,
+        bandAware: true
       }
     }
   };
@@ -102,12 +118,14 @@ export function createPulseHalo({ log, warn, error }) {
 
   // -----------------------------------------------------------
   // COUNTER HOOKS (called by other organs)
-//  (metadata-only, no payload access)
+  //  (metadata-only, no payload access)
 // -----------------------------------------------------------
   const PulseHaloCounters = {
-    impulseStarted({ mode } = {}) {
+    impulseStarted({ mode, band, presenceTag } = {}) {
       HaloState.impulses_total++;
       classifyMode(mode);
+      classifyBand(band);
+      trackPresenceTag(presenceTag);
     },
     impulseCompleted() { HaloState.impulses_completed++; },
 
@@ -128,7 +146,17 @@ export function createPulseHalo({ log, warn, error }) {
 
     factoringCollapsedManyToOne() { HaloState.factoring_collapse_events++; },
     factoringBiasHigh() { HaloState.factoring_bias_high++; },
-    factoredPathUsed() { HaloState.factored_path_uses++; }
+    factoredPathUsed() {
+      HaloState.factored_path_uses++;
+      HaloState.advantage_factored_paths++;
+      HaloState.advantage_events++;
+    },
+
+    // advantage-field hooks (metadata-only)
+    advantageBinaryPreferred() {
+      HaloState.advantage_binary_pref++;
+      HaloState.advantage_events++;
+    }
   };
 
 
@@ -146,12 +174,31 @@ export function createPulseHalo({ log, warn, error }) {
     }
   }
 
+  // -----------------------------------------------------------
+  // BAND / PRESENCE CLASSIFICATION (metadata-only)
+// -----------------------------------------------------------
+  function classifyBand(band) {
+    if (!band) return;
+    if (band === "binary") {
+      HaloState.presence_binary++;
+    } else if (band === "symbolic") {
+      HaloState.presence_symbolic++;
+    } else if (band === "dual") {
+      HaloState.presence_dual++;
+    }
+  }
+
+  function trackPresenceTag(_presenceTag) {
+    // Intentionally no storage of tag values — only counts via band.
+    // Keeps Halo strictly metadata-aggregate, no identity registry.
+  }
+
 
   // -----------------------------------------------------------
   // SNAPSHOT (read-only)
 // -----------------------------------------------------------
   function snapshot() {
-    return { ...HaloState };
+    return { ...HaloState, meta: { ...HaloState.meta, evo: { ...HaloState.meta.evo } } };
   }
 
 
@@ -226,6 +273,21 @@ export function createPulseHalo({ log, warn, error }) {
           s.factoring_collapse_events,
           s.impulses_total
         )
+      },
+
+      presence: {
+        symbolic: s.presence_symbolic,
+        binary: s.presence_binary,
+        dual: s.presence_dual,
+        symbolic_ratio: ratio(s.presence_symbolic, s.impulses_total),
+        binary_ratio: ratio(s.presence_binary, s.impulses_total),
+        dual_ratio: ratio(s.presence_dual, s.impulses_total)
+      },
+
+      advantage: {
+        events: s.advantage_events,
+        binary_preference_events: s.advantage_binary_pref,
+        factored_path_advantage_events: s.advantage_factored_paths
       },
 
       health: {

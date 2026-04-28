@@ -4,7 +4,7 @@
  *   root: "PULSE-FINALITY",
  *   mode: "substrate",
  *   target: "omnidirectional-hosting",
- *   version: "v11-EVO",
+ *   version: "v12.3-PRESENCE-EVO+",
  *
  *   role: "Universal hosting mesh. Determines where an organism can run, move, replicate, or failover.",
  *
@@ -13,9 +13,17 @@
  *     hostAgnostic: true,
  *     multiInstanceReady: true,
  *     zeroBackend: true,
-     zeroNetwork: true,
+ *     zeroNetwork: true,
  *     reversiblePlacement: true,
- *     noRandomness: true
+ *     noRandomness: true,
+ *
+ *     // 12.3+ presence / advantage surface
+ *     presenceAware: true,
+ *     advantageAware: true,
+ *     fallbackBandAware: true,
+ *     chunkAware: true,
+ *     cacheAware: true,
+ *     prewarmAware: true
  *   },
  *
  *   contracts: {
@@ -42,7 +50,8 @@
  *     "DeploymentPhysics",
  *     "DeltaEngine",
  *     "SnapshotPhysics",
- *     "LineageEngine"
+ *     "LineageEngine",
+ *     "PulseOmniHosting-CoreMemory-v12.3-PRESENCE-EVO+"
  *   ],
  *
  *   notes: [
@@ -50,13 +59,14 @@
  *     "Hosts are interchangeable. No host defines truth.",
  *     "Placement is deterministic and reversible.",
  *     "Failover is schema-aware and region-aware.",
- *     "This organ enables multi-instance minimal survival."
+ *     "This organ enables multi-instance minimal survival.",
+ *     "12.3+ adds presence/fallback/chunk/cache/prewarm hints as pure symbolic metadata."
  *   ]
  * }
  */
 
 /**
- * PulseOmniHosting-v11-Evo.js
+ * PulseOmniHosting-v12.3-PRESENCE-EVO+.js
  * PULSE-FINALITY / PULSE-OMNIHOSTING
  *
  * ROLE:
@@ -73,30 +83,42 @@
  *   - Always use PulseSchema as truth.
  *   - Always evaluate hosts deterministically.
  *   - Always produce reversible placement plans.
+ *   - 12.3+: expose presence/fallback/chunk/cache/prewarm hints as symbolic fields only.
  */
+
+// -------------------------
+// META EXPORT
+// -------------------------
+
+export const PulseOmniHostingMeta = Object.freeze({
+  layer: "PulseOmniHosting",
+  role: "OMNIHOSTING_PHYSICS_ORGAN",
+  version: "12.3-PRESENCE-EVO+",
+  identity: "PulseOmniHosting-v12.3-PRESENCE-EVO+",
+  evo: Object.freeze({
+    deterministic: true,
+    driftProof: true,
+    hostAgnostic: true,
+    multiInstanceReady: true,
+    zeroBackend: true,
+    zeroNetwork: true,
+    reversiblePlacement: true,
+    noRandomness: true,
+
+    presenceAware: true,
+    advantageAware: true,
+    fallbackBandAware: true,
+    chunkAware: true,
+    cacheAware: true,
+    prewarmAware: true,
+    epoch: "12.3-PRESENCE-EVO+"
+  })
+});
 
 // -------------------------
 // Host Descriptor
 // -------------------------
 
-/**
- * HostDescriptor
- *
- * A symbolic description of a host.
- * This is NOT the host itself — only its capabilities.
- *
- * name: unique host name
- * type: "firebase" | "sql" | "netlify" | "vercel" | "cloudflare" | "custom"
- * region: region identifier
- * capabilities: {
- *   read: boolean,
- *   write: boolean,
- *   binary: boolean,
- *   compute: boolean,
- *   storage: boolean
- * }
- * meta: free-form metadata
- */
 export class HostDescriptor {
   constructor({
     name,
@@ -123,12 +145,6 @@ export class HostDescriptor {
 // Capability Matrix
 // -------------------------
 
-/**
- * buildCapabilityMatrix
- *
- * Input: array of HostDescriptor
- * Output: deterministic matrix describing host capabilities
- */
 export function buildCapabilityMatrix(hosts = []) {
   const matrix = {};
 
@@ -144,17 +160,84 @@ export function buildCapabilityMatrix(hosts = []) {
 }
 
 // -------------------------
+// Internal helpers (12.3+ hints)
+// -------------------------
+
+function computeFallbackBandLevelForPlacement(eligibleCount, minInstances) {
+  if (eligibleCount === 0) return 3;
+  if (eligibleCount <= minInstances) return 2;
+  if (eligibleCount <= minInstances + 1) return 1;
+  return 0;
+}
+
+function buildPlacementChunkHint(eligibleCount) {
+  const max = 10;
+  const ratio = Math.max(0, Math.min(1, eligibleCount / max));
+  return { chunkAggression: 1 - ratio };
+}
+
+function buildPlacementCacheHint(eligibleCount) {
+  let priority = "normal";
+  if (eligibleCount <= 1) priority = "critical";
+  else if (eligibleCount <= 2) priority = "high";
+  else if (eligibleCount <= 4) priority = "medium";
+
+  return {
+    keepHot: eligibleCount <= 4,
+    priority
+  };
+}
+
+function buildPlacementPrewarmHint(eligibleCount) {
+  if (eligibleCount <= 1) {
+    return { shouldPrewarm: true, reason: "scarce_eligible_hosts" };
+  }
+  if (eligibleCount <= 3) {
+    return { shouldPrewarm: true, reason: "limited_eligible_hosts" };
+  }
+  return { shouldPrewarm: false, reason: "sufficient_eligible_hosts" };
+}
+
+function computeFallbackBandLevelForFailover(targetCount) {
+  if (targetCount === 0) return 3;
+  if (targetCount === 1) return 2;
+  if (targetCount === 2) return 1;
+  return 0;
+}
+
+function buildFailoverChunkHint(targetCount) {
+  const max = 10;
+  const ratio = Math.max(0, Math.min(1, targetCount / max));
+  return { chunkAggression: 1 - ratio };
+}
+
+function buildFailoverCacheHint(targetCount) {
+  let priority = "normal";
+  if (targetCount === 0) priority = "critical";
+  else if (targetCount === 1) priority = "high";
+  else if (targetCount === 2) priority = "medium";
+
+  return {
+    keepHot: targetCount <= 2,
+    priority
+  };
+}
+
+function buildFailoverPrewarmHint(targetCount) {
+  if (targetCount === 0) {
+    return { shouldPrewarm: true, reason: "no_failover_targets" };
+  }
+  if (targetCount === 1) {
+    return { shouldPrewarm: true, reason: "single_failover_target" };
+  }
+  return { shouldPrewarm: false, reason: "multiple_failover_targets" };
+}
+
+// -------------------------
 // Placement Logic
 // -------------------------
 
-/**
- * evaluateHostForSchema
- *
- * Determines if a host can support a given PulseSchema.
- * This is symbolic — no host-specific logic allowed.
- */
 export function evaluateHostForSchema(host, pulseSchema) {
-  // If schema contains binary fields, host must support binary
   const requiresBinary = Object.values(pulseSchema.fields).some(
     (f) => f.type === "binary"
   );
@@ -163,7 +246,6 @@ export function evaluateHostForSchema(host, pulseSchema) {
     return false;
   }
 
-  // If schema requires compute (object/array), host must support compute
   const requiresCompute = Object.values(pulseSchema.fields).some(
     (f) => f.type === "object" || f.type === "array"
   );
@@ -175,32 +257,37 @@ export function evaluateHostForSchema(host, pulseSchema) {
   return true;
 }
 
-/**
- * buildPlacementPlan
- *
- * Input:
- *   - hosts: array of HostDescriptor
- *   - pulseSchema: PulseSchema
- *   - minInstances: minimum number of instances to maintain
- *
- * Output:
- *   - deterministic placement plan
- */
 export function buildPlacementPlan(hosts, pulseSchema, minInstances = 1) {
   const eligible = hosts.filter((h) =>
     evaluateHostForSchema(h, pulseSchema)
   );
 
-  // Deterministic sort by name
   eligible.sort((a, b) => a.name.localeCompare(b.name));
 
   const selected = eligible.slice(0, minInstances);
 
+  const eligibleNames = eligible.map((h) => h.name);
+  const selectedNames = selected.map((h) => h.name);
+
+  const fallbackBandLevel = computeFallbackBandLevelForPlacement(
+    eligibleNames.length,
+    minInstances
+  );
+  const chunkHint = buildPlacementChunkHint(eligibleNames.length);
+  const cacheHint = buildPlacementCacheHint(eligibleNames.length);
+  const prewarmHint = buildPlacementPrewarmHint(eligibleNames.length);
+
   return {
-    selectedHosts: selected.map((h) => h.name),
-    eligibleHosts: eligible.map((h) => h.name),
+    selectedHosts: selectedNames,
+    eligibleHosts: eligibleNames,
     minInstances,
-    schemaVersion: pulseSchema.version
+    schemaVersion: pulseSchema.version,
+
+    // 12.3-PRESENCE-EVO+ symbolic hints
+    fallbackBandLevel,
+    chunkHint,
+    cacheHint,
+    prewarmHint
   };
 }
 
@@ -208,17 +295,6 @@ export function buildPlacementPlan(hosts, pulseSchema, minInstances = 1) {
 // Failover Logic
 // -------------------------
 
-/**
- * buildFailoverPlan
- *
- * Input:
- *   - hosts: array of HostDescriptor
- *   - pulseSchema: PulseSchema
- *   - failedHostName: string
- *
- * Output:
- *   - deterministic failover plan
- */
 export function buildFailoverPlan(hosts, pulseSchema, failedHostName) {
   const remaining = hosts.filter((h) => h.name !== failedHostName);
 
@@ -228,10 +304,25 @@ export function buildFailoverPlan(hosts, pulseSchema, failedHostName) {
 
   eligible.sort((a, b) => a.name.localeCompare(b.name));
 
+  const failoverTargets = eligible.map((h) => h.name);
+
+  const fallbackBandLevel = computeFallbackBandLevelForFailover(
+    failoverTargets.length
+  );
+  const chunkHint = buildFailoverChunkHint(failoverTargets.length);
+  const cacheHint = buildFailoverCacheHint(failoverTargets.length);
+  const prewarmHint = buildFailoverPrewarmHint(failoverTargets.length);
+
   return {
     failedHost: failedHostName,
-    failoverTargets: eligible.map((h) => h.name),
-    schemaVersion: pulseSchema.version
+    failoverTargets,
+    schemaVersion: pulseSchema.version,
+
+    // 12.3-PRESENCE-EVO+ symbolic hints
+    fallbackBandLevel,
+    chunkHint,
+    cacheHint,
+    prewarmHint
   };
 }
 
@@ -240,6 +331,7 @@ export function buildFailoverPlan(hosts, pulseSchema, failedHostName) {
 // -------------------------
 
 const PulseOmniHostingAPI = {
+  Meta: PulseOmniHostingMeta,
   HostDescriptor,
   buildCapabilityMatrix,
   evaluateHostForSchema,

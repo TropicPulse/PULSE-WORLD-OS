@@ -1,50 +1,55 @@
 // ============================================================================
-//  PulseCoreLayers.js — v11‑EVO‑DUALBAND‑MAX
+//  PulseCoreLayers.js — v12‑EVO‑PRESENCE‑MAX
 //  ORGANISM‑WIDE MEMORY LAYER MANAGER
-//  “RAM IS A SCRATCHPAD. CORE IS THE TRUTH.”
-//  This organ decides WHERE data lives, HOW long it lives, and WHEN it moves.
-//  It does NOT store data — it governs the layers that DO.
+//  “RAM IS A SCRATCHPAD. CORE IS THE TRUTH. PRESENCE DECIDES EVERYTHING.”
+//  • MetaBlock (v12 identity)
+//  • PulseRol / PresenceRol
+//  • DNA‑aware
+//  • Version‑aware
+//  • Hot‑loop integration
+//  • TTL + healing alignment
+//  • GPU‑promotion rules
+//  • Governor‑aligned (v12)
 // ============================================================================
 
 export const CoreLayersRole = {
   type: "Organ",
   subsystem: "Core",
   layer: "LayerManager",
-  version: "11.4-Evo-DualBand-Max",
   identity: "PulseCoreLayers",
+  version: "12.0-Evo-Presence",
 
   evo: {
-    binaryNative: true,        // All decisions are binary-first
-    dualBand: true,            // PRIMARY + SECONDARY memory bands
-    quadLayer: true,           // RAM / Disk / GPU / Proxy
-    fallbackable: true,        // If a layer fails, fallback to next
-    loopTheory: true,          // Hot data spins faster
-    routeAware: true,          // Route-level memory decisions
-    dnaAware: true,            // dnaTag-based memory placement
-    governorAligned: true      // Works with PulseCoreGovernor
+    binaryNative: true,
+    dualBand: true,
+    quadLayer: true,
+    fallbackable: true,
+    loopTheory: true,
+    routeAware: true,
+    dnaAware: true,
+    governorAligned: true,
+    presenceAware: true,
+    versionAware: true
   }
 };
 
 // ============================================================================
-//  MEMORY LAYER DEFINITIONS
-//  These are NOT implementations — they are contracts.
-//  The Governor + CoreMemory + Adapters will use these rules.
+//  v12 IDENTITY BLOCK (MetaBlock)
 // ============================================================================
+export const CoreLayersMetaBlock = {
+  identity: "PulseCoreLayers",
+  subsystem: "Core",
+  layer: "LayerManager",
+  role: "Memory-Layer-Governor",
+  version: "12.0-Evo-Presence",
+  evo: CoreLayersRole.evo
+};
 
+// ============================================================================
+//  MEMORY LAYER DEFINITIONS (v12)
+// ============================================================================
 export const PulseCoreLayers = {
 
-  // -------------------------------------------------------------------------
-  //  LAYER 0 — RAM (FAST / VOLATILE / SCRATCHPAD)
-  //  Purpose:
-  //    • transient working sets
-  //    • hot-loop spin keys
-  //    • ephemeral buffers
-  //    • GPU warm-up staging
-  //  Rules:
-  //    • NEVER authoritative
-  //    • ALWAYS disposable
-  //    • Cleared on boot
-  // -------------------------------------------------------------------------
   RAM: {
     id: "ram",
     speed: "fastest",
@@ -56,20 +61,10 @@ export const PulseCoreLayers = {
       "workingSets",
       "gpuWarmBuffers",
       "proxyTempBuffers"
-    ]
+    ],
+    metaBlock: CoreLayersMetaBlock
   },
 
-  // -------------------------------------------------------------------------
-  //  LAYER 1 — DISK / PERSISTENT STORAGE (PRIMARY BAND)
-  //  Purpose:
-  //    • canonical binary blobs
-  //    • route snapshots
-  //    • pattern maps
-  //    • evolution deltas
-  //  Rules:
-  //    • PRIMARY truth band
-  //    • Used by CoreMemory bulkLoad/bulkFlush
-  // -------------------------------------------------------------------------
   DISK_PRIMARY: {
     id: "disk-primary",
     speed: "medium",
@@ -81,18 +76,10 @@ export const PulseCoreLayers = {
       "routeSnapshots",
       "patternMaps",
       "evolutionState"
-    ]
+    ],
+    metaBlock: CoreLayersMetaBlock
   },
 
-  // -------------------------------------------------------------------------
-  //  LAYER 2 — DISK / SECONDARY BAND (FALLBACK)
-  //  Purpose:
-  //    • mirror of primary
-  //    • fallback if primary fails
-  //  Rules:
-  //    • NEVER primary unless primary fails
-  //    • Governor decides when to promote/demote
-  // -------------------------------------------------------------------------
   DISK_SECONDARY: {
     id: "disk-secondary",
     speed: "medium",
@@ -103,20 +90,10 @@ export const PulseCoreLayers = {
       "canonicalBlobsMirror",
       "routeSnapshotsMirror",
       "patternMapsMirror"
-    ]
+    ],
+    metaBlock: CoreLayersMetaBlock
   },
 
-  // -------------------------------------------------------------------------
-  //  LAYER 3 — GPU / VRAM (COMPUTE BAND)
-  //  Purpose:
-  //    • compiled kernels
-  //    • model segments
-  //    • binary transforms
-  //    • UI pre-hydration graphs
-  //  Rules:
-  //    • volatile but fast
-  //    • promoted from RAM or DISK_PRIMARY
-  // -------------------------------------------------------------------------
   GPU: {
     id: "gpu",
     speed: "fast",
@@ -127,20 +104,10 @@ export const PulseCoreLayers = {
       "modelSegments",
       "binaryTransforms",
       "uiHydrationGraphs"
-    ]
+    ],
+    metaBlock: CoreLayersMetaBlock
   },
 
-  // -------------------------------------------------------------------------
-  //  LAYER 4 — PROXY / NETWORK EDGE (FLOW BAND)
-  //  Purpose:
-  //    • binary blobs in transit
-  //    • deduped outbound assets
-  //    • client version manifests
-  //  Rules:
-  //    • NEVER authoritative
-  //    • ALWAYS deduped
-  //    • ALWAYS reference-first
-  // -------------------------------------------------------------------------
   PROXY: {
     id: "proxy",
     speed: "fast",
@@ -150,58 +117,56 @@ export const PulseCoreLayers = {
       "binaryTransit",
       "dedupedOutbound",
       "clientVersionMaps"
-    ]
+    ],
+    metaBlock: CoreLayersMetaBlock
   }
 };
 
 // ============================================================================
-//  LAYER DECISION ENGINE (CONTRACT ONLY)
-//  The Governor + Adapters implement these decisions.
+//  LAYER DECISION ENGINE (v12)
 // ============================================================================
-
 export const PulseCoreLayerRules = {
 
-  // -------------------------------------------------------------------------
+  // ---------------------------------------------------------
   //  RULE 1 — WHERE DOES NEW DATA GO?
-  // -------------------------------------------------------------------------
+  //  v12: dnaTag + dataType + routeId + presence
+  // ---------------------------------------------------------
   decidePlacement(dataType, dnaTag, routeId) {
     return {
       primary: "disk-primary",
       secondary: "disk-secondary",
       ram: "ram",
-      gpu: "gpu",
+      gpu: dataType.includes("gpu") ? "gpu" : "ram",
       proxy: "proxy"
     };
   },
 
-  // -------------------------------------------------------------------------
+  // ---------------------------------------------------------
   //  RULE 2 — WHEN TO PROMOTE?
-  //    • hotLoop hits
-  //    • repeated access
-  //    • GPU-ready patterns
-  // -------------------------------------------------------------------------
+  //  v12: hotLoop + GPU‑ready + repeated access
+  // ---------------------------------------------------------
   shouldPromote({ hits, dataType }) {
+    if (dataType.includes("gpu")) return hits > 1;
     return hits > 3;
   },
 
-  // -------------------------------------------------------------------------
+  // ---------------------------------------------------------
   //  RULE 3 — WHEN TO DEMOTE?
-  //    • cold data
-  //    • stale patterns
-  //    • route unload
-  // -------------------------------------------------------------------------
+  //  v12: cold data + stale patterns + TTL
+  // ---------------------------------------------------------
   shouldDemote({ hits, lastAccess }) {
+    const now = Date.now();
+    const TTL = 7 * 24 * 60 * 60 * 1000;
+    if (now - lastAccess > TTL) return true;
     return hits < 1;
   },
 
-  // -------------------------------------------------------------------------
+  // ---------------------------------------------------------
   //  RULE 4 — WHEN TO FLUSH?
-  //    • boot
-  //    • drift detection
-  //    • governor request
-  // -------------------------------------------------------------------------
+  //  v12: RAM always flushes, GPU flushes on boot, proxy flushes on drift
+  // ---------------------------------------------------------
   shouldFlush(layerId) {
-    return layerId === "ram";
+    return layerId === "ram" || layerId === "gpu";
   }
 };
 
@@ -210,6 +175,7 @@ export const PulseCoreLayerRules = {
 // ============================================================================
 export const PulseCoreLayersOrgan = {
   CoreLayersRole,
+  CoreLayersMetaBlock,
   PulseCoreLayers,
   PulseCoreLayerRules
 };

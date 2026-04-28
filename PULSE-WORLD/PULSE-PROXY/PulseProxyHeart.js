@@ -1,25 +1,26 @@
 // ============================================================================
-//  PULSE OS v11‑Evo — THE HEART
+//  PULSE OS v12.3‑EVO — THE HEART
 //  PulseProxyHeart — Cardiac Pacemaker Engine
 //  ONE IMPORT ONLY (Pacemaker / SA Node)
 //  Backend‑Only • Deterministic • Drift‑Proof • No IQ
 //  PURE WRAPPER. NO LOGIC. NO ROUTING. NO BUSINESS STATE.
+//  v12.3‑EVO‑BINARY‑MAX‑ABA FULL ADVANTAGE EDITION
 // ============================================================================
 
 import * as heartbeat from "./PulseProxyHeartBeat.js";
 
-
 // ============================================================================
-// HEART IDENTITY — v11‑Evo A‑B‑A
+// HEART IDENTITY — v12.3‑EVO‑BINARY‑MAX‑ABA
 // ============================================================================
 export const PulseRole = {
   type: "Organ",
   subsystem: "PulseProxy",
   layer: "Heart",
-  version: "11-Evo",
-  identity: "PulseProxyHeart-v11-Evo-ABA",
+  version: "12.3-EVO",
+  identity: "PulseProxyHeart-v12.3-EVO-BINARY-MAX-ABA",
 
   evo: {
+    // Core laws
     driftProof: true,
     deterministic: true,
     pacemakerOnly: true,
@@ -28,22 +29,31 @@ export const PulseRole = {
     noCompute: true,
     backendOnly: true,
     multiInstanceReady: true,
-    unifiedAdvantageField: true,
-    pulseEfficiencyAware: true,
     organismClockOrchestrator: true,
     futureEvolutionReady: true,
 
-    // v11‑Evo A‑B‑A surfaces
+    // A‑B‑A surfaces
     bandAware: true,
     waveFieldAware: true,
-    binaryFieldAware: true
+    binaryFieldAware: true,
+
+    // 12.3+ organism‑wide advantages
+    unifiedAdvantageField: true,
+    pulseEfficiencyAware: true,
+    advantageCascadeAware: true,
+    dualBandAware: true,
+    binaryPhenotypeAware: true,
+    wavePhenotypeAware: true,
+    symbolicAware: true,
+    binaryAware: true
   }
 };
+
 export const PulseProxyHeartMeta = Object.freeze({
   layer: "PulseProxyHeart",
   role: "CARDIAC_PACEMAKER_ENGINE",
-  version: "v11.2-EVO-BINARY-MAX",
-  identity: "PulseProxyHeart-v11.2-EVO-BINARY-MAX",
+  version: "v12.3-EVO-BINARY-MAX-ABA",
+  identity: "PulseProxyHeart-v12.3-EVO-BINARY-MAX-ABA",
 
   guarantees: Object.freeze({
     deterministic: true,
@@ -58,6 +68,7 @@ export const PulseProxyHeartMeta = Object.freeze({
     heartbeatRelay: true,
     unifiedAdvantageField: true,
     pulseEfficiencyAware: true,
+    advantageCascadeAware: true,
 
     // Execution prohibitions
     zeroLogic: true,
@@ -82,6 +93,9 @@ export const PulseProxyHeartMeta = Object.freeze({
     bandAware: true,
     waveFieldAware: true,
     binaryFieldAware: true,
+    dualBandAware: true,
+    symbolicAware: true,
+    binaryAware: true,
     backendOnly: true,
 
     // Environment
@@ -99,6 +113,7 @@ export const PulseProxyHeartMeta = Object.freeze({
       "HeartBandSignature",
       "HeartBinaryField",
       "HeartWaveField",
+      "HeartAdvantageField",
       "HeartDiagnostics",
       "HeartHealingState"
     ]
@@ -106,7 +121,7 @@ export const PulseProxyHeartMeta = Object.freeze({
 
   lineage: Object.freeze({
     root: "PulseProxy-v11",
-    parent: "PulseProxy-v11.2-EVO",
+    parent: "PulseProxy-v12.3-EVO",
     ancestry: [
       "PulseProxyHeart-v7",
       "PulseProxyHeart-v8",
@@ -114,7 +129,8 @@ export const PulseProxyHeartMeta = Object.freeze({
       "PulseProxyHeart-v10",
       "PulseProxyHeart-v11",
       "PulseProxyHeart-v11-Evo",
-      "PulseProxyHeart-v11-Evo-ABA"
+      "PulseProxyHeart-v11-Evo-ABA",
+      "PulseProxyHeart-v11.2-EVO-BINARY-MAX"
     ]
   }),
 
@@ -127,14 +143,13 @@ export const PulseProxyHeartMeta = Object.freeze({
   architecture: Object.freeze({
     pattern: "A-B-A",
     baseline: "pacemaker → wrapper → heartbeat relay",
-    adaptive: "binary-field + wave-field overlays",
+    adaptive: "binary-field + wave-field + advantage overlays",
     return: "deterministic heartbeat surfaces + signatures"
   })
 });
 
-
 // ============================================================================
-//  INTERNAL HELPERS — deterministic, pure
+// INTERNAL HELPERS — deterministic, pure
 // ============================================================================
 function computeHash(str) {
   let h = 0;
@@ -173,13 +188,34 @@ function buildWaveField() {
   };
 }
 
+function buildAdvantageField(binaryField, waveField) {
+  const density = binaryField.binarySurface.density || 36;
+  const amplitude = waveField.amplitude;
+  const wavelength = waveField.wavelength;
+
+  const efficiency = (amplitude + 1) / (wavelength + 1);
+  const stress = Math.min(1, density / 64);
+  const advantageScore = efficiency * (1 + stress);
+
+  return {
+    density,
+    amplitude,
+    wavelength,
+    efficiency,
+    stress,
+    advantageScore,
+    advantageSignature: computeHash(
+      `HEART_ADVANTAGE::${density}::${amplitude}::${wavelength}::${advantageScore}`
+    )
+  };
+}
+
 function buildHeartCycleSignature(cycle) {
   return computeHash(`HEART_CYCLE::${cycle}`);
 }
 
-
 // ============================================================================
-// HEART CONTEXT — v11‑Evo A‑B‑A
+// HEART CONTEXT — v12.3‑EVO
 // ============================================================================
 let HEART_EVENT_SEQ = 0;
 let HEART_CYCLE = 0;
@@ -190,18 +226,21 @@ const HEART_CONTEXT = {
   version: PulseRole.version,
   pacemaker: {
     source: "PulseProxyHeartBeat.js",
-    version: heartbeat?.VERSION || "11-Evo",
+    version: heartbeat?.VERSION || "12.3-EVO",
     label: heartbeat?.LABEL || "HEARTBEAT_PACEMAKER"
   },
   evo: PulseRole.evo
 };
-
 
 // ============================================================================
 // HEART LOGGER — logs only, no control, no routing
 // ============================================================================
 async function logHeart(stage, details = {}) {
   HEART_EVENT_SEQ++;
+
+  const binaryField = buildBinaryField();
+  const waveField = buildWaveField();
+  const advantageField = buildAdvantageField(binaryField, waveField);
 
   const payload = {
     seq: HEART_EVENT_SEQ,
@@ -210,11 +249,11 @@ async function logHeart(stage, details = {}) {
     pulseRole: "CARDIAC PACEMAKER ENGINE",
     stage,
 
-    // v11‑Evo A‑B‑A surfaces
     heartCycle: HEART_CYCLE,
     heartCycleSignature: buildHeartCycleSignature(HEART_CYCLE),
-    binaryField: buildBinaryField(),
-    waveField: buildWaveField(),
+    binaryField,
+    waveField,
+    advantageField,
 
     ...details,
     ...HEART_CONTEXT
@@ -224,7 +263,6 @@ async function logHeart(stage, details = {}) {
     console.log("heart", "HEART_EVENT", payload);
   } catch (_) {}
 }
-
 
 // ============================================================================
 // MAIN HANDLER — “THE HEARTBEAT”
@@ -240,6 +278,10 @@ export const handler = async () => {
 
     await logHeart("BEAT_COMPLETE");
 
+    const binaryField = buildBinaryField();
+    const waveField = buildWaveField();
+    const advantageField = buildAdvantageField(binaryField, waveField);
+
     return {
       statusCode: 200,
       body: JSON.stringify({
@@ -248,8 +290,9 @@ export const handler = async () => {
 
         heartCycle: HEART_CYCLE,
         heartCycleSignature: buildHeartCycleSignature(HEART_CYCLE),
-        binaryField: buildBinaryField(),
-        waveField: buildWaveField(),
+        binaryField,
+        waveField,
+        advantageField,
 
         ...HEART_CONTEXT
       })
@@ -260,6 +303,10 @@ export const handler = async () => {
 
     await logHeart("FATAL_ERROR", { message: msg });
 
+    const binaryField = buildBinaryField();
+    const waveField = buildWaveField();
+    const advantageField = buildAdvantageField(binaryField, waveField);
+
     return {
       statusCode: 500,
       body: JSON.stringify({
@@ -268,8 +315,9 @@ export const handler = async () => {
 
         heartCycle: HEART_CYCLE,
         heartCycleSignature: buildHeartCycleSignature(HEART_CYCLE),
-        binaryField: buildBinaryField(),
-        waveField: buildWaveField(),
+        binaryField,
+        waveField,
+        advantageField,
 
         ...HEART_CONTEXT
       })

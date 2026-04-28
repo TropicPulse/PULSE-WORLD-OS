@@ -1,39 +1,28 @@
 // ============================================================================
-//  PulseSendMover-v11-Evo.js
+//  PulseSendMover-v12.3-Evo.js
 //  Movement Organ • Pulse‑Agnostic • Deterministic Transport Muscle
-//  v11: Diagnostics + Signatures + Pattern Surface + Lineage Surface
-//  v11-Binary: Binary-Aware Movement Surface (Optional, Non-Breaking)
+//  v12.3: Binary + CacheChunk + Prewarm + Presence Surfaces
 // ============================================================================
 //
-//  ROLE:
-//    • Pulse‑agnostic movement organ (v1/v2/v3).
-//    • Builds a deterministic movement packet (no side effects).
-//    • Emits diagnostics + signatures for the movement arc.
-//    • Now *binary-aware*:
-//        - If the pulse carries binary metadata (binaryPattern, binaryMode, etc.),
-//          it is surfaced in diagnostics and in the movementSignature.
-//        - If not, behavior is unchanged.
-//
-//  SAFETY CONTRACT (v11-Evo):
-//  --------------------------
-//  • No imports.
-//  • No network.
-//  • No compute beyond local helpers.
-//  • Zero randomness.
-//  • Zero timestamps.
+//  SAFETY CONTRACT (v12.3-Evo):
+//  ----------------------------
+//  • No randomness.
+//  • No timestamps.
+//  • No external IO.
+//  • Pure deterministic movement.
 //  • Zero mutation outside instance.
 // ============================================================================
 
 
 // ============================================================================
-// ⭐ PulseRole — identifies this as the PulseSend Mover Organ (v11-Evo)
+// ⭐ PulseRole — identifies this as the PulseSend Mover Organ (v12.3-Evo)
 // ============================================================================
 export const PulseRole = {
   type: "Messenger",
   subsystem: "PulseSend",
   layer: "Mover",
-  version: "11.0",
-  identity: "PulseSendMover-v11-Evo",
+  version: "12.3",
+  identity: "PulseSendMover-v12.3-Evo",
 
   evo: {
     driftProof: true,
@@ -53,41 +42,42 @@ export const PulseRole = {
     signatureReady: true,
     movementSurfaceReady: true,
 
-    // Binary-aware movement surface:
-    //  - understands binaryPattern / binaryMode / binaryStrength if present
-    //  - does not require them
-    binaryAwareMovementReady: true
-  },
+    // Binary-aware movement surface
+    binaryAwareMovementReady: true,
 
-  routingContract: "PulseRouter-v11",
-  meshContract: "PulseMesh-v11",
-  pulseContract: "Pulse-v1/v2/v3",
-  gpuOrganContract: "PulseGPU-v11",
-  earnCompatibility: "PulseEarn-v11"
+    // 12.3+: cacheChunk / prewarm / presence
+    cacheChunkAware: true,
+    prewarmAware: true,
+    multiPresenceAware: true
+  }
 };
 
 
 // ============================================================================
-//  INTERNAL HELPERS — deterministic, tiny, pure
+//  INTERNAL HELPERS — deterministic, pure
 // ============================================================================
 function computeHash(str) {
   let h = 0;
   for (let i = 0; i < str.length; i++) {
-    h = (h + str.charCodeAt(i) * (i + 1)) % 100000;
+    h = (h + str.charCodeAt(i) * (i + 3)) % 131072;
   }
-  return `h${h}`;
+  return `h12_${h}`;
 }
 
-function extractBinarySurfaceFromPulse(pulse) {
-  const payload = pulse?.payload || {};
+function stableStringify(v) {
+  if (v === null || typeof v !== "object") return JSON.stringify(v);
+  if (Array.isArray(v)) return "[" + v.map(stableStringify).join(",") + "]";
+  const keys = Object.keys(v).sort();
+  return "{" + keys.map(k => JSON.stringify(k) + ":" + stableStringify(v[k])).join(",") + "}";
+}
 
-  const binaryPattern  = payload.binaryPattern || null;
-  const binaryMode     = payload.binaryMode || null;
-  const binaryPayload  = payload.binaryPayload || null;
-  const binaryHints    = payload.binaryHints || null;
-  const binaryStrength = typeof payload.binaryStrength === "number"
-    ? payload.binaryStrength
-    : null;
+function extractBinarySurface(pulse) {
+  const p = pulse?.payload || {};
+  const binaryPattern  = p.binaryPattern || null;
+  const binaryMode     = p.binaryMode || null;
+  const binaryPayload  = p.binaryPayload || null;
+  const binaryHints    = p.binaryHints || null;
+  const binaryStrength = typeof p.binaryStrength === "number" ? p.binaryStrength : null;
 
   const hasBinary =
     !!binaryPattern ||
@@ -106,45 +96,95 @@ function extractBinarySurfaceFromPulse(pulse) {
   };
 }
 
-function buildMovementDiagnostics({ pulse, targetOrgan, pathway, mode }) {
-  const pattern = pulse?.pattern || "NO_PATTERN";
-  const lineageDepth = Array.isArray(pulse?.lineage) ? pulse.lineage.length : 0;
-  const pulseType = pulse?.pulseType || pulse?.PulseRole?.identity || "UNKNOWN_PULSE_TYPE";
 
-  const binarySurface = extractBinarySurfaceFromPulse(pulse);
+// ============================================================================
+//  12.3+ Surfaces — cacheChunk / prewarm / presence
+// ============================================================================
+function buildCacheChunkSurface({ pulse, targetOrgan, pathway, mode }) {
+  const shape = {
+    pattern: pulse.pattern || "",
+    lineageDepth: Array.isArray(pulse.lineage) ? pulse.lineage.length : 0,
+    targetOrgan,
+    pathway,
+    mode
+  };
+  const raw = stableStringify(shape);
+  const cacheChunkKey = "mover-cache::" + computeHash(raw);
 
   return {
-    // Core symbolic surface
-    pattern,
-    lineageDepth,
-    pulseType,
-    targetOrgan: targetOrgan || "NO_ORGAN",
-    pathway: pathway || "NO_PATHWAY",
-    mode,
+    cacheChunkKey,
+    cacheChunkSignature: computeHash(cacheChunkKey)
+  };
+}
 
-    // Binary surface (optional, non-breaking)
-    binary: binarySurface,
+function buildPrewarmSurface({ pulse, targetOrgan }) {
+  const priority = pulse.priority || "normal";
+  let level = "none";
 
-    // Hashes for quick indexing / SDN / logging
-    patternHash: computeHash(pattern),
-    lineageHash: computeHash(String(lineageDepth)),
-    pulseTypeHash: computeHash(pulseType),
-    organHash: computeHash(String(targetOrgan)),
-    pathwayHash: computeHash(JSON.stringify(pathway || {})),
+  if (priority === "critical" || priority === "high") level = "aggressive";
+  else if (priority === "normal") level = "medium";
+  else if (priority === "low") level = "light";
 
-    // Binary hashes (only meaningful if hasBinary === true)
-    binaryPatternHash: binarySurface.binaryPattern
-      ? computeHash(binarySurface.binaryPattern)
-      : null,
-    binaryModeHash: binarySurface.binaryMode
-      ? computeHash(binarySurface.binaryMode)
-      : null
+  const raw = stableStringify({ priority, targetOrgan });
+  const prewarmKey = "mover-prewarm::" + computeHash(raw);
+
+  return {
+    level,
+    prewarmKey
+  };
+}
+
+function buildPresenceSurface({ pulse, targetOrgan }) {
+  const pattern = pulse.pattern || "";
+  let scope = "local";
+
+  if (pattern.includes("/global")) scope = "global";
+  else if (pattern.includes("/page")) scope = "page";
+
+  const raw = stableStringify({ pattern, targetOrgan, scope });
+  const presenceKey = "mover-presence::" + computeHash(raw);
+
+  return {
+    scope,
+    presenceKey
   };
 }
 
 
 // ============================================================================
-//  FACTORY — Create the Mover Organ (v11-Evo + Binary-Aware)
+//  MOVEMENT DIAGNOSTICS (symbolic + binary + 12.3 surfaces)
+// ============================================================================
+function buildMovementDiagnostics({ pulse, targetOrgan, pathway, mode }) {
+  const pattern = pulse.pattern || "NO_PATTERN";
+  const lineageDepth = Array.isArray(pulse.lineage) ? pulse.lineage.length : 0;
+  const pulseType = pulse.pulseType || pulse?.PulseRole?.identity || "UNKNOWN_PULSE_TYPE";
+
+  const binary = extractBinarySurface(pulse);
+
+  return {
+    pattern,
+    lineageDepth,
+    pulseType,
+    targetOrgan,
+    pathway,
+    mode,
+
+    binary,
+
+    patternHash: computeHash(pattern),
+    lineageHash: computeHash(String(lineageDepth)),
+    pulseTypeHash: computeHash(pulseType),
+    organHash: computeHash(String(targetOrgan)),
+    pathwayHash: computeHash(stableStringify(pathway || {})),
+
+    binaryPatternHash: binary.binaryPattern ? computeHash(binary.binaryPattern) : null,
+    binaryModeHash: binary.binaryMode ? computeHash(binary.binaryMode) : null
+  };
+}
+
+
+// ============================================================================
+//  FACTORY — Create the Mover Organ (v12.3-Evo)
 // ============================================================================
 export function createPulseSendMover({ pulseMesh, log }) {
   return {
@@ -159,16 +199,23 @@ export function createPulseSendMover({ pulseMesh, log }) {
         mode
       });
 
-      const advantageField = pulse?.advantageField || null;
-
-      // ⭐ v11 logging surface
-      log && log("[PulseSendMover-v11-Evo] Movement fired", {
-        jobId: pulse.jobId,
-        diagnostics,
-        advantageField
+      const cacheChunkSurface = buildCacheChunkSurface({
+        pulse,
+        targetOrgan,
+        pathway,
+        mode
       });
 
-      // ⭐ v11 movement signature (now implicitly binary-aware via diagnostics)
+      const prewarmSurface = buildPrewarmSurface({
+        pulse,
+        targetOrgan
+      });
+
+      const presenceSurface = buildPresenceSurface({
+        pulse,
+        targetOrgan
+      });
+
       const movementSignature = computeHash(
         diagnostics.pattern +
         "::" +
@@ -176,10 +223,17 @@ export function createPulseSendMover({ pulseMesh, log }) {
         "::" +
         diagnostics.mode +
         "::" +
-        (diagnostics.binary.binaryPattern || "NO_BINARY_PATTERN")
+        (diagnostics.binary.binaryPattern || "NO_BINARY")
       );
 
-      // ⭐ Return deterministic movement packet
+      log && log("[PulseSendMover-v12.3] Movement fired", {
+        jobId: pulse.jobId,
+        diagnostics,
+        cacheChunkSurface,
+        prewarmSurface,
+        presenceSurface
+      });
+
       return {
         packet: {
           pulse,
@@ -187,7 +241,10 @@ export function createPulseSendMover({ pulseMesh, log }) {
           pathway,
           mode,
           movementSignature,
-          diagnostics
+          diagnostics,
+          cacheChunkSurface,
+          prewarmSurface,
+          presenceSurface
         }
       };
     }
@@ -196,7 +253,7 @@ export function createPulseSendMover({ pulseMesh, log }) {
 
 
 // ============================================================================
-//  ORGAN EXPORT — ⭐ PulseSendMover (v11-Evo)
+//  ORGAN EXPORT — ⭐ PulseSendMover (v12.3-Evo)
 // ============================================================================
 export const PulseSendMover = {
   PulseRole,
@@ -205,20 +262,15 @@ export const PulseSendMover = {
     const pulseType = pulse?.pulseType || pulse?.PulseRole?.identity || "UNKNOWN_PULSE_TYPE";
     const pattern = pulse?.pattern || "NO_PATTERN";
     const lineageDepth = Array.isArray(pulse?.lineage) ? pulse.lineage.length : 0;
-    const organLabel = targetOrgan || "NO_ORGAN";
-    const pathwayLabel = pathway || "NO_PATHWAY";
-    const modeLabel = mode || "NO_MODE";
-    const advantageField = pulse?.advantageField || null;
 
     throw new Error(
-      `[PulseSendMover-v11-Evo] move() called before initialization.\n` +
+      `[PulseSendMover-v12.3-Evo] move() called before initialization.\n` +
       `• pulseType: ${pulseType}\n` +
       `• pattern: ${pattern}\n` +
       `• lineageDepth: ${lineageDepth}\n` +
-      `• targetOrgan: ${organLabel}\n` +
-      `• pathway: ${pathwayLabel}\n` +
-      `• mode: ${modeLabel}\n` +
-      `• advantageField: ${JSON.stringify(advantageField)}\n` +
+      `• targetOrgan: ${targetOrgan || "NO_ORGAN"}\n` +
+      `• pathway: ${pathway || "NO_PATHWAY"}\n` +
+      `• mode: ${mode || "NO_MODE"}\n` +
       `Use createPulseSendMover(...) to wire dependencies.`
     );
   }

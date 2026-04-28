@@ -1,19 +1,21 @@
 // ============================================================================
-// [pulse:mesh] PULSE_MESH_ENVIRONMENTAL_FIELD v11-Evo  // teal
+// [pulse:mesh] PULSE_MESH_ENVIRONMENTAL_FIELD v12.3-PRESENCE-EVO-MAX-PRIME // teal
 // Internal Weather System • Metadata-Only • Stabilization + Pressure Signals
+// Presence-Aware • Binary-Aware • Dual-Band • Drift-Proof
 // ============================================================================
 //
-// IDENTITY — THE ENVIRONMENTAL FIELD (v11-Evo):
-// ---------------------------------------------
+// IDENTITY — THE ENVIRONMENTAL FIELD (v12.3):
+// -------------------------------------------
 // • The organism’s internal “weather system.”
 // • Aggregates friction, noise, stability, resonance, drift, load, and pressure.
 // • Holds system-pressure indicators for Flow, Aura, Reflex, Mesh, Factoring,
-//   and now Binary vs Symbolic mode pressure.
+//   Binary vs Symbolic mode pressure, and Presence-band pressure.
 // • Read-only to all organs except trusted CNS Brain writers.
 // • Pure metadata-only stabilization layer — zero compute, zero routing.
 // • NOT blood pressure — this is atmospheric/system pressure.
 //
-// SAFETY CONTRACT (v11-Evo):
+// SAFETY CONTRACT (v12.3):
+// -------------------------
 // • No payload access.
 // • No compute.
 // • No routing.
@@ -22,7 +24,7 @@
 // • Deterministic-field: same inputs → same field state.
 // • Unified-advantage-field: inherits all safe systemic advantages.
 // • Drift-proof, multi-instance-ready, factoring-aware, mesh-pressure-aware,
-//   binary-aware, dual-mode-ready.
+//   binary-aware, dual-band-ready, presence-aware.
 // ============================================================================
 
 
@@ -45,14 +47,14 @@ export function createPulseField({ log, warn, error }) {
     loadWave: 0,
     driftPressure: 0,
 
-    // System pressure (v11-Evo)
+    // System pressure
     flowPressure: 0,
     throttleRate: 0,
     auraTension: 0,
     reflexDropRate: 0,
     meshStormPressure: 0,
 
-    // Factoring pressure (mesh signal factoring awareness)
+    // Factoring pressure
     factoringPressure: 0,
 
     // External influence markers
@@ -60,15 +62,20 @@ export function createPulseField({ log, warn, error }) {
     externalStorm: 0,
     externalSignal: 0,
 
-    // v11-Evo: binary vs symbolic mode pressure
+    // Mode pressure (binary vs symbolic vs dual)
     binaryModePressure: 0,
     symbolicModePressure: 0,
     dualModeResonance: 0,
 
+    // Presence-band pressure (v12.3)
+    presenceSymbolicPressure: 0,
+    presenceBinaryPressure: 0,
+    presenceDualPressure: 0,
+
     meta: {
       layer: "PulseField",
       role: "ENVIRONMENTAL_FIELD",
-      version: "11.0-Evo",
+      version: "12.3-PRESENCE-EVO-MAX-PRIME",
       target: "full-mesh",
       selfRepairable: true,
       evo: {
@@ -93,6 +100,9 @@ export function createPulseField({ log, warn, error }) {
         flowAware: true,
         driftAware: true,
 
+        presenceAware: true,
+        bandAware: true,
+
         zeroCompute: true,
         zeroMutation: true,
         zeroRoutingInfluence: true
@@ -102,7 +112,7 @@ export function createPulseField({ log, warn, error }) {
 
 
   // -----------------------------------------------------------
-  // FIELD UPDATE API (trusted writers only)
+  // FIELD UPDATE API (trusted CNS writers only)
   // -----------------------------------------------------------
   const PulseFieldControl = {
     setFriction(v) { FieldState.friction = clamp01(v); },
@@ -127,10 +137,15 @@ export function createPulseField({ log, warn, error }) {
     setExternalStorm(v) { FieldState.externalStorm = clamp01(v); },
     setExternalSignal(v) { FieldState.externalSignal = clamp01(v); },
 
-    // v11-Evo: binary vs symbolic mode pressure
+    // Mode pressure
     setBinaryModePressure(v) { FieldState.binaryModePressure = clamp01(v); },
     setSymbolicModePressure(v) { FieldState.symbolicModePressure = clamp01(v); },
     setDualModeResonance(v) { FieldState.dualModeResonance = clamp01(v); },
+
+    // Presence-band pressure (v12.3)
+    setPresenceSymbolicPressure(v) { FieldState.presenceSymbolicPressure = clamp01(v); },
+    setPresenceBinaryPressure(v) { FieldState.presenceBinaryPressure = clamp01(v); },
+    setPresenceDualPressure(v) { FieldState.presenceDualPressure = clamp01(v); },
 
     // Bulk update from PulseEnvironment or system pressure snapshot
     applyEnvironmentSnapshot(env = {}) {
@@ -169,10 +184,13 @@ export function createPulseField({ log, warn, error }) {
     getExternalStorm() { return FieldState.externalStorm; },
     getExternalSignal() { return FieldState.externalSignal; },
 
-    // v11-Evo: binary vs symbolic mode pressure
     getBinaryModePressure() { return FieldState.binaryModePressure; },
     getSymbolicModePressure() { return FieldState.symbolicModePressure; },
     getDualModeResonance() { return FieldState.dualModeResonance; },
+
+    getPresenceSymbolicPressure() { return FieldState.presenceSymbolicPressure; },
+    getPresenceBinaryPressure() { return FieldState.presenceBinaryPressure; },
+    getPresenceDualPressure() { return FieldState.presenceDualPressure; },
 
     getMeta() { return FieldState.meta; }
   };

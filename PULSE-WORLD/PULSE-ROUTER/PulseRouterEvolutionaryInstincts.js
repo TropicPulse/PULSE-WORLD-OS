@@ -1,12 +1,12 @@
 // ============================================================================
-//  PULSE ROUTER EVOLUTIONARY INSTINCTS v11‑Evo‑DualStack — ROUTER EVOLUTION CORE
+//  PULSE ROUTER EVOLUTIONARY INSTINCTS v12.3‑Evo‑DualStack — ROUTER EVOLUTION CORE
 //  Adaptive Routing Identity • Genetic Route Memory • Best‑Path Preservation
-//  Symbolic + Binary Ancestry • Deterministic • Drift‑Proof
+//  Symbolic + Binary + Presence + CacheChunk Ancestry • Deterministic • Drift‑Proof
 // ============================================================================
 //
 //  ROLE:
 //    • Stores evolutionary routing memory (success/failure/degrade).
-//    • Symbolic + Binary dual‑stack ancestry.
+//    • Symbolic + Binary + Presence + CacheChunk dual‑stack ancestry.
 //    • Deterministic scoring + regression detection.
 //    • Loop‑Theory‑Aware.
 //    • Pure memory organ — NO routing, NO compute, NO mutation outside instance.
@@ -15,15 +15,15 @@
 
 
 // ------------------------------------------------------------
-// v11‑Evo CONTEXT METADATA — Router Evolution Identity
+// v12.3‑Evo CONTEXT METADATA — Router Evolution Identity
 // ------------------------------------------------------------
 const ROUTER_EVOLUTION_CONTEXT = {
   layer: "PulseRouterEvolutionaryInstincts",
   role: "ROUTER_EVOLUTION_CORE",
   purpose: "Adaptive routing identity + genetic memory for symbolic + binary routes",
-  context: "Stores best-known routes, lineage, stability, regression, binary ancestry",
+  context: "Stores best-known routes, lineage, stability, regression, binary + presence + cache ancestry",
   target: "dual-stack-router",
-  version: 11.0,
+  version: 12.3,
   selfRepairable: true,
 
   evo: {
@@ -38,8 +38,11 @@ const ROUTER_EVOLUTION_CONTEXT = {
     routerOrganContract: "PulseRouter-v11",
     earnCompatibility: "Earn-v3",
 
-    // ⭐ NEW: binary-aware instincts cortex
-    binaryAware: true
+    // ⭐ binary + presence + cache-aware instincts cortex
+    binaryAware: true,
+    presenceAware: true,
+    cacheChunkAware: true,
+    prewarmAware: true
   },
 
   loopTheory: {
@@ -135,11 +138,82 @@ function extractBinarySurface(payload = {}) {
 
 
 // ------------------------------------------------------------
-// Route hash — Genetic Route Fingerprint (Symbolic + Binary)
+// Presence / multi‑presence helpers
+// ------------------------------------------------------------
+function extractPresenceSurface(payload = {}) {
+  const instanceId   = payload.instanceId || null;
+  const presenceId   = payload.presenceId || null;
+  const presenceRole = payload.presenceRole || null;
+  const presenceGroupId = payload.presenceGroupId || null;
+  const regionId     = payload.regionId || null;
+  const hostName     = payload.hostName || null;
+
+  const hasPresence =
+    !!instanceId ||
+    !!presenceId ||
+    !!presenceRole ||
+    !!presenceGroupId ||
+    !!regionId ||
+    !!hostName;
+
+  return {
+    hasPresence,
+    instanceId,
+    presenceId,
+    presenceRole,
+    presenceGroupId,
+    regionId,
+    hostName
+  };
+}
+
+
+// ------------------------------------------------------------
+// CacheChunk / prewarm helpers
+// ------------------------------------------------------------
+function extractCacheChunkSurface(payload = {}) {
+  const cacheChunkId   = payload.cacheChunkId || null;
+  const cacheTier      = payload.cacheTier || null;
+  const prewarmKey     = payload.prewarmKey || null;
+  const prewarmHint    = payload.prewarmHint || null;
+  const cacheStrategy  = payload.cacheStrategy || null;
+  const advantageField = payload.advantageField || null;
+
+  const hasCacheChunk =
+    !!cacheChunkId ||
+    !!cacheTier ||
+    !!prewarmKey ||
+    !!prewarmHint ||
+    !!cacheStrategy ||
+    !!advantageField;
+
+  return {
+    hasCacheChunk,
+    cacheChunkId,
+    cacheTier,
+    prewarmKey,
+    prewarmHint,
+    cacheStrategy,
+    advantageField
+  };
+}
+
+
+// ------------------------------------------------------------
+// Route hash — Genetic Route Fingerprint (Symbolic + Binary + Presence + Cache)
 // ------------------------------------------------------------
 function computeRouteHash(routeShape, payload = {}) {
-  const binary = extractBinarySurface(payload);
-  const base = { routeShape, binary };
+  const binary   = extractBinarySurface(payload);
+  const presence = extractPresenceSurface(payload);
+  const cache    = extractCacheChunkSurface(payload);
+
+  const base = {
+    routeShape,
+    binary,
+    presence,
+    cache
+  };
+
   return simpleHash(stableStringify(base));
 }
 
@@ -192,7 +266,7 @@ function classifyDegradationTier(healthScore) {
 
 
 // ------------------------------------------------------------
-// Memory entry model — Evolutionary Route Record (DualStack)
+// Memory entry model — Evolutionary Route Record (DualStack + Presence + Cache)
 // ------------------------------------------------------------
 class PulseRouterEvolutionaryStore {
   constructor() {
@@ -205,7 +279,7 @@ class PulseRouterEvolutionaryStore {
   }
 
   recordRoute({ routeShape, routeStats, healthScore, pattern, lineage, pageId, payload }) {
-    const routeHash = computeRouteHash(routeShape, payload);
+    const routeHash = computeRouteHash(routeShape, payload || {});
     const score = scoreRoute(routeStats);
 
     const existing = this.entries.get(routeHash);
@@ -224,7 +298,9 @@ class PulseRouterEvolutionaryStore {
       pageId: safePageId
     });
 
-    const binary = extractBinarySurface(payload || {});
+    const binary    = extractBinarySurface(payload || {});
+    const presence  = extractPresenceSurface(payload || {});
+    const cache     = extractCacheChunkSurface(payload || {});
 
     const loopTheory = {
       routingCompletion: true,
@@ -247,8 +323,14 @@ class PulseRouterEvolutionaryStore {
       pageId: safePageId,
       pageAncestrySignature,
 
-      // ⭐ NEW: binary ancestry
+      // ⭐ binary ancestry
       binary,
+
+      // ⭐ presence / multi‑presence surface
+      presence,
+
+      // ⭐ cacheChunk / prewarm surface
+      cache,
 
       healthScore: safeHealth,
       tier,
@@ -274,6 +356,10 @@ class PulseRouterEvolutionaryStore {
         // ⭐ always update binary surface
         binary,
 
+        // ⭐ always update presence + cache surfaces
+        presence,
+        cache,
+
         healthScore: safeHealth,
         tier,
         loopTheory
@@ -286,7 +372,7 @@ class PulseRouterEvolutionaryStore {
   }
 
   getBestRoute(routeShape, payload = {}) {
-    const routeHash = computeRouteHash(routeShape, payload);
+    const routeHash = computeRouteHash(routeShape, payload || {});
     return this.entries.get(routeHash) || null;
   }
 
@@ -308,6 +394,12 @@ class PulseRouterEvolutionaryStore {
 
         // ⭐ binary ancestry
         binary: { ...entry.binary },
+
+        // ⭐ presence / multi‑presence snapshot
+        presence: { ...entry.presence },
+
+        // ⭐ cacheChunk / prewarm snapshot
+        cache: { ...entry.cache },
 
         healthScore: entry.healthScore,
         tier: entry.tier,
@@ -359,11 +451,30 @@ class PulseRouterEvolutionaryStore {
               pageId: safePageId
             });
 
+      const binary =
+        entry.binary && typeof entry.binary === "object"
+          ? entry.binary
+          : extractBinarySurface({});
+
+      const presence =
+        entry.presence && typeof entry.presence === "object"
+          ? entry.presence
+          : extractPresenceSurface({});
+
+      const cache =
+        entry.cache && typeof entry.cache === "object"
+          ? entry.cache
+          : extractCacheChunkSurface({});
+
+      const healthScore =
+        typeof entry.healthScore === "number" ? entry.healthScore : 1.0;
+
       const safeEntry = {
         key: entry.key,
         routeShape: entry.routeShape || {},
         bestStats: entry.bestStats || {},
-        bestScore: typeof entry.bestScore === "number" ? entry.bestScore : 0,
+        bestScore:
+          typeof entry.bestScore === "number" ? entry.bestScore : 0,
 
         pattern: safePattern,
         patternAncestry,
@@ -373,10 +484,14 @@ class PulseRouterEvolutionaryStore {
         pageAncestrySignature,
 
         // ⭐ restore binary surface
-        binary: entry.binary || extractBinarySurface({}),
+        binary,
 
-        healthScore: typeof entry.healthScore === "number" ? entry.healthScore : 1.0,
-        tier: classifyDegradationTier(entry.healthScore),
+        // ⭐ restore presence + cache surfaces
+        presence,
+        cache,
+
+        healthScore,
+        tier: classifyDegradationTier(healthScore),
 
         loopTheory: {
           routingCompletion: true,

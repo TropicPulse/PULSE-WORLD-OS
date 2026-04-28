@@ -34,7 +34,6 @@
 //  • Deterministic: same input → same output
 //  • Fail-open: invalid input → safe empty results
 // ============================================================================
-
 import { PulseGPUEventEmitter } from "./PulseGPUSynapses.js";
 import { PulseGPUInsightsEngine } from "./PulseGPUWisdomCortex.js";
 import { PulseGPUSessionTracer } from "./PulseGPUSessionTracer.js";
@@ -43,16 +42,17 @@ import { PulseGPUSettingsRestorer } from "./PulseGPUSettingsRestorer.js";
 import { PulseGPUGuardianCortex } from "./PulseGPUGuardianCortex.js";
 import { PulseGPUHealer } from "./PulseGPUHealer.js";
 import { PulseGPUUXBridge } from "./PulseGPUUXBridge.js";
+import { PulseGPUGeneticMemory } from "./PulseGPUGeneticMemory.js";
 import { DEFAULT_USER_PREFERENCES } from "./PulseGPUConfig.js";
 
 // ============================================================================
-//  ORCHESTRATOR META — Brainstem Identity (v11-Evo-Prime)
+//  ORCHESTRATOR META — Brainstem Identity (v12.3-Evo-Spine)
 // ============================================================================
-const PULSE_GPU_ORCHESTRATOR_META_V11 = {
+const PULSE_GPU_ORCHESTRATOR_META_V12_3 = {
   layer: "PulseGPUOrchestrator",
   role: "BRAINSTEM",
-  version: "11.0-Evo-Prime",
-  target: "full-gpu+binary",
+  version: "12.3-Evo-Spine",
+  target: "full-gpu+binary+presence",
   selfRepairable: true,
 
   evo: {
@@ -71,10 +71,23 @@ const PULSE_GPU_ORCHESTRATOR_META_V11 = {
     gpuMemoryAware: true,
     gpuAdvantageAware: true,
 
+    // Spine + organism loader awareness
+    gpuSpineReady: true,
+    organismLoaderReady: true,
+    sessionTracerAware: true,
+    geneticMemoryAware: true,
+
+    // Prewarm / chunking / cache awareness (no actual IO here)
+    prewarmReady: true,
+    warmPathAware: true,
+    coldPathSafe: true,
+    chunkingReady: true,
+    dualBandAware: true,
+
     // Routing + organism contracts
     pulseSend11Ready: true,
     routingContract: "PulseSend-v11",
-    gpuOrganContract: "PulseGPU-v11-Evo-Prime",
+    gpuOrganContract: "PulseGPU-v12.3-Evo-Spine",
     earnCompatibility: "Earn-v3",
 
     // Legacy metadata
@@ -95,8 +108,10 @@ function buildPressureSnapshotFromStep(step = {}) {
 
   const gpuLoadPressure = Math.max(0, Math.min(1, gpuLoad));
   const thermalPressure = gpuLoadPressure; // deterministic proxy
-  const memoryPressure = vram > 0 ? Math.max(0, Math.min(1, vram / 4_000_000)) : 0;
-  const meshStormPressure = stutters > 0 ? Math.max(0, Math.min(1, stutters / 1000)) : 0;
+  const memoryPressure =
+    vram > 0 ? Math.max(0, Math.min(1, vram / 4_000_000)) : 0;
+  const meshStormPressure =
+    stutters > 0 ? Math.max(0, Math.min(1, stutters / 1000)) : 0;
   const auraTension = Math.max(0, Math.min(1, (gpuLoad + cpuLoad) / 2));
 
   return {
@@ -109,18 +124,79 @@ function buildPressureSnapshotFromStep(step = {}) {
 }
 
 // ============================================================================
-//  PULSE GPU ORCHESTRATOR v11-Evo-Prime — THE SPINE / BRAINSTEM
+//  EXECUTION CONTEXT BUILDER — For Genetic Memory v12.3+
+// ============================================================================
+function buildExecutionContextFromSession({ metrics = {}, summary = {}, gpuContext = null } = {}) {
+  const binaryMode =
+    typeof metrics.binaryMode === "string"
+      ? metrics.binaryMode
+      : gpuContext?.binaryMode || "auto";
+
+  const pipelineId = metrics.pipelineId || gpuContext?.pipelineId || "";
+  const sceneType = metrics.sceneType || gpuContext?.sceneType || "";
+  const workloadClass = metrics.workloadClass || gpuContext?.workloadClass || "";
+  const resolution = metrics.resolution || gpuContext?.resolution || "";
+  const refreshRate = metrics.refreshRate || gpuContext?.refreshRate || 0;
+
+  const dispatchSignature =
+    metrics.dispatchSignature ||
+    gpuContext?.dispatchSignature ||
+    summary.gpuContext?.dispatchSignature ||
+    "";
+
+  const shapeSignature =
+    metrics.shapeSignature ||
+    gpuContext?.shapeSignature ||
+    summary.gpuContext?.shapeSignature ||
+    "";
+
+  return {
+    binaryMode,
+    pipelineId,
+    sceneType,
+    workloadClass,
+    resolution,
+    refreshRate,
+    dispatchSignature,
+    shapeSignature
+  };
+}
+
+// ============================================================================
+//  TRACE SUMMARY → GENETIC MEMORY TRACE SNAPSHOT
+// ============================================================================
+function buildTraceSummaryForGeneticMemory({ summary = {}, pressureSnapshot = null } = {}) {
+  return {
+    totalDurationMs: summary.totalDurationMs || 0,
+    totalWarnings: summary.totalWarnings || 0,
+    totalErrors: summary.totalErrors || 0,
+    totalStutters: summary.totalStutters || 0,
+    stepCount: summary.stepCount || 0,
+    binaryStepCount: summary.binaryStepCount || 0,
+    symbolicStepCount: summary.symbolicStepCount || 0,
+    pressureSnapshot: pressureSnapshot || null
+  };
+}
+
+// ============================================================================
+//  PULSE GPU ORCHESTRATOR v12.3-Evo-Spine — THE SPINE / BRAINSTEM
 // ============================================================================
 class PulseGPUOrchestrator {
   constructor(options = {}) {
     // Synapses — electrical junctions
-    this.eventEmitter = new PulseGPUEventEmitter();
+    this.eventEmitter = options.eventEmitter || new PulseGPUEventEmitter();
 
     // Wisdom Cortex — insights interpreter
-    this.insightsEngine = new PulseGPUInsightsEngine();
+    this.insightsEngine =
+      options.insightsEngine || new PulseGPUInsightsEngine();
 
     // Sensory Archive — afferent nervous system
-    this.sessionTracer = options.sessionTracer || new PulseGPUSessionTracer();
+    this.sessionTracer =
+      options.sessionTracer || new PulseGPUSessionTracer();
+
+    // Genetic Memory — long-horizon pattern archive
+    this.geneticMemory =
+      options.geneticMemory || new PulseGPUGeneticMemory();
 
     // Cognitive + Immune Cluster
     this.performanceAdvisor =
@@ -147,27 +223,133 @@ class PulseGPUOrchestrator {
     this.uxBridge = options.uxBridge || new PulseGPUUXBridge();
 
     // Identity metadata
-    this.meta = { ...PULSE_GPU_ORCHESTRATOR_META_V11 };
+    this.meta = { ...PULSE_GPU_ORCHESTRATOR_META_V12_3 };
+  }
+
+  // ========================================================================
+  // PREWARM — Deterministic Warm Path Priming (v12.3+)
+  // ========================================================================
+  prewarm() {
+    const dummyGameProfile = { gameId: "prewarm-game" };
+    const dummyHardwareProfile = { gpuModel: "prewarm-gpu" };
+    const dummyTierProfile = { tierId: "prewarm-tier" };
+    const dummySettings = {};
+    const dummyMetrics = {};
+    const dummyPrefs = { ...DEFAULT_USER_PREFERENCES };
+    const dummyGpuContext = {
+      binaryMode: "auto",
+      pipelineId: "prewarm-pipeline",
+      sceneType: "prewarm-scene",
+      workloadClass: "prewarm-workload"
+    };
+
+    // Sensory + trace
+    const trace = this.sessionTracer.startSession({
+      sessionId: "prewarm-session",
+      gameProfile: dummyGameProfile,
+      hardwareProfile: dummyHardwareProfile,
+      tierProfile: dummyTierProfile,
+      gpuContext: dummyGpuContext
+    });
+    this.sessionTracer.recordStep("prewarm-session", {
+      stepId: "prewarm-step",
+      durationMs: 0
+    });
+    this.sessionTracer.endSession("prewarm-session");
+
+    // Advisor + restorer + guardian + healer
+    const advisorResult =
+      this.performanceAdvisor.safeAnalyzeCurrentSession({
+        gameProfile: dummyGameProfile,
+        hardwareProfile: dummyHardwareProfile,
+        tierProfile: dummyTierProfile,
+        settings: dummySettings,
+        metrics: dummyMetrics
+      });
+
+    const restorePlan = this.settingsRestorer.buildRestorePlan(
+      advisorResult.advice || []
+    );
+
+    const guardianDecision = this.guardianCortex.decide(restorePlan, {
+      adviceList: advisorResult.advice || [],
+      userPreferences: dummyPrefs,
+      gpuContext: dummyGpuContext
+    });
+
+    this.healer.healSessionFlow({
+      advisorResult,
+      restorePlan,
+      autoDecision: guardianDecision,
+      notifications: [],
+      context: {
+        gameProfile: dummyGameProfile,
+        hardwareProfile: dummyHardwareProfile,
+        tierProfile: dummyTierProfile,
+        settings: dummySettings,
+        metrics: dummyMetrics,
+        userPreferences: dummyPrefs,
+        gpuContext: dummyGpuContext
+      }
+    });
+
+    // Insights + UX + Genetic Memory
+    this.insightsEngine.analyzeStepDurationsForGameAndHardware({
+      baselineTraces: [],
+      currentTraces: [],
+      gameId: dummyGameProfile.gameId,
+      gpuModel: dummyHardwareProfile.gpuModel
+    });
+
+    this.uxBridge.fromAdvisorResult(advisorResult);
+    this.uxBridge.fromRestorePlan(restorePlan);
+    this.uxBridge.fromInsights([]);
+
+    this.geneticMemory.recordObservation({
+      gameProfile: dummyGameProfile,
+      hardwareProfile: dummyHardwareProfile,
+      tierProfile: dummyTierProfile,
+      executionContext: buildExecutionContextFromSession({
+        metrics: dummyMetrics,
+        summary: {},
+        gpuContext: dummyGpuContext
+      }),
+      metrics: {},
+      traceSummary: buildTraceSummaryForGeneticMemory({
+        summary: {},
+        pressureSnapshot: null
+      })
+    });
+
+    return { prewarmed: true, meta: this.meta };
   }
 
   // ========================================================================
   // SESSION START — Reflex Boot + Sensory Activation
   // ========================================================================
   startSession(payload = {}) {
-    const { sessionId, gameProfile, hardwareProfile, tierProfile } = payload;
+    const {
+      sessionId,
+      gameProfile,
+      hardwareProfile,
+      tierProfile,
+      gpuContext
+    } = payload;
 
     const trace = this.sessionTracer.startSession({
       sessionId,
       gameProfile,
       hardwareProfile,
-      tierProfile
+      tierProfile,
+      gpuContext: gpuContext || null
     });
 
     this.eventEmitter.emit("session-started", {
       sessionId: trace.sessionId,
       gameProfile,
       hardwareProfile,
-      tierProfile
+      tierProfile,
+      gpuContext: gpuContext || null
     });
 
     return { sessionId: trace.sessionId };
@@ -208,13 +390,34 @@ class PulseGPUOrchestrator {
       tierProfile,
       metrics,
       settings,
-      userPreferences
+      userPreferences,
+      gpuContext
     } = payload;
 
     const trace = this.sessionTracer.endSession(sessionId);
     const summary = trace ? trace.getSummary() : null;
 
-    this.eventEmitter.emit("session-ended", { sessionId, summary });
+    // Session-level pressure snapshot (deterministic proxy from metrics or summary)
+    const pressureSnapshot =
+      summary && summary.stepCount > 0
+        ? buildPressureSnapshotFromStep({
+            gpuLoad: metrics?.gpuLoad,
+            cpuLoad: metrics?.cpuLoad,
+            stutters: summary.totalStutters,
+            vramUsageMB: metrics?.vramUsageMB
+          })
+        : buildPressureSnapshotFromStep({
+            gpuLoad: metrics?.gpuLoad,
+            cpuLoad: metrics?.cpuLoad,
+            stutters: metrics?.stutters,
+            vramUsageMB: metrics?.vramUsageMB
+          });
+
+    this.eventEmitter.emit("session-ended", {
+      sessionId,
+      summary,
+      pressureSnapshot
+    });
 
     // INSIGHTS — Wisdom Cortex
     const baselineTraces = [];
@@ -266,7 +469,8 @@ class PulseGPUOrchestrator {
     // GUARDIAN — Permission Cortex
     const guardianDecision = this.guardianCortex.decide(restorePlan, {
       adviceList: advisorResult.advice,
-      userPreferences: userPreferences || DEFAULT_USER_PREFERENCES
+      userPreferences: userPreferences || DEFAULT_USER_PREFERENCES,
+      gpuContext: gpuContext || null
     });
 
     this.eventEmitter.emit("guardian-decision", {
@@ -286,13 +490,40 @@ class PulseGPUOrchestrator {
         tierProfile,
         settings,
         metrics,
-        userPreferences: userPreferences || DEFAULT_USER_PREFERENCES
+        userPreferences: userPreferences || DEFAULT_USER_PREFERENCES,
+        gpuContext: gpuContext || null
       }
     });
 
     this.eventEmitter.emit("healing-report", {
       sessionId,
       healingReport
+    });
+
+    // GENETIC MEMORY — Long-Horizon Pattern Archive
+    const executionContext = buildExecutionContextFromSession({
+      metrics,
+      summary: summary || {},
+      gpuContext: gpuContext || null
+    });
+
+    const traceSummary = buildTraceSummaryForGeneticMemory({
+      summary: summary || {},
+      pressureSnapshot
+    });
+
+    const geneticMemoryEntry = this.geneticMemory.recordObservation({
+      gameProfile,
+      hardwareProfile,
+      tierProfile,
+      executionContext,
+      metrics: metrics || {},
+      traceSummary
+    });
+
+    this.eventEmitter.emit("genetic-memory-updated", {
+      sessionId,
+      geneticMemoryEntry
     });
 
     // UX BRIDGE — Cognitive Communication Layer
@@ -317,14 +548,21 @@ class PulseGPUOrchestrator {
       restorePlan,
       guardianDecision,
       healingReport,
-      notifications
+      geneticMemoryEntry,
+      notifications,
+      pressureSnapshot
     };
   }
 
   // ========================================================================
   // INSIGHTS ONLY — Explicit Call
   // ========================================================================
-  analyzeInsights({ baselineTraces = [], currentTraces = [], gameId, gpuModel }) {
+  analyzeInsights({
+    baselineTraces = [],
+    currentTraces = [],
+    gameId,
+    gpuModel
+  }) {
     let insights = [];
 
     try {
@@ -350,4 +588,7 @@ class PulseGPUOrchestrator {
 // ============================================================================
 // EXPORTS
 // ============================================================================
-export { PulseGPUOrchestrator, PULSE_GPU_ORCHESTRATOR_META_V11 };
+export {
+  PulseGPUOrchestrator,
+  PULSE_GPU_ORCHESTRATOR_META_V12_3
+};

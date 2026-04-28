@@ -1,6 +1,6 @@
 /**
- * PulseRuntime-v2-Evo.js
- * PULSE-X / RUNTIME / v2
+ * PulseRuntime-v2.3-PRESENCE-EVO+.js
+ * PULSE-X / RUNTIME / v2.3
  *
  * ROLE:
  *   v2 Runtime introduces:
@@ -20,6 +20,36 @@
  */
 
 // -------------------------
+// Meta
+// -------------------------
+
+export const PulseRuntimeV2Meta = Object.freeze({
+  organId: "PulseRuntime-v2.3-PRESENCE-EVO+",
+  role: "RUNTIME_SPINE",
+  version: "2.3-PRESENCE-EVO+",
+  epoch: "v12.3-PRESENCE-EVO+",
+  layer: "RuntimeCore",
+  safety: Object.freeze({
+    deterministic: true,
+    noRandomness: true,
+    noAsyncDrift: true,
+    syntheticOnly: true
+  }),
+  evo: Object.freeze({
+    presenceAware: true,        // region/host heatmaps, tick visibility
+    advantageAware: true,       // can surface advantage via meta/policy
+    dualbandSafe: true,         // symbolic-first, binary-backed
+    chunkAware: true,           // binary frames are chunk-friendly
+    cacheAware: true,           // runtime state is cacheable/introspectable
+    prewarmAware: true,         // CoreMemory.prewarm() at entry
+    meshAware: true,            // region/host heatmaps tie into mesh
+    expansionAware: true,       // multi-organism plans for Expansion/NodeAdmin
+    multiInstanceReady: true,
+    runtimeAware: true          // explicit runtime tick + introspection
+  })
+});
+
+// -------------------------
 // Imports
 // -------------------------
 
@@ -29,7 +59,7 @@ import * as PulseWorldFinality from "../PULSE-FINALITY/index.js";
 import MultiOrganismSupportAPI from "../PULSE-ORGANS/MultiOrganismSupport-v11-Evo.js";
 import ExecutionPhysicsAPI from "../PULSE-ORGANS/ExecutionPhysics-v11-Evo.js";
 
-import { createPulseCoreMemory } from "../PULSECORE/PulseCoreMemory.js";
+import { createPulseCoreMemory } from "../PULSE-CORE/PulseCoreMemory.js";
 
 import BinarySubstrateV2 from "./BinarySubstrate-v2.js";
 
@@ -150,21 +180,18 @@ export function runPulseTickV2({
 
   CoreMemory.set(ROUTE, KEY_LAST_POLICY, globalContinuancePolicy);
 
-  // World-level adjustment hook
   const adjustedContexts =
     PulseWorldRegioning.adjustInstanceContextsForWorld?.(
       instanceContexts,
       globalContinuancePolicy
     ) || instanceContexts;
 
-  // Build plan
   const multiPlan = buildMultiOrganismPlan(adjustedContexts);
   const multiPlanSummary = summarizeMultiOrganismPlan(multiPlan);
 
   CoreMemory.set(ROUTE, KEY_LAST_PLAN, multiPlan);
   CoreMemory.set(ROUTE, KEY_LAST_PLAN_SUMMARY, multiPlanSummary);
 
-  // Execute
   const executionResultsById = executeMultiOrganismPlan(
     multiPlan,
     currentStatesById
@@ -172,13 +199,11 @@ export function runPulseTickV2({
 
   CoreMemory.set(ROUTE, KEY_LAST_EXEC, executionResultsById);
 
-  // Track instance + region/host heatmaps
   for (const [id, state] of Object.entries(currentStatesById)) {
     trackInstance(id);
     trackRegionHost(state);
   }
 
-  // Binary pack
   const multiPlanFrame = packMultiOrganismPlan(multiPlan);
   trackFrameSize(multiPlanFrame);
 
@@ -196,7 +221,6 @@ export function runPulseTickV2({
 
   CoreMemory.set(ROUTE, KEY_LAST_FRAMES, binaryFrames);
 
-  // Finality hook
   PulseWorldFinality.onRuntimeTickCompleted?.({
     tick,
     multiPlan,
@@ -239,6 +263,7 @@ export function getRuntimeStateV2() {
 // -------------------------
 
 const PulseRuntimeV2 = {
+  meta: PulseRuntimeV2Meta,
   runPulseTickV2,
   getRuntimeStateV2,
   CoreMemory

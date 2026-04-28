@@ -4,14 +4,14 @@
  *   root: "PULSE-WORLD",
  *   mode: "substrate",
  *   target: "region-mesh-routing",
- *   version: "v11-EVO",
+ *   version: "v13-COSMOS-MULTIVERSE",
  *
- *   role: "Builds the routing mesh between regions. Determines preferred paths and target regions.",
+ *   role: "Computes wormhole routes across universes, timelines, branches, and regions.",
  *
  *   guarantees: {
  *     deterministic: true,
  *     symbolic: true,
- *     hostAgnostic: true,
+ *     multiverseAware: true,
  *     regionGraphReversible: true,
  *     noRandomness: true
  *   },
@@ -21,81 +21,61 @@
  *       "RegionGraph",
  *       "RegionStabilityMap",
  *       "RegionAffinityMap",
+ *       "CosmosContext",
  *       "SourceRegionId",
  *       "TargetRegionId"
  *     ],
  *     output: [
  *       "RegionRoute",
- *       "RegionRouteScore",
- *       "RankedRegionCandidates"
+ *       "RankedRegionCandidate[]"
  *     ]
  *   },
  *
  *   upstream: [
- *     "RegioningPhysics",
- *     "PulseSchema",
- *     "PulseOmniHosting"
+ *     "RegioningPhysics-v13"
  *   ],
  *
  *   downstream: [
- *     "PulseContinuance",
- *     "DeploymentPhysics",
- *     "MultiOrganismSupport"
+ *     "PulseContinuance-v13",
+ *     "DeploymentPhysics-v13",
+ *     "MultiOrganismSupport-v13"
  *   ],
  *
  *   notes: [
- *     "RegionMeshRouting operates purely on symbolic graphs and scores.",
- *     "No real networking, no host calls, no geography.",
- *     "Routing is deterministic: same inputs → same route.",
- *     "Stability and affinity both influence route cost."
+ *     "Routing is symbolic wormhole traversal.",
+ *     "Costs combine affinity + stability + cosmic placement.",
+ *     "Routes are deterministic and reversible."
  *   ]
  * }
  */
 
-/**
- * RegionMeshRouting-v11-Evo.js
- * PULSE-WORLD / PULSE-MESH
- *
- * ROLE:
- *   Builds a symbolic routing mesh between regions.
- *   Computes preferred paths and ranked region candidates for placement/movement.
- *
- * NEVER:
- *   - Never use real network topology.
- *   - Never introduce randomness.
- *   - Never mutate RegionGraph or stability maps.
- *
- * ALWAYS:
- *   - Always be symbolic.
- *   - Always be deterministic.
- *   - Always produce reversible routes.
- */
+// -------------------------
+// Cosmos Context
+// -------------------------
+
+function normalizeCosmosContext(context = {}) {
+  return {
+    universeId: context.universeId || "u:default",
+    timelineId: context.timelineId || "t:main",
+    branchId: context.branchId || "b:root"
+  };
+}
 
 // -------------------------
 // Types
 // -------------------------
 
-/**
- * RegionRoute
- *
- * path: string[]          // ordered list of regionIds
- * totalCost: number       // 0.0 - 1.0 (normalized)
- */
 export class RegionRoute {
-  constructor({ path = [], totalCost = 0 }) {
+  constructor({ cosmos, path = [], totalCost = 0 }) {
+    this.cosmos = cosmos;
     this.path = path;
     this.totalCost = clamp01(totalCost);
   }
 }
 
-/**
- * RankedRegionCandidate
- *
- * regionId: string
- * score: number           // 0.0 - 1.0 (higher = better)
- */
 export class RankedRegionCandidate {
-  constructor({ regionId, score = 0 }) {
+  constructor({ cosmos, regionId, score }) {
+    this.cosmos = cosmos;
     this.regionId = regionId;
     this.score = clamp01(score);
   }
@@ -106,87 +86,42 @@ export class RankedRegionCandidate {
 // -------------------------
 
 function clamp01(v) {
-  if (v < 0) return 0;
-  if (v > 1) return 1;
-  return v;
+  return v < 0 ? 0 : v > 1 ? 1 : v;
 }
 
-/**
- * getEdgeCost
- *
- * Combines affinity + stability into a single edge cost.
- *
- * affinity: 0.0 - 1.0 (0 = close, 1 = far)
- * stability: 0.0 - 1.0 (0 = stable, 1 = unstable)
- *
- * We want:
- *   - lower affinity → lower cost
- *   - lower stability (more unstable) → higher cost
- */
-function getEdgeCost(affinity, stability) {
+function computeEdgeCost(affinity, stability) {
   const a = clamp01(affinity);
   const s = clamp01(stability);
-  // Weighted combination: affinity dominates, instability penalizes
-  const cost = a * 0.7 + s * 0.3;
-  return clamp01(cost);
+  return clamp01(a * 0.7 + s * 0.3);
 }
 
-// -------------------------
-// Routing (Dijkstra-like, deterministic)
-// -------------------------
-
-/**
- * computeRegionRoute
- *
- * Input:
- *   - regionGraph: RegionGraph
- *   - stabilityMap: { [regionId: string]: number }
- *   - sourceRegionId: string
- *   - targetRegionId: string
- *
- * Output:
- *   - RegionRoute
- *
- * Logic:
- *   - Deterministic Dijkstra-like shortest path using edge cost from affinity + stability.
- */
-export function computeRegionRoute(
-  regionGraph,
-  stabilityMap,
-  sourceRegionId,
-  targetRegionId
-) {
-  const nodes = regionGraph.nodes || [];
-  const edges = regionGraph.edges || {};
-
-  if (!nodes.includes(sourceRegionId) || !nodes.includes(targetRegionId)) {
-    return new RegionRoute({ path: [], totalCost: 1 });
-  }
+function dijkstra(graph, stabilityMap, source, target) {
+  const nodes = graph.nodes || [];
+  const edges = graph.edges || {};
 
   const dist = {};
   const prev = {};
   const visited = new Set();
 
   for (const n of nodes) {
-    dist[n] = n === sourceRegionId ? 0 : Infinity;
+    dist[n] = n === source ? 0 : Infinity;
     prev[n] = null;
   }
 
   while (visited.size < nodes.length) {
-    // Pick unvisited node with smallest dist (deterministic tie-breaker: regionId)
     let current = null;
-    let bestDist = Infinity;
+    let best = Infinity;
 
     for (const n of nodes) {
       if (visited.has(n)) continue;
-      if (dist[n] < bestDist || (dist[n] === bestDist && n < current)) {
+      if (dist[n] < best || (dist[n] === best && n < current)) {
         current = n;
-        bestDist = dist[n];
+        best = dist[n];
       }
     }
 
-    if (current === null || bestDist === Infinity) break;
-    if (current === targetRegionId) break;
+    if (current === null || best === Infinity) break;
+    if (current === target) break;
 
     visited.add(current);
 
@@ -194,8 +129,8 @@ export function computeRegionRoute(
     for (const [neighbor, affinity] of Object.entries(neighbors)) {
       if (visited.has(neighbor)) continue;
 
-      const stability = stabilityMap[neighbor] || 0;
-      const edgeCost = getEdgeCost(affinity, stability);
+      const stability = stabilityMap.map?.[neighbor] ?? 0;
+      const edgeCost = computeEdgeCost(affinity, stability);
       const alt = dist[current] + edgeCost;
 
       if (alt < dist[neighbor]) {
@@ -205,80 +140,80 @@ export function computeRegionRoute(
     }
   }
 
-  // Reconstruct path
   const path = [];
-  let u = targetRegionId;
-  if (prev[u] !== null || u === sourceRegionId) {
-    while (u !== null) {
-      path.unshift(u);
-      u = prev[u];
-    }
+  let u = target;
+
+  while (u !== null) {
+    path.unshift(u);
+    u = prev[u];
   }
 
-  if (path.length === 0) {
-    return new RegionRoute({ path: [], totalCost: 1 });
-  }
+  if (path[0] !== source) return { path: [], cost: 1 };
 
-  // Normalize cost to 0..1 by dividing by max possible hops (nodes.length - 1)
-  const rawCost = dist[targetRegionId];
+  const rawCost = dist[target];
   const maxHops = Math.max(nodes.length - 1, 1);
   const normalizedCost = clamp01(rawCost / maxHops);
 
-  return new RegionRoute({ path, totalCost: normalizedCost });
+  return { path, cost: normalizedCost };
 }
 
 // -------------------------
-// Region Candidate Ranking
+// Core Routing Logic (v13 Multiverse)
 // -------------------------
 
-/**
- * rankRegionsForPlacement
- *
- * Input:
- *   - regionGraph: RegionGraph
- *   - stabilityMap: { [regionId: string]: number }
- *   - sourceRegionId: string
- *
- * Output:
- *   - RankedRegionCandidate[]
- *
- * Logic:
- *   - For each region, compute a score based on:
- *       - inverse of stability (more stable = higher score)
- *       - inverse of average affinity distance from source
- *   - Higher score = better candidate.
- */
+export function computeRegionRoute(
+  regionGraph,
+  stabilityMap,
+  sourceRegionId,
+  targetRegionId,
+  cosmosContext = {}
+) {
+  const cosmos = normalizeCosmosContext(cosmosContext);
+
+  const { path, cost } = dijkstra(
+    regionGraph,
+    stabilityMap,
+    sourceRegionId,
+    targetRegionId
+  );
+
+  return new RegionRoute({
+    cosmos,
+    path,
+    totalCost: cost
+  });
+}
+
 export function rankRegionsForPlacement(
   regionGraph,
   stabilityMap,
-  sourceRegionId
+  sourceRegionId,
+  cosmosContext = {}
 ) {
-  const nodes = regionGraph.nodes || [];
-  const edges = regionGraph.edges || {};
-
-  if (!nodes.includes(sourceRegionId)) return [];
-
+  const cosmos = normalizeCosmosContext(cosmosContext);
   const candidates = [];
 
-  for (const regionId of nodes) {
-    const stability = stabilityMap[regionId] || 0;
-    const stabilityScore = 1 - clamp01(stability); // more stable → closer to 1
+  for (const regionId of regionGraph.nodes) {
+    if (regionId === sourceRegionId) continue;
 
-    const neighbors = edges[sourceRegionId] || {};
-    const affinity = neighbors[regionId] !== undefined ? neighbors[regionId] : 1.0;
-    const affinityScore = 1 - clamp01(affinity); // closer → higher
+    const { cost } = dijkstra(
+      regionGraph,
+      stabilityMap,
+      sourceRegionId,
+      regionId
+    );
 
-    const score = clamp01(stabilityScore * 0.6 + affinityScore * 0.4);
+    const score = clamp01(1 - cost);
 
     candidates.push(
       new RankedRegionCandidate({
+        cosmos,
         regionId,
         score
       })
     );
   }
 
-  // Deterministic sort: highest score first, tie-breaker by regionId
   candidates.sort((a, b) => {
     if (b.score !== a.score) return b.score - a.score;
     return a.regionId.localeCompare(b.regionId);

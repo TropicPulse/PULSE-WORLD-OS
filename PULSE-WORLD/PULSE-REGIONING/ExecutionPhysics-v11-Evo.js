@@ -4,13 +4,14 @@
  *   root: "PULSE-WORLD",
  *   mode: "substrate",
  *   target: "symbolic-execution",
- *   version: "v11-EVO",
+ *   version: "v13-COSMOS-MULTIVERSE",
  *
- *   role: "Executes symbolic deployment plans against symbolic instance state. Produces new state + logs.",
+ *   role: "Executes symbolic deployment plans across universes, timelines, and branches. Produces new state + logs.",
  *
  *   guarantees: {
  *     deterministic: true,
  *     symbolic: true,
+ *     multiverseAware: true,
  *     regionAware: true,
  *     hostAgnostic: true,
  *     noRandomness: true,
@@ -19,7 +20,7 @@
  *
  *   contracts: {
  *     input: [
- *       "DeploymentPlan",
+ *       "DeploymentPlan (multiverse-aware)",
  *       "CurrentInstanceState"
  *     ],
  *     output: [
@@ -29,7 +30,7 @@
  *   },
  *
  *   upstream: [
- *     "DeploymentPhysics",
+ *     "DeploymentPhysics-v13",
  *     "MultiOrganismSupport",
  *     "LineageEngine",
  *     "SnapshotPhysics"
@@ -40,63 +41,31 @@
  *   ],
  *
  *   notes: [
- *     "ExecutionPhysics is symbolic only; no real infra calls.",
+ *     "ExecutionPhysics v13 is symbolic only; no real infra calls.",
  *     "It applies actions to state and emits logs.",
- *     "Perfectly suited for binary packing: small, fixed, deterministic."
+ *     "Multiverse-aware but physics-pure.",
+ *     "Perfect for binary packing: small, fixed, deterministic."
  *   ]
  * }
- */
-
-/**
- * ExecutionPhysics-v11-Evo.js
- * PULSE-WORLD / PULSE-EXECUTION
- *
- * ROLE:
- *   Apply DeploymentPlan actions to CurrentInstanceState symbolically.
- *   Emit:
- *     - new CurrentInstanceState
- *     - execution log
- *
- * NEVER:
- *   - Never talk to real servers.
- *   - Never perform real I/O.
- *   - Never introduce randomness.
- *
- * ALWAYS:
- *   - Always be symbolic.
- *   - Always be deterministic.
- *   - Always be reversible (via lineage + snapshots).
  */
 
 // -------------------------
 // Types
 // -------------------------
 
-/**
- * ExecutionLogEntry
- *
- * instanceId: string
- * actionType: string
- * details: object
- */
 export class ExecutionLogEntry {
-  constructor({ instanceId, actionType, details = {} }) {
+  constructor({ instanceId, actionType, cosmos, details = {} }) {
     this.instanceId = instanceId;
     this.actionType = actionType;
+    this.cosmos = cosmos; // { universeId, timelineId, branchId }
     this.details = details;
   }
 }
 
-/**
- * ExecutionResult
- *
- * instanceId: string
- * newState: CurrentInstanceState
- * logs: ExecutionLogEntry[]
- */
 export class ExecutionResult {
-  constructor({ instanceId, newState, logs = [] }) {
+  constructor({ instanceId, cosmos, newState, logs = [] }) {
     this.instanceId = instanceId;
+    this.cosmos = cosmos;
     this.newState = newState;
     this.logs = logs;
   }
@@ -106,35 +75,56 @@ export class ExecutionResult {
 // Imports (logical)
 // -------------------------
 
-// Wire these to your actual modules.
 import { CurrentInstanceState } from "./LineageEngine-v11-Evo.js";
-import DeploymentPhysicsAPI from "./DeploymentPhysics-v11-Evo.js";
+import DeploymentPhysicsAPI from "./DeploymentPhysics-v13-COSMOS-MULTIVERSE.js";
 import MultiOrganismSupportAPI from "./MultiOrganismSupport-v11-Evo.js";
 
 const { DeploymentActionType } = DeploymentPhysicsAPI;
 const { MultiOrganismPlan } = MultiOrganismSupportAPI;
 
 // -------------------------
-// Core Execution Logic
+// Helpers
 // -------------------------
 
-/**
- * applyDeploymentActionToState
- *
- * Pure function:
- *   - takes CurrentInstanceState + DeploymentAction
- *   - returns NEW CurrentInstanceState
- */
-export function applyDeploymentActionToState(currentState, action) {
+function normalizeCosmosContext(context = {}) {
+  return {
+    universeId: context.universeId || "u:default",
+    timelineId: context.timelineId || "t:main",
+    branchId: context.branchId || "b:root"
+  };
+}
+
+// -------------------------
+// Core Execution Logic (v13 Multiverse)
+// -------------------------
+
+export function applyDeploymentActionToState(currentState, action, cosmos) {
   const base = new CurrentInstanceState({
     instanceId: currentState.instanceId,
     active: currentState.active,
     currentRegionId: currentState.currentRegionId,
     currentHostName: currentState.currentHostName,
-    mergedInto: currentState.mergedInto
+    mergedInto: currentState.mergedInto,
+
+    // v13 multiverse placement
+    universeId: currentState.universeId || "u:default",
+    timelineId: currentState.timelineId || "t:main",
+    branchId: currentState.branchId || "b:root"
   });
 
   switch (action.type) {
+    case DeploymentActionType.MOVE_UNIVERSE:
+      base.universeId = action.universeId;
+      return base;
+
+    case DeploymentActionType.MOVE_TIMELINE:
+      base.timelineId = action.timelineId;
+      return base;
+
+    case DeploymentActionType.MOVE_BRANCH:
+      base.branchId = action.branchId;
+      return base;
+
     case DeploymentActionType.MOVE_REGION:
       base.currentRegionId = action.regionId;
       return base;
@@ -144,12 +134,9 @@ export function applyDeploymentActionToState(currentState, action) {
       return base;
 
     case DeploymentActionType.RESTART_INSTANCE:
-      // Symbolic restart: stays active, no field change here.
       return base;
 
     case DeploymentActionType.SPAWN_INSTANCE:
-      // ExecutionPhysics does not create new instances itself;
-      // it just logs that a spawn is requested.
       return base;
 
     case DeploymentActionType.RETIRE_INSTANCE:
@@ -157,8 +144,6 @@ export function applyDeploymentActionToState(currentState, action) {
       return base;
 
     case DeploymentActionType.APPLY_DELTA:
-      // DeltaPatch already applied at Snapshot/Deployment level;
-      // here we only care about placement state.
       return base;
 
     case DeploymentActionType.NO_OP:
@@ -167,28 +152,23 @@ export function applyDeploymentActionToState(currentState, action) {
   }
 }
 
-/**
- * executeDeploymentPlan
- *
- * Input:
- *   - plan: DeploymentPlan
- *   - currentState: CurrentInstanceState
- *
- * Output:
- *   - ExecutionResult
- */
 export function executeDeploymentPlan(plan, currentState) {
+  const cosmos = normalizeCosmosContext(plan.cosmos || {});
   let state = currentState;
   const logs = [];
 
   for (const action of plan.actions) {
-    const newState = applyDeploymentActionToState(state, action);
+    const newState = applyDeploymentActionToState(state, action, cosmos);
 
     logs.push(
       new ExecutionLogEntry({
         instanceId: state.instanceId,
         actionType: action.type,
+        cosmos,
         details: {
+          universeId: action.universeId || null,
+          timelineId: action.timelineId || null,
+          branchId: action.branchId || null,
           regionId: action.regionId || null,
           hostName: action.hostName || null,
           meta: action.meta || null
@@ -201,45 +181,31 @@ export function executeDeploymentPlan(plan, currentState) {
 
   return new ExecutionResult({
     instanceId: state.instanceId,
+    cosmos,
     newState: state,
     logs
   });
 }
 
 // -------------------------
-// Multi-Organism Execution
+// Multi-Organism Execution (v13 Multiverse)
 // -------------------------
 
-/**
- * executeMultiOrganismPlan
- *
- * Input:
- *   - multiPlan: MultiOrganismPlan
- *   - currentStatesById: { [instanceId: string]: CurrentInstanceState }
- *
- * Output:
- *   - { [instanceId: string]: ExecutionResult }
- */
 export function executeMultiOrganismPlan(multiPlan, currentStatesById) {
   if (!(multiPlan instanceof MultiOrganismPlan)) {
     throw new Error("executeMultiOrganismPlan: expected MultiOrganismPlan");
   }
 
+  const cosmos = normalizeCosmosContext(multiPlan.cosmos || {});
   const results = {};
 
   for (const bundle of multiPlan.instances) {
     const instanceId = bundle.instanceId;
     const currentState = currentStatesById[instanceId];
 
-    if (!currentState) {
-      continue; // or log missing state symbolically
-    }
+    if (!currentState) continue;
 
-    const execResult = executeDeploymentPlan(
-      bundle.deploymentPlan,
-      currentState
-    );
-
+    const execResult = executeDeploymentPlan(bundle.deploymentPlan, currentState);
     results[instanceId] = execResult;
   }
 

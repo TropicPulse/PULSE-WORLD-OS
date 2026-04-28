@@ -1,19 +1,19 @@
 // ============================================================================
-// FILE: /apps/PulseOS/Core/PulseSDN-Prewarm-v12-EVO.js
+// FILE: /apps/PulseOS/Core/PulseSDN-Prewarm-v12.3-PRESENCE.js
 // LAYER: SDN PREWARM ENGINE (Spinal Reflex Ignition)
 // ============================================================================
 //
 // ROLE:
 //   • Prewarm SDN (Spinal Distributed Network) internal pathways.
 //   • Warm reflex arcs, impulse routes, extension registry, dual-band paths,
-//     pressure snapshots, dispatch signatures, and fallback routes.
+//     pressure snapshots, dispatch signatures, fallback routes, and presence paths.
 //   • NO cognition, NO evolution, NO external mutation.
 //   • Pure, deterministic, CNS warm-up.
 //
 // CONTRACT:
 //   • MAY touch SDN internal APIs (registerExtension, emitImpulse, etc.).
 //   • MAY simulate impulses with synthetic packets.
-//   • MAY pre-register extensions (Understanding, Mesh, Send, Earn, etc.).
+//   • MAY pre-register extensions (Understanding, Mesh, Send, Earn, Presence, etc.).
 //   • MUST NOT mutate external systems or persistent state.
 //   • MUST NOT introduce randomness or autonomy.
 // ============================================================================
@@ -21,8 +21,8 @@
 export const SDNPrewarmMeta = Object.freeze({
   layer: "PulseSDN",
   role: "SDN_PREWARM_ENGINE",
-  version: "12.0-EVO",
-  identity: "PulseSDN-Prewarm-v12-EVO",
+  version: "12.3-EVO-PRESENCE",
+  identity: "PulseSDN-Prewarm-v12.3-EVO-PRESENCE",
   evo: Object.freeze({
     spinalReflexIgnition: true,
     dualBandAware: true,
@@ -30,6 +30,8 @@ export const SDNPrewarmMeta = Object.freeze({
     pressureAware: true,
     dispatchAware: true,
     fallbackAware: true,
+    presenceAware: true,
+    advantageFieldAware: true,
     driftProof: true,
     deterministic: true,
     readOnly: true
@@ -52,14 +54,14 @@ export function prewarmSDN(SDN) {
 
   try {
     // -----------------------------------------------------------------------
-    // 1) Warm Extension Registry
-    // -----------------------------------------------------------------------
+    // 1) Warm Extension Registry (v12.3 Presence-aware)
+// -----------------------------------------------------------------------
     const extensionsToPrewarm = [
       {
         name: "Understanding",
         kind: "extension",
         meta: {
-          version: "v12",
+          version: "v12.3-PRESENCE",
           role: "cortical-opener",
           layer: "A3",
           binaryFirst: true,
@@ -92,6 +94,17 @@ export function prewarmSDN(SDN) {
           role: "value-organ",
           layer: "V1"
         }
+      },
+      {
+        name: "Presence",
+        kind: "extension",
+        meta: {
+          version: "v12.3",
+          role: "presence-field-organ",
+          layer: "P1",
+          presenceFieldAware: true,
+          dualBandPresence: true
+        }
       }
     ];
 
@@ -106,8 +119,8 @@ export function prewarmSDN(SDN) {
     }
 
     // -----------------------------------------------------------------------
-    // 2) Warm Dual-Band Impulse Pathways
-    // -----------------------------------------------------------------------
+    // 2) Warm Dual-Band Impulse Pathways (core + presence)
+// -----------------------------------------------------------------------
     const dualBandImpulses = [
       {
         source: "PrewarmEngine",
@@ -119,6 +132,24 @@ export function prewarmSDN(SDN) {
             dispatchSignature: "SDN.dual-band-prewarm",
             shapeSignature: "SDN-A1",
             extensionId: "Understanding",
+            identityKind: "none"
+          },
+          pressureSnapshot: {
+            runtime: "prewarm",
+            online: true
+          }
+        }
+      },
+      {
+        source: "PrewarmEngine",
+        packet: {
+          modeKind: "dual",
+          executionContext: {
+            sceneType: "presence-prewarm",
+            workloadClass: "presence-dual-band",
+            dispatchSignature: "SDN.presence.dual-band-prewarm",
+            shapeSignature: "P1",
+            extensionId: "Presence",
             identityKind: "none"
           },
           pressureSnapshot: {
@@ -141,7 +172,7 @@ export function prewarmSDN(SDN) {
 
     // -----------------------------------------------------------------------
     // 3) Warm Reflex Arcs (touch / pressure / identity-safe)
-    // -----------------------------------------------------------------------
+// -----------------------------------------------------------------------
     const reflexImpulses = [
       {
         source: "PrewarmEngine",
@@ -193,7 +224,7 @@ export function prewarmSDN(SDN) {
 
     // -----------------------------------------------------------------------
     // 4) Warm Fallback Paths (binary ↔ symbolic)
-    // -----------------------------------------------------------------------
+// -----------------------------------------------------------------------
     const fallbackImpulses = [
       {
         source: "PrewarmEngine",
@@ -216,19 +247,19 @@ export function prewarmSDN(SDN) {
       {
         source: "PrewarmEngine",
         packet: {
-            modeKind: "fallback",
-            executionContext: {
-              sceneType: "fallback-prewarm",
-              workloadClass: "symbolic-fallback",
-              dispatchSignature: "SDN.fallback.symbolic",
-              shapeSignature: "F2",
-              extensionId: "Understanding",
-              identityKind: "none"
-            },
-            pressureSnapshot: {
-              runtime: "prewarm",
-              online: true
-            }
+          modeKind: "fallback",
+          executionContext: {
+            sceneType: "fallback-prewarm",
+            workloadClass: "symbolic-fallback",
+            dispatchSignature: "SDN.fallback.symbolic",
+            shapeSignature: "F2",
+            extensionId: "Understanding",
+            identityKind: "none"
+          },
+          pressureSnapshot: {
+            runtime: "prewarm",
+            online: true
+          }
         }
       }
     ];
@@ -244,8 +275,7 @@ export function prewarmSDN(SDN) {
     }
 
     // -----------------------------------------------------------------------
-    // 5) Warm Dispatch Signatures / Workload Classes
-    //    (by touching a small variety of executionContext shapes)
+    // 5) Warm Dispatch Signatures / Workload Classes (incl. presence)
 // -----------------------------------------------------------------------
     const dispatchImpulses = [
       {
@@ -255,7 +285,7 @@ export function prewarmSDN(SDN) {
           executionContext: {
             sceneType: "cortical-opener",
             workloadClass: "frontend-boot",
-            dispatchSignature: "Understanding.v12-EVO-MAX",
+            dispatchSignature: "Understanding.v12.3-EVO-PRESENCE",
             shapeSignature: "A3-layer",
             extensionId: "Understanding",
             identityKind: "none"
@@ -276,6 +306,24 @@ export function prewarmSDN(SDN) {
             dispatchSignature: "Mesh.v11-boot",
             shapeSignature: "M1-layer",
             extensionId: "Mesh",
+            identityKind: "none"
+          },
+          pressureSnapshot: {
+            runtime: "prewarm",
+            online: true
+          }
+        }
+      },
+      {
+        source: "PrewarmEngine",
+        packet: {
+          modeKind: "dual",
+          executionContext: {
+            sceneType: "presence-field",
+            workloadClass: "presence-boot",
+            dispatchSignature: "Presence.v12.3-field",
+            shapeSignature: "P1-layer",
+            extensionId: "Presence",
             identityKind: "none"
           },
           pressureSnapshot: {

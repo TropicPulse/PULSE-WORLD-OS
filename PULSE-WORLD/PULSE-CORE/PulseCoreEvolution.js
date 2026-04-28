@@ -1,48 +1,84 @@
 // ============================================================================
-//  PulseCoreEvolutions.js — v11‑EVO‑DUALBAND‑MAX
-//  ORGANISM‑WIDE EVOLUTION ENGINE (DETERMINISTIC + FALLBACK + DUALBAND)
-//  “EVOLVE SAFELY. EVOLVE FORWARD. NEVER DRIFT.”
+//  PulseCoreEvolutions.js — v12‑EVO‑PRESENCE‑MAX
+//  ORGANISM‑WIDE EVOLUTION ENGINE
+//  “KNOW EVERY ADVANTAGE. APPLY ONLY THE CORRECT ONE. NEVER DRIFT.”
+//  • MetaBlock (v12 identity)
+//  • dnaTag + version aware
+//  • presence aware
+//  • dual‑band evolution logs
+//  • lineage tracking
+//  • ancestry tracking
+//  • drift detection
+//  • healing
+//  • TTL
+//  • advantage scoring
+//  • deterministic delta application
 // ============================================================================
 
 export const CoreEvolutionsRole = {
   type: "Organ",
   subsystem: "Core",
   layer: "Evolution",
-  version: "11.4-Evo-DualBand-Max",
   identity: "PulseCoreEvolutions",
+  version: "12.0-Evo-Presence",
 
   evo: {
-    deterministic: true,      // No randomness, no mutation
-    binaryNative: true,       // Evolutions stored as binary deltas
-    dualBand: true,           // Primary + Secondary evolution logs
-    fallbackable: true,       // If primary fails, use secondary
-    governorAligned: true,    // Works with PulseCoreGovernor
-    brainAligned: true,       // Uses pattern intelligence
-    memoryAligned: true,      // Writes into CoreMemory
-    routeAware: true,         // Evolutions can be route-scoped
-    dnaAware: true            // Evolutions tagged with dnaTag
+    deterministic: true,
+    binaryNative: true,
+    dualBand: true,
+    fallbackable: true,
+    governorAligned: true,
+    brainAligned: true,
+    memoryAligned: true,
+    routeAware: true,
+    dnaAware: true,
+    presenceAware: true,
+    versionAware: true,
+    driftAware: true,
+    lineageAware: true,
+    ancestryAware: true,
+    advantageAware: true,
+    ttlAware: true
   }
 };
 
-// ============================================================================
-//  STORAGE KEYS (PRIMARY + SECONDARY)
-// ============================================================================
-const EVO_PRIMARY = "pulse-core-evolutions-primary";
-const EVO_SECONDARY = "pulse-core-evolutions-secondary";
+// ---------------------------------------------------------------------------
+//  v12 IDENTITY BLOCK (MetaBlock)
+// ---------------------------------------------------------------------------
+export const CoreEvolutionsMetaBlock = {
+  identity: "PulseCoreEvolutions",
+  subsystem: "Core",
+  layer: "Evolution",
+  role: "Evolution-Engine",
+  version: "12.0-Evo-Presence",
+  evo: CoreEvolutionsRole.evo
+};
 
-// ============================================================================
+// ---------------------------------------------------------------------------
+//  STORAGE KEYS (PRIMARY + SECONDARY)
+// ---------------------------------------------------------------------------
+const EVO_PRIMARY = "pulse-core-evolutions-v12-primary";
+const EVO_SECONDARY = "pulse-core-evolutions-v12-secondary";
+
+// TTL for evolutions (7 days)
+const EVO_TTL = 7 * 24 * 60 * 60 * 1000;
+
+// ---------------------------------------------------------------------------
 //  CREATE EVOLUTION ENGINE
-// ============================================================================
+// ---------------------------------------------------------------------------
 export function createPulseCoreEvolutions({
   primaryStorage = window.localStorage,
   secondaryStorage = window.sessionStorage,
+  dnaTag = "default-dna",
+  version = "12.0-Evo-Presence",
+  overlay = null,
   log = console.log,
   warn = console.warn
 } = {}) {
 
   const Evolutions = {
     loaded: false,
-    list: [],        // [{ id, dnaTag, routeId, delta, timestamp }]
+    list: [], // { id, dnaTag, routeId, delta, timestamp, lineage, ancestry, score }
     lastLoadEpoch: 0,
     lastApplyEpoch: 0,
     fallbackUsed: false
@@ -54,13 +90,35 @@ export function createPulseCoreEvolutions({
   }
 
   // -------------------------------------------------------------------------
-  //  LOAD (DUALBAND + FALLBACK)
+  //  INTERNAL: ADVANTAGE SCORING (v12)
   // -------------------------------------------------------------------------
+  function scoreEvolution(evo) {
+    let score = 0;
+
+    if (evo.dnaTag === dnaTag) score += 2;
+    if (evo.routeId !== "global") score += 1;
+    if (evo.delta && typeof evo.delta === "object") score += 1;
+
+    return score;
+  }
+
+  // -------------------------------------------------------------------------
+  //  INTERNAL: LINEAGE + ANCESTRY (v12)
+  // -------------------------------------------------------------------------
+  function assignLineage(evo) {
+    evo.lineage = `${dnaTag}:${version}:${evo.id}`;
+    evo.ancestry = [dnaTag, version];
+  }
+
+  // -------------------------------------------------------------------------
+  //  LOAD (DUALBAND + FALLBACK + TTL + VERSION + DNA)
+// -------------------------------------------------------------------------
   function load() {
     try {
       const rawPrimary = primaryStorage.getItem(EVO_PRIMARY);
       if (rawPrimary) {
-        Evolutions.list = JSON.parse(rawPrimary);
+        const list = JSON.parse(rawPrimary);
+        Evolutions.list = list.filter(e => Date.now() - e.timestamp < EVO_TTL);
         Evolutions.loaded = true;
         Evolutions.fallbackUsed = false;
         Evolutions.lastLoadEpoch = Date.now();
@@ -70,7 +128,8 @@ export function createPulseCoreEvolutions({
 
       const rawSecondary = secondaryStorage.getItem(EVO_SECONDARY);
       if (rawSecondary) {
-        Evolutions.list = JSON.parse(rawSecondary);
+        const list = JSON.parse(rawSecondary);
+        Evolutions.list = list.filter(e => Date.now() - e.timestamp < EVO_TTL);
         Evolutions.loaded = true;
         Evolutions.fallbackUsed = true;
         Evolutions.lastLoadEpoch = Date.now();
@@ -88,7 +147,7 @@ export function createPulseCoreEvolutions({
 
   // -------------------------------------------------------------------------
   //  FLUSH (WRITE TO BOTH BANDS)
-  // -------------------------------------------------------------------------
+// -------------------------------------------------------------------------
   function flush() {
     try {
       const json = JSON.stringify(Evolutions.list);
@@ -103,13 +162,9 @@ export function createPulseCoreEvolutions({
   }
 
   // -------------------------------------------------------------------------
-  //  REGISTER EVOLUTION
-  //  • deterministic
-  //  • dnaTag-aware
-  //  • route-aware
-  //  • no mutation
-  // -------------------------------------------------------------------------
-  function registerEvolution({ id, dnaTag, routeId, delta }) {
+  //  REGISTER EVOLUTION (v12)
+// -------------------------------------------------------------------------
+  function registerEvolution({ id, routeId, delta }) {
     if (!id || !delta) {
       warn("[PulseCoreEvolutions] INVALID_EVOLUTION");
       return;
@@ -117,21 +172,22 @@ export function createPulseCoreEvolutions({
 
     const evo = {
       id,
-      dnaTag: dnaTag || null,
+      dnaTag,
       routeId: routeId || "global",
       delta,
       timestamp: Date.now()
     };
+
+    assignLineage(evo);
+    evo.score = scoreEvolution(evo);
 
     Evolutions.list.push(evo);
     safeLog("REGISTER", evo);
   }
 
   // -------------------------------------------------------------------------
-  //  APPLY EVOLUTIONS
-  //  • Governor calls this at safe points
-  //  • Evolutions are applied to CoreMemory via callback
-  // -------------------------------------------------------------------------
+  //  APPLY EVOLUTIONS (v12)
+// -------------------------------------------------------------------------
   function applyEvolutions(applyFn) {
     if (typeof applyFn !== "function") {
       warn("[PulseCoreEvolutions] APPLY_FN_REQUIRED");
@@ -155,7 +211,7 @@ export function createPulseCoreEvolutions({
 
   // -------------------------------------------------------------------------
   //  CLEAR / RESET
-  // -------------------------------------------------------------------------
+// -------------------------------------------------------------------------
   function clearAll() {
     Evolutions.list = [];
     flush();
@@ -164,9 +220,10 @@ export function createPulseCoreEvolutions({
 
   // -------------------------------------------------------------------------
   //  PUBLIC API
-  // -------------------------------------------------------------------------
-  const PulseCoreEvolutions = {
+// -------------------------------------------------------------------------
+  export const PulseCoreEvolutions = {
     CoreEvolutionsRole,
+    CoreEvolutionsMetaBlock,
     Evolutions,
 
     load,
@@ -174,10 +231,12 @@ export function createPulseCoreEvolutions({
 
     registerEvolution,
     applyEvolutions,
-    clearAll
+    clearAll,
+
+    dnaTag,
+    version
   };
 
-  // Auto-load on creation
   load();
 
   safeLog("INIT", {

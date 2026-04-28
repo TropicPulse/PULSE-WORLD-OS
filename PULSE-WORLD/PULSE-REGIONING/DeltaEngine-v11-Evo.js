@@ -4,23 +4,25 @@
  *   root: "PULSE-WORLD",
  *   mode: "substrate",
  *   target: "organism-delta",
- *   version: "v11-EVO",
+ *   version: "v13-COSMOS-MULTIVERSE",
  *
- *   role: "Computes symbolic diffs between snapshots. Produces minimal change pulses.",
+ *   role: "Computes symbolic diffs between snapshots across universes, timelines, and branches.",
  *
  *   guarantees: {
  *     deterministic: true,
  *     symbolic: true,
  *     hostAgnostic: true,
  *     regionAware: true,
- *     noRandomness: true,
- *     reversible: true
+ *     multiverseAware: true,
+ *     reversible: true,
+ *     noRandomness: true
  *   },
  *
  *   contracts: {
  *     input: [
  *       "SnapshotRecord(before)",
- *       "SnapshotRecord(after)"
+ *       "SnapshotRecord(after)",
+ *       "CosmosContext { universeId, timelineId, branchId }"
  *     ],
  *     output: [
  *       "DeltaRecord",
@@ -37,49 +39,22 @@
  *   downstream: [
  *     "DeploymentPhysics",
  *     "MultiOrganismSupport",
- *     "PulseContinuance"
+ *     "PulseContinuance",
+ *     "DeltaEngine-CosmosMultiverse"
  *   ],
  *
  *   notes: [
- *     "DeltaEngine produces symbolic patches, not byte-level diffs.",
- *     "Delta patches are reversible: apply(before, delta) = after.",
- *     "DeltaEngine is the core of Pulse-based minimal updates."
+ *     "DeltaEngine v13 is multiverse-aware but physics-pure.",
+ *     "Cosmos context is metadata-only; no behavioral drift.",
+ *     "Delta patches remain reversible across universes."
  *   ]
  * }
- */
-
-/**
- * DeltaEngine-v11-Evo.js
- * PULSE-WORLD / PULSE-DELTA
- *
- * ROLE:
- *   Compare two snapshots and produce:
- *     - minimal symbolic delta
- *     - summary of changes
- *     - reversible patch
- *
- * NEVER:
- *   - Never diff heavy payloads.
- *   - Never depend on real time.
- *   - Never introduce randomness.
- *
- * ALWAYS:
- *   - Always be symbolic.
- *   - Always be deterministic.
- *   - Always be reversible.
  */
 
 // -------------------------
 // Types
 // -------------------------
 
-/**
- * DeltaFieldChange
- *
- * field: string
- * before: any
- * after: any
- */
 export class DeltaFieldChange {
   constructor({ field, before, after }) {
     this.field = field;
@@ -88,54 +63,34 @@ export class DeltaFieldChange {
   }
 }
 
-/**
- * DeltaRecord
- *
- * instanceId: string
- * snapshotBeforeId: string
- * snapshotAfterId: string
- * changes: DeltaFieldChange[]
- */
 export class DeltaRecord {
   constructor({
     instanceId,
     snapshotBeforeId,
     snapshotAfterId,
+    cosmos,
     changes = []
   }) {
     this.instanceId = instanceId;
     this.snapshotBeforeId = snapshotBeforeId;
     this.snapshotAfterId = snapshotAfterId;
+    this.cosmos = cosmos; // { universeId, timelineId, branchId }
     this.changes = changes;
   }
 }
 
-/**
- * DeltaSummary
- *
- * instanceId: string
- * totalChanges: number
- * changedFields: string[]
- */
 export class DeltaSummary {
-  constructor({ instanceId, totalChanges, changedFields }) {
+  constructor({ instanceId, cosmos, totalChanges, changedFields }) {
     this.instanceId = instanceId;
+    this.cosmos = cosmos;
     this.totalChanges = totalChanges;
     this.changedFields = changedFields;
   }
 }
 
-/**
- * DeltaPatch
- *
- * A reversible patch:
- *   - applyPatch(before, patch) → after
- *   - applyPatch(after, reverse(patch)) → before
- *
- * patch: { [field: string]: any }
- */
 export class DeltaPatch {
-  constructor({ patch = {} }) {
+  constructor({ cosmos, patch = {} }) {
+    this.cosmos = cosmos;
     this.patch = patch;
   }
 }
@@ -152,8 +107,16 @@ function clone(obj) {
   return JSON.parse(JSON.stringify(obj));
 }
 
+function normalizeCosmosContext(context = {}) {
+  return {
+    universeId: context.universeId || "u:default",
+    timelineId: context.timelineId || "t:main",
+    branchId: context.branchId || "b:root"
+  };
+}
+
 // -------------------------
-// Core Delta Logic
+// Core Delta Logic (v13)
 // -------------------------
 
 /**
@@ -162,14 +125,18 @@ function clone(obj) {
  * Input:
  *   - beforeSnapshot: SnapshotRecord
  *   - afterSnapshot: SnapshotRecord
+ *   - cosmosContext: { universeId?, timelineId?, branchId? }
  *
  * Output:
- *   - DeltaRecord
+ *   - DeltaRecord (multiverse-aware)
  */
-export function computeDelta(beforeSnapshot, afterSnapshot) {
+export function computeDelta(beforeSnapshot, afterSnapshot, cosmosContext = {}) {
+  const cosmos = normalizeCosmosContext(cosmosContext);
+
   const before = beforeSnapshot.state;
   const after = afterSnapshot.state;
 
+  // v13: substrate fields remain symbolic + minimal
   const fields = [
     "regionId",
     "hostName",
@@ -201,6 +168,7 @@ export function computeDelta(beforeSnapshot, afterSnapshot) {
     instanceId: beforeSnapshot.header.instanceId,
     snapshotBeforeId: beforeSnapshot.header.snapshotId,
     snapshotAfterId: afterSnapshot.header.snapshotId,
+    cosmos,
     changes
   });
 }
@@ -215,6 +183,7 @@ export function summarizeDelta(deltaRecord) {
 
   return new DeltaSummary({
     instanceId: deltaRecord.instanceId,
+    cosmos: deltaRecord.cosmos,
     totalChanges: deltaRecord.changes.length,
     changedFields
   });
@@ -232,7 +201,10 @@ export function buildDeltaPatch(deltaRecord) {
     patch[change.field] = change.after;
   }
 
-  return new DeltaPatch({ patch });
+  return new DeltaPatch({
+    cosmos: deltaRecord.cosmos,
+    patch
+  });
 }
 
 /**
@@ -240,6 +212,8 @@ export function buildDeltaPatch(deltaRecord) {
  *
  * Applies a patch to a snapshot state.
  * Returns a NEW SnapshotStateView.
+ *
+ * Cosmos context is preserved but not used in physics.
  */
 export function applyDeltaPatch(snapshotRecord, deltaPatch) {
   const newState = clone(snapshotRecord.state);

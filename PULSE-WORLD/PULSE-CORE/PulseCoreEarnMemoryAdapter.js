@@ -1,49 +1,116 @@
 // ============================================================================
-//  PulseEarnMemoryAdapter.js — v11‑EVO‑SPINE
-//  “EARN FLOWS IN. VALUE ACCUMULATES. NOTHING IS PROCESSED TWICE.”
-//  Mirror of Send, but inbound reward/earn signals.
+//  PulseEarnMemoryAdapter.js — v12‑EVO‑PRESENCE‑MAX
+//  “EARN FLOWS IN. VALUE ACCUMULATES. NOTHING DRIFTS.”
+//  • MetaBlock (v12 identity)
+//  • dnaTag + version aware
+//  • presence aware
+//  • hot‑loop promotion
+//  • dual‑band metadata
+//  • lineage + reward‑shape metadata
+//  • governor + evolution aligned
 // ============================================================================
 
 import { createPulseBinaryOverlay } from "../PulseBinaryOverlay.js";
 
 export function createPulseEarnMemoryAdapter({
   overlay = createPulseBinaryOverlay(),
+  dnaTag = "default-dna",
+  version = "12.0-Evo-Presence",
   log = console.log
 } = {}) {
 
-  // EARN inbound reward payloads
+  // ---------------------------------------------------------
+  //  v12 IDENTITY BLOCK (MetaBlock)
+  // ---------------------------------------------------------
+  export const metaBlock = {
+    identity: "PulseEarnMemoryAdapter",
+    subsystem: "Earn",
+    layer: "MemoryAdapter",
+    role: "Earn-Memory-Bridge",
+    version,
+    dnaTag,
+    evo: {
+      dnaAware: true,
+      versionAware: true,
+      presenceAware: true,
+      hotLoop: true,
+      dualBandSafe: true,
+      lineageAware: true,
+      rewardAware: true
+    }
+  };
+
+  // ---------------------------------------------------------
+  //  INTERNAL: WRAP WITH v12 METADATA
+  // ---------------------------------------------------------
+  function wrap(routeId, payload, dataType) {
+    const meta = {
+      dataType,
+      dnaTag,
+      version,
+      lastTouched: Date.now(),
+      metaBlock
+    };
+
+    // Presence‑touch propagation
+    try {
+      overlay.touch(routeId, meta.lastTouched);
+    } catch {}
+
+    return overlay.canonicalize(routeId, payload, meta);
+  }
+
+  // ---------------------------------------------------------
+  //  EARN SIGNALS (REWARD INFLOW)
+  // ---------------------------------------------------------
   function registerEarnSignal(routeId, earnPayload) {
-    return overlay.interceptInbound(routeId, earnPayload, {
-      dataType: "earn-signal"
-    });
+    return wrap(routeId, earnPayload, "earn-signal");
   }
 
-  // EARN metadata (lineage, shape, reward factors)
+  // ---------------------------------------------------------
+  //  EARN METADATA (LINEAGE, SHAPE, FACTORS)
+  // ---------------------------------------------------------
   function registerEarnMeta(routeId, meta) {
-    return overlay.canonicalize(routeId, meta, {
-      dataType: "earn-meta"
-    });
+    return wrap(routeId, meta, "earn-meta");
   }
 
-  // EARN attachments (your “always attached side benefit”)
+  // ---------------------------------------------------------
+  //  EARN ATTACHMENTS (SIDE BENEFITS)
+  // ---------------------------------------------------------
   function registerEarnAttachment(routeId, attachment) {
-    return overlay.canonicalize(routeId, attachment, {
-      dataType: "earn-attachment"
-    });
+    return wrap(routeId, attachment, "earn-attachment");
   }
 
-  // EARN reward formulas (pattern intelligence)
+  // ---------------------------------------------------------
+  //  EARN FORMULAS (PATTERN INTELLIGENCE)
+  // ---------------------------------------------------------
   function registerEarnFormula(routeId, formulaStruct) {
-    return overlay.canonicalize(routeId, formulaStruct, {
-      dataType: "earn-formula"
-    });
+    return wrap(routeId, formulaStruct, "earn-formula");
   }
 
+  // ---------------------------------------------------------
+  //  HOT‑LOOP PROMOTION HOOK
+  // ---------------------------------------------------------
+  function promoteHot(routeId, key) {
+    try {
+      overlay.markHot(routeId, key);
+      log("[PulseEarnMemoryAdapter] HOT_PROMOTE", { routeId, key });
+    } catch {}
+  }
+
+  // ---------------------------------------------------------
+  //  PUBLIC API
+  // ---------------------------------------------------------
   return {
-    role: "PulseEarnMemoryAdapter",
+    metaBlock,
+    dnaTag,
+    version,
+
     registerEarnSignal,
     registerEarnMeta,
     registerEarnAttachment,
-    registerEarnFormula
+    registerEarnFormula,
+
+    promoteHot
   };
 }

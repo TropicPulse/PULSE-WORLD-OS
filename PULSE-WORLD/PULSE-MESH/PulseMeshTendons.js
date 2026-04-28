@@ -1,20 +1,22 @@
 // ============================================================================
 // FILE: PulseMeshTendons.js
-// PULSE OS — v11-Evo
+// PULSE OS — v12.3+ PRESENCE-EVO
 // CONNECTIVE TISSUE ORGAN — “PulseMeshTendons”
 // Intent Translation • Earn-Ready Metadata • Deterministic Connective Tissue
+// Full Advantage Stack: Prewarm • Chunk • Cache • Presence-Band
 // ============================================================================
 //
-// IDENTITY — THE TENDON ORGAN (v11-Evo):
-// --------------------------------------
+// IDENTITY — THE TENDON ORGAN (v12.3+):
+// -------------------------------------
 // • Translates Cortex intent into earn-ready metadata.
 // • Classifies impulses (heavy/medium/light) deterministically.
-// • Shapes routeHint based on class + mode (symbolic/PULSE-TOOLS/dual).
-// • Stabilizes energy deterministically (v11-Evo contract).
+// • Shapes routeHint based on class + mode (symbolic/binary/dual).
+// • Stabilizes energy deterministically (v12.3+ contract).
 // • Attaches volatility + earn-context for EarnEngine.
+// • Emits earn-prewarm / earn-chunk / earn-cache / presence-band tags.
 // • Pure metadata-only — zero payload mutation.
 // • Deterministic, drift-proof, connective tissue.
-// • Binary-aware, dual-mode-ready.
+// • Binary-aware, dual-mode-ready, presence-aware, dual-band-ready.
 // ============================================================================
 
 export function createPulseMeshTendons({ log, warn, error }) {
@@ -22,7 +24,7 @@ export function createPulseMeshTendons({ log, warn, error }) {
   const tendonMeta = {
     layer: "PulseMeshTendons",
     role: "INTENT_TRANSLATION",
-    version: "11.0-Evo",
+    version: "12.3+",
     target: "full-mesh",
     selfRepairable: true,
     evo: {
@@ -45,14 +47,32 @@ export function createPulseMeshTendons({ log, warn, error }) {
       meshPressureAware: true,
       auraPressureAware: true,
 
+      // v12.3+ advantage flags
+      prewarmAware: true,
+      chunkAware: true,
+      cacheAware: true,
+      presenceAware: true,
+      dualBandReady: true,
+
       zeroCompute: true,
       zeroMutation: true,
       zeroRoutingInfluence: true
     }
   };
 
+  // --------------------------------------------------------------------------
+  // Presence-Band Helper (v12.3+)
+  // --------------------------------------------------------------------------
+  function classifyPresenceBand(impulse) {
+    const f = impulse.flags || {};
+    if (f.binary_mode && f.dual_mode) return "dual";
+    if (f.binary_mode) return "binary";
+    if (f.dual_mode) return "dual";
+    return "symbolic";
+  }
+
   // ========================================================================
-  // Tendon Pack (v11-Evo)
+  // Tendon Pack (v12.3+)
   // ========================================================================
   const PulseMeshTendons = {
 
@@ -68,7 +88,7 @@ export function createPulseMeshTendons({ log, warn, error }) {
     },
 
     // -------------------------------------------------------
-    // ROUTE HINT — v11-Evo (class + mode)
+    // ROUTE HINT — v12.3+ (class + mode + presence-band)
     // -------------------------------------------------------
     routeHint(impulse, cls) {
       impulse.flags = impulse.flags || {};
@@ -92,7 +112,7 @@ export function createPulseMeshTendons({ log, warn, error }) {
     },
 
     // -------------------------------------------------------
-    // SHAPE ENERGY — deterministic stabilization (v11-Evo)
+    // SHAPE ENERGY — deterministic stabilization (v12.3+)
     // -------------------------------------------------------
     shapeEnergy(impulse, cls) {
       impulse.flags = impulse.flags || {};
@@ -102,7 +122,7 @@ export function createPulseMeshTendons({ log, warn, error }) {
       if (cls === "heavy") e *= 1.05;
       if (cls === "light") e *= 0.95;
 
-      // v11-Evo: binary mode slightly boosts stability
+      // v12.3+: binary mode slightly boosts stability
       if (impulse.flags.binary_mode) e *= 1.02;
 
       impulse.energy = e;
@@ -111,7 +131,7 @@ export function createPulseMeshTendons({ log, warn, error }) {
     },
 
     // -------------------------------------------------------
-    // NORMALIZE EARN ENERGY — clamp to safe range (v11-Evo)
+    // NORMALIZE EARN ENERGY — clamp to safe range (v12.3+)
     // -------------------------------------------------------
     normalizeEarnEnergy(impulse) {
       impulse.flags = impulse.flags || {};
@@ -124,12 +144,12 @@ export function createPulseMeshTendons({ log, warn, error }) {
     },
 
     // -------------------------------------------------------
-    // ATTACH VOLATILITY — deterministic (v11-Evo)
-    // -------------------------------------------------------
+    // ATTACH VOLATILITY — deterministic (v12.3+)
+// -------------------------------------------------------
     attachVolatility(impulse) {
       impulse.flags = impulse.flags || {};
 
-      // v11-Evo: volatility is mode-aware but deterministic
+      // v12.3+: volatility is mode-aware but deterministic
       if (impulse.flags.binary_mode) {
         impulse.flags.earner_volatility = 0.1;
       } else if (impulse.flags.dual_mode) {
@@ -144,7 +164,7 @@ export function createPulseMeshTendons({ log, warn, error }) {
     // -------------------------------------------------------
     // ATTACH EARN CONTEXT — deterministic earn metadata
     // -------------------------------------------------------
-    attachEarnContext(impulse, cls) {
+    attachEarnContext(impulse, cls, presenceBand) {
       impulse.flags = impulse.flags || {};
 
       impulse.flags.earner_context = {
@@ -157,7 +177,8 @@ export function createPulseMeshTendons({ log, warn, error }) {
           ? "binary"
           : impulse.flags.dual_mode
           ? "dual"
-          : "symbolic"
+          : "symbolic",
+        presence_band: presenceBand
       };
 
       return impulse;
@@ -170,25 +191,57 @@ export function createPulseMeshTendons({ log, warn, error }) {
       impulse.flags = impulse.flags || {};
       impulse.flags[`tendon_class_${cls}`] = true;
       return impulse;
+    },
+
+    // -------------------------------------------------------
+    // ADVANTAGE TAGS — prewarm / chunk / cache / presence
+    // Metadata-only, no side effects.
+// -------------------------------------------------------
+    attachAdvantageSurfaces(impulse, cls, presenceBand) {
+      impulse.flags = impulse.flags || {};
+
+      impulse.flags.tendon_presence_band = presenceBand;
+
+      impulse.flags.tendon_advantage_meta = {
+        prewarm_surface: true,
+        chunk_surface: true,
+        cache_surface: true,
+        presence_band: presenceBand,
+        class: cls
+      };
+
+      // Earn-prewarm: hint that downstream can prewarm earn paths
+      impulse.flags.tendon_earn_prewarm = true;
+
+      // Earn-chunk: this impulse carries a stable earn-intent chunk
+      impulse.flags.tendon_earn_chunk = true;
+
+      // Earn-cache: this pattern is cacheable for future earn routing
+      impulse.flags.tendon_earn_cache = true;
+
+      return impulse;
     }
   };
 
   // ========================================================================
-  // Tendon Engine (v11-Evo)
+  // Tendon Engine (v12.3+)
   // “Apply connective tissue shaping for Mesh → EarnEngine”
+  // Full advantage: prewarm + chunk + cache + presence-band
   // ========================================================================
   function applyPulseMeshTendons(impulse) {
     impulse.flags = impulse.flags || {};
     impulse.flags.tendon_meta = tendonMeta;
 
     const cls = PulseMeshTendons.classify(impulse);
+    const presenceBand = classifyPresenceBand(impulse);
 
     PulseMeshTendons.routeHint(impulse, cls);
     PulseMeshTendons.shapeEnergy(impulse, cls);
     PulseMeshTendons.normalizeEarnEnergy(impulse);
     PulseMeshTendons.attachVolatility(impulse);
-    PulseMeshTendons.attachEarnContext(impulse, cls);
+    PulseMeshTendons.attachEarnContext(impulse, cls, presenceBand);
     PulseMeshTendons.tag(impulse, cls);
+    PulseMeshTendons.attachAdvantageSurfaces(impulse, cls, presenceBand);
 
     impulse.flags.tendon_applied = true;
 

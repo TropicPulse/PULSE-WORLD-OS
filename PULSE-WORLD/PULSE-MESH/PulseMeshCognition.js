@@ -1,21 +1,22 @@
 // ============================================================================
-//  PULSE OS v11-Evo — COGNITION LAYER  // yellow
-//  “PulseMeshCognition / Meta‑Memory / Evolution Brain”
+//  PULSE OS v12.3-PRESENCE-EVO-MAX-PRIME — COGNITION LAYER  // yellow
+//  “PulseMeshCognition / Meta‑Memory / Evolution Brain / Presence‑Aware”
 // ============================================================================
 //
-//  IDENTITY — COGNITION (v11-Evo):
-//  --------------------------------
+//  IDENTITY — COGNITION (v12.3):
+//  ------------------------------
 //  • Organizes long‑term + short‑term memory into patterns-of-patterns.
 //  • Stores metadata-only cognition surfaces for evolution.
-//  • Supports Cortex, Tendons, Organs, Mesh, Immune, Aura, Spine.
+//  • Supports Cortex, Tendons, Organs, Mesh, Immune, Aura, Spine, Halo.
 //  • NEVER computes payloads, NEVER mutates data.
 //  • Pure cognition — system-wide learning.
-//  • v11-Evo: deterministic-field, unified-advantage-field,
-//             factoring-aware, aura-aware, mesh-pressure-aware,
-//             binary-aware, dual-mode-ready, multi-instance-ready.
+//  • Deterministic-field, unified-advantage-field,
+//    factoring-aware, aura-aware, mesh-pressure-aware,
+//    binary-aware, dual-band-ready, presence-aware,
+//    multi-instance-ready, drift-proof.
 //
-//  SAFETY CONTRACT (v11-Evo):
-//  ---------------------------
+//  SAFETY CONTRACT (v12.3):
+//  -------------------------
 //  • Metadata-only.
 //  • No payload access.
 //  • No routing override.
@@ -34,11 +35,22 @@ export const CognitionStore = {
   organs: new Map(),
   reflexes: new Map(),
 
-  // v11-Evo: dual-mode cognition
+  // v12.3: dual-band + presence cognition
   mode: {
     symbolic: 0,
     binary: 0,
     dual: 0
+  },
+
+  band: {
+    symbolic: 0,
+    binary: 0,
+    dual: 0
+  },
+
+  presence: {
+    tags: new Map(), // counts only, no identity registry
+    total: 0
   },
 
   mesh: {
@@ -54,10 +66,16 @@ export const CognitionStore = {
     throttlePressure: []
   },
 
+  advantage: {
+    binaryPreference: [],
+    factoredPaths: 0,
+    events: 0
+  },
+
   meta: {
     layer: "PulseMeshCognition",
     role: "META_MEMORY",
-    version: "11.0-Evo",
+    version: "12.3-PRESENCE-EVO-MAX-PRIME",
     target: "full-mesh",
     selfRepairable: true,
     evo: {
@@ -78,7 +96,10 @@ export const CognitionStore = {
 
       signalFactoringAware: true,
       auraPressureAware: true,
-      meshPressureAware: true
+      meshPressureAware: true,
+
+      presenceAware: true,
+      bandAware: true
     }
   }
 };
@@ -100,14 +121,32 @@ function classifyMode(impulse) {
   else if (m === "dual") CognitionStore.mode.dual++;
 }
 
+function classifyBand(impulse) {
+  const b = impulse?.band;
+  if (!b) return;
+  if (b === "binary") CognitionStore.band.binary++;
+  else if (b === "symbolic") CognitionStore.band.symbolic++;
+  else if (b === "dual") CognitionStore.band.dual++;
+}
+
+function recordPresenceTag(impulse) {
+  const tag = impulse?.flags?.aura_presence_tag;
+  if (!tag) return;
+  CognitionStore.presence.total++;
+  const count = CognitionStore.presence.tags.get(tag) || 0;
+  CognitionStore.presence.tags.set(tag, count + 1);
+}
+
 
 // -----------------------------------------------------------
-// Cognition Pack — pattern-of-patterns (v11-Evo)
+// Cognition Pack — pattern-of-patterns (v12.3)
 // -----------------------------------------------------------
 export const PulseMeshCognition = {
 
   recordRoutePattern(impulse) {
     classifyMode(impulse);
+    classifyBand(impulse);
+    recordPresenceTag(impulse);
 
     const entry = impulse.entryNodeId ?? "unknown";
     const delivered = impulse.flags?.delivered_to ?? "none";
@@ -168,7 +207,7 @@ export const PulseMeshCognition = {
   },
 
   // ---------------------------------------------------------
-  // v11-Evo — Mesh Pressure + Factoring Cognition
+  // v12.3 — Mesh Pressure + Factoring + Presence Cognition
   // ---------------------------------------------------------
   recordMeshPattern(impulse) {
     const flags = impulse.flags || {};
@@ -193,6 +232,8 @@ export const PulseMeshCognition = {
       CognitionStore.mesh.factoringEvents.push({
         depth: flags.mesh_factor_depth ?? 0
       });
+      CognitionStore.advantage.factoredPaths++;
+      CognitionStore.advantage.events++;
     }
 
     if (flags.aura_factoring_bias !== undefined) {
@@ -214,12 +255,17 @@ export const PulseMeshCognition = {
     if (flags.recent_throttle_rate !== undefined) {
       CognitionStore.mesh.throttlePressure.push(flags.recent_throttle_rate);
     }
+
+    if (flags.aura_binary_mesh_bias !== undefined) {
+      CognitionStore.advantage.binaryPreference.push(flags.aura_binary_mesh_bias);
+      CognitionStore.advantage.events++;
+    }
   }
 };
 
 
 // -----------------------------------------------------------
-// Cognition Engine (v11-Evo)
+// Cognition Engine (v12.3)
 // -----------------------------------------------------------
 export function applyPulseMeshCognition(impulse) {
   impulse.flags = impulse.flags || {};
@@ -247,7 +293,15 @@ export function getCognitionSnapshot() {
     earners: CognitionStore.earners.size,
     organs: CognitionStore.organs.size,
     reflexes: CognitionStore.reflexes.size,
+
     mode: { ...CognitionStore.mode },
+    band: { ...CognitionStore.band },
+
+    presence: {
+      total: CognitionStore.presence.total,
+      tags: CognitionStore.presence.tags.size
+    },
+
     mesh: {
       hopsCount: CognitionStore.mesh.hops.length,
       stallsCount: CognitionStore.mesh.stalls.length,
@@ -259,6 +313,12 @@ export function getCognitionSnapshot() {
       flowPressureSamples: CognitionStore.mesh.flowPressure.length,
       driftPressureSamples: CognitionStore.mesh.driftPressure.length,
       throttlePressureSamples: CognitionStore.mesh.throttlePressure.length
+    },
+
+    advantage: {
+      events: CognitionStore.advantage.events,
+      binaryPreferenceSamples: CognitionStore.advantage.binaryPreference.length,
+      factoredPaths: CognitionStore.advantage.factoredPaths
     }
   };
 }

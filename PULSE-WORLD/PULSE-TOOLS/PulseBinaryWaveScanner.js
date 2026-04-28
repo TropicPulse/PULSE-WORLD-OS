@@ -1,25 +1,31 @@
 // ============================================================================
-// FILE: /apps/PulseOS/PULSE-TOOLS/PulseBinaryWaveScanner-v11-EVO.js
-// PULSE OS — v11-EVO
-// PURE BINARY WAVE ORGAN — ZERO DRIFT, MULTI-SPIN, HIGH-CONTRAST
+// FILE: /apps/PulseOS/PULSE-TOOLS/PulseBinaryWaveScanner-v12.3-EVO.js
+// PULSE OS — v12.3-EVO
+// PURE BINARY WAVE ORGAN — ZERO DRIFT, MULTI-SPIN, PRESENCE/HARMONICS-AWARE
 // ============================================================================
-// ROLE:
+// ROLE (12.3-EVO):
 //   - Convert binary pulses → deterministic waveforms.
 //   - Drive contrast, depth, “see-through”, edge emphasis for all layers.
 //   - Zero randomness, zero timestamps, zero mutation.
 //   - Multi-spin aware (3-phase wave sets).
-//   - Pairs with BinaryPulse-v11-EVO + PulseBinaryLoopScanner-v11-EVO.
+//   - Dual-band aware: optional presence/harmonics bias depth/contrast, still deterministic.
+//   - Pairs with BinaryPulse‑v12.3‑EVO + PulseBinaryLoopScanner‑v12.3‑EVO.
 //
-// WAVE MODES (v11-EVO):
+// WAVE MODES (v12.3-EVO, API-COMPATIBLE):
 //   • nextWave       → standard wave (balanced detail)
 //   • nextWaveDeep   → slower, deeper, high-contrast wave
 //   • nextWaveMulti  → 3-phase multi-spin wave set
 //   • nextWaveEdge   → edge/outline emphasis
 //   • nextWaveFlat   → low-depth, high-stability baseline
 //
-// NOTES:
-//   - 100% binary-only. Requires pure 0/1 arrays.
-//   - Deterministic tick (t) ensures stable evolution.
+// NOTE:
+//   - Signatures accept optional dual-band scalars but remain v11-safe:
+//       nextWave(bits, presence = 0, harmonicBias = 0)
+//       nextWaveDeep(bits, presence = 0, harmonicBias = 0)
+//       nextWaveMulti(bits, presence = 0, harmonicBias = 0)
+//       nextWaveEdge(bits, presence = 0, harmonicBias = 0)
+//       nextWaveFlat(bits, presence = 0, harmonicBias = 0)
+//   - Callers that pass only (bits) get pure v11 behavior.
 // ============================================================================
 
 export function createBinaryWaveScanner({ trace = false } = {}) {
@@ -50,116 +56,127 @@ export function createBinaryWaveScanner({ trace = false } = {}) {
     return (t % 360) * (Math.PI / 180); // radians
   }
 
-  function buildWave(amplitude, phase, depthScale, reflectScale) {
+  function dualBandScale(presence = 0, harmonicBias = 0) {
+    const p = clamp(presence, 0, 1);
+    const h = clamp(harmonicBias, 0, 1);
+    // 0.8–1.2 range: subtle but real influence
+    return 0.8 + (p * 0.15 + h * 0.25);
+  }
+
+  function buildWave(amplitude, phase, depthScale, reflectScale, presence = 0, harmonicBias = 0) {
+    const band = dualBandScale(presence, harmonicBias);
     return {
       phase,
       amplitude,
-      depth: amplitude * depthScale * Math.abs(Math.sin(phase * 0.5)),
-      reflection: reflectScale * Math.abs(Math.cos(phase * 0.75))
+      depth: amplitude * depthScale * band * Math.abs(Math.sin(phase * 0.5)),
+      reflection: reflectScale * band * Math.abs(Math.cos(phase * 0.75))
     };
   }
 
   // ========================================================================
   // MODE 1 — STANDARD WAVE (BALANCED DETAIL)
-  // ========================================================================
-  function nextWave(bits) {
+// ========================================================================
+  function nextWave(bits, presence = 0, harmonicBias = 0) {
     if (!isPureBinary(bits)) {
-      throw new Error("[BinaryWaveScanner] non-binary bits passed to nextWave");
+      throw new Error("[BinaryWaveScanner‑12.3] non-binary bits passed to nextWave");
     }
 
     const amp = amplitudeFromBits(bits);
     const phase = nextPhase(1);
 
-    const wave = buildWave(amp, phase, 1.0, 1.0);
+    const wave = buildWave(amp, phase, 1.0, 1.0, presence, harmonicBias);
 
-    if (trace) console.log("[BinaryWaveScanner] STANDARD:", wave);
+    if (trace) console.log("[BinaryWaveScanner‑12.3] STANDARD:", wave);
     return wave;
   }
 
   // ========================================================================
   // MODE 2 — DEEP WAVE (SLOW, HIGH CONTRAST, MRI-LIKE)
-  // ========================================================================
-  function nextWaveDeep(bits) {
+// ========================================================================
+  function nextWaveDeep(bits, presence = 0, harmonicBias = 0) {
     if (!isPureBinary(bits)) {
-      throw new Error("[BinaryWaveScanner] non-binary bits passed to nextWaveDeep");
+      throw new Error("[BinaryWaveScanner‑12.3] non-binary bits passed to nextWaveDeep");
     }
 
     const amp = amplitudeFromBits(bits);
     const phase = nextPhase(0.25);
 
-    const wave = buildWave(amp, phase, 1.4, 0.9);
+    const wave = buildWave(amp, phase, 1.4, 0.9, presence, harmonicBias);
 
-    if (trace) console.log("[BinaryWaveScanner] DEEP:", wave);
+    if (trace) console.log("[BinaryWaveScanner‑12.3] DEEP:", wave);
     return wave;
   }
 
   // ========================================================================
   // MODE 3 — MULTI WAVE (3-PHASE MULTI-SPIN)
-  // ========================================================================
-  function nextWaveMulti(bits) {
+// ========================================================================
+  function nextWaveMulti(bits, presence = 0, harmonicBias = 0) {
     if (!isPureBinary(bits)) {
-      throw new Error("[BinaryWaveScanner] non-binary bits passed to nextWaveMulti");
+      throw new Error("[BinaryWaveScanner‑12.3] non-binary bits passed to nextWaveMulti");
     }
 
     const amp = amplitudeFromBits(bits);
     const basePhase = nextPhase(1);
+    const band = dualBandScale(presence, harmonicBias);
 
     const waves = [0, 1, 2].map(i => {
       const phase = basePhase + (Math.PI * 2 * i) / 3;
       return {
         phase,
         amplitude: amp,
-        depth: amp * Math.abs(Math.sin(phase * 0.5)),
-        reflection: Math.abs(Math.cos(phase * 0.75)),
+        depth: amp * band * Math.abs(Math.sin(phase * 0.5)),
+        reflection: band * Math.abs(Math.cos(phase * 0.75)),
         spinIndex: i
       };
     });
 
-    if (trace) console.log("[BinaryWaveScanner] MULTI:", waves);
+    if (trace) console.log("[BinaryWaveScanner‑12.3] MULTI:", waves);
     return waves;
   }
 
   // ========================================================================
   // MODE 4 — EDGE WAVE (OUTLINE EMPHASIS)
-  // ========================================================================
-  function nextWaveEdge(bits) {
+// ========================================================================
+  function nextWaveEdge(bits, presence = 0, harmonicBias = 0) {
     if (!isPureBinary(bits)) {
-      throw new Error("[BinaryWaveScanner] non-binary bits passed to nextWaveEdge");
+      throw new Error("[BinaryWaveScanner‑12.3] non-binary bits passed to nextWaveEdge");
     }
 
     const amp = amplitudeFromBits(bits);
     const phase = nextPhase(1);
+    const band = dualBandScale(presence, harmonicBias);
 
     const wave = {
       phase,
       amplitude: amp,
-      depth: amp * Math.abs(Math.sin(phase)),          // sharper depth
-      reflection: Math.abs(Math.sin(phase * 1.5))      // edge-like reflection
+      depth: amp * band * Math.abs(Math.sin(phase)),      // sharper depth
+      reflection: band * Math.abs(Math.sin(phase * 1.5))  // edge-like reflection
     };
 
-    if (trace) console.log("[BinaryWaveScanner] EDGE:", wave);
+    if (trace) console.log("[BinaryWaveScanner‑12.3] EDGE:", wave);
     return wave;
   }
 
   // ========================================================================
   // MODE 5 — FLAT WAVE (LOW DEPTH, HIGH STABILITY)
-  // ========================================================================
-  function nextWaveFlat(bits) {
+// ========================================================================
+  function nextWaveFlat(bits, presence = 0, harmonicBias = 0) {
     if (!isPureBinary(bits)) {
-      throw new Error("[BinaryWaveScanner] non-binary bits passed to nextWaveFlat");
+      throw new Error("[BinaryWaveScanner‑12.3] non-binary bits passed to nextWaveFlat");
     }
 
     const amp = amplitudeFromBits(bits);
     const phase = nextPhase(0.1);
+    const band = dualBandScale(presence, harmonicBias);
 
     const wave = {
       phase,
       amplitude: amp,
-      depth: amp * 0.2,                 // very shallow
-      reflection: 0.5 + amp * 0.3       // stable reflection band
+      depth: amp * 0.2 * band,           // very shallow, slightly band-shaped
+      reflection: (0.5 + amp * 0.3) * band
     };
 
-    if (trace) console.log("[BinaryWaveScanner] FLAT:", wave);
+    if (trace) console.log("[BinaryWaveScanner‑12.3] FLAT:", wave);
     return wave;
   }
 
@@ -173,4 +190,11 @@ export function createBinaryWaveScanner({ trace = false } = {}) {
     nextWaveEdge,
     nextWaveFlat
   };
+}
+
+// ---------------------------------------------------------------------------
+// UTIL
+// ---------------------------------------------------------------------------
+function clamp(v, min, max) {
+  return Math.max(min, Math.min(max, v));
 }

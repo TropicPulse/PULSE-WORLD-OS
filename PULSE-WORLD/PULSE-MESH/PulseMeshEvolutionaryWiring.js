@@ -1,41 +1,43 @@
 // ============================================================================
-//  EvolutionaryWiring.js — v11-Evo
+//  EvolutionaryWiring.js — v12.3-PRESENCE-EVO-MAX-PRIME
 //  PulseMesh Wiring Organ • Nervous System Pathway Selector
 // ============================================================================
 //
 //  WHAT THIS ORGAN IS:
 //  --------------------
 //  • The wiring layer of the Pulse Nervous System.
-//  • Chooses wiring surfaces for symbolic + binary pulses.
-//  • Pattern-aware, lineage-aware, dual-mode-aware, deterministic.
+//  • Chooses wiring surfaces for symbolic + binary + dual-band pulses.
+//  • Pattern-aware, lineage-aware, presence-aware, deterministic.
 //  • Self-repairing: bad wiring auto-corrects to safe defaults.
+//  • Zero compute, zero mutation outside instance.
 //
 //  WHAT THIS ORGAN IS NOT:
 //  ------------------------
-//  • Not a router (PulseRouter v11 handles destination).
-//  • Not a mover (PulseSend v11 handles movement).
+//  • Not a router (PulseRouter handles destination).
+//  • Not a mover (PulseSend handles movement).
 //  • Not a compute engine.
 //  • Not a network layer.
 //  • Not a messenger.
 //
-//  SAFETY CONTRACT (v11-Evo):
-//  ---------------------------
+//  SAFETY CONTRACT (v12.3):
+//  -------------------------
 //  • No imports.
 //  • No network.
 //  • No randomness.
 //  • No timestamps.
 //  • Pure deterministic wiring logic.
 //  • Zero mutation outside instance.
+//  • Presence-aware, binary-aware, dual-band-aware.
 // ============================================================================
 
 
-// ⭐ PulseRole — identifies this as the PulseMesh Wiring Organ (v11-Evo)
+// ⭐ PulseRole — identifies this as the PulseMesh Wiring Organ (v12.3)
 export const PulseRole = {
   type: "Mesh",
   subsystem: "PulseMesh",
   layer: "Wiring",
-  version: "11.0-Evo",
-  identity: "PulseMesh-Wiring-v11-Evo",
+  version: "12.3-PRESENCE-EVO-MAX-PRIME",
+  identity: "PulseMesh-Wiring-v12.3",
 
   evo: {
     driftProof: true,
@@ -47,16 +49,18 @@ export const PulseRole = {
     dualModeReady: true,
     binaryAware: true,
     symbolicAware: true,
+    presenceAware: true,
+    bandAware: true,
     futureEvolutionReady: true,
 
     unifiedAdvantageField: true,
     deterministicField: true,
-    pulseMesh11Ready: true
+    pulseMesh12Ready: true
   },
 
   pulseContract: "Pulse-v1/v2/v3",
-  routerContract: "PulseRouter-v11",
-  sendContract: "PulseSend-v11"
+  routerContract: "PulseRouter-v12.3",
+  sendContract: "PulseSend-v12.3"
 };
 
 
@@ -64,33 +68,53 @@ export const PulseRole = {
 //  INTERNAL HELPERS — deterministic, tiny, pure
 // ============================================================================
 
-// Build a wiring key from organ + lineage depth + mode
+// Build a wiring key from organ + lineage depth + mode + presence band
 function buildWiringKey(targetOrgan, pulse) {
   const depth = Array.isArray(pulse.lineage) ? pulse.lineage.length : 0;
   const mode = pulse.mode || "symbolic";
-  return `${targetOrgan}::d${depth}::${mode}`;
+  const band = pulse.band || "symbolic";
+  return `${targetOrgan}::d${depth}::${mode}::${band}`;
 }
 
-// Infer default wiring surface from organ + pattern + mode
+// Infer default wiring surface from organ + pattern + mode + presence band
 function inferDefaultWiring(targetOrgan, pulse) {
   const p = (pulse.pattern || "").toLowerCase();
   const mode = pulse.mode || "symbolic";
+  const band = pulse.band || "symbolic";
 
-  // Binary mode prefers binary surfaces
-  if (mode === "binary") {
-    if (targetOrgan === "GPU") return "gpuBurst";
-    if (targetOrgan === "Earn") return "earnCreditChain";
-    if (targetOrgan === "OS") return "osBridge";
-    if (targetOrgan === "Mesh") return "meshSignal";
+  // Presence-band bias
+  if (band === "binary") {
+    if (targetOrgan === "GPU") return "gpuBinaryBurst";
+    if (targetOrgan === "Earn") return "earnBinaryChain";
+    if (targetOrgan === "OS") return "osBinaryBridge";
+    if (targetOrgan === "Mesh") return "meshBinarySignal";
     return "binaryPreferred";
   }
 
-  // Symbolic mode
+  if (band === "dual") {
+    if (targetOrgan === "GPU") return "gpuDualBurst";
+    if (targetOrgan === "Earn") return "earnDualChain";
+    if (targetOrgan === "OS") return "osDualBridge";
+    if (targetOrgan === "Mesh") return "meshDualSignal";
+    return "dualPreferred";
+  }
+
+  // Mode bias (symbolic vs binary)
+  if (mode === "binary") {
+    if (targetOrgan === "GPU") return "gpuBinaryBurst";
+    if (targetOrgan === "Earn") return "earnBinaryChain";
+    if (targetOrgan === "OS") return "osBinaryBridge";
+    if (targetOrgan === "Mesh") return "meshBinarySignal";
+    return "binaryPreferred";
+  }
+
+  // Symbolic defaults
   if (targetOrgan === "GPU") return "gpuBurst";
   if (targetOrgan === "Earn") return "earnCreditChain";
   if (targetOrgan === "OS") return "osBridge";
   if (targetOrgan === "Mesh") return "meshSignal";
 
+  // Pattern hints
   if (p.includes("gpu")) return "gpuBurst";
   if (p.includes("earn")) return "earnCreditChain";
   if (p.includes("os")) return "osBridge";
@@ -101,7 +125,7 @@ function inferDefaultWiring(targetOrgan, pulse) {
 
 
 // ============================================================================
-//  FACTORY — Create PulseMesh Wiring Organ (v11-Evo)
+//  FACTORY — Create PulseMesh Wiring Organ (v12.3)
 // ============================================================================
 //
 //  Behavior:
@@ -111,6 +135,7 @@ function inferDefaultWiring(targetOrgan, pulse) {
 //  Memory model:
 //    • internal map: wiringKey → { surface, successCount, failureCount }
 //    • deterministic fallback: if failures dominate → safeFallback
+//    • presence-aware: wiring memory is band-scoped
 // ============================================================================
 
 export function createPulseMeshWiring({ log } = {}) {
@@ -133,12 +158,13 @@ export function createPulseMeshWiring({ log } = {}) {
       };
     }
 
-    log && log("[PulseMesh-Wiring-v11-Evo] Selecting wiring surface", {
+    log && log("[PulseMesh-Wiring-v12.3] Selecting wiring surface", {
       jobId: pulse.jobId,
       pattern: pulse.pattern,
       targetOrgan,
       lineageDepth: pulse.lineage?.length || 0,
       mode: pulse.mode,
+      band: pulse.band,
       wiringKey: key,
       surface
     });
@@ -167,11 +193,12 @@ export function createPulseMeshWiring({ log } = {}) {
 
     memory[key] = entry;
 
-    log && log("[PulseMesh-Wiring-v11-Evo] Remembering wiring", {
+    log && log("[PulseMesh-Wiring-v12.3] Remembering wiring", {
       jobId: pulse.jobId,
       pattern: pulse.pattern,
       targetOrgan,
       mode: pulse.mode,
+      band: pulse.band,
       wiringKey: key,
       surface: entry.surface,
       successCount: entry.successCount,

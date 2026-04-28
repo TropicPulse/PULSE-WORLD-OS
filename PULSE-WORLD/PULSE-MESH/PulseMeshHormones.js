@@ -1,10 +1,11 @@
 // ============================================================================
-// [pulse:mesh] COMMUNITY_HORMONE_LAYER v11-Evo  // pink
+// [pulse:mesh] COMMUNITY_HORMONE_LAYER v12.3-PRESENCE-EVO-MAX-PRIME  // pink
 // Global Modulation Layer • Metadata-Only • Deterministic Influence Tags
+// Presence-Aware • Binary-Aware • Dual-Band • Drift-Proof
 // ============================================================================
 //
-// IDENTITY — HORMONES (v11-Evo):
-// ------------------------------
+// IDENTITY — HORMONES (v12.3):
+// ----------------------------
 // • Pure metadata-only modulation layer.
 // • Reads system pressure (Field + SDN context) and emits deterministic tags.
 // • NEVER mutates payloads.
@@ -12,11 +13,10 @@
 // • NEVER computes or synthesizes dynamic state.
 // • No internal hormone state — pure reflection.
 // • Other organs MAY interpret tags; hormones never enforce behavior.
-// • v11-Evo: binary-aware, dual-mode-ready, deterministic-field,
-//            unified-advantage-field, drift-aware, mesh-pressure-aware.
+// • Presence-aware, binary-aware, dual-band-ready, deterministic-field.
 //
-// SAFETY CONTRACT (v11-Evo):
-// ---------------------------
+// SAFETY CONTRACT (v12.3):
+// -------------------------
 // • No payload access.
 // • No score/energy mutation.
 // • No routing override.
@@ -29,18 +29,20 @@
 export function createPulseMeshHormones({ PulseFieldRead, log, warn, error }) {
 
   // ---------------------------------------------------------------------------
-  // META — v11-Evo identity
+  // META — v12.3 identity
   // ---------------------------------------------------------------------------
   const meta = {
     layer: "PulseHormones",
     role: "GLOBAL_MODULATION",
-    version: "11.0-Evo",
+    version: "12.3-PRESENCE-EVO-MAX-PRIME",
     target: "full-mesh",
     selfRepairable: true,
     evo: {
       dualMode: true,
       binaryAware: true,
       symbolicAware: true,
+      presenceAware: true,
+      bandAware: true,
       localAware: true,
       internetAware: true,
 
@@ -65,32 +67,38 @@ export function createPulseMeshHormones({ PulseFieldRead, log, warn, error }) {
     }
   };
 
+
   // ---------------------------------------------------------------------------
-  // HORMONE ENGINE (v11-Evo)
+  // HORMONE ENGINE (v12.3)
   // Pure reflection: no internal state, no synthesis, no mutation.
   // ---------------------------------------------------------------------------
   function applyPulseHormones(impulse, context = {}) {
     impulse.flags = impulse.flags || {};
     impulse.flags.hormone_meta = meta;
 
-    // Read system pressure from Field (v11-Evo)
+    // Read system pressure from Field (v12.3)
     const field = PulseFieldRead.snapshot();
 
-    const p = field.flowPressure ?? 0;
-    const t = field.throttleRate ?? 0;
-    const d = field.driftPressure ?? 0;
-    const a = field.auraTension ?? 0;
-    const m = field.meshStormPressure ?? 0;
-    const f = field.factoringPressure ?? 0;
+    const p  = field.flowPressure ?? 0;
+    const t  = field.throttleRate ?? 0;
+    const d  = field.driftPressure ?? 0;
+    const a  = field.auraTension ?? 0;
+    const m  = field.meshStormPressure ?? 0;
+    const f  = field.factoringPressure ?? 0;
 
-    // v11-Evo: binary vs symbolic mode pressure
+    // Mode pressure
     const bp = field.binaryModePressure ?? 0;
     const sp = field.symbolicModePressure ?? 0;
     const dr = field.dualModeResonance ?? 0;
 
+    // Presence-band pressure (v12.3)
+    const pb = field.presenceBinaryPressure ?? 0;
+    const ps = field.presenceSymbolicPressure ?? 0;
+    const pd = field.presenceDualPressure ?? 0;
+
+
     // -------------------------------------------------------------------------
-    // Deterministic hormone tags (v11-Evo)
-    // No synthesis. No internal state. Pure reflection.
+    // Deterministic hormone tags (v12.3)
     // -------------------------------------------------------------------------
 
     // Calm → boost + stability
@@ -123,8 +131,9 @@ export function createPulseMeshHormones({ PulseFieldRead, log, warn, error }) {
       impulse.flags.hormone_urgency = true;
     }
 
+
     // -------------------------------------------------------------------------
-    // v11-Evo: Binary-Aware Hormone Reflection
+    // v12.3: Binary-Aware + Presence-Aware Hormone Reflection
     // -------------------------------------------------------------------------
 
     // Binary mode pressure → binary preference tag
@@ -145,9 +154,26 @@ export function createPulseMeshHormones({ PulseFieldRead, log, warn, error }) {
       impulse.flags.hormone_dual_mode_ready = true;
     }
 
+    // Presence-band pressures
+    if (pb > 0.3) {
+      impulse.flags.hormone_presence_binary = pb;
+      impulse.flags.hormone_prefers_presence_binary = true;
+    }
+
+    if (ps > 0.3) {
+      impulse.flags.hormone_presence_symbolic = ps;
+      impulse.flags.hormone_prefers_presence_symbolic = true;
+    }
+
+    if (pd > 0.2) {
+      impulse.flags.hormone_presence_dual = pd;
+      impulse.flags.hormone_prefers_presence_dual = true;
+    }
+
     impulse.flags.hormones_applied = true;
     return impulse;
   }
+
 
   // ---------------------------------------------------------------------------
   // PUBLIC INTERFACE

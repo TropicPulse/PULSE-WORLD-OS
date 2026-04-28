@@ -1,21 +1,23 @@
 // ============================================================================
-//  PULSE GPU INSIGHTS ENGINE v11-Evo-binary — THE WISDOM CORTEX
+//  PULSE GPU INSIGHTS ENGINE v12.3-Spine-binary — THE WISDOM CORTEX
 //  Deterministic, Pure Logic, Drift‑Proof Analytics Over Session Traces
 // ============================================================================
 //
-// IDENTITY — THE WISDOM CORTEX (v11-Evo-binary):
-//  --------------------------------------------
+// IDENTITY — THE WISDOM CORTEX (v12.3-Spine-binary):
+//  -------------------------------------------------
 //  • Interpretive cortex of the GPU organism.
 //  • Observes baseline traces (past) and current traces (present).
 //  • Compares them with deterministic clarity, no guessing.
 //  • Reveals meaning already encoded in the data.
-//  • Binary-aware, dual-mode-aware (metadata only, no behavior change).
+//  • Binary-aware, symbolic-aware, dual-band-aware (metadata only).
+//  • Spine-aware: aligned with Orchestrator v12.3+.
+//  • Chunking-aware + prewarm-ready (metadata only).
 //  • Advantage‑cascade aware: systemic gains improve insight flow.
-//  • PulseSend‑v11‑ready: insights can be routed through the compute router.
-//  • Earn‑v3‑ready.
+//  • PulseSend‑v12.3‑ready: insights routable by compute router.
+//  • Earn‑v4‑ready.
 //
-// SAFETY CONTRACT (v11-Evo-binary):
-//  --------------------------------
+// SAFETY CONTRACT (v12.3-Spine-binary):
+//  ------------------------------------
 //  • No randomness
 //  • No timestamps
 //  • No GPU calls
@@ -39,9 +41,8 @@ function clamp(value, min, max) {
   return value;
 }
 
-
 // ============================================================================
-// DELTA CLASSIFICATION — Wisdom about change (Commandments‑aligned)
+// DELTA CLASSIFICATION — Wisdom about change
 // ============================================================================
 function classifyDelta(deltaPercent) {
   if (typeof deltaPercent !== "number" || Number.isNaN(deltaPercent)) {
@@ -51,14 +52,12 @@ function classifyDelta(deltaPercent) {
   const absDelta = Math.abs(deltaPercent);
 
   const low = INSIGHT_THRESHOLDS?.MIN_STEP_DELTA_PERCENT ?? 5;
-  const highCap = INSIGHT_THRESHOLDS?.MAX_STEP_DELTA_PERCENT ?? 200;
 
   if (absDelta < low) return "low";
   if (absDelta < 20) return "medium";
   if (absDelta < 40) return "high";
   return "critical";
 }
-
 
 // ============================================================================
 // INSIGHT BUILDER — Structured understanding
@@ -80,11 +79,12 @@ function buildInsight({
     type,
     severity,
     message,
+
     meta: {
       layer: "PulseGPUInsightsEngine",
       role: "WISDOM_CORTEX",
-      version: "11.0-Evo-binary",
-      target: "full-gpu+binary",
+      version: "12.3-Spine-binary",
+      target: "full-gpu+binary+spine",
       selfRepairable: true,
 
       evo: {
@@ -92,17 +92,26 @@ function buildInsight({
         pulseEfficiencyAware: true,
         driftProof: true,
         unifiedAdvantageField: true,
-        pulseSend11Ready: true,
 
-        // Dual-mode + binary awareness
-        dualModeEvolution: true,
+        // v12.3 spine + dual-band + chunking
+        gpuSpineReady: true,
+        dualBandReady: true,
+        chunkingReady: true,
+        prewarmReady: true,
+
+        // awareness flags (metadata only)
         binaryAware: true,
         symbolicAware: true,
+        gpuDispatchAware: true,
+        gpuMemoryAware: true,
+        gpuAdvantageAware: true,
 
-        // Contracts (conceptual only)
-        routingContract: "PulseSend-v11",
-        gpuOrganContract: "PulseGPU-v11-Evo",
-        earnCompatibility: "Earn-v3",
+        // Contracts
+        pulseSend12Ready: true,
+        routingContract: "PulseSend-v12.3",
+        gpuOrganContract: "PulseGPU-v12.3-Spine",
+        binaryGpuOrganContract: "PulseBinaryGPU-v12.3-Spine",
+        earnCompatibility: "Earn-v4",
 
         // Legacy compatibility
         legacyRoutingContract: "PulseSend-v10.4",
@@ -129,7 +138,6 @@ function buildInsight({
 
   return insight;
 }
-
 
 // ============================================================================
 // GROUP STEPS — The Cortex organizes the story
@@ -166,7 +174,6 @@ function groupStepsById(traces = []) {
   return groups;
 }
 
-
 // ============================================================================
 // COMPUTE AVERAGES — The Cortex finds the pattern
 // ============================================================================
@@ -196,9 +203,8 @@ function computeStepAverages(groups) {
   return result;
 }
 
-
 // ============================================================================
-//  PULSE GPU INSIGHTS ENGINE — THE WISDOM CORTEX (v11-Evo-binary)
+//  PULSE GPU INSIGHTS ENGINE — THE WISDOM CORTEX (v12.3-Spine-binary)
 // ============================================================================
 class PulseGPUInsightsEngine {
   constructor() {}
@@ -288,7 +294,6 @@ class PulseGPUInsightsEngine {
     return this.analyzeStepDurations(filteredBaseline, filteredCurrent);
   }
 }
-
 
 // ============================================================================
 // EXPORTS

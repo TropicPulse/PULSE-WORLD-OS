@@ -1,34 +1,34 @@
 // ============================================================================
-//  PulseEarnReflexRouter-v11-Evo.js
-//  Reflex → Earn Synapse (v11-Evo + Dual-Band A-B-A)
-//  - No imports
-//  - No routing, no sending
-//  - Pure deterministic EarnReflex → Earn handoff
-//  - Fully aligned with PulseOSGovernor v3.3 (instance slicing safe)
-//  - Designed to run ONLY when explicitly called
-//  - v11: Diagnostics + Signatures + Pattern Surface
-//  - v11+ A-B-A: Dual-band + binary + wave (metadata-only, deterministic)
+//  PulseEarnReflexRouter-v12.3-PRESENCE-EVO+.js
+//  Reflex → Earn Synapse (v12.3 Presence + Advantage‑C + Chunk/Prewarm)
+//  Deterministic, Zero-Async, Zero-Routing, Zero-Sending
+//  Pure Reflex → Earn Handoff with Presence Surfaces
 // ============================================================================
-// ============================================================================
-// ORGAN IDENTITY — v11‑EVO‑PRIME (Reflex → Earn Synapse)
-// ============================================================================
+
 export const PulseRole = {
   type: "Synapse",
   subsystem: "PulseEarnReflexRouter",
   layer: "B1-ReflexToEarn",
-  version: "11.0-Evo-Prime",
-  identity: "PulseEarnReflexRouter-v11-Evo-Prime",
+  version: "12.3-PRESENCE-EVO+",
+  identity: "PulseEarnReflexRouter-v12.3-PRESENCE-EVO+",
 
   evo: {
-    // Core invariants
     driftProof: true,
     deterministicField: true,
     unifiedAdvantageField: true,
     futureEvolutionReady: true,
 
-    // Synapse laws
+    reflexSynapse: true,
+    reflexHandoffOnly: true,
+    reflexDeterministic: true,
+    reflexBandAware: true,
+    reflexABASurface: true,
+    reflexPresenceAware: true,
+    reflexAdvantageAware: true,
+    reflexChunkAware: true,
+
     zeroTiming: true,
-    zeroState: false,            // local reflex state allowed
+    zeroState: false,
     zeroMutation: true,
     zeroCompute: true,
     zeroRouting: true,
@@ -36,29 +36,21 @@ export const PulseRole = {
     zeroAsync: true,
     zeroRandomness: true,
 
-    // Reflex lineage
-    reflexSynapse: true,
-    reflexHandoffOnly: true,
-    reflexDeterministic: true,
-    reflexBandAware: true,
-    reflexABASurface: true,
-
-    // Band + metadata
     dualBand: true,
     binaryAware: true,
     symbolicAware: true,
     bandNormalizationAware: true,
 
-    // Safety + environment
     environmentAgnostic: true,
     multiInstanceReady: true
   }
 };
+
 export const PulseEarnReflexRouterMeta = Object.freeze({
   layer: "PulseEarnReflexRouter",
   role: "EARN_REFLEX_ROUTER_ORGAN",
-  version: "v11.2-EVO",
-  identity: "PulseEarnReflexRouter-v11.2-EVO",
+  version: "v12.3-PRESENCE-EVO+",
+  identity: "PulseEarnReflexRouter-v12.3-PRESENCE-EVO+",
 
   guarantees: Object.freeze({
     deterministic: true,
@@ -67,19 +59,15 @@ export const PulseEarnReflexRouterMeta = Object.freeze({
     noRealTime: true,
     noExternalIO: true,
     pureReflexSynapse: true,
+
     dualBandAware: true,
     binaryAware: true,
     waveFieldAware: true,
+    presenceAware: true,
+    advantageAware: true,
+    chunkPrewarmAware: true,
     healingMetadataAware: true,
-    worldLensAware: false,
 
-    // Reflex‑synapse laws
-    reflexSynapse: true,
-    reflexHandoffOnly: true,
-    reflexDeterministic: true,
-    reflexInstanceLaw: true,
-
-    // Execution laws
     zeroRouting: true,
     zeroSending: true,
     zeroCompute: true,
@@ -88,7 +76,7 @@ export const PulseEarnReflexRouterMeta = Object.freeze({
     zeroMutation: true,
     zeroTiming: true,
 
-    // Environment
+    worldLensAware: false,
     multiInstanceReady: true,
     environmentAgnostic: true
   }),
@@ -97,71 +85,45 @@ export const PulseEarnReflexRouterMeta = Object.freeze({
     input: [
       "EarnReflexOrganism",
       "ReflexSliceContext",
-      "DualBandContext"
+      "DualBandContext",
+      "DevicePhenotypePresence"
     ],
     output: [
       "ReflexRouterHandoff",
       "ReflexRouterDiagnostics",
       "ReflexRouterSignatures",
-      "ReflexRouterHealingState"
+      "ReflexRouterHealingState",
+      "ReflexRouterPresenceField",
+      "ReflexRouterAdvantageField",
+      "ReflexRouterChunkPrewarmPlan"
     ]
-  }),
-
-  lineage: Object.freeze({
-    root: "PulseOS-v11-EVO",
-    parent: "PulseEarn-v11.2-EVO",
-    ancestry: [
-      "PulseEarnReflexRouter-v9",
-      "PulseEarnReflexRouter-v10",
-      "PulseEarnReflexRouter-v11",
-      "PulseEarnReflexRouter-v11-Evo",
-      "PulseEarnReflexRouter-v11-Evo-Prime"
-    ]
-  }),
-
-  bands: Object.freeze({
-    supported: ["symbolic", "binary"],
-    default: "symbolic",
-    behavior: "metadata-only",
-    priority: "symbolic-first"
-  }),
-
-  architecture: Object.freeze({
-    pattern: "A-B-A",
-    baseline: "deterministic reflex → Earn handoff",
-    adaptive: "binary/wave surfaces + dual-band signatures",
-    return: "deterministic EarnReflex handoff + router signatures"
   })
 });
 
+// ============================================================================
+// INTERNAL STATE
+// ============================================================================
+const routedReflexes = new Map();
+let reflexRouteCycle = 0;
 
 // ============================================================================
-//  INTERNAL STATE — deterministic, drift-proof
-// ============================================================================
-const routedReflexes = new Map(); // reflexId -> state
-let reflexRouteCycle = 0;         // deterministic cycle counter
-
-
-// ============================================================================
-//  INTERNAL HELPERS — deterministic, tiny, pure
+// HELPERS
 // ============================================================================
 function computeHash(str) {
   let h = 0;
   const s = String(str || "");
-  for (let i = 0; i < s.length; i++) {
+  for (let i = 0; i < s.length; i++)
     h = (h + s.charCodeAt(i) * (i + 1)) % 100000;
-  }
   return `h${h}`;
 }
 
-function normalizeBand(band) {
-  const b = String(band || "symbolic").toLowerCase();
-  return b === "binary" ? "binary" : "symbolic";
+function normalizeBand(b) {
+  const x = String(b || "symbolic").toLowerCase();
+  return x === "binary" ? "binary" : "symbolic";
 }
 
 function getOrCreateReflexRouteState(reflexId) {
   let state = routedReflexes.get(reflexId);
-
   if (!state) {
     state = {
       reflexId,
@@ -171,128 +133,181 @@ function getOrCreateReflexRouteState(reflexId) {
     };
     routedReflexes.set(reflexId, state);
   }
-
   return state;
 }
 
-
 // ============================================================================
-//  Dual-Band + Binary + Wave Builder (v11+ A-B-A)
+// A‑B‑A BINARY + WAVE (12.3 PRESENCE)
 // ============================================================================
-function buildRouteBandBinaryWave(earnReflex, reflexId, cycleIndex) {
+function buildRouteBandBinaryWave(earnReflex, reflexId, cycleIndex, device) {
   const pattern = earnReflex?.pattern || "NO_PATTERN";
-  const sourcePulseId = earnReflex?.meta?.sourcePulseId || "NO_SOURCE_PULSE";
-  const sourceOrgan   = earnReflex?.meta?.sourceOrgan   || "NO_SOURCE_ORGAN";
-  const sourceReason  = earnReflex?.meta?.sourceReason  || "NO_SOURCE_REASON";
-
   const band = normalizeBand(
     earnReflex?.meta?.band ||
     earnReflex?.band ||
+    device?.band ||
     "symbolic"
   );
 
-  const patternLen = String(pattern).length;
-  const organLen   = String(sourceOrgan).length;
-  const reasonLen  = String(sourceReason).length;
-  const pulseLen   = String(sourcePulseId).length;
+  const patternLen = pattern.length;
+  const lineageDepth = earnReflex?.lineage?.length || 0;
+  const gpuScore = device?.gpuScore || 0;
 
-  const surface = patternLen + organLen + reasonLen + pulseLen + cycleIndex;
+  const surface = patternLen + lineageDepth + gpuScore + cycleIndex;
 
   const binaryField = {
-    binaryRouteSignature: computeHash(`BREFLEX_ROUTE::${reflexId}::${surface}`),
-    binarySurfaceSignature: computeHash(`BSURF_ROUTE::${surface}`),
+    binaryReflexSignature: computeHash(`BREFLEX::${reflexId}::${surface}`),
+    binarySurfaceSignature: computeHash(`BSURF_RFX::${surface}`),
     binarySurface: {
       patternLen,
-      organLen,
-      reasonLen,
-      pulseLen,
+      lineageDepth,
+      gpuScore,
       cycle: cycleIndex,
       surface
     },
     parity: surface % 2 === 0 ? 0 : 1,
-    density: organLen + reasonLen + patternLen,
+    density: patternLen + lineageDepth + gpuScore,
     shiftDepth: Math.max(0, Math.floor(Math.log2(surface || 1)))
   };
 
   const waveField = {
-    amplitude: patternLen,
+    amplitude: patternLen + gpuScore,
     wavelength: cycleIndex,
-    phase: (patternLen + organLen + reasonLen + cycleIndex) % 8,
+    phase: (patternLen + lineageDepth + cycleIndex) % 16,
     band,
     mode: band === "binary" ? "compression-wave" : "symbolic-wave"
   };
 
-  const bandSignature = computeHash(`BAND::REFLEX_ROUTE::${band}::${cycleIndex}`);
+  const bandSignature = computeHash(`BAND::REFLEX::${band}::${cycleIndex}`);
+
+  return { band, bandSignature, binaryField, waveField };
+}
+
+// ============================================================================
+// PRESENCE FIELD (12.3)
+// ============================================================================
+function buildPresenceField(earnReflex, device, cycleIndex) {
+  const patternLen = (earnReflex?.pattern || "").length;
+  const lineageDepth = earnReflex?.lineage?.length || 0;
+  const stability = device?.stabilityScore || 0.7;
+
+  const composite =
+    patternLen * 0.001 +
+    lineageDepth * 0.002 +
+    stability * 0.01;
+
+  const presenceTier =
+    composite >= 0.02 ? "presence_high" :
+    composite >= 0.005 ? "presence_mid" :
+    "presence_low";
 
   return {
-    band,
-    bandSignature,
-    binaryField,
-    waveField
+    presenceVersion: "v12.3",
+    presenceTier,
+    patternLen,
+    lineageDepth,
+    stability,
+    cycleIndex,
+    presenceSignature: computeHash(
+      `RFX_PRESENCE::${presenceTier}::${patternLen}::${lineageDepth}::${cycleIndex}`
+    )
   };
 }
 
+// ============================================================================
+// ADVANTAGE‑C FIELD (12.3)
+// ============================================================================
+function buildAdvantageField(earnReflex, device, bandPack, presenceField) {
+  const gpuScore = device?.gpuScore || 0;
+  const bandwidth = device?.bandwidthMbps || 0;
+  const density = bandPack.binaryField.density;
+  const amplitude = bandPack.waveField.amplitude;
+
+  const advantageScore =
+    gpuScore * 0.0005 +
+    bandwidth * 0.0002 +
+    density * 0.00001 +
+    amplitude * 0.00001 +
+    (presenceField.presenceTier === "presence_high" ? 0.01 : 0);
+
+  return {
+    advantageVersion: "C",
+    band: bandPack.band,
+    gpuScore,
+    bandwidth,
+    binaryDensity: density,
+    waveAmplitude: amplitude,
+    presenceTier: presenceField.presenceTier,
+    advantageScore
+  };
+}
 
 // ============================================================================
-//  Diagnostics Builder (v11-Evo + A-B-A)
+// CHUNK / CACHE / PREWARM PLAN (12.3)
 // ============================================================================
-function buildReflexDiagnostics(earnReflex, reflexId, state) {
+function buildChunkPrewarmPlan(earnReflex, device, presenceField) {
+  const basePriority =
+    presenceField.presenceTier === "presence_high"
+      ? 3
+      : presenceField.presenceTier === "presence_mid"
+      ? 2
+      : 1;
+
+  const gpuBoost = (device?.gpuScore || 0) > 600 ? 1 : 0;
+  const priority = basePriority + gpuBoost;
+
+  return {
+    planVersion: "v12.3-AdvantageC",
+    priority,
+    band: presenceField.presenceTier,
+    chunks: {
+      reflexEnvelope: true,
+      earnHandoff: true
+    },
+    cache: {
+      reflexDiagnostics: true
+    },
+    prewarm: {
+      earnSystem: presenceField.presenceTier !== "presence_low"
+    }
+  };
+}
+
+// ============================================================================
+// DIAGNOSTICS
+// ============================================================================
+function buildReflexDiagnostics(earnReflex, reflexId, state, bandPack, presenceField) {
   const pattern = earnReflex?.pattern || "NO_PATTERN";
-  const lineageDepth = Array.isArray(earnReflex?.lineage)
-    ? earnReflex.lineage.length
-    : 0;
+  const lineageDepth = earnReflex?.lineage?.length || 0;
 
-  const sourcePulseId = earnReflex?.meta?.sourcePulseId || "NO_SOURCE_PULSE";
-  const sourceOrgan   = earnReflex?.meta?.sourceOrgan   || "NO_SOURCE_ORGAN";
-  const sourceReason  = earnReflex?.meta?.sourceReason  || "NO_SOURCE_REASON";
-
-  const base = {
+  return {
     reflexId,
     pattern,
     lineageDepth,
-    sourcePulseId,
-    sourceOrgan,
-    sourceReason,
     cycleIndex: reflexRouteCycle,
+    instanceCount: state.count,
+    firstSeenCycle: state.firstSeenCycle,
+    lastSeenCycle: state.lastSeenCycle,
 
     patternHash: computeHash(pattern),
     lineageHash: computeHash(String(lineageDepth)),
-    sourceHash: computeHash(sourcePulseId + "::" + sourceOrgan),
     reflexHash: computeHash(reflexId),
     cycleHash: computeHash(String(reflexRouteCycle)),
 
-    instanceCount: state.count,
-    firstSeenCycle: state.firstSeenCycle,
-    lastSeenCycle: state.lastSeenCycle
-  };
-
-  const bandPack = buildRouteBandBinaryWave(
-    earnReflex,
-    reflexId,
-    base.cycleIndex
-  );
-
-  return {
-    ...base,
     band: bandPack.band,
     bandSignature: bandPack.bandSignature,
     binaryField: bandPack.binaryField,
-    waveField: bandPack.waveField
+    waveField: bandPack.waveField,
+
+    presenceField
   };
 }
 
-
 // ============================================================================
-//  PUBLIC API — PulseEarnReflexRouter v11-Evo + Dual-Band A-B-A
+// PUBLIC API — FULL PRESENCE UPGRADE
 // ============================================================================
 export const PulseEarnReflexRouter = {
 
-  /**
-   * route(earnReflex, EarnSystem)
-   * - earnReflex: the organism built by PulseEarnReflex
-   * - EarnSystem: the frontend Earn engine (PulseEarn)
-   */
-  route(earnReflex, EarnSystem) {
+  route(earnReflex, EarnSystem, deviceProfile = {}) {
     reflexRouteCycle++;
 
     if (!earnReflex || !earnReflex.meta?.reflex) {
@@ -308,12 +323,44 @@ export const PulseEarnReflexRouter = {
       `${earnReflex.meta.sourcePulseId}::${earnReflex.meta.sourceOrgan}::${earnReflex.meta.sourceReason}`;
 
     const state = getOrCreateReflexRouteState(reflexId);
-    state.count += 1;
+    state.count++;
     state.lastSeenCycle = reflexRouteCycle;
 
-    const diagnostics = buildReflexDiagnostics(earnReflex, reflexId, state);
+    // Build surfaces
+    const bandPack = buildRouteBandBinaryWave(
+      earnReflex,
+      reflexId,
+      reflexRouteCycle,
+      deviceProfile
+    );
 
-    // v11+ A-B-A reflexRouteSignature (band-aware, deterministic)
+    const presenceField = buildPresenceField(
+      earnReflex,
+      deviceProfile,
+      reflexRouteCycle
+    );
+
+    const advantageField = buildAdvantageField(
+      earnReflex,
+      deviceProfile,
+      bandPack,
+      presenceField
+    );
+
+    const chunkPrewarmPlan = buildChunkPrewarmPlan(
+      earnReflex,
+      deviceProfile,
+      presenceField
+    );
+
+    const diagnostics = buildReflexDiagnostics(
+      earnReflex,
+      reflexId,
+      state,
+      bandPack,
+      presenceField
+    );
+
     const reflexRouteSignature = computeHash(
       diagnostics.pattern +
       "::" +
@@ -321,10 +368,12 @@ export const PulseEarnReflexRouter = {
       "::" +
       diagnostics.cycleIndex +
       "::" +
-      diagnostics.band
+      diagnostics.band +
+      "::" +
+      presenceField.presenceTier
     );
 
-    // If EarnSystem is missing or not ready, fail-open (immune-safe)
+    // If EarnSystem missing → fail-open
     if (!EarnSystem || typeof EarnSystem.handle !== "function") {
       return {
         ok: false,
@@ -332,28 +381,25 @@ export const PulseEarnReflexRouter = {
         reflexId,
         state,
         diagnostics,
-        reflexRouteSignature
+        reflexRouteSignature,
+        presenceField,
+        advantageField,
+        chunkPrewarmPlan
       };
     }
 
-    // -----------------------------------------------------------------------
-    //  SAFE HANDOFF (v11-Evo):
-    //  - No routing
-    //  - No sending
-    //  - No returnTo
-    //  - No lineage mutation
-    //  - No async
-    //  - Pure EarnSystem.handle() call
-    // -----------------------------------------------------------------------
+    // SAFE HANDOFF (no routing, no sending)
     try {
       const result = EarnSystem.handle(earnReflex, {
         reflex: true,
         reflexId,
         state,
-        instanceContext: earnReflex.meta.instanceContext || null,
         cycleIndex: reflexRouteCycle,
         diagnostics,
-        reflexRouteSignature
+        reflexRouteSignature,
+        presenceField,
+        advantageField,
+        chunkPrewarmPlan
       });
 
       return {
@@ -363,8 +409,12 @@ export const PulseEarnReflexRouter = {
         state,
         diagnostics,
         reflexRouteSignature,
+        presenceField,
+        advantageField,
+        chunkPrewarmPlan,
         result
       };
+
     } catch (error) {
       return {
         ok: false,
@@ -373,14 +423,14 @@ export const PulseEarnReflexRouter = {
         state,
         diagnostics,
         reflexRouteSignature,
+        presenceField,
+        advantageField,
+        chunkPrewarmPlan,
         error
       };
     }
   },
 
-  // -------------------------------------------------------------------------
-  //  Debug / Dashboard
-  // -------------------------------------------------------------------------
   getRoutedState(reflexId) {
     if (reflexId) return routedReflexes.get(reflexId) || null;
     return Array.from(routedReflexes.values());

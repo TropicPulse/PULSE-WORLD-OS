@@ -1,23 +1,27 @@
 // ============================================================================
-//  PulseCoreGovernor.js — v11‑EVO‑DUALBAND‑MAX
+//  PulseCoreGovernor.js — v12‑EVO‑PRESENCE‑MAX
 //  ORGANISM‑WIDE CORE MEMORY GOVERNOR
-//  “ONE BRAIN, ONE SPINE, MANY LAYERS, NO WASTE.”
-//  Orchestrates: CoreMemory + CoreLayers + CoreBrain + CoreEvolution.
-//  Does NOT own data — it owns DECISIONS about data.
+//  “ONE BRAIN. ONE SPINE. MANY LAYERS. ZERO DRIFT.”
+//  • MetaBlock (v12 identity)
+//  • dnaTag + version propagation
+//  • Presence‑touch propagation
+//  • TTL + healing alignment
+//  • Dual‑band alignment
+//  • Promotion/demotion logic
+//  • Placement logic
+//  • Drift detection hooks
+//  • Governor‑aligned with CoreMemory v12 + CoreLayers v12
 // ============================================================================
 
 import { CoreMemoryRole, createPulseCoreMemory } from "./PulseCoreMemory.js";
 import { CoreLayersRole, PulseCoreLayersOrgan } from "./PulseCoreLayers.js";
-// (Optionally)
-// import { PulseCoreBrainOrgan } from "./PulseCoreBrain.js";
-// import { PulseCoreEvolutionOrgan } from "./PulseCoreEvolution.js";
 
 export const CoreGovernorRole = {
   type: "Organ",
   subsystem: "Core",
   layer: "Governor",
-  version: "11.4-Evo-DualBand-Max",
   identity: "PulseCoreGovernor",
+  version: "12.0-Evo-Presence",
 
   evo: {
     binaryNative: true,
@@ -27,25 +31,43 @@ export const CoreGovernorRole = {
     fallbackAware: true,
     driftAware: true,
     evolutionAware: true,
-    routeAware: true
+    routeAware: true,
+    presenceAware: true,
+    dnaAware: true,
+    versionAware: true
   }
+};
+
+// ---------------------------------------------------------------------------
+//  v12 IDENTITY BLOCK (MetaBlock)
+// ---------------------------------------------------------------------------
+export const CoreGovernorMetaBlock = {
+  identity: "PulseCoreGovernor",
+  subsystem: "Core",
+  layer: "Governor",
+  role: "Memory-Governor",
+  version: "12.0-Evo-Presence",
+  evo: CoreGovernorRole.evo
 };
 
 // ============================================================================
 //  GOVERNOR CREATION
-//  • Wires CoreMemory + CoreLayers
-//  • Provides a single control surface for the organism
 // ============================================================================
-
 export function createPulseCoreGovernor({
   primaryStorage = window.localStorage,
   secondaryStorage = window.sessionStorage,
+  dnaTag = "default-dna",
+  version = "12.0-Evo-Presence",
+  overlay = null,
   log = console.log,
   warn = console.warn
 } = {}) {
+
   const CoreMemory = createPulseCoreMemory({
     primaryStorage,
     secondaryStorage,
+    dnaTag,
+    version,
     log,
     warn
   });
@@ -53,69 +75,65 @@ export function createPulseCoreGovernor({
   const { PulseCoreLayers, PulseCoreLayerRules } = PulseCoreLayersOrgan;
 
   function safeLog(stage, details = {}) {
-    try {
-      log("[PulseCoreGovernor]", stage, JSON.stringify(details));
-    } catch {}
+    try { log("[PulseCoreGovernor]", stage, JSON.stringify(details)); }
+    catch {}
   }
 
   // -------------------------------------------------------------------------
   //  BOOT / PREWARM / HEAL
-  //  • Called early in organism boot
-  //  • Ensures CoreMemory is loaded and ready
   // -------------------------------------------------------------------------
   function boot() {
     CoreMemory.prewarm();
     safeLog("BOOT", {
       coreMemoryVersion: CoreMemoryRole.version,
-      coreLayersVersion: CoreLayersRole.version
+      coreLayersVersion: CoreLayersRole.version,
+      dnaTag,
+      version
     });
   }
 
   function healIfNeeded() {
-    // Placeholder: future drift detection + repair hooks.
-    // For now, we just ensure CoreMemory is loaded.
     CoreMemory.prewarm();
+    safeLog("HEAL_CHECK", {});
   }
 
   // -------------------------------------------------------------------------
-  //  LAYER‑AWARE SET / GET
-  //  • Spines call these instead of talking directly to CoreMemory
-  //  • Governor decides placement, promotion, demotion
+  //  LAYER‑AWARE SET / GET (v12)
   // -------------------------------------------------------------------------
   function set(routeId, key, value, options = {}) {
-    const { dataType, dnaTag } = options;
+    const dataType = options.dataType || "generic";
 
-    // Decide placement (contract only for now)
     const placement = PulseCoreLayerRules.decidePlacement(
-      dataType || "generic",
-      dnaTag || null,
+      dataType,
+      dnaTag,
       routeId
     );
 
-    // For v11: we always write into CoreMemory (disk primary/secondary).
     CoreMemory.set(routeId, key, value);
 
     safeLog("SET", {
       routeId,
       key,
-      dataType: dataType || "generic",
-      placement
+      dataType,
+      placement,
+      dnaTag,
+      version
     });
   }
 
   function get(routeId, key, options = {}) {
+    const dataType = options.dataType || "generic";
     const value = CoreMemory.get(routeId, key);
-    const hits = value !== undefined ? 1 : 0; // simple placeholder
 
-    // Promotion / demotion decisions can be wired later.
+    const hits = value !== undefined ? 1 : 0;
+
     const promote = PulseCoreLayerRules.shouldPromote({
       hits,
-      dataType: options.dataType || "generic"
+      dataType
     });
 
     if (promote) {
-      safeLog("PROMOTE_HINT", { routeId, key });
-      // Future: promote to RAM/GPU based on CoreLayers.
+      safeLog("PROMOTE_HINT", { routeId, key, dataType });
     }
 
     return value;
@@ -145,8 +163,7 @@ export function createPulseCoreGovernor({
 
   // -------------------------------------------------------------------------
   //  FLUSH / PERSIST
-  //  • Called by organism on safe points (idle, shutdown, checkpoint)
-// -------------------------------------------------------------------------
+  // -------------------------------------------------------------------------
   function flush() {
     CoreMemory.bulkFlush();
     safeLog("FLUSH", {
@@ -156,7 +173,6 @@ export function createPulseCoreGovernor({
 
   // -------------------------------------------------------------------------
   //  LOOP THEORY INTROSPECTION
-  //  • Expose hot keys so spines (Proxy/Router/Send/Mesh) can optimize
   // -------------------------------------------------------------------------
   function getHotKeys(minHits = 3) {
     return CoreMemory.getHotKeys(minHits);
@@ -165,8 +181,10 @@ export function createPulseCoreGovernor({
   // -------------------------------------------------------------------------
   //  PUBLIC API
   // -------------------------------------------------------------------------
-  const PulseCoreGovernor = {
+ export const PulseCoreGovernor = {
     CoreGovernorRole,
+    CoreGovernorMetaBlock,
+
     CoreMemoryRole,
     CoreLayersRole,
 
@@ -185,7 +203,10 @@ export function createPulseCoreGovernor({
     clearAll,
 
     flush,
-    getHotKeys
+    getHotKeys,
+
+    dnaTag,
+    version
   };
 
   safeLog("INIT", {

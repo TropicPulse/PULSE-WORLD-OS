@@ -1,12 +1,13 @@
 // ============================================================================
-//  PulseSend-v11-Evo.js — PulseSend Organism v11.0 (Symbolic Edition)
+//  PulseSend-v12.3-Evo.js — PulseSend Organism v12.3 (Symbolic Edition)
 //  Evolutionary Transport Organ • Pattern + Lineage + Shape • SDN-Aware
-//  11.0: Fallback Surface + Movement Surface + Route Surface + Diagnostics
+//  12.3: Fallback Surface + Movement Surface + Route Surface + Diagnostics
+//        + cacheChunkSurface + prewarmSurface + presenceSurface
 //  NOTE: This is the SYMBOLIC (pre-binary) top-level PulseSend.
 // ============================================================================
 //
-//  SAFETY CONTRACT (v11-Evo):
-//  --------------------------
+//  SAFETY CONTRACT (v12.3-Evo):
+//  ----------------------------
 //  • No randomness.
 //  • No timestamps.
 //  • No external IO.
@@ -16,14 +17,14 @@
 
 
 // ============================================================================
-// ⭐ PulseRole — identifies this as the PulseSend Organ Wrapper (v11)
+// ⭐ PulseRole — identifies this as the PulseSend Organ Wrapper (v12.3)
 // ============================================================================
 export const PulseRole = {
   type: "Messenger",
   subsystem: "PulseSend",
   layer: "TransportSystem",
-  version: "11.0",
-  identity: "PulseSend-v11-Evo",
+  version: "12.3",
+  identity: "PulseSend-v12.3-Evo",
 
   evo: {
     driftProof: true,
@@ -46,7 +47,12 @@ export const PulseRole = {
     returnArcAware: true,
     pathwayAware: true,
     routerAware: true,
-    meshAware: true
+    meshAware: true,
+
+    // 12.3+: cache / prewarm / presence
+    cacheChunkAware: true,
+    prewarmAware: true,
+    multiPresenceAware: true
   },
 
   routingContract: "PulseRouter-v11",
@@ -66,6 +72,19 @@ function computeHash(str) {
     h = (h + str.charCodeAt(i) * (i + 1)) % 100000;
   }
   return `h${h}`;
+}
+
+function stableStringify(value) {
+  if (value === null || typeof value !== "object") return JSON.stringify(value);
+  if (Array.isArray(value)) {
+    return "[" + value.map(stableStringify).join(",") + "]";
+  }
+  const keys = Object.keys(value).sort();
+  return (
+    "{" +
+    keys.map((k) => JSON.stringify(k) + ":" + stableStringify(value[k])).join(",") +
+    "}"
+  );
 }
 
 function buildFallbackSurface(type, error) {
@@ -128,7 +147,73 @@ function buildReturnSurface(result) {
 
 
 // ============================================================================
-//  FACTORY — Build the Full PulseSend v11 Organism (Symbolic Edition)
+//  12.3+ surfaces — cacheChunk / prewarm / presence
+// ============================================================================
+function buildCacheChunkSurface({ jobId, pattern, targetOrgan, pathway, mode, pulseType }) {
+  const shape = {
+    jobId: jobId || "NO_JOB",
+    pattern: pattern || "",
+    targetOrgan: targetOrgan || null,
+    pathway: pathway || null,
+    mode: mode || "normal",
+    pulseType: pulseType || "UNKNOWN"
+  };
+
+  const serialized = stableStringify(shape);
+  const cacheChunkKey = "psend-cache::" + computeHash(serialized);
+
+  return {
+    cacheChunkKey,
+    cacheChunkSignature: computeHash(cacheChunkKey)
+  };
+}
+
+function buildPrewarmSurface({ priority, mode, pathway }) {
+  const safePriority = priority || "normal";
+  const safeMode = mode || "normal";
+  const hasPathway = !!pathway;
+
+  let level = "none";
+  if (safePriority === "high" || safePriority === "critical") {
+    level = "aggressive";
+  } else if (safePriority === "normal" && hasPathway) {
+    level = "medium";
+  } else if (safePriority === "low" && hasPathway) {
+    level = "light";
+  }
+
+  const raw = stableStringify({ priority: safePriority, mode: safeMode, hasPathway });
+  const prewarmKey = "psend-prewarm::" + computeHash(raw);
+
+  return {
+    level,
+    prewarmKey
+  };
+}
+
+function buildPresenceSurface({ pattern, pathway }) {
+  const safePattern = pattern || "";
+  const hasPathway = !!pathway;
+
+  let scope = "local";
+  if (hasPathway && safePattern.includes("/global")) {
+    scope = "global";
+  } else if (hasPathway && safePattern.includes("/page")) {
+    scope = "page";
+  }
+
+  const raw = stableStringify({ pattern: safePattern, hasPathway, scope });
+  const presenceKey = "psend-presence::" + computeHash(raw);
+
+  return {
+    scope,
+    presenceKey
+  };
+}
+
+
+// ============================================================================
+//  FACTORY — Build the Full PulseSend v12.3 Organism (Symbolic Edition)
 // ============================================================================
 export function createPulseSend({
   createPulseV3,
@@ -151,7 +236,7 @@ export function createPulseSend({
     try {
       sdn.emitImpulse(source, payload);
     } catch (e) {
-      log && log("[PulseSend-v11] SDN emit failed (non-fatal)", { source, error: e });
+      log && log("[PulseSend-v12.3] SDN emit failed (non-fatal)", { source, error: e });
     }
   }
 
@@ -179,7 +264,13 @@ export function createPulseSend({
       pulseType = "Pulse-v3";
     } catch (errV3) {
       fallbackSurface = buildFallbackSurface("v3→v2", errV3);
-      emitSDN("send:pulse-fallback", { jobId, pattern, from: "v3", to: "v2", error: String(errV3) });
+      emitSDN("send:pulse-fallback", {
+        jobId,
+        pattern,
+        from: "v3",
+        to: "v2",
+        error: String(errV3)
+      });
     }
 
     // ⭐ Tier 2 — Pulse v2
@@ -189,7 +280,13 @@ export function createPulseSend({
         pulseType = "Pulse-v2";
       } catch (errV2) {
         fallbackSurface = buildFallbackSurface("v2→v1", errV2);
-        emitSDN("send:pulse-fallback", { jobId, pattern, from: "v2", to: "v1", error: String(errV2) });
+        emitSDN("send:pulse-fallback", {
+          jobId,
+          pattern,
+          from: "v2",
+          to: "v1",
+          error: String(errV2)
+        });
       }
     }
 
@@ -244,6 +341,27 @@ export function createPulseSend({
 
     emitSDN("send:complete", { jobId, pattern, targetOrgan, mode, pulseType });
 
+    // ⭐ 12.3 surfaces — cacheChunk / prewarm / presence
+    const cacheChunkSurface = buildCacheChunkSurface({
+      jobId,
+      pattern,
+      targetOrgan,
+      pathway,
+      mode,
+      pulseType
+    });
+
+    const prewarmSurface = buildPrewarmSurface({
+      priority,
+      mode,
+      pathway
+    });
+
+    const presenceSurface = buildPresenceSurface({
+      pattern,
+      pathway
+    });
+
     // ⭐ Return full telemetry
     return {
       PulseRole,
@@ -257,6 +375,10 @@ export function createPulseSend({
       pathwaySurface,
       movementSurface,
       returnSurface,
+
+      cacheChunkSurface,
+      prewarmSurface,
+      presenceSurface,
 
       diagnostics: buildSendDiagnostics({
         jobId,
@@ -275,14 +397,14 @@ export function createPulseSend({
 
 
 // ============================================================================
-//  ORGAN EXPORT — ⭐ PulseSend (v11)
+//  ORGAN EXPORT — ⭐ PulseSend (v12.3)
 // ============================================================================
 export const PulseSend = {
   PulseRole,
 
   send(...args) {
     throw new Error(
-      "[PulseSend-v11] PulseSend.send() was called before initialization. " +
+      "[PulseSend-v12.3] PulseSend.send() was called before initialization. " +
       "Use createPulseSend(...) to wire dependencies."
     );
   }

@@ -1,42 +1,47 @@
 // ============================================================================
-// FILE: /apps/PULSE-PROXY/CheckBand-v11-EVO-BINARY.js
-// PULSE INSTANCE ORCHESTRATOR — “CHECKBAND” — v11‑EVO‑BINARY
+// FILE: /apps/PULSE-PROXY/CheckBand-v12.3-PRESENCE-EVO-BINARY.js
+// PULSE INSTANCE ORCHESTRATOR — “CHECKBAND” — v12.3‑PRESENCE‑EVO‑BINARY‑MAX
 // “THE BAND CONTROLLER / INSTANCE ADRENAL SYSTEM / BINARY-FIRST ORCHESTRATOR”
+// Backbone for PulseBand presence + PulseNet pulses + instance scaling
 // ============================================================================
 //
-// ROLE (v11‑EVO‑BINARY / CHECKBAND):
+// ROLE (v12.3‑PRESENCE‑EVO‑BINARY‑MAX / CHECKBAND):
 //   • Backend‑only, PULSE‑folder organ (safe for OSKernel + proxy spine)
-//   • Orchestrates per‑user “instance band” (active workers) deterministically
-//   • Reads UserScores → computes instance band size → launches/shuts workers
+//   • Backbone band controller for PulseBand + PulseNet + presence
+//   • Orchestrates per‑user “instance band” deterministically
+//   • Reads UserScores → presence/pulse quality → computes band size
 //   • Binary‑first, dualband: symbolic view + binary compression metadata
 //   • No timers, no intervals, no Date.now — pure metadata + Firestore writes
-//   • Designed to run on a binary‑designed organism: no middleman layers
+//   • Designed for binary organism + presence upgrade + advantage cascade
 //
-// INTENT (ALIGNMENT WITH PULSE INTENT MAP v11‑EVO):
+// INTENT (ALIGNMENT WITH PULSE INTENT MAP v12.3‑PRESENCE‑EVO):
 //   • binaryFirstEvolution: instance orchestration respects binary organism first
 //   • preferBinaryRouteFirst: CheckBand is the binary‑aware band controller
-//   • noTextFirstPaths: no async nervous system, no timer‑driven scaling
-//   • deterministicOrganism: same input scores → same band shape, replayable
-//   • fail‑open: if Firestore or scores drift, band degrades safely, never panics
+//   • presenceBackbone: band reacts to presence/pulse quality, never panics
+//   • fallbackDegradeSafe: worse pulses/presence → lower band, never higher
+//   • deterministicOrganism: same inputs → same band shape, replayable
+//   • fail‑open: if Firestore or scores drift, band degrades safely to 1
 //
-// CONTRACT (v11‑EVO‑BINARY):
+// CONTRACT (v12.3‑PRESENCE‑EVO‑BINARY‑MAX):
 //   • Backend‑only organ (PULSE‑ prefix, no frontend imports)
 //   • No randomness, no Date.now, no timers, no async loops
 //   • Never mutates external inputs (UserScores docs are read‑only)
 //   • Only legal mutable state: in‑memory activeWorkers registry
-//   • Deterministic, loggable, replayable, binary‑aware
+//   • Deterministic, loggable, replayable, binary‑aware, presence‑aware
 //   • Snapshots are metadata‑only, safe for OS‑Healer + GlobalHealer
 // ============================================================================
+
 export const PulseOSCheckBandMeta = Object.freeze({
   layer: "PulseProxyAdrenalSystem",
   role: "BAND_CONTROLLER_ORGAN",
-  version: "v11.2-EVO-BINARY-MAX",
-  identity: "CheckBand-v11.2-EVO-BINARY-MAX",
+  version: "v12.3-PRESENCE-EVO-BINARY-MAX",
+  identity: "CheckBand-v12.3-PRESENCE-EVO-BINARY-MAX",
 
   guarantees: Object.freeze({
     deterministic: true,
     driftProof: true,
     multiInstanceReady: true,
+    parallelSafe: true,
 
     // Adrenal laws
     adrenalOrgan: true,
@@ -50,6 +55,20 @@ export const PulseOSCheckBandMeta = Object.freeze({
     advantageCascadeAware: true,
     pulseEfficiencyAware: true,
     pulseSendAware: true,
+    zeroDriftCloning: true,
+    clusterCoherence: true,
+    organismClusterBoost: true,
+
+    // Presence / Pulse / Prewarm awareness
+    presenceBackbone: true,
+    presenceAware: true,
+    bluetoothPresenceAware: true,
+    pulseQualityAware: true,
+    pulseDegradeSafe: true,
+    pulseFallbackAware: true,
+    prewarmAware: true,
+    cacheChunkAware: true,
+    pulsebandBackbone: true,
 
     // Execution prohibitions
     zeroTimers: true,
@@ -62,6 +81,15 @@ export const PulseOSCheckBandMeta = Object.freeze({
     zeroNetworkFetch: true,        // Firestore allowed, fetch not allowed
     zeroFrontendAccess: true,
     zeroWindowAccess: true,
+    zeroDOM: true,
+    zeroGPU: true,
+
+    // Awareness
+    bandAware: true,
+    waveFieldAware: true,
+    binaryFieldAware: true,
+    symbolicBandAware: true,
+    dualBandPresenceAware: true,
 
     // Environment
     localAware: true,
@@ -73,7 +101,9 @@ export const PulseOSCheckBandMeta = Object.freeze({
     input: [
       "UserScoresSnapshot",
       "ProxyContext",
-      "DualBandContext"
+      "DualBandContext",
+      "PresenceContext",
+      "PulseQualityContext"
     ],
     output: [
       "InstanceBandShape",
@@ -86,14 +116,15 @@ export const PulseOSCheckBandMeta = Object.freeze({
   }),
 
   lineage: Object.freeze({
-    root: "PulseProxy-v11-EVO",
-    parent: "PulseProxy-v11.2-EVO",
+    root: "PulseProxy-v12.3",
+    parent: "PulseProxy-v12.3-PRESENCE-EVO",
     ancestry: [
       "CheckBand-v9",
       "CheckBand-v10",
       "CheckBand-v11",
       "CheckBand-v11-Evo",
-      "CheckBand-v11-Evo-Binary"
+      "CheckBand-v11-Evo-Binary",
+      "CheckBand-v11.2-EVO-BINARY-MAX"
     ]
   }),
 
@@ -105,9 +136,9 @@ export const PulseOSCheckBandMeta = Object.freeze({
 
   architecture: Object.freeze({
     pattern: "A-B-A",
-    baseline: "UserScores → deterministic band → worker launch/shutdown",
-    adaptive: "binary-first scaling surfaces",
-    return: "deterministic instance band + signatures"
+    baseline: "UserScores + Presence + PulseQuality → deterministic band → worker launch/shutdown",
+    adaptive: "binary-first scaling surfaces + dualband presence overlays",
+    return: "deterministic instance band + signatures + presence-aware surfaces"
   })
 });
 
@@ -116,25 +147,24 @@ export const PulseOSCheckBandMeta = Object.freeze({
 //  OSKernel imports (backend‑safe)
 // ============================================================================
 
-// Firestore (backend‑only)
 import { getFirestore } from "firebase-admin/firestore";
 const db = getFirestore();
 
 
 // ============================================================================
-//  PULSE ROLE — v11‑EVO‑BINARY Identity (CHECKBAND)
+//  PULSE ROLE — v12.3‑PRESENCE‑EVO‑BINARY‑MAX Identity (CHECKBAND)
 // ============================================================================
 export const PulseRole = {
   type: "Organ",
   subsystem: "PulseProxy",
   layer: "AdrenalSystem",
-  version: "11.0-EVO-BINARY",
-  identity: "CheckBand-v11-EVO-BINARY",
+  version: "12.3-PRESENCE-EVO-BINARY-MAX",
+  identity: "CheckBand-v12.3-PRESENCE-EVO-BINARY-MAX",
 
   evo: {
     // Dualband + binary‑first nervous system
-    dualMode: true,                 // Symbolic + binary metadata
-    binaryFirst: true,              // Binary organism first, no middlemen
+    dualMode: true,
+    binaryFirst: true,
     localAware: true,
     internetAware: true,
     advantageCascadeAware: true,
@@ -146,18 +176,29 @@ export const PulseRole = {
     multiInstanceReady: true,
     unifiedAdvantageField: true,
     pulseSendAware: true,
+    zeroDriftCloning: true,
+    clusterCoherence: true,
+    organismClusterBoost: true,
+
+    // Presence / Pulse
+    presenceBackbone: true,
+    presenceAware: true,
+    bluetoothPresenceAware: true,
+    pulseQualityAware: true,
+    pulseDegradeSafe: true,
+    pulseFallbackAware: true,
 
     // Evolution + future‑proofing
     futureEvolutionReady: true,
-    binaryOrganismAligned: true,    // Aligned with AIBinaryOrganism
-    noTimers: true,                 // No timer‑based nervous system
-    noAsyncLoops: true              // No self‑driving loops
+    binaryOrganismAligned: true,
+    noTimers: true,
+    noAsyncLoops: true
   }
 };
 
 
 // ============================================================================
-//  ORGAN CONTEXT — v11‑EVO‑BINARY
+//  ORGAN CONTEXT — v12.3‑PRESENCE‑EVO‑BINARY‑MAX
 // ============================================================================
 const ADRENAL_CONTEXT = {
   layer: PulseRole.layer,
@@ -168,12 +209,12 @@ const ADRENAL_CONTEXT = {
   binaryFirst: true,
   dualband: true,
   purpose:
-    "Deterministic instance band controller (CheckBand) for per‑user worker orchestration"
+    "Deterministic instance band controller (CheckBand) for per‑user worker orchestration + presence/pulse backbone"
 };
 
 
 // ============================================================================
-//  MODES — Orchestrator routing modes (v11‑EVO‑BINARY)
+//  MODES — Orchestrator routing modes
 // ============================================================================
 export const ORCHESTRATOR_MODES = {
   NORMAL: "normal",
@@ -183,9 +224,7 @@ export const ORCHESTRATOR_MODES = {
 
 
 // ============================================================================
-//  CONFIG — Physiological Limits (v11, drift‑proof, binary‑aware)
-//  • These are the “band width” limits per device tier
-//  • No randomness, no auto‑tuning at runtime
+//  CONFIG — Physiological Limits (drift‑proof, binary‑aware)
 // ============================================================================
 export const NORMAL_MAX     = 4;
 export const UPGRADED_MAX   = 8;
@@ -200,18 +239,32 @@ export const ENABLE_INSTANCE_LOGGING = true;
 export const INSTANCE_LOG_COLLECTION = "UserInstanceLogs";
 
 
+// Presence / pulse quality bands (symbolic inputs → deterministic factors)
+export const PULSE_QUALITY = {
+  EXCELLENT: "excellent",
+  GOOD: "good",
+  WEAK: "weak",
+  CRITICAL: "critical",
+  UNKNOWN: "unknown"
+};
+
+export const PRESENCE_TIER = {
+  FULL: "full",          // strong Bluetooth + device presence
+  PARTIAL: "partial",
+  BACKGROUND: "background",
+  OFFLINE: "offline",
+  UNKNOWN: "unknown"
+};
+
+
 // ============================================================================
 //  INTERNAL STATE — Active “cells” per user (CHECKBAND REGISTRY)
-//  • Only legal mutable registry in this organ
-//  • Represents the current “band” of active instances per user
 // ============================================================================
 const activeWorkers = new Map(); // userId -> worker[]
 
 
 // ============================================================================
 //  BINARY HELPERS — Instance Signatures + Drift Flags
-//  • Binary signatures compress band state for binary nervous system
-//  • Drift flags detect impossible or suspicious band shapes
 // ============================================================================
 let adrenalSeq = 0; // deterministic sequence counter (replaces Date.now)
 
@@ -237,7 +290,7 @@ function computeBandDriftFlags(finalInstances, maxAllowed) {
 
 
 // ============================================================================
-//  DEVICE TIER → MAX INSTANCES (deterministic, v11‑EVO‑BINARY)
+//  DEVICE TIER → MAX INSTANCES (deterministic)
 // ============================================================================
 function getDeviceMax(deviceTier, testEarnActive, orchestratorMode) {
   if (orchestratorMode === ORCHESTRATOR_MODES.DRAIN) {
@@ -260,15 +313,50 @@ function getDeviceMax(deviceTier, testEarnActive, orchestratorMode) {
 
 
 // ============================================================================
-//  COMPUTE FINAL INSTANCE COUNT — Deterministic v11‑EVO‑BINARY
-//  • No randomness
-//  • No timers
-//  • Binary‑aware band shaping
+//  PULSE / PRESENCE DEGRADE FACTOR — deterministic fallback ladder
+//  • Worse pulses/presence → lower band, never higher
+//  • Always returns factor in (0, 1], never 0
 // ============================================================================
-function computeFinalInstances(base, deviceTier, earnMode, testEarnActive, orchestratorMode) {
+function computePulsePresenceDegradeFactor(pulseQuality, presenceTier) {
+  const pq = pulseQuality || PULSE_QUALITY.UNKNOWN;
+  const pt = presenceTier || PRESENCE_TIER.UNKNOWN;
+
+  // Base factor from pulse quality
+  let factor = 1.0;
+  if (pq === PULSE_QUALITY.EXCELLENT) factor = 1.0;
+  else if (pq === PULSE_QUALITY.GOOD) factor = 0.85;
+  else if (pq === PULSE_QUALITY.WEAK) factor = 0.6;
+  else if (pq === PULSE_QUALITY.CRITICAL) factor = 0.35;
+  else factor = 0.7; // UNKNOWN
+
+  // Presence tier further constrains factor (fallback ladder)
+  if (pt === PRESENCE_TIER.FULL) {
+    factor *= 1.0;
+  } else if (pt === PRESENCE_TIER.PARTIAL) {
+    factor *= 0.85;
+  } else if (pt === PRESENCE_TIER.BACKGROUND) {
+    factor *= 0.6;
+  } else if (pt === PRESENCE_TIER.OFFLINE) {
+    factor *= 0.4;
+  } else {
+    factor *= 0.75; // UNKNOWN
+  }
+
+  // Clamp to safe range (never 0, never >1)
+  if (factor > 1.0) factor = 1.0;
+  if (factor <= 0) factor = 0.2;
+
+  return factor;
+}
+
+
+// ============================================================================
+//  COMPUTE FINAL INSTANCE COUNT — Deterministic + presence/pulse aware
+// ============================================================================
+function computeFinalInstances(base, deviceTier, earnMode, testEarnActive, orchestratorMode, pulseQuality, presenceTier) {
   let final = base;
 
-  // Mode‑aware routing (deterministic)
+  // Mode‑aware routing
   if (orchestratorMode === ORCHESTRATOR_MODES.DRAIN) {
     final = 1;
   } else {
@@ -280,7 +368,6 @@ function computeFinalInstances(base, deviceTier, earnMode, testEarnActive, orche
     }
 
     if (orchestratorMode === ORCHESTRATOR_MODES.EARN_STRESS) {
-      // Stress mode: deterministic ceiling, no randomness
       final = Math.max(final, base * 2);
     }
 
@@ -289,22 +376,24 @@ function computeFinalInstances(base, deviceTier, earnMode, testEarnActive, orche
     }
   }
 
+  // Presence/pulse degrade ladder — only ever scales DOWN
+  const degradeFactor = computePulsePresenceDegradeFactor(pulseQuality, presenceTier);
+  final = Math.floor(final * degradeFactor);
+
   const max = getDeviceMax(deviceTier, testEarnActive, orchestratorMode);
   const clamped = Math.max(1, Math.min(final, max));
 
   return {
     finalInstances: clamped,
     maxAllowed: max,
+    degradeFactor,
     driftFlags: computeBandDriftFlags(clamped, max)
   };
 }
 
 
 // ============================================================================
-//  LOG USER SNAPSHOT — v11‑EVO‑BINARY (deterministic, immune‑safe)
-//  • No Date.now()
-//  • No nondeterministic timestamps
-//  • Binary metadata attached for OS‑Healer / GlobalHealer
+//  LOG USER SNAPSHOT — deterministic, immune‑safe, presence/pulse aware
 // ============================================================================
 async function logUserInstanceSnapshot(userId, snapshot) {
   if (!ENABLE_INSTANCE_LOGGING) return;
@@ -313,7 +402,7 @@ async function logUserInstanceSnapshot(userId, snapshot) {
     await db.collection(INSTANCE_LOG_COLLECTION).add({
       ...ADRENAL_CONTEXT,
       userId,
-      seq: ++adrenalSeq,   // deterministic, replaces Date.now()
+      seq: ++adrenalSeq,
       binaryBandSignature: snapshot.binaryBandSignature,
       binaryBandDriftFlags: snapshot.binaryBandDriftFlags,
       ...snapshot
@@ -325,9 +414,7 @@ async function logUserInstanceSnapshot(userId, snapshot) {
 
 
 // ============================================================================
-//  LAUNCH WORKER — v11‑EVO‑BINARY (no timers, no intervals, no Date.now)
-//  • Workers are pure metadata objects
-//  • First‑class citizens of the binary nervous system
+//  LAUNCH WORKER — binary‑first, presence‑aware metadata
 // ============================================================================
 function launchWorker(userId, workerIndex, orchestratorMode, deviceTier) {
   const workerName = `${userId}-instance-${workerIndex}`;
@@ -343,6 +430,7 @@ function launchWorker(userId, workerIndex, orchestratorMode, deviceTier) {
     workerName,
     workerIndex,
     mode: orchestratorMode,
+    deviceTier,
     binarySignature
   });
 
@@ -352,14 +440,14 @@ function launchWorker(userId, workerIndex, orchestratorMode, deviceTier) {
     index: workerIndex,
     mode: orchestratorMode,
     deviceTier,
-    seq: ++adrenalSeq,   // deterministic creation marker
+    seq: ++adrenalSeq,
     binarySignature
   };
 }
 
 
 // ============================================================================
-//  KILL WORKER — v11‑EVO‑BINARY (no intervals to clear)
+//  KILL WORKER — deterministic shutdown
 // ============================================================================
 function killWorker(worker) {
   logger.log("adrenal", "shutdown", {
@@ -367,14 +455,13 @@ function killWorker(worker) {
     mode: worker.mode,
     binarySignature: worker.binarySignature
   });
-  // No timers to clear in v11‑EVO‑BINARY
 }
 
 
 // ============================================================================
-//  MAIN ORCHESTRATOR LOOP — v11‑EVO‑BINARY (CHECKBAND)
-//  Deterministic • Drift‑Proof • No timing • No intervals
-//  Binary‑first band controller: scores → band shape → binary metadata
+//  MAIN ORCHESTRATOR LOOP — v12.3‑PRESENCE‑EVO‑BINARY‑MAX (CHECKBAND)
+//  • Reads presence/pulse fields if present, otherwise safe defaults
+//  • Worse pulses/presence → lower band, never higher
 // ============================================================================
 export async function runInstanceOrchestrator(pulse) {
   const orchestratorMode =
@@ -392,23 +479,31 @@ export async function runInstanceOrchestrator(pulse) {
 
   for (const doc of snap.docs) {
     const userId = doc.id;
-    const data = doc.data();
+    const data = doc.data() || {};
 
     const baseInstances   = data.instances ?? 1;
     const deviceTier      = data.deviceTier ?? "normal";
     const earnMode        = data.earnMode ?? false;
     const testEarnActive  = data.testEarnActive ?? false;
 
+    // Presence / pulse quality inputs (optional, safe defaults)
+    const pulseQuality    = data.pulseQuality || PULSE_QUALITY.UNKNOWN;
+    const presenceTier    = data.presenceTier || PRESENCE_TIER.UNKNOWN;
+    const bluetoothPresence = !!data.bluetoothPresence; // symbolic only
+
     const {
       finalInstances,
       maxAllowed,
+      degradeFactor,
       driftFlags
     } = computeFinalInstances(
       baseInstances,
       deviceTier,
       earnMode,
       testEarnActive,
-      orchestratorMode
+      orchestratorMode,
+      pulseQuality,
+      presenceTier
     );
 
     if (!activeWorkers.has(userId)) {
@@ -427,12 +522,14 @@ export async function runInstanceOrchestrator(pulse) {
       final: finalInstances,
       maxAllowed,
       driftFlags,
-      mode: orchestratorMode
+      mode: orchestratorMode,
+      pulseQuality,
+      presenceTier,
+      bluetoothPresence,
+      degradeFactor
     });
 
-    // ------------------------------------------------------------
-    // SCALE UP — Fight‑or‑Flight Reflex (deterministic, binary‑aware)
-    // ------------------------------------------------------------
+    // SCALE UP
     if (currentWorkers.length < finalInstances) {
       const needed = finalInstances - currentWorkers.length;
 
@@ -456,9 +553,7 @@ export async function runInstanceOrchestrator(pulse) {
       }
     }
 
-    // ------------------------------------------------------------
-    // SCALE DOWN — Recovery Reflex (deterministic, binary‑aware)
-    // ------------------------------------------------------------
+    // SCALE DOWN
     if (currentWorkers.length > finalInstances) {
       const extra = currentWorkers.length - finalInstances;
 
@@ -476,10 +571,8 @@ export async function runInstanceOrchestrator(pulse) {
       }
     }
 
-    // ------------------------------------------------------------
     // BINARY BAND SIGNATURE — compress entire band for this user
-    // ------------------------------------------------------------
-    const bandSeed = `${userId}|${currentWorkers.length}|${deviceTier}|${orchestratorMode}|${adrenalSeq}`;
+    const bandSeed = `${userId}|${currentWorkers.length}|${deviceTier}|${orchestratorMode}|${adrenalSeq}|${pulseQuality}|${presenceTier}`;
     let bandHash = 0;
     for (let i = 0; i < bandSeed.length; i++) {
       bandHash = (bandHash * 31 + bandSeed.charCodeAt(i)) >>> 0;
@@ -487,9 +580,7 @@ export async function runInstanceOrchestrator(pulse) {
     const binaryBandSignature =
       "BAND-STATE-" + bandHash.toString(16).padStart(8, "0");
 
-    // ------------------------------------------------------------
-    // SNAPSHOT — Immune‑Safe Logging (deterministic, dualband)
-// ------------------------------------------------------------
+    // SNAPSHOT — Immune‑Safe Logging (deterministic, presence/pulse aware)
     await logUserInstanceSnapshot(userId, {
       baseInstances,
       finalInstances,
@@ -500,6 +591,10 @@ export async function runInstanceOrchestrator(pulse) {
       maxAllowed,
       seq: adrenalSeq,
       mode: orchestratorMode,
+      pulseQuality,
+      presenceTier,
+      bluetoothPresence,
+      degradeFactor,
       binaryBandSignature,
       binaryBandDriftFlags: driftFlags
     });

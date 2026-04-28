@@ -1,5 +1,5 @@
 // ============================================================================
-//  PULSE OS v11‑Evo — ADRENAL SYSTEM (Instance Circulation Organ)
+//  PULSE OS v12.3‑PRESENCE‑EVO+ — ADRENAL SYSTEM (Instance Circulation Organ)
 //  Backend‑only • Reflex‑Safe Scaling • Instance “Blood Flow” Regulator
 //  PURE SCALING MATH. NO IQ. NO ROUTING. NO AI.
 // ============================================================================
@@ -8,8 +8,8 @@
 // ============================================================================
 //  OSKernel imports (backend‑safe)
 // ============================================================================
-import { logger } from "../OSKernel/PulseLogger.js";
-import { PulseLineage } from "../OSKernel/PulseIdentity.js";
+import { logger } from "../PULSEProofLogger.js";
+import { PulseLineage } from "./PulseProxyBBB.js";
 
 // Firestore (backend‑only)
 import { getFirestore } from "firebase-admin/firestore";
@@ -17,17 +17,17 @@ const db = getFirestore();
 
 
 // ============================================================================
-//  PULSE ROLE — v11‑Evo Identity
+//  PULSE ROLE — v12.3‑PRESENCE‑EVO+ Identity
 // ============================================================================
 export const PulseRole = {
   type: "Organ",
   subsystem: "PulseProxy",
   layer: "AdrenalSystem",
-  version: "11-Evo",
-  identity: "PulseProxyAdrenalSystem-v11-Evo",
+  version: "12.3-PRESENCE-EVO+",
+  identity: "PulseProxyAdrenalSystem-v12.3-PRESENCE-EVO-ABA",
 
   evo: {
-    dualMode: true,                 // local + cloud aware
+    dualMode: true,
     localAware: true,
     internetAware: true,
     advantageCascadeAware: true,
@@ -36,21 +36,33 @@ export const PulseRole = {
     multiInstanceReady: true,
     unifiedAdvantageField: true,
     pulseSendAware: true,
-    governorReady: true,            // ready for PulseOSGovernor wrapping
-    reflexSafe: true,               // no IQ, no decisions beyond scaling math
+    governorReady: true,
+    reflexSafe: true,
     backendOnly: true,
     futureEvolutionReady: true,
 
-    // v11‑Evo circulatory awareness
+    // circulatory awareness
     circulationAware: true,
     stressFieldAware: true,
-    capacityFieldAware: true
+    capacityFieldAware: true,
+
+    // A‑B‑A surfaces
+    bandAware: true,
+    waveFieldAware: true,
+    binaryFieldAware: true,
+
+    // 12.3+ presence extensions
+    presenceAware: true,
+    meshPressureAware: true,
+    expansionAware: true,
+    runtimeAware: true,
+    schedulerAware: true
   }
 };
 
 
 // ============================================================================
-//  ORGAN CONTEXT — v11‑Evo
+//  ORGAN CONTEXT — v12.3‑PRESENCE‑EVO+
 // ============================================================================
 const ADRENAL_CONTEXT = {
   layer: PulseRole.layer,
@@ -63,7 +75,7 @@ const ADRENAL_CONTEXT = {
 
 
 // ============================================================================
-//  MODES — Orchestrator routing modes (v11‑Evo)
+//  MODES — Orchestrator routing modes (v12.3‑PRESENCE‑EVO+)
 // ============================================================================
 export const ORCHESTRATOR_MODES = {
   NORMAL: "normal",
@@ -73,7 +85,7 @@ export const ORCHESTRATOR_MODES = {
 
 
 // ============================================================================
-//  CONFIG — Physiological Limits (v11‑Evo)
+//  CONFIG — Physiological Limits (v12.3‑PRESENCE‑EVO+)
 // ============================================================================
 export const NORMAL_MAX     = 4;
 export const UPGRADED_MAX   = 8;
@@ -93,19 +105,19 @@ const INSTANCE_HEARTBEAT_MS = 5000;
 // ============================================================================
 //  INTERNAL STATE — Active “cells” per user
 // ============================================================================
-const activeWorkers = new Map(); // userId -> worker[]
+const activeWorkers = new Map();
+
 export const PulseProxyAdrenalSystemMeta = Object.freeze({
   layer: "PulseProxyAdrenalSystem",
   role: "ADRENAL_SYSTEM_ORGAN",
-  version: "v11.2-EVO-BINARY-MAX",
-  identity: "PulseProxyAdrenalSystem-v11.2-EVO-BINARY-MAX",
+  version: "v12.3-PRESENCE-EVO-BINARY-MAX-ABA",
+  identity: "PulseProxyAdrenalSystem-v12.3-PRESENCE-EVO-BINARY-MAX-ABA",
 
   guarantees: Object.freeze({
     deterministic: true,
     driftProof: true,
     multiInstanceReady: true,
 
-    // Adrenal laws
     adrenalOrgan: true,
     reflexSafe: true,
     fightOrFlightReflex: true,
@@ -122,7 +134,6 @@ export const PulseProxyAdrenalSystemMeta = Object.freeze({
     backendOnly: true,
     governorReady: true,
 
-    // Execution prohibitions
     zeroRandomness: true,
     zeroNondeterminism: true,
     zeroExternalMutation: true,
@@ -132,22 +143,20 @@ export const PulseProxyAdrenalSystemMeta = Object.freeze({
     zeroTimers: true,
     zeroAsyncLoops: true,
     zeroDateNow: true,
-    zeroNetworkFetch: true,     // Firestore allowed
+    zeroNetworkFetch: true,
     zeroWindow: true,
     zeroDOM: true,
     zeroAI: true,
     zeroRouting: true,
     zeroIQ: true,
 
-    // Awareness
-    dualMode: true,
     bandAware: true,
     waveFieldAware: true,
     binaryFieldAware: true,
+    dualMode: true,
     localAware: true,
     internetAware: true,
 
-    // Environment
     worldLensAware: false
   }),
 
@@ -173,14 +182,15 @@ export const PulseProxyAdrenalSystemMeta = Object.freeze({
 
   lineage: Object.freeze({
     root: "PulseProxy-v11",
-    parent: "PulseProxy-v11.2-EVO",
+    parent: "PulseProxy-v12.3-PRESENCE-EVO+",
     ancestry: [
       "PulseProxyAdrenalSystem-v7",
       "PulseProxyAdrenalSystem-v8",
       "PulseProxyAdrenalSystem-v9",
       "PulseProxyAdrenalSystem-v10",
       "PulseProxyAdrenalSystem-v11",
-      "PulseProxyAdrenalSystem-v11-Evo"
+      "PulseProxyAdrenalSystem-v11-Evo",
+      "PulseProxyAdrenalSystem-v11.2-EVO-BINARY-MAX"
     ]
   }),
 
@@ -200,7 +210,7 @@ export const PulseProxyAdrenalSystemMeta = Object.freeze({
 
 
 // ============================================================================
-//  v11‑Evo CIRCULATORY HELPERS
+//  v12.3‑PRESENCE‑EVO+ CIRCULATORY HELPERS
 // ============================================================================
 let adrenalCycle = 0;
 
@@ -278,7 +288,7 @@ function getDeviceMax(deviceTier, testEarnActive, orchestratorMode) {
 
 
 // ============================================================================
-//  COMPUTE FINAL INSTANCE COUNT — Deterministic v11‑Evo
+//  COMPUTE FINAL INSTANCE COUNT — Deterministic v12.3‑PRESENCE‑EVO+
 // ============================================================================
 function computeFinalInstances(base, deviceTier, earnMode, testEarnActive, orchestratorMode) {
   let final = base || 1;
@@ -304,7 +314,7 @@ function computeFinalInstances(base, deviceTier, earnMode, testEarnActive, orche
 
 
 // ============================================================================
-//  LOG USER SNAPSHOT — v11‑Evo
+//  LOG USER SNAPSHOT — v12.3‑PRESENCE‑EVO+
 // ============================================================================
 async function logUserInstanceSnapshot(userId, snapshot) {
   if (!ENABLE_INSTANCE_LOGGING) return;
@@ -371,16 +381,12 @@ function killWorker(worker) {
 
   try {
     clearInterval(worker.interval);
-  } catch {
-    // ignore
-  }
+  } catch {}
 }
 
 
 // ============================================================================
-//  MAIN ORCHESTRATOR LOOP — v11‑Evo
-//  Optional pulse envelope for Governor wrapping:
-//    pulse = { jobId, lineage, mode, meta... } (not required)
+//  MAIN ORCHESTRATOR LOOP — v12.3‑PRESENCE‑EVO+
 // ============================================================================
 export async function runInstanceOrchestrator(pulse) {
   adrenalCycle++;
@@ -448,9 +454,7 @@ export async function runInstanceOrchestrator(pulse) {
       stressField
     });
 
-    // ------------------------------------------------------------
-    // SCALE UP — Fight‑or‑Flight Reflex
-    // ------------------------------------------------------------
+    // SCALE UP
     if (currentWorkers.length < finalInstances) {
       const needed = finalInstances - currentWorkers.length;
 
@@ -469,9 +473,7 @@ export async function runInstanceOrchestrator(pulse) {
       }
     }
 
-    // ------------------------------------------------------------
-    // SCALE DOWN — Recovery Reflex
-    // ------------------------------------------------------------
+    // SCALE DOWN
     if (currentWorkers.length > finalInstances) {
       const extra = currentWorkers.length - finalInstances;
 
@@ -489,9 +491,7 @@ export async function runInstanceOrchestrator(pulse) {
       }
     }
 
-    // ------------------------------------------------------------
-    // SNAPSHOT — Immune‑Safe Logging (v11‑Evo circulatory fields)
-// ------------------------------------------------------------
+    // SNAPSHOT
     await logUserInstanceSnapshot(userId, {
       baseInstances,
       finalInstances,

@@ -1,34 +1,23 @@
 // ============================================================================
-// FILE: /apps/PulseOS/core/PulseWaveScanner-v11-EVO.js
-// PULSE OS — v11-EVO
-// GENERIC WAVE ORGAN — NON-BINARY, DETERMINISTIC, MULTI-SPIN, ZERO-DRIFT
+// FILE: /apps/PulseOS/core/PulseWaveScanner-v12.3-EVO.js
+// PULSE OS — v12.3-EVO
+// GENERIC WAVE ORGAN — PRESENCE + HARMONICS + DUAL-BAND + MULTI-SPIN-EVO
 // ============================================================================
-// ROLE:
+// ROLE (12.3-EVO):
 //   - Convert ANY numeric signal → deterministic waveforms.
-//   - Drive contrast, depth, “see-through”, edge emphasis for all layers.
+//   - Presence-aware (presenceAvg, presenceGradient).
+//   - Harmonics-aware (phaseDrift, coherenceScore).
+//   - Dual-band aware (binary + pulse + presence).
+//   - Multi-spin-EVO aware (3-phase wave sets).
 //   - Zero randomness, zero timestamps, zero mutation.
-//   - Multi-spin aware (3-phase wave sets).
-//   - Designed to pair with ANY scanner (Behavior, Binary, NodeAdmin, UI).
-//
-// WAVE MODES (v11-EVO):
-//   • nextWave       → standard wave (balanced detail)
-//   • nextWaveDeep   → slower, deeper, high-contrast wave
-//   • nextWaveMulti  → 3-phase multi-spin wave set
-//   • nextWaveEdge   → edge/outline emphasis
-//   • nextWaveFlat   → low-depth, high-stability baseline
-//
-// NOTES:
-//   - This is the GENERIC version (NOT binary).
-//   - Accepts ANY numeric array or scalar.
-//   - No binary validation.
-//   - No bit restrictions.
+//   - API-compatible with v11-EVO.
 // ============================================================================
 
 export function createWaveScanner({ trace = false } = {}) {
-  let t = 0; // deterministic tick
+  let t = 0; // deterministic epoch tick
 
   // ---------------------------------------------------------------------------
-  // CORE: SIGNAL → AMPLITUDE (GENERIC)
+  // CORE: SIGNAL → AMPLITUDE (GENERIC, DETERMINISTIC)
   // ---------------------------------------------------------------------------
   function amplitudeFromSignal(signal) {
     if (Array.isArray(signal)) {
@@ -38,13 +27,11 @@ export function createWaveScanner({ trace = false } = {}) {
       }
       return signal.length ? Math.min(1, sum / (signal.length * 10)) : 0;
     }
-
-    // Scalar fallback
     return Math.min(1, Math.abs(signal || 0) / 10);
   }
 
   // ---------------------------------------------------------------------------
-  // PHASE GENERATOR — deterministic, zero drift
+  // PHASE GENERATOR — deterministic, epoch-stable
   // ---------------------------------------------------------------------------
   function nextPhase(step = 1) {
     t += step;
@@ -52,104 +39,120 @@ export function createWaveScanner({ trace = false } = {}) {
   }
 
   // ---------------------------------------------------------------------------
-  // WAVE BUILDER — shared structure
+  // DUAL-BAND SCALE (presence + harmonics)
   // ---------------------------------------------------------------------------
-  function buildWave(amplitude, phase, depthScale, reflectScale) {
+  function dualBandScale(presence = 0, harmonicDrift = 0) {
+    const p = clamp(presence, 0, 1);
+    const h = clamp(harmonicDrift, 0, 1);
+
+    // presence stabilizes, harmonics destabilize
+    return 1.0 + (h * 0.25) - (p * 0.15);
+  }
+
+  // ---------------------------------------------------------------------------
+  // WAVE BUILDER — shared structure (12.3-EVO)
+  // ---------------------------------------------------------------------------
+  function buildWave(amplitude, phase, depthScale, reflectScale, presence = 0, harmonicDrift = 0) {
+    const band = dualBandScale(presence, harmonicDrift);
+
     return {
       phase,
       amplitude,
-      depth: amplitude * depthScale * Math.abs(Math.sin(phase * 0.5)),
-      reflection: reflectScale * Math.abs(Math.cos(phase * 0.75))
+      depth: amplitude * depthScale * band * Math.abs(Math.sin(phase * 0.5)),
+      reflection: reflectScale * band * Math.abs(Math.cos(phase * 0.75))
     };
   }
 
   // ========================================================================
-  // MODE 1 — STANDARD WAVE (BALANCED DETAIL)
+  // MODE 1 — STANDARD WAVE (BALANCED DETAIL, DUAL-BAND AWARE)
   // ========================================================================
-  function nextWave(signal) {
+  function nextWave(signal, presence = 0, harmonicDrift = 0) {
     const amp = amplitudeFromSignal(signal);
     const phase = nextPhase(1);
 
-    const wave = buildWave(amp, phase, 1.0, 1.0);
+    const wave = buildWave(amp, phase, 1.0, 1.0, presence, harmonicDrift);
 
-    if (trace) console.log("[WaveScanner-GENERIC] STANDARD:", wave);
+    if (trace) console.log("[WaveScanner‑12.3] STANDARD:", wave);
     return wave;
   }
 
   // ========================================================================
-  // MODE 2 — DEEP WAVE (SLOW, HIGH CONTRAST)
+  // MODE 2 — DEEP WAVE (SLOW, HIGH CONTRAST, PRESENCE-STABILIZED)
   // ========================================================================
-  function nextWaveDeep(signal) {
+  function nextWaveDeep(signal, presence = 0, harmonicDrift = 0) {
     const amp = amplitudeFromSignal(signal);
     const phase = nextPhase(0.25);
 
-    const wave = buildWave(amp, phase, 1.4, 0.9);
+    const wave = buildWave(amp, phase, 1.4, 0.9, presence, harmonicDrift);
 
-    if (trace) console.log("[WaveScanner-GENERIC] DEEP:", wave);
+    if (trace) console.log("[WaveScanner‑12.3] DEEP:", wave);
     return wave;
   }
 
   // ========================================================================
-  // MODE 3 — MULTI WAVE (3-PHASE MULTI-SPIN)
+  // MODE 3 — MULTI WAVE (3-PHASE MULTI-SPIN-EVO)
   // ========================================================================
-  function nextWaveMulti(signal) {
+  function nextWaveMulti(signal, presence = 0, harmonicDrift = 0) {
     const amp = amplitudeFromSignal(signal);
     const basePhase = nextPhase(1);
+    const band = dualBandScale(presence, harmonicDrift);
 
     const waves = [0, 1, 2].map(i => {
       const phase = basePhase + (Math.PI * 2 * i) / 3;
       return {
         phase,
         amplitude: amp,
-        depth: amp * Math.abs(Math.sin(phase * 0.5)),
-        reflection: Math.abs(Math.cos(phase * 0.75)),
+        depth: amp * band * Math.abs(Math.sin(phase * 0.5)),
+        reflection: band * Math.abs(Math.cos(phase * 0.75)),
         spinIndex: i
       };
     });
 
-    if (trace) console.log("[WaveScanner-GENERIC] MULTI:", waves);
+    if (trace) console.log("[WaveScanner‑12.3] MULTI:", waves);
     return waves;
   }
 
   // ========================================================================
-  // MODE 4 — EDGE WAVE (OUTLINE EMPHASIS)
+  // MODE 4 — EDGE WAVE (OUTLINE EMPHASIS, HARMONICS-SHARPENED)
   // ========================================================================
-  function nextWaveEdge(signal) {
+  function nextWaveEdge(signal, presence = 0, harmonicDrift = 0) {
     const amp = amplitudeFromSignal(signal);
     const phase = nextPhase(1);
+    const band = dualBandScale(presence, harmonicDrift);
 
     const wave = {
       phase,
       amplitude: amp,
-      depth: amp * Math.abs(Math.sin(phase)),          // sharper depth
-      reflection: Math.abs(Math.sin(phase * 1.5))      // edge-like reflection
+      depth: amp * band * Math.abs(Math.sin(phase)),
+      reflection: band * Math.abs(Math.sin(phase * 1.5))
     };
 
-    if (trace) console.log("[WaveScanner-GENERIC] EDGE:", wave);
+    if (trace) console.log("[WaveScanner‑12.3] EDGE:", wave);
     return wave;
   }
 
   // ========================================================================
-  // MODE 5 — FLAT WAVE (LOW DEPTH, HIGH STABILITY)
+  // MODE 5 — FLAT WAVE (LOW DEPTH, HIGH STABILITY, PRESENCE-SMOOTHED)
   // ========================================================================
-  function nextWaveFlat(signal) {
+  function nextWaveFlat(signal, presence = 0, harmonicDrift = 0) {
     const amp = amplitudeFromSignal(signal);
     const phase = nextPhase(0.1);
+    const band = dualBandScale(presence, harmonicDrift);
 
     const wave = {
       phase,
       amplitude: amp,
-      depth: amp * 0.2,                 // very shallow
-      reflection: 0.5 + amp * 0.3       // stable reflection band
+      depth: amp * 0.2 * band,
+      reflection: (0.5 + amp * 0.3) * band
     };
 
-    if (trace) console.log("[WaveScanner-GENERIC] FLAT:", wave);
+    if (trace) console.log("[WaveScanner‑12.3] FLAT:", wave);
     return wave;
   }
 
   // ========================================================================
-  // ORGAN EXPORT
-  // ========================================================================
+  // ORGAN EXPORT (API-COMPATIBLE)
+// ========================================================================
   return {
     nextWave,
     nextWaveDeep,
@@ -157,4 +160,11 @@ export function createWaveScanner({ trace = false } = {}) {
     nextWaveEdge,
     nextWaveFlat
   };
+}
+
+// ---------------------------------------------------------------------------
+// HELPERS
+// ---------------------------------------------------------------------------
+function clamp(v, min, max) {
+  return Math.max(min, Math.min(max, v));
 }

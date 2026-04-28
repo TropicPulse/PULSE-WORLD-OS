@@ -1,42 +1,19 @@
 // ============================================================================
-// FILE: /apps/specs/PulseSpecsDNAGenome-v11-Evo.js
-// [pulse:specs] PULSE_SPECS_DNA_GENOME v11-Evo  // gold‑white + binary
+// FILE: /apps/specs/PulseSpecsDNAGenome-v12-3-Evo.js
+// [pulse:specs] PULSE_SPECS_DNA_GENOME v12.3-Evo  // gold‑white + binary
 // OS Data Genome • Canonical Field Language • Deterministic Translation Spec
 // PURE SPEC — NO IO • NO NETWORK • NO AI • NO RUNTIME
 // ============================================================================
 //
-// IDENTITY — THE OS DNA GENOME (v11-Evo):
-// --------------------------------------
+// IDENTITY — THE OS DNA GENOME (v12.3-Evo):
+// ----------------------------------------
 // • Immutable genetic blueprint of Pulse OS.
-// • Canonical PulseField language for all v11 subsystems.
+// • Canonical PulseField language for all v12+ subsystems.
 // • Source of truth for SQL ↔ Pulse ↔ Firestore mappings.
 // • Validation rulebook for translators + healers.
 // • Schema cortex foundation for AI reasoning + component generation.
 // • Drift‑proof, deterministic, backwards‑compatible, evolution‑safe.
-// • ⭐ Binary‑aware, pulse‑aware, v1/v2/v3 compatible.
-//
-// ROLE IN THE ORGANISM (v11-Evo):
-// -------------------------------
-// • DNA → canonical data genome (this file)
-// • RNA → translators (sqlToPulse, pulseToSQL, firestoreToPulse, etc.)
-// • Proteins → actual data structures in the organism
-// • Healers → mutation correction + schema drift repair
-// • Cortex → uses genome to reason about structure + generate components
-//
-// SAFETY CONTRACT (v11-Evo):
-// --------------------------
-// • Read‑only spec — no writes, no mutation.
-// • No eval(), no Function(), no dynamic imports.
-// • No network calls.
-// • Deterministic, stable output only.
-// • Backwards‑compatible evolution only.
-// • All new types must degrade safely to existing primitives.
-// • Frozen snapshot — cannot be modified at runtime.
-//
-// THEME:
-// • Color: Gold‑White (genetic law + organism‑wide purity).
-// • Binary Accent: Black‑Gold (binary/unbinary pulse layer).
-// • Subtheme: Determinism, lineage, schema purity, evolutionary stability.
+// • ⭐ Binary‑aware, pulse‑aware, v1/v2/v3+ compatible.
 // ============================================================================
 
 export const PULSE_FIELDS_CONTEXT = {
@@ -44,8 +21,8 @@ export const PULSE_FIELDS_CONTEXT = {
   role: "OS_DATA_GENOME",
   purpose: "Define canonical PulseField types, rules, and mappings",
   context: "Deterministic data language for all Pulse subsystems",
-  version: 11.0,
-  target: "os-core-v11",
+  version: 12.3,
+  target: "os-core-v12",
   selfRepairable: false,
 
   evolution: {
@@ -53,7 +30,8 @@ export const PULSE_FIELDS_CONTEXT = {
     "1.2": "Extended numeric semantics (currency/percent) and enum support.",
     "1.3": "Explicit null handling + stricter URL/email patterns + frozen spec snapshot.",
     "10.4": "Identity uplift, organism alignment, gold‑white genome header, v10.4 contract sync.",
-    "11.0": "Binary‑aware genome extension, v11‑Evo alignment, pulse/binary field layer (backwards‑compatible)."
+    "11.0": "Binary‑aware genome extension, v11‑Evo alignment, pulse/binary field layer (backwards‑compatible).",
+    "12.3": "Every‑advantage period uplift: v12-core alignment, no new primitives, stricter determinism + drift guards."
   }
 };
 

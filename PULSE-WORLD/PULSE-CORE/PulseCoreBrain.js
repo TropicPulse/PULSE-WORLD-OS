@@ -1,34 +1,53 @@
 // ============================================================================
-//  PulseCoreBrain.js — v11‑EVO‑PATTERN‑MAX
+//  PulseCoreBrain.js — v12‑EVO‑PRESENCE‑MAX
 //  ORGANISM‑WIDE PATTERN INTELLIGENCE ENGINE
-//  “THINK ONCE. REUSE FOREVER.”
-//  • Detects structure (formulas, shapes, trees, queries, routes)
-//  • Canonicalizes patterns
-//  • Stores simplest form
-//  • Returns patternId + parameters
+//  “THINK ONCE. REUSE FOREVER. NEVER DRIFT.”
+//  • MetaBlock (v12 identity)
+//  • dnaTag + version aware
+//  • presence aware
+//  • lineage + ancestry
+//  • advantage scoring
+//  • dual‑band metadata alignment
+//  • CoreMemory persistence
+//  • deterministic canonicalization
 // ============================================================================
 
 export const CoreBrainRole = {
   type: "Organ",
   subsystem: "Core",
   layer: "Brain",
-  version: "11.4-Evo-Pattern-Max",
   identity: "PulseCoreBrain",
+  version: "12.0-Evo-Presence",
 
   evo: {
-    deterministic: true,      // Same input → same patternId
-    binaryNative: true,       // Patterns can be stored as binary
-    routeAware: true,         // Patterns can be route-scoped
-    dnaAware: true,           // Patterns can be dnaTag-scoped
-    governorAligned: true,    // Works with PulseCoreGovernor
-    memoryAligned: true       // Uses CoreMemory for persistence
+    deterministic: true,
+    binaryNative: true,
+    routeAware: true,
+    dnaAware: true,
+    governorAligned: true,
+    memoryAligned: true,
+    presenceAware: true,
+    versionAware: true,
+    lineageAware: true,
+    advantageAware: true
   }
 };
 
-// ============================================================================
+// ---------------------------------------------------------------------------
+//  v12 IDENTITY BLOCK (MetaBlock)
+// ---------------------------------------------------------------------------
+export const CoreBrainMetaBlock = {
+  identity: "PulseCoreBrain",
+  subsystem: "Core",
+  layer: "Brain",
+  role: "Pattern-Intelligence",
+  version: "12.0-Evo-Presence",
+  evo: CoreBrainRole.evo
+};
+
+// ---------------------------------------------------------------------------
 //  SIMPLE HASH / ID HELPERS (STRUCTURAL, NOT CRYPTO)
-//  You can swap this for a stronger / GPU-backed hash later.
-// ============================================================================
+// ---------------------------------------------------------------------------
 function simpleHash(str) {
   let h = 0;
   for (let i = 0; i < str.length; i++) {
@@ -37,7 +56,6 @@ function simpleHash(str) {
   return "patt-" + (h >>> 0).toString(16);
 }
 
-// Normalize a JS object / structure into a stable string
 function normalizeStructure(struct) {
   try {
     return JSON.stringify(struct, Object.keys(struct).sort());
@@ -46,24 +64,21 @@ function normalizeStructure(struct) {
   }
 }
 
-// ============================================================================
-//  CREATE BRAIN
-//  • In-memory pattern cache
-//  • Optional CoreMemory integration via injected callbacks
-// ============================================================================
+// ---------------------------------------------------------------------------
+//  CREATE BRAIN (v12)
+// ---------------------------------------------------------------------------
 export function createPulseCoreBrain({
+  dnaTag = "default-dna",
+  version = "12.0-Evo-Presence",
+  overlay = null,
+  coreMemory = null,
+  coreMemoryRouteId = "brain-patterns",
   log = console.log,
-  warn = console.warn,
-
-  // Optional: CoreMemory integration
-  coreMemory = null,          // e.g., PulseCoreGovernor.CoreMemory
-  coreMemoryRouteId = "brain-patterns"
+  warn = console.warn
 } = {}) {
-  const Patterns = {
-    // patternId -> { canonical, meta }
-    byId: Object.create(null),
 
-    // normalizedKey -> patternId
+  const Patterns = {
+    byId: Object.create(null),
     index: Object.create(null)
   };
 
@@ -73,15 +88,34 @@ export function createPulseCoreBrain({
   }
 
   // -------------------------------------------------------------------------
-  //  INTERNAL: PERSIST / LOAD (OPTIONAL)
-  //  • If coreMemory is provided, we persist patterns there
+  //  INTERNAL: ADVANTAGE SCORING (v12)
   // -------------------------------------------------------------------------
+  function scorePattern(meta) {
+    let score = 0;
+    if (meta.dnaTag === dnaTag) score += 2;
+    if (meta.routeId && meta.routeId !== "global") score += 1;
+    if (meta.type) score += 1;
+    return score;
+  }
+
+  // -------------------------------------------------------------------------
+  //  INTERNAL: LINEAGE + ANCESTRY (v12)
+  // -------------------------------------------------------------------------
+  function assignLineage(meta) {
+    meta.lineage = `${dnaTag}:${version}:${meta.patternId}`;
+    meta.ancestry = [dnaTag, version];
+  }
+
+  // -------------------------------------------------------------------------
+  //  LOAD FROM CORE MEMORY (v12)
+// -------------------------------------------------------------------------
   function loadFromCoreMemory() {
     if (!coreMemory) return;
     try {
       const snapshot = coreMemory.getRouteSnapshot(coreMemoryRouteId) || {};
       Patterns.byId = snapshot.byId || Object.create(null);
       Patterns.index = snapshot.index || Object.create(null);
+
       safeLog("LOAD_FROM_CORE_MEMORY", {
         patterns: Object.keys(Patterns.byId).length
       });
@@ -90,6 +124,9 @@ export function createPulseCoreBrain({
     }
   }
 
+  // -------------------------------------------------------------------------
+  //  FLUSH TO CORE MEMORY (v12)
+// -------------------------------------------------------------------------
   function flushToCoreMemory() {
     if (!coreMemory) return;
     try {
@@ -98,6 +135,7 @@ export function createPulseCoreBrain({
         index: Patterns.index
       };
       coreMemory.setRouteSnapshot(coreMemoryRouteId, snapshot);
+
       safeLog("FLUSH_TO_CORE_MEMORY", {
         patterns: Object.keys(Patterns.byId).length
       });
@@ -107,68 +145,80 @@ export function createPulseCoreBrain({
   }
 
   // -------------------------------------------------------------------------
-  //  CORE IDEA:
-  //    • You give the Brain a structure (formula, AST, UI tree, query, etc.)
-  //    • It:
-  //        1) normalizes it
-  //        2) hashes it
-  //        3) returns patternId + canonical form
-  //    • If seen before, it reuses the same patternId
-  // -------------------------------------------------------------------------
+  //  REGISTER PATTERN (v12)
+// -------------------------------------------------------------------------
   function registerPattern(struct, meta = {}) {
     const normalized = normalizeStructure(struct || {});
     const existingId = Patterns.index[normalized];
 
     if (existingId) {
+      const existing = Patterns.byId[existingId];
       return {
         patternId: existingId,
-        canonical: Patterns.byId[existingId].canonical,
-        reused: true
+        canonical: existing.canonical,
+        reused: true,
+        meta: existing.meta
       };
     }
 
     const patternId = simpleHash(normalized);
 
+    const enrichedMeta = {
+      ...meta,
+      dnaTag,
+      version,
+      patternId,
+      createdAt: Date.now()
+    };
+
+    assignLineage(enrichedMeta);
+    enrichedMeta.score = scorePattern(enrichedMeta);
+
     Patterns.index[normalized] = patternId;
     Patterns.byId[patternId] = {
       canonical: struct,
-      meta: {
-        ...meta,
-        createdAt: Date.now()
-      }
+      meta: enrichedMeta
     };
+
+    // Presence‑touch propagation
+    if (overlay && overlay.touch) {
+      try { overlay.touch("brain", enrichedMeta.createdAt); }
+      catch {}
+    }
 
     safeLog("REGISTER_PATTERN", {
       patternId,
-      meta
+      score: enrichedMeta.score
     });
 
     return {
       patternId,
       canonical: struct,
-      reused: false
+      reused: false,
+      meta: enrichedMeta
     };
   }
 
   // -------------------------------------------------------------------------
   //  LOOKUP
-  // -------------------------------------------------------------------------
+// -------------------------------------------------------------------------
   function getPattern(patternId) {
     return Patterns.byId[patternId] || null;
   }
 
   // -------------------------------------------------------------------------
-  //  HIGHER-LEVEL: FORMULA EXAMPLE (LIKE YOUR x+1 IDEA)
-  //  • This is a placeholder hook — you can extend it later.
-//  • For now, we just treat formula as a string pattern.
+  //  FORMULA REGISTRATION (v12)
 // -------------------------------------------------------------------------
   function registerFormula(formulaStr, meta = {}) {
-    return registerPattern({ type: "formula", value: formulaStr }, meta);
+    return registerPattern(
+      { type: "formula", value: formulaStr },
+      meta
+    );
   }
 
   // -------------------------------------------------------------------------
   //  CLEAR / RESET
-  // -------------------------------------------------------------------------
+// -------------------------------------------------------------------------
   function clearAll() {
     Patterns.byId = Object.create(null);
     Patterns.index = Object.create(null);
@@ -178,9 +228,10 @@ export function createPulseCoreBrain({
 
   // -------------------------------------------------------------------------
   //  PUBLIC API
-  // -------------------------------------------------------------------------
-  const PulseCoreBrain = {
+// -------------------------------------------------------------------------
+  export const PulseCoreBrain = {
     CoreBrainRole,
+    CoreBrainMetaBlock,
     Patterns,
 
     loadFromCoreMemory,
@@ -188,12 +239,14 @@ export function createPulseCoreBrain({
 
     registerPattern,
     getPattern,
-
     registerFormula,
-    clearAll
+
+    clearAll,
+
+    dnaTag,
+    version
   };
 
-  // Optional initial load
   loadFromCoreMemory();
 
   safeLog("INIT", {

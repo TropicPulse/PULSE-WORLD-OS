@@ -1,5 +1,5 @@
 /**
- * aiReproduction.js — Pulse OS v12.3‑EVO+ Organ
+ * aiReproduction.js — Pulse OS v12.3‑PRESENCE‑EVO+
  * ---------------------------------------------------------
  * CANONICAL ROLE:
  *   Binary Reproduction System of the organism.
@@ -11,6 +11,7 @@
  *     - lineage-safe replication
  *     - reproduction artery metrics v3 (throughput, pressure, cost, budget)
  *     - multi-instance harmony + soft spiral warnings
+ *     - presence-aware reproduction metrics (cluster, density, band mix)
  *
  *   It is the organism’s:
  *     • reproductive system
@@ -18,23 +19,22 @@
  *     • spawn factory
  *     • lineage multiplier
  *
- *   v12.3‑EVO+ UPGRADE:
- *     • Reproduction Artery v3 (rate, pressure, budget)
- *     • Exported artery snapshot (getReproductionArtery)
- *     • Multi-instance identity + harmony metrics
- *     • Soft spiral warnings (no blocking, no limiting)
- *     • Updated meta + epoch
+ *   v12.3‑PRESENCE‑EVO+ UPGRADE:
+ *     • Presence context hook (read-only, optional)
+ *     • Presence-enriched artery snapshot (cluster, density, band mix)
+ *     • No behavioral change, metrics-only enrichment
+ *     • Still deterministic, drift-proof, non-blocking
  */
 
 // ============================================================================
-//  META BLOCK — v12.3‑EVO+
+//  META BLOCK — v12.3‑PRESENCE‑EVO+
 // ============================================================================
 
 export const ReproductionMeta = Object.freeze({
   layer: "BinaryOrganism",
   role: "BINARY_REPRODUCTION_ORGAN",
-  version: "12.3-EVO+",
-  identity: "aiBinaryReproduction-v12.3-EVO+",
+  version: "12.3-PRESENCE-EVO+",
+  identity: "aiBinaryReproduction-v12.3-PRESENCE-EVO+",
 
   evo: Object.freeze({
     driftProof: true,
@@ -48,12 +48,14 @@ export const ReproductionMeta = Object.freeze({
     identitySafe: true,
     readOnly: true,
     multiInstanceReady: true,
-    epoch: "12.3-EVO+"
+    presenceAware: true,
+    socialAware: true,
+    epoch: "12.3-PRESENCE-EVO+"
   }),
 
   contract: Object.freeze({
     purpose:
-      "Provide deterministic organism cloning, genome duplication, lineage-safe replication, and reproduction artery metrics v3 for the v12.3‑EVO+ organism.",
+      "Provide deterministic organism cloning, genome duplication, lineage-safe replication, and reproduction artery metrics v3 + presence-enriched metrics for the v12.3‑PRESENCE‑EVO+ organism.",
 
     never: Object.freeze([
       "use randomness",
@@ -63,7 +65,8 @@ export const ReproductionMeta = Object.freeze({
       "override evolution logic",
       "generate symbolic state",
       "block the organism",
-      "perform cognition"
+      "perform cognition",
+      "drive presence or social behavior directly"
     ]),
 
     always: Object.freeze([
@@ -72,6 +75,7 @@ export const ReproductionMeta = Object.freeze({
       "emit binary-only reproduction packets",
       "record lineage deterministically",
       "compute reproduction artery metrics v3",
+      "enrich metrics with presence context only (read-only)",
       "remain drift-proof",
       "remain deterministic",
       "remain non-blocking"
@@ -80,7 +84,7 @@ export const ReproductionMeta = Object.freeze({
 });
 
 // ============================================================================
-//  ORGAN IMPLEMENTATION — v12.3‑EVO+
+//  ORGAN IMPLEMENTATION — v12.3‑PRESENCE‑EVO+
 // ============================================================================
 
 export class AIBinaryReproduction {
@@ -103,6 +107,17 @@ export class AIBinaryReproduction {
      *   control:
      *     windowMs        → time window for rate metrics (default: 60000 ms)
      *     recommendedRate → recommended max clones per second (soft, non-blocking)
+     *
+     *   presence:
+     *     presenceContextProvider → optional fn() => {
+     *        clusterId?: string,
+     *        presenceDensity?: number,        // 0..1
+     *        bandMix?: { symbolic?: number, dual?: number, binary?: number },
+     *        newCount?: number,
+     *        veteranCount?: number,
+     *        powerUserCount?: number
+     *     }
+     *     (read-only, metrics-only, no behavior change)
      */
     this.id = config.id || "ai-binary-reproduction";
     this.encoder = config.encoder;
@@ -126,6 +141,12 @@ export class AIBinaryReproduction {
       typeof config.recommendedRate === "number" && config.recommendedRate > 0
         ? config.recommendedRate
         : 32;
+
+    // presence context provider (optional, read-only)
+    this.presenceContextProvider =
+      typeof config.presenceContextProvider === "function"
+        ? config.presenceContextProvider
+        : null;
 
     // multi-instance identity
     this.instanceIndex = AIBinaryReproduction._registerInstance();
@@ -165,13 +186,38 @@ export class AIBinaryReproduction {
   }
 
   // ---------------------------------------------------------
-  //  REPRODUCTION ARTERY METRICS v3
+  //  REPRODUCTION ARTERY METRICS v3 + PRESENCE ENRICHMENT
   // ---------------------------------------------------------
 
   _rollWindow(now) {
     if (now - this._windowStart >= this.windowMs) {
       this._windowStart = now;
       this._windowCount = 0;
+    }
+  }
+
+  _safePresenceContext() {
+    if (!this.presenceContextProvider) return null;
+
+    try {
+      const ctx = this.presenceContextProvider() || {};
+      return {
+        clusterId: typeof ctx.clusterId === "string" ? ctx.clusterId : null,
+        presenceDensity: this._clamp01(ctx.presenceDensity),
+        bandMix: {
+          symbolic: this._clamp01(ctx.bandMix?.symbolic),
+          dual: this._clamp01(ctx.bandMix?.dual),
+          binary: this._clamp01(ctx.bandMix?.binary)
+        },
+        newCount: typeof ctx.newCount === "number" ? ctx.newCount : 0,
+        veteranCount:
+          typeof ctx.veteranCount === "number" ? ctx.veteranCount : 0,
+        powerUserCount:
+          typeof ctx.powerUserCount === "number" ? ctx.powerUserCount : 0
+      };
+    } catch (err) {
+      this._trace("presence:context:error", { error: String(err) });
+      return null;
     }
   }
 
@@ -197,6 +243,8 @@ export class AIBinaryReproduction {
     const cost = Math.max(0, Math.min(1, pressure * (1 - throughput)));
     const budget = Math.max(0, Math.min(1, throughput - cost));
 
+    const presenceCtx = this._safePresenceContext();
+
     const artery = {
       slice: this.slice,
 
@@ -220,7 +268,17 @@ export class AIBinaryReproduction {
       budgetBucket: this._bucketLevel(budget),
 
       recommendedRate: this.recommendedRate,
-      timestamp: now
+      timestamp: now,
+
+      // presence-enriched metrics (read-only, optional)
+      presence: presenceCtx && {
+        clusterId: presenceCtx.clusterId,
+        presenceDensity: presenceCtx.presenceDensity,
+        bandMix: presenceCtx.bandMix,
+        newCount: presenceCtx.newCount,
+        veteranCount: presenceCtx.veteranCount,
+        powerUserCount: presenceCtx.powerUserCount
+      }
     };
 
     // soft spiral detection (no blocking)
@@ -256,6 +314,13 @@ export class AIBinaryReproduction {
     if (v >= 0.2) return "light";
     if (v > 0) return "negligible";
     return "none";
+  }
+
+  _clamp01(v) {
+    const n = typeof v === "number" ? v : 0;
+    if (n <= 0) return 0;
+    if (n >= 1) return 1;
+    return n;
   }
 
   // PUBLIC EXPORT
@@ -450,7 +515,7 @@ export class AIBinaryReproduction {
 }
 
 // ============================================================================
-//  FACTORY — v12.3‑EVO+
+//  FACTORY — v12.3‑PRESENCE‑EVO+
 // ============================================================================
 
 export function createAIBinaryReproduction(config) {

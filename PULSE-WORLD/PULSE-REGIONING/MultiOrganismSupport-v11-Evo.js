@@ -4,13 +4,14 @@
  *   root: "PULSE-WORLD",
  *   mode: "substrate",
  *   target: "multi-organism-coordination",
- *   version: "v11-EVO",
+ *   version: "v13-COSMOS-MULTIVERSE",
  *
- *   role: "Coordinates many organism instances at once: snapshots, deltas, deployments, and summaries.",
+ *   role: "Coordinates many organism instances across universes, timelines, and branches.",
  *
  *   guarantees: {
  *     deterministic: true,
  *     symbolic: true,
+ *     multiverseAware: true,
  *     regionAware: true,
  *     hostAgnostic: true,
  *     noRandomness: true
@@ -19,7 +20,8 @@
  *   contracts: {
  *     input: [
  *       "InstanceContext[]",
- *       "GlobalContinuancePolicy"
+ *       "GlobalContinuancePolicy",
+ *       "CosmosContext { universeId, timelineId, branchId }"
  *     ],
  *     output: [
  *       "MultiOrganismPlan",
@@ -28,75 +30,37 @@
  *   },
  *
  *   upstream: [
- *     "LineageEngine",
+ *     "LineageEngine-v13",
  *     "SnapshotPhysics",
- *     "DeltaEngine",
- *     "DeploymentPhysics",
+ *     "DeltaEngine-v13",
+ *     "DeploymentPhysics-v13",
  *     "PulseContinuance",
- *     "RegionMeshRouting"
+ *     "RegionMeshRouting-v13"
  *   ],
  *
  *   downstream: [
- *     "ExecutionPhysics"
+ *     "ExecutionPhysics-v13"
  *   ],
  *
  *   notes: [
  *     "This organ never executes deployments; it only coordinates symbolic plans.",
- *     "It treats each instance as a cell in a larger organism mesh.",
- *     "GlobalContinuancePolicy can bias movement, spawning, and retirement."
+ *     "It treats each instance as a star in a multiverse mesh.",
+ *     "CosmosContext determines which universe/timeline/branch the plan belongs to."
  *   ]
  * }
- */
-
-/**
- * MultiOrganismSupport-v11-Evo.js
- * PULSE-WORLD / PULSE-MULTI
- *
- * ROLE:
- *   Coordinate many instances:
- *     - build per-instance snapshots
- *     - compute deltas
- *     - build deployment plans
- *     - aggregate into a multi-organism plan
- *
- * NEVER:
- *   - Never talk to real infrastructure.
- *   - Never introduce randomness.
- *
- * ALWAYS:
- *   - Always be symbolic.
- *   - Always be deterministic.
  */
 
 // -------------------------
 // Types
 // -------------------------
 
-/**
- * InstanceContext
- *
- * instanceId: string
- * currentState: CurrentInstanceState
- * previousSnapshot: SnapshotRecord | null
- * desiredSnapshot: SnapshotRecord
- * regionRoute: RegionRoute
- * continuanceDecision: {
- *   shouldMoveRegion: boolean,
- *   shouldMoveHost: boolean,
- *   shouldRestart: boolean,
- *   shouldSpawnReplica: boolean,
- *   shouldRetire: boolean,
- *   targetHost?: string,
- *   spawnRegion?: string,
- *   spawnHost?: string
- * }
- */
 export class InstanceContext {
   constructor({
     instanceId,
     currentState,
     previousSnapshot = null,
     desiredSnapshot,
+    cosmosRoute,
     regionRoute,
     continuanceDecision
   }) {
@@ -104,24 +68,23 @@ export class InstanceContext {
     this.currentState = currentState;
     this.previousSnapshot = previousSnapshot;
     this.desiredSnapshot = desiredSnapshot;
+
+    // v13 multiverse routing
+    this.cosmosRoute = cosmosRoute || {
+      universeId: "u:default",
+      timelineId: "t:main",
+      branchId: "b:root"
+    };
+
     this.regionRoute = regionRoute;
     this.continuanceDecision = continuanceDecision;
   }
 }
 
-/**
- * InstancePlanBundle
- *
- * instanceId: string
- * deltaRecord: DeltaRecord | null
- * deltaSummary: DeltaSummary | null
- * deltaPatch: DeltaPatch | null
- * deploymentPlan: DeploymentPlan
- * deploymentSummary: DeploymentSummary
- */
 export class InstancePlanBundle {
   constructor({
     instanceId,
+    cosmos,
     deltaRecord = null,
     deltaSummary = null,
     deltaPatch = null,
@@ -129,6 +92,7 @@ export class InstancePlanBundle {
     deploymentSummary
   }) {
     this.instanceId = instanceId;
+    this.cosmos = cosmos;
     this.deltaRecord = deltaRecord;
     this.deltaSummary = deltaSummary;
     this.deltaPatch = deltaPatch;
@@ -137,26 +101,16 @@ export class InstancePlanBundle {
   }
 }
 
-/**
- * MultiOrganismPlan
- *
- * instances: InstancePlanBundle[]
- */
 export class MultiOrganismPlan {
-  constructor({ instances = [] }) {
+  constructor({ cosmos, instances = [] }) {
+    this.cosmos = cosmos;
     this.instances = instances;
   }
 }
 
-/**
- * MultiOrganismSummary
- *
- * totalInstances: number
- * totalActions: number
- * actionTypeCounts: { [type: string]: number }
- */
 export class MultiOrganismSummary {
-  constructor({ totalInstances, totalActions, actionTypeCounts }) {
+  constructor({ cosmos, totalInstances, totalActions, actionTypeCounts }) {
+    this.cosmos = cosmos;
     this.totalInstances = totalInstances;
     this.totalActions = totalActions;
     this.actionTypeCounts = actionTypeCounts;
@@ -167,69 +121,62 @@ export class MultiOrganismSummary {
 // Imports (logical)
 // -------------------------
 
-// These are logical imports; wire them to your actual modules.
 import SnapshotPhysicsAPI from "./SnapshotPhysics-v11-Evo.js";
-import DeltaEngineAPI from "./DeltaEngine-v11-Evo.js";
-import DeploymentPhysicsAPI from "./DeploymentPhysics-v11-Evo.js";
+import DeltaEngineAPI from "./DeltaEngine-v13-COSMOS-MULTIVERSE.js";
+import DeploymentPhysicsAPI from "./DeploymentPhysics-v13-COSMOS-MULTIVERSE.js";
 
-const {
-  projectSnapshotForDelta
-} = SnapshotPhysicsAPI;
-
-const {
-  computeDelta,
-  summarizeDelta,
-  buildDeltaPatch
-} = DeltaEngineAPI;
-
-const {
-  buildDeploymentPlan,
-  summarizeDeploymentPlan
-} = DeploymentPhysicsAPI;
+const { projectSnapshotForDelta } = SnapshotPhysicsAPI;
+const { computeDelta, summarizeDelta, buildDeltaPatch } = DeltaEngineAPI;
+const { buildDeploymentPlan, summarizeDeploymentPlan } = DeploymentPhysicsAPI;
 
 // -------------------------
-// Core Logic
+// Helpers
 // -------------------------
 
-/**
- * buildInstancePlanBundle
- *
- * For a single instance:
- *   - compute delta (if previous snapshot exists)
- *   - build patch
- *   - build deployment plan
- *   - summarize
- */
+function normalizeCosmosContext(context = {}) {
+  return {
+    universeId: context.universeId || "u:default",
+    timelineId: context.timelineId || "t:main",
+    branchId: context.branchId || "b:root"
+  };
+}
+
+// -------------------------
+// Core Logic (v13 Multiverse)
+// -------------------------
+
 export function buildInstancePlanBundle(instanceContext) {
   const {
     instanceId,
     currentState,
     previousSnapshot,
     desiredSnapshot,
+    cosmosRoute,
     regionRoute,
     continuanceDecision
   } = instanceContext;
+
+  const cosmos = normalizeCosmosContext(cosmosRoute);
 
   let deltaRecord = null;
   let deltaSummary = null;
   let deltaPatch = null;
 
   if (previousSnapshot) {
-    // Use projected snapshots to ensure stable diff surface
     const beforeProjected = projectSnapshotForDelta(previousSnapshot);
     const afterProjected = projectSnapshotForDelta(desiredSnapshot);
 
-    // Re-wrap into SnapshotRecord-like objects for DeltaEngine
     const beforeSnapshot = {
       header: previousSnapshot.header,
       state: beforeProjected.state
     };
+
     const afterSnapshot = {
       header: desiredSnapshot.header,
       state: afterProjected.state
     };
 
-    deltaRecord = computeDelta(beforeSnapshot, afterSnapshot);
+    deltaRecord = computeDelta(beforeSnapshot, afterSnapshot, cosmos);
     deltaSummary = summarizeDelta(deltaRecord);
     deltaPatch = buildDeltaPatch(deltaRecord);
   }
@@ -237,6 +184,7 @@ export function buildInstancePlanBundle(instanceContext) {
   const deploymentPlan = buildDeploymentPlan({
     currentState,
     deltaPatch: deltaPatch || { patch: {} },
+    cosmosRoute: cosmos,
     regionRoute,
     continuanceDecision
   });
@@ -245,6 +193,7 @@ export function buildInstancePlanBundle(instanceContext) {
 
   return new InstancePlanBundle({
     instanceId,
+    cosmos,
     deltaRecord,
     deltaSummary,
     deltaPatch,
@@ -253,29 +202,22 @@ export function buildInstancePlanBundle(instanceContext) {
   });
 }
 
-/**
- * buildMultiOrganismPlan
- *
- * Input:
- *   - instanceContexts: InstanceContext[]
- *
- * Output:
- *   - MultiOrganismPlan
- */
-export function buildMultiOrganismPlan(instanceContexts = []) {
+export function buildMultiOrganismPlan(instanceContexts = [], cosmosContext = {}) {
+  const cosmos = normalizeCosmosContext(cosmosContext);
+
   const bundles = instanceContexts.map((ctx) =>
     buildInstancePlanBundle(ctx)
   );
 
-  return new MultiOrganismPlan({ instances: bundles });
+  return new MultiOrganismPlan({
+    cosmos,
+    instances: bundles
+  });
 }
 
-/**
- * summarizeMultiOrganismPlan
- *
- * Produces a global summary across all instances.
- */
 export function summarizeMultiOrganismPlan(multiPlan) {
+  const cosmos = multiPlan.cosmos;
+
   let totalInstances = multiPlan.instances.length;
   let totalActions = 0;
   const actionTypeCounts = {};
@@ -291,6 +233,7 @@ export function summarizeMultiOrganismPlan(multiPlan) {
   }
 
   return new MultiOrganismSummary({
+    cosmos,
     totalInstances,
     totalActions,
     actionTypeCounts

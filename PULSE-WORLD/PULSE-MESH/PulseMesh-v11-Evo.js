@@ -1,103 +1,147 @@
 // ============================================================================
-//  PulseBinaryMesh-v11-Evo (BINARY FULLY UPGRADED BEAST)
-//  Pure Binary Pathway Engine • Zero Drift • Zero Semantics
+// FILE: /PULSE-AI/PulseBinaryMesh-v12.3-PRESENCE-EVO-MAX-PRIME.js
+// PULSE BINARY MESH — v12.3-PRESENCE-EVO-MAX-PRIME
+// “PURE BINARY PATHWAY ENGINE / REFLEX-LEVEL MESH / ZERO SEMANTICS”
 // ============================================================================
-//  ROLE:
-//    - Binary-native counterpart to PulseMesh-v11-Evo.
-//    - Pure connective tissue between binary organs.
-//    - No patterns, no lineage, no JSON, no objects in the data path.
-//    - Deterministic, drift-proof, mutation-free.
 //
-//  DIFFERENCE FROM SYMBOLIC PulseMesh:
-//    - Symbolic PulseMesh builds pathway surfaces, diagnostics, signatures.
-//    - Binary PulseMesh does NONE of that.
-//    - It only validates, routes, and falls back.
-//    - It is the reflex-level mesh, not the cortex-level mesh.
+// ROLE:
+//   • Binary-native counterpart to symbolic PulseMesh.
+//   • Pure connective tissue between binary organs (0/1 arrays only).
+//   • Reflex-level mesh: validate → route → fallback.
+//   • Deterministic, drift-proof, mutation-safe, presence-aware.
 //
-//  BINARY CONTRACT:
-//    - Only accepts pure binary arrays (0/1).
-//    - No timestamps, no randomness.
-//    - No console unless trace=true.
-//    - No symbolic metadata.
+// CONTRACT (DATA PATH):
+//   • bits: number[] (each element 0 or 1)
+//   • returns: bits (unchanged) OR fallbackProxy result
+//
+// CONTRACT (CONTROL PATH):
+//   • from: string
+//   • options: { band?, presenceTag?, trace? } — symbolic, off data path
+//
+// SAFETY:
+//   • No timestamps, no randomness, no env access.
+//   • No dynamic imports, no eval.
 // ============================================================================
 
+export const PulseBinaryMeshMeta = Object.freeze({
+  layer: "BinaryNervousSystem",
+  role: "PULSE_BINARY_MESH",
+  version: "v12.3-PRESENCE-EVO-MAX-PRIME",
+  identity: "PulseBinaryMesh-v12.3-PRESENCE-EVO-MAX-PRIME",
+  guarantees: Object.freeze({
+    pureBinaryPath: true,
+    zeroSymbolicInDataPath: true,
+    deterministic: true,
+    driftProof: true,
+    mutationSafe: true,
+    presenceAware: true,
+    bandAware: true,
+    noRandomness: true,
+    noTiming: true,
+    noEnvAccess: true
+  }),
+  contract: Object.freeze({
+    inputDataPath: ["bits"],
+    inputControlPath: ["from", "band", "presenceTag", "trace"],
+    outputDataPath: ["bits"],
+    outputFallback: ["fallbackResult"]
+  })
+});
+
+// ============================================================================
+// INTERNAL HELPERS
+// ============================================================================
+function isPureBinary(bits, maxBitsLength) {
+  if (!Array.isArray(bits)) return false;
+  const len = bits.length;
+  if (len === 0 || len > maxBitsLength) return false;
+  for (let i = 0; i < len; i++) {
+    const b = bits[i];
+    if (b !== 0 && b !== 1) return false;
+  }
+  return true;
+}
+
+// ============================================================================
+// PULSE BINARY MESH FACTORY — v12.3-PRESENCE-EVO-MAX-PRIME
+// ============================================================================
 export function createPulseBinaryMesh({
   fallbackProxy,
   trace = false,
-  maxBitsLength = 64
+  maxBitsLength = 64,
+  defaultBand = "binary",
+  defaultPresenceTag = "PulseBinaryMesh-v12.3"
 } = {}) {
-
-  // Internal link table (symbolic-only, safe)
+  // Symbolic-only link table (off data path)
   const links = Object.create(null);
 
-  // ---------------------------------------------------------------------------
-  // PURE BINARY VALIDATION
-  // ---------------------------------------------------------------------------
-  function isPureBinary(bits) {
-    if (!Array.isArray(bits)) return false;
-    const len = bits.length;
-    if (len === 0 || len > maxBitsLength) return false;
-    for (let i = 0; i < len; i++) {
-      const b = bits[i];
-      if (b !== 0 && b !== 1) return false;
-    }
-    return true;
-  }
-
-  // ---------------------------------------------------------------------------
+  // -------------------------------------------------------------------------
   // LINK REGISTRATION (symbolic-only)
-  // ---------------------------------------------------------------------------
+// -------------------------------------------------------------------------
   function link(from, to) {
     links[from] = to;
   }
 
-  // ---------------------------------------------------------------------------
-  // PURE BINARY TRANSMISSION
-  // ---------------------------------------------------------------------------
-  function transmit(from, bits) {
-    const to = links[from];
-
-    if (!to) {
-      return fallback("missing-link", from, bits);
-    }
-
-    if (!isPureBinary(bits)) {
-      return fallback("non-binary-input", from, bits);
-    }
-
-    if (trace && typeof console !== "undefined") {
-      console.log(`[PulseBinaryMesh] ${from} → ${to}`, bits);
-    }
-
-    // Binary mesh NEVER transforms bits
-    return bits;
-  }
-
-  // ---------------------------------------------------------------------------
-  // SMART BINARY FALLBACK
-  // ---------------------------------------------------------------------------
-  function fallback(reason, from, bits) {
+  // -------------------------------------------------------------------------
+  // SMART BINARY FALLBACK (presence-aware, pure bits on data path)
+// -------------------------------------------------------------------------
+  function fallback(reason, from, bits, {
+    band = defaultBand,
+    presenceTag = defaultPresenceTag
+  } = {}) {
     if (!fallbackProxy) {
       throw new Error(
-        `PulseBinaryMesh fallback triggered (${reason}) but no fallbackProxy provided`
+        `PulseBinaryMesh fallback triggered (${reason}) from:${from} but no fallbackProxy provided`
       );
     }
 
     if (trace && typeof console !== "undefined") {
-      console.warn(`[PulseBinaryMesh] FALLBACK (${reason}) from:${from}`, bits);
+      console.warn(
+        `[PulseBinaryMesh v12.3] FALLBACK (${reason}) from:${from} band:${band} presence:${presenceTag}`,
+        bits
+      );
     }
 
     return fallbackProxy.exchange
-      ? fallbackProxy.exchange(bits)
-      : fallbackProxy(bits);
+      ? fallbackProxy.exchange(bits, { band, presenceTag, reason })
+      : fallbackProxy(bits, { band, presenceTag, reason });
   }
 
-  // ---------------------------------------------------------------------------
+  // -------------------------------------------------------------------------
+  // PURE BINARY TRANSMISSION (reflex-level, non-mutating)
+// -------------------------------------------------------------------------
+  function transmit(from, bits, {
+    band = defaultBand,
+    presenceTag = defaultPresenceTag
+  } = {}) {
+    const to = links[from];
+
+    if (!to) {
+      return fallback("missing-link", from, bits, { band, presenceTag });
+    }
+
+    if (!isPureBinary(bits, maxBitsLength)) {
+      return fallback("non-binary-input", from, bits, { band, presenceTag });
+    }
+
+    if (trace && typeof console !== "undefined") {
+      console.log(
+        `[PulseBinaryMesh v12.3] ${from} → ${to} band:${band} presence:${presenceTag}`,
+        bits
+      );
+    }
+
+    // Never transform bits — pure connective tissue
+    return bits;
+  }
+
+  // -------------------------------------------------------------------------
   // PUBLIC API
-  // ---------------------------------------------------------------------------
-  return {
+  // -------------------------------------------------------------------------
+  return Object.freeze({
+    meta: PulseBinaryMeshMeta,
     link,       // symbolic-only
-    transmit,   // pure binary
-    fallback    // pure binary
-  };
+    transmit,   // pure binary data path
+    fallback    // pure binary data path + presence-aware control
+  });
 }

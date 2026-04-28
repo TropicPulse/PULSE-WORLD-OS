@@ -1,9 +1,9 @@
 // ============================================================================
-//  PULSE OS v11‑Evo — BLOOD–BRAIN BARRIER (BBB)
+//  PULSE OS v12.3‑Evo — BLOOD–BRAIN BARRIER (BBB)
 //  Identity Gate • Trust Filter • Core Security Organ
 //  PURE VERIFICATION. ZERO IMPORTS. ZERO DRIFT.
 //  CENTRALIZED IDENTITY FOR ALL SUBSYSTEMS.
-//  A‑B‑A BAND + BINARY/WAVE SURFACES + EVO LINEAGE
+//  A‑B‑A BAND + BINARY/WAVE SURFACES + EVO LINEAGE + PRESENCE/HARMONICS
 // ============================================================================
 
 
@@ -16,31 +16,31 @@ function safeError(...args){ try { console.error(...args); } catch {} }
 
 
 // ============================================================================
-// ⭐ VERSION MAP — The Genome of PulseOS (v11‑Evo)
+// ⭐ VERSION MAP — The Genome of PulseOS (v12.3‑Evo)
 // ============================================================================
 export const PulseVersion = {
-  identity:      "11-Evo",
-  brain:         "11-Evo",
-  gpu:           "11-Evo",
-  orchestrator:  "11-Evo",
-  engine:        "11-Evo",
-  optimizer:     "11-Evo",
-  synapse:       "11-Evo",
-  band:          "11-Evo",
-  router:        "11-Evo",
-  marketplaces:  "11-Evo",
-  telemetry:     "11-Evo",
-  limbic:        "11-Evo",
-  governor:      "11-Evo",
-  understanding: "11-Evo",
-  proxy:         "11-Evo",
-  earn:          "11-Evo",
-  send:          "11-Evo"
+  identity:      "12.3-EVO",
+  brain:         "12.3-EVO",
+  gpu:           "12.3-EVO",
+  orchestrator:  "12.3-EVO",
+  engine:        "12.3-EVO",
+  optimizer:     "12.3-EVO",
+  synapse:       "12.3-EVO",
+  band:          "12.3-EVO",
+  router:        "12.3-EVO",
+  marketplaces:  "12.3-EVO",
+  telemetry:     "12.3-EVO",
+  limbic:        "12.3-EVO",
+  governor:      "12.3-EVO",
+  understanding: "12.3-EVO",
+  proxy:         "12.3-EVO",
+  earn:          "12.3-EVO",
+  send:          "12.3-EVO"
 };
 
 
 // ============================================================================
-// ⭐ ROLE MAP — Organ Metaphors (v11‑Evo)
+// ⭐ ROLE MAP — Organ Metaphors (v12.3‑Evo)
 // ============================================================================
 export const PulseRoles = {
   identity:      "BLOOD–BRAIN BARRIER (BBB) — Identity Gate",
@@ -64,31 +64,31 @@ export const PulseRoles = {
 
 
 // ============================================================================
-// ⭐ LINEAGE MAP — Evolutionary Identity (v11‑Evo)
+// ⭐ LINEAGE MAP — Evolutionary Identity (v12.3‑Evo)
 // ============================================================================
 export const PulseLineage = {
-  identity:      "bbb-core-evo",
-  brain:         "analysis-core-evo",
-  gpu:           "astral-core-evo",
-  orchestrator:  "autonomic-core-evo",
-  engine:        "execution-core-evo",
-  optimizer:     "guardian-core-evo",
-  synapse:       "junction-core-evo",
-  band:          "interface-core-evo",
-  router:        "consulate-core-evo",
-  marketplaces:  "embassy-core-evo",
-  telemetry:     "bloodstream-core-evo",
-  limbic:        "shadow-core-evo",
-  governor:      "governor-core-evo",
-  understanding: "cortical-opener-core-evo",
-  proxy:         "adrenal-core-evo",
-  earn:          "economic-core-evo",
-  send:          "transport-core-evo"
+  identity:      "bbb-core-evo-12.3",
+  brain:         "analysis-core-evo-12.3",
+  gpu:           "astral-core-evo-12.3",
+  orchestrator:  "autonomic-core-evo-12.3",
+  engine:        "execution-core-evo-12.3",
+  optimizer:     "guardian-core-evo-12.3",
+  synapse:       "junction-core-evo-12.3",
+  band:          "interface-core-evo-12.3",
+  router:        "consulate-core-evo-12.3",
+  marketplaces:  "embassy-core-evo-12.3",
+  telemetry:     "bloodstream-core-evo-12.3",
+  limbic:        "shadow-core-evo-12.3",
+  governor:      "governor-core-evo-12.3",
+  understanding: "cortical-opener-core-evo-12.3",
+  proxy:         "adrenal-core-evo-12.3",
+  earn:          "economic-core-evo-12.3",
+  send:          "transport-core-evo-12.3"
 };
 
 
 // ============================================================================
-// ⭐ MODE MAP — A/B/A Routing Modes (v11‑Evo)
+// ⭐ MODE MAP — A/B/A Routing Modes (v12.3‑Evo)
 // ============================================================================
 const IdentityModes = {
   LOCAL_ONLY:   "local-only",     // A
@@ -98,18 +98,20 @@ const IdentityModes = {
 
 
 // ============================================================================
-// ⭐ STORAGE KEYS — v11‑Evo Identity Cache
+// ⭐ STORAGE KEYS — v12.3‑Evo Identity Cache
 // ============================================================================
 const IDENTITY_STORAGE_KEYS = [
+  "tp_identity_v12_3",
   "tp_identity_v11",
   "tp_identity_v10",
   "tp_identity_v9"
 ];
+
 export const PulseOSIdentityBBBMeta = Object.freeze({
   layer: "PulseOSIdentityBBB",
   role: "BLOOD_BRAIN_BARRIER_IDENTITY_ORGAN",
-  version: "v11.2-EVO-BINARY-MAX",
-  identity: "PulseOSIdentityBBB-v11.2-EVO-BINARY-MAX",
+  version: "v12.3-EVO-BINARY-MAX",
+  identity: "PulseOSIdentityBBB-v12.3-EVO-BINARY-MAX",
 
   guarantees: Object.freeze({
     deterministic: true,
@@ -128,23 +130,32 @@ export const PulseOSIdentityBBBMeta = Object.freeze({
     waveFieldEmitter: true,
     abaBandAware: true,
 
-    // Execution prohibitions
+    // 12.3+ presence / harmonics / dual-band hints
+    presenceAware: true,
+    harmonicsAware: true,
+    dualBandAware: true,
+    dualBandCompatible: true,
+    passivePrewarm: true,
+    passiveCache: true,
+    passiveChunk: true,
+    passiveRemember: true,
+
+    // Execution prohibitions (logical contract; environment may still provide fetch/localStorage)
     zeroImports: true,
     zeroRandomness: true,
     zeroTimestamps: true,
     zeroTimers: true,
-    zeroAsync: true,
-    zeroNetwork: true,
-    zeroIO: true,
+    zeroAsync: false, // identity() is async by design
+    zeroNetwork: false,
+    zeroIO: false,
     zeroExternalMutation: true,
     zeroDynamicImports: true,
     zeroEval: true,
-    zeroEnvironmentAccess: true,
+    zeroEnvironmentAccess: false,
 
     // Awareness
     symbolicAware: true,
     binaryAware: true,
-    dualBandAware: true,
     lineageAware: true,
     patternAware: true,
     shapeAware: true,
@@ -167,6 +178,7 @@ export const PulseOSIdentityBBBMeta = Object.freeze({
       "IdentityBandSignature",
       "IdentityBinaryField",
       "IdentityWaveField",
+      "IdentityPresenceField",
       "IdentityDiagnostics",
       "IdentityHealingState"
     ]
@@ -174,7 +186,7 @@ export const PulseOSIdentityBBBMeta = Object.freeze({
 
   lineage: Object.freeze({
     root: "PulseOS-v11",
-    parent: "PulseOS-v11.2-EVO",
+    parent: "PulseOS-v12.3-EVO",
     ancestry: [
       "PulseIdentity-v7",
       "PulseIdentity-v8",
@@ -182,7 +194,8 @@ export const PulseOSIdentityBBBMeta = Object.freeze({
       "PulseIdentity-v10",
       "PulseIdentity-v11",
       "PulseIdentity-v11-Evo",
-      "PulseIdentity-v11-Evo-Prime"
+      "PulseIdentity-v11-Evo-Prime",
+      "PulseIdentity-v11.2-EVO-BINARY-MAX"
     ]
   }),
 
@@ -195,7 +208,7 @@ export const PulseOSIdentityBBBMeta = Object.freeze({
   architecture: Object.freeze({
     pattern: "A-B-A",
     baseline: "identity → verification → trust filter → identity snapshot",
-    adaptive: "binary-field + wave-field overlays",
+    adaptive: "binary-field + wave-field + presence overlays",
     return: "deterministic identity snapshot + signatures"
   })
 });
@@ -204,59 +217,10 @@ export const PulseOSIdentityBBBMeta = Object.freeze({
 // ============================================================================
 // ⭐ A‑B‑A SURFACES — Identity Band + Binary/Wave Fields
 // ============================================================================
-function buildBand() {
-  // BBB is always symbolic-root
-  return "symbolic-root";
-}
-
-function buildBandSignature() {
-  const raw = "BBB_BAND::symbolic-root";
-  let acc = 0;
-  for (let i = 0; i < raw.length; i++) {
-    acc = (acc + raw.charCodeAt(i) * (i + 1)) % 100000;
-  }
-  return `bbb-band-${acc}`;
-}
-
-function buildBinaryField() {
-  const patternLen = 12;
-  const density = 12 + 24;
-  const surface = density + patternLen;
-
-  return {
-    binaryPhenotypeSignature: `bbb-binary-pheno-${surface % 99991}`,
-    binarySurfaceSignature: `bbb-binary-surface-${(surface * 7) % 99991}`,
-    binarySurface: { patternLen, density, surface },
-    parity: surface % 2 === 0 ? 0 : 1,
-    shiftDepth: Math.max(0, Math.floor(Math.log2(surface || 1)))
-  };
-}
-
-function buildWaveField() {
-  const amplitude = 10;
-  const wavelength = amplitude + 4;
-  const phase = amplitude % 16;
-
-  return {
-    amplitude,
-    wavelength,
-    phase,
-    band: "symbolic-root",
-    mode: "symbolic-wave"
-  };
-}
-
-function buildIdentityCycleSignature(cycle) {
-  return `bbb-cycle-${(cycle * 7919) % 99991}`;
-}
-// ============================================================================
-// ⭐ HELPERS — Local + Remote (v11‑Evo A‑B‑A)
-// ============================================================================
-
 let identityCycle = 0;
 
-// A‑B‑A surfaces for BBB
 function buildIdentityBand() {
+  // BBB is always symbolic-root
   return "symbolic-root";
 }
 
@@ -301,9 +265,68 @@ function buildIdentityCycleSignature() {
   return `bbb-cycle-${(identityCycle * 7919) % 99991}`;
 }
 
+// 12.3+ presence / harmonics / dual-band + passive hints
+function buildIdentityPresence(mode, hasLocal, hasRemote, trustedDevice) {
+  const local = !!hasLocal;
+  const remote = !!hasRemote;
+  const trusted = !!trustedDevice;
+
+  let presenceBandState = "offline-presence";
+  if (remote && trusted) presenceBandState = "deep-presence";
+  else if (remote) presenceBandState = "stable-presence";
+  else if (local) presenceBandState = "light-presence";
+
+  const harmonicDrift =
+    remote ? 0.1 :
+    local ? 0.3 :
+    0.6;
+
+  const coherenceBase =
+    remote ? 0.9 :
+    local ? 0.8 :
+    0.6;
+
+  const coherenceScore = Math.max(0.2, Math.min(1.0, coherenceBase - harmonicDrift * 0.1));
+
+  const dualBandMode =
+    remote ? "dual" :
+    local ? "symbolic" :
+    "binary";
+
+  const pulsePrewarm =
+    remote ? "preferred" :
+    local ? "optional" :
+    "disabled";
+
+  const pulseCacheMode =
+    remote ? "identity-cache-strong" :
+    local ? "identity-cache-local" :
+    "identity-cache-weak";
+
+  const pulseChunkMode =
+    remote ? "multi-chunk" :
+    "single-chunk";
+
+  const pulseRemember =
+    trusted ? "remember-strong" :
+    remote || local ? "remember-normal" :
+    "remember-weak";
+
+  return {
+    presenceBandState,
+    harmonicDrift,
+    coherenceScore,
+    dualBandMode,
+    pulsePrewarm,
+    pulseCacheMode,
+    pulseChunkMode,
+    pulseRemember
+  };
+}
+
 
 // ============================================================================
-// ⭐ LOAD LOCAL IDENTITY — v11‑Evo
+// ⭐ LOAD LOCAL IDENTITY — v12.3‑Evo
 // ============================================================================
 function loadLocalIdentity() {
   if (typeof localStorage === "undefined") return null;
@@ -338,7 +361,7 @@ function loadLocalIdentity() {
 
 
 // ============================================================================
-// ⭐ REMOTE VERIFY — v11‑Evo (unchanged behavior, upgraded metadata)
+// ⭐ REMOTE VERIFY — v12.3‑Evo (behavior preserved, metadata upgraded)
 // ============================================================================
 async function verifyRemoteIdentity(localIdentity) {
   if (typeof fetch !== "function") {
@@ -375,7 +398,7 @@ async function verifyRemoteIdentity(localIdentity) {
     try {
       if (typeof localStorage !== "undefined") {
         localStorage.setItem(
-          "tp_identity_v11",
+          "tp_identity_v12_3",
           JSON.stringify({
             uid: data.uid,
             userEmail: data.userEmail,
@@ -399,9 +422,15 @@ async function verifyRemoteIdentity(localIdentity) {
 
 
 // ============================================================================
-// ⭐ OFFLINE IDENTITY — v11‑Evo A‑B‑A
+// ⭐ OFFLINE IDENTITY — v12.3‑Evo A‑B‑A
 // ============================================================================
 function buildOfflineIdentity(reason, mode) {
+  const band = buildIdentityBand();
+  const bandSignature = buildIdentityBandSignature();
+  const binaryField = buildIdentityBinaryField();
+  const waveField = buildIdentityWaveField();
+  const presence = buildIdentityPresence(mode, false, false, false);
+
   return {
     uid: null,
     userEmail: null,
@@ -412,11 +441,21 @@ function buildOfflineIdentity(reason, mode) {
     lineage: PulseLineage.identity,
 
     // A‑B‑A surfaces
-    band: buildIdentityBand(),
-    bandSignature: buildIdentityBandSignature(),
-    binaryField: buildIdentityBinaryField(),
-    waveField: buildIdentityWaveField(),
+    band,
+    bandSignature,
+    binaryField,
+    waveField,
     identityCycleSignature: buildIdentityCycleSignature(),
+
+    // 12.3+ presence / harmonics / dual-band hints
+    presenceBandState: presence.presenceBandState,
+    harmonicDrift: presence.harmonicDrift,
+    coherenceScore: presence.coherenceScore,
+    dualBandMode: presence.dualBandMode,
+    pulsePrewarm: presence.pulsePrewarm,
+    pulseCacheMode: presence.pulseCacheMode,
+    pulseChunkMode: presence.pulseChunkMode,
+    pulseRemember: presence.pulseRemember,
 
     meta: {
       layer: "PulseIdentity",
@@ -430,11 +469,11 @@ function buildOfflineIdentity(reason, mode) {
 
 
 // ============================================================================
-// ⭐ IDENTITY LOADER — BBB Verification Engine (v11‑Evo A‑B‑A)
+// ⭐ IDENTITY LOADER — BBB Verification Engine (v12.3‑Evo A‑B‑A)
 // ============================================================================
 export async function identity(modeOrOptions) {
   identityCycle++;
-  safeLog("[BBB] Identity Request (v11‑Evo A‑B‑A)");
+  safeLog("[BBB] Identity Request (v12.3‑Evo A‑B‑A)");
 
   let mode = IdentityModes.HYBRID;
 
@@ -462,19 +501,39 @@ export async function identity(modeOrOptions) {
         storageKey: localIdentity.storageKey
       });
 
+      const band = buildIdentityBand();
+      const bandSignature = buildIdentityBandSignature();
+      const binaryField = buildIdentityBinaryField();
+      const waveField = buildIdentityWaveField();
+      const presence = buildIdentityPresence(
+        "local",
+        true,
+        false,
+        localIdentity.trustedDevice
+      );
+
       const base = {
         uid: localIdentity.uid,
         userEmail: localIdentity.userEmail,
         sessionToken: localIdentity.sessionToken,
         trustedDevice: localIdentity.trustedDevice,
+        offline: false,
         lineage: PulseLineage.identity,
 
-        // A‑B‑A surfaces
-        band: buildIdentityBand(),
-        bandSignature: buildIdentityBandSignature(),
-        binaryField: buildIdentityBinaryField(),
-        waveField: buildIdentityWaveField(),
+        band,
+        bandSignature,
+        binaryField,
+        waveField,
         identityCycleSignature: buildIdentityCycleSignature(),
+
+        presenceBandState: presence.presenceBandState,
+        harmonicDrift: presence.harmonicDrift,
+        coherenceScore: presence.coherenceScore,
+        dualBandMode: presence.dualBandMode,
+        pulsePrewarm: presence.pulsePrewarm,
+        pulseCacheMode: presence.pulseCacheMode,
+        pulseChunkMode: presence.pulseChunkMode,
+        pulseRemember: presence.pulseRemember,
 
         meta: {
           layer: "PulseIdentity",
@@ -490,21 +549,37 @@ export async function identity(modeOrOptions) {
 
       // ============================================================
       // B‑PATH: REMOTE VERIFY (HYBRID ONLY)
-      // ============================================================
+// ============================================================
       const remote = await verifyRemoteIdentity(localIdentity);
       if (remote) {
         safeLog("[BBB] Remote identity verified (B‑path)");
+
+        const rPresence = buildIdentityPresence(
+          "remote-verified",
+          true,
+          true,
+          remote.trustedDevice
+        );
 
         return {
           ...remote,
           offline: false,
           lineage: PulseLineage.identity,
 
-          band: buildIdentityBand(),
-          bandSignature: buildIdentityBandSignature(),
-          binaryField: buildIdentityBinaryField(),
-          waveField: buildIdentityWaveField(),
+          band,
+          bandSignature,
+          binaryField,
+          waveField,
           identityCycleSignature: buildIdentityCycleSignature(),
+
+          presenceBandState: rPresence.presenceBandState,
+          harmonicDrift: rPresence.harmonicDrift,
+          coherenceScore: rPresence.coherenceScore,
+          dualBandMode: rPresence.dualBandMode,
+          pulsePrewarm: rPresence.pulsePrewarm,
+          pulseCacheMode: rPresence.pulseCacheMode,
+          pulseChunkMode: rPresence.pulseChunkMode,
+          pulseRemember: rPresence.pulseRemember,
 
           meta: {
             layer: "PulseIdentity",
@@ -515,8 +590,23 @@ export async function identity(modeOrOptions) {
       }
 
       safeWarn("[BBB] Remote verification failed, staying on local (A‑path)");
+      const lfPresence = buildIdentityPresence(
+        "local-fallback",
+        true,
+        false,
+        localIdentity.trustedDevice
+      );
+
       return {
         ...base,
+        presenceBandState: lfPresence.presenceBandState,
+        harmonicDrift: lfPresence.harmonicDrift,
+        coherenceScore: lfPresence.coherenceScore,
+        dualBandMode: lfPresence.dualBandMode,
+        pulsePrewarm: lfPresence.pulsePrewarm,
+        pulseCacheMode: lfPresence.pulseCacheMode,
+        pulseChunkMode: lfPresence.pulseChunkMode,
+        pulseRemember: lfPresence.pulseRemember,
         meta: {
           layer: "PulseIdentity",
           version: PulseVersion.identity,
@@ -535,16 +625,36 @@ export async function identity(modeOrOptions) {
       if (remote) {
         safeLog("[BBB] Remote identity obtained without local cache");
 
+        const band = buildIdentityBand();
+        const bandSignature = buildIdentityBandSignature();
+        const binaryField = buildIdentityBinaryField();
+        const waveField = buildIdentityWaveField();
+        const presence = buildIdentityPresence(
+          "remote-only",
+          false,
+          true,
+          remote.trustedDevice
+        );
+
         return {
           ...remote,
           offline: false,
           lineage: PulseLineage.identity,
 
-          band: buildIdentityBand(),
-          bandSignature: buildIdentityBandSignature(),
-          binaryField: buildIdentityBinaryField(),
-          waveField: buildIdentityWaveField(),
+          band,
+          bandSignature,
+          binaryField,
+          waveField,
           identityCycleSignature: buildIdentityCycleSignature(),
+
+          presenceBandState: presence.presenceBandState,
+          harmonicDrift: presence.harmonicDrift,
+          coherenceScore: presence.coherenceScore,
+          dualBandMode: presence.dualBandMode,
+          pulsePrewarm: presence.pulsePrewarm,
+          pulseCacheMode: presence.pulseCacheMode,
+          pulseChunkMode: presence.pulseChunkMode,
+          pulseRemember: presence.pulseRemember,
 
           meta: {
             layer: "PulseIdentity",

@@ -1,31 +1,33 @@
 // ============================================================================
-//  PulseEarn-v11-Evo.js — Earn Organism v11.0 + Dual-Band + Evolution Engine
-//  Evolutionary Earn Organ • Pattern + Lineage + Shape • Multi-Instance Waves
-//  v11: Diagnostics + Signatures + Evolution Surface + Advantage Surface
-//  v11+Binary: Symbolic + Binary bands, deterministic, compression-aware
+//  PulseEarn-v12.3-PRESENCE-EVO+.js — Earn Organism v12.3 Presence-EVO+
+//  FULL UPGRADE of v11-EVO: dual-band, evolution surfaces, presence/mesh/castle/
+//  expansion/server/globalHints-aware, chunk/cache/prewarm/factoring-aware.
 // ============================================================================
 //
-//  SAFETY CONTRACT (v11-Evo):
-//  --------------------------
+//  SAFETY CONTRACT (v12.3-PRESENCE-EVO+):
+//  -------------------------------------
 //  • No imports.
 //  • No randomness.
-//  • No timestamps.
+//  • No timestamps in math (only telemetry if desired).
 //  • Pure deterministic string/shape operations.
 //  • Zero mutation outside instance.
 //  • Band-aware, but band is metadata-only (no behavioral non-determinism).
 //  • All “memory” is structural (derived from inputs), not temporal.
+//  • Presence/mesh/castle/expansion/globalHints are metadata surfaces only.
 // ============================================================================
+
 export const EarnMeta = Object.freeze({
   layer: "PulseEarn",
   role: "EARN_ORGAN",
-  version: "v11.2-EVO",
-  identity: "PulseEarn-v11.2-EVO",
+  version: "v12.3-PRESENCE-EVO+",
+  identity: "PulseEarn-v12.3-PRESENCE-EVO+",
 
   guarantees: Object.freeze({
     deterministic: true,
     noRandomness: true,
     noRealTime: true,
     noExternalIO: true,
+
     bandAware: true,
     binaryAware: true,
     evolutionAware: true,
@@ -34,7 +36,21 @@ export const EarnMeta = Object.freeze({
     shapeAware: true,
     worldLensAware: true,
     multiInstanceAware: true,
-    waveFieldAware: true
+    waveFieldAware: true,
+
+    presenceAware: true,
+    meshAware: true,
+    castleAware: true,
+    expansionAware: true,
+    serverAware: true,
+    routerAware: true,
+    beaconAware: true,
+
+    chunkAware: true,
+    cacheAware: true,
+    prewarmAware: true,
+    hotStateAware: true,
+    factoringAware: true
   }),
 
   contract: Object.freeze({
@@ -43,19 +59,27 @@ export const EarnMeta = Object.freeze({
       "DualBandContext",
       "EvolutionSurface",
       "AdvantageField",
-      "CohortWaveState"
+      "CohortWaveState",
+      "PresenceField",
+      "MeshSignals",
+      "CastleSignals",
+      "ExpansionSignals",
+      "ServerAdvantageHints",
+      "GlobalHints"
     ],
     output: [
       "EarnOutputShape",
       "EarnDiagnostics",
-      "EarnSignatures"
+      "EarnSignatures",
+      "EarnPresenceField",
+      "EarnAdvantageField"
     ]
   }),
 
   lineage: Object.freeze({
-    root: "PulseOS-v11-EVO",
-    parent: "PulseProxy-v11-EVO",
-    ancestry: ["PulseOS-v10", "PulseEarn-v10.4", "PulseEarn-v11"]
+    root: "PulseOS-v12.3-PRESENCE-EVO+",
+    parent: "PulseProxy-v12.3-PRESENCE-EVO+",
+    ancestry: ["PulseOS-v10", "PulseEarn-v10.4", "PulseEarn-v11", "PulseEarn-v11.2-EVO"]
   }),
 
   bands: Object.freeze({
@@ -81,14 +105,14 @@ function normalizeBand(band) {
 
 
 // ============================================================================
-//  EarnRole — identifies this as the Earn v11 Organism
+//  EarnRole — identifies this as the Earn v12.3 Organism
 // ============================================================================
 export const EarnRole = {
   type: "Earn",
   subsystem: "Earn",
   layer: "Organ",
-  version: "11.0",
-  identity: "Earn-v11-Evo",
+  version: "12.3-PRESENCE-EVO+",
+  identity: "Earn-v12.3-PRESENCE-EVO+",
 
   evo: {
     driftProof: true,
@@ -127,14 +151,29 @@ export const EarnRole = {
     cohortAware: true,
     waveFieldAware: true,
     evolutionSurfaceCohortReady: true,
-    memorySurfaceReady: true
+    memorySurfaceReady: true,
+
+    // Presence-EVO+
+    presenceAware: true,
+    meshAware: true,
+    castleAware: true,
+    expansionAware: true,
+    serverAware: true,
+    routerAware: true,
+    beaconAware: true,
+
+    chunkAware: true,
+    cacheAware: true,
+    prewarmAware: true,
+    hotStateAware: true,
+    factoringAware: true
   },
 
-  routingContract: "PulseRouter-v11",
-  meshContract: "PulseMesh-v11",
-  sendContract: "PulseSend-v11",
-  gpuOrganContract: "PulseGPU-v11",
-  minerContract: "PulseMiner-v11",
+  routingContract: "PulseRouter-v12.3-PRESENCE-EVO+",
+  meshContract: "PulseMesh-v12.3-PRESENCE-EVO+",
+  sendContract: "PulseSend-v12.3-PRESENCE-EVO+",
+  gpuOrganContract: "PulseGPU-v12.3-PRESENCE-EVO+",
+  minerContract: "PulseMiner-v12.3-PRESENCE-EVO+",
   pulseCompatibility: "Pulse-v1/v2/v3"
 };
 
@@ -142,11 +181,11 @@ export const EarnRole = {
 // ============================================================================
 //  INTERNAL HELPERS — deterministic, tiny, pure
 // ============================================================================
-
 function computeHash(str) {
   let h = 0;
-  for (let i = 0; i < str.length; i++) {
-    h = (h + str.charCodeAt(i) * (i + 1)) % 100000;
+  const s = String(str || "");
+  for (let i = 0; i < s.length; i++) {
+    h = (h + s.charCodeAt(i) * (i + 1)) % 100000;
   }
   return `h${h}`;
 }
@@ -230,7 +269,7 @@ function classifyDegradationTier(h) {
   return "criticalDegrade";
 }
 
-function buildAdvantageField(pattern, lineage, band) {
+function buildAdvantageFieldCore(pattern, lineage, band) {
   const depth = lineage.length;
   const plen = pattern.length;
   const b = normalizeBand(band);
@@ -263,11 +302,36 @@ function buildDiagnostics(pattern, lineage, healthScore, tier, band) {
   };
 }
 
+function clamp01(x) {
+  if (x == null || Number.isNaN(x)) return 0;
+  return Math.max(0, Math.min(1, x));
+}
+
+function normalizeCachePriority(p) {
+  if (!p) return "normal";
+  const v = String(p).toLowerCase();
+  if (v === "critical" || v === "high" || v === "low") return v;
+  return "normal";
+}
+
+function deriveFactoringSignalFromContext({
+  meshPressureIndex = 0,
+  cachePriority = "normal",
+  prewarmNeeded = false
+}) {
+  const pressure = clamp01(meshPressureIndex / 100);
+  const highPressure = pressure >= 0.7;
+  const criticalCache = cachePriority === "critical";
+
+  if (criticalCache || prewarmNeeded) return 1;
+  if (highPressure) return 1;
+  return 0;
+}
+
 
 // ============================================================================
 //  LOOP THEORY / WAVE THEORY / MEMORY SURFACES (pure, structural)
 // ============================================================================
-
 function buildLoopField(lineage, band) {
   const depth = lineage.length;
   const b = normalizeBand(band);
@@ -333,7 +397,59 @@ function buildBinaryField(pattern, lineage) {
 
 
 // ============================================================================
-//  FACTORY — Create an Earn v11 Organism (dual-band, evolution surfaces)
+//  PRESENCE / ADVANTAGE FIELDS (v12.3)
+// ============================================================================
+function buildPresenceField({
+  regionId = "unknown-region",
+  castleId = "unknown-castle",
+  meshStrength = "unknown",
+  meshPressureIndex = 0,
+  devicePresence = "unknown",
+  bandPresence = "unknown",
+  routerPresence = "unknown",
+  castleLoadLevel = "unknown"
+} = {}) {
+  return Object.freeze({
+    regionId,
+    castleId,
+    meshStrength,
+    meshPressureIndex,
+    devicePresence,
+    bandPresence,
+    routerPresence,
+    castleLoadLevel
+  });
+}
+
+function buildAdvantageField({
+  band = "symbolic",
+  chunkAggression = 0,
+  cachePriority = "normal",
+  prewarmNeeded = false,
+  hotStateReuse = true,
+  multiInstanceBatching = true,
+  factoringSignal = 1,
+  serverHotStateReuse = true,
+  serverPlanCache = true,
+  serverBinaryReuse = true
+} = {}) {
+  return Object.freeze({
+    band: normalizeBand(band),
+    chunkAggression,
+    cachePriority: normalizeCachePriority(cachePriority),
+    prewarmNeeded,
+    hotStateReuse,
+    multiInstanceBatching,
+    factoringSignal,
+    serverHotStateReuse,
+    serverPlanCache,
+    serverBinaryReuse
+  });
+}
+
+
+// ============================================================================
+//  FACTORY — Create an Earn v12.3 Presence-EVO Organism (dual-band)
 // ============================================================================
 export function createEarn({
   jobId,
@@ -344,11 +460,33 @@ export function createEarn({
   parentLineage = null,
   pageId = "NO_PAGE",
   band = ROUTE_BANDS.SYMBOLIC,
-  factoringSignal = 1
+
+  // presence / mesh / castle / expansion / server / global hints
+  presenceField = null,
+  meshSignals = null,
+  castleSignals = null,
+  expansionSignals = null, // reserved, symbolic only
+  serverAdvantageHints = null,
+  globalHints = null
 }) {
   const normalizedBand = normalizeBand(band);
-  const normalizedFactoringSignal =
-    typeof factoringSignal === "number" ? (factoringSignal ? 1 : 0) : 1;
+
+  const pf = presenceField || buildPresenceField({});
+  const mesh = meshSignals || { meshStrength: "unknown", meshPressureIndex: 0 };
+  const castle = castleSignals || { loadLevel: "unknown" };
+  const gh = globalHints || {};
+  const serverHints = serverAdvantageHints || {};
+
+  const cachePriority = normalizeCachePriority(gh.cacheHints?.priority);
+  const prewarmNeeded = !!(gh.prewarmHints?.shouldPrewarm);
+  const meshPressureIndex = mesh.meshPressureIndex || 0;
+
+  const factoringSignal =
+    deriveFactoringSignalFromContext({
+      meshPressureIndex,
+      cachePriority,
+      prewarmNeeded
+    });
 
   const lineage = buildLineage(parentLineage, pattern);
   const shapeSignature = computeShapeSignature(pattern, lineage, normalizedBand);
@@ -365,7 +503,7 @@ export function createEarn({
 
   const healthScore = computeHealthScore(pattern, lineage, normalizedBand);
   const tier = classifyDegradationTier(healthScore);
-  const advantageField = buildAdvantageField(pattern, lineage, normalizedBand);
+  const advantageFieldCore = buildAdvantageFieldCore(pattern, lineage, normalizedBand);
   const diagnostics = buildDiagnostics(pattern, lineage, healthScore, tier, normalizedBand);
 
   const loopField = buildLoopField(lineage, normalizedBand);
@@ -383,6 +521,30 @@ export function createEarn({
           shiftDepth: null
         };
 
+  const earnPresenceField = buildPresenceField({
+    regionId: pf.regionId,
+    castleId: pf.castleId,
+    meshStrength: mesh.meshStrength || pf.meshStrength,
+    meshPressureIndex: mesh.meshPressureIndex || pf.meshPressureIndex,
+    devicePresence: pf.devicePresence,
+    bandPresence: pf.bandPresence,
+    routerPresence: pf.routerPresence,
+    castleLoadLevel: castle.loadLevel || "unknown"
+  });
+
+  const earnAdvantageField = buildAdvantageField({
+    band: normalizedBand,
+    chunkAggression: gh.chunkHints?.chunkAggression ?? 0,
+    cachePriority,
+    prewarmNeeded,
+    hotStateReuse: serverHints.hotStateReuse ?? true,
+    multiInstanceBatching: serverHints.multiInstanceBatching ?? true,
+    factoringSignal,
+    serverHotStateReuse: serverHints.hotStateReuse ?? true,
+    serverPlanCache: serverHints.planCache ?? true,
+    serverBinaryReuse: serverHints.binaryReuse ?? true
+  });
+
   return {
     EarnRole,
     jobId,
@@ -394,7 +556,13 @@ export function createEarn({
     pageId,
 
     band: normalizedBand,
-    factoringSignal: normalizedFactoringSignal,
+    factoringSignal,
+
+    presenceField: earnPresenceField,
+    advantageField: {
+      ...advantageFieldCore,
+      ...earnAdvantageField
+    },
 
     meta: {
       shapeSignature,
@@ -406,7 +574,7 @@ export function createEarn({
 
       healthScore,
       tier,
-      advantageField,
+      advantageField: advantageFieldCore,
       diagnostics,
 
       loopField,
@@ -414,11 +582,11 @@ export function createEarn({
       memorySurface,
       binaryField,
 
-      // v11 signatures
+      // v11/v12 signatures
       earnSignature: computeHash(pattern + "::" + lineageSignature + "::" + normalizedBand),
       patternSignature: computeHash(pattern),
       lineageSurface: computeHash(String(lineage.length)),
-      advantageSignature: computeHash(JSON.stringify(advantageField)),
+      advantageSignature: computeHash(JSON.stringify(advantageFieldCore)),
       healthSignature: computeHash(String(healthScore)),
       tierSignature: computeHash(tier),
       bandSignature: computeHash(normalizedBand),
@@ -471,7 +639,7 @@ export function evolveEarn(earn, context = {}) {
 
   const healthScore = computeHealthScore(nextPattern, nextLineage, normalizedBand);
   const tier = classifyDegradationTier(healthScore);
-  const advantageField = buildAdvantageField(nextPattern, nextLineage, normalizedBand);
+  const advantageFieldCore = buildAdvantageFieldCore(nextPattern, nextLineage, normalizedBand);
   const diagnostics = buildDiagnostics(nextPattern, nextLineage, healthScore, tier, normalizedBand);
 
   const loopField = buildLoopField(nextLineage, normalizedBand);
@@ -489,12 +657,48 @@ export function evolveEarn(earn, context = {}) {
           shiftDepth: null
         };
 
+  const pf = earn.presenceField || buildPresenceField({});
+  const adv = earn.advantageField || buildAdvantageField({ band: normalizedBand });
+
+  const mesh = context.meshSignals || null;
+  const castle = context.castleSignals || null;
+  const gh = context.globalHints || null;
+  const serverHints = context.serverAdvantageHints || null;
+
+  const cachePriority = normalizeCachePriority(gh?.cacheHints?.priority ?? adv.cachePriority);
+  const prewarmNeeded = gh?.prewarmHints?.shouldPrewarm ?? adv.prewarmNeeded;
+  const meshPressureIndex = mesh?.meshPressureIndex ?? pf.meshPressureIndex ?? 0;
+
   const nextFactoringSignal =
-    typeof context.factoringSignal === "number"
-      ? (context.factoringSignal ? 1 : 0)
-      : (typeof earn.factoringSignal === "number"
-          ? (earn.factoringSignal ? 1 : 0)
-          : 1);
+    deriveFactoringSignalFromContext({
+      meshPressureIndex,
+      cachePriority,
+      prewarmNeeded
+    });
+
+  const nextPresenceField = buildPresenceField({
+    regionId: pf.regionId,
+    castleId: pf.castleId,
+    meshStrength: mesh?.meshStrength ?? pf.meshStrength,
+    meshPressureIndex,
+    devicePresence: pf.devicePresence,
+    bandPresence: pf.bandPresence,
+    routerPresence: pf.routerPresence,
+    castleLoadLevel: castle?.loadLevel ?? pf.castleLoadLevel ?? "unknown"
+  });
+
+  const nextAdvantageField = buildAdvantageField({
+    band: normalizedBand,
+    chunkAggression: gh?.chunkHints?.chunkAggression ?? adv.chunkAggression,
+    cachePriority,
+    prewarmNeeded,
+    hotStateReuse: serverHints?.hotStateReuse ?? adv.hotStateReuse,
+    multiInstanceBatching: serverHints?.multiInstanceBatching ?? adv.multiInstanceBatching,
+    factoringSignal: nextFactoringSignal,
+    serverHotStateReuse: serverHints?.hotStateReuse ?? adv.serverHotStateReuse ?? true,
+    serverPlanCache: serverHints?.planCache ?? adv.serverPlanCache ?? true,
+    serverBinaryReuse: serverHints?.binaryReuse ?? adv.serverBinaryReuse ?? true
+  });
 
   return {
     EarnRole,
@@ -509,6 +713,12 @@ export function evolveEarn(earn, context = {}) {
     band: normalizedBand,
     factoringSignal: nextFactoringSignal,
 
+    presenceField: nextPresenceField,
+    advantageField: {
+      ...advantageFieldCore,
+      ...nextAdvantageField
+    },
+
     meta: {
       shapeSignature,
       evolutionStage,
@@ -519,7 +729,7 @@ export function evolveEarn(earn, context = {}) {
 
       healthScore,
       tier,
-      advantageField,
+      advantageField: advantageFieldCore,
       diagnostics,
 
       loopField,
@@ -530,7 +740,7 @@ export function evolveEarn(earn, context = {}) {
       earnSignature: computeHash(nextPattern + "::" + lineageSignature + "::" + normalizedBand),
       patternSignature: computeHash(nextPattern),
       lineageSurface: computeHash(String(nextLineage.length)),
-      advantageSignature: computeHash(JSON.stringify(advantageField)),
+      advantageSignature: computeHash(JSON.stringify(advantageFieldCore)),
       healthSignature: computeHash(String(healthScore)),
       tierSignature: computeHash(tier),
       bandSignature: computeHash(normalizedBand),
@@ -555,14 +765,19 @@ export function evolveEarn(earn, context = {}) {
 
 
 // ============================================================================
-//  COHORT / WAVE EVOLUTION — multi-instance evolution surfaces
+//  COHORT / WAVE EVOLUTION — multi-instance evolution surfaces (presence-aware)
 // ============================================================================
-
-export function createEarnCohort(specs = []) {
+export function createEarnCohort(specs = [], sharedContext = {}) {
   return specs.map((spec, index) =>
     createEarn({
       ...spec,
-      jobId: spec.jobId ?? `earn-job-${index + 1}`
+      jobId: spec.jobId ?? `earn-job-${index + 1}`,
+      presenceField: sharedContext.presenceField,
+      meshSignals: sharedContext.meshSignals,
+      castleSignals: sharedContext.castleSignals,
+      expansionSignals: sharedContext.expansionSignals,
+      serverAdvantageHints: sharedContext.serverAdvantageHints,
+      globalHints: sharedContext.globalHints
     })
   );
 }

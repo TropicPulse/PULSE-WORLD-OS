@@ -1,7 +1,8 @@
 // ============================================================================
-//  PulseSendSystem-v11-Evo.js — Nervous System Conductor (v11‑Evo + SDN‑Aware)
-//  Impulse → Pulse v3 → Pulse v2 → Pulse v1 → Router → Mesh → Send
-//  v11-Evo-Binary: Fully Binary-Aware + Symbolic-Aware + Unbinary Surface
+//  PulseSendSystem-v12.4-EvoBinary.js
+//  Nervous System Conductor (v12.4‑EvoBinary + SDN‑Aware + DualStack‑Aware)
+//  Impulse → Pulse v3 → Pulse v2 → Pulse v1 → Router → Mesh → Send → Return
+//  v12.4: Fully Binary-Aware + Ancestry + Degradation Tier + Advantage Surface
 // ============================================================================
 //
 //  ROLE:
@@ -14,14 +15,8 @@
 //    • If v2 fails → fallback to Pulse v1 (EvoStable).
 //    • Route → Mesh → Send → ReturnArc.
 //    • Emit SDN impulses at every stage (non‑blocking).
+//    • Surface ancestry, degradation tier, advantage field, binary summary.
 //    • Return result to PulseBand (if present).
-//
-//  BINARY / UNBINARY BEHAVIOR:
-//    • Impulse may contain:
-//        - bits: number[] (0/1)
-//        - unbinary: boolean (if true, we also expose decoded symbolic fields)
-//    • If intent/payload/mode are missing, they are derived from bits.
-//    • If they exist, bits act as *hints* (extra context).
 //
 //  SAFETY:
 //    • No network
@@ -45,13 +40,93 @@ import { PulseMesh } from "../pulse-mesh/PulseMesh-v11.js";
 import { createPulseSend } from "./PULSE-SEND/PulseSend-v11-Evo.js";
 import { createPulseSendMover } from "./PULSE-SEND/PulseSendMover-v11-Evo.js";
 import { createPulseSendImpulse } from "./PULSE-SEND/PulseSendImpulse-v11-Evo.js";
-import { createPulseSendReturn } from "./PULSE-SEND/PulseSendReturn-v11-Evo.js";
+import { createPulseSendReturn } from "./PULSE-SEND/PulseSendReturn-v12.4-EvoBinary.js";
+
+
+// ============================================================================
+//  INTERNAL: GENERIC HELPERS
+// ============================================================================
+function computeHash(str) {
+  let h = 0;
+  const s = String(str);
+  for (let i = 0; i < s.length; i++) {
+    h = (h + s.charCodeAt(i) * (i + 1)) % 100000;
+  }
+  return `h${h}`;
+}
+
+function buildPatternAncestry(pattern) {
+  if (!pattern || typeof pattern !== "string") return [];
+  return pattern.split("/").filter(Boolean);
+}
+
+function buildLineageSignature(lineage) {
+  if (!Array.isArray(lineage) || lineage.length === 0) return "NO_LINEAGE";
+  return lineage.join(">");
+}
+
+function buildPageAncestrySignature({ pattern, lineage, pageId }) {
+  const safePattern = typeof pattern === "string" ? pattern : "";
+  const safeLineage = Array.isArray(lineage) ? lineage : [];
+  const safePageId = pageId || "NO_PAGE";
+
+  const shape = {
+    pattern: safePattern,
+    patternAncestry: buildPatternAncestry(safePattern),
+    lineageSignature: buildLineageSignature(safeLineage),
+    pageId: safePageId
+  };
+
+  const raw = JSON.stringify(shape);
+  let hash = 0;
+  for (let i = 0; i < raw.length; i++) {
+    hash = (hash << 5) - hash + raw.charCodeAt(i);
+    hash |= 0;
+  }
+  return (hash >>> 0).toString(16);
+}
+
+function classifyDegradationTier(healthScore) {
+  const h = typeof healthScore === "number" ? healthScore : 1.0;
+  if (h >= 0.95) return "microDegrade";
+  if (h >= 0.85) return "softDegrade";
+  if (h >= 0.50) return "midDegrade";
+  if (h >= 0.15) return "hardDegrade";
+  return "criticalDegrade";
+}
+
+function extractBinarySurfaceFromPulse(pulse) {
+  const payload = pulse?.payload || {};
+
+  const binaryPattern  = payload.binaryPattern || null;
+  const binaryMode     = payload.binaryMode || null;
+  const binaryPayload  = payload.binaryPayload || null;
+  const binaryHints    = payload.binaryHints || null;
+  const binaryStrength = typeof payload.binaryStrength === "number"
+    ? payload.binaryStrength
+    : null;
+
+  const hasBinary =
+    !!binaryPattern ||
+    !!binaryMode ||
+    !!binaryPayload ||
+    !!binaryHints ||
+    binaryStrength !== null;
+
+  return {
+    hasBinary,
+    binaryPattern,
+    binaryMode,
+    binaryPayload,
+    binaryHints,
+    binaryStrength
+  };
+}
 
 
 // ============================================================================
 //  INTERNAL: BINARY HELPERS — bits → pattern/mode/payload/hints
 // ============================================================================
-
 function bitsToNumber(bits) {
   const safe = Array.isArray(bits) ? bits : [];
   let n = 0;
@@ -120,17 +195,6 @@ function computeBinaryStrength(bits) {
 // ============================================================================
 //  INTERNAL: IMPULSE NORMALIZATION (Symbolic + Binary + Unbinary)
 // ============================================================================
-//
-//  normalizeImpulse:
-//    - Accepts raw impulse (may contain bits + symbolic fields).
-//    - Produces a resolved view:
-//        • intent
-//        • payload
-//        • mode
-//        • pageId
-//        • binarySummary (if bits present)
-// ============================================================================
-
 function normalizeImpulse(impulse) {
   const bits = Array.isArray(impulse.bits) ? impulse.bits : null;
   const hasBits = !!bits && bits.length > 0;
@@ -142,7 +206,6 @@ function normalizeImpulse(impulse) {
   const binaryHints    = hasBits ? bitsToHints(bits) : { routerHint: null, meshHint: null, organHint: null };
   const binaryStrength = hasBits ? computeBinaryStrength(bits) : 0;
 
-  // Symbolic fields may already exist; bits fill gaps.
   const intent =
     impulse.intent ||
     (unbinary && binaryPattern) ||
@@ -163,7 +226,6 @@ function normalizeImpulse(impulse) {
   const payloadBase = impulse.payload || {};
   const payloadMerged = {
     ...payloadBase,
-    // If unbinary is requested, we expose binary-derived fields explicitly.
     ...(unbinary ? {
       binaryPattern,
       binaryMode,
@@ -171,7 +233,6 @@ function normalizeImpulse(impulse) {
       binaryHints,
       binaryStrength
     } : {}),
-    // Always keep binary hints available as soft hints (non-breaking).
     routerHint: payloadBase.routerHint || binaryHints.routerHint || null,
     meshHint:   payloadBase.meshHint   || binaryHints.meshHint   || null,
     organHint:  payloadBase.organHint  || binaryHints.organHint  || null
@@ -201,24 +262,83 @@ function normalizeImpulse(impulse) {
 
 
 // ============================================================================
-//  FACTORY — Build SDN‑Aware, Binary‑Aware PulseSendSystem
+//  INTERNAL: SYSTEM DIAGNOSTICS (Ancestry + Degradation + Advantage)
+// ============================================================================
+function buildSystemDiagnostics({ pulse, fallbackTier }) {
+  const pattern = pulse?.pattern || "NO_PATTERN";
+  const lineage = Array.isArray(pulse?.lineage) ? pulse.lineage : [];
+  const lineageDepth = lineage.length;
+  const pageId = pulse?.pageId || "NO_PAGE";
+  const pulseType = pulse?.pulseType || pulse?.PulseRole?.identity || "UNKNOWN_PULSE_TYPE";
+
+  const healthScore = typeof pulse?.healthScore === "number"
+    ? pulse.healthScore
+    : 1.0;
+
+  const degradationTier = classifyDegradationTier(healthScore);
+  const advantageField = pulse?.advantageField || null;
+
+  const patternAncestry = buildPatternAncestry(pattern);
+  const lineageSignature = buildLineageSignature(lineage);
+  const pageAncestrySignature = buildPageAncestrySignature({
+    pattern,
+    lineage,
+    pageId
+  });
+
+  const binarySurface = extractBinarySurfaceFromPulse(pulse);
+
+  return {
+    pattern,
+    lineageDepth,
+    pageId,
+    pulseType,
+    fallbackTier,
+
+    patternAncestry,
+    lineageSignature,
+    pageAncestrySignature,
+
+    healthScore,
+    degradationTier,
+    advantageField,
+
+    binary: binarySurface,
+
+    patternHash: computeHash(pattern),
+    lineageHash: computeHash(String(lineageDepth)),
+    pageHash: computeHash(pageId),
+    pulseTypeHash: computeHash(pulseType),
+    fallbackTierHash: computeHash(String(fallbackTier)),
+    degradationHash: computeHash(degradationTier),
+
+    binaryPatternHash: binarySurface.binaryPattern
+      ? computeHash(binarySurface.binaryPattern)
+      : null,
+    binaryModeHash: binarySurface.binaryMode
+      ? computeHash(binarySurface.binaryMode)
+      : null
+  };
+}
+
+
+// ============================================================================
+//  FACTORY — Build SDN‑Aware, Binary‑Aware PulseSendSystem (v12.4-EvoBinary)
 // ============================================================================
 export function createPulseSendSystem({
-  sdn = null,          // ⭐ injected SDN (optional)
+  sdn = null,
   log = console.log
 }) {
 
-  // helper: safe SDN emission
   function emitSDN(event, payload) {
     if (!sdn || typeof sdn.emitImpulse !== "function") return;
     try {
       sdn.emitImpulse(event, payload);
     } catch (err) {
-      log && log("[PulseSendSystem-v11-Evo] SDN emit failed (non‑fatal)", { event, err });
+      log && log("[PulseSendSystem-v12.4-EvoBinary] SDN emit failed (non‑fatal)", { event, err });
     }
   }
 
-  // build PulseSend with SDN injected
   const PulseSend = createPulseSend({
     createPulseV3,
     createPulseV2,
@@ -232,9 +352,9 @@ export function createPulseSendSystem({
     sdn
   });
 
-  // ========================================================================
+  // ------------------------------------------------------------------------
   //  INTERNAL: Try Pulse v3 (Unified Organism)
-  // ========================================================================
+  // ------------------------------------------------------------------------
   function tryPulseV3(impulse, normalized) {
     try {
       const pulse = createPulseV3({
@@ -254,9 +374,9 @@ export function createPulseSendSystem({
     }
   }
 
-  // ========================================================================
+  // ------------------------------------------------------------------------
   //  INTERNAL: Try Pulse v2 (Evolution Engine)
-  // ========================================================================
+  // ------------------------------------------------------------------------
   function tryPulseV2(impulse, normalized) {
     try {
       const pulse = createPulseV2({
@@ -276,9 +396,9 @@ export function createPulseSendSystem({
     }
   }
 
-  // ========================================================================
+  // ------------------------------------------------------------------------
   //  INTERNAL: Build Pulse v1 (EvoStable)
-  // ========================================================================
+// ------------------------------------------------------------------------
   function buildPulseV1(impulse, normalized) {
     return createLegacyPulse({
       jobId: impulse.tickId,
@@ -292,26 +412,26 @@ export function createPulseSendSystem({
     });
   }
 
-  // ========================================================================
-  //  PUBLIC API — PulseSendSystem (v11‑Evo + SDN‑Aware + Binary‑Aware)
-  // ========================================================================
+  // ------------------------------------------------------------------------
+  //  PUBLIC API — PulseSendSystem (v12.4‑EvoBinary + SDN‑Aware)
+// ------------------------------------------------------------------------
   return {
     async send(impulse) {
       const normalized = normalizeImpulse(impulse);
 
       emitSDN("sendSystem:begin", {
-        impulseIntent: impulse.intent,
         tickId: impulse.tickId,
+        impulseIntent: impulse.intent,
+        resolvedIntent: normalized.intent,
         mode: normalized.mode,
+        pageId: normalized.pageId,
         binary: normalized.binarySummary
       });
 
       let pulse = null;
       let fallbackTier = null;
 
-      // ================================================================
-      // ⭐ Tier 1 — Try Pulse v3 (Unified Organism)
-      // ================================================================
+      // ⭐ Tier 1 — Try Pulse v3
       const v3 = tryPulseV3(impulse, normalized);
       if (v3.ok) {
         pulse = v3.pulse;
@@ -321,6 +441,7 @@ export function createPulseSendSystem({
           intent: normalized.intent,
           pulseType: pulse.pulseType,
           healthScore: pulse.healthScore,
+          mode: pulse.mode,
           binary: normalized.binarySummary
         });
       } else {
@@ -332,9 +453,7 @@ export function createPulseSendSystem({
         });
       }
 
-      // ================================================================
-      // ⭐ Tier 2 — Try Pulse v2 (Evolution Engine)
-      // ================================================================
+      // ⭐ Tier 2 — Try Pulse v2
       if (!pulse) {
         const v2 = tryPulseV2(impulse, normalized);
         if (v2.ok) {
@@ -345,6 +464,7 @@ export function createPulseSendSystem({
             intent: normalized.intent,
             pulseType: pulse.pulseType,
             healthScore: pulse.healthScore,
+            mode: pulse.mode,
             binary: normalized.binarySummary
           });
         } else {
@@ -357,9 +477,7 @@ export function createPulseSendSystem({
         }
       }
 
-      // ================================================================
-      // ⭐ Tier 3 — Fallback to Pulse v1 (EvoStable)
-      // ================================================================
+      // ⭐ Tier 3 — Fallback to Pulse v1
       if (!pulse) {
         pulse = buildPulseV1(impulse, normalized);
         fallbackTier = "v1";
@@ -368,19 +486,20 @@ export function createPulseSendSystem({
           intent: normalized.intent,
           pulseType: pulse.pulseType,
           healthScore: pulse.healthScore,
+          mode: pulse.mode,
           binary: normalized.binarySummary
         });
       }
 
-      // ================================================================
-      // ⭐ Transport Chain — Router → Mesh → Send → ReturnArc
-      // ================================================================
+      const systemDiagnostics = buildSystemDiagnostics({ pulse, fallbackTier });
+
       emitSDN("sendSystem:transport-begin", {
         tickId: impulse.tickId,
         intent: normalized.intent,
         fallbackTier,
         pulseType: pulse.pulseType,
         mode: pulse.mode,
+        diagnostics: systemDiagnostics,
         binary: normalized.binarySummary
       });
 
@@ -393,26 +512,27 @@ export function createPulseSendSystem({
         mode: pulse.mode
       });
 
+      const ok = !!result && result.result && result.result.ok !== false;
+
       emitSDN("sendSystem:transport-complete", {
         tickId: impulse.tickId,
         intent: normalized.intent,
         fallbackTier,
         pulseType: pulse.pulseType,
         mode: pulse.mode,
-        ok: !!result && result.result && result.result.ok !== false,
+        ok,
+        diagnostics: systemDiagnostics,
         binary: normalized.binarySummary
       });
 
-      // ================================================================
-      // ⭐ Return to PulseBand (if present, browser‑only)
-      // ================================================================
       if (typeof window !== "undefined" && window.PulseBand?.receivePulseSendResult) {
         window.PulseBand.receivePulseSendResult({
           impulse,
           normalized,
           pulse,
           result,
-          fallbackTier
+          fallbackTier,
+          diagnostics: systemDiagnostics
         });
       }
 
@@ -422,15 +542,18 @@ export function createPulseSendSystem({
         fallbackTier,
         pulseType: pulse.pulseType,
         mode: pulse.mode,
+        ok,
+        diagnostics: systemDiagnostics,
         binary: normalized.binarySummary
       });
 
       return {
-        ok: true,
+        ok,
         pulse,
         result,
         fallbackTier,
-        binary: normalized.binarySummary
+        binary: normalized.binarySummary,
+        diagnostics: systemDiagnostics
       };
     }
   };

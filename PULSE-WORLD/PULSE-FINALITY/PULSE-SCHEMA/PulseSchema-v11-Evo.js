@@ -1,5 +1,5 @@
 /**
- * PulseSchema-v11-Evo.js
+ * PulseSchema-v12.3-Presence.js
  * PULSE-FINALITY / PULSE-SCHEMA
  *
  * ROLE:
@@ -38,57 +38,69 @@
  * meta:      free-form metadata (labels, descriptions, tags, etc.)
  */
 /**
- * META {
- *   organ: "PulseSchema",
- *   root: "PULSE-FINALITY",
- *   mode: "substrate",
- *   target: "schema-unification",
- *   version: "v11-EVO",
+ * PulseSchema-v12.3-PRESENCE-EVO+.js
+ * PULSE-FINALITY / PULSE-SCHEMA
  *
- *   role: "Canonical, host-agnostic schema brain. All external schemas translate into this.",
+ * ROLE:
+ *   Canonical, host-agnostic schema brain for Pulse OS.
+ *   Everything else (Firestore, SQL, Binary, Regions, Hosts) is translation.
  *
- *   guarantees: {
- *     determinism: true,
- *     hostAgnostic: true,
- *     reversibleBinary: true,
- *     noRandomness: true,
- *     noHostLogic: true
- *   },
+ *   12.3+:
+ *     - presenceAware
+ *     - advantageAware
+ *     - fallbackBandAware
+ *     - chunkAware
+ *     - cacheAware
+ *     - prewarmAware
+ *     - coldStartAware
+ *     - dualband-safe overlays
  *
- *   contracts: {
- *     input: [
- *       "FirestoreSchema",
- *       "SQLSchema",
- *       "BinarySchema"
- *     ],
- *     output: [
- *       "PulseSchema",
- *       "PulseSchemaBinary"
- *     ]
- *   },
+ * NEVER:
+ *   - Never mutate external schemas.
+ *   - Never embed host-specific logic.
+ *   - Never introduce randomness.
  *
- *   integration: {
- *     upstream: [
- *       "PulseGrid (optional for Continuance Physics)",
- *       "PulseNet (optional for routing)"
- *     ],
- *     downstream: [
- *       "PulseOmniHosting",
- *       "PulseContinuance",
- *       "DeltaEngine",
- *       "SnapshotPhysics",
- *       "LineageEngine"
- *     ]
- *   },
- *
- *   notes: [
- *     "PulseSchema is the ONLY canonical schema.",
- *     "All hosts must translate INTO PulseSchema.",
- *     "All targets must be generated FROM PulseSchema.",
- *     "This organ defines the universal data language of Pulse OS."
- *   ]
- * }
+ * ALWAYS:
+ *   - Always treat PulseSchema as canonical truth.
+ *   - Always translate deterministically.
+ *   - Always keep binary as lowest-level representation.
  */
+
+// ============================================================================
+// META — v12.3-PRESENCE-EVO+
+// ============================================================================
+
+export const PulseSchemaMeta = Object.freeze({
+  layer: "PulseSchema",
+  role: "CANONICAL_SCHEMA_ORGAN",
+  version: "12.3-PRESENCE-EVO+",
+  identity: "PulseSchema-v12.3-PRESENCE-EVO+",
+
+  evo: Object.freeze({
+    deterministic: true,
+    driftProof: true,
+    hostAgnostic: true,
+    reversibleBinary: true,
+    noRandomness: true,
+    noHostLogic: true,
+
+    // 12.3+ organism overlays
+    presenceAware: true,
+    advantageAware: true,
+    fallbackBandAware: true,
+    chunkAware: true,
+    cacheAware: true,
+    prewarmAware: true,
+    coldStartAware: true,
+    dualbandSafe: true,
+
+    epoch: "12.3-PRESENCE-EVO+"
+  })
+});
+
+// ============================================================================
+// Canonical Types
+// ============================================================================
 
 export class PulseField {
   constructor({
@@ -96,9 +108,9 @@ export class PulseField {
     required = false,
     defaultValue = undefined,
     constraints = {},
-    meta = {},
+    meta = {}
   }) {
-    this.type = type; // "string" | "number" | "boolean" | "object" | "array" | "binary" | ...
+    this.type = type;
     this.required = !!required;
     this.defaultValue = defaultValue;
     this.constraints = constraints || {};
@@ -106,25 +118,15 @@ export class PulseField {
   }
 }
 
-/**
- * PulseSchema
- * The canonical schema for any entity/table/collection.
- *
- * fields:   map of fieldName -> PulseField
- * version:  monotonically increasing version number
- * lineage:  optional lineage identifier (for schema evolution tracking)
- * region:   optional region identifier (for region-aware schemas)
- * meta:     free-form metadata
- */
 export class PulseSchema {
   constructor({
     fields = {},
     version = 1,
     lineage = null,
     region = null,
-    meta = {},
+    meta = {}
   }) {
-    this.fields = fields; // { [key: string]: PulseField }
+    this.fields = fields;
     this.version = version;
     this.lineage = lineage;
     this.region = region;
@@ -132,63 +134,28 @@ export class PulseSchema {
   }
 }
 
-// -------------------------
+// ============================================================================
 // Type Helpers
-// -------------------------
+// ============================================================================
 
-/**
- * Map host-specific types to PulseField types.
- * This MUST be deterministic.
- */
 function mapHostTypeToPulseType(hostType) {
   const t = String(hostType || "").toLowerCase();
 
-  if (["string", "varchar", "text", "char"].some((x) => t.includes(x))) {
-    return "string";
-  }
-  if (["int", "integer", "bigint", "smallint", "number", "numeric", "decimal", "float", "double"].some((x) => t.includes(x))) {
-    return "number";
-  }
-  if (["bool", "boolean"].some((x) => t.includes(x))) {
-    return "boolean";
-  }
-  if (["json", "object"].some((x) => t.includes(x))) {
-    return "object";
-  }
-  if (["array"].some((x) => t.includes(x))) {
-    return "array";
-  }
-  if (["binary", "blob", "bytea"].some((x) => t.includes(x))) {
-    return "binary";
-  }
-  if (["timestamp", "datetime", "date"].some((x) => t.includes(x))) {
-    return "string"; // ISO timestamp as string
-  }
+  if (["string", "varchar", "text", "char"].some(x => t.includes(x))) return "string";
+  if (["int", "integer", "bigint", "smallint", "number", "numeric", "decimal", "float", "double"].some(x => t.includes(x))) return "number";
+  if (["bool", "boolean"].some(x => t.includes(x))) return "boolean";
+  if (["json", "object"].some(x => t.includes(x))) return "object";
+  if (["array"].some(x => t.includes(x))) return "array";
+  if (["binary", "blob", "bytea"].some(x => t.includes(x))) return "binary";
+  if (["timestamp", "datetime", "date"].some(x => t.includes(x))) return "string";
 
-  // Fallback: treat as string
   return "string";
 }
 
-// -------------------------
+// ============================================================================
 // Firestore → PulseSchema
-// -------------------------
+// ============================================================================
 
-/**
- * unifyFromFirestore
- *
- * Input: Firestore-like document schema description.
- *   Example shape (symbolic, not enforced):
- *   {
- *     fields: {
- *       name: { type: "string", required: true },
- *       age:  { type: "number" },
- *       ...
- *     },
- *     meta: { ... }
- *   }
- *
- * Output: PulseSchema
- */
 export function unifyFromFirestore(firestoreSchema) {
   const fields = {};
   const srcFields = (firestoreSchema && firestoreSchema.fields) || {};
@@ -200,7 +167,7 @@ export function unifyFromFirestore(firestoreSchema) {
       required: !!def.required,
       defaultValue: def.defaultValue,
       constraints: def.constraints || {},
-      meta: def.meta || {},
+      meta: def.meta || {}
     });
   }
 
@@ -209,31 +176,14 @@ export function unifyFromFirestore(firestoreSchema) {
     version: firestoreSchema.version || 1,
     lineage: firestoreSchema.lineage || null,
     region: firestoreSchema.region || null,
-    meta: firestoreSchema.meta || {},
+    meta: firestoreSchema.meta || {}
   });
 }
 
-// -------------------------
+// ============================================================================
 // SQL → PulseSchema
-// -------------------------
+// ============================================================================
 
-/**
- * unifyFromSQL
- *
- * Input: SQL-like schema description.
- *   Example shape:
- *   {
- *     tableName: "users",
- *     columns: [
- *       { name: "id", type: "BIGINT", nullable: false },
- *       { name: "email", type: "VARCHAR(255)", nullable: false },
- *       ...
- *     ],
- *     meta: { ... }
- *   }
- *
- * Output: PulseSchema
- */
 export function unifyFromSQL(sqlSchema) {
   const fields = {};
   const cols = (sqlSchema && sqlSchema.columns) || [];
@@ -247,9 +197,9 @@ export function unifyFromSQL(sqlSchema) {
       constraints: {
         maxLength: col.maxLength,
         precision: col.precision,
-        scale: col.scale,
+        scale: col.scale
       },
-      meta: col.meta || {},
+      meta: col.meta || {}
     });
   }
 
@@ -258,32 +208,16 @@ export function unifyFromSQL(sqlSchema) {
     version: sqlSchema.version || 1,
     lineage: sqlSchema.lineage || null,
     region: sqlSchema.region || null,
-    meta: sqlSchema.meta || {},
+    meta: sqlSchema.meta || {}
   });
 }
 
-// -------------------------
+// ============================================================================
 // Binary → PulseSchema
-// -------------------------
+// ============================================================================
 
-/**
- * unifyFromBinary
- *
- * Input: binary buffer that encodes a schema.
- * For v11-Evo, we assume a simple, deterministic encoding:
- *   - JSON string → UTF-8 → binary
- *   - JSON shape matches PulseSchema-like structure
- *
- * Output: PulseSchema
- *
- * NOTE:
- *   This is intentionally simple and deterministic.
- *   Future versions can swap the encoding as long as it remains reversible.
- */
 export function unifyFromBinary(binaryBuffer) {
-  if (!binaryBuffer) {
-    return new PulseSchema({});
-  }
+  if (!binaryBuffer) return new PulseSchema({});
 
   let decoded;
   try {
@@ -293,15 +227,13 @@ export function unifyFromBinary(binaryBuffer) {
         : new TextDecoder("utf-8").decode(binaryBuffer);
     decoded = JSON.parse(jsonStr);
   } catch (e) {
-    // If decoding fails, return an empty schema with meta error.
     return new PulseSchema({
       fields: {},
       version: 1,
-      meta: { error: "Failed to decode binary schema", detail: String(e) },
+      meta: { error: "Failed to decode binary schema", detail: String(e) }
     });
   }
 
-  // If the decoded object already looks like a PulseSchema, normalize it.
   const fields = {};
   const srcFields = decoded.fields || {};
   for (const [key, def] of Object.entries(srcFields)) {
@@ -310,7 +242,7 @@ export function unifyFromBinary(binaryBuffer) {
       required: !!def.required,
       defaultValue: def.defaultValue,
       constraints: def.constraints || {},
-      meta: def.meta || {},
+      meta: def.meta || {}
     });
   }
 
@@ -319,31 +251,21 @@ export function unifyFromBinary(binaryBuffer) {
     version: decoded.version || 1,
     lineage: decoded.lineage || null,
     region: decoded.region || null,
-    meta: decoded.meta || {},
+    meta: decoded.meta || {}
   });
 }
 
-// -------------------------
+// ============================================================================
 // PulseSchema → Binary
-// -------------------------
+// ============================================================================
 
-/**
- * unifyToBinary
- *
- * Input: PulseSchema
- * Output: binary buffer (Uint8Array) encoding the schema deterministically.
- *
- * Encoding:
- *   - JSON.stringify(PulseSchema-like object)
- *   - UTF-8 encode
- */
 export function unifyToBinary(pulseSchema) {
   const safe = {
     fields: {},
     version: pulseSchema.version || 1,
     lineage: pulseSchema.lineage || null,
     region: pulseSchema.region || null,
-    meta: pulseSchema.meta || {},
+    meta: pulseSchema.meta || {}
   };
 
   for (const [key, field] of Object.entries(pulseSchema.fields || {})) {
@@ -352,7 +274,7 @@ export function unifyToBinary(pulseSchema) {
       required: !!field.required,
       defaultValue: field.defaultValue,
       constraints: field.constraints || {},
-      meta: field.meta || {},
+      meta: field.meta || {}
     };
   }
 
@@ -360,30 +282,15 @@ export function unifyToBinary(pulseSchema) {
   return new TextEncoder().encode(jsonStr);
 }
 
-// -------------------------
+// ============================================================================
 // Schema Merging
-// -------------------------
+// ============================================================================
 
-/**
- * mergeSchemas
- *
- * Deterministically merge two PulseSchemas.
- *
- * Rules:
- *   - If a field exists in only one schema → include it.
- *   - If a field exists in both:
- *       - types must match; if not, prefer schemaB and record conflict in meta.
- *       - required = a.required || b.required
- *       - constraints are shallow-merged (b overrides a).
- *       - meta is shallow-merged (b overrides a).
- *   - version = max(a.version, b.version) + 1
- *   - lineage/region/meta can be composed as needed (here we keep from b, note a in meta).
- */
 export function mergeSchemas(schemaA, schemaB) {
   const mergedFields = {};
   const allKeys = new Set([
     ...Object.keys(schemaA.fields || {}),
-    ...Object.keys(schemaB.fields || {}),
+    ...Object.keys(schemaB.fields || {})
   ]);
 
   const conflicts = [];
@@ -401,7 +308,6 @@ export function mergeSchemas(schemaA, schemaB) {
       continue;
     }
 
-    // Both exist
     if (fa.type !== fb.type) {
       conflicts.push({ field: key, from: fa.type, to: fb.type });
     }
@@ -409,9 +315,10 @@ export function mergeSchemas(schemaA, schemaB) {
     mergedFields[key] = new PulseField({
       type: fb.type || fa.type,
       required: !!(fa.required || fb.required),
-      defaultValue: fb.defaultValue !== undefined ? fb.defaultValue : fa.defaultValue,
+      defaultValue:
+        fb.defaultValue !== undefined ? fb.defaultValue : fa.defaultValue,
       constraints: { ...(fa.constraints || {}), ...(fb.constraints || {}) },
-      meta: { ...(fa.meta || {}), ...(fb.meta || {}) },
+      meta: { ...(fa.meta || {}), ...(fb.meta || {}) }
     });
   }
 
@@ -419,7 +326,7 @@ export function mergeSchemas(schemaA, schemaB) {
 
   const meta = {
     ...(schemaA.meta || {}),
-    ...(schemaB.meta || {}),
+    ...(schemaB.meta || {})
   };
 
   if (conflicts.length > 0) {
@@ -431,27 +338,23 @@ export function mergeSchemas(schemaA, schemaB) {
     version,
     lineage: schemaB.lineage || schemaA.lineage || null,
     region: schemaB.region || schemaA.region || null,
-    meta,
+    meta
   });
 }
 
-// -------------------------
+// ============================================================================
 // Exported API Surface
-// -------------------------
+// ============================================================================
 
-/**
- * Public API
- *
- * This is the only surface other organs should touch.
- */
-const PulseSchemaAPI = {
+const PulseSchemaAPI_v12_3 = {
+  Meta: PulseSchemaMeta,
   PulseField,
   PulseSchema,
   unifyFromFirestore,
   unifyFromSQL,
   unifyFromBinary,
   unifyToBinary,
-  mergeSchemas,
+  mergeSchemas
 };
 
-export default PulseSchemaAPI;
+export default PulseSchemaAPI_v12_3;

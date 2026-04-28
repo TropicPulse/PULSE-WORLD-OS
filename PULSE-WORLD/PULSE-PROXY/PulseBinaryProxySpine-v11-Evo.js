@@ -1,12 +1,12 @@
 // ============================================================================
-//  FILE: PulseProxySpineBinary.js
-//  PULSE OS v11-EVO — PULSE PROXY SPINE (BINARY CORE)
+//  FILE: PulseProxySpineBinary-v12.3-EVO.js
+//  PULSE OS v12.3-EVO — PULSE PROXY SPINE (BINARY CORE)
 //  Deterministic Brainstem • Vitals Math • Rate Limit Field • Healability Map
 //  PURE BINARY ORGAN — NO IO, NO GLOBALS, NO EXPRESS, NO REDIS, NO MAILER.
 // ============================================================================
 //
-//  ROLE (v11-EVO):
-//  --------------
+//  ROLE (v12.3-EVO):
+//  -----------------
 //  • This is the BINARY CORE of PulseProxySpine.
 //  • It defines the organism-correct shape of the backend spine:
 //      – identity + context
@@ -14,11 +14,12 @@
 //      – rate-limit field
 //      – node/region descriptors
 //      – healability descriptors
+//      – passive band metadata (presence/harmonics/prewarm/cache/chunk/remember)
 //  • It performs ONLY deterministic, side-effect-free computations.
 //  • It is the "brainstem math" that the symbolic spine calls into.
 //
-//  SAFETY CONTRACT (v11-EVO):
-//  --------------------------
+//  SAFETY CONTRACT (v12.3-EVO):
+//  ----------------------------
 //  • No imports.
 //  • No globalThis/global/window/process access.
 //  • No timers, no Date.now() calls inside helpers (caller passes timestamps).
@@ -32,14 +33,14 @@
 
 
 // ============================================================================
-//  ORGAN IDENTITY — v11-EVO (Binary Core)
+//  ORGAN IDENTITY — v12.3-EVO (Binary Core)
 // ============================================================================
 export const PulseRoleBinary = {
   type: "Organ",
   subsystem: "PulseProxy",
   layer: "BackendSpineBinary",
-  version: "11.0",
-  identity: "PulseProxySpineBinary",
+  version: "12.3-EVO",
+  identity: "PulseProxySpineBinary-v12.3-EVO",
 
   evo: {
     driftProof: true,
@@ -58,14 +59,26 @@ export const PulseRoleBinary = {
     reflexPropagation: 1.0,
     organismClusterBoost: 1.0,
     cognitiveComputeLink: true,
-    futureEvolutionReady: true
+    futureEvolutionReady: true,
+
+    // 12.3-EVO passive band metadata awareness
+    presenceAware: true,
+    harmonicsAware: true,
+    dualBandCompatible: true,
+    epochStable: true,
+    passivePrewarm: true,
+    passiveCache: true,
+    passiveChunk: true,
+    passiveRemember: true,
+    passiveForwarding: true
   }
 };
+
 export const PulseProxySpineBinaryMeta = Object.freeze({
   layer: "PulseProxySpineBinary",
   role: "BINARY_BACKEND_SPINE_CORE",
-  version: "v11.2-EVO-BINARY-MAX",
-  identity: "PulseProxySpineBinary-v11.2-EVO-BINARY-MAX",
+  version: "v12.3-EVO",
+  identity: "PulseProxySpineBinary-v12.3-EVO",
 
   guarantees: Object.freeze({
     deterministic: true,
@@ -86,6 +99,17 @@ export const PulseProxySpineBinaryMeta = Object.freeze({
     unifiedAdvantageField: true,
     pulseEfficiencyAware: true,
     cognitiveComputeLink: true,
+
+    // 12.3-EVO passive band metadata
+    presenceAware: true,
+    harmonicsAware: true,
+    dualBandCompatible: true,
+    epochStable: true,
+    passivePrewarm: true,
+    passiveCache: true,
+    passiveChunk: true,
+    passiveRemember: true,
+    passiveForwarding: true,
 
     // Absolute prohibitions
     noImports: true,
@@ -135,13 +159,14 @@ export const PulseProxySpineBinaryMeta = Object.freeze({
 
   lineage: Object.freeze({
     root: "PulseProxy-v11",
-    parent: "PulseProxy-v11.2-EVO",
+    parent: "PulseProxy-v12.3-EVO",
     ancestry: [
       "PulseProxySpineBinary-v9",
       "PulseProxySpineBinary-v10",
       "PulseProxySpineBinary-v11",
       "PulseProxySpineBinary-v11-Evo",
-      "PulseProxySpineBinary-v11-Evo-Max"
+      "PulseProxySpineBinary-v11-Evo-Max",
+      "PulseProxySpineBinary-v11.2-EVO-BINARY-MAX"
     ]
   }),
 
@@ -161,14 +186,14 @@ export const PulseProxySpineBinaryMeta = Object.freeze({
 
 
 // ============================================================================
-//  CONTEXT SHAPE — v11-EVO
+//  CONTEXT SHAPE — v12.3-EVO
 // ============================================================================
 export function createSpineContext({
   layer = "BackendSpine",
-  role = "PulseProxySpine",
+  role = "PulseProxySpine-v12.3-EVO",
   purpose = "Unified TPProxy gateway + vitals pump + OS healer feed",
   context = "Backend spine for PulseProxy: routes traffic, exposes vitals, feeds healers",
-  version = "11.0",
+  version = "12.3-EVO",
   target = "proxy-core",
   selfRepairable = true
 } = {}) {
@@ -186,12 +211,7 @@ export function createSpineContext({
 
 
 // ============================================================================
-//  VITALS FIELD — Deterministic Shape + Defaults
-// ============================================================================
-//
-//  The symbolic spine maintains a mutable healingState object.
-//  The binary core defines the canonical shape and provides
-//  pure helpers to derive status from raw counters + timestamps.
+//  VITALS FIELD — Deterministic Shape + Defaults (with band metadata)
 // ============================================================================
 export function createEmptyVitals(context = createSpineContext()) {
   return {
@@ -210,17 +230,25 @@ export function createEmptyVitals(context = createSpineContext()) {
     lastPingCheck: null,
     cycleCount: 0,
     status: "healthy",
-    mode: "online"
+    mode: "online",
+
+    // 12.3-EVO passive band metadata
+    pulsePrewarm: null,
+    pulseCacheMode: null,
+    pulseChunkMode: null,
+    pulseRemember: null,
+
+    presenceBandState: null,
+    harmonicDrift: null,
+    coherenceScore: null,
+
+    dualBandMode: "symbolic"
   };
 }
 
 
 // ============================================================================
 //  RATE LIMIT FIELD — Deterministic Rate Limit Math
-// ============================================================================
-//
-//  The binary core does not enforce rate limits; it only computes
-//  descriptors and decisions based on counters and thresholds.
 // ============================================================================
 export function computeRateLimitState({
   totalRequestsToday,
@@ -272,7 +300,7 @@ export function buildNodeDescriptor({
   return {
     region: region || "unknown-region",
     nodeId: nodeId || "unknown-node",
-    version: version || "v11",
+    version: version || "v12.3-EVO",
     mode: mode === "offline" ? "offline" : "online",
     maxRequestsPerDay: Number.isFinite(maxRequestsPerDay)
       ? maxRequestsPerDay
@@ -283,10 +311,6 @@ export function buildNodeDescriptor({
 
 // ============================================================================
 //  HEALABILITY MAP — How the Spine Looks to Healers (Binary View)
-// ============================================================================
-//
-//  The symbolic spine can expose this to PulseOSHealer / GlobalHealer
-//  as a stable, drift-proof description of the spine’s health.
 // ============================================================================
 export function buildHealabilitySnapshot({
   vitals,
@@ -302,7 +326,6 @@ export function buildHealabilitySnapshot({
   const redisStatus = redisReady ? "ready" : "degraded";
   const mode = offlineMode ? "offline" : "online";
 
-  // High-level health classification (binary-only, no IO)
   let health = "healthy";
 
   if (v.lastProxyError || v.lastRedisError || v.lastEmailError) {
@@ -314,7 +337,6 @@ export function buildHealabilitySnapshot({
   }
 
   if (mode === "offline") {
-    // Offline is not an error, but we mark it explicitly.
     health = health === "healthy" ? "offline" : health;
   }
 
@@ -346,7 +368,17 @@ export function buildHealabilitySnapshot({
       lastMetricsCheck: v.lastMetricsCheck,
       lastNodeCheck: v.lastNodeCheck,
       lastPingCheck: v.lastPingCheck,
-      cycleCount: v.cycleCount
+      cycleCount: v.cycleCount,
+
+      // 12.3-EVO band metadata surfaced to healers
+      presenceBandState: v.presenceBandState,
+      harmonicDrift: v.harmonicDrift,
+      coherenceScore: v.coherenceScore,
+      pulsePrewarm: v.pulsePrewarm,
+      pulseCacheMode: v.pulseCacheMode,
+      pulseChunkMode: v.pulseChunkMode,
+      pulseRemember: v.pulseRemember,
+      dualBandMode: v.dualBandMode
     }
   };
 }
@@ -354,11 +386,6 @@ export function buildHealabilitySnapshot({
 
 // ============================================================================
 //  VITALS UPDATE HELPERS — Pure, Caller-Driven
-// ============================================================================
-//
-//  These helpers never mutate in-place; they always return new objects.
-//  The symbolic spine owns the mutable healingState and calls these
-//  to derive updated snapshots.
 // ============================================================================
 export function bumpCycle(vitals, { nowMs } = {}) {
   const base = vitals || {};
@@ -453,11 +480,6 @@ export function recordPingCheck(vitals, { nowMs } = {}) {
 
 // ============================================================================
 //  PACKET / EARN DESCRIPTORS — Binary View Only
-// ============================================================================
-//
-//  The symbolic spine + PacketEngine do the real IO. The binary core
-//  only describes packets in a deterministic way for logging, healing,
-//  or rate-limit classification.
 // ============================================================================
 export function describePacket({
   packetId,

@@ -1,11 +1,11 @@
 // ============================================================================
-// FILE: /apps/PULSE-OS/PulseOSEvolution.js
-// PULSE OS — v11‑EVO‑BINARY‑MAX
+// FILE: /apps/PULSE-OS/PulseOSEvolution-v12.3-Spine.js
+// PULSE OS — v12.3-SPINE-DUALBAND-PRESENCE
 // “THE EVOLUTION ENGINE — ORGANISM-WIDE CNS GROWTH + DRIFT INTELLIGENCE”
 // ============================================================================
 //
-// ROLE IN THE ORGANISM (v11‑EVO‑BINARY‑MAX):
-// ------------------------------------------
+// ROLE IN THE ORGANISM (v12.3-SPINE-DUALBAND-PRESENCE):
+// -----------------------------------------------------
 // • FIRST organ after Understanding
 // • Attaches Intent, OrganismMap, IQMap to Brain
 // • Attaches Evolution to Brain
@@ -16,32 +16,15 @@
 // • Provides CNS evolution + structural drift scanning
 // • Pure frontend, deterministic wiring, zero network, zero filesystem
 // • Symbolic-primary, binary-aware, dualband-tagging
-//
-// SAFETY CONTRACT (v11‑EVO‑BINARY‑MAX):
-// -------------------------------------
-// • No dynamic eval
-// • No backend calls
-// • No filesystem access
-// • No import.meta.glob
-// • Deterministic, drift‑proof wiring only
-// • NO Date.now() — deterministic seq counters only
-// • Band usage is tagging-only, never branching
-// • Binary is tagging-only, never executed
-//
-// IDENTITY (v11‑EVO‑BINARY‑MAX):
-// ------------------------------
-// • organ: Evolution
-// • layer: CNS
-// • subsystem: OS
-// • version: 11.0
+// • Presence-aware + mesh-aware + chunk/prewarm-aware (metadata-only)
 // ============================================================================
 
 export const PulseRole = {
   type: "Evolution",
   subsystem: "OS",
   layer: "CNS",
-  version: "11.0",
-  identity: "PulseOSEvolution-v11-EVO-BINARY",
+  version: "12.3-Spine",
+  identity: "PulseOSEvolution-v12.3-SPINE-DUALBAND-PRESENCE",
 
   evo: {
     deterministic: true,
@@ -54,12 +37,12 @@ export const PulseRole = {
     loopTheoryAware: true,
     continuanceAware: true,
 
-    // v11 organism-wide contracts
-    routingContract: "PulseRouter-v11",
-    osOrganContract: "PulseOS-v11",
-    earnCompatibility: "PulseEarn-v11",
-    gpuCompatibility: "PulseGPU-v11",
-    sendCompatibility: "PulseSendSystem-v11",
+    // v12.3 organism-wide contracts
+    routingContract: "PulseRouter-v12.3",
+    osOrganContract: "PulseOS-v12.3-SPINE",
+    earnCompatibility: "PulseEarn-v12.0",
+    gpuCompatibility: "PulseGPU-v12.3",
+    sendCompatibility: "PulseSendSystem-v12.3",
 
     // Dual-band evolution surface (tag-only)
     dualMode: true,
@@ -68,15 +51,23 @@ export const PulseRole = {
     binaryNonExecutable: true,
     advantageCascadeAware: true,
     pulseEfficiencyAware: true,
-    futureEvolutionReady: true
+    futureEvolutionReady: true,
+
+    // Presence / mesh / chunking awareness (metadata-only)
+    presenceFieldAware: true,
+    bluetoothPresenceAware: true,
+    meshPresenceRelayAware: true,
+    meshTopologyAware: true,
+    cortexChunkingAware: true,
+    cortexPrewarmAware: true
   }
 };
 
 export const PulseOSEvolutionMeta = Object.freeze({
   layer: "PulseOSEvolution",
   role: "CNS_EVOLUTION_ORGAN",
-  version: "v11.2-EVO-BINARY-MAX",
-  identity: "PulseOSEvolution-v11.2-EVO-BINARY-MAX",
+  version: "v12.3-SPINE-DUALBAND-PRESENCE",
+  identity: "PulseOSEvolution-v12.3-SPINE-DUALBAND-PRESENCE",
 
   guarantees: Object.freeze({
     deterministic: true,
@@ -103,6 +94,14 @@ export const PulseOSEvolutionMeta = Object.freeze({
     attachesEvolutionToBrain: true,
     bootsBrain: true,          // which boots Cortex
 
+    // Presence / mesh / chunking (metadata-only)
+    presenceFieldAware: true,
+    bluetoothPresenceAware: true,
+    meshPresenceRelayAware: true,
+    meshTopologyAware: true,
+    cortexChunkingAware: true,
+    cortexPrewarmAware: true,
+
     // Safety
     zeroNetwork: true,
     zeroFilesystem: true,
@@ -128,19 +127,22 @@ export const PulseOSEvolutionMeta = Object.freeze({
       "EvolutionState",
       "EvolutionDiagnostics",
       "EvolutionSignatures",
-      "EvolutionHealingState"
+      "EvolutionHealingState",
+      "EvolutionPresenceDescriptors", // presence + mesh (metadata-only)
+      "EvolutionChunkingProfiles"     // chunk/prewarm (metadata-only)
     ]
   }),
 
   lineage: Object.freeze({
-    root: "PulseOS-v11-EVO",
-    parent: "PulseOS-v11.2-EVO",
+    root: "PulseOS-v12.3-SPINE",
+    parent: "PulseOS-v12.0-SPINE",
     ancestry: [
       "PulseOSEvolution-v9",
       "PulseOSEvolution-v10",
       "PulseOSEvolution-v11",
       "PulseOSEvolution-v11-Evo",
-      "PulseOSEvolution-v11-EVO-BINARY"
+      "PulseOSEvolution-v11-EVO-BINARY",
+      "PulseOSEvolution-v12.3-SPINE-DUALBAND-PRESENCE"
     ]
   }),
 
@@ -153,19 +155,51 @@ export const PulseOSEvolutionMeta = Object.freeze({
   architecture: Object.freeze({
     pattern: "A-B-A",
     baseline: "attach → boot → scan drift → track lineage",
-    adaptive: "binary-aware tagging + dual-band metadata",
-    return: "deterministic evolution state + signatures"
+    adaptive:
+      "binary-aware tagging + dual-band metadata + presence/mesh/chunking descriptors",
+    return: "deterministic evolution state + signatures + presence/chunking metadata"
   })
 });
 
 // ============================================================================
-//  EVOLUTION ENGINE — The CNS growth organ (v11‑EVO‑BINARY‑MAX)
+//  EVOLUTION ENGINE — The CNS growth organ (v12.3-SPINE-DUALBAND-PRESENCE)
 // ============================================================================
 export function PulseOSEvolution({ intent, organism, iq, understanding }) {
 
   // Deterministic sequence counter (NO Date.now)
   let seq = 0;
   const nextSeq = () => ++seq;
+
+  // Presence + chunking helpers (metadata-only)
+  function computePresenceDescriptors() {
+    const presenceConfig = (iq && iq.presenceConfig) || {};
+    const meshConfig = (iq && iq.meshPresenceConfig) || {};
+
+    return {
+      presenceField: {
+        enabled: !!presenceConfig.enabled,
+        bluetoothPreferred: !!presenceConfig.bluetoothPreferred,
+        routes: presenceConfig.routes || []
+      },
+      meshPresence: {
+        enabled: !!meshConfig.enabled,
+        topology: meshConfig.topology || "none",
+        routes: meshConfig.routes || []
+      },
+      organismSnapshot: {
+        organs: organism ? Object.keys(organism) : []
+      }
+    };
+  }
+
+  function computeChunkingProfiles() {
+    const profiles = (iq && iq.chunkingProfiles) || {};
+    return {
+      defaultProfile: profiles.default || null,
+      routeProfiles: profiles.routes || {},
+      gpuProfiles: profiles.gpu || {}
+    };
+  }
 
   // Internal drift + lineage state
   const DriftState = {
@@ -175,7 +209,11 @@ export function PulseOSEvolution({ intent, organism, iq, understanding }) {
     organismHealth: 1.0,
     lastScanSeq: null,
     lastScanBand: "dual",
-    binaryDescriptor: null
+    binaryDescriptor: null,
+
+    // Presence / chunking snapshots
+    presenceDescriptors: computePresenceDescriptors(),
+    chunkingProfiles: computeChunkingProfiles()
   };
 
   // --------------------------------------------------------------------------
@@ -200,6 +238,10 @@ export function PulseOSEvolution({ intent, organism, iq, understanding }) {
     // Binary descriptor drift
     const descriptor = Brain.BrainIntel?.getBinaryOrganismDescriptor?.();
     DriftState.binaryDescriptor = descriptor || null;
+
+    // Refresh presence + chunking snapshots on scan
+    DriftState.presenceDescriptors = computePresenceDescriptors();
+    DriftState.chunkingProfiles = computeChunkingProfiles();
 
     DriftState.lastScanSeq = nextSeq();
     DriftState.lastScanBand = normBand;
@@ -264,8 +306,19 @@ export function PulseOSEvolution({ intent, organism, iq, understanding }) {
   }
 
   // --------------------------------------------------------------------------
-  // EVOLUTION → BRAIN BOOTSTRAP (v11‑EVO‑BINARY‑MAX)
+  // PRESENCE + CHUNKING SURFACES — evolution-level descriptors
   // --------------------------------------------------------------------------
+  function getPresenceDescriptors() {
+    return DriftState.presenceDescriptors;
+  }
+
+  function getChunkingProfiles() {
+    return DriftState.chunkingProfiles;
+  }
+
+  // --------------------------------------------------------------------------
+  // EVOLUTION → BRAIN BOOTSTRAP (v12.3-SPINE-DUALBAND-PRESENCE)
+// --------------------------------------------------------------------------
   function bootBrain(Brain, { band = "dual", dnaTag = null } = {}) {
     const normBand = normalizeBand(band);
 
@@ -288,7 +341,7 @@ export function PulseOSEvolution({ intent, organism, iq, understanding }) {
       understanding
     });
 
-    // Initial drift scan (binary-aware)
+    // Initial drift scan (binary-aware + presence/chunking-aware)
     scanDrift(bootedBrain, { band: normBand, dnaTag });
 
     return bootedBrain;
@@ -297,14 +350,18 @@ export function PulseOSEvolution({ intent, organism, iq, understanding }) {
   // --------------------------------------------------------------------------
   // PUBLIC EVOLUTION ORGAN SURFACE
   // --------------------------------------------------------------------------
-  const Evolution = {
+  export const Evolution = {
     PulseRole,
     DriftState,
     scanDrift,
     recordLineage,
     updateOrganHealth,
     computeOrganismHealth,
-    bootBrain
+    bootBrain,
+
+    // Presence / chunking metadata surfaces
+    getPresenceDescriptors,
+    getChunkingProfiles
   };
 
   return Evolution;

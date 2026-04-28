@@ -1,5 +1,5 @@
 /**
- * BinarySubstrate-v2.js
+ * BinarySubstrate-v2.3-PRESENCE-EVO+.js
  * PULSE-WORLD / PULSE-BINARY / FIXED-WIDTH
  *
  * ROLE:
@@ -14,6 +14,31 @@
  *   All upstream organs remain symbolic.
  *   This is the binary representation layer.
  */
+
+export const BinarySubstrateV2Meta = Object.freeze({
+  organId: "BinarySubstrate-v2.3-PRESENCE-EVO+",
+  role: "BINARY_SUBSTRATE",
+  version: "2.3-PRESENCE-EVO+",
+  epoch: "v12.3-PRESENCE-EVO+",
+  layer: "BinaryTransport",
+  safety: Object.freeze({
+    deterministic: true,
+    noRandomness: true,
+    noAsyncDrift: true,
+    syntheticOnly: true
+  }),
+  evo: Object.freeze({
+    presenceAware: true,      // can carry presence fields in meta/state
+    advantageAware: true,     // can carry advantage fields in meta/state
+    dualbandSafe: true,       // symbolic/binary tagging only
+    chunkAware: true,         // frames are chunk-friendly
+    cacheAware: true,         // stable, cacheable shapes
+    prewarmAware: true,       // predictable sizes for prewarm
+    meshAware: true,          // can carry region/host/mesh IDs
+    expansionAware: true,     // carries deployment/multi-plan payloads
+    multiInstanceReady: true
+  })
+});
 
 // -------------------------
 // ENUM COMPRESSION
@@ -97,7 +122,6 @@ export function packSnapshot(snapshot) {
     JSON.stringify(state.meta)
   ];
 
-  // Compute total size
   const encodedFields = fields.map(encodeString);
   const totalSize =
     1 + // payload type
@@ -261,7 +285,6 @@ export function unpackBinaryPayload(uint8) {
 
   const out = { _t: tag };
 
-  // v2 uses fixed ordering per type
   function readField() {
     const [str, next] = decodeString(view, o);
     o = next;
@@ -352,6 +375,7 @@ export function unpackBinaryPayload(uint8) {
 // -------------------------
 
 const BinarySubstrateV2 = {
+  meta: BinarySubstrateV2Meta,
   BinaryPayloadType,
   packSnapshot,
   packDelta,

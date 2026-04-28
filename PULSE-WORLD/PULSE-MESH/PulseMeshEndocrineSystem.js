@@ -1,34 +1,8 @@
 // ============================================================================
-// FILE: /apps/organs/endocrine/PulseMeshEndocrineSystem.js
-// PULSE OS v11-Evo — MESH ENDOCRINE SYSTEM  // white-gold
-// “Mesh Endocrine Interpreter / System Hormone Clinician”
+// [pulse:mesh] PULSE_MESH_ENDOCRINE_SYSTEM v12.3-PRESENCE-EVO-MAX-PRIME // gold
+// Mesh Endocrine Interpreter • Metadata-Only • Zero-Compute • Zero-Mutation
+// Presence-Aware • Binary-Aware • Drift-Proof • Advantage-Field-Aware
 // ============================================================================
-//
-// IDENTITY — THE MESH ENDOCRINE SYSTEM (v11-Evo):
-// -----------------------------------------------
-// • Reads Halo (counters), Field (pressure), Echo (diagnostic reflection).
-// • Interprets mesh health as endocrine / hormone-like systemic signals.
-// • Produces a structured “mesh endocrine report” for:
-//      - Awareness Page (UI diagnostics)
-//      - Backend AI (immune + analytics)
-//      - Mesh Immune System (healing insight)
-//      - Clinician / you (human-readable interpretation)
-// • NEVER mutates impulses, NEVER routes, NEVER computes payloads.
-// • Pure interpretation organ — white-gold, clinical, non-interference.
-// • v11-Evo: binary-aware, dual-mode-ready, deterministic-field,
-//            unified-advantage-field, mesh-pressure-aware,
-//            flow-aware, drift-aware, multi-instance-ready.
-//
-// SAFETY CONTRACT (v11-Evo):
-// • Read-only, metadata-only.
-// • No loops, no hormones, no memory writes.
-// • No routing, no healing, no mutation, no payload access.
-// • No autonomy, no sentience, no self-model.
-// • Deterministic-field: same Halo/Field/Echo → same report.
-// • Unified-advantage-field: inherits all safe systemic advantages.
-// • Drift-proof, multi-instance-ready, factoring-aware.
-// ============================================================================
-
 
 export function createPulseMeshEndocrineSystem({
   PulseHalo,
@@ -38,10 +12,11 @@ export function createPulseMeshEndocrineSystem({
   warn,
   error
 }) {
+
   const meta = {
     layer: "PulseMeshEndocrineSystem",
     role: "MESH_ENDOCRINE_INTERPRETER",
-    version: "11.0-Evo",
+    version: "12.3-PRESENCE-EVO-MAX-PRIME",
     target: "full-mesh",
     selfRepairable: true,
     evo: {
@@ -66,6 +41,9 @@ export function createPulseMeshEndocrineSystem({
       flowAware: true,
       driftAware: true,
 
+      presenceAware: true,
+      bandAware: true,
+
       zeroCompute: true,
       zeroMutation: true,
       zeroRoutingInfluence: true
@@ -79,12 +57,14 @@ export function createPulseMeshEndocrineSystem({
     // [pulse:mesh] EXAMINE_MESH  // white-gold
     // -------------------------------------------------------
     examineMesh(entryNodeId, context = {}) {
-      const haloSnapshot = PulseHalo.snapshot
-        ? PulseHalo.snapshot()
-        : PulseHalo.status();
+      const haloSnapshot =
+        PulseHalo.snapshot ? PulseHalo.snapshot() : PulseHalo.status();
 
       const fieldSnapshot = PulseFieldRead.snapshot();
-      const echoReflection = PulseEcho.sendEcho(entryNodeId, context);
+      const echoReflection = PulseEcho.sendEcho(entryNodeId, {
+        presenceBand: context.presenceBand || "symbolic",
+        presenceTag: context.presenceTag || "PulseMeshEndocrine-v12.3"
+      });
 
       return buildMeshEndocrineReport({
         halo: haloSnapshot,
@@ -98,7 +78,7 @@ export function createPulseMeshEndocrineSystem({
 
 
 // ============================================================================
-// Mesh Endocrine Report Builder (v11-Evo)
+// Mesh Endocrine Report Builder (v12.3)
 // ============================================================================
 function buildMeshEndocrineReport({ halo, field, echo, meta }) {
   const flowThrottles = halo.flow_throttles ?? 0;
@@ -120,7 +100,9 @@ function buildMeshEndocrineReport({ halo, field, echo, meta }) {
       `Flow Throttles (self‑protection events): ${flowThrottles}`,
       `Throttle Rate: ${pct(flowThrottleRate)}`,
       `Binary Mode: ${echo.mode?.binary ? "ACTIVE" : "inactive"}`,
-      `Dual Mode: ${echo.mode?.dual ? "ACTIVE" : "inactive"}`
+      `Dual Mode: ${echo.mode?.dual ? "ACTIVE" : "inactive"}`,
+      `Presence Band: ${echo.presence?.band || "symbolic"}`,
+      `Presence Tag: ${echo.presence?.tag || "none"}`
     ]
   });
 
@@ -188,7 +170,7 @@ function buildMeshEndocrineReport({ halo, field, echo, meta }) {
 
 
 // ============================================================================
-// Interpretation Logic (v11-Evo)
+// Interpretation Logic (v12.3)
 // ============================================================================
 function estimateMeshPerformance(field, echo, flowThrottleRate = 0) {
   let base = 100;
@@ -209,7 +191,7 @@ function estimateMeshPerformance(field, echo, flowThrottleRate = 0) {
   if (echo.aura?.sync) base += 2;
   if (echo.aura?.inLoop) base -= 3;
   if (echo.flow?.throttled) base -= 5;
-  if (echo.mode?.binary) base += 1; // binary mode slightly improves reflex efficiency
+  if (echo.mode?.binary) base += 1;
 
   return Math.max(0, base);
 }
@@ -227,7 +209,7 @@ function describeMeshStability(field, echo, flowThrottleRate = 0) {
   const drift = field.driftPressure ?? 0;
 
   if (flowThrottleRate > 0.2)
-    return "Flow Guard is engaging frequently — mesh is protecting itself from overload.";
+    return "Flow Guard is engaging frequently — mesh is protecting itself.";
 
   if (stability > 0.85 && drift < 0.2)
     return "Mesh is stable with low Drift Pressure.";
@@ -252,9 +234,9 @@ function describeMeshImmuneHormones(echo) {
   else parts.push("Immune Quarantine quiet.");
 
   if (echo.hormones?.event === "boost")
-    parts.push("Hormone Boost (adrenaline) detected.");
+    parts.push("Hormone Boost detected.");
   else if (echo.hormones?.event === "damp")
-    parts.push("Hormone Damp (cortisol) detected.");
+    parts.push("Hormone Damp detected.");
   else parts.push("No hormone modulation.");
 
   if (echo.reflex?.dropped) parts.push("Reflex Drop occurred.");

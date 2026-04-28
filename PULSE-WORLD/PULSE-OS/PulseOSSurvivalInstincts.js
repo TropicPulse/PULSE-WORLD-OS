@@ -1,31 +1,35 @@
 // ============================================================================
 // FILE: /apps/PulseOS/Organs/Instincts/PulseOSSurvivalInstincts.js
-// PULSE OS — v11-Evo-Prime
+// PULSE OS — v12.3-Evo-Presence-Max
 // “THE SURVIVAL INSTINCTS / ORGANISM IDENTITY ANCHOR”
 // STRUCTURAL MEMORY • ORGANISM SIGNATURE • EVOLUTION SENTINEL
+// CHUNKED ROUTE-DNA CACHE • PREWARMED MULTI-PRESENCE SNAPSHOTS
 // ============================================================================
 //
-// ORGAN IDENTITY (v11-Evo-Prime):
+// ORGAN IDENTITY (v12.3-Evo-Presence-Max):
 //   • Organ Type: Instincts / Structural Memory
 //   • Layer: Instinct Layer (I‑Layer)
 //   • Biological Analog: Survival instincts + structural organism memory
 //   • System Role: Remember last safe organism configuration + detect evolution
+//                  + prewarm structural signatures across presences / routes.
 //
-// SAFETY CONTRACT (v11-Evo-Prime):
+// SAFETY CONTRACT (v12.3-Evo-Presence-Max):
 //   • Pure structural memory — NEVER mutate impulses
 //   • Never compute payloads or business logic
 //   • Never depend on filenames or pages
-//   • Store structure, not state
+//   • Store structure, not stateful runtime
 //   • Zero timestamps, zero randomness, zero timers
 //   • Zero network, zero routing, zero environment access
 //   • Safe for organisms that grow new layers over time
 //   • Deterministic: same snapshot → same signature
+//   • Prewarm + chunking are purely structural, offline-absolute
 // ============================================================================
+
 export const PulseOSSurvivalInstinctsMeta = Object.freeze({
   layer: "PulseOSSurvivalInstincts",
   role: "STRUCTURAL_MEMORY_ORGAN",
-  version: "v11.2-EVO-BINARY-MAX",
-  identity: "PulseOSSurvivalInstincts-v11.2-EVO-BINARY-MAX",
+  version: "v12.3-EVO-PRESENCE-MAX",
+  identity: "PulseOSSurvivalInstincts-v12.3-EVO-PRESENCE-MAX",
 
   guarantees: Object.freeze({
     deterministic: true,
@@ -41,6 +45,13 @@ export const PulseOSSurvivalInstinctsMeta = Object.freeze({
     structuralSignatureBuilder: true,
     lineageAware: true,
     organismGrowthSafe: true,
+
+    // Presence + chunking
+    multiPresenceAware: true,
+    routeDNACacheAware: true,
+    structuralChunkCache: true,
+    prewarmReady: true,
+    offlinePrewarmOnly: true,
 
     // Execution prohibitions
     zeroMutationOfImpulses: true,
@@ -70,25 +81,31 @@ export const PulseOSSurvivalInstinctsMeta = Object.freeze({
       "OrganismStructure",
       "RouteDNA",
       "EvolutionContext",
-      "DualBandContext"
+      "DualBandContext",
+      "PresenceContext",
+      "PrewarmChunks"
     ],
     output: [
       "StructuralSignature",
       "EvolutionDetection",
       "InstinctsDiagnostics",
-      "InstinctsHealingState"
+      "InstinctsHealingState",
+      "PrewarmedRouteDNACache",
+      "PresenceStructuralMap"
     ]
   }),
 
   lineage: Object.freeze({
-    root: "PulseOS-v11-EVO",
-    parent: "PulseOS-v11.2-EVO",
+    root: "PulseOS-v12-EVO",
+    parent: "PulseOS-v12.3-EVO-PRESENCE",
     ancestry: [
       "PulseOSSurvivalInstincts-v9",
       "PulseOSSurvivalInstincts-v10",
       "PulseOSSurvivalInstincts-v11",
       "PulseOSSurvivalInstincts-v11-Evo",
-      "PulseOSSurvivalInstincts-v11-Evo-Prime"
+      "PulseOSSurvivalInstincts-v11-Evo-Prime",
+      "PulseOSSurvivalInstincts-v12-Evo",
+      "PulseOSSurvivalInstincts-v12.3-Evo-Presence-Max"
     ]
   }),
 
@@ -101,23 +118,30 @@ export const PulseOSSurvivalInstinctsMeta = Object.freeze({
   architecture: Object.freeze({
     pattern: "A-B-A",
     baseline: "organism structure → structural signature → evolution detection",
-    adaptive: "binary-tagged structural overlays",
-    return: "deterministic structural memory + signatures"
+    adaptive: "binary-tagged structural overlays + prewarmed route-DNA chunks + multi-presence map",
+    return: "deterministic structural memory + signatures + prewarmed caches"
   })
 });
 
-
 // ============================================================================
-// INTERNAL MEMORY STORE (long-term structural memory)
+// INTERNAL MEMORY STORE (long-term structural memory + prewarm + presence)
 // ============================================================================
 const _store = {
   pathway: null,
   signature: null,
   history: [],
   lastLearnedRouteId: null,
-  evolutionCount: 0
-};
+  evolutionCount: 0,
 
+  // Route-DNA chunk cache: { routeId: { signature, pathway, core, ec, pressure } }
+  routeDNACache: Object.create(null),
+
+  // Structural chunks keyed by chunkId (pure structural slices)
+  structuralChunks: Object.create(null),
+
+  // Multi-presence structural mirrors: { presenceId: { snapshot, signature } }
+  presenceMap: Object.create(null)
+};
 
 // ============================================================================
 // HELPERS — cloning + signature building
@@ -238,9 +262,36 @@ function signaturesMatch(a, b) {
   return a === b;
 }
 
+// Build a deterministic route-DNA key from snapshot / route context
+function buildRouteDNAKey(routeDNA = {}) {
+  const id = routeDNA.routeId || routeDNA.routeName || "";
+  const band = routeDNA.modeKind || "symbolic";
+  const ext = routeDNA.extensionId || "";
+  const sys = routeDNA.systemId || "";
+  return [id, band, ext, sys].join("::");
+}
+
+// Build a deterministic presence key
+function buildPresenceKey(presenceContext = {}) {
+  const device = presenceContext.deviceId || "";
+  const scene = presenceContext.sceneType || "";
+  const profile = presenceContext.profileId || "";
+  return [device, scene, profile].join("::");
+}
+
+// Chunk structural pathway into deterministic slices (no timing, no randomness)
+function chunkPathway(hops, chunkSize) {
+  if (!Array.isArray(hops) || chunkSize <= 0) return [];
+  const chunks = [];
+  for (let i = 0; i < hops.length; i += chunkSize) {
+    const slice = hops.slice(i, i + chunkSize);
+    chunks.push(slice);
+  }
+  return chunks;
+}
 
 // ============================================================================
-// SURVIVAL INSTINCT ENGINE — v11-Evo-Prime (Organism-Wide)
+// SURVIVAL INSTINCT ENGINE — v12.3-Evo-Presence-Max (Organism-Wide)
 // ============================================================================
 export const PulseOSSurvivalInstincts = {
 
@@ -248,8 +299,8 @@ export const PulseOSSurvivalInstincts = {
     organ: "PulseOSSurvivalInstincts",
     layer: "Instinct Layer",
     role: "Structural Memory / Organism Identity Anchor",
-    version: "11.0-Evo-Prime",
-    generation: "v11",
+    version: "12.3-Evo-Presence-Max",
+    generation: "v12.3",
     evo: {
       driftProof: true,
       deterministicNeuron: true,
@@ -264,7 +315,12 @@ export const PulseOSSurvivalInstincts = {
       binaryAware: true,
       symbolicAware: true,
       gpuDispatchAware: true,
-      gpuMemoryAware: true
+      gpuMemoryAware: true,
+
+      multiPresenceAware: true,
+      routeDNACacheAware: true,
+      structuralChunkCache: true,
+      prewarmReady: true
     }
   },
 
@@ -278,7 +334,7 @@ export const PulseOSSurvivalInstincts = {
     const newSignature = computeSignatureFromSnapshot(snapshot);
 
     // FIRST DISCOVERY
-    if (!_store.pathway) {
+    if (_store.pathway == null) {
       _store.pathway = clone(hops);
       _store.signature = newSignature;
 
@@ -331,7 +387,85 @@ export const PulseOSSurvivalInstincts = {
   },
 
   // --------------------------------------------------------------------------
-  // ACCESSORS
+  // PREWARM ENGINE — route-DNA cache + structural chunks (offline-only)
+  // --------------------------------------------------------------------------
+  prewarmFromRouteDNA(routeDNAList = []) {
+    if (!Array.isArray(routeDNAList)) return;
+
+    for (const item of routeDNAList) {
+      const { snapshot, routeDNA, chunkSize = 8 } = item || {};
+      if (!snapshot || !Array.isArray(snapshot?.pathway?.hops)) continue;
+
+      const key = buildRouteDNAKey(routeDNA || {});
+      const signature = computeSignatureFromSnapshot(snapshot);
+      const hops = clone(snapshot.pathway.hops);
+
+      // Cache full route-DNA
+      _store.routeDNACache[key] = {
+        signature,
+        pathway: hops,
+        core: extractOrganismCore(snapshot),
+        executionContext: extractExecutionContext(snapshot),
+        pressure: extractPressure(snapshot)
+      };
+
+      // Chunk + cache structural slices
+      const chunks = chunkPathway(hops, chunkSize);
+      _store.structuralChunks[key] = chunks.map((c, idx) => ({
+        chunkIndex: idx,
+        hops: c
+      }));
+    }
+  },
+
+  getRouteDNACache(routeDNA = {}) {
+    const key = buildRouteDNAKey(routeDNA);
+    const entry = _store.routeDNACache[key];
+    return entry ? clone(entry) : null;
+  },
+
+  getRouteChunks(routeDNA = {}) {
+    const key = buildRouteDNAKey(routeDNA);
+    const chunks = _store.structuralChunks[key];
+    return chunks ? clone(chunks) : [];
+  },
+
+  // --------------------------------------------------------------------------
+  // MULTI-PRESENCE STRUCTURAL MAP — per-device / per-scene mirrors
+  // --------------------------------------------------------------------------
+  registerPresence(presenceContext = {}, snapshot) {
+    if (!snapshot || !Array.isArray(snapshot?.pathway?.hops)) return;
+    const presenceKey = buildPresenceKey(presenceContext);
+    const signature = computeSignatureFromSnapshot(snapshot);
+
+    _store.presenceMap[presenceKey] = {
+      presenceContext: clone(presenceContext),
+      snapshot: clone(snapshot),
+      signature
+    };
+  },
+
+  getPresence(presenceContext = {}) {
+    const presenceKey = buildPresenceKey(presenceContext);
+    const entry = _store.presenceMap[presenceKey];
+    return entry ? clone(entry) : null;
+  },
+
+  listPresences() {
+    const result = [];
+    for (const key of Object.keys(_store.presenceMap)) {
+      const entry = _store.presenceMap[key];
+      result.push({
+        key,
+        presenceContext: clone(entry.presenceContext),
+        signature: entry.signature
+      });
+    }
+    return result;
+  },
+
+  // --------------------------------------------------------------------------
+  // ACCESSORS — legacy structural memory surface
   // --------------------------------------------------------------------------
   getPathway() {
     return clone(_store.pathway || []);
@@ -359,11 +493,18 @@ export const PulseOSSurvivalInstincts = {
     return _store.lastLearnedRouteId;
   },
 
+  // --------------------------------------------------------------------------
+  // CLEAR — full reset (structural memory + caches + presences)
+// --------------------------------------------------------------------------
   clear() {
     _store.pathway = null;
     _store.signature = null;
     _store.history = [];
     _store.lastLearnedRouteId = null;
     _store.evolutionCount = 0;
+
+    _store.routeDNACache = Object.create(null);
+    _store.structuralChunks = Object.create(null);
+    _store.presenceMap = Object.create(null);
   }
 };

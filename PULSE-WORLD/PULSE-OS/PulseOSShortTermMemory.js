@@ -1,19 +1,18 @@
-
 // ============================================================================
 // FILE: /apps/PulseOS/Organs/Memory/PulseOSShortTermMemory.js
-// PULSE OS — v11-Evo-Prime
+// PULSE OS — v12.3-Presence
 // “THE SHORT‑TERM MEMORY / HIPPOCAMPAL BUFFER”
-// DUAL‑BAND NEURAL MEMORY • OFFLINE‑ABSOLUTE • ZERO MUTATION AFTER INSERTION
+// DUAL‑BAND NEURAL MEMORY • PREWARM + CHUNK • MULTI‑PRESENCE SNAPSHOTS
+// OFFLINE‑ABSOLUTE • ZERO MUTATION AFTER INSERTION
 // ============================================================================
-
 
 const LAYER_ID   = "SHORT-TERM-MEMORY";
 const LAYER_NAME = "THE HIPPOCAMPAL BUFFER";
 const LAYER_ROLE = "B-LAYER NEURAL MEMORY";
-const LAYER_VER  = "11.0-Evo-Prime";
+const LAYER_VER  = "12.3-Presence";
 
 // ============================================================================
-// MEMORY CONTEXT — organism-wide identity
+// MEMORY CONTEXT — organism-wide identity (v12.3-Presence)
 // ============================================================================
 const MEMORY_CONTEXT = {
   label: "MEMORY",
@@ -21,11 +20,15 @@ const MEMORY_CONTEXT = {
   purpose: "Short‑Term Neural Buffer",
   context: "Stores logs before Heart.js flush",
   version: LAYER_VER,
+  generation: "v12",
+  target: "os-core",
   evo: {
     driftProof: true,
     deterministicNeuron: true,
     unifiedAdvantageField: true,
     multiInstanceReady: true,
+    multiPresenceReady: true,
+
     zeroNetwork: true,
     zeroMutation: true,
     zeroTiming: true,
@@ -37,19 +40,31 @@ const MEMORY_CONTEXT = {
 
     executionContextAware: true,
     pressureAware: true,
-    dispatchAware: true
+    dispatchAware: true,
+
+    // v12.3+: chunk + cache + prewarm + GPU-friendly
+    chunkAware: true,
+    cacheAware: true,
+    prewarmAware: true,
+    presenceAware: true,
+    dualBandChunking: true,
+    streamingFriendly: true,
+    batchFriendly: true,
+    gpuBufferAware: true
   }
 };
+
 export const PulseOSShortTermMemoryMeta = Object.freeze({
   layer: "PulseOSShortTermMemory",
   role: "SHORT_TERM_NEURAL_MEMORY_ORGAN",
-  version: "v11.2-EVO-BINARY-MAX",
-  identity: "PulseOSShortTermMemory-v11.2-EVO-BINARY-MAX",
+  version: "v12.3-PRESENCE-CHUNK-MAX",
+  identity: "PulseOSShortTermMemory-v12.3-PRESENCE-CHUNK-MAX",
 
   guarantees: Object.freeze({
     deterministic: true,
     driftProof: true,
     multiInstanceReady: true,
+    multiPresenceReady: true,
 
     // Hippocampal laws
     shortTermNeuralBuffer: true,
@@ -59,6 +74,16 @@ export const PulseOSShortTermMemoryMeta = Object.freeze({
     zeroMutationAfterInsertion: true,
     immutableEntries: true,
     preHeartFlushBuffer: true,
+
+    // v12.3+: chunk + cache + prewarm + presence
+    chunkAware: true,
+    cacheAware: true,
+    prewarmAware: true,
+    presenceAware: true,
+    dualBandChunking: true,
+    streamingFriendly: true,
+    batchFriendly: true,
+    gpuBufferAware: true,
 
     // Execution prohibitions
     zeroNetwork: true,
@@ -92,6 +117,8 @@ export const PulseOSShortTermMemoryMeta = Object.freeze({
     ],
     output: [
       "ShortTermMemorySnapshot",
+      "ShortTermMemoryChunks",
+      "ShortTermPresenceView",
       "ShortTermMemoryDiagnostics",
       "ShortTermMemorySignatures",
       "ShortTermMemoryHealingState"
@@ -100,13 +127,14 @@ export const PulseOSShortTermMemoryMeta = Object.freeze({
 
   lineage: Object.freeze({
     root: "PulseOS-v11-EVO",
-    parent: "PulseOS-v11.2-EVO",
+    parent: "PulseOS-v12.3-Presence",
     ancestry: [
       "PulseOSShortTermMemory-v9",
       "PulseOSShortTermMemory-v10",
       "PulseOSShortTermMemory-v11",
       "PulseOSShortTermMemory-v11-Evo",
-      "PulseOSShortTermMemory-v11-Evo-Prime"
+      "PulseOSShortTermMemory-v11-Evo-Prime",
+      "PulseOSShortTermMemory-v12.3-Presence"
     ]
   }),
 
@@ -119,8 +147,8 @@ export const PulseOSShortTermMemoryMeta = Object.freeze({
   architecture: Object.freeze({
     pattern: "A-B-A",
     baseline: "log entry → immutable insertion → pre-heart snapshot",
-    adaptive: "binary-tagged metadata surfaces",
-    return: "deterministic short-term memory snapshot + signatures"
+    adaptive: "binary-tagged metadata surfaces + chunked presence views",
+    return: "deterministic short-term memory snapshot + chunks + signatures"
   })
 });
 
@@ -157,7 +185,50 @@ function isStructurallySame(a, b) {
 }
 
 // ============================================================================
-// SHORT‑TERM MEMORY ORGAN — v11-Evo-Prime
+// CHUNK + PRESENCE HELPERS — zero-mutation, offline-absolute
+// ============================================================================
+function buildChunk(entries, index, totalChunks) {
+  return {
+    ...MEMORY_CONTEXT,
+    kind: "ShortTermMemoryChunk",
+    chunkIndex: index,
+    chunkCount: totalChunks,
+    count: entries.length,
+    // logs are already immutable snapshots
+    logs: entries
+  };
+}
+
+function buildPresenceView(logs) {
+  const count = logs.length;
+
+  const byMode = { symbolic: 0, binary: 0, dual: 0 };
+  const byEventType = {};
+  const bySubsystem = {};
+
+  for (const entry of logs) {
+    const mode = entry.modeKind || "symbolic";
+    if (byMode[mode] !== undefined) byMode[mode] += 1;
+
+    const eventType = entry.eventType || "unknown";
+    byEventType[eventType] = (byEventType[eventType] || 0) + 1;
+
+    const subsystem = entry.subsystem || "unknown";
+    bySubsystem[subsystem] = (bySubsystem[subsystem] || 0) + 1;
+  }
+
+  return {
+    ...MEMORY_CONTEXT,
+    kind: "ShortTermPresenceView",
+    totalLogs: count,
+    byMode,
+    byEventType,
+    bySubsystem
+  };
+}
+
+// ============================================================================
+// SHORT‑TERM MEMORY ORGAN — v12.3-Presence
 // ============================================================================
 export const PulseOSShortTermMemory = {
   _logs: [],
@@ -217,9 +288,57 @@ export const PulseOSShortTermMemory = {
   // --------------------------------------------------------------------------
   snapshot() {
     return {
+      ...MEMORY_CONTEXT,
+      kind: "ShortTermMemorySnapshot",
       version: LAYER_VER,
       count: this._logs.length,
       logs: [...this._logs]
     };
+  },
+
+  // --------------------------------------------------------------------------
+  // CHUNKS — GPU / streaming friendly view (read-only)
+//   maxChunkSize: how many entries per chunk (default 128)
+// --------------------------------------------------------------------------
+  getChunks({ maxChunkSize = 128 } = {}) {
+    const logs = this._logs;
+    if (!logs.length) return [];
+
+    const size = Math.max(1, maxChunkSize | 0);
+    const totalChunks = Math.ceil(logs.length / size);
+    const chunks = [];
+
+    for (let i = 0; i < totalChunks; i++) {
+      const start = i * size;
+      const end = start + size;
+      const slice = logs.slice(start, end);
+      chunks.push(buildChunk(slice, i, totalChunks));
+    }
+
+    return chunks;
+  },
+
+  // --------------------------------------------------------------------------
+  // PREWARM SNAPSHOT — cache-ready, chunk-indexed view
+  // --------------------------------------------------------------------------
+  prewarmSnapshot({ maxChunkSize = 128 } = {}) {
+    const chunks = this.getChunks({ maxChunkSize });
+
+    return {
+      ...MEMORY_CONTEXT,
+      kind: "ShortTermMemoryPrewarm",
+      version: LAYER_VER,
+      totalLogs: this._logs.length,
+      totalChunks: chunks.length,
+      chunks
+    };
+  },
+
+  // --------------------------------------------------------------------------
+  // PRESENCE VIEW — multi-presence, dual-band summary
+  // --------------------------------------------------------------------------
+  presenceView() {
+    const logs = this._logs;
+    return buildPresenceView(logs);
   }
 };

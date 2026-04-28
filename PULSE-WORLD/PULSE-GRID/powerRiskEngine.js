@@ -1,14 +1,15 @@
 // ============================================================================
-//  PULSE OS v12.3‑EVO+ — POWER‑PRIME RISK ENGINE
+//  PULSE OS v12.3‑PRESENCE‑EVO+ — POWER‑PRIME RISK ENGINE
 //  Predictive Risk Vector • Artery Fusion • Drift‑Aware • Deterministic
-//  PURE COMPUTE. ZERO MUTATION. ZERO RANDOMNESS.
+//  Presence • Advantage • Fallback Bands • Chunk/Cache/Prewarm Hints
+//  PURE COMPUTE. ZERO MUTATION. ZERO RANDOMNESS. ZERO I/O.
 // ============================================================================
 
 export const PowerRiskEngineMeta = Object.freeze({
   layer: "PulseAIPowerPrime",
   role: "POWER_RISK_ENGINE",
-  version: "12.3-EVO+",
-  identity: "powerRiskEngine-v12.3-EVO+",
+  version: "12.3-PRESENCE-EVO+",
+  identity: "powerRiskEngine-v12.3-PRESENCE-EVO+",
 
   evo: Object.freeze({
     deterministic: true,
@@ -21,8 +22,44 @@ export const PowerRiskEngineMeta = Object.freeze({
     personaAware: true,
     memoryAware: true,
     evolutionAware: true,
+    presenceAware: true,
+    bandPresenceAware: true,
+    routerPresenceAware: true,
+    advantageAware: true,
+    fallbackBandAware: true,
+    chunkAware: true,
+    cacheAware: true,
+    prewarmAware: true,
+    coldStartAware: true,
     readOnly: true,
-    epoch: "12.3-EVO+"
+    epoch: "12.3-PRESENCE-EVO+"
+  }),
+
+  guarantees: Object.freeze({
+    pureCompute: true,
+    zeroMutation: true,
+    zeroRandomness: true,
+    zeroTimers: true,
+    zeroDateNow: true,
+    zeroIO: true,
+    zeroNetwork: true,
+    zeroSideEffects: true
+  }),
+
+  contract: Object.freeze({
+    input: [
+      "PowerHistorySnapshot",
+      "FusedArteriesSnapshot",
+      "ContinuanceSnapshot",
+      "PresenceContext",
+      "AdvantageContext"
+    ],
+    output: [
+      "PowerRiskVector",
+      "PowerRiskSummary",
+      "PowerBeaconSignals",
+      "PowerRiskPresencePlan"
+    ]
   })
 });
 
@@ -39,23 +76,35 @@ function safeLen(arr) {
   return Array.isArray(arr) ? arr.length : 0;
 }
 
+function safeNum(v, d = 0) {
+  return typeof v === "number" && !isNaN(v) ? v : d;
+}
+
+function safeObj(v, d = {}) {
+  return v && typeof v === "object" ? v : d;
+}
+
+function safeBool(v, d = false) {
+  return typeof v === "boolean" ? v : d;
+}
+
 // ============================================================================
 //  ARTERY FUSION — BUILD RISK VECTOR INPUTS
 // ============================================================================
 
 function fuseArteryWeights(fusedArteries) {
   const {
-    metabolic,
-    nervous,
-    immune,
-    hormones,
-    pipeline,
-    scanner,
-    personalFrame,
-    personality,
-    memory,
-    evolution
-  } = fusedArteries;
+    metabolic = {},
+    nervous = {},
+    immune = {},
+    hormones = {},
+    pipeline = {},
+    scanner = {},
+    personalFrame = {},
+    personality = {},
+    memory = {},
+    evolution = {}
+  } = fusedArteries || {};
 
   return Object.freeze({
     metabolicPressure: norm(metabolic.pressure),
@@ -128,7 +177,7 @@ export function computePowerRiskVector({
 
   // --------------------------------------------------------------------------
   // 2. OUTAGE‑LIKELIHOOD SCORE (predictive)
-  // --------------------------------------------------------------------------
+// --------------------------------------------------------------------------
   const outageLikelihood = norm(
     0.4 * instability +
       0.2 * fused.metabolicPressure +
@@ -198,7 +247,8 @@ export function computePowerRiskVector({
     hormoneMod,
     memoryMod,
     continuanceMod,
-    fusedArteries: fused
+    fusedArteries: fused,
+    latestPower: latest
   });
 }
 
@@ -238,7 +288,6 @@ export function buildPowerRiskSummary({ riskVector, continuance }) {
 export function buildPowerBeaconSignals({ riskVector, continuance, fusedArteries }) {
   const beacons = [];
 
-  // High risk → immediate beacon
   if (riskVector.riskScore >= 0.85) {
     beacons.push({
       type: "power-critical",
@@ -247,7 +296,6 @@ export function buildPowerBeaconSignals({ riskVector, continuance, fusedArteries
     });
   }
 
-  // Outage likelihood
   if (riskVector.outageLikelihood >= 0.7) {
     beacons.push({
       type: "power-outage-likely",
@@ -256,7 +304,6 @@ export function buildPowerBeaconSignals({ riskVector, continuance, fusedArteries
     });
   }
 
-  // Drift risk
   if (riskVector.driftRisk >= 0.6) {
     beacons.push({
       type: "power-drift",
@@ -265,7 +312,6 @@ export function buildPowerBeaconSignals({ riskVector, continuance, fusedArteries
     });
   }
 
-  // Continuance low
   if (continuance?.continuanceScore <= 0.25) {
     beacons.push({
       type: "power-continuance-low",
@@ -275,4 +321,127 @@ export function buildPowerBeaconSignals({ riskVector, continuance, fusedArteries
   }
 
   return Object.freeze(beacons);
+}
+
+// ============================================================================
+//  FULL 12.3+ PRESENCE / ADVANTAGE / FALLBACK / CHUNK PLAN
+//  “Backbone for PulseBand / CheckBand / RouterMemory / Identity”
+// ============================================================================
+
+export function buildPowerRiskPresencePlan({
+  power,
+  history,
+  fusedArteries,
+  continuance,
+  presenceContext = {},
+  advantageContext = {},
+  settings = {}
+}) {
+  const riskVector = computePowerRiskVector({
+    power,
+    history,
+    fusedArteries,
+    continuance,
+    settings
+  });
+
+  const summary = buildPowerRiskSummary({ riskVector, continuance });
+  const beacons = buildPowerBeaconSignals({
+    riskVector,
+    continuance,
+    fusedArteries
+  });
+
+  const risk = riskVector.riskScore;
+  const contScore = continuance?.continuanceScore ?? 0;
+
+  // Fallback band ladder (0–3)
+  let fallbackBandLevel = 0;
+  if (risk >= 0.85 || contScore <= 0.2) {
+    fallbackBandLevel = 3;
+  } else if (risk >= 0.65 || contScore <= 0.35) {
+    fallbackBandLevel = 2;
+  } else if (risk >= 0.4 || contScore <= 0.5) {
+    fallbackBandLevel = 1;
+  }
+
+  // PulseBand aggression (0–1, inverse of risk)
+  const pulseBandAggression = norm(1 - risk);
+
+  // Presence field
+  const bandPresence = {
+    band: presenceContext.band || "pulseband",
+    deviceId: presenceContext.deviceId || null,
+    hydraNodeId: presenceContext.hydraNodeId || null,
+    route: presenceContext.route || "/"
+  };
+
+  const routerPresence = {
+    routerHealthy: safeBool(presenceContext.routerHealthy, true),
+    proxyHealthy: safeBool(presenceContext.proxyHealthy, true)
+  };
+
+  // Advantage field
+  const advantage = {
+    advantageScore: safeNum(advantageContext.advantageScore, 1.0),
+    cascadeLevel: safeNum(advantageContext.cascadeLevel, 0),
+    timeSavedMs: safeNum(advantageContext.timeSavedMs, 0),
+    field: advantageContext.field || "power-risk"
+  };
+
+  // Chunk / cache / prewarm hints
+  const route = bandPresence.route;
+
+  const prewarmHints = {
+    shouldPrewarm: risk >= 0.4 || contScore <= 0.5,
+    targetRoutes: [route],
+    targetBands: ["pulseband"],
+    reason:
+      risk >= 0.65
+        ? "high_risk"
+        : risk >= 0.4
+        ? "medium_risk"
+        : contScore <= 0.5
+        ? "continuance_low"
+        : "steady_state"
+  };
+
+  const cacheHints = {
+    keepHot: risk >= 0.4 || contScore <= 0.5,
+    priority:
+      risk >= 0.85
+        ? "critical"
+        : risk >= 0.65
+        ? "high"
+        : risk >= 0.4
+        ? "medium"
+        : "normal",
+    advantageScore: advantage.advantageScore
+  };
+
+  const chunkHints = {
+    chunkAggression: pulseBandAggression,
+    preferBinaryChunks: true,
+    preferPresenceChunks: risk >= 0.4 || contScore <= 0.5
+  };
+
+  return Object.freeze({
+    meta: {
+      ...PowerRiskEngineMeta,
+      mode: "presence-plan-12.3+"
+    },
+    riskVector,
+    summary,
+    beacons,
+    fallbackBandLevel,
+    pulseBandAggression,
+    presenceField: {
+      bandPresence,
+      routerPresence
+    },
+    advantage,
+    prewarmHints,
+    cacheHints,
+    chunkHints
+  });
 }

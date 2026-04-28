@@ -1,39 +1,38 @@
-//js
 // ============================================================================
-// FILE: tropic-pulse-functions/apps/PULSE-EARN/PulseEarnSurvivalInstincts-v11-Evo.js
-// LAYER: THE SURVIVAL INSTINCTS (v11-Evo)
-// (Worker Protection + Evolutionary Scaling + Fair Workload Defense + Diagnostics)
+// FILE: tropic-pulse-functions/apps/PULSE-EARN/PulseEarnSurvivalInstincts-v12.3-PRESENCE-EVO+.js
+// LAYER: THE SURVIVAL INSTINCTS (v12.3-PRESENCE-EVO+ A-B-A)
+// (Worker Protection + Evolutionary Scaling + Fair Workload Defense + Presence/Advantage Surfaces)
 // ============================================================================
 //
-// ROLE (v11-Evo):
+// ROLE (v12.3-PRESENCE-EVO+):
 //   THE SURVIVAL INSTINCTS — Pulse‑Earn’s evolved worker‑protection engine.
 //   • Rejects unsafe jobs (structural incompatibility).
 //   • Rejects unfair jobs (low pay, high metabolic cost).
 //   • Rejects exploitative jobs (bandwidth drain, long runtimes).
-//   • Applies deterministic evolutionary capability scaling.
+//   • Applies deterministic evolutionary capability + presence/advantage scaling.
 //   • Approves only safe, profitable, fair workloads.
-//   • Emits deterministic, pattern‑aware diagnostics for governance.
+//   • Emits deterministic, pattern‑aware, presence‑aware diagnostics for governance.
 //
-// PURPOSE (v11-Evo):
+// PURPOSE (v12.3-PRESENCE-EVO+):
 //   • Provide deterministic, drift‑proof job scoring.
-//   • Apply evolutionary scaling to device capability.
+//   • Apply evolutionary + presence/advantage scaling to device capability.
 //   • Ensure the device is never overloaded or underpaid.
 //   • Guarantee that only profitable, safe workloads enter the pipeline.
-//   • Surface a stable, inspectable survival signature per job.
+//   • Surface a stable, inspectable survival + presence signature per job.
 //
-// CONTRACT (v11-Evo):
+// CONTRACT (v12.3-PRESENCE-EVO+):
 //   • PURE SCORING ENGINE — no AI layers, no translation, no memory model.
 //   • NO imports, NO eval(), NO dynamic behavior.
 //   • NEVER mutate job objects.
-//   • Deterministic compatibility + profitability scoring only.
+//   • Deterministic compatibility + profitability + presence/advantage scoring only.
 //   • NO timestamps, NO randomness.
 //   • Internal healing state is allowed to mutate; external objects are not.
 // ============================================================================
 export const PulseEarnSurvivalInstinctsMeta = Object.freeze({
   layer: "PulseEarnSurvivalInstincts",
   role: "EARN_SURVIVAL_ORGAN",
-  version: "v11.2-EVO",
-  identity: "PulseEarnSurvivalInstincts-v11.2-EVO",
+  version: "v12.3-PRESENCE-EVO+",
+  identity: "PulseEarnSurvivalInstincts-v12.3-PRESENCE-EVO+",
 
   guarantees: Object.freeze({
     deterministic: true,
@@ -70,6 +69,13 @@ export const PulseEarnSurvivalInstinctsMeta = Object.freeze({
     waveFieldAware: true,
     healingMetadataAware: true,
 
+    // Presence / advantage / hints
+    presenceAware: true,
+    advantageAware: true,
+    cacheAware: true,
+    chunkAware: true,
+    prewarmAware: true,
+
     // Environment
     worldLensAware: false,
     multiInstanceReady: true
@@ -79,7 +85,7 @@ export const PulseEarnSurvivalInstinctsMeta = Object.freeze({
     input: [
       "MarketplaceJob",
       "DevicePhenotype",
-      "DualBandContext"
+      "DualBandContextPresenceAdvantageHints"
     ],
     output: [
       "SurvivalScore",
@@ -91,13 +97,14 @@ export const PulseEarnSurvivalInstinctsMeta = Object.freeze({
   }),
 
   lineage: Object.freeze({
-    root: "PulseOS-v11-EVO",
-    parent: "PulseEarn-v11.2-EVO",
+    root: "PulseOS-v12.3-PRESENCE-EVO+",
+    parent: "PulseEarn-v12.3-PRESENCE-EVO+",
     ancestry: [
       "PulseEarnSurvivalInstincts-v9",
       "PulseEarnSurvivalInstincts-v10",
       "PulseEarnSurvivalInstincts-v11",
-      "PulseEarnSurvivalInstincts-v11-Evo"
+      "PulseEarnSurvivalInstincts-v11-Evo",
+      "PulseEarnSurvivalInstincts-v12.3-PRESENCE-EVO+"
     ]
   }),
 
@@ -111,14 +118,14 @@ export const PulseEarnSurvivalInstinctsMeta = Object.freeze({
   architecture: Object.freeze({
     pattern: "A-B-A",
     baseline: "deterministic compatibility → evolutionary scaling → fairness defense",
-    adaptive: "binary/wave surfaces + dual-band signatures",
-    return: "deterministic survival score + decision + signatures"
+    adaptive: "binary/wave surfaces + dual-band + presence/advantage signatures",
+    return: "deterministic survival score + decision + signatures + presence surfaces"
   })
 });
 
 
 // ---------------------------------------------------------------------------
-// Healing Metadata — Survival Instinct Activity Log (v11-Evo)
+// Healing Metadata — Survival Instinct Activity Log (v12.3-PRESENCE-EVO+)
 // ---------------------------------------------------------------------------
 const survivalHealing = {
   lastJobId: null,
@@ -145,6 +152,21 @@ const survivalHealing = {
   lastDevicePattern: null,
   lastSurvivalSignature: null,
 
+  // v12.3-PRESENCE-EVO+: presence / advantage / hints surfaces
+  presenceTier: null,
+  presenceField: null,
+  advantageField: null,
+  hintsField: null,
+  presenceSignature: null,
+  advantageSignature: null,
+  hintsSignature: null,
+
+  // v12.3-PRESENCE-EVO+: band + binary + wave surfaces
+  lastBand: "symbolic",
+  lastBandSignature: null,
+  lastBinaryField: null,
+  lastWaveField: null,
+
   cycleCount: 0,
 
   loopTheory: {
@@ -157,7 +179,7 @@ const survivalHealing = {
 
 
 // ---------------------------------------------------------------------------
-// Deterministic Hash Helper — v11-Evo (no randomness, no timestamps)
+// Deterministic Hash Helper — v12.3 (no randomness, no timestamps)
 // ---------------------------------------------------------------------------
 function computeDeterministicHash(str) {
   let acc = 0;
@@ -166,6 +188,11 @@ function computeDeterministicHash(str) {
     acc = (acc + s.charCodeAt(i) * (i + 1)) % 100000;
   }
   return `h${acc}`;
+}
+
+function normalizeBand(band) {
+  const b = String(band || "symbolic").toLowerCase();
+  return b === "binary" ? "binary" : "symbolic";
 }
 
 
@@ -191,21 +218,150 @@ function nonNegative(value, fallback) {
 
 
 // ---------------------------------------------------------------------------
-// Degradation Tier — aligned with Router v10.4 / v11
+// Degradation Tier — aligned with Router v10.4 / v11 / v12.3 presence tiers
 // ---------------------------------------------------------------------------
 function classifyDegradationTier(healthScore) {
   const h = typeof healthScore === "number" ? healthScore : 1.0;
 
-  if (h >= 0.95) return "microDegrade";
-  if (h >= 0.85) return "softDegrade";
-  if (h >= 0.50) return "midDegrade";
-  if (h >= 0.15) return "hardDegrade";
-  return "criticalDegrade";
+  if (h >= 0.97) return "presenceMicroDegrade";
+  if (h >= 0.90) return "presenceSoftDegrade";
+  if (h >= 0.60) return "presenceMidDegrade";
+  if (h >= 0.25) return "presenceHardDegrade";
+  return "presenceCriticalDegrade";
 }
 
 
 // ---------------------------------------------------------------------------
-// INTERNAL: Build Survival Signature (v11-Evo)
+// INTERNAL: Presence / Advantage / Hints Surfaces (v12.3-PRESENCE-EVO+)
+// ---------------------------------------------------------------------------
+function buildPresenceField(deviceProfile, dualBandContext) {
+  const presenceContext = (dualBandContext && dualBandContext.presenceContext) || {};
+  const regionContext = (dualBandContext && dualBandContext.regionContext) || {};
+
+  const bandPresence = presenceContext.bandPresence || deviceProfile.band || "symbolic";
+  const devicePresence = presenceContext.devicePresence || "local";
+  const routerPresence = presenceContext.routerPresence || "stable";
+  const regionTag = regionContext.regionTag || "unknown-region";
+
+  const field = {
+    bandPresence,
+    devicePresence,
+    routerPresence,
+    regionTag
+  };
+
+  const raw = [
+    bandPresence,
+    devicePresence,
+    routerPresence,
+    regionTag
+  ].join("::");
+
+  survivalHealing.presenceField = field;
+  survivalHealing.presenceSignature = computeDeterministicHash(`PRESENCE::${raw}`);
+
+  return field;
+}
+
+function buildAdvantageField(deviceProfile, dualBandContext) {
+  const advantageContext = (dualBandContext && dualBandContext.advantageContext) || {};
+  const score = toNumber(advantageContext.score, 0);
+  const band = advantageContext.band || deviceProfile.band || "symbolic";
+  const tier = advantageContext.tier || 0;
+
+  const field = {
+    score,
+    band,
+    tier
+  };
+
+  const raw = `ADV::score:${score}::band:${band}::tier:${tier}`;
+  survivalHealing.advantageField = field;
+  survivalHealing.advantageSignature = computeDeterministicHash(raw);
+
+  return field;
+}
+
+function buildHintsField(dualBandContext) {
+  const chunkHints = (dualBandContext && dualBandContext.chunkHints) || {};
+  const cacheHints = (dualBandContext && dualBandContext.cacheHints) || {};
+  const prewarmHints = (dualBandContext && dualBandContext.prewarmHints) || {};
+  const coldStartHints = (dualBandContext && dualBandContext.coldStartHints) || {};
+
+  const field = {
+    chunkHints,
+    cacheHints,
+    prewarmHints,
+    coldStartHints
+  };
+
+  const raw = [
+    JSON.stringify(chunkHints || {}),
+    JSON.stringify(cacheHints || {}),
+    JSON.stringify(prewarmHints || {}),
+    JSON.stringify(coldStartHints || {})
+  ].join("::");
+
+  survivalHealing.hintsField = field;
+  survivalHealing.hintsSignature = computeDeterministicHash(`HINTS::${raw}`);
+
+  return field;
+}
+
+function buildBandBinaryWaveSurfaces(deviceProfile, dualBandContext) {
+  const bandRaw =
+    (dualBandContext && dualBandContext.band) ||
+    deviceProfile.band ||
+    (survivalHealing.presenceField && survivalHealing.presenceField.bandPresence) ||
+    "symbolic";
+
+  const band = normalizeBand(bandRaw);
+  survivalHealing.lastBand = band;
+  survivalHealing.lastBandSignature = computeDeterministicHash(`BAND::${band}`);
+
+  const cpu = deviceProfile.cpuCores || 0;
+  const mem = deviceProfile.memoryMB || 0;
+  const gpu = deviceProfile.gpuScore || 0;
+  const cycle = survivalHealing.cycleCount || 0;
+
+  const surface = cpu + mem + gpu + cycle;
+
+  const binaryField = {
+    binarySurvivalSignature: computeDeterministicHash(`BSURV::${surface}`),
+    binarySurfaceSignature: computeDeterministicHash(`BSURF_SURV::${surface}`),
+    binarySurface: {
+      cpu,
+      mem,
+      gpu,
+      cycle,
+      surface
+    },
+    parity: surface % 2 === 0 ? 0 : 1,
+    density: cpu + gpu,
+    shiftDepth: Math.max(0, Math.floor(Math.log2(surface || 1)))
+  };
+
+  const amplitude = cpu + gpu;
+  const wavelength = cycle + 1;
+  const phase = (amplitude + wavelength) % 16;
+
+  const waveField = {
+    amplitude,
+    wavelength,
+    phase,
+    band,
+    mode: band === "binary" ? "compression-wave" : "symbolic-wave"
+  };
+
+  survivalHealing.lastBinaryField = binaryField;
+  survivalHealing.lastWaveField = waveField;
+
+  return { band, binaryField, waveField };
+}
+
+
+// ---------------------------------------------------------------------------
+// INTERNAL: Build Survival Signature (v12.3-PRESENCE-EVO+)
 // ---------------------------------------------------------------------------
 function buildSurvivalSignature({
   jobId,
@@ -233,9 +389,10 @@ function buildSurvivalSignature({
 
 
 // ---------------------------------------------------------------------------
-// scoreJobForDevice — Survival Instinct Approval Process (v11-Evo)
+// scoreJobForDevice — Survival Instinct Approval Process (v12.3-PRESENCE-EVO+)
+// dualBandContext may carry presence/advantage/cache/chunk/prewarm hints.
 // ---------------------------------------------------------------------------
-export function scoreJobForDevice(rawJob, deviceProfile) {
+export function scoreJobForDevice(rawJob, deviceProfile, dualBandContext) {
   const job = rawJob || {};
   const device = deviceProfile || {};
 
@@ -247,15 +404,30 @@ export function scoreJobForDevice(rawJob, deviceProfile) {
   survivalHealing.lastRejectionReason = null;
   survivalHealing.lastApprovalReason = null;
 
+  // 0. Presence / Advantage / Hints + Band/Binary/Wave surfaces
+  const presenceField = buildPresenceField(device, dualBandContext || {});
+  const advantageField = buildAdvantageField(device, dualBandContext || {});
+  const hintsField = buildHintsField(dualBandContext || {});
+  const { band, binaryField, waveField } = buildBandBinaryWaveSurfaces(
+    device,
+    dualBandContext || {}
+  );
+
+  // presence tier derived from health + advantage tier
+  const healthScore = toNumber(device.healthScore, 1.0);
+  const baseTier = classifyDegradationTier(healthScore);
+  const advTier = advantageField.tier || 0;
+  const presenceTier = `${baseTier}::advTier:${advTier}`;
+
+  survivalHealing.presenceTier = presenceTier;
+
   // 1. Worker Safety Check — Survival Protection
   const compatible = isJobCompatible(job, device);
   survivalHealing.lastCompatibility = compatible;
 
-  const healthScore = toNumber(device.healthScore, 1.0);
   const stabilityBonus = clamp(device.stabilityScore, 0, 1.5) || 0.5;
-  const tier = classifyDegradationTier(healthScore);
 
-  survivalHealing.lastTier = tier;
+  survivalHealing.lastTier = baseTier;
   survivalHealing.lastHealthScore = healthScore;
   survivalHealing.lastStabilityBonus = stabilityBonus;
 
@@ -280,16 +452,21 @@ export function scoreJobForDevice(rawJob, deviceProfile) {
       compatibility: false,
       profitPerSecond: 0,
       bandwidthPenalty: 0,
-      tier,
+      tier: baseTier,
       healthScore,
       stabilityBonus
     });
 
+    // keep presence/binary/wave surfaces attached in healing state
+    survivalHealing.lastBand = band;
+    survivalHealing.lastBinaryField = binaryField;
+    survivalHealing.lastWaveField = waveField;
+
     return -Infinity;
   }
 
-  // 2. Evolutionary Capability Scaling — Organism Advantage
-  const evoBoost = computeEvolutionaryBoost(device);
+  // 2. Evolutionary Capability Scaling — Organism Advantage + Presence
+  const evoBoost = computeEvolutionaryBoost(device, presenceField, advantageField, hintsField, band, binaryField, waveField);
   survivalHealing.lastEvolutionBoost = evoBoost;
 
   // 3. Workload Evaluation — Difficulty
@@ -305,12 +482,12 @@ export function scoreJobForDevice(rawJob, deviceProfile) {
 
   // 5. Hidden Cost Detection — Bandwidth Penalties
   const bandwidthPenalty = nonNegative(
-    estimateBandwidthPenalty(job, device),
+    estimateBandwidthPenalty(job, device, band),
     0
   );
   survivalHealing.lastBandwidthPenalty = bandwidthPenalty;
 
-  // 6. Final Survival Score — Profitability + Evolution
+  // 6. Final Survival Score — Profitability + Evolution + Presence Advantage
   const profitPerSecond =
     estimatedPayout / Math.max(estimatedRuntimeSeconds, 1);
   survivalHealing.lastProfitPerSecond = profitPerSecond;
@@ -322,7 +499,7 @@ export function scoreJobForDevice(rawJob, deviceProfile) {
   const finalScore = Number.isFinite(rawScore) ? rawScore : -Infinity;
   survivalHealing.lastScore = finalScore;
 
-  // 7. v11-Evo: Pattern + Signature Surface
+  // 7. Pattern + Signature Surface
   const jobPattern = buildJobPattern(job);
   const devicePattern = buildDevicePattern(device);
   survivalHealing.lastJobPattern = jobPattern;
@@ -334,7 +511,7 @@ export function scoreJobForDevice(rawJob, deviceProfile) {
     compatibility: true,
     profitPerSecond,
     bandwidthPenalty,
-    tier,
+    tier: baseTier,
     healthScore,
     stabilityBonus
   });
@@ -347,10 +524,17 @@ export function scoreJobForDevice(rawJob, deviceProfile) {
     survivalHealing.lastRejectionReason = "non_profitable_or_neutral";
   }
 
+  // keep presence/binary/wave surfaces attached in healing state
+  survivalHealing.lastBand = band;
+  survivalHealing.lastBinaryField = binaryField;
+  survivalHealing.lastWaveField = waveField;
+
   return finalScore;
 }
+
+
 // ---------------------------------------------------------------------------
-// COMPATIBILITY CHECKS — Worker Safety Rules (v11-Evo A-B-A Upgraded)
+// COMPATIBILITY CHECKS — Worker Safety Rules (v12.3-PRESENCE-EVO+ A-B-A)
 // ---------------------------------------------------------------------------
 function isJobCompatible(rawJob, deviceProfile) {
   if (!rawJob || !deviceProfile) return false;
@@ -377,20 +561,34 @@ function isJobCompatible(rawJob, deviceProfile) {
 
 
 // ---------------------------------------------------------------------------
-// EVOLUTIONARY CAPABILITY BOOST — Organism Advantage (v11-Evo A-B-A)
+// EVOLUTIONARY CAPABILITY BOOST — Organism Advantage (v12.3-PRESENCE-EVO+)
 // ---------------------------------------------------------------------------
-function computeEvolutionaryBoost(deviceProfile) {
+function computeEvolutionaryBoost(
+  deviceProfile,
+  presenceField,
+  advantageField,
+  hintsField,
+  band,
+  binaryField,
+  waveField
+) {
   const stability = deviceProfile.stabilityScore || 0.5;
   const bandwidth = deviceProfile.bandwidthMbps || 50;
   const memory = deviceProfile.memoryMB || 4096;
 
-  // A-B-A surfaces
-  const band = (deviceProfile.band || "symbolic").toLowerCase();
-  const binaryField = deviceProfile.binaryField || null;
-  const waveField = deviceProfile.waveField || null;
+  const density = (binaryField && binaryField.binarySurface && binaryField.binarySurface.density) || 0;
+  const amplitude = (waveField && waveField.amplitude) || 0;
 
-  const density = binaryField?.density || 0;
-  const amplitude = waveField?.amplitude || 0;
+  const advScore = (advantageField && advantageField.score) || 0;
+  const advTier = (advantageField && advantageField.tier) || 0;
+
+  const chunkHints = (hintsField && hintsField.chunkHints) || {};
+  const cacheHints = (hintsField && hintsField.cacheHints) || {};
+  const prewarmHints = (hintsField && hintsField.prewarmHints) || {};
+
+  const chunkBoost = chunkHints.prechunk ? 0.05 : 0;
+  const cacheBoost = toNumber(cacheHints.level, 0) * 0.02;
+  const prewarmBoost = prewarmHints.enabled ? 0.05 : 0;
 
   // Base deterministic boost
   let boost =
@@ -410,9 +608,16 @@ function computeEvolutionaryBoost(deviceProfile) {
   // A-B-A wave amplitude advantage
   boost += Math.min(amplitude / 5000, 0.1);
 
+  // Presence / advantage score + tier
+  boost += Math.min(advScore * 0.03, 0.15);
+  boost += Math.min(advTier * 0.02, 0.10);
+
+  // Chunk / cache / prewarm hints
+  boost += chunkBoost + cacheBoost + prewarmBoost;
+
   // Clamp for determinism
   if (boost < 0.5) return 0.5;
-  if (boost > 2.5) return 2.5;
+  if (boost > 3.0) return 3.0;
 
   return boost;
 }
@@ -448,7 +653,7 @@ function estimatePayout(rawJob) {
 // ---------------------------------------------------------------------------
 // BANDWIDTH PENALTY — Hidden Cost Detection (v11-Evo A-B-A)
 // ---------------------------------------------------------------------------
-function estimateBandwidthPenalty(rawJob, deviceProfile) {
+function estimateBandwidthPenalty(rawJob, deviceProfile, band) {
   const needed = rawJob.bandwidthNeededMbps || 0;
   const available = deviceProfile.bandwidthMbps || 1;
 
@@ -457,8 +662,8 @@ function estimateBandwidthPenalty(rawJob, deviceProfile) {
   const ratio = needed / Math.max(available, 1);
 
   // A-B-A band-aware penalty
-  const band = (deviceProfile.band || "symbolic").toLowerCase();
-  const bandMultiplier = band === "binary" ? 0.8 : 1.0;
+  const b = (band || deviceProfile.band || "symbolic").toLowerCase();
+  const bandMultiplier = b === "binary" ? 0.8 : 1.0;
 
   if (ratio > 1) return ratio * 0.01 * bandMultiplier;
   return ratio * 0.001 * bandMultiplier;
@@ -512,7 +717,7 @@ function buildDevicePattern(deviceProfile) {
 
 
 // ---------------------------------------------------------------------------
-// Export Healing Metadata — Survival Instinct Report (v11-Evo)
+// Export Healing Metadata — Survival Instinct Report (v12.3-PRESENCE-EVO+)
 // ---------------------------------------------------------------------------
 export function getPulseEarnSurvivalHealingState() {
   return { ...survivalHealing };

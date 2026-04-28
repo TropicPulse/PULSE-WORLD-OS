@@ -1,12 +1,13 @@
 // ============================================================================
-// FILE: /apps/organs/aura/PulseMeshAura.js
-// [pulse:mesh] PULSE_MESH_AURA v11-Evo  // violet
+// FILE: /apps/organs/aura/PulseMeshAura-v12.3-PRESENCE-EVO-MAX-PRIME.js
+// [pulse:mesh] PULSE_MESH_AURA v12.3-PRESENCE-EVO-MAX-PRIME  // violet
 // System-wide Field Layer • Stabilization Loops • Multi-Instance Resonance
-// Metadata-only • Zero Compute • Zero Payload Mutation
+// Metadata-only • Zero Compute • Zero Payload Mutation (flags-only)
+// Presence-aware • Binary-aware • Advantage-cascade-aware
 // ============================================================================
 //
-// IDENTITY — THE AURA FIELD (v11-Evo):
-//  -----------------------------------
+// IDENTITY — THE AURA FIELD (v12.3-PRESENCE-EVO-MAX-PRIME):
+//  --------------------------------------------------------
 //  • Organism-wide field surrounding all pulses and instances.
 //  • Provides stabilization loops (loop field).
 //  • Provides multi-instance resonance (sync field).
@@ -14,19 +15,20 @@
 //  • Senses mesh factoring pressure → factoring hints.
 //  • Metadata-only: tags, hints, and gentle shaping fields.
 //  • Advantage-cascade aware: inherits ANY systemic advantage automatically.
-//  • Binary-aware: can tag pulses as binary-ready / binary-preferred.
-//  • Fully deterministic: same impulse → same aura tags.
+//  • Binary-aware + Presence-aware: tags pulses with band + presence origin.
+//  • Fully deterministic: same impulse + same AuraState → same aura tags.
 //  • Zero randomness, zero timestamps, zero async.
 //
-// SAFETY CONTRACT (v11-Evo):
-//  --------------------------
+// SAFETY CONTRACT (v12.3):
+//  ------------------------
 //  • No randomness
 //  • No timestamps
 //  • No payload mutation (flags-only metadata shaping)
 //  • No async
 //  • Fail-open: missing fields → safe defaults
-//  • Deterministic: same impulse → same aura tags
+//  • Deterministic: same impulse + same AuraState → same aura tags
 //  • Zero imports — zero external dependencies
+//  • Presence-aware but presence stays in metadata only
 // ============================================================================
 
 
@@ -44,15 +46,19 @@ const AuraState = {
   flowPressure: 0.0,
   recentThrottleRate: 0.0,
 
-  // Binary-awareness knobs (v11-Evo)
+  // Binary-awareness knobs
   binaryPreference: 0.0,   // 0..1: how strongly we prefer binary routes
   binaryMeshReady: true,   // whether mesh has binary counterpart
   binaryOSReady: true,     // whether OS has binary counterpart
 
+  // Presence-awareness knobs
+  presenceBand: "symbolic",          // "symbolic" | "binary" | "dual"
+  presenceTag: "PulseMeshAura-v12.3",// origin tag for aura application
+
   meta: {
     layer: "PulseMeshAura",
     role: "AURA_FIELD",
-    version: "11.0-Evo",
+    version: "12.3-PRESENCE-EVO-MAX-PRIME",
     target: "full-mesh",
     selfRepairable: true,
     evo: {
@@ -70,11 +76,13 @@ const AuraState = {
       zeroCompute: true,
       zeroMutation: true,
 
-      // v11-Evo additions
+      // Binary + Presence additions
       binaryAware: true,
       binaryMeshReady: true,
       binaryOSReady: true,
-      pulseMesh11Ready: true
+      pulseMesh11Ready: true,
+      presenceAware: true,
+      bandAware: true
     }
   }
 };
@@ -108,14 +116,25 @@ export const PulseAuraControl = {
   setBinaryPreference(v) {
     AuraState.binaryPreference = clamp01(v);
   },
+  setPresenceBand(band) {
+    if (band === "symbolic" || band === "binary" || band === "dual") {
+      AuraState.presenceBand = band;
+    }
+  },
+  setPresenceTag(tag) {
+    if (typeof tag === "string" && tag) {
+      AuraState.presenceTag = tag;
+    }
+  },
   snapshot() {
-    return { ...AuraState };
+    // Shallow clone; metadata-only
+    return { ...AuraState, meta: { ...AuraState.meta, evo: { ...AuraState.meta.evo } } };
   }
 };
 
 
 // -----------------------------------------------------------
-// Aura Pack: loop + sync + stabilization + binary hints
+// Aura Pack: loop + sync + stabilization + binary + presence hints
 // -----------------------------------------------------------
 export const PulseAura = {
 
@@ -192,7 +211,7 @@ export const PulseAura = {
     return impulse;
   },
 
-  // v11-Evo: binary-awareness hinting
+  // Binary-awareness hinting
   binaryHint(impulse) {
     impulse.flags = impulse.flags || {};
 
@@ -205,6 +224,14 @@ export const PulseAura = {
       impulse.flags["aura_binary_os_available"] = true;
     }
 
+    return impulse;
+  },
+
+  // Presence-awareness hinting (band + origin)
+  presenceHint(impulse) {
+    impulse.flags = impulse.flags || {};
+    impulse.flags["aura_presence_band"] = AuraState.presenceBand;
+    impulse.flags["aura_presence_tag"] = AuraState.presenceTag;
     return impulse;
   }
 };
@@ -224,6 +251,7 @@ export function applyPulseAura(impulse) {
   PulseAura.syncHint(impulse);
   PulseAura.factoringHint(impulse);
   PulseAura.binaryHint(impulse);
+  PulseAura.presenceHint(impulse);
 
   impulse.flags["aura_applied"] = true;
 

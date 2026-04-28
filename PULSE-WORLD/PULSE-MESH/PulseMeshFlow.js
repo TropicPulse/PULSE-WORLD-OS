@@ -1,24 +1,25 @@
 // ============================================================================
-// [pulse:mesh] COMMUNITY_FLOW_LAYER v11-Evo  // rainbow
+// [pulse:mesh] COMMUNITY_FLOW_LAYER v12.3-PRESENCE-EVO-MAX-PRIME  // rainbow
 // Full-Spectrum Coordination • Deterministic Lifecycle Sequencer
 // Metadata-Only • Zero Recursion • Zero Routing • SDN-Aligned
+// Presence-Aware • Binary-Aware • Dual-Band • Drift-Proof
 // ============================================================================
 //
-// IDENTITY — THE FLOW ORGAN (v11-Evo):
-// ------------------------------------
+// IDENTITY — THE FLOW ORGAN (v12.3):
+// ----------------------------------
 // • Pure lifecycle sequencer for impulses.
 // • Coordinates Skin → Reflex → Cortex → Tendons → Organs → Immune
 //                     → Memory → Hormones → Aura → Router → SendSystem.
 // • No recursion, no timestamps, no rate limiting.
-// • No routing logic — Router v11 handles all routing.
-// • No movement logic — SendSystem v11 handles all movement.
-// • No mesh routing — Mesh v11 is deterministic pathway engine.
+// • No routing logic — Router handles destination.
+// • No movement logic — SendSystem handles movement.
+// • No mesh routing — Mesh is deterministic pathway engine.
 // • Metadata-only shaping + sequencing.
 // • SDN-aware: receives impulses from SDN, returns shaped impulses.
-// • v11-Evo: binary-aware, dual-mode-ready, deterministic-field,
-//            unified-advantage-field, drift-aware, mesh-pressure-aware.
+// • Presence-aware, binary-aware, dual-band-aware.
 //
-// SAFETY CONTRACT (v11-Evo):
+// SAFETY CONTRACT (v12.3):
+// -------------------------
 // • No payload access.
 // • No compute.
 // • No recursion.
@@ -39,26 +40,28 @@ export function createPulseMeshFlow({
   applyPulseHormones,
   applyPulseAura,
   PulseHaloCounters,
-  Router,        // v11-Evo — Router handles routing
-  SendSystem,    // v11-Evo — SendSystem handles movement
+  Router,
+  SendSystem,
   log,
   warn,
   error
 }) {
 
   // ---------------------------------------------------------------------------
-  // META — v11-Evo identity
+  // META — v12.3 identity
   // ---------------------------------------------------------------------------
   const meta = {
     layer: "PulseFlow",
     role: "FLOW_ORCHESTRATOR",
-    version: "11.0-Evo",
+    version: "12.3-PRESENCE-EVO-MAX-PRIME",
     target: "full-mesh",
     selfRepairable: true,
     evo: {
       dualMode: true,
       binaryAware: true,
       symbolicAware: true,
+      presenceAware: true,
+      bandAware: true,
       localAware: true,
       internetAware: true,
 
@@ -83,8 +86,9 @@ export function createPulseMeshFlow({
     }
   };
 
+
   // ---------------------------------------------------------------------------
-  // FLOW ENGINE (v11-Evo)
+  // FLOW ENGINE (v12.3)
   // ---------------------------------------------------------------------------
   function PulseFlow() {
     const reflex = createCommunityReflex();
@@ -93,18 +97,25 @@ export function createPulseMeshFlow({
       meta,
 
       // -----------------------------------------------------------------------
-      // FLOW_RUN (v11-Evo)
+      // FLOW_RUN (v12.3)
       // -----------------------------------------------------------------------
       async run(impulse, entryNodeId, context = {}) {
         impulse.flags = impulse.flags || {};
         impulse.flags.flow_meta = meta;
         impulse.flags.flow_started = true;
 
-        // v11-Evo: dual-mode tagging
+        // v12.3: dual-band + presence tagging
         if (context.binaryMode) impulse.flags.binary_mode = true;
         if (context.dualMode) impulse.flags.dual_mode = true;
 
-        PulseHaloCounters?.impulseStarted?.({ mode: context.binaryMode ? "binary" : "symbolic" });
+        if (context.presenceBand) impulse.band = context.presenceBand;
+        if (context.presenceTag) impulse.flags.aura_presence_tag = context.presenceTag;
+
+        PulseHaloCounters?.impulseStarted?.({
+          mode: context.binaryMode ? "binary" : context.dualMode ? "dual" : "symbolic",
+          band: impulse.band,
+          presenceTag: impulse.flags.aura_presence_tag
+        });
 
         try {
           // 1. SKIN ENTRY
@@ -170,15 +181,16 @@ export function createPulseMeshFlow({
             PulseHaloCounters?.auraTensionTagged?.();
           }
 
-          // 10. ROUTER v11-Evo — deterministic routing
+          // 10. ROUTER v12.3 — deterministic routing
           const routed = await Router.route("pulse", {
             impulse,
             entryNodeId,
             sdnContext: context.sdnContext,
-            binaryMode: context.binaryMode
+            binaryMode: context.binaryMode,
+            presenceBand: impulse.band
           });
 
-          // 11. SEND SYSTEM v11-Evo — deterministic movement
+          // 11. SEND SYSTEM v12.3 — deterministic movement
           const moved = await SendSystem.move(routed);
 
           // 12. SKIN EXIT
@@ -187,13 +199,14 @@ export function createPulseMeshFlow({
           return finalize(moved);
 
         } catch (err) {
-          warn?.("[PulseFlow v11-Evo] Flow error:", err);
+          warn?.("[PulseFlow v12.3] Flow error:", err);
           impulse.flags.flow_error = String(err);
           return finalize(impulse);
         }
       }
     };
   }
+
 
   // ---------------------------------------------------------------------------
   // FINALIZER
@@ -206,6 +219,7 @@ export function createPulseMeshFlow({
 
     return impulse;
   }
+
 
   // ---------------------------------------------------------------------------
   // PUBLIC INTERFACE

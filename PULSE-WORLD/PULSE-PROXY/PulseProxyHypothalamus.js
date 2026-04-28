@@ -1,10 +1,10 @@
 // ============================================================================
-//  PULSE OS v11‑Evo — HYPOTHALAMUS
+//  PULSE OS v12.3‑EVO — HYPOTHALAMUS
 //  PulseUserScoring — Homeostasis Regulation Organ
 //  Backend‑Only • Deterministic • Drift‑Proof • No IQ
 //  ROLE: Reads UserMetrics → Computes trustScore, meshScore, phase, hubFlag,
 //        instance allocation → Writes UserScores.
-//  ⭐ LOGIC UNCHANGED — ONLY IDENTITY + ENVELOPE UPGRADED ⭐
+//  ⭐ v11 logic preserved, 12.3‑EVO A‑B‑A envelope + band surfaces wired in ⭐
 // ============================================================================
 
 
@@ -29,14 +29,14 @@ const Timestamp =
 
 
 // ============================================================================
-//  ORGAN IDENTITY — v11‑Evo A‑B‑A
+//  ORGAN IDENTITY — v12.3‑EVO A‑B‑A
 // ============================================================================
 export const PulseRole = {
   type: "Organ",
   subsystem: "PulseProxy",
   layer: "Hypothalamus",
-  version: "11-Evo",
-  identity: "PulseUserScoring-v11-Evo-ABA",
+  version: "12.3-EVO",
+  identity: "PulseUserScoring-v12.3-EVO-ABA",
 
   evo: {
     driftProof: true,
@@ -49,18 +49,22 @@ export const PulseRole = {
     pulseEfficiencyAware: true,
     futureEvolutionReady: true,
 
-    // v11‑Evo A‑B‑A surfaces
+    // 12.3‑EVO A‑B‑A awareness
     bandAware: true,
     waveFieldAware: true,
     binaryFieldAware: true,
-    hypothalamusCycleAware: true
+    hypothalamusCycleAware: true,
+    symbolicAware: true,
+    binaryAware: true,
+    dualBandAware: true
   }
 };
+
 export const PulseUserScoringMeta = Object.freeze({
   layer: "PulseUserScoringHypothalamus",
   role: "HYPOTHALAMUS_HOMEOSTASIS_ORGAN",
-  version: "v11.2-EVO-BINARY-MAX",
-  identity: "PulseUserScoring-v11.2-EVO-BINARY-MAX",
+  version: "v12.3-EVO-BINARY-MAX-ABA",
+  identity: "PulseUserScoring-v12.3-EVO-BINARY-MAX-ABA",
 
   guarantees: Object.freeze({
     deterministic: true,
@@ -135,7 +139,7 @@ export const PulseUserScoringMeta = Object.freeze({
 
   lineage: Object.freeze({
     root: "PulseProxy-v11",
-    parent: "PulseProxy-v11.2-EVO",
+    parent: "PulseProxy-v12.3-EVO",
     ancestry: [
       "PulseUserScoring-v7",
       "PulseUserScoring-v8",
@@ -164,6 +168,7 @@ export const PulseUserScoringMeta = Object.freeze({
 
 // ============================================================================
 //  INTERNAL HELPERS — deterministic, pure, zero randomness
+//  (12.3‑EVO A‑B‑A surfaces)
 // ============================================================================
 function computeHash(str) {
   let h = 0;
@@ -172,6 +177,18 @@ function computeHash(str) {
     h = (h + s.charCodeAt(i) * (i + 1)) % 100000;
   }
   return `h${h}`;
+}
+
+// trustScore is 0–100; band thresholds in that space
+function buildHypothalamusBand(trustScore) {
+  const t = Number(trustScore || 0);
+  if (t >= 75) return "symbolic";
+  if (t >= 40) return "transition";
+  return "binary";
+}
+
+function buildHypothalamusBandSignature(band) {
+  return computeHash(`HYPOTHALAMUS_BAND::${band}`);
 }
 
 function buildBinaryField() {
@@ -208,7 +225,7 @@ function buildHypothalamusCycleSignature(cycle) {
 
 
 // ============================================================================
-//  HYPOTHALAMUS CONTEXT — v11‑Evo A‑B‑A
+//  HYPOTHALAMUS CONTEXT — v12.3‑EVO A‑B‑A
 // ============================================================================
 let HYPOTHALAMUS_CYCLE = 0;
 
@@ -386,7 +403,7 @@ function allocateInstances(
 
 
 // ============================================================================
-//  SNAPSHOT LOGGING — backend‑safe (UNCHANGED)
+//  SNAPSHOT LOGGING — backend‑safe
 // ============================================================================
 async function logScoringSnapshot(userId, snapshot) {
   if (!ENABLE_SCORING_LOGGING || !db) return;
@@ -407,7 +424,7 @@ async function logScoringSnapshot(userId, snapshot) {
 
 
 // ============================================================================
-//  MAIN PASS — runUserScoring() (UNCHANGED LOGIC + v11‑Evo envelope)
+//  MAIN PASS — runUserScoring() (v11 logic + 12.3‑EVO surfaces)
 // ============================================================================
 export async function runUserScoring() {
   HYPOTHALAMUS_CYCLE++;
@@ -424,7 +441,6 @@ export async function runUserScoring() {
     ...HYPOTHALAMUS_CONTEXT
   });
 
-  // ⭐ ORIGINAL LOGIC BELOW (unchanged)
   if (!db) {
     error("hypothalamus", "runUserScoring called but db is missing.");
     G.PULSE_LAYER_STATE[4].ok = false;
@@ -467,6 +483,9 @@ export async function runUserScoring() {
       testEarnActive
     );
 
+    const band = buildHypothalamusBand(trustScore);
+    const bandSignature = buildHypothalamusBandSignature(band);
+
     const ref = db.collection("UserScores").doc(doc.id);
 
     batch.set(
@@ -482,6 +501,10 @@ export async function runUserScoring() {
         earnMode,
         testEarnActive,
         instances,
+        band,
+        hypothalamusBandSignature: bandSignature,
+        hypothalamusCycle: HYPOTHALAMUS_CYCLE,
+        hypothalamusCycleSignature,
         lastUpdated: Date.now()
       },
       { merge: true }
@@ -495,7 +518,11 @@ export async function runUserScoring() {
       deviceTier,
       earnMode,
       testEarnActive,
-      instances
+      instances,
+      band,
+      hypothalamusBandSignature: bandSignature,
+      hypothalamusCycle: HYPOTHALAMUS_CYCLE,
+      hypothalamusCycleSignature
     });
 
     processed++;
@@ -518,7 +545,7 @@ export async function runUserScoring() {
 
 
 // ============================================================================
-//  PUBLIC EXPORTS (UNCHANGED)
+//  PUBLIC EXPORTS
 // ============================================================================
 export {
   calculateTrustScore,

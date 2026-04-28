@@ -1,38 +1,15 @@
 // ============================================================================
-// FILE: tropic-pulse-functions/apps/PULSE-EARN/PulseEarnNervousSystem-v11-Evo.js
-// LAYER: THE NERVOUS SYSTEM + EXCHANGE OFFICE (v11-Evo + Dual-Band + Binary + Wave)
-// (Deterministic Job Intake + Result Forwarding + Reputation Updating)
+//  PulseEarnNervousSystem-v12.3-PRESENCE-EVO+.js
+//  THE NERVOUS SYSTEM + EXCHANGE OFFICE (v12.3 Presence + Advantage‑C)
+//  Deterministic Job Intake + Result Forwarding + Reputation Updating
+//  Dual-Band + Binary + Wave + Presence + Chunk/Prewarm
 // ============================================================================
-//
-// ROLE (v11-Evo):
-//   THE NERVOUS SYSTEM — deterministic sensory + motor signal router.
-//   • Fetches next job from deterministic marketplaces.
-//   • Converts marketplace jobs into PulseJobSchema-like structures.
-//   • Submits completed results back to deterministic receptors.
-//   • Updates marketplace reputation deterministically.
-//   • Emits v11-Evo signatures + diagnostics.
-//   • NOW dual-band, binary-aware, wave-aware (metadata only).
-//
-// PURPOSE (v11-Evo):
-//   • Provide deterministic, drift‑proof interface between Earn and markets.
-//   • Normalize jobs + forward results safely.
-//   • Maintain healing metadata for the Immune System.
-//   • Make economic + biological routing explicit.
-//
-// CONTRACT (v11-Evo):
-//   • PURE INTERFACE — no AI layers, no translation, no memory model.
-//   • READ‑ONLY except for healing metadata + deterministic reputation updates.
-//   • NO eval(), NO Function(), NO dynamic imports.
-//   • NO executing user code.
-//   • NO async, NO timestamps, NO network.
-//   • Deterministic job intake + result forwarding only.
-//   • Dual-band + binary + wave metadata are structural-only.
-// ============================================================================
+
 export const PulseEarnNervousSystemMeta = Object.freeze({
   layer: "PulseEarnNervousSystem",
   role: "EARN_NERVOUS_ORGAN",
-  version: "v11.2-EVO",
-  identity: "PulseEarnNervousSystem-v11.2-EVO",
+  version: "v12.3-PRESENCE-EVO+",
+  identity: "PulseEarnNervousSystem-v12.3-PRESENCE-EVO+",
 
   guarantees: Object.freeze({
     deterministic: true,
@@ -40,10 +17,15 @@ export const PulseEarnNervousSystemMeta = Object.freeze({
     noRealTime: true,
     noExternalIO: true,
     pureInterface: true,
+
     dualBandAware: true,
     binaryAware: true,
     waveFieldAware: true,
+    presenceAware: true,
+    advantageAware: true,
+    chunkPrewarmAware: true,
     healingMetadataAware: true,
+
     worldLensAware: false,
     zeroNetwork: true,
     zeroAsync: true,
@@ -60,25 +42,30 @@ export const PulseEarnNervousSystemMeta = Object.freeze({
       "DeviceProfile",
       "DualBandContext",
       "ReputationSignals",
-      "CirculatoryRouting"
+      "CirculatoryRouting",
+      "DevicePhenotypePresence"
     ],
     output: [
       "NervousJobIntakeResult",
       "NervousResultForwardingResult",
       "NervousDiagnostics",
       "NervousSignatures",
-      "NervousHealingState"
+      "NervousHealingState",
+      "NervousPresenceField",
+      "NervousAdvantageField",
+      "NervousChunkPrewarmPlan"
     ]
   }),
 
   lineage: Object.freeze({
-    root: "PulseOS-v11-EVO",
-    parent: "PulseEarn-v11.2-EVO",
+    root: "PulseOS-v12-PRESENCE",
+    parent: "PulseEarn-v12.3-PRESENCE",
     ancestry: [
       "PulseEarnNervousSystem-v9",
       "PulseEarnNervousSystem-v10",
       "PulseEarnNervousSystem-v11",
-      "PulseEarnNervousSystem-v11-Evo"
+      "PulseEarnNervousSystem-v11-Evo",
+      "PulseEarnNervousSystem-v11.2-EVO"
     ]
   }),
 
@@ -91,8 +78,8 @@ export const PulseEarnNervousSystemMeta = Object.freeze({
   architecture: Object.freeze({
     pattern: "A-B-A",
     baseline: "deterministic sensory intake → deterministic motor output",
-    adaptive: "binary/wave surfaces + dual-band signatures",
-    return: "deterministic job intake + deterministic result forwarding"
+    adaptive: "binary/wave surfaces + dual-band signatures + presence/advantage fields",
+    return: "deterministic job intake + deterministic result forwarding + prewarm hints"
   })
 });
 
@@ -102,9 +89,8 @@ import { getPulseEarnDeviceProfile } from "./PulseEarnSkeletalSystem-v11-Evo.js"
 import { marketplaces } from "./RegisteredMarketplaces-v11-Evo.js";
 import { sendResultToMarketplace } from "./PulseEarnLymphNodes-v11-Evo.js";
 
-
 // ============================================================================
-// Healing Metadata — Neural Activity Log (v11-Evo)
+// Healing Metadata — Neural Activity Log (v12.3-PRESENCE)
 // ============================================================================
 const nervousHealing = {
   lastFetchError: null,
@@ -128,16 +114,19 @@ const nervousHealing = {
     errorRouteAround: true
   },
 
-  // v11+ Dual-Band + Binary + Wave
+  // Dual-Band + Binary + Wave + Presence
   lastBand: "symbolic",
   lastBandSignature: null,
   lastBinaryField: null,
-  lastWaveField: null
+  lastWaveField: null,
+
+  lastPresenceField: null,
+  lastAdvantageField: null,
+  lastChunkPrewarmPlan: null
 };
 
-
 // ============================================================================
-// Deterministic Hash Helper — v11-Evo
+// Deterministic Hash Helper
 // ============================================================================
 function computeHash(str) {
   let h = 0;
@@ -153,9 +142,8 @@ function normalizeBand(band) {
   return b === "binary" ? "binary" : "symbolic";
 }
 
-
 // ============================================================================
-// Pattern Builders — v11-Evo
+// Pattern Builders
 // ============================================================================
 function buildDevicePattern(device) {
   return (
@@ -178,23 +166,26 @@ function buildJobPattern(job) {
   );
 }
 
-
 // ============================================================================
-// Dual-Band + Binary + Wave Builder — v11+ A-B-A
+// Dual-Band + Binary + Wave Builder — v12.3 Presence
 // ============================================================================
-function buildNervousBandBinaryWave(job, result, cycleIndex) {
+function buildNervousBandBinaryWave(job, result, cycleIndex, device) {
   const band = normalizeBand(
     result?.band ||
     job?.band ||
     job?.meta?.band ||
+    device?.band ||
     "symbolic"
   );
   nervousHealing.lastBand = band;
-  nervousHealing.lastBandSignature = computeHash(`BAND::NERVOUS::${band}`);
+  const bandSignature = computeHash(`BAND::NERVOUS::${band}::${cycleIndex}`);
+  nervousHealing.lastBandSignature = bandSignature;
 
   const jobIdLength = (job?.id || "").length;
   const marketplaceLength = (job?.marketplaceId || "").length;
-  const surface = jobIdLength + marketplaceLength + cycleIndex;
+  const gpuScore = device?.gpuScore || 0;
+
+  const surface = jobIdLength + marketplaceLength + gpuScore + cycleIndex;
 
   const binaryField = {
     binaryNervousSignature: computeHash(`BNERV::${surface}`),
@@ -202,30 +193,133 @@ function buildNervousBandBinaryWave(job, result, cycleIndex) {
     binarySurface: {
       jobIdLength,
       marketplaceLength,
+      gpuScore,
       cycle: cycleIndex,
       surface
     },
     parity: surface % 2 === 0 ? 0 : 1,
-    density: marketplaceLength,
+    density: marketplaceLength + gpuScore,
     shiftDepth: Math.max(0, Math.floor(Math.log2(surface || 1)))
   };
   nervousHealing.lastBinaryField = binaryField;
 
   const waveField = {
-    amplitude: marketplaceLength,
-    wavelength: cycleIndex,
-    phase: (marketplaceLength + cycleIndex) % 8,
+    amplitude: marketplaceLength + gpuScore,
+    wavelength: cycleIndex || 1,
+    phase: (marketplaceLength + cycleIndex) % 16,
     band,
     mode: band === "binary" ? "compression-wave" : "symbolic-wave"
   };
   nervousHealing.lastWaveField = waveField;
 
-  return { band, binaryField, waveField };
+  return { band, bandSignature, binaryField, waveField };
 }
 
+// ============================================================================
+// Presence Field — v12.3
+// ============================================================================
+function buildNervousPresenceField(job, device, cycleIndex) {
+  const jobLen = (job?.id || "").length;
+  const marketLen = (job?.marketplaceId || "").length;
+  const stability = device?.stabilityScore || 0.7;
+
+  const composite =
+    jobLen * 0.001 +
+    marketLen * 0.001 +
+    stability * 0.01;
+
+  const presenceTier =
+    composite >= 0.02 ? "presence_high" :
+    composite >= 0.005 ? "presence_mid" :
+    "presence_low";
+
+  const presenceField = {
+    presenceVersion: "v12.3",
+    presenceTier,
+    jobLen,
+    marketLen,
+    stability,
+    cycleIndex,
+    presenceSignature: computeHash(
+      `NERV_PRESENCE::${presenceTier}::${jobLen}::${marketLen}::${cycleIndex}`
+    )
+  };
+
+  nervousHealing.lastPresenceField = presenceField;
+  return presenceField;
+}
 
 // ============================================================================
-// fetchJobFromMarketplace — Sensory Intake (v11-Evo)
+// Advantage‑C Field — v12.3
+// ============================================================================
+function buildNervousAdvantageField(job, device, bandPack, presenceField) {
+  const gpuScore = device?.gpuScore || 0;
+  const bandwidth = device?.bandwidthMbps || 0;
+  const density = bandPack.binaryField.density;
+  const amplitude = bandPack.waveField.amplitude;
+
+  const advantageScore =
+    gpuScore * 0.0005 +
+    bandwidth * 0.0002 +
+    density * 0.00001 +
+    amplitude * 0.00001 +
+    (presenceField.presenceTier === "presence_high" ? 0.01 : 0);
+
+  const advantageField = {
+    advantageVersion: "C",
+    band: bandPack.band,
+    gpuScore,
+    bandwidth,
+    binaryDensity: density,
+    waveAmplitude: amplitude,
+    presenceTier: presenceField.presenceTier,
+    advantageScore
+  };
+
+  nervousHealing.lastAdvantageField = advantageField;
+  return advantageField;
+}
+
+// ============================================================================
+// Chunk / Cache / Prewarm Plan — v12.3
+// ============================================================================
+function buildNervousChunkPrewarmPlan(job, device, presenceField) {
+  const basePriority =
+    presenceField.presenceTier === "presence_high"
+      ? 3
+      : presenceField.presenceTier === "presence_mid"
+      ? 2
+      : 1;
+
+  const gpuBoost = (device?.gpuScore || 0) > 600 ? 1 : 0;
+  const priority = basePriority + gpuBoost;
+
+  const plan = {
+    planVersion: "v12.3-AdvantageC",
+    priority,
+    band: presenceField.presenceTier,
+    chunks: {
+      jobEnvelope: true,
+      metabolismBlueprint: true,
+      marketplaceHandshake: true
+    },
+    cache: {
+      deviceProfile: true,
+      nervousDiagnostics: true
+    },
+    prewarm: {
+      survivalInstincts: true,
+      circulatorySystem: presenceField.presenceTier !== "presence_low",
+      lymphNodes: presenceField.presenceTier !== "presence_low"
+    }
+  };
+
+  nervousHealing.lastChunkPrewarmPlan = plan;
+  return plan;
+}
+
+// ============================================================================
+// fetchJobFromMarketplace — Sensory Intake (v12.3-PRESENCE)
 // ============================================================================
 export function fetchJobFromMarketplace() {
   nervousHealing.cycleCount++;
@@ -251,11 +345,42 @@ export function fetchJobFromMarketplace() {
         `${job.id}::${job.marketplaceId}::${nervousHealing.cycleCount}`
       );
 
-      // A-B-A: intake band/PULSE-TOOLS/wave from job surface
-      buildNervousBandBinaryWave(job, null, nervousHealing.cycleCount);
+      const bandPack = buildNervousBandBinaryWave(
+        job,
+        null,
+        nervousHealing.cycleCount,
+        device
+      );
+      const presenceField = buildNervousPresenceField(
+        job,
+        device,
+        nervousHealing.cycleCount
+      );
+      const advantageField = buildNervousAdvantageField(
+        job,
+        device,
+        bandPack,
+        presenceField
+      );
+      const chunkPrewarmPlan = buildNervousChunkPrewarmPlan(
+        job,
+        device,
+        presenceField
+      );
+
+      return {
+        job,
+        band: bandPack.band,
+        bandSignature: bandPack.bandSignature,
+        binaryField: bandPack.binaryField,
+        waveField: bandPack.waveField,
+        presenceField,
+        advantageField,
+        chunkPrewarmPlan
+      };
     }
 
-    return job || null;
+    return null;
 
   } catch (err) {
     nervousHealing.lastFetchError = err.message;
@@ -263,13 +388,14 @@ export function fetchJobFromMarketplace() {
   }
 }
 
-
 // ============================================================================
-// getNextMarketplaceJob — Neural Encoding Layer (v11-Evo)
+// getNextMarketplaceJob — Neural Encoding Layer (v12.3-PRESENCE)
 // ============================================================================
 export function getNextMarketplaceJob(deviceId) {
-  const job = fetchJobFromMarketplace();
-  if (!job) return null;
+  const intake = fetchJobFromMarketplace();
+  if (!intake || !intake.job) return null;
+
+  const job = intake.job;
 
   if (!job.id || !job.marketplaceId) {
     nervousHealing.lastFetchError = "invalid_job_structure";
@@ -297,13 +423,20 @@ export function getNextMarketplaceJob(deviceId) {
     marketplace: job.marketplaceId,
     assignedTo: deviceId,
 
-    cycleIndex: nervousHealing.cycleCount
+    cycleIndex: nervousHealing.cycleCount,
+
+    band: intake.band,
+    bandSignature: intake.bandSignature,
+    binaryField: intake.binaryField,
+    waveField: intake.waveField,
+    presenceField: intake.presenceField,
+    advantageField: intake.advantageField,
+    chunkPrewarmPlan: intake.chunkPrewarmPlan
   };
 }
 
-
 // ============================================================================
-// submitMarketplaceResult — Motor Output + Synaptic Update (v11-Evo)
+// submitMarketplaceResult — Motor Output + Synaptic Update (v12.3-PRESENCE)
 // ============================================================================
 export function submitMarketplaceResult(job, result) {
   try {
@@ -311,6 +444,8 @@ export function submitMarketplaceResult(job, result) {
       nervousHealing.lastSubmitError = "invalid_job_for_submission";
       return null;
     }
+
+    const device = getPulseEarnDeviceProfile();
 
     const signals = computeReputationSignals({
       latencyMs: result.latencyMs ?? 0,
@@ -329,10 +464,39 @@ export function submitMarketplaceResult(job, result) {
       `${job.id}::${job.marketplaceId}::${result.jobSuccessRate ?? 0}`
     );
 
-    // A-B-A: forward band/PULSE-TOOLS/wave using job + result
-    buildNervousBandBinaryWave(job, result, nervousHealing.cycleCount);
+    const bandPack = buildNervousBandBinaryWave(
+      job,
+      result,
+      nervousHealing.cycleCount,
+      device
+    );
+    const presenceField = buildNervousPresenceField(
+      job,
+      device,
+      nervousHealing.cycleCount
+    );
+    const advantageField = buildNervousAdvantageField(
+      job,
+      device,
+      bandPack,
+      presenceField
+    );
+    const chunkPrewarmPlan = buildNervousChunkPrewarmPlan(
+      job,
+      device,
+      presenceField
+    );
 
-    return submission;
+    return {
+      submission,
+      band: bandPack.band,
+      bandSignature: bandPack.bandSignature,
+      binaryField: bandPack.binaryField,
+      waveField: bandPack.waveField,
+      presenceField,
+      advantageField,
+      chunkPrewarmPlan
+    };
 
   } catch (err) {
     nervousHealing.lastSubmitError = err.message;
@@ -340,9 +504,8 @@ export function submitMarketplaceResult(job, result) {
   }
 }
 
-
 // ============================================================================
-// Nervous System Signature — v11-Evo
+// Nervous System Signature
 // ============================================================================
 function buildNervousSignature() {
   return computeHash(
@@ -350,9 +513,8 @@ function buildNervousSignature() {
   );
 }
 
-
 // ============================================================================
-// Export Healing Metadata — Nervous System Health Report (v11-Evo)
+// Export Healing Metadata — Nervous System Health Report (v12.3-PRESENCE)
 // ============================================================================
 export function getPulseEarnNervousSystemHealingState() {
   nervousHealing.lastNervousSignature = buildNervousSignature();

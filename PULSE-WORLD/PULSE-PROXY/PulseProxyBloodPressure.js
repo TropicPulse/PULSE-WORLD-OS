@@ -1,5 +1,5 @@
 // ============================================================================
-//  PULSE OS v11‑Evo — CIRCULATION MONITOR (A‑B‑A)
+//  PULSE OS v12.3‑EVO — CIRCULATION MONITOR (A‑B‑A)
 //  “Blood Pressure + Blood Flow Sensor”
 //  Measures latency (pressure) and speed (flow) and emits A‑B‑A vital signs.
 //  PURE SENSOR. NO THINKING. NO DECISIONS. NO GLOBAL STATE.
@@ -7,14 +7,14 @@
 
 
 // ============================================================================
-//  ORGAN IDENTITY — v11‑Evo A‑B‑A
+//  ORGAN IDENTITY — v12.3‑EVO A‑B‑A
 // ============================================================================
 export const PulseRole = {
   type: "Organ",
   subsystem: "PulseBand",
   layer: "CirculationMonitor",
-  version: "11-Evo",
-  identity: "PulseCirculationMonitor-v11-Evo-ABA",
+  version: "12.3-EVO",
+  identity: "PulseCirculationMonitor-v12.3-EVO-ABA",
 
   evo: {
     driftProof: true,
@@ -30,7 +30,12 @@ export const PulseRole = {
     waveFieldAware: true,
     binaryFieldAware: true,
     stressFieldAware: true,
-    flowFieldAware: true
+    flowFieldAware: true,
+
+    // 12.3+ presence / chunking / cache-prewarm awareness
+    presenceAware: true,
+    chunkingAware: true,
+    cachePrewarmAware: true
   }
 };
 
@@ -66,11 +71,12 @@ function diag(stage, details = {}) {
 }
 
 diag("CIRCULATION_INIT");
+
 export const PulseCirculationMonitorMeta = Object.freeze({
   layer: "PulseCirculationMonitor",
   role: "CIRCULATION_MONITOR_ORGAN",
-  version: "v11.2-EVO-BINARY-MAX",
-  identity: "PulseCirculationMonitor-v11.2-EVO-BINARY-MAX",
+  version: "v12.3-EVO-BINARY-MAX-ABA",
+  identity: "PulseCirculationMonitor-v12.3-EVO-BINARY-MAX-ABA",
 
   guarantees: Object.freeze({
     deterministic: true,
@@ -108,6 +114,11 @@ export const PulseCirculationMonitorMeta = Object.freeze({
     binaryAware: true,
     dualBandAware: true,
 
+    // 12.3+ presence / chunking / cache-prewarm awareness
+    presenceAware: true,
+    chunkingAware: true,
+    cachePrewarmAware: true,
+
     // Environment
     worldLensAware: false
   }),
@@ -125,13 +136,17 @@ export const PulseCirculationMonitorMeta = Object.freeze({
       "CirculationBinaryField",
       "CirculationWaveField",
       "CirculationDiagnostics",
-      "CirculationHealingState"
+      "CirculationHealingState",
+
+      // 12.3+ surfaces
+      "CirculationChunkingHints",
+      "CirculationPresenceHints"
     ]
   }),
 
   lineage: Object.freeze({
     root: "PulseBand-v11",
-    parent: "PulseBand-v11.2-EVO",
+    parent: "PulseBand-v12.3-EVO",
     ancestry: [
       "PulseCirculationMonitor-v7",
       "PulseCirculationMonitor-v8",
@@ -139,7 +154,8 @@ export const PulseCirculationMonitorMeta = Object.freeze({
       "PulseCirculationMonitor-v10",
       "PulseCirculationMonitor-v11",
       "PulseCirculationMonitor-v11-Evo",
-      "PulseCirculationMonitor-v11-Evo-ABA"
+      "PulseCirculationMonitor-v11-Evo-ABA",
+      "PulseCirculationMonitor-v11.2-EVO-BINARY-MAX"
     ]
   }),
 
@@ -153,7 +169,7 @@ export const PulseCirculationMonitorMeta = Object.freeze({
     pattern: "A-B-A",
     baseline: "pressure + flow → vital signs → A‑B‑A surfaces",
     adaptive: "binary-field + wave-field + flow-field overlays",
-    return: "deterministic vital signs + signatures"
+    return: "deterministic vital signs + signatures + chunk/presence hints"
   })
 });
 
@@ -209,6 +225,53 @@ function buildWaveField(latency, band) {
 
 function buildCirculationCycleSignature() {
   return `circ-cycle-${(circulationCycle * 7919) % 99991}`;
+}
+
+
+// ============================================================================
+//  12.3+ CHUNK / CACHE / PRESENCE HINTS (purely derived, no side effects)
+// ============================================================================
+
+function buildChunkingHints(latency, kbps) {
+  const safeLatency = latency ?? 200;
+  const safeKbps = kbps ?? 512;
+
+  // smaller chunks when latency is high, larger when low
+  const baseChunkKB =
+    safeLatency > 220 ? 32 :
+    safeLatency > 160 ? 64 :
+    safeLatency > 100 ? 96 : 128;
+
+  const suggestedChunkSizeKB = Math.max(16, Math.min(256, baseChunkKB));
+  const suggestedPrewarm = safeLatency > 140;
+
+  return {
+    suggestedChunkSizeKB,
+    suggestedPrewarm,
+    bandwidthKbps: safeKbps,
+    latencyMs: safeLatency
+  };
+}
+
+function buildPresenceHints(latency) {
+  const safeLatency = latency ?? 200;
+
+  // tighter presence windows when network is strong
+  const recommendedPresenceWindowMs =
+    safeLatency < 90 ? 8000 :
+    safeLatency < 140 ? 12000 :
+    safeLatency < 200 ? 18000 : 24000;
+
+  const suggestedPollIntervalMs =
+    safeLatency < 90 ? 4000 :
+    safeLatency < 140 ? 6000 :
+    safeLatency < 200 ? 9000 : 12000;
+
+  return {
+    recommendedPresenceWindowMs,
+    suggestedPollIntervalMs,
+    latencyMs: safeLatency
+  };
 }
 
 
@@ -279,7 +342,7 @@ function classifyNetworkHealth(latency) {
 
 
 // ============================================================================
-// 3. PUBLIC API — Build a vital‑signs packet (v11‑Evo A‑B‑A)
+// 3. PUBLIC API — Build a vital‑signs packet (v12.3‑EVO A‑B‑A)
 // ============================================================================
 async function getPulseTelemetry() {
   circulationCycle++;
@@ -304,6 +367,10 @@ async function getPulseTelemetry() {
   const waveField = buildWaveField(latency, band);
   const circulationCycleSignature = buildCirculationCycleSignature();
 
+  // 12.3+ chunk / presence hints
+  const chunkingHints = buildChunkingHints(latency, kbps);
+  const presenceHints = buildPresenceHints(latency);
+
   // Stable snapshot
   const snapshot = {
     lastChunkDurationMs: latency,
@@ -316,6 +383,10 @@ async function getPulseTelemetry() {
     binaryField,
     waveField,
     circulationCycleSignature,
+
+    // 12.3+ hints
+    chunkingHints,
+    presenceHints,
 
     meta: { ...CIRCULATION_CONTEXT }
   };
@@ -342,6 +413,10 @@ async function getPulseTelemetry() {
       waveField,
       circulationCycleSignature,
 
+      // 12.3+ hints
+      chunkingHints,
+      presenceHints,
+
       meta: { ...CIRCULATION_CONTEXT }
     },
     snapshot
@@ -354,7 +429,7 @@ async function getPulseTelemetry() {
 
 
 // ============================================================================
-//  EXPORT — CIRCULATION MONITOR v11‑Evo A‑B‑A
+//  EXPORT — CIRCULATION MONITOR v12.3‑EVO A‑B‑A
 // ============================================================================
 export const PulseUpdate = {
   measureLatency,

@@ -1,12 +1,13 @@
 // ============================================================================
-//  PulseSendAdapter-v11-Evo.js
+//  PulseSendAdapter-v12.3-Evo.js
 //  Pattern‑Shape Adapter • Pulse‑Agnostic Translator • Pre‑Delivery Adapter
-//  v11: Diagnostics + Signatures + Pattern Surface + Lineage Surface
-//  v11-Binary: Binary-Aware Adapter Surface (Optional, Non-Breaking)
+//  v12.3: Diagnostics + Signatures + Pattern Surface + Lineage Surface
+//         + cacheChunkSurface + prewarmSurface + presenceSurface
+//  v12.3-Binary: Binary-Aware Adapter Surface (Optional, Non-Breaking)
 // ============================================================================
 //
-//  SAFETY CONTRACT (v11-Evo):
-//  --------------------------
+//  SAFETY CONTRACT (v12.3-Evo):
+//  ----------------------------
 //  • No imports.
 //  • No network.
 //  • No compute beyond local helpers.
@@ -17,14 +18,14 @@
 
 
 // ============================================================================
-// ⭐ PulseRole — identifies this as the PulseSend Adapter Organ (v11-Evo)
+// ⭐ PulseRole — identifies this as the PulseSend Adapter Organ (v12.3-Evo)
 // ============================================================================
 export const PulseRole = {
   type: "Messenger",
   subsystem: "PulseSend",
   layer: "Adapter",
-  version: "11.0",
-  identity: "PulseSendAdapter-v11-Evo",
+  version: "12.3",
+  identity: "PulseSendAdapter-v12.3-Evo",
 
   evo: {
     driftProof: true,
@@ -45,8 +46,13 @@ export const PulseRole = {
     signatureReady: true,
     adapterSurfaceReady: true,
 
-    // ⭐ NEW: Binary-aware adapter surface
-    binaryAwareAdapterReady: true
+    // Binary-aware adapter surface
+    binaryAwareAdapterReady: true,
+
+    // 12.3+: cache / prewarm / presence
+    cacheChunkAware: true,
+    prewarmAware: true,
+    multiPresenceAware: true
   },
 
   routingContract: "PulseRouter-v11",
@@ -67,6 +73,19 @@ function computeHash(str) {
     h = (h + str.charCodeAt(i) * (i + 1)) % 100000;
   }
   return `h${h}`;
+}
+
+function stableStringify(value) {
+  if (value === null || typeof value !== "object") return JSON.stringify(value);
+  if (Array.isArray(value)) {
+    return "[" + value.map(stableStringify).join(",") + "]";
+  }
+  const keys = Object.keys(value).sort();
+  return (
+    "{" +
+    keys.map((k) => JSON.stringify(k) + ":" + stableStringify(value[k])).join(",") +
+    "}"
+  );
 }
 
 function extractBinarySurfaceFromPulse(pulse) {
@@ -129,6 +148,86 @@ function buildAdapterDiagnostics({ pulse, targetOrgan, mode }) {
     binaryModeHash: binarySurface.binaryMode
       ? computeHash(binarySurface.binaryMode)
       : null
+  };
+}
+
+
+// ============================================================================
+//  12.3+ surfaces — cacheChunk / prewarm / presence
+// ============================================================================
+
+function buildCacheChunkSurface({ pulse, targetOrgan, mode }) {
+  const pattern = pulse?.pattern || "NO_PATTERN";
+  const jobId = pulse?.jobId || "NO_JOB";
+  const pulseType = pulse?.pulseType || pulse?.PulseRole?.identity || "UNKNOWN_PULSE_TYPE";
+
+  const shape = {
+    jobId,
+    pattern,
+    targetOrgan: targetOrgan || "NO_ORGAN",
+    mode: mode || "normal",
+    pulseType
+  };
+
+  const serialized = stableStringify(shape);
+  const cacheChunkKey = "psend-adapter-cache::" + computeHash(serialized);
+
+  return {
+    cacheChunkKey,
+    cacheChunkSignature: computeHash(cacheChunkKey)
+  };
+}
+
+function buildPrewarmSurface({ pulse, targetOrgan, mode }) {
+  const priority = pulse?.priority || "normal";
+  const safeMode = mode || "normal";
+  const hasTarget = !!targetOrgan;
+
+  let level = "none";
+  if (priority === "high" || priority === "critical") {
+    level = "aggressive";
+  } else if (priority === "normal" && hasTarget) {
+    level = "medium";
+  } else if (priority === "low" && hasTarget) {
+    level = "light";
+  }
+
+  const raw = stableStringify({
+    priority,
+    mode: safeMode,
+    hasTarget
+  });
+
+  const prewarmKey = "psend-adapter-prewarm::" + computeHash(raw);
+
+  return {
+    level,
+    prewarmKey
+  };
+}
+
+function buildPresenceSurface({ pulse, targetOrgan }) {
+  const pattern = pulse?.pattern || "NO_PATTERN";
+  const hasTarget = !!targetOrgan;
+
+  let scope = "local";
+  if (hasTarget && pattern.includes("/global")) {
+    scope = "global";
+  } else if (hasTarget && pattern.includes("/page")) {
+    scope = "page";
+  }
+
+  const raw = stableStringify({
+    pattern,
+    hasTarget,
+    scope
+  });
+
+  const presenceKey = "psend-adapter-presence::" + computeHash(raw);
+
+  return {
+    scope,
+    presenceKey
   };
 }
 
@@ -204,7 +303,7 @@ export function adaptPulseSendPacket(pulse, targetOrgan, mode = "normal") {
     mode
   });
 
-  // ⭐ v11 adapter signature (binary-aware)
+  // ⭐ v12.3 adapter signature (binary + cacheChunk aware)
   const adapterSignature = computeHash(
     diagnostics.pattern +
     "::" +
@@ -214,6 +313,23 @@ export function adaptPulseSendPacket(pulse, targetOrgan, mode = "normal") {
     "::" +
     (diagnostics.binary.binaryPattern || "NO_BINARY_PATTERN")
   );
+
+  const cacheChunkSurface = buildCacheChunkSurface({
+    pulse,
+    targetOrgan,
+    mode
+  });
+
+  const prewarmSurface = buildPrewarmSurface({
+    pulse,
+    targetOrgan,
+    mode
+  });
+
+  const presenceSurface = buildPresenceSurface({
+    pulse,
+    targetOrgan
+  });
 
   const adapter = ORGAN_ADAPTERS[targetOrgan];
 
@@ -225,7 +341,10 @@ export function adaptPulseSendPacket(pulse, targetOrgan, mode = "normal") {
         mode
       ),
       adapterSignature,
-      diagnostics
+      diagnostics,
+      cacheChunkSurface,
+      prewarmSurface,
+      presenceSurface
     };
   }
 
@@ -242,6 +361,9 @@ export function adaptPulseSendPacket(pulse, targetOrgan, mode = "normal") {
     advantageField,
     neutral: true,
     adapterSignature,
-    diagnostics
+    diagnostics,
+    cacheChunkSurface,
+    prewarmSurface,
+    presenceSurface
   };
 }

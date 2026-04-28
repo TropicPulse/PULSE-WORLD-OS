@@ -1,11 +1,11 @@
 // ============================================================================
 // FILE: tropic-pulse-functions/apps/PULSE-GPU/PulseGPUGeneticMemory.js
-// PULSE GPU GENETIC MEMORY v11-Evo-binary-Prime — THE DNA ARCHIVE
+// PULSE GPU GENETIC MEMORY v12.3-Presence-binary-Prime — THE DNA ARCHIVE
 // Long-Horizon Pattern Memory • Lineage Store • Deterministic Pattern Engine
 // ============================================================================
 //
-// IDENTITY — THE DNA ARCHIVE (v11-Evo-binary-Prime):
-//  -------------------------------------------------
+// IDENTITY — THE DNA ARCHIVE (v12.3-Presence-binary-Prime):
+//  --------------------------------------------------------
 //  • Long-term genetic memory of the GPU organism.
 //  • Stores lineage, execution signatures, binary-mode outcomes, and patterns.
 //  • Stores dispatch signatures, shape signatures, pressure correlations.
@@ -13,10 +13,10 @@
 //  • No prediction — only pattern recognition over what actually happened.
 //  • Designed for Advisor, Healer, Orchestrator, Insights, UI, Engine.
 //  • Advantage-cascade aware: systemic gains improve pattern density.
-//  • PulseSend-v11-ready • Earn-v3-ready • Binary/NonBinary dual-mode aware.
+//  • PulseSend-v12.3-ready • Earn-v3-ready • Binary/NonBinary dual-mode aware.
 //
-// SAFETY CONTRACT (v11-Evo-binary-Prime):
-//  --------------------------------------
+// SAFETY CONTRACT (v12.3-Presence-binary-Prime):
+//  ---------------------------------------------
 //  • No randomness
 //  • No timestamps
 //  • No GPU calls
@@ -40,7 +40,7 @@ const GENETIC_MEMORY_CONTEXT = {
   context:
     "Stores lineage, binary-mode outcomes, dispatch signatures, shape signatures, and pattern stats",
   target: "full-gpu+binary",
-  version: "11.0-Evo-binary-Prime",
+  version: "12.3-Presence-binary-Prime",
   selfRepairable: true,
 
   evo: {
@@ -58,10 +58,12 @@ const GENETIC_MEMORY_CONTEXT = {
     gpuMemoryAware: true,
     gpuAdvantageAware: true,
 
-    routingContract: "PulseSend-v11",
-    gpuOrganContract: "PulseGPU-v11-Evo",
+    // v12.3-Presence contracts
+    routingContract: "PulseSend-v12.3",
+    gpuOrganContract: "PulseGPU-v12.3-Presence",
     earnCompatibility: "Earn-v3",
 
+    // Legacy compatibility
     legacyRoutingContract: "PulseSend-v10.4",
     legacyGPUOrganContract: "PulseGPU-v10.4",
     legacyEarnCompatibility: "Earn-v2"
@@ -114,7 +116,7 @@ function clamp(value, min, max) {
 
 
 // ============================================================================
-// Signature builders — Genetic Keys (v11-Evo-binary-Prime)
+// Signature builders — Genetic Keys (v12.3-Presence-binary-Prime)
 // ============================================================================
 function buildGameKey(gameProfile = {}) {
   const { gameId = "unknown", buildVersion = "", contentHash = "" } =
@@ -147,7 +149,7 @@ function buildTierKey(tierProfile = {}) {
 
 
 // ============================================================================
-// Execution Context Key — FULL v11-Evo-binary-Prime
+// Execution Context Key — FULL v12.3-Presence-binary-Prime
 // ============================================================================
 function buildExecutionContextKey(executionContext = {}) {
   const {
@@ -158,7 +160,7 @@ function buildExecutionContextKey(executionContext = {}) {
     resolution = "",
     refreshRate = 0,
 
-    // v11-Evo-Prime GPU organ fields
+    // v12.3-Presence GPU organ fields
     dispatchSignature = "",
     shapeSignature = ""
   } = executionContext;
@@ -202,7 +204,7 @@ function buildGeneticKey({
 
 
 // ============================================================================
-// Pattern aggregation helpers — v11-Evo-binary-Prime
+// Pattern aggregation helpers — v12.3-Presence-binary-Prime
 // ============================================================================
 function safeNumber(n, fallback = 0) {
   return typeof n === "number" && !Number.isNaN(n) ? n : fallback;
@@ -219,7 +221,7 @@ function aggregatePatternStats(existing, sample) {
         crashRate: 0,
         avgDurationMs: 0,
 
-        // v11-Evo-binary-Prime pattern vectors
+        // v12.3-Presence-binary-Prime pattern vectors
         pressureVector: { gpu: 0, thermal: 0, memory: 0, mesh: 0, aura: 0 },
         binaryModeRatio: 0,
         symbolicModeRatio: 0
@@ -245,19 +247,34 @@ function aggregatePatternStats(existing, sample) {
   next.avgDurationMs =
     (next.avgDurationMs * count + sDuration) / newCount;
 
-  // v11-Evo-Prime: pressure vector
+  // v12.3-Presence-binary-Prime: pressure vector
   if (sample.pressureSnapshot) {
     const p = sample.pressureSnapshot;
     next.pressureVector = {
-      gpu: (next.pressureVector.gpu * count + safeNumber(p.gpuLoadPressure)) / newCount,
-      thermal: (next.pressureVector.thermal * count + safeNumber(p.thermalPressure)) / newCount,
-      memory: (next.pressureVector.memory * count + safeNumber(p.memoryPressure)) / newCount,
-      mesh: (next.pressureVector.mesh * count + safeNumber(p.meshStormPressure)) / newCount,
-      aura: (next.pressureVector.aura * count + safeNumber(p.auraTension)) / newCount
+      gpu:
+        (next.pressureVector.gpu * count +
+          safeNumber(p.gpuLoadPressure)) /
+        newCount,
+      thermal:
+        (next.pressureVector.thermal * count +
+          safeNumber(p.thermalPressure)) /
+        newCount,
+      memory:
+        (next.pressureVector.memory * count +
+          safeNumber(p.memoryPressure)) /
+        newCount,
+      mesh:
+        (next.pressureVector.mesh * count +
+          safeNumber(p.meshStormPressure)) /
+        newCount,
+      aura:
+        (next.pressureVector.aura * count +
+          safeNumber(p.auraTension)) /
+        newCount
     };
   }
 
-  // v11-Evo-Prime: mode ratios
+  // v12.3-Presence-binary-Prime: mode ratios
   if (sample.binaryStepCount || sample.symbolicStepCount) {
     const total = sample.binaryStepCount + sample.symbolicStepCount;
     if (total > 0) {
@@ -276,7 +293,7 @@ function aggregatePatternStats(existing, sample) {
 
 
 // ============================================================================
-// Genetic Memory Store — DNA Archive Map (v11-Evo-binary-Prime)
+// Genetic Memory Store — DNA Archive Map (v12.3-Presence-binary-Prime)
 // ============================================================================
 class PulseGPUGeneticMemoryStore {
   constructor() {
@@ -321,7 +338,7 @@ class PulseGPUGeneticMemoryStore {
       crashFlag: !!metrics?.crashFlag,
       totalDurationMs: traceSummary?.totalDurationMs || 0,
 
-      // v11-Evo-binary-Prime fields
+      // v12.3-Presence-binary-Prime fields
       pressureSnapshot: traceSummary?.pressureSnapshot || null,
       binaryStepCount: traceSummary?.binaryStepCount || 0,
       symbolicStepCount: traceSummary?.symbolicStepCount || 0
@@ -420,7 +437,11 @@ class PulseGPUGeneticMemoryStore {
           crashRate: ps.crashRate || 0,
           avgDurationMs: ps.avgDurationMs || 0,
           pressureVector: ps.pressureVector || {
-            gpu: 0, thermal: 0, memory: 0, mesh: 0, aura: 0
+            gpu: 0,
+            thermal: 0,
+            memory: 0,
+            mesh: 0,
+            aura: 0
           },
           binaryModeRatio: ps.binaryModeRatio || 0,
           symbolicModeRatio: ps.symbolicModeRatio || 0

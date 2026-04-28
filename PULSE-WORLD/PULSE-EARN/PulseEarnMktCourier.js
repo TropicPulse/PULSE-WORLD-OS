@@ -1,28 +1,13 @@
 // ============================================================================
-// FILE: tropic-pulse-functions/apps/PULSE-EARN/PulseEarnMktCourier-v11-Evo.js
-// LAYER: THE COURIER (v11‑Evo A‑B‑A)
-// (Deterministic Spheron Receptor + A‑B‑A Band Surfaces)
-// ============================================================================
-//
-// ROLE (v11‑Evo A‑B‑A):
-//   THE COURIER — Pulse‑Earn’s deterministic Spheron marketplace receptor.
-//   • Represents Spheron compute jobs as stable receptor DNA.
-//   • Normalizes raw Spheron tasks into Pulse‑Earn job schema.
-//   • Emits bandSignature + binaryField + waveField.
-//   • Provides deterministic ping(), fetchJobs(), submitResult().
-//   • Maintains healing metadata + v11‑Evo signatures.
-//
-// CONTRACT:
-//   • PURE RECEPTOR — deterministic, drift‑proof.
-//   • NO network, NO async, NO randomness, NO timestamps.
-//   • READ‑ONLY except healing metadata.
+// FILE: tropic-pulse-functions/apps/PULSE-EARN/PulseEarnMktCourier-v12.3-PRESENCE-EVO+.js
+// LAYER: THE COURIER (v12.3 Presence + Advantage‑C + Prewarm)
 // ============================================================================
 
 export const PulseEarnMktCourierMeta = Object.freeze({
   layer: "PulseEarnMktCourier",
   role: "EARN_MARKETPLACE_RECEPTOR",
-  version: "v11.2-EVO",
-  identity: "PulseEarnMktCourier-v11.2-EVO",
+  version: "v12.3-PRESENCE-EVO+",
+  identity: "PulseEarnMktCourier-v12.3-PRESENCE-EVO+",
 
   guarantees: Object.freeze({
     deterministic: true,
@@ -30,10 +15,15 @@ export const PulseEarnMktCourierMeta = Object.freeze({
     noRealTime: true,
     noExternalIO: true,
     pureReceptor: true,
+
     dualBandAware: true,
     binaryAware: true,
     waveFieldAware: true,
+    presenceAware: true,
+    advantageAware: true,
+    chunkPrewarmAware: true,
     healingMetadataAware: true,
+
     worldLensAware: false,
     zeroNetwork: true,
     zeroAsync: true,
@@ -45,7 +35,8 @@ export const PulseEarnMktCourierMeta = Object.freeze({
     input: [
       "SpheronTaskDNA",
       "DualBandContext",
-      "ReceptorNormalizationRules"
+      "ReceptorNormalizationRules",
+      "DevicePhenotypePresence"
     ],
     output: [
       "ReceptorPingResult",
@@ -53,56 +44,33 @@ export const PulseEarnMktCourierMeta = Object.freeze({
       "ReceptorSubmissionResult",
       "ReceptorNormalizationResult",
       "ReceptorSignatures",
-      "CourierHealingState"
+      "CourierHealingState",
+      "CourierPresenceField",
+      "CourierAdvantageField",
+      "CourierChunkPrewarmPlan"
     ]
-  }),
-
-  lineage: Object.freeze({
-    root: "PulseOS-v11-EVO",
-    parent: "PulseEarn-v11.2-EVO",
-    ancestry: [
-      "PulseEarnMktCourier-v9",
-      "PulseEarnMktCourier-v10",
-      "PulseEarnMktCourier-v11",
-      "PulseEarnMktCourier-v11-Evo"
-    ]
-  }),
-
-  bands: Object.freeze({
-    supported: ["symbolic", "binary"],
-    default: "symbolic",
-    behavior: "metadata-only"
-  }),
-
-  architecture: Object.freeze({
-    pattern: "A-B-A",
-    baseline: "deterministic Spheron receptor phenotype",
-    adaptive: "binary/wave surfaces + band signatures",
-    return: "deterministic ping/fetchJobs/submitResult"
   })
 });
 
 // ============================================================================
-// Deterministic Hash Helper — v11‑Evo
+// Deterministic Hash Helper
 // ============================================================================
 function computeHash(str) {
   let h = 0;
   const s = String(str || "");
-  for (let i = 0; i < s.length; i++) {
+  for (let i = 0; i < s.length; i++)
     h = (h + s.charCodeAt(i) * (i + 1)) % 100000;
-  }
   return `h${h}`;
 }
 
-function normalizeBand(band) {
-  const b = String(band || "symbolic").toLowerCase();
-  return b === "binary" ? "binary" : "symbolic";
+function normalizeBand(b) {
+  const x = String(b || "symbolic").toLowerCase();
+  return x === "binary" ? "binary" : "symbolic";
 }
 
 function buildBandSignature(band) {
   return computeHash(`COURIER_BAND::${normalizeBand(band)}`);
 }
-
 
 // ============================================================================
 // A‑B‑A Binary + Wave Surfaces
@@ -110,7 +78,6 @@ function buildBandSignature(band) {
 function buildBinaryField(cycle, gpuFlag) {
   const patternLen = gpuFlag ? 14 : 10;
   const density = patternLen + (gpuFlag ? 20 : 5) + cycle;
-
   const surface = density + patternLen;
 
   return {
@@ -140,33 +107,101 @@ function buildWaveField(cycle, band) {
   };
 }
 
+// ============================================================================
+// Presence Field (v12.3)
+// ============================================================================
+function buildPresenceField(jobOrRaw, device, cycle) {
+  const idLen = (jobOrRaw?.id || "").length;
+  const typeLen = (jobOrRaw?.type || "").length;
+  const stability = device?.stabilityScore || 0.7;
+
+  const composite =
+    idLen * 0.001 +
+    typeLen * 0.001 +
+    stability * 0.01;
+
+  const presenceTier =
+    composite >= 0.02 ? "presence_high" :
+    composite >= 0.005 ? "presence_mid" :
+    "presence_low";
+
+  return {
+    presenceVersion: "v12.3",
+    presenceTier,
+    idLen,
+    typeLen,
+    stability,
+    cycle,
+    presenceSignature: computeHash(
+      `COURIER_PRESENCE::${presenceTier}::${idLen}::${typeLen}::${cycle}`
+    )
+  };
+}
 
 // ============================================================================
-// Signature Builders — v11‑Evo
+// Advantage‑C Field (v12.3)
 // ============================================================================
-function buildPingSignature(latency) {
-  return computeHash(`PING::SPHERON::${latency}`);
-}
+function buildAdvantageField(jobOrRaw, device, bandPack, presenceField) {
+  const gpuScore = device?.gpuScore || 0;
+  const bandwidth = device?.bandwidthMbps || 0;
+  const density = bandPack.binaryField.binarySurface.density;
+  const amplitude = bandPack.waveField.amplitude;
 
-function buildFetchSignature(count) {
-  return computeHash(`FETCH::SPHERON::${count}`);
-}
+  const advantageScore =
+    gpuScore * 0.0005 +
+    bandwidth * 0.0002 +
+    density * 0.00001 +
+    amplitude * 0.00001 +
+    (presenceField.presenceTier === "presence_high" ? 0.01 : 0);
 
-function buildNormalizationSignature(jobId) {
-  return computeHash(`NORM::SPHERON::${jobId || "NONE"}`);
+  return {
+    advantageVersion: "C",
+    band: bandPack.band,
+    gpuScore,
+    bandwidth,
+    binaryDensity: density,
+    waveAmplitude: amplitude,
+    presenceTier: presenceField.presenceTier,
+    advantageScore
+  };
 }
-
-function buildSubmitSignature(jobId) {
-  return computeHash(`SUBMIT::SPHERON::${jobId || "NONE"}`);
-}
-
-function buildCourierCycleSignature(cycle) {
-  return computeHash(`COURIER_CYCLE::${cycle}`);
-}
-
 
 // ============================================================================
-// Healing Metadata — Courier Interaction Log (A‑B‑A)
+// Chunk / Cache / Prewarm Plan (v12.3)
+// ============================================================================
+function buildChunkPrewarmPlan(jobOrRaw, device, presenceField) {
+  const basePriority =
+    presenceField.presenceTier === "presence_high"
+      ? 3
+      : presenceField.presenceTier === "presence_mid"
+      ? 2
+      : 1;
+
+  const gpuBoost = (device?.gpuScore || 0) > 600 ? 1 : 0;
+  const priority = basePriority + gpuBoost;
+
+  return {
+    planVersion: "v12.3-AdvantageC",
+    priority,
+    band: presenceField.presenceTier,
+    chunks: {
+      receptorEnvelope: true,
+      normalizationBlueprint: true
+    },
+    cache: {
+      deviceProfile: true,
+      courierDiagnostics: true
+    },
+    prewarm: {
+      nervousSystem: presenceField.presenceTier !== "presence_low",
+      muscleSystem: presenceField.presenceTier !== "presence_low",
+      lymphNodes: presenceField.presenceTier !== "presence_low"
+    }
+  };
+}
+
+// ============================================================================
+// Healing Metadata — Courier Interaction Log
 // ============================================================================
 const healingState = {
   lastPingMs: null,
@@ -178,7 +213,7 @@ const healingState = {
   lastNormalizedJobId: null,
   lastNormalizationError: null,
 
-  lastPayloadVersion: "11-spheron-dna",
+  lastPayloadVersion: "12.3-spheron-dna",
   lastJobType: null,
   lastResourceShape: null,
   lastGpuFlag: null,
@@ -188,25 +223,26 @@ const healingState = {
   cycleCount: 0,
   lastCycleIndex: null,
 
-  // v11‑Evo signatures
   lastPingSignature: null,
   lastFetchSignature: null,
   lastNormalizationSignature: null,
   lastSubmitSignature: null,
   lastCourierCycleSignature: null,
 
-  // A‑B‑A surfaces
   lastBand: "symbolic",
   lastBandSignature: null,
   lastBinaryField: null,
-  lastWaveField: null
+  lastWaveField: null,
+
+  lastPresenceField: null,
+  lastAdvantageField: null,
+  lastChunkPrewarmPlan: null
 };
 
 let courierCycle = 0;
 
-
 // ============================================================================
-// INTERNAL — Safe Getter
+// Safe Getter
 // ============================================================================
 function safeGet(obj, path, fallback = null) {
   try {
@@ -218,9 +254,8 @@ function safeGet(obj, path, fallback = null) {
   }
 }
 
-
 // ============================================================================
-// Deterministic Spheron Receptor DNA (v11‑Evo)
+// Deterministic Spheron Receptor DNA
 // ============================================================================
 const SPHERON_RECEPTOR_DNA = {
   pingLatency: 42,
@@ -244,32 +279,31 @@ const SPHERON_RECEPTOR_DNA = {
       type: "compute"
     }
   ],
-  version: "11-Evo",
-  lineage: "Courier-Spheron-v11-Evo",
+  version: "12.3-PRESENCE",
+  lineage: "Courier-Spheron-v12.3-PRESENCE",
   phenotype: "MarketplaceReceptor"
 };
 
-
 // ============================================================================
-// COURIER CLIENT — Deterministic Spheron Interface (A‑B‑A)
+// COURIER CLIENT — v12.3 Presence + Advantage‑C
 // ============================================================================
 export const PulseEarnMktCourier = {
   id: "spheron",
   name: "Spheron Compute",
-  version: "11-Evo",
-  lineage: "Courier-Spheron-v11-Evo",
+  version: "12.3-PRESENCE-EVO+",
+  lineage: "Courier-Spheron-v12.3-PRESENCE-EVO+",
 
   // -------------------------------------------------------------------------
-  // Ping — Deterministic courier route latency + A‑B‑A surfaces
+  // Ping — deterministic + Presence + Advantage‑C
   // -------------------------------------------------------------------------
-  ping() {
+  ping(deviceProfile = {}) {
     courierCycle++;
     healingState.cycleCount++;
     healingState.lastCycleIndex = courierCycle;
 
     const latency = SPHERON_RECEPTOR_DNA.pingLatency;
 
-    const band = "symbolic"; // ping is always symbolic
+    const band = "symbolic";
     healingState.lastBand = band;
     healingState.lastBandSignature = buildBandSignature(band);
 
@@ -284,26 +318,37 @@ export const PulseEarnMktCourier = {
     healingState.lastPingSignature = buildPingSignature(latency);
     healingState.lastCourierCycleSignature = buildCourierCycleSignature(courierCycle);
 
+    const presenceField = buildPresenceField(null, deviceProfile, courierCycle);
+    const advantageField = buildAdvantageField(null, deviceProfile, { band, binaryField, waveField }, presenceField);
+    const chunkPlan = buildChunkPrewarmPlan(null, deviceProfile, presenceField);
+
+    healingState.lastPresenceField = presenceField;
+    healingState.lastAdvantageField = advantageField;
+    healingState.lastChunkPrewarmPlan = chunkPlan;
+
     return {
       latency,
       signature: healingState.lastPingSignature,
       bandSignature: healingState.lastBandSignature,
       binaryField,
-      waveField
+      waveField,
+      presenceField,
+      advantageField,
+      chunkPlan
     };
   },
 
   // -------------------------------------------------------------------------
-  // Fetch Jobs — Deterministic compute task retrieval + A‑B‑A surfaces
+  // Fetch Jobs — deterministic + Presence + Advantage‑C
   // -------------------------------------------------------------------------
-  fetchJobs() {
+  fetchJobs(deviceProfile = {}) {
     courierCycle++;
     healingState.cycleCount++;
     healingState.lastCycleIndex = courierCycle;
 
     try {
       const data = { jobs: SPHERON_RECEPTOR_DNA.jobs };
-      healingState.lastPayloadVersion = "11-spheron-dna";
+      healingState.lastPayloadVersion = "12.3-spheron-dna";
 
       if (!data || !Array.isArray(data.jobs)) {
         healingState.lastFetchError = "invalid_jobs_payload";
@@ -313,12 +358,11 @@ export const PulseEarnMktCourier = {
       }
 
       const jobs = data.jobs
-        .map(raw => this.normalizeJob(raw))
+        .map(raw => this.normalizeJob(raw, deviceProfile))
         .filter(j => j !== null);
 
-      // deterministic volatility
-      const count = jobs.length;
       const payouts = jobs.map(j => j.payout);
+      const count = jobs.length;
 
       healingState.liquidityScore = Math.abs(
         count - (healingState.lastFetchCount || 0)
@@ -337,8 +381,7 @@ export const PulseEarnMktCourier = {
       healingState.lastFetchSignature = buildFetchSignature(jobs.length);
       healingState.lastCourierCycleSignature = buildCourierCycleSignature(courierCycle);
 
-      // A‑B‑A surfaces for fetch
-      const band = "symbolic"; // fetch is symbolic
+      const band = "symbolic";
       healingState.lastBand = band;
       healingState.lastBandSignature = buildBandSignature(band);
 
@@ -348,12 +391,23 @@ export const PulseEarnMktCourier = {
       healingState.lastBinaryField = binaryField;
       healingState.lastWaveField = waveField;
 
+      const presenceField = buildPresenceField(null, deviceProfile, courierCycle);
+      const advantageField = buildAdvantageField(null, deviceProfile, { band, binaryField, waveField }, presenceField);
+      const chunkPlan = buildChunkPrewarmPlan(null, deviceProfile, presenceField);
+
+      healingState.lastPresenceField = presenceField;
+      healingState.lastAdvantageField = advantageField;
+      healingState.lastChunkPrewarmPlan = chunkPlan;
+
       return {
         jobs,
         signature: healingState.lastFetchSignature,
         bandSignature: healingState.lastBandSignature,
         binaryField,
-        waveField
+        waveField,
+        presenceField,
+        advantageField,
+        chunkPlan
       };
 
     } catch (err) {
@@ -365,16 +419,16 @@ export const PulseEarnMktCourier = {
   },
 
   // -------------------------------------------------------------------------
-  // Submit Result — Deterministic delivery + A‑B‑A surfaces
+  // Submit Result — deterministic + Presence + Advantage‑C
   // -------------------------------------------------------------------------
-  submitResult(job, result) {
+  submitResult(job, result, deviceProfile = {}) {
     courierCycle++;
     healingState.cycleCount++;
     healingState.lastCycleIndex = courierCycle;
 
     const jobId = job?.id ?? null;
 
-    const band = "symbolic"; // submissions are symbolic
+    const band = "symbolic";
     healingState.lastBand = band;
     healingState.lastBandSignature = buildBandSignature(band);
 
@@ -389,6 +443,14 @@ export const PulseEarnMktCourier = {
     healingState.lastSubmitSignature = buildSubmitSignature(jobId);
     healingState.lastCourierCycleSignature = buildCourierCycleSignature(courierCycle);
 
+    const presenceField = buildPresenceField(job, deviceProfile, courierCycle);
+    const advantageField = buildAdvantageField(job, deviceProfile, { band, binaryField, waveField }, presenceField);
+    const chunkPlan = buildChunkPrewarmPlan(job, deviceProfile, presenceField);
+
+    healingState.lastPresenceField = presenceField;
+    healingState.lastAdvantageField = advantageField;
+    healingState.lastChunkPrewarmPlan = chunkPlan;
+
     return {
       ok: true,
       marketplace: "spheron",
@@ -398,15 +460,18 @@ export const PulseEarnMktCourier = {
       bandSignature: healingState.lastBandSignature,
       binaryField,
       waveField,
-      note: "Spheron submission simulated deterministically (v11‑Evo A‑B‑A).",
+      presenceField,
+      advantageField,
+      chunkPlan,
+      note: "Spheron submission simulated deterministically (v12.3-PRESENCE-EVO+).",
       result
     };
   },
 
   // -------------------------------------------------------------------------
-  // Normalize Job — Convert Spheron job → Pulse‑Earn job schema + A‑B‑A band
+  // Normalize Job — deterministic + Presence + Advantage‑C
   // -------------------------------------------------------------------------
-  normalizeJob(raw) {
+  normalizeJob(raw, deviceProfile = {}) {
     try {
       if (!raw || typeof raw !== "object") {
         healingState.lastNormalizationError = "invalid_raw_job";
@@ -447,7 +512,6 @@ export const PulseEarnMktCourier = {
       const gpuFlag = !!raw.gpu;
       healingState.lastGpuFlag = gpuFlag ? "gpu" : "cpu";
 
-      // Dynamic band assignment
       const band = gpuFlag ? "binary" : "symbolic";
       healingState.lastBand = band;
       healingState.lastBandSignature = buildBandSignature(band);
@@ -457,6 +521,14 @@ export const PulseEarnMktCourier = {
 
       healingState.lastBinaryField = binaryField;
       healingState.lastWaveField = waveField;
+
+      const presenceField = buildPresenceField(raw, deviceProfile, courierCycle);
+      const advantageField = buildAdvantageField(raw, deviceProfile, { band, binaryField, waveField }, presenceField);
+      const chunkPlan = buildChunkPrewarmPlan(raw, deviceProfile, presenceField);
+
+      healingState.lastPresenceField = presenceField;
+      healingState.lastAdvantageField = advantageField;
+      healingState.lastChunkPrewarmPlan = chunkPlan;
 
       const normalized = {
         id: String(raw.id),
@@ -470,10 +542,14 @@ export const PulseEarnMktCourier = {
         minGpuScore: gpuFlag ? 300 : 100,
         bandwidthNeededMbps: 5,
 
-        // A‑B‑A hints for Consulate
         _abaBand: band,
         _abaBinaryDensity: binaryField.binarySurface.density,
-        _abaWaveAmplitude: waveField.amplitude
+        _abaWaveAmplitude: waveField.amplitude,
+
+        // Presence + Advantage‑C + Chunk/Prewarm
+        presenceField,
+        advantageField,
+        chunkPlan
       };
 
       healingState.lastNormalizedJobId = normalized.id;
@@ -485,16 +561,9 @@ export const PulseEarnMktCourier = {
 
     } catch (err) {
       healingState.lastNormalizationError = err.message;
-      healingState.lastNormalizationSignature = buildNormalizationSignature(null);
+      healingState.lastNormalizationSignature =
+        buildNormalizationSignature(null);
       return null;
     }
   }
 };
-
-
-// ---------------------------------------------------------------------------
-// Healing State Export — Courier Interaction Log
-// ---------------------------------------------------------------------------
-export function getPulseEarnMktCourierHealingState() {
-  return { ...healingState };
-}
