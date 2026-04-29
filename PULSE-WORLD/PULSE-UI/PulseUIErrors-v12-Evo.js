@@ -157,7 +157,7 @@ export const PulseUIErrors = (() => {
 
   return {
     meta: spineMeta,
-    normalize: normalizeError,
+    normalizeError,
     broadcast,
     init
   };
