@@ -150,7 +150,7 @@ export const PulseOSCortexMeta = Object.freeze({
     return: "deterministic cortex state + signatures + presence/chunking metadata"
   })
 });
-import { Evolution } from "./PulseOSBrainEvolution.js";
+import { PulseOSEvolution as Evolution } from "./PulseOSBrainEvolution.js";
 // ============================================================================
 //  BOOT SURFACE — v12.6‑EVO
 //  Brain calls: bootCortex({ Brain, ...options })
