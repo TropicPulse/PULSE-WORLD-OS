@@ -38,12 +38,12 @@ import { PulseIQMap } from "./PULSE-OS/PulseIQMap.js";
 // ============================================================================
 import { PulseOSv11Evo } from "./PULSE-OS/PulseOS-v11-Evo.js";
 
-import * as PulseProxySym from "./PULSE-PROXY/PulseProxy-v11-EVO.js";
-import * as PulseRouterSym from "./PULSE-ROUTER/PulseRouter-v11-EVO.js";
-import * as PulseGPUSym from "./PULSE-GPU/PulseGPU-v11-EVO.js";
-import * as PulseMeshSym from "./PULSE-MESH/PulseMesh-v11-EVO.js";
-import * as PulseSendSym from "./PULSE-SEND/PulseSend-v11-EVO.js";
-import {createEarn as PulseEarnSym} from "./PULSE-EARN/PulseEarn-v12.3-Presence.js";
+import { createProxy as PulseProxySym } from "./PULSE-PROXY/PulseProxy-v11-EVO.js";
+import { PulseRouter as PulseRouterSym } from "./PULSE-ROUTER/PulseRouter-v11-EVO.js";
+import { createGPUDispatch as PulseGPUSym } from "./PULSE-GPU/PulseGPU-v11-EVO.js";
+import { createPulseMesh as PulseMeshSym } from "./PULSE-MESH/PulseMesh-v11-EVO.js";
+import { createPulseSend as PulseSendSym } from "./PULSE-SEND/PulseSend-v11-EVO.js";
+import { createEarn as PulseEarnSym} from "./PULSE-EARN/PulseEarn-v12.3-Presence.js";
 
 
 // ============================================================================
@@ -51,7 +51,7 @@ import {createEarn as PulseEarnSym} from "./PULSE-EARN/PulseEarn-v12.3-Presence.
 //  Window already booted ai-v11-Evo and exposed window.PulseBinary.
 // ============================================================================
 import { PulseBinaryOSv11Evo } from "./PULSE-OS/PulseBinaryOS-v11-EVO-MAX.js";
-import PulseBinaryOrganismBoot from "./PULSE-AI/ai-v11-Evo.js";
+import { PulseBinaryOrganismBoot } from "./PULSE-AI/ai-v11-Evo.js";
 
 import { createBinaryProxy } from "./PULSE-PROXY/PulseBinaryProxy-v11-EVO.js";
 import { createBinaryRouter as PulseRouterBin} from "./PULSE-ROUTER/PulseBinaryRouter-v11-EVO.js";

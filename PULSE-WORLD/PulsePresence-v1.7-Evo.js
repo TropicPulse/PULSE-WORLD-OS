@@ -415,6 +415,6 @@ window.PulseChunks = {
   dechunk,
   dechunkAll
 };
-
+export default window.PulseChunks;
 
 console.log("[PulseChunks-v1.7-EVO-FALLBACK] Ready — membrane chunker active with sectional fallback.");

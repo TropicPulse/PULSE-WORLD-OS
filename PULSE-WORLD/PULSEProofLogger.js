@@ -1,16 +1,15 @@
 // ============================================================================
-//  PulseProofLogger.js — v12.6‑EVO
-//  PROOF LOGGER • RECORD LAYER • EVOLUTION LEDGER • EXTERNAL WITNESS
+//  PulseProofLogger.js — v13.0-EVO-AI
+//  PROOF LOGGER • AI CONSOLE EXTENSION • TELEMETRY HOOKS
 // ============================================================================
 
 import { route } from "./PULSE-OS/PulseOSCNSNervousSystem.js";
 
-// Capture original console (prevents recursion)
+// Capture original console to avoid recursion
 const _c = { ...console };
 
-// ============================================================================
-//  VERSION / ROLE / COLOR / ICON MAPS — v12.6‑EVO
-// ============================================================================
+// -----------------------------------------------------------------------------
+// Existing maps and helpers (unchanged)
 export const PulseVersion = {
   proof: "12.6",
   logger: "12.6",
@@ -47,9 +46,6 @@ export const PulseIcons = {
   legacy: "🖥️"
 };
 
-// ============================================================================
-//  INTERNAL — Format prefix
-// ============================================================================
 function formatPrefix(subsystem) {
   const role = PulseRoles[subsystem] || "SUBSYSTEM";
   const version = PulseVersion[subsystem] || "12.x";
@@ -57,10 +53,6 @@ function formatPrefix(subsystem) {
   return `${icon} ${role} v${version}`;
 }
 
-// ============================================================================
-//  ARGUMENT NORMALIZER — v12.6‑EVO
-//  • Handles primitives, objects, GPU payloads, binary arteries, band pulses
-// ============================================================================
 function normalizeArgs(args) {
   let subsystem = "legacy";
   let message = "";
@@ -69,78 +61,40 @@ function normalizeArgs(args) {
 
   const first = args[0];
 
-  // Raw %c logs
   if (typeof first === "string" && first.startsWith("%c")) {
     return { subsystem, message: first, rest: args.slice(1), raw: true };
   }
 
-  // subsystem + message
   if (args.length >= 2 && typeof first === "string" && typeof args[1] === "string") {
     return { subsystem: first, message: args[1], rest: args.slice(2), raw: false };
   }
 
-  // Object logs
   if (typeof first === "object" && first !== null) {
     const obj = first;
-
-    // Nervous system pulses
     if (obj.pulseLayer === "NERVOUS-SYSTEM") subsystem = "band";
-
-    // GPU payloads
     if (obj.schemaVersion && obj.textures !== undefined) subsystem = "gpu";
-
-    // Binary arteries
     if (obj.binaryArtery === true) subsystem = "logger";
-
     return { subsystem, message: "", rest: [obj], raw: false };
   }
 
-  // Single primitive
   if (args.length === 1) {
     return { subsystem, message: first, rest: [], raw: false };
   }
 
-  // Fallback
   return { subsystem, message: args.join(" "), rest: [], raw: false };
 }
 
-// ============================================================================
-//  FIREBASE LOGGING BRIDGE — v12.6‑EVO
-// ============================================================================
-async function sendToFirebase(level, message, rest) {
-  try {
-    await route("firebaseLog", { level, message, rest });
-  } catch (e) {
-    _c.warn("PulseProofLogger: Firebase logging failed:", e);
-  }
-}
-
-// ============================================================================
-//  TELEMETRY PACKET FORMATTER — v12.6‑EVO
-// ============================================================================
+// -----------------------------------------------------------------------------
+// Telemetry packet formatter unchanged
 export function makeTelemetryPacket(subsystem, event, data = {}) {
   const ts = Date.now();
-
   const version = PulseVersion[subsystem] || "12.x";
   const role = PulseRoles[subsystem] || "SUBSYSTEM";
   const icon = PulseIcons[subsystem] || PulseIcons.legacy;
-
   const band = data.band || "dual";
-
-  const presence = {
-    field: data.presenceField || null,
-    mesh: data.meshPresence || null
-  };
-
-  const binary = {
-    artery: data.binaryArtery || false,
-    channel: data.binaryChannel || null
-  };
-
-  const lineage = {
-    id: data.lineageId || null,
-    parent: data.lineageParent || null
-  };
+  const presence = { field: data.presenceField || null, mesh: data.meshPresence || null };
+  const binary = { artery: data.binaryArtery || false, channel: data.binaryChannel || null };
+  const lineage = { id: data.lineageId || null, parent: data.lineageParent || null };
 
   return {
     ts,
@@ -152,7 +106,7 @@ export function makeTelemetryPacket(subsystem, event, data = {}) {
     data,
     meta: {
       layer: "PulseProofLogger",
-      version: "12.6‑EVO",
+      version: "13.0-EVO-AI",
       subsystem,
       event,
       band,
@@ -163,9 +117,18 @@ export function makeTelemetryPacket(subsystem, event, data = {}) {
   };
 }
 
-// ============================================================================
-//  CORE LOGGING FUNCTIONS — v12.6‑EVO
-// ============================================================================
+// -----------------------------------------------------------------------------
+// Firebase bridge unchanged
+async function sendToFirebase(level, message, rest) {
+  try {
+    await route("firebaseLog", { level, message, rest });
+  } catch (e) {
+    _c.warn("PulseProofLogger: Firebase logging failed:", e);
+  }
+}
+
+// -----------------------------------------------------------------------------
+// Core logging functions unchanged behavior
 export function log(...args) {
   const { subsystem, message, rest, raw } = normalizeArgs(args);
   const color = PulseColors[subsystem] || "#fff";
@@ -220,13 +183,11 @@ export function critical(...args) {
   sendToFirebase("critical", message, rest);
 }
 
-// ============================================================================
-//  GROUPING HELPERS — v12.6‑EVO
-// ============================================================================
+// -----------------------------------------------------------------------------
+// Grouping helpers unchanged
 export function group(subsystem, label) {
   const color = PulseColors[subsystem] || "#fff";
   const prefix = formatPrefix(subsystem);
-
   _c.groupCollapsed(`%c${prefix} — ${label}`, `color:${color}; font-weight:bold;`);
 }
 
@@ -234,16 +195,146 @@ export function groupEnd() {
   _c.groupEnd();
 }
 
-// ============================================================================
-//  LEGACY CONSOLE REDIRECTS (SAFE — no recursion)
-// ============================================================================
+// -----------------------------------------------------------------------------
+// AI Console Extension
+const AIPromptStore = Object.create(null);
+let recentAIPromptId = null;
+
+// Create a new AI prompt entry
+export function createAIPrompt({ id, role = "assistant", text = "", meta = {} } = {}) {
+  if (!id) throw new Error("createAIPrompt requires id");
+  const created = Date.now();
+  AIPromptStore[id] = {
+    id,
+    role,
+    text,
+    meta,
+    created,
+    opened: false,
+    archived: false
+  };
+  recentAIPromptId = id;
+  return AIPromptStore[id];
+}
+
+// Open a prompt and render as a console group
+export function openAIPrompt(id, { trace = false } = {}) {
+  const p = AIPromptStore[id];
+  if (!p) return null;
+
+  p.opened = true;
+  p.archived = false;
+
+  const subsystem = p.meta.subsystem || "proof";
+  const label = `${p.role} ${id} — ${p.meta.title || "AI Prompt"}`;
+
+  group(subsystem, label);
+  try {
+    _c.log(`%c${p.role.toUpperCase()} ${id}`, "font-weight:bold; color:#9b59b6;");
+    if (p.meta) _c.log("meta:", p.meta);
+    _c.log("prompt:", p.text);
+    if (Array.isArray(p.meta.context) && p.meta.context.length) {
+      _c.log("context:", p.meta.context);
+    }
+    if (p.meta.previous) _c.log("previous:", p.meta.previous);
+  } finally {
+    groupEnd();
+  }
+
+  // Telemetry bloodstream hook
+  try {
+    const packet = makeTelemetryPacket(subsystem, "ai_prompt_open", {
+      promptId: id,
+      role: p.role,
+      title: p.meta.title || null,
+      band: p.meta.band || "dual"
+    });
+    // route telemetry if available
+    if (typeof route === "function") {
+      route("telemetryIngest", packet).catch(() => {});
+    }
+  } catch (e) {}
+
+  if (trace) _c.log(`[AIPrompt] opened ${id}`);
+  return p;
+}
+
+// Close a prompt and archive optionally
+export function closeAIPrompt(id, { archive = true, trace = false } = {}) {
+  const p = AIPromptStore[id];
+  if (!p) return null;
+  p.opened = false;
+  if (archive) p.archived = true;
+
+  // Telemetry bloodstream hook
+  try {
+    const packet = makeTelemetryPacket(p.meta?.subsystem || "proof", "ai_prompt_close", {
+      promptId: id,
+      role: p.role,
+      archived: !!p.archived,
+      band: p.meta?.band || "dual"
+    });
+    if (typeof route === "function") {
+      route("telemetryIngest", packet).catch(() => {});
+    }
+  } catch (e) {}
+
+  // Move recent pointer to last non-archived prompt
+  const keys = Object.keys(AIPromptStore).reverse();
+  for (const k of keys) {
+    if (!AIPromptStore[k].archived) {
+      recentAIPromptId = k;
+      break;
+    }
+  }
+
+  if (trace) _c.log(`[AIPrompt] closed ${id}, recent now ${recentAIPromptId}`);
+  return p;
+}
+
+export function getRecentAIPrompt() {
+  return recentAIPromptId ? AIPromptStore[recentAIPromptId] : null;
+}
+
+export function listAIPrompts({ includeArchived = false } = {}) {
+  return Object.values(AIPromptStore).filter(p => includeArchived || !p.archived);
+}
+
+// Optional persistence helpers using route bridge
+export async function persistAIPrompts(storageKey = "PulseAIPrompts") {
+  try {
+    if (typeof route === "function") {
+      await route("memorySave", { key: storageKey, value: JSON.stringify(AIPromptStore) });
+    }
+  } catch (e) {
+    _c.warn("persistAIPrompts failed", e);
+  }
+}
+
+export async function restoreAIPrompts(storageKey = "PulseAIPrompts") {
+  try {
+    if (typeof route === "function") {
+      const res = await route("memoryLoad", { key: storageKey });
+      if (res && res.value) {
+        const parsed = JSON.parse(res.value);
+        Object.assign(AIPromptStore, parsed);
+        const keys = Object.keys(AIPromptStore);
+        recentAIPromptId = keys.length ? keys[keys.length - 1] : null;
+      }
+    }
+  } catch (e) {
+    _c.warn("restoreAIPrompts failed", e);
+  }
+}
+
+// -----------------------------------------------------------------------------
+// Legacy console redirects preserved
 console.log = (...args) => log(...args);
 console.warn = (...args) => warn(...args);
 console.error = (...args) => error(...args);
 
-// ============================================================================
-//  LOGGER EXPORT — v12.6‑EVO
-// ============================================================================
+// -----------------------------------------------------------------------------
+// Exports
 export const VitalsLogger = {
   log,
   warn,
@@ -252,14 +343,19 @@ export const VitalsLogger = {
   group,
   groupEnd,
   makeTelemetryPacket,
-  meta: { layer: "PulseProofLogger", version: "12.6‑EVO" }
+  createAIPrompt,
+  openAIPrompt,
+  closeAIPrompt,
+  getRecentAIPrompt,
+  listAIPrompts,
+  persistAIPrompts,
+  restoreAIPrompts,
+  meta: { layer: "PulseProofLogger", version: "13.0-EVO-AI" }
 };
 
 export const logger = { ...VitalsLogger };
 
-// ============================================================================
-//  GLOBAL BROADCAST — v12.6‑EVO
-// ============================================================================
+// Global broadcast for quick dev access
 if (typeof window !== "undefined") {
   window.log = log;
   window.warn = warn;
@@ -267,4 +363,8 @@ if (typeof window !== "undefined") {
   window.critical = critical;
   window.group = group;
   window.groupEnd = groupEnd;
+  window.createAIPrompt = createAIPrompt;
+  window.openAIPrompt = openAIPrompt;
+  window.closeAIPrompt = closeAIPrompt;
+  window.listAIPrompts = listAIPrompts;
 }

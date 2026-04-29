@@ -25,15 +25,15 @@
 // ============================================================================
 import {VitalsMonitor as PulseVitals} from "./PULSEProofMonitor.js";
 import {VitalsLogger as PulseLogger} from "./PULSEProofLogger.js";
-import * as PulseOSSkinReflex from "./PulseOSSkinReflex.js";
+import {PageScannerV12 as PulseOSSkinReflex} from "./PulseOSSkinReflex.js";
 // FRONTEND CHUNK MEMBRANE — 2026 transport layer (portal carpet)
-import * as PulseChunks from "./PulsePresence-v1.7-Evo.js";
+import PulseChunks from "./PulsePresence-v1.7-Evo.js";
 
 // ============================================================================
 //  LOAD UNDERSTANDING (SECOND LAYER)
 //  - Understanding is descriptive only, never prescriptive.
 // ============================================================================
-import * as PulseUnderstanding from "./PulseUnderstanding.js";
+import PulseUnderstanding from "./PulseUnderstanding.js";
 
 
 // ============================================================================

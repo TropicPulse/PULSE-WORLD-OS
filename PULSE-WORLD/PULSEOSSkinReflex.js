@@ -15,7 +15,7 @@
 // ============================================================================
 import PulseUIErrors from "./PULSE-UI/PulseUIErrors-v12-EVO.js";
 
-const PageScannerV12 = Object.freeze({
+export const PageScannerV12 = Object.freeze({
 
   // ---------------------------------------------------------
   // Extract variable names from JS source

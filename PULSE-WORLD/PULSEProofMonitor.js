@@ -62,7 +62,7 @@
 //  BACKEND‑ONLY VITALS MONITOR • METRICS ORGAN • PROOF‑GRADE TELEMETRY
 // ============================================================================
 
-import { log, warn, error, makeTelemetryPacket } from "./PulseProofLogger.js";
+import { log, warn, error } from "./PulseProofLogger.js";
 
 // NOTE: `db` is expected to be a backend Firebase/Firestore handle in scope.
 // If not present, all DB work becomes a silent no‑op.
