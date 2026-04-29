@@ -29,10 +29,6 @@
 import { logger } from "../PULSEProofLogger.js";
 import { PulseLineage } from "./PulseProxyBBB.js";
 
-// Firestore (backend‑only)
-import { getFirestore } from "firebase-admin/firestore";
-const db = getFirestore();
-
 
 // ============================================================================
 //  PULSE ROLE — v12.3‑Evo A‑B‑A Identity

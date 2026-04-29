@@ -147,9 +147,6 @@ export const PulseOSCheckBandMeta = Object.freeze({
 //  OSKernel imports (backend‑safe)
 // ============================================================================
 
-import { getFirestore } from "firebase-admin/firestore";
-const db = getFirestore();
-
 
 // ============================================================================
 //  PULSE ROLE — v12.3‑PRESENCE‑EVO‑BINARY‑MAX Identity (CHECKBAND)
