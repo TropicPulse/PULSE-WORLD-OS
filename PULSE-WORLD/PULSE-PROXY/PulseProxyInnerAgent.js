@@ -6,6 +6,7 @@
 //  PURE BACKEND ORGAN — NO MARKETPLACE, NO BUSINESS LOGIC, NO RANDOMNESS.
 // ============================================================================
 
+import { corsHandler, pulseCors } from "../NETLIFY/FUNCTIONS/http.js";
 
 // ============================================================================
 //  ORGAN IDENTITY — v12.3‑EVO‑PRESENCE
@@ -23,25 +24,20 @@ export const PulseRole = {
     backendOnly: true,
     innerBridge: true,
 
-    // Dual-band nervous awareness
     dualBand: true,
     binaryAware: true,
     symbolicAware: true,
 
-    // Presence surfaces
     presenceAware: true,
     presenceFieldAware: true,
 
-    // Advantage surfaces
     unifiedAdvantageField: true,
     pulseEfficiencyAware: true,
 
-    // A‑B‑A surfaces
     bandAware: true,
     waveFieldAware: true,
     binaryFieldAware: true,
 
-    // Safety
     noIQ: true,
     noRouting: true,
     noCompute: true,
@@ -229,31 +225,30 @@ export function createPulseProxyInnerAgent({
     catch {}
   }
 
-    function resolveTarget(type) {
-      if (!type || typeof type !== "string")
-        return { target: null, route: "unknown" };
+  function resolveTarget(type) {
+    if (!type || typeof type !== "string")
+      return { target: null, route: "unknown" };
 
-      if (type.startsWith("brain:") || type === "PING_BRAIN")
-        return { target: "Brain", route: "brain" };
+    if (type.startsWith("brain:") || type === "PING_BRAIN")
+      return { target: "Brain", route: "brain" };
 
-      if (type.startsWith("ltm:") || type === "LONG_TERM_MEMORY")
-        return { target: "LongTermMemory", route: "ltm" };
+    if (type.startsWith("ltm:") || type === "LONG_TERM_MEMORY")
+      return { target: "LongTermMemory", route: "ltm" };
 
-      if (type.startsWith("page:") || type === "PAGE_REQUEST")
-        return { target: "Pages", route: "pages" };
+    if (type.startsWith("page:") || type === "PAGE_REQUEST")
+      return { target: "Pages", route: "pages" };
 
-      if (
-        type === "FETCH_EXTERNAL_RESOURCE" ||
-        type === "fetchExternalResource" ||
-        type === "EXTERNAL_RESOURCE" ||
-        type === "externalResource"
-      ) {
-        return { target: "Pages", route: "external-resource" };
-      }
-
-      return { target: "Brain", route: "brain-default" };
+    if (
+      type === "FETCH_EXTERNAL_RESOURCE" ||
+      type === "fetchExternalResource" ||
+      type === "EXTERNAL_RESOURCE" ||
+      type === "externalResource"
+    ) {
+      return { target: "Pages", route: "external-resource" };
     }
 
+    return { target: "Brain", route: "brain-default" };
+  }
 
   async function dispatchToTarget(target, type, payload, binaryPayload, context) {
     const args = [type, payload || {}, binaryPayload || null, context || {}];
@@ -280,6 +275,12 @@ export function createPulseProxyInnerAgent({
   //  PUBLIC ENTRY — ORGANISM-CORRECT BACKEND ENDPOINT BRIDGE
   // ========================================================================
   async function handle({ type, payload, binaryPayload, context, modeKind } = {}) {
+
+    // ⭐⭐⭐ APPLY CORS INSIDE HANDLE() — EXACTLY WHERE YOU WANTED ⭐⭐⭐
+    if (context?.req && context?.res) {
+      pulseCors(context.req, context.res, () => {});
+    }
+
     const { target, route } = resolveTarget(type);
     const mk = modeKind || (binaryPayload ? "dual" : "symbolic");
 
