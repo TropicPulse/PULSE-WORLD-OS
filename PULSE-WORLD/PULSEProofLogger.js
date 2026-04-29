@@ -1,6 +1,6 @@
 // ============================================================================
-//  PulseProofLogger.js — v13.0-EVO-AI
-//  PROOF LOGGER • AI CONSOLE EXTENSION • TELEMETRY HOOKS
+//  PulseProofLogger.js — v13.1-EVO-ALWAYS-ON-OFFLINE-FIRST
+//  PROOF LOGGER • AI CONSOLE EXTENSION • OFFLINE-FIRST TELEMETRY
 // ============================================================================
 
 import { route } from "./PULSE-OS/PulseOSCNSNervousSystem.js";
@@ -9,10 +9,37 @@ import { route } from "./PULSE-OS/PulseOSCNSNervousSystem.js";
 const _c = { ...console };
 
 // -----------------------------------------------------------------------------
-// Existing maps and helpers (unchanged)
+// Environment + online flag (offline-first)
+// -----------------------------------------------------------------------------
+const g =
+  typeof global !== "undefined"
+    ? global
+    : typeof globalThis !== "undefined"
+    ? globalThis
+    : typeof window !== "undefined"
+    ? window
+    : {};
+
+function isOnline() {
+  if (typeof window !== "undefined") {
+    return window.PULSE_ONLINE === true;
+  }
+  if (typeof g.PULSE_ONLINE === "boolean") {
+    return g.PULSE_ONLINE === true;
+  }
+  return false;
+}
+
+function hasRoute() {
+  return typeof route === "function";
+}
+
+// -----------------------------------------------------------------------------
+// Existing maps and helpers (version bumped)
+// -----------------------------------------------------------------------------
 export const PulseVersion = {
-  proof: "12.6",
-  logger: "12.6",
+  proof: "13.1",
+  logger: "13.1",
   renderer: "12.4",
   gpu: "12.4",
   band: "12.4",
@@ -85,7 +112,8 @@ function normalizeArgs(args) {
 }
 
 // -----------------------------------------------------------------------------
-// Telemetry packet formatter unchanged
+// Telemetry packet formatter
+// -----------------------------------------------------------------------------
 export function makeTelemetryPacket(subsystem, event, data = {}) {
   const ts = Date.now();
   const version = PulseVersion[subsystem] || "12.x";
@@ -106,7 +134,7 @@ export function makeTelemetryPacket(subsystem, event, data = {}) {
     data,
     meta: {
       layer: "PulseProofLogger",
-      version: "13.0-EVO-AI",
+      version: "13.1-EVO-ALWAYS-ON-OFFLINE-FIRST",
       subsystem,
       event,
       band,
@@ -118,15 +146,23 @@ export function makeTelemetryPacket(subsystem, event, data = {}) {
 }
 
 // -----------------------------------------------------------------------------
-// Firebase bridge unchanged
+// Firebase / telemetry bridge — OFFLINE-FIRST, FAILURE-PROOF
+// -----------------------------------------------------------------------------
 async function sendToFirebase(level, message, rest) {
+  // Offline-first: never block logging if CNS/route is missing or offline.
+  if (!hasRoute()) return;
+  if (!isOnline()) return;
+
   try {
     await route("firebaseLog", { level, message, rest });
   } catch (e) {
     _c.warn("PulseProofLogger: Firebase logging failed:", e);
   }
 }
-// Add this Pulse command handler and integrate into log()
+
+// -----------------------------------------------------------------------------
+// Pulse command handler (AI console extension)
+// -----------------------------------------------------------------------------
 function handlePulseCommand(cmd) {
   const raw = cmd.slice(6).trim(); // remove "Pulse:"
   const parts = raw.split(/\s+/);
@@ -173,23 +209,27 @@ function handlePulseCommand(cmd) {
 }
 
 // -----------------------------------------------------------------------------
-// Core logging functions unchanged behavior
+// Core logging functions — now offline-first, CNS-optional
+// -----------------------------------------------------------------------------
 export function log(...args) {
   const { subsystem, message, rest, raw } = normalizeArgs(args);
   const color = PulseColors[subsystem] || "#fff";
   const prefix = formatPrefix(subsystem);
+
+  // Pulse: commands on logger channel
   if (subsystem === "logger" && typeof message === "string" && message.startsWith("Pulse:")) {
-  handlePulseCommand(message);
-  return;
-}
+    handlePulseCommand(message);
+    return;
+  }
 
-
+  // Local console is ALWAYS written — offline-first
   if (raw) {
     _c.log(message, ...rest);
   } else {
     _c.log(`%c${prefix} — ${message}`, `color:${color}; font-weight:bold;`, ...rest);
   }
 
+  // Telemetry is best-effort, never required for logging
   sendToFirebase("log", message, rest);
 }
 
@@ -234,7 +274,8 @@ export function critical(...args) {
 }
 
 // -----------------------------------------------------------------------------
-// Grouping helpers unchanged
+// Grouping helpers
+// -----------------------------------------------------------------------------
 export function group(subsystem, label) {
   const color = PulseColors[subsystem] || "#fff";
   const prefix = formatPrefix(subsystem);
@@ -247,10 +288,10 @@ export function groupEnd() {
 
 // -----------------------------------------------------------------------------
 // AI Console Extension
+// -----------------------------------------------------------------------------
 const AIPromptStore = Object.create(null);
 let recentAIPromptId = null;
 
-// Create a new AI prompt entry
 export function createAIPrompt({ id, role = "assistant", text = "", meta = {} } = {}) {
   if (!id) throw new Error("createAIPrompt requires id");
   const created = Date.now();
@@ -267,7 +308,6 @@ export function createAIPrompt({ id, role = "assistant", text = "", meta = {} } 
   return AIPromptStore[id];
 }
 
-// Open a prompt and render as a console group
 export function openAIPrompt(id, { trace = false } = {}) {
   const p = AIPromptStore[id];
   if (!p) return null;
@@ -291,7 +331,7 @@ export function openAIPrompt(id, { trace = false } = {}) {
     groupEnd();
   }
 
-  // Telemetry bloodstream hook
+  // Telemetry bloodstream hook — best-effort, offline-first
   try {
     const packet = makeTelemetryPacket(subsystem, "ai_prompt_open", {
       promptId: id,
@@ -299,8 +339,7 @@ export function openAIPrompt(id, { trace = false } = {}) {
       title: p.meta.title || null,
       band: p.meta.band || "dual"
     });
-    // route telemetry if available
-    if (typeof route === "function") {
+    if (hasRoute() && isOnline()) {
       route("telemetryIngest", packet).catch(() => {});
     }
   } catch (e) {}
@@ -309,14 +348,13 @@ export function openAIPrompt(id, { trace = false } = {}) {
   return p;
 }
 
-// Close a prompt and archive optionally
 export function closeAIPrompt(id, { archive = true, trace = false } = {}) {
   const p = AIPromptStore[id];
   if (!p) return null;
   p.opened = false;
   if (archive) p.archived = true;
 
-  // Telemetry bloodstream hook
+  // Telemetry bloodstream hook — best-effort
   try {
     const packet = makeTelemetryPacket(p.meta?.subsystem || "proof", "ai_prompt_close", {
       promptId: id,
@@ -324,12 +362,11 @@ export function closeAIPrompt(id, { archive = true, trace = false } = {}) {
       archived: !!p.archived,
       band: p.meta?.band || "dual"
     });
-    if (typeof route === "function") {
+    if (hasRoute() && isOnline()) {
       route("telemetryIngest", packet).catch(() => {});
     }
   } catch (e) {}
 
-  // Move recent pointer to last non-archived prompt
   const keys = Object.keys(AIPromptStore).reverse();
   for (const k of keys) {
     if (!AIPromptStore[k].archived) {
@@ -350,7 +387,6 @@ export function listAIPrompts({ includeArchived = false } = {}) {
   return Object.values(AIPromptStore).filter(p => includeArchived || !p.archived);
 }
 
-// Replace the old aiHelpBanner with this guarded version
 export function aiHelpBanner() {
   _c.groupCollapsed(
     "%c🤖 AI Console Help (Pulse: commands)",
@@ -365,11 +401,10 @@ export function aiHelpBanner() {
   _c.groupEnd();
 }
 
-
 // Optional persistence helpers using route bridge
 export async function persistAIPrompts(storageKey = "PulseAIPrompts") {
   try {
-    if (typeof route === "function") {
+    if (hasRoute() && isOnline()) {
       await route("memorySave", { key: storageKey, value: JSON.stringify(AIPromptStore) });
     }
   } catch (e) {
@@ -379,7 +414,7 @@ export async function persistAIPrompts(storageKey = "PulseAIPrompts") {
 
 export async function restoreAIPrompts(storageKey = "PulseAIPrompts") {
   try {
-    if (typeof route === "function") {
+    if (hasRoute() && isOnline()) {
       const res = await route("memoryLoad", { key: storageKey });
       if (res && res.value) {
         const parsed = JSON.parse(res.value);
@@ -394,13 +429,15 @@ export async function restoreAIPrompts(storageKey = "PulseAIPrompts") {
 }
 
 // -----------------------------------------------------------------------------
-// Legacy console redirects preserved
+// Legacy console redirects preserved — logger is the membrane
+// -----------------------------------------------------------------------------
 console.log = (...args) => log(...args);
 console.warn = (...args) => warn(...args);
 console.error = (...args) => error(...args);
 
 // -----------------------------------------------------------------------------
 // Exports
+// -----------------------------------------------------------------------------
 export const VitalsLogger = {
   log,
   warn,
@@ -416,18 +453,18 @@ export const VitalsLogger = {
   listAIPrompts,
   persistAIPrompts,
   restoreAIPrompts,
-  meta: { layer: "PulseProofLogger", version: "13.0-EVO-AI" }
+  meta: { layer: "PulseProofLogger", version: "13.1-EVO-ALWAYS-ON-OFFLINE-FIRST" }
 };
 
 export const logger = { ...VitalsLogger };
 
-window.aiHelp = aiHelpBanner;
-setTimeout(() => {
-  aiHelpBanner();
-}, 300);
-
-// Global broadcast for quick dev access
+// Optional dev helpers (can be removed for production)
 if (typeof window !== "undefined") {
+  window.aiHelp = aiHelpBanner;
+  setTimeout(() => {
+    aiHelpBanner();
+  }, 300);
+
   window.log = log;
   window.warn = warn;
   window.error = error;
