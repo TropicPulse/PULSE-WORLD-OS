@@ -106,7 +106,7 @@ export const PulseOSEvolutionMeta = Object.freeze({
 });
 
 // Cortex is ONLY imported here — NOT in Brain
-import { createPulseOSCortex } from "./PulseOSCortex-v13-Spine.js";
+import { createPulseOSCortex } from "./PulseOSBrainCortex.js";
 
 // ============================================================================
 //  EVOLUTION ENGINE — v13

@@ -111,7 +111,7 @@ export const PulseOSBrainMeta = Object.freeze({
 // ============================================================================
 import { PulseIQMap } from "./PulseIQMap.js";
 import { PulseOrganismMap } from "./PulseOrganismMap.js";
-import { PulseOSEvolution } from "./PulseOSEvolution-v13-Spine.js";
+import { PulseOSEvolution } from "./PulseOSBrainEvolution.js";
 
 // ============================================================================
 //  CNS BRAIN — v13-SPINE
