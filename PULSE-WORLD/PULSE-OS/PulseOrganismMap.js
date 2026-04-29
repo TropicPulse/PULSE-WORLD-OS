@@ -15,9 +15,51 @@
 // Every other subsystem (IQMap, Cortex, Earn, Router, Mesh, Presence)
 // reads from THIS genome.
 // -----------------------------------------------------------------------------
+let fs = null;
+let db = null;
+let routes = null;
+let schema = null;
+let warmDualBand = null;
 
-import fs from "fs";
-import path from "path";
+export function prewarmLayer() {
+  try {
+    db = aiDeps.getDb({ trace: false });
+    db.getCollection("prewarm");
+    db.getDocument("prewarm", "id");
+
+    fs = aiDeps.getFsAPI({ trace: false });
+    fs.getAllFiles();
+    fs.getFile("/prewarm");
+
+    routes = aiDeps.getRouteAPI({ trace: false });
+    routes.getRouteMap();
+    routes.getRoute("prewarm");
+
+    schema = aiDeps.getSchemaAPI({ trace: false });
+    schema.getAllSchemas();
+    schema.getSchema("prewarm");
+
+    warmDualBand = {
+      binary: { vitals: { snapshot: () => ({ load: 0, pressure: 0 }) } },
+      symbolic: {
+        personaEngine: { getActivePersona: () => "ARCHITECT" },
+        boundariesEngine: { getMode: () => "safe" },
+        permissionsEngine: { snapshot: () => ({ allow: true }) }
+      }
+    };
+    aiDeps.getOrganismSnapshot(warmDualBand);
+
+    return aiDeps.emitDepsPacket("prewarm", {
+      message: "Deps layer prewarmed and adapter pathways aligned."
+    });
+  } catch (err) {
+    console.error("[Deps Prewarm] Failed:", err);
+    return aiDeps.emitDepsPacket("prewarm-error", {
+      error: String(err),
+      message: "Deps layer prewarm failed."
+    });
+  }
+}
 
 // -----------------------------------------------------------------------------
 // Scan all PULSE-* systems and extract their organs
