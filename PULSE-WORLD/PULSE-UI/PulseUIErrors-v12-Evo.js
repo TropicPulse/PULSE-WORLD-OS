@@ -1,36 +1,14 @@
 // ============================================================================
-// FILE: PulseUIErrors-v12-EVO.js
-// UNIVERSAL ERROR SPINE — v12-EVO
+// FILE: PulseUIErrors-v13-EVO-PRIME.js
+// UNIVERSAL ERROR SPINE — v13-EVO-PRIME
 // Membrane-Safe • Drift-Safe • Organism-Wide Error Unifier
-// ============================================================================
-//
-// PURPOSE:
-// --------
-//  - Capture ALL errors from ALL layers without ever breaking execution.
-//  - Normalize them into a single organism-wide error packet.
-//  - Forward them safely to:
-//        • Window Logger (PulseProofLogger)
-//        • Understanding (PulseUnderstanding)
-//        • Binary Shadow (window.PulseBinary)
-//        • UI Flow (window.PulseUI)
-//        • SkinReflex (window.PulseSkinReflex)
-//  - Never throw, never interrupt, never cascade failures.
-//
-// CONTRACT:
-// ---------
-//  - NO exceptions thrown.
-//  - NO rethrow.
-//  - NO blocking.
-//  - NO routing.
-//  - NO identity.
-//  - Purely: capture → normalize → broadcast.
 // ============================================================================
 
 export const PulseUIErrors = (() => {
   const spineMeta = Object.freeze({
     layer: "PulseUIErrors",
     role: "universal-error-spine",
-    version: "12.0-EVO",
+    version: "13.0-EVO-PRIME",
     evo: {
       driftSafe: true,
       membraneSafe: true,
@@ -39,7 +17,10 @@ export const PulseUIErrors = (() => {
       binaryAware: true,
       symbolicAware: true,
       uiFlowAware: true,
-      skinReflexAware: true
+      skinReflexAware: true,
+      evolutionaryPageAware: true,
+      cortexAware: true,
+      routerAware: true
     }
   });
 
@@ -72,19 +53,35 @@ export const PulseUIErrors = (() => {
   // BROADCAST — send normalized error to all safe listeners
   // --------------------------------------------------------------------------
   function broadcast(packet) {
-    try {
-      // Window logger
-      window?.PulseLogger?.logError?.(packet);
-    } catch {}
+    // Window logger
+    try { window?.PulseLogger?.logError?.(packet); } catch {}
 
+    // EvolutionaryPage (v13)
+    try { window?.PulseEvolutionaryPage?.onError?.(packet); } catch {}
+
+    // UI Flow v13
+    try { window?.PulseUIFlowV13?.onError?.(packet); } catch {}
+
+    // RouterOrgan
+    try { window?.PulseRouterOrgan?.onError?.(packet); } catch {}
+
+    // Cortex
+    try { window?.PulseCortex?.onError?.(packet); } catch {}
+
+    // MemoryOrgan
+    try { window?.PulseMemoryOrgan?.onError?.(packet); } catch {}
+
+    // BinaryOrgan
+    try { window?.PulseBinaryOrgan?.onError?.(packet); } catch {}
+
+    // Understanding (SDN)
     try {
-      // Understanding (symbolic OS)
       window?.Pulse?.SDN?.emitImpulse?.("ErrorSpine", {
         modeKind: "dual",
         executionContext: {
           sceneType: "error",
           workloadClass: "ui-error",
-          dispatchSignature: "PulseUIErrors.v12",
+          dispatchSignature: "PulseUIErrors.v13",
           shapeSignature: "error-spine",
           extensionId: "PulseUIErrors"
         },
@@ -92,20 +89,11 @@ export const PulseUIErrors = (() => {
       });
     } catch {}
 
-    try {
-      // Binary shadow
-      window?.PulseBinary?.Vitals?.generate?.(); // soft ping
-    } catch {}
+    // Binary shadow
+    try { window?.PulseBinary?.Vitals?.generate?.(); } catch {}
 
-    try {
-      // UI Flow
-      window?.PulseUI?.Flow?.onError?.(packet);
-    } catch {}
-
-    try {
-      // SkinReflex
-      window?.PulseSkinReflex?.onError?.(packet);
-    } catch {}
+    // SkinReflex
+    try { window?.PulseSkinReflex?.onError?.(packet); } catch {}
   }
 
   // --------------------------------------------------------------------------
@@ -124,14 +112,6 @@ export const PulseUIErrors = (() => {
       broadcast(packet);
     });
 
-    // UI Flow internal errors
-    try {
-      window.PulseUI?.Flow?.registerErrorHandler?.((err) => {
-        const packet = normalizeError(err, "ui.flow");
-        broadcast(packet);
-      });
-    } catch {}
-
     // SkinReflex internal errors
     try {
       window.PulseSkinReflex?.registerErrorHandler?.((err) => {
@@ -145,15 +125,11 @@ export const PulseUIErrors = (() => {
   // INIT
   // --------------------------------------------------------------------------
   function init() {
-    try {
-      installGlobalHandlers();
-    } catch {}
+    try { installGlobalHandlers(); } catch {}
   }
 
   // Auto-init
-  if (typeof window !== "undefined") {
-    init();
-  }
+  if (typeof window !== "undefined") init();
 
   return {
     meta: spineMeta,
