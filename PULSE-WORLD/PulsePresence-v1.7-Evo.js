@@ -192,6 +192,23 @@ function buildChunkPresenceEnvelope({ url, fromCache, degraded, kind }) {
 //  Returns: { ok, value, envelope, error? }
 // ============================================================================
 async function fetchChunk(url) {
+  // ⭐ MAKE DNA VISIBLE IN NETWORK — FRONTEND LOGGING ENDPOINT
+try {
+  fetch("/pulse-dna-visibility", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      url,
+      timestamp: Date.now(),
+      degraded: chunksDegraded,
+      presence: "frontend-dna-request",
+      membrane: "PulseChunks-v1.7"
+    })
+  });
+} catch (err) {
+  console.warn("[PulseDNA] Network visibility logging failed:", err);
+}
+
   if (!url) {
     return {
       ok: false,
