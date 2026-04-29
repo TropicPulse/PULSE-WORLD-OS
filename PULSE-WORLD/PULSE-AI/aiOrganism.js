@@ -58,16 +58,16 @@ export const OrganismMeta = Object.freeze({
 //  IMPORTS — v11.3‑EVO organs
 // ============================================================================
 import { createAIBinaryAgent } from "./aiBinaryAgent.js";
-import { createAIMemory } from "./aiMemory.js";
-import { createAIBinaryPipeline } from "./aiBinaryPipeline.js";
-import { createAIBinaryReflex } from "./aiBinaryReflex.js";
+import { createAIMemory } from "./aiMemory-v11-Evo.js";
+import { createAIBinaryPipeline } from "./aiPipeline.js";
+import { createAIBinaryReflex } from "./aiReflex.js";
 import { createAIBinaryLoggerAdapter } from "./aiLoggerAdapter.js";
-import { createAIBinaryPageScannerAdapter } from "./aiBinaryPageScannerAdapter.js";
+import { createAIBinaryPageScannerAdapter } from "./aiPageScannerAdapter.js";
 import { createAIBinaryEvolution } from "./aiBinaryEvolution.js";
 import { createAIBinaryGovernorAdapter } from "./aiGovernorAdapter.js";
 import { createAIBinaryOrganRegistry } from "./aiBinaryOrganRegistry.js";
 import { createAIBinaryDelta } from "./aiBinaryDelta.js";
-import { createAIBinaryConductor } from "./aiConductor.js";
+import { createAIConductor as createAIBinaryConductor } from "./aiConductor.js";
 import { createAIBinaryMetabolism } from "./aiMetabolism.js";
 import { createAIBinaryHormones } from "./aiHormones.js";
 import { createAIBinaryImmunity } from "./aiImmunity.js";
