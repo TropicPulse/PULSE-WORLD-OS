@@ -116,15 +116,19 @@
        ============================================================================ -->
   <script type="module">
     // Import icons
-    import { PulseIcons } from "./PULSE-UI/PulseEvolutionaryIcons.js";
+    import { PulseIcons } from "./PulseEvolutionaryIcons.js";
 
     // Import the full UI organism
-    import { createPulseEvolutionaryCode } from "./PULSE-UI/PulseEvolutionaryCode.js";
-    import { createPulseEvolutionaryMemory } from "./PULSE-UI/PulseEvolutionaryMemory.js";
-    import { createPulseEvolutionaryBrain } from "./PULSE-UI/PulseEvolutionaryBrain.js";
-    import { createPulseEvolutionaryImpulse } from "./PULSE-UI/PulseEvolutionaryImpulse.js";
-    import { createPulseEvolutionaryRouter } from "./PULSE-UI/PulseEvolutionaryRouter.js";
-    import { createPulseEvolutionaryBinary } from "./PULSE-UI/PulseEvolutionaryBinary.js";
+    import { createPulseEvolutionaryCode } from "./PulseEvolutionaryCode.js";
+    import { createPulseEvolutionaryMemory } from "./PulseEvolutionaryMemory.js";
+    import { createPulseEvolutionaryBrain } from "./PulseEvolutionaryBrain.js";
+    import { createPulseEvolutionaryImpulse } from "./PulseEvolutionaryImpulse.js";
+    import { createPulseEvolutionaryRouter } from "./PulseEvolutionaryRouter.js";
+    import { createPulseEvolutionaryBinary } from "./PulseEvolutionaryBinary.js";
+    // ------------------------------------------------------------------------
+    // AI ORGANS (example: aiEarn)
+    // ------------------------------------------------------------------------
+    import * as aiEarn from "../PULSE-AI/aiEarn.js"; 
 
     // Mock CNS + Evolution (replace with real Pulse OS CNS)
     const CNS = {
@@ -227,6 +231,22 @@
         window.PulseEvolutionaryPage = {
           evolve: (payload) =>
             CodeOrgan.evolve({ type: "portal:update", payload }),
+            ai: async (intent) => {
+              if (intent === "earn") {
+                const data = await aiEarn.readAll(); // your organ call
+
+                return CodeOrgan.evolve({
+                  type: "page:update",
+                  payload: {
+                    mode: "inside",
+                    title: "AI Earn Diagnostics",
+                    content: JSON.stringify(data, null, 2)
+                  }
+                });
+              }
+
+              console.warn("[AI] Unknown AI intent:", intent);
+            },
           memory: MemoryOrgan,
           brain: BrainOrgan,
           router: RouterOrgan,
