@@ -1,34 +1,25 @@
 // -----------------------------------------------------------------------------
-// PulseOrganismMap.js
-// PulseOS v12.4+ / v13-EVO
-// SELF-DESCRIBING ORGANISM GENOME
+// PulseOrganismMap.js — v13‑EVO‑PRIME
+// THE JEWEL OF THE ORGANISM
 //
-// LAW:
-//   - Any folder starting with "PULSE-" is a system.
-//   - Any .js file inside that folder is an organ.
-//   - No hardcoded clusters.
-//   - No hardcoded organs.
-//   - No hardcoded pages.
-//   - The filesystem IS the organism.
-//
-// This file IS the organism map.
-// Every other subsystem (IQMap, Cortex, Earn, Router, Mesh, Presence)
-// reads from THIS genome.
-// -----------------------------------------------------------------------------
-// -----------------------------------------------------------------------------
-// PulseOrganismMap.js — v13‑EVO / SELF‑DESCRIBING ORGANISM GENOME
+// LAWS OF THE ORGANISM:
+//   • Any folder starting with "PULSE-" is a system.
+//   • Any .js file inside that folder is an organ.
+//   • No hardcoded clusters.
+//   • No hardcoded organs.
+//   • No hardcoded pages.
+//   • The filesystem IS the organism.
+//   • The organism map IS the genome.
+//   • All subsystems read from THIS file.
 // -----------------------------------------------------------------------------
 
-import path from "path";
-
-// Adapters
 let fs = null;
 let db = null;
 let routes = null;
 let schema = null;
 
 // -----------------------------------------------------------------------------
-// PREWARM LAYER (unchanged, uses your new APIs)
+// PREWARM LAYER — Aligns all adapters before organism boot
 // -----------------------------------------------------------------------------
 export function prewarmLayer() {
   try {
@@ -52,7 +43,7 @@ export function prewarmLayer() {
       message: "OrganismMap layer prewarmed and adapter pathways aligned."
     });
   } catch (err) {
-    console.error("[Deps Prewarm] Failed:", err);
+    console.error("[OrganismMap:Prewarm] Failed:", err);
     return emitDepsPacket("prewarm-error", {
       error: String(err),
       message: "OrganismMap layer prewarm failed."
@@ -61,35 +52,34 @@ export function prewarmLayer() {
 }
 
 // -----------------------------------------------------------------------------
-// ASYNC SCAN OF PULSE-* SYSTEMS USING NEW FS API
+// SCAN SYSTEMS — Pure FS API, no Node, no assumptions
 // -----------------------------------------------------------------------------
 async function scanPulseSystems(baseDir) {
   fs = getFsAPI({ trace: false });
 
-  // Get all files in the entire organism root
   const allFiles = await fs.getAllFiles();
 
-  // Filter directories that start with PULSE-
+  // Identify PULSE-* system directories
   const pulseSystems = allFiles
     .filter(f => f.type === "dir" && f.name.startsWith("PULSE-"))
-    .map(f => f.name);
+    .map(f => ({
+      name: f.name,
+      path: f.path
+    }));
 
   const systems = {};
 
   for (const system of pulseSystems) {
-    const systemPath = path.join(baseDir, system);
-
-    // Get all files inside this system folder
     const systemFiles = allFiles.filter(f =>
-      f.path.startsWith(systemPath)
+      f.path.startsWith(system.path)
     );
 
     const organs = systemFiles
       .filter(f => f.type === "file" && f.name.endsWith(".js"))
       .map(f => f.name.replace(".js", ""));
 
-    systems[system.toLowerCase()] = {
-      root: system,
+    systems[system.name.toLowerCase()] = {
+      root: system.name,
       organs
     };
   }
@@ -98,21 +88,26 @@ async function scanPulseSystems(baseDir) {
 }
 
 // -----------------------------------------------------------------------------
-// BUILD ORGANISM MAP (ASYNC, NODE-FREE, EVO-CORRECT)
+// BUILD ORGANISM MAP — The Genome
 // -----------------------------------------------------------------------------
 export async function buildPulseOrganismMap(baseDir = "/") {
   const systems = await scanPulseSystems(baseDir);
 
   return {
-    version: "13‑EVO‑SELF‑DESCRIBING‑ORGANISM",
+    version: "13‑EVO‑PRIME‑SELF‑DESCRIBING‑ORGANISM",
     generatedAt: new Date().toISOString(),
     systems,
 
+    // Lineage metadata — evolution, not structure
     aliases: {
       base: {
         PulseBand: {
           old: ["PulseBand"],
-          now: ["PulseOSSkinReflex","PulseOSSensoryCortex","PulseProxyImpulse"]
+          now: [
+            "PulseOSSkinReflex",
+            "PulseOSSensoryCortex",
+            "PulseProxyImpulse"
+          ]
         },
         PulseNet: {
           old: ["PulseNet"],
@@ -120,11 +115,11 @@ export async function buildPulseOrganismMap(baseDir = "/") {
         },
         PulseClient: {
           old: ["PulseClient"],
-          now: ["PulseProxyImpulse","PulseProxySpine"]
+          now: ["PulseProxyImpulse", "PulseProxySpine"]
         },
         PulseUpdate: {
           old: ["PulseUpdate"],
-          now: ["PulseOSBrainEvolution","PulseIQ"]
+          now: ["PulseOSBrainEvolution", "PulseIQ"]
         },
         PulseIdentity: {
           old: ["PulseIdentity"],
@@ -134,7 +129,7 @@ export async function buildPulseOrganismMap(baseDir = "/") {
 
       routing: {
         Router: {
-          old: ["router.js","PulseRouter"],
+          old: ["router.js", "PulseRouter"],
           now: ["PulseRouterEvolutionaryThought"]
         },
         RouterMemory: {
@@ -155,7 +150,15 @@ export async function buildPulseOrganismMap(baseDir = "/") {
       },
 
       routeChain: {
-        old: ["PulseBand","PulseNet","PulseClient","router.js","organ","PulseSend","backend"],
+        old: [
+          "PulseBand",
+          "PulseNet",
+          "PulseClient",
+          "router.js",
+          "organ",
+          "PulseSend",
+          "backend"
+        ],
         now: [
           "PulseOSSkinReflex / PulseOSSensoryCortex",
           "PulseSDN",
@@ -184,6 +187,6 @@ export async function buildPulseOrganismMap(baseDir = "/") {
 }
 
 // -----------------------------------------------------------------------------
-// EXPORT — PROMISE (async organism genome)
+// EXPORT — The Genome (async)
 // -----------------------------------------------------------------------------
 export const PulseOrganismMap = await buildPulseOrganismMap("/");
