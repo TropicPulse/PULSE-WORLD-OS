@@ -22,71 +22,20 @@
        ============================================================================ -->
   <link rel="stylesheet" href="./PulseEvolutionaryAnimations.css" />
 
-  <!-- Google tag (gtag.js) -->
-  <script async src="https://www.googletagmanager.com/gtag/js?id=G-HSX89KS63P"></script>
-
   <!-- ============================================================================
        UNIFIED MODULE SCRIPT (OS ignition + analytics)
        ============================================================================ -->
   <script type="module">
-    /* ============================================================
-       0. SKIN REFLEX — UNIVERSAL FRONT DOOR
-       ------------------------------------------------------------
-       • sessionCheck
-       • routeCheck
-       • pageName / lastPageU
-       • identity exposure
-       ============================================================ */
-    import * as PulseSkinReflex from "../PULSEOSSkinReflex.js";
+    /* 0. BOOT MEMBRANE — MUST BE FIRST */
+    import * as PulseWindow from "../PULSEEvolutionaryWindow.js";
 
-    await PulseSkinReflex.attachScanner();
+    /* 1. SKIN REFLEX — SIDE‑EFFECT IMPORT, AUTO‑ATTACHES */
+    import "../PULSEOSSkinReflex.js"; // PageScannerV12 auto hooks window here
 
-    /* ============================================================
-       1. BOOT MEMBRANE (WINDOW ORGAN)
-       ============================================================ */
-    import PulseWindow from "../PULSEEvolutionaryWindow.js";
-
-    /* ============================================================
-       2. UI HELPERS
-       ============================================================ */
-
-    // Analytics
-    window.dataLayer = window.dataLayer || [];
-    function gtag(){ dataLayer.push(arguments); }
-    gtag("js", new Date());
-    gtag("config", "G-HSX89KS63P");
-
-    // Disable right‑click + drag
-    document.addEventListener("contextmenu", e => e.preventDefault());
-    document.addEventListener("dragstart", e => e.preventDefault());
-
-    // Facebook Pixel
-    !function(f,b,e,v,n,t,s){
-      if (f.fbq) return;
-      n = f.fbq = function(){
-        n.callMethod ?
-          n.callMethod.apply(n, arguments) : n.queue.push(arguments);
-      };
-      if (!f._fbq) f._fbq = n;
-      n.push = n;
-      n.loaded = true;
-      n.version = "2.0";
-      n.queue = [];
-      t = b.createElement(e);
-      t.async = true;
-      t.src = v;
-      s = b.getElementsByTagName(e)[0];
-      s.parentNode.insertBefore(t, s);
-    }(window, document, "script", "https://connect.facebook.net/en_US/fbevents.js");
-
-    fbq("init", "1651551349364459");
-    fbq("track", "PageView");
+    function mark(label) {
+      console.log("[INDEX]", label);
+    }
   </script>
-
-  <noscript>
-    <img height="1" width="1" style="display:none"
-         src="https://www.facebook.com/tr?id=1651551349364459&ev=PageView&noscript=1" />
-  </noscript>
 
   <!-- ============================================================================
        DYNAMIC CSS LAYER (EMPTY — JS will inject evolution rules)
