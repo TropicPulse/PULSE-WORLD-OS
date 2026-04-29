@@ -9,56 +9,6 @@
                minimum-scale=1,
                user-scalable=no">
   <title>Welcome to Tropic Pulse!</title>
-<!-- Google Font -->
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
-
-<!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-HSX89KS63P"></script>
-
-<!-- Unified Module Script (imports + login logic will go here later) -->
-<script type="module">
-  
-  // Expose analytics globals (Google + FB Pixel) inside module
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){ dataLayer.push(arguments); }
-  gtag('js', new Date());
-  gtag('config', 'G-HSX89KS63P');
-
-  // Disable right‑click + drag
-  document.addEventListener("contextmenu", e => e.preventDefault());
-  document.addEventListener("dragstart", e => e.preventDefault());
-
-  // Facebook Pixel
-  !function(f,b,e,v,n,t,s){
-    if(f.fbq) return;
-    n = f.fbq = function(){
-      n.callMethod ?
-        n.callMethod.apply(n, arguments) : n.queue.push(arguments)
-    };
-    if(!f._fbq) f._fbq = n;
-    n.push = n;
-    n.loaded = true;
-    n.version = '2.0';
-    n.queue = [];
-    t = b.createElement(e);
-    t.async = true;
-    t.src = v;
-    s = b.getElementsByTagName(e)[0];
-    s.parentNode.insertBefore(t, s);
-  }(window, document, 'script', 'https://connect.facebook.net/en_US/fbevents.js');
-
-  fbq('init', '1651551349364459');
-  fbq('track', 'PageView');
-
-  // NOTE:
-  // Your loginBootstrap() and page logic will also live inside THIS SAME MODULE.
-  // That ensures identity(), pulseband, PageScanner, etc. are all in scope.
-</script>
-
-<noscript>
-  <img height="1" width="1" style="display:none"
-       src="https://www.facebook.com/tr?id=1651551349364459&ev=PageView&noscript=1" />
-</noscript>
 
 <style>
 
@@ -761,43 +711,15 @@ text-align: center;
     </div>
   </div>
 <script type="module">
+/* 0. BOOT MEMBRANE — MUST BE FIRST */
+import * as PulseWindow from "./PULSEEvolutionaryWindow.js";
 
-/* ============================================================
-   0. SKIN REFLEX — UNIVERSAL FRONT DOOR
-============================================================ */
-import * as PulseSkinReflex from "./PulseOSSkinReflex.js";
+/* 1. SKIN REFLEX — SIDE‑EFFECT IMPORT, AUTO‑ATTACHES */
+import * as PULSEOSSkinReflex from "./PULSEOSSkinReflex.js"; // PageScannerV12 auto hooks window here
 
-/* ⭐ attachScanner handles:
-      • sessionCheck
-      • routeCheck
-      • pageName / lastPage
-      • identity exposure
-*/
-await PulseSkinReflex.attachScanner();
-
-/* ============================================================
-   1. BOOT MEMBRANE
-============================================================ */
-import PulseWindow from "./PulseEvolutionaryWindow.js";
-
-/* ============================================================
-   LOCAL ERROR SURFACE (unchanged)
-   ============================================================ */
-window.onerror = function (msg, src, line, col) {
-  const div = document.createElement("div");
-  div.style.position = "fixed";
-  div.style.bottom = "0";
-  div.style.left = "0";
-  div.style.right = "0";
-  div.style.background = "rgba(255,0,0,0.85)";
-  div.style.color = "white";
-  div.style.padding = "10px";
-  div.style.fontSize = "14px";
-  div.style.zIndex = "9999";
-  div.style.whiteSpace = "pre-wrap";
-  div.textContent = `🔥 JS ERROR:\n${msg}\n${src}:${line}:${col}`;
-  document.body.appendChild(div);
-};
+function mark(label) {
+  console.log("[INDEX]", label);
+}
 
 function showTPLoader() {
   const el = document.getElementById("t-loading");
