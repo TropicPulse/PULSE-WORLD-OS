@@ -1,6 +1,7 @@
 /* global log */
 // PULSE OS v12‑EVO — PAGE SCANNER INTELLIGENCE LAYER (A1/A2 HYBRID)
 // “DRIFT ENGINE • LINEAGE ENGINE • STRUCTURAL ENGINE • MODULE ENGINE”
+// PLEASE AI THIS IS PAGESCANNER.> THE ONLY PAGESCANNER.. DO NOT TELL ME THIS ISN"T THE PLACE
 // This layer adds:
 //   • Naming Drift Detection
 //   • Lineage Drift Detection
@@ -82,7 +83,26 @@ export const PageScannerV12 = Object.freeze({
       return [];
     }
   },
-
+  // ---------------------------------------------------------
+// Detect and rewrite illegal admin imports (frontend-safe)
+// ---------------------------------------------------------
+rewriteIllegalImports(source = "") {
+  try {
+    // If firebase-admin appears anywhere in the source:
+    if (source.includes("firebase-admin")) {
+      // Replace it with client-side Firebase functions
+      return source.replace(/firebase-admin/g, "firebase/functions");
+    }
+    return source;
+  } catch (err) {
+    try {
+      PulseUIErrors.broadcast(
+        PulseUIErrors.normalizeError(err, "pagescanner.rewriteIllegalImports")
+      );
+    } catch {}
+    return source;
+  }
+},
   // ---------------------------------------------------------
   // Detect module mode drift (ESM vs CJS)
   // ---------------------------------------------------------

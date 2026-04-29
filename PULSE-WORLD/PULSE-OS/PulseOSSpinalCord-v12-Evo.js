@@ -1,35 +1,12 @@
 // ============================================================================
 // FILE: /PULSE-OS/PulseOSSpinalCord.js
-// PULSE OS SPINAL CORD — v13-Evo-Max-Firewall-12.3-Presence
+// PULSE OS SPINAL CORD — v13-Evo-Max-Firewall-12.3-Presence+PageScanner
 // “ORGANISM-WIDE DUAL-BAND SPINE • ADVANTAGE FIELD CONDUCTOR • ROUTE ROOT”
 // CHUNK/PREWARM/CACHE-AWARE • MULTI-PRESENCE-AWARE • FIREWALL-GATED
-// ============================================================================
-//
-// ROLE (v13-Evo-Max-Firewall-12.3-Presence):
-// -----------------------------------------
-// • The ONE TRUE SPINE for the entire Pulse organism (route root).
-// • Dual-band (binary + symbolic) central nervous system wiring layer.
-// • Strict separation of binary, symbolic, and dual impulses.
-// • Receives impulses from UI, GPU, Mesh, Earn, OS, AI, Proxy, Send.
-// • Routes impulses to Router, Cortex, Brain, Organs, and Systems.
-// • Conducts unified advantage field + loop theory across all extensions.
-// • Pure wiring — no cognition, no business logic, no compute.
-// • Enforces Firewall (PulseChunks-v1) at the nervous-system level.
-// • v12.3+ spine-aligned: chunk-aware, prewarm-aware, cache-aware, multi-presence-aware.
-//
-// SAFETY CONTRACT (v13-Evo-Max-Firewall-12.3-Presence):
-// -----------------------------------------------------
-// • No timestamps (no Date.now()).
-// • No nondeterminism, no randomness.
-// • No mutation of external modules.
-// • No backend calls directly (Router only).
-// • Deterministic routing behavior.
-// • Pure wiring — no decisions beyond modeKind + extensionId + firewall verdict.
-// • No direct GPU / FS / DOM / Network calls.
-// • Firewall-aware: refuses unsafe routes, sources, extensions, systems.
-// • Chunk/prewarm/cache/presence surfaces are context-only (no compute here).
+// PASSIVE/ACTIVE PAGESCANNER-AWARE (NO TIMERS, NO POLLING)
 // ============================================================================
 import { prewarmSDN } from "./PulseSDN-Prewarm-v12-EVO.js";
+import { PageScannerV12 } from "./PulseOSSkinReflex-v12-EVO-BINARY-MAX.js";
 
 
 // ============================================================================
@@ -235,6 +212,44 @@ export function createPulseOSSpinalCord({
 }) {
 
   // --------------------------------------------------------------------------
+  // SPINAL-LEVEL PAGESCANNER BRIDGE — ALWAYS-ON PASSIVE/ACTIVE
+  //  • No timers, no polling
+  //  • Called on impulses, routes, firewall decisions, prewarm, health
+  // --------------------------------------------------------------------------
+  const SpinalPageScanner = {
+    emit(event, context = {}) {
+      try {
+        if (!PageScannerV12 || typeof PageScannerV12.buildDriftPacket !== "function") {
+          return;
+        }
+
+        const packet = PageScannerV12.buildDriftPacket({
+          event,
+          layer: "SpinalCord",
+          subsystem: "OS-Spine",
+          spinalIdentity: PulseOSSpinalCordMeta.identity,
+          ...context
+        });
+
+        if (
+          typeof window !== "undefined" &&
+          window.PageScannerAdapter &&
+          typeof window.PageScannerAdapter.onEvent === "function"
+        ) {
+          window.PageScannerAdapter.onEvent(packet);
+        }
+
+        if (typeof packet.severity === "number") {
+          Brain?.log?.("[SpinalCord/PageScanner] event:", event, "severity:", packet.severity, "tooFar:", !!packet.tooFar);
+        }
+      } catch {
+        // Scanner must never break spine
+      }
+    }
+  };
+
+
+  // --------------------------------------------------------------------------
   // INTERNAL STATE — deterministic, no timestamps
   // --------------------------------------------------------------------------
   const SpinalState = {
@@ -305,7 +320,6 @@ export function createPulseOSSpinalCord({
 
     SpinalState.advantageField.lastModeKind = modeKind;
 
-    // Simple deterministic advantage flags (no time, no randomness)
     SpinalState.advantageField.binaryHot =
       SpinalState.loopCounters.binary > SpinalState.loopCounters.symbolic;
     SpinalState.advantageField.symbolicHot =
@@ -314,9 +328,10 @@ export function createPulseOSSpinalCord({
       SpinalState.loopCounters.dual > 0;
   }
 
+
   // --------------------------------------------------------------------------
   // v12.3+ PRESENCE REGISTRATION — multi-presence map (pure metadata)
-// --------------------------------------------------------------------------
+  // --------------------------------------------------------------------------
   function registerPresence(presenceId, { extensionId, systemId, modeKind } = {}) {
     if (!presenceId) return;
     SpinalState.presence.sessions[presenceId] = {
@@ -326,6 +341,13 @@ export function createPulseOSSpinalCord({
     };
     Evolution?.recordLineage?.(`spinal-presence-register:${presenceId}`);
     Brain?.log?.("[SpinalCord] Presence registered:", presenceId);
+
+    SpinalPageScanner.emit("spinal-presence-register", {
+      presenceId,
+      extensionId: extensionId || null,
+      systemId: systemId || null,
+      modeKind: modeKind || "symbolic"
+    });
   }
 
   function unregisterPresence(presenceId) {
@@ -334,12 +356,17 @@ export function createPulseOSSpinalCord({
       delete SpinalState.presence.sessions[presenceId];
       Evolution?.recordLineage?.(`spinal-presence-unregister:${presenceId}`);
       Brain?.log?.("[SpinalCord] Presence unregistered:", presenceId);
+
+      SpinalPageScanner.emit("spinal-presence-unregister", {
+        presenceId
+      });
     }
   }
 
+
   // --------------------------------------------------------------------------
   // v12.3+ PREWARM HELPERS — chunk/cache/route prewarm (context-only)
-// --------------------------------------------------------------------------
+  // --------------------------------------------------------------------------
   function buildRoutePrewarmContext(source, impulse, impulseSignature) {
     const modeKind = impulse.modeKind || "symbolic";
     const executionContext = impulse.executionContext || {};
@@ -363,7 +390,12 @@ export function createPulseOSSpinalCord({
   function prewarmForImpulse(source, impulse, impulseSignature) {
     const ctx = buildRoutePrewarmContext(source, impulse, impulseSignature);
 
-    // Chunker prewarm (no compute here, just delegation)
+    SpinalPageScanner.emit("spinal-prewarm-context", {
+      source,
+      modeKind: impulse.modeKind || "symbolic",
+      presenceId: ctx.presenceId
+    });
+
     if (SpinalState.prewarm.chunkPrewarmEnabled && Chunker?.prewarmForRoute) {
       try {
         Chunker.prewarmForRoute(ctx);
@@ -373,7 +405,6 @@ export function createPulseOSSpinalCord({
       }
     }
 
-    // Cache prewarm
     if (SpinalState.prewarm.cachePrewarmEnabled && PrewarmCache?.prewarm) {
       try {
         PrewarmCache.prewarm(ctx);
@@ -383,7 +414,6 @@ export function createPulseOSSpinalCord({
       }
     }
 
-    // Presence mesh notification (multi-presence awareness)
     if (PresenceMesh?.notifySpineImpulse) {
       try {
         PresenceMesh.notifySpineImpulse(ctx);
@@ -400,22 +430,54 @@ export function createPulseOSSpinalCord({
   // --------------------------------------------------------------------------
   function firewallBlocksRoute(routeType) {
     if (!Firewall || typeof Firewall.isBlockedRoute !== "function") return false;
-    return !!Firewall.isBlockedRoute(routeType);
+    const blocked = !!Firewall.isBlockedRoute(routeType);
+
+    if (blocked) {
+      SpinalPageScanner.emit("spinal-firewall-route-block", {
+        routeType
+      });
+    }
+
+    return blocked;
   }
 
   function firewallBlocksSource(source) {
     if (!Firewall || typeof Firewall.isBlockedSource !== "function") return false;
-    return !!Firewall.isBlockedSource(source);
+    const blocked = !!Firewall.isBlockedSource(source);
+
+    if (blocked) {
+      SpinalPageScanner.emit("spinal-firewall-source-block", {
+        source
+      });
+    }
+
+    return blocked;
   }
 
   function firewallBlocksExtension(extensionId) {
     if (!Firewall || typeof Firewall.isBlockedExtension !== "function") return false;
-    return !!Firewall.isBlockedExtension(extensionId);
+    const blocked = !!Firewall.isBlockedExtension(extensionId);
+
+    if (blocked) {
+      SpinalPageScanner.emit("spinal-firewall-extension-block", {
+        extensionId
+      });
+    }
+
+    return blocked;
   }
 
   function firewallBlocksSystem(systemId) {
     if (!Firewall || typeof Firewall.isBlockedSystem !== "function") return false;
-    return !!Firewall.isBlockedSystem(systemId);
+    const blocked = !!Firewall.isBlockedSystem(systemId);
+
+    if (blocked) {
+      SpinalPageScanner.emit("spinal-firewall-system-block", {
+        systemId
+      });
+    }
+
+    return blocked;
   }
 
 
@@ -425,7 +487,6 @@ export function createPulseOSSpinalCord({
   function registerExtension(extensionId, kind, meta = {}) {
     if (!extensionId || !kind) return;
 
-    // Firewall gate
     if (firewallBlocksExtension(extensionId)) {
       warn("[SpinalCord] Firewall blocked unsafe extension:", extensionId, kind);
       Evolution?.recordLineage?.(`spinal-firewall-ext-block:${extensionId}:${kind}`);
@@ -435,12 +496,16 @@ export function createPulseOSSpinalCord({
     SpinalState.extensions[extensionId] = { kind, meta };
     Evolution?.recordLineage?.(`spinal-ext-register:${extensionId}:${kind}`);
     log("[SpinalCord] Extension registered:", extensionId, kind);
+
+    SpinalPageScanner.emit("spinal-extension-register", {
+      extensionId,
+      kind
+    });
   }
 
   function registerSystem(systemId, kind, meta = {}) {
     if (!systemId || !kind) return;
 
-    // Firewall gate
     if (firewallBlocksSystem(systemId)) {
       warn("[SpinalCord] Firewall blocked unsafe system:", systemId, kind);
       Evolution?.recordLineage?.(`spinal-firewall-sys-block:${systemId}:${kind}`);
@@ -450,6 +515,11 @@ export function createPulseOSSpinalCord({
     SpinalState.systems[systemId] = { kind, meta };
     Evolution?.recordLineage?.(`spinal-sys-register:${systemId}:${kind}`);
     log("[SpinalCord] System registered:", systemId, kind);
+
+    SpinalPageScanner.emit("spinal-system-register", {
+      systemId,
+      kind
+    });
   }
 
 
@@ -460,7 +530,6 @@ export function createPulseOSSpinalCord({
     if (!source || typeof handler !== "function") return;
     if (!["binary", "symbolic", "dual"].includes(modeKind)) return;
 
-    // Firewall gate
     if (firewallBlocksSource(source)) {
       warn("[SpinalCord] Firewall blocked unsafe receptor source:", source, modeKind);
       Evolution?.recordLineage?.(`spinal-firewall-receptor-block:${modeKind}:${source}`);
@@ -473,6 +542,11 @@ export function createPulseOSSpinalCord({
 
     Evolution?.recordLineage?.(`spinal-register-${modeKind}:${source}`);
     log("[SpinalCord] Receptor registered:", modeKind, source);
+
+    SpinalPageScanner.emit("spinal-receptor-register", {
+      modeKind,
+      source
+    });
   }
 
   function unregisterReceptor(modeKind, source, handler) {
@@ -484,6 +558,11 @@ export function createPulseOSSpinalCord({
 
     Evolution?.recordLineage?.(`spinal-unregister-${modeKind}:${source}`);
     log("[SpinalCord] Receptor unregistered:", modeKind, source);
+
+    SpinalPageScanner.emit("spinal-receptor-unregister", {
+      modeKind,
+      source
+    });
   }
 
 
@@ -491,14 +570,19 @@ export function createPulseOSSpinalCord({
   // IMPULSE EMISSION — strict dual-band conduction + advantage field + firewall
   // --------------------------------------------------------------------------
   function emitImpulse(source, impulse = {}) {
-    const modeKind = impulse.modeKind || "symbolic"; // binary | symbolic | dual
+    const modeKind = impulse.modeKind || "symbolic";
     const executionContext = impulse.executionContext || {};
     const pressureSnapshot = impulse.pressureSnapshot || {};
 
-    // Firewall gate: block unsafe impulse sources
     if (firewallBlocksSource(source)) {
       warn("[SpinalCord] Firewall blocked unsafe impulse source:", source, modeKind);
       Evolution?.recordLineage?.(`spinal-firewall-impulse-block:${modeKind}:${source}`);
+
+      SpinalPageScanner.emit("spinal-impulse-blocked", {
+        source,
+        modeKind
+      });
+
       return;
     }
 
@@ -511,10 +595,15 @@ export function createPulseOSSpinalCord({
       executionContext
     });
 
-    // v12.3+ route prewarm surfaces (chunk/cache/presence) — context-only
+    SpinalPageScanner.emit("spinal-impulse", {
+      source,
+      modeKind,
+      impulseSignature,
+      advantageField: SpinalState.advantageField
+    });
+
     prewarmForImpulse(source, impulse, impulseSignature);
 
-    // Emit spinal impulse event (no timestamps)
     EventBus?.emit?.("spinal:impulse", {
       source,
       modeKind,
@@ -525,7 +614,6 @@ export function createPulseOSSpinalCord({
       loopCounters: SpinalState.loopCounters
     });
 
-    // Strict separation
     const bucket = SpinalState.receptors[modeKind];
     const set = bucket?.[source];
 
@@ -535,6 +623,10 @@ export function createPulseOSSpinalCord({
           handler(impulse);
         } catch (err) {
           warn("[SpinalCord] Receptor handler error:", source, err);
+          SpinalPageScanner.emit("spinal-receptor-error", {
+            source,
+            modeKind
+          });
         }
       }
     }
@@ -549,7 +641,6 @@ export function createPulseOSSpinalCord({
   async function routeToOrgan(routeType, payload = {}) {
     Evolution?.recordLineage?.("spinal-route-organ");
 
-    // Firewall gate: block unsafe routes
     if (firewallBlocksRoute(routeType)) {
       warn("[SpinalCord] Firewall blocked unsafe organ route:", routeType);
       Evolution?.recordLineage?.(`spinal-firewall-route-organ-block:${routeType}`);
@@ -558,6 +649,11 @@ export function createPulseOSSpinalCord({
         routeType,
         reason: "firewallBlocked"
       });
+
+      SpinalPageScanner.emit("spinal-route-organ-blocked", {
+        routeType
+      });
+
       return {
         error: "firewallBlocked",
         kind: "organ",
@@ -568,8 +664,17 @@ export function createPulseOSSpinalCord({
 
     if (!Router?.route) {
       warn("[SpinalCord] Router missing route() — cannot route to organ.");
+
+      SpinalPageScanner.emit("spinal-route-organ-router-missing", {
+        routeType
+      });
+
       return { error: "routerMissing", details: "Router.route not available" };
     }
+
+    SpinalPageScanner.emit("spinal-route-organ-call", {
+      routeType
+    });
 
     const res = await Router.route(routeType, {
       ...payload,
@@ -586,13 +691,17 @@ export function createPulseOSSpinalCord({
     });
 
     EventBus?.emit?.("spinal:route:organ", { routeType, payload, res });
+
+    SpinalPageScanner.emit("spinal-route-organ-response", {
+      routeType
+    });
+
     return res;
   }
 
   async function routeToBackend(endpointType, payload = {}) {
     Evolution?.recordLineage?.("spinal-route-backend");
 
-    // Firewall gate: block unsafe backend routes
     if (firewallBlocksRoute(endpointType)) {
       warn("[SpinalCord] Firewall blocked unsafe backend route:", endpointType);
       Evolution?.recordLineage?.(`spinal-firewall-route-backend-block:${endpointType}`);
@@ -601,6 +710,11 @@ export function createPulseOSSpinalCord({
         routeType: endpointType,
         reason: "firewallBlocked"
       });
+
+      SpinalPageScanner.emit("spinal-route-backend-blocked", {
+        endpointType
+      });
+
       return {
         error: "firewallBlocked",
         kind: "backend",
@@ -611,8 +725,17 @@ export function createPulseOSSpinalCord({
 
     if (!Router?.route) {
       warn("[SpinalCord] Router missing route() — cannot route to backend.");
+
+      SpinalPageScanner.emit("spinal-route-backend-router-missing", {
+        endpointType
+      });
+
       return { error: "routerMissing", details: "Router.route not available" };
     }
+
+    SpinalPageScanner.emit("spinal-route-backend-call", {
+      endpointType
+    });
 
     const res = await Router.route(endpointType, {
       ...payload,
@@ -629,6 +752,11 @@ export function createPulseOSSpinalCord({
     });
 
     EventBus?.emit?.("spinal:route:backend", { endpointType, payload, res });
+
+    SpinalPageScanner.emit("spinal-route-backend-response", {
+      endpointType
+    });
+
     return res;
   }
 
@@ -640,11 +768,16 @@ export function createPulseOSSpinalCord({
     SpinalState.healthScore = score;
     EventBus?.emit?.("spinal:health:update", { score });
     Evolution?.updateOrganHealth?.("PulseOSSpinalCord", score);
+
+    SpinalPageScanner.emit("spinal-health-update", {
+      score
+    });
   }
 
   function getHealth() {
     return SpinalState.healthScore;
   }
+
 
   // --------------------------------------------------------------------------
   // PUBLIC SPINAL CORD SURFACE
@@ -677,18 +810,25 @@ export function createPulseOSSpinalCord({
     getHealth
   };
 
+
   // --------------------------------------------------------------------------
   // SDN PREWARM ENGINE — Spinal Reflex Ignition
   // --------------------------------------------------------------------------
   try {
     prewarmSDN(PulseOSSpinalCord);
     Brain?.log?.("[PulseOSSpinalCord] SDN prewarm complete (reflex arcs hot).");
+
+    SpinalPageScanner.emit("spinal-sdn-prewarm-complete", {});
   } catch (err) {
     warn?.("[PulseOSSpinalCord] SDN prewarm failed:", err);
+
+    SpinalPageScanner.emit("spinal-sdn-prewarm-error", {});
   }
 
-  Brain?.log?.("[PulseOSSpinalCord v13-Evo-Max-Firewall-12.3-Presence] Initialized organism-wide dual-band spinal cord with firewall gating, chunk/cache prewarm, and multi-presence spine.");
+  Brain?.log?.("[PulseOSSpinalCord v13-Evo-Max-Firewall-12.3-Presence] Initialized organism-wide dual-band spinal cord with firewall gating, chunk/cache prewarm, multi-presence spine, and PageScanner spine-level intel.");
   Evolution?.recordLineage?.("spinal-init-v13-firewall-12.3-presence");
+
+  SpinalPageScanner.emit("spinal-init", {});
 
   return PulseOSSpinalCord;
 }
