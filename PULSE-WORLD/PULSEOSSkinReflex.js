@@ -28,7 +28,7 @@ const PageScannerV12 = Object.freeze({
     } catch (err) {
       try {
         PulseUIErrors.broadcast(
-          PulseUIErrors.normalize(err, "pagescanner.extractVars")
+          PulseUIErrors.normalizeError(err, "pagescanner.extractVars")
         );
       } catch {}
       return [];
@@ -47,7 +47,7 @@ const PageScannerV12 = Object.freeze({
     } catch (err) {
       try {
         PulseUIErrors.broadcast(
-          PulseUIErrors.normalize(err, "pagescanner.normalize")
+          PulseUIErrors.normalizeError(err, "pagescanner.normalize")
         );
       } catch {}
       return "";
@@ -77,7 +77,7 @@ const PageScannerV12 = Object.freeze({
     } catch (err) {
       try {
         PulseUIErrors.broadcast(
-          PulseUIErrors.normalize(err, "pagescanner.detectLineage")
+          PulseUIErrors.normalizeError(err, "pagescanner.detectLineage")
         );
       } catch {}
       return [];
@@ -100,7 +100,7 @@ const PageScannerV12 = Object.freeze({
     } catch (err) {
       try {
         PulseUIErrors.broadcast(
-          PulseUIErrors.normalize(err, "pagescanner.detectModuleMode")
+          PulseUIErrors.normalizeError(err, "pagescanner.detectModuleMode")
         );
       } catch {}
       return Object.freeze({ esm: false, cjs: false, mixed: false });
@@ -123,7 +123,7 @@ const PageScannerV12 = Object.freeze({
     } catch (err) {
       try {
         PulseUIErrors.broadcast(
-          PulseUIErrors.normalize(err, "pagescanner.detectExportDrift")
+          PulseUIErrors.normalizeError(err, "pagescanner.detectExportDrift")
         );
       } catch {}
       return Object.freeze({
@@ -183,7 +183,7 @@ const PageScannerV12 = Object.freeze({
     } catch (err) {
       try {
         PulseUIErrors.broadcast(
-          PulseUIErrors.normalize(err, "pagescanner.detectStructural")
+          PulseUIErrors.normalizeError(err, "pagescanner.detectStructural")
         );
       } catch {}
       return Object.freeze({
@@ -223,7 +223,7 @@ const PageScannerV12 = Object.freeze({
     } catch (err) {
       try {
         PulseUIErrors.broadcast(
-          PulseUIErrors.normalize(err, "pagescanner.detectContract")
+          PulseUIErrors.normalizeError(err, "pagescanner.detectContract")
         );
       } catch {}
       return Object.freeze({
@@ -253,7 +253,7 @@ const PageScannerV12 = Object.freeze({
     } catch (err) {
       try {
         PulseUIErrors.broadcast(
-          PulseUIErrors.normalize(err, "pagescanner.detectPathDrift")
+          PulseUIErrors.normalizeError(err, "pagescanner.detectPathDrift")
         );
       } catch {}
       return null;
@@ -289,7 +289,7 @@ const PageScannerV12 = Object.freeze({
     } catch (err) {
       try {
         PulseUIErrors.broadcast(
-          PulseUIErrors.normalize(err, "pagescanner.buildDriftPacket")
+          PulseUIErrors.normalizeError(err, "pagescanner.buildDriftPacket")
         );
       } catch {}
       return Object.freeze({
@@ -461,7 +461,7 @@ const RouteMemory = {
       return message + "::" + top;
     } catch (err) {
       PulseUIErrors.broadcast(
-        PulseUIErrors.normalize(err, "skinreflex.routememory.makeKey")
+        PulseUIErrors.normalizeError(err, "skinreflex.routememory.makeKey")
       );
       return message + "::NO_FRAME";
     }
@@ -478,7 +478,7 @@ const RouteMemory = {
       return "criticalDegrade";
     } catch (err) {
       PulseUIErrors.broadcast(
-        PulseUIErrors.normalize(err, "skinreflex.routememory.classifyTier")
+        PulseUIErrors.normalizeError(err, "skinreflex.routememory.classifyTier")
       );
       return "microDegrade";
     }
@@ -514,7 +514,7 @@ const RouteMemory = {
       });
     } catch (err) {
       PulseUIErrors.broadcast(
-        PulseUIErrors.normalize(err, "skinreflex.routememory.remember")
+        PulseUIErrors.normalizeError(err, "skinreflex.routememory.remember")
       );
     }
   },
@@ -540,7 +540,7 @@ const RouteMemory = {
       });
     } catch (err) {
       PulseUIErrors.broadcast(
-        PulseUIErrors.normalize(err, "skinreflex.routememory.markDegraded")
+        PulseUIErrors.normalizeError(err, "skinreflex.routememory.markDegraded")
       );
     }
   },
@@ -563,7 +563,7 @@ const RouteMemory = {
       return entry.routeTrace;
     } catch (err) {
       PulseUIErrors.broadcast(
-        PulseUIErrors.normalize(err, "skinreflex.routememory.recall")
+        PulseUIErrors.normalizeError(err, "skinreflex.routememory.recall")
       );
       return null;
     }
@@ -575,7 +575,7 @@ const RouteMemory = {
       return this.store[key] || null;
     } catch (err) {
       PulseUIErrors.broadcast(
-        PulseUIErrors.normalize(err, "skinreflex.routememory.getEntry")
+        PulseUIErrors.normalizeError(err, "skinreflex.routememory.getEntry")
       );
       return null;
     }
@@ -621,7 +621,7 @@ async function sessionCheck() {
     return id;
   } catch (err) {
     PulseUIErrors.broadcast(
-      PulseUIErrors.normalize(err, "skinreflex.sessionCheck")
+      PulseUIErrors.normalizeError(err, "skinreflex.sessionCheck")
     );
     return null;
   }
@@ -670,7 +670,7 @@ function routeCheck() {
 
   } catch (err) {
     PulseUIErrors.broadcast(
-      PulseUIErrors.normalize(err, "skinreflex.routeCheck")
+      PulseUIErrors.normalizeError(err, "skinreflex.routeCheck")
     );
     return { needsHealing: false };
   }
@@ -693,7 +693,7 @@ export async function getAuth(jwtToken) {
     });
   } catch (err) {
     PulseUIErrors.broadcast(
-      PulseUIErrors.normalize(err, "skinreflex.getAuth")
+      PulseUIErrors.normalizeError(err, "skinreflex.getAuth")
     );
     return null;
   }
@@ -712,7 +712,7 @@ export async function getHook(name, payload = {}) {
     });
   } catch (err) {
     PulseUIErrors.broadcast(
-      PulseUIErrors.normalize(err, "skinreflex.getHook")
+      PulseUIErrors.normalizeError(err, "skinreflex.getHook")
     );
     return null;
   }
@@ -730,7 +730,7 @@ export async function getMap(mapName) {
     });
   } catch (err) {
     PulseUIErrors.broadcast(
-      PulseUIErrors.normalize(err, "skinreflex.getMap")
+      PulseUIErrors.normalizeError(err, "skinreflex.getMap")
     );
     return null;
   }
@@ -749,7 +749,7 @@ export async function callHelper(helperName, payload = {}) {
     });
   } catch (err) {
     PulseUIErrors.broadcast(
-      PulseUIErrors.normalize(err, "skinreflex.callHelper")
+      PulseUIErrors.normalizeError(err, "skinreflex.callHelper")
     );
     return null;
   }
@@ -803,7 +803,7 @@ export async function attachScanner() {
 
   } catch (err) {
     PulseUIErrors.broadcast(
-      PulseUIErrors.normalize(err, "skinreflex.attachScanner")
+      PulseUIErrors.normalizeError(err, "skinreflex.attachScanner")
     );
     return null;
   }
@@ -821,7 +821,7 @@ export function membraneAlive(origin = "unknown") {
     }
   } catch (err) {
     PulseUIErrors.broadcast(
-      PulseUIErrors.normalize(err, "skinreflex.membraneAlive")
+      PulseUIErrors.normalizeError(err, "skinreflex.membraneAlive")
     );
   }
 }
@@ -850,7 +850,7 @@ function emitPageScannerIntel(context = {}) {
     }
   } catch (err) {
     PulseUIErrors.broadcast(
-      PulseUIErrors.normalize(err, "pagescanner.emitIntel")
+      PulseUIErrors.normalizeError(err, "pagescanner.emitIntel")
     );
   }
 }
@@ -883,7 +883,7 @@ function emitPageScannerIntel(context = {}) {
     // v12‑EVO: forward to error spine
     try {
       PulseUIErrors.broadcast(
-        PulseUIErrors.normalize(err, "pagescanner.attachIntel")
+        PulseUIErrors.normalizeError(err, "pagescanner.attachIntel")
       );
     } catch {}
   }
@@ -919,7 +919,7 @@ if (hasWindow && typeof window.addEventListener === "function") {
       // ========================================================================
       try {
         PulseUIErrors.broadcast(
-          PulseUIErrors.normalize(
+          PulseUIErrors.normalizeError(
             event.error || msg,
             "skinreflex.window.error"
           )
@@ -959,7 +959,7 @@ if (hasWindow && typeof window.addEventListener === "function") {
           }
         } catch (err) {
           PulseUIErrors.broadcast(
-            PulseUIErrors.normalize(err, "skinreflex.localDiagnostics")
+            PulseUIErrors.normalizeError(err, "skinreflex.localDiagnostics")
           );
         }
       })();
@@ -1223,7 +1223,7 @@ if (hasWindow && typeof window.addEventListener === "function") {
 
       } catch (intelErr) {
         PulseUIErrors.broadcast(
-          PulseUIErrors.normalize(intelErr, "pagescanner.driftIntel")
+          PulseUIErrors.normalizeError(intelErr, "pagescanner.driftIntel")
         );
       }
 
@@ -1305,7 +1305,7 @@ if (hasWindow && typeof window.addEventListener === "function") {
         });
       } catch (err) {
         PulseUIErrors.broadcast(
-          PulseUIErrors.normalize(err, "skinreflex.healingFailed")
+          PulseUIErrors.normalizeError(err, "skinreflex.healingFailed")
         );
 
         logProtector("HEALING_FAILED", {
@@ -1343,7 +1343,7 @@ function parseMissingField(message) {
     return null;
   } catch (err) {
     PulseUIErrors.broadcast(
-      PulseUIErrors.normalize(err, "skinreflex.parseMissingField")
+      PulseUIErrors.normalizeError(err, "skinreflex.parseMissingField")
     );
     return null;
   }
