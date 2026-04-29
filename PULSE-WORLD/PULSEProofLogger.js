@@ -14,10 +14,10 @@ const _c = { ...console };
 export const PulseVersion = {
   proof: "12.6",
   logger: "12.6",
-  renderer: "12.0",
-  gpu: "12.0",
-  band: "12.0",
-  legacy: "10.x"
+  renderer: "12.4",
+  gpu: "12.4",
+  band: "12.4",
+  legacy: "11.x"
 };
 
 export const PulseRoles = {
