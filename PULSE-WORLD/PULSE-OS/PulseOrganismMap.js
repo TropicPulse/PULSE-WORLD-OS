@@ -22,14 +22,14 @@ let schema = null;
 let warmDualBand = null;
 function emitDepsPacket(type = "snapshot", payload = {}) {
   const base = {
-    type: "deps-snapshot",
+    type: "map-snapshot",
     timestamp: Date.now(),
     adapters: ["db", "fs", "routes", "schema"]
   };
 
   return Object.freeze({
     meta: DepsMeta,
-    packetType: `deps-${type}`,
+    packetType: `map-${type}`,
     epoch: DepsMeta.evo.epoch,
     layer: DepsMeta.layer,
     role: DepsMeta.role,
