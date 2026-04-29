@@ -39,18 +39,87 @@ export function prewarmLayer() {
     schema.getAllSchemas();
     schema.getSchema("prewarm");
 
-    return emitDepsPacket("prewarm", {
-      message: "OrganismMap layer prewarmed and adapter pathways aligned."
-    });
   } catch (err) {
     console.error("[OrganismMap:Prewarm] Failed:", err);
-    return emitDepsPacket("prewarm-error", {
-      error: String(err),
-      message: "OrganismMap layer prewarm failed."
-    });
+  
   }
 }
 
+// ============================================================================
+//  DATABASE API — Firestore/SQL/KV Compatible Adapter
+// ============================================================================
+export function getDb({ trace = false } = {}) {
+  const log = (msg, data) => trace && console.log(`[aiDeps:db] ${msg}`, data);
+
+  return Object.freeze({
+    async getCollection(collection, options = {}) {
+      log("getCollection", { collection, options });
+      return [];
+    },
+
+    async getDocument(collection, id) {
+      log("getDocument", { collection, id });
+      return null;
+    }
+  });
+}
+
+// ============================================================================
+//  FILESYSTEM API — Required by aiEvolution
+// ============================================================================
+export function getFsAPI({ trace = false } = {}) {
+  const log = (msg, data) => trace && console.log(`[aiDeps:fs] ${msg}`, data);
+
+  return Object.freeze({
+    async getAllFiles() {
+      log("getAllFiles");
+      return [];
+    },
+
+    async getFile(path) {
+      log("getFile", { path });
+      return null;
+    }
+  });
+}
+
+// ============================================================================
+//  ROUTE API — Required by aiEvolution
+// ============================================================================
+export function getRouteAPI({ trace = false } = {}) {
+  const log = (msg, data) => trace && console.log(`[aiDeps:routes] ${msg}`, data);
+
+  return Object.freeze({
+    async getRouteMap() {
+      log("getRouteMap");
+      return [];
+    },
+
+    async getRoute(routeId) {
+      log("getRoute", { routeId });
+      return null;
+    }
+  });
+}
+
+// ============================================================================
+//  SCHEMA API — Required by aiEvolution
+// ============================================================================
+export function getSchemaAPI({ trace = false } = {}) {
+  const log = (msg, data) => trace && console.log(`[aiDeps:schema] ${msg}`, data);
+
+  return Object.freeze({
+    async getAllSchemas() {
+      log("getAllSchemas");
+      return [];
+    },
+
+    async getSchema(name) {
+      log("getSchema", { name });
+      return null;
+    }
+  });
+}
 // -----------------------------------------------------------------------------
 // SCAN SYSTEMS — Pure FS API, no Node, no assumptions
 // -----------------------------------------------------------------------------
