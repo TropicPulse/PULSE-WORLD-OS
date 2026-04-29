@@ -110,7 +110,7 @@ export const PulseOSBrainMeta = Object.freeze({
 // ============================================================================
 import { PulseIQMap } from "./PulseIQMap.js";
 import { PulseOrganismMap } from "./PulseOrganismMap.js";
-import { bootCortex } from "./PulseOSBrainCortex.js";
+import { cortexAPI } from "./PulseOSBrainCortex.js";
 
 
 export const PulseOSBrain = {
@@ -335,7 +335,7 @@ function prewarmPulseOSBrain() {
     };
 
     try {
-      bootCortex({
+      cortexAPI.boot({
         PulseOSBrain,
         PulseIQMap,
         PulseOrganismMap,
@@ -457,7 +457,7 @@ export function cognitiveBootstrap({ intent, organism, iqMap, understanding }) {
   PulseOSBrain.understanding = understanding;
 
   // Boot Cortex with PulseOSBrain as CNS parent
-  PulseOSBrain.cortex = bootCortex({ Brain: PulseOSBrain });
+  PulseOSBrain.cortex = cortexAPI.boot({ Brain: PulseOSBrain });
 
   // Let Cortex initialize Nervous System + organs if it exposes hooks
   PulseOSBrain.cortex?.initializeNervousSystem?.();
