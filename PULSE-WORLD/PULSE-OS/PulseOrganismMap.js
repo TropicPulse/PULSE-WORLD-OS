@@ -93,7 +93,7 @@ function scanPulseSystems(baseDir) {
 // -----------------------------------------------------------------------------
 // Build the full organism map (v12.4+ / v13-EVO)
 // -----------------------------------------------------------------------------
-export function buildPulseOrganismMap(baseDir = process.cwd()) {
+export function buildPulseOrganismMap(baseDir = aiDeps.getFsAPI()) {
   return {
     version: "12.4‑EVO‑SELF‑DESCRIBING‑ORGANISM",
     generatedAt: new Date().toISOString(),
