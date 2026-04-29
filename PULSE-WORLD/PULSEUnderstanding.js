@@ -51,7 +51,7 @@ import { createEarn as PulseEarnSym} from "./PULSE-EARN/PulseEarn-v12.3-Presence
 //  Window already booted ai-v11-Evo and exposed window.PulseBinary.
 // ============================================================================
 import { PulseBinaryOSv11Evo } from "./PULSE-OS/PulseBinaryOS-v11-EVO-MAX.js";
-import { PulseBinaryOrganismBoot } from "./PULSE-AI/ai-v11-Evo.js";
+import { createDualBandOrganism as PulseBinaryOrganismBoot } from "./PULSE-AI/aiDualBand-v11-Evo.js";
 
 import { createBinaryProxy } from "./PULSE-PROXY/PulseBinaryProxy-v11-EVO.js";
 import { createBinaryRouter as PulseRouterBin} from "./PULSE-ROUTER/PulseBinaryRouter-v11-EVO.js";
