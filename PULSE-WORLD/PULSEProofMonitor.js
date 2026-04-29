@@ -57,13 +57,16 @@
 //    not as organism time or contract time.
 //  - No routing, no identity, no organ imports.
 // ============================================================================
-
-
 // ============================================================================
-//  UNIVERSAL GLOBAL RESOLVER — NEVER THROWS
-//  - Works in backend Node, browser, or test harness.
-//  - db is ONLY valid on backend; front‑layer calls become no‑ops.
+//  PulseProofVitalsMonitor.js — v12.6‑EVO
+//  BACKEND‑ONLY VITALS MONITOR • METRICS ORGAN • PROOF‑GRADE TELEMETRY
 // ============================================================================
+
+import { log, warn, error, makeTelemetryPacket } from "./PulseProofLogger.js";
+
+// NOTE: `db` is expected to be a backend Firebase/Firestore handle in scope.
+// If not present, all DB work becomes a silent no‑op.
+
 const g =
   typeof global !== "undefined"
     ? global
@@ -75,19 +78,15 @@ const g =
 
 // Backend‑only globals (db only exists on backend)
 const db    = g.db    || null;
-const log   = g.log   || console.log;
-const warn  = g.warn  || console.warn;
-const error = g.error || console.error;
-
 
 // ============================================================================
-//  ORGAN IDENTITY — v11‑EVO‑BINARY‑MAX
+//  ORGAN IDENTITY — v12.6‑EVO
 // ============================================================================
 export const PulseRole = {
   type: "Organ",
   subsystem: "ProofLayer",
   layer: "ProofMonitor",
-  version: "11.0",
+  version: "12.6‑EVO",
   identity: "PulseProofMonitor",
 
   evo: {
@@ -189,7 +188,7 @@ function renderRouteNode(name, icon, status, color) {
 // ============================================================================
 export function printRouteScan(route = {}) {
   console.groupCollapsed(
-    "%c🔍 ROUTE SCAN — PulseOS v11‑EVO‑BINARY‑MAX",
+    "%c🔍 ROUTE SCAN — PulseOS v12.6‑EVO",
     "color:#03A9F4; font-weight:bold;"
   );
 
@@ -209,9 +208,7 @@ export function printRouteScan(route = {}) {
 
 
 // ============================================================================
-//  INSTANCE LIMIT HINTS — ADVISORY ONLY (NO HARD LAW)
-//  - These are hints for CheckBand / orchestrators.
-//  - They do NOT directly control the organism here.
+//  INSTANCE LIMIT HINTS — ADVISORY ONLY
 // ============================================================================
 export const NORMAL_MAX     = 4;
 export const UPGRADED_MAX   = 8;
@@ -227,26 +224,26 @@ export const PERFORMANCE_LOG_COLLECTION = "UserPerformanceLogs";
 
 
 // ============================================================================
-//  updateUserMetrics — BACKEND‑ONLY VITALS UPDATE
+//  updateUserMetrics — BACKEND‑ONLY VITALS UPDATE (v12.6‑EVO)
 //  - No db → silent no‑op.
-//  - Uses Date.now ONLY as observation timestamps, not organism time.
+//  - Date.now used ONLY as observation timestamps.
 // ============================================================================
 export async function updateUserMetrics(userId, data = {}) {
-  if (!db) return;
+  if (typeof db === "undefined" || !db) return;
   if (!userId || userId === "anonymous") return;
 
-  log(
-    "vitals",
-    `${ICON.update} update`,
-    {
-      userId,
-      bytes: data.bytes ?? 0,
-      durationMs: data.durationMs ?? 0,
-      meshRelay: !!data.meshRelay,
-      meshPing: !!data.meshPing,
-      hubFlag: !!data.hubFlag
-    }
-  );
+  const payload = {
+    userId,
+    bytes: data.bytes ?? 0,
+    durationMs: data.durationMs ?? 0,
+    meshRelay: !!data.meshRelay,
+    meshPing: !!data.meshPing,
+    hubFlag: !!data.hubFlag,
+    band: "dual",
+    binaryArtery: false
+  };
+
+  log("vitals", `${ICON.update} update`, payload);
 
   const ref = db.collection("UserMetrics").doc(userId);
   const now = Date.now(); // observation time only
@@ -293,7 +290,11 @@ export async function updateUserMetrics(userId, data = {}) {
       );
     });
   } catch (err) {
-    error("vitals", `${ICON.error} metrics_update_failed`, { error: String(err) });
+    error("vitals", `${ICON.error} metrics_update_failed`, {
+      error: String(err),
+      band: "dual",
+      binaryArtery: false
+    });
   }
 
   if (ENABLE_PERFORMANCE_LOGGING) {
@@ -309,9 +310,17 @@ export async function updateUserMetrics(userId, data = {}) {
         hubFlag: data.hubFlag ?? false
       });
 
-      log("vitals", `${ICON.ok} snapshot_logged`, { userId });
+      log("vitals", `${ICON.ok} snapshot_logged`, {
+        userId,
+        band: "dual",
+        binaryArtery: false
+      });
     } catch (err) {
-      error("vitals", `${ICON.error} snapshot_failed`, { error: String(err) });
+      error("vitals", `${ICON.error} snapshot_failed`, {
+        error: String(err),
+        band: "dual",
+        binaryArtery: false
+      });
     }
   }
 }
@@ -337,7 +346,9 @@ export function calculateTrustScore(metrics) {
 
   log("vitals", `${ICON.trust} trust_score`, {
     userId: metrics.userId ?? "?",
-    score: final
+    score: final,
+    band: "dual",
+    binaryArtery: false
   });
 
   return final;
@@ -355,7 +366,12 @@ export function calculatePhase(trustScore) {
   else if (trustScore < 75) phase = 3;
   else                      phase = 4;
 
-  log("vitals", `${ICON.phase} phase`, { trustScore, phase });
+  log("vitals", `${ICON.phase} phase`, {
+    trustScore,
+    phase,
+    band: "dual",
+    binaryArtery: false
+  });
 
   return phase;
 }
@@ -377,7 +393,9 @@ export function isHub(metrics) {
       userId: metrics.userId ?? "?",
       relays: metrics.meshRelays,
       hubSignals: metrics.hubSignals,
-      totalRequests: metrics.totalRequests
+      totalRequests: metrics.totalRequests,
+      band: "dual",
+      binaryArtery: false
     });
   }
 
@@ -386,9 +404,7 @@ export function isHub(metrics) {
 
 
 // ============================================================================
-//  INSTANCE ALLOCATION HINT — ADVISORY ONLY
-//  - This does NOT directly spin workers here.
-//  - CheckBand / backend orchestrators consume this as a hint.
+//  INSTANCE ALLOCATION HINT — v12.6‑EVO (ADVISORY ONLY)
 // ============================================================================
 export function allocateInstances(
   phase,
@@ -422,7 +438,9 @@ export function allocateInstances(
     deviceTier,
     earnMode,
     testEarnActive,
-    final
+    final,
+    band: "dual",
+    binaryArtery: false
   });
 
   return final;
@@ -430,7 +448,7 @@ export function allocateInstances(
 
 
 // ============================================================================
-//  EXPORT — VITALS MONITOR SURFACE
+//  EXPORT — VITALS MONITOR SURFACE (v12.6‑EVO)
 // ============================================================================
 export const VitalsMonitor = {
   PulseRole,
