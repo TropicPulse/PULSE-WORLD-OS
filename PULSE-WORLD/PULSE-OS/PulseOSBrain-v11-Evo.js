@@ -312,16 +312,19 @@ export const PulseOSBrain = {
 // ============================================================================
 function prewarmPulseOSBrain() {
   try {
+    const iq = PulseOSBrain.PulseIQMap || {};
+    const organism = PulseOSBrain.PulseOrganismMap || {};
+
     // Touch IQ map entries (design + logging + long-term memory)
-    const iqKeys = Object.keys(PulseIQMap || {});
+    const iqKeys = Object.keys(iq);
     for (const k of iqKeys) {
-      const _ = PulseIQMap[k];
+      const _ = iq[k];
     }
 
     // Touch organism map entries (organ layout + lineage)
-    const orgKeys = Object.keys(PulseOrganismMap || {});
+    const orgKeys = Object.keys(organism);
     for (const k of orgKeys) {
-      const _ = PulseOrganismMap[k];
+      const _ = organism[k];
     }
 
     // Prewarm Cortex boot wiring with a minimal synthetic config
@@ -336,9 +339,9 @@ function prewarmPulseOSBrain() {
 
     try {
       cortexAPI.boot({
-        PulseOSBrain,
-        PulseIQMap,
-        PulseOrganismMap,
+        Brain: PulseOSBrain,
+        PulseIQMap: iq,
+        PulseOrganismMap: organism,
         ...syntheticBootConfig
       });
 
@@ -352,6 +355,7 @@ function prewarmPulseOSBrain() {
     return false;
   }
 }
+
 
 
 // ============================================================================
