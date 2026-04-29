@@ -3,13 +3,13 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport"
-      content="width=device-width,
-               initial-scale=1,
-               maximum-scale=1,
-               minimum-scale=1,
-               user-scalable=no">
+        content="width=device-width,
+                 initial-scale=1,
+                 maximum-scale=1,
+                 minimum-scale=1,
+                 user-scalable=no">
 
-  <title>Pulse Evolutionary Page — v11-EVO</title>
+  <title>Pulse EvolutionaryTrustedPage — v13-EVO-PRIME</title>
 
   <!-- Google Font -->
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
@@ -32,31 +32,31 @@
        ============================================================================ -->
   <script type="module">
     /* ============================================================
-   0. SKIN REFLEX — UNIVERSAL FRONT DOOR
-============================================================ */
-import * as PulseSkinReflex from "./PulseOSSkinReflex.js";
+       0. SKIN REFLEX — UNIVERSAL FRONT DOOR
+       ------------------------------------------------------------
+       • sessionCheck
+       • routeCheck
+       • pageName / lastPageU
+       • identity exposure
+       ============================================================ */
+    import * as PulseSkinReflex from "./PulseOSSkinReflex.js";
 
-/* ⭐ attachScanner handles:
-      • sessionCheck
-      • routeCheck
-      • pageName / lastPageU
-      • identity exposure
-*/
-await PulseSkinReflex.attachScanner();
+    await PulseSkinReflex.attachScanner();
 
-/* ============================================================
-   1. BOOT MEMBRANE
-============================================================ */
-import PulseWindow from "./PulseEvolutionaryWindow.js";
-/* ============================================================
-   1. UI HELPERS
-   ============================================================ */
+    /* ============================================================
+       1. BOOT MEMBRANE (WINDOW ORGAN)
+       ============================================================ */
+    import PulseWindow from "./PulseEvolutionaryWindow.js";
+
+    /* ============================================================
+       2. UI HELPERS
+       ============================================================ */
 
     // Analytics
     window.dataLayer = window.dataLayer || [];
     function gtag(){ dataLayer.push(arguments); }
-    gtag('js', new Date());
-    gtag('config', 'G-HSX89KS63P');
+    gtag("js", new Date());
+    gtag("config", "G-HSX89KS63P");
 
     // Disable right‑click + drag
     document.addEventListener("contextmenu", e => e.preventDefault());
@@ -64,30 +64,30 @@ import PulseWindow from "./PulseEvolutionaryWindow.js";
 
     // Facebook Pixel
     !function(f,b,e,v,n,t,s){
-      if(f.fbq) return;
+      if (f.fbq) return;
       n = f.fbq = function(){
         n.callMethod ?
-          n.callMethod.apply(n, arguments) : n.queue.push(arguments)
+          n.callMethod.apply(n, arguments) : n.queue.push(arguments);
       };
-      if(!f._fbq) f._fbq = n;
+      if (!f._fbq) f._fbq = n;
       n.push = n;
       n.loaded = true;
-      n.version = '2.0';
+      n.version = "2.0";
       n.queue = [];
       t = b.createElement(e);
       t.async = true;
       t.src = v;
       s = b.getElementsByTagName(e)[0];
       s.parentNode.insertBefore(t, s);
-    }(window, document, 'script', 'https://connect.facebook.net/en_US/fbevents.js');
+    }(window, document, "script", "https://connect.facebook.net/en_US/fbevents.js");
 
-    fbq('init', '1651551349364459');
-    fbq('track', 'PageView');
+    fbq("init", "1651551349364459");
+    fbq("track", "PageView");
   </script>
 
   <noscript>
     <img height="1" width="1" style="display:none"
-        src="https://www.facebook.com/tr?id=1651551349364459&ev=PageView&noscript=1" />
+         src="https://www.facebook.com/tr?id=1651551349364459&ev=PageView&noscript=1" />
   </noscript>
 
   <!-- ============================================================================
@@ -98,17 +98,22 @@ import PulseWindow from "./PulseEvolutionaryWindow.js";
 
 <body>
   <!-- ============================================================================
-        HTML LAYER (SKELETON)
-        ----------------------------------------------------------------------------
-        EMPTY. The organism grows its own body.
-  ============================================================================ -->
+       HTML LAYER (SKELETON)
+       ----------------------------------------------------------------------------
+       EvolutionaryTrustedPage Skeleton
+       --------------------------------
+       This single wrapper can reconstruct into:
+         • Any internal page (trusted intent)
+         • The portal boundary (untrusted intent)
+       The organism grows its own body dynamically.
+       ============================================================================ -->
   <div id="evo-wrapper"></div>
 
   <!-- ============================================================================
-        JS LAYER (CORTEX)
-        ----------------------------------------------------------------------------
-        Full Pulse‑UI organism wiring
-  ============================================================================ -->
+       JS LAYER (CORTEX)
+       ----------------------------------------------------------------------------
+       Full Pulse‑UI organism wiring + trust-gated portal/page loader
+       ============================================================================ -->
   <script type="module">
     // Import icons
     import { PulseIcons } from "./PULSE-UI/PulseEvolutionaryIcons.js";
@@ -130,7 +135,11 @@ import PulseWindow from "./PulseEvolutionaryWindow.js";
 
     const Evolution = {
       getPageLineage() {
-        return { lineage: "v11-evo", stable: true, page: window.location.pathname };
+        return {
+          lineage: "v13-evo-prime",
+          stable: true,
+          page: window.location.pathname
+        };
       },
       recordPageLineage(model) {
         console.log("[Evolution] Lineage recorded:", model);
@@ -138,12 +147,12 @@ import PulseWindow from "./PulseEvolutionaryWindow.js";
     };
 
     // ------------------------------------------------------------------------
-    // INSTANTIATE UI ORGANS — v11‑EVO‑Prime wiring order
+    // INSTANTIATE UI ORGANS — v13‑EVO‑PRIME wiring order
     // ------------------------------------------------------------------------
 
     // 1) Long‑term memory (route‑aware)
     const MemoryOrgan = createPulseEvolutionaryMemory({
-      routeId: window.location.pathname || "PulseEvolutionaryPage"
+      routeId: window.location.pathname || "PulseEvolutionaryTrustedPage"
     });
 
     // 2) Code organ (needs Evolution + Memory + CNS)
@@ -184,32 +193,81 @@ import PulseWindow from "./PulseEvolutionaryWindow.js";
     });
 
     // ------------------------------------------------------------------------
-    // BOOT SEQUENCE — deterministic, drift-proof
+    // BOOT SEQUENCE — EvolutionaryTrustedPage (TRUSTED / UNTRUSTED INTENTS)
     // ------------------------------------------------------------------------
     (async () => {
-      console.log("[BOOT] PulseEvolutionaryPage starting…");
+      console.log("[BOOT] EvolutionaryTrustedPage starting…");
 
-      // 1. Try restore from memory
+      /* ============================================================
+         TRUST GATE — ZERO‑TRAVERSAL SECURITY
+         ------------------------------------------------------------
+         • If trusted   → reconstruct INSIDE organism
+         • If untrusted → reconstruct OUTSIDE portal (window)
+         • No routing for untrusted requests
+         • No traversal of internal systems
+         ============================================================ */
+      const trust =
+        typeof PulseSkinReflex.checkTrust === "function"
+          ? await PulseSkinReflex.checkTrust()
+          : true; // default to trusted if not wired yet
+
+      if (!trust) {
+        console.log("[BOOT] Untrusted session → loading OUTSIDE intent…");
+
+        await BrainOrgan.freshEvolve({
+          type: "portal:outside",
+          payload: {
+            mode: "outside",
+            title: "Portal Boundary",
+            message: "Please authenticate to continue."
+          }
+        });
+
+        // Minimal interface in OUTSIDE mode (no internal routing)
+        window.PulseEvolutionaryPage = {
+          evolve: (payload) =>
+            CodeOrgan.evolve({ type: "portal:update", payload }),
+          memory: MemoryOrgan,
+          brain: BrainOrgan,
+          router: RouterOrgan,
+          binary: BinaryOrgan,
+          impulse: ImpulseOrgan,
+          icons: PulseIcons
+        };
+
+        console.log("[BOOT] EvolutionaryTrustedPage ready in OUTSIDE mode.");
+        return;
+      }
+
+      /* ============================================================
+         TRUSTED MODE — FULL ORGANISM RECONSTRUCTION
+         ------------------------------------------------------------
+         • Restore from memory if possible
+         • Otherwise fresh evolve into internal page
+         • Full routing + internal organs enabled
+         ============================================================ */
+      console.log("[BOOT] Trusted session → loading INSIDE intent…");
+
       const restored = await BrainOrgan.restore();
 
       if (!restored?.ok) {
-        // 2. If no memory, do fresh evolve
         await BrainOrgan.freshEvolve({
-          type: "page:init",
-          payload: { title: "Initial Evolution", content: "Fresh boot." }
+          type: "page:inside",
+          payload: {
+            mode: "inside",
+            title: "PulseOS",
+            content: "Trusted session restored."
+          }
         });
       }
 
-      // 3. Expose global organism interface
+      // Full internal interface in INSIDE mode
       window.PulseEvolutionaryPage = {
         evolve: (payload) =>
           CodeOrgan.evolve({ type: "page:update", payload }),
-
         route: (route, opts) => RouterOrgan.go(route, opts),
-
         encode: (payload) => BinaryOrgan.encode(payload),
         decode: (compressed) => BinaryOrgan.decode(compressed),
-
         memory: MemoryOrgan,
         brain: BrainOrgan,
         router: RouterOrgan,
@@ -218,7 +276,7 @@ import PulseWindow from "./PulseEvolutionaryWindow.js";
         icons: PulseIcons
       };
 
-      console.log("[BOOT] PulseEvolutionaryPage ready.");
+      console.log("[BOOT] EvolutionaryTrustedPage ready in INSIDE mode.");
     })();
   </script>
 </body>
