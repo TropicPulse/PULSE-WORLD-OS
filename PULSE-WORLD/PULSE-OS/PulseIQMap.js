@@ -1,6 +1,7 @@
 // -----------------------------------------------------------------------------
 // PulseIQMapPrime.js — v13‑EVO‑PRIME
 // INTERPRETATION LAYER OF THE GENOME (PulseOrganismMap)
+// Zero top‑level routes. Zero static routing. Fully dynamic.
 // -----------------------------------------------------------------------------
 
 import { PulseOrganismMap } from "./PulseOrganismMap.js";
@@ -8,11 +9,12 @@ import { log, warn, error as logError } from "../PULSEProofLogger.js";
 import { bootCortex } from "./PulseOSBrainCortex.js";
 
 // -----------------------------------------------------------------------------
-// VERSION MAP — carried forward, still text-only
+// VERSION MAP — text‑only, non‑executable, non‑binding
 // -----------------------------------------------------------------------------
 const VERSION_MAP = {
   organism: "v12.3‑PRESENCE‑EVO‑MAX‑PRIME",
   iq: "v13‑EVO‑PRIME",
+
   router: "v12.3‑PRESENCE",
   mesh: "v12.3‑PRESENCE",
   send: "v12.3‑PRESENCE",
@@ -50,14 +52,6 @@ const VERSION_MAP = {
   codeAnalyzer: "v12.3‑CODE‑ANALYZER"
 };
 
-function inferTopLevelFromPath(path = "") {
-  if (!path || typeof path !== "string") return "/";
-  const clean = path.toLowerCase().split("?")[0].split("#")[0];
-  if (clean === "/" || clean === "") return "/";
-  return clean;
-}
-
-
 // -----------------------------------------------------------------------------
 // STATIC ACCESS BLUEPRINTS (Firebase, etc.)
 // -----------------------------------------------------------------------------
@@ -73,7 +67,7 @@ const firebaseAccess = {
 };
 
 // -----------------------------------------------------------------------------
-// FRONTEND / WORLD TOPOLOGY — derived from your description
+// FRONTEND / WORLD TOPOLOGY
 // -----------------------------------------------------------------------------
 const FRONTEND_ROOT = "PULSE-WORLD";
 
@@ -101,7 +95,7 @@ const WORLD_FOLDERS = [
 ];
 
 // -----------------------------------------------------------------------------
-// ORGANISM INTERPRETATION HELPERS (from genome → IQ expectations)
+// ORGANISM INTERPRETATION HELPERS
 // -----------------------------------------------------------------------------
 function buildOrganExpectationsFromGenome(genome) {
   const systems = genome.systems || {};
@@ -114,98 +108,33 @@ function buildOrganExpectationsFromGenome(genome) {
   return organsBySystem;
 }
 
+// -----------------------------------------------------------------------------
+// PAGE EXPECTATIONS — still allowed, but no top‑level routing
+// -----------------------------------------------------------------------------
 function buildPageExpectations() {
-  // Keep your existing page expectations, but this is now the place
-  // where you could dynamically extend based on FRONTEND_SYSTEMS if desired.
   return {
-    "/": ["PulseRouter", "PulseKernel", "PulseEvolutionaryPage"],
+    "/": ["PulseEvolutionaryPage"],
 
-    "/dashboard": [
-      "PulseRouter",
-      "PulseGPU",
-      "LongTermMemory",
-      "PulseEvolutionaryPage"
-    ],
+    "/dashboard": ["PulseEvolutionaryPage"],
+    "/send": ["PulseEvolutionaryPage"],
+    "/forms/send": ["PulseEvolutionaryPage"],
+    "/earn": ["PulseEvolutionaryPage"],
+    "/settings": ["PulseEvolutionaryPage"],
 
-    "/send": [
-      "PulseSendSystem",
-      "BinarySend",
-      "PulseOSShortTermMemory",
-      "PulseEvolutionaryPage"
-    ],
+    "/organism": ["PulseEvolutionaryPage"],
+    "/scanner": ["PulseEvolutionaryPage"],
+    "/scanner/file": ["PulseEvolutionaryPage"],
 
-    "/forms/send": [
-      "PulseSendSystem",
-      "PulseEvolutionaryPage",
-      "DynamicWrapperPage"
-    ],
+    "/proxy": ["PulseEvolutionaryPage"],
+    "/proxy/health": ["PulseEvolutionaryPage"],
+    "/proxy/metrics": ["PulseEvolutionaryPage"],
+    "/proxy/node": ["PulseEvolutionaryPage"],
 
-    "/earn": [
-      "PulseEarn",
-      "PulseEarnSendSystem",
-      "PulseEarnContinuancePulse",
-      "PulseEvolutionaryPage"
-    ],
-
-    "/settings": [
-      "BBB",
-      "LongTermMemory",
-      "PulseOSShortTermMemory",
-      "PulseEvolutionaryPage"
-    ],
-
-    "/organism": [
-      "PulseProxySpine",
-      "PulseBand",
-      "PulseBandCleanup",
-      "PulseHistoryRepair",
-      "BinaryRouter",
-      "BinaryMesh",
-      "BinaryPulse",
-      "PulseEvolutionaryPage"
-    ],
-
-    "/scanner": [
-      "BinaryMRI",
-      "BinaryWaveScanner",
-      "BinaryLoopScanner",
-      "PulseEvolutionaryPage"
-    ],
-
-    "/scanner/file": [
-      "PulseFileScanner",
-      "PulseEvolutionaryPage"
-    ],
-
-    "/proxy": [
-      "PulseProxySpine",
-      "PulseProxyHealer",
-      "PulseEvolutionaryPage"
-    ],
-
-    "/proxy/health": [
-      "PulseProxySpine",
-      "PulseProxyHealer",
-      "PulseEvolutionaryPage"
-    ],
-
-    "/proxy/metrics": [
-      "PulseProxySpine",
-      "PulseProxyHealer",
-      "PulseEvolutionaryPage"
-    ],
-
-    "/proxy/node": [
-      "PulseProxySpine",
-      "PulseEvolutionaryPage"
-    ],
-
-    // Frontend-specific logical pages (can be expanded later)
-    "/admin":      ["PulseEvolutionaryPage"],
-    "/directory":  ["PulseEvolutionaryPage"],
-    "/delivery":   ["PulseEvolutionaryPage"],
-    "/rewards":    ["PulseEvolutionaryPage"],
-    "/userrecords":["PulseEvolutionaryPage"]
+    "/admin": ["PulseEvolutionaryPage"],
+    "/directory": ["PulseEvolutionaryPage"],
+    "/delivery": ["PulseEvolutionaryPage"],
+    "/rewards": ["PulseEvolutionaryPage"],
+    "/userrecords": ["PulseEvolutionaryPage"]
   };
 }
 
@@ -227,7 +156,35 @@ const DRIFT_METADATA = {
 };
 
 // -----------------------------------------------------------------------------
-// PRIME IQ MAP — ASYNC CONSTRUCTION FROM GENOME
+// ROUTE INTERPRETER — v13‑EVO‑PRIME
+// Zero top‑level routes. Zero static routing.
+// -----------------------------------------------------------------------------
+function interpretRoute(path = "", genome, pageExpectations) {
+  if (!path || typeof path !== "string") return "/";
+
+  const clean = path.toLowerCase().split("?")[0].split("#")[0];
+  if (clean === "/" || clean === "") return "/";
+
+  // Direct page expectation match
+  if (pageExpectations[clean]) return clean;
+
+  // Match frontend file (minus .html)
+  const asHtml = clean.replace("/", "") + ".html";
+  if (FRONTEND_FILES.includes(asHtml)) return clean;
+
+  // Match frontend system folder
+  const asSystem = clean.replace("/", "");
+  if (FRONTEND_SYSTEMS.includes(asSystem)) return clean;
+
+  // Match organism genome system
+  if (genome.systems && genome.systems[asSystem]) return clean;
+
+  // Fallback: root
+  return "/";
+}
+
+// -----------------------------------------------------------------------------
+// PRIME IQ MAP — ASYNC CONSTRUCTION
 // -----------------------------------------------------------------------------
 async function buildPulseIQMapPrime() {
   const genome = await PulseOrganismMap;
@@ -236,20 +193,15 @@ async function buildPulseIQMapPrime() {
   const pageExpectations = buildPageExpectations();
 
   return {
-    // ACCESS UTILITIES
     log,
     warn,
     logError,
     bootCortex,
     firebase: firebaseAccess,
 
-    // VERSION MAP
     version: VERSION_MAP,
-
-    // GENOME REFERENCE
     genome,
 
-    // TOPOLOGY
     topology: {
       backendRoot: "tropic-pulse-functions",
       publishRoot: FRONTEND_ROOT,
@@ -258,25 +210,13 @@ async function buildPulseIQMapPrime() {
       worldFolders: WORLD_FOLDERS
     },
 
-    // ORGAN EXPECTATIONS (derived from genome)
     organs: organExpectations,
-
-    // PAGE EXPECTATIONS (currently semi-static, but now centralized)
     pages: pageExpectations,
-
-    // DRIFT / REPAIR
     drift: DRIFT_METADATA,
 
-    // ROUTING HELPERS
-    topLevelRoutes: TOP_LEVEL_ROUTES,
-
-    getTopLevelRouteFor(path) {
-      return inferTopLevelFromPath(path);
-    },
-
-    getRecoveryRoute() {
-      return TOP_LEVEL_ROUTES.fallback;
-    }
+    // NEW — dynamic route interpreter
+    routeInterpreter: (path) =>
+      interpretRoute(path, genome, pageExpectations)
   };
 }
 
