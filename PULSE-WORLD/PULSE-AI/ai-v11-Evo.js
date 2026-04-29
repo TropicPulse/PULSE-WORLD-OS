@@ -51,9 +51,9 @@ export const OrganismKernelMeta = Object.freeze({
 //  IMPORT ALL BINARY ORGANS
 // ============================================================================
 import { AIBinaryAgent } from "./aiBinaryAgent.js";
-import { AIBinaryMemory, AIMemory as AIPulseCoreMemory } from "./aiMemory-v11-Evo.js";        // legacy memory
+import { AIMemory } from "./aiMemory-v11-Evo.js";        // legacy memory
 
-import { AIBinaryAnatomy } from "./aiAnatomy.js";
+import { AIAnatomy as AIBinaryAnatomy } from "./aiAnatomy.js";
 import { AIBinaryGenome } from "./aiGenome.js";
 import { AIBinaryVitals } from "./aiVitals.js";
 import { AIBinaryMetabolism } from "./aiMetabolism.js";
@@ -91,8 +91,8 @@ export function prewarmBinaryOrganism(config = {}) {
     warmAgent.decode?.(warmAgent.encode?.("prewarm"), "string");
 
     // 2) Prewarm Memory (legacy + core)
-    const warmLegacy = new AIBinaryMemory({ id: "prewarm-memory-legacy", maxBits: 2048, trace });
-    const warmCore   = new AIPulseCoreMemory({ id: "prewarm-memory-core", maxBits: 2048, trace });
+    const warmLegacy = new AIMemory({ id: "prewarm-memory-legacy", maxBits: 2048, trace });
+    const warmCore   = new AIMemory({ id: "prewarm-memory-core", maxBits: 2048, trace });
 
     const k = warmAgent.encode("prewarm-key");
     const v = warmAgent.encode("prewarm-value");
@@ -232,13 +232,13 @@ export function createBinaryOrganism({ trace = false } = {}) {
   });
 
   // 2) Memory organs (legacy + new)
-  const memoryLegacy = new AIBinaryMemory({
+  const memoryLegacy = new AIMemory({
     id: "ai-binary-memory-legacy",
     maxBits: 16384,
     trace
   });
 
-  const memoryCore = new AIPulseCoreMemory({
+  const memoryCore = new AIMemory({
     id: "ai-binary-memory-core",
     maxBits: 16384,
     trace
@@ -361,7 +361,7 @@ export function createBinaryOrganism({ trace = false } = {}) {
     encoder,
     memory,          // legacy default
     memoryLegacy,
-    memoryCore,      // new PulseCoreMemory-based organ
+    memoryCore,      // new AIMemory-based organ
     registry,
     evolution,
     immunity,
