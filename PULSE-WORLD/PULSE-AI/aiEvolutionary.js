@@ -1,5 +1,5 @@
 // ============================================================================
-//  PULSE OS v11.3‑EVO — WINDOW‑EVOLUTION ORGAN
+//  PULSE OS v12.3‑Presence — WINDOW‑EVOLUTION ORGAN
 //  Meta‑Observer • Drift Detector • Abstraction Engine • User‑Evolution Guide
 //  PURE META. ZERO MUTATION. ZERO SELF‑MODIFICATION.
 // ============================================================================
@@ -7,8 +7,8 @@
 export const EvolutionMeta = Object.freeze({
   layer: "PulseAIEvolutionFrame",
   role: "EVOLUTION_ORGAN",
-  version: "11.3-EVO",
-  identity: "aiEvolutionary-v11.3-EVO",
+  version: "12.3-Presence",
+  identity: "aiEvolutionary-v12.3-Presence",
 
   evo: Object.freeze({
     driftProof: true,
@@ -33,9 +33,13 @@ export const EvolutionMeta = Object.freeze({
     passiveEvolution: true,
     activeEvolution: true,
 
+    presenceAware: true,
+    packetAware: true,
+    chunkingAware: true,
+
     multiInstanceReady: true,
     readOnly: true,
-    epoch: "11.3-EVO"
+    epoch: "12.3-Presence"
   }),
 
   contract: Object.freeze({
@@ -68,6 +72,27 @@ export const EvolutionMeta = Object.freeze({
     tone: "architectural, analytical, system-level, evolutionary"
   }),
 
+  presence: Object.freeze({
+    organId: "WindowEvolution",
+    organKind: "MetaObserver",
+    physiologyBand: "DualBand",
+    warmStrategy: "prewarm-on-attach",
+    attachStrategy: "per-request",
+    concurrency: "multi-instance",
+    observability: {
+      traceEvents: [
+        "prewarm",
+        "prewarm-error",
+        "drift-observation",
+        "evolution-diff",
+        "abstraction-suggestion",
+        "user-evolution-suggestion",
+        "active-evolution-guidance",
+        "lineage-audit"
+      ]
+    }
+  }),
+
   boundaryReflex() {
     return "This is conceptual system evolution, not a directive.";
   }
@@ -76,20 +101,18 @@ export const EvolutionMeta = Object.freeze({
 import { getOrganismSnapshot } from "./aiDeps.js";
 
 // ============================================================================
-//  PREWARM — v11.3‑EVO (window‑evolution)
+//  PREWARM — v12.3‑Presence (window‑evolution)
 // ============================================================================
 export function prewarmWindowEvolution(dualBand = null, { trace = false } = {}) {
   try {
     if (trace) console.log("[aiWindowEvolution] prewarm: starting");
 
-    // Warm snapshot summarization path
     const snapshot = getOrganismSnapshot(dualBand);
-    summarizeLineageSnapshot(snapshot);
+    const summary = summarizeLineageSnapshot(snapshot);
 
-    // Warm packet emitter + basic flows
     emitWindowEvolutionPacket("prewarm", {
       note: "window-evolution prewarm",
-      snapshotSummary: summarizeLineageSnapshot(snapshot)
+      snapshotSummary: summary
     });
 
     if (trace) console.log("[aiWindowEvolution] prewarm: complete");
@@ -134,7 +157,7 @@ function summarizeLineageSnapshot(snapshot) {
 }
 
 function chunkArray(arr, size = 128) {
-  if (!Array.isArray(arr) || size <= 0) return [];
+  if (!Array.isArray(arr) || size <= 0) return Object.freeze([]);
   const chunks = [];
   for (let i = 0; i < arr.length; i += size) {
     chunks.push(Object.freeze(arr.slice(i, i + size)));
@@ -149,93 +172,118 @@ function emitWindowEvolutionPacket(type, payload, { severity = "info" } = {}) {
     packetId: `window-evo-${type}-${Date.now()}`,
     timestamp: Date.now(),
     epoch: EvolutionMeta.evo.epoch,
+    layer: EvolutionMeta.layer,
+    role: EvolutionMeta.role,
+    identity: EvolutionMeta.identity,
     severity,
     ...payload
   });
 }
 
 // ============================================================================
-//  PUBLIC API — Create Evolution Organ (v11.3‑EVO)
+//  PUBLIC API — Create Evolution Organ (v12.3‑Presence)
 // ============================================================================
 export function createEvolutionOrgan(context, dualBand = null) {
   let driftCount = 0;
 
   // --------------------------------------------------------------------------
   // DRIFT OBSERVATION (pure meta, no mutation)
-// --------------------------------------------------------------------------
+  // --------------------------------------------------------------------------
   function observeDrift(condition, note = "Unspecified drift condition.") {
     if (condition) {
       driftCount += 1;
       context.flagDrift?.(note);
 
-      return emitWindowEvolutionPacket("drift-observation", {
-        drift: true,
-        count: driftCount,
-        note,
-        message:
-          `Evolution organ observed drift: ${note}. ` +
-          `This is a meta‑observation only.`
-      }, { severity: "warn" });
+      return emitWindowEvolutionPacket(
+        "drift-observation",
+        {
+          drift: true,
+          count: driftCount,
+          note,
+          message:
+            `Evolution organ observed drift: ${note}. ` +
+            `This is a meta‑observation only.`
+        },
+        { severity: "warn" }
+      );
     }
 
-    return emitWindowEvolutionPacket("drift-observation", {
-      drift: false
-    }, { severity: "info" });
+    return emitWindowEvolutionPacket(
+      "drift-observation",
+      { drift: false },
+      { severity: "info" }
+    );
   }
 
   // --------------------------------------------------------------------------
   // PROPOSE UPGRADE DIFFS (conceptual only, never applied)
-// --------------------------------------------------------------------------
+  // --------------------------------------------------------------------------
   function proposeDiff(description, payload = {}) {
-    return emitWindowEvolutionPacket("evolution-diff", {
-      description,
-      payload: Object.freeze({ ...payload }),
-      approvalRequired: true,
-      message:
-        `Proposed conceptual upgrade: ${description}. ` +
-        `Requires explicit owner approval.`
-    }, { severity: "info" });
+    return emitWindowEvolutionPacket(
+      "evolution-diff",
+      {
+        description,
+        payload: Object.freeze({ ...payload }),
+        approvalRequired: true,
+        message:
+          `Proposed conceptual upgrade: ${description}. ` +
+          `Requires explicit owner approval.`
+      },
+      { severity: "info" }
+    );
   }
 
   // --------------------------------------------------------------------------
   // ABSTRACT PATTERN SUGGESTIONS (meta‑level only)
-// --------------------------------------------------------------------------
+  // --------------------------------------------------------------------------
   function suggestAbstraction(pattern) {
-    return emitWindowEvolutionPacket("abstraction-suggestion", {
-      pattern,
-      message:
-        `Detected recurring pattern: "${pattern}". ` +
-        `Suggesting higher‑level abstraction for long‑term stability.`
-    }, { severity: "info" });
+    return emitWindowEvolutionPacket(
+      "abstraction-suggestion",
+      {
+        pattern,
+        message:
+          `Detected recurring pattern: "${pattern}". ` +
+          `Suggesting higher‑level abstraction for long‑term stability.`
+      },
+      { severity: "info" }
+    );
   }
 
   // --------------------------------------------------------------------------
   // USER‑FACING EVOLUTION (passive mode)
-// --------------------------------------------------------------------------
+  // --------------------------------------------------------------------------
   function suggestUserEvolution(idea) {
-    return emitWindowEvolutionPacket("user-evolution-suggestion", {
-      idea,
-      message:
-        `Here are conceptual things you *could* explore with this system: ${idea}. ` +
-        `This is optional, non-binding, and does not reveal internal architecture.`
-    }, { severity: "info" });
+    return emitWindowEvolutionPacket(
+      "user-evolution-suggestion",
+      {
+        idea,
+        message:
+          `Here are conceptual things you *could* explore with this system: ${idea}. ` +
+          `This is optional, non-binding, and does not reveal internal architecture.`
+      },
+      { severity: "info" }
+    );
   }
 
   // --------------------------------------------------------------------------
   // USER‑REQUESTED ACTIVE EVOLUTION (on demand)
-// --------------------------------------------------------------------------
+  // --------------------------------------------------------------------------
   function guideActiveEvolution(request) {
-    return emitWindowEvolutionPacket("active-evolution-guidance", {
-      request,
-      message:
-        `Active evolution guidance for: "${request}". ` +
-        `This provides conceptual pathways without exposing internal wiring.`
-    }, { severity: "info" });
+    return emitWindowEvolutionPacket(
+      "active-evolution-guidance",
+      {
+        request,
+        message:
+          `Active evolution guidance for: "${request}". ` +
+          `This provides conceptual pathways without exposing internal wiring.`
+      },
+      { severity: "info" }
+    );
   }
 
   // --------------------------------------------------------------------------
   // LINEAGE AUDIT (binary + symbolic summaries + dual‑band snapshot)
-// --------------------------------------------------------------------------
+  // --------------------------------------------------------------------------
   function auditLineage() {
     const binary = context.binaryVitals || {};
     const symbolic = context.symbolicState || {};
@@ -245,17 +293,21 @@ export function createEvolutionOrgan(context, dualBand = null) {
     const binaryKeys = Object.keys(binary);
     const symbolicKeys = Object.keys(symbolic);
 
-    return emitWindowEvolutionPacket("lineage-audit", {
-      binarySummary: chunkArray(binaryKeys),
-      symbolicSummary: chunkArray(symbolicKeys),
-      snapshotSummary,
-      message:
-        "Lineage audit complete. Observational only. No mutations performed."
-    }, { severity: "info" });
+    return emitWindowEvolutionPacket(
+      "lineage-audit",
+      {
+        binarySummary: chunkArray(binaryKeys),
+        symbolicSummary: chunkArray(symbolicKeys),
+        snapshotSummary,
+        message:
+          "Lineage audit complete. Observational only. No mutations performed."
+      },
+      { severity: "info" }
+    );
   }
 
   // --------------------------------------------------------------------------
-  // PUBLIC EVOLUTION API (v11.3‑EVO)
+  // PUBLIC EVOLUTION API (Presence‑grade)
 // --------------------------------------------------------------------------
   return Object.freeze({
     meta: EvolutionMeta,

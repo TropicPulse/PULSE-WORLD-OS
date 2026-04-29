@@ -1,5 +1,5 @@
 // ============================================================================
-//  aiBinaryHeartbeat.js — Pulse OS v11.3‑EVO Organ
+//  aiBinaryHeartbeat.js — Pulse OS v12.3‑Presence Organ
 //  Binary Heartbeat • Liveness Rhythm • Artery Metrics • Packet‑Ready
 // ============================================================================
 //
@@ -11,8 +11,8 @@
 export const HeartbeatMeta = Object.freeze({
   layer: "BinaryRhythm",
   role: "BINARY_HEARTBEAT",
-  version: "11.3-EVO",
-  identity: "aiBinaryHeartbeat-v11.3-EVO",
+  version: "12.3-Presence",
+  identity: "aiBinaryHeartbeat-v12.3-Presence",
 
   evo: Object.freeze({
     deterministic: true,
@@ -24,14 +24,18 @@ export const HeartbeatMeta = Object.freeze({
     pipelineAware: true,
     arteryAware: true,
 
-    dualband: true,        // ⭐ NEW
-    packetAware: true,     // ⭐ NEW
-    windowAware: true,     // ⭐ NEW (safe artery snapshot)
-    bluetoothReady: true,  // ⭐ NEW (future rhythm channels)
+    dualBandSafe: true,
+    packetAware: true,
+    windowAware: true,
+    bluetoothReady: true,
+
+    presenceAware: true,
+    chunkingAware: true,
+    gpuFriendly: true,
 
     multiInstanceReady: true,
     readOnly: true,
-    epoch: "v11.3-EVO"
+    epoch: "12.3-Presence"
   }),
 
   contract: Object.freeze({
@@ -57,6 +61,22 @@ export const HeartbeatMeta = Object.freeze({
       "maintain artery metrics",
       "stay drift-proof"
     ])
+  }),
+
+  presence: Object.freeze({
+    organId: "BinaryHeartbeat",
+    organKind: "Physiology",
+    physiologyBand: "Binary",
+    warmStrategy: "prewarm-on-attach",
+    attachStrategy: "on-demand",
+    concurrency: "multi-instance",
+    observability: {
+      traceEvents: [
+        "pulse:emitted",
+        "prewarm",
+        "prewarm-error"
+      ]
+    }
   })
 });
 
@@ -69,12 +89,15 @@ function emitHeartbeatPacket(type, payload) {
     packetType: `heartbeat-${type}`,
     timestamp: Date.now(),
     epoch: HeartbeatMeta.evo.epoch,
+    layer: HeartbeatMeta.layer,
+    role: HeartbeatMeta.role,
+    identity: HeartbeatMeta.identity,
     ...payload
   });
 }
 
 // ============================================================================
-//  PREWARM — optional, dualband-aware
+//  PREWARM — presence-aware, dualband-safe
 // ============================================================================
 export function prewarmBinaryHeartbeat(dualBand = null, { trace = false } = {}) {
   try {
@@ -96,7 +119,7 @@ export function prewarmBinaryHeartbeat(dualBand = null, { trace = false } = {}) 
 }
 
 // ============================================================================
-//  ORGAN IMPLEMENTATION — v11.3‑EVO
+//  ORGAN IMPLEMENTATION — v12.3‑Presence
 // ============================================================================
 export class AIBinaryHeartbeat {
   constructor(config = {}) {
@@ -107,7 +130,6 @@ export class AIBinaryHeartbeat {
     this.logger   = config.logger   || null;
     this.trace    = !!config.trace;
 
-    // Future: Bluetooth rhythm channel (not active)
     this.bluetooth = config.bluetooth || null;
 
     if (!this.encoder?.encode) {
@@ -204,7 +226,8 @@ export class AIBinaryHeartbeat {
 
     if (this.pipeline) this.pipeline.run(pulse.bits);
     if (this.reflex)   this.reflex.run(pulse.bits);
-    if (this.logger)   this.logger.logBinary(pulse.bits, { source: "binary-heartbeat" });
+    if (this.logger)
+      this.logger.logBinary(pulse.bits, { source: "binary-heartbeat" });
 
     this._trace("pulse:emitted", {
       bits: pulse.bitLength,
@@ -226,10 +249,9 @@ export class AIBinaryHeartbeat {
 // ============================================================================
 //  FACTORY
 // ============================================================================
-export function createAIBinaryHeartbeat(config) {
+export function createAIBinaryHeartbeat(config = {}) {
   return new AIBinaryHeartbeat(config);
 }
-
 
 if (typeof module !== "undefined") {
   module.exports = {

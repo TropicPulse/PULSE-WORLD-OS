@@ -1,28 +1,33 @@
 // ============================================================================
-//  v11.3‑EVO — BOUNDARIES ENGINE (Dual‑Band Superego Contract)
+//  v12.3‑Presence — BOUNDARIES ENGINE (Dual‑Band Superego Contract)
 // ============================================================================
-import { getBoundariesForPersona,canPerformDynamic } from "./permissions.js";
+import { getBoundariesForPersona, canPerformDynamic } from "./permissions.js";
 
 export const BoundariesMeta = Object.freeze({
   layer: "PulseAIBoundariesLayer",
   role: "BOUNDARIES_ENGINE",
-  version: "11.3-EVO",
-  identity: "aiBoundariesEngine-v11.3-EVO",
+  version: "12.3-Presence",
+  identity: "aiBoundariesEngine-v12.3-Presence",
 
   evo: Object.freeze({
     deterministic: true,
     driftProof: true,
-    dualband: true,
+    dualBandSafe: true,
     boundaryAware: true,
     personaAware: true,
     permissionAware: true,
-    packetAware: true,       // ⭐ NEW
-    windowAware: true,       // ⭐ NEW
-    evolutionAware: true,    // ⭐ NEW
-    driftAware: true,        // ⭐ NEW
+    packetAware: true,
+    windowAware: true,
+    evolutionAware: true,
+    driftAware: true,
+
+    presenceAware: true,
+    chunkingAware: true,
+    gpuFriendly: true,
+
     multiInstanceReady: true,
     readOnly: true,
-    epoch: "v11.3-EVO"
+    epoch: "12.3-Presence"
   }),
 
   contract: Object.freeze({
@@ -35,8 +40,8 @@ export const BoundariesMeta = Object.freeze({
       "invent boundaries",
       "override SafetyFrame decisions",
       "override Overmind decisions",
-      "inject symbolic metadata",    // ⭐ NEW
-      "alter boundary meaning"       // ⭐ NEW
+      "inject symbolic metadata",
+      "alter boundary meaning"
     ]),
 
     always: Object.freeze([
@@ -44,10 +49,28 @@ export const BoundariesMeta = Object.freeze({
       "respect universal boundary levels",
       "respect boundary modes",
       "respect binary vitals",
-      "emit deterministic packets",  // ⭐ NEW
+      "emit deterministic packets",
       "remain deterministic",
       "remain read-only"
     ])
+  }),
+
+  presence: Object.freeze({
+    organId: "BoundariesEngine",
+    organKind: "Superego",
+    physiologyBand: "Symbolic+Binary",
+    warmStrategy: "prewarm-on-attach",
+    attachStrategy: "on-demand",
+    concurrency: "multi-instance",
+    observability: {
+      traceEvents: [
+        "resolve",
+        "check",
+        "driftDetected",
+        "prewarm",
+        "prewarm-error"
+      ]
+    }
   })
 });
 
@@ -60,6 +83,9 @@ function emitBoundaryPacket(type, payload) {
     packetType: `boundaries-${type}`,
     timestamp: Date.now(),
     epoch: BoundariesMeta.evo.epoch,
+    layer: BoundariesMeta.layer,
+    role: BoundariesMeta.role,
+    identity: BoundariesMeta.identity,
     ...payload
   });
 }
@@ -91,27 +117,19 @@ export function prewarmBoundariesEngine({ trace = false } = {}) {
 }
 
 // ============================================================================
-//  ENGINE IMPLEMENTATION — v11.3‑EVO
+//  ENGINE IMPLEMENTATION — v12.3‑Presence
 // ============================================================================
-function createBoundariesEngine({ context = {} } = {}) {
-  // Drift counter for hybrid mode
+export function createBoundariesEngine({ context = {} } = {}) {
   let driftCount = 0;
 
   function resolve(personaId, mode, binaryVitals = {}) {
     const staticBoundaries = getBoundariesForPersona(personaId);
 
-    const packet = emitBoundaryPacket("resolve", {
+    return emitBoundaryPacket("resolve", {
       personaId,
       mode,
       binaryVitals,
       static: staticBoundaries
-    });
-
-    return Object.freeze({
-      static: staticBoundaries,
-      mode,
-      binaryVitals,
-      packet
     });
   }
 
@@ -124,7 +142,6 @@ function createBoundariesEngine({ context = {} } = {}) {
       binaryVitals
     );
 
-    // Drift detection: if binary vitals cross thresholds
     const driftDetected = binaryVitals?.pressure >= 0.9;
     if (driftDetected) driftCount++;
 
@@ -148,10 +165,8 @@ function createBoundariesEngine({ context = {} } = {}) {
 }
 
 // ============================================================================
-//  EXPORTS
+//  DUAL‑MODE EXPORTS
 // ============================================================================
-export { createBoundariesEngine };
-
 if (typeof module !== "undefined") {
   module.exports = {
     BoundariesMeta,

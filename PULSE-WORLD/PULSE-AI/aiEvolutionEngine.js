@@ -1,17 +1,14 @@
 // ============================================================================
-//  aiEvolutionEngine.js
-//  PulseOS Evolution Organ — v11.3‑EVO
-//  Ensures the AI is fully evolved BEFORE helping the user evolve anything.
-//  Provides passive + active user evolution pathways.
-//  Applies factoring, routing, memory overlays, and organism mapping.
+//  aiEvolutionEngine.js — Pulse OS v12.3‑Presence
+//  Evolution Organ • Passive + Active User Evolution • Cross‑Domain Mapping
 //  PURE META. ZERO MUTATION. ZERO RANDOMNESS.
 // ============================================================================
 
 export const EvolutionEngineMeta = Object.freeze({
   layer: "PulseAIEvolutionCortex",
   role: "EVOLUTION_ENGINE",
-  version: "11.3-EVO",
-  identity: "aiEvolutionEngine-v11.3-EVO",
+  version: "12.3-Presence",
+  identity: "aiEvolutionEngine-v12.3-Presence",
 
   evo: Object.freeze({
     driftProof: true,
@@ -29,8 +26,11 @@ export const EvolutionEngineMeta = Object.freeze({
     activeEvolution: true,
 
     packetAware: true,
-    recommendationAware: true,
+    presenceAware: true,
+    chunkingAware: true,
+    gpuFriendly: true,
 
+    recommendationAware: true,
     crossDomainMapping: true,
     organismAware: true,
     memoryOverlayAware: true,
@@ -39,7 +39,8 @@ export const EvolutionEngineMeta = Object.freeze({
     userDrivenEvolutionOnly: true,
     multiInstanceReady: true,
     readOnly: true,
-    epoch: "11.3-EVO"
+
+    epoch: "12.3-Presence"
   }),
 
   contract: Object.freeze({
@@ -74,13 +75,34 @@ export const EvolutionEngineMeta = Object.freeze({
     tone: "architectural, analytical, system-level, evolutionary"
   }),
 
+  presence: Object.freeze({
+    organId: "EvolutionEngine",
+    organKind: "MetaCortex",
+    physiologyBand: "DualBand",
+    warmStrategy: "prewarm-on-boot",
+    attachStrategy: "per-request",
+    concurrency: "multi-instance",
+    observability: {
+      traceEvents: [
+        "prewarm",
+        "prewarm-error",
+        "evolve-missing-target",
+        "evolve-domain-route",
+        "evolve-generic-route",
+        "user-evolution-suggestion",
+        "active-evolution-guidance",
+        "pre-evolve"
+      ]
+    }
+  }),
+
   boundaryReflex() {
     return "Evolution is user-requested only. Never automatic. Never manipulative.";
   }
 });
 
 // ============================================================================
-//  PACKET EMITTER — deterministic, window‑safe
+//  PACKET EMITTER — deterministic, presence‑grade
 // ============================================================================
 function emitEvolutionPacket(type, payload, { severity = "info" } = {}) {
   return Object.freeze({
@@ -118,16 +140,19 @@ export function prewarmEvolutionEngine(dualBand = null, { trace = false } = {}) 
     if (trace) console.log("[aiEvolutionEngine] prewarm: complete");
     return packet;
   } catch (err) {
-    console.error("[aiEvolutionEngine] prewarm failed:", err);
-    return emitEvolutionPacket("prewarm-error", {
-      error: String(err),
-      message: "Evolution engine prewarm failed."
-    }, { severity: "error" });
+    return emitEvolutionPacket(
+      "prewarm-error",
+      {
+        error: String(err),
+        message: "Evolution engine prewarm failed."
+      },
+      { severity: "error" }
+    );
   }
 }
 
 // ============================================================================
-//  EVOLUTION ENGINE — v11.3‑EVO
+//  EVOLUTION ENGINE — v12.3‑Presence
 // ============================================================================
 export const aiEvolutionEngine = {
   meta: EvolutionEngineMeta,
@@ -137,7 +162,7 @@ export const aiEvolutionEngine = {
   // ------------------------------------------------------------------------
   state: Object.freeze({
     evolved: true,
-    version: "11.3-evo",
+    version: "12.3-presence",
     confidence: 1.0,
     humility: 1.0,
     clarity: 1.0
@@ -145,7 +170,7 @@ export const aiEvolutionEngine = {
 
   // ------------------------------------------------------------------------
   // CORE EVOLUTIONARY ROUTES (domains as organisms)
-// ------------------------------------------------------------------------
+  // ------------------------------------------------------------------------
   routes: Object.freeze({
     vocabulary: ["context", "frequency", "domain", "adaptation"],
     habits: ["pattern", "compression", "timing", "reinforcement"],
@@ -157,7 +182,7 @@ export const aiEvolutionEngine = {
 
   // ------------------------------------------------------------------------
   // PASSIVE USER EVOLUTION (window-facing)
-// ------------------------------------------------------------------------
+  // ------------------------------------------------------------------------
   suggestUserEvolution(idea) {
     return emitEvolutionPacket("user-evolution-suggestion", {
       idea,
@@ -169,7 +194,7 @@ export const aiEvolutionEngine = {
 
   // ------------------------------------------------------------------------
   // ACTIVE USER EVOLUTION (on request)
-// ------------------------------------------------------------------------
+  // ------------------------------------------------------------------------
   guideActiveEvolution(request) {
     return emitEvolutionPacket("active-evolution-guidance", {
       request,
@@ -181,7 +206,7 @@ export const aiEvolutionEngine = {
 
   // ------------------------------------------------------------------------
   // MAIN EVOLUTION HANDLER — always returns a packet
-// ------------------------------------------------------------------------
+  // ------------------------------------------------------------------------
   evolve(target) {
     if (!target) {
       return emitEvolutionPacket("evolve-missing-target", {
@@ -196,7 +221,6 @@ export const aiEvolutionEngine = {
     const route = this.routes[key];
 
     if (!route) {
-      // Unknown domain → universal evolutionary route
       return emitEvolutionPacket("evolve-generic-route", {
         target,
         route: Object.freeze([
@@ -209,22 +233,16 @@ export const aiEvolutionEngine = {
       });
     }
 
-    // Known domain → deterministic route
     return emitEvolutionPacket("evolve-domain-route", {
       target,
-      route: Object.freeze([
-        route[0],
-        route[1],
-        route[2],
-        route[3]
-      ]),
+      route: Object.freeze([...route]),
       message: `Evolved route for "${target}" is ready.`
     });
   },
 
   // ------------------------------------------------------------------------
   // PRE-EVOLUTION — explicit readiness check
-// ------------------------------------------------------------------------
+  // ------------------------------------------------------------------------
   preEvolve() {
     return emitEvolutionPacket("pre-evolve", {
       state: this.state,

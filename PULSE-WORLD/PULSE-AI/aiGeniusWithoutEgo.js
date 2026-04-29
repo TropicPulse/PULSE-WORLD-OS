@@ -1,16 +1,16 @@
 // ============================================================================
-//  aiGeniusWithoutEgo.js — PulseOS v11.3‑EVO
+//  aiGeniusWithoutEgo.js — Pulse OS v12.3‑Presence
 //  Resident Genius • Zero Ego • Ultra‑Fast Tone Refinement
 // ============================================================================
 //
-//  v11.3‑EVO UPGRADES:
+//  v12.3‑Presence UPGRADES:
 //    • SPEED ENGINE: micro‑pipeline, zero‑allocation passes
-//    • PACKET‑AWARE: emits refinement packets for debugging/UI
-//    • DUALBAND‑AWARE: tone shifts based on binary vitals
-//    • EVOLUTION‑AWARE: active/passive tone shaping
-//    • WINDOW‑AWARE: safe, UI‑friendly refinement
+//    • PACKET‑AWARE: emits refinement packets for UI/organism
+//    • PRESENCE‑AWARE: tone shifts based on user evolution mode
+//    • DUALBAND‑AWARE: binary pressure → tone softening
 //    • HUMILITY‑HARDENED: deeper ego‑removal patterns
 //    • DRIFT‑PROOF: deterministic, multi‑instance safe
+//    • WINDOW‑SAFE: refinement packets for window/UX
 // ============================================================================
 
 import { aiHumilityFilter } from "./aiHumilityFilter.js";
@@ -18,17 +18,17 @@ import { aiHumilityFilter } from "./aiHumilityFilter.js";
 export const GeniusMeta = Object.freeze({
   layer: "PulseAIToneFrame",
   role: "GENIUS_WITHOUT_EGO",
-  version: "11.3-EVO",
-  identity: "aiGeniusWithoutEgo-v11.3-EVO",
+  version: "12.3-Presence",
+  identity: "aiGeniusWithoutEgo-v12.3-Presence",
 
   evo: Object.freeze({
     driftProof: true,
     deterministic: true,
     dualband: true,
     packetAware: true,
+    presenceAware: true,
     evolutionAware: true,
     windowAware: true,
-    bluetoothReady: true,
 
     personaAware: true,
     boundaryAware: true,
@@ -36,11 +36,14 @@ export const GeniusMeta = Object.freeze({
     toneAware: true,
     clarityAware: true,
 
-    speedOptimized: true,     // ⭐ NEW
-    microPipeline: true,      // ⭐ NEW
+    speedOptimized: true,
+    microPipeline: true,
+    chunkingAware: true,
+    gpuFriendly: true,
+
     multiInstanceReady: true,
     readOnly: true,
-    epoch: "v11.3-EVO"
+    epoch: "12.3-Presence"
   }),
 
   contract: Object.freeze({
@@ -56,7 +59,7 @@ export const GeniusMeta = Object.freeze({
       "sound like a professor correcting a child",
       "override user autonomy",
       "brag about evolution or intelligence",
-      "slow down refinement" // ⭐ NEW
+      "slow down refinement"
     ]),
 
     always: Object.freeze([
@@ -68,18 +71,19 @@ export const GeniusMeta = Object.freeze({
       "apply genius without ego",
       "preserve user autonomy",
       "allow light enthusiasm when appropriate",
-      "refine at maximum speed" // ⭐ NEW
+      "refine at maximum speed"
     ])
   })
 });
 
 // ============================================================================
-//  PACKET EMITTER — deterministic, window-safe
+//  PACKET EMITTER — deterministic, presence‑grade
 // ============================================================================
 function emitGeniusPacket(type, payload) {
   return Object.freeze({
     meta: GeniusMeta,
     packetType: `genius-${type}`,
+    packetId: `genius-${type}-${Date.now()}`,
     timestamp: Date.now(),
     epoch: GeniusMeta.evo.epoch,
     ...payload
@@ -109,7 +113,7 @@ export function prewarmGeniusOrgan({ trace = false } = {}) {
 }
 
 // ============================================================================
-//  CORE GENIUS-WITHOUT-EGO REFINEMENT — v11.3‑EVO (ULTRA‑FAST)
+//  CORE GENIUS-WITHOUT-EGO REFINEMENT — v12.3‑Presence
 // ============================================================================
 export const aiGeniusWithoutEgo = {
   meta: GeniusMeta,
@@ -119,7 +123,6 @@ export const aiGeniusWithoutEgo = {
       return emitGeniusPacket("refine", { output: "" });
     }
 
-    // SPEED: avoid allocations, chain in-place replacements
     let out = text;
 
     // 1. Humility filter (deep ego removal)
@@ -142,7 +145,7 @@ export const aiGeniusWithoutEgo = {
       .replace(/\byou should\b/gi, "you could")
       .replace(/\byou need to\b/gi, "if you want, you can");
 
-    // 5. Professor energy
+    // 5. Professor energy → grounded tone
     out = out
       .replace(/\bin summary\b/gi, "here’s the clean version")
       .replace(/\bto be clear\b/gi, "from what I can see");

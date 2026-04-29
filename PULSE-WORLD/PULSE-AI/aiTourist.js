@@ -7,7 +7,6 @@
 // - frozen results for determinism
 // - zero identity leakage
 
-// ```js
 // ============================================================================
 // FILE: tropic-pulse-functions/apps/PULSE-AI/aiTourist.js
 // LAYER: TOURIST ORGAN (Public + User‑Scoped Data Pantry, Intent‑Aware)
@@ -95,6 +94,15 @@ export const TouristMeta = Object.freeze({
 
 import { Personas } from "./persona.js";
 
+function emitTouristChunkPacket(type, payload) {
+  return Object.freeze({
+    type: `tourist-${type}`,
+    epoch: TouristMeta.evo.epoch,
+    timestamp: Date.now(),
+    ...payload
+  });
+}
+
 // simple in-memory cache: key → { data, cache, expiresAt }
 const _TOURIST_CACHE = new Map();
 
@@ -103,6 +111,14 @@ function parseMaxAge(cacheControl) {
   const m = cacheControl.match(/max-age=(\d+)/);
   return m ? parseInt(m[1], 10) * 1000 : 0;
 }
+
+
+export function prewarmTourist() {
+  return emitTouristChunkPacket("prewarm", {
+    message: "Tourist organ prewarmed and chunk-ready."
+  });
+}
+
 
 export function createTouristAPI(db) {
 
@@ -227,7 +243,15 @@ export function createTouristAPI(db) {
     if (scope === "owner") {
       if (!userIsOwner) {
         context.logStep?.(`aiTourist: owner‑only "${key}" blocked for non‑owner.`);
-        return { data: [], cache: cacheControl };
+        return emitTouristChunkPacket("bundle", {
+          data: Object.freeze([]),
+          cache: cacheControl,
+          chunk: Object.freeze({
+            size: 2,               // "[]"
+            cacheControl,
+            scope
+          })
+        });
       }
 
       if (cacheControl !== "no-store" && maxAgeMs > 0) {
@@ -239,9 +263,16 @@ export function createTouristAPI(db) {
       }
 
       const rows = await db.getCollection(key, options);
-      const packet = Object.freeze({
-        data: Object.freeze(rows.map(stripIdentity)),
-        cache: cacheControl
+      const cleaned = rows.map(stripIdentity);
+
+      const packet = emitTouristChunkPacket("bundle", {
+        data: Object.freeze(cleaned),
+        cache: cacheControl,
+        chunk: Object.freeze({
+          size: JSON.stringify(cleaned).length,
+          cacheControl,
+          scope
+        })
       });
 
       if (cacheControl !== "no-store" && maxAgeMs > 0) {
@@ -254,11 +285,20 @@ export function createTouristAPI(db) {
       return packet;
     }
 
+
     // USER‑SCOPED
     if (scope === "user") {
       if (!userId) {
         context.logStep?.(`aiTourist: user‑scoped "${key}" requested without userId.`);
-        return { data: [], cache: cacheControl };
+        return emitTouristChunkPacket("bundle", {
+          data: Object.freeze([]),
+          cache: cacheControl,
+          chunk: Object.freeze({
+            size: 2,               // "[]"
+            cacheControl,
+            scope
+          })
+        });
       }
 
       if (cacheControl !== "no-store" && maxAgeMs > 0) {
@@ -274,9 +314,16 @@ export function createTouristAPI(db) {
         where: { userId }
       });
 
-      const packet = Object.freeze({
-        data: Object.freeze(rows.map(stripIdentity)),
-        cache: cacheControl
+      const cleaned = rows.map(stripIdentity);
+
+      const packet = emitTouristChunkPacket("bundle", {
+        data: Object.freeze(cleaned),
+        cache: cacheControl,
+        chunk: Object.freeze({
+          size: JSON.stringify(cleaned).length,
+          cacheControl,
+          scope
+        })
       });
 
       if (cacheControl !== "no-store" && maxAgeMs > 0) {
@@ -289,6 +336,7 @@ export function createTouristAPI(db) {
       return packet;
     }
 
+
     // TOURIST‑SAFE
     if (cacheControl !== "no-store" && maxAgeMs > 0) {
       const cached = _TOURIST_CACHE.get(cacheKey);
@@ -299,10 +347,16 @@ export function createTouristAPI(db) {
     }
 
     const rows = await db.getCollection(key, options);
+    const cleaned = rows.map(stripIdentity);
 
-    const packet = Object.freeze({
-      data: Object.freeze(rows.map(stripIdentity)),
-      cache: cacheControl
+    const packet = emitTouristChunkPacket("bundle", {
+      data: Object.freeze(cleaned),
+      cache: cacheControl,
+      chunk: Object.freeze({
+        size: JSON.stringify(cleaned).length,
+        cacheControl,
+        scope
+      })
     });
 
     if (cacheControl !== "no-store" && maxAgeMs > 0) {
@@ -331,21 +385,34 @@ export function createTouristAPI(db) {
       fetchCollection(context, "TPEnvironmentHistory")
     ]);
 
-    return Object.freeze({
-      data: Object.freeze({
-        environment: environment.data,
-        environmentHistory: environmentHistory.data,
-        TPEnvironment: tpEnv.data,
-        TPEnvironmentHistory: tpEnvHistory.data
-      }),
-      cache: Object.freeze({
-        environment: environment.cache,
-        environmentHistory: environmentHistory.cache,
-        TPEnvironment: tpEnv.cache,
-        TPEnvironmentHistory: tpEnvHistory.cache
+    const data = Object.freeze({
+      environment: environment.data,
+      environmentHistory: environmentHistory.data,
+      TPEnvironment: tpEnv.data,
+      TPEnvironmentHistory: tpEnvHistory.data
+    });
+
+    const cache = Object.freeze({
+      environment: environment.cache,
+      environmentHistory: environmentHistory.cache,
+      TPEnvironment: tpEnv.cache,
+      TPEnvironmentHistory: tpEnvHistory.cache
+    });
+
+    const scope = "tourist";
+    const cacheControl = "public,max-age=30";
+
+    return emitTouristChunkPacket("bundle", {
+      data,
+      cache,
+      chunk: Object.freeze({
+        size: JSON.stringify(data).length,
+        cacheControl,
+        scope
       })
     });
   }
+
 
   async function buildPowerBundle(context) {
     const [
@@ -360,21 +427,34 @@ export function createTouristAPI(db) {
       fetchCollection(context, "powerSettings")
     ]);
 
-    return Object.freeze({
-      data: Object.freeze({
-        power: power.data,
-        powerData: powerData.data,
-        powerHistory: powerHistory.data,
-        powerSettings: powerSettings.data
-      }),
-      cache: Object.freeze({
-        power: power.cache,
-        powerData: powerData.cache,
-        powerHistory: powerHistory.cache,
-        powerSettings: powerSettings.cache
+    const data = Object.freeze({
+      power: power.data,
+      powerData: powerData.data,
+      powerHistory: powerHistory.data,
+      powerSettings: powerSettings.data
+    });
+
+    const cache = Object.freeze({
+      power: power.cache,
+      powerData: powerData.cache,
+      powerHistory: powerHistory.cache,
+      powerSettings: powerSettings.cache
+    });
+
+    const scope = "tourist";
+    const cacheControl = "public,max-age=30";
+
+    return emitTouristChunkPacket("bundle", {
+      data,
+      cache,
+      chunk: Object.freeze({
+        size: JSON.stringify(data).length,
+        cacheControl,
+        scope
       })
     });
   }
+
 
   async function buildBusinessBundle(context, businessId) {
     const [
@@ -391,23 +471,36 @@ export function createTouristAPI(db) {
       fetchCollection(context, "categoryIconCache")
     ]);
 
-    return Object.freeze({
-      data: Object.freeze({
-        business: businesses.data[0] || null,
-        menus: menus.data,
-        pendingMenus: pendingMenus.data,
-        duplicateImages: duplicateImages.data,
-        categoryIcons: categoryIcons.data
-      }),
-      cache: Object.freeze({
-        business: businesses.cache,
-        menus: menus.cache,
-        pendingMenus: pendingMenus.cache,
-        duplicateImages: duplicateImages.cache,
-        categoryIcons: categoryIcons.cache
+    const data = Object.freeze({
+      business: businesses.data[0] || null,
+      menus: menus.data,
+      pendingMenus: pendingMenus.data,
+      duplicateImages: duplicateImages.data,
+      categoryIcons: categoryIcons.data
+    });
+
+    const cache = Object.freeze({
+      business: businesses.cache,
+      menus: menus.cache,
+      pendingMenus: pendingMenus.cache,
+      duplicateImages: duplicateImages.cache,
+      categoryIcons: categoryIcons.cache
+    });
+
+    const scope = "tourist";
+    const cacheControl = "public,max-age=300";
+
+    return emitTouristChunkPacket("bundle", {
+      data,
+      cache,
+      chunk: Object.freeze({
+        size: JSON.stringify(data).length,
+        cacheControl,
+        scope
       })
     });
   }
+
 
   async function buildAreaOverview(context) {
     const [
@@ -424,23 +517,36 @@ export function createTouristAPI(db) {
       fetchCollection(context, "pulseHistory")
     ]);
 
-    return Object.freeze({
-      data: Object.freeze({
-        businesses: businesses.data,
-        events: events.data,
-        environment: environmentBundle.data,
-        power: powerBundle.data,
-        pulseHistory: pulseHistory.data
-      }),
-      cache: Object.freeze({
-        businesses: businesses.cache,
-        events: events.cache,
-        environment: environmentBundle.cache,
-        power: powerBundle.cache,
-        pulseHistory: pulseHistory.cache
+    const data = Object.freeze({
+      businesses: businesses.data,
+      events: events.data,
+      environment: environmentBundle.data,
+      power: powerBundle.data,
+      pulseHistory: pulseHistory.data
+    });
+
+    const cache = Object.freeze({
+      businesses: businesses.cache,
+      events: events.cache,
+      environment: environmentBundle.cache,
+      power: powerBundle.cache,
+      pulseHistory: pulseHistory.cache
+    });
+
+    const scope = "tourist";
+    const cacheControl = "public,max-age=300";
+
+    return emitTouristChunkPacket("bundle", {
+      data,
+      cache,
+      chunk: Object.freeze({
+        size: JSON.stringify(data).length,
+        cacheControl,
+        scope
       })
     });
   }
+
 
   // --------------------------------------------------------------------------
   // INTENT ROUTER — for Tour Guide / intent handlers
@@ -470,7 +576,7 @@ export function createTouristAPI(db) {
 
       case "list-events": {
         const events = await fetchCollection(context, "events");
-        return Object.freeze({
+        return emitTouristChunkPacket("bundle", {
           data: Object.freeze({ events: events.data }),
           cache: Object.freeze({ events: events.cache })
         });
@@ -481,110 +587,175 @@ export function createTouristAPI(db) {
         return { data: {}, cache: {} };
     }
   }
+  
+// --------------------------------------------------------------------------
+// PUBLIC API — High‑Level Helpers for Tour Guide AI
+// --------------------------------------------------------------------------
+return {
+  async getTouristOverview(context) {
+    return buildAreaOverview(context);
+  },
 
-  // --------------------------------------------------------------------------
-  // PUBLIC API — High‑Level Helpers for Tour Guide AI
-  // --------------------------------------------------------------------------
-  return {
-    async getTouristOverview(context) {
-      return buildAreaOverview(context);
-    },
+  async getBusinessBundle(context, businessId) {
+    return buildBusinessBundle(context, businessId);
+  },
 
-    async getBusinessBundle(context, businessId) {
-      return buildBusinessBundle(context, businessId);
-    },
+  async getUserReferrals(context) {
+    const [referrals, referralClicks] = await Promise.all([
+      fetchCollection(context, "referrals"),
+      fetchCollection(context, "referralClicks")
+    ]);
 
-    async getUserReferrals(context) {
-      const [referrals, referralClicks] = await Promise.all([
-        fetchCollection(context, "referrals"),
-        fetchCollection(context, "referralClicks")
-      ]);
+    const data = Object.freeze({
+      referrals: referrals.data,
+      referralClicks: referralClicks.data
+    });
 
-      return Object.freeze({
-        data: Object.freeze({
-          referrals: referrals.data,
-          referralClicks: referralClicks.data
-        }),
-        cache: Object.freeze({
-          referrals: referrals.cache,
-          referralClicks: referralClicks.cache
-        })
-      });
-    },
+    const cache = Object.freeze({
+      referrals: referrals.cache,
+      referralClicks: referralClicks.cache
+    });
 
-    async getUserOrders(context) {
-      const orders = await fetchCollection(context, "orders");
-      return Object.freeze({
-        data: Object.freeze({ orders: orders.data }),
-        cache: Object.freeze({ orders: orders.cache })
-      });
-    },
+    const scope = "user";
+    const cacheControl = "private,max-age=60";
 
-    async getUserVaultHistory(context) {
-      const vaultHistory = await fetchCollection(context, "vaultHistory");
-      return Object.freeze({
-        data: Object.freeze({ vaultHistory: vaultHistory.data }),
-        cache: Object.freeze({ vaultHistory: vaultHistory.cache })
-      });
-    },
+    return emitTouristChunkPacket("bundle", {
+      data,
+      cache,
+      chunk: Object.freeze({
+        size: JSON.stringify(data).length,
+        cacheControl,
+        scope
+      })
+    });
+  },
 
-    async getUserTimerLogs(context) {
-      const [tried, saved] = await Promise.all([
-        fetchCollection(context, "timerLogsUserTried"),
-        fetchCollection(context, "timerLogsUserSaved")
-      ]);
+  async getUserOrders(context) {
+    const orders = await fetchCollection(context, "orders");
 
-      return Object.freeze({
-        data: Object.freeze({
-          tried: tried.data,
-          saved: saved.data
-        }),
-        cache: Object.freeze({
-          tried: tried.cache,
-          saved: saved.cache
-        })
-      });
-    },
+    const data = Object.freeze({ orders: orders.data });
+    const cache = Object.freeze({ orders: orders.cache });
 
-    async getOwnerAttentionBundle(context) {
-      const [
-        pendingBusinesses,
-        pendingMenus,
-        functionErrors,
-        identityHistory,
-        securityViolations,
-        emailLogs
-      ] = await Promise.all([
-        fetchCollection(context, "pendingBusinesses"),
-        fetchCollection(context, "pendingMenus"),
-        fetchCollection(context, "functionErrors"),
-        fetchCollection(context, "identityHistory"),
-        fetchCollection(context, "securityViolations"),
-        fetchCollection(context, "emailLogs")
-      ]);
+    const scope = "user";
+    const cacheControl = "private,max-age=60";
 
-      return Object.freeze({
-        data: Object.freeze({
-          pendingBusinesses: pendingBusinesses.data,
-          pendingMenus: pendingMenus.data,
-          functionErrors: functionErrors.data,
-          identityHistory: identityHistory.data,
-          securityViolations: securityViolations.data,
-          emailLogs: emailLogs.data
-        }),
-        cache: Object.freeze({
-          pendingBusinesses: pendingBusinesses.cache,
-          pendingMenus: pendingMenus.cache,
-          functionErrors: functionErrors.cache,
-          identityHistory: identityHistory.cache,
-          securityViolations: securityViolations.cache,
-          emailLogs: emailLogs.cache
-        })
-      });
-    },
+    return emitTouristChunkPacket("bundle", {
+      data,
+      cache,
+      chunk: Object.freeze({
+        size: JSON.stringify(data).length,
+        cacheControl,
+        scope
+      })
+    });
+  },
 
-    async resolveIntent(context, intent) {
-      return resolveTouristIntent(context, intent);
-    }
-  };
+  async getUserVaultHistory(context) {
+    const vaultHistory = await fetchCollection(context, "vaultHistory");
+
+    const data = Object.freeze({ vaultHistory: vaultHistory.data });
+    const cache = Object.freeze({ vaultHistory: vaultHistory.cache });
+
+    const scope = "user";
+    const cacheControl = "private,max-age=60";
+
+    return emitTouristChunkPacket("bundle", {
+      data,
+      cache,
+      chunk: Object.freeze({
+        size: JSON.stringify(data).length,
+        cacheControl,
+        scope
+      })
+    });
+  },
+
+  async getUserTimerLogs(context) {
+    const [tried, saved] = await Promise.all([
+      fetchCollection(context, "timerLogsUserTried"),
+      fetchCollection(context, "timerLogsUserSaved")
+    ]);
+
+    const data = Object.freeze({
+      tried: tried.data,
+      saved: saved.data
+    });
+
+    const cache = Object.freeze({
+      tried: tried.cache,
+      saved: saved.cache
+    });
+
+    const scope = "user";
+    const cacheControl = "private,max-age=30";
+
+    return emitTouristChunkPacket("bundle", {
+      data,
+      cache,
+      chunk: Object.freeze({
+        size: JSON.stringify(data).length,
+        cacheControl,
+        scope
+      })
+    });
+  },
+
+  async getOwnerAttentionBundle(context) {
+    const [
+      pendingBusinesses,
+      pendingMenus,
+      functionErrors,
+      identityHistory,
+      securityViolations,
+      emailLogs
+    ] = await Promise.all([
+      fetchCollection(context, "pendingBusinesses"),
+      fetchCollection(context, "pendingMenus"),
+      fetchCollection(context, "functionErrors"),
+      fetchCollection(context, "identityHistory"),
+      fetchCollection(context, "securityViolations"),
+      fetchCollection(context, "emailLogs")
+    ]);
+
+    const data = Object.freeze({
+      pendingBusinesses: pendingBusinesses.data,
+      pendingMenus: pendingMenus.data,
+      functionErrors: functionErrors.data,
+      identityHistory: identityHistory.data,
+      securityViolations: securityViolations.data,
+      emailLogs: emailLogs.data
+    });
+
+    const cache = Object.freeze({
+      pendingBusinesses: pendingBusinesses.cache,
+      pendingMenus: pendingMenus.cache,
+      functionErrors: functionErrors.cache,
+      identityHistory: identityHistory.cache,
+      securityViolations: securityViolations.cache,
+      emailLogs: emailLogs.cache
+    });
+
+    const scope = "owner";
+    const cacheControl = "no-store";
+
+    return emitTouristChunkPacket("bundle", {
+      data,
+      cache,
+      chunk: Object.freeze({
+        size: JSON.stringify(data).length,
+        cacheControl,
+        scope
+      })
+    });
+  },
+
+  async resolveIntent(context, intent) {
+    return resolveTouristIntent(context, intent);
+  },
+
+  async chunk(context, intent) {
+    const bundle = await resolveTouristIntent(context, intent);
+    return emitTouristChunkPacket("chunk", bundle);
+  }
+};
 }

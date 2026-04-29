@@ -1,5 +1,5 @@
 // ============================================================================
-//  PULSE OS v12.3‑EVO+ — AI ROUTER ORGAN
+//  PULSE OS v12.3-PRESENCE — AI ROUTER ORGAN
 //  CNS Router • Intent Decoder • Persona Selector • Archetype Map
 //  PURE ROUTING • ZERO MUTATION • ZERO RANDOMNESS • DUALBAND‑AWARE
 //  ROUTING ARTERY v3 (throughput, pressure, cost, budget)
@@ -8,8 +8,8 @@
 export const AIRouterMeta = Object.freeze({
   layer: "PulseAIRouter",
   role: "CNS_ROUTER_ORGAN",
-  version: "12.3-EVO+",
-  identity: "aiRouter-v12.3-EVO+",
+  version: "12.3-PRESENCE",
+  identity: "aiRouter-v12.3-PRESENCE",
 
   evo: Object.freeze({
     driftProof: true,
@@ -27,7 +27,7 @@ export const AIRouterMeta = Object.freeze({
     safetyAware: true,
     personalAware: true,
     multiInstanceReady: true,
-    epoch: "12.3-EVO+"
+    epoch: "12.3-PRESENCE"
   }),
 
   contract: Object.freeze({

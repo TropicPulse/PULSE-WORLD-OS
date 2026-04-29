@@ -1,14 +1,13 @@
 /**
- * aiBinaryEvolution.js — Pulse OS v11‑EVO Organ
+ * aiBinaryEvolution.js — Pulse OS v12.3‑Presence Organ
  * ---------------------------------------------------------
  * CANONICAL ROLE:
  *   This organ is the **Binary Evolution Engine** of Pulse OS.
  *
- *   It is the first organ that:
+ *   It:
  *     • observes other organs
  *     • generates binary signatures
- *     • detects drift
- *     • detects mutation
+ *     • detects drift and mutation
  *     • detects structural changes
  *     • enforces organism identity
  *
@@ -16,26 +15,39 @@
  */
 
 // ---------------------------------------------------------
-//  META BLOCK — v11‑EVO
+//  META BLOCK — v12.3‑Presence
 // ---------------------------------------------------------
 
 export const EvolutionMeta = Object.freeze({
   layer: "BinaryEvolution",
   role: "BINARY_EVOLUTION_ENGINE",
-  version: "11.0-EVO",
-  identity: "aiBinaryEvolution-v11-EVO",
+  version: "12.3-Presence",
+  identity: "aiBinaryEvolution-v12.3-Presence",
 
   evo: Object.freeze({
     deterministic: true,
     driftProof: true,
     binaryOnly: true,
+
     registryAware: true,
     memoryAware: true,
     signatureAware: true,
     mutationDetection: true,
     structuralAudit: true,
+
+    longTermMemoryAware: true,
+    repairAware: true,
+    identityEnforcement: true,
+
     multiInstanceReady: true,
-    epoch: "v11-EVO"
+    readOnly: true,
+    epoch: "12.3-Presence",
+
+    presenceAware: true,
+    chunkingAware: true,
+    gpuFriendly: true,
+    dualBandSafe: true,      // can live in dualband, stays binary‑only
+    sideEffectFree: true
   }),
 
   contract: Object.freeze({
@@ -60,32 +72,74 @@ export const EvolutionMeta = Object.freeze({
       "remain pure and minimal",
       "return frozen results"
     ])
+  }),
+
+  presence: Object.freeze({
+    organId: "BinaryEvolutionEngine",
+    organKind: "Genetic",
+    physiologyBand: "Binary",
+    warmStrategy: "prewarm-on-attach",
+    attachStrategy: "on-demand",
+    concurrency: "multi-instance",
+    observability: {
+      traceEvents: [
+        "generateSignature",
+        "storeSignature",
+        "loadSignature",
+        "detectDrift:firstSignature",
+        "detectDrift:noDrift",
+        "detectDrift:driftDetected",
+        "evolve:noDrift",
+        "evolve:evolved",
+        "prewarm:success",
+        "prewarm:failure"
+      ]
+    }
   })
 });
+
 // ---------------------------------------------------------
-//  BINARY EVOLUTION PREWARM ENGINE — v11-EVO
+//  PREWARM ENGINE — v12.3‑Presence
 //  - Warms encoder + memory + signature paths.
-//  - No cognition, no routing, no mutation of organs.
 // ---------------------------------------------------------
 export function prewarmAIBinaryEvolution(config = {}) {
   try {
-    const { encoder, memory } = config;
+    const { encoder, memory, trace } = config;
 
     if (!encoder || typeof encoder.encode !== "function") {
+      if (trace) {
+        console.warn("[AIBinaryEvolution Prewarm] Missing encoder");
+      }
       return false;
     }
-    if (!memory || typeof memory.write !== "function" || typeof memory.read !== "function") {
+    if (
+      !memory ||
+      typeof memory.write !== "function" ||
+      typeof memory.read !== "function"
+    ) {
+      if (trace) {
+        console.warn("[AIBinaryEvolution Prewarm] Missing memory adapter");
+      }
       return false;
     }
 
-    // Warm encoder with small deterministic payloads
-    const warmJson = JSON.stringify({ id: "prewarm", keys: ["id", "keys", "type"] });
+    const warmJson = JSON.stringify({
+      id: "prewarm",
+      keys: ["id", "keys", "type"],
+      type: "organ-signature"
+    });
     const warmBits = encoder.encode(warmJson);
     const warmKey = encoder.encode("signature:prewarm-organ");
 
-    // Warm memory write/read path
     memory.write(warmKey, warmBits);
-    const _stored = memory.read(warmKey);
+    const stored = memory.read(warmKey);
+
+    if (trace) {
+      console.log("[AIBinaryEvolution Prewarm] success", {
+        bits: warmBits.length,
+        storedBits: stored?.length ?? 0
+      });
+    }
 
     return true;
   } catch (err) {
@@ -95,22 +149,25 @@ export function prewarmAIBinaryEvolution(config = {}) {
 }
 
 // ---------------------------------------------------------
-//  ORGAN IMPLEMENTATION
+//  ORGAN IMPLEMENTATION — v12.3‑Presence
 // ---------------------------------------------------------
 
 class AIBinaryEvolution {
   constructor(config = {}) {
-    this.id = config.id || 'ai-binary-evolution';
+    this.id = config.id || "ai-binary-evolution";
     this.encoder = config.encoder;
     this.memory = config.memory;
     this.trace = !!config.trace;
 
-    if (!this.encoder || typeof this.encoder.encode !== 'function') {
-      throw new Error('AIBinaryEvolution requires aiBinaryAgent encoder');
+    if (!this.encoder || typeof this.encoder.encode !== "function") {
+      throw new Error("AIBinaryEvolution requires aiBinaryAgent encoder");
     }
-    if (!this.memory || typeof this.memory.write !== 'function') {
-      throw new Error('AIBinaryEvolution requires aiBinaryMemory');
+    if (!this.memory || typeof this.memory.write !== "function") {
+      throw new Error("AIBinaryEvolution requires aiBinaryMemory");
     }
+
+    // optional presence / performance hints
+    this.maxSignatureBits = config.maxSignatureBits || 0; // 0 = unlimited
   }
 
   // ---------------------------------------------------------
@@ -121,12 +178,22 @@ class AIBinaryEvolution {
     const json = JSON.stringify({
       id: organ.id || null,
       keys: Object.keys(organ),
-      type: organ.constructor.name,
+      type: organ.constructor?.name || "UnknownOrgan"
     });
 
-    const binary = this.encoder.encode(json);
+    let binary = this.encoder.encode(json);
 
-    this._trace('generateSignature', {
+    if (this.maxSignatureBits > 0 && binary.length > this.maxSignatureBits) {
+      // allow truncation for presence‑aware, bounded signatures
+      binary = binary.slice(-this.maxSignatureBits);
+      this._trace("generateSignature:truncated", {
+        organ: organ.id,
+        originalBits: binary.length,
+        maxSignatureBits: this.maxSignatureBits
+      });
+    }
+
+    this._trace("generateSignature", {
       organ: organ.id,
       bits: binary.length
     });
@@ -144,9 +211,9 @@ class AIBinaryEvolution {
 
     this.memory.write(key, signature);
 
-    this._trace('storeSignature', {
+    this._trace("storeSignature", {
       organ: organ.id,
-      bits: signature.length,
+      bits: signature.length
     });
 
     return signature;
@@ -156,7 +223,7 @@ class AIBinaryEvolution {
     const key = this.encoder.encode(`signature:${organ.id}`);
     const stored = this.memory.read(key);
 
-    this._trace('loadSignature', {
+    this._trace("loadSignature", {
       organ: organ.id,
       storedBits: stored?.length
     });
@@ -173,19 +240,19 @@ class AIBinaryEvolution {
     const newSig = this.generateSignature(organ);
 
     if (!oldSig) {
-      this._trace('detectDrift:firstSignature', { organ: organ.id });
+      this._trace("detectDrift:firstSignature", { organ: organ.id });
       return { oldSig: null, newSig };
     }
 
     if (oldSig === newSig) {
-      this._trace('detectDrift:noDrift', { organ: organ.id });
+      this._trace("detectDrift:noDrift", { organ: organ.id });
       return null;
     }
 
-    this._trace('detectDrift:driftDetected', {
+    this._trace("detectDrift:driftDetected", {
       organ: organ.id,
       oldBits: oldSig.length,
-      newBits: newSig.length,
+      newBits: newSig.length
     });
 
     return { oldSig, newSig };
@@ -199,19 +266,24 @@ class AIBinaryEvolution {
     const drift = this.detectDrift(organ);
 
     if (!drift) {
-      return Object.freeze({
+      const result = Object.freeze({
         evolved: false,
-        message: 'No drift detected',
+        message: "No drift detected"
       });
+      this._trace("evolve:noDrift", { organ: organ.id });
+      return result;
     }
 
     this.storeSignature(organ);
 
-    return Object.freeze({
+    const result = Object.freeze({
       evolved: true,
       oldSignature: drift.oldSig,
-      newSignature: drift.newSig,
+      newSignature: drift.newSig
     });
+
+    this._trace("evolve:evolved", { organ: organ.id });
+    return result;
   }
 
   // ---------------------------------------------------------
@@ -225,17 +297,15 @@ class AIBinaryEvolution {
 }
 
 // ---------------------------------------------------------
-// FACTORY EXPORT
+// FACTORY EXPORT — v12.3‑Presence
 // ---------------------------------------------------------
 
-export function createAIBinaryEvolution(config) {
-  // One-time binary evolution prewarm for this encoder/memory pair
+export function createAIBinaryEvolution(config = {}) {
   prewarmAIBinaryEvolution(config);
   return new AIBinaryEvolution(config);
 }
 
-
-// ⭐ Add missing ESM export:
+// direct class export for advanced callers
 export { AIBinaryEvolution };
 
 // ---------------------------------------------------------
@@ -246,6 +316,7 @@ if (typeof module !== "undefined") {
   module.exports = {
     AIBinaryEvolution,
     createAIBinaryEvolution,
-    EvolutionMeta
+    EvolutionMeta,
+    prewarmAIBinaryEvolution
   };
 }

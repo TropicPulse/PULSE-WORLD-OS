@@ -1,33 +1,34 @@
-/**
- * aiConductor.js — Pulse OS v11‑EVO Organ
- * ---------------------------------------------------------
- * CANONICAL ROLE:
- *   This organ is the **Conductor** of Pulse OS (dualband).
- */
+// ============================================================================
+//  aiConductor.js — Pulse OS v12.3‑Presence Organ
+//  Deterministic Wiring • Dualband‑Safe • Packet‑Aware • Drift‑Proof
+// ============================================================================
 
-// ---------------------------------------------------------
-//  META BLOCK — v11‑EVO (UPGRADED)
-// ---------------------------------------------------------
-
-const ConductorMeta = Object.freeze({
+export const ConductorMeta = Object.freeze({
   layer: "OrganismOrchestration",
   role: "CONDUCTOR_ORGAN",
-  version: "11.0-EVO",
-  identity: "aiConductor-v11-EVO",
+  version: "12.3-Presence",
+  identity: "aiConductor-v12.3-Presence",
 
   evo: Object.freeze({
     deterministic: true,
     driftProof: true,
-    dualband: true,
+    dualBandSafe: true,
+
     binaryAware: true,
     nonBinaryAware: true,
     wiringOnly: true,
     noCompute: true,
     noMutation: true,
     noInterpretation: true,
+
     packetAware: true,
+    presenceAware: true,
+    chunkingAware: true,
+    gpuFriendly: true,
+
     multiInstanceReady: true,
-    epoch: "v11-EVO"
+    readOnly: true,
+    epoch: "12.3-Presence"
   }),
 
   contract: Object.freeze({
@@ -53,32 +54,72 @@ const ConductorMeta = Object.freeze({
       "remain pure and minimal",
       "return frozen state"
     ])
+  }),
+
+  presence: Object.freeze({
+    organId: "Conductor",
+    organKind: "Wiring",
+    physiologyBand: "Symbolic+Binary",
+    warmStrategy: "prewarm-on-attach",
+    attachStrategy: "on-demand",
+    concurrency: "multi-instance",
+    observability: {
+      traceEvents: [
+        "register",
+        "wirePipeline",
+        "wirePageScanner",
+        "wireEvolution",
+        "initialize",
+        "activation",
+        "prewarm",
+        "prewarm-error"
+      ]
+    }
   })
 });
-// ---------------------------------------------------------
-//  CONDUCTOR PREWARM ENGINE — v11‑EVO
-// ---------------------------------------------------------
+
+// ============================================================================
+//  PACKET EMITTER — deterministic, conductor-scoped
+// ============================================================================
+function emitConductorPacket(type, payload) {
+  return Object.freeze({
+    meta: ConductorMeta,
+    packetType: `conductor-${type}`,
+    timestamp: Date.now(),
+    epoch: ConductorMeta.evo.epoch,
+    layer: ConductorMeta.layer,
+    role: ConductorMeta.role,
+    identity: ConductorMeta.identity,
+    ...payload
+  });
+}
+
+// ============================================================================
+//  PREWARM ENGINE — v12.3‑Presence
+// ============================================================================
 export function prewarmAIConductor(config = {}) {
   try {
-    const { trace } = config;
+    const warm = new AIConductor({ id: "prewarm-conductor", trace: config.trace });
 
-    // Create a tiny conductor instance for warm-up
-    const warm = new AIConductor({ id: "prewarm-conductor", trace });
-
-    // Warm register/get pathways
     warm.register({ id: "prewarm-organ-A" });
     warm.register({ id: "prewarm-organ-B" });
     warm.get("prewarm-organ-A");
 
-    // Warm pipeline wiring
     warm.wirePipeline({
       pipeline: { id: "prewarm-pipeline", run: () => {} },
       reflex: { id: "prewarm-reflex", run: () => {} },
-      logger: { id: "prewarm-logger", attachToPipeline: () => {}, attachToReflex: () => {} },
-      governorAdapter: { id: "prewarm-governor", attachToPipeline: () => {}, attachToReflex: () => {} }
+      logger: {
+        id: "prewarm-logger",
+        attachToPipeline: () => {},
+        attachToReflex: () => {}
+      },
+      governorAdapter: {
+        id: "prewarm-governor",
+        attachToPipeline: () => {},
+        attachToReflex: () => {}
+      }
     });
 
-    // Warm scanner wiring
     warm.wirePageScanner({
       scannerAdapter: { id: "prewarm-scanner" },
       pipeline: { id: "prewarm-pipeline" },
@@ -86,33 +127,33 @@ export function prewarmAIConductor(config = {}) {
       logger: { id: "prewarm-logger" }
     });
 
-    // Warm evolution wiring
     warm.wireEvolution({
       evolution: { id: "prewarm-evolution" },
       registry: { id: "prewarm-registry" }
     });
 
-    // Warm initialization
     warm.initialize(
       { registerOrgan: () => {} },
       { storeSignature: () => {} }
     );
 
-    // Warm packet emission
     warm.emitPacket();
 
-    return true;
+    return emitConductorPacket("prewarm", {
+      message: "Conductor prewarmed and wiring pathways aligned."
+    });
   } catch (err) {
-    console.error("[AIConductor Prewarm] Failed:", err);
-    return false;
+    return emitConductorPacket("prewarm-error", {
+      error: String(err),
+      message: "Conductor prewarm failed."
+    });
   }
 }
 
-// ---------------------------------------------------------
-//  ORGAN IMPLEMENTATION — v11‑EVO COMPLETE
-// ---------------------------------------------------------
-
-class AIConductor {
+// ============================================================================
+//  ORGAN IMPLEMENTATION — v12.3‑Presence
+// ============================================================================
+export class AIConductor {
   constructor(config = {}) {
     this.id = config.id || ConductorMeta.identity;
     this.trace = !!config.trace;
@@ -133,12 +174,12 @@ class AIConductor {
   }
 
   wirePipeline({ pipeline, reflex, logger, governorAdapter }) {
-    if (logger) logger.attachToPipeline?.(pipeline);
-    if (governorAdapter) governorAdapter.attachToPipeline?.(pipeline);
+    logger?.attachToPipeline?.(pipeline);
+    governorAdapter?.attachToPipeline?.(pipeline);
 
     if (reflex) {
-      if (logger) logger.attachToReflex?.(reflex);
-      if (governorAdapter) governorAdapter.attachToReflex?.(reflex);
+      logger?.attachToReflex?.(reflex);
+      governorAdapter?.attachToReflex?.(reflex);
     }
 
     this._trace("wirePipeline", {
@@ -190,7 +231,7 @@ class AIConductor {
       organs: Array.from(this.organs.keys())
     };
 
-    return Object.freeze({
+    return emitConductorPacket("activation", {
       ...payload,
       bits: null,
       bitLength: 0
@@ -203,32 +244,22 @@ class AIConductor {
   }
 }
 
-// ---------------------------------------------------------
-//  FACTORY
-// ---------------------------------------------------------
-
-function createAIConductor(config) {
-  prewarmAIConductor(config);   // ← PREWARM HERE
+// ============================================================================
+//  FACTORY — v12.3‑Presence
+// ============================================================================
+export function createAIConductor(config = {}) {
+  prewarmAIConductor(config);
   return new AIConductor(config);
 }
 
-
-// ---------------------------------------------------------
-//  DUAL‑MODE EXPORTS (ESM + CommonJS)
-// ---------------------------------------------------------
-
-// ESM
-export {
-  ConductorMeta,
-  AIConductor,
-  createAIConductor
-};
-
+// ============================================================================
+//  DUAL‑MODE EXPORTS
+// ============================================================================
 if (typeof module !== "undefined") {
-// CommonJS
-module.exports = {
-  ConductorMeta,
-  AIConductor,
-  createAIConductor
-};
+  module.exports = {
+    ConductorMeta,
+    AIConductor,
+    createAIConductor,
+    prewarmAIConductor
+  };
 }

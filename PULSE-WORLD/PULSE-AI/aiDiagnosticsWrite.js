@@ -1,5 +1,5 @@
 // ============================================================================
-//  PULSE OS v11‑EVO — DIAGNOSTICS WRITE ORGAN
+//  aiDiagnosticsWrite.js — Pulse OS v12.3‑Presence
 //  Safe Logger • Identity‑Stripped • Deterministic Write Surface
 //  PURE LOGGING. ZERO IDENTITY. ZERO MUTATION.
 // ============================================================================
@@ -7,53 +7,99 @@
 export const DiagnosticsWriteMeta = Object.freeze({
   layer: "PulseAIDiagnosticsWriteFrame",
   role: "DIAGNOSTICS_WRITE_ORGAN",
-  version: "11.0-EVO",
-  identity: "aiDiagnosticsWrite-v11-EVO",
+  version: "12.3-Presence",
+  identity: "aiDiagnosticsWrite-v12.3-Presence",
 
   evo: Object.freeze({
     driftProof: true,
     deterministic: true,
     dualband: true,
+
     binaryAware: true,
     symbolicAware: true,
     writeAware: true,
     logAware: true,
+
     identitySafe: true,
     readOnly: true,
     multiInstanceReady: true,
-    epoch: "v11-EVO"
+
+    packetAware: true,
+    presenceAware: true,
+    chunkingAware: true,
+    gpuFriendly: true,
+
+    epoch: "12.3-Presence"
   }),
 
   contract: Object.freeze({
-    purpose: "Safely store AI runs into a logging backend without identity anchors.",
+    purpose:
+      "Safely store AI runs into a logging backend without identity anchors.",
+
     never: Object.freeze([
       "store user identifiers",
       "store device fingerprints",
       "store session roots",
-      "mutate logs after write"
+      "mutate logs after write",
+      "introduce randomness",
+      "rewrite payloads nondeterministically"
     ]),
+
     always: Object.freeze([
       "strip identity",
       "write deterministically",
       "preserve diagnostics",
       "preserve trace",
-      "preserve routing snapshot"
+      "preserve routing snapshot",
+      "emit deterministic write packets"
     ])
+  }),
+
+  presence: Object.freeze({
+    organId: "DiagnosticsWrite",
+    organKind: "Logging",
+    physiologyBand: "Symbolic",
+    warmStrategy: "prewarm-on-attach",
+    attachStrategy: "per-write",
+    concurrency: "multi-instance",
+    observability: {
+      traceEvents: [
+        "prewarm",
+        "prewarm-error",
+        "write",
+        "write-error"
+      ]
+    }
   })
 });
-// ---------------------------------------------------------
-//  DIAGNOSTICS WRITE PREWARM ENGINE — v11‑EVO
-// ---------------------------------------------------------
+
+// ============================================================================
+//  PACKET EMITTER — deterministic, diagnostics-write scoped
+// ============================================================================
+function emitDiagnosticsWritePacket(type, payload = {}) {
+  return Object.freeze({
+    meta: DiagnosticsWriteMeta,
+    packetType: `diagnostics-write-${type}`,
+    timestamp: Date.now(),
+    epoch: DiagnosticsWriteMeta.evo.epoch,
+    layer: DiagnosticsWriteMeta.layer,
+    role: DiagnosticsWriteMeta.role,
+    identity: DiagnosticsWriteMeta.identity,
+    ...payload
+  });
+}
+
+// ============================================================================
+//  DIAGNOSTICS WRITE PREWARM ENGINE — v12.3‑Presence
+// ============================================================================
 export function prewarmDiagnosticsWriteOrgan() {
   try {
-    // Fake backend with no‑op write
     const warmBackend = {
       async write(path, payload) {
         return true;
       }
     };
 
-    // Fake context
     const warmContext = {
       personaId: "prewarm",
       userIsOwner: false,
@@ -64,13 +110,11 @@ export function prewarmDiagnosticsWriteOrgan() {
       clinicianReport: { clinician: "prewarm" }
     };
 
-    // Create warm organ
     const warmOrgan = createDiagnosticsWriteOrgan({
       context: warmContext,
       backend: warmBackend
     });
 
-    // Warm stripIdentity + writeRun
     warmOrgan.writeRun({
       result: {
         userId: "123",
@@ -83,29 +127,32 @@ export function prewarmDiagnosticsWriteOrgan() {
       }
     });
 
-    // Warm log()
     warmOrgan.log("prewarm");
 
-    return true;
+    return emitDiagnosticsWritePacket("prewarm", {
+      message: "Diagnostics Write organ prewarmed and logging pathways aligned."
+    });
   } catch (err) {
-    console.error("[DiagnosticsWrite Prewarm] Failed:", err);
-    return false;
+    return emitDiagnosticsWritePacket("prewarm-error", {
+      error: String(err),
+      message: "Diagnostics Write organ prewarm failed."
+    });
   }
 }
 
-
 // ============================================================================
-// PUBLIC API — Create Diagnostics Write Organ
+//  PUBLIC API — Create Diagnostics Write Organ (v12.3‑Presence)
 // ============================================================================
 export function createDiagnosticsWriteOrgan({ context, backend }) {
 
   // --------------------------------------------------------------------------
-  // IDENTITY STRIPPER
+  // IDENTITY STRIPPER — deterministic, presence-safe
   // --------------------------------------------------------------------------
   function stripIdentity(obj) {
     if (!obj || typeof obj !== "object") return obj;
 
     const clone = { ...obj };
+
     delete clone.userId;
     delete clone.uid;
     delete clone.resendToken;
@@ -117,37 +164,45 @@ export function createDiagnosticsWriteOrgan({ context, backend }) {
   }
 
   // --------------------------------------------------------------------------
-  // WRITE LOG ENTRY
+  // WRITE LOG ENTRY — deterministic, identity-safe
   // --------------------------------------------------------------------------
   async function writeRun({ result }) {
-    const timestamp = Date.now();
-    const docId = `${context.personaId || "unknown"}-${timestamp}`;
+    try {
+      const timestamp = Date.now();
+      const docId = `${context.personaId || "unknown"}-${timestamp}`;
 
-    const safePayload = {
-      personaId: context.personaId,
-      userIsOwner: context.userIsOwner || false,
-      timestamp,
+      const safePayload = {
+        personaId: context.personaId,
+        userIsOwner: context.userIsOwner || false,
+        timestamp,
 
-      result: stripIdentity(result),
-      diagnostics: stripIdentity(context.diagnostics),
-      trace: Array.isArray(context.trace) ? [...context.trace] : [],
-      routing: stripIdentity(context.routing),
+        result: stripIdentity(result),
+        diagnostics: stripIdentity(context.diagnostics),
+        trace: Array.isArray(context.trace) ? [...context.trace] : [],
+        routing: stripIdentity(context.routing),
 
-      scribeReport: stripIdentity(context.scribeReport),
-      clinicianReport: stripIdentity(context.clinicianReport)
-    };
+        scribeReport: stripIdentity(context.scribeReport),
+        clinicianReport: stripIdentity(context.clinicianReport)
+      };
 
-    await backend.write(`AI_LOGS/${docId}`, safePayload);
+      await backend.write(`AI_LOGS/${docId}`, safePayload);
 
-    return {
-      ok: true,
-      id: docId,
-      message: "Diagnostics written safely (identity stripped)."
-    };
+      return emitDiagnosticsWritePacket("write", {
+        ok: true,
+        id: docId,
+        message: "Diagnostics written safely (identity stripped)."
+      });
+    } catch (err) {
+      return emitDiagnosticsWritePacket("write-error", {
+        ok: false,
+        error: String(err),
+        message: "Diagnostics write failed."
+      });
+    }
   }
 
   // --------------------------------------------------------------------------
-  // PUBLIC API
+  // PUBLIC ORGAN SURFACE
   // --------------------------------------------------------------------------
   return Object.freeze({
     meta: DiagnosticsWriteMeta,
@@ -159,15 +214,14 @@ export function createDiagnosticsWriteOrgan({ context, backend }) {
     writeRun
   });
 }
-// ---------------------------------------------------------
+
+// ============================================================================
 //  DUAL‑MODE EXPORTS (ESM + CommonJS)
-// ---------------------------------------------------------
-
-
-// CommonJS
+// ============================================================================
 if (typeof module !== "undefined") {
   module.exports = {
     DiagnosticsWriteMeta,
-    createDiagnosticsWriteOrgan
+    createDiagnosticsWriteOrgan,
+    prewarmDiagnosticsWriteOrgan
   };
 }

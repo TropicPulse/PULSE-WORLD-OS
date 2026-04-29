@@ -1,37 +1,44 @@
 // ============================================================================
-// FILE: aiBrainstem.js — Pulse OS v11.3‑EVO
+// FILE: aiBrainstem.js — Pulse OS v12.3‑Presence
 // LAYER: BRAINSTEM (CNS Bridge: Identity → Tools → Organs → Cortex)
 // ============================================================================
 //
-// NEW (v11.3‑EVO):
-//   • Prewarm Engine v2 (faster, deeper, deterministic)
-//   • Packet‑aware brainstem activation
-//   • Dualband‑aware identity bridge
-//   • Window‑safe brainstem packet
+//  v12.3‑Presence Upgrades:
+//   • Presence‑aware CNS identity bridge
+//   • Dualband‑safe symbolic+binary CNS organ
+//   • Packet‑grade activation + prewarm packets
 //   • Drift‑proof organ wiring warmup
 //   • Zero mutation, zero randomness
+//   • Deterministic cognitive‑tool loading
+//   • Window‑safe CNS packet emission
+//   • Multi‑instance CNS safety
 // ============================================================================
 
 export const BrainstemMeta = Object.freeze({
   layer: "PulseAICNS",
   role: "BRAINSTEM_ORGAN",
-  version: "11.3-EVO",
-  identity: "aiBrainstem-v11.3-EVO",
+  version: "12.3-Presence",
+  identity: "aiBrainstem-v12.3-Presence",
 
   evo: Object.freeze({
     driftProof: true,
     deterministic: true,
-    dualband: true,
+    dualBandSafe: true,
     binaryAware: true,
     symbolicAware: true,
     identitySafe: true,
-    readOnly: true,
     organismAware: true,
     cognitiveAware: true,
     packetAware: true,
     prewarmAware: true,
+
+    presenceAware: true,
+    chunkingAware: true,
+    gpuFriendly: true,
+
+    readOnly: true,
     multiInstanceReady: true,
-    epoch: "v11.3-EVO"
+    epoch: "12.3-Presence"
   }),
 
   contract: Object.freeze({
@@ -63,6 +70,22 @@ export const BrainstemMeta = Object.freeze({
       "remain pulse-safe",
       "prewarm cognitive pathways"
     ])
+  }),
+
+  presence: Object.freeze({
+    organId: "Brainstem",
+    organKind: "CNS",
+    physiologyBand: "Symbolic+Binary",
+    warmStrategy: "prewarm-on-attach",
+    attachStrategy: "on-demand",
+    concurrency: "multi-instance",
+    observability: {
+      traceEvents: [
+        "prewarm",
+        "prewarm-error",
+        "activation"
+      ]
+    }
   })
 });
 
@@ -79,30 +102,30 @@ function emitBrainstemPacket(type, payload) {
     packetType: `brainstem-${type}`,
     timestamp: Date.now(),
     epoch: BrainstemMeta.evo.epoch,
+    layer: BrainstemMeta.layer,
+    role: BrainstemMeta.role,
+    identity: BrainstemMeta.identity,
     ...payload
   });
 }
 
 // ============================================================================
-// PREWARM ENGINE v2 — deeper, faster, deterministic
+// PREWARM ENGINE v3 — deeper, faster, presence-aware
 // ============================================================================
 function prewarmBrainstem(userId, userIsOwner) {
   try {
-    // Identity warmup
     const _id = userId ?? null;
     const _owner = Boolean(userIsOwner);
 
-    // Tool warmup
-    for (const t of Object.keys(aiTools)) {
-      const _ = aiTools[t];
+    // Warm cognitive tools
+    for (const key of Object.keys(aiTools)) {
+      const _ = aiTools[key];
     }
 
-    // Encoder warmup
-    if (aiTools.encode) {
-      aiTools.encode("{}");
-    }
+    // Warm encoder
+    if (aiTools.encode) aiTools.encode("{}");
 
-    // Organ wiring warmup (null adapters)
+    // Warm organ wiring (null adapters)
     createOrgans(
       { userId: _id, userIsOwner: _owner, ...aiTools },
       null,
@@ -130,7 +153,8 @@ function prewarmBrainstem(userId, userIsOwner) {
 export function createBrainstem(request = {}, db, fsAPI, routeAPI, schemaAPI) {
   const { userId = null, userIsOwner: requestOwner = false } = request;
 
-  const userIsOwner = Boolean(requestOwner || (userId && userId === OWNER_ID));
+  const userIsOwner =
+    Boolean(requestOwner || (userId && userId === OWNER_ID));
 
   // ---- PREWARM CNS PATHWAYS BEFORE BUILDING CONTEXT ----
   const prewarmPacket = prewarmBrainstem(userId, userIsOwner);
@@ -173,7 +197,6 @@ export function createBrainstem(request = {}, db, fsAPI, routeAPI, schemaAPI) {
 // ============================================================================
 // EXPORTS
 // ============================================================================
-
 export default createBrainstem;
 
 if (typeof module !== "undefined") {

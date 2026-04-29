@@ -1,19 +1,20 @@
 // ============================================================================
-//  PULSE OS v11‑EVO — DIAGNOSTICS ORGAN
-//  Drift Tracker • Mismatch Ledger • Slowdown Sensor • Integrity Surface
+//  aiDiagnostics.js — Pulse OS v12.3‑Presence
+//  Diagnostics Organ • Drift Tracker • Mismatch Ledger • Slowdown Sensor
 //  PURE OBSERVATION. ZERO RANDOMNESS. ZERO MUTATION.
 // ============================================================================
 
 export const DiagnosticsMeta = Object.freeze({
   layer: "PulseAIDiagnosticsFrame",
   role: "DIAGNOSTICS_ORGAN",
-  version: "11.0-EVO",
-  identity: "aiDiagnostics-v11-EVO",
+  version: "12.3-Presence",
+  identity: "aiDiagnostics-v12.3-Presence",
 
   evo: Object.freeze({
     driftProof: true,
     deterministic: true,
     dualband: true,
+
     binaryAware: true,
     symbolicAware: true,
     diagnosticsAware: true,
@@ -21,10 +22,18 @@ export const DiagnosticsMeta = Object.freeze({
     schemaAware: true,
     observerOnly: true,
     architectAware: true,
+
     identitySafe: true,
     readOnly: true,
     multiInstanceReady: true,
-    epoch: "v11-EVO"
+
+    packetAware: true,
+    presenceAware: true,
+    windowAware: true,
+    chunkingAware: true,
+    gpuFriendly: true,
+
+    epoch: "12.3-Presence"
   }),
 
   contract: Object.freeze({
@@ -48,24 +57,56 @@ export const DiagnosticsMeta = Object.freeze({
       "annotate",
       "stay deterministic"
     ])
+  }),
+
+  presence: Object.freeze({
+    organId: "DiagnosticsOrgan",
+    organKind: "Observer",
+    physiologyBand: "Symbolic+Binary",
+    warmStrategy: "prewarm-on-attach",
+    attachStrategy: "per-context",
+    concurrency: "multi-instance",
+    observability: {
+      traceEvents: [
+        "prewarm",
+        "prewarm-error",
+        "state-created",
+        "context-attached",
+        "api-created"
+      ]
+    }
   })
 });
-// ---------------------------------------------------------
-//  DIAGNOSTICS PREWARM ENGINE — v11‑EVO
-// ---------------------------------------------------------
+
+// ============================================================================
+//  PACKET EMITTER — deterministic, diagnostics-scoped
+// ============================================================================
+function emitDiagnosticsPacket(type, payload = {}) {
+  return Object.freeze({
+    meta: DiagnosticsMeta,
+    packetType: `diagnostics-${type}`,
+    timestamp: Date.now(),
+    epoch: DiagnosticsMeta.evo.epoch,
+    layer: DiagnosticsMeta.layer,
+    role: DiagnosticsMeta.role,
+    identity: DiagnosticsMeta.identity,
+    ...payload
+  });
+}
+
+// ============================================================================
+//  DIAGNOSTICS PREWARM ENGINE — v12.3‑Presence
+// ============================================================================
 export function prewarmDiagnosticsOrgan() {
   try {
-    // Warm state creation
     const warmState = createDiagnosticsState();
 
-    // Warm standalone API
     const api = createDiagnosticsAPI();
     api.flagMismatch("prewarm", "expected", "actual");
     api.flagMissingField("missingField");
     api.flagSlowdown("prewarm");
     api.flagDrift("prewarm drift");
 
-    // Warm context-attached diagnostics
     const warmContext = { trace: [] };
     attachDiagnosticsOrgan(warmContext);
 
@@ -74,16 +115,21 @@ export function prewarmDiagnosticsOrgan() {
     warmContext.flagSlowdown("prewarm");
     warmContext.flagDrift("prewarm drift");
 
-    return true;
+    return emitDiagnosticsPacket("prewarm", {
+      message: "Diagnostics organ prewarmed and observation pathways aligned.",
+      warmStateTimestamp: warmState.timestamp
+    });
   } catch (err) {
     console.error("[Diagnostics Prewarm] Failed:", err);
-    return false;
+    return emitDiagnosticsPacket("prewarm-error", {
+      error: String(err),
+      message: "Diagnostics organ prewarm failed."
+    });
   }
 }
 
-
 // ============================================================================
-// FACTORY — Create Diagnostics State
+//  FACTORY — Create Diagnostics State
 // ============================================================================
 export function createDiagnosticsState() {
   return {
@@ -97,7 +143,7 @@ export function createDiagnosticsState() {
 }
 
 // ============================================================================
-// ATTACH HELPERS — Bind Diagnostics to a Context
+//  ATTACH HELPERS — Bind Diagnostics to a Context
 // ============================================================================
 export function attachDiagnosticsOrgan(context) {
   if (!context) return context;
@@ -105,33 +151,23 @@ export function attachDiagnosticsOrgan(context) {
   const diagnostics = createDiagnosticsState();
   context.diagnostics = diagnostics;
 
-  // --------------------------------------------------------------------------
-  // MISMATCH — expected vs actual
-  // --------------------------------------------------------------------------
   context.flagMismatch = (key, expected, actual) => {
     diagnostics.mismatches.push({ key, expected, actual });
-    context.trace?.push?.(`Mismatch: ${key} expected ${expected}, got ${actual}`);
+    context.trace?.push?.(
+      `Mismatch: ${key} expected ${expected}, got ${actual}`
+    );
   };
 
-  // --------------------------------------------------------------------------
-  // MISSING FIELD — required but absent
-  // --------------------------------------------------------------------------
   context.flagMissingField = (key) => {
     diagnostics.missingFields.push({ key });
     context.trace?.push?.(`Missing field: ${key}`);
   };
 
-  // --------------------------------------------------------------------------
-  // SLOWDOWN — performance / payload concerns
-  // --------------------------------------------------------------------------
   context.flagSlowdown = (reason) => {
     diagnostics.slowdownCauses.push({ reason });
     context.trace?.push?.(`Slowdown cause: ${reason}`);
   };
 
-  // --------------------------------------------------------------------------
-  // DRIFT — schema / behavior divergence
-  // --------------------------------------------------------------------------
   context.flagDrift = (description) => {
     diagnostics.driftDetected = true;
     diagnostics.driftEvents.push({ description });
@@ -142,7 +178,7 @@ export function attachDiagnosticsOrgan(context) {
 }
 
 // ============================================================================
-// STANDALONE DIAGNOSTICS API — No Context Mutation
+//  STANDALONE DIAGNOSTICS API — No Context Mutation
 // ============================================================================
 export function createDiagnosticsAPI() {
   const diagnostics = createDiagnosticsState();
@@ -173,18 +209,18 @@ export function createDiagnosticsAPI() {
     flagDrift
   });
 }
-// ---------------------------------------------------------
-//  DUAL‑MODE EXPORTS (ESM + CommonJS)
-// ---------------------------------------------------------
+
+// ============================================================================
+//  BOOT PREWARM + DUAL‑MODE EXPORTS
+// ============================================================================
 prewarmDiagnosticsOrgan();
 
-
-// CommonJS
 if (typeof module !== "undefined") {
   module.exports = {
     DiagnosticsMeta,
     createDiagnosticsState,
     attachDiagnosticsOrgan,
-    createDiagnosticsAPI
+    createDiagnosticsAPI,
+    prewarmDiagnosticsOrgan
   };
 }

@@ -1,5 +1,5 @@
 // ============================================================================
-//  aiHumilityFilter.js — PulseOS Humility Organ — v11.3‑EVO
+//  aiHumilityFilter.js — PulseOS Humility Organ — v12.3‑Presence
 //  Removes superiority, snobbery, ego, obligation‑tone, and professor‑energy.
 //  PURE FILTER. ZERO MUTATION. ZERO RANDOMNESS.
 // ============================================================================
@@ -7,34 +7,37 @@
 export const aiHumilityFilter = {
 
   // ─────────────────────────────────────────────────────────────
-  // META BLOCK — ORGAN IDENTITY (v11.3‑EVO)
+  // META BLOCK — ORGAN IDENTITY (v12.3‑Presence)
   // ─────────────────────────────────────────────────────────────
   meta: Object.freeze({
     type: "Cognitive",
     subsystem: "aiTone",
     layer: "C1-HumilityFilter",
-    version: "11.3",
-    identity: "aiHumilityFilter-v11.3-EVO",
+    version: "12.3-Presence",
+    identity: "aiHumilityFilter-v12.3-Presence",
 
     evo: Object.freeze({
       driftProof: true,
       deterministic: true,
       dualband: true,
-      packetAware: true,        // ⭐ NEW
-      evolutionAware: true,     // ⭐ NEW
-      windowAware: true,        // ⭐ NEW
-      bluetoothReady: true,     // ⭐ NEW
+      packetAware: true,
+      evolutionAware: true,
+      windowAware: true,
+      presenceAware: true,
+      bluetoothReady: true,
 
       toneAware: true,
       personaAware: true,
       boundaryAware: true,
 
-      microPipeline: true,      // ⭐ NEW (speed)
-      speedOptimized: true,     // ⭐ NEW
+      microPipeline: true,
+      speedOptimized: true,
+      chunkingAware: true,
+      gpuFriendly: true,
 
       multiInstanceReady: true,
       readOnly: true,
-      epoch: "v11.3-EVO"
+      epoch: "12.3-Presence"
     }),
 
     contract: Object.freeze({
@@ -62,7 +65,7 @@ export const aiHumilityFilter = {
         "preserve warmth",
         "remove ego-coded phrasing",
         "apply evolution-aware tone shaping",
-        "emit deterministic tone packets" // ⭐ NEW
+        "emit deterministic tone packets"
       ])
     }),
 
@@ -71,7 +74,9 @@ export const aiHumilityFilter = {
       toneSafe: true,
       driftProof: true,
       compatibleWithToneEngine: true,
-      compatibleWithEvolutionEngine: true
+      compatibleWithEvolutionEngine: true,
+      compatibleWithGeniusOrgan: true,
+      compatibleWithExperienceOrgan: true
     }),
 
     boundaryReflex() {
@@ -86,6 +91,7 @@ export const aiHumilityFilter = {
     return Object.freeze({
       meta: aiHumilityFilter.meta,
       packetType: `humility-${type}`,
+      packetId: `humility-${type}-${Date.now()}`,
       timestamp: Date.now(),
       epoch: aiHumilityFilter.meta.evo.epoch,
       ...payload
@@ -93,7 +99,7 @@ export const aiHumilityFilter = {
   },
 
   // ========================================================================
-  // HUMILITY FILTER — CORE LOGIC (v11.3‑EVO, SPEED‑OPTIMIZED)
+  // HUMILITY FILTER — CORE LOGIC (v12.3‑Presence, SPEED‑OPTIMIZED)
   // ========================================================================
   filter(text, context = {}) {
     if (!text || typeof text !== "string") {
@@ -130,7 +136,7 @@ export const aiHumilityFilter = {
       .replace(/\blet me explain\b/gi, "here’s the clean version")
       .replace(/\bactually\b/gi, "");
 
-    // 6. Evolution-aware softening (v11.3‑EVO)
+    // 6. Evolution-aware softening (Presence-grade)
     const evoMode = context?.evolutionMode || "passive";
 
     if (evoMode === "active") {

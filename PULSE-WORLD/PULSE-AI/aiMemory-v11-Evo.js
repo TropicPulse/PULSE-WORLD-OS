@@ -1,5 +1,5 @@
 // ============================================================================
-//  aiMemory.js — Pulse OS v11.3‑EVO Organ
+//  aiMemory.js — Pulse OS v12.3-Presence Organ
 //  Pure PulseCoreMemory Adapter • Dualband • Binary‑Only • Zero Local State
 // ----------------------------------------------------------------------------
 //  CANONICAL ROLE:
@@ -24,13 +24,13 @@
 import { PulseCoreMemory } from "../PULSE-CORE/PulseCoreMemory.js";
 
 // ---------------------------------------------------------
-//  META BLOCK — v11.3‑EVO
+//  META BLOCK — v12.3-Presence
 // ---------------------------------------------------------
 export const MemoryMeta = Object.freeze({
   layer: "OrganismMemory",
   role: "MEMORY_LAYER",
-  version: "11.3-EVO",
-  identity: "aiMemory-v11.3-EVO",
+  version: "12.3-Presence",
+  identity: "aiMemory-v12.3-Presence",
 
   evo: Object.freeze({
     deterministic: true,
@@ -47,7 +47,7 @@ export const MemoryMeta = Object.freeze({
     speedOptimized: true,    // ⭐ NEW
     prewarmAware: true,      // ⭐ NEW
     arteryAware: true,       // ⭐ NEW
-    epoch: "v11.3-EVO"
+    epoch: "v12.3-Presence"
   }),
 
   contract: Object.freeze({

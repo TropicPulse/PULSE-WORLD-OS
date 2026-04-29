@@ -1,19 +1,21 @@
 /**
- * aiBinaryOrganRegistry.js — Pulse OS v11.1‑EVO Organ
+ * aiBinaryOrganRegistry.js — Pulse OS v12.3‑Presence Organ
  * ---------------------------------------------------------
  * CANONICAL ROLE:
  *   Binary Organ Registry (identity ledger)
+ *   Stores organ identity, signatures, timestamps, and type.
+ *   Presence‑aware, drift‑proof, deterministic.
  */
 
 // ---------------------------------------------------------
-//  META BLOCK — v11.1‑EVO
+//  META BLOCK — v12.3‑Presence
 // ---------------------------------------------------------
 
-const OrganRegistryMeta = Object.freeze({
+export const OrganRegistryMeta = Object.freeze({
   layer: "OrganismIdentity",
   role: "BINARY_ORGAN_REGISTRY",
-  version: "11.1-EVO",
-  identity: "aiOrganRegistry-v11.1-EVO",
+  version: "12.3-Presence",
+  identity: "aiOrganRegistry-v12.3-Presence",
 
   evo: Object.freeze({
     deterministic: true,
@@ -25,8 +27,14 @@ const OrganRegistryMeta = Object.freeze({
     identityAware: true,
     arteryAware: true,
 
+    presenceAware: true,
+    chunkingAware: true,
+    gpuFriendly: true,
+    dualBandSafe: true,
+
     multiInstanceReady: true,
-    epoch: "v11.1-EVO"
+    readOnly: true,
+    epoch: "12.3-Presence"
   }),
 
   contract: Object.freeze({
@@ -52,20 +60,56 @@ const OrganRegistryMeta = Object.freeze({
       "treat organ records as read-only data",
       "maintain registry artery metrics"
     ])
+  }),
+
+  presence: Object.freeze({
+    organId: "BinaryOrganRegistry",
+    organKind: "Identity",
+    physiologyBand: "Binary",
+    warmStrategy: "prewarm-on-attach",
+    attachStrategy: "on-demand",
+    concurrency: "multi-instance",
+    observability: {
+      traceEvents: [
+        "registerOrgan",
+        "getOrganRecord",
+        "getOrganRecord:notFound",
+        "listOrgans",
+        "evolveOrgan",
+        "prewarm",
+        "prewarm-error"
+      ]
+    }
   })
 });
+
 // ---------------------------------------------------------
-//  BINARY ORGAN REGISTRY PREWARM ENGINE — v11.1‑EVO
+//  PACKET EMITTER — deterministic, identity-scoped
+// ---------------------------------------------------------
+function emitRegistryPacket(type, payload) {
+  return Object.freeze({
+    meta: OrganRegistryMeta,
+    packetType: `registry-${type}`,
+    timestamp: Date.now(),
+    epoch: OrganRegistryMeta.evo.epoch,
+    layer: OrganRegistryMeta.layer,
+    role: OrganRegistryMeta.role,
+    identity: OrganRegistryMeta.identity,
+    ...payload
+  });
+}
+
+// ---------------------------------------------------------
+//  PREWARM ENGINE — v12.3‑Presence
 // ---------------------------------------------------------
 export function prewarmAIBinaryOrganRegistry(config = {}) {
   try {
-    const { encoder, memory, evolution } = config;
+    const { encoder, memory, evolution, trace } = config;
 
     if (!encoder?.encode || !memory?.write || !memory?.read) {
       return false;
     }
 
-    // Warm encoder encode/decode
     const warmJson = JSON.stringify({
       id: "prewarm-organ",
       type: "Prewarm",
@@ -76,24 +120,16 @@ export function prewarmAIBinaryOrganRegistry(config = {}) {
     const warmKey = encoder.encode("organ:prewarm");
     const warmVal = encoder.encode(warmJson);
 
-    // Warm memory write/read
     memory.write(warmKey, warmVal);
-    const _read = memory.read(warmKey);
+    const read = memory.read(warmKey);
 
-    // Warm decode
-    if (_read) {
-      encoder.decode(_read, "string");
-    }
+    if (read) encoder.decode(read, "string");
 
-    // Warm listKeys
     if (typeof memory.listKeys === "function") {
-      const _keys = memory.listKeys();
-      for (const k of _keys) {
-        encoder.decode(k, "string");
-      }
+      const keys = memory.listKeys();
+      for (const k of keys) encoder.decode(k, "string");
     }
 
-    // Warm evolution signature path
     if (evolution?.generateSignature) {
       evolution.generateSignature({
         id: "prewarm-organ",
@@ -101,18 +137,24 @@ export function prewarmAIBinaryOrganRegistry(config = {}) {
       });
     }
 
-    return true;
+    if (trace) console.log("[aiBinaryOrganRegistry] prewarm");
+
+    return emitRegistryPacket("prewarm", {
+      message: "Binary Organ Registry prewarmed."
+    });
   } catch (err) {
-    console.error("[AIBinaryOrganRegistry Prewarm] Failed:", err);
-    return false;
+    return emitRegistryPacket("prewarm-error", {
+      error: String(err),
+      message: "Binary Organ Registry prewarm failed."
+    });
   }
 }
 
 // ---------------------------------------------------------
-//  ORGAN IMPLEMENTATION — v11.1‑EVO
+//  ORGAN IMPLEMENTATION — v12.3‑Presence
 // ---------------------------------------------------------
 
-class AIBinaryOrganRegistry {
+export class AIBinaryOrganRegistry {
   constructor(config = {}) {
     this.id        = config.id || "organ-registry";
     this.encoder   = config.encoder;
@@ -141,6 +183,9 @@ class AIBinaryOrganRegistry {
     };
   }
 
+  // ---------------------------------------------------------
+  //  REGISTER ORGAN
+  // ---------------------------------------------------------
   registerOrgan(organ) {
     const signature = this.evolution
       ? this.evolution.generateSignature(organ)
@@ -168,9 +213,12 @@ class AIBinaryOrganRegistry {
       bits: value.length
     });
 
-    return record;
+    return emitRegistryPacket("register", record);
   }
 
+  // ---------------------------------------------------------
+  //  LOOKUP ORGAN
+  // ---------------------------------------------------------
   getOrganRecord(organId) {
     const key = this.encoder.encode(`organ:${organId}`);
     const binary = this.memory.read(key);
@@ -189,9 +237,12 @@ class AIBinaryOrganRegistry {
 
     this._trace("getOrganRecord", { organId, record });
 
-    return record;
+    return emitRegistryPacket("lookup", record);
   }
 
+  // ---------------------------------------------------------
+  //  LIST ORGANS
+  // ---------------------------------------------------------
   listOrgans() {
     const keys = this.memory.listKeys();
 
@@ -210,9 +261,12 @@ class AIBinaryOrganRegistry {
 
     this._trace("listOrgans", { count: organIds.length });
 
-    return organIds;
+    return emitRegistryPacket("list", { organIds });
   }
 
+  // ---------------------------------------------------------
+  //  EVOLVE ORGAN
+  // ---------------------------------------------------------
   evolveOrgan(organ) {
     if (!this.evolution) {
       throw new Error("evolution engine not provided");
@@ -229,9 +283,12 @@ class AIBinaryOrganRegistry {
       evolved: result.evolved
     });
 
-    return result;
+    return emitRegistryPacket("evolve", result);
   }
 
+  // ---------------------------------------------------------
+  //  TRACE
+  // ---------------------------------------------------------
   _trace(event, payload) {
     if (!this.trace) return;
     console.log(`[${this.id}] ${event}`, payload);
@@ -239,32 +296,23 @@ class AIBinaryOrganRegistry {
 }
 
 // ---------------------------------------------------------
-//  FACTORY
+//  FACTORY — v12.3‑Presence
 // ---------------------------------------------------------
 
-function createAIBinaryOrganRegistry(config) {
-  // Prewarm registry binary pathways
+export function createAIBinaryOrganRegistry(config = {}) {
   prewarmAIBinaryOrganRegistry(config);
   return new AIBinaryOrganRegistry(config);
 }
 
-
 // ---------------------------------------------------------
-//  DUAL‑MODE EXPORTS (ESM + CommonJS)
+//  DUAL‑MODE EXPORTS
 // ---------------------------------------------------------
-
-// ESM
-export {
-  OrganRegistryMeta,
-  AIBinaryOrganRegistry,
-  createAIBinaryOrganRegistry
-};
 
 if (typeof module !== "undefined") {
-// CommonJS
-module.exports = {
-  OrganRegistryMeta,
-  AIBinaryOrganRegistry,
-  createAIBinaryOrganRegistry
-};
+  module.exports = {
+    OrganRegistryMeta,
+    AIBinaryOrganRegistry,
+    createAIBinaryOrganRegistry,
+    prewarmAIBinaryOrganRegistry
+  };
 }

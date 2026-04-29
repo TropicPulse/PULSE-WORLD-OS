@@ -1,5 +1,5 @@
 // ============================================================================
-//  PULSE OS v11‑EVO — COGNITIVE FRAME ORGAN
+//  PULSE OS v12.3‑Presence — COGNITIVE FRAME ORGAN
 //  Dual‑Band Context • ABA Anchor • Drift & Diagnostics Surface
 //  PURE CONTEXT. ZERO MUTATION. ZERO RANDOMNESS.
 // ============================================================================
@@ -7,8 +7,8 @@
 export const COGNITIVE_FRAME_META = Object.freeze({
   layer: "PulseAICognitiveFrame",
   role: "COGNITIVE_FRAME_ORGAN",
-  version: "11.1-EVO",
-  identity: "aiCognitiveFrame-v11-EVO",
+  version: "12.3-Presence",
+  identity: "aiCognitiveFrame-v12.3-Presence",
 
   evo: Object.freeze({
     driftProof: true,
@@ -39,15 +39,57 @@ export const COGNITIVE_FRAME_META = Object.freeze({
     readOnly: true,
 
     multiInstanceReady: true,
-    epoch: "v11-EVO"
+    epoch: "12.3-Presence"
+  }),
+
+  presence: Object.freeze({
+    organId: "CognitiveFrame",
+    organKind: "Context",
+    physiologyBand: "Symbolic+Binary",
+    warmStrategy: "prewarm-on-attach",
+    attachStrategy: "per-request",
+    concurrency: "multi-instance",
+    observability: {
+      traceEvents: [
+        "prewarm",
+        "prewarm-error",
+        "frame:created",
+        "diagnostic:mismatch",
+        "diagnostic:missingField",
+        "diagnostic:slowdown",
+        "diagnostic:drift",
+        "ABA:setStablePoint",
+        "ABA:resetToStablePoint",
+        "abstraction:updateLevel",
+        "repair:next",
+        "window:explainSafe",
+        "frustration:soothe"
+      ]
+    }
   })
 });
-// ---------------------------------------------------------
-//  COGNITIVE FRAME PREWARM ENGINE — v11.1‑EVO
-// ---------------------------------------------------------
+
+// ============================================================================
+//  PACKET EMITTER — deterministic, frame-scoped
+// ============================================================================
+function emitCognitiveFramePacket(type, payload) {
+  return Object.freeze({
+    meta: COGNITIVE_FRAME_META,
+    packetType: `cognitive-frame-${type}`,
+    timestamp: Date.now(),
+    epoch: COGNITIVE_FRAME_META.evo.epoch,
+    layer: COGNITIVE_FRAME_META.layer,
+    role: COGNITIVE_FRAME_META.role,
+    identity: COGNITIVE_FRAME_META.identity,
+    ...payload
+  });
+}
+
+// ============================================================================
+//  COGNITIVE FRAME PREWARM ENGINE — v12.3‑Presence
+// ============================================================================
 export function prewarmCognitiveFrame() {
   try {
-    // Warm request parsing
     const warmRequest = {
       intent: "prewarm",
       domain: "system",
@@ -55,7 +97,6 @@ export function prewarmCognitiveFrame() {
       userId: "prewarm-user"
     };
 
-    // Warm routing snapshot
     const warmRouting = {
       personaId: "ARCHITECT",
       persona: { id: "ARCHITECT" },
@@ -66,46 +107,43 @@ export function prewarmCognitiveFrame() {
       flags: { stable: true }
     };
 
-    // Warm organism snapshot
     const warmOrganism = {
       binary: { throughput: 1, pressure: 0, cost: 0, budget: 1 },
       symbolic: { state: "prewarm" }
     };
 
-    // Construct a warm frame
     const frame = createCognitiveFrame({
       request: warmRequest,
       routing: warmRouting,
       organismSnapshot: warmOrganism
     });
 
-    // Touch diagnostics helpers
     frame.flagMismatch?.("test", "expected", "actual");
     frame.flagMissingField?.("missingField");
     frame.flagSlowdown?.("prewarm");
     frame.flagDrift?.("prewarm drift");
 
-    // Touch ABA
     frame.ABA.setStablePoint?.({ snapshot: "prewarm" });
     frame.ABA.resetToStablePoint?.();
 
-    // Touch abstraction
     frame.abstraction.updateLevel?.("prewarm");
 
-    // Touch repair reflex
     frame.repair.next?.();
     frame.repair.next?.();
 
-    // Touch window principle
     frame.window.explainSafe?.("prewarm");
 
-    // Touch frustration tone
     frame.frustration.soothe?.();
 
-    return true;
+    return emitCognitiveFramePacket("prewarm", {
+      message: "Cognitive frame prewarmed and context pathways aligned."
+    });
   } catch (err) {
     console.error("[CognitiveFrame Prewarm] Failed:", err);
-    return false;
+    return emitCognitiveFramePacket("prewarm-error", {
+      error: String(err),
+      message: "Cognitive frame prewarm failed."
+    });
   }
 }
 
@@ -115,6 +153,7 @@ export function prewarmCognitiveFrame() {
 
 export function createCognitiveFrame(options = {}) {
   prewarmCognitiveFrame();   // ← PREWARM HERE
+
   const { request = {}, routing = {}, organismSnapshot = null } = options;
 
   const context = {
@@ -160,22 +199,26 @@ export function createCognitiveFrame(options = {}) {
   context.flagMismatch = function (key, expected, actual) {
     this.diagnostics.mismatches.push({ key, expected, actual });
     this.trace.push(`Mismatch: "${key}" expected ${expected}, got ${actual}`);
+    this.logStep && this.logStep("diagnostic:mismatch");
   };
 
   context.flagMissingField = function (key) {
     this.diagnostics.missingFields.push({ key });
     this.trace.push(`Missing field: "${key}"`);
+    this.logStep && this.logStep("diagnostic:missingField");
   };
 
   context.flagSlowdown = function (reason) {
     this.diagnostics.slowdownCauses.push({ reason });
     this.trace.push(`Slowdown cause: ${reason}`);
+    this.logStep && this.logStep("diagnostic:slowdown");
   };
 
   context.flagDrift = function (description) {
     this.diagnostics.driftDetected = true;
     this.diagnostics.driftEvents.push({ description });
     this.trace.push(`Drift detected: ${description}`);
+    this.logStep && this.logStep("diagnostic:drift");
   };
 
   // ABA ANCHOR
@@ -269,9 +312,13 @@ export function createCognitiveFrame(options = {}) {
     context.logStep("Intent handler context attached.");
   }
 
-  return Object.freeze(context);
-}
+  const frozen = Object.freeze(context);
 
+  // final trace marker
+  frozen.logStep("frame:created");
+
+  return frozen;
+}
 
 export default createCognitiveFrame;
 
@@ -282,6 +329,7 @@ if (typeof module !== "undefined") {
   module.exports = {
     COGNITIVE_FRAME_META,
     createCognitiveFrame,
-    default: createCognitiveFrame
+    default: createCognitiveFrame,
+    prewarmCognitiveFrame
   };
 }

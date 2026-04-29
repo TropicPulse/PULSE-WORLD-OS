@@ -60,7 +60,8 @@ export const BrainstemMeta = Object.freeze({
 //  IMPORTS
 // ============================================================================
 import { createArchitectAPI } from "./aiArchitect.js";
-import { createTouristAPI } from "./aiTourist.js";
+import { createTouristAPI, prewarmTourist } from "./aiTourist.js";
+
 import { createEnvironmentAPI } from "./aiEnvironment.js";
 import { createPowerAPI } from "./aiPowerPrime.js";
 import { createEvolutionAPI } from "./aiEvolution.js";
@@ -88,7 +89,7 @@ import { createClinicianAPI } from "./aiClinician.js";
 import { createEvolutionaryAPI } from "./aiEvolutionary.js";
 
 // ============================================================================
-//  ORGAN ASSEMBLY — v11.2‑EVO+ (Dual‑Band Brainstem)
+//  ORGAN ASSEMBLY — v12‑EVO+ (Universal Chunk Fabric Brainstem)
 // ============================================================================
 export function createOrgans(context, db, fsAPI, routeAPI, schemaAPI) {
 
@@ -139,15 +140,6 @@ export function createOrgans(context, db, fsAPI, routeAPI, schemaAPI) {
     schemaAPI
   });
 
-  // wire chunker into dual-band / router if supported
-  if (dualBand && typeof dualBand.registerBackendOrgan === "function") {
-    dualBand.registerBackendOrgan("chunker", chunker);
-  }
-
-  if (router && typeof router.registerBackendOrgan === "function") {
-    router.registerBackendOrgan("chunker", chunker);
-  }
-
   // ------------------------------------------------------------------------
   // 4) REAL ORGANS (symbolic service organs)
   // ------------------------------------------------------------------------
@@ -160,7 +152,7 @@ export function createOrgans(context, db, fsAPI, routeAPI, schemaAPI) {
   const evolutionary = createEvolutionaryAPI({ context, db });
 
   // ------------------------------------------------------------------------
-  // 5) CORE ORGANS (v10.4 → v11.2‑EVO+)
+  // 5) CORE ORGANS (v10.4 → v12‑EVO+)
   // ------------------------------------------------------------------------
   const architect = createArchitectAPI({ context, db });
   const tourist = createTouristAPI({ context, db });
@@ -170,19 +162,10 @@ export function createOrgans(context, db, fsAPI, routeAPI, schemaAPI) {
   const earn = createEarnAPI({ context, db });
   const diagnosticsWrite = createDiagnosticsWriteAPI({ context, db });
 
-  // evolution / diagnostics awareness of chunker if surfaces exist
-  if (evolution && typeof evolution.registerOrgan === "function") {
-    evolution.registerOrgan("chunker", chunker);
-  }
-
-  if (diagnosticsWrite && typeof diagnosticsWrite.register === "function") {
-    diagnosticsWrite.register("chunker", chunker);
-  }
-
   // ------------------------------------------------------------------------
-  // 6) RETURN FULL ORGANISM MAP (dual‑band unified)
-  // ------------------------------------------------------------------------
-  return Object.freeze({
+  // 5.0) UNIVERSAL SYSTEM MAP (EVERYTHING IS A SYSTEM)
+// ------------------------------------------------------------------------
+  const ALL_SYSTEMS = Object.freeze({
     // CNS
     personaEngine,
     boundariesEngine,
@@ -190,10 +173,10 @@ export function createOrgans(context, db, fsAPI, routeAPI, schemaAPI) {
     router,
     cortex,
 
-    // Dual‑Band Organism
+    // Dual‑Band
     dualBand,
 
-    // Backend infrastructure organ (pre-chunked)
+    // Backend infra
     chunker,
 
     // Service organs
@@ -205,7 +188,70 @@ export function createOrgans(context, db, fsAPI, routeAPI, schemaAPI) {
     clinician,
     evolutionary,
 
-    // Core
+    // Core organs
+    architect,
+    tourist,
+    environment,
+    power,
+    evolution,
+    earn,
+    diagnosticsWrite
+  });
+
+  // wire chunker into dual-band / router if supported
+  if (dualBand && typeof dualBand.registerBackendOrgan === "function") {
+    dualBand.registerBackendOrgan("chunker", chunker);
+  }
+
+  if (router && typeof router.registerBackendOrgan === "function") {
+    router.registerBackendOrgan("chunker", chunker);
+  }
+
+  // ------------------------------------------------------------------------
+  // 5.1) UNIVERSAL REGISTRATION WITH CHUNKER
+  // ------------------------------------------------------------------------
+  if (chunker && typeof chunker.registerBackendOrgan === "function") {
+    for (const [name, system] of Object.entries(ALL_SYSTEMS)) {
+      if (system && typeof system.chunk === "function") {
+        chunker.registerBackendOrgan(name, {
+          chunk: system.chunk,
+          prewarm: typeof system.prewarm === "function" ? system.prewarm : undefined
+        });
+      }
+    }
+  }
+
+  // ------------------------------------------------------------------------
+  // 5.2) UNIVERSAL PREWARM
+  // ------------------------------------------------------------------------
+  if (typeof chunker.prewarm === "function") {
+    chunker.prewarm();
+  }
+
+  for (const system of Object.values(ALL_SYSTEMS)) {
+    if (system && typeof system.prewarm === "function") {
+      system.prewarm();
+    }
+  }
+
+  // ------------------------------------------------------------------------
+  // 6) RETURN FULL ORGANISM MAP (dual‑band unified)
+// ------------------------------------------------------------------------
+  return Object.freeze({
+    personaEngine,
+    boundariesEngine,
+    permissionsEngine,
+    router,
+    cortex,
+    dualBand,
+    chunker,
+    doctor,
+    surgeon,
+    lawyer,
+    entrepreneur,
+    veterinarian,
+    clinician,
+    evolutionary,
     architect,
     tourist,
     environment,
@@ -215,6 +261,7 @@ export function createOrgans(context, db, fsAPI, routeAPI, schemaAPI) {
     diagnosticsWrite
   });
 }
+
 
 // ---------------------------------------------------------------------------
 //  DUAL EXPORT LAYER — CommonJS compatibility (v11.2‑EVO+ dualband)

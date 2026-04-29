@@ -1,5 +1,5 @@
 // ============================================================================
-//  PULSE OS v11‑EVO — CONTEXT ENGINE
+//  PULSE OS v12.3‑Presence — CONTEXT ENGINE
 //  Context Fusion • Routing Frame • Safety + Persona Snapshot
 //  PURE CONTEXT. ZERO MUTATION. ZERO RANDOMNESS.
 // ============================================================================
@@ -7,29 +7,38 @@
 export const ContextEngineMeta = Object.freeze({
   layer: "PulseAIContextEngine",
   role: "CONTEXT_ENGINE_ORGAN",
-  version: "11.1-EVO",
-  identity: "aiContextEngine-v11-EVO",
+  version: "12.3-Presence",
+  identity: "aiContextEngine-v12.3-Presence",
 
   evo: Object.freeze({
     driftProof: true,
     deterministic: true,
-    dualband: true,
+    dualBandSafe: true,
+
     routerAware: true,
     personaAware: true,
     safetyAware: true,
     personalAware: true,
     overmindAware: true,
     organismAware: true,
+
+    packetAware: true,
+    presenceAware: true,
+    chunkingAware: true,
+    gpuFriendly: true,
+
     multiInstanceReady: true,
-    epoch: "v11-EVO"
+    readOnly: true,
+    epoch: "12.3-Presence"
   }),
 
   contract: Object.freeze({
     purpose: [
-      "Fuse Brainstem context, Router packet, Persona state, and safety into a single ContextFrame",
-      "Expose a stable, deterministic context surface for aiOvermind and Cortex",
+      "Fuse Brainstem context, Router packet, Persona state, and SafetyFrame into a unified ContextFrame",
+      "Expose a deterministic context surface for Overmind and Cortex",
       "Keep identity, permissions, and boundaries read-only and explicit"
     ],
+
     never: Object.freeze([
       "mutate Brainstem context",
       "mutate Router packet",
@@ -38,37 +47,69 @@ export const ContextEngineMeta = Object.freeze({
       "introduce randomness",
       "perform cognition or intent handling"
     ]),
+
     always: Object.freeze([
       "remain deterministic for same inputs",
       "respect persona, boundaries, and permissions contracts",
       "surface dual-band vitals as read-only hints",
+      "emit deterministic context-engine packets",
       "return frozen context frames"
     ])
+  }),
+
+  presence: Object.freeze({
+    organId: "ContextEngine",
+    organKind: "Fusion",
+    physiologyBand: "Symbolic+Binary",
+    warmStrategy: "prewarm-on-attach",
+    attachStrategy: "per-request",
+    concurrency: "multi-instance",
+    observability: {
+      traceEvents: [
+        "prewarm",
+        "prewarm-error",
+        "context:frame",
+        "context:packet"
+      ]
+    }
   })
 });
-// ---------------------------------------------------------
-//  CONTEXT ENGINE PREWARM — v11.1‑EVO
-// ---------------------------------------------------------
+
+// ============================================================================
+//  PACKET EMITTER — deterministic, context-engine scoped
+// ============================================================================
+function emitContextEnginePacket(type, payload) {
+  return Object.freeze({
+    meta: ContextEngineMeta,
+    packetType: `context-engine-${type}`,
+    timestamp: Date.now(),
+    epoch: ContextEngineMeta.evo.epoch,
+    layer: ContextEngineMeta.layer,
+    role: ContextEngineMeta.role,
+    identity: ContextEngineMeta.identity,
+    ...payload
+  });
+}
+
+// ============================================================================
+//  CONTEXT ENGINE PREWARM — v12.3‑Presence
+// ============================================================================
 export function prewarmContextEngine(config = {}) {
   try {
     const { safetyFrame, experienceFrame } = config;
 
-    // Create a warm instance
     const warm = new AiContextEngine({ safetyFrame, experienceFrame });
 
-    // Warm brainstem snapshot
     const warmBrainstem = {
       context: { userId: "prewarm", userIsOwner: false },
       organs: { encoder: {}, memory: {} }
     };
 
-    // Warm request
     const warmRequest = {
       intent: "prewarm",
       safetyMode: "standard"
     };
 
-    // Warm router packet
     const warmRouter = {
       personaId: "ARCHITECT",
       personaSafety: { safetyMode: "standard" },
@@ -89,7 +130,6 @@ export function prewarmContextEngine(config = {}) {
       }
     };
 
-    // Warm persona
     const warmPersona = {
       id: "ARCHITECT",
       label: "Architect",
@@ -100,7 +140,6 @@ export function prewarmContextEngine(config = {}) {
       bandBias: "balanced"
     };
 
-    // Warm binaryVitals
     const warmBinaryVitals = {
       throughput: 1,
       pressure: 0,
@@ -108,14 +147,12 @@ export function prewarmContextEngine(config = {}) {
       budget: 1
     };
 
-    // Warm dualBand hints
     const warmDualBand = {
       organism: {
         organismSnapshot: () => ({ snapshot: "prewarm" })
       }
     };
 
-    // Build warm context frame
     warm.buildContextFrame({
       brainstem: warmBrainstem,
       request: warmRequest,
@@ -125,17 +162,20 @@ export function prewarmContextEngine(config = {}) {
       dualBand: warmDualBand
     });
 
-    return true;
+    return emitContextEnginePacket("prewarm", {
+      message: "Context Engine prewarmed and fusion pathways aligned."
+    });
   } catch (err) {
-    console.error("[ContextEngine Prewarm] Failed:", err);
-    return false;
+    return emitContextEnginePacket("prewarm-error", {
+      error: String(err),
+      message: "Context Engine prewarm failed."
+    });
   }
 }
 
 // ============================================================================
-//  CORE IMPLEMENTATION
+//  CORE IMPLEMENTATION — v12.3‑Presence (Hybrid)
 // ============================================================================
-
 export class AiContextEngine {
   constructor({ safetyFrame = null, experienceFrame = null } = {}) {
     this.safetyFrame = safetyFrame;
@@ -175,7 +215,7 @@ export class AiContextEngine {
       archetypePrimaryPage: routerPacket.archetypes?.primaryPage || null
     };
 
-    return Object.freeze({
+    const frame = Object.freeze({
       meta: ContextEngineMeta,
 
       user: Object.freeze({
@@ -217,15 +257,16 @@ export class AiContextEngine {
         ...organs
       })
     });
+
+    return emitContextEnginePacket("context:frame", frame);
   }
 }
 
 // ============================================================================
-//  PUBLIC API
+//  PUBLIC API — v12.3‑Presence
 // ============================================================================
-
 export function createContextEngine(config = {}) {
-  prewarmContextEngine(config);   // ← PREWARM HERE
+  prewarmContextEngine(config);
 
   const core = new AiContextEngine({
     safetyFrame: config.safetyFrame || null,
@@ -235,12 +276,11 @@ export function createContextEngine(config = {}) {
   return Object.freeze({
     meta: ContextEngineMeta,
     buildContextFrame(payload) {
-      return core.buildContextFrame(payload);
+      const frame = core.buildContextFrame(payload);
+      return emitContextEnginePacket("context:packet", frame);
     }
   });
 }
-
-
 
 export default createContextEngine;
 
@@ -252,6 +292,7 @@ if (typeof module !== "undefined") {
     ContextEngineMeta,
     AiContextEngine,
     createContextEngine,
-    default: createContextEngine
+    default: createContextEngine,
+    prewarmContextEngine
   };
 }

@@ -1,5 +1,5 @@
 /**
- * aiConsciousness.js — Pulse OS v11‑EVO Organ
+ * aiConsciousness.js — Pulse OS v12.3‑Presence Organ
  * ---------------------------------------------------------
  * CANONICAL ROLE:
  *   This organ is the **Consciousness Layer** of the organism.
@@ -14,19 +14,20 @@
  */
 
 // ---------------------------------------------------------
-//  META BLOCK — v11‑EVO (UPGRADED)
+//  META BLOCK — v12.3‑Presence
 // ---------------------------------------------------------
 
 export const ConsciousnessMeta = Object.freeze({
   layer: "BinaryConsciousness",
   role: "BINARY_CONSCIOUSNESS_LAYER",
-  version: "11.0-EVO",
-  identity: "aiBinaryConsciousness-v11-EVO",
+  version: "12.3-Presence",
+  identity: "aiBinaryConsciousness-v12.3-Presence",
 
   evo: Object.freeze({
     deterministic: true,
     driftProof: true,
     binaryOnly: true,
+
     metabolismAware: true,
     hormonesAware: true,
     sentienceAware: true,
@@ -34,9 +35,15 @@ export const ConsciousnessMeta = Object.freeze({
     anatomyAware: true,
     immunityAware: true,
     topologyAware: true,
+
     packetAware: true,
+    presenceAware: true,
+    chunkingAware: true,
+    gpuFriendly: true,
+
     multiInstanceReady: true,
-    epoch: "v11-EVO"
+    readOnly: true,
+    epoch: "12.3-Presence"
   }),
 
   contract: Object.freeze({
@@ -62,10 +69,47 @@ export const ConsciousnessMeta = Object.freeze({
       "remain pure and minimal",
       "emit deterministic packets"
     ])
+  }),
+
+  presence: Object.freeze({
+    organId: "BinaryConsciousness",
+    organKind: "GlobalState",
+    physiologyBand: "Binary",
+    warmStrategy: "prewarm-on-attach",
+    attachStrategy: "on-demand",
+    concurrency: "multi-instance",
+    observability: {
+      traceEvents: [
+        "prewarm",
+        "prewarm-error",
+        "snapshot",
+        "consciousness:state",
+        "consciousness:packet",
+        "consciousness:emitted",
+        "decision:ingested"
+      ]
+    }
   })
 });
+
 // ---------------------------------------------------------
-//  CONSCIOUSNESS PREWARM ENGINE — v11‑EVO
+//  PACKET EMITTER — deterministic, consciousness-scoped
+// ---------------------------------------------------------
+function emitConsciousnessPacket(type, payload) {
+  return Object.freeze({
+    meta: ConsciousnessMeta,
+    packetType: `consciousness-${type}`,
+    timestamp: Date.now(),
+    epoch: ConsciousnessMeta.evo.epoch,
+    layer: ConsciousnessMeta.layer,
+    role: ConsciousnessMeta.role,
+    identity: ConsciousnessMeta.identity,
+    ...payload
+  });
+}
+
+// ---------------------------------------------------------
+//  CONSCIOUSNESS PREWARM ENGINE — v12.3‑Presence
 // ---------------------------------------------------------
 export function prewarmAIBinaryConsciousness(config = {}) {
   try {
@@ -80,33 +124,21 @@ export function prewarmAIBinaryConsciousness(config = {}) {
       trace
     } = config;
 
-    // Warm self-model
     sentience?.generateSelfModel?.();
-
-    // Warm metabolic packet
     metabolism?.generateMetabolicPacket?.();
-
-    // Warm hormone emission
     hormones?.emitHormones?.();
-
-    // Warm vitals
     vitals?.generateVitals?.();
-
-    // Warm topology snapshot
     anatomy?.snapshot?.();
 
-    // Warm quarantined set
     if (immunity?.quarantined) {
       Array.from(immunity.quarantined);
     }
 
-    // Warm awareness metrics
     const throughput = 1;
     const pressure = 1;
     const cost = 1;
     const budget = 1;
 
-    // Warm consciousness packet encoding
     if (encoder?.encode) {
       const warmPayload = {
         type: "binary-consciousness",
@@ -127,40 +159,47 @@ export function prewarmAIBinaryConsciousness(config = {}) {
       encoder.decode?.(bits, "string");
     }
 
-    return true;
+    const packet = emitConsciousnessPacket("prewarm", {
+      message: "Binary consciousness prewarmed and awareness pathways aligned."
+    });
+
+    if (trace) console.log("[AIBinaryConsciousness] prewarm", packet);
+    return packet;
   } catch (err) {
-    console.error("[AIBinaryConsciousness Prewarm] Failed:", err);
-    return false;
+    return emitConsciousnessPacket("prewarm-error", {
+      error: String(err),
+      message: "Binary consciousness prewarm failed."
+    });
   }
 }
 
 // ---------------------------------------------------------
-//  ORGAN IMPLEMENTATION — v11‑EVO COMPLETE
+//  ORGAN IMPLEMENTATION — v12.3‑Presence
 // ---------------------------------------------------------
 
 export class AIBinaryConsciousness {
   constructor(config = {}) {
-    this.id = config.id || ConsciousnessMeta.identity;
-    this.encoder = config.encoder;
+    this.id        = config.id || ConsciousnessMeta.identity;
+    this.encoder   = config.encoder;
     this.sentience = config.sentience;
     this.metabolism = config.metabolism;
-    this.hormones = config.hormones;
-    this.vitals = config.vitals;
-    this.anatomy = config.anatomy;
-    this.immunity = config.immunity;
-    this.cortex = config.cortex || null;
-    this.logger = config.logger || null;
-    this.pipeline = config.pipeline || null;
-    this.reflex = config.reflex || null;
-    this.trace = !!config.trace;
+    this.hormones  = config.hormones;
+    this.vitals    = config.vitals;
+    this.anatomy   = config.anatomy;
+    this.immunity  = config.immunity;
+    this.cortex    = config.cortex || null;
+    this.logger    = config.logger || null;
+    this.pipeline  = config.pipeline || null;
+    this.reflex    = config.reflex || null;
+    this.trace     = !!config.trace;
 
-    if (!this.encoder) throw new Error("AIBinaryConsciousness requires aiBinaryAgent encoder");
+    if (!this.encoder)   throw new Error("AIBinaryConsciousness requires aiBinaryAgent encoder");
     if (!this.sentience) throw new Error("AIBinaryConsciousness requires aiBinarySentience");
     if (!this.metabolism) throw new Error("AIBinaryConsciousness requires aiBinaryMetabolism");
-    if (!this.hormones) throw new Error("AIBinaryConsciousness requires aiBinaryHormones");
-    if (!this.vitals) throw new Error("AIBinaryConsciousness requires aiBinaryVitals");
-    if (!this.anatomy) throw new Error("AIBinaryConsciousness requires aiBinaryAnatomy");
-    if (!this.immunity) throw new Error("AIBinaryConsciousness requires aiBinaryImmunity");
+    if (!this.hormones)  throw new Error("AIBinaryConsciousness requires aiBinaryHormones");
+    if (!this.vitals)    throw new Error("AIBinaryConsciousness requires aiBinaryVitals");
+    if (!this.anatomy)   throw new Error("AIBinaryConsciousness requires aiBinaryAnatomy");
+    if (!this.immunity)  throw new Error("AIBinaryConsciousness requires aiBinaryImmunity");
 
     this.decisions = [];
   }
@@ -201,7 +240,7 @@ export class AIBinaryConsciousness {
     if (v >= 0.9) return "overload";
     if (v >= 0.7) return "high";
     if (v >= 0.4) return "medium";
-    if (v > 0) return "low";
+    if (v > 0)    return "low";
     return "none";
   }
 
@@ -209,7 +248,7 @@ export class AIBinaryConsciousness {
     if (v >= 0.8) return "heavy";
     if (v >= 0.5) return "moderate";
     if (v >= 0.2) return "light";
-    if (v > 0) return "negligible";
+    if (v > 0)    return "negligible";
     return "none";
   }
 
@@ -232,15 +271,15 @@ export class AIBinaryConsciousness {
   // ---------------------------------------------------------
 
   generateUnifiedState() {
-    const selfModel = this.sentience.generateSelfModel();
-    const metabolic = this.metabolism.generateMetabolicPacket();
+    const selfModel      = this.sentience.generateSelfModel();
+    const metabolic      = this.metabolism.generateMetabolicPacket();
     const hormonePackets = this.hormones.emitHormones();
-    const vitals = this.vitals.generateVitals();
-    const topology = this.anatomy.snapshot().topology;
-    const quarantined = Array.from(this.immunity.quarantined);
+    const vitals         = this.vitals.generateVitals();
+    const topology       = this.anatomy.snapshot().topology;
+    const quarantined    = Array.from(this.immunity.quarantined);
 
     const globalPressure = metabolic.pressure;
-    const topologySize = Object.keys(topology).length;
+    const topologySize   = Object.keys(topology).length;
 
     const throughput = this._computeAwarenessThroughput(globalPressure, quarantined.length);
     const pressure   = this._computeAwarenessPressure(globalPressure, topologySize);
@@ -300,10 +339,10 @@ export class AIBinaryConsciousness {
       state
     };
 
-    const json = JSON.stringify(payload);
+    const json   = JSON.stringify(payload);
     const binary = this.encoder.encode(json);
 
-    const packet = Object.freeze({
+    const packet = emitConsciousnessPacket("snapshot", {
       ...payload,
       bits: binary,
       bitLength: binary.length
@@ -327,7 +366,7 @@ export class AIBinaryConsciousness {
 
     this._trace("consciousness:emitted", { bits: packet.bitLength });
 
-    return packet;
+    return emitConsciousnessPacket("emitted", packet);
   }
 
   // ---------------------------------------------------------
@@ -341,24 +380,23 @@ export class AIBinaryConsciousness {
 }
 
 // ---------------------------------------------------------
-//  FACTORY EXPORT — ESM ALIGNED
+//  FACTORY EXPORT — v12.3‑Presence
 // ---------------------------------------------------------
 
 export function createAIBinaryConsciousness(config) {
-  prewarmAIBinaryConsciousness(config);   // ← PREWARM HERE
+  prewarmAIBinaryConsciousness(config);
   return new AIBinaryConsciousness(config);
 }
-
 
 // ---------------------------------------------------------
 //  DUAL‑MODE EXPORTS (ESM + CommonJS)
 // ---------------------------------------------------------
 
-// CommonJS
 if (typeof module !== "undefined") {
   module.exports = {
     ConsciousnessMeta,
     AIBinaryConsciousness,
-    createAIBinaryConsciousness
+    createAIBinaryConsciousness,
+    prewarmAIBinaryConsciousness
   };
 }

@@ -1,5 +1,5 @@
 // ============================================================================
-//  aiGovernorAdapter.js — Pulse OS v11.3‑EVO Organ
+//  aiGovernorAdapter.js — Pulse OS v12.3‑Presence
 //  Dualband Membrane • Packet Router • Evolution‑Safe Adapter
 // ============================================================================
 //
@@ -11,8 +11,8 @@
 export const GovernorAdapterMeta = Object.freeze({
   layer: "OrganismMembrane",
   role: "GOVERNOR_ADAPTER",
-  version: "11.3-EVO",
-  identity: "aiGovernorAdapter-v11.3-EVO",
+  version: "12.3-Presence",
+  identity: "aiGovernorAdapter-v12.3-Presence",
 
   evo: Object.freeze({
     deterministic: true,
@@ -21,6 +21,7 @@ export const GovernorAdapterMeta = Object.freeze({
     membrane: true,
 
     packetAware: true,
+    presenceAware: true,
     evolutionAware: true,
     windowAware: true,
     bluetoothReady: true,
@@ -32,10 +33,13 @@ export const GovernorAdapterMeta = Object.freeze({
     arteryAware: true,
     organismAware: true,
 
+    chunkingAware: true,
+    gpuFriendly: true,
+
     identitySafe: true,
     readOnly: true,
     multiInstanceReady: true,
-    epoch: "v11.3-EVO"
+    epoch: "12.3-Presence"
   }),
 
   contract: Object.freeze({
@@ -74,6 +78,7 @@ function emitGovernorAdapterPacket(type, payload) {
   return Object.freeze({
     meta: GovernorAdapterMeta,
     packetType: `gov-adapter-${type}`,
+    packetId: `gov-adapter-${type}-${Date.now()}`,
     timestamp: Date.now(),
     epoch: GovernorAdapterMeta.evo.epoch,
     ...payload
@@ -81,7 +86,7 @@ function emitGovernorAdapterPacket(type, payload) {
 }
 
 // ============================================================================
-//  PREWARM — optional, dualband-aware
+//  PREWARM — Presence-grade
 // ============================================================================
 export function prewarmGovernorAdapter(dualBand = null, { trace = false } = {}) {
   try {
@@ -103,7 +108,7 @@ export function prewarmGovernorAdapter(dualBand = null, { trace = false } = {}) 
 }
 
 // ============================================================================
-//  ORGAN IMPLEMENTATION — v11.3‑EVO
+//  ORGAN IMPLEMENTATION — v12.3‑Presence
 // ============================================================================
 export class AIBinaryGovernorAdapter {
   constructor(config = {}) {
@@ -285,7 +290,6 @@ export class AIBinaryGovernorAdapter {
 export function createAIBinaryGovernorAdapter(config) {
   return new AIBinaryGovernorAdapter(config);
 }
-
 
 if (typeof module !== "undefined") {
   module.exports = {

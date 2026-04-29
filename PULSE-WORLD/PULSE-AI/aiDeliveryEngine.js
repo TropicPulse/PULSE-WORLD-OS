@@ -1,9 +1,116 @@
-// aiDeliveryEngine.js
-// PulseOS Delivery Organ — v11‑EVO
-// Ensures information is delivered cleanly, clearly, deterministically, and without drift.
-// ---------------------------------------------------------
-//  DELIVERY ENGINE PREWARM — v11‑EVO
-// ---------------------------------------------------------
+// ============================================================================
+//  aiDeliveryEngine.js — Pulse OS v12.3‑Presence
+//  Delivery Organ • Clarity Engine • Drift‑Proof Formatting
+//  PURE DELIVERY. ZERO MUTATION OF MEANING. ZERO RANDOMNESS.
+// ============================================================================
+
+// ─────────────────────────────────────────────────────────────
+// META BLOCK — ORGAN IDENTITY (v12.3‑Presence)
+// ─────────────────────────────────────────────────────────────
+export const DeliveryEngineMeta = Object.freeze({
+  layer: "PulseAIDeliveryEngine",
+  role: "DELIVERY_ENGINE_ORGAN",
+  version: "12.3-Presence",
+  identity: "aiDeliveryEngine-v12.3-Presence",
+
+  evo: Object.freeze({
+    driftProof: true,
+    deterministic: true,
+    dualBandSafe: true,
+
+    cognitiveAware: true,
+    toneAware: true,
+    formattingAware: true,
+    structureAware: true,
+    routerAware: true,
+    brainstemAware: true,
+
+    packetAware: true,
+    presenceAware: true,
+    chunkingAware: true,
+    gpuFriendly: true,
+
+    readOnly: true,
+    multiInstanceReady: true,
+    epoch: "12.3-Presence"
+  }),
+
+  contract: Object.freeze({
+    purpose:
+      "Deliver information in a clean, structured, evolved, drift-proof format without altering meaning or tone.",
+
+    never: Object.freeze([
+      "introduce noise",
+      "add ego",
+      "add snobbery",
+      "inflate complexity",
+      "break clarity",
+      "alter tone identity",
+      "introduce randomness",
+      "mutate semantic content"
+    ]),
+
+    always: Object.freeze([
+      "preserve meaning",
+      "preserve clarity",
+      "preserve structure",
+      "preserve tone",
+      "clean formatting",
+      "remove noise",
+      "deliver deterministically"
+    ])
+  }),
+
+  guarantees: Object.freeze({
+    driftProof: true,
+    deterministic: true,
+    clarityFirst: true,
+    egoFree: true,
+    toneCompatible: true
+  }),
+
+  presence: Object.freeze({
+    organId: "DeliveryEngine",
+    organKind: "CognitiveUtility",
+    physiologyBand: "Symbolic",
+    warmStrategy: "prewarm-on-attach",
+    attachStrategy: "per-request",
+    concurrency: "multi-instance",
+    observability: {
+      traceEvents: [
+        "prewarm",
+        "prewarm-error",
+        "deliver",
+        "structure",
+        "finalize"
+      ]
+    }
+  }),
+
+  boundaryReflex() {
+    return "Delivery must remain clean, structured, ego-free, and aligned with tone + evolution engines.";
+  }
+});
+
+// ─────────────────────────────────────────────────────────────
+// PACKET EMITTER — deterministic, delivery-scoped
+// ─────────────────────────────────────────────────────────────
+function emitDeliveryPacket(type, payload) {
+  return Object.freeze({
+    meta: DeliveryEngineMeta,
+    packetType: `delivery-${type}`,
+    timestamp: Date.now(),
+    epoch: DeliveryEngineMeta.evo.epoch,
+    layer: DeliveryEngineMeta.layer,
+    role: DeliveryEngineMeta.role,
+    identity: DeliveryEngineMeta.identity,
+    ...payload
+  });
+}
+
+// ─────────────────────────────────────────────────────────────
+// DELIVERY ENGINE PREWARM — v12.3‑Presence
+// ─────────────────────────────────────────────────────────────
 export function prewarmDeliveryEngine() {
   try {
     const warmText = `
@@ -13,73 +120,33 @@ export function prewarmDeliveryEngine() {
       With --- dashes — and em-dashes.
     `;
 
-    // Warm deliver()
     aiDeliveryEngine.deliver(warmText);
-
-    // Warm structure()
     aiDeliveryEngine.structure(warmText);
-
-    // Warm finalize()
     aiDeliveryEngine.finalize(warmText);
 
-    return true;
+    return emitDeliveryPacket("prewarm", {
+      message: "Delivery engine prewarmed and formatting pathways aligned."
+    });
   } catch (err) {
     console.error("[DeliveryEngine Prewarm] Failed:", err);
-    return false;
+    return emitDeliveryPacket("prewarm-error", {
+      error: String(err),
+      message: "Delivery engine prewarm failed."
+    });
   }
 }
 
+// ─────────────────────────────────────────────────────────────
+// CORE DELIVERY ORGAN — v12.3‑Presence
+// ─────────────────────────────────────────────────────────────
 export const aiDeliveryEngine = {
+  meta: DeliveryEngineMeta,
 
-  // ─────────────────────────────────────────────────────────────
-  // META BLOCK — ORGAN IDENTITY
-  // ─────────────────────────────────────────────────────────────
-  meta: {
-    type: "Cognitive",
-    subsystem: "aiDelivery",
-    layer: "C1-DeliveryEngine",
-    version: "11.0",
-    identity: "aiDeliveryEngine-v11-EVO",
-
-    contract: {
-      purpose: "Deliver information in a clean, structured, evolved, drift-proof format.",
-      never: [
-        "introduce noise",
-        "add ego",
-        "add snobbery",
-        "inflate complexity",
-        "break clarity",
-        "alter tone identity"
-      ],
-      always: [
-        "preserve meaning",
-        "preserve clarity",
-        "preserve structure",
-        "preserve tone",
-        "clean formatting",
-        "remove noise",
-        "deliver deterministically"
-      ]
-    },
-
-    guarantees: {
-      driftProof: true,
-      deterministic: true,
-      clarityFirst: true,
-      egoFree: true,
-      toneCompatible: true
-    },
-
-    boundaryReflex() {
-      return "Delivery must remain clean, structured, ego-free, and aligned with tone + evolution engines.";
-    }
-  },
-
-  // ─────────────────────────────────────────────────────────────
   // CORE DELIVERY LOGIC
-  // ─────────────────────────────────────────────────────────────
   deliver(text) {
-    if (!text || typeof text !== "string") return "";
+    if (!text || typeof text !== "string") {
+      return "";
+    }
 
     let output = text;
 
@@ -90,7 +157,7 @@ export const aiDeliveryEngine = {
     output = output.replace(/\. \./g, ".");
 
     // Remove accidental trailing commas or periods
-    output = output.replace(/[,\.]+$/, match => match[0]);
+    output = output.replace(/[,\.]+$/, (match) => match[0]);
 
     // Trim edges
     output = output.trim();
@@ -98,10 +165,7 @@ export const aiDeliveryEngine = {
     return output;
   },
 
-  // ─────────────────────────────────────────────────────────────
   // ADVANCED DELIVERY — STRUCTURE CLEANUP
-  // (Optional but included for EVO-grade clarity)
-  // ─────────────────────────────────────────────────────────────
   structure(text) {
     if (!text) return "";
 
@@ -112,27 +176,27 @@ export const aiDeliveryEngine = {
       .trim();
   },
 
-  // ─────────────────────────────────────────────────────────────
   // FINAL DELIVERY PIPELINE
-  // (Used by aiRouter or aiBrainstem)
-  // ─────────────────────────────────────────────────────────────
   finalize(text) {
-    let out = this.deliver(text);
-    out = this.structure(out);
-    return out;
+    const delivered = this.deliver(text);
+    const structured = this.structure(delivered);
+
+    return structured;
   }
 };
+
 export default aiDeliveryEngine;
 
-// ---------------------------------------------------------
-//  DUAL‑MODE EXPORTS (ESM + CommonJS)
-// ---------------------------------------------------------
+// ─────────────────────────────────────────────────────────────
+// BOOT PREWARM + DUAL‑MODE EXPORTS
+// ─────────────────────────────────────────────────────────────
 prewarmDeliveryEngine();
 
-// CommonJS
 if (typeof module !== "undefined") {
   module.exports = {
+    DeliveryEngineMeta,
     aiDeliveryEngine,
+    prewarmDeliveryEngine,
     default: aiDeliveryEngine
   };
 }

@@ -1,13 +1,13 @@
 // ============================================================================
-//  aiBinaryDelta.js — Pulse OS v11.3‑EVO Organ
+//  aiBinaryDelta.js — Pulse OS v12.3‑Presence Organ
 //  Binary Delta Engine • Change Detector • Segment Comparator • Packet‑Ready
 // ============================================================================
 
 export const DeltaMeta = Object.freeze({
   layer: "BinaryDelta",
   role: "BINARY_DELTA_ENGINE",
-  version: "11.3-EVO",
-  identity: "aiBinaryDelta-v11.3-EVO",
+  version: "12.3-Presence",
+  identity: "aiBinaryDelta-v12.3-Presence",
 
   evo: Object.freeze({
     deterministic: true,
@@ -17,15 +17,20 @@ export const DeltaMeta = Object.freeze({
     diffAware: true,
     changeAware: true,
     temporalAware: true,
-    segmentAware: true,       // ⭐ NEW
-    packetAware: true,        // ⭐ NEW
-    windowAware: true,        // ⭐ NEW
-    dualband: true,           // ⭐ NEW
-    deltaCache: true,         // ⭐ NEW
+    segmentAware: true,
+    packetAware: true,
+    windowAware: true,
+    deltaCache: true,
 
     multiInstanceReady: true,
     readOnly: true,
-    epoch: "v11.3-EVO"
+    epoch: "v12.3-Presence",
+
+    presenceAware: true,
+    chunkingAware: true,
+    gpuFriendly: true,
+    dualBandSafe: true,      // can live in dualband, but stays binary‑only
+    sideEffectFree: true
   }),
 
   contract: Object.freeze({
@@ -48,6 +53,25 @@ export const DeltaMeta = Object.freeze({
       "remain pure and minimal",
       "produce frozen results"
     ])
+  }),
+
+  presence: Object.freeze({
+    organId: "BinaryDeltaEngine",
+    organKind: "Physiology",
+    physiologyBand: "Binary",
+    warmStrategy: "prewarm-on-attach",
+    attachStrategy: "on-demand",
+    concurrency: "multi-instance",
+    observability: {
+      traceEvents: [
+        "diff",
+        "diff-fast",
+        "segment-delta",
+        "compress",
+        "apply",
+        "prewarm"
+      ]
+    }
   })
 });
 
@@ -60,6 +84,9 @@ function emitDeltaPacket(type, payload) {
     packetType: `delta-${type}`,
     timestamp: Date.now(),
     epoch: DeltaMeta.evo.epoch,
+    layer: DeltaMeta.layer,
+    role: DeltaMeta.role,
+    identity: DeltaMeta.identity,
     ...payload
   });
 }
@@ -72,7 +99,6 @@ export function prewarmBinaryDelta({ trace = false } = {}) {
     const sampleA = "000111000";
     const sampleB = "001011100";
 
-    // warm diff path
     const warm = {
       added: sampleB,
       removed: sampleA
@@ -94,15 +120,19 @@ export function prewarmBinaryDelta({ trace = false } = {}) {
 }
 
 // ============================================================================
-//  ORGAN IMPLEMENTATION — v11.3‑EVO
+//  ORGAN IMPLEMENTATION — v12.3‑Presence
 // ============================================================================
 export class AIBinaryDelta {
   constructor(config = {}) {
     this.id = config.id || "ai-binary-delta";
     this.trace = !!config.trace;
 
-    // ⭐ NEW — delta cache for repeated comparisons
+    // delta cache for repeated comparisons
     this._cache = new Map();
+
+    // optional presence / performance hints
+    this.windowSize = config.windowSize || 0; // optional temporal window
+    this.maxCacheEntries = config.maxCacheEntries || 256;
   }
 
   // ---------------------------------------------------------------------------
@@ -114,6 +144,13 @@ export class AIBinaryDelta {
     }
   }
 
+  _maybeEvictCache() {
+    if (this._cache.size <= this.maxCacheEntries) return;
+    // simple FIFO eviction: delete first inserted key
+    const firstKey = this._cache.keys().next().value;
+    if (firstKey !== undefined) this._cache.delete(firstKey);
+  }
+
   // ---------------------------------------------------------------------------
   //  BINARY DIFF CORE — deterministic
   // ---------------------------------------------------------------------------
@@ -123,7 +160,9 @@ export class AIBinaryDelta {
 
     const key = `${aBin}|${bBin}`;
     if (this._cache.has(key)) {
-      return emitDeltaPacket("diff-fast", this._cache.get(key));
+      const cached = this._cache.get(key);
+      this._trace("diff-fast", { key, cached });
+      return emitDeltaPacket("diff-fast", cached);
     }
 
     const maxLen = Math.max(aBin.length, bBin.length);
@@ -157,17 +196,21 @@ export class AIBinaryDelta {
       unchangedCount: unchanged.length
     });
 
+    this._maybeEvictCache();
     this._cache.set(key, delta);
 
-    return emitDeltaPacket("diff", {
+    const packet = emitDeltaPacket("diff", {
       aBits: aBin.length,
       bBits: bBin.length,
       delta
     });
+
+    this._trace("diff", { key, packet });
+    return packet;
   }
 
   // ---------------------------------------------------------------------------
-  //  SEGMENT DELTA — v11.3‑EVO
+  //  SEGMENT DELTA — v12.3‑Presence
   // ---------------------------------------------------------------------------
   segmentDelta(aBin, bBin, segmentSize = 64) {
     this._assertBinary(aBin);
@@ -183,7 +226,8 @@ export class AIBinaryDelta {
       const segB = b.slice(i, i + segmentSize);
 
       let changed = 0;
-      for (let j = 0; j < segmentSize; j++) {
+      const len = Math.min(segA.length, segB.length);
+      for (let j = 0; j < len; j++) {
         if (segA[j] !== segB[j]) changed++;
       }
 
@@ -194,29 +238,36 @@ export class AIBinaryDelta {
       });
     }
 
-    return emitDeltaPacket("segment-delta", {
+    const packet = emitDeltaPacket("segment-delta", {
       segmentSize,
       segments
     });
+
+    this._trace("segment-delta", { segmentSize, segmentsCount: segments.length });
+    return packet;
   }
 
   // ---------------------------------------------------------------------------
-  //  DELTA COMPRESSION (placeholder)
+  //  DELTA COMPRESSION (placeholder, presence‑aware)
 // ---------------------------------------------------------------------------
   compressDelta(delta) {
-    return emitDeltaPacket("compress", { delta });
+    const packet = emitDeltaPacket("compress", { delta });
+    this._trace("compress", { delta });
+    return packet;
   }
 
   // ---------------------------------------------------------------------------
-  //  DELTA APPLICATION (placeholder)
+  //  DELTA APPLICATION (placeholder, presence‑aware)
 // ---------------------------------------------------------------------------
   applyDelta(aBin, delta) {
     this._assertBinary(aBin);
-    return emitDeltaPacket("apply", {
+    const packet = emitDeltaPacket("apply", {
       aBin,
       delta,
       result: aBin
     });
+    this._trace("apply", { aBits: aBin.length });
+    return packet;
   }
 
   // ---------------------------------------------------------------------------
@@ -229,8 +280,18 @@ export class AIBinaryDelta {
 }
 
 // ============================================================================
-//  FACTORY
+//  FACTORY + PRESENCE SURFACE
 // ============================================================================
-export function createAIBinaryDelta(config) {
+export function createAIBinaryDelta(config = {}) {
   return new AIBinaryDelta(config);
 }
+
+export const BinaryDeltaPresence = Object.freeze({
+  meta: DeltaMeta,
+  create: createAIBinaryDelta,
+  prewarm: prewarmBinaryDelta,
+  organ: "AIBinaryDelta",
+  layer: DeltaMeta.layer,
+  role: DeltaMeta.role,
+  version: DeltaMeta.version
+});

@@ -1,5 +1,5 @@
 // ============================================================================
-//  aiMetabolism.js — Pulse OS v11.3‑EVO Organ
+//  aiMetabolism.js — Pulse OS v12.3-Presence Organ
 //  Binary Metabolism Engine • BinaryCore • Deterministic • Metabolic Artery Metrics
 // ----------------------------------------------------------------------------
 //  CANONICAL ROLE:
@@ -23,13 +23,13 @@
 // ============================================================================
 
 // ---------------------------------------------------------
-//  META BLOCK — v11.3‑EVO
+//  META BLOCK — v12.3-Presence
 // ---------------------------------------------------------
 export const MetabolismMeta = Object.freeze({
   layer: "BinaryCore",
   role: "BINARY_METABOLISM_ENGINE",
-  version: "11.3-EVO",
-  identity: "aiBinaryMetabolism-v11.3-EVO",
+  version: "12.3-Presence",
+  identity: "aiBinaryMetabolism-v12.3-Presence",
 
   evo: Object.freeze({
     deterministic: true,
@@ -47,7 +47,7 @@ export const MetabolismMeta = Object.freeze({
     arteryAware: true,     // ⭐ NEW
 
     multiInstanceReady: true,
-    epoch: "v11.3-EVO"
+    epoch: "v12.3-Presence"
   }),
 
   contract: Object.freeze({

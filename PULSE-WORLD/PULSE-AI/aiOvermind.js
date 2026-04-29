@@ -1,5 +1,5 @@
 // ============================================================================
-//  aiOvermindPrime.js — Pulse OS v11.3‑EVO
+//  aiOvermindPrime.js — Pulse OS v12.3-Presence
 //  Crown-Layer Meta-Governor • World-Lens Engine v3
 //  Organism-State Fusion • Drift-Governor • Breakthrough Engine
 //  Conversational Stabilizer • Dualband Governor • Zero Mutation
@@ -8,8 +8,8 @@
 export const OvermindPrimeMeta = Object.freeze({
   layer: "PulseAIOvermindPrime",
   role: "OVERMIND_PRIME",
-  version: "11.3-EVO",
-  identity: "aiOvermindPrime-v11.3-EVO",
+  version: "12.3-Presence",
+  identity: "aiOvermindPrime-v12.3-Presence",
 
   evo: Object.freeze({
     deterministic: true,
@@ -25,7 +25,7 @@ export const OvermindPrimeMeta = Object.freeze({
     breakthroughAware: true,
     multiInstanceReady: true,
     readOnly: true,
-    epoch: "11.3-EVO"
+    epoch: "12.3-Presence"
   }),
 
   contract: Object.freeze({

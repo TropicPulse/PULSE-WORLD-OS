@@ -1,19 +1,20 @@
 // ============================================================================
-//  PULSE OS v11‑EVO — DEPENDENCY INJECTION LAYER
-//  Deterministic Adapters • Dual‑Band Safe • Evolution‑Compatible
+//  aiDeps.js — Pulse OS v12.3‑Presence
+//  Dependency Injection Organ • Deterministic Adapters • Dual‑Band Safe
 //  PURE INPUT. ZERO MUTATION. ZERO RANDOMNESS.
 // ============================================================================
 
 export const DepsMeta = Object.freeze({
   layer: "PulseAIDependencyKernel",
   role: "DEPENDENCY_INJECTION_ORGAN",
-  version: "11.0-EVO",
-  identity: "aiDeps-v11-EVO",
+  version: "12.3-Presence",
+  identity: "aiDeps-v12.3-Presence",
 
   evo: Object.freeze({
     driftProof: true,
     deterministic: true,
     dualband: true,
+
     binaryAware: true,
     symbolicAware: true,
     dbAware: true,
@@ -21,14 +22,20 @@ export const DepsMeta = Object.freeze({
     routeAware: true,
     schemaAware: true,
     snapshotAware: true,
+    logAware: true,
+    organismAware: true,
+
     identitySafe: true,
     readOnly: true,
     environmentAgnostic: true,
-    logAware: true,
-    organismAware: true,
-    packetAware: true,          // NEW — all v11‑EVO organs emit packets
+
+    packetAware: true,
+    presenceAware: true,
+    chunkingAware: true,
+    gpuFriendly: true,
+
     multiInstanceReady: true,
-    epoch: "v11-EVO"
+    epoch: "12.3-Presence"
   }),
 
   contract: Object.freeze({
@@ -52,36 +59,72 @@ export const DepsMeta = Object.freeze({
       "support dual-band cortex",
       "support evolution organ",
       "support router + boundaries + persona",
-      "emit deterministic deps packets"   // NEW
+      "emit deterministic deps packets"
     ])
+  }),
+
+  presence: Object.freeze({
+    organId: "DepsKernel",
+    organKind: "Infrastructure",
+    physiologyBand: "Symbolic+Binary",
+    warmStrategy: "prewarm-on-attach",
+    attachStrategy: "on-demand",
+    concurrency: "multi-instance",
+    observability: {
+      traceEvents: [
+        "prewarm",
+        "prewarm-error",
+        "deps-snapshot"
+      ]
+    }
   })
 });
-// ---------------------------------------------------------
-//  DEPS PREWARM ENGINE — v11‑EVO
-// ---------------------------------------------------------
+
+// ============================================================================
+//  PACKET EMITTER — deterministic, deps-scoped
+// ============================================================================
+function emitDepsPacket(type = "snapshot", payload = {}) {
+  const base = {
+    type: "deps-snapshot",
+    timestamp: Date.now(),
+    adapters: ["db", "fs", "routes", "schema", "organismSnapshot"]
+  };
+
+  return Object.freeze({
+    meta: DepsMeta,
+    packetType: `deps-${type}`,
+    epoch: DepsMeta.evo.epoch,
+    layer: DepsMeta.layer,
+    role: DepsMeta.role,
+    identity: DepsMeta.identity,
+    ...base,
+    ...payload,
+    bits: null,
+    bitLength: 0
+  });
+}
+
+// ============================================================================
+//  DEPS PREWARM ENGINE — v12.3‑Presence
+// ============================================================================
 export function prewarmDepsLayer() {
   try {
-    // Warm DB adapter
     const db = getDb({ trace: false });
     db.getCollection("prewarm");
     db.getDocument("prewarm", "id");
 
-    // Warm FS adapter
     const fs = getFsAPI({ trace: false });
     fs.getAllFiles();
     fs.getFile("/prewarm");
 
-    // Warm Route adapter
     const routes = getRouteAPI({ trace: false });
     routes.getRouteMap();
     routes.getRoute("prewarm");
 
-    // Warm Schema adapter
     const schema = getSchemaAPI({ trace: false });
     schema.getAllSchemas();
     schema.getSchema("prewarm");
 
-    // Warm organism snapshot
     const warmDualBand = {
       binary: { vitals: { snapshot: () => ({ load: 0, pressure: 0 }) } },
       symbolic: {
@@ -92,13 +135,15 @@ export function prewarmDepsLayer() {
     };
     getOrganismSnapshot(warmDualBand);
 
-    // Warm deps packet
-    emitDepsPacket();
-
-    return true;
+    return emitDepsPacket("prewarm", {
+      message: "Deps layer prewarmed and adapter pathways aligned."
+    });
   } catch (err) {
     console.error("[Deps Prewarm] Failed:", err);
-    return false;
+    return emitDepsPacket("prewarm-error", {
+      error: String(err),
+      message: "Deps layer prewarm failed."
+    });
   }
 }
 
@@ -179,7 +224,7 @@ export function getSchemaAPI({ trace = false } = {}) {
 }
 
 // ============================================================================
-//  DUAL‑BAND ORGANISM SNAPSHOT (v11‑EVO)
+//  DUAL‑BAND ORGANISM SNAPSHOT — v12.3‑Presence
 // ============================================================================
 export function getOrganismSnapshot(dualBand) {
   if (!dualBand) {
@@ -204,31 +249,11 @@ export function getOrganismSnapshot(dualBand) {
 }
 
 // ============================================================================
-//  DEPS PACKET — NEW (v11‑EVO)
+//  EXPORT — v12.3‑Presence Dependency Surface (Frozen)
 // ============================================================================
-export function emitDepsPacket() {
-  const payload = {
-    type: "deps-snapshot",
-    timestamp: Date.now(),
-    adapters: ["db", "fs", "routes", "schema", "organismSnapshot"]
-  };
+prewarmDepsLayer();
 
-  const json = JSON.stringify(payload);
-
-  // Dependency layer is symbolic-only → no binary encoding
-  return Object.freeze({
-    ...payload,
-    bits: null,
-    bitLength: 0
-  });
-}
-
-// ============================================================================
-//  EXPORT — v11‑EVO Dependency Harness (Frozen)
-// ============================================================================
-prewarmDepsLayer();   // ← PREWARM HERE
-
-const depsSurface = Object.freeze({
+export const depsSurface = Object.freeze({
   meta: DepsMeta,
   getDb,
   getFsAPI,
@@ -238,19 +263,9 @@ const depsSurface = Object.freeze({
   emitDepsPacket
 });
 
-
 export default depsSurface;
 
-// ---------------------------------------------------------
-//  DUAL‑MODE EXPORTS (ESM + CommonJS)
-// ---------------------------------------------------------
 
-// ESM
-export {
-  depsSurface
-};
-
-// CommonJS
 if (typeof module !== "undefined") {
   module.exports = {
     DepsMeta,
@@ -261,6 +276,7 @@ if (typeof module !== "undefined") {
     getOrganismSnapshot,
     emitDepsPacket,
     depsSurface,
-    default: depsSurface
+    default: depsSurface,
+    prewarmDepsLayer
   };
 }

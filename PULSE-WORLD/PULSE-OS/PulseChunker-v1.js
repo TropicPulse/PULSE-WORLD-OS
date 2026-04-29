@@ -1,6 +1,9 @@
 // ============================================================================
-// FILE: /apps/PulseOS/Core/PulseChunker-v12.3-PRESENCE-EVO-MAX.js
-// PULSE CHUNK ENGINE — v12.3‑PRESENCE‑EVO‑MAX‑PRIME
+// FILE: /apps/PulseOS/Core/PulseChunker-v12.4-PRESENCE-EVO-MAX.js
+// PULSE CHUNK ENGINE — v12.4‑PRESENCE‑EVO‑MAX‑PRIME
+//  - Payload chunking
+//  - Cache/delta engine
+//  - Route-level folding carpet (full route chunking)
 // ============================================================================
 
 import * as admin from "firebase-admin";
@@ -15,8 +18,8 @@ const db = admin.firestore();
 export const PulseChunkerMeta = Object.freeze({
   layer: "Backend",
   role: "PAYLOAD_CHUNK_ENGINE",
-  version: "v12.3-PRESENCE-EVO-MAX",
-  identity: "PulseChunker-v12.3-PRESENCE-EVO-MAX",
+  version: "v12.4-PRESENCE-EVO-MAX",
+  identity: "PulseChunker-v12.4-PRESENCE-EVO-MAX",
   guarantees: Object.freeze({
     deterministicSessionId: true,
     cacheAware: true,
@@ -53,6 +56,21 @@ export const PulseChunkerMeta = Object.freeze({
 });
 
 // ============================================================================
+// ROUTE DESCRIPTOR CONTRACT — v12.4-EVO-ROUTE-FABRIC
+//  - Lets frontend send "the whole route" as one object.
+//  - Chunker folds open: data payloads + imports + assets.
+// ============================================================================
+function isRouteDescriptor(input) {
+  if (!input || typeof input !== "object") return false;
+  return (
+    typeof input.route === "string" &&
+    Array.isArray(input.imports) &&
+    Array.isArray(input.assets) &&
+    Array.isArray(input.payloads)
+  );
+}
+
+// ============================================================================
 // LORE TRANSLATOR
 // ============================================================================
 function generateLoreHeader({ meta, payloadType, baseVersion, presenceTag, band }) {
@@ -83,10 +101,12 @@ function generateLoreHeader({ meta, payloadType, baseVersion, presenceTag, band 
 // ============================================================================
 async function generateCache({ payload, baseVersion, sizeOnly=false, deltaRequest=false }) {
 
-  const isDelta = deltaRequest || payload.endsWith("_DELTA");
+  const isDelta = deltaRequest || (typeof payload === "string" && payload.endsWith("_DELTA"));
 
-  const [collection, field] = payload
-    .replace(/^REQUEST_/, "")
+  const [collection, field] = String(
+    payload
+      .replace?.(/^REQUEST_/, "") ?? payload
+  )
     .replace(/_DELTA$/, "")
     .replace(/_CACHE$/, "")
     .toLowerCase()
@@ -172,7 +192,7 @@ function signChunk(userId, sessionId, index, dataBase64) {
 }
 
 // ============================================================================
-// CREATE PULSE BAND SESSION
+// CREATE PULSE BAND SESSION — NOW ROUTE-AWARE
 // ============================================================================
 export const createPulseBandSession = onRequest(
   { region: "us-central1", timeoutSeconds: 300, memory: "1GiB" },
@@ -200,6 +220,57 @@ export const createPulseBandSession = onRequest(
 
       if (typeof chunkSize !== "number" || chunkSize <= 0) {
         chunkSize = 500;
+      }
+
+      // -------------------------------------------------------------------
+      // ROUTE MODE — full route folding carpet
+      //  - If payload is a route descriptor, we build a composite payload:
+      //    { route, imports, assets, data: { ...resolved payloads... } }
+      // -------------------------------------------------------------------
+      if (isRouteDescriptor(payload)) {
+        const routeDescriptor = payload;
+        const { route, imports = [], assets = [], payloads = [] } = routeDescriptor;
+
+        await db.collection("pulseband_logs").add({
+          type: "route_session_request",
+          userId,
+          route,
+          imports,
+          assets,
+          payloads,
+          baseVersion: baseVersion || null,
+          sizeOnly: !!sizeOnly,
+          presenceTag,
+          band,
+          createdAt: admin.firestore.FieldValue.serverTimestamp()
+        });
+
+        const resolvedData = {};
+        for (const key of payloads) {
+          try {
+            resolvedData[key] = await resolveCacheRequest(
+              key,
+              baseVersion,
+              sizeOnly === true
+            );
+          } catch (err) {
+            await db.collection("pulseband_errors").add({
+              type: "route_payload_resolution_error",
+              userId,
+              route,
+              payloadKey: key,
+              error: err?.message || String(err),
+              createdAt: admin.firestore.FieldValue.serverTimestamp()
+            });
+          }
+        }
+
+        payload = {
+          route,
+          imports,
+          assets,
+          data: resolvedData
+        };
       }
 
       await db.collection("pulseband_logs").add({
@@ -247,7 +318,7 @@ export const createPulseBandSession = onRequest(
       // Lore injection
       const loreHeader = generateLoreHeader({
         meta: PulseChunkerMeta,
-        payloadType: payload,
+        payloadType: isRouteDescriptor(payload) ? payload.route : payload,
         baseVersion,
         presenceTag,
         band
@@ -277,7 +348,7 @@ export const createPulseBandSession = onRequest(
         restarts: 0,
         payloadBytes: buffer.length,
         payloadHash,
-        payloadType: payload,
+        payloadType: isRouteDescriptor(payload) ? payload.route : payload,
         baseVersion: baseVersion || null,
         presenceTag,
         band
@@ -291,7 +362,7 @@ export const createPulseBandSession = onRequest(
         chunkSize,
         payloadBytes: buffer.length,
         payloadHash,
-        payloadType: payload,
+        payloadType: isRouteDescriptor(payload) ? payload.route : payload,
         baseVersion: baseVersion || null,
         presenceTag,
         band,
@@ -550,9 +621,9 @@ export const ackPulseBandChunk = onRequest(
     }
   }
 );
+
 // ============================================================================
-// LOG PULSE BAND REDOWNLOAD — v12.3‑PRESENCE‑EVO‑MAX‑PRIME
-// Deterministic • Presence‑aware • Binary‑aware • Zero‑timing • Zero‑randomness
+// LOG PULSE BAND REDOWNLOAD — v12.4‑PRESENCE‑EVO‑MAX‑PRIME
 // ============================================================================
 export const logPulseBandRedownload = onRequest(
   { region: "us-central1" },
@@ -568,7 +639,6 @@ export const logPulseBandRedownload = onRequest(
 
       const sessionRef = db.collection("pulseband_sessions").doc(String(sessionId));
 
-      // Log redownload event
       await db.collection("pulseband_redownloads").add({
         sessionId,
         userId,
@@ -578,7 +648,6 @@ export const logPulseBandRedownload = onRequest(
         createdAt: admin.firestore.FieldValue.serverTimestamp()
       });
 
-      // Increment failure count
       await sessionRef.set(
         { failures: admin.firestore.FieldValue.increment(1) },
         { merge: true }

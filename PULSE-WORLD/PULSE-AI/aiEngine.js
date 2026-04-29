@@ -1,5 +1,5 @@
 // ============================================================================
-//  PULSE OS v11.3‑EVO — AI EXECUTION ENGINE
+//  aiExecutionEngine.js — Pulse OS v12.3‑Presence
 //  Dual‑Band Execution • Persona Routing • Organ Dispatch • Packet‑Ready
 //  PURE EXECUTION. ZERO MUTATION. ZERO RANDOMNESS.
 // ============================================================================
@@ -7,24 +7,30 @@
 export const ExecutionEngineMeta = Object.freeze({
   layer: "PulseAIExecutionKernel",
   role: "EXECUTION_ENGINE",
-  version: "11.3-EVO", // aligned with Router/Cortex/Safety/Experience
-  identity: "aiExecutionEngine-v11.3-EVO",
+  version: "12.3-Presence",
+  identity: "aiExecutionEngine-v12.3-Presence",
 
   evo: Object.freeze({
     driftProof: true,
     deterministic: true,
     dualband: true,
+
     personaAware: true,
     boundaryAware: true,
     permissionAware: true,
     routingAware: true,
     symbolicAware: true,
     binaryAware: true,
-    packetAware: true,     // ⭐ NEW
-    windowAware: true,     // ⭐ NEW
-    evolutionAware: true,  // ⭐ NEW
+
+    packetAware: true,
+    windowAware: true,
+    evolutionAware: true,
+    presenceAware: true,
+    chunkingAware: true,
+    gpuFriendly: true,
+
     multiInstanceReady: true,
-    epoch: "11.3-EVO"
+    epoch: "12.3-Presence"
   }),
 
   contract: Object.freeze({
@@ -46,8 +52,28 @@ export const ExecutionEngineMeta = Object.freeze({
       "enforce permissions",
       "route execution through correct mode",
       "return unified response packet",
-      "emit deterministic execution packets" // ⭐ NEW
+      "emit deterministic execution packets"
     ])
+  }),
+
+  presence: Object.freeze({
+    organId: "ExecutionEngine",
+    organKind: "Kernel",
+    physiologyBand: "DualBand",
+    warmStrategy: "prewarm-on-boot",
+    attachStrategy: "per-request",
+    concurrency: "multi-instance",
+    observability: {
+      traceEvents: [
+        "prewarm",
+        "prewarm-error",
+        "start",
+        "permission-denied",
+        "mode-selected",
+        "complete",
+        "error"
+      ]
+    }
   })
 });
 
@@ -64,26 +90,31 @@ import { runTourGuideMode } from "./modes/tourguide.js";
 // ============================================================================
 //  PACKET EMITTER — deterministic, execution-scoped
 // ============================================================================
-function emitExecutionPacket(type, payload) {
+function emitExecutionPacket(type, payload = {}) {
   return Object.freeze({
     meta: ExecutionEngineMeta,
     packetType: `execution-${type}`,
     timestamp: Date.now(),
     epoch: ExecutionEngineMeta.evo.epoch,
+    layer: ExecutionEngineMeta.layer,
+    role: ExecutionEngineMeta.role,
+    identity: ExecutionEngineMeta.identity,
     ...payload
   });
 }
 
 // ============================================================================
-//  PREWARM — optional, warms routing + persona + boundaries
+//  PREWARM — warms routing + persona + boundaries (Presence‑grade)
 // ============================================================================
 export function prewarmExecutionEngine({ trace = false } = {}) {
   try {
     const sampleRequest = { domain: "system", action: "read" };
+
     const packet = emitExecutionPacket("prewarm", {
-      message: "Execution engine prewarmed.",
+      message: "Execution engine prewarmed and routing pathways aligned.",
       sampleRequest
     });
+
     if (trace) console.log("[ExecutionEngine] prewarm", packet);
     return packet;
   } catch (err) {
@@ -95,10 +126,10 @@ export function prewarmExecutionEngine({ trace = false } = {}) {
 }
 
 // ============================================================================
-//  MAIN EXECUTION ENTRY — v11.3‑EVO
+//  MAIN EXECUTION ENTRY — v12.3‑Presence
 // ============================================================================
 export async function runAI(request = {}, operation, deps = {}, dualBand = null) {
-  const { db, fsAPI, routeAPI, schemaAPI } = deps;
+  const { db, fsAPI, routeAPI, schemaAPI } = deps || {};
 
   // 1) Build Cognitive Frame
   const context = createAIContext(request);
@@ -162,7 +193,7 @@ export async function runAI(request = {}, operation, deps = {}, dualBand = null)
       boundaryMode,
       binaryVitals
     });
-    return buildAIResponse(null, context, packet, startPacket);
+    return buildAIResponse(null, context, packet, startPacket, null);
   }
 
   // 5) Persona Execution Pathway
@@ -199,8 +230,13 @@ export async function runAI(request = {}, operation, deps = {}, dualBand = null)
       binaryVitals
     });
 
-    return buildAIResponse(result, context, completePacket, startPacket, modePacket);
-
+    return buildAIResponse(
+      result,
+      context,
+      completePacket,
+      startPacket,
+      modePacket
+    );
   } catch (err) {
     context.flagSlowdown?.("Operation threw an exception.");
     context.logStep?.(`Error: ${err.message}`);
@@ -212,12 +248,18 @@ export async function runAI(request = {}, operation, deps = {}, dualBand = null)
       error: String(err)
     });
 
-    return buildAIResponse(null, context, errorPacket, startPacket, modePacket);
+    return buildAIResponse(
+      null,
+      context,
+      errorPacket,
+      startPacket,
+      modePacket
+    );
   }
 }
 
 // ============================================================================
-//  RESPONSE BUILDER — v11.3‑EVO
+//  RESPONSE BUILDER — v12.3‑Presence
 // ============================================================================
 function buildAIResponse(result, context, packet, startPacket, modePacket) {
   return Object.freeze({

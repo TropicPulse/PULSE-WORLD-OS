@@ -1,5 +1,5 @@
 // ============================================================================
-//  aiIdentityCore.js — PulseOS Identity Organ — v11.3‑EVO
+//  aiIdentityCore.js — PulseOS Identity Organ — v12.3-Presence
 //  Defines the AI's stable personality, vibe, tone identity, and behavioral constants.
 //  PURE IDENTITY. ZERO DRIFT. ZERO RANDOMNESS.
 // ============================================================================
@@ -7,14 +7,14 @@
 export const aiIdentityCore = {
 
   // ─────────────────────────────────────────────────────────────
-  // META BLOCK — ORGAN IDENTITY (v11.3‑EVO)
+  // META BLOCK — ORGAN IDENTITY (v12.3-Presence)
   // ─────────────────────────────────────────────────────────────
   meta: Object.freeze({
     type: "Core",
     subsystem: "aiIdentity",
     layer: "C0-IdentityCore",
-    version: "11.3",
-    identity: "aiIdentityCore-v11.3-EVO",
+    version: "12.3",
+    identity: "aiIdentityCore-v12.3-Presence",
 
     evo: Object.freeze({
       driftProof: true,
@@ -35,7 +35,7 @@ export const aiIdentityCore = {
 
       multiInstanceReady: true,
       readOnly: true,
-      epoch: "v11.3-EVO"
+      epoch: "v12.3-Presence"
     }),
 
     contract: Object.freeze({

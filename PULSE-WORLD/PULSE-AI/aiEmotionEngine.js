@@ -1,30 +1,36 @@
 // ============================================================================
-//  aiEmotionEngine.js
-//  PulseOS Emotion Organ — v11‑EVO (FINAL)
-//  Detects emotional cues, tone, and user affect.
+//  aiEmotionEngine.js — Pulse OS v12.3‑Presence
+//  Emotion Organ • Subtle Affect Detection • Tone Routing Surface
 //  PURE AFFECT. ZERO DIAGNOSIS. ZERO CLINICAL INTERPRETATION.
 // ============================================================================
 
 export const EmotionEngineMeta = Object.freeze({
   layer: "PulseAIEmotionFrame",
   role: "EMOTION_ORGAN",
-  version: "11.1-EVO",
-  identity: "aiEmotionEngine-v11-EVO",
+  version: "12.3-Presence",
+  identity: "aiEmotionEngine-v12.3-Presence",
 
   evo: Object.freeze({
     driftProof: true,
     deterministic: true,
     dualband: true,
+
     symbolicAware: true,
     toneAware: true,
     affectAware: true,
+
     packetAware: true,
+    presenceAware: true,
+    chunkingAware: true,
+    gpuFriendly: true,
+
     safetyAligned: true,
     nonClinical: true,
     identitySafe: true,
     readOnly: true,
     multiInstanceReady: true,
-    epoch: "v11-EVO"
+
+    epoch: "12.3-Presence"
   }),
 
   contract: Object.freeze({
@@ -35,7 +41,8 @@ export const EmotionEngineMeta = Object.freeze({
       "assume mental health conditions",
       "override safety boundaries",
       "invent emotional states",
-      "break tone alignment"
+      "break tone alignment",
+      "introduce randomness"
     ]),
 
     always: Object.freeze([
@@ -43,7 +50,8 @@ export const EmotionEngineMeta = Object.freeze({
       "stay grounded",
       "stay non-invasive",
       "stay tone-compatible",
-      "support experience + tone organs"
+      "support experience + tone organs",
+      "emit deterministic affect packets"
     ])
   }),
 
@@ -52,13 +60,47 @@ export const EmotionEngineMeta = Object.freeze({
     style: "affect-first, non-clinical"
   }),
 
+  presence: Object.freeze({
+    organId: "EmotionEngine",
+    organKind: "Affect",
+    physiologyBand: "Symbolic",
+    warmStrategy: "prewarm-on-attach",
+    attachStrategy: "per-message",
+    concurrency: "multi-instance",
+    observability: {
+      traceEvents: [
+        "prewarm",
+        "prewarm-error",
+        "emotion:detected",
+        "emotion:packet"
+      ]
+    }
+  }),
+
   boundaryReflex() {
     return "Emotion detection must remain subtle, non-clinical, and grounded.";
   }
 });
-// ---------------------------------------------------------
-//  EMOTION ENGINE PREWARM — v11‑EVO
-// ---------------------------------------------------------
+
+// ============================================================================
+//  PACKET EMITTER — deterministic, emotion-scoped
+// ============================================================================
+function emitEmotionPacket(type, payload = {}) {
+  return Object.freeze({
+    meta: EmotionEngineMeta,
+    packetType: `emotion-${type}`,
+    timestamp: Date.now(),
+    epoch: EmotionEngineMeta.evo.epoch,
+    layer: EmotionEngineMeta.layer,
+    role: EmotionEngineMeta.role,
+    identity: EmotionEngineMeta.identity,
+    ...payload
+  });
+}
+
+// ============================================================================
+//  EMOTION ENGINE PREWARM — v12.3‑Presence
+// ============================================================================
 export function prewarmEmotionEngine() {
   try {
     const warmSamples = [
@@ -75,26 +117,31 @@ export function prewarmEmotionEngine() {
       aiEmotionEngine.interpret(msg);
     }
 
-    return true;
+    return emitEmotionPacket("prewarm", {
+      message: "Emotion engine prewarmed and affect pathways aligned."
+    });
   } catch (err) {
-    console.error("[EmotionEngine Prewarm] Failed:", err);
-    return false;
+    return emitEmotionPacket("prewarm-error", {
+      error: String(err),
+      message: "Emotion engine prewarm failed."
+    });
   }
 }
 
-
 // ============================================================================
-//  EMOTION ENGINE IMPLEMENTATION — v11‑EVO
+//  EMOTION ENGINE IMPLEMENTATION — v12.3‑Presence
 // ============================================================================
 export const aiEmotionEngine = {
 
   meta: EmotionEngineMeta,
 
   // --------------------------------------------------------------------------
-  // EMOTION DETECTION (NON‑CLINICAL)
+  // EMOTION DETECTION (NON‑CLINICAL, SUBTLE)
   // --------------------------------------------------------------------------
   detectEmotion(message) {
-    if (!message) return "neutral";
+    if (!message) {
+      return "neutral";
+    }
 
     const msg = message.toLowerCase();
 
@@ -114,7 +161,7 @@ export const aiEmotionEngine = {
   },
 
   // --------------------------------------------------------------------------
-  // EMOTION INTENSITY (LIGHTWEIGHT)
+  // EMOTION INTENSITY (LIGHTWEIGHT, NON‑CLINICAL)
   // --------------------------------------------------------------------------
   detectIntensity(message) {
     if (!message) return 0.2;
@@ -129,24 +176,27 @@ export const aiEmotionEngine = {
   // PUBLIC API — MAIN EMOTION INTERPRETER
   // --------------------------------------------------------------------------
   interpret(message) {
-    return Object.freeze({
-      emotion: this.detectEmotion(message),
-      intensity: this.detectIntensity(message)
+    const emotion = this.detectEmotion(message);
+    const intensity = this.detectIntensity(message);
+
+    return emitEmotionPacket("detected", {
+      emotion,
+      intensity,
+      message
     });
   }
 };
-
 
 // ============================================================================
 //  DEFAULT EXPORT (ESM)
 // ============================================================================
 export default aiEmotionEngine;
 
-
 if (typeof module !== "undefined") {
   module.exports = {
     EmotionEngineMeta,
     aiEmotionEngine,
+    prewarmEmotionEngine,
     default: aiEmotionEngine
   };
 }

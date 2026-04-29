@@ -1,13 +1,13 @@
 // ============================================================================
-//  aiNervousSystem.js — Pulse OS v11.3‑EVO Organ
+//  aiNervousSystem.js — Pulse OS v12.3-Presence Organ
 //  Binary Nervous System • Routing Brainstem • Deterministic • Routing Artery
 // ============================================================================
 
 export const NervousSystemMeta = Object.freeze({
   layer: "BinaryNervousSystem",
   role: "BINARY_NERVOUS_SYSTEM",
-  version: "11.3-EVO",
-  identity: "aiBinaryNervousSystem-v11.3-EVO",
+  version: "12.3-Presence",
+  identity: "aiBinaryNervousSystem-v12.3-Presence",
 
   evo: Object.freeze({
     deterministic: true,
@@ -27,7 +27,7 @@ export const NervousSystemMeta = Object.freeze({
     prewarmAware: true,    // ⭐ NEW
 
     multiInstanceReady: true,
-    epoch: "v11.3-EVO"
+    epoch: "v12.3-Presence"
   }),
 
   contract: Object.freeze({

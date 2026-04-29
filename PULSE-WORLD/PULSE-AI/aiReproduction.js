@@ -1,5 +1,5 @@
 /**
- * aiReproduction.js — Pulse OS v12.3‑PRESENCE‑EVO+
+ * aiReproduction.js — Pulse OS v12.4‑PRESENCE‑EVO++
  * ---------------------------------------------------------
  * CANONICAL ROLE:
  *   Binary Reproduction System of the organism.
@@ -12,29 +12,35 @@
  *     - reproduction artery metrics v3 (throughput, pressure, cost, budget)
  *     - multi-instance harmony + soft spiral warnings
  *     - presence-aware reproduction metrics (cluster, density, band mix)
+ *     - route-aware metrics (castles, servers, corridors, route pressure)
+ *     - NodeAdmin-aware metrics (mesh pressure, route pressure, reproduction priority)
  *
  *   It is the organism’s:
  *     • reproductive system
  *     • cloning engine
  *     • spawn factory
  *     • lineage multiplier
+ *     • corridor / route reinforcement signaler (metrics-only)
  *
- *   v12.3‑PRESENCE‑EVO+ UPGRADE:
+ *   v12.4‑PRESENCE‑EVO++ UPGRADE:
  *     • Presence context hook (read-only, optional)
- *     • Presence-enriched artery snapshot (cluster, density, band mix)
- *     • No behavioral change, metrics-only enrichment
+ *     • Route context hook (read-only, optional)
+ *     • NodeAdmin context hook (read-only, optional)
+ *     • Presence/Route/NodeAdmin-enriched artery snapshot
+ *     • Soft reproductionHint for NodeAdmin / Expansion / Castle (metrics-only)
+ *     • No behavioral change inside reproduction (no auto-spawn decisions)
  *     • Still deterministic, drift-proof, non-blocking
  */
 
 // ============================================================================
-//  META BLOCK — v12.3‑PRESENCE‑EVO+
+//  META BLOCK — v12.4‑PRESENCE‑EVO++
 // ============================================================================
 
 export const ReproductionMeta = Object.freeze({
   layer: "BinaryOrganism",
   role: "BINARY_REPRODUCTION_ORGAN",
-  version: "12.3-PRESENCE-EVO+",
-  identity: "aiBinaryReproduction-v12.3-PRESENCE-EVO+",
+  version: "12.4-PRESENCE-EVO++",
+  identity: "aiBinaryReproduction-v12.4-PRESENCE-EVO++",
 
   evo: Object.freeze({
     driftProof: true,
@@ -50,12 +56,15 @@ export const ReproductionMeta = Object.freeze({
     multiInstanceReady: true,
     presenceAware: true,
     socialAware: true,
-    epoch: "12.3-PRESENCE-EVO+"
+    routeAware: true,        // ⭐ NEW
+    nodeAdminAware: true,    // ⭐ NEW
+    arteryAware: true,
+    epoch: "12.4-PRESENCE-EVO++"
   }),
 
   contract: Object.freeze({
     purpose:
-      "Provide deterministic organism cloning, genome duplication, lineage-safe replication, and reproduction artery metrics v3 + presence-enriched metrics for the v12.3‑PRESENCE‑EVO+ organism.",
+      "Provide deterministic organism cloning, genome duplication, lineage-safe replication, and reproduction artery metrics v3 + presence/route/NodeAdmin-enriched metrics for the v12.4‑PRESENCE‑EVO++ organism.",
 
     never: Object.freeze([
       "use randomness",
@@ -66,7 +75,8 @@ export const ReproductionMeta = Object.freeze({
       "generate symbolic state",
       "block the organism",
       "perform cognition",
-      "drive presence or social behavior directly"
+      "drive presence, route, or social behavior directly",
+      "decide reproduction policy (NodeAdmin/Expansion/Castle own that)"
     ]),
 
     always: Object.freeze([
@@ -75,7 +85,7 @@ export const ReproductionMeta = Object.freeze({
       "emit binary-only reproduction packets",
       "record lineage deterministically",
       "compute reproduction artery metrics v3",
-      "enrich metrics with presence context only (read-only)",
+      "enrich metrics with presence/route/NodeAdmin context only (read-only)",
       "remain drift-proof",
       "remain deterministic",
       "remain non-blocking"
@@ -84,7 +94,7 @@ export const ReproductionMeta = Object.freeze({
 });
 
 // ============================================================================
-//  ORGAN IMPLEMENTATION — v12.3‑PRESENCE‑EVO+
+//  ORGAN IMPLEMENTATION — v12.4‑PRESENCE‑EVO++
 // ============================================================================
 
 export class AIBinaryReproduction {
@@ -117,7 +127,24 @@ export class AIBinaryReproduction {
      *        veteranCount?: number,
      *        powerUserCount?: number
      *     }
-     *     (read-only, metrics-only, no behavior change)
+     *
+     *   routes (castles/servers/corridors):
+     *     routeContextProvider → optional fn() => {
+     *        weakSegments?: string[],         // route IDs / corridor IDs
+     *        prioritySegments?: string[],     // high-value corridors
+     *        corridorPressure?: number,       // 0..1
+     *        castleLoad?: number,            // 0..1
+     *        serverLoad?: number             // 0..1
+     *     }
+     *
+     *   NodeAdmin:
+     *     nodeAdminContextProvider → optional fn() => {
+     *        meshPressure?: number,          // 0..1
+     *        routePressure?: number,         // 0..1
+     *        reproductionPriority?: number   // 0..1 (advisory)
+     *     }
+     *
+     *   All providers are read-only, metrics-only, no behavior change inside this organ.
      */
     this.id = config.id || "ai-binary-reproduction";
     this.encoder = config.encoder;
@@ -148,6 +175,18 @@ export class AIBinaryReproduction {
         ? config.presenceContextProvider
         : null;
 
+    // route context provider (optional, read-only)
+    this.routeContextProvider =
+      typeof config.routeContextProvider === "function"
+        ? config.routeContextProvider
+        : null;
+
+    // NodeAdmin context provider (optional, read-only)
+    this.nodeAdminContextProvider =
+      typeof config.nodeAdminContextProvider === "function"
+        ? config.nodeAdminContextProvider
+        : null;
+
     // multi-instance identity
     this.instanceIndex = AIBinaryReproduction._registerInstance();
     // counters for artery metrics
@@ -168,7 +207,7 @@ export class AIBinaryReproduction {
 
   // ---------------------------------------------------------
   //  STATIC INSTANCE REGISTRY (MULTI-INSTANCE HARMONY)
-  // ---------------------------------------------------------
+// ---------------------------------------------------------
 
   static _registerInstance() {
     if (typeof AIBinaryReproduction._instanceCount !== "number") {
@@ -186,15 +225,8 @@ export class AIBinaryReproduction {
   }
 
   // ---------------------------------------------------------
-  //  REPRODUCTION ARTERY METRICS v3 + PRESENCE ENRICHMENT
-  // ---------------------------------------------------------
-
-  _rollWindow(now) {
-    if (now - this._windowStart >= this.windowMs) {
-      this._windowStart = now;
-      this._windowCount = 0;
-    }
-  }
+  //  CONTEXT PROVIDERS (PRESENCE / ROUTE / NODEADMIN)
+// ---------------------------------------------------------
 
   _safePresenceContext() {
     if (!this.presenceContextProvider) return null;
@@ -221,6 +253,55 @@ export class AIBinaryReproduction {
     }
   }
 
+  _safeRouteContext() {
+    if (!this.routeContextProvider) return null;
+
+    try {
+      const ctx = this.routeContextProvider() || {};
+      return {
+        weakSegments: Array.isArray(ctx.weakSegments)
+          ? ctx.weakSegments.slice(0, 32)
+          : [],
+        prioritySegments: Array.isArray(ctx.prioritySegments)
+          ? ctx.prioritySegments.slice(0, 32)
+          : [],
+        corridorPressure: this._clamp01(ctx.corridorPressure),
+        castleLoad: this._clamp01(ctx.castleLoad),
+        serverLoad: this._clamp01(ctx.serverLoad)
+      };
+    } catch (err) {
+      this._trace("route:context:error", { error: String(err) });
+      return null;
+    }
+  }
+
+  _safeNodeAdminContext() {
+    if (!this.nodeAdminContextProvider) return null;
+
+    try {
+      const ctx = this.nodeAdminContextProvider() || {};
+      return {
+        meshPressure: this._clamp01(ctx.meshPressure),
+        routePressure: this._clamp01(ctx.routePressure),
+        reproductionPriority: this._clamp01(ctx.reproductionPriority)
+      };
+    } catch (err) {
+      this._trace("nodeAdmin:context:error", { error: String(err) });
+      return null;
+    }
+  }
+
+  // ---------------------------------------------------------
+  //  REPRODUCTION ARTERY METRICS v3 + PRESENCE/ROUTE/NODEADMIN
+  // ---------------------------------------------------------
+
+  _rollWindow(now) {
+    if (now - this._windowStart >= this.windowMs) {
+      this._windowStart = now;
+      this._windowCount = 0;
+    }
+  }
+
   _computeReproductionArtery() {
     const now = Date.now();
     this._rollWindow(now);
@@ -244,6 +325,25 @@ export class AIBinaryReproduction {
     const budget = Math.max(0, Math.min(1, throughput - cost));
 
     const presenceCtx = this._safePresenceContext();
+    const routeCtx = this._safeRouteContext();
+    const nodeCtx = this._safeNodeAdminContext();
+
+    // advisory hint for NodeAdmin / Expansion / Castle (metrics-only)
+    let reproductionHint = "normal";
+    if (nodeCtx && nodeCtx.reproductionPriority >= 0.7) {
+      reproductionHint = "recommended";
+    }
+    if (routeCtx && routeCtx.corridorPressure >= 0.7) {
+      reproductionHint = "recommended";
+    }
+    if (
+      nodeCtx &&
+      nodeCtx.reproductionPriority >= 0.9 &&
+      routeCtx &&
+      routeCtx.corridorPressure >= 0.8
+    ) {
+      reproductionHint = "urgent";
+    }
 
     const artery = {
       slice: this.slice,
@@ -270,6 +370,8 @@ export class AIBinaryReproduction {
       recommendedRate: this.recommendedRate,
       timestamp: now,
 
+      reproductionHint, // advisory only, no behavior inside this organ
+
       // presence-enriched metrics (read-only, optional)
       presence: presenceCtx && {
         clusterId: presenceCtx.clusterId,
@@ -278,6 +380,22 @@ export class AIBinaryReproduction {
         newCount: presenceCtx.newCount,
         veteranCount: presenceCtx.veteranCount,
         powerUserCount: presenceCtx.powerUserCount
+      },
+
+      // route-enriched metrics (castles/servers/corridors)
+      routes: routeCtx && {
+        weakSegments: routeCtx.weakSegments,
+        prioritySegments: routeCtx.prioritySegments,
+        corridorPressure: routeCtx.corridorPressure,
+        castleLoad: routeCtx.castleLoad,
+        serverLoad: routeCtx.serverLoad
+      },
+
+      // NodeAdmin-enriched metrics
+      nodeAdmin: nodeCtx && {
+        meshPressure: nodeCtx.meshPressure,
+        routePressure: nodeCtx.routePressure,
+        reproductionPriority: nodeCtx.reproductionPriority
       }
     };
 
@@ -389,6 +507,7 @@ export class AIBinaryReproduction {
    * -------------------------------------
    * Creates a new organism instance with the same genome.
    * All abilities preserved; now monitored via artery metrics.
+   * ReproductionHint is advisory for NodeAdmin/Expansion/Castle only.
    */
   cloneOrganism(parentId, parentConfig = {}) {
     const genome = this.genome.loadGenome();
@@ -465,6 +584,7 @@ export class AIBinaryReproduction {
    * ---------------------------------------
    * Spawns multiple child organisms from the same parent.
    * Behavior preserved; artery metrics reflect burst.
+   * NodeAdmin/Expansion/Castle can read reproductionHint to decide strategy.
    */
   spawnMany(parentId, parentConfig = {}, count = 1) {
     const results = [];
@@ -515,7 +635,7 @@ export class AIBinaryReproduction {
 }
 
 // ============================================================================
-//  FACTORY — v12.3‑PRESENCE‑EVO+
+//  FACTORY — v12.4‑PRESENCE‑EVO++
 // ============================================================================
 
 export function createAIBinaryReproduction(config) {

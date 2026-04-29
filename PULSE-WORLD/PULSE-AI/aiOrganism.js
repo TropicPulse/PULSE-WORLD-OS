@@ -1,13 +1,13 @@
 // ============================================================================
-//  aiOrganism.js — Pulse OS v11.3‑EVO Organ
+//  aiOrganism.js — Pulse OS v12.3-Presence Organ
 //  Dualband Organism Bootloader • Canonical Assembly • Deterministic Root
 // ============================================================================
 
 export const OrganismMeta = Object.freeze({
   layer: "OrganismRoot",
   role: "DUALBAND_ORGANISM_BOOTLOADER",
-  version: "11.3-EVO",
-  identity: "aiOrganism-v11.3-EVO",
+  version: "12.3-Presence",
+  identity: "aiOrganism-v12.3-Presence",
 
   evo: Object.freeze({
     deterministic: true,
@@ -29,7 +29,7 @@ export const OrganismMeta = Object.freeze({
     packetAware: true,         // ⭐ NEW
     prewarmAware: true,        // ⭐ NEW
     multiInstanceReady: true,
-    epoch: "11.3-EVO"
+    epoch: "12.3-Presence"
   }),
 
   contract: Object.freeze({

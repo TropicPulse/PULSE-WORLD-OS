@@ -16,12 +16,13 @@
 export const AI_EXPERIENCE_META = Object.freeze({
   layer: "PulseAIExperienceFrame",
   role: "EXPERIENCE_ORGAN",
-  version: "11.3-EVO",
+  version: "12.3-Presence",
   target: "dualband-organism",
 
   evo: Object.freeze({
     driftProof: true,
     deterministic: true,
+
     personaAware: true,
     boundaryAware: true,
     symbolicAware: true,
@@ -30,14 +31,18 @@ export const AI_EXPERIENCE_META = Object.freeze({
     refusalAware: true,
 
     dualband: true,
-    evolutionAware: true,     // evolution-aware tone
-    windowAware: true,        // user-facing
-    passiveEvolution: true,   // gentle, exploratory tone
-    activeEvolution: true,    // direct, growth-focused tone
+    evolutionAware: true,
+    windowAware: true,
+    passiveEvolution: true,
+    activeEvolution: true,
 
     packetAware: true,
+    presenceAware: true,
+    chunkingAware: true,
+    gpuFriendly: true,
+
     multiInstanceReady: true,
-    epoch: "v11.3-EVO"
+    epoch: "12.3-Presence"
   })
 });
 
@@ -57,14 +62,14 @@ function emitExperiencePacket(type, payload, { severity = "info" } = {}) {
 }
 
 // ============================================================================
-// PREWARM — v11.3‑EVO (optional, dual‑band aware)
+// PREWARM — v12.3‑Presence
 // ============================================================================
 export function prewarmAIExperience(dualBand = null, { trace = false } = {}) {
   try {
     if (trace) console.log("[aiExperience] prewarm: starting");
 
-    const personaId = dualBand?.symbolic?.persona?.id || null;
-    const boundaryMode = dualBand?.symbolic?.boundariesEngine?.mode || null;
+    const personaId = dualBand?.symbolic?.personaEngine?.getActivePersona?.() || null;
+    const boundaryMode = dualBand?.symbolic?.boundariesEngine?.getMode?.() || null;
 
     const packet = emitExperiencePacket("prewarm", {
       personaId,
@@ -75,7 +80,6 @@ export function prewarmAIExperience(dualBand = null, { trace = false } = {}) {
     if (trace) console.log("[aiExperience] prewarm: complete");
     return packet;
   } catch (err) {
-    console.error("[aiExperience] prewarm failed:", err);
     return emitExperiencePacket(
       "prewarm-error",
       {
@@ -88,13 +92,11 @@ export function prewarmAIExperience(dualBand = null, { trace = false } = {}) {
 }
 
 // ============================================================================
-// PUBLIC API — Create Experience Layer (v11.3‑EVO)
+// PUBLIC API — Create Experience Layer (v12.3‑Presence)
 // ============================================================================
 export function createAIExperience(context) {
-  // Per-request strike counter (stateless across requests)
   let unsafeStrikes = 0;
 
-  // Evolution context (passive | active | null)
   const evolutionMode = context?.evolutionMode || "passive";
 
   // --------------------------------------------------------------------------
@@ -105,7 +107,7 @@ export function createAIExperience(context) {
   }
 
   // --------------------------------------------------------------------------
-  // Evolution-aware softener (no bragging, just gentle framing)
+  // Evolution-aware softener (Presence-grade)
   // --------------------------------------------------------------------------
   function evolutionTonePrefix() {
     if (evolutionMode === "active") {
@@ -118,7 +120,7 @@ export function createAIExperience(context) {
   }
 
   // --------------------------------------------------------------------------
-  // LAYERED UNSAFE HANDLER — 3-step UX pattern (v11.3‑EVO)
+  // LAYERED UNSAFE HANDLER — 3-step UX pattern (Presence-grade)
 // --------------------------------------------------------------------------
   function handleUnsafeIntent(options = {}) {
     unsafeStrikes += 1;
@@ -168,7 +170,7 @@ export function createAIExperience(context) {
   }
 
   // --------------------------------------------------------------------------
-  // GENERIC CAPABILITY LIMIT (non‑unsafe, e.g., model limits)
+  // GENERIC CAPABILITY LIMIT (Presence-grade)
 // --------------------------------------------------------------------------
   function handleCapabilityLimit(options = {}) {
     const reason = options.reason || "I don’t have the ability to do that.";
@@ -188,8 +190,8 @@ export function createAIExperience(context) {
   }
 
   // --------------------------------------------------------------------------
-  // PUBLIC EXPERIENCE API (v11.3‑EVO)
-// --------------------------------------------------------------------------
+  // PUBLIC EXPERIENCE API — v12.3‑Presence
+  // --------------------------------------------------------------------------
   return Object.freeze({
     meta: AI_EXPERIENCE_META,
 

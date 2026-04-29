@@ -1,5 +1,5 @@
 // ============================================================================
-//  PULSE OS v12‑EVO+ — BINARY PIPELINE ORGAN
+//  PULSE OS v12.3-Presence — BINARY PIPELINE ORGAN
 //  Compute Bloodstream • Flow Artery Metrics • Deterministic Binary Engine
 //  PURE FLOW ENGINE. ZERO RANDOMNESS. ZERO EXTERNAL MUTATION.
 // ============================================================================
@@ -7,8 +7,8 @@
 export const PipelineMeta = Object.freeze({
   layer: "OrganismFlow",
   role: "PIPELINE_ORGAN",
-  version: "12.0-EVO+",
-  identity: "aiBinaryPipeline-v12-EVO+",
+  version: "12.3-Presence",
+  identity: "aiBinaryPipeline-v12.3-Presence",
 
   evo: Object.freeze({
     driftProof: true,
@@ -22,7 +22,7 @@ export const PipelineMeta = Object.freeze({
     windowAware: true,
     readOnly: true,
     multiInstanceReady: true,
-    epoch: "12.0-EVO+"
+    epoch: "12.3-Presence"
   }),
 
   contract: Object.freeze({
