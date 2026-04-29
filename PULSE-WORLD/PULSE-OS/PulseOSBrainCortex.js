@@ -150,6 +150,7 @@ export const PulseOSCortexMeta = Object.freeze({
     return: "deterministic cortex state + signatures + presence/chunking metadata"
   })
 });
+import { cognitiveBootstrap } from "./PulseOSBrain-v11-Evo.js";
 import { PulseOSEvolution as Evolution } from "./PulseOSBrainEvolution.js";
 // ============================================================================
 //  BOOT SURFACE — v12.6‑EVO
@@ -355,6 +356,7 @@ export function createPulseOSCortex({ Brain }) {
     scanFile,
 
     // Optional hooks for Brain.cognitiveBootstrap (no-ops by default)
+    cognitiveBootstrap,
     initializeNervousSystem() {
       // Intentionally empty — real wiring lives in organs/Brain if needed
     },
