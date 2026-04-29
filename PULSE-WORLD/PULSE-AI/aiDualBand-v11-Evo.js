@@ -98,8 +98,8 @@ import {
   prewarmScribe
 } from "./aiDebug.js";
 
-import { createPermissionsEngine } from "./permissions.js";
-import { createBoundariesEngine } from "./boundaries.js";
+import { createPermissionsEngine } from "./aiPermissionsEngine-v11-Evo.js";
+import { createBoundariesEngine } from "./aiBoundariesEngine-v11-Evo.js";
 import { createPersonaEngine } from "./persona.js";
 
 import {
