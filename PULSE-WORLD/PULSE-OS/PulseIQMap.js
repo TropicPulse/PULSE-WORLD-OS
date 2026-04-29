@@ -1,33 +1,18 @@
-// ============================================================================
-//  SAFE LOGGING (ACCESS IMPORT)
-// ============================================================================
+// -----------------------------------------------------------------------------
+// PulseIQMapPrime.js — v13‑EVO‑PRIME
+// INTERPRETATION LAYER OF THE GENOME (PulseOrganismMap)
+// -----------------------------------------------------------------------------
+
+import { PulseOrganismMap } from "./PulseOrganismMap.js";
 import { log, warn, error as logError } from "../PULSEProofLogger.js";
-// ============================================================================
-//  CORTEX BOOT (ACCESS IMPORT)
-// ============================================================================
 import { bootCortex } from "./PulseOSBrainCortex.js";
 
-// … VERSION_MAP and TOP_LEVEL_ROUTES unchanged …
-
-// ============================================================================
-//  IQ MAP — TEXT BLUEPRINT + ACCESS APPENDAGES
-// ============================================================================
-const firebaseAccess = {
-  provider: "Firebase",
-  role: "REMOTE_STATE_STORE",
-  routed: true,          // goes through backend helpers (which are now routed)
-  handle: "db",          // symbolic handle, not for direct client use
-  meta: {
-    helperModule: "../NETLIFY/FUNCTIONS/helpers.js",
-    contract: "PulseFirebase-v12.6-Routed"
-  }
-};
-// ============================================================================
-//  VERSION MAP — v12.3‑PRESENCE‑EVO‑MAX‑PRIME (TEXT‑ONLY)
-// ============================================================================
+// -----------------------------------------------------------------------------
+// VERSION MAP — carried forward, still text-only
+// -----------------------------------------------------------------------------
 const VERSION_MAP = {
   organism: "v12.3‑PRESENCE‑EVO‑MAX‑PRIME",
-  iq: "v12.3‑PRESENCE‑EVO‑MAX‑PRIME",
+  iq: "v13‑EVO‑PRIME",
   router: "v12.3‑PRESENCE",
   mesh: "v12.3‑PRESENCE",
   send: "v12.3‑PRESENCE",
@@ -65,135 +50,74 @@ const VERSION_MAP = {
   codeAnalyzer: "v12.3‑CODE‑ANALYZER"
 };
 
-// ============================================================================
-//  TOP‑LEVEL ROUTES (TEXT‑ONLY)
-// ============================================================================
-const TOP_LEVEL_ROUTES = {
-  root: "/",
-  home: "/",
-  dashboard: "/dashboard",
-  send: "/send",
-  earn: "/earn",
-  settings: "/settings",
-  organism: "/organism",
-  scanner: "/scanner",
-  scannerFile: "/scanner/file",
-  forms: "/forms",
-  proxy: "/proxy",
-  fallback: "/"
-};
-
 function inferTopLevelFromPath(path = "") {
-  if (!path || typeof path !== "string") return TOP_LEVEL_ROUTES.fallback;
-
-  const lower = path.toLowerCase();
-
-  if (lower.startsWith("/send"))          return TOP_LEVEL_ROUTES.send;
-  if (lower.startsWith("/earn"))          return TOP_LEVEL_ROUTES.earn;
-  if (lower.startsWith("/settings"))      return TOP_LEVEL_ROUTES.settings;
-  if (lower.startsWith("/organism"))      return TOP_LEVEL_ROUTES.organism;
-  if (lower.startsWith("/scanner/file"))  return TOP_LEVEL_ROUTES.scannerFile;
-  if (lower.startsWith("/scanner"))       return TOP_LEVEL_ROUTES.scanner;
-  if (lower.startsWith("/forms"))         return TOP_LEVEL_ROUTES.forms;
-  if (lower.startsWith("/proxy"))         return TOP_LEVEL_ROUTES.proxy;
-  if (lower.startsWith("/dash") || lower.startsWith("/home"))
-    return TOP_LEVEL_ROUTES.dashboard;
-
-  return TOP_LEVEL_ROUTES.fallback;
+  if (!path || typeof path !== "string") return "/";
+  const clean = path.toLowerCase().split("?")[0].split("#")[0];
+  if (clean === "/" || clean === "") return "/";
+  return clean;
 }
 
-// ============================================================================
-//  IQ MAP — TEXT BLUEPRINT + ACCESS APPENDAGES
-// ============================================================================
-export const PulseIQMap = {
-// ACCESS UTILITIES
-  log,
-  warn,
-  logError,
-  bootCortex,
-  firebase: firebaseAccess,
 
-  // VERSION MAP
-  version: VERSION_MAP,
+// -----------------------------------------------------------------------------
+// STATIC ACCESS BLUEPRINTS (Firebase, etc.)
+// -----------------------------------------------------------------------------
+const firebaseAccess = {
+  provider: "Firebase",
+  role: "REMOTE_STATE_STORE",
+  routed: true,
+  handle: "db",
+  meta: {
+    helperModule: "../NETLIFY/FUNCTIONS/helpers.js",
+    contract: "PulseFirebase-v12.6-Routed"
+  }
+};
 
-  // ========================================================================
-  //  ORGANISM EXPECTATIONS (TEXT‑ONLY)
-  // ========================================================================
-  organs: {
-    kernel: ["PulseKernel"],
-    identity: ["BBB"],
+// -----------------------------------------------------------------------------
+// FRONTEND / WORLD TOPOLOGY — derived from your description
+// -----------------------------------------------------------------------------
+const FRONTEND_ROOT = "PULSE-WORLD";
 
-    memory: [
-      "LongTermMemory",
-      "PulseOSShortTermMemory",
-      "saveSnapshot",
-      "recordDriftSignature",
-      "createRestorePoint",
-      "PulseCoreMemory",
-      "PulseCoreBinaryMemory"
-    ],
+const FRONTEND_FILES = [
+  "index.html",
+  "dashboard.html",
+  "checkemail.html",
+  "userrecords.html"
+];
 
-    evolution: ["EvolutionEngine", "evolveRaw", "boot"],
+const FRONTEND_SYSTEMS = [
+  "PulseAdmin",
+  "PulseDirectory",
+  "PulseDelivery",
+  "PulseRewards"
+];
 
-    nervousSystem: ["PulseSDN", "PulseBand"],
-    nervousSystemBinary: ["PulseBandBinary"],
+const WORLD_FOLDERS = [
+  "NETLIFY/FUNCTIONS",
+  "_PICTURES",
+  "_REDIRECT",
+  "_SOUNDS",
+  "_LOADERS",
+  "_HELPERS"
+];
 
-    gpu: ["PulseGPU", "PulseGPUAstralNervousSystem"],
+// -----------------------------------------------------------------------------
+// ORGANISM INTERPRETATION HELPERS (from genome → IQ expectations)
+// -----------------------------------------------------------------------------
+function buildOrganExpectationsFromGenome(genome) {
+  const systems = genome.systems || {};
+  const organsBySystem = {};
 
-    router: ["PulseRouter", "BinaryRouter", "BinaryRouterFallbackTier"],
-    send: ["PulseSendSystem", "BinarySend", "BinarySendFallbackTier"],
-    mesh: ["PulseMesh", "BinaryMesh", "BinaryMeshFallbackTier"],
-    pulse: ["PulseHeartbeat", "BinaryPulse", "BinaryPulseFallbackTier"],
+  for (const [systemKey, systemDef] of Object.entries(systems)) {
+    organsBySystem[systemKey] = systemDef.organs || [];
+  }
 
-    proxy: [
-      "PulseProxy-v12.3-Presence",
-      "BinaryProxy-v12.3-PURE",
-      "BinaryProxyFallbackTier"
-    ],
+  return organsBySystem;
+}
 
-    proxySpine: ["PulseProxySpine", "PulseProxySpineBinary"],
-
-    purifier: ["PulseBandCleanup"],
-    shortTermMemoryRepair: ["PulseHistoryRepair"],
-
-    healers: ["PulseOSHealer", "GlobalHealer", "PulseProxyHealer"],
-
-    timers: ["PulseProxyHeart", "PulseTimer", "PulseOSKernelTimer"],
-
-    scanner: [
-      "PageScanner",
-      "BinaryMRI",
-      "BinaryWaveScanner",
-      "BinaryLoopScanner"
-    ],
-
-    fileScanner: ["PulseFileScanner", "PulseCodeAnalyzer"],
-
-    archetypes: ["BinaryDoctor", "BinaryCommunicator", "BinaryAgent"],
-
-    dynamicPage: [
-      "PulseEvolutionaryPage",
-      "PageEvo",
-      "DynamicWrapperPage"
-    ],
-
-    uiOrganism: [
-      "PulseEvolutionaryCode",
-      "PulseEvolutionaryMemory",
-      "PulseEvolutionaryBrain",
-      "PulseEvolutionaryRouter",
-      "PulseEvolutionaryImpulse",
-      "PulseEvolutionaryBinary",
-      "PulseEvolutionaryStyles",
-      "PulseEvolutionaryAnimations",
-      "PulseEvolutionaryIcons"
-    ]
-  },
-
-  // ========================================================================
-  //  PAGE EXPECTATIONS (TEXT‑ONLY)
-  // ========================================================================
-  pages: {
+function buildPageExpectations() {
+  // Keep your existing page expectations, but this is now the place
+  // where you could dynamically extend based on FRONTEND_SYSTEMS if desired.
+  return {
     "/": ["PulseRouter", "PulseKernel", "PulseEvolutionaryPage"],
 
     "/dashboard": [
@@ -274,40 +198,89 @@ export const PulseIQMap = {
     "/proxy/node": [
       "PulseProxySpine",
       "PulseEvolutionaryPage"
-    ]
-  },
-
-  // ========================================================================
-  //  DRIFT / REPAIR METADATA (TEXT‑ONLY)
-  // ========================================================================
-  drift: {
-    lastScan: null,
-    lastRepair: null,
-    signatures: [],
-    repairOrgans: [
-      "PulseBandCleanup",
-      "PulseHistoryRepair",
-      "PulseOSHealer",
-      "GlobalHealer",
-      "PulseProxyHealer"
     ],
-    scannerOrgans: ["PulseFileScanner", "PulseCodeAnalyzer"]
-  },
 
-  // ========================================================================
-  //  ROUTING HELPERS (TEXT‑ONLY)
-  // ========================================================================
-  topLevelRoutes: TOP_LEVEL_ROUTES,
+    // Frontend-specific logical pages (can be expanded later)
+    "/admin":      ["PulseEvolutionaryPage"],
+    "/directory":  ["PulseEvolutionaryPage"],
+    "/delivery":   ["PulseEvolutionaryPage"],
+    "/rewards":    ["PulseEvolutionaryPage"],
+    "/userrecords":["PulseEvolutionaryPage"]
+  };
+}
 
-  getTopLevelRouteFor(path) {
-    return inferTopLevelFromPath(path);
-  },
-
-  getRecoveryRoute() {
-    return TOP_LEVEL_ROUTES.fallback;
-  }
+// -----------------------------------------------------------------------------
+// DRIFT / REPAIR METADATA
+// -----------------------------------------------------------------------------
+const DRIFT_METADATA = {
+  lastScan: null,
+  lastRepair: null,
+  signatures: [],
+  repairOrgans: [
+    "PulseBandCleanup",
+    "PulseHistoryRepair",
+    "PulseOSHealer",
+    "GlobalHealer",
+    "PulseProxyHealer"
+  ],
+  scannerOrgans: ["PulseFileScanner", "PulseCodeAnalyzer"]
 };
 
-// ============================================================================
-// END OF FILE — PULSE IQ / TEXT DESIGN + ACCESS APPENDAGES / v12.3‑PRESENCE‑EVO‑MAX‑PRIME
-// ============================================================================
+// -----------------------------------------------------------------------------
+// PRIME IQ MAP — ASYNC CONSTRUCTION FROM GENOME
+// -----------------------------------------------------------------------------
+async function buildPulseIQMapPrime() {
+  const genome = await PulseOrganismMap;
+
+  const organExpectations = buildOrganExpectationsFromGenome(genome);
+  const pageExpectations = buildPageExpectations();
+
+  return {
+    // ACCESS UTILITIES
+    log,
+    warn,
+    logError,
+    bootCortex,
+    firebase: firebaseAccess,
+
+    // VERSION MAP
+    version: VERSION_MAP,
+
+    // GENOME REFERENCE
+    genome,
+
+    // TOPOLOGY
+    topology: {
+      backendRoot: "tropic-pulse-functions",
+      publishRoot: FRONTEND_ROOT,
+      frontendFiles: FRONTEND_FILES,
+      frontendSystems: FRONTEND_SYSTEMS,
+      worldFolders: WORLD_FOLDERS
+    },
+
+    // ORGAN EXPECTATIONS (derived from genome)
+    organs: organExpectations,
+
+    // PAGE EXPECTATIONS (currently semi-static, but now centralized)
+    pages: pageExpectations,
+
+    // DRIFT / REPAIR
+    drift: DRIFT_METADATA,
+
+    // ROUTING HELPERS
+    topLevelRoutes: TOP_LEVEL_ROUTES,
+
+    getTopLevelRouteFor(path) {
+      return inferTopLevelFromPath(path);
+    },
+
+    getRecoveryRoute() {
+      return TOP_LEVEL_ROUTES.fallback;
+    }
+  };
+}
+
+// -----------------------------------------------------------------------------
+// EXPORT — PRIME IQ MAP (PROMISE)
+// -----------------------------------------------------------------------------
+export const PulseIQMap = await buildPulseIQMapPrime();
