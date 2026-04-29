@@ -193,23 +193,22 @@ function runThroughGovernor(organName, pulseOrImpulse, fn) {
   });
 }
 
-
 // ============================================================================
 //  KERNEL BOOTSTRAP — SYMBOLIC OS BOOT (EVOLUTION + BRAIN + SPINAL CORD + PRESENCE)
 // ============================================================================
 async function buildPulseOSKernel() {
   // 1) Evolution organ (symbolic growth engine)
-  const Evolution = PulseOSEvolution.PulseOSEvolution
+  const Evolution = typeof PulseOSEvolution.PulseOSEvolution === "function"
     ? PulseOSEvolution.PulseOSEvolution({ understanding: PULSE_OS_CONTEXT })
     : PulseOSEvolution;
 
-  // 2) Brain organ (symbolic CNS)
-  const Brain = Evolution.bootBrain
-    ? Evolution.bootBrain(PulseOSBrain.PulseOSBrain)
-    : PulseOSBrain.PulseOSBrain?.();
+  // 2) Brain organ (symbolic CNS) — v12.6: direct instantiation only
+  const Brain = typeof PulseOSBrain.PulseOSBrain === "function"
+    ? PulseOSBrain.PulseOSBrain()
+    : PulseOSBrain;
 
   // 3) Spinal Cord organ (symbolic wiring fabric)
-  const SpinalCord = PulseSpinalCord.createPulseOSSpinalCord
+  const SpinalCord = typeof PulseSpinalCord.createPulseOSSpinalCord === "function"
     ? PulseSpinalCord.createPulseOSSpinalCord({
         Brain,
         Evolution,
@@ -222,17 +221,14 @@ async function buildPulseOSKernel() {
 
   // 4) Presence Field (OS-level presence organ, optional)
   let PresenceField = null;
-  if (PulseOSPresence && typeof PulseOSPresence.buildPresenceField === "function") {
+  if (PulseOSPresence?.buildPresenceField) {
     PresenceField = PulseOSPresence.buildPresenceField({
       Brain,
       Evolution,
       SpinalCord,
       meta
     });
-  } else if (
-    PulseOSPresence &&
-    typeof PulseOSPresence.PulseOSPresence === "function"
-  ) {
+  } else if (PulseOSPresence?.PulseOSPresence) {
     PresenceField = PulseOSPresence.PulseOSPresence({
       Brain,
       Evolution,
@@ -243,10 +239,7 @@ async function buildPulseOSKernel() {
 
   // 5) Mesh Presence Relay (Mesh-level presence organ, optional)
   let MeshPresenceRelay = null;
-  if (
-    PulseMeshPresence &&
-    typeof PulseMeshPresence.buildMeshPresenceRelay === "function"
-  ) {
+  if (PulseMeshPresence?.buildMeshPresenceRelay) {
     MeshPresenceRelay = PulseMeshPresence.buildMeshPresenceRelay({
       Brain,
       Evolution,
@@ -254,10 +247,7 @@ async function buildPulseOSKernel() {
       PresenceField,
       meta
     });
-  } else if (
-    PulseMeshPresence &&
-    typeof PulseMeshPresence.PulseMeshPresenceRelay === "function"
-  ) {
+  } else if (PulseMeshPresence?.PulseMeshPresenceRelay) {
     MeshPresenceRelay = PulseMeshPresence.PulseMeshPresenceRelay({
       Brain,
       Evolution,
@@ -267,6 +257,7 @@ async function buildPulseOSKernel() {
     });
   }
 
+  // FINAL SYMBOLIC KERNEL (v12.6‑EVO)
   const PulseKernel = {
     meta,
     Brain,
