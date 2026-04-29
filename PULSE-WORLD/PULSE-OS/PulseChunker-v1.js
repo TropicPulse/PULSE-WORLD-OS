@@ -1,5 +1,5 @@
 // ============================================================================
-// FILE: /apps/PulseOS/Core/PulseChunker-v12.4-PRESENCE-EVO-MAX.js
+// FILE: /PulseOS/Core/PulseChunker-v12.4-PRESENCE-EVO-MAX.js
 // PULSE CHUNK ENGINE — v12.4‑PRESENCE‑EVO‑MAX‑PRIME
 //  - Payload chunking
 //  - Cache/delta engine

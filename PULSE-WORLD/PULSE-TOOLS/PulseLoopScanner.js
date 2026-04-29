@@ -1,5 +1,5 @@
 // ============================================================================
-// FILE: /apps/PulseOS/core/PulseLoopScanner-v12.3-EVO.js
+// FILE: /PulseOS/core/PulseLoopScanner-v12.3-EVO.js
 // PULSE OS — v12.3-EVO
 // GENERIC LOOP ORGAN — PRESENCE + HARMONICS + DUAL-BAND + MULTI-SPIN-EVO
 // ============================================================================

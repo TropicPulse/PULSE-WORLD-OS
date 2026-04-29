@@ -1,5 +1,5 @@
 // ============================================================================
-// FILE: tropic-pulse-functions/apps/PULSE-GPU/PulseGPUSettingsRestorer.js
+// FILE: tropic-pulse-functions/PULSE-WORLD/PULSE-GPU/PulseGPUSettingsRestorer.js
 // PULSE GPU SETTINGS RESTORER v12-Evo-Presence-Max
 // “COGNITIVE RECOGNITION LAYER / RESTORATION PLANNER”
 // ============================================================================

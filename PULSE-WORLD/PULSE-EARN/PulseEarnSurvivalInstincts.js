@@ -1,5 +1,5 @@
 // ============================================================================
-// FILE: tropic-pulse-functions/apps/PULSE-EARN/PulseEarnSurvivalInstincts-v12.3-PRESENCE-EVO+.js
+// FILE: tropic-pulse-functions/PULSE-WORLD/PULSE-EARN/PulseEarnSurvivalInstincts-v12.3-PRESENCE-EVO+.js
 // LAYER: THE SURVIVAL INSTINCTS (v12.3-PRESENCE-EVO+ A-B-A)
 // (Worker Protection + Evolutionary Scaling + Fair Workload Defense + Presence/Advantage Surfaces)
 // ============================================================================

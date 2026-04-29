@@ -1,5 +1,5 @@
 // ============================================================================
-// FILE: tropic-pulse-functions/apps/PULSE-EARN/PulseEarnCell-v12.3-PRESENCE-EVO+.js
+// FILE: tropic-pulse-functions/PULSE-WORLD/PULSE-EARN/PulseEarnCell-v12.3-PRESENCE-EVO+.js
 // LAYER: THE CELL (Deterministic Worker + Safe Compute Participant)
 // ============================================================================
 //

@@ -1,5 +1,5 @@
 // ============================================================================
-// FILE: tropic-pulse-functions/apps/PULSE-AI/aiExperience.js
+// FILE: tropic-pulse-functions/PULSE-WORLD/PULSE-AI/aiExperience.js
 // LAYER: EXPERIENCE ORGAN (Tone • Boundaries • Flow • Refusals)
 // ============================================================================
 //

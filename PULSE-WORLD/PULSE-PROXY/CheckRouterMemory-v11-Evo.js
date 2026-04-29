@@ -1,6 +1,6 @@
 
 // ============================================================================
-// FILE: /apps/PULSE-PROXY/CheckRouterMemory-v12.3-PRESENCE-EVO-BINARY.js
+// FILE: /PULSE-PROXY/CheckRouterMemory-v12.3-PRESENCE-EVO-BINARY.js
 // PULSE NETWORK MEMORY HEALER — v12.3-PRESENCE-EVO-BINARY
 // “THE NETWORK HEALER+++ / BINARY-FIRST LOG INTAKE + DUALBAND REPAIR ENGINE
 //   + PRESENCE FIELD + CHUNK/CACHE/PREWARM HINT ENGINE”

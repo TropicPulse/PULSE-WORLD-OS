@@ -1,5 +1,5 @@
 // ============================================================================
-// FILE: tropic-pulse-functions/apps/PULSE-DESIGN/translator.js
+// FILE: tropic-pulse-functions/PULSE-WORLD/PULSE-DESIGN/translator.js
 // LAYER: THE ARCHITECT (v10.4 Orchestrator + Genome Conductor)
 // ============================================================================
 

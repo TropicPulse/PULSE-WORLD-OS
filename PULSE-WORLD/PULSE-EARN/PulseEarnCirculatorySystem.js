@@ -1,5 +1,5 @@
 // ============================================================================
-// FILE: tropic-pulse-functions/apps/PULSE-EARN/PulseEarnCirculatorySystem-v12.3-PRESENCE-EVO+.js
+// FILE: tropic-pulse-functions/PULSE-WORLD/PULSE-EARN/PulseEarnCirculatorySystem-v12.3-PRESENCE-EVO+.js
 // LAYER: THE CIRCULATORY SYSTEM (v12.3-PRESENCE-EVO+)
 // (Deterministic Reflex + Routing + Weighting + Presence + Advantage + Multi-Instance)
 // ============================================================================

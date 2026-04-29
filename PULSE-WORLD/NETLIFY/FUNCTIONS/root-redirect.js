@@ -1,6 +1,6 @@
 /* global log,warn,error */
 // ============================================================================
-// FILE: tropic-pulse-functions/netlify/functions/root-redirect.js
+// FILE: tropic-pulse-functions/PULSE-WORLD/netlify/functions/root-redirect.js
 // PULSE REDIRECT — VERSION 6.3
 // “THE CROSSING GUARD / SAFE‑PASSAGE REDIRECT LAYER”
 // ============================================================================

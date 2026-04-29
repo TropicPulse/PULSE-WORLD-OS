@@ -1,5 +1,5 @@
 // ============================================================================
-//  FILE: /apps/PULSE-PROXY/PulseProxyInnerAgent.js
+//  FILE: /PULSE-PROXY/PulseProxyInnerAgent.js
 //  PULSE OS v12.3‑EVO‑PRESENCE — PROXY INNER AGENT (DUAL‑BAND + PRESENCE)
 //  “INNER AGENT / ORGANISM BRIDGE”
 //  CNS ↔ Router ↔ /PULSE-PROXY/endpoint ↔ InnerAgent ↔ Brain / LTM / Pages

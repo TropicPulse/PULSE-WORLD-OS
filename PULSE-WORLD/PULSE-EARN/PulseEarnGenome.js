@@ -1,5 +1,5 @@
 // ============================================================================
-// FILE: tropic-pulse-functions/apps/PULSE-EARN/PulseEarnGenome-v12.3-PRESENCE-EVO+.js
+// FILE: tropic-pulse-functions/PULSE-WORLD/PULSE-EARN/PulseEarnGenome-v12.3-PRESENCE-EVO+.js
 // LAYER: THE GENOME CORE (v12.3-PRESENCE-EVO+)
 // (Immutable DNA Sequence + Cross‑Organism Law + Presence Surfaces)
 // ============================================================================

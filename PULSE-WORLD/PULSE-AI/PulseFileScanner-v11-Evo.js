@@ -1,5 +1,5 @@
 // ============================================================================
-// FILE: /apps/PULSE-AI/PulseFileScanner-v12.3-EVO+.js
+// FILE: /PULSE-AI/PulseFileScanner-v12.3-EVO+.js
 // PULSE AI — v12.3‑EVO+
 // “THE FILE SCANNER ORGAN — SYMBOLIC COGNITION + STRUCTURAL ANALYSIS”
 // ============================================================================

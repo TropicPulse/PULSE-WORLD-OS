@@ -1,5 +1,5 @@
 // ============================================================================
-// FILE: /apps/PulseOS/Surface/PulseEvolutionaryWindow-v13.js
+// FILE: /PulseOS/Surface/PulseEvolutionaryWindow-v13.js
 // PULSE EVOLUTIONARY WINDOW — v13-EVO-ALWAYS-ON-OFFLINE-FIRST
 // PORTAL-MEMBRANE • ONE-WAY GLASS • ZERO-TRUST SURFACE • NO ORGANS BEYOND GLASS
 // ============================================================================

@@ -1,17 +1,17 @@
 // ============================================================================
-// FILE: /apps/PULSE-OS/PulseOSCortex-v12.4-Spine.js
-// PULSE OS — v12.4-SPINE-DUALBAND-PRESENCE
+// FILE: /PULSE-OS/PulseOSCortex-v13-Spine.js
+// PULSE OS — v13-SPINE-DUALBAND-PRESENCE
 // “THE CORTEX ORGAN — HIGH‑LEVEL COGNITION + ORGAN SUPERVISOR”
 // ============================================================================
 //
-// ROLE (v12.4-SPINE-DUALBAND-PRESENCE):
+// ROLE (v13-SPINE-DUALBAND-PRESENCE):
 // -------------------------------------
 // • Receives PulseOSBrain (CNS) directly
 // • Reads intent, IQ, OrganismMap from Brain
-// • Reads Evolution from Brain.evolution
+// • Reads Evolution from Brain.evolution (optional, non-blocking)
 // • Initializes Nervous System + Organs (delegated to CNS Brain)
 // • Maintains OS-level conscious state (symbolic-primary)
-// • Reports lineage + drift to Evolution (band-tagged)
+// • Reports lineage + drift to Evolution (band-tagged, optional)
 // • Pure frontend, deterministic, zero timing, zero backend
 // • Continuance-aware (never halts organism)
 // • Dual-band aware (symbolic | binary | dual) — tagging only
@@ -21,10 +21,10 @@
 // ============================================================================
 
 export const PulseRole = {
-  type: "Brain",
+  type: "Cortex",            // FIXED (was incorrectly "Brain")
   subsystem: "OS",
   layer: "Cortex",
-  version: "12.4-Spine",
+  version: "13-Spine",
   identity: "PulseOSCortex",
 
   evo: {
@@ -37,13 +37,13 @@ export const PulseRole = {
     loopTheoryAware: true,
     continuanceAware: true,
 
-    // v12.4 organism-wide contracts
-    routingContract: "PulseRouter-v12.4",
-    gpuCompatibility: "PulseGPU-v12.4",
-    sdnCompatibility: "PulseSDN-v12.4",
-    earnCompatibility: "PulseEarn-v12.0",
-    sendCompatibility: "PulseSendSystem-v12.4",
-    osOrganContract: "PulseOS-v12.4-SPINE",
+    // v13 organism-wide contracts
+    routingContract: "PulseRouter-v13",
+    gpuCompatibility: "PulseGPU-v13",
+    sdnCompatibility: "PulseSDN-v13",
+    earnCompatibility: "PulseEarn-v13",
+    sendCompatibility: "PulseSendSystem-v13",
+    osOrganContract: "PulseOS-v13-SPINE",
 
     // Dual-band CNS
     dualMode: true,
@@ -65,8 +65,8 @@ export const PulseRole = {
 export const PulseOSCortexMeta = Object.freeze({
   layer: "PulseOSCortex",
   role: "CORTEX_ORGAN",
-  version: "v12.4-SPINE-DUALBAND-PRESENCE",
-  identity: "PulseOSCortex-v12.4-SPINE-DUALBAND-PRESENCE",
+  version: "v13-SPINE-DUALBAND-PRESENCE",
+  identity: "PulseOSCortex-v13-SPINE-DUALBAND-PRESENCE",
 
   guarantees: Object.freeze({
     deterministic: true,
@@ -98,7 +98,7 @@ export const PulseOSCortexMeta = Object.freeze({
 
     zeroBackend: true,
     zeroNetwork: true,
-    zeroTiming: true,          // no Date.now()
+    zeroTiming: true,
     zeroUserCode: true,
     zeroDynamicImports: true,
     zeroEval: true,
@@ -118,14 +118,14 @@ export const PulseOSCortexMeta = Object.freeze({
       "CortexDiagnostics",
       "CortexSignatures",
       "CortexHealingState",
-      "CortexPresenceDescriptors", // presence + mesh (metadata-only)
-      "CortexChunkingProfiles"     // chunk/prewarm (metadata-only)
+      "CortexPresenceDescriptors",
+      "CortexChunkingProfiles"
     ]
   }),
 
   lineage: Object.freeze({
-    root: "PulseOS-v12.4-SPINE",
-    parent: "PulseOS-v12.3-SPINE",
+    root: "PulseOS-v13-SPINE",
+    parent: "PulseOS-v12.4-SPINE",
     ancestry: [
       "PulseOSCortex-v9",
       "PulseOSCortex-v10",
@@ -133,12 +133,13 @@ export const PulseOSCortexMeta = Object.freeze({
       "PulseOSCortex-v11-Evo",
       "PulseOSCortex-v11-Evo-BinaryMax",
       "PulseOSCortex-v12.3-SPINE-DUALBAND-PRESENCE",
-      "PulseOSCortex-v12.4-SPINE-DUALBAND-PRESENCE"
+      "PulseOSCortex-v12.4-SPINE-DUALBAND-PRESENCE",
+      "PulseOSCortex-v13-SPINE-DUALBAND-PRESENCE"
     ]
   }),
 
   bands: Object.freeze({
-    supported: ["symbolic", "binary"],
+    supported: ["symbolic", "binary", "dual"],
     default: "symbolic",
     behavior: "cortex-only"
   }),
@@ -152,15 +153,19 @@ export const PulseOSCortexMeta = Object.freeze({
   })
 });
 
-import { PulseOSEvolution as Evolution } from "./PulseOSBrainEvolution.js";
 
 // ============================================================================
-//  BOOT SURFACE — v12.4‑EVO
-//  Brain calls: bootCortex({ Brain, ...options })
+//  EVOLUTION IMPORT (optional, non-blocking)
+// ============================================================================
+import { PulseOSEvolution as Evolution } from "./PulseOSBrainEvolution.js";
+
+
+// ============================================================================
+//  BOOT SURFACE — v13
 // ============================================================================
 export function bootCortex({ Brain, ...options } = {}) {
   if (!Brain) {
-    throw new Error("PulseOSCortex v12.4: Missing CNS Brain injection.");
+    throw new Error("PulseOSCortex v13: Missing CNS Brain injection.");
   }
 
   const cortex = createPulseOSCortex({ Brain });
@@ -169,23 +174,20 @@ export function bootCortex({ Brain, ...options } = {}) {
 
 
 // ============================================================================
-//  FACTORY — Cortex receives the CNS Brain directly (v12.4‑EVO)
+//  FACTORY — Cortex receives the CNS Brain directly (v13)
 // ============================================================================
 export function createPulseOSCortex({ Brain }) {
   if (!Brain) {
-    throw new Error("PulseOSCortex v12.4: Missing CNS Brain injection.");
+    throw new Error("PulseOSCortex v13: Missing CNS Brain injection.");
   }
 
-  // Band normalizer
   function normalizeBand(band) {
     return (band === "binary" || band === "symbolic" || band === "dual")
       ? band
       : "dual";
   }
 
-  // Presence descriptors (IQMap → metadata)
   function computePresenceDescriptors() {
-    // BrainIntel override (if present)
     if (Brain.BrainIntel?.getPresenceDescriptors) {
       return Brain.BrainIntel.getPresenceDescriptors();
     }
@@ -213,9 +215,7 @@ export function createPulseOSCortex({ Brain }) {
     };
   }
 
-  // Chunking profiles (IQMap → metadata)
   function computeChunkingProfiles() {
-    // BrainIntel override (if present)
     if (Brain.BrainIntel?.getChunkingProfiles) {
       return Brain.BrainIntel.getChunkingProfiles();
     }
@@ -230,9 +230,6 @@ export function createPulseOSCortex({ Brain }) {
     };
   }
 
-  // --------------------------------------------------------------------------
-  // Cortex State (zero timing, zero backend)
-  // --------------------------------------------------------------------------
   const CortexState = {
     booted: false,
     routeName: "main",
@@ -248,17 +245,15 @@ export function createPulseOSCortex({ Brain }) {
     symbolicPrimary: true,
     binaryAware: true,
 
-    // Scanner results (symbolic-only, no timestamps)
     lastScan: null,
 
-    // Presence / mesh / chunking (metadata-only snapshots)
     presenceDescriptors: computePresenceDescriptors(),
     chunkingProfiles: computeChunkingProfiles()
   };
 
 
   // ========================================================================
-  //  BOOT — Cortex comes online AFTER PulseOSBrain (v12.4‑EVO)
+  //  BOOT — v13
   // ========================================================================
   function bootCortexFn({ band = "dual" } = {}) {
     const normBand = normalizeBand(band);
@@ -268,20 +263,19 @@ export function createPulseOSCortex({ Brain }) {
       CortexState.booted = true;
     }
 
-    // Refresh presence + chunking snapshots on boot
     CortexState.presenceDescriptors = computePresenceDescriptors();
     CortexState.chunkingProfiles = computeChunkingProfiles();
 
-    Evolution?.recordLineage?.("cortex-boot-v12.4", { band: normBand });
+    Evolution?.recordLineage?.("cortex-boot-v13", { band: normBand });
     Evolution?.scanDrift?.(Brain, { band: normBand });
 
-    Brain.log?.("[Cortex v12.4-SPINE] Boot complete", { CortexState });
+    Brain.log?.("[Cortex v13-SPINE] Boot complete", { CortexState });
     return CortexState;
   }
 
 
   // ========================================================================
-  //  UPDATE — Route or identity changed (band-tagged)
+  //  UPDATE — v13
   // ========================================================================
   function updateCortex(ctx = {}, { band = "dual" } = {}) {
     const normBand = normalizeBand(band);
@@ -290,11 +284,10 @@ export function createPulseOSCortex({ Brain }) {
     CortexState.routeName   = ctx.routeName   ?? CortexState.routeName;
     CortexState.hasIdentity = ctx.hasIdentity ?? CortexState.hasIdentity;
 
-    // Refresh presence + chunking snapshots on significant context change
     CortexState.presenceDescriptors = computePresenceDescriptors();
     CortexState.chunkingProfiles = computeChunkingProfiles();
 
-    Evolution?.recordLineage?.("cortex-update-v12.4", {
+    Evolution?.recordLineage?.("cortex-update-v13", {
       band: normBand,
       routeName: CortexState.routeName,
       hasIdentity: CortexState.hasIdentity
@@ -305,9 +298,8 @@ export function createPulseOSCortex({ Brain }) {
 
 
   // ========================================================================
-  //  ⭐ FILE SCANNING — Symbolic-only, delegated to scanner organ
-  //  (no Date.now, no timing; zeroTiming contract)
-// ========================================================================
+  //  FILE SCANNING — v13
+  // ========================================================================
   function scanFile(filePath) {
     const scanner =
       Brain.understanding?.fileScanner ||
@@ -316,7 +308,7 @@ export function createPulseOSCortex({ Brain }) {
       null;
 
     if (!scanner || typeof scanner.scanFile !== "function") {
-      Brain.warn?.("⚠️ [Cortex v12.4] scanFile requested but no scanner organ available.", {
+      Brain.warn?.("⚠️ [Cortex v13] scanFile requested but no scanner organ available.", {
         filePath
       });
       return {
@@ -331,10 +323,9 @@ export function createPulseOSCortex({ Brain }) {
     CortexState.lastScan = {
       filePath,
       result
-      // no timestamp — zeroTiming:true
     };
 
-    Evolution?.recordLineage?.("cortex-scan-file-v12.4", { filePath });
+    Evolution?.recordLineage?.("cortex-scan-file-v13", { filePath });
     Evolution?.scanDrift?.(Brain, { band: CortexState.band });
 
     return result;
@@ -342,7 +333,7 @@ export function createPulseOSCortex({ Brain }) {
 
 
   // ========================================================================
-  //  PUBLIC API
+  //  PUBLIC API — v13
   // ========================================================================
   const cortexAPI = {
     boot: bootCortexFn,
@@ -350,16 +341,10 @@ export function createPulseOSCortex({ Brain }) {
     state: CortexState,
     isReady: () => CortexState.booted,
 
-    // Symbolic-only scanner surface
     scanFile,
 
-    // Optional hooks for Brain.cognitiveBootstrap (no-ops by default)
-    initializeNervousSystem() {
-      // Intentionally empty — real wiring lives in organs/Brain if needed
-    },
-    initializeOrgans() {
-      // Intentionally empty — real wiring lives in organs/Brain if needed
-    }
+    initializeNervousSystem() {},
+    initializeOrgans() {}
   };
 
   return cortexAPI;

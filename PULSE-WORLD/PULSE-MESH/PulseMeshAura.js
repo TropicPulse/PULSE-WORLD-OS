@@ -1,5 +1,5 @@
 // ============================================================================
-// FILE: /apps/organs/aura/PulseMeshAura-v12.3-PRESENCE-EVO-MAX-PRIME.js
+// FILE: /organs/aura/PulseMeshAura-v12.3-PRESENCE-EVO-MAX-PRIME.js
 // [pulse:mesh] PULSE_MESH_AURA v12.3-PRESENCE-EVO-MAX-PRIME  // violet
 // System-wide Field Layer • Stabilization Loops • Multi-Instance Resonance
 // Metadata-only • Zero Compute • Zero Payload Mutation (flags-only)

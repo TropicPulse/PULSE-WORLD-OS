@@ -1,5 +1,5 @@
 // ============================================================================
-// FILE: /apps/pulse-translator/PulseTranslatorSkeletalIntake.js
+// FILE: /pulse-translator/PulseTranslatorSkeletalIntake.js
 // [pulse:translator] PULSE_TRANSLATOR_SKELETAL_INTAKE v11.0  // bone‑gold
 // SQL → Pulse Skeletal Intake • Deterministic • Genome‑Driven • Zero IO
 // PURE TRANSLATOR — NO SQL EXECUTION • NO NETWORK • NO MUTATION

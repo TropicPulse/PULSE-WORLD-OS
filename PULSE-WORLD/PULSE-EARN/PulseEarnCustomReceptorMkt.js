@@ -1,5 +1,5 @@
 // ============================================================================
-// FILE: tropic-pulse-functions/apps/PULSE-EARN/PulseEarnCustomReceptor-v12.3-PRESENCE-EVO+.js
+// FILE: tropic-pulse-functions/PULSE-WORLD/PULSE-EARN/PulseEarnCustomReceptor-v12.3-PRESENCE-EVO+.js
 // LAYER: THE GENETIC REGULATOR (v12.3-PRESENCE-EVO+ A‑B‑A)
 // (Deterministic Marketplace Interpreter + Receptor Builder + Presence Surfaces)
 // ============================================================================

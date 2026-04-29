@@ -1,6 +1,6 @@
 /* global log, error */
 // ============================================================================
-// FILE: /apps/PulseOS/Organs/Barriers/PulseOSOrganMembrane.js
+// FILE: /PulseOS/Organs/Barriers/PulseOSOrganMembrane.js
 // PULSE OS — v12.3-Evo-Prime
 // “THE ORGAN MEMBRANE / A3 EPITHELIAL REFLEX”
 // GLOBAL SENTINEL • ORGAN-LEVEL PROTECTOR • ZERO TIMING • ZERO STATE

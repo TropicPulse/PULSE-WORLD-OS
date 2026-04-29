@@ -1,5 +1,5 @@
 // ============================================================================
-// FILE: /apps/PulseOS/Organs/Senses/PulseOSSensoryCortex.js
+// FILE: /PulseOS/Organs/Senses/PulseOSSensoryCortex.js
 // PULSE OS — v12.3-Presence
 // “THE SENSORY CORTEX / NERVE MAP ENGINE”
 // DUAL-BAND NERVE MAP • DRIFT SENTINEL • EXECUTION CONTEXT VISUALIZER

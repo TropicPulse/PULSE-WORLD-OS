@@ -1,5 +1,5 @@
 // ============================================================================
-//  FILE: /apps/PULSE-PROXY/PulseProxySpine-v12.3-EVO.js
+//  FILE: /PULSE-PROXY/PulseProxySpine-v12.3-EVO.js
 //  PULSE OS v12.3-EVO — PULSE PROXY SPINE (BACKEND SPINE)
 //  Unified TPProxy Gateway • Vitals Pump • OS‑Healer Feed
 //  SYMBOLIC BACKEND ORGAN — NO BUSINESS LOGIC, NO MARKETPLACE.

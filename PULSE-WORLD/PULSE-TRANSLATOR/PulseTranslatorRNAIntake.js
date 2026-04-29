@@ -1,5 +1,5 @@
 // ============================================================================
-// FILE: /apps/pulse-translator/PulseTranslatorRNAIntake.js
+// FILE: /pulse-translator/PulseTranslatorRNAIntake.js
 // [pulse:translator] PULSE_TRANSLATOR_RNA_INTAKE v11.0  // gold‑white
 // Firestore → Pulse Intake RNA • Deterministic • Drift‑Proof • Genome‑Driven
 // PURE TRANSLATOR — NO IO • NO NETWORK • NO FIRESTORE EXECUTION

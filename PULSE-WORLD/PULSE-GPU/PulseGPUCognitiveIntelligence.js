@@ -1,5 +1,5 @@
 // ============================================================================
-// FILE: tropic-pulse-functions/apps/PULSE-GPU/PulseGPUUXBridge.js
+// FILE: tropic-pulse-functions/PULSE-WORLD/PULSE-GPU/PulseGPUUXBridge.js
 // PULSE GPU UX BRIDGE v12-Evo-Presence-Max
 // “INTELLIGENCE LAYER / COGNITIVE COMMUNICATION BRIDGE”
 // ============================================================================

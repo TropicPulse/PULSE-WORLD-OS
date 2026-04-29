@@ -1,5 +1,5 @@
 // ============================================================================
-// FILE: /apps/pulse-translator/PulseTranslatorRNAOutput.js
+// FILE: /pulse-translator/PulseTranslatorRNAOutput.js
 // [pulse:translator] PULSE_TRANSLATOR_RNA_OUTPUT v11.0  // gold‑white
 // Pulse → Firestore Output RNA • Deterministic • Drift‑Proof • Genome‑Driven
 // PURE TRANSLATOR — NO IO • NO NETWORK • NO FIRESTORE EXECUTION

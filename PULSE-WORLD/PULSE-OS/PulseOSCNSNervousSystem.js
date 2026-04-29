@@ -1,5 +1,5 @@
 // ============================================================================
-// FILE: /apps/PULSE-OS/PulseOSCNSNervousSystem-v12.3-EVO-BINARY-MAX.js
+// FILE: /PULSE-OS/PulseOSCNSNervousSystem-v12.3-EVO-BINARY-MAX.js
 // PULSE OS — v12.3‑EVO‑BINARY‑MAX
 // “THE CENTRAL NERVOUS SYSTEM / COMMUNICATION INTELLIGENCE ORGAN”
 //  • UPGRADED: CNS-level passive/active PageScanner integration (always-on, no timers)

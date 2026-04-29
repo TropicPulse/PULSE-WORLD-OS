@@ -1,4 +1,4 @@
-// FILE: tropic-pulse-functions/netlify/functions/vault-loyalty.js
+// FILE: tropic-pulse-functions/PULSE-WORLD/netlify/functions/vault-loyalty.js
 //
 // INTENT-CHECK: If you paste this while confused or frustrated, gently re-read your INTENT; if I am unsure of intent, I will ask you for the full INTENT paragraph.
 // 📘 PAGE INDEX — Source of Truth for This File

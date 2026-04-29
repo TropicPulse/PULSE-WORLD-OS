@@ -1,5 +1,5 @@
 // ============================================================================
-// FILE: tropic-pulse-functions/apps/PULSE-EARN/PulseEarnImmuneSystem-v12.3-PRESENCE-EVO+.js
+// FILE: tropic-pulse-functions/PULSE-WORLD/PULSE-EARN/PulseEarnImmuneSystem-v12.3-PRESENCE-EVO+.js
 // LAYER: THE IMMUNE SYSTEM (v12.3-PRESENCE-EVO+ + Dual-Band + Binary-First + Wave)
 // (Subsystem Doctor + Drift Diagnostician + Deterministic Repair Engine + Presence Telemetry)
 // ============================================================================

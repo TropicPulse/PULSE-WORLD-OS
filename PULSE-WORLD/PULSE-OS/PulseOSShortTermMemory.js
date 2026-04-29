@@ -1,5 +1,5 @@
 // ============================================================================
-// FILE: /apps/PulseOS/Organs/Memory/PulseOSShortTermMemory.js
+// FILE: /PulseOS/Organs/Memory/PulseOSShortTermMemory.js
 // PULSE OS — v12.3-Presence
 // “THE SHORT‑TERM MEMORY / HIPPOCAMPAL BUFFER”
 // DUAL‑BAND NEURAL MEMORY • PREWARM + CHUNK • MULTI‑PRESENCE SNAPSHOTS

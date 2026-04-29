@@ -1,5 +1,5 @@
 // ============================================================================
-//  FILE: /apps/PULSE-PROXY/pulseNetSynapse.js
+//  FILE: /PULSE-PROXY/pulseNetSynapse.js
 //  PULSE OS v12.3-EVO-PRESENCE — PULSENET SYNAPSE
 //  Neural Signal Routing Organ • Binary Core + Symbolic Wrapper
 //  Dual-Mode: Binary (pure, deterministic) + Symbolic (browser / fetch / storage)

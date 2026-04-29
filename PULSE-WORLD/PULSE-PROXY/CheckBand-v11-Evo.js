@@ -1,5 +1,5 @@
 // ============================================================================
-// FILE: /apps/PULSE-PROXY/CheckBand-v12.3-PRESENCE-EVO-BINARY.js
+// FILE: /PULSE-PROXY/CheckBand-v12.3-PRESENCE-EVO-BINARY.js
 // PULSE INSTANCE ORCHESTRATOR — “CHECKBAND” — v12.3‑PRESENCE‑EVO‑BINARY‑MAX
 // “THE BAND CONTROLLER / INSTANCE ADRENAL SYSTEM / BINARY-FIRST ORCHESTRATOR”
 // Backbone for PulseBand presence + PulseNet pulses + instance scaling

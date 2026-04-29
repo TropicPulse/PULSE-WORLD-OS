@@ -1,5 +1,5 @@
 // ============================================================================
-// FILE: /apps/specs/PulseSpecsDNAGenome-v12-3-Evo.js
+// FILE: /specs/PulseSpecsDNAGenome-v12-3-Evo.js
 // [pulse:specs] PULSE_SPECS_DNA_GENOME v12.3-Evo  // gold‑white + binary
 // OS Data Genome • Canonical Field Language • Deterministic Translation Spec
 // PURE SPEC — NO IO • NO NETWORK • NO AI • NO RUNTIME

@@ -1,5 +1,5 @@
 // ============================================================================
-// FILE: tropic-pulse-functions/apps/PULSE-EARN/PulseEarnGeneticMemory-v12.3-PRESENCE-EVO+.js
+// FILE: tropic-pulse-functions/PULSE-WORLD/PULSE-EARN/PulseEarnGeneticMemory-v12.3-PRESENCE-EVO+.js
 // LAYER: THE GENIUS-ETIC MEMORY (v12.3-PRESENCE-EVO+ + Dual-Band + Binary + Wave)
 // (Keeper of Packets + Guardian of Determinism + DNA Repair Substrate)
 // ============================================================================

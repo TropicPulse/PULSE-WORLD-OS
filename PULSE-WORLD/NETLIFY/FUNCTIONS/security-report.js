@@ -1,6 +1,6 @@
 /* global log,warn,error */
 // ============================================================================
-// FILE: tropic-pulse-functions/functions/security-report.js
+// FILE: tropic-pulse-functions/PULSE-WORLD/functions/security-report.js
 // PULSE SECURITY REPORTER — v7.1+
 // “THE IMMUNE SENTINEL / FORENSIC ANTIGEN CAPTURE LAYER”
 // ============================================================================

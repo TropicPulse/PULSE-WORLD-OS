@@ -1,5 +1,5 @@
 // ============================================================================
-// FILE: tropic-pulse-functions/apps/PULSE-DESIGN/manifestWriter.js
+// FILE: tropic-pulse-functions/PULSE-WORLD/PULSE-DESIGN/manifestWriter.js
 // LAYER: THE SURVEYOR (Canonical Blueprint Writer)
 // ============================================================================
 

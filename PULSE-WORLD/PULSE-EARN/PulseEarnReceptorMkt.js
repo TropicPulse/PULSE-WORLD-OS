@@ -1,5 +1,5 @@
 // ============================================================================
-// FILE: tropic-pulse-functions/apps/PULSE-EARN/PulseEarnReceptor-v12.3-PRESENCE-EVO+.js
+// FILE: tropic-pulse-functions/PULSE-WORLD/PULSE-EARN/PulseEarnReceptor-v12.3-PRESENCE-EVO+.js
 // LAYER: THE STANDARD RECEPTOR (Marketplace Protocol + Universal Adapter)
 // PULSE EARN — v12.3-PRESENCE-EVO+ A‑B‑A
 // ============================================================================

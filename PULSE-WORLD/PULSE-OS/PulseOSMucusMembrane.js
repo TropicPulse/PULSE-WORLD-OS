@@ -1,5 +1,5 @@
 // ============================================================================
-// FILE: /apps/PulseOS/Organs/Barriers/PulseOSMucusMembrane.v12.3.js
+// FILE: /PulseOS/Organs/Barriers/PulseOSMucusMembrane.v12.3.js
 // PULSE OS — v12.3-Evo-Binary-Max
 // “THE MUCUS MEMBRANE / EPITHELIAL BARRIER”
 // PURE BARRIER • OFFLINE-ABSOLUTE • ZERO TIMING • ZERO NETWORK

@@ -1,5 +1,5 @@
 // ============================================================================
-// FILE: tropic-pulse-functions/apps/PULSE-GPU/PulseGPUSurvivalInstincts.js
+// FILE: tropic-pulse-functions/PULSE-WORLD/PULSE-GPU/PulseGPUSurvivalInstincts.js
 // PULSE GPU SURVIVAL INSTINCTS v12.3-Evo-binary-Prime — THE EVOLUTION CORE
 // Adaptive Identity Layer • Genetic Memory • Best‑Self Preservation Engine
 // ============================================================================

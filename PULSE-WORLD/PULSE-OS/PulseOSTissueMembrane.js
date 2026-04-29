@@ -1,6 +1,6 @@
 /* global log,error */
 // ============================================================================
-// FILE: /apps/PulseOS/PULSE-OS/PulseOSTissueMembrane.js
+// FILE: /PulseOS/PULSE-OS/PulseOSTissueMembrane.js
 // PULSE OS — v10.1 → v12.3-Presence
 // “THE TISSUE MEMBRANE / MID‑LAYER EPITHELIAL REFLEX”
 // A2 REFLEX LAYER • MID‑LAYER SENTINEL • ZERO TIMING • ZERO STATE

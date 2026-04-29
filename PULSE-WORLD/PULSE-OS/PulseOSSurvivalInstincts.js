@@ -1,5 +1,5 @@
 // ============================================================================
-// FILE: /apps/PulseOS/Organs/Instincts/PulseOSSurvivalInstincts.js
+// FILE: /PulseOS/Organs/Instincts/PulseOSSurvivalInstincts.js
 // PULSE OS — v12.3-Evo-Presence-Max
 // “THE SURVIVAL INSTINCTS / ORGANISM IDENTITY ANCHOR”
 // STRUCTURAL MEMORY • ORGANISM SIGNATURE • EVOLUTION SENTINEL

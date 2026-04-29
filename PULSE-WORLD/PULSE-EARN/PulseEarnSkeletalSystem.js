@@ -1,5 +1,5 @@
 // ============================================================================
-// FILE: tropic-pulse-functions/apps/PULSE-EARN/PulseEarnSkeletalSystem-v12.3-Presence.js
+// FILE: tropic-pulse-functions/PULSE-WORLD/PULSE-EARN/PulseEarnSkeletalSystem-v12.3-Presence.js
 // LAYER: THE SKELETAL SYSTEM + VITAL SIGNS MONITOR (v12.3-Presence A-B-A)
 // (Deterministic Device Phenotype + Structural Limits + Physiological Baselines
 //  + Presence Field + Chunk/Cache/Prewarm Advantage Surfaces)

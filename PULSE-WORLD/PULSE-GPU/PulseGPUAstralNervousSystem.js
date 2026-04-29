@@ -1,5 +1,5 @@
 // ============================================================================
-// FILE: /apps/organs/gpu/PulseGPUAstralNervousSystem.js
+// FILE: /organs/gpu/PulseGPUAstralNervousSystem.js
 // [pulse:gpu] PULSE_GPU_ASTRAL_NERVOUS_SYSTEM v12-Evo-Presence-Max  // indigo-silver
 // GPU Organ Export Layer • Pure Barrel • Zero Logic • Zero State • Zero Boot
 // ============================================================================

@@ -1,5 +1,5 @@
 // ============================================================================
-// FILE: /apps/organs/gpu/PulseGPUGuardianCortex.js
+// FILE: /organs/gpu/PulseGPUGuardianCortex.js
 // [pulse:gpu] PULSE_GPU_GUARDIAN_CORTEX v12.3-Presence  // blue-gold
 // GPU Permission Cortex • Deterministic Policy Engine • Zero Imports
 // ============================================================================

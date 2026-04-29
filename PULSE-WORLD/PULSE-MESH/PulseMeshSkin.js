@@ -1,5 +1,5 @@
 // ============================================================================
-// FILE: /apps/organs/skin/PulseMeshSkin.js
+// FILE: /organs/skin/PulseMeshSkin.js
 // [pulse:mesh] PULSE_OS_SKIN_LAYER v12.3-PRESENCE-EVO-MAX-PRIME  // silver
 // Boundary Membrane • Entry–Exit Normalization • Deterministic Skin
 // ============================================================================

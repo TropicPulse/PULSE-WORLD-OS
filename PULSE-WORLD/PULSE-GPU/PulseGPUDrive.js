@@ -1,6 +1,6 @@
 /* global log,warn,error */
 // ============================================================================
-// FILE: tropic-pulse-functions/apps/PULSE-GPU/PulseGPUDrive.js
+// FILE: tropic-pulse-functions/PULSE-WORLD/PULSE-GPU/PulseGPUDrive.js
 // LAYER: MOMENTUM NETWORK — GPU RUNTIME (BRAIN → ENGINE FLOW)
 //
 // PulseGPURuntime v12-Evo-Presence-Max

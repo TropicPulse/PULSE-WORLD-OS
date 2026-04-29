@@ -1,6 +1,6 @@
 
 // ============================================================================
-// FILE: /apps/PulseOS/PULSE-TOOLS/PulseNodeAdmin-v12.3-PRESENCE-EVO-INTELLECT.js
+// FILE: /PulseOS/PULSE-TOOLS/PulseNodeAdmin-v12.3-PRESENCE-EVO-INTELLECT.js
 // PULSE OS — v12.3 PRESENCE-EVO
 // NODEADMIN ORGAN — SENTINEL COMMAND BRAIN / INTENT + MEMORY + IQ + PRESENCE MAP
 // ============================================================================

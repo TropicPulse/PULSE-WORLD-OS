@@ -1,5 +1,5 @@
 // ============================================================================
-// FILE: tropic-pulse-functions/apps/PULSE-EARN/PulseEarnMktCourier-v12.3-PRESENCE-EVO+.js
+// FILE: tropic-pulse-functions/PULSE-WORLD/PULSE-EARN/PulseEarnMktCourier-v12.3-PRESENCE-EVO+.js
 // LAYER: THE COURIER (v12.3 Presence + Advantage‑C + Prewarm)
 // ============================================================================
 

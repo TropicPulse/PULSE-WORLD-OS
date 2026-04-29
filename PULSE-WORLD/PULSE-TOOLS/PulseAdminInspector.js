@@ -1,5 +1,5 @@
 // ============================================================================
-// FILE: /apps/PulseOS/Scanner/PulseAdminInspector.js
+// FILE: /OS/Scanner/PulseAdminInspector.js
 // PULSE OS — v12.3‑EVO
 // ADMIN INSPECTOR ORGAN — QUAD‑MODE (BINARY | ENVIRONMENT | PRESENCE | HYBRID)
 // ============================================================================

@@ -1,5 +1,5 @@
 // ============================================================================
-// FILE: /apps/PULSE-OS/PulseOSEvolution-v12.4-Spine.js
+// FILE: /PULSE-OS/PulseOSEvolution-v12.4-Spine.js
 // PULSE OS — v12.4-SPINE-DUALBAND-PRESENCE
 // “THE EVOLUTION ENGINE — ORGANISM-WIDE CNS GROWTH + DRIFT INTELLIGENCE”
 // ============================================================================

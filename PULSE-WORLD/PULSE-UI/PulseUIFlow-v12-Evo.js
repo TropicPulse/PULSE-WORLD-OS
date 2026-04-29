@@ -1,6 +1,6 @@
 /* global log,warn,error */
 // ============================================================================
-// FILE: /apps/PulseOS/PULSE-UI/PulseUIFlow-v13-EVO-PRIME.js
+// FILE: /PulseOS/PULSE-UI/PulseUIFlow-v13-EVO-PRIME.js
 // PULSE OS — v13‑EVO‑PRIME
 // “UI FLOW ENGINE / INTENT GLUE / HUMAN‑VISIBLE ORGANISM MAP”
 // ============================================================================

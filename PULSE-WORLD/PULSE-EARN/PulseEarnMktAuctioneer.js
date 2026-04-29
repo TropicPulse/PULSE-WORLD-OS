@@ -1,5 +1,5 @@
 // ============================================================================
-// FILE: tropic-pulse-functions/apps/PULSE-EARN/PulseEarnMktAuctioneer-v12.3-PRESENCE-EVO+.js
+// FILE: tropic-pulse-functions/PULSE-WORLD/PULSE-EARN/PulseEarnMktAuctioneer-v12.3-PRESENCE-EVO+.js
 // LAYER: MARKETPLACE AUCTIONEER (v12.3‑PRESENCE‑EVO+ A‑B‑A)
 // Vast.ai Deterministic Adapter + Presence/Advantage/Hints Surfaces
 // ============================================================================

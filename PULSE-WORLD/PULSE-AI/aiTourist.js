@@ -8,7 +8,7 @@
 // - zero identity leakage
 
 // ============================================================================
-// FILE: tropic-pulse-functions/apps/PULSE-AI/aiTourist.js
+// FILE: tropic-pulse-functions/PULSE-WORLD/PULSE-AI/aiTourist.js
 // LAYER: TOURIST ORGAN (Public + User‑Scoped Data Pantry, Intent‑Aware)
 // ============================================================================
 //

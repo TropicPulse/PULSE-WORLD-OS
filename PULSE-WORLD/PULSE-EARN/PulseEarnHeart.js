@@ -1,5 +1,5 @@
 // ============================================================================
-// FILE: tropic-pulse-functions/apps/PULSE-EARN/PulseEarnHeart-v12.3-PRESENCE-EVO+.js
+// FILE: tropic-pulse-functions/PULSE-WORLD/PULSE-EARN/PulseEarnHeart-v12.3-PRESENCE-EVO+.js
 // LAYER: THE HEART (v12.3-PRESENCE-EVO+ + Dual-Band + Binary + Wave + Presence)
 // (Deterministic Heartbeat Cycle + Circulatory Pump + Presence Telemetry)
 // ============================================================================

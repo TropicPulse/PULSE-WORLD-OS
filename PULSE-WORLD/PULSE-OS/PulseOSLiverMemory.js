@@ -1,5 +1,5 @@
 // ============================================================================
-// FILE: /apps/PulseOS/Organs/Memory/PulseOSMemory.js
+// FILE: /PulseOS/Organs/Memory/PulseOSMemory.js
 // PULSE OS — v12.3-EVO-BINARY-MAX
 // “THE LIVER” — C‑LAYER METABOLIC ARCHIVE
 // PURE METADATA • ZERO TIMING • ZERO NETWORK • ZERO AUTONOMY • ZERO LOOPS

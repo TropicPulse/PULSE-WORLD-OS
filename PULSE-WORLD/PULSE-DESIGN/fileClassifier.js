@@ -1,5 +1,5 @@
 // ============================================================================
-// FILE: tropic-pulse-functions/apps/PULSE-DESIGN/fileClassifier.js
+// FILE: tropic-pulse-functions/PULSE-WORLD/PULSE-DESIGN/fileClassifier.js
 // LAYER: THE ANATOMIST (Structural Classifier + Identity Mapper + Evolutionary Morphology)
 // ============================================================================
 //

@@ -1,5 +1,5 @@
 // ============================================================================
-// FILE: /apps/PulseOS/Scanner/PulseScannerCortex-v12.3-EVO.js
+// FILE: /PulseOS/Scanner/PulseScannerCortex-v12.3-EVO.js
 // PULSE OS — v12.3‑EVO
 // SCANNER CORTEX ORGAN — PRESENCE + HARMONICS + DUAL-BAND + ADAPTIVE LAYERS
 // ============================================================================

@@ -1,5 +1,5 @@
 // ============================================================================
-// FILE: /apps/PulseOS/Organs/Immune/PulseOSThymus.js
+// FILE: /PulseOS/Organs/Immune/PulseOSThymus.js
 // PULSE OS — v12.3-Evo-Max-Immune
 // “THE THYMUS / IMMUNE COMMAND ORGAN”
 // DUAL‑BAND IMMUNE NUCLEUS • PREWARM PLAN • CHUNK/PRESENCE AWARE

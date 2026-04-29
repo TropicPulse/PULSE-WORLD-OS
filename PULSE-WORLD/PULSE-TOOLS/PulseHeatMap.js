@@ -1,5 +1,5 @@
 // ============================================================================
-// FILE: /apps/PulseOS/Scanner/PulseHeatMap-v12.3-EVO.js
+// FILE: /PulseOS/Scanner/PulseHeatMap-v12.3-EVO.js
 // PULSE OS — v12.3-EVO
 // UNIVERSAL HEATMAP ORGAN — PRESENCE + HARMONICS + DUAL-BAND + MULTI-SPIN-EVO
 // ============================================================================

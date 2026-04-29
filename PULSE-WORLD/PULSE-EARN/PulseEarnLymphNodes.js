@@ -1,5 +1,5 @@
 // ============================================================================
-// FILE: tropic-pulse-functions/apps/PULSE-EARN/PulseEarnLymphNodes-v12.3-PRESENCE-EVO+.js
+// FILE: tropic-pulse-functions/PULSE-WORLD/PULSE-EARN/PulseEarnLymphNodes-v12.3-PRESENCE-EVO+.js
 // LAYER: THE LYMPHATIC HANDSHAKE NODES (v12.3-PRESENCE-EVO+ + Dual-Band + Binary + Wave)
 // (Finalizer of Jobs + Immune-Safe Dispatch + Certified Marketplace Exchange + Presence Telemetry)
 // ============================================================================

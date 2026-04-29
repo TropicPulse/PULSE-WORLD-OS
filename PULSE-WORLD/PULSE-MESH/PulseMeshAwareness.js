@@ -1,5 +1,5 @@
 // ============================================================================
-// FILE: /apps/organs/halo/PulseHalo-v12.3-PRESENCE-EVO-MAX-PRIME.js
+// FILE: /organs/halo/PulseHalo-v12.3-PRESENCE-EVO-MAX-PRIME.js
 // [pulse:halo] PULSE_OS_AWARENESS_RING v12.3-PRESENCE-EVO-MAX-PRIME  // white
 // Read-Only Awareness Ring • System Dashboard • Metadata-Only Reflection
 // Presence-Aware • Binary-Aware • Advantage-Field-Aware

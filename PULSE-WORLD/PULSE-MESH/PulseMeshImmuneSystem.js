@@ -1,5 +1,5 @@
 // ============================================================================
-// FILE: /apps/organs/immune/PulseMeshImmuneSystem.js
+// FILE: /organs/immune/PulseMeshImmuneSystem.js
 // PULSE OS — v12.3-PRESENCE-EVO-MAX-PRIME
 // MESH IMMUNE SYSTEM COMMANDER — “THE IMMUNE COMMANDER”
 // Deterministic • Declarative • Zero Drift • Pure Logic

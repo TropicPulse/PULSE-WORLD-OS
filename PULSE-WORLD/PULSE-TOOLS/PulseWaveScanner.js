@@ -1,5 +1,5 @@
 // ============================================================================
-// FILE: /apps/PulseOS/core/PulseWaveScanner-v12.3-EVO.js
+// FILE: /PulseOS/core/PulseWaveScanner-v12.3-EVO.js
 // PULSE OS — v12.3-EVO
 // GENERIC WAVE ORGAN — PRESENCE + HARMONICS + DUAL-BAND + MULTI-SPIN-EVO
 // ============================================================================

@@ -1,5 +1,5 @@
 // ============================================================================
-// FILE: /apps/organs/senses/PulseMeshSenses.js
+// FILE: /organs/senses/PulseMeshSenses.js
 // [pulse:senses] PULSE_MESH_SENSES v12.3-Presence  // white-silver
 // Unified Sensory Cortex • Metadata-Only • System Awareness Brain
 // ============================================================================

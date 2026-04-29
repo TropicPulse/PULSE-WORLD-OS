@@ -1,5 +1,5 @@
 // ============================================================================
-// FILE: tropic-pulse-functions/apps/PULSE-GPU/PulseGPUGeneticMemory.js
+// FILE: tropic-pulse-functions/PULSE-WORLD/PULSE-GPU/PulseGPUGeneticMemory.js
 // PULSE GPU GENETIC MEMORY v12.3-Presence-binary-Prime — THE DNA ARCHIVE
 // Long-Horizon Pattern Memory • Lineage Store • Deterministic Pattern Engine
 // ============================================================================

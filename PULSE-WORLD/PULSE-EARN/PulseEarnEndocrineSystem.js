@@ -1,6 +1,6 @@
 
 // ============================================================================
-// FILE: tropic-pulse-functions/apps/PULSE-EARN/PulseEarnEndocrineSystem-v12.3-PRESENCE-EVO+-AGGRESSIVE.js
+// FILE: tropic-pulse-functions/PULSE-WORLD/PULSE-EARN/PulseEarnEndocrineSystem-v12.3-PRESENCE-EVO+-AGGRESSIVE.js
 // LAYER: THE ENDOCRINE SYSTEM (v12.3-PRESENCE-EVO+ AGGRESSIVE)
 // (Performance Intelligence + Reputation Hormones + Trust Regulation)
 // ============================================================================
