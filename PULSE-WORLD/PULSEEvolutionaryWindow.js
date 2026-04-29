@@ -23,8 +23,8 @@
 //  SURFACE REFLEXES (ALWAYS SAFE, ALWAYS PRESENT)
 //  - These are NOT organs; they are membrane‑level sensors.
 // ============================================================================
-import {VitalsMonitor as PulseVitals} from "./PULSEProofMonitor.js";
-import {VitalsLogger as PulseLogger} from "./PULSEProofLogger.js";
+import {VitalsLogger as PulseVitals} from "./PULSEProofMonitor.js";
+import {VitalsLogger as PulseLogger}  from "./PULSEProofLogger.js";
 import * as PulseOSSkinReflex from "./PulseOSSkinReflex.js";
 // FRONTEND CHUNK MEMBRANE — 2026 transport layer (portal carpet)
 import PulseChunks from "./PulsePresence-v1.7-Evo.js";
