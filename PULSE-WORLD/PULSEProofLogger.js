@@ -136,7 +136,7 @@ async function sendToFirebase(level, message, rest) {
     // Avoid blowing up in non‑browser environments
     if (typeof fetch === "undefined") return;
 
-    await fetch("/log", {
+    await fetch("/NETLIFY/FUNCTIONS/log", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ level, message, rest })
