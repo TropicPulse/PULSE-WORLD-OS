@@ -113,64 +113,6 @@ import { PulseOrganismMap } from "./PulseOrganismMap.js";
 import { bootCortex } from "./PulseOSBrainCortex.js";
 
 
-// ============================================================================
-//  BRAIN PREWARM ENGINE — v12.3-SPINE
-//  - Prewarm CNS identity + contracts + cortex boot signatures.
-//  - Touches ONLY PulseIQMap, PulseOrganismMap, bootCortex (law-compliant).
-//  - No binary execution, no external mutation, no randomness.
-//  - Presence/mesh/chunking awareness is metadata-only (no imports).
-// ============================================================================
-function prewarmPulseOSBrain() {
-  try {
-    // Touch IQ map entries (design + logging + long-term memory)
-    const iqKeys = Object.keys(PulseIQMap || {});
-    for (const k of iqKeys) {
-      const _ = PulseIQMap[k];
-    }
-
-    // Touch organism map entries (organ layout + lineage)
-    const orgKeys = Object.keys(PulseOrganismMap || {});
-    for (const k of orgKeys) {
-      const _ = PulseOrganismMap[k];
-    }
-
-    // Prewarm Cortex boot wiring with a minimal synthetic config
-    const syntheticBootConfig = {
-      mode: "prewarm",
-      identityKind: "none",
-      sceneType: "cns-prewarm",
-      workloadClass: "brain-prewarm",
-      dispatchSignature: "PulseOSBrain.prewarm.v12.3",
-      shapeSignature: "CNS-SPINE-A1"
-    };
-
-    try {
-      bootCortex({
-        PulseOSBrain,
-        PulseIQMap,
-        PulseOrganismMap,
-        ...syntheticBootConfig
-      });
-
-    } catch (err) {
-      console.error("[PulseOSBrain Prewarm v12.3] bootCortex prewarm failed:", err);
-    }
-
-    return true;
-  } catch (err) {
-    console.error("[PulseOSBrain Prewarm v12.3] Failed:", err);
-    return false;
-  }
-}
-
-
-// ============================================================================
-// 0) THE REAL CNS BRAIN — EXPORTED AS PulseOSBrain
-// ============================================================================
-
-// One-time CNS brain prewarm at module load
-prewarmPulseOSBrain();
-
 export const PulseOSBrain = {
   // -------------------------------------------------------------------------
   // Identity — Organism-wide CNS contract
@@ -361,6 +303,63 @@ export const PulseOSBrain = {
   }
 };
 
+// ============================================================================
+//  BRAIN PREWARM ENGINE — v12.3-SPINE
+//  - Prewarm CNS identity + contracts + cortex boot signatures.
+//  - Touches ONLY PulseIQMap, PulseOrganismMap, bootCortex (law-compliant).
+//  - No binary execution, no external mutation, no randomness.
+//  - Presence/mesh/chunking awareness is metadata-only (no imports).
+// ============================================================================
+function prewarmPulseOSBrain() {
+  try {
+    // Touch IQ map entries (design + logging + long-term memory)
+    const iqKeys = Object.keys(PulseIQMap || {});
+    for (const k of iqKeys) {
+      const _ = PulseIQMap[k];
+    }
+
+    // Touch organism map entries (organ layout + lineage)
+    const orgKeys = Object.keys(PulseOrganismMap || {});
+    for (const k of orgKeys) {
+      const _ = PulseOrganismMap[k];
+    }
+
+    // Prewarm Cortex boot wiring with a minimal synthetic config
+    const syntheticBootConfig = {
+      mode: "prewarm",
+      identityKind: "none",
+      sceneType: "cns-prewarm",
+      workloadClass: "brain-prewarm",
+      dispatchSignature: "PulseOSBrain.prewarm.v12.3",
+      shapeSignature: "CNS-SPINE-A1"
+    };
+
+    try {
+      bootCortex({
+        PulseOSBrain,
+        PulseIQMap,
+        PulseOrganismMap,
+        ...syntheticBootConfig
+      });
+
+    } catch (err) {
+      console.error("[PulseOSBrain Prewarm v12.3] bootCortex prewarm failed:", err);
+    }
+
+    return true;
+  } catch (err) {
+    console.error("[PulseOSBrain Prewarm v12.3] Failed:", err);
+    return false;
+  }
+}
+
+
+// ============================================================================
+// 0) THE REAL CNS BRAIN — EXPORTED AS PulseOSBrain
+// ============================================================================
+
+// One-time CNS brain prewarm at module load
+prewarmPulseOSBrain();
 
 // ============================================================================
 // 1) ROLE VALIDATION — CNS Gatekeeper
