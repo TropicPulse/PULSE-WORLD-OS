@@ -157,7 +157,6 @@ const DRIFT_METADATA = {
 
 // -----------------------------------------------------------------------------
 // ROUTE INTERPRETER — v13‑EVO‑PRIME
-// Zero top‑level routes. Zero static routing.
 // -----------------------------------------------------------------------------
 function interpretRoute(path = "", genome, pageExpectations) {
   if (!path || typeof path !== "string") return "/";
@@ -165,21 +164,16 @@ function interpretRoute(path = "", genome, pageExpectations) {
   const clean = path.toLowerCase().split("?")[0].split("#")[0];
   if (clean === "/" || clean === "") return "/";
 
-  // Direct page expectation match
   if (pageExpectations[clean]) return clean;
 
-  // Match frontend file (minus .html)
   const asHtml = clean.replace("/", "") + ".html";
   if (FRONTEND_FILES.includes(asHtml)) return clean;
 
-  // Match frontend system folder
   const asSystem = clean.replace("/", "");
   if (FRONTEND_SYSTEMS.includes(asSystem)) return clean;
 
-  // Match organism genome system
   if (genome.systems && genome.systems[asSystem]) return clean;
 
-  // Fallback: root
   return "/";
 }
 
@@ -193,46 +187,55 @@ async function buildPulseIQMapPrime() {
   const pageExpectations = buildPageExpectations();
 
   return {
-  log,
-  warn,
-  logError,
-  bootCortex,
-  firebase: firebaseAccess,
+    log,
+    warn,
+    logError,
+    bootCortex,
+    firebase: firebaseAccess,
 
-  version: VERSION_MAP,
-  genome,
+    version: VERSION_MAP,
+    genome,
 
-  topology: {
-    backendRoot: "tropic-pulse-functions",
-    publishRoot: FRONTEND_ROOT,
-    frontendFiles: FRONTEND_FILES,
-    frontendSystems: FRONTEND_SYSTEMS,
-    worldFolders: WORLD_FOLDERS
-  },
-presenceConfig: {
-  enabled: false,
-  bluetoothPreferred: false,
-  routes: []
-},
-meshPresenceConfig: {
-  enabled: false,
-  topology: "none",
-  routes: []
-},
+    topology: {
+      backendRoot: "tropic-pulse-functions",
+      publishRoot: FRONTEND_ROOT,
+      frontendFiles: FRONTEND_FILES,
+      frontendSystems: FRONTEND_SYSTEMS,
+      worldFolders: WORLD_FOLDERS
+    },
 
-  organs: organExpectations,
-  pages: pageExpectations,
-  drift: DRIFT_METADATA,
+    // ⭐ REQUIRED BY BRAIN / EVOLUTION / CORTEX
+    presenceConfig: {
+      enabled: false,
+      bluetoothPreferred: false,
+      routes: []
+    },
 
-  // ⭐ FIX — add this
-  getRecoveryRoute() {
-    return "/";
-  },
+    meshPresenceConfig: {
+      enabled: false,
+      topology: "none",
+      routes: []
+    },
 
-  routeInterpreter: (path) =>
-    interpretRoute(path, genome, pageExpectations)
-};
+    // ⭐ REQUIRED BY BRAIN (chunking metadata)
+    chunkingProfiles: {
+      default: null,
+      routes: {},
+      gpu: {}
+    },
 
+    organs: organExpectations,
+    pages: pageExpectations,
+    drift: DRIFT_METADATA,
+
+    // ⭐ REQUIRED BY BRAIN
+    getRecoveryRoute() {
+      return "/";
+    },
+
+    routeInterpreter: (path) =>
+      interpretRoute(path, genome, pageExpectations)
+  };
 }
 
 // -----------------------------------------------------------------------------
