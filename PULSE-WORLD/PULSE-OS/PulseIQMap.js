@@ -20,9 +20,7 @@ const firebaseAccess = {
   meta: {
     helperModule: "../NETLIFY/FUNCTIONS/helpers.js",
     contract: "PulseFirebase-v12.6-Routed"
-  },
-  // design-only reference (execution happens in backend helpers)
-  db: firebaseDb
+  }
 };
 // ============================================================================
 //  VERSION MAP — v12.3‑PRESENCE‑EVO‑MAX‑PRIME (TEXT‑ONLY)
