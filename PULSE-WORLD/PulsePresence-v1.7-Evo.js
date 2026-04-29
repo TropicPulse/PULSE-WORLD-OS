@@ -305,24 +305,23 @@ function attachLore(chunk, metaPack) {
     __lore: lore,
     __chunk: chunk
   };
-}
-// ============================================================================
-//  GENERIC CHUNKER ENTRY — NOW WITH UNIVERSAL LORE INJECTION
+}// ============================================================================
+//  GENERIC CHUNKER ENTRY — NOW WITH UNIVERSAL LORE INJECTION (DNA MODE)
 // ============================================================================
 export async function PulseChunker(filePath, fileSize = 0, metaPack = null) {
   if (shouldSkipChunk(filePath, fileSize)) {
     return null;
   }
 
-  console.log("[PulseChunks] Chunking allowed:", filePath);
+  console.log("[PulseChunks] DNA allowed:", filePath);
 
   const { value: chunk, envelope } = await fetchChunk(filePath);
 
-  // If no lore or degraded, return raw
+  // If no lore or degraded, return raw DNA
   if (!metaPack || chunksDegraded) {
     return {
-      chunk,
-      chunked: !chunksDegraded,
+      dna: chunk,
+      dnaEncoded: !chunksDegraded,
       safe: true,
       presence: envelope
     };
@@ -331,27 +330,28 @@ export async function PulseChunker(filePath, fileSize = 0, metaPack = null) {
   // ⭐ ALWAYS generate lore
   const lore = generateLoreHeader(metaPack);
 
-  // ⭐ If chunk is text → prepend lore
+  // ⭐ If DNA is text → prepend lore
   if (typeof chunk === "string") {
     return {
-      chunk: lore + "\n" + chunk,
-      chunked: true,
+      dna: lore + "\n" + chunk,
+      dnaEncoded: true,
       safe: true,
       presence: envelope
     };
   }
 
-  // ⭐ If chunk is NOT text → wrap it with lore metadata
+  // ⭐ If DNA is NOT text → wrap it with lore metadata
   return {
-    chunk: {
+    dna: {
       __lore: lore,
-      __chunk: chunk
+      __dna: chunk
     },
-    chunked: true,
+    dnaEncoded: true,
     safe: true,
     presence: envelope
   };
 }
+
 
 
 // ============================================================================
