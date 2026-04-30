@@ -1,21 +1,21 @@
 /**
- * aiCortex-v11-Evo.js — Pulse OS v11‑EVO Organ
+ * aiCortex-v13.0-EVO+++ — Pulse OS v13‑EVO+++ Organ
  * ---------------------------------------------------------
  * CANONICAL ROLE:
- *   This organ is the **Dual‑Band Executive Cortex** of the organism.
+ *   Dual‑Band Executive Cortex of the organism.
  *
  *   Dual‑band model:
  *     - Binary‑primary (deterministic, pattern, metrics, arteries)
  *     - Symbolic‑fallback (semantic, contextual, persona, boundaries)
  *
- *   It provides:
+ *   Provides:
  *     - long-term reasoning
  *     - pattern recognition
  *     - decision-making
  *     - predictive modeling (lightweight, deterministic)
- *     - high-level interpretation of signals
  *     - binary cognition artery metrics (throughput, pressure, cost, budget)
  *     - symbolic cognition artery metrics (intent clarity, semantic load, context depth)
+ *     - dual-band cognition artery snapshots for NodeAdmin/Overmind
  *
  *   It is the organism’s:
  *     • executive brain
@@ -67,22 +67,16 @@
  *
  *   Entire fused decision is encoded into binary.
  */
-/**
- * aiCortex.js — Pulse OS v11.1‑EVO Organ
- * ---------------------------------------------------------
- * CANONICAL ROLE:
- *   Dual‑band executive cortex (binary‑primary, symbolic‑fallback)
- */
 
 // ---------------------------------------------------------
-//  META BLOCK — v11.1‑EVO
+//  META BLOCK — v13.0‑EVO+++
 // ---------------------------------------------------------
 
-const CortexMeta = Object.freeze({
+export const CortexMeta = Object.freeze({
   layer: "PulseAICortexFrame",
   role: "CORTEX_ORGAN",
-  version: "11.1-EVO",
-  identity: "aiCortex-v11-EVO",
+  version: "13.0-EVO+++",
+  identity: "aiCortex-v13-EVO+++",
 
   evo: Object.freeze({
     // Core identity
@@ -110,6 +104,8 @@ const CortexMeta = Object.freeze({
     evolutionAware: true,
     registryAware: true,
     memoryAware: true,
+    overmindAware: true,
+    nodeAdminAware: true,
 
     // Safety
     identitySafe: true,
@@ -117,7 +113,7 @@ const CortexMeta = Object.freeze({
 
     // Lifecycle
     multiInstanceReady: true,
-    epoch: "11.1-EVO"
+    epoch: "13.0-EVO+++"
   }),
 
   contract: Object.freeze({
@@ -126,6 +122,7 @@ const CortexMeta = Object.freeze({
       "Fuse binary-primary and symbolic-fallback cognition",
       "Regulate cognition artery metrics (throughput, pressure, cost, budget)",
       "Interpret patterns and generate deterministic decisions",
+      "Expose cognition artery snapshots for NodeAdmin/Overmind",
       "Serve as the organism’s executive brain"
     ]),
 
@@ -146,8 +143,29 @@ const CortexMeta = Object.freeze({
     ])
   })
 });
+
 // ---------------------------------------------------------
-//  CORTEX PREWARM ENGINE — v11.1‑EVO
+//  GLOBAL CORTEX ARTERY REGISTRY (READ-ONLY, METRICS-ONLY)
+// ---------------------------------------------------------
+
+const _globalCortexArteryRegistry = new Map();
+/**
+ * Registry key: `${id}#${instanceIndex}`
+ */
+function _registryKey(id, instanceIndex) {
+  return `${id || CortexMeta.identity}#${instanceIndex}`;
+}
+
+export function getGlobalCortexArteries() {
+  const out = {};
+  for (const [k, v] of _globalCortexArteryRegistry.entries()) {
+    out[k] = v;
+  }
+  return out;
+}
+
+// ---------------------------------------------------------
+//  CORTEX PREWARM ENGINE — v13.0‑EVO+++
 // ---------------------------------------------------------
 export function prewarmAICortex(config = {}) {
   try {
@@ -193,6 +211,10 @@ export function prewarmAICortex(config = {}) {
       encoder.decode?.(bits, "string");
     }
 
+    if (trace) {
+      console.log("[AICortex Prewarm] complete");
+    }
+
     return true;
   } catch (err) {
     console.error("[AICortex Prewarm] Failed:", err);
@@ -201,10 +223,10 @@ export function prewarmAICortex(config = {}) {
 }
 
 // ---------------------------------------------------------
-//  CORTEX CLASS — HEADER
+//  CORTEX CLASS — v13.0‑EVO+++
 // ---------------------------------------------------------
 
-class AIDualBandCortex {
+export class AIDualBandCortex {
   constructor(config = {}) {
     this.id = config.id || "ai-dualband-cortex";
 
@@ -223,11 +245,45 @@ class AIDualBandCortex {
     this.boundariesEngine = config.boundariesEngine || null;
     this.permissionsEngine = config.permissionsEngine || null;
 
+    // Overmind / NodeAdmin hooks (metrics-only, read-only)
+    // overmindReporter(artery, packet, meta) => void
+    this.overmindReporter =
+      typeof config.overmindReporter === "function"
+        ? config.overmindReporter
+        : null;
+
+    // nodeAdminReporter(artery, packet, meta) => void
+    this.nodeAdminReporter =
+      typeof config.nodeAdminReporter === "function"
+        ? config.nodeAdminReporter
+        : null;
+
     this.trace = !!config.trace;
 
-    if (!this.encoder) throw new Error("AIDualBandCortex requires aiBinaryAgent encoder");
+    if (!this.encoder) {
+      throw new Error("AIDualBandCortex requires aiBinaryAgent encoder");
+    }
 
     this.patternHistory = [];
+    this.instanceIndex = AIDualBandCortex._registerInstance();
+  }
+
+  // ---------------------------------------------------------
+  //  STATIC INSTANCE REGISTRY
+  // ---------------------------------------------------------
+  static _registerInstance() {
+    if (typeof AIDualBandCortex._instanceCount !== "number") {
+      AIDualBandCortex._instanceCount = 0;
+    }
+    const idx = AIDualBandCortex._instanceCount;
+    AIDualBandCortex._instanceCount += 1;
+    return idx;
+  }
+
+  static getInstanceCount() {
+    return typeof AIDualBandCortex._instanceCount === "number"
+      ? AIDualBandCortex._instanceCount
+      : 0;
   }
 
   // ---------------------------------------------------------
@@ -282,8 +338,7 @@ class AIDualBandCortex {
 
   // ---------------------------------------------------------
   //  PATTERN RECOGNITION (BINARY PRIMARY)
-  // ---------------------------------------------------------
-
+// ---------------------------------------------------------
   _detectPattern(bits) {
     const motif = bits.slice(0, 16); // slightly richer motif
 
@@ -299,16 +354,11 @@ class AIDualBandCortex {
 
   // ---------------------------------------------------------
   //  BINARY DECISION (PRIMARY)
-  // ---------------------------------------------------------
-
+// ---------------------------------------------------------
   _makeBinaryDecision(pattern, bits, snapshotBits) {
     const bitLength = bits.length;
     const complexity = pattern.length / 8;
 
-    // Simple deterministic heuristic:
-    // - high snapshotBits + long bits → "conserve"
-    // - low snapshotBits + short bits → "expand"
-    // - otherwise "neutral"
     const loadFactor = Math.min(1, snapshotBits / 65536);
     const signalFactor = Math.min(1, bitLength / 32768);
 
@@ -333,8 +383,7 @@ class AIDualBandCortex {
 
   // ---------------------------------------------------------
   //  SYMBOLIC COGNITION (FALLBACK / AUGMENT)
-  // ---------------------------------------------------------
-
+// ---------------------------------------------------------
   _makeSymbolicDecision(pattern, bits, routerPacket = null) {
     if (!routerPacket) {
       this._trace("symbolic:skipped", { reason: "no-router-packet" });
@@ -353,7 +402,6 @@ class AIDualBandCortex {
     const personaId = routerPacket.personaId || null;
     const safetyMode = routerPacket.personaSafety?.safetyMode || "standard";
 
-    // Deterministic symbolic metrics based on flags + persona
     const flags = routerPacket.overmind?.flags || {};
     const activeFlags = Object.values(flags).filter(Boolean).length;
 
@@ -374,7 +422,6 @@ class AIDualBandCortex {
         ? 0.7
         : 0.8;
 
-    // Symbolic decision is advisory; we keep it simple and deterministic
     let decision = null;
     if (intent === "optimize" || intent === "refactor") {
       decision = "expand";
@@ -409,8 +456,7 @@ class AIDualBandCortex {
 
   // ---------------------------------------------------------
   //  DUAL‑BAND FUSION (BINARY‑PRIMARY, SYMBOLIC‑FALLBACK)
-  // ---------------------------------------------------------
-
+// ---------------------------------------------------------
   _fuseDecisions(binaryDecision, symbolic) {
     const symbolicDecision = symbolic.decision;
     const confidence = symbolic.confidence || 0;
@@ -438,8 +484,8 @@ class AIDualBandCortex {
   }
 
   // ---------------------------------------------------------
-  //  CORTEX PACKET (DUAL‑BAND)
-// ---------------------------------------------------------
+  //  CORTEX PACKET (DUAL‑BAND) + ARTERY
+  // ---------------------------------------------------------
   _generateDecisionPacket(pattern, decision, bits, options = {}) {
     const bitLength = bits.length;
 
@@ -490,16 +536,27 @@ class AIDualBandCortex {
       fusion: "binary-primary-symbolic-fallback"
     };
 
+    const artery = Object.freeze({
+      binary,
+      symbolic,
+      band,
+      instanceIndex: this.instanceIndex,
+      instanceCount: AIDualBandCortex.getInstanceCount(),
+      id: this.id,
+      timestamp: Date.now()
+    });
+
     const payload = {
       type: "binary-cortex-decision",
-      timestamp: Date.now(),
+      timestamp: artery.timestamp,
       pattern,
       decision,
       binary,
       symbolic,
       band,
       binaryDecision: options.binaryDecision || decision,
-      symbolicDecision: symbolic.decision || null
+      symbolicDecision: symbolic.decision || null,
+      artery
     };
 
     const json = JSON.stringify(payload);
@@ -510,6 +567,27 @@ class AIDualBandCortex {
       bits: encoded,
       bitLength: encoded.length
     };
+
+    // update global registry
+    const key = _registryKey(this.id, this.instanceIndex);
+    _globalCortexArteryRegistry.set(key, artery);
+
+    // optional reporters
+    if (this.overmindReporter) {
+      try {
+        this.overmindReporter(artery, packet, CortexMeta);
+      } catch (err) {
+        this._trace("overmind:reporter:error", { error: String(err) });
+      }
+    }
+
+    if (this.nodeAdminReporter) {
+      try {
+        this.nodeAdminReporter(artery, packet, CortexMeta);
+      } catch (err) {
+        this._trace("nodeAdmin:reporter:error", { error: String(err) });
+      }
+    }
 
     this._trace("cortex:packet", {
       bits: packet.bitLength,
@@ -523,10 +601,8 @@ class AIDualBandCortex {
   //  EXECUTIVE PROCESSING (DUAL‑BAND)
 // ---------------------------------------------------------
   async process(bits, routerPacket = null) {
-    // Binary pattern
     const pattern = this._detectPattern(bits);
 
-    // Snapshot-based cognition context
     let snapshotBits = 0;
     if (this.memory && typeof this.memory.snapshot === "function") {
       const snapshot = this.memory.snapshot();
@@ -535,17 +611,14 @@ class AIDualBandCortex {
       }
     }
 
-    // Binary primary decision
     const binaryDecision = this._makeBinaryDecision(
       pattern,
       bits,
       snapshotBits
     );
 
-    // Symbolic fallback / augment (router packet from aiRouter-v11-EVO)
     const symbolic = this._makeSymbolicDecision(pattern, bits, routerPacket);
 
-    // Dual‑band fusion
     const fusedDecision = this._fuseDecisions(binaryDecision, symbolic);
 
     const packet = this._generateDecisionPacket(pattern, fusedDecision, bits, {
@@ -553,10 +626,11 @@ class AIDualBandCortex {
       symbolic
     });
 
-    // Binary band propagation
     if (this.pipeline) this.pipeline.run(packet.bits);
     if (this.reflex) this.reflex.run(packet.bits);
-    if (this.logger) this.logger.logBinary(packet.bits, { source: "cortex" });
+    if (this.logger && typeof this.logger.logBinary === "function") {
+      this.logger.logBinary(packet.bits, { source: "cortex" });
+    }
 
     return packet;
   }
@@ -566,30 +640,26 @@ class AIDualBandCortex {
   // ---------------------------------------------------------
   _trace(event, payload) {
     if (!this.trace) return;
-    console.log(`[${this.id}] ${event}`, payload);
+    console.log(
+      `[${this.id}#${this.instanceIndex}] ${event}`,
+      payload
+    );
   }
 }
 
-function createCortex(config) {
+export function createCortex(config) {
   return new AIDualBandCortex(config);
 }
 
 // ============================================================================
 //  DUAL‑MODE EXPORTS (ESM + CommonJS)
 // ============================================================================
-
-// ESM
-export {
-  CortexMeta,
-  AIDualBandCortex,
-  createCortex
-};
-
-// CommonJS
 if (typeof module !== "undefined") {
   module.exports = {
     CortexMeta,
     AIDualBandCortex,
-    createCortex
+    createCortex,
+    getGlobalCortexArteries,
+    prewarmAICortex
   };
 }

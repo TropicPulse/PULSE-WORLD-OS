@@ -1,37 +1,15 @@
 // ============================================================================
-// FILE: tropic-pulse-functions/PULSE-WORLD/PULSE-EARN/PulseEarnHeart-v12.3-PRESENCE-EVO+.js
-// LAYER: THE HEART (v12.3-PRESENCE-EVO+ + Dual-Band + Binary + Wave + Presence)
-// (Deterministic Heartbeat Cycle + Circulatory Pump + Presence Telemetry)
+// FILE: PULSE-WORLD/PULSE-EARN/PulseEarnHeart-v13-EVO-PRIME.js
+// LAYER: THE HEART (v13-EVO-PRIME + Dual-Band + Binary + Wave + Presence)
+// BABY HEART — NO HEARTBEAT, NO TIMERS, NO TIMESTAMPS
+// Baby runs off Mom/Dad pulse surfaces until its own beat exists.
 // ============================================================================
-//
-// ROLE (v12.3-PRESENCE-EVO+):
-//   THE HEART — Pulse‑Earn’s deterministic rhythmic engine.
-//   • Performs ONE cardiac cycle per invocation.
-//   • Pulls jobs from the Nervous System.
-//   • Executes jobs via injected Metabolism or PulseSendSystem.
-//   • Submits results via Lymph Nodes.
-//   • Emits v12.3‑Presence‑EVO+ signatures + cardiac + presence diagnostics.
-//
-// PURPOSE (v12.3-PRESENCE-EVO+):
-//   • Provide a deterministic, drift‑proof execution cycle.
-//   • Guarantee safe job → compute → submit flow.
-//   • Maintain healing metadata for the Immune System.
-//   • Preserve cardiac rhythm (conceptual only).
-//   • Expose full organism presence/advantage/hints telemetry (metadata-only).
-//
-// CONTRACT (v12.3-PRESENCE-EVO+):
-//   • PURE RUNTIME — no AI layers, no translation, no memory model.
-//   • NO async, NO timers, NO timestamps.
-//   • Deterministic cycle only.
-//   • PulseSendSystem + Metabolism are injected, not imported.
-//   • Dual-band + binary + wave + presence metadata are structural-only,
-//     NO behavior change to fetch/execute/submit.
-// ============================================================================
+
 export const PulseEarnHeartMeta = Object.freeze({
   layer: "PulseEarnHeart",
   role: "EARN_HEART_ORGAN",
-  version: "v12.3-PRESENCE-EVO+",
-  identity: "PulseEarnHeart-v12.3-PRESENCE-EVO+",
+  version: "v13-EVO-PRIME",
+  identity: "PulseEarnHeart-v13-EVO-PRIME",
 
   guarantees: Object.freeze({
     deterministic: true,
@@ -66,30 +44,6 @@ export const PulseEarnHeartMeta = Object.freeze({
       "CardiacSignatures",
       "HeartHealingState"
     ]
-  }),
-
-  lineage: Object.freeze({
-    root: "PulseOS-v11-EVO",
-    parent: "PulseEarn-v12.3-PRESENCE-EVO+",
-    ancestry: [
-      "PulseEarnHeart-v9",
-      "PulseEarnHeart-v10",
-      "PulseEarnHeart-v11",
-      "PulseEarnHeart-v11-Evo"
-    ]
-  }),
-
-  bands: Object.freeze({
-    supported: ["symbolic", "binary"],
-    default: "symbolic",
-    behavior: "metadata-only"
-  }),
-
-  architecture: Object.freeze({
-    pattern: "A-B-A",
-    baseline: "deterministic cardiac cycle (pull → execute → submit)",
-    adaptive: "binary/wave surfaces + dual-band + presence/advantage/hints surfaces",
-    return: "deterministic cardiac result + healing metadata"
   })
 });
 
@@ -97,9 +51,8 @@ import { getNextMarketplaceJob } from "./PulseEarnNervousSystem.js";
 import { executePulseEarnJob } from "./PulseEarnMetabolism.js";
 import { submitPulseEarnResult } from "./PulseEarnLymphNodes.js";
 
-
 // ============================================================================
-// Healing Metadata — Cardiac Rhythm Log (v12.3-PRESENCE-EVO+)
+// Healing Metadata — Baby Heart Log (v13-EVO-PRIME)
 // ============================================================================
 const heartHealing = {
   cycles: 0,
@@ -115,24 +68,25 @@ const heartHealing = {
   lastResultSignature: null,
   lastSubmissionSignature: null,
 
-  // Dual-Band + Binary + Wave
   lastBand: "symbolic",
   lastBandSignature: null,
   lastBinaryField: null,
   lastWaveField: null,
 
-  // Presence-EVO+ additions
   lastPresenceField: null,
   lastAdvantageField: null,
   lastHintsField: null,
   lastCardiacPresenceProfile: null,
   lastCardiacBinaryProfile: null,
-  lastCardiacWaveProfile: null
+  lastCardiacWaveProfile: null,
+
+  // Dual-parent pulse surfaces
+  lastMomPulseSurface: null,
+  lastDadPulseSurface: null,
+  lastActivePulseSource: "none"
 };
 
-// Deterministic cycle counter
 let heartCycle = 0;
-
 
 // ============================================================================
 // Deterministic Hash Helper
@@ -150,7 +104,6 @@ function normalizeBand(band) {
   const b = String(band || "symbolic").toLowerCase();
   return b === "binary" ? "binary" : "symbolic";
 }
-
 
 // ============================================================================
 // Signature Builders
@@ -176,24 +129,26 @@ function buildSubmissionSignature(submission) {
   return computeHash(`SUBMIT::${submission.success ? "OK" : "FAIL"}`);
 }
 
-
 // ============================================================================
-// Presence / Advantage / Hints Surfaces (merge NervousSystem + Job + Global)
+// Presence / Advantage / Hints Surfaces
 // ============================================================================
 function buildPresenceField({ job, nervousPresence = {}, globalHints = {} }) {
   const jobMeta = job?.meta || {};
   const jobPresence = jobMeta.presenceContext || jobMeta.cardiacPresence || {};
   const ghPresence = globalHints.presenceContext || {};
+
   const mesh = {
     ...(globalHints.meshSignals || {}),
     ...(jobMeta.meshSignals || {}),
     ...(nervousPresence.meshSignals || {})
   };
+
   const castle = {
     ...(globalHints.castleSignals || {}),
     ...(jobMeta.castleSignals || {}),
     ...(nervousPresence.castleSignals || {})
   };
+
   const region = {
     ...(globalHints.regionContext || {}),
     ...(jobMeta.regionContext || {}),
@@ -206,21 +161,26 @@ function buildPresenceField({ job, nervousPresence = {}, globalHints = {} }) {
       ghPresence.bandPresence ||
       nervousPresence.bandPresence ||
       "unknown",
+
     routerPresence:
       jobPresence.routerPresence ||
       ghPresence.routerPresence ||
       nervousPresence.routerPresence ||
       "unknown",
+
     devicePresence:
       jobPresence.devicePresence ||
       ghPresence.devicePresence ||
       nervousPresence.devicePresence ||
       "unknown",
+
     meshPresence: mesh.meshStrength || "unknown",
     castlePresence: castle.castlePresence || "unknown",
     regionPresence: region.regionTag || "unknown",
+
     regionId: region.regionId || "unknown-region",
     castleId: castle.castleId || "unknown-castle",
+
     castleLoadLevel: castle.loadLevel || 0,
     meshStrength: mesh.meshStrength || 0,
     meshPressureIndex: mesh.meshPressureIndex || 0
@@ -238,11 +198,13 @@ function buildAdvantageField({ job, nervousAdvantage = {}, globalHints = {} }) {
       ghAdv.score ??
       nervousAdvantage.score ??
       0,
+
     advantageBand:
       jobAdv.band ??
       ghAdv.band ??
       nervousAdvantage.band ??
       "neutral",
+
     advantageTier:
       jobAdv.tier ??
       ghAdv.tier ??
@@ -254,27 +216,32 @@ function buildAdvantageField({ job, nervousAdvantage = {}, globalHints = {} }) {
 function buildHintsField({ job, nervousHints = {}, globalHints = {} }) {
   const jobMeta = job?.meta || {};
   const jobHints = jobMeta.hintsContext || {};
+
   return {
     fallbackBandLevel:
       jobHints.fallbackBandLevel ??
       globalHints.fallbackBandLevel ??
       nervousHints.fallbackBandLevel ??
       0,
+
     chunkHints: {
       ...(globalHints.chunkHints || {}),
       ...(jobHints.chunkHints || {}),
       ...(nervousHints.chunkHints || {})
     },
+
     cacheHints: {
       ...(globalHints.cacheHints || {}),
       ...(jobHints.cacheHints || {}),
       ...(nervousHints.cacheHints || {})
     },
+
     prewarmHints: {
       ...(globalHints.prewarmHints || {}),
       ...(jobHints.prewarmHints || {}),
       ...(nervousHints.prewarmHints || {})
     },
+
     coldStartHints: {
       ...(globalHints.coldStartHints || {}),
       ...(jobHints.coldStartHints || {}),
@@ -286,8 +253,8 @@ function buildHintsField({ job, nervousHints = {}, globalHints = {} }) {
 function classifyPresenceTier(presenceField) {
   const mesh = Number(presenceField.meshPressureIndex || 0);
   const castle = Number(presenceField.castleLoadLevel || 0);
+  const pressure = mesh + castle;
 
-  const pressure = mesh + castle; // 0–200
   if (pressure >= 150) return "critical";
   if (pressure >= 100) return "high";
   if (pressure >= 50) return "elevated";
@@ -295,41 +262,92 @@ function classifyPresenceTier(presenceField) {
   return "idle";
 }
 
+// ============================================================================
+// Dual-Parent Pulse Surfaces (baby has no beat yet, only pulses)
+// ============================================================================
+const MOM_PULSE_KEY = "PulseProxyHeartbeatLastBeatAt";
+const DAD_PULSE_KEY = "PulseAIHeartbeatLastBeatAt";
+
+function buildMomPulseSurface() {
+  let last = 0;
+  try {
+    last = globalThis?.[MOM_PULSE_KEY] || 0;
+  } catch (_) {
+    last = 0;
+  }
+  const alive = !!last;
+  return {
+    momPulseAlive: alive,
+    momPulseLastBeatAt: last,
+    momPulseFallbackState: alive ? "available" : "silent"
+  };
+}
+
+function buildDadPulseSurface() {
+  let last = 0;
+  try {
+    last = globalThis?.[DAD_PULSE_KEY] || 0;
+  } catch (_) {
+    last = 0;
+  }
+  const alive = !!last;
+  return {
+    dadPulseAlive: alive,
+    dadPulseLastBeatAt: last,
+    dadPulseFallbackState: alive ? "available" : "silent"
+  };
+}
+
+function selectActivePulseSource(momPulseSurface, dadPulseSurface) {
+  if (momPulseSurface.momPulseAlive) return "mom";
+  if (dadPulseSurface.dadPulseAlive) return "dad";
+  return "none";
+}
 
 // ============================================================================
-// FACTORY — createPulseEarnHeart (v12.3-PRESENCE-EVO+)
+// MAIN CARDIAC ENGINE — createPulseEarnHeart (baby, no own heartbeat)
 // ============================================================================
 export function createPulseEarnHeart({
-  pulseSendSystem,   // optional: injected PulseSendSystem (compute override)
-  log = console.log  // deterministic logger
+  pulseSendSystem,
+  log = console.log
 } = {}) {
 
   const heart = {
 
-    // -----------------------------------------------------------------------
-    // ONE deterministic heartbeat
-    // globalHints is optional; if omitted, defaults to {}
-    // nervousPresence/advantage/hints are expected to be carried on engineRef
-    // or embedded in jobs; we treat them as optional metadata.
-// -----------------------------------------------------------------------
-    cycle(workerId, engineRef, globalHints = {}) {
+    cycle(workerId, engineRef = {}, globalHints = {}) {
       heartCycle++;
       heartHealing.cycles++;
       heartHealing.lastCycleIndex = heartCycle;
 
-      if (!engineRef.running) {
+      const runningFlag =
+        engineRef.forceRun === true
+          ? true
+          : engineRef.running !== false;
+
+      if (!runningFlag) {
         heartHealing.lastExitReason = "engine_not_running";
         return null;
       }
 
       try {
+        // -------------------------------------------------------------------
+        // Dual‑parent pulse surfaces (baby has no beat yet, only pulses)
+        // -------------------------------------------------------------------
+        const momPulseSurface = buildMomPulseSurface();
+        const dadPulseSurface = buildDadPulseSurface();
+        const activePulseSource = selectActivePulseSource(momPulseSurface, dadPulseSurface);
+
+        heartHealing.lastMomPulseSurface = momPulseSurface;
+        heartHealing.lastDadPulseSurface = dadPulseSurface;
+        heartHealing.lastActivePulseSource = activePulseSource;
+
         // ------------------------------------------------------
-        // 1. FETCH — Systole: Heart contracts, pulling in blood
+        // 1. FETCH — Systole
         // ------------------------------------------------------
         const job = getNextMarketplaceJob(workerId);
 
         if (!job) {
-          log("earn:heart_no_job", { workerId, cycleIndex: heartCycle });
+          heartHealing.lastExitReason = "no_job";
           return null;
         }
 
@@ -346,7 +364,7 @@ export function createPulseEarnHeart({
         const nervousAdvantage = engineRef?.advantageContext || {};
         const nervousHints = engineRef?.hintsContext || {};
 
-        // Presence surfaces (merged: NervousSystem + Job + Global)
+        // Presence surfaces
         const presenceField = buildPresenceField({
           job,
           nervousPresence,
@@ -367,9 +385,10 @@ export function createPulseEarnHeart({
 
         const presenceTier = classifyPresenceTier(presenceField);
 
-        // B — Binary Surfaces (structural only, presence-aware)
+        // B — Binary Surfaces
         const jobIdLength = (job.id || "").length;
         const marketplaceLength = (job.marketplace || "").length;
+
         const binarySurfaceValue =
           jobIdLength +
           marketplaceLength +
@@ -395,7 +414,7 @@ export function createPulseEarnHeart({
 
         heartHealing.lastBinaryField = binaryField;
 
-        // C — Wave-Theory Metadata (structural only, presence-aware)
+        // C — Wave-Theory Metadata
         const waveField = {
           amplitude: jobIdLength + (presenceField.meshStrength || 0),
           wavelength: heartCycle,
@@ -409,14 +428,15 @@ export function createPulseEarnHeart({
 
         heartHealing.lastWaveField = waveField;
 
-        // Cardiac presence/binary/wave profiles (for diagnostics)
+        // Profiles
         const cardiacPresenceProfile = {
           presenceTier,
           band,
           meshPressureIndex: presenceField.meshPressureIndex,
           castleLoadLevel: presenceField.castleLoadLevel,
           advantageTier: advantageField.advantageTier,
-          fallbackBandLevel: hintsField.fallbackBandLevel
+          fallbackBandLevel: hintsField.fallbackBandLevel,
+          activePulseSource
         };
 
         const cardiacBinaryProfile = {
@@ -436,60 +456,30 @@ export function createPulseEarnHeart({
         heartHealing.lastCardiacBinaryProfile = cardiacBinaryProfile;
         heartHealing.lastCardiacWaveProfile = cardiacWaveProfile;
 
-        log("earn:heart_job_selected", {
-          workerId,
-          jobId: job.id,
-          cycleIndex: heartCycle,
-          band,
-          presenceTier,
-          meshPressureIndex: presenceField.meshPressureIndex,
-          castleLoadLevel: presenceField.castleLoadLevel
-        });
-
         // ------------------------------------------------------
-        // 2. EXECUTE — Cardiac output: Heart pumps
+        // 2. EXECUTE — Cardiac Output
         // ------------------------------------------------------
         let result;
 
         if (pulseSendSystem && typeof pulseSendSystem.compute === "function") {
-          // PulseSendSystem override path
           result = pulseSendSystem.compute(job, {});
         } else {
-          // Default metabolic execution path
           result = executePulseEarnJob(job);
         }
 
         heartHealing.lastResult = result;
         heartHealing.lastResultSignature = buildResultSignature(result);
 
-        log("earn:heart_job_executed", {
-          workerId,
-          jobId: job.id,
-          success: result.success,
-          cycleIndex: heartCycle,
-          band,
-          presenceTier
-        });
-
         // ------------------------------------------------------
-        // 3. SUBMIT — Venous return: Blood flows back
+        // 3. SUBMIT — Venous Return
         // ------------------------------------------------------
         const submission = submitPulseEarnResult(job, result);
         heartHealing.lastSubmission = submission;
         heartHealing.lastSubmissionSignature = buildSubmissionSignature(submission);
 
-        log("earn:heart_job_submitted", {
-          workerId,
-          jobId: job.id,
-          submission,
-          cycleIndex: heartCycle,
-          band,
-          presenceTier
-        });
-
         // ------------------------------------------------------
-        // 4. Heartbeat Signature (presence-aware, deterministic)
-// ------------------------------------------------------
+        // 4. Heart Signature (Baby has no beat; this is cycle signature only)
+        // ------------------------------------------------------
         const heartSignature = buildHeartSignature(
           heartCycle,
           band,
@@ -497,7 +487,9 @@ export function createPulseEarnHeart({
           presenceField.meshPressureIndex || 0,
           presenceField.castleLoadLevel || 0
         );
+
         heartHealing.lastHeartSignature = heartSignature;
+        heartHealing.lastExitReason = "ok";
 
         return {
           job,
@@ -512,7 +504,10 @@ export function createPulseEarnHeart({
           hintsField,
           cardiacPresenceProfile,
           cardiacBinaryProfile,
-          cardiacWaveProfile
+          cardiacWaveProfile,
+          momPulseSurface,
+          dadPulseSurface,
+          activePulseSource
         };
 
       } catch (err) {
@@ -521,12 +516,6 @@ export function createPulseEarnHeart({
           workerId,
           cycleIndex: heartCycle
         };
-
-        log("earn:heart_error", {
-          workerId,
-          error: err.message,
-          cycleIndex: heartCycle
-        });
 
         if (engineRef.stopOnError) {
           heartHealing.lastExitReason = "hardStop";
@@ -537,14 +526,8 @@ export function createPulseEarnHeart({
       }
     },
 
-    // -----------------------------------------------------------------------
-    // stop — no-op (engine owns lifecycle)
-// -----------------------------------------------------------------------
     stop() {},
 
-    // -----------------------------------------------------------------------
-    // diagnostics — v12.3-PRESENCE-EVO+ cardiac telemetry
-// -----------------------------------------------------------------------
     diagnostics() {
       return {
         cycles: heartHealing.cycles,
@@ -570,7 +553,11 @@ export function createPulseEarnHeart({
         lastHintsField: heartHealing.lastHintsField,
         lastCardiacPresenceProfile: heartHealing.lastCardiacPresenceProfile,
         lastCardiacBinaryProfile: heartHealing.lastCardiacBinaryProfile,
-        lastCardiacWaveProfile: heartHealing.lastCardiacWaveProfile
+        lastCardiacWaveProfile: heartHealing.lastCardiacWaveProfile,
+
+        lastMomPulseSurface: heartHealing.lastMomPulseSurface,
+        lastDadPulseSurface: heartHealing.lastDadPulseSurface,
+        lastActivePulseSource: heartHealing.lastActivePulseSource
       };
     }
   };
@@ -578,10 +565,12 @@ export function createPulseEarnHeart({
   return heart;
 }
 
+const earnHeartSingleton = createPulseEarnHeart();
 
-// ============================================================================
-// Export healing metadata — Cardiac Rhythm Report (v12.3-PRESENCE-EVO+)
-// ============================================================================
+export function pulseEarnFromHeartbeat(source = "unknown", engineRef = {}, globalHints = {}) {
+  return earnHeartSingleton.cycle(source, engineRef, globalHints);
+}
+
 export function getPulseEarnHeartHealingState() {
   return { ...heartHealing };
 }

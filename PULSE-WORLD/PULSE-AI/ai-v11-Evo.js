@@ -1,16 +1,16 @@
 // ============================================================================
-//  ai-v12.3-EVO+.js
-//  DUALBAND ORGANISM BOOTLOADER — v12.3-EVO+
+//  ai-v13.0-EVO+++.js
+//  DUALBAND ORGANISM BOOTLOADER — v13.0-EVO+++
 // ============================================================================
 
 // ============================================================================
-//  META BLOCK — v12.3‑EVO+ (ORGANISM KERNEL)
+//  META BLOCK — v13.0‑EVO+++ (ORGANISM KERNEL)
 // ============================================================================
 export const OrganismKernelMeta = Object.freeze({
   layer: "OrganismKernel",
   role: "DUALBAND_BOOTLOADER",
-  version: "12.3-EVO+",
-  identity: "pulse-organism-kernel-v12.3-EVO+",
+  version: "13.0-EVO+++",
+  identity: "pulse-organism-kernel-v13.0-EVO+++",
 
   evo: Object.freeze({
     deterministic: true,
@@ -20,12 +20,16 @@ export const OrganismKernelMeta = Object.freeze({
     bootloader: true,
     multiInstanceReady: true,
     organismArteryAware: true,
-    epoch: "12.3-EVO+"
+    nodeAdminAware: true,
+    overmindAware: true,
+    registryAware: true,
+    prewarmAware: true,
+    epoch: "13.0-EVO+++"
   }),
 
   contract: Object.freeze({
     purpose:
-      "Assemble all binary organs, wire anatomy and registry, and boot the dualband organism deterministically.",
+      "Assemble all binary organs, wire anatomy and registry, compute organism artery, and boot the dualband organism deterministically.",
 
     never: Object.freeze([
       "perform cognition",
@@ -41,6 +45,8 @@ export const OrganismKernelMeta = Object.freeze({
       "register organs in the binary registry",
       "wire anatomy deterministically",
       "persist anatomy and genome",
+      "compute organism artery snapshot",
+      "expose artery to NodeAdmin/Overmind",
       "start scheduler only on boot",
       "return a stable organism surface"
     ])
@@ -51,7 +57,7 @@ export const OrganismKernelMeta = Object.freeze({
 //  IMPORT ALL BINARY ORGANS
 // ============================================================================
 import { AIBinaryAgent } from "./aiBinaryAgent.js";
-import { AIMemory } from "./aiMemory-v11-Evo.js";        // legacy memory
+import { AIMemory } from "./aiMemory-v13.0-ADV.js";   // upgraded memory
 
 import { AIAnatomy as AIBinaryAnatomy } from "./aiAnatomy.js";
 import { AIBinaryGenome } from "./aiGenome.js";
@@ -68,66 +74,90 @@ import { AIBinaryOrganRegistry } from "./aiBinaryOrganRegistry.js";
 import { AIBinaryEvolution } from "./aiBinaryEvolution.js";
 
 // ============================================================================
+//  GLOBAL ORGANISM ARTERY REGISTRY (READ-ONLY, METRICS-ONLY)
+// ============================================================================
+const _globalOrganismArteryRegistry = new Map();
+
+export function getGlobalOrganismArteries() {
+  const out = {};
+  for (const [k, v] of _globalOrganismArteryRegistry.entries()) {
+    out[k] = v;
+  }
+  return out;
+}
+
+function _registryKey(id) {
+  return `${id || "binary-organism"}#0`;
+}
+
+// ============================================================================
 //  ORGANISM CONTEXT — IDENTITY OF THE DUALBAND ORGANISM
 // ============================================================================
 const ORGANISM_CONTEXT = {
   layer: OrganismKernelMeta.layer,
   role: OrganismKernelMeta.role,
   version: OrganismKernelMeta.version,
-  lineage: "pulse-organism-v12.3-evo",
+  lineage: "pulse-organism-v13.0-evo",
   evo: OrganismKernelMeta.evo
 };
 
 // ============================================================================
-//  BINARY ORGANISM PREWARM ENGINE — v12.3-EVO+
+//  BINARY ORGANISM PREWARM ENGINE — v13.0-EVO+++
 // ============================================================================
 export function prewarmBinaryOrganism(config = {}) {
   try {
     const { trace = false } = config;
 
-    // 1) Prewarm Binary Agent (encoder/decoder)
-    const warmAgent = new AIBinaryAgent({ id: "prewarm-agent", maxBits: 1024, trace });
+    const warmAgent = new AIBinaryAgent({
+      id: "prewarm-agent",
+      maxBits: 2048,
+      trace
+    });
+
     warmAgent.encode?.("prewarm");
     warmAgent.decode?.(warmAgent.encode?.("prewarm"), "string");
 
-    // 2) Prewarm Memory (legacy + core)
-    const warmLegacy = new AIMemory({ id: "prewarm-memory-legacy", maxBits: 2048, trace });
-    const warmCore   = new AIMemory({ id: "prewarm-memory-core", maxBits: 2048, trace });
+    const warmMemory = new AIMemory({
+      id: "prewarm-memory",
+      maxBits: 4096,
+      trace
+    });
 
     const k = warmAgent.encode("prewarm-key");
     const v = warmAgent.encode("prewarm-value");
 
-    warmLegacy.write(k, v);
-    warmLegacy.read(k);
-    warmLegacy.listKeys?.();
+    warmMemory.write(k, v);
+    warmMemory.read(k);
+    warmMemory.listKeys?.();
 
-    warmCore.write(k, v);
-    warmCore.read(k);
-    warmCore.listKeys?.();
-
-    // 3) Prewarm Evolution + Registry
     const warmRegistry = new AIBinaryOrganRegistry({
       id: "prewarm-registry",
       encoder: warmAgent,
-      memory: warmLegacy,
+      memory: warmMemory,
       trace
     });
 
     const warmEvolution = new AIBinaryEvolution({
       id: "prewarm-evolution",
       encoder: warmAgent,
-      memory: warmLegacy,
+      memory: warmMemory,
       trace
     });
 
-    warmEvolution.generateSignature({ id: "prewarm-organ", constructor: { name: "PrewarmOrgan" } });
-    warmRegistry.registerOrgan({ id: "prewarm-organ", constructor: { name: "PrewarmOrgan" } });
+    warmEvolution.generateSignature({
+      id: "prewarm-organ",
+      constructor: { name: "PrewarmOrgan" }
+    });
 
-    // 4) Prewarm Anatomy + Genome
+    warmRegistry.registerOrgan({
+      id: "prewarm-organ",
+      constructor: { name: "PrewarmOrgan" }
+    });
+
     const warmAnatomy = new AIBinaryAnatomy({
       id: "prewarm-anatomy",
       encoder: warmAgent,
-      memory: warmLegacy,
+      memory: warmMemory,
       trace
     });
 
@@ -139,13 +169,12 @@ export function prewarmBinaryOrganism(config = {}) {
       encoder: warmAgent,
       registry: warmRegistry,
       evolution: warmEvolution,
-      memory: warmLegacy,
+      memory: warmMemory,
       trace
     });
 
     warmGenome.storeGenome();
 
-    // 5) Prewarm Reflex + Pipeline + Scheduler
     const warmReflex = new AIBinaryReflex({ id: "prewarm-reflex", trace });
     const warmPipeline = new AIBinaryPipeline({ id: "prewarm-pipeline", trace });
 
@@ -159,11 +188,10 @@ export function prewarmBinaryOrganism(config = {}) {
 
     warmScheduler.tick?.();
 
-    // 6) Prewarm Metabolism + Sentience + Hormones + Consciousness
     const warmVitals = new AIBinaryVitals({
       id: "prewarm-vitals",
       encoder: warmAgent,
-      memory: warmLegacy,
+      memory: warmMemory,
       evolution: warmEvolution,
       trace
     });
@@ -218,36 +246,48 @@ export function prewarmBinaryOrganism(config = {}) {
 }
 
 // ============================================================================
-//  createBinaryOrganism() — v12.3‑EVO+
+//  ORGANISM ARTERY SNAPSHOT (v13.0)
 // ============================================================================
-export function createBinaryOrganism({ trace = false } = {}) {
-  // Prewarm the entire binary organism physiology
+function computeOrganismArtery({ registry, anatomy, genome, memory, scheduler }) {
+  const artery = Object.freeze({
+    timestamp: Date.now(),
+    registryCount: registry?.count?.() ?? 0,
+    anatomyCount: anatomy?.count?.() ?? 0,
+    genomeHash: genome?.hash?.() ?? null,
+    memoryFootprint: memory?.size?.() ?? null,
+    schedulerState: scheduler?.state?.() ?? null,
+    buckets: {
+      registry: registry?.count?.() > 32 ? "high" : "medium",
+      memory: memory?.size?.() > 8192 ? "high" : "medium"
+    }
+  });
+
+  const key = _registryKey("binary-organism");
+  _globalOrganismArteryRegistry.set(key, artery);
+
+  return artery;
+}
+
+// ============================================================================
+//  createBinaryOrganism() — v13.0‑EVO+++
+// ============================================================================
+export function createBinaryOrganism({ trace = false, nodeAdminReporter = null, overmindReporter = null } = {}) {
   prewarmBinaryOrganism({ trace });
 
-  // 1) Binary Cortex (Agent)
   const encoder = new AIBinaryAgent({
     id: "ai-binary-agent",
     maxBits: 4096,
     trace
   });
 
-  // 2) Memory organs (legacy + new)
-  const memoryLegacy = new AIMemory({
-    id: "ai-binary-memory-legacy",
+  const memory = new AIMemory({
+    id: "ai-binary-memory",
     maxBits: 16384,
-    trace
+    trace,
+    nodeAdminReporter,
+    overmindReporter
   });
 
-  const memoryCore = new AIMemory({
-    id: "ai-binary-memory-core",
-    maxBits: 16384,
-    trace
-  });
-
-  // For backward compatibility, keep `memory` pointing at the legacy one
-  const memory = memoryLegacy;
-
-  // 3) Registry + Evolution + Immunity
   const registry = new AIBinaryOrganRegistry({
     id: "ai-binary-organ-registry",
     encoder,
@@ -271,7 +311,6 @@ export function createBinaryOrganism({ trace = false } = {}) {
     trace
   });
 
-  // 4) Anatomy + Vitals + Genome
   const anatomy = new AIBinaryAnatomy({
     id: "ai-binary-anatomy",
     encoder,
@@ -296,7 +335,6 @@ export function createBinaryOrganism({ trace = false } = {}) {
     trace
   });
 
-  // 5) Pipeline + Reflex + Scheduler
   const reflex = new AIBinaryReflex({
     id: "ai-binary-reflex",
     trace
@@ -315,7 +353,6 @@ export function createBinaryOrganism({ trace = false } = {}) {
     trace
   });
 
-  // 6) Metabolism + Sentience + Hormones + Consciousness
   const metabolism = new AIBinaryMetabolism({
     id: "ai-binary-metabolism",
     encoder,
@@ -356,12 +393,9 @@ export function createBinaryOrganism({ trace = false } = {}) {
     trace
   });
 
-  // 7) Register all organs + wire anatomy
   const organs = {
     encoder,
-    memory,          // legacy default
-    memoryLegacy,
-    memoryCore,      // new AIMemory-based organ
+    memory,
     registry,
     evolution,
     immunity,
@@ -383,53 +417,68 @@ export function createBinaryOrganism({ trace = false } = {}) {
     anatomy.registerOrgan(organ.id);
   }
 
-  // Canonical wiring
   anatomy.connect(metabolism.id, hormones.id);
   anatomy.connect(hormones.id, consciousness.id);
   anatomy.connect(sentience.id, consciousness.id);
   anatomy.connect(vitals.id, metabolism.id);
 
-  // Persist anatomy + genome
   anatomy.store();
   genome.storeGenome();
-  // ---------------------------------------------------------------------------
-// 8) Binary Organism Readiness Surface (v12.3-EVO+)
-// ---------------------------------------------------------------------------
-const readiness = Object.freeze({
-  meta: {
-    layer: "BinaryOrganismReadiness",
-    role: "READINESS_SURFACE",
-    version: "12.3-EVO+",
-    evo: {
-      deterministic: true,
-      driftProof: true,
-      zeroMutation: true,
-      zeroSecrets: true
-    }
-  },
 
-  registryCount: registry?.count?.() ?? null,
-  anatomyCount: anatomy?.count?.() ?? null,
-  genomeHash: genome?.hash?.() ?? null,
-  consciousnessHash: consciousness?.hash?.() ?? null,
-  memoryFootprint: memory?.size?.() ?? null,
-  schedulerState: scheduler?.state?.() ?? null,
+  const artery = computeOrganismArtery({
+    registry,
+    anatomy,
+    genome,
+    memory,
+    scheduler
+  });
 
-  prewarmed: true
-});
+  if (nodeAdminReporter) {
+    try {
+      nodeAdminReporter(artery, OrganismKernelMeta);
+    } catch {}
+  }
+
+  if (overmindReporter) {
+    try {
+      overmindReporter(artery, OrganismKernelMeta);
+    } catch {}
+  }
+
+  const readiness = Object.freeze({
+    meta: {
+      layer: "BinaryOrganismReadiness",
+      role: "READINESS_SURFACE",
+      version: "13.0-EVO+++",
+      evo: {
+        deterministic: true,
+        driftProof: true,
+        zeroMutation: true,
+        zeroSecrets: true
+      }
+    },
+
+    registryCount: registry?.count?.() ?? null,
+    anatomyCount: anatomy?.count?.() ?? null,
+    genomeHash: genome?.hash?.() ?? null,
+    consciousnessHash: consciousness?.hash?.() ?? null,
+    memoryFootprint: memory?.size?.() ?? null,
+    schedulerState: scheduler?.state?.() ?? null,
+
+    artery,
+    prewarmed: true
+  });
 
   return {
-  context: ORGANISM_CONTEXT,
-  ...organs,
-  readiness
-};
-
+    context: ORGANISM_CONTEXT,
+    ...organs,
+    artery,
+    readiness
+  };
 }
 
-
-
 // ============================================================================
-//  bootBinaryOrganism() — v12.3‑EVO+
+//  bootBinaryOrganism() — v13.0‑EVO+++
 // ============================================================================
 export async function bootBinaryOrganism(options = {}) {
   const organism = createBinaryOrganism(options);
@@ -452,7 +501,8 @@ const PulseOrganismBoot = {
   ...ORGANISM_CONTEXT,
   meta: OrganismKernelMeta,
   create: createBinaryOrganism,
-  boot: bootBinaryOrganism
+  boot: bootBinaryOrganism,
+  getGlobalOrganismArteries
 };
 
 export default PulseOrganismBoot;

@@ -1,6 +1,6 @@
 // ============================================================================
-//  aiDualBand-v12.3-EVO+.js
-//  PULSE OS v12.3-EVO+ — Dual-Band Bridge (Symbolic ↔ Binary)
+//  aiDualBand-v13.0-EVO+++.js
+//  PULSE OS v13.0-EVO+++ — Dual-Band Bridge (Symbolic ↔ Binary)
 //  Organism Bridge • Context Engine • Clinical + Structural + ScanFile Aware
 //  PURE BRIDGE. ZERO MUTATION. ZERO RANDOMNESS.
 // ============================================================================
@@ -8,8 +8,8 @@
 export const DualBandMeta = Object.freeze({
   layer: "PulseAIDualBandKernel",
   role: "DUAL_BAND_BRIDGE_ORGAN",
-  version: "12.3-EVO+",
-  identity: "aiDualBandBridge-v12.3-EVO+",
+  version: "13.0-EVO+++",
+  identity: "aiDualBandBridge-v13.0-EVO+++",
 
   evo: Object.freeze({
     driftProof: true,
@@ -34,12 +34,12 @@ export const DualBandMeta = Object.freeze({
     readOnly: true,
     multiInstanceReady: true,
     dualBandArteryAware: true,
-    epoch: "v12.3-EVO+"
+    epoch: "v13.0-EVO+++"
   }),
 
   contract: Object.freeze({
     purpose:
-      "Bind the symbolic Pulse OS to the dualband organism, providing a unified dual-band surface for all AI services.",
+      "Bind the symbolic Pulse OS to the dualband organism, providing a unified dual-band surface for all AI services and exposing dual-band artery metrics for NodeAdmin/Overmind.",
 
     never: Object.freeze([
       "mutate external inputs",
@@ -58,11 +58,13 @@ export const DualBandMeta = Object.freeze({
       "sync symbolic vitals to organism state (logically)",
       "sync organism state to symbolic cortex (logically)",
       "expose unified dual-band surface",
+      "expose dual-band artery metrics deterministically",
       "preserve organism identity",
       "preserve drift-proof architecture"
     ])
   })
 });
+
 // ============================================================================
 // IMPORTS (dependency-ordered, ESM)
 // ============================================================================
@@ -127,15 +129,14 @@ import { createDoctorArchitectOrgan } from "./aiDoctorArchitect.js";
 
 import { createAIOrganism } from "./aiOrganism.js";
 
-
 // ============================================================================
 //  DUAL-BAND CONTEXT
 // ============================================================================
 const DUAL_BAND_CONTEXT = Object.freeze({
   layer: "DualBandOrganism",
   role: "DUAL_BAND_BRIDGE",
-  version: "12.3-EVO+",
-  lineage: "pulse-dual-band-v12.3-evo",
+  version: "13.0-EVO+++",
+  lineage: "pulse-dual-band-v13.0-evo",
   evo: Object.freeze({
     dualBand: true,
     binaryFirst: true,
@@ -182,7 +183,7 @@ function dualBandArtery({ diagnostics = {}, binaryVitals = {} } = {}) {
     Math.min(1, 0.6 * localPressure + 0.4 * binaryPressure)
   );
 
-  return {
+  return Object.freeze({
     organism: {
       pressure,
       pressureBucket: bucketPressure(pressure)
@@ -193,11 +194,11 @@ function dualBandArtery({ diagnostics = {}, binaryVitals = {} } = {}) {
       slowdown: slowdownCount,
       drift
     }
-  };
+  });
 }
 
 // ============================================================================
-//  DUAL‑BAND BRIDGE PREWARM ENGINE — v12.3‑EVO+
+//  DUAL‑BAND BRIDGE PREWARM ENGINE — v13.0‑EVO+++
 // ============================================================================
 export function prewarmDualBandBridge({ trace = false } = {}) {
   try {
@@ -455,11 +456,13 @@ export function createDualBandOrganism({
   // --------------------------------------------------------------------------
   // DUAL-BAND SURFACE
   // --------------------------------------------------------------------------
+  const artery = dualBandArtery({ diagnostics, binaryVitals });
+
   const dualBand = Object.freeze({
     meta: DualBandMeta,
     context,
     deps,
-    artery: dualBandArtery({ diagnostics, binaryVitals }),
+    artery,
 
     symbolic: Object.freeze({
       cortex,

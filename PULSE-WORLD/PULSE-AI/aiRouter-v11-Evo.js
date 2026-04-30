@@ -1,15 +1,15 @@
 // ============================================================================
-//  PULSE OS v12.3-PRESENCE — AI ROUTER ORGAN
+//  PULSE OS v13.0-PRESENCE-ADV — AI ROUTER ORGAN
 //  CNS Router • Intent Decoder • Persona Selector • Archetype Map
 //  PURE ROUTING • ZERO MUTATION • ZERO RANDOMNESS • DUALBAND‑AWARE
-//  ROUTING ARTERY v3 (throughput, pressure, cost, budget)
+//  ROUTING ARTERY v3 • BINARY SNAPSHOT AWARE • HOT-PATH CACHED
 // ============================================================================
 
 export const AIRouterMeta = Object.freeze({
   layer: "PulseAIRouter",
   role: "CNS_ROUTER_ORGAN",
-  version: "12.3-PRESENCE",
-  identity: "aiRouter-v12.3-PRESENCE",
+  version: "13.0-PRESENCE-ADV",
+  identity: "aiRouter-v13.0-PRESENCE-ADV",
 
   evo: Object.freeze({
     driftProof: true,
@@ -27,12 +27,14 @@ export const AIRouterMeta = Object.freeze({
     safetyAware: true,
     personalAware: true,
     multiInstanceReady: true,
-    epoch: "12.3-PRESENCE"
+    cacheAware: true,
+    prewarmReady: true,
+    epoch: "13.0-PRESENCE-ADV"
   }),
 
   contract: Object.freeze({
     purpose:
-      "Decode intent, select persona, map archetypes, integrate dual-band routing hints, and compute routing artery metrics v3 for CNS execution.",
+      "Decode intent, select persona, map archetypes, integrate dual-band routing hints, compute routing artery metrics v3, and optionally enrich with Overmind + NodeAdmin meta in an async advanced path.",
 
     never: Object.freeze([
       "mutate request",
@@ -59,12 +61,16 @@ export const AIRouterMeta = Object.freeze({
       "surface safety + overmind hints",
       "return frozen routing packets",
       "remain drift-proof",
-      "remain non-blocking"
+      "remain non-blocking on sync path",
+      "support async enrichment via advanced path",
+      "support hot-path caching and prewarm"
     ])
   })
 });
 
 import { Personas, getPersona } from "./persona.js";
+import Overmind from "../overmind/Overmind.js";
+import NodeAdmin from "../PULSE-TOOLS/PulseNodeAdmin-v11-Evo.js";
 
 // ============================================================================
 //  ARCHETYPE PAGE MAP (STATIC METADATA)
@@ -90,6 +96,113 @@ const ArchetypePages = Object.freeze({
   TOURIST: "aiTourist.js",
   VETERINARIAN: "aiVeterinarian.js"
 });
+
+// ============================================================================
+//  LIGHTWEIGHT HOT-PATH CACHE (PURELY IN-MEMORY, NON-PERSISTENT)
+// ============================================================================
+
+const _MAX_CACHE_ENTRIES = 128;
+const _routingCache = new Map();
+
+/**
+ * Deterministic cache key: request + dualBand snapshot signature.
+ * No bodies, no large blobs — just flags + persona-relevant bits.
+ */
+function _buildCacheKey(request = {}, dualBand = null) {
+  const {
+    intent = "analyze",
+    touchesBackend = false,
+    touchesFrontend = false,
+    touchesSchemas = false,
+    touchesFiles = false,
+    touchesLogs = false,
+    touchesRoutes = false,
+    touchesErrors = false,
+    touchesTourism = false,
+    touchesUsers = false,
+    touchesArchitecture = false,
+    touchesEvolution = false,
+    touchesEnvironment = false,
+    touchesPower = false,
+    touchesEarn = false,
+    touchesPulse = false,
+    touchesHistory = false,
+    touchesSettings = false,
+    userIsOwner = false,
+    safetyMode: requestedSafetyMode = null
+  } = request;
+
+  let organismSig = 0;
+  if (dualBand?.organism?.organismSnapshot) {
+    const snapshot = dualBand.organism.organismSnapshot();
+    if (typeof snapshot === "string") {
+      // cheap, deterministic signature
+      organismSig = snapshot.length;
+    }
+  }
+
+  return JSON.stringify({
+    intent: String(intent || "").toLowerCase(),
+    touchesBackend,
+    touchesFrontend,
+    touchesSchemas,
+    touchesFiles,
+    touchesLogs,
+    touchesRoutes,
+    touchesErrors,
+    touchesTourism,
+    touchesUsers,
+    touchesArchitecture,
+    touchesEvolution,
+    touchesEnvironment,
+    touchesPower,
+    touchesEarn,
+    touchesPulse,
+    touchesHistory,
+    touchesSettings,
+    userIsOwner,
+    requestedSafetyMode: requestedSafetyMode || null,
+    organismSig
+  });
+}
+
+function _cacheGet(key) {
+  if (!_routingCache.has(key)) return null;
+  const value = _routingCache.get(key);
+  // LRU bump
+  _routingCache.delete(key);
+  _routingCache.set(key, value);
+  return value;
+}
+
+function _cacheSet(key, value) {
+  if (_routingCache.has(key)) {
+    _routingCache.delete(key);
+  } else if (_routingCache.size >= _MAX_CACHE_ENTRIES) {
+    // delete oldest
+    const firstKey = _routingCache.keys().next().value;
+    if (firstKey !== undefined) _routingCache.delete(firstKey);
+  }
+  _routingCache.set(key, value);
+}
+
+/**
+ * Prewarm hook: allow caller to seed cache with known patterns.
+ * This does NOT mutate behavior, only primes hot paths.
+ */
+export function prewarmAIRouter(samples = [], dualBand = null) {
+  if (!Array.isArray(samples)) return;
+  for (const req of samples) {
+    try {
+      const key = _buildCacheKey(req, dualBand);
+      if (_cacheGet(key)) continue;
+      const result = routeAIRequest(req, dualBand);
+      _cacheSet(key, result);
+    } catch {
+      // prewarm must never throw
+    }
+  }
+}
 
 // ============================================================================
 //  ROUTING ARTERY HELPERS (PURE, STATELESS)
@@ -156,7 +269,7 @@ function computeRoutingArtery(flags, binaryLoad, personaId) {
   });
 }
 
-// ============================================================================
+// ============================================================================–
 //  ARCHETYPE SELECTOR (DETERMINISTIC)
 // ============================================================================
 function selectPrimaryArchetypePage(personaId, flags) {
@@ -211,9 +324,17 @@ function selectPrimaryArchetypePage(personaId, flags) {
 }
 
 // ============================================================================
-//  DUAL‑BAND CNS ROUTER — symbolic + organism integration
+//  DUAL‑BAND CNS ROUTER — symbolic + organism integration (SYNC, HOT-PATH)
 // ============================================================================
+
 export function routeAIRequest(request = {}, dualBand = null) {
+  const cacheKey = _buildCacheKey(request, dualBand);
+  const cached = _cacheGet(cacheKey);
+  if (cached) {
+    // return a frozen clone to preserve immutability guarantees
+    return Object.freeze({ ...cached });
+  }
+
   const reasoning = [];
 
   // --------------------------------------------------------------------------
@@ -330,7 +451,7 @@ export function routeAIRequest(request = {}, dualBand = null) {
 
   // --------------------------------------------------------------------------
   // 4) Dual‑Band Integration (Organism Snapshot Metrics)
-// --------------------------------------------------------------------------
+  // --------------------------------------------------------------------------
   let organismSnapshotBits = 0;
   let binaryPressure = 0;
   let binaryLoad = 0;
@@ -375,7 +496,7 @@ export function routeAIRequest(request = {}, dualBand = null) {
 
   // --------------------------------------------------------------------------
   // 6) Routing Artery v3 (pure, stateless)
-// --------------------------------------------------------------------------
+  // --------------------------------------------------------------------------
   const artery = computeRoutingArtery(flags, binaryLoad, personaId);
 
   reasoning.push(
@@ -389,8 +510,8 @@ export function routeAIRequest(request = {}, dualBand = null) {
   );
 
   // --------------------------------------------------------------------------
-  // 7) Overmind + Safety + Personal Hints
-  // --------------------------------------------------------------------------
+  // 7) Overmind + Safety + Personal Hints (SYNC HINTS ONLY)
+// --------------------------------------------------------------------------
   const safetyMode =
     requestedSafetyMode || persona?.safetyMode || "standard";
 
@@ -410,10 +531,7 @@ export function routeAIRequest(request = {}, dualBand = null) {
 
   reasoning.push(`Safety mode: ${safetyMode}`);
 
-  // --------------------------------------------------------------------------
-  // 8) Return Routing Packet
-  // --------------------------------------------------------------------------
-  return Object.freeze({
+  const packet = Object.freeze({
     meta: AIRouterMeta,
     personaId,
     persona,
@@ -425,6 +543,52 @@ export function routeAIRequest(request = {}, dualBand = null) {
     personaSafety,
     artery,
     reasoning
+  });
+
+  _cacheSet(cacheKey, packet);
+  return packet;
+}
+
+// ============================================================================
+//  ADVANCED ASYNC ROUTER — Overmind + NodeAdmin ENRICHMENT
+// ============================================================================
+
+/**
+ * Async advanced path:
+ *  - runs the deterministic router
+ *  - calls Overmind with overmindHints
+ *  - forwards meta to NodeAdmin
+ *  - returns enriched packet (without breaking sync callers)
+ */
+export async function routeAIRequestAdvanced(request = {}, dualBand = null) {
+  const base = routeAIRequest(request, dualBand);
+
+  let overmindResult = null;
+  let nodeAdminMeta = null;
+
+  try {
+    overmindResult = await Overmind.process(base.overmind);
+  } catch (err) {
+    // Overmind failures must not break routing
+    nodeAdminMeta = { overmindError: String(err?.message || err || "unknown") };
+  }
+
+  try {
+    if (overmindResult && overmindResult.meta) {
+      nodeAdminMeta = await NodeAdmin.handleOvermindMeta(overmindResult.meta);
+    }
+  } catch (err) {
+    // NodeAdmin failures must not break routing
+    nodeAdminMeta = {
+      ...(nodeAdminMeta || {}),
+      nodeAdminError: String(err?.message || err || "unknown")
+    };
+  }
+
+  return Object.freeze({
+    ...base,
+    overmindResult: overmindResult || null,
+    nodeAdminMeta: nodeAdminMeta || null
   });
 }
 
@@ -451,6 +615,8 @@ if (typeof module !== "undefined") {
   module.exports = {
     AIRouterMeta,
     routeAIRequest,
-    explainRoutingDecision
+    routeAIRequestAdvanced,
+    explainRoutingDecision,
+    prewarmAIRouter
   };
 }

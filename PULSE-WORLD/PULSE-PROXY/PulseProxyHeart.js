@@ -1,32 +1,30 @@
 // ============================================================================
-//  PULSE OS v12.3‑EVO — THE HEART
-//  PulseProxyHeart — Cardiac Pacemaker Engine
-//  ONE IMPORT ONLY (Pacemaker / SA Node)
-//  Backend‑Only • Deterministic • Drift‑Proof • No IQ
-//  PURE WRAPPER. NO LOGIC. NO ROUTING. NO BUSINESS STATE.
-//  v12.3‑EVO‑BINARY‑MAX‑ABA FULL ADVANTAGE EDITION
+//  PULSE OS v13‑EVO‑PRIME — THE HEART (MOM)
+//  PulseProxyHeart — Cardiac Pacemaker Engine (v13 Upgrade)
+//  MOM PULSE PRIMARY • DAD PULSE FALLBACK
+//  SAME HEARTBEAT CODE, PULSE-LEVEL BOUNCE
 // ============================================================================
 
 import * as heartbeat from "./PulseProxyHeartBeat.js";
+import * as aiHeartbeat from "./aiHeartbeat.js";
 
 // ============================================================================
-// HEART IDENTITY — v12.3‑EVO‑BINARY‑MAX‑ABA
+// MOM HEART IDENTITY — v13‑EVO‑PRIME
 // ============================================================================
 export const PulseRole = {
   type: "Organ",
   subsystem: "PulseProxy",
   layer: "Heart",
-  version: "12.3-EVO",
-  identity: "PulseProxyHeart-v12.3-EVO-BINARY-MAX-ABA",
+  version: "13-EVO-PRIME",
+  identity: "PulseProxyHeart-v13-EVO-PRIME-ABA",
 
   evo: {
-    // Core laws
     driftProof: true,
     deterministic: true,
     pacemakerOnly: true,
     noIQ: true,
     noRouting: true,
-    noCompute: true,
+    noCompute: false, // pulse-level fallback logic allowed
     backendOnly: true,
     multiInstanceReady: true,
     organismClockOrchestrator: true,
@@ -37,7 +35,7 @@ export const PulseRole = {
     waveFieldAware: true,
     binaryFieldAware: true,
 
-    // 12.3+ organism‑wide advantages
+    // v13+ organism‑wide advantages
     unifiedAdvantageField: true,
     pulseEfficiencyAware: true,
     advantageCascadeAware: true,
@@ -45,51 +43,38 @@ export const PulseRole = {
     binaryPhenotypeAware: true,
     wavePhenotypeAware: true,
     symbolicAware: true,
-    binaryAware: true
+    binaryAware: true,
+
+    // v13+ fallback surfaces
+    aiHeartbeatAware: true,
+    aiFallbackSurface: true,
+    dualParentLivenessAware: true
   }
 };
 
 export const PulseProxyHeartMeta = Object.freeze({
   layer: "PulseProxyHeart",
   role: "CARDIAC_PACEMAKER_ENGINE",
-  version: "v12.3-EVO-BINARY-MAX-ABA",
-  identity: "PulseProxyHeart-v12.3-EVO-BINARY-MAX-ABA",
+  version: "v13-EVO-PRIME-ABA",
+  identity: "PulseProxyHeart-v13-EVO-PRIME-ABA",
 
   guarantees: Object.freeze({
     deterministic: true,
     driftProof: true,
     multiInstanceReady: true,
 
-    // Heart laws
-    pureWrapper: true,
+    pureWrapper: false, // now has controlled pulse fallback
     pacemakerOnly: true,
     saNodeOnly: true,
     organismClockOrchestrator: true,
     heartbeatRelay: true,
+
     unifiedAdvantageField: true,
     pulseEfficiencyAware: true,
     advantageCascadeAware: true,
 
-    // Execution prohibitions
-    zeroLogic: true,
-    zeroRouting: true,
-    zeroCompute: true,
-    zeroIQ: true,
     zeroRandomness: true,
-    zeroTimestamps: true,
-    zeroDateNow: true,
-    zeroTimers: true,
-    zeroAsync: true,
-    zeroNetwork: true,
-    zeroIO: true,
-    zeroExternalMutation: true,
-    zeroDynamicImports: true,
-    zeroEval: true,
-    zeroWindow: true,
-    zeroDOM: true,
-    zeroGPU: true,
 
-    // Awareness
     bandAware: true,
     waveFieldAware: true,
     binaryFieldAware: true,
@@ -98,7 +83,10 @@ export const PulseProxyHeartMeta = Object.freeze({
     binaryAware: true,
     backendOnly: true,
 
-    // Environment
+    aiHeartbeatAware: true,
+    aiFallbackSurface: true,
+    dualParentLivenessAware: true,
+
     worldLensAware: false
   }),
 
@@ -115,41 +103,29 @@ export const PulseProxyHeartMeta = Object.freeze({
       "HeartWaveField",
       "HeartAdvantageField",
       "HeartDiagnostics",
-      "HeartHealingState"
+      "HeartHealingState",
+      "AiHeartbeatFallbackSurface",
+      "AiHeartbeatLivenessField"
     ]
-  }),
-
-  lineage: Object.freeze({
-    root: "PulseProxy-v11",
-    parent: "PulseProxy-v12.3-EVO",
-    ancestry: [
-      "PulseProxyHeart-v7",
-      "PulseProxyHeart-v8",
-      "PulseProxyHeart-v9",
-      "PulseProxyHeart-v10",
-      "PulseProxyHeart-v11",
-      "PulseProxyHeart-v11-Evo",
-      "PulseProxyHeart-v11-Evo-ABA",
-      "PulseProxyHeart-v11.2-EVO-BINARY-MAX"
-    ]
-  }),
-
-  bands: Object.freeze({
-    supported: ["symbolic", "binary"],
-    default: "symbolic",
-    behavior: "pacemaker-wrapper"
-  }),
-
-  architecture: Object.freeze({
-    pattern: "A-B-A",
-    baseline: "pacemaker → wrapper → heartbeat relay",
-    adaptive: "binary-field + wave-field + advantage overlays",
-    return: "deterministic heartbeat surfaces + signatures"
   })
 });
 
 // ============================================================================
-// INTERNAL HELPERS — deterministic, pure
+// AI FALLBACK SURFACES (metadata)
+// ============================================================================
+function buildAiFallbackSurface() {
+  const last = globalThis?.PulseAIHeartbeatLastBeatAt || 0;
+  const alive = last > 0;
+
+  return {
+    aiHeartbeatAlive: alive,
+    aiHeartbeatLastBeatAt: last,
+    aiHeartbeatFallbackState: alive ? "available" : "silent"
+  };
+}
+
+// ============================================================================
+// INTERNAL HELPERS
 // ============================================================================
 function computeHash(str) {
   let h = 0;
@@ -215,84 +191,96 @@ function buildHeartCycleSignature(cycle) {
 }
 
 // ============================================================================
-// HEART CONTEXT — v12.3‑EVO
+// CONTEXT + HEALING
 // ============================================================================
-let HEART_EVENT_SEQ = 0;
 let HEART_CYCLE = 0;
 
 const HEART_CONTEXT = {
   layer: PulseRole.layer,
   role: "CARDIAC_PACEMAKER_ENGINE",
   version: PulseRole.version,
-  pacemaker: {
-    source: "PulseProxyHeartBeat.js",
-    version: heartbeat?.VERSION || "12.3-EVO",
-    label: heartbeat?.LABEL || "HEARTBEAT_PACEMAKER"
-  },
   evo: PulseRole.evo
 };
 
-// ============================================================================
-// HEART LOGGER — logs only, no control, no routing
-// ============================================================================
+const heartHealing = {
+  cycles: 0,
+  lastBeatResult: null,
+  lastError: null,
+  lastExitReason: null,
+  lastCycleIndex: null,
+
+  lastHeartCycleSignature: null,
+  lastBinaryField: null,
+  lastWaveField: null,
+  lastAdvantageField: null,
+
+  lastAiFallbackSurface: null,
+  lastBeatSource: "mom" // "mom" | "dad"
+};
+
 async function logHeart(stage, details = {}) {
-  HEART_EVENT_SEQ++;
-
-  const binaryField = buildBinaryField();
-  const waveField = buildWaveField();
-  const advantageField = buildAdvantageField(binaryField, waveField);
-
-  const payload = {
-    seq: HEART_EVENT_SEQ,
-    pulseLayer: "HEART-LAYER",
-    pulseName: "THE HEART",
-    pulseRole: "CARDIAC PACEMAKER ENGINE",
-    stage,
-
-    heartCycle: HEART_CYCLE,
-    heartCycleSignature: buildHeartCycleSignature(HEART_CYCLE),
-    binaryField,
-    waveField,
-    advantageField,
-
-    ...details,
-    ...HEART_CONTEXT
-  };
-
   try {
-    console.log("heart", "HEART_EVENT", payload);
+    console.log("heart", "HEART_EVENT", {
+      stage,
+      heartCycle: HEART_CYCLE,
+      ...details,
+      ...HEART_CONTEXT
+    });
   } catch (_) {}
 }
 
 // ============================================================================
-// MAIN HANDLER — “THE HEARTBEAT”
-// PURE WRAPPER AROUND PACEMAKER. NOTHING ELSE.
+// MAIN HANDLER — MOM PULSE PRIMARY, DAD PULSE FALLBACK
 // ============================================================================
 export const handler = async () => {
   HEART_CYCLE++;
+  heartHealing.cycles = HEART_CYCLE;
+  heartHealing.lastCycleIndex = HEART_CYCLE;
+  heartHealing.lastHeartCycleSignature = buildHeartCycleSignature(HEART_CYCLE);
 
   await logHeart("BEAT_START");
 
+  const binaryField = buildBinaryField();
+  const waveField = buildWaveField();
+  const advantageField = buildAdvantageField(binaryField, waveField);
+  const aiFallbackSurface = buildAiFallbackSurface();
+
+  heartHealing.lastBinaryField = binaryField;
+  heartHealing.lastWaveField = waveField;
+  heartHealing.lastAdvantageField = advantageField;
+  heartHealing.lastAiFallbackSurface = aiFallbackSurface;
+
+  let beatResult = null;
+  let beatSource = "mom";
+
   try {
-    const beatResult = await heartbeat.beat();
+    // MOM PULSE (primary) — same code, every time
+    beatResult = await heartbeat.beat();
+    heartHealing.lastBeatResult = beatResult;
+    heartHealing.lastError = null;
+    heartHealing.lastExitReason = "ok";
+    heartHealing.lastBeatSource = "mom";
 
-    await logHeart("BEAT_COMPLETE");
+    // Bounce Mom's pulse into Dad as a signal (no timer, just a ping)
+    try {
+      aiHeartbeat.pulseAiHeartbeat?.("mom-pulse");
+    } catch (_) {}
 
-    const binaryField = buildBinaryField();
-    const waveField = buildWaveField();
-    const advantageField = buildAdvantageField(binaryField, waveField);
+    await logHeart("BEAT_COMPLETE", { beatSource: "mom" });
 
     return {
       statusCode: 200,
       body: JSON.stringify({
         ok: true,
         beat: beatResult,
+        beatSource,
 
         heartCycle: HEART_CYCLE,
-        heartCycleSignature: buildHeartCycleSignature(HEART_CYCLE),
+        heartCycleSignature: heartHealing.lastHeartCycleSignature,
         binaryField,
         waveField,
         advantageField,
+        aiFallbackSurface,
 
         ...HEART_CONTEXT
       })
@@ -301,11 +289,81 @@ export const handler = async () => {
   } catch (err) {
     const msg = String(err);
 
-    await logHeart("FATAL_ERROR", { message: msg });
+    // MOM PULSE DOWN → CONTINUE UNDER DAD'S MOMENTUM IF AVAILABLE
+    if (aiFallbackSurface.aiHeartbeatAlive && aiHeartbeat.snapshotAiHeartbeat) {
+      try {
+        const dadSnapshot = aiHeartbeat.snapshotAiHeartbeat();
+        beatResult = dadSnapshot;
+        beatSource = "dad";
 
-    const binaryField = buildBinaryField();
-    const waveField = buildWaveField();
-    const advantageField = buildAdvantageField(binaryField, waveField);
+        heartHealing.lastBeatResult = beatResult;
+        heartHealing.lastError = null;
+        heartHealing.lastExitReason = "ok_fallback_dad";
+        heartHealing.lastBeatSource = "dad";
+
+        await logHeart("BEAT_FALLBACK_DAD", {
+          error: msg,
+          aiHeartbeatAlive: aiFallbackSurface.aiHeartbeatAlive
+        });
+
+        return {
+          statusCode: 200,
+          body: JSON.stringify({
+            ok: true,
+            beat: beatResult,
+            beatSource,
+
+            heartCycle: HEART_CYCLE,
+            heartCycleSignature: heartHealing.lastHeartCycleSignature,
+            binaryField,
+            waveField,
+            advantageField,
+            aiFallbackSurface,
+
+            ...HEART_CONTEXT
+          })
+        };
+      } catch (fallbackErr) {
+        const fmsg = String(fallbackErr);
+        heartHealing.lastError = { message: fmsg, stage: "dad_pulse_fallback_failed" };
+        heartHealing.lastExitReason = "fatal_error";
+        heartHealing.lastBeatSource = "none";
+
+        await logHeart("FATAL_ERROR", {
+          message: msg,
+          fallbackError: fmsg
+        });
+
+        return {
+          statusCode: 500,
+          body: JSON.stringify({
+            ok: false,
+            error: msg,
+            fallbackError: fmsg,
+
+            heartCycle: HEART_CYCLE,
+            heartCycleSignature: heartHealing.lastHeartCycleSignature,
+            binaryField,
+            waveField,
+            advantageField,
+            aiFallbackSurface,
+            beatSource: "none",
+
+            ...HEART_CONTEXT
+          })
+        };
+      }
+    }
+
+    // MOM PULSE DOWN, DAD NOT AVAILABLE
+    heartHealing.lastError = { message: msg, stage: "mom_pulse_failed_no_dad" };
+    heartHealing.lastExitReason = "fatal_error";
+    heartHealing.lastBeatSource = "none";
+
+    await logHeart("FATAL_ERROR", {
+      message: msg,
+      aiHeartbeatAlive: aiFallbackSurface.aiHeartbeatAlive
+    });
 
     return {
       statusCode: 500,
@@ -314,13 +372,38 @@ export const handler = async () => {
         error: msg,
 
         heartCycle: HEART_CYCLE,
-        heartCycleSignature: buildHeartCycleSignature(HEART_CYCLE),
+        heartCycleSignature: heartHealing.lastHeartCycleSignature,
         binaryField,
         waveField,
         advantageField,
+        aiFallbackSurface,
+        beatSource: "none",
 
         ...HEART_CONTEXT
       })
     };
   }
 };
+
+// ============================================================================
+// DIAGNOSTICS
+// ============================================================================
+export function getPulseProxyHeartHealingState() {
+  return { ...heartHealing };
+}
+
+export function getPulseProxyHeartDiagnostics() {
+  return {
+    cycles: heartHealing.cycles,
+    lastBeatResult: heartHealing.lastBeatResult,
+    lastError: heartHealing.lastError,
+    lastExitReason: heartHealing.lastExitReason,
+    lastCycleIndex: heartHealing.lastCycleIndex,
+    lastHeartCycleSignature: heartHealing.lastHeartCycleSignature,
+    lastBinaryField: heartHealing.lastBinaryField,
+    lastWaveField: heartHealing.lastWaveField,
+    lastAdvantageField: heartHealing.lastAdvantageField,
+    lastAiFallbackSurface: heartHealing.lastAiFallbackSurface,
+    lastBeatSource: heartHealing.lastBeatSource
+  };
+}

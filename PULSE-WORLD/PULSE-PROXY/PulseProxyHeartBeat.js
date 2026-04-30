@@ -216,6 +216,24 @@ function buildHeartbeatCycleSignature(cycle) {
 
 
 // ============================================================================
+// HEARTBEAT HEALING STATE — pacemaker rhythm log
+// ============================================================================
+const heartbeatHealing = {
+  cycles: 0,
+  lastTimerLogoutRunId: null,
+  lastSecuritySweepRunId: null,
+  lastError: null,
+  lastExitReason: null,
+  lastCycleIndex: null,
+
+  lastHeartbeatCycleSignature: null,
+  lastBinaryField: null,
+  lastWaveField: null,
+  lastAdvantageField: null
+};
+
+
+// ============================================================================
 // HEARTBEAT CONTEXT — v12.3‑EVO
 // ============================================================================
 let HEARTBEAT_CYCLE = 0;
@@ -234,11 +252,19 @@ export const HEARTBEAT_CONTEXT = {
 // ============================================================================
 export const timerLogout = onSchedule("every 5 minutes", async () => {
   HEARTBEAT_CYCLE++;
+  heartbeatHealing.cycles = HEARTBEAT_CYCLE;
+  heartbeatHealing.lastCycleIndex = HEARTBEAT_CYCLE;
 
   const heartbeatCycleSignature = buildHeartbeatCycleSignature(HEARTBEAT_CYCLE);
   const binaryField = buildBinaryField();
   const waveField = buildWaveField();
   const advantageField = buildAdvantageField(binaryField, waveField);
+
+  heartbeatHealing.lastHeartbeatCycleSignature = heartbeatCycleSignature;
+  heartbeatHealing.lastBinaryField = binaryField;
+  heartbeatHealing.lastWaveField = waveField;
+  heartbeatHealing.lastAdvantageField = advantageField;
+  heartbeatHealing.lastExitReason = "ok";
 
   try {
     console.log("heartbeat", "TIMER_START", {
@@ -259,6 +285,8 @@ export const timerLogout = onSchedule("every 5 minutes", async () => {
   const runId = crypto.randomUUID();
   const logId = `LOGOUT_${runId}`;
   const errorPrefix = `ERR_${runId}_`;
+
+  heartbeatHealing.lastTimerLogoutRunId = runId;
 
   const userChanges = {};
   const pulseChanges = {};
@@ -445,6 +473,9 @@ export const timerLogout = onSchedule("every 5 minutes", async () => {
     });
 
   } catch (err) {
+    heartbeatHealing.lastError = { message: String(err), stage: "timerLogout_fatal" };
+    heartbeatHealing.lastExitReason = "fatal_error";
+
     await db.collection("FUNCTION_ERRORS").doc(`ERR_FATAL_${runId}`).set({
       fn: "timerLogout",
       stage: "fatal",
@@ -476,6 +507,12 @@ export const securitySweep = onSchedule("every 24 hours", async () => {
   const binaryField = buildBinaryField();
   const waveField = buildWaveField();
   const advantageField = buildAdvantageField(binaryField, waveField);
+
+  heartbeatHealing.lastSecuritySweepRunId = `SECURE_${SECURITY_SWEEP_CYCLE}`;
+  heartbeatHealing.lastBinaryField = binaryField;
+  heartbeatHealing.lastWaveField = waveField;
+  heartbeatHealing.lastAdvantageField = advantageField;
+  heartbeatHealing.lastExitReason = "ok";
 
   try {
     console.log("heartbeat", "SECURITY_SWEEP_START", {
@@ -774,6 +811,9 @@ export const securitySweep = onSchedule("every 24 hours", async () => {
     });
 
   } catch (err) {
+    heartbeatHealing.lastError = { message: String(err), stage: "securitySweep_fatal" };
+    heartbeatHealing.lastExitReason = "fatal_error";
+
     await db.collection("FUNCTION_ERRORS").doc(`ERR_FATAL_${runId}`).set({
       fn: "securitySweep",
       stage: "fatal",
@@ -783,3 +823,26 @@ export const securitySweep = onSchedule("every 24 hours", async () => {
     });
   }
 });
+
+
+// ============================================================================
+// HEARTBEAT HEALING / DIAGNOSTICS EXPORTS
+// ============================================================================
+export function getPulseProxyHeartbeatHealingState() {
+  return { ...heartbeatHealing };
+}
+
+export function getPulseProxyHeartbeatDiagnostics() {
+  return {
+    cycles: heartbeatHealing.cycles,
+    lastTimerLogoutRunId: heartbeatHealing.lastTimerLogoutRunId,
+    lastSecuritySweepRunId: heartbeatHealing.lastSecuritySweepRunId,
+    lastError: heartbeatHealing.lastError,
+    lastExitReason: heartbeatHealing.lastExitReason,
+    lastCycleIndex: heartbeatHealing.lastCycleIndex,
+    lastHeartbeatCycleSignature: heartbeatHealing.lastHeartbeatCycleSignature,
+    lastBinaryField: heartbeatHealing.lastBinaryField,
+    lastWaveField: heartbeatHealing.lastWaveField,
+    lastAdvantageField: heartbeatHealing.lastAdvantageField
+  };
+}

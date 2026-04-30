@@ -1,6 +1,6 @@
 // ============================================================================
-//  aiMemory.js — Pulse OS v12.3-Presence Organ
-//  Pure PulseCoreMemory Adapter • Dualband • Binary‑Only • Zero Local State
+//  aiMemory.js — Pulse OS v13.0-Presence-ADV Organ
+//  Pure PulseCoreMemory Adapter • Dualband • Binary‑Only • Zero Local Storage
 // ----------------------------------------------------------------------------
 //  CANONICAL ROLE:
 //    This organ is the **Memory Layer Adapter** of Pulse OS (dualband).
@@ -14,6 +14,7 @@
 //      • forwards reads/writes to PulseCoreMemory
 //      • computes memory artery metrics (throughput, pressure, cost, budget)
 //      • exposes window‑safe memory snapshots
+//      • exposes artery snapshots to NodeAdmin/Overmind via registry/reporter
 //
 //  STORAGE TRUTH:
 //    • All real storage lives in PulseCoreMemory.
@@ -24,13 +25,13 @@
 import { PulseCoreMemory } from "../PULSE-CORE/PulseCoreMemory.js";
 
 // ---------------------------------------------------------
-//  META BLOCK — v12.3-Presence
+//  META BLOCK — v13.0-Presence-ADV
 // ---------------------------------------------------------
 export const MemoryMeta = Object.freeze({
   layer: "OrganismMemory",
   role: "MEMORY_LAYER",
-  version: "12.3-Presence",
-  identity: "aiMemory-v12.3-Presence",
+  version: "13.0-Presence-ADV",
+  identity: "aiMemory-v13.0-Presence-ADV",
 
   evo: Object.freeze({
     deterministic: true,
@@ -43,16 +44,18 @@ export const MemoryMeta = Object.freeze({
     bluetoothReady: true,
     multiInstanceReady: true,
     readOnly: false,
-    microPipeline: true,     // ⭐ NEW
-    speedOptimized: true,    // ⭐ NEW
-    prewarmAware: true,      // ⭐ NEW
-    arteryAware: true,       // ⭐ NEW
-    epoch: "v12.3-Presence"
+    microPipeline: true,
+    speedOptimized: true,
+    prewarmAware: true,
+    arteryAware: true,
+    nodeAdminAware: true,
+    cacheAware: true,      // registry-level, not data cache
+    epoch: "v13.0-Presence-ADV"
   }),
 
   contract: Object.freeze({
     purpose:
-      "Provide deterministic memory access over PulseCoreMemory with artery metrics for throughput, pressure, cost, and budget.",
+      "Provide deterministic memory access over PulseCoreMemory with artery metrics for throughput, pressure, cost, and budget, and expose those metrics to NodeAdmin/Overmind via registry/reporter.",
 
     never: Object.freeze([
       "store non-binary data",
@@ -74,6 +77,26 @@ export const MemoryMeta = Object.freeze({
 });
 
 // ---------------------------------------------------------
+//  GLOBAL MEMORY ARTERY REGISTRY (READ-ONLY, METRICS-ONLY)
+// ---------------------------------------------------------
+
+const _globalMemoryArteryRegistry = new Map();
+/**
+ * Registry key: `${id}#${instanceIndex}`
+ */
+function _registryKey(id, instanceIndex) {
+  return `${id || MemoryMeta.identity}#${instanceIndex}`;
+}
+
+export function getGlobalMemoryArteries() {
+  const out = {};
+  for (const [k, v] of _globalMemoryArteryRegistry.entries()) {
+    out[k] = v;
+  }
+  return out;
+}
+
+// ---------------------------------------------------------
 //  PACKET EMITTER — deterministic, memory-scoped
 // ---------------------------------------------------------
 function emitMemoryPacket(type, payload) {
@@ -87,7 +110,7 @@ function emitMemoryPacket(type, payload) {
 }
 
 // ---------------------------------------------------------
-//  PREWARM — v11.3‑EVO
+//  PREWARM — v13.0‑ADV
 // ---------------------------------------------------------
 export function prewarmAIMemory({ trace = false } = {}) {
   const packet = emitMemoryPacket("prewarm", {
@@ -99,7 +122,7 @@ export function prewarmAIMemory({ trace = false } = {}) {
 }
 
 // ============================================================================
-//  ORGAN IMPLEMENTATION — v11.3‑EVO (PulseCoreMemory‑only)
+//  ORGAN IMPLEMENTATION — v13.0‑ADV (PulseCoreMemory‑only)
 // ============================================================================
 export class AIMemory {
   constructor(config = {}) {
@@ -110,6 +133,16 @@ export class AIMemory {
 
     this.maxBits = config.maxBits || 4096;
 
+    // optional NodeAdmin reporter hook (metrics-only, read-only)
+    // fn(artery, meta) => void
+    this.nodeAdminReporter =
+      typeof config.nodeAdminReporter === "function"
+        ? config.nodeAdminReporter
+        : null;
+
+    // instance index for registry
+    this.instanceIndex = AIMemory._registerInstance();
+
     if (
       !this.core ||
       typeof this.core.writeBinary !== "function" ||
@@ -119,6 +152,24 @@ export class AIMemory {
         "AIMemory requires PulseCoreMemory with writeBinary(key, value) and readBinary(key)"
       );
     }
+  }
+
+  // --------------------------------------------------------------------------
+  //  STATIC INSTANCE REGISTRY
+  // --------------------------------------------------------------------------
+  static _registerInstance() {
+    if (typeof AIMemory._instanceCount !== "number") {
+      AIMemory._instanceCount = 0;
+    }
+    const idx = AIMemory._instanceCount;
+    AIMemory._instanceCount += 1;
+    return idx;
+  }
+
+  static getInstanceCount() {
+    return typeof AIMemory._instanceCount === "number"
+      ? AIMemory._instanceCount
+      : 0;
   }
 
   // --------------------------------------------------------------------------
@@ -184,7 +235,7 @@ export class AIMemory {
     const cost       = this._computeMemoryCost(pressure, throughput);
     const budget     = this._computeMemoryBudget(throughput, cost);
 
-    return {
+    const artery = {
       throughput,
       throughputBucket: this._bucketLevel(throughput),
 
@@ -199,8 +250,28 @@ export class AIMemory {
 
       segmentCount,
       totalBits,
-      avgSize
+      avgSize,
+
+      instanceIndex: this.instanceIndex,
+      instanceCount: AIMemory.getInstanceCount(),
+      id: this.id,
+      timestamp: Date.now()
     };
+
+    // update global registry
+    const key = _registryKey(this.id, this.instanceIndex);
+    _globalMemoryArteryRegistry.set(key, artery);
+
+    // optional NodeAdmin reporter
+    if (this.nodeAdminReporter) {
+      try {
+        this.nodeAdminReporter(artery, MemoryMeta);
+      } catch (err) {
+        this._trace("nodeAdmin:reporter:error", { error: String(err) });
+      }
+    }
+
+    return artery;
   }
 
   // --------------------------------------------------------------------------
@@ -314,7 +385,7 @@ export class AIMemory {
 
   _trace(event, payload) {
     if (!this.trace) return;
-    console.log(`[${this.id}] ${event}`, payload);
+    console.log(`[${this.id}#${this.instanceIndex}] ${event}`, payload);
   }
 }
 
@@ -333,6 +404,7 @@ if (typeof module !== "undefined") {
     AIMemory,
     createAIMemory,
     MemoryMeta,
-    prewarmAIMemory
+    prewarmAIMemory,
+    getGlobalMemoryArteries
   };
 }

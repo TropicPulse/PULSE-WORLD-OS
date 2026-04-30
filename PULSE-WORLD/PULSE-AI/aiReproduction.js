@@ -1,5 +1,5 @@
 /**
- * aiReproduction.js — Pulse OS v12.4‑PRESENCE‑EVO++
+ * aiReproduction.js — Pulse OS v13.0‑PRESENCE‑EVO+++
  * ---------------------------------------------------------
  * CANONICAL ROLE:
  *   Binary Reproduction System of the organism.
@@ -14,6 +14,7 @@
  *     - presence-aware reproduction metrics (cluster, density, band mix)
  *     - route-aware metrics (castles, servers, corridors, route pressure)
  *     - NodeAdmin-aware metrics (mesh pressure, route pressure, reproduction priority)
+ *     - NodeAdmin-reportable artery snapshots (via config hook)
  *
  *   It is the organism’s:
  *     • reproductive system
@@ -22,25 +23,24 @@
  *     • lineage multiplier
  *     • corridor / route reinforcement signaler (metrics-only)
  *
- *   v12.4‑PRESENCE‑EVO++ UPGRADE:
- *     • Presence context hook (read-only, optional)
- *     • Route context hook (read-only, optional)
- *     • NodeAdmin context hook (read-only, optional)
- *     • Presence/Route/NodeAdmin-enriched artery snapshot
- *     • Soft reproductionHint for NodeAdmin / Expansion / Castle (metrics-only)
+ *   v13.0‑PRESENCE‑EVO+++ UPGRADE:
+ *     • Presence/Route/NodeAdmin context preserved (read-only, optional)
+ *     • Global artery registry (read-only, metrics-only) for NodeAdmin/Overmind
+ *     • Optional nodeAdminReporter hook (metrics-only, no behavior change)
+ *     • Prewarm helper for artery metrics
  *     • No behavioral change inside reproduction (no auto-spawn decisions)
  *     • Still deterministic, drift-proof, non-blocking
  */
 
 // ============================================================================
-//  META BLOCK — v12.4‑PRESENCE‑EVO++
+//  META BLOCK — v13.0‑PRESENCE‑EVO+++
 // ============================================================================
 
 export const ReproductionMeta = Object.freeze({
   layer: "BinaryOrganism",
   role: "BINARY_REPRODUCTION_ORGAN",
-  version: "12.4-PRESENCE-EVO++",
-  identity: "aiBinaryReproduction-v12.4-PRESENCE-EVO++",
+  version: "13.0-PRESENCE-EVO+++",
+  identity: "aiBinaryReproduction-v13.0-PRESENCE-EVO+++",
 
   evo: Object.freeze({
     driftProof: true,
@@ -56,15 +56,17 @@ export const ReproductionMeta = Object.freeze({
     multiInstanceReady: true,
     presenceAware: true,
     socialAware: true,
-    routeAware: true,        // ⭐ NEW
-    nodeAdminAware: true,    // ⭐ NEW
+    routeAware: true,
+    nodeAdminAware: true,
     arteryAware: true,
-    epoch: "12.4-PRESENCE-EVO++"
+    cacheAware: true,
+    prewarmReady: true,
+    epoch: "13.0-PRESENCE-EVO+++"
   }),
 
   contract: Object.freeze({
     purpose:
-      "Provide deterministic organism cloning, genome duplication, lineage-safe replication, and reproduction artery metrics v3 + presence/route/NodeAdmin-enriched metrics for the v12.4‑PRESENCE‑EVO++ organism.",
+      "Provide deterministic organism cloning, genome duplication, lineage-safe replication, and reproduction artery metrics v3 + presence/route/NodeAdmin-enriched metrics for the v13.0‑PRESENCE‑EVO+++ organism.",
 
     never: Object.freeze([
       "use randomness",
@@ -86,6 +88,7 @@ export const ReproductionMeta = Object.freeze({
       "record lineage deterministically",
       "compute reproduction artery metrics v3",
       "enrich metrics with presence/route/NodeAdmin context only (read-only)",
+      "expose artery snapshots for NodeAdmin/Overmind via hooks/registry",
       "remain drift-proof",
       "remain deterministic",
       "remain non-blocking"
@@ -94,7 +97,34 @@ export const ReproductionMeta = Object.freeze({
 });
 
 // ============================================================================
-//  ORGAN IMPLEMENTATION — v12.4‑PRESENCE‑EVO++
+//  GLOBAL ARTERY REGISTRY (READ-ONLY, METRICS-ONLY)
+// ============================================================================
+
+const _globalReproductionArteryRegistry = new Map();
+/**
+ * Registry key: `${slice}#${instanceIndex}`
+ */
+function _registryKey(slice, instanceIndex) {
+  return `${slice || "default"}#${instanceIndex}`;
+}
+
+export function getGlobalReproductionArteries() {
+  // shallow copy, read-only view
+  const out = {};
+  for (const [k, v] of _globalReproductionArteryRegistry.entries()) {
+    out[k] = v;
+  }
+  return out;
+}
+
+export function prewarmReproductionArtery(slice = "default") {
+  // no-op placeholder for now; kept for symmetry and future tuning
+  // (you can call this to ensure the module is loaded and registry is live)
+  return !!slice;
+}
+
+// ============================================================================
+//  ORGAN IMPLEMENTATION — v13.0‑PRESENCE‑EVO+++
 // ============================================================================
 
 export class AIBinaryReproduction {
@@ -144,7 +174,10 @@ export class AIBinaryReproduction {
      *        reproductionPriority?: number   // 0..1 (advisory)
      *     }
      *
-     *   All providers are read-only, metrics-only, no behavior change inside this organ.
+     *     nodeAdminReporter → optional fn(artery, meta) => void
+     *       - metrics-only, read-only
+     *       - can forward artery to PulseNodeAdmin-v11-Evo or similar
+     *       - no behavior change inside this organ
      */
     this.id = config.id || "ai-binary-reproduction";
     this.encoder = config.encoder;
@@ -187,6 +220,12 @@ export class AIBinaryReproduction {
         ? config.nodeAdminContextProvider
         : null;
 
+    // NodeAdmin reporter hook (optional, metrics-only)
+    this.nodeAdminReporter =
+      typeof config.nodeAdminReporter === "function"
+        ? config.nodeAdminReporter
+        : null;
+
     // multi-instance identity
     this.instanceIndex = AIBinaryReproduction._registerInstance();
     // counters for artery metrics
@@ -207,7 +246,7 @@ export class AIBinaryReproduction {
 
   // ---------------------------------------------------------
   //  STATIC INSTANCE REGISTRY (MULTI-INSTANCE HARMONY)
-// ---------------------------------------------------------
+  // ---------------------------------------------------------
 
   static _registerInstance() {
     if (typeof AIBinaryReproduction._instanceCount !== "number") {
@@ -226,7 +265,7 @@ export class AIBinaryReproduction {
 
   // ---------------------------------------------------------
   //  CONTEXT PROVIDERS (PRESENCE / ROUTE / NODEADMIN)
-// ---------------------------------------------------------
+  // ---------------------------------------------------------
 
   _safePresenceContext() {
     if (!this.presenceContextProvider) return null;
@@ -407,6 +446,19 @@ export class AIBinaryReproduction {
       this._warn("reproduction:spiral:detected", artery);
     }
 
+    // update global registry (read-only for others)
+    const key = _registryKey(this.slice, this.instanceIndex);
+    _globalReproductionArteryRegistry.set(key, artery);
+
+    // optional NodeAdmin reporter hook
+    if (this.nodeAdminReporter) {
+      try {
+        this.nodeAdminReporter(artery, ReproductionMeta);
+      } catch (err) {
+        this._trace("nodeAdmin:reporter:error", { error: String(err) });
+      }
+    }
+
     return artery;
   }
 
@@ -444,6 +496,13 @@ export class AIBinaryReproduction {
   // PUBLIC EXPORT
   getReproductionArtery() {
     return this._computeReproductionArtery();
+  }
+
+  getReproductionSnapshot() {
+    return Object.freeze({
+      meta: ReproductionMeta,
+      artery: this._computeReproductionArtery()
+    });
   }
 
   // ---------------------------------------------------------
@@ -635,7 +694,7 @@ export class AIBinaryReproduction {
 }
 
 // ============================================================================
-//  FACTORY — v12.4‑PRESENCE‑EVO++
+//  FACTORY — v13.0‑PRESENCE‑EVO+++
 // ============================================================================
 
 export function createAIBinaryReproduction(config) {
@@ -650,6 +709,8 @@ if (typeof module !== "undefined") {
   module.exports = {
     ReproductionMeta,
     AIBinaryReproduction,
-    createAIBinaryReproduction
+    createAIBinaryReproduction,
+    getGlobalReproductionArteries,
+    prewarmReproductionArtery
   };
 }
