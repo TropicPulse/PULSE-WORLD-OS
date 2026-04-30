@@ -1,13 +1,13 @@
 // ============================================================================
-//  PulseUnderstanding.js — v12-EVO-MAX (HYBRID LOADER)
+//  PulseUnderstanding.js — v13-EVO-MAX (HYBRID LOADER)
 //  Cortical Opener • Symbolic Kernel Loader • Binary Shadow Integrator
 //  Deterministic Brainstem • Runtime/Scheduler/Substrate Unifier
 // ============================================================================
 //
-//  v12-EVO HYBRID CONTRACT:
+//  v13-EVO HYBRID CONTRACT:
 //  ------------------------
 //   • DO NOT boot the binary organism (Window already did).
-//   • DO load symbolic kernel + symbolic organs.
+//   • DO load symbolic kernel + symbolic organs (via User/OS chain).
 //   • DO integrate binary shadow from window.PulseBinary.
 //   • DO integrate Flow (window.PulseUI) and PageScanner intel.
 //   • DO unify runtime, scheduler, substrate.
@@ -34,40 +34,46 @@ import { PulseIQMap } from "./PULSE-OS/PulseIQMap.js";
 
 
 // ============================================================================
-//  IMPORTS — SYMBOLIC KERNEL + SYMBOLIC ORGANS
+//  IMPORTS — USER / LOCAL OS ORCHESTRATOR (v13+)
+//  - User pulls OS; OS pulls everything else.
+//  - Understanding depends on User, not directly on OS barrels.
 // ============================================================================
-import { PulseOSv11Evo } from "./PULSE-OS/PulseOS-v11-Evo.js";
+import createPulseWorldCore from "./PULSE-EXPANSION/PulseUser-v12.3-Presence.js";
 
+
+// ============================================================================
+//  IMPORTS — SYMBOLIC / BINARY ORGANS (UNCHANGED)
+//  - These are still the organ-level pieces we unify under the kernel.
+// ============================================================================
 import { createProxy as PulseProxySym } from "./PULSE-PROXY/PulseProxy-v11-EVO.js";
 import { PulseRouter as PulseRouterSym } from "./PULSE-ROUTER/PulseRouter-v11-EVO.js";
 import { createGPUDispatch as PulseGPUSym } from "./PULSE-GPU/PulseGPU-v11-EVO.js";
 import { createPulseMesh as PulseMeshSym } from "./PULSE-MESH/PulseMesh-v11-EVO.js";
 import { createPulseSend as PulseSendSym } from "./PULSE-SEND/PulseSend-v11-EVO.js";
-import { createEarn as PulseEarnSym} from "./PULSE-EARN/PulseEarn-v12.3-Presence.js";
+import { createEarn as PulseEarnSym } from "./PULSE-EARN/PulseEarn-v12.3-Presence.js";
 
 
 // ============================================================================
 //  IMPORTS — BINARY SHADOW (NO BOOT HERE)
 //  Window already booted ai-v11-Evo and exposed window.PulseBinary.
 // ============================================================================
-import { PulseBinaryOSv11Evo } from "./PULSE-OS/PulseBinaryOS-v11-EVO-MAX.js";
 import { createDualBandOrganism as PulseBinaryOrganismBoot } from "./PULSE-AI/aiDualBand-v11-Evo.js";
 
 import { createBinaryProxy } from "./PULSE-PROXY/PulseBinaryProxy-v11-EVO.js";
-import { createBinaryRouter as PulseRouterBin} from "./PULSE-ROUTER/PulseBinaryRouter-v11-EVO.js";
-import { PulseBinaryGPU as PulseGPUBin} from "./PULSE-GPU/PulseBinaryGPU-v11-Evo.js";
-import { createBinaryMesh as PulseMeshBin} from "./PULSE-MESH/PulseBinaryMesh-v11-EVO.js";
-import { createBinarySend as PulseSendBin} from "./PULSE-SEND/PulseBinarySend-v11-EVO.js";
+import { createBinaryRouter as PulseRouterBin } from "./PULSE-ROUTER/PulseBinaryRouter-v11-EVO.js";
+import { PulseBinaryGPU as PulseGPUBin } from "./PULSE-GPU/PulseBinaryGPU-v11-Evo.js";
+import { createBinaryMesh as PulseMeshBin } from "./PULSE-MESH/PulseBinaryMesh-v11-EVO.js";
+import { createBinarySend as PulseSendBin } from "./PULSE-SEND/PulseBinarySend-v11-EVO.js";
 
 
 // ============================================================================
-//  CONTEXT — v12-EVO-MAX
+//  CONTEXT — v13-EVO-MAX
 // ============================================================================
 const PULSE_UNDERSTANDING_CONTEXT = {
   layer: "PulseUnderstanding",
   role: "CORTICAL_OPENER",
-  version: "12.0-EVO-MAX",
-  lineage: "cortical-opener-core-v12",
+  version: "13.0-EVO-MAX",
+  lineage: "cortical-opener-core-v13",
   evo: {
     hybridLoader: true,
     symbolicKernel: true,
@@ -84,15 +90,14 @@ const PULSE_UNDERSTANDING_CONTEXT = {
     browserOnly: true,
     portalAware: true,
     surfaceEnvironmentAware: true,
-    chunkMembraneAware: true
+    chunkMembraneAware: true,
+    userPulledOS: true // NEW: User → OS → Brain chain
   }
 };
 
 
 // ============================================================================
 //  ENVIRONMENT SNAPSHOT (UPGRADED — USE PORTAL IF PRESENT)
-//  - Prefer Window's PulseSurface.environment (richer, cached).
-//  - Fall back to local navigator snapshot if portal not present.
 // ============================================================================
 function buildEnvironmentSnapshot() {
   if (typeof window === "undefined") {
@@ -138,17 +143,45 @@ const PulseEnvironment = buildEnvironmentSnapshot();
 
 
 // ============================================================================
-//  GOVERNOR (symbolic only)
+//  USER / LOCAL OS CORE (SIDE-EFFECT LOAD)
+//  - This is the "user pulls OS" connection.
+//  - We don't call into it directly here; we just ensure it's loaded.
+// ============================================================================
+let PulseWorldCore = null;
+try {
+  PulseWorldCore = createPulseWorldCore({
+    regionID: null,
+    trace: false,
+    serverMode: false
+  });
+} catch {
+  // Understanding must not throw if user core fails; it degrades to window.PulseBinary-only.
+  PulseWorldCore = null;
+}
+
+
+// ============================================================================
+//  GOVERNOR (symbolic only, now via global Pulse if present)
+//  - Previously: PulseOSv11Evo.runThroughGovernor(...)
+//  - Now: delegate to window.Pulse.Governed.run if available, else direct fn.
 // ============================================================================
 function runThroughGovernor(organName, pulseOrImpulse, fn) {
-  return PulseOSv11Evo.runThroughGovernor(organName, pulseOrImpulse, fn);
+  const governedRun =
+    typeof window !== "undefined"
+      ? window?.Pulse?.Governed?.run
+      : null;
+
+  if (typeof governedRun === "function") {
+    return governedRun(organName, pulseOrImpulse, fn);
+  }
+
+  // Fallback: just run the function directly.
+  return fn(pulseOrImpulse);
 }
 
 
 // ============================================================================
 //  BINARY-FIRST IDENTITY (HYBRID MODE)
-//  - Try binary shadow identity first.
-//  - Fall back to symbolic identity.
 // ============================================================================
 async function resolveIdentityBinaryFirst(ProxyBin, ProxySym) {
   const shadow = window?.PulseBinary?.meta;
@@ -176,13 +209,42 @@ async function resolveIdentityBinaryFirst(ProxyBin, ProxySym) {
 
 // ============================================================================
 //  HYBRID KERNEL RESOLUTION (NO BINARY BOOT HERE)
-//  - Symbolic kernel loads normally.
-//  - Binary kernel is read from Window shadow.
+//  - Symbolic kernel is now resolved via User/OS chain or window.Pulse.
+//  - Binary kernel is still read from window.PulseBinary.
 // ============================================================================
 async function resolveKernelsBinaryFirst() {
-  const SymbolicKernel = await PulseOSv11Evo.Kernel;
-  const BinaryKernel = window?.PulseBinary ?? null;
-  return { BinaryKernel, SymbolicKernel };
+  const BinaryKernel =
+    typeof window !== "undefined" ? window.PulseBinary ?? null : null;
+
+  let SymbolicKernel = null;
+
+  // Try to get symbolic kernel from User/OS chain first
+  try {
+    if (PulseWorldCore?.getPrimaryOSView) {
+      const osView = PulseWorldCore.getPrimaryOSView();
+      if (osView?.SymbolicKernel) {
+        SymbolicKernel = osView.SymbolicKernel;
+      }
+    }
+  } catch {}
+
+  // Fallback: try window.Pulse.SymbolicKernel or window.Pulse.Kernel
+  if (!SymbolicKernel && typeof window !== "undefined") {
+    SymbolicKernel =
+      window.Pulse?.SymbolicKernel ??
+      window.Pulse?.Kernel ??
+      null;
+  }
+
+  // If it's a promise-like, await it
+  if (SymbolicKernel && typeof SymbolicKernel.then === "function") {
+    SymbolicKernel = await SymbolicKernel;
+  }
+
+  return {
+    BinaryKernel,
+    SymbolicKernel: SymbolicKernel || {}
+  };
 }
 
 
@@ -192,9 +254,12 @@ async function resolveKernelsBinaryFirst() {
 async function buildPulseKernel() {
   const { BinaryKernel, SymbolicKernel } = await resolveKernelsBinaryFirst();
 
-  const BinaryShadow = typeof window !== "undefined" ? window.PulseBinary ?? null : null;
-  const UIFlow = typeof window !== "undefined" ? window.PulseUI ?? null : null;
-  const SkinReflex = typeof window !== "undefined" ? window.PulseSkinReflex ?? null : null;
+  const BinaryShadow =
+    typeof window !== "undefined" ? window.PulseBinary ?? null : null;
+  const UIFlow =
+    typeof window !== "undefined" ? window.PulseUI ?? null : null;
+  const SkinReflex =
+    typeof window !== "undefined" ? window.PulseSkinReflex ?? null : null;
 
   const BinaryBrain = BinaryKernel?.Brain ?? null;
   const BinaryEvolution = BinaryKernel?.Evolution ?? null;
@@ -202,9 +267,9 @@ async function buildPulseKernel() {
   const BinaryMemoryCore = BinaryKernel?.MemoryCore ?? null;
   const BinaryOverlay = BinaryKernel?.BinaryOverlay ?? null;
 
-  const Brain = BinaryBrain ?? SymbolicKernel.Brain;
-  const Evolution = BinaryEvolution ?? SymbolicKernel.Evolution;
-  const SpinalCord = BinarySDN ?? SymbolicKernel.SDN;
+  const Brain = BinaryBrain ?? SymbolicKernel.Brain ?? null;
+  const Evolution = BinaryEvolution ?? SymbolicKernel.Evolution ?? null;
+  const SpinalCord = BinarySDN ?? SymbolicKernel.SDN ?? null;
   const CoreGovernor = SymbolicKernel.Governor ?? null;
 
   const MemoryCore =
@@ -291,7 +356,7 @@ async function buildPulseKernel() {
 
   try {
     SpinalCord?.registerExtension?.("Understanding", "extension", {
-      version: "v12",
+      version: "v13",
       role: "cortical-opener",
       layer: "A3",
       binaryFirst: true,
@@ -347,7 +412,7 @@ async function buildPulseKernel() {
       executionContext: {
         sceneType: "cortical-opener",
         workloadClass: "frontend-boot",
-        dispatchSignature: "Understanding.v12-EVO-MAX",
+        dispatchSignature: "Understanding.v13-EVO-MAX",
         shapeSignature: "A3-layer",
         extensionId: "Understanding",
         identityKind: identityResult.kind
@@ -441,7 +506,7 @@ if (typeof window !== "undefined") {
     })
     .catch((err) => {
       console.error(
-        "[PulseUnderstanding v12-EVO-MAX] Kernel bootstrap failed:",
+        "[PulseUnderstanding v13-EVO-MAX] Kernel bootstrap failed:",
         err
       );
     });
@@ -450,8 +515,6 @@ if (typeof window !== "undefined") {
 
 // ============================================================================
 //  UNDERSTANDING PREWARM — uses portal chunk membrane if available
-//  - Optional helper: prewarm common cortical paths (maps, configs, assets).
-//  - Does NOT mutate Window or Page; only calls membrane prewarm.
 // ============================================================================
 export function prewarmUnderstanding(urls = []) {
   if (typeof window === "undefined") return;

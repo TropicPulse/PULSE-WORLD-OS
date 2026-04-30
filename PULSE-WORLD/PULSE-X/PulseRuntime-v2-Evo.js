@@ -27,7 +27,7 @@ export const PulseRuntimeV2Meta = Object.freeze({
   organId: "PulseRuntime-v2.3-PRESENCE-EVO+",
   role: "RUNTIME_SPINE",
   version: "2.3-PRESENCE-EVO+",
-  epoch: "v12.3-PRESENCE-EVO+",
+  epoch: "v13-PRESENCE-EVO+",
   layer: "RuntimeCore",
   safety: Object.freeze({
     deterministic: true,
@@ -55,9 +55,6 @@ export const PulseRuntimeV2Meta = Object.freeze({
 
 // World / Regioning (this *is* PulseExpansion)
 import * as PulseWorldRegioning from "../PULSE-EXPANSION/PulseExpansion-v12.3-Presence.js";
-
-// Finality hooks (aggregator over finality organs)
-import * as PulseWorldFinality from "../PULSE-FINALITY/index.js";
 
 // Delta Engine (CoreMemory integrations)
 import * as PulseContinuance from "../PULSE-FINALITY/PULSE-CONTINUANCE/PulseContinuance-CoreMemoryIntegration-v1.js";
@@ -244,12 +241,7 @@ export function runPulseTickV2({
 
   CoreMemory.set(ROUTE, KEY_LAST_FRAMES, binaryFrames);
 
-  PulseWorldFinality.onRuntimeTickCompleted?.({
-    tick,
-    multiPlan,
-    multiPlanSummary,
-    executionResultsById
-  });
+  // v13+: no fake finality callback; runtime is pure and returns its result.
 
   return new PulseRuntimeTickResult({
     tick,

@@ -1,58 +1,21 @@
 // ============================================================================
-// PULSE-WORLD : PulseUser-v12.3-PRESENCE-EVO+.js
+// PULSE-WORLD : PulseUser-v12.3-Presence.js
 // ORGAN TYPE: Local OS / Experience Orchestrator
-// VERSION: v12.3-PRESENCE-EVO+ (Hybrid, Every-Advantage, Context-Aware)
+// VERSION: v13-PRESENCE-EVO+ (Hybrid, Every-Advantage, Context-Aware, Brain-Aware)
 // ============================================================================
-//
-// ROLE:
-//   PulseWorldCore/PulseUser is the local OS layer that boots when a user taps the beacon.
-//   It binds Beacon → Router → Castle → Mesh → Expansion into a coherent,
-//   adaptive, local-first experience.
-//
-//   In v12.3 it becomes:
-//     - presence-aware
-//     - advantage-aware
-//     - fallback-aware
-//     - chunk/cache/prewarm-aware
-//     - mesh-pressure-aware
-//     - castle-load-aware
-//     - expansion-route-aware
-//     - router-suggestion-aware
-//
-//   It does NOT:
-//     - spawn nodes
-//     - route traffic directly
-//     - override organ logic
-//     - mutate infrastructure
-//
-//   It ONLY adapts the local OS experience.
-//
-// CONTRACT:
-//   - Must only boot after explicit user opt-in.
-//   - Must respect offline-first and local-first principles.
-//   - Must route via PulseRouter, not directly to castles/mesh.
-//   - Must expose clear, minimal, reversible controls.
-//   - Must remain deterministic, synthetic, and drift-proof.
-//
-// ARCHITECTURE:
-//   A = Baseline experience shell.
-//   B = Adaptive behavior (presence-aware, density-aware, pressure-aware).
-//   A = Return to deterministic UX contracts.
-//
-// DEPENDENCIES (SYMBOLIC):
-//   - PulseBeaconEngine
-//   - PulseRouter
-//   - PulseExpansion
-//   - PulseCastle
-//   - PulseMesh
-//   - SafetyFrame
+
+// PRIMARY OS / BINARY OS PULLER
+// This is the thing that actually knows how to boot brains / runtimes.
+// Swap this line to PulseOS-v11-Evo.js if that's your primary.
+import * as PulseBinaryOS from "../PULSE-OS/PulseBinaryOS-v11-Evo-Max.js";
+
 // ============================================================================
 
 export const PulseWorldCoreMeta = Object.freeze({
-  organId: "PulseWorldCore-v12.3-PRESENCE-EVO+",
+  organId: "PulseWorldCore-v13-PRESENCE-EVO+",
   role: "LOCAL_OS",
-  version: "12.3-PRESENCE-EVO+",
-  epoch: "v12.3-PRESENCE-EVO+",
+  version: "13-PRESENCE-EVO+",
+  epoch: "v13-PRESENCE-EVO+",
   layer: "Experience",
   safety: Object.freeze({
     deterministic: true,
@@ -71,51 +34,67 @@ export const PulseWorldCoreMeta = Object.freeze({
     routeAware: true,
     castleAware: true,
     expansionAware: true,
-    dualbandSafe: true
+    dualbandSafe: true,
+    runtimeAware: true,
+    osBrainAware: true // still true: we see brain via primary OS / binary OS puller
   })
 });
 
 // ============================================================================
-// FACTORY: createPulseWorldCore — v12.3-PRESENCE-EVO+
+// FACTORY: createPulseWorldCore — v13-PRESENCE-EVO+
 // ============================================================================
 
 export function createPulseWorldCore({
   regionID = null,
-  trace = false
+  trace = false,
+  serverMode = false
 } = {}) {
 
-  // --------------------------------------------------------------------------
-  // 1. Identity & Scope (A)
-  // --------------------------------------------------------------------------
+  // 1. Identity
   const Identity = Object.freeze({
     coreID: "PulseWorldCore",
-    version: "v12.3-PRESENCE-EVO+",
+    version: "v13-PRESENCE-EVO+",
     createdBy: "PulseOS",
-    regionID
+    regionID,
+    serverMode
   });
 
-  // --------------------------------------------------------------------------
-  // 2. Attached Organ Snapshots (NEW)
-// --------------------------------------------------------------------------
+  // 2. Attached Organ Snapshots
   let beaconSnapshot = null;
   let routerSnapshot = null;
   let castleSnapshot = null;
   let meshSnapshot = null;
   let expansionSnapshot = null;
 
-  function attachBeacon(snapshot) { beaconSnapshot = snapshot; return { ok: true }; }
-  function attachRouter(snapshot) { routerSnapshot = snapshot; return { ok: true }; }
-  function attachCastle(snapshot) { castleSnapshot = snapshot; return { ok: true }; }
-  function attachMesh(snapshot) { meshSnapshot = snapshot; return { ok: true }; }
-  function attachExpansion(snapshot) { expansionSnapshot = snapshot; return { ok: true }; }
+  // This is now the "primary OS / binary OS puller" attachment.
+  // It may internally own OSBrain + runtimes.
+  let primaryOSSnapshot = null; // PulseBinaryOS / PulseOS
+  let runtimeSnapshot = null;   // Runtime / Brainstem (if you still attach it separately)
 
-  // --------------------------------------------------------------------------
-  // 3. Boot Sequence (Beacon Tap → Core)
-// --------------------------------------------------------------------------
+  function attachBeacon(snapshot)     { beaconSnapshot = snapshot;     return { ok: true }; }
+  function attachRouter(snapshot)     { routerSnapshot = snapshot;     return { ok: true }; }
+  function attachCastle(snapshot)     { castleSnapshot = snapshot;     return { ok: true }; }
+  function attachMesh(snapshot)       { meshSnapshot = snapshot;       return { ok: true }; }
+  function attachExpansion(snapshot)  { expansionSnapshot = snapshot;  return { ok: true }; }
+
+  // Attach primary OS (PulseBinaryOS / PulseOS)
+  function attachPrimaryOS(snapshot)  { primaryOSSnapshot = snapshot;  return { ok: true }; }
+
+  // Keep runtime attachment if you still want direct runtime view
+  function attachRuntime(snapshot)    { runtimeSnapshot = snapshot;    return { ok: true }; }
+
+  // If running under server, auto‑attach the primary OS module we imported.
+  // No brain boot here — primary OS handles that internally.
+  if (serverMode === true) {
+    attachPrimaryOS(PulseBinaryOS);
+  }
+
+  // 3. Boot Sequence
   const Boot = {
     A_triggers: {
       fromBeaconTap: true,
-      fromLocalShortcut: true
+      fromLocalShortcut: true,
+      fromServerSession: serverMode === true
     },
     B_contextAwareness: {
       readRegionFromBeacon: true,
@@ -130,14 +109,13 @@ export function createPulseWorldCore({
     }
   };
 
-  // --------------------------------------------------------------------------
-  // 4. Experience Shell (Local Dashboard + Tools)
-// --------------------------------------------------------------------------
+  // 4. Experience Shell
   const Experience = {
     A_layout: {
       hasLocalDashboard: true,
       hasToolsTray: true,
-      hasEvolutionPanel: true
+      hasEvolutionPanel: true,
+      hasBrainPanel: true
     },
     B_adaptiveUI: {
       densityAwareUI: true,
@@ -146,7 +124,9 @@ export function createPulseWorldCore({
       presenceFieldIndicators: true,
       advantageBandIndicators: true,
       fallbackBandIndicators: true,
-      routeHealthIndicators: true
+      routeHealthIndicators: true,
+      runtimeHealthIndicators: true,
+      osBrainHealthIndicators: true // via primary OS view
     },
     A_tools: {
       defaultTools: ["MyDay", "MyTools", "Evolution", "LocalPulse"],
@@ -154,9 +134,7 @@ export function createPulseWorldCore({
     }
   };
 
-  // --------------------------------------------------------------------------
-  // 5. Routing Integration (Core ↔ PulseRouter)
-// --------------------------------------------------------------------------
+  // 5. Routing Integration
   function requestRoute(request) {
     if (!routerSnapshot) {
       return { ok: false, reason: "router-not-attached" };
@@ -164,9 +142,7 @@ export function createPulseWorldCore({
     return routerSnapshot.decideRoute(request);
   }
 
-  // --------------------------------------------------------------------------
-  // 6. Advantage Aggregation (NEW)
-// --------------------------------------------------------------------------
+  // 6. Advantage Aggregation
   function buildAdvantageContext() {
     return Object.freeze({
       presenceField: beaconSnapshot?.presenceField || null,
@@ -179,24 +155,70 @@ export function createPulseWorldCore({
     });
   }
 
-  // --------------------------------------------------------------------------
-  // 7. Adaptive UI Logic (NEW)
-// --------------------------------------------------------------------------
+  // 7. Brain / Runtime View (direct runtime, if attached)
+  function getBrainView() {
+    if (runtimeSnapshot?.getRuntimeStateV2) {
+      return runtimeSnapshot.getRuntimeStateV2();
+    }
+    return null;
+  }
+
+  // 8. Primary OS / OSBrain View (read-only, via primary OS)
+  // Expect primaryOSSnapshot to expose something like getOSState / getBrainState.
+  function getPrimaryOSView() {
+    if (primaryOSSnapshot?.getOSState) {
+      return primaryOSSnapshot.getOSState();
+    }
+    if (primaryOSSnapshot?.getOSBrainState) {
+      return primaryOSSnapshot.getOSBrainState();
+    }
+    return null;
+  }
+
+  // 9. Ask primary OS to spin a brain/runtime (delegated)
+  // This is the “server spins something that spins brains” hook,
+  // now correctly routed through the primary OS / binary OS puller.
+  function requestBrainInstance(spawnRequest = {}) {
+    if (!primaryOSSnapshot?.spawnRuntimeInstance &&
+        !primaryOSSnapshot?.spawnBrainInstance) {
+      return { ok: false, reason: "primary-os-spawn-not-available" };
+    }
+
+    if (primaryOSSnapshot.spawnRuntimeInstance) {
+      return primaryOSSnapshot.spawnRuntimeInstance(spawnRequest);
+    }
+    return primaryOSSnapshot.spawnBrainInstance(spawnRequest);
+  }
+
+  // 10. Adaptive UI Logic
   function computeAdaptiveUI() {
     const ctx = buildAdvantageContext();
+    const brain = getBrainView();
+    const primaryOS = getPrimaryOSView();
+
+    const runtimeHealthy =
+      brain &&
+      typeof brain.tick === "number" &&
+      brain.tick >= 0;
+
+    const osBrainHealthy =
+      primaryOS &&
+      (primaryOS.status === "healthy" || primaryOS.osBrainStatus === "healthy");
 
     return Object.freeze({
       showMeshWarning: ctx.meshPressureIndex >= 70,
       showCastleLoadWarning: ctx.castleLoadLevel === "high" || ctx.castleLoadLevel === "critical",
       showRouteUnstableWarning: ctx.routeStable === false,
       showFallbackMode: ctx.fallbackBandLevel >= 2,
-      showAdvantageBoost: ctx.advantageField?.advantageBand === "high"
+      showAdvantageBoost: ctx.advantageField?.advantageBand === "high",
+      showRuntimePanel: !!brain,
+      showRuntimeWarning: brain && !runtimeHealthy,
+      showOSBrainPanel: !!primaryOS,
+      showOSBrainWarning: primaryOS && !osBrainHealthy
     });
   }
 
-  // --------------------------------------------------------------------------
-  // 8. Telemetry
-  // --------------------------------------------------------------------------
+  // 11. Telemetry
   const Telemetry = {
     metrics: {
       sessionsStarted: 0,
@@ -205,9 +227,7 @@ export function createPulseWorldCore({
     }
   };
 
-  // --------------------------------------------------------------------------
-  // 9. Snapshot
-  // --------------------------------------------------------------------------
+  // 12. Snapshot
   function getSnapshot() {
     return Object.freeze({
       organId: PulseWorldCoreMeta.organId,
@@ -219,17 +239,19 @@ export function createPulseWorldCore({
         router: routerSnapshot,
         castle: castleSnapshot,
         mesh: meshSnapshot,
-        expansion: expansionSnapshot
+        expansion: expansionSnapshot,
+        primaryOS: primaryOSSnapshot, // primary OS / binary OS puller
+        runtime: runtimeSnapshot
       },
       advantageContext: buildAdvantageContext(),
+      brainView: getBrainView(),
+      primaryOSView: getPrimaryOSView(),
       adaptiveUI: computeAdaptiveUI(),
       telemetry: Telemetry
     });
   }
 
-  // --------------------------------------------------------------------------
-  // 10. Public API
-  // --------------------------------------------------------------------------
+  // 13. Public API
   return Object.freeze({
     meta: PulseWorldCoreMeta,
     identity: Identity,
@@ -240,6 +262,8 @@ export function createPulseWorldCore({
     attachCastle,
     attachMesh,
     attachExpansion,
+    attachPrimaryOS,
+    attachRuntime,
 
     // routing
     requestRoute,
@@ -247,6 +271,11 @@ export function createPulseWorldCore({
     // experience
     computeAdaptiveUI,
     buildAdvantageContext,
+
+    // brain/runtime
+    getBrainView,
+    getPrimaryOSView,
+    requestBrainInstance,
 
     // introspection
     getSnapshot
