@@ -1,10 +1,10 @@
 // ============================================================================
 // FILE: /PulseOS/Brain/PulseOSBrain-v13-Spine.js
-// PULSE OS BRAIN — v13-SPINE-DUALBAND-PRESENCE
+// PULSE OS BRAIN — v13-SPINE-DUALBAND-PRESENCE-ADVANTAGE
 // “THE REAL CNS / ORGANISM-WIDE IDENTITY + INTELLIGENCE KERNEL”
 // ============================================================================
 //
-// LAWS (UPDATED FOR v13):
+// LAWS (UPDATED FOR v13+ADV):
 //   • Brain may import ONLY:
 //       - PulseIQMap        (design + logging + long-term memory)
 //       - PulseOrganismMap  (organ layout + organs + lineage)
@@ -14,13 +14,16 @@
 //   • Binary is always post-render, handled by GPU / Send / Binary organs.
 //   • Brain is the CNS identity + contract kernel, not a router, not a GPU.
 //   • No presence/mesh/gpu imports — awareness is metadata-only.
+//   • Brain is the ONLY conceptual “internet center”; it may hold
+//     world-lens / advantage / presence summaries, but it only emits
+//     view-only, non-network-dependent descriptors to the rest of the OS.
 // ============================================================================
 
 export const PulseOSBrainMeta = Object.freeze({
   layer: "PulseOSBrain",
   role: "CNS_BRAIN_ORGAN",
-  version: "v13-SPINE-DUALBAND-PRESENCE",
-  identity: "PulseOSBrain-v13-SPINE-DUALBAND-PRESENCE",
+  version: "v13-SPINE-DUALBAND-PRESENCE-ADVANTAGE",
+  identity: "PulseOSBrain-v13-SPINE-DUALBAND-PRESENCE-ADVANTAGE",
 
   guarantees: Object.freeze({
     deterministic: true,
@@ -48,6 +51,10 @@ export const PulseOSBrainMeta = Object.freeze({
     meshTopologyAware: true,
     kernelChunkingReady: true,
     kernelPrewarmReady: true,
+    advantageFieldAware: true,
+    unifiedAdvantageField: true,
+
+    // Multi-instance / cloning
     multiInstanceReady: true,
     clusterCoherence: true,
     zeroDriftCloning: true,
@@ -56,7 +63,8 @@ export const PulseOSBrainMeta = Object.freeze({
     zeroUserCode: true,
     zeroDynamicImports: true,
     zeroEval: true,
-    worldLensAware: true
+    worldLensAware: true,          // Brain may hold a world-lens snapshot
+    zeroNetworkInOrgans: true      // No other organ depends on live network
   }),
 
   contract: Object.freeze({
@@ -71,7 +79,9 @@ export const PulseOSBrainMeta = Object.freeze({
       "CNSDiagnostics",
       "CNSBootSignatures",
       "CNSPresenceDescriptors",
-      "CNSChunkingProfiles"
+      "CNSChunkingProfiles",
+      "CNSAdvantageField",
+      "CNSWorldLensSnapshot"
     ]
   }),
 
@@ -86,7 +96,8 @@ export const PulseOSBrainMeta = Object.freeze({
       "PulseOSBrain-v11-EVO-BINARY-MAX",
       "PulseOSBrain-v12.3-SPINE-DUALBAND-PRESENCE",
       "PulseOSBrain-v12.4-SPINE-DUALBAND-PRESENCE",
-      "PulseOSBrain-v13-SPINE-DUALBAND-PRESENCE"
+      "PulseOSBrain-v13-SPINE-DUALBAND-PRESENCE",
+      "PulseOSBrain-v13-SPINE-DUALBAND-PRESENCE-ADVANTAGE"
     ]
   }),
 
@@ -100,9 +111,9 @@ export const PulseOSBrainMeta = Object.freeze({
     pattern: "A-B-A",
     baseline: "CNS identity + contract kernel (symbolic-primary, dualband-aware)",
     adaptive:
-      "binary-aware overlays via GPU/Send/Binary organs + presence/mesh/chunk/prewarm metadata surfaces",
+      "binary-aware overlays via GPU/Send/Binary organs + presence/mesh/chunk/prewarm/advantage/world-lens metadata surfaces",
     return:
-      "online CNS identity + contracts + boot signatures + presence/chunking descriptors"
+      "online CNS identity + contracts + boot signatures + presence/chunking/advantage/world-lens descriptors"
   })
 });
 
@@ -114,7 +125,7 @@ import { PulseOrganismMap } from "./PulseOrganismMap.js";
 import { PulseOSEvolution } from "./PulseOSBrainEvolution.js";
 
 // ============================================================================
-//  CNS BRAIN — v13-SPINE
+//  CNS BRAIN — v13-SPINE-DUALBAND-PRESENCE-ADVANTAGE
 // ============================================================================
 export const PulseOSBrain = {
   // -------------------------------------------------------------------------
@@ -124,7 +135,7 @@ export const PulseOSBrain = {
     type: "Brain",
     subsystem: "OS",
     layer: "CNS",
-    version: "13-SPINE",
+    version: "13-SPINE-ADV",
     identity: "PulseOSBrain",
     evo: {
       deterministicNeuron: true,
@@ -154,7 +165,8 @@ export const PulseOSBrain = {
       meshPresenceRelayAware: true,
       meshTopologyAware: true,
       kernelChunkingReady: true,
-      kernelPrewarmReady: true
+      kernelPrewarmReady: true,
+      advantageFieldAware: true
     }
   },
 
@@ -253,6 +265,34 @@ export const PulseOSBrain = {
         routeProfiles: profiles.routes || {},
         gpuProfiles: profiles.gpu || {}
       };
+    },
+
+    getAdvantageField() {
+      const iq = PulseOSBrain.PulseIQMap || PulseIQMap || {};
+      const adv = iq.advantageField || {};
+
+      return {
+        advantageScore: adv.score ?? null,
+        advantageBand: adv.band || "neutral",
+        regionAdvantage: adv.regionAdvantage || {},
+        cascadeHints: adv.cascadeHints || {}
+      };
+    },
+
+    getWorldLensSnapshot() {
+      const iq = PulseOSBrain.PulseIQMap || PulseIQMap || {};
+      const lens = iq.worldLens || {};
+
+      // View-only, symbolic snapshot; no live network dependency.
+      return {
+        version: lens.version || "v1",
+        lastUpdated: lens.lastUpdated || null,
+        sources: lens.sources || [],
+        summary: lens.summary || {},
+        // Any “internet” knowledge is already baked into IQMap;
+        // no organ depends on live fetch.
+        offlineSafe: true
+      };
     }
   },
 
@@ -326,7 +366,7 @@ export const PulseOSBrain = {
 };
 
 // ============================================================================
-//  BRAIN PREWARM ENGINE — v13-SPINE
+//  BRAIN PREWARM ENGINE — v13-SPINE-ADVANTAGE
 // ============================================================================
 function prewarmPulseOSBrain() {
   try {
@@ -463,10 +503,10 @@ export async function cognitiveBootstrap({ intent, organism, iqMap, understandin
   const cortex = evolutionOrgan.bootCortex(PulseOSBrain, { band: "dual" });
   PulseOSBrain.cortex = cortex;
 
-  evolutionOrgan.recordLineage("brain-cognitive-bootstrap-v13", { band: "dual" });
+  evolutionOrgan.recordLineage("brain-cognitive-bootstrap-v13-advantage", { band: "dual" });
   evolutionOrgan.scanDrift(PulseOSBrain, { band: "dual" });
 
-  PulseOSBrain.log("🧠 [PulseOSBrain v13] cognitiveBootstrap complete.");
+  PulseOSBrain.log("🧠 [PulseOSBrain v13] cognitiveBootstrap complete (advantage-integrated).");
 
   return PulseOSBrain;
 }

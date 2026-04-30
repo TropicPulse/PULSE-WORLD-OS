@@ -36,7 +36,9 @@ export const PulseWorldCoreMeta = Object.freeze({
     expansionAware: true,
     dualbandSafe: true,
     runtimeAware: true,
-    osBrainAware: true // still true: we see brain via primary OS / binary OS puller
+    osBrainAware: true, // still true: we see brain via primary OS / binary OS puller
+    userAttachedToBrain: true,
+    serverAttachedToUser: true
   })
 });
 
@@ -71,17 +73,125 @@ export function createPulseWorldCore({
   let primaryOSSnapshot = null; // PulseBinaryOS / PulseOS
   let runtimeSnapshot = null;   // Runtime / Brainstem (if you still attach it separately)
 
-  function attachBeacon(snapshot)     { beaconSnapshot = snapshot;     return { ok: true }; }
-  function attachRouter(snapshot)     { routerSnapshot = snapshot;     return { ok: true }; }
-  function attachCastle(snapshot)     { castleSnapshot = snapshot;     return { ok: true }; }
-  function attachMesh(snapshot)       { meshSnapshot = snapshot;       return { ok: true }; }
-  function attachExpansion(snapshot)  { expansionSnapshot = snapshot;  return { ok: true }; }
+  // Core user/world context we pass into brain / mesh / others
+  const userContext = Object.freeze({
+    identity: Identity,
+    regionID,
+    serverMode,
+    trace
+  });
+
+  function attachBeacon(snapshot) {
+    beaconSnapshot = snapshot;
+
+    // allow beacon to see world core if it wants
+    if (snapshot && typeof snapshot.attachWorldCore === "function") {
+      snapshot.attachWorldCore({
+        identity: Identity,
+        getSnapshot,
+        buildAdvantageContext
+      });
+    }
+
+    return { ok: true };
+  }
+
+  function attachRouter(snapshot) {
+    routerSnapshot = snapshot;
+
+    if (snapshot && typeof snapshot.attachWorldCore === "function") {
+      snapshot.attachWorldCore({
+        identity: Identity,
+        requestRoute,
+        getSnapshot
+      });
+    }
+
+    return { ok: true };
+  }
+
+  function attachCastle(snapshot) {
+    castleSnapshot = snapshot;
+
+    if (snapshot && typeof snapshot.attachWorldCore === "function") {
+      snapshot.attachWorldCore({
+        identity: Identity,
+        buildAdvantageContext,
+        getSnapshot
+      });
+    }
+
+    return { ok: true };
+  }
+
+  function attachMesh(snapshot) {
+    meshSnapshot = snapshot;
+
+    // Mesh gets explicit user/world attachment
+    if (snapshot && typeof snapshot.attachUser === "function") {
+      snapshot.attachUser(userContext);
+    }
+    if (snapshot && typeof snapshot.attachWorldCore === "function") {
+      snapshot.attachWorldCore({
+        identity: Identity,
+        buildAdvantageContext,
+        getSnapshot
+      });
+    }
+
+    return { ok: true };
+  }
+
+  function attachExpansion(snapshot) {
+    expansionSnapshot = snapshot;
+
+    if (snapshot && typeof snapshot.attachWorldCore === "function") {
+      snapshot.attachWorldCore({
+        identity: Identity,
+        buildAdvantageContext,
+        getSnapshot
+      });
+    }
+
+    return { ok: true };
+  }
 
   // Attach primary OS (PulseBinaryOS / PulseOS)
-  function attachPrimaryOS(snapshot)  { primaryOSSnapshot = snapshot;  return { ok: true }; }
+  function attachPrimaryOS(snapshot) {
+    primaryOSSnapshot = snapshot;
+
+    // let OS see user/world context if it supports it
+    if (snapshot && typeof snapshot.attachWorldCore === "function") {
+      snapshot.attachWorldCore({
+        identity: Identity,
+        getSnapshot,
+        buildAdvantageContext,
+        computeAdaptiveUI
+      });
+    }
+
+    return { ok: true };
+  }
 
   // Keep runtime attachment if you still want direct runtime view
-  function attachRuntime(snapshot)    { runtimeSnapshot = snapshot;    return { ok: true }; }
+  function attachRuntime(snapshot) {
+    runtimeSnapshot = snapshot;
+
+    // explicit user → brain attachment
+    if (snapshot && typeof snapshot.attachUserContext === "function") {
+      snapshot.attachUserContext(userContext);
+    }
+    if (snapshot && typeof snapshot.attachWorldCore === "function") {
+      snapshot.attachWorldCore({
+        identity: Identity,
+        getSnapshot,
+        buildAdvantageContext,
+        computeAdaptiveUI
+      });
+    }
+
+    return { ok: true };
+  }
 
   // If running under server, auto‑attach the primary OS module we imported.
   // No brain boot here — primary OS handles that internally.
@@ -177,17 +287,24 @@ export function createPulseWorldCore({
 
   // 9. Ask primary OS to spin a brain/runtime (delegated)
   // This is the “server spins something that spins brains” hook,
-  // now correctly routed through the primary OS / binary OS puller.
+  // now correctly routed through the primary OS / binary OS puller,
+  // and enriched with user attachment.
   function requestBrainInstance(spawnRequest = {}) {
     if (!primaryOSSnapshot?.spawnRuntimeInstance &&
         !primaryOSSnapshot?.spawnBrainInstance) {
       return { ok: false, reason: "primary-os-spawn-not-available" };
     }
 
+    const enriched = {
+      ...spawnRequest,
+      userContext,
+      worldCoreIdentity: Identity
+    };
+
     if (primaryOSSnapshot.spawnRuntimeInstance) {
-      return primaryOSSnapshot.spawnRuntimeInstance(spawnRequest);
+      return primaryOSSnapshot.spawnRuntimeInstance(enriched);
     }
-    return primaryOSSnapshot.spawnBrainInstance(spawnRequest);
+    return primaryOSSnapshot.spawnBrainInstance(enriched);
   }
 
   // 10. Adaptive UI Logic

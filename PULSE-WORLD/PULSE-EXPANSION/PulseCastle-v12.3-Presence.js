@@ -1,10 +1,11 @@
 // ============================================================================
-//  PULSE OS v12.3‑PRESENCE‑EVO++ — PULSE CASTLE (PRESENCE / HOST ORGAN)
-//  PulseCastle-v12.3-Presence.js
+//  PULSE OS v13‑PRESENCE‑EVO+ — PULSE CASTLE (PRESENCE / HOST ORGAN)
+//  PulseCastle-v13-Presence.js
 //
 //  ROLE:
 //    - Presence + host organ for PulseServer instances.
 //    - Manages castles (region/host nodes) and their attached servers.
+//    - Manages user bindings + world cores per castle (user‑aware).
 //    - Maintains awareness of other castles (mesh awareness).
 //    - Maintains basic treasury + soldier awareness for economic layer.
 //    - Pure symbolic registry + mapping. No compute math, no routing, no AI.
@@ -28,7 +29,12 @@ import {
   PulseServerMeta
 } from ".//PulseServer-v12.3-Presence";
 
-import { pulseUser, PulseUserMeta, createPulseWorldCore } from "./PulseUser-v12.3-Presence";
+import {
+  pulseUser,
+  PulseUserMeta,
+  createPulseWorldCore
+} from "./PulseUser-v12.3-Presence";
+
 
 // ============================================================================
 //  META — Castle Identity
@@ -36,20 +42,31 @@ import { pulseUser, PulseUserMeta, createPulseWorldCore } from "./PulseUser-v12.
 export const PulseCastleMeta = Object.freeze({
   layer: "PulseCastle",
   role: "PRESENCE_HOST_ORGAN",
-  version: "v12.3-PRESENCE-EVO++",
-  identity: "PulseCastle-v12.3-PRESENCE-EVO++",
+  version: "v13-PRESENCE-EVO+",
+  identity: "PulseCastle-v13-PRESENCE-EVO+",
 
   guarantees: Object.freeze({
     deterministic: true,
     driftProof: true,
+
     multiCastleReady: true,
     multiServerReady: true,
     meshAware: true,
     regionAware: true,
     hostAware: true,
+
     presenceFieldAware: true,
     treasuryAware: true,
     soldierAware: true,
+
+    // v13+ awareness
+    userAware: true,
+    worldCoreAware: true,
+    serverUserBindingAware: true,
+    meshPressureAware: true,
+    advantageAware: true,
+    chunkPrewarmAware: true,
+    osBrainAware: true,
 
     zeroRandomness: true,
     zeroDynamicImports: true,
@@ -57,7 +74,7 @@ export const PulseCastleMeta = Object.freeze({
     zeroNetworkFetch: true,
     zeroAI: true,
     zeroRouting: true,
-    zeroComputeMath: true // delegates to PulseServer
+    zeroComputeMath: true // delegates to PulseServer / Runtime
   }),
 
   contract: Object.freeze({
@@ -66,25 +83,30 @@ export const PulseCastleMeta = Object.freeze({
       "CastlePresenceUpdate",
       "ServerAttachRequest",
       "ServerDetachRequest",
-      "CastleMeshQuery"
+      "CastleMeshQuery",
+      "CastleUserRegistrationRequest",
+      "CastleUserBindingRequest"
     ],
     output: [
       "CastleRegistrationResult",
       "CastlePresenceState",
       "ServerAttachResult",
       "ServerDetachResult",
-      "CastleMeshState"
+      "CastleMeshState",
+      "CastleUserRegistrationResult",
+      "CastleUserBindingState"
     ]
   }),
 
   lineage: Object.freeze({
-    root: "PulseOS-v12.3-PRESENCE-EVO+",
-    parent: "PulseProxy-v12.3-PRESENCE-EVO+",
+    root: "PulseOS-v13-PRESENCE-EVO+",
+    parent: "PulseExpansion-v13-PRESENCE-EVO+",
     ancestry: [
       "PulseCastle-v9",
       "PulseCastle-v10",
       "PulseCastle-v11",
-      "PulseCastle-v12"
+      "PulseCastle-v12",
+      "PulseCastle-v12.3-PRESENCE-EVO++"
     ]
   })
 });
@@ -104,7 +126,11 @@ export class CastleRegistrationResult {
 }
 
 export class CastlePresenceState {
-  constructor({ castlesById, meshLinksByCastleId, meta = {} }) {
+  constructor({
+    castlesById,
+    meshLinksByCastleId,
+    meta = {}
+  }) {
     this.castlesById = castlesById;
     this.meshLinksByCastleId = meshLinksByCastleId;
     this.meta = meta;
@@ -138,6 +164,42 @@ export class CastleMeshState {
   }
 }
 
+export class CastleUserRegistrationResult {
+  constructor({
+    castleId,
+    userId,
+    regionId,
+    hostName,
+    userMeta,
+    worldCoreSnapshot,
+    boundServers = [],
+    meta = {}
+  }) {
+    this.castleId = castleId;
+    this.userId = userId;
+    this.regionId = regionId;
+    this.hostName = hostName;
+    this.userMeta = userMeta;
+    this.worldCoreSnapshot = worldCoreSnapshot;
+    this.boundServers = boundServers;
+    this.meta = meta;
+  }
+}
+
+export class CastleUserBindingState {
+  constructor({
+    castleId,
+    usersById,
+    bindingsByServerId,
+    meta = {}
+  }) {
+    this.castleId = castleId;
+    this.usersById = usersById;
+    this.bindingsByServerId = bindingsByServerId;
+    this.meta = meta;
+  }
+}
+
 
 // ============================================================================
 //  INTERNAL STATE (symbolic, deterministic)
@@ -164,10 +226,28 @@ export class CastleMeshState {
 //   }
 // }
 //
-const castlesById = Object.create(null);
-
+// usersById: {
+//   [userId]: {
+//     userId,
+//     castleId,
+//     regionId,
+//     hostName,
+//     userMeta,
+//     worldCore,
+//     worldCoreSnapshot,
+//     servers: Set<serverId>
+//   }
+// }
+//
+// userBindingsByServerId: { [serverId]: userId }
+//
 // meshLinksByCastleId: { [castleId]: Set<castleId> }
+// ============================================================================
+const castlesById = Object.create(null);
 const meshLinksByCastleId = Object.create(null);
+
+const usersById = Object.create(null);
+const userBindingsByServerId = Object.create(null);
 
 
 // ============================================================================
@@ -191,12 +271,17 @@ function buildCastleId({ regionId, hostName }) {
   return stableHash(`CASTLE::${regionId}::${hostName}`);
 }
 
+function buildUserId({ regionId, hostName, userKey }) {
+  return stableHash(`USER::${regionId}::${hostName}::${userKey || "default"}`);
+}
+
 export function computeCastlePresence(castle) {
   const serverCount = Object.keys(castle.serversById || {}).length;
   const soldierCount = Object.keys(castle.soldiersById || {}).length;
   const capacityHint = castle.presenceField?.capacityHint ?? 1;
 
-  const rawLoad = (serverCount + soldierCount * 0.5) / Math.max(1, capacityHint * 4);
+  const rawLoad =
+    (serverCount + soldierCount * 0.5) / Math.max(1, capacityHint * 4);
   const loadIndex = clamp01(rawLoad);
 
   const stressIndex = clamp01(
@@ -224,15 +309,20 @@ export function computeCastlePresence(castle) {
   };
 }
 
-export function summarizeCastlePresence(castles = {}) {
+// v13: richer summary for Expansion / Mesh / Advantage
+export function summarizeCastlePresence(castles = castlesById) {
   const byRegion = {};
-  const meshLinksByCastleId = {};
+  const meshSnapshot = {};
 
   for (const castleId in castles) {
     const castle = castles[castleId];
-    const region = castle.region || "unknown";
+    const region = castle.regionId || "unknown-region";
 
-    const presence = computeCastlePresence(castle);
+    const presenceMetrics = computeCastlePresence(castle);
+    const presenceField = {
+      ...(castle.presenceField || {}),
+      ...presenceMetrics
+    };
 
     if (!byRegion[region]) {
       byRegion[region] = {
@@ -245,25 +335,29 @@ export function summarizeCastlePresence(castles = {}) {
 
     byRegion[region].castles.push({
       castleId,
-      ...presence
+      regionId: castle.regionId,
+      hostName: castle.hostName,
+      presenceField
     });
 
-    byRegion[region].totalLoad += presence.loadIndex;
+    byRegion[region].totalLoad += presenceMetrics.loadIndex;
     byRegion[region].count++;
   }
 
-  // compute averages
   for (const region in byRegion) {
     const r = byRegion[region];
     r.avgLoad = r.count > 0 ? r.totalLoad / r.count : 0;
   }
 
+  for (const [id, set] of Object.entries(meshLinksByCastleId)) {
+    meshSnapshot[id] = new Set(set);
+  }
+
   return {
     byRegion,
-    meshLinksByCastleId
+    meshLinksByCastleId: meshSnapshot
   };
 }
-
 
 function ensureCastle(castleId, regionId, hostName, presenceField) {
   if (!castlesById[castleId]) {
@@ -300,7 +394,6 @@ function ensureCastle(castleId, regionId, hostName, presenceField) {
     meshLinksByCastleId[castleId] = new Set();
   }
 
-  // recompute presence metrics
   const metrics = computeCastlePresence(castlesById[castleId]);
   castlesById[castleId].presenceField = {
     ...castlesById[castleId].presenceField,
@@ -316,6 +409,70 @@ function linkCastles(aId, bId) {
   if (aId === bId) return;
   meshLinksByCastleId[aId].add(bId);
   meshLinksByCastleId[bId].add(aId);
+}
+
+function ensureUser({
+  castleId,
+  regionId,
+  hostName,
+  userId,
+  userKey,
+  worldCoreConfig = {}
+}) {
+  const effectiveUserId =
+    userId || buildUserId({ regionId, hostName, userKey });
+
+  if (!usersById[effectiveUserId]) {
+    const worldCore =
+      typeof createPulseWorldCore === "function"
+        ? createPulseWorldCore({
+            regionID: regionId,
+            serverMode: true,
+            ...worldCoreConfig
+          })
+        : null;
+
+    const worldCoreSnapshot = worldCore?.getSnapshot?.() || null;
+
+    usersById[effectiveUserId] = {
+      userId: effectiveUserId,
+      castleId,
+      regionId,
+      hostName,
+      userMeta: PulseUserMeta || { identity: "PulseUser" },
+      worldCore,
+      worldCoreSnapshot,
+      servers: new Set()
+    };
+
+    logger?.log?.("castle", "register_user", {
+      castleId,
+      userId: effectiveUserId,
+      regionId,
+      hostName
+    });
+  }
+
+  return usersById[effectiveUserId];
+}
+
+function bindServerToUserInternal({ castleId, serverId, userId }) {
+  const user = usersById[userId];
+  const castle = castlesById[castleId];
+  if (!user || !castle) {
+    return { ok: false, reason: "castle_or_user_not_found" };
+  }
+
+  user.servers.add(serverId);
+  userBindingsByServerId[serverId] = userId;
+
+  logger?.log?.("castle", "bind_server_user", {
+    castleId,
+    serverId,
+    userId
+  });
+
+  return { ok: true };
 }
 
 function snapshotMesh() {
@@ -343,6 +500,31 @@ function snapshotMesh() {
   return { castlesSnapshot, meshSnapshot };
 }
 
+function snapshotUsersForCastle(castleId) {
+  const users = {};
+  const bindings = {};
+
+  for (const [uid, u] of Object.entries(usersById)) {
+    if (u.castleId !== castleId) continue;
+    users[uid] = {
+      userId: u.userId,
+      regionId: u.regionId,
+      hostName: u.hostName,
+      userMeta: u.userMeta,
+      worldCoreSnapshot: u.worldCoreSnapshot,
+      servers: Array.from(u.servers)
+    };
+  }
+
+  for (const [serverId, userId] of Object.entries(userBindingsByServerId)) {
+    const u = usersById[userId];
+    if (!u || u.castleId !== castleId) continue;
+    bindings[serverId] = userId;
+  }
+
+  return { users, bindings };
+}
+
 
 // ============================================================================
 //  CORE ORGAN
@@ -352,6 +534,7 @@ export class PulseCastle {
     this.config = {
       autoMeshByRegion: true,
       autoMeshAll: false,
+      autoBindServerToUser: true,
       ...config
     };
   }
@@ -405,14 +588,95 @@ export class PulseCastle {
   }
 
   // --------------------------------------------------------------------------
-  // Attach a PulseServer instance to a castle
+  // Register a user at a castle + optional world core
   // --------------------------------------------------------------------------
+  registerUserAtCastle({
+    regionId,
+    hostName,
+    castleId = null,
+    userId = null,
+    userKey = null,
+    worldCoreConfig = {},
+    attachServerId = null
+  }) {
+    const rId = regionId || "unknown-region";
+    const hName = hostName || "unknown-host";
+
+    const effectiveCastleId =
+      castleId || buildCastleId({ regionId: rId, hostName: hName });
+
+    ensureCastle(effectiveCastleId, rId, hName, null);
+
+    const user = ensureUser({
+      castleId: effectiveCastleId,
+      regionId: rId,
+      hostName: hName,
+      userId,
+      userKey,
+      worldCoreConfig
+    });
+
+    if (attachServerId) {
+      bindServerToUserInternal({
+        castleId: effectiveCastleId,
+        serverId: attachServerId,
+        userId: user.userId
+      });
+    }
+
+    const boundServers = Array.from(user.servers);
+
+    return new CastleUserRegistrationResult({
+      castleId: effectiveCastleId,
+      userId: user.userId,
+      regionId: rId,
+      hostName: hName,
+      userMeta: user.userMeta,
+      worldCoreSnapshot: user.worldCoreSnapshot,
+      boundServers,
+      meta: {
+        castleMeta: PulseCastleMeta,
+        userMeta: PulseUserMeta
+      }
+    });
+  }
+
+  // --------------------------------------------------------------------------
+  // Bind an existing server to an existing user
+  // --------------------------------------------------------------------------
+  bindServerToUser({
+    castleId,
+    serverId,
+    userId
+  }) {
+    const result = bindServerToUserInternal({ castleId, serverId, userId });
+
+    const { users, bindings } = snapshotUsersForCastle(castleId);
+
+    return new CastleUserBindingState({
+      castleId,
+      usersById: users,
+      bindingsByServerId: bindings,
+      meta: {
+        castleMeta: PulseCastleMeta,
+        ok: result.ok,
+        reason: result.reason || null
+      }
+    });
+  }
+
+  // --------------------------------------------------------------------------
+  // Attach a PulseServer instance to a castle (optionally bind to user)
+// --------------------------------------------------------------------------
   attachServerToCastle({
     regionId,
     hostName,
     presenceField = null,
     serverConfig = {},
-    serverId = null
+    serverId = null,
+    userId = null,
+    userKey = null,
+    worldCoreConfig = {}
   }) {
     const rId = regionId || "unknown-region";
     const hName = hostName || "unknown-host";
@@ -431,7 +695,6 @@ export class PulseCastle {
         serverInstance
       };
 
-      // recompute presence after server attach
       const metrics = computeCastlePresence(castle);
       castle.presenceField = { ...castle.presenceField, ...metrics };
 
@@ -440,6 +703,22 @@ export class PulseCastle {
         serverId: effectiveServerId,
         regionId: rId,
         hostName: hName
+      });
+    }
+
+    if (this.config.autoBindServerToUser || userId || userKey) {
+      const user = ensureUser({
+        castleId,
+        regionId: rId,
+        hostName: hName,
+        userId,
+        userKey,
+        worldCoreConfig
+      });
+      bindServerToUserInternal({
+        castleId,
+        serverId: effectiveServerId,
+        userId: user.userId
       });
     }
 
@@ -476,6 +755,12 @@ export class PulseCastle {
     const metrics = computeCastlePresence(castle);
     castle.presenceField = { ...castle.presenceField, ...metrics };
 
+    const boundUserId = userBindingsByServerId[serverId];
+    if (boundUserId && usersById[boundUserId]) {
+      usersById[boundUserId].servers.delete(serverId);
+      delete userBindingsByServerId[serverId];
+    }
+
     logger?.log?.("castle", "detach_server", {
       castleId,
       serverId
@@ -493,7 +778,7 @@ export class PulseCastle {
 
   // --------------------------------------------------------------------------
   // Treasury adjustments (symbolic, for future Earn integration)
-// --------------------------------------------------------------------------
+  // --------------------------------------------------------------------------
   applyTreasuryDelta({ castleId, delta = 0 }) {
     const castle = castlesById[castleId];
     if (!castle) return { ok: false, reason: "castle_not_found" };
@@ -514,12 +799,13 @@ export class PulseCastle {
 
   // --------------------------------------------------------------------------
   // Soldier registry (symbolic, for NodeAdmin / Expansion)
-// --------------------------------------------------------------------------
+  // --------------------------------------------------------------------------
   registerSoldier({ castleId, soldierId, meta = {} }) {
     const castle = castlesById[castleId];
     if (!castle) return { ok: false, reason: "castle_not_found" };
 
-    const id = soldierId || stableHash(`SOLDIER::${castleId}::${JSON.stringify(meta)}`);
+    const id =
+      soldierId || stableHash(`SOLDIER::${castleId}::${JSON.stringify(meta)}`);
     if (!castle.soldiersById[id]) {
       castle.soldiersById[id] = { soldierId: id, meta };
       const metrics = computeCastlePresence(castle);
@@ -553,8 +839,8 @@ export class PulseCastle {
   }
 
   // --------------------------------------------------------------------------
-  // Get presence / mesh state
-  // --------------------------------------------------------------------------
+  // Get presence / mesh state (v13: includes user/binding hints in meta)
+// --------------------------------------------------------------------------
   getPresenceState() {
     const { castlesSnapshot, meshSnapshot } = snapshotMesh();
 
@@ -592,6 +878,22 @@ export class PulseCastle {
       serverMeta: s.serverMeta
     }));
   }
+
+  // --------------------------------------------------------------------------
+  // Get user bindings for a specific castle
+  // --------------------------------------------------------------------------
+  getUserBindingsForCastle(castleId) {
+    const { users, bindings } = snapshotUsersForCastle(castleId);
+
+    return new CastleUserBindingState({
+      castleId,
+      usersById: users,
+      bindingsByServerId: bindings,
+      meta: {
+        castleMeta: PulseCastleMeta
+      }
+    });
+  }
 }
 
 
@@ -606,6 +908,14 @@ export function createPulseCastle(config = {}) {
 
     registerCastle(payload) {
       return core.registerCastle(payload);
+    },
+
+    registerUserAtCastle(payload) {
+      return core.registerUserAtCastle(payload);
+    },
+
+    bindServerToUser(payload) {
+      return core.bindServerToUser(payload);
     },
 
     attachServerToCastle(payload) {
@@ -628,7 +938,11 @@ export function createPulseCastle(config = {}) {
       return core.getServersForCastle(castleId);
     },
 
-    // new but non‑breaking hooks
+    getUserBindingsForCastle(castleId) {
+      return core.getUserBindingsForCastle(castleId);
+    },
+
+    // v13+ hooks
     applyTreasuryDelta(payload) {
       return core.applyTreasuryDelta(payload);
     },

@@ -1,41 +1,46 @@
 // ============================================================================
-// PULSE-WORLD : PulseMesh-v12.3-PRESENCE-EVO+.js
+// PULSE-WORLD : PulseMesh-v13-PRESENCE-EVO+.js
 // ORGAN TYPE: Connectivity / Mesh Organism
-// VERSION: v12.3-PRESENCE-EVO+ (Hybrid, Every-Advantage, Pressure-Aware)
+// VERSION: v13-PRESENCE-EVO+ (Hybrid, Every-Advantage, Pressure-Aware, Multi-Mesh)
 // ============================================================================
 //
 // ROLE:
 //   PulseMesh is the connective tissue of PulseWorld.
-//   It links users, castles, and regions into a coherent local-first network.
+//   It links users, castles, regions, and neighboring meshes into a coherent
+//   local-first, multi-mesh network.
 //   It prefers local paths, bridges between castles when needed, and reports
-//   density + health + pressure back to PulseExpansion and PulseCastle.
+//   density + health + pressure back to PulseExpansion, PulseCastle, Router,
+//   and OS/User views.
 //
 // CONTRACT:
 //   - Prefer local routes over remote whenever possible.
-//   - Must cooperate with PulseExpansion + PulseCastle.
+//   - Must cooperate with PulseExpansion + PulseCastle + Router.
 //   - Must not fragment the network or create loops.
 //   - Must respect SafetyFrame and cost constraints.
 //   - Must expose clear density + health + pressure signals.
 //   - Must remain deterministic, synthetic, and drift-proof.
+//   - Must support multi-mesh / world-mesh aggregation (symbolic only).
 //
 // ARCHITECTURE:
 //   A = Baseline mesh structure (nodes, links, regions).
 //   B = Adaptive behavior (density-aware, cost-aware, bridge-aware,
-//       pressure-aware, multi-instance-aware).
+//       pressure-aware, multi-instance-aware, multi-mesh-aware).
 //   A = Return to deterministic contracts and limits.
 //
 // DEPENDENCIES (SYMBOLIC):
 //   - PulseExpansion
 //   - PulseCastle
+//   - PulseRouter
 //   - SafetyFrame
 //   - PulseBeaconEngine (for presence + mesh status)
+//   - Optional: world / neighbor mesh snapshots (symbolic only)
 // ============================================================================
 
 export const PulseMeshMeta = Object.freeze({
-  organId: "PulseMesh-v12.3-PRESENCE-EVO+",
+  organId: "PulseMesh-v13-PRESENCE-EVO+",
   role: "CONNECTIVE_TISSUE",
-  version: "12.3-PRESENCE-EVO+",
-  epoch: "v12.3-PRESENCE-EVO+",
+  version: "13-PRESENCE-EVO+",
+  epoch: "v13-PRESENCE-EVO+",
   layer: "Connectivity",
   safety: Object.freeze({
     deterministic: true,
@@ -53,12 +58,21 @@ export const PulseMeshMeta = Object.freeze({
     bridgeAware: true,
     multiInstanceAware: true,
     expansionAware: true,
-    dualbandSafe: true
+    dualbandSafe: true,
+    // v13+ extensions
+    multiMeshAware: true,
+    worldMeshAware: true,
+    userMeshAware: true,
+    routerAware: true,
+    osBrainAware: true,
+    chunkPrewarmAware: true,
+    regionPresenceAware: true,
+    regionAdvantageAware: true
   })
 });
 
 // ============================================================================
-// FACTORY: createPulseMesh — v12.3-PRESENCE-EVO+
+// FACTORY: createPulseMesh — v13-PRESENCE-EVO+
 // ============================================================================
 
 export function createPulseMesh({
@@ -75,8 +89,14 @@ export function createPulseMesh({
     meshID,
     regionID,
     createdBy: "PulseExpansion",
-    version: "v12.3-PRESENCE-EVO+"
+    version: "v13-PRESENCE-EVO+"
   });
+
+  function log(...args) {
+    if (trace) console.log("[PulseMesh v13]", ...args);
+  }
+
+  log("PulseMesh created:", { meshID, regionID });
 
   // --------------------------------------------------------------------------
   // 2. Topology (A → B → A)
@@ -95,10 +115,10 @@ export function createPulseMesh({
       autoRemoveIdleNodes: true,
       autoReweightLinksOnLoad: true
     },
-    A_limits: {
+    A_limits: Object.freeze({
       maxNodesPerRegion: 5000,
       maxEdgesPerNode: 64
-    }
+    })
   };
 
   // --------------------------------------------------------------------------
@@ -123,12 +143,12 @@ export function createPulseMesh({
       preferShortLocalPaths: true,
       computePressureIndex: true
     },
-    A_thresholds: {
+    A_thresholds: Object.freeze({
       weakThresholdUsers: 1,
       stableThresholdUsers: 5,
       strongThresholdUsers: 20,
       highPressureThreshold: 70 // 0-100 scale
-    }
+    })
   };
 
   // --------------------------------------------------------------------------
@@ -145,10 +165,10 @@ export function createPulseMesh({
       congestionAware: true,
       canBridgeBetweenCastles: true
     },
-    A_contracts: {
+    A_contracts: Object.freeze({
       mustRespectSafetyFrame: true,
       mustNotBypassCostLimits: true
-    }
+    })
   };
 
   // --------------------------------------------------------------------------
@@ -163,10 +183,10 @@ export function createPulseMesh({
       reportCastleHealthToExpansion: true,
       supportCastleRetirement: true
     },
-    A_contracts: {
+    A_contracts: Object.freeze({
       mustNotOverloadSingleCastle: true,
       mustSupportMultiCastleRegions: true
-    }
+    })
   };
 
   // --------------------------------------------------------------------------
@@ -182,11 +202,11 @@ export function createPulseMesh({
       suggestCastleSpinUpOnDemand: true,
       suggestCastleSpinDownWhenStable: true
     },
-    A_contracts: {
+    A_contracts: Object.freeze({
       mustProvideAccurateDensitySignals: true,
       mustProvideAccurateMeshStrength: true,
       mustProvideAccurateMeshPressure: true
-    }
+    })
   };
 
   // --------------------------------------------------------------------------
@@ -203,13 +223,79 @@ export function createPulseMesh({
       mergeSubMeshesWhenPossible: true,
       splitOnlyOnHighLoad: true
     },
-    A_rules: {
+    A_rules: Object.freeze({
       mustMaintainSingleLogicalViewPerRegion: true
-    }
+    })
   };
 
   // --------------------------------------------------------------------------
-  // 8. Telemetry & Logging
+  // 8. Multi-Mesh / World-Mesh Integration (v13+)
+// --------------------------------------------------------------------------
+  const MultiMeshIntegration = {
+    A_links: {
+      worldMeshID: "PulseWorldMesh",
+      neighborMeshes: Object.create(null) // id -> { getSnapshot }
+    },
+    B_behavior: {
+      aggregateNeighborDensity: true,
+      aggregateNeighborPressure: true,
+      preferLocalRegionFirst: true,
+      worldMeshAware: true
+    },
+    A_contracts: Object.freeze({
+      mustRemainSymbolicOnly: true,
+      mustNotDirectlyControlNeighborMeshes: true
+    })
+  };
+
+  function registerNeighborMesh(meshId, snapshotProvider) {
+    if (!meshId || typeof snapshotProvider !== "function") {
+      return { ok: false, reason: "invalid-arguments" };
+    }
+    MultiMeshIntegration.A_links.neighborMeshes[meshId] = snapshotProvider;
+    return { ok: true };
+  }
+
+  function unregisterNeighborMesh(meshId) {
+    if (!meshId) return { ok: false, reason: "invalid-arguments" };
+    delete MultiMeshIntegration.A_links.neighborMeshes[meshId];
+    return { ok: true };
+  }
+
+  function buildWorldMeshSignal() {
+    const neighbors = MultiMeshIntegration.A_links.neighborMeshes;
+    let totalUserCount = DensityHealth.A_metrics.userCount;
+    let totalCastleCount = DensityHealth.A_metrics.castleCount;
+    let maxPressure = DensityHealth.A_metrics.meshPressureIndex;
+
+    for (const provider of Object.values(neighbors)) {
+      try {
+        const snap = provider();
+        const dh = snap?.densityHealth?.A_metrics || {};
+        totalUserCount += dh.userCount || 0;
+        totalCastleCount += dh.castleCount || 0;
+        if (typeof dh.meshPressureIndex === "number") {
+          maxPressure = Math.max(maxPressure, dh.meshPressureIndex);
+        }
+      } catch {
+        // ignore neighbor failures
+      }
+    }
+
+    return Object.freeze({
+      worldMeshID: MultiMeshIntegration.A_links.worldMeshID,
+      regionID,
+      localUserCount: DensityHealth.A_metrics.userCount,
+      localCastleCount: DensityHealth.A_metrics.castleCount,
+      localMeshPressureIndex: DensityHealth.A_metrics.meshPressureIndex,
+      aggregatedUserCount: totalUserCount,
+      aggregatedCastleCount: totalCastleCount,
+      aggregatedMaxPressureIndex: maxPressure
+    });
+  }
+
+  // --------------------------------------------------------------------------
+  // 9. Telemetry & Logging
   // --------------------------------------------------------------------------
   const Telemetry = {
     metrics: {
@@ -227,7 +313,7 @@ export function createPulseMesh({
   };
 
   // --------------------------------------------------------------------------
-  // 9. Contracts (DNA)
+  // 10. Contracts (DNA)
   // --------------------------------------------------------------------------
   const Contracts = Object.freeze({
     preferLocalFirst: true,
@@ -237,7 +323,7 @@ export function createPulseMesh({
   });
 
   // --------------------------------------------------------------------------
-  // 10. Global Hints (presence/advantage/fallback)
+  // 11. Global Hints (presence/advantage/fallback)
   // --------------------------------------------------------------------------
   let lastGlobalHints = globalHints || null;
 
@@ -251,7 +337,7 @@ export function createPulseMesh({
   }
 
   // --------------------------------------------------------------------------
-  // 11. Presence & Advantage Fields (Mesh View)
+  // 12. Presence & Advantage Fields (Mesh View)
   // --------------------------------------------------------------------------
   function buildPresenceField() {
     const gh = lastGlobalHints || {};
@@ -273,7 +359,7 @@ export function createPulseMesh({
   }
 
   // --------------------------------------------------------------------------
-  // 12. Compute Density & Pressure (deterministic)
+  // 13. Compute Density & Pressure (deterministic)
   // --------------------------------------------------------------------------
   function computeDensityAndPressure({
     userCount,
@@ -329,8 +415,8 @@ export function createPulseMesh({
   }
 
   // --------------------------------------------------------------------------
-  // 13. Mesh → Expansion / Castle Signals (symbolic)
-  // --------------------------------------------------------------------------
+  // 14. Mesh → Expansion / Castle / User / World Signals (symbolic)
+// --------------------------------------------------------------------------
   function buildExpansionSignal() {
     const presenceField = buildPresenceField();
     const advantageField = buildAdvantageField();
@@ -356,8 +442,38 @@ export function createPulseMesh({
     });
   }
 
+  function buildUserMeshSignal() {
+    const presenceField = buildPresenceField();
+    const advantageField = buildAdvantageField();
+
+    return Object.freeze({
+      regionID,
+      meshID,
+      presenceField,
+      advantageField,
+      meshPressureIndex: DensityHealth.A_metrics.meshPressureIndex
+    });
+  }
+
   // --------------------------------------------------------------------------
-  // 14. Snapshot & Manual
+  // 15. Prewarm (chunk / cache awareness)
+// --------------------------------------------------------------------------
+  function prewarm() {
+    log("Prewarm: PulseMesh v13 starting prewarm.");
+    // Symbolic-only: mark that density/pressure path is hot.
+    // No external side effects; this is a readiness hint.
+    return {
+      ok: true,
+      meta: {
+        organId: PulseMeshMeta.organId,
+        version: PulseMeshMeta.version,
+        prewarmKind: "connectivity-density-pressure"
+      }
+    };
+  }
+
+  // --------------------------------------------------------------------------
+  // 16. Snapshot & Manual
   // --------------------------------------------------------------------------
   function getSnapshot() {
     return Object.freeze({
@@ -369,6 +485,10 @@ export function createPulseMesh({
       castleIntegration: CastleIntegration,
       expansionIntegration: ExpansionIntegration,
       multiInstance: MultiInstance,
+      multiMeshIntegration: {
+        worldMeshID: MultiMeshIntegration.A_links.worldMeshID,
+        neighborMeshIds: Object.keys(MultiMeshIntegration.A_links.neighborMeshes)
+      },
       telemetry: Telemetry,
       contracts: Contracts,
       globalHints: lastGlobalHints,
@@ -381,7 +501,7 @@ export function createPulseMesh({
     return {
       meta: PulseMeshMeta,
       description:
-        "PulseMesh is the connective tissue of PulseWorld. It reports density, health, and mesh pressure to Expansion and Castle.",
+        "PulseMesh is the connective tissue of PulseWorld. It reports density, health, mesh pressure, and multi-mesh signals to Expansion, Castle, Router, and OS/User views.",
       usage: {
         setGlobalHints:
           "mesh.setGlobalHints({ presenceContext?, advantageContext?, fallbackBandLevel?, ... })",
@@ -391,6 +511,12 @@ export function createPulseMesh({
           "mesh.buildExpansionSignal() // for PulseExpansion",
         buildCastleSignal:
           "mesh.buildCastleSignal() // for PulseCastle",
+        buildUserMeshSignal:
+          "mesh.buildUserMeshSignal() // for user/OS views",
+        buildWorldMeshSignal:
+          "mesh.buildWorldMeshSignal() // for world/neighbor mesh aggregation",
+        registerNeighborMesh:
+          "mesh.registerNeighborMesh(meshId, () => neighborMesh.getSnapshot())",
         getSnapshot:
           "mesh.getSnapshot()"
       }
@@ -398,14 +524,8 @@ export function createPulseMesh({
   }
 
   // --------------------------------------------------------------------------
-  // 15. Public API
+  // 17. Public API
   // --------------------------------------------------------------------------
-  function log(...args) {
-    if (trace) console.log("[PulseMesh]", ...args);
-  }
-
-  log("PulseMesh created:", { meshID, regionID });
-
   return Object.freeze({
     meta: PulseMeshMeta,
     identity: Identity,
@@ -422,6 +542,15 @@ export function createPulseMesh({
     computeDensityAndPressure,
     buildExpansionSignal,
     buildCastleSignal,
+    buildUserMeshSignal,
+    buildWorldMeshSignal,
+
+    // multi-mesh
+    registerNeighborMesh,
+    unregisterNeighborMesh,
+
+    // prewarm
+    prewarm,
 
     // introspection
     getSnapshot,

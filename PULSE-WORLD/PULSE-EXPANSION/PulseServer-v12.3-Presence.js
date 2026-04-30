@@ -1,6 +1,6 @@
 // ============================================================================
-//  PULSE OS v12.3‑PRESENCE‑EVO+ — PULSE SERVER (EXEC ENGINE / ADVANTAGE HUB)
-//  PulseServer-v12.3-Presence
+//  PULSE OS v13‑PRESENCE‑EVO+ — PULSE SERVER (EXEC ENGINE / ADVANTAGE HUB)
+//  PulseServer-v13-Presence
 //
 //  ROLE:
 //    - Deterministic compute / exec engine for the organism.
@@ -8,11 +8,7 @@
 //      reinterpreting organ math.
 //    - Binds: AdrenalSystem + Scheduler + Runtime v2 (+ Router/Overmind via Scheduler).
 //    - Single entrypoint for “server-as-compute” and “server-as-earn/flow”.
-//
-//  GUARANTEES:
-//    - No new randomness, no new time sources.
-//    - No new network beyond organs.
-//    - No reinterpretation of ExecutionPhysics / Runtime / Adrenal math.
+//    - Now worldCore-aware, user-aware, mesh-aware, brain-aware.
 // ============================================================================
 
 
@@ -48,8 +44,8 @@ const {
 export const PulseServerMeta = Object.freeze({
   layer: "PulseServer",
   role: "PRESENCE_EXEC_ENGINE",
-  version: "v12.3-PRESENCE-EVO+",
-  identity: "PulseServer-v12.3-PRESENCE-EXEC-EVO+",
+  version: "v13-PRESENCE-EVO+",
+  identity: "PulseServer-v13-PRESENCE-EXEC-EVO+",
 
   guarantees: Object.freeze({
     deterministic: true,
@@ -90,7 +86,13 @@ export const PulseServerMeta = Object.freeze({
     // Delegation
     usesAdrenalSystem: true,
     usesSchedulerOrgan: true,
-    usesRuntimeV2: true
+    usesRuntimeV2: true,
+
+    // NEW v13+ integration
+    worldCoreAware: true,
+    userContextAware: true,
+    meshAware: true,
+    brainAware: true
   }),
 
   contract: Object.freeze({
@@ -123,14 +125,15 @@ export const PulseServerMeta = Object.freeze({
   }),
 
   lineage: Object.freeze({
-    root: "PulseOS-v12.3-PRESENCE-EVO+",
-    parent: "PulseProxy-v12.3-PRESENCE-EVO+",
+    root: "PulseOS-v13-PRESENCE-EVO+",
+    parent: "PulseProxy-v13-PRESENCE-EVO+",
     ancestry: [
       "PulseServer-v9",
       "PulseServer-v10",
       "PulseServer-v11",
       "PulseServer-v11-Evo",
-      "PulseServer-v12-Evo"
+      "PulseServer-v12-Evo",
+      "PulseServer-v12.3-PRESENCE-EVO+"
     ]
   })
 });
@@ -173,8 +176,6 @@ const jobResultCache = new Map();
 const hotInstanceBatches = new Map();
 
 function stableStringify(obj) {
-  // Deterministic JSON stringify (field order stable for simple objects).
-  // For deep structures, we rely on upstream organs being deterministic.
   if (obj == null || typeof obj !== "object") return JSON.stringify(obj);
   const keys = Object.keys(obj).sort();
   const out = {};
@@ -192,28 +193,87 @@ function buildBatchKey(instances, currentStatesById, globalContinuancePolicy) {
 
 
 // ============================================================================
-//  CORE SERVER ENGINE
+//  CORE SERVER ENGINE — now worldCore/user/mesh aware
 // ============================================================================
 export class PulseServerPresenceExec {
   constructor(config = {}) {
     this.config = {
       enableAdrenal: true,
       enableScheduler: true,
-      enableRuntimeV2DirectTick: true, // we want the extra compute pass
+      enableRuntimeV2DirectTick: true,
       enableJobCache: true,
       enableBatchReuse: true,
       defaultGlobalPolicy: {},
       defaultMaxTicks: 3,
       defaultStopOnWorldLens: ["unsafe"],
+
+      // NEW: integration points
+      worldCore: null,   // PulseWorldCore instance (user orchestrator)
+      mesh: null,        // mesh environment / snapshot
+      userContext: null, // user / session context
+
       ...config
     };
+
+    this.worldCore = this.config.worldCore || null;
+    this.mesh = this.config.mesh || null;
+    this.userContext = this.config.userContext || null;
 
     this.scheduler = createPulseScheduler({
       defaultGlobalPolicy: this.config.defaultGlobalPolicy,
       defaultMaxTicks: this.config.defaultMaxTicks,
       defaultStopOnWorldLens: this.config.defaultStopOnWorldLens,
-      ...config.schedulerConfig
+      ...this.config.schedulerConfig
     });
+
+    // Attach runtime to worldCore if it supports it (user ↔ brain)
+    if (this.worldCore && typeof this.worldCore.attachRuntime === "function") {
+      try {
+        this.worldCore.attachRuntime(PulseRuntimeV2);
+      } catch {
+        // never throw from integration
+      }
+    }
+
+    // Attach user to mesh if mesh supports it
+    if (this.mesh && typeof this.mesh.attachUser === "function") {
+      try {
+        this.mesh.attachUser(this.userContext || { source: "PulseServer" });
+      } catch {
+        // ignore
+      }
+    }
+  }
+
+  // Allow late binding of worldCore / mesh / userContext
+  attachWorldCore(worldCore) {
+    this.worldCore = worldCore;
+    if (worldCore && typeof worldCore.attachRuntime === "function") {
+      try {
+        worldCore.attachRuntime(PulseRuntimeV2);
+      } catch {}
+    }
+    return { ok: true };
+  }
+
+  attachMesh(mesh) {
+    this.mesh = mesh;
+    if (mesh && typeof mesh.attachUser === "function") {
+      try {
+        mesh.attachUser(this.userContext || { source: "PulseServer" });
+      } catch {}
+    }
+    return { ok: true };
+  }
+
+  attachUserContext(userContext) {
+    this.userContext = userContext;
+    if (this.mesh && typeof this.mesh.attachUser === "function") {
+      try {
+        this.mesh.attachUser(userContext);
+      } catch {}
+    }
+    return { ok: true };
   }
 
   // --------------------------------------------------------------------------
@@ -224,7 +284,6 @@ export class PulseServerPresenceExec {
     currentStatesById,
     globalContinuancePolicy
   }) {
-    // Prewarm runtime core memory (no side effects, just readiness).
     RuntimeCoreMemory.prewarm?.();
 
     if (!this.config.enableBatchReuse) {
@@ -246,7 +305,6 @@ export class PulseServerPresenceExec {
       };
     }
 
-    // Store as hot batch for future jobs.
     hotInstanceBatches.set(batchKey, {
       instances,
       currentStatesById
@@ -269,7 +327,11 @@ export class PulseServerPresenceExec {
       };
     }
 
-    const pulsePayload = adrenalPulse || {};
+    const pulsePayload = {
+      ...(adrenalPulse || {}),
+      userContext: this.userContext || null
+    };
+
     await runAdrenalInstanceOrchestrator(pulsePayload);
 
     return {
@@ -283,7 +345,7 @@ export class PulseServerPresenceExec {
 
   // --------------------------------------------------------------------------
   // 2) Scheduler pipeline — Router + Overmind + Runtime (v1-style)
-  // --------------------------------------------------------------------------
+// --------------------------------------------------------------------------
   async runSchedulerPipeline({
     instances = [],
     currentStatesById = {},
@@ -303,6 +365,11 @@ export class PulseServerPresenceExec {
       };
     }
 
+    const advantageContext =
+      this.worldCore && typeof this.worldCore.buildAdvantageContext === "function"
+        ? this.worldCore.buildAdvantageContext()
+        : null;
+
     const pipelineResult = await this.scheduler.runPipeline({
       instances,
       currentStatesById,
@@ -311,7 +378,10 @@ export class PulseServerPresenceExec {
       userRequest,
       dualBand,
       maxTicks: maxTicks ?? this.config.defaultMaxTicks,
-      stopOnWorldLens: stopOnWorldLens ?? this.config.defaultStopOnWorldLens
+      stopOnWorldLens: stopOnWorldLens ?? this.config.defaultStopOnWorldLens,
+      // pass advantage + user context into scheduler if it knows how to use it
+      advantageContext,
+      userContext: this.userContext || null
     });
 
     return {
@@ -353,8 +423,8 @@ export class PulseServerPresenceExec {
   }
 
   // --------------------------------------------------------------------------
-  // MAIN ENTRYPOINT — PulseServer job
-  // --------------------------------------------------------------------------
+  // MAIN ENTRYPOINT — PulseServer job (now worldCore/user/mesh aware)
+// --------------------------------------------------------------------------
   async runServerJob({
     instances = [],
     currentStatesById = {},
@@ -368,13 +438,12 @@ export class PulseServerPresenceExec {
   } = {}) {
     const notes = [];
 
-    notes.push("PulseServer-v12.3-PRESENCE-EXEC-EVO+: starting job.");
+    notes.push("PulseServer-v13-PRESENCE-EXEC-EVO+: starting job.");
 
     // 0) Job cache check
     const cached = this.maybeGetCachedJob(cacheKey);
     if (cached) {
       notes.push("Job cache hit: returning cached PulseServerJobResult.");
-      // Attach updated notes but keep core result identical.
       const cachedWithNotes = new PulseServerJobResult({
         ...cached,
         cacheHit: true,
@@ -453,10 +522,30 @@ export class PulseServerPresenceExec {
     const runtimeStateV2 = getRuntimeStateV2();
     notes.push("Runtime v2 state snapshot captured (hot-state + binary frames).");
 
+    // 5) Pull worldCore + mesh advantage context for this job
+    const advantageContext =
+      this.worldCore && typeof this.worldCore.buildAdvantageContext === "function"
+        ? this.worldCore.buildAdvantageContext()
+        : null;
+
+    const worldCoreSnapshot =
+      this.worldCore && typeof this.worldCore.getSnapshot === "function"
+        ? this.worldCore.getSnapshot()
+        : null;
+
+    const meshSnapshot =
+      this.mesh && typeof this.mesh.getSnapshot === "function"
+        ? this.mesh.getSnapshot()
+        : null;
+
     const meta = Object.freeze({
       serverMeta: PulseServerMeta,
       schedulerMeta,
       adrenalMeta,
+      advantageContext,
+      worldCoreSnapshot,
+      meshSnapshot,
+      userContext: this.userContext || null,
       notes
     });
 
@@ -473,7 +562,6 @@ export class PulseServerPresenceExec {
       meta
     });
 
-    // 5) Store in job cache if applicable
     this.maybeStoreCachedJob(cacheKey, result);
 
     return result;
@@ -492,9 +580,20 @@ export function createPulseServer(config = {}) {
 
     async runServerJob(payload) {
       return core.runServerJob(payload);
+    },
+
+    // expose integration hooks if caller wants to wire after creation
+    attachWorldCore(worldCore) {
+      return core.attachWorldCore(worldCore);
+    },
+    attachMesh(mesh) {
+      return core.attachMesh(mesh);
+    },
+    attachUserContext(userContext) {
+      return core.attachUserContext(userContext);
     }
   });
 }
 
-// Default singleton-style instance
+// Default singleton-style instance (no worldCore/mesh until attached)
 export const pulseServer = createPulseServer();

@@ -1,6 +1,7 @@
 // ============================================================================
 //  PULSE EXPANSION — v13-PRESENCE-EVO+
 //  B‑Tier Presence Strategist (Region Governor)
+//  Every‑Advantage / Regioning‑Physics‑Aware / Beacon‑Aware / OS‑Aware
 // ============================================================================
 
 import { logger } from "../PULSEProofLogger.js";
@@ -22,6 +23,16 @@ import {
   PulseBeaconMeshMeta,
   PulseBeaconMesh
 } from "./PulseBeaconMesh-v12.3-Presence.js";
+
+// ============================================================================
+//  OS / ROUTER / SERVER / MESH META (READ-ONLY VISIBILITY)
+//  - Expansion never calls into these; it only carries their meta forward.
+// ============================================================================
+import { PulseWorldCoreMeta } from "./PulseUser-v12.3-Presence.js";
+import { PulseRouterMeta } from "./PulseRouter-v12.3-Presence.js";
+import { PulseServerMeta } from "./PulseServer-v12.3-Presence.js";
+import { PulseMeshMeta } from "./PulseMesh-v12.3-PRESENCE.js";
+import { PulseMeshMeta as BinaryMeshMeta } from "./PulseMesh-v12.3-PRESENCE.js";
 
 // ============================================================================
 //  REGIONING PHYSICS BARREL — v13-EVO-PRESENCE-MAX
@@ -81,7 +92,9 @@ function buildRegioningPhysicsSignature() {
     ...Object.keys(RegionMeshRoutingEvo),
     ...Object.keys(SnapshotPhysicsCoreMemory),
     ...Object.keys(SnapshotPhysicsEvo)
-  ].sort().join("|");
+  ]
+    .sort()
+    .join("|");
 
   let h = 0;
   for (let i = 0; i < keys.length; i++) {
@@ -92,7 +105,7 @@ function buildRegioningPhysicsSignature() {
 
 // ============================================================================
 //  WORLD BOOT / PREWARM — CASTLE + BEACON ENGINE + MESH
-//  (SERVER/USER ARE INSIDE CASTLE)
+//  (SERVER/USER ARE INSIDE CASTLE; EXPANSION ONLY OBSERVES)
 // ============================================================================
 const Castle = createCastleServer ? createCastleServer() : pulseCastle;
 
@@ -100,12 +113,10 @@ const BeaconEngine = createPulseBeaconEngine
   ? createPulseBeaconEngine({ castle: Castle })
   : null;
 
-const BeaconMesh = BeaconEngine
-  ? PulseBeaconMesh({ beacon: BeaconEngine })
-  : null;
+const BeaconMesh = BeaconEngine ? PulseBeaconMesh({ beacon: BeaconEngine }) : null;
 
 // ============================================================================
-//  META
+//  META — FULL-ADVANTAGE STRATEGIST VIEW
 // ============================================================================
 export const PulseExpansionMeta = Object.freeze({
   layer: "PulseExpansion",
@@ -114,12 +125,24 @@ export const PulseExpansionMeta = Object.freeze({
   identity: "PulseExpansion-v13-PRESENCE-EVO+",
 
   world: Object.freeze({
-    castle: Castle
+    castle: Castle,
+    castleMeta: PulseCastleMeta,
+    osMeta: PulseWorldCoreMeta
   }),
 
   beacons: Object.freeze({
     engineMeta: BeaconEngine?.meta ?? PulseBeaconEngineMeta ?? null,
     meshMeta: PulseBeaconMeshMeta
+  }),
+
+  connectivity: Object.freeze({
+    meshMeta: PulseMeshMeta,
+    binaryMeshMeta: BinaryMeshMeta,
+    routerMeta: PulseRouterMeta
+  }),
+
+  server: Object.freeze({
+    pulseServerMeta: PulseServerMeta
   }),
 
   physics: Object.freeze({
@@ -154,6 +177,12 @@ export const PulseExpansionMeta = Object.freeze({
     treasuryAware: true,
     capacitySignalAware: true,
     stressSignalAware: true,
+    regioningPhysicsAware: true,
+    beaconAware: true,
+    osBrainAware: true,
+    routerAware: true,
+    serverExecAware: true,
+    binaryMeshAware: true,
 
     zeroRandomness: true,
     zeroDynamicImports: true,
@@ -265,8 +294,9 @@ function clamp01(x) {
 function computeHash(str) {
   let h = 0;
   const s = String(str || "");
-  for (let i = 0; i < s.length; i++)
+  for (let i = 0; i < s.length; i++) {
     h = (h + s.charCodeAt(i) * (i + 1)) % 100000;
+  }
   return `h${h}`;
 }
 
@@ -304,18 +334,20 @@ function buildRegionPresenceField(regionInfo, cycle, physicsSig) {
   const castleCount = regionInfo.castles.length;
   const totalServers = regionInfo.totalServers;
   const avgPresence =
-    regionInfo.castles.reduce((a, c) => a + (c.presenceField?.presenceScore || 0), 0) /
-    Math.max(1, castleCount);
+    regionInfo.castles.reduce(
+      (a, c) => a + (c.presenceField?.presenceScore || 0),
+      0
+    ) / Math.max(1, castleCount);
 
   const composite =
-    castleCount * 0.01 +
-    totalServers * 0.005 +
-    avgPresence * 0.02;
+    castleCount * 0.01 + totalServers * 0.005 + avgPresence * 0.02;
 
   const presenceTier =
-    composite >= 0.5 ? "presence_high" :
-    composite >= 0.2 ? "presence_mid" :
-    "presence_low";
+    composite >= 0.5
+      ? "presence_high"
+      : composite >= 0.2
+      ? "presence_mid"
+      : "presence_low";
 
   return {
     presenceVersion: "v13",
@@ -355,7 +387,12 @@ function buildRegionAdvantageField(regionInfo, presenceField, cycle, physicsSig)
   };
 }
 
-function buildRegionChunkPrewarmPlan(regionInfo, presenceField, advantageField, physicsSig) {
+function buildRegionChunkPrewarmPlan(
+  regionInfo,
+  presenceField,
+  advantageField,
+  physicsSig
+) {
   const basePriority =
     presenceField.presenceTier === "presence_high"
       ? 3
@@ -434,6 +471,11 @@ export class PulseExpansion {
     const regionAdvantage = {};
     const regionChunkPlan = {};
 
+    // Optional: beacon snapshot (presence/advantage/mesh view)
+    const beaconSnapshot = BeaconMesh?.getSnapshot?.() ?? null;
+    const beaconPresenceField = beaconSnapshot?.presenceField ?? null;
+    const beaconAdvantageField = beaconSnapshot?.advantageField ?? null;
+
     // REGION LOOP
     for (const [regionId, regionInfo] of Object.entries(byRegion)) {
       const signal = regionSignals[regionId] || {};
@@ -441,9 +483,23 @@ export class PulseExpansion {
       const userDensityHint = signal.userDensityHint ?? 0;
       const stressHint = clamp01(signal.stressHint ?? globalLoad);
 
-      const presenceField = buildRegionPresenceField(regionInfo, this.cycle, physicsSig);
-      const advantageField = buildRegionAdvantageField(regionInfo, presenceField, this.cycle, physicsSig);
-      const chunkPlan = buildRegionChunkPrewarmPlan(regionInfo, presenceField, advantageField, physicsSig);
+      const presenceField = buildRegionPresenceField(
+        regionInfo,
+        this.cycle,
+        physicsSig
+      );
+      const advantageField = buildRegionAdvantageField(
+        regionInfo,
+        presenceField,
+        this.cycle,
+        physicsSig
+      );
+      const chunkPlan = buildRegionChunkPrewarmPlan(
+        regionInfo,
+        presenceField,
+        advantageField,
+        physicsSig
+      );
 
       regionPresence[regionId] = presenceField;
       regionAdvantage[regionId] = advantageField;
@@ -453,7 +509,9 @@ export class PulseExpansion {
 
       // EXPANSION
       if (
-        (avgLoadIndex >= 0.6 || userDensityHint >= 2000 || stressHint >= 0.6) &&
+        (avgLoadIndex >= 0.6 ||
+          userDensityHint >= 2000 ||
+          stressHint >= 0.6) &&
         castleCount < effectiveMaxCastles
       ) {
         expansions.push(
@@ -510,7 +568,7 @@ export class PulseExpansion {
     }
 
     // MESH REBALANCE
-    for (const [regionId, regionInfo] of Object.entries(byRegion)) {
+    for (const [, regionInfo] of Object.entries(byRegion)) {
       const castles = regionInfo.castles;
       if (castles.length <= 1) continue;
 
@@ -535,9 +593,6 @@ export class PulseExpansion {
     const binaryField = buildBinaryField(this.cycle);
     const waveField = buildWaveField(this.cycle, band);
     const bandSignature = buildBandSignature(band);
-
-    // Optional: beacon prewarm / telemetry hook (no mutation of strategy)
-    const beaconSnapshot = BeaconMesh?.getSnapshot?.() ?? null;
 
     logger?.log?.("expansion", "plan_built", {
       cycle: this.cycle,
@@ -565,8 +620,15 @@ export class PulseExpansion {
         castleMeta: PulseCastleMeta,
         beaconEngineMeta: BeaconEngine?.meta ?? PulseBeaconEngineMeta ?? null,
         beaconMeshMeta: PulseBeaconMeshMeta,
+        routerMeta: PulseRouterMeta,
+        serverMeta: PulseServerMeta,
+        meshMeta: PulseMeshMeta,
+        binaryMeshMeta: BinaryMeshMeta,
+        osMeta: PulseWorldCoreMeta,
         physicsSig,
         beaconSnapshot,
+        beaconPresenceField,
+        beaconAdvantageField,
         regioningPhysics: {
           DeltaEngineCosmosMultiverse,
           DeltaEngineEvo,

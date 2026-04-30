@@ -1,17 +1,18 @@
 // ============================================================================
-// PULSE-WORLD : PulseRouter-v12.3-PRESENCE-EVO+.js
+// PULSE-WORLD : PulseRouter-v13-PRESENCE-EVO+.js
 // ORGAN TYPE: Routing / Traffic Brain
-// VERSION: v12.3-PRESENCE-EVO+ (Hybrid, Every-Advantage, Route-Aware)
+// VERSION: v13-PRESENCE-EVO+ (Hybrid, Every-Advantage, Route-Aware, User-Aware)
 // ============================================================================
 //
 // ROLE:
 //   PulseRouter is the traffic brain of a region. It decides how to route
 //   user requests: via local castle, via mesh, or via remote cloud as a last
-//   resort. In v12.3 it also becomes a *route strategist*:
+//   resort. In v13 it also becomes a *user-aware route strategist*:
 //
 //     - Reads Castle reproduction / load state
 //     - Reads Mesh pressure + density + presence/advantage fields
 //     - Reads Expansion route / expansion fields
+//     - Reads User / WorldCore / Brain views (when attached)
 //     - Suggests better routes (never auto-applies)
 //     - Suggests corridor reinforcement
 //     - Suggests node placement ideas
@@ -22,26 +23,14 @@
 //   - Respect SafetyFrame and user opt-in.
 //   - Be pressure-aware but never auto-expand.
 //   - Suggest improvements, never execute them.
-//
-// ARCHITECTURE:
-//   A = Baseline routing policy.
-//   B = Evolutionary enhancements (pressure-aware, latency-aware,
-//       cost-aware, route-aware, reproduction-aware).
-//   A = Return to deterministic, explainable routing rules.
-//
-// DEPENDENCIES (SYMBOLIC):
-//   - PulseMesh (snapshot from createPulseMesh().getSnapshot())
-//   - PulseCastle (snapshot from pulseCastle.getPresenceState() + castle state)
-//   - PulseExpansion (snapshot from pulseExpansion.buildExpansionPlan() + routeField)
-//   - SafetyFrame
-//   - PulseBeaconEngine
+//   - Be user-aware and OS-brain-aware when attachments are present.
 // ============================================================================
 
 export const PulseRouterMeta = Object.freeze({
-  organId: "PulseRouter-v12.3-PRESENCE-EVO+",
+  organId: "PulseRouter-v13-PRESENCE-EVO+",
   role: "TRAFFIC_BRAIN",
-  version: "12.3-PRESENCE-EVO+",
-  epoch: "v12.3-PRESENCE-EVO+",
+  version: "13-PRESENCE-EVO+",
+  epoch: "v13-PRESENCE-EVO+",
   layer: "Routing",
   safety: Object.freeze({
     deterministic: true,
@@ -57,12 +46,16 @@ export const PulseRouterMeta = Object.freeze({
     routeAware: true,
     reproductionAware: true,
     expansionAware: true,
-    dualbandSafe: true
+    dualbandSafe: true,
+    userAware: true,
+    worldCoreAware: true,
+    osBrainAware: true,
+    meshWorldAware: true
   })
 });
 
 // ============================================================================
-// FACTORY: createPulseRouter — v12.3-PRESENCE-EVO+
+// FACTORY: createPulseRouter — v13-PRESENCE-EVO+
 // ============================================================================
 
 export function createPulseRouter({
@@ -79,22 +72,27 @@ export function createPulseRouter({
     routerID,
     regionID,
     createdBy: "PulseWorldCore",
-    version: "v12.3-PRESENCE-EVO+"
+    version: "v13-PRESENCE-EVO+"
   });
 
   function log(...args) {
-    if (trace) console.log("[PulseRouter]", ...args);
+    if (trace) console.log("[PulseRouter v13]", ...args);
   }
 
-  log("PulseRouter created:", { routerID, regionID });
+  log("PulseRouter v13 created:", { routerID, regionID });
 
   // --------------------------------------------------------------------------
   // 2. Inputs (What the Router Can See)
   // --------------------------------------------------------------------------
-  let meshSnapshot = null;      // from PulseMesh.getSnapshot()
-  let castleSnapshot = null;    // from PulseCastle presence + state
-  let expansionSnapshot = null; // from PulseExpansion.buildExpansionPlan() + routeField
-  let beaconSnapshot = null;    // from PulseBeaconEngine (optional)
+  let meshSnapshot = null;        // from PulseMesh.getSnapshot()
+  let castleSnapshot = null;      // from PulseCastle presence + state
+  let expansionSnapshot = null;   // from PulseExpansion.buildExpansionPlan() + routeField
+  let beaconSnapshot = null;      // from PulseBeaconEngine (optional)
+
+  // NEW: user / world / brain attachments
+  let userSnapshot = null;        // from PulseUser / local user context
+  let worldCoreSnapshot = null;   // from PulseWorldCore.getSnapshot()
+  let brainSnapshot = null;       // from runtime.getRuntimeStateV2() or OS brain view
 
   function attachMesh(snapshot) {
     meshSnapshot = snapshot || null;
@@ -116,9 +114,24 @@ export function createPulseRouter({
     return { ok: true };
   }
 
+  function attachUser(snapshot) {
+    userSnapshot = snapshot || null;
+    return { ok: true };
+  }
+
+  function attachWorldCore(snapshot) {
+    worldCoreSnapshot = snapshot || null;
+    return { ok: true };
+  }
+
+  function attachBrain(snapshot) {
+    brainSnapshot = snapshot || null;
+    return { ok: true };
+  }
+
   // --------------------------------------------------------------------------
   // 3. Global Hints (presence/advantage/fallback)
-// --------------------------------------------------------------------------
+  // --------------------------------------------------------------------------
   let lastGlobalHints = globalHints || null;
 
   function setGlobalHints(hints) {
@@ -132,15 +145,32 @@ export function createPulseRouter({
 
   function buildPresenceField() {
     const gh = lastGlobalHints || {};
-    const meshPresence = meshSnapshot?.presenceField?.meshPresence
-      || meshSnapshot?.densityHealth?.A_metrics?.meshStrength
-      || "unknown";
+
+    const meshPresence =
+      meshSnapshot?.presenceField?.meshPresence ||
+      meshSnapshot?.densityHealth?.A_metrics?.meshStrength ||
+      "unknown";
+
+    const userPresence =
+      userSnapshot?.presenceField?.userPresence ||
+      userSnapshot?.presenceField?.devicePresence ||
+      gh?.presenceContext?.devicePresence ||
+      "unknown";
+
+    const routerPresence =
+      gh?.presenceContext?.routerPresence || "unknown";
+
+    const regionPresence =
+      beaconSnapshot?.presenceField?.regionPresence ||
+      worldCoreSnapshot?.advantageContext?.presenceField?.presenceTier ||
+      "unknown";
 
     return Object.freeze({
       bandPresence: gh?.presenceContext?.bandPresence || "unknown",
-      routerPresence: gh?.presenceContext?.routerPresence || "unknown",
-      devicePresence: gh?.presenceContext?.devicePresence || "unknown",
-      meshPresence
+      routerPresence,
+      devicePresence: userPresence,
+      meshPresence,
+      regionPresence
     });
   }
 
@@ -149,9 +179,25 @@ export function createPulseRouter({
     const meshAdvantageScore = meshSnapshot?.advantageField?.advantageScore ?? null;
     const meshAdvantageBand = meshSnapshot?.advantageField?.advantageBand ?? "neutral";
 
+    const userAdvantageScore =
+      userSnapshot?.advantageField?.advantageScore ??
+      worldCoreSnapshot?.advantageContext?.advantageField?.advantageScore ??
+      null;
+
+    const userAdvantageBand =
+      userSnapshot?.advantageField?.advantageBand ??
+      worldCoreSnapshot?.advantageContext?.advantageField?.advantageBand ??
+      "neutral";
+
     return Object.freeze({
-      advantageScore: gh?.advantageContext?.score ?? meshAdvantageScore,
-      advantageBand: gh?.advantageContext?.band ?? meshAdvantageBand,
+      advantageScore:
+        gh?.advantageContext?.score ??
+        userAdvantageScore ??
+        meshAdvantageScore,
+      advantageBand:
+        gh?.advantageContext?.band ??
+        userAdvantageBand ??
+        meshAdvantageBand,
       fallbackBandLevel: gh?.fallbackBandLevel ?? null
     });
   }
@@ -170,7 +216,10 @@ export function createPulseRouter({
       pressureAware: true,
       latencyAware: true,
       costAware: true,
-      routeAware: true
+      routeAware: true,
+      userAware: true,
+      worldCoreAware: true,
+      osBrainAware: true
     },
     A_limits: {
       maxHops: 8
@@ -196,7 +245,6 @@ export function createPulseRouter({
   }
 
   function getCastleSignals() {
-    // castleSnapshot is free-form; we treat it symbolically
     const state = castleSnapshot?.state || {};
     const loadLevel = state.loadLevel || "unknown"; // low | normal | high | critical
     const presenceField = castleSnapshot?.presenceField || null;
@@ -208,7 +256,6 @@ export function createPulseRouter({
   }
 
   function getExpansionSignals() {
-    // expansionSnapshot is ExpansionPlan + optional routeField
     const routeField = expansionSnapshot?.routeField || {
       weakSegments: [],
       prioritySegments: [],
@@ -220,31 +267,85 @@ export function createPulseRouter({
     };
   }
 
+  function getUserSignals() {
+    const region =
+      userSnapshot?.regionID ||
+      worldCoreSnapshot?.identity?.regionID ||
+      regionID ||
+      null;
+
+    const stressIndex =
+      userSnapshot?.presenceField?.stressIndex ??
+      worldCoreSnapshot?.advantageContext?.meshPressureIndex ??
+      0;
+
+    const fallbackBandLevel =
+      lastGlobalHints?.fallbackBandLevel ??
+      worldCoreSnapshot?.advantageContext?.fallbackBandLevel ??
+      0;
+
+    const osBrainStatus =
+      worldCoreSnapshot?.primaryOSView?.osBrainStatus ??
+      worldCoreSnapshot?.primaryOSView?.status ??
+      "unknown";
+
+    return {
+      region,
+      stressIndex,
+      fallbackBandLevel,
+      osBrainStatus
+    };
+  }
+
   // --------------------------------------------------------------------------
   // 6. Decision Engine (Routing Decisions)
 // --------------------------------------------------------------------------
   function decideRoute(request) {
     const mesh = getMeshSignals();
     const castle = getCastleSignals();
+    const { routeField } = getExpansionSignals();
     const presenceField = buildPresenceField();
     const advantageField = buildAdvantageField();
+    const userSignals = getUserSignals();
 
     const meshStrength = mesh.meshStrength;
     const meshPressure = mesh.meshPressureIndex;
     const castleLoad = castle.loadLevel;
 
-    // 1. Prefer Castle if healthy and not overloaded
+    const userStress = userSignals.stressIndex;
+    const fallbackBandLevel = advantageField.fallbackBandLevel ?? userSignals.fallbackBandLevel ?? 0;
+    const osBrainStatus = userSignals.osBrainStatus;
+
+    // 0. If OS brain is unhealthy or fallback band is high, bias toward cloud
+    if (osBrainStatus !== "healthy" || fallbackBandLevel >= 3) {
+      return routeTo("cloud", "osBrainUnhealthyOrHighFallback", {
+        mesh,
+        castle,
+        presenceField,
+        advantageField,
+        userSignals,
+        routeField
+      });
+    }
+
+    // 1. Prefer Castle if healthy and not overloaded, and user stress not critical
     const castleHealthy =
       castleLoad === "low" ||
       castleLoad === "normal" ||
       castleLoad === "medium";
 
-    if (castleHealthy && Policy.A_baseline.preferLocalCastle) {
+    if (
+      castleHealthy &&
+      userStress < 80 &&
+      Policy.A_baseline.preferLocalCastle
+    ) {
       return routeTo("castle", "nearestHealthyCastle", {
         mesh,
         castle,
         presenceField,
-        advantageField
+        advantageField,
+        userSignals,
+        routeField
       });
     }
 
@@ -258,7 +359,9 @@ export function createPulseRouter({
         mesh,
         castle,
         presenceField,
-        advantageField
+        advantageField,
+        userSignals,
+        routeField
       });
     }
 
@@ -272,16 +375,36 @@ export function createPulseRouter({
         mesh,
         castle,
         presenceField,
-        advantageField
+        advantageField,
+        userSignals,
+        routeField
       });
     }
 
-    // 4. Cloud fallback when both castle + mesh are weak/overloaded
+    // 4. If user stress is very high, prefer mesh (distributed) over castle
+    if (
+      userStress >= 80 &&
+      meshStrength !== "weak" &&
+      Policy.A_baseline.preferLocalMesh
+    ) {
+      return routeTo("mesh", "userStressHighPreferMesh", {
+        mesh,
+        castle,
+        presenceField,
+        advantageField,
+        userSignals,
+        routeField
+      });
+    }
+
+    // 5. Cloud fallback when both castle + mesh are weak/overloaded
     return routeTo("cloud", "fallback", {
       mesh,
       castle,
       presenceField,
-      advantageField
+      advantageField,
+      userSignals,
+      routeField
     });
   }
 
@@ -294,7 +417,9 @@ export function createPulseRouter({
       presenceField: context.presenceField || null,
       advantageField: context.advantageField || null,
       meshSignals: context.mesh || null,
-      castleSignals: context.castle || null
+      castleSignals: context.castle || null,
+      userSignals: context.userSignals || null,
+      routeField: context.routeField || null
     });
   }
 
@@ -309,6 +434,7 @@ export function createPulseRouter({
     const mesh = getMeshSignals();
     const castle = getCastleSignals();
     const { routeField } = getExpansionSignals();
+    const userSignals = getUserSignals();
 
     const suggestions = [];
 
@@ -339,6 +465,16 @@ export function createPulseRouter({
         reason: "castleLoadHigh",
         idea: "shift some traffic to mesh or neighboring castles",
         castleLoadLevel: castle.loadLevel
+      });
+    }
+
+    // User stress-based suggestions
+    if (userSignals.stressIndex >= 80) {
+      suggestions.push({
+        type: "user-stress-relief",
+        reason: "userStressHigh",
+        idea: "prefer distributed mesh routes and reduce local castle contention",
+        userStressIndex: userSignals.stressIndex
       });
     }
 
@@ -430,6 +566,9 @@ export function createPulseRouter({
       castleSnapshot,
       expansionSnapshot,
       beaconSnapshot,
+      userSnapshot,
+      worldCoreSnapshot,
+      brainSnapshot,
       presenceField: buildPresenceField(),
       advantageField: buildAdvantageField(),
       telemetry: Telemetry,
@@ -452,6 +591,9 @@ export function createPulseRouter({
     attachCastle,
     attachExpansion,
     attachBeacon,
+    attachUser,
+    attachWorldCore,
+    attachBrain,
 
     // hints
     setGlobalHints,

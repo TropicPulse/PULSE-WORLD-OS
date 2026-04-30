@@ -137,8 +137,32 @@ import * as PulseSpinalCord from "./PulseOSSpinalCord-v12-Evo.js";       // Wiri
 // Presence / Mesh presence (symbolic/OS side, optional)
 import * as PulseOSPresence from "./PulseOSPresence-v12.4-EVO.js";                 // OS Presence Organ (optional)
 import * as PulseMeshPresence from "../PULSE-MESH/PulseMeshPresenceRelay-v12.4-EVO.js";        // Mesh Presence Relay (optional)
+// ============================================================================
+// PULSE OS v13-PRESENCE-EVO+ — WORLD BARREL
+// ============================================================================
+import { createPulseExpansion, pulseExpansion, PulseExpansionMeta } from "../PULSE-EXPANSION/PulseExpansion-v12.3-PRESENCE.js";
 
+// (optional) direct access if you want to surface them:
+const Expansion = pulseExpansion; // singleton
+const ExpansionMeta = PulseExpansionMeta;
 
+// World-facing API
+export const PulseWorld = Object.freeze({
+  meta: ExpansionMeta,
+
+  // region governor
+  expansion: Expansion,
+
+  // convenience surfaces (all routed through Expansion)
+  castle: ExpansionMeta.world.castle,
+  beacons: ExpansionMeta.beacons,
+  physics: ExpansionMeta.physics,
+
+  // primary call: build expansion plan from region signals
+  buildExpansionPlan(payload) {
+    return Expansion.buildExpansionPlan(payload);
+  }
+});
 // ============================================================================
 //  CONTEXT — BINARY OS KERNEL IDENTITY (v12.3-SPINE-BINARY)
 // ============================================================================

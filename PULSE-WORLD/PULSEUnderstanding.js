@@ -392,6 +392,17 @@ async function buildPulseKernel() {
   } catch {}
 
   try {
+    if (Brain && Mesh && typeof Brain.attachMesh === "function") {
+      Brain.attachMesh(Mesh);
+    }
+    if (Mesh && typeof Mesh.attachBrain === "function") {
+      Mesh.attachBrain(Brain);
+    }
+  } catch (err) {
+    console.error("[PulseUnderstanding] Brain ↔ Mesh attach failed:", err);
+  }
+
+  try {
     if (Earn && typeof Earn.boot === "function") {
       Earn.boot({
         Brain,
