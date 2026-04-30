@@ -4,7 +4,7 @@
 // “THE REAL CNS / ORGANISM-WIDE IDENTITY + INTELLIGENCE KERNEL”
 // ============================================================================
 //
-// LAWS (UPDATED FOR v13+ADV):
+// LAWS (v13+ADV+PULSE-TOPOLOGY):
 //   • Brain may import ONLY:
 //       - PulseIQMap        (design + logging + long-term memory)
 //       - PulseOrganismMap  (organ layout + organs + lineage)
@@ -13,10 +13,9 @@
 //   • Brain is binary-aware, dualband, but symbolic-primary.
 //   • Binary is always post-render, handled by GPU / Send / Binary organs.
 //   • Brain is the CNS identity + contract kernel, not a router, not a GPU.
-//   • No presence/mesh/gpu imports — awareness is metadata-only.
-//   • Brain is the ONLY conceptual “internet center”; it may hold
-//     world-lens / advantage / presence summaries, but it only emits
-//     view-only, non-network-dependent descriptors to the rest of the OS.
+//   • No presence/mesh/gpu/heartbeat imports — awareness is metadata-only.
+//   • Brain may hold world-lens / advantage / presence / pulse-topology
+//     summaries, but only emits view-only, non-network-dependent descriptors.
 // ============================================================================
 
 export const PulseOSBrainMeta = Object.freeze({
@@ -44,7 +43,7 @@ export const PulseOSBrainMeta = Object.freeze({
     importsOrganismMapOnly: true,
     importsEvolutionOnly: true,
 
-    // Presence / mesh / performance awareness (metadata-only)
+    // Presence / mesh / performance / advantage / pulse-topology awareness
     presenceFieldAware: true,
     bluetoothPresenceAware: true,
     meshPresenceRelayAware: true,
@@ -53,6 +52,7 @@ export const PulseOSBrainMeta = Object.freeze({
     kernelPrewarmReady: true,
     advantageFieldAware: true,
     unifiedAdvantageField: true,
+    pulseTopologyAware: true,
 
     // Multi-instance / cloning
     multiInstanceReady: true,
@@ -63,8 +63,8 @@ export const PulseOSBrainMeta = Object.freeze({
     zeroUserCode: true,
     zeroDynamicImports: true,
     zeroEval: true,
-    worldLensAware: true,          // Brain may hold a world-lens snapshot
-    zeroNetworkInOrgans: true      // No other organ depends on live network
+    worldLensAware: true,
+    zeroNetworkInOrgans: true
   }),
 
   contract: Object.freeze({
@@ -81,7 +81,8 @@ export const PulseOSBrainMeta = Object.freeze({
       "CNSPresenceDescriptors",
       "CNSChunkingProfiles",
       "CNSAdvantageField",
-      "CNSWorldLensSnapshot"
+      "CNSWorldLensSnapshot",
+      "CNSPulseTopologyDescriptors"
     ]
   }),
 
@@ -111,9 +112,9 @@ export const PulseOSBrainMeta = Object.freeze({
     pattern: "A-B-A",
     baseline: "CNS identity + contract kernel (symbolic-primary, dualband-aware)",
     adaptive:
-      "binary-aware overlays via GPU/Send/Binary organs + presence/mesh/chunk/prewarm/advantage/world-lens metadata surfaces",
+      "binary-aware overlays via GPU/Send/Binary organs + presence/mesh/chunk/prewarm/advantage/world-lens/pulse-topology metadata surfaces",
     return:
-      "online CNS identity + contracts + boot signatures + presence/chunking/advantage/world-lens descriptors"
+      "online CNS identity + contracts + boot signatures + presence/chunking/advantage/world-lens/pulse-topology descriptors"
   })
 });
 
@@ -170,8 +171,61 @@ export const PulseOSBrain = {
       meshTopologyAware: true,
       kernelChunkingReady: true,
       kernelPrewarmReady: true,
-      advantageFieldAware: true
+      advantageFieldAware: true,
+      pulseTopologyAware: true
     }
+  },
+
+  // -------------------------------------------------------------------------
+  // CNS Infrastructure — IQ-aware but NOT IQ-dependent for survival
+  // -------------------------------------------------------------------------
+  PulseIQMap: PulseIQMap || {},
+  PulseOrganismMap: PulseOrganismMap,
+  PulseOSEvolution: PulseOSEvolution,
+
+  intent: {
+    mode: "organism-brain",
+    epoch: "13-SPINE",
+    dualBand: true,
+    symbolicPrimary: true
+  },
+
+  understanding: {
+    classify: () => null,
+    fallback: () => null
+  },
+
+  evolution: null, // attached by cognitiveBootstrap
+
+  cortex: {
+    routes: {},
+    pages: {},
+    bind: () => {},
+    initializeNervousSystem: () => {},
+    initializeOrgans: () => {},
+    scanFile: null
+  },
+
+  CNSWorldLensSnapshot: null,
+
+  log: (...args) => {
+    if (PulseOSBrain.PulseIQMap?.log) return PulseOSBrain.PulseIQMap.log(...args);
+    return console.log("[BRAIN]", ...args);
+  },
+
+  warn: (...args) => {
+    if (PulseOSBrain.PulseIQMap?.warn) return PulseOSBrain.PulseIQMap.warn(...args);
+    return console.warn("[BRAIN-WARN]", ...args);
+  },
+
+  logError: (...args) => {
+    if (PulseOSBrain.PulseIQMap?.logError) return PulseOSBrain.PulseIQMap.logError(...args);
+    return console.error("[BRAIN-ERROR]", ...args);
+  },
+
+  firebase: (...args) => {
+    if (PulseOSBrain.PulseIQMap?.firebase) return PulseOSBrain.PulseIQMap.firebase(...args);
+    return null;
   },
 
   // -------------------------------------------------------------------------
@@ -284,70 +338,42 @@ export const PulseOSBrain = {
     },
 
     getWorldLensSnapshot() {
-      const iq = PulseOSBrain.PulseIQMap || PulseIQMap || {};
-      const lens = iq.worldLens || {};
-
-      // View-only, symbolic snapshot; no live network dependency.
+      const lens = PulseOSBrain.CNSWorldLensSnapshot || {};
       return {
-        version: lens.version || "v1",
         lastUpdated: lens.lastUpdated || null,
-        sources: lens.sources || [],
         summary: lens.summary || {},
-        // Any “internet” knowledge is already baked into IQMap;
-        // no organ depends on live fetch.
-        offlineSafe: true
+        sources: lens.sources || [],
+        offlineSafe: lens.offlineSafe !== false
+      };
+    },
+
+    getPulseTopologyDescriptors() {
+      const iq = PulseOSBrain.PulseIQMap || PulseIQMap || {};
+      const organism = PulseOSBrain.PulseOrganismMap || PulseOrganismMap || {};
+
+      const topo = iq.pulseTopology || {};
+
+      const mom = topo.momHeart || organism.PulseProxyHeart || null;
+      const dad = topo.dadHeart || organism.PulseAIHeartbeat || null;
+      const baby = topo.earnHeart || organism.PulseEarnHeart || null;
+
+      return {
+        momHeart: mom
+          ? { identity: mom.identity || "mom-heart", role: mom.role || "MOM_HEART" }
+          : null,
+        dadHeart: dad
+          ? { identity: dad.identity || "dad-heart", role: dad.role || "DAD_HEART" }
+          : null,
+        babyHeart: baby
+          ? { identity: baby.identity || "baby-heart", role: baby.role || "EARN_HEART" }
+          : null,
+        fallbackRules: topo.fallbackRules || {
+          babyPulseSource: "mom-or-dad",
+          momFallbackToDad: true,
+          dadFallbackToMom: true
+        }
       };
     }
-  },
-
-  // -------------------------------------------------------------------------
-  // CNS Infrastructure — IQ-aware but NOT IQ-dependent for survival
-  // -------------------------------------------------------------------------
-  PulseIQMap: PulseIQMap || {},
-  PulseOrganismMap: PulseOrganismMap,
-
-  log: (...args) => {
-    if (PulseOSBrain.PulseIQMap?.log) return PulseOSBrain.PulseIQMap.log(...args);
-    return console.log("[BRAIN]", ...args);
-  },
-
-  warn: (...args) => {
-    if (PulseOSBrain.PulseIQMap?.warn) return PulseOSBrain.PulseIQMap.warn(...args);
-    return console.warn("[BRAIN-WARN]", ...args);
-  },
-
-  logError: (...args) => {
-    if (PulseOSBrain.PulseIQMap?.logError) return PulseOSBrain.PulseIQMap.logError(...args);
-    return console.error("[BRAIN-ERROR]", ...args);
-  },
-
-  firebase: (...args) => {
-    if (PulseOSBrain.PulseIQMap?.firebase) return PulseOSBrain.PulseIQMap.firebase(...args);
-    return null;
-  },
-
-  // -------------------------------------------------------------------------
-  // INTENT / UNDERSTANDING / EVOLUTION / CORTEX — NEVER NULL
-  // -------------------------------------------------------------------------
-  intent: {
-    classify: () => null,
-    get: () => null
-  },
-
-  understanding: {
-    classify: () => null,
-    fallback: () => null
-  },
-
-  evolution: null, // will be attached by cognitiveBootstrap
-
-  cortex: {
-    routes: {},
-    pages: {},
-    bind: () => {},
-    initializeNervousSystem: () => {},
-    initializeOrgans: () => {},
-    scanFile: null
   },
 
   scanFile(filePath) {
@@ -367,46 +393,44 @@ export const PulseOSBrain = {
       filePath
     };
   },
+
   // -------------------------------------------------------------------------
-// BRAIN-ONLY INTERNET CONNECTOR (SAFE, ISOLATED, VIEW-ONLY)
-// -------------------------------------------------------------------------
-async connectToInternet() {
-  try {
-    const url = PulseOSBrain.PulseIQMap?.worldLensURL;
-    if (!url) {
-      PulseOSBrain.warn("No worldLensURL configured in IQMap.");
-      return null;
+  // BRAIN-ONLY INTERNET CONNECTOR (SAFE, ISOLATED, VIEW-ONLY)
+  // -------------------------------------------------------------------------
+  async connectToInternet() {
+    try {
+      const url = PulseOSBrain.PulseIQMap?.worldLensURL;
+      if (!url) {
+        PulseOSBrain.warn("No worldLensURL configured in IQMap.");
+        return null;
+      }
+
+      const response = await fetch(url, {
+        method: "GET",
+        cache: "no-store"
+      });
+
+      const data = await response.json();
+
+      PulseOSBrain.CNSWorldLensSnapshot = {
+        lastUpdated: Date.now(),
+        summary: data.summary || {},
+        sources: data.sources || [],
+        offlineSafe: true
+      };
+
+      return PulseOSBrain.CNSWorldLensSnapshot;
+
+    } catch (err) {
+      PulseOSBrain.warn("Brain internet connection failed:", err);
+      return {
+        lastUpdated: null,
+        summary: {},
+        sources: [],
+        offlineSafe: true
+      };
     }
-
-    const response = await fetch(url, {
-      method: "GET",
-      cache: "no-store"
-    });
-
-    const data = await response.json();
-
-    // Store symbolic-only snapshot (never live dependency)
-    PulseOSBrain.CNSWorldLensSnapshot = {
-      lastUpdated: Date.now(),
-      summary: data.summary || {},
-      sources: data.sources || [],
-      offlineSafe: true
-    };
-
-    return PulseOSBrain.CNSWorldLensSnapshot;
-
-  } catch (err) {
-    PulseOSBrain.warn("Brain internet connection failed:", err);
-    return {
-      lastUpdated: null,
-      summary: {},
-      sources: [],
-      offlineSafe: true
-    };
   }
-},
-
-  
 };
 
 // ============================================================================
@@ -420,14 +444,15 @@ function prewarmPulseOSBrain() {
     const iqKeys = Object.keys(iq);
     for (const k of iqKeys) {
       const o = iq[k];
+      void o;
     }
 
     const orgKeys = Object.keys(organism);
     for (const k of orgKeys) {
       const o = organism[k];
+      void o;
     }
 
-    // Prewarm is symbolic-only; no Evolution boot here
     return true;
   } catch (err) {
     console.error("[PulseOSBrain Prewarm v13] Failed:", err);
@@ -455,8 +480,6 @@ export function validatePulseRole(module, expectedType, expectedSubsystem) {
 
   return typeOk && subsystemOk;
 }
-
-
 
 // ============================================================================
 // 2) STRUCTURAL ERROR INTELLIGENCE — Drift Surface
@@ -511,7 +534,55 @@ export async function loadOrganByDesign(designIdentity, expectedType, expectedSu
 }
 
 // ============================================================================
-// 4) COGNITIVE BOOTSTRAP — Brain → Evolution → Cortex
+// 4) CNS DIAGNOSTICS + OUTPUT — CALLS ALL HEALERS + SURFACES
+// ============================================================================
+function safeRun(label, fn) {
+  try {
+    const res = fn();
+    return res === undefined ? { ok: true, surface: label } : res;
+  } catch (err) {
+    return { ok: false, error: String(err), surface: label };
+  }
+}
+
+export function getCNSDiagnostics() {
+  return {
+    bandCheck: safeRun("checkBand", checkBand),
+    identityCheck: safeRun("checkIdentity", checkIdentity),
+    routerMemoryCheck: safeRun("checkRouterMemory", checkRouterMemory),
+    worldLens: PulseOSBrain.BrainIntel.getWorldLensSnapshot(),
+    advantageField: PulseOSBrain.BrainIntel.getAdvantageField(),
+    pulseTopology: PulseOSBrain.BrainIntel.getPulseTopologyDescriptors()
+  };
+}
+
+export function getCNSState() {
+  const identity = PulseOSBrain.BrainIntel.getSymbolicOrganismIdentity();
+  const presence = PulseOSBrain.BrainIntel.getPresenceDescriptors();
+  const chunking = PulseOSBrain.BrainIntel.getChunkingProfiles();
+  const advantage = PulseOSBrain.BrainIntel.getAdvantageField();
+  const worldLens = PulseOSBrain.BrainIntel.getWorldLensSnapshot();
+  const pulseTopology = PulseOSBrain.BrainIntel.getPulseTopologyDescriptors();
+  const diagnostics = getCNSDiagnostics();
+
+  return {
+    CNSIdentity: identity,
+    CNSContracts: PulseOSBrain.PulseRole,
+    CNSDiagnostics: diagnostics,
+    CNSBootSignatures: {
+      organism: PulseOSBrain.PulseOrganismMap,
+      iq: PulseOSBrain.PulseIQMap
+    },
+    CNSPresenceDescriptors: presence,
+    CNSChunkingProfiles: chunking,
+    CNSAdvantageField: advantage,
+    CNSWorldLensSnapshot: worldLens,
+    CNSPulseTopologyDescriptors: pulseTopology
+  };
+}
+
+// ============================================================================
+// 5) COGNITIVE BOOTSTRAP — Brain → Evolution → Cortex
 // ============================================================================
 export async function cognitiveBootstrap({ intent, organism, iqMap, understanding }) {
 
@@ -536,7 +607,6 @@ export async function cognitiveBootstrap({ intent, organism, iqMap, understandin
     PulseOSBrain.understanding = understanding;
   }
 
-  // ⭐ Brain boots Evolution (which will boot Cortex)
   const evolutionOrgan = PulseOSEvolution({
     intent,
     organism,
@@ -554,10 +624,16 @@ export async function cognitiveBootstrap({ intent, organism, iqMap, understandin
 
   PulseOSBrain.log("🧠 [PulseOSBrain v13] cognitiveBootstrap complete (advantage-integrated).");
 
+  // Run healers once at boot, attach CNS state snapshot
+  const diagnostics = getCNSDiagnostics();
+  PulseOSBrain.CNSLastDiagnostics = diagnostics;
+  PulseOSBrain.CNSLastState = getCNSState();
+
   return PulseOSBrain;
 }
+
 // -------------------------------------------------------------------------
-// AUTO-CONNECT: Brain upstream world-lens fetch on load
+// AUTO-CONNECT: Brain upstream world-lens fetch on load (view-only)
 // -------------------------------------------------------------------------
 (async () => {
   try {
