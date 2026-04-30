@@ -189,6 +189,17 @@ import PulseProxyBloodPressure from "./PulseProxyBloodPressure.js";
 import PulseProxyCirculatorySystem from "./PulseProxyCirculatorySystem.js";
 import PulseProxyHypothalamus from "./PulseProxyHypothalamus.js";
 import PulseProxySpine from "./PulseProxySpine-v11-Evo.js";
+// Nervous systems (PNS + CNS)
+import pulseband from "./PulseProxyPNSNervousSystem-v11-Evo.js";
+
+// Limbic system (emotion, instinct, survival)
+import PulseProxyLimbicSystem from "./PulseProxyLimbicSystem.js";
+
+// Outer agent purifier (immune‑like external threat filter)
+import PulseProxyOuterAgentPurifier from "./PulseProxyOuterAgentPurifier.js";
+
+// Repair organ (cellular repair, tissue regeneration, drift correction)
+import PulseProxyRepairSystem from "./PulseProxyRepairSystem.js";
 
 // If ProxyRole actually lives in one of these, you can re‑export or import it from there.
 // For now, keep symbolic proxy independent of a specific enum and just expose the proxy role symbolically:

@@ -871,7 +871,79 @@ export const pulseband = {
       }
     }
   },
+  // --------------------------------------------------------------------------
+  // LATENCY → CLASSIFIER (binary-safe)
+  // --------------------------------------------------------------------------
+  classifyLatency(latencyMs) {
+    if (!Number.isFinite(latencyMs) || latencyMs <= 0) return "Unknown";
+    if (latencyMs < 80)  return "Excellent";
+    if (latencyMs < 180) return "Good";
+    if (latencyMs < 400) return "Weak";
+    return "Critical";
+  },
 
+  // --------------------------------------------------------------------------
+  // LATENCY SPIKE DETECTOR (binary-safe)
+  // --------------------------------------------------------------------------
+  detectSpike(prevLatency, nextLatency) {
+    if (!Number.isFinite(prevLatency) || !Number.isFinite(nextLatency)) return false;
+    return nextLatency - prevLatency > 120;
+  },
+
+  // --------------------------------------------------------------------------
+  // NETWORK HEALTH (binary-safe)
+  // --------------------------------------------------------------------------
+  computeNetworkHealth(latencyMs) {
+    return this.classifyLatency(latencyMs);
+  },
+
+  // --------------------------------------------------------------------------
+  // GPU PERFORMANCE MIRROR (binary-safe)
+  // --------------------------------------------------------------------------
+  computeGpuPerformance({ load = 0, stalls = 0 }) {
+    return {
+      warm: load < 0.6 && stalls < 3,
+      smoothness: Math.max(0, 100 - stalls * 10),
+      pacing: stalls > 5 ? "Erratic" : "Stable",
+      stalls,
+      efficiency: Math.max(0, 100 - load * 100),
+      load,
+      frameBudget: 16.6,
+      frameVariance: stalls * 0.5
+    };
+  },
+
+  // --------------------------------------------------------------------------
+  // SNAPSHOT BUILDER (binary-safe)
+  // --------------------------------------------------------------------------
+  buildSnapshot({ latency = 0, prevLatency = 0, advantage = 1.0, timeSaved = 0 }) {
+    const spike = this.detectSpike(prevLatency, latency);
+
+    return {
+      latency,
+      latencyClass: this.classifyLatency(latency),
+      networkHealth: this.computeNetworkHealth(latency),
+      spike,
+      advantage,
+      timeSaved
+    };
+  },
+
+  // --------------------------------------------------------------------------
+  // LIVE MIRROR BUILDER (binary-safe)
+  // --------------------------------------------------------------------------
+  buildLiveMirror({ latency = 0, prevLatency = 0, lastUpdate = 0, now = 0 }) {
+    const spike = this.detectSpike(prevLatency, latency);
+
+    return {
+      latency,
+      latencyClass: this.classifyLatency(latency),
+      networkHealth: this.computeNetworkHealth(latency),
+      microWindowActive: now - lastUpdate < 5000,
+      spike,
+      lastUpdateTimestamp: now
+    };
+  },
   // ------------------------------------------------------------
   // PulseCache Request Helper — Signal Request/Response
   // ------------------------------------------------------------
@@ -913,3 +985,27 @@ export const pulseband = {
     });
   }
 };
+// ---------------------------------------------------------------------------
+// AUTO‑START PULSEBAND ON PNS PAGE (DOM‑READY)
+// ---------------------------------------------------------------------------
+document.addEventListener("DOMContentLoaded", () => {
+  try {
+    if (typeof pulseband === "undefined") {
+      console.warn("[PNS Nervous System] PulseBand not found — cannot auto-start.");
+      return;
+    }
+
+    // Auto-start PulseBand in PNS mode
+    pulseband.initEngine?.({
+      mode: "pns",
+      source: "PNS-NervousSystem",
+      auto: true,
+      silent: true,
+      offlineSafe: true
+    });
+
+    console.log("🧠 [PNS Nervous System] PulseBand auto-started via DOMContentLoaded.");
+  } catch (err) {
+    console.warn("[PNS Nervous System] PulseBand auto-start failed:", err);
+  }
+});

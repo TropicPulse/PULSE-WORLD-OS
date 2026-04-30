@@ -143,6 +143,26 @@ export const PulseOSBinaryProxyMeta = Object.freeze({
   })
 });
 
+
+// Forward imports from existing proxy organs.
+// Adjust paths if your filenames differ slightly.
+import PulseProxyHeart from "./PulseProxyHeart.js";
+import PulseProxyBloodPressure from "./PulseProxyBloodPressure.js";
+import PulseProxyCirculatorySystem from "./PulseProxyCirculatorySystem.js";
+import PulseProxyHypothalamus from "./PulseProxyHypothalamus.js";
+import PulseProxySpine from "./PulseProxySpine-v11-Evo.js";
+// Nervous systems (PNS + CNS)
+import pulseband from "./PulseProxyPNSNervousSystem-v11-Evo.js";
+
+// Limbic system (emotion, instinct, survival)
+import PulseProxyLimbicSystem from "./PulseProxyLimbicSystem.js";
+
+// Outer agent purifier (immune‑like external threat filter)
+import PulseProxyOuterAgentPurifier from "./PulseProxyOuterAgentPurifier.js";
+
+// Repair organ (cellular repair, tissue regeneration, drift correction)
+import PulseProxyRepairSystem from "./PulseProxyRepairSystem.js";
+
 export function createBinaryProxy({
   encoder,
   fallbackProxyFactory,
