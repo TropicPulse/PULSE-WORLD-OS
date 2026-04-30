@@ -36,9 +36,6 @@
 //  • Presence/harmonics/dual‑band are surfaced as metadata only.
 // ============================================================================
 
-import express from "express";
-import nodemailer from "nodemailer";
-import { createClient } from "redis";
 
 const log   = global.log   || console.log;
 const warn  = global.warn  || console.warn;

@@ -3,6 +3,7 @@
 // PULSE OS — v12.3‑EVO‑BINARY‑MAX
 // “THE CENTRAL NERVOUS SYSTEM / COMMUNICATION INTELLIGENCE ORGAN”
 //  • UPGRADED: CNS-level passive/active PageScanner integration (always-on, no timers)
+//  • UPGRADED: v13+ CNS healers (checkBand / checkIdentity / checkRouterMemory)
 // ============================================================================
 
 export const PulseRole = {
@@ -128,6 +129,10 @@ import { PulseOSShortTermMemory } from "./PulseOSShortTermMemory.js";
 // PageScannerV12: A1/A2 intelligence pack, used here as CNS-level passive/active scanner
 import { PageScannerV12 } from "../PulseOSSkinReflex.js";
 
+import checkBand from "../PULSE-PROXY/CheckBand-v11-Evo.js";
+import checkIdentity from "../PULSE-PROXY/CheckIdentity-v11-Evo.js";
+import checkRouterMemory from "../PULSE-PROXY/CheckRouterMemory-v11-Evo.js";
+
 
 // ============================================================================
 // CNS CONSTANTS + DIAGNOSTICS
@@ -252,8 +257,31 @@ const CNS_CONTEXT = {
 
 
 // ============================================================================
+// CNS HEALING STATE — v13+
+// ============================================================================
+const CNS_HEALING = {
+  lastBandCheck: null,
+  lastIdentityCheck: null,
+  lastRouterMemoryCheck: null,
+  lastHealRequestCount: 0,
+  lastHealAppliedCount: 0,
+  lastHealError: null
+};
+
+function safeRun(label, fn) {
+  try {
+    const res = fn();
+    return res === undefined ? { ok: true, surface: label } : res;
+  } catch (err) {
+    return { ok: false, error: String(err), surface: label };
+  }
+}
+
+
+// ============================================================================
 // TRANSPORT LAYER — OFFLINE + ONLINE (GUARDED GLOBALS, DUAL‑BAND)
 //  • UPGRADED: every call emits CNSPageScanner events
+//  • UPGRADED: router-memory healing uses local checkRouterMemory before remote
 // ============================================================================
 const Transport = {
   async callEndpoint(type, payload) {
@@ -372,6 +400,11 @@ const Transport = {
   async callCheckRouterMemory(logs) {
     const offlineMode =
       hasWindow && window.PULSE_OFFLINE_MODE === true;
+
+    // v13+: always run local router-memory validator first
+    CNS_HEALING.lastRouterMemoryCheck = safeRun("checkRouterMemory", () =>
+      checkRouterMemory(logs)
+    );
 
     if (offlineMode) {
       logCNS("HEAL_SKIP_OFFLINE", { count: logs.length, band: "offline" });
@@ -499,6 +532,7 @@ const Transport = {
 
 // ============================================================================
 // UNIVERSAL SYS‑CALL FUNCTION — CNS v12.3‑EVO‑BINARY‑MAX Dual‑Band
+//  • UPGRADED: every event runs band + identity healers once per push
 // ============================================================================
 const ROUTE_BANDS = {
   SYMBOLIC: "symbolic",
@@ -541,6 +575,12 @@ export async function logEvent(eventType, data) {
     dnaTag
   });
 
+  // v13+: CNS pre‑validation on every event (band + identity)
+  CNS_HEALING.lastBandCheck = safeRun("checkBand", () => checkBand(band));
+  CNS_HEALING.lastIdentityCheck = safeRun("checkIdentity", () =>
+    checkIdentity({ phase: "logEvent", eventType, band, dnaTag })
+  );
+
   const page =
     hasWindow && window.location
       ? window.location.pathname
@@ -575,6 +615,7 @@ export async function logEvent(eventType, data) {
 
 // ============================================================================
 // ROUTER MEMORY HEALING — v12.3‑EVO‑BINARY‑MAX Dual‑Band Aware
+//  • UPGRADED: tracks heal counts + errors in CNS_HEALING
 // ============================================================================
 async function healRouterMemoryIfNeeded() {
   if (!RouterMemory || typeof RouterMemory.getAll !== "function") {
@@ -592,6 +633,8 @@ async function healRouterMemoryIfNeeded() {
     return;
   }
 
+  CNS_HEALING.lastHealRequestCount = logs.length;
+
   logCNS("HEAL_REQUEST", { count: logs.length });
 
   CNSPageScanner.emit("cns-heal-request", {
@@ -607,6 +650,8 @@ async function healRouterMemoryIfNeeded() {
       } else {
         RouterMemory._logs = data.logs;
       }
+      CNS_HEALING.lastHealAppliedCount = data.logs.length;
+
       logCNS("HEAL_APPLIED", { count: data.logs.length });
 
       CNSPageScanner.emit("cns-heal-applied", {
@@ -623,6 +668,8 @@ async function healRouterMemoryIfNeeded() {
     }
   } catch (err) {
     const msg = String(err);
+    CNS_HEALING.lastHealError = msg;
+
     logCNS("HEAL_ERROR", { message: msg });
 
     CNSPageScanner.emit("cns-heal-error", {
@@ -634,8 +681,15 @@ async function healRouterMemoryIfNeeded() {
 
 // ============================================================================
 // ROUTE‑DOWN ALERT — v12.3‑EVO‑BINARY‑MAX Continuance‑First
+//  • UPGRADED: records band/identity state at alert time
 // ============================================================================
 async function triggerRouteDownAlert(error, type, band = "symbolic") {
+  // v13+: capture band + identity drift at alert time
+  CNS_HEALING.lastBandCheck = safeRun("checkBand", () => checkBand(band));
+  CNS_HEALING.lastIdentityCheck = safeRun("checkIdentity", () =>
+    checkIdentity({ phase: "routeDownAlert", type, band, error })
+  );
+
   logCNS("ALERT_TRIGGER", { error, type, band });
 
   CNSPageScanner.emit("cns-alert-trigger", {
@@ -670,10 +724,17 @@ async function triggerRouteDownAlert(error, type, band = "symbolic") {
 // ============================================================================
 // ROUTE — CNS v12.3‑EVO‑BINARY‑MAX Dual‑Band
 //  • UPGRADED: CNSPageScanner on call, response, error, retry
+//  • UPGRADED: band + identity healers on route entry
 // ============================================================================
 export async function route(type, payload = {}) {
   const band = resolveBandFromPayload(payload);
   const dnaTag = resolveDnaTagFromPayload(payload);
+
+  // v13+: CNS pre‑validation on route entry
+  CNS_HEALING.lastBandCheck = safeRun("checkBand", () => checkBand(band));
+  CNS_HEALING.lastIdentityCheck = safeRun("checkIdentity", () =>
+    checkIdentity({ phase: "route", type, band, dnaTag })
+  );
 
   if (routingInProgressBands.has(band)) {
     const result = {
@@ -902,6 +963,7 @@ export async function route(type, payload = {}) {
 
 // ============================================================================
 // HEALING ENTRY POINT — v12.3‑EVO‑BINARY‑MAX Dual‑Band
+//  • UPGRADED: band + identity healers on heal entry
 // ============================================================================
 export async function heal(type, payload) {
   const band = resolveBandFromPayload(payload || {});
@@ -913,6 +975,12 @@ export async function heal(type, payload) {
     band,
     dnaTag
   });
+
+  // v13+: CNS pre‑validation on heal entry
+  CNS_HEALING.lastBandCheck = safeRun("checkBand", () => checkBand(band));
+  CNS_HEALING.lastIdentityCheck = safeRun("checkIdentity", () =>
+    checkIdentity({ phase: "heal", type, band, dnaTag })
+  );
 
   logEvent("healingRequest", { type, payload, band, dnaTag, ...CNS_CONTEXT });
 
@@ -929,6 +997,14 @@ export async function heal(type, payload) {
 
 
 // ============================================================================
+// CNS NERVOUS SYSTEM DIAGNOSTICS SURFACE
+// ============================================================================
+export function getCNSNervousSystemDiagnostics() {
+  return { ...CNS_HEALING };
+}
+
+
+// ============================================================================
 // PUBLIC ORGAN SURFACE
 // ============================================================================
 export const PulseOSCNSNervousSystem = {
@@ -936,5 +1012,6 @@ export const PulseOSCNSNervousSystem = {
   meta: PulseOSCNSNervousSystemMeta,
   route,
   logEvent,
-  heal
+  heal,
+  getDiagnostics: getCNSNervousSystemDiagnostics
 };
