@@ -35,8 +35,8 @@ import { createPulseV2 } from "./PulseV2EvolutionEngine-v11-Evo.js";
 import { createLegacyPulse } from "./PulseSendLegacyPulse-v11-Evo.js";
 
 // Router + Mesh + Send
-import { PulseRouter } from "../pulse-router/PulseRouter-v11-evo.js";
-import { PulseMesh } from "../pulse-mesh/PulseMesh-v11-evo.js";
+import { PulseRouter } from "../PULSE-ROUTER/PulseRouter-v11-evo.js";
+import { PulseMesh } from "../PULSE-MESH/PulseMesh-v11-evo.js";
 import { createPulseSendImpulse as createPulseSend } from "./PulseSendImpulse-v11-Evo.js";
 import { createPulseSendReturn } from "./PulseSendReturn.js";
 

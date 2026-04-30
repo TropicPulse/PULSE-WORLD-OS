@@ -207,7 +207,7 @@ function resolveMode(event) {
     const headerMode =
       headers["x-pulse-mode"] ||
       headers["X-Pulse-Mode"] ||
-      headers["x-pulse-router-mode"];
+      headers["x-PULSE-ROUTER-mode"];
 
     const queryMode = qs.mode || qs.routerMode;
 
@@ -517,7 +517,7 @@ async function notifyLymbicOnFatal(err, mode) {
       return;
     }
 
-    await fetch("/pulse-router/RouteDownAlert", {
+    await fetch("/PULSE-ROUTER/RouteDownAlert", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({

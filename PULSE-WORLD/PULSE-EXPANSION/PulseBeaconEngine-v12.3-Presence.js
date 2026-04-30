@@ -74,7 +74,7 @@ export function createPulseBeaconEngine({
   // --------------------------------------------------------------------------
   // INTERNAL STATE
   // --------------------------------------------------------------------------
-  let activeMode = "discovery"; // discovery | presence | adaptive | pulse-reach | pulse-storm | pulse-mesh | pulse-expand
+  let activeMode = "discovery"; // discovery | presence | adaptive | pulse-reach | pulse-storm | PULSE-MESH | pulse-expand
   let tick = 0;
 
   const identity = {
@@ -157,7 +157,7 @@ export function createPulseBeaconEngine({
         powerProfile: "high",
         intervalProfile: "frequent"
       },
-      "pulse-mesh": {
+      "PULSE-MESH": {
         description: "Mesh-aware, cooperative presence",
         powerProfile: "medium",
         intervalProfile: "steady"
@@ -457,7 +457,7 @@ export function createPulseBeaconEngine({
         intervalProfile = "frequent";
       }
 
-      if (meshStrong && activeMode === "pulse-mesh") {
+      if (meshStrong && activeMode === "PULSE-MESH") {
         powerProfile = "medium";
         intervalProfile = "steady";
       }
@@ -645,8 +645,8 @@ export function createPulseBeaconEngine({
       return broadcastOnce(ctx);
     }
 
-    if (intentName === "pulse-mesh") {
-      setMode("pulse-mesh");
+    if (intentName === "PULSE-MESH") {
+      setMode("PULSE-MESH");
       return broadcastOnce(ctx);
     }
 
@@ -697,7 +697,7 @@ export function createPulseBeaconEngine({
       description: "PulseBeaconEngine is the Bluetooth membrane organ for PulseWorld.",
       usage: {
         setMode:
-          "beacon.setMode('discovery' | 'presence' | 'adaptive' | 'pulse-reach' | 'pulse-storm' | 'pulse-mesh' | 'pulse-expand')",
+          "beacon.setMode('discovery' | 'presence' | 'adaptive' | 'pulse-reach' | 'pulse-storm' | 'PULSE-MESH' | 'pulse-expand')",
         updatePayloadFromContext:
           "beacon.updatePayloadFromContext({ regionTag?, castlePresence?, meshStatus?, loadHint?, userProfile? })",
         setGlobalHints:

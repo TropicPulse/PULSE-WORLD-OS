@@ -11,6 +11,26 @@
  *   - Tiered fallback (proxy → mesh → node)
  *   - Multiverse-aware routing metadata
  */
+// ============================================================================
+//  PulseRouter-Barrel.js — v13‑EVO‑PRESENCE‑MAX
+//  Unified Router Organ Import Surface (Binary + Evolutionary + Mesh + Earn)
+//  PURE IMPORT LAYER — NO LOGIC, NO STATE, NO EXECUTION
+// ============================================================================
+
+
+// --- EVOLUTIONARY ROUTER ORGANS --------------------------------------------
+import * as PulseRouterEvolutionaryDesign     from "./PulseRouterEvolutionaryDesign.js";
+import * as PulseRouterEvolutionaryInstincts  from "./PulseRouterEvolutionaryInstincts.js";
+import * as PulseRouterEvolutionaryThought    from "./PulseRouterEvolutionaryThought.js";
+
+// --- MESH ROUTER ------------------------------------------------------------
+import * as PulseRouterMesh           from "./PulseRouterMesh-v11-Evo.js";
+
+// --- EARN-AWARE ROUTER ------------------------------------------------------
+import * as PulseRouterEarn           from "./PulseRouterEarn-v11-Evo.js";
+
+// --- ROUTER COMMANDMENTS ----------------------------------------------------
+import * as PulseRouterCommandments   from "./PulseRouterCommandments.js";
 
 export function createBinaryRouter({
   handlers = [],

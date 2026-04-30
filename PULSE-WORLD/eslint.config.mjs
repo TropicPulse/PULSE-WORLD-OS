@@ -9,7 +9,7 @@ export default [
       "PULSE-OS/PulseIntentMap.js",
       "PULSE-OS/PulseOrganismMap.js",
       "PULSE-OS/PulseIQMap.js",
-      "pulse-router/**",
+      "PULSE-ROUTER/**",
       "pulse-gpu/**",
       "PULSE-OS/PulseOSBrain.js",
       "PULSE-OS/PulseOSBrainEvolution.js",

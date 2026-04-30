@@ -54,7 +54,7 @@ export function PulseBeaconConsole({ beacon }) {
     },
 
     // ------------------------------------------------------------------------
-    // MODE CONTROL: discovery | presence | adaptive | pulse-reach | pulse-storm | pulse-mesh | pulse-expand
+    // MODE CONTROL: discovery | presence | adaptive | pulse-reach | pulse-storm | PULSE-MESH | pulse-expand
     // ------------------------------------------------------------------------
     setMode(mode) {
       return beacon.setMode(mode);

@@ -24,7 +24,7 @@
 import {
   runInstanceOrchestrator as runAdrenalInstanceOrchestrator,
   PulseProxyAdrenalSystemMeta
-} from "./PulseProxyAdrenalSystem-v12.3-PRESENCE.js";
+} from "../PULSE-PROXY/PulseProxyAdrenalSystem.js";
 
 // Scheduler (Router + Overmind + Runtime v1 macro pipeline)
 import {

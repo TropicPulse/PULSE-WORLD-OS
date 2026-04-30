@@ -122,8 +122,8 @@ export class MultiOrganismSummary {
 // -------------------------
 
 import SnapshotPhysicsAPI from "./SnapshotPhysics-v11-Evo.js";
-import DeltaEngineAPI from "./DeltaEngine-v13-COSMOS-MULTIVERSE.js";
-import DeploymentPhysicsAPI from "./DeploymentPhysics-v13-COSMOS-MULTIVERSE.js";
+import DeltaEngineAPI from "./DeltaEngine-v11-Evo.js";
+import DeploymentPhysicsAPI from "./DeploymentPhysics-v11-Evo.js";
 
 const { projectSnapshotForDelta } = SnapshotPhysicsAPI;
 const { computeDelta, summarizeDelta, buildDeltaPatch } = DeltaEngineAPI;

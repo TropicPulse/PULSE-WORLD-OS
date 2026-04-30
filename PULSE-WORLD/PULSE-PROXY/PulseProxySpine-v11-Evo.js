@@ -521,8 +521,8 @@ app.get("/TPProxy", async (req, res) => {
     "Unknown";
 
   const userId    = req.get("x-pulse-user") || "anonymous";
-  const meshRelay = req.get("x-pulse-mesh-relay") === "1";
-  const meshPing  = req.get("x-pulse-mesh-ping") === "1";
+  const meshRelay = req.get("x-PULSE-MESH-relay") === "1";
+  const meshPing  = req.get("x-PULSE-MESH-ping") === "1";
   const hubFlag   = req.get("x-pulse-hub") === "1";
 
   const cacheKey =

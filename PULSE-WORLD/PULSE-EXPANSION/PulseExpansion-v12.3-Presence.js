@@ -6,6 +6,43 @@
 import { logger } from "../PULSEProofLogger.js";
 import { pulseCastle, PulseCastleMeta, summarizeCastlePresence } from "./PulseCastle-v12.3-Presence.js";
 import { pulseServer, PulseServerMeta } from "./PulseServer-v12.3-Presence.js";
+// ============================================================================
+//  PulseRegioning-Barrel.js — v13‑EVO‑PRESENCE‑MAX
+//  Unified Regioning Organ Import Surface
+//  PURE IMPORT LAYER — NO LOGIC, NO STATE, NO EXECUTION
+// ============================================================================
+
+// --- DELTA ENGINE -----------------------------------------------------------
+import * as DeltaEngineCosmosMultiverse from "../PULSE-REGIONING/DeltaEngine-CoreMemoryIntegration-v1.js";
+import * as DeltaEngineEvo        from "../PULSE-REGIONING/DeltaEngine-v11-Evo.js";
+
+// --- DEPLOYMENT PHYSICS -----------------------------------------------------
+import * as DeploymentPhysicsCoreMemory from "../PULSE-REGIONING/DeploymentPhysics-CoreMemoryIntegration-v1.js";
+import * as DeploymentPhysicsEvo        from "../PULSE-REGIONING/DeploymentPhysics-v11-Evo.js";
+
+// --- EXECUTION PHYSICS ------------------------------------------------------
+import * as ExecutionPhysicsCoreMemory from "../PULSE-REGIONING/ExecutionPhysics-CoreMemoryIntegration-v1.js";
+import * as ExecutionPhysicsEvo        from "../PULSE-REGIONING/ExecutionPhysics-v11-Evo.js";
+
+// --- LINEAGE ENGINE ---------------------------------------------------------
+import * as LineageEngineCoreMemory from "../PULSE-REGIONING/LineageEngine-CoreMemoryIntegration-v1.js";
+import * as LineageEngineEvo        from "../PULSE-REGIONING/LineageEngine-v11-Evo.js";
+
+// --- MULTI-ORGANISM SUPPORT -------------------------------------------------
+import * as MultiOrganismSupportCoreMemory from "../PULSE-REGIONING/MultiOrganismSupport-CoreMemoryIntegration-v1.js";
+import * as MultiOrganismSupportEvo        from "../PULSE-REGIONING/MultiOrganismSupport-v11-Evo.js";
+
+// --- REGIONING PHYSICS ------------------------------------------------------
+import * as RegioningPhysicsCoreMemory from "../PULSE-REGIONING/RegioningPhysics-CoreMemoryIntegration-v1.js";
+import * as RegioningPhysicsEvo        from "../PULSE-REGIONING/RegioningPhysics-v11-Evo.js";
+
+// --- REGION MESH ROUTING ----------------------------------------------------
+import * as RegionMeshRoutingCoreMemory from "../PULSE-REGIONING/RegionMeshRouting-CoreMemoryIntegration-v1.js";
+import * as RegionMeshRoutingEvo        from "../PULSE-REGIONING/RegionMeshRouting-v11-Evo.js";
+
+// --- SNAPSHOT PHYSICS -------------------------------------------------------
+import * as SnapshotPhysicsCoreMemory from "../PULSE-REGIONING/SnapshotPhysics-CoreMemoryIntegration-v1.js";
+import * as SnapshotPhysicsEvo        from "../PULSE-REGIONING/SnapshotPhysics-v11-Evo.js";
 
 // ============================================================================
 //  META

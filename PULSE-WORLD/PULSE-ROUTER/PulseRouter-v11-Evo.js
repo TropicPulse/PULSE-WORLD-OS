@@ -15,6 +15,19 @@
 // ============================================================================
 
 
+// --- EVOLUTIONARY ROUTER ORGANS --------------------------------------------
+import * as PulseRouterEvolutionaryDesign     from "./PulseRouterEvolutionaryDesign.js";
+import * as PulseRouterEvolutionaryInstincts  from "./PulseRouterEvolutionaryInstincts.js";
+import * as PulseRouterEvolutionaryThought    from "./PulseRouterEvolutionaryThought.js";
+
+// --- MESH ROUTER ------------------------------------------------------------
+import * as PulseRouterMesh           from "./PulseRouterMesh-v11-Evo.js";
+
+// --- EARN-AWARE ROUTER ------------------------------------------------------
+import * as PulseRouterEarn           from "./PulseRouterEarn-v11-Evo.js";
+
+// --- ROUTER COMMANDMENTS ----------------------------------------------------
+import * as PulseRouterCommandments   from "./PulseRouterCommandments.js";
 // ============================================================================
 // ⭐ PulseRole — identifies this as the PulseRouter Organ (v13-COSMOS)
 // ============================================================================

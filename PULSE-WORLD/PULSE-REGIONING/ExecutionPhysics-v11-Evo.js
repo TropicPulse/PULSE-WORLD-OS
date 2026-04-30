@@ -76,7 +76,7 @@ export class ExecutionResult {
 // -------------------------
 
 import { CurrentInstanceState } from "./LineageEngine-v11-Evo.js";
-import DeploymentPhysicsAPI from "./DeploymentPhysics-v13-COSMOS-MULTIVERSE.js";
+import DeploymentPhysicsAPI from "./DeploymentPhysics-v11-Evo.js";
 import MultiOrganismSupportAPI from "./MultiOrganismSupport-v11-Evo.js";
 
 const { DeploymentActionType } = DeploymentPhysicsAPI;

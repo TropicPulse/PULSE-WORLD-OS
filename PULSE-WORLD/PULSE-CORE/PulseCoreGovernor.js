@@ -13,7 +13,7 @@
 //  • Governor‑aligned with CoreMemory v12 + CoreLayers v12
 // ============================================================================
 
-import { CoreMemoryRole, createPulseCoreMemory } from "./PulseCoreMemory.js";
+import { CoreMemoryRole, createPulseCoreMemory } from "../PULSE-CORE/PulseCoreMemory.js";
 import { CoreLayersRole, PulseCoreLayersOrgan } from "./PulseCoreLayers.js";
 
 export const CoreGovernorRole = {
