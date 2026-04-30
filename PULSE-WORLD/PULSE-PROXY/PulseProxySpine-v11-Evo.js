@@ -315,7 +315,7 @@ const PORT = process.env.PORT || 8080;
 // backend-only PulseChunker base URL
 const CHUNKER_BASE =
   process.env.PULSE_CHUNKER_BASE ||
-  "https://us-central1-YOUR_PROJECT.cloudfunctions.net";
+  "https://us-central1-tropic-pulse.cloudfunctions.net";
 
 // ============================================================================
 //  ENV + IDENTITY + MODE — v12.3-EVO
