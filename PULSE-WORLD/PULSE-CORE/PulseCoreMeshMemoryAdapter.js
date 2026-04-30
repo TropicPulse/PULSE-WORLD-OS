@@ -10,7 +10,7 @@
 //  • TTL + healing compatible
 // ============================================================================
 
-import { createPulseBinaryOverlay } from "../PulseBinaryOverlay.js";
+import { createPulseBinaryOverlay } from "./PulseBinaryCoreOverlay.js";
 
 export function createPulseMeshMemoryAdapter({
   overlay = createPulseBinaryOverlay(),

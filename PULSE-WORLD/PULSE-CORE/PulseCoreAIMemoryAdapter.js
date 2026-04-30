@@ -10,7 +10,7 @@
 //  • governor + evolution aligned
 // ============================================================================
 
-import { createPulseBinaryOverlay } from "../PulseBinaryOverlay.js";
+import { createPulseBinaryOverlay } from "./PulseBinaryCoreOverlay.js";
 
 export function createPulseAIMemoryAdapter({
   overlay = createPulseBinaryOverlay(),

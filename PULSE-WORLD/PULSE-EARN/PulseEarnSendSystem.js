@@ -386,7 +386,6 @@ function buildChunkPrewarmPlan(earn, deviceProfile, presenceField) {
 // ============================================================================
 //  FACTORY — Presence‑aware PulseEarnSendSystem (v12.3-Presence + Advantage-C)
 // ============================================================================
-
 export function createPulseEarnSendSystem({
   sendSystem,
   sdn = null,
@@ -394,17 +393,21 @@ export function createPulseEarnSendSystem({
   deviceProfile = null // Presence‑aware skeletal phenotype
 }) {
 
+  // v13: hardened SDN emitter
   function emitSDN(event, payload) {
     if (!sdn || typeof sdn.emitImpulse !== "function") return;
     try {
       sdn.emitImpulse(event, payload);
     } catch (err) {
-      log && log("[PulseEarnSendSystem-v12.3-Presence] SDN emit failed (non‑fatal)", { event, err });
+      log && log("[PulseEarnSendSystem-v13-Evo] SDN emit failed (non‑fatal)", {
+        event,
+        err
+      });
     }
   }
 
   return {
-    // Deterministic Single‑Pass Earn → Pulse → Send
+    // v13: Deterministic Single‑Pass Earn → Pulse → Send
     send(impulse) {
       const cycleIndex = impulse?.tickId || 0;
 
@@ -465,7 +468,7 @@ export function createPulseEarnSendSystem({
         pulseCompatibleEarn
       );
 
-      // 5. A-B-A Dual-Band + Binary + Wave metadata
+      // 5. A‑B‑A Dual-Band + Binary + Wave metadata (v13 hardened)
       const bandPack = buildEarnSendBandBinaryWave(
         earn,
         usedFallback,
@@ -483,18 +486,20 @@ export function createPulseEarnSendSystem({
         bandPack.band
       );
 
-      // 6. Presence + Advantage‑C + Chunk/Prewarm
+      // 6. Presence + Advantage‑C + Chunk/Prewarm (v13 tuned)
       const presenceField = buildPresenceField(
         earn,
         deviceProfile || {},
         usedFallback
       );
+
       const advantageField = buildAdvantageField(
         earn,
         deviceProfile || {},
         bandPack,
         presenceField
       );
+
       const chunkPrewarmPlan = buildChunkPrewarmPlan(
         earn,
         deviceProfile || {},
@@ -511,10 +516,14 @@ export function createPulseEarnSendSystem({
         result,
         fallback: usedFallback,
         earnSendSignature,
+
+        // v13 A‑B‑A surfaces
         band: bandPack.band,
         bandSignature: bandPack.bandSignature,
         binaryField: bandPack.binaryField,
         waveField: bandPack.waveField,
+
+        // v13 presence + advantage + chunk/prewarm
         presenceField,
         advantageField,
         chunkPrewarmPlan

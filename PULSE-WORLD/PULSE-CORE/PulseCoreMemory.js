@@ -1,14 +1,26 @@
 // ============================================================================
-//  PulseCoreMemory.js — v12‑EVO‑PRESENCE‑DUALBAND‑MAX
+//  PulseCoreMemory.js — v13‑EVO‑PRESENCE‑DUALBAND‑MAX
 //  ORGANISM‑WIDE BINARY MEMORY SPINE (DUAL‑BAND + DNA + HEALING + LOOP THEORY)
 //  “LOAD RARELY, SERVE CONSTANTLY, FLUSH INTENTIONALLY, HEAL WHILE SPINNING”
 // ============================================================================
 
+// Adapters — forward‑only, no barrels
+import { createPulseGPUOrchestrator }         from "./PulseCoreGpuMemoryAdapter.js";
+import { createPulseAIMemoryAdapter } from "./PulseCoreAIMemoryAdapter.js";
+import { createPulseEarnMemoryAdapter }    from "./PulseCoreEarnMemoryAdapter.js";
+import { createPulseMeshMemoryAdapter }       from "./PulseCoreMeshMemoryAdapter.js";
+import { createPulseProxyMemoryAdapter }     from "./PulseCoreProxyMemoryAdapter.js";
+import { createPulseRouterMemoryAdapter }        from "./PulseCoreRouterMemoryAdapter.js";
+import { createPulseSendMemoryAdapter }      from "./PulseCoreSendMemoryAdapter.js";
+
+// ============================================================================
+//  ROLE
+// ============================================================================
 export const CoreMemoryRole = {
   type: "Organ",
   subsystem: "Core",
   layer: "MemorySpine",
-  version: "12.0-Evo-Presence-DualBand-Max",
+  version: "13.0-Evo-Presence-DualBand-Max",
   identity: "PulseCoreMemory",
 
   evo: {
@@ -29,10 +41,9 @@ export const CoreMemoryRole = {
   }
 };
 
-// ---------------------------------------------------------------------------
+// ============================================================================
 //  SIMPLE BINARY HELPERS
-//  (GPU / native engine can later plug into encode/decode hooks.)
-// ---------------------------------------------------------------------------
+// ============================================================================
 function encodeToBinary(obj) {
   const json = JSON.stringify(obj || {});
   const bits = [];
@@ -58,32 +69,35 @@ function decodeFromBinary(bits) {
   }
 }
 
-// ---------------------------------------------------------------------------
+// ============================================================================
 //  STORAGE KEYS + BANDS
-// ---------------------------------------------------------------------------
-const CORE_KEY_PRIMARY = "pulse-core-memory-v12-primary";
-const CORE_KEY_SECONDARY = "pulse-core-memory-v12-secondary";
-const META_KEY_PRIMARY = "pulse-core-memory-meta-primary";
+// ============================================================================
+const CORE_KEY_PRIMARY   = "pulse-core-memory-v13-primary";
+const CORE_KEY_SECONDARY = "pulse-core-memory-v13-secondary";
+const META_KEY_PRIMARY   = "pulse-core-memory-meta-primary";
 const META_KEY_SECONDARY = "pulse-core-memory-meta-secondary";
 
 // TTL + size guard (can tune later)
-const ROUTE_TTL_MS = 7 * 24 * 60 * 60 * 1000; // 7 days
-const MAX_SERIALIZED_BYTES = 512 * 1024;      // 512 KB per band (guard)
+const ROUTE_TTL_MS         = 7 * 24 * 60 * 60 * 1000; // 7 days
+const MAX_SERIALIZED_BYTES = 512 * 1024;              // 512 KB per band (guard)
 
+// ============================================================================
+//  FACTORY
+// ============================================================================
 export function createPulseCoreMemory({
-  primaryStorage = window.localStorage,
+  primaryStorage   = window.localStorage,
   secondaryStorage = window.sessionStorage,
-  log = console.log,
-  warn = console.warn,
-  dnaTag = "default-dna" // organism / build / persona tag
+  log              = console.log,
+  warn             = console.warn,
+  dnaTag           = "default-dna" // organism / build / persona tag
 } = {}) {
   const Cache = {
     loaded: false,
     lastLoadEpoch: 0,
-    data: Object.create(null), // { routeId: { ... } }
+    data: Object.create(null),     // { routeId: { ... } }
 
     // LOOP THEORY: hot keys that should stay “spinning” in process
-    hotLoop: Object.create(null), // { routeId:key -> hitCount }
+    hotLoop: Object.create(null),  // { routeId:key -> hitCount }
 
     // Route meta: { [routeId]: { lastTouched, dnaTag } }
     routeMeta: Object.create(null)
@@ -104,9 +118,6 @@ export function createPulseCoreMemory({
     } catch {}
   }
 
-  // -------------------------------------------------------------------------
-  //  INTERNAL: BAND HELPERS
-  // -------------------------------------------------------------------------
   function readBand(storage, coreKey, metaKey) {
     try {
       const raw = storage.getItem(coreKey);
@@ -139,9 +150,6 @@ export function createPulseCoreMemory({
     }
   }
 
-  // -------------------------------------------------------------------------
-  //  INTERNAL: VERSION + DNA + TTL + HEALING
-  // -------------------------------------------------------------------------
   function isVersionCompatible(meta) {
     if (!meta || !meta.version) return false;
     return meta.version === CoreMemoryRole.version;
@@ -153,7 +161,6 @@ export function createPulseCoreMemory({
   }
 
   function healBandsFrom(sourceData, sourceMeta) {
-    // Write source snapshot to both bands to “heal” them.
     const primaryOk = writeBand(
       primaryStorage,
       CORE_KEY_PRIMARY,
@@ -184,7 +191,6 @@ export function createPulseCoreMemory({
       const info = meta[routeId];
       if (!info) continue;
 
-      // TTL
       if (info.lastTouched && now - info.lastTouched > ROUTE_TTL_MS) {
         delete Cache.data[routeId];
         delete Cache.routeMeta[routeId];
@@ -192,7 +198,6 @@ export function createPulseCoreMemory({
         continue;
       }
 
-      // DNA mismatch at route level → drop
       if (info.dnaTag && info.dnaTag !== dnaTag) {
         delete Cache.data[routeId];
         delete Cache.routeMeta[routeId];
@@ -214,9 +219,6 @@ export function createPulseCoreMemory({
     }
   }
 
-  // -------------------------------------------------------------------------
-  //  BULK LOAD / PREWARM (DUALBAND + FALLBACK + HEALING + VERSION/DNA)
-  // -------------------------------------------------------------------------
   function shouldReloadNow() {
     const now = Date.now();
     const ONE_DAY = 24 * 60 * 60 * 1000;
@@ -224,17 +226,16 @@ export function createPulseCoreMemory({
   }
 
   function bulkLoad() {
-    // 1) Try PRIMARY band
     const primary = readBand(primaryStorage, CORE_KEY_PRIMARY, META_KEY_PRIMARY);
 
     if (primary.ok && primary.data && isVersionCompatible(primary.meta) && isDnaCompatible(primary.meta)) {
-      Cache.data = primary.data.data || Object.create(null);
+      Cache.data      = primary.data.data || Object.create(null);
       Cache.routeMeta = primary.data.routeMeta || Object.create(null);
-      Cache.loaded = true;
+      Cache.loaded    = true;
       Cache.lastLoadEpoch = Date.now();
-      Meta.lastLoadEpoch = Cache.lastLoadEpoch;
-      Meta.lastBandUsed = "primary";
-      Meta.fallbackUsed = false;
+      Meta.lastLoadEpoch  = Cache.lastLoadEpoch;
+      Meta.lastBandUsed   = "primary";
+      Meta.fallbackUsed   = false;
 
       if (primary.meta) Object.assign(Meta, primary.meta);
 
@@ -246,7 +247,6 @@ export function createPulseCoreMemory({
       return;
     }
 
-    // 2) Fallback to SECONDARY band
     const secondary = readBand(
       secondaryStorage,
       CORE_KEY_SECONDARY,
@@ -254,19 +254,18 @@ export function createPulseCoreMemory({
     );
 
     if (secondary.ok && secondary.data && isVersionCompatible(secondary.meta) && isDnaCompatible(secondary.meta)) {
-      Cache.data = secondary.data.data || Object.create(null);
+      Cache.data      = secondary.data.data || Object.create(null);
       Cache.routeMeta = secondary.data.routeMeta || Object.create(null);
-      Cache.loaded = true;
+      Cache.loaded    = true;
       Cache.lastLoadEpoch = Date.now();
-      Meta.lastLoadEpoch = Cache.lastLoadEpoch;
-      Meta.lastBandUsed = "secondary";
-      Meta.fallbackUsed = true;
+      Meta.lastLoadEpoch  = Cache.lastLoadEpoch;
+      Meta.lastBandUsed   = "secondary";
+      Meta.fallbackUsed   = true;
 
       if (secondary.meta) Object.assign(Meta, secondary.meta);
 
       pruneExpiredRoutes();
 
-      // HEAL PRIMARY FROM SECONDARY
       healBandsFrom({ data: Cache.data, routeMeta: Cache.routeMeta }, Meta);
 
       safeLog("BULK_LOAD_SECONDARY_OK", {
@@ -275,17 +274,16 @@ export function createPulseCoreMemory({
       return;
     }
 
-    // 3) Version / DNA mismatch or nothing found — start clean
-    Cache.loaded = true;
+    Cache.loaded      = true;
     Cache.lastLoadEpoch = Date.now();
-    Cache.data = Object.create(null);
-    Cache.routeMeta = Object.create(null);
+    Cache.data        = Object.create(null);
+    Cache.routeMeta   = Object.create(null);
 
     Meta.lastLoadEpoch = Cache.lastLoadEpoch;
-    Meta.lastBandUsed = "primary";
-    Meta.fallbackUsed = false;
-    Meta.version = CoreMemoryRole.version;
-    Meta.dnaTag = dnaTag;
+    Meta.lastBandUsed  = "primary";
+    Meta.fallbackUsed  = false;
+    Meta.version       = CoreMemoryRole.version;
+    Meta.dnaTag        = dnaTag;
 
     safeLog("BULK_LOAD_EMPTY_OR_RESET");
   }
@@ -294,9 +292,6 @@ export function createPulseCoreMemory({
     if (shouldReloadNow()) bulkLoad();
   }
 
-  // -------------------------------------------------------------------------
-  //  BULK FLUSH (DUALBAND MIRROR + HEALING)
-  // -------------------------------------------------------------------------
   function bulkFlush() {
     try {
       Meta.lastFlushEpoch = Date.now();
@@ -351,10 +346,6 @@ export function createPulseCoreMemory({
     const current = Cache.hotLoop[id] || 0;
     const next = current + 1;
     Cache.hotLoop[id] = next;
-
-    // LOOP THEORY:
-    // If something is hit often enough, we treat it as “spin‑locked” in memory.
-    // For now, we just track it and keep it in Cache; future: GPU / binary engine.
     return next;
   }
 
@@ -377,7 +368,6 @@ export function createPulseCoreMemory({
     bucket[key] = value;
     markHot(routeId, key);
     touchRouteMeta(routeId);
-    // NOTE: we do NOT flush immediately — intentional.
   }
 
   function getRouteSnapshot(routeId) {
@@ -399,15 +389,12 @@ export function createPulseCoreMemory({
   }
 
   function clearAll() {
-    Cache.data = Object.create(null);
-    Cache.hotLoop = Object.create(null);
+    Cache.data      = Object.create(null);
+    Cache.hotLoop   = Object.create(null);
     Cache.routeMeta = Object.create(null);
     bulkFlush();
   }
 
-  // -------------------------------------------------------------------------
-  //  LOOP THEORY UTILITIES
-  // -------------------------------------------------------------------------
   function getHotKeys(minHits = 3) {
     const result = [];
     for (const id in Cache.hotLoop) {
@@ -421,9 +408,6 @@ export function createPulseCoreMemory({
     delete Cache.hotLoop[id];
   }
 
-  // -------------------------------------------------------------------------
-  //  PUBLIC API
-  // -------------------------------------------------------------------------
   const PulseCoreMemory = {
     CoreMemoryRole,
     Meta,
@@ -440,10 +424,29 @@ export function createPulseCoreMemory({
     clearRoute,
     clearAll,
 
-    // Loop theory helpers
     getHotKeys,
     coolDown
   };
+
+  // ========================================================================
+  //  ADAPTERS — v13+ MEMORY ORGAN ADAPTER LAYER
+  // ========================================================================
+  // ========================================================================
+//  ADAPTERS — v13+ MEMORY ORGAN ADAPTER LAYER (REAL, NOT PLACEHOLDERS)
+// ========================================================================
+const adapters = {
+  gpu:         createPulseGPUOrchestrator(PulseCoreMemory),
+  ai:          createPulseAIMemoryAdapter(PulseCoreMemory),
+  earn:        createPulseEarnMemoryAdapter(PulseCoreMemory),
+  mesh:        createPulseMeshMemoryAdapter(PulseCoreMemory),
+  proxy:       createPulseProxyMemoryAdapter(PulseCoreMemory),
+  router:      createPulseRouterMemoryAdapter(PulseCoreMemory),
+  send:        createPulseSendMemoryAdapter(PulseCoreMemory)
+};
+
+// Attach to the core memory organ
+PulseCoreMemory.adapters = adapters;
+
 
   safeLog("INIT", {
     identity: CoreMemoryRole.identity,
@@ -454,10 +457,7 @@ export function createPulseCoreMemory({
 
   return PulseCoreMemory;
 }
-// ---------------------------------------------------------------------------
-//  DEFAULT + NAMED EXPORT SURFACE
-//  (So other organs can import `PulseCoreMemory` directly.)
-// ---------------------------------------------------------------------------
+
 export { createPulseCoreMemory as PulseCoreMemory };
 
 const PulseCoreMemoryAPI = {

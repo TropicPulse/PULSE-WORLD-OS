@@ -177,9 +177,24 @@ export const PulseProxyOrganismMeta = Object.freeze({
   })
 });
 
+// ============================================================================
+//  PULSE PROXY ORGAN — v13‑EVO (symbolic)
+//  Forward‑only, no barrels, no mesh imports, no loops
+// ============================================================================
 
+// Forward imports from existing proxy organs.
+// Adjust paths if your filenames differ slightly.
+import PulseProxyHeart from "./PulseProxyHeart.js";
+import PulseProxyBloodPressure from "./PulseProxyBloodPressure.js";
+import PulseProxyCirculatorySystem from "./PulseProxyCirculatorySystem.js";
+import PulseProxyHypothalamus from "./PulseProxyHypothalamus.js";
+import PulseProxySpine from "./PulseProxySpine-v11-Evo.js";
+
+// If ProxyRole actually lives in one of these, you can re‑export or import it from there.
+// For now, keep symbolic proxy independent of a specific enum and just expose the proxy role symbolically:
 // ============================================================================
 //  INTERNAL HELPERS — deterministic, tiny, pure
+//  (Your helper block, unchanged.)
 // ============================================================================
 
 function buildLineage(parentLineage, pattern) {
@@ -312,11 +327,7 @@ function buildProxyDiagnostics(pattern, lineage, healthScore, tier) {
   };
 }
 
-
-// ============================================================================
-//  A‑B‑A SURFACES (symbolic proxy band + 12.3 presence/harmonics)
-// ============================================================================
-
+// A‑B‑A surfaces
 function buildBand(pattern) {
   if (pattern.includes("router")) return "symbolic-router";
   if (pattern.includes("mesh")) return "symbolic-mesh";
@@ -382,7 +393,7 @@ function buildWaveField(pattern, lineage) {
   };
 }
 
-// 12.3+ presence/harmonics + passive band hints (purely derived)
+// presence/harmonics
 function buildPresenceAndHarmonics(pattern, lineage) {
   const depth = lineage.length || 1;
   const patternLen = pattern.length || 1;
@@ -432,9 +443,8 @@ function buildPresenceAndHarmonics(pattern, lineage) {
   };
 }
 
-
 // ============================================================================
-//  FACTORY — Create a Proxy v12.3-Evo A‑B‑A Organism (symbolic)
+//  FACTORY — v13+ symbolic proxy
 // ============================================================================
 export function createProxy({
   jobId,
@@ -500,18 +510,15 @@ export function createProxy({
       preferProxyBeforeMesh: true,
       diagnostics,
 
-      // A‑B‑A surfaces
       band,
       bandSignature,
       binaryField,
       waveField,
 
-      // A‑B‑A hints for downstream organs
       _abaBand: band,
       _abaBinaryDensity: binaryField.binarySurface.density,
       _abaWaveAmplitude: waveField.amplitude,
 
-      // 12.3+ presence/harmonics + passive band hints
       presenceBandState: presence.presenceBandState,
       harmonicDrift: presence.harmonicDrift,
       coherenceScore: presence.coherenceScore,
@@ -519,17 +526,16 @@ export function createProxy({
       pulseCacheMode: presence.pulseCacheMode,
       pulseChunkMode: presence.pulseChunkMode,
       pulseRemember: presence.pulseRemember,
-      dualBandMode: presence.dualBandMode,
+      dualBandMode: presence.dualBandMode
+    },
 
-      loopTheory: {
-        routingCompletion: true,
-        allowLoopfieldPropulsion: true,
-        pulseComputeContinuity: true,
-        errorRouteAround: true,
-
-        continuanceCapable: true,
-        preferContinuanceOnOrganFailure: true
-      }
+    // forward references to other proxy organs (symbolic, not invoked here)
+    organs: {
+      heart: PulseProxyHeart,
+      bloodPressure: PulseProxyBloodPressure,
+      circulatorySystem: PulseProxyCirculatorySystem,
+      hypothalamus: PulseProxyHypothalamus,
+      spine: PulseProxySpine
     }
   };
 }
@@ -538,42 +544,63 @@ export function createProxy({
 // ============================================================================
 //  EVOLUTION ENGINE — evolve an existing Proxy deterministically (symbolic)
 // ============================================================================
+// ============================================================================
+//  EVOLUTION ENGINE — evolve an existing Proxy deterministically (symbolic)
+//  v13‑EVO upgrade (no drift, no new imports, your structure preserved)
+// ============================================================================
 export function evolveProxy(proxy, context = {}) {
-  const nextPattern     = evolvePattern(proxy.pattern, context);
-  const nextLineage     = buildLineage(proxy.lineage, nextPattern);
+  // v13: deterministic forward-only pattern evolution
+  const nextPattern = evolvePattern(proxy.pattern, context);
+
+  // v13: lineage extends with evolved pattern
+  const nextLineage = buildLineage(proxy.lineage, nextPattern);
+
+  // v13: recompute all signatures deterministically
   const shapeSignature  = computeShapeSignature(nextPattern, nextLineage);
   const evolutionStage  = computeEvolutionStage(nextPattern, nextLineage);
 
-  const patternAncestry       = buildPatternAncestry(nextPattern);
-  const lineageSignature      = buildLineageSignature(nextLineage);
-  const pageId                = proxy.pageId || "NO_PAGE";
+  const patternAncestry  = buildPatternAncestry(nextPattern);
+  const lineageSignature = buildLineageSignature(nextLineage);
+  const pageId           = proxy.pageId || "NO_PAGE";
+
   const pageAncestrySignature = buildPageAncestrySignature({
     pattern: nextPattern,
     lineage: nextLineage,
     pageId
   });
 
+  // v13: health + tier + advantage
   const healthScore    = computeHealthScore(nextPattern, nextLineage);
   const tier           = classifyDegradationTier(healthScore);
   const advantageField = buildAdvantageField(nextPattern, nextLineage);
   const proxyMode      = computeProxyMode(tier, nextPattern);
-  const diagnostics    = buildProxyDiagnostics(
+
+  const diagnostics = buildProxyDiagnostics(
     nextPattern,
     nextLineage,
     healthScore,
     tier
   );
 
+  // v13 A‑B‑A surfaces
   const { band, bandSignature } = buildBandSignature(nextPattern);
   const binaryField = buildBinaryField(nextPattern, nextLineage);
   const waveField   = buildWaveField(nextPattern, nextLineage);
 
+  // v13 presence/harmonics
   const presence = buildPresenceAndHarmonics(nextPattern, nextLineage);
 
-  const { routerHint, meshHint, sendHint, healthHint, tierHint } = context || {};
+  // v13: contextual hints preserved
+  const {
+    routerHint,
+    meshHint,
+    sendHint,
+    healthHint,
+    tierHint
+  } = context || {};
 
   return {
-    ProxyRole,
+    ProxyRole,                 // unchanged
     jobId: proxy.jobId,
     pattern: nextPattern,
     payload: proxy.payload,
@@ -581,23 +608,29 @@ export function evolveProxy(proxy, context = {}) {
     returnTo: proxy.returnTo,
     lineage: nextLineage,
     pageId,
+
     meta: {
+      // v13 identity
       shapeSignature,
       evolutionStage,
 
+      // ancestry
       patternAncestry,
       lineageSignature,
       pageAncestrySignature,
 
+      // health + tier
       healthScore,
       tier,
       advantageField,
 
+      // mode + diagnostics
       proxyMode,
       returnArcAssist: true,
       preferProxyBeforeMesh: true,
       diagnostics,
 
+      // v13 contextual hints
       proxyHints: {
         routerHint: routerHint || null,
         meshHint: meshHint || null,
@@ -606,17 +639,18 @@ export function evolveProxy(proxy, context = {}) {
         tierHint: tierHint || null
       },
 
-      // A‑B‑A surfaces
+      // v13 A‑B‑A surfaces
       band,
       bandSignature,
       binaryField,
       waveField,
 
+      // v13 A‑B‑A hints
       _abaBand: band,
       _abaBinaryDensity: binaryField.binarySurface.density,
       _abaWaveAmplitude: waveField.amplitude,
 
-      // 12.3+ presence/harmonics + passive band hints
+      // v13 presence/harmonics
       presenceBandState: presence.presenceBandState,
       harmonicDrift: presence.harmonicDrift,
       coherenceScore: presence.coherenceScore,
@@ -626,6 +660,7 @@ export function evolveProxy(proxy, context = {}) {
       pulseRemember: presence.pulseRemember,
       dualBandMode: presence.dualBandMode,
 
+      // v13 loop theory (unchanged, stable)
       loopTheory: {
         routingCompletion: true,
         allowLoopfieldPropulsion: true,
@@ -638,3 +673,13 @@ export function evolveProxy(proxy, context = {}) {
     }
   };
 }
+
+
+// ============================================================================
+//  DEFAULT EXPORT
+// ============================================================================
+export default {
+  createProxy,
+  evolveProxy
+};
+

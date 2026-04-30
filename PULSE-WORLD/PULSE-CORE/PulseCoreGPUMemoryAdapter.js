@@ -14,6 +14,8 @@
 //  • Deterministic routing (no GPU calls)
 // ============================================================================
 
+import { createPulseBinaryOverlay } from "./PulseBinaryCoreOverlay.js";
+
 export const GPUOrchestratorRole = {
   type: "Organ",
   subsystem: "GPU",
@@ -117,9 +119,9 @@ export const GPUOrchestratorRoutes = {
 //  PURE, DETERMINISTIC DISPATCHER (v12 metadata-aware)
 // ---------------------------------------------------------------------------
 export function createPulseGPUOrchestrator({
+  overlay = createPulseBinaryOverlay(),
   dnaTag = "default-dna",
   version = "12.0-Evo-Presence",
-  overlay = null,
   log = console.log
 } = {}) {
 

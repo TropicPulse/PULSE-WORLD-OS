@@ -264,18 +264,14 @@ export function getSpineHealingState() {
 //  DOWNSTREAM ORGANS — Packet Engine, Metrics, OS‑level organs
 // ============================================================================
 
-import {
-  readPacketExists,
-  writePacket,
-  generatePacketData
-} from "./PULSE-EARN/PacketEngine.js";
+import { createPulseEarnSendSystem } from "../PULSE-EARN/PulseEarnSendSystem.js";
 
-import { updateUserMetrics as recordUserMetrics } from "./PULSE-OS/PulseUserMetrics.js";
+
+import { updateUserMetrics as recordUserMetrics } from "../PulseProofMonitor.js";
 
 import startPulseTimer from "./PulseProxyHeart.js";
-import startPulseOS from "./PULSE-OS/PulseOS.js";
-import startPulseOSHealer from "./PULSE-OS/PulseOSHealer.js";
-import startGlobalHealer from "../PULSE-OS/GlobalHealer.js";
+import { createPulseOSHealerV12_3 as startPulseOSHealer } from "../PULSE-OS/PulseOSInflammatoryResponse.js";
+import { createGlobalHealerV12 as startGlobalHealer} from "../PULSE-OS/PulseOSImmuneSystem.js";
 
 // ============================================================================
 //  SINGLE‑BOOT GUARDS — v12.3-EVO (unchanged behavior)
