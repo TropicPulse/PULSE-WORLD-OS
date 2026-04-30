@@ -50,16 +50,16 @@ export * from "./PulseGPUDriveCenter.js";
 // --- GPU SYMBOLIC / BINARY DISPATCH ORGANS ---------------------------------
 //  SYMBOLIC GPU — Pattern + Lineage + Shape (non-binary, symbolic path)
 //  Version: PulseGPU-v12-Evo-Presence-Max (symbolic path if split)
-export * from "./PulseSymbolicGPU.js";
+export * from "./PulseGPU-v11-Evo.js";
 
 //  BINARY GPU — Binary/Dual-Mode, Pressure/Factoring/Mesh/Aura-aware
 //  Version: PulseBinaryGPU-v12-Evo-Presence-Max
-export * from "./PulseBinaryGPU.js";
+export * from "./PulseBinaryGPU-v11-Evo.js";
 
 // --- GPU SPINE / MEMORY (optional, if present) -----------------------------
 //  GPU SPINE + MEMORY — symbolic/binary selector + dispatch history
 //  Version: PulseGPUSpineMemory-v12-Evo-Presence (if wired)
-export * from "./PulseGPUSpineMemory.js";
+export * from "./PulseGPUGeneticMemory.js";
 
 // --- GPU AUTO-OPTIMIZE -----------------------------------------------------
 //  GUARDIAN CORTEX — Permission, safety, optimization, self-healing triggers

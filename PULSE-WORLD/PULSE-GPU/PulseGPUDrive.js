@@ -15,7 +15,7 @@
 //  • Binary-aware, symbolic-aware, dispatch-aware, memory-aware, presence-aware.
 //  • Fail-open: if anything is missing, surfaces stay empty but never throw.
 
-import { PulseGPUBrainExport } from "./PulseGPUBrain";
+import { PulseGPUBrainExport } from "./PulseGPUBrain.js";
 
 const PULSE_GPU_RUNTIME_VERSION = "12.0-Evo-Presence-Max";
 

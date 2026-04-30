@@ -108,8 +108,8 @@ export const PulseEarnSendSystemMeta = Object.freeze({
   })
 });
 
-import { createEarn, evolveEarn } from "./PulseEarn-v11-Evo.js";
-import { PulseEarnContinuancePulse } from "./PulseEarnContinuancePulse-v11-Evo.js";
+import { createEarn, evolveEarn } from "./PulseEarn-v12.3-Presence.js";
+import { PulseEarnContinuancePulse } from "./PulseEarnContinuancePulse-v12.3-Presence.js";
 
 
 // ============================================================================

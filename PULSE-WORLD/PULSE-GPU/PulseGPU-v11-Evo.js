@@ -5,6 +5,39 @@
 //  “PLAN ONCE. REUSE FOREVER. NEVER DRIFT.”
 //  • Still: metadata-only, zero GPU calls, zero side effects
 // ============================================================================
+// --- CORE GPU ORGANS --------------------------------------------------------
+import * as PulseGPUBrain              from "./PulseGPUBrain.js";
+import * as PulseGPUDrive              from "./PulseGPUDrive.js";
+import * as PulseGPUDriveCenter        from "./PulseGPUDriveCenter.js";
+import * as PulseGPUDriveEngine        from "./PulseGPUDriveCenter.js";      // alias
+import * as PulseGPUSpine              from "./PulseGPUSpine.js";
+import * as PulseGPUGeneticMemory      from "./PulseGPUGeneticMemory.js";
+
+// --- GPU COMPUTE / ENGINE ---------------------------------------------------
+import * as PulseGPUAstralMuscleSystem from "./PulseGPUAstralMuscleSystem.js";
+
+
+// --- GPU GUARDIAN / HEALER --------------------------------------------------
+import * as PulseGPUGuardianCortex     from "./PulseGPUGuardianCortex.js";
+import * as PulseGPULymphNodes         from "./PulseGPULymphNodes.js";
+
+// --- GPU NERVOUS SYSTEMS ----------------------------------------------------
+import * as PulseGPUAstralNervousSystem from "./PulseGPUAstralNervousSystem.js";
+import * as PulseGPUNervousSystem       from "./PulseGPUNervousSystem.js";
+
+// --- GPU COGNITIVE LAYERS ---------------------------------------------------
+import * as PulseGPUCognitiveLayer      from "./PulseGPUCognitiveLayer.js";
+import * as PulseGPUCognitiveIntelligence from "./PulseGPUCognitiveIntelligence.js";
+import * as PulseGPUWisdomCortex        from "./PulseGPUWisdomCortex.js";
+
+// --- GPU SURVIVAL / INSTINCTS -----------------------------------------------
+import * as PulseGPUSurvivalInstincts   from "./PulseGPUSurvivalInstincts.js";
+
+// --- GPU SYNAPSES -----------------------------------------------------------
+import * as PulseGPUSynapses            from "./PulseGPUSynapses.js";
+
+// --- GPU COMMANDMENTS -------------------------------------------------------
+import * as PulseGPUCommandments        from "./PulseGPUCommandments.js";
 
 export const GPURole = {
   type: "GPU",

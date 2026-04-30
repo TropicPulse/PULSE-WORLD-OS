@@ -36,14 +36,14 @@
 // ============================================================================
 import { PulseGPUEventEmitter } from "./PulseGPUSynapses.js";
 import { PulseGPUInsightsEngine } from "./PulseGPUWisdomCortex.js";
-import { PulseGPUSessionTracer } from "./PulseGPUSessionTracer.js";
-import { PulseGPUPerformanceAdvisor } from "./PulseGPUPerformanceAdvisor.js";
-import { PulseGPUSettingsRestorer } from "./PulseGPUSettingsRestorer.js";
+import { PulseGPUSessionTracer } from "./PulseGPUNervousSystem.js";
+import { PulseGPUPerformanceAdvisor } from "./PulseGPUDriveCenter.js";
+import { PulseGPUSettingsRestorer } from "./PulseGPUCognitiveLayer.js";
 import { PulseGPUGuardianCortex } from "./PulseGPUGuardianCortex.js";
-import { PulseGPUHealer } from "./PulseGPUHealer.js";
-import { PulseGPUUXBridge } from "./PulseGPUUXBridge.js";
+import { PulseGPUHealer } from "./PulseGPULymphNodes.js";
+import { PulseGPUUXBridge } from "./PulseGPUCognitiveIntelligence.js";
 import { PulseGPUGeneticMemory } from "./PulseGPUGeneticMemory.js";
-import { DEFAULT_USER_PREFERENCES } from "./PulseGPUConfig.js";
+import { DEFAULT_USER_PREFERENCES } from "./PulseGPUCommandments.js";
 
 // ============================================================================
 //  ORCHESTRATOR META — Brainstem Identity (v12.3-Evo-Spine)
