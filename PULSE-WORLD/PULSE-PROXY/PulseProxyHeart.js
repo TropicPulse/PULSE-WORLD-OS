@@ -6,7 +6,7 @@
 // ============================================================================
 
 import * as heartbeat from "./PulseProxyHeartBeat.js";
-import * as aiHeartbeat from "./aiHeartbeat.js";
+import * as aiHeartbeat from "../PULSE-AI/aiHeartbeat.js";
 
 // ============================================================================
 // MOM HEART IDENTITY — v13‑EVO‑PRIME

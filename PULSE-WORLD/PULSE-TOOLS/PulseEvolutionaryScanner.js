@@ -11,11 +11,11 @@
 //   - Balanced adaptive mode: stable unless meaningful change detected.
 // ============================================================================
 
-import { createBinaryPulse } from "../PULSE-TECH/PulseBinaryTech-v12.3-EVO.js";
+import { createBinaryPulse } from "../PULSE-TECH/PulseBinaryTech-v11-EVO.js";
 import { createBinaryWaveScanner } from "../PULSE-TOOLS/PulseBinaryWaveScanner.js";
 import { createBinaryLoopScanner } from "../PULSE-TOOLS/PulseBinaryLoopScanner.js";
 import { createPulseAdminInspector } from "../PULSE-TOOLS/PulseAdminInspector.js";
-import { PageEvo } from "../PULSE-UI/PulseBinaryFramework.js";
+import { createPageEvo as PageEvo } from "../PULSE-TOOLS/PulseBinaryFramework.js";
 
 // ============================================================================
 // GRID HELPERS
