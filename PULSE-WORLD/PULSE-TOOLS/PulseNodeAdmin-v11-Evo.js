@@ -62,7 +62,17 @@ export const NodeAdminMeta = Object.freeze({
     ])
   })
 });
-
+import PulseAdminInspector from "./PulseAdminInspector.js";
+import PulseBehaviorScanner from "./PulseBehaviorScanner.js";
+import PulseBinaryBehaviorScanner from "./PulseBinaryBehaviorScanner.js";
+import PulseBinaryFramework from "./PulseBinaryFramework.js";
+import PulseBinaryLoopScanner from "./PulseBinaryLoopScanner.js";
+import PulseBinaryWaveScanner from "./PulseBinaryWaveScanner.js";
+import PulseEvolutionaryScanner from "./PulseEvolutionaryScanner.js";
+import PulseHeatMap from "./PulseHeatMap.js";
+import PulseLoopScanner from "./PulseLoopScanner.js";
+import PulseNodeAdminIntellect from "./PulseNodeAdmin-v11-Evo-Intellect.js";
+import PulseWaveScanner from "./PulseWaveScanner.js";
 
 // ============================================================================
 // FACTORY: createPulseNodeAdmin — v12.3+ PRESENCE-EVO-INTELLECT

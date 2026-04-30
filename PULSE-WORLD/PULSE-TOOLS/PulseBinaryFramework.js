@@ -1,5 +1,5 @@
 // ============================================================================
-// FILE: /OS/ui/PageEvo-v12.3-EVO.js
+// FILE: /OS/PULSE-UI/PulseBinaryFramework.js
 // PULSE OS — v12.3‑EVO
 // PAGE EVO ORGAN — SURFACE MEMBRANE + VISUAL CORTEX (DUAL-BAND + PRESENCE)
 // ============================================================================

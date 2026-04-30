@@ -1,5 +1,5 @@
 // ============================================================================
-// FILE: /PulseOS/PULSE-TOOLS/PulseBinaryLoopScanner-v12.3-EVO.js
+// FILE: /PulseOS/PULSE-TOOLS/PulseBinaryLoopScanner.js
 // PULSE OS — v12.3-EVO
 // MAIN LOOP ORGAN — PURE BINARY, DUAL-BAND-AWARE, ZERO-DRIFT
 // ============================================================================

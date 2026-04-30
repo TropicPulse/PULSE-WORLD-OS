@@ -12,10 +12,10 @@
 // ============================================================================
 
 import { createBinaryPulse } from "../PULSE-TECH/PulseBinaryTech-v12.3-EVO.js";
-import { createBinaryWaveScanner } from "../PULSE-TOOLS/PulseBinaryWaveScanner-v12.3-EVO.js";
-import { createBinaryLoopScanner } from "../PULSE-TOOLS/PulseBinaryLoopScanner-v12.3-EVO.js";
-import { createPulseAdminInspector } from "../PULSE-TOOLS/PulseAdminInspector-v12.3-EVO.js";
-import { PageEvo } from "../ui/PageEvo-v12.3-EVO.js";
+import { createBinaryWaveScanner } from "../PULSE-TOOLS/PulseBinaryWaveScanner.js";
+import { createBinaryLoopScanner } from "../PULSE-TOOLS/PulseBinaryLoopScanner.js";
+import { createPulseAdminInspector } from "../PULSE-TOOLS/PulseAdminInspector.js";
+import { PageEvo } from "../PULSE-UI/PulseBinaryFramework.js";
 
 // ============================================================================
 // GRID HELPERS
