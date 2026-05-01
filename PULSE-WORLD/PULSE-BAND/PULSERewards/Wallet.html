@@ -10,55 +10,17 @@
                minimum-scale=1,
                user-scalable=no">
   
-<!-- Google Font -->
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
-<!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-HSX89KS63P"></script>
-
 <!-- Backend Connector Layer -->
 <script type="module">
 
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
+import { VitalsLogger as PulseLogger }        from "../PULSEProofLogger.js";
+/* 0. BOOT MEMBRANE — MUST BE FIRST */
+import * as PulseWindow from "../PULSEEvolutionaryWindow.js";
 
-  gtag('config', 'G-HSX89KS63P');
-  document.addEventListener("contextmenu", function(e) {
-    e.preventDefault();
-  });
-  document.addEventListener("dragstart", function(e) {
-    e.preventDefault();
-  });
-  !function(f,b,e,v,n,t,s){
-    if(f.fbq) return;
-    n = f.fbq = function(){
-      n.callMethod ?
-        n.callMethod.apply(n, arguments) : n.queue.push(arguments)
-    };
-    if(!f._fbq) f._fbq = n;
-    n.push = n;
-    n.loaded = true;
-    n.version = '2.0';
-    n.queue = [];
-    t = b.createElement(e);
-    t.async = true;
-    t.src = v;
-    s = b.getElementsByTagName(e)[0];
-    s.parentNode.insertBefore(t, s);
-  }(window, document, 'script', 'https://connect.facebook.net/en_US/fbevents.js');
-
-  fbq('init', '1651551349364459');
-  fbq('track', 'PageView');
+/* 1. SKIN REFLEX — SIDE‑EFFECT IMPORT, AUTO‑ATTACHES */
+import * as PULSEOSSkinReflex from "../PULSEOSSkinReflex.js"; // PageScannerV12 auto hooks window here
 </script>
 
-<noscript>
-  <img
-    height="1"
-    width="1"
-    style="display:none"
-    src="https://www.facebook.com/tr?id=1651551349364459&ev=PageView&noscript=1"
-  />
-</noscript>
 <!-- End Meta Pixel Code -->
   <style>
       :root {
@@ -2318,62 +2280,8 @@ body::before {
       </div>
     </div>
   </div>
-<script type="module">
+<script>
   
-/* ============================================================
-   0. SKIN REFLEX — UNIVERSAL FRONT DOOR
-============================================================ */
-import * as PulseSkinReflex from "./PULSEOSSkinReflex.js";
-
-/* ⭐ attachScanner handles:
-      • sessionCheck
-      • routeCheck
-      • pageName / lastPage
-      • identity exposure
-*/
-await PulseSkinReflex.attachScanner();
-
-/* ============================================================
-   1. BOOT MEMBRANE
-============================================================ */
-import PulseWindow from "./PulseEvolutionaryWindow.js";
-  window.onerror = function (msg, src, line, col, err) {
-    const div = document.createElement("div");
-    div.style.position = "fixed";
-    div.style.bottom = "0";
-    div.style.left = "0";
-    div.style.right = "0";
-    div.style.background = "rgba(255,0,0,0.85)";
-    div.style.color = "white";
-    div.style.padding = "10px";
-    div.style.fontSize = "14px";
-    div.style.zIndex = "999999";
-    div.style.whiteSpace = "pre-wrap";
-    div.textContent = `🔥 JS ERROR:\n${msg}\n${src}:${line}:${col}`;
-    document.body.appendChild(div);
-  };
-  (function () {
-  const logBox = document.createElement("div");
-  logBox.style.position = "fixed";
-  logBox.style.top = "0";
-  logBox.style.left = "0";
-  logBox.style.right = "0";
-  logBox.style.maxHeight = "40vh";
-  logBox.style.overflowY = "auto";
-  logBox.style.background = "rgba(0,0,0,0.75)";
-  logBox.style.color = "lime";
-  logBox.style.fontSize = "12px";
-  logBox.style.padding = "6px";
-  logBox.style.zIndex = "999999";
-  logBox.style.whiteSpace = "pre-wrap";
-  document.body.appendChild(logBox);
-
-  const oldLog = log;
-  log = function (...args) {
-    oldLog.apply(console, args);
-    logBox.textContent += args.join(" ") + "\n";
-  };
-})();
 log("🌞 Script loaded, attaching visibility listener…");
 
 if (window.__vaultScriptLoaded) {

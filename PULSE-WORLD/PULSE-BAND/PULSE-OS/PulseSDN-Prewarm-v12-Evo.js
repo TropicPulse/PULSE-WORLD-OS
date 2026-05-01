@@ -1,28 +1,31 @@
 // ============================================================================
-// FILE: /Pulse-OS/PulseSDN-Prewarm-v12.3-PRESENCE.js
-// LAYER: SDN PREWARM ENGINE (Spinal Reflex Ignition)
+// FILE: /Pulse-OS/PulseSDN-Prewarm-v13.0-PRESENCE-IMMORTAL.js
+// LAYER: SDN PREWARM ENGINE (Spinal Reflex Ignition, v13 IMMORTAL)
 // ============================================================================
 //
 // ROLE:
 //   • Prewarm SDN (Spinal Distributed Network) internal pathways.
 //   • Warm reflex arcs, impulse routes, extension registry, dual-band paths,
-//     pressure snapshots, dispatch signatures, fallback routes, and presence paths.
+//     pressure snapshots, dispatch signatures, fallback routes, presence paths,
+//     and Earn/value pathways.
 //   • NO cognition, NO evolution, NO external mutation.
 //   • Pure, deterministic, CNS warm-up.
 //
-// CONTRACT:
+// CONTRACT (v13.0-PRESENCE-IMMORTAL):
 //   • MAY touch SDN internal APIs (registerExtension, emitImpulse, etc.).
 //   • MAY simulate impulses with synthetic packets.
 //   • MAY pre-register extensions (Understanding, Mesh, Send, Earn, Presence, etc.).
 //   • MUST NOT mutate external systems or persistent state.
 //   • MUST NOT introduce randomness or autonomy.
+//   • MUST NOT depend on real time or clocks.
+//   • All operations are structural, deterministic, and presence/dual-band aware.
 // ============================================================================
 
 export const SDNPrewarmMeta = Object.freeze({
   layer: "PulseSDN",
   role: "SDN_PREWARM_ENGINE",
-  version: "12.3-EVO-PRESENCE",
-  identity: "PulseSDN-Prewarm-v12.3-EVO-PRESENCE",
+  version: "v13.0-PRESENCE-IMMORTAL",
+  identity: "PulseSDN-Prewarm-v13.0-PRESENCE-IMMORTAL",
   evo: Object.freeze({
     spinalReflexIgnition: true,
     dualBandAware: true,
@@ -32,6 +35,7 @@ export const SDNPrewarmMeta = Object.freeze({
     fallbackAware: true,
     presenceAware: true,
     advantageFieldAware: true,
+    earnAware: true,
     driftProof: true,
     deterministic: true,
     readOnly: true
@@ -48,58 +52,68 @@ export const SDNPrewarmMeta = Object.freeze({
  */
 export function prewarmSDN(SDN) {
   if (!SDN || typeof SDN !== "object") {
-    console.warn("[SDN Prewarm] No SDN instance provided.");
+    console.warn("[SDN Prewarm v13] No SDN instance provided.");
     return false;
   }
 
   try {
     // -----------------------------------------------------------------------
-    // 1) Warm Extension Registry (v12.3 Presence-aware)
-// -----------------------------------------------------------------------
+    // 1) Warm Extension Registry (v13 Presence-IMMORTAL, Earn-aware)
+    // -----------------------------------------------------------------------
     const extensionsToPrewarm = [
       {
         name: "Understanding",
         kind: "extension",
         meta: {
-          version: "v12.3-PRESENCE",
+          version: "v13.0-PRESENCE-IMMORTAL",
           role: "cortical-opener",
           layer: "A3",
           binaryFirst: true,
-          hybridLoader: true
+          hybridLoader: true,
+          dualBandAware: true,
+          presenceAware: true
         }
       },
       {
         name: "Mesh",
         kind: "extension",
         meta: {
-          version: "v11",
+          version: "v13.0-PRESENCE-IMMORTAL",
           role: "network-organ",
-          layer: "M1"
+          layer: "M1",
+          presenceAware: true,
+          dualBandAware: true
         }
       },
       {
         name: "Send",
         kind: "extension",
         meta: {
-          version: "v11",
+          version: "v13.0-PRESENCE-IMMORTAL",
           role: "output-organ",
-          layer: "O1"
+          layer: "O1",
+          presenceAware: true,
+          dualBandAware: true
         }
       },
       {
         name: "Earn",
         kind: "extension",
         meta: {
-          version: "v11",
+          version: "v13.0-PRESENCE-IMMORTAL",
           role: "value-organ",
-          layer: "V1"
+          layer: "V1",
+          presenceAware: true,
+          dualBandAware: true,
+          advantageFieldAware: true,
+          earnOrganContract: "PulseEarn-v13.0-PRESENCE-IMMORTAL"
         }
       },
       {
         name: "Presence",
         kind: "extension",
         meta: {
-          version: "v12.3",
+          version: "v13.0-PRESENCE-IMMORTAL",
           role: "presence-field-organ",
           layer: "P1",
           presenceFieldAware: true,
@@ -113,17 +127,17 @@ export function prewarmSDN(SDN) {
         try {
           SDN.registerExtension(ext.name, ext.kind, ext.meta);
         } catch (err) {
-          console.error("[SDN Prewarm] registerExtension failed for", ext.name, err);
+          console.error("[SDN Prewarm v13] registerExtension failed for", ext.name, err);
         }
       }
     }
 
     // -----------------------------------------------------------------------
-    // 2) Warm Dual-Band Impulse Pathways (core + presence)
-// -----------------------------------------------------------------------
+    // 2) Warm Dual-Band Impulse Pathways (core + presence + earn/value)
+    // -----------------------------------------------------------------------
     const dualBandImpulses = [
       {
-        source: "PrewarmEngine",
+        source: "PrewarmEngine-v13",
         packet: {
           modeKind: "dual",
           executionContext: {
@@ -141,7 +155,7 @@ export function prewarmSDN(SDN) {
         }
       },
       {
-        source: "PrewarmEngine",
+        source: "PrewarmEngine-v13",
         packet: {
           modeKind: "dual",
           executionContext: {
@@ -157,6 +171,24 @@ export function prewarmSDN(SDN) {
             online: true
           }
         }
+      },
+      {
+        source: "PrewarmEngine-v13",
+        packet: {
+          modeKind: "dual",
+          executionContext: {
+            sceneType: "earn-prewarm",
+            workloadClass: "earn-dual-band",
+            dispatchSignature: "SDN.earn.dual-band-prewarm",
+            shapeSignature: "V1",
+            extensionId: "Earn",
+            identityKind: "none"
+          },
+          pressureSnapshot: {
+            runtime: "prewarm",
+            online: true
+          }
+        }
       }
     ];
 
@@ -165,17 +197,17 @@ export function prewarmSDN(SDN) {
         try {
           SDN.emitImpulse(impulse.source, impulse.packet);
         } catch (err) {
-          console.error("[SDN Prewarm] emitImpulse (dual-band) failed:", err);
+          console.error("[SDN Prewarm v13] emitImpulse (dual-band) failed:", err);
         }
       }
     }
 
     // -----------------------------------------------------------------------
-    // 3) Warm Reflex Arcs (touch / pressure / identity-safe)
-// -----------------------------------------------------------------------
+    // 3) Warm Reflex Arcs (touch / identity-safe / presence-safe)
+    // -----------------------------------------------------------------------
     const reflexImpulses = [
       {
-        source: "PrewarmEngine",
+        source: "PrewarmEngine-v13",
         packet: {
           modeKind: "reflex",
           executionContext: {
@@ -193,7 +225,7 @@ export function prewarmSDN(SDN) {
         }
       },
       {
-        source: "PrewarmEngine",
+        source: "PrewarmEngine-v13",
         packet: {
           modeKind: "reflex",
           executionContext: {
@@ -209,6 +241,24 @@ export function prewarmSDN(SDN) {
             online: true
           }
         }
+      },
+      {
+        source: "PrewarmEngine-v13",
+        packet: {
+          modeKind: "reflex",
+          executionContext: {
+            sceneType: "reflex-prewarm",
+            workloadClass: "presence-safe-reflex",
+            dispatchSignature: "SDN.reflex.presence-safe",
+            shapeSignature: "R3",
+            extensionId: "Presence",
+            identityKind: "none"
+          },
+          pressureSnapshot: {
+            runtime: "prewarm",
+            online: true
+          }
+        }
       }
     ];
 
@@ -217,17 +267,17 @@ export function prewarmSDN(SDN) {
         try {
           SDN.emitImpulse(impulse.source, impulse.packet);
         } catch (err) {
-          console.error("[SDN Prewarm] emitImpulse (reflex) failed:", err);
+          console.error("[SDN Prewarm v13] emitImpulse (reflex) failed:", err);
         }
       }
     }
 
     // -----------------------------------------------------------------------
-    // 4) Warm Fallback Paths (binary ↔ symbolic)
+    // 4) Warm Fallback Paths (binary ↔ symbolic, presence-aware)
 // -----------------------------------------------------------------------
     const fallbackImpulses = [
       {
-        source: "PrewarmEngine",
+        source: "PrewarmEngine-v13",
         packet: {
           modeKind: "fallback",
           executionContext: {
@@ -245,7 +295,7 @@ export function prewarmSDN(SDN) {
         }
       },
       {
-        source: "PrewarmEngine",
+        source: "PrewarmEngine-v13",
         packet: {
           modeKind: "fallback",
           executionContext: {
@@ -261,6 +311,24 @@ export function prewarmSDN(SDN) {
             online: true
           }
         }
+      },
+      {
+        source: "PrewarmEngine-v13",
+        packet: {
+          modeKind: "fallback",
+          executionContext: {
+            sceneType: "fallback-prewarm",
+            workloadClass: "presence-fallback",
+            dispatchSignature: "SDN.fallback.presence",
+            shapeSignature: "F3",
+            extensionId: "Presence",
+            identityKind: "none"
+          },
+          pressureSnapshot: {
+            runtime: "prewarm",
+            online: true
+          }
+        }
       }
     ];
 
@@ -269,23 +337,23 @@ export function prewarmSDN(SDN) {
         try {
           SDN.emitImpulse(impulse.source, impulse.packet);
         } catch (err) {
-          console.error("[SDN Prewarm] emitImpulse (fallback) failed:", err);
+          console.error("[SDN Prewarm v13] emitImpulse (fallback) failed:", err);
         }
       }
     }
 
     // -----------------------------------------------------------------------
-    // 5) Warm Dispatch Signatures / Workload Classes (incl. presence)
+    // 5) Warm Dispatch Signatures / Workload Classes (incl. presence + earn)
 // -----------------------------------------------------------------------
     const dispatchImpulses = [
       {
-        source: "PrewarmEngine",
+        source: "PrewarmEngine-v13",
         packet: {
           modeKind: "dual",
           executionContext: {
             sceneType: "cortical-opener",
             workloadClass: "frontend-boot",
-            dispatchSignature: "Understanding.v12.3-EVO-PRESENCE",
+            dispatchSignature: "Understanding.v13.0-PRESENCE-IMMORTAL",
             shapeSignature: "A3-layer",
             extensionId: "Understanding",
             identityKind: "none"
@@ -297,13 +365,13 @@ export function prewarmSDN(SDN) {
         }
       },
       {
-        source: "PrewarmEngine",
+        source: "PrewarmEngine-v13",
         packet: {
           modeKind: "dual",
           executionContext: {
             sceneType: "network-organ",
             workloadClass: "mesh-boot",
-            dispatchSignature: "Mesh.v11-boot",
+            dispatchSignature: "Mesh.v13.0-PRESENCE-IMMORTAL",
             shapeSignature: "M1-layer",
             extensionId: "Mesh",
             identityKind: "none"
@@ -315,15 +383,33 @@ export function prewarmSDN(SDN) {
         }
       },
       {
-        source: "PrewarmEngine",
+        source: "PrewarmEngine-v13",
         packet: {
           modeKind: "dual",
           executionContext: {
             sceneType: "presence-field",
             workloadClass: "presence-boot",
-            dispatchSignature: "Presence.v12.3-field",
+            dispatchSignature: "Presence.v13.0-PRESENCE-IMMORTAL",
             shapeSignature: "P1-layer",
             extensionId: "Presence",
+            identityKind: "none"
+          },
+          pressureSnapshot: {
+            runtime: "prewarm",
+            online: true
+          }
+        }
+      },
+      {
+        source: "PrewarmEngine-v13",
+        packet: {
+          modeKind: "dual",
+          executionContext: {
+            sceneType: "value-organ",
+            workloadClass: "earn-boot",
+            dispatchSignature: "Earn.v13.0-PRESENCE-IMMORTAL",
+            shapeSignature: "V1-layer",
+            extensionId: "Earn",
             identityKind: "none"
           },
           pressureSnapshot: {
@@ -339,14 +425,14 @@ export function prewarmSDN(SDN) {
         try {
           SDN.emitImpulse(impulse.source, impulse.packet);
         } catch (err) {
-          console.error("[SDN Prewarm] emitImpulse (dispatch) failed:", err);
+          console.error("[SDN Prewarm v13] emitImpulse (dispatch) failed:", err);
         }
       }
     }
 
     return true;
   } catch (err) {
-    console.error("[SDN Prewarm] Unexpected failure:", err);
+    console.error("[SDN Prewarm v13] Unexpected failure:", err);
     return false;
   }
 }
