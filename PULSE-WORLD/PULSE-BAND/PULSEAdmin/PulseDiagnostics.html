@@ -320,25 +320,13 @@ input[type="file"] {
 <!-- Backend Connector Layer -->
  
  <script type="module">
+ 
+import { VitalsLogger as PulseLogger }        from "./PULSE-X/PulseProofLogger.js";
+/* 0. BOOT MEMBRANE — MUST BE FIRST */
+import * as PulseWindow from "./PULSE-X/PULSEEvolutionaryWindow.js";
 
-/* ============================================================
-   0. SKIN REFLEX — UNIVERSAL FRONT DOOR
-============================================================ */
-import * as PulseSkinReflex from "./PulseOSSkinReflex.js";
-
-/* ⭐ attachScanner handles:
-      • sessionCheck
-      • routeCheck
-      • pageName / lastPage
-      • identity exposure
-*/
-await PulseSkinReflex.attachScanner();
-
-/* ============================================================
-   1. BOOT MEMBRANE
-============================================================ */
-import PulseWindow from "./PulseEvolutionaryWindow.js";
-
+/* 1. SKIN REFLEX — SIDE‑EFFECT IMPORT, AUTO‑ATTACHES */
+import * as PULSEOSSkinReflex from "./PULSE-X/PULSEOSSkinReflex.js"; // PageScannerV12 auto hooks window here
 /* ============================================================================
    PULSE DIAGNOSTICS — PAGE BRAIN
 ============================================================================ */

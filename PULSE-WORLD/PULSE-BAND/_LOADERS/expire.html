@@ -10,56 +10,16 @@
                minimum-scale=1,
                user-scalable=no">
 
-<!-- Google Font -->
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
-<!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-HSX89KS63P"></script>
-<!-- Backend Connector Layer -->
 <script type="module">
+ 
+import { VitalsLogger as PulseLogger }        from "./PULSE-X/PulseProofLogger.js";
+/* 0. BOOT MEMBRANE — MUST BE FIRST */
+import * as PulseWindow from "./PULSE-X/PULSEEvolutionaryWindow.js";
 
-import * as PulseSkinReflex from "./PulseOSSkinReflex.js";
-
-// Use the identity Window already computed
-PulseSkinReflex.attachScanner(window.Pulse.pageName);
-
-// Boot membrane
-import PulseWindow from "./PulseEvolutionaryWindow.js";
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-
-  gtag('config', 'G-HSX89KS63P');
-
-  !function(f,b,e,v,n,t,s){
-    if(f.fbq) return;
-    n = f.fbq = function(){
-      n.callMethod ?
-        n.callMethod.apply(n, arguments) : n.queue.push(arguments)
-    };
-    if(!f._fbq) f._fbq = n;
-    n.push = n;
-    n.loaded = true;
-    n.version = '2.0';
-    n.queue = [];
-    t = b.createElement(e);
-    t.async = true;
-    t.src = v;
-    s = b.getElementsByTagName(e)[0];
-    s.parentNode.insertBefore(t, s);
-  }(window, document, 'script', 'https://connect.facebook.net/en_US/fbevents.js');
-
-  fbq('init', '1651551349364459');
-  fbq('track', 'PageView');
+/* 1. SKIN REFLEX — SIDE‑EFFECT IMPORT, AUTO‑ATTACHES */
+import * as PULSEOSSkinReflex from "./PULSE-X/PULSEOSSkinReflex.js"; // PageScannerV12 auto hooks window here
 </script>
 
-<noscript>
-  <img
-    height="1"
-    width="1"
-    style="display:none"
-    src="https://www.facebook.com/tr?id=1651551349364459&ev=PageView&noscript=1"
-  />
-</noscript>
 <!-- End Meta Pixel Code -->
 
   <style>
