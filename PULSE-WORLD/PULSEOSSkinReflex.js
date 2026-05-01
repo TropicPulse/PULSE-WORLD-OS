@@ -1142,6 +1142,39 @@ if (hasWindow && typeof window.addEventListener === "function") {
         classified = true;
       }
 
+      // ========================================================================
+      // PULSECORS CLASSIFIER — v13-EVO-PRIME
+      // Detects ANY CORS-related failure and routes to PulseCORS page
+      // ========================================================================
+      if (
+        msg.includes("CORS") ||
+        msg.includes("cors") ||
+        msg.includes("Access-Control-Allow") ||
+        msg.includes("blocked by CORS") ||
+        msg.includes("No 'Access-Control-Allow-Origin'")
+      ) {
+        logProtector("PULSECORS_REQUIRED", {
+          error: "corsMismatch",
+          hint: "Use PulseCORS instead of default browser CORS.",
+          note: "PulseCORS is the unified v13-EVO-PRIME CORS layer."
+        });
+
+        RouteMemory.markDegraded(msg, rawFrames, 0.72, false);
+        classified = true;
+
+        await route("PulseCORS", {
+          message: msg,
+          frames: rawFrames,
+          page: pagePath,
+          reflexOrigin: "SkinReflex",
+          layer: "A1",
+          binaryAware: true,
+          dualBand: true,
+          presenceAware: true
+        });
+      }
+
+
       if (msg.includes("Maximum call stack size exceeded")) {
         logProtector("PAGE_RECURSION_LOOP", {
           error: "pageRecursionLoop",
