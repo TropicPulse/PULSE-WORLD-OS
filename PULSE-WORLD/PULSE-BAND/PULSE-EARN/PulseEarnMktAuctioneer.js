@@ -609,60 +609,102 @@ export const PulseEarnMktAuctioneer = {
   },
 
   // -------------------------------------------------------------------------
-  // NORMALIZE JOB — Vast → Pulse‑Earn schema (deterministic + presence hints)
-// -------------------------------------------------------------------------
+  // NORMALIZE JOB — Vast → Pulse‑Earn schema (v14‑IMMORTAL)
+  // Never returns null unless job is truly invalid.
+  // Auto-fills missing fields, presence-aware, deterministic.
+  // -------------------------------------------------------------------------
   normalizeJob(raw, globalHints = {}) {
     try {
-      const presenceField = buildPresenceField(globalHints);
-      const advantageField = buildAdvantageField(globalHints);
-      const hintsField = buildHintsField(globalHints);
+      // -------------------------------------------------------------
+      // 0. Build presence/advantage/hints surfaces (v14)
+      // -------------------------------------------------------------
+      const presenceField = buildPresenceField({ globalHints });
+      const advantageField = buildAdvantageField({ globalHints });
+      const hintsField = buildHintsField({ globalHints });
       const presenceTier = classifyAuctioneerPresenceTier(presenceField);
 
+      // -------------------------------------------------------------
+      // 1. Validate raw job
+      // -------------------------------------------------------------
       if (!raw || typeof raw !== "object") {
         healingState.lastNormalizationError = "invalid_raw_job";
-        healingState.lastNormalizationSignature =
-          buildNormalizationSignature(null);
+        healingState.lastNormalizationSignature = buildNormalizationSignature(null);
         return null;
       }
 
-      if (!raw.id) {
+      // Vast sometimes uses id, sometimes uses "job_id", sometimes "id_str"
+      const id =
+        raw.id ??
+        raw.job_id ??
+        raw.id_str ??
+        raw.offer_id ??
+        null;
+
+      if (!id) {
         healingState.lastNormalizationError = "missing_id";
-        healingState.lastNormalizationSignature =
-          buildNormalizationSignature(null);
+        healingState.lastNormalizationSignature = buildNormalizationSignature(null);
         return null;
       }
 
-      healingState.lastJobType = safeGet(raw, "type", "offer");
+      // -------------------------------------------------------------
+      // 2. Extract payout (Vast uses many fields)
+      // -------------------------------------------------------------
+      const payout =
+        Number(raw.dph_total) ||
+        Number(raw.price_per_hour) ||
+        Number(raw.dph) ||
+        Number(raw.total_dph) ||
+        0;
 
-      const payout = Number(raw.dph_total ?? raw.price_per_hour ?? 0);
       if (!Number.isFinite(payout) || payout <= 0) {
-        healingState.lastNormalizationError = "non_positive_payout";
-        healingState.lastNormalizationSignature =
-          buildNormalizationSignature(null);
-        return null;
+        // v14: DO NOT return null — fallback to tiny payout
+        healingState.lastNormalizationError = "non_positive_payout_fallback";
       }
 
-      const cpuRequired = Number(raw.cpu_cores ?? 1);
-      const memoryRequired = Number(raw.ram_gb ?? 1) * 1024;
-      const estimatedSeconds = 3600;
+      const finalPayout = payout > 0 ? payout : 0.01;
 
-      healingState.lastResourceShape = {
-        cpu: cpuRequired,
-        mem: memoryRequired,
-        duration: estimatedSeconds
-      };
+      // -------------------------------------------------------------
+      // 3. Extract CPU / RAM / GPU / Bandwidth
+      // Vast job shapes vary wildly — v14 normalizer handles all.
+      // -------------------------------------------------------------
+      const cpuRequired =
+        Number(raw.cpu_cores) ||
+        Number(raw.cpu) ||
+        Number(raw.vcpu) ||
+        1;
 
-      const gpuScore = Number(raw.gpu_ram ?? 8) * 10;
-      healingState.lastGpuScore = gpuScore;
+      const memoryRequired =
+        (Number(raw.ram_gb) * 1024) ||
+        Number(raw.memory_mb) ||
+        Number(raw.mem) ||
+        1024;
 
-      const bandwidth = Number(raw.net_up ?? 5);
-      healingState.lastBandwidthInference = bandwidth;
+      const estimatedSeconds =
+        Number(raw.estimated_seconds) ||
+        Number(raw.duration) ||
+        3600;
 
+      // GPU score heuristic
+      const gpuScore =
+        Number(raw.gpu_ram) * 10 ||
+        Number(raw.gpu_score) ||
+        Number(raw.min_gpu_score) ||
+        80;
+
+      const bandwidth =
+        Number(raw.net_up) ||
+        Number(raw.bandwidth) ||
+        Number(raw.net_mbps) ||
+        5;
+
+      // -------------------------------------------------------------
+      // 4. Build normalized job (v14)
+      // -------------------------------------------------------------
       const normalized = {
-        id: String(raw.id),
+        id: String(id),
         marketplaceId: "vast",
 
-        payout,
+        payout: finalPayout,
         cpuRequired,
         memoryRequired,
         estimatedSeconds,
@@ -670,13 +712,24 @@ export const PulseEarnMktAuctioneer = {
         minGpuScore: gpuScore,
         bandwidthNeededMbps: bandwidth,
 
-        // Presence-aware metadata for Consulate / Nervous System
+        // v14 presence-aware metadata
         presenceField,
         advantageField,
         hintsField,
-        presenceTier
+        presenceTier,
+
+        // v14 meta
+        meta: {
+          rawSource: "vast",
+          rawJob: raw,
+          version: "v14-IMMORTAL",
+          band: raw.band || raw.meta?.band || "symbolic"
+        }
       };
 
+      // -------------------------------------------------------------
+      // 5. Healing state updates
+      // -------------------------------------------------------------
       healingState.lastNormalizedJobId = normalized.id;
       healingState.lastNormalizationError = null;
       healingState.lastNormalizationSignature =
@@ -691,6 +744,7 @@ export const PulseEarnMktAuctioneer = {
       return null;
     }
   }
+
 };
 
 
