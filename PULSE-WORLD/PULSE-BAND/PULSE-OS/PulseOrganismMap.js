@@ -173,7 +173,7 @@ export async function buildPulseOrganismMap(baseDir = "/") {
         PulseBand: {
           old: ["PulseBand"],
           now: [
-            "PulseOSSkinReflex",
+            "PULSEOSSkinReflex",
             "PulseOSSensoryCortex",
             "PulseProxyImpulse"
           ]
@@ -229,7 +229,7 @@ export async function buildPulseOrganismMap(baseDir = "/") {
           "backend"
         ],
         now: [
-          "PulseOSSkinReflex / PulseOSSensoryCortex",
+          "PULSEOSSkinReflex / PulseOSSensoryCortex",
           "PulseSDN",
           "PulseProxyImpulse",
           "PulseRouterEvolutionaryThought",
@@ -242,7 +242,7 @@ export async function buildPulseOrganismMap(baseDir = "/") {
       binaryRouteChain: {
         old: [],
         now: [
-          "PulseOSSkinReflex / PulseOSSensoryCortex",
+          "PULSEOSSkinReflex / PulseOSSensoryCortex",
           "PulseSDN",
           "BinaryRouter-v12.3-PURE",
           "BinaryProxy-v12.3-PURE",

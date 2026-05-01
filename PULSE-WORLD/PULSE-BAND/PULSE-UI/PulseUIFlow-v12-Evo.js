@@ -101,7 +101,7 @@ function logFlow(stage, details = {}) {
 // IMPORTS — Router / SkinReflex / EvolutionaryPage
 // ============================================================================
 import { route } from "../PULSE-OS/PulseOSCNSNervousSystem.js";
-import { attachScanner } from "../PulseOSSkinReflex.js";
+import { attachScanner } from "../PULSEOSSkinReflex.js";
 
 // EvolutionaryPage is exposed globally by EvolutionaryTrustedPage boot
 // window.PulseEvolutionaryPage.evolve({ intent: "dashboard", ... })

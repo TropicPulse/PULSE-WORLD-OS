@@ -328,10 +328,10 @@ rewriteIllegalImports(source = "") {
 // ============================================================================
 export const PulseRole = {
   type: "Skin",
-  subsystem: "PulseOSSkinReflex",
+  subsystem: "PULSEOSSkinReflex",
   layer: "A1-SurfaceReflex",
   version: "12.0",
-  identity: "PulseOSSkinReflex-v12-EVO-BINARY-MAX",
+  identity: "PULSEOSSkinReflex-v12-EVO-BINARY-MAX",
 
   evo: {
     driftProof: true,
@@ -411,7 +411,7 @@ function resolveOwnerModule(symbol) {
 
 if (typeof console !== "undefined" && typeof console.log === "function") {
   console.log(
-    "%c[PulseOSSkinReflex v12‑EVO‑BINARY‑MAX] Loaded — A1/A2 Universal Membrane Active",
+    "%c[PULSEOSSkinReflex v12‑EVO‑BINARY‑MAX] Loaded — A1/A2 Universal Membrane Active",
     "color:#4CAF50; font-weight:bold;"
   );
 }
