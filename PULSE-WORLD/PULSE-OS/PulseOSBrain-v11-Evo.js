@@ -586,10 +586,8 @@ export function getCNSState() {
 // ============================================================================
 export async function cognitiveBootstrap({ intent, organism, iqMap, understanding }) {
 
-  if (!iqMap) {
-    const module = await import("./PulseIQMap.js");
-    iqMap = module.PulseIQMap;
-  }
+  iqMap = PulseIQMap;
+
 
   if (intent) PulseOSBrain.intent = intent;
   if (organism) PulseOSBrain.PulseOrganismMap = organism;
