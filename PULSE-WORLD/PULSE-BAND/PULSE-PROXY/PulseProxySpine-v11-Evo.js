@@ -264,7 +264,7 @@ export function getSpineHealingState() {
 import { createPulseEarnSendSystem } from "../PULSE-EARN/PulseEarnSendSystem.js";
 
 
-import { updateUserMetrics as recordUserMetrics } from "../PULSE-X/PulseProofMonitor.js";
+import { updateUserMetrics as recordUserMetrics } from "../PulseProofMonitor.js";
 
 import startPulseTimer from "./PulseProxyHeart.js";
 import { createPulseOSHealerV12_3 as startPulseOSHealer } from "../PULSE-OS/PulseOSInflammatoryResponse.js";

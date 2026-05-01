@@ -33,7 +33,7 @@ import PulseEarnMktAmbassador     from "./PulseEarnMktAmbassador.js";
 import PulseEarnMktBroker         from "./PulseEarnMktBroker.js";
 import PulseEarnMktCourier        from "./PulseEarnMktCourier.js";
 import PulseEarnMktForager        from "./PulseEarnMktForager.js";
-import { PulseNetForward, PulseNetBackward } from ".../PULSE-X/PULSE-NET.js";
+import { PulseNetForward, PulseNetBackward } from "../PULSE-NET.js";
 
 const forward = PulseNetForward();
 const backward = PulseNetBackward();
