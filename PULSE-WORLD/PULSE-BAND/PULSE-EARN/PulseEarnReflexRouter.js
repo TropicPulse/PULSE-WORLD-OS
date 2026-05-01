@@ -1,16 +1,16 @@
 // ============================================================================
-//  PulseEarnReflexRouter-v12.3-PRESENCE-EVO+.js
-//  Reflex → Earn Synapse (v12.3 Presence + Advantage‑C + Chunk/Prewarm)
+//  PulseEarnReflexRouter-v13.0-PRESENCE-IMMORTAL.js
+//  Reflex → Earn Synapse (v13.0 Presence-IMMORTAL + Advantage‑M + Chunk/Prewarm)
 //  Deterministic, Zero-Async, Zero-Routing, Zero-Sending
-//  Pure Reflex → Earn Handoff with Presence Surfaces
+//  Pure Reflex → Earn Handoff with Presence Surfaces (metadata-only)
 // ============================================================================
 
 export const PulseRole = {
   type: "Synapse",
   subsystem: "PulseEarnReflexRouter",
   layer: "B1-ReflexToEarn",
-  version: "12.3-PRESENCE-EVO+",
-  identity: "PulseEarnReflexRouter-v12.3-PRESENCE-EVO+",
+  version: "13.0-PRESENCE-IMMORTAL",
+  identity: "PulseEarnReflexRouter-v13.0-PRESENCE-IMMORTAL",
 
   evo: {
     driftProof: true,
@@ -49,8 +49,8 @@ export const PulseRole = {
 export const PulseEarnReflexRouterMeta = Object.freeze({
   layer: "PulseEarnReflexRouter",
   role: "EARN_REFLEX_ROUTER_ORGAN",
-  version: "v12.3-PRESENCE-EVO+",
-  identity: "PulseEarnReflexRouter-v12.3-PRESENCE-EVO+",
+  version: "v13.0-PRESENCE-IMMORTAL",
+  identity: "PulseEarnReflexRouter-v13.0-PRESENCE-IMMORTAL",
 
   guarantees: Object.freeze({
     deterministic: true,
@@ -137,7 +137,7 @@ function getOrCreateReflexRouteState(reflexId) {
 }
 
 // ============================================================================
-// A‑B‑A BINARY + WAVE (12.3 PRESENCE)
+// A‑B‑A BINARY + WAVE (v13.0 PRESENCE-IMMORTAL)
 // ============================================================================
 function buildRouteBandBinaryWave(earnReflex, reflexId, cycleIndex, device) {
   const pattern = earnReflex?.pattern || "NO_PATTERN";
@@ -183,38 +183,34 @@ function buildRouteBandBinaryWave(earnReflex, reflexId, cycleIndex, device) {
 }
 
 // ============================================================================
-// PRESENCE FIELD (12.3)
+// PRESENCE FIELD (v13.0-PRESENCE-IMMORTAL)
 // ============================================================================
 function buildPresenceField(earnReflex, device, cycleIndex) {
   const patternLen = (earnReflex?.pattern || "").length;
   const lineageDepth = earnReflex?.lineage?.length || 0;
-  const stability = device?.stabilityScore || 0.7;
+  const stability = device?.stabilityScore ?? 0.7;
 
-  const composite =
-    patternLen * 0.001 +
-    lineageDepth * 0.002 +
-    stability * 0.01;
-
-  const presenceTier =
-    composite >= 0.02 ? "presence_high" :
-    composite >= 0.005 ? "presence_mid" :
-    "presence_low";
+  const magnitude = patternLen + lineageDepth;
+  let presenceTier = "presence_idle";
+  if (magnitude >= 80) presenceTier = "presence_high";
+  else if (magnitude >= 20) presenceTier = "presence_mid";
+  else if (magnitude > 0) presenceTier = "presence_low";
 
   return {
-    presenceVersion: "v12.3",
+    presenceVersion: "v13.0-PRESENCE-IMMORTAL",
     presenceTier,
     patternLen,
     lineageDepth,
     stability,
     cycleIndex,
     presenceSignature: computeHash(
-      `RFX_PRESENCE::${presenceTier}::${patternLen}::${lineageDepth}::${cycleIndex}`
+      `RFX_PRESENCE_V13::${presenceTier}::${patternLen}::${lineageDepth}::${cycleIndex}`
     )
   };
 }
 
 // ============================================================================
-// ADVANTAGE‑C FIELD (12.3)
+// ADVANTAGE‑M FIELD (v13.0, structural-only)
 // ============================================================================
 function buildAdvantageField(earnReflex, device, bandPack, presenceField) {
   const gpuScore = device?.gpuScore || 0;
@@ -222,43 +218,30 @@ function buildAdvantageField(earnReflex, device, bandPack, presenceField) {
   const density = bandPack.binaryField.density;
   const amplitude = bandPack.waveField.amplitude;
 
-  const advantageScore =
-    gpuScore * 0.0005 +
-    bandwidth * 0.0002 +
-    density * 0.00001 +
-    amplitude * 0.00001 +
-    (presenceField.presenceTier === "presence_high" ? 0.01 : 0);
-
   return {
-    advantageVersion: "C",
+    advantageVersion: "M-13.0",
     band: bandPack.band,
     gpuScore,
     bandwidth,
     binaryDensity: density,
     waveAmplitude: amplitude,
-    presenceTier: presenceField.presenceTier,
-    advantageScore
+    presenceTier: presenceField.presenceTier
   };
 }
 
 // ============================================================================
-// CHUNK / CACHE / PREWARM PLAN (12.3)
+// CHUNK / CACHE / PREWARM PLAN (v13.0-AdvantageM)
 // ============================================================================
 function buildChunkPrewarmPlan(earnReflex, device, presenceField) {
-  const basePriority =
-    presenceField.presenceTier === "presence_high"
-      ? 3
-      : presenceField.presenceTier === "presence_mid"
-      ? 2
-      : 1;
-
-  const gpuBoost = (device?.gpuScore || 0) > 600 ? 1 : 0;
-  const priority = basePriority + gpuBoost;
+  let priorityLabel = "normal";
+  if (presenceField.presenceTier === "presence_high") priorityLabel = "high";
+  else if (presenceField.presenceTier === "presence_mid") priorityLabel = "medium";
+  else if (presenceField.presenceTier === "presence_low") priorityLabel = "low";
 
   return {
-    planVersion: "v12.3-AdvantageC",
-    priority,
-    band: presenceField.presenceTier,
+    planVersion: "v13.0-AdvantageM",
+    priorityLabel,
+    bandPresence: presenceField.presenceTier,
     chunks: {
       reflexEnvelope: true,
       earnHandoff: true
@@ -267,7 +250,7 @@ function buildChunkPrewarmPlan(earnReflex, device, presenceField) {
       reflexDiagnostics: true
     },
     prewarm: {
-      earnSystem: presenceField.presenceTier !== "presence_low"
+      earnSystem: presenceField.presenceTier !== "presence_idle"
     }
   };
 }
@@ -303,7 +286,7 @@ function buildReflexDiagnostics(earnReflex, reflexId, state, bandPack, presenceF
 }
 
 // ============================================================================
-// PUBLIC API — FULL PRESENCE UPGRADE
+// PUBLIC API — FULL PRESENCE-IMMORTAL ROUTER
 // ============================================================================
 export const PulseEarnReflexRouter = {
 
@@ -326,7 +309,6 @@ export const PulseEarnReflexRouter = {
     state.count++;
     state.lastSeenCycle = reflexRouteCycle;
 
-    // Build surfaces
     const bandPack = buildRouteBandBinaryWave(
       earnReflex,
       reflexId,
@@ -373,7 +355,6 @@ export const PulseEarnReflexRouter = {
       presenceField.presenceTier
     );
 
-    // If EarnSystem missing → fail-open
     if (!EarnSystem || typeof EarnSystem.handle !== "function") {
       return {
         ok: false,
@@ -388,7 +369,6 @@ export const PulseEarnReflexRouter = {
       };
     }
 
-    // SAFE HANDOFF (no routing, no sending)
     try {
       const result = EarnSystem.handle(earnReflex, {
         reflex: true,

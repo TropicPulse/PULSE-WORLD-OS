@@ -1,6 +1,6 @@
 // ============================================================================
-// TEST SCRIPT — Vast.ai Adapter Test (v12.3‑PRESENCE‑EVO+ A‑B‑A Deterministic)
-// Pulse‑Earn v12.3‑Presence‑EVO+
+// TEST SCRIPT — Vast.ai Adapter Test (v13.0‑PRESENCE‑IMMORTAL A‑B‑A Deterministic)
+// Pulse‑Earn v13.0‑PRESENCE‑IMMORTAL
 // ============================================================================
 
 import {
@@ -42,7 +42,7 @@ const globalHints = {
 
 function run() {
   console.log("==============================================");
-  console.log(" PULSE‑EARN VAST.AI ADAPTER — TEST RUN (v12.3‑PRESENCE‑EVO+)");
+  console.log(" PULSE‑EARN VAST.AI ADAPTER — TEST RUN (v13.0‑PRESENCE‑IMMORTAL)");
   console.log("==============================================\n");
 
   // ---------------------------------------------------------
@@ -98,13 +98,13 @@ function run() {
   }
 
   // ---------------------------------------------------------
-  // 5. HEALING STATE (v12.3‑Presence‑EVO+ signatures)
+  // 5. HEALING STATE (v13.0‑PRESENCE‑IMMORTAL signatures)
   // ---------------------------------------------------------
   console.log("🔹 Healing State:");
   console.log(getPulseEarnMktAuctioneerHealingState());
 
   console.log("\n==============================================");
-  console.log(" TEST COMPLETE (v12.3‑PRESENCE‑EVO+)");
+  console.log(" TEST COMPLETE (v13.0‑PRESENCE‑IMMORTAL)");
   console.log("==============================================");
 }
 

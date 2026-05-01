@@ -1,32 +1,33 @@
 // ============================================================================
-// FILE: tropic-pulse-functions/PULSE-WORLD/PULSE-EARN/PulseEarnMetabolism-v12.3-PRESENCE-EVO+.js
-// LAYER: THE METABOLIC ENGINEER (v12.3-PRESENCE-EVO+ + Dual-Band + Binary + Wave)
-// (Interpreter of Jobs + Safe Executor + Deterministic Throughput Engine + Presence Metabolism)
+// FILE: tropic-pulse-functions/PULSE-WORLD/PULSE-EARN/PulseEarnMetabolism-v13.0-PRESENCE-IMMORTAL.js
+// LAYER: THE METABOLIC ENGINEER (v13.0-PRESENCE-IMMORTAL)
+// (Interpreter of Jobs + Safe Executor + Deterministic Throughput Engine)
 // ============================================================================
 //
-// ROLE (v12.3-PRESENCE-EVO+):
+// ROLE (v13.0-PRESENCE-IMMORTAL):
 //   THE METABOLIC ENGINEER — Pulse‑Earn’s deterministic execution organ.
 //   • Reads the blueprint (job payload).
 //   • Selects the correct safe tool (compute/image/script handler).
-//   • Applies deterministic metabolic scaling (conceptual only).
-//   • Produces deterministic, drift‑proof results.
-//   • Emits v12.3‑Presence‑EVO+ signatures + diagnostics.
-//   • Never improvises, never executes unsafe code.
-//   • NOW dual-band, binary-aware, wave-aware, presence/advantage/hints-aware.
+//   • Executes deterministically with NO performance math.
+//   • Emits v13‑Presence‑IMMORTAL presence/advantage/hints surfaces.
+//   • Emits binary-first + wave surfaces.
+//   • Emits metabolicComputeProfile (metadata-only).
 //
-// CONTRACT (v12.3-PRESENCE-EVO+):
+// CONTRACT (v13.0-PRESENCE-IMMORTAL):
 //   • PURE EXECUTION BRIDGE — no AI layers, no translation, no memory model.
 //   • NO eval(), NO Function(), NO dynamic imports.
 //   • NO user scripts, NO network calls, NO filesystem access.
 //   • NEVER mutate job objects.
 //   • Deterministic output only.
 //   • Dual-band + binary + wave + presence metadata are structural-only.
+//   • NO speed, NO baseline, NO governor, NO performance assumptions.
 // ============================================================================
+
 export const PulseEarnMetabolismMeta = Object.freeze({
   layer: "PulseEarnMetabolism",
   role: "EARN_METABOLISM_ORGAN",
-  version: "v12.3-PRESENCE-EVO+",
-  identity: "PulseEarnMetabolism-v12.3-PRESENCE-EVO+",
+  version: "v13.0-PRESENCE-IMMORTAL",
+  identity: "PulseEarnMetabolism-v13.0-PRESENCE-IMMORTAL",
 
   guarantees: Object.freeze({
     deterministic: true,
@@ -70,12 +71,13 @@ export const PulseEarnMetabolismMeta = Object.freeze({
 
   lineage: Object.freeze({
     root: "PulseOS-v11-EVO",
-    parent: "PulseEarn-v12.3-PRESENCE-EVO+",
+    parent: "PulseEarn-v13.0-PRESENCE-IMMORTAL",
     ancestry: [
       "PulseEarnMetabolism-v9",
       "PulseEarnMetabolism-v10",
       "PulseEarnMetabolism-v11",
-      "PulseEarnMetabolism-v11-Evo"
+      "PulseEarnMetabolism-v11-Evo",
+      "PulseEarnMetabolism-v12.3-PRESENCE-EVO+"
     ]
   }),
 
@@ -88,52 +90,48 @@ export const PulseEarnMetabolismMeta = Object.freeze({
   architecture: Object.freeze({
     pattern: "A-B-A",
     baseline: "validate job → deterministic tool selection",
-    adaptive: "binary/wave metabolic surfaces + dual-band + presence/advantage/hints surfaces",
+    adaptive: "binary/wave surfaces + v13 presence/advantage/hints surfaces",
     return: "deterministic metabolic output + healing metadata"
   })
 });
 
+// ============================================================================
+// Healing Metadata — v13 IMMORTAL
+// ============================================================================
 
-// ============================================================================
-// Healing Metadata — Metabolic Work Log (v12.3-PRESENCE-EVO+)
-// ============================================================================
 const metabolicHealing = {
   lastJobId: null,
   lastPayloadType: null,
   lastError: null,
   lastResult: null,
   cycleCount: 0,
-  executionState: "idle", // idle | validating | executing | returning | error
+  executionState: "idle",
   lastCycleIndex: null,
-  lastEvolutionBoost: null,
 
   lastMetabolicSignature: null,
   lastJobSignature: null,
   lastPayloadSignature: null,
 
-  // Dual-Band + Binary + Wave
   lastBand: "symbolic",
   lastBandSignature: null,
   lastBinaryField: null,
   lastWaveField: null,
 
-  // Presence-EVO+ additions
   lastPresenceField: null,
   lastAdvantageField: null,
   lastHintsField: null,
   lastMetabolicPresenceProfile: null,
   lastBinaryProfile: null,
-  lastWaveProfile: null
+  lastWaveProfile: null,
+  lastMetabolicComputeProfile: null
 };
 
-
-// Deterministic cycle counter
 let metabolismCycle = 0;
-
 
 // ============================================================================
 // Deterministic Hash Helper
 // ============================================================================
+
 function computeHash(str) {
   let h = 0;
   const s = String(str || "");
@@ -148,213 +146,144 @@ function normalizeBand(band) {
   return b === "binary" ? "binary" : "symbolic";
 }
 
-
 // ============================================================================
-// Deterministic Evolutionary Metabolic Boost (Presence-EVO+)
+// Signature Builders
 // ============================================================================
-function computeMetabolicBoost(payloadType, presenceField, advantageField, hintsField) {
-  // All deterministic, no randomness.
-  const base = 1.0;
 
-  const mesh = Number(presenceField.meshPressureIndex || 0);
-  const castle = Number(presenceField.castleLoadLevel || 0);
-  const advTier = Number(advantageField.advantageTier || 0);
-  const fallback = Number(hintsField.fallbackBandLevel || 0);
-
-  const pressureScore = (mesh + castle) / 200;      // 0–1
-  const advantageScore = advTier / 10;              // 0–1 (assuming tier 0–10)
-  const fallbackPenalty = fallback / 10;            // 0–1
-
-  const typeWeight =
-    payloadType === "compute" ? 1.0 :
-    payloadType === "image-processing" ? 0.9 :
-    payloadType === "script" ? 0.8 :
-    0.7;
-
-  const boost =
-    base *
-    typeWeight *
-    (1 + pressureScore * 0.3) *
-    (1 + advantageScore * 0.4) *
-    (1 - fallbackPenalty * 0.3);
-
-  // Clamp to deterministic safe range
-  const clamped = Math.max(0.5, Math.min(2.0, boost));
-  return clamped;
-}
-
-
-// ============================================================================
-// INTERNAL: Signature Builders
-// ============================================================================
 function buildJobSignature(job) {
   if (!job) return "JOB::NONE";
-  return computeHash(
-    `JOB::${job.id}::${job.payload?.type || "NO_TYPE"}`
-  );
+  return computeHash(`JOB::${job.id}::${job.payload?.type || "NO_TYPE"}`);
 }
 
 function buildPayloadSignature(payload) {
   if (!payload) return "PAYLOAD::NONE";
-  return computeHash(
-    `PAYLOAD::${payload.type}::${Object.keys(payload).join("::")}`
-  );
+  return computeHash(`PAYLOAD::${payload.type}::${Object.keys(payload).join("::")}`);
 }
 
 function buildMetabolicSignature(job, cycle, presenceTier) {
-  return computeHash(
-    `META::${job?.id || "NO_JOB"}::${cycle}::PTIER:${presenceTier}`
-  );
+  return computeHash(`META::${job?.id || "NO_JOB"}::${cycle}::PTIER:${presenceTier}`);
 }
 
+// ============================================================================
+// Presence / Advantage / Hints — v13 IMMORTAL
+// ============================================================================
 
-// ============================================================================
-// Presence / Advantage / Hints Surfaces (job + global + nervousContext)
-// ============================================================================
-function buildPresenceField(job, globalHints = {}, nervousContext = {}) {
+function buildPresenceField(job, globalHints = {}) {
   const meta = job?.meta || {};
-  const jp = meta.presenceContext || meta.cardiacPresence || {};
-  const nc = nervousContext.presenceContext || {};
-  const ghP = globalHints.presenceContext || {};
+  const jp = meta.presenceContext || {};
 
-  const mesh = {
-    ...(globalHints.meshSignals || {}),
-    ...(meta.meshSignals || {}),
-    ...(nervousContext.meshSignals || {})
-  };
-  const castle = {
-    ...(globalHints.castleSignals || {}),
-    ...(meta.castleSignals || {}),
-    ...(nervousContext.castleSignals || {})
-  };
-  const region = {
-    ...(globalHints.regionContext || {}),
-    ...(meta.regionContext || {}),
-    ...(nervousContext.regionContext || {})
-  };
+  const mesh = { ...(globalHints.meshSignals || {}), ...(meta.meshSignals || {}) };
+  const castle = { ...(globalHints.castleSignals || {}), ...(meta.castleSignals || {}) };
+  const region = { ...(globalHints.regionContext || {}), ...(meta.regionContext || {}) };
+
+  const meshPressureIndex = mesh.meshPressureIndex || 0;
+  const castleLoadLevel = castle.loadLevel || 0;
+  const meshStrength = mesh.meshStrength || 0;
+
+  const pressure = meshPressureIndex + castleLoadLevel;
+  let presenceTier = "idle";
+  if (pressure >= 180) presenceTier = "critical";
+  else if (pressure >= 120) presenceTier = "high";
+  else if (pressure >= 60) presenceTier = "elevated";
+  else if (pressure > 0) presenceTier = "soft";
+
+  const presenceSignature = computeHash(
+    `META_PRESENCE_V13::${presenceTier}::${meshPressureIndex}::${castleLoadLevel}`
+  );
 
   return {
-    bandPresence:
-      jp.bandPresence ||
-      nc.bandPresence ||
-      ghP.bandPresence ||
-      "unknown",
-    routerPresence:
-      jp.routerPresence ||
-      nc.routerPresence ||
-      ghP.routerPresence ||
-      "unknown",
-    devicePresence:
-      jp.devicePresence ||
-      nc.devicePresence ||
-      ghP.devicePresence ||
-      "unknown",
-    meshPresence:
-      jp.meshPresence ||
-      nc.meshPresence ||
-      mesh.meshStrength ||
-      "unknown",
-    castlePresence:
-      jp.castlePresence ||
-      nc.castlePresence ||
-      castle.castlePresence ||
-      "unknown",
-    regionPresence:
-      jp.regionPresence ||
-      nc.regionPresence ||
-      region.regionTag ||
-      "unknown",
+    presenceVersion: "v13.0-PRESENCE-IMMORTAL",
+    presenceTier,
+    presenceSignature,
+
+    bandPresence: jp.bandPresence || (globalHints.presenceContext || {}).bandPresence || "unknown",
+    routerPresence: jp.routerPresence || (globalHints.presenceContext || {}).routerPresence || "unknown",
+    devicePresence: jp.devicePresence || (globalHints.presenceContext || {}).devicePresence || "unknown",
+
+    meshPresence: jp.meshPresence || mesh.meshStrength || "unknown",
+    castlePresence: jp.castlePresence || castle.castlePresence || "unknown",
+    regionPresence: jp.regionPresence || region.regionTag || "unknown",
+
     regionId: region.regionId || "unknown-region",
     castleId: castle.castleId || "unknown-castle",
-    castleLoadLevel: castle.loadLevel || 0,
-    meshStrength: mesh.meshStrength || 0,
-    meshPressureIndex: mesh.meshPressureIndex || 0
+
+    castleLoadLevel,
+    meshStrength,
+    meshPressureIndex
   };
 }
 
-function buildAdvantageField(job, globalHints = {}, nervousContext = {}) {
+function buildAdvantageField(job, globalHints = {}) {
   const meta = job?.meta || {};
   const ja = meta.advantageContext || {};
   const gh = globalHints.advantageContext || {};
-  const na = nervousContext.advantageContext || {};
 
   return {
-    advantageScore:
-      ja.score ??
-      na.score ??
-      gh.score ??
-      0,
-    advantageBand:
-      ja.band ??
-      na.band ??
-      gh.band ??
-      "neutral",
-    advantageTier:
-      ja.tier ??
-      na.tier ??
-      gh.tier ??
-      0
+    advantageVersion: "C-13.0",
+    advantageScore: ja.score ?? gh.score ?? 0,
+    advantageBand: ja.band ?? gh.band ?? "neutral",
+    advantageTier: ja.tier ?? gh.tier ?? 0
   };
 }
 
-function buildHintsField(job, globalHints = {}, nervousContext = {}) {
+function buildHintsField(job, globalHints = {}) {
   const meta = job?.meta || {};
   const jh = meta.hintsContext || {};
-  const nh = nervousContext.hintsContext || {};
 
   return {
     fallbackBandLevel:
       jh.fallbackBandLevel ??
-      nh.fallbackBandLevel ??
       globalHints.fallbackBandLevel ??
       0,
+
     chunkHints: {
       ...(globalHints.chunkHints || {}),
-      ...(jh.chunkHints || {}),
-      ...(nh.chunkHints || {})
+      ...(jh.chunkHints || {})
     },
+
     cacheHints: {
       ...(globalHints.cacheHints || {}),
-      ...(jh.cacheHints || {}),
-      ...(nh.cacheHints || {})
+      ...(jh.cacheHints || {})
     },
+
     prewarmHints: {
       ...(globalHints.prewarmHints || {}),
-      ...(jh.prewarmHints || {}),
-      ...(nh.prewarmHints || {})
+      ...(jh.prewarmHints || {})
     },
+
     coldStartHints: {
       ...(globalHints.coldStartHints || {}),
-      ...(jh.coldStartHints || {}),
-      ...(nh.coldStartHints || {})
+      ...(jh.coldStartHints || {})
     }
   };
 }
 
-function classifyMetabolicPresenceTier(presenceField, payloadType) {
-  const mesh = Number(presenceField.meshPressureIndex || 0);
-  const castle = Number(presenceField.castleLoadLevel || 0);
-  const base = mesh + castle;
+// ============================================================================
+// Metabolic Compute Profile (metadata-only)
+// ============================================================================
 
-  const typeBias =
-    payloadType === "compute" ? 10 :
-    payloadType === "image-processing" ? 5 :
-    payloadType === "script" ? 3 :
-    0;
-
-  const pressure = base + typeBias;
-
-  if (pressure >= 180) return "critical";
-  if (pressure >= 120) return "high";
-  if (pressure >= 60) return "elevated";
-  if (pressure > 0) return "soft";
-  return "idle";
+function normalizeCachePriority(p) {
+  if (!p) return "normal";
+  const v = String(p).toLowerCase();
+  if (v === "critical" || v === "high" || v === "low") return v;
+  return "normal";
 }
 
+function buildMetabolicComputeProfile(band, hintsField) {
+  return {
+    routeBand: band,
+    fallbackBandLevel: hintsField.fallbackBandLevel,
+    chunkAggression: hintsField.chunkHints.chunkAggression ?? 0,
+    prewarmNeeded: !!hintsField.prewarmHints.shouldPrewarm,
+    cachePriority: normalizeCachePriority(hintsField.cacheHints.priority),
+    coldStartRisk: !!hintsField.coldStartHints.coldStartRisk
+  };
+}
 
 // ============================================================================
-// INTERNAL: Build dual-band + binary + wave metadata for a job/cycle
+// Binary + Wave Surfaces
 // ============================================================================
+
 function buildMetabolicBandBinaryWave(job, cycleIndex, presenceField) {
   const band = normalizeBand(job?.band || job?.meta?.band || "symbolic");
   metabolicHealing.lastBand = band;
@@ -402,19 +331,17 @@ function buildMetabolicBandBinaryWave(job, cycleIndex, presenceField) {
   return { band, binaryField, waveField };
 }
 
+// ============================================================================
+// executePulseEarnJob — Deterministic Metabolic Workflow (v13 IMMORTAL)
+// ============================================================================
 
-// ============================================================================
-// executePulseEarnJob(job) — Deterministic Metabolic Workflow (Presence-EVO+)
-// globalHints and nervousContext are optional; if omitted, default to {}
-// ============================================================================
-export function executePulseEarnJob(job, globalHints = {}, nervousContext = {}) {
+export function executePulseEarnJob(job, globalHints = {}) {
   metabolismCycle++;
   metabolicHealing.cycleCount++;
   metabolicHealing.lastCycleIndex = metabolismCycle;
   metabolicHealing.executionState = "validating";
 
   try {
-    // 1. Blueprint Inspection — Validate job structure
     if (!job || !job.id || !job.payload) {
       metabolicHealing.lastError = "invalid_job_format";
       metabolicHealing.executionState = "error";
@@ -432,57 +359,44 @@ export function executePulseEarnJob(job, globalHints = {}, nervousContext = {}) 
     metabolicHealing.lastJobId = job.id;
     metabolicHealing.lastPayloadType = payload.type;
 
-    // v12.3 signatures
     metabolicHealing.lastJobSignature = buildJobSignature(job);
     metabolicHealing.lastPayloadSignature = buildPayloadSignature(payload);
 
-    // Presence / Advantage / Hints surfaces
-    const presenceField = buildPresenceField(job, globalHints, nervousContext);
-    const advantageField = buildAdvantageField(job, globalHints, nervousContext);
-    const hintsField = buildHintsField(job, globalHints, nervousContext);
+    const presenceField = buildPresenceField(job, globalHints);
+    const advantageField = buildAdvantageField(job, globalHints);
+    const hintsField = buildHintsField(job, globalHints);
 
     metabolicHealing.lastPresenceField = presenceField;
     metabolicHealing.lastAdvantageField = advantageField;
     metabolicHealing.lastHintsField = hintsField;
 
-    const presenceTier = classifyMetabolicPresenceTier(
-      presenceField,
-      payload.type
-    );
+    const presenceTier = presenceField.presenceTier;
 
-    // Dual-Band + Binary + Wave metadata
     const { band, binaryField, waveField } = buildMetabolicBandBinaryWave(
       job,
       metabolismCycle,
       presenceField
     );
 
-    // 2. Deterministic Metabolic Boost (presence-aware)
-    const evoBoost = computeMetabolicBoost(
-      payload.type,
-      presenceField,
-      advantageField,
-      hintsField
-    );
-    metabolicHealing.lastEvolutionBoost = evoBoost;
+    // NO BOOST. NO SPEED. NO PERFORMANCE MATH.
+    const metabolicComputeProfile = buildMetabolicComputeProfile(band, hintsField);
+    metabolicHealing.lastMetabolicComputeProfile = metabolicComputeProfile;
 
-    // 3. Tool Selection + Safe Execution
     metabolicHealing.executionState = "executing";
 
     let result;
 
     switch (payload.type) {
       case "compute":
-        result = runComputeTask(payload.data, evoBoost);
+        result = runComputeTask(payload.data);
         break;
 
       case "image-processing":
-        result = runImageTask(payload.data, evoBoost);
+        result = runImageTask(payload.data);
         break;
 
       case "script":
-        // SAFE placeholder — does NOT execute arbitrary code
-        result = runScriptTask(payload.script, payload.input, evoBoost);
+        result = runScriptTask(payload.script, payload.input);
         break;
 
       default:
@@ -499,7 +413,6 @@ export function executePulseEarnJob(job, globalHints = {}, nervousContext = {}) 
 
     metabolicHealing.lastResult = result;
 
-    // 4. Deliver Finished Product
     metabolicHealing.executionState = "returning";
 
     const metabolicSignature = buildMetabolicSignature(
@@ -515,19 +428,11 @@ export function executePulseEarnJob(job, globalHints = {}, nervousContext = {}) 
       meshPressureIndex: presenceField.meshPressureIndex,
       castleLoadLevel: presenceField.castleLoadLevel,
       advantageTier: advantageField.advantageTier,
-      fallbackBandLevel: hintsField.fallbackBandLevel,
-      evoBoost
+      fallbackBandLevel: hintsField.fallbackBandLevel
     };
 
-    const binaryProfile = {
-      binaryField,
-      presenceTier
-    };
-
-    const waveProfile = {
-      waveField,
-      presenceTier
-    };
+    const binaryProfile = { binaryField, presenceTier };
+    const waveProfile = { waveField, presenceTier };
 
     metabolicHealing.lastMetabolicPresenceProfile = metabolicPresenceProfile;
     metabolicHealing.lastBinaryProfile = binaryProfile;
@@ -537,7 +442,6 @@ export function executePulseEarnJob(job, globalHints = {}, nervousContext = {}) 
       success: true,
       jobId: job.id,
       result,
-      evoBoost,
       band,
       binaryField,
       waveField,
@@ -545,6 +449,7 @@ export function executePulseEarnJob(job, globalHints = {}, nervousContext = {}) 
       advantageField,
       hintsField,
       metabolicPresenceProfile,
+      metabolicComputeProfile,
       binaryProfile,
       waveProfile,
       cycleIndex: metabolismCycle,
@@ -566,40 +471,26 @@ export function executePulseEarnJob(job, globalHints = {}, nervousContext = {}) 
   }
 }
 
-
 // ============================================================================
-// SAFE workload handlers — Deterministic Metabolic Tools (Presence-EVO+)
-// (evoBoost is metadata-only; does not change semantics, only attached)
+// SAFE workload handlers — Deterministic Metabolic Tools (v13 IMMORTAL)
 // ============================================================================
-function runComputeTask(data, evoBoost) {
-  return {
-    output: "compute-result",
-    input: data,
-    evoBoost
-  };
+
+function runComputeTask(data) {
+  return { output: "compute-result", input: data };
 }
 
-function runImageTask(data, evoBoost) {
-  return {
-    output: "image-result",
-    input: data,
-    evoBoost
-  };
+function runImageTask(data) {
+  return { output: "image-result", input: data };
 }
 
-function runScriptTask(script, input, evoBoost) {
-  return {
-    output: "script-task-placeholder",
-    script,
-    input,
-    evoBoost
-  };
+function runScriptTask(script, input) {
+  return { output: "script-task-placeholder", script, input };
 }
-
 
 // ============================================================================
 // Export healing metadata — Metabolic Ledger
 // ============================================================================
+
 export function getPulseEarnMetabolismHealingState() {
   return { ...metabolicHealing };
 }

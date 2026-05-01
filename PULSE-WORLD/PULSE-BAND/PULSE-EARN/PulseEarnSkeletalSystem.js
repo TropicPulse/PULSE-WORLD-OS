@@ -1,11 +1,11 @@
 // ============================================================================
-// FILE: tropic-pulse-functions/PULSE-WORLD/PULSE-EARN/PulseEarnSkeletalSystem-v12.3-Presence.js
-// LAYER: THE SKELETAL SYSTEM + VITAL SIGNS MONITOR (v12.3-Presence A-B-A)
+// FILE: tropic-pulse-functions/PULSE-WORLD/PULSE-EARN/PulseEarnSkeletalSystem-v13.1-PRESENCE-IMMORTAL-ADV.js
+// LAYER: THE SKELETAL SYSTEM + VITAL SIGNS MONITOR (v13.1-PRESENCE-IMMORTAL A-B-A)
 // (Deterministic Device Phenotype + Structural Limits + Physiological Baselines
-//  + Presence Field + Chunk/Cache/Prewarm Advantage Surfaces)
+//  + Presence Field + Chunk/Cache/Prewarm + Advantage‑M Surfaces)
 // ============================================================================
 //
-// ROLE (v12.3-Presence):
+// ROLE (v13.1-PRESENCE-IMMORTAL-ADV):
 //   THE SKELETAL SYSTEM — Pulse‑Earn’s structural capacity declaration.
 //   • CPU cores = bone density (deterministic)
 //   • Memory = marrow capacity (deterministic)
@@ -15,27 +15,30 @@
 //   • Bandwidth = circulatory throughput (deterministic)
 //   • Stability = organism homeostasis (deterministic)
 //
-//   PRESENCE + A-B-A DUAL-BAND EXTENSION (v12.3):
+//   PRESENCE + A-B-A DUAL-BAND EXTENSION (v13.1):
 //   • band = symbolic | binary (phenotype-declared, binary-first capable)
 //   • presenceBand = organism presence field hint
 //   • binaryField = deterministic binary surface
 //   • waveField = deterministic wave surface
 //   • chunkField = deterministic chunk/cache/prewarm budget surface
+//   • advantageField = Advantage‑M skeletal surface (gpu/bw/presence/chunk)
 //
-// PURPOSE (v12.3-Presence):
+// PURPOSE (v13.1-PRESENCE-IMMORTAL-ADV):
 //   • Provide deterministic, drift‑proof device profiling.
 //   • Guarantee safe capability declaration.
-//   • Supply Survival Instincts + Reflex + Earn + PulseSend with stable data.
-//   • Emit pattern + signature surfaces for v12.3‑Presence diagnostics.
-//   • Provide band + binary + wave + presence + chunk metadata
-//     for organism‑wide A‑B‑A + Presence field.
+//   • Supply Survival Instincts + Reflex + Earn + PulseSend with:
+//       - phenotype
+//       - presence
+//       - chunk/cache/prewarm
+//       - skeletal Advantage‑M field
+//   • Emit pattern + signature surfaces for v13.1‑Presence diagnostics.
 // ============================================================================
 
 export const PulseEarnSkeletalSystemMeta = Object.freeze({
   layer: "PulseEarnSkeletalSystem",
   role: "EARN_SKELETAL_ORGAN",
-  version: "v12.3-PRESENCE",
-  identity: "PulseEarnSkeletalSystem-v12.3-PRESENCE",
+  version: "v13.1-PRESENCE-IMMORTAL-ADV",
+  identity: "PulseEarnSkeletalSystem-v13.1-PRESENCE-IMMORTAL-ADV",
 
   guarantees: Object.freeze({
     deterministic: true,
@@ -73,6 +76,7 @@ export const PulseEarnSkeletalSystemMeta = Object.freeze({
     chunkingAware: true,
     cachePrewarmAware: true,
     gpuFieldAware: true,
+    advantageFieldAware: true,
 
     // Environment
     worldLensAware: false,
@@ -90,20 +94,22 @@ export const PulseEarnSkeletalSystemMeta = Object.freeze({
       "StructuralDiagnostics",
       "PhysiologicalDiagnostics",
       "PresenceDiagnostics",
+      "SkeletalAdvantageField",
       "SkeletalSignatures",
       "SkeletalHealingState"
     ]
   }),
 
   lineage: Object.freeze({
-    root: "PulseOS-v12-Presence",
-    parent: "PulseEarn-v12.3-Presence",
+    root: "PulseOS-v13-PRESENCE-IMMORTAL",
+    parent: "PulseEarn-v13.0-PRESENCE-IMMORTAL",
     ancestry: [
       "PulseEarnSkeletalSystem-v9",
       "PulseEarnSkeletalSystem-v10",
       "PulseEarnSkeletalSystem-v11",
       "PulseEarnSkeletalSystem-v11-Evo",
-      "PulseEarnSkeletalSystem-v12.3-Presence"
+      "PulseEarnSkeletalSystem-v12.3-Presence",
+      "PulseEarnSkeletalSystem-v13.0-PRESENCE-IMMORTAL"
     ]
   }),
 
@@ -117,14 +123,14 @@ export const PulseEarnSkeletalSystemMeta = Object.freeze({
   architecture: Object.freeze({
     pattern: "A-B-A",
     baseline: "deterministic phenotype → structural limits → physiological baselines",
-    adaptive: "binary/wave/presence surfaces + dual-band signatures + chunkField",
-    return: "deterministic phenotype + structural + physiological + presence signatures"
+    adaptive: "binary/wave/presence surfaces + dual-band signatures + chunkField + advantageField",
+    return: "deterministic phenotype + structural + physiological + presence + advantage signatures"
   })
 });
 
 
 // ---------------------------------------------------------------------------
-// Healing Metadata — Structural + Physiological + Presence Log (v12.3-Presence)
+// Healing Metadata — Structural + Physiological + Presence + Advantage Log
 // ---------------------------------------------------------------------------
 const skeletalHealing = {
   lastProfile: null,
@@ -147,6 +153,9 @@ const skeletalHealing = {
   lastPresenceField: null,
   lastChunkField: null,
 
+  lastAdvantageField: null,
+  lastAdvantageSignature: null,
+
   cycleCount: 0,
 
   loopTheory: {
@@ -159,7 +168,7 @@ const skeletalHealing = {
 
 
 // ---------------------------------------------------------------------------
-// Deterministic Hash Helper — v12.3-Presence
+// Deterministic Hash Helper — v13.1-PRESENCE-IMMORTAL-ADV
 // ---------------------------------------------------------------------------
 function computeHash(str) {
   let h = 0;
@@ -182,14 +191,14 @@ function normalizePresenceBand(presenceBand) {
 
 
 // ---------------------------------------------------------------------------
-// Deterministic Phenotype — v12.3-Presence
+// Deterministic Phenotype — v13.1-PRESENCE-IMMORTAL-ADV
 // ---------------------------------------------------------------------------
 //
 // Still no hardware probing; phenotype is deterministic and override‑only.
 // ---------------------------------------------------------------------------
 
 let phenotype = {
-  id: "DEVICE-12.3-PRESENCE",
+  id: "DEVICE-13.1-PRESENCE-IMMORTAL-ADV",
 
   // Structural capacity (skeletal system)
   cpuCores: 8,
@@ -198,25 +207,25 @@ let phenotype = {
   // Muscular potential
   gpuModel: "deterministic-gpu",
   vramMB: 4096,
-  gpuScore: 800, // slight uplift for Presence generation
+  gpuScore: 800,
 
   // Physiological baselines
   bandwidthMbps: 100,
   stabilityScore: 0.8,
 
   // A-B-A band identity (phenotype-declared, binary-first capable)
-  band: "binary", // Presence prefers binary-first surfaces
+  band: "binary",
 
   // Presence + chunk/cache/prewarm hints
   presenceBand: "binary",
-  chunkBudgetKB: 512,       // deterministic chunk budget hint
-  cacheLines: 128,          // deterministic cache line hint
-  prewarmSlots: 8           // deterministic prewarm slot hint
+  chunkBudgetKB: 512,
+  cacheLines: 128,
+  prewarmSlots: 8
 };
 
 
 // ---------------------------------------------------------------------------
-// configurePulseEarnPhenotype — deterministic override (v12.3-Presence)
+// configurePulseEarnPhenotype — deterministic override
 // ---------------------------------------------------------------------------
 export function configurePulseEarnPhenotype(config) {
   const cfg = config || {};
@@ -232,7 +241,7 @@ export function configurePulseEarnPhenotype(config) {
 
 
 // ---------------------------------------------------------------------------
-// INTERNAL: Build Device Pattern (v12.3-Presence)
+// INTERNAL: Build Device Pattern
 // ---------------------------------------------------------------------------
 function buildDevicePattern(p) {
   return (
@@ -251,7 +260,7 @@ function buildDevicePattern(p) {
 
 
 // ---------------------------------------------------------------------------
-// INTERNAL: Build Signatures (v12.3-Presence)
+// INTERNAL: Build Signatures
 // ---------------------------------------------------------------------------
 function buildStructuralSignature(p) {
   return computeHash(
@@ -284,7 +293,7 @@ function buildBandSignature(p, cycleIndex) {
 
 
 // ---------------------------------------------------------------------------
-// INTERNAL: A-B-A Binary + Wave Surfaces (v12.3-Presence)
+// INTERNAL: A-B-A Binary + Wave Surfaces
 // ---------------------------------------------------------------------------
 function buildBinaryField(p, cycleIndex) {
   const patternLen =
@@ -326,7 +335,7 @@ function buildWaveField(p, cycleIndex) {
 
 
 // ---------------------------------------------------------------------------
-// INTERNAL: Presence + Chunk/Cache/Prewarm Field (v12.3-Presence)
+// INTERNAL: Presence + Chunk/Cache/Prewarm Field
 // ---------------------------------------------------------------------------
 function buildPresenceField(p, cycleIndex) {
   const presenceBand = normalizePresenceBand(p.presenceBand);
@@ -341,6 +350,7 @@ function buildPresenceField(p, cycleIndex) {
     cycleIndex;
 
   return {
+    presenceVersion: "v13.1-PRESENCE-IMMORTAL-ADV",
     presenceBand,
     presenceSignature: computeHash(
       `PRES_FIELD::${presenceBand}::${chunkBudget}::${cacheLines}::${prewarmSlots}::${surface}`
@@ -357,8 +367,62 @@ function buildPresenceField(p, cycleIndex) {
 
 
 // ---------------------------------------------------------------------------
+// INTERNAL: Advantage‑M Skeletal Field
+// ---------------------------------------------------------------------------
+//
+// This is the skeletal Advantage‑M surface: it does not know about mesh/server
+// hints, but exposes a stable advantage baseline for higher organs.
+//
+function buildSkeletalAdvantageField(p, presenceField, binaryField, waveField) {
+  const gpuScore = p.gpuScore || 0;
+  const bandwidth = p.bandwidthMbps || 0;
+  const chunkBudget = p.chunkBudgetKB || 0;
+  const cacheLines = p.cacheLines || 0;
+  const prewarmSlots = p.prewarmSlots || 0;
+
+  const density = binaryField.density || 0;
+  const amplitude = waveField.amplitude || 0;
+
+  const presenceTier =
+    presenceField.presenceBand === "binary" ? "presence_high" : "presence_mid";
+
+  const advantageScore =
+    gpuScore * 0.0005 +
+    bandwidth * 0.0002 +
+    density * 0.00001 +
+    amplitude * 0.00001 +
+    (chunkBudget + cacheLines + prewarmSlots) * 0.000001 +
+    (presenceTier === "presence_high" ? 0.01 : 0);
+
+  const advantageField = {
+    advantageVersion: "M-SKELETAL-13.1",
+    band: normalizeBand(p.band),
+    presenceBand: presenceField.presenceBand,
+    gpuScore,
+    bandwidth,
+    binaryDensity: density,
+    waveAmplitude: amplitude,
+    chunkBudgetKB: chunkBudget,
+    cacheLines,
+    prewarmSlots,
+    presenceTier,
+    advantageScore
+  };
+
+  const advantageSignature = computeHash(
+    `ADV_SKEL::${gpuScore}::${bandwidth}::${density}::${amplitude}::${chunkBudget}::${cacheLines}::${prewarmSlots}::${presenceTier}`
+  );
+
+  skeletalHealing.lastAdvantageField = advantageField;
+  skeletalHealing.lastAdvantageSignature = advantageSignature;
+
+  return { advantageField, advantageSignature };
+}
+
+
+// ---------------------------------------------------------------------------
 // MAIN EXPORT — getPulseEarnDeviceProfile()
-// Phenotype Passport + Structural Identity (v12.3-Presence A-B-A)
+// Phenotype Passport + Structural Identity + Advantage‑M (v13.1)
 // ---------------------------------------------------------------------------
 export function getPulseEarnDeviceProfile() {
   skeletalHealing.cycleCount++;
@@ -375,6 +439,12 @@ export function getPulseEarnDeviceProfile() {
   const binaryField = buildBinaryField(phenotype, cycleIndex);
   const waveField = buildWaveField(phenotype, cycleIndex);
   const presenceField = buildPresenceField(phenotype, cycleIndex);
+  const { advantageField, advantageSignature } = buildSkeletalAdvantageField(
+    phenotype,
+    presenceField,
+    binaryField,
+    waveField
+  );
 
   const profile = {
     id: phenotype.id,
@@ -397,15 +467,16 @@ export function getPulseEarnDeviceProfile() {
     bandSignature,
 
     // Presence identity
+    presenceVersion: presenceField.presenceVersion,
     presenceBand: presenceField.presenceBand,
     presenceSignature,
 
-    // v12.3-Presence signatures
+    // v13.1-PRESENCE-IMMORTAL-ADV signatures
     structuralSignature,
     physiologicalSignature,
     phenotypeSignature,
 
-    // v12.3-Presence pattern surface
+    // v13.1 pattern surface
     devicePattern,
 
     // A-B-A binary + wave surfaces
@@ -413,7 +484,11 @@ export function getPulseEarnDeviceProfile() {
     waveField,
 
     // Presence + chunk/cache/prewarm field
-    chunkField: presenceField.chunkField
+    chunkField: presenceField.chunkField,
+
+    // Skeletal Advantage‑M field
+    advantageField,
+    advantageSignature
   };
 
   // Update healing metadata
@@ -443,7 +518,7 @@ export function getPulseEarnDeviceProfile() {
 
 
 // ---------------------------------------------------------------------------
-// Export Healing Metadata — Phenotype Health Report (v12.3-Presence)
+// Export Healing Metadata — Phenotype Health Report (v13.1-PRESENCE-IMMORTAL-ADV)
 // ---------------------------------------------------------------------------
 export function getPulseEarnSkeletalHealingState() {
   return { ...skeletalHealing };

@@ -1,14 +1,14 @@
 // ============================================================================
-//  PulseEarnMktForager-v12.3-PRESENCE-EVO+.js
-//  THE FORAGER — Salad Marketplace Receptor (v12.3 Presence + Advantage‑C)
-//  Deterministic receptor DNA + A‑B‑A + Presence + Chunk/Prewarm
+//  PulseEarnMktForager-v13.0-PRESENCE-IMMORTAL.js
+//  THE FORAGER — Salad Marketplace Receptor (v13.0 Presence + Advantage‑C‑13.0)
+//  Deterministic receptor DNA + A‑B‑A + Unified Presence + Chunk/Prewarm v13
 // ============================================================================
 
 export const PulseEarnMktForagerMeta = Object.freeze({
   layer: "PulseEarnMktForager",
   role: "EARN_MARKETPLACE_RECEPTOR",
-  version: "v12.3-PRESENCE-EVO+",
-  identity: "PulseEarnMktForager-v12.3-PRESENCE-EVO+",
+  version: "v13.0-PRESENCE-IMMORTAL",
+  identity: "PulseEarnMktForager-v13.0-PRESENCE-IMMORTAL",
 
   guarantees: Object.freeze({
     deterministic: true,
@@ -30,26 +30,6 @@ export const PulseEarnMktForagerMeta = Object.freeze({
     zeroAsync: true,
     zeroAI: true,
     zeroUserCode: true
-  }),
-
-  contract: Object.freeze({
-    input: [
-      "SaladTaskDNA",
-      "DualBandContext",
-      "ReceptorNormalizationRules",
-      "DevicePhenotypePresence"
-    ],
-    output: [
-      "ReceptorPingResult",
-      "ReceptorJobList",
-      "ReceptorSubmissionResult",
-      "ReceptorNormalizationResult",
-      "ReceptorSignatures",
-      "ForagerHealingState",
-      "ForagerPresenceField",
-      "ForagerAdvantageField",
-      "ForagerChunkPrewarmPlan"
-    ]
   })
 });
 
@@ -74,16 +54,19 @@ function buildBandSignature(band) {
 }
 
 // ============================================================================
-// A‑B‑A Binary + Wave Surfaces
+// A‑B‑A Binary + Wave Surfaces (v13 unified)
 // ============================================================================
-function buildBinaryField(cycle, gpuTier) {
+function buildBinaryField(cycle, gpuTier, presenceField) {
   const tierWeight =
     gpuTier === "high" ? 20 :
     gpuTier === "mid"  ? 12 :
     gpuTier === "low"  ? 8  : 5;
 
+  const mesh = Number(presenceField?.meshPressureIndex || 0);
+  const castle = Number(presenceField?.castleLoadLevel || 0);
+
   const patternLen = tierWeight;
-  const density = patternLen + cycle + (tierWeight * 2);
+  const density = patternLen + cycle + (tierWeight * 2) + mesh + castle;
   const surface = density + patternLen;
 
   return {
@@ -92,6 +75,8 @@ function buildBinaryField(cycle, gpuTier) {
     binarySurface: {
       patternLen,
       density,
+      meshPressureIndex: mesh,
+      castleLoadLevel: castle,
       surface
     },
     parity: surface % 2 === 0 ? 0 : 1,
@@ -99,10 +84,11 @@ function buildBinaryField(cycle, gpuTier) {
   };
 }
 
-function buildWaveField(cycle, band) {
-  const amplitude = (cycle + 1) * (band === "binary" ? 10 : 5);
+function buildWaveField(cycle, band, presenceField) {
+  const mesh = Number(presenceField?.meshStrength || 0);
+  const amplitude = (cycle + 1) * (band === "binary" ? 10 : 5) + mesh;
   const wavelength = amplitude + 3;
-  const phase = amplitude % 16;
+  const phase = (amplitude + (presenceField?.meshPressureIndex || 0)) % 16;
 
   return {
     amplitude,
@@ -114,80 +100,147 @@ function buildWaveField(cycle, band) {
 }
 
 // ============================================================================
-// Presence Field (v12.3)
+// Unified Earn v13 Presence Tier
 // ============================================================================
-function buildPresenceField(jobOrRaw, device, cycle) {
+function classifyPresenceTier(pressure) {
+  if (pressure >= 150) return "critical";
+  if (pressure >= 100) return "high";
+  if (pressure >= 50) return "elevated";
+  if (pressure > 0) return "soft";
+  return "idle";
+}
+
+// ============================================================================
+// Unified v13 Presence Field
+// ============================================================================
+function buildPresenceField(jobOrRaw, deviceProfile, cycle, globalHints = {}) {
+  const ghP = globalHints.presenceContext || {};
+  const mesh = globalHints.meshSignals || {};
+  const castle = globalHints.castleSignals || {};
+  const region = globalHints.regionContext || {};
+
+  const meshStrength = Number(mesh.meshStrength || 0);
+  const meshPressureExternal = Number(mesh.meshPressureIndex || 0);
+  const castleLoadExternal = Number(castle.loadLevel || 0);
+
+  // Forager internal signal: job complexity
   const idLen = (jobOrRaw?.id || "").length;
   const typeLen = (jobOrRaw?.type || "").length;
-  const stability = device?.stabilityScore || 0.7;
+  const stability = deviceProfile?.stabilityScore || 0.7;
 
-  const composite =
+  const internalComposite =
     idLen * 0.001 +
     typeLen * 0.001 +
     stability * 0.01;
 
-  const presenceTier =
-    composite >= 0.02 ? "presence_high" :
-    composite >= 0.005 ? "presence_mid" :
-    "presence_low";
+  const internalPressure = Math.floor(internalComposite * 1000);
+
+  const meshPressureIndex = meshPressureExternal + internalPressure;
+  const castleLoadLevel = castleLoadExternal;
+
+  const pressure = meshPressureIndex + castleLoadLevel;
+  const presenceTier = classifyPresenceTier(pressure);
 
   return {
-    presenceVersion: "v12.3",
+    presenceVersion: "v13.0-PRESENCE-IMMORTAL",
     presenceTier,
+
+    bandPresence: ghP.bandPresence || "symbolic",
+    routerPresence: ghP.routerPresence || "stable",
+    devicePresence: ghP.devicePresence || "forager",
+
+    meshPresence: ghP.meshPresence || (meshStrength > 0 ? "mesh-active" : "mesh-idle"),
+    castlePresence: ghP.castlePresence || castle.castlePresence || "forager-region",
+    regionPresence: ghP.regionPresence || region.regionTag || "unknown-region",
+
+    regionId: region.regionId || "forager-region",
+    castleId: castle.castleId || "forager-castle",
+
+    meshStrength,
+    meshPressureIndex,
+    castleLoadLevel,
+
     idLen,
     typeLen,
     stability,
     cycle,
+
     presenceSignature: computeHash(
-      `FORAGER_PRESENCE::${presenceTier}::${idLen}::${typeLen}::${cycle}`
+      `FORAGER_PRESENCE::${presenceTier}::${meshPressureIndex}::${castleLoadLevel}`
     )
   };
 }
 
 // ============================================================================
-// Advantage‑C Field (v12.3)
+// Advantage‑C v13
 // ============================================================================
-function buildAdvantageField(jobOrRaw, device, bandPack, presenceField) {
-  const gpuScore = device?.gpuScore || 0;
-  const bandwidth = device?.bandwidthMbps || 0;
+function buildAdvantageField(jobOrRaw, deviceProfile, bandPack, presenceField, globalHints = {}) {
+  const gpuScore = deviceProfile?.gpuScore || 0;
+  const bandwidth = deviceProfile?.bandwidthMbps || 0;
+
   const density = bandPack.binaryField.binarySurface.density;
   const amplitude = bandPack.waveField.amplitude;
 
-  const advantageScore =
+  const baseScore =
     gpuScore * 0.0005 +
     bandwidth * 0.0002 +
     density * 0.00001 +
-    amplitude * 0.00001 +
-    (presenceField.presenceTier === "presence_high" ? 0.01 : 0);
+    amplitude * 0.00001;
+
+  const presenceBoost =
+    presenceField.presenceTier === "critical" ? 0.02 :
+    presenceField.presenceTier === "high" ? 0.015 :
+    presenceField.presenceTier === "elevated" ? 0.01 :
+    presenceField.presenceTier === "soft" ? 0.005 :
+    0;
+
+  const advantageScore = baseScore + presenceBoost;
+
+  let advantageTier = 0;
+  if (advantageScore >= 0.05) advantageTier = 3;
+  else if (advantageScore >= 0.02) advantageTier = 2;
+  else if (advantageScore > 0) advantageTier = 1;
+
+  const fallbackBandLevel = globalHints.fallbackBandLevel ?? 0;
 
   return {
-    advantageVersion: "C",
+    advantageVersion: "C-13.0",
     band: bandPack.band,
     gpuScore,
     bandwidth,
     binaryDensity: density,
     waveAmplitude: amplitude,
     presenceTier: presenceField.presenceTier,
-    advantageScore
+    advantageScore,
+    advantageTier,
+    fallbackBandLevel
   };
 }
 
 // ============================================================================
-// Chunk / Cache / Prewarm Plan (v12.3)
+// Chunk / Cache / Prewarm Plan v13
 // ============================================================================
-function buildChunkPrewarmPlan(jobOrRaw, device, presenceField) {
+function buildChunkPrewarmPlan(jobOrRaw, deviceProfile, presenceField, advantageField) {
   const basePriority =
-    presenceField.presenceTier === "presence_high"
+    presenceField.presenceTier === "critical"
+      ? 4
+      : presenceField.presenceTier === "high"
       ? 3
-      : presenceField.presenceTier === "presence_mid"
+      : presenceField.presenceTier === "elevated"
       ? 2
-      : 1;
+      : presenceField.presenceTier === "soft"
+      ? 1
+      : 0;
 
-  const gpuBoost = (device?.gpuScore || 0) > 600 ? 1 : 0;
-  const priority = basePriority + gpuBoost;
+  const advantageBoost =
+    advantageField.advantageTier >= 3 ? 2 :
+    advantageField.advantageTier === 2 ? 1 :
+    0;
+
+  const priority = basePriority + advantageBoost;
 
   return {
-    planVersion: "v12.3-AdvantageC",
+    planVersion: "v13.0-Forager-AdvantageC",
     priority,
     band: presenceField.presenceTier,
     chunks: {
@@ -199,9 +252,9 @@ function buildChunkPrewarmPlan(jobOrRaw, device, presenceField) {
       foragerDiagnostics: true
     },
     prewarm: {
-      nervousSystem: presenceField.presenceTier !== "presence_low",
-      survivalInstincts: presenceField.presenceTier !== "presence_low",
-      lymphNodes: presenceField.presenceTier !== "presence_low"
+      nervousSystem: true,
+      survivalInstincts: true,
+      lymphNodes: true
     }
   };
 }
@@ -219,7 +272,7 @@ const healingState = {
   lastNormalizedJobId: null,
   lastNormalizationError: null,
 
-  lastPayloadVersion: "11-salad-dna",
+  lastPayloadVersion: "13-salad-dna",
   lastJobType: null,
   lastGpuTier: null,
   lastResourceShape: null,
@@ -256,7 +309,7 @@ function safeGet(obj, path, fallback = null) {
 }
 
 // ============================================================================
-// Deterministic Salad Receptor DNA
+// Deterministic Salad Receptor DNA (unchanged payload)
 // ============================================================================
 const SALAD_RECEPTOR_DNA = {
   pingLatency: 55,
@@ -282,24 +335,24 @@ const SALAD_RECEPTOR_DNA = {
       type: "ai-task"
     }
   ],
-  version: "11-Evo",
-  lineage: "Forager-Salad-v11-Evo",
+  version: "13.0-PRESENCE-IMMORTAL",
+  lineage: "Forager-Salad-v13.0-PRESENCE-IMMORTAL",
   phenotype: "MarketplaceReceptor"
 };
 
 // ============================================================================
-// FORAGER CLIENT — v12.3 Presence + Advantage‑C
+// FORAGER CLIENT — v13.0 Presence + Advantage‑C‑13.0
 // ============================================================================
 export const PulseEarnMktForager = {
   id: "salad",
   name: "Salad Marketplace",
-  version: "12.3-PRESENCE-EVO+",
-  lineage: "Forager-Salad-v12.3-PRESENCE-EVO+",
+  version: "v13.0-PRESENCE-IMMORTAL",
+  lineage: "Forager-Salad-v13.0-PRESENCE-IMMORTAL",
 
   // -------------------------------------------------------------------------
-  // Ping — deterministic + Presence + Advantage‑C
+  // Ping — unified v13 presence
   // -------------------------------------------------------------------------
-  ping(deviceProfile = {}) {
+  ping(deviceProfile = {}, globalHints = {}) {
     const latency = SALAD_RECEPTOR_DNA.pingLatency;
 
     healingState.cycleCount++;
@@ -311,16 +364,22 @@ export const PulseEarnMktForager = {
     healingState.lastBand = band;
     healingState.lastBandSignature = buildBandSignature(band);
 
-    const binaryField = buildBinaryField(healingState.cycleCount, "low");
-    const waveField = buildWaveField(healingState.cycleCount, band);
+    const presenceField = buildPresenceField(null, deviceProfile, healingState.cycleCount, globalHints);
+    const binaryField = buildBinaryField(healingState.cycleCount, "low", presenceField);
+    const waveField = buildWaveField(healingState.cycleCount, band, presenceField);
+
+    const advantageField = buildAdvantageField(
+      null,
+      deviceProfile,
+      { band, binaryField, waveField },
+      presenceField,
+      globalHints
+    );
+
+    const chunkPlan = buildChunkPrewarmPlan(null, deviceProfile, presenceField, advantageField);
 
     healingState.lastBinaryField = binaryField;
     healingState.lastWaveField = waveField;
-
-    const presenceField = buildPresenceField(null, deviceProfile, healingState.cycleCount);
-    const advantageField = buildAdvantageField(null, deviceProfile, { band, binaryField, waveField }, presenceField);
-    const chunkPlan = buildChunkPrewarmPlan(null, deviceProfile, presenceField);
-
     healingState.lastPresenceField = presenceField;
     healingState.lastAdvantageField = advantageField;
     healingState.lastChunkPrewarmPlan = chunkPlan;
@@ -338,12 +397,12 @@ export const PulseEarnMktForager = {
   },
 
   // -------------------------------------------------------------------------
-  // Fetch Jobs — deterministic + Presence + Advantage‑C
+  // Fetch Jobs — unified v13 presence
   // -------------------------------------------------------------------------
-  fetchJobs(deviceProfile = {}) {
+  fetchJobs(deviceProfile = {}, globalHints = {}) {
     try {
       const data = { jobs: SALAD_RECEPTOR_DNA.jobs };
-      healingState.lastPayloadVersion = "12.3-salad-dna";
+      healingState.lastPayloadVersion = "13-salad-dna";
 
       if (!data || !Array.isArray(data.jobs)) {
         healingState.lastFetchError = "invalid_jobs_payload";
@@ -353,7 +412,7 @@ export const PulseEarnMktForager = {
       }
 
       const jobs = data.jobs
-        .map(raw => this.normalizeJob(raw, deviceProfile))
+        .map(raw => this.normalizeJob(raw, deviceProfile, globalHints))
         .filter(j => j !== null);
 
       healingState.lastFetchError = null;
@@ -365,16 +424,22 @@ export const PulseEarnMktForager = {
       healingState.lastBand = band;
       healingState.lastBandSignature = buildBandSignature(band);
 
-      const binaryField = buildBinaryField(healingState.cycleCount, "low");
-      const waveField = buildWaveField(healingState.cycleCount, band);
+      const presenceField = buildPresenceField(null, deviceProfile, healingState.cycleCount, globalHints);
+      const binaryField = buildBinaryField(healingState.cycleCount, "low", presenceField);
+      const waveField = buildWaveField(healingState.cycleCount, band, presenceField);
+
+      const advantageField = buildAdvantageField(
+        null,
+        deviceProfile,
+        { band, binaryField, waveField },
+        presenceField,
+        globalHints
+      );
+
+      const chunkPlan = buildChunkPrewarmPlan(null, deviceProfile, presenceField, advantageField);
 
       healingState.lastBinaryField = binaryField;
       healingState.lastWaveField = waveField;
-
-      const presenceField = buildPresenceField(null, deviceProfile, healingState.cycleCount);
-      const advantageField = buildAdvantageField(null, deviceProfile, { band, binaryField, waveField }, presenceField);
-      const chunkPlan = buildChunkPrewarmPlan(null, deviceProfile, presenceField);
-
       healingState.lastPresenceField = presenceField;
       healingState.lastAdvantageField = advantageField;
       healingState.lastChunkPrewarmPlan = chunkPlan;
@@ -399,9 +464,9 @@ export const PulseEarnMktForager = {
   },
 
   // -------------------------------------------------------------------------
-  // Submit Result — deterministic + Presence + Advantage‑C
+  // Submit Result — unified v13 presence
   // -------------------------------------------------------------------------
-  submitResult(job, result, deviceProfile = {}) {
+  submitResult(job, result, deviceProfile = {}, globalHints = {}) {
     const jobId = job?.id ?? null;
 
     healingState.lastSubmitJobId = jobId;
@@ -413,16 +478,22 @@ export const PulseEarnMktForager = {
     healingState.lastBand = band;
     healingState.lastBandSignature = buildBandSignature(band);
 
-    const binaryField = buildBinaryField(healingState.cycleCount, "low");
-    const waveField = buildWaveField(healingState.cycleCount, band);
+    const presenceField = buildPresenceField(job, deviceProfile, healingState.cycleCount, globalHints);
+    const binaryField = buildBinaryField(healingState.cycleCount, "low", presenceField);
+    const waveField = buildWaveField(healingState.cycleCount, band, presenceField);
+
+    const advantageField = buildAdvantageField(
+      job,
+      deviceProfile,
+      { band, binaryField, waveField },
+      presenceField,
+      globalHints
+    );
+
+    const chunkPlan = buildChunkPrewarmPlan(job, deviceProfile, presenceField, advantageField);
 
     healingState.lastBinaryField = binaryField;
     healingState.lastWaveField = waveField;
-
-    const presenceField = buildPresenceField(job, deviceProfile, healingState.cycleCount);
-    const advantageField = buildAdvantageField(job, deviceProfile, { band, binaryField, waveField }, presenceField);
-    const chunkPlan = buildChunkPrewarmPlan(job, deviceProfile, presenceField);
-
     healingState.lastPresenceField = presenceField;
     healingState.lastAdvantageField = advantageField;
     healingState.lastChunkPrewarmPlan = chunkPlan;
@@ -438,15 +509,14 @@ export const PulseEarnMktForager = {
       presenceField,
       advantageField,
       chunkPlan,
-      note: "Salad submission simulated deterministically (v12.3-PRESENCE-EVO+).",
       result
     };
   },
-
+  
   // -------------------------------------------------------------------------
-  // Normalize Job — deterministic + Presence + Advantage‑C
+  // Normalize Job — unified v13 presence
   // -------------------------------------------------------------------------
-  normalizeJob(raw, deviceProfile = {}) {
+  normalizeJob(raw, deviceProfile = {}, globalHints = {}) {
     try {
       if (!raw || typeof raw !== "object") {
         healingState.lastNormalizationError = "invalid_raw_job";
@@ -502,17 +572,33 @@ export const PulseEarnMktForager = {
       healingState.lastBand = band;
       healingState.lastBandSignature = buildBandSignature(band);
 
-      const binaryField = buildBinaryField(healingState.cycleCount, gpuTier);
-      const waveField = buildWaveField(healingState.cycleCount, band);
+      const presenceField = buildPresenceField(
+        raw,
+        deviceProfile,
+        healingState.cycleCount,
+        globalHints
+      );
+      const binaryField = buildBinaryField(healingState.cycleCount, gpuTier, presenceField);
+      const waveField = buildWaveField(healingState.cycleCount, band, presenceField);
+
+      const advantageField = buildAdvantageField(
+        raw,
+        deviceProfile,
+        { band, binaryField, waveField },
+        presenceField,
+        globalHints
+      );
+
+      const chunkPlan = buildChunkPrewarmPlan(
+        raw,
+        deviceProfile,
+        presenceField,
+        advantageField
+      );
 
       healingState.lastBinaryField = binaryField;
       healingState.lastWaveField = waveField;
-
-      const presenceField = buildPresenceField(raw, deviceProfile, healingState.cycleCount);
-      const advantageField = buildAdvantageField(raw, deviceProfile, { band, binaryField, waveField }, presenceField);
-      const chunkPlan = buildChunkPrewarmPlan(raw, deviceProfile, presenceField);
-
-            healingState.lastPresenceField = presenceField;
+      healingState.lastPresenceField = presenceField;
       healingState.lastAdvantageField = advantageField;
       healingState.lastChunkPrewarmPlan = chunkPlan;
 
@@ -533,12 +619,10 @@ export const PulseEarnMktForager = {
         minGpuScore,
         bandwidthNeededMbps,
 
-        // A‑B‑A hints for Consulate / Survival Instincts
         _abaBand: band,
         _abaBinaryDensity: binaryField.binarySurface.density,
         _abaWaveAmplitude: waveField.amplitude,
 
-        // Presence + Advantage‑C + Chunk/Prewarm
         presenceField,
         advantageField,
         chunkPlan
@@ -554,7 +638,7 @@ export const PulseEarnMktForager = {
 };
 
 // ---------------------------------------------------------------------------
-// Healing State Export — Forager Interaction Log (v12.3-PRESENCE-EVO+)
+// Healing State Export — Forager Interaction Log (v13.0-PRESENCE-IMMORTAL)
 // ---------------------------------------------------------------------------
 export function getPulseEarnMktForagerHealingState() {
   return { ...healingState };

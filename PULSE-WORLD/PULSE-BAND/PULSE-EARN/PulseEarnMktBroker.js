@@ -1,13 +1,13 @@
 // ============================================================================
-// FILE: tropic-pulse-functions/PULSE-WORLD/PULSE-EARN/PulseEarnMktBroker-v12.3-PRESENCE-EVO+.js
-// LAYER: THE RUNPOD BROKER (v12.3 Presence + Advantage‑C + Prewarm)
+// FILE: tropic-pulse-functions/PULSE-WORLD/PULSE-EARN/PulseEarnMktBroker-v13.0-PRESENCE-IMMORTAL.js
+// LAYER: THE RUNPOD BROKER (v13.0 Presence + Advantage‑C + Prewarm)
 // ============================================================================
 
 export const PulseEarnMktBrokerMeta = Object.freeze({
   layer: "PulseEarnMktBroker",
   role: "EARN_MARKETPLACE_RECEPTOR",
-  version: "v12.3-PRESENCE-EVO+",
-  identity: "PulseEarnMktBroker-v12.3-PRESENCE-EVO+",
+  version: "v13.0-PRESENCE-IMMORTAL",
+  identity: "PulseEarnMktBroker-v13.0-PRESENCE-IMMORTAL",
 
   guarantees: Object.freeze({
     deterministic: true,
@@ -51,8 +51,9 @@ export const PulseEarnMktBrokerMeta = Object.freeze({
     ]
   })
 });
+
 export const RUNPOD_RECEPTOR_DNA = {
-  version: "1.0",
+  version: "13.0-PRESENCE-IMMORTAL",
   receptorType: "runpod",
   jobs: [
     { id: "ping", payload: { type: "ping" } },
@@ -117,7 +118,7 @@ function buildWaveField(cycle, band) {
 }
 
 // ============================================================================
-// Presence Field (v12.3)
+// Presence Field (v13.0‑PRESENCE‑IMMORTAL)
 // ============================================================================
 function buildPresenceField(jobOrRaw, device, cycle) {
   const idLen = (jobOrRaw?.id || "").length;
@@ -135,7 +136,7 @@ function buildPresenceField(jobOrRaw, device, cycle) {
     "presence_low";
 
   return {
-    presenceVersion: "v12.3",
+    presenceVersion: "v13.0-PRESENCE-IMMORTAL",
     presenceTier,
     idLen,
     typeLen,
@@ -148,7 +149,7 @@ function buildPresenceField(jobOrRaw, device, cycle) {
 }
 
 // ============================================================================
-// Advantage‑C Field (v12.3)
+// Advantage‑C Field (v13.0)
 // ============================================================================
 function buildAdvantageField(jobOrRaw, device, bandPack, presenceField) {
   const gpuScore = device?.gpuScore || 0;
@@ -164,7 +165,7 @@ function buildAdvantageField(jobOrRaw, device, bandPack, presenceField) {
     (presenceField.presenceTier === "presence_high" ? 0.01 : 0);
 
   return {
-    advantageVersion: "C",
+    advantageVersion: "C-13.0",
     band: bandPack.band,
     gpuScore,
     bandwidth,
@@ -176,7 +177,7 @@ function buildAdvantageField(jobOrRaw, device, bandPack, presenceField) {
 }
 
 // ============================================================================
-// Chunk / Cache / Prewarm Plan (v12.3)
+// Chunk / Cache / Prewarm Plan (v13.0)
 // ============================================================================
 function buildChunkPrewarmPlan(jobOrRaw, device, presenceField) {
   const basePriority =
@@ -190,7 +191,7 @@ function buildChunkPrewarmPlan(jobOrRaw, device, presenceField) {
   const priority = basePriority + gpuBoost;
 
   return {
-    planVersion: "v12.3-AdvantageC",
+    planVersion: "v13.0-AdvantageC",
     priority,
     band: presenceField.presenceTier,
     chunks: {
@@ -291,7 +292,12 @@ function normalizeJob(raw, deviceProfile = {}) {
   runpodHealing.lastWaveField = waveField;
 
   const presenceField = buildPresenceField(raw, deviceProfile, runpodCycle);
-  const advantageField = buildAdvantageField(raw, deviceProfile, { band, binaryField, waveField }, presenceField);
+  const advantageField = buildAdvantageField(
+    raw,
+    deviceProfile,
+    { band, binaryField, waveField },
+    presenceField
+  );
   const chunkPlan = buildChunkPrewarmPlan(raw, deviceProfile, presenceField);
 
   runpodHealing.lastPresenceField = presenceField;
@@ -332,7 +338,12 @@ function registerDevice({ deviceId, gpuInfo = {}, meta = {} } = {}, deviceProfil
   const waveField = buildWaveField(runpodCycle, band);
 
   const presenceField = buildPresenceField(null, deviceProfile, runpodCycle);
-  const advantageField = buildAdvantageField(null, deviceProfile, { band, binaryField, waveField }, presenceField);
+  const advantageField = buildAdvantageField(
+    null,
+    deviceProfile,
+    { band, binaryField, waveField },
+    presenceField
+  );
   const chunkPlan = buildChunkPrewarmPlan(null, deviceProfile, presenceField);
 
   runpodHealing.lastPresenceField = presenceField;
@@ -388,7 +399,12 @@ function requestJob({ deviceId, filters = {} } = {}, deviceProfile = {}) {
   const waveField = buildWaveField(runpodCycle, band);
 
   const presenceField = buildPresenceField(job, deviceProfile, runpodCycle);
-  const advantageField = buildAdvantageField(job, deviceProfile, { band, binaryField, waveField }, presenceField);
+  const advantageField = buildAdvantageField(
+    job,
+    deviceProfile,
+    { band, binaryField, waveField },
+    presenceField
+  );
   const chunkPlan = buildChunkPrewarmPlan(job, deviceProfile, presenceField);
 
   runpodHealing.lastPresenceField = presenceField;
@@ -434,7 +450,12 @@ function submitJob({ jobId, result, error: jobError = null } = {}, deviceProfile
   const waveField = buildWaveField(runpodCycle, band);
 
   const presenceField = buildPresenceField({ id: jobId }, deviceProfile, runpodCycle);
-  const advantageField = buildAdvantageField({ id: jobId }, deviceProfile, { band, binaryField, waveField }, presenceField);
+  const advantageField = buildAdvantageField(
+    { id: jobId },
+    deviceProfile,
+    { band, binaryField, waveField },
+    presenceField
+  );
   const chunkPlan = buildChunkPrewarmPlan({ id: jobId }, deviceProfile, presenceField);
 
   runpodHealing.lastPresenceField = presenceField;
@@ -454,7 +475,7 @@ function submitJob({ jobId, result, error: jobError = null } = {}, deviceProfile
       presenceField,
       advantageField,
       chunkPlan,
-      note: "RunPod submission simulated deterministically (v12.3-PRESENCE-EVO+)."
+      note: "RunPod submission simulated deterministically (v13.0-PRESENCE-IMMORTAL)."
     }
   };
 }
@@ -465,8 +486,8 @@ function submitJob({ jobId, result, error: jobError = null } = {}, deviceProfile
 export const PulseEarnMktBroker = {
   id: "runpod",
   name: "RunPod",
-  version: "12.3-PRESENCE-EVO+",
-  lineage: "RunPodAdapter-v12.3-PRESENCE-EVO+",
+  version: "v13.0-PRESENCE-IMMORTAL",
+  lineage: "RunPodAdapter-v13.0-PRESENCE-IMMORTAL",
 
   registerDevice,
   requestJob,

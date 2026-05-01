@@ -1,15 +1,15 @@
 // ============================================================================
-//  PulseEarnNervousSystem-v12.3-PRESENCE-EVO+.js
-//  THE NERVOUS SYSTEM + EXCHANGE OFFICE (v12.3 Presence + Advantage‑C)
+//  PulseEarnNervousSystem-v13.0-PRESENCE-IMMORTAL.js
+//  THE NERVOUS SYSTEM + EXCHANGE OFFICE (v13.0 Presence-IMMORTAL + Advantage‑M)
 //  Deterministic Job Intake + Result Forwarding + Reputation Updating
-//  Dual-Band + Binary + Wave + Presence + Chunk/Prewarm
+//  Dual-Band + Binary + Wave + Presence + Chunk/Prewarm (descriptive-only)
 // ============================================================================
 
 export const PulseEarnNervousSystemMeta = Object.freeze({
   layer: "PulseEarnNervousSystem",
   role: "EARN_NERVOUS_ORGAN",
-  version: "v12.3-PRESENCE-EVO+",
-  identity: "PulseEarnNervousSystem-v12.3-PRESENCE-EVO+",
+  version: "v13.0-PRESENCE-IMMORTAL",
+  identity: "PulseEarnNervousSystem-v13.0-PRESENCE-IMMORTAL",
 
   guarantees: Object.freeze({
     deterministic: true,
@@ -58,14 +58,15 @@ export const PulseEarnNervousSystemMeta = Object.freeze({
   }),
 
   lineage: Object.freeze({
-    root: "PulseOS-v12-PRESENCE",
-    parent: "PulseEarn-v12.3-PRESENCE",
+    root: "PulseOS-v13.0-PRESENCE-IMMORTAL",
+    parent: "PulseEarn-v13.0-PRESENCE-IMMORTAL",
     ancestry: [
       "PulseEarnNervousSystem-v9",
       "PulseEarnNervousSystem-v10",
       "PulseEarnNervousSystem-v11",
       "PulseEarnNervousSystem-v11-Evo",
-      "PulseEarnNervousSystem-v11.2-EVO"
+      "PulseEarnNervousSystem-v11.2-EVO",
+      "PulseEarnNervousSystem-v12.3-PRESENCE-EVO+"
     ]
   }),
 
@@ -90,7 +91,7 @@ import { PulseEarnMktEmbassyLedger as marketplaces } from "./PulseEarnMktEmbassy
 import { sendResultToMarketplace } from "./PulseEarnLymphNodes.js";
 
 // ============================================================================
-// Healing Metadata — Neural Activity Log (v12.3-PRESENCE)
+// Healing Metadata — Neural Activity Log (v13.0-PRESENCE-IMMORTAL)
 // ============================================================================
 const nervousHealing = {
   lastFetchError: null,
@@ -167,7 +168,7 @@ function buildJobPattern(job) {
 }
 
 // ============================================================================
-// Dual-Band + Binary + Wave Builder — v12.3 Presence
+// Dual-Band + Binary + Wave Builder — v13.0 Presence-IMMORTAL
 // ============================================================================
 function buildNervousBandBinaryWave(job, result, cycleIndex, device) {
   const band = normalizeBand(
@@ -216,32 +217,28 @@ function buildNervousBandBinaryWave(job, result, cycleIndex, device) {
 }
 
 // ============================================================================
-// Presence Field — v12.3
+// Presence Field — v13.0-PRESENCE-IMMORTAL (descriptive-only)
 // ============================================================================
 function buildNervousPresenceField(job, device, cycleIndex) {
   const jobLen = (job?.id || "").length;
   const marketLen = (job?.marketplaceId || "").length;
-  const stability = device?.stabilityScore || 0.7;
+  const stability = device?.stabilityScore ?? 0.7;
 
-  const composite =
-    jobLen * 0.001 +
-    marketLen * 0.001 +
-    stability * 0.01;
-
-  const presenceTier =
-    composite >= 0.02 ? "presence_high" :
-    composite >= 0.005 ? "presence_mid" :
-    "presence_low";
+  const magnitude = jobLen + marketLen;
+  let presenceTier = "presence_idle";
+  if (magnitude >= 40) presenceTier = "presence_high";
+  else if (magnitude >= 10) presenceTier = "presence_mid";
+  else if (magnitude > 0) presenceTier = "presence_low";
 
   const presenceField = {
-    presenceVersion: "v12.3",
+    presenceVersion: "v13.0-PRESENCE-IMMORTAL",
     presenceTier,
     jobLen,
     marketLen,
     stability,
     cycleIndex,
     presenceSignature: computeHash(
-      `NERV_PRESENCE::${presenceTier}::${jobLen}::${marketLen}::${cycleIndex}`
+      `NERV_PRESENCE_V13::${presenceTier}::${jobLen}::${marketLen}::${cycleIndex}`
     )
   };
 
@@ -250,7 +247,7 @@ function buildNervousPresenceField(job, device, cycleIndex) {
 }
 
 // ============================================================================
-// Advantage‑C Field — v12.3
+// Advantage‑M Field — v13.0 (structural-only, no advantageScore)
 // ============================================================================
 function buildNervousAdvantageField(job, device, bandPack, presenceField) {
   const gpuScore = device?.gpuScore || 0;
@@ -258,22 +255,14 @@ function buildNervousAdvantageField(job, device, bandPack, presenceField) {
   const density = bandPack.binaryField.density;
   const amplitude = bandPack.waveField.amplitude;
 
-  const advantageScore =
-    gpuScore * 0.0005 +
-    bandwidth * 0.0002 +
-    density * 0.00001 +
-    amplitude * 0.00001 +
-    (presenceField.presenceTier === "presence_high" ? 0.01 : 0);
-
   const advantageField = {
-    advantageVersion: "C",
+    advantageVersion: "M-13.0",
     band: bandPack.band,
     gpuScore,
     bandwidth,
     binaryDensity: density,
     waveAmplitude: amplitude,
-    presenceTier: presenceField.presenceTier,
-    advantageScore
+    presenceTier: presenceField.presenceTier
   };
 
   nervousHealing.lastAdvantageField = advantageField;
@@ -281,23 +270,18 @@ function buildNervousAdvantageField(job, device, bandPack, presenceField) {
 }
 
 // ============================================================================
-// Chunk / Cache / Prewarm Plan — v12.3
+// Chunk / Cache / Prewarm Plan — v13.0 (plan surface only)
 // ============================================================================
 function buildNervousChunkPrewarmPlan(job, device, presenceField) {
-  const basePriority =
-    presenceField.presenceTier === "presence_high"
-      ? 3
-      : presenceField.presenceTier === "presence_mid"
-      ? 2
-      : 1;
-
-  const gpuBoost = (device?.gpuScore || 0) > 600 ? 1 : 0;
-  const priority = basePriority + gpuBoost;
+  let priorityLabel = "normal";
+  if (presenceField.presenceTier === "presence_high") priorityLabel = "high";
+  else if (presenceField.presenceTier === "presence_mid") priorityLabel = "medium";
+  else if (presenceField.presenceTier === "presence_low") priorityLabel = "low";
 
   const plan = {
-    planVersion: "v12.3-AdvantageC",
-    priority,
-    band: presenceField.presenceTier,
+    planVersion: "v13.0-AdvantageM",
+    priorityLabel,
+    bandPresence: presenceField.presenceTier,
     chunks: {
       jobEnvelope: true,
       metabolismBlueprint: true,
@@ -309,8 +293,8 @@ function buildNervousChunkPrewarmPlan(job, device, presenceField) {
     },
     prewarm: {
       survivalInstincts: true,
-      circulatorySystem: presenceField.presenceTier !== "presence_low",
-      lymphNodes: presenceField.presenceTier !== "presence_low"
+      circulatorySystem: presenceField.presenceTier !== "presence_idle",
+      lymphNodes: presenceField.presenceTier !== "presence_idle"
     }
   };
 
@@ -319,7 +303,7 @@ function buildNervousChunkPrewarmPlan(job, device, presenceField) {
 }
 
 // ============================================================================
-// fetchJobFromMarketplace — Sensory Intake (v12.3-PRESENCE)
+// fetchJobFromMarketplace — Sensory Intake (v13.0-PRESENCE-IMMORTAL)
 // ============================================================================
 export function fetchJobFromMarketplace() {
   nervousHealing.cycleCount++;
@@ -389,7 +373,7 @@ export function fetchJobFromMarketplace() {
 }
 
 // ============================================================================
-// getNextMarketplaceJob — Neural Encoding Layer (v12.3-PRESENCE)
+// getNextMarketplaceJob — Neural Encoding Layer (v13.0-PRESENCE-IMMORTAL)
 // ============================================================================
 export function getNextMarketplaceJob(deviceId) {
   const intake = fetchJobFromMarketplace();
@@ -436,7 +420,7 @@ export function getNextMarketplaceJob(deviceId) {
 }
 
 // ============================================================================
-// submitMarketplaceResult — Motor Output + Synaptic Update (v12.3-PRESENCE)
+// submitMarketplaceResult — Motor Output + Synaptic Update (v13.0-PRESENCE-IMMORTAL)
 // ============================================================================
 export function submitMarketplaceResult(job, result) {
   try {
@@ -514,7 +498,7 @@ function buildNervousSignature() {
 }
 
 // ============================================================================
-// Export Healing Metadata — Nervous System Health Report (v12.3-PRESENCE)
+// Export Healing Metadata — Nervous System Health Report (v13.0-PRESENCE-IMMORTAL)
 // ============================================================================
 export function getPulseEarnNervousSystemHealingState() {
   nervousHealing.lastNervousSignature = buildNervousSignature();

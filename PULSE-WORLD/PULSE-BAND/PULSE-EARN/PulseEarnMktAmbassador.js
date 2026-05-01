@@ -1,28 +1,28 @@
 // ============================================================================
-// FILE: tropic-pulse-functions/PULSE-WORLD/PULSE-EARN/PulseEarnMktAmbassador-v12.3-PRESENCE-EVO+.js
-// LAYER: THE AMBASSADOR (v12.3‑PRESENCE‑EVO+ A‑B‑A)
-// (Deterministic Akash Marketplace Receptor + A‑B‑A Band + Presence Surfaces)
+// FILE: tropic-pulse-functions/PULSE-WORLD/PULSE-EARN/PulseEarnMktAmbassador-v13.0-PRESENCE-IMMORTAL.js
+// LAYER: THE AMBASSADOR (v13.0‑PRESENCE‑IMMORTAL + A‑B‑A)
 // ============================================================================
 //
-// ROLE (v12.3‑PRESENCE‑EVO+ A‑B‑A):
+// ROLE (v13.0‑PRESENCE‑IMMORTAL):
 //   THE AMBASSADOR — deterministic Akash marketplace receptor.
-//   • Represents Akash leases as stable receptor DNA.
-//   • Normalizes leases into Pulse‑Earn job schema.
-//   • Emits bandSignature + binaryField + waveField + presence/advantage/hints.
-//   • Provides deterministic ping(), fetchJobs(), submitResult().
-//   • Maintains healing metadata + v12.3‑Presence‑EVO+ signatures.
+//   • Normalizes Akash leases into the unified v13 job schema.
+//   • Emits unified v13 presence/advantage/chunk surfaces.
+//   • Emits A‑B‑A binary/wave surfaces.
+//   • Deterministic ping(), fetchJobs(), submitResult().
+//   • No network, no async, no randomness.
 //
 // CONTRACT:
 //   • PURE RECEPTOR — deterministic, drift‑proof.
-//   • NO network, NO async, NO randomness, NO timestamps.
-//   • READ‑ONLY except healing metadata.
-//   • Presence/advantage/hints are metadata-only, no external IO.
+//   • Unified Earn v13 presence model.
+//   • Unified v13 job schema.
+//   • A‑B‑A surfaces preserved.
 // ============================================================================
+
 export const PulseEarnMktAmbassadorMeta = Object.freeze({
   layer: "PulseEarnMktAmbassador",
   role: "EARN_MARKETPLACE_RECEPTOR",
-  version: "v12.3-PRESENCE-EVO+",
-  identity: "PulseEarnMktAmbassador-v12.3-PRESENCE-EVO+",
+  version: "v13.0-PRESENCE-IMMORTAL",
+  identity: "PulseEarnMktAmbassador-v13.0-PRESENCE-IMMORTAL",
 
   guarantees: Object.freeze({
     deterministic: true,
@@ -30,67 +30,28 @@ export const PulseEarnMktAmbassadorMeta = Object.freeze({
     noRealTime: true,
     noExternalIO: true,
     pureReceptor: true,
+
     dualBandAware: true,
     binaryAware: true,
     waveFieldAware: true,
-    healingMetadataAware: true,
     presenceAware: true,
     advantageAware: true,
-    hintsAware: true,
+    chunkPrewarmAware: true,
+    healingMetadataAware: true,
+
     meshAware: true,
     castleAware: true,
     regionAware: true,
-    worldLensAware: false,
+
     zeroNetwork: true,
     zeroAsync: true,
     zeroAI: true,
     zeroUserCode: true
-  }),
-
-  contract: Object.freeze({
-    input: [
-      "AkashLeaseDNA",
-      "DualBandContext",
-      "ReceptorNormalizationRules",
-      "GlobalHintsPresenceField"
-    ],
-    output: [
-      "ReceptorPingResult",
-      "ReceptorJobList",
-      "ReceptorSubmissionResult",
-      "ReceptorSignatures",
-      "AmbassadorHealingState"
-    ]
-  }),
-
-  lineage: Object.freeze({
-    root: "PulseOS-v11-EVO",
-    parent: "PulseEarn-v12.3-PRESENCE-EVO+",
-    ancestry: [
-      "PulseEarnMktAmbassador-v9",
-      "PulseEarnMktAmbassador-v10",
-      "PulseEarnMktAmbassador-v11",
-      "PulseEarnMktAmbassador-v11-Evo"
-    ]
-  }),
-
-  bands: Object.freeze({
-    supported: ["symbolic", "binary"],
-    default: "symbolic",
-    behavior: "metadata-only"
-  }),
-
-  architecture: Object.freeze({
-    pattern: "A-B-A",
-    baseline: "deterministic receptor DNA → stable phenotype",
-    adaptive: "binary/wave + presence/advantage/hints surfaces",
-    return: "deterministic ping/fetchJobs/submitResult"
   })
 });
 
-
 // ============================================================================
-// Healing Metadata — Ambassador Interaction Log (A‑B‑A + Presence)
+// Healing Metadata
 // ============================================================================
 const ambassadorHealing = {
   lastPingMs: null,
@@ -117,31 +78,24 @@ const ambassadorHealing = {
   lastSubmitSignature: null,
   lastAmbassadorCycleSignature: null,
 
-  // A‑B‑A surfaces
   lastBand: "symbolic",
   lastBandSignature: null,
   lastBinaryField: null,
   lastWaveField: null,
 
-  // Presence‑EVO+ additions
   lastPresenceField: null,
   lastAdvantageField: null,
-  lastHintsField: null,
-  lastAmbassadorPresenceProfile: null,
-  lastBinaryProfile: null,
-  lastWaveProfile: null
+  lastChunkPrewarmPlan: null
 };
 
-
 // ============================================================================
-// Deterministic Hash Helper — v12.3‑EVO
+// Deterministic Hash Helper
 // ============================================================================
 function computeHash(str) {
   let h = 0;
   const s = String(str || "");
-  for (let i = 0; i < s.length; i++) {
+  for (let i = 0; i < s.length; i++)
     h = (h + s.charCodeAt(i) * (i + 1)) % 100000;
-  }
   return `h${h}`;
 }
 
@@ -154,15 +108,16 @@ function buildBandSignature(band) {
   return computeHash(`AMBASSADOR_BAND::${normalizeBand(band)}`);
 }
 
-
 // ============================================================================
-// A‑B‑A Binary + Wave Surfaces
+// A‑B‑A Surfaces (v13 unified)
 // ============================================================================
 function buildBinaryField(cycle, hasGpu, presenceField) {
   const patternLen = hasGpu ? 16 : 10;
   const baseDensity = patternLen + cycle + (hasGpu ? 25 : 8);
-  const mesh = Number(presenceField?.meshPressureIndex || 0);
-  const castle = Number(presenceField?.castleLoadLevel || 0);
+
+  const mesh = Number(presenceField.meshPressureIndex || 0);
+  const castle = Number(presenceField.castleLoadLevel || 0);
+
   const density = baseDensity + mesh + castle;
   const surface = density + patternLen;
 
@@ -182,10 +137,10 @@ function buildBinaryField(cycle, hasGpu, presenceField) {
 }
 
 function buildWaveField(cycle, band, presenceField) {
-  const mesh = Number(presenceField?.meshStrength || 0);
+  const mesh = Number(presenceField.meshStrength || 0);
   const amplitude = (cycle + 1) * (band === "binary" ? 14 : 7) + mesh;
   const wavelength = amplitude + 5;
-  const phase = (amplitude + (presenceField?.meshPressureIndex || 0)) % 16;
+  const phase = (amplitude + (presenceField.meshPressureIndex || 0)) % 16;
 
   return {
     amplitude,
@@ -196,55 +151,144 @@ function buildWaveField(cycle, band, presenceField) {
   };
 }
 
+// ============================================================================
+// Unified Earn v13 Presence Tier
+// ============================================================================
+function classifyPresenceTier(pressure) {
+  if (pressure >= 150) return "critical";
+  if (pressure >= 100) return "high";
+  if (pressure >= 50) return "elevated";
+  if (pressure > 0) return "soft";
+  return "idle";
+}
 
 // ============================================================================
-// Signature Builders — v12.3‑EVO
+// Unified v13 Presence Field
 // ============================================================================
-function buildPingSignature(latency) {
-  return computeHash(`PING::${latency}`);
-}
+function buildPresenceField(globalHints = {}, cycle) {
+  const ghP = globalHints.presenceContext || {};
+  const mesh = globalHints.meshSignals || {};
+  const castle = globalHints.castleSignals || {};
+  const region = globalHints.regionContext || {};
 
-function buildFetchSignature(count) {
-  return computeHash(`FETCH::${count}`);
-}
+  const meshStrength = Number(mesh.meshStrength || 0);
+  const meshPressureExternal = Number(mesh.meshPressureIndex || 0);
+  const castleLoadExternal = Number(castle.loadLevel || 0);
 
-function buildNormalizationSignature(jobId) {
-  return computeHash(`NORM::${jobId || "NONE"}`);
-}
+  const internalComposite = cycle * 0.0001;
+  const internalPressure = Math.floor(internalComposite * 1000);
 
-function buildSubmitSignature(jobId) {
-  return computeHash(`SUBMIT::${jobId || "NONE"}`);
-}
+  const meshPressureIndex = meshPressureExternal + internalPressure;
+  const castleLoadLevel = castleLoadExternal;
 
-function buildAmbassadorCycleSignature(cycle, presenceTier) {
-  return computeHash(`AMBASSADOR_CYCLE::${cycle}::PTIER:${presenceTier}`);
-}
+  const pressure = meshPressureIndex + castleLoadLevel;
+  const presenceTier = classifyPresenceTier(pressure);
 
+  return {
+    presenceVersion: "v13.0-PRESENCE-IMMORTAL",
+    presenceTier,
+
+    bandPresence: ghP.bandPresence || "symbolic",
+    routerPresence: ghP.routerPresence || "stable",
+    devicePresence: ghP.devicePresence || "ambassador",
+
+    meshPresence: ghP.meshPresence || (meshStrength > 0 ? "mesh-active" : "mesh-idle"),
+    castlePresence: ghP.castlePresence || castle.castlePresence || "ambassador-region",
+    regionPresence: ghP.regionPresence || region.regionTag || "unknown-region",
+
+    regionId: region.regionId || "ambassador-region",
+    castleId: castle.castleId || "ambassador-castle",
+
+    meshStrength,
+    meshPressureIndex,
+    castleLoadLevel,
+
+    cycle,
+
+    presenceSignature: computeHash(
+      `AMBASSADOR_PRESENCE::${presenceTier}::${meshPressureIndex}::${castleLoadLevel}`
+    )
+  };
+}
 
 // ============================================================================
-// INTERNAL — Safe Getter
+// Advantage‑C v13
 // ============================================================================
-function safeGet(obj, path, fallback = null) {
-  try {
-    return path
-      .split(".")
-      .reduce((o, k) => (o && o[k] !== undefined ? o[k] : null), obj) ?? fallback;
-  } catch {
-    return fallback;
-  }
+function buildAdvantageField(bandPack, presenceField, globalHints = {}) {
+  const density = bandPack.binaryField.binarySurface.density;
+  const amplitude = bandPack.waveField.amplitude;
+
+  const baseScore =
+    density * 0.00001 +
+    amplitude * 0.00001;
+
+  const presenceBoost =
+    presenceField.presenceTier === "critical" ? 0.02 :
+    presenceField.presenceTier === "high" ? 0.015 :
+    presenceField.presenceTier === "elevated" ? 0.01 :
+    presenceField.presenceTier === "soft" ? 0.005 :
+    0;
+
+  const advantageScore = baseScore + presenceBoost;
+
+  let advantageTier = 0;
+  if (advantageScore >= 0.05) advantageTier = 3;
+  else if (advantageScore >= 0.02) advantageTier = 2;
+  else if (advantageScore > 0) advantageTier = 1;
+
+  const fallbackBandLevel = globalHints.fallbackBandLevel ?? 0;
+
+  return {
+    advantageVersion: "C-13.0",
+    advantageScore,
+    advantageTier,
+    fallbackBandLevel
+  };
 }
 
-const VALID_LEASE_STATES = new Set([
-  "active",
-  "open",
-  "insufficient_funds",
-  "closed",
-  "unknown"
-]);
+// ============================================================================
+// Chunk / Cache / Prewarm Plan v13
+// ============================================================================
+function buildChunkPrewarmPlan(presenceField, advantageField) {
+  const basePriority =
+    presenceField.presenceTier === "critical"
+      ? 4
+      : presenceField.presenceTier === "high"
+      ? 3
+      : presenceField.presenceTier === "elevated"
+      ? 2
+      : presenceField.presenceTier === "soft"
+      ? 1
+      : 0;
 
+  const advantageBoost =
+    advantageField.advantageTier >= 3 ? 2 :
+    advantageField.advantageTier === 2 ? 1 :
+    0;
+
+  const priority = basePriority + advantageBoost;
+
+  return {
+    planVersion: "v13.0-Ambassador-AdvantageC",
+    priority,
+    band: presenceField.presenceTier,
+    chunks: {
+      receptorEnvelope: true,
+      normalizationBlueprint: true
+    },
+    cache: {
+      ambassadorDiagnostics: true
+    },
+    prewarm: {
+      nervousSystem: true,
+      muscleSystem: true,
+      lymphNodes: true
+    }
+  };
+}
 
 // ============================================================================
-// Deterministic Akash Receptor DNA (v11‑Evo baseline, still static)
+// Deterministic Akash Receptor DNA
 // ============================================================================
 const AKASH_RECEPTOR_DNA = {
   pingLatency: 87,
@@ -274,87 +318,27 @@ const AKASH_RECEPTOR_DNA = {
     }
   ],
 
-  version: "11-Evo",
-  lineage: "Ambassador-Akash-v11-Evo",
+  version: "13.0-PRESENCE-IMMORTAL",
+  lineage: "Ambassador-Akash-v13.0-PRESENCE-IMMORTAL",
   phenotype: "MarketplaceAmbassador"
 };
-
-
-// ============================================================================
-// Presence / Advantage / Hints Surfaces (ambassador-level)
-// ============================================================================
-function buildPresenceField(globalHints = {}) {
-  const ghP = globalHints.presenceContext || {};
-  const mesh = globalHints.meshSignals || {};
-  const castle = globalHints.castleSignals || {};
-  const region = globalHints.regionContext || {};
-
-  return {
-    bandPresence: ghP.bandPresence || "unknown",
-    routerPresence: ghP.routerPresence || "unknown",
-    devicePresence: ghP.devicePresence || "unknown",
-    meshPresence: ghP.meshPresence || mesh.meshStrength || "unknown",
-    castlePresence: ghP.castlePresence || castle.castlePresence || "unknown",
-    regionPresence: ghP.regionPresence || region.regionTag || "unknown",
-    regionId: region.regionId || "unknown-region",
-    castleId: castle.castleId || "unknown-castle",
-    castleLoadLevel: castle.loadLevel || 0,
-    meshStrength: mesh.meshStrength || 0,
-    meshPressureIndex: mesh.meshPressureIndex || 0
-  };
-}
-
-function buildAdvantageField(globalHints = {}) {
-  const gh = globalHints.advantageContext || {};
-
-  return {
-    advantageScore: gh.score ?? 0,
-    advantageBand: gh.band ?? "neutral",
-    advantageTier: gh.tier ?? 0
-  };
-}
-
-function buildHintsField(globalHints = {}) {
-  return {
-    fallbackBandLevel: globalHints.fallbackBandLevel ?? 0,
-    chunkHints: { ...(globalHints.chunkHints || {}) },
-    cacheHints: { ...(globalHints.cacheHints || {}) },
-    prewarmHints: { ...(globalHints.prewarmHints || {}) },
-    coldStartHints: { ...(globalHints.coldStartHints || {}) }
-  };
-}
-
-function classifyAmbassadorPresenceTier(presenceField) {
-  const mesh = Number(presenceField.meshPressureIndex || 0);
-  const castle = Number(presenceField.castleLoadLevel || 0);
-  const pressure = mesh + castle;
-
-  if (pressure >= 150) return "critical";
-  if (pressure >= 100) return "high";
-  if (pressure >= 50) return "elevated";
-  if (pressure > 0) return "soft";
-  return "idle";
-}
-
 
 // ============================================================================
 // Deterministic Cycle Counter
 // ============================================================================
 let ambassadorCycle = 0;
 
-
 // ============================================================================
-// AMBASSADOR CLIENT — Deterministic Akash Marketplace Interface (A‑B‑A + Presence)
-// globalHints is optional; if omitted, defaults to {}
+// AMBASSADOR CLIENT — v13.0‑PRESENCE‑IMMORTAL
 // ============================================================================
 export const PulseEarnMktAmbassador = {
   id: "akash",
   name: "Akash Network",
-  version: "12.3-PRESENCE-EVO+",
-  lineage: "Ambassador-Akash-v12.3-PRESENCE-EVO+",
+  version: "v13.0-PRESENCE-IMMORTAL",
+  lineage: "Ambassador-Akash-v13.0-PRESENCE-IMMORTAL",
 
   // -------------------------------------------------------------------------
-  // Ping — deterministic + A‑B‑A + presence surfaces
+  // Ping — unified v13 presence
   // -------------------------------------------------------------------------
   ping(globalHints = {}) {
     ambassadorCycle++;
@@ -362,46 +346,34 @@ export const PulseEarnMktAmbassador = {
 
     const latency = AKASH_RECEPTOR_DNA.pingLatency;
 
-    const presenceField = buildPresenceField(globalHints);
-    const advantageField = buildAdvantageField(globalHints);
-    const hintsField = buildHintsField(globalHints);
-    const presenceTier = classifyAmbassadorPresenceTier(presenceField);
-
-    ambassadorHealing.lastPingMs = latency;
-    ambassadorHealing.lastPingError = null;
-    ambassadorHealing.lastPingSignature = buildPingSignature(latency);
-
+    const presenceField = buildPresenceField(globalHints, ambassadorCycle);
     const band = "symbolic";
-    ambassadorHealing.lastBand = band;
-    ambassadorHealing.lastBandSignature = buildBandSignature(band);
-
     const binaryField = buildBinaryField(ambassadorCycle, false, presenceField);
     const waveField = buildWaveField(ambassadorCycle, band, presenceField);
+
+    const advantageField = buildAdvantageField(
+      { band, binaryField, waveField },
+      presenceField,
+      globalHints
+    );
+
+    const chunkPlan = buildChunkPrewarmPlan(presenceField, advantageField);
+
+    ambassadorHealing.lastPingMs = latency;
+    ambassadorHealing.lastPingSignature = computeHash(`PING::AKASH::${latency}`);
+
+    ambassadorHealing.lastBand = band;
+    ambassadorHealing.lastBandSignature = buildBandSignature(band);
 
     ambassadorHealing.lastBinaryField = binaryField;
     ambassadorHealing.lastWaveField = waveField;
 
-    const ambassadorPresenceProfile = {
-      presenceTier,
-      band,
-      meshPressureIndex: presenceField.meshPressureIndex,
-      castleLoadLevel: presenceField.castleLoadLevel,
-      advantageTier: advantageField.advantageTier,
-      fallbackBandLevel: hintsField.fallbackBandLevel
-    };
-
-    const binaryProfile = { binaryField, presenceTier };
-    const waveProfile = { waveField, presenceTier };
-
     ambassadorHealing.lastPresenceField = presenceField;
     ambassadorHealing.lastAdvantageField = advantageField;
-    ambassadorHealing.lastHintsField = hintsField;
-    ambassadorHealing.lastAmbassadorPresenceProfile = ambassadorPresenceProfile;
-    ambassadorHealing.lastBinaryProfile = binaryProfile;
-    ambassadorHealing.lastWaveProfile = waveProfile;
+    ambassadorHealing.lastChunkPrewarmPlan = chunkPlan;
 
     ambassadorHealing.lastAmbassadorCycleSignature =
-      buildAmbassadorCycleSignature(ambassadorCycle, presenceTier);
+      computeHash(`AMBASSADOR_CYCLE::${ambassadorCycle}`);
 
     return {
       latency,
@@ -411,53 +383,48 @@ export const PulseEarnMktAmbassador = {
       waveField,
       presenceField,
       advantageField,
-      hintsField,
-      ambassadorPresenceProfile,
-      binaryProfile,
-      waveProfile
+      chunkPlan
     };
   },
 
   // -------------------------------------------------------------------------
-  // Fetch Jobs — deterministic + A‑B‑A + presence surfaces
+  // Fetch Jobs — unified v13 presence
   // -------------------------------------------------------------------------
   fetchJobs(globalHints = {}) {
     ambassadorCycle++;
     ambassadorHealing.cycleCount++;
 
-    const presenceField = buildPresenceField(globalHints);
-    const advantageField = buildAdvantageField(globalHints);
-    const hintsField = buildHintsField(globalHints);
-    const presenceTier = classifyAmbassadorPresenceTier(presenceField);
+    const presenceField = buildPresenceField(globalHints, ambassadorCycle);
+    const band = "symbolic";
+    const binaryField = buildBinaryField(ambassadorCycle, false, presenceField);
+    const waveField = buildWaveField(ambassadorCycle, band, presenceField);
+
+    const advantageField = buildAdvantageField(
+      { band, binaryField, waveField },
+      presenceField,
+      globalHints
+    );
+
+    const chunkPlan = buildChunkPrewarmPlan(presenceField, advantageField);
 
     try {
       const leases = AKASH_RECEPTOR_DNA.leases;
-      ambassadorHealing.lastPayloadVersion = "11-Evo-akash-dna";
+      ambassadorHealing.lastPayloadVersion = "13-akash-dna";
 
       if (!Array.isArray(leases)) {
         ambassadorHealing.lastFetchError = "invalid_leases_payload";
         ambassadorHealing.lastFetchCount = 0;
-        ambassadorHealing.lastFetchSignature = buildFetchSignature(0);
+        ambassadorHealing.lastFetchSignature = computeHash(`FETCH::AKASH::0`);
 
         return {
           jobs: [],
           signature: ambassadorHealing.lastFetchSignature,
-          bandSignature: null,
-          binaryField: null,
-          waveField: null,
+          bandSignature: ambassadorHealing.lastBandSignature,
+          binaryField,
+          waveField,
           presenceField,
           advantageField,
-          hintsField,
-          ambassadorPresenceProfile: {
-            presenceTier,
-            band: "symbolic",
-            meshPressureIndex: presenceField.meshPressureIndex,
-            castleLoadLevel: presenceField.castleLoadLevel,
-            advantageTier: advantageField.advantageTier,
-            fallbackBandLevel: hintsField.fallbackBandLevel
-          },
-          binaryProfile: null,
-          waveProfile: null
+          chunkPlan
         };
       }
 
@@ -467,39 +434,20 @@ export const PulseEarnMktAmbassador = {
 
       ambassadorHealing.lastFetchError = null;
       ambassadorHealing.lastFetchCount = jobs.length;
-      ambassadorHealing.lastFetchSignature = buildFetchSignature(jobs.length);
+      ambassadorHealing.lastFetchSignature = computeHash(`FETCH::AKASH::${jobs.length}`);
 
-      const band = "symbolic";
       ambassadorHealing.lastBand = band;
       ambassadorHealing.lastBandSignature = buildBandSignature(band);
-
-      const binaryField = buildBinaryField(ambassadorCycle, false, presenceField);
-      const waveField = buildWaveField(ambassadorCycle, band, presenceField);
 
       ambassadorHealing.lastBinaryField = binaryField;
       ambassadorHealing.lastWaveField = waveField;
 
-      const ambassadorPresenceProfile = {
-        presenceTier,
-        band,
-        meshPressureIndex: presenceField.meshPressureIndex,
-        castleLoadLevel: presenceField.castleLoadLevel,
-        advantageTier: advantageField.advantageTier,
-        fallbackBandLevel: hintsField.fallbackBandLevel
-      };
-
-      const binaryProfile = { binaryField, presenceTier };
-      const waveProfile = { waveField, presenceTier };
-
       ambassadorHealing.lastPresenceField = presenceField;
       ambassadorHealing.lastAdvantageField = advantageField;
-      ambassadorHealing.lastHintsField = hintsField;
-      ambassadorHealing.lastAmbassadorPresenceProfile = ambassadorPresenceProfile;
-      ambassadorHealing.lastBinaryProfile = binaryProfile;
-      ambassadorHealing.lastWaveProfile = waveProfile;
+      ambassadorHealing.lastChunkPrewarmPlan = chunkPlan;
 
       ambassadorHealing.lastAmbassadorCycleSignature =
-        buildAmbassadorCycleSignature(ambassadorCycle, presenceTier);
+        computeHash(`AMBASSADOR_CYCLE::${ambassadorCycle}`);
 
       return {
         jobs,
@@ -509,89 +457,63 @@ export const PulseEarnMktAmbassador = {
         waveField,
         presenceField,
         advantageField,
-        hintsField,
-        ambassadorPresenceProfile,
-        binaryProfile,
-        waveProfile
+        chunkPlan
       };
 
     } catch (err) {
       ambassadorHealing.lastFetchError = err.message;
       ambassadorHealing.lastFetchCount = 0;
-      ambassadorHealing.lastFetchSignature = buildFetchSignature(0);
+      ambassadorHealing.lastFetchSignature = computeHash(`FETCH::AKASH::0`);
 
       return {
         jobs: [],
         signature: ambassadorHealing.lastFetchSignature,
-        bandSignature: null,
-        binaryField: null,
-        waveField: null,
+        bandSignature: ambassadorHealing.lastBandSignature,
+        binaryField,
+        waveField,
         presenceField,
         advantageField,
-        hintsField,
-        ambassadorPresenceProfile: {
-          presenceTier,
-          band: "symbolic",
-          meshPressureIndex: presenceField.meshPressureIndex,
-          castleLoadLevel: presenceField.castleLoadLevel,
-          advantageTier: advantageField.advantageTier,
-          fallbackBandLevel: hintsField.fallbackBandLevel
-        },
-        binaryProfile: null,
-        waveProfile: null
+        chunkPlan
       };
     }
   },
 
   // -------------------------------------------------------------------------
-  // Submit Result — deterministic + A‑B‑A + presence surfaces
+  // Submit Result — unified v13 presence
   // -------------------------------------------------------------------------
   submitResult(job, result, globalHints = {}) {
     ambassadorCycle++;
     ambassadorHealing.cycleCount++;
 
-    const presenceField = buildPresenceField(globalHints);
-    const advantageField = buildAdvantageField(globalHints);
-    const hintsField = buildHintsField(globalHints);
-    const presenceTier = classifyAmbassadorPresenceTier(presenceField);
+    const presenceField = buildPresenceField(globalHints, ambassadorCycle);
+    const band = "symbolic";
+    const binaryField = buildBinaryField(ambassadorCycle, false, presenceField);
+    const waveField = buildWaveField(ambassadorCycle, band, presenceField);
+
+    const advantageField = buildAdvantageField(
+      { band, binaryField, waveField },
+      presenceField,
+      globalHints
+    );
+
+    const chunkPlan = buildChunkPrewarmPlan(presenceField, advantageField);
 
     const jobId = job?.id ?? null;
     ambassadorHealing.lastSubmitJobId = jobId;
-    ambassadorHealing.lastSubmitError = null;
+    ambassadorHealing.lastSubmitSignature = computeHash(`SUBMIT::AKASH::${jobId}`);
 
-    ambassadorHealing.lastSubmitSignature = buildSubmitSignature(jobId);
-
-    const band = "symbolic";
     ambassadorHealing.lastBand = band;
     ambassadorHealing.lastBandSignature = buildBandSignature(band);
-
-    const binaryField = buildBinaryField(ambassadorCycle, false, presenceField);
-    const waveField = buildWaveField(ambassadorCycle, band, presenceField);
 
     ambassadorHealing.lastBinaryField = binaryField;
     ambassadorHealing.lastWaveField = waveField;
 
-    const ambassadorPresenceProfile = {
-      presenceTier,
-      band,
-      meshPressureIndex: presenceField.meshPressureIndex,
-      castleLoadLevel: presenceField.castleLoadLevel,
-      advantageTier: advantageField.advantageTier,
-      fallbackBandLevel: hintsField.fallbackBandLevel
-    };
-
-    const binaryProfile = { binaryField, presenceTier };
-    const waveProfile = { waveField, presenceTier };
-
     ambassadorHealing.lastPresenceField = presenceField;
     ambassadorHealing.lastAdvantageField = advantageField;
-    ambassadorHealing.lastHintsField = hintsField;
-    ambassadorHealing.lastAmbassadorPresenceProfile = ambassadorPresenceProfile;
-    ambassadorHealing.lastBinaryProfile = binaryProfile;
-    ambassadorHealing.lastWaveProfile = waveProfile;
+    ambassadorHealing.lastChunkPrewarmPlan = chunkPlan;
 
     ambassadorHealing.lastAmbassadorCycleSignature =
-      buildAmbassadorCycleSignature(ambassadorCycle, presenceTier);
+      computeHash(`AMBASSADOR_CYCLE::${ambassadorCycle}`);
 
     return {
       ok: true,
@@ -604,53 +526,39 @@ export const PulseEarnMktAmbassador = {
       waveField,
       presenceField,
       advantageField,
-      hintsField,
-      ambassadorPresenceProfile,
-      binaryProfile,
-      waveProfile,
-      note: "Akash submission simulated deterministically (v12.3‑PRESENCE‑EVO+ A‑B‑A)."
+      chunkPlan
     };
   },
-
-  // -------------------------------------------------------------------------
-  // Normalize Job — deterministic + dynamic A‑B‑A band + presence hints
+    // -------------------------------------------------------------------------
+  // Normalize Job — unified v13 job schema + A‑B‑A + presence
   // -------------------------------------------------------------------------
   normalizeJob(raw, globalHints = {}) {
     try {
-      const presenceField = buildPresenceField(globalHints);
-      const advantageField = buildAdvantageField(globalHints);
-      const hintsField = buildHintsField(globalHints);
-      const presenceTier = classifyAmbassadorPresenceTier(presenceField);
+      ambassadorCycle++;
+      ambassadorHealing.cycleCount++;
 
       if (!raw || typeof raw !== "object") {
         ambassadorHealing.lastNormalizationError = "invalid_raw_lease";
-        ambassadorHealing.lastNormalizationSignature =
-          buildNormalizationSignature(null);
+        ambassadorHealing.lastNormalizationSignature = computeHash(`NORM::AKASH::NONE`);
         return null;
       }
-
-      const leaseState = safeGet(raw, "state", "unknown");
-      ambassadorHealing.lastLeaseState =
-        VALID_LEASE_STATES.has(leaseState) ? leaseState : "unknown";
 
       if (!raw.id) {
         ambassadorHealing.lastNormalizationError = "missing_id";
-        ambassadorHealing.lastNormalizationSignature =
-          buildNormalizationSignature(null);
+        ambassadorHealing.lastNormalizationSignature = computeHash(`NORM::AKASH::NONE`);
         return null;
       }
 
-      const payout = Number(safeGet(raw, "price.amount", 0));
+      const payout = Number(raw.price?.amount ?? 0);
       if (!Number.isFinite(payout) || payout <= 0) {
         ambassadorHealing.lastNormalizationError = "non_positive_payout";
-        ambassadorHealing.lastNormalizationSignature =
-          buildNormalizationSignature(null);
+        ambassadorHealing.lastNormalizationSignature = computeHash(`NORM::AKASH::NONE`);
         return null;
       }
 
-      const cpuRequired = Number(safeGet(raw, "resources.cpu.units", 1));
-      const memoryRequired = Number(safeGet(raw, "resources.memory.quantity", 1024));
-      const estimatedSeconds = Number(safeGet(raw, "duration", 600));
+      const cpuRequired = Number(raw.resources?.cpu?.units ?? 1);
+      const memoryRequired = Number(raw.resources?.memory?.quantity ?? 1024);
+      const estimatedSeconds = Number(raw.duration ?? 600);
 
       ambassadorHealing.lastResourceShape = {
         cpu: cpuRequired,
@@ -660,22 +568,33 @@ export const PulseEarnMktAmbassador = {
 
       if (!Number.isFinite(estimatedSeconds) || estimatedSeconds <= 0) {
         ambassadorHealing.lastNormalizationError = "non_positive_duration";
-        ambassadorHealing.lastNormalizationSignature =
-          buildNormalizationSignature(null);
+        ambassadorHealing.lastNormalizationSignature = computeHash(`NORM::AKASH::NONE`);
         return null;
       }
 
-      const hasGpu = !!safeGet(raw, "resources.gpu", null);
-
+      const hasGpu = !!(raw.resources && raw.resources.gpu);
       const band = hasGpu ? "binary" : "symbolic";
+
       ambassadorHealing.lastBand = band;
       ambassadorHealing.lastBandSignature = buildBandSignature(band);
 
+      const presenceField = buildPresenceField(globalHints, ambassadorCycle);
       const binaryField = buildBinaryField(ambassadorCycle, hasGpu, presenceField);
       const waveField = buildWaveField(ambassadorCycle, band, presenceField);
 
+      const advantageField = buildAdvantageField(
+        { band, binaryField, waveField },
+        presenceField,
+        globalHints
+      );
+
+      const chunkPlan = buildChunkPrewarmPlan(presenceField, advantageField);
+
       ambassadorHealing.lastBinaryField = binaryField;
       ambassadorHealing.lastWaveField = waveField;
+      ambassadorHealing.lastPresenceField = presenceField;
+      ambassadorHealing.lastAdvantageField = advantageField;
+      ambassadorHealing.lastChunkPrewarmPlan = chunkPlan;
 
       const normalized = {
         id: String(raw.id),
@@ -689,28 +608,30 @@ export const PulseEarnMktAmbassador = {
         minGpuScore: hasGpu ? 300 : 100,
         bandwidthNeededMbps: 5,
 
-        // A‑B‑A hints for Consulate + presence-aware metadata
+        // A‑B‑A hints for Consulate / routing
         _abaBand: band,
         _abaBinaryDensity: binaryField.binarySurface.density,
         _abaWaveAmplitude: waveField.amplitude,
 
+        // Unified v13 surfaces
         presenceField,
         advantageField,
-        hintsField,
-        presenceTier
+        chunkPlan
       };
 
       ambassadorHealing.lastNormalizedJobId = normalized.id;
       ambassadorHealing.lastNormalizationError = null;
       ambassadorHealing.lastNormalizationSignature =
-        buildNormalizationSignature(normalized.id);
+        computeHash(`NORM::AKASH::${normalized.id}`);
+
+      ambassadorHealing.lastAmbassadorCycleSignature =
+        computeHash(`AMBASSADOR_CYCLE::${ambassadorCycle}`);
 
       return normalized;
 
     } catch (err) {
       ambassadorHealing.lastNormalizationError = err.message;
-      ambassadorHealing.lastNormalizationSignature =
-        buildNormalizationSignature(null);
+      ambassadorHealing.lastNormalizationSignature = computeHash(`NORM::AKASH::NONE`);
       return null;
     }
   }
@@ -718,7 +639,7 @@ export const PulseEarnMktAmbassador = {
 
 
 // ============================================================================
-// Healing State Export — Ambassador Interaction Log (A‑B‑A + Presence)
+// Healing State Export — Ambassador Interaction Log (v13.0‑PRESENCE‑IMMORTAL)
 // ============================================================================
 export function getPulseEarnMktAmbassadorHealingState() {
   return { ...ambassadorHealing };

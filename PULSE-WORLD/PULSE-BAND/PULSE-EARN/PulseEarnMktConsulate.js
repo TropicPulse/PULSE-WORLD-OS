@@ -1,13 +1,13 @@
 // ============================================================================
-// FILE: tropic-pulse-functions/PULSE-WORLD/PULSE-EARN/PulseEarnMktConsulate-v12.3-PRESENCE-EVO+.js
-// LAYER: THE CONSULATE (v12.3 Presence + Advantage‑C + Prewarm)
+// FILE: tropic-pulse-functions/PULSE-WORLD/PULSE-EARN/PulseEarnMktConsulate-v13.0-PRESENCE-IMMORTAL.js
+// LAYER: THE CONSULATE (v13.0 Presence + Advantage‑C + Prewarm)
 // ============================================================================
 
 export const PulseEarnMktConsulateMeta = Object.freeze({
   layer: "PulseEarnMktConsulate",
   role: "EARN_CONSULATE_ORGAN",
-  version: "v12.3-PRESENCE-EVO+",
-  identity: "PulseEarnMktConsulate-v12.3-PRESENCE-EVO+",
+  version: "v13.0-PRESENCE-IMMORTAL",
+  identity: "PulseEarnMktConsulate-v13.0-PRESENCE-IMMORTAL",
 
   guarantees: Object.freeze({
     deterministic: true,
@@ -48,70 +48,137 @@ function computeHash(str) {
 }
 
 // ============================================================================
-// Presence / Advantage / Chunk‑Prewarm Builders (v12.3)
+// Presence / Advantage / Chunk‑Prewarm Builders (v13.0‑PRESENCE‑IMMORTAL)
 // ============================================================================
-function buildPresenceField(consulateState) {
+function classifyPresenceTierFromPressure(pressure) {
+  if (pressure >= 150) return "critical";
+  if (pressure >= 100) return "high";
+  if (pressure >= 50) return "elevated";
+  if (pressure > 0) return "soft";
+  return "idle";
+}
+
+function buildPresenceField(consulateState, globalHints = {}) {
   const jobsIn = consulateState.stats.lastCycleJobsIn || 0;
   const jobsOut = consulateState.stats.lastCycleJobsOut || 0;
   const unique = consulateState.stats.totalUniqueJobs || 0;
 
-  const composite =
+  // Internal “intelligence load” composite
+  const internalComposite =
     jobsIn * 0.0005 +
     jobsOut * 0.0007 +
     unique * 0.0001;
 
-  const presenceTier =
-    composite >= 0.05 ? "presence_high" :
-    composite >= 0.01 ? "presence_mid" :
-    "presence_low";
+  // External presence hints (unified with Earn v13)
+  const ghP = globalHints.presenceContext || {};
+  const mesh = globalHints.meshSignals || {};
+  const castle = globalHints.castleSignals || {};
+  const region = globalHints.regionContext || {};
+
+  const meshStrength = Number(mesh.meshStrength || 0);
+  const meshPressureIndexExternal = Number(mesh.meshPressureIndex || 0);
+  const castleLoadLevelExternal = Number(castle.loadLevel || 0);
+
+  // Fold internal composite into pressure so Consulate’s own load matters
+  const internalPressure = Math.floor(internalComposite * 1000);
+  const meshPressureIndex = meshPressureIndexExternal + internalPressure;
+  const castleLoadLevel = castleLoadLevelExternal;
+
+  const pressure = meshPressureIndex + castleLoadLevel;
+  const presenceTier = classifyPresenceTierFromPressure(pressure);
 
   return {
-    presenceVersion: "v12.3",
+    presenceVersion: "v13.0-PRESENCE-IMMORTAL",
     presenceTier,
+
+    // Unified Earn presence surface
+    bandPresence: ghP.bandPresence || "symbolic",
+    routerPresence: ghP.routerPresence || "stable",
+    devicePresence: ghP.devicePresence || "consulate",
+
+    meshPresence: ghP.meshPresence || (meshStrength > 0 ? "mesh-active" : "mesh-idle"),
+    castlePresence: ghP.castlePresence || castle.castlePresence || "consulate-region",
+    regionPresence: ghP.regionPresence || region.regionTag || "unknown-region",
+
+    regionId: region.regionId || "consulate-region",
+    castleId: castle.castleId || "consulate-castle",
+
+    castleLoadLevel,
+    meshStrength,
+    meshPressureIndex,
+
+    // Internal intelligence stats (for debugging / healing)
     jobsIn,
     jobsOut,
     unique,
     cycleIndex: consulateState.cycleIndex,
+
     presenceSignature: computeHash(
-      `CONSULATE_PRESENCE::${presenceTier}::${jobsIn}::${jobsOut}::${unique}`
+      `CONSULATE_PRESENCE::${presenceTier}::${jobsIn}::${jobsOut}::${unique}::${meshPressureIndex}::${castleLoadLevel}`
     )
   };
 }
 
-function buildAdvantageField(consulateState, presenceField) {
+function buildAdvantageField(consulateState, presenceField, globalHints = {}) {
   const fpCount = consulateState.fingerprintIndex.size;
   const factorCount = consulateState.factorIndex.size;
   const cacheSize = consulateState.resultCache.size;
 
-  const advantageScore =
+  const baseScore =
     fpCount * 0.00005 +
     factorCount * 0.00003 +
-    cacheSize * 0.00002 +
-    (presenceField.presenceTier === "presence_high" ? 0.01 : 0);
+    cacheSize * 0.00002;
+
+  const presenceBoost =
+    presenceField.presenceTier === "critical" ? 0.02 :
+    presenceField.presenceTier === "high" ? 0.015 :
+    presenceField.presenceTier === "elevated" ? 0.01 :
+    presenceField.presenceTier === "soft" ? 0.005 :
+    0;
+
+  const advantageScore = baseScore + presenceBoost;
+
+  // Simple tiering for advantage
+  let advantageTier = 0;
+  if (advantageScore >= 0.05) advantageTier = 3;
+  else if (advantageScore >= 0.02) advantageTier = 2;
+  else if (advantageScore > 0) advantageTier = 1;
+
+  const fallbackBandLevel = globalHints.fallbackBandLevel ?? 0;
 
   return {
-    advantageVersion: "C",
+    advantageVersion: "C-13.0",
     fpCount,
     factorCount,
     cacheSize,
     presenceTier: presenceField.presenceTier,
-    advantageScore
+    advantageScore,
+    advantageTier,
+    fallbackBandLevel
   };
 }
 
 function buildChunkPrewarmPlan(consulateState, presenceField, advantageField) {
   const basePriority =
-    presenceField.presenceTier === "presence_high"
+    presenceField.presenceTier === "critical"
+      ? 4
+      : presenceField.presenceTier === "high"
       ? 3
-      : presenceField.presenceTier === "presence_mid"
+      : presenceField.presenceTier === "elevated"
       ? 2
-      : 1;
+      : presenceField.presenceTier === "soft"
+      ? 1
+      : 0;
 
-  const advantageBoost = advantageField.advantageScore > 0.02 ? 1 : 0;
+  const advantageBoost =
+    advantageField.advantageTier >= 3 ? 2 :
+    advantageField.advantageTier === 2 ? 1 :
+    0;
+
   const priority = basePriority + advantageBoost;
 
   return {
-    planVersion: "v12.3-Consulate-AdvantageC",
+    planVersion: "v13.0-Consulate-AdvantageC",
     priority,
     band: presenceField.presenceTier,
     chunks: {
@@ -137,7 +204,7 @@ function buildChunkPrewarmPlan(consulateState, presenceField, advantageField) {
 }
 
 // ============================================================================
-// Consulate State (v12.3 Presence)
+// Consulate State (v13.0 Presence)
 // ============================================================================
 const consulateState = {
   resultCache: new Map(),
@@ -164,7 +231,7 @@ const consulateState = {
   lastMarketplaceStatsSignature: null,
   lastResultCacheSignature: null,
 
-  // NEW 12.3 Presence Surfaces
+  // v13 Presence Surfaces
   lastPresenceField: null,
   lastAdvantageField: null,
   lastChunkPrewarmPlan: null
@@ -338,13 +405,16 @@ function updateMarketplaceStats(jobs) {
 // ============================================================================
 // Fetch Jobs From All Marketplaces
 // ============================================================================
-function fetchJobsFromAllMarketplaces(deviceId) {
+function fetchJobsFromAllMarketplaces(deviceId, globalHints = {}) {
   const { marketplaces } = PulseEarnMktEmbassyLedger;
   const all = [];
 
   for (const adapter of marketplaces) {
     try {
-      const raw = adapter.fetchJobs(deviceId);
+      // Allow adapters that accept globalHints or not
+      const raw = adapter.fetchJobs
+        ? adapter.fetchJobs(globalHints)
+        : [];
 
       let jobs;
       if (Array.isArray(raw)) jobs = raw;
@@ -436,10 +506,11 @@ function sortJobsByPriority(jobs) {
 // ============================================================================
 // Public: getRoutedJobs
 // ============================================================================
-function getRoutedJobs(deviceId) {
+// globalHints is optional; if omitted, defaults to {}
+function getRoutedJobs(deviceId, globalHints = {}) {
   consulateState.cycleIndex++;
 
-  const raw = fetchJobsFromAllMarketplaces(deviceId);
+  const raw = fetchJobsFromAllMarketplaces(deviceId, globalHints);
   const unique = processJobsIntelligently(raw);
   const sorted = sortJobsByPriority(unique);
 
@@ -448,9 +519,9 @@ function getRoutedJobs(deviceId) {
   consulateState.lastResultCacheSignature =
     computeHash(`RESULT_CACHE::${consulateState.resultCache.size}`);
 
-  // NEW: Presence + Advantage + Chunk/Prewarm
-  const presenceField = buildPresenceField(consulateState);
-  const advantageField = buildAdvantageField(consulateState, presenceField);
+  // v13 Presence + Advantage + Chunk/Prewarm (unified with Earn)
+  const presenceField = buildPresenceField(consulateState, globalHints);
+  const advantageField = buildAdvantageField(consulateState, presenceField, globalHints);
   const chunkPlan = buildChunkPrewarmPlan(consulateState, presenceField, advantageField);
 
   consulateState.lastPresenceField = presenceField;
@@ -503,7 +574,7 @@ function getPulseEarnMktConsulateHealingState() {
     lastMarketplaceStatsSignature: consulateState.lastMarketplaceStatsSignature,
     lastResultCacheSignature: consulateState.lastResultCacheSignature,
 
-    // NEW 12.3 Presence Surfaces
+    // v13 Presence Surfaces
     lastPresenceField: consulateState.lastPresenceField,
     lastAdvantageField: consulateState.lastAdvantageField,
     lastChunkPrewarmPlan: consulateState.lastChunkPrewarmPlan

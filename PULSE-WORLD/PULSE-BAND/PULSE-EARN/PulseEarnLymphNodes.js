@@ -1,33 +1,34 @@
 // ============================================================================
-// FILE: tropic-pulse-functions/PULSE-WORLD/PULSE-EARN/PulseEarnLymphNodes-v12.3-PRESENCE-EVO+.js
-// LAYER: THE LYMPHATIC HANDSHAKE NODES (v12.3-PRESENCE-EVO+ + Dual-Band + Binary + Wave)
-// (Finalizer of Jobs + Immune-Safe Dispatch + Certified Marketplace Exchange + Presence Telemetry)
+// FILE: tropic-pulse-functions/PULSE-WORLD/PULSE-EARN/PulseEarnLymphNodes-v13.0-PRESENCE-IMMORTAL.js
+// LAYER: THE LYMPHATIC HANDSHAKE NODES (v13.0-PRESENCE-IMMORTAL)
+// (Finalizer of Jobs + Immune-Safe Dispatch + Certified Marketplace Exchange)
 // ============================================================================
 //
-// ROLE (v12.3-PRESENCE-EVO+):
+// ROLE (v13.0-PRESENCE-IMMORTAL):
 //   THE LYMPHATIC HANDSHAKE NODES — Pulse‑Earn’s immune‑safe finalizers.
 //   • Validate job + marketplace identity (immune recognition).
 //   • Locate the correct marketplace receptor (antigen matching).
 //   • Ensure submitResult() exists (immune compatibility).
 //   • Perform deterministic Earn → Marketplace handshake.
 //   • Record certified submission outcome (immune memory + signatures).
-//   • Emit v12.3‑Presence‑EVO+ presence/advantage/hints surfaces (metadata-only).
+//   • Emit v13‑Presence‑IMMORTAL presence/advantage/hints surfaces.
+//   • Emit binary-first + wave surfaces.
+//   • Emit lymphComputeProfile (metadata-only).
 //
-// CONTRACT (v12.3-PRESENCE-EVO+):
+// CONTRACT (v13.0-PRESENCE-IMMORTAL):
 //   • PURE RESULT DISPATCHER — no AI layers, no translation, no memory model.
 //   • NO async, NO timestamps, NO nondeterministic behavior.
 //   • NEVER mutate job objects.
 //   • Deterministic identity verification + dispatch only.
 //   • Dual-band + binary + wave + presence metadata are structural-only.
+//   • NO speed, NO baseline, NO governor, NO performance assumptions.
 // ============================================================================
-// ============================================================================
-// ORGAN IDENTITY — v12.3‑PRESENCE‑EVO+ (C2 Lymphatic Immune Dispatch)
-// ============================================================================
+
 export const PulseEarnLymphNodesMeta = Object.freeze({
   layer: "PulseEarnLymphNodes",
   role: "EARN_LYMPHATIC_HANDSHAKE_ORGAN",
-  version: "v12.3-PRESENCE-EVO+",
-  identity: "PulseEarnLymphNodes-v12.3-PRESENCE-EVO+",
+  version: "v13.0-PRESENCE-IMMORTAL",
+  identity: "PulseEarnLymphNodes-v13.0-PRESENCE-IMMORTAL",
 
   guarantees: Object.freeze({
     deterministic: true,
@@ -68,12 +69,13 @@ export const PulseEarnLymphNodesMeta = Object.freeze({
 
   lineage: Object.freeze({
     root: "PulseOS-v11-EVO",
-    parent: "PulseEarn-v12.3-PRESENCE-EVO+",
+    parent: "PulseEarn-v13.0-PRESENCE-IMMORTAL",
     ancestry: [
       "PulseEarnLymphNodes-v9",
       "PulseEarnLymphNodes-v10",
       "PulseEarnLymphNodes-v11",
-      "PulseEarnLymphNodes-v11-Evo"
+      "PulseEarnLymphNodes-v11-Evo",
+      "PulseEarnLymphNodes-v12.3-PRESENCE-EVO+"
     ]
   }),
 
@@ -91,22 +93,23 @@ export const PulseEarnLymphNodesMeta = Object.freeze({
   })
 });
 
+// ============================================================================
+// ROLE CONTEXT — v13 IMMORTAL
+// ============================================================================
 
 export const PulseRole = {
   type: "ImmuneDispatch",
   subsystem: "PulseEarnLymphNodes",
   layer: "C2-LymphaticHandshake",
-  version: "12.3-PRESENCE-EVO+",
-  identity: "PulseEarnLymphNodes-v12.3-PRESENCE-EVO+",
+  version: "13.0-PRESENCE-IMMORTAL",
+  identity: "PulseEarnLymphNodes-v13.0-PRESENCE-IMMORTAL",
 
   evo: {
-    // Core invariants
     driftProof: true,
     deterministicField: true,
     unifiedAdvantageField: true,
     futureEvolutionReady: true,
 
-    // Immune dispatch laws
     immuneDispatch: true,
     immuneSafeFinalizer: true,
     immuneRecognition: true,
@@ -114,40 +117,40 @@ export const PulseRole = {
     certifiedHandshake: true,
     deterministicHandshake: true,
 
-    // Execution laws
     zeroAsync: true,
     zeroTiming: true,
     zeroRandomness: true,
     zeroMutation: true,
     zeroRouting: true,
-    zeroSending: false,          // dispatch to adapter is allowed
+    zeroSending: false,
     zeroCompute: true,
 
-    // Dual-band + metadata
     dualBand: true,
     binaryAware: true,
     symbolicAware: true,
     waveAware: true,
     bandNormalizationAware: true,
 
-    // Earn lineage
     earnFinalizer: true,
     earnMarketplaceBridge: true,
     immuneMemoryRecorder: true,
 
-    // Safety + environment
     environmentAgnostic: true,
     multiInstanceReady: true
   }
 };
 
+// ============================================================================
+// Imports
+// ============================================================================
+
 import { PulseEarnReceptor } from "./PulseEarnReceptorMkt.js";
 import { PulseEarnCustomReceptor } from "./PulseEarnCustomReceptorMkt.js";
 
+// ============================================================================
+// Healing Metadata — v13 IMMORTAL
+// ============================================================================
 
-// ---------------------------------------------------------------------------
-// Healing Metadata — Lymphatic Dispatch Log (v12.3-PRESENCE-EVO+)
-// ---------------------------------------------------------------------------
 const lymphHealing = {
   lastJobId: null,
   lastMarketplaceId: null,
@@ -161,28 +164,26 @@ const lymphHealing = {
   lastJobSignature: null,
   lastMarketplaceSignature: null,
 
-  // Dual-Band + Binary + Wave
   lastBand: "symbolic",
   lastBandSignature: null,
   lastBinaryField: null,
   lastWaveField: null,
 
-  // Presence-EVO+ additions
   lastPresenceField: null,
   lastAdvantageField: null,
   lastHintsField: null,
   lastLymphPresenceProfile: null,
   lastBinaryProfile: null,
-  lastWaveProfile: null
+  lastWaveProfile: null,
+  lastLymphComputeProfile: null
 };
 
-// Deterministic cycle counter
 let lymphCycle = 0;
 
-
-// ---------------------------------------------------------------------------
+// ============================================================================
 // Deterministic Hash Helper
-// ---------------------------------------------------------------------------
+// ============================================================================
+
 function computeHash(str) {
   let h = 0;
   const s = String(str || "");
@@ -197,10 +198,10 @@ function normalizeBand(band) {
   return b === "binary" ? "binary" : "symbolic";
 }
 
-
-// ---------------------------------------------------------------------------
+// ============================================================================
 // Signature Builders
-// ---------------------------------------------------------------------------
+// ============================================================================
+
 function buildJobSignature(job) {
   if (!job) return "JOB::NONE";
   return computeHash(`JOB::${job.id}::${job.marketplaceId || "NO_MKT"}`);
@@ -216,47 +217,61 @@ function buildHandshakeSignature(job, cycleIndex) {
   );
 }
 
+// ============================================================================
+// Receptor Registry
+// ============================================================================
 
-// ---------------------------------------------------------------------------
-// Marketplace Receptor Registry — Antigen Directory
-// ---------------------------------------------------------------------------
 const receptorRegistry = {
   A: PulseEarnReceptor,
   CUSTOM: PulseEarnCustomReceptor
 };
 
+// ============================================================================
+// Presence / Advantage / Hints — v13 IMMORTAL
+// ============================================================================
 
-// ---------------------------------------------------------------------------
-// Presence / Advantage / Hints Surfaces (job + global hints)
-// ---------------------------------------------------------------------------
 function buildPresenceField(job, globalHints = {}) {
   const meta = job?.meta || {};
   const jp = meta.presenceContext || meta.cardiacPresence || {};
-  const mesh = {
-    ...(globalHints.meshSignals || {}),
-    ...(meta.meshSignals || {})
-  };
-  const castle = {
-    ...(globalHints.castleSignals || {}),
-    ...(meta.castleSignals || {})
-  };
-  const region = {
-    ...(globalHints.regionContext || {}),
-    ...(meta.regionContext || {})
-  };
+
+  const mesh = { ...(globalHints.meshSignals || {}), ...(meta.meshSignals || {}) };
+  const castle = { ...(globalHints.castleSignals || {}), ...(meta.castleSignals || {}) };
+  const region = { ...(globalHints.regionContext || {}), ...(meta.regionContext || {}) };
+
+  const meshPressureIndex = mesh.meshPressureIndex || 0;
+  const castleLoadLevel = castle.loadLevel || 0;
+  const meshStrength = mesh.meshStrength || 0;
+
+  const pressure = meshPressureIndex + castleLoadLevel;
+  let presenceTier = "idle";
+  if (pressure >= 150) presenceTier = "critical";
+  else if (pressure >= 100) presenceTier = "high";
+  else if (pressure >= 50) presenceTier = "elevated";
+  else if (pressure > 0) presenceTier = "soft";
+
+  const presenceSignature = computeHash(
+    `LYMPH_PRESENCE_V13::${presenceTier}::${meshPressureIndex}::${castleLoadLevel}`
+  );
 
   return {
+    presenceVersion: "v13.0-PRESENCE-IMMORTAL",
+    presenceTier,
+    presenceSignature,
+
     bandPresence: jp.bandPresence || (globalHints.presenceContext || {}).bandPresence || "unknown",
     routerPresence: jp.routerPresence || (globalHints.presenceContext || {}).routerPresence || "unknown",
     devicePresence: jp.devicePresence || (globalHints.presenceContext || {}).devicePresence || "unknown",
+
     meshPresence: jp.meshPresence || mesh.meshStrength || "unknown",
     castlePresence: jp.castlePresence || castle.castlePresence || "unknown",
     regionPresence: jp.regionPresence || region.regionTag || "unknown",
+
     regionId: region.regionId || "unknown-region",
     castleId: castle.castleId || "unknown-castle",
-    castleLoadLevel: castle.loadLevel || 0,
-    meshStrength: mesh.meshStrength || 0,
-    meshPressureIndex: mesh.meshPressureIndex || 0
+
+    castleLoadLevel,
+    meshStrength,
+    meshPressureIndex
   };
 }
 
@@ -266,6 +281,7 @@ function buildAdvantageField(job, globalHints = {}) {
   const gh = globalHints.advantageContext || {};
 
   return {
+    advantageVersion: "C-13.0",
     advantageScore: ja.score ?? gh.score ?? 0,
     advantageBand: ja.band ?? gh.band ?? "neutral",
     advantageTier: ja.tier ?? gh.tier ?? 0
@@ -281,18 +297,22 @@ function buildHintsField(job, globalHints = {}) {
       jh.fallbackBandLevel ??
       globalHints.fallbackBandLevel ??
       0,
+
     chunkHints: {
       ...(globalHints.chunkHints || {}),
       ...(jh.chunkHints || {})
     },
+
     cacheHints: {
       ...(globalHints.cacheHints || {}),
       ...(jh.cacheHints || {})
     },
+
     prewarmHints: {
       ...(globalHints.prewarmHints || {}),
       ...(jh.prewarmHints || {})
     },
+
     coldStartHints: {
       ...(globalHints.coldStartHints || {}),
       ...(jh.coldStartHints || {})
@@ -300,22 +320,32 @@ function buildHintsField(job, globalHints = {}) {
   };
 }
 
-function classifyLymphPresenceTier(presenceField) {
-  const mesh = Number(presenceField.meshPressureIndex || 0);
-  const castle = Number(presenceField.castleLoadLevel || 0);
-  const pressure = mesh + castle;
+// ============================================================================
+// Lymph Compute Profile (metadata-only)
+// ============================================================================
 
-  if (pressure >= 150) return "critical";
-  if (pressure >= 100) return "high";
-  if (pressure >= 50) return "elevated";
-  if (pressure > 0) return "soft";
-  return "idle";
+function normalizeCachePriority(p) {
+  if (!p) return "normal";
+  const v = String(p).toLowerCase();
+  if (v === "critical" || v === "high" || v === "low") return v;
+  return "normal";
 }
 
+function buildLymphComputeProfile(band, hintsField) {
+  return {
+    routeBand: band,
+    fallbackBandLevel: hintsField.fallbackBandLevel,
+    chunkAggression: hintsField.chunkHints.chunkAggression ?? 0,
+    prewarmNeeded: !!hintsField.prewarmHints.shouldPrewarm,
+    cachePriority: normalizeCachePriority(hintsField.cacheHints.priority),
+    coldStartRisk: !!hintsField.coldStartHints.coldStartRisk
+  };
+}
 
-// ---------------------------------------------------------------------------
-// INTERNAL: Build dual-band + binary + wave metadata for a job/cycle
-// ---------------------------------------------------------------------------
+// ============================================================================
+// Binary + Wave Surfaces
+// ============================================================================
+
 function buildLymphBandBinaryWave(job, cycleIndex, presenceField) {
   const band = normalizeBand(job?.band || job?.meta?.band || "symbolic");
   lymphHealing.lastBand = band;
@@ -363,11 +393,10 @@ function buildLymphBandBinaryWave(job, cycleIndex, presenceField) {
   return { band, binaryField, waveField };
 }
 
+// ============================================================================
+// submitPulseEarnResult — Deterministic Lymphatic Handshake (v13 IMMORTAL)
+// ============================================================================
 
-// ---------------------------------------------------------------------------
-// submitPulseEarnResult — Deterministic Lymphatic Handshake (Presence-EVO+)
-// ---------------------------------------------------------------------------
-// globalHints is optional; if omitted, defaults to {}
 export function submitPulseEarnResult(job, result, globalHints = {}) {
   lymphCycle++;
   lymphHealing.cycleCount++;
@@ -376,7 +405,7 @@ export function submitPulseEarnResult(job, result, globalHints = {}) {
   const presenceField = buildPresenceField(job, globalHints);
   const advantageField = buildAdvantageField(job, globalHints);
   const hintsField = buildHintsField(job, globalHints);
-  const presenceTier = classifyLymphPresenceTier(presenceField);
+  const presenceTier = presenceField.presenceTier;
 
   lymphHealing.lastPresenceField = presenceField;
   lymphHealing.lastAdvantageField = advantageField;
@@ -388,6 +417,8 @@ export function submitPulseEarnResult(job, result, globalHints = {}) {
     presenceField
   );
 
+  const lymphComputeProfile = buildLymphComputeProfile(band, hintsField);
+
   const lymphPresenceProfile = {
     presenceTier,
     band,
@@ -397,22 +428,15 @@ export function submitPulseEarnResult(job, result, globalHints = {}) {
     fallbackBandLevel: hintsField.fallbackBandLevel
   };
 
-  const binaryProfile = {
-    binaryField,
-    presenceTier
-  };
-
-  const waveProfile = {
-    waveField,
-    presenceTier
-  };
+  const binaryProfile = { binaryField, presenceTier };
+  const waveProfile = { waveField, presenceTier };
 
   lymphHealing.lastLymphPresenceProfile = lymphPresenceProfile;
   lymphHealing.lastBinaryProfile = binaryProfile;
   lymphHealing.lastWaveProfile = waveProfile;
+  lymphHealing.lastLymphComputeProfile = lymphComputeProfile;
 
   try {
-    // 1. Identity Verification — Immune Recognition
     if (!job || !job.marketplaceId) {
       lymphHealing.lastError = "missing_marketplaceId";
       lymphHealing.lastJobId = job?.id ?? null;
@@ -432,6 +456,7 @@ export function submitPulseEarnResult(job, result, globalHints = {}) {
         lymphPresenceProfile,
         binaryProfile,
         waveProfile,
+        lymphComputeProfile,
         cycleIndex: lymphCycle
       };
 
@@ -453,7 +478,6 @@ export function submitPulseEarnResult(job, result, globalHints = {}) {
       job.marketplaceId
     );
 
-    // 2. Locate Marketplace Receptor — Antigen Matching
     const adapter = receptorRegistry[job.marketplaceId];
 
     if (!adapter) {
@@ -473,6 +497,7 @@ export function submitPulseEarnResult(job, result, globalHints = {}) {
         lymphPresenceProfile,
         binaryProfile,
         waveProfile,
+        lymphComputeProfile,
         cycleIndex: lymphCycle
       };
 
@@ -499,6 +524,7 @@ export function submitPulseEarnResult(job, result, globalHints = {}) {
         lymphPresenceProfile,
         binaryProfile,
         waveProfile,
+        lymphComputeProfile,
         cycleIndex: lymphCycle
       };
 
@@ -510,7 +536,6 @@ export function submitPulseEarnResult(job, result, globalHints = {}) {
 
     lymphHealing.lastAdapterUsed = job.marketplaceId;
 
-    // 3. Perform the Handshake — Deterministic Dispatch
     const response = adapter.submitResult(job, result);
 
     lymphHealing.lastResponse = response;
@@ -528,8 +553,10 @@ export function submitPulseEarnResult(job, result, globalHints = {}) {
       lymphPresenceProfile,
       binaryProfile,
       waveProfile,
+      lymphComputeProfile,   // ← THIS WAS MISSING
       cycleIndex: lymphCycle
     };
+
 
   } catch (err) {
     lymphHealing.lastError = err.message;
@@ -548,8 +575,10 @@ export function submitPulseEarnResult(job, result, globalHints = {}) {
       lymphPresenceProfile,
       binaryProfile,
       waveProfile,
+      lymphComputeProfile,   // ← ALSO MUST BE INCLUDED HERE
       cycleIndex: lymphCycle
     };
+
 
     lymphHealing.lastResponse = failure;
     lymphHealing.lastHandshakeSignature = buildHandshakeSignature(job, lymphCycle);

@@ -1,32 +1,33 @@
 // ============================================================================
-// FILE: tropic-pulse-functions/PULSE-WORLD/PULSE-EARN/PulseEarnImmuneSystem-v12.3-PRESENCE-EVO+.js
-// LAYER: THE IMMUNE SYSTEM (v12.3-PRESENCE-EVO+ + Dual-Band + Binary-First + Wave)
+// FILE: tropic-pulse-functions/PULSE-WORLD/PULSE-EARN/PulseEarnImmuneSystem-v13.0-PRESENCE-IMMORTAL.js
+// LAYER: THE IMMUNE SYSTEM (v13.0-PRESENCE-IMMORTAL + Dual-Band + Binary-First + Wave)
 // (Subsystem Doctor + Drift Diagnostician + Deterministic Repair Engine + Presence Telemetry)
 // ============================================================================
 //
-// ROLE (v12.3-PRESENCE-EVO+):
+// ROLE (v13.0-PRESENCE-IMMORTAL):
 //   THE IMMUNE SYSTEM — Pulse‑Earn’s subsystem physician.
 //   • Reads vitals across all Earn subsystems (immune surveillance).
 //   • Detects drift, errors, inconsistencies (pathogen detection).
 //   • Prescribes deterministic repairs (immune response).
 //   • Maintains subsystem health records (immune memory).
-//   • Emits v12.3‑Presence‑EVO+ signatures + diagnostics + presence surfaces.
+//   • Emits v13‑Presence‑IMMORTAL signatures + diagnostics + presence surfaces.
 //
-// CONTRACT (v12.3-PRESENCE-EVO+):
+// CONTRACT (v13.0-PRESENCE-IMMORTAL):
 //   • PURE HEALING — no AI layers, no translation, no LLM inference.
 //   • READ‑ONLY except deterministic repair actions.
 //   • NO eval(), NO Function(), NO dynamic imports.
 //   • NO executing user code.
-//   • NO timestamps, NO async.
+//   • NO filesystem, NO timestamps, NO async.
 //   • Deterministic drift detection only.
 //   • Dual-band + binary + wave + presence metadata are structural-only.
 //   • Binary-first: binary field is the primary immune surface, wave is secondary.
 // ============================================================================
+
 export const PulseEarnImmuneSystemMeta = Object.freeze({
   layer: "PulseEarnImmuneSystem",
   role: "EARN_IMMUNE_ORGAN",
-  version: "v12.3-PRESENCE-EVO+",
-  identity: "PulseEarnImmuneSystem-v12.3-PRESENCE-EVO+",
+  version: "v13.0-PRESENCE-IMMORTAL",
+  identity: "PulseEarnImmuneSystem-v13.0-PRESENCE-IMMORTAL",
 
   guarantees: Object.freeze({
     deterministic: true,
@@ -70,12 +71,13 @@ export const PulseEarnImmuneSystemMeta = Object.freeze({
 
   lineage: Object.freeze({
     root: "PulseOS-v11-EVO",
-    parent: "PulseEarn-v12.3-PRESENCE-EVO+",
+    parent: "PulseEarn-v13.0-PRESENCE-IMMORTAL",
     ancestry: [
       "PulseEarnImmuneSystem-v9",
       "PulseEarnImmuneSystem-v10",
       "PulseEarnImmuneSystem-v11",
-      "PulseEarnImmuneSystem-v11-Evo"
+      "PulseEarnImmuneSystem-v11-Evo",
+      "PulseEarnImmuneSystem-v12.3-PRESENCE-EVO+"
     ]
   }),
 
@@ -94,12 +96,12 @@ export const PulseEarnImmuneSystemMeta = Object.freeze({
   })
 });
 
+// ============================================================================
+// IMMUNE CONTEXT METADATA (v13.0-PRESENCE-IMMORTAL + Dual-Band + Binary-First)
+// ============================================================================
 
-// ============================================================================
-// IMMUNE CONTEXT METADATA (v12.3-PRESENCE-EVO+ + Dual-Band + Binary-First)
-// ============================================================================
 export const PULSE_EARN_IMMUNE_CONTEXT = Object.freeze({
-  layer: "PulseEarnImmuneSystem-v12.3-PRESENCE-EVO+",
+  layer: "PulseEarnImmuneSystem-v13.0-PRESENCE-IMMORTAL",
   role: "IMMUNE_PHYSICIAN",
   purpose: "Diagnose and repair drift across Earn subsystems",
   context: "Immune surveillance + deterministic healing",
@@ -135,11 +137,10 @@ export const PULSE_EARN_IMMUNE_CONTEXT = Object.freeze({
   })
 });
 
-
 // ============================================================================
 // Imports — subsystem vitals (healing state providers)
-// (still v11-Evo filenames; presence fields are optional, metadata-only)
 // ============================================================================
+
 import { getEarnEngineHealingState } from "./PulseEarnMuscleSystem.js";
 import { getPulseEarnHeartHealingState } from "./PulseEarnHeart.js";
 
@@ -155,10 +156,10 @@ import {
 import { getPulseEarnCellHealingState } from "./PulseEarnCell.js";
 import { getPulseEarnNervousSystemHealingState } from "./PulseEarnNervousSystem.js";
 
-
 // ============================================================================
 // Immune State — medical chart (immune memory)
 // ============================================================================
+
 const immuneState = {
   lastCheck: null,
   lastRepair: null,
@@ -178,13 +179,14 @@ const immuneState = {
   lastBinaryField: null,
   lastWaveField: null,
 
-  // Presence-EVO+ additions
+  // Presence / Advantage / Hints / Profiles
   lastPresenceField: null,
   lastAdvantageField: null,
   lastHintsField: null,
   lastImmunePressureProfile: null,
   lastBinaryProfile: null,
   lastWaveProfile: null,
+  lastImmuneComputeProfile: null,
 
   ...PULSE_EARN_IMMUNE_CONTEXT
 };
@@ -192,10 +194,10 @@ const immuneState = {
 // Deterministic immune cycle counter
 let immuneCycle = 0;
 
-
 // ============================================================================
 // Deterministic Hash Helper
 // ============================================================================
+
 function computeHash(str) {
   let h = 0;
   const s = String(str || "");
@@ -210,10 +212,10 @@ function normalizeBand(band) {
   return b === "binary" ? "binary" : "symbolic";
 }
 
-
 // ============================================================================
 // Signature Builders
 // ============================================================================
+
 function buildImmuneSignature(cycle, band, pressureTier, errorCount) {
   return computeHash(
     `IMMUNE::${cycle}::${band}::PTIER:${pressureTier}::ERRS:${errorCount}`
@@ -230,10 +232,10 @@ function buildRepairSignature(key, cycle) {
   return computeHash(`REPAIR::${key || "NONE"}::${cycle}`);
 }
 
-
 // ============================================================================
 // Presence / Advantage / Hints Surfaces (aggregated across subsystems + global)
 // ============================================================================
+
 function safePresenceFrom(subsystem) {
   return (
     subsystem?.lastPresenceField ||
@@ -266,6 +268,7 @@ function buildPresenceField(report, globalHints = {}) {
   const packetsP = safePresenceFrom(report.packets);
   const cellP = safePresenceFrom(report.cell);
   const connectorP = safePresenceFrom(report.connector);
+
   const gh = globalHints.presenceContext || {};
   const mesh = globalHints.meshSignals || {};
   const castle = globalHints.castleSignals || {};
@@ -293,7 +296,33 @@ function buildPresenceField(report, globalHints = {}) {
     castle.loadLevel ||
     0;
 
+  const meshStrength =
+    engineP.meshStrength ||
+    runtimeP.meshStrength ||
+    workerP.meshStrength ||
+    submissionP.meshStrength ||
+    packetsP.meshStrength ||
+    cellP.meshStrength ||
+    connectorP.meshStrength ||
+    mesh.meshStrength ||
+    0;
+
+  const pressure = meshPressureIndex + castleLoadLevel;
+  let presenceTier = "idle";
+  if (pressure >= 180) presenceTier = "critical";
+  else if (pressure >= 120) presenceTier = "high";
+  else if (pressure >= 60) presenceTier = "elevated";
+  else if (pressure > 0) presenceTier = "soft";
+
+  const presenceSignature = computeHash(
+    `IMMUNE_PRESENCE_V13::${presenceTier}::${meshPressureIndex}::${castleLoadLevel}`
+  );
+
   return {
+    presenceVersion: "v13.0-PRESENCE-IMMORTAL",
+    presenceTier,
+    presenceSignature,
+
     bandPresence:
       engineP.bandPresence ||
       runtimeP.bandPresence ||
@@ -374,17 +403,9 @@ function buildPresenceField(report, globalHints = {}) {
       connectorP.castleId ||
       castle.castleId ||
       "unknown-castle",
+
     castleLoadLevel,
-    meshStrength:
-      engineP.meshStrength ||
-      runtimeP.meshStrength ||
-      workerP.meshStrength ||
-      submissionP.meshStrength ||
-      packetsP.meshStrength ||
-      cellP.meshStrength ||
-      connectorP.meshStrength ||
-      mesh.meshStrength ||
-      0,
+    meshStrength,
     meshPressureIndex
   };
 }
@@ -400,6 +421,7 @@ function buildAdvantageField(report, globalHints = {}) {
   const ghAdv = globalHints.advantageContext || {};
 
   return {
+    advantageVersion: "C-13.0",
     advantageScore:
       engineA.advantageScore ??
       runtimeA.advantageScore ??
@@ -450,59 +472,100 @@ function buildHintsField(report, globalHints = {}) {
     coldStartHints: globalHints.coldStartHints || {}
   };
 
+  const mergedChunkHints = {
+    ...gh.chunkHints,
+    ...(engineH.chunkHints || {}),
+    ...(runtimeH.chunkHints || {}),
+    ...(workerH.chunkHints || {}),
+    ...(submissionH.chunkHints || {}),
+    ...(packetsH.chunkHints || {}),
+    ...(cellH.chunkHints || {}),
+    ...(connectorH.chunkHints || {})
+  };
+
+  const mergedCacheHints = {
+    ...gh.cacheHints,
+    ...(engineH.cacheHints || {}),
+    ...(runtimeH.cacheHints || {}),
+    ...(workerH.cacheHints || {}),
+    ...(submissionH.cacheHints || {}),
+    ...(packetsH.cacheHints || {}),
+    ...(cellH.cacheHints || {}),
+    ...(connectorH.cacheHints || {})
+  };
+
+  const mergedPrewarmHints = {
+    ...gh.prewarmHints,
+    ...(engineH.prewarmHints || {}),
+    ...(runtimeH.prewarmHints || {}),
+    ...(workerH.prewarmHints || {}),
+    ...(submissionH.prewarmHints || {}),
+    ...(packetsH.prewarmHints || {}),
+    ...(cellH.prewarmHints || {}),
+    ...(connectorH.prewarmHints || {})
+  };
+
+  const mergedColdStartHints = {
+    ...gh.coldStartHints,
+    ...(engineH.coldStartHints || {}),
+    ...(runtimeH.coldStartHints || {}),
+    ...(workerH.coldStartHints || {}),
+    ...(submissionH.coldStartHints || {}),
+    ...(packetsH.coldStartHints || {}),
+    ...(cellH.coldStartHints || {}),
+    ...(connectorH.coldStartHints || {})
+  };
+
+  const fallbackBandLevel =
+    engineH.fallbackBandLevel ??
+    runtimeH.fallbackBandLevel ??
+    workerH.fallbackBandLevel ??
+    submissionH.fallbackBandLevel ??
+    packetsH.fallbackBandLevel ??
+    cellH.fallbackBandLevel ??
+    connectorH.fallbackBandLevel ??
+    gh.fallbackBandLevel ??
+    0;
+
   return {
-    fallbackBandLevel:
-      engineH.fallbackBandLevel ??
-      runtimeH.fallbackBandLevel ??
-      workerH.fallbackBandLevel ??
-      submissionH.fallbackBandLevel ??
-      packetsH.fallbackBandLevel ??
-      cellH.fallbackBandLevel ??
-      connectorH.fallbackBandLevel ??
-      gh.fallbackBandLevel ??
-      0,
-    chunkHints: {
-      ...gh.chunkHints,
-      ...(engineH.chunkHints || {}),
-      ...(runtimeH.chunkHints || {}),
-      ...(workerH.chunkHints || {}),
-      ...(submissionH.chunkHints || {}),
-      ...(packetsH.chunkHints || {}),
-      ...(cellH.chunkHints || {}),
-      ...(connectorH.chunkHints || {})
-    },
-    cacheHints: {
-      ...gh.cacheHints,
-      ...(engineH.cacheHints || {}),
-      ...(runtimeH.cacheHints || {}),
-      ...(workerH.cacheHints || {}),
-      ...(submissionH.cacheHints || {}),
-      ...(packetsH.cacheHints || {}),
-      ...(cellH.cacheHints || {}),
-      ...(connectorH.cacheHints || {})
-    },
-    prewarmHints: {
-      ...gh.prewarmHints,
-      ...(engineH.prewarmHints || {}),
-      ...(runtimeH.prewarmHints || {}),
-      ...(workerH.prewarmHints || {}),
-      ...(submissionH.prewarmHints || {}),
-      ...(packetsH.prewarmHints || {}),
-      ...(cellH.prewarmHints || {}),
-      ...(connectorH.prewarmHints || {})
-    },
-    coldStartHints: {
-      ...gh.coldStartHints,
-      ...(engineH.coldStartHints || {}),
-      ...(runtimeH.coldStartHints || {}),
-      ...(workerH.coldStartHints || {}),
-      ...(submissionH.coldStartHints || {}),
-      ...(packetsH.coldStartHints || {}),
-      ...(cellH.coldStartHints || {}),
-      ...(connectorH.coldStartHints || {})
-    }
+    fallbackBandLevel,
+    chunkHints: mergedChunkHints,
+    cacheHints: mergedCacheHints,
+    prewarmHints: mergedPrewarmHints,
+    coldStartHints: mergedColdStartHints
   };
 }
+
+// ============================================================================
+// Immune Compute Profile (metadata-only, no performance math)
+// ============================================================================
+
+function normalizeCachePriority(p) {
+  if (!p) return "normal";
+  const v = String(p).toLowerCase();
+  if (v === "critical" || v === "high" || v === "low") return v;
+  return "normal";
+}
+
+function buildImmuneComputeProfile(derivedBand, hintsField) {
+  const chunkAggression = hintsField.chunkHints.chunkAggression ?? 0;
+  const prewarmNeeded = !!hintsField.prewarmHints.shouldPrewarm;
+  const cachePriority = normalizeCachePriority(hintsField.cacheHints.priority);
+  const coldStartRisk = !!hintsField.coldStartHints.coldStartRisk;
+
+  return {
+    routeBand: derivedBand,
+    fallbackBandLevel: hintsField.fallbackBandLevel,
+    chunkAggression,
+    prewarmNeeded,
+    cachePriority,
+    coldStartRisk
+  };
+}
+
+// ============================================================================
+// Pressure Tier Classification (diagnostic only, no perf baseline)
+// ============================================================================
 
 function classifyPressureTier(presenceField, errorCount) {
   const mesh = Number(presenceField.meshPressureIndex || 0);
@@ -516,10 +579,10 @@ function classifyPressureTier(presenceField, errorCount) {
   return "idle";
 }
 
-
 // ============================================================================
 // runHealthCheck() — immune surveillance scan (presence-aware, binary-first)
 // ============================================================================
+
 export function runHealthCheck(globalHints = {}) {
   immuneCycle++;
   immuneState.cycleCount++;
@@ -549,7 +612,6 @@ export function runHealthCheck(globalHints = {}) {
       report.cell.lastError ||
       report.connector.lastError;
 
-    // A — Dual-Band Awareness (derive band from runtime/packets, default symbolic)
     const derivedBand = normalizeBand(
       report.runtime.lastBand ||
       report.packets.lastBand ||
@@ -558,7 +620,6 @@ export function runHealthCheck(globalHints = {}) {
     immuneState.lastBand = derivedBand;
     immuneState.lastBandSignature = computeHash(`BAND::${derivedBand}`);
 
-    // Binary-first error surface
     const errorFlags = [
       report.engine.lastError,
       report.runtime.lastError,
@@ -573,18 +634,22 @@ export function runHealthCheck(globalHints = {}) {
       0
     );
 
-    // Presence / Advantage / Hints aggregation
     const presenceField = buildPresenceField(report, globalHints);
     const advantageField = buildAdvantageField(report, globalHints);
     const hintsField = buildHintsField(report, globalHints);
 
     const pressureTier = classifyPressureTier(presenceField, errorCount);
 
+    const immuneComputeProfile = buildImmuneComputeProfile(
+      derivedBand,
+      hintsField
+    );
+
     immuneState.lastPresenceField = presenceField;
     immuneState.lastAdvantageField = advantageField;
     immuneState.lastHintsField = hintsField;
+    immuneState.lastImmuneComputeProfile = immuneComputeProfile;
 
-    // Binary surface (binary-first, presence-aware)
     const surface =
       errorCount * 100 +
       immuneCycle +
@@ -607,7 +672,6 @@ export function runHealthCheck(globalHints = {}) {
     };
     immuneState.lastBinaryField = binaryField;
 
-    // Wave-Theory Metadata (secondary structural field, presence-aware)
     const waveField = {
       amplitude: errorCount + (presenceField.meshStrength || 0),
       wavelength: immuneCycle,
@@ -620,7 +684,6 @@ export function runHealthCheck(globalHints = {}) {
     };
     immuneState.lastWaveField = waveField;
 
-    // Presence-aware immune profiles
     const immunePressureProfile = {
       pressureTier,
       errorCount,
@@ -672,6 +735,7 @@ export function runHealthCheck(globalHints = {}) {
         immunePressureProfile,
         binaryProfile,
         waveProfile,
+        immuneComputeProfile,
         cycleIndex: immuneCycle,
         ...PULSE_EARN_IMMUNE_CONTEXT
       };
@@ -696,6 +760,7 @@ export function runHealthCheck(globalHints = {}) {
       immunePressureProfile,
       binaryProfile,
       waveProfile,
+      immuneComputeProfile,
       cycleIndex: immuneCycle,
       ...PULSE_EARN_IMMUNE_CONTEXT
     };
@@ -748,10 +813,10 @@ export function runHealthCheck(globalHints = {}) {
   }
 }
 
-
 // ============================================================================
 // runRepair() — immune response (dual-band aware genetic repair)
 // ============================================================================
+
 export function runRepair() {
   immuneCycle++;
   immuneState.lastCycleIndex = immuneCycle;
@@ -762,7 +827,6 @@ export function runRepair() {
 
     let repairedKey = null;
 
-    // If PacketEngine drifted, regenerate last packet deterministically
     if (packets.lastError && packets.lastKey) {
       const parts = String(packets.lastKey).split(":");
       const fileId = parts[0];
@@ -804,10 +868,10 @@ export function runRepair() {
   }
 }
 
-
 // ============================================================================
 // getPulseEarnImmuneState() — immune memory export
 // ============================================================================
+
 export function getPulseEarnImmuneState() {
   return { ...immuneState };
 }

@@ -1,30 +1,26 @@
 // ============================================================================
-// FILE: tropic-pulse-functions/PULSE-WORLD/PULSE-EARN/PulseEarnMktEmbassyLedger.js
-// LAYER: THE EMBASSY LEDGER (v12.3-PRESENCE-EVO+)
-// (Marketplace Registry + Identity Verifier + Diplomatic Roster + Prewarm Surfaces)
+// FILE: tropic-pulse-functions/PULSE-WORLD/PULSE-EARN/PulseEarnMktEmbassyLedger-v13.0-PRESENCE-IMMORTAL.js
+// LAYER: THE EMBASSY LEDGER (v13.0-PRESENCE-IMMORTAL)
+// Marketplace Registry + Identity Verifier + Diplomatic Roster + Presence/Advantage/Prewarm
 // ============================================================================
 //
-// ROLE (v12.3-PRESENCE-EVO+):
-//   THE EMBASSY LEDGER — The official registry of all Pulse‑Earn marketplace
-//   representatives. Maintains a deterministic roster of foreign marketplace
-//   agents (Ambassador, Broker, Forager, Courier, Auctioneer).
-//   • Validates adapter identity + required methods.
-//   • Validates optional A‑B‑A surfaces (bandSignature, binaryField, waveField).
-//   • Emits deterministic signatures for roster integrity.
-//   • Computes Presence + Advantage‑C + Chunk/Prewarm plans per adapter.
-//   • Keeps the entire marketplace layer "ready to go" every single moment.
+// ROLE (v13.0-PRESENCE-IMMORTAL):
+//   The Embassy Ledger is the authoritative registry of all Pulse‑Earn marketplace
+//   representatives. It validates identity, ensures deterministic readiness,
+//   and emits unified v13 presence/advantage/chunk-prewarm surfaces for each adapter.
 //
-// CONTRACT (v12.3-PRESENCE-EVO+):
-//   • PURE REGISTRY — no AI layers, no translation, no memory model.
-//   • NO async, NO timestamps, NO nondeterminism.
+// CONTRACT (v13.0-PRESENCE-IMMORTAL):
+//   • PURE REGISTRY — no async, no randomness, no timestamps.
 //   • Deterministic validation + readiness surfaces only.
-//   • Public API remains unchanged (marketplaces, getHealingState).
+//   • Unified Earn v13 presence model (mesh/castle/region).
+//   • Public API unchanged: marketplaces[], getHealingState().
 // ============================================================================
+
 export const PulseEarnMktEmbassyLedgerMeta = Object.freeze({
   layer: "PulseEarnMktEmbassyLedger",
   role: "EARN_MARKETPLACE_REGISTRY",
-  version: "v12.3-PRESENCE-EVO+",
-  identity: "PulseEarnMktEmbassyLedger-v12.3-PRESENCE-EVO+",
+  version: "v13.0-PRESENCE-IMMORTAL",
+  identity: "PulseEarnMktEmbassyLedger-v13.0-PRESENCE-IMMORTAL",
 
   guarantees: Object.freeze({
     deterministic: true,
@@ -48,54 +44,11 @@ export const PulseEarnMktEmbassyLedgerMeta = Object.freeze({
     zeroAI: true,
     zeroUserCode: true,
     identityVerificationStrict: true
-  }),
-
-  contract: Object.freeze({
-    input: [
-      "MarketplaceAdapters",
-      "AdapterIdentityMetadata",
-      "DualBandContext",
-      "DevicePhenotypePresence"
-    ],
-    output: [
-      "ValidatedMarketplaceRoster",
-      "EmbassyDiagnostics",
-      "EmbassySignatures",
-      "EmbassyHealingState",
-      "EmbassyPresenceField",
-      "EmbassyAdvantageField",
-      "EmbassyChunkPrewarmPlan"
-    ]
-  }),
-
-  lineage: Object.freeze({
-    root: "PulseOS-v11-EVO",
-    parent: "PulseEarn-v11.2-EVO",
-    ancestry: [
-      "PulseEarnMktEmbassyLedger-v9",
-      "PulseEarnMktEmbassyLedger-v10",
-      "PulseEarnMktEmbassyLedger-v11",
-      "PulseEarnMktEmbassyLedger-v11-Evo"
-    ]
-  }),
-
-  bands: Object.freeze({
-    supported: ["symbolic", "binary"],
-    default: "symbolic",
-    behavior: "metadata-only"
-  }),
-
-  architecture: Object.freeze({
-    pattern: "A-B-A",
-    baseline: "deterministic adapter validation + roster construction",
-    adaptive: "binary/wave surfaces + band signatures + presence/advantage/prewarm",
-    return: "deterministic marketplace roster + signatures + readiness surfaces"
   })
 });
 
-
 // ---------------------------------------------------------------------------
-// Imports — Deterministic Marketplace Representatives
+// Imports — Deterministic Marketplace Representatives (v13)
 // ---------------------------------------------------------------------------
 import { PulseEarnMktAmbassador } from "./PulseEarnMktAmbassador.js";   // Akash
 import { PulseEarnMktBroker } from "./PulseEarnMktBroker.js";           // RunPod
@@ -103,16 +56,14 @@ import { PulseEarnMktForager } from "./PulseEarnMktForager.js";         // Salad
 import { PulseEarnMktCourier } from "./PulseEarnMktCourier.js";         // Spheron
 import { PulseEarnMktAuctioneer } from "./PulseEarnMktAuctioneer.js";   // Vast
 
-
 // ---------------------------------------------------------------------------
 // Deterministic Hash Helper
 // ---------------------------------------------------------------------------
 function computeHash(str) {
   let h = 0;
   const s = String(str || "");
-  for (let i = 0; i < s.length; i++) {
+  for (let i = 0; i < s.length; i++)
     h = (h + s.charCodeAt(i) * (i + 1)) % 100000;
-  }
   return `h${h}`;
 }
 
@@ -128,89 +79,148 @@ function buildCycleSignature(cycle) {
   return computeHash(`EMBASSY_CYCLE::${cycle}`);
 }
 
-function buildAbaSignature(adapter) {
-  const band = adapter?.bandSignature || "NO_BAND";
-  return computeHash(`ABA_ADAPTER::${band}`);
-}
-
 function normalizeBand(band) {
   const b = String(band || "symbolic").toLowerCase();
   return b === "binary" ? "binary" : "symbolic";
 }
 
+// ---------------------------------------------------------------------------
+// Unified Earn v13 Presence Tier
+// ---------------------------------------------------------------------------
+function classifyPresenceTier(pressure) {
+  if (pressure >= 150) return "critical";
+  if (pressure >= 100) return "high";
+  if (pressure >= 50) return "elevated";
+  if (pressure > 0) return "soft";
+  return "idle";
+}
 
 // ---------------------------------------------------------------------------
-// Presence / Advantage / Chunk‑Prewarm Builders (v12.3)
+// Unified v13 Presence Field for Adapters
 // ---------------------------------------------------------------------------
-function buildAdapterPresenceField(name, adapter, cycleIndex) {
+function buildAdapterPresenceField(name, adapter, cycleIndex, globalHints = {}) {
+  const ghP = globalHints.presenceContext || {};
+  const mesh = globalHints.meshSignals || {};
+  const castle = globalHints.castleSignals || {};
+  const region = globalHints.regionContext || {};
+
+  const meshStrength = Number(mesh.meshStrength || 0);
+  const meshPressureExternal = Number(mesh.meshPressureIndex || 0);
+  const castleLoadExternal = Number(castle.loadLevel || 0);
+
+  // Internal adapter identity signal
   const idLen = (adapter?.id || "").length;
   const roleLen = (adapter?.name || "").length;
+  const internalComposite = idLen * 0.001 + roleLen * 0.001 + cycleIndex * 0.0001;
+  const internalPressure = Math.floor(internalComposite * 1000);
 
-  const composite =
-    idLen * 0.001 +
-    roleLen * 0.001 +
-    cycleIndex * 0.0001;
+  const meshPressureIndex = meshPressureExternal + internalPressure;
+  const castleLoadLevel = castleLoadExternal;
 
-  const presenceTier =
-    composite >= 0.02 ? "presence_high" :
-    composite >= 0.005 ? "presence_mid" :
-    "presence_low";
+  const pressure = meshPressureIndex + castleLoadLevel;
+  const presenceTier = classifyPresenceTier(pressure);
 
   return {
-    presenceVersion: "v12.3",
+    presenceVersion: "v13.0-PRESENCE-IMMORTAL",
     presenceTier,
+
     adapterName: name,
     adapterId: adapter?.id || null,
+
+    bandPresence: ghP.bandPresence || "symbolic",
+    routerPresence: ghP.routerPresence || "stable",
+    devicePresence: ghP.devicePresence || "embassy",
+
+    meshPresence: ghP.meshPresence || (meshStrength > 0 ? "mesh-active" : "mesh-idle"),
+    castlePresence: ghP.castlePresence || castle.castlePresence || "embassy-region",
+    regionPresence: ghP.regionPresence || region.regionTag || "unknown-region",
+
+    regionId: region.regionId || "embassy-region",
+    castleId: castle.castleId || "embassy-castle",
+
+    meshStrength,
+    meshPressureIndex,
+    castleLoadLevel,
+
     idLen,
     roleLen,
     cycleIndex,
+
     presenceSignature: computeHash(
-      `EMBASSY_PRESENCE::${name}::${presenceTier}::${cycleIndex}`
+      `EMBASSY_PRESENCE::${name}::${presenceTier}::${meshPressureIndex}::${castleLoadLevel}`
     )
   };
 }
 
-function buildAdapterAdvantageField(name, adapter, band, cycleIndex) {
+// ---------------------------------------------------------------------------
+// Unified v13 Advantage‑C
+// ---------------------------------------------------------------------------
+function buildAdapterAdvantageField(name, adapter, band, cycleIndex, presenceField, globalHints = {}) {
   const hasPing = typeof adapter?.ping === "function";
   const hasFetch = typeof adapter?.fetchJobs === "function";
   const hasSubmit = typeof adapter?.submitResult === "function";
 
-  const methodScore =
-    (hasPing ? 1 : 0) +
-    (hasFetch ? 1 : 0) +
-    (hasSubmit ? 1 : 0);
-
+  const methodScore = (hasPing ? 1 : 0) + (hasFetch ? 1 : 0) + (hasSubmit ? 1 : 0);
   const bandScore = band === "binary" ? 2 : 1;
 
-  const advantageScore =
+  const baseScore =
     methodScore * 0.01 +
     bandScore * 0.005 +
     cycleIndex * 0.0001;
 
+  const presenceBoost =
+    presenceField.presenceTier === "critical" ? 0.02 :
+    presenceField.presenceTier === "high" ? 0.015 :
+    presenceField.presenceTier === "elevated" ? 0.01 :
+    presenceField.presenceTier === "soft" ? 0.005 :
+    0;
+
+  const advantageScore = baseScore + presenceBoost;
+
+  let advantageTier = 0;
+  if (advantageScore >= 0.05) advantageTier = 3;
+  else if (advantageScore >= 0.02) advantageTier = 2;
+  else if (advantageScore > 0) advantageTier = 1;
+
+  const fallbackBandLevel = globalHints.fallbackBandLevel ?? 0;
+
   return {
-    advantageVersion: "C",
+    advantageVersion: "C-13.0",
     adapterName: name,
     adapterId: adapter?.id || null,
     band,
     methodScore,
     bandScore,
-    advantageScore
+    advantageScore,
+    advantageTier,
+    fallbackBandLevel
   };
 }
 
+// ---------------------------------------------------------------------------
+// Unified v13 Chunk/Prewarm Plan
+// ---------------------------------------------------------------------------
 function buildAdapterChunkPrewarmPlan(name, adapter, presenceField, advantageField) {
   const basePriority =
-    presenceField.presenceTier === "presence_high"
+    presenceField.presenceTier === "critical"
+      ? 4
+      : presenceField.presenceTier === "high"
       ? 3
-      : presenceField.presenceTier === "presence_mid"
+      : presenceField.presenceTier === "elevated"
       ? 2
-      : 1;
+      : presenceField.presenceTier === "soft"
+      ? 1
+      : 0;
 
-  const advantageBoost = advantageField.advantageScore > 0.03 ? 1 : 0;
+  const advantageBoost =
+    advantageField.advantageTier >= 3 ? 2 :
+    advantageField.advantageTier === 2 ? 1 :
+    0;
+
   const priority = basePriority + advantageBoost;
 
   return {
-    planVersion: "v12.3-Embassy-AdvantageC",
+    planVersion: "v13.0-Embassy-AdvantageC",
     adapterName: name,
     adapterId: adapter?.id || null,
     priority,
@@ -234,9 +244,8 @@ function buildAdapterChunkPrewarmPlan(name, adapter, presenceField, advantageFie
   };
 }
 
-
 // ---------------------------------------------------------------------------
-// Healing Metadata — Embassy Ledger Integrity + Readiness Log
+// Healing Metadata
 // ---------------------------------------------------------------------------
 const embassyHealing = {
   adaptersLoaded: [],
@@ -245,25 +254,21 @@ const embassyHealing = {
   cycleCount: 0,
   lastCycleIndex: null,
 
-  // v11/v12 signatures
   lastAdapterSignature: null,
   lastRosterSignature: null,
   lastCycleSignature: null,
-  lastAbaSignature: null,
 
-  // Presence / Advantage / Chunk‑Prewarm per adapter
-  adapterPresence: {},   // name -> presenceField
-  adapterAdvantage: {},  // name -> advantageField
-  adapterChunkPlan: {}   // name -> chunkPrewarmPlan
+  adapterPresence: {},
+  adapterAdvantage: {},
+  adapterChunkPlan: {}
 };
 
 let embassyCycle = 0;
 
-
 // ---------------------------------------------------------------------------
-// Adapter Validation — Diplomatic Credential Check + Readiness Surfaces
+// Adapter Validation (Unified v13 Presence)
 // ---------------------------------------------------------------------------
-function validateAdapter(name, adapter) {
+function validateAdapter(name, adapter, globalHints = {}) {
   embassyCycle++;
   embassyHealing.cycleCount++;
   embassyHealing.lastCycleIndex = embassyCycle;
@@ -273,30 +278,29 @@ function validateAdapter(name, adapter) {
     return false;
   }
 
-  // Required receptor methods
   const required = ["ping", "fetchJobs", "submitResult"];
   const missing = required.filter(fn => typeof adapter[fn] !== "function");
 
   if (missing.length > 0) {
-    embassyHealing.invalidAdapters.push({
-      adapter: name,
-      missingMethods: missing
-    });
+    embassyHealing.invalidAdapters.push({ adapter: name, missingMethods: missing });
     return false;
   }
-
-  // Optional A‑B‑A surfaces (non‑blocking)
-  const abaBand = adapter.bandSignature || "symbolic";
-  embassyHealing.lastAbaSignature = buildAbaSignature(adapter);
 
   embassyHealing.adaptersLoaded.push(name);
   embassyHealing.lastAdapterSignature = buildAdapterSignature(name);
   embassyHealing.lastCycleSignature = buildCycleSignature(embassyCycle);
 
-  // Presence + Advantage‑C + Chunk/Prewarm (per adapter, per validation cycle)
-  const band = normalizeBand(abaBand);
-  const presenceField = buildAdapterPresenceField(name, adapter, embassyCycle);
-  const advantageField = buildAdapterAdvantageField(name, adapter, band, embassyCycle);
+  const band = normalizeBand(adapter.bandSignature || "symbolic");
+
+  const presenceField = buildAdapterPresenceField(name, adapter, embassyCycle, globalHints);
+  const advantageField = buildAdapterAdvantageField(
+    name,
+    adapter,
+    band,
+    embassyCycle,
+    presenceField,
+    globalHints
+  );
   const chunkPlan = buildAdapterChunkPrewarmPlan(name, adapter, presenceField, advantageField);
 
   embassyHealing.adapterPresence[name] = presenceField;
@@ -306,44 +310,40 @@ function validateAdapter(name, adapter) {
   return true;
 }
 
-
 // ---------------------------------------------------------------------------
-// Validate All Marketplace Representatives (deterministic, eager prewarm)
+// Validate All Marketplace Representatives
 // ---------------------------------------------------------------------------
-validateAdapter("PulseEarnMktAmbassador",  PulseEarnMktAmbassador);  // Akash
-validateAdapter("PulseEarnMktBroker",      PulseEarnMktBroker);      // RunPod
-validateAdapter("PulseEarnMktForager",     PulseEarnMktForager);     // Salad
-validateAdapter("PulseEarnMktCourier",     PulseEarnMktCourier);     // Spheron
-validateAdapter("PulseEarnMktAuctioneer",  PulseEarnMktAuctioneer);  // Vast
-
+validateAdapter("PulseEarnMktAmbassador",  PulseEarnMktAmbassador);
+validateAdapter("PulseEarnMktBroker",      PulseEarnMktBroker);
+validateAdapter("PulseEarnMktForager",     PulseEarnMktForager);
+validateAdapter("PulseEarnMktCourier",     PulseEarnMktCourier);
+validateAdapter("PulseEarnMktAuctioneer",  PulseEarnMktAuctioneer);
 
 // ---------------------------------------------------------------------------
 // Deterministic Marketplace Roster
 // ---------------------------------------------------------------------------
 const marketplaces = [
-  PulseEarnMktAmbassador,   // Akash — Ambassador
-  PulseEarnMktBroker,       // RunPod — Broker
-  PulseEarnMktForager,      // Salad — Forager
-  PulseEarnMktCourier,      // Spheron — Courier
-  PulseEarnMktAuctioneer    // Vast — Auctioneer
+  PulseEarnMktAmbassador,
+  PulseEarnMktBroker,
+  PulseEarnMktForager,
+  PulseEarnMktCourier,
+  PulseEarnMktAuctioneer
 ];
 
 embassyHealing.lastRosterSignature = buildRosterSignature(
   marketplaces.map(m => m.id || "unknown")
 );
 
-
 // ---------------------------------------------------------------------------
-// Healing State Accessor (public, unchanged)
+// Healing State Accessor
 // ---------------------------------------------------------------------------
 function getPulseEarnMktEmbassyHealingState() {
   return { ...embassyHealing };
 }
 
-
-// ============================================================================
-// Exported API — EMBASSY LEDGER (Diplomatic Roster, v12.3-PRESENCE-EVO+)
-// ============================================================================
+// ---------------------------------------------------------------------------
+// Exported API
+// ---------------------------------------------------------------------------
 export const PulseEarnMktEmbassyLedger = {
   marketplaces,
   getHealingState: getPulseEarnMktEmbassyHealingState

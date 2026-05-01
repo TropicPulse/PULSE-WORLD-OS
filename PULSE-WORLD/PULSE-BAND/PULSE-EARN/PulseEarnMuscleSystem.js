@@ -1,15 +1,16 @@
 // ============================================================================
-//  PulseEarnMuscleSystem-v12.3-PRESENCE-EVO+.js
-//  THE MUSCLE SYSTEM (v12.3 Presence + Advantage‑C + Triple Presence)
+//  PulseEarnMuscleSystem-v13.0-PRESENCE-IMMORTAL.js
+//  THE MUSCLE SYSTEM (v13.0 Presence-IMMORTAL + Advantage‑M + Triple Presence)
 //  Deterministic Worker Supervisor + Profit Orchestrator
 //  Zero async, zero compute, zero mutation, zero routing
+//  IMMORTAL: presence/advantage/plan are descriptive-only, no hidden governors.
 // ============================================================================
 
 export const PulseEarnMuscleSystemMeta = Object.freeze({
   layer: "PulseEarnMuscleSystem",
   role: "EARN_MUSCLE_ORGAN",
-  version: "v12.3-PRESENCE-EVO+",
-  identity: "PulseEarnMuscleSystem-v12.3-PRESENCE-EVO+",
+  version: "v13.0-PRESENCE-IMMORTAL",
+  identity: "PulseEarnMuscleSystem-v13.0-PRESENCE-IMMORTAL",
 
   guarantees: Object.freeze({
     deterministic: true,
@@ -78,7 +79,7 @@ function normalizeBand(b) {
 }
 
 // ============================================================================
-// Healing Metadata — Muscle Memory Log (v12.3-PRESENCE)
+// Healing Metadata — Muscle Memory Log (v13.0-PRESENCE-IMMORTAL)
 // ============================================================================
 const engineHealing = {
   running: false,
@@ -121,38 +122,38 @@ const engineHealing = {
 let engineCycle = 0;
 
 // ============================================================================
-// Presence Field (v12.3)
+// Presence Field (v13.0-PRESENCE-IMMORTAL)
+// Descriptive-only: tiers from simple structural counts, no perf scoring.
 // ============================================================================
 function buildPresenceField(job, device, cycleIndex) {
   const jobLen = (job?.id || "").length;
   const marketLen = (job?.marketplaceId || "").length;
-  const stability = device?.stabilityScore || 0.7;
+  const stability = device?.stabilityScore ?? 0.7;
 
-  const composite =
-    jobLen * 0.001 +
-    marketLen * 0.001 +
-    stability * 0.01;
+  const magnitude = jobLen + marketLen;
+  let presenceTier = "presence_idle";
+  if (magnitude >= 40) presenceTier = "presence_high";
+  else if (magnitude >= 10) presenceTier = "presence_mid";
+  else if (magnitude > 0) presenceTier = "presence_low";
 
-  const presenceTier =
-    composite >= 0.02 ? "presence_high" :
-    composite >= 0.005 ? "presence_mid" :
-    "presence_low";
+  const presenceSignature = computeHash(
+    `MUSCLE_PRESENCE_V13::${presenceTier}::${jobLen}::${marketLen}::${cycleIndex}`
+  );
 
   return {
-    presenceVersion: "v12.3",
+    presenceVersion: "v13.0-PRESENCE-IMMORTAL",
     presenceTier,
     jobLen,
     marketLen,
     stability,
     cycleIndex,
-    presenceSignature: computeHash(
-      `MUSCLE_PRESENCE::${presenceTier}::${jobLen}::${marketLen}::${cycleIndex}`
-    )
+    presenceSignature
   };
 }
 
 // ============================================================================
-// Advantage‑C Field (v12.3)
+// Advantage‑M Field (v13.0-PRESENCE-IMMORTAL)
+// Structural-only: no advantageScore math, just descriptive fields.
 // ============================================================================
 function buildAdvantageField(job, device, bandPack, presenceField) {
   const gpuScore = device?.gpuScore || 0;
@@ -160,43 +161,31 @@ function buildAdvantageField(job, device, bandPack, presenceField) {
   const density = bandPack.binaryField.density;
   const amplitude = bandPack.waveField.amplitude;
 
-  const advantageScore =
-    gpuScore * 0.0005 +
-    bandwidth * 0.0002 +
-    density * 0.00001 +
-    amplitude * 0.00001 +
-    (presenceField.presenceTier === "presence_high" ? 0.01 : 0);
-
   return {
-    advantageVersion: "C",
+    advantageVersion: "M-13.0",
     band: bandPack.band,
     gpuScore,
     bandwidth,
     binaryDensity: density,
     waveAmplitude: amplitude,
-    presenceTier: presenceField.presenceTier,
-    advantageScore
+    presenceTier: presenceField.presenceTier
   };
 }
 
 // ============================================================================
-// Chunk / Cache / Prewarm Plan (v12.3)
+// Chunk / Cache / Prewarm Plan (v13 IMMORTAL)
+// Plan surface only; no hidden throttling or perf governors.
 // ============================================================================
 function buildChunkPrewarmPlan(job, device, presenceField) {
-  const basePriority =
-    presenceField.presenceTier === "presence_high"
-      ? 3
-      : presenceField.presenceTier === "presence_mid"
-      ? 2
-      : 1;
-
-  const gpuBoost = (device?.gpuScore || 0) > 600 ? 1 : 0;
-  const priority = basePriority + gpuBoost;
+  let priorityLabel = "normal";
+  if (presenceField.presenceTier === "presence_high") priorityLabel = "high";
+  else if (presenceField.presenceTier === "presence_mid") priorityLabel = "medium";
+  else if (presenceField.presenceTier === "presence_low") priorityLabel = "low";
 
   return {
-    planVersion: "v12.3-AdvantageC",
-    priority,
-    band: presenceField.presenceTier,
+    planVersion: "v13.0-AdvantageM",
+    priorityLabel,
+    bandPresence: presenceField.presenceTier,
     chunks: {
       jobEnvelope: true,
       metabolismBlueprint: true,
@@ -207,9 +196,9 @@ function buildChunkPrewarmPlan(job, device, presenceField) {
       muscleDiagnostics: true
     },
     prewarm: {
-      pulseSendSystem: presenceField.presenceTier !== "presence_low",
-      lymphNodes: presenceField.presenceTier !== "presence_low",
-      nervousSystem: presenceField.presenceTier !== "presence_low"
+      pulseSendSystem: presenceField.presenceTier !== "presence_idle",
+      lymphNodes: presenceField.presenceTier !== "presence_idle",
+      nervousSystem: presenceField.presenceTier !== "presence_idle"
     }
   };
 }
@@ -283,14 +272,14 @@ function buildResultSignature(job, result) {
 }
 
 // ============================================================================
-// FACTORY — createEarnEngine (v12.3-PRESENCE-EVO+)
+// FACTORY — createEarnEngine (v13.0-PRESENCE-IMMORTAL)
 // ============================================================================
 export function createEarnEngine({
   pulseSendSystem,
   log = console.log
 } = {}) {
   if (!pulseSendSystem || typeof pulseSendSystem.compute !== "function") {
-    throw new Error("[EarnEngine-v12.3-PRESENCE] pulseSendSystem.compute(job, ctx) required.");
+    throw new Error("[EarnEngine-v13.0-PRESENCE-IMMORTAL] pulseSendSystem.compute(job, ctx) required.");
   }
 
   const engine = {

@@ -1,33 +1,31 @@
 // ============================================================================
-// FILE: tropic-pulse-functions/PULSE-WORLD/PULSE-EARN/PulseEarnCell-v12.3-PRESENCE-EVO+.js
-// LAYER: THE CELL (Deterministic Worker + Safe Compute Participant)
+// FILE: tropic-pulse-functions/PULSE-WORLD/PULSE-EARN/PulseEarnCell-v13.0-PRESENCE-IMMORTAL.js
+// LAYER: THE CELL WORKER (v13.0-PRESENCE-IMMORTAL)
+// (Deterministic Cell Compute + Presence/Advantage/Hints + Compute Profile)
 // ============================================================================
 //
-// ROLE (v12.3-PRESENCE-EVO+):
-//   THE CELL — Pulse‑Earn’s sandboxed metabolic labor unit.
-//   • Executes deterministic, rule‑bound compute tasks (cellular metabolism).
-//   • Returns safe, structured results (ATP output).
-//   • Maintains personal healing metadata (cell health).
-//   • Emits v12.3‑Presence‑EVO+ metabolic signatures.
-//   • Dual-band aware (symbolic + binary) as metadata-only.
-//   • Presence/advantage/hints/computeProfile-aware via context/globalHints.
+// ROLE (v13.0-PRESENCE-IMMORTAL):
+//   THE CELL WORKER — Pulse‑Earn’s deterministic micro‑compute organ.
+//   • Executes small, sandboxed, deterministic operations.
+//   • Emits v13‑Presence‑IMMORTAL presence/advantage/hints surfaces.
+//   • Emits cell compute profile (metadata-only).
+//   • Emits loop + wave fields as structural metadata.
+//   • No speed, no baselines, no governors, no performance math.
 //
-// CONTRACT (v12.3-PRESENCE-EVO+):
+// CONTRACT (v13.0-PRESENCE-IMMORTAL):
 //   • PURE COMPUTE — no AI layers, no translation, no memory model.
-//   • READ‑ONLY except for healing metadata.
 //   • NO eval(), NO Function(), NO dynamic imports.
-//   • NO network access.
-//   • NO executing user code.
+//   • NO user scripts, NO network calls, NO filesystem access.
+//   • NEVER mutate job objects.
 //   • Deterministic output only.
-//   • No timestamps, no randomness, no async.
-//   • Band is metadata-only (no non-deterministic branching).
+//   • Dual-band + binary + wave + presence metadata are structural-only.
 // ============================================================================
 
 export const PulseEarnCellMeta = Object.freeze({
   layer: "PulseEarnCell",
   role: "CELL_WORKER",
-  version: "v12.3-PRESENCE-EVO+",
-  identity: "PulseEarnCell-v12.3-PRESENCE-EVO+",
+  version: "v13.0-PRESENCE-IMMORTAL",
+  identity: "PulseEarnCell-v13.0-PRESENCE-IMMORTAL",
 
   guarantees: Object.freeze({
     deterministic: true,
@@ -44,7 +42,6 @@ export const PulseEarnCellMeta = Object.freeze({
     loopFieldAware: true,
     worldLensAware: false,
 
-    // Presence-EVO+ advantages
     presenceAware: true,
     advantageAware: true,
     fallbackBandAware: true,
@@ -77,11 +74,12 @@ export const PulseEarnCellMeta = Object.freeze({
 
   lineage: Object.freeze({
     root: "PulseOS-v11-EVO",
-    parent: "PulseEarn-v12.3-PRESENCE-EVO+",
+    parent: "PulseEarn-v13.0-PRESENCE-IMMORTAL",
     ancestry: [
       "PulseEarnCell-v10",
       "PulseEarnCell-v11",
-      "PulseEarnCell-v11-Evo"
+      "PulseEarnCell-v11-Evo",
+      "PulseEarnCell-v12.3-PRESENCE-EVO+"
     ]
   }),
 
@@ -103,11 +101,11 @@ export const PulseEarnCellMeta = Object.freeze({
 // CELL CONTEXT METADATA
 // ============================================================================
 const EARN_CELL_CONTEXT = {
-  layer: "PulseEarnCell-v12.3-PRESENCE-EVO+",
+  layer: "PulseEarnCell-v13.0-PRESENCE-IMMORTAL",
   role: "CELL_WORKER",
   purpose: "Execute deterministic, sandboxed compute operations for Earn jobs",
   context: "Safe compute participant + healing metadata (cell health)",
-  version: "12.3-PRESENCE-EVO+"
+  version: "13.0-PRESENCE-IMMORTAL"
 };
 
 // ============================================================================
@@ -183,22 +181,10 @@ function buildOutputSignature(output, band) {
 // ============================================================================
 // Health / Tier / Advantage / Loop / Wave
 // ============================================================================
-function computeHealthScore(jobType, band) {
-  const base = 0.8;
-  const typeBias =
-    jobType === "math.compute" ? 0.05 :
-    jobType === "data.aggregate" ? 0.03 :
-    jobType === "json.transform" ? 0.02 :
-    jobType === "text.process" ? 0.01 :
-    jobType === "text.transform" ? 0.01 :
-    0.0;
-
-  const bandBias = normalizeBand(band) === CELL_BANDS.BINARY ? 0.02 : 0.0;
-  const score = base + typeBias + bandBias;
-
-  if (score > 1.0) return 1.0;
-  if (score < 0.15) return 0.15;
-  return score;
+// v13 IMMORTAL: no performance math, no type/band bias.
+// Health is neutral, descriptive-only.
+function computeHealthScore() {
+  return 1.0;
 }
 
 function classifyDegradationTier(h) {
@@ -213,6 +199,7 @@ function buildAdvantageField(jobType, band) {
   const b = normalizeBand(band);
 
   return {
+    advantageVersion: "C-13.0",
     jobType,
     band: b,
     symbolicPlanningBias: b === CELL_BANDS.SYMBOLIC ? 1 : 0,
@@ -278,7 +265,26 @@ function buildPresenceFieldFromContext(context = {}) {
   const castle = context.castleSignals || {};
   const region = gh.regionContext || {};
 
+  const meshPressureIndex = mesh.meshPressureIndex || 0;
+  const castleLoadLevel = castle.loadLevel || 0;
+  const meshStrength = mesh.meshStrength || 0;
+
+  const pressure = meshPressureIndex + castleLoadLevel;
+  let presenceTier = "idle";
+  if (pressure >= 150) presenceTier = "critical";
+  else if (pressure >= 100) presenceTier = "high";
+  else if (pressure >= 50) presenceTier = "elevated";
+  else if (pressure > 0) presenceTier = "soft";
+
+  const presenceSignature = computeHash(
+    `CELL_PRESENCE_V13::${presenceTier}::${meshPressureIndex}::${castleLoadLevel}`
+  );
+
   return Object.freeze({
+    presenceVersion: "v13.0-PRESENCE-IMMORTAL",
+    presenceTier,
+    presenceSignature,
+
     bandPresence: pf.bandPresence || gh.presenceContext?.bandPresence || "unknown",
     routerPresence: pf.routerPresence || gh.presenceContext?.routerPresence || "unknown",
     devicePresence: pf.devicePresence || gh.presenceContext?.devicePresence || "unknown",
@@ -287,9 +293,9 @@ function buildPresenceFieldFromContext(context = {}) {
     regionPresence: pf.regionPresence || region.regionTag || "unknown",
     regionId: region.regionId || "unknown-region",
     castleId: castle.castleId || "unknown-castle",
-    castleLoadLevel: castle.loadLevel || "unknown",
-    meshStrength: mesh.meshStrength || "unknown",
-    meshPressureIndex: mesh.meshPressureIndex || 0
+    castleLoadLevel,
+    meshStrength,
+    meshPressureIndex
   });
 }
 
@@ -298,9 +304,10 @@ function buildAdvantageFieldFromHints(context = {}) {
   const adv = gh.advantageContext || {};
 
   return Object.freeze({
+    advantageVersion: "C-13.0",
     advantageScore: adv.score ?? null,
     advantageBand: adv.band ?? "neutral",
-    advantageTier: adv.tier ?? "unknown"
+    advantageTier: adv.tier ?? 0
   });
 }
 
@@ -326,7 +333,6 @@ function deriveFactoringSignal({ meshPressureIndex = 0, cachePriority = "normal"
 
 function buildComputeProfile({ band, context = {} }) {
   const b = normalizeBand(band);
-  const gh = context.globalHints || {};
   const hintsField = buildHintsFieldFromHints(context);
   const cachePriority = cwNormalizeCachePriority(hintsField.cacheHints.priority);
   const prewarmNeeded = !!hintsField.prewarmHints.shouldPrewarm;
@@ -357,7 +363,7 @@ function buildComputeProfile({ band, context = {} }) {
 }
 
 // ============================================================================
-// SAFE COMPUTE MODULES — Deterministic Cell Skillset
+// Deterministic Cell Workloads
 // ============================================================================
 function textTransform({ text = "", mode = "upper" }) {
   switch (mode) {
@@ -403,8 +409,7 @@ function jsonTransform({ json, pick }) {
 }
 
 // ============================================================================
-// computeWork(job, context) — Deterministic Metabolic Labor (Presence-EVO+)
-// context is optional: { presenceField, meshSignals, castleSignals, serverAdvantageHints, globalHints }
+// computeWork — v13 IMMORTAL Cell Execution
 // ============================================================================
 export function computeWork(job, context = {}) {
   healingState.cycleCount++;
@@ -425,7 +430,7 @@ export function computeWork(job, context = {}) {
       healingState.executionState = "error";
       healingState.continuanceFallback = true;
 
-      const healthScore = computeHealthScore("invalid", band);
+      const healthScore = computeHealthScore();
       const tier = classifyDegradationTier(healthScore);
       const advantageField = buildAdvantageField("invalid", band);
       const diagnostics = buildDiagnostics("invalid", band, healthScore, tier);
@@ -496,7 +501,7 @@ export function computeWork(job, context = {}) {
         healingState.executionState = "error";
         healingState.continuanceFallback = true;
 
-        const uHealthScore = computeHealthScore(type, band);
+        const uHealthScore = computeHealthScore();
         const uTier = classifyDegradationTier(uHealthScore);
         const uAdvantageField = buildAdvantageField(type, band);
         const uDiagnostics = buildDiagnostics(type, band, uHealthScore, uTier);
@@ -541,7 +546,7 @@ export function computeWork(job, context = {}) {
     healingState.lastError = null;
     healingState.executionState = "returning";
 
-    const healthScore = computeHealthScore(type, band);
+    const healthScore = computeHealthScore();
     const tier = classifyDegradationTier(healthScore);
     const advantageField = buildAdvantageField(type, band);
     const diagnostics = buildDiagnostics(type, band, healthScore, tier);
@@ -587,7 +592,7 @@ export function computeWork(job, context = {}) {
     healingState.executionState = "error";
     healingState.continuanceFallback = true;
 
-    const healthScore = computeHealthScore(healingState.lastJobType || "error", band);
+    const healthScore = computeHealthScore();
     const tier = classifyDegradationTier(healthScore);
     const advantageField = buildAdvantageField(
       healingState.lastJobType || "error",

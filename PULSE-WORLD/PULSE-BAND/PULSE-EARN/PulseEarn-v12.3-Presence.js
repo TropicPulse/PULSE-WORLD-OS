@@ -1,12 +1,12 @@
 // ============================================================================
-//  PulseEarn-v12.3-PRESENCE-EVO+.js — Earn Organism v12.3 Presence-EVO+
-//  FULL UPGRADE of v11-EVO: dual-band, evolution surfaces, presence/mesh/castle/
-//  expansion/server/globalHints-aware, chunk/cache/prewarm/factoring-aware.
+//  PulseEarn-v13.0-PRESENCE-IMMORTAL.js — Earn Organism v13 Presence-IMMORTAL
+//  IMMORTAL UPGRADE of v12.3-EVO+: dual-band, evolution surfaces, presence/
+//  mesh/castle/expansion/server/globalHints-aware, chunk/cache/prewarm/
+//  factoring-aware — with descriptive-only health + IMMORTAL advantage fields.
 // ============================================================================
 //
-//  SAFETY CONTRACT (v12.3-PRESENCE-EVO+):
-//  -------------------------------------
-//  • No imports.
+//  SAFETY CONTRACT (v13.0-PRESENCE-IMMORTAL):
+//  -----------------------------------------
 //  • No randomness.
 //  • No timestamps in math (only telemetry if desired).
 //  • Pure deterministic string/shape operations.
@@ -14,7 +14,10 @@
 //  • Band-aware, but band is metadata-only (no behavioral non-determinism).
 //  • All “memory” is structural (derived from inputs), not temporal.
 //  • Presence/mesh/castle/expansion/globalHints are metadata surfaces only.
+//  • Health is descriptive-only (no performance/baseline math).
+//  • Advantage fields are IMMORTAL, versioned, non-perf-weighted.
 // ============================================================================
+
 // --- CORE EARN ORGAN --------------------------------------------------------
 // --- BIOLOGICAL EARN ORGANS -----------------------------------------------
 import * as PulseEarnCirculatorySystem from "./PulseEarnCirculatorySystem.js";
@@ -26,7 +29,7 @@ import * as PulseEarnSkeletalSystem    from "./PulseEarnSkeletalSystem.js";
 
 // --- MARKET EARN ORGANS ----------------------------------------------------
 import PulseEarnMktAuctioneer     from "./PulseEarnMktAuctioneer.js";
-import PulseEarnMktAmbassador        from "./PulseEarnMktAmbassador.js";
+import PulseEarnMktAmbassador     from "./PulseEarnMktAmbassador.js";
 import PulseEarnMktBroker         from "./PulseEarnMktBroker.js";
 import PulseEarnMktCourier        from "./PulseEarnMktCourier.js";
 import PulseEarnMktForager        from "./PulseEarnMktForager.js";
@@ -41,8 +44,8 @@ backward.tick();
 export const EarnMeta = Object.freeze({
   layer: "PulseEarn",
   role: "EARN_ORGAN",
-  version: "v12.3-PRESENCE-EVO+",
-  identity: "PulseEarn-v12.3-PRESENCE-EVO+",
+  version: "v13.0-PRESENCE-IMMORTAL",
+  identity: "PulseEarn-v13.0-PRESENCE-IMMORTAL",
 
   guarantees: Object.freeze({
     deterministic: true,
@@ -99,9 +102,15 @@ export const EarnMeta = Object.freeze({
   }),
 
   lineage: Object.freeze({
-    root: "PulseOS-v12.3-PRESENCE-EVO+",
-    parent: "PulseProxy-v12.3-PRESENCE-EVO+",
-    ancestry: ["PulseOS-v10", "PulseEarn-v10.4", "PulseEarn-v11", "PulseEarn-v11.2-EVO"]
+    root: "PulseOS-v13.0-PRESENCE-IMMORTAL",
+    parent: "PulseProxy-v13.0-PRESENCE-IMMORTAL",
+    ancestry: [
+      "PulseOS-v10",
+      "PulseEarn-v10.4",
+      "PulseEarn-v11",
+      "PulseEarn-v11.2-EVO",
+      "PulseEarn-v12.3-PRESENCE-EVO+"
+    ]
   }),
 
   bands: Object.freeze({
@@ -127,14 +136,14 @@ function normalizeBand(band) {
 
 
 // ============================================================================
-//  EarnRole — identifies this as the Earn v12.3 Organism
+//  EarnRole — identifies this as the Earn v13 IMMORTAL Organism
 // ============================================================================
 export const EarnRole = {
   type: "Earn",
   subsystem: "Earn",
   layer: "Organ",
-  version: "12.3-PRESENCE-EVO+",
-  identity: "Earn-v12.3-PRESENCE-EVO+",
+  version: "13.0-PRESENCE-IMMORTAL",
+  identity: "Earn-v13.0-PRESENCE-IMMORTAL",
 
   evo: {
     driftProof: true,
@@ -175,7 +184,7 @@ export const EarnRole = {
     evolutionSurfaceCohortReady: true,
     memorySurfaceReady: true,
 
-    // Presence-EVO+
+    // Presence-IMMORTAL
     presenceAware: true,
     meshAware: true,
     castleAware: true,
@@ -191,11 +200,11 @@ export const EarnRole = {
     factoringAware: true
   },
 
-  routingContract: "PulseRouter-v12.3-PRESENCE-EVO+",
-  meshContract: "PulseMesh-v12.3-PRESENCE-EVO+",
-  sendContract: "PulseSend-v12.3-PRESENCE-EVO+",
-  gpuOrganContract: "PulseGPU-v12.3-PRESENCE-EVO+",
-  minerContract: "PulseMiner-v12.3-PRESENCE-EVO+",
+  routingContract: "PulseRouter-v13.0-PRESENCE-IMMORTAL",
+  meshContract: "PulseMesh-v13.0-PRESENCE-IMMORTAL",
+  sendContract: "PulseSend-v13.0-PRESENCE-IMMORTAL",
+  gpuOrganContract: "PulseGPU-v13.0-PRESENCE-IMMORTAL",
+  minerContract: "PulseMiner-v13.0-PRESENCE-IMMORTAL",
   pulseCompatibility: "Pulse-v1/v2/v3"
 };
 
@@ -276,11 +285,9 @@ function buildPageAncestrySignature({ pattern, lineage, pageId, band }) {
   return computeHash(JSON.stringify(shape));
 }
 
-function computeHealthScore(pattern, lineage, band) {
-  const baseCore = 0.7 + Math.min(0.3, lineage.length * 0.02 + pattern.length * 0.001);
-  const bandBias = normalizeBand(band) === ROUTE_BANDS.BINARY ? 0.02 : 0.0;
-  const base = baseCore + bandBias;
-  return Math.max(0.15, Math.min(1.0, base));
+// v13 IMMORTAL: health is descriptive-only, not performance-weighted.
+function computeHealthScore() {
+  return 1.0;
 }
 
 function classifyDegradationTier(h) {
@@ -291,15 +298,15 @@ function classifyDegradationTier(h) {
   return "criticalDegrade";
 }
 
+// v13 IMMORTAL: advantage core is structural, not perf-weighted by pattern length.
 function buildAdvantageFieldCore(pattern, lineage, band) {
   const depth = lineage.length;
-  const plen = pattern.length;
   const b = normalizeBand(band);
 
   return {
+    advantageVersion: "E-13.0",
     lineageDepth: depth,
-    patternStrength: plen,
-    shapeComplexity: depth * plen,
+    patternTag: pattern,
     band: b,
     binaryCompressionBias: b === ROUTE_BANDS.BINARY ? 1 : 0,
     symbolicPlanningBias: b === ROUTE_BANDS.SYMBOLIC ? 1 : 0
@@ -310,14 +317,11 @@ function buildDiagnostics(pattern, lineage, healthScore, tier, band) {
   const b = normalizeBand(band);
 
   return {
+    pattern,
     patternLength: pattern.length,
     lineageDepth: lineage.length,
-    healthBucket:
-      healthScore >= 0.9 ? "elite" :
-      healthScore >= 0.75 ? "high" :
-      healthScore >= 0.5 ? "medium" : "low",
+    healthScore,
     tier,
-    lineageDensity: lineage.length === 0 ? 0 : pattern.length / lineage.length,
     band: b,
     bandMode:
       b === ROUTE_BANDS.BINARY ? "binary-compression" : "symbolic-planning"
@@ -419,7 +423,7 @@ function buildBinaryField(pattern, lineage) {
 
 
 // ============================================================================
-//  PRESENCE / ADVANTAGE FIELDS (v12.3)
+//  PRESENCE / ADVANTAGE FIELDS (v13 IMMORTAL)
 // ============================================================================
 function buildPresenceField({
   regionId = "unknown-region",
@@ -431,7 +435,21 @@ function buildPresenceField({
   routerPresence = "unknown",
   castleLoadLevel = "unknown"
 } = {}) {
+  const pressure = (Number(meshPressureIndex) || 0) + (castleLoadLevel === "unknown" ? 0 : Number(castleLoadLevel) || 0);
+  let presenceTier = "idle";
+  if (pressure >= 150) presenceTier = "critical";
+  else if (pressure >= 100) presenceTier = "high";
+  else if (pressure >= 50) presenceTier = "elevated";
+  else if (pressure > 0) presenceTier = "soft";
+
+  const presenceSignature = computeHash(
+    `EARN_PRESENCE_V13::${presenceTier}::${meshPressureIndex}::${castleLoadLevel}`
+  );
+
   return Object.freeze({
+    presenceVersion: "v13.0-PRESENCE-IMMORTAL",
+    presenceTier,
+    presenceSignature,
     regionId,
     castleId,
     meshStrength,
@@ -456,6 +474,7 @@ function buildAdvantageField({
   serverBinaryReuse = true
 } = {}) {
   return Object.freeze({
+    advantageVersion: "E-13.0",
     band: normalizeBand(band),
     chunkAggression,
     cachePriority: normalizeCachePriority(cachePriority),
@@ -471,7 +490,7 @@ function buildAdvantageField({
 
 
 // ============================================================================
-//  FACTORY — Create an Earn v12.3 Presence-EVO Organism (dual-band)
+//  FACTORY — Create an Earn v13 Presence-IMMORTAL Organism (dual-band)
 // ============================================================================
 export function createEarn({
   jobId,
@@ -523,7 +542,7 @@ export function createEarn({
     band: normalizedBand
   });
 
-  const healthScore = computeHealthScore(pattern, lineage, normalizedBand);
+  const healthScore = computeHealthScore();
   const tier = classifyDegradationTier(healthScore);
   const advantageFieldCore = buildAdvantageFieldCore(pattern, lineage, normalizedBand);
   const diagnostics = buildDiagnostics(pattern, lineage, healthScore, tier, normalizedBand);
@@ -604,7 +623,7 @@ export function createEarn({
       memorySurface,
       binaryField,
 
-      // v11/v12 signatures
+      // v11/v12/v13 signatures
       earnSignature: computeHash(pattern + "::" + lineageSignature + "::" + normalizedBand),
       patternSignature: computeHash(pattern),
       lineageSurface: computeHash(String(lineage.length)),
@@ -659,7 +678,7 @@ export function evolveEarn(earn, context = {}) {
     band: normalizedBand
   });
 
-  const healthScore = computeHealthScore(nextPattern, nextLineage, normalizedBand);
+  const healthScore = computeHealthScore();
   const tier = classifyDegradationTier(healthScore);
   const advantageFieldCore = buildAdvantageFieldCore(nextPattern, nextLineage, normalizedBand);
   const diagnostics = buildDiagnostics(nextPattern, nextLineage, healthScore, tier, normalizedBand);
