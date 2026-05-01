@@ -12,7 +12,7 @@
 //  - Pure witness: if the organism dies, we SEE it.
 //
 // ============================================================================
-
+console.log("Monitor");
 import { log, warn, error } from "./PulseProofLogger.js";
 
 const g =

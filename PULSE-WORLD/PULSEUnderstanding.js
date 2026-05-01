@@ -17,7 +17,7 @@
 //   • MAY read membrane intel from window.PulseSurface + PulseChunks portal.
 // ============================================================================
 
-
+console.log("Understanding");
 // ============================================================================
 //  UNIVERSAL ERROR SPINE (PulseUIErrors-v12-EVO)
 //  - Understanding integrates error packets from Window + Flow + Reflex.
