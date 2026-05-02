@@ -8,13 +8,12 @@ import PulseUIErrors from "./PulseUIErrors-v12-EVO.js";
 import { VitalsMonitor as PulseVitalsMonitor } from "./PulseProofMonitor.js";
 import { VitalsLogger as PulseLogger }        from "./PulseProofLogger.js";
 import { PageScannerV12 as PULSEOSSkinReflex } from "./PULSEOSSkinReflex.js";
-import PulseChunks from "./PulsePresence-v1.7-Evo.js";
-import PulseUnderstanding from "./PulseUnderstanding.js";
-
-import { route, PulseBinaryOrganismBoot } from "./PulseProofBridge.js";
-
-
 import { initUIFlow as PulseUIFlow } from "./PulseUIFlow-v12-EVO.js";
+import PulseChunks from "./PulsePresence-v1.7-Evo.js";
+
+import { route, startUnderstanding as PulseUnderstanding, PulseBinaryOrganismBoot } from "./PulseProofBridge.js";
+
+
 
 const g =
   typeof global !== "undefined"

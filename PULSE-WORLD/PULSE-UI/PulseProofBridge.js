@@ -1,19 +1,6 @@
 // -----------------------------------------------------------------------------
 // PulseBridge.js — The LOCAL PORT BRIDGE for FRONT ↔ CNS (SIGNAL VERSION)
 // -----------------------------------------------------------------------------
-//
-// PURPOSE:
-//   - Lives INSIDE PULSE-UI.
-//   - NO IMPORTS.
-//   - Sends SIGNALS to offline CNS + DualBand AI.
-//   - Receives SIGNALS from offline CNS + DualBand AI.
-//   - UI registers callbacks for organism boot + AI events.
-//   - Bridge calls those callbacks when signals arrive.
-//
-// -----------------------------------------------------------------------------
-// -----------------------------------------------------------------------------
-// PulseBridge.js — The LOCAL PORT BRIDGE for FRONT ↔ CNS (SIGNAL VERSION)
-// -----------------------------------------------------------------------------
 
 const DEV = true;
 const channel = new BroadcastChannel("PulseCNS");
@@ -99,6 +86,19 @@ export function startDualBandAI(options = {}) {
 }
 
 // -----------------------------------------------------------------------------
+// START UNDERSTANDING — fire-and-forget signal
+// -----------------------------------------------------------------------------
+export function startUnderstanding(options = {}) {
+  trace("UNDERSTANDING_START (SIGNAL)", options);
+
+  channel.postMessage({
+    type: "UNDERSTANDING_START",
+    timestamp: Date.now(),
+    options
+  });
+}
+
+// -----------------------------------------------------------------------------
 // INBOUND SIGNAL HANDLER — AI → UI events
 // -----------------------------------------------------------------------------
 channel.onmessage = (event) => {
@@ -123,3 +123,4 @@ channel.onmessage = (event) => {
 // -----------------------------------------------------------------------------
 export const route = safeRoute;
 export const PulseBinaryOrganismBoot = startDualBandAI;
+export const PulseUnderstandingBoot = startUnderstanding;
