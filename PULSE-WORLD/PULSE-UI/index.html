@@ -15,7 +15,6 @@
 import { VitalsLogger as PulseLogger }        from "./PulseProofLogger.js";
 import PulseChunks from "./PulsePresence-v1.7-Evo.js";
 
-import { safeRoute as route } from "./PulseProofBridge.js";
 /* 0. BOOT MEMBRANE — MUST BE FIRST */
 import * as PulseWindow from "./PULSEEvolutionaryWindow.js";
 
@@ -1108,9 +1107,9 @@ nav a:hover::after {
     <div id="pulseband-panel" class="pb-card">
 
       <div class="pb-header">
-      <img id="pb-mini-badge" class="pb-mini-badge"
-          src="./_PICTURES/PulseBand.png"
-          alt="PulseBand Badge">
+      <img id="pb-mini-badge" class="pb-mini-badge offline-img"
+     data-offline="./_PICTURES/PulseBand.png"
+     alt="PulseBand Badge">
     </div>
 
       <div class="pb-row">
@@ -1179,7 +1178,9 @@ nav a:hover::after {
     <div class="mobile-menu-panel">
       <div class="mobile-menu-header">
         <div class="tp-logo-wrapper">
-          <img src="./_PICTURES/ToucanLogo-Mini.png" alt="Tropic Pulse Logo" class="tp-logo-circle-mobile" />
+          <img class="tp-logo-circle-mobile offline-img"
+     data-offline="./_PICTURES/ToucanLogo-Mini.png"
+     alt="Tropic Pulse Logo">
         </div>
         <h1 class="tp-header-mobile">Tropic Pulse</h1>
         <button class="mobile-menu-close" id="mobileMenuClose">&times;</button>
@@ -1206,7 +1207,9 @@ nav a:hover::after {
   <header class="topmenu" style="background:#000;color:#fff;border-bottom:3px inset rgba(0,0,0,0.4);box-shadow:0 4px 10px rgba(0,0,0,0.25);">
     <div class="header-inner">
       <div class="tp-logo-wrapper">
-        <img src="./_PICTURES/ToucanLogo-Mini.png" alt="Tropic Pulse Logo" class="tp-logo-circle" />
+        <img class="tp-logo-circle offline-img"
+     data-offline="./_PICTURES/ToucanLogo-Mini.png"
+     alt="Tropic Pulse Logo">
       </div>
 
       <h1 class="tp-header">Tropic Pulse</h1>
@@ -1262,7 +1265,9 @@ nav a:hover::after {
       <div class="hero-phone">
         <div class="phone-frame">
           <div class="phone-inner">
-            <img src="./_PICTURES/Phone1.png" class="phone-screen-img" alt="OS Preview">
+            <img class="phone-screen-img offline-img"
+     data-offline="./_PICTURES/Phone1.png"
+     alt="OS Preview">
           </div>
         </div>
         <div class="phone-glow"></div>
@@ -1331,7 +1336,9 @@ nav a:hover::after {
     <div class="feature-grid">
 
       <div class="feature-card">
-        <img src="./_PICTURES/PulseBackbone.png" alt="Pulse Backbone" />
+        <img class="offline-img"
+            data-offline="./_PICTURES/PulseBackbone.png"
+            alt="Pulse Backbone" />
         <div class="feature-card-overlay">
           <div class="feature-card-title">Pulse Backbone</div>
           <div class="feature-card-text">
@@ -1343,7 +1350,9 @@ nav a:hover::after {
       </div>
 
       <div class="feature-card">
-        <img src="./_PICTURES/LocalNetworks.png" alt="Local Networks" />
+        <img class="offline-img"
+            data-offline="./_PICTURES/LocalNetworks.png"
+            alt="Local Networks" />
         <div class="feature-card-overlay">
           <div class="feature-card-title">Local Networks</div>
           <div class="feature-card-text">
@@ -1353,7 +1362,9 @@ nav a:hover::after {
       </div>
 
       <div class="feature-card">
-        <img src="./_PICTURES/PulseEarn.png" alt="Pulse Earn" />
+        <img class="offline-img"
+            data-offline="./_PICTURES/PulseEarn.png"
+            alt="Pulse Earn" />
         <div class="feature-card-overlay">
           <div class="feature-card-title">Pulse Earn</div>
           <div class="feature-card-text">
@@ -1364,7 +1375,9 @@ nav a:hover::after {
       </div>
 
       <div class="feature-card">
-        <img src="./_PICTURES/PulseGPU.png" alt="Pulse-GPU" />
+        <img class="offline-img"
+            data-offline="./_PICTURES/PulseGPU.png"
+            alt="Pulse-GPU" />
         <div class="feature-card-overlay">
           <div class="feature-card-title">Pulse‑GPU</div>
           <div class="feature-card-text">
@@ -1376,7 +1389,9 @@ nav a:hover::after {
       </div>
 
       <div class="feature-card">
-        <img src="./_PICTURES/PulseLoyalty.png" alt="Loyalty & Identity" />
+        <img class="offline-img"
+            data-offline="./_PICTURES/PulseLoyalty.png"
+            alt="Loyalty & Identity" />
         <div class="feature-card-overlay">
           <div class="feature-card-title">Identity & Loyalty</div>
           <div class="feature-card-text">
@@ -1387,7 +1402,9 @@ nav a:hover::after {
       </div>
 
       <div class="feature-card">
-        <img src="./_PICTURES/AdminPanels.png" alt="Admin Dashboards" />
+        <img class="offline-img"
+            data-offline="./_PICTURES/AdminPanels.png"
+            alt="Admin Dashboards" />
         <div class="feature-card-overlay">
           <div class="feature-card-title">Admin Dashboards</div>
           <div class="feature-card-text">
@@ -1395,6 +1412,7 @@ nav a:hover::after {
           </div>
         </div>
       </div>
+
 
     </div>
   </div>
