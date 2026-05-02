@@ -10,7 +10,7 @@ import { VitalsLogger as PulseLogger }        from "./PulseProofLogger.js";
 import { PageScannerV12 as PULSEOSSkinReflex } from "./PULSEOSSkinReflex.js";
 import PulseChunks from "./PulsePresence-v1.7-Evo.js";
 import PulseUnderstanding from "./PulseUnderstanding.js";
-import { createDualBandOrganism as PulseBinaryOrganismBoot } from "../PULSE-BAND/PULSE-AI/aiDualBand-v11-Evo.js";
+import { createDualBandOrganism as PulseBinaryOrganismBoot } from "./aiDualBand-v11-Evo.js";
 
 import { initUIFlow as PulseUIFlow } from "./PulseUIFlow-v12-EVO.js";
 
