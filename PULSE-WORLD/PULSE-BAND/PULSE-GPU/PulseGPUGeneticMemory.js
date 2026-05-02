@@ -1,10 +1,10 @@
 // ============================================================================
 // FILE: tropic-pulse-functions/PULSE-WORLD/PULSE-GPU/PulseGPUGeneticMemory.js
-// PULSE GPU GENETIC MEMORY v12.3-Presence-binary-Prime — THE DNA ARCHIVE
+// PULSE GPU GENETIC MEMORY v14‑IMMORTAL — THE DNA ARCHIVE
 // Long-Horizon Pattern Memory • Lineage Store • Deterministic Pattern Engine
 // ============================================================================
 //
-// IDENTITY — THE DNA ARCHIVE (v12.3-Presence-binary-Prime):
+// IDENTITY — THE DNA ARCHIVE (v14‑IMMORTAL):
 //  --------------------------------------------------------
 //  • Long-term genetic memory of the GPU organism.
 //  • Stores lineage, execution signatures, binary-mode outcomes, and patterns.
@@ -15,7 +15,7 @@
 //  • Advantage-cascade aware: systemic gains improve pattern density.
 //  • PulseSend-v12.3-ready • Earn-v3-ready • Binary/NonBinary dual-mode aware.
 //
-// SAFETY CONTRACT (v12.3-Presence-binary-Prime):
+// SAFETY CONTRACT (v14‑IMMORTAL):
 //  ---------------------------------------------
 //  • No randomness
 //  • No timestamps
@@ -28,6 +28,14 @@
 //  • Deterministic: same inputs → same genetic memory
 // ============================================================================
 
+// ============================================================================
+// FILE: PULSE-WORLD/PULSE-GPU/PulseGPUGeneticMemory-v14-IMMORTAL.js
+// PULSE GPU GENETIC MEMORY v14‑IMMORTAL — THE DNA ARCHIVE
+// Long-Horizon Pattern Memory • Lineage Store • Deterministic Pattern Engine
+// CoreMemory‑Integrated • Binary/NonBinary Dual-Mode • Advantage-Cascade Ready
+// ============================================================================
+
+import { PulseCoreMemory } from "../PULSE-CORE/PulseCoreMemory.js";
 
 // ============================================================================
 // CONTEXT METADATA — Genetic Memory Identity
@@ -40,7 +48,7 @@ const GENETIC_MEMORY_CONTEXT = {
   context:
     "Stores lineage, binary-mode outcomes, dispatch signatures, shape signatures, and pattern stats",
   target: "full-gpu+binary",
-  version: "12.3-Presence-binary-Prime",
+  version: "14-IMMORTAL",
   selfRepairable: true,
 
   evo: {
@@ -49,7 +57,7 @@ const GENETIC_MEMORY_CONTEXT = {
     driftProof: true,
     multiInstanceReady: true,
     unifiedAdvantageField: true,
-    pulseSend11Ready: true,
+    pulseSend14Ready: true,
 
     dualModeEvolution: true,
     binaryAware: true,
@@ -58,9 +66,11 @@ const GENETIC_MEMORY_CONTEXT = {
     gpuMemoryAware: true,
     gpuAdvantageAware: true,
 
-    // v12.3-Presence contracts
-    routingContract: "PulseSend-v12.3",
-    gpuOrganContract: "PulseGPU-v12.3-Presence",
+    // v14 IMMORTAL contracts
+    coreMemoryAware: true,
+    coreMemoryContract: "PulseCoreMemory-v14-IMMORTAL",
+    routingContract: "PulseSend-v14-IMMORTAL",
+    gpuOrganContract: "PulseGPU-v14-IMMORTAL",
     earnCompatibility: "Earn-v3",
 
     // Legacy compatibility
@@ -74,53 +84,35 @@ const GENETIC_MEMORY_CONTEXT = {
 // Utility: stable JSON stringify for hashing
 // ============================================================================
 function stableStringify(value) {
-  if (value === null || typeof value !== "object") {
-    return JSON.stringify(value);
-  }
-
-  if (Array.isArray(value)) {
-    return "[" + value.map(stableStringify).join(",") + "]";
-  }
-
+  if (value === null || typeof value !== "object") return JSON.stringify(value);
+  if (Array.isArray(value)) return "[" + value.map(stableStringify).join(",") + "]";
   const keys = Object.keys(value).sort();
-  const parts = keys.map(
-    (k) => JSON.stringify(k) + ":" + stableStringify(value[k])
-  );
-  return "{" + parts.join(",") + "}";
+  return "{" + keys.map(k => JSON.stringify(k) + ":" + stableStringify(value[k])).join(",") + "}";
 }
 
-
 // ============================================================================
-// Utility: simple deterministic hash
+// Utility: deterministic hash
 // ============================================================================
 function simpleHash(str) {
   let hash = 0;
-  for (let i = 0; i < str.length; i++) {
-    const chr = str.charCodeAt(i);
-    hash = (hash << 5) - hash + chr;
+  const s = String(str);
+  for (let i = 0; i < s.length; i++) {
+    hash = (hash << 5) - hash + s.charCodeAt(i);
     hash |= 0;
   }
   return (hash >>> 0).toString(16);
 }
 
-
-// ============================================================================
-// Utility: clamp
-// ============================================================================
-function clamp(value, min, max) {
-  if (typeof value !== "number" || Number.isNaN(value)) return min;
-  if (value < min) return min;
-  if (value > max) return max;
-  return value;
+function clamp(v, min, max) {
+  if (typeof v !== "number" || Number.isNaN(v)) return min;
+  return v < min ? min : v > max ? max : v;
 }
 
-
 // ============================================================================
-// Signature builders — Genetic Keys (v12.3-Presence-binary-Prime)
+// Signature builders — v14 IMMORTAL
 // ============================================================================
 function buildGameKey(gameProfile = {}) {
-  const { gameId = "unknown", buildVersion = "", contentHash = "" } =
-    gameProfile;
+  const { gameId = "unknown", buildVersion = "", contentHash = "" } = gameProfile;
   return stableStringify({ gameId, buildVersion, contentHash });
 }
 
@@ -133,34 +125,21 @@ function buildHardwareKey(hardwareProfile = {}) {
     ramMB = 0
   } = hardwareProfile;
 
-  return stableStringify({
-    gpuModel,
-    driverVersion,
-    vramMB,
-    cpuModel,
-    ramMB
-  });
+  return stableStringify({ gpuModel, driverVersion, vramMB, cpuModel, ramMB });
 }
 
 function buildTierKey(tierProfile = {}) {
-  const { tierId = "default" } = tierProfile;
-  return stableStringify({ tierId });
+  return stableStringify({ tierId: tierProfile?.tierId || "default" });
 }
 
-
-// ============================================================================
-// Execution Context Key — FULL v12.3-Presence-binary-Prime
-// ============================================================================
 function buildExecutionContextKey(executionContext = {}) {
   const {
-    binaryMode = "auto",          // "auto" | "binary" | "non-binary" | "dual"
+    binaryMode = "auto",
     pipelineId = "",
     sceneType = "",
     workloadClass = "",
     resolution = "",
     refreshRate = 0,
-
-    // v12.3-Presence GPU organ fields
     dispatchSignature = "",
     shapeSignature = ""
   } = executionContext;
@@ -177,34 +156,18 @@ function buildExecutionContextKey(executionContext = {}) {
   });
 }
 
-
-// ============================================================================
-// Genetic Key — full organism fingerprint
-// ============================================================================
-function buildGeneticKey({
-  gameProfile,
-  hardwareProfile,
-  tierProfile,
-  executionContext
-}) {
-  const gameKey = buildGameKey(gameProfile);
-  const hwKey = buildHardwareKey(hardwareProfile);
-  const tierKey = buildTierKey(tierProfile || {});
-  const ctxKey = buildExecutionContextKey(executionContext || {});
-
+function buildGeneticKey({ gameProfile, hardwareProfile, tierProfile, executionContext }) {
   const base = stableStringify({
-    gameKey,
-    hwKey,
-    tierKey,
-    ctxKey
+    gameKey: buildGameKey(gameProfile),
+    hwKey: buildHardwareKey(hardwareProfile),
+    tierKey: buildTierKey(tierProfile),
+    ctxKey: buildExecutionContextKey(executionContext)
   });
-
   return simpleHash(base);
 }
 
-
 // ============================================================================
-// Pattern aggregation helpers — v12.3-Presence-binary-Prime
+// Pattern aggregation — v14 IMMORTAL
 // ============================================================================
 function safeNumber(n, fallback = 0) {
   return typeof n === "number" && !Number.isNaN(n) ? n : fallback;
@@ -220,8 +183,6 @@ function aggregatePatternStats(existing, sample) {
         stutterRate: 0,
         crashRate: 0,
         avgDurationMs: 0,
-
-        // v12.3-Presence-binary-Prime pattern vectors
         pressureVector: { gpu: 0, thermal: 0, memory: 0, mesh: 0, aura: 0 },
         binaryModeRatio: 0,
         symbolicModeRatio: 0
@@ -240,50 +201,29 @@ function aggregatePatternStats(existing, sample) {
   next.minFPS = (next.minFPS * count + sMinFPS) / newCount;
 
   const stutterRateSample = sDuration > 0 ? sStutters / sDuration : 0;
-  next.stutterRate =
-    (next.stutterRate * count + stutterRateSample) / newCount;
+  next.stutterRate = (next.stutterRate * count + stutterRateSample) / newCount;
 
   next.crashRate = (next.crashRate * count + sCrash) / newCount;
-  next.avgDurationMs =
-    (next.avgDurationMs * count + sDuration) / newCount;
+  next.avgDurationMs = (next.avgDurationMs * count + sDuration) / newCount;
 
-  // v12.3-Presence-binary-Prime: pressure vector
   if (sample.pressureSnapshot) {
     const p = sample.pressureSnapshot;
     next.pressureVector = {
-      gpu:
-        (next.pressureVector.gpu * count +
-          safeNumber(p.gpuLoadPressure)) /
-        newCount,
-      thermal:
-        (next.pressureVector.thermal * count +
-          safeNumber(p.thermalPressure)) /
-        newCount,
-      memory:
-        (next.pressureVector.memory * count +
-          safeNumber(p.memoryPressure)) /
-        newCount,
-      mesh:
-        (next.pressureVector.mesh * count +
-          safeNumber(p.meshStormPressure)) /
-        newCount,
-      aura:
-        (next.pressureVector.aura * count +
-          safeNumber(p.auraTension)) /
-        newCount
+      gpu: (next.pressureVector.gpu * count + safeNumber(p.gpuLoadPressure)) / newCount,
+      thermal: (next.pressureVector.thermal * count + safeNumber(p.thermalPressure)) / newCount,
+      memory: (next.pressureVector.memory * count + safeNumber(p.memoryPressure)) / newCount,
+      mesh: (next.pressureVector.mesh * count + safeNumber(p.meshStormPressure)) / newCount,
+      aura: (next.pressureVector.aura * count + safeNumber(p.auraTension)) / newCount
     };
   }
 
-  // v12.3-Presence-binary-Prime: mode ratios
   if (sample.binaryStepCount || sample.symbolicStepCount) {
     const total = sample.binaryStepCount + sample.symbolicStepCount;
     if (total > 0) {
       next.binaryModeRatio =
-        (next.binaryModeRatio * count + sample.binaryStepCount / total) /
-        newCount;
+        (next.binaryModeRatio * count + sample.binaryStepCount / total) / newCount;
       next.symbolicModeRatio =
-        (next.symbolicModeRatio * count + sample.symbolicStepCount / total) /
-        newCount;
+        (next.symbolicModeRatio * count + sample.symbolicStepCount / total) / newCount;
     }
   }
 
@@ -291,63 +231,41 @@ function aggregatePatternStats(existing, sample) {
   return next;
 }
 
-
 // ============================================================================
-// Genetic Memory Store — DNA Archive Map (v12.3-Presence-binary-Prime)
+// Genetic Memory Store — v14 IMMORTAL + CoreMemory Integration
 // ============================================================================
 class PulseGPUGeneticMemoryStore {
   constructor() {
     this.entries = new Map();
     this.meta = { ...GENETIC_MEMORY_CONTEXT };
+    this.coreMemory = new PulseCoreMemory("PulseGPU.GeneticMemory.v14");
+    this.namespace = "PulseGPU.GeneticMemory.v14";
   }
 
   clear() {
     this.entries.clear();
+    try {
+      this.coreMemory.clearNamespace(this.namespace);
+    } catch {}
   }
 
-  recordObservation({
-    gameProfile,
-    hardwareProfile,
-    tierProfile,
-    executionContext,
-    metrics,
-    traceSummary
-  }) {
-    const key = buildGeneticKey({
-      gameProfile,
-      hardwareProfile,
-      tierProfile,
-      executionContext
-    });
+  recordObservation({ gameProfile, hardwareProfile, tierProfile, executionContext, metrics, traceSummary }) {
+    const key = buildGeneticKey({ gameProfile, hardwareProfile, tierProfile, executionContext });
 
     const existing = this.entries.get(key);
 
     const sample = {
-      avgFPS:
-        typeof metrics?.avgFps === "number"
-          ? metrics.avgFps
-          : metrics?.avgFPS || 0,
-      minFPS:
-        typeof metrics?.minFps === "number"
-          ? metrics.minFps
-          : metrics?.minFPS || 0,
-      stutters:
-        typeof metrics?.stutters === "number"
-          ? metrics.stutters
-          : metrics?.stutterCount || 0,
+      avgFPS: metrics?.avgFps ?? metrics?.avgFPS ?? 0,
+      minFPS: metrics?.minFps ?? metrics?.minFPS ?? 0,
+      stutters: metrics?.stutters ?? metrics?.stutterCount ?? 0,
       crashFlag: !!metrics?.crashFlag,
-      totalDurationMs: traceSummary?.totalDurationMs || 0,
-
-      // v12.3-Presence-binary-Prime fields
-      pressureSnapshot: traceSummary?.pressureSnapshot || null,
-      binaryStepCount: traceSummary?.binaryStepCount || 0,
-      symbolicStepCount: traceSummary?.symbolicStepCount || 0
+      totalDurationMs: traceSummary?.totalDurationMs ?? 0,
+      pressureSnapshot: traceSummary?.pressureSnapshot ?? null,
+      binaryStepCount: traceSummary?.binaryStepCount ?? 0,
+      symbolicStepCount: traceSummary?.symbolicStepCount ?? 0
     };
 
-    const updatedStats = aggregatePatternStats(
-      existing?.patternStats,
-      sample
-    );
+    const updatedStats = aggregatePatternStats(existing?.patternStats, sample);
 
     const entry = {
       key,
@@ -360,32 +278,34 @@ class PulseGPUGeneticMemoryStore {
     };
 
     this.entries.set(key, entry);
+
+    // CoreMemory mirror
+    try {
+      this.coreMemory.record(this.namespace, key, entry);
+    } catch {}
+
     return entry;
   }
 
-  getPatternForContext({
-    gameProfile,
-    hardwareProfile,
-    tierProfile,
-    executionContext
-  }) {
-    const key = buildGeneticKey({
-      gameProfile,
-      hardwareProfile,
-      tierProfile,
-      executionContext
-    });
+  getPatternForContext({ gameProfile, hardwareProfile, tierProfile, executionContext }) {
+    const key = buildGeneticKey({ gameProfile, hardwareProfile, tierProfile, executionContext });
 
-    return this.entries.get(key) || null;
+    const local = this.entries.get(key);
+    if (local) return local;
+
+    try {
+      const fromCore = this.coreMemory.get(this.namespace, key);
+      if (fromCore) {
+        this.entries.set(key, fromCore);
+        return fromCore;
+      }
+    } catch {}
+
+    return null;
   }
 
-  queryPatterns({
-    gameId,
-    gpuModel,
-    binaryMode
-  } = {}) {
+  queryPatterns({ gameId, gpuModel, binaryMode } = {}) {
     const results = [];
-
     for (const entry of this.entries.values()) {
       const gp = entry.gameProfile || {};
       const hp = entry.hardwareProfile || {};
@@ -397,7 +317,6 @@ class PulseGPUGeneticMemoryStore {
 
       results.push(entry);
     }
-
     return results;
   }
 
@@ -418,8 +337,8 @@ class PulseGPUGeneticMemoryStore {
 
     if (!Array.isArray(arr)) return;
 
-    arr.forEach((entry) => {
-      if (!entry || typeof entry !== "object" || !entry.key) return;
+    for (const entry of arr) {
+      if (!entry || typeof entry !== "object" || !entry.key) continue;
 
       const ps = entry.patternStats || {};
 
@@ -450,14 +369,16 @@ class PulseGPUGeneticMemoryStore {
       };
 
       this.entries.set(safeEntry.key, safeEntry);
-    });
+
+      try {
+        this.coreMemory.record(this.namespace, safeEntry.key, safeEntry);
+      } catch {}
+    }
   }
 }
 
-
-
 // ============================================================================
-// Public API — Genetic Memory Surface
+// Public API — Genetic Memory Surface (v14 IMMORTAL)
 // ============================================================================
 class PulseGPUGeneticMemory {
   constructor() {
@@ -465,16 +386,16 @@ class PulseGPUGeneticMemory {
     this.meta = { ...GENETIC_MEMORY_CONTEXT };
   }
 
-  recordObservation(observation) {
-    return this.store.recordObservation(observation || {});
+  recordObservation(o) {
+    return this.store.recordObservation(o || {});
   }
 
-  getPatternForContext(context) {
-    return this.store.getPatternForContext(context || {});
+  getPatternForContext(ctx) {
+    return this.store.getPatternForContext(ctx || {});
   }
 
-  queryPatterns(query) {
-    return this.store.queryPatterns(query || {});
+  queryPatterns(q) {
+    return this.store.queryPatterns(q || {});
   }
 
   serialize() {
@@ -489,7 +410,6 @@ class PulseGPUGeneticMemory {
     this.store.clear();
   }
 }
-
 
 // ============================================================================
 // EXPORTS
