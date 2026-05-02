@@ -1,7 +1,8 @@
 // ============================================================================
-//  PulseSendImpulse-v12.3-Evo.js
+//  PulseSendImpulse-v14.4-IMMORTAL.js
 //  Nerve‑Spark • Pulse‑Agnostic Trigger Organ • Fires the Movement
-//  v12.3: Binary + CacheChunk + Prewarm + Presence Surfaces
+//  v14.4: Binary + CacheChunk + Prewarm + Presence + Degradation + Advantage
+//         + DualBand + Immortal Meta Surfaces
 // ============================================================================
 //
 //  ROLE:
@@ -9,9 +10,10 @@
 //    • Fires the movement via the mover organ.
 //    • Emits diagnostics + signatures for the impulse arc.
 //    • Binary‑aware + cacheChunk‑aware + prewarm‑aware + multi‑presence‑aware.
+//    • Degradation‑aware + advantage‑aware + dual‑band‑aware + immortal‑meta‑aware.
 //
-//  SAFETY CONTRACT (v12.3-Evo):
-//  ----------------------------
+//  SAFETY CONTRACT (v14.4-IMMORTAL):
+//  --------------------------------
 //  • No imports.
 //  • No network.
 //  • No compute beyond local helpers.
@@ -22,14 +24,14 @@
 
 
 // ============================================================================
-// ⭐ PulseRole — identifies this as the PulseSend Impulse Organ (v12.3-Evo)
+// ⭐ PulseRole — identifies this as the PulseSend Impulse Organ (v14.4-IMMORTAL)
 // ============================================================================
 export const PulseRole = {
   type: "Messenger",
   subsystem: "PulseSend",
   layer: "Impulse",
-  version: "12.3",
-  identity: "PulseSendImpulse-v12.3-Evo",
+  version: "14.4",
+  identity: "PulseSendImpulse-v14.4-IMMORTAL",
 
   evo: {
     driftProof: true,
@@ -56,7 +58,12 @@ export const PulseRole = {
     // 12.3+: cacheChunk / prewarm / presence
     cacheChunkAware: true,
     prewarmAware: true,
-    multiPresenceAware: true
+    multiPresenceAware: true,
+
+    // 14.4+: degradation / dual-band / immortal meta
+    degradationAware: true,
+    dualBandAware: true,
+    immortalMetaAware: true
   }
 };
 
@@ -107,9 +114,29 @@ function extractBinarySurfaceFromPulse(pulse) {
   };
 }
 
+function classifyDegradationTier(healthScore) {
+  const h = typeof healthScore === "number" ? healthScore : 1.0;
+  if (h >= 0.95) return "microDegrade";
+  if (h >= 0.85) return "softDegrade";
+  if (h >= 0.50) return "midDegrade";
+  if (h >= 0.15) return "hardDegrade";
+  return "criticalDegrade";
+}
+
+function extractImmortalMetaFromPulse(pulse) {
+  const meta = pulse?.immortalMeta || {};
+  return {
+    presenceBandState: meta.presenceBandState ?? null,
+    harmonicDrift: meta.harmonicDrift ?? null,
+    coherenceScore: meta.coherenceScore ?? null,
+    dualBandMode: meta.dualBandMode ?? null,
+    shifterBand: meta.shifterBand ?? null
+  };
+}
+
 
 // ============================================================================
-//  12.3+ Surfaces — cacheChunk / prewarm / presence
+//  14.4+ Surfaces — cacheChunk / prewarm / presence / degradation / immortal
 // ============================================================================
 function buildCacheChunkSurface({ pulse, targetOrgan, pathway, mode }) {
   const shape = {
@@ -161,9 +188,35 @@ function buildPresenceSurface({ pulse, targetOrgan }) {
   };
 }
 
+function buildDegradationSurface({ pulse }) {
+  const healthScore = typeof pulse?.healthScore === "number"
+    ? pulse.healthScore
+    : 1.0;
+
+  const degradationTier = classifyDegradationTier(healthScore);
+
+  return {
+    healthScore,
+    degradationTier,
+    degradationHash: computeHash(degradationTier)
+  };
+}
+
+function buildImmortalSurface({ pulse }) {
+  const immortalMeta = extractImmortalMetaFromPulse(pulse);
+
+  const raw = stableStringify(immortalMeta);
+  const immortalSignature = computeHash("immortal::" + raw);
+
+  return {
+    immortalMeta,
+    immortalSignature
+  };
+}
+
 
 // ============================================================================
-//  IMPULSE DIAGNOSTICS (symbolic + binary + 12.3 surfaces)
+//  IMPULSE DIAGNOSTICS (symbolic + binary + 14.4 surfaces)
 // ============================================================================
 function buildImpulseDiagnostics({ pulse, targetOrgan, pathway, mode }) {
   const pattern = pulse?.pattern || "NO_PATTERN";
@@ -171,6 +224,8 @@ function buildImpulseDiagnostics({ pulse, targetOrgan, pathway, mode }) {
   const pulseType = pulse?.pulseType || pulse?.PulseRole?.identity || "UNKNOWN_PULSE_TYPE";
 
   const binarySurface = extractBinarySurfaceFromPulse(pulse);
+  const immortalSurface = buildImmortalSurface({ pulse });
+  const degradationSurface = buildDegradationSurface({ pulse });
 
   return {
     pattern,
@@ -181,6 +236,8 @@ function buildImpulseDiagnostics({ pulse, targetOrgan, pathway, mode }) {
     mode,
 
     binary: binarySurface,
+    immortal: immortalSurface,
+    degradation: degradationSurface,
 
     patternHash: computeHash(pattern),
     lineageHash: computeHash(String(lineageDepth)),
@@ -199,7 +256,7 @@ function buildImpulseDiagnostics({ pulse, targetOrgan, pathway, mode }) {
 
 
 // ============================================================================
-//  FACTORY — Create the Impulse Organ (v12.3-Evo + Binary/CacheChunk/Presence)
+//  FACTORY — Create the Impulse Organ (v14.4-IMMORTAL)
 // ============================================================================
 export function createPulseSendImpulse({ mover, log }) {
   return {
@@ -231,14 +288,19 @@ export function createPulseSendImpulse({ mover, log }) {
         targetOrgan
       });
 
+      const degradationSurface = diagnostics.degradation;
+      const immortalSurface = diagnostics.immortal;
+
       const advantageField = pulse?.advantageField || null;
 
-      log && log("[PulseSendImpulse-v12.3-Evo] Spark fired", {
+      log && log("[PulseSendImpulse-v14.4-IMMORTAL] Spark fired", {
         jobId: pulse.jobId,
         diagnostics,
         cacheChunkSurface,
         prewarmSurface,
         presenceSurface,
+        degradationSurface,
+        immortalSurface,
         advantageField
       });
 
@@ -253,7 +315,11 @@ export function createPulseSendImpulse({ mover, log }) {
         "::" +
         (diagnostics.binary.binaryPattern || "NO_BINARY") +
         "::" +
-        cacheChunkSurface.cacheChunkKey
+        cacheChunkSurface.cacheChunkKey +
+        "::" +
+        (degradationSurface.degradationTier || "NO_DEGRADE") +
+        "::" +
+        (immortalSurface.immortalSignature || "NO_IMMORTAL")
       );
 
       const movement = mover.move({
@@ -269,6 +335,8 @@ export function createPulseSendImpulse({ mover, log }) {
         cacheChunkSurface,
         prewarmSurface,
         presenceSurface,
+        degradationSurface,
+        immortalSurface,
         movement
       };
     }

@@ -321,6 +321,48 @@ function buildSystemDiagnostics({ pulse, fallbackTier }) {
 
 
 // ============================================================================
+//  NEW: TECH SURFACE — use all imports deterministically
+// ============================================================================
+function buildTechSurface({ impulse, normalized, pulse }) {
+  // Probe v3/v2/v1 creators in a safe, non-throwing way
+  const v3Available = typeof createPulseV3 === "function";
+  const v2Available = typeof createPulseV2 === "function";
+  const v1Available = typeof createLegacyPulse === "function";
+
+  const routerType = typeof PulseRouter;
+  const meshType   = typeof PulseMesh;
+
+  const sendFactoryName   = typeof createPulseSend === "function" ? createPulseSend.name || "createPulseSend" : "not-a-function";
+  const sendReturnFactory = typeof createPulseSendReturn === "function" ? createPulseSendReturn.name || "createPulseSendReturn" : "not-a-function";
+
+  const techShape = {
+    tickId: impulse.tickId,
+    intent: normalized.intent,
+    mode: normalized.mode,
+    pageId: normalized.pageId,
+    v3Available,
+    v2Available,
+    v1Available,
+    routerType,
+    meshType,
+    sendFactoryName,
+    sendReturnFactory
+  };
+
+  return {
+    techSignature: computeHash(JSON.stringify(techShape)),
+    v3Available,
+    v2Available,
+    v1Available,
+    routerType,
+    meshType,
+    sendFactoryName,
+    sendReturnFactory
+  };
+}
+
+
+// ============================================================================
 //  FACTORY — Build SDN‑Aware, Binary‑Aware PulseSendSystem (v12.4-EvoBinary)
 // ============================================================================
 export function createPulseSendSystem({
@@ -338,15 +380,15 @@ export function createPulseSendSystem({
   }
 
   const PulseSend = createPulseSend({
-  createPulseV3,
-  createPulseV2,
-  createPulseV1: createLegacyPulse,
-  pulseRouter: PulseRouter,
-  pulseMesh: PulseMesh,
-  createPulseSendReturn,
-  log,
-  sdn
-});
+    createPulseV3,
+    createPulseV2,
+    createPulseV1: createLegacyPulse,
+    pulseRouter: PulseRouter,
+    pulseMesh: PulseMesh,
+    createPulseSendReturn,
+    log,
+    sdn
+  });
 
 
   // ------------------------------------------------------------------------
@@ -395,7 +437,7 @@ export function createPulseSendSystem({
 
   // ------------------------------------------------------------------------
   //  INTERNAL: Build Pulse v1 (EvoStable)
-// ------------------------------------------------------------------------
+  // ------------------------------------------------------------------------
   function buildPulseV1(impulse, normalized) {
     return createLegacyPulse({
       jobId: impulse.tickId,
@@ -411,7 +453,7 @@ export function createPulseSendSystem({
 
   // ------------------------------------------------------------------------
   //  PUBLIC API — PulseSendSystem (v12.4‑EvoBinary + SDN‑Aware)
-// ------------------------------------------------------------------------
+  // ------------------------------------------------------------------------
   return {
     async send(impulse) {
       const normalized = normalizeImpulse(impulse);
@@ -533,6 +575,8 @@ export function createPulseSendSystem({
         });
       }
 
+      const techSurface = buildTechSurface({ impulse, normalized, pulse });
+
       emitSDN("sendSystem:complete", {
         tickId: impulse.tickId,
         intent: normalized.intent,
@@ -541,7 +585,8 @@ export function createPulseSendSystem({
         mode: pulse.mode,
         ok,
         diagnostics: systemDiagnostics,
-        binary: normalized.binarySummary
+        binary: normalized.binarySummary,
+        techSurface
       });
 
       return {
@@ -550,7 +595,8 @@ export function createPulseSendSystem({
         result,
         fallbackTier,
         binary: normalized.binarySummary,
-        diagnostics: systemDiagnostics
+        diagnostics: systemDiagnostics,
+        techSurface
       };
     }
   };

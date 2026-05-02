@@ -8,7 +8,7 @@
 // ============================================================================
 
 // Optional SHIFTER PULSE bridge (binary/regular band shifter, descriptive-only)
-import { ShifterPulse } from "./PulseShifterEvolutionaryPulse-v11-Evo.js";
+import { ShifterPulse } from "../PULSE-SHIFTER/PulseShifterEvolutionaryPulse-v11-Evo.js";
 
 export const BackwardEngineMeta = Object.freeze({
   lane: "backward",

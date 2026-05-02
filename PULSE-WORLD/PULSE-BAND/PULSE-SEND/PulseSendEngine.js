@@ -1,11 +1,11 @@
 // ============================================================================
-//  PulseSendMover-v12.3-Evo.js
+//  PulseSendMover-v14.4-IMMORTAL.js
 //  Movement Organ • Pulse‑Agnostic • Deterministic Transport Muscle
-//  v12.3: Binary + CacheChunk + Prewarm + Presence Surfaces
+//  v14.4: Binary + CacheChunk + Prewarm + Presence + Degradation + ImmortalMeta
 // ============================================================================
 //
-//  SAFETY CONTRACT (v12.3-Evo):
-//  ----------------------------
+//  SAFETY CONTRACT (v14.4-IMMORTAL):
+//  --------------------------------
 //  • No randomness.
 //  • No timestamps.
 //  • No external IO.
@@ -15,14 +15,14 @@
 
 
 // ============================================================================
-// ⭐ PulseRole — identifies this as the PulseSend Mover Organ (v12.3-Evo)
+// ⭐ PulseRole — identifies this as the PulseSend Mover Organ (v14.4-IMMORTAL)
 // ============================================================================
 export const PulseRole = {
   type: "Messenger",
   subsystem: "PulseSend",
   layer: "Mover",
-  version: "12.3",
-  identity: "PulseSendMover-v12.3-Evo",
+  version: "14.4",
+  identity: "PulseSendMover-v14.4-IMMORTAL",
 
   evo: {
     driftProof: true,
@@ -48,7 +48,11 @@ export const PulseRole = {
     // 12.3+: cacheChunk / prewarm / presence
     cacheChunkAware: true,
     prewarmAware: true,
-    multiPresenceAware: true
+    multiPresenceAware: true,
+
+    // 14.4+: degradation + immortal meta
+    degradationAware: true,
+    immortalMetaAware: true
   }
 };
 
@@ -93,6 +97,26 @@ function extractBinarySurface(pulse) {
     binaryPayload,
     binaryHints,
     binaryStrength
+  };
+}
+
+function classifyDegradationTier(healthScore) {
+  const h = typeof healthScore === "number" ? healthScore : 1.0;
+  if (h >= 0.95) return "microDegrade";
+  if (h >= 0.85) return "softDegrade";
+  if (h >= 0.50) return "midDegrade";
+  if (h >= 0.15) return "hardDegrade";
+  return "criticalDegrade";
+}
+
+function extractImmortalMeta(pulse) {
+  const meta = pulse?.immortalMeta || {};
+  return {
+    presenceBandState: meta.presenceBandState ?? null,
+    harmonicDrift: meta.harmonicDrift ?? null,
+    coherenceScore: meta.coherenceScore ?? null,
+    dualBandMode: meta.dualBandMode ?? null,
+    shifterBand: meta.shifterBand ?? null
   };
 }
 
@@ -152,7 +176,36 @@ function buildPresenceSurface({ pulse, targetOrgan }) {
 
 
 // ============================================================================
-//  MOVEMENT DIAGNOSTICS (symbolic + binary + 12.3 surfaces)
+//  14.4+ Surfaces — degradation + immortalMeta
+// ============================================================================
+function buildDegradationSurface({ pulse }) {
+  const healthScore = typeof pulse?.healthScore === "number"
+    ? pulse.healthScore
+    : 1.0;
+
+  const degradationTier = classifyDegradationTier(healthScore);
+
+  return {
+    healthScore,
+    degradationTier,
+    degradationHash: computeHash(degradationTier)
+  };
+}
+
+function buildImmortalSurface({ pulse }) {
+  const immortalMeta = extractImmortalMeta(pulse);
+  const raw = stableStringify(immortalMeta);
+  const immortalSignature = computeHash("mover-immortal::" + raw);
+
+  return {
+    immortalMeta,
+    immortalSignature
+  };
+}
+
+
+// ============================================================================
+//  MOVEMENT DIAGNOSTICS (symbolic + binary + 14.4 surfaces)
 // ============================================================================
 function buildMovementDiagnostics({ pulse, targetOrgan, pathway, mode }) {
   const pattern = pulse.pattern || "NO_PATTERN";
@@ -160,6 +213,8 @@ function buildMovementDiagnostics({ pulse, targetOrgan, pathway, mode }) {
   const pulseType = pulse.pulseType || pulse?.PulseRole?.identity || "UNKNOWN_PULSE_TYPE";
 
   const binary = extractBinarySurface(pulse);
+  const degradation = buildDegradationSurface({ pulse });
+  const immortal = buildImmortalSurface({ pulse });
 
   return {
     pattern,
@@ -170,6 +225,8 @@ function buildMovementDiagnostics({ pulse, targetOrgan, pathway, mode }) {
     mode,
 
     binary,
+    degradation,
+    immortal,
 
     patternHash: computeHash(pattern),
     lineageHash: computeHash(String(lineageDepth)),
@@ -184,7 +241,7 @@ function buildMovementDiagnostics({ pulse, targetOrgan, pathway, mode }) {
 
 
 // ============================================================================
-//  FACTORY — Create the Mover Organ (v12.3-Evo)
+//  FACTORY — Create the Mover Organ (v14.4-IMMORTAL)
 // ============================================================================
 export function createPulseSendMover({ pulseMesh, log }) {
   return {
@@ -223,10 +280,14 @@ export function createPulseSendMover({ pulseMesh, log }) {
         "::" +
         diagnostics.mode +
         "::" +
-        (diagnostics.binary.binaryPattern || "NO_BINARY")
+        (diagnostics.binary.binaryPattern || "NO_BINARY") +
+        "::" +
+        diagnostics.degradation.degradationTier +
+        "::" +
+        diagnostics.immortal.immortalSignature
       );
 
-      log && log("[PulseSendMover-v12.3] Movement fired", {
+      log && log("[PulseSendMover-v14.4-IMMORTAL] Movement fired", {
         jobId: pulse.jobId,
         diagnostics,
         cacheChunkSurface,
@@ -253,7 +314,7 @@ export function createPulseSendMover({ pulseMesh, log }) {
 
 
 // ============================================================================
-//  ORGAN EXPORT — ⭐ PulseSendMover (v12.3-Evo)
+//  ORGAN EXPORT — ⭐ PulseSendMover (v14.4-IMMORTAL)
 // ============================================================================
 export const PulseSendMover = {
   PulseRole,
@@ -264,7 +325,7 @@ export const PulseSendMover = {
     const lineageDepth = Array.isArray(pulse?.lineage) ? pulse.lineage.length : 0;
 
     throw new Error(
-      `[PulseSendMover-v12.3-Evo] move() called before initialization.\n` +
+      `[PulseSendMover-v14.4-IMMORTAL] move() called before initialization.\n` +
       `• pulseType: ${pulseType}\n` +
       `• pattern: ${pattern}\n` +
       `• lineageDepth: ${lineageDepth}\n` +

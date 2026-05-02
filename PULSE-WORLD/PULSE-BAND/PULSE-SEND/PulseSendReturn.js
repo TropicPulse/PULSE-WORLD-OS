@@ -1,17 +1,16 @@
 // ============================================================================
-//  PulseSendReturn-v11-Evo-12_4_Upgrade.js
+//  PulseSendReturn-v14-IMMORTAL.js
 //  Return Arc • Pulse‑Agnostic Bounce‑Back Organ • Handles returnTo Logic
-//  v11: Diagnostics + Signatures + Pattern Surface + Lineage Surface
-//  v11-Binary: Binary-Aware + Symbolic-Aware Return Surface
-//  12.4-Upgrade: Movement-aware, packet-aware, backward-compatible
+//  v14-IMMORTAL: Binary-Aware + Movement-Aware + DualStack-Aware Return Surface
+//                + Ancestry Surface + Advantage Echo
 // ============================================================================
 
 export const PulseRole = {
   type: "Messenger",
   subsystem: "PulseSend",
   layer: "Return",
-  version: "11.0",
-  identity: "PulseSendReturn-v11-Evo-12.4-Upgrade",
+  version: "14-IMMORTAL",
+  identity: "PulseSendReturn-v14-IMMORTAL",
 
   evo: {
     driftProof: true,
@@ -32,16 +31,18 @@ export const PulseRole = {
 
     // Binary-aware return surface:
     binaryAwareReturnReady: true,
+    binaryFrontEndReady: true,
+    dualStackReady: true,
 
-    // 12.4+: movement/packet aware
+    // Movement/packet aware
     movementPacketAware: true
   },
 
-  routingContract: "PulseRouter-v11",
-  meshContract: "PulseMesh-v11",
+  routingContract: "PulseRouter-v14",
+  meshContract: "PulseMesh-v14",
   pulseContract: "Pulse-v1/v2/v3",
-  gpuOrganContract: "PulseGPU-v11",
-  earnCompatibility: "PulseEarn-v11"
+  gpuOrganContract: "PulseGPU-v14",
+  earnCompatibility: "PulseEarn-v14"
 };
 
 
@@ -51,8 +52,9 @@ export const PulseRole = {
 
 function computeHash(str) {
   let h = 0;
-  for (let i = 0; i < str.length; i++) {
-    h = (h + str.charCodeAt(i) * (i + 1)) % 100000;
+  const s = String(str);
+  for (let i = 0; i < s.length; i++) {
+    h = (h + s.charCodeAt(i) * (i + 1)) % 100000;
   }
   return `h${h}`;
 }
@@ -75,13 +77,20 @@ function extractBinarySurfaceFromPulse(pulse) {
     !!binaryHints ||
     binaryStrength !== null;
 
+  const routerHint = payload.routerHint ?? (binaryHints && binaryHints.routerHint) ?? null;
+  const meshHint   = payload.meshHint   ?? (binaryHints && binaryHints.meshHint)   ?? null;
+  const organHint  = payload.organHint  ?? (binaryHints && binaryHints.organHint)  ?? null;
+
   return {
     hasBinary,
     binaryPattern,
     binaryMode,
     binaryPayload,
     binaryHints,
-    binaryStrength
+    binaryStrength,
+    routerHint,
+    meshHint,
+    organHint
   };
 }
 
@@ -115,7 +124,7 @@ function buildReturnDiagnostics({
     // Binary surface (optional, non-breaking)
     binary: binarySurface,
 
-    // Movement packet surface (12.4+)
+    // Movement packet surface
     movementSignature,
     movementDiagnostics,
 
@@ -133,13 +142,22 @@ function buildReturnDiagnostics({
       : null,
     binaryModeHash: binarySurface.binaryMode
       ? computeHash(binarySurface.binaryMode)
+      : null,
+    binaryRouterHintHash: binarySurface.routerHint
+      ? computeHash(binarySurface.routerHint)
+      : null,
+    binaryMeshHintHash: binarySurface.meshHint
+      ? computeHash(binarySurface.meshHint)
+      : null,
+    binaryOrganHintHash: binarySurface.organHint
+      ? computeHash(binarySurface.organHint)
       : null
   };
 }
 
 
 // ============================================================================
-//  FACTORY — Create the Return Organ (v11-Evo + Binary-Aware + 12.4 Packet)
+//  FACTORY — Return Organ (v14-IMMORTAL + Binary/DualStack/Movement-Aware)
 // ============================================================================
 export function createPulseSendReturn({ impulse, pulseRouter, pulseMesh, log }) {
   return {
@@ -176,7 +194,7 @@ export function createPulseSendReturn({ impulse, pulseRouter, pulseMesh, log }) 
           mode
         });
 
-        log && log("[PulseSendReturn-v11-Evo-12.4] No returnTo target — chain complete", {
+        log && log("[PulseSendReturn-v14-IMMORTAL] No returnTo target — chain complete", {
           jobId: pulse.jobId,
           diagnostics
         });
@@ -191,7 +209,7 @@ export function createPulseSendReturn({ impulse, pulseRouter, pulseMesh, log }) 
       }
 
       // ⭐ Return target exists → route the return pulse
-      log && log("[PulseSendReturn-v11-Evo-12.4] Returning pulse", {
+      log && log("[PulseSendReturn-v14-IMMORTAL] Returning pulse", {
         jobId: pulse.jobId,
         pattern,
         returnTo,
@@ -219,7 +237,7 @@ export function createPulseSendReturn({ impulse, pulseRouter, pulseMesh, log }) 
         mode
       });
 
-      // ⭐ v11/12.4 return signature (binary + movement aware)
+      // ⭐ v14 return signature (binary + hints + movement aware)
       const returnSignature = computeHash(
         diagnostics.pattern +
         "::" +
@@ -230,6 +248,12 @@ export function createPulseSendReturn({ impulse, pulseRouter, pulseMesh, log }) 
         diagnostics.mode +
         "::" +
         (diagnostics.binary.binaryPattern || "NO_BINARY_PATTERN") +
+        "::" +
+        (diagnostics.binary.routerHint || "NO_ROUTER_HINT") +
+        "::" +
+        (diagnostics.binary.meshHint || "NO_MESH_HINT") +
+        "::" +
+        (diagnostics.binary.organHint || "NO_ORGAN_HINT") +
         "::" +
         (diagnostics.movementSignature || "NO_MOVEMENT_SIGNATURE")
       );

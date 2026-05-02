@@ -14,27 +14,27 @@
 //  • Pure deterministic transport chain.
 //  • Zero mutation outside instance.
 // ============================================================================
-import * as PulseV2EvolutionEngine   from "./PulseV2EvolutionEngine-v11-Evo.js";
-import * as PulseV3UnifiedOrganism   from "./PulseV3UnifiedOrganism-v11-Evo.js";
+// --- Evolution Engines ------------------------------------------------------
+import {createPulseV2 as PulseV2EvolutionEngine }  from "./PulseV2EvolutionEngine-v11-Evo.js";
+import {createPulseV3 as PulseV3UnifiedOrganism }  from "./PulseV3UnifiedOrganism-v11-Evo.js";
 
 // --- Impulse Layer ----------------------------------------------------------
-import * as PulseSendImpulse         from "./PulseSendImpulse-v11-Evo.js";
+import {createPulseSendImpulse as PulseSendImpulse }        from "./PulseSendImpulse-v11-Evo.js";
 
 // --- Legacy Pulse Layer -----------------------------------------------------
-import * as PulseSendLegacyPulse     from "./PulseSendLegacyPulse-v11-Evo.js";
+import {createLegacyPulse as PulseSendLegacyPulse }    from "./PulseSendLegacyPulse-v11-Evo.js";
 
 // --- Adapter Layer ----------------------------------------------------------
-import * as PulseSendAdapter         from "./PulseSendAdapter.js";
+import {adaptPulseSendPacket as PulseSendAdapter }        from "./PulseSendAdapter.js";
 
 // --- Engine Layer -----------------------------------------------------------
-import * as PulseSendEngine          from "./PulseSendEngine.js";
+import {PulseSendMover as PulseSendEngine }         from "./PulseSendEngine.js";
 
 // --- Return Layer -----------------------------------------------------------
-import * as PulseSendReturn          from "./PulseSendReturn.js";
+import {createPulseSendReturn as PulseSendReturn }         from "./PulseSendReturn.js";
 
 // --- System Layer (Final Conductor) ----------------------------------------
-import * as PulseSendSystem          from "./PulseSendSystem.js";
-
+import {createPulseSendSystem as PulseSendSystem }         from "./PulseSendSystem.js";
 // ============================================================================
 // ⭐ PulseRole — identifies this as the PulseSend Organ Wrapper (v12.3)
 // ============================================================================
@@ -68,7 +68,6 @@ export const PulseRole = {
     routerAware: true,
     meshAware: true,
 
-    // 12.3+: cache / prewarm / presence
     cacheChunkAware: true,
     prewarmAware: true,
     multiPresenceAware: true
@@ -232,6 +231,56 @@ function buildPresenceSurface({ pattern, pathway }) {
 
 
 // ============================================================================
+// ⭐ NEW: TECH SURFACE — USE ALL IMPORTS
+// ============================================================================
+function buildTechSurface({ jobId, pattern, payload, priority, returnTo, mode }) {
+
+  const v2 = PulseV2EvolutionEngine?.createPulseV2
+    ? PulseV2EvolutionEngine.createPulseV2({ jobId, pattern, payload, priority, returnTo, mode })
+    : null;
+
+  const v3 = PulseV3UnifiedOrganism?.createPulseV3
+    ? PulseV3UnifiedOrganism.createPulseV3({ jobId, pattern, payload, priority, returnTo, mode })
+    : null;
+
+  const impulse = PulseSendImpulse?.createImpulse
+    ? PulseSendImpulse.createImpulse({ jobId, pattern, payload, priority, returnTo, mode })
+    : null;
+
+  const legacy = PulseSendLegacyPulse?.createLegacyPulse
+    ? PulseSendLegacyPulse.createLegacyPulse({ jobId, pattern, payload, priority, returnTo, mode })
+    : null;
+
+  const adapter = PulseSendAdapter?.adapt
+    ? PulseSendAdapter.adapt({ jobId, pattern, payload, priority, returnTo, mode })
+    : null;
+
+  const engine = PulseSendEngine?.engine
+    ? PulseSendEngine.engine({ jobId, pattern, payload, priority, returnTo, mode })
+    : null;
+
+  const ret = PulseSendReturn?.ret
+    ? PulseSendReturn.ret({ jobId, pattern, payload, priority, returnTo, mode })
+    : null;
+
+  const system = PulseSendSystem?.conduct
+    ? PulseSendSystem.conduct({ jobId, pattern, payload, priority, returnTo, mode })
+    : null;
+
+  return {
+    v2,
+    v3,
+    impulse,
+    legacy,
+    adapter,
+    engine,
+    ret,
+    system
+  };
+}
+
+
+// ============================================================================
 //  FACTORY — Build the Full PulseSend v12.3 Organism (Symbolic Edition)
 // ============================================================================
 export function createPulseSend({
@@ -381,6 +430,16 @@ export function createPulseSend({
       pathway
     });
 
+    // ⭐ NEW: TECH SURFACE (uses ALL imports)
+    const techSurface = buildTechSurface({
+      jobId,
+      pattern,
+      payload,
+      priority,
+      returnTo,
+      mode
+    });
+
     // ⭐ Return full telemetry
     return {
       PulseRole,
@@ -398,6 +457,8 @@ export function createPulseSend({
       cacheChunkSurface,
       prewarmSurface,
       presenceSurface,
+
+      techSurface,
 
       diagnostics: buildSendDiagnostics({
         jobId,

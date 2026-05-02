@@ -1,18 +1,19 @@
 // ============================================================================
-//  PulseSendLegacyPulse-v12.3-EvoStable.js
+//  PulseSendLegacyPulse-v14.4-IMMORTAL.js
 //  Pulse v1 Organism • Stable Evolutionary Floor • Non-Evolving
-//  v12.3: Binary + CacheChunk + Prewarm + Presence Surfaces (Stable-Plus)
+//  v14.4: Binary + CacheChunk + Prewarm + Presence + Degradation + ImmortalMeta
+//         (Stable-Plus-IMMORTAL)
 // ============================================================================
 //
 //  ROLE:
 //    • v1 is the *stable floor* of the organism stack.
 //    • It never evolves, never mutates, never computes evolution tiers.
-//    • It now surfaces 12.3 metadata (cacheChunk, prewarm, presence).
+//    • It surfaces 12.3+ metadata (cacheChunk, prewarm, presence, degradation, immortalMeta).
 //    • It does NOT use these surfaces to evolve or change behavior.
 //    • Deterministic, stable, non-evolving, non-computing.
 //
-//  SAFETY CONTRACT (v12.3-EvoStable):
-//  ----------------------------------
+//  SAFETY CONTRACT (v14.4-IMMORTAL-EvoStable):
+//  ------------------------------------------
 //  • No randomness.
 //  • No timestamps.
 //  • No external mutation.
@@ -21,14 +22,14 @@
 
 
 // ============================================================================
-// ⭐ PulseRole — identifies this as the Pulse v1 stable organism (v12.3)
+// ⭐ PulseRole — identifies this as the Pulse v1 stable organism (v14.4)
 // ============================================================================
 export const PulseRole = {
   type: "Pulse",
   subsystem: "Pulse",
   layer: "Organ",
-  version: "12.3",
-  identity: "Pulse-v1-EvoStable-v12.3",
+  version: "14.4",
+  identity: "Pulse-v1-EvoStable-v14.4-IMMORTAL",
 
   evo: {
     driftProof: true,
@@ -54,7 +55,11 @@ export const PulseRole = {
     // ⭐ 12.3 surfaces (surfaced only, never used for evolution)
     cacheChunkAware: true,
     prewarmAware: true,
-    multiPresenceAware: true
+    multiPresenceAware: true,
+
+    // ⭐ 14.4 surfaces (metadata only, never used for evolution)
+    degradationAware: true,
+    immortalMetaAware: true
   }
 };
 
@@ -140,6 +145,26 @@ function extractBinarySurface(payload) {
   };
 }
 
+function classifyDegradationTier(healthScore) {
+  const h = typeof healthScore === "number" ? healthScore : 1.0;
+  if (h >= 0.95) return "microDegrade";
+  if (h >= 0.85) return "softDegrade";
+  if (h >= 0.50) return "midDegrade";
+  if (h >= 0.15) return "hardDegrade";
+  return "criticalDegrade";
+}
+
+function extractImmortalMeta(payload) {
+  const meta = payload?.immortalMeta || {};
+  return {
+    presenceBandState: meta.presenceBandState ?? null,
+    harmonicDrift: meta.harmonicDrift ?? null,
+    coherenceScore: meta.coherenceScore ?? null,
+    dualBandMode: meta.dualBandMode ?? null,
+    shifterBand: meta.shifterBand ?? null
+  };
+}
+
 
 // ============================================================================
 //  12.3 surfaces — surfaced only, never used for evolution
@@ -186,24 +211,50 @@ function buildPresenceSurface({ pattern }) {
 
 
 // ============================================================================
-//  DIAGNOSTICS (stable, non-evolving)
+//  14.4 surfaces — degradation + immortalMeta (metadata only)
 // ============================================================================
-function buildDiagnostics(pattern, lineage, payload) {
-  const binarySurface = extractBinarySurface(payload);
-
+function buildDegradationSurface({ healthScore }) {
+  const tier = classifyDegradationTier(healthScore);
   return {
-    patternLength: pattern.length,
-    lineageDepth: lineage.length,
-    lineageDensity: lineage.length === 0 ? 0 : pattern.length / lineage.length,
-    stabilityTier: "v1-evo-stable-12.3",
+    healthScore,
+    degradationTier: tier,
+    degradationSignature: computeHash(tier)
+  };
+}
 
-    binary: binarySurface
+function buildImmortalSurface({ immortalMeta }) {
+  const raw = stableStringify(immortalMeta);
+  return {
+    immortalMeta,
+    immortalSignature: computeHash("immortal-v1::" + raw)
   };
 }
 
 
 // ============================================================================
-//  FACTORY — Create a Pulse v1 Organism (v12.3 Stable-Plus)
+//  DIAGNOSTICS (stable, non-evolving)
+// ============================================================================
+function buildDiagnostics(pattern, lineage, payload, healthScore) {
+  const binarySurface = extractBinarySurface(payload);
+  const degradationSurface = buildDegradationSurface({ healthScore });
+  const immortalMeta = extractImmortalMeta(payload);
+  const immortalSurface = buildImmortalSurface({ immortalMeta });
+
+  return {
+    patternLength: pattern.length,
+    lineageDepth: lineage.length,
+    lineageDensity: lineage.length === 0 ? 0 : pattern.length / lineage.length,
+    stabilityTier: "v1-evo-stable-14.4-IMMORTAL",
+
+    binary: binarySurface,
+    degradation: degradationSurface,
+    immortal: immortalSurface
+  };
+}
+
+
+// ============================================================================
+//  FACTORY — Create a Pulse v1 Organism (v14.4 Stable-Plus-IMMORTAL)
 // ============================================================================
 export function createLegacyPulse({
   jobId,
@@ -232,13 +283,11 @@ export function createLegacyPulse({
     patternStrength: pattern.length,
     lineageDepth: lineage.length,
     modeBias: mode === "stress" ? 2 : 1,
-    stabilityTier: "v1-evo-stable-12.3"
+    stabilityTier: "v1-evo-stable-14.4-IMMORTAL"
   };
 
   const healthScore = 1.0;
   const tier = "stable";
-
-  const diagnostics = buildDiagnostics(pattern, lineage, payload);
 
   const cacheChunkSurface = buildCacheChunkSurface({
     pattern,
@@ -254,6 +303,10 @@ export function createLegacyPulse({
     pattern
   });
 
+  const diagnostics = buildDiagnostics(pattern, lineage, payload, healthScore);
+
+  const immortalMeta = diagnostics.immortal.immortalMeta;
+
   return {
     PulseRole,
     jobId,
@@ -265,7 +318,7 @@ export function createLegacyPulse({
     mode,
     pageId,
 
-    pulseType: "Pulse-v1-EvoStable-v12.3",
+    pulseType: "Pulse-v1-EvoStable-v14.4-IMMORTAL",
 
     advantageField,
     healthScore,
@@ -274,6 +327,8 @@ export function createLegacyPulse({
     cacheChunkSurface,
     prewarmSurface,
     presenceSurface,
+
+    immortalMeta,
 
     meta: {
       shapeSignature,
@@ -297,7 +352,7 @@ export function createLegacyPulse({
 
 
 // ============================================================================
-//  FROM IMPULSE — build a v1 Pulse from an Impulse traveler (12.3 Stable-Plus)
+//  FROM IMPULSE — build a v1 Pulse from an Impulse traveler (14.4 IMMORTAL)
 // ============================================================================
 export function legacyPulseFromImpulse(impulse, overrides = {}) {
   if (!impulse) return null;

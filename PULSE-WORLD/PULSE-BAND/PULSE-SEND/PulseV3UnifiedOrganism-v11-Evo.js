@@ -1,25 +1,26 @@
 // ============================================================================
-//  FILE: PulseV3UnifiedOrganism-v12-4-Evo.js
+//  FILE: PulseV3UnifiedOrganism-v14.4-IMMORTAL.js
 //  Pulse v3 • Unified Organism • Evolution-Aware • Deterministic Compute Loop
-//  v12.4: Unified Advantage Surface + Degradation Tier + Rich Diagnostics
-//         + Signature Surface + Binary-Front-End Ready
+//  v14.4: Unified Advantage Surface + Degradation Tier + Rich Diagnostics
+//         + Signature Surface + Binary-Front-End Ready + ImmortalMeta Surface
 // ============================================================================
 //
 //  ROLE (v3 vs v2):
 //  ----------------
 //  • Pulse v2 (evolution engine) is a *specialized evolution core*.
-//  • Pulse v3 is the *unified organism* view: it treats pattern+lineage+payload
-//    as a single organism surface with a unified advantage field.
+//  • Pulse v3 is the *unified organism* view: pattern+lineage+payload as a
+//    single organism surface with a unified advantage field.
 //
 //  This file is the *symbolic* v3 organism core:
 //    - It does NOT know about bits directly.
-//    - It is designed to sit behind a binary front-end (e.g.
-//      PulseBinaryUnifiedOrganism-v12-4-Evo).
+//    - It is designed to sit behind a binary front-end.
 //    - It exposes a unified advantage surface + tier + diagnostics that
 //      binary layers can read without understanding all symbolic details.
+//    - v14.4: also surfaces immortalMeta (presenceBandState, harmonicDrift,
+//      coherenceScore, dualBandMode, shifterBand).
 //
-//  SAFETY CONTRACT (v12-4-Evo):
-//  ----------------------------
+//  SAFETY CONTRACT (v14.4-IMMORTAL):
+//  ---------------------------------
 //  • No imports.
 //  • No randomness.
 //  • No timestamps.
@@ -29,14 +30,14 @@
 
 
 // ============================================================================
-// ⭐ PulseRole — identifies this as the Pulse v3 unified organism (v12-4-Evo)
+// ⭐ PulseRole — identifies this as the Pulse v3 unified organism (v14.4)
 // ============================================================================
 export const PulseRole = {
   type: "Pulse",
   subsystem: "Pulse",
   layer: "Organ",
-  version: "12.4",
-  identity: "Pulse-v3-Unified-v12-4-Evo",
+  version: "14.4",
+  identity: "Pulse-v3-Unified-v14.4-IMMORTAL",
 
   evo: {
     // Core evolution awareness
@@ -66,33 +67,28 @@ export const PulseRole = {
     lineageSurfaceReady: true,
 
     // Binary integration flags:
-    //   - This file is the *back-end* unified organism engine.
-    //   - A separate binary organ will act as the front-end that speaks in bits.
     binaryBackEndReady: true,
-    binaryFrontEndContract: "PulseBinaryUnifiedOrganism-v12-4-Evo"
+    binaryFrontEndContract: "PulseBinaryUnifiedOrganism-v14.4-IMMORTAL",
+
+    // Immortal meta awareness
+    immortalMetaAware: true,
+    dualBandAware: true,
+    harmonicAware: true,
+    coherenceAware: true
   },
 
-  routingContract: "PulseRouter-v12-4",
-  meshContract: "PulseMesh-v12-4",
-  sendContract: "PulseSend-v12-4",
-  gpuOrganContract: "PulseGPU-v12-4",
-  earnCompatibility: "PulseEarn-v12-4"
+  routingContract: "PulseRouter-v14.4",
+  meshContract: "PulseMesh-v14.4",
+  sendContract: "PulseSend-v14.4",
+  gpuOrganContract: "PulseGPU-v14.4",
+  earnCompatibility: "PulseEarn-v14.4"
 };
 
 
 // ============================================================================
 //  INTERNAL HELPERS — deterministic, tiny, pure
 // ============================================================================
-//  These helpers define how v3 builds its unified organism identity:
-//    - lineage: ancestry chain
-//    - shapeSignature: pattern+lineage compressed
-//    - evolutionStage: coarse growth stage
-//    - ancestry signatures: pattern/lineage/page binding
-//    - diagnostics: human/AI-readable health summary
-// ============================================================================
-
 function computeHash(str) {
-  // v3-specific deterministic hash; small, bounded, and stable.
   let h = 0;
   for (let i = 0; i < str.length; i++) {
     h = (h + str.charCodeAt(i) * (i + 1)) % 100000;
@@ -100,19 +96,16 @@ function computeHash(str) {
   return `h${h}`;
 }
 
-// Build lineage chain (v3 can extend lineage deterministically)
 function buildLineage(parentLineage, pattern) {
   const base = Array.isArray(parentLineage) ? parentLineage : [];
   return [...base, pattern];
 }
 
-// Deterministic shape signature
 function computeShapeSignature(pattern, lineage) {
   const raw = `${pattern}::${lineage.join("::")}`;
   return `shape-${computeHash(raw)}`;
 }
 
-// Evolution stage classification (v3: simpler, unified)
 function computeEvolutionStage(pattern, lineage) {
   const depth = lineage.length;
 
@@ -154,8 +147,26 @@ function computeDegradationTier(healthScore) {
   );
 }
 
-function buildDiagnostics({ pattern, lineage, healthScore, tier }) {
-  // Diagnostics: unified organism view of health + structure + tier.
+
+// ============================================================================
+//  IMMORTAL META SURFACE (v14.4)
+// ============================================================================
+function extractImmortalMeta(payload) {
+  const m = payload?.immortalMeta || {};
+  return {
+    presenceBandState: m.presenceBandState ?? null,
+    harmonicDrift: m.harmonicDrift ?? null,
+    coherenceScore: m.coherenceScore ?? null,
+    dualBandMode: m.dualBandMode ?? null,
+    shifterBand: m.shifterBand ?? null
+  };
+}
+
+
+// ============================================================================
+//  DIAGNOSTICS (unified organism view + immortalMeta)
+// ============================================================================
+function buildDiagnostics({ pattern, lineage, healthScore, tier, immortalMeta }) {
   return {
     patternLength: pattern.length,
     lineageDepth: lineage.length,
@@ -164,24 +175,27 @@ function buildDiagnostics({ pattern, lineage, healthScore, tier }) {
       healthScore >= 0.75 ? "high" :
       healthScore >= 0.5 ? "medium" : "low",
     tier,
-    lineageDensity: lineage.length === 0 ? 0 : pattern.length / lineage.length
+    lineageDensity: lineage.length === 0 ? 0 : pattern.length / lineage.length,
+
+    immortal: immortalMeta,
+    immortalSignature: computeHash(JSON.stringify(immortalMeta))
   };
 }
 
 
 // ============================================================================
-//  INTERNAL: Deterministic evolution compute loop (v3, v12.4 surface)
+//  INTERNAL: Deterministic evolution compute loop (v3, v14.4 surface)
 // ============================================================================
+//
 //  v3's compute loop is a *unified advantage surface*:
 //
 //    - patternScore: how "large/complex" the pattern is
 //    - lineageScore: how deep the ancestry is
 //    - payloadScore: how rich the payload is
 //
-//  The advantageField is a structured description that a binary front-end
-//  can read without understanding all symbolic details.
+//  v14.4: immortalMeta is surfaced into advantageField but does not
+//         change the core scoring behavior (non-breaking).
 // ============================================================================
-
 function runEvolutionComputeLoop({ pattern, lineage, payload, mode }) {
   const lineageDepth = Array.isArray(lineage) ? lineage.length : 0;
   const payloadSize = payload && typeof payload === "object"
@@ -196,6 +210,8 @@ function runEvolutionComputeLoop({ pattern, lineage, payload, mode }) {
   const lineageScore = Math.min(lineageDepth / maxLineage, 1);
   const payloadScore = Math.min(payloadSize / maxPayload, 1);
 
+  const immortalMeta = extractImmortalMeta(payload);
+
   const advantageField = {
     patternStrength: pattern.length,
     lineageDepth,
@@ -205,7 +221,15 @@ function runEvolutionComputeLoop({ pattern, lineage, payload, mode }) {
       mode === "drain"    ? 2 :
       mode === "recovery" ? 2 :
       1,
-    unifiedTier: "v3-unified-v12-4"
+
+    unifiedTier: "v3-unified-v14.4-IMMORTAL",
+
+    // Immortal meta surfaced for higher layers
+    presenceBandState: immortalMeta.presenceBandState,
+    harmonicDrift: immortalMeta.harmonicDrift,
+    coherenceScore: immortalMeta.coherenceScore,
+    dualBandMode: immortalMeta.dualBandMode,
+    shifterBand: immortalMeta.shifterBand
   };
 
   const healthScore = (
@@ -216,29 +240,15 @@ function runEvolutionComputeLoop({ pattern, lineage, payload, mode }) {
 
   return {
     advantageField,
-    healthScore
+    healthScore,
+    immortalMeta
   };
 }
 
 
 // ============================================================================
-//  FACTORY — Create a Pulse v3 Unified Organism (v12-4-Evo)
+//  FACTORY — Create a Pulse v3 Unified Organism (v14.4-IMMORTAL)
 // ============================================================================
-//  This is the "birth" function for a v3 unified organism instance.
-//  A binary front-end will typically:
-//
-//    - derive pattern from bits / route / job
-//    - derive payload from bits / metadata
-//    - choose mode (normal/stress/drain/recovery)
-//    - call createPulseV3
-//
-//  The result is a unified organism object with:
-//    - PulseRole
-//    - pattern/lineage/mode/payload
-//    - advantageField + healthScore + tier
-//    - meta: signatures + diagnostics
-// ============================================================================
-
 export function createPulseV3({
   jobId,
   pattern,
@@ -261,7 +271,11 @@ export function createPulseV3({
     pageId
   });
 
-  const { advantageField, healthScore } = runEvolutionComputeLoop({
+  const {
+    advantageField,
+    healthScore,
+    immortalMeta
+  } = runEvolutionComputeLoop({
     pattern,
     lineage,
     payload,
@@ -273,7 +287,8 @@ export function createPulseV3({
     pattern,
     lineage,
     healthScore,
-    tier
+    tier,
+    immortalMeta
   });
 
   return {
@@ -291,12 +306,15 @@ export function createPulseV3({
     pageId,
 
     // Unified organism type
-    pulseType: "Pulse-v3-Unified-v12-4",
+    pulseType: "Pulse-v3-Unified-v14.4-IMMORTAL",
 
     // Advantage + health
     advantageField,
     healthScore,
     tier,
+
+    // Immortal meta surfaced at organism level
+    immortalMeta,
 
     // Meta: signatures + diagnostics
     meta: {

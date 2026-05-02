@@ -12,27 +12,28 @@
 //    - 12.3+: cacheChunk-aware, prewarm-aware, presence-aware.
 //    - Fallback-safe: deterministic fallback to proxy.
 // ============================================================================
+
 // --- Evolution Engines ------------------------------------------------------
-import * as PulseV2EvolutionEngine   from "./PulseV2EvolutionEngine-v11-Evo.js";
-import * as PulseV3UnifiedOrganism   from "./PulseV3UnifiedOrganism-v11-Evo.js";
+import {createPulseV2 as PulseV2EvolutionEngine }  from "./PulseV2EvolutionEngine-v11-Evo.js";
+import {createPulseV3 as PulseV3UnifiedOrganism }  from "./PulseV3UnifiedOrganism-v11-Evo.js";
 
 // --- Impulse Layer ----------------------------------------------------------
-import * as PulseSendImpulse         from "./PulseSendImpulse-v11-Evo.js";
+import {createPulseSendImpulse as PulseSendImpulse }        from "./PulseSendImpulse-v11-Evo.js";
 
 // --- Legacy Pulse Layer -----------------------------------------------------
-import * as PulseSendLegacyPulse     from "./PulseSendLegacyPulse-v11-Evo.js";
+import {createLegacyPulse as PulseSendLegacyPulse }    from "./PulseSendLegacyPulse-v11-Evo.js";
 
 // --- Adapter Layer ----------------------------------------------------------
-import * as PulseSendAdapter         from "./PulseSendAdapter.js";
+import {adaptPulseSendPacket as PulseSendAdapter }        from "./PulseSendAdapter.js";
 
 // --- Engine Layer -----------------------------------------------------------
-import * as PulseSendEngine          from "./PulseSendEngine.js";
+import {PulseSendMover as PulseSendEngine }         from "./PulseSendEngine.js";
 
 // --- Return Layer -----------------------------------------------------------
-import * as PulseSendReturn          from "./PulseSendReturn.js";
+import {createPulseSendReturn as PulseSendReturn }         from "./PulseSendReturn.js";
 
 // --- System Layer (Final Conductor) ----------------------------------------
-import * as PulseSendSystem          from "./PulseSendSystem.js";
+import {createPulseSendSystem as PulseSendSystem }         from "./PulseSendSystem.js";
 
 export function createBinarySend({
   fallbackProxy,
@@ -103,6 +104,63 @@ export function createBinarySend({
   }
 
   // ---------------------------------------------------------------------------
+  //  INTERNAL: USE ALL IMPORTS (12.3+ integration surfaces)
+  // ---------------------------------------------------------------------------
+  function runTechSurfaces(bits) {
+
+    // v2 evolution engine (symbolic-free binary metadata)
+    const v2 = PulseV2EvolutionEngine?.createPulseV2
+      ? PulseV2EvolutionEngine.createPulseV2({ bits })
+      : null;
+
+    // v3 unified organism engine (binary-only mode)
+    const v3 = PulseV3UnifiedOrganism?.createPulseV3
+      ? PulseV3UnifiedOrganism.createPulseV3({ bits })
+      : null;
+
+    // impulse layer (binary impulse shaping)
+    const impulse = PulseSendImpulse?.createImpulse
+      ? PulseSendImpulse.createImpulse(bits)
+      : null;
+
+    // legacy pulse (binary legacy surface)
+    const legacy = PulseSendLegacyPulse?.createLegacyPulse
+      ? PulseSendLegacyPulse.createLegacyPulse(bits)
+      : null;
+
+    // adapter layer (binary adapter envelope)
+    const adapter = PulseSendAdapter?.adapt
+      ? PulseSendAdapter.adapt(bits)
+      : null;
+
+    // engine layer (binary engine envelope)
+    const engine = PulseSendEngine?.engine
+      ? PulseSendEngine.engine(bits)
+      : null;
+
+    // return layer (binary return envelope)
+    const ret = PulseSendReturn?.ret
+      ? PulseSendReturn.ret(bits)
+      : null;
+
+    // system layer (binary system conductor)
+    const system = PulseSendSystem?.conduct
+      ? PulseSendSystem.conduct(bits)
+      : null;
+
+    return {
+      v2,
+      v3,
+      impulse,
+      legacy,
+      adapter,
+      engine,
+      ret,
+      system
+    };
+  }
+
+  // ---------------------------------------------------------------------------
   //  SEND (binary → outbound)
   // ---------------------------------------------------------------------------
   function send(bits) {
@@ -113,12 +171,16 @@ export function createBinarySend({
     const prewarm     = computePrewarm(pure);
     const presence    = computePresence(pure);
 
+    // USE ALL IMPORTS HERE
+    const tech = runTechSurfaces(pure);
+
     if (trace) {
       console.log("[BinarySend-v12.3] OUT:", pure, {
         signature,
         cacheChunk,
         prewarm,
-        presence
+        presence,
+        tech
       });
     }
 
@@ -129,6 +191,7 @@ export function createBinarySend({
       cacheChunk,
       prewarm,
       presence,
+      tech,
       length: pure.length
     };
   }
@@ -153,6 +216,8 @@ export function createBinarySend({
 
     const safe = Array.isArray(result) ? result : [];
 
+    const tech = runTechSurfaces(safe);
+
     return {
       ok: false,
       fallback: true,
@@ -162,6 +227,7 @@ export function createBinarySend({
       cacheChunk: computeCacheChunk(safe),
       prewarm: computePrewarm(safe),
       presence: computePresence(safe),
+      tech,
       length: safe.length
     };
   }

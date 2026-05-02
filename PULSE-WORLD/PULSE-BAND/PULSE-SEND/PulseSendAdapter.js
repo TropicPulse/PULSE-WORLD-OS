@@ -1,13 +1,12 @@
 // ============================================================================
-//  PulseSendAdapter-v12.3-Evo.js
+//  PulseSendAdapter-v14-IMMORTAL.js
 //  Pattern‑Shape Adapter • Pulse‑Agnostic Translator • Pre‑Delivery Adapter
-//  v12.3: Diagnostics + Signatures + Pattern Surface + Lineage Surface
-//         + cacheChunkSurface + prewarmSurface + presenceSurface
-//  v12.3-Binary: Binary-Aware Adapter Surface (Optional, Non-Breaking)
+//  v14-IMMORTAL: DualStack + Binary-Front-End + Ancestry Surface + Advantage Echo
+//                + cacheChunkSurface + prewarmSurface + presenceSurface
 // ============================================================================
 //
-//  SAFETY CONTRACT (v12.3-Evo):
-//  ----------------------------
+//  SAFETY CONTRACT (v14-IMMORTAL):
+//  --------------------------------
 //  • No imports.
 //  • No network.
 //  • No compute beyond local helpers.
@@ -18,14 +17,14 @@
 
 
 // ============================================================================
-// ⭐ PulseRole — identifies this as the PulseSend Adapter Organ (v12.3-Evo)
+// ⭐ PulseRole — PulseSend Adapter Organ (v14-IMMORTAL)
 // ============================================================================
 export const PulseRole = {
   type: "Messenger",
   subsystem: "PulseSend",
   layer: "Adapter",
-  version: "12.3",
-  identity: "PulseSendAdapter-v12.3-Evo",
+  version: "14-IMMORTAL",
+  identity: "PulseSendAdapter-v14-IMMORTAL",
 
   evo: {
     driftProof: true,
@@ -46,20 +45,22 @@ export const PulseRole = {
     signatureReady: true,
     adapterSurfaceReady: true,
 
-    // Binary-aware adapter surface
+    // Binary + dual-stack adapter surface
     binaryAwareAdapterReady: true,
+    binaryFrontEndReady: true,
+    dualStackReady: true,
 
-    // 12.3+: cache / prewarm / presence
+    // 14+: cache / prewarm / presence
     cacheChunkAware: true,
     prewarmAware: true,
     multiPresenceAware: true
   },
 
-  routingContract: "PulseRouter-v11",
-  meshContract: "PulseMesh-v11",
+  routingContract: "PulseRouter-v14",
+  meshContract: "PulseMesh-v14",
   pulseContract: "Pulse-v1/v2/v3",
-  gpuOrganContract: "PulseGPU-v11",
-  earnCompatibility: "PulseEarn-v11"
+  gpuOrganContract: "PulseGPU-v14",
+  earnCompatibility: "PulseEarn-v14"
 };
 
 
@@ -69,8 +70,9 @@ export const PulseRole = {
 
 function computeHash(str) {
   let h = 0;
-  for (let i = 0; i < str.length; i++) {
-    h = (h + str.charCodeAt(i) * (i + 1)) % 100000;
+  const s = String(str);
+  for (let i = 0; i < s.length; i++) {
+    h = (h + s.charCodeAt(i) * (i + 1)) % 100000;
   }
   return `h${h}`;
 }
@@ -106,13 +108,20 @@ function extractBinarySurfaceFromPulse(pulse) {
     !!binaryHints ||
     binaryStrength !== null;
 
+  const routerHint = payload.routerHint ?? (binaryHints && binaryHints.routerHint) ?? null;
+  const meshHint   = payload.meshHint   ?? (binaryHints && binaryHints.meshHint)   ?? null;
+  const organHint  = payload.organHint  ?? (binaryHints && binaryHints.organHint)  ?? null;
+
   return {
     hasBinary,
     binaryPattern,
     binaryMode,
     binaryPayload,
     binaryHints,
-    binaryStrength
+    binaryStrength,
+    routerHint,
+    meshHint,
+    organHint
   };
 }
 
@@ -147,13 +156,22 @@ function buildAdapterDiagnostics({ pulse, targetOrgan, mode }) {
       : null,
     binaryModeHash: binarySurface.binaryMode
       ? computeHash(binarySurface.binaryMode)
+      : null,
+    binaryRouterHintHash: binarySurface.routerHint
+      ? computeHash(binarySurface.routerHint)
+      : null,
+    binaryMeshHintHash: binarySurface.meshHint
+      ? computeHash(binarySurface.meshHint)
+      : null,
+    binaryOrganHintHash: binarySurface.organHint
+      ? computeHash(binarySurface.organHint)
       : null
   };
 }
 
 
 // ============================================================================
-//  12.3+ surfaces — cacheChunk / prewarm / presence
+//  14+ surfaces — cacheChunk / prewarm / presence
 // ============================================================================
 
 function buildCacheChunkSurface({ pulse, targetOrgan, mode }) {
@@ -303,7 +321,7 @@ export function adaptPulseSendPacket(pulse, targetOrgan, mode = "normal") {
     mode
   });
 
-  // ⭐ v12.3 adapter signature (binary + cacheChunk aware)
+  // ⭐ v14 adapter signature (binary + hints + cacheChunk aware)
   const adapterSignature = computeHash(
     diagnostics.pattern +
     "::" +
@@ -311,7 +329,13 @@ export function adaptPulseSendPacket(pulse, targetOrgan, mode = "normal") {
     "::" +
     diagnostics.mode +
     "::" +
-    (diagnostics.binary.binaryPattern || "NO_BINARY_PATTERN")
+    (diagnostics.binary.binaryPattern || "NO_BINARY_PATTERN") +
+    "::" +
+    (diagnostics.binary.routerHint || "NO_ROUTER_HINT") +
+    "::" +
+    (diagnostics.binary.meshHint || "NO_MESH_HINT") +
+    "::" +
+    (diagnostics.binary.organHint || "NO_ORGAN_HINT")
   );
 
   const cacheChunkSurface = buildCacheChunkSurface({
