@@ -100,8 +100,7 @@ function logFlow(stage, details = {}) {
 // ============================================================================
 // IMPORTS — Router / SkinReflex / EvolutionaryPage
 // ============================================================================
-import { route } from "../PULSE-BAND/PULSE-OS/PulseOSCNSNervousSystem.js";
-import { attachScanner } from "./PULSEOSSkinReflex.js";
+import { safeRoute as route } from "./PulseProofBridge.js";
 
 // EvolutionaryPage is exposed globally by EvolutionaryTrustedPage boot
 // window.PulseEvolutionaryPage.evolve({ intent: "dashboard", ... })
@@ -256,15 +255,17 @@ export async function initUIFlow() {
     return null;
   }
 
-  // 1. Attach SkinReflex/PageScanner
-  let scannerContext = null;
+  // 1. Ask CNS for identity (via safeRoute)
+  let identityTrusted = false;
+  let identityContext = null;
+
   try {
-    scannerContext = await attachScanner();
+    identityContext = await route("identity.check", {});
+    identityTrusted = !!identityContext?.trustedDevice;
   } catch (err) {
-    logFlow("SCANNER_ATTACH_FAILED", { error: String(err) });
+    logFlow("IDENTITY_CHECK_FAILED", { error: String(err) });
   }
 
-  const identityTrusted = !!scannerContext?.identity?.trustedDevice;
   UIFlowState.setIdentityTrusted(identityTrusted);
 
   // 2. Choose initial flow
@@ -287,9 +288,10 @@ export async function initUIFlow() {
   return {
     flow: initialFlow,
     identityTrusted,
-    scannerContext
+    identityContext
   };
 }
+
 
 
 /**
