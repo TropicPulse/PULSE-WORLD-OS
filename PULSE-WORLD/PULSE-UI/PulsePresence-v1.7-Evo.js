@@ -308,11 +308,35 @@ async function fetchChunk(url) {
 }
 
 // ============================================================================
-//  IMAGE-SPECIFIC CHUNKER — WITH PRESENCE-AWARE ROUTED FETCH
+//  IMAGE-SPECIFIC CHUNKER — WITH PRESENCE-AWARE ROUTED FETCH + NORMALIZATION
 // ============================================================================
 export async function getImage(url) {
-  const { value } = await fetchChunk(url);
-  return value;
+  const { value, ok, error, envelope } = await fetchChunk(url);
+
+  if (!ok) {
+    console.warn("[PulseChunks] getImage fallback — using raw URL due to chunk failure:", {
+      url,
+      error,
+      envelope
+    });
+    return url;
+  }
+
+  // Prefer dedicated image normalizer, then generic
+  const src =
+    normalizeImage(value) ||
+    normalizeChunkValue(value, "image") ||
+    null;
+
+  if (!src) {
+    console.warn("[PulseChunks] getImage could not normalize image, falling back to URL:", {
+      url,
+      value
+    });
+    return url;
+  }
+
+  return src;
 }
 
 function attachLore(chunk, metaPack) {
@@ -429,7 +453,6 @@ function handlePulseBandPacket(packet) {
   }
 }
 
-// After chunkCache / failures / state declarations
 function dechunk(urls = []) {
   urls.forEach((url) => {
     if (!url) return;
@@ -453,23 +476,44 @@ function dechunkAll() {
 async function autoLoadOfflineImages() {
   if (typeof document === "undefined") return;
 
-  const imgs = document.querySelectorAll("img.offline-img[data-offline]");
+  const imgs = Array.from(document.querySelectorAll("img.offline-img[data-offline]"));
 
   for (const img of imgs) {
     const url = img.getAttribute("data-offline");
     if (!url) continue;
 
     try {
-      const value = await getImage(url);
-      const src = normalizeImage(value) || normalizeChunkValue(value, "image");
+      const { value, ok, error, envelope } = await fetchChunk(url);
 
-      if (src) {
-        img.src = src;
-      } else {
-        console.warn("[PulseChunks] Could not normalize image:", url, value);
+      if (!ok) {
+        console.warn("[PulseChunks] Offline image chunk failed, falling back to URL:", {
+          url,
+          error,
+          envelope
+        });
+        img.src = url;
+        continue;
       }
+
+      const src =
+        normalizeImage(value) ||
+        normalizeChunkValue(value, "image") ||
+        null;
+
+      if (!src) {
+        console.warn("[PulseChunks] Could not normalize image, falling back to URL:", {
+          url,
+          value
+        });
+        img.src = url;
+        continue;
+      }
+
+      img.src = src;
+
     } catch (err) {
-      console.warn("[PulseChunks] Offline image load failed:", url, err);
+      console.warn("[PulseChunks] Offline image load threw, falling back to URL:", url, err);
+      img.src = url;
     }
   }
 }
@@ -499,7 +543,7 @@ window.PulseChunks = {
   resetState: resetChunksState,
   dechunk,
   dechunkAll,
-  normalizeChunkValue,   // expose normalizer
+  normalizeChunkValue,
 };
 
 export default window.PulseChunks;

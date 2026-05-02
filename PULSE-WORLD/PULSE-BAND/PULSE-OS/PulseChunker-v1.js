@@ -58,7 +58,6 @@ export const PulseChunkerMeta = Object.freeze({
   })
 });
 
-
 // ============================================================================
 // ROUTE DESCRIPTOR CONTRACT — v12.4-EVO-ROUTE-FABRIC
 //  - Lets frontend send "the whole route" as one object.
@@ -101,89 +100,6 @@ function generateLoreHeader({ meta, payloadType, baseVersion, presenceTag, band 
 }
 
 // ============================================================================
-// UNIVERSAL CACHE ENGINE — ONE FUNCTION ONLY
-// ============================================================================
-async function generateCache({ payload, baseVersion, sizeOnly=false, deltaRequest=false }) {
-
-  const isDelta = deltaRequest || (typeof payload === "string" && payload.endsWith("_DELTA"));
-
-  const [collection, field] = String(
-    payload
-      .replace?.(/^REQUEST_/, "") ?? payload
-  )
-    .replace(/_DELTA$/, "")
-    .replace(/_CACHE$/, "")
-    .toLowerCase()
-    .split("_");
-
-  const docs = (await db.collection(collection).get()).docs.map(d => d.data());
-  let result = field ? docs.map(d => d[field]) : docs;
-
-  if (isDelta && baseVersion) {
-    const hash = crypto.createHash("sha256").update(JSON.stringify(result)).digest("hex");
-    if (hash === baseVersion) return { added:[], removed:[], changed:[] };
-    return { added: result, removed: [], changed: [] };
-  }
-
-  if (!sizeOnly) return result;
-
-  return Buffer.byteLength(JSON.stringify(result ?? {}), "utf8");
-}
-
-// ============================================================================
-// INTELLIGENT CACHE RESOLVER — ONE FUNCTION ONLY
-// ============================================================================
-async function resolveCacheRequest(payload, baseVersion, sizeOnly) {
-  if (typeof payload !== "string") return payload;
-
-  const isDelta = payload.endsWith("_DELTA");
-  const isFull  = payload.endsWith("_CACHE");
-
-  if (isDelta) {
-    const delta = await generateCache({
-      payload,
-      baseVersion,
-      deltaRequest: true,
-      sizeOnly: !!sizeOnly
-    });
-
-    if (sizeOnly) return delta;
-
-    const added   = delta?.added   || [];
-    const removed = delta?.removed || [];
-    const changed = delta?.changed || [];
-
-    const empty =
-      (!added?.length && !Object.keys(added).length) &&
-      (!removed?.length && !Object.keys(removed).length) &&
-      (!changed?.length && !Object.keys(changed).length);
-
-    return empty
-      ? await generateCache({ payload })
-      : delta;
-  }
-
-  if (isFull) {
-    return await generateCache({
-      payload,
-      sizeOnly: !!sizeOnly
-    });
-  }
-
-  if (sizeOnly) {
-    const deltaSize = Number(
-      await generateCache({ payload, deltaRequest: true, sizeOnly: true }) || 0
-    );
-
-    if (deltaSize > 0) return deltaSize;
-
-    return await generateCache({ payload, sizeOnly: true });
-  }
-
-  return payload;
-}
-
-// ============================================================================
 // SIGN CHUNK
 // ============================================================================
 function signChunk(userId, sessionId, index, dataBase64) {
@@ -193,6 +109,280 @@ function signChunk(userId, sessionId, index, dataBase64) {
   h.update(String(index));
   h.update(String(dataBase64));
   return h.digest("hex");
+}
+
+// ============================================================================
+// FACTORY — CNS‑SAFE CHUNKER (Brain + Logger)
+// ============================================================================
+export function createPulseChunker({ Brain, Logger } = {}) {
+  if (!Brain && !Logger) {
+    throw new Error("PulseChunker v13: Missing Brain/Logger injection.");
+  }
+
+  const log   = Logger?.log   || Brain?.log   || console.log;
+  const warn  = Logger?.warn  || Brain?.warn  || console.warn;
+  const error = Logger?.error || Brain?.logError || console.error;
+
+  // Optional DB — routed via Brain if available (no firebase-admin import)
+  const db = Brain?.firebase ? Brain.firebase("db") : null;
+
+  // Optional helpers from Brain / Logger / global
+  const fsAPI     = Brain?.fsAPI     || global.fsAPI     || null;
+  const routeAPI  = Brain?.routeAPI  || global.routeAPI  || null;
+  const schemaAPI = Brain?.schemaAPI || global.schemaAPI || null;
+  const fetchAPI  = Logger?.fetchAPI || Brain?.fetchAPI  || global.fetch || null;
+
+  // Internal registries
+  const backendOrgans = new Map();
+  const sessions = new Map();
+
+  // ========================================================================
+  // UNIVERSAL CACHE ENGINE — ONE FUNCTION ONLY (DB‑scoped)
+  // ========================================================================
+  async function generateCache({ payload, baseVersion, sizeOnly = false, deltaRequest = false }) {
+    if (!db) {
+      warn("[PulseChunker v13] generateCache called without db; returning passthrough.");
+      return sizeOnly ? 0 : payload;
+    }
+
+    const isDelta = deltaRequest || (typeof payload === "string" && payload.endsWith("_DELTA"));
+
+    const [collection, field] = String(
+      payload
+        .replace?.(/^REQUEST_/, "") ?? payload
+    )
+      .replace(/_DELTA$/, "")
+      .replace(/_CACHE$/, "")
+      .toLowerCase()
+      .split("_");
+
+    const docs = (await db.collection(collection).get()).docs.map(d => d.data());
+    let result = field ? docs.map(d => d[field]) : docs;
+
+    if (isDelta && baseVersion) {
+      const hash = crypto.createHash("sha256").update(JSON.stringify(result)).digest("hex");
+      if (hash === baseVersion) return { added: [], removed: [], changed: [] };
+      return { added: result, removed: [], changed: [] };
+    }
+
+    if (!sizeOnly) return result;
+
+    return Buffer.byteLength(JSON.stringify(result ?? {}), "utf8");
+  }
+
+  // ========================================================================
+  // INTELLIGENT CACHE RESOLVER — ONE FUNCTION ONLY
+  // ========================================================================
+  async function resolveCacheRequest(payload, baseVersion, sizeOnly) {
+    if (typeof payload !== "string") return payload;
+
+    const isDelta = payload.endsWith("_DELTA");
+    const isFull  = payload.endsWith("_CACHE");
+
+    if (isDelta) {
+      const delta = await generateCache({
+        payload,
+        baseVersion,
+        deltaRequest: true,
+        sizeOnly: !!sizeOnly
+      });
+
+      if (sizeOnly) return delta;
+
+      const added   = delta?.added   || [];
+      const removed = delta?.removed || [];
+      const changed = delta?.changed || [];
+
+      const empty =
+        (!added?.length && !Object.keys(added).length) &&
+        (!removed?.length && !Object.keys(removed).length) &&
+        (!changed?.length && !Object.keys(changed).length);
+
+      return empty
+        ? await generateCache({ payload })
+        : delta;
+    }
+
+    if (isFull) {
+      return await generateCache({
+        payload,
+        sizeOnly: !!sizeOnly
+      });
+    }
+
+    if (sizeOnly) {
+      const deltaSize = Number(
+        await generateCache({ payload, deltaRequest: true, sizeOnly: true }) || 0
+      );
+
+      if (deltaSize > 0) return deltaSize;
+
+      return await generateCache({ payload, sizeOnly: true });
+    }
+
+    return payload;
+  }
+
+  // --------------------------------------------------------------------------
+  // PulseBandSession — deterministic session bootstrap
+  // --------------------------------------------------------------------------
+  function startPulseBandSession({
+    trace,
+    db: dbOverride,
+    fsAPI: fsOverride,
+    routeAPI: routeOverride,
+    schemaAPI: schemaOverride
+  } = {}) {
+    const now = Date.now().toString();
+    const seed = `${trace || "no-trace"}::${now}`;
+
+    const sessionId = crypto
+      .createHash("sha256")
+      .update(seed)
+      .digest("hex");
+
+    const session = {
+      id: sessionId,
+      startedAt: now,
+      db: dbOverride || db,
+      fsAPI: fsOverride || fsAPI,
+      routeAPI: routeOverride || routeAPI,
+      schemaAPI: schemaOverride || schemaAPI
+    };
+
+    sessions.set(sessionId, session);
+
+    log("[PulseChunker v13] PulseBandSession started", {
+      sessionId,
+      hasDb: !!session.db
+    });
+
+    return session;
+  }
+
+  // --------------------------------------------------------------------------
+  // Registration — backend organs that support chunking
+  // --------------------------------------------------------------------------
+  function registerBackendOrgan(name, { chunk, prewarm } = {}) {
+    if (!name || typeof chunk !== "function") {
+      warn("[PulseChunker v13] registerBackendOrgan called with invalid args", {
+        name,
+        hasChunk: typeof chunk === "function"
+      });
+      return;
+    }
+
+    backendOrgans.set(name, { chunk, prewarm });
+    log("[PulseChunker v13] Registered backend organ for chunking", { name });
+  }
+
+  // --------------------------------------------------------------------------
+  // Prewarm — universal warmup for chunker + registered organs
+  // --------------------------------------------------------------------------
+  function prewarm() {
+    log("[PulseChunker v13] Prewarm start", {
+      organs: backendOrgans.size
+    });
+
+    for (const [name, organ] of backendOrgans.entries()) {
+      if (typeof organ.prewarm === "function") {
+        try {
+          organ.prewarm();
+          log("[PulseChunker v13] Prewarmed organ", { name });
+        } catch (e) {
+          warn("[PulseChunker v13] Prewarm failed for organ", {
+            name,
+            error: e?.message
+          });
+        }
+      }
+    }
+
+    log("[PulseChunker v13] Prewarm complete");
+  }
+
+  // --------------------------------------------------------------------------
+  // Core chunking primitive
+  // --------------------------------------------------------------------------
+  function chunkPayload({
+    userId,
+    payload,
+    chunkSize = 1024 * 64,
+    baseVersion = "v1",
+    sizeOnly = false,
+    presenceTag = "default",
+    band = "dual"
+  }) {
+    const buffer =
+      typeof payload === "string" ? Buffer.from(payload, "utf8") : Buffer.from(payload || []);
+
+    const payloadBytes = buffer.length;
+    const payloadHash = crypto
+      .createHash("sha256")
+      .update(buffer)
+      .digest("hex");
+
+    const totalChunks = sizeOnly
+      ? Math.ceil(payloadBytes / chunkSize)
+      : Math.max(1, Math.ceil(payloadBytes / chunkSize));
+
+    const sessionSeed = `${userId || "anon"}::${payloadHash}::${baseVersion}`;
+    const sessionId = crypto
+      .createHash("sha256")
+      .update(sessionSeed)
+      .digest("hex");
+
+    const result = {
+      sessionId,
+      totalChunks,
+      payloadBytes,
+      payloadHash,
+      presenceTag,
+      band
+    };
+
+    log("[PulseChunker v13] Chunk payload computed", {
+      userId,
+      payloadBytes,
+      totalChunks,
+      presenceTag,
+      band
+    });
+
+    return result;
+  }
+
+  // --------------------------------------------------------------------------
+  // Public API
+  // --------------------------------------------------------------------------
+  return {
+    meta: PulseChunkerMeta,
+
+    // CNS wiring
+    startPulseBandSession,
+    registerBackendOrgan,
+    prewarm,
+
+    // Core primitive
+    chunkPayload,
+
+    // Cache / route helpers
+    resolveCacheRequest,
+    generateCache,
+
+    // Utilities
+    getSession(sessionId) {
+      return sessions.get(sessionId) || null;
+    },
+
+    hasBackendOrgan(name) {
+      return backendOrgans.has(name);
+    },
+
+    isRouteDescriptor,
+    generateLoreHeader,
+    signChunk
+  };
 }
 
 // // ============================================================================
@@ -681,182 +871,3 @@ function signChunk(userId, sessionId, index, dataBase64) {
 //     }
 //   }
 // );
-
-// ============================================================================
-// FACTORY — CNS‑SAFE CHUNKER (Brain + Logger)
-// ============================================================================
-export function createPulseChunker({ Brain, Logger } = {}) {
-  if (!Brain && !Logger) {
-    throw new Error("PulseChunker v13: Missing Brain/Logger injection.");
-  }
-
-  const log   = Logger?.log   || Brain?.log   || console.log;
-  const warn  = Logger?.warn  || Brain?.warn  || console.warn;
-  const error = Logger?.error || Brain?.logError || console.error;
-
-  // Optional DB — routed via Brain if available (no firebase-admin import)
-  const db = Brain?.firebase ? Brain.firebase("db") : null;
-
-  // Optional helpers from Brain / Logger / global
-  const fsAPI     = Brain?.fsAPI     || global.fsAPI     || null;
-  const routeAPI  = Brain?.routeAPI  || global.routeAPI  || null;
-  const schemaAPI = Brain?.schemaAPI || global.schemaAPI || null;
-  const fetchAPI  = Logger?.fetchAPI || Brain?.fetchAPI  || global.fetch || null;
-
-  // Internal registries
-  const backendOrgans = new Map();
-  const sessions = new Map();
-
-  // --------------------------------------------------------------------------
-  // PulseBandSession — deterministic session bootstrap
-  // --------------------------------------------------------------------------
-  function startPulseBandSession({
-    trace,
-    db: dbOverride,
-    fsAPI: fsOverride,
-    routeAPI: routeOverride,
-    schemaAPI: schemaOverride
-  } = {}) {
-    const now = Date.now().toString();
-    const seed = `${trace || "no-trace"}::${now}`;
-
-    const sessionId = crypto
-      .createHash("sha256")
-      .update(seed)
-      .digest("hex");
-
-    const session = {
-      id: sessionId,
-      startedAt: now,
-      db: dbOverride || db,
-      fsAPI: fsOverride || fsAPI,
-      routeAPI: routeOverride || routeAPI,
-      schemaAPI: schemaOverride || schemaAPI
-    };
-
-    sessions.set(sessionId, session);
-
-    log("[PulseChunker v13] PulseBandSession started", {
-      sessionId,
-      hasDb: !!session.db
-    });
-
-    return session;
-  }
-
-  // --------------------------------------------------------------------------
-  // Registration — backend organs that support chunking
-  // --------------------------------------------------------------------------
-  function registerBackendOrgan(name, { chunk, prewarm } = {}) {
-    if (!name || typeof chunk !== "function") {
-      warn("[PulseChunker v13] registerBackendOrgan called with invalid args", {
-        name,
-        hasChunk: typeof chunk === "function"
-      });
-      return;
-    }
-
-    backendOrgans.set(name, { chunk, prewarm });
-    log("[PulseChunker v13] Registered backend organ for chunking", { name });
-  }
-
-  // --------------------------------------------------------------------------
-  // Prewarm — universal warmup for chunker + registered organs
-  // --------------------------------------------------------------------------
-  function prewarm() {
-    log("[PulseChunker v13] Prewarm start", {
-      organs: backendOrgans.size
-    });
-
-    for (const [name, organ] of backendOrgans.entries()) {
-      if (typeof organ.prewarm === "function") {
-        try {
-          organ.prewarm();
-          log("[PulseChunker v13] Prewarmed organ", { name });
-        } catch (e) {
-          warn("[PulseChunker v13] Prewarm failed for organ", {
-            name,
-            error: e?.message
-          });
-        }
-      }
-    }
-
-    log("[PulseChunker v13] Prewarm complete");
-  }
-
-  // --------------------------------------------------------------------------
-  // Core chunking primitive
-  // --------------------------------------------------------------------------
-  function chunkPayload({
-    userId,
-    payload,
-    chunkSize = 1024 * 64,
-    baseVersion = "v1",
-    sizeOnly = false,
-    presenceTag = "default",
-    band = "dual"
-  }) {
-    const buffer =
-      typeof payload === "string" ? Buffer.from(payload, "utf8") : Buffer.from(payload || []);
-
-    const payloadBytes = buffer.length;
-    const payloadHash = crypto
-      .createHash("sha256")
-      .update(buffer)
-      .digest("hex");
-
-    const totalChunks = sizeOnly
-      ? Math.ceil(payloadBytes / chunkSize)
-      : Math.max(1, Math.ceil(payloadBytes / chunkSize));
-
-    const sessionSeed = `${userId || "anon"}::${payloadHash}::${baseVersion}`;
-    const sessionId = crypto
-      .createHash("sha256")
-      .update(sessionSeed)
-      .digest("hex");
-
-    const result = {
-      sessionId,
-      totalChunks,
-      payloadBytes,
-      payloadHash,
-      presenceTag,
-      band
-    };
-
-    log("[PulseChunker v13] Chunk payload computed", {
-      userId,
-      payloadBytes,
-      totalChunks,
-      presenceTag,
-      band
-    });
-
-    return result;
-  }
-
-  // --------------------------------------------------------------------------
-  // Public API
-  // --------------------------------------------------------------------------
-  return {
-    meta: PulseChunkerMeta,
-
-    // CNS wiring
-    startPulseBandSession,
-    registerBackendOrgan,
-    prewarm,
-
-    // Core primitive
-    chunkPayload,
-
-    // Optional helpers exposed for router / dualBand if needed
-    getSession(sessionId) {
-      return sessions.get(sessionId) || null;
-    },
-
-    hasBackendOrgan(name) {
-      return backendOrgans.has(name);
-    }
-  };
-}
