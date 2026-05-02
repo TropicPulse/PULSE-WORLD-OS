@@ -1,31 +1,37 @@
 // ============================================================================
-//  PulseProxyFront-v12.3-EVO-BINARY-MAX-ABA.js
+//  PulseProxyFront-v14-IMMORTAL-PROXY-FRONT.js
 //  Binary-First Proxy Front • Legacy Fallback • Earned Route Memory
+//  v14-IMMORTAL: CoreMemory-integrated, immortal route memory, deterministic surfaces
 //  Connects Proxy → Field (binary descriptor) OR Proxy → Legacy Router (symbolic)
 // ============================================================================
 //
-//  ROLE (v12.3-EVO-BINARY-MAX-ABA):
-//  -------------------------------
+//  ROLE (v14-IMMORTAL-PROXY-FRONT):
+//  --------------------------------
 //  • Binary-first route planner at the proxy front.
 //  • Treats binary as a DATA SURFACE ONLY (non-executable).
 //  • Falls back to legacy symbolic router when bits are not pure binary.
-//  • Uses earned route memory (previousRouteMemory) deterministically.
+//  • Uses earned route memory (previousRouteMemory + CoreMemory) deterministically.
 //  • Emits band + dnaTag + A‑B‑A surfaces so CNS/Brain can classify routes.
+//  • Immortal route memory via PulseCoreMemory (organ-local + global).
 //
-//  SAFETY CONTRACT:
-//  ----------------
-//  • No imports.
+//  SAFETY CONTRACT (v14-IMMORTAL):
+//  -------------------------------
+//  • Single import: PulseCoreMemory (immortal, in-process only).
 //  • No randomness.
 //  • No timestamps.
 //  • Pure deterministic logic.
-//  • Zero mutation outside instance.
+//  • Zero mutation outside instance (except CoreMemory writes).
 //  • Binary is NEVER executed, only described (phenotype/surface fields).
 // ============================================================================
+
+// v14-IMMORTAL upgrade: CoreMemory integration
+import { PulseCoreMemory } from "./PulseCoreMemory.js";
+
 export const PulseProxyFrontMeta = Object.freeze({
   layer: "PulseProxyFront",
   role: "BINARY_FIRST_PROXY_FRONT",
-  version: "v12.3-EVO-BINARY-MAX-ABA",
-  identity: "PulseProxyFront-v12.3-EVO-BINARY-MAX-ABA",
+  version: "v14-IMMORTAL-PROXY-FRONT",
+  identity: "PulseProxyFront-v14-IMMORTAL-PROXY-FRONT",
 
   guarantees: Object.freeze({
     deterministic: true,
@@ -57,8 +63,12 @@ export const PulseProxyFrontMeta = Object.freeze({
     internetAware: true,
     abaBandAware: true,
 
-    // Execution prohibitions
-    zeroImports: true,
+    // CoreMemory / immortal memory
+    coreMemoryIntegrated: true,
+    immortalRouteMemory: true,
+    coreMemoryDeterministicKeys: true,
+
+    // Execution prohibitions (v14: imports allowed only for CoreMemory)
     zeroRandomness: true,
     zeroTimestamps: true,
     zeroDateNow: true,
@@ -114,7 +124,8 @@ export const PulseProxyFrontMeta = Object.freeze({
       "PulseProxyFront-v11-Evo",
       "PulseProxyFront-v11-Evo-Binary",
       "PulseProxyFront-v11-Evo-Binary-Max",
-      "PulseProxyFront-v11.2-EVO-BINARY-MAX"
+      "PulseProxyFront-v11.2-EVO-BINARY-MAX",
+      "PulseProxyFront-v12.3-EVO-BINARY-MAX-ABA"
     ]
   }),
 
@@ -127,8 +138,8 @@ export const PulseProxyFrontMeta = Object.freeze({
   architecture: Object.freeze({
     pattern: "A-B-A",
     baseline: "binary descriptor → route plan → symbolic fallback",
-    adaptive: "earned route memory + binary phenotype + wave + advantage surfaces",
-    return: "deterministic proxy-front surfaces + signatures"
+    adaptive: "earned route memory + binary phenotype + wave + advantage surfaces + CoreMemory",
+    return: "deterministic proxy-front surfaces + signatures + immortal route memory"
   })
 });
 
@@ -136,6 +147,8 @@ export const PulseProxyFrontMeta = Object.freeze({
 // ============================================================================
 //  INTERNAL HELPERS — deterministic, pure
 // ============================================================================
+
+const CORE_MEMORY_NAMESPACE = "PulseProxyFrontRoute-v14-IMMORTAL";
 
 function computeHash(str) {
   let h = 0;
@@ -241,6 +254,59 @@ function isPureBinary(bits) {
   return true;
 }
 
+// ============================================================================
+//  CORE MEMORY INTEGRATION — immortal route memory (deterministic keys)
+// ============================================================================
+
+function coreMemoryRecordRoute(routeMemory) {
+  if (!routeMemory || !routeMemory.routeKey) return;
+
+  const summary = {
+    routeKey: routeMemory.routeKey,
+    decision: routeMemory.decision,
+    band: routeMemory.band,
+    bandSignature: routeMemory.bandSignature,
+    advantageField: routeMemory.advantageField,
+    dnaTag: routeMemory.dnaTag,
+    frontCycle: routeMemory.frontCycle,
+    frontCycleSignature: routeMemory.frontCycleSignature
+  };
+
+  try {
+    if (PulseCoreMemory && typeof PulseCoreMemory.record === "function") {
+      PulseCoreMemory.record(CORE_MEMORY_NAMESPACE, routeMemory.routeKey, summary);
+    }
+  } catch {
+    // Fail-open: never throw, never break proxy front.
+  }
+}
+
+function coreMemoryRecallRoute(routeKey) {
+  if (!routeKey) return null;
+  try {
+    if (PulseCoreMemory && typeof PulseCoreMemory.recall === "function") {
+      const stored = PulseCoreMemory.recall(CORE_MEMORY_NAMESPACE, routeKey);
+      if (stored && typeof stored === "object") {
+        return {
+          routeKey: stored.routeKey || routeKey,
+          decision: stored.decision || { mode: "binary" },
+          binaryField: stored.binaryField || null,
+          waveField: stored.waveField || null,
+          band: stored.band || "binary",
+          bandSignature: stored.bandSignature || null,
+          advantageField: stored.advantageField || null,
+          frontCycle: stored.frontCycle || 0,
+          frontCycleSignature: stored.frontCycleSignature || null,
+          dnaTag: stored.dnaTag || null
+        };
+      }
+    }
+  } catch {
+    // Fail-open: ignore CoreMemory failures.
+  }
+  return null;
+}
+
 
 // ============================================================================
 //  ROUTE PLANNER — binary-first, fallback-safe, deterministic (A‑B‑A surfaces)
@@ -264,12 +330,21 @@ export function planProxyRoute({
 
   const pureBinary = isPureBinary(bits);
 
+  // v14-IMMORTAL: merge local previousRouteMemory with CoreMemory recall
   let usedMemory = false;
   let decision = { mode: "binary" };
 
-  if (previousRouteMemory && previousRouteMemory.routeKey === routeKey) {
+  let effectiveMemory = previousRouteMemory;
+  if (!effectiveMemory || effectiveMemory.routeKey !== routeKey) {
+    const recalled = coreMemoryRecallRoute(routeKey);
+    if (recalled && recalled.routeKey === routeKey && recalled.decision) {
+      effectiveMemory = recalled;
+    }
+  }
+
+  if (effectiveMemory && effectiveMemory.routeKey === routeKey) {
     usedMemory = true;
-    decision = previousRouteMemory.decision;
+    decision = effectiveMemory.decision;
   } else {
     if (!pureBinary) {
       decision = { mode: "legacy" };
@@ -297,6 +372,9 @@ export function planProxyRoute({
         ? "PROXY_FRONT_BINARY"
         : "PROXY_FRONT_LEGACY"
   };
+
+  // v14-IMMORTAL: persist route memory into CoreMemory (immortal, deterministic)
+  coreMemoryRecordRoute(routeMemory);
 
   return {
     routeKey,

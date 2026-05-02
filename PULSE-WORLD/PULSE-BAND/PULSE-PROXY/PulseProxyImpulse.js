@@ -1,11 +1,23 @@
 // ============================================================================
-// FILE: PulseOSImpulseEngine-v12.3-EVO-PRESENCE.js
-// PULSE OS — v12.3‑EVO‑PRESENCE
+// FILE: PulseOSImpulseEngine-v14-IMMORTAL.js
+// PULSE OS — v14‑IMMORTAL
 // “THE IMPULSE ENGINE / NEURAL IMPULSE LIFECYCLE ORGAN”
+// CoreMemory‑Integrated • Deterministic • Immortal Lineage
 // ============================================================================
 
+import { PulseCoreMemory } from "../PULSE-CORE/PulseCoreMemory.js";
+
+// ============================================================================
+// CORE MEMORY — IMMORTAL IMPULSE MEMORY
+// ============================================================================
+const CORE_MEMORY_NAMESPACE = "PulseImpulse-v14-IMMORTAL";
+const coreMemory = new PulseCoreMemory();
+
+// ============================================================================
+// CONTEXT / META
+// ============================================================================
 const IMPULSE_CONTEXT = {
-  version: "12.3-EVO-PRESENCE",
+  version: "14-IMMORTAL",
   layer: "ImpulseEngine",
   role: "NeuralImpulseLifecycle",
   evo: {
@@ -20,15 +32,23 @@ const IMPULSE_CONTEXT = {
     presenceFieldAware: true,
     bandAware: true,
     waveFieldAware: true,
-    binaryFieldAware: true
+    binaryFieldAware: true,
+
+    // v14-IMMORTAL
+    immortalReady: true,
+    coreMemoryAware: true,
+    impulseMemoryAware: true,
+    lineageMemoryAware: true,
+    returnSurfaceMemoryAware: true,
+    diagnosticsMemoryAware: true
   }
 };
 
 export const PulseOSImpulseEngineMeta = Object.freeze({
   layer: "PulseOSImpulseEngine",
   role: "NEURAL_IMPULSE_LIFECYCLE_ORGAN",
-  version: "v12.3-EVO-BINARY-MAX-ABA-PRESENCE",
-  identity: "PulseOSImpulseEngine-v12.3-EVO-BINARY-MAX-ABA-PRESENCE",
+  version: "v14-IMMORTAL",
+  identity: "PulseOSImpulseEngine-v14-IMMORTAL",
 
   guarantees: Object.freeze({
     deterministic: true,
@@ -50,6 +70,7 @@ export const PulseOSImpulseEngineMeta = Object.freeze({
     binaryAware: true,
     symbolicAware: true,
 
+    // v14-IMMORTAL safety
     zeroRandomness: true,
     zeroJSON: true,
     zeroWindowInCore: true,
@@ -68,7 +89,9 @@ export const PulseOSImpulseEngineMeta = Object.freeze({
     waveFieldAware: true,
     binaryFieldAware: true,
 
-    worldLensAware: false
+    worldLensAware: false,
+    coreMemoryAware: true,
+    immortalImpulseMemory: true
   }),
 
   contract: Object.freeze({
@@ -112,7 +135,8 @@ export const PulseOSImpulseEngineMeta = Object.freeze({
       "PulseBinaryShifterEvolutionaryPulse",
       "PulseV3UnifiedOrganism",
       "PulseV2EvolutionEngine",
-      "PulseOSImpulseEngine-v12.3-EVO-PRESENCE"
+      "PulseOSImpulseEngine-v12.3-EVO-PRESENCE",
+      "PulseOSImpulseEngine-v14-IMMORTAL"
     ]
   }),
 
@@ -126,17 +150,19 @@ export const PulseOSImpulseEngineMeta = Object.freeze({
     pattern: "A-B-A",
     baseline: "binary impulse → symbolic wrapper → unified return",
     adaptive: "multi-generation + dual-band + presence overlays",
-    return: "deterministic impulse surfaces + signatures"
+    return: "deterministic impulse surfaces + signatures + coreMemory"
   })
 });
 
 // ============================================================================
-// SHARED HELPERS
+// SHARED HELPERS (IMMORTAL, NO Date.now)
 // ============================================================================
 let IMPULSE_CYCLE = 0;
+let TICK_COUNTER = 0;
 
-function nowMs() {
-  return Date.now();
+function nextTick() {
+  TICK_COUNTER += 1;
+  return TICK_COUNTER;
 }
 
 function computeHash(str) {
@@ -252,11 +278,59 @@ function impulseLog(event, data) {
   if (typeof window === "undefined") return;
   if (!window.PULSE_IMPULSE_DIAGNOSTICS) return;
   if (typeof console?.log !== "function") return;
-  console.log("[ImpulseEngine]", event, { ...data, ctx: IMPULSE_CONTEXT });
+  console.log("[ImpulseEngine-v14-IMMORTAL]", event, { ...data, ctx: IMPULSE_CONTEXT });
 }
 
 // ============================================================================
-// LEGACY SURFACES (stubs – you wire your real implementations)
+// CORE MEMORY HELPERS — IMMORTAL IMPULSE STORAGE
+// ============================================================================
+function persistImpulseSnapshot(label, impulse) {
+  const snap = {
+    tickId:   impulse.tickId,
+    intent:   impulse.intent,
+    version:  impulse.version,
+    page:     { ...impulse.page },
+    repairSeed: { ...impulse.repairSeed },
+    identityHealth: impulse.identityHealth,
+    pathway: { ...impulse.pathway, hops: [...impulse.pathway.hops] },
+    hops:    impulse.path.length,
+    pulse:   { ...impulse.pulse },
+    meta:    { ...IMPULSE_CONTEXT },
+    label
+  };
+
+  try {
+    coreMemory.write(CORE_MEMORY_NAMESPACE, snap.tickId, snap);
+  } catch {
+    // fail-open, never crash
+  }
+
+  return snap;
+}
+
+function persistReturnSurface(label, impulse, snap) {
+  const key = `return::${impulse.tickId}`;
+  const payload = {
+    label,
+    tickId: impulse.tickId,
+    jobId: impulse.pulse?.jobId || null,
+    pattern: impulse.pulse?.pattern || "UNKNOWN_PATTERN",
+    band: impulse.pulse?.meta?.band || "unknown",
+    presenceField: impulse.pulse?.meta?.presenceField || null,
+    snapshotTickId: snap?.tickId || null
+  };
+
+  try {
+    coreMemory.write(CORE_MEMORY_NAMESPACE, key, payload);
+  } catch {
+    // fail-open
+  }
+
+  return payload;
+}
+
+// ============================================================================
+// LEGACY SURFACES (stubs – unchanged, still fallbacks)
 // ============================================================================
 export const ImpulseLegacy = {
   create(intent, payload = {}) { /* v9.3 as-is */ },
@@ -274,22 +348,22 @@ export const LegacyPulse = {
 };
 
 // ============================================================================
-// CORE v12.3 BINARY (base for all 12.3+ pulses)
+// CORE v14-IMMORTAL BINARY (base for all 14+ pulses)
 // ============================================================================
-function makeDeterministicTickId(now, seed = "") {
-  return `${now}-${seed}`;
+function makeDeterministicTickId(seed = "") {
+  const tick = nextTick();
+  return `${tick}-${seed}`;
 }
 
-function createBinaryImpulseCore(intent, payload = {}, now, patternOverride) {
+function createBinaryImpulseCore(intent, payload = {}, nowIgnored, patternOverride) {
   IMPULSE_CYCLE++;
 
   const pageIdentity = payload?.pageIdentity || {};
-  const tickNow       = now || nowMs();
-  const tickId        = makeDeterministicTickId(tickNow, payload.jobId || "");
-  const jobId         = payload.jobId || tickId;
-  const pattern       = patternOverride || payload.pattern || intent || "UNKNOWN_PATTERN";
-  const priority      = payload.priority || "normal";
-  const returnTo      = payload.returnTo || null;
+  const tickId       = makeDeterministicTickId(payload.jobId || "");
+  const jobId        = payload.jobId || tickId;
+  const pattern      = patternOverride || payload.pattern || intent || "UNKNOWN_PATTERN";
+  const priority     = payload.priority || "normal";
+  const returnTo     = payload.returnTo || null;
   const parentLineage = payload.parentLineage || null;
 
   const lineage        = buildLineage(parentLineage, pattern);
@@ -303,11 +377,11 @@ function createBinaryImpulseCore(intent, payload = {}, now, patternOverride) {
   const waveField     = buildWaveField(pattern);
   const impulseCycleSignature = buildImpulseCycleSignature(IMPULSE_CYCLE);
 
-  return {
+  const impulse = {
     tickId,
     intent,
     payload,
-    version: "v12.3-binary",
+    version: "v14-IMMORTAL-binary",
 
     path: [],
     pathway: {
@@ -358,6 +432,9 @@ function createBinaryImpulseCore(intent, payload = {}, now, patternOverride) {
 
     meta: { ...IMPULSE_CONTEXT }
   };
+
+  persistImpulseSnapshot("create", impulse);
+  return impulse;
 }
 
 function computeUrgencyBinary(layerState) {
@@ -369,7 +446,7 @@ function computeUrgencyBinary(layerState) {
   return Math.min(1, u);
 }
 
-function annotateBinaryCore(impulse, layerIdentity, layerState, delta, now) {
+function annotateBinaryCore(impulse, layerIdentity, layerState, delta, nowIgnored) {
   impulse.urgency = computeUrgencyBinary(layerState);
 
   const hopIndex = impulse.path.length;
@@ -384,7 +461,7 @@ function annotateBinaryCore(impulse, layerIdentity, layerState, delta, now) {
     state: layerState,
     delta,
     urgency: impulse.urgency,
-    timestamp: now || nowMs(),
+    timestamp: hopIndex + 1, // deterministic, no Date.now
 
     page:           impulse.page.name,
     repairSeed:     impulse.repairSeed,
@@ -409,18 +486,24 @@ function annotateBinaryCore(impulse, layerIdentity, layerState, delta, now) {
   impulse.pulse.meta.waveField = waveField;
   impulse.pulse.meta.presenceField = presenceField;
 
+  persistImpulseSnapshot("annotate", impulse);
   return impulse;
 }
 
 // ============================================================================
-// 12.3+ PULSE VARIANTS (your named pulses, all upgraded)
+// 14+ PULSE VARIANTS (upgraded from 12.3, same names, immortal core)
 // ============================================================================
 
-// 1) PulseShifterEvolutionaryPulse — symbolic wrapper over core
+// 1) PulseShifterEvolutionaryPulse — symbolic wrapper over immortal core
 export const PulseShifterEvolutionaryPulse = {
   create(intent, payload = {}) {
-    const impulse = createBinaryImpulseCore(intent, payload, nowMs(), "PulseShifterEvolutionaryPulse");
-    impulse.version = "v12.3-PulseShifterEvolutionary";
+    const impulse = createBinaryImpulseCore(
+      intent,
+      payload,
+      null,
+      "PulseShifterEvolutionaryPulse"
+    );
+    impulse.version = "v14-IMMORTAL-PulseShifterEvolutionary";
     impulseLog("PULSE_SHIFTER_CREATE", {
       tickId: impulse.tickId,
       intent,
@@ -430,7 +513,7 @@ export const PulseShifterEvolutionaryPulse = {
     return impulse;
   },
   annotate(impulse, layerIdentity, layerState, delta) {
-    const updated = annotateBinaryCore(impulse, layerIdentity, layerState, delta, nowMs());
+    const updated = annotateBinaryCore(impulse, layerIdentity, layerState, delta, null);
     impulseLog("PULSE_SHIFTER_ANNOTATE", {
       tickId: updated.tickId,
       layer: layerIdentity.id,
@@ -443,8 +526,13 @@ export const PulseShifterEvolutionaryPulse = {
 // 2) PulseBinaryShifterEvolutionaryPulse — binary‑emphasized variant
 export const PulseBinaryShifterEvolutionaryPulse = {
   create(intent, payload = {}) {
-    const impulse = createBinaryImpulseCore(intent, payload, nowMs(), "PulseBinaryShifterEvolutionaryPulse");
-    impulse.version = "v12.3-PulseBinaryShifterEvolutionary";
+    const impulse = createBinaryImpulseCore(
+      intent,
+      payload,
+      null,
+      "PulseBinaryShifterEvolutionaryPulse"
+    );
+    impulse.version = "v14-IMMORTAL-PulseBinaryShifterEvolutionary";
     impulse.offline = true;
     impulseLog("PULSE_BINARY_SHIFTER_CREATE", {
       tickId: impulse.tickId,
@@ -455,7 +543,7 @@ export const PulseBinaryShifterEvolutionaryPulse = {
     return impulse;
   },
   annotate(impulse, layerIdentity, layerState, delta) {
-    const updated = annotateBinaryCore(impulse, layerIdentity, layerState, delta, nowMs());
+    const updated = annotateBinaryCore(impulse, layerIdentity, layerState, delta, null);
     impulseLog("PULSE_BINARY_SHIFTER_ANNOTATE", {
       tickId: updated.tickId,
       layer: layerIdentity.id,
@@ -465,21 +553,21 @@ export const PulseBinaryShifterEvolutionaryPulse = {
   }
 };
 
-
 // ============================================================================
-// PRIMARY 12.3 PRESENCE IMPULSE (default Impulse)
+// PRIMARY 14-IMMORTAL IMPULSE (default Impulse)
 // ============================================================================
 export const ImpulseBinary = {
   create: (intent, payload = {}) =>
-    createBinaryImpulseCore(intent, payload, nowMs(), null),
+    createBinaryImpulseCore(intent, payload, null, null),
   computeUrgency: computeUrgencyBinary,
   annotate: (impulse, layerIdentity, layerState, delta) =>
-    annotateBinaryCore(impulse, layerIdentity, layerState, delta, nowMs())
+    annotateBinaryCore(impulse, layerIdentity, layerState, delta, null)
 };
 
 export const Impulse = {
   create(intent, payload = {}) {
     const impulse = ImpulseBinary.create(intent, payload);
+    impulse.version = "v14-IMMORTAL";
     impulseLog("IMPULSE_CREATE", {
       tickId: impulse.tickId,
       intent,
@@ -511,6 +599,7 @@ export const Impulse = {
       hopsSoFar: impulse.path.length,
       band: impulse.pulse.meta.band
     });
+    persistImpulseSnapshot("factor", impulse);
     return impulse;
   },
 
@@ -535,18 +624,7 @@ export const Impulse = {
   },
 
   snapshot(impulse) {
-    const snap = {
-      tickId:   impulse.tickId,
-      intent:   impulse.intent,
-      version:  impulse.version,
-      page:     { ...impulse.page },
-      repairSeed: { ...impulse.repairSeed },
-      identityHealth: impulse.identityHealth,
-      pathway: { ...impulse.pathway, hops: [...impulse.pathway.hops] },
-      hops:    impulse.path.length,
-      pulse:   { ...impulse.pulse },
-      meta:    { ...IMPULSE_CONTEXT }
-    };
+    const snap = persistImpulseSnapshot("snapshot", impulse);
     impulseLog("IMPULSE_SNAPSHOT", {
       tickId: snap.tickId,
       hops:   snap.hops,
@@ -565,6 +643,7 @@ export const Impulse = {
       hops: impulse.pathway.hops.length,
       band: impulse.pulse.meta.band
     });
+    persistImpulseSnapshot("pathway-stable", impulse);
     return impulse;
   },
 
@@ -580,6 +659,8 @@ export const Impulse = {
       band: impulse.pulse.meta.band,
       presenceField: impulse.pulse.meta.presenceField
     });
+
+    persistReturnSurface("return", impulse, snap);
 
     if (typeof window !== "undefined" && window.PulseBand?.receiveImpulseReturn) {
       window.PulseBand.receiveImpulseReturn(impulse, snap);
@@ -603,19 +684,18 @@ export const ImpulseStrategy = {
 
     // AUTO = always choose the highest-trust, newest, safest engine
     if (version === "auto") {
-      return Impulse.create(intent, payload);   // v12.3 Presence (PRIMARY)
+      return Impulse.create(intent, payload);   // v14-IMMORTAL (PRIMARY)
     }
 
     switch (version) {
 
       // ---------------------------------------------------------------
-      // 1) FULL PULSE 12.3-EVO-PRESENCE (highest trust)
-      // ---------------------------------------------------------------
-      case "v12.3":
-      case "presence":
+      // 1) FULL PULSE 14-IMMORTAL (highest trust)
+// ---------------------------------------------------------------
+      case "v14":
+      case "immortal":
       case "full":
         return Impulse.create(intent, payload);
-
 
       // ---------------------------------------------------------------
       // 2) SHIFTER EVOLUTIONARY PULSES (risk + potential improvement)
@@ -628,10 +708,14 @@ export const ImpulseStrategy = {
       case "binary-shifter":
         return PulseBinaryShifterEvolutionaryPulse.create(intent, payload);
 
-
       // ---------------------------------------------------------------
       // 3) REGULAR OLDER PULSES (stable fallbacks)
-      // ---------------------------------------------------------------
+// ---------------------------------------------------------------
+      case "v12.3":
+      case "presence":
+        // 12.3 Presence maps to 14-IMMORTAL primary now
+        return Impulse.create(intent, payload);
+
       case "v11-prime":
         return Impulse_v11_Prime.create(intent, payload);
 
@@ -651,7 +735,6 @@ export const ImpulseStrategy = {
       case "v9.3":
       case "legacy":
         return ImpulseLegacy.create(intent, payload);
-
 
       // ---------------------------------------------------------------
       // DEFAULT → ALWAYS the newest, safest engine
