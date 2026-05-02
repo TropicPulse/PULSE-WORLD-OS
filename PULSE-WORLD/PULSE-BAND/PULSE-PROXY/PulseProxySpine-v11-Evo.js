@@ -917,7 +917,6 @@ app.get("/TPProxy", async (req, res) => {
       .set("x-pulse-mode", "offline")
       .json(payload);
   }
-
   try {
     let warmDuration = 0;
 
