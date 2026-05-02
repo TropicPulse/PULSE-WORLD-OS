@@ -3,6 +3,46 @@
 // PULSE EVOLUTIONARY WINDOW — v13-EVO-ALWAYS-ON-OFFLINE-FIRST
 // PORTAL-MEMBRANE • ONE-WAY GLASS • ZERO-TRUST SURFACE • NO ORGANS BEYOND GLASS
 // ============================================================================
+/* 
+AI_EXPERIENCE_META = {
+  identity: "PulseWindow",
+  version: "v12.5-EVO",
+  layer: "frontend",
+  role: "window_loader",
+  lineage: "PulseOS-v12",
+
+  evo: {
+    binaryAware: true,
+    dualBand: true,
+    chunkAligned: true,
+    presenceAware: true,
+    safeRouteFree: true,
+    cnsFallback: true,
+    normalizerAligned: true,
+    windowRoot: true
+  },
+
+  contract: {
+    always: [
+      "PulsePresence",
+      "PulseChunks",
+      "PulseBand",
+      "PulsePresenceNormalizer",
+      "PulseUIFlow"
+    ],
+    never: [
+      "legacyPresence",
+      "legacyWindow",
+      "safeRoute",
+      "fetchViaCNS",
+      "legacyOfflineLoader",
+      "legacyChunker",
+      "v1.7Fallback"
+    ]
+  }
+}
+*/
+
 console.log("Window");
 import PulseUIErrors from "./PulseUIErrors-v12-EVO.js";
 import { VitalsMonitor as PulseVitalsMonitor } from "./PulseProofMonitor.js";

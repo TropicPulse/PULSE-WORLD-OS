@@ -6,6 +6,43 @@
 //  + Universal de-chunking via PulseChunkNormalizer
 //  + 32-LANE HYBRID CNS ROUTER (binary-aligned, hash-routed)
 // ============================================================================
+/* 
+AI_EXPERIENCE_META = {
+  identity: "PulsePresence",
+  version: "v12.5-EVO",
+  layer: "frontend",
+  role: "presence_loader",
+  lineage: "PulseOS-v12",
+  
+  evo: {
+    binaryAware: true,
+    dualBand: true,
+    chunkAligned: true,
+    presenceAware: true,
+    safeRouteFree: true,
+    cnsFallback: true,
+    normalizerAligned: true
+  },
+
+  contract: {
+    always: [
+      "CNS",
+      "PulseChunks",
+      "PulseBand",
+      "PulsePresenceNormalizer"
+    ],
+    never: [
+      "safeRoute",
+      "fetchViaCNS",
+      "legacyPresence",
+      "legacyOfflineLoader",
+      "legacyChunker",
+      "v1.7Fallback"
+    ]
+  }
+}
+*/
+
 console.log("Presence");
 console.log("[PulseChunks-v2.0-MULTILANE-HYBRID] Membrane chunker loading...");
 
