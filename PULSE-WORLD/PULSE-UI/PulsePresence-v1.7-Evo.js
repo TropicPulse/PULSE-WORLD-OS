@@ -1,13 +1,15 @@
 // ============================================================================
-//  PulseChunks-v1.7-EVO-FALLBACK
+//  PulseChunks-v1.8-EVO-FALLBACK
 //  FRONTEND CHUNK MEMBRANE — 2026 Transport Layer
 //  Chunking • Caching • Prewarm • Zero-Latency Surface
 //  Lore injection • PulseBand integration • Sectional fallback
+//  + Universal de-chunking via PulseChunkNormalizer
 // ============================================================================
 console.log("Presence");
-console.log("[PulseChunks-v1.7-EVO-FALLBACK] Membrane chunker loading...");
+console.log("[PulseChunks-v1.8-EVO-FALLBACK] Membrane chunker loading...");
 
 import { safeRoute as route } from "./PulseProofBridge.js";
+import { normalizeChunkValue, normalizeImage } from "./PulseChunkNormalizer.js";
 
 // ============================================================================
 //  LORE TRANSLATOR — Evolvable, deterministic, metadata-driven
@@ -204,7 +206,7 @@ async function fetchChunk(url) {
       timestamp: Date.now(),
       degraded: chunksDegraded,
       presence: "frontend-dna-request",
-      membrane: "PulseChunks-v1.7"
+      membrane: "PulseChunks-v1.8"
     });
   } catch (err) {
     console.warn("[PulseDNA] Network visibility logging failed:", err);
@@ -446,44 +448,30 @@ function dechunkAll() {
 
 // ============================================================================
 //  OFFLINE IMAGE AUTO-DETECTOR — <img class="offline-img" data-offline="...">
-//  Loads images THROUGH the chunker, not raw browser fetch.
+//  Loads images THROUGH the chunker, then normalizes via PulseChunkNormalizer.
 // ============================================================================
-function autoLoadOfflineImages() {
+async function autoLoadOfflineImages() {
   if (typeof document === "undefined") return;
 
   const imgs = document.querySelectorAll("img.offline-img[data-offline]");
 
-  imgs.forEach(async (img) => {
+  for (const img of imgs) {
     const url = img.getAttribute("data-offline");
-    if (!url) return;
+    if (!url) continue;
 
     try {
       const value = await getImage(url);
+      const src = normalizeImage(value) || normalizeChunkValue(value, "image");
 
-      // If backend returns a URL/string → use directly
-      if (typeof value === "string") {
-        img.src = value;
-        return;
+      if (src) {
+        img.src = src;
+      } else {
+        console.warn("[PulseChunks] Could not normalize image:", url, value);
       }
-
-      // If backend returns an object with url
-      if (value && typeof value === "object" && typeof value.url === "string") {
-        img.src = value.url;
-        return;
-      }
-
-      // If backend returns base64 payload
-      if (value && typeof value === "object" && typeof value.base64 === "string") {
-        // Default to PNG; caller can adjust later if needed
-        img.src = `data:image/png;base64,${value.base64}`;
-        return;
-      }
-
-      console.warn("[PulseChunks] Unknown image chunk format for", url, value);
     } catch (err) {
       console.warn("[PulseChunks] Offline image load failed:", url, err);
     }
-  });
+  }
 }
 
 if (typeof window !== "undefined" && typeof document !== "undefined") {
@@ -510,9 +498,10 @@ window.PulseChunks = {
   isDegraded: isChunksDegraded,
   resetState: resetChunksState,
   dechunk,
-  dechunkAll
+  dechunkAll,
+  normalizeChunkValue,   // expose normalizer
 };
 
 export default window.PulseChunks;
 
-console.log("[PulseChunks-v1.7-EVO-FALLBACK] Ready — membrane chunker active with sectional fallback + offline image auto-loader.");
+console.log("[PulseChunks-v1.8-EVO-FALLBACK] Ready — membrane chunker active with sectional fallback + universal de-chunking + offline image auto-loader.");
