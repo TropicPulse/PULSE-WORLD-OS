@@ -1,26 +1,21 @@
 // ============================================================================
-// FILE: /PulseOS/Brain/PulseOSEvolution-v13-Spine.js
-// PULSE OS — v13-SPINE-DUALBAND-PRESENCE
+// FILE: /PulseOS/Brain/PulseOSEvolution-v14-IMMORTAL-CoreMemory.js
+// PULSE OS — v14-IMMORTAL-DUALBAND-PRESENCE
 // “THE EVOLUTION ENGINE — ORGANISM-WIDE CNS GROWTH + DRIFT INTELLIGENCE”
-// ============================================================================
-//
-// ROLE IN THE ORGANISM (v13):
-// ---------------------------
-// • Brain → Evolution → Cortex (final architecture)
-// • Evolution is the FIRST organ Brain boots
-// • Evolution attaches maps + understanding to Brain
-// • Evolution attaches itself to Brain.evolution
-// • Evolution boots Cortex (Brain no longer boots Cortex)
-// • Provides drift detection + lineage + organism health
-// • Pure symbolic-primary, deterministic, zero network, zero filesystem
+// CoreMemory-integrated • Immortal Drift/Lineage • Cache/Prewarm-aware
 // ============================================================================
 
+import { PulseCoreMemory } from "../PULSE-CORE/PulseCoreMemory.js";
+
+// ============================================================================
+// ROLE + IDENTITY (v14-IMMORTAL)
+// ============================================================================
 export const PulseRole = {
   type: "Evolution",
   subsystem: "OS",
   layer: "CNS",
-  version: "13-Spine",
-  identity: "PulseOSEvolution-v13-SPINE-DUALBAND-PRESENCE",
+  version: "14-IMMORTAL",
+  identity: "PulseOSEvolution-v14-IMMORTAL-COREMEMORY",
 
   evo: {
     deterministic: true,
@@ -33,11 +28,11 @@ export const PulseRole = {
     loopTheoryAware: true,
     continuanceAware: true,
 
-    routingContract: "PulseRouter-v13",
-    osOrganContract: "PulseOS-v13-SPINE",
-    earnCompatibility: "PulseEarn-v13",
-    gpuCompatibility: "PulseGPU-v13",
-    sendCompatibility: "PulseSendSystem-v13",
+    routingContract: "PulseRouter-v14",
+    osOrganContract: "PulseOS-v14-IMMORTAL",
+    earnCompatibility: "PulseEarn-v14",
+    gpuCompatibility: "PulseGPU-v14",
+    sendCompatibility: "PulseSendSystem-v14",
 
     dualMode: true,
     symbolicPrimary: true,
@@ -52,15 +47,22 @@ export const PulseRole = {
     meshPresenceRelayAware: true,
     meshTopologyAware: true,
     cortexChunkingAware: true,
-    cortexPrewarmAware: true
+    cortexPrewarmAware: true,
+
+    // v14-IMMORTAL
+    coreMemoryIntegrated: true,
+    immortalDriftLineage: true,
+    immortalOrganismHealth: true,
+    cacheChunkAware: true,
+    prewarmAware: true
   }
 };
 
 export const PulseOSEvolutionMeta = Object.freeze({
   layer: "PulseOSEvolution",
   role: "CNS_EVOLUTION_ORGAN",
-  version: "v13-SPINE-DUALBAND-PRESENCE",
-  identity: "PulseOSEvolution-v13-SPINE-DUALBAND-PRESENCE",
+  version: "v14-IMMORTAL-COREMEMORY",
+  identity: "PulseOSEvolution-v14-IMMORTAL-COREMEMORY",
 
   guarantees: Object.freeze({
     deterministic: true,
@@ -101,15 +103,135 @@ export const PulseOSEvolutionMeta = Object.freeze({
     worldLensAware: true,
 
     loopTheoryAware: true,
-    continuanceAware: true
+    continuanceAware: true,
+
+    // v14-IMMORTAL
+    coreMemoryIntegrated: true,
+    immortalDriftLineage: true,
+    immortalOrganismHealth: true,
+    cacheChunkAware: true,
+    prewarmAware: true
   })
 });
 
 // Cortex is ONLY imported here — NOT in Brain
 import { createPulseOSCortex } from "./PulseOSBrainCortex.js";
 
+const CORE_MEMORY_NAMESPACE = "PulseOSEvolution-v14-IMMORTAL";
+
 // ============================================================================
-//  EVOLUTION ENGINE — v13
+//  DETERMINISTIC HELPERS (no Date, no randomness)
+// ============================================================================
+function stableStringify(value) {
+  if (value === null || typeof value !== "object") return JSON.stringify(value);
+  if (Array.isArray(value)) {
+    return "[" + value.map(stableStringify).join(",") + "]";
+  }
+  const keys = Object.keys(value).sort();
+  return (
+    "{" +
+    keys.map((k) => JSON.stringify(k) + ":" + stableStringify(value[k])).join(",") +
+    "}"
+  );
+}
+
+function computeHash(str) {
+  let h = 0;
+  const s = String(str || "");
+  for (let i = 0; i < s.length; i++) {
+    h = (h + s.charCodeAt(i) * (i + 1)) % 100000;
+  }
+  return `h${h}`;
+}
+
+function normalizeBand(band) {
+  return band === "binary" || band === "symbolic" || band === "dual"
+    ? band
+    : "dual";
+}
+
+// v14: cacheChunk + prewarm surfaces for evolution scans
+function buildCacheChunkSurface({ intent, organism, iq, band }) {
+  const shape = {
+    intent: intent || "NO_INTENT",
+    organs: organism ? Object.keys(organism) : [],
+    iqKeys: iq ? Object.keys(iq) : [],
+    band: normalizeBand(band)
+  };
+  const serialized = stableStringify(shape);
+  const cacheChunkKey = "evolution-cache::" + computeHash(serialized);
+  return {
+    cacheChunkKey,
+    cacheChunkSignature: computeHash(cacheChunkKey)
+  };
+}
+
+function buildPrewarmSurface({ iq, band }) {
+  const profiles = iq?.chunkingProfiles || {};
+  const hasCortexPrewarm = !!profiles.default || !!profiles.routes;
+
+  let level = "none";
+  if (hasCortexPrewarm && band === "binary") level = "aggressive";
+  else if (hasCortexPrewarm && band === "dual") level = "medium";
+  else if (hasCortexPrewarm) level = "light";
+
+  const raw = stableStringify({
+    hasCortexPrewarm,
+    band: normalizeBand(band)
+  });
+
+  const prewarmKey = "evolution-prewarm::" + computeHash(raw);
+
+  return {
+    level,
+    prewarmKey
+  };
+}
+
+// ============================================================================
+//  CORE MEMORY INTEGRATION — immortal drift/lineage/health
+// ============================================================================
+function coreMemoryRecord(key, payload) {
+  if (!key) return;
+  try {
+    if (PulseCoreMemory && typeof PulseCoreMemory.record === "function") {
+      PulseCoreMemory.record(CORE_MEMORY_NAMESPACE, key, payload);
+    }
+  } catch {
+    // fail-open
+  }
+}
+
+function coreMemoryRecall(key) {
+  if (!key) return null;
+  try {
+    if (PulseCoreMemory && typeof PulseCoreMemory.recall === "function") {
+      return PulseCoreMemory.recall(CORE_MEMORY_NAMESPACE, key) || null;
+    }
+  } catch {
+    // fail-open
+  }
+  return null;
+}
+
+function buildDriftStateKey(intent) {
+  return `DRIFT_STATE::${String(intent || "NO_INTENT")}`;
+}
+
+function buildLineageKey(intent) {
+  return `LINEAGE::${String(intent || "NO_INTENT")}`;
+}
+
+function buildOrganHealthKey(intent) {
+  return `ORGAN_HEALTH::${String(intent || "NO_INTENT")}`;
+}
+
+function buildOrganismHealthKey(intent) {
+  return `ORGANISM_HEALTH::${String(intent || "NO_INTENT")}`;
+}
+
+// ============================================================================
+//  EVOLUTION ENGINE — v14-IMMORTAL-COREMEMORY
 // ============================================================================
 export function PulseOSEvolution({ intent, organism, iq, understanding }) {
 
@@ -150,25 +272,43 @@ export function PulseOSEvolution({ intent, organism, iq, understanding }) {
   }
 
   // --------------------------------------------------------------------------
-  // Drift + lineage state
+  // Drift + lineage state (seeded from CoreMemory if present)
   // --------------------------------------------------------------------------
-  const DriftState = {
-    lineage: [],
-    driftEvents: [],
-    organHealth: {},
-    organismHealth: 1.0,
-    lastScanSeq: null,
-    lastScanBand: "dual",
-    binaryDescriptor: null,
-    presenceDescriptors: computePresenceDescriptors(),
-    chunkingProfiles: computeChunkingProfiles()
-  };
+  const driftKey = buildDriftStateKey(intent);
+  const lineageKey = buildLineageKey(intent);
+  const organHealthKey = buildOrganHealthKey(intent);
+  const organismHealthKey = buildOrganismHealthKey(intent);
 
-  function normalizeBand(band) {
-    return (band === "binary" || band === "symbolic" || band === "dual")
-      ? band
-      : "dual";
-  }
+  const recalledDrift = coreMemoryRecall(driftKey);
+  const recalledLineage = coreMemoryRecall(lineageKey);
+  const recalledOrganHealth = coreMemoryRecall(organHealthKey);
+  const recalledOrganismHealth = coreMemoryRecall(organismHealthKey);
+
+  const DriftState = {
+    lineage: Array.isArray(recalledLineage?.lineage)
+      ? recalledLineage.lineage.slice()
+      : [],
+    driftEvents: Array.isArray(recalledDrift?.driftEvents)
+      ? recalledDrift.driftEvents.slice()
+      : [],
+    organHealth:
+      recalledOrganHealth && typeof recalledOrganHealth.organHealth === "object"
+        ? { ...recalledOrganHealth.organHealth }
+        : {},
+    organismHealth:
+      typeof recalledOrganismHealth?.organismHealth === "number"
+        ? recalledOrganismHealth.organismHealth
+        : 1.0,
+    lastScanSeq: recalledDrift?.lastScanSeq || null,
+    lastScanBand: recalledDrift?.lastScanBand || "dual",
+    binaryDescriptor: recalledDrift?.binaryDescriptor || null,
+    presenceDescriptors: computePresenceDescriptors(),
+    chunkingProfiles: computeChunkingProfiles(),
+
+    // v14 cache/prewarm surfaces
+    cacheChunkSurface: null,
+    prewarmSurface: null
+  };
 
   // --------------------------------------------------------------------------
   // DRIFT SCANNER
@@ -198,6 +338,32 @@ export function PulseOSEvolution({ intent, organism, iq, understanding }) {
       event: "drift-scan"
     });
 
+    // v14: cache/prewarm surfaces for this scan
+    DriftState.cacheChunkSurface = buildCacheChunkSurface({
+      intent,
+      organism,
+      iq,
+      band: normBand
+    });
+    DriftState.prewarmSurface = buildPrewarmSurface({
+      iq,
+      band: normBand
+    });
+
+    // persist drift + lineage + cache/prewarm into CoreMemory
+    coreMemoryRecord(driftKey, {
+      lastScanSeq: DriftState.lastScanSeq,
+      lastScanBand: DriftState.lastScanBand,
+      driftEvents: DriftState.driftEvents.slice(),
+      binaryDescriptor: DriftState.binaryDescriptor,
+      cacheChunkSurface: DriftState.cacheChunkSurface,
+      prewarmSurface: DriftState.prewarmSurface
+    });
+
+    coreMemoryRecord(lineageKey, {
+      lineage: DriftState.lineage.slice()
+    });
+
     return drift;
   }
 
@@ -210,6 +376,10 @@ export function PulseOSEvolution({ intent, organism, iq, understanding }) {
       band: normalizeBand(band),
       dnaTag,
       event
+    });
+
+    coreMemoryRecord(lineageKey, {
+      lineage: DriftState.lineage.slice()
     });
   }
 
@@ -225,6 +395,14 @@ export function PulseOSEvolution({ intent, organism, iq, understanding }) {
       dnaTag,
       event: `organ-health-update:${organName}`
     });
+
+    coreMemoryRecord(organHealthKey, {
+      organHealth: { ...DriftState.organHealth }
+    });
+
+    coreMemoryRecord(lineageKey, {
+      lineage: DriftState.lineage.slice()
+    });
   }
 
   function computeOrganismHealth({ band = "dual", dnaTag = null } = {}) {
@@ -239,12 +417,20 @@ export function PulseOSEvolution({ intent, organism, iq, understanding }) {
       event: "organism-health-computed"
     });
 
+    coreMemoryRecord(organismHealthKey, {
+      organismHealth: DriftState.organismHealth
+    });
+
+    coreMemoryRecord(lineageKey, {
+      lineage: DriftState.lineage.slice()
+    });
+
     return DriftState.organismHealth;
   }
 
   // --------------------------------------------------------------------------
-  // EVOLUTION → CORTEX BOOTSTRAP (v13)
-  // --------------------------------------------------------------------------
+  // EVOLUTION → CORTEX BOOTSTRAP (v14-IMMORTAL)
+// --------------------------------------------------------------------------
   function bootCortex(Brain, { band = "dual", dnaTag = null } = {}) {
     const normBand = normalizeBand(band);
 
@@ -259,7 +445,12 @@ export function PulseOSEvolution({ intent, organism, iq, understanding }) {
 
     const cortex = createPulseOSCortex({ Brain });
 
-    cortex.boot({ band: normBand });
+    // v14: allow cortex to see cache/prewarm surfaces from Evolution
+    cortex.boot({
+      band: normBand,
+      cacheChunkSurface: DriftState.cacheChunkSurface,
+      prewarmSurface: DriftState.prewarmSurface
+    });
 
     Brain.cortex = cortex;
 
@@ -280,7 +471,9 @@ export function PulseOSEvolution({ intent, organism, iq, understanding }) {
     computeOrganismHealth,
     bootCortex,
     getPresenceDescriptors: () => DriftState.presenceDescriptors,
-    getChunkingProfiles: () => DriftState.chunkingProfiles
+    getChunkingProfiles: () => DriftState.chunkingProfiles,
+    getCacheChunkSurface: () => DriftState.cacheChunkSurface,
+    getPrewarmSurface: () => DriftState.prewarmSurface
   };
 
   return Evolution;
