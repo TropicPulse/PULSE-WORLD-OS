@@ -1522,7 +1522,7 @@ if (!window.__PULSE_UI_INIT__) {
         if (pbFields.advantage)  pbFields.advantage.textContent  = `${advantage}× Faster`;
         if (pbFields.estimated)  pbFields.estimated.textContent  = `${estimated}% better`;
       } catch (err) {
-        warn("Window PulseBand snapshot failed", err);
+        mark("Window PulseBand snapshot failed", err);
       }
     })();
 
@@ -1579,7 +1579,7 @@ if (!window.__PULSE_UI_INIT__) {
 
         if (testStatus) testStatus.textContent = "Test complete.";
       } catch (err) {
-        console.warn("Window GPU test failed", err);
+        mark("Window GPU test failed", err);
         if (testStatus)  testStatus.textContent  = "Test failed.";
         if (testMetrics) testMetrics.textContent = "";
       }
