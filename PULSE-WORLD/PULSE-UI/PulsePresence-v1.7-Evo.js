@@ -6,7 +6,7 @@
 // ============================================================================
 console.log("Presence");
 console.log("[PulseChunks-v1.7-EVO-FALLBACK] Membrane chunker loading...");
-
+import { safeRoute as route } from "./PulseProofBridge.js";
 // ============================================================================
 //  LORE TRANSLATOR — Evolvable, deterministic, metadata-driven
 // ============================================================================
@@ -197,7 +197,7 @@ function buildChunkPresenceEnvelope({ url, fromCache, degraded, kind }) {
 async function fetchChunk(url) {
   // ⭐ MAKE DNA VISIBLE IN NETWORK — FRONTEND LOGGING ENDPOINT
 try {
-  await window.route("proxy.dnaVisibility", {
+  await route("proxy.dnaVisibility", {
   url,
   timestamp: Date.now(),
   degraded: chunksDegraded,
