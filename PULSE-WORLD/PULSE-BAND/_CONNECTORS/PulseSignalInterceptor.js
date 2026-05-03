@@ -47,8 +47,8 @@ AI_EXPERIENCE_META = {
 // ============================================================================
 // IMPORTS — CNS ROUTER + DUALBAND AI ENGINE
 // ============================================================================
-import { route as CNSRoute } from "../PULSE-BAND/PULSE-OS/PulseOSCNSNervousSystem.js";
-import { startDualBandAIEngine } from "../PULSE-BAND/PULSE-AI/DualBandAIEngine.js";
+import { route as CNSRoute } from "../PULSE-OS/PulseOSCNSNervousSystem.js";
+import { createDualBandOrganism as startDualBandAIEngine } from "../PULSE-AI/aiDualBand-v11-Evo.js";
 
 // ============================================================================
 // BROADCAST CHANNEL — PulseCNS

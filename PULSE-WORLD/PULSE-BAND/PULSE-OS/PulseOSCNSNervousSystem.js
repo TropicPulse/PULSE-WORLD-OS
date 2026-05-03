@@ -173,11 +173,13 @@ export const PulseOSCNSNervousSystemMeta = Object.freeze({
 // ============================================================================
 import { PulseOSShortTermMemory } from "./PulseOSShortTermMemory.js";
 // PageScannerV12: A1/A2 intelligence pack, used here as CNS-level passive/active scanner
-import { PageScannerV12 } from "../../PULSE-UI/PulseSkinReflex.js";
+import { PageScannerV12 } from "../../PULSE-UI/_CONNECTORS/PulseSkinReflex.js";
 
 import checkBand from "../PULSE-PROXY/CheckBand-v11-Evo.js";
 import checkIdentity from "../PULSE-PROXY/CheckIdentity-v11-Evo.js";
 import checkRouterMemory from "../PULSE-PROXY/CheckRouterMemory-v11-Evo.js";
+
+import { createDualBandOrganism } from "../PULSE-AI/aiDualBand-v11-Evo.js";
 
 
 // ============================================================================
@@ -1061,3 +1063,34 @@ export const PulseOSCNSNervousSystem = {
   heal,
   getDiagnostics: getCNSNervousSystemDiagnostics
 };
+// ============================================================================
+// ORIGINAL DESIGN RESTORED — CNS auto‑boots DualBand AI
+// ============================================================================
+
+(async () => {
+  try {
+    const ai = await createDualBandOrganism({});
+
+    // Forward AI events to UI
+    const channel = new BroadcastChannel("PulseCNS");
+
+    ai.on("event", (data) => {
+      channel.postMessage({
+        type: "DUALBAND_AI_EVENT",
+        data
+      });
+    });
+
+    ai.on("boot-organism", (bootOptions) => {
+      channel.postMessage({
+        type: "DUALBAND_BOOT",
+        bootOptions
+      });
+    });
+
+    console.log("[CNS] DualBand AI auto‑booted");
+
+  } catch (err) {
+    console.error("[CNS] DualBand AI auto‑boot FAILED:", err);
+  }
+})();
