@@ -78,7 +78,7 @@ import PulseEarnMktForager        from "./PulseEarnMktForager.js";
 import {
   PulseNetBoot,
   PulseNet
-} from "../PULSE-BRIDGE/PulseProofBridge.js";
+} from "../../PULSE-UI/PulseProofBridge.js";
 
 
 // --- PULSE-CORE MEMORY SPINE (FULL SPINE) ----------------------------------
