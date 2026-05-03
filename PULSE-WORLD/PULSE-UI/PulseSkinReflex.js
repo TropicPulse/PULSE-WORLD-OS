@@ -1273,7 +1273,14 @@ export function createPulseSkinReflex({
 
   return PulseSkinReflex;
 }
+const DefaultSkinReflex = createPulseSkinReflex();
 
-// Default export: initialized organ (common pattern)
-const DefaultSkinReflex = createPulseSkinReflex().init();
+// Auto‑attach on import
+DefaultSkinReflex.init();
+
+// Expose to Window membrane
+if (typeof window !== "undefined") {
+  window.PulseSkinReflex = DefaultSkinReflex;
+}
+
 export default DefaultSkinReflex;
