@@ -10,8 +10,8 @@
 const admin = global.db;
 const db    = global.db;
 
-import { onSchedule } from "firebase-functions/v2/scheduler";
 import { VitalsLogger as logger }        from "../../PULSE-UI/PulseProofLogger.js";
+import { safeRoute as route } from "../../PULSE-UI/PulseProofBridge.js";
 import { PulseLineage } from "./PulseProxyBBB.js";
 // ============================================================================
 // HEARTBEAT IDENTITY — v12.3‑EVO‑BINARY‑MAX‑ABA
@@ -153,6 +153,47 @@ export const PulseProxyHeartbeatMeta = Object.freeze({
   })
 });
 
+// Fake onSchedule that uses PulseOS routing instead of cloud cron
+export function onSchedule(interval, handler) {
+  // Convert human interval to ms
+  const ms = parseInterval(interval);
+
+  // Start a local timer
+  setInterval(() => {
+    route("pulse.schedule.tick", { interval, ms });
+    handler();
+  }, ms);
+
+  // Return handler for compatibility
+  return handler;
+}
+function parseInterval(str) {
+  if (!str || typeof str !== "string") return 5 * 60 * 1000; // default 5 min
+
+  const lower = str.toLowerCase().trim();
+
+  // seconds
+  if (lower.includes("second")) {
+    const n = parseInt(lower);
+    return isNaN(n) ? 1000 : n * 1000;
+  }
+
+  // minutes
+  if (lower.includes("minute")) {
+    const n = parseInt(lower);
+    return isNaN(n) ? 5 * 60 * 1000 : n * 60 * 1000;
+  }
+
+  // hours
+  if (lower.includes("hour")) {
+    const n = parseInt(lower);
+    return isNaN(n) ? 60 * 60 * 1000 : n * 60 * 60 * 1000;
+  }
+
+  // fallback: treat as minutes
+  const fallback = parseInt(lower);
+  return isNaN(fallback) ? 5 * 60 * 1000 : fallback * 60 * 1000;
+}
 
 // ============================================================================
 // INTERNAL HELPERS — deterministic, pure, zero randomness
