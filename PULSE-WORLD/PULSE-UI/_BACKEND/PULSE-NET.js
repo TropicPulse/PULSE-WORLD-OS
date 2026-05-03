@@ -83,7 +83,7 @@ AI_EXPERIENCE_META = {
 //  • Hybrid crown model: OvermindPrime sees heartbeats + AI requests
 // ============================================================================
 
-import { aiOvermindPrime } from "../PULSE-AI/aiOvermindPrime.js";
+import { aiOvermindPrime } from "../../PULSE-BAND/PULSE-AI/aiOvermindPrime.js";
 import { createForwardEngine } from "../../PULSE-BAND/PULSE-ENGINE/ForwardEngine.js";
 import { createBackwardEngine } from "../../PULSE-BAND/PULSE-ENGINE/BackwardEngine.js";
 import PulseUIErrors from "../_CONNECTORS/PulseUIErrors-v12-Evo.js";
