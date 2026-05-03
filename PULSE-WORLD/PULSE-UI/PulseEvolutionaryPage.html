@@ -51,7 +51,7 @@ import PulseChunks from "./PulsePresence-v2.js";
 import * as PulseWindow from "./PULSEEvolutionaryWindow.js";
 
 /* 1. SKIN REFLEX — SIDE‑EFFECT IMPORT, AUTO‑ATTACHES */
-import * as PULSEOSSkinReflex from "./PULSEOSSkinReflex.js"; // PageScannerV12 auto hooks window here
+import * as PulseSkinReflex from "./PulseSkinReflex.js"; // PageScannerV12 auto hooks window here
 
 // Expose PulseChunks
     window.PulseChunks = window.PulseChunks || PulseChunks;
@@ -271,8 +271,8 @@ import * as PULSEOSSkinReflex from "./PULSEOSSkinReflex.js"; // PageScannerV12 a
     await prewarmEvolutionaryMembrane();
 
     const trust =
-      typeof PULSEOSSkinReflex.checkTrust === "function"
-        ? await PULSEOSSkinReflex.checkTrust()
+      typeof PulseSkinReflex.checkTrust === "function"
+        ? await PulseSkinReflex.checkTrust()
         : true; // default to trusted if not wired yet
 
     if (!trust) {

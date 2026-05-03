@@ -9,7 +9,7 @@ AI_EXPERIENCE_META = {
   version: "v14-IMMORTAL",
   layer: "pulse_ui",
   role: "a1_surface_reflex + a3_error_spine",
-  lineage: "PULSEOSSkinReflex-v12-EVO-BINARY-MAX → v14-IMMORTAL",
+  lineage: "PulseSkinReflex-v12-EVO-BINARY-MAX → v14-IMMORTAL",
 
   evo: {
     driftProof: true,
@@ -85,10 +85,10 @@ import { getUIFlowSnapshot } from "./PulseUIFlow-v13-EVO-PRIME.js";
 // ---------------------------------------------------------------------------
 export const SkinReflexRole = {
   type: "Skin",
-  subsystem: "PULSEOSSkinReflex",
+  subsystem: "PulseSkinReflex",
   layer: "A1-SurfaceReflex",
   version: "14.0-IMMORTAL",
-  identity: "PULSEOSSkinReflex-v14-IMMORTAL",
+  identity: "PulseSkinReflex-v14-IMMORTAL",
 
   evo: {
     driftProof: true,
@@ -457,7 +457,7 @@ export function createPulseSkinReflex({
 
   if (typeof console !== "undefined" && typeof console.log === "function") {
     console.log(
-      "%c[PULSEOSSkinReflex v14-IMMORTAL] Loaded — A1/A2/A3 Universal Membrane Active",
+      "%c[PulseSkinReflex v14-IMMORTAL] Loaded — A1/A2/A3 Universal Membrane Active",
       "color:#4CAF50; font-weight:bold;"
     );
   }
