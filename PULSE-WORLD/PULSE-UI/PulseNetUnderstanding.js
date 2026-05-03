@@ -1,5 +1,5 @@
 // ============================================================================
-//  PulseUnderstanding.js — v13-EVO-MAX (HYBRID LOADER)
+//  PulseNetUnderstanding.js — v13-EVO-MAX (HYBRID LOADER)
 //  Cortical Opener • Symbolic Kernel Loader • Binary Shadow Integrator
 //  Deterministic Brainstem • Runtime/Scheduler/Substrate Unifier
 // ============================================================================
