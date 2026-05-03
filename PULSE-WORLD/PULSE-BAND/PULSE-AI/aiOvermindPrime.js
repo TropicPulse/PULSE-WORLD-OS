@@ -82,7 +82,6 @@ import { PulseIntentMap } from "../PULSE-OS/PulseIntentMap.js";
 import { PulseUnderstanding } from "../../PULSE-UI/_BACKEND/PulseNetUnderstanding.js";
 import { PulseGovernor } from "../PULSE-OS/PulseOSGovernor.js";
 import { PulseVitalsMonitor } from "../../PULSE-UI/_CONNECTORS/PulseProofMonitor.js";
-import { PulseEvolutionaryWindow } from "../../PULSE-UI/PulseNetEvolutionaryWindow.js";
 import { PulseBinaryTech } from "../PULSE-TECH/PulseBinaryTech-v14-Presence-Immortal.js";
 
 // ———————————————————————————————
@@ -460,7 +459,6 @@ export class AiOvermindPrime {
       understanding: PulseUnderstanding,
       governor: PulseGovernor,
       vitals: PulseVitalsMonitor,
-      evoWindow: PulseEvolutionaryWindow,
       binaryTech: PulseBinaryTech
     });
 
@@ -468,12 +466,6 @@ export class AiOvermindPrime {
     this.vitalsMonitor =
       config.vitalsMonitor ||
       new PulseVitalsMonitor(OvermindPrimeMeta.identity);
-
-    this.evoWindow =
-      config.evoWindow ||
-      new PulseEvolutionaryWindow(OvermindPrimeMeta.identity, {
-        breakthroughSensitivity: this.config.breakthroughSensitivity
-      });
   }
 
   // ========================================================================

@@ -92,6 +92,7 @@ import { applyPulseCortex } from "./PulseMeshCortex.js";
 import { applyPulseMeshTendons } from "./PulseMeshTendons.js";
 import { applyMeshSignalFactoring } from "./PulseMeshSignalFactoring.js";
 import { createGlobalHealerV12 as recordMeshDriftEvent } from "../PULSE-OS/PulseOSImmuneSystem.js";
+
 import "./MeshScanner.js";
 
 export const MeshMemory = {

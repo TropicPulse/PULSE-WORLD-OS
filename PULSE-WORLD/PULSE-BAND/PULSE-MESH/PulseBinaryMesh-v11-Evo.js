@@ -118,11 +118,8 @@ export const BinaryMeshMeta = Object.freeze({
 // IMPORTS — MESH SUBSYSTEMS (SYMBOLIC SIDE)
 // ============================================================================
 import { createOrganismMesh } from "./OrganismMesh-v1-EVO.js";
-
-// symbolic-side mesh systems
 import PulseMeshFlow from "./PulseMeshFlow.js";
 import PulseMeshPresenceRelay from "./PulseMeshPresenceRelay-v12.4-EVO.js";
-
 import PulseMeshCognition from "./PulseMeshCognition.js";
 import PulseMeshEndocrineSystem from "./PulseMeshEndocrineSystem.js";
 import PulseMeshImmuneSystem from "./PulseMeshImmuneSystem.js";
@@ -131,6 +128,9 @@ import PulseMeshThalamus from "./PulseMeshThalamus.js";
 
 import PresenceAIView from "./PresenceAIView.js";
 import MentorUpgradeRequest from "./MentorUpgradeRequest.js";
+
+import { applyPulseCortex } from "./PulseMeshCortex.js";
+import { applyPulseMeshTendons } from "./PulseMeshTendons.js";
 
 // ============================================================================
 // INTERNAL HELPERS
