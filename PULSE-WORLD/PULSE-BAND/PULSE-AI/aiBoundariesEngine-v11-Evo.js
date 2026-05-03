@@ -1,6 +1,43 @@
 // ============================================================================
 //  v12.3‑Presence — BOUNDARIES ENGINE (Dual‑Band Superego Contract)
 // ============================================================================
+/*
+AI_EXPERIENCE_META = {
+  identity: "aiBoundariesEngine",
+  version: "v14-IMMORTAL",
+  layer: "ai_core",
+  role: "ai_boundary_enforcer",
+  lineage: "aiBoundariesEngine-v11 → v12.3 → v14-IMMORTAL",
+
+  evo: {
+    boundaryEnforcer: true,
+    safetyRules: true,
+    symbolicPrimary: true,
+    binaryAware: true,
+    dualBand: true,
+
+    deterministic: true,
+    driftProof: true,
+    pureCompute: true,
+    zeroNetwork: true,
+    zeroFilesystem: true,
+    zeroMutationOfInput: true
+  },
+
+  contract: {
+    always: [
+      "aiBrainstem",
+      "aiAssistant",
+      "aiAnatomy"
+    ],
+    never: [
+      "safeRoute",
+      "fetchViaCNS"
+    ]
+  }
+}
+*/
+
 import { getBoundariesForPersona, canPerformDynamic } from "./permissions.js";
 
 export const BoundariesMeta = Object.freeze({

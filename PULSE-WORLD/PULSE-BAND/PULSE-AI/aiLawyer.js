@@ -2,6 +2,35 @@
 //  aiLawyer.js — PulseOS Legal Mapper Organ — v12.3‑EVO+
 //  Structured • Neutral • Doctrine‑Aware • Zero‑Advice
 // ============================================================================
+/*
+AI_EXPERIENCE_META = {
+  identity: "aiLawyer",
+  version: "v14-IMMORTAL",
+  layer: "ai_tools",
+  role: "legal_reasoner",
+  lineage: "aiLawyer-v11 → v14-IMMORTAL",
+
+  evo: {
+    legalReasoning: true,
+    structureMapping: true,
+    symbolicPrimary: true,
+    binaryAware: true,
+    dualBand: true,
+
+    deterministic: true,
+    driftProof: true,
+    pureCompute: true,
+    zeroNetwork: true,
+    zeroFilesystem: true,
+    zeroMutationOfInput: true
+  },
+
+  contract: {
+    always: ["aiContext", "aiArchitect", "aiCortex"],
+    never: ["safeRoute", "fetchViaCNS"]
+  }
+}
+*/
 
 export const PulseRole = Object.freeze({
   type: "Cognitive",

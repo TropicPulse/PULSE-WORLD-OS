@@ -31,6 +31,35 @@
 //   • NO executing user code.
 //   • Deterministic, scoped data access only.
 // ============================================================================
+/*
+AI_EXPERIENCE_META = {
+  identity: "aiTourist",
+  version: "v14-IMMORTAL",
+  layer: "ai_tools",
+  role: "tourist_reasoner",
+  lineage: "aiTourist-v11 → v14-IMMORTAL",
+
+  evo: {
+    touristReasoning: true,
+    explorationMapping: true,
+    symbolicPrimary: true,
+    binaryAware: true,
+    dualBand: true,
+
+    deterministic: true,
+    driftProof: true,
+    pureCompute: true,
+    zeroNetwork: true,
+    zeroFilesystem: true,
+    zeroMutationOfInput: true
+  },
+
+  contract: {
+    always: ["aiEnvironment", "aiContext", "aiCortex"],
+    never: ["safeRoute", "fetchViaCNS"]
+  }
+}
+*/
 
 export const TouristMeta = Object.freeze({
   type: "Cognitive",

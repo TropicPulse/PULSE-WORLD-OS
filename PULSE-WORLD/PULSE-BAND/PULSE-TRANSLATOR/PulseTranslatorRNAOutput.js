@@ -1,34 +1,97 @@
-// ============================================================================
-// FILE: /pulse-translator/PulseTranslatorRNAOutput.js
-// [pulse:translator] PULSE_TRANSLATOR_RNA_OUTPUT v11.0  // gold‑white
-// Pulse → Firestore Output RNA • Deterministic • Drift‑Proof • Genome‑Driven
-// PURE TRANSLATOR — NO IO • NO NETWORK • NO FIRESTORE EXECUTION
-// ============================================================================
-//
-// IDENTITY — THE RNA OUTPUT TRANSLATOR (v11.0):
-//  --------------------------------------------
-//  • Converts PulseField definitions + values → Firestore‑safe payloads.
-//  • Converts PulseField schemas → Firestore document objects.
-//  • Uses the OS DNA Genome (PulseSpecsDNAGenome v11.0) as the source of truth.
-//  • Deterministic, safe, drift‑proof, read‑only.
-//  • Zero Firestore execution — only produces plain JS objects.
-//
-// ROLE IN THE ORGANISM (v11.0):
-//  -----------------------------
-//  • DNA → PulseSpecsDNAGenome.js (v11.0 gold‑white genome)
-//  • RNA Intake → PulseTranslatorRNAIntake.js
-//  • RNA Output → THIS FILE (Pulse → Firestore)
-//  • Proteins → actual Firestore documents written by the system
-//
-// SAFETY CONTRACT (v11.0):
-//  ------------------------
-//  • Read‑only — no writes, no mutation.
-//  • No eval(), no Function(), no dynamic imports.
-//  • No network calls.
-//  • No Firestore execution.
-//  • Deterministic: same input → same output.
-//  • All types validated against the genome.
-// ============================================================================
+/*
+===============================================================================
+AI_EXPERIENCE_META = {
+  identity: "PulseTranslator.RNAOutput",
+  version: "v14-IMMORTAL",
+  layer: "pulse_translator",
+  role: "rna_output_translator",
+  lineage: "RNAOutput-v11.0 → v12.4 → v14-IMMORTAL",
+
+  evo: {
+    rnaOutput: true,
+    genomeDriven: true,
+    firestoreOutput: true,
+    symbolicPrimary: true,
+    binaryAware: true,
+    dualBand: true,
+
+    deterministic: true,
+    driftProof: true,
+    pureCompute: true,
+
+    zeroMutationOfInput: true,
+    zeroNetwork: true,
+    zeroFilesystem: true,
+    zeroFirestoreExecution: true
+  },
+
+  contract: {
+    always: [
+      "PulseSpecs.DNAGenome",
+      "PulseTranslator.RNAIntake",
+      "PulseTranslator.SkeletalIntake"
+    ],
+    never: [
+      "eval",
+      "Function",
+      "dynamicImport",
+      "safeRoute",
+      "fetchViaCNS"
+    ]
+  }
+}
+===============================================================================
+EXPORT_META = {
+  organ: "PulseTranslator.RNAOutput",
+  layer: "pulse_translator",
+  stability: "IMMORTAL",
+  deterministic: true,
+  pure: true,
+
+  consumes: [
+    "PulseField",
+    "PulseFieldSchemaMap",
+    "PulseDataObject"
+  ],
+
+  produces: [
+    "FirestoreSafeValue",
+    "FirestoreDocumentPayload"
+  ],
+
+  sideEffects: "none",
+  network: "none",
+  filesystem: "none",
+  firestore: "no_execution"
+}
+===============================================================================
+FILE: /pulse-translator/PulseTranslatorRNAOutput.js
+LAYER: THE RNA OUTPUT TRANSLATOR (Pulse → Firestore)
+===============================================================================
+
+ROLE (v14+):
+  THE RNA OUTPUT TRANSLATOR — Genome‑driven Pulse → Firestore translator.
+  • Converts PulseField definitions + values → Firestore‑safe payloads.
+  • Converts PulseField schemas → Firestore document objects.
+  • Uses PulseSpecsDNAGenome v14+ as the authoritative DNA.
+  • Deterministic, drift‑proof, pure, read‑only.
+
+PURPOSE (v14+):
+  • Provide Firestore‑safe, deterministic output values.
+  • Guarantee genome‑aligned typing and schema consistency.
+  • Serve as the RNA output layer of the Pulse OS organism.
+
+CONTRACT:
+  • PURE FUNCTION — no IO, no network, no Firestore execution.
+  • READ‑ONLY — no mutation of input.
+  • NO eval(), NO Function(), NO dynamic imports.
+  • Deterministic output only.
+
+SAFETY:
+  • v14+ upgrade is PURE + GENOME‑DRIVEN.
+  • All behavior is deterministic and organism‑safe.
+===============================================================================
+*/
 
 import {
   PulseToFirestore,
@@ -36,10 +99,9 @@ import {
   validatePulseField
 } from "../PULSE-SPECS/PulseSpecsDNAGenome.js";
 
-
 // ============================================================================
-//  translatePulseFieldToFirestore(field, value)
-//  Converts a PulseField + value → Firestore‑safe value.
+// translatePulseFieldToFirestore(field, value)
+// Converts a PulseField + value → Firestore‑safe value.
 // ============================================================================
 export function translatePulseFieldToFirestore(field, value) {
   validatePulseField(field);
@@ -124,10 +186,9 @@ export function translatePulseFieldToFirestore(field, value) {
   }
 }
 
-
 // ============================================================================
-//  translatePulseSchemaToFirestore(schemaObject, dataObject)
-//  Converts a PulseField schema + data → Firestore document.
+// translatePulseSchemaToFirestore(schemaObject, dataObject)
+// Converts a PulseField schema + data → Firestore document.
 // ============================================================================
 export function translatePulseSchemaToFirestore(schemaObject = {}, dataObject = {}) {
   const out = {};
@@ -140,18 +201,16 @@ export function translatePulseSchemaToFirestore(schemaObject = {}, dataObject = 
   return out;
 }
 
-
 // ============================================================================
-//  generateFirestoreWritePayload(schemaObject, dataObject)
-//  Produces a Firestore‑ready payload for setDoc/updateDoc.
+// generateFirestoreWritePayload(schemaObject, dataObject)
+// Produces a Firestore‑ready payload for setDoc/updateDoc.
 // ============================================================================
 export function generateFirestoreWritePayload(schemaObject = {}, dataObject = {}) {
   return translatePulseSchemaToFirestore(schemaObject, dataObject);
 }
 
-
 // ============================================================================
-//  Helpers
+// Helpers
 // ============================================================================
 function normalizeFieldName(name) {
   return name.trim().toLowerCase().replace(/[^a-z0-9_]/g, "_");

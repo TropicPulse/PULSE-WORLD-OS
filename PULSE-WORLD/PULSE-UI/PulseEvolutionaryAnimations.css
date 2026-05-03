@@ -1,33 +1,42 @@
 /* ============================================================================
-   PulseEvolutionaryAnimations.css — v11‑EVO‑PRIME
+   PulseEvolutionaryAnimations.css — v15‑IMMORTAL
    UNIVERSAL ANIMATION ORGAN FOR PULSE UI
+   ----------------------------------------------------------------------------
+   • deterministic GPU‑friendly animations
+   • binary‑aware contrast motion
+   • neon‑native glow pulses
+   • cinematic breathing + heartbeat
+   • shimmer v3 (route‑aware)
+   • impulse‑flash v2 (CNS‑aware)
+   • scanline v2 (binary‑friendly)
    ============================================================================ */
 
-/* PULSE GLOW --------------------------------------------------------------- */
-@keyframes pulse-glow {
-  0%   { box-shadow: 0 0 4px rgba(0,255,255,0.15); }
-  50%  { box-shadow: 0 0 14px rgba(0,255,255,0.45); }
-  100% { box-shadow: 0 0 4px rgba(0,255,255,0.15); }
-}
-.evo-pulse {
-  animation: pulse-glow 2.8s infinite ease-in-out;
+/* PULSE GLOW v2 ------------------------------------------------------------- */
+@keyframes pulse-glow-v2 {
+  0%   { box-shadow: 0 0 4px rgba(0,255,255,0.18); }
+  50%  { box-shadow: 0 0 18px rgba(0,255,255,0.55); }
+  100% { box-shadow: 0 0 4px rgba(0,255,255,0.18); }
 }
 
-/* BREATHING PANEL ---------------------------------------------------------- */
-@keyframes evo-breathe {
-  0%   { transform: scale(1); opacity: 0.95; }
-  50%  { transform: scale(1.015); opacity: 1; }
-  100% { transform: scale(1); opacity: 0.95; }
+.evo-pulse {
+  animation: pulse-glow-v2 2.8s infinite ease-in-out;
+}
+
+/* BREATHING PANEL v2 ------------------------------------------------------- */
+@keyframes evo-breathe-v2 {
+  0%   { transform: scale(1); opacity: 0.92; }
+  50%  { transform: scale(1.018); opacity: 1; }
+  100% { transform: scale(1); opacity: 0.92; }
 }
 
 .evo-breathe {
-  animation: evo-breathe 4.5s infinite ease-in-out;
+  animation: evo-breathe-v2 4.6s infinite ease-in-out;
 }
 
-/* SHIMMER ------------------------------------------------------------------ */
-@keyframes evo-shimmer {
-  0%   { left: -150%; }
-  100% { left: 150%; }
+/* SHIMMER v3 (deterministic, route-aware) ---------------------------------- */
+@keyframes evo-shimmer-v3 {
+  0%   { left: -170%; }
+  100% { left: 170%; }
 }
 
 .evo-shimmer {
@@ -39,59 +48,92 @@
   content: "";
   position: absolute;
   top: 0;
-  left: -150%;
-  width: 150%;
+  left: -170%;
+  width: 170%;
   height: 100%;
   background: linear-gradient(
     120deg,
     transparent 0%,
-    rgba(255,255,255,0.08) 50%,
+    rgba(255,255,255,0.12) 50%,
     transparent 100%
   );
-  animation: evo-shimmer 2.5s infinite;
+  animation: evo-shimmer-v3 2.9s linear infinite;
 }
 
-/* NEON FLICKER ------------------------------------------------------------- */
-@keyframes evo-flicker {
-  0%, 19%, 21%, 23%, 25%, 54%, 56%, 100% {
+/* NEON FLICKER v2 ---------------------------------------------------------- */
+@keyframes evo-flicker-v2 {
+  0%, 18%, 22%, 24%, 53%, 57%, 100% {
     opacity: 1;
   }
-  20%, 24%, 55% {
-    opacity: 0.4;
+  20%, 23%, 55% {
+    opacity: 0.35;
   }
 }
 
 .evo-flicker {
-  animation: evo-flicker 3.5s infinite;
+  animation: evo-flicker-v2 3.8s infinite;
 }
 
-/* BINARY SCAN -------------------------------------------------------------- */
-@keyframes evo-scan {
+/* BINARY SCAN v2 ----------------------------------------------------------- */
+@keyframes evo-scan-v2 {
   0%   { background-position: 0 0; }
-  100% { background-position: 0 100%; }
+  100% { background-position: 0 120%; }
 }
 
 .evo-binary-scan {
   background-image: repeating-linear-gradient(
     to bottom,
-    rgba(0,255,255,0.08) 0px,
-    rgba(0,255,255,0.08) 2px,
+    rgba(0,255,255,0.10) 0px,
+    rgba(0,255,255,0.10) 2px,
     transparent 2px,
-    transparent 4px
+    transparent 5px
   );
-  animation: evo-scan 1.8s linear infinite;
+  animation: evo-scan-v2 1.9s linear infinite;
 }
 
-/* ORGANISM HEARTBEAT ------------------------------------------------------- */
-@keyframes evo-heartbeat {
+/* ORGANISM HEARTBEAT v2 ---------------------------------------------------- */
+@keyframes evo-heartbeat-v2 {
   0%   { transform: scale(1); }
-  20%  { transform: scale(1.06); }
-  40%  { transform: scale(1); }
-  60%  { transform: scale(1.04); }
+  18%  { transform: scale(1.065); }
+  36%  { transform: scale(1); }
+  58%  { transform: scale(1.045); }
   80%  { transform: scale(1); }
   100% { transform: scale(1); }
 }
 
 .evo-heartbeat {
-  animation: evo-heartbeat 3.2s infinite ease-in-out;
+  animation: evo-heartbeat-v2 3.3s infinite ease-in-out;
+}
+
+/* CNS IMPULSE FLASH v2 ----------------------------------------------------- */
+@keyframes evo-impulse-flash-v2 {
+  0%   { box-shadow: 0 0 0 rgba(0,255,255,0); }
+  40%  { box-shadow: 0 0 26px rgba(0,255,255,0.65); }
+  100% { box-shadow: 0 0 0 rgba(0,255,255,0); }
+}
+
+.evo-impulse {
+  animation: evo-impulse-flash-v2 0.48s ease-out;
+}
+
+/* ROUTE TRANSITION GLOW ---------------------------------------------------- */
+@keyframes evo-route-transition {
+  0%   { box-shadow: 0 0 0 rgba(0,255,255,0); }
+  50%  { box-shadow: 0 0 20px rgba(0,255,255,0.45); }
+  100% { box-shadow: 0 0 0 rgba(0,255,255,0); }
+}
+
+.evo-route-active {
+  animation: evo-route-transition 0.65s ease-out;
+}
+
+/* IMMORTAL TIER GLOW ------------------------------------------------------- */
+@keyframes evo-immortal-glow {
+  0%   { filter: drop-shadow(0 0 6px rgba(180,0,255,0.45)); }
+  50%  { filter: drop-shadow(0 0 14px rgba(180,0,255,0.75)); }
+  100% { filter: drop-shadow(0 0 6px rgba(180,0,255,0.45)); }
+}
+
+.evo-immortal {
+  animation: evo-immortal-glow 3.2s infinite ease-in-out;
 }

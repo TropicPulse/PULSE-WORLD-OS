@@ -2,6 +2,36 @@
 //  aiNervousSystem.js — Pulse OS v12.3-Presence Organ
 //  Binary Nervous System • Routing Brainstem • Deterministic • Routing Artery
 // ============================================================================
+/*
+AI_EXPERIENCE_META = {
+  identity: "aiNervousSystem",
+  version: "v14-IMMORTAL",
+  layer: "ai_core",
+  role: "signal_router",
+  lineage: "aiNervousSystem-v10 → v14-IMMORTAL",
+
+  evo: {
+    signalRouting: true,
+    sensoryIntake: true,
+    motorOutput: true,
+    symbolicPrimary: true,
+    binaryAware: true,
+    dualBand: true,
+
+    deterministic: true,
+    driftProof: true,
+    pureCompute: true,
+    zeroNetwork: true,
+    zeroFilesystem: true,
+    zeroMutationOfInput: true
+  },
+
+  contract: {
+    always: ["aiReflex", "aiMetabolism", "aiImmunity"],
+    never: ["safeRoute", "fetchViaCNS"]
+  }
+}
+*/
 
 export const NervousSystemMeta = Object.freeze({
   layer: "BinaryNervousSystem",

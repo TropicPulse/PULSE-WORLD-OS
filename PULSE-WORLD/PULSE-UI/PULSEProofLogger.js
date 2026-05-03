@@ -1,6 +1,6 @@
 // ============================================================================
 //  PulseProofLogger.js — v14-IMMORTAL-LOGGER
-//  PROOF LOGGER • AI CONSOLE EXTENSION • OFFLINE-FIRST TELEMETRY
+//  PROOF LOGGER • AI CONSOLE EXTENSION • OFFLINE-FIRST TELEMETRY + LOCALSTORE
 // ============================================================================
 /*
 AI_EXPERIENCE_META = {
@@ -8,7 +8,7 @@ AI_EXPERIENCE_META = {
   version: "v14-IMMORTAL-LOGGER",
   layer: "frontend",
   role: "observer_logger",
-  lineage: "PulseOS-v12",
+  lineage: "PulseOS-v14",
 
   evo: {
     passive: true,
@@ -17,7 +17,10 @@ AI_EXPERIENCE_META = {
     dualBandAware: true,
     chunkAligned: true,
     presenceAware: true,
-    cnsAligned: true
+    cnsAligned: true,
+    offlineFirst: true,
+    localStoreMirrored: true,
+    replayAware: true
   },
 
   contract: {
@@ -26,7 +29,8 @@ AI_EXPERIENCE_META = {
       "PulsePresence",
       "PulseChunks",
       "PulseUIFlow",
-      "PulseUIErrors"
+      "PulseUIErrors",
+      "PulseOfflineLogs"
     ],
     never: [
       "legacyLogger",
@@ -70,6 +74,122 @@ function isOnline() {
 
 function hasRoute() {
   return typeof route === "function";
+}
+
+// -----------------------------------------------------------------------------
+// LocalStorage OFFLINE LOG STORE — v14 IMMORTAL
+//  - Every log/warn/error/critical is mirrored here
+//  - Any page / any mode can read the same log history
+// -----------------------------------------------------------------------------
+const LS_KEY_LOGS = "PulseProofLogger.v14.logs";
+const LS_MAX_ENTRIES = 5000; // ring-ish cap to avoid unbounded growth
+
+function hasLocalStorage() {
+  try {
+    if (typeof window === "undefined" || !window.localStorage) return false;
+    const testKey = "__pulse_logger_test__";
+    window.localStorage.setItem(testKey, "1");
+    window.localStorage.removeItem(testKey);
+    return true;
+  } catch (_) {
+    return false;
+  }
+}
+
+function loadLocalLogs() {
+  if (!hasLocalStorage()) return [];
+  try {
+    const raw = window.localStorage.getItem(LS_KEY_LOGS);
+    if (!raw) return [];
+    const parsed = JSON.parse(raw);
+    if (!Array.isArray(parsed)) return [];
+    return parsed;
+  } catch (_) {
+    return [];
+  }
+}
+
+function saveLocalLogs(entries) {
+  if (!hasLocalStorage()) return;
+  try {
+    const trimmed =
+      entries.length > LS_MAX_ENTRIES
+        ? entries.slice(entries.length - LS_MAX_ENTRIES)
+        : entries;
+    window.localStorage.setItem(LS_KEY_LOGS, JSON.stringify(trimmed));
+  } catch (_) {
+    // ignore
+  }
+}
+
+let localLogBuffer = loadLocalLogs();
+
+function appendLocalLog(entry) {
+  localLogBuffer.push(entry);
+  saveLocalLogs(localLogBuffer);
+}
+
+function getLocalLogs({ level = null, subsystem = null } = {}) {
+  return localLogBuffer.filter((e) => {
+    if (level && e.level !== level) return false;
+    if (subsystem && e.subsystem !== subsystem) return false;
+    return true;
+  });
+}
+
+// Optional: mark entries as synced when successfully sent upstream
+function markLocalLogsSynced(ids = []) {
+  if (!ids || !ids.length) return;
+  let changed = false;
+  localLogBuffer = localLogBuffer.map((e) => {
+    if (ids.includes(e.id)) {
+      if (!e.synced) {
+        changed = true;
+        return { ...e, synced: true };
+      }
+    }
+    return e;
+  });
+  if (changed) saveLocalLogs(localLogBuffer);
+}
+
+// Replay unsynced logs when we come online
+async function flushLocalLogsToFirebase() {
+  if (!hasRoute() || !isOnline()) return;
+  const unsynced = localLogBuffer.filter((e) => !e.synced);
+  if (!unsynced.length) return;
+
+  const sentIds = [];
+  for (const entry of unsynced) {
+    try {
+      await route("firebaseLog", {
+        level: entry.level,
+        message: entry.message,
+        rest: entry.rest || [],
+        ts: entry.ts,
+        subsystem: entry.subsystem,
+        offline: true
+      });
+      sentIds.push(entry.id);
+    } catch (_) {
+      // stop on first failure to avoid hammering
+      break;
+    }
+  }
+
+  if (sentIds.length) {
+    markLocalLogsSynced(sentIds);
+  }
+}
+
+// Try to flush on load and whenever we detect online
+if (typeof window !== "undefined") {
+  // initial attempt
+  flushLocalLogsToFirebase().catch(() => {});
+  // listen to browser online event
+  window.addEventListener("online", () => {
+    flushLocalLogsToFirebase().catch(() => {});
+  });
 }
 
 // -----------------------------------------------------------------------------
@@ -184,14 +304,41 @@ export function makeTelemetryPacket(subsystem, event, data = {}) {
 }
 
 // -----------------------------------------------------------------------------
-// Firebase / telemetry bridge — OFFLINE-FIRST, FAILURE-PROOF
+// Firebase / telemetry bridge — OFFLINE-FIRST, FAILURE-PROOF + LOCALSTORE
 // -----------------------------------------------------------------------------
-async function sendToFirebase(level, message, rest) {
-  if (!hasRoute()) return;
-  if (!isOnline()) return;
+let logIdCounter = Date.now();
+
+function makeLocalLogEntry(level, subsystem, message, rest) {
+  return {
+    id: `L${++logIdCounter}`,
+    ts: Date.now(),
+    level,
+    subsystem,
+    message,
+    rest
+  };
+}
+
+async function sendToFirebase(level, message, rest, subsystem = "legacy") {
+  // Always mirror to localStorage first — offline beast
+  const entry = makeLocalLogEntry(level, subsystem, message, rest);
+  appendLocalLog(entry);
+
+  if (!hasRoute() || !isOnline()) {
+    return;
+  }
 
   try {
-    await route("firebaseLog", { level, message, rest });
+    await route("firebaseLog", {
+      level,
+      message,
+      rest,
+      ts: entry.ts,
+      subsystem,
+      offline: false
+    });
+    // mark this entry as synced
+    markLocalLogsSynced([entry.id]);
   } catch (e) {
     _c.warn("PulseProofLogger: Firebase logging failed:", e);
   }
@@ -229,10 +376,11 @@ function handlePulseCommand(cmd) {
       break;
     }
 
-    case "recent": {
-      const recent = getRecentAIPrompt();
-      if (!recent) return _c.log("No recent AI prompt.");
-      openAIPrompt(recent.id);
+    case "logs": {
+      const all = getLocalLogs();
+      _c.groupCollapsed("%cPulse: Offline Logs", "color:#FF7043; font-weight:bold;");
+      _c.log(all);
+      _c.groupEnd();
       break;
     }
 
@@ -243,7 +391,7 @@ function handlePulseCommand(cmd) {
 }
 
 // -----------------------------------------------------------------------------
-// Core logging functions — offline-first, CNS-optional
+// Core logging functions — offline-first, CNS-optional, LOCALSTORE MIRRORED
 // -----------------------------------------------------------------------------
 function mark404(message) {
   if (typeof message === "string" && message.trim() === "404") {
@@ -274,7 +422,7 @@ export function log(...args) {
     );
   }
 
-  sendToFirebase("log", safeMessage, rest);
+  sendToFirebase("log", safeMessage, rest, subsystem);
 }
 
 export function warn(...args) {
@@ -288,7 +436,7 @@ export function warn(...args) {
     ...rest
   );
 
-  sendToFirebase("warn", safeMessage, rest);
+  sendToFirebase("warn", safeMessage, rest, subsystem);
 }
 
 export function error(...args) {
@@ -302,7 +450,7 @@ export function error(...args) {
     ...rest
   );
 
-  sendToFirebase("error", safeMessage, rest);
+  sendToFirebase("error", safeMessage, rest, subsystem);
 }
 
 export function critical(...args) {
@@ -317,7 +465,7 @@ export function critical(...args) {
   _c.error(`%c${safeMessage}`, "color:#D32F2F; font-weight:bold;", ...rest);
   _c.groupEnd();
 
-  sendToFirebase("critical", safeMessage, rest);
+  sendToFirebase("critical", safeMessage, rest, subsystem);
 }
 
 // -----------------------------------------------------------------------------
@@ -446,12 +594,13 @@ export function aiHelpBanner() {
   _c.log("• Pulse: List                 → list active AI prompts");
   _c.log("• Pulse: Open <id>            → open prompt <id> in console");
   _c.log("• Pulse: Close <id>           → close/archive prompt <id>");
+  _c.log("• Pulse: Logs                 → dump offline log buffer");
   _c.log("• createAIPrompt({ id, text })→ register a new AI prompt (API)");
   _c.groupEnd();
 }
 
 // -----------------------------------------------------------------------------
-// Optional persistence helpers using route bridge
+// Optional persistence helpers using route bridge (unchanged)
 // -----------------------------------------------------------------------------
 export async function persistAIPrompts(storageKey = "PulseAIPrompts") {
   try {
@@ -504,13 +653,15 @@ export const VitalsLogger = {
   listAIPrompts,
   persistAIPrompts,
   restoreAIPrompts,
-  meta: { layer: "PulseProofLogger", version: "13.1-EVO-ALWAYS-ON-OFFLINE-FIRST" }
+  getLocalLogs,
+  flushLocalLogsToFirebase,
+  meta: { layer: "PulseProofLogger", version: "14.0-IMMORTAL-OFFLINE-LOCALSTORE" }
 };
 
 export const logger = { ...VitalsLogger };
 
 // ============================================================================
-// GLOBAL LOGGER BINDINGS — v14 IMMORTAL
+// GLOBAL LOGGER BINDINGS — v14 IMMORTAL + OFFLINE LOG SURFACE
 // ============================================================================
 (function bindLogger() {
   try {
@@ -530,6 +681,14 @@ export const logger = { ...VitalsLogger };
       window.openAIPrompt = openAIPrompt;
       window.closeAIPrompt = closeAIPrompt;
       window.listAIPrompts = listAIPrompts;
+
+      // Offline beast visibility: global log surface
+      window.PulseOfflineLogs = {
+        getAll: () => getLocalLogs(),
+        getByLevel: (level) => getLocalLogs({ level }),
+        getBySubsystem: (subsystem) => getLocalLogs({ subsystem }),
+        flushToFirebase: () => flushLocalLogsToFirebase()
+      };
     }
 
     // Universal binding (browser + node + workers)
@@ -544,6 +703,14 @@ export const logger = { ...VitalsLogger };
     globalThis.openAIPrompt = openAIPrompt;
     globalThis.closeAIPrompt = closeAIPrompt;
     globalThis.listAIPrompts = listAIPrompts;
+
+    // Also expose offline logs on globalThis
+    globalThis.PulseOfflineLogs = {
+      getAll: () => getLocalLogs(),
+      getByLevel: (level) => getLocalLogs({ level }),
+      getBySubsystem: (subsystem) => getLocalLogs({ subsystem }),
+      flushToFirebase: () => flushLocalLogsToFirebase()
+    };
 
   } catch (err) {
     _c.error("Logger binding failed:", err);

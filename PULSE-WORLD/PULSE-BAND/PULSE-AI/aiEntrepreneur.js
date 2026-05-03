@@ -3,6 +3,35 @@
 //  Strategy Mapper • Experiment Designer • Risk Surface Analyzer
 //  PURE STRATEGY. ZERO PROMISES. ZERO OUTCOME CLAIMS.
 // ============================================================================
+/*
+AI_EXPERIENCE_META = {
+  identity: "aiEntrepreneur",
+  version: "v14-IMMORTAL",
+  layer: "ai_tools",
+  role: "entrepreneurial_reasoner",
+  lineage: "aiEntrepreneur-v11 → v14-IMMORTAL",
+
+  evo: {
+    entrepreneurialReasoning: true,
+    opportunityMapping: true,
+    symbolicPrimary: true,
+    binaryAware: true,
+    dualBand: true,
+
+    deterministic: true,
+    driftProof: true,
+    pureCompute: true,
+    zeroNetwork: true,
+    zeroFilesystem: true,
+    zeroMutationOfInput: true
+  },
+
+  contract: {
+    always: ["aiArchitect", "aiContext", "aiCortex"],
+    never: ["safeRoute", "fetchViaCNS"]
+  }
+}
+*/
 
 export const EntrepreneurMeta = Object.freeze({
   layer: "PulseAIStrategyFrame",

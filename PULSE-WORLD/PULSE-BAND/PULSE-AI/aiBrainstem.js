@@ -13,6 +13,45 @@
 //   • Window‑safe CNS packet emission
 //   • Multi‑instance CNS safety
 // ============================================================================
+/*
+AI_EXPERIENCE_META = {
+  identity: "aiBrainstem",
+  version: "v14-IMMORTAL",
+  layer: "ai_core",
+  role: "ai_brainstem",
+  lineage: "aiBrainstem-v9 → v11-Evo → v14-IMMORTAL",
+
+  evo: {
+    brainstem: true,
+    identityBridge: true,
+    ownershipBridge: true,
+    organLoader: true,
+    dualBand: true,
+    symbolicPrimary: true,
+    binaryAware: true,
+
+    deterministic: true,
+    driftProof: true,
+    pureCompute: true,
+    zeroNetwork: true,
+    zeroFilesystem: true,
+    zeroMutationOfInput: true
+  },
+
+  contract: {
+    always: [
+      "aiAnatomy",
+      "aiBoundariesEngine",
+      "aiBinaryOrganRegistry",
+      "ai-v11-evo"
+    ],
+    never: [
+      "safeRoute",
+      "fetchViaCNS"
+    ]
+  }
+}
+*/
 
 export const BrainstemMeta = Object.freeze({
   layer: "PulseAICNS",

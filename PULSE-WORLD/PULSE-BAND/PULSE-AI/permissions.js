@@ -3,6 +3,35 @@
 //  Capability Contract • Self‑Regulation Layer • Evolutionary Control
 //  PURE PERMISSIONS. ZERO MUTATION. ZERO TIME. ZERO RANDOMNESS.
 // ============================================================================
+/*
+AI_EXPERIENCE_META = {
+  identity: "permissions",
+  version: "v14-IMMORTAL",
+  layer: "ai_core",
+  role: "permissions_surface",
+  lineage: "permissions-v11 → v14-IMMORTAL",
+
+  evo: {
+    permissionsSurface: true,
+    policyMapping: true,
+    symbolicPrimary: true,
+    binaryAware: true,
+    dualBand: true,
+
+    deterministic: true,
+    driftProof: true,
+    pureCompute: true,
+    zeroNetwork: true,
+    zeroFilesystem: true,
+    zeroMutationOfInput: true
+  },
+
+  contract: {
+    always: ["aiPermissionsEngine", "aiGovernorAdaptor", "aiBoundariesEngine"],
+    never: ["safeRoute", "fetchViaCNS"]
+  }
+}
+*/
 
 export const EgoMeta = Object.freeze({
   type: "Cognitive",

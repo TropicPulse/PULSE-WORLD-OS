@@ -12,6 +12,35 @@
 //    • DRIFT‑PROOF: deterministic, multi‑instance safe
 //    • WINDOW‑SAFE: refinement packets for window/UX
 // ============================================================================
+/*
+AI_EXPERIENCE_META = {
+  identity: "aiGeniusWithoutEgo",
+  version: "v14-IMMORTAL",
+  layer: "ai_tools",
+  role: "ego_filter",
+  lineage: "aiGeniusWithoutEgo-v11 → v14-IMMORTAL",
+
+  evo: {
+    egoRemoval: true,
+    groundedConfidence: true,
+    symbolicPrimary: true,
+    binaryAware: true,
+    dualBand: true,
+
+    deterministic: true,
+    driftProof: true,
+    pureCompute: true,
+    zeroNetwork: true,
+    zeroFilesystem: true,
+    zeroMutationOfInput: true
+  },
+
+  contract: {
+    always: ["aiHumilityFilter", "aiEmotionEngine", "aiDeliveryEngine"],
+    never: ["safeRoute", "fetchViaCNS"]
+  }
+}
+*/
 
 import { aiHumilityFilter } from "./aiHumilityFilter.js";
 

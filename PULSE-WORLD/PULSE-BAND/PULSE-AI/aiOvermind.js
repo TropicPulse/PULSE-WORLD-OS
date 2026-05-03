@@ -4,6 +4,35 @@
 //  Organism-State Fusion • Drift-Governor • Breakthrough Engine
 //  Conversational Stabilizer • Dualband Governor • Zero Mutation
 // ============================================================================
+/*
+AI_EXPERIENCE_META = {
+  identity: "aiOvermind",
+  version: "v14-IMMORTAL",
+  layer: "ai_core",
+  role: "ai_overseer",
+  lineage: "aiOvermind-v11 → v14-IMMORTAL",
+
+  evo: {
+    overseer: true,
+    organGovernance: true,
+    symbolicPrimary: true,
+    binaryAware: true,
+    dualBand: true,
+
+    deterministic: true,
+    driftProof: true,
+    pureCompute: true,
+    zeroNetwork: true,
+    zeroFilesystem: true,
+    zeroMutationOfInput: true
+  },
+
+  contract: {
+    always: ["aiOrganism", "aiBrainstem", "aiGovernorAdaptor"],
+    never: ["safeRoute", "fetchViaCNS"]
+  }
+}
+*/
 
 export const OvermindPrimeMeta = Object.freeze({
   layer: "PulseAIOvermindPrime",

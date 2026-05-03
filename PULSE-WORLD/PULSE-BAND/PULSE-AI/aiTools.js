@@ -47,6 +47,35 @@
 //   • ZERO identity leakage.
 //   • PURE deterministic analysis.
 // ============================================================================
+/*
+AI_EXPERIENCE_META = {
+  identity: "aiTools",
+  version: "v14-IMMORTAL",
+  layer: "ai_tools",
+  role: "tools_surface",
+  lineage: "aiTools-v10 → v14-IMMORTAL",
+
+  evo: {
+    toolsSurface: true,
+    utilityMapping: true,
+    symbolicPrimary: true,
+    binaryAware: true,
+    dualBand: true,
+
+    deterministic: true,
+    driftProof: true,
+    pureCompute: true,
+    zeroNetwork: true,
+    zeroFilesystem: true,
+    zeroMutationOfInput: true
+  },
+
+  contract: {
+    always: ["aiAssistant", "aiService", "aiContext"],
+    never: ["safeRoute", "fetchViaCNS"]
+  }
+}
+*/
 
 export const AI_INSTRUMENTS_META = Object.freeze({
   type: "Cognitive",

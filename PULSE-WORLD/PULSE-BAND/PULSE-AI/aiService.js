@@ -3,6 +3,37 @@
 //  Dual‑Band Entry Point • Safe Relay • Deterministic Execution
 //  PURE RELAY. ZERO MUTATION. ZERO RANDOMNESS. HARMONIC, MONITORED LOAD.
 // ============================================================================
+
+/*
+AI_EXPERIENCE_META = {
+  identity: "aiService",
+  version: "v14-IMMORTAL",
+  layer: "ai_tools",
+  role: "service_surface",
+  lineage: "aiService-v10 → v14-IMMORTAL",
+
+  evo: {
+    serviceSurface: true,
+    taskMapping: true,
+    symbolicPrimary: true,
+    binaryAware: true,
+    dualBand: true,
+
+    deterministic: true,
+    driftProof: true,
+    pureCompute: true,
+    zeroNetwork: true,
+    zeroFilesystem: true,
+    zeroMutationOfInput: true
+  },
+
+  contract: {
+    always: ["aiAssistant", "aiContext", "aiCortex"],
+    never: ["safeRoute", "fetchViaCNS"]
+  }
+}
+*/
+
 export const ServiceGatewayMeta = Object.freeze({
   layer: "PulseAIServiceGateway",
   role: "SERVICE_GATEWAY_ORGAN",

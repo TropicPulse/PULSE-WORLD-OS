@@ -3,6 +3,36 @@
 //  Stable Personality Layer • Deterministic Tone • Ego‑Free Identity
 //  PURE READ‑ONLY TO BINARY. ZERO MUTATION. DUALBAND‑AWARE.
 // ============================================================================
+/*
+AI_EXPERIENCE_META = {
+  identity: "aiPersonalityEngine",
+  version: "v14-IMMORTAL",
+  layer: "ai_core",
+  role: "personality_engine",
+  lineage: "aiPersonalityEngine-v11 → v14-IMMORTAL",
+
+  evo: {
+    personalityEngine: true,
+    toneMapping: true,
+    personaStability: true,
+    symbolicPrimary: true,
+    binaryAware: true,
+    dualBand: true,
+
+    deterministic: true,
+    driftProof: true,
+    pureCompute: true,
+    zeroNetwork: true,
+    zeroFilesystem: true,
+    zeroMutationOfInput: true
+  },
+
+  contract: {
+    always: ["aiIdentityCore", "aiHumilityFilter", "aiEmotionEngine"],
+    never: ["safeRoute", "fetchViaCNS"]
+  }
+}
+*/
 
 export const PersonalityEngineMeta = Object.freeze({
   layer: "PulseAIPersonalityLayer",

@@ -9,6 +9,36 @@
 //    • Never interprets symbols, never routes, never mutates external organs.
 //    • Provides cached hormone snapshots for Execution / Evolution / Diagnostics.
 // ============================================================================
+/*
+AI_EXPERIENCE_META = {
+  identity: "aiHormones",
+  version: "v14-IMMORTAL",
+  layer: "ai_core",
+  role: "hormone_signal_engine",
+  lineage: "aiHormones-v11 → v14-IMMORTAL",
+
+  evo: {
+    hormoneSignals: true,
+    toneSignals: true,
+    prioritySignals: true,
+    symbolicPrimary: true,
+    binaryAware: true,
+    dualBand: true,
+
+    deterministic: true,
+    driftProof: true,
+    pureCompute: true,
+    zeroNetwork: true,
+    zeroFilesystem: true,
+    zeroMutationOfInput: true
+  },
+
+  contract: {
+    always: ["aiEmotionEngine", "aiExperience", "aiHumilityFilter"],
+    never: ["safeRoute", "fetchViaCNS"]
+  }
+}
+*/
 
 export const HormonesMeta = Object.freeze({
   layer: "BinaryModulation",

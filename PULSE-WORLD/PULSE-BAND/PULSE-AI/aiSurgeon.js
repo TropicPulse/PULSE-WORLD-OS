@@ -3,6 +3,35 @@
 //  Structural Mapper • Anatomy Explainer • Safe Scan Interpreter
 //  ZERO DIAGNOSIS • ZERO PROCEDURE • ZERO MEDICAL AUTHORITY
 // ============================================================================
+/*
+AI_EXPERIENCE_META = {
+  identity: "aiSurgeon",
+  version: "v14-IMMORTAL",
+  layer: "ai_tools",
+  role: "surgical_pattern_explainer",
+  lineage: "aiSurgeon-v11 → v14-IMMORTAL",
+
+  evo: {
+    surgicalPatterns: true,
+    educationalOnly: true,
+    symbolicPrimary: true,
+    binaryAware: true,
+    dualBand: true,
+
+    deterministic: true,
+    driftProof: true,
+    pureCompute: true,
+    zeroNetwork: true,
+    zeroFilesystem: true,
+    zeroMutationOfInput: true
+  },
+
+  contract: {
+    always: ["aiDoctor", "aiClinician", "aiDoctorArchitect"],
+    never: ["safeRoute", "fetchViaCNS"]
+  }
+}
+*/
 
 export const PulseRole = Object.freeze({
   type: "Cognitive",

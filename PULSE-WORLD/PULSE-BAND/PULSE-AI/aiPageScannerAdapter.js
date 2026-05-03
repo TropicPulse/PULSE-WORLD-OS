@@ -3,6 +3,35 @@
 //  Binary Membrane • Drift‑Intelligence Layer • Routing Artery Metrics
 //  PURE MEMBRANE. ZERO MUTATION. ZERO RANDOMNESS.
 // ============================================================================
+/*
+AI_EXPERIENCE_META = {
+  identity: "aiPageScannerAdapter",
+  version: "v14-IMMORTAL",
+  layer: "ai_adapter",
+  role: "page_scanner_adapter",
+  lineage: "aiPageScannerAdapter-v10 → v14-IMMORTAL",
+
+  evo: {
+    adapter: true,
+    pageScanning: true,
+    symbolicPrimary: true,
+    binaryAware: true,
+    dualBand: true,
+
+    deterministic: true,
+    driftProof: true,
+    pureCompute: true,
+    zeroNetwork: true,
+    zeroFilesystem: true,
+    zeroMutationOfInput: true
+  },
+
+  contract: {
+    always: ["aiContext", "aiCortex", "aiEngine"],
+    never: ["safeRoute", "fetchViaCNS"]
+  }
+}
+*/
 
 export const PageScannerAdapterMeta = Object.freeze({
   type: "Binary",

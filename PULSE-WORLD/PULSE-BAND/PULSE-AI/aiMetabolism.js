@@ -21,6 +21,35 @@
 //      • metabolic regulator
 //      • binary energy artery source
 // ============================================================================
+/*
+AI_EXPERIENCE_META = {
+  identity: "aiMetabolism",
+  version: "v14-IMMORTAL",
+  layer: "ai_core",
+  role: "ai_metabolic_engine",
+  lineage: "aiMetabolism-v11 → v14-IMMORTAL",
+
+  evo: {
+    metabolismEngine: true,
+    energyModel: true,
+    symbolicPrimary: true,
+    binaryAware: true,
+    dualBand: true,
+
+    deterministic: true,
+    driftProof: true,
+    pureCompute: true,
+    zeroNetwork: true,
+    zeroFilesystem: true,
+    zeroMutationOfInput: true
+  },
+
+  contract: {
+    always: ["aiHeartbeat", "aiNervousSystem", "aiReflex"],
+    never: ["safeRoute", "fetchViaCNS"]
+  }
+}
+*/
 
 // ---------------------------------------------------------
 //  META BLOCK — v12.3-Presence

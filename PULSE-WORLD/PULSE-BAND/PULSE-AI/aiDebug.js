@@ -3,6 +3,34 @@
 //  Dual‑Band Diagnostic Recorder • Forensic Historian • Organism Snapshot
 //  PURE FORMATTING + SUMMARIZATION. ZERO MUTATION. ZERO RANDOMNESS.
 // ============================================================================
+/*
+AI_EXPERIENCE_META = {
+  identity: "aiDebug",
+  version: "v14-IMMORTAL",
+  layer: "ai_tools",
+  role: "debug_surface",
+  lineage: "aiDebug-v10 → v12 → v14-IMMORTAL",
+
+  evo: {
+    debugSurface: true,
+    traceFormatting: true,
+    symbolicPrimary: true,
+    binaryAware: true,
+    dualBand: true,
+    deterministic: true,
+    driftProof: true,
+    pureCompute: true,
+    zeroNetwork: true,
+    zeroFilesystem: true,
+    zeroMutationOfInput: true
+  },
+
+  contract: {
+    always: ["aiDiagnostics", "aiDiagnosticsWrite", "aiBrainstem"],
+    never: ["safeRoute", "fetchViaCNS"]
+  }
+}
+*/
 
 export const SCRIBE_META = Object.freeze({
   layer: "PulseAIScribe",

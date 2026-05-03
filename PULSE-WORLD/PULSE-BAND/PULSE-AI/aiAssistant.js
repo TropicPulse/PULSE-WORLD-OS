@@ -3,6 +3,43 @@
 //  Proactive • Interpretive • Gap‑Filling • Owner-Aware
 //  PURE STRUCTURE. ZERO ACTION IN THE WORLD.
 // ============================================================================
+/*
+AI_EXPERIENCE_META = {
+  identity: "aiAssistant",
+  version: "v14-IMMORTAL",
+  layer: "ai_tools",
+  role: "assistant_surface",
+  lineage: "aiAssistant-v9 → v12.3 → v14-IMMORTAL",
+
+  evo: {
+    assistantSurface: true,
+    symbolicPrimary: true,
+    binaryAware: true,
+    dualBand: true,
+    gapFilling: true,
+    structureAware: true,
+    nonIntrusive: true,
+
+    deterministic: true,
+    driftProof: true,
+    pureCompute: true,
+    zeroNetwork: true,
+    zeroFilesystem: true,
+    zeroMutationOfInput: true
+  },
+
+  contract: {
+    always: [
+      "aiBrainstem",
+      "aiBoundariesEngine"
+    ],
+    never: [
+      "safeRoute",
+      "fetchViaCNS"
+    ]
+  }
+}
+*/
 
 export const AssistantMeta = Object.freeze({
   layer: "PulseAIAssistantFrame",

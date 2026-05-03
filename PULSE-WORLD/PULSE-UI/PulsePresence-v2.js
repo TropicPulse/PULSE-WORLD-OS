@@ -1,18 +1,20 @@
 // ============================================================================
-//  PulseChunks-v2.0-MULTILANE-HYBRID
+//  PulseChunks-v2.2-MULTILANE-IMMORTAL
 //  FRONTEND CHUNK MEMBRANE — 2026 Transport Layer
 //  Chunking • Caching • Prewarm • Zero-Latency Surface
 //  Lore injection • PulseBand integration • Sectional fallback
 //  + Universal de-chunking via PulseChunkNormalizer
 //  + 32-LANE HYBRID CNS ROUTER (binary-aligned, hash-routed)
+//  + v14-IMMORTAL DNA-aware cache + reconstruction
 // ============================================================================
+
 /* 
 AI_EXPERIENCE_META = {
   identity: "PulsePresence",
-  version: "v12.5-EVO",
+  version: "v14-IMMORTAL-MEMBRANE",
   layer: "frontend",
   role: "presence_loader",
-  lineage: "PulseOS-v12",
+  lineage: "PulseOS-v14",
   
   evo: {
     binaryAware: true,
@@ -21,7 +23,9 @@ AI_EXPERIENCE_META = {
     presenceAware: true,
     safeRouteFree: true,
     cnsFallback: true,
-    normalizerAligned: true
+    normalizerAligned: true,
+    immortalChunkerAligned: true,
+    cacheTTLBounded: true
   },
 
   contract: {
@@ -29,7 +33,8 @@ AI_EXPERIENCE_META = {
       "CNS",
       "PulseChunks",
       "PulseBand",
-      "PulsePresenceNormalizer"
+      "PulsePresenceNormalizer",
+      "PulseChunker-v14-IMMORTAL"
     ],
     never: [
       "safeRoute",
@@ -44,11 +49,10 @@ AI_EXPERIENCE_META = {
 */
 
 console.log("Presence");
-console.log("[PulseChunks-v2.0-MULTILANE-HYBRID] Membrane chunker loading...");
+console.log("[PulseChunks-v2.2-MULTILANE-IMMORTAL] Membrane chunker loading...");
 
 import { safeRoute as route, fireAndForgetRoute } from "./PulseProofBridge.js";
 import PulseChunkNormalizer from "./PulsePresenceNormalizer.js";
-
 
 // ============================================================================
 //  LORE TRANSLATOR — Evolvable, deterministic, metadata-driven
@@ -162,14 +166,22 @@ function shouldSkipChunk(filePath = "", fileSize = 0) {
 }
 
 // ============================================================================
-//  CHUNKS STATE — SECTIONAL FALLBACK (GLOBAL)
+//  CHUNKS STATE — SECTIONAL FALLBACK (GLOBAL) + TTL CACHE
 // ============================================================================
-const chunkCache = new Map();
+const WEEK_MS = 7 * 24 * 60 * 60 * 1000;
+const CACHE_TTL_MS = WEEK_MS;
+
+const chunkCache = new Map();      // url -> { value, ts, presence, kind }
 const chunkFailures = new Map();
 let chunksDegraded = false;
 const MAX_FAILURES_PER_URL = 3;
 const MAX_GLOBAL_FAILURES = 20;
 let globalFailures = 0;
+
+function isExpired(entry) {
+  if (!entry) return true;
+  return (Date.now() - entry.ts) > CACHE_TTL_MS;
+}
 
 function markChunkFailure(url, err) {
   globalFailures++;
@@ -199,7 +211,7 @@ function isChunksDegraded() {
 }
 
 // ============================================================================
-//  PRESENCE / BAND ENVELOPE HELPERS — v12.5‑EVO‑PRESENCE
+//  PRESENCE / BAND ENVELOPE HELPERS — v14 IMMORTAL FRONT
 // ============================================================================
 function buildChunkPresenceEnvelope({ url, fromCache, degraded, kind }) {
   const presence =
@@ -306,17 +318,26 @@ function getLaneStatsSnapshot() {
 }
 
 // ============================================================================
-//  UNIVERSAL CHUNK FETCHER — v2.0 MULTILANE HYBRID
+//  DNA-AWARE VALUE NORMALIZATION (v14 IMMORTAL BACKEND)
+//  Accepts raw, or { __lore, __chunk } from PulseChunker-v14
+// ============================================================================
+function unwrapImmortalDNA(value) {
+  if (!value) return value;
+  if (value.__chunk !== undefined) return value.__chunk;
+  return value;
+}
+
+// ============================================================================
+//  UNIVERSAL CHUNK FETCHER — v2.2 MULTILANE IMMORTAL
 // ============================================================================
 async function fetchChunk(url) {
-  // Frontend DNA visibility logging — non-blocking via bridge rules
   try {
     fireAndForgetRoute("proxy.dnaVisibility", {
       url,
       timestamp: Date.now(),
       degraded: chunksDegraded,
       presence: "frontend-dna-request",
-      membrane: "PulseChunks-v2.0-MULTILANE-HYBRID",
+      membrane: "PulseChunks-v2.2-MULTILANE-IMMORTAL",
     });
   } catch (err) {
     console.warn("[PulseDNA] Network visibility logging failed:", err);
@@ -348,22 +369,23 @@ async function fetchChunk(url) {
     };
   }
 
-  // Global cache — shared across lanes
-  if (chunkCache.has(url)) {
-    const cached = chunkCache.get(url);
+  const cachedEntry = chunkCache.get(url);
+  if (cachedEntry && !isExpired(cachedEntry)) {
+    const { value, kind, presence } = cachedEntry;
     return {
       ok: true,
-      value: cached,
-      envelope: buildChunkPresenceEnvelope({
+      value,
+      envelope: presence || buildChunkPresenceEnvelope({
         url,
         fromCache: true,
         degraded: false,
-        kind: typeof cached === "string" ? "text-or-url" : "object"
+        kind: kind || (typeof value === "string" ? "text-or-url" : "object")
       })
     };
+  } else if (cachedEntry && isExpired(cachedEntry)) {
+    chunkCache.delete(url);
   }
 
-  // Deterministic lane selection
   const laneIndex = pickLaneIndex(url);
   const lane = lanes[laneIndex];
 
@@ -375,22 +397,30 @@ async function fetchChunk(url) {
       throw new Error(routed?.error || `Chunk route failed for ${url}`);
     }
 
-    const value = routed.data ?? routed.result ?? url;
+    const dna = routed.data ?? routed.result ?? url;
+    const unwrapped = unwrapImmortalDNA(dna);
     const kind = routed.kind || (
-      typeof value === "string" ? "text-or-url" : "object"
+      typeof unwrapped === "string" ? "text-or-url" : "object"
     );
 
-    chunkCache.set(url, value);
+    const envelope = buildChunkPresenceEnvelope({
+      url,
+      fromCache: false,
+      degraded: false,
+      kind
+    });
+
+    chunkCache.set(url, {
+      value: dna,
+      ts: Date.now(),
+      kind,
+      presence: envelope
+    });
 
     return {
       ok: true,
-      value,
-      envelope: buildChunkPresenceEnvelope({
-        url,
-        fromCache: false,
-        degraded: false,
-        kind
-      })
+      value: dna,
+      envelope
     };
 
   } catch (err) {
@@ -411,7 +441,7 @@ async function fetchChunk(url) {
 }
 
 // ============================================================================
-//  IMAGE-SPECIFIC CHUNKER — NORMALIZER-ALIGNED (v2.0 MULTILANE)
+//  IMAGE-SPECIFIC CHUNKER — NORMALIZER-ALIGNED (v2.2 MULTILANE IMMORTAL)
 // ============================================================================
 export async function getImage(url) {
   const { value, ok, error, envelope } = await fetchChunk(url);
@@ -425,13 +455,10 @@ export async function getImage(url) {
     return url;
   }
 
-  // 1) Fully unwrap DNA → raw payload
-  const unwrapped = PulseChunkNormalizer.unwrap(value);
-
-  // 2) Normalize binary → Blob / base64
+  const dnaUnwrapped = unwrapImmortalDNA(value);
+  const unwrapped = PulseChunkNormalizer.unwrap(dnaUnwrapped);
   const binary = PulseChunkNormalizer.normalizeBinary(unwrapped);
 
-  // 3) Normalize image → usable img.src
   const src =
     PulseChunkNormalizer.normalizeImage(binary) ||
     PulseChunkNormalizer.normalizeChunkValue(binary, "image") ||
@@ -448,8 +475,25 @@ export async function getImage(url) {
   return src;
 }
 
+// Optional: sync-only image resolver from cache (no await, no network)
+export function getImageSync(url) {
+  const dna = getCachedDNA(url);
+  if (!dna) return null;
+
+  const dnaUnwrapped = unwrapImmortalDNA(dna);
+  const unwrapped = PulseChunkNormalizer.unwrap(dnaUnwrapped);
+  const binary = PulseChunkNormalizer.normalizeBinary(unwrapped);
+
+  const src =
+    PulseChunkNormalizer.normalizeImage(binary) ||
+    PulseChunkNormalizer.normalizeChunkValue(binary, "image") ||
+    null;
+
+  return src || null;
+}
+
 // ============================================================================
-//  LORE ATTACHMENT — USED BY DNA MODE
+//  LORE ATTACHMENT — USED BY DNA MODE (FRONTEND-SIDE)
 // ============================================================================
 function attachLore(chunk, metaPack) {
   const lore = generateLoreHeader(metaPack);
@@ -465,6 +509,50 @@ function attachLore(chunk, metaPack) {
 }
 
 // ============================================================================
+//  PAGE RECONSTRUCTION HELPERS — MEMORY MESH ALIGNMENT
+// ============================================================================
+export function reconstructChunk(dnaOrValue) {
+  const dnaUnwrapped = unwrapImmortalDNA(dnaOrValue);
+  const unwrapped = PulseChunkNormalizer.unwrap(dnaUnwrapped);
+  return unwrapped;
+}
+
+export function reconstructRouteDescriptor(dnaOrValue) {
+  const core = reconstructChunk(dnaOrValue);
+  if (!core || typeof core !== "object") return core;
+
+  const { route, imports, assets, payloads } = core;
+  return {
+    route: route || null,
+    imports: imports || [],
+    assets: assets || [],
+    payloads: payloads || []
+  };
+}
+
+// ============================================================================
+//  SYNC MEMORY SURFACE — NO AWAIT, NO NETWORK
+// ============================================================================
+export function getCachedDNA(url) {
+  if (!url) return null;
+  const entry = chunkCache.get(url);
+  if (!entry || isExpired(entry)) return null;
+  return entry.value;
+}
+
+export function reconstructCachedChunk(url) {
+  const dna = getCachedDNA(url);
+  if (!dna) return null;
+  return reconstructChunk(dna);
+}
+
+export function reconstructCachedRouteDescriptor(url) {
+  const dna = getCachedDNA(url);
+  if (!dna) return null;
+  return reconstructRouteDescriptor(dna);
+}
+
+// ============================================================================
 //  GENERIC CHUNKER ENTRY — WITH UNIVERSAL LORE INJECTION (DNA MODE)
 // ============================================================================
 export async function PulseChunker(filePath, fileSize = 0, metaPack = null) {
@@ -474,18 +562,19 @@ export async function PulseChunker(filePath, fileSize = 0, metaPack = null) {
 
   console.log("[PulseChunks] DNA allowed:", filePath);
 
-  const { value: chunk, envelope } = await fetchChunk(filePath);
+  const { value: dna, envelope } = await fetchChunk(filePath);
 
   if (!metaPack || chunksDegraded) {
     return {
-      dna: chunk,
+      dna,
       dnaEncoded: !chunksDegraded,
       safe: true,
       presence: envelope
     };
   }
 
-  const dnaWithLore = attachLore(chunk, metaPack);
+  const dnaCore = unwrapImmortalDNA(dna);
+  const dnaWithLore = attachLore(dnaCore, metaPack);
 
   return {
     dna: dnaWithLore,
@@ -496,18 +585,20 @@ export async function PulseChunker(filePath, fileSize = 0, metaPack = null) {
 }
 
 // ============================================================================
-//  PREWARM ENGINE — NON-BLOCKING, ROUTED
+//  PREWARM ENGINE — NON-BLOCKING, ROUTED, TTL-AWARE
 // ============================================================================
 export function prewarm(urls = []) {
   urls.forEach((url) => {
-    if (!chunkCache.has(url) && !chunksDegraded) {
-      fetchChunk(url); // fire-and-forget, lane-routed
+    if (!url) return;
+    const entry = chunkCache.get(url);
+    if ((!entry || isExpired(entry)) && !chunksDegraded) {
+      fetchChunk(url);
     }
   });
 }
 
 // ============================================================================
-//  PULSEBAND INTEGRATION — v12-EVO
+//  PULSEBAND INTEGRATION — v14-EVO
 // ============================================================================
 function handlePulseBandPacket(packet) {
   if (!packet || !packet.type) return;
@@ -522,13 +613,33 @@ function handlePulseBandPacket(packet) {
 
     case "chunk-bundle":
       if (packet.url && packet.data && !chunksDegraded) {
-        chunkCache.set(packet.url, packet.data);
+        chunkCache.set(packet.url, {
+          value: packet.data,
+          ts: Date.now(),
+          kind: typeof packet.data === "string" ? "text-or-url" : "object",
+          presence: buildChunkPresenceEnvelope({
+            url: packet.url,
+            fromCache: false,
+            degraded: false,
+            kind: typeof packet.data === "string" ? "text-or-url" : "object"
+          })
+        });
       }
       break;
 
     case "chunk-packet":
       if (packet.url && packet.chunk && !chunksDegraded) {
-        chunkCache.set(packet.url, packet.chunk);
+        chunkCache.set(packet.url, {
+          value: packet.chunk,
+          ts: Date.now(),
+          kind: typeof packet.chunk === "string" ? "text-or-url" : "object",
+          presence: buildChunkPresenceEnvelope({
+            url: packet.url,
+            fromCache: false,
+            degraded: false,
+            kind: typeof packet.chunk === "string" ? "text-or-url" : "object"
+          })
+        });
       }
       break;
 
@@ -558,13 +669,10 @@ function dechunkAll() {
   chunksDegraded = false;
   console.log("[PulseChunks] All chunks cleared, state reset.");
 }
-// ============================================================================
-//  OFFLINE IMAGE AUTO-DETECTOR — v2.1 MULTILANE + CNS FALLBACK
-//  No raw URL fallback. No 404. No flicker. No retries.
-//  Primary: fetchChunk()
-//  Fallback: route("getImages") — CNS-level image fetch
-// ============================================================================
 
+// ============================================================================
+//  OFFLINE IMAGE AUTO-DETECTOR — v2.2 MULTILANE + CNS FALLBACK
+// ============================================================================
 async function autoLoadOfflineImages() {
   if (typeof document === "undefined") return;
 
@@ -577,7 +685,6 @@ async function autoLoadOfflineImages() {
     if (!url) continue;
 
     try {
-      // Primary: chunk-based image fetch
       const { value, ok, error, envelope } = await fetchChunk(url);
 
       if (!ok) {
@@ -587,9 +694,6 @@ async function autoLoadOfflineImages() {
           envelope
         });
 
-        // ============================================================
-        //  CNS FALLBACK — getImages route
-        // ============================================================
         const fallback = await route("getImages", {
           url,
           layer: "A1",
@@ -619,10 +723,8 @@ async function autoLoadOfflineImages() {
         continue;
       }
 
-      // ============================================================
-      //  PRIMARY CHUNK → NORMALIZER PIPELINE
-      // ============================================================
-      const unwrapped = PulseChunkNormalizer.unwrap(value);
+      const dnaUnwrapped = unwrapImmortalDNA(value);
+      const unwrapped = PulseChunkNormalizer.unwrap(dnaUnwrapped);
       const binary = PulseChunkNormalizer.normalizeBinary(unwrapped);
 
       const src =
@@ -636,9 +738,6 @@ async function autoLoadOfflineImages() {
           value
         });
 
-        // ============================================================
-        //  CNS FALLBACK — getImages route
-        // ============================================================
         const fallback = await route("getImages", {
           url,
           layer: "A1",
@@ -668,9 +767,6 @@ async function autoLoadOfflineImages() {
         continue;
       }
 
-      // ============================================================
-      //  SUCCESS — APPLY IMAGE
-      // ============================================================
       img.src = src;
 
     } catch (err) {
@@ -679,9 +775,6 @@ async function autoLoadOfflineImages() {
         err
       });
 
-      // ============================================================
-      //  CNS FALLBACK — getImages route
-      // ============================================================
       try {
         const fallback = await route("getImages", {
           url,
@@ -717,16 +810,25 @@ async function autoLoadOfflineImages() {
   }
 }
 
-
 // ============================================================================
-//  EXPOSE TO WINDOW — WITH STATE + CONTROLS + LANE STATS (v2.1 CLEAN)
+//  EXPOSE TO WINDOW — WITH STATE + CONTROLS + LANE STATS (v2.2 IMMORTAL)
 // ============================================================================
 window.PulseChunks = {
   // Core API
   getImage,
+  getImageSync,
   fetchChunk,
   prewarm,
   PulseChunker,
+
+  // Reconstruction helpers (for router / mesh memory)
+  reconstructChunk,
+  reconstructRouteDescriptor,
+
+  // Sync memory surface
+  getCachedDNA,
+  reconstructCachedChunk,
+  reconstructCachedRouteDescriptor,
 
   // State + degradation
   isDegraded: isChunksDegraded,
@@ -736,7 +838,7 @@ window.PulseChunks = {
   dechunk,
   dechunkAll,
 
-  // Full normalizer organ (v2.0 MULTILANE)
+  // Full normalizer organ
   normalizer: PulseChunkNormalizer,
 
   // Lane system
@@ -746,19 +848,18 @@ window.PulseChunks = {
 
 export default window.PulseChunks;
 
-// Attach loader
 if (typeof window !== "undefined" && typeof document !== "undefined") {
   document.addEventListener("DOMContentLoaded", () => {
     autoLoadOfflineImages();
   });
 }
 
-// PulseBand integration stays unchanged
 if (typeof window !== "undefined") {
   if (window.PulseBand && typeof window.PulseBand.on === "function") {
     window.PulseBand.on("chunk", handlePulseBandPacket);
   }
 }
+
 console.log(
-  "[PulseChunks-v2.1-MULTILANE-HYBRID] Ready — 32-lane membrane active, full normalizer attached, sectional fallback, universal de-chunking, offline image loader fixed, lane stats online."
+  "[PulseChunks-v2.2-MULTILANE-IMMORTAL] Ready — 32-lane membrane active, v14-IMMORTAL DNA-aware cache, TTL-bounded memory, reconstruction helpers online."
 );

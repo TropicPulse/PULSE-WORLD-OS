@@ -15,6 +15,35 @@
 //   • Deterministic
 //   • Emits FileScanner-Artery v3 (symbolic-only)
 // ============================================================================
+/*
+AI_EXPERIENCE_META = {
+  identity: "PulseFileScanner",
+  version: "v14-IMMORTAL",
+  layer: "ai_adapter",
+  role: "file_scanner_adapter",
+  lineage: "PulseFileScanner-v11 → v14-IMMORTAL",
+
+  evo: {
+    adapter: true,
+    fileScanning: true,
+    symbolicPrimary: true,
+    binaryAware: true,
+    dualBand: true,
+
+    deterministic: true,
+    driftProof: true,
+    pureCompute: true,
+    zeroNetwork: true,
+    zeroFilesystem: true,
+    zeroMutationOfInput: true
+  },
+
+  contract: {
+    always: ["aiContext", "aiCortex", "aiEngine"],
+    never: ["safeRoute", "fetchViaCNS"]
+  }
+}
+*/
 
 export const PulseFileScannerMeta = Object.freeze({
   type: "Cognitive",

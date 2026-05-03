@@ -1,12 +1,12 @@
 // ============================================================================
-//  PULSE OS — PROOF VITALS MONITOR (v13-EVO-ALWAYS-ON-OFFLINE-FIRST)
+//  PULSE OS — PROOF VITALS MONITOR (v14‑IMMORTAL‑OFFLINE‑FIRST)
 //  “Organism Life Witness / Continuous Vitals / Offline-First Telemetry”
 // ============================================================================
 //
 //  DESIGN:
 //  - Always-on, never sleeps, never “turns off for a bit”.
 //  - Logs every event it can see: impulses, routes, errors, drift, heartbeat.
-//  - Offline-first: everything is logged locally via ProofLogger.
+//  - Offline-first: everything is logged locally via ProofLogger + LocalStorage.
 //  - Backend writes are OPTIONAL and ONLY occur when PULSE_ONLINE === true.
 //  - No routing, no healing, no control, no mutation of other organs.
 //  - Pure witness: if the organism dies, we SEE it.
@@ -15,10 +15,10 @@
 /*
 AI_EXPERIENCE_META = {
   identity: "PulseProofMonitor",
-  version: "v13-EVO-BINARY-MAX",
+  version: "v14-IMMORTAL-OFFLINE-FIRST",
   layer: "frontend",
   role: "observer_monitor",
-  lineage: "PulseOS-v12",
+  lineage: "PulseOS-v14",
 
   evo: {
     binaryAware: true,
@@ -27,7 +27,13 @@ AI_EXPERIENCE_META = {
     chunkAligned: true,
     safeRouteFree: true,
     vitalsMonitor: true,
-    passive: true
+    passive: true,
+
+    // v14 IMMORTAL
+    offlineFirst: true,
+    localStoreMirrored: true,
+    replayAware: true,
+    loggerAligned: true
   },
 
   contract: {
@@ -36,7 +42,8 @@ AI_EXPERIENCE_META = {
       "PulsePresence",
       "PulseChunks",
       "PulseUIFlow",
-      "PulseUIErrors"
+      "PulseUIErrors",
+      "PulseProofLogger"
     ],
     never: [
       "legacyMonitor",
@@ -66,14 +73,14 @@ const g =
 const db = g.db || null;
 
 // ============================================================================
-//  ORGAN IDENTITY — v13-EVO-ALWAYS-ON-OFFLINE-FIRST
+//  ORGAN IDENTITY — v14‑IMMORTAL‑OFFLINE‑FIRST
 // ============================================================================
 
 export const PulseRole = {
   type: "Organ",
   subsystem: "ProofLayer",
   layer: "ProofVitalsMonitor",
-  version: "13.0-EVO-ALWAYS-ON-OFFLINE-FIRST",
+  version: "14.0-IMMORTAL-OFFLINE-FIRST",
   identity: "PulseProofVitalsMonitor",
 
   evo: {
@@ -103,7 +110,12 @@ export const PulseRole = {
     cnsAware: true,
     pageScannerAware: true,
     errorSpineAware: true,
-    routerMemoryAware: true
+    routerMemoryAware: true,
+
+    // NEW IMMORTAL TRAITS
+    offlineFirst: true,
+    localStoreMirrored: true,
+    replayAware: true
   }
 };
 
@@ -162,12 +174,87 @@ function makeHealthBar(status) {
 }
 
 // ============================================================================
+//  LOCALSTORAGE VITALS BUFFER — IMMORTAL OFFLINE SURFACE
+// ============================================================================
+
+const VITALS_LS_KEY = "PulseVitals.v14.buffer";
+const VITALS_LS_MAX_ENTRIES = 2000;
+
+function hasLocalStorage() {
+  try {
+    if (typeof window === "undefined" || !window.localStorage) return false;
+    const testKey = "__pulse_vitals_test__";
+    window.localStorage.setItem(testKey, "1");
+    window.localStorage.removeItem(testKey);
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+function loadVitalsBuffer() {
+  if (!hasLocalStorage()) return [];
+  try {
+    const raw = window.localStorage.getItem(VITALS_LS_KEY);
+    if (!raw) return [];
+    const parsed = JSON.parse(raw);
+    return Array.isArray(parsed) ? parsed : [];
+  } catch {
+    return [];
+  }
+}
+
+function saveVitalsBuffer(buffer) {
+  if (!hasLocalStorage()) return;
+  try {
+    const trimmed =
+      buffer.length > VITALS_LS_MAX_ENTRIES
+        ? buffer.slice(buffer.length - VITALS_LS_MAX_ENTRIES)
+        : buffer;
+    window.localStorage.setItem(VITALS_LS_KEY, JSON.stringify(trimmed));
+  } catch {
+    // never throw
+  }
+}
+
+function appendVitalsEntry(kind, payload) {
+  const entry = {
+    ts: Date.now(),
+    kind,
+    payload,
+    context: {
+      layer: VITALS_CONTEXT.layer,
+      organ: VITALS_CONTEXT.organ,
+      version: VITALS_CONTEXT.version
+    }
+  };
+
+  const buffer = loadVitalsBuffer();
+  buffer.push(entry);
+  saveVitalsBuffer(buffer);
+}
+
+export const PulseVitalsStore = {
+  getAll() {
+    return loadVitalsBuffer();
+  },
+  clear() {
+    saveVitalsBuffer([]);
+  },
+  tail(n = 200) {
+    const buf = loadVitalsBuffer();
+    if (n <= 0) return [];
+    return buf.slice(Math.max(0, buf.length - n));
+  }
+};
+
+// ============================================================================
 //  ROUTE SCAN — READ-ONLY VISUALIZATION (NO CONTROL)
 // ============================================================================
 
 export function printRouteScan(route = {}) {
   console.groupCollapsed(
-    "%c🔍 ROUTE SCAN — PulseOS v13-EVO-ALWAYS-ON-OFFLINE-FIRST",
+    "%c🔍 ROUTE SCAN — PulseOS v14‑IMMORTAL‑OFFLINE‑FIRST",
     "color:#03A9F4; font-weight:bold;"
   );
 
@@ -230,13 +317,18 @@ function isOnline() {
 // ============================================================================
 
 export async function updateUserMetrics(userId, data = {}) {
+  const uid = userId || "anonymous";
+
   // ALWAYS log locally (offline-first)
-  log("vitals", `${ICON.update} update_local`, {
-    userId: userId || "anonymous",
+  const localPayload = {
+    userId: uid,
     ...data,
     band: "dual",
     binaryArtery: false
-  });
+  };
+
+  log("vitals", `${ICON.update} update_local`, localPayload);
+  appendVitalsEntry("metrics_update", localPayload);
 
   // Only mirror to backend when explicitly online and db present
   if (!db) return;
@@ -353,12 +445,15 @@ export function calculateTrustScore(metrics) {
 
   const final = Math.min(score, 100);
 
-  log("vitals", `${ICON.trust} trust_score`, {
+  const payload = {
     userId: metrics.userId ?? "?",
     score: final,
     band: "dual",
     binaryArtery: false
-  });
+  };
+
+  log("vitals", `${ICON.trust} trust_score`, payload);
+  appendVitalsEntry("trust_score", payload);
 
   return final;
 }
@@ -371,12 +466,15 @@ export function calculatePhase(trustScore) {
   else if (trustScore < 75) phase = 3;
   else                      phase = 4;
 
-  log("vitals", `${ICON.phase} phase`, {
+  const payload = {
     trustScore,
     phase,
     band: "dual",
     binaryArtery: false
-  });
+  };
+
+  log("vitals", `${ICON.phase} phase`, payload);
+  appendVitalsEntry("phase", payload);
 
   return phase;
 }
@@ -390,14 +488,17 @@ export function isHub(metrics) {
     (metrics.totalRequests || 0) > 500;
 
   if (hub) {
-    warn("vitals", `${ICON.hub} hub_detected`, {
+    const payload = {
       userId: metrics.userId ?? "?",
       relays: metrics.meshRelays,
       hubSignals: metrics.hubSignals,
       totalRequests: metrics.totalRequests,
       band: "dual",
       binaryArtery: false
-    });
+    };
+
+    warn("vitals", `${ICON.hub} hub_detected`, payload);
+    appendVitalsEntry("hub_detected", payload);
   }
 
   return hub;
@@ -429,7 +530,7 @@ export function allocateInstances(
 
   const final = Math.max(1, Math.min(base, max));
 
-  log("vitals", `${ICON.alloc} instance_allocation`, {
+  const payload = {
     phase,
     hubFlag,
     deviceTier,
@@ -438,7 +539,10 @@ export function allocateInstances(
     final,
     band: "dual",
     binaryArtery: false
-  });
+  };
+
+  log("vitals", `${ICON.alloc} instance_allocation`, payload);
+  appendVitalsEntry("instance_allocation", payload);
 
   return final;
 }
@@ -456,7 +560,7 @@ export function allocateInstances(
 //  })
 //
 //  No timers. No polling. Purely event-driven.
-//  Every event that flows through these channels is logged.
+//  Every event that flows through these channels is logged + mirrored.
 // ============================================================================
 
 function safeGroup(label, fn) {
@@ -507,18 +611,23 @@ export function attachVitalsMonitor({
       ...details
     };
 
+    // ALWAYS mirrored to LocalStorage via vitals store
     log("vitals", `${ICON.pulse} pulse`, payload);
+    appendVitalsEntry("pulse", payload);
   }
 
   function markOrganismDeath(reason) {
     if (!VitalsState.organismAlive) return;
     VitalsState.organismAlive = false;
 
-    error("vitals", `${ICON.death} organism_death`, {
+    const payload = {
       reason,
       band: "dual",
       binaryArtery: false
-    });
+    };
+
+    error("vitals", `${ICON.death} organism_death`, payload);
+    appendVitalsEntry("organism_death", payload);
 
     safeGroup("%c💀 ORGANISM DEATH DETECTED", () => {
       console.log("Reason:", reason);
@@ -616,6 +725,11 @@ export function attachVitalsMonitor({
     band: "dual",
     binaryArtery: false
   });
+  appendVitalsEntry("monitor_attached", {
+    ts: Date.now(),
+    band: "dual",
+    binaryArtery: false
+  });
 
   return {
     PulseRole,
@@ -649,6 +763,8 @@ export const VitalsMonitor = {
   ENABLE_PERFORMANCE_LOGGING,
   PERFORMANCE_LOG_COLLECTION,
 
+  PulseVitalsStore,
+
   meta: {
     layer:     PulseRole.layer,
     subsystem: PulseRole.subsystem,
@@ -656,3 +772,18 @@ export const VitalsMonitor = {
     identity:  PulseRole.identity
   }
 };
+
+// ============================================================================
+//  GLOBAL BINDING FOR VITALS STORE (OPTIONAL, MODE-AGNOSTIC UI HOOK)
+// ============================================================================
+
+try {
+  if (typeof window !== "undefined") {
+    window.PulseVitalsStore = PulseVitalsStore;
+  }
+  if (typeof globalThis !== "undefined") {
+    globalThis.PulseVitalsStore = PulseVitalsStore;
+  }
+} catch {
+  // never throw
+}

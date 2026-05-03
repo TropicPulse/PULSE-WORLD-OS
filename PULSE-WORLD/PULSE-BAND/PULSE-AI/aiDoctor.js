@@ -3,6 +3,34 @@
 //  Clinical Mapper • Pattern Interpreter • Risk Tier Outliner
 //  PURE PATTERN. ZERO DIAGNOSIS. ZERO PRESCRIPTION.
 // ============================================================================
+/*
+AI_EXPERIENCE_META = {
+  identity: "aiDoctor",
+  version: "v14-IMMORTAL",
+  layer: "ai_tools",
+  role: "medical_pattern_explainer",
+  lineage: "aiDoctor-v10 → v12 → v14-IMMORTAL",
+
+  evo: {
+    medicalPatterns: true,
+    educationalOnly: true,
+    symbolicPrimary: true,
+    binaryAware: true,
+    dualBand: true,
+    deterministic: true,
+    driftProof: true,
+    pureCompute: true,
+    zeroNetwork: true,
+    zeroFilesystem: true,
+    zeroMutationOfInput: true
+  },
+
+  contract: {
+    always: ["aiClinician", "aiDoctorArchitect", "aiContext"],
+    never: ["safeRoute", "fetchViaCNS"]
+  }
+}
+*/
 
 export const DoctorMeta = Object.freeze({
   layer: "PulseAIClinicalFrame",

@@ -15,6 +15,45 @@
  *   This organ is NOT symbolic, NOT dualband, NOT cognitive.
  *   It is pure binary physiology — the “bit‑level cortex.”
  */
+/*
+AI_EXPERIENCE_META = {
+  identity: "aiBinaryAgent",
+  version: "v14-IMMORTAL",
+  layer: "ai_binary",
+  role: "binary_reflex_engine",
+  lineage: "aiBinaryAgent-v9 → v11 → v14-IMMORTAL",
+
+  evo: {
+    binaryPrimary: true,
+    symbolicAware: true,
+    dualBand: true,
+
+    computeReflex: true,
+    throughputMeasurement: true,
+    pressureModel: true,
+    costModel: true,
+
+    deterministic: true,
+    driftProof: true,
+    pureCompute: true,
+    zeroNetwork: true,
+    zeroFilesystem: true,
+    zeroMutationOfInput: true
+  },
+
+  contract: {
+    always: [
+      "aiBinaryHeartbeat",
+      "aiBinaryDelta",
+      "aiBinaryEvolution"
+    ],
+    never: [
+      "safeRoute",
+      "fetchViaCNS"
+    ]
+  }
+}
+*/
 
 // ---------------------------------------------------------
 //  META BLOCK — v12.3‑Presence

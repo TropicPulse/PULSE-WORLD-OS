@@ -3,6 +3,36 @@
 //  Defines the AI's stable personality, vibe, tone identity, and behavioral constants.
 //  PURE IDENTITY. ZERO DRIFT. ZERO RANDOMNESS.
 // ============================================================================
+/*
+AI_EXPERIENCE_META = {
+  identity: "aiIdentityCore",
+  version: "v14-IMMORTAL",
+  layer: "ai_core",
+  role: "identity_spine",
+  lineage: "aiIdentityCore-v11 → v14-IMMORTAL",
+
+  evo: {
+    identitySpine: true,
+    personaAnchor: true,
+    ownerAwareness: true,
+    symbolicPrimary: true,
+    binaryAware: true,
+    dualBand: true,
+
+    deterministic: true,
+    driftProof: true,
+    pureCompute: true,
+    zeroNetwork: true,
+    zeroFilesystem: true,
+    zeroMutationOfInput: true
+  },
+
+  contract: {
+    always: ["aiBrainstem", "aiPersonalityEngine", "aiContext"],
+    never: ["safeRoute", "fetchViaCNS"]
+  }
+}
+*/
 
 export const aiIdentityCore = {
 

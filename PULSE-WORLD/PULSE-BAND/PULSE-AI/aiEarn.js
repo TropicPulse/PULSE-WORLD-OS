@@ -18,6 +18,35 @@
 //   • ZERO TIMESTAMPS.
 //   • DETERMINISTIC ANALYSIS ONLY.
 // ============================================================================
+/*
+AI_EXPERIENCE_META = {
+  identity: "aiEarn",
+  version: "v14-IMMORTAL",
+  layer: "ai_tools",
+  role: "earn_surface",
+  lineage: "aiEarn-v10 → v12 → v14-IMMORTAL",
+
+  evo: {
+    earnSurface: true,
+    jobAwareness: true,
+    symbolicPrimary: true,
+    binaryAware: true,
+    dualBand: true,
+
+    deterministic: true,
+    driftProof: true,
+    pureCompute: true,
+    zeroNetwork: true,
+    zeroFilesystem: true,
+    zeroMutationOfInput: true
+  },
+
+  contract: {
+    always: ["aiEngine", "aiContext", "aiCortex"],
+    never: ["safeRoute", "fetchViaCNS"]
+  }
+}
+*/
 
 export const EarnMeta = Object.freeze({
   layer: "PulseAIEarnFrame",

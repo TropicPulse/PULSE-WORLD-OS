@@ -1,41 +1,107 @@
-// ============================================================================
-// FILE: tropic-pulse-functions/PULSE-WORLD/PULSE-DESIGN/repoWalker.js
-// LAYER: THE CARTOGRAPHER (Terrain Explorer + Directory Mapper + Evolutionary Topographer)
-// ============================================================================
-//
-// ROLE (v7.1+):
-//   THE CARTOGRAPHER — Deterministic explorer of the Pulse OS filesystem.
-//   • Walks the entire directory tree.
-//   • Reads file contents safely.
-//   • Passes data to the Anatomist (FileClassifier).
-//   • Produces the raw map of the project terrain.
-//   • Acts as the “topographer” of the digital organism.
-//
-// PURPOSE (v7.1+):
-//   • Provide the Archivist with a complete, classified file list.
-//   • Traverse the repo deterministically and safely.
-//   • Skip irrelevant or dangerous directories.
-//   • Preserve the organism’s terrain map (conceptual only).
-//
-// CONTRACT (unchanged):
-//   • READ‑ONLY — no writes.
-//   • NO eval(), NO Function(), NO dynamic imports.
-//   • NO executing user code.
-//   • NO network calls.
-//   • Deterministic traversal only.
-//
-// SAFETY (unchanged):
-//   • v7.1+ upgrade is COMMENTAL ONLY — NO LOGIC CHANGES.
-//   • All behavior remains identical to pre‑v7.1 repoWalker.
-// ============================================================================
+/*
+===============================================================================
+AI_EXPERIENCE_META = {
+  identity: "PulseDesign.Cartographer",
+  version: "v14-IMMORTAL",
+  layer: "pulse_design",
+  role: "terrain_explorer_and_directory_mapper",
+  lineage: "Cartographer-v7.1 → v10.4 → v12.3 → v14-IMMORTAL",
+
+  evo: {
+    terrainExplorer: true,
+    directoryMapper: true,
+    evolutionaryTopographer: true,
+    signatureEmitter: true,
+    symbolicPrimary: true,
+    binaryAware: true,
+    dualBand: true,
+
+    deterministic: true,
+    driftProof: true,
+    pureCompute: true,
+
+    zeroMutationOfInput: true,
+    zeroNetwork: true,
+
+    // NOTE:
+    // This organ *allows* filesystem READS ONLY.
+    // It never writes, mutates, or executes anything.
+    controlledFilesystemRead: true
+  },
+
+  contract: {
+    always: [
+      "PulseDesign.Anatomist",
+      "PulseDesign.Archivist",
+      "PulseDesign.Surveyor"
+    ],
+    never: [
+      "safeRoute",
+      "fetchViaCNS",
+      "dynamicImport",
+      "eval",
+      "Function"
+    ]
+  }
+}
+===============================================================================
+EXPORT_META = {
+  organ: "PulseDesign.Cartographer",
+  layer: "pulse_design",
+  stability: "IMMORTAL",
+  deterministic: true,
+
+  consumes: ["rootDir"],
+  produces: ["FileSignature[]"],
+
+  sideEffects: "read_only",
+  network: "none",
+  filesystem: "read_only"
+}
+===============================================================================
+FILE: tropic-pulse-functions/PULSE-WORLD/PULSE-DESIGN/repoWalker.js
+LAYER: THE CARTOGRAPHER (Terrain Explorer + Directory Mapper + Evolutionary Topographer)
+===============================================================================
+
+ROLE (v14+):
+  THE CARTOGRAPHER — Deterministic explorer of the Pulse OS filesystem.
+  • Walks the entire directory tree.
+  • Reads file contents safely.
+  • Emits FileSignatures for THE ANATOMIST.
+  • Acts as the “topographer” of the digital organism.
+
+PURPOSE (v14+):
+  • Provide the Archivist with a complete, signature‑rich file list.
+  • Traverse the repo deterministically and safely.
+  • Skip irrelevant or dangerous directories.
+  • Preserve the organism’s terrain map.
+
+CONTRACT:
+  • READ‑ONLY — no writes.
+  • PURE — no eval(), no Function(), no dynamic imports.
+  • NO executing user code.
+  • NO network calls.
+  • Deterministic traversal only.
+
+SAFETY:
+  • v14+ upgrade is PURE + STRUCTURAL — logic is richer but still safe.
+  • All behavior is deterministic and organism‑safe.
+===============================================================================
+*/
+
 import fs from "fs";
 import path from "path";
-import { classifyFile } from "./fileClassifier.js";
+import { classifyFile } from "./fileClassifier.js"; // THE ANATOMIST
 
 // ============================================================================
 // PUBLIC API — Cartographic Scan (Terrain Mapping)
 // ============================================================================
+
 export function walkRepo(rootDir) {
+  if (!rootDir) {
+    throw new Error("repoWalker: missing rootDir");
+  }
+
   const results = [];
 
   walk(rootDir, (fullPath) => {
@@ -53,6 +119,8 @@ export function walkRepo(rootDir) {
     }
 
     const content = safeRead(fullPath);
+
+    // THE ANATOMIST now expects (filePath, content)
     const classification = classifyFile(rel, content);
 
     results.push(classification);

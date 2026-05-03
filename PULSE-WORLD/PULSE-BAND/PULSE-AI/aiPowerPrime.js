@@ -4,6 +4,35 @@
 //  Crown-Layer Power Intelligence • Artery-Fused • Predictive • Drift-Aware
 //  READ-ONLY • DUALBAND • DETERMINISTIC • IDENTITY-SAFE
 // ============================================================================
+/*
+AI_EXPERIENCE_META = {
+  identity: "aiPowerPrime",
+  version: "v14-IMMORTAL",
+  layer: "ai_core",
+  role: "power_model",
+  lineage: "aiPowerPrime-v11 → v14-IMMORTAL",
+
+  evo: {
+    powerModel: true,
+    costAwareness: true,
+    symbolicPrimary: true,
+    binaryAware: true,
+    dualBand: true,
+
+    deterministic: true,
+    driftProof: true,
+    pureCompute: true,
+    zeroNetwork: true,
+    zeroFilesystem: true,
+    zeroMutationOfInput: true
+  },
+
+  contract: {
+    always: ["aiMetabolism", "aiNervousSystem", "aiReflex"],
+    never: ["safeRoute", "fetchViaCNS"]
+  }
+}
+*/
 
 export const PowerMeta = Object.freeze({
   layer: "PulseAIPowerPrime",

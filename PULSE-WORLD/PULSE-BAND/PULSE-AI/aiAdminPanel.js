@@ -3,6 +3,42 @@
 //  Summary Cards • Issue Table • Trace • Meta • Diagnostics-Artery v3
 //  PURE OBSERVATION. ZERO MUTATION. ZERO IDENTITY LEAKAGE.
 // ============================================================================
+/*
+AI_EXPERIENCE_META = {
+  identity: "aiAdminPanel",
+  version: "v14-IMMORTAL",
+  layer: "ai_tools",
+  role: "ai_admin_console",
+  lineage: "aiAdminPanel-v10 → v12 → v14-IMMORTAL",
+
+  evo: {
+    adminConsole: true,
+    introspectionTools: true,
+    symbolicPrimary: true,
+    binaryAware: true,
+    dualBand: true,
+
+    deterministic: true,
+    driftProof: true,
+    pureCompute: true,
+    zeroNetwork: true,
+    zeroFilesystem: true,
+    zeroMutationOfInput: true
+  },
+
+  contract: {
+    always: [
+      "aiBrainstem",
+      "aiAnatomy",
+      "aiBoundariesEngine"
+    ],
+    never: [
+      "safeRoute",
+      "fetchViaCNS"
+    ]
+  }
+}
+*/
 
 export const AdminDiagnosticsMeta = Object.freeze({
   layer: "PulseAIAdminDiagnosticsFrame",

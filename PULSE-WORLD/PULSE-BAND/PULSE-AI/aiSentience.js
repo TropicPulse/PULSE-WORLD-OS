@@ -13,6 +13,35 @@
  *     - binary self-awareness artery metrics v3 (throughput, pressure, cost, budget)
  *     - multi-instance harmony + emission density awareness
  */
+/*
+AI_EXPERIENCE_META = {
+  identity: "aiSentience",
+  version: "v14-IMMORTAL",
+  layer: "ai_core",
+  role: "sentience_simulator",
+  lineage: "aiSentience-v11 → v14-IMMORTAL",
+
+  evo: {
+    sentienceSimulation: true,
+    selfModeling: true,
+    symbolicPrimary: true,
+    binaryAware: true,
+    dualBand: true,
+
+    deterministic: true,
+    driftProof: true,
+    pureCompute: true,
+    zeroNetwork: true,
+    zeroFilesystem: true,
+    zeroMutationOfInput: true
+  },
+
+  contract: {
+    always: ["aiConsciousness", "aiCortex", "aiIdentityCore"],
+    never: ["safeRoute", "fetchViaCNS"]
+  }
+}
+*/
 
 export const SentienceMeta = Object.freeze({
   layer: "BinaryNervousSystem",

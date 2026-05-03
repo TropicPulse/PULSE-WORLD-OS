@@ -2,6 +2,35 @@
 //  aiOrganism.js — Pulse OS v12.3-Presence Organ
 //  Dualband Organism Bootloader • Canonical Assembly • Deterministic Root
 // ============================================================================
+/*
+AI_EXPERIENCE_META = {
+  identity: "aiOrganism",
+  version: "v14-IMMORTAL",
+  layer: "ai_core",
+  role: "organism_definition",
+  lineage: "aiOrganism-v11 → v14-IMMORTAL",
+
+  evo: {
+    organismDefinition: true,
+    organMap: true,
+    symbolicPrimary: true,
+    binaryAware: true,
+    dualBand: true,
+
+    deterministic: true,
+    driftProof: true,
+    pureCompute: true,
+    zeroNetwork: true,
+    zeroFilesystem: true,
+    zeroMutationOfInput: true
+  },
+
+  contract: {
+    always: ["aiAnatomy", "aiBrainstem", "aiContext"],
+    never: ["safeRoute", "fetchViaCNS"]
+  }
+}
+*/
 
 export const OrganismMeta = Object.freeze({
   layer: "OrganismRoot",

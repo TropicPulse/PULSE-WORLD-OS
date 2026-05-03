@@ -20,6 +20,35 @@
  *     - multi-instance harmony + soft spiral warnings (non-blocking)
  *     - task-level prewarm + binary chunk awareness
  */
+/*
+AI_EXPERIENCE_META = {
+  identity: "aiScheduler",
+  version: "v14-IMMORTAL",
+  layer: "ai_core",
+  role: "ai_scheduler",
+  lineage: "aiScheduler-v10 → v14-IMMORTAL",
+
+  evo: {
+    schedulingEngine: true,
+    stageTiming: true,
+    symbolicPrimary: true,
+    binaryAware: true,
+    dualBand: true,
+
+    deterministic: true,
+    driftProof: true,
+    pureCompute: true,
+    zeroNetwork: true,
+    zeroFilesystem: true,
+    zeroMutationOfInput: true
+  },
+
+  contract: {
+    always: ["aiEngine", "aiCortex", "aiNervousSystem"],
+    never: ["safeRoute", "fetchViaCNS"]
+  }
+}
+*/
 
 export const SchedulerMeta = Object.freeze({
   layer: "BinaryNervousSystem",

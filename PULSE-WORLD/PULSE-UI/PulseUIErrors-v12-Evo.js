@@ -1,7 +1,8 @@
 // ============================================================================
-// FILE: PulseUIErrors-v13-EVO-PRIME.js
-// UNIVERSAL ERROR SPINE — v13-EVO-PRIME
+// FILE: PulseUIErrors-v14-IMMORTAL.js
+// UNIVERSAL ERROR SPINE — v14-IMMORTAL
 // Membrane-Safe • Drift-Safe • Organism-Wide Error Unifier
+// Offline-First • LocalStorage-Mirrored • Replay-Aware
 // ============================================================================
 /*
 AI_EXPERIENCE_META = {
@@ -17,7 +18,13 @@ AI_EXPERIENCE_META = {
     dualBand: true,
     safeRouteFree: true,
     normalizerAligned: true,
-    errorSpine: true
+    errorSpine: true,
+
+    // v14 IMMORTAL
+    offlineFirst: true,
+    localStoreMirrored: true,
+    replayAware: true,
+    modeAgnostic: true
   },
 
   contract: {
@@ -37,6 +44,74 @@ AI_EXPERIENCE_META = {
   }
 }
 */
+
+// ============================================================================
+// IMMORTAL LOCALSTORAGE MIRROR — PulseUIErrorStore
+// ============================================================================
+
+const UIE_LS_KEY = "PulseUIErrors.v14.buffer";
+const UIE_LS_MAX = 2000;
+
+function uieHasLocalStorage() {
+  try {
+    if (typeof window === "undefined" || !window.localStorage) return false;
+    const t = "__uie_test__";
+    window.localStorage.setItem(t, "1");
+    window.localStorage.removeItem(t);
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+function uieLoadBuffer() {
+  if (!uieHasLocalStorage()) return [];
+  try {
+    const raw = window.localStorage.getItem(UIE_LS_KEY);
+    if (!raw) return [];
+    const parsed = JSON.parse(raw);
+    return Array.isArray(parsed) ? parsed : [];
+  } catch {
+    return [];
+  }
+}
+
+function uieSaveBuffer(buf) {
+  if (!uieHasLocalStorage()) return;
+  try {
+    const trimmed =
+      buf.length > UIE_LS_MAX ? buf.slice(buf.length - UIE_LS_MAX) : buf;
+    window.localStorage.setItem(UIE_LS_KEY, JSON.stringify(trimmed));
+  } catch {}
+}
+
+function appendUIErrorRecord(kind, payload) {
+  const entry = {
+    ts: Date.now(),
+    kind,
+    payload
+  };
+  const buf = uieLoadBuffer();
+  buf.push(entry);
+  uieSaveBuffer(buf);
+}
+
+export const PulseUIErrorStore = {
+  getAll() {
+    return uieLoadBuffer();
+  },
+  tail(n = 200) {
+    const buf = uieLoadBuffer();
+    return buf.slice(Math.max(0, buf.length - n));
+  },
+  clear() {
+    uieSaveBuffer([]);
+  }
+};
+
+// ============================================================================
+// UNIVERSAL ERROR SPINE
+// ============================================================================
 
 export const PulseUIErrors = (() => {
   const spineMeta = Object.freeze({
@@ -62,8 +137,9 @@ export const PulseUIErrors = (() => {
   // NORMALIZER — convert ANY error into a safe packet
   // --------------------------------------------------------------------------
   function normalizeError(err, origin = "unknown") {
+    let packet;
     try {
-      return {
+      packet = {
         origin,
         message: err?.message ?? String(err),
         name: err?.name ?? "Error",
@@ -72,7 +148,7 @@ export const PulseUIErrors = (() => {
         meta: spineMeta
       };
     } catch {
-      return {
+      packet = {
         origin,
         message: "Unknown error",
         name: "Unknown",
@@ -81,12 +157,19 @@ export const PulseUIErrors = (() => {
         meta: spineMeta
       };
     }
+
+    // IMMORTAL: mirror normalized packet
+    appendUIErrorRecord("normalize", packet);
+    return packet;
   }
 
   // --------------------------------------------------------------------------
   // BROADCAST — send normalized error to all safe listeners
   // --------------------------------------------------------------------------
   function broadcast(packet) {
+    // IMMORTAL: mirror broadcast
+    appendUIErrorRecord("broadcast", packet);
+
     // Window logger
     try { window?.PulseLogger?.logError?.(packet); } catch {}
 
@@ -134,22 +217,27 @@ export const PulseUIErrors = (() => {
   // CAPTURE — global listeners
   // --------------------------------------------------------------------------
   function installGlobalHandlers() {
+    if (typeof window === "undefined" || !window.addEventListener) return;
+
     // JS runtime errors
     window.addEventListener("error", (e) => {
       const packet = normalizeError(e.error || e, "window.error");
+      appendUIErrorRecord("window.error", packet);
       broadcast(packet);
     });
 
     // Promise rejections
     window.addEventListener("unhandledrejection", (e) => {
       const packet = normalizeError(e.reason || e, "window.unhandledrejection");
+      appendUIErrorRecord("window.unhandledrejection", packet);
       broadcast(packet);
     });
 
-    // SkinReflex internal errors
+    // SkinReflex internal errors (if it exposes a handler)
     try {
       window.PulseSkinReflex?.registerErrorHandler?.((err) => {
         const packet = normalizeError(err, "skin.reflex");
+        appendUIErrorRecord("skin.reflex", packet);
         broadcast(packet);
       });
     } catch {}
@@ -174,3 +262,15 @@ export const PulseUIErrors = (() => {
 })();
 
 export default PulseUIErrors;
+
+// ============================================================================
+// GLOBAL EXPOSURE OF IMMORTAL STORE
+// ============================================================================
+try {
+  if (typeof window !== "undefined") {
+    window.PulseUIErrorStore = PulseUIErrorStore;
+  }
+  if (typeof globalThis !== "undefined") {
+    globalThis.PulseUIErrorStore = PulseUIErrorStore;
+  }
+} catch {}

@@ -12,6 +12,35 @@
 //   • Adapt tone to user evolution mode (passive vs active) without bragging.
 //   • Emit deterministic experience packets for the organism/window.
 // ============================================================================
+/*
+AI_EXPERIENCE_META = {
+  identity: "aiExperience",
+  version: "v14-IMMORTAL",
+  layer: "ai_tools",
+  role: "experience_shaper",
+  lineage: "aiExperience-v10 → v12 → v14-IMMORTAL",
+
+  evo: {
+    experienceShaping: true,
+    toneMapping: true,
+    symbolicPrimary: true,
+    binaryAware: true,
+    dualBand: true,
+
+    deterministic: true,
+    driftProof: true,
+    pureCompute: true,
+    zeroNetwork: true,
+    zeroFilesystem: true,
+    zeroMutationOfInput: true
+  },
+
+  contract: {
+    always: ["aiDeliveryEngine", "aiEmotionEngine", "aiHumilityFilter"],
+    never: ["safeRoute", "fetchViaCNS"]
+  }
+}
+*/
 
 export const AI_EXPERIENCE_META = Object.freeze({
   layer: "PulseAIExperienceFrame",

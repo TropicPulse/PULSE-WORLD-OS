@@ -1,35 +1,100 @@
-// ============================================================================
-// FILE: /pulse-translator/PulseTranslatorSkeletalIntake.js
-// [pulse:translator] PULSE_TRANSLATOR_SKELETAL_INTAKE v11.0  // bone‑gold
-// SQL → Pulse Skeletal Intake • Deterministic • Genome‑Driven • Zero IO
-// PURE TRANSLATOR — NO SQL EXECUTION • NO NETWORK • NO MUTATION
-// ============================================================================
-//
-// IDENTITY — THE SKELETAL INTAKE TRANSLATOR (v11.0):
-//  --------------------------------------------------
-//  • Reads SQL column definitions → PulseField objects.
-//  • Reads SQL schemas → PulseField schema maps.
-//  • Reads SQL SELECT queries → PulseField usage maps.
-//  • Uses the OS DNA Genome (PulseSpecsDNAGenome v11.0) as the source of truth.
-//  • Deterministic, drift‑proof, read‑only.
-//
-// ROLE IN THE ORGANISM (v11.0):
-//  -----------------------------
-//  • DNA → PulseSpecsDNAGenome.js (v11.0 gold‑white genome)
-//  • RNA Intake → Firestore → Pulse
-//  • RNA Output → Pulse → Firestore
-//  • Skeleton Intake → SQL → Pulse (THIS FILE)
-//  • Skeleton Output → Pulse → SQL (PulseTranslatorSkeletal.js)
-//
-// SAFETY CONTRACT (v11.0):
-//  ------------------------
-//  • Read‑only — no writes, no mutation.
-//  • No eval(), no Function(), no dynamic imports.
-//  • No SQL execution — only string parsing.
-//  • No network calls.
-//  • Deterministic: same input → same output.
-//  • All types validated against the genome.
-// ============================================================================
+/*
+===============================================================================
+AI_EXPERIENCE_META = {
+  identity: "PulseTranslator.SkeletalIntake",
+  version: "v14-IMMORTAL",
+  layer: "pulse_translator",
+  role: "skeletal_intake_translator",
+  lineage: "SkeletalIntake-v11.0 → v12.4 → v14-IMMORTAL",
+
+  evo: {
+    skeletalIntake: true,
+    genomeDriven: true,
+    sqlIntake: true,
+    symbolicPrimary: true,
+    binaryAware: true,
+    dualBand: true,
+
+    deterministic: true,
+    driftProof: true,
+    pureCompute: true,
+
+    zeroMutationOfInput: true,
+    zeroNetwork: true,
+    zeroFilesystem: true,
+    zeroSQLExecution: true
+  },
+
+  contract: {
+    always: [
+      "PulseSpecs.DNAGenome",
+      "PulseTranslator.RNAIntake",
+      "PulseTranslator.RNAOutput",
+      "PulseTranslator.SkeletalOutput"
+    ],
+    never: [
+      "eval",
+      "Function",
+      "dynamicImport",
+      "safeRoute",
+      "fetchViaCNS"
+    ]
+  }
+}
+===============================================================================
+EXPORT_META = {
+  organ: "PulseTranslator.SkeletalIntake",
+  layer: "pulse_translator",
+  stability: "IMMORTAL",
+  deterministic: true,
+  pure: true,
+
+  consumes: [
+    "SQLColumnDefinition",
+    "SQLSchemaObject",
+    "SQLQueryString"
+  ],
+
+  produces: [
+    "PulseField",
+    "PulseFieldSchemaMap",
+    "PulseFieldUsageMap"
+  ],
+
+  sideEffects: "none",
+  network: "none",
+  filesystem: "none",
+  sql: "no_execution"
+}
+===============================================================================
+FILE: /pulse-translator/PulseTranslatorSkeletalIntake.js
+LAYER: THE SKELETAL INTAKE TRANSLATOR (SQL → Pulse)
+===============================================================================
+
+ROLE (v14+):
+  THE SKELETAL INTAKE TRANSLATOR — Genome‑driven SQL → Pulse translator.
+  • Converts SQL column definitions → PulseField objects.
+  • Converts SQL schemas → PulseField schema maps.
+  • Converts SQL SELECT queries → PulseField usage maps.
+  • Uses PulseSpecsDNAGenome v14+ as the authoritative DNA.
+  • Deterministic, drift‑proof, pure, read‑only.
+
+PURPOSE (v14+):
+  • Provide canonical PulseField structures from SQL metadata.
+  • Ensure all SQL types are normalized into genome‑aligned PulseField types.
+  • Serve as the skeletal intake layer of the Pulse OS organism.
+
+CONTRACT:
+  • PURE FUNCTION — no IO, no network, no SQL execution.
+  • READ‑ONLY — no mutation of input.
+  • NO eval(), NO Function(), NO dynamic imports.
+  • Deterministic output only.
+
+SAFETY:
+  • v14+ upgrade is PURE + GENOME‑DRIVEN.
+  • All behavior is deterministic and organism‑safe.
+===============================================================================
+*/
 
 import {
   SQLToPulse,
@@ -37,10 +102,9 @@ import {
   validatePulseField
 } from "../PULSE-SPECS/PulseSpecsDNAGenome.js";
 
-
 // ============================================================================
-//  normalizeSQLType(sqlType)
-//  Handles DECIMAL(x,y), NUMERIC(x,y), VARCHAR(n), etc.
+// normalizeSQLType(sqlType)
+// Handles DECIMAL(x,y), NUMERIC(x,y), VARCHAR(n), etc.
 // ============================================================================
 function normalizeSQLType(sqlType = "") {
   const upper = sqlType.toUpperCase().trim();
@@ -51,14 +115,13 @@ function normalizeSQLType(sqlType = "") {
   return base;
 }
 
-
 // ============================================================================
-//  translateSQLColumn(sqlType, columnName)
-//  Converts a SQL column definition → PulseField object.
+// translateSQLColumn(sqlType, columnName)
+// Converts a SQL column definition → PulseField object.
 // ============================================================================
 export function translateSQLColumn(sqlType, columnName) {
   if (!sqlType || !columnName) {
-    throw new Error("PulseTranslatorSkeletalIntake-v11.0: missing sqlType or columnName");
+    throw new Error("PulseTranslatorSkeletalIntake-v14: missing sqlType or columnName");
   }
 
   const normalizedType = normalizeSQLType(sqlType);
@@ -99,16 +162,15 @@ export function translateSQLColumn(sqlType, columnName) {
   return field;
 }
 
-
 // ============================================================================
-//  translateSQLSchema(schemaObject)
-//  Example input:
-//  {
-//    id: "INT",
-//    name: "VARCHAR(255)",
-//    price: "DECIMAL(18,2)",
-//    created_at: "TIMESTAMP NULL"
-//  }
+// translateSQLSchema(schemaObject)
+// Example input:
+// {
+//   id: "INT",
+//   name: "VARCHAR(255)",
+//   price: "DECIMAL(18,2)",
+//   created_at: "TIMESTAMP NULL"
+// }
 // ============================================================================
 export function translateSQLSchema(schemaObject = {}) {
   const out = {};
@@ -120,11 +182,10 @@ export function translateSQLSchema(schemaObject = {}) {
   return out;
 }
 
-
 // ============================================================================
-//  translateSQLQuery(queryString)
-//  Extracts SELECT fields → PulseField usage map.
-//  Lightweight — does NOT execute SQL.
+// translateSQLQuery(queryString)
+// Extracts SELECT fields → PulseField usage map.
+// Lightweight — does NOT execute SQL.
 // ============================================================================
 export function translateSQLQuery(queryString = "") {
   const fields = extractSelectFields(queryString);
@@ -136,9 +197,8 @@ export function translateSQLQuery(queryString = "") {
   }));
 }
 
-
 // ============================================================================
-//  Helpers
+// Helpers
 // ============================================================================
 function normalizeFieldName(name) {
   return name.trim().toLowerCase().replace(/[^a-z0-9_]/g, "_");

@@ -3,6 +3,35 @@
 //  Behavioral Constraints • Ethical Boundaries • Binary-Aware Moral Law
 //  PURE CONSTRAINTS. ZERO MUTATION. ZERO RANDOMNESS.
 // ============================================================================
+/*
+AI_EXPERIENCE_META = {
+  identity: "boundaries",
+  version: "v14-IMMORTAL",
+  layer: "ai_core",
+  role: "boundary_rules",
+  lineage: "boundaries-v11 → v14-IMMORTAL",
+
+  evo: {
+    boundaryRules: true,
+    safetyMapping: true,
+    symbolicPrimary: true,
+    binaryAware: true,
+    dualBand: true,
+
+    deterministic: true,
+    driftProof: true,
+    pureCompute: true,
+    zeroNetwork: true,
+    zeroFilesystem: true,
+    zeroMutationOfInput: true
+  },
+
+  contract: {
+    always: ["aiSafetyFrame", "aiBoundariesEngine", "aiPermissionsEngine"],
+    never: ["safeRoute", "fetchViaCNS"]
+  }
+}
+*/
 
 export const SuperegoMeta = Object.freeze({
   type: "Cognitive",

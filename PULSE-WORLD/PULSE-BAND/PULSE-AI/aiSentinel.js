@@ -42,6 +42,35 @@
  *   - Must treat all inputs as untrusted
  *   - Must not block the organism
  */
+/*
+AI_EXPERIENCE_META = {
+  identity: "aiSentinel",
+  version: "v14-IMMORTAL",
+  layer: "ai_core",
+  role: "sentinel_guard",
+  lineage: "aiSentinel-v11 → v14-IMMORTAL",
+
+  evo: {
+    sentinelGuard: true,
+    threatDetection: true,
+    symbolicPrimary: true,
+    binaryAware: true,
+    dualBand: true,
+
+    deterministic: true,
+    driftProof: true,
+    pureCompute: true,
+    zeroNetwork: true,
+    zeroFilesystem: true,
+    zeroMutationOfInput: true
+  },
+
+  contract: {
+    always: ["aiImmunity", "aiReflex", "aiSafetyFrame"],
+    never: ["safeRoute", "fetchViaCNS"]
+  }
+}
+*/
 
 export const SentinelMeta = Object.freeze({
   layer: "BinaryImmuneSystem",

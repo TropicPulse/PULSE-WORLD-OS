@@ -7,6 +7,35 @@
 //    This organ is the **Governor Adapter** — the deterministic membrane
 //    between the Evolution Layer and the Governor.
 // ============================================================================
+/*
+AI_EXPERIENCE_META = {
+  identity: "aiGovernorAdaptor",
+  version: "v14-IMMORTAL",
+  layer: "ai_core",
+  role: "governor_adaptor",
+  lineage: "aiGovernorAdaptor-v11 → v14-IMMORTAL",
+
+  evo: {
+    governorAdaptor: true,
+    policyMapping: true,
+    symbolicPrimary: true,
+    binaryAware: true,
+    dualBand: true,
+
+    deterministic: true,
+    driftProof: true,
+    pureCompute: true,
+    zeroNetwork: true,
+    zeroFilesystem: true,
+    zeroMutationOfInput: true
+  },
+
+  contract: {
+    always: ["aiEngine", "aiBoundariesEngine", "aiBrainstem"],
+    never: ["safeRoute", "fetchViaCNS"]
+  }
+}
+*/
 
 export const GovernorAdapterMeta = Object.freeze({
   layer: "OrganismMembrane",

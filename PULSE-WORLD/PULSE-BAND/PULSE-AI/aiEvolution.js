@@ -18,6 +18,35 @@
 //   • ZERO RANDOMNESS.
 //   • DETERMINISTIC ANALYSIS ONLY.
 // ============================================================================
+/*
+AI_EXPERIENCE_META = {
+  identity: "aiEvolution",
+  version: "v14-IMMORTAL",
+  layer: "ai_core",
+  role: "symbolic_evolution_engine",
+  lineage: "aiEvolution-v9 → v11 → v14-IMMORTAL",
+
+  evo: {
+    symbolicEvolution: true,
+    patternExpansion: true,
+    dualBand: true,
+    symbolicPrimary: true,
+    binaryAware: true,
+
+    deterministic: true,
+    driftProof: true,
+    pureCompute: true,
+    zeroNetwork: true,
+    zeroFilesystem: true,
+    zeroMutationOfInput: true
+  },
+
+  contract: {
+    always: ["aiEvolutionEngine", "aiGenome", "aiBrainstem"],
+    never: ["safeRoute", "fetchViaCNS"]
+  }
+}
+*/
 
 export const AI_EVOLUTION_META = Object.freeze({
   layer: "PulseAIEvolution",

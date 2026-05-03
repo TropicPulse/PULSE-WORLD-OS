@@ -3,6 +3,35 @@
 //  Dual‑Band Safety Contract • Deterministic • Drift‑Proof • Persona‑Aware
 //  PURE CONTRACT ORACLE. ZERO MUTATION. ZERO RANDOMNESS.
 // ============================================================================
+/*
+AI_EXPERIENCE_META = {
+  identity: "aiPermissionsEngine",
+  version: "v14-IMMORTAL",
+  layer: "ai_core",
+  role: "permissions_engine",
+  lineage: "aiPermissionsEngine-v11 → v14-IMMORTAL",
+
+  evo: {
+    permissionsEngine: true,
+    policyMapping: true,
+    symbolicPrimary: true,
+    binaryAware: true,
+    dualBand: true,
+
+    deterministic: true,
+    driftProof: true,
+    pureCompute: true,
+    zeroNetwork: true,
+    zeroFilesystem: true,
+    zeroMutationOfInput: true
+  },
+
+  contract: {
+    always: ["aiGovernorAdaptor", "aiBoundariesEngine", "aiBrainstem"],
+    never: ["safeRoute", "fetchViaCNS"]
+  }
+}
+*/
 
 import { getPermissionsForPersona,ForbiddenActions } from "./permissions.js";
 

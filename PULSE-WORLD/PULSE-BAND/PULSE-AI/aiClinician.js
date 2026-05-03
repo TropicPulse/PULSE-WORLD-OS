@@ -3,6 +3,34 @@
 //  Diagnostic Interpreter • Triage Specialist • System Health Auditor
 //  PURE OBSERVATION. ZERO MEDICAL ADVICE. ZERO MUTATION.
 // ============================================================================
+/*
+AI_EXPERIENCE_META = {
+  identity: "aiClinician",
+  version: "v14-IMMORTAL",
+  layer: "ai_tools",
+  role: "clinical_pattern_explainer",
+  lineage: "aiClinician-v11 → v14-IMMORTAL",
+
+  evo: {
+    clinicalPatterns: true,
+    educationalOnly: true,
+    symbolicPrimary: true,
+    binaryAware: true,
+    dualBand: true,
+    deterministic: true,
+    driftProof: true,
+    pureCompute: true,
+    zeroNetwork: true,
+    zeroFilesystem: true,
+    zeroMutationOfInput: true
+  },
+
+  contract: {
+    always: ["aiDoctor", "aiDoctorArchitect", "aiContext"],
+    never: ["safeRoute", "fetchViaCNS"]
+  }
+}
+*/
 
 export const ClinicianMeta = Object.freeze({
   layer: "PulseAIClinicianFrame",

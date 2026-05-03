@@ -38,6 +38,36 @@
  *   - Must attach observers safely
  *   - Must never block the organism
  */
+/*
+AI_EXPERIENCE_META = {
+  identity: "aiWatchdog",
+  version: "v14-IMMORTAL",
+  layer: "ai_core",
+  role: "watchdog_engine",
+  lineage: "aiWatchdog-v11 → v14-IMMORTAL",
+
+  evo: {
+    watchdogEngine: true,
+    anomalyDetection: true,
+    driftDetection: true,
+    symbolicPrimary: true,
+    binaryAware: true,
+    dualBand: true,
+
+    deterministic: true,
+    driftProof: true,
+    pureCompute: true,
+    zeroNetwork: true,
+    zeroFilesystem: true,
+    zeroMutationOfInput: true
+  },
+
+  contract: {
+    always: ["aiImmunity", "aiReflex", "aiVitals"],
+    never: ["safeRoute", "fetchViaCNS"]
+  }
+}
+*/
 
 export const WatchdogMeta = Object.freeze({
   type: "Binary",

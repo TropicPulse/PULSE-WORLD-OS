@@ -31,6 +31,36 @@
  *     • No behavioral change inside reproduction (no auto-spawn decisions)
  *     • Still deterministic, drift-proof, non-blocking
  */
+/*
+AI_EXPERIENCE_META = {
+  identity: "aiReproduction",
+  version: "v14-IMMORTAL",
+  layer: "ai_core",
+  role: "reproduction_engine",
+  lineage: "aiReproduction-v11 → v14-IMMORTAL",
+
+  evo: {
+    reproductionEngine: true,
+    cloning: true,
+    lineagePropagation: true,
+    symbolicPrimary: true,
+    binaryAware: true,
+    dualBand: true,
+
+    deterministic: true,
+    driftProof: true,
+    pureCompute: true,
+    zeroNetwork: true,
+    zeroFilesystem: true,
+    zeroMutationOfInput: true
+  },
+
+  contract: {
+    always: ["aiGenome", "aiEvolutionEngine", "aiOrganism"],
+    never: ["safeRoute", "fetchViaCNS"]
+  }
+}
+*/
 
 // ============================================================================
 //  META BLOCK — v13.0‑PRESENCE‑EVO+++

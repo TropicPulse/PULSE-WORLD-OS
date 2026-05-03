@@ -3,6 +3,36 @@
 //  Dual‑Parent Liveness • Independent Pacer • Bi‑Directional Fallback Surfaces
 //  PURE LIVENESS. ZERO MUTATION. + SOFT RANDOM NUDGE AS LAST-RESORT PULSE
 // ============================================================================
+/*
+AI_EXPERIENCE_META = {
+  identity: "aiHeartbeat",
+  version: "v14-IMMORTAL",
+  layer: "ai_core",
+  role: "ai_heartbeat",
+  lineage: "aiHeartbeat-v9 → v11 → v14-IMMORTAL",
+
+  evo: {
+    heartbeat: true,
+    symbolicPulse: true,
+    binaryPulse: true,
+    dualBand: true,
+    symbolicPrimary: true,
+    binaryAware: true,
+
+    deterministic: true,
+    driftProof: true,
+    pureCompute: true,
+    zeroNetwork: true,
+    zeroFilesystem: true,
+    zeroMutationOfInput: true
+  },
+
+  contract: {
+    always: ["aiEngine", "aiCortex", "aiBinaryOrganRegistry"],
+    never: ["safeRoute", "fetchViaCNS"]
+  }
+}
+*/
 
 export const AI_HEARTBEAT_META = Object.freeze({
   layer: "PulseAIHeartbeat",

@@ -2,6 +2,42 @@
 //  aiBinaryDelta.js — Pulse OS v12.3‑Presence Organ
 //  Binary Delta Engine • Change Detector • Segment Comparator • Packet‑Ready
 // ============================================================================
+/*
+AI_EXPERIENCE_META = {
+  identity: "aiBinaryDelta",
+  version: "v14-IMMORTAL",
+  layer: "ai_binary",
+  role: "binary_delta_engine",
+  lineage: "aiBinaryDelta-v10 → v12 → v14-IMMORTAL",
+
+  evo: {
+    deltaEngine: true,
+    binaryDiffing: true,
+    symbolicAware: true,
+    dualBand: true,
+    binaryPrimary: true,
+
+    deterministic: true,
+    driftProof: true,
+    pureCompute: true,
+    zeroNetwork: true,
+    zeroFilesystem: true,
+    zeroMutationOfInput: true
+  },
+
+  contract: {
+    always: [
+      "aiBinaryAgent",
+      "aiBinaryEvolution",
+      "aiBinaryHeartbeat"
+    ],
+    never: [
+      "safeRoute",
+      "fetchViaCNS"
+    ]
+  }
+}
+*/
 
 export const DeltaMeta = Object.freeze({
   layer: "BinaryDelta",

@@ -3,6 +3,43 @@
 //  Genealogical Archive • Lineage Ledger • Reproduction Historian
 //  PURE BINARY. ZERO MUTATION. ZERO RANDOMNESS.
 // ============================================================================
+/*
+AI_EXPERIENCE_META = {
+  identity: "aiAncestry",
+  version: "v14-IMMORTAL",
+  layer: "ai_core",
+  role: "ai_lineage_tracker",
+  lineage: "aiAncestry-v10 → v12 → v14-IMMORTAL",
+
+  evo: {
+    lineageTracking: true,
+    dnaHistory: true,
+    versionHistory: true,
+    symbolicPrimary: true,
+    binaryAware: true,
+    dualBand: true,
+
+    deterministic: true,
+    driftProof: true,
+    pureCompute: true,
+    zeroNetwork: true,
+    zeroFilesystem: true,
+    zeroMutationOfInput: true
+  },
+
+  contract: {
+    always: [
+      "aiBrainstem",
+      "aiBinaryEvolution",
+      "ai-v11-evo"
+    ],
+    never: [
+      "safeRoute",
+      "fetchViaCNS"
+    ]
+  }
+}
+*/
 
 export const AncestryMeta = Object.freeze({
   layer: "Ancestry",

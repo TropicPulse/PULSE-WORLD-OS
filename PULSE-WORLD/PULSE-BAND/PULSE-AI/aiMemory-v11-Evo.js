@@ -21,6 +21,36 @@
 //    • All caching, speed, and power optimizations are handled by PulseCoreMemory
 //      and lower layers — organism‑wide, not per‑organ.
 // ============================================================================
+/*
+AI_EXPERIENCE_META = {
+  identity: "aiMemory",
+  version: "v14-IMMORTAL",
+  layer: "ai_core",
+  role: "symbolic_memory_engine",
+  lineage: "aiMemory-v9 → v11 → v14-IMMORTAL",
+
+  evo: {
+    symbolicMemory: true,
+    hydration: true,
+    dehydration: true,
+    dualBand: true,
+    symbolicPrimary: true,
+    binaryAware: true,
+
+    deterministic: true,
+    driftProof: true,
+    pureCompute: true,
+    zeroNetwork: true,
+    zeroFilesystem: true,
+    zeroMutationOfInput: true
+  },
+
+  contract: {
+    always: ["aiContextEngine", "aiCortex", "aiBrainstem"],
+    never: ["safeRoute", "fetchViaCNS"]
+  }
+}
+*/
 
 import { PulseCoreMemory } from "../PULSE-CORE/PulseCoreMemory.js";
 

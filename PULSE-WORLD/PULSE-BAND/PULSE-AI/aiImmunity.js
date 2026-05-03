@@ -40,6 +40,36 @@
  *       highway: "binary_first_dualband"
  *     }
  */
+/*
+AI_EXPERIENCE_META = {
+  identity: "aiImmunity",
+  version: "v14-IMMORTAL",
+  layer: "ai_core",
+  role: "ai_immune_system",
+  lineage: "aiImmunity-v11 → v14-IMMORTAL",
+
+  evo: {
+    immuneSystem: true,
+    anomalyDetection: true,
+    toxinFiltering: true,
+    symbolicPrimary: true,
+    binaryAware: true,
+    dualBand: true,
+
+    deterministic: true,
+    driftProof: true,
+    pureCompute: true,
+    zeroNetwork: true,
+    zeroFilesystem: true,
+    zeroMutationOfInput: true
+  },
+
+  contract: {
+    always: ["aiReflex", "aiNervousSystem", "aiSafetyFrame"],
+    never: ["safeRoute", "fetchViaCNS"]
+  }
+}
+*/
 
 // ============================================================================
 //  ORGAN IDENTITY — v11.3‑EVO (B2 Binary Immune System)

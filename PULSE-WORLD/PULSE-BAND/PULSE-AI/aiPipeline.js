@@ -3,6 +3,35 @@
 //  Compute Bloodstream • Flow Artery Metrics • Deterministic Binary Engine
 //  PURE FLOW ENGINE. ZERO RANDOMNESS. ZERO EXTERNAL MUTATION.
 // ============================================================================
+/*
+AI_EXPERIENCE_META = {
+  identity: "aiPipeline",
+  version: "v14-IMMORTAL",
+  layer: "ai_core",
+  role: "pipeline_engine",
+  lineage: "aiPipeline-v10 → v14-IMMORTAL",
+
+  evo: {
+    pipelineEngine: true,
+    stageOrchestration: true,
+    symbolicPrimary: true,
+    binaryAware: true,
+    dualBand: true,
+
+    deterministic: true,
+    driftProof: true,
+    pureCompute: true,
+    zeroNetwork: true,
+    zeroFilesystem: true,
+    zeroMutationOfInput: true
+  },
+
+  contract: {
+    always: ["aiEngine", "aiCortex", "aiContextEngine"],
+    never: ["safeRoute", "fetchViaCNS"]
+  }
+}
+*/
 
 export const PipelineMeta = Object.freeze({
   layer: "OrganismFlow",

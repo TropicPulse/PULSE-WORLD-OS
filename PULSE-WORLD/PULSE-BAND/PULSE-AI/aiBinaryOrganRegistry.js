@@ -6,6 +6,42 @@
  *   Stores organ identity, signatures, timestamps, and type.
  *   Presence‑aware, drift‑proof, deterministic.
  */
+/*
+AI_EXPERIENCE_META = {
+  identity: "aiBinaryOrganRegistry",
+  version: "v14-IMMORTAL",
+  layer: "ai_binary",
+  role: "binary_organ_registry",
+  lineage: "aiBinaryOrganRegistry-v10 → v12 → v14-IMMORTAL",
+
+  evo: {
+    organRegistry: true,
+    binaryIndex: true,
+    dualBand: true,
+    symbolicAware: true,
+    binaryPrimary: true,
+
+    deterministic: true,
+    driftProof: true,
+    pureCompute: true,
+    zeroNetwork: true,
+    zeroFilesystem: true,
+    zeroMutationOfInput: true
+  },
+
+  contract: {
+    always: [
+      "aiBinaryHeartbeat",
+      "aiBinaryAgent",
+      "aiAnatomy"
+    ],
+    never: [
+      "safeRoute",
+      "fetchViaCNS"
+    ]
+  }
+}
+*/
 
 // ---------------------------------------------------------
 //  META BLOCK — v12.3‑Presence

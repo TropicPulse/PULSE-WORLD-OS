@@ -2,6 +2,45 @@
 //  ai-v13.0-EVO+++.js
 //  DUALBAND ORGANISM BOOTLOADER — v13.0-EVO+++
 // ============================================================================
+/*
+AI_EXPERIENCE_META = {
+  identity: "ai-v11-evo",
+  version: "v14-IMMORTAL",
+  layer: "ai_core",
+  role: "ai_evolution_kernel",
+  lineage: "ai-v9 → ai-v10.4 → ai-v11-evo → v14-IMMORTAL",
+
+  evo: {
+    evolutionKernel: true,
+    dualBand: true,
+    symbolicPrimary: true,
+    binaryAware: true,
+    hotLoopPromotion: true,
+    healingLogic: true,
+    dnaTagging: true,
+
+    deterministic: true,
+    driftProof: true,
+    pureCompute: true,
+    zeroNetwork: true,
+    zeroFilesystem: true,
+    zeroMutationOfInput: true
+  },
+
+  contract: {
+    always: [
+      "aiBrainstem",
+      "aiAnatomy",
+      "aiBinaryEvolution",
+      "aiBinaryOrganRegistry"
+    ],
+    never: [
+      "safeRoute",
+      "fetchViaCNS"
+    ]
+  }
+}
+*/
 
 // ============================================================================
 //  META BLOCK — v13.0‑EVO+++ (ORGANISM KERNEL)

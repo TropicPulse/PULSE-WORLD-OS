@@ -3,6 +3,35 @@
 //  Self‑Definition • Role Assignment • Binary‑Aware Identity Drift
 //  PURE IDENTITY. ZERO MUTATION. ZERO RANDOMNESS.
 // ============================================================================
+/*
+AI_EXPERIENCE_META = {
+  identity: "persona",
+  version: "v14-IMMORTAL",
+  layer: "ai_core",
+  role: "persona_engine",
+  lineage: "persona-v11 → v14-IMMORTAL",
+
+  evo: {
+    personaEngine: true,
+    personaMapping: true,
+    symbolicPrimary: true,
+    binaryAware: true,
+    dualBand: true,
+
+    deterministic: true,
+    driftProof: true,
+    pureCompute: true,
+    zeroNetwork: true,
+    zeroFilesystem: true,
+    zeroMutationOfInput: true
+  },
+
+  contract: {
+    always: ["aiIdentityCore", "aiPersonalityEngine", "aiHumilityFilter"],
+    never: ["safeRoute", "fetchViaCNS"]
+  }
+}
+*/
 
 import {
   ArchitectAIPermissions,

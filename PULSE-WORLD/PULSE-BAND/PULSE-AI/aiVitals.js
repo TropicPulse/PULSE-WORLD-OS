@@ -69,6 +69,36 @@
  *     bitLength: <number>
  *   }
  */
+/*
+AI_EXPERIENCE_META = {
+  identity: "aiVitals",
+  version: "v14-IMMORTAL",
+  layer: "ai_core",
+  role: "vitals_monitor",
+  lineage: "aiVitals-v10 → v14-IMMORTAL",
+
+  evo: {
+    vitalsMonitor: true,
+    pressureModel: true,
+    loadModel: true,
+    symbolicPrimary: true,
+    binaryAware: true,
+    dualBand: true,
+
+    deterministic: true,
+    driftProof: true,
+    pureCompute: true,
+    zeroNetwork: true,
+    zeroFilesystem: true,
+    zeroMutationOfInput: true
+  },
+
+  contract: {
+    always: ["aiMetabolism", "aiNervousSystem", "aiReflex"],
+    never: ["safeRoute", "fetchViaCNS"]
+  }
+}
+*/
 
 export const VitalsMeta = Object.freeze({
   type: "Binary",

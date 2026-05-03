@@ -7,6 +7,42 @@
 //    This organ is the **Binary Heartbeat** of the organism.
 //    Emits deterministic binary pulses for liveness, rhythm, and sync.
 // ============================================================================
+/*
+AI_EXPERIENCE_META = {
+  identity: "aiBinaryHeartbeat",
+  version: "v14-IMMORTAL",
+  layer: "ai_binary",
+  role: "binary_heartbeat",
+  lineage: "aiBinaryHeartbeat-v9 → v11 → v14-IMMORTAL",
+
+  evo: {
+    heartbeat: true,
+    binaryPulse: true,
+    dualBand: true,
+    symbolicAware: true,
+    binaryPrimary: true,
+
+    deterministic: true,
+    driftProof: true,
+    pureCompute: true,
+    zeroNetwork: true,
+    zeroFilesystem: true,
+    zeroMutationOfInput: true
+  },
+
+  contract: {
+    always: [
+      "aiBinaryAgent",
+      "aiBinaryDelta",
+      "aiBinaryOrganRegistry"
+    ],
+    never: [
+      "safeRoute",
+      "fetchViaCNS"
+    ]
+  }
+}
+*/
 
 export const HeartbeatMeta = Object.freeze({
   layer: "BinaryRhythm",

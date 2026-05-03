@@ -3,6 +3,35 @@
 //  World-Lens Registry for aiOvermind
 //  PURE FUNCTIONAL • ZERO STATE • ZERO MUTATION
 // ============================================================================
+/*
+AI_EXPERIENCE_META = {
+  identity: "JuryFrame",
+  version: "v14-IMMORTAL",
+  layer: "ai_core",
+  role: "jury_frame",
+  lineage: "JuryFrame-v11 → v14-IMMORTAL",
+
+  evo: {
+    juryFrame: true,
+    personaMapping: true,
+    symbolicPrimary: true,
+    binaryAware: true,
+    dualBand: true,
+
+    deterministic: true,
+    driftProof: true,
+    pureCompute: true,
+    zeroNetwork: true,
+    zeroFilesystem: true,
+    zeroMutationOfInput: true
+  },
+
+  contract: {
+    always: ["aiPersonalFrame", "aiIdentityCore", "aiContext"],
+    never: ["safeRoute", "fetchViaCNS"]
+  }
+}
+*/
 
 export const JuryFrameMeta = Object.freeze({
   type: "Cognitive",

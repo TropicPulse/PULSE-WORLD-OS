@@ -3,6 +3,42 @@
 //  Structural Map • Connectivity Skeleton • Organism Blueprint
 //  PURE STRUCTURE. ZERO ROUTING. ZERO COMPUTE.
 // ============================================================================
+/*
+AI_EXPERIENCE_META = {
+  identity: "aiAnatomy",
+  version: "v14-IMMORTAL",
+  layer: "ai_core",
+  role: "ai_organ_topology",
+  lineage: "aiAnatomy-v9 → v11 → v14-IMMORTAL",
+
+  evo: {
+    organTopology: true,
+    organMap: true,
+    dualBand: true,
+    symbolicPrimary: true,
+    binaryAware: true,
+
+    deterministic: true,
+    driftProof: true,
+    pureCompute: true,
+    zeroNetwork: true,
+    zeroFilesystem: true,
+    zeroMutationOfInput: true
+  },
+
+  contract: {
+    always: [
+      "aiBrainstem",
+      "aiBinaryOrganRegistry",
+      "aiBoundariesEngine"
+    ],
+    never: [
+      "safeRoute",
+      "fetchViaCNS"
+    ]
+  }
+}
+*/
 
 export const AnatomyMeta = Object.freeze({
   layer: "Anatomy",

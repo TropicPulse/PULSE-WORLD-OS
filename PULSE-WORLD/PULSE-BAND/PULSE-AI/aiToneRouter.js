@@ -3,6 +3,35 @@
 //  Deterministic • Ego‑Free • Emotion‑Aware • Identity‑Aligned • Harmonic
 //  INTERNAL ENGINE (NOT AN ORGAN, NOT AN ARCHETYPE)
 // ============================================================================
+/*
+AI_EXPERIENCE_META = {
+  identity: "aiToneRouter",
+  version: "v14-IMMORTAL",
+  layer: "ai_core",
+  role: "tone_router",
+  lineage: "aiToneRouter-v11 → v14-IMMORTAL",
+
+  evo: {
+    toneRouting: true,
+    toneSelection: true,
+    symbolicPrimary: true,
+    binaryAware: true,
+    dualBand: true,
+
+    deterministic: true,
+    driftProof: true,
+    pureCompute: true,
+    zeroNetwork: true,
+    zeroFilesystem: true,
+    zeroMutationOfInput: true
+  },
+
+  contract: {
+    always: ["aiToneEngine", "aiEmotionEngine", "aiHumilityFilter"],
+    never: ["safeRoute", "fetchViaCNS"]
+  }
+}
+*/
 
 import { aiToneEngine } from "./aiToneEngine.js";
 import { aiPersonalityEngine } from "./aiPersonalityEngine.js";

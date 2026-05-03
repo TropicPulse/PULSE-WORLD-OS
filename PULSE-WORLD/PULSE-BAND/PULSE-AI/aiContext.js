@@ -3,6 +3,34 @@
 //  Dual‑Band Context • ABA Anchor • Drift & Diagnostics Surface
 //  PURE CONTEXT. ZERO MUTATION. ZERO RANDOMNESS.
 // ============================================================================
+/*
+AI_EXPERIENCE_META = {
+  identity: "aiContext",
+  version: "v14-IMMORTAL",
+  layer: "ai_core",
+  role: "context_frame_builder",
+  lineage: "aiContext-v9 → v11 → v14-IMMORTAL",
+
+  evo: {
+    contextFrame: true,
+    memoryShaping: true,
+    dualBand: true,
+    symbolicPrimary: true,
+    binaryAware: true,
+    deterministic: true,
+    driftProof: true,
+    pureCompute: true,
+    zeroNetwork: true,
+    zeroFilesystem: true,
+    zeroMutationOfInput: true
+  },
+
+  contract: {
+    always: ["aiContextEngine", "aiCortex", "aiBrainstem"],
+    never: ["safeRoute", "fetchViaCNS"]
+  }
+}
+*/
 
 export const COGNITIVE_FRAME_META = Object.freeze({
   layer: "PulseAICognitiveFrame",

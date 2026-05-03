@@ -3,6 +3,36 @@
 //  Binary Genome • Organ Lineage • Fingerprint Engine • Packet‑Ready
 //  HYBRID MODE: Fast by default, deep when drift is detected
 // ============================================================================
+/*
+AI_EXPERIENCE_META = {
+  identity: "aiGenome",
+  version: "v14-IMMORTAL",
+  layer: "ai_core",
+  role: "ai_genome",
+  lineage: "aiGenome-v11 → v14-IMMORTAL",
+
+  evo: {
+    genome: true,
+    dnaMapping: true,
+    lineageTracking: true,
+    symbolicPrimary: true,
+    binaryAware: true,
+    dualBand: true,
+
+    deterministic: true,
+    driftProof: true,
+    pureCompute: true,
+    zeroNetwork: true,
+    zeroFilesystem: true,
+    zeroMutationOfInput: true
+  },
+
+  contract: {
+    always: ["aiEvolution", "aiEvolutionEngine", "aiEvolutionary"],
+    never: ["safeRoute", "fetchViaCNS"]
+  }
+}
+*/
 
 export const GenomeMeta = Object.freeze({
   layer: "BinaryGenetics",

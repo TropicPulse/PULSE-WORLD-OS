@@ -18,6 +18,35 @@
 //    • prewarm-aware (field prewarm packet)
 //    • multi-instance, identity-safe
 // ============================================================================
+/*
+AI_EXPERIENCE_META = {
+  identity: "aiField",
+  version: "v14-IMMORTAL",
+  layer: "ai_core",
+  role: "field_simulation_engine",
+  lineage: "aiField-v11 → v14-IMMORTAL",
+
+  evo: {
+    fieldSimulation: true,
+    contextField: true,
+    symbolicPrimary: true,
+    binaryAware: true,
+    dualBand: true,
+
+    deterministic: true,
+    driftProof: true,
+    pureCompute: true,
+    zeroNetwork: true,
+    zeroFilesystem: true,
+    zeroMutationOfInput: true
+  },
+
+  contract: {
+    always: ["aiContext", "aiCortex", "aiEnvironment"],
+    never: ["safeRoute", "fetchViaCNS"]
+  }
+}
+*/
 
 export const FieldMeta = Object.freeze({
   layer: "BinaryField",

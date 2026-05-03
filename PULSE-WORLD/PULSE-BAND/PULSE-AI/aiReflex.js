@@ -25,6 +25,36 @@
  *     • Fail‑open / fail‑close contract
  *     • Updated meta + epoch
  */
+/*
+AI_EXPERIENCE_META = {
+  identity: "aiReflex",
+  version: "v14-IMMORTAL",
+  layer: "ai_core",
+  role: "reflex_arc",
+  lineage: "aiReflex-v10 → v14-IMMORTAL",
+
+  evo: {
+    reflexArc: true,
+    fastPath: true,
+    threatResponse: true,
+    symbolicPrimary: true,
+    binaryAware: true,
+    dualBand: true,
+
+    deterministic: true,
+    driftProof: true,
+    pureCompute: true,
+    zeroNetwork: true,
+    zeroFilesystem: true,
+    zeroMutationOfInput: true
+  },
+
+  contract: {
+    always: ["aiNervousSystem", "aiImmunity", "aiMetabolism"],
+    never: ["safeRoute", "fetchViaCNS"]
+  }
+}
+*/
 
 // ---------------------------------------------------------
 //  META BLOCK — v12.3‑EVO+

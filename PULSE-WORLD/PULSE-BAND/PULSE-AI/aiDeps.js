@@ -3,6 +3,33 @@
 //  Dependency Injection Organ • Deterministic Adapters • Dual‑Band Safe
 //  PURE INPUT. ZERO MUTATION. ZERO RANDOMNESS.
 // ============================================================================
+/*
+AI_EXPERIENCE_META = {
+  identity: "aiDeps",
+  version: "v14-IMMORTAL",
+  layer: "ai_core",
+  role: "dependency_surface",
+  lineage: "aiDeps-v10 → v12 → v14-IMMORTAL",
+
+  evo: {
+    dependencySurface: true,
+    symbolicPrimary: true,
+    binaryAware: true,
+    dualBand: true,
+    deterministic: true,
+    driftProof: true,
+    pureCompute: true,
+    zeroNetwork: true,
+    zeroFilesystem: true,
+    zeroMutationOfInput: true
+  },
+
+  contract: {
+    always: ["aiBrainstem", "aiContext", "aiCortex"],
+    never: ["safeRoute", "fetchViaCNS"]
+  }
+}
+*/
 
 export const DepsMeta = Object.freeze({
   layer: "PulseAIDependencyKernel",

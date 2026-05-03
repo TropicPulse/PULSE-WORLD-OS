@@ -4,6 +4,7 @@
 //  - Fire-and-forget signals for telemetry (dnaVisibility, etc.)
 //  - Dev tracing
 //  - SSR-safe (no BroadcastChannel → no-op bridge)
+//  - v14 IMMORTAL: LocalStorage mirroring of ALL bridge events
 // -----------------------------------------------------------------------------
 /*
 AI_EXPERIENCE_META = {
@@ -20,7 +21,13 @@ AI_EXPERIENCE_META = {
     presenceAware: true,
     safeRouteFree: true,
     chunkAligned: true,
-    bridgeCore: true
+    bridgeCore: true,
+
+    // v14 IMMORTAL
+    offlineFirst: true,
+    localStoreMirrored: true,
+    replayAware: true,
+    modeAgnostic: true
   },
 
   contract: {
@@ -44,6 +51,74 @@ AI_EXPERIENCE_META = {
 }
 */
 
+// -----------------------------------------------------------------------------
+// IMMORTAL LOCALSTORAGE MIRROR — PulseBridgeStore
+// -----------------------------------------------------------------------------
+
+const BRIDGE_LS_KEY = "PulseBridge.v14.buffer";
+const BRIDGE_LS_MAX = 2000;
+
+function hasLocalStorage() {
+  try {
+    if (typeof window === "undefined" || !window.localStorage) return false;
+    const t = "__pulse_bridge_test__";
+    window.localStorage.setItem(t, "1");
+    window.localStorage.removeItem(t);
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+function loadBridgeBuffer() {
+  if (!hasLocalStorage()) return [];
+  try {
+    const raw = window.localStorage.getItem(BRIDGE_LS_KEY);
+    if (!raw) return [];
+    const parsed = JSON.parse(raw);
+    return Array.isArray(parsed) ? parsed : [];
+  } catch {
+    return [];
+  }
+}
+
+function saveBridgeBuffer(buf) {
+  if (!hasLocalStorage()) return;
+  try {
+    const trimmed =
+      buf.length > BRIDGE_LS_MAX ? buf.slice(buf.length - BRIDGE_LS_MAX) : buf;
+    window.localStorage.setItem(BRIDGE_LS_KEY, JSON.stringify(trimmed));
+  } catch {}
+}
+
+function appendBridgeRecord(kind, payload) {
+  const entry = {
+    ts: Date.now(),
+    kind,
+    payload
+  };
+  const buf = loadBridgeBuffer();
+  buf.push(entry);
+  saveBridgeBuffer(buf);
+}
+
+export const PulseBridgeStore = {
+  getAll() {
+    return loadBridgeBuffer();
+  },
+  tail(n = 200) {
+    const buf = loadBridgeBuffer();
+    return buf.slice(Math.max(0, buf.length - n));
+  },
+  clear() {
+    saveBridgeBuffer([]);
+  }
+};
+
+// -----------------------------------------------------------------------------
+// ORIGINAL BRIDGE IMPLEMENTATION (UNCHANGED BEHAVIOR)
+// -----------------------------------------------------------------------------
+
 const DEV = true;
 
 const hasBroadcastChannel =
@@ -57,7 +132,7 @@ const FIRE_AND_FORGET_PATHS = new Set([
 ]);
 
 // -----------------------------------------------------------------------------
-// CALLBACK REGISTRIES (UI registers handlers here)
+// CALLBACK REGISTRIES
 // -----------------------------------------------------------------------------
 let dualBandBootHandler = null;
 let aiEventHandler = null;
@@ -71,7 +146,7 @@ export function onAIEvent(fn) {
 }
 
 // -----------------------------------------------------------------------------
-// Marks synthetic 404s so YOU know it's internal
+// Marks synthetic 404s
 // -----------------------------------------------------------------------------
 function mark404(result) {
   if (!result) return result;
@@ -95,13 +170,14 @@ function traceInbound(label, data) {
 }
 
 // -----------------------------------------------------------------------------
-// SAFE ROUTE — CNS_REQUEST → CNS_RESPONSE (with timeout, SSR-safe)
-//  - SPECIAL: certain paths (e.g. proxy.dnaVisibility) are auto fire-and-forget
+// SAFE ROUTE — CNS_REQUEST → CNS_RESPONSE
 // -----------------------------------------------------------------------------
 export function safeRoute(path, payload = {}, timeoutMs = 10000) {
   trace("CNS (SIGNAL)", { path, payload });
 
-  // SSR / no BroadcastChannel → resolve immediately with null
+  // IMMORTAL: mirror outbound safeRoute
+  appendBridgeRecord("safeRoute_outbound", { path, payload });
+
   if (!channel) {
     if (DEV) {
       console.warn("[LOCAL PORT BRIDGE] BroadcastChannel unavailable, safeRoute is a no-op:", {
@@ -109,13 +185,13 @@ export function safeRoute(path, payload = {}, timeoutMs = 10000) {
         payload,
       });
     }
+    appendBridgeRecord("safeRoute_noop", { path, payload });
     return Promise.resolve(null);
   }
 
   const requestId = `req-${Date.now()}-${Math.floor(performance.now() * 1000)}`;
 
-
-  // 🔹 Auto fire-and-forget for telemetry-style paths
+  // Fire-and-forget paths
   if (FIRE_AND_FORGET_PATHS.has(path)) {
     channel.postMessage({
       type: "CNS_REQUEST",
@@ -123,11 +199,13 @@ export function safeRoute(path, payload = {}, timeoutMs = 10000) {
       path,
       payload,
     });
-    // Never wait for a response
+
+    appendBridgeRecord("safeRoute_fireAndForget", { path, payload });
+
     return Promise.resolve(null);
   }
 
-  // Normal request/response path with timeout
+  // Normal request/response
   return new Promise((resolve) => {
     let settled = false;
 
@@ -145,7 +223,17 @@ export function safeRoute(path, payload = {}, timeoutMs = 10000) {
       settled = true;
 
       cleanup();
-      resolve(mark404(msg.result));
+
+      const result = mark404(msg.result);
+
+      // IMMORTAL: mirror inbound response
+      appendBridgeRecord("safeRoute_inbound", {
+        path,
+        payload,
+        result
+      });
+
+      resolve(result);
     };
 
     const timer = setTimeout(() => {
@@ -153,6 +241,9 @@ export function safeRoute(path, payload = {}, timeoutMs = 10000) {
       settled = true;
 
       cleanup();
+
+      appendBridgeRecord("safeRoute_timeout", { path, payload });
+
       if (DEV) {
         console.warn("[LOCAL PORT BRIDGE] safeRoute timeout:", { path, payload, timeoutMs });
       }
@@ -176,10 +267,12 @@ export function safeRoute(path, payload = {}, timeoutMs = 10000) {
 }
 
 // -----------------------------------------------------------------------------
-// FIRE-AND-FORGET ROUTE — explicit helper for telemetry, logs, etc.
+// FIRE-AND-FORGET ROUTE
 // -----------------------------------------------------------------------------
 export function fireAndForgetRoute(path, payload = {}) {
   trace("CNS (SIGNAL, FIRE-AND-FORGET)", { path, payload });
+
+  appendBridgeRecord("fireAndForget_outbound", { path, payload });
 
   if (!channel) {
     if (DEV) {
@@ -188,6 +281,7 @@ export function fireAndForgetRoute(path, payload = {}) {
         payload,
       });
     }
+    appendBridgeRecord("fireAndForget_noop", { path, payload });
     return;
   }
 
@@ -202,10 +296,12 @@ export function fireAndForgetRoute(path, payload = {}) {
 }
 
 // -----------------------------------------------------------------------------
-// START DUALBAND AI — fire-and-forget signal
+// START DUALBAND AI
 // -----------------------------------------------------------------------------
 export function startDualBandAI(options = {}) {
   trace("DUALBAND_AI_START (SIGNAL)", options);
+
+  appendBridgeRecord("dualband_start_outbound", options);
 
   if (!channel) return;
 
@@ -217,10 +313,12 @@ export function startDualBandAI(options = {}) {
 }
 
 // -----------------------------------------------------------------------------
-// IMAGE FETCH THROUGH BRIDGE — request/response
+// IMAGE FETCH THROUGH BRIDGE
 // -----------------------------------------------------------------------------
 export function fetchImageThroughBridge(url) {
   trace("IMAGE_FETCH (SIGNAL)", { url });
+
+  appendBridgeRecord("imageFetch_outbound", { url });
 
   if (!channel) {
     if (DEV) {
@@ -228,6 +326,7 @@ export function fetchImageThroughBridge(url) {
         url,
       });
     }
+    appendBridgeRecord("imageFetch_noop", { url });
     return Promise.resolve(null);
   }
 
@@ -240,6 +339,12 @@ export function fetchImageThroughBridge(url) {
       if (msg.requestId !== requestId) return;
 
       channel.removeEventListener("message", handler);
+
+      appendBridgeRecord("imageFetch_inbound", {
+        url,
+        data: msg.data
+      });
+
       resolve(msg.data);
     };
 
@@ -254,10 +359,12 @@ export function fetchImageThroughBridge(url) {
 }
 
 // -----------------------------------------------------------------------------
-// START UNDERSTANDING — fire-and-forget signal
+// START UNDERSTANDING
 // -----------------------------------------------------------------------------
 export function startUnderstanding(options = {}) {
   trace("UNDERSTANDING_START (SIGNAL)", options);
+
+  appendBridgeRecord("understanding_start_outbound", options);
 
   if (!channel) return;
 
@@ -276,20 +383,25 @@ if (channel) {
     const msg = event.data;
     if (!msg) return;
 
+    // Mirror inbound
+    appendBridgeRecord("inbound_raw", msg);
+
     if (msg.type === "DUALBAND_AI_EVENT") {
       traceInbound("DUALBAND_AI_EVENT", msg.data);
+      appendBridgeRecord("dualband_ai_event", msg.data);
       if (aiEventHandler) aiEventHandler(msg.data);
       return;
     }
 
     if (msg.type === "IMAGE_RESPONSE") {
       traceInbound("IMAGE_RESPONSE", msg.data);
-      // UI will handle the data (Blob/Base64) via fetchImageThroughBridge
+      appendBridgeRecord("image_response", msg.data);
       return;
     }
 
     if (msg.type === "DUALBAND_BOOT") {
       traceInbound("DUALBAND_BOOT", msg.bootOptions);
+      appendBridgeRecord("dualband_boot", msg.bootOptions);
       if (dualBandBootHandler) dualBandBootHandler(msg.bootOptions);
       return;
     }
@@ -297,8 +409,20 @@ if (channel) {
 }
 
 // -----------------------------------------------------------------------------
-// ALIASES FOR WINDOW / OTHER MODULES
+// ALIASES
 // -----------------------------------------------------------------------------
 export const route = safeRoute;
 export const PulseBinaryOrganismBoot = startDualBandAI;
 export const PulseUnderstandingBoot = startUnderstanding;
+
+// -----------------------------------------------------------------------------
+// GLOBAL EXPOSURE OF IMMORTAL STORE
+// -----------------------------------------------------------------------------
+try {
+  if (typeof window !== "undefined") {
+    window.PulseBridgeStore = PulseBridgeStore;
+  }
+  if (typeof globalThis !== "undefined") {
+    globalThis.PulseBridgeStore = PulseBridgeStore;
+  }
+} catch {}

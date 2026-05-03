@@ -13,6 +13,43 @@
  *
  *   This is the “genetic layer” of Pulse OS.
  */
+/*
+AI_EXPERIENCE_META = {
+  identity: "aiBinaryEvolution",
+  version: "v14-IMMORTAL",
+  layer: "ai_binary",
+  role: "binary_evolution_engine",
+  lineage: "aiBinaryEvolution-v10 → v12 → v14-IMMORTAL",
+
+  evo: {
+    binaryEvolution: true,
+    mutationProofing: true,
+    driftCorrection: true,
+    dualBand: true,
+    symbolicAware: true,
+    binaryPrimary: true,
+
+    deterministic: true,
+    driftProof: true,
+    pureCompute: true,
+    zeroNetwork: true,
+    zeroFilesystem: true,
+    zeroMutationOfInput: true
+  },
+
+  contract: {
+    always: [
+      "aiBinaryAgent",
+      "aiBinaryDelta",
+      "ai-v11-evo"
+    ],
+    never: [
+      "safeRoute",
+      "fetchViaCNS"
+    ]
+  }
+}
+*/
 
 // ---------------------------------------------------------
 //  META BLOCK — v12.3‑Presence

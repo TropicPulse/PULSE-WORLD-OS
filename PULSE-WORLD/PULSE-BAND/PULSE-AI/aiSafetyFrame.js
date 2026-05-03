@@ -4,6 +4,35 @@
 //  PURE READ-ONLY TO BINARY. NO DIRECT SYSTEM MUTATION.
 //  SAFETY ARTERY v3 (throughput, pressure, cost, budget)
 // ============================================================================
+/*
+AI_EXPERIENCE_META = {
+  identity: "aiSafetyFrame",
+  version: "v14-IMMORTAL",
+  layer: "ai_core",
+  role: "safety_frame",
+  lineage: "aiSafetyFrame-v11 → v14-IMMORTAL",
+
+  evo: {
+    safetyFrame: true,
+    boundaryMapping: true,
+    symbolicPrimary: true,
+    binaryAware: true,
+    dualBand: true,
+
+    deterministic: true,
+    driftProof: true,
+    pureCompute: true,
+    zeroNetwork: true,
+    zeroFilesystem: true,
+    zeroMutationOfInput: true
+  },
+
+  contract: {
+    always: ["aiBoundariesEngine", "aiImmunity", "aiReflex"],
+    never: ["safeRoute", "fetchViaCNS"]
+  }
+}
+*/
 
 export const SafetyFrameMeta = Object.freeze({
   layer: "PulseAISafetyFrame",

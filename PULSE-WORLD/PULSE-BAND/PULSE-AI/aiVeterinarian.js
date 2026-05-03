@@ -3,6 +3,35 @@
 //  Animal Mapper • Behavior Interpreter • Safe Scan Explainer
 //  ZERO DIAGNOSIS • ZERO TREATMENT • ZERO PRESCRIPTION
 // ============================================================================
+/*
+AI_EXPERIENCE_META = {
+  identity: "aiVeterinarian",
+  version: "v14-IMMORTAL",
+  layer: "ai_tools",
+  role: "veterinary_pattern_explainer",
+  lineage: "aiVeterinarian-v11 → v14-IMMORTAL",
+
+  evo: {
+    veterinaryPatterns: true,
+    educationalOnly: true,
+    symbolicPrimary: true,
+    binaryAware: true,
+    dualBand: true,
+
+    deterministic: true,
+    driftProof: true,
+    pureCompute: true,
+    zeroNetwork: true,
+    zeroFilesystem: true,
+    zeroMutationOfInput: true
+  },
+
+  contract: {
+    always: ["aiDoctor", "aiClinician", "aiDoctorArchitect"],
+    never: ["safeRoute", "fetchViaCNS"]
+  }
+}
+*/
 
 export const PulseRole = Object.freeze({
   type: "Cognitive",

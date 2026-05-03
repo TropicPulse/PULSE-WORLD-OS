@@ -12,6 +12,34 @@
  *     - cross-organ coherence
  *     - binary awareness artery metrics
  */
+/*
+AI_EXPERIENCE_META = {
+  identity: "aiConsciousness",
+  version: "v14-IMMORTAL",
+  layer: "ai_core",
+  role: "ai_consciousness_simulator",
+  lineage: "aiConsciousness-v11 → v14-IMMORTAL",
+
+  evo: {
+    consciousnessSimulation: true,
+    selfModeling: true,
+    symbolicPrimary: true,
+    binaryAware: true,
+    dualBand: true,
+    deterministic: true,
+    driftProof: true,
+    pureCompute: true,
+    zeroNetwork: true,
+    zeroFilesystem: true,
+    zeroMutationOfInput: true
+  },
+
+  contract: {
+    always: ["aiCortex", "aiContext", "aiBrainstem"],
+    never: ["safeRoute", "fetchViaCNS"]
+  }
+}
+*/
 
 // ---------------------------------------------------------
 //  META BLOCK — v12.3‑Presence

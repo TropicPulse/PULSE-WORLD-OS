@@ -4,6 +4,35 @@
 //  PURE READ-ONLY TO BINARY. GUARDED WRITES TO PERSONAL MEMORY.
 //  DUALBAND • DETERMINISTIC • SAFETY-AWARE • OVERMIND-PRIME-AWARE
 // ============================================================================
+/*
+AI_EXPERIENCE_META = {
+  identity: "aiPersonalFrame",
+  version: "v14-IMMORTAL",
+  layer: "ai_core",
+  role: "personal_context_frame",
+  lineage: "aiPersonalFrame-v11 → v14-IMMORTAL",
+
+  evo: {
+    personalContext: true,
+    personaMapping: true,
+    symbolicPrimary: true,
+    binaryAware: true,
+    dualBand: true,
+
+    deterministic: true,
+    driftProof: true,
+    pureCompute: true,
+    zeroNetwork: true,
+    zeroFilesystem: true,
+    zeroMutationOfInput: true
+  },
+
+  contract: {
+    always: ["aiIdentityCore", "aiContext", "aiCortex"],
+    never: ["safeRoute", "fetchViaCNS"]
+  }
+}
+*/
 
 export const PersonalFrameMeta = Object.freeze({
   layer: "PulseAIPersonalFrame",

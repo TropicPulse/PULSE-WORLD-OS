@@ -1,8 +1,9 @@
 // ============================================================================
-//  PulsePresenceNormalizer-SMART v2.0
+//  PulsePresenceNormalizer-SMART v2.0 (v14 IMMORTAL UPGRADE)
 //  Contract-driven bridge: A → Z
 //  No guessing. No heuristics. No fallback decoding.
 //  Fully aligned with PulseChunks-v2.0-MULTILANE-HYBRID
+//  v14 IMMORTAL: LocalStorage mirroring of ALL normalization events
 // ============================================================================
 /*
 AI_EXPERIENCE_META = {
@@ -19,7 +20,13 @@ AI_EXPERIENCE_META = {
     presenceAware: true,
     safeRouteFree: true,
     smartNormalizer: true,
-    unwrapOneLayer: true
+    unwrapOneLayer: true,
+
+    // v14 IMMORTAL
+    offlineFirst: true,
+    localStoreMirrored: true,
+    replayAware: true,
+    modeAgnostic: true
   },
 
   contract: {
@@ -41,16 +48,82 @@ AI_EXPERIENCE_META = {
 }
 */
 
+// ============================================================================
+// IMMORTAL LOCALSTORAGE MIRROR — PulsePresenceNormalizerStore
+// ============================================================================
+
+const PN_LS_KEY = "PulsePresenceNormalizer.v14.buffer";
+const PN_LS_MAX = 2000;
+
+function hasLocalStorage() {
+  try {
+    if (typeof window === "undefined" || !window.localStorage) return false;
+    const t = "__presence_normalizer_test__";
+    window.localStorage.setItem(t, "1");
+    window.localStorage.removeItem(t);
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+function loadPNBuffer() {
+  if (!hasLocalStorage()) return [];
+  try {
+    const raw = window.localStorage.getItem(PN_LS_KEY);
+    if (!raw) return [];
+    const parsed = JSON.parse(raw);
+    return Array.isArray(parsed) ? parsed : [];
+  } catch {
+    return [];
+  }
+}
+
+function savePNBuffer(buf) {
+  if (!hasLocalStorage()) return;
+  try {
+    const trimmed =
+      buf.length > PN_LS_MAX ? buf.slice(buf.length - PN_LS_MAX) : buf;
+    window.localStorage.setItem(PN_LS_KEY, JSON.stringify(trimmed));
+  } catch {}
+}
+
+function appendPresenceRecord(kind, payload) {
+  const entry = {
+    ts: Date.now(),
+    kind,
+    payload
+  };
+  const buf = loadPNBuffer();
+  buf.push(entry);
+  savePNBuffer(buf);
+}
+
+export const PulsePresenceNormalizerStore = {
+  getAll() {
+    return loadPNBuffer();
+  },
+  tail(n = 200) {
+    const buf = loadPNBuffer();
+    return buf.slice(Math.max(0, buf.length - n));
+  },
+  clear() {
+    savePNBuffer([]);
+  }
+};
+
+// ============================================================================
 // SMART: unwrap ONLY ONE LAYER.
 // Backend must declare the shape. No recursive peeling.
+// ============================================================================
 function unwrap(value) {
+  appendPresenceRecord("unwrap", { value });
+
   if (!value || typeof value !== "object") return value;
 
-  // Lore-wrapped DNA
   if (value.__dna !== undefined) return value.__dna;
   if (value.__chunk !== undefined) return value.__chunk;
 
-  // Backend-declared wrappers
   if (value.data !== undefined) return value.data;
   if (value.chunk !== undefined) return value.chunk;
   if (value.value !== undefined) return value.value;
@@ -59,107 +132,117 @@ function unwrap(value) {
 }
 
 // ============================================================================
-//  SMART IMAGE CONSTRUCTOR — A → Z (image)
+// SMART IMAGE CONSTRUCTOR — A → Z (image)
 // ============================================================================
 export function normalizeImage(value, mime = "image/png") {
+  appendPresenceRecord("normalizeImage_in", { value, mime });
+
   value = unwrap(value);
 
-  // 1. Direct URL string
-  if (typeof value === "string") return value;
+  let out = null;
 
-  // 2. Base64 object
-  if (value && typeof value.base64 === "string") {
-    return `data:${mime};base64,${value.base64}`;
-  }
+  if (typeof value === "string") out = value;
+  else if (value && typeof value.base64 === "string")
+    out = `data:${mime};base64,${value.base64}`;
+  else if (value instanceof Uint8Array)
+    out = URL.createObjectURL(new Blob([value], { type: mime }));
+  else if (value instanceof ArrayBuffer)
+    out = URL.createObjectURL(new Blob([new Uint8Array(value)], { type: mime }));
+  else if (value instanceof Blob)
+    out = URL.createObjectURL(value);
+  else if (value && typeof value.url === "string")
+    out = value.url;
 
-  // 3. Uint8Array / ArrayBuffer → Blob URL
-  if (value instanceof Uint8Array) {
-    return URL.createObjectURL(new Blob([value], { type: mime }));
-  }
-
-  if (value instanceof ArrayBuffer) {
-    return URL.createObjectURL(new Blob([new Uint8Array(value)], { type: mime }));
-  }
-
-  // 4. Blob → Blob URL
-  if (value instanceof Blob) {
-    return URL.createObjectURL(value);
-  }
-
-  // 5. { url }
-  if (value && typeof value.url === "string") {
-    return value.url;
-  }
-
-  // 6. Unknown → null (SMART: do NOT guess)
-  return null;
+  appendPresenceRecord("normalizeImage_out", { out });
+  return out;
 }
 
 // ============================================================================
-//  SMART TEXT / HTML / CSS / JS
+// SMART TEXT / HTML / CSS / JS
 // ============================================================================
 function normalizeText(value) {
+  appendPresenceRecord("normalizeText_in", { value });
+
   value = unwrap(value);
-  return typeof value === "string" ? value : null;
+  const out = typeof value === "string" ? value : null;
+
+  appendPresenceRecord("normalizeText_out", { out });
+  return out;
 }
 
 // ============================================================================
-//  SMART JSON
+// SMART JSON
 // ============================================================================
 function normalizeJSON(value) {
+  appendPresenceRecord("normalizeJSON_in", { value });
+
   value = unwrap(value);
-  return typeof value === "object" ? value : null;
+  const out = typeof value === "object" ? value : null;
+
+  appendPresenceRecord("normalizeJSON_out", { out });
+  return out;
 }
 
 // ============================================================================
-//  SMART BINARY
+// SMART BINARY
 // ============================================================================
 function normalizeBinary(value, mime = "application/octet-stream") {
+  appendPresenceRecord("normalizeBinary_in", { value, mime });
+
   value = unwrap(value);
 
-  if (value instanceof Uint8Array) {
-    return new Blob([value], { type: mime });
-  }
+  let out = null;
 
-  if (value instanceof ArrayBuffer) {
-    return new Blob([new Uint8Array(value)], { type: mime });
-  }
+  if (value instanceof Uint8Array)
+    out = new Blob([value], { type: mime });
+  else if (value instanceof ArrayBuffer)
+    out = new Blob([new Uint8Array(value)], { type: mime });
+  else if (value instanceof Blob)
+    out = value;
 
-  if (value instanceof Blob) return value;
-
-  return null;
+  appendPresenceRecord("normalizeBinary_out", { out });
+  return out;
 }
 
 // ============================================================================
-//  SMART UNIVERSAL NORMALIZER
-//  typeHint: "image" | "html" | "css" | "js" | "json" | "binary"
+// SMART UNIVERSAL NORMALIZER
 // ============================================================================
 export function normalizeChunkValue(value, typeHint = null, options = {}) {
+  appendPresenceRecord("normalizeChunkValue_in", { value, typeHint, options });
+
   const mime = options.mime || "application/octet-stream";
+  let out = null;
 
   switch (typeHint) {
     case "image":
-      return normalizeImage(value, mime);
+      out = normalizeImage(value, mime);
+      break;
 
     case "html":
     case "css":
     case "js":
-      return normalizeText(value);
+      out = normalizeText(value);
+      break;
 
     case "json":
-      return normalizeJSON(value);
+      out = normalizeJSON(value);
+      break;
 
     case "binary":
-      return normalizeBinary(value, mime);
+      out = normalizeBinary(value, mime);
+      break;
 
     default:
-      // SMART: no guessing. Return raw.
-      return unwrap(value);
+      out = unwrap(value);
+      break;
   }
+
+  appendPresenceRecord("normalizeChunkValue_out", { out });
+  return out;
 }
 
 // ============================================================================
-//  EXPORTS
+// EXPORTS
 // ============================================================================
 export const PulseChunkNormalizer = {
   normalizeChunkValue,
@@ -173,3 +256,15 @@ export const PulseChunkNormalizer = {
 };
 
 export default PulseChunkNormalizer;
+
+// ============================================================================
+// GLOBAL EXPOSURE OF IMMORTAL STORE
+// ============================================================================
+try {
+  if (typeof window !== "undefined") {
+    window.PulsePresenceNormalizerStore = PulsePresenceNormalizerStore;
+  }
+  if (typeof globalThis !== "undefined") {
+    globalThis.PulsePresenceNormalizerStore = PulsePresenceNormalizerStore;
+  }
+} catch {}

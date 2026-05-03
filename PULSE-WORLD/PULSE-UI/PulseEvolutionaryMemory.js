@@ -1,16 +1,84 @@
-// ============================================================================
-//  FILE: /PULSE-UI/PulseEvolutionaryMemory.js
-//  PULSE OS v11‑EVO‑PRIME — UI LONG‑TERM MEMORY ORGAN (UPGRADED)
-//  “ROUTE‑AWARE CLIENT OF PulseCoreMemory”
-//  Deterministic • Drift‑Proof • Binary‑Native • No Host Churn
-//
-//  UPGRADE NOTE:
-//  -------------
-//  • This organ NO LONGER touches localStorage directly.
-//  • It delegates all persistence to PulseCoreMemory (the memory spine).
-//  • Page memory is now route‑scoped, binary‑native, bulk‑loaded, bulk‑flushed.
-//  • This is the OFFICIAL v11‑Evo UI Long‑Term Memory organ.
-// ============================================================================
+/*
+===============================================================================
+FILE: /PULSE-UI/PulseEvolutionaryMemory.js
+LAYER: UI LONG‑TERM MEMORY ORGAN
+===============================================================================
+===============================================================================
+AI_EXPERIENCE_META = {
+  identity: "PulseUI.EvolutionaryMemory",
+  version: "v15-IMMORTAL",
+  layer: "pulse_ui",
+  role: "ui_long_term_memory",
+  lineage: "PulseEvolutionaryMemory-v11.3-Evo-Prime → v14-IMMORTAL → v15-IMMORTAL",
+
+  evo: {
+    memoryOrgan: true,
+    longTermMemory: true,
+    routeAware: true,
+    lineageAware: true,
+    binaryAware: true,
+    symbolicAware: true,
+    dualBand: true,
+    unifiedAdvantageField: true,
+    futureEvolutionReady: true,
+
+    deterministic: true,
+    driftProof: true,
+    pureCompute: true,
+
+    zeroNetwork: true,
+    zeroFilesystem: true,
+    zeroMutationOfInput: true,
+
+    // v15 upgrades
+    schemaVersioned: true,
+    envelopeAware: true,
+    integrityAware: true,
+    bulkFlushAware: true
+  },
+
+  contract: {
+    always: [
+      "PulseCore.Memory",
+      "PulseUI.EvolutionaryCode",
+      "PulseUI.EvolutionaryBrain",
+      "PulseUI.EvolutionaryBinary"
+    ],
+    never: [
+      "eval",
+      "Function",
+      "dynamicImport",
+      "fetchViaCNS",
+      "safeRoute"
+    ]
+  }
+}
+===============================================================================
+EXPORT_META = {
+  organ: "PulseUI.EvolutionaryMemory",
+  layer: "pulse_ui",
+  stability: "IMMORTAL",
+  deterministic: true,
+  pure: true,
+
+  consumes: [
+    "PageModel",
+    "RouteId",
+    "PulseCoreMemory"
+  ],
+
+  produces: [
+    "SavedSnapshot",
+    "LoadedSnapshot",
+    "BulkFlushResult"
+  ],
+
+  sideEffects: "core_memory_write_only",
+  network: "none",
+  filesystem: "none"
+}
+
+*/
 
 import { createPulseCoreMemory } from "../PULSE-CORE/PulseCoreMemory.js";
 
@@ -18,7 +86,7 @@ export const MemoryRole = {
   type: "Organ",
   subsystem: "UI",
   layer: "PageMemory",
-  version: "11.3-Evo-Prime",
+  version: "15.0-IMMORTAL",
   identity: "PulseEvolutionaryMemory",
 
   evo: {
@@ -35,77 +103,127 @@ export const MemoryRole = {
   }
 };
 
+const MEMORY_SCHEMA_VERSION = "v2";
+
 // ============================================================================
-//  FACTORY — creates the UI memory organ
+// FACTORY — creates the UI memory organ (CoreMemory‑powered)
 // ============================================================================
 export function createPulseEvolutionaryMemory({
-  routeId = "page",   // UI pages get their own bucket
+  routeId = "page",
   log = console.log,
   warn = console.warn
 } = {}) {
 
+  // CoreMemory v15 IMMORTAL
   const Core = createPulseCoreMemory({ log, warn });
 
   const MemoryState = {
     lastSaved: null,
     lastLoaded: null,
-    routeId
+    lastError: null,
+    routeId,
+    eventSeq: 0
   };
+
+  function nextSeq() {
+    MemoryState.eventSeq += 1;
+    return MemoryState.eventSeq;
+  }
 
   function safeLog(stage, details = {}) {
     try {
-      log("[PulseEvolutionaryMemory]", stage, JSON.stringify(details));
+      log(
+        "[PulseEvolutionaryMemory]",
+        stage,
+        JSON.stringify({
+          schemaVersion: MEMORY_SCHEMA_VERSION,
+          seq: MemoryState.eventSeq,
+          routeId,
+          ...details
+        })
+      );
     } catch {}
   }
 
   // --------------------------------------------------------------------------
-  //  SAVE PAGE MODEL — now uses PulseCoreMemory
+  // SAVE PAGE MODEL — deterministic, route‑scoped, binary‑aware
   // --------------------------------------------------------------------------
   async function savePage(model) {
+    nextSeq();
+
     if (!model || typeof model !== "object") {
+      const errorInfo = "InvalidModel";
+      MemoryState.lastError = errorInfo;
       warn("[PulseEvolutionaryMemory] INVALID_MODEL");
-      return { ok: false, error: "InvalidModel" };
+      safeLog("SAVE_INVALID_MODEL", { error: errorInfo });
+      return { ok: false, error: errorInfo };
     }
 
     try {
-      Core.setRouteSnapshot(routeId, model);
-      MemoryState.lastSaved = model;
+      const envelope = {
+        schemaVersion: MEMORY_SCHEMA_VERSION,
+        version: MemoryRole.version,
+        routeId,
+        model,
+        timestamp: "NO_TIMESTAMP_v15"
+      };
 
-      // NOTE: We do NOT flush here — bulk flush happens once/day or manually.
-      safeLog("SAVE_OK", { routeId });
-      return { ok: true };
+      Core.setRouteSnapshot(routeId, envelope);
+
+      MemoryState.lastSaved = envelope;
+      safeLog("SAVE_OK", {});
+      return { ok: true, envelope };
     } catch (err) {
-      warn("[PulseEvolutionaryMemory] SAVE_ERROR", String(err));
+      const msg = String(err);
+      MemoryState.lastError = msg;
+      warn("[PulseEvolutionaryMemory] SAVE_ERROR", msg);
+      safeLog("SAVE_ERROR", { error: msg });
       return { ok: false, error: "SaveError" };
     }
   }
 
   // --------------------------------------------------------------------------
-  //  LOAD PAGE MODEL — now uses PulseCoreMemory
+  // LOAD PAGE MODEL — deterministic, route‑scoped, integrity‑aware
   // --------------------------------------------------------------------------
   async function loadPage() {
-    try {
-      const snapshot = Core.getRouteSnapshot(routeId);
+    nextSeq();
 
-      if (!snapshot || Object.keys(snapshot).length === 0) {
-        safeLog("LOAD_EMPTY", { routeId });
+    try {
+      const envelope = Core.getRouteSnapshot(routeId);
+
+      if (!envelope || typeof envelope !== "object") {
+        safeLog("LOAD_EMPTY", {});
         return null;
       }
 
-      MemoryState.lastLoaded = snapshot;
-      safeLog("LOAD_OK", { routeId });
-      return snapshot;
+      MemoryState.lastLoaded = envelope;
+      safeLog("LOAD_OK", {});
+      return envelope.model || null;
     } catch (err) {
-      warn("[PulseEvolutionaryMemory] LOAD_ERROR", String(err));
+      const msg = String(err);
+      MemoryState.lastError = msg;
+      warn("[PulseEvolutionaryMemory] LOAD_ERROR", msg);
+      safeLog("LOAD_ERROR", { error: msg });
       return null;
     }
   }
 
   // --------------------------------------------------------------------------
-  //  OPTIONAL: FORCE FLUSH (rare)
+  // OPTIONAL: FORCE FLUSH — CoreMemory bulk flush
   // --------------------------------------------------------------------------
   function flush() {
-    Core.bulkFlush();
+    nextSeq();
+    try {
+      Core.bulkFlush();
+      safeLog("FLUSH_OK", {});
+      return { ok: true };
+    } catch (err) {
+      const msg = String(err);
+      MemoryState.lastError = msg;
+      warn("[PulseEvolutionaryMemory] FLUSH_ERROR", msg);
+      safeLog("FLUSH_ERROR", { error: msg });
+      return { ok: false, error: "FlushError" };
+    }
   }
 
   const PulseEvolutionaryMemory = {
@@ -119,8 +237,7 @@ export function createPulseEvolutionaryMemory({
 
   safeLog("INIT", {
     identity: MemoryRole.identity,
-    version: MemoryRole.version,
-    routeId
+    version: MemoryRole.version
   });
 
   return PulseEvolutionaryMemory;

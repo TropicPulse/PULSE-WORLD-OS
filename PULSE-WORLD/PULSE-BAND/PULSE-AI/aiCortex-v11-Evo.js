@@ -67,6 +67,34 @@
  *
  *   Entire fused decision is encoded into binary.
  */
+/*
+AI_EXPERIENCE_META = {
+  identity: "aiCortex",
+  version: "v14-IMMORTAL",
+  layer: "ai_core",
+  role: "ai_cortex",
+  lineage: "aiCortex-v9 → v11-Evo → v14-IMMORTAL",
+
+  evo: {
+    cortex: true,
+    reasoning: true,
+    symbolicPrimary: true,
+    binaryAware: true,
+    dualBand: true,
+    deterministic: true,
+    driftProof: true,
+    pureCompute: true,
+    zeroNetwork: true,
+    zeroFilesystem: true,
+    zeroMutationOfInput: true
+  },
+
+  contract: {
+    always: ["aiContext", "aiContextEngine", "aiBrainstem"],
+    never: ["safeRoute", "fetchViaCNS"]
+  }
+}
+*/
 
 // ---------------------------------------------------------
 //  META BLOCK — v13.0‑EVO+++

@@ -1,140 +1,141 @@
 /* ============================================================================
-   PulseEvolutionaryStyles.css — v11‑EVO‑PRIME
-   UNIVERSAL PULSE OS UI SKIN ORGAN
+   PulseEvolutionaryStyles.css — v15‑IMMORTAL
+   UNIVERSAL PULSE OS UI SKIN ORGAN (A1/A2/A3 SURFACE MEMBRANE)
    ----------------------------------------------------------------------------
-   This stylesheet is designed to be used across ALL evolutionary pages.
-   It encodes the Pulse OS aesthetic:
-     • deep shadows
-     • neon edges
-     • tropical teal glow
-     • cinematic gradients
-     • glass surfaces
-     • hover lift
-     • pulse shimmer
-     • binary-friendly contrast
+   • GPU‑friendly neon edges
+   • Immortal‑grade shadows
+   • Binary‑aware contrast
+   • Cinematic gradients
+   • Glass‑membrane surfaces
+   • Pulse shimmer v2 (deterministic)
+   • Tier‑aware UI classes
+   • Route‑aware highlight hooks
+   • CNS‑aware impulse‑visual cues
    ============================================================================ */
 
 /* GLOBAL RESET -------------------------------------------------------------- */
 html, body {
   margin: 0;
   padding: 0;
-  background: #0b0b0b;
+  background: #050505;
   color: #e8e8e8;
   font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
   -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
 }
 
 /* WRAPPER ------------------------------------------------------------------- */
 #evo-wrapper {
   padding: 32px;
-  max-width: 980px;
+  max-width: 1080px;
   margin: 0 auto;
   display: flex;
   flex-direction: column;
-  gap: 22px;
+  gap: 26px;
 }
 
 /* BLOCKS -------------------------------------------------------------------- */
 .evo-block {
-  background: rgba(20, 20, 20, 0.85);
-  border: 1px solid rgba(0, 255, 255, 0.08);
-  border-radius: 14px;
-  padding: 24px;
-  backdrop-filter: blur(6px);
+  background: rgba(18, 18, 18, 0.82);
+  border: 1px solid rgba(0, 255, 255, 0.10);
+  border-radius: 16px;
+  padding: 26px;
+  backdrop-filter: blur(10px) saturate(140%);
   box-shadow:
-    0 4px 12px rgba(0,0,0,0.35),
-    0 12px 28px rgba(0,0,0,0.45),
-    inset 0 0 0 1px rgba(255,255,255,0.05);
+    0 6px 16px rgba(0,0,0,0.45),
+    0 14px 32px rgba(0,0,0,0.55),
+    inset 0 0 0 1px rgba(255,255,255,0.04);
   transition: 0.25s ease;
 }
 
 .evo-block:hover {
   transform: translateY(-3px);
-  border-color: rgba(0, 255, 255, 0.25);
+  border-color: rgba(0, 255, 255, 0.35);
   box-shadow:
-    0 6px 16px rgba(0,0,0,0.45),
-    0 18px 36px rgba(0,0,0,0.55),
-    0 0 12px rgba(0, 255, 255, 0.25);
+    0 8px 20px rgba(0,0,0,0.55),
+    0 0 14px rgba(0, 255, 255, 0.35),
+    inset 0 0 0 1px rgba(255,255,255,0.06);
 }
 
 /* TITLES -------------------------------------------------------------------- */
 .evo-title {
-  font-size: 1.45rem;
-  margin-bottom: 10px;
+  font-size: 1.55rem;
+  margin-bottom: 12px;
   font-weight: 600;
   color: #00eaff;
-  text-shadow: 0 0 8px rgba(0, 255, 255, 0.35);
+  text-shadow: 0 0 10px rgba(0, 255, 255, 0.45);
 }
 
 /* CONTENT ------------------------------------------------------------------- */
 .evo-content {
-  font-size: 1.05rem;
-  line-height: 1.55rem;
+  font-size: 1.08rem;
+  line-height: 1.6rem;
   color: #dcdcdc;
+  white-space: pre-wrap;
 }
 
 /* BUTTONS ------------------------------------------------------------------- */
 .evo-button {
   display: inline-flex;
   align-items: center;
-  gap: 8px;
-  padding: 12px 20px;
-  border-radius: 10px;
-  background: linear-gradient(145deg, #0f0f0f, #1a1a1a);
-  border: 1px solid rgba(0, 255, 255, 0.15);
+  gap: 10px;
+  padding: 12px 22px;
+  border-radius: 12px;
+  background: linear-gradient(145deg, #0c0c0c, #1a1a1a);
+  border: 1px solid rgba(0, 255, 255, 0.18);
   color: #00eaff;
   cursor: pointer;
   font-size: 1rem;
   transition: 0.25s ease;
   box-shadow:
-    0 4px 10px rgba(0,0,0,0.4),
+    0 4px 12px rgba(0,0,0,0.45),
     inset 0 0 0 1px rgba(255,255,255,0.05);
 }
 
 .evo-button:hover {
   transform: translateY(-2px);
-  border-color: rgba(0, 255, 255, 0.35);
+  border-color: rgba(0, 255, 255, 0.45);
   box-shadow:
-    0 6px 14px rgba(0,0,0,0.5),
-    0 0 10px rgba(0, 255, 255, 0.25);
+    0 6px 16px rgba(0,0,0,0.55),
+    0 0 12px rgba(0, 255, 255, 0.35);
 }
 
 /* ICONS --------------------------------------------------------------------- */
 .evo-icon {
-  width: 20px;
-  height: 20px;
-  filter: drop-shadow(0 0 4px rgba(0,255,255,0.35));
+  width: 22px;
+  height: 22px;
+  filter: drop-shadow(0 0 5px rgba(0,255,255,0.45));
 }
 
 /* ALERT / DANGER ------------------------------------------------------------ */
 .evo-danger {
-  border-color: rgba(255, 60, 60, 0.35) !important;
+  border-color: rgba(255, 60, 60, 0.45) !important;
   background: rgba(60, 0, 0, 0.55) !important;
   box-shadow:
-    0 0 12px rgba(255, 60, 60, 0.35),
-    inset 0 0 0 1px rgba(255,255,255,0.05) !important;
+    0 0 14px rgba(255, 60, 60, 0.45),
+    inset 0 0 0 1px rgba(255,255,255,0.06) !important;
 }
 
 .evo-danger .evo-title {
   color: #ff4d4d !important;
-  text-shadow: 0 0 8px rgba(255, 60, 60, 0.45) !important;
+  text-shadow: 0 0 10px rgba(255, 60, 60, 0.55) !important;
 }
 
 /* SUCCESS / POWER ----------------------------------------------------------- */
 .evo-success {
-  border-color: rgba(0, 255, 150, 0.35) !important;
+  border-color: rgba(0, 255, 150, 0.45) !important;
   background: rgba(0, 60, 30, 0.55) !important;
   box-shadow:
-    0 0 12px rgba(0, 255, 150, 0.35),
-    inset 0 0 0 1px rgba(255,255,255,0.05) !important;
+    0 0 14px rgba(0, 255, 150, 0.45),
+    inset 0 0 0 1px rgba(255,255,255,0.06) !important;
 }
 
 .evo-success .evo-title {
   color: #00ff99 !important;
-  text-shadow: 0 0 8px rgba(0, 255, 150, 0.45) !important;
+  text-shadow: 0 0 10px rgba(0, 255, 150, 0.55) !important;
 }
 
-/* SHIMMER EFFECT ------------------------------------------------------------ */
+/* SHIMMER EFFECT v2 --------------------------------------------------------- */
 .evo-shimmer {
   position: relative;
   overflow: hidden;
@@ -144,27 +145,46 @@ html, body {
   content: "";
   position: absolute;
   top: 0;
-  left: -150%;
-  width: 150%;
+  left: -160%;
+  width: 160%;
   height: 100%;
   background: linear-gradient(
     120deg,
     transparent 0%,
-    rgba(255,255,255,0.08) 50%,
+    rgba(255,255,255,0.10) 50%,
     transparent 100%
   );
-  animation: shimmer 2.5s infinite;
+  animation: shimmer-v2 2.8s linear infinite;
 }
 
-@keyframes shimmer {
-  0% { left: -150%; }
-  100% { left: 150%; }
+@keyframes shimmer-v2 {
+  0% { left: -160%; }
+  100% { left: 160%; }
 }
 
 /* BINARY HIGHLIGHT ---------------------------------------------------------- */
 .evo-binary {
-  border-color: rgba(0, 255, 255, 0.45) !important;
+  border-color: rgba(0, 255, 255, 0.55) !important;
   box-shadow:
-    0 0 14px rgba(0, 255, 255, 0.45),
-    inset 0 0 0 1px rgba(255,255,255,0.05) !important;
+    0 0 16px rgba(0, 255, 255, 0.55),
+    inset 0 0 0 1px rgba(255,255,255,0.06) !important;
+}
+
+/* ROUTE-AWARE HIGHLIGHT ----------------------------------------------------- */
+.evo-route-active {
+  border-color: rgba(0, 255, 255, 0.65) !important;
+  box-shadow:
+    0 0 18px rgba(0, 255, 255, 0.65),
+    inset 0 0 0 1px rgba(255,255,255,0.08) !important;
+}
+
+/* CNS IMPULSE VISUAL -------------------------------------------------------- */
+.evo-impulse {
+  animation: impulse-flash 0.45s ease-out;
+}
+
+@keyframes impulse-flash {
+  0% { box-shadow: 0 0 0 rgba(0,255,255,0); }
+  50% { box-shadow: 0 0 22px rgba(0,255,255,0.55); }
+  100% { box-shadow: 0 0 0 rgba(0,255,255,0); }
 }
