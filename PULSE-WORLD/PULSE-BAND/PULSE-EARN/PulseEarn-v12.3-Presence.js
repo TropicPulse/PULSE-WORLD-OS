@@ -81,7 +81,7 @@ import {
   PulseNetForward,
   PulseNetBackward,
   PulseNetOrganism
-} from "../PULSE-ENGINE/PULSE-NET.js";
+} from "../../PULSE-UI/PULSE-NET.js";
 
 // --- PULSE-CORE MEMORY SPINE (FULL SPINE) ----------------------------------
 import PulseCoreMemory                from "../PULSE-CORE/PulseCoreMemory.js";
