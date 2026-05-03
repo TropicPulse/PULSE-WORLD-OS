@@ -47,7 +47,6 @@ console.log("Window");
 import PulseUIErrors from "./PulseUIErrors-v12-EVO.js";
 import { VitalsMonitor as PulseVitalsMonitor } from "./PulseProofMonitor.js";
 import { VitalsLogger as PulseLogger }        from "./PulseProofLogger.js";
-import PulseSkinReflex from "./PulseSkinReflex.js";
 import { route, startUnderstanding as PulseUnderstanding, PulseBinaryOrganismBoot } from "./PulseProofBridge.js";
 import { initUIFlow as PulseUIFlow } from "./PulseUIFlow-v12-EVO.js";
 
