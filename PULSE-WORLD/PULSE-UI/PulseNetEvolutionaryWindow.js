@@ -44,7 +44,7 @@ AI_EXPERIENCE_META = {
 */
 
 console.log("Window");
-import { route, startUnderstanding as PulseUnderstanding, PulseBinaryOrganismBoot } from "./PulseProofBridge.js";
+import { route, startUnderstanding as PulseUnderstanding, PulseBinaryOrganismBoot } from "./_BACKEND/PulseProofBridge.js";
 
 
 

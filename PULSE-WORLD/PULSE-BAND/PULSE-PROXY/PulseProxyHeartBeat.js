@@ -10,8 +10,8 @@
 const admin = global.db;
 const db    = global.db;
 
-import { VitalsLogger as logger }        from "../../PULSE-UI/PulseProofLogger.js";
-import { safeRoute as route } from "../../PULSE-UI/PulseProofBridge.js";
+import { VitalsLogger as logger }        from "../../PULSE-UI/_BACKEND/PulseProofLogger.js";
+import { safeRoute as route } from "../../PULSE-UI/_BACKEND/PulseProofBridge.js";
 import { PulseLineage } from "./PulseProxyBBB.js";
 // ============================================================================
 // HEARTBEAT IDENTITY — v12.3‑EVO‑BINARY‑MAX‑ABA

@@ -67,8 +67,8 @@ EXPORT_META = {
 
 */
 
-import PulseUIErrors from "./PulseUIErrors-v12-Evo.js";
-import { PulseProofBridge } from "./PulseProofBridge.js";
+import PulseUIErrors from "./_BACKEND/PulseUIErrors-v12-Evo.js";
+import { PulseProofBridge } from "./_BACKEND/PulseProofBridge.js";
 
 
 export const RouteMemoryRole = {
