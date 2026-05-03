@@ -54,7 +54,7 @@ AI_EXPERIENCE_META = {
 }
 */
 
-import { safeRoute as route } from "./_BACKEND/PulseProofBridge.js";
+import { safeRoute as route } from "../_BACKEND/PulseProofBridge.js";
 
 // ============================================================================
 // IMMORTAL LOCALSTORAGE MIRROR — PulseUIFlowStore
