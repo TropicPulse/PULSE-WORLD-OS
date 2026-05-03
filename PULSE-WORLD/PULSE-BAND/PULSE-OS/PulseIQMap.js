@@ -52,7 +52,7 @@ AI_EXPERIENCE_META = {
 */
 
 import { PulseOrganismMap } from "./PulseOrganismMap.js";
-import { log, warn, error as logError } from "../../PULSE-UI/PULSEProofLogger.js";
+import { log, warn, error as logError } from "../../PULSE-UI/PulseProofLogger.js";
 import { bootCortex } from "./PulseOSBrainCortex.js";
 
 // -----------------------------------------------------------------------------

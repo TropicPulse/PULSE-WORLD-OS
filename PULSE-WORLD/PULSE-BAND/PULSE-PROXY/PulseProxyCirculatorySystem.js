@@ -8,7 +8,7 @@
 // ============================================================================
 //  OSKernel imports (backend‑safe)
 // ============================================================================
-import { logger } from "../../PULSE-UI/PULSEProofLogger.js";
+import { logger } from "../../PULSE-UI/PulseProofLogger.js";
 import { PulseLineage } from "./PulseProxyBBB.js";
 const admin = global.db;
 const db    = global.db;
