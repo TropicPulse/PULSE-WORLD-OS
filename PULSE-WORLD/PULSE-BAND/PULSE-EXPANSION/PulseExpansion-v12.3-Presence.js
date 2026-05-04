@@ -324,6 +324,7 @@ export class ExpansionPlan {
   }
 }
 
+
 // ============================================================================
 //  INTERNAL HELPERS
 // ============================================================================
@@ -545,6 +546,119 @@ export class PulseExpansion {
     };
   }
 
+  // ============================================================================
+// v16-IMMORTAL FEDERAL GOVERNMENT UPGRADE — EXPANSION
+// Federal abilities:
+//   • monitorCastleHealth()
+//   • monitorServerTakeover()
+//   • detectPowerImbalance()
+//   • haltRunawayBehavior()
+//   • rebalanceGovernance()
+// ============================================================================
+// ============================================================================
+// FEDERAL GOVERNMENT HELPERS — v16 IMMORTAL
+// ============================================================================
+
+monitorCastleHealth({ castlePresence }) {
+  if (!castlePresence) return { ok: false, reason: "no_castle_presence" };
+
+  const unhealthy = [];
+
+  for (const region of Object.values(castlePresence.byRegion || {})) {
+    for (const c of region.castles || []) {
+      const pf = c.presenceField || {};
+      const presenceScore = pf.presenceScore ?? 0;
+      const stressIndex = pf.stressIndex ?? 0;
+      const governanceStabilityIndex = pf.governanceStabilityIndex ?? 1;
+
+      if (presenceScore < 0.3 || stressIndex > 0.9 || governanceStabilityIndex < 0.3) {
+        unhealthy.push({
+          castleId: c.castleId,
+          regionId: c.regionId,
+          presenceField: pf
+        });
+      }
+    }
+  }
+
+  return {
+    ok: true,
+    unhealthy,
+    count: unhealthy.length
+  };
+}
+
+monitorServerTakeover({ serverFallback }) {
+  if (!serverFallback) return { ok: true, takeover: false };
+
+  return {
+    ok: true,
+    takeover: !!serverFallback.takeover,
+    reason: serverFallback.reason,
+    serverCastleId: serverFallback.serverCastleId,
+    serverCastlePresence: serverFallback.serverCastlePresence
+  };
+}
+
+detectPowerImbalance({ castleHealth, serverTakeover }) {
+  const imbalance = {
+    castleWeak: castleHealth.count > 0,
+    serverDominating: serverTakeover.takeover === true,
+    severity: 0
+  };
+
+  if (imbalance.castleWeak) imbalance.severity += 1;
+  if (imbalance.serverDominating) imbalance.severity += 1;
+
+  return imbalance;
+}
+
+haltRunawayBehavior({ imbalance }) {
+  if (imbalance.severity === 0) return null;
+
+  const target =
+    imbalance.serverDominating && imbalance.castleWeak
+      ? "server"
+      : imbalance.serverDominating
+      ? "server"
+      : "castle";
+
+  return {
+    kind: "halt_runaway",
+    target,
+    severity: imbalance.severity,
+    reason: "federal_governance_intervention"
+  };
+}
+
+rebalanceGovernance({ imbalance }) {
+  if (imbalance.severity === 0) return null;
+
+  const actions = [];
+
+  if (imbalance.castleWeak) {
+    actions.push({
+      kind: "spawn_castle",
+      reason: "castle_weakness_detected"
+    });
+  }
+
+  if (imbalance.serverDominating) {
+    actions.push({
+      kind: "reduce_server_influence",
+      reason: "server_dominance_detected"
+    });
+  }
+
+  return {
+    kind: "governance_rebalance",
+    actions,
+    severity: imbalance.severity
+  };
+}
+
+
+
   // Build expansion plan + emit PULSE-NET routing intents
   buildExpansionPlan({
     globalLoadIndex = 0,
@@ -586,7 +700,7 @@ export class PulseExpansion {
         : this.config.defaultMinCastlesPerRegion;
 
     const globalLoad = clamp01(globalLoadIndex);
-
+    
     const regionPresence = {};
     const regionAdvantage = {};
     const regionChunkPlan = {};
@@ -846,163 +960,239 @@ export class PulseExpansion {
       }
     }
 
-    // MESH REBALANCE
-    for (const [, regionInfo] of Object.entries(byRegion)) {
-      const castles = regionInfo.castles;
-      if (castles.length <= 1) continue;
+    // ============================================================================
+// MESH REBALANCE
+// ============================================================================
+for (const [, regionInfo] of Object.entries(byRegion)) {
+  const castles = regionInfo.castles;
+  if (castles.length <= 1) continue;
 
-      for (let i = 0; i < castles.length; i++) {
-        const a = castles[i];
-        const links = meshLinksByCastleId[a.castleId] || new Set();
-        if (links.size === 0) {
-          const b = castles[(i + 1) % castles.length];
-          const action = new MeshRebalanceAction({
-            castleId: a.castleId,
-            targetCastleId: b.castleId,
-            action: "link"
-          });
-          rebalanceLinks.push(action);
+  for (let i = 0; i < castles.length; i++) {
+    const a = castles[i];
+    const links = meshLinksByCastleId[a.castleId] || new Set();
 
-          pulseNetIntents.push({
-            kind: "mesh_link",
-            castleId: a.castleId,
-            targetCastleId: b.castleId,
-            regionId: a.regionId || null,
-            cycle: this.cycle,
-            proxyMode,
-            proxyPressure
-          });
-        }
-      }
-    }
+    if (links.size === 0) {
+      const b = castles[(i + 1) % castles.length];
 
-    // A-B-A surfaces — heartbeat-driven band
-    const band =
-      aiHb.preferredBand === "binary" || aiHb.preferredBand === "symbolic"
-        ? aiHb.preferredBand
-        : "symbolic";
-
-    const binaryField = buildBinaryField(this.cycle, hb, aiHb, earnHb);
-    const waveField = buildWaveField(this.cycle, band, hb, aiHb, earnHb);
-    const bandSignature = buildBandSignature(band, hb, aiHb);
-
-    // Emit intents to PULSE-NET via bridge (if present)
-    const bridge = this.pulseNetBridge;
-    if (bridge) {
-      safePulseNetCall(bridge, "routeExpansion", {
-        cycle: this.cycle,
-        expansions,
-        contractions,
-        regionPresence,
-        regionAdvantage,
-        regionChunkPlan,
-        proxyMode,
-        proxyPressure,
-        proxyFallback
+      const action = new MeshRebalanceAction({
+        castleId: a.castleId,
+        targetCastleId: b.castleId,
+        action: "link"
       });
 
-      safePulseNetCall(bridge, "routeSoldiers", {
-        cycle: this.cycle,
-        soldierDelegation,
-        proxyMode,
-        proxyPressure
-      });
+      rebalanceLinks.push(action);
 
-      safePulseNetCall(bridge, "routeMesh", {
+      pulseNetIntents.push({
+        kind: "mesh_link",
+        castleId: a.castleId,
+        targetCastleId: b.castleId,
+        regionId: a.regionId || null,
         cycle: this.cycle,
-        rebalanceLinks,
-        proxyMode,
-        proxyPressure
-      });
-
-      safePulseNetCall(bridge, "routeDefense", {
-        cycle: this.cycle,
-        routeDefenseActions,
-        proxyMode,
-        proxyPressure
-      });
-
-      safePulseNetCall(bridge, "routeNodeAdmin", {
-        cycle: this.cycle,
-        nodeAdminOrbitActions,
         proxyMode,
         proxyPressure
       });
     }
-
-    logger?.log?.("expansion", "plan_built_v16", {
-      cycle: this.cycle,
-      expansions: expansions.length,
-      contractions: contractions.length,
-      soldierDelegation: soldierDelegation.length,
-      rebalanceLinks: rebalanceLinks.length,
-      routeDefenseActions: routeDefenseActions.length,
-      nodeAdminOrbitActions: nodeAdminOrbitActions.length,
-      beaconSnapshotPresent: !!beaconSnapshot,
-      pulseNetBridgePresent: !!bridge,
-      proxyMode,
-      proxyPressure,
-      proxyFallback,
-      heartbeatTick: hb.tick ?? null
-    });
-
-    return new ExpansionPlan({
-      expansions,
-      contractions,
-      rebalanceLinks,
-      soldierDelegation,
-      routeDefenseActions,
-      nodeAdminOrbitActions,
-      regionPresence,
-      regionAdvantage,
-      regionChunkPlan,
-      bandSignature,
-      binaryField,
-      waveField,
-      pulseNetIntents,
-      meta: {
-        expansionMeta: PulseExpansionMeta,
-        castleMeta: PulseCastleMeta,
-        beaconEngineMeta: BeaconEngine?.meta ?? PulseBeaconEngineMeta ?? null,
-        beaconMeshMeta: PulseBeaconMeshMeta,
-        routerMeta: PulseRouterMeta,
-        serverMeta: PulseServerMeta,
-        meshMeta: PulseMeshMeta,
-        binaryMeshMeta: BinaryMeshMeta,
-        osMeta: PulseWorldCoreMeta,
-        beaconSnapshot,
-        beaconPresenceField,
-        beaconAdvantageField,
-        proxy: {
-          context: proxyCtx,
-          mode: proxyMode,
-          pressure: proxyPressure,
-          boost: proxyBoost,
-          fallback: proxyFallback,
-          lineage: proxyLineage
-        },
-        heartbeat: hb,
-        aiHeartbeat: aiHb,
-        earnHeartbeat: earnHb
-      }
-    });
   }
 }
 
 // ============================================================================
-//  PUBLIC API
+// A-B-A BAND + BINARY/WAVE FIELDS
+// ============================================================================
+const band =
+  aiHb.preferredBand === "binary" || aiHb.preferredBand === "symbolic"
+    ? aiHb.preferredBand
+    : "symbolic";
+
+const binaryField = buildBinaryField(this.cycle, hb, aiHb, earnHb);
+const waveField = buildWaveField(this.cycle, band, hb, aiHb, earnHb);
+const bandSignature = buildBandSignature(band, hb, aiHb);
+
+// ============================================================================
+// FEDERAL GOVERNMENT OVERSIGHT — v16 IMMORTAL
+// ============================================================================
+const castlePresence = {
+  byRegion,
+  meshLinksByCastleId
+};
+
+// serverFallbackContext is optional; server may attach it
+const serverFallbackContext = this.serverFallbackContext || null;
+
+const castleHealth = this.monitorCastleHealth({ castlePresence });
+const serverTakeover = this.monitorServerTakeover({ serverFallback: serverFallbackContext });
+const imbalance = this.detectPowerImbalance({ castleHealth, serverTakeover });
+
+const haltIntent = this.haltRunawayBehavior({ imbalance });
+const rebalanceIntent = this.rebalanceGovernance({ imbalance });
+
+if (haltIntent) {
+  pulseNetIntents.push({
+    kind: "federal_halt",
+    payload: haltIntent,
+    cycle: this.cycle,
+    proxyMode,
+    proxyPressure
+  });
+}
+
+if (rebalanceIntent) {
+  pulseNetIntents.push({
+    kind: "federal_rebalance",
+    payload: rebalanceIntent,
+    cycle: this.cycle,
+    proxyMode,
+    proxyPressure
+  });
+}
+
+// ============================================================================
+// EMIT INTENTS TO PULSE-NET BRIDGE
+// ============================================================================
+const bridge = this.pulseNetBridge;
+if (bridge) {
+  safePulseNetCall(bridge, "routeExpansion", {
+    cycle: this.cycle,
+    expansions,
+    contractions,
+    regionPresence,
+    regionAdvantage,
+    regionChunkPlan,
+    proxyMode,
+    proxyPressure,
+    proxyFallback
+  });
+
+  safePulseNetCall(bridge, "routeSoldiers", {
+    cycle: this.cycle,
+    soldierDelegation,
+    proxyMode,
+    proxyPressure
+  });
+
+  safePulseNetCall(bridge, "routeMesh", {
+    cycle: this.cycle,
+    rebalanceLinks,
+    proxyMode,
+    proxyPressure
+  });
+
+  safePulseNetCall(bridge, "routeDefense", {
+    cycle: this.cycle,
+    routeDefenseActions,
+    proxyMode,
+    proxyPressure
+  });
+
+  safePulseNetCall(bridge, "routeNodeAdmin", {
+    cycle: this.cycle,
+    nodeAdminOrbitActions,
+    proxyMode,
+    proxyPressure
+  });
+}
+
+// ============================================================================
+// LOG + RETURN FINAL FEDERALLY-AWARE EXPANSION PLAN
+// ============================================================================
+logger?.log?.("expansion", "plan_built_v16_federal", {
+  cycle: this.cycle,
+  expansions: expansions.length,
+  contractions: contractions.length,
+  soldierDelegation: soldierDelegation.length,
+  rebalanceLinks: rebalanceLinks.length,
+  routeDefenseActions: routeDefenseActions.length,
+  nodeAdminOrbitActions: nodeAdminOrbitActions.length,
+  beaconSnapshotPresent: !!beaconSnapshot,
+  pulseNetBridgePresent: !!bridge,
+  proxyMode,
+  proxyPressure,
+  proxyFallback,
+  heartbeatTick: hb.tick ?? null,
+  federal: {
+    castleHealth,
+    serverTakeover,
+    imbalance,
+    haltIntent,
+    rebalanceIntent
+  }
+});
+
+return new ExpansionPlan({
+  expansions,
+  contractions,
+  rebalanceLinks,
+  soldierDelegation,
+  routeDefenseActions,
+  nodeAdminOrbitActions,
+  regionPresence,
+  regionAdvantage,
+  regionChunkPlan,
+  bandSignature,
+  binaryField,
+  waveField,
+  pulseNetIntents,
+  meta: {
+    expansionMeta: PulseExpansionMeta,
+    castleMeta: PulseCastleMeta,
+    beaconEngineMeta: BeaconEngine?.meta ?? PulseBeaconEngineMeta ?? null,
+    beaconMeshMeta: PulseBeaconMeshMeta,
+    routerMeta: PulseRouterMeta,
+    serverMeta: PulseServerMeta,
+    meshMeta: PulseMeshMeta,
+    binaryMeshMeta: BinaryMeshMeta,
+    osMeta: PulseWorldCoreMeta,
+    beaconSnapshot,
+    beaconPresenceField,
+    beaconAdvantageField,
+    proxy: {
+      context: proxyCtx,
+      mode: proxyMode,
+      pressure: proxyPressure,
+      boost: proxyBoost,
+      fallback: proxyFallback,
+      lineage: proxyLineage
+    },
+    heartbeat: hb,
+    aiHeartbeat: aiHb,
+    earnHeartbeat: earnHb,
+    federal: {
+      castleHealth,
+      serverTakeover,
+      imbalance,
+      haltIntent,
+      rebalanceIntent
+    }
+  }
+});
+  }
+}
+// ============================================================================
+//  PUBLIC API — v16 IMMORTAL (Federal-Aware)
 // ============================================================================
 
 export function createPulseExpansion(config = {}) {
   const core = new PulseExpansion(config);
+
   return Object.freeze({
     meta: PulseExpansionMeta,
+
+    // Attach PulseNet bridge (federal + routing)
     attachPulseNetBridge(bridge) {
       return core.attachPulseNetBridge(bridge);
     },
+
+    // Attach heartbeats (symbolic + AI + Earn)
     attachHeartbeats(payload) {
       return core.attachHeartbeats(payload);
     },
+
+    // OPTIONAL: allow Server to pass fallback context into Expansion
+    attachServerFallbackContext(fallbackCtx) {
+      core.serverFallbackContext = fallbackCtx;
+      return { ok: true };
+    },
+
+    // Build the full expansion plan (now federal-aware)
     buildExpansionPlan(payload) {
       return core.buildExpansionPlan(payload);
     }

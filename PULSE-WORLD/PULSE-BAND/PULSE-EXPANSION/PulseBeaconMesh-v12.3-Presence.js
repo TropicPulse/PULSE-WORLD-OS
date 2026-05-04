@@ -132,15 +132,16 @@ import {
   createPulseRouter
 } from "../PULSE-EXPANSION/PulseRouter-v12.3-Presence.js";
 
+// User lanes
+import { getPulseUserContext, createPulseWorldCore } from "../PULSE-EXPANSION/PulseUser-v12.3-Presence.js";
+
+
 import {
-  getBeaconEngineContext, 
+  getBeaconEngineContext, PulseBeaconEngine
 } from "../PULSE-EXPANSION/PulseBeaconEngine-v12.3-Presence.js";
 import {
   getConsoleContext
 } from "../PULSE-EXPANSION/PulseBeaconConsole-v12.3-Presence.js";
-
-// User lanes
-import { getPulseUserContext, createPulseWorldCore } from "../PULSE-EXPANSION/PulseUser-v12.3-Presence.js";
 
 // Mesh organism (symbolic + binary)
 import createPulseMesh, {

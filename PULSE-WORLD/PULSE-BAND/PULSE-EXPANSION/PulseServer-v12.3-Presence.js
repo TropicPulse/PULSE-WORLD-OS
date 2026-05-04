@@ -11,6 +11,8 @@
 //    - WorldCore-aware, user-aware, mesh-aware, brain-aware, PulseNet-bridge-aware.
 //    - DualBand-aware + binary send aware (symbolic + binary lanes).
 //    - NO direct network fetch: all network is via higher PulseNet bridge / expansion.
+//    - v16+: Castle-aware, Expansion-aware, can act as Castle-General fallback
+//      when Castle is absent or degraded (server-as-central-castle).
 // ============================================================================
 
 /*
@@ -35,14 +37,24 @@ AI_EXPERIENCE_META = {
     driftProof: true,
     zeroMutationOfInput: true,
     zeroNetwork: true,
-    zeroFilesystem: true
+    zeroFilesystem: true,
+
+    // v16+: castle + expansion + PulseNet bridge
+    castleAware: true,
+    expansionAware: true,
+    pulseNetBridgeAware: true,
+    soldierAware: true,
+    routeAware: true,
+    nodeAdminAware: true,
+    castleFallbackGeneral: true
   },
 
   contract: {
     always: [
       "PulseRouter",
       "PulseCastle",
-      "PulseExpansion"
+      "PulseExpansion",
+      "PulseNetBridge"
     ],
     never: [
       "safeRoute",
@@ -58,18 +70,37 @@ AI_EXPERIENCE_META = {
 
 import { logger } from "../../PULSE-UI/_BACKEND/PulseProofLogger.js";
 
-import { PulseExpansionMeta, createPulseExpansion } from "../PULSE-EXPANSION/PulseExpansion-v12.3-Presence.js";
-import { PulseCastleMeta, createPulseCastle } from "../PULSE-EXPANSION/PulseCastle-v12.3-Presence.js";
-import { PulseRouterMeta, createPulseRouter } from "../PULSE-EXPANSION/PulseRouter-v12.3-Presence.js";
-// User lanes
-import { getPulseUserContext, createPulseWorldCore } from "../PULSE-EXPANSION/PulseUser-v12.3-Presence.js";
+// v16 Expansion / Castle
+import {
+  PulseExpansionMeta,
+  createPulseExpansion
+} from "../PULSE-EXPANSION/PulseExpansion-v16-Immortal-ORGANISM.js";
+
+import {
+  PulseCastleMeta,
+  summarizeCastlePresence,
+  computeCastlePresence
+} from "../PULSE-EXPANSION/PulseCastle-v16-Immortal-ORGANISM.js";
+
+// Router (still v12.3 presence-era)
+import {
+  PulseRouterMeta,
+  createPulseRouter
+} from "../PULSE-EXPANSION/PulseRouter-v12.3-Presence.js";
+
+// User lanes / WorldCore
+import {
+  getPulseUserContext,
+  createPulseWorldCore
+} from "../PULSE-EXPANSION/PulseUser-v12.3-Presence.js";
+
 // Adrenal (compute starter / circulation governor)
 import {
   runInstanceOrchestrator as runAdrenalInstanceOrchestrator,
   PulseProxyAdrenalSystemMeta
 } from "../PULSE-PROXY/PulseProxyAdrenalSystem.js";
 
-// Scheduler (Router + Overmind + Runtime v1 macro pipeline)
+// Scheduler (Router + Overmind + Runtime v2 macro pipeline)
 import {
   createPulseScheduler,
   PulseSchedulerMeta
@@ -97,6 +128,11 @@ import {
   getProxyMode,
   getProxyLineage
 } from "../PULSE-PROXY/PulseProxyContext-v16.js";
+
+// PulseNet bridge (symbolic adapter to PULSE-NET)
+import {
+  createPulseNetBridge
+} from "../../PULSE-UI/_FRONTEND/PulseNet-v16-FAMILY-NET-Immortal.js";
 
 // ============================================================================
 //  META — PulseServer Identity
@@ -156,12 +192,17 @@ export const PulseServerMeta = Object.freeze({
     meshAware: true,
     brainAware: true,
     pulseNetBridgeAware: true,
+    expansionAware: true,
+    castleAware: true,
 
-    // ⭐ Proxy integration
+    // Proxy
     proxyAware: true,
     proxyPressureAware: true,
     proxyFallbackAware: true,
-    proxyBoostAware: true
+    proxyBoostAware: true,
+
+    // Castle fallback
+    castleFallbackGeneral: true
   }),
 
   contract: Object.freeze({
@@ -189,7 +230,6 @@ export const PulseServerMeta = Object.freeze({
   })
 });
 
-
 // ============================================================================
 //  TYPES
 // ============================================================================
@@ -213,11 +253,9 @@ export class PulseServerJobResult {
   }
 }
 
-
 // ============================================================================
 //  INTERNAL ADVANTAGE STATE (Deterministic, in‑memory, backend‑only)
 // ============================================================================
-
 const jobResultCache = new Map();
 const hotInstanceBatches = new Map();
 
@@ -264,8 +302,46 @@ function computeProxyAwareMaxTicks(baseMaxTicks) {
 }
 
 // ============================================================================
+//  CASTLE / EXPANSION / PULSENET BRIDGE HELPERS
+// ============================================================================
+
+function buildServerCastleId({ serverId, regionId }) {
+  return `SERVER_GENERAL::${regionId || "unknown-region"}::${serverId || "anon"}`;
+}
+
+function isCastleHealthy(presenceField) {
+  if (!presenceField) return false;
+  const tier = presenceField.tier || presenceField.presenceTier || "normal";
+  const score =
+    presenceField.presenceScore ??
+    presenceField.composite ??
+    0;
+  const stress = presenceField.stressIndex ?? 0;
+
+  if (getProxyFallback()) return false;
+  if (tier === "low") return false;
+  if (score < 0.3) return false;
+  if (stress > 0.9) return false;
+  return true;
+}
+
+function emitBridgeSafe(bridge, method, payload) {
+  if (!bridge || typeof bridge[method] !== "function") return { ok: false };
+  try {
+    return bridge[method](payload) || { ok: true };
+  } catch (err) {
+    logger?.log?.("server", "pulsenet_bridge_error", {
+      method,
+      error: String(err)
+    });
+    return { ok: false, error: String(err) };
+  }
+}
+
+// ============================================================================
 //  CORE SERVER ENGINE — worldCore/user/mesh/PulseNet-bridge/dualBand aware
 // ============================================================================
+
 export class PulseServerPresenceExec {
   constructor(config = {}) {
     this.config = {
@@ -285,6 +361,12 @@ export class PulseServerPresenceExec {
       pulseNetBridge: null,
       brainNetworkMode: true,
 
+      // Castle / Expansion
+      regionId: null,
+      hostName: null,
+      serverId: null,
+      enableCastleFallback: true,
+
       // DualBand / binary
       dualBandEngine: null,
       binarySend: null,
@@ -295,8 +377,19 @@ export class PulseServerPresenceExec {
     this.worldCore = this.config.worldCore || null;
     this.mesh = this.config.mesh || null;
     this.userContext = this.config.userContext || null;
-    this.pulseNetBridge = this.config.pulseNetBridge || null;
 
+    this.regionId = this.config.regionId || null;
+    this.hostName = this.config.hostName || null;
+    this.serverId = this.config.serverId || null;
+
+    // PulseNet bridge (symbolic)
+    this.pulseNetBridge =
+      this.config.pulseNetBridge ||
+      (typeof createPulseNetBridge === "function"
+        ? createPulseNetBridge()
+        : null);
+
+    // DualBand / binary
     this.dualBandEngine =
       this.config.dualBandEngine ||
       (typeof PulseBinaryOrganismBoot === "function"
@@ -309,6 +402,7 @@ export class PulseServerPresenceExec {
         ? PulseSendBin({ source: "PulseServer-v16" })
         : null);
 
+    // Scheduler
     this.scheduler = createPulseScheduler({
       defaultGlobalPolicy: this.config.defaultGlobalPolicy,
       defaultMaxTicks: this.config.defaultMaxTicks,
@@ -316,6 +410,27 @@ export class PulseServerPresenceExec {
       ...this.config.schedulerConfig
     });
 
+    // Expansion (v16) — server-aware, castle-aware, PulseNet-bridge-aware
+    this.expansion =
+      typeof createPulseExpansion === "function"
+        ? createPulseExpansion({})
+        : null;
+
+    if (
+      this.expansion &&
+      this.pulseNetBridge &&
+      typeof this.expansion.attachPulseNetBridge === "function"
+    ) {
+      try {
+        this.expansion.attachPulseNetBridge(this.pulseNetBridge);
+      } catch (err) {
+        logger?.log?.("server", "expansion_attach_pulsenet_error", {
+          error: String(err)
+        });
+      }
+    }
+
+    // WorldCore runtime attach
     if (this.worldCore && typeof this.worldCore.attachRuntime === "function") {
       try {
         this.worldCore.attachRuntime(PulseRuntimeV2);
@@ -326,6 +441,7 @@ export class PulseServerPresenceExec {
       }
     }
 
+    // Mesh user attach
     if (this.mesh && typeof this.mesh.attachUser === "function") {
       try {
         this.mesh.attachUser(this.userContext || { source: "PulseServer" });
@@ -389,6 +505,19 @@ export class PulseServerPresenceExec {
         pulseNetBridge.attachServer({ serverMeta: PulseServerMeta });
       } catch (err) {
         logger?.log?.("server", "pulsenet_attach_server_error", {
+          error: String(err)
+        });
+      }
+    }
+    if (
+      this.expansion &&
+      this.pulseNetBridge &&
+      typeof this.expansion.attachPulseNetBridge === "function"
+    ) {
+      try {
+        this.expansion.attachPulseNetBridge(this.pulseNetBridge);
+      } catch (err) {
+        logger?.log?.("server", "expansion_attach_pulsenet_error", {
           error: String(err)
         });
       }
@@ -475,7 +604,7 @@ export class PulseServerPresenceExec {
 
   // --------------------------------------------------------------------------
   // 2) Scheduler pipeline — Router + Overmind + Runtime (v1-style)
-// --------------------------------------------------------------------------
+  // --------------------------------------------------------------------------
   async runSchedulerPipeline({
     instances = [],
     currentStatesById = {},
@@ -496,14 +625,15 @@ export class PulseServerPresenceExec {
     }
 
     const advantageContext =
-      this.worldCore && typeof this.worldCore.buildAdvantageContext === "function"
+      this.worldCore &&
+      typeof this.worldCore.buildAdvantageContext === "function"
         ? this.worldCore.buildAdvantageContext()
         : null;
 
     const dualBandSnapshot =
       dualBand ||
       (this.dualBandEngine &&
-        typeof this.dualBandEngine.getSnapshot === "function"
+      typeof this.dualBandEngine.getSnapshot === "function"
         ? this.dualBandEngine.getSnapshot()
         : null);
 
@@ -614,6 +744,133 @@ export class PulseServerPresenceExec {
   }
 
   // --------------------------------------------------------------------------
+  // 6) Castle-General fallback — server becomes central castle if needed
+  // --------------------------------------------------------------------------
+  evaluateCastleFallbackAndSignal({
+    runtimeStateV2,
+    schedulerPipeline
+  }) {
+    if (!this.config.enableCastleFallback) {
+      return {
+        takeover: false,
+        reason: "castle_fallback_disabled"
+      };
+    }
+
+    const regionId = this.regionId || "unknown-region";
+    const serverId = this.serverId || "server-unknown";
+    const hostName = this.hostName || "host-unknown";
+
+    let takeover = false;
+    let reason = "castle_healthy_or_unknown";
+    let castlePresenceField = null;
+    let meshSnapshot = null;
+
+    try {
+      const { byRegion } = summarizeCastlePresence();
+      const regionInfo = byRegion[regionId];
+
+      if (!regionInfo || regionInfo.castles.length === 0) {
+        takeover = true;
+        reason = "no_castles_in_region";
+      } else {
+        let anyHealthy = false;
+        for (const c of regionInfo.castles) {
+          const presenceField = c.presenceField || computeCastlePresence(c);
+          if (isCastleHealthy(presenceField)) {
+            anyHealthy = true;
+            break;
+          }
+        }
+        if (!anyHealthy) {
+          takeover = true;
+          reason = "all_castles_unhealthy_or_low";
+        }
+      }
+
+      meshSnapshot = regionInfo || null;
+      castlePresenceField =
+        regionInfo && regionInfo.castles[0]
+          ? regionInfo.castles[0].presenceField || null
+          : null;
+    } catch (err) {
+      takeover = true;
+      reason = "castle_snapshot_error";
+      logger?.log?.("server", "castle_snapshot_error", {
+        error: String(err)
+      });
+    }
+
+    const serverCastleId = buildServerCastleId({ serverId, regionId });
+
+    const serverCastlePresence = {
+      castleId: serverCastleId,
+      regionId,
+      hostName,
+      presenceField: {
+        tier: "normal",
+        presenceScore: 0.6,
+        loadIndex: 0.4,
+        stressIndex: 0.3,
+        proxyMode: getProxyMode(),
+        proxyPressure: getProxyPressure(),
+        proxyBoost: getProxyBoost(),
+        proxyFallback: getProxyFallback()
+      },
+      runtimeHint: {
+        runtimeStateV2: !!runtimeStateV2,
+        schedulerTicks: schedulerPipeline?.ticks?.length ?? 0
+      }
+    };
+
+    if (takeover && this.pulseNetBridge) {
+      emitBridgeSafe(this.pulseNetBridge, "routeCastle", {
+        mode: "server_general_takeover",
+        serverId,
+        regionId,
+        hostName,
+        serverCastleId,
+        serverCastlePresence,
+        previousCastlePresence: castlePresenceField,
+        meshSnapshot,
+        proxy: {
+          mode: getProxyMode(),
+          pressure: getProxyPressure(),
+          boost: getProxyBoost(),
+          fallback: getProxyFallback(),
+          lineage: getProxyLineage()
+        }
+      });
+
+      if (this.expansion && typeof this.expansion.buildExpansionPlan === "function") {
+        try {
+          this.expansion.buildExpansionPlan({
+            globalLoadIndex: 0.5,
+            regionSignals: {
+              [regionId]: {
+                avgLoadIndex: 0.5,
+                userDensityHint: 0,
+                stressHint: 0.4
+              }
+            }
+          });
+        } catch (err) {
+          logger?.log?.("server", "expansion_plan_on_takeover_error", {
+            error: String(err)
+          });
+        }
+      }
+    }
+
+    return {
+      takeover,
+      reason,
+      serverCastleId,
+      serverCastlePresence
+    };
+  }
+
+  // --------------------------------------------------------------------------
   // MAIN ENTRYPOINT — PulseServer job
   // --------------------------------------------------------------------------
   async runServerJob({
@@ -708,7 +965,8 @@ export class PulseServerPresenceExec {
     notes.push("Runtime v2 state snapshot captured (hot-state + binary frames).");
 
     const advantageContext =
-      this.worldCore && typeof this.worldCore.buildAdvantageContext === "function"
+      this.worldCore &&
+      typeof this.worldCore.buildAdvantageContext === "function"
         ? this.worldCore.buildAdvantageContext()
         : null;
 
@@ -725,7 +983,7 @@ export class PulseServerPresenceExec {
     const dualBandSnapshot =
       dualBand ||
       (this.dualBandEngine &&
-        typeof this.dualBandEngine.getSnapshot === "function"
+      typeof this.dualBandEngine.getSnapshot === "function"
         ? this.dualBandEngine.getSnapshot()
         : null);
 
@@ -737,6 +995,11 @@ export class PulseServerPresenceExec {
       proxyMode: getProxyMode(),
       proxyLineage: getProxyLineage()
     };
+
+    const castleFallback = this.evaluateCastleFallbackAndSignal({
+      runtimeStateV2,
+      schedulerPipeline
+    });
 
     const meta = Object.freeze({
       serverMeta: PulseServerMeta,
@@ -750,6 +1013,7 @@ export class PulseServerPresenceExec {
       pulseNetBridgeAttached: !!this.pulseNetBridge,
       binarySendAttached: !!this.binarySend,
       proxyMeta,
+      castleFallback,
       notes
     });
 
@@ -771,7 +1035,6 @@ export class PulseServerPresenceExec {
     return result;
   }
 }
-
 
 // ============================================================================
 //  PUBLIC API — Create / Singleton
