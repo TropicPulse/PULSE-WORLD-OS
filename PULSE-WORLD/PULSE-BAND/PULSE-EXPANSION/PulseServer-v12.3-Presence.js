@@ -58,21 +58,45 @@ AI_EXPERIENCE_META = {
 
 import { logger } from "../../PULSE-UI/_BACKEND/PulseProofLogger.js";
 
+import { PulseExpansionMeta, createPulseExpansion } from "../PULSE-EXPANSION/PulseExpansion-v12.3-Presence.js";
+import { PulseCastleMeta, createPulseCastle } from "../PULSE-EXPANSION/PulseCastle-v12.3-Presence.js";
+import { PulseRouterMeta, createPulseRouter } from "../PULSE-EXPANSION/PulseRouter-v12.3-Presence.js";
+// User lanes
+import { getPulseUserContext, createPulseWorldCore } from "../PULSE-EXPANSION/PulseUser-v12.3-Presence.js";
 // Adrenal (compute starter / circulation governor)
-import { runInstanceOrchestrator as runAdrenalInstanceOrchestrator, PulseProxyAdrenalSystemMeta} from "../PULSE-PROXY/PulseProxyAdrenalSystem.js";
+import {
+  runInstanceOrchestrator as runAdrenalInstanceOrchestrator,
+  PulseProxyAdrenalSystemMeta
+} from "../PULSE-PROXY/PulseProxyAdrenalSystem.js";
 
 // Scheduler (Router + Overmind + Runtime v1 macro pipeline)
-import { createPulseScheduler, PulseSchedulerMeta} from "../PULSE-X/PulseScheduler-v2.js";
+import {
+  createPulseScheduler,
+  PulseSchedulerMeta
+} from "../PULSE-X/PulseScheduler-v2.js";
 
 // Runtime v2 (multi-organism execution + binary frames)
 import PulseRuntimeV2 from "../PULSE-X/PulseRuntime-v2-Evo.js";
 
-const { runPulseTickV2, getRuntimeStateV2, CoreMemory: RuntimeCoreMemory} = PulseRuntimeV2;
+const {
+  runPulseTickV2,
+  getRuntimeStateV2,
+  CoreMemory: RuntimeCoreMemory
+} = PulseRuntimeV2;
 
 // DualBand / Binary field (optional, advantage-only)
 import { createDualBandOrganism as PulseBinaryOrganismBoot } from "../PULSE-AI/aiDualBand-v11-Evo.js";
 import { createBinarySend as PulseSendBin } from "../PULSE-SEND/PulseBinarySend-v11-EVO.js";
 
+// Proxy context (v16 IMMORTAL ORGANISM)
+import {
+  getProxyContext,
+  getProxyPressure,
+  getProxyBoost,
+  getProxyFallback,
+  getProxyMode,
+  getProxyLineage
+} from "../PULSE-PROXY/PulseProxyContext-v16.js";
 
 // ============================================================================
 //  META — PulseServer Identity
@@ -131,35 +155,21 @@ export const PulseServerMeta = Object.freeze({
     userContextAware: true,
     meshAware: true,
     brainAware: true,
-    pulseNetBridgeAware: true
+    pulseNetBridgeAware: true,
+
+    // ⭐ Proxy integration
+    proxyAware: true,
+    proxyPressureAware: true,
+    proxyFallbackAware: true,
+    proxyBoostAware: true
   }),
 
   contract: Object.freeze({
     input: [
       "PulseServerJobRequest"
-      // {
-      //   instances: InstanceContext[],
-      //   currentStatesById: CurrentInstanceStateById,
-      //   globalContinuancePolicy?: GlobalContinuancePolicy,
-      //   userRequest?: AIRouterRequestShape,
-      //   dualBand?: DualBandSnapshotAPI,
-      //   maxTicks?: number,
-      //   stopOnWorldLens?: string[],
-      //   adrenalPulse?: { id?: string; jobId?: string; mode?: string; lineage?: any },
-      //   cacheKey?: string
-      // }
     ],
     output: [
       "PulseServerJobResult"
-      // {
-      //   serverMeta,
-      //   schedulerPipeline,
-      //   runtimeStateV2,
-      //   adrenalMeta,
-      //   adrenalTickAccepted,
-      //   cacheHit,
-      //   meta
-      // }
     ]
   }),
 
@@ -208,11 +218,7 @@ export class PulseServerJobResult {
 //  INTERNAL ADVANTAGE STATE (Deterministic, in‑memory, backend‑only)
 // ============================================================================
 
-// Simple deterministic cache keyed by symbolic cacheKey.
-// We do NOT store user secrets, only organ outputs / summaries.
 const jobResultCache = new Map();
-
-// Hot multi‑instance batch memory (symbolic only).
 const hotInstanceBatches = new Map();
 
 function stableStringify(obj) {
@@ -231,6 +237,31 @@ function buildBatchKey(instances, currentStatesById, globalContinuancePolicy) {
   });
 }
 
+// ============================================================================
+//  PROXY-AWARE TICK GOVERNOR — symbolic-only, no runtime mutation
+// ============================================================================
+function computeProxyAwareMaxTicks(baseMaxTicks) {
+  let maxTicks = baseMaxTicks;
+
+  const mode = getProxyMode();
+  const pressure = getProxyPressure();
+  const boost = getProxyBoost();
+  const fallback = getProxyFallback();
+
+  if (fallback || mode === "fallback") {
+    maxTicks = Math.max(1, maxTicks - 2);
+  }
+
+  if (pressure > 0.7) {
+    maxTicks = Math.max(1, maxTicks - 1);
+  }
+
+  if (boost > 0.5 && !fallback && mode !== "fallback") {
+    maxTicks += 1;
+  }
+
+  return maxTicks;
+}
 
 // ============================================================================
 //  CORE SERVER ENGINE — worldCore/user/mesh/PulseNet-bridge/dualBand aware
@@ -248,15 +279,15 @@ export class PulseServerPresenceExec {
       defaultStopOnWorldLens: ["unsafe"],
 
       // Integration points
-      worldCore: null,        // PulseWorldCore instance (user orchestrator)
-      mesh: null,             // mesh environment / snapshot
-      userContext: null,      // user / session context
-      pulseNetBridge: null,   // PulseNet bridge / expansion-level sender
-      brainNetworkMode: true, // allow brain-intent-shaped jobs
+      worldCore: null,
+      mesh: null,
+      userContext: null,
+      pulseNetBridge: null,
+      brainNetworkMode: true,
 
       // DualBand / binary
-      dualBandEngine: null,   // external dualBand engine (optional)
-      binarySend: null,       // external binary send (optional)
+      dualBandEngine: null,
+      binarySend: null,
 
       ...config
     };
@@ -266,7 +297,6 @@ export class PulseServerPresenceExec {
     this.userContext = this.config.userContext || null;
     this.pulseNetBridge = this.config.pulseNetBridge || null;
 
-    // DualBand + Binary send (advantage-only, no network fetch)
     this.dualBandEngine =
       this.config.dualBandEngine ||
       (typeof PulseBinaryOrganismBoot === "function"
@@ -286,7 +316,6 @@ export class PulseServerPresenceExec {
       ...this.config.schedulerConfig
     });
 
-    // Attach runtime to worldCore if it supports it (user ↔ brain)
     if (this.worldCore && typeof this.worldCore.attachRuntime === "function") {
       try {
         this.worldCore.attachRuntime(PulseRuntimeV2);
@@ -297,7 +326,6 @@ export class PulseServerPresenceExec {
       }
     }
 
-    // Attach user to mesh if mesh supports it
     if (this.mesh && typeof this.mesh.attachUser === "function") {
       try {
         this.mesh.attachUser(this.userContext || { source: "PulseServer" });
@@ -447,7 +475,7 @@ export class PulseServerPresenceExec {
 
   // --------------------------------------------------------------------------
   // 2) Scheduler pipeline — Router + Overmind + Runtime (v1-style)
-  // --------------------------------------------------------------------------
+// --------------------------------------------------------------------------
   async runSchedulerPipeline({
     instances = [],
     currentStatesById = {},
@@ -479,6 +507,9 @@ export class PulseServerPresenceExec {
         ? this.dualBandEngine.getSnapshot()
         : null);
 
+    const baseMaxTicks = maxTicks ?? this.config.defaultMaxTicks;
+    const proxyAwareMaxTicks = computeProxyAwareMaxTicks(baseMaxTicks);
+
     const pipelineResult = await this.scheduler.runPipeline({
       instances,
       currentStatesById,
@@ -486,7 +517,7 @@ export class PulseServerPresenceExec {
         globalContinuancePolicy ?? this.config.defaultGlobalPolicy,
       userRequest,
       dualBand: dualBandSnapshot,
-      maxTicks: maxTicks ?? this.config.defaultMaxTicks,
+      maxTicks: proxyAwareMaxTicks,
       stopOnWorldLens: stopOnWorldLens ?? this.config.defaultStopOnWorldLens,
       advantageContext,
       userContext: this.userContext || null
@@ -494,7 +525,11 @@ export class PulseServerPresenceExec {
 
     return {
       schedulerPipeline: pipelineResult,
-      schedulerMeta: PulseSchedulerMeta
+      schedulerMeta: {
+        ...PulseSchedulerMeta,
+        proxyMode: getProxyMode(),
+        proxyPressure: getProxyPressure()
+      }
     };
   }
 
@@ -596,7 +631,6 @@ export class PulseServerPresenceExec {
 
     notes.push("PulseServer-v16-IMMORTAL-ORGANISM-EXEC: starting job.");
 
-    // 0) Job cache check
     const cached = this.maybeGetCachedJob(cacheKey);
     if (cached) {
       notes.push("Job cache hit: returning cached PulseServerJobResult.");
@@ -611,7 +645,6 @@ export class PulseServerPresenceExec {
       return cachedWithNotes;
     }
 
-    // 0.1) Prewarm + batch reuse
     const {
       instances: effectiveInstances,
       currentStatesById: effectiveStates,
@@ -628,7 +661,6 @@ export class PulseServerPresenceExec {
         : "New batch stored as hot for future reuse."
     );
 
-    // 1) Adrenal tick
     const {
       adrenalTickAccepted,
       adrenalMeta
@@ -640,7 +672,6 @@ export class PulseServerPresenceExec {
         : "Adrenal tick skipped (disabled)."
     );
 
-    // 2) Scheduler pipeline
     const {
       schedulerPipeline,
       schedulerMeta
@@ -660,7 +691,6 @@ export class PulseServerPresenceExec {
         : "Scheduler pipeline skipped (disabled)."
     );
 
-    // 3) Optional direct Runtime v2 tick
     let runtimeV2TickResult = null;
     if (this.config.enableRuntimeV2DirectTick) {
       runtimeV2TickResult = this.runRuntimeV2IfEnabled({
@@ -674,11 +704,9 @@ export class PulseServerPresenceExec {
       notes.push("Runtime v2 direct tick skipped (disabled).");
     }
 
-    // 4) Runtime v2 introspection snapshot
     const runtimeStateV2 = getRuntimeStateV2();
     notes.push("Runtime v2 state snapshot captured (hot-state + binary frames).");
 
-    // 5) Pull worldCore + mesh + dualBand advantage context for this job
     const advantageContext =
       this.worldCore && typeof this.worldCore.buildAdvantageContext === "function"
         ? this.worldCore.buildAdvantageContext()
@@ -701,6 +729,15 @@ export class PulseServerPresenceExec {
         ? this.dualBandEngine.getSnapshot()
         : null);
 
+    const proxyMeta = {
+      proxy: getProxyContext(),
+      proxyPressure: getProxyPressure(),
+      proxyBoost: getProxyBoost(),
+      proxyFallback: getProxyFallback(),
+      proxyMode: getProxyMode(),
+      proxyLineage: getProxyLineage()
+    };
+
     const meta = Object.freeze({
       serverMeta: PulseServerMeta,
       schedulerMeta,
@@ -712,6 +749,7 @@ export class PulseServerPresenceExec {
       userContext: this.userContext || null,
       pulseNetBridgeAttached: !!this.pulseNetBridge,
       binarySendAttached: !!this.binarySend,
+      proxyMeta,
       notes
     });
 
@@ -773,5 +811,4 @@ export function createPulseServer(config = {}) {
   });
 }
 
-// Default singleton-style instance (no worldCore/mesh/bridge until attached)
 export const pulseServer = createPulseServer();

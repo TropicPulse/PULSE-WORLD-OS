@@ -94,8 +94,10 @@ import { PulseWorldCoreMeta, createPulseWorldCore} from "../PULSE-EXPANSION/Puls
 
 // Castle / Mesh / BeaconMesh / Expansion / Server / Router
 import { PulseCastleMeta } from "../PULSE-EXPANSION/PulseCastle-v12.3-Presence.js";
-import createPulseMesh, { PulseMeshMeta} from "../PULSE-MESH/PulseMesh-v11-Evo.js";
-import PulseBeaconMesh, { PulseBeaconMeshMeta} from "../PULSE-EXPANSION/PulseBeaconMesh-v12.3-Presence.js";
+import createPulseMesh, { PulseMeshMeta } from "../PULSE-MESH/PulseMesh-v11-Evo.js";
+import PulseBeaconMesh, {
+  PulseBeaconMeshMeta
+} from "../PULSE-EXPANSION/PulseBeaconMesh-v12.3-Presence.js";
 import PulseBeaconEngine from "../PULSE-EXPANSION/PulseBeaconEngine-v12.3-Presence.js";
 import { PulseExpansionMeta } from "../PULSE-EXPANSION/PulseExpansion-v12.3-Presence.js";
 import { PulseServerMeta } from "../PULSE-EXPANSION/PulseServer-v12.3-Presence.js";
@@ -105,13 +107,24 @@ import { PulseRouterMeta } from "../PULSE-EXPANSION/PulseRouter-v12.3-Presence.j
 import { getEarnContext } from "../PULSE-EARN/PulseEarn-v12.3-Presence.js";
 import { createDualBandOrganism as PulseBinaryOrganismBoot } from "../PULSE-AI/aiDualBand-v11-Evo.js";
 import { createBinarySend as PulseSendBin } from "../PULSE-SEND/PulseBinarySend-v11-EVO.js";
-import createBinaryRouter           from "../PULSE-ROUTER/PulseBinaryRouter-v11-Evo.js";
-import PulseRouter           from "../PULSE-ROUTER/PulseRouter-v11-Evo.js";
+import createBinaryRouter from "../PULSE-ROUTER/PulseBinaryRouter-v11-Evo.js";
+import PulseRouter from "../PULSE-ROUTER/PulseRouter-v11-Evo.js";
+
 // Runtime / Scheduler (symbolic context only)
 import PulseRuntimeV2 from "../PULSE-X/PulseRuntime-v2-Evo.js";
 import { createPulseScheduler } from "../PULSE-X/PulseScheduler-v2.js";
 
-const { getRuntimeStateV2: getRuntimeStateV2Context} = PulseRuntimeV2;
+const { getRuntimeStateV2: getRuntimeStateV2Context } = PulseRuntimeV2;
+
+// Proxy (binary lane / fallback band / pressure)
+import {
+  getProxyContext,
+  getProxyPressure,
+  getProxyBoost,
+  getProxyFallback,
+  getProxyMode,
+  getProxyLineage
+} from "../PULSE-PROXY/PulseProxyContext-v16.js";
 
 // ============================================================================
 //  META — AI Router Identity
@@ -339,6 +352,10 @@ let _attachedServerSnapshot = null;
 let _attachedWorldCoreSnapshot = null;
 let _attachedDualBandOrganism = null;
 let _attachedBinarySend = null;
+let _attachedRuntimeSnapshot = null;
+let _attachedSchedulerSnapshot = null;
+let _attachedEarnSnapshot = null;
+let _attachedBeaconMeshSnapshot = null;
 
 // ATTACH API — called by Castle / Mesh / Expansion / Server / WorldCore / Band
 export function attachCastleSnapshot(snapshot) {
@@ -376,6 +393,26 @@ export function attachBinarySend(binarySend) {
   return { ok: true };
 }
 
+export function attachRuntimeSnapshot(snapshot) {
+  _attachedRuntimeSnapshot = snapshot || null;
+  return { ok: true };
+}
+
+export function attachSchedulerSnapshot(snapshot) {
+  _attachedSchedulerSnapshot = snapshot || null;
+  return { ok: true };
+}
+
+export function attachEarnSnapshot(snapshot) {
+  _attachedEarnSnapshot = snapshot || null;
+  return { ok: true };
+}
+
+export function attachBeaconMeshSnapshot(snapshot) {
+  _attachedBeaconMeshSnapshot = snapshot || null;
+  return { ok: true };
+}
+
 // ============================================================================
 //  ORGANISM HEALTH HELPERS (SYNC, LIGHTWEIGHT, NO NETWORK)
 //  NOTE: We only read snapshots; we never mutate them.
@@ -405,7 +442,7 @@ function _bucketCost(v) {
   return "none";
 }
 
-// ORGANISM-AWARE: compute artery v4 using flags + binary load + organism stress
+// ORGANISM-AWARE: compute artery v4 using flags + binary load + organism stress + proxy
 function computeRoutingArteryV4(flags, binaryLoad, personaId, organismHealth) {
   const flagValues = Object.values(flags || {});
   const activeFlags = flagValues.filter(Boolean).length;
@@ -421,9 +458,12 @@ function computeRoutingArteryV4(flags, binaryLoad, personaId, organismHealth) {
       ? organismHealth.compositeScore
       : 0;
 
+  // PROXY-AWARE: incorporate proxy pressure as an additional stress lane
+  const proxyPressure = Math.max(0, Math.min(1, getProxyPressure() || 0));
+
   const pressure = Math.max(
     0,
-    Math.min(1, (basePressure + organismStress * 0.5) / 1.5)
+    Math.min(1, (basePressure + organismStress * 0.5 + proxyPressure * 0.3) / 1.8)
   );
 
   let personaBias = 0;
@@ -452,11 +492,12 @@ function computeRoutingArteryV4(flags, binaryLoad, personaId, organismHealth) {
     pressureBucket: _bucketPressure(pressure),
     costBucket: _bucketCost(cost),
     budgetBucket: _bucketLevel(budget),
-    organismStress
+    organismStress,
+    proxyPressure
   });
 }
 
-// ORGANISM-AWARE: compute health score from attached snapshots + dualBand + binarySend
+// ORGANISM-AWARE: compute health score from attached snapshots + dualBand + binarySend + proxy
 function computeOrganismHealth(dualBand = null) {
   const castle = _attachedCastleSnapshot;
   const mesh = _attachedMeshSnapshot;
@@ -464,6 +505,10 @@ function computeOrganismHealth(dualBand = null) {
   const server = _attachedServerSnapshot;
   const worldCore = _attachedWorldCoreSnapshot;
   const binarySend = _attachedBinarySend;
+  const runtimeSnap = _attachedRuntimeSnapshot;
+  const schedulerSnap = _attachedSchedulerSnapshot;
+  const earnSnap = _attachedEarnSnapshot;
+  const beaconMeshSnap = _attachedBeaconMeshSnapshot;
 
   // Castle
   const castleLoadLevel = castle?.state?.loadLevel || "unknown";
@@ -478,13 +523,24 @@ function computeOrganismHealth(dualBand = null) {
       ? 0.2
       : 0.3;
 
-  // Mesh
+  // Mesh (symbolic mesh organism)
   const meshPressureIndex =
-    mesh?.densityHealth?.A_metrics?.meshPressureIndex ?? 0;
+    mesh?.densityHealth?.A_metrics?.meshPressureIndex ??
+    mesh?.densityHealth?.metrics?.meshPressureIndex ??
+    0;
   const meshPressureScore = Math.max(
     0,
     Math.min(1, meshPressureIndex / 100)
   );
+
+  // BeaconMesh (local membrane)
+  const beaconCompositePressure =
+    beaconMeshSnap?.compositeField?.meshPressureIndex ??
+    beaconMeshSnap?.presenceField?.meshPressureIndex ??
+    null;
+  const beaconPressureScore = beaconCompositePressure
+    ? Math.max(0, Math.min(1, beaconCompositePressure / 100))
+    : 0;
 
   // Expansion
   const routeStable = expansion?.routeField?.routeStable;
@@ -493,7 +549,9 @@ function computeOrganismHealth(dualBand = null) {
 
   // WorldCore
   const fallbackBandLevel =
-    worldCore?.advantageContext?.fallbackBandLevel ?? 0;
+    worldCore?.advantageContext?.fallbackBandLevel ??
+    worldCore?.advantageField?.fallbackBandLevel ??
+    0;
   const worldCoreFallbackScore = Math.max(
     0,
     Math.min(1, fallbackBandLevel / 4)
@@ -505,6 +563,31 @@ function computeOrganismHealth(dualBand = null) {
       ? 0.4
       : 0.3; // symbolic placeholder; real load would come from server meta/state
   const serverScore = serverLoad;
+
+  // Runtime
+  const runtimePressure =
+    runtimeSnap?.pressureIndex ??
+    runtimeSnap?.hotPressure ??
+    0;
+  const runtimeScore = Math.max(0, Math.min(1, runtimePressure / 100));
+
+  // Scheduler
+  const schedulerTicks =
+    schedulerSnap?.ticksPerCycle ??
+    schedulerSnap?.maxTicks ??
+    0;
+  const schedulerScore = Math.max(
+    0,
+    Math.min(1, schedulerTicks / 1024)
+  );
+
+  // Earn (treasury / economic pressure)
+  const earnContext = earnSnap || getEarnContext?.() || {};
+  const earnLoad =
+    earnContext.treasuryPressure ??
+    earnContext.earnPressure ??
+    0;
+  const earnScore = Math.max(0, Math.min(1, earnLoad));
 
   // DualBand
   let organismSnapshotBits = 0;
@@ -527,15 +610,36 @@ function computeOrganismHealth(dualBand = null) {
   const sendQueueDepth = binarySend?.getQueueDepth?.() ?? 0;
   const sendScore = Math.max(0, Math.min(1, sendQueueDepth / 100));
 
+  // Proxy
+  const proxyCtx = getProxyContext?.() || {};
+  const proxyPressure = Math.max(0, Math.min(1, getProxyPressure() || 0));
+  const proxyFallback = !!getProxyFallback();
+  const proxyBoost = Math.max(0, Math.min(1, getProxyBoost() || 0));
+
+  const proxyScore = Math.max(
+    0,
+    Math.min(
+      1,
+      proxyPressure * 0.6 +
+        (proxyFallback ? 0.3 : 0) -
+        proxyBoost * 0.2
+    )
+  );
+
   // Composite
   const components = {
     castleLoadScore,
     meshPressureScore,
+    beaconPressureScore,
     expansionScore,
     worldCoreFallbackScore,
     serverScore,
+    runtimeScore,
+    schedulerScore,
+    earnScore,
     dualBandScore,
-    sendScore
+    sendScore,
+    proxyScore
   };
 
   const compositeScore = Math.max(
@@ -543,20 +647,32 @@ function computeOrganismHealth(dualBand = null) {
     Math.min(
       1,
       (
-        castleLoadScore * 0.2 +
-        meshPressureScore * 0.2 +
-        expansionScore * 0.15 +
-        worldCoreFallbackScore * 0.15 +
-        serverScore * 0.1 +
+        castleLoadScore * 0.15 +
+        meshPressureScore * 0.15 +
+        beaconPressureScore * 0.05 +
+        expansionScore * 0.1 +
+        worldCoreFallbackScore * 0.1 +
+        serverScore * 0.05 +
+        runtimeScore * 0.1 +
+        schedulerScore * 0.05 +
+        earnScore * 0.05 +
         dualBandScore * 0.1 +
-        sendScore * 0.1
+        sendScore * 0.05 +
+        proxyScore * 0.05
       )
     )
   );
 
   return Object.freeze({
     compositeScore,
-    components
+    components,
+    proxy: {
+      pressure: proxyPressure,
+      fallback: proxyFallback,
+      boost: proxyBoost,
+      mode: getProxyMode?.() || null,
+      lineage: getProxyLineage?.() || null
+    }
   });
 }
 
@@ -694,7 +810,7 @@ export function routeAIRequest(
 
   // --------------------------------------------------------------------------
   // 2) Persona Selection (request-driven baseline)
-// --------------------------------------------------------------------------
+  // --------------------------------------------------------------------------
   let personaId = Personas.NEUTRAL;
 
   if (
@@ -733,7 +849,7 @@ export function routeAIRequest(
 
   // --------------------------------------------------------------------------
   // 3) ORGANISM-DRIVEN PERSONA OVERRIDES (STRESS-AWARE)
-// --------------------------------------------------------------------------
+  // --------------------------------------------------------------------------
   const health = organismHealth;
   const h = health.components || {};
 
@@ -785,6 +901,14 @@ export function routeAIRequest(
     personaId = Personas.NEUTRAL;
   }
 
+  // Proxy fallback → safe persona
+  if (health.proxy?.fallback && personaId !== Personas.NEUTRAL) {
+    reasoning.push(
+      "ORGANISM-AWARE: proxy fallback active → forcing NEUTRAL persona (safe symbolic lane)."
+    );
+    personaId = Personas.NEUTRAL;
+  }
+
   // Composite stress critical → ARCHITECT or OBSERVER depending on flags
   if (health.compositeScore >= 0.9) {
     if (
@@ -827,7 +951,7 @@ export function routeAIRequest(
 
   // --------------------------------------------------------------------------
   // 5) Dual‑Band Integration (Organism Snapshot Metrics)
-// --------------------------------------------------------------------------
+  // --------------------------------------------------------------------------
   let organismSnapshotBits = 0;
   let binaryLoad = 0;
   let binaryPressure = 0;
@@ -872,8 +996,8 @@ export function routeAIRequest(
   );
 
   // --------------------------------------------------------------------------
-  // 7) Routing Artery v4 (organism-aware)
-// --------------------------------------------------------------------------
+  // 7) Routing Artery v4 (organism-aware + proxy-aware)
+  // --------------------------------------------------------------------------
   const artery = computeRoutingArteryV4(flags, binaryLoad, personaId, health);
 
   reasoning.push(
@@ -885,12 +1009,12 @@ export function routeAIRequest(
       2
     )} (${artery.budgetBucket}), organismStress=${artery.organismStress.toFixed(
       2
-    )}`
+    )}, proxyPressure=${artery.proxyPressure.toFixed(2)}`
   );
 
   // --------------------------------------------------------------------------
   // 8) Overmind + Safety + Personal Hints (SYNC HINTS ONLY)
-// --------------------------------------------------------------------------
+  // --------------------------------------------------------------------------
   const safetyMode =
     requestedSafetyMode || persona?.safetyMode || "standard";
 
@@ -900,7 +1024,8 @@ export function routeAIRequest(
     safetyMode,
     flags,
     archetypePrimaryPage: primaryArchetypePage || null,
-    organismHealth: health
+    organismHealth: health,
+    proxy: health.proxy || null
   });
 
   const personaSafety = Object.freeze({
@@ -943,76 +1068,69 @@ export async function routeAIRequestAdvanced(
   dualBand = null,
   options = {}
 ) {
-  const base = routeAIRequest(request, dualBand, options);
+  // First, run sync router to get base packet
+  const basePacket = routeAIRequest(request, dualBand, options);
+  const reasoning = [...(basePacket.reasoning || [])];
 
-  let overmindResult = null;
-  let nodeAdminMeta = null;
-
+  // Overmind enrichment (symbolic only, no mutation of base packet)
+  let overmindMeta = null;
   try {
-    overmindResult = await Overmind.process(base.overmind);
-  } catch (err) {
-    // Overmind failures must not break routing
-    nodeAdminMeta = { overmindError: String(err?.message || err || "unknown") };
-  }
-
-  try {
-    if (overmindResult && overmindResult.meta) {
-      nodeAdminMeta = await NodeAdmin.handleOvermindMeta(overmindResult.meta);
+    if (typeof Overmind?.analyzeRoutingPacket === "function") {
+      overmindMeta = await Overmind.analyzeRoutingPacket(basePacket, {
+        intent: request.intent || null
+      });
+      reasoning.push("Overmind: routing packet analyzed (advanced path).");
     }
-  } catch (err) {
-    // NodeAdmin failures must not break routing
-    nodeAdminMeta = {
-      ...(nodeAdminMeta || {}),
-      nodeAdminError: String(err?.message || err || "unknown")
-    };
+  } catch {
+    reasoning.push("Overmind: enrichment failed (ignored).");
+  }
+
+  // NodeAdmin enrichment (health + artery visibility)
+  let nodeAdminMeta = null;
+  try {
+    if (typeof NodeAdmin?.recordRoutingArtery === "function") {
+      nodeAdminMeta = await NodeAdmin.recordRoutingArtery({
+        artery: basePacket.artery,
+        organismHealth: basePacket.organismHealth,
+        personaId: basePacket.personaId,
+        intent: request.intent || null
+      });
+      reasoning.push("NodeAdmin: routing artery recorded (advanced path).");
+    }
+  } catch {
+    reasoning.push("NodeAdmin: enrichment failed (ignored).");
   }
 
   return Object.freeze({
-    ...base,
-    overmindResult: overmindResult || null,
-    nodeAdminMeta: nodeAdminMeta || null
+    ...basePacket,
+    advanced: {
+      overmind: overmindMeta,
+      nodeAdmin: nodeAdminMeta
+    },
+    reasoning
   });
 }
 
 // ============================================================================
-//  EXPLAIN ROUTING — Interpreter Summary (SYNC, LIGHTWEIGHT)
+//  PUBLIC API SURFACE
 // ============================================================================
 
-export function explainRoutingDecision(
-  request = {},
-  dualBand = null,
-  options = {}
-) {
-  const result = routeAIRequest(request, dualBand, options);
+export const AIRouterAPI = Object.freeze({
+  meta: AIRouterMeta,
+  route: routeAIRequest,
+  routeAdvanced: routeAIRequestAdvanced,
+  prewarm: prewarmAIRouter,
+  attachCastleSnapshot,
+  attachMeshSnapshot,
+  attachExpansionSnapshot,
+  attachServerSnapshot,
+  attachWorldCoreSnapshot,
+  attachDualBandOrganism,
+  attachBinarySend,
+  attachRuntimeSnapshot,
+  attachSchedulerSnapshot,
+  attachEarnSnapshot,
+  attachBeaconMeshSnapshot
+});
 
-  return Object.freeze({
-    personaId: result.personaId,
-    archetypePrimaryPage: result.archetypes?.primaryPage || null,
-    dualBand: result.dualBand,
-    safetyMode: result.personaSafety?.safetyMode || "standard",
-    artery: result.artery,
-    organismHealth: result.organismHealth,
-    reasoning: result.reasoning
-  });
-}
-
-// ============================================================================
-//  DUAL‑MODE EXPORTS (ESM + CommonJS)
-// ============================================================================
-
-if (typeof module !== "undefined") {
-  module.exports = {
-    AIRouterMeta,
-    routeAIRequest,
-    routeAIRequestAdvanced,
-    explainRoutingDecision,
-    prewarmAIRouter,
-    attachCastleSnapshot,
-    attachMeshSnapshot,
-    attachExpansionSnapshot,
-    attachServerSnapshot,
-    attachWorldCoreSnapshot,
-    attachDualBandOrganism,
-    attachBinarySend
-  };
-}
+export default AIRouterAPI;

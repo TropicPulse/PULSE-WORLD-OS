@@ -84,7 +84,12 @@ AI_EXPERIENCE_META = {
     overmindAware: true,
     pulseTouchAware: true,
     pulseNetAware: true,
-    schedulerAware: true
+    schedulerAware: true,
+
+    proxyAware: true,
+    proxyPressureAware: true,
+    proxyFallbackAware: true,
+    proxyBoostAware: true
   },
 
   contract: {
@@ -111,33 +116,20 @@ AI_EXPERIENCE_META = {
 */
 
 // ============================================================================
-// IMPORTS — ORGANISM CONTEXT PROVIDERS
+// IMPORTS — ORGANISM CONTEXT PROVIDERS (kept exactly as in your tree)
 // ============================================================================
-//
-// These are symbolic-only context providers. They expose the *state* of each
-// organ without performing IO, routing, or execution. Mesh consumes them to
-// build the organism map.
-//
-// All of these live under PULSE-EXPANSION / PULSE-WORLD style paths and are
-// named in the v12.3-Presence / v14-IMMORTAL era style you’ve used.
-//
-// If any of these files don’t exist yet, they are the next organs to build.
-// Mesh is the consumer; Expansion is the one that wires them up.
-//
 
-// Expansion / world / region / cluster
-import { getPulseExpansionContext } from "../PULSE-EXPANSION/PulseExpansion-v12.3-Presence.js";
+// Castle / Server / Router / Expansion meta
+import { PulseExpansionMeta, createPulseExpansion } from "../PULSE-EXPANSION/PulseExpansion-v12.3-Presence.js";
+import { PulseCastleMeta, createPulseCastle } from "../PULSE-EXPANSION/PulseCastle-v12.3-Presence.js";
+import { PulseServerMeta, createPulseServer } from "../PULSE-EXPANSION/PulseServer-v12.3-Presence.js";
+import { PulseBeaconMesh } from "../PULSE-EXPANSION/PulseMesh-v12.3-Presence.js";
+import { PulseRouterMeta, createPulseRouter } from "../PULSE-EXPANSION/PulseRouter-v12.3-Presence.js";
+// User lanes
+import { getPulseUserContext, createPulseWorldCore } from "../PULSE-EXPANSION/PulseUser-v12.3-Presence.js";
 
-// Castle / beacon / engine / console
-import { getPulseCastleContext } from "../PULSE-EXPANSION/PulseCastle-v12.3-Presence.js";
 import { getBeaconEngineContext } from "../PULSE-EXPANSION/PulseBeaconEngine-v12.3-Presence.js";
 import { getConsoleContext } from "../PULSE-EXPANSION/PulseBeaconConsole-v12.3-Presence.js";
-
-// Server lanes
-import { getPulseServerContext } from "../PULSE-EXPANSION/PulseServer-v12.3-Presence.js";
-
-// User lanes
-import { getPulseUserContext } from "../PULSE-EXPANSION/PulseUser-v12.3-Presence.js";
 
 // Touch (presence / mode / page / chunkProfile / trust / identity)
 import { getPulseTouchContext } from "../../PULSE-UI/PULSE-TOUCH.js";
@@ -153,6 +145,64 @@ import { getPulseSchedulerContext } from "../PULSE-X/PulseScheduler-v2.js";
 
 // Overmind (world-lens / safety / persona mix)
 import { getPulseOvermindContext } from "../PULSE-AI/aiOvermindPrime.js";
+
+// Proxy context (symbolic-only, IMMORTAL-safe)
+import {
+  getProxyContext,
+  getProxyPressure,
+  getProxyBoost,
+  getProxyFallback,
+  getProxyMode,
+  getProxyLineage
+} from "../PULSE-PROXY/PulseProxyContext-v16.js";
+
+// ============================================================================
+// v16 ORGANISM CONTEXT SHIMS (sub-imports actually implemented)
+// ============================================================================
+//
+// Mesh already *consumes* these symbolic contexts in buildOrganismContext.
+// Here we provide deterministic, synthetic shims so every lane has a stable
+// v16-ready view, without adding IO or routing.
+//
+
+// Singletons (symbolic only, no network / no async)
+const _expansionSingleton =
+  (typeof createPulseExpansion === "function"
+    ? createPulseExpansion({})
+    : null) || null;
+
+const _castleSingleton =
+  (typeof createPulseCastle === "function"
+    ? createPulseCastle({})
+    : null) || null;
+
+const _serverSingleton =
+  (typeof createPulseServer === "function"
+    ? createPulseServer({})
+    : null) || null;
+
+// Symbolic context getters used by Mesh
+function getPulseExpansionContext() {
+  // v16-style: expose meta + any lightweight snapshot the core exposes
+  return {
+    meta: PulseExpansionMeta,
+    core: _expansionSingleton || null
+  };
+}
+
+function getPulseCastleContext() {
+  return {
+    meta: PulseCastleMeta,
+    core: _castleSingleton || null
+  };
+}
+
+function getPulseServerContext() {
+  return {
+    meta: PulseServerMeta,
+    core: _serverSingleton || null
+  };
+}
 
 // ============================================================================
 // META
@@ -197,7 +247,12 @@ export const PulseMeshMeta = Object.freeze({
     overmindAware: true,
     pulseTouchAware: true,
     pulseNetAware: true,
-    schedulerAware: true
+    schedulerAware: true,
+
+    proxyAware: true,
+    proxyPressureAware: true,
+    proxyFallbackAware: true,
+    proxyBoostAware: true
   })
 });
 
@@ -251,7 +306,13 @@ export function createPulseMesh({
       relayLoadScore: 0,
       pingFrequencyScore: 0,
       meshContributionScore: 0,
-      meshPressureIndex: 0
+      meshPressureIndex: 0,
+
+      // Proxy-aware overlays
+      proxyPressure: 0,
+      proxyBoost: 0,
+      proxyFallback: false,
+      proxyMode: "normal"
     },
     thresholds: Object.freeze({
       weakThresholdUsers: 1,
@@ -278,6 +339,15 @@ export function createPulseMesh({
     const scheduler = getPulseSchedulerContext?.() || {};
     const overmind = getPulseOvermindContext?.() || {};
 
+    const proxyMeta = {
+      context: getProxyContext?.() || null,
+      pressure: getProxyPressure?.() ?? 0,
+      boost: getProxyBoost?.() ?? 0,
+      fallback: getProxyFallback?.() ?? false,
+      mode: getProxyMode?.() || "normal",
+      lineage: getProxyLineage?.() || null
+    };
+
     return {
       expansion,
       castle,
@@ -289,7 +359,8 @@ export function createPulseMesh({
       net,
       runtime,
       scheduler,
-      overmind
+      overmind,
+      proxyMeta
     };
   }
 
@@ -302,6 +373,7 @@ export function createPulseMesh({
     const runtime = ctx.runtime || {};
     const net = ctx.net || {};
     const overmind = ctx.overmind || {};
+    const proxyMeta = ctx.proxyMeta || {};
 
     return Object.freeze({
       bandPresence: touch.bandPresence || "unknown",
@@ -323,7 +395,11 @@ export function createPulseMesh({
       netInstanceCount: net.instanceCount || null,
       netIngressPressure: net.meshPressureIndex || null,
 
-      overmindWorldLens: overmind.worldLens || null
+      overmindWorldLens: overmind.worldLens || null,
+
+      // Proxy overlays
+      proxyMode: proxyMeta.mode || "normal",
+      proxyFallback: !!proxyMeta.fallback
     });
   }
 
@@ -333,6 +409,7 @@ export function createPulseMesh({
     const runtime = ctx.runtime || {};
     const expansion = ctx.expansion || {};
     const user = ctx.user || {};
+    const proxyMeta = ctx.proxyMeta || {};
 
     return Object.freeze({
       advantageScore: touch.advantageScore ?? null,
@@ -345,7 +422,12 @@ export function createPulseMesh({
 
       runtimeContributionHeat: runtime.hotInstances || null,
       expansionTier: expansion.tier || null,
-      userContributionScore: user.contributionScore ?? null
+      userContributionScore: user.contributionScore ?? null,
+
+      // Proxy overlays
+      proxyPressure: proxyMeta.pressure ?? 0,
+      proxyBoost: proxyMeta.boost ?? 0,
+      proxyFallback: !!proxyMeta.fallback
     });
   }
 
@@ -376,12 +458,33 @@ export function createPulseMesh({
     else if (userCount >= t.stableThresholdUsers) meshStrength = "stable";
     else if (userCount >= t.weakThresholdUsers) meshStrength = "weak";
 
-    const pressure =
+    const basePressure =
       (relayLoadScore * 0.4) +
       (pingFrequencyScore * 0.3) +
       (meshContributionScore * 0.3);
 
-    const meshPressureIndex = Math.max(0, Math.min(100, Math.round(pressure)));
+    let meshPressureIndex = Math.max(0, Math.min(100, Math.round(basePressure)));
+
+    // Proxy overlays (symbolic-only, deterministic)
+    const proxyPressure = getProxyPressure?.() ?? 0;
+    const proxyBoost = getProxyBoost?.() ?? 0;
+    const proxyFallback = getProxyFallback?.() ?? false;
+    const proxyMode = getProxyMode?.() || "normal";
+
+    DensityHealth.metrics.proxyPressure = proxyPressure;
+    DensityHealth.metrics.proxyBoost = proxyBoost;
+    DensityHealth.metrics.proxyFallback = proxyFallback;
+    DensityHealth.metrics.proxyMode = proxyMode;
+
+    // Increase pressure when proxy is under strain, reduce slightly on boost
+    meshPressureIndex += Math.round(proxyPressure * 20);
+    meshPressureIndex -= Math.round(proxyBoost * 5);
+
+    if (proxyFallback || proxyMode === "fallback") {
+      meshPressureIndex = Math.min(100, meshPressureIndex + 10);
+    }
+
+    meshPressureIndex = Math.max(0, Math.min(100, meshPressureIndex));
 
     DensityHealth.metrics.meshStrength = meshStrength;
     DensityHealth.metrics.meshPressureIndex = meshPressureIndex;
@@ -468,6 +571,7 @@ export function createPulseMesh({
     const net = ctx.net || {};
     const scheduler = ctx.scheduler || {};
     const overmind = ctx.overmind || {};
+    const proxyMeta = ctx.proxyMeta || {};
 
     return Object.freeze({
       routerLoad: net.routerLoad || null,
@@ -477,13 +581,18 @@ export function createPulseMesh({
       schedulerStopOnWorldLens: scheduler.stopOnWorldLens || null,
       overmindWorldLens: overmind.worldLens || null,
       overmindSafetyStatus: overmind.safetyStatus || null,
-      meshPressureIndex: DensityHealth.metrics.meshPressureIndex
+      meshPressureIndex: DensityHealth.metrics.meshPressureIndex,
+
+      proxyMode: proxyMeta.mode || "normal",
+      proxyPressure: proxyMeta.pressure ?? 0,
+      proxyFallback: !!proxyMeta.fallback
     });
   }
 
   function buildRuntimeSignal() {
     const ctx = buildOrganismContext();
     const runtime = ctx.runtime || {};
+    const proxyMeta = ctx.proxyMeta || {};
 
     return Object.freeze({
       hotInstances: runtime.hotInstances || null,
@@ -493,13 +602,16 @@ export function createPulseMesh({
       hotPages: runtime.hotPages || null,
       hotChunkProfiles: runtime.hotChunkProfiles || null,
       hotTrust: runtime.hotTrust || null,
-      meshPressureIndex: DensityHealth.metrics.meshPressureIndex
+      meshPressureIndex: DensityHealth.metrics.meshPressureIndex,
+
+      proxyMode: proxyMeta.mode || "normal"
     });
   }
 
   function buildTouchSignal() {
     const ctx = buildOrganismContext();
     const touch = ctx.touch || {};
+    const proxyMeta = ctx.proxyMeta || {};
 
     return Object.freeze({
       presence: touch.presence || "unknown",
@@ -509,7 +621,9 @@ export function createPulseMesh({
       identity: touch.identity || null,
       identityTier: touch.identityTier || "anon",
       trusted: touch.trusted || "unknown",
-      region: touch.region || regionID || "unknown"
+      region: touch.region || regionID || "unknown",
+
+      proxyMode: proxyMeta.mode || "normal"
     });
   }
 
@@ -546,6 +660,16 @@ export function createPulseMesh({
           maxPressure = Math.max(maxPressure, dh.meshPressureIndex);
         }
       } catch {}
+    }
+
+    const proxyPressure = getProxyPressure?.() ?? 0;
+    const proxyFallback = getProxyFallback?.() ?? false;
+
+    if (proxyPressure > 0) {
+      maxPressure = Math.min(100, maxPressure + Math.round(proxyPressure * 10));
+    }
+    if (proxyFallback) {
+      maxPressure = Math.min(100, maxPressure + 5);
     }
 
     return Object.freeze({

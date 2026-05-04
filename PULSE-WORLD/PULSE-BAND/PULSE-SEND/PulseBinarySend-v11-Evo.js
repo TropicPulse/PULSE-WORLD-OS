@@ -1,6 +1,6 @@
 // ============================================================================
-//  BinarySend-v12.3-PURE-EVO-Binary.js
-//  PURE BINARY SEND ORGAN — v12.3 EVO BINARY EDITION
+//  BinarySend-v16-IMMORTAL-ORGANISM.js
+//  PURE BINARY SEND ORGAN — v12.3 EVO BINARY CORE + v16 IMMORTAL CONTEXT
 // ============================================================================
 //  ROLE:
 //    - Accept ONLY pure binary arrays (0/1).
@@ -10,15 +10,17 @@
 //    - No drift, no randomness, no mutation.
 //    - Binary-aware: emits binary diagnostics + signatures.
 //    - 12.3+: cacheChunk-aware, prewarm-aware, presence-aware.
+//    - v16: proxy-aware (pressure / fallback / boost), organism-aware (safe).
 //    - Fallback-safe: deterministic fallback to proxy.
 // ============================================================================
+
 /*
 AI_EXPERIENCE_META = {
   identity: "PulseBinarySend",
-  version: "v14-EVO-IMMORTAL",
+  version: "v16-IMMORTAL-ORGANISM",
   layer: "frontend",
   role: "binary_send_engine",
-  lineage: "PulseOS-v12",
+  lineage: "PulseOS-v12 → v14-EVO-IMMORTAL → v16-IMMORTAL-ORGANISM",
 
   evo: {
     binaryCore: true,
@@ -26,6 +28,8 @@ AI_EXPERIENCE_META = {
     dualBand: true,
     chunkAligned: true,
     presenceAware: true,
+    proxyAware: true,
+    organismAware: true,
     safeRouteFree: true,
     deterministic: true
   },
@@ -49,34 +53,130 @@ AI_EXPERIENCE_META = {
 }
 */
 
+// ============================================================================
+//  v16 IMMORTAL META (symbolic-only, no impact on binary core)
+// ============================================================================
+export const PulseBinarySendMetaV16 = Object.freeze({
+  layer: "BinarySend",
+  role: "PURE_BINARY_SEND_ORGAN",
+  version: "v16-IMMORTAL-ORGANISM",
+  identity: "BinarySend-v16-IMMORTAL",
+
+  evo: Object.freeze({
+    binaryOnly: true,
+    deterministic: true,
+    driftProof: true,
+    dualBandAware: true,
+    proxyAware: true,
+    organismAware: true,
+    pressureAware: true,
+    fallbackAware: true,
+    prewarmAware: true,
+    presenceAware: true,
+    chunkAware: true,
+    zeroNetwork: true,
+    zeroAsync: true,
+    zeroMutation: true
+  }),
+
+  guarantees: Object.freeze({
+    noSymbolicLogic: true,
+    noRouting: true,
+    noPatterns: true,
+    noLineage: true,
+    noCompute: true,
+    noRandomness: true,
+    noExternalMutation: true,
+    noDynamicImports: true,
+    noJSONExternal: true,
+    noObjectsExternal: true
+  }),
+
+  contract: Object.freeze({
+    input: ["BinaryArray"],
+    output: ["BinarySendPacket"],
+    consumers: [
+      "PulseRouter",
+      "DualBandOrganism",
+      "PulseServer",
+      "PulseExpansion",
+      "PulseMesh"
+    ]
+  })
+});
+
 // --- Evolution Engines ------------------------------------------------------
-import {createPulseV2 as PulseV2EvolutionEngine }  from "./PulseV2EvolutionEngine-v11-Evo.js";
-import {createPulseV3 as PulseV3UnifiedOrganism }  from "./PulseV3UnifiedOrganism-v11-Evo.js";
+import { createPulseV2 as PulseV2EvolutionEngine } from "./PulseV2EvolutionEngine-v11-Evo.js";
+import { createPulseV3 as PulseV3UnifiedOrganism } from "./PulseV3UnifiedOrganism-v11-Evo.js";
 
 // --- Impulse Layer ----------------------------------------------------------
-import {createPulseSendImpulse as PulseSendImpulse }        from "./PulseSendImpulse-v11-Evo.js";
+import { createPulseSendImpulse as PulseSendImpulse } from "./PulseSendImpulse-v11-Evo.js";
 
 // --- Legacy Pulse Layer -----------------------------------------------------
-import {createLegacyPulse as PulseSendLegacyPulse }    from "./PulseSendLegacyPulse-v11-Evo.js";
+import { createLegacyPulse as PulseSendLegacyPulse } from "./PulseSendLegacyPulse-v11-Evo.js";
 
 // --- Adapter Layer ----------------------------------------------------------
-import {adaptPulseSendPacket as PulseSendAdapter }        from "./PulseSendAdapter.js";
+import { adaptPulseSendPacket as PulseSendAdapter } from "./PulseSendAdapter.js";
 
 // --- Engine Layer -----------------------------------------------------------
-import {PulseSendMover as PulseSendEngine }         from "./PulseSendEngine.js";
+import { PulseSendMover as PulseSendEngine } from "./PulseSendEngine.js";
 
 // --- Return Layer -----------------------------------------------------------
-import {createPulseSendReturn as PulseSendReturn }         from "./PulseSendReturn.js";
+import { createPulseSendReturn as PulseSendReturn } from "./PulseSendReturn.js";
 
 // --- System Layer (Final Conductor) ----------------------------------------
-import {createPulseSendSystem as PulseSendSystem }         from "./PulseSendSystem.js";
+import { createPulseSendSystem as PulseSendSystem } from "./PulseSendSystem.js";
+
+// --- Proxy Context (v16 IMMORTAL ORGANISM) ---------------------------------
+import {
+  getProxyContext,
+  getProxyPressure,
+  getProxyBoost,
+  getProxyFallback,
+  getProxyMode,
+  getProxyLineage
+} from "../PULSE-PROXY/PulseProxyContext-v16.js";
+
+// ============================================================================
+//  PROXY INTEGRATION — BinarySend Throughput Control (symbolic-only)
+//  NOTE: This is symbolic meta; it does NOT alter binary bits, only informs
+//        consumers about recommended throughput based on proxy state.
+// ============================================================================
+function computeMaxBinaryThroughput() {
+  let maxBinaryThroughput = 8; // default safe throughput
+
+  // Proxy fallback → strong throttle
+  if (getProxyFallback()) {
+    maxBinaryThroughput = Math.max(1, maxBinaryThroughput - 4);
+  }
+
+  // Proxy pressure → dynamic throttling
+  const proxyPressure = getProxyPressure();
+  if (proxyPressure > 0.7) {
+    maxBinaryThroughput = Math.max(1, maxBinaryThroughput - 2);
+  } else if (proxyPressure > 0.4) {
+    maxBinaryThroughput = Math.max(1, maxBinaryThroughput - 1);
+  }
+
+  // Proxy boost → increase throughput if not in fallback
+  if (getProxyBoost() > 0.5 && !getProxyFallback()) {
+    maxBinaryThroughput += 2;
+  }
+
+  // Proxy mode override
+  if (getProxyMode() === "fallback") {
+    maxBinaryThroughput = 1;
+  }
+
+  return maxBinaryThroughput;
+}
 
 // ============================================================================
 // ⭐ Pulse Intelligence (logic-only, IMMORTAL-safe)
 // ============================================================================
 function computePulseIntelligence({ advantageField, presenceField, factoringSignal, band }) {
   const advantageScore = advantageField.advantageScore || 0;
-  const advantageTier  = advantageField.advantageTier  || 0;
+  const advantageTier = advantageField.advantageTier || 0;
 
   const presenceTier = presenceField.presenceTier || "idle";
   const presenceWeight =
@@ -144,7 +244,7 @@ export function createBinarySend({
 
   // ---------------------------------------------------------------------------
   //  12.3+: deterministic binary signature (dual-band safe)
-  // ---------------------------------------------------------------------------
+// ---------------------------------------------------------------------------
   function computeSignature(bits) {
     let h = 0;
     for (let i = 0; i < bits.length; i++) {
@@ -155,7 +255,7 @@ export function createBinarySend({
 
   // ---------------------------------------------------------------------------
   //  12.3+: cacheChunk fingerprint (binary-only)
-  // ---------------------------------------------------------------------------
+// ---------------------------------------------------------------------------
   function computeCacheChunk(bits) {
     let acc = 1;
     for (let i = 0; i < bits.length; i++) {
@@ -166,7 +266,7 @@ export function createBinarySend({
 
   // ---------------------------------------------------------------------------
   //  12.3+: prewarm hint (binary-only)
-  // ---------------------------------------------------------------------------
+// ---------------------------------------------------------------------------
   function computePrewarm(bits) {
     if (bits.length >= 512) return "prewarm-aggressive";
     if (bits.length >= 128) return "prewarm-medium";
@@ -176,7 +276,7 @@ export function createBinarySend({
 
   // ---------------------------------------------------------------------------
   //  12.3+: presence scope (binary-only)
-  // ---------------------------------------------------------------------------
+// ---------------------------------------------------------------------------
   function computePresence(bits) {
     const len = bits.length;
     if (len >= 1024) return "presence-global";
@@ -202,7 +302,12 @@ export function createBinarySend({
     const presence = computePresence(bits);
     const signature = computeSignature(bits);
 
-    const solvednessScore = Math.min(1, density * 0.6 + (shiftDepth ? 0.2 : 0) + (len > 256 ? 0.2 : 0));
+    const solvednessScore = Math.min(
+      1,
+      density * 0.6 +
+        (shiftDepth ? 0.2 : 0) +
+        (len > 256 ? 0.2 : 0)
+    );
 
     const computeTier =
       solvednessScore >= 0.9 ? "nearSolution" :
@@ -211,12 +316,30 @@ export function createBinarySend({
       solvednessScore >= 0.2 ? "lowPriority"  :
       "avoidCompute";
 
-    const readinessScore = Math.min(1, solvednessScore * 0.7 + (parity === "even" ? 0.1 : 0));
+    const baseReadinessScore = Math.min(
+      1,
+      solvednessScore * 0.7 + (parity === "even" ? 0.1 : 0)
+    );
+
+    // ORGANISM-AWARE (symbolic-only): proxy pressure influences readiness
+    const proxyPressure = getProxyPressure();
+    const proxyFallback = getProxyFallback();
+    const proxyBoost = getProxyBoost();
+
+    const organismAdjustedReadiness = Math.max(
+      0,
+      Math.min(
+        baseReadinessScore * (proxyFallback ? 0.5 : 1) -
+          proxyPressure * 0.2 +
+          (proxyBoost > 0.5 ? 0.1 : 0),
+        1
+      )
+    );
 
     return {
       solvednessScore,
       computeTier,
-      readinessScore,
+      readinessScore: organismAdjustedReadiness,
       parity,
       density,
       shiftDepth,
@@ -240,7 +363,7 @@ export function createBinarySend({
 
   // ---------------------------------------------------------------------------
   //  INTERNAL: USE ALL IMPORTS (12.3+ integration surfaces)
-  // ---------------------------------------------------------------------------
+// ---------------------------------------------------------------------------
   function runTechSurfaces(bits) {
 
     const v2 = PulseV2EvolutionEngine?.createPulseV2
@@ -289,28 +412,42 @@ export function createBinarySend({
 
   // ---------------------------------------------------------------------------
   //  SEND (binary → outbound)
-  // ---------------------------------------------------------------------------
+// ---------------------------------------------------------------------------
   function send(bits) {
     const pure = ensurePureBinaryOrFallback("send", bits, "non-binary-output");
 
-    const signature   = computeSignature(pure);
-    const cacheChunk  = computeCacheChunk(pure);
-    const prewarm     = computePrewarm(pure);
-    const presence    = computePresence(pure);
+    const signature  = computeSignature(pure);
+    const cacheChunk = computeCacheChunk(pure);
+    const prewarm    = computePrewarm(pure);
+    const presence   = computePresence(pure);
 
     const tech = runTechSurfaces(pure);
 
     // ⭐ v14.4 intelligence
     const pulseIntelligence = computeBinaryIntelligence(pure);
 
+    // ORGANISM-AWARE: proxy meta (symbolic-only)
+    const proxyMeta = {
+      proxyPressure: getProxyPressure(),
+      proxyFallback: getProxyFallback(),
+      proxyBoost: getProxyBoost(),
+      proxyMode: getProxyMode(),
+      proxyLineage: getProxyLineage()
+    };
+
+    // ORGANISM-AWARE: recommended throughput (symbolic-only)
+    const recommendedThroughput = computeMaxBinaryThroughput();
+
     if (trace) {
-      console.log("[BinarySend-v14.4] OUT:", pure, {
+      console.log("[BinarySend-v16] OUT:", pure, {
         signature,
         cacheChunk,
         prewarm,
         presence,
         tech,
-        pulseIntelligence
+        pulseIntelligence,
+        proxyMeta,
+        recommendedThroughput
       });
     }
 
@@ -324,7 +461,9 @@ export function createBinarySend({
       tech,
       pulseIntelligence,
       pulseIntelligenceSignature: computeSignature(pure),
-      length: pure.length
+      length: pure.length,
+      proxyMeta,
+      recommendedThroughput
     };
   }
 
@@ -339,7 +478,7 @@ export function createBinarySend({
     }
 
     if (trace) {
-      console.warn(`[BinarySend-v14.4] FALLBACK (${op}):`, reason, bits);
+      console.warn(`[BinarySend-v16] FALLBACK (${op}):`, reason, bits);
     }
 
     const result = fallbackProxy.exchange
@@ -351,6 +490,16 @@ export function createBinarySend({
     const tech = runTechSurfaces(safe);
 
     const pulseIntelligence = computeBinaryIntelligence(safe);
+
+    const proxyMeta = {
+      proxyPressure: getProxyPressure(),
+      proxyFallback: getProxyFallback(),
+      proxyBoost: getProxyBoost(),
+      proxyMode: getProxyMode(),
+      proxyLineage: getProxyLineage()
+    };
+
+    const recommendedThroughput = computeMaxBinaryThroughput();
 
     return {
       ok: false,
@@ -364,7 +513,9 @@ export function createBinarySend({
       tech,
       pulseIntelligence,
       pulseIntelligenceSignature: computeSignature(safe),
-      length: safe.length
+      length: safe.length,
+      proxyMeta,
+      recommendedThroughput
     };
   }
 

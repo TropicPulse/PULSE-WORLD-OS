@@ -1,22 +1,24 @@
-// ============================================================================
-//  PULSE EXPANSION — v14-IMMORTAL
-//  Presence Region Governor / Network Stretcher to PULSE-NET
-//  Every-Advantage / Regioning-Aware / Beacon-Aware / Castle-Aware / PulseNet-Aware
-// ============================================================================
-
+/**
+ * ============================================================================
+ *  PULSE EXPANSION — v16-IMMORTAL-ORGANISM
+ *  Presence Region Governor / Network Stretcher to PULSE-NET
+ *  Every-Advantage / Regioning-Aware / Beacon-Aware / Castle-Aware / PulseNet-Aware
+ * ============================================================================
+ */
 /*
 AI_EXPERIENCE_META = {
   identity: "PulseExpansion",
-  version: "v14-IMMORTAL",
+  version: "v16-IMMORTAL-ORGANISM",
   layer: "presence_expansion",
   role: "presence_region_governor",
-  lineage: "PulsePresence-v14",
+  lineage: "PulseExpansion-v14 → v16-IMMORTAL-ORGANISM",
 
   evo: {
     expansionGovernor: true,
     regionPlanner: true,
     meshAware: true,
     beaconAware: true,
+    beaconMeshAware: true,
     castleAware: true,
     serverAware: true,
     userAware: true,
@@ -30,7 +32,10 @@ AI_EXPERIENCE_META = {
     driftProof: true,
     zeroMutationOfInput: true,
     zeroNetwork: true,
-    zeroFilesystem: true
+    zeroFilesystem: true,
+
+    proxyAware: true,
+    meshOrganismAware: true
   },
 
   contract: {
@@ -53,30 +58,50 @@ AI_EXPERIENCE_META = {
 */
 
 import { logger } from "../../PULSE-UI/_BACKEND/PulseProofLogger.js";
-import { pulseCastle, PulseCastleMeta, summarizeCastlePresence} from "./PulseCastle-v12.3-Presence.js";
 
-import { PulseBeaconMeta as PulseBeaconEngineMeta, createPulseBeaconEngine} from "./PulseBeaconEngine-v12.3-Presence.js";
+// v12.3 presence-era metas (still valid for server/router)
+import { PulseServerMeta, createPulseServer } from "../PULSE-EXPANSION/PulseServer-v12.3-Presence.js";
+import { PulseRouterMeta, createPulseRouter } from "../PULSE-EXPANSION/PulseRouter-v12.3-Presence.js";
 
-import { PulseBeaconMeshMeta, PulseBeaconMesh} from "./PulseBeaconMesh-v12.3-Presence.js";
+// v16 world core + castle + beacon mesh
+import { PulseWorldCoreMeta, createPulseWorldCore } from "./PulseUser-v12.3-Presence.js";
+import {
+  PulseCastleMeta,
+  summarizeCastlePresence
+} from "./PulseCastle-v12.3-Presence.js";
+import {
+  PulseBeaconMeshMeta,
+  PulseBeaconMesh
+} from "./PulseBeaconMesh-v12.3-Presence.js";
 
-import { PulseWorldCoreMeta } from "./PulseUser-v12.3-Presence.js";
-import { PulseRouterMeta } from "./PulseRouter-v12.3-Presence.js";
-import { PulseServerMeta } from "./PulseServer-v12.3-Presence.js";
-import { PulseMeshMeta, PulseMeshMeta as BinaryMeshMeta } from "./PulseMesh-v12.3-Presence.js";
+// v11 mesh + binary mesh metas
+import { PulseMeshMeta } from "../PULSE-MESH/PulseMesh-v11-Evo.js";
+import { BinaryMeshMeta } from "../PULSE-MESH/PulseBinaryMesh-v11-Evo.js";
+
+// Beacon engine (physics) v12.3
+import {
+  PulseBeaconMeta as PulseBeaconEngineMeta,
+  createPulseBeaconEngine
+} from "./PulseBeaconEngine-v12.3-Presence.js";
+
+// Touch / presence
+import { getPulseTouchContext } from "../../PULSE-UI/PULSE-TOUCH.js";
+
+// Net / connectivity
+import { getPulseNetContext } from "../../PULSE-UI/_BACKEND/PULSE-NET.js";
+
+// PROXY CONTEXT — v16 IMMORTAL ORGANISM
+import {
+  getProxyContext,
+  getProxyPressure,
+  getProxyBoost,
+  getProxyFallback,
+  getProxyMode,
+  getProxyLineage
+} from "../PULSE-PROXY/PulseProxyContext-v16.js";
 
 // ============================================================================
 //  PULSE-NET BRIDGE CONTRACT (NO IMPORTS, PURELY INJECTED)
-// ============================================================================
-//
-// pulseNetBridge is an injected object (from backend / PULSE-NET server),
-// never imported on device. Expansion only emits symbolic intents:
-//
-//   pulseNetBridge.routeSoldiers(intent)
-//   pulseNetBridge.routeExpansion(intent)
-//   pulseNetBridge.routeMesh(intent)
-//
-// All of these are OPTIONAL. If no bridge is present, Expansion still
-// computes plans but does not perform any network I/O.
 // ============================================================================
 
 function safePulseNetCall(pulseNetBridge, method, payload) {
@@ -97,14 +122,14 @@ function safePulseNetCall(pulseNetBridge, method, payload) {
 }
 
 // ============================================================================
-//  META — FULL-ADVANTAGE STRATEGIST VIEW
+//  META — FULL-ADVANTAGE STRATEGIST VIEW (v16 IMMORTAL ORGANISM)
 // ============================================================================
 
 export const PulseExpansionMeta = Object.freeze({
   layer: "PulseExpansion",
   role: "PRESENCE_STRATEGIST_ORGAN",
-  version: "v14-IMMORTAL",
-  identity: "PulseExpansion-v14-IMMORTAL",
+  version: "v16-IMMORTAL-ORGANISM",
+  identity: "PulseExpansion-v16-IMMORTAL-ORGANISM",
 
   world: Object.freeze({
     castleMeta: PulseCastleMeta,
@@ -140,11 +165,14 @@ export const PulseExpansionMeta = Object.freeze({
     capacitySignalAware: true,
     stressSignalAware: true,
     beaconAware: true,
+    beaconMeshAware: true,
     osBrainAware: true,
     routerAware: true,
     serverExecAware: true,
     binaryMeshAware: true,
     pulseNetAware: true,
+    proxyAware: true,
+    meshOrganismAware: true,
 
     zeroRandomness: true,
     zeroDynamicImports: true,
@@ -315,7 +343,7 @@ function buildRegionPresenceField(regionInfo, cycle) {
       : "presence_low";
 
   return {
-    presenceVersion: "v14",
+    presenceVersion: "v16",
     presenceTier,
     castleCount,
     totalServers,
@@ -341,7 +369,7 @@ function buildRegionAdvantageField(regionInfo, presenceField, cycle) {
     (presenceField.presenceTier === "presence_high" ? 0.1 : 0);
 
   return {
-    advantageVersion: "v14-C",
+    advantageVersion: "v16-C",
     density,
     stress,
     presenceTier: presenceField.presenceTier,
@@ -365,7 +393,7 @@ function buildRegionChunkPrewarmPlan(
   const advantageBoost = advantageField.advantageScore > 0.1 ? 1 : 0;
 
   return {
-    planVersion: "v14-Region-AdvantageC",
+    planVersion: "v16-Region-AdvantageC",
     priority: basePriority + advantageBoost,
     chunks: {
       castleEnvelope: true,
@@ -388,16 +416,16 @@ function buildRegionChunkPrewarmPlan(
 //  WORLD BOOT / PREWARM — CASTLE + BEACON ENGINE + MESH
 // ============================================================================
 
-const Castle = pulseCastle;
-
 const BeaconEngine = createPulseBeaconEngine
   ? createPulseBeaconEngine({ boundCastleID: "GLOBAL_CASTLE" })
   : null;
 
-const BeaconMesh = BeaconEngine ? PulseBeaconMesh({ beacon: BeaconEngine }) : null;
+const BeaconMesh = BeaconEngine
+  ? PulseBeaconMesh({ beacon: BeaconEngine, meshID: "expansion-beacon-mesh", regionID: null, trace: false })
+  : null;
 
 // ============================================================================
-//  CORE ORGAN — PulseExpansion v14-IMMORTAL
+//  CORE ORGAN — PulseExpansion v16-IMMORTAL-ORGANISM
 // ============================================================================
 
 export class PulseExpansion {
@@ -452,10 +480,18 @@ export class PulseExpansion {
     const regionChunkPlan = {};
 
     const beaconSnapshot = BeaconMesh?.getSnapshot?.() ?? null;
-    const beaconPresenceField = beaconSnapshot?.presenceField ?? null;
-    const beaconAdvantageField = beaconSnapshot?.advantageField ?? null;
+    const beaconPresenceField = beaconSnapshot?.composite?.presenceField ?? null;
+    const beaconAdvantageField = beaconSnapshot?.composite?.advantageField ?? null;
 
     const pulseNetIntents = [];
+
+    // PROXY SNAPSHOT — region-wide modifier (symbolic only)
+    const proxyCtx = getProxyContext();
+    const proxyPressure = getProxyPressure();
+    const proxyBoost = getProxyBoost();
+    const proxyFallback = getProxyFallback();
+    const proxyMode = getProxyMode();
+    const proxyLineage = getProxyLineage();
 
     // REGION LOOP
     for (const [regionId, regionInfo] of Object.entries(byRegion)) {
@@ -468,7 +504,7 @@ export class PulseExpansion {
         regionInfo,
         this.cycle
       );
-      const advantageField = buildRegionAdvantageField(
+      let advantageField = buildRegionAdvantageField(
         regionInfo,
         presenceField,
         this.cycle
@@ -479,6 +515,32 @@ export class PulseExpansion {
         advantageField
       );
 
+      const proxyPressureClamped = clamp01(proxyPressure || 0);
+      const proxyStressBoost = proxyPressureClamped * 10;
+      const proxyAdvantageBoost = proxyBoost ? 0.02 : 0;
+
+      const adjustedStress =
+        (advantageField.stress || 0) + proxyStressBoost;
+
+      const adjustedAdvantageScore =
+        (advantageField.advantageScore || 0) +
+        proxyAdvantageBoost -
+        (proxyFallback ? 0.05 : 0);
+
+      advantageField = {
+        ...advantageField,
+        stress: adjustedStress,
+        advantageScore: adjustedAdvantageScore,
+        proxy: {
+          mode: proxyMode,
+          pressure: proxyPressure,
+          boost: proxyBoost,
+          fallback: proxyFallback,
+          lineage: proxyLineage,
+          context: proxyCtx
+        }
+      };
+
       regionPresence[regionId] = presenceField;
       regionAdvantage[regionId] = advantageField;
       regionChunkPlan[regionId] = chunkPlan;
@@ -486,34 +548,45 @@ export class PulseExpansion {
       const castleCount = regionInfo.castles.length;
 
       // EXPANSION
+      const expansionPressure =
+        avgLoadIndex >= 0.6 ||
+        userDensityHint >= 2000 ||
+        stressHint >= 0.6 ||
+        proxyPressureClamped >= 0.8;
+
       if (
-        (avgLoadIndex >= 0.6 ||
-          userDensityHint >= 2000 ||
-          stressHint >= 0.6) &&
-        castleCount < effectiveMaxCastles
+        expansionPressure &&
+        castleCount < effectiveMaxCastles &&
+        !proxyFallback
       ) {
         const action = new ExpansionAction({
           regionId,
           tier: presenceField.presenceTier,
-          reason: "high_load_or_density",
+          reason: "high_load_or_density_or_proxy_pressure",
           desiredServers: this.config.defaultDesiredServersPerCastle,
           desiredSoldiers: this.config.defaultDesiredSoldiersPerCastle
         });
         expansions.push(action);
 
-        // PULSE-NET intent: request remote castle/server stretch
         pulseNetIntents.push({
           kind: "expansion_request",
           regionId,
           tier: presenceField.presenceTier,
           desiredServers: action.desiredServers,
           desiredSoldiers: action.desiredSoldiers,
-          cycle: this.cycle
+          cycle: this.cycle,
+          proxyMode,
+          proxyPressure
         });
       }
 
       // CONTRACTION
-      if (avgLoadIndex <= 0.2 && castleCount > effectiveMinCastles) {
+      const contractionPressure =
+        avgLoadIndex <= 0.2 &&
+        castleCount > effectiveMinCastles &&
+        proxyPressureClamped < 0.5;
+
+      if (contractionPressure) {
         const candidate = regionInfo.castles[regionInfo.castles.length - 1];
         if (candidate) {
           const action = new ContractionAction({
@@ -529,7 +602,9 @@ export class PulseExpansion {
             castleId: candidate.castleId,
             regionId,
             reason: action.reason,
-            cycle: this.cycle
+            cycle: this.cycle,
+            proxyMode,
+            proxyPressure
           });
         }
       }
@@ -539,12 +614,22 @@ export class PulseExpansion {
         const load = c.presenceField?.loadIndex ?? 0;
         const stress = c.presenceField?.stressIndex ?? 0;
 
-        if (load >= 0.7 || stress >= 0.7) {
+        const highPressure =
+          load >= 0.7 ||
+          stress >= 0.7 ||
+          proxyPressureClamped >= 0.8;
+
+        const lowPressure =
+          load <= 0.2 &&
+          stress <= 0.2 &&
+          proxyPressureClamped < 0.5;
+
+        if (highPressure) {
           const action = new SoldierDelegationAction({
             castleId: c.castleId,
             spawn: 2,
             kill: 0,
-            reason: "high_pressure"
+            reason: "high_pressure_or_proxy_pressure"
           });
           soldierDelegation.push(action);
 
@@ -555,9 +640,11 @@ export class PulseExpansion {
             spawn: action.spawn,
             kill: action.kill,
             reason: action.reason,
-            cycle: this.cycle
+            cycle: this.cycle,
+            proxyMode,
+            proxyPressure
           });
-        } else if (load <= 0.2 && stress <= 0.2) {
+        } else if (lowPressure) {
           const action = new SoldierDelegationAction({
             castleId: c.castleId,
             spawn: 0,
@@ -573,7 +660,9 @@ export class PulseExpansion {
             spawn: action.spawn,
             kill: action.kill,
             reason: action.reason,
-            cycle: this.cycle
+            cycle: this.cycle,
+            proxyMode,
+            proxyPressure
           });
         }
       }
@@ -601,7 +690,9 @@ export class PulseExpansion {
             castleId: a.castleId,
             targetCastleId: b.castleId,
             regionId: a.regionId || null,
-            cycle: this.cycle
+            cycle: this.cycle,
+            proxyMode,
+            proxyPressure
           });
         }
       }
@@ -622,28 +713,38 @@ export class PulseExpansion {
         contractions,
         regionPresence,
         regionAdvantage,
-        regionChunkPlan
+        regionChunkPlan,
+        proxyMode,
+        proxyPressure,
+        proxyFallback
       });
 
       safePulseNetCall(bridge, "routeSoldiers", {
         cycle: this.cycle,
-        soldierDelegation
+        soldierDelegation,
+        proxyMode,
+        proxyPressure
       });
 
       safePulseNetCall(bridge, "routeMesh", {
         cycle: this.cycle,
-        rebalanceLinks
+        rebalanceLinks,
+        proxyMode,
+        proxyPressure
       });
     }
 
-    logger?.log?.("expansion", "plan_built_v14", {
+    logger?.log?.("expansion", "plan_built_v16", {
       cycle: this.cycle,
       expansions: expansions.length,
       contractions: contractions.length,
       soldierDelegation: soldierDelegation.length,
       rebalanceLinks: rebalanceLinks.length,
       beaconSnapshotPresent: !!beaconSnapshot,
-      pulseNetBridgePresent: !!bridge
+      pulseNetBridgePresent: !!bridge,
+      proxyMode,
+      proxyPressure,
+      proxyFallback
     });
 
     return new ExpansionPlan({
@@ -670,7 +771,15 @@ export class PulseExpansion {
         osMeta: PulseWorldCoreMeta,
         beaconSnapshot,
         beaconPresenceField,
-        beaconAdvantageField
+        beaconAdvantageField,
+        proxy: {
+          context: proxyCtx,
+          mode: proxyMode,
+          pressure: proxyPressure,
+          boost: proxyBoost,
+          fallback: proxyFallback,
+          lineage: proxyLineage
+        }
       }
     });
   }

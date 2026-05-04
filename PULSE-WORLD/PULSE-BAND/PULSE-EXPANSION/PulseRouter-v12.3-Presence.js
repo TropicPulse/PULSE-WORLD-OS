@@ -45,7 +45,12 @@ AI_EXPERIENCE_META = {
     earnAware: true,
     schedulerAware: true,
     runtimeAware: true,
-    overmindAware: true
+    overmindAware: true,
+
+    proxyAware: true,
+    proxyPressureAware: true,
+    proxyFallbackAware: true,
+    proxyBoostAware: true
   },
 
   contract: {
@@ -75,8 +80,11 @@ AI_EXPERIENCE_META = {
 // ============================================================================
 import { logger } from "../../PULSE-UI/_BACKEND/PulseProofLogger.js";
 
-// Expansion / world
-import { getPulseExpansionContext } from "./PulseExpansion-v12.3-Presence.js";
+import { PulseExpansionMeta, createPulseExpansion, getPulseExpansionContext } from "../PULSE-EXPANSION/PulseExpansion-v12.3-Presence.js";
+import { PulseCastleMeta, createPulseCastle } from "../PULSE-EXPANSION/PulseCastle-v12.3-Presence.js";
+import { PulseServerMeta, createPulseServer } from "../PULSE-EXPANSION/PulseServer-v12.3-Presence.js";
+// User lanes + world core
+import { getPulseUserContext, createPulseWorldCore, pulseUser, PulseUserMeta } from "../PULSE-EXPANSION/PulseUser-v12.3-Presence.js";
 
 // Mesh (symbolic + binary)
 import createBinaryMesh, {
@@ -105,15 +113,18 @@ import { getPulseRuntimeContext } from "../PULSE-X/PulseRuntime-v2-Evo.js";
 import { getPulseSchedulerContext } from "../PULSE-X/PulseScheduler-v2.js";
 import { getPulseOvermindContext } from "../PULSE-AI/aiOvermindPrime.js";
 
-// User / world core
-import {
-  pulseUser,
-  PulseUserMeta,
-  createPulseWorldCore
-} from "./PulseUser-v12.3-Presence.js";
-
 // (Optional) Earn / treasury integration hook (symbolic only)
 import { getEarnContext } from "../PULSE-EARN/PulseEarn-v12.3-Presence.js";
+
+// Proxy context (symbolic-only, IMMORTAL-safe)
+import {
+  getProxyContext,
+  getProxyPressure,
+  getProxyBoost,
+  getProxyFallback,
+  getProxyMode,
+  getProxyLineage
+} from "../PULSE-PROXY/PulseProxyContext-v16.js";
 
 // ============================================================================
 //  META — Router Identity
@@ -149,9 +160,53 @@ export const PulseRouterMeta = Object.freeze({
     runtimeAware: true,
     schedulerAware: true,
     overmindAware: true,
-    earnAware: true
+    earnAware: true,
+
+    proxyAware: true,
+    proxyPressureAware: true,
+    proxyFallbackAware: true,
+    proxyBoostAware: true
   })
 });
+
+// ============================================================================
+//  A-B-A SURFACES — SYMBOLIC BAND SIGNATURES
+// ============================================================================
+function computeHash(str) {
+  let h = 0;
+  const s = String(str || "");
+  for (let i = 0; i < s.length; i++) {
+    h = (h + s.charCodeAt(i) * (i + 1)) % 100000;
+  }
+  return `h${h}`;
+}
+
+function buildBinaryField(cycle) {
+  const density = 10 + cycle * 3;
+  const surface = density + 12;
+  return {
+    binaryPhenotypeSignature: computeHash(`ROUTER_BEXP::${surface}`),
+    binarySurfaceSignature: computeHash(`ROUTER_BEXP_SURF::${surface}`),
+    binarySurface: { density, surface, patternLen: 16 },
+    parity: surface % 2,
+    shiftDepth: Math.floor(Math.log2(surface || 1))
+  };
+}
+
+function buildWaveField(cycle, band) {
+  const amplitude = (cycle + 1) * (band === "binary" ? 9 : 5);
+  return {
+    amplitude,
+    wavelength: amplitude + 5,
+    phase: amplitude % 32,
+    band,
+    mode: band === "binary" ? "compression-wave" : "symbolic-wave"
+  };
+}
+
+function buildBandSignature(band) {
+  return computeHash(`ROUTER_EXP_BAND::${band}`);
+}
 
 // ============================================================================
 //  ORGANISM CONTEXT (for meta + introspection)
@@ -165,6 +220,15 @@ function buildOrganismContext() {
   const overmind = getPulseOvermindContext?.() || {};
   const earn = getEarnContext?.() || {};
 
+  const proxyMeta = {
+    proxy: getProxyContext() || null,
+    proxyPressure: getProxyPressure(),
+    proxyBoost: getProxyBoost(),
+    proxyFallback: getProxyFallback(),
+    proxyMode: getProxyMode(),
+    proxyLineage: getProxyLineage()
+  };
+
   return {
     expansion,
     touch,
@@ -175,7 +239,8 @@ function buildOrganismContext() {
     earn,
     meshMeta: PulseMeshMeta,
     binaryMeshMeta: BinaryMeshMeta,
-    beaconMeshMeta: PulseBeaconMeshMeta
+    beaconMeshMeta: PulseBeaconMeshMeta,
+    proxyMeta
   };
 }
 
@@ -218,6 +283,12 @@ export function createPulseRouter({
   }
 
   log("PulseRouter v16 created:", { routerID, regionID });
+
+  // A-B-A cycle + last fields
+  let cycle = 0;
+  let lastBinaryField = null;
+  let lastWaveField = null;
+  let lastBandSignature = null;
 
   // --------------------------------------------------------------------------
   // 2. Inputs (What the Router Can See)
@@ -494,11 +565,22 @@ export function createPulseRouter({
       meshSignals: context.mesh || null,
       castleSignals: context.castle || null,
       userSignals: context.userSignals || null,
-      routeField: context.routeField || null
+      routeField: context.routeField || null,
+      proxyMeta: context.proxyMeta || null,
+      bandSignature: lastBandSignature,
+      binaryField: lastBinaryField,
+      waveField: lastWaveField
     });
   }
 
   function decideRoute(request) {
+    // A-B-A tick
+    cycle += 1;
+    const band = "symbolic";
+    lastBinaryField = buildBinaryField(cycle);
+    lastWaveField = buildWaveField(cycle, band);
+    lastBandSignature = buildBandSignature(band);
+
     const mesh = getMeshSignals();
     const castle = getCastleSignals();
     const { routeField } = getExpansionSignals();
@@ -517,6 +599,54 @@ export function createPulseRouter({
       0;
     const osBrainStatus = userSignals.osBrainStatus;
 
+    const proxyMeta = {
+      proxy: getProxyContext() || null,
+      proxyPressure: getProxyPressure(),
+      proxyBoost: getProxyBoost(),
+      proxyFallback: getProxyFallback(),
+      proxyMode: getProxyMode(),
+      proxyLineage: getProxyLineage()
+    };
+
+    // Proxy-aware bias: if proxy is in hard fallback, prefer cloud
+    if (proxyMeta.proxyFallback || proxyMeta.proxyMode === "fallback") {
+      return routeTo("cloud", "proxyFallbackActive", {
+        mesh,
+        castle,
+        presenceField,
+        advantageField,
+        userSignals,
+        routeField,
+        proxyMeta
+      });
+    }
+
+    // Proxy pressure: if high, prefer mesh (distributed) over castle
+    if (proxyMeta.proxyPressure > 0.8 && meshStrength !== "weak") {
+      return routeTo("mesh", "proxyPressureHighPreferMesh", {
+        mesh,
+        castle,
+        presenceField,
+        advantageField,
+        userSignals,
+        routeField,
+        proxyMeta
+      });
+    }
+
+    // Proxy boost: if boost and castle not critical, bias to castle
+    if (proxyMeta.proxyBoost > 0.5 && castleLoad !== "critical") {
+      return routeTo("castle", "proxyBoostPreferCastle", {
+        mesh,
+        castle,
+        presenceField,
+        advantageField,
+        userSignals,
+        routeField,
+        proxyMeta
+      });
+    }
+
     // 0. If OS brain is unhealthy or fallback band is high, bias toward cloud
     if (osBrainStatus !== "healthy" || fallbackBandLevel >= 3) {
       return routeTo("cloud", "osBrainUnhealthyOrHighFallback", {
@@ -525,7 +655,8 @@ export function createPulseRouter({
         presenceField,
         advantageField,
         userSignals,
-        routeField
+        routeField,
+        proxyMeta
       });
     }
 
@@ -546,7 +677,8 @@ export function createPulseRouter({
         presenceField,
         advantageField,
         userSignals,
-        routeField
+        routeField,
+        proxyMeta
       });
     }
 
@@ -562,7 +694,8 @@ export function createPulseRouter({
         presenceField,
         advantageField,
         userSignals,
-        routeField
+        routeField,
+        proxyMeta
       });
     }
 
@@ -578,7 +711,8 @@ export function createPulseRouter({
         presenceField,
         advantageField,
         userSignals,
-        routeField
+        routeField,
+        proxyMeta
       });
     }
 
@@ -594,7 +728,8 @@ export function createPulseRouter({
         presenceField,
         advantageField,
         userSignals,
-        routeField
+        routeField,
+        proxyMeta
       });
     }
 
@@ -605,7 +740,8 @@ export function createPulseRouter({
       presenceField,
       advantageField,
       userSignals,
-      routeField
+      routeField,
+      proxyMeta
     });
   }
 
@@ -768,6 +904,9 @@ export function createPulseRouter({
       brainSnapshot,
       presenceField: buildPresenceField(),
       advantageField: buildAdvantageField(),
+      bandSignature: lastBandSignature,
+      binaryField: lastBinaryField,
+      waveField: lastWaveField,
       telemetry: Telemetry,
       suggestions: {
         betterRoutes: suggestBetterRoutes(),
