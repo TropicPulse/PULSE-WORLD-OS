@@ -1,15 +1,15 @@
 // ============================================================================
-//  PULSE GPU PERFORMANCE ADVISOR v11-Evo — THE DRIVE CENTER
+//  PULSE GPU PERFORMANCE ADVISOR v16-Immortal — THE DRIVE CENTER
 //  Internal Performance Instinct • Deterministic, Pure Logic, Drift‑Proof
-//  Binary-aware • Symbolic-aware • Dispatch-aware • Memory-aware
+//  Binary-aware • Symbolic-aware • Dispatch-aware • Memory-aware • CI-aware
 // ============================================================================
 /*
 AI_EXPERIENCE_META = {
   identity: "PulseGPUDriveCenter",
-  version: "v14-Immortal",
+  version: "v16-Immortal",
   layer: "gpu_engine",
   role: "gpu_execution_engine",
-  lineage: "PulseGPU-v14",
+  lineage: "PulseGPU-v16-Immortal",
 
   evo: {
     gpuEngine: true,
@@ -25,13 +25,43 @@ AI_EXPERIENCE_META = {
     zeroMutationOfInput: true,
 
     parallelSafe: true,
-    gpuSafe: true
+    gpuSafe: true,
+
+    // Awareness
+    symbolicAware: true,
+    binaryAware: true,
+    dualBandAware: true,
+    gpuDispatchAware: true,
+    gpuMemoryAware: true,
+    gpuAdvantageAware: true,
+    presenceAware: true,
+    dnaAware: true,
+    versionAware: true,
+    instanceAware: true,
+
+    // Mesh linkage
+    brainLinked: true,
+    cognitionLinked: true,
+    wisdomLinked: true,
+    geneticMemoryLinked: true,
+
+    // Immortal + Earn
+    immortalReady: true,
+    immortalSurface: true,
+    earnAware: true,
+    earnCompatibility: "Earn-v4-Presence",
+
+    // Contracts
+    routingContract: "PulseSend-v16",
+    gpuOrganContract: "PulseGPU-v16-Immortal",
+    binaryGpuOrganContract: "PulseBinaryGPU-v16-Immortal",
+    workgroupLawVersion: 16
   },
 
   contract: {
     always: [
       "PulseGPUDrive",
-      "PulseGPUAastarMuscleSystem"
+      "PulseGPUAstralMuscleSystem"
     ],
     never: [
       "safeRoute",
@@ -46,17 +76,18 @@ import { SCORE_CONSTANTS, SEVERITY_THRESHOLDS } from "./PulseGPUCommandments.js"
 import { PulseGPUGeneticMemory } from "./PulseGPUGeneticMemory.js";
 import { PulseGPUSurvivalInstincts } from "./PulseGPUSurvivalInstincts.js";
 import { PulseGPUEngine } from "./PulseGPUAstralMuscleSystem.js";
+import { computeComputerIntelligence } from "./PulseGPUComputerIntelligence.js";
+
 // ============================================================================
-// DELTA CLASSIFICATION — DRIVE PRESSURE LOGIC (v11-Evo)
+// DELTA CLASSIFICATION — DRIVE PRESSURE LOGIC (v16-Immortal)
 // ============================================================================
-function classifyDelta(deltaPercent, gpuContext = null) {
+function classifyDelta(deltaPercent, gpuContext = null, computerIntelligence = null) {
   if (typeof deltaPercent !== "number" || Number.isNaN(deltaPercent)) {
     return "low";
   }
 
   let absDelta = Math.abs(deltaPercent);
 
-  // v11-Evo: binary regression extra sensitivity (conceptual, deterministic)
   const binarySensitive =
     gpuContext &&
     typeof gpuContext === "object" &&
@@ -65,6 +96,13 @@ function classifyDelta(deltaPercent, gpuContext = null) {
   if (binarySensitive && deltaPercent < 0) {
     const extra = SEVERITY_THRESHOLDS.BINARY_REGRESSION_EXTRA_SENSITIVITY || 0;
     absDelta += extra;
+  }
+
+  // v16: CI-aware modulation (conceptual, deterministic)
+  if (computerIntelligence && typeof computerIntelligence === "object") {
+    const ciPressure = computerIntelligence.performancePressure || 0;
+    const ciClamp = Math.max(-10, Math.min(10, ciPressure));
+    absDelta += ciClamp;
   }
 
   if (absDelta < SEVERITY_THRESHOLDS.LOW) return "low";
@@ -82,7 +120,7 @@ function isRegression(deltaPercent) {
 }
 
 // ============================================================================
-// ADVICE BUILDER — Structured Drive Signals (v11-Evo)
+// ADVICE BUILDER — Structured Drive Signals (v16-Immortal)
 // ============================================================================
 function buildAdvice({
   type,
@@ -97,7 +135,9 @@ function buildAdvice({
   settings,
   baselineSettings,
   extra,
-  gpuContext
+  gpuContext,
+  computerIntelligence,
+  cognitiveFrame
 }) {
   const advice = {
     type,
@@ -106,7 +146,7 @@ function buildAdvice({
     meta: {
       layer: "PulseGPUPerformanceAdvisor",
       role: "DRIVE_CENTER",
-      version: "11.0-Evo",
+      version: "16.0-Immortal",
       target: "full-gpu",
       selfRepairable: true,
       evo: {
@@ -115,19 +155,28 @@ function buildAdvice({
         driftProof: true,
         multiInstanceReady: true,
         unifiedAdvantageField: true,
-        pulseSend11Ready: true,
+        pulseSend16Ready: true,
 
-        // v11-Evo awareness
+        // v16 Immortal awareness
         binaryAware: true,
         symbolicAware: true,
+        dualBandAware: true,
         gpuDispatchAware: true,
         gpuMemoryAware: true,
         gpuAdvantageAware: true,
+        presenceAware: true,
+        dnaAware: true,
+        versionAware: true,
+        instanceAware: true,
 
-        routingContract: "PulseSend-v11",
-        gpuOrganContract: "PulseGPU-v11-Evo",
-        binaryGpuOrganContract: "PulseBinaryGPU-v11-Evo",
-        earnCompatibility: "Earn-v3"
+        // Cognitive / CI awareness (metadata only)
+        cognitiveFrameAware: true,
+        computerIntelligenceAware: true,
+
+        routingContract: "PulseSend-v16",
+        gpuOrganContract: "PulseGPU-v16-Immortal",
+        binaryGpuOrganContract: "PulseBinaryGPU-v16-Immortal",
+        earnCompatibility: "Earn-v4-Presence"
       }
     }
   };
@@ -142,7 +191,6 @@ function buildAdvice({
   if (baselineSettings) advice.baselineSettings = baselineSettings;
   if (extra && typeof extra === "object") advice.extra = extra;
 
-  // v11-Evo GPU context injection (symbolic + binary + pattern)
   if (gpuContext && typeof gpuContext === "object") {
     advice.gpuContext = { ...gpuContext };
 
@@ -163,11 +211,19 @@ function buildAdvice({
     }
   }
 
+  // v16: CI + CognitiveFrame surfaces (metadata-only, fail-open)
+  if (computerIntelligence && typeof computerIntelligence === "object") {
+    advice.computerIntelligence = computerIntelligence;
+  }
+  if (cognitiveFrame && typeof cognitiveFrame === "object") {
+    advice.cognitiveFrame = cognitiveFrame;
+  }
+
   return advice;
 }
 
 // ============================================================================
-// ADVICE VALIDATION — For Immune Layer (v11-Evo)
+// ADVICE VALIDATION — For Immune Layer (v16-Immortal)
 // ============================================================================
 function validateAdvice(advice) {
   if (!advice || typeof advice !== "object") return false;
@@ -180,7 +236,7 @@ function validateAdvice(advice) {
 }
 
 // ============================================================================
-// SCORING + REGRESSION DETECTION HELPERS (v11-Evo)
+// SCORING + REGRESSION DETECTION HELPERS (v16-Immortal)
 // ============================================================================
 function scoreSession(metrics = {}) {
   if (!metrics || typeof metrics !== "object") return 0;
@@ -188,11 +244,16 @@ function scoreSession(metrics = {}) {
   const avg = metrics.avgFps || 0;
   const min = metrics.minFps || 0;
   const stutters = metrics.stutters || 0;
+  const crashes = metrics.crashes || 0;
 
-  const score =
+  let score =
     avg * SCORE_CONSTANTS.AVG_FPS_WEIGHT +
     min * SCORE_CONSTANTS.MIN_FPS_WEIGHT -
     stutters * SCORE_CONSTANTS.STUTTER_WEIGHT;
+
+  if (crashes > 0) {
+    score = score * (1 - SCORE_CONSTANTS.CRASH_PENALTY);
+  }
 
   return Math.max(0, score);
 }
@@ -207,7 +268,7 @@ function detectRegression(currentMetrics = {}, baselineMetrics = {}) {
 }
 
 // ============================================================================
-//  PULSE GPU PERFORMANCE ADVISOR — THE DRIVE CENTER (v11-Evo)
+//  PULSE GPU PERFORMANCE ADVISOR — THE DRIVE CENTER (v16-Immortal)
 // ============================================================================
 class PulseGPUPerformanceAdvisor {
   constructor(settingsMemory) {
@@ -217,7 +278,7 @@ class PulseGPUPerformanceAdvisor {
   static meta = {
     layer: "PulseGPUPerformanceAdvisor",
     role: "DRIVE_CENTER",
-    version: "11.0-Evo",
+    version: "16.0-Immortal",
     target: "full-gpu",
     selfRepairable: true,
     evo: {
@@ -226,24 +287,33 @@ class PulseGPUPerformanceAdvisor {
       driftProof: true,
       multiInstanceReady: true,
       unifiedAdvantageField: true,
-      pulseSend11Ready: true,
+      pulseSend16Ready: true,
 
-      // v11-Evo awareness
+      // v16 Immortal awareness
       binaryAware: true,
       symbolicAware: true,
+      dualBandAware: true,
       gpuDispatchAware: true,
       gpuMemoryAware: true,
       gpuAdvantageAware: true,
+      presenceAware: true,
+      dnaAware: true,
+      versionAware: true,
+      instanceAware: true,
 
-      routingContract: "PulseSend-v11",
-      gpuOrganContract: "PulseGPU-v11-Evo",
-      binaryGpuOrganContract: "PulseBinaryGPU-v11-Evo",
-      earnCompatibility: "Earn-v3"
+      // Cognitive / CI awareness (metadata only)
+      cognitiveFrameAware: true,
+      computerIntelligenceAware: true,
+
+      routingContract: "PulseSend-v16",
+      gpuOrganContract: "PulseGPU-v16-Immortal",
+      binaryGpuOrganContract: "PulseBinaryGPU-v16-Immortal",
+      earnCompatibility: "Earn-v4-Presence"
     }
   };
 
   // ----------------------------------------------------
-  // MAIN ANALYSIS — CURRENT SESSION (v11-Evo)
+  // MAIN ANALYSIS — CURRENT SESSION (v16-Immortal)
   // ----------------------------------------------------
   analyzeCurrentSession({
     gameProfile,
@@ -251,7 +321,10 @@ class PulseGPUPerformanceAdvisor {
     tierProfile,
     settings,
     metrics,
-    gpuContext // v11-Evo GPU context
+    gpuContext,       // GPU context (binary/symbolic/dispatch)
+    cognitiveFrame,   // optional cognitive frame (metadata-only)
+    dispatchHints,    // optional dispatch hints (for CI)
+    gpuMemorySnapshot // optional memory snapshot (for CI)
   }) {
     const currentScore = scoreSession(metrics);
 
@@ -273,11 +346,27 @@ class PulseGPUPerformanceAdvisor {
     const baselineScore = baselineEntry.bestScore;
     const deltaPercent = detectRegression(metrics, baselineEntry.bestMetrics);
 
+    // v16: compute ComputerIntelligence snapshot (fail-open)
+    let computerIntelligence = null;
+    try {
+      computerIntelligence = computeComputerIntelligence({
+        dispatchHints: dispatchHints || gpuContext?.gpuDispatchHints || null,
+        gpuMemorySnapshot: gpuMemorySnapshot || null,
+        currentMetrics: metrics || null,
+        baselineMetrics: baselineEntry.bestMetrics || null,
+        gameProfile,
+        hardwareProfile,
+        tierProfile
+      });
+    } catch {
+      computerIntelligence = null;
+    }
+
     const advice = [];
 
     // NEGATIVE PRESSURE — REGRESSION
     if (isRegression(deltaPercent)) {
-      const severity = classifyDelta(deltaPercent, gpuContext);
+      const severity = classifyDelta(deltaPercent, gpuContext, computerIntelligence);
 
       advice.push(
         buildAdvice({
@@ -299,14 +388,16 @@ class PulseGPUPerformanceAdvisor {
             baselineMetrics: baselineEntry.bestMetrics,
             repairHint: "restore-baseline-settings"
           },
-          gpuContext
+          gpuContext,
+          computerIntelligence,
+          cognitiveFrame
         })
       );
     }
 
     // POSITIVE PRESSURE — IMPROVEMENT
     else if (isImprovement(deltaPercent)) {
-      const severity = classifyDelta(deltaPercent, gpuContext);
+      const severity = classifyDelta(deltaPercent, gpuContext, computerIntelligence);
 
       advice.push(
         buildAdvice({
@@ -328,7 +419,9 @@ class PulseGPUPerformanceAdvisor {
             baselineMetrics: baselineEntry.bestMetrics,
             repairHint: "promote-current-to-baseline"
           },
-          gpuContext
+          gpuContext,
+          computerIntelligence,
+          cognitiveFrame
         })
       );
     }
@@ -342,13 +435,18 @@ class PulseGPUPerformanceAdvisor {
   }
 
   // ----------------------------------------------------
-  // SAFE ANALYSIS — IMMUNE LAYER ENTRYPOINT (v11-Evo)
-  // ----------------------------------------------------
-  safeAnalyzeCurrentSession(input, gpuContext = null) {
+  // SAFE ANALYSIS — IMMUNE LAYER ENTRYPOINT (v16-Immortal)
+// ----------------------------------------------------
+  safeAnalyzeCurrentSession(input, gpuContext = null, cognitiveFrame = null, dispatchHints = null, gpuMemorySnapshot = null) {
     try {
       const result = this.analyzeCurrentSession(
-        { ...(input || {}), gpuContext },
-        gpuContext
+        {
+          ...(input || {}),
+          gpuContext,
+          cognitiveFrame,
+          dispatchHints,
+          gpuMemorySnapshot
+        }
       );
 
       if (!result || typeof result !== "object" || !Array.isArray(result.advice)) {
@@ -385,7 +483,7 @@ class PulseGPUPerformanceAdvisor {
   }
 
   // ----------------------------------------------------
-  // SUBOPTIMAL SETTINGS ANALYSIS (v11-Evo)
+  // SUBOPTIMAL SETTINGS ANALYSIS (v16-Immortal)
   // ----------------------------------------------------
   analyzeSuboptimalSettings({
     gameProfile,
@@ -393,7 +491,10 @@ class PulseGPUPerformanceAdvisor {
     tierProfile,
     currentSettings,
     currentMetrics,
-    gpuContext
+    gpuContext,
+    cognitiveFrame,
+    dispatchHints,
+    gpuMemorySnapshot
   }) {
     const baselineEntry = this.memory.getBestSettingsFor(
       gameProfile,
@@ -413,7 +514,22 @@ class PulseGPUPerformanceAdvisor {
         ? 0
         : ((baselineScore - currentScore) / baselineScore) * 100;
 
-    const severity = classifyDelta(deltaPercent, gpuContext);
+    let computerIntelligence = null;
+    try {
+      computerIntelligence = computeComputerIntelligence({
+        dispatchHints: dispatchHints || gpuContext?.gpuDispatchHints || null,
+        gpuMemorySnapshot: gpuMemorySnapshot || null,
+        currentMetrics: currentMetrics || null,
+        baselineMetrics: baselineEntry.bestMetrics || null,
+        gameProfile,
+        hardwareProfile,
+        tierProfile
+      });
+    } catch {
+      computerIntelligence = null;
+    }
+
+    const severity = classifyDelta(deltaPercent, gpuContext, computerIntelligence);
 
     return [
       buildAdvice({
@@ -433,13 +549,15 @@ class PulseGPUPerformanceAdvisor {
           baselineMetrics: baselineEntry.bestMetrics,
           repairHint: "suggest-baseline-settings"
         },
-        gpuContext
+        gpuContext,
+        computerIntelligence,
+        cognitiveFrame
       })
     ];
   }
 
   // ----------------------------------------------------
-  // TIER UPGRADE ANALYSIS (v11-Evo)
+  // TIER UPGRADE ANALYSIS (v16-Immortal)
   // ----------------------------------------------------
   analyzeTierUpgrade({
     gameProfile,
@@ -448,7 +566,10 @@ class PulseGPUPerformanceAdvisor {
     newTierProfile,
     currentSettings,
     currentMetrics,
-    gpuContext
+    gpuContext,
+    cognitiveFrame,
+    dispatchHints,
+    gpuMemorySnapshot
   }) {
     const currentScore = scoreSession(currentMetrics);
 
@@ -469,7 +590,22 @@ class PulseGPUPerformanceAdvisor {
         ? 0
         : ((newTierScore - currentScore) / currentScore) * 100;
 
-    const severity = classifyDelta(deltaPercent, gpuContext);
+    let computerIntelligence = null;
+    try {
+      computerIntelligence = computeComputerIntelligence({
+        dispatchHints: dispatchHints || gpuContext?.gpuDispatchHints || null,
+        gpuMemorySnapshot: gpuMemorySnapshot || null,
+        currentMetrics: currentMetrics || null,
+        baselineMetrics: newTierBaseline.bestMetrics || null,
+        gameProfile,
+        hardwareProfile,
+        tierProfile: newTierProfile
+      });
+    } catch {
+      computerIntelligence = null;
+    }
+
+    const severity = classifyDelta(deltaPercent, gpuContext, computerIntelligence);
 
     return [
       buildAdvice({
@@ -491,7 +627,9 @@ class PulseGPUPerformanceAdvisor {
           newTierMetrics: newTierBaseline.bestMetrics,
           repairHint: "upgrade-tier"
         },
-        gpuContext
+        gpuContext,
+        computerIntelligence,
+        cognitiveFrame
       })
     ];
   }

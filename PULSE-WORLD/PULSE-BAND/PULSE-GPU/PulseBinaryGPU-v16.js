@@ -1,53 +1,80 @@
 // ============================================================================
-//  PulseBinaryGPU-v12-Evo-Presence-Max — BINARY GPU ORGAN
+//  PulseBinaryGPU-v16-Immortal — BINARY GPU ORGAN (FULL v16 UPGRADE)
 //  Deterministic GPU Dispatch Organ • Pattern + Lineage + Shape + Presence
 //  Binary/Dual-Mode • Pressure-Aware • Factoring-Aware • Mesh/Aura/Earn-Aware
 //  “PLAN ONCE. REUSE FOREVER. NEVER DRIFT.”
 // ============================================================================
-// --- CORE GPU ORGANS --------------------------------------------------------
+
 /*
-/*
-AI_EXPERIENCE_META = {
-  identity: "PulseBinaryGPU",
-  version: "v14-Immortal",
-  layer: "gpu_binary",
-  role: "gpu_binary_surface",
-  lineage: "PulseGPU-v14",
+AI_EXPERIENCE_META:
+  organ: PulseBinaryGPU
+  version: 16.0.0
+  tier: IMMORTAL
+  role: gpu_binary_surface
+  mind: false
 
-  evo: {
-    binaryPrimary: true,
-    symbolicAware: true,
-    dualBand: true,
+  description:
+    "IMMORTAL binary GPU organ. Deterministic dispatch descriptor with full
+     lineage, shape, pressure, factoring, and presence awareness. Provides
+     v16-level snapshots, advantage view, and prewarm hooks. No AI reasoning."
 
-    deterministic: true,
-    driftProof: true,
-    pureCompute: true,
+  guarantees:
+    - "Never mutates input payloads."
+    - "Never performs AI reasoning."
+    - "Never executes GPU kernels directly."
+    - "Always emits deterministic dispatch descriptors."
+    - "Always preserves lineage and shape signatures."
+    - "Always remains drift-proof and mutation-safe."
 
-    zeroNetwork: true,
-    zeroFilesystem: true,
-    zeroMutationOfInput: true,
+  boundaries:
+    - "Cannot alter routing decisions outside its descriptor."
+    - "Cannot infer correctness or intent."
+    - "Cannot generate opinions or narratives."
+    - "Cannot call AI models."
 
-    gpuBoundary: true,
-    gpuSafe: true,
-    nonExecutableBinary: true
-  },
+  identity:
+    band: "gpu_binary"
+    type: "organ"
+    mind: false
+    immutable: true
 
-  contract: {
-    always: [
-      "PulseGPU",
-      "PulseGPUDrive",
-      "PulseGPUDriveCenter"
-    ],
-    never: [
-      "safeRoute",
-      "fetchViaCNS",
-      "legacyBinaryGPU"
-    ]
-  }
-}
+  lineage:
+    parent: "PulseBinaryGPU-v12-Evo-Presence-Max"
+    evolution: "v16 IMMORTAL — full advantage + snapshot + prewarm upgrade"
+
+  integration:
+    receives:
+      - pressureSnapshot (mesh/aura/earn pressure)
+      - factoringSnapshot
+      - gpuCoreView (PulseGPUCore-v16)
+      - chunkCache / prewarm hooks
+    feeds:
+      - PulseWorldCore (worldSnapshot.raw.gpuBinary)
+      - PulseTrustEvidence (RAW/RAW_AI evidence)
+      - Debug / infra tools
+
+  contract:
+    input:
+      - plan(earn, mode, pressureSnapshot, factoringSnapshot, context, dnaTag, version)
+      - evolve(dispatch, context)
+      - describeBinaryPlan(pattern, options, env)
+      - snapshotBinarySurface()
+      - prewarmBinaryChunks(hints)
+    output:
+      - binaryDispatchDescriptor
+      - evolvedBinaryDispatchDescriptor
+      - binaryPlanSnapshot
+      - binarySurfaceSnapshot
+
+  immortal:
+    drift_protection: true
+    mutation_protection: true
+    deterministic: true
 */
 
-
+// ---------------------------------------------------------------------------
+//  IMPORTS (as in v12)
+// ---------------------------------------------------------------------------
 
 import * as PulseGPUBrain              from "./PulseGPUBrain.js";
 import * as PulseGPUDrive              from "./PulseGPUDrive.js";
@@ -56,38 +83,34 @@ import * as PulseGPUDriveEngine        from "./PulseGPUDriveCenter.js";      // 
 import * as PulseGPUSpine              from "./PulseGPUSpine.js";
 import * as PulseGPUGeneticMemory      from "./PulseGPUGeneticMemory.js";
 
-// --- GPU COMPUTE / ENGINE ---------------------------------------------------
 import * as PulseGPUAstralMuscleSystem from "./PulseGPUAstralMuscleSystem.js";
 
-
-// --- GPU GUARDIAN / HEALER --------------------------------------------------
 import * as PulseGPUGuardianCortex     from "./PulseGPUGuardianCortex.js";
 import * as PulseGPULymphNodes         from "./PulseGPULymphNodes.js";
 
-// --- GPU NERVOUS SYSTEMS ----------------------------------------------------
 import * as PulseGPUAstralNervousSystem from "./PulseGPUAstralNervousSystem.js";
 import * as PulseGPUNervousSystem       from "./PulseGPUNervousSystem.js";
 
-// --- GPU COGNITIVE LAYERS ---------------------------------------------------
 import * as PulseGPUCognitiveLayer      from "./PulseGPUCognitiveLayer.js";
 import * as PulseGPUCognitiveIntelligence from "./PulseGPUCognitiveIntelligence.js";
 import * as PulseGPUWisdomCortex        from "./PulseGPUWisdomCortex.js";
 
-// --- GPU SURVIVAL / INSTINCTS -----------------------------------------------
 import * as PulseGPUSurvivalInstincts   from "./PulseGPUSurvivalInstincts.js";
 
-// --- GPU SYNAPSES -----------------------------------------------------------
 import * as PulseGPUSynapses            from "./PulseGPUSynapses.js";
 
-// --- GPU COMMANDMENTS -------------------------------------------------------
 import * as PulseGPUCommandments        from "./PulseGPUCommandments.js";
+
+// ---------------------------------------------------------------------------
+//  CORE ROLE / METABLOCK — UPGRADED TO v16
+// ---------------------------------------------------------------------------
 
 export const BinaryGPURole = {
   type: "GPU",
   subsystem: "PulseGPU",
   layer: "ComputeOrgan",
-  version: "12.0-Evo-Presence",
-  identity: "PulseBinaryGPU-v12-Evo-Presence-Max",
+  version: "16.0-Immortal",
+  identity: "PulseBinaryGPU-v16-Immortal",
 
   evo: {
     driftProof: true,
@@ -121,26 +144,23 @@ export const BinaryGPURole = {
   },
 
   pulseContract: "Pulse-v4-Presence",
-  meshContract: "PulseMeshSpine-v12",
-  routerContract: "PulseRouter-v12",
-  sendContract: "PulseSend-v12",
-  earnContract: "Earn-v4-Presence"
+  meshContract: "PulseMeshSpine-v16",
+  routerContract: "PulseRouter-v16",
+  sendContract: "PulseSend-v16",
+  earnContract: "Earn-v6-Immortal"
 };
 
-// ---------------------------------------------------------------------------
-//  v12 MetaBlock
-// ---------------------------------------------------------------------------
 export const BinaryGPUMetaBlock = {
   identity: "PulseBinaryGPU",
   subsystem: "PulseGPU",
   layer: "ComputeOrgan",
   role: "Binary-GPU-Dispatch",
-  version: "12.0-Evo-Presence",
+  version: "16.0-Immortal",
   evo: BinaryGPURole.evo
 };
 
 // ---------------------------------------------------------------------------
-//  INTERNAL HELPERS — deterministic, tiny, pure
+//  INTERNAL HELPERS — deterministic, tiny, pure (from v12, unchanged)
 // ---------------------------------------------------------------------------
 
 function buildLineage(parentLineage, pattern) {
@@ -335,7 +355,6 @@ function resolveBinaryModeSurface(context = {}) {
   return { binaryMode, dualMode };
 }
 
-// v12: advantage score for this dispatch
 function computeAdvantageScore({ pattern, modeBias, binaryMode, dualMode, pressureSnapshot }) {
   let score = 0;
 
@@ -350,13 +369,13 @@ function computeAdvantageScore({ pattern, modeBias, binaryMode, dualMode, pressu
   if (modeBias === "low-latency") score += 1;
 
   const gpuLoad = pressureSnapshot?.gpuLoadPressure || 0;
-  if (gpuLoad < 0.3) score += 1; // room to push
+  if (gpuLoad < 0.3) score += 1;
 
   return score;
 }
 
 // ---------------------------------------------------------------------------
-//  FACTORY — Create a Binary GPU Dispatch Descriptor (v12-Evo-Presence-Max)
+//  v16 DISPATCH FACTORY (based on v12, version bumped, meta enriched)
 // ---------------------------------------------------------------------------
 
 export function createBinaryGPUDispatch({
@@ -369,7 +388,7 @@ export function createBinaryGPUDispatch({
   factoringSnapshot = null,
   context = {},
   dnaTag = "default-dna",
-  version = "12.0-Evo-Presence"
+  version = "16.0-Immortal"
 }) {
   const { binaryMode, dualMode } = resolveBinaryModeSurface(context);
 
@@ -440,7 +459,7 @@ export function createBinaryGPUDispatch({
 }
 
 // ---------------------------------------------------------------------------
-//  EVOLUTION ENGINE — evolve an existing Binary GPU dispatch deterministically
+//  v16 EVOLUTION ENGINE
 // ---------------------------------------------------------------------------
 
 export function evolveBinaryGPUDispatch(dispatch, context = {}) {
@@ -517,7 +536,7 @@ export function evolveBinaryGPUDispatch(dispatch, context = {}) {
     binaryMode,
     dualMode,
     dnaTag: dispatch.dnaTag || "default-dna",
-    version: dispatch.version || "12.0-Evo-Presence",
+    version: dispatch.version || "16.0-Immortal",
     executionContext,
     meta: {
       shapeSignature,
@@ -533,11 +552,236 @@ export function evolveBinaryGPUDispatch(dispatch, context = {}) {
 }
 
 // ---------------------------------------------------------------------------
-//  PUBLIC ORGAN — PulseBinaryGPU (v12-Evo-Presence-Max)
+//  IMMORTAL SURFACE CLASS — SNAPSHOT + ADVANTAGE + PREWARM
+// ---------------------------------------------------------------------------
+
+export class PulseBinaryGPUImmortal {
+  constructor(config = {}) {
+    this.config = {
+      id: BinaryGPURole.identity,
+      ...config
+    };
+
+    this.pressure = config.pressure || null;   // mesh/aura/earn pressure provider
+    this.factoring = config.factoring || null; // factoring provider
+    this.gpuCore = config.gpuCore || null;     // PulseGPUCore-v16
+    this.chunkCache = config.chunkCache || null;
+
+    this.logger = config.logger || console;
+  }
+
+  // v16: structural plan description (no change to dispatch math)
+  describeBinaryPlan(pattern, options = {}, env = {}) {
+    const parentLineage = options.parentLineage || [];
+    const binaryMode = !!options.binaryMode;
+    const dualMode = !!options.dualMode;
+    const mode = options.mode || env.mode || "normal";
+    const multiInstanceHint = options.multiInstanceHint || env.multiInstanceHint || false;
+
+    const pressureSnapshot =
+      options.pressureSnapshot ||
+      env.pressureSnapshot ||
+      this._safeCall(this.pressure, "snapshot") ||
+      null;
+
+    const factoringSnapshot =
+      options.factoringSnapshot ||
+      env.factoringSnapshot ||
+      this._safeCall(this.factoring, "snapshot") ||
+      null;
+
+    const lineage = buildLineage(parentLineage, pattern);
+    const shapeSignature = computeShapeSignature(pattern, lineage, binaryMode, dualMode);
+    const evolutionStage = computeEvolutionStage(pattern, lineage, binaryMode, dualMode);
+    const modeBias = computeModeBias(mode, pressureSnapshot || {}, factoringSnapshot || {});
+    const profile = selectDispatchProfile(
+      pattern,
+      modeBias,
+      binaryMode,
+      dualMode,
+      multiInstanceHint
+    );
+    const dispatchSignature = computeDispatchSignature(
+      pattern,
+      binaryMode,
+      dualMode,
+      profile.style
+    );
+    const advantageScore = computeAdvantageScore({
+      pattern,
+      modeBias,
+      binaryMode,
+      dualMode,
+      pressureSnapshot: pressureSnapshot || {}
+    });
+
+    const plan = {
+      ts: Date.now(),
+      meta: {
+        id: this.config.id,
+        version: BinaryGPURole.version
+      },
+      pattern,
+      lineage,
+      binaryMode,
+      dualMode,
+      mode,
+      modeBias,
+      evolutionStage,
+      shapeSignature,
+      dispatchSignature,
+      profile,
+      advantageScore,
+      pressureSnapshot,
+      factoringSnapshot
+    };
+
+    this._log("binary-gpu:plan-v16", { plan });
+    return plan;
+  }
+
+  // v16: surface snapshot for world/trust
+  snapshotBinarySurface() {
+    const gpuView =
+      this._safeCall(this.gpuCore, "buildGpuView") ||
+      this._safeCall(this.gpuCore, "snapshotGPU") ||
+      null;
+
+    const pressureSnapshot = this._safeCall(this.pressure, "snapshot") || null;
+    const factoringSnapshot = this._safeCall(this.factoring, "snapshot") || null;
+
+    const snapshot = {
+      ts: Date.now(),
+      meta: {
+        id: this.config.id,
+        version: BinaryGPURole.version
+      },
+      gpuView,
+      pressureSnapshot,
+      factoringSnapshot,
+      chunkCache: this._snapshotChunkCache()
+    };
+
+    this._log("binary-gpu:snapshot-surface-v16", { snapshot });
+    return snapshot;
+  }
+
+  
+    // Intelligent compute hint — advisory only, no execution
+    intelligentComputeHint(dispatch) {
+      if (!dispatch || !dispatch.meta) {
+        return {
+          level: "none",
+          reason: "no-dispatch",
+          suggestions: []
+        };
+      }
+  
+      const { profile, modeBias, advantageScore, pressureSnapshot } = dispatch.meta;
+      const suggestions = [];
+  
+      if (profile?.style?.includes("throughput") && pressureSnapshot?.gpuLoadPressure > 0.8) {
+        suggestions.push("consider-reducing-batch-size");
+        suggestions.push("prefer-streaming-or-latency-profile");
+      }
+  
+      if (profile?.style?.includes("latency") && pressureSnapshot?.gpuLoadPressure < 0.3) {
+        suggestions.push("consider-increasing-batch-size");
+      }
+  
+      if (modeBias === "memory-conservative" && profile?.maxBatchSize > 4) {
+        suggestions.push("cap-batch-size-to-4-for-memory");
+      }
+  
+      if (advantageScore < 2) {
+        suggestions.push("pattern-may-benefit-from-fuse-or-batch-variant");
+      }
+  
+      const level =
+        suggestions.length === 0 ? "none" :
+        suggestions.length <= 2 ? "mild" :
+        "strong";
+  
+      const hint = {
+        ts: Date.now(),
+        meta: {
+          id: this.config.id,
+          version: BinaryGPURole.version
+        },
+        level,
+        modeKind: dispatch.modeKind,
+        modeBias,
+        advantageScore,
+        suggestions
+      };
+  
+      this._log("binary-gpu:intelligent-hint-v16", { hint });
+      return hint;
+    }
+
+  // v16: prewarm / chunk preheat hook
+  prewarmBinaryChunks(hints = {}) {
+    if (!this.chunkCache || typeof this.chunkCache.prewarm !== "function") {
+      return null;
+    }
+
+    const payload = {
+      ts: Date.now(),
+      hints
+    };
+
+    const result = this.chunkCache.prewarm(payload);
+    this._log("binary-gpu:prewarm-chunks-v16", { payload, result });
+    return result;
+  }
+
+  diagnostics() {
+    const diag = {
+      GPURole: BinaryGPURole,
+      metaBlock: BinaryGPUMetaBlock
+    };
+    this._log("binary-gpu:diagnostics-v16", { diag });
+    return diag;
+  }
+
+  _snapshotChunkCache() {
+    try {
+      if (!this.chunkCache || typeof this.chunkCache.snapshot !== "function") return null;
+      return this.chunkCache.snapshot();
+    } catch {
+      return null;
+    }
+  }
+
+  _safeCall(target, method) {
+    try {
+      if (!target || typeof target[method] !== "function") return null;
+      return target[method]();
+    } catch {
+      return null;
+    }
+  }
+
+  _log(event, payload) {
+    try {
+      this.logger?.log?.(event, {
+        ...payload,
+        binaryGPU: {
+          identity: BinaryGPUMetaBlock.identity,
+          version: BinaryGPUMetaBlock.version
+        }
+      });
+    } catch {
+      // non-fatal
+    }
+  }
+}
+
+// ---------------------------------------------------------------------------
+//  PUBLIC ORGAN — PulseBinaryGPU (v16-Immortal)
 // ---------------------------------------------------------------------------
 
 export const PulseBinaryGPU = {
-
   GPURole: BinaryGPURole,
   BinaryGPUMetaBlock,
 
@@ -548,7 +792,7 @@ export const PulseBinaryGPU = {
     factoringSnapshot = null,
     context = {},
     dnaTag = "default-dna",
-    version = "12.0-Evo-Presence"
+    version = "16.0-Immortal"
   ) {
     const jobId   = earn.jobId;
     const pattern = earn.pattern || "gpu-binary-default";
@@ -588,3 +832,20 @@ export const PulseBinaryGPU = {
     };
   }
 };
+
+// ---------------------------------------------------------------------------
+//  FACTORY FOR IMMORTAL SURFACE
+// ---------------------------------------------------------------------------
+
+export function createPulseBinaryGPUImmortal(config = {}) {
+  const core = new PulseBinaryGPUImmortal(config);
+
+  return Object.freeze({
+    meta: BinaryGPUMetaBlock,
+    describeBinaryPlan: (pattern, options, env) =>
+      core.describeBinaryPlan(pattern, options, env),
+    snapshotBinarySurface: () => core.snapshotBinarySurface(),
+    prewarmBinaryChunks: (hints) => core.prewarmBinaryChunks(hints),
+    diagnostics: () => core.diagnostics()
+  });
+}

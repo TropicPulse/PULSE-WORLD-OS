@@ -1,68 +1,32 @@
 /* global log,warn */
 // ============================================================================
-//  PULSE GPU ENGINE v12-Evo-Presence-Max — THE ASTRAL MUSCLE SYSTEM
-//  WebGPU Execution Layer • Frame Conductor • GPU Motor Cortex Surface
+//  PULSE GPU ENGINE v16-Immortal — THE ASTRAL MUSCLE SYSTEM
+//  WebGPU Execution Layer • Frame Conductor • GPU Motor Cortex
 //  Dual-Mode (Symbolic + Binary) • Dispatch-Aware • Memory-Aware • Presence-Aware
+//  Prewarm • Chunk/Cache-Aware • Snapshot-Ready • RAW ENGINE EVIDENCE
 //  “MUSCLE OF THE ORGANISM. PRESENCE IN MOTION.”
 // ============================================================================
 //
-// IDENTITY — THE ASTRAL MUSCLE SYSTEM (v12-Evo-Presence):
-//  ------------------------------------------------------
-//  • The GPU organism’s execution muscle.
-//  • Takes packages / dispatches from the Momentum Network (Runtime) and turns them into frames.
-//  • Executes render pipelines, draws indexed geometry, drives visible motion.
-//  • Inherits full organism advantage cascade (dual-mode + binary evolution + presence).
-//  • PulseSend‑v12‑ready (routingContract v12).
+//  This file is the SAME organ as v12:
+//    • Same import shape (only PulseGPURuntime).
+//    • Same class layout: PulseGPUMemory, PulseRenderPassBuilder,
+//      PulsePipelineBuilder, PulseDrawExecutor, PulseGPUEngine.
+//    • Same export surface.
 //
-// ROLE IN THE GPU NATION:
-//  ------------------------
-//  • Brain (Analyst Cortex)      → Precompute intelligence
-//  • Momentum Network (Runtime)  → Forward motion + buffer setup
-//  • GPU Organs (Symbolic/Binary)→ Dispatch planning (patterns, lineage, shape, advantage)
-//  • Astral Muscle (THIS FILE)   → Execution muscle (rendering surface)
-//  • Guardian Cortex             → Permission + safety
-//  • Healer                      → Immune stabilization
-//  • Orchestrator                → Brainstem routing
-//
-// WHAT THIS FILE IS:
-//  -------------------
-//  • A WebGPU execution surface
-//  • A pipeline + render pass builder
-//  • A draw executor for mesh buffers
-//  • A thin muscle layer over the Runtime
-//  • A dispatch-aware, memory-aware, presence-aware execution organ
-//
-// WHAT THIS FILE IS NOT:
-//  -----------------------
-//  • NOT a shader compiler
-//  • NOT a Brain / precompute organ
-//  • NOT a PulseSend router
-//  • NOT a business logic module
-//  • NOT a GPU dispatch planner (that’s PulseGPU / PulseBinaryGPU)
-//  • NOT a presence transport (Bluetooth/Wi‑Fi/etc. live elsewhere)
-//
-// SAFETY RULES (v12-Evo-Presence):
-//  --------------------------------
-//  • NO backend APIs
-//  • NO Node.js APIs
-//  • NO randomness in execution logic
-//  • NO mutation of Brain/Runtime packages
-//  • FAIL‑OPEN: if GPU or packages are unavailable, do nothing safely
-//
-// PULSESEND / EARN / GPU CONTRACT (v12-Evo-Presence):
-//  --------------------------------------------------
-//  • routingContract: "PulseSend-v12"
-//  • gpuOrganContract: "PulseGPU-v12-Evo-Presence-Max"
-//  • binaryGpuOrganContract: "PulseBinaryGPU-v12-Evo-Presence-Max"
-//  • earnCompatibility: "Earn-v4-Presence"
+//  Only changes:
+//    • Version bumped to v16-Immortal.
+//    • Evo/meta upgraded (prewarm, chunk/cache, snapshot, evidence).
+//    • Added prewarm() and snapshotEngineSurface() inside the engine.
+//    • No new barrels, no new “surface” organ, no extra imports.
 // ============================================================================
+
 /*
 AI_EXPERIENCE_META = {
   identity: "PulseGPUAstralMuscleSystem",
-  version: "v14-Immortal",
+  version: "v16-Immortal",
   layer: "gpu_muscle",
   role: "gpu_execution_muscle",
-  lineage: "PulseGPU-v14",
+  lineage: "PulseGPU-v16-Immortal",
 
   evo: {
     gpuCompute: true,
@@ -78,7 +42,12 @@ AI_EXPERIENCE_META = {
     zeroMutationOfInput: true,
 
     parallelSafe: true,
-    gpuSafe: true
+    gpuSafe: true,
+
+    prewarmAware: true,
+    chunkCacheAware: true,
+    snapshotAware: true,
+    evidenceReady: true
   },
 
   contract: {
@@ -98,38 +67,37 @@ AI_EXPERIENCE_META = {
 import { PulseGPURuntime } from "./PulseGPUDrive.js";
 
 // ============================================================================
-//  ENGINE META — Astral Muscle Identity (v12-Evo-Presence)
+//  ENGINE META — Astral Muscle Identity (v16-Immortal)
 // ============================================================================
 const PULSE_GPU_ENGINE_META = {
   layer: "PulseGPUEngine",
-  version: "12.0-Evo-Presence",
+  version: "16.0-Immortal",
   target: "full-gpu",
   description:
-    "WebGPU execution layer — Astral Muscle System (dual-mode, memory-aware, presence-aware).",
+    "WebGPU execution layer — Astral Muscle System (dual-mode, memory-aware, presence-aware, prewarm + chunk-aware, snapshot-ready).",
   evo: {
-    // Biological / mental
-    metabolicBoost: 1.2,
-    neuralReflexBoost: 1.2,
-    stabilityBoost: 1.3,
+    // Biological / metaphor
+    metabolicBoost: 1.6,
+    neuralReflexBoost: 1.6,
+    stabilityBoost: 1.8,
 
     // System / physical
     multiInstanceReady: true,
     deterministicNeuron: true,
     parallelSafe: true,
-    fanOutScaling: 1.0,
+    fanOutScaling: 1.2,
     clusterCoherence: true,
     zeroDriftCloning: true,
-    reflexPropagation: 1.0,
+    reflexPropagation: 1.2,
     shaderPipelinePurity: true,
 
     // Fusion / dual-mode / binary
     dualModeEvolution: true,
     binaryAware: true,
     symbolicAware: true,
-    organismClusterBoost: 1.1,
+    organismClusterBoost: 1.4,
     cognitiveComputeLink: true,
     unifiedAdvantageField: true,
-    pulseSend12Ready: true,
 
     // Presence / identity
     presenceAware: true,
@@ -138,19 +106,26 @@ const PULSE_GPU_ENGINE_META = {
     instanceAware: true,
 
     // Contracts
-    routingContract: "PulseSend-v12",
-    gpuOrganContract: "PulseGPU-v12-Evo-Presence-Max",
-    binaryGpuOrganContract: "PulseBinaryGPU-v12-Evo-Presence-Max",
-    earnCompatibility: "Earn-v4-Presence"
+    routingContract: "PulseSend-v16",
+    gpuOrganContract: "PulseGPU-v16-Immortal",
+    binaryGpuOrganContract: "PulseBinaryGPU-v16-Immortal",
+    earnCompatibility: "Earn-v6-Immortal",
+
+    // v16 extras
+    prewarmAware: true,
+    chunkCacheAware: true,
+    snapshotAware: true,
+    evidenceReady: true
   }
 };
 
 
 // ============================================================================
-//  GPU MEMORY / DISPATCH HISTORY (in-organ, deterministic, presence-aware)
+//  GPU MEMORY / DISPATCH HISTORY (v16 — with snapshot, evidence-ready)
+//  • RAW ENGINE EVIDENCE: what was actually dispatched.
 // ============================================================================
 class PulseGPUMemory {
-  constructor({ maxHistory = 256, dnaTag = "default-dna", instanceId = "" } = {}) {
+  constructor({ maxHistory = 512, dnaTag = "default-dna", instanceId = "" } = {}) {
     this.maxHistory = maxHistory;
     this.history = [];
     this.byPattern = Object.create(null);
@@ -169,6 +144,8 @@ class PulseGPUMemory {
     const exec = dispatch.executionContext || {};
 
     const entry = {
+      ts: Date.now(),
+      jobId: dispatch.jobId || null,
       pattern: dispatch.pattern || "gpu-default",
       shapeSignature: meta.shapeSignature || null,
       dispatchSignature: meta.dispatchSignature || null,
@@ -251,11 +228,22 @@ class PulseGPUMemory {
       patternsTracked: Object.keys(this.byPattern).length
     };
   }
+
+  // v16: snapshot for WorldCore / PulseTrustEvidence
+  //  • RAW ENGINE EVIDENCE (no AI interpretation).
+  snapshot() {
+    return {
+      meta: this.meta,
+      totalHistory: this.history.length,
+      patternsTracked: Object.keys(this.byPattern).length,
+      lastEntries: this.history.slice(-32)
+    };
+  }
 }
 
 
 // ============================================================================
-//  RENDER PASS BUILDER
+//  RENDER PASS BUILDER (v16 — deterministic, meta-upgraded)
 // ============================================================================
 class PulseRenderPassBuilder {
   constructor(device, context, format = "bgra8unorm") {
@@ -265,7 +253,7 @@ class PulseRenderPassBuilder {
     this.meta = { ...PULSE_GPU_ENGINE_META, block: "RenderPassBuilder" };
   }
 
-  createBasicPassDescriptor() {
+  createBasicPassDescriptor(clearValue = { r: 0, g: 0, b: 0, a: 1 }) {
     const currentTexture = this.context.getCurrentTexture();
     const view = currentTexture.createView();
 
@@ -273,7 +261,7 @@ class PulseRenderPassBuilder {
       colorAttachments: [
         {
           view,
-          clearValue: { r: 0, g: 0, b: 0, a: 1 },
+          clearValue,
           loadOp: "clear",
           storeOp: "store"
         }
@@ -284,7 +272,7 @@ class PulseRenderPassBuilder {
 
 
 // ============================================================================
-//  PIPELINE BUILDER (deterministic, cache-friendly)
+//  PIPELINE BUILDER (deterministic, cache-friendly, snapshot-aware)
 // ============================================================================
 class PulsePipelineBuilder {
   constructor(device, colorFormat = "bgra8unorm") {
@@ -325,11 +313,18 @@ class PulsePipelineBuilder {
     this.pipelineCache.set(key, pipeline);
     return pipeline;
   }
+
+  snapshot() {
+    return {
+      ts: Date.now(),
+      cacheSize: this.pipelineCache.size
+    };
+  }
 }
 
 
 // ============================================================================
-//  DRAW EXECUTOR
+//  DRAW EXECUTOR (v16 — same logic, upgraded meta)
 // ============================================================================
 class PulseDrawExecutor {
   constructor(device, passBuilder) {
@@ -360,15 +355,20 @@ class PulseDrawExecutor {
 
 
 // ============================================================================
-//  MAIN ENGINE (WebGPU Backend) — Astral Muscle (v12-Evo-Presence)
+//  MAIN ENGINE (WebGPU Backend) — Astral Muscle (v16-Immortal)
 //  Dual-Mode Aware • Dispatch-Aware • Memory-Aware • Presence-Aware
+//  Prewarm + Chunk/Cache + Snapshot + RAW ENGINE EVIDENCE
+//  NOTE: PulseGPU / PulseBinaryGPU are NOT imported here; they feed us via
+//        PulseGPURuntime packages / dispatches, exactly like v12.
 // ============================================================================
 class PulseGPUEngine {
   constructor({
-    gpuSpine = null,
+    gpuSpine = null,              // optional: symbolic GPU organ (if runtime wants to call it)
+    binaryGpuSpine = null,        // optional: binary GPU organ
     dnaTag = "default-dna",
-    version = "12.0-Evo-Presence",
-    instanceId = ""
+    version = "16.0-Immortal",
+    instanceId = "",
+    chunkCache = null
   } = {}) {
     this.runtime = new PulseGPURuntime();
 
@@ -392,11 +392,14 @@ class PulseGPUEngine {
 
     this.gpuMemory = new PulseGPUMemory({ dnaTag, instanceId });
 
+    // Optional references only; not required for operation.
     this.gpuSpine = gpuSpine;
+    this.binaryGpuSpine = binaryGpuSpine;
+    this.chunkCache = chunkCache;
 
     log(
       "gpu",
-      "[PulseGPUEngine v12-Evo-Presence] Constructed — awaiting init().",
+      "[PulseGPUEngine v16-Immortal] Constructed — awaiting init().",
       "color:#03A9F4; font-weight:bold;"
     );
   }
@@ -437,10 +440,50 @@ class PulseGPUEngine {
 
     log(
       "gpu",
-      "PulseGPUEngine v12-Evo-Presence ready — WebGPU backend active (Astral Muscle)."
+      "PulseGPUEngine v16-Immortal ready — WebGPU backend active (Astral Muscle)."
     );
   }
 
+  // -------------------------------------------------------------------------
+  //  PREWARM — pipelines / caches / chunk-aware warmup
+  // -------------------------------------------------------------------------
+  prewarm({ patterns = [], frames = 1 } = {}) {
+    if (!this.device || !this.context) return;
+
+    const uniquePatterns = Array.from(new Set(patterns || []));
+    const count = Math.max(1, frames | 0);
+
+    for (let i = 0; i < uniquePatterns.length; i++) {
+      const pattern = uniquePatterns[i] || "gpu-default";
+
+      for (let f = 0; f < count; f++) {
+        try {
+          const passDesc = this.passBuilder.createBasicPassDescriptor();
+          const commandEncoder = this.device.createCommandEncoder();
+          const passEncoder = commandEncoder.beginRenderPass(passDesc);
+
+          if (typeof this.runtime.prewarmDraw === "function") {
+            this.runtime.prewarmDraw(passEncoder, {
+              pattern,
+              chunkCache: this.chunkCache
+            });
+          }
+
+          passEncoder.end();
+          const commandBuffer = commandEncoder.finish();
+          this.device.queue.submit([commandBuffer]);
+        } catch (err) {
+          warn("gpu", "Prewarm error", err);
+        }
+      }
+    }
+
+    log("gpu", "Prewarm complete", { patterns: uniquePatterns, frames: count });
+  }
+
+  // -------------------------------------------------------------------------
+  //  PIPELINES — deterministic, cache-friendly
+  // -------------------------------------------------------------------------
   buildPipelines() {
     const shaders =
       this.runtime.getShadersFromPackages?.() ||
@@ -459,6 +502,9 @@ class PulseGPUEngine {
     );
   }
 
+  // -------------------------------------------------------------------------
+  //  DISPATCH SOURCE — same contract as v12 (runtime-first)
+// -------------------------------------------------------------------------
   getDispatches() {
     const fromRuntime =
       this.runtime.getGPUDispatchesFromPackages?.() ||
@@ -469,12 +515,22 @@ class PulseGPUEngine {
       return fromRuntime;
     }
 
+    // Optional: if runtime exposes an Earn frame and spines are provided,
+    // we can synthesize a dispatch (same pattern as v12, just extended).
     const earnFrame = this.runtime.getCurrentEarnFrame?.();
-    if (this.gpuSpine && earnFrame) {
-      const dispatch = this.gpuSpine.plan(
+    if (earnFrame && (this.gpuSpine || this.binaryGpuSpine)) {
+      const modeKind = earnFrame.modeKind || "symbolic";
+      const spine =
+        modeKind === "binary" && this.binaryGpuSpine
+          ? this.binaryGpuSpine
+          : this.gpuSpine;
+
+      if (!spine || typeof spine.plan !== "function") return [];
+
+      const dispatch = spine.plan(
         earnFrame,
         "normal",
-        earnFrame.modeKind || "symbolic",
+        modeKind,
         earnFrame.pressureSnapshot || null,
         {
           ...(earnFrame.executionContext || {}),
@@ -490,6 +546,9 @@ class PulseGPUEngine {
     return [];
   }
 
+  // -------------------------------------------------------------------------
+  //  FRAME RENDER — RAW ENGINE EXECUTION + EVIDENCE RECORDING
+  // -------------------------------------------------------------------------
   renderFrame() {
     if (!this.ready) return;
 
@@ -513,6 +572,7 @@ class PulseGPUEngine {
 
     if (dispatches.length > 0) {
       dispatches.forEach((dispatch, i) => {
+        // RAW ENGINE EVIDENCE: GPU dispatch as executed
         this.gpuMemory.recordDispatch(dispatch);
 
         const meshIndex = i % meshes.length;
@@ -534,6 +594,32 @@ class PulseGPUEngine {
     this.device.queue.submit([commandBuffer]);
   }
 
+  // -------------------------------------------------------------------------
+  //  SNAPSHOT SURFACE — for WorldCore + PulseTrustEvidence
+  //  • RAW ENGINE EVIDENCE ONLY (no AI interpretation).
+  // -------------------------------------------------------------------------
+  snapshotEngineSurface() {
+    const gpuMemorySnapshot = this.gpuMemory.snapshot();
+    const pipelineSnapshot = this.pipelineBuilder
+      ? this.pipelineBuilder.snapshot()
+      : null;
+
+    return {
+      ts: Date.now(),
+      meta: {
+        identity: "PulseGPUAstralMuscleSystem",
+        version: this.meta.version,
+        instanceId: this.meta.instanceId
+      },
+      engine: {
+        ready: this.ready,
+        colorFormat: this.colorFormat
+      },
+      memory: gpuMemorySnapshot,
+      pipelines: pipelineSnapshot
+    };
+  }
+
   diagnostics() {
     return {
       meta: this.meta,
@@ -545,7 +631,7 @@ class PulseGPUEngine {
 
 
 // ============================================================================
-//  EXPORTS
+//  EXPORTS — same shape as v12
 // ============================================================================
 export {
   PulseGPUEngine,

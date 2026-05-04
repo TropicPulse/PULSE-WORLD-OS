@@ -1,50 +1,83 @@
 // ============================================================================
-//  PulseGPU-v12-Evo-Presence-Max — UNIFIED GPU ORGAN
+//  PulseGPU-v16-Immortal — UNIFIED GPU ORGAN (FULL v16 UPGRADE)
 //  Deterministic GPU Dispatch Organ • Pattern + Lineage + Shape + Presence
 //  Dual-Mode: Binary + Symbolic • Multi-Instance • Advantage-Aware
 //  “PLAN ONCE. REUSE FOREVER. NEVER DRIFT.”
-//  • Still: metadata-only, zero GPU calls, zero side effects
+//  • Metadata-only, zero GPU calls, zero side effects
 // ============================================================================
-// --- CORE GPU ORGANS --------------------------------------------------------
+
 /*
-AI_EXPERIENCE_META = {
-  identity: "PulseGPU",
-  version: "v14-Immortal",
-  layer: "gpu_symbolic",
-  role: "gpu_symbolic_surface",
-  lineage: "PulseGPU-v14",
+AI_EXPERIENCE_META:
+  organ: PulseGPU
+  version: 16.0.0
+  tier: IMMORTAL
+  layer: gpu_symbolic
+  role: gpu_symbolic_surface
+  mind: false
 
-  evo: {
-    symbolicPrimary: true,
-    binaryAware: true,
-    dualBand: true,
+  description:
+    "IMMORTAL unified GPU organ. Deterministic symbolic/binary dispatch
+     descriptors with lineage, shape, pressure, and presence awareness.
+     Provides v16-level snapshots, intelligent compute hints, and
+     advantage-aware planning. No GPU execution, no AI reasoning."
 
-    deterministic: true,
-    driftProof: true,
-    pureCompute: true,
+  guarantees:
+    - "Never mutates input payloads."
+    - "Never performs AI reasoning."
+    - "Never executes GPU kernels directly."
+    - "Always emits deterministic dispatch descriptors."
+    - "Always preserves lineage and shape signatures."
+    - "Always remains drift-proof and mutation-safe."
 
-    zeroNetwork: true,
-    zeroFilesystem: true,
-    zeroMutationOfInput: true,
+  boundaries:
+    - "Cannot alter routing decisions outside its descriptor."
+    - "Cannot infer correctness or intent."
+    - "Cannot generate opinions or narratives."
+    - "Cannot call AI models."
 
-    gpuBoundary: true,
-    gpuSafe: true
-  },
+  identity:
+    band: "gpu_symbolic"
+    type: "organ"
+    mind: false
+    immutable: true
 
-  contract: {
-    always: [
-      "PulseGPUBrain",
-      "PulseGPUDrive",
-      "PulseGPUDriveCenter"
-    ],
-    never: [
-      "safeRoute",
-      "fetchViaCNS",
-      "legacyPulseGPU"
-    ]
-  }
-}
+  lineage:
+    parent: "PulseGPU-v12-Evo-Presence-Max"
+    evolution: "v16 IMMORTAL — full advantage + snapshot + intelligent compute"
+
+  integration:
+    receives:
+      - pressureSnapshot (mesh/aura/earn pressure)
+      - gpuCoreView (PulseGPUCore-v16)
+      - chunkCache / prewarm hooks
+    feeds:
+      - PulseWorldCore (worldSnapshot.raw.gpuUnified)
+      - PulseTrustEvidence (RAW/RAW_AI evidence)
+      - Debug / infra tools
+
+  contract:
+    input:
+      - plan(earn, mode, modeKind, pressureSnapshot, executionContext, dnaTag, version)
+      - evolve(dispatch, context)
+      - describeGpuPlan(pattern, options, env)
+      - snapshotGpuSurface()
+      - intelligentComputeHint(dispatch)
+    output:
+      - gpuDispatchDescriptor
+      - evolvedGpuDispatchDescriptor
+      - gpuPlanSnapshot
+      - gpuSurfaceSnapshot
+      - gpuIntelligentHint
+
+  immortal:
+    drift_protection: true
+    mutation_protection: true
+    deterministic: true
 */
+
+// ---------------------------------------------------------------------------
+//  IMPORTS (same as v12)
+// ---------------------------------------------------------------------------
 
 import * as PulseGPUBrain              from "./PulseGPUBrain.js";
 import * as PulseGPUDrive              from "./PulseGPUDrive.js";
@@ -53,38 +86,34 @@ import * as PulseGPUDriveEngine        from "./PulseGPUDriveCenter.js";      // 
 import * as PulseGPUSpine              from "./PulseGPUSpine.js";
 import * as PulseGPUGeneticMemory      from "./PulseGPUGeneticMemory.js";
 
-// --- GPU COMPUTE / ENGINE ---------------------------------------------------
 import * as PulseGPUAstralMuscleSystem from "./PulseGPUAstralMuscleSystem.js";
 
-
-// --- GPU GUARDIAN / HEALER --------------------------------------------------
 import * as PulseGPUGuardianCortex     from "./PulseGPUGuardianCortex.js";
 import * as PulseGPULymphNodes         from "./PulseGPULymphNodes.js";
 
-// --- GPU NERVOUS SYSTEMS ----------------------------------------------------
 import * as PulseGPUAstralNervousSystem from "./PulseGPUAstralNervousSystem.js";
 import * as PulseGPUNervousSystem       from "./PulseGPUNervousSystem.js";
 
-// --- GPU COGNITIVE LAYERS ---------------------------------------------------
 import * as PulseGPUCognitiveLayer      from "./PulseGPUCognitiveLayer.js";
 import * as PulseGPUCognitiveIntelligence from "./PulseGPUCognitiveIntelligence.js";
 import * as PulseGPUWisdomCortex        from "./PulseGPUWisdomCortex.js";
 
-// --- GPU SURVIVAL / INSTINCTS -----------------------------------------------
 import * as PulseGPUSurvivalInstincts   from "./PulseGPUSurvivalInstincts.js";
 
-// --- GPU SYNAPSES -----------------------------------------------------------
 import * as PulseGPUSynapses            from "./PulseGPUSynapses.js";
 
-// --- GPU COMMANDMENTS -------------------------------------------------------
 import * as PulseGPUCommandments        from "./PulseGPUCommandments.js";
+
+// ---------------------------------------------------------------------------
+//  ROLE / METABLOCK — v16 IMMORTAL
+// ---------------------------------------------------------------------------
 
 export const GPURole = {
   type: "GPU",
   subsystem: "PulseGPU",
   layer: "ComputeOrgan",
-  version: "12.0-Evo-Presence",
-  identity: "PulseGPU-v12-Evo-Presence-Max",
+  version: "16.0-Immortal",
+  identity: "PulseGPU-v16-Immortal",
 
   evo: {
     driftProof: true,
@@ -119,26 +148,23 @@ export const GPURole = {
   },
 
   pulseContract: "Pulse-v4-Presence",
-  meshContract: "PulseMeshSpine-v12",
-  routerContract: "PulseRouter-v12",
-  sendContract: "PulseSend-v12",
-  earnContract: "Earn-v4-Presence"
+  meshContract: "PulseMeshSpine-v16",
+  routerContract: "PulseRouter-v16",
+  sendContract: "PulseSend-v16",
+  earnContract: "Earn-v6-Immortal"
 };
 
-// ---------------------------------------------------------------------------
-//  v12 MetaBlock
-// ---------------------------------------------------------------------------
 export const GPUMetaBlock = {
   identity: "PulseGPU",
   subsystem: "PulseGPU",
   layer: "ComputeOrgan",
   role: "Unified-GPU-Dispatch",
-  version: "12.0-Evo-Presence",
+  version: "16.0-Immortal",
   evo: GPURole.evo
 };
 
 // ============================================================================
-//  INTERNAL HELPERS — deterministic, tiny, pure
+//  INTERNAL HELPERS — from v12, preserved
 // ============================================================================
 
 function buildLineage(parentLineage, pattern) {
@@ -354,7 +380,7 @@ function computeAdvantageScore({ pattern, modeBias, modeKind, pressureSnapshot }
 }
 
 // ============================================================================
-//  FACTORY — Create a GPU Dispatch Descriptor (v12-Evo-Presence-Max)
+//  v16 DISPATCH FACTORY (from v12, version bumped)
 // ============================================================================
 
 export function createGPUDispatch({
@@ -367,7 +393,7 @@ export function createGPUDispatch({
   pressureSnapshot = null,
   executionContext = {},
   dnaTag = "default-dna",
-  version = "12.0-Evo-Presence"
+  version = "16.0-Immortal"
 }) {
   const resolvedModeKind = resolveModeKind(modeKind);
   const lineage          = buildLineage(parentLineage, pattern);
@@ -432,7 +458,7 @@ export function createGPUDispatch({
 }
 
 // ============================================================================
-//  EVOLUTION ENGINE — evolve an existing GPU dispatch deterministically
+//  v16 EVOLUTION ENGINE
 // ============================================================================
 
 export function evolveGPUDispatch(dispatch, context = {}) {
@@ -501,7 +527,7 @@ export function evolveGPUDispatch(dispatch, context = {}) {
     modeKind: resolvedModeKind,
     lineage: nextLineage,
     dnaTag: dispatch.dnaTag || "default-dna",
-    version: dispatch.version || "12.0-Evo-Presence",
+    version: dispatch.version || "16.0-Immortal",
     executionContext: execCtx,
     meta: {
       shapeSignature,
@@ -516,7 +542,217 @@ export function evolveGPUDispatch(dispatch, context = {}) {
 }
 
 // ============================================================================
-//  PUBLIC ORGAN — PulseGPU (v12-Evo-Presence-Max, dual-mode)
+//  IMMORTAL SURFACE — SNAPSHOT + INTELLIGENT COMPUTE HINT
+// ============================================================================
+
+export class PulseGPUImmortal {
+  constructor(config = {}) {
+    this.config = {
+      id: GPURole.identity,
+      ...config
+    };
+
+    this.pressure = config.pressure || null;   // mesh/aura/earn pressure provider
+    this.gpuCore = config.gpuCore || null;     // PulseGPUCore-v16
+    this.chunkCache = config.chunkCache || null;
+
+    this.logger = config.logger || console;
+  }
+
+  // Pure structural plan description (no execution)
+  describeGpuPlan(pattern, options = {}, env = {}) {
+    const parentLineage = options.parentLineage || [];
+    const modeKind = resolveModeKind(options.modeKind || env.modeKind || "symbolic");
+    const mode = options.mode || env.mode || "normal";
+    const multiInstanceHint = options.multiInstanceHint || env.multiInstanceHint || false;
+
+    const pressureSnapshot =
+      options.pressureSnapshot ||
+      env.pressureSnapshot ||
+      this._safeCall(this.pressure, "snapshot") ||
+      null;
+
+    const lineage = buildLineage(parentLineage, pattern);
+    const evolutionStage = computeEvolutionStage(pattern, lineage);
+    const modeBias = computeModeBias(mode, pressureSnapshot || {}, modeKind);
+    const profile = selectDispatchProfile(
+      pattern,
+      modeBias,
+      modeKind,
+      multiInstanceHint
+    );
+    const shapeSignature = computeShapeSignature(pattern, lineage, modeKind);
+    const dispatchSignature = computeDispatchSignature(
+      pattern,
+      modeKind,
+      profile.style
+    );
+    const advantageScore = computeAdvantageScore({
+      pattern,
+      modeBias,
+      modeKind,
+      pressureSnapshot: pressureSnapshot || {}
+    });
+
+    const plan = {
+      ts: Date.now(),
+      meta: {
+        id: this.config.id,
+        version: GPURole.version
+      },
+      pattern,
+      lineage,
+      modeKind,
+      mode,
+      modeBias,
+      evolutionStage,
+      shapeSignature,
+      dispatchSignature,
+      profile,
+      advantageScore,
+      pressureSnapshot
+    };
+
+    this._log("gpu:plan-v16", { plan });
+    return plan;
+  }
+
+  // Surface snapshot for world / trust
+  snapshotGpuSurface() {
+    const gpuView =
+      this._safeCall(this.gpuCore, "buildGpuView") ||
+      this._safeCall(this.gpuCore, "snapshotGPU") ||
+      null;
+
+    const pressureSnapshot = this._safeCall(this.pressure, "snapshot") || null;
+
+    const snapshot = {
+      ts: Date.now(),
+      meta: {
+        id: this.config.id,
+        version: GPURole.version
+      },
+      gpuView,
+      pressureSnapshot,
+      chunkCache: this._snapshotChunkCache()
+    };
+
+    this._log("gpu:snapshot-surface-v16", { snapshot });
+    return snapshot;
+  }
+
+  // Intelligent compute hint — advisory only, no execution
+  intelligentComputeHint(dispatch) {
+    if (!dispatch || !dispatch.meta) {
+      return {
+        level: "none",
+        reason: "no-dispatch",
+        suggestions: []
+      };
+    }
+
+    const { profile, modeBias, advantageScore, pressureSnapshot } = dispatch.meta;
+    const suggestions = [];
+
+    if (profile?.style?.includes("throughput") && pressureSnapshot?.gpuLoadPressure > 0.8) {
+      suggestions.push("consider-reducing-batch-size");
+      suggestions.push("prefer-streaming-or-latency-profile");
+    }
+
+    if (profile?.style?.includes("latency") && pressureSnapshot?.gpuLoadPressure < 0.3) {
+      suggestions.push("consider-increasing-batch-size");
+    }
+
+    if (modeBias === "memory-conservative" && profile?.maxBatchSize > 4) {
+      suggestions.push("cap-batch-size-to-4-for-memory");
+    }
+
+    if (advantageScore < 2) {
+      suggestions.push("pattern-may-benefit-from-fuse-or-batch-variant");
+    }
+
+    const level =
+      suggestions.length === 0 ? "none" :
+      suggestions.length <= 2 ? "mild" :
+      "strong";
+
+    const hint = {
+      ts: Date.now(),
+      meta: {
+        id: this.config.id,
+        version: GPURole.version
+      },
+      level,
+      modeKind: dispatch.modeKind,
+      modeBias,
+      advantageScore,
+      suggestions
+    };
+
+    this._log("gpu:intelligent-hint-v16", { hint });
+    return hint;
+  }
+
+  // v16: prewarm / chunk preheat hook
+  prewarmChunks(hints = {}) {
+    if (!this.chunkCache || typeof this.chunkCache.prewarm !== "function") {
+      return null;
+    }
+
+    const payload = {
+      ts: Date.now(),
+      hints
+    };
+
+    const result = this.chunkCache.prewarm(payload);
+    this._log("gpu:prewarm-chunks-v16", { payload, result });
+    return result;
+  }
+
+  diagnostics() {
+    const diag = {
+      GPURole,
+      GPUMetaBlock
+    };
+    this._log("gpu:diagnostics-v16", { diag });
+    return diag;
+  }
+
+  _snapshotChunkCache() {
+    try {
+      if (!this.chunkCache || typeof this.chunkCache.snapshot !== "function") return null;
+      return this.chunkCache.snapshot();
+    } catch {
+      return null;
+    }
+  }
+
+  _safeCall(target, method) {
+    try {
+      if (!target || typeof target[method] !== "function") return null;
+      return target[method]();
+    } catch {
+      return null;
+    }
+  }
+
+  _log(event, payload) {
+    try {
+      this.logger?.log?.(event, {
+        ...payload,
+        gpu: {
+          identity: GPUMetaBlock.identity,
+          version: GPUMetaBlock.version
+        }
+      });
+    } catch {
+      // non-fatal
+    }
+  }
+}
+
+// ============================================================================
+//  PUBLIC ORGAN — PulseGPU (v16-Immortal, dual-mode)
 // ============================================================================
 
 export const PulseGPU = {
@@ -531,7 +767,7 @@ export const PulseGPU = {
     pressureSnapshot = null,
     executionContext = {},
     dnaTag = "default-dna",
-    version = "12.0-Evo-Presence"
+    version = "16.0-Immortal"
   ) {
     const jobId   = earn.jobId;
     const pattern = earn.pattern || "gpu-default";
@@ -563,3 +799,20 @@ export const PulseGPU = {
     };
   }
 };
+
+// ============================================================================
+//  FACTORY FOR IMMORTAL SURFACE
+// ============================================================================
+
+export function createPulseGPUImmortal(config = {}) {
+  const core = new PulseGPUImmortal(config);
+
+  return Object.freeze({
+    meta: GPUMetaBlock,
+    describeGpuPlan: (pattern, options, env) =>
+      core.describeGpuPlan(pattern, options, env),
+    snapshotGpuSurface: () => core.snapshotGpuSurface(),
+    intelligentComputeHint: (dispatch) => core.intelligentComputeHint(dispatch),
+    diagnostics: () => core.diagnostics()
+  });
+}

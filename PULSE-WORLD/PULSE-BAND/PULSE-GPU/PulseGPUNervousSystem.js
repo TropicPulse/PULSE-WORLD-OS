@@ -1,23 +1,23 @@
 // ============================================================================
-//  PULSE GPU SESSION TRACER v12.3-Continuum-binary — THE SENSORY ARCHIVE
+//  PULSE GPU SESSION TRACER v16-Ascendant-Continuum-binary — THE SENSORY ARCHIVE
 //  Afferent Nervous System • Deterministic Perception Layer • Pure Recording
 // ============================================================================
 //
-// IDENTITY — THE SENSORY ARCHIVE (v12.3-Continuum-binary):
-//  ------------------------------------------------------
+// IDENTITY — THE SENSORY ARCHIVE (v16-Ascendant-Continuum-binary):
+//  ---------------------------------------------------------------
 //  • The afferent nervous system of the GPU organism.
 //  • Records every sensation: duration, warnings, errors, stutters, load.
 //  • Records binary/symbolic mode, dispatch lineage, shape signatures.
-//  • Records extended v12.3+ pressure + frame-time + thermal vectors.
+//  • Records extended v16+ pressure, frame-time, thermal, prewarm, cache hints.
 //  • Never judges, never interprets — only perceives and preserves.
 //  • The black box of the GPU body.
-//  • The raw sensory feed for Insights, Brainstem, Healer, Advisor, GeneticMemory.
+//  • Raw sensory feed for Insights, Brainstem, Healer, Advisor, GeneticMemory.
 //  • Advantage‑cascade aware: inherits all systemic advantages.
-//  • PulseSend‑v12‑ready: sensory traces can be routed by the compute router.
-//  • Earn‑v3‑ready: compatible with Earn‑v3 job payloads.
+//  • PulseSend‑v16‑Ascendant‑ready: sensory traces can be routed by the router.
+//  • Earn‑v4‑Presence‑ready.
 //
-// SAFETY CONTRACT (v12.3-Continuum-binary):
-//  ---------------------------------------
+// SAFETY CONTRACT (v16-Ascendant-Continuum-binary):
+//  -----------------------------------------------
 //  • No randomness
 //  • No timestamps
 //  • No GPU calls
@@ -28,13 +28,14 @@
 //  • Self-repair-ready: traces include metadata
 //  • Deterministic: same steps → same trace
 // ============================================================================
+
 /*
 AI_EXPERIENCE_META = {
   identity: "PulseGPUNervousSystem",
-  version: "v14-Immortal",
+  version: "v16-Ascendant",
   layer: "gpu_runtime",
   role: "gpu_nervous_system",
-  lineage: "PulseGPU-v14",
+  lineage: "PulseGPU-v16",
 
   evo: {
     gpuConduction: true,
@@ -68,17 +69,22 @@ AI_EXPERIENCE_META = {
 
 
 // ------------------------------------------------------------
-// ⭐ OS‑v12.3-Continuum-binary CONTEXT METADATA — Sensory Archive Identity
+// ⭐ v16-Ascendant CONTEXT METADATA — Sensory Archive Identity
 // ------------------------------------------------------------
 const TRACER_CONTEXT = {
   layer: "PulseGPUSessionTracer",
   role: "SENSORY_ARCHIVE",
   purpose: "Afferent nervous system — deterministic perception + recording",
   context:
-    "Records ordered steps with durations + health signals + GPU mode/dispatch info + v12.3+ vectors",
+    "Records ordered steps with durations + health signals + GPU mode/dispatch info + v16+ vectors",
   target: "full-gpu+binary",
   selfRepairable: true,
-  version: "12.3-Continuum-binary",
+  version: "16-Ascendant-Continuum-binary",
+
+  // v16+ advantage epoch identity
+  advantageEpochId: "gpu-v16-ascendant",
+  systemAgeBand: "immortal",
+  lineage: "PulseGPU-v16-Ascendant",
 
   evo: {
     advantageCascadeAware: true,
@@ -86,9 +92,9 @@ const TRACER_CONTEXT = {
     driftProof: true,
     multiInstanceReady: true,
     unifiedAdvantageField: true,
-    pulseSend12Ready: true,
+    pulseSend16Ready: true,
 
-    // v12.3-Continuum awareness
+    // v16-Ascendant awareness
     binaryAware: true,
     symbolicAware: true,
     gpuDispatchAware: true,
@@ -99,16 +105,20 @@ const TRACER_CONTEXT = {
     organismLoaderAware: true,
     geneticMemoryLink: true,
     healerLink: true,
+    lymphNodeLink: true,
+    prewarmAware: true,
+    cacheAware: true,
+    snapshotAware: true,
 
-    routingContract: "PulseSend-v12",
-    gpuOrganContract: "PulseGPU-v12-Continuum",
-    binaryGpuOrganContract: "PulseBinaryGPU-v12-Continuum",
-    earnCompatibility: "Earn-v3",
+    routingContract: "PulseSend-v16-Ascendant",
+    gpuOrganContract: "PulseGPU-v16-Ascendant",
+    binaryGpuOrganContract: "PulseBinaryGPU-v16-Ascendant",
+    earnCompatibility: "Earn-v4-Presence",
 
     // Legacy compatibility (metadata only)
-    legacyRoutingContract: "PulseSend-v10.4",
-    legacyGPUOrganContract: "PulseGPU-v10.4",
-    legacyEarnCompatibility: "Earn-v2",
+    legacyRoutingContract: "PulseSend-v12",
+    legacyGPUOrganContract: "PulseGPU-v12-Continuum",
+    legacyEarnCompatibility: "Earn-v3",
     legacyRoutingContractV11: "PulseSend-v11",
     legacyGPUOrganContractV11: "PulseGPU-v11-Evo"
   }
@@ -125,9 +135,17 @@ function clamp(value, min, max) {
   return value;
 }
 
+function safeBool(v) {
+  return v === true;
+}
+
+function safeNumber(v, fallback = 0) {
+  return typeof v === "number" && !Number.isNaN(v) ? v : fallback;
+}
+
 
 // ------------------------------------------------------------
-// Step normalization — Sensory Input Normalization (v12.3-Continuum-binary)
+// Step normalization — Sensory Input Normalization (v16-Ascendant)
 // ------------------------------------------------------------
 function normalizeStep(step = {}) {
   const {
@@ -142,7 +160,7 @@ function normalizeStep(step = {}) {
     cpuLoad,
     vramUsageMB,
 
-    // v12.3+ extended telemetry (optional)
+    // v16+ extended telemetry (optional)
     frameTimeAvgMs,
     frameTimeP95Ms,
     frameTimeP99Ms,
@@ -151,7 +169,7 @@ function normalizeStep(step = {}) {
     gpuFanRpm,
     memoryBandwidthGBs,
 
-    // v11-Evo-binary sensory fields
+    // v11-Evo / v12 sensory fields
     binaryModeObserved,
     symbolicModeObserved,
     gpuPattern,
@@ -160,7 +178,14 @@ function normalizeStep(step = {}) {
     gpuModeBias,
     gpuDispatchProfile,
     pressureSnapshot,
-    factoringSnapshot
+    factoringSnapshot,
+
+    // v16+ nervous system extras
+    prewarmFlag,
+    cacheHitFlag,
+    advantageTag,
+    advantageEpochId,
+    nervousSystemChannel
   } = step;
 
   return {
@@ -180,7 +205,7 @@ function normalizeStep(step = {}) {
         ? clamp(vramUsageMB, 0, 4_000_000)
         : undefined,
 
-    // v12.3+ extended telemetry (pure recording)
+    // v16+ extended telemetry (pure recording)
     frameTimeAvgMs:
       typeof frameTimeAvgMs === "number"
         ? clamp(frameTimeAvgMs, 0, 1000)
@@ -232,13 +257,20 @@ function normalizeStep(step = {}) {
         ? { ...factoringSnapshot }
         : null,
 
+    // v16+ nervous system extras
+    prewarmFlag: safeBool(prewarmFlag),
+    cacheHitFlag: safeBool(cacheHitFlag),
+    advantageTag: advantageTag || null,
+    advantageEpochId: advantageEpochId || TRACER_CONTEXT.advantageEpochId,
+    nervousSystemChannel: nervousSystemChannel || "default",
+
     meta: { ...TRACER_CONTEXT }
   };
 }
 
 
 // ------------------------------------------------------------
-// SessionTrace — Sensory Recording Unit (v12.3-Continuum-binary)
+// SessionTrace — Sensory Recording Unit (v16-Ascendant-Continuum-binary)
 // ------------------------------------------------------------
 class SessionTrace {
   constructor({
@@ -253,7 +285,7 @@ class SessionTrace {
     this.hardwareProfile = hardwareProfile || {};
     this.tierProfile = tierProfile || {};
 
-    // v12.3-Continuum-binary: session-level GPU context snapshot
+    // v16-Ascendant: session-level GPU context snapshot
     this.gpuContext = gpuContext || null;
 
     this.steps = [];
@@ -265,6 +297,7 @@ class SessionTrace {
     this.steps.push(normalized);
   }
 
+  // v16-Ascendant: full advantage snapshot summary for GeneticMemory / Healer
   getSummary() {
     let totalDuration = 0;
     let totalWarnings = 0;
@@ -272,16 +305,85 @@ class SessionTrace {
     let totalStutters = 0;
     let binarySteps = 0;
     let symbolicSteps = 0;
+    let prewarmSteps = 0;
+    let cacheHitSteps = 0;
+
+    let minFrameTimeMs = null;
+    let sumFrameTimeMs = 0;
+    let frameSampleCount = 0;
+
+    let pressureAgg = {
+      gpu: 0,
+      thermal: 0,
+      memory: 0,
+      mesh: 0,
+      aura: 0
+    };
+    let pressureCount = 0;
 
     this.steps.forEach((s) => {
-      totalDuration += s.durationMs;
-      totalWarnings += s.warnings;
-      totalErrors += s.errors;
-      totalStutters += s.stutters;
+      const step = s || {};
 
-      if (s.binaryModeObserved) binarySteps += 1;
-      if (s.symbolicModeObserved) symbolicSteps += 1;
+      totalDuration += safeNumber(step.durationMs, 0);
+      totalWarnings += safeNumber(step.warnings, 0);
+      totalErrors += safeNumber(step.errors, 0);
+      totalStutters += safeNumber(step.stutters, 0);
+
+      if (step.binaryModeObserved) binarySteps += 1;
+      if (step.symbolicModeObserved) symbolicSteps += 1;
+      if (step.prewarmFlag) prewarmSteps += 1;
+      if (step.cacheHitFlag) cacheHitSteps += 1;
+
+      if (typeof step.frameTimeAvgMs === "number") {
+        const ft = clamp(step.frameTimeAvgMs, 0, 1000);
+        sumFrameTimeMs += ft;
+        frameSampleCount += 1;
+        if (minFrameTimeMs === null || ft < minFrameTimeMs) {
+          minFrameTimeMs = ft;
+        }
+      }
+
+      if (step.pressureSnapshot && typeof step.pressureSnapshot === "object") {
+        const p = step.pressureSnapshot;
+        pressureAgg.gpu += safeNumber(p.gpuLoadPressure, 0);
+        pressureAgg.thermal += safeNumber(p.thermalPressure, 0);
+        pressureAgg.memory += safeNumber(p.memoryPressure, 0);
+        pressureAgg.mesh += safeNumber(p.meshStormPressure, 0);
+        pressureAgg.aura += safeNumber(p.auraTension, 0);
+        pressureCount += 1;
+      }
     });
+
+    const avgFrameTimeMs =
+      frameSampleCount > 0 ? sumFrameTimeMs / frameSampleCount : 0;
+    const avgFps = avgFrameTimeMs > 0 ? 1000 / avgFrameTimeMs : 0;
+    const minFps =
+      minFrameTimeMs && minFrameTimeMs > 0 ? 1000 / minFrameTimeMs : 0;
+
+    const pressureVector =
+      pressureCount > 0
+        ? {
+            gpu: pressureAgg.gpu / pressureCount,
+            thermal: pressureAgg.thermal / pressureCount,
+            memory: pressureAgg.memory / pressureCount,
+            mesh: pressureAgg.mesh / pressureCount,
+            aura: pressureAgg.aura / pressureCount
+          }
+        : null;
+
+    const advantageSnapshot = {
+      epochId: TRACER_CONTEXT.advantageEpochId,
+      sessionId: this.sessionId,
+      sampleCount: this.steps.length,
+      avgFps,
+      minFps,
+      totalDurationMs: totalDuration,
+      pressureVector,
+      binaryStepCount: binarySteps,
+      symbolicStepCount: symbolicSteps,
+      prewarmStepCount: prewarmSteps,
+      cacheHitStepCount: cacheHitSteps
+    };
 
     return {
       sessionId: this.sessionId,
@@ -291,12 +393,18 @@ class SessionTrace {
       totalStutters,
       stepCount: this.steps.length,
 
-      // v12.3-Continuum-binary: mode counts for GeneticMemory / Insights
+      // v16-Ascendant: mode + advantage counts
       binaryStepCount: binarySteps,
       symbolicStepCount: symbolicSteps,
+      prewarmStepCount: prewarmSteps,
+      cacheHitStepCount: cacheHitSteps,
 
       // session-level GPU context
       gpuContext: this.gpuContext,
+
+      // v16-Ascendant: advantage snapshot for GeneticMemory / Healer / Advisor
+      advantageSnapshot,
+      pressureVector,
 
       meta: { ...TRACER_CONTEXT }
     };
@@ -305,7 +413,7 @@ class SessionTrace {
 
 
 // ------------------------------------------------------------
-// PulseGPUSessionTracer — Sensory Archive Controller (v12.3-Continuum-binary)
+// PulseGPUSessionTracer — Sensory Archive Controller (v16-Ascendant)
 // ------------------------------------------------------------
 class PulseGPUSessionTracer {
   constructor() {
@@ -376,5 +484,6 @@ class PulseGPUSessionTracer {
 export {
   PulseGPUSessionTracer,
   SessionTrace,
-  normalizeStep
+  normalizeStep,
+  TRACER_CONTEXT
 };

@@ -1,21 +1,22 @@
 // ============================================================================
 // FILE: tropic-pulse-functions/PULSE-WORLD/PULSE-GPU/PulseGPUGeneticMemory.js
-// PULSE GPU GENETIC MEMORY v14‑IMMORTAL — THE DNA ARCHIVE
+// PULSE GPU GENETIC MEMORY v16‑IMMORTAL — THE DNA ARCHIVE
 // Long-Horizon Pattern Memory • Lineage Store • Deterministic Pattern Engine
+// CoreMemory‑Integrated • ComputerIntelligence‑Aware • Earn‑v4‑Presence‑Ready
 // ============================================================================
 //
-// IDENTITY — THE DNA ARCHIVE (v14‑IMMORTAL):
+// IDENTITY — THE DNA ARCHIVE (v16‑IMMORTAL):
 //  --------------------------------------------------------
 //  • Long-term genetic memory of the GPU organism.
 //  • Stores lineage, execution signatures, binary-mode outcomes, and patterns.
 //  • Stores dispatch signatures, shape signatures, pressure correlations.
-//  • Reads traces, metrics, and survival entries to extract stable patterns.
+//  • Tracks advantage vectors + CI fields for Drive / Wisdom / Cognitive layers.
 //  • No prediction — only pattern recognition over what actually happened.
-//  • Designed for Advisor, Healer, Orchestrator, Insights, UI, Engine.
+//  • Designed for Advisor, Healer, Orchestrator, Insights, UI, Engine, Earn.
 //  • Advantage-cascade aware: systemic gains improve pattern density.
-//  • PulseSend-v12.3-ready • Earn-v3-ready • Binary/NonBinary dual-mode aware.
+//  • PulseSend-v16-ready • Earn-v4-Presence-ready • Dual-band + CI aware.
 //
-// SAFETY CONTRACT (v14‑IMMORTAL):
+// SAFETY CONTRACT (v16‑IMMORTAL):
 //  ---------------------------------------------
 //  • No randomness
 //  • No timestamps
@@ -28,19 +29,13 @@
 //  • Deterministic: same inputs → same genetic memory
 // ============================================================================
 
-// ============================================================================
-// FILE: PULSE-WORLD/PULSE-GPU/PulseGPUGeneticMemory-v14-Immortal.js
-// PULSE GPU GENETIC MEMORY v14‑IMMORTAL — THE DNA ARCHIVE
-// Long-Horizon Pattern Memory • Lineage Store • Deterministic Pattern Engine
-// CoreMemory‑Integrated • Binary/NonBinary Dual-Mode • Advantage-Cascade Ready
-// ============================================================================
 /*
 AI_EXPERIENCE_META = {
   identity: "PulseGPUGeneticMemory",
-  version: "v14-Immortal",
+  version: "v16-Immortal",
   layer: "gpu_brain",
   role: "gpu_genetic_memory",
-  lineage: "PulseGPU-v14",
+  lineage: "PulseGPU-v16-Immortal",
 
   evo: {
     gpuCompute: true,
@@ -53,13 +48,38 @@ AI_EXPERIENCE_META = {
 
     zeroNetwork: true,
     zeroFilesystem: true,
-    zeroMutationOfInput: true
+    zeroMutationOfInput: true,
+
+    // Awareness
+    binaryAware: true,
+    symbolicAware: true,
+    dualBandAware: true,
+    gpuDispatchAware: true,
+    gpuMemoryAware: true,
+    gpuAdvantageAware: true,
+    presenceAware: true,
+    dnaAware: true,
+    versionAware: true,
+    instanceAware: true,
+
+    // CI + Earn
+    computerIntelligenceAware: true,
+    earnAware: true,
+    earnCompatibility: "Earn-v4-Presence",
+
+    // Contracts
+    coreMemoryAware: true,
+    coreMemoryContract: "PulseCoreMemory-v16-Immortal",
+    routingContract: "PulseSend-v16",
+    gpuOrganContract: "PulseGPU-v16-Immortal",
+    binaryGpuOrganContract: "PulseBinaryGPU-v16-Immortal"
   },
 
   contract: {
     always: [
       "PulseGPUBrain",
-      "PulseGPUCognitiveLayer"
+      "PulseGPUCognitiveLayer",
+      "PulseGPUDriveCenter"
     ],
     never: [
       "safeRoute",
@@ -70,21 +90,20 @@ AI_EXPERIENCE_META = {
 }
 */
 
-
 import { PulseCoreMemory } from "../PULSE-CORE/PulseCoreMemory.js";
 
 // ============================================================================
-// CONTEXT METADATA — Genetic Memory Identity
+// CONTEXT METADATA — Genetic Memory Identity (v16-Immortal)
 // ============================================================================
 const GENETIC_MEMORY_CONTEXT = {
   layer: "PulseGPUGeneticMemory",
   role: "DNA_ARCHIVE",
   purpose:
-    "Long-horizon genetic memory for configs, execution signatures, patterns, lineage, and correlations",
+    "Long-horizon genetic memory for configs, execution signatures, patterns, lineage, correlations, and CI fields",
   context:
-    "Stores lineage, binary-mode outcomes, dispatch signatures, shape signatures, and pattern stats",
-  target: "full-gpu+binary",
-  version: "14-Immortal",
+    "Stores lineage, binary-mode outcomes, dispatch signatures, shape signatures, pattern stats, and advantage vectors",
+  target: "full-gpu+binary+symbolic",
+  version: "16-Immortal",
   selfRepairable: true,
 
   evo: {
@@ -93,21 +112,23 @@ const GENETIC_MEMORY_CONTEXT = {
     driftProof: true,
     multiInstanceReady: true,
     unifiedAdvantageField: true,
-    pulseSend14Ready: true,
+    pulseSend16Ready: true,
 
     dualModeEvolution: true,
     binaryAware: true,
     symbolicAware: true,
+    dualBandAware: true,
     gpuDispatchAware: true,
     gpuMemoryAware: true,
     gpuAdvantageAware: true,
 
-    // v14 IMMORTAL contracts
+    // v16 IMMORTAL contracts
     coreMemoryAware: true,
-    coreMemoryContract: "PulseCoreMemory-v14-Immortal",
-    routingContract: "PulseSend-v14-Immortal",
-    gpuOrganContract: "PulseGPU-v14-Immortal",
-    earnCompatibility: "Earn-v3",
+    coreMemoryContract: "PulseCoreMemory-v16-Immortal",
+    routingContract: "PulseSend-v16",
+    gpuOrganContract: "PulseGPU-v16-Immortal",
+    binaryGpuOrganContract: "PulseBinaryGPU-v16-Immortal",
+    earnCompatibility: "Earn-v4-Presence",
 
     // Legacy compatibility
     legacyRoutingContract: "PulseSend-v10.4",
@@ -145,11 +166,17 @@ function clamp(v, min, max) {
 }
 
 // ============================================================================
-// Signature builders — v14 IMMORTAL
+// Signature builders — v16 IMMORTAL
 // ============================================================================
 function buildGameKey(gameProfile = {}) {
-  const { gameId = "unknown", buildVersion = "", contentHash = "" } = gameProfile;
-  return stableStringify({ gameId, buildVersion, contentHash });
+  const {
+    gameId = "unknown",
+    buildVersion = "",
+    contentHash = "",
+    publisherId = "",
+    channel = ""
+  } = gameProfile;
+  return stableStringify({ gameId, buildVersion, contentHash, publisherId, channel });
 }
 
 function buildHardwareKey(hardwareProfile = {}) {
@@ -158,14 +185,20 @@ function buildHardwareKey(hardwareProfile = {}) {
     driverVersion = "",
     vramMB = 0,
     cpuModel = "",
-    ramMB = 0
+    ramMB = 0,
+    deviceClass = "",
+    platform = ""
   } = hardwareProfile;
 
-  return stableStringify({ gpuModel, driverVersion, vramMB, cpuModel, ramMB });
+  return stableStringify({ gpuModel, driverVersion, vramMB, cpuModel, ramMB, deviceClass, platform });
 }
 
 function buildTierKey(tierProfile = {}) {
-  return stableStringify({ tierId: tierProfile?.tierId || "default" });
+  return stableStringify({
+    tierId: tierProfile?.tierId || "default",
+    tierLabel: tierProfile?.tierLabel || "",
+    earnTier: tierProfile?.earnTier || ""
+  });
 }
 
 function buildExecutionContextKey(executionContext = {}) {
@@ -177,7 +210,9 @@ function buildExecutionContextKey(executionContext = {}) {
     resolution = "",
     refreshRate = 0,
     dispatchSignature = "",
-    shapeSignature = ""
+    shapeSignature = "",
+    qualityPreset = "",
+    rayTracing = false
   } = executionContext;
 
   return stableStringify({
@@ -188,7 +223,9 @@ function buildExecutionContextKey(executionContext = {}) {
     resolution,
     refreshRate,
     dispatchSignature,
-    shapeSignature
+    shapeSignature,
+    qualityPreset,
+    rayTracing
   });
 }
 
@@ -203,7 +240,7 @@ function buildGeneticKey({ gameProfile, hardwareProfile, tierProfile, executionC
 }
 
 // ============================================================================
-// Pattern aggregation — v14 IMMORTAL
+// Pattern aggregation — v16 IMMORTAL
 // ============================================================================
 function safeNumber(n, fallback = 0) {
   return typeof n === "number" && !Number.isNaN(n) ? n : fallback;
@@ -219,9 +256,21 @@ function aggregatePatternStats(existing, sample) {
         stutterRate: 0,
         crashRate: 0,
         avgDurationMs: 0,
+
+        // pressure + advantage vectors
         pressureVector: { gpu: 0, thermal: 0, memory: 0, mesh: 0, aura: 0 },
+        advantageVector: { scoreDelta: 0, stabilityDelta: 0, earnPotential: 0 },
+
+        // mode ratios
         binaryModeRatio: 0,
-        symbolicModeRatio: 0
+        symbolicModeRatio: 0,
+
+        // CI surface (metadata-only)
+        computerIntelligence: {
+          performancePressure: 0,
+          stabilitySignal: 0,
+          confidence: 0
+        }
       };
 
   const count = next.sampleCount;
@@ -253,6 +302,20 @@ function aggregatePatternStats(existing, sample) {
     };
   }
 
+  if (sample.advantageSnapshot) {
+    const a = sample.advantageSnapshot;
+    next.advantageVector = {
+      scoreDelta:
+        (next.advantageVector.scoreDelta * count + safeNumber(a.scoreDelta)) / newCount,
+      stabilityDelta:
+        (next.advantageVector.stabilityDelta * count + safeNumber(a.stabilityDelta)) /
+        newCount,
+      earnPotential:
+        (next.advantageVector.earnPotential * count + safeNumber(a.earnPotential)) /
+        newCount
+    };
+  }
+
   if (sample.binaryStepCount || sample.symbolicStepCount) {
     const total = sample.binaryStepCount + sample.symbolicStepCount;
     if (total > 0) {
@@ -263,19 +326,37 @@ function aggregatePatternStats(existing, sample) {
     }
   }
 
+  if (sample.computerIntelligence && typeof sample.computerIntelligence === "object") {
+    const ci = sample.computerIntelligence;
+    const prev = next.computerIntelligence || {
+      performancePressure: 0,
+      stabilitySignal: 0,
+      confidence: 0
+    };
+
+    next.computerIntelligence = {
+      performancePressure:
+        (prev.performancePressure * count + safeNumber(ci.performancePressure)) / newCount,
+      stabilitySignal:
+        (prev.stabilitySignal * count + safeNumber(ci.stabilitySignal)) / newCount,
+      confidence:
+        (prev.confidence * count + clamp(safeNumber(ci.confidence), 0, 1)) / newCount
+    };
+  }
+
   next.sampleCount = newCount;
   return next;
 }
 
 // ============================================================================
-// Genetic Memory Store — v14 IMMORTAL + CoreMemory Integration
+// Genetic Memory Store — v16 IMMORTAL + CoreMemory Integration
 // ============================================================================
 class PulseGPUGeneticMemoryStore {
   constructor() {
     this.entries = new Map();
     this.meta = { ...GENETIC_MEMORY_CONTEXT };
-    this.coreMemory = new PulseCoreMemory("PulseGPU.GeneticMemory.v14");
-    this.namespace = "PulseGPU.GeneticMemory.v14";
+    this.coreMemory = new PulseCoreMemory("PulseGPU.GeneticMemory.v16");
+    this.namespace = "PulseGPU.GeneticMemory.v16";
   }
 
   clear() {
@@ -285,7 +366,16 @@ class PulseGPUGeneticMemoryStore {
     } catch {}
   }
 
-  recordObservation({ gameProfile, hardwareProfile, tierProfile, executionContext, metrics, traceSummary }) {
+  recordObservation({
+    gameProfile,
+    hardwareProfile,
+    tierProfile,
+    executionContext,
+    metrics,
+    traceSummary,
+    advantageSnapshot,
+    computerIntelligence
+  }) {
     const key = buildGeneticKey({ gameProfile, hardwareProfile, tierProfile, executionContext });
 
     const existing = this.entries.get(key);
@@ -298,7 +388,9 @@ class PulseGPUGeneticMemoryStore {
       totalDurationMs: traceSummary?.totalDurationMs ?? 0,
       pressureSnapshot: traceSummary?.pressureSnapshot ?? null,
       binaryStepCount: traceSummary?.binaryStepCount ?? 0,
-      symbolicStepCount: traceSummary?.symbolicStepCount ?? 0
+      symbolicStepCount: traceSummary?.symbolicStepCount ?? 0,
+      advantageSnapshot: advantageSnapshot || null,
+      computerIntelligence: computerIntelligence || null
     };
 
     const updatedStats = aggregatePatternStats(existing?.patternStats, sample);
@@ -340,16 +432,19 @@ class PulseGPUGeneticMemoryStore {
     return null;
   }
 
-  queryPatterns({ gameId, gpuModel, binaryMode } = {}) {
+  queryPatterns({ gameId, gpuModel, binaryMode, tierId, earnTier } = {}) {
     const results = [];
     for (const entry of this.entries.values()) {
       const gp = entry.gameProfile || {};
       const hp = entry.hardwareProfile || {};
       const ctx = entry.executionContext || {};
+      const tp = entry.tierProfile || {};
 
       if (gameId && gp.gameId !== gameId) continue;
       if (gpuModel && hp.gpuModel !== gpuModel) continue;
       if (binaryMode && ctx.binaryMode !== binaryMode) continue;
+      if (tierId && tp.tierId !== tierId) continue;
+      if (earnTier && tp.earnTier !== earnTier) continue;
 
       results.push(entry);
     }
@@ -377,6 +472,9 @@ class PulseGPUGeneticMemoryStore {
       if (!entry || typeof entry !== "object" || !entry.key) continue;
 
       const ps = entry.patternStats || {};
+      const pv = ps.pressureVector || {};
+      const av = ps.advantageVector || {};
+      const ci = ps.computerIntelligence || {};
 
       const safeEntry = {
         key: entry.key,
@@ -391,15 +489,25 @@ class PulseGPUGeneticMemoryStore {
           stutterRate: ps.stutterRate || 0,
           crashRate: ps.crashRate || 0,
           avgDurationMs: ps.avgDurationMs || 0,
-          pressureVector: ps.pressureVector || {
-            gpu: 0,
-            thermal: 0,
-            memory: 0,
-            mesh: 0,
-            aura: 0
+          pressureVector: {
+            gpu: pv.gpu || 0,
+            thermal: pv.thermal || 0,
+            memory: pv.memory || 0,
+            mesh: pv.mesh || 0,
+            aura: pv.aura || 0
+          },
+          advantageVector: {
+            scoreDelta: av.scoreDelta || 0,
+            stabilityDelta: av.stabilityDelta || 0,
+            earnPotential: av.earnPotential || 0
           },
           binaryModeRatio: ps.binaryModeRatio || 0,
-          symbolicModeRatio: ps.symbolicModeRatio || 0
+          symbolicModeRatio: ps.symbolicModeRatio || 0,
+          computerIntelligence: {
+            performancePressure: ci.performancePressure || 0,
+            stabilitySignal: ci.stabilitySignal || 0,
+            confidence: clamp(ci.confidence || 0, 0, 1)
+          }
         },
         meta: { ...GENETIC_MEMORY_CONTEXT }
       };
@@ -414,7 +522,7 @@ class PulseGPUGeneticMemoryStore {
 }
 
 // ============================================================================
-// Public API — Genetic Memory Surface (v14 IMMORTAL)
+// Public API — Genetic Memory Surface (v16 IMMORTAL)
 // ============================================================================
 class PulseGPUGeneticMemory {
   constructor() {

@@ -3,8 +3,8 @@
 // FILE: tropic-pulse-functions/PULSE-WORLD/PULSE-GPU/PulseGPUDrive.js
 // LAYER: MOMENTUM NETWORK — GPU RUNTIME (BRAIN → ENGINE FLOW)
 //
-// PulseGPURuntime v12-Evo-Presence-Max
-// Deterministic, Drift‑Proof, PulseSend‑v12‑Ready, Presence‑Aware
+// PulseGPURuntime v16-Immortal
+// Deterministic, Drift‑Proof, PulseSend‑v16‑Ready, Presence‑Aware, CI‑Aware
 // ============================================================================
 //
 // ROLE — MOMENTUM NETWORK:
@@ -13,14 +13,15 @@
 //  • Loads GPU Brain packages → creates GPU buffers + shader modules.
 //  • Exposes meshes/shaders/textures/dispatch hints to Astral Muscle Engine.
 //  • Binary-aware, symbolic-aware, dispatch-aware, memory-aware, presence-aware.
+//  • CognitiveFrame-aware + ComputerIntelligence-aware (metadata + surfaces).
 //  • Fail-open: if anything is missing, surfaces stay empty but never throw.
 /*
 AI_EXPERIENCE_META = {
   identity: "PulseGPUDrive",
-  version: "v14-Immortal",
+  version: "v16-Immortal",
   layer: "gpu_runtime",
   role: "gpu_runtime_surface",
-  lineage: "PulseGPU-v14",
+  lineage: "PulseGPU-v16-Immortal",
 
   evo: {
     gpuRuntime: true,
@@ -36,7 +37,37 @@ AI_EXPERIENCE_META = {
     zeroMutationOfInput: true,
 
     parallelSafe: true,
-    gpuSafe: true
+    gpuSafe: true,
+
+    // Awareness
+    symbolicAware: true,
+    binaryAware: true,
+    dualBandAware: true,
+    gpuDispatchAware: true,
+    gpuMemoryAware: true,
+    gpuAdvantageAware: true,
+    presenceAware: true,
+    dnaAware: true,
+    versionAware: true,
+    instanceAware: true,
+
+    // Mesh linkage
+    brainLinked: true,
+    cognitionLinked: true,
+    wisdomLinked: true,
+    geneticMemoryLinked: true,
+
+    // Immortal + Earn
+    immortalReady: true,
+    immortalSurface: true,
+    earnAware: true,
+    earnCompatibility: "Earn-v4-Presence",
+
+    // Contracts
+    routingContract: "PulseSend-v16",
+    gpuOrganContract: "PulseGPU-v16-Immortal",
+    binaryGpuOrganContract: "PulseBinaryGPU-v16-Immortal",
+    workgroupLawVersion: 16
   },
 
   contract: {
@@ -55,8 +86,9 @@ AI_EXPERIENCE_META = {
 */
 
 import { PulseGPUBrainExport } from "./PulseGPUBrain.js";
+import { computeComputerIntelligence } from "./PulseGPUComputerIntelligence.js";
 
-const PULSE_GPU_RUNTIME_VERSION = "12.0-Evo-Presence-Max";
+const PULSE_GPU_RUNTIME_VERSION = "16.0-Immortal";
 
 // ============================================================================
 // GPU CONTEXT WRAPPER — Momentum Network: Conduction Node
@@ -80,9 +112,9 @@ class PulseGPUContext {
         driftProof: true,
         multiInstanceReady: true,
         unifiedAdvantageField: true,
-        pulseSend12Ready: true,
+        pulseSend16Ready: true,
 
-        // v12 Presence Evolution
+        // v16 Immortal Presence
         presenceAware: true,
         dnaAware: true,
         versionAware: true,
@@ -95,9 +127,13 @@ class PulseGPUContext {
         gpuMemoryAware: true,
         gpuAdvantageAware: true,
 
-        routingContract: "PulseSend-v12",
-        gpuOrganContract: "PulseGPU-v12-Evo-Presence-Max",
-        binaryGpuOrganContract: "PulseBinaryGPU-v12-Evo-Presence-Max",
+        // Cognitive / CI awareness (metadata only)
+        cognitiveFrameAware: true,
+        computerIntelligenceAware: true,
+
+        routingContract: "PulseSend-v16",
+        gpuOrganContract: "PulseGPU-v16-Immortal",
+        binaryGpuOrganContract: "PulseBinaryGPU-v16-Immortal",
         earnCompatibility: "Earn-v4-Presence"
       }
     };
@@ -181,8 +217,12 @@ class PulseGPURuntimeLoader {
     this.meshBuffers = [];
     this.shaderModules = [];
 
-    this.dispatchHints = null;      // v12: still metadata-only
-    this.gpuMemorySnapshot = null;  // v12: optional, metadata-only
+    this.dispatchHints = null;      // v16: metadata + CI input
+    this.gpuMemorySnapshot = null;  // v16: optional, metadata-only
+
+    // v16: cognitive + CI runtime surfaces (metadata-only, fail-open)
+    this.cognitiveFrame = null;
+    this.computerIntelligence = null;
 
     this.meta = {
       layer: "PulseGPURuntimeLoader",
@@ -195,9 +235,9 @@ class PulseGPURuntimeLoader {
         driftProof: true,
         multiInstanceReady: true,
         unifiedAdvantageField: true,
-        pulseSend12Ready: true,
+        pulseSend16Ready: true,
 
-        // v12 Presence Evolution
+        // v16 Immortal Presence
         presenceAware: true,
         dnaAware: true,
         versionAware: true,
@@ -210,9 +250,13 @@ class PulseGPURuntimeLoader {
         gpuMemoryAware: true,
         gpuAdvantageAware: true,
 
-        routingContract: "PulseSend-v12",
-        gpuOrganContract: "PulseGPU-v12-Evo-Presence-Max",
-        binaryGpuOrganContract: "PulseBinaryGPU-v12-Evo-Presence-Max",
+        // Cognitive / CI awareness (metadata only)
+        cognitiveFrameAware: true,
+        computerIntelligenceAware: true,
+
+        routingContract: "PulseSend-v16",
+        gpuOrganContract: "PulseGPU-v16-Immortal",
+        binaryGpuOrganContract: "PulseBinaryGPU-v16-Immortal",
         earnCompatibility: "Earn-v4-Presence"
       }
     };
@@ -228,9 +272,25 @@ class PulseGPURuntimeLoader {
 
     this.packages = pkg;
 
-    // v12: load dispatch hints + memory snapshot if present
+    // v16: load dispatch hints + memory snapshot if present
     this.dispatchHints = pkg.dispatchHints || null;
     this.gpuMemorySnapshot = pkg.gpuMemorySnapshot || null;
+
+    // v16: optional cognitive frame + CI snapshot (metadata-only, fail-open)
+    this.cognitiveFrame = pkg.cognitiveFrame || null;
+
+    try {
+      this.computerIntelligence = computeComputerIntelligence({
+        dispatchHints: this.dispatchHints,
+        gpuMemorySnapshot: this.gpuMemorySnapshot,
+        renderPlan: pkg.renderPlan || null,
+        dnaTag: pkg.dnaTag,
+        instanceId: pkg.instanceId,
+        brainVersion: pkg.brainVersion
+      });
+    } catch {
+      this.computerIntelligence = null;
+    }
 
     return this.packages;
   }
@@ -330,9 +390,9 @@ class PulseGPURuntime {
         driftProof: true,
         multiInstanceReady: true,
         unifiedAdvantageField: true,
-        pulseSend12Ready: true,
+        pulseSend16Ready: true,
 
-        // v12 Presence Evolution
+        // v16 Immortal Presence
         presenceAware: true,
         dnaAware: true,
         versionAware: true,
@@ -345,9 +405,13 @@ class PulseGPURuntime {
         gpuMemoryAware: true,
         gpuAdvantageAware: true,
 
-        routingContract: "PulseSend-v12",
-        gpuOrganContract: "PulseGPU-v12-Evo-Presence-Max",
-        binaryGpuOrganContract: "PulseBinaryGPU-v12-Evo-Presence-Max",
+        // Cognitive / CI awareness (metadata only)
+        cognitiveFrameAware: true,
+        computerIntelligenceAware: true,
+
+        routingContract: "PulseSend-v16",
+        gpuOrganContract: "PulseGPU-v16-Immortal",
+        binaryGpuOrganContract: "PulseBinaryGPU-v16-Immortal",
         earnCompatibility: "Earn-v4-Presence"
       }
     };
@@ -383,7 +447,7 @@ class PulseGPURuntime {
     return this.loader.packages;
   }
 
-  // v12: expose dispatch hints + memory snapshot
+  // v16: expose dispatch hints + memory snapshot
   getDispatchHints() {
     return this.loader.dispatchHints;
   }
@@ -392,7 +456,16 @@ class PulseGPURuntime {
     return this.loader.gpuMemorySnapshot;
   }
 
-  // v12: compatibility surfaces for Astral Muscle / Spine
+  // v16: cognitive + CI runtime surfaces (for Earn / Spine / Wisdom)
+  getCognitiveFrame() {
+    return this.loader.cognitiveFrame;
+  }
+
+  getComputerIntelligence() {
+    return this.loader.computerIntelligence;
+  }
+
+  // v16: compatibility surfaces for Astral Muscle / Spine
   getMeshesFromPackages() {
     return this.loader.meshBuffers;
   }
@@ -401,7 +474,7 @@ class PulseGPURuntime {
     return this.loader.shaderModules;
   }
 
-  // v12: optional dispatch surfaces (fail-open, empty)
+  // v16: optional dispatch surfaces (fail-open, empty)
   getGPUDispatchesFromPackages() {
     return this.loader.packages?.gpuDispatches || [];
   }
@@ -410,7 +483,7 @@ class PulseGPURuntime {
     return this.getGPUDispatchesFromPackages();
   }
 
-  // v12: optional Earn frame surface (for Spine planning) — fail-open
+  // v16: optional Earn frame surface (for Spine planning) — fail-open
   getCurrentEarnFrame() {
     return this.loader.packages?.earnFrame || null;
   }

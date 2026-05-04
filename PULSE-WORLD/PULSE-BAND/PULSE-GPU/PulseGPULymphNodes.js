@@ -1,9 +1,10 @@
+/* global */
 // ============================================================================
-//  PULSE GPU HEALER v12.3-Evo — THE LYMPH NODE NETWORK
+//  PULSE GPU LYMPH NODES v16-Ascendant — THE LYMPH NODE NETWORK HEALER
 //  Systemic GPU Immune Layer (Deterministic, Pure Logic, Drift‑Proof, Fail‑Open)
 // ============================================================================
 //
-// IDENTITY — THE LYMPH NODE NETWORK (v12.3-Evo):
+// IDENTITY — THE LYMPH NODE NETWORK HEALER (v16-Ascendant):
 //  ---------------------------------------------
 //  • The immune filtration system of the GPU subsystem.
 //  • Validates every signal flowing through the GPU body.
@@ -12,10 +13,10 @@
 //  • Ensures the entire GPU organism stays drift‑free and healthy.
 //  • Distributed, systemic, always-on — the GPU’s internal defense grid.
 //  • Dual‑mode + binary‑aware: biological + system‑level immune advantage.
-//  • PulseSend‑v12.3‑ready: immune validation before compute routing.
-//  • Earn‑ready: compatible with Earn‑v4 job payloads.
+//  • PulseSend‑v16‑Ascendant‑ready: immune validation before compute routing.
+//  • Earn‑v4‑Presence‑ready.
 //
-// SAFETY CONTRACT (v12.3-Evo):
+// SAFETY CONTRACT (v16-Ascendant):
 //  ---------------------------
 //  • No randomness
 //  • No timestamps
@@ -29,10 +30,10 @@
 /*
 AI_EXPERIENCE_META = {
   identity: "PulseGPULymphNodes",
-  version: "v14-Immortal",
+  version: "v16-Ascendant",
   layer: "gpu_guardian",
   role: "gpu_lymph_nodes",
-  lineage: "PulseGPU-v14",
+  lineage: "PulseGPU-v16",
 
   evo: {
     gpuHealer: true,
@@ -72,30 +73,38 @@ const GPU_HEALER_CONTEXT = {
   role: "LYMPH_NODE_NETWORK",
   purpose: "Systemic GPU immune filter + drift purifier",
   context:
-    "Validates advisor results, restore plans, auto-opt decisions, and notifications",
+    "Validates advisor results, restore plans, auto-opt decisions, notifications, and advantage snapshots",
   target: "full-gpu+binary",
-  version: "12.3-Evo",
+  version: "16-Ascendant",
   selfRepairable: true,
 
-  evo: {
-    metabolicBoost: 1.2,
-    neuralReflexBoost: 1.3,
-    stabilityBoost: 1.4,
+  // v16+ advantage epoch identity
+  advantageEpochId: "gpu-v16-ascendant",
+  systemAgeBand: "immortal",
+  lineage: "PulseGPU-v16-Ascendant",
 
+  evo: {
+    // metabolic / stability field
+    metabolicBoost: 1.6,
+    neuralReflexBoost: 1.7,
+    stabilityBoost: 1.8,
+
+    // organism / topology
     multiInstanceReady: true,
     deterministicNeuron: true,
     parallelSafe: true,
-    fanOutScaling: 1.2,
+    fanOutScaling: 1.5,
     clusterCoherence: true,
     zeroDriftCloning: true,
-    reflexPropagation: 1.1,
+    reflexPropagation: 1.4,
 
+    // dual-mode + cognition
     dualModeEvolution: true,
-    organismClusterBoost: 1.2,
+    organismClusterBoost: 1.5,
     cognitiveComputeLink: true,
     unifiedAdvantageField: true,
 
-    // v12.3-Evo awareness
+    // awareness fields
     binaryAware: true,
     dualModeAware: true,
     gpuDispatchAware: true,
@@ -103,18 +112,21 @@ const GPU_HEALER_CONTEXT = {
     gpuAdvantageAware: true,
     immuneFieldAware: true,
     geneticMemoryAware: true,
+    snapshotAware: true,
+    cacheAware: true,
+    prewarmAware: true,
 
-    // PulseSend / Earn contracts (conceptual only)
-    pulseSend12Ready: true,
-    routingContract: "PulseSend-v12.3",
-    gpuOrganContract: "PulseGPU-v12.3-Evo",
-    binaryGpuOrganContract: "PulseBinaryGPU-v12.3-Evo",
-    earnCompatibility: "Earn-v4",
+    // v16 contracts
+    pulseSend16Ready: true,
+    routingContract: "PulseSend-v16-Ascendant",
+    gpuOrganContract: "PulseGPU-v16-Ascendant",
+    binaryGpuOrganContract: "PulseBinaryGPU-v16-Ascendant",
+    earnCompatibility: "Earn-v4-Presence",
 
-    // Legacy compatibility (conceptual only)
-    legacyRoutingContract: "PulseSend-v11",
-    legacyGPUOrganContract: "PulseGPU-v11-Evo",
-    legacyBinaryGpuOrganContract: "PulseBinaryGPU-v11-Evo",
+    // legacy (conceptual only)
+    legacyRoutingContract: "PulseSend-v12.3",
+    legacyGPUOrganContract: "PulseGPU-v12.3-Evo",
+    legacyBinaryGpuOrganContract: "PulseBinaryGPU-v12.3-Evo",
     legacyEarnCompatibility: "Earn-v3"
   }
 };
@@ -129,7 +141,10 @@ function buildHealingReport({
   restorePlan,
   autoDecision,
   notifications,
-  gpuContext
+  gpuContext,
+  advantageSnapshot,
+  cacheState,
+  prewarmState
 }) {
   return {
     status,
@@ -139,6 +154,12 @@ function buildHealingReport({
     autoDecision: autoDecision || null,
     notifications: Array.isArray(notifications) ? notifications.slice() : [],
     gpuContext: gpuContext || null,
+
+    // v16+ advantage surfaces
+    advantageSnapshot: advantageSnapshot || null,   // { epochId, scoreDelta, pressureVector, ... }
+    cacheState: cacheState || null,                 // { advisorCacheHit, planCacheHit, notifCacheHit }
+    prewarmState: prewarmState || null,             // { prewarmedSignals, prewarmedPlans, ... }
+
     meta: {
       ...GPU_HEALER_CONTEXT
     }
@@ -190,7 +211,7 @@ function filterValidNotifications(notifications) {
 }
 
 // ============================================================================
-//  PULSE GPU HEALER v12.3-Evo — THE LYMPH NODE NETWORK
+//  PULSE GPU HEALER v16-Ascendant — THE LYMPH NODE NETWORK
 // ============================================================================
 class PulseGPUHealer {
   constructor(options = {}) {
@@ -204,14 +225,32 @@ class PulseGPUHealer {
       new PulseGPUAutoOptimize(options.userPreferences);
     this.uxBridge =
       options.uxBridge || new PulseGPUUXBridge();
+
+    // v16+ deterministic in-memory caches
+    this.advisorCache = new Map();
+    this.planCache = new Map();
+    this.notificationCache = new Map();
   }
 
   static meta = {
     ...GPU_HEALER_CONTEXT
   };
 
+  // deterministic cache key builder
+  buildCacheKey({ gameProfile, hardwareProfile, tierProfile, settings, metrics, gpuContext }) {
+    const safe = (v) => (v == null ? null : v);
+    return JSON.stringify({
+      gameProfile: safe(gameProfile),
+      hardwareProfile: safe(hardwareProfile),
+      tierProfile: safe(tierProfile),
+      settings: safe(settings),
+      metrics: safe(metrics),
+      gpuContext: safe(gpuContext)
+    });
+  }
+
   // ----------------------------------------------------
-  // healSessionFlow — IMMUNE RESPONSE CYCLE (v12.3-Evo)
+  // healSessionFlow — IMMUNE RESPONSE CYCLE (v16-Ascendant)
   // ----------------------------------------------------
   healSessionFlow({
     advisorResult,
@@ -229,47 +268,88 @@ class PulseGPUHealer {
       settings,
       metrics,
       userPreferences,
-      gpuContext // binary/symbolic/pressure/dispatch hints
+      gpuContext,          // binary/symbolic/pressure/dispatch hints
+      advantageSnapshot,   // optional: upstream advantage snapshot
+      prewarmState         // optional: upstream prewarm info
     } = context;
 
-    // 1) FILTER + REGENERATE ADVISOR RESULT
+    const cacheKey = this.buildCacheKey({
+      gameProfile,
+      hardwareProfile,
+      tierProfile,
+      settings,
+      metrics,
+      gpuContext
+    });
+
+    let cacheState = {
+      advisorCacheHit: false,
+      planCacheHit: false,
+      notifCacheHit: false
+    };
+
+    // 1) FILTER + REGENERATE ADVISOR RESULT (with v16 cache)
     let healedAdvisor = advisorResult;
 
     if (!isAdvisorResultValid(healedAdvisor)) {
-      healedAdvisor = this.advisor.analyzeCurrentSession({
-        gameProfile,
-        hardwareProfile,
-        tierProfile,
-        settings,
-        metrics,
-        gpuContext
-      });
+      const cachedAdvisor = this.advisorCache.get(cacheKey);
+      if (cachedAdvisor && isAdvisorResultValid(cachedAdvisor)) {
+        healedAdvisor = cachedAdvisor;
+        cacheState.advisorCacheHit = true;
+        actions.push({
+          type: "advisor-cache-hit",
+          description: "Advisor result restored from v16 immune cache.",
+          ...GPU_HEALER_CONTEXT
+        });
+      } else {
+        healedAdvisor = this.advisor.analyzeCurrentSession({
+          gameProfile,
+          hardwareProfile,
+          tierProfile,
+          settings,
+          metrics,
+          gpuContext
+        });
 
-      actions.push({
-        type: "recomputed-advisor-result",
-        description:
-          "Advisor result invalid; immune system regenerated it.",
-        ...GPU_HEALER_CONTEXT
-      });
+        this.advisorCache.set(cacheKey, healedAdvisor);
+        actions.push({
+          type: "recomputed-advisor-result",
+          description:
+            "Advisor result invalid; immune system regenerated it.",
+          ...GPU_HEALER_CONTEXT
+        });
+      }
     }
 
-    // 2) FILTER + REGENERATE RESTORE PLAN
+    // 2) FILTER + REGENERATE RESTORE PLAN (with v16 cache)
     let healedPlan = restorePlan;
 
     if (!healedPlan || !validatePlan(healedPlan)) {
-      healedPlan = this.restorer.buildRestorePlan(healedAdvisor.advice, {
-        gameProfile,
-        hardwareProfile,
-        tierProfile,
-        gpuContext
-      });
+      const cachedPlan = this.planCache.get(cacheKey);
+      if (cachedPlan && validatePlan(cachedPlan)) {
+        healedPlan = cachedPlan;
+        cacheState.planCacheHit = true;
+        actions.push({
+          type: "restore-plan-cache-hit",
+          description: "Restore plan restored from v16 immune cache.",
+          ...GPU_HEALER_CONTEXT
+        });
+      } else {
+        healedPlan = this.restorer.buildRestorePlan(healedAdvisor.advice, {
+          gameProfile,
+          hardwareProfile,
+          tierProfile,
+          gpuContext
+        });
 
-      actions.push({
-        type: "recomputed-restore-plan",
-        description:
-          "Restore plan invalid; immune system rebuilt it.",
-        ...GPU_HEALER_CONTEXT
-      });
+        this.planCache.set(cacheKey, healedPlan);
+        actions.push({
+          type: "recomputed-restore-plan",
+          description:
+            "Restore plan invalid; immune system rebuilt it.",
+          ...GPU_HEALER_CONTEXT
+        });
+      }
     }
 
     // 3) FILTER + REGENERATE AUTO-OPT DECISION
@@ -292,7 +372,7 @@ class PulseGPUHealer {
       });
     }
 
-    // 4) FILTER + REGENERATE NOTIFICATIONS
+    // 4) FILTER + REGENERATE NOTIFICATIONS (with v16 cache)
     let healedNotifications = filterValidNotifications(notifications);
 
     const needAdvisorNotifs =
@@ -304,24 +384,37 @@ class PulseGPUHealer {
       healedPlan && healedPlan.action && healedPlan.action !== "noop";
 
     if (healedNotifications.length === 0 && (needAdvisorNotifs || needPlanNotif)) {
-      const advisorNotifs = this.uxBridge.fromAdvisorResult(healedAdvisor, {
-        gpuContext
-      });
-      const planNotif = this.uxBridge.fromRestorePlan(healedPlan, {
-        gpuContext
-      });
+      const cachedNotifs = this.notificationCache.get(cacheKey);
+      if (cachedNotifs && Array.isArray(cachedNotifs) && cachedNotifs.length > 0) {
+        healedNotifications = filterValidNotifications(cachedNotifs);
+        cacheState.notifCacheHit = true;
+        actions.push({
+          type: "notification-cache-hit",
+          description: "Notifications restored from v16 immune cache.",
+          ...GPU_HEALER_CONTEXT
+        });
+      } else {
+        const advisorNotifs = this.uxBridge.fromAdvisorResult(healedAdvisor, {
+          gpuContext
+        });
+        const planNotif = this.uxBridge.fromRestorePlan(healedPlan, {
+          gpuContext
+        });
 
-      healedNotifications = advisorNotifs.slice();
-      if (planNotif) healedNotifications.push(planNotif);
+        healedNotifications = advisorNotifs.slice();
+        if (planNotif) healedNotifications.push(planNotif);
 
-      healedNotifications = filterValidNotifications(healedNotifications);
+        healedNotifications = filterValidNotifications(healedNotifications);
 
-      actions.push({
-        type: "regenerated-notifications",
-        description:
-          "Notifications invalid; immune system regenerated them.",
-        ...GPU_HEALER_CONTEXT
-      });
+        this.notificationCache.set(cacheKey, healedNotifications);
+
+        actions.push({
+          type: "regenerated-notifications",
+          description:
+            "Notifications invalid; immune system regenerated them.",
+          ...GPU_HEALER_CONTEXT
+        });
+      }
     }
 
     // 5) IMMUNE STATUS
@@ -334,7 +427,10 @@ class PulseGPUHealer {
       restorePlan: healedPlan,
       autoDecision: healedDecision,
       notifications: healedNotifications,
-      gpuContext
+      gpuContext,
+      advantageSnapshot: advantageSnapshot || null,
+      cacheState,
+      prewarmState: prewarmState || null
     });
   }
 }

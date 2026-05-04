@@ -1,23 +1,28 @@
+/* global log,warn */
 // ============================================================================
-//  PULSE GPU INSIGHTS ENGINE v12.3-Spine-binary — THE WISDOM CORTEX
+//  PULSE GPU INSIGHTS ENGINE v16-Immortal — THE WISDOM CORTEX
 //  Deterministic, Pure Logic, Drift‑Proof Analytics Over Session Traces
+//  COGNITIVE-FRAME AWARE • COMPUTER-INTELLIGENCE AWARE • EARN-AWARE
 // ============================================================================
 //
-// IDENTITY — THE WISDOM CORTEX (v12.3-Spine-binary):
-//  -------------------------------------------------
+// IDENTITY — THE WISDOM CORTEX (v16-Immortal):
+//  ------------------------------------------
 //  • Interpretive cortex of the GPU organism.
 //  • Observes baseline traces (past) and current traces (present).
 //  • Compares them with deterministic clarity, no guessing.
 //  • Reveals meaning already encoded in the data.
 //  • Binary-aware, symbolic-aware, dual-band-aware (metadata only).
-//  • Spine-aware: aligned with Orchestrator v12.3+.
+//  • Spine-aware: aligned with Orchestrator / Spine / Genetic Memory.
 //  • Chunking-aware + prewarm-ready (metadata only).
 //  • Advantage‑cascade aware: systemic gains improve insight flow.
-//  • PulseSend‑v12.3‑ready: insights routable by compute router.
-//  • Earn‑v4‑ready.
+//  • PulseSend‑v16‑ready: insights routable by compute router.
+//  • Earn‑v4‑Presence‑ready.
+//  • CognitiveFrame-aware: can emit GPU “thoughts” per step change.
+//  • ComputerIntelligence-aware: can emit CI frames for Earn mode.
+// ============================================================================
 //
-// SAFETY CONTRACT (v12.3-Spine-binary):
-//  ------------------------------------
+// SAFETY CONTRACT (v16-Immortal):
+//  ------------------------------
 //  • No randomness
 //  • No timestamps
 //  • No GPU calls
@@ -31,10 +36,10 @@
 /*
 AI_EXPERIENCE_META = {
   identity: "PulseGPUWisdomCortex",
-  version: "v14-Immortal",
-  layer: "gpu_brain",
+  version: "v16-Immortal",
+  layer: "gpu_wisdom",
   role: "gpu_wisdom_cortex",
-  lineage: "PulseGPU-v14",
+  lineage: "PulseGPU-v16-Immortal",
 
   evo: {
     gpuCognition: true,
@@ -48,13 +53,42 @@ AI_EXPERIENCE_META = {
 
     zeroNetwork: true,
     zeroFilesystem: true,
-    zeroMutationOfInput: true
+    zeroMutationOfInput: true,
+
+    // Awareness
+    symbolicAware: true,
+    binaryAware: true,
+    dualBandAware: true,
+    gpuDispatchAware: true,
+    gpuMemoryAware: true,
+    gpuAdvantageAware: true,
+    presenceAware: true,
+    dnaAware: true,
+    versionAware: true,
+
+    // Mesh linkage
+    brainLinked: true,
+    cognitionLinked: true,
+    spineLinked: true,
+    geneticMemoryLinked: true,
+
+    // Immortal + Earn
+    immortalReady: true,
+    immortalSurface: true,
+    earnAware: true,
+    earnCompatibility: "Earn-v4-Presence",
+
+    // Contracts
+    routingContract: "PulseSend-v16",
+    gpuOrganContract: "PulseGPU-v16-Immortal",
+    binaryGpuOrganContract: "PulseBinaryGPU-v16-Immortal",
+    workgroupLawVersion: 16
   },
 
   contract: {
     always: [
       "PulseGPUBrain",
-      "PulseGPUCognitiveLayer",
+      "PulseGPUCognitiveIntelligence",
       "PulseGPUGeneticMemory"
     ],
     never: [
@@ -67,10 +101,15 @@ AI_EXPERIENCE_META = {
 */
 
 import { INSIGHT_THRESHOLDS } from "./PulseGPUCommandments.js";
+import {
+  CognitiveFrame,
+  computeComputerIntelligence
+} from "./PulseGPUCognitiveIntelligence.js";
 
-// ============================================================================
-// UTILITY: clamp — Wisdom requires boundaries
-// ============================================================================
+// ------------------------------------------------------
+// Helpers
+// ------------------------------------------------------
+
 function clamp(value, min, max) {
   if (typeof value !== "number" || Number.isNaN(value)) return min;
   if (value < min) return min;
@@ -78,16 +117,12 @@ function clamp(value, min, max) {
   return value;
 }
 
-// ============================================================================
-// DELTA CLASSIFICATION — Wisdom about change
-// ============================================================================
 function classifyDelta(deltaPercent) {
   if (typeof deltaPercent !== "number" || Number.isNaN(deltaPercent)) {
     return "low";
   }
 
   const absDelta = Math.abs(deltaPercent);
-
   const low = INSIGHT_THRESHOLDS?.MIN_STEP_DELTA_PERCENT ?? 5;
 
   if (absDelta < low) return "low";
@@ -96,9 +131,94 @@ function classifyDelta(deltaPercent) {
   return "critical";
 }
 
-// ============================================================================
-// INSIGHT BUILDER — Structured understanding
-// ============================================================================
+// ------------------------------------------------------
+// CognitiveFrame builder for a single step change
+// ------------------------------------------------------
+
+function buildCognitiveFrameForStepChange({
+  stepId,
+  deltaPercent,
+  baselineAvgDurationMs,
+  currentAvgDurationMs,
+  gameProfile,
+  hardwareProfile,
+  tierProfile,
+  dnaTag = "default-dna",
+  instanceId = "",
+  earnMode = false
+}) {
+  const performanceLabel =
+    typeof deltaPercent === "number"
+      ? deltaPercent > 0
+        ? "faster"
+        : "slower"
+      : "unknown";
+
+  const cognition = {
+    gameProfile,
+    hardwareProfile,
+    tierProfile,
+    stepId,
+    deltaPercent,
+    baselineAvgDurationMs,
+    currentAvgDurationMs
+  };
+
+  const performance = {
+    baselineScore: null,
+    currentScore: null,
+    deltaPercent,
+    label: performanceLabel
+  };
+
+  const narrative = {
+    summary:
+      performanceLabel === "faster"
+        ? `Step "${stepId}" appears faster than baseline.`
+        : performanceLabel === "slower"
+        ? `Step "${stepId}" appears slower than baseline.`
+        : `Step "${stepId}" changed relative to baseline.`,
+    details: {
+      deltaPercent,
+      baselineAvgDurationMs,
+      currentAvgDurationMs
+    }
+  };
+
+  const frame = new CognitiveFrame({
+    cognition,
+    interpretation: {},
+    narrative,
+    tier: {
+      currentTier: tierProfile?.tierId || null,
+      tierHistory: tierProfile?.history || []
+    },
+    performance,
+    dispatch: {},
+    advantage: {},
+    presence: {
+      context: null,
+      dnaTag,
+      instanceId,
+      intelligentCompute: null
+    },
+    shapeSignature: {},
+    patternSignature: {},
+    symbolic: {},
+    binary: {},
+    recommendedActions: [],
+    dnaTag,
+    instanceId,
+    earnMode
+  });
+
+  return frame;
+}
+
+// ------------------------------------------------------
+// Insight builder (v16-Immortal, CognitiveFrame-aware)
+// ------------------------------------------------------
+
 function buildInsight({
   type,
   severity,
@@ -110,7 +230,9 @@ function buildInsight({
   deltaPercent,
   baselineAvgDurationMs,
   currentAvgDurationMs,
-  extra
+  extra,
+  cognitiveFrame,
+  computerIntelligence
 }) {
   const insight = {
     type,
@@ -120,7 +242,7 @@ function buildInsight({
     meta: {
       layer: "PulseGPUInsightsEngine",
       role: "WISDOM_CORTEX",
-      version: "12.3-Spine-binary",
+      version: "16.0-Immortal",
       target: "full-gpu+binary+spine",
       selfRepairable: true,
 
@@ -130,30 +252,22 @@ function buildInsight({
         driftProof: true,
         unifiedAdvantageField: true,
 
-        // v12.3 spine + dual-band + chunking
         gpuSpineReady: true,
         dualBandReady: true,
         chunkingReady: true,
         prewarmReady: true,
 
-        // awareness flags (metadata only)
         binaryAware: true,
         symbolicAware: true,
         gpuDispatchAware: true,
         gpuMemoryAware: true,
         gpuAdvantageAware: true,
 
-        // Contracts
-        pulseSend12Ready: true,
-        routingContract: "PulseSend-v12.3",
-        gpuOrganContract: "PulseGPU-v12.3-Spine",
-        binaryGpuOrganContract: "PulseBinaryGPU-v12.3-Spine",
-        earnCompatibility: "Earn-v4",
-
-        // Legacy compatibility
-        legacyRoutingContract: "PulseSend-v10.4",
-        legacyGPUOrganContract: "PulseGPU-v10.4",
-        legacyEarnCompatibility: "Earn-v2"
+        pulseSend16Ready: true,
+        routingContract: "PulseSend-v16",
+        gpuOrganContract: "PulseGPU-v16-Immortal",
+        binaryGpuOrganContract: "PulseBinaryGPU-v16-Immortal",
+        earnCompatibility: "Earn-v4-Presence"
       }
     }
   };
@@ -173,12 +287,20 @@ function buildInsight({
     insight.extra = extra;
   }
 
+  if (cognitiveFrame) {
+    insight.meta.cognitiveFrame = cognitiveFrame;
+  }
+  if (computerIntelligence) {
+    insight.meta.computerIntelligence = computerIntelligence;
+  }
+
   return insight;
 }
 
-// ============================================================================
-// GROUP STEPS — The Cortex organizes the story
-// ============================================================================
+// ------------------------------------------------------
+// Trace grouping + averages
+// ------------------------------------------------------
+
 function groupStepsById(traces = []) {
   const groups = new Map();
 
@@ -211,9 +333,6 @@ function groupStepsById(traces = []) {
   return groups;
 }
 
-// ============================================================================
-// COMPUTE AVERAGES — The Cortex finds the pattern
-// ============================================================================
 function computeStepAverages(groups) {
   const result = new Map();
 
@@ -240,19 +359,22 @@ function computeStepAverages(groups) {
   return result;
 }
 
-// ============================================================================
-//  PULSE GPU INSIGHTS ENGINE — THE WISDOM CORTEX (v12.3-Spine-binary)
-// ============================================================================
+// ------------------------------------------------------
+// Wisdom Cortex Engine (v16-Immortal)
+// ------------------------------------------------------
+
 class PulseGPUInsightsEngine {
   constructor() {}
 
-  analyzeStepDurations(baselineTraces = [], currentTraces = []) {
+  analyzeStepDurations(
+    baselineTraces = [],
+    currentTraces = [],
+    { dnaTag = "default-dna", instanceId = "", earnMode = false } = {}
+  ) {
     const baselineGroups = groupStepsById(baselineTraces);
     const currentGroups = groupStepsById(currentTraces);
-
     const baselineAverages = computeStepAverages(baselineGroups);
     const currentAverages = computeStepAverages(currentGroups);
-
     const insights = [];
 
     for (const [stepId, baselineInfo] of baselineAverages.entries()) {
@@ -281,6 +403,25 @@ class PulseGPUInsightsEngine {
           ? `Step "${stepId}" is faster than baseline.`
           : `Step "${stepId}" is slower than baseline.`;
 
+      // Build CognitiveFrame + ComputerIntelligence for this step change
+      const cognitiveFrame = buildCognitiveFrameForStepChange({
+        stepId,
+        deltaPercent,
+        baselineAvgDurationMs: baselineAvg,
+        currentAvgDurationMs: currentAvg,
+        gameProfile,
+        hardwareProfile,
+        tierProfile,
+        dnaTag,
+        instanceId,
+        earnMode
+      });
+
+      const computerIntelligence = computeComputerIntelligence(
+        cognitiveFrame,
+        { earnMode }
+      );
+
       insights.push(
         buildInsight({
           type: "step-duration-change",
@@ -296,7 +437,9 @@ class PulseGPUInsightsEngine {
           extra: {
             baselineSampleCount: baselineInfo.sampleCount,
             currentSampleCount: currentInfo.sampleCount
-          }
+          },
+          cognitiveFrame,
+          computerIntelligence
         })
       );
     }
@@ -308,7 +451,10 @@ class PulseGPUInsightsEngine {
     baselineTraces = [],
     currentTraces = [],
     gameId,
-    gpuModel
+    gpuModel,
+    dnaTag = "default-dna",
+    instanceId = "",
+    earnMode = false
   }) {
     const filteredBaseline = baselineTraces.filter((trace) => {
       if (!trace) return false;
@@ -328,13 +474,18 @@ class PulseGPUInsightsEngine {
       return true;
     });
 
-    return this.analyzeStepDurations(filteredBaseline, filteredCurrent);
+    return this.analyzeStepDurations(filteredBaseline, filteredCurrent, {
+      dnaTag,
+      instanceId,
+      earnMode
+    });
   }
 }
 
-// ============================================================================
+// ------------------------------------------------------
 // EXPORTS
-// ============================================================================
+// ------------------------------------------------------
+
 export {
   PulseGPUInsightsEngine,
   buildInsight,

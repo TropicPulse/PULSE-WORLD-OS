@@ -1,20 +1,21 @@
 // ============================================================================
 // FILE: /organs/gpu/PulseGPUGuardianCortex.js
-// [pulse:gpu] PULSE_GPU_GUARDIAN_CORTEX v12.3-Presence  // blue-gold
+// [pulse:gpu] PULSE_GPU_GUARDIAN_CORTEX v14-Immortal-Presence  // blue-gold
 // GPU Permission Cortex • Deterministic Policy Engine • Zero Imports
 // ============================================================================
 //
-// IDENTITY — THE GPU GUARDIAN CORTEX (v12.3-Presence):
-//  ---------------------------------------------------
+// IDENTITY — THE GPU GUARDIAN CORTEX (v14-Immortal-Presence):
+//  ----------------------------------------------------------
 //  • The decision-making cortex of the GPU subsystem.
 //  • Determines when GPU actions may auto-apply vs require confirmation.
 //  • Pure logic: deterministic, stateless, zero-entropy, zero randomness.
 //  • Reads advisor severity + user preferences + plan type + GPU context.
 //  • Produces a final decision object (mode + reason + plan).
-//  • PulseSend‑v12.3‑ready: decisions can be routed by the compute router.
+//  • PulseSend‑v14‑Immortal‑ready: decisions can be routed by the compute router.
 //  • Binary-aware, symbolic-aware, dispatch-aware, memory-aware.
+//  • Computer-intelligence-aware: can align with Earn/computation modes (metadata only).
 //
-// SAFETY CONTRACT (v12.3-Presence):
+// SAFETY CONTRACT (v14-Immortal-Presence):
 //  • No imports (DI only).
 //  • No async.
 //  • No randomness.
@@ -38,6 +39,10 @@ AI_EXPERIENCE_META = {
     gpuSafety: true,
     gpuPolicyEnforcer: true,
 
+    gpuComputerIntelligence: true,
+    computerIntelligence: true,
+    earnComputerIntelligenceAware: true,
+
     deterministic: true,
     driftProof: true,
     pureCompute: true,
@@ -50,7 +55,9 @@ AI_EXPERIENCE_META = {
   contract: {
     always: [
       "PulseGPUDriveCenter",
-      "PulseGPUCommandments"
+      "PulseGPUCommandments",
+      "PulseGPUSettingsRestorer",
+      "PulseGPUGeneticMemory"
     ],
     never: [
       "safeRoute",
@@ -72,8 +79,8 @@ function buildDecision({ mode, reason, plan, gpuContext }) {
     gpuContext: gpuContext || null,
     meta: {
       layer: "PulseGPUGuardianCortex",
-      version: "12.3-Presence",
-      target: "full-gpu",
+      version: "14-Immortal-Presence",
+      target: "full-gpu+binary+spine",
 
       // Evolutionary metadata (no logic impact)
       lineage: "guardian-core",
@@ -82,31 +89,42 @@ function buildDecision({ mode, reason, plan, gpuContext }) {
       parallelSafe: true,
       statelessCore: true,
       zeroEntropy: true,
+      driftResistance: "high",
+      mutationRisk: "none",
 
       // Nervous-system hints (purely descriptive)
       neuralRole: "policy-cortex",
       subsystem: "gpu-healing",
       instanceBehavior: "predictable",
       decisionSurface: "severity × preference × plan × gpuContext",
-      driftResistance: "high",
-      mutationRisk: "none",
 
       // Unified advantage + PulseSend identity
       unifiedAdvantageField: true,
-      pulseSend11Ready: true,
+      pulseSend14Ready: true,
+      pulseSend12Ready: true,
 
-      // v12.3-Presence awareness
+      // v14-Immortal-Presence awareness
+      presenceAware: true,
+      dnaAware: true,
+      versionAware: true,
+      instanceAware: true,
+
       binaryAware: true,
       symbolicAware: true,
       gpuDispatchAware: true,
       gpuMemoryAware: true,
       gpuAdvantageAware: true,
 
+      // Computer-intelligence / Earn awareness (metadata only)
+      gpuComputerIntelligence: true,
+      computerIntelligence: true,
+      earnComputerIntelligenceAware: true,
+
       // PulseSend / Earn contracts (conceptual only)
-      routingContract: "PulseSend-v12.3",
-      gpuOrganContract: "PulseGPU-v12.3-Presence",
-      binaryGpuOrganContract: "PulseBinaryGPU-v12.3-Presence",
-      earnCompatibility: "Earn-v3",
+      routingContract: "PulseSend-v14-Immortal",
+      gpuOrganContract: "PulseGPU-v14-Immortal",
+      binaryGpuOrganContract: "PulseBinaryGPU-v14-Immortal",
+      earnCompatibility: "Earn-v4-Immortal",
 
       // Legacy compatibility
       legacyRoutingContract: "PulseSend-v10.4",
@@ -116,7 +134,6 @@ function buildDecision({ mode, reason, plan, gpuContext }) {
     }
   };
 }
-
 
 // ============================================================================
 //  Severity ranking helper — Guardian’s Risk Map
@@ -142,9 +159,8 @@ function getHighestSeverity(adviceList = []) {
   return highest;
 }
 
-
 // ============================================================================
-//  PulseGPUGuardianCortex v12.3-Presence — GPU Permission Cortex
+//  PulseGPUGuardianCortex v14-Immortal-Presence — GPU Permission Cortex
 // ============================================================================
 class PulseGPUGuardianCortex {
   constructor(userPreferences, instanceId) {
@@ -159,7 +175,7 @@ class PulseGPUGuardianCortex {
   //     • adviceList
   //     • userPreferences
   //     • gpuContext (binary/symbolic/dispatch/memory hints)
-// ----------------------------------------------------
+  // ----------------------------------------------------
   decide(plan, context = {}) {
     if (!plan || typeof plan !== "object") {
       return buildDecision({
@@ -239,6 +255,7 @@ class PulseGPUGuardianCortex {
       });
     }
 
+    // Future computer-intelligence / Earn-aligned actions fall back to confirmation
     return buildDecision({
       mode: "require-confirmation",
       reason: "Unknown plan action; confirmation required.",
@@ -248,7 +265,7 @@ class PulseGPUGuardianCortex {
   }
 
   // ----------------------------------------------------
-  // Restore plan policy — Regression Healer (v12.3-Presence)
+  // Restore plan policy — Regression Healer (v14-Immortal-Presence)
   // ----------------------------------------------------
   decideForRestore(plan, severity, prefs, gpuContext) {
     const allowLow = !!prefs.allowAutoFixLowRegressions;
@@ -256,7 +273,7 @@ class PulseGPUGuardianCortex {
     const allowHigh = !!prefs.allowAutoFixHighRegressions;
     const allowCritical = !!prefs.allowAutoFixCriticalRegressions;
 
-    // v12.3-Presence: binary regressions get extra caution
+    // v14-Immortal-Presence: binary regressions get extra caution
     const binaryPenalty =
       gpuContext?.binaryModeObserved && severity !== "low";
 
@@ -293,7 +310,7 @@ class PulseGPUGuardianCortex {
   }
 
   // ----------------------------------------------------
-  // Apply-optimal plan policy — Optimization Reflex (v12.3-Presence)
+  // Apply-optimal plan policy — Optimization Reflex (v14-Immortal-Presence)
   // ----------------------------------------------------
   decideForApplyOptimal(plan, severity, prefs, gpuContext) {
     const allowAuto = !!prefs.allowAutoApplyOptimalSettings;
@@ -309,7 +326,7 @@ class PulseGPUGuardianCortex {
   }
 
   // ----------------------------------------------------
-  // Tier upgrade plan policy — Tier Ascent Logic (v12.3-Presence)
+  // Tier upgrade plan policy — Tier Ascent Logic (v14-Immortal-Presence)
   // ----------------------------------------------------
   decideForTierUpgrade(plan, severity, prefs, gpuContext) {
     const allowAutoTier = !!prefs.allowAutoTierChanges;

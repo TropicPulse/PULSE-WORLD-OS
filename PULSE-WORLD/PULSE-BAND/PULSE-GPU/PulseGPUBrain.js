@@ -1,19 +1,59 @@
 /* global log,warn */
 // ============================================================================
-//  PULSE GPU BRAIN v12-Evo-Presence-Max — THE ANALYST CORTEX / BRAINSTEM
+//  PULSE GPU BRAIN v16-Immortal — THE ANALYST CORTEX / BRAINSTEM
 //  CPU-SIDE INTELLIGENCE DIVISION (FULL-GPU, API-AGNOSTIC)
 //  PURE LOGIC. PURE DETERMINISM. ZERO SIDE EFFECTS.
 //  SYMBOLIC + BINARY AWARE • DISPATCH-AWARE • MEMORY-AWARE • PRESENCE-AWARE
+//  PREWARM + CHUNK + CACHE-AWARE • IMMORTAL SURFACE
 // ============================================================================
+
+// ---------------------------------------------------------------------------
+//  GPU ORGAN IMPORT SURFACE (v16-Immortal, awareness only — zero coupling)
+//  NOTE: These imports are for identity, contracts, and future intelligent
+//        compute hooks. No direct calls here: brain stays pure.
+// ---------------------------------------------------------------------------
+
+import * as PulseGPUBrain              from "./PulseGPUBrain.js";              // self-identity (for meta / diagnostics)
+import * as PulseGPU                   from "./PulseGPU-v16.js";
+import * as PulseBinaryGPU             from "./PulseBinaryGPU-v16.js";
+
+import * as PulseGPUDrive              from "./PulseGPUDrive.js";
+import * as PulseGPUDriveCenter        from "./PulseGPUDriveCenter.js";
+import * as PulseGPUDriveEngine        from "./PulseGPUDriveCenter.js";        // alias
+
+import * as PulseGPUSpine              from "./PulseGPUSpine.js";
+import * as PulseGPUGeneticMemory      from "./PulseGPUGeneticMemory.js";
+
+import * as PulseGPUAstralMuscleSystem from "./PulseGPUAstralMuscleSystem.js";
+import * as PulseGPUAstralNervousSystem from "./PulseGPUAstralNervousSystem.js";
+
+import * as PulseGPUGuardianCortex     from "./PulseGPUGuardianCortex.js";
+import * as PulseGPULymphNodes         from "./PulseGPULymphNodes.js";
+
+import * as PulseGPUCognitiveLayer      from "./PulseGPUCognitiveLayer.js";
+import * as PulseGPUCognitiveIntelligence from "./PulseGPUCognitiveIntelligence.js";
+import * as PulseGPUWisdomCortex        from "./PulseGPUWisdomCortex.js";
+
+import * as PulseGPUSurvivalInstincts   from "./PulseGPUSurvivalInstincts.js";
+
+import * as PulseGPUSynapses            from "./PulseGPUSynapses.js";
+
+import * as PulseGPUCommandments        from "./PulseGPUCommandments.js";
+
+// ============================================================================
+//  AI EXPERIENCE META (v16-Immortal)
+// ============================================================================
+
 /*
 AI_EXPERIENCE_META = {
   identity: "PulseGPUBrain",
-  version: "v14-Immortal",
+  version: "v16-Immortal",
   layer: "gpu_brain",
   role: "gpu_precompute_brain",
-  lineage: "PulseGPU-v14",
+  lineage: "PulseGPU-v16",
 
   evo: {
+    // Core brain traits
     gpuPrecompute: true,
     gpuPackageBuilder: true,
     gpuOptimizer: true,
@@ -26,16 +66,67 @@ AI_EXPERIENCE_META = {
     zeroFilesystem: true,
     zeroMutationOfInput: true,
 
+    // Dual-band / binary / symbolic
     symbolicPrimary: true,
     binaryAware: true,
-    dualBand: true
+    dualBand: true,
+    gpuDispatchAware: true,
+    gpuMemoryAware: true,
+    gpuAdvantageAware: true,
+
+    // Immortal surface / v16 upgrades
+    immortalSurface: true,
+    immortalContract: true,
+    prewarmReady: true,
+    chunkCacheReady: true,
+    presencePrewarmReady: true,
+    intelligentComputeReady: true,
+    advantageFieldV16: true,
+
+    // Organ mesh awareness
+    astralMuscleAware: true,
+    astralNervousSystemAware: true,
+    guardianAware: true,
+    lymphAware: true,
+    spineAware: true,
+    cognitiveLayerAware: true,
+    wisdomCortexAware: true,
+    survivalInstinctAware: true,
+    commandmentsAware: true,
+
+    // Presence / identity
+    presenceAware: true,
+    dnaAware: true,
+    versionAware: true,
+    instanceAware: true,
+
+    // Contracts (v16-Immortal)
+    routingContract: "PulseSend-v16-Immortal",
+    gpuOrganContract: "PulseGPU-v16-Immortal",
+    binaryGpuOrganContract: "PulseBinaryGPU-v16-Immortal",
+    earnCompatibility: "Earn-v4-Presence",   // can be bumped when Earn v16 is live
+    workgroupLawVersion: 16,
+    zeroImportShaderPipeline: true
   },
 
   contract: {
     always: [
       "PulseGPU",
+      "PulseBinaryGPU",
       "PulseGPUDrive",
-      "PulseGPUDriveCenter"
+      "PulseGPUDriveCenter",
+      "PulseGPUSpine",
+      "PulseGPUGeneticMemory",
+      "PulseGPUAstralMuscleSystem",
+      "PulseGPUAstralNervousSystem",
+      "PulseGPUGuardianCortex",
+      "PulseGPULymphNodes",
+      "PulseGPUCognitiveLayer",
+      "PulseGPUCognitiveIntelligence",
+      "PulseGPUWisdomCortex",
+      "PulseGPUSurvivalInstincts",
+      "PulseGPUSynapses",
+      "PulseGPUCommandments"
     ],
     never: [
       "safeRoute",
@@ -46,47 +137,48 @@ AI_EXPERIENCE_META = {
 }
 */
 
-
 log(
   "gpu",
-  "PulseGPUBrain v12-Evo-Presence-Max — Analyst Cortex / Brainstem active " +
-    "(dual-mode + binary + presence, PulseSend‑v12‑ready)."
+  "PulseGPUBrain v16-Immortal — Analyst Cortex / Brainstem active " +
+    "(dual-mode + binary + presence + immortal surface, PulseSend‑v16‑Immortal‑ready)."
 );
 
 // ------------------------------------------------------
 // GLOBAL VERSIONS
 // ------------------------------------------------------
 
-const PULSE_GPU_BRAIN_VERSION = "12.0-Evo-Presence-Max";
-const PULSE_GPU_BRAIN_SCHEMA_VERSION = 8;
+const PULSE_GPU_BRAIN_VERSION = "16.0-Immortal";
+const PULSE_GPU_BRAIN_SCHEMA_VERSION = 12; // v8 → v12 schema evolution for v16 brain
 
 // ------------------------------------------------------
-// DUAL-MODE + BINARY + PRESENCE ADVANTAGE BLOCK (v12-Evo-Presence-Max)
+// DUAL-MODE + BINARY + PRESENCE ADVANTAGE BLOCK (v16-Immortal)
 // ------------------------------------------------------
 
 const DUAL_MODE_EVO = {
   // Biological / mental
-  metabolicBoost: 1.2,
-  neuralReflexBoost: 1.2,
-  stabilityBoost: 1.3,
+  metabolicBoost: 1.4,
+  neuralReflexBoost: 1.5,
+  stabilityBoost: 1.6,
   cognitiveStabilityField: true,
+  immortalCortexField: true,
 
   // System / physical
   multiInstanceReady: true,
   deterministicNeuron: true,
   parallelSafe: true,
-  fanOutScaling: 1.0,
+  fanOutScaling: 1.2,
   clusterCoherence: true,
   zeroDriftCloning: true,
-  reflexPropagation: 1.0,
+  reflexPropagation: 1.1,
   shaderPipelinePurity: true,
 
   // Fusion — BOTH layers active
   dualModeEvolution: true,
-  organismClusterBoost: 1.1,
+  organismClusterBoost: 1.3,
   cognitiveComputeLink: true,
   unifiedAdvantageField: true,
-  pulseSend12Ready: true,
+  unifiedAdvantageFieldV16: true,
+  pulseSend16Ready: true,
 
   // Binary / symbolic awareness
   binaryAware: true,
@@ -95,22 +187,29 @@ const DUAL_MODE_EVO = {
   gpuMemoryAware: true,
   gpuAdvantageAware: true,
 
+  // Prewarm / chunk / cache / presence
+  prewarmReady: true,
+  chunkCacheReady: true,
+  presencePrewarmReady: true,
+  intelligentComputeReady: true,
+
   // Presence / identity
   presenceAware: true,
   dnaAware: true,
   versionAware: true,
+  instanceAware: true,
 
   // PulseSend / organism contracts (conceptual only)
-  routingContract: "PulseSend-v12",
-  gpuOrganContract: "PulseGPU-v12-Evo-Presence-Max",
-  binaryGpuOrganContract: "PulseBinaryGPU-v12-Evo-Presence-Max",
+  routingContract: "PulseSend-v16-Immortal",
+  gpuOrganContract: "PulseGPU-v16-Immortal",
+  binaryGpuOrganContract: "PulseBinaryGPU-v16-Immortal",
   earnCompatibility: "Earn-v4-Presence",
-  workgroupLawVersion: 12,
+  workgroupLawVersion: 16,
   zeroImportShaderPipeline: true
 };
 
 // ------------------------------------------------------
-// PACKAGE DEFINITIONS (STRUCTURAL ONLY) — v12 presence-aware
+// PACKAGE DEFINITIONS (STRUCTURAL ONLY) — v16-Immortal, presence-aware
 // ------------------------------------------------------
 
 class PulseTexturePackage {
@@ -136,6 +235,8 @@ class PulseTexturePackage {
       brainVersion: PULSE_GPU_BRAIN_VERSION,
       schemaVersion: PULSE_GPU_BRAIN_SCHEMA_VERSION,
       dnaTag,
+      prewarmReady: true,
+      chunkCacheReady: true,
       ...metadata
     };
   }
@@ -166,6 +267,8 @@ class PulseMeshPackage {
       brainVersion: PULSE_GPU_BRAIN_VERSION,
       schemaVersion: PULSE_GPU_BRAIN_SCHEMA_VERSION,
       dnaTag,
+      prewarmReady: true,
+      chunkCacheReady: true,
       ...metadata
     };
   }
@@ -196,6 +299,7 @@ class PulseLightingPackage {
       brainVersion: PULSE_GPU_BRAIN_VERSION,
       schemaVersion: PULSE_GPU_BRAIN_SCHEMA_VERSION,
       dnaTag,
+      presencePrewarmReady: true,
       ...metadata
     };
   }
@@ -224,6 +328,7 @@ class PulseAnimationPackage {
       brainVersion: PULSE_GPU_BRAIN_VERSION,
       schemaVersion: PULSE_GPU_BRAIN_SCHEMA_VERSION,
       dnaTag,
+      intelligentComputeReady: true,
       ...metadata
     };
   }
@@ -249,8 +354,9 @@ class PulseShaderPackage {
       evo: DUAL_MODE_EVO,
       brainVersion: PULSE_GPU_BRAIN_VERSION,
       schemaVersion: PULSE_GPU_BRAIN_SCHEMA_VERSION,
-      shaderContract: "WGSL-v12-Evo-Presence",
+      shaderContract: "WGSL-v16-Immortal",
       dnaTag,
+      zeroImportShaderPipeline: true,
       ...metadata
     };
   }
@@ -280,10 +386,11 @@ class PulseRenderPlanPackage {
       evo: DUAL_MODE_EVO,
       brainVersion: PULSE_GPU_BRAIN_VERSION,
       schemaVersion: PULSE_GPU_BRAIN_SCHEMA_VERSION,
-      routingContract: "PulseSend-v12",
-      renderPlanContract: "PulseGPU-RenderPlan-v12-Evo-Presence",
-      frameGraphContract: "FrameGraph-v6",
+      routingContract: "PulseSend-v16-Immortal",
+      renderPlanContract: "PulseGPU-RenderPlan-v16-Immortal",
+      frameGraphContract: "FrameGraph-v8",
       dnaTag,
+      prewarmReady: true,
       ...metadata
     };
   }
@@ -307,15 +414,16 @@ class PulseGPUDispatchHintPackage {
       evo: DUAL_MODE_EVO,
       brainVersion: PULSE_GPU_BRAIN_VERSION,
       schemaVersion: PULSE_GPU_BRAIN_SCHEMA_VERSION,
-      dispatchHintContract: "PulseGPU-DispatchHints-v12-Evo-Presence",
+      dispatchHintContract: "PulseGPU-DispatchHints-v16-Immortal",
       dnaTag,
+      intelligentComputeReady: true,
       ...metadata
     };
   }
 }
 
 // ------------------------------------------------------
-// BRAIN INPUT (RAW ASSET + GPU MEMORY / DISPATCH CONTEXT) — v12
+// BRAIN INPUT (RAW ASSET + GPU MEMORY / DISPATCH CONTEXT) — v16-Immortal
 // ------------------------------------------------------
 
 class BrainInput {
@@ -358,28 +466,53 @@ class BrainInput {
 
     this.evo = DUAL_MODE_EVO;
     this.brainVersion = PULSE_GPU_BRAIN_VERSION;
-    this.routingContract = "PulseSend-v12";
-    this.gpuOrganContract = "PulseGPU-v12-Evo-Presence-Max";
-    this.binaryGpuOrganContract = "PulseBinaryGPU-v12-Evo-Presence-Max";
+    this.routingContract = "PulseSend-v16-Immortal";
+    this.gpuOrganContract = "PulseGPU-v16-Immortal";
+    this.binaryGpuOrganContract = "PulseBinaryGPU-v16-Immortal";
     this.earnCompatibility = "Earn-v4-Presence";
   }
 }
 
 // ------------------------------------------------------
-// OPTIMIZATION PIPELINES (PURE, DETERMINISTIC) — v12
+// INTELLIGENT COMPUTE HINT (v16-Immortal, pure helper)
+// ------------------------------------------------------
+
+function computeIntelligentAdvantage(brainInput) {
+  const dispatchCount = Array.isArray(brainInput.gpuDispatchHistory)
+    ? brainInput.gpuDispatchHistory.length
+    : 0;
+
+  const hasAdvantageMap = !!brainInput.gpuAdvantageMap;
+  const hasPresence = !!brainInput.presenceContext;
+
+  return {
+    dispatchCount,
+    hasAdvantageMap,
+    hasPresence,
+    prewarmRecommended: dispatchCount > 0 || hasPresence,
+    chunkCacheRecommended: dispatchCount > 8 || hasAdvantageMap,
+    modeHint: dispatchCount > 32 ? "throughput" : "latency"
+  };
+}
+
+// ------------------------------------------------------
+// OPTIMIZATION PIPELINES (PURE, DETERMINISTIC) — v16-Immortal
 // ------------------------------------------------------
 
 class TextureOptimizer {
   static process(rawTextures, brainInput) {
+    const intel = computeIntelligentAdvantage(brainInput);
+
     log(
       "gpu",
-      "[Analyst] TextureOptimizer v12-Evo-Presence-Max → pass-through (memory + presence aware)",
+      "[Analyst] TextureOptimizer v16-Immortal → pass-through (memory + presence + prewarm aware)",
       "color:#8BC34A;",
       {
         count: rawTextures.length,
         hasGpuMemory: !!brainInput.gpuMemorySnapshot,
         dnaTag: brainInput.dnaTag,
-        instanceId: brainInput.instanceId
+        instanceId: brainInput.instanceId,
+        prewarmRecommended: intel.prewarmRecommended
       }
     );
 
@@ -388,9 +521,10 @@ class TextureOptimizer {
       dnaTag: brainInput.dnaTag,
       metadata: {
         sourceCount: rawTextures.length,
-        optimizerContract: "TextureOptimizer-v12-Evo-Presence-Max",
+        optimizerContract: "TextureOptimizer-v16-Immortal",
         hasGpuMemorySnapshot: !!brainInput.gpuMemorySnapshot,
-        instanceId: brainInput.instanceId
+        instanceId: brainInput.instanceId,
+        intelligentAdvantage: intel
       }
     });
   }
@@ -402,15 +536,18 @@ class MeshOptimizer {
       ? brainInput.gpuDispatchHistory.length
       : 0;
 
+    const intel = computeIntelligentAdvantage(brainInput);
+
     log(
       "gpu",
-      "[Analyst] MeshOptimizer v12-Evo-Presence-Max → pass-through (dispatch + presence aware)",
+      "[Analyst] MeshOptimizer v16-Immortal → pass-through (dispatch + presence + chunk-cache aware)",
       "color:#8BC34A;",
       {
         count: rawMeshes.length,
         dispatchHistoryCount,
         dnaTag: brainInput.dnaTag,
-        instanceId: brainInput.instanceId
+        instanceId: brainInput.instanceId,
+        chunkCacheRecommended: intel.chunkCacheRecommended
       }
     );
 
@@ -419,9 +556,10 @@ class MeshOptimizer {
       dnaTag: brainInput.dnaTag,
       metadata: {
         sourceCount: rawMeshes.length,
-        optimizerContract: "MeshOptimizer-v12-Evo-Presence-Max",
+        optimizerContract: "MeshOptimizer-v16-Immortal",
         dispatchHistoryCount,
-        instanceId: brainInput.instanceId
+        instanceId: brainInput.instanceId,
+        intelligentAdvantage: intel
       }
     });
   }
@@ -429,15 +567,18 @@ class MeshOptimizer {
 
 class LightingBaker {
   static process(rawScenes, brainInput) {
+    const intel = computeIntelligentAdvantage(brainInput);
+
     log(
       "gpu",
-      "[Analyst] LightingBaker v12-Evo-Presence-Max → placeholder (advantage + presence aware)",
+      "[Analyst] LightingBaker v16-Immortal → placeholder (advantage + presence + prewarm aware)",
       "color:#8BC34A;",
       {
         sceneCount: rawScenes.length,
         hasAdvantageMap: !!brainInput.gpuAdvantageMap,
         dnaTag: brainInput.dnaTag,
-        instanceId: brainInput.instanceId
+        instanceId: brainInput.instanceId,
+        prewarmRecommended: intel.prewarmRecommended
       }
     );
 
@@ -445,9 +586,10 @@ class LightingBaker {
       dnaTag: brainInput.dnaTag,
       metadata: {
         sceneCount: rawScenes.length,
-        bakerContract: "LightingBaker-v12-Evo-Presence-Max",
+        bakerContract: "LightingBaker-v16-Immortal",
         hasAdvantageMap: !!brainInput.gpuAdvantageMap,
-        instanceId: brainInput.instanceId
+        instanceId: brainInput.instanceId,
+        intelligentAdvantage: intel
       }
     });
   }
@@ -459,15 +601,18 @@ class AnimationBaker {
       !!brainInput.usagePatterns &&
       Object.keys(brainInput.usagePatterns).length > 0;
 
+    const intel = computeIntelligentAdvantage(brainInput);
+
     log(
       "gpu",
-      "[Analyst] AnimationBaker v12-Evo-Presence-Max → pass-through (usage + presence aware)",
+      "[Analyst] AnimationBaker v16-Immortal → pass-through (usage + presence + intelligent compute aware)",
       "color:#8BC34A;",
       {
         clipCount: rawAnimations.length,
         hasUsagePatterns,
         dnaTag: brainInput.dnaTag,
-        instanceId: brainInput.instanceId
+        instanceId: brainInput.instanceId,
+        modeHint: intel.modeHint
       }
     );
 
@@ -476,9 +621,10 @@ class AnimationBaker {
       dnaTag: brainInput.dnaTag,
       metadata: {
         clipCount: rawAnimations.length,
-        bakerContract: "AnimationBaker-v12-Evo-Presence-Max",
+        bakerContract: "AnimationBaker-v16-Immortal",
         hasUsagePatterns,
-        instanceId: brainInput.instanceId
+        instanceId: brainInput.instanceId,
+        intelligentAdvantage: intel
       }
     });
   }
@@ -490,15 +636,18 @@ class ShaderCompiler {
       ? brainInput.gpuDispatchHistory.length > 0
       : false;
 
+    const intel = computeIntelligentAdvantage(brainInput);
+
     log(
       "gpu",
-      "[Analyst] ShaderCompiler v12-Evo-Presence-Max → pass-through (binary/symbolic + presence aware)",
+      "[Analyst] ShaderCompiler v16-Immortal → pass-through (binary/symbolic + presence + immortal aware)",
       "color:#8BC34A;",
       {
         shaderCount: rawShaders.length,
         hasDispatchHistory,
         dnaTag: brainInput.dnaTag,
-        instanceId: brainInput.instanceId
+        instanceId: brainInput.instanceId,
+        modeHint: intel.modeHint
       }
     );
 
@@ -507,9 +656,10 @@ class ShaderCompiler {
       dnaTag: brainInput.dnaTag,
       metadata: {
         shaderCount: rawShaders.length,
-        compilerContract: "ShaderCompiler-v12-Evo-Presence-Max",
+        compilerContract: "ShaderCompiler-v16-Immortal",
         hasDispatchHistory,
-        instanceId: brainInput.instanceId
+        instanceId: brainInput.instanceId,
+        intelligentAdvantage: intel
       }
     });
   }
@@ -522,15 +672,18 @@ class GPUDispatchHintBuilder {
       ? brainInput.gpuDispatchHistory
       : [];
 
+    const intel = computeIntelligentAdvantage(brainInput);
+
     log(
       "gpu",
-      "[Analyst] GPUDispatchHintBuilder v12-Evo-Presence-Max → placeholder",
+      "[Analyst] GPUDispatchHintBuilder v16-Immortal → intelligent placeholder",
       "color:#8BC34A;",
       {
         dispatchHistoryCount: history.length,
         hasAdvantageMap: !!brainInput.gpuAdvantageMap,
         dnaTag: brainInput.dnaTag,
-        instanceId: brainInput.instanceId
+        instanceId: brainInput.instanceId,
+        modeHint: intel.modeHint
       }
     );
 
@@ -567,8 +720,9 @@ class GPUDispatchHintBuilder {
       preferBinary: bucket.lastBinaryMode,
       preferDualMode: bucket.lastDualMode,
       observedCount: bucket.count,
-      lastAdvantageScore: bucket.lastAdvantageScore
-    }));
+      lastAdvantageScore: bucket.lastAdvantageScore,
+      intelligentModeHint: intel.modeHint
+  }));
 
     return new PulseGPUDispatchHintPackage({
       patternHints,
@@ -576,14 +730,15 @@ class GPUDispatchHintBuilder {
       metadata: {
         dispatchHistoryCount: history.length,
         hasAdvantageMap: !!brainInput.gpuAdvantageMap,
-        instanceId: brainInput.instanceId
+        instanceId: brainInput.instanceId,
+        intelligentAdvantage: intel
       }
     });
   }
 }
 
 // ------------------------------------------------------
-// RENDER PLANNER — v12-Evo-Presence-Max
+// RENDER PLANNER — v16-Immortal
 // ------------------------------------------------------
 
 class RenderPlanner {
@@ -591,15 +746,18 @@ class RenderPlanner {
     const hasUsagePatterns =
       !!usagePatterns && Object.keys(usagePatterns).length > 0;
 
+    const intel = computeIntelligentAdvantage(brainInput);
+
     log(
       "gpu",
-      "RenderPlanner v12-Evo-Presence-Max → placeholder (dispatch + memory + presence aware)",
+      "RenderPlanner v16-Immortal → placeholder (dispatch + memory + presence + prewarm aware)",
       {
         sceneCount: rawScenes.length,
         hasUsagePatterns,
         hasGpuMemorySnapshot: !!brainInput.gpuMemorySnapshot,
         dnaTag: brainInput.dnaTag,
-        instanceId: brainInput.instanceId
+        instanceId: brainInput.instanceId,
+        prewarmRecommended: intel.prewarmRecommended
       }
     );
 
@@ -609,22 +767,23 @@ class RenderPlanner {
         sceneCount: rawScenes.length,
         hasUsagePatterns,
         hasGpuMemorySnapshot: !!brainInput.gpuMemorySnapshot,
-        plannerContract: "RenderPlanner-v12-Evo-Presence-Max",
-        instanceId: brainInput.instanceId
+        plannerContract: "RenderPlanner-v16-Immortal",
+        instanceId: brainInput.instanceId,
+        intelligentAdvantage: intel
       }
     });
   }
 }
 
 // ------------------------------------------------------
-// BRAIN ORCHESTRATOR (PURE, SYNCHRONOUS, v12-Evo-Presence-Max)
+// BRAIN ORCHESTRATOR (PURE, SYNCHRONOUS, v16-Immortal)
 // ------------------------------------------------------
 
 class PulseGPUBrainController {
   static buildPackages(brainInput) {
     log(
       "gpu",
-      "[Analyst] buildPackages() v12-Evo-Presence-Max — starting",
+      "[Analyst] buildPackages() v16-Immortal — starting",
       "color:#03A9F4;",
       {
         schemaVersion: brainInput.schemaVersion,
@@ -669,16 +828,16 @@ class PulseGPUBrainController {
       dispatchHints,
 
       evo: DUAL_MODE_EVO,
-      routingContract: "PulseSend-v12",
-      gpuOrganContract: "PulseGPU-v12-Evo-Presence-Max",
-      binaryGpuOrganContract: "PulseBinaryGPU-v12-Evo-Presence-Max",
+      routingContract: "PulseSend-v16-Immortal",
+      gpuOrganContract: "PulseGPU-v16-Immortal",
+      binaryGpuOrganContract: "PulseBinaryGPU-v16-Immortal",
       dnaTag: brainInput.dnaTag,
       instanceId: brainInput.instanceId
     };
 
     log(
       "gpu",
-      "[Analyst] buildPackages() v12-Evo-Presence-Max — complete",
+      "[Analyst] buildPackages() v16-Immortal — complete",
       "color:#4CAF50;",
       {
         schemaVersion: packageSet.schemaVersion,
@@ -700,7 +859,7 @@ class PulseGPUBrainExport {
   static buildAndStore(brainInput) {
     log(
       "gpu",
-      "[Analyst] buildAndStore() v12-Evo-Presence-Max",
+      "[Analyst] buildAndStore() v16-Immortal",
       "color:#03A9F4;"
     );
 
@@ -708,7 +867,7 @@ class PulseGPUBrainExport {
 
     log(
       "gpu",
-      "[Analyst] packageSet stored v12-Evo-Presence-Max",
+      "[Analyst] packageSet stored v16-Immortal",
       "color:#4CAF50;"
     );
 
@@ -718,7 +877,7 @@ class PulseGPUBrainExport {
   static exportToRuntime() {
     log(
       "gpu",
-      "[Analyst] exportToRuntime() v12-Evo-Presence-Max",
+      "[Analyst] exportToRuntime() v16-Immortal",
       "color:#03A9F4;",
       { hasPackageSet: !!this.packageSet }
     );
@@ -749,5 +908,6 @@ export {
   RenderPlanner,
   GPUDispatchHintBuilder,
   PulseGPUBrainController,
-  PulseGPUBrainExport
+  PulseGPUBrainExport,
+  computeIntelligentAdvantage
 };

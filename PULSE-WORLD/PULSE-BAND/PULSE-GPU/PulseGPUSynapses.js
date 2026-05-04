@@ -1,38 +1,29 @@
 // ============================================================================
-//  PULSE GPU EVENT EMITTER v12.3-Evo-binary-Spine — THE SYNAPSE LAYER
+// FILE: tropic-pulse-functions/PULSE-WORLD/PULSE-GPU/PulseGPUEventEmitter.js
+//  PULSE GPU EVENT EMITTER v16-Immortal — THE SYNAPSE LAYER
 //  Deterministic, Fail‑Open, Zero‑Side‑Effects Signal Relay
 // ============================================================================
 //
-// IDENTITY — THE SYNAPSE LAYER (v12.3-Evo-binary-Spine):
-//  -----------------------------------------------------
+// IDENTITY — THE SYNAPSE LAYER (v16-Immortal):
+//  -------------------------------------------
 //  • Electrical junctions of the GPU organism.
 //  • Pure deterministic relay between GPU subsystems.
-//  • Spine-aware: tuned for Orchestrator v12.3+
+//  • Spine-aware: tuned for Orchestrator v16+
 //  • Dual-band-aware: binary + symbolic pathways (metadata only)
-//  • Chunking-aware + prewarm-ready
+//  • Chunking-aware + prewarm-ready + CognitiveFrame-aware
+//  • ComputerIntelligence-aware (Earn mesh, metadata only)
 //  • No randomness, no async, no timestamps, no GPU calls.
 //  • Fail‑open: a bad handler never breaks the relay.
-//  • PulseSend‑v12.3‑ready: impulses routable by compute router.
-//  • Earn‑v4‑ready.
-//
-// SAFETY CONTRACT (v12.3):
-//  ------------------------
-//  • No randomness
-//  • No timestamps
-//  • No async
-//  • No DOM
-//  • No GPU calls
-//  • No environment access
-//  • No mutation outside internal listener map
-//  • Deterministic: same impulses → same order → same results
+//  • PulseSend‑v16‑ready: impulses routable by compute router.
+//  • Earn‑v4‑Presence‑ready.
 // ============================================================================
 /*
 AI_EXPERIENCE_META = {
   identity: "PulseGPUSynapse",
-  version: "v14-Immortal",
+  version: "v16-Immortal",
   layer: "gpu_runtime",
   role: "gpu_synapse",
-  lineage: "PulseGPU-v14",
+  lineage: "PulseGPU-v16-Immortal",
 
   evo: {
     gpuSynapse: true,
@@ -46,7 +37,36 @@ AI_EXPERIENCE_META = {
 
     zeroNetwork: true,
     zeroFilesystem: true,
-    zeroMutationOfInput: true
+    zeroMutationOfInput: true,
+
+    // Awareness
+    symbolicAware: true,
+    binaryAware: true,
+    dualBandAware: true,
+    gpuDispatchAware: true,
+    gpuMemoryAware: true,
+    gpuAdvantageAware: true,
+    presenceAware: true,
+    dnaAware: true,
+    versionAware: true,
+
+    // Mesh linkage
+    brainLinked: true,
+    cognitionLinked: true,
+    wisdomLinked: true,
+    geneticMemoryLinked: true,
+
+    // Immortal + Earn
+    immortalReady: true,
+    immortalSurface: true,
+    earnAware: true,
+    earnCompatibility: "Earn-v4-Presence",
+
+    // Contracts
+    routingContract: "PulseSend-v16",
+    gpuOrganContract: "PulseGPU-v16-Immortal",
+    binaryGpuOrganContract: "PulseBinaryGPU-v16-Immortal",
+    workgroupLawVersion: 16
   },
 
   contract: {
@@ -63,21 +83,21 @@ AI_EXPERIENCE_META = {
 }
 */
 
-const PULSE_GPU_EVENT_EMITTER_META_V12 = {
+const PULSE_GPU_EVENT_EMITTER_META_V16 = {
   layer: "PulseGPUEventEmitter",
-  version: "12.3-Evo-binary-Spine",
+  version: "16.0-Immortal",
   target: "full-gpu+binary+spine",
   description: "Synaptic signal relay for GPU subsystem communication.",
 
   selfRepairable: true,
   unifiedAdvantageField: true,
-  pulseSend12Ready: true,
+  pulseSend16Ready: true,
 
   evo: {
     // deterministic nervous system traits
-    metabolicBoost: 1.0,
-    neuralReflexBoost: 1.0,
-    stabilityBoost: 1.0,
+    metabolicBoost: 1.05,
+    neuralReflexBoost: 1.05,
+    stabilityBoost: 1.1,
 
     multiInstanceReady: true,
     deterministicNeuron: true,
@@ -87,12 +107,12 @@ const PULSE_GPU_EVENT_EMITTER_META_V12 = {
     zeroDriftCloning: true,
     reflexPropagation: 1.0,
 
-    // v12.3 spine + dual-band + chunking
+    // v16 spine + dual-band + chunking
     gpuSpineReady: true,
     dualBandReady: true,
     chunkingReady: true,
     prewarmReady: true,
-    organismClusterBoost: 1.0,
+    organismClusterBoost: 1.05,
     cognitiveComputeLink: true,
 
     // awareness flags (metadata only)
@@ -100,30 +120,28 @@ const PULSE_GPU_EVENT_EMITTER_META_V12 = {
     symbolicAware: true,
     gpuDispatchAware: true,
     gpuMemoryAware: true,
+    gpuAdvantageAware: true,
+    cognitiveFrameAware: true,
+    computerIntelligenceAware: true,
 
     // Contracts (conceptual only)
-    routingContract: "PulseSend-v12.3",
-    gpuOrganContract: "PulseGPU-v12.3-Spine",
-    binaryGpuOrganContract: "PulseBinaryGPU-v12.3-Spine",
-    earnCompatibility: "Earn-v4",
-
-    // Legacy compatibility
-    legacyRoutingContract: "PulseSend-v10.4",
-    legacyGPUOrganContract: "PulseGPU-v10.4",
-    legacyEarnCompatibility: "Earn-v2"
+    routingContract: "PulseSend-v16",
+    gpuOrganContract: "PulseGPU-v16-Immortal",
+    binaryGpuOrganContract: "PulseBinaryGPU-v16-Immortal",
+    earnCompatibility: "Earn-v4-Presence"
   }
 };
 
 class PulseGPUEventEmitter {
   constructor(logger) {
     this.listeners = {};
-    this.meta = { ...PULSE_GPU_EVENT_EMITTER_META_V12 };
+    this.meta = { ...PULSE_GPU_EVENT_EMITTER_META_V16 };
     this.logger = typeof logger === "function" ? logger : null;
 
     if (this.logger) {
       this.logger(
         "synapse",
-        "PulseGPUEventEmitter v12.3 — synaptic junction layer active (spine-ready, dual-band, chunking-prewarm)."
+        "PulseGPUEventEmitter v16-Immortal — synaptic junction layer active (spine-ready, dual-band, chunking-prewarm, CI-aware)."
       );
     }
   }
@@ -159,16 +177,23 @@ class PulseGPUEventEmitter {
 
   // ------------------------------------------------------------------------
   // EMIT — An electrical impulse jumps across the junction
+  //   payload MAY include:
+//     • cognitiveFrame
+//     • computerIntelligence
+//     • gpuDispatchHints / gpuContext
   // ------------------------------------------------------------------------
   emit(signalName, payload) {
     const handlers = this.listeners[signalName];
     if (!handlers || handlers.length === 0) return;
 
+    const safePayload =
+      payload && typeof payload === "object" ? payload : payload;
+
     // Deterministic ordering: handlers invoked in registration order
     for (let i = 0; i < handlers.length; i++) {
       const handler = handlers[i];
       try {
-        handler(payload);
+        handler(safePayload);
       } catch {
         // fail‑open: synapse never breaks
       }
