@@ -149,10 +149,10 @@ import { onDocumentWritten, onDocumentWrittenWithAuthContext } from "firebase-fu
 import nodemailer from "nodemailer";
 import { defineSecret } from "firebase-functions/params";
 import express from "express";
-import { admin, db } from "./helpers.js";
-import { getStripe as Stripe } from "./stripe.js";
-import { getTwilioClient as twilio } from "./sms.js";
-import { log, warn, error, logger } from "./PulseProofLogger.js";
+import { admin, db } from "../../NETLIFY/FUNCTIONS/helpers.js";
+import { getStripe as Stripe } from "../../NETLIFY/FUNCTIONS/stripe.js";
+import { getTwilioClient as twilio } from "../../NETLIFY/FUNCTIONS/sms.js";
+import { log, warn, error, logger } from "../../PULSE-UI/_BACKEND/PulseProofLogger.js";
 
 
 

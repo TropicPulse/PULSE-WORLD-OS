@@ -105,8 +105,6 @@ import PulseBeaconMesh, {
 // Touch / presence
 import { getPulseTouchContext } from "../../PULSE-UI/PULSE-TOUCH.js";
 
-// Net / connectivity
-import { getPulseNetContext } from "../../PULSE-UI/_BACKEND/PULSE-NET.js";
 
 // Runtime / scheduler / overmind
 import { getPulseRuntimeContext } from "../PULSE-X/PulseRuntime-v2-Evo.js";

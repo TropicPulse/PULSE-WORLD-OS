@@ -130,9 +130,6 @@ import PulseBeaconMesh, {
 // Touch / presence
 import { getPulseTouchContext } from "../../PULSE-UI/PULSE-TOUCH.js";
 
-// Net / connectivity
-import { getPulseNetContext } from "../../PULSE-UI/_BACKEND/PULSE-NET.js";
-
 // Runtime / scheduler / overmind
 import { getPulseRuntimeContext } from "../PULSE-X/PulseRuntime-v2-Evo.js";
 import { getPulseSchedulerContext } from "../PULSE-X/PulseScheduler-v2.js";
@@ -387,7 +384,6 @@ function clamp01(x) {
 function buildOrganismContext(extra = {}) {
   const expansion = getPulseExpansionContext?.() || {};
   const touch = getPulseTouchContext?.() || {};
-  const net = getPulseNetContext?.() || {};
   const runtime = getPulseRuntimeContext?.() || {};
   const scheduler = getPulseSchedulerContext?.() || {};
   const overmind = getPulseOvermindContext?.() || {};
@@ -403,7 +399,6 @@ function buildOrganismContext(extra = {}) {
   return {
     expansion,
     touch,
-    net,
     runtime,
     scheduler,
     overmind,

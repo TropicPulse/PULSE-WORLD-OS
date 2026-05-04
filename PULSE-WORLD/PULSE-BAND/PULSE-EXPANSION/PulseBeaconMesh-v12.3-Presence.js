@@ -133,7 +133,7 @@ import {
 } from "../PULSE-EXPANSION/PulseRouter-v12.3-Presence.js";
 
 import {
-  getBeaconEngineContext
+  getBeaconEngineContext, 
 } from "../PULSE-EXPANSION/PulseBeaconEngine-v12.3-Presence.js";
 import {
   getConsoleContext
@@ -150,14 +150,8 @@ import createBinaryMesh, {
   BinaryMeshMeta
 } from "../PULSE-MESH/PulseBinaryMesh-v11-Evo.js";
 
-// Beacon engine (concrete engine type, optional direct use)
-import PulseBeaconEngine from "../PULSE-EXPANSION/PulseBeaconEngine-v12.3-Presence.js";
-
 // Touch / presence
 import { getPulseTouchContext } from "../../PULSE-UI/PULSE-TOUCH.js";
-
-// Net / connectivity
-import { getPulseNetContext } from "../../PULSE-UI/_BACKEND/PULSE-NET.js";
 
 // Runtime (hot instances / regions / presence / modes / pages)
 import { getPulseRuntimeContext } from "../PULSE-X/PulseRuntime-v2-Evo.js";
@@ -245,7 +239,6 @@ function buildOrganismContext() {
   const server = getPulseServerContext?.() || {};
   const user = getPulseUserContext?.() || {};
   const touch = getPulseTouchContext?.() || {};
-  const net = getPulseNetContext?.() || {};
   const runtime = getPulseRuntimeContext?.() || {};
   const scheduler = getPulseSchedulerContext?.() || {};
   const overmind = getPulseOvermindContext?.() || {};
@@ -258,7 +251,6 @@ function buildOrganismContext() {
     server,
     user,
     touch,
-    net,
     runtime,
     scheduler,
     overmind,

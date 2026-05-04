@@ -134,8 +134,6 @@ import { getConsoleContext } from "../PULSE-EXPANSION/PulseBeaconConsole-v12.3-P
 // Touch (presence / mode / page / chunkProfile / trust / identity)
 import { getPulseTouchContext } from "../../PULSE-UI/PULSE-TOUCH.js";
 
-// Net (mesh family / ingress / pressure)
-import { getPulseNetContext } from "../../PULSE-UI/_BACKEND/PULSE-NET.js";
 
 // Runtime (hot instances / regions / presence / modes / pages / trust)
 import { getPulseRuntimeContext } from "../PULSE-X/PulseRuntime-v2-Evo.js";
@@ -334,7 +332,6 @@ export function createPulseMesh({
     const server = getPulseServerContext?.() || {};
     const user = getPulseUserContext?.() || {};
     const touch = getPulseTouchContext?.() || {};
-    const net = getPulseNetContext?.() || {};
     const runtime = getPulseRuntimeContext?.() || {};
     const scheduler = getPulseSchedulerContext?.() || {};
     const overmind = getPulseOvermindContext?.() || {};
@@ -356,7 +353,6 @@ export function createPulseMesh({
       server,
       user,
       touch,
-      net,
       runtime,
       scheduler,
       overmind,
