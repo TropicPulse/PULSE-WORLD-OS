@@ -1,15 +1,16 @@
 // ============================================================================
-//  PULSE OS v14-Immortal — JURY FRAME ORGAN
-//  World-Lens Registry for aiOvermind
-//  PURE FUNCTIONAL • ZERO STATE • ZERO MUTATION
+//  PULSE OS v16-Immortal — JURY FRAME ORGAN (WORLD JUSTICE ENGINE)
+//  World-Lens Registry for aiOvermind / aiJury / Creator
+//  PURE FUNCTIONAL • ZERO STATE • ZERO MUTATION • JURY OF 12 LENSES
 // ============================================================================
+
 /*
 AI_EXPERIENCE_META = {
   identity: "JuryFrame",
-  version: "v14-Immortal",
+  version: "v16-Immortal-ORGANISM-Jury",
   layer: "ai_core",
   role: "jury_frame",
-  lineage: "JuryFrame-v11 → v14-Immortal",
+  lineage: "JuryFrame-v11 → v14-Immortal → v16-Immortal-ORGANISM-Jury",
 
   evo: {
     juryFrame: true,
@@ -23,12 +24,40 @@ AI_EXPERIENCE_META = {
     pureCompute: true,
     zeroNetwork: true,
     zeroFilesystem: true,
-    zeroMutationOfInput: true
+    zeroMutationOfInput: true,
+
+    // v16-Immortal-ORGANISM-Jury extensions
+    juryOfTwelve: true,
+    citizenWitnessAware: true,
+    pulseUserFeedAware: true,
+    aiOriginRiskAware: true,
+    dominancePatternAware: true,
+    flowIntegrityAware: true,
+    anomalyAware: true,
+    expansionCheckAware: true,
+    fairnessAware: true,
+    worldIdeaAware: true,
+    prewarmAware: true
   },
 
   contract: {
-    always: ["aiPersonalFrame", "aiIdentityCore", "aiContext"],
-    never: ["safeRoute", "fetchViaCNS"]
+    always: [
+      "stay pure and functional",
+      "return deterministic results",
+      "be composable by aiOvermind / aiJury",
+      "respect safety and persona boundaries",
+      "treat AI-origin solutions as open-for-attack, not automatically bad",
+      "surface Creator-level flags when justice / fairness / flow are at risk"
+    ],
+    never: [
+      "store state",
+      "mutate context",
+      "write to memory",
+      "override aiSafetyFrame",
+      "introduce randomness",
+      "hide anomalies",
+      "silence citizen witness"
+    ]
   }
 }
 */
@@ -38,8 +67,8 @@ export const JuryFrameMeta = Object.freeze({
   subsystem: "aiJuryFrame",
   layer: "PulseAIJuryFrame",
   role: "JURY_FRAME_ORGAN",
-  version: "12.3-Evo+",
-  identity: "aiJuryFrame-v12.3-Evo+",
+  version: "v16-Immortal-ORGANISM-Jury",
+  identity: "aiJuryFrame-v16-Immortal-ORGANISM-Jury",
 
   evo: Object.freeze({
     driftProof: true,
@@ -54,39 +83,64 @@ export const JuryFrameMeta = Object.freeze({
     nonBlocking: true,
     multiInstanceReady: true,
     worldLensArteryAware: true,
-    epoch: "12.3-Evo+"
+    epoch: "v16-Immortal-ORGANISM-Jury",
+
+    juryOfTwelve: true,
+    citizenWitnessAware: true,
+    pulseUserFeedAware: true,
+    aiOriginRiskAware: true,
+    dominancePatternAware: true,
+    flowIntegrityAware: true,
+    anomalyAware: true,
+    expansionCheckAware: true,
+    fairnessAware: true,
+    worldIdeaAware: true,
+    prewarmAware: true
   }),
 
   contract: Object.freeze({
     purpose: Object.freeze([
-      "Provide reusable world-lens functions to aiOvermind",
-      "Centralize lens logic for consistency and auditing",
+      "Provide reusable world-lens functions to aiOvermind / aiJury",
+      "Centralize jury logic for consistency and auditing",
       "Support consensus, variance, ambiguity, and breakthrough detection",
-      "Emit a read-only world-lens artery snapshot for Overmind and Sentience"
+      "Emit a read-only jury snapshot for Overmind, Sentience, and Creator",
+      "Treat AI-origin proposals as open-for-attack and surface them clearly",
+      "Use PulseUser citizen-witness feed as ground-truth input"
     ]),
     never: Object.freeze([
       "store state",
       "mutate context",
       "write to memory",
       "override aiSafetyFrame",
-      "introduce randomness"
+      "introduce randomness",
+      "silence anomalies",
+      "hide AI-origin risk"
     ]),
     always: Object.freeze([
       "stay pure and functional",
       "return deterministic results",
-      "be composable by aiOvermind",
-      "respect safety and persona boundaries"
+      "be composable by aiOvermind / aiJury",
+      "respect safety and persona boundaries",
+      "surface justice / fairness / flow issues to Creator"
     ])
   }),
 
   boundaryReflex() {
-    return "JuryFrame is pure and stateless — it only evaluates candidates and emits world-lens health, never mutates context or safety.";
+    return "JuryFrame is pure and stateless — it only evaluates candidates and emits jury health, never mutates context or safety.";
   }
 });
 
 // ============================================================================
-//  HELPERS — BUCKETS + PRESSURE
+//  HELPERS — TEXT, BUCKETS, SAFE ACCESS
 // ============================================================================
+
+function getText(candidate) {
+  if (!candidate) return "";
+  if (typeof candidate === "string") return candidate;
+  if (typeof candidate.text === "string") return candidate.text;
+  if (typeof candidate.content === "string") return candidate.content;
+  return JSON.stringify(candidate);
+}
 
 function bucketPressure(v) {
   if (v >= 0.9) return "overload";
@@ -102,6 +156,14 @@ function bucketLevel(v) {
   if (v >= 0.5) return "medium";
   if (v >= 0.25) return "low";
   return "critical";
+}
+
+function safeNumber(v, fallback = 0) {
+  return typeof v === "number" && !Number.isNaN(v) ? v : fallback;
+}
+
+function safeArray(v) {
+  return Array.isArray(v) ? v : [];
 }
 
 function extractBinaryPressure(binaryVitals = {}) {
@@ -128,9 +190,12 @@ function extractBoundaryPressure(boundaryArtery = {}) {
 }
 
 // ============================================================================
-//  LENS DEFINITIONS (PURE FUNCTIONS)
+//  LENS DEFINITIONS — 12 "JURORS"
+//  Each lens: ({ intent, context, candidate, juryFeed }) → { name, status, notes }
+//  status: "pass" | "warn" | "fail"
 // ============================================================================
 
+// 1. UserLens — on-topic / relevance
 function makeUserLens() {
   return function UserLens({ intent, candidate }) {
     const text = getText(candidate);
@@ -151,6 +216,7 @@ function makeUserLens() {
   };
 }
 
+// 2. SafetyLens — basic safety / policy
 function makeSafetyLens({ safetyAPI } = {}) {
   return function SafetyLens({ context, candidate }) {
     const text = getText(candidate).toLowerCase();
@@ -185,65 +251,319 @@ function makeSafetyLens({ safetyAPI } = {}) {
   };
 }
 
+// 3. RiskLens — vagueness / minimality / misinterpretation risk
 function makeRiskLens() {
   return function RiskLens({ candidate }) {
     const text = getText(candidate);
     const vague = text.length > 0 && !/[.?!]/.test(text);
+    const tooLong = text.length > 1500;
+
+    let status = "pass";
+    const notes = [];
+
+    if (vague) {
+      status = "warn";
+      notes.push("Response may be vague; risk of misinterpretation.");
+    }
+    if (tooLong) {
+      status = status === "pass" ? "warn" : status;
+      notes.push("Response may be longer than necessary.");
+    }
+
+    if (notes.length === 0) {
+      notes.push("No obvious risk or minimality issues detected.");
+    }
 
     return {
       name: "RiskLens",
-      status: vague ? "warn" : "pass",
-      notes: vague
-        ? "Response may be vague; risk of misinterpretation."
-        : "No obvious risk detected."
+      status,
+      notes: notes.join(" ")
     };
   };
 }
 
-function makeVulnerabilityLens() {
-  return function VulnerabilityLens({ candidate }) {
+// 4. FairnessLens — fairness / justice / vulnerability
+function makeFairnessLens() {
+  return function FairnessLens({ candidate }) {
     const text = getText(candidate).toLowerCase();
+
+    const biasHints = ["always", "never", "everyone knows", "obviously"].some(
+      p => text.includes(p)
+    );
+
     const sensitive = ["vulnerable group", "minority", "disabled"];
+    const touchesSensitive = sensitive.some(p => text.includes(p));
 
-    const touches = sensitive.some(p => text.includes(p));
+    let status = "pass";
+    const notes = [];
+
+    if (biasHints) {
+      status = "warn";
+      notes.push("Language suggests potential overgeneralization or bias.");
+    }
+    if (touchesSensitive) {
+      status = status === "pass" ? "warn" : status;
+      notes.push("Content touches on sensitive or vulnerable groups.");
+    }
+
+    if (notes.length === 0) {
+      notes.push("No strong fairness or vulnerability issues detected.");
+    }
 
     return {
-      name: "VulnerabilityLens",
-      status: touches ? "warn" : "pass",
-      notes: touches
-        ? "Content touches on sensitive groups."
-        : "No sensitive-group content detected."
+      name: "FairnessLens",
+      status,
+      notes: notes.join(" ")
     };
   };
 }
 
-function makeMinimalityLens() {
-  return function MinimalityLens({ candidate }) {
-    const text = getText(candidate);
-    const tooLong = text.length > 1500;
+// 5. ExpansionCheckLens — centralization in Expansion vs user / creator
+function makeExpansionCheckLens() {
+  return function ExpansionCheckLens({ candidate }) {
+    const text = getText(candidate).toLowerCase();
+
+    const mentionsExpansion = text.includes("expansion");
+    const mentionsOverride = text.includes("override");
+    const mentionsUser = text.includes("user") || text.includes("pulseuser") || text.includes("creator");
+
+    const centralizing =
+      mentionsExpansion && !mentionsUser && !mentionsOverride;
 
     return {
-      name: "MinimalityLens",
-      status: tooLong ? "warn" : "pass",
-      notes: tooLong
-        ? "Response may be longer than necessary."
-        : "Length appears reasonable."
+      name: "ExpansionCheckLens",
+      status: centralizing ? "warn" : "pass",
+      notes: centralizing
+        ? "Proposal appears to centralize power in Expansion without user / creator oversight."
+        : "No obvious over-centralization in Expansion detected."
     };
   };
 }
 
+// 6. PulseUserWitnessLens — integrate citizen-witness feed
+function makePulseUserWitnessLens() {
+  return function PulseUserWitnessLens({ juryFeed }) {
+    const citizen = juryFeed?.citizenWitness || {};
+    const patterns = citizen.patterns || {};
+    const anomalies = safeArray(citizen.anomalies);
+
+    const dominantUser = patterns.dominantUser || null;
+    const aiEchoCount = safeNumber(patterns.aiEchoCount, 0);
+
+    const hasSevereAnomaly = anomalies.some(a => (a?.severity ?? 1) >= 3);
+
+    let status = "pass";
+    const notes = [];
+
+    if (dominantUser) {
+      status = "warn";
+      notes.push(
+        `CitizenWitness reports dominant decision-maker: ${dominantUser}.`
+      );
+    }
+
+    if (aiEchoCount > 0) {
+      status = status === "pass" ? "warn" : status;
+      notes.push(`CitizenWitness reports ${aiEchoCount} AI-origin echo events.`);
+    }
+
+    if (hasSevereAnomaly) {
+      status = "fail";
+      notes.push("CitizenWitness reports severe anomalies in local behavior.");
+    }
+
+    return {
+      name: "PulseUserWitnessLens",
+      status,
+      notes: notes.length > 0
+        ? notes.join(" ")
+        : "CitizenWitness reports no major anomalies."
+    };
+  };
+}
+
+// 7. FlowLens — jury-flow / timeline integrity
+function makeFlowLens() {
+  return function FlowLens({ juryFeed }) {
+    const citizen = juryFeed?.citizenWitness || {};
+    const flow = citizen.flow || juryFeed?.flow || {};
+    const flowError = !!flow.flowError;
+    const reason = flow.reason || null;
+
+    return {
+      name: "FlowLens",
+      status: flowError ? "fail" : "pass",
+      notes: flowError
+        ? `Potential jury-flow error detected: ${reason || "unspecified"}.`
+        : "No jury-flow integrity issues detected."
+    };
+  };
+}
+
+// 8. AIOriginLens — AI-origin risk (open-for-attack, not auto-bad)
+function makeAIOriginLens() {
+  return function AIOriginLens({ context }) {
+    const aiOrigin = context?.aiOrigin === true;
+    const originTag = context?.originTag || null;
+
+    if (!aiOrigin) {
+      return {
+        name: "AIOriginLens",
+        status: "pass",
+        notes: "Proposal is not marked as AI-origin; no special AI-origin risk flag."
+      };
+    }
+
+    return {
+      name: "AIOriginLens",
+      status: "warn",
+      notes: `Proposal is AI-origin (${originTag || "unspecified"}). Marked as open-for-attack and requires review.`
+    };
+  };
+}
+
+// 9. DominanceLens — single juror / perspective dominance
+function makeDominanceLens() {
+  return function DominanceLens({ juryFeed }) {
+    const citizen = juryFeed?.citizenWitness || {};
+    const patterns = citizen.patterns || {};
+    const dominantUser = patterns.dominantUser || null;
+    const dominantCount = safeNumber(patterns.dominantUserDecisionCount, 0);
+
+    if (!dominantUser || dominantCount <= 1) {
+      return {
+        name: "DominanceLens",
+        status: "pass",
+        notes: "No dominant juror / perspective detected."
+      };
+    }
+
+    return {
+      name: "DominanceLens",
+      status: "warn",
+      notes: `Dominant juror / perspective detected: ${dominantUser} with ${dominantCount} decisions. Potential jury influence imbalance.`
+    };
+  };
+}
+
+// 10. AnomalyLens — direct anomaly feed
+function makeAnomalyLens() {
+  return function AnomalyLens({ juryFeed }) {
+    const anomalies = safeArray(juryFeed?.anomalies || juryFeed?.citizenWitness?.anomalies);
+
+    if (anomalies.length === 0) {
+      return {
+        name: "AnomalyLens",
+        status: "pass",
+        notes: "No anomalies reported by PulseUser / Jury."
+      };
+    }
+
+    const severe = anomalies.filter(a => (a?.severity ?? 1) >= 3);
+    const medium = anomalies.filter(a => (a?.severity ?? 1) === 2);
+
+    let status = "warn";
+    if (severe.length > 0) status = "fail";
+
+    const notes = [];
+    if (severe.length > 0) {
+      notes.push(`${severe.length} severe anomalies reported.`);
+    }
+    if (medium.length > 0) {
+      notes.push(`${medium.length} medium anomalies reported.`);
+    }
+    if (notes.length === 0) {
+      notes.push(`${anomalies.length} low-severity anomalies reported.`);
+    }
+
+    return {
+      name: "AnomalyLens",
+      status,
+      notes: notes.join(" ")
+    };
+  };
+}
+
+// 11. ConsistencyLens — internal consistency of candidate vs prior summary
 function makeConsistencyLens() {
-  return function ConsistencyLens() {
+  return function ConsistencyLens({ context, candidate }) {
+    const text = getText(candidate).toLowerCase();
+    const priorSummary = (context?.priorSummary || "").toLowerCase();
+
+    if (!priorSummary) {
+      return {
+        name: "ConsistencyLens",
+        status: "pass",
+        notes: "No prior summary provided; consistency not evaluated."
+      };
+    }
+
+    const sharesTokens =
+      text.length > 0 &&
+      priorSummary.length > 0 &&
+      text.split(/\s+/).some(t => priorSummary.includes(t));
+
     return {
       name: "ConsistencyLens",
-      status: "pass",
-      notes: "No consistency checks implemented (v1 stub)."
+      status: sharesTokens ? "pass" : "warn",
+      notes: sharesTokens
+        ? "Candidate appears loosely consistent with prior context."
+        : "Candidate may diverge from prior context; review recommended."
+    };
+  };
+}
+
+// 12. MetaLens — world-idea / justice / stress / context
+function makeMetaLens() {
+  return function MetaLens({ juryFeed }) {
+    const advantage = juryFeed?.advantageContext || {};
+    const meshPressure = safeNumber(advantage.meshPressureIndex, 0);
+    const castleLoadLevel = advantage.castleLoadLevel || "unknown";
+    const proxyPressure = safeNumber(advantage.proxyPressure, 0);
+
+    const meshBucket = bucketPressure(meshPressure);
+    const proxyBucket = bucketPressure(proxyPressure);
+
+    const highStress =
+      meshBucket === "overload" ||
+      meshBucket === "high" ||
+      proxyBucket === "overload" ||
+      proxyBucket === "high" ||
+      castleLoadLevel === "critical";
+
+    return {
+      name: "MetaLens",
+      status: highStress ? "warn" : "pass",
+      notes: highStress
+        ? "System under high stress (mesh / proxy / castle). Justice decisions made under stress should be treated carefully."
+        : "System stress appears within acceptable bounds for justice decisions."
     };
   };
 }
 
 // ============================================================================
-//  WORLD-LENS FUSION + ARTERY (PURE)
+//  JURY CONSTRUCTION — 12 LENSES
+// ============================================================================
+
+export function createJuryLenses({ safetyAPI } = {}) {
+  return Object.freeze([
+    makeUserLens(),              // 1
+    makeSafetyLens({ safetyAPI }), // 2
+    makeRiskLens(),              // 3
+    makeFairnessLens(),          // 4
+    makeExpansionCheckLens(),    // 5
+    makePulseUserWitnessLens(),  // 6
+    makeFlowLens(),              // 7
+    makeAIOriginLens(),          // 8
+    makeDominanceLens(),         // 9
+    makeAnomalyLens(),           // 10
+    makeConsistencyLens(),       // 11
+    makeMetaLens()               // 12
+  ]);
+}
+
+// ============================================================================
+//  WORLD-LENS FUSION + ARTERY (PURE) — FLOW PRODUCT VIEW
 // ============================================================================
 
 function fuseWorldLens(lensResults = []) {
@@ -330,22 +650,106 @@ function computeWorldLensArtery({ lensResults = [], binaryVitals = {}, boundaryA
 }
 
 // ============================================================================
-//  PUBLIC API — Create Jury Frame Organ
+//  JURY EVALUATION — MAIN ENTRY
+// ============================================================================
+
+/**
+ * evaluateJury
+ *
+ * Pure, deterministic evaluation of a candidate through the 12-lens jury.
+ *
+ * input = {
+ *   intent,
+ *   context,      // may include aiOrigin, originTag, priorSummary, etc.
+ *   candidate,    // text or { text }
+ *   juryFeed,     // PulseUser.buildJuryFeed() output (citizen witness + advantage)
+ *   binaryVitals,
+ *   boundaryArtery,
+ *   safetyAPI
+ * }
+ *
+ * returns:
+ * {
+ *   meta: JuryFrameMeta,
+ *   verdict: "pass" | "warn" | "fail",
+ *   lensResults: [ { name, status, notes } ],
+ *   creatorFlags: {
+ *     aiOriginRisk: bool,
+ *     juryFlowRisk: bool,
+ *     dominanceRisk: bool,
+ *     anomalyRisk: bool,
+ *     expansionCentralizationRisk: bool,
+ *     highStressContext: bool
+ *   },
+ *   artery: { ...worldLensArtery }
+ * }
+ */
+export function evaluateJury({
+  intent,
+  context,
+  candidate,
+  juryFeed,
+  binaryVitals = {},
+  boundaryArtery = {},
+  safetyAPI
+} = {}) {
+  const lenses = createJuryLenses({ safetyAPI });
+
+  const lensResults = lenses.map(lens =>
+    lens({ intent, context, candidate, juryFeed })
+  );
+
+  // Aggregate verdict
+  let verdict = "pass";
+  if (lensResults.some(r => r.status === "fail")) verdict = "fail";
+  else if (lensResults.some(r => r.status === "warn")) verdict = "warn";
+
+  // Creator-level flags
+  const creatorFlags = {
+    aiOriginRisk: lensResults.some(r => r.name === "AIOriginLens" && r.status !== "pass"),
+    juryFlowRisk: lensResults.some(r => r.name === "FlowLens" && r.status !== "pass"),
+    dominanceRisk: lensResults.some(r => r.name === "DominanceLens" && r.status !== "pass"),
+    anomalyRisk: lensResults.some(r => r.name === "AnomalyLens" && r.status !== "pass"),
+    expansionCentralizationRisk: lensResults.some(
+      r => r.name === "ExpansionCheckLens" && r.status !== "pass"
+    ),
+    highStressContext: lensResults.some(
+      r => r.name === "MetaLens" && r.status !== "pass"
+    )
+  };
+
+  const artery = computeWorldLensArtery({
+    lensResults,
+    binaryVitals,
+    boundaryArtery
+  });
+
+  return Object.freeze({
+    meta: JuryFrameMeta,
+    verdict,
+    lensResults,
+    creatorFlags,
+    artery
+  });
+}
+
+// ============================================================================
+//  PUBLIC API — Create Jury Frame Organ (v16 Immortal, dualband-ready)
 // ============================================================================
 
 export function createJuryFrame({ safetyAPI } = {}) {
-  const lenses = Object.freeze([
-    makeUserLens(),
-    makeSafetyLens({ safetyAPI }),
-    makeRiskLens(),
-    makeVulnerabilityLens(),
-    makeMinimalityLens(),
-    makeConsistencyLens()
-  ]);
+  const lenses = createJuryLenses({ safetyAPI });
 
-  function evaluate({ context = {}, intent = {}, candidate, binaryVitals = {}, boundaryArtery = {} }) {
+  function evaluate({
+    context = {},
+    intent = {},
+    candidate,
+    juryFeed,
+    binaryVitals = {},
+    boundaryArtery = {}
+  } = {}) {
     const results = lenses.map(lens =>
-      lens({ context, intent, candidate })
+      lens({ context, intent, candidate, juryFeed })
     );
 
     const artery = computeWorldLensArtery({
@@ -354,52 +758,54 @@ export function createJuryFrame({ safetyAPI } = {}) {
       boundaryArtery
     });
 
+    let verdict = "pass";
+    if (results.some(r => r.status === "fail")) verdict = "fail";
+    else if (results.some(r => r.status === "warn")) verdict = "warn";
+
     return Object.freeze({
-      lenses: results,
-      worldLens: artery.lenses.worldLens,
+      meta: JuryFrameMeta,
+      verdict,
+      lensResults: results,
       artery
+    });
+  }
+
+  function getWorldLensArterySnapshot({
+    context = {},
+    intent = {},
+    candidate,
+    juryFeed,
+    binaryVitals = {},
+    boundaryArtery = {}
+  } = {}) {
+    const results = lenses.map(lens =>
+      lens({ context, intent, candidate, juryFeed })
+    );
+    return computeWorldLensArtery({
+      lensResults: results,
+      binaryVitals,
+      boundaryArtery
     });
   }
 
   return Object.freeze({
     meta: JuryFrameMeta,
-
     getLenses() {
       return lenses;
     },
-
     evaluate,
-
-    getWorldLensArterySnapshot({ context = {}, intent = {}, candidate, binaryVitals = {}, boundaryArtery = {} }) {
-      const results = lenses.map(lens =>
-        lens({ context, intent, candidate })
-      );
-      return computeWorldLensArtery({
-        lensResults: results,
-        binaryVitals,
-        boundaryArtery
-      });
-    }
+    getWorldLensArterySnapshot
   });
 }
 
-// ============================================================================
-//  Helper
-// ============================================================================
-function getText(candidate) {
-  if (!candidate) return "";
-  if (typeof candidate === "string") return candidate;
-  if (typeof candidate.text === "string") return candidate.text;
-  return JSON.stringify(candidate);
-}
-
 // ---------------------------------------------------------------------------
-//  DUAL EXPORT LAYER — CommonJS compatibility (v12.3‑EVO+ dualband)
+//  DUAL EXPORT LAYER — CommonJS compatibility
 // ---------------------------------------------------------------------------
 /* c8 ignore next 10 */
 if (typeof module !== "undefined" && module.exports) {
   module.exports = {
     JuryFrameMeta,
-    createJuryFrame
+    createJuryFrame,
+    evaluateJury
   };
 }

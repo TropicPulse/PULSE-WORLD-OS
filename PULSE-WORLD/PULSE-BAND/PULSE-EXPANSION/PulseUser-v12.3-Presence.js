@@ -1,16 +1,16 @@
 // ============================================================================
-// PULSE-WORLD : PulseUser-v12.3-Presence.js
-// ORGAN TYPE: Local OS / Experience Orchestrator
-// VERSION: v16-Immortal-ORGANISM (Hybrid, Every-Advantage, Brain-Aware, Server-Attachable)
+// PULSE-WORLD : PulseUser-v16-Immortal-ORGANISM-JuryReady.js
+// ORGAN TYPE: Local OS / Experience Orchestrator / Citizen Witness
+// VERSION: v16-Immortal-ORGANISM (Hybrid, Every-Advantage, Brain-Aware, Server-Attachable, Jury-Ready)
 // ============================================================================
 
 /*
 AI_EXPERIENCE_META = {
   identity: "PulseUser",
-  version: "v16-Immortal-ORGANISM",
+  version: "v16-Immortal-ORGANISM-JuryReady",
   layer: "presence_user",
   role: "presence_user_core",
-  lineage: "PulseUser-v9 → v12.3-Presence-Evo+ → v15-Immortal → v16-Immortal-ORGANISM",
+  lineage: "PulseUser-v9 → v12.3-Presence-Evo+ → v15-Immortal → v16-Immortal-ORGANISM → v16-Immortal-ORGANISM-JuryReady",
 
   evo: {
     userCore: true,
@@ -65,6 +65,7 @@ import { PulseCastleMeta, createPulseCastle } from "../PULSE-EXPANSION/PulseCast
 import { PulseServerMeta, createPulseServer } from "../PULSE-EXPANSION/PulseServer-v12.3-Presence.js";
 import { PulseRouterMeta, createPulseRouter } from "../PULSE-EXPANSION/PulseRouter-v12.3-Presence.js";
 import { PulseExpansionMeta, createPulseExpansion } from "../PULSE-EXPANSION/PulseExpansion-v12.3-Presence.js";
+
 // Earn / Band / BinarySend
 import { getEarnContext, evolveEarn, createEarn } from "../PULSE-EARN/PulseEarn-v12.3-Presence.js";
 import { createDualBandOrganism as PulseBinaryOrganismBoot } from "../PULSE-AI/aiDualBand-v11-Evo.js";
@@ -85,9 +86,9 @@ import {
 // ============================================================================
 
 export const PulseWorldCoreMeta = Object.freeze({
-  organId: "PulseWorldCore-v16-Immortal-ORGANISM",
+  organId: "PulseWorldCore-v16-Immortal-ORGANISM-JuryReady",
   role: "LOCAL_OS",
-  version: "v16-Immortal-ORGANISM",
+  version: "v16-Immortal-ORGANISM-JuryReady",
   epoch: "v16-Immortal-ORGANISM",
   layer: "Experience",
   safety: Object.freeze({
@@ -119,12 +120,20 @@ export const PulseWorldCoreMeta = Object.freeze({
     earnAware: true,
     bandAware: true,
     binarySendAware: true,
-    proxyAware: true
+    proxyAware: true,
+
+    // ⭐ Jury-ready extensions
+    juryAware: true,
+    citizenWitnessAware: true,
+    behaviorPatternAware: true,
+    aiOriginEchoAware: true,
+    socialAnomalyAware: true,
+    timelineFlowAware: true
   })
 });
 
 // ============================================================================
-// FACTORY: createPulseWorldCore — v16 IMMORTAL ORGANISM
+// FACTORY: createPulseWorldCore — v16 IMMORTAL ORGANISM JURY-READY
 // ============================================================================
 
 export function createPulseWorldCore({
@@ -136,7 +145,7 @@ export function createPulseWorldCore({
   // 1. Identity
   const Identity = Object.freeze({
     coreID: "PulseWorldCore",
-    version: "v16-Immortal-ORGANISM",
+    version: "v16-Immortal-ORGANISM-JuryReady",
     createdBy: "PulseOS",
     regionID,
     serverMode
@@ -164,6 +173,23 @@ export function createPulseWorldCore({
     serverMode,
     trace
   });
+
+  // ---------------------------------------------------------------------------
+  // JURY-READY INTERNAL STATE (DETERMINISTIC, IN-MEMORY ONLY)
+  // ---------------------------------------------------------------------------
+
+  const MAX_EVENTS = 256;
+  const MAX_ANOMALIES = 128;
+  const MAX_DECISIONS = 128;
+
+  const interactionLog = [];
+  const anomalyLog = [];
+  const decisionTimeline = [];
+
+  function pushBounded(list, item, max) {
+    list.push(item);
+    if (list.length > max) list.shift();
+  }
 
   // ---------------------------------------------------------------------------
   // ATTACHMENTS
@@ -302,7 +328,7 @@ export function createPulseWorldCore({
 
   // ---------------------------------------------------------------------------
   // ADVANTAGE CONTEXT (FULLY UPGRADED + PROXY INTEGRATED)
-// ---------------------------------------------------------------------------
+  // ---------------------------------------------------------------------------
 
   function buildAdvantageContext() {
     const earn = getEarnContext?.() || {};
@@ -339,7 +365,7 @@ export function createPulseWorldCore({
 
   // ---------------------------------------------------------------------------
   // ADAPTIVE UI (FULLY UPGRADED + PROXY AWARE)
-// ---------------------------------------------------------------------------
+  // ---------------------------------------------------------------------------
 
   function computeAdaptiveUI() {
     const ctx = buildAdvantageContext();
@@ -455,6 +481,273 @@ export function createPulseWorldCore({
   }
 
   // ---------------------------------------------------------------------------
+  // JURY-READY: CITIZEN WITNESS + PATTERN / FLOW / AI-ORIGIN DETECTION
+  // ---------------------------------------------------------------------------
+
+  /**
+   * Record a local user / social / behavioral event.
+   * This is the primary feed into Jury for social pattern analysis.
+   *
+   * event = {
+   *   type: "chat" | "decision" | "identity" | "anomaly" | "ai_echo" | ...,
+   *   userId,
+   *   role,          // "juror" | "participant" | "observer" | ...
+   *   content,       // opaque, no mutation
+   *   aiOrigin: bool,
+   *   contextHash,   // stable hash of prior context (optional)
+   *   timestamp,     // ms since epoch (provided by caller, not generated here)
+   *   tag            // optional string tag
+   * }
+   */
+  function recordUserEvent(event) {
+    if (!event || typeof event !== "object") {
+      return { ok: false, reason: "invalid-event" };
+    }
+
+    const safeEvent = Object.freeze({
+      type: event.type || "unknown",
+      userId: event.userId || null,
+      role: event.role || null,
+      content: event.content ?? null,
+      aiOrigin: event.aiOrigin === true,
+      contextHash: event.contextHash || null,
+      timestamp: event.timestamp ?? null,
+      tag: event.tag || null
+    });
+
+    pushBounded(interactionLog, safeEvent, MAX_EVENTS);
+    return { ok: true };
+  }
+
+  /**
+   * Record a decision that will later be used for jury-flow / timeline analysis.
+   *
+   * decision = {
+   *   decisionId,
+   *   stageIndex,          // 0,1,2,... (early decisions vs later)
+   *   userId,
+   *   aiOrigin: bool,
+   *   contextHash,
+   *   verdictSummary,
+   *   timestamp
+   * }
+   */
+  function recordDecision(decision) {
+    if (!decision || typeof decision !== "object") {
+      return { ok: false, reason: "invalid-decision" };
+    }
+
+    const safeDecision = Object.freeze({
+      decisionId: decision.decisionId || null,
+      stageIndex: typeof decision.stageIndex === "number" ? decision.stageIndex : null,
+      userId: decision.userId || null,
+      aiOrigin: decision.aiOrigin === true,
+      contextHash: decision.contextHash || null,
+      verdictSummary: decision.verdictSummary ?? null,
+      timestamp: decision.timestamp ?? null
+    });
+
+    pushBounded(decisionTimeline, safeDecision, MAX_DECISIONS);
+    return { ok: true };
+  }
+
+  /**
+   * Simple, deterministic behavior pattern summary for Jury:
+   * - dominance: who keeps producing final decisions
+   * - aiEchoCount: how many events are AI-origin echoes
+   * - identityLoops: repeated identity assertions
+   */
+  function analyzeBehaviorPatterns() {
+    const dominanceMap = Object.create(null);
+    const identityLoopMap = Object.create(null);
+    let aiEchoCount = 0;
+
+    for (const d of decisionTimeline) {
+      if (!d || !d.userId) continue;
+      dominanceMap[d.userId] = (dominanceMap[d.userId] || 0) + 1;
+    }
+
+    for (const e of interactionLog) {
+      if (!e) continue;
+      if (e.aiOrigin === true) aiEchoCount++;
+      if (e.type === "identity" && e.userId) {
+        identityLoopMap[e.userId] = (identityLoopMap[e.userId] || 0) + 1;
+      }
+    }
+
+    const dominantUser = Object.keys(dominanceMap).reduce(
+      (best, userId) => {
+        const count = dominanceMap[userId];
+        if (!best || count > best.count) return { userId, count };
+        return best;
+      },
+      null
+    );
+
+    return Object.freeze({
+      dominantUser: dominantUser ? dominantUser.userId : null,
+      dominantUserDecisionCount: dominantUser ? dominantUser.count : 0,
+      aiEchoCount,
+      identityLoops: Object.freeze(identityLoopMap)
+    });
+  }
+
+  /**
+   * Detect simple contextual divergence:
+   * - proposalContextHash does not match last known contextHash
+   * - or proposal is marked as aiOrigin and contextHash is null
+   */
+  function detectContextDivergence({ proposalContextHash, aiOrigin }) {
+    const last = interactionLog.length > 0 ? interactionLog[interactionLog.length - 1] : null;
+    const lastHash = last?.contextHash || null;
+
+    const mismatch =
+      proposalContextHash &&
+      lastHash &&
+      proposalContextHash !== lastHash;
+
+    const suspiciousAI =
+      aiOrigin === true &&
+      !proposalContextHash;
+
+    const divergent = !!(mismatch || suspiciousAI);
+
+    return Object.freeze({
+      divergent,
+      reason: divergent
+        ? (mismatch ? "context-hash-mismatch" : "ai-origin-without-context")
+        : null,
+      lastContextHash: lastHash,
+      proposalContextHash: proposalContextHash || null
+    });
+  }
+
+  /**
+   * Record an anomaly for Jury / Creator:
+   * anomaly = {
+   *   type: "dominance" | "ai_origin" | "context_divergence" | "flow_error" | ...,
+   *   severity: 1|2|3,
+   *   details: any,
+   *   timestamp
+   * }
+   */
+  function recordAnomaly(anomaly) {
+    if (!anomaly || typeof anomaly !== "object") {
+      return { ok: false, reason: "invalid-anomaly" };
+    }
+
+    const safeAnomaly = Object.freeze({
+      type: anomaly.type || "unknown",
+      severity: anomaly.severity ?? 1,
+      details: anomaly.details ?? null,
+      timestamp: anomaly.timestamp ?? null
+    });
+
+    pushBounded(anomalyLog, safeAnomaly, MAX_ANOMALIES);
+    return { ok: true };
+  }
+
+  /**
+   * Build a citizen-witness report for aiJury:
+   * - local behavior patterns
+   * - recent anomalies
+   * - recent interactions
+   * - decision timeline summary
+   */
+  function buildCitizenWitnessReport() {
+    const patterns = analyzeBehaviorPatterns();
+
+    const decisionsSummary = decisionTimeline.map(d => ({
+      decisionId: d.decisionId,
+      stageIndex: d.stageIndex,
+      userId: d.userId,
+      aiOrigin: d.aiOrigin,
+      timestamp: d.timestamp
+    }));
+
+    const interactionsSummary = interactionLog.map(e => ({
+      type: e.type,
+      userId: e.userId,
+      role: e.role,
+      aiOrigin: e.aiOrigin,
+      tag: e.tag,
+      timestamp: e.timestamp
+    }));
+
+    return Object.freeze({
+      identity: Identity,
+      regionID,
+      serverMode,
+      patterns,
+      decisions: Object.freeze(decisionsSummary),
+      interactions: Object.freeze(interactionsSummary),
+      anomalies: Object.freeze(anomalyLog.slice())
+    });
+  }
+
+  /**
+   * Build a Jury-ready feed:
+   * - advantage context
+   * - adaptive UI state
+   * - citizen witness report
+   * - brain / OS views (for health correlation)
+   */
+  function buildJuryFeed() {
+    return Object.freeze({
+      identity: Identity,
+      advantageContext: buildAdvantageContext(),
+      adaptiveUI: computeAdaptiveUI(),
+      brainView: getBrainView(),
+      primaryOSView: getPrimaryOSView(),
+      citizenWitness: buildCitizenWitnessReport()
+    });
+  }
+
+  /**
+   * Simple flow integrity check:
+   * - if earliest decision is aiOrigin and later decisions depend on it,
+   *   mark as potential flow error.
+   */
+  function analyzeJuryFlow() {
+    if (decisionTimeline.length === 0) {
+      return Object.freeze({
+        flowError: false,
+        reason: null,
+        rootDecisionId: null
+      });
+    }
+
+    const first = decisionTimeline[0];
+    const later = decisionTimeline.slice(1);
+
+    const anyDependOnFirst =
+      !!later.find(d => d.contextHash && first.contextHash && d.contextHash === first.contextHash);
+
+    const flowError =
+      first.aiOrigin === true && anyDependOnFirst;
+
+    return Object.freeze({
+      flowError,
+      reason: flowError ? "ai-origin-root-decision-with-downstream-dependents" : null,
+      rootDecisionId: first.decisionId || null
+    });
+  }
+
+  /**
+   * Expose a compact Jury snapshot for Creator / aiJury:
+   */
+  function getJurySnapshot() {
+    return Object.freeze({
+      identity: Identity,
+      patterns: analyzeBehaviorPatterns(),
+      flow: analyzeJuryFlow(),
+      anomalies: anomalyLog.slice(),
+      decisions: decisionTimeline.slice(),
+      interactions: interactionLog.slice()
+    });
+  }
+
+  // ---------------------------------------------------------------------------
   // SNAPSHOT
   // ---------------------------------------------------------------------------
 
@@ -480,7 +773,10 @@ export function createPulseWorldCore({
       advantageContext: buildAdvantageContext(),
       adaptiveUI: computeAdaptiveUI(),
       brainView: getBrainView(),
-      primaryOSView: getPrimaryOSView()
+      primaryOSView: getPrimaryOSView(),
+
+      // Jury-ready views
+      jurySnapshot: getJurySnapshot()
     });
   }
 
@@ -512,6 +808,17 @@ export function createPulseWorldCore({
     requestBrainInstance,
 
     handleBrainNetworkIntent,
+
+    // ⭐ Jury-ready citizen witness + pattern / flow APIs
+    recordUserEvent,
+    recordDecision,
+    recordAnomaly,
+    analyzeBehaviorPatterns,
+    detectContextDivergence,
+    buildCitizenWitnessReport,
+    buildJuryFeed,
+    analyzeJuryFlow,
+    getJurySnapshot,
 
     getSnapshot
   });
