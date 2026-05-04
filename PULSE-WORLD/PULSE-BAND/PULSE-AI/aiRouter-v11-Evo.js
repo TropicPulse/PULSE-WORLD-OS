@@ -1,20 +1,32 @@
 // ============================================================================
-//  PULSE OS v13.0-PRESENCE-ADV — AI ROUTER ORGAN
-//  CNS Router • Intent Decoder • Persona Selector • Archetype Map
-//  PURE ROUTING • ZERO MUTATION • ZERO RANDOMNESS • DUALBAND‑AWARE
-//  ROUTING ARTERY v3 • BINARY SNAPSHOT AWARE • HOT-PATH CACHED
+//  PULSE OS v16-IMMORTAL-ORGANISM — AI ROUTER ORGAN
+//  AI Router • Organism-Aware • Persona Selector • Archetype Map • Failover Brain
+//  PURE ROUTING • ZERO MUTATION • ZERO RANDOMNESS • DUALBAND‑AWARE • ORGANISM‑AWARE
+//  ROUTING ARTERY v4 • BINARY SNAPSHOT AWARE • HOT-PATH CACHED • HEALTH-SCORE DRIVEN
 // ============================================================================
+
 /*
 AI_EXPERIENCE_META = {
   identity: "aiRouter",
-  version: "v14-IMMORTAL",
+  version: "v16-IMMORTAL-ORGANISM",
   layer: "ai_core",
-  role: "ai_router",
-  lineage: "aiRouter-v10 → v14-IMMORTAL",
+  role: "ai_router_organism",
+  lineage: "aiRouter-v10 → v13.0-PRESENCE-ADV → v16-IMMORTAL-ORGANISM",
 
   evo: {
     routingEngine: true,
     organRouting: true,
+    organismAware: true,
+    castleAware: true,
+    meshAware: true,
+    expansionAware: true,
+    serverAware: true,
+    worldCoreAware: true,
+    earnAware: true,
+    dualBandAware: true,
+    binarySendAware: true,
+    routerHealthAware: true,
+
     symbolicPrimary: true,
     binaryAware: true,
     dualBand: true,
@@ -27,6 +39,36 @@ AI_EXPERIENCE_META = {
     zeroMutationOfInput: true
   },
 
+  AI_ROUTER_ORGANISM_AWARENESS: {
+    readsCastle: true,
+    readsMesh: true,
+    readsExpansion: true,
+    readsServer: true,
+    readsWorldCore: true,
+    readsEarn: true,
+    readsDualBand: true,
+    readsBinarySend: true,
+    readsRuntime: true,
+    readsScheduler: true
+  },
+
+  AI_ROUTER_FAILOVER_BEHAVIOR: {
+    canTakeOverAIRouting: true,
+    watchesRouterHealth: true,
+    watchesOrganismStress: true
+  },
+
+  AI_ROUTER_STRESS_OVERRIDES: {
+    personaOverrideOnStress: true,
+    safetyOverrideOnFallbackBand: true,
+    symbolicFallbackOnBinaryPressure: true
+  },
+
+  AI_ROUTER_HEALTH_SCORE_SYSTEM: {
+    enabled: true,
+    compositeOrganismScore: true
+  },
+
   contract: {
     always: ["aiEngine", "aiCortex", "aiContext"],
     never: ["safeRoute", "fetchViaCNS"]
@@ -34,11 +76,60 @@ AI_EXPERIENCE_META = {
 }
 */
 
+// ============================================================================
+//  IMPORTS — Personas / Overmind / NodeAdmin
+// ============================================================================
+
+import { Personas, getPersona } from "./persona.js";
+import Overmind from "./aiOvermindPrime.js";
+import NodeAdmin from "../PULSE-TOOLS/PulseNodeAdmin-v11-Evo.js";
+
+// ============================================================================
+//  IMPORTS — Organism Context (HYBRID: attach OR pull)
+//  NOTE: these are symbolic-only; router never mutates them.
+// ============================================================================
+
+// WorldCore / User
+import {
+  PulseWorldCoreMeta,
+  createPulseWorldCore
+} from "../PULSE-WORLD/PulseUser-v16-IMMORTAL-ORGANISM.js";
+
+// Castle / Mesh / BeaconMesh / Expansion / Server / Router
+import { PulseCastleMeta } from "../PULSE-CASTLE/PulseCastle-v16-IMMORTAL-ORGANISM.js";
+import createPulseMesh, {
+  PulseMeshMeta
+} from "../PULSE-MESH/PulseMesh-v11-Evo.js";
+import PulseBeaconMesh, {
+  PulseBeaconMeshMeta
+} from "../PULSE-CASTLE/PulseBeaconMesh-v12.3-Presence.js";
+import PulseBeaconEngine from "../PULSE-CASTLE/PulseBeaconEngine-v12.3-Presence.js";
+import { PulseExpansionMeta } from "../PULSE-CASTLE/PulseExpansion-v16-IMMORTAL-ORGANISM.js";
+import { PulseServerMeta } from "../PULSE-CASTLE/PulseServer-v16-IMMORTAL-ORGANISM.js";
+import { PulseRouterMeta } from "../PULSE-ROUTER/PulseRouter-v13-PRESENCE-EVO+.js";
+
+// Earn / Band / Send
+import { getEarnContext } from "../PULSE-EARN/PulseEarn-v12.3-Presence.js";
+import { createDualBandOrganism as PulseBinaryOrganismBoot } from "../PULSE-BAND/PULSE-AI/aiDualBand-v11-Evo.js";
+import { createBinarySend as PulseSendBin } from "../PULSE-BAND/PULSE-SEND/PulseBinarySend-v11-EVO.js";
+
+// Runtime / Scheduler (symbolic context only)
+import PulseRuntimeV2 from "../PULSE-X/PulseRuntime-v2-Evo.js";
+import { createPulseScheduler } from "../PULSE-X/PulseScheduler-v2.js";
+
+const {
+  getRuntimeStateV2: getRuntimeStateV2Context
+} = PulseRuntimeV2;
+
+// ============================================================================
+//  META — AI Router Identity
+// ============================================================================
+
 export const AIRouterMeta = Object.freeze({
   layer: "PulseAIRouter",
-  role: "CNS_ROUTER_ORGAN",
-  version: "13.0-PRESENCE-ADV",
-  identity: "aiRouter-v13.0-PRESENCE-ADV",
+  role: "CNS_ROUTER_ORGANISM",
+  version: "v16-IMMORTAL-ORGANISM",
+  identity: "aiRouter-v16-IMMORTAL-ORGANISM",
 
   evo: Object.freeze({
     driftProof: true,
@@ -58,12 +149,15 @@ export const AIRouterMeta = Object.freeze({
     multiInstanceReady: true,
     cacheAware: true,
     prewarmReady: true,
-    epoch: "13.0-PRESENCE-ADV"
+    organismAware: true,
+    failoverAware: true,
+    healthScoreAware: true,
+    epoch: "v16-IMMORTAL-ORGANISM"
   }),
 
   contract: Object.freeze({
     purpose:
-      "Decode intent, select persona, map archetypes, integrate dual-band routing hints, compute routing artery metrics v3, and optionally enrich with Overmind + NodeAdmin meta in an async advanced path.",
+      "Decode intent, select persona, map archetypes, integrate dual-band + organism routing hints, compute routing artery metrics v4, and optionally enrich with Overmind + NodeAdmin meta in an async advanced path.",
 
     never: Object.freeze([
       "mutate request",
@@ -85,8 +179,9 @@ export const AIRouterMeta = Object.freeze({
       "select persona safely",
       "map archetypes deterministically",
       "integrate organism snapshot metrics",
-      "compute routing artery metrics v3",
+      "compute routing artery metrics v4",
       "produce dual-band routing hints",
+      "produce organism health score",
       "surface safety + overmind hints",
       "return frozen routing packets",
       "remain drift-proof",
@@ -97,13 +192,10 @@ export const AIRouterMeta = Object.freeze({
   })
 });
 
-import { Personas, getPersona } from "./persona.js";
-import Overmind from "./aiOvermindPrime.js";
-import NodeAdmin from "../PULSE-TOOLS/PulseNodeAdmin-v11-Evo.js";
-
 // ============================================================================
 //  ARCHETYPE PAGE MAP (STATIC METADATA)
 // ============================================================================
+
 const ArchetypePages = Object.freeze({
   ARCHITECT: "aiArchitect.js",
   ASSISTANT: "aiAssistant.js",
@@ -128,16 +220,17 @@ const ArchetypePages = Object.freeze({
 
 // ============================================================================
 //  LIGHTWEIGHT HOT-PATH CACHE (PURELY IN-MEMORY, NON-PERSISTENT)
+//  NOTE: sync-only, no async, no I/O. Prewarm is optional.
 // ============================================================================
 
 const _MAX_CACHE_ENTRIES = 128;
 const _routingCache = new Map();
 
 /**
- * Deterministic cache key: request + dualBand snapshot signature.
+ * Deterministic cache key: request + dualBand snapshot signature + coarse organism bits.
  * No bodies, no large blobs — just flags + persona-relevant bits.
  */
-function _buildCacheKey(request = {}, dualBand = null) {
+function _buildCacheKey(request = {}, dualBand = null, organismHealth = null) {
   const {
     intent = "analyze",
     touchesBackend = false,
@@ -170,6 +263,11 @@ function _buildCacheKey(request = {}, dualBand = null) {
     }
   }
 
+  const healthBucket =
+    organismHealth && typeof organismHealth.compositeScore === "number"
+      ? Math.round(organismHealth.compositeScore * 10)
+      : 0;
+
   return JSON.stringify({
     intent: String(intent || "").toLowerCase(),
     touchesBackend,
@@ -191,7 +289,8 @@ function _buildCacheKey(request = {}, dualBand = null) {
     touchesSettings,
     userIsOwner,
     requestedSafetyMode: requestedSafetyMode || null,
-    organismSig
+    organismSig,
+    healthBucket
   });
 }
 
@@ -218,14 +317,15 @@ function _cacheSet(key, value) {
 /**
  * Prewarm hook: allow caller to seed cache with known patterns.
  * This does NOT mutate behavior, only primes hot paths.
+ * NOTE: sync-only; we do not call advanced/async path here.
  */
-export function prewarmAIRouter(samples = [], dualBand = null) {
+export function prewarmAIRouter(samples = [], dualBand = null, organismHealth = null) {
   if (!Array.isArray(samples)) return;
   for (const req of samples) {
     try {
-      const key = _buildCacheKey(req, dualBand);
+      const key = _buildCacheKey(req, dualBand, organismHealth);
       if (_cacheGet(key)) continue;
-      const result = routeAIRequest(req, dualBand);
+      const result = routeAIRequest(req, dualBand, { organismHealth });
       _cacheSet(key, result);
     } catch {
       // prewarm must never throw
@@ -234,8 +334,61 @@ export function prewarmAIRouter(samples = [], dualBand = null) {
 }
 
 // ============================================================================
-//  ROUTING ARTERY HELPERS (PURE, STATELESS)
+//  ORGANISM SNAPSHOT ATTACHMENT (HYBRID MODE)
+//  - If attached: use snapshots
+//  - If not: router remains functional and can run with dualBand-only
 // ============================================================================
+
+// ATTACHED SNAPSHOTS (OPTIONAL, HYBRID MODE)
+let _attachedCastleSnapshot = null;
+let _attachedMeshSnapshot = null;
+let _attachedExpansionSnapshot = null;
+let _attachedServerSnapshot = null;
+let _attachedWorldCoreSnapshot = null;
+let _attachedDualBandOrganism = null;
+let _attachedBinarySend = null;
+
+// ATTACH API — called by Castle / Mesh / Expansion / Server / WorldCore / Band
+export function attachCastleSnapshot(snapshot) {
+  _attachedCastleSnapshot = snapshot || null;
+  return { ok: true };
+}
+
+export function attachMeshSnapshot(snapshot) {
+  _attachedMeshSnapshot = snapshot || null;
+  return { ok: true };
+}
+
+export function attachExpansionSnapshot(snapshot) {
+  _attachedExpansionSnapshot = snapshot || null;
+  return { ok: true };
+}
+
+export function attachServerSnapshot(snapshot) {
+  _attachedServerSnapshot = snapshot || null;
+  return { ok: true };
+}
+
+export function attachWorldCoreSnapshot(snapshot) {
+  _attachedWorldCoreSnapshot = snapshot || null;
+  return { ok: true };
+}
+
+export function attachDualBandOrganism(organism) {
+  _attachedDualBandOrganism = organism || null;
+  return { ok: true };
+}
+
+export function attachBinarySend(binarySend) {
+  _attachedBinarySend = binarySend || null;
+  return { ok: true };
+}
+
+// ============================================================================
+//  ORGANISM HEALTH HELPERS (SYNC, LIGHTWEIGHT, NO NETWORK)
+//  NOTE: We only read snapshots; we never mutate them.
+// ============================================================================
+
 function _bucketLevel(v) {
   if (v >= 0.9) return "elite";
   if (v >= 0.75) return "high";
@@ -260,14 +413,26 @@ function _bucketCost(v) {
   return "none";
 }
 
-function computeRoutingArtery(flags, binaryLoad, personaId) {
+// ORGANISM-AWARE: compute artery v4 using flags + binary load + organism stress
+function computeRoutingArteryV4(flags, binaryLoad, personaId, organismHealth) {
   const flagValues = Object.values(flags || {});
   const activeFlags = flagValues.filter(Boolean).length;
 
   const flagDensity = Math.min(1, activeFlags / 16);
   const loadFactor = Math.min(1, binaryLoad);
 
-  const pressure = Math.max(0, Math.min(1, (flagDensity + loadFactor) / 2));
+  const basePressure = Math.max(0, Math.min(1, (flagDensity + loadFactor) / 2));
+
+  // ORGANISM-AWARE: incorporate organism stress into pressure
+  const organismStress =
+    organismHealth && typeof organismHealth.compositeScore === "number"
+      ? organismHealth.compositeScore
+      : 0;
+
+  const pressure = Math.max(
+    0,
+    Math.min(1, (basePressure + organismStress * 0.5) / 1.5)
+  );
 
   let personaBias = 0;
   if (personaId === Personas.ARCHITECT) personaBias = 0.1;
@@ -294,13 +459,119 @@ function computeRoutingArtery(flags, binaryLoad, personaId) {
     throughputBucket: _bucketLevel(throughput),
     pressureBucket: _bucketPressure(pressure),
     costBucket: _bucketCost(cost),
-    budgetBucket: _bucketLevel(budget)
+    budgetBucket: _bucketLevel(budget),
+    organismStress
   });
 }
 
-// ============================================================================–
+// ORGANISM-AWARE: compute health score from attached snapshots + dualBand + binarySend
+function computeOrganismHealth(dualBand = null) {
+  const castle = _attachedCastleSnapshot;
+  const mesh = _attachedMeshSnapshot;
+  const expansion = _attachedExpansionSnapshot;
+  const server = _attachedServerSnapshot;
+  const worldCore = _attachedWorldCoreSnapshot;
+  const binarySend = _attachedBinarySend;
+
+  // Castle
+  const castleLoadLevel = castle?.state?.loadLevel || "unknown";
+  const castleLoadScore =
+    castleLoadLevel === "critical"
+      ? 1
+      : castleLoadLevel === "high"
+      ? 0.8
+      : castleLoadLevel === "medium"
+      ? 0.5
+      : castleLoadLevel === "low"
+      ? 0.2
+      : 0.3;
+
+  // Mesh
+  const meshPressureIndex =
+    mesh?.densityHealth?.A_metrics?.meshPressureIndex ?? 0;
+  const meshPressureScore = Math.max(
+    0,
+    Math.min(1, meshPressureIndex / 100)
+  );
+
+  // Expansion
+  const routeStable = expansion?.routeField?.routeStable;
+  const expansionScore =
+    routeStable === false ? 0.9 : routeStable === true ? 0.2 : 0.4;
+
+  // WorldCore
+  const fallbackBandLevel =
+    worldCore?.advantageContext?.fallbackBandLevel ?? 0;
+  const worldCoreFallbackScore = Math.max(
+    0,
+    Math.min(1, fallbackBandLevel / 4)
+  );
+
+  // Server
+  const serverLoad =
+    server?.meta?.guarantees?.multiInstanceBatchAware === true
+      ? 0.4
+      : 0.3; // symbolic placeholder; real load would come from server meta/state
+  const serverScore = serverLoad;
+
+  // DualBand
+  let organismSnapshotBits = 0;
+  let binaryLoad = 0;
+  let binaryPressure = 0;
+
+  const effectiveDualBand = dualBand || _attachedDualBandOrganism || null;
+  if (effectiveDualBand?.organism?.organismSnapshot) {
+    const snapshot = effectiveDualBand.organism.organismSnapshot();
+    if (typeof snapshot === "string") {
+      organismSnapshotBits = snapshot.length;
+      binaryLoad = Math.min(1, organismSnapshotBits / 4096);
+      binaryPressure = binaryLoad;
+    }
+  }
+
+  const dualBandScore = binaryPressure;
+
+  // BinarySend
+  const sendQueueDepth = binarySend?.getQueueDepth?.() ?? 0;
+  const sendScore = Math.max(0, Math.min(1, sendQueueDepth / 100));
+
+  // Composite
+  const components = {
+    castleLoadScore,
+    meshPressureScore,
+    expansionScore,
+    worldCoreFallbackScore,
+    serverScore,
+    dualBandScore,
+    sendScore
+  };
+
+  const compositeScore = Math.max(
+    0,
+    Math.min(
+      1,
+      (
+        castleLoadScore * 0.2 +
+        meshPressureScore * 0.2 +
+        expansionScore * 0.15 +
+        worldCoreFallbackScore * 0.15 +
+        serverScore * 0.1 +
+        dualBandScore * 0.1 +
+        sendScore * 0.1
+      )
+    )
+  );
+
+  return Object.freeze({
+    compositeScore,
+    components
+  });
+}
+
+// ============================================================================
 //  ARCHETYPE SELECTOR (DETERMINISTIC)
 // ============================================================================
+
 function selectPrimaryArchetypePage(personaId, flags) {
   const {
     touchesEnvironment,
@@ -354,17 +625,27 @@ function selectPrimaryArchetypePage(personaId, flags) {
 
 // ============================================================================
 //  DUAL‑BAND CNS ROUTER — symbolic + organism integration (SYNC, HOT-PATH)
+//  NOTE: This is the main sync path. No async, no heavy pulls.
 // ============================================================================
 
-export function routeAIRequest(request = {}, dualBand = null) {
-  const cacheKey = _buildCacheKey(request, dualBand);
+export function routeAIRequest(
+  request = {},
+  dualBand = null,
+  options = {}
+) {
+  const reasoning = [];
+
+  // ORGANISM-AWARE: compute organism health (lightweight, snapshot-only)
+  const organismHealth =
+    options.organismHealth || computeOrganismHealth(dualBand);
+
+  // 0) Cache check (includes coarse organism health bucket)
+  const cacheKey = _buildCacheKey(request, dualBand, organismHealth);
   const cached = _cacheGet(cacheKey);
   if (cached) {
-    // return a frozen clone to preserve immutability guarantees
-    return Object.freeze({ ...cached });
+    reasoning.push("Cache hit: returning cached routing packet.");
+    return Object.freeze({ ...cached, reasoning: cached.reasoning || [] });
   }
-
-  const reasoning = [];
 
   // --------------------------------------------------------------------------
   // 1) Intent Normalization
@@ -420,8 +701,8 @@ export function routeAIRequest(request = {}, dualBand = null) {
   });
 
   // --------------------------------------------------------------------------
-  // 2) Persona Selection
-  // --------------------------------------------------------------------------
+  // 2) Persona Selection (request-driven baseline)
+// --------------------------------------------------------------------------
   let personaId = Personas.NEUTRAL;
 
   if (
@@ -458,14 +739,88 @@ export function routeAIRequest(request = {}, dualBand = null) {
     reasoning.push("Routing to NEUTRAL persona (generic request).");
   }
 
+  // --------------------------------------------------------------------------
+  // 3) ORGANISM-DRIVEN PERSONA OVERRIDES (STRESS-AWARE)
+// --------------------------------------------------------------------------
+  const health = organismHealth;
+  const h = health.components || {};
+
+  // Mesh pressure high → OBSERVER
+  if (h.meshPressureScore >= 0.7 && personaId !== Personas.OBSERVER) {
+    reasoning.push(
+      "ORGANISM-AWARE: mesh pressure high → overriding persona to OBSERVER."
+    );
+    personaId = Personas.OBSERVER;
+  }
+
+  // Castle load high → NEUTRAL
+  if (h.castleLoadScore >= 0.7 && personaId === Personas.ARCHITECT) {
+    reasoning.push(
+      "ORGANISM-AWARE: castle load high → overriding persona to NEUTRAL."
+    );
+    personaId = Personas.NEUTRAL;
+  }
+
+  // Expansion unstable → DIAGNOSTICS (via OBSERVER)
+  if (h.expansionScore >= 0.7 && personaId !== Personas.OBSERVER) {
+    reasoning.push(
+      "ORGANISM-AWARE: expansion route unstable → overriding persona to OBSERVER (diagnostics)."
+    );
+    personaId = Personas.OBSERVER;
+  }
+
+  // WorldCore fallbackBand high → SAFE persona (NEUTRAL with strict safety)
+  if (h.worldCoreFallbackScore >= 0.6 && personaId !== Personas.NEUTRAL) {
+    reasoning.push(
+      "ORGANISM-AWARE: worldCore fallbackBand high → overriding persona to NEUTRAL (safe mode)."
+    );
+    personaId = Personas.NEUTRAL;
+  }
+
+  // DualBand binary pressure high → symbolic-friendly persona
+  if (h.dualBandScore >= 0.7 && personaId === Personas.ARCHITECT) {
+    reasoning.push(
+      "ORGANISM-AWARE: dualBand binary pressure high → avoiding heavy ARCHITECT persona."
+    );
+    personaId = Personas.NEUTRAL;
+  }
+
+  // BinarySend congestion → low-binary persona (NEUTRAL / TOURGUIDE)
+  if (h.sendScore >= 0.7 && personaId === Personas.OBSERVER) {
+    reasoning.push(
+      "ORGANISM-AWARE: binary send congestion high → avoiding heavy diagnostics persona."
+    );
+    personaId = Personas.NEUTRAL;
+  }
+
+  // Composite stress critical → ARCHITECT or OBSERVER depending on flags
+  if (health.compositeScore >= 0.9) {
+    if (
+      touchesArchitecture ||
+      touchesBackend ||
+      touchesSchemas ||
+      touchesEvolution
+    ) {
+      reasoning.push(
+        "ORGANISM-AWARE: composite stress critical + system flags → forcing ARCHITECT persona."
+      );
+      personaId = Personas.ARCHITECT;
+    } else {
+      reasoning.push(
+        "ORGANISM-AWARE: composite stress critical → forcing OBSERVER persona (diagnostics)."
+      );
+      personaId = Personas.OBSERVER;
+    }
+  }
+
   const persona = getPersona(personaId);
   const permissions = persona?.permissions || {};
   const boundaries = persona?.boundaries || {};
 
-  reasoning.push(`Persona selected: ${personaId}`);
+  reasoning.push(`Persona selected (after organism overrides): ${personaId}`);
 
   // --------------------------------------------------------------------------
-  // 3) Archetype Mapping
+  // 4) Archetype Mapping
   // --------------------------------------------------------------------------
   const primaryArchetypePage = selectPrimaryArchetypePage(personaId, flags);
 
@@ -479,17 +834,18 @@ export function routeAIRequest(request = {}, dualBand = null) {
   }
 
   // --------------------------------------------------------------------------
-  // 4) Dual‑Band Integration (Organism Snapshot Metrics)
-  // --------------------------------------------------------------------------
+  // 5) Dual‑Band Integration (Organism Snapshot Metrics)
+// --------------------------------------------------------------------------
   let organismSnapshotBits = 0;
-  let binaryPressure = 0;
   let binaryLoad = 0;
+  let binaryPressure = 0;
 
-  if (dualBand?.organism?.organismSnapshot) {
-    const snapshot = dualBand.organism.organismSnapshot();
+  const effectiveDualBand = dualBand || _attachedDualBandOrganism || null;
+
+  if (effectiveDualBand?.organism?.organismSnapshot) {
+    const snapshot = effectiveDualBand.organism.organismSnapshot();
     if (typeof snapshot === "string") {
       organismSnapshotBits = snapshot.length;
-
       binaryLoad = Math.min(1, organismSnapshotBits / 4096);
       binaryPressure = binaryLoad;
 
@@ -500,7 +856,7 @@ export function routeAIRequest(request = {}, dualBand = null) {
   }
 
   // --------------------------------------------------------------------------
-  // 5) Dual‑Band Routing Hints
+  // 6) Dual‑Band Routing Hints
   // --------------------------------------------------------------------------
   const dualBandHints = Object.freeze({
     primary: "binary",
@@ -524,22 +880,24 @@ export function routeAIRequest(request = {}, dualBand = null) {
   );
 
   // --------------------------------------------------------------------------
-  // 6) Routing Artery v3 (pure, stateless)
-  // --------------------------------------------------------------------------
-  const artery = computeRoutingArtery(flags, binaryLoad, personaId);
+  // 7) Routing Artery v4 (organism-aware)
+// --------------------------------------------------------------------------
+  const artery = computeRoutingArteryV4(flags, binaryLoad, personaId, health);
 
   reasoning.push(
-    `Routing artery: throughput=${artery.throughput.toFixed(
+    `Routing artery v4: throughput=${artery.throughput.toFixed(
       2
     )} (${artery.throughputBucket}), pressure=${artery.pressure.toFixed(
       2
     )} (${artery.pressureBucket}), budget=${artery.budget.toFixed(
       2
-    )} (${artery.budgetBucket})`
+    )} (${artery.budgetBucket}), organismStress=${artery.organismStress.toFixed(
+      2
+    )}`
   );
 
   // --------------------------------------------------------------------------
-  // 7) Overmind + Safety + Personal Hints (SYNC HINTS ONLY)
+  // 8) Overmind + Safety + Personal Hints (SYNC HINTS ONLY)
 // --------------------------------------------------------------------------
   const safetyMode =
     requestedSafetyMode || persona?.safetyMode || "standard";
@@ -549,7 +907,8 @@ export function routeAIRequest(request = {}, dualBand = null) {
     personaId,
     safetyMode,
     flags,
-    archetypePrimaryPage: primaryArchetypePage || null
+    archetypePrimaryPage: primaryArchetypePage || null,
+    organismHealth: health
   });
 
   const personaSafety = Object.freeze({
@@ -559,6 +918,9 @@ export function routeAIRequest(request = {}, dualBand = null) {
   });
 
   reasoning.push(`Safety mode: ${safetyMode}`);
+  reasoning.push(
+    `Organism health composite score: ${health.compositeScore.toFixed(2)}`
+  );
 
   const packet = Object.freeze({
     meta: AIRouterMeta,
@@ -571,6 +933,7 @@ export function routeAIRequest(request = {}, dualBand = null) {
     overmind: overmindHints,
     personaSafety,
     artery,
+    organismHealth: health,
     reasoning
   });
 
@@ -580,17 +943,15 @@ export function routeAIRequest(request = {}, dualBand = null) {
 
 // ============================================================================
 //  ADVANCED ASYNC ROUTER — Overmind + NodeAdmin ENRICHMENT
+//  NOTE: async path is optional and only used when explicitly called.
 // ============================================================================
 
-/**
- * Async advanced path:
- *  - runs the deterministic router
- *  - calls Overmind with overmindHints
- *  - forwards meta to NodeAdmin
- *  - returns enriched packet (without breaking sync callers)
- */
-export async function routeAIRequestAdvanced(request = {}, dualBand = null) {
-  const base = routeAIRequest(request, dualBand);
+export async function routeAIRequestAdvanced(
+  request = {},
+  dualBand = null,
+  options = {}
+) {
+  const base = routeAIRequest(request, dualBand, options);
 
   let overmindResult = null;
   let nodeAdminMeta = null;
@@ -622,10 +983,15 @@ export async function routeAIRequestAdvanced(request = {}, dualBand = null) {
 }
 
 // ============================================================================
-//  EXPLAIN ROUTING — Interpreter Summary
+//  EXPLAIN ROUTING — Interpreter Summary (SYNC, LIGHTWEIGHT)
 // ============================================================================
-export function explainRoutingDecision(request = {}, dualBand = null) {
-  const result = routeAIRequest(request, dualBand);
+
+export function explainRoutingDecision(
+  request = {},
+  dualBand = null,
+  options = {}
+) {
+  const result = routeAIRequest(request, dualBand, options);
 
   return Object.freeze({
     personaId: result.personaId,
@@ -633,6 +999,7 @@ export function explainRoutingDecision(request = {}, dualBand = null) {
     dualBand: result.dualBand,
     safetyMode: result.personaSafety?.safetyMode || "standard",
     artery: result.artery,
+    organismHealth: result.organismHealth,
     reasoning: result.reasoning
   });
 }
@@ -640,12 +1007,20 @@ export function explainRoutingDecision(request = {}, dualBand = null) {
 // ============================================================================
 //  DUAL‑MODE EXPORTS (ESM + CommonJS)
 // ============================================================================
+
 if (typeof module !== "undefined") {
   module.exports = {
     AIRouterMeta,
     routeAIRequest,
     routeAIRequestAdvanced,
     explainRoutingDecision,
-    prewarmAIRouter
+    prewarmAIRouter,
+    attachCastleSnapshot,
+    attachMeshSnapshot,
+    attachExpansionSnapshot,
+    attachServerSnapshot,
+    attachWorldCoreSnapshot,
+    attachDualBandOrganism,
+    attachBinarySend
   };
 }
