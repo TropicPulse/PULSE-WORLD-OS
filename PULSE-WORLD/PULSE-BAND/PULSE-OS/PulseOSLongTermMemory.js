@@ -1,4 +1,4 @@
-/* global log */
+/* global log,warn,error */
 // ============================================================================
 //  HISTORICAL CONTEXT — “THE EXPONENTIAL ERA” (was index.js)
 //  A record of the system’s evolution and the acceleration of development
@@ -143,6 +143,97 @@ AI_EXPERIENCE_META = {
   }
 }
 */
+
+import { onRequest, onCall } from "firebase-functions/v2/https";
+import { onDocumentWritten, onDocumentWrittenWithAuthContext } from "firebase-functions/v2/firestore";
+import nodemailer from "nodemailer";
+import { defineSecret } from "firebase-functions/params";
+import express from "express";
+import { admin, db } from "./helpers.js";
+import { getStripe as Stripe } from "./stripe.js";
+import { getTwilioClient as twilio } from "./sms.js";
+import { log, warn, error, logger } from "./PulseProofLogger.js";
+
+
+
+
+export const VAULT_PATCH_TWILIGHT = {
+  signature: "Twilight",
+  invoked: "2026-04-07T04:00:00-07:00", // 4 AM MST
+  version: 2,
+  type: "security-data-integrity",
+  glyph: "🌒",
+  description: "The first protective veil cast by the Vault Spirit during a 4 AM development session.",
+  note: "Named 'Twilight' because it was created in the quiet hours before dawn."
+};
+
+function pulseCors(req, res, next) {
+  res.set("Access-Control-Allow-Origin", "*");
+  res.set("Access-Control-Allow-Headers", "Content-Type, Authorization, X-Pulse-Device, X-Pulse-Remember");
+  res.set("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
+
+  if (req.method === "OPTIONS") {
+    return res.status(204).send("");
+  }
+
+  next();
+}
+
+const EMAIL_PASSWORD = defineSecret("EMAIL_PASSWORD");
+const STRIPE_PASSWORD = defineSecret("STRIPE_SECRET_KEY");
+const JWT_SECRET = defineSecret("JWT_SECRET");
+// CLOUD RUN ENVIRONMENTS
+const TP_API_KEY = window.TP_API_KEY;
+const BASE_PAYMENT_URL = window.BASE_PAYMENT_URL;
+const GOOGLE_MAPS_KEY = window.GOOGLE_MAPS_KEY;
+const PLACEHOLDER_IMAGE_URL = window.PLACEHOLDER_IMAGE_URL;
+
+const STRIPE_WEBHOOK_SECRET = defineSecret("STRIPE_SECRET_WEBHOOK");
+const MESSAGING_SERVICE_SID = defineSecret("MESSAGING_SERVICE_SID");
+const ACCOUNT_SID = defineSecret("ACCOUNT_SID");
+const AUTH_TOKEN = defineSecret("AUTH_TOKEN");
+
+// CONFIG
+const PIN_COLLECTION = "Users";
+const RATE_LIMIT_WINDOW_MS = 60 * 1000; // 1 minute
+const MAX_REQUESTS_PER_WINDOW = 5;
+const PIN_TTL_MS = MAX_REQUESTS_PER_WINDOW * RATE_LIMIT_WINDOW_MS; // 5 minutes
+
+const corsHandler = pulseCors;
+
+window.__serverTimeOffset = 0;
+
+window.setServerNow = function(serverNowMs) {
+  window.__serverTimeOffset = serverNowMs - Date.now();
+};
+
+window.nowMs = function() {
+  return Date.now() + window.__serverTimeOffset;
+};
+
+
+const storage = admin.storage().bucket();
+const app = express();
+
+let stripeInstance = null;
+
+function computeHash(str) {
+  let h = 0;
+  const s = String(str || "");
+  for (let i = 0; i < s.length; i++) {
+    h = (h + s.charCodeAt(i) * (i + 1)) % 100000;
+  }
+  return `h${h}`;
+}
+
+const generateToken = (userId, timestamp) => {
+  return computeHash(userId + ":" + timestamp);
+};
+const jwt = generateToken;
+
+function hashPin(pin) {
+  return computeHash("pin:" + pin);
+}
 
 
 // // ============================================================================
@@ -675,89 +766,6 @@ AI_EXPERIENCE_META = {
 // schedulerTick();
 
 // loadMarketplaceReputation();
-
-import { onRequest, onCall } from "firebase-functions/v2/https";
-import { onDocumentWritten, onDocumentWrittenWithAuthContext } from "firebase-functions/v2/firestore";
-import nodemailer from "nodemailer";
-import { defineSecret } from "firebase-functions/params";
-import admin from "firebase-admin";
-import Stripe from "stripe";
-import * as logger from "firebase-functions/logger";
-import fetch from "node-fetch";
-//import { Readable } from "node:stream";
-import express from "express";
-import twilio from "twilio";
-import jwt from "jsonwebtoken";
-import { v4 as uuidv4 } from "uuid";
-import crypto from "crypto";
-import bcrypt from "bcryptjs";
-import sharp from "sharp";
-import { fileURLToPath } from "url";
-
-export const VAULT_PATCH_TWILIGHT = {
-  signature: "Twilight",
-  invoked: "2026-04-07T04:00:00-07:00", // 4 AM MST
-  version: 2,
-  type: "security-data-integrity",
-  glyph: "🌒",
-  description: "The first protective veil cast by the Vault Spirit during a 4 AM development session.",
-  note: "Named 'Twilight' because it was created in the quiet hours before dawn."
-};
-
-function pulseCors(req, res, next) {
-  res.set("Access-Control-Allow-Origin", "*");
-  res.set("Access-Control-Allow-Headers", "Content-Type, Authorization, X-Pulse-Device, X-Pulse-Remember");
-  res.set("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
-
-  if (req.method === "OPTIONS") {
-    return res.status(204).send("");
-  }
-
-  next();
-}
-
-const EMAIL_PASSWORD = defineSecret("EMAIL_PASSWORD");
-const STRIPE_PASSWORD = defineSecret("STRIPE_SECRET_KEY");
-const JWT_SECRET = defineSecret("JWT_SECRET");
-// CLOUD RUN ENVIRONMENTS
-const TP_API_KEY = window.TP_API_KEY;
-const BASE_PAYMENT_URL = window.BASE_PAYMENT_URL;
-const GOOGLE_MAPS_KEY = window.GOOGLE_MAPS_KEY;
-const PLACEHOLDER_IMAGE_URL = window.PLACEHOLDER_IMAGE_URL;
-
-const STRIPE_WEBHOOK_SECRET = defineSecret("STRIPE_SECRET_WEBHOOK");
-const MESSAGING_SERVICE_SID = defineSecret("MESSAGING_SERVICE_SID");
-const ACCOUNT_SID = defineSecret("ACCOUNT_SID");
-const AUTH_TOKEN = defineSecret("AUTH_TOKEN");
-
-// CONFIG
-const PIN_COLLECTION = "Users";
-const RATE_LIMIT_WINDOW_MS = 60 * 1000; // 1 minute
-const MAX_REQUESTS_PER_WINDOW = 5;
-const PIN_TTL_MS = MAX_REQUESTS_PER_WINDOW * RATE_LIMIT_WINDOW_MS; // 5 minutes
-
-const corsHandler = pulseCors;
-
-window.__serverTimeOffset = 0;
-
-window.setServerNow = function(serverNowMs) {
-  window.__serverTimeOffset = serverNowMs - Date.now();
-};
-
-window.nowMs = function() {
-  return Date.now() + window.__serverTimeOffset;
-};
-
-
-const db = admin.firestore();
-const storage = admin.storage().bucket();
-const app = express();
-
-let stripeInstance = null;
-
-const __filename = fileURLToPath(import.meta.url);
-export { admin };
-
 
 async function logSecurityPatch(uid, patch, reason = "auto") {
   if (!uid) return;
@@ -27290,7 +27298,6 @@ async function validatePlaceId(placeId, mapsKey) {
   }
 }
 
-
 export const generateMap = onRequest(
   {
     region: "us-central1",
@@ -27339,7 +27346,7 @@ export const generateMap = onRequest(
       }
 
       // -------------------------------------------------------
-      // LOAD EXISTING TPMap BUCKET
+      // LOAD EXISTING TPMap
       // -------------------------------------------------------
       const snap = await targetRef.get();
       const data = snap.exists ? snap.data() : {};
@@ -27384,50 +27391,11 @@ export const generateMap = onRequest(
       const lng = result.geometry.location.lng;
 
       // -------------------------------------------------------
-      // STATIC MAP
+      // STATIC MAP (NO SHARP)
       // -------------------------------------------------------
       const staticMapUrl = buildStaticMapUrl(lat, lng, placeId, mapsKey, venue);
       const imgRes = await fetch(staticMapUrl);
-      const rawBuffer = Buffer.from(await imgRes.arrayBuffer());
-      const mapMeta = await sharp(rawBuffer).metadata();
-
-      // -------------------------------------------------------
-      // OVERLAY
-      // -------------------------------------------------------
-      let overlayBuffer = null;
-      try {
-        const fetched = await fetch("/TropicPulseOverlay.png?v8");
-        const arr = await fetched.arrayBuffer();
-        const originalOverlay = Buffer.from(arr);
-
-        overlayBuffer = await sharp(originalOverlay)
-          .resize({
-            width: Math.floor(mapMeta.width * 0.25),
-            fit: "inside"
-          })
-          .png({ premultiplied: true })
-          .toBuffer();
-      } catch (e) {
-        console.error("Overlay fetch or resize failed:", e);
-      }
-
-      const compositeLayers = [];
-      if (overlayBuffer) {
-        compositeLayers.push({
-          input: overlayBuffer,
-          gravity: "southeast",
-          blend: "over",
-          premultiplied: true
-        });
-      }
-
-      // -------------------------------------------------------
-      // FINAL MAP IMAGE
-      // -------------------------------------------------------
-      const finalBuffer = await sharp(rawBuffer)
-        .composite(compositeLayers)
-        .png()
-        .toBuffer();
+      const finalBuffer = Buffer.from(await imgRes.arrayBuffer());
 
       // -------------------------------------------------------
       // STORAGE UPLOAD
@@ -27483,6 +27451,7 @@ export const generateMap = onRequest(
     }
   }
 );
+
 
 export const getUserCredits = onRequest(
   { 
@@ -28322,7 +28291,7 @@ export const setPin = onRequest(
 
       const existingSecurity = data.TPSecurity || {};
       const now = admin.firestore.Timestamp.now();
-      const hash = await bcrypt.hash(String(pin), 10);
+      const hash = await hashPin(String(pin), 10);
 
       const updatedSecurity = {
         ...existingSecurity,
@@ -28416,7 +28385,8 @@ export const verifyOwnerPin = onRequest(
       }
 
       const now = admin.firestore.Timestamp.now();
-      const match = await bcrypt.compare(String(pin), pinHash);
+      const match = computeHash("pin:" + pin) === pinHash;
+
 
       // WRONG PIN
       if (!match) {
@@ -28642,7 +28612,7 @@ export const confirmPinReset = onRequest(
         return res.status(400).json({ error: "Reset token expired" });
       }
 
-      const hash = await bcrypt.hash(String(newPin), 10);
+      const hash = await hashPin(String(newPin), 10);
 
       const updatedSecurity = {
         ...security,
