@@ -78,7 +78,6 @@ AI_EXPERIENCE_META = {
 }
 */
 
-
 // Global handle
 const g =
   typeof globalThis !== "undefined"
@@ -112,6 +111,7 @@ import PulseUIErrors from "../_FRONTEND/PulseUIErrors-v12-Evo.js";
 import { initUIFlow } from "../_FRONTEND/PulseUIFlow-v12-Evo.js";
 import { safeRoute as route } from "./PulseProofBridge.js";
 import { PulseUnderstanding } from "../../PULSE-UI/_BACKEND/PulseNetUnderstanding.js";
+
 // ============================================================================
 // GLOBAL ORGANISM MEMORY (shared across all imports)
 // ============================================================================
@@ -243,7 +243,7 @@ const NetworkOrgan = {
         instanceId,
         organism,
         result,
-        pulseTouch,              // <<<<< NEW
+        pulseTouch,
         layer: "PulseNet",
         binaryAware: true,
         dualBand: true,
@@ -253,7 +253,6 @@ const NetworkOrgan = {
       // swallow; ErrorSpine will be handled by caller
     }
   }
-
 };
 
 // ============================================================================
@@ -369,7 +368,7 @@ async function overmindHeartbeatSample(instanceId, tickResult) {
         lastAIHeartbeat: organism.lastAIHeartbeat,
         lastBeatSource: organism.lastBeatSource
       },
-      pulseTouch,          // <<<<< NEW
+      pulseTouch,
       tickResult
     };
 
@@ -378,7 +377,7 @@ async function overmindHeartbeatSample(instanceId, tickResult) {
         text: JSON.stringify({
           instanceId,
           organism: context.organismSnapshot,
-          pulseTouch,      // <<<<< NEW
+          pulseTouch,
           tickResult
         })
       }
@@ -389,7 +388,6 @@ async function overmindHeartbeatSample(instanceId, tickResult) {
     // crown learning is non-fatal for runtime
   }
 }
-
 
 // Public AI gateway: frontend archetypes → PulseNet → OvermindPrime
 export async function pulseNetAI({ intent, context, candidates }) {
@@ -461,22 +459,20 @@ function momHeart(instanceId, now) {
   runOrganismHeartbeat(instanceId, "mom");
   const forwardMetrics = warmForwardEngine(instanceId);
   return {
-  source: "mom",
-  forward: forwardMetrics,
-  ts: now
-};
-
+    source: "mom",
+    forward: forwardMetrics,
+    ts: now
+  };
 }
 
 function dadHeart(instanceId, now) {
   runAIHeartbeat(instanceId, "dad");
   const backwardMetrics = warmBackwardEngine(instanceId);
   return {
-  source: "dad",
-  forward: backwardMetrics,
-  ts: now
-};
-
+    source: "dad",
+    forward: backwardMetrics,
+    ts: now
+  };
 }
 
 function earnHeart(instanceId, now, stale) {
@@ -515,7 +511,7 @@ async function tickFamily(instanceId = "core") {
   const now = Date.now();
   const { last } = getHeartbeatState(instanceId);
   const delta = now - (last || 0);
-  
+
   const stale = delta > 90 * 1000;
   const softStale = delta > 15 * 1000;
   const temporalDrift = delta > 300000; // 5 minutes without a beat
@@ -555,7 +551,6 @@ async function tickFamily(instanceId = "core") {
 
   // 4.5) OvermindPrime heartbeat sampling (learning only)
   await overmindHeartbeatSample(instanceId, { ...result, temporalDrift });
-
 
   // 5) UIFlow + CNS + ErrorSpine awareness + heartbeat via NetworkOrgan
   try {
@@ -680,13 +675,12 @@ export function pulseNetIngressFromTouch(packet) {
   });
 }
 
-
 const PulseTouchOrgan = {
   snapshot() {
     try {
       if (typeof window === "undefined") return null;
 
-      const touch = window.__PULSE_TOUCH__ || null; // or decode cookie here
+      const touch = window.__PULSE_TOUCH__ || null;
       if (!touch) return null;
 
       return {
@@ -703,25 +697,80 @@ const PulseTouchOrgan = {
   }
 };
 
+// ============================================================================
+// PULSE-NET BRIDGE — symbolic adapter for Expansion/Castle/Server/User/Brain
+//  • No imports from Expansion/Castle
+//  • Uses local ingress + NetworkOrgan as single internet edge
+// ============================================================================
+function bridgeRoute(kind, source, payload, detailKind) {
+  const packet = {
+    source,
+    kind: detailKind,
+    payload,
+    ts: Date.now()
+  };
+  enqueueIngress(kind, packet);
+  NetworkOrgan.send(kind, packet);
+  return { ok: true };
+}
 
+export const PulseNetBridge = Object.freeze({
+  // Expansion → routes, soldiers, mesh
+  routeExpansion(payload) {
+    return bridgeRoute("expansion", "PulseExpansion", payload, "expansion_plan");
+  },
+  routeSoldiers(payload) {
+    return bridgeRoute("soldier", "PulseExpansion", payload, "soldier_delegation");
+  },
+  routeMesh(payload) {
+    return bridgeRoute("mesh", "PulseExpansion", payload, "mesh_rebalance");
+  },
+
+  // Castle → presence, routes, nodeadmin, defense, treasury, etc (symbolic)
+  routeCastle(payload) {
+    return bridgeRoute("castle", "PulseCastle", payload, "castle_signal");
+  },
+
+  // Server / User / Brain direct ingress if needed
+  routeServer(payload) {
+    return bridgeRoute("server", "PulseServer", payload, "server_signal");
+  },
+  routeUser(payload) {
+    return bridgeRoute("user", "PulseUser", payload, "user_signal");
+  },
+  routeBrain(payload) {
+    return bridgeRoute("brain", "PulseBrain", payload, "brain_signal");
+  }
+});
+
+export function createPulseNetBridge() {
+  return PulseNetBridge;
+}
+
+// ============================================================================
+// MIRROR GLOBALS INTO window/global/g
+// ============================================================================
 try {
   if (typeof window !== "undefined") {
     window.__PULSE_MEM__ = globalThis.__PULSE_MEM__;
     window.__PULSE_NET_INGRESS__ = globalThis.__PULSE_NET_INGRESS__;
     window.__PULSE_NET_FAMILY__ = globalThis.__PULSE_NET_FAMILY__;
     window.__PULSE_ORGANISM_FAMILY__ = globalThis.__PULSE_ORGANISM_FAMILY__;
+    window.__PULSE_TOUCH__ = globalThis.__PULSE_TOUCH__;
   }
   if (typeof global !== "undefined") {
     global.__PULSE_MEM__ = globalThis.__PULSE_MEM__;
     global.__PULSE_NET_INGRESS__ = globalThis.__PULSE_NET_INGRESS__;
     global.__PULSE_NET_FAMILY__ = globalThis.__PULSE_NET_FAMILY__;
     global.__PULSE_ORGANISM_FAMILY__ = globalThis.__PULSE_ORGANISM_FAMILY__;
+    global.__PULSE_TOUCH__ = globalThis.__PULSE_TOUCH__;
   }
-  
+
   if (typeof g !== "undefined") {
     g.__PULSE_MEM__ = globalThis.__PULSE_MEM__;
     g.__PULSE_NET_INGRESS__ = globalThis.__PULSE_NET_INGRESS__;
     g.__PULSE_NET_FAMILY__ = globalThis.__PULSE_NET_FAMILY__;
     g.__PULSE_ORGANISM_FAMILY__ = globalThis.__PULSE_ORGANISM_FAMILY__;
+    g.__PULSE_TOUCH__ = globalThis.__PULSE_TOUCH__;
   }
 } catch {}

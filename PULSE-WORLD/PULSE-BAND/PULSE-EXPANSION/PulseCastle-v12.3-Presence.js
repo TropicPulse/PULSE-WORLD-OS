@@ -842,6 +842,211 @@ export function getBeaconEngineContext() {
   }
   return _beaconEngineInstance;
 }
+// ============================================================================
+//  EXECUTOR HELPERS — APPLY EXPANSION PLAN (v16 IMMORTAL ORGANISM)
+// ============================================================================
+
+function spawnCastleInternal({ regionId, hostName, presenceField = null }) {
+  const rId = regionId || "unknown-region";
+  const hName = hostName || "unknown-host";
+  const castleId = buildCastleId({ regionId: rId, hostName: hName });
+  const castle = ensureCastle(castleId, rId, hName, presenceField);
+  return castle;
+}
+
+function spawnServersForCastleInternal({
+  castleId,
+  count = 1,
+  serverConfig = {}
+}) {
+  const castle = castlesById[castleId];
+  if (!castle) return [];
+
+  const created = [];
+  for (let i = 0; i < count; i++) {
+    const effectiveServerId = stableHash(
+      `SERVER::${castleId}::${JSON.stringify(serverConfig)}::${i}`
+    );
+
+    if (!castle.serversById[effectiveServerId]) {
+      const server =
+        typeof createPulseServer === "function"
+          ? createPulseServer({
+              castleId,
+              serverId: effectiveServerId,
+              ...serverConfig
+            })
+          : null;
+
+      castle.serversById[effectiveServerId] = {
+        serverId: effectiveServerId,
+        serverMeta: PulseServerMeta,
+        server
+      };
+
+      logger?.log?.("castle", "attach_server_auto", {
+        castleId,
+        serverId: effectiveServerId
+      });
+
+      created.push(effectiveServerId);
+    }
+  }
+  return created;
+}
+
+function spawnUsersForCastleInternal({
+  castleId,
+  regionId,
+  hostName,
+  count = 1,
+  worldCoreConfig = {}
+}) {
+  const created = [];
+  for (let i = 0; i < count; i++) {
+    const userKey = `auto-user-${i}`;
+    const user = ensureUser({
+      castleId,
+      regionId,
+      hostName,
+      userKey,
+      worldCoreConfig
+    });
+    created.push(user.userId);
+  }
+  return created;
+}
+
+function applySoldierDelegationInternal(actions = []) {
+  for (const act of actions) {
+    const castle = castlesById[act.castleId];
+    if (!castle) continue;
+
+    castle.soldiersById = castle.soldiersById || Object.create(null);
+
+    for (let i = 0; i < (act.spawn || 0); i++) {
+      const soldierId = stableHash(
+        `SOLDIER::${act.castleId}::${act.reason || "spawn"}::${i}`
+      );
+      castle.soldiersById[soldierId] = {
+        soldierId,
+        castleId: act.castleId,
+        reason: act.reason || "spawn"
+      };
+      logger?.log?.("castle", "spawn_soldier_auto", {
+        castleId: act.castleId,
+        soldierId,
+        reason: act.reason
+      });
+    }
+
+    for (let i = 0; i < (act.kill || 0); i++) {
+      const ids = Object.keys(castle.soldiersById);
+      const victim = ids[0];
+      if (!victim) break;
+      delete castle.soldiersById[victim];
+      logger?.log?.("castle", "kill_soldier_auto", {
+        castleId: act.castleId,
+        soldierId: victim,
+        reason: act.reason
+      });
+    }
+  }
+}
+
+function applyMeshRebalanceInternal(actions = []) {
+  for (const act of actions) {
+    if (act.action === "link") {
+      linkCastles(act.castleId, act.targetCastleId);
+      logger?.log?.("castle", "mesh_link_auto", {
+        castleId: act.castleId,
+        targetCastleId: act.targetCastleId
+      });
+    }
+  }
+}
+
+// ============================================================================
+//  ROUTE DEFENSE + NODEADMIN ORBITS (v16 IMMORTAL ORGANISM)
+// ============================================================================
+
+function defendRouteInternal({ routeId, soldierCount = 2 }) {
+  const route = expansionRoutesById[routeId];
+  if (!route) {
+    logger?.log?.("castle", "defend_route_missing", { routeId });
+    return { ok: false, reason: "route_not_found" };
+  }
+
+  const originCastleId = route.fromCastleId;
+  const castle = castlesById[originCastleId];
+  if (!castle) {
+    logger?.log?.("castle", "defend_route_castle_missing", {
+      routeId,
+      originCastleId
+    });
+    return { ok: false, reason: "castle_not_found" };
+  }
+
+  castle.soldiersById = castle.soldiersById || Object.create(null);
+
+  for (let i = 0; i < soldierCount; i++) {
+    const soldierId = stableHash(
+      `SOLDIER_DEFEND::${originCastleId}::${routeId}::${i}`
+    );
+    castle.soldiersById[soldierId] = {
+      soldierId,
+      castleId: originCastleId,
+      routeId,
+      role: "defender"
+    };
+    logger?.log?.("castle", "spawn_soldier_defender", {
+      castleId: originCastleId,
+      soldierId,
+      routeId
+    });
+  }
+
+  return { ok: true, routeId, originCastleId, soldiers: soldierCount };
+}
+
+function spawnNodeAdminOrbitInternal({
+  castleId,
+  intervalHint = "steady",
+  pressureHint = "normal"
+}) {
+  const castle = castlesById[castleId];
+  if (!castle) {
+    return { ok: false, reason: "castle_not_found" };
+  }
+
+  // orbit loop is just a NodeAdmin loop with no specific route target
+  const loopId = stableHash(`ORBIT::${castleId}::${intervalHint}::${pressureHint}`);
+
+  nodeAdminLoopsById[loopId] = {
+    loopId,
+    routeId: null,
+    originCastleId: castleId,
+    targetServerId: null,
+    intervalHint,
+    pressureHint,
+    active: true,
+    proxyMode: getProxyMode?.() || "normal",
+    proxyPressure: getProxyPressure?.() ?? 0,
+    orbit: true
+  };
+
+  logger?.log?.("castle", "spawn_nodeadmin_orbit", {
+    loopId,
+    castleId,
+    intervalHint,
+    pressureHint,
+    proxyMode: nodeAdminLoopsById[loopId].proxyMode,
+    proxyPressure: nodeAdminLoopsById[loopId].proxyPressure
+  });
+
+  return { ok: true, loopId };
+}
+
 
 // ============================================================================
 //  CORE ORGAN — PulseCastle v16 IMMORTAL ORGANISM
@@ -968,6 +1173,173 @@ export class PulseCastle {
           dualBandOrganism: !!this.dualBandOrganism,
           binarySend: !!this.binarySend
         })
+      }
+    });
+  }
+
+    // ------------------------------------------------------------------------
+  // Apply ExpansionPlan from PulseExpansion (symbolic executor)
+  // ------------------------------------------------------------------------
+
+  applyExpansionPlan(plan) {
+    if (!plan) {
+      return {
+        ok: false,
+        reason: "no_plan",
+        meta: { castleMeta: PulseCastleMeta }
+      };
+    }
+
+    const {
+      expansions = [],
+      contractions = [],
+      soldierDelegation = [],
+      rebalanceLinks = [],
+      regionPresence = {}
+    } = plan;
+
+    // EXPANSIONS → spawn castles + servers + users
+    for (const exp of expansions) {
+      const regionId = exp.regionId;
+      const hostName = `auto-host-${regionId || "unknown"}`;
+
+      const castle = spawnCastleInternal({
+        regionId,
+        hostName,
+        presenceField: {
+          tier: exp.tier || "normal",
+          reason: exp.reason || "expansion"
+        }
+      });
+
+      const serverIds = spawnServersForCastleInternal({
+        castleId: castle.castleId,
+        count: exp.desiredServers || 1,
+        serverConfig: { tier: exp.tier || "normal" }
+      });
+
+      const userIds = spawnUsersForCastleInternal({
+        castleId: castle.castleId,
+        regionId: castle.regionId,
+        hostName: castle.hostName,
+        count: exp.desiredSoldiers || 0,
+        worldCoreConfig: { regionID: castle.regionId }
+      });
+
+      logger?.log?.("castle", "apply_expansion", {
+        regionId,
+        castleId: castle.castleId,
+        servers: serverIds,
+        users: userIds,
+        tier: exp.tier,
+        reason: exp.reason
+      });
+    }
+
+    // CONTRACTIONS → simple symbolic shrink
+    for (const con of contractions) {
+      const castle = castlesById[con.castleId];
+      if (!castle) continue;
+
+      const serverIds = Object.keys(castle.serversById || {});
+      if (serverIds.length > 0) {
+        const victim = serverIds[serverIds.length - 1];
+        delete castle.serversById[victim];
+        logger?.log?.("castle", "contract_server_auto", {
+          castleId: con.castleId,
+          serverId: victim,
+          reason: con.reason
+        });
+      }
+
+      const soldierIds = Object.keys(castle.soldiersById || {});
+      if (soldierIds.length > 0) {
+        const victim = soldierIds[soldierIds.length - 1];
+        delete castle.soldiersById[victim];
+        logger?.log?.("castle", "contract_soldier_auto", {
+          castleId: con.castleId,
+          soldierId: victim,
+          reason: con.reason
+        });
+      }
+    }
+
+    // SOLDIER DELEGATION
+    applySoldierDelegationInternal(soldierDelegation);
+
+    // MESH REBALANCE
+    applyMeshRebalanceInternal(rebalanceLinks);
+
+    // Recompute presence after changes
+    for (const [castleId, castle] of Object.entries(castlesById)) {
+      const metrics = computeCastlePresence(castle);
+      castle.presenceField = {
+        ...(castle.presenceField || {}),
+        ...metrics
+      };
+    }
+
+    const { castlesSnapshot, meshSnapshot } = snapshotMesh();
+
+    return new CastlePresenceState({
+      castlesById: castlesSnapshot,
+      meshLinksByCastleId: meshSnapshot,
+      meta: {
+        castleMeta: PulseCastleMeta,
+        regionPresence,
+        appliedExpansions: expansions.length,
+        appliedContractions: contractions.length,
+        appliedSoldierDelegations: soldierDelegation.length,
+        appliedMeshRebalances: rebalanceLinks.length,
+        organismContext: buildOrganismContext()
+      }
+    });
+  }
+
+    // ------------------------------------------------------------------------
+  // Defend a symbolic expansion route with soldiers
+  // ------------------------------------------------------------------------
+
+  defendRoute({ routeId, soldierCount = 2 }) {
+    const result = defendRouteInternal({ routeId, soldierCount });
+
+    return new CastleExpansionRouteState({
+      routesById: snapshotExpansionRoutes(),
+      meta: {
+        castleMeta: PulseCastleMeta,
+        ok: result.ok,
+        reason: result.reason || null,
+        defendedRouteId: routeId,
+        soldiers: result.soldiers || soldierCount,
+        organismContext: buildOrganismContext()
+      }
+    });
+  }
+
+    // ------------------------------------------------------------------------
+  // Spawn a NodeAdmin orbit loop around a castle (circle the castle)
+// ------------------------------------------------------------------------
+
+  spawnNodeAdminOrbit({
+    castleId,
+    intervalHint = "steady",
+    pressureHint = "normal"
+  }) {
+    const result = spawnNodeAdminOrbitInternal({
+      castleId,
+      intervalHint,
+      pressureHint
+    });
+
+    return new CastleNodeAdminLoopState({
+      loopsById: snapshotNodeAdminLoops(),
+      meta: {
+        castleMeta: PulseCastleMeta,
+        ok: result.ok,
+        reason: result.reason || null,
+        orbitCastleId: castleId,
+        orbitLoopId: result.loopId || null,
+        organismContext: buildOrganismContext()
       }
     });
   }
@@ -1274,6 +1646,52 @@ export class PulseCastle {
         binarySend: !!this.binarySend
       })
     });
+  }
+
+    // ------------------------------------------------------------------------
+  // CASTLE PULSE TICK — runs every heartbeat / aiHeartbeat / earnHeartbeat
+  // ------------------------------------------------------------------------
+
+  castlePulseTick() {
+    // 1. Pull expansion context (symbolic only)
+    const expansionCtx = getPulseExpansionContext?.() || {};
+    const latestPlan = expansionCtx.latestPlan || null;
+
+    // 2. Apply expansion plan if present
+    if (latestPlan) {
+      this.applyExpansionPlan(latestPlan);
+    }
+
+    // 3. Update NodeAdmin loops (orbit + route loops)
+    for (const [loopId, loop] of Object.entries(nodeAdminLoopsById)) {
+      if (!loop.active) continue;
+
+      // symbolic pulse update
+      loop.lastPulse = Date.now();
+      loop.proxyPressure = getProxyPressure?.() ?? 0;
+      loop.proxyMode = getProxyMode?.() || "normal";
+    }
+
+    // 4. Recompute presence for all castles
+    for (const [castleId, castle] of Object.entries(castlesById)) {
+      const metrics = computeCastlePresence(castle);
+      castle.presenceField = {
+        ...(castle.presenceField || {}),
+        ...metrics
+      };
+    }
+
+    // 5. Emit presence snapshot back to expansion
+    const presenceSnapshot = summarizeCastlePresence();
+    expansionCtx.castlePresence = presenceSnapshot;
+
+    logger?.log?.("castle", "pulse_tick", {
+      castles: Object.keys(castlesById).length,
+      loops: Object.keys(nodeAdminLoopsById).length,
+      routes: Object.keys(expansionRoutesById).length
+    });
+
+    return presenceSnapshot;
   }
 
   // ------------------------------------------------------------------------

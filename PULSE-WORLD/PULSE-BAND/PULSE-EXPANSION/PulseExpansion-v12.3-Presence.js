@@ -3,6 +3,7 @@
  *  PULSE EXPANSION — v16-Immortal-ORGANISM
  *  Presence Region Governor / Network Stretcher to PULSE-NET
  *  Every-Advantage / Regioning-Aware / Beacon-Aware / Castle-Aware / PulseNet-Aware
+ *  Heartbeat-Driven (heartbeat / aiHeartbeat / earnHeartbeat)
  * ============================================================================
  */
 /*
@@ -35,7 +36,10 @@ AI_EXPERIENCE_META = {
     zeroFilesystem: true,
 
     proxyAware: true,
-    meshOrganismAware: true
+    meshOrganismAware: true,
+    heartbeatAware: true,
+    aiHeartbeatAware: true,
+    earnHeartbeatAware: true
   },
 
   contract: {
@@ -60,15 +64,27 @@ AI_EXPERIENCE_META = {
 import { logger } from "../../PULSE-UI/_BACKEND/PulseProofLogger.js";
 
 // v12.3 presence-era metas (still valid for server/router)
-import { PulseServerMeta, createPulseServer } from "../PULSE-EXPANSION/PulseServer-v12.3-Presence.js";
-import { PulseRouterMeta, createPulseRouter } from "../PULSE-EXPANSION/PulseRouter-v12.3-Presence.js";
+import {
+  PulseServerMeta,
+  createPulseServer
+} from "../PULSE-EXPANSION/PulseServer-v12.3-Presence.js";
+
+import {
+  PulseRouterMeta,
+  createPulseRouter
+} from "../PULSE-EXPANSION/PulseRouter-v12.3-Presence.js";
 
 // v16 world core + castle + beacon mesh
-import { PulseWorldCoreMeta, createPulseWorldCore } from "./PulseUser-v12.3-Presence.js";
+import {
+  PulseWorldCoreMeta,
+  createPulseWorldCore
+} from "./PulseUser-v12.3-Presence.js";
+
 import {
   PulseCastleMeta,
   summarizeCastlePresence
-} from "./PulseCastle-v12.3-Presence.js";
+} from "./PulseCastle-v16-Immortal-ORGANISM.js";
+
 import {
   PulseBeaconMeshMeta,
   PulseBeaconMesh
@@ -86,9 +102,6 @@ import {
 
 // Touch / presence
 import { getPulseTouchContext } from "../../PULSE-UI/PULSE-TOUCH.js";
-
-// Net / connectivity
-import { getPulseNetContext } from "../../PULSE-UI/_BACKEND/PULSE-NET.js";
 
 // PROXY CONTEXT — v16 IMMORTAL ORGANISM
 import {
@@ -173,6 +186,9 @@ export const PulseExpansionMeta = Object.freeze({
     pulseNetAware: true,
     proxyAware: true,
     meshOrganismAware: true,
+    heartbeatAware: true,
+    aiHeartbeatAware: true,
+    earnHeartbeatAware: true,
 
     zeroRandomness: true,
     zeroDynamicImports: true,
@@ -246,12 +262,42 @@ export class MeshRebalanceAction {
   }
 }
 
+export class RouteDefenseAction {
+  constructor({
+    regionId,
+    castleId,
+    reason = "protect_routes",
+    desiredDefenders = 2
+  }) {
+    this.type = "route_defense";
+    this.regionId = regionId;
+    this.castleId = castleId;
+    this.reason = reason;
+    this.desiredDefenders = desiredDefenders;
+  }
+}
+
+export class NodeAdminOrbitAction {
+  constructor({
+    castleId,
+    intervalHint = "steady",
+    pressureHint = "normal"
+  }) {
+    this.type = "nodeadmin_orbit";
+    this.castleId = castleId;
+    this.intervalHint = intervalHint;
+    this.pressureHint = pressureHint;
+  }
+}
+
 export class ExpansionPlan {
   constructor({
     expansions = [],
     contractions = [],
     rebalanceLinks = [],
     soldierDelegation = [],
+    routeDefenseActions = [],
+    nodeAdminOrbitActions = [],
     regionPresence = {},
     regionAdvantage = {},
     regionChunkPlan = {},
@@ -265,6 +311,8 @@ export class ExpansionPlan {
     this.contractions = contractions;
     this.rebalanceLinks = rebalanceLinks;
     this.soldierDelegation = soldierDelegation;
+    this.routeDefenseActions = routeDefenseActions;
+    this.nodeAdminOrbitActions = nodeAdminOrbitActions;
     this.regionPresence = regionPresence;
     this.regionAdvantage = regionAdvantage;
     this.regionChunkPlan = regionChunkPlan;
@@ -294,31 +342,59 @@ function computeHash(str) {
   return `h${h}`;
 }
 
-function buildBinaryField(cycle) {
-  const density = 10 + cycle * 3;
+function buildBinaryField(cycle, heartbeat, aiHeartbeat, earnHeartbeat) {
+  const hbFactor = clamp01(heartbeat?.intensity ?? 0.5);
+  const aiFactor = clamp01(aiHeartbeat?.intensity ?? 0.5);
+  const earnFactor = clamp01(earnHeartbeat?.throughput ?? 0.5);
+
+  const densityBase = 10 + cycle * 3;
+  const density = densityBase + Math.floor(hbFactor * 4 + aiFactor * 3 + earnFactor * 3);
   const surface = density + 12;
+
   return {
-    binaryPhenotypeSignature: computeHash(`BEXP::${surface}`),
+    binaryPhenotypeSignature: computeHash(`BEXP::${surface}::${hbFactor}::${aiFactor}::${earnFactor}`),
     binarySurfaceSignature: computeHash(`BEXP_SURF::${surface}`),
-    binarySurface: { density, surface, patternLen: 12 },
+    binarySurface: {
+      density,
+      surface,
+      patternLen: 12
+    },
     parity: surface % 2,
-    shiftDepth: Math.floor(Math.log2(surface || 1))
+    shiftDepth: Math.floor(Math.log2(surface || 1)),
+    heartbeat: {
+      hbFactor,
+      aiFactor,
+      earnFactor
+    }
   };
 }
 
-function buildWaveField(cycle, band) {
-  const amplitude = (cycle + 1) * (band === "binary" ? 9 : 5);
+function buildWaveField(cycle, band, heartbeat, aiHeartbeat, earnHeartbeat) {
+  const hbPhase = heartbeat?.phase ?? 0;
+  const aiPhase = aiHeartbeat?.phase ?? 0;
+  const earnPhase = earnHeartbeat?.phase ?? 0;
+
+  const baseAmp = band === "binary" ? 9 : 5;
+  const amplitude = (cycle + 1) * baseAmp + hbPhase + aiPhase + earnPhase;
+
   return {
     amplitude,
     wavelength: amplitude + 3,
     phase: amplitude % 16,
     band,
-    mode: band === "binary" ? "compression-wave" : "symbolic-wave"
+    mode: band === "binary" ? "compression-wave" : "symbolic-wave",
+    heartbeatPhase: {
+      hbPhase,
+      aiPhase,
+      earnPhase
+    }
   };
 }
 
-function buildBandSignature(band) {
-  return computeHash(`EXP_BAND::${band}`);
+function buildBandSignature(band, heartbeat, aiHeartbeat) {
+  const hbTag = heartbeat?.bandTag || "hb";
+  const aiTag = aiHeartbeat?.bandTag || "ai";
+  return computeHash(`EXP_BAND::${band}::${hbTag}::${aiTag}`);
 }
 
 // Region presence / advantage / chunk plan (symbolic only)
@@ -421,7 +497,12 @@ const BeaconEngine = createPulseBeaconEngine
   : null;
 
 const BeaconMesh = BeaconEngine
-  ? PulseBeaconMesh({ beacon: BeaconEngine, meshID: "expansion-beacon-mesh", regionID: null, trace: false })
+  ? PulseBeaconMesh({
+      beacon: BeaconEngine,
+      meshID: "expansion-beacon-mesh",
+      regionID: null,
+      trace: false
+    })
   : null;
 
 // ============================================================================
@@ -439,6 +520,10 @@ export class PulseExpansion {
     };
     this.cycle = 0;
     this.pulseNetBridge = config.pulseNetBridge || null;
+
+    this.heartbeat = null;
+    this.aiHeartbeat = null;
+    this.earnHeartbeat = null;
   }
 
   // Attach / replace PULSE-NET bridge at runtime (backend only)
@@ -447,19 +532,46 @@ export class PulseExpansion {
     return { ok: true, hasBridge: !!this.pulseNetBridge };
   }
 
+  // Attach heartbeat streams (symbolic only, no timers)
+  attachHeartbeats({ heartbeat, aiHeartbeat, earnHeartbeat } = {}) {
+    this.heartbeat = heartbeat || null;
+    this.aiHeartbeat = aiHeartbeat || null;
+    this.earnHeartbeat = earnHeartbeat || null;
+    return {
+      ok: true,
+      heartbeatAttached: !!this.heartbeat,
+      aiHeartbeatAttached: !!this.aiHeartbeat,
+      earnHeartbeatAttached: !!this.earnHeartbeat
+    };
+  }
+
   // Build expansion plan + emit PULSE-NET routing intents
   buildExpansionPlan({
     globalLoadIndex = 0,
     regionSignals = {},
     maxCastlesPerRegion = null,
-    minCastlesPerRegion = null
+    minCastlesPerRegion = null,
+    heartbeat = null,
+    aiHeartbeat = null,
+    earnHeartbeat = null
   } = {}) {
-    this.cycle++;
+    // Heartbeat-driven cycle: if heartbeat.tick is provided, follow it; else increment.
+    const hb = heartbeat || this.heartbeat || {};
+    const aiHb = aiHeartbeat || this.aiHeartbeat || {};
+    const earnHb = earnHeartbeat || this.earnHeartbeat || {};
+
+    if (typeof hb.tick === "number") {
+      this.cycle = hb.tick;
+    } else {
+      this.cycle++;
+    }
 
     const expansions = [];
     const contractions = [];
     const rebalanceLinks = [];
     const soldierDelegation = [];
+    const routeDefenseActions = [];
+    const nodeAdminOrbitActions = [];
 
     const { byRegion, meshLinksByCastleId } = summarizeCastlePresence();
 
@@ -547,9 +659,15 @@ export class PulseExpansion {
 
       const castleCount = regionInfo.castles.length;
 
-      // EXPANSION
+      // EXPANSION (castle spawn) — heartbeat-aware
+      const hbLoadBoost = clamp01(hb.intensity ?? 0);
+      const aiLoadBoost = clamp01(aiHb.intensity ?? 0);
+      const effectiveLoad = clamp01(
+        avgLoadIndex + hbLoadBoost * 0.1 + aiLoadBoost * 0.1
+      );
+
       const expansionPressure =
-        avgLoadIndex >= 0.6 ||
+        effectiveLoad >= 0.6 ||
         userDensityHint >= 2000 ||
         stressHint >= 0.6 ||
         proxyPressureClamped >= 0.8;
@@ -576,13 +694,14 @@ export class PulseExpansion {
           desiredSoldiers: action.desiredSoldiers,
           cycle: this.cycle,
           proxyMode,
-          proxyPressure
+          proxyPressure,
+          heartbeatTick: hb.tick ?? null
         });
       }
 
-      // CONTRACTION
+      // CONTRACTION (castle shrink)
       const contractionPressure =
-        avgLoadIndex <= 0.2 &&
+        effectiveLoad <= 0.2 &&
         castleCount > effectiveMinCastles &&
         proxyPressureClamped < 0.5;
 
@@ -604,12 +723,13 @@ export class PulseExpansion {
             reason: action.reason,
             cycle: this.cycle,
             proxyMode,
-            proxyPressure
+            proxyPressure,
+            heartbeatTick: hb.tick ?? null
           });
         }
       }
 
-      // SOLDIER DELEGATION
+      // SOLDIER DELEGATION (castle-level)
       for (const c of regionInfo.castles) {
         const load = c.presenceField?.loadIndex ?? 0;
         const stress = c.presenceField?.stressIndex ?? 0;
@@ -644,6 +764,45 @@ export class PulseExpansion {
             proxyMode,
             proxyPressure
           });
+
+          // Route defense: if castle is under high pressure, defend its routes
+          const rdAction = new RouteDefenseAction({
+            regionId,
+            castleId: c.castleId,
+            reason: "high_pressure_route_defense",
+            desiredDefenders: 2
+          });
+          routeDefenseActions.push(rdAction);
+
+          pulseNetIntents.push({
+            kind: "route_defense",
+            castleId: c.castleId,
+            regionId,
+            desiredDefenders: rdAction.desiredDefenders,
+            reason: rdAction.reason,
+            cycle: this.cycle,
+            proxyMode,
+            proxyPressure
+          });
+
+          // NodeAdmin orbit: keep NodeAdmin circling this castle
+          const orbitAction = new NodeAdminOrbitAction({
+            castleId: c.castleId,
+            intervalHint: "tight",
+            pressureHint: "high"
+          });
+          nodeAdminOrbitActions.push(orbitAction);
+
+          pulseNetIntents.push({
+            kind: "nodeadmin_orbit",
+            castleId: c.castleId,
+            regionId,
+            intervalHint: orbitAction.intervalHint,
+            pressureHint: orbitAction.pressureHint,
+            cycle: this.cycle,
+            proxyMode,
+            proxyPressure
+          });
         } else if (lowPressure) {
           const action = new SoldierDelegationAction({
             castleId: c.castleId,
@@ -660,6 +819,25 @@ export class PulseExpansion {
             spawn: action.spawn,
             kill: action.kill,
             reason: action.reason,
+            cycle: this.cycle,
+            proxyMode,
+            proxyPressure
+          });
+
+          // Low pressure: orbit can relax
+          const orbitAction = new NodeAdminOrbitAction({
+            castleId: c.castleId,
+            intervalHint: "steady",
+            pressureHint: "normal"
+          });
+          nodeAdminOrbitActions.push(orbitAction);
+
+          pulseNetIntents.push({
+            kind: "nodeadmin_orbit",
+            castleId: c.castleId,
+            regionId,
+            intervalHint: orbitAction.intervalHint,
+            pressureHint: orbitAction.pressureHint,
             cycle: this.cycle,
             proxyMode,
             proxyPressure
@@ -698,11 +876,15 @@ export class PulseExpansion {
       }
     }
 
-    // A-B-A surfaces
-    const band = "symbolic";
-    const binaryField = buildBinaryField(this.cycle);
-    const waveField = buildWaveField(this.cycle, band);
-    const bandSignature = buildBandSignature(band);
+    // A-B-A surfaces — heartbeat-driven band
+    const band =
+      aiHb.preferredBand === "binary" || aiHb.preferredBand === "symbolic"
+        ? aiHb.preferredBand
+        : "symbolic";
+
+    const binaryField = buildBinaryField(this.cycle, hb, aiHb, earnHb);
+    const waveField = buildWaveField(this.cycle, band, hb, aiHb, earnHb);
+    const bandSignature = buildBandSignature(band, hb, aiHb);
 
     // Emit intents to PULSE-NET via bridge (if present)
     const bridge = this.pulseNetBridge;
@@ -732,6 +914,20 @@ export class PulseExpansion {
         proxyMode,
         proxyPressure
       });
+
+      safePulseNetCall(bridge, "routeDefense", {
+        cycle: this.cycle,
+        routeDefenseActions,
+        proxyMode,
+        proxyPressure
+      });
+
+      safePulseNetCall(bridge, "routeNodeAdmin", {
+        cycle: this.cycle,
+        nodeAdminOrbitActions,
+        proxyMode,
+        proxyPressure
+      });
     }
 
     logger?.log?.("expansion", "plan_built_v16", {
@@ -740,11 +936,14 @@ export class PulseExpansion {
       contractions: contractions.length,
       soldierDelegation: soldierDelegation.length,
       rebalanceLinks: rebalanceLinks.length,
+      routeDefenseActions: routeDefenseActions.length,
+      nodeAdminOrbitActions: nodeAdminOrbitActions.length,
       beaconSnapshotPresent: !!beaconSnapshot,
       pulseNetBridgePresent: !!bridge,
       proxyMode,
       proxyPressure,
-      proxyFallback
+      proxyFallback,
+      heartbeatTick: hb.tick ?? null
     });
 
     return new ExpansionPlan({
@@ -752,6 +951,8 @@ export class PulseExpansion {
       contractions,
       rebalanceLinks,
       soldierDelegation,
+      routeDefenseActions,
+      nodeAdminOrbitActions,
       regionPresence,
       regionAdvantage,
       regionChunkPlan,
@@ -779,7 +980,10 @@ export class PulseExpansion {
           boost: proxyBoost,
           fallback: proxyFallback,
           lineage: proxyLineage
-        }
+        },
+        heartbeat: hb,
+        aiHeartbeat: aiHb,
+        earnHeartbeat: earnHb
       }
     });
   }
@@ -795,6 +999,9 @@ export function createPulseExpansion(config = {}) {
     meta: PulseExpansionMeta,
     attachPulseNetBridge(bridge) {
       return core.attachPulseNetBridge(bridge);
+    },
+    attachHeartbeats(payload) {
+      return core.attachHeartbeats(payload);
     },
     buildExpansionPlan(payload) {
       return core.buildExpansionPlan(payload);
