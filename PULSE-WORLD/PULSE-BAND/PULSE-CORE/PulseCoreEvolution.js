@@ -1,5 +1,5 @@
 // ============================================================================
-//  PulseCoreEvolutions.js — v15-IMMORTAL-ADVANTAGE
+//  PulseCoreEvolutions.js — v15-Immortal-ADVANTAGE
 //  ORGANISM‑WIDE EVOLUTION ENGINE
 //  “KNOW EVERY ADVANTAGE. APPLY ONLY THE CORRECT ONE. NEVER DRIFT.”
 //  • v15 AI_EXPERIENCE_META (IMMORTAL identity)
@@ -18,10 +18,10 @@
 /*
 AI_EXPERIENCE_META = {
   identity: "PulseCoreEvolutions",
-  version: "v15-IMMORTAL-ADVANTAGE",
+  version: "v15-Immortal-ADVANTAGE",
   layer: "corememory_evolution",
   role: "corememory_evolution_engine",
-  lineage: "PulseCoreMemory-v15-IMMORTAL",
+  lineage: "PulseCoreMemory-v15-Immortal",
 
   evo: {
     evolutionEngine: true,
@@ -59,14 +59,14 @@ AI_EXPERIENCE_META = {
 */
 
 // ---------------------------------------------------------------------------
-//  ROLE / META — v15-IMMORTAL-ADVANTAGE
+//  ROLE / META — v15-Immortal-ADVANTAGE
 // ---------------------------------------------------------------------------
 export const CoreEvolutionsRole = {
   type: "Organ",
   subsystem: "Core",
   layer: "Evolution",
   identity: "PulseCoreEvolutions",
-  version: "15.0-IMMORTAL-ADVANTAGE",
+  version: "15.0-Immortal-ADVANTAGE",
 
   evo: {
     deterministic: true,
@@ -98,7 +98,7 @@ export const CoreEvolutionsMetaBlock = {
   subsystem: "Core",
   layer: "Evolution",
   role: "Evolution-Engine",
-  version: "15.0-IMMORTAL-ADVANTAGE",
+  version: "15.0-Immortal-ADVANTAGE",
   evo: CoreEvolutionsRole.evo
 };
 
@@ -119,13 +119,13 @@ function nextEpoch() {
 }
 
 // ---------------------------------------------------------------------------
-//  CREATE EVOLUTION ENGINE — v15-IMMORTAL-ADVANTAGE
+//  CREATE EVOLUTION ENGINE — v15-Immortal-ADVANTAGE
 // ---------------------------------------------------------------------------
 export function createPulseCoreEvolutions({
   primaryStorage = typeof window !== "undefined" ? window.localStorage : null,
   secondaryStorage = typeof window !== "undefined" ? window.sessionStorage : null,
   dnaTag = "default-dna",
-  version = "15.0-IMMORTAL-ADVANTAGE",
+  version = "15.0-Immortal-ADVANTAGE",
   overlay = null, // optional evolution overlay (lens / filter / transformer)
   log = console.log,
   warn = console.warn
@@ -150,7 +150,7 @@ export function createPulseCoreEvolutions({
   }
 
   // -------------------------------------------------------------------------
-  //  INTERNAL: ADVANTAGE SCORING (v15-IMMORTAL-ADVANTAGE)
+  //  INTERNAL: ADVANTAGE SCORING (v15-Immortal-ADVANTAGE)
   //  Uses dnaTag, routeId, delta richness, recency, overlay hints, band
   // -------------------------------------------------------------------------
   function scoreEvolution(evo, nowMs) {
@@ -319,7 +319,7 @@ export function createPulseCoreEvolutions({
   }
 
   // -------------------------------------------------------------------------
-  //  REGISTER EVOLUTION (v15-IMMORTAL-ADVANTAGE)
+  //  REGISTER EVOLUTION (v15-Immortal-ADVANTAGE)
 // -------------------------------------------------------------------------
   function registerEvolution({ id, routeId, delta, band = "symbolic" }) {
     if (!id || !delta || typeof delta !== "object") {
@@ -353,7 +353,7 @@ export function createPulseCoreEvolutions({
   }
 
   // -------------------------------------------------------------------------
-  //  APPLY EVOLUTIONS (v15-IMMORTAL-ADVANTAGE)
+  //  APPLY EVOLUTIONS (v15-Immortal-ADVANTAGE)
 // -------------------------------------------------------------------------
   function applyEvolutions(applyFn) {
     if (typeof applyFn !== "function") {

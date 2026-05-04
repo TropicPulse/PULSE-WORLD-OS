@@ -19,7 +19,7 @@
 /*
 AI_EXPERIENCE_META = {
   identity: "PulseGPUCommandments",
-  version: "v14-IMMORTAL",
+  version: "v14-Immortal",
   layer: "gpu_law",
   role: "gpu_commandments",
   lineage: "PulseGPU-v14",
@@ -61,8 +61,8 @@ const PULSE_GPU_CONFIG_META = {
   version: "12.0-Evo-Presence-Max",
   target: "full-gpu",
   selfRepairable: true,
-  doctrine: "These constants form the immutable commandments of Pulse-GPU.",
-  description: "Central configuration + policy constants for Pulse-GPU.",
+  doctrine: "These constants form the immutable commandments of PULSE-GPU.",
+  description: "Central configuration + policy constants for PULSE-GPU.",
 
   evo: {
     metabolicBoost: 1.2,

@@ -29,7 +29,7 @@
 /*
 AI_EXPERIENCE_META = {
   identity: "PulseGPULymphNodes",
-  version: "v14-IMMORTAL",
+  version: "v14-Immortal",
   layer: "gpu_guardian",
   role: "gpu_lymph_nodes",
   lineage: "PulseGPU-v14",

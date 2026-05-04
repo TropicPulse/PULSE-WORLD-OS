@@ -6,10 +6,10 @@ LAYER: UI → CNS SIGNAL ORGAN
 ===============================================================================
 AI_EXPERIENCE_META = {
   identity: "PulseUI.EvolutionaryImpulse",
-  version: "v15-IMMORTAL",
+  version: "v15-Immortal",
   layer: "pulse_ui",
   role: "ui_to_cns_signal_layer",
-  lineage: "PulseEvolutionaryImpulse-v11.3-Evo-Prime → v14-IMMORTAL → v15-IMMORTAL",
+  lineage: "PulseEvolutionaryImpulse-v11.3-Evo-Prime → v14-Immortal → v15-Immortal",
 
   evo: {
     impulseOrgan: true,
@@ -109,7 +109,7 @@ export const ImpulseRole = {
   type: "Organ",
   subsystem: "UI",
   layer: "Impulse",
-  version: "15.0-IMMORTAL",
+  version: "15.0-Immortal",
   identity: "PulseEvolutionaryImpulse",
 
   evo: {

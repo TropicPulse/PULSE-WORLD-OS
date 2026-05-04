@@ -15,10 +15,10 @@
 /*
 AI_EXPERIENCE_META = {
   identity: "aiExperience",
-  version: "v14-IMMORTAL",
+  version: "v14-Immortal",
   layer: "ai_tools",
   role: "experience_shaper",
-  lineage: "aiExperience-v10 → v12 → v12.3-Presence → v14-IMMORTAL",
+  lineage: "aiExperience-v10 → v12 → v12.3-Presence → v14-Immortal",
 
   evo: {
     experienceShaping: true,
@@ -45,7 +45,7 @@ AI_EXPERIENCE_META = {
 export const AI_EXPERIENCE_META = Object.freeze({
   layer: "PulseAIExperienceFrame",
   role: "EXPERIENCE_ORGAN",
-  version: "14-IMMORTAL",
+  version: "14-Immortal",
   target: "dualband-organism",
 
   evo: Object.freeze({
@@ -77,7 +77,7 @@ export const AI_EXPERIENCE_META = Object.freeze({
     humilityFilterAware: true,
 
     multiInstanceReady: true,
-    epoch: "14-IMMORTAL"
+    epoch: "14-Immortal"
   }),
 
   contract: Object.freeze({

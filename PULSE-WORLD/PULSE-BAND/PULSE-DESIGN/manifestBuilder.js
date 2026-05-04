@@ -2,10 +2,10 @@
 ===============================================================================
 AI_EXPERIENCE_META = {
   identity: "PulseDesign.Archivist",
-  version: "v14-IMMORTAL",
+  version: "v14-Immortal",
   layer: "pulse_design",
   role: "canonical_manifest_archivist",
-  lineage: "Archivist-v10.4 → v12.3 → v14-IMMORTAL",
+  lineage: "Archivist-v10.4 → v12.3 → v14-Immortal",
 
   evo: {
     manifestBuilder: true,

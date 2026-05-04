@@ -3,7 +3,7 @@
 // LAYER: EARN ORGAN (Economics + Rewards + Flow Awareness)
 // ============================================================================
 //
-// ROLE (v13.0-PRESENCE-IMMORTAL-ADV):
+// ROLE (v13.0-Presence-Immortal-ADV):
 //   • Provide AI with a SAFE, READ‑ONLY view into PulseEarn economic data.
 //   • User: orders, referrals, referralClicks, vaultHistory, pulseHistory.
 //   • Owner: system‑level earning patterns, anomalies, lineage, evolution logs.
@@ -11,7 +11,7 @@
 //   • Never exposes UID, resendToken, or identity anchors.
 //   • Never mutates anything returned from DB/evolution APIs.
 //
-// CONTRACT (v13.0-PRESENCE-IMMORTAL-ADV):
+// CONTRACT (v13.0-Presence-Immortal-ADV):
 //   • READ‑ONLY.
 //   • ZERO MUTATION (of external data).
 //   • ZERO RANDOMNESS.
@@ -21,10 +21,10 @@
 /*
 AI_EXPERIENCE_META = {
   identity: "aiEarn",
-  version: "v14-IMMORTAL",
+  version: "v14-Immortal",
   layer: "ai_tools",
   role: "earn_surface",
-  lineage: "aiEarn-v10 → v12 → v14-IMMORTAL",
+  lineage: "aiEarn-v10 → v12 → v14-Immortal",
 
   evo: {
     earnSurface: true,
@@ -51,8 +51,8 @@ AI_EXPERIENCE_META = {
 export const EarnMeta = Object.freeze({
   layer: "PulseAIEarnFrame",
   role: "EARN_ORGAN",
-  version: "13.0-PRESENCE-IMMORTAL-ADV",
-  identity: "aiEarn-v13-PRESENCE-IMMORTAL-ADV",
+  version: "13.0-Presence-Immortal-ADV",
+  identity: "aiEarn-v13-Presence-Immortal-ADV",
 
   evo: Object.freeze({
     driftProof: true,
@@ -68,7 +68,7 @@ export const EarnMeta = Object.freeze({
     evolutionAware: true,
     packetAware: true,
     multiInstanceReady: true,
-    epoch: "v13-PRESENCE-IMMORTAL-ADV"
+    epoch: "v13-Presence-Immortal-ADV"
   }),
 
   contract: Object.freeze({
@@ -146,7 +146,7 @@ function buildPresenceField(snapshot, dualBand) {
     dualBand?.regionContext?.regionTag ||
     "unknown-region";
 
-  const presenceVersion = "v13.0-PRESENCE-IMMORTAL-ADV";
+  const presenceVersion = "v13.0-Presence-Immortal-ADV";
 
   const field = Object.freeze({
     presenceVersion,
@@ -329,7 +329,7 @@ export function prewarmEarnOrgan(db, evolutionAPI, dualBand) {
     // Warm evolution API (owner only, read‑only)
     evolutionAPI?.getOrganismOverview?.({ userIsOwner: true });
     evolutionAPI?.analyzeSchema?.({ userIsOwner: true }, "pulseEarn");
-    evolutionAPI?.analyzeFile?.({ userIsOwner: true }, "PulseEarn-v13-IMMORTAL.js");
+    evolutionAPI?.analyzeFile?.({ userIsOwner: true }, "PulseEarn-v13-Immortal.js");
     evolutionAPI?.analyzeRoute?.({ userIsOwner: true }, "earn");
 
     return true;
@@ -571,7 +571,7 @@ export function createEarnAPI(db, evolutionAPI, dualBand = null) {
 
     async analyzeEarnFiles(context) {
       if (!context.userIsOwner || !evolutionAPI?.analyzeFile) return null;
-      return evolutionAPI.analyzeFile(context, "PulseEarn-v13-IMMORTAL.js");
+      return evolutionAPI.analyzeFile(context, "PulseEarn-v13-Immortal.js");
     },
 
     async analyzeEarnRoutes(context) {

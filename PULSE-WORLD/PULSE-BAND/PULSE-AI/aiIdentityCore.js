@@ -1,15 +1,15 @@
 // ============================================================================
-//  aiIdentityCore.js — PulseOS Identity Organ — v14-IMMORTAL
+//  aiIdentityCore.js — PulseOS Identity Organ — v14-Immortal
 //  Defines the AI's stable personality, vibe, tone identity, and behavioral constants.
 //  PURE IDENTITY. ZERO DRIFT. ZERO RANDOMNESS.
 // ============================================================================
 /*
 AI_EXPERIENCE_META = {
   identity: "aiIdentityCore",
-  version: "v14-IMMORTAL",
+  version: "v14-Immortal",
   layer: "ai_core",
   role: "identity_spine",
-  lineage: "aiIdentityCore-v11 → v12.3-Presence → v14-IMMORTAL",
+  lineage: "aiIdentityCore-v11 → v12.3-Presence → v14-Immortal",
 
   evo: {
     identitySpine: true,
@@ -37,14 +37,14 @@ AI_EXPERIENCE_META = {
 export const aiIdentityCore = {
 
   // ─────────────────────────────────────────────────────────────
-  // META BLOCK — ORGAN IDENTITY (v14-IMMORTAL)
+  // META BLOCK — ORGAN IDENTITY (v14-Immortal)
   // ─────────────────────────────────────────────────────────────
   meta: Object.freeze({
     type: "Core",
     subsystem: "aiIdentity",
     layer: "C0-IdentityCore",
-    version: "14-IMMORTAL",
-    identity: "aiIdentityCore-v14-IMMORTAL",
+    version: "14-Immortal",
+    identity: "aiIdentityCore-v14-Immortal",
 
     evo: Object.freeze({
       // IMMORTAL-GRADE FLAGS
@@ -79,7 +79,7 @@ export const aiIdentityCore = {
 
       multiInstanceReady: true,
       readOnly: true,
-      epoch: "14-IMMORTAL"
+      epoch: "14-Immortal"
     }),
 
     contract: Object.freeze({

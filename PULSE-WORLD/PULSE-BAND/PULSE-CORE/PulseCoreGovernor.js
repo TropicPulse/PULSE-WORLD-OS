@@ -1,5 +1,5 @@
 // ============================================================================
-//  PulseCoreGovernor.js — v15-IMMORTAL-GOVERNOR
+//  PulseCoreGovernor.js — v15-Immortal-GOVERNOR
 //  ORGANISM‑WIDE CORE MEMORY GOVERNOR
 //  “ONE BRAIN. ONE SPINE. MANY LAYERS. ZERO DRIFT.”
 //  • v15 AI_EXPERIENCE_META (IMMORTAL identity)
@@ -16,10 +16,10 @@
 /*
 AI_EXPERIENCE_META = {
   identity: "PulseCoreGovernor",
-  version: "v15-IMMORTAL-GOVERNOR",
+  version: "v15-Immortal-GOVERNOR",
   layer: "corememory_governor",
   role: "corememory_governor",
-  lineage: "PulseCoreMemory-v15-IMMORTAL",
+  lineage: "PulseCoreMemory-v15-Immortal",
 
   evo: {
     governor: true,
@@ -62,7 +62,7 @@ export const CoreGovernorRole = {
   subsystem: "Core",
   layer: "Governor",
   identity: "PulseCoreGovernor",
-  version: "15.0-IMMORTAL-GOVERNOR",
+  version: "15.0-Immortal-GOVERNOR",
 
   evo: {
     binaryNative: true,
@@ -89,7 +89,7 @@ export const CoreGovernorMetaBlock = {
   subsystem: "Core",
   layer: "Governor",
   role: "Memory-Governor",
-  version: "15.0-IMMORTAL-GOVERNOR",
+  version: "15.0-Immortal-GOVERNOR",
   evo: CoreGovernorRole.evo
 };
 
@@ -101,13 +101,13 @@ function nextGovernorEpoch() {
 }
 
 // ============================================================================
-//  GOVERNOR CREATION — v15-IMMORTAL-GOVERNOR
+//  GOVERNOR CREATION — v15-Immortal-GOVERNOR
 // ============================================================================
 export function createPulseCoreGovernor({
   primaryStorage = typeof window !== "undefined" ? window.localStorage : null,
   secondaryStorage = typeof window !== "undefined" ? window.sessionStorage : null,
   dnaTag = "default-dna",
-  version = "15.0-IMMORTAL-GOVERNOR",
+  version = "15.0-Immortal-GOVERNOR",
   overlay = null, // optional governor overlay (placement / promotion / drift lens)
   log = console.log,
   warn = console.warn
@@ -203,7 +203,7 @@ export function createPulseCoreGovernor({
   }
 
   // -------------------------------------------------------------------------
-  //  LAYER‑AWARE SET / GET (v15-IMMORTAL-GOVERNOR)
+  //  LAYER‑AWARE SET / GET (v15-Immortal-GOVERNOR)
   // -------------------------------------------------------------------------
   function set(routeId, key, value, options = {}) {
     const dataType = options.dataType || "generic";

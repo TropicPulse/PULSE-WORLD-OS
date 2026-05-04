@@ -6,10 +6,10 @@ LAYER: A1 SURFACE REFLEX + A3 ERROR SPINE
 ===============================================================================
 AI_EXPERIENCE_META = {
   identity: "PulseUI.SkinReflex",
-  version: "v14-IMMORTAL",
+  version: "v14-Immortal",
   layer: "pulse_ui",
   role: "a1_surface_reflex + a3_error_spine",
-  lineage: "PulseSkinReflex-v12-EVO-BINARY-MAX → v14-IMMORTAL",
+  lineage: "PulseSkinReflex-v12-Evo-BINARY-MAX → v14-Immortal",
 
   evo: {
     driftProof: true,
@@ -123,8 +123,8 @@ export const SkinReflexRole = {
   type: "Skin",
   subsystem: "PulseSkinReflex",
   layer: "A1-SurfaceReflex",
-  version: "14.0-IMMORTAL",
-  identity: "PulseSkinReflex-v14-IMMORTAL",
+  version: "14.0-Immortal",
+  identity: "PulseSkinReflex-v14-Immortal",
 
   evo: {
     driftProof: true,
@@ -243,7 +243,7 @@ function emitReflexSenseReport(context = {}) {
   if (typeof console === "undefined" || !console.groupCollapsed) return;
 
   console.groupCollapsed(
-    "%c[SkinReflex SENSE REPORT — v14-IMMORTAL]",
+    "%c[SkinReflex SENSE REPORT — v14-Immortal]",
     "color:#FF9800; font-weight:bold;"
   );
 
@@ -493,7 +493,7 @@ export function createPulseSkinReflex({
 
   if (typeof console !== "undefined" && typeof console.log === "function") {
     console.log(
-      "%c[PulseSkinReflex v14-IMMORTAL] Loaded — A1/A2/A3 Universal Membrane Active",
+      "%c[PulseSkinReflex v14-Immortal] Loaded — A1/A2/A3 Universal Membrane Active",
       "color:#4CAF50; font-weight:bold;"
     );
   }
@@ -791,7 +791,7 @@ export function createPulseSkinReflex({
         // External resource classifier
         if (isExternal(msg)) {
           logProtector("EXTERNAL_RESOURCE_REQUEST", {
-            note: "External resource detected — routing through CNS (v14-IMMORTAL)",
+            note: "External resource detected — routing through CNS (v14-Immortal)",
             url: msg
           });
 
@@ -845,7 +845,7 @@ export function createPulseSkinReflex({
 
         if (msg.includes("Cannot find module")) {
           logProtector("IMPORT_DEGRADED", {
-            note: "Import errors are degradation signals in v14-IMMORTAL",
+            note: "Import errors are degradation signals in v14-Immortal",
             details: msg
           });
 

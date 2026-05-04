@@ -1,10 +1,10 @@
 // ============================================================================
-// [pulse:mesh] PULSE_MESH_ENVIRONMENTAL_FIELD v15-EVO-IMMORTAL // teal
+// [pulse:mesh] PULSE_MESH_ENVIRONMENTAL_FIELD v15-Evo-Immortal // teal
 // Internal Weather System • Metadata-Only • Stabilization + Pressure Signals
 // Presence-Aware • Binary-Aware • Dual-Band • Drift-Proof • Advantage-Aware
 // ============================================================================
 //
-// IDENTITY — THE ENVIRONMENTAL FIELD (v15-EVO-IMMORTAL):
+// IDENTITY — THE ENVIRONMENTAL FIELD (v15-Evo-Immortal):
 // ------------------------------------------------------
 // • The organism’s internal “weather system.”
 // • Aggregates friction, noise, stability, resonance, drift, load, and pressure.
@@ -31,7 +31,7 @@
 /*
 AI_EXPERIENCE_META = {
   identity: "PulseMeshEnvironmentalField",
-  version: "v14.9-MESH-ENVIRONMENTAL-IMMORTAL",
+  version: "v14.9-MESH-ENVIRONMENTAL-Immortal",
   layer: "mesh",
   role: "mesh_internal_weather_system",
   lineage: "PulseMesh-v14",
@@ -120,7 +120,7 @@ export function createPulseField({ log, warn, error } = {}) {
     meta: {
       layer: "PulseField",
       role: "ENVIRONMENTAL_FIELD",
-      version: "15-EVO-IMMORTAL",
+      version: "15-Evo-Immortal",
       target: "full-mesh",
       selfRepairable: true,
       evo: {

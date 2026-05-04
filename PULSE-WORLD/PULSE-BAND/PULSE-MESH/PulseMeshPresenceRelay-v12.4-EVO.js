@@ -1,13 +1,13 @@
 // ============================================================================
-// FILE: PulseMeshPresenceRelay-v12.4-EVO.js
-// PULSE MESH PRESENCE RELAY — v12.4-EVO
+// FILE: PulseMeshPresenceRelay-v12.4-Evo.js
+// PULSE MESH PRESENCE RELAY — v12.4-Evo
 // Mesh-Level Presence • Nearby Scan • Metadata-Only • Membrane-Safe
 // Bridges Mesh → Presence → Window (no organs exposed)
 // ============================================================================
 /*
 AI_EXPERIENCE_META = {
   identity: "PulseMeshPresenceRelay",
-  version: "v14.9-MESH-PRESENCE-RELAY",
+  version: "v14.9-MESH-Presence-RELAY",
   layer: "mesh",
   role: "presence_to_mesh_bridge",
   lineage: "PulseMesh-v14",
@@ -42,8 +42,8 @@ AI_EXPERIENCE_META = {
 }
 */
 // ============================================================================
-// FILE: PulseMeshPresenceRelay-v15-EVO-IMMORTAL.js
-// PULSE MESH PRESENCE RELAY — v15-EVO-IMMORTAL
+// FILE: PulseMeshPresenceRelay-v15-Evo-Immortal.js
+// PULSE MESH PRESENCE RELAY — v15-Evo-Immortal
 // Mesh-Level Presence • Nearby Scan • Metadata-Only • Membrane-Safe
 // Bridges Mesh → Presence → Window (no organs exposed)
 // ============================================================================
@@ -61,7 +61,7 @@ export function createPulseMeshPresenceRelay({
   const meta = Object.freeze({
     layer: "PulseMeshPresenceRelay",
     role: "MESH_PRESENCE_RELAY",
-    version: "15-EVO-IMMORTAL",
+    version: "15-Evo-Immortal",
     lineage: "PulseMesh-v15",
     target: "full-mesh",
     selfRepairable: true,

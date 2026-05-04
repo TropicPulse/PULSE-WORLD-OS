@@ -16,7 +16,7 @@
 /*
 AI_EXPERIENCE_META = {
   identity: "PulseRouterEvolutionaryInstincts",
-  version: "v14.4-EVO-INSTINCTS",
+  version: "v14.4-Evo-INSTINCTS",
   layer: "frontend",
   role: "router_evolutionary_memory",
   lineage: "PulseOS-v12",

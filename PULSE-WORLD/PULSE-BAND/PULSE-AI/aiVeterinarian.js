@@ -6,10 +6,10 @@
 /*
 AI_EXPERIENCE_META = {
   identity: "aiVeterinarian",
-  version: "v14-IMMORTAL",
+  version: "v14-Immortal",
   layer: "ai_tools",
   role: "veterinary_pattern_explainer",
-  lineage: "aiVeterinarian-v11 → v14-IMMORTAL",
+  lineage: "aiVeterinarian-v11 → v14-Immortal",
 
   evo: {
     veterinaryPatterns: true,
@@ -37,8 +37,8 @@ export const PulseRole = Object.freeze({
   type: "Cognitive",
   subsystem: "aiVeterinarian",
   layer: "C3-AnimalMapper",
-  version: "12.3-EVO+",
-  identity: "aiVeterinarian-v12.3-EVO+",
+  version: "12.3-Evo+",
+  identity: "aiVeterinarian-v12.3-Evo+",
 
   evo: Object.freeze({
     driftProof: true,
@@ -50,7 +50,7 @@ export const PulseRole = Object.freeze({
     scanInterpreter: true,
     multiInstanceReady: true,
     archetypeArteryAware: true,
-    epoch: "12.3-EVO+"
+    epoch: "12.3-Evo+"
   }),
 
   contract: Object.freeze({

@@ -1,5 +1,5 @@
 // ============================================================================
-// FILE: /organs/world/PulseWorldSocialGraph-v15.0-IMMORTAL.js
+// FILE: /organs/world/PulseWorldSocialGraph-v15.0-Immortal.js
 // PULSE OS v15.0+ PRESENCE‑EVO‑IMMORTAL
 // Pulse‑World Social Graph
 // Deterministic • Metadata‑Only • Presence + Jobs + Mentorship + Upgrades
@@ -14,7 +14,7 @@
 /*
 AI_EXPERIENCE_META = {
   identity: "PulseWorldSocialGraph",
-  version: "v15.0-WORLD-SOCIAL-GRAPH-IMMORTAL",
+  version: "v15.0-WORLD-SOCIAL-GRAPH-Immortal",
   layer: "world_social",
   role: "social_graph_engine",
   lineage: "PulseWorld-v15",
@@ -68,7 +68,7 @@ export function createPulseWorldSocialGraph({
   const meta = {
     layer: "PulseWorldSocialGraph",
     role: "SOCIAL_GRAPH",
-    version: "15.0-WORLD-SOCIAL-GRAPH-IMMORTAL",
+    version: "15.0-WORLD-SOCIAL-GRAPH-Immortal",
     evo: {
       presenceAware: true,
       socialAware: true,

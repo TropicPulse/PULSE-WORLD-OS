@@ -50,10 +50,10 @@
 /*
 AI_EXPERIENCE_META = {
   identity: "aiTools",
-  version: "v14-IMMORTAL",
+  version: "v14-Immortal",
   layer: "ai_tools",
   role: "tools_surface",
-  lineage: "aiTools-v10 → v14-IMMORTAL",
+  lineage: "aiTools-v10 → v14-Immortal",
 
   evo: {
     toolsSurface: true,
@@ -82,8 +82,8 @@ export const AI_INSTRUMENTS_META = Object.freeze({
   subsystem: "aiInstruments",
   layer: "PulseAIInstruments",
   role: "INSTRUMENTS_ORGAN",
-  version: "12.3-EVO+",
-  identity: "aiInstruments-v12.3-EVO+",
+  version: "12.3-Evo+",
+  identity: "aiInstruments-v12.3-Evo+",
   target: "full-mesh",
 
   evo: Object.freeze({
@@ -104,7 +104,7 @@ export const AI_INSTRUMENTS_META = Object.freeze({
     architectAware: true,
     multiInstanceReady: true,
     arteryAware: true,
-    epoch: "v12.3-EVO+"
+    epoch: "v12.3-Evo+"
   }),
 
   contract: Object.freeze({

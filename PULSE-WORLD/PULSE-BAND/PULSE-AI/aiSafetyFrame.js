@@ -8,10 +8,10 @@
 /*
 AI_EXPERIENCE_META = {
   identity: "aiSafetyFrame",
-  version: "v15-IMMORTAL",
+  version: "v15-Immortal",
   layer: "ai_core",
   role: "safety_frame",
-  lineage: "aiSafetyFrame-v11 → v15-IMMORTAL",
+  lineage: "aiSafetyFrame-v11 → v15-Immortal",
 
   evo: {
     safetyFrame: true,
@@ -45,8 +45,8 @@ AI_EXPERIENCE_META = {
 export const SafetyFrameMeta = Object.freeze({
   layer: "PulseAISafetyFrame",
   role: "SAFETY_FRAME_ORGAN",
-  version: "15-IMMORTAL",
-  identity: "aiSafetyFrame-v15-IMMORTAL",
+  version: "15-Immortal",
+  identity: "aiSafetyFrame-v15-Immortal",
 
   evo: Object.freeze({
     driftProof: true,
@@ -69,7 +69,7 @@ export const SafetyFrameMeta = Object.freeze({
 
     multiInstanceReady: true,
     readOnly: true,
-    epoch: "15-IMMORTAL"
+    epoch: "15-Immortal"
   }),
 
   contract: Object.freeze({

@@ -37,7 +37,7 @@
 /*
 AI_EXPERIENCE_META = {
   identity: "PulseCors",
-  version: "v14.4-IMMORTAL-BOUNDARY",
+  version: "v14.4-Immortal-BOUNDARY",
   layer: "backend_boundary",
   role: "cors_enforcement_organ",
   lineage: "PulseProxy-v12",

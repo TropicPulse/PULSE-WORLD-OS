@@ -1,10 +1,10 @@
 // ============================================================================
 // FILE: /organs/senses/PulseMeshSenses.js
-// [pulse:senses] PULSE_MESH_SENSES v15-EVO-IMMORTAL  // white-silver
+// [pulse:senses] PULSE_MESH_SENSES v15-Evo-Immortal  // white-silver
 // Unified Sensory Cortex • Metadata-Only • System Awareness Brain
 // ============================================================================
 //
-// IDENTITY — THE SENSES CORTEX (v15-EVO-IMMORTAL):
+// IDENTITY — THE SENSES CORTEX (v15-Evo-Immortal):
 // ------------------------------------------------
 // • Unified sensory cortex for the organism.
 // • Reads from:
@@ -19,7 +19,7 @@
 //      - Clinician
 //      - Immune Commander
 //
-// SAFETY CONTRACT (v15-EVO-IMMORTAL):
+// SAFETY CONTRACT (v15-Evo-Immortal):
 // -----------------------------------
 // • Metadata-only.
 // • Read-only — NEVER mutates impulses.
@@ -32,7 +32,7 @@
 /*
 AI_EXPERIENCE_META = {
   identity: "PulseMeshSenses",
-  version: "v15-EVO-IMMORTAL",
+  version: "v15-Evo-Immortal",
   layer: "mesh",
   role: "mesh_sensory_engine",
   lineage: "PulseMesh-v15",
@@ -82,7 +82,7 @@ export function createPulseSenses({
   const sensesMeta = {
     layer: "PulseSenses",
     role: "AWARENESS_CORTEX",
-    version: "15-EVO-IMMORTAL",
+    version: "15-Evo-Immortal",
     target: "full-mesh",
     selfRepairable: true,
     evo: {
@@ -124,7 +124,7 @@ export function createPulseSenses({
     },
 
     // -------------------------------------------------------
-    // STATUS — Unified Sensory Model (v15-EVO-IMMORTAL)
+    // STATUS — Unified Sensory Model (v15-Evo-Immortal)
     // -------------------------------------------------------
     status(entryNodeId, context = {}) {
       const halo = PulseHalo.status();
@@ -144,7 +144,7 @@ export function createPulseSenses({
     },
 
     // -------------------------------------------------------
-    // AWARENESS PAGE VIEW (v15-EVO-IMMORTAL)
+    // AWARENESS PAGE VIEW (v15-Evo-Immortal)
     // -------------------------------------------------------
     forAwarenessPage(entryNodeId, context = {}) {
       const unified = this.status(entryNodeId, context);
@@ -166,7 +166,7 @@ export function createPulseSenses({
     },
 
     // -------------------------------------------------------
-    // AI VIEW (v15-EVO-IMMORTAL)
+    // AI VIEW (v15-Evo-Immortal)
     // -------------------------------------------------------
     forAI(entryNodeId, context = {}) {
       const unified = this.status(entryNodeId, context);
@@ -189,7 +189,7 @@ export function createPulseSenses({
     },
 
     // -------------------------------------------------------
-    // CLINICIAN VIEW (v15-EVO-IMMORTAL)
+    // CLINICIAN VIEW (v15-Evo-Immortal)
     // -------------------------------------------------------
     forClinician(entryNodeId, context = {}) {
       return this.status(entryNodeId, context).clinician_view;
@@ -201,7 +201,7 @@ export function createPulseSenses({
 
 
 // ============================================================================
-// UNIFIED AWARENESS BUILDER (v15-EVO-IMMORTAL)
+// UNIFIED AWARENESS BUILDER (v15-Evo-Immortal)
 // ============================================================================
 function buildUnifiedAwareness({ meta, halo, field, echo, clinician, sdn }) {
   const performancePercent = clinician.performancePercent ?? 100;
@@ -365,7 +365,7 @@ function buildUnifiedAwareness({ meta, halo, field, echo, clinician, sdn }) {
 
 
 // ============================================================================
-// NARRATIVE + PERFORMANCE HINTS (v15-EVO-IMMORTAL)
+// NARRATIVE + PERFORMANCE HINTS (v15-Evo-Immortal)
 // ============================================================================
 function estimatePerformanceHint(perf, field, echo) {
   if (perf > 100) return "overperforming_compensated";

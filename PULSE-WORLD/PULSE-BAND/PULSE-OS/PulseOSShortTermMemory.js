@@ -8,7 +8,7 @@
 /*
 AI_EXPERIENCE_META = {
   identity: "PulseOSShortTermMemory",
-  version: "v14-IMMORTAL",
+  version: "v14-Immortal",
   layer: "cns",
   role: "os_short_term_memory",
   lineage: "PulseOS-v14",
@@ -111,8 +111,8 @@ export const PulseOSShortTermMemoryMeta = Object.freeze({
   layerId: LAYER_ID,
   layerName: LAYER_NAME,
   layerRole: LAYER_ROLE,
-  version: "v12.3-PRESENCE-CHUNK-MAX",
-  identity: `PulseOSShortTermMemory-${LAYER_VER}-IMMORTAL`,
+  version: "v12.3-Presence-CHUNK-MAX",
+  identity: `PulseOSShortTermMemory-${LAYER_VER}-Immortal`,
 
   guarantees: Object.freeze({
     deterministic: true,
@@ -175,7 +175,7 @@ export const PulseOSShortTermMemoryMeta = Object.freeze({
   }),
 
   lineage: Object.freeze({
-    root: "PulseOS-v11-EVO",
+    root: "PulseOS-v11-Evo",
     parent: "PulseOS-v12.3-Presence",
     ancestry: [
       "PulseOSShortTermMemory-v9",

@@ -1,5 +1,5 @@
 // ============================================================================
-// FILE: tropic-pulse-functions/PULSE-WORLD/PULSE-EARN/PulseEarnMktAuctioneer-v13.0-PRESENCE-IMMORTAL.js
+// FILE: tropic-pulse-functions/PULSE-WORLD/PULSE-EARN/PulseEarnMktAuctioneer-v13.0-Presence-Immortal.js
 // LAYER: MARKETPLACE AUCTIONEER (v13.0‑PRESENCE‑IMMORTAL A‑B‑A)
 // Vast.ai Deterministic Adapter + Presence/Advantage/Hints Surfaces
 // ============================================================================
@@ -20,10 +20,10 @@
 /*
 AI_EXPERIENCE_META = {
   identity: "PulseEarnMktAuctioneer",
-  version: "v14-IMMORTAL",
+  version: "v14-Immortal",
   layer: "earn_market",
   role: "earn_market_auctioneer",
-  lineage: "PulseEarnMktAuctioneer-v11 → v12.3 → v14-IMMORTAL",
+  lineage: "PulseEarnMktAuctioneer-v11 → v12.3 → v14-Immortal",
 
   evo: {
     marketAuctioneer: true,
@@ -59,8 +59,8 @@ AI_EXPERIENCE_META = {
 export const PulseEarnMktAuctioneerMeta = Object.freeze({
   layer: "PulseEarnMktAuctioneer",
   role: "EARN_MARKETPLACE_RECEPTOR",
-  version: "v13.0-PRESENCE-IMMORTAL",
-  identity: "PulseEarnMktAuctioneer-v13.0-PRESENCE-IMMORTAL",
+  version: "v13.0-Presence-Immortal",
+  identity: "PulseEarnMktAuctioneer-v13.0-Presence-Immortal",
 
   guarantees: Object.freeze({
     deterministic: true,
@@ -104,14 +104,14 @@ export const PulseEarnMktAuctioneerMeta = Object.freeze({
   }),
 
   lineage: Object.freeze({
-    root: "PulseOS-v11-EVO",
-    parent: "PulseEarn-v13.0-PRESENCE-IMMORTAL",
+    root: "PulseOS-v11-Evo",
+    parent: "PulseEarn-v13.0-Presence-Immortal",
     ancestry: [
       "PulseEarnMktAuctioneer-v9",
       "PulseEarnMktAuctioneer-v10",
       "PulseEarnMktAuctioneer-v11",
       "PulseEarnMktAuctioneer-v11-Evo",
-      "PulseEarnMktAuctioneer-v12.3-PRESENCE-EVO+"
+      "PulseEarnMktAuctioneer-v12.3-Presence-Evo+"
     ]
   }),
 
@@ -146,7 +146,7 @@ const healingState = {
   lastNormalizedJobId: null,
   lastNormalizationError: null,
 
-  lastPayloadVersion: "13-IMMORTAL",
+  lastPayloadVersion: "13-Immortal",
   lastJobType: null,
   lastGpuScore: null,
   lastResourceShape: null,
@@ -321,8 +321,8 @@ const VAST_RECEPTOR_DNA = {
     }
   ],
 
-  version: "13-IMMORTAL",
-  lineage: "Auctioneer-Vast-v13-IMMORTAL",
+  version: "13-Immortal",
+  lineage: "Auctioneer-Vast-v13-Immortal",
   phenotype: "MarketplaceAuctioneer"
 };
 
@@ -417,8 +417,8 @@ function updateVolatility(jobs) {
 export const PulseEarnMktAuctioneer = {
   id: "vast",
   name: "Vast.ai",
-  version: "v13-IMMORTAL",
-  lineage: "Auctioneer-Vast-v13-IMMORTAL",
+  version: "v13-Immortal",
+  lineage: "Auctioneer-Vast-v13-Immortal",
 
   // -------------------------------------------------------------------------
   // PING — deterministic latency + A‑B‑A + presence surfaces
@@ -643,7 +643,7 @@ export const PulseEarnMktAuctioneer = {
       auctioneerPresenceProfile,
       binaryProfile,
       waveProfile,
-      note: "Vast.ai does not accept compute results (v13.0-PRESENCE-IMMORTAL deterministic)."
+      note: "Vast.ai does not accept compute results (v13.0-Presence-Immortal deterministic)."
     };
   },
 
@@ -761,7 +761,7 @@ export const PulseEarnMktAuctioneer = {
         meta: {
           rawSource: "vast",
           rawJob: raw,
-          version: "v13-IMMORTAL",
+          version: "v13-Immortal",
           band: raw.band || raw.meta?.band || "symbolic"
         }
       };

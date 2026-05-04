@@ -1,15 +1,15 @@
 // ============================================================================
-// FILE: tropic-pulse-functions/PULSE-WORLD/PULSE-EARN/PulseEarnMktEmbassyLedger-v13.0-PRESENCE-IMMORTAL.js
-// LAYER: THE EMBASSY LEDGER (v13.0-PRESENCE-IMMORTAL)
+// FILE: tropic-pulse-functions/PULSE-WORLD/PULSE-EARN/PulseEarnMktEmbassyLedger-v13.0-Presence-Immortal.js
+// LAYER: THE EMBASSY LEDGER (v13.0-Presence-Immortal)
 // Marketplace Registry + Identity Verifier + Diplomatic Roster + Presence/Advantage/Prewarm
 // ============================================================================
 //
-// ROLE (v13.0-PRESENCE-IMMORTAL):
+// ROLE (v13.0-Presence-Immortal):
 //   The Embassy Ledger is the authoritative registry of all Pulse‑Earn marketplace
 //   representatives. It validates identity, ensures deterministic readiness,
 //   and emits unified v13 presence/advantage/chunk-prewarm surfaces for each adapter.
 //
-// CONTRACT (v13.0-PRESENCE-IMMORTAL):
+// CONTRACT (v13.0-Presence-Immortal):
 //   • PURE REGISTRY — no async, no randomness, no timestamps.
 //   • Deterministic validation + readiness surfaces only.
 //   • Unified Earn v13 presence model (mesh/castle/region).
@@ -18,10 +18,10 @@
 /*
 AI_EXPERIENCE_META = {
   identity: "PulseEarnMktEmbassyLedger",
-  version: "v14-IMMORTAL",
+  version: "v14-Immortal",
   layer: "earn_market",
   role: "market_embassy_ledger",
-  lineage: "PulseEarnMktEmbassyLedger-v11 → v12.3 → v14-IMMORTAL",
+  lineage: "PulseEarnMktEmbassyLedger-v11 → v12.3 → v14-Immortal",
 
   evo: {
     embassyLedger: true,
@@ -58,8 +58,8 @@ AI_EXPERIENCE_META = {
 export const PulseEarnMktEmbassyLedgerMeta = Object.freeze({
   layer: "PulseEarnMktEmbassyLedger",
   role: "EARN_MARKETPLACE_REGISTRY",
-  version: "v13.0-PRESENCE-IMMORTAL",
-  identity: "PulseEarnMktEmbassyLedger-v13.0-PRESENCE-IMMORTAL",
+  version: "v13.0-Presence-Immortal",
+  identity: "PulseEarnMktEmbassyLedger-v13.0-Presence-Immortal",
 
   guarantees: Object.freeze({
     deterministic: true,
@@ -160,7 +160,7 @@ function buildAdapterPresenceField(name, adapter, cycleIndex, globalHints = {}) 
   const presenceTier = classifyPresenceTier(pressure);
 
   return {
-    presenceVersion: "v13.0-PRESENCE-IMMORTAL",
+    presenceVersion: "v13.0-Presence-Immortal",
     presenceTier,
 
     adapterName: name,

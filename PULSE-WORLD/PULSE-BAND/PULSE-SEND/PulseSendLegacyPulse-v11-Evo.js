@@ -1,8 +1,8 @@
 // ============================================================================
-//  PulseSendLegacyPulse-v14.4-IMMORTAL.js
+//  PulseSendLegacyPulse-v14.4-Immortal.js
 //  Pulse v1 Organism • Stable Evolutionary Floor • Non-Evolving
 //  v14.4: Binary + CacheChunk + Prewarm + Presence + Degradation + ImmortalMeta
-//         (Stable-Plus-IMMORTAL)
+//         (Stable-Plus-Immortal)
 // ============================================================================
 //
 //  ROLE:
@@ -12,7 +12,7 @@
 //    • It does NOT use these surfaces to evolve or change behavior.
 //    • Deterministic, stable, non-evolving, non-computing.
 //
-//  SAFETY CONTRACT (v14.4-IMMORTAL-EvoStable):
+//  SAFETY CONTRACT (v14.4-Immortal-EvoStable):
 //  ------------------------------------------
 //  • No randomness.
 //  • No timestamps.
@@ -22,7 +22,7 @@
 /*
 AI_EXPERIENCE_META = {
   identity: "PulseSendLegacyPulse",
-  version: "v14.4-IMMORTAL",
+  version: "v14.4-Immortal",
   layer: "frontend",
   role: "legacy_pulse_floor",
   lineage: "PulseOS-v12",
@@ -56,7 +56,7 @@ export const PulseRole = {
   subsystem: "Pulse",
   layer: "Organ",
   version: "14.4",
-  identity: "Pulse-v1-EvoStable-v14.4-IMMORTAL",
+  identity: "Pulse-v1-EvoStable-v14.4-Immortal",
 
   evo: {
     // v1 is stable, non-evolving, deterministic
@@ -287,7 +287,7 @@ function buildDiagnostics(pattern, lineage, payload, healthScore) {
     patternLength: pattern.length,
     lineageDepth: lineage.length,
     lineageDensity: lineage.length === 0 ? 0 : pattern.length / lineage.length,
-    stabilityTier: "v1-evo-stable-14.4-IMMORTAL",
+    stabilityTier: "v1-evo-stable-14.4-Immortal",
 
     binary: binarySurface,
     degradation: degradationSurface,
@@ -297,7 +297,7 @@ function buildDiagnostics(pattern, lineage, payload, healthScore) {
 
 
 // ============================================================================
-//  FACTORY — Create a Pulse v1 Organism (v14.4 Stable-Plus-IMMORTAL)
+//  FACTORY — Create a Pulse v1 Organism (v14.4 Stable-Plus-Immortal)
 // ============================================================================
 export function createLegacyPulse({
   jobId,
@@ -326,7 +326,7 @@ export function createLegacyPulse({
     patternStrength: pattern.length,
     lineageDepth: lineage.length,
     modeBias: mode === "stress" ? 2 : 1,
-    stabilityTier: "v1-evo-stable-14.4-IMMORTAL"
+    stabilityTier: "v1-evo-stable-14.4-Immortal"
   };
 
   const healthScore = 1.0;
@@ -361,7 +361,7 @@ export function createLegacyPulse({
     mode,
     pageId,
 
-    pulseType: "Pulse-v1-EvoStable-v14.4-IMMORTAL",
+    pulseType: "Pulse-v1-EvoStable-v14.4-Immortal",
 
     advantageField,
     healthScore,

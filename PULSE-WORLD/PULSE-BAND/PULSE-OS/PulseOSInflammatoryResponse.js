@@ -1,5 +1,5 @@
 // ============================================================================
-//  PULSE OS HEALER — v12.3-EVO-BINARY-MAX
+//  PULSE OS HEALER — v12.3-Evo-BINARY-MAX
 //  INFLAMMATORY RESPONSE ORGAN — PURE IMMUNE TRANSFORMER
 //  • Zero compute, zero network, zero timers, zero DB
 //  • Deterministic immune surface only (builders → artifacts)
@@ -8,7 +8,7 @@
 /*
 AI_EXPERIENCE_META = {
   identity: "PulseOSInflammatoryResponse",
-  version: "v14-IMMORTAL",
+  version: "v14-Immortal",
   layer: "cns",
   role: "os_inflammatory_response",
   lineage: "PulseOS-v14",
@@ -104,8 +104,8 @@ export const HEALER_CONTEXT_V12_3 = {
 export const PulseOSHealerMeta = Object.freeze({
   layer: "PulseOSHealer",
   role: "INFLAMMATORY_RESPONSE_ORGAN",
-  version: "v12.3-EVO-BINARY-MAX",
-  identity: "PulseOSHealer-v12.3-EVO-BINARY-MAX",
+  version: "v12.3-Evo-BINARY-MAX",
+  identity: "PulseOSHealer-v12.3-Evo-BINARY-MAX",
 
   guarantees: Object.freeze({
     deterministic: true,
@@ -167,14 +167,14 @@ export const PulseOSHealerMeta = Object.freeze({
   }),
 
   lineage: Object.freeze({
-    root: "PulseOS-v12-EVO",
-    parent: "PulseOS-v12.3-EVO",
+    root: "PulseOS-v12-Evo",
+    parent: "PulseOS-v12.3-Evo",
     ancestry: [
       "PulseOSHealer-v9",
       "PulseOSHealer-v10",
       "PulseOSHealer-v11",
       "PulseOSHealer-v11-Evo",
-      "PulseOSHealer-v11.2-EVO-BINARY-MAX"
+      "PulseOSHealer-v11.2-Evo-BINARY-MAX"
     ]
   }),
 

@@ -1,11 +1,11 @@
 // ============================================================================
-//  PulseProxyFront-v14-IMMORTAL-PROXY-FRONT.js
+//  PulseProxyFront-v14-Immortal-PROXY-FRONT.js
 //  Binary-First Proxy Front • Legacy Fallback • Earned Route Memory
-//  v14-IMMORTAL: CoreMemory-integrated, immortal route memory, deterministic surfaces
+//  v14-Immortal: CoreMemory-integrated, immortal route memory, deterministic surfaces
 //  Connects Proxy → Field (binary descriptor) OR Proxy → Legacy Router (symbolic)
 // ============================================================================
 //
-//  ROLE (v14-IMMORTAL-PROXY-FRONT):
+//  ROLE (v14-Immortal-PROXY-FRONT):
 //  --------------------------------
 //  • Binary-first route planner at the proxy front.
 //  • Treats binary as a DATA SURFACE ONLY (non-executable).
@@ -14,7 +14,7 @@
 //  • Emits band + dnaTag + A‑B‑A surfaces so CNS/Brain can classify routes.
 //  • Immortal route memory via PulseCoreMemory (organ-local + global).
 //
-//  SAFETY CONTRACT (v14-IMMORTAL):
+//  SAFETY CONTRACT (v14-Immortal):
 //  -------------------------------
 //  • Single import: PulseCoreMemory (immortal, in-process only).
 //  • No randomness.
@@ -24,14 +24,14 @@
 //  • Binary is NEVER executed, only described (phenotype/surface fields).
 // ============================================================================
 
-// v14-IMMORTAL upgrade: CoreMemory integration
+// v14-Immortal upgrade: CoreMemory integration
 import { PulseCoreMemory } from "./PulseCoreMemory.js";
 
 export const PulseProxyFrontMeta = Object.freeze({
   layer: "PulseProxyFront",
   role: "BINARY_FIRST_PROXY_FRONT",
-  version: "v14-IMMORTAL-PROXY-FRONT",
-  identity: "PulseProxyFront-v14-IMMORTAL-PROXY-FRONT",
+  version: "v14-Immortal-PROXY-FRONT",
+  identity: "PulseProxyFront-v14-Immortal-PROXY-FRONT",
 
   guarantees: Object.freeze({
     deterministic: true,
@@ -114,7 +114,7 @@ export const PulseProxyFrontMeta = Object.freeze({
 
   lineage: Object.freeze({
     root: "PulseProxy-v11",
-    parent: "PulseProxy-v12.3-EVO",
+    parent: "PulseProxy-v12.3-Evo",
     ancestry: [
       "PulseProxyFront-v7",
       "PulseProxyFront-v8",
@@ -124,8 +124,8 @@ export const PulseProxyFrontMeta = Object.freeze({
       "PulseProxyFront-v11-Evo",
       "PulseProxyFront-v11-Evo-Binary",
       "PulseProxyFront-v11-Evo-Binary-Max",
-      "PulseProxyFront-v11.2-EVO-BINARY-MAX",
-      "PulseProxyFront-v12.3-EVO-BINARY-MAX-ABA"
+      "PulseProxyFront-v11.2-Evo-BINARY-MAX",
+      "PulseProxyFront-v12.3-Evo-BINARY-MAX-ABA"
     ]
   }),
 
@@ -148,7 +148,7 @@ export const PulseProxyFrontMeta = Object.freeze({
 //  INTERNAL HELPERS — deterministic, pure
 // ============================================================================
 
-const CORE_MEMORY_NAMESPACE = "PulseProxyFrontRoute-v14-IMMORTAL";
+const CORE_MEMORY_NAMESPACE = "PulseProxyFrontRoute-v14-Immortal";
 
 function computeHash(str) {
   let h = 0;
@@ -330,7 +330,7 @@ export function planProxyRoute({
 
   const pureBinary = isPureBinary(bits);
 
-  // v14-IMMORTAL: merge local previousRouteMemory with CoreMemory recall
+  // v14-Immortal: merge local previousRouteMemory with CoreMemory recall
   let usedMemory = false;
   let decision = { mode: "binary" };
 
@@ -373,7 +373,7 @@ export function planProxyRoute({
         : "PROXY_FRONT_LEGACY"
   };
 
-  // v14-IMMORTAL: persist route memory into CoreMemory (immortal, deterministic)
+  // v14-Immortal: persist route memory into CoreMemory (immortal, deterministic)
   coreMemoryRecordRoute(routeMemory);
 
   return {

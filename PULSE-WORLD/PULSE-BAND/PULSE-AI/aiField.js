@@ -21,10 +21,10 @@
 /*
 AI_EXPERIENCE_META = {
   identity: "aiField",
-  version: "v14-IMMORTAL",
+  version: "v14-Immortal",
   layer: "ai_core",
   role: "field_simulation_engine",
-  lineage: "aiField-v11 → v14-IMMORTAL",
+  lineage: "aiField-v11 → v14-Immortal",
 
   evo: {
     fieldSimulation: true,
@@ -51,8 +51,8 @@ AI_EXPERIENCE_META = {
 export const FieldMeta = Object.freeze({
   layer: "BinaryField",
   role: "BINARY_FIELD_LAYER",
-  version: "11.3-EVO",
-  identity: "aiBinaryField-v11.3-EVO",
+  version: "11.3-Evo",
+  identity: "aiBinaryField-v11.3-Evo",
 
   evo: Object.freeze({
     deterministic: true,
@@ -81,7 +81,7 @@ export const FieldMeta = Object.freeze({
     identitySafe: true,
     readOnly: true,
     multiInstanceReady: true,
-    epoch: "11.3-EVO"
+    epoch: "11.3-Evo"
   }),
 
   contract: Object.freeze({

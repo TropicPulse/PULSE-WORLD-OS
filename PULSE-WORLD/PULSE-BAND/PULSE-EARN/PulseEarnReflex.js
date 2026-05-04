@@ -1,16 +1,16 @@
 // ============================================================================
-//  PulseEarnReflex-v13.0-PRESENCE-IMMORTAL.js
-//  Side-Attached Earn Reflex (v13.0 Presence-IMMORTAL + Advantage‑M + Chunk/Prewarm)
+//  PulseEarnReflex-v13.0-Presence-Immortal.js
+//  Side-Attached Earn Reflex (v13.0 Presence-Immortal + Advantage‑M + Chunk/Prewarm)
 //  Pure deterministic reflex builder (zero routing, zero sending)
 //  Binary-first A-B-A + Presence surfaces (metadata-only)
 // ============================================================================
 /*
 AI_EXPERIENCE_META = {
   identity: "PulseEarnReflex",
-  version: "v14-IMMORTAL",
+  version: "v14-Immortal",
   layer: "earn_reflex",
   role: "earn_reflex_arc",
-  lineage: "PulseEarnReflex-v11 → v12.3 → v14-IMMORTAL",
+  lineage: "PulseEarnReflex-v11 → v12.3 → v14-Immortal",
 
   evo: {
     reflexArc: true,
@@ -43,14 +43,14 @@ AI_EXPERIENCE_META = {
 */
 
 // ============================================================================
-// ORGAN IDENTITY — v13.0-PRESENCE-IMMORTAL
+// ORGAN IDENTITY — v13.0-Presence-Immortal
 // ============================================================================
 export const PulseRole = {
   type: "Reflex",
   subsystem: "PulseEarnReflex",
   layer: "B1-SubHealerReflexArc",
-  version: "13.0-PRESENCE-IMMORTAL",
-  identity: "PulseEarnReflex-v13.0-PRESENCE-IMMORTAL",
+  version: "13.0-Presence-Immortal",
+  identity: "PulseEarnReflex-v13.0-Presence-Immortal",
 
   evo: {
     driftProof: true,
@@ -90,8 +90,8 @@ export const PulseRole = {
 export const PulseEarnReflexMeta = Object.freeze({
   layer: "PulseEarnReflex",
   role: "EARN_REFLEX_ORGAN",
-  version: "v13.0-PRESENCE-IMMORTAL",
-  identity: "PulseEarnReflex-v13.0-PRESENCE-IMMORTAL",
+  version: "v13.0-Presence-Immortal",
+  identity: "PulseEarnReflex-v13.0-Presence-Immortal",
 
   guarantees: Object.freeze({
     deterministic: true,
@@ -189,7 +189,7 @@ function getReflexId(event, pulse) {
 }
 
 // ============================================================================
-// A-B-A BINARY + WAVE (v13.0 PRESENCE-IMMORTAL)
+// A-B-A BINARY + WAVE (v13.0 PRESENCE-Immortal)
 // ============================================================================
 function buildReflexBandBinaryWave(event, pulse, reflexId, cycleIndex, device) {
   const band = normalizeBand(
@@ -237,7 +237,7 @@ function buildReflexBandBinaryWave(event, pulse, reflexId, cycleIndex, device) {
 }
 
 // ============================================================================
-// PRESENCE FIELD (v13.0-PRESENCE-IMMORTAL)
+// PRESENCE FIELD (v13.0-Presence-Immortal)
 // ============================================================================
 function buildPresenceField(event, pulse, device, cycleIndex) {
   const organLen = String(getOrgan(event)).length;
@@ -251,7 +251,7 @@ function buildPresenceField(event, pulse, device, cycleIndex) {
   else if (magnitude > 0) presenceTier = "presence_low";
 
   return {
-    presenceVersion: "v13.0-PRESENCE-IMMORTAL",
+    presenceVersion: "v13.0-Presence-Immortal",
     presenceTier,
     organLen,
     reasonLen,
@@ -323,8 +323,8 @@ function buildReflexEarn(event, pulse, instanceContext) {
   return {
     EarnRole: {
       kind: "EarnReflex",
-      version: "13.0-PRESENCE-IMMORTAL",
-      identity: "EarnReflex-v13.0-PRESENCE-IMMORTAL"
+      version: "13.0-Presence-Immortal",
+      identity: "EarnReflex-v13.0-Presence-Immortal"
     },
 
     jobId: pulseId,
@@ -350,7 +350,7 @@ function buildReflexEarn(event, pulse, instanceContext) {
 
     meta: {
       reflex: true,
-      origin: "PulseEarnReflex-v13.0-PRESENCE-IMMORTAL",
+      origin: "PulseEarnReflex-v13.0-Presence-Immortal",
       sourceOrgan: organ,
       sourceReason: reason,
       sourcePulseId: pulseId,
@@ -362,7 +362,7 @@ function buildReflexEarn(event, pulse, instanceContext) {
 }
 
 // ============================================================================
-// PUBLIC API — FULL PRESENCE-IMMORTAL REFLEX
+// PUBLIC API — FULL PRESENCE-Immortal REFLEX
 // ============================================================================
 export const PulseEarnReflex = {
 

@@ -1,10 +1,10 @@
 // ============================================================================
-// [pulse:mesh] COMMUNITY_HORMONE_LAYER v15-EVO-IMMORTAL  // pink
+// [pulse:mesh] COMMUNITY_HORMONE_LAYER v15-Evo-Immortal  // pink
 // Global Modulation Layer • Metadata-Only • Deterministic Influence Tags
 // Presence-Aware • Binary-Aware • Dual-Band • Drift-Proof • Advantage-Aware
 // ============================================================================
 //
-// IDENTITY — HORMONES (v15-EVO-IMMORTAL):
+// IDENTITY — HORMONES (v15-Evo-Immortal):
 // --------------------------------------
 // • Pure metadata-only modulation layer.
 // • Reads system pressure (Field + SDN context) and emits deterministic tags.
@@ -32,7 +32,7 @@
 /*
 AI_EXPERIENCE_META = {
   identity: "PulseMeshHormones",
-  version: "v15-EVO-IMMORTAL",
+  version: "v15-Evo-Immortal",
   layer: "mesh",
   role: "mesh_hormone_signal_generator",
   lineage: "PulseMesh-v15",
@@ -79,12 +79,12 @@ AI_EXPERIENCE_META = {
 export function createPulseMeshHormones({ PulseFieldRead, log, warn, error }) {
 
   // ---------------------------------------------------------------------------
-  // META — v15-EVO-IMMORTAL identity
+  // META — v15-Evo-Immortal identity
   // ---------------------------------------------------------------------------
   const meta = {
     layer: "PulseHormones",
     role: "GLOBAL_MODULATION",
-    version: "15-EVO-IMMORTAL",
+    version: "15-Evo-Immortal",
     target: "full-mesh",
     selfRepairable: true,
     evo: {

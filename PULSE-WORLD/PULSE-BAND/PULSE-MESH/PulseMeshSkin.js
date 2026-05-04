@@ -1,6 +1,6 @@
 // ============================================================================
 // FILE: /organs/skin/PulseMeshSkin.js
-// [pulse:mesh] PULSE_OS_SKIN_LAYER v12.3-PRESENCE-EVO-MAX-PRIME  // silver
+// [pulse:mesh] PULSE_OS_SKIN_LAYER v12.3-Presence-Evo-MAX-PRIME  // silver
 // Boundary Membrane • Entry–Exit Normalization • Deterministic Skin
 // ============================================================================
 //
@@ -62,8 +62,8 @@ AI_EXPERIENCE_META = {
 }
 */
 // ============================================================================
-// FILE: /organs/skin/PulseMeshSkin-v15-EVO-IMMORTAL.js
-// [pulse:mesh] PULSE_OS_SKIN_LAYER v15-EVO-IMMORTAL  // silver-white
+// FILE: /organs/skin/PulseMeshSkin-v15-Evo-Immortal.js
+// [pulse:mesh] PULSE_OS_SKIN_LAYER v15-Evo-Immortal  // silver-white
 // Boundary Membrane • Entry–Exit Normalization • Deterministic Skin
 // Zero-Trust Surface • Presence/Band-Aware • Dual-Mode Ready
 // ============================================================================
@@ -77,7 +77,7 @@ export function createPulseSkin({ log, warn, error }) {
     meta: Object.freeze({
       layer: "PulseSkin",
       role: "BOUNDARY_MEMBRANE",
-      version: "15-EVO-IMMORTAL",
+      version: "15-Evo-Immortal",
       lineage: "PulseMesh-v15",
       target: "full-mesh",
       selfRepairable: true,

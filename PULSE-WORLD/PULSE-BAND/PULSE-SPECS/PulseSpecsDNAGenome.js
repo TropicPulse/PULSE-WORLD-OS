@@ -1,11 +1,11 @@
 // ============================================================================
-// FILE: /specs/PulseSpecsDNAGenome-v14.0-PRESENCE-IMMORTAL.js
-// [pulse:specs] PULSE_SPECS_DNA_GENOME v14.0-PRESENCE-IMMORTAL
+// FILE: /specs/PulseSpecsDNAGenome-v14.0-Presence-Immortal.js
+// [pulse:specs] PULSE_SPECS_DNA_GENOME v14.0-Presence-Immortal
 // OS Data Genome • Canonical Field Language • Deterministic Translation Spec
 // PURE SPEC — NO IO • NO NETWORK • NO AI • NO RUNTIME
 // ============================================================================
 //
-// IDENTITY — THE OS DNA GENOME (v14.0-PRESENCE-IMMORTAL):
+// IDENTITY — THE OS DNA GENOME (v14.0-Presence-Immortal):
 // ------------------------------------------------------
 // • Immutable genetic blueprint of Pulse OS (v10.4 → v14 IMMORTAL).
 // • Canonical PulseField language for all v12+ subsystems.
@@ -19,10 +19,10 @@
 /*
 AI_EXPERIENCE_META = {
   identity: "PulseSpecsDNAGenome",
-  version: "v14-IMMORTAL",
+  version: "v14-Immortal",
   layer: "genome",
   role: "os_data_genome",
-  lineage: "PulseSpecsDNAGenome-v1 → v9.1 → v10.4 → v11-Evo → v12.3 → v14-IMMORTAL",
+  lineage: "PulseSpecsDNAGenome-v1 → v9.1 → v10.4 → v11-Evo → v12.3 → v14-Immortal",
 
   evo: {
     genomeCore: true,               // canonical PulseField language
@@ -66,7 +66,7 @@ export const PULSE_FIELDS_CONTEXT = {
   purpose: "Define canonical PulseField types, rules, and mappings",
   context: "Deterministic data language for all Pulse subsystems",
   version: 14.0,
-  target: "os-core-v14-PRESENCE-IMMORTAL",
+  target: "os-core-v14-Presence-Immortal",
   selfRepairable: false,
 
   evolution: {
@@ -370,7 +370,7 @@ export function validatePulseField(field) {
 
 
 // ============================================================================
-// PULSE_FIELDS_SPEC — FROZEN GENOME SNAPSHOT (v14.0-PRESENCE-IMMORTAL)
+// PULSE_FIELDS_SPEC — FROZEN GENOME SNAPSHOT (v14.0-Presence-Immortal)
 // ============================================================================
 export const PULSE_FIELDS_SPEC = Object.freeze({
   ...PULSE_FIELDS_CONTEXT,

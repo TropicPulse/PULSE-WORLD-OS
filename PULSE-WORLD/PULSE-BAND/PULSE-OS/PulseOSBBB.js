@@ -80,7 +80,7 @@
 /*
 AI_EXPERIENCE_META = {
   identity: "PulseOSBBB",
-  version: "v14-IMMORTAL",
+  version: "v14-Immortal",
   layer: "os_bridge",
   role: "binary_symbolic_bridge",
   lineage: "PulseOS-v14",
@@ -194,7 +194,7 @@ export const PulseOSOuterBBBMeta = Object.freeze({
       "PulseOSOuterBBB-v9",
       "PulseOSOuterBBB-v10",
       "PulseOSOuterBBB-v11",
-      "PulseOSOuterBBB-v11.2-EVO",
+      "PulseOSOuterBBB-v11.2-Evo",
       "PulseOSOuterBBB-v12.3-SPINE"
     ]
   }),

@@ -1,11 +1,11 @@
 // ============================================================================
-// FILE: PulseMeshCognition-v15-EVO-IMMORTAL.js
+// FILE: PulseMeshCognition-v15-Evo-Immortal.js
 // PULSE MESH COGNITION — META MEMORY / PATTERN-OF-PATTERNS
 // System-wide Mesh Cognition • Route / Earner / Organ / Reflex Patterns
 // Metadata-only • Zero Payload Mutation • Presence + Band + Advantage Aware
 // ============================================================================
 //
-// IDENTITY — THE COGNITION FIELD (v15-EVO-IMMORTAL):
+// IDENTITY — THE COGNITION FIELD (v15-Evo-Immortal):
 //  -------------------------------------------------
 //  • Meta-memory for the mesh: patterns-of-patterns, not raw payloads.
 //  • Tracks routes, earners, organs, reflexes, mesh pressure, factoring,
@@ -69,7 +69,7 @@ AI_EXPERIENCE_META = {
 /*
 AI_EXPERIENCE_META = {
   identity: "PulseMeshCognition",
-  version: "v14.9-MESH-COGNITION-IMMORTAL",
+  version: "v14.9-MESH-COGNITION-Immortal",
   layer: "mesh",
   role: "mesh_cognition_engine",
   lineage: "PulseMesh-v14",
@@ -158,7 +158,7 @@ export const CognitionStore = {
   meta: {
     layer: "PulseMeshCognition",
     role: "META_MEMORY",
-    version: "15-EVO-IMMORTAL",
+    version: "15-Evo-Immortal",
     target: "full-mesh",
     selfRepairable: true,
     evo: {

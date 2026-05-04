@@ -1,5 +1,5 @@
 // ============================================================================
-// FILE: /PulseOS/Scanner/PulseScannerCortex-v12.3-EVO.js
+// FILE: /PulseOS/Scanner/PulseScannerCortex-v12.3-Evo.js
 // PULSE OS — v12.3‑EVO
 // SCANNER CORTEX ORGAN — PRESENCE + HARMONICS + DUAL-BAND + ADAPTIVE LAYERS
 // ============================================================================
@@ -307,6 +307,6 @@ export function createPulseScannerCortex({
 }
 
 // ============================================================================
-// END OF FILE — PulseScannerCortex-v12.3-EVO
+// END OF FILE — PulseScannerCortex-v12.3-Evo
 // Dynamic Adaptive Presence Cortex / Harmonics Cortex / Dual-Band Visual Cortex
 // ============================================================================

@@ -1,11 +1,11 @@
 // ============================================================================
-//  PulseEarnSendSystem-v13.0-PRESENCE-IMMORTAL.js
+//  PulseEarnSendSystem-v13.0-Presence-Immortal.js
 //  Earn Nervous System Conductor (v13.0 Presence‑IMMORTAL + Advantage‑M + Prewarm)
 //  Deterministic Single‑Pass Earn → Pulse → Send (No async, No loops)
 //  v13.0: Presence surfaces + Advantage‑M + Chunk/Prewarm + Factoring signal
 // ============================================================================
 //
-//  SAFETY CONTRACT (v13.0-PRESENCE-IMMORTAL):
+//  SAFETY CONTRACT (v13.0-Presence-Immortal):
 //  -----------------------------------------
 //  • No async.
 //  • No network.
@@ -19,10 +19,10 @@
 /*
 AI_EXPERIENCE_META = {
   identity: "PulseEarnSendSystem",
-  version: "v14-IMMORTAL",
+  version: "v14-Immortal",
   layer: "earn_send",
   role: "earn_send_conductor",
-  lineage: "PulseEarnSendSystem-v10.4 → v11-Evo → v14-IMMORTAL",
+  lineage: "PulseEarnSendSystem-v10.4 → v11-Evo → v14-Immortal",
 
   evo: {
     sendConductor: true,
@@ -57,8 +57,8 @@ AI_EXPERIENCE_META = {
 export const PulseEarnSendSystemMeta = Object.freeze({
   layer: "PulseEarnSendSystem",
   role: "EARN_SEND_CONDUCTOR",
-  version: "v13.0-PRESENCE-IMMORTAL",
-  identity: "PulseEarnSendSystem-v13.0-PRESENCE-IMMORTAL",
+  version: "v13.0-Presence-Immortal",
+  identity: "PulseEarnSendSystem-v13.0-Presence-Immortal",
 
   guarantees: Object.freeze({
     deterministic: true,
@@ -124,14 +124,14 @@ export const PulseEarnSendSystemMeta = Object.freeze({
   }),
 
   lineage: Object.freeze({
-    root: "PulseOS-v13-PRESENCE-IMMORTAL",
-    parent: "PulseEarn-v13.0-PRESENCE-IMMORTAL",
+    root: "PulseOS-v13-Presence-Immortal",
+    parent: "PulseEarn-v13.0-Presence-Immortal",
     ancestry: [
       "PulseEarnSendSystem-v9",
       "PulseEarnSendSystem-v10",
       "PulseEarnSendSystem-v11",
       "PulseEarnSendSystem-v11-Evo",
-      "PulseEarnSendSystem-v11.2-EVO",
+      "PulseEarnSendSystem-v11.2-Evo",
       "PulseEarnSendSystem-v12.3-Presence"
     ]
   }),
@@ -202,7 +202,7 @@ function deriveFactoringSignalFromContext({
 
 
 // ============================================================================
-//  HEALING STATE — Send Conductor Health Snapshot (v13.0-PRESENCE-IMMORTAL)
+//  HEALING STATE — Send Conductor Health Snapshot (v13.0-Presence-Immortal)
 // ============================================================================
 
 const sendHealing = {
@@ -232,7 +232,7 @@ export function getPulseEarnSendSystemHealingState() {
 
 
 // ============================================================================
-//  GOVERNOR — Earn Loop Guard (v13.0-PRESENCE-IMMORTAL)
+//  GOVERNOR — Earn Loop Guard (v13.0-Presence-Immortal)
 // ============================================================================
 
 function isEarnReentryImpulse(impulse) {
@@ -286,7 +286,7 @@ function tryEarnV11(impulse) {
     const evolved =
       typeof evolveEarn === "function"
         ? evolveEarn(baseEarn, {
-            source: "PulseEarnSendSystem-v13.0-PRESENCE-IMMORTAL",
+            source: "PulseEarnSendSystem-v13.0-Presence-Immortal",
             intent: impulse.intent,
             lineage: impulse.payload?.parentLineage || null
           })
@@ -338,7 +338,7 @@ function wrapEarnForPulse(earn) {
 
 
 // ============================================================================
-//  A-B-A Dual-Band + Binary + Wave Builder (v13.0-PRESENCE-IMMORTAL)
+//  A-B-A Dual-Band + Binary + Wave Builder (v13.0-Presence-Immortal)
 // ============================================================================
 
 function buildEarnSendBandBinaryWave(earn, fallbackUsed, cycleIndex, deviceProfile) {
@@ -396,7 +396,7 @@ function buildEarnSendBandBinaryWave(earn, fallbackUsed, cycleIndex, deviceProfi
 
 
 // ============================================================================
-//  Presence + Advantage‑M + Chunk/Prewarm + Factoring (v13.0-PRESENCE-IMMORTAL)
+//  Presence + Advantage‑M + Chunk/Prewarm + Factoring (v13.0-Presence-Immortal)
 // ============================================================================
 
 function buildPresenceField(earn, deviceProfile, fallbackUsed) {
@@ -417,7 +417,7 @@ function buildPresenceField(earn, deviceProfile, fallbackUsed) {
     "presence_idle";
 
   const presenceField = {
-    presenceVersion: "v13.0-PRESENCE-IMMORTAL",
+    presenceVersion: "v13.0-Presence-Immortal",
     presenceTier,
     band,
     patternLen,
@@ -511,7 +511,7 @@ function buildAdvantageField({
   // 8. Build final advantage field (v15 IMMORTAL CHUNK)
   // ------------------------------------------------------------
   const advantageField = {
-    advantageVersion: "M-15.0-IMMORTAL-CHUNK",
+    advantageVersion: "M-15.0-Immortal-CHUNK",
 
     // core
     band,
@@ -604,7 +604,7 @@ function buildChunkPrewarmPlan({
   // 4. BUILD PLAN — every variable contributes
   // ------------------------------------------------------------
   const plan = {
-    planVersion: "v15.0-AdvantageM-IMMORTAL-CHUNK",
+    planVersion: "v15.0-AdvantageM-Immortal-CHUNK",
 
     priorityLabel,
     presenceTier: presenceField.presenceTier,
@@ -682,7 +682,7 @@ export function createPulseEarnSendSystem({
   deviceProfile = null // Presence‑aware skeletal phenotype
 }) {
   if (!sendSystem || typeof sendSystem.send !== "function") {
-    throw new Error("[PulseEarnSendSystem-v13.0-PRESENCE-IMMORTAL] sendSystem.send(impulse) required.");
+    throw new Error("[PulseEarnSendSystem-v13.0-Presence-Immortal] sendSystem.send(impulse) required.");
   }
 
   function emitSDN(event, payload) {
@@ -690,7 +690,7 @@ export function createPulseEarnSendSystem({
     try {
       sdn.emitImpulse(event, payload);
     } catch (err) {
-      log && log("[PulseEarnSendSystem-v13.0-PRESENCE-IMMORTAL] SDN emit failed (non‑fatal)", {
+      log && log("[PulseEarnSendSystem-v13.0-Presence-Immortal] SDN emit failed (non‑fatal)", {
         event,
         err
       });

@@ -15,10 +15,10 @@
 /*
 AI_EXPERIENCE_META = {
   identity: "aiContextEngine",
-  version: "v14-IMMORTAL",
+  version: "v14-Immortal",
   layer: "ai_core",
   role: "context_engine",
-  lineage: "aiContextEngine-v10 → v12 → v12.3-Presence → v14-IMMORTAL",
+  lineage: "aiContextEngine-v10 → v12 → v12.3-Presence → v14-Immortal",
 
   evo: {
     contextEngine: true,
@@ -45,8 +45,8 @@ AI_EXPERIENCE_META = {
 export const ContextEngineMeta = Object.freeze({
   layer: "PulseAIContextEngine",
   role: "CONTEXT_ENGINE_ORGAN",
-  version: "14-IMMORTAL",
-  identity: "aiContextEngine-v14-IMMORTAL",
+  version: "14-Immortal",
+  identity: "aiContextEngine-v14-Immortal",
 
   evo: Object.freeze({
     driftProof: true,
@@ -70,7 +70,7 @@ export const ContextEngineMeta = Object.freeze({
 
     multiInstanceReady: true,
     readOnly: true,
-    epoch: "14-IMMORTAL"
+    epoch: "14-Immortal"
   }),
 
   contract: Object.freeze({

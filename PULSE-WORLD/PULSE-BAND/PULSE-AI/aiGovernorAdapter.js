@@ -10,10 +10,10 @@
 /*
 AI_EXPERIENCE_META = {
   identity: "aiGovernorAdaptor",
-  version: "v14-IMMORTAL",
+  version: "v14-Immortal",
   layer: "ai_core",
   role: "governor_adaptor",
-  lineage: "aiGovernorAdaptor-v11 → v14-IMMORTAL",
+  lineage: "aiGovernorAdaptor-v11 → v14-Immortal",
 
   evo: {
     governorAdaptor: true,
@@ -39,8 +39,8 @@ AI_EXPERIENCE_META = {
 export const GovernorAdapterMeta = Object.freeze({
   layer: "OrganismMembrane",
   role: "GOVERNOR_ADAPTER",
-  version: "15-IMMORTAL",
-  identity: "aiGovernorAdapter-v15-IMMORTAL",
+  version: "15-Immortal",
+  identity: "aiGovernorAdapter-v15-Immortal",
 
   evo: Object.freeze({
     deterministic: true,
@@ -73,7 +73,7 @@ export const GovernorAdapterMeta = Object.freeze({
     identitySafe: true,
     readOnly: true,
     multiInstanceReady: true,
-    epoch: "15-IMMORTAL"
+    epoch: "15-Immortal"
   }),
 
   contract: Object.freeze({
@@ -120,7 +120,7 @@ function emitGovernorAdapterPacket(type, payload) {
 }
 
 // ============================================================================
-//  PREWARM — 15-IMMORTAL
+//  PREWARM — 15-Immortal
 // ============================================================================
 export function prewarmGovernorAdapter(dualBand = null, { trace = false } = {}) {
   try {
@@ -142,7 +142,7 @@ export function prewarmGovernorAdapter(dualBand = null, { trace = false } = {}) 
 }
 
 // ============================================================================
-//  ORGAN IMPLEMENTATION — v12.3‑Presence (logic unchanged, meta is 15-IMMORTAL)
+//  ORGAN IMPLEMENTATION — v12.3‑Presence (logic unchanged, meta is 15-Immortal)
 // ============================================================================
 export class AIBinaryGovernorAdapter {
   constructor(config = {}) {

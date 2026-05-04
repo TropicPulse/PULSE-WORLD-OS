@@ -15,10 +15,10 @@
 /*
 AI_EXPERIENCE_META = {
   identity: "aiConsciousness",
-  version: "v14-IMMORTAL",
+  version: "v14-Immortal",
   layer: "ai_core",
   role: "ai_consciousness_simulator",
-  lineage: "aiConsciousness-v11 → v14-IMMORTAL",
+  lineage: "aiConsciousness-v11 → v14-Immortal",
 
   evo: {
     consciousnessSimulation: true,

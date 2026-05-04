@@ -1,5 +1,5 @@
 // ============================================================================
-//  PulseProxy-v12.3-EVO.js — Proxy Organism v12.3+ (NON-BINARY EDITION)
+//  PulseProxy-v12.3-Evo.js — Proxy Organism v12.3+ (NON-BINARY EDITION)
 //  Evolutionary Proxy Organ • Pattern + Lineage + Shape • Route-Assist
 //  12.3: Ancestry + Loop-Theory + Tier + Advantage Field + Presence/Harmonics
 //        + DualBand Awareness + Passive Prewarm/Cache/Chunk/Remember Hints
@@ -94,8 +94,8 @@ const ProxyRole = Object.freeze({
 export const PulseProxyOrganismMeta = Object.freeze({
   layer: "PulseProxyOrganism",
   role: "SYMBOLIC_PROXY_ORGANISM",
-  version: "v12.3-EVO-MAX",
-  identity: "PulseProxy-v12.3-EVO-MAX",
+  version: "v12.3-Evo-MAX",
+  identity: "PulseProxy-v12.3-Evo-MAX",
 
   guarantees: Object.freeze({
     deterministic: true,
@@ -169,7 +169,7 @@ export const PulseProxyOrganismMeta = Object.freeze({
 
   lineage: Object.freeze({
     root: "PulseProxy-v11",
-    parent: "PulseProxy-v12.3-EVO",
+    parent: "PulseProxy-v12.3-Evo",
     ancestry: [
       "PulseProxy-v7",
       "PulseProxy-v8",
@@ -177,7 +177,7 @@ export const PulseProxyOrganismMeta = Object.freeze({
       "PulseProxy-v10",
       "PulseProxy-v11",
       "PulseProxy-v11-Evo",
-      "PulseProxy-v11.2-EVO-MAX"
+      "PulseProxy-v11.2-Evo-MAX"
     ]
   }),
 

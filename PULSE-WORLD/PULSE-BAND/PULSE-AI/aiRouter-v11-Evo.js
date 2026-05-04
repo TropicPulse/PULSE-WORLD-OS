@@ -1,5 +1,5 @@
 // ============================================================================
-//  PULSE OS v16-IMMORTAL-ORGANISM — AI ROUTER ORGAN
+//  PULSE OS v16-Immortal-ORGANISM — AI ROUTER ORGAN
 //  AI Router • Organism-Aware • Persona Selector • Archetype Map • Failover Brain
 //  PURE ROUTING • ZERO MUTATION • ZERO RANDOMNESS • DUALBAND‑AWARE • ORGANISM‑AWARE
 //  ROUTING ARTERY v4 • BINARY SNAPSHOT AWARE • HOT-PATH CACHED • HEALTH-SCORE DRIVEN
@@ -8,10 +8,10 @@
 /*
 AI_EXPERIENCE_META = {
   identity: "aiRouter",
-  version: "v16-IMMORTAL-ORGANISM",
+  version: "v16-Immortal-ORGANISM",
   layer: "ai_core",
   role: "ai_router_organism",
-  lineage: "aiRouter-v10 → v13.0-PRESENCE-ADV → v16-IMMORTAL-ORGANISM",
+  lineage: "aiRouter-v10 → v13.0-Presence-ADV → v16-Immortal-ORGANISM",
 
   evo: {
     routingEngine: true,
@@ -106,7 +106,7 @@ import { PulseRouterMeta } from "../PULSE-EXPANSION/PulseRouter-v12.3-Presence.j
 // Earn / Band / Send
 import { getEarnContext } from "../PULSE-EARN/PulseEarn-v12.3-Presence.js";
 import { createDualBandOrganism as PulseBinaryOrganismBoot } from "../PULSE-AI/aiDualBand-v11-Evo.js";
-import { createBinarySend as PulseSendBin } from "../PULSE-SEND/PulseBinarySend-v11-EVO.js";
+import { createBinarySend as PulseSendBin } from "../PULSE-SEND/PulseBinarySend-v11-Evo.js";
 import createBinaryRouter from "../PULSE-ROUTER/PulseBinaryRouter-v11-Evo.js";
 import PulseRouter from "../PULSE-ROUTER/PulseRouter-v11-Evo.js";
 
@@ -133,8 +133,8 @@ import {
 export const AIRouterMeta = Object.freeze({
   layer: "PulseAIRouter",
   role: "CNS_ROUTER_ORGANISM",
-  version: "v16-IMMORTAL-ORGANISM",
-  identity: "aiRouter-v16-IMMORTAL-ORGANISM",
+  version: "v16-Immortal-ORGANISM",
+  identity: "aiRouter-v16-Immortal-ORGANISM",
 
   evo: Object.freeze({
     driftProof: true,
@@ -157,7 +157,7 @@ export const AIRouterMeta = Object.freeze({
     organismAware: true,
     failoverAware: true,
     healthScoreAware: true,
-    epoch: "v16-IMMORTAL-ORGANISM"
+    epoch: "v16-Immortal-ORGANISM"
   }),
 
   contract: Object.freeze({

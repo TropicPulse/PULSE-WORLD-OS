@@ -6,10 +6,10 @@
 /*
 AI_EXPERIENCE_META = {
   identity: "aiDeps",
-  version: "v14-IMMORTAL",
+  version: "v14-Immortal",
   layer: "ai_core",
   role: "dependency_surface",
-  lineage: "aiDeps-v10 → v12 → v14-IMMORTAL",
+  lineage: "aiDeps-v10 → v12 → v14-Immortal",
 
   evo: {
     dependencySurface: true,

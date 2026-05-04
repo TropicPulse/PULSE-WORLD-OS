@@ -1,5 +1,5 @@
 // ============================================================================
-// [pulse:mesh] COMMUNITY_FLOW_LAYER v15-EVO-IMMORTAL  // rainbow
+// [pulse:mesh] COMMUNITY_FLOW_LAYER v15-Evo-Immortal  // rainbow
 // Full-Spectrum Coordination • Deterministic Lifecycle Sequencer
 // Metadata-Only • Zero Recursion • Zero Routing • SDN-Aligned
 // Presence-Aware • Binary-Aware • Dual-Band • Drift-Proof • Echo-Aware
@@ -92,7 +92,7 @@ export function createPulseMeshFlow({
   const meta = {
     layer: "PulseFlow",
     role: "FLOW_ORCHESTRATOR",
-    version: "15-EVO-IMMORTAL",
+    version: "15-Evo-Immortal",
     target: "full-mesh",
     selfRepairable: true,
     evo: {

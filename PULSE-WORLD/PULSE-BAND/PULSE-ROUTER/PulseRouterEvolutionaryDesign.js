@@ -6,7 +6,7 @@
 /*
 AI_EXPERIENCE_META = {
   identity: "PulseRouterEvolutionaryDesign",
-  version: "v14.4-EVO-DESIGN",
+  version: "v14.4-Evo-DESIGN",
   layer: "frontend",
   role: "router_design_cortex",
   lineage: "PulseOS-v12",

@@ -6,10 +6,10 @@
 /*
 AI_EXPERIENCE_META = {
   identity: "aiEmotionEngine",
-  version: "v14-IMMORTAL",
+  version: "v14-Immortal",
   layer: "ai_core",
   role: "emotion_simulation_engine",
-  lineage: "aiEmotionEngine-v10 → v12 → v12.3-Presence → v14-IMMORTAL",
+  lineage: "aiEmotionEngine-v10 → v12 → v12.3-Presence → v14-Immortal",
 
   evo: {
     emotionSimulation: true,
@@ -36,8 +36,8 @@ AI_EXPERIENCE_META = {
 export const EmotionEngineMeta = Object.freeze({
   layer: "PulseAIEmotionFrame",
   role: "EMOTION_ORGAN",
-  version: "14-IMMORTAL",
-  identity: "aiEmotionEngine-v14-IMMORTAL",
+  version: "14-Immortal",
+  identity: "aiEmotionEngine-v14-Immortal",
 
   evo: Object.freeze({
     driftProof: true,
@@ -66,7 +66,7 @@ export const EmotionEngineMeta = Object.freeze({
     readOnly: true,
     multiInstanceReady: true,
 
-    epoch: "14-IMMORTAL"
+    epoch: "14-Immortal"
   }),
 
   contract: Object.freeze({

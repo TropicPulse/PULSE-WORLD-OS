@@ -1,5 +1,5 @@
 /**
- * BinarySubstrate-v2.4-PRESENCE-TOUCH-IMMORTAL.js
+ * BinarySubstrate-v2.4-Presence-TOUCH-Immortal.js
  * PULSE-WORLD / PULSE-BINARY / FIXED-WIDTH
  *
  * ROLE:
@@ -11,7 +11,7 @@
  *     - varint encoding for lengths
  *     - reversible decoding
  *
- *   v2.4-PRESENCE-TOUCH-IMMORTAL adds:
+ *   v2.4-Presence-TOUCH-Immortal adds:
  *     - explicit Pulse-Touch presence fields
  *     - explicit advantage / chunkProfile / page / identity / trust fields
  *     - optional pulseTouchMeta block (JSON) at tail
@@ -23,10 +23,10 @@
 /*
 AI_EXPERIENCE_META = {
   identity: "BinarySubstrate",
-  version: "v2.4-PRESENCE-TOUCH-IMMORTAL",
+  version: "v2.4-Presence-TOUCH-Immortal",
   layer: "substrate",
   role: "binary_representation_layer",
-  lineage: "BinarySubstrate-v1 → v11-Evo → v14-IMMORTAL → v2.4-PRESENCE-TOUCH-IMMORTAL",
+  lineage: "BinarySubstrate-v1 → v11-Evo → v14-Immortal → v2.4-Presence-TOUCH-Immortal",
 
   evo: {
     binaryPrimary: true,           // binary-first representation
@@ -73,10 +73,10 @@ AI_EXPERIENCE_META = {
 */
 
 export const BinarySubstrateV2Meta = Object.freeze({
-  organId: "BinarySubstrate-v2.4-PRESENCE-TOUCH-IMMORTAL",
+  organId: "BinarySubstrate-v2.4-Presence-TOUCH-Immortal",
   role: "BINARY_SUBSTRATE",
-  version: "2.4-PRESENCE-TOUCH-IMMORTAL",
-  epoch: "v13.0-PRESENCE-TOUCH",
+  version: "2.4-Presence-TOUCH-Immortal",
+  epoch: "v13.0-Presence-TOUCH",
   layer: "BinaryTransport",
   safety: Object.freeze({
     deterministic: true,

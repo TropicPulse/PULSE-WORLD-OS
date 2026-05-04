@@ -1,10 +1,10 @@
 // ============================================================================
-// FILE: tropic-pulse-functions/PULSE-WORLD/PULSE-EARN/PulseEarnMetabolism-v13.0-PRESENCE-IMMORTAL.js
-// LAYER: THE METABOLIC ENGINEER (v13.0-PRESENCE-IMMORTAL)
+// FILE: tropic-pulse-functions/PULSE-WORLD/PULSE-EARN/PulseEarnMetabolism-v13.0-Presence-Immortal.js
+// LAYER: THE METABOLIC ENGINEER (v13.0-Presence-Immortal)
 // (Interpreter of Jobs + Safe Executor + Deterministic Throughput Engine)
 // ============================================================================
 //
-// ROLE (v13.0-PRESENCE-IMMORTAL):
+// ROLE (v13.0-Presence-Immortal):
 //   THE METABOLIC ENGINEER — Pulse‑Earn’s deterministic execution organ.
 //   • Reads the blueprint (job payload).
 //   • Selects the correct safe tool (compute/image/script handler).
@@ -13,7 +13,7 @@
 //   • Emits binary-first + wave surfaces.
 //   • Emits metabolicComputeProfile (metadata-only).
 //
-// CONTRACT (v13.0-PRESENCE-IMMORTAL):
+// CONTRACT (v13.0-Presence-Immortal):
 //   • PURE EXECUTION BRIDGE — no AI layers, no translation, no memory model.
 //   • NO eval(), NO Function(), NO dynamic imports.
 //   • NO user scripts, NO network calls, NO filesystem access.
@@ -25,10 +25,10 @@
 /*
 AI_EXPERIENCE_META = {
   identity: "PulseEarnMetabolism",
-  version: "v14-IMMORTAL",
+  version: "v14-Immortal",
   layer: "earn_metabolism",
   role: "earn_metabolic_engine",
-  lineage: "PulseEarnMetabolism-v11 → v12.3 → v14-IMMORTAL",
+  lineage: "PulseEarnMetabolism-v11 → v12.3 → v14-Immortal",
 
   evo: {
     metabolismEngine: true,
@@ -64,8 +64,8 @@ AI_EXPERIENCE_META = {
 export const PulseEarnMetabolismMeta = Object.freeze({
   layer: "PulseEarnMetabolism",
   role: "EARN_METABOLISM_ORGAN",
-  version: "v13.0-PRESENCE-IMMORTAL",
-  identity: "PulseEarnMetabolism-v13.0-PRESENCE-IMMORTAL",
+  version: "v13.0-Presence-Immortal",
+  identity: "PulseEarnMetabolism-v13.0-Presence-Immortal",
 
   guarantees: Object.freeze({
     deterministic: true,
@@ -108,14 +108,14 @@ export const PulseEarnMetabolismMeta = Object.freeze({
   }),
 
   lineage: Object.freeze({
-    root: "PulseOS-v11-EVO",
-    parent: "PulseEarn-v13.0-PRESENCE-IMMORTAL",
+    root: "PulseOS-v11-Evo",
+    parent: "PulseEarn-v13.0-Presence-Immortal",
     ancestry: [
       "PulseEarnMetabolism-v9",
       "PulseEarnMetabolism-v10",
       "PulseEarnMetabolism-v11",
       "PulseEarnMetabolism-v11-Evo",
-      "PulseEarnMetabolism-v12.3-PRESENCE-EVO+"
+      "PulseEarnMetabolism-v12.3-Presence-Evo+"
     ]
   }),
 
@@ -230,7 +230,7 @@ function buildPresenceField(job, globalHints = {}) {
   );
 
   return {
-    presenceVersion: "v13.0-PRESENCE-IMMORTAL",
+    presenceVersion: "v13.0-Presence-Immortal",
     presenceTier,
     presenceSignature,
 

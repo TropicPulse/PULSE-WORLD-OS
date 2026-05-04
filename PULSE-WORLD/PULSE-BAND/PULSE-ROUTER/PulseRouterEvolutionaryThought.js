@@ -19,7 +19,7 @@
 /*
 AI_EXPERIENCE_META = {
   identity: "PulseRouterEvolutionaryThought",
-  version: "v14.4-EVO-THOUGHT",
+  version: "v14.4-Evo-THOUGHT",
   layer: "frontend",
   role: "router_reasoning_engine",
   lineage: "PulseOS-v12",

@@ -6,10 +6,10 @@
 /*
 AI_EXPERIENCE_META = {
   identity: "aiArchitect",
-  version: "v14-IMMORTAL",
+  version: "v14-Immortal",
   layer: "ai_tools",
   role: "architectural_reasoner",
-  lineage: "aiArchitect-v9 → v11 → v14-IMMORTAL",
+  lineage: "aiArchitect-v9 → v11 → v14-Immortal",
 
   evo: {
     architecturalReasoning: true,
@@ -35,8 +35,8 @@ AI_EXPERIENCE_META = {
 export const ArchitectMeta = Object.freeze({
   layer: "PulseAIArchitectFrame",
   role: "ARCHITECT_ORGAN",
-  version: "12.3-EVO+",
-  identity: "aiArchitect-v12.3-EVO+",
+  version: "12.3-Evo+",
+  identity: "aiArchitect-v12.3-Evo+",
 
   evo: Object.freeze({
     deterministic: true,
@@ -54,7 +54,7 @@ export const ArchitectMeta = Object.freeze({
     orphanRouteAware: true,
     multiInstanceReady: true,
     architectArteryAware: true,
-    epoch: "v12.3-EVO+"
+    epoch: "v12.3-Evo+"
   }),
 
   contract: Object.freeze({

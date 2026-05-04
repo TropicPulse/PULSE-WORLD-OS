@@ -6,10 +6,10 @@
 /*
 AI_EXPERIENCE_META = {
   identity: "aiContext",
-  version: "v14-IMMORTAL",
+  version: "v14-Immortal",
   layer: "ai_core",
   role: "context_frame_builder",
-  lineage: "aiContext-v9 → v11 → v14-IMMORTAL",
+  lineage: "aiContext-v9 → v11 → v14-Immortal",
 
   evo: {
     contextFrame: true,

@@ -26,7 +26,7 @@
 /*
 AI_EXPERIENCE_META = {
   identity: "PulseOSSymbolicKernel",
-  version: "v12.3-SPINE-SYMBOLIC-IMMORTAL",
+  version: "v12.3-SPINE-SYMBOLIC-Immortal",
   layer: "os_kernel_symbolic",
   role: "symbolic_organism_kernel",
   lineage: "PulseOS-v12.3-SPINE",
@@ -91,12 +91,12 @@ import * as PulseOSEvolution from "./PulseOSBrainEvolution.js";            // Ev
 import * as PulseSpinalCord from "./PulseOSSpinalCord-v12-Evo.js";         // Wiring organ
 
 // Presence / Mesh presence (symbolic/OS side, optional)
-import * as PulseOSPresence from "./PulseOSPresence-v12.4-EVO.js";         // OS Presence Organ (optional)
+import * as PulseOSPresence from "./PulseOSPresence-v12.4-Evo.js";         // OS Presence Organ (optional)
 import { createBinaryMeshEnvironment as createBinaryMeshEnv } from "../PULSE-MESH/PulseBinaryMesh-v11-Evo.js"; // Mesh env (binary+symbolic)
 
-import { createPulseMeshPresenceRelay as PulseMeshPresence } from "../PULSE-MESH/PulseMeshPresenceRelay-v12.4-EVO.js"; // Mesh env (binary+symbolic)
+import { createPulseMeshPresenceRelay as PulseMeshPresence } from "../PULSE-MESH/PulseMeshPresenceRelay-v12.4-Evo.js"; // Mesh env (binary+symbolic)
 // ============================================================================
-// PULSE OS v13-PRESENCE-EVO+ — WORLD BARREL
+// PULSE OS v13-Presence-Evo+ — WORLD BARREL
 // ============================================================================
 import { createPulseExpansion, pulseExpansion, PulseExpansionMeta} from "../PULSE-EXPANSION/PulseExpansion-v12.3-Presence.js";
 // (optional) direct access if you want to surface them:

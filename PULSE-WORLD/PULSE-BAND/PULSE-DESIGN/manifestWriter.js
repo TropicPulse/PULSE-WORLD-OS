@@ -2,10 +2,10 @@
 ===============================================================================
 AI_EXPERIENCE_META = {
   identity: "PulseDesign.Surveyor",
-  version: "v14-IMMORTAL",
+  version: "v14-Immortal",
   layer: "pulse_design",
   role: "canonical_blueprint_writer",
-  lineage: "Surveyor-v10.4 → v12.3 → v14-IMMORTAL",
+  lineage: "Surveyor-v10.4 → v12.3 → v14-Immortal",
 
   evo: {
     blueprintWriter: true,

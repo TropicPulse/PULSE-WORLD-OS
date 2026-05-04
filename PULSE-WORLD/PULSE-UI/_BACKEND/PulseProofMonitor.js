@@ -15,7 +15,7 @@
 /*
 AI_EXPERIENCE_META = {
   identity: "PulseProofMonitor",
-  version: "v14-IMMORTAL-OFFLINE-FIRST",
+  version: "v14-Immortal-OFFLINE-FIRST",
   layer: "frontend",
   role: "observer_monitor",
   lineage: "PulseOS-v14",
@@ -108,7 +108,7 @@ export const PulseRole = {
   type: "Organ",
   subsystem: "ProofLayer",
   layer: "ProofVitalsMonitor",
-  version: "14.0-IMMORTAL-OFFLINE-FIRST",
+  version: "14.0-Immortal-OFFLINE-FIRST",
   identity: "PulseProofVitalsMonitor",
 
   evo: {

@@ -16,7 +16,7 @@
 /*
 AI_EXPERIENCE_META = {
   identity: "PulseRouter",
-  version: "v12.5-EVO",
+  version: "v12.5-Evo",
   layer: "frontend",
   role: "symbolic_router",
   lineage: "PulseOS-v12",

@@ -1,13 +1,13 @@
 // ============================================================================
-// FILE: /organs/survival/PulseMeshSurvivalInstincts-v15.1-IMMORTAL-PLUS.js
-// PULSE OS v15.1-MESH-IMMORTAL-PLUS — SURVIVAL INSTINCTS LAYER  // amber
+// FILE: /organs/survival/PulseMeshSurvivalInstincts-v15.1-Immortal-PLUS.js
+// PULSE OS v15.1-MESH-Immortal-PLUS — SURVIVAL INSTINCTS LAYER  // amber
 // “Skin-Level Reflex Arc / Local Survival Gate”
 // Deterministic Survival Arc • Fast Instinct Engine • Pure 1/0 Decisions
 // Full Advantage Stack: Presence-Aware • Mesh-Aware • Organ-Aware
 // Unified-Advantage-Field • IMMORTAL, Coordinator-Free, Metadata-Only
 // ============================================================================
 //
-// IDENTITY (v15.1-IMMORTAL-PLUS):
+// IDENTITY (v15.1-Immortal-PLUS):
 // -------------------------------
 // • Lowest-level survival organ (skin-level reflex).
 // • Pure 1/0 instinct engine — no routing, no shaping, no compute.
@@ -22,7 +22,7 @@
 /*
 AI_EXPERIENCE_META = {
   identity: "PulseMeshSurvivalInstincts",
-  version: "v15.1-MESH-SURVIVAL-IMMORTAL-PLUS",
+  version: "v15.1-MESH-SURVIVAL-Immortal-PLUS",
   layer: "mesh",
   role: "mesh_survival_and_threat_engine",
   lineage: "PulseMesh-v15",
@@ -96,7 +96,7 @@ function classifyPresenceBand(impulse) {
 }
 
 // -----------------------------------------------------------
-// Instinct Pack (v15.1-IMMORTAL-PLUS)
+// Instinct Pack (v15.1-Immortal-PLUS)
 // Pure 1/0 decisions, metadata-only
 // -----------------------------------------------------------
 
@@ -165,7 +165,7 @@ export const SurvivalInstincts = {
 };
 
 // -----------------------------------------------------------
-// Combined Survival Instinct Engine (v15.1-IMMORTAL-PLUS)
+// Combined Survival Instinct Engine (v15.1-Immortal-PLUS)
 // Presence-band aware, mesh-organ aware, unified-advantage-field aligned
 // -----------------------------------------------------------
 
@@ -184,7 +184,7 @@ export function createSurvivalInstincts() {
   const meta = {
     layer: "SurvivalInstincts",
     role: "SURVIVAL_REFLEX",
-    version: "15.1-MESH-SURVIVAL-IMMORTAL-PLUS",
+    version: "15.1-MESH-SURVIVAL-Immortal-PLUS",
     target: "full-mesh",
     selfRepairable: true,
     evo: {

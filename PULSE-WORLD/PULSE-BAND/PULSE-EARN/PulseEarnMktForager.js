@@ -1,15 +1,15 @@
 // ============================================================================
-//  PulseEarnMktForager-v13.0-PRESENCE-IMMORTAL.js
+//  PulseEarnMktForager-v13.0-Presence-Immortal.js
 //  THE FORAGER — Salad Marketplace Receptor (v13.0 Presence + Advantage‑C‑13.0)
 //  Deterministic receptor DNA + A‑B‑A + Unified Presence + Chunk/Prewarm v13
 // ============================================================================
 /*
 AI_EXPERIENCE_META = {
   identity: "PulseEarnMktForager",
-  version: "v14-IMMORTAL",
+  version: "v14-Immortal",
   layer: "earn_market",
   role: "market_forager",
-  lineage: "PulseEarnMktForager-v11 → v12.3 → v14-IMMORTAL",
+  lineage: "PulseEarnMktForager-v11 → v12.3 → v14-Immortal",
 
   evo: {
     marketForager: true,
@@ -45,8 +45,8 @@ AI_EXPERIENCE_META = {
 export const PulseEarnMktForagerMeta = Object.freeze({
   layer: "PulseEarnMktForager",
   role: "EARN_MARKETPLACE_RECEPTOR",
-  version: "v13.0-PRESENCE-IMMORTAL",
-  identity: "PulseEarnMktForager-v13.0-PRESENCE-IMMORTAL",
+  version: "v13.0-Presence-Immortal",
+  identity: "PulseEarnMktForager-v13.0-Presence-Immortal",
 
   guarantees: Object.freeze({
     deterministic: true,
@@ -180,7 +180,7 @@ function buildPresenceField(jobOrRaw, deviceProfile, cycle, globalHints = {}) {
   const presenceTier = classifyPresenceTier(pressure);
 
   return {
-    presenceVersion: "v13.0-PRESENCE-IMMORTAL",
+    presenceVersion: "v13.0-Presence-Immortal",
     presenceTier,
 
     bandPresence: ghP.bandPresence || "symbolic",
@@ -373,8 +373,8 @@ const SALAD_RECEPTOR_DNA = {
       type: "ai-task"
     }
   ],
-  version: "13.0-PRESENCE-IMMORTAL",
-  lineage: "Forager-Salad-v13.0-PRESENCE-IMMORTAL",
+  version: "13.0-Presence-Immortal",
+  lineage: "Forager-Salad-v13.0-Presence-Immortal",
   phenotype: "MarketplaceReceptor"
 };
 
@@ -384,8 +384,8 @@ const SALAD_RECEPTOR_DNA = {
 export const PulseEarnMktForager = {
   id: "salad",
   name: "Salad Marketplace",
-  version: "v13.0-PRESENCE-IMMORTAL",
-  lineage: "Forager-Salad-v13.0-PRESENCE-IMMORTAL",
+  version: "v13.0-Presence-Immortal",
+  lineage: "Forager-Salad-v13.0-Presence-Immortal",
 
   // -------------------------------------------------------------------------
   // Ping — unified v13 presence
@@ -676,7 +676,7 @@ export const PulseEarnMktForager = {
 };
 
 // ---------------------------------------------------------------------------
-// Healing State Export — Forager Interaction Log (v13.0-PRESENCE-IMMORTAL)
+// Healing State Export — Forager Interaction Log (v13.0-Presence-Immortal)
 // ---------------------------------------------------------------------------
 export function getPulseEarnMktForagerHealingState() {
   return { ...healingState };

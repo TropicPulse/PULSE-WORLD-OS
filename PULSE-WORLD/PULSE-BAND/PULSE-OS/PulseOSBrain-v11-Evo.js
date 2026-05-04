@@ -1,6 +1,6 @@
 // ============================================================================
-// FILE: /PulseOS/Brain/PulseOSBrain-v15-IMMORTAL.js
-// PULSE OS BRAIN — v15-IMMORTAL-DUALBAND-PRESENCE-ADVANTAGE
+// FILE: /PulseOS/Brain/PulseOSBrain-v15-Immortal.js
+// PULSE OS BRAIN — v15-Immortal-DUALBAND-Presence-ADVANTAGE
 // “THE REAL CNS / ORGANISM-WIDE IDENTITY + INTELLIGENCE KERNEL”
 // ============================================================================
 //
@@ -25,10 +25,10 @@
 /*
 AI_EXPERIENCE_META = {
   identity: "PulseOSBrain",
-  version: "v15-IMMORTAL",
+  version: "v15-Immortal",
   layer: "cns",
   role: "os_brain",
-  lineage: "PulseOS-v15-IMMORTAL",
+  lineage: "PulseOS-v15-Immortal",
 
   evo: {
     symbolicPrimary: true,
@@ -68,8 +68,8 @@ AI_EXPERIENCE_META = {
 export const PulseOSBrainMeta = Object.freeze({
   layer: "PulseOSBrain",
   role: "CNS_BRAIN_ORGAN",
-  version: "v15-IMMORTAL-DUALBAND-PRESENCE-ADVANTAGE",
-  identity: "PulseOSBrain-v15-IMMORTAL-DUALBAND-PRESENCE-ADVANTAGE",
+  version: "v15-Immortal-DUALBAND-Presence-ADVANTAGE",
+  identity: "PulseOSBrain-v15-Immortal-DUALBAND-Presence-ADVANTAGE",
 
   guarantees: Object.freeze({
     deterministic: true,
@@ -134,19 +134,19 @@ export const PulseOSBrainMeta = Object.freeze({
   }),
 
   lineage: Object.freeze({
-    root: "PulseOS-v15-IMMORTAL",
+    root: "PulseOS-v15-Immortal",
     parent: "PulseOS-v13-SPINE",
     ancestry: [
       "PulseOSBrain-v9",
       "PulseOSBrain-v10",
       "PulseOSBrain-v11",
       "PulseOSBrain-v11-Evo",
-      "PulseOSBrain-v11-EVO-BINARY-MAX",
-      "PulseOSBrain-v12.3-SPINE-DUALBAND-PRESENCE",
-      "PulseOSBrain-v12.4-SPINE-DUALBAND-PRESENCE",
-      "PulseOSBrain-v13-SPINE-DUALBAND-PRESENCE",
-      "PulseOSBrain-v13-SPINE-DUALBAND-PRESENCE-ADVANTAGE",
-      "PulseOSBrain-v15-IMMORTAL-DUALBAND-PRESENCE-ADVANTAGE"
+      "PulseOSBrain-v11-Evo-BINARY-MAX",
+      "PulseOSBrain-v12.3-SPINE-DUALBAND-Presence",
+      "PulseOSBrain-v12.4-SPINE-DUALBAND-Presence",
+      "PulseOSBrain-v13-SPINE-DUALBAND-Presence",
+      "PulseOSBrain-v13-SPINE-DUALBAND-Presence-ADVANTAGE",
+      "PulseOSBrain-v15-Immortal-DUALBAND-Presence-ADVANTAGE"
     ]
   }),
 
@@ -178,7 +178,7 @@ import checkIdentity from "../PULSE-PROXY/CheckIdentity-v11-Evo.js";
 import checkRouterMemory from "../PULSE-PROXY/CheckRouterMemory-v11-Evo.js";
 
 // ============================================================================
-//  CNS BRAIN — v15-IMMORTAL-DUALBAND-PRESENCE-ADVANTAGE
+//  CNS BRAIN — v15-Immortal-DUALBAND-Presence-ADVANTAGE
 // ============================================================================
 export const PulseOSBrain = {
   // -------------------------------------------------------------------------
@@ -188,7 +188,7 @@ export const PulseOSBrain = {
     type: "Brain",
     subsystem: "OS",
     layer: "CNS",
-    version: "15-IMMORTAL",
+    version: "15-Immortal",
     identity: "PulseOSBrain",
     evo: {
       deterministicNeuron: true,
@@ -198,7 +198,7 @@ export const PulseOSBrain = {
       unifiedAdvantageField: true,
 
       routingContract: "PulseRouter-v15",
-      osOrganContract: "PulseOS-v15-IMMORTAL",
+      osOrganContract: "PulseOS-v15-Immortal",
       earnCompatibility: "PulseEarn-v15.0",
       proxyCompatibility: "PulseProxySpine-v15",
       gpuCompatibility: "PulseGPU-v15",
@@ -233,7 +233,7 @@ export const PulseOSBrain = {
 
   intent: {
     mode: "organism-brain",
-    epoch: "15-IMMORTAL",
+    epoch: "15-Immortal",
     dualBand: true,
     symbolicPrimary: true
   },
@@ -572,7 +572,7 @@ export const PulseOSBrain = {
 };
 
 // ============================================================================
-//  BRAIN PREWARM ENGINE — v15-IMMORTAL
+//  BRAIN PREWARM ENGINE — v15-Immortal
 // ============================================================================
 function prewarmPulseOSBrain() {
   try {

@@ -1,7 +1,7 @@
 /**
  * ============================================================================
  *  PULSE OS v16‑IMMORTAL — PULSE ROUTER (TRAFFIC BRAIN / ORGANISM-AWARE)
- *  PulseRouter-v16-IMMORTAL-ORGANISM.js
+ *  PulseRouter-v16-Immortal-ORGANISM.js
  * ============================================================================
  *
  *  ROLE:
@@ -15,10 +15,10 @@
 /*
 AI_EXPERIENCE_META = {
   identity: "PulseRouter",
-  version: "v16-IMMORTAL-ORGANISM",
+  version: "v16-Immortal-ORGANISM",
   layer: "presence_router",
   role: "presence_route_planner",
-  lineage: "PulseRouter-v13-PRESENCE-EVO+ → v16-IMMORTAL-ORGANISM",
+  lineage: "PulseRouter-v13-Presence-Evo+ → v16-Immortal-ORGANISM",
 
   evo: {
     routePlanner: true,
@@ -130,10 +130,10 @@ import {
 //  META — Router Identity
 // ============================================================================
 export const PulseRouterMeta = Object.freeze({
-  organId: "PulseRouter-v16-IMMORTAL-ORGANISM",
+  organId: "PulseRouter-v16-Immortal-ORGANISM",
   role: "TRAFFIC_BRAIN",
-  version: "v16-IMMORTAL-ORGANISM",
-  epoch: "v16-IMMORTAL-ORGANISM",
+  version: "v16-Immortal-ORGANISM",
+  epoch: "v16-Immortal-ORGANISM",
   layer: "Routing",
   safety: Object.freeze({
     deterministic: true,
@@ -260,7 +260,7 @@ function getLocalBeaconEngine() {
 }
 
 // ============================================================================
-// FACTORY: createPulseRouter — v16-IMMORTAL-ORGANISM
+// FACTORY: createPulseRouter — v16-Immortal-ORGANISM
 // ============================================================================
 export function createPulseRouter({
   routerID = null,
@@ -275,7 +275,7 @@ export function createPulseRouter({
     routerID,
     regionID,
     createdBy: "PulseWorldCore",
-    version: "v16-IMMORTAL-ORGANISM"
+    version: "v16-Immortal-ORGANISM"
   });
 
   function log(...args) {

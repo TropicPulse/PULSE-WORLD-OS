@@ -6,10 +6,10 @@
 /*
 AI_EXPERIENCE_META = {
   identity: "aiDeliveryEngine",
-  version: "v14-IMMORTAL",
+  version: "v14-Immortal",
   layer: "ai_tools",
   role: "delivery_engine",
-  lineage: "aiDeliveryEngine-v10 → v12 → v12.3-Presence → v14-IMMORTAL",
+  lineage: "aiDeliveryEngine-v10 → v12 → v12.3-Presence → v14-Immortal",
 
   evo: {
     deliveryEngine: true,
@@ -38,8 +38,8 @@ AI_EXPERIENCE_META = {
 export const DeliveryEngineMeta = Object.freeze({
   layer: "PulseAIDeliveryEngine",
   role: "DELIVERY_ENGINE_ORGAN",
-  version: "14-IMMORTAL",
-  identity: "aiDeliveryEngine-v14-IMMORTAL",
+  version: "14-Immortal",
+  identity: "aiDeliveryEngine-v14-Immortal",
 
   evo: Object.freeze({
     driftProof: true,
@@ -60,7 +60,7 @@ export const DeliveryEngineMeta = Object.freeze({
 
     readOnly: true,
     multiInstanceReady: true,
-    epoch: "14-IMMORTAL"
+    epoch: "14-Immortal"
   }),
 
   contract: Object.freeze({

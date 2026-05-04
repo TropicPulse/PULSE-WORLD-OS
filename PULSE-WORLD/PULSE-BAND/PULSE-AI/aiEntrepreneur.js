@@ -6,10 +6,10 @@
 /*
 AI_EXPERIENCE_META = {
   identity: "aiEntrepreneur",
-  version: "v14-IMMORTAL",
+  version: "v14-Immortal",
   layer: "ai_tools",
   role: "entrepreneurial_reasoner",
-  lineage: "aiEntrepreneur-v11 → v14-IMMORTAL",
+  lineage: "aiEntrepreneur-v11 → v14-Immortal",
 
   evo: {
     entrepreneurialReasoning: true,
@@ -36,8 +36,8 @@ AI_EXPERIENCE_META = {
 export const EntrepreneurMeta = Object.freeze({
   layer: "PulseAIStrategyFrame",
   role: "ENTREPRENEUR_ORGAN",
-  version: "12.3-EVO+",
-  identity: "aiEntrepreneur-v12.3-EVO+",
+  version: "12.3-Evo+",
+  identity: "aiEntrepreneur-v12.3-Evo+",
 
   evo: Object.freeze({
     driftProof: true,
@@ -53,7 +53,7 @@ export const EntrepreneurMeta = Object.freeze({
     readOnly: true,
     multiInstanceReady: true,
     strategyArteryAware: true,
-    epoch: "12.3-EVO+"
+    epoch: "12.3-Evo+"
   }),
 
   contract: Object.freeze({

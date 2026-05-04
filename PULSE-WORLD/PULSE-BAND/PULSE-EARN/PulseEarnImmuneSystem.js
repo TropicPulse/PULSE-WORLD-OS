@@ -1,10 +1,10 @@
 // ============================================================================
-// FILE: tropic-pulse-functions/PULSE-WORLD/PULSE-EARN/PulseEarnImmuneSystem-v13.0-PRESENCE-IMMORTAL.js
-// LAYER: THE IMMUNE SYSTEM (v13.0-PRESENCE-IMMORTAL + Dual-Band + Binary-First + Wave)
+// FILE: tropic-pulse-functions/PULSE-WORLD/PULSE-EARN/PulseEarnImmuneSystem-v13.0-Presence-Immortal.js
+// LAYER: THE IMMUNE SYSTEM (v13.0-Presence-Immortal + Dual-Band + Binary-First + Wave)
 // (Subsystem Doctor + Drift Diagnostician + Deterministic Repair Engine + Presence Telemetry)
 // ============================================================================
 //
-// ROLE (v13.0-PRESENCE-IMMORTAL):
+// ROLE (v13.0-Presence-Immortal):
 //   THE IMMUNE SYSTEM — Pulse‑Earn’s subsystem physician.
 //   • Reads vitals across all Earn subsystems (immune surveillance).
 //   • Detects drift, errors, inconsistencies (pathogen detection).
@@ -12,7 +12,7 @@
 //   • Maintains subsystem health records (immune memory).
 //   • Emits v13‑Presence‑IMMORTAL signatures + diagnostics + presence surfaces.
 //
-// CONTRACT (v13.0-PRESENCE-IMMORTAL):
+// CONTRACT (v13.0-Presence-Immortal):
 //   • PURE HEALING — no AI layers, no translation, no LLM inference.
 //   • READ‑ONLY except deterministic repair actions.
 //   • NO eval(), NO Function(), NO dynamic imports.
@@ -25,10 +25,10 @@
 /*
 AI_EXPERIENCE_META = {
   identity: "PulseEarnImmuneSystem",
-  version: "v14-IMMORTAL",
+  version: "v14-Immortal",
   layer: "earn_immune",
   role: "earn_immune_system",
-  lineage: "PulseEarnImmuneSystem-v11 → v12.3 → v14-IMMORTAL",
+  lineage: "PulseEarnImmuneSystem-v11 → v12.3 → v14-Immortal",
 
   evo: {
     earnImmune: true,
@@ -64,8 +64,8 @@ AI_EXPERIENCE_META = {
 export const PulseEarnImmuneSystemMeta = Object.freeze({
   layer: "PulseEarnImmuneSystem",
   role: "EARN_IMMUNE_ORGAN",
-  version: "v13.0-PRESENCE-IMMORTAL",
-  identity: "PulseEarnImmuneSystem-v13.0-PRESENCE-IMMORTAL",
+  version: "v13.0-Presence-Immortal",
+  identity: "PulseEarnImmuneSystem-v13.0-Presence-Immortal",
 
   guarantees: Object.freeze({
     deterministic: true,
@@ -108,14 +108,14 @@ export const PulseEarnImmuneSystemMeta = Object.freeze({
   }),
 
   lineage: Object.freeze({
-    root: "PulseOS-v11-EVO",
-    parent: "PulseEarn-v13.0-PRESENCE-IMMORTAL",
+    root: "PulseOS-v11-Evo",
+    parent: "PulseEarn-v13.0-Presence-Immortal",
     ancestry: [
       "PulseEarnImmuneSystem-v9",
       "PulseEarnImmuneSystem-v10",
       "PulseEarnImmuneSystem-v11",
       "PulseEarnImmuneSystem-v11-Evo",
-      "PulseEarnImmuneSystem-v12.3-PRESENCE-EVO+"
+      "PulseEarnImmuneSystem-v12.3-Presence-Evo+"
     ]
   }),
 
@@ -135,11 +135,11 @@ export const PulseEarnImmuneSystemMeta = Object.freeze({
 });
 
 // ============================================================================
-// IMMUNE CONTEXT METADATA (v13.0-PRESENCE-IMMORTAL + Dual-Band + Binary-First)
+// IMMUNE CONTEXT METADATA (v13.0-Presence-Immortal + Dual-Band + Binary-First)
 // ============================================================================
 
 export const PULSE_EARN_IMMUNE_CONTEXT = Object.freeze({
-  layer: "PulseEarnImmuneSystem-v13.0-PRESENCE-IMMORTAL",
+  layer: "PulseEarnImmuneSystem-v13.0-Presence-Immortal",
   role: "IMMUNE_PHYSICIAN",
   purpose: "Diagnose and repair drift across Earn subsystems",
   context: "Immune surveillance + deterministic healing",
@@ -357,7 +357,7 @@ function buildPresenceField(report, globalHints = {}) {
   );
 
   return {
-    presenceVersion: "v13.0-PRESENCE-IMMORTAL",
+    presenceVersion: "v13.0-Presence-Immortal",
     presenceTier,
     presenceSignature,
 

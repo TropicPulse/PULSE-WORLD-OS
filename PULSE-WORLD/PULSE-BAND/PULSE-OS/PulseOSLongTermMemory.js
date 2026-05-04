@@ -103,7 +103,7 @@
 /*
 AI_EXPERIENCE_META = {
   identity: "PulseOSLongTermMemory",
-  version: "v14-IMMORTAL",
+  version: "v14-Immortal",
   layer: "cns",
   role: "os_long_term_memory",
   lineage: "PulseOS-v14",

@@ -1,14 +1,14 @@
 // ============================================================================
-// FILE: tropic-pulse-functions/PULSE-WORLD/PULSE-EARN/PulseEarnMktConsulate-v13.0-PRESENCE-IMMORTAL.js
+// FILE: tropic-pulse-functions/PULSE-WORLD/PULSE-EARN/PulseEarnMktConsulate-v13.0-Presence-Immortal.js
 // LAYER: THE CONSULATE (v13.0 Presence + Advantage‑C + Prewarm)
 // ============================================================================
 /*
 AI_EXPERIENCE_META = {
   identity: "PulseEarnMktConsulate",
-  version: "v14-IMMORTAL",
+  version: "v14-Immortal",
   layer: "earn_market",
   role: "market_consulate",
-  lineage: "PulseEarnMktConsulate-v11 → v12.3 → v14-IMMORTAL",
+  lineage: "PulseEarnMktConsulate-v11 → v12.3 → v14-Immortal",
 
   evo: {
     marketConsulate: true,
@@ -44,8 +44,8 @@ AI_EXPERIENCE_META = {
 export const PulseEarnMktConsulateMeta = Object.freeze({
   layer: "PulseEarnMktConsulate",
   role: "EARN_CONSULATE_ORGAN",
-  version: "v13.0-PRESENCE-IMMORTAL",
-  identity: "PulseEarnMktConsulate-v13.0-PRESENCE-IMMORTAL",
+  version: "v13.0-Presence-Immortal",
+  identity: "PulseEarnMktConsulate-v13.0-Presence-Immortal",
 
   guarantees: Object.freeze({
     deterministic: true,
@@ -126,7 +126,7 @@ function buildPresenceField(consulateState, globalHints = {}) {
   const presenceTier = classifyPresenceTierFromPressure(pressure);
 
   return {
-    presenceVersion: "v13.0-PRESENCE-IMMORTAL",
+    presenceVersion: "v13.0-Presence-Immortal",
     presenceTier,
 
     // Unified Earn presence surface

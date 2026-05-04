@@ -6,7 +6,7 @@
 /*
 AI_EXPERIENCE_META = {
   identity: "powerContinuanceEngine",
-  version: "v14-IMMORTAL",
+  version: "v14-Immortal",
   layer: "pulsegrid_compute",
   role: "continuance_compute_engine",
   lineage: "PowerPrime-v14",
@@ -51,8 +51,8 @@ AI_EXPERIENCE_META = {
 export const PowerContinuanceEngineMeta = Object.freeze({
   layer: "PulseAIPowerPrime",
   role: "POWER_CONTINUANCE_ENGINE",
-  version: "12.3-PRESENCE-EVO+",
-  identity: "powerContinuanceEngine-v12.3-PRESENCE-EVO+",
+  version: "12.3-Presence-Evo+",
+  identity: "powerContinuanceEngine-v12.3-Presence-Evo+",
 
   evo: Object.freeze({
     deterministic: true,
@@ -73,7 +73,7 @@ export const PowerContinuanceEngineMeta = Object.freeze({
     prewarmAware: true,
     coldStartAware: true,
     readOnly: true,
-    epoch: "12.3-PRESENCE-EVO+"
+    epoch: "12.3-Presence-Evo+"
   }),
 
   guarantees: Object.freeze({

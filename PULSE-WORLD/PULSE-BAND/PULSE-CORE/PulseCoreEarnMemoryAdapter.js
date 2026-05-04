@@ -14,10 +14,10 @@
 /*
 AI_EXPERIENCE_META = {
   identity: "PulseCoreEarnMemoryAdapter",
-  version: "v15-IMMORTAL-EARN-MEMORY",
+  version: "v15-Immortal-EARN-MEMORY",
   layer: "corememory_adapter",
   role: "earn_memory_adapter",
-  lineage: "PulseCoreMemory-v15-IMMORTAL",
+  lineage: "PulseCoreMemory-v15-Immortal",
 
   evo: {
     adapter: true,
@@ -61,7 +61,7 @@ function nextEarnEpoch() {
 export function createPulseEarnMemoryAdapter({
   overlay = createPulseBinaryOverlay(),
   dnaTag = "default-dna",
-  version = "15.0-IMMORTAL-EARN-MEMORY",
+  version = "15.0-Immortal-EARN-MEMORY",
   log = console.log
 } = {}) {
 

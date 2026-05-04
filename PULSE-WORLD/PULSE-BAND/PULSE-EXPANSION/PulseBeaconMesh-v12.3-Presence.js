@@ -2,16 +2,16 @@
  * ============================================================================
  *  PULSE-WORLD : PulseBeaconMesh-v12.3-Presence.js
  *  ROLE: Local membrane simulator + density/mode/advantage debugger
- *  VERSION: v16-IMMORTAL-ORGANISM
+ *  VERSION: v16-Immortal-ORGANISM
  *  LAYER: BeaconMesh
- *  IDENTITY: PulseBeaconMesh-v16-IMMORTAL-ORGANISM
+ *  IDENTITY: PulseBeaconMesh-v16-Immortal-ORGANISM
  * ============================================================================
  *
  *  PURPOSE:
  *    This organ simulates local world conditions and feeds them into the
  *    PulseBeaconEngine IMMORTAL chain. It does NOT compute signal physics.
  *
- *    In v16-IMMORTAL-ORGANISM, BeaconMesh is no longer an isolated helper.
+ *    In v16-Immortal-ORGANISM, BeaconMesh is no longer an isolated helper.
  *    It is the LOCAL MEMBRANE of the organism, wired symbolically into:
  *
  *      - PulseExpansion (world / region / cluster)
@@ -36,10 +36,10 @@
 /*
 AI_EXPERIENCE_META = {
   identity: "PulseBeaconMesh",
-  version: "v16-IMMORTAL-ORGANISM",
+  version: "v16-Immortal-ORGANISM",
   layer: "beacon_mesh",
   role: "local_membrane_simulator",
-  lineage: "PulseBeaconMesh-v1 → v11-Evo → v14-IMMORTAL → v16-IMMORTAL-ORGANISM",
+  lineage: "PulseBeaconMesh-v1 → v11-Evo → v14-Immortal → v16-Immortal-ORGANISM",
 
   evo: {
     localMembrane: true,
@@ -185,8 +185,8 @@ import {
 export const PulseBeaconMeshMeta = Object.freeze({
   layer: "BeaconMesh",
   role: "LOCAL_MEMBRANE_SIMULATOR",
-  version: "v16-IMMORTAL-ORGANISM",
-  identity: "PulseBeaconMesh-v16-IMMORTAL-ORGANISM",
+  version: "v16-Immortal-ORGANISM",
+  identity: "PulseBeaconMesh-v16-Immortal-ORGANISM",
 
   guarantees: Object.freeze({
     deterministic: true,
@@ -296,7 +296,7 @@ function buildScenarioProfile({
 }
 
 // ============================================================================
-// ORGAN: PulseBeaconMesh (v16-IMMORTAL-ORGANISM)
+// ORGAN: PulseBeaconMesh (v16-Immortal-ORGANISM)
 // ============================================================================
 
 export function PulseBeaconMesh({

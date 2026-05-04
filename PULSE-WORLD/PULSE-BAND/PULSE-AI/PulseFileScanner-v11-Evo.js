@@ -1,5 +1,5 @@
 // ============================================================================
-// FILE: /PULSE-AI/PulseFileScanner-v15-IMMORTAL.js
+// FILE: /PULSE-AI/PulseFileScanner-v15-Immortal.js
 // PULSE OS v15‑IMMORTAL — FILE SCANNER ORGAN
 // Symbolic Cognition • Structural Analysis • Drift + Lineage Aware
 // PURE SYMBOLIC ENGINE. ZERO EXECUTION. ZERO MUTATION. DUALBAND-SAFE.
@@ -7,10 +7,10 @@
 /*
 AI_EXPERIENCE_META = {
   identity: "PulseFileScanner",
-  version: "v15-IMMORTAL",
+  version: "v15-Immortal",
   layer: "ai_adapter",
   role: "file_scanner_adapter",
-  lineage: "PulseFileScanner-v11 → v14-IMMORTAL → v15-IMMORTAL",
+  lineage: "PulseFileScanner-v11 → v14-Immortal → v15-Immortal",
 
   evo: {
     adapter: true,
@@ -39,8 +39,8 @@ export const PulseFileScannerMeta = Object.freeze({
   subsystem: "aiFileScanner",
   layer: "PulseAICognition",
   role: "FILE_SCANNER_ORGAN",
-  version: "15-IMMORTAL",
-  identity: "PulseFileScanner-v15-IMMORTAL",
+  version: "15-Immortal",
+  identity: "PulseFileScanner-v15-Immortal",
 
   // --------------------------------------------------------------------------
   // EVO — IMMORTAL-GRADE SCANNER CAPABILITIES
@@ -66,7 +66,7 @@ export const PulseFileScannerMeta = Object.freeze({
     windowAware: true,
 
     futureEvolutionReady: true,
-    epoch: "15-IMMORTAL"
+    epoch: "15-Immortal"
   }),
 
   // --------------------------------------------------------------------------

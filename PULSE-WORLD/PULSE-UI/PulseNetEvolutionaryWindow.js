@@ -1,12 +1,12 @@
 // ============================================================================
 // FILE: /PulseOS/Surface/PulseEvolutionaryWindow-v13.js
-// PULSE EVOLUTIONARY WINDOW — v13-EVO-ALWAYS-ON-OFFLINE-FIRST
+// PULSE EVOLUTIONARY WINDOW — v13-Evo-ALWAYS-ON-OFFLINE-FIRST
 // PORTAL-MEMBRANE • ONE-WAY GLASS • ZERO-TRUST SURFACE • NO ORGANS BEYOND GLASS
 // ============================================================================
 /* 
 AI_EXPERIENCE_META = {
   identity: "PulseWindow",
-  version: "v12.5-EVO",
+  version: "v12.5-Evo",
   layer: "frontend",
   role: "window_loader",
   lineage: "PulseOS-v12",
@@ -204,7 +204,7 @@ function buildRouteId() {
 const surfaceMeta = Object.freeze({
   layer: "PulseEvolutionaryWindow",
   role: "surface-membrane",
-  version: "13.0-EVO-ALWAYS-ON-OFFLINE-FIRST",
+  version: "13.0-Evo-ALWAYS-ON-OFFLINE-FIRST",
   evo: {
     browserOnly: true,
     membraneOnly: true,
@@ -241,7 +241,7 @@ const pulseRole = Object.freeze({
   type: "membrane",
   subsystem: "surface",
   layer: "window",
-  version: "13.0-EVO-ALWAYS-ON-OFFLINE-FIRST",
+  version: "13.0-Evo-ALWAYS-ON-OFFLINE-FIRST",
   contract: {
     purpose:
       "Provide a one-way glass into the organism: vitals, logs, understanding, binary shadow, and route-level lore."
@@ -681,7 +681,7 @@ if (isBrowser()) {
             type: "chunk-session",
             surface: "PulseEvolutionaryWindow",
             environment: PulseSurfaceEnvironment,
-            version: "13.0-EVO-ALWAYS-ON-OFFLINE-FIRST"
+            version: "13.0-Evo-ALWAYS-ON-OFFLINE-FIRST"
           });
         }
       } catch (err) {

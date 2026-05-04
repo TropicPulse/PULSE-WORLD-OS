@@ -1,11 +1,11 @@
 // ============================================================================
-// FILE: PulseMeshCortex-v15-EVO-IMMORTAL.js
-// [pulse:mesh] COMMUNITY_CORTEX_LAYER v15-EVO-IMMORTAL  // blue
+// FILE: PulseMeshCortex-v15-Evo-Immortal.js
+// [pulse:mesh] COMMUNITY_CORTEX_LAYER v15-Evo-Immortal  // blue
 // Strategic Decision Layer • Survival-Pattern Instincts • Metadata-Only
 // Presence-Aware • Binary-Aware • Dual-Band • Drift-Proof • Advantage-Aware
 // ============================================================================
 //
-// IDENTITY — THE MESH CORTEX (v15-EVO-IMMORTAL):
+// IDENTITY — THE MESH CORTEX (v15-Evo-Immortal):
 // ----------------------------------------------
 // • High-level strategic decision layer for impulses (community cortex).
 // • Applies survival-pattern instincts: risk, novelty, cooperation, budgeting.
@@ -33,7 +33,7 @@
 /*
 AI_EXPERIENCE_META = {
   identity: "PulseMeshCortex",
-  version: "v14.9-MESH-CORTEX-IMMORTAL",
+  version: "v14.9-MESH-CORTEX-Immortal",
   layer: "mesh",
   role: "mesh_symbolic_interpretation",
   lineage: "PulseMesh-v14",
@@ -66,8 +66,8 @@ AI_EXPERIENCE_META = {
 }
 */
 // ============================================================================
-// FILE: PulseMeshCortex-v15-EVO-IMMORTAL.js
-// [pulse:mesh] COMMUNITY_CORTEX_LAYER v15-EVO-IMMORTAL  // blue
+// FILE: PulseMeshCortex-v15-Evo-Immortal.js
+// [pulse:mesh] COMMUNITY_CORTEX_LAYER v15-Evo-Immortal  // blue
 // Strategic Decision Layer • Survival-Pattern Instincts • Metadata-Only
 // Presence-Aware • Binary-Aware • Dual-Band • Drift-Proof • Advantage-Aware
 // ============================================================================
@@ -80,7 +80,7 @@ export function createPulseMeshCortex({ context = {}, log, warn, error } = {}) {
   const CORTEX_META = {
     layer: "PulseCortex",
     role: "MESH_STRATEGIC_LAYER",
-    version: "15-EVO-IMMORTAL",
+    version: "15-Evo-Immortal",
     target: "full-mesh",
     selfRepairable: true,
     evo: {

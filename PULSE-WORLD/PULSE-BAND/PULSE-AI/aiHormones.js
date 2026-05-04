@@ -1,5 +1,5 @@
 // ============================================================================
-//  aiHormones.js — Pulse OS v15-IMMORTAL+ Organ
+//  aiHormones.js — Pulse OS v15-Immortal+ Organ
 //  Binary Hormone System • Global Modulation • Dualband • Artery-First
 //  Window-Safe • Registry-Aware • Governor/Membrane-Ready
 // ============================================================================
@@ -11,8 +11,8 @@
 //    • Provides cached hormone snapshots + artery snapshots + global registry.
 //    • Dualband-aware: can fuse metabolic + sentience + external vitals.
 //
-//  DESIGN NOTES (v15-IMMORTAL+):
-//    • Upgraded from v12.3-EVO to v15-IMMORTAL+ with:
+//  DESIGN NOTES (v15-Immortal+):
+//    • Upgraded from v12.3-Evo to v15-Immortal+ with:
 //        - Multi-instance registry + global hormone artery registry
 //        - Dualband vitals fusion (metabolism + sentience + external binaryVitals)
 //        - Explicit drift detection between hormone snapshots
@@ -25,10 +25,10 @@
 /*
 AI_EXPERIENCE_META = {
   identity: "aiHormones",
-  version: "v15-IMMORTAL+",
+  version: "v15-Immortal+",
   layer: "ai_core",
   role: "hormone_signal_engine",
-  lineage: "aiHormones-v11 → v12.3-EVO → v15-IMMORTAL+",
+  lineage: "aiHormones-v11 → v12.3-Evo → v15-Immortal+",
 
   evo: {
     hormoneSignals: true,
@@ -62,8 +62,8 @@ AI_EXPERIENCE_META = {
 export const HormonesMeta = Object.freeze({
   layer: "BinaryModulation",
   role: "BINARY_HORMONE_SYSTEM",
-  version: "15-IMMORTAL+",
-  identity: "aiBinaryHormones-v15-IMMORTAL+",
+  version: "15-Immortal+",
+  identity: "aiBinaryHormones-v15-Immortal+",
 
   evo: Object.freeze({
     deterministic: true,
@@ -94,7 +94,7 @@ export const HormonesMeta = Object.freeze({
     registryAware: true,       // global hormone registry
     multiInstanceReady: true,
     readOnly: true,
-    epoch: "v15-IMMORTAL+"
+    epoch: "v15-Immortal+"
   }),
 
   contract: Object.freeze({
@@ -226,7 +226,7 @@ export function prewarmBinaryHormones(dualBand = null, { trace = false } = {}) {
 }
 
 // ============================================================================
-//  ORGAN IMPLEMENTATION — v15-IMMORTAL+
+//  ORGAN IMPLEMENTATION — v15-Immortal+
 // ============================================================================
 export class AIBinaryHormones {
   constructor(config = {}) {
@@ -435,7 +435,7 @@ export class AIBinaryHormones {
   }
 
   // ---------------------------------------------------------------------------
-  //  EMIT — global modulation packets (v15-IMMORTAL+)
+  //  EMIT — global modulation packets (v15-Immortal+)
 // ---------------------------------------------------------------------------
   emitHormones() {
     const { levels, artery } = this._computeHormoneLevels();

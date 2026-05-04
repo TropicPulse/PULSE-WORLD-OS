@@ -1,10 +1,10 @@
 // ============================================================================
-// FILE: tropic-pulse-functions/PULSE-WORLD/PULSE-EARN/PulseEarnCirculatorySystem-v13.0-PRESENCE-IMMORTAL.js
-// LAYER: THE CIRCULATORY SYSTEM (v13.0-PRESENCE-IMMORTAL)
+// FILE: tropic-pulse-functions/PULSE-WORLD/PULSE-EARN/PulseEarnCirculatorySystem-v13.0-Presence-Immortal.js
+// LAYER: THE CIRCULATORY SYSTEM (v13.0-Presence-Immortal)
 // (Deterministic Reflex + Routing + Weighting + Presence + Advantage-C + Multi-Instance)
 // ============================================================================
 //
-// ROLE (v13.0-PRESENCE-IMMORTAL):
+// ROLE (v13.0-Presence-Immortal):
 //   THE CIRCULATORY SYSTEM — Pulse‑Earn’s autonomic routing center.
 //   • Deterministically evaluates marketplaces (no real ping).
 //   • Filters unhealthy ones using deterministic healthScore.
@@ -17,7 +17,7 @@
 //   • Supports dual-band routing (symbolic + binary) as metadata-only.
 //   • Uses ONLY provided capabilityModel; no internal device constants.
 //
-// PURPOSE (v13.0-PRESENCE-IMMORTAL):
+// PURPOSE (v13.0-Presence-Immortal):
 //   • Provide deterministic, drift‑proof job routing.
 //   • Guarantee safe multi‑marketplace discovery.
 //   • Maintain healing metadata for the Immune System.
@@ -25,7 +25,7 @@
 //   • Expose routing loop/wave fields + presence/advantage/compute surfaces.
 //   • Remain pure: no hardcoded device profile, no internal baseline.
 //
-// CONTRACT (v13.0-PRESENCE-IMMORTAL):
+// CONTRACT (v13.0-Presence-Immortal):
 //   • PURE ROUTER — no AI layers, no translation, no memory model.
 //   • READ‑ONLY except for healing metadata.
 //   • NO eval(), NO Function(), NO dynamic imports.
@@ -38,10 +38,10 @@
 /*
 AI_EXPERIENCE_META = {
   identity: "PulseEarnCirculatorySystem",
-  version: "v14-IMMORTAL",
+  version: "v14-Immortal",
   layer: "earn_circulatory",
   role: "earn_circulation_and_flow",
-  lineage: "PulseEarnCirculatorySystem-v11 → v12.3 → v14-IMMORTAL",
+  lineage: "PulseEarnCirculatorySystem-v11 → v12.3 → v14-Immortal",
 
   evo: {
     earnCirculation: true,
@@ -76,8 +76,8 @@ AI_EXPERIENCE_META = {
 export const PulseEarnCirculatorySystemMeta = Object.freeze({
   layer: "PulseEarnCirculatorySystem",
   role: "CIRCULATORY_ORGAN",
-  version: "v13.0-PRESENCE-IMMORTAL",
-  identity: "PulseEarnCirculatorySystem-v13.0-PRESENCE-IMMORTAL",
+  version: "v13.0-Presence-Immortal",
+  identity: "PulseEarnCirculatorySystem-v13.0-Presence-Immortal",
 
   guarantees: Object.freeze({
     deterministic: true,
@@ -131,13 +131,13 @@ export const PulseEarnCirculatorySystemMeta = Object.freeze({
   }),
 
   lineage: Object.freeze({
-    root: "PulseOS-v11-EVO",
-    parent: "PulseEarn-v13.0-PRESENCE-IMMORTAL",
+    root: "PulseOS-v11-Evo",
+    parent: "PulseEarn-v13.0-Presence-Immortal",
     ancestry: [
       "PulseEarnCirculatorySystem-v10",
       "PulseEarnCirculatorySystem-v11",
       "PulseEarnCirculatorySystem-v11-Evo",
-      "PulseEarnCirculatorySystem-v12.3-PRESENCE-EVO+"
+      "PulseEarnCirculatorySystem-v12.3-Presence-Evo+"
     ]
   }),
 
@@ -169,7 +169,7 @@ function normalizeBand(band) {
 }
 
 // ============================================================================
-// Healing Metadata — Circulatory Reflex Log (v13.0-PRESENCE-IMMORTAL)
+// Healing Metadata — Circulatory Reflex Log (v13.0-Presence-Immortal)
 // ============================================================================
 const circulatoryHealing = {
   lastHealthError: null,
@@ -295,7 +295,7 @@ function buildPresenceField(context = {}) {
   else if (pressure > 0) presenceTier = "soft";
 
   return Object.freeze({
-    presenceVersion: "v13.0-PRESENCE-IMMORTAL",
+    presenceVersion: "v13.0-Presence-Immortal",
     presenceTier,
 
     bandPresence: pf.bandPresence || gh.presenceContext?.bandPresence || "unknown",
@@ -638,7 +638,7 @@ export function getNextJob(
 }
 
 // ============================================================================
-// Export Healing Metadata — Circulatory Reflex Report (v13.0-PRESENCE-IMMORTAL)
+// Export Healing Metadata — Circulatory Reflex Report (v13.0-Presence-Immortal)
 // ============================================================================
 export function getPulseEarnCirculatorySystemHealingState() {
   return { ...circulatoryHealing };

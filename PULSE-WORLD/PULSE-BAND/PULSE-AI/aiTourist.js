@@ -34,10 +34,10 @@
 /*
 AI_EXPERIENCE_META = {
   identity: "aiTourist",
-  version: "v14-IMMORTAL",
+  version: "v14-Immortal",
   layer: "ai_tools",
   role: "tourist_reasoner",
-  lineage: "aiTourist-v11 → v14-IMMORTAL",
+  lineage: "aiTourist-v11 → v14-Immortal",
 
   evo: {
     touristReasoning: true,
@@ -66,8 +66,8 @@ export const TouristMeta = Object.freeze({
   subsystem: "aiTourist",
   layer: "PulseAITouristFrame",
   role: "TOURIST_ORGAN",
-  version: "11.2-EVO+",
-  identity: "aiTourist-v11.2-EVO+",
+  version: "11.2-Evo+",
+  identity: "aiTourist-v11.2-Evo+",
 
   evo: Object.freeze({
     driftProof: true,
@@ -86,7 +86,7 @@ export const TouristMeta = Object.freeze({
     userAware: true,
     touristAware: true,
     multiInstanceReady: true,
-    epoch: "v11.2-EVO+"
+    epoch: "v11.2-Evo+"
   }),
 
   contract: Object.freeze({

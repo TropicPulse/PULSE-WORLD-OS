@@ -34,7 +34,7 @@
 /*
 AI_EXPERIENCE_META = {
   identity: "PulseOSMucusMembrane",
-  version: "v14-IMMORTAL",
+  version: "v14-Immortal",
   layer: "membrane",
   role: "os_outer_mucus_membrane",
   lineage: "PulseOS-v14",
@@ -70,7 +70,7 @@ AI_EXPERIENCE_META = {
 */
 
 // ============================================================================
-// ORGAN IDENTITY — v12.3-EVO-BINARY-MAX (A0 Mucus Membrane)
+// ORGAN IDENTITY — v12.3-Evo-BINARY-MAX (A0 Mucus Membrane)
 // ============================================================================
 export const PulseRole = {
   type: "Barrier",
@@ -123,8 +123,8 @@ export const PulseRole = {
 export const PulseOSMucusMembraneMeta = Object.freeze({
   layer: "PulseOSMucusMembrane",
   role: "A0_MUCUS_BARRIER_ORGAN",
-  version: "v12.3-EVO-BINARY-MAX",
-  identity: "PulseOSMucusMembrane-v12.3-EVO-BINARY-MAX",
+  version: "v12.3-Evo-BINARY-MAX",
+  identity: "PulseOSMucusMembrane-v12.3-Evo-BINARY-MAX",
 
   guarantees: Object.freeze({
     deterministic: true,
@@ -181,15 +181,15 @@ export const PulseOSMucusMembraneMeta = Object.freeze({
   }),
 
   lineage: Object.freeze({
-    root: "PulseOS-v12-EVO",
-    parent: "PulseOS-v12.3-EVO",
+    root: "PulseOS-v12-Evo",
+    parent: "PulseOS-v12.3-Evo",
     ancestry: [
       "PulseOSMucusMembrane-v9",
       "PulseOSMucusMembrane-v10",
       "PulseOSMucusMembrane-v11",
       "PulseOSMucusMembrane-v11-Evo",
       "PulseOSMucusMembrane-v11-Evo-Prime",
-      "PulseOSMucusMembrane-v11.2-EVO-BINARY-MAX"
+      "PulseOSMucusMembrane-v11.2-Evo-BINARY-MAX"
     ]
   }),
 

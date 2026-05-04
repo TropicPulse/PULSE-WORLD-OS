@@ -16,10 +16,10 @@
 /*
 AI_EXPERIENCE_META = {
   identity: "aiBinaryEvolution",
-  version: "v14-IMMORTAL",
+  version: "v14-Immortal",
   layer: "ai_binary",
   role: "binary_evolution_engine",
-  lineage: "aiBinaryEvolution-v10 → v12 → v14-IMMORTAL",
+  lineage: "aiBinaryEvolution-v10 → v12 → v14-Immortal",
 
   evo: {
     binaryEvolution: true,

@@ -17,7 +17,7 @@
 /*
 AI_EXPERIENCE_META = {
   identity: "PulseSend",
-  version: "v12.4-EVO-UNIFIED",
+  version: "v12.4-Evo-UNIFIED",
   layer: "frontend",
   role: "send_router",
   lineage: "PulseOS-v12",

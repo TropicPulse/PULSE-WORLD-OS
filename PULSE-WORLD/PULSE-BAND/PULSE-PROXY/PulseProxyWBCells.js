@@ -35,8 +35,8 @@ export const PulseRole = {
   type: "Organ",
   subsystem: "PulseProxy",
   layer: "ImmuneLayer",
-  version: "12.3-EVO-PRESENCE",
-  identity: "PulseProxyHealer-v12.3-EVO-PRESENCE",
+  version: "12.3-Evo-Presence",
+  identity: "PulseProxyHealer-v12.3-Evo-Presence",
 
   evo: {
     driftProof: true,
@@ -118,8 +118,8 @@ export const MAX_INSTANCES = 32;
 export const PulseProxyHealerMeta = Object.freeze({
   layer: "PulseProxyHealer",
   role: "IMMUNE_PATROL_ORGAN",
-  version: "v12.3-EVO-BINARY-MAX-ABA-PRESENCE",
-  identity: "PulseProxyHealer-v12.3-EVO-BINARY-MAX-ABA-PRESENCE",
+  version: "v12.3-Evo-BINARY-MAX-ABA-Presence",
+  identity: "PulseProxyHealer-v12.3-Evo-BINARY-MAX-ABA-Presence",
 
   guarantees: Object.freeze({
     deterministicImmuneScan: true,
@@ -186,7 +186,7 @@ export const PulseProxyHealerMeta = Object.freeze({
 
   lineage: Object.freeze({
     root: "PulseProxy-v11",
-    parent: "PulseProxy-v12.3-EVO",
+    parent: "PulseProxy-v12.3-Evo",
     ancestry: [
       "PulseProxyHealer-v7",
       "PulseProxyHealer-v8",
@@ -195,7 +195,7 @@ export const PulseProxyHealerMeta = Object.freeze({
       "PulseProxyHealer-v11",
       "PulseProxyHealer-v11-Evo",
       "PulseProxyHealer-v11-Evo-Prime",
-      "PulseProxyHealer-v12.3-EVO-PRESENCE"
+      "PulseProxyHealer-v12.3-Evo-Presence"
     ]
   }),
 
@@ -243,7 +243,7 @@ export async function writeHealerLog({
       uid,
       file,
       fn,
-      healerVersion: "v14-IMMORTAL",
+      healerVersion: "v14-Immortal",
       layer: "backend_healer",
       createdAt: admin.firestore.FieldValue.serverTimestamp()
     };

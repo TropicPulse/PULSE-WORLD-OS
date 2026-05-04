@@ -2,10 +2,10 @@
 ===============================================================================
 AI_EXPERIENCE_META = {
   identity: "PulseDesign.Architect",
-  version: "v14-IMMORTAL",
+  version: "v14-Immortal",
   layer: "pulse_design",
   role: "architectural_orchestrator_and_genome_conductor",
-  lineage: "Architect-v10.4 → v12.3 → v14-IMMORTAL",
+  lineage: "Architect-v10.4 → v12.3 → v14-Immortal",
 
   evo: {
     architecturalOrchestrator: true,

@@ -8,10 +8,10 @@
 /*
 AI_EXPERIENCE_META = {
   identity: "aiPersonalityEngine",
-  version: "v15-IMMORTAL",
+  version: "v15-Immortal",
   layer: "ai_core",
   role: "personality_engine",
-  lineage: "aiPersonalityEngine-v11 → v15-IMMORTAL",
+  lineage: "aiPersonalityEngine-v11 → v15-Immortal",
 
   evo: {
     personalityEngine: true,
@@ -43,8 +43,8 @@ AI_EXPERIENCE_META = {
 export const PersonalityEngineMeta = Object.freeze({
   layer: "PulseAIPersonalityLayer",
   role: "PERSONALITY_ENGINE",
-  version: "15-IMMORTAL",
-  identity: "aiPersonalityEngine-v15-IMMORTAL",
+  version: "15-Immortal",
+  identity: "aiPersonalityEngine-v15-Immortal",
 
   // --------------------------------------------------------------------------
   //  EVO — IMMORTAL-GRADE PERSONALITY MAP
@@ -72,7 +72,7 @@ export const PersonalityEngineMeta = Object.freeze({
     multiInstanceReady: true,
     readOnly: true,
 
-    epoch: "15-IMMORTAL"
+    epoch: "15-Immortal"
   }),
 
   // --------------------------------------------------------------------------

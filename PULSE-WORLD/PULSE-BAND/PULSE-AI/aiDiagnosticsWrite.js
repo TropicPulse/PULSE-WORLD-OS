@@ -6,10 +6,10 @@
 /*
 AI_EXPERIENCE_META = {
   identity: "aiDiagnosticsWrite",
-  version: "v14-IMMORTAL",
+  version: "v14-Immortal",
   layer: "ai_tools",
   role: "diagnostics_write_engine",
-  lineage: "aiDiagnosticsWrite-v10 → v12 → v14-IMMORTAL",
+  lineage: "aiDiagnosticsWrite-v10 → v12 → v14-Immortal",
 
   evo: {
     diagnosticsWrite: true,

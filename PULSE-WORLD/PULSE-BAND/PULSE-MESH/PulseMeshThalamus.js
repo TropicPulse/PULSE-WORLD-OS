@@ -1,12 +1,12 @@
 // ============================================================================
-// FILE: /organs/thalamus/PulseMeshThalamus-v15.0-IMMORTAL.js
-// [pulse:mesh] PULSE_MESH_THALAMUS v15.0-MESH-IMMORTAL  // white‑violet
+// FILE: /organs/thalamus/PulseMeshThalamus-v15.0-Immortal.js
+// [pulse:mesh] PULSE_MESH_THALAMUS v15.0-MESH-Immortal  // white‑violet
 // Sensory Relay Gate • Perception Filter • Neural Signal Interpreter
 // Deterministic • Metadata‑Only • Zero Pressure Logic
 // Full Advantage Stack: Prewarm • Chunk • Cache • Presence-Band
 // ============================================================================
 //
-// IDENTITY — THALAMUS (v15.0-IMMORTAL):
+// IDENTITY — THALAMUS (v15.0-Immortal):
 // -------------------------------------
 // • First neural relay after ShadowGuard.
 // • Interprets shellState → safe neuralState.
@@ -21,7 +21,7 @@
 /*
 AI_EXPERIENCE_META = {
   identity: "PulseMeshThalamus",
-  version: "v15.0-MESH-THALAMUS-IMMORTAL",
+  version: "v15.0-MESH-THALAMUS-Immortal",
   layer: "mesh",
   role: "mesh_deterministic_relay",
   lineage: "PulseMesh-v15",
@@ -72,7 +72,7 @@ AI_EXPERIENCE_META = {
 const ThalamusMeta = {
   layer: "PulseMeshThalamus",
   role: "THALAMUS_RELAY",
-  version: "15.0-MESH-THALAMUS-IMMORTAL",
+  version: "15.0-MESH-THALAMUS-Immortal",
   target: "full-mesh",
   selfRepairable: true,
   evo: {
@@ -124,7 +124,7 @@ export function createPulseMeshThalamus({
 }) {
 
   // ------------------------------------------------------
-  // Presence-band classifier (v15.0-IMMORTAL)
+  // Presence-band classifier (v15.0-Immortal)
   // ------------------------------------------------------
   function classifyPresenceBand({ binaryMode, dualMode }) {
     if (binaryMode && dualMode) return "dual";
@@ -138,7 +138,7 @@ export function createPulseMeshThalamus({
   // ======================================================
   function interpretShellSignal(input) {
     groupCollapsed?.(
-      "%c[PulseThalamus v15.0-IMMORTAL] Relay",
+      "%c[PulseThalamus v15.0-Immortal] Relay",
       "color:#CE93D8; font-weight:bold;"
     );
 
@@ -177,7 +177,7 @@ export function createPulseMeshThalamus({
       if (shellState === null) perceptionSafe = false;
 
       // ------------------------------------------------------------
-      // MODE + PRESENCE-BAND TAGGING — v15.0-IMMORTAL
+      // MODE + PRESENCE-BAND TAGGING — v15.0-Immortal
       // ------------------------------------------------------------
       const mode = binaryMode ? "binary" : dualMode ? "dual" : "symbolic";
       const presenceBand = classifyPresenceBand({ binaryMode, dualMode });

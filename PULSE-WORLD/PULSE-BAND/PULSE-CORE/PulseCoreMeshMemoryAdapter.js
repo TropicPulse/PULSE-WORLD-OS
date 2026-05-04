@@ -14,10 +14,10 @@
 /*
 AI_EXPERIENCE_META = {
   identity: "PulseCoreMeshMemoryAdapter",
-  version: "v15-IMMORTAL-MESH-MEMORY",
+  version: "v15-Immortal-MESH-MEMORY",
   layer: "corememory_adapter",
   role: "mesh_memory_adapter",
-  lineage: "PulseCoreMemory-v15-IMMORTAL",
+  lineage: "PulseCoreMemory-v15-Immortal",
 
   evo: {
     adapter: true,
@@ -61,7 +61,7 @@ function nextMeshEpoch() {
 export function createPulseMeshMemoryAdapter({
   overlay = createPulseBinaryOverlay(),
   dnaTag = "default-dna",
-  version = "15.0-IMMORTAL-MESH-MEMORY",
+  version = "15.0-Immortal-MESH-MEMORY",
   log = console.log
 } = {}) {
 

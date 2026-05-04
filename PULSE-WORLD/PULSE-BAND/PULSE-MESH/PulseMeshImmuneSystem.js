@@ -1,11 +1,11 @@
 // ============================================================================
 // FILE: /organs/immune/PulseMeshImmuneSystem.js
-// PULSE OS — v15-EVO-IMMORTAL
+// PULSE OS — v15-Evo-Immortal
 // MESH IMMUNE SYSTEM COMMANDER — “THE IMMUNE COMMANDER”
 // Deterministic • Declarative • Zero Drift • Pure Logic • Presence/Band-Aware
 // ============================================================================
 //
-// ROLE (v15-EVO-IMMORTAL):
+// ROLE (v15-Evo-Immortal):
 //   • Receives diagnostic snapshots (Halo, Echo, Field, SDN).
 //   • Performs deterministic triage (no pressure thresholds).
 //   • Emits declarative repair directives for:
@@ -22,7 +22,7 @@
 /*
 AI_EXPERIENCE_META = {
   identity: "PulseMeshImmuneSystem",
-  version: "v15.0-MESH-IMMUNE-IMMORTAL",
+  version: "v15.0-MESH-IMMUNE-Immortal",
   layer: "mesh",
   role: "mesh_immune_engine",
   lineage: "PulseMesh-v15",
@@ -70,12 +70,12 @@ export function createPulseMeshImmuneSystem({
 }) {
 
   // ---------------------------------------------------------------------------
-  // META — v15-EVO-IMMORTAL identity
+  // META — v15-Evo-Immortal identity
   // ---------------------------------------------------------------------------
   const meta = {
     layer: "PulseMeshImmuneSystem",
     role: "IMMUNE_COMMANDER",
-    version: "15-EVO-IMMORTAL",
+    version: "15-Evo-Immortal",
     target: "full-mesh",
     selfRepairable: true,
     evo: {

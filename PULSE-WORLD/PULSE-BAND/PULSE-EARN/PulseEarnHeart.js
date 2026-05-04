@@ -1,16 +1,16 @@
 // ============================================================================
-// FILE: PULSE-WORLD/PULSE-EARN/PulseEarnHeart-v14-EVO-IMMORTAL.js
-// LAYER: THE HEART (v14-EVO-IMMORTAL + Dual-Band + Binary + Wave + Presence)
+// FILE: PULSE-WORLD/PULSE-EARN/PulseEarnHeart-v14-Evo-Immortal.js
+// LAYER: THE HEART (v14-Evo-Immortal + Dual-Band + Binary + Wave + Presence)
 // BABY HEART — NO HEARTBEAT, NO TIMERS, NO TIMESTAMPS
 // Baby runs off Mom/Dad pulse surfaces + soft random nudge until its own beat exists.
 // ============================================================================
 /*
 AI_EXPERIENCE_META = {
   identity: "PulseEarnHeart",
-  version: "v14-IMMORTAL",
+  version: "v14-Immortal",
   layer: "earn_heart",
   role: "earn_pulse_driver",
-  lineage: "PulseEarnHeart-v10.4 → v11-Evo → v14-IMMORTAL",
+  lineage: "PulseEarnHeart-v10.4 → v11-Evo → v14-Immortal",
 
   evo: {
     earnPulse: true,
@@ -45,8 +45,8 @@ AI_EXPERIENCE_META = {
 export const PulseEarnHeartMeta = Object.freeze({
   layer: "PulseEarnHeart",
   role: "EARN_HEART_ORGAN",
-  version: "v14-EVO-IMMORTAL",
-  identity: "PulseEarnHeart-v14-EVO-IMMORTAL",
+  version: "v14-Evo-Immortal",
+  identity: "PulseEarnHeart-v14-Evo-Immortal",
 
   guarantees: Object.freeze({
     deterministicCore: true,
@@ -95,7 +95,7 @@ import { executePulseEarnJob } from "./PulseEarnMetabolism.js";
 import { submitPulseEarnResult } from "./PulseEarnLymphNodes.js";
 
 // ============================================================================
-// Healing Metadata — Baby Heart Log (v14-EVO-IMMORTAL)
+// Healing Metadata — Baby Heart Log (v14-Evo-Immortal)
 // ============================================================================
 const heartHealing = {
   cycles: 0,

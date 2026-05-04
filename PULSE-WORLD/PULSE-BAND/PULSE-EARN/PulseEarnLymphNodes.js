@@ -1,10 +1,10 @@
 // ============================================================================
-// FILE: tropic-pulse-functions/PULSE-WORLD/PULSE-EARN/PulseEarnLymphNodes-v13.0-PRESENCE-IMMORTAL.js
-// LAYER: THE LYMPHATIC HANDSHAKE NODES (v13.0-PRESENCE-IMMORTAL)
+// FILE: tropic-pulse-functions/PULSE-WORLD/PULSE-EARN/PulseEarnLymphNodes-v13.0-Presence-Immortal.js
+// LAYER: THE LYMPHATIC HANDSHAKE NODES (v13.0-Presence-Immortal)
 // (Finalizer of Jobs + Immune-Safe Dispatch + Certified Marketplace Exchange)
 // ============================================================================
 //
-// ROLE (v13.0-PRESENCE-IMMORTAL):
+// ROLE (v13.0-Presence-Immortal):
 //   THE LYMPHATIC HANDSHAKE NODES — Pulse‑Earn’s immune‑safe finalizers.
 //   • Validate job + marketplace identity (immune recognition).
 //   • Locate the correct marketplace receptor (antigen matching).
@@ -15,7 +15,7 @@
 //   • Emit binary-first + wave surfaces.
 //   • Emit lymphComputeProfile (metadata-only).
 //
-// CONTRACT (v13.0-PRESENCE-IMMORTAL):
+// CONTRACT (v13.0-Presence-Immortal):
 //   • PURE RESULT DISPATCHER — no AI layers, no translation, no memory model.
 //   • NO async, NO timestamps, NO nondeterministic behavior.
 //   • NEVER mutate job objects.
@@ -26,10 +26,10 @@
 /*
 AI_EXPERIENCE_META = {
   identity: "PulseEarnLymphNodes",
-  version: "v14-IMMORTAL",
+  version: "v14-Immortal",
   layer: "earn_immune",
   role: "earn_lymph_nodes",
-  lineage: "PulseEarnLymphNodes-v11 → v12.3 → v14-IMMORTAL",
+  lineage: "PulseEarnLymphNodes-v11 → v12.3 → v14-Immortal",
 
   evo: {
     lymphNodes: true,
@@ -64,8 +64,8 @@ AI_EXPERIENCE_META = {
 export const PulseEarnLymphNodesMeta = Object.freeze({
   layer: "PulseEarnLymphNodes",
   role: "EARN_LYMPHATIC_HANDSHAKE_ORGAN",
-  version: "v13.0-PRESENCE-IMMORTAL",
-  identity: "PulseEarnLymphNodes-v13.0-PRESENCE-IMMORTAL",
+  version: "v13.0-Presence-Immortal",
+  identity: "PulseEarnLymphNodes-v13.0-Presence-Immortal",
 
   guarantees: Object.freeze({
     deterministic: true,
@@ -105,14 +105,14 @@ export const PulseEarnLymphNodesMeta = Object.freeze({
   }),
 
   lineage: Object.freeze({
-    root: "PulseOS-v11-EVO",
-    parent: "PulseEarn-v13.0-PRESENCE-IMMORTAL",
+    root: "PulseOS-v11-Evo",
+    parent: "PulseEarn-v13.0-Presence-Immortal",
     ancestry: [
       "PulseEarnLymphNodes-v9",
       "PulseEarnLymphNodes-v10",
       "PulseEarnLymphNodes-v11",
       "PulseEarnLymphNodes-v11-Evo",
-      "PulseEarnLymphNodes-v12.3-PRESENCE-EVO+"
+      "PulseEarnLymphNodes-v12.3-Presence-Evo+"
     ]
   }),
 
@@ -138,8 +138,8 @@ export const PulseRole = {
   type: "ImmuneDispatch",
   subsystem: "PulseEarnLymphNodes",
   layer: "C2-LymphaticHandshake",
-  version: "13.0-PRESENCE-IMMORTAL",
-  identity: "PulseEarnLymphNodes-v13.0-PRESENCE-IMMORTAL",
+  version: "13.0-Presence-Immortal",
+  identity: "PulseEarnLymphNodes-v13.0-Presence-Immortal",
 
   evo: {
     driftProof: true,
@@ -291,7 +291,7 @@ function buildPresenceField(job, globalHints = {}) {
   );
 
   return {
-    presenceVersion: "v13.0-PRESENCE-IMMORTAL",
+    presenceVersion: "v13.0-Presence-Immortal",
     presenceTier,
     presenceSignature,
 

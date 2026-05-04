@@ -48,7 +48,7 @@
 /*
 AI_EXPERIENCE_META = {
   identity: "PulseTouchWarmup",
-  version: "v14-IMMORTAL",
+  version: "v14-Immortal",
   layer: "metabolic",
   role: "pre_pulse_warmup_engine",
   lineage: "PulseOS-v13",

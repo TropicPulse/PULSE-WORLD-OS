@@ -2,10 +2,10 @@
 ===============================================================================
 AI_EXPERIENCE_META = {
   identity: "PulseTranslator.SkeletalOutput",
-  version: "v14-IMMORTAL",
+  version: "v14-Immortal",
   layer: "pulse_translator",
   role: "skeletal_output_translator",
-  lineage: "SkeletalOutput-v11.0 → v12.4 → v14-IMMORTAL",
+  lineage: "SkeletalOutput-v11.0 → v12.4 → v14-Immortal",
 
   evo: {
     skeletalOutput: true,

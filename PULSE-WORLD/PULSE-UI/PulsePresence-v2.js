@@ -1,17 +1,17 @@
 // ============================================================================
-//  PulseChunks-v2.2-MULTILANE-IMMORTAL
+//  PulseChunks-v2.2-MULTILANE-Immortal
 //  FRONTEND CHUNK MEMBRANE — 2026 Transport Layer
 //  Chunking • Caching • Prewarm • Zero-Latency Surface
 //  Lore injection • PulseBand integration • Sectional fallback
 //  + Universal de-chunking via PulseChunkNormalizer
 //  + 32-LANE HYBRID CNS ROUTER (binary-aligned, hash-routed)
-//  + v14-IMMORTAL DNA-aware cache + reconstruction
+//  + v14-Immortal DNA-aware cache + reconstruction
 // ============================================================================
 
 /* 
 AI_EXPERIENCE_META = {
   identity: "PulsePresence",
-  version: "v14-IMMORTAL-MEMBRANE",
+  version: "v14-Immortal-MEMBRANE",
   layer: "frontend",
   role: "presence_loader",
   lineage: "PulseOS-v14",
@@ -34,7 +34,7 @@ AI_EXPERIENCE_META = {
       "PulseChunks",
       "PulseBand",
       "PulsePresenceNormalizer",
-      "PulseChunker-v14-IMMORTAL"
+      "PulseChunker-v14-Immortal"
     ],
     never: [
       "safeRoute",
@@ -68,7 +68,7 @@ const db =
   null;
 
 console.log("Presence");
-console.log("[PulseChunks-v2.2-MULTILANE-IMMORTAL] Membrane chunker loading...");
+console.log("[PulseChunks-v2.2-MULTILANE-Immortal] Membrane chunker loading...");
 
 import { safeRoute as route, fireAndForgetRoute } from "./_BACKEND/PulseProofBridge.js";
 import PulseChunkNormalizer from "./PulsePresenceNormalizer.js";
@@ -356,7 +356,7 @@ async function fetchChunk(url) {
       timestamp: Date.now(),
       degraded: chunksDegraded,
       presence: "frontend-dna-request",
-      membrane: "PulseChunks-v2.2-MULTILANE-IMMORTAL",
+      membrane: "PulseChunks-v2.2-MULTILANE-Immortal",
     });
   } catch (err) {
     console.warn("[PulseDNA] Network visibility logging failed:", err);
@@ -617,7 +617,7 @@ export function prewarm(urls = []) {
 }
 
 // ============================================================================
-//  PULSEBAND INTEGRATION — v14-EVO
+//  PULSEBAND INTEGRATION — v14-Evo
 // ============================================================================
 function handlePulseBandPacket(packet) {
   if (!packet || !packet.type) return;
@@ -880,7 +880,7 @@ if (typeof window !== "undefined") {
 }
 
 console.log(
-  "[PulseChunks-v2.2-MULTILANE-IMMORTAL] Ready — 32-lane membrane active, v14-IMMORTAL DNA-aware cache, TTL-bounded memory, reconstruction helpers online."
+  "[PulseChunks-v2.2-MULTILANE-Immortal] Ready — 32-lane membrane active, v14-Immortal DNA-aware cache, TTL-bounded memory, reconstruction helpers online."
 );
 
 try {

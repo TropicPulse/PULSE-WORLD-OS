@@ -1,13 +1,13 @@
 // ============================================================================
-//  PulseSendReturn-v14-IMMORTAL.js
+//  PulseSendReturn-v14-Immortal.js
 //  Return Arc • Pulse‑Agnostic Bounce‑Back Organ • Handles returnTo Logic
-//  v14-IMMORTAL: Binary-Aware + Movement-Aware + DualStack-Aware Return Surface
+//  v14-Immortal: Binary-Aware + Movement-Aware + DualStack-Aware Return Surface
 //                + Ancestry Surface + Advantage Echo
 // ============================================================================
 /*
 AI_EXPERIENCE_META = {
   identity: "PulseSendReturn",
-  version: "v14.4-EVO",
+  version: "v14.4-Evo",
   layer: "frontend",
   role: "send_return",
   lineage: "PulseOS-v12",
@@ -37,8 +37,8 @@ export const PulseRole = {
   type: "Messenger",
   subsystem: "PulseSend",
   layer: "Return",
-  version: "14-IMMORTAL",
-  identity: "PulseSendReturn-v14-IMMORTAL",
+  version: "14-Immortal",
+  identity: "PulseSendReturn-v14-Immortal",
 
   evo: {
     driftProof: true,
@@ -185,7 +185,7 @@ function buildReturnDiagnostics({
 
 
 // ============================================================================
-//  FACTORY — Return Organ (v14-IMMORTAL + Binary/DualStack/Movement-Aware)
+//  FACTORY — Return Organ (v14-Immortal + Binary/DualStack/Movement-Aware)
 // ============================================================================
 export function createPulseSendReturn({ impulse, pulseRouter, pulseMesh, log }) {
   return {
@@ -222,7 +222,7 @@ export function createPulseSendReturn({ impulse, pulseRouter, pulseMesh, log }) 
           mode
         });
 
-        log && log("[PulseSendReturn-v14-IMMORTAL] No returnTo target — chain complete", {
+        log && log("[PulseSendReturn-v14-Immortal] No returnTo target — chain complete", {
           jobId: pulse.jobId,
           diagnostics
         });
@@ -237,7 +237,7 @@ export function createPulseSendReturn({ impulse, pulseRouter, pulseMesh, log }) 
       }
 
       // ⭐ Return target exists → route the return pulse
-      log && log("[PulseSendReturn-v14-IMMORTAL] Returning pulse", {
+      log && log("[PulseSendReturn-v14-Immortal] Returning pulse", {
         jobId: pulse.jobId,
         pattern,
         returnTo,

@@ -1,15 +1,15 @@
 // ============================================================================
-//  PULSE OS v14-IMMORTAL — THE EGO
+//  PULSE OS v14-Immortal — THE EGO
 //  Capability Contract • Self‑Regulation Layer • Evolutionary Control
 //  PURE PERMISSIONS. ZERO MUTATION. ZERO TIME. ZERO RANDOMNESS.
 // ============================================================================
 /*
 AI_EXPERIENCE_META = {
   identity: "permissions",
-  version: "v14-IMMORTAL",
+  version: "v14-Immortal",
   layer: "ai_core",
   role: "permissions_surface",
-  lineage: "permissions-v11 → v14-IMMORTAL",
+  lineage: "permissions-v11 → v14-Immortal",
 
   evo: {
     permissionsSurface: true,
@@ -38,8 +38,8 @@ export const EgoMeta = Object.freeze({
   subsystem: "aiEgo",
   layer: "PulseAIEgo",
   role: "EGO_ORGAN",
-  version: "12.3-EVO+",
-  identity: "aiEgo-v12.3-EVO+",
+  version: "12.3-Evo+",
+  identity: "aiEgo-v12.3-Evo+",
 
   evo: Object.freeze({
     driftProof: true,
@@ -53,7 +53,7 @@ export const EgoMeta = Object.freeze({
     lineageAware: true,
     multiInstanceReady: true,
     capabilityArteryAware: true,
-    epoch: "12.3-EVO+"
+    epoch: "12.3-Evo+"
   }),
 
   contract: Object.freeze({

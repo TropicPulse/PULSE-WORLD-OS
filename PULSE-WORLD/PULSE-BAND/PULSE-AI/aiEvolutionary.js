@@ -6,10 +6,10 @@
 /*
 AI_EXPERIENCE_META = {
   identity: "aiEvolutionary",
-  version: "v14-IMMORTAL",
+  version: "v14-Immortal",
   layer: "ai_core",
   role: "evolutionary_reasoner",
-  lineage: "aiEvolutionary-v11 → v14-IMMORTAL",
+  lineage: "aiEvolutionary-v11 → v14-Immortal",
 
   evo: {
     evolutionaryReasoning: true,

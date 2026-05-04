@@ -1,5 +1,5 @@
 // ============================================================================
-// FILE: /PULSE-PROXY/CheckBand-v12.3-PRESENCE-EVO-BINARY.js
+// FILE: /PULSE-PROXY/CheckBand-v12.3-Presence-Evo-BINARY.js
 // PULSE INSTANCE ORCHESTRATOR — “CHECKBAND” — v12.3‑PRESENCE‑EVO‑BINARY‑MAX
 // “THE BAND CONTROLLER / INSTANCE ADRENAL SYSTEM / BINARY-FIRST ORCHESTRATOR”
 // Backbone for PulseBand presence + PulseNet pulses + instance scaling
@@ -33,7 +33,7 @@
 /*
 AI_EXPERIENCE_META = {
   identity: "CheckBand",
-  version: "v14.4-IMMORTAL-DUALBAND",
+  version: "v14.4-Immortal-DUALBAND",
   layer: "backend_healer",
   role: "band_integrity_healer",
   lineage: "PulseOS-v12",
@@ -74,8 +74,8 @@ import { PulseLineage } from "./PulseProxyBBB.js";
 export const PulseOSCheckBandMeta = Object.freeze({
   layer: "PulseProxyAdrenalSystem",
   role: "BAND_CONTROLLER_ORGAN",
-  version: "v12.3-PRESENCE-EVO-BINARY-MAX",
-  identity: "CheckBand-v12.3-PRESENCE-EVO-BINARY-MAX",
+  version: "v12.3-Presence-Evo-BINARY-MAX",
+  identity: "CheckBand-v12.3-Presence-Evo-BINARY-MAX",
 
   guarantees: Object.freeze({
     deterministic: true,
@@ -157,14 +157,14 @@ export const PulseOSCheckBandMeta = Object.freeze({
 
   lineage: Object.freeze({
     root: "PulseProxy-v12.3",
-    parent: "PulseProxy-v12.3-PRESENCE-EVO",
+    parent: "PulseProxy-v12.3-Presence-Evo",
     ancestry: [
       "CheckBand-v9",
       "CheckBand-v10",
       "CheckBand-v11",
       "CheckBand-v11-Evo",
       "CheckBand-v11-Evo-Binary",
-      "CheckBand-v11.2-EVO-BINARY-MAX"
+      "CheckBand-v11.2-Evo-BINARY-MAX"
     ]
   }),
 
@@ -195,8 +195,8 @@ export const PulseRole = {
   type: "Organ",
   subsystem: "PulseProxy",
   layer: "AdrenalSystem",
-  version: "12.3-PRESENCE-EVO-BINARY-MAX",
-  identity: "CheckBand-v12.3-PRESENCE-EVO-BINARY-MAX",
+  version: "12.3-Presence-Evo-BINARY-MAX",
+  identity: "CheckBand-v12.3-Presence-Evo-BINARY-MAX",
 
   evo: {
     // Dualband + binary‑first nervous system

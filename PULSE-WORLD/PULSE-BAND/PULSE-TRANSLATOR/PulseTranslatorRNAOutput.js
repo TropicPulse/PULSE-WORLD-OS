@@ -2,10 +2,10 @@
 ===============================================================================
 AI_EXPERIENCE_META = {
   identity: "PulseTranslator.RNAOutput",
-  version: "v14-IMMORTAL",
+  version: "v14-Immortal",
   layer: "pulse_translator",
   role: "rna_output_translator",
-  lineage: "RNAOutput-v11.0 → v12.4 → v14-IMMORTAL",
+  lineage: "RNAOutput-v11.0 → v12.4 → v14-Immortal",
 
   evo: {
     rnaOutput: true,

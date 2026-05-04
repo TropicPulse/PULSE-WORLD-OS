@@ -1,9 +1,9 @@
 // ============================================================================
 // FILE: /PulseOS/PULSE-TOOLS/PulseBinaryLoopScanner.js
-// PULSE OS — v12.3-EVO
+// PULSE OS — v12.3-Evo
 // MAIN LOOP ORGAN — PURE BINARY, DUAL-BAND-AWARE, ZERO-DRIFT
 // ============================================================================
-// ROLE (12.3-EVO):
+// ROLE (12.3-Evo):
 //   - Convert binary pulses → deterministic loop indices.
 //   - Drive sweep lines for ALL PulseOS layers (body/home/town/node).
 //   - Provide multiple loop “personalities” (standard/deep/multi/edge/flat).
@@ -12,7 +12,7 @@
 //   - Zero randomness, zero timestamps, zero mutation of inputs.
 //   - Pairs with BinaryPulse‑v12.3‑EVO + BinaryWaveScanner‑v12.3‑EVO.
 // ---------------------------------------------------------------------------
-// LOOP MODES (v12.3-EVO, API-COMPATIBLE):
+// LOOP MODES (v12.3-Evo, API-COMPATIBLE):
 //   • nextIndex       → standard loop index (fast, responsive, dual-band aware)
 //   • nextIndexDeep   → slower, deeper, stable sweep (MRI-like)
 //   • nextIndexMulti  → 3-phase multi-spin loop indices

@@ -19,23 +19,23 @@ function safeError(...args){ try { console.error(...args); } catch {} }
 // ⭐ VERSION MAP — The Genome of PulseOS (v12.3‑Evo)
 // ============================================================================
 export const PulseVersion = {
-  identity:      "12.3-EVO",
-  brain:         "12.3-EVO",
-  gpu:           "12.3-EVO",
-  orchestrator:  "12.3-EVO",
-  engine:        "12.3-EVO",
-  optimizer:     "12.3-EVO",
-  synapse:       "12.3-EVO",
-  band:          "12.3-EVO",
-  router:        "12.3-EVO",
-  marketplaces:  "12.3-EVO",
-  telemetry:     "12.3-EVO",
-  limbic:        "12.3-EVO",
-  governor:      "12.3-EVO",
-  understanding: "12.3-EVO",
-  proxy:         "12.3-EVO",
-  earn:          "12.3-EVO",
-  send:          "12.3-EVO"
+  identity:      "12.3-Evo",
+  brain:         "12.3-Evo",
+  gpu:           "12.3-Evo",
+  orchestrator:  "12.3-Evo",
+  engine:        "12.3-Evo",
+  optimizer:     "12.3-Evo",
+  synapse:       "12.3-Evo",
+  band:          "12.3-Evo",
+  router:        "12.3-Evo",
+  marketplaces:  "12.3-Evo",
+  telemetry:     "12.3-Evo",
+  limbic:        "12.3-Evo",
+  governor:      "12.3-Evo",
+  understanding: "12.3-Evo",
+  proxy:         "12.3-Evo",
+  earn:          "12.3-Evo",
+  send:          "12.3-Evo"
 };
 
 
@@ -110,8 +110,8 @@ const IDENTITY_STORAGE_KEYS = [
 export const PulseOSIdentityBBBMeta = Object.freeze({
   layer: "PulseOSIdentityBBB",
   role: "BLOOD_BRAIN_BARRIER_IDENTITY_ORGAN",
-  version: "v12.3-EVO-BINARY-MAX",
-  identity: "PulseOSIdentityBBB-v12.3-EVO-BINARY-MAX",
+  version: "v12.3-Evo-BINARY-MAX",
+  identity: "PulseOSIdentityBBB-v12.3-Evo-BINARY-MAX",
 
   guarantees: Object.freeze({
     deterministic: true,
@@ -186,7 +186,7 @@ export const PulseOSIdentityBBBMeta = Object.freeze({
 
   lineage: Object.freeze({
     root: "PulseOS-v11",
-    parent: "PulseOS-v12.3-EVO",
+    parent: "PulseOS-v12.3-Evo",
     ancestry: [
       "PulseIdentity-v7",
       "PulseIdentity-v8",
@@ -195,7 +195,7 @@ export const PulseOSIdentityBBBMeta = Object.freeze({
       "PulseIdentity-v11",
       "PulseIdentity-v11-Evo",
       "PulseIdentity-v11-Evo-Prime",
-      "PulseIdentity-v11.2-EVO-BINARY-MAX"
+      "PulseIdentity-v11.2-Evo-BINARY-MAX"
     ]
   }),
 

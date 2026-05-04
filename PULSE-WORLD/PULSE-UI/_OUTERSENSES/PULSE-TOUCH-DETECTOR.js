@@ -43,7 +43,7 @@
 /*
 AI_EXPERIENCE_META = {
   identity: "PulseTouchDetector",
-  version: "v14-IMMORTAL",
+  version: "v14-Immortal",
   layer: "edge",
   role: "skin_signal_reader",
   lineage: "PulseOS-v13",

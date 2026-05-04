@@ -1,10 +1,10 @@
 // ============================================================================
 // FILE: /PULSE-OS/PulseOSCortex-v13-Spine.js
-// PULSE OS — v13-SPINE-DUALBAND-PRESENCE
+// PULSE OS — v13-SPINE-DUALBAND-Presence
 // “THE CORTEX ORGAN — HIGH‑LEVEL COGNITION + ORGAN SUPERVISOR”
 // ============================================================================
 //
-// ROLE (v13-SPINE-DUALBAND-PRESENCE):
+// ROLE (v13-SPINE-DUALBAND-Presence):
 // -------------------------------------
 // • Receives PulseOSBrain (CNS) directly
 // • Reads intent, IQ, OrganismMap from Brain
@@ -22,7 +22,7 @@
 /*
 AI_EXPERIENCE_META = {
   identity: "PulseOSBrainCortex",
-  version: "v14-IMMORTAL",
+  version: "v14-Immortal",
   layer: "cns",
   role: "os_cortex",
   lineage: "PulseOS-v14",
@@ -106,8 +106,8 @@ export const PulseRole = {
 export const PulseOSCortexMeta = Object.freeze({
   layer: "PulseOSCortex",
   role: "CORTEX_ORGAN",
-  version: "v13-SPINE-DUALBAND-PRESENCE",
-  identity: "PulseOSCortex-v13-SPINE-DUALBAND-PRESENCE",
+  version: "v13-SPINE-DUALBAND-Presence",
+  identity: "PulseOSCortex-v13-SPINE-DUALBAND-Presence",
 
   guarantees: Object.freeze({
     deterministic: true,
@@ -173,9 +173,9 @@ export const PulseOSCortexMeta = Object.freeze({
       "PulseOSCortex-v11",
       "PulseOSCortex-v11-Evo",
       "PulseOSCortex-v11-Evo-BinaryMax",
-      "PulseOSCortex-v12.3-SPINE-DUALBAND-PRESENCE",
-      "PulseOSCortex-v12.4-SPINE-DUALBAND-PRESENCE",
-      "PulseOSCortex-v13-SPINE-DUALBAND-PRESENCE"
+      "PulseOSCortex-v12.3-SPINE-DUALBAND-Presence",
+      "PulseOSCortex-v12.4-SPINE-DUALBAND-Presence",
+      "PulseOSCortex-v13-SPINE-DUALBAND-Presence"
     ]
   }),
 

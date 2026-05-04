@@ -1,5 +1,5 @@
 /**
- * aiCortex-v13.0-EVO+++ — Pulse OS v13‑EVO+++ Organ
+ * aiCortex-v13.0-Evo+++ — Pulse OS v13‑EVO+++ Organ
  * ---------------------------------------------------------
  * CANONICAL ROLE:
  *   Dual‑Band Executive Cortex of the organism.
@@ -70,10 +70,10 @@
 /*
 AI_EXPERIENCE_META = {
   identity: "aiCortex",
-  version: "v14-IMMORTAL",
+  version: "v14-Immortal",
   layer: "ai_core",
   role: "ai_cortex",
-  lineage: "aiCortex-v9 → v11-Evo → v14-IMMORTAL",
+  lineage: "aiCortex-v9 → v11-Evo → v14-Immortal",
 
   evo: {
     cortex: true,
@@ -103,8 +103,8 @@ AI_EXPERIENCE_META = {
 export const CortexMeta = Object.freeze({
   layer: "PulseAICortexFrame",
   role: "CORTEX_ORGAN",
-  version: "13.0-EVO+++",
-  identity: "aiCortex-v13-EVO+++",
+  version: "13.0-Evo+++",
+  identity: "aiCortex-v13-Evo+++",
 
   evo: Object.freeze({
     // Core identity
@@ -141,7 +141,7 @@ export const CortexMeta = Object.freeze({
 
     // Lifecycle
     multiInstanceReady: true,
-    epoch: "13.0-EVO+++"
+    epoch: "13.0-Evo+++"
   }),
 
   contract: Object.freeze({

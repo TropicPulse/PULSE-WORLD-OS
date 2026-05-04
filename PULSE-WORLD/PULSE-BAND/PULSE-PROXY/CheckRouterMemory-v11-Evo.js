@@ -1,12 +1,12 @@
 
 // ============================================================================
-// FILE: /PULSE-PROXY/CheckRouterMemory-v12.3-PRESENCE-EVO-BINARY.js
-// PULSE NETWORK MEMORY HEALER — v12.3-PRESENCE-EVO-BINARY
+// FILE: /PULSE-PROXY/CheckRouterMemory-v12.3-Presence-Evo-BINARY.js
+// PULSE NETWORK MEMORY HEALER — v12.3-Presence-Evo-BINARY
 // “THE NETWORK HEALER+++ / BINARY-FIRST LOG INTAKE + DUALBAND REPAIR ENGINE
 //   + PRESENCE FIELD + CHUNK/CACHE/PREWARM HINT ENGINE”
 // ============================================================================
 //
-// ROLE (v12.3-PRESENCE-EVO-BINARY):
+// ROLE (v12.3-Presence-Evo-BINARY):
 //   • Backend intake + validator for RouterMemory flushes
 //   • Binary‑first, dualband healer: Symbolic A → Binary B → Symbolic A
 //   • Normalizes ALL log fields (routeTrace, lineage, evo, importConflict)
@@ -17,7 +17,7 @@
 //   • Returns authoritative, organism‑safe, binary‑aware log batch
 //   • Mode‑aware: A→B→A compatible, binary‑first nervous system
 //
-// CONTRACT (v12.3-PRESENCE-EVO-BINARY):
+// CONTRACT (v12.3-Presence-Evo-BINARY):
 //   • Never mutate original input
 //   • Fail‑open: invalid payload → empty safe array
 //   • Always return structurally complete log entries
@@ -31,7 +31,7 @@
 /*
 AI_EXPERIENCE_META = {
   identity: "CheckRouterMemory",
-  version: "v14.4-EVO-BINARY-MAX",
+  version: "v14.4-Evo-BINARY-MAX",
   layer: "backend_healer",
   role: "router_memory_healer",
   lineage: "PulseRouter-v12",
@@ -71,7 +71,7 @@ AI_EXPERIENCE_META = {
 const LAYER_ID   = "NETWORK-LAYER-BINARY";
 const LAYER_NAME = "THE NETWORK HEALER+++";
 const LAYER_ROLE = "B-LAYER MEMORY INTAKE + DUALBAND REPAIR + PRESENCE FIELD";
-const LAYER_VER  = "12.3-PRESENCE-EVO-BINARY";
+const LAYER_VER  = "12.3-Presence-Evo-BINARY";
 
 const NETWORK_DIAGNOSTICS_ENABLED =
   process.env.PULSE_NETWORK_DIAGNOSTICS === "true" ||
@@ -107,7 +107,7 @@ const BASE_MEMORY_CONTEXT = {
   label: "MEMORY",
   layer: "B‑Layer",
   purpose: "Log Buffer + Healing + Presence + Chunk/Cache/Prewarm Hints",
-  context: "RouterMemory → CheckRouterMemory-v12.3-PRESENCE-EVO-BINARY",
+  context: "RouterMemory → CheckRouterMemory-v12.3-Presence-Evo-BINARY",
   healerVersion: LAYER_VER,
   binaryFirst: true,
   dualband: true
@@ -116,8 +116,8 @@ const BASE_MEMORY_CONTEXT = {
 export const PulseOSCheckRouterMemoryMeta = Object.freeze({
   layer: "PulseProxyNetworkHealer",
   role: "NETWORK_MEMORY_HEALER_ORGAN",
-  version: "v12.3-PRESENCE-EVO-BINARY-MAX",
-  identity: "CheckRouterMemory-v12.3-PRESENCE-EVO-BINARY-MAX",
+  version: "v12.3-Presence-Evo-BINARY-MAX",
+  identity: "CheckRouterMemory-v12.3-Presence-Evo-BINARY-MAX",
 
   guarantees: Object.freeze({
     deterministic: true,
@@ -198,8 +198,8 @@ export const PulseOSCheckRouterMemoryMeta = Object.freeze({
   }),
 
   lineage: Object.freeze({
-    root: "PulseProxy-v11-EVO",
-    parent: "PulseProxy-v12.3-PRESENCE-EVO",
+    root: "PulseProxy-v11-Evo",
+    parent: "PulseProxy-v12.3-Presence-Evo",
     ancestry: [
       "CheckRouterMemory-v7",
       "CheckRouterMemory-v8",
@@ -392,7 +392,7 @@ function deriveChunkCachePrewarmHints(entry) {
 
 
 // ============================================================================
-// HELPERS — SAFE PARSE + NORMALIZE LOG BATCH (v12.3-PRESENCE-EVO-BINARY)
+// HELPERS — SAFE PARSE + NORMALIZE LOG BATCH (v12.3-Presence-Evo-BINARY)
 // ============================================================================
 function safeParseBody(body) {
   if (!body) return null;
@@ -405,7 +405,7 @@ function safeParseBody(body) {
   }
 }
 
-// Normalize a single log entry to v12.3-PRESENCE-EVO-BINARY shape
+// Normalize a single log entry to v12.3-Presence-Evo-BINARY shape
 function normalizeLogEntry(entry, mode, memoryContext) {
   if (!entry || typeof entry !== "object") return null;
 
@@ -536,7 +536,7 @@ function healLogBatch(raw, mode, memoryContext) {
 
 
 // ============================================================================
-// – LYMBIC ESCALATION HOOK — SAFE, OPTIONAL (v12.3-PRESENCE-EVO-BINARY)
+// – LYMBIC ESCALATION HOOK — SAFE, OPTIONAL (v12.3-Presence-Evo-BINARY)
 //   NOTE: kept signature, but still respects zeroNetworkFetch guarantee by
 //         being wired only in environments where fetch is allowed.
 // ============================================================================
@@ -553,7 +553,7 @@ async function notifyLymbicOnFatal(err, mode) {
       body: JSON.stringify({
         error: err?.message || String(err),
         type: "CheckRouterMemoryFatal",
-        source: "CheckRouterMemory-v12.3-PRESENCE-EVO-BINARY",
+        source: "CheckRouterMemory-v12.3-Presence-Evo-BINARY",
         mode,
         extra: {
           layer: LAYER_ID,
@@ -571,7 +571,7 @@ async function notifyLymbicOnFatal(err, mode) {
 
 
 // ============================================================================
-// BACKEND ENTRY POINT — “THE NETWORK HEALER+++” (v12.3-PRESENCE-EVO-BINARY)
+// BACKEND ENTRY POINT — “THE NETWORK HEALER+++” (v12.3-Presence-Evo-BINARY)
 // A→B→A‑safe: mode‑aware, fail‑open, never throws outward.
 // Presence + advantage context are injected by caller.
 // ============================================================================
@@ -624,7 +624,7 @@ export const handler = async (event, context) => {
     };
 
   } catch (err) {
-    safeError("CheckRouterMemory v12.3-PRESENCE-EVO-BINARY error:", err);
+    safeError("CheckRouterMemory v12.3-Presence-Evo-BINARY error:", err);
 
     logNetworkHealer("FATAL_ERROR", {
       message: err?.message,

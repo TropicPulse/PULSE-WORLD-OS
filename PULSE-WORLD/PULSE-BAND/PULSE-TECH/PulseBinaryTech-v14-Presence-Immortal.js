@@ -1,6 +1,6 @@
 // ============================================================================
-// FILE: PulseBinaryTech-v14.4-PRESENCE-IMMORTAL.js
-// Pulse OS v14.4-PRESENCE-IMMORTAL — Unified Binary Carrier Organ
+// FILE: PulseBinaryTech-v14.4-Presence-Immortal.js
+// Pulse OS v14.4-Presence-Immortal — Unified Binary Carrier Organ
 // PURE BINARY WAVEFORM • MULTI-PULSE SURFACE • SHIFTER/V2/V3/LEGACY/SEND/EARN/IMMORTAL
 // ============================================================================
 // ROLE:
@@ -27,7 +27,7 @@
 /*
 AI_EXPERIENCE_META = {
   identity: "PulseBinaryTech",
-  version: "v14.4-PRESENCE-IMMORTAL",
+  version: "v14.4-Presence-Immortal",
   layer: "frontend",
   role: "binary_tech_engine",
   lineage: "PulseOS-v12",
@@ -78,7 +78,7 @@ import { createPulseV2 as createPulseV2Shifter } from "../PULSE-SHIFTER/PulseShi
 // Binary Shifter Evolutionary Pulse front-end
 import { createPulseBinaryShifterEvolutionaryPulse } from "../PULSE-SHIFTER/PulseBinaryShifterEvolutionaryPulse-v11-Evo.js";
 
-// v1 Legacy Pulse surface (Pulse-SEND)
+// v1 Legacy Pulse surface (PULSE-SEND)
 import { createLegacyPulse as createPulseV1Legacy } from "../PULSE-SEND/PulseSendLegacyPulse-v11-Evo.js";
 
 // v3 Continuance Pulse surface
@@ -211,7 +211,7 @@ function createNormalPulseSurface() {
 
 
 // ============================================================================
-// MAIN ORGAN: createBinaryPulse — v14.4-PRESENCE-IMMORTAL
+// MAIN ORGAN: createBinaryPulse — v14.4-Presence-Immortal
 // ============================================================================
 export function createBinaryPulse({
   fallbackProxy,

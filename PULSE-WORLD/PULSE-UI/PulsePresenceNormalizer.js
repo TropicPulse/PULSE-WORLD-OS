@@ -8,7 +8,7 @@
 /*
 AI_EXPERIENCE_META = {
   identity: "PulsePresenceNormalizer",
-  version: "v12.5-EVO-SMART-HYBRID",
+  version: "v12.5-Evo-SMART-HYBRID",
   layer: "frontend",
   role: "chunk_normalizer",
   lineage: "PulseOS-v12",

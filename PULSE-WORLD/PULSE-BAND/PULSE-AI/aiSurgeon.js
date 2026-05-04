@@ -6,10 +6,10 @@
 /*
 AI_EXPERIENCE_META = {
   identity: "aiSurgeon",
-  version: "v14-IMMORTAL",
+  version: "v14-Immortal",
   layer: "ai_tools",
   role: "surgical_pattern_explainer",
-  lineage: "aiSurgeon-v11 → v14-IMMORTAL",
+  lineage: "aiSurgeon-v11 → v14-Immortal",
 
   evo: {
     surgicalPatterns: true,
@@ -37,8 +37,8 @@ export const PulseRole = Object.freeze({
   type: "Cognitive",
   subsystem: "aiSurgeon",
   layer: "C4-ProceduralMapper",
-  version: "12.3-EVO+",
-  identity: "aiSurgeon-v12.3-EVO+",
+  version: "12.3-Evo+",
+  identity: "aiSurgeon-v12.3-Evo+",
 
   evo: Object.freeze({
     driftProof: true,
@@ -50,7 +50,7 @@ export const PulseRole = Object.freeze({
     scanInterpreter: true,
     multiInstanceReady: true,
     archetypeArteryAware: true,
-    epoch: "12.3-EVO+"
+    epoch: "12.3-Evo+"
   }),
 
   contract: Object.freeze({

@@ -1,5 +1,5 @@
 /**
- * PulseRuntime-v2.4-PRESENCE-TOUCH-IMMORTAL.js
+ * PulseRuntime-v2.4-Presence-TOUCH-Immortal.js
  * PULSE-X / RUNTIME / v2.4
  *
  * ROLE:
@@ -13,7 +13,7 @@
  *     - world-adjustment hooks
  *     - unified introspection API
  *
- *   v2.4-PRESENCE-TOUCH-IMMORTAL adds:
+ *   v2.4-Presence-TOUCH-Immortal adds:
  *     - Pulse-Touch–aware hot maps (presence/mode/page/chunkProfile/trust)
  *     - explicit Pulse-Touch propagation into binary frames (via BinarySubstrate v2.4)
  *     - upgraded meta/lineage to match Presence/Touch epoch
@@ -26,10 +26,10 @@
 /*
 AI_EXPERIENCE_META = {
   identity: "PulseRuntime",
-  version: "v2.4-PRESENCE-TOUCH-IMMORTAL",
+  version: "v2.4-Presence-TOUCH-Immortal",
   layer: "runtime",
   role: "organism_execution_conductor",
-  lineage: "PulseRuntime-v1 → v11-Evo → v13-PRESENCE-EVO+ → v14-IMMORTAL → v2.4-PRESENCE-TOUCH-IMMORTAL",
+  lineage: "PulseRuntime-v1 → v11-Evo → v13-Presence-Evo+ → v14-Immortal → v2.4-Presence-TOUCH-Immortal",
 
   evo: {
     runtimeConductor: true,        // orchestrates organs
@@ -80,10 +80,10 @@ AI_EXPERIENCE_META = {
 // -------------------------
 
 export const PulseRuntimeV2Meta = Object.freeze({
-  organId: "PulseRuntime-v2.4-PRESENCE-TOUCH-IMMORTAL",
+  organId: "PulseRuntime-v2.4-Presence-TOUCH-Immortal",
   role: "RUNTIME_SPINE",
-  version: "2.4-PRESENCE-TOUCH-IMMORTAL",
-  epoch: "v13.5-PRESENCE-TOUCH",
+  version: "2.4-Presence-TOUCH-Immortal",
+  epoch: "v13.5-Presence-TOUCH",
   layer: "RuntimeCore",
   safety: Object.freeze({
     deterministic: true,

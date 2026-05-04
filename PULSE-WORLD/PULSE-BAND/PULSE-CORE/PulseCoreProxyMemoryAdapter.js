@@ -14,10 +14,10 @@
 /*
 AI_EXPERIENCE_META = {
   identity: "PulseCoreProxyMemoryAdapter",
-  version: "v15-IMMORTAL-PROXY-MEMORY",
+  version: "v15-Immortal-PROXY-MEMORY",
   layer: "corememory_adapter",
   role: "proxy_memory_adapter",
-  lineage: "PulseCoreMemory-v15-IMMORTAL",
+  lineage: "PulseCoreMemory-v15-Immortal",
 
   evo: {
     adapter: true,
@@ -60,7 +60,7 @@ function nextProxyEpoch() {
 export function createPulseProxyMemoryAdapter({
   overlay = createPulseBinaryOverlay(),
   dnaTag = "default-dna",
-  version = "15.0-IMMORTAL-PROXY-MEMORY",
+  version = "15.0-Immortal-PROXY-MEMORY",
   log = console.log
 } = {}) {
 

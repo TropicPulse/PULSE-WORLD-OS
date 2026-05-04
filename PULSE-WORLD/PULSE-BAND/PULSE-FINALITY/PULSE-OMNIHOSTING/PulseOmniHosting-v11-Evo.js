@@ -1,6 +1,6 @@
 
 /**
- * PulseOmniHosting-v12.3-PRESENCE-EVO+.js
+ * PulseOmniHosting-v12.3-Presence-Evo+.js
  * PULSE-FINALITY / PULSE-OMNIHOSTING
  *
  * ROLE:
@@ -22,7 +22,7 @@
 /*
 AI_EXPERIENCE_META = {
   identity: "PulseOmniHosting",
-  version: "v14-IMMORTAL",
+  version: "v14-Immortal",
   layer: "hosting",
   role: "omni_hosting_engine",
   lineage: "PulseOS-v14",
@@ -65,8 +65,8 @@ AI_EXPERIENCE_META = {
 export const PulseOmniHostingMeta = Object.freeze({
   layer: "PulseOmniHosting",
   role: "OMNIHOSTING_PHYSICS_ORGAN",
-  version: "12.3-PRESENCE-EVO+",
-  identity: "PulseOmniHosting-v12.3-PRESENCE-EVO+",
+  version: "12.3-Presence-Evo+",
+  identity: "PulseOmniHosting-v12.3-Presence-Evo+",
   evo: Object.freeze({
     deterministic: true,
     driftProof: true,
@@ -83,7 +83,7 @@ export const PulseOmniHostingMeta = Object.freeze({
     chunkAware: true,
     cacheAware: true,
     prewarmAware: true,
-    epoch: "12.3-PRESENCE-EVO+"
+    epoch: "12.3-Presence-Evo+"
   })
 });
 
@@ -255,7 +255,7 @@ export function buildPlacementPlan(hosts, pulseSchema, minInstances = 1) {
     minInstances,
     schemaVersion: pulseSchema.version,
 
-    // 12.3-PRESENCE-EVO+ symbolic hints
+    // 12.3-Presence-Evo+ symbolic hints
     fallbackBandLevel,
     chunkHint,
     cacheHint,
@@ -290,7 +290,7 @@ export function buildFailoverPlan(hosts, pulseSchema, failedHostName) {
     failoverTargets,
     schemaVersion: pulseSchema.version,
 
-    // 12.3-PRESENCE-EVO+ symbolic hints
+    // 12.3-Presence-Evo+ symbolic hints
     fallbackBandLevel,
     chunkHint,
     cacheHint,

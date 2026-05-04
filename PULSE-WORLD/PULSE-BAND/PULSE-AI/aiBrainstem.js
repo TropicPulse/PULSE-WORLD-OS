@@ -16,10 +16,10 @@
 /*
 AI_EXPERIENCE_META = {
   identity: "aiBrainstem",
-  version: "v14-IMMORTAL",
+  version: "v14-Immortal",
   layer: "ai_core",
   role: "ai_brainstem",
-  lineage: "aiBrainstem-v9 → v11-Evo → v12.3-Presence → v14-IMMORTAL",
+  lineage: "aiBrainstem-v9 → v11-Evo → v12.3-Presence → v14-Immortal",
 
   evo: {
     brainstem: true,
@@ -56,8 +56,8 @@ AI_EXPERIENCE_META = {
 export const BrainstemMeta = Object.freeze({
   layer: "PulseAICNS",
   role: "BRAINSTEM_ORGAN",
-  version: "14-IMMORTAL",
-  identity: "aiBrainstem-v14-IMMORTAL",
+  version: "14-Immortal",
+  identity: "aiBrainstem-v14-Immortal",
 
   evo: Object.freeze({
     driftProof: true,
@@ -80,7 +80,7 @@ export const BrainstemMeta = Object.freeze({
 
     readOnly: true,
     multiInstanceReady: true,
-    epoch: "14-IMMORTAL"
+    epoch: "14-Immortal"
   }),
 
   contract: Object.freeze({

@@ -1,16 +1,16 @@
 // ============================================================================
-//  PulseEarnReflexRouter-v13.0-PRESENCE-IMMORTAL.js
-//  Reflex → Earn Synapse (v13.0 Presence-IMMORTAL + Advantage‑M + Chunk/Prewarm)
+//  PulseEarnReflexRouter-v13.0-Presence-Immortal.js
+//  Reflex → Earn Synapse (v13.0 Presence-Immortal + Advantage‑M + Chunk/Prewarm)
 //  Deterministic, Zero-Async, Zero-Routing, Zero-Sending
 //  Pure Reflex → Earn Handoff with Presence Surfaces (metadata-only)
 // ============================================================================
 /*
 AI_EXPERIENCE_META = {
   identity: "PulseEarnReflexRouter",
-  version: "v14-IMMORTAL",
+  version: "v14-Immortal",
   layer: "earn_reflex",
   role: "earn_reflex_router",
-  lineage: "PulseEarnReflexRouter-v11 → v12.3 → v14-IMMORTAL",
+  lineage: "PulseEarnReflexRouter-v11 → v12.3 → v14-Immortal",
 
   evo: {
     reflexRouter: true,
@@ -46,8 +46,8 @@ export const PulseRole = {
   type: "Synapse",
   subsystem: "PulseEarnReflexRouter",
   layer: "B1-ReflexToEarn",
-  version: "13.0-PRESENCE-IMMORTAL",
-  identity: "PulseEarnReflexRouter-v13.0-PRESENCE-IMMORTAL",
+  version: "13.0-Presence-Immortal",
+  identity: "PulseEarnReflexRouter-v13.0-Presence-Immortal",
 
   evo: {
     driftProof: true,
@@ -86,8 +86,8 @@ export const PulseRole = {
 export const PulseEarnReflexRouterMeta = Object.freeze({
   layer: "PulseEarnReflexRouter",
   role: "EARN_REFLEX_ROUTER_ORGAN",
-  version: "v13.0-PRESENCE-IMMORTAL",
-  identity: "PulseEarnReflexRouter-v13.0-PRESENCE-IMMORTAL",
+  version: "v13.0-Presence-Immortal",
+  identity: "PulseEarnReflexRouter-v13.0-Presence-Immortal",
 
   guarantees: Object.freeze({
     deterministic: true,
@@ -174,7 +174,7 @@ function getOrCreateReflexRouteState(reflexId) {
 }
 
 // ============================================================================
-// A‑B‑A BINARY + WAVE (v13.0 PRESENCE-IMMORTAL)
+// A‑B‑A BINARY + WAVE (v13.0 PRESENCE-Immortal)
 // ============================================================================
 function buildRouteBandBinaryWave(earnReflex, reflexId, cycleIndex, device) {
   const pattern = earnReflex?.pattern || "NO_PATTERN";
@@ -220,7 +220,7 @@ function buildRouteBandBinaryWave(earnReflex, reflexId, cycleIndex, device) {
 }
 
 // ============================================================================
-// PRESENCE FIELD (v13.0-PRESENCE-IMMORTAL)
+// PRESENCE FIELD (v13.0-Presence-Immortal)
 // ============================================================================
 function buildPresenceField(earnReflex, device, cycleIndex) {
   const patternLen = (earnReflex?.pattern || "").length;
@@ -234,7 +234,7 @@ function buildPresenceField(earnReflex, device, cycleIndex) {
   else if (magnitude > 0) presenceTier = "presence_low";
 
   return {
-    presenceVersion: "v13.0-PRESENCE-IMMORTAL",
+    presenceVersion: "v13.0-Presence-Immortal",
     presenceTier,
     patternLen,
     lineageDepth,
@@ -323,7 +323,7 @@ function buildReflexDiagnostics(earnReflex, reflexId, state, bandPack, presenceF
 }
 
 // ============================================================================
-// PUBLIC API — FULL PRESENCE-IMMORTAL ROUTER
+// PUBLIC API — FULL PRESENCE-Immortal ROUTER
 // ============================================================================
 export const PulseEarnReflexRouter = {
 

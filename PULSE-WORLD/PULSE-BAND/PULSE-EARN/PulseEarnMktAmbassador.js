@@ -1,5 +1,5 @@
 // ============================================================================
-// FILE: tropic-pulse-functions/PULSE-WORLD/PULSE-EARN/PulseEarnMktAmbassador-v13.0-PRESENCE-IMMORTAL.js
+// FILE: tropic-pulse-functions/PULSE-WORLD/PULSE-EARN/PulseEarnMktAmbassador-v13.0-Presence-Immortal.js
 // LAYER: THE AMBASSADOR (v13.0‑PRESENCE‑IMMORTAL + A‑B‑A)
 // ============================================================================
 //
@@ -20,10 +20,10 @@
 /*
 AI_EXPERIENCE_META = {
   identity: "PulseEarnMktAmbassador",
-  version: "v14-IMMORTAL",
+  version: "v14-Immortal",
   layer: "earn_market",
   role: "earn_market_ambassador",
-  lineage: "PulseEarnMktAmbassador-v11 → v12.3 → v14-IMMORTAL",
+  lineage: "PulseEarnMktAmbassador-v11 → v12.3 → v14-Immortal",
 
   evo: {
     marketAmbassador: true,
@@ -58,8 +58,8 @@ AI_EXPERIENCE_META = {
 export const PulseEarnMktAmbassadorMeta = Object.freeze({
   layer: "PulseEarnMktAmbassador",
   role: "EARN_MARKETPLACE_RECEPTOR",
-  version: "v13.0-PRESENCE-IMMORTAL",
-  identity: "PulseEarnMktAmbassador-v13.0-PRESENCE-IMMORTAL",
+  version: "v13.0-Presence-Immortal",
+  identity: "PulseEarnMktAmbassador-v13.0-Presence-Immortal",
 
   guarantees: Object.freeze({
     deterministic: true,
@@ -222,7 +222,7 @@ function buildPresenceField(globalHints = {}, cycle) {
   const presenceTier = classifyPresenceTier(pressure);
 
   return {
-    presenceVersion: "v13.0-PRESENCE-IMMORTAL",
+    presenceVersion: "v13.0-Presence-Immortal",
     presenceTier,
 
     bandPresence: ghP.bandPresence || "symbolic",
@@ -355,8 +355,8 @@ const AKASH_RECEPTOR_DNA = {
     }
   ],
 
-  version: "13.0-PRESENCE-IMMORTAL",
-  lineage: "Ambassador-Akash-v13.0-PRESENCE-IMMORTAL",
+  version: "13.0-Presence-Immortal",
+  lineage: "Ambassador-Akash-v13.0-Presence-Immortal",
   phenotype: "MarketplaceAmbassador"
 };
 
@@ -371,8 +371,8 @@ let ambassadorCycle = 0;
 export const PulseEarnMktAmbassador = {
   id: "akash",
   name: "Akash Network",
-  version: "v13.0-PRESENCE-IMMORTAL",
-  lineage: "Ambassador-Akash-v13.0-PRESENCE-IMMORTAL",
+  version: "v13.0-Presence-Immortal",
+  lineage: "Ambassador-Akash-v13.0-Presence-Immortal",
 
   // -------------------------------------------------------------------------
   // Ping — unified v13 presence

@@ -2,7 +2,7 @@
  * ============================================================
  *  FILE: PULSE-TOUCH.js
  *  ORGAN: Pulse‑Touch (Sensory Skin / Pre‑Pulse Ignition Organ)
- *  VERSION: v4.0.0-IMMORTAL
+ *  VERSION: v4.0.0-Immortal
  *  AUTHOR: Pulse‑OS (Aldwyn’s Organism Architecture)
  * ============================================================
  *
@@ -41,10 +41,10 @@
 /*
 AI_EXPERIENCE_META = {
   identity: "PulseTouch",
-  version: "v4.0.0-IMMORTAL",
+  version: "v4.0.0-Immortal",
   layer: "skin",
   role: "first_contact_sensor",
-  lineage: "PulseOS-v13 → v14-IMMORTAL → v4.0.0-IMMORTAL",
+  lineage: "PulseOS-v13 → v14-Immortal → v4.0.0-Immortal",
 
   evo: {
     prePulse: true,
@@ -66,7 +66,7 @@ AI_EXPERIENCE_META = {
     chunkProfileAware: true,
     pageHintAware: true,
 
-    // v4.0.0-IMMORTAL: PulseNet integration
+    // v4.0.0-Immortal: PulseNet integration
     pulseNetAware: true,
     pulseNetIgnition: true,
     pulseNetIngressAware: true,
@@ -386,6 +386,6 @@ function applyGateDecision(gateDecision, skin) {
 
 /**
  * ============================================================
- *  END OF FILE: PULSE-TOUCH.js (v4.0.0-IMMORTAL)
+ *  END OF FILE: PULSE-TOUCH.js (v4.0.0-Immortal)
  * ============================================================
  */

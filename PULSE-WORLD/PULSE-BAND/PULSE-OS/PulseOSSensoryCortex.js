@@ -3,7 +3,7 @@
 // PULSE OS — v12.3-Presence
 // “THE SENSORY CORTEX / NERVE MAP ENGINE”
 // DUAL-BAND NERVE MAP • DRIFT SENTINEL • EXECUTION CONTEXT VISUALIZER
-// CHUNK/PREWARM-AWARE • MULTI-PRESENCE DIAGNOSTICS • CACHE SURFACE MAPPER
+// CHUNK/PREWARM-AWARE • MULTI-Presence DIAGNOSTICS • CACHE SURFACE MAPPER
 // ============================================================================
 //
 // ORGAN IDENTITY (v12.3-Presence):
@@ -38,7 +38,7 @@
 /*
 AI_EXPERIENCE_META = {
   identity: "PulseOSSensoryCortex",
-  version: "v14-IMMORTAL",
+  version: "v14-Immortal",
   layer: "cns",
   role: "os_sensory_cortex",
   lineage: "PulseOS-v14",
@@ -82,8 +82,8 @@ AI_EXPERIENCE_META = {
 export const PulseOSSensoryCortexMeta = Object.freeze({
   layer: "PulseOSSensoryCortex",
   role: "SENSORY_CORTEX_ORGAN",
-  version: "v12.3-PRESENCE-CHUNK",
-  identity: "PulseOSSensoryCortex-v12.3-PRESENCE-CHUNK",
+  version: "v12.3-Presence-CHUNK",
+  identity: "PulseOSSensoryCortex-v12.3-Presence-CHUNK",
 
   guarantees: Object.freeze({
     deterministic: true,

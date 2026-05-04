@@ -7,10 +7,10 @@
 /*
 AI_EXPERIENCE_META = {
   identity: "aiPersonalFrame",
-  version: "v15-IMMORTAL",
+  version: "v15-Immortal",
   layer: "ai_core",
   role: "personal_context_frame",
-  lineage: "aiPersonalFrame-v11 → v15-IMMORTAL",
+  lineage: "aiPersonalFrame-v11 → v15-Immortal",
 
   evo: {
     personalContext: true,
@@ -37,8 +37,8 @@ AI_EXPERIENCE_META = {
 export const PersonalFrameMeta = Object.freeze({
   layer: "PulseAIPersonalFrame",
   role: "PERSONAL_FRAME_ORGAN",
-  version: "15-IMMORTAL",
-  identity: "aiPersonalFrame-v15-IMMORTAL",
+  version: "15-Immortal",
+  identity: "aiPersonalFrame-v15-Immortal",
 
   // --------------------------------------------------------------------------
   //  EVO — IMMORTAL-GRADE CAPABILITY MAP
@@ -71,7 +71,7 @@ export const PersonalFrameMeta = Object.freeze({
 
     multiInstanceReady: true,
     readOnly: false, // guarded writes to personal memory lanes only
-    epoch: "15-IMMORTAL"
+    epoch: "15-Immortal"
   }),
 
   // --------------------------------------------------------------------------

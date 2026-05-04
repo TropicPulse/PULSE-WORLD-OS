@@ -5,10 +5,10 @@
 /*
 AI_EXPERIENCE_META = {
   identity: "aiConductor",
-  version: "v14-IMMORTAL",
+  version: "v14-Immortal",
   layer: "ai_core",
   role: "ai_flow_conductor",
-  lineage: "aiConductor-v10 → v12 → v14-IMMORTAL",
+  lineage: "aiConductor-v10 → v12 → v14-Immortal",
 
   evo: {
     flowConductor: true,

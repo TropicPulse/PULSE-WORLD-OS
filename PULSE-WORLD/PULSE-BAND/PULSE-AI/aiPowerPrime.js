@@ -33,10 +33,10 @@
 /*
 AI_EXPERIENCE_META = {
   identity: "aiPowerPrime",
-  version: "v15-IMMORTAL-EVO++",
+  version: "v15-Immortal-Evo++",
   layer: "ai_core",
   role: "power_model",
-  lineage: "aiPowerPrime-v11 → v14-IMMORTAL → v15-IMMORTAL-EVO++",
+  lineage: "aiPowerPrime-v11 → v14-Immortal → v15-Immortal-Evo++",
 
   evo: {
     powerModel: true,
@@ -67,8 +67,8 @@ AI_EXPERIENCE_META = {
 export const PowerMeta = Object.freeze({
   layer: "PulseAIPowerPrime",
   role: "POWER_PRIME_ORGAN",
-  version: "15-IMMORTAL-EVO++",
-  identity: "aiPowerPrime-v15-IMMORTAL-EVO++",
+  version: "15-Immortal-Evo++",
+  identity: "aiPowerPrime-v15-Immortal-Evo++",
 
   evo: Object.freeze({
     driftProof: true,
@@ -86,7 +86,7 @@ export const PowerMeta = Object.freeze({
     identitySafe: true,
     readOnly: true,
     multiInstanceReady: true,
-    epoch: "15-IMMORTAL-EVO++",
+    epoch: "15-Immortal-Evo++",
     zeroNetwork: true,
     zeroFilesystem: true,
     zeroMutationOfInput: true

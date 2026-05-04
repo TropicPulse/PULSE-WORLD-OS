@@ -1,5 +1,5 @@
 // ============================================================================
-// FILE: /PulseOS/Scanner/PulseBinaryBehaviorScanner-v12.3-EVO.js
+// FILE: /PulseOS/Scanner/PulseBinaryBehaviorScanner-v12.3-Evo.js
 // PULSE OS — v12.3‑EVO
 // BINARY BEHAVIOR ORGAN — DUAL-BAND, PRESENCE-AWARE, NODEADMIN‑EVO
 // ============================================================================

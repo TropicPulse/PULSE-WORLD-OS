@@ -13,8 +13,8 @@ export const PulseRole = {
   type: "Organ",
   subsystem: "PulseBand",
   layer: "CirculationMonitor",
-  version: "12.3-EVO",
-  identity: "PulseCirculationMonitor-v12.3-EVO-ABA",
+  version: "12.3-Evo",
+  identity: "PulseCirculationMonitor-v12.3-Evo-ABA",
 
   evo: {
     driftProof: true,
@@ -75,8 +75,8 @@ diag("CIRCULATION_INIT");
 export const PulseCirculationMonitorMeta = Object.freeze({
   layer: "PulseCirculationMonitor",
   role: "CIRCULATION_MONITOR_ORGAN",
-  version: "v12.3-EVO-BINARY-MAX-ABA",
-  identity: "PulseCirculationMonitor-v12.3-EVO-BINARY-MAX-ABA",
+  version: "v12.3-Evo-BINARY-MAX-ABA",
+  identity: "PulseCirculationMonitor-v12.3-Evo-BINARY-MAX-ABA",
 
   guarantees: Object.freeze({
     deterministic: true,
@@ -146,7 +146,7 @@ export const PulseCirculationMonitorMeta = Object.freeze({
 
   lineage: Object.freeze({
     root: "PulseBand-v11",
-    parent: "PulseBand-v12.3-EVO",
+    parent: "PulseBand-v12.3-Evo",
     ancestry: [
       "PulseCirculationMonitor-v7",
       "PulseCirculationMonitor-v8",
@@ -155,7 +155,7 @@ export const PulseCirculationMonitorMeta = Object.freeze({
       "PulseCirculationMonitor-v11",
       "PulseCirculationMonitor-v11-Evo",
       "PulseCirculationMonitor-v11-Evo-ABA",
-      "PulseCirculationMonitor-v11.2-EVO-BINARY-MAX"
+      "PulseCirculationMonitor-v11.2-Evo-BINARY-MAX"
     ]
   }),
 

@@ -1,12 +1,12 @@
 // ============================================================================
-//  FILE: /PULSE-PROXY/PulseProxySpine-v14.0-PRESENCE-IMMORTAL-BACKEND.js
-//  PULSE OS v14.0-PRESENCE-IMMORTAL — PULSE PROXY SPINE (BACKEND SPINE)
+//  FILE: /PULSE-PROXY/PulseProxySpine-v14.0-Presence-Immortal-BACKEND.js
+//  PULSE OS v14.0-Presence-Immortal — PULSE PROXY SPINE (BACKEND SPINE)
 //  Unified TPProxy Gateway • Vitals Pump • OS‑Healer Feed • SDN Prewarm Bridge
 //  SYMBOLIC BACKEND ORGAN — NO BUSINESS LOGIC, NO MARKETPLACE, NO GPU.
 //  PRESENCE/HARMONICS/DUAL-BAND AWARE (PASSIVE + FORWARD, IMMORTAL FIELDS)
 // ============================================================================
 //
-//  WHAT THIS ORGAN IS (v14.0-PRESENCE-IMMORTAL-BACKEND):
+//  WHAT THIS ORGAN IS (v14.0-Presence-Immortal-BACKEND):
 //  -----------------------------------------------------
 //  • Backend Spine of PulseProxy for the organism (symbolic-only).
 //  • Single ingress spine for TPProxy traffic, vitals, and OS‑healer feeds.
@@ -25,7 +25,7 @@
 //  • NOT a place for OSKernel logic or GPU logic.
 //  • NOT a binary organ — this is a symbolic backend spine only.
 //
-//  SAFETY CONTRACT (v14.0-PRESENCE-IMMORTAL-BACKEND):
+//  SAFETY CONTRACT (v14.0-Presence-Immortal-BACKEND):
 //  --------------------------------------------------
 //  • Fail‑open: Redis / mailer / env failures degrade, never crash the process.
 //  • No IQ, no routing intelligence, no marketplace logic.
@@ -57,7 +57,7 @@ const warn  = global.warn  || console.warn;
 const error = global.error || console.error;
 
 // ============================================================================
-//  SPINE IDENTITY — v14.0-PRESENCE-IMMORTAL-BACKEND (symbolic backend only)
+//  SPINE IDENTITY — v14.0-Presence-Immortal-BACKEND (symbolic backend only)
 // ============================================================================
 
 
@@ -65,8 +65,8 @@ export const PulseRole = {
   type: "Organ",
   subsystem: "PulseProxy",
   layer: "BackendSpine",
-  version: "14.0-PRESENCE-IMMORTAL-BACKEND",
-  identity: "PulseProxySpine-v14.0-PRESENCE-IMMORTAL-BACKEND",
+  version: "14.0-Presence-Immortal-BACKEND",
+  identity: "PulseProxySpine-v14.0-Presence-Immortal-BACKEND",
 
   evo: {
     deterministic: true,
@@ -126,8 +126,8 @@ const PROXY_CONTEXT = {
 export const PulseProxySpineMeta = Object.freeze({
   layer: "PulseProxySpine",
   role: "BACKEND_SPINE_ORGAN",
-  version: "v14.0-PRESENCE-IMMORTAL-BACKEND",
-  identity: "PulseProxySpine-v14.0-PRESENCE-IMMORTAL-BACKEND",
+  version: "v14.0-Presence-Immortal-BACKEND",
+  identity: "PulseProxySpine-v14.0-Presence-Immortal-BACKEND",
 
   guarantees: Object.freeze({
     deterministic: true,
@@ -207,7 +207,7 @@ export const PulseProxySpineMeta = Object.freeze({
 
   lineage: Object.freeze({
     root: "PulseProxy-v11",
-    parent: "PulseProxy-v14.0-PRESENCE-IMMORTAL",
+    parent: "PulseProxy-v14.0-Presence-Immortal",
     ancestry: [
       "PulseProxySpine-v7",
       "PulseProxySpine-v8",
@@ -216,8 +216,8 @@ export const PulseProxySpineMeta = Object.freeze({
       "PulseProxySpine-v11",
       "PulseProxySpine-v11.1",
       "PulseProxySpine-v11-Evo",
-      "PulseProxySpine-v11.2-EVO-BINARY-MAX",
-      "PulseProxySpine-v12.3-EVO"
+      "PulseProxySpine-v11.2-Evo-BINARY-MAX",
+      "PulseProxySpine-v12.3-Evo"
     ]
   }),
 
@@ -236,7 +236,7 @@ export const PulseProxySpineMeta = Object.freeze({
 });
 
 log(
-  "%c🟦 PulseProxySpine v14.0-PRESENCE-IMMORTAL-BACKEND online — backend spine + vitals pump + SDN prewarm active.",
+  "%c🟦 PulseProxySpine v14.0-Presence-Immortal-BACKEND online — backend spine + vitals pump + SDN prewarm active.",
   "color:#03A9F4; font-weight:bold;"
 );
 
@@ -313,7 +313,7 @@ const CLOUD_REGION =
 
 const NODE_ID = process.env.K_REVISION || process.env.HOSTNAME || "Local";
 
-const PULSE_VERSION = "v14.0-PRESENCE-IMMORTAL-BACKEND";
+const PULSE_VERSION = "v14.0-Presence-Immortal-BACKEND";
 
 const OFFLINE_MODE =
   process.env.PULSE_OFFLINE_MODE === "1" ||
@@ -380,10 +380,10 @@ app.use((req, res, next) => {
 // ============================================================================
 export function createSpineContext({
   layer = "BackendSpine",
-  role = "PulseProxySpine-v14.0-PRESENCE-IMMORTAL-BACKEND",
+  role = "PulseProxySpine-v14.0-Presence-Immortal-BACKEND",
   purpose = "Unified TPProxy gateway + vitals pump + OS healer feed",
   context = "Backend spine for PulseProxy: routes traffic, exposes vitals, feeds healers",
-  version = "14.0-PRESENCE-IMMORTAL-BACKEND",
+  version = "14.0-Presence-Immortal-BACKEND",
   target = "proxy-core",
   selfRepairable = true
 } = {}) {
@@ -487,7 +487,7 @@ export function buildNodeDescriptor({
   return {
     region: region || "unknown-region",
     nodeId: nodeId || "unknown-node",
-    version: version || "v14.0-PRESENCE-IMMORTAL-BACKEND",
+    version: version || "v14.0-Presence-Immortal-BACKEND",
     mode: mode === "offline" ? "offline" : "online",
     maxRequestsPerDay: Number.isFinite(maxRequestsPerDay)
       ? maxRequestsPerDay
@@ -838,7 +838,7 @@ try {
 
 // ============================================================================
 //  UNIVERSAL PROXY — TPProxy v14 IMMORTAL BACKEND
-//  (logic preserved from v12.3-EVO, band/presence fields extended)
+//  (logic preserved from v12.3-Evo, band/presence fields extended)
 // ============================================================================
 
 app.get("/TPProxy", async (req, res) => {
@@ -973,7 +973,7 @@ app.get("/TPProxy", async (req, res) => {
   }
 });
 // ============================================================================
-//  PULSEBAND CHUNKER BRIDGE — v12.3-EVO → PulseChunker-v12-Evo
+//  PULSEBAND CHUNKER BRIDGE — v12.3-Evo → PulseChunker-v12-Evo
 //  (logic unchanged, now forwards passive band metadata)
 // ============================================================================
 
@@ -1079,7 +1079,7 @@ app.post("/PULSE-PROXY/pulseband/redownload", async (req, res) => {
 });
 
 // ============================================================================
-//  HEALTH — PROXY VITALS SNAPSHOT (v12.3-EVO)
+//  HEALTH — PROXY VITALS SNAPSHOT (v12.3-Evo)
 // ============================================================================
 
 app.get("/PULSE-PROXY/health", async (req, res) => {
@@ -1125,7 +1125,7 @@ app.get("/PULSE-PROXY/health", async (req, res) => {
 });
 
 // ============================================================================
-//  METRICS — ICU‑Grade Telemetry (v12.3-EVO)
+//  METRICS — ICU‑Grade Telemetry (v12.3-Evo)
 // ============================================================================
 
 app.get("/PULSE-PROXY/metrics", async (req, res) => {
@@ -1181,7 +1181,7 @@ app.get("/PULSE-PROXY/metrics", async (req, res) => {
 });
 
 // ============================================================================
-//  NODE INFO — BACKEND BODY CARD (v12.3-EVO)
+//  NODE INFO — BACKEND BODY CARD (v12.3-Evo)
 // ============================================================================
 
 app.get("/PULSE-PROXY/node", async (req, res) => {
@@ -1228,7 +1228,7 @@ app.get("/PULSE-PROXY/node", async (req, res) => {
 });
 
 // ============================================================================
-//  PING — REFLEX TEST (v12.3-EVO)
+//  PING — REFLEX TEST (v12.3-Evo)
 // ============================================================================
 
 app.get("/PULSE-PROXY/ping", async (req, res) => {

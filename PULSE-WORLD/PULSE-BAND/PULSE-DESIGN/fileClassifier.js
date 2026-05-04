@@ -2,10 +2,10 @@
 ===============================================================================
 AI_EXPERIENCE_META = {
   identity: "PulseDesign.Anatomist",
-  version: "v14-IMMORTAL",
+  version: "v14-Immortal",
   layer: "pulse_design",
   role: "structural_classifier_and_identity_mapper",
-  lineage: "Anatomist-v7.1 → v10.4 → v12.3 → v14-IMMORTAL",
+  lineage: "Anatomist-v7.1 → v10.4 → v12.3 → v14-Immortal",
 
   evo: {
     structuralClassifier: true,

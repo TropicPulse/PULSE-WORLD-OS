@@ -5,10 +5,10 @@
 /*
 AI_EXPERIENCE_META = {
   identity: "aiBinaryDelta",
-  version: "v14-IMMORTAL",
+  version: "v14-Immortal",
   layer: "ai_binary",
   role: "binary_delta_engine",
-  lineage: "aiBinaryDelta-v10 → v12 → v14-IMMORTAL",
+  lineage: "aiBinaryDelta-v10 → v12 → v14-Immortal",
 
   evo: {
     deltaEngine: true,

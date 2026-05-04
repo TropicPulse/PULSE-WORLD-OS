@@ -59,7 +59,7 @@
 /*
 AI_EXPERIENCE_META = {
   identity: "PulseGPUAstralMuscleSystem",
-  version: "v14-IMMORTAL",
+  version: "v14-Immortal",
   layer: "gpu_muscle",
   role: "gpu_execution_muscle",
   lineage: "PulseGPU-v14",

@@ -7,7 +7,7 @@
 /*
 AI_EXPERIENCE_META = {
   identity: "PulseOSThymus",
-  version: "v14-IMMORTAL",
+  version: "v14-Immortal",
   layer: "cns",
   role: "os_thymus",
   lineage: "PulseOS-v14",
@@ -108,8 +108,8 @@ export const THYMUS_CONTEXT = {
 export const PulseOSThymusMeta = Object.freeze({
   layer: "PulseOSThymus",
   role: "IMMUNE_COMMAND_ORGAN",
-  version: "v12.3-EVO-BINARY-MAX-IMMUNE",
-  identity: "PulseOSThymus-v12.3-EVO-BINARY-MAX-IMMUNE",
+  version: "v12.3-Evo-BINARY-MAX-IMMUNE",
+  identity: "PulseOSThymus-v12.3-Evo-BINARY-MAX-IMMUNE",
 
   guarantees: Object.freeze({
     deterministic: true,
@@ -194,8 +194,8 @@ export const PulseOSThymusMeta = Object.freeze({
   }),
 
   lineage: Object.freeze({
-    root: "PulseOS-v12.3-EVO",
-    parent: "PulseOS-v12.3-EVO-MAX",
+    root: "PulseOS-v12.3-Evo",
+    parent: "PulseOS-v12.3-Evo-MAX",
     ancestry: [
       "PulseOSThymus-v7",
       "PulseOSThymus-v8",

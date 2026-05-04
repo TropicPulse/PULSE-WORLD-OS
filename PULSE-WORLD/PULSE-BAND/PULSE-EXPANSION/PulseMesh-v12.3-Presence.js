@@ -1,14 +1,14 @@
 /**
  * ============================================================================
- *  PULSE-WORLD : PulseMesh-v16-IMMORTAL-ORGANISM.js
+ *  PULSE-WORLD : PulseMesh-v16-Immortal-ORGANISM.js
  *  ORGAN TYPE: Connectivity / Symbolic Mesh Organism
- *  VERSION: v16-IMMORTAL-ORGANISM
+ *  VERSION: v16-Immortal-ORGANISM
  * ============================================================================
  *
  *  ROLE:
  *    PulseMesh is the symbolic connective tissue of PulseWorld.
  *
- *    In v16-IMMORTAL-ORGANISM, Mesh is no longer a floating kernel.
+ *    In v16-Immortal-ORGANISM, Mesh is no longer a floating kernel.
  *    It is the ORGANISM MAP — the symbolic view that connects:
  *
  *      - PulseExpansion (world / region / cluster)
@@ -45,10 +45,10 @@
 /*
 AI_EXPERIENCE_META = {
   identity: "PulseMesh",
-  version: "v16-IMMORTAL-ORGANISM",
+  version: "v16-Immortal-ORGANISM",
   layer: "connectivity",
   role: "symbolic_mesh_organism",
-  lineage: "PulseMesh-v1 → v11-Evo → v15-IMMORTAL → v16-IMMORTAL-ORGANISM",
+  lineage: "PulseMesh-v1 → v11-Evo → v15-Immortal → v16-Immortal-ORGANISM",
 
   evo: {
     symbolicMeshKernel: true,
@@ -209,10 +209,10 @@ function getPulseServerContext() {
 // ============================================================================
 
 export const PulseMeshMeta = Object.freeze({
-  organId: "PulseMesh-v16-IMMORTAL-ORGANISM",
+  organId: "PulseMesh-v16-Immortal-ORGANISM",
   role: "SYMBOLIC_MESH_ORGANISM",
-  version: "v16-IMMORTAL-ORGANISM",
-  epoch: "v16-IMMORTAL-ORGANISM",
+  version: "v16-Immortal-ORGANISM",
+  epoch: "v16-Immortal-ORGANISM",
   layer: "Connectivity",
 
   guarantees: Object.freeze({
@@ -257,7 +257,7 @@ export const PulseMeshMeta = Object.freeze({
 });
 
 // ============================================================================
-// FACTORY: createPulseMesh — v16-IMMORTAL-ORGANISM
+// FACTORY: createPulseMesh — v16-Immortal-ORGANISM
 // ============================================================================
 
 export function createPulseMesh({
@@ -269,7 +269,7 @@ export function createPulseMesh({
     meshID,
     regionID,
     createdBy: "PulseExpansion",
-    version: "v16-IMMORTAL-ORGANISM"
+    version: "v16-Immortal-ORGANISM"
   });
 
   const log = (...args) => trace && console.log("[PulseMesh v16]", ...args);

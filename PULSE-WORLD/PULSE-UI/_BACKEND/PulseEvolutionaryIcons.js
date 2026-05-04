@@ -6,10 +6,10 @@ LAYER: UNIVERSAL ICON ORGAN
 ===============================================================================
 AI_EXPERIENCE_META = {
   identity: "PulseUI.EvolutionaryIcons",
-  version: "v15-IMMORTAL",
+  version: "v15-Immortal",
   layer: "pulse_ui",
   role: "universal_icon_organ",
-  lineage: "PulseEvolutionaryIcons-v11 → v14-IMMORTAL → v15-IMMORTAL",
+  lineage: "PulseEvolutionaryIcons-v11 → v14-Immortal → v15-Immortal",
 
   evo: {
     iconOrgan: true,

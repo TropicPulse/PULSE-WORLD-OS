@@ -1,7 +1,7 @@
 // ============================================================================
-// PULSE-WORLD : PulseBeaconEngine-v15-IMMORTAL.js
+// PULSE-WORLD : PulseBeaconEngine-v15-Immortal.js
 // ORGAN TYPE: Bluetooth Presence / Membrane Organism
-// VERSION: v15-IMMORTAL (Hybrid, Every-Advantage, Every-Prewarm, Mesh-/User-/WorldCore-Aware, Monolithic Membrane)
+// VERSION: v15-Immortal (Hybrid, Every-Advantage, Every-Prewarm, Mesh-/User-/WorldCore-Aware, Monolithic Membrane)
 // ============================================================================
 //
 // ROLE:
@@ -9,7 +9,7 @@
 //   It turns region + mesh + castle + user + worldCore state into deterministic,
 //   SafetyFrame-compliant Bluetooth presence frames AND EMITS THEM over Bluetooth.
 //
-//   v15-IMMORTAL upgrades:
+//   v15-Immortal upgrades:
 //     - WorldCore-aware, Mesh-aware, Router-aware, Server-aware
 //     - Explicit userContext attachment (user ↔ membrane)
 //     - Direct consumption of PulseMesh.buildUserMeshSignal() / worldMesh signals
@@ -29,7 +29,7 @@
 /*
 AI_EXPERIENCE_META = {
   identity: "PulseBeaconEngine",
-  version: "v15-IMMORTAL",
+  version: "v15-Immortal",
   layer: "presence_engine",
   role: "bluetooth_presence_engine",
   lineage: "PulsePresence-v15",
@@ -77,10 +77,10 @@ AI_EXPERIENCE_META = {
 */
 
 export const PulseBeaconMeta = Object.freeze({
-  organId: "PulseBeaconEngine-v15-IMMORTAL",
+  organId: "PulseBeaconEngine-v15-Immortal",
   role: "BLUETOOTH_MEMBRANE",
-  version: "v15-IMMORTAL",
-  epoch: "v15-IMMORTAL",
+  version: "v15-Immortal",
+  epoch: "v15-Immortal",
   layer: "Membrane",
   safety: Object.freeze({
     deterministic: true,
@@ -178,7 +178,7 @@ function nativeBluetoothBroadcast(payload, profile) {
 }
 
 // ============================================================================
-// FACTORY: createPulseBeaconEngine — v15-IMMORTAL
+// FACTORY: createPulseBeaconEngine — v15-Immortal
 // Hybrid: consumes global hints + mesh/user/worldCore snapshots,
 //         produces local presence/advantage/band/chunk fields,
 //         and EMITS via internal nativeBluetoothBroadcast.

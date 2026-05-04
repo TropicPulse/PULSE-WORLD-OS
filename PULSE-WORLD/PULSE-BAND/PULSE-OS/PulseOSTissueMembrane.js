@@ -6,7 +6,7 @@
 // A2 REFLEX LAYER • MID‑LAYER SENTINEL • ZERO TIMING • ZERO STATE
 // ============================================================================
 //
-// v12.3+ PRESENCE / PREWARM / MULTI-PRESENCE UPGRADE:
+// v12.3+ PRESENCE / PREWARM / MULTI-Presence UPGRADE:
 //   ✔ Zero timing (no Date.now → deterministic seq counter)
 //   ✔ Zero global mutation (no PulseOSBrain.* writes)
 //   ✔ Guarded window access (environment‑agnostic)
@@ -20,7 +20,7 @@
 /*
 AI_EXPERIENCE_META = {
   identity: "PulseOSTissueMembrane",
-  version: "v14-IMMORTAL",
+  version: "v14-Immortal",
   layer: "membrane",
   role: "os_tissue_membrane",
   lineage: "PulseOS-v14",
@@ -55,7 +55,7 @@ AI_EXPERIENCE_META = {
 */
 
 // ============================================================================
-// ORGAN IDENTITY — v12.3-PRESENCE (A2 Tissue Membrane)
+// ORGAN IDENTITY — v12.3-Presence (A2 Tissue Membrane)
 // ============================================================================
 export const PulseRole = {
   type: "Barrier",
@@ -109,8 +109,8 @@ export const PulseRole = {
 export const PulseOSTissueMembraneMeta = Object.freeze({
   layer: "PulseOSTissueMembrane",
   role: "A2_TISSUE_REFLEX_MEMBRANE",
-  version: "v12.3-EVO-PRESENCE",
-  identity: "PulseOSTissueMembrane-v12.3-EVO-PRESENCE",
+  version: "v12.3-Evo-Presence",
+  identity: "PulseOSTissueMembrane-v12.3-Evo-Presence",
 
   guarantees: Object.freeze({
     deterministic: true,
@@ -170,8 +170,8 @@ export const PulseOSTissueMembraneMeta = Object.freeze({
   }),
 
   lineage: Object.freeze({
-    root: "PulseOS-v12-EVO",
-    parent: "PulseOS-v12.3-EVO-PRESENCE",
+    root: "PulseOS-v12-Evo",
+    parent: "PulseOS-v12.3-Evo-Presence",
     ancestry: [
       "PulseOSTissueMembrane-v9",
       "PulseOSTissueMembrane-v10",

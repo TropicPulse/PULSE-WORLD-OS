@@ -37,7 +37,7 @@ export function createPulseMeshSkinReflex({
   const meta = {
     layer: "PulseMeshSkinReflex",
     role: "MESH_SKIN_REFLEX",
-    version: "15-EVO-IMMORTAL",
+    version: "15-Evo-Immortal",
     target: "full-mesh",
     selfRepairable: true,
 

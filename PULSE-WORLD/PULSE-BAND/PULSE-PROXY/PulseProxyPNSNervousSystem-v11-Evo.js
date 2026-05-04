@@ -30,7 +30,7 @@ const PULSEBAND_CONTEXT = {
   context:
     "Maintains live/snapshot/gpuPerformance mirrors, fires nervous events, propagates reflexes, synchronizes with Cortex + Evolution",
   target: "full-os",
-  version: "12.3-EVO-PRESENCE",
+  version: "12.3-Evo-Presence",
   mode: "symbolic",
   binaryPartner: "PulseProxyPNSNervousSystemBinary",
   selfRepairable: true,
@@ -65,8 +65,8 @@ const PULSEBAND_CONTEXT = {
 export const PulseBandSymbolicMeta = Object.freeze({
   layer: "PulseBandSymbolic",
   role: "PNS_SYMBOLIC_NERVOUS_SYSTEM",
-  version: "v12.3-EVO-BINARY-MAX-ABA-PRESENCE",
-  identity: "PulseBandSymbolic-v12.3-EVO-BINARY-MAX-ABA-PRESENCE",
+  version: "v12.3-Evo-BINARY-MAX-ABA-Presence",
+  identity: "PulseBandSymbolic-v12.3-Evo-BINARY-MAX-ABA-Presence",
 
   guarantees: Object.freeze({
     deterministic: true,
@@ -144,7 +144,7 @@ export const PulseBandSymbolicMeta = Object.freeze({
 
   lineage: Object.freeze({
     root: "PulseBand-v11",
-    parent: "PulseBand-v12.3-EVO",
+    parent: "PulseBand-v12.3-Evo",
     ancestry: [
       "PulseBand-v7",
       "PulseBand-v8",
@@ -153,7 +153,7 @@ export const PulseBandSymbolicMeta = Object.freeze({
       "PulseBand-v11",
       "PulseBand-v11-Evo",
       "PulseBand-v11-Evo-Prime",
-      "PulseBand-v12.3-EVO-PRESENCE"
+      "PulseBand-v12.3-Evo-Presence"
     ]
   }),
 

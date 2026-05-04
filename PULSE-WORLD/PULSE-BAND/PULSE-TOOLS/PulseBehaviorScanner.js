@@ -1,5 +1,5 @@
 // ============================================================================
-// FILE: /PulseOS/Scanner/PulseBehaviorScanner-v12.3-EVO.js
+// FILE: /PulseOS/Scanner/PulseBehaviorScanner-v12.3-Evo.js
 // PULSE OS — v12.3‑EVO
 // ENVIRONMENT BEHAVIOR ORGAN — PRESENCE-AWARE, DUAL-BAND, NODEADMIN‑EVO
 // ============================================================================

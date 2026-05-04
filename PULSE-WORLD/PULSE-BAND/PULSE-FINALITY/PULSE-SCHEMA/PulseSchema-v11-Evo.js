@@ -38,7 +38,7 @@
  * meta:      free-form metadata (labels, descriptions, tags, etc.)
  */
 /**
- * PulseSchema-v12.3-PRESENCE-EVO+.js
+ * PulseSchema-v12.3-Presence-Evo+.js
  * PULSE-FINALITY / PULSE-SCHEMA
  *
  * ROLE:
@@ -68,7 +68,7 @@
 /*
 AI_EXPERIENCE_META = {
   identity: "PulseSchema",
-  version: "v14-IMMORTAL",
+  version: "v14-Immortal",
   layer: "schema",
   role: "unified_schema_brain",
   lineage: "PulseOS-v14",
@@ -107,14 +107,14 @@ AI_EXPERIENCE_META = {
 */
 
 // ============================================================================
-// META — v12.3-PRESENCE-EVO+
+// META — v12.3-Presence-Evo+
 // ============================================================================
 
 export const PulseSchemaMeta = Object.freeze({
   layer: "PulseSchema",
   role: "CANONICAL_SCHEMA_ORGAN",
-  version: "12.3-PRESENCE-EVO+",
-  identity: "PulseSchema-v12.3-PRESENCE-EVO+",
+  version: "12.3-Presence-Evo+",
+  identity: "PulseSchema-v12.3-Presence-Evo+",
 
   evo: Object.freeze({
     deterministic: true,
@@ -134,7 +134,7 @@ export const PulseSchemaMeta = Object.freeze({
     coldStartAware: true,
     dualbandSafe: true,
 
-    epoch: "12.3-PRESENCE-EVO+"
+    epoch: "12.3-Presence-Evo+"
   })
 });
 

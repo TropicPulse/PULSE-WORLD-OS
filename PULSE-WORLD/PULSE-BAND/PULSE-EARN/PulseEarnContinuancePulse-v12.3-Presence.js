@@ -1,5 +1,5 @@
 // ============================================================================
-//  PulseEarnContinuancePulse-v14.4-IMMORTAL-INTEL.js
+//  PulseEarnContinuancePulse-v14.4-Immortal-INTEL.js
 //  Earn v1 Continuance Wrapper (v14.4 IMMORTAL SAFE MODE)
 //  NO PulseSendSystem, NO network, NO routing, NO loops.
 //  Only: build LegacyEarn v1 + Pulse-compatible envelope and return it.
@@ -10,10 +10,10 @@
 /*
 AI_EXPERIENCE_META = {
   identity: "PulseEarnContinuancePulse",
-  version: "v14.4-IMMORTAL-INTEL",
+  version: "v14.4-Immortal-INTEL",
   layer: "earn_continuance",
   role: "earn_continuance_pulse",
-  lineage: "PulseEarnContinuancePulse-v11 → v12.3 → v13 → v14.4-IMMORTAL-INTEL",
+  lineage: "PulseEarnContinuancePulse-v11 → v12.3 → v13 → v14.4-Immortal-INTEL",
 
   evo: {
     continuancePulse: true,
@@ -55,7 +55,7 @@ export const PulseRole = {
   subsystem: "Earn",
   layer: "Organ",
   version: "14.4",
-  identity: "PulseEarnContinuancePulse-v14.4-IMMORTAL-INTEL",
+  identity: "PulseEarnContinuancePulse-v14.4-Immortal-INTEL",
 
   evo: {
     continuancePulse: true,
@@ -94,8 +94,8 @@ export const PulseRole = {
 export const PulseEarnContinuancePulseMeta = Object.freeze({
   layer: "PulseEarnContinuancePulse",
   role: "EARN_CONTINUANCE_ORGAN",
-  version: "v14.4-IMMORTAL-INTEL",
-  identity: "PulseEarnContinuancePulse-v14.4-IMMORTAL-INTEL",
+  version: "v14.4-Immortal-INTEL",
+  identity: "PulseEarnContinuancePulse-v14.4-Immortal-INTEL",
 
   guarantees: Object.freeze({
     deterministic: true,
@@ -187,7 +187,7 @@ function buildPresenceFieldV14(globalHints = {}, cycle) {
   const presenceTier = classifyPresenceTier(pressure);
 
   return {
-    presenceVersion: "v14.4-PRESENCE-IMMORTAL-INTEL",
+    presenceVersion: "v14.4-Presence-Immortal-INTEL",
     presenceTier,
 
     bandPresence: ghP.bandPresence || "symbolic",
@@ -414,7 +414,7 @@ function buildLegacyEarnV1(impulse, globalHints = {}) {
     EarnRole: {
       kind: "Earn",
       version: "1.0",
-      identity: "Earn-v1-Continuance-v14.4-IMMORTAL-INTEL"
+      identity: "Earn-v1-Continuance-v14.4-Immortal-INTEL"
     },
 
     jobId,
@@ -441,7 +441,7 @@ function buildLegacyEarnV1(impulse, globalHints = {}) {
     meta: {
       ...(payload.meta || {}),
       legacy: true,
-      origin: "ContinuancePulse-v14.4-IMMORTAL-INTEL",
+      origin: "ContinuancePulse-v14.4-Immortal-INTEL",
       cycleIndex: continuanceCycle,
       patternSignature,
       lineageSignature
@@ -485,9 +485,9 @@ function buildPulseCompatibleEarnV14(earn) {
 
     meta: {
       ...(earn.meta || {}),
-      origin: "ContinuancePulse-v14.4-IMMORTAL-INTEL",
+      origin: "ContinuancePulse-v14.4-Immortal-INTEL",
       earnVersion: "1.0",
-      earnIdentity: "Earn-v1-Continuance-v14.4-IMMORTAL-INTEL",
+      earnIdentity: "Earn-v1-Continuance-v14.4-Immortal-INTEL",
       earnEnvelope: true,
       cycleIndex: earn.meta.cycleIndex,
       continuanceSignature,

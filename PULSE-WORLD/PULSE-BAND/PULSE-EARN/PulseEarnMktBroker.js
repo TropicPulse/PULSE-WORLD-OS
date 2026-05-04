@@ -1,14 +1,14 @@
 // ============================================================================
-// FILE: tropic-pulse-functions/PULSE-WORLD/PULSE-EARN/PulseEarnMktBroker-v13.0-PRESENCE-IMMORTAL.js
+// FILE: tropic-pulse-functions/PULSE-WORLD/PULSE-EARN/PulseEarnMktBroker-v13.0-Presence-Immortal.js
 // LAYER: THE RUNPOD BROKER (v13.0 Presence + Advantage‑C + Prewarm)
 // ============================================================================
 /*
 AI_EXPERIENCE_META = {
   identity: "PulseEarnMktBroker",
-  version: "v14-IMMORTAL",
+  version: "v14-Immortal",
   layer: "earn_market",
   role: "market_broker",
-  lineage: "PulseEarnMktBroker-v11 → v12.3 → v14-IMMORTAL",
+  lineage: "PulseEarnMktBroker-v11 → v12.3 → v14-Immortal",
 
   evo: {
     marketBroker: true,
@@ -43,8 +43,8 @@ AI_EXPERIENCE_META = {
 export const PulseEarnMktBrokerMeta = Object.freeze({
   layer: "PulseEarnMktBroker",
   role: "EARN_MARKETPLACE_RECEPTOR",
-  version: "v13.0-PRESENCE-IMMORTAL",
-  identity: "PulseEarnMktBroker-v13.0-PRESENCE-IMMORTAL",
+  version: "v13.0-Presence-Immortal",
+  identity: "PulseEarnMktBroker-v13.0-Presence-Immortal",
 
   guarantees: Object.freeze({
     deterministic: true,
@@ -90,7 +90,7 @@ export const PulseEarnMktBrokerMeta = Object.freeze({
 });
 
 export const RUNPOD_RECEPTOR_DNA = {
-  version: "13.0-PRESENCE-IMMORTAL",
+  version: "13.0-Presence-Immortal",
   receptorType: "runpod",
   jobs: [
     { id: "ping", payload: { type: "ping" } },
@@ -173,7 +173,7 @@ function buildPresenceField(jobOrRaw, device, cycle) {
     "presence_low";
 
   return {
-    presenceVersion: "v13.0-PRESENCE-IMMORTAL",
+    presenceVersion: "v13.0-Presence-Immortal",
     presenceTier,
     idLen,
     typeLen,
@@ -512,7 +512,7 @@ function submitJob({ jobId, result, error: jobError = null } = {}, deviceProfile
       presenceField,
       advantageField,
       chunkPlan,
-      note: "RunPod submission simulated deterministically (v13.0-PRESENCE-IMMORTAL)."
+      note: "RunPod submission simulated deterministically (v13.0-Presence-Immortal)."
     }
   };
 }
@@ -523,8 +523,8 @@ function submitJob({ jobId, result, error: jobError = null } = {}, deviceProfile
 export const PulseEarnMktBroker = {
   id: "runpod",
   name: "RunPod",
-  version: "v13.0-PRESENCE-IMMORTAL",
-  lineage: "RunPodAdapter-v13.0-PRESENCE-IMMORTAL",
+  version: "v13.0-Presence-Immortal",
+  lineage: "RunPodAdapter-v13.0-Presence-Immortal",
 
   registerDevice,
   requestJob,

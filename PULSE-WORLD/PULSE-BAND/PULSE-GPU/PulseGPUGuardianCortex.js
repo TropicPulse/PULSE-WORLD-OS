@@ -28,7 +28,7 @@
 /*
 AI_EXPERIENCE_META = {
   identity: "PulseGPUGuardianCortex",
-  version: "v14-IMMORTAL",
+  version: "v14-Immortal",
   layer: "gpu_guardian",
   role: "gpu_guardian_cortex",
   lineage: "PulseGPU-v14",

@@ -1,14 +1,14 @@
 // ============================================================================
-// PULSE-WORLD : PulseBeaconConsole-v14-IMMORTAL.js
+// PULSE-WORLD : PulseBeaconConsole-v14-Immortal.js
 // ROLE: Global expansion console + Overmind control surface
-// VERSION: v14-IMMORTAL
+// VERSION: v14-Immortal
 // ============================================================================
 //
 // PURPOSE:
 //   This page is the "brain" of PulseWorld expansion.
 //   It controls global hints, modes, payload shaping, and expansion pulses.
 //
-//   It consumes (Beacon Engine v14-IMMORTAL):
+//   It consumes (Beacon Engine v14-Immortal):
 //     - beacon.getStateSnapshot()
 //     - beacon.getTelemetry()
 //     - beacon.getGlobalHints()
@@ -42,7 +42,7 @@
 /*
 AI_EXPERIENCE_META = {
   identity: "PulseBeaconConsole",
-  version: "v14-IMMORTAL",
+  version: "v14-Immortal",
   layer: "presence_console",
   role: "presence_debug_console",
   lineage: "PulsePresence-v14",
@@ -82,8 +82,8 @@ AI_EXPERIENCE_META = {
 export const PulseBeaconConsoleMeta = Object.freeze({
   layer: "OvermindConsole",
   role: "GLOBAL_EXPANSION_CONSOLE",
-  version: "v14-IMMORTAL",
-  identity: "PulseBeaconConsole-v14-IMMORTAL",
+  version: "v14-Immortal",
+  identity: "PulseBeaconConsole-v14-Immortal",
   guarantees: Object.freeze({
     deterministic: true,
     driftProof: true,
@@ -184,7 +184,7 @@ function mergeGlobalHints(prev = {}, patch = {}) {
 }
 
 // ============================================================================
-// ORGAN: PulseBeaconConsole (v14-IMMORTAL)
+// ORGAN: PulseBeaconConsole (v14-Immortal)
 // ============================================================================
 export function PulseBeaconConsole({ beacon }) {
   if (!beacon) throw new Error("PulseBeaconConsole requires a Beacon Engine instance");

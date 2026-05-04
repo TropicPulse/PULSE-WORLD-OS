@@ -6,10 +6,10 @@ LAYER: UI PAGE ROUTER ORGAN
 ===============================================================================
 AI_EXPERIENCE_META = {
   identity: "PulseUI.EvolutionaryRouter",
-  version: "v15-IMMORTAL",
+  version: "v15-Immortal",
   layer: "pulse_ui",
   role: "ui_page_router",
-  lineage: "PulseEvolutionaryRouter-v11.3-Evo-Prime → v14-IMMORTAL → v15-IMMORTAL",
+  lineage: "PulseEvolutionaryRouter-v11.3-Evo-Prime → v14-Immortal → v15-Immortal",
 
   evo: {
     uiRouting: true,
@@ -93,7 +93,7 @@ export const RouterRole = {
   type: "Organ",
   subsystem: "UI",
   layer: "PageRouter",
-  version: "15.0-IMMORTAL",
+  version: "15.0-Immortal",
   identity: "PulseEvolutionaryRouter",
 
   evo: {

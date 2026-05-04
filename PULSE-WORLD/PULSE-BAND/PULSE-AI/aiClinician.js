@@ -6,10 +6,10 @@
 /*
 AI_EXPERIENCE_META = {
   identity: "aiClinician",
-  version: "v14-IMMORTAL",
+  version: "v14-Immortal",
   layer: "ai_tools",
   role: "clinical_pattern_explainer",
-  lineage: "aiClinician-v11 → v14-IMMORTAL",
+  lineage: "aiClinician-v11 → v14-Immortal",
 
   evo: {
     clinicalPatterns: true,
@@ -35,8 +35,8 @@ AI_EXPERIENCE_META = {
 export const ClinicianMeta = Object.freeze({
   layer: "PulseAIClinicianFrame",
   role: "CLINICIAN_ORGAN",
-  version: "12.3-EVO+",
-  identity: "aiClinician-v12.3-EVO+",
+  version: "12.3-Evo+",
+  identity: "aiClinician-v12.3-Evo+",
 
   evo: Object.freeze({
     driftProof: true,
@@ -59,7 +59,7 @@ export const ClinicianMeta = Object.freeze({
     packetAware: true,
     multiInstanceReady: true,
     clinicianArteryAware: true,
-    epoch: "12.3-EVO+"
+    epoch: "12.3-Evo+"
   }),
 
   contract: Object.freeze({

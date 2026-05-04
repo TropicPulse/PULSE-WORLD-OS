@@ -7,10 +7,10 @@
 /*
 AI_EXPERIENCE_META = {
   identity: "aiToneRouter",
-  version: "v15-IMMORTAL",
+  version: "v15-Immortal",
   layer: "ai_core",
   role: "tone_router",
-  lineage: "aiToneRouter-v11 → v15-IMMORTAL",
+  lineage: "aiToneRouter-v11 → v15-Immortal",
 
   evo: {
     toneRouting: true,
@@ -55,8 +55,8 @@ export const aiToneRouter = {
     type: "Engine",
     subsystem: "aiTone",
     layer: "C1-ToneRouter",
-    version: "15-IMMORTAL",
-    identity: "aiToneRouter-v15-IMMORTAL",
+    version: "15-Immortal",
+    identity: "aiToneRouter-v15-Immortal",
 
     evo: Object.freeze({
       deterministic: true,
@@ -78,7 +78,7 @@ export const aiToneRouter = {
       arteryAware: true,
 
       multiInstanceReady: true,
-      epoch: "15-IMMORTAL"
+      epoch: "15-Immortal"
     }),
 
     contract: Object.freeze({

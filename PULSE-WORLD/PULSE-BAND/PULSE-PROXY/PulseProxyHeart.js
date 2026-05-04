@@ -15,8 +15,8 @@ export const PulseRole = {
   type: "Organ",
   subsystem: "PulseProxy",
   layer: "Heart",
-  version: "13-EVO-PRIME",
-  identity: "PulseProxyHeart-v13-EVO-PRIME-ABA",
+  version: "13-Evo-PRIME",
+  identity: "PulseProxyHeart-v13-Evo-PRIME-ABA",
 
   evo: {
     driftProof: true,
@@ -55,8 +55,8 @@ export const PulseRole = {
 export const PulseProxyHeartMeta = Object.freeze({
   layer: "PulseProxyHeart",
   role: "CARDIAC_PACEMAKER_ENGINE",
-  version: "v13-EVO-PRIME-ABA",
-  identity: "PulseProxyHeart-v13-EVO-PRIME-ABA",
+  version: "v13-Evo-PRIME-ABA",
+  identity: "PulseProxyHeart-v13-Evo-PRIME-ABA",
 
   guarantees: Object.freeze({
     deterministic: true,

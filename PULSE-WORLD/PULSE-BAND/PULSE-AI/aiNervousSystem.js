@@ -1,5 +1,5 @@
 // ============================================================================
-//  aiNervousSystem.js — Pulse OS v15.0-IMMORTAL Organ
+//  aiNervousSystem.js — Pulse OS v15.0-Immortal Organ
 //  Binary Nervous System • Routing Brainstem • Deterministic • Routing Artery v3
 //  Dualband • Registry-Aware • Multi-Instance • Spiral-Safe
 // ============================================================================
@@ -33,10 +33,10 @@
 /*
 AI_EXPERIENCE_META = {
   identity: "aiNervousSystem",
-  version: "v15-IMMORTAL",
+  version: "v15-Immortal",
   layer: "ai_core",
   role: "signal_router",
-  lineage: "aiNervousSystem-v10 → v12.3-Presence → v15-IMMORTAL",
+  lineage: "aiNervousSystem-v10 → v12.3-Presence → v15-Immortal",
 
   evo: {
     signalRouting: true,
@@ -76,13 +76,13 @@ AI_EXPERIENCE_META = {
 */
 
 // ============================================================================
-//  META BLOCK — v15.0-IMMORTAL
+//  META BLOCK — v15.0-Immortal
 // ============================================================================
 export const NervousSystemMeta = Object.freeze({
   layer: "BinaryNervousSystem",
   role: "BINARY_NERVOUS_SYSTEM",
-  version: "15.0-IMMORTAL",
-  identity: "aiBinaryNervousSystem-v15.0-IMMORTAL",
+  version: "15.0-Immortal",
+  identity: "aiBinaryNervousSystem-v15.0-Immortal",
 
   evo: Object.freeze({
     deterministic: true,
@@ -102,7 +102,7 @@ export const NervousSystemMeta = Object.freeze({
     prewarmAware: true,
 
     multiInstanceReady: true,
-    epoch: "v15.0-IMMORTAL"
+    epoch: "v15.0-Immortal"
   }),
 
   contract: Object.freeze({
@@ -197,7 +197,7 @@ function emitRoutingPacket(type, payload) {
 }
 
 // ============================================================================
-//  PREWARM — v15.0-IMMORTAL
+//  PREWARM — v15.0-Immortal
 // ============================================================================
 export function prewarmAIBinaryNervousSystem({ trace = false } = {}) {
   const packet = emitRoutingPacket("prewarm", {
@@ -209,7 +209,7 @@ export function prewarmAIBinaryNervousSystem({ trace = false } = {}) {
 }
 
 // ============================================================================
-//  ORGAN IMPLEMENTATION — v15.0-IMMORTAL
+//  ORGAN IMPLEMENTATION — v15.0-Immortal
 // ============================================================================
 export class AIBinaryNervousSystem {
   constructor(config = {}) {

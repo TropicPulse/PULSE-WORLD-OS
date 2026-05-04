@@ -1,9 +1,9 @@
 // ============================================================================
-//  PULSE OS v15-EVO-IMMORTAL — IMMUNE MEMBRANE LAYER  // red
+//  PULSE OS v15-Evo-Immortal — IMMUNE MEMBRANE LAYER  // red
 //  “System Safety Membrane / Structural Validation / Quarantine / Metadata‑Only”
 // ============================================================================
 //
-// IDENTITY — IMMUNE MEMBRANE (v15-EVO-IMMORTAL):
+// IDENTITY — IMMUNE MEMBRANE (v15-Evo-Immortal):
 // ---------------------------------------------
 // • First-line safety membrane for all impulses.
 // • Pure structural validation — no pressure gating.
@@ -30,7 +30,7 @@
 /*
 AI_EXPERIENCE_META = {
   identity: "PulseMeshImmuneMembrane",
-  version: "v15-EVO-IMMORTAL",
+  version: "v15-Evo-Immortal",
   layer: "mesh",
   role: "mesh_integrity_and_immune_barrier",
   lineage: "PulseMesh-v15",
@@ -73,7 +73,7 @@ export function createPulseImmune() {
   const meta = {
     layer: "PulseImmune",
     role: "IMMUNE_MEMBRANE",
-    version: "15-EVO-IMMORTAL",
+    version: "15-Evo-Immortal",
     target: "full-mesh",
     selfRepairable: true,
     evo: {

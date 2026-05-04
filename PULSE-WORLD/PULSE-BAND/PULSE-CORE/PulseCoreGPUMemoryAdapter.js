@@ -16,10 +16,10 @@
 /*
 AI_EXPERIENCE_META = {
   identity: "PulseCoreGPUMemoryAdapter",
-  version: "v15-IMMORTAL-GPU-ORCHESTRATOR",
+  version: "v15-Immortal-GPU-ORCHESTRATOR",
   layer: "corememory_adapter",
   role: "gpu_memory_adapter",
-  lineage: "PulseCoreMemory-v15-IMMORTAL",
+  lineage: "PulseCoreMemory-v15-Immortal",
 
   evo: {
     adapter: true,
@@ -65,7 +65,7 @@ export const GPUOrchestratorRole = {
   subsystem: "GPU",
   layer: "Spine",
   identity: "PulseGPUOrchestrator",
-  version: "15.0-IMMORTAL-GPU-ORCHESTRATOR",
+  version: "15.0-Immortal-GPU-ORCHESTRATOR",
 
   evo: {
     dualMode: true,
@@ -91,7 +91,7 @@ export const GPUOrchestratorMetaBlock = {
   subsystem: "GPU",
   layer: "Spine",
   role: "GPU-Orchestrator",
-  version: "15.0-IMMORTAL-GPU-ORCHESTRATOR",
+  version: "15.0-Immortal-GPU-ORCHESTRATOR",
   evo: GPUOrchestratorRole.evo
 };
 
@@ -167,7 +167,7 @@ export const GPUOrchestratorRoutes = {
 export function createPulseGPUOrchestrator({
   overlay = createPulseBinaryOverlay(),
   dnaTag = "default-dna",
-  version = "15.0-IMMORTAL-GPU-ORCHESTRATOR",
+  version = "15.0-Immortal-GPU-ORCHESTRATOR",
   log = console.log
 } = {}) {
 

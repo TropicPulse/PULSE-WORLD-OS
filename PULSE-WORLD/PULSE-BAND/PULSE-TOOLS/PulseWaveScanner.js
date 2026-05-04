@@ -1,16 +1,16 @@
 // ============================================================================
-// FILE: /PulseOS/core/PulseWaveScanner-v12.3-EVO.js
-// PULSE OS — v12.3-EVO
-// GENERIC WAVE ORGAN — PRESENCE + HARMONICS + DUAL-BAND + MULTI-SPIN-EVO
+// FILE: /PulseOS/core/PulseWaveScanner-v12.3-Evo.js
+// PULSE OS — v12.3-Evo
+// GENERIC WAVE ORGAN — PRESENCE + HARMONICS + DUAL-BAND + MULTI-SPIN-Evo
 // ============================================================================
-// ROLE (12.3-EVO):
+// ROLE (12.3-Evo):
 //   - Convert ANY numeric signal → deterministic waveforms.
 //   - Presence-aware (presenceAvg, presenceGradient).
 //   - Harmonics-aware (phaseDrift, coherenceScore).
 //   - Dual-band aware (binary + pulse + presence).
-//   - Multi-spin-EVO aware (3-phase wave sets).
+//   - Multi-spin-Evo aware (3-phase wave sets).
 //   - Zero randomness, zero timestamps, zero mutation.
-//   - API-compatible with v11-EVO.
+//   - API-compatible with v11-Evo.
 // ============================================================================
 
 export function createWaveScanner({ trace = false } = {}) {
@@ -50,7 +50,7 @@ export function createWaveScanner({ trace = false } = {}) {
   }
 
   // ---------------------------------------------------------------------------
-  // WAVE BUILDER — shared structure (12.3-EVO)
+  // WAVE BUILDER — shared structure (12.3-Evo)
   // ---------------------------------------------------------------------------
   function buildWave(amplitude, phase, depthScale, reflectScale, presence = 0, harmonicDrift = 0) {
     const band = dualBandScale(presence, harmonicDrift);
@@ -90,7 +90,7 @@ export function createWaveScanner({ trace = false } = {}) {
   }
 
   // ========================================================================
-  // MODE 3 — MULTI WAVE (3-PHASE MULTI-SPIN-EVO)
+  // MODE 3 — MULTI WAVE (3-PHASE MULTI-SPIN-Evo)
   // ========================================================================
   function nextWaveMulti(signal, presence = 0, harmonicDrift = 0) {
     const amp = amplitudeFromSignal(signal);

@@ -30,10 +30,10 @@ SAFETY:
 ===============================================================================
 AI_EXPERIENCE_META = {
   identity: "PulseUI.EvolutionaryBinary",
-  version: "v15-IMMORTAL",
+  version: "v15-Immortal",
   layer: "pulse_ui",
   role: "ui_binary_evolution_organ",
-  lineage: "PulseEvolutionaryBinary-v11.3-Evo-Prime → v14-IMMORTAL → v15-IMMORTAL",
+  lineage: "PulseEvolutionaryBinary-v11.3-Evo-Prime → v14-Immortal → v15-Immortal",
 
   evo: {
     uiOrgan: true,
@@ -131,7 +131,7 @@ export const BinaryRole = {
   type: "Organ",
   subsystem: "UI",
   layer: "PageBinary",
-  version: "15.0-IMMORTAL",
+  version: "15.0-Immortal",
   identity: "PulseEvolutionaryBinary",
 
   evo: {

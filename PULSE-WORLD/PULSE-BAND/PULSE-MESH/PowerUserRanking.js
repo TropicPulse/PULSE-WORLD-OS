@@ -1,6 +1,6 @@
 // ============================================================================
-// FILE: PowerUserRanking-v15-EVO.js
-// PULSE OS v15.0 — PRESENCE-EVO-MESH-AWARE
+// FILE: PowerUserRanking-v15-Evo.js
+// PULSE OS v15.0 — PRESENCE-Evo-MESH-AWARE
 // ---------------------------------------------------------------------------
 //  POWER USER RANKING ENGINE (IMMORTAL-GRADE COMMENTARY)
 // ---------------------------------------------------------------------------
@@ -44,7 +44,7 @@
 /*
 AI_EXPERIENCE_META = {
   identity: "PowerUserRanking",
-  version: "v14.9-PRESENCE-RANK",
+  version: "v14.9-Presence-RANK",
   layer: "presence_social",
   role: "power_user_ranking_engine",
   lineage: "PulseWorld-v14",
@@ -83,7 +83,7 @@ export function createPowerUserRanking({ log, warn, error }) {
   const meta = Object.freeze({
     layer: "PowerUserRanking",
     role: "POWER_USER_RANKING",
-    version: "15.0-EVO",
+    version: "15.0-Evo",
     evo: {
       presenceAware: true,            // Reads presence bands + system age
       meshAware: true,                // Reads mesh proximity + identity

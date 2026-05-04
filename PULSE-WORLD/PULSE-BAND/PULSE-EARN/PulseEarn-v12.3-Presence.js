@@ -1,11 +1,11 @@
 // ============================================================================
-//  PulseEarn-v13.0-PRESENCE-IMMORTAL.js — Earn Organism v13 Presence-IMMORTAL
-//  IMMORTAL UPGRADE of v12.3-EVO+: dual-band, evolution surfaces, presence/
+//  PulseEarn-v13.0-Presence-Immortal.js — Earn Organism v13 Presence-Immortal
+//  IMMORTAL UPGRADE of v12.3-Evo+: dual-band, evolution surfaces, presence/
 //  mesh/castle/expansion/server/globalHints-aware, chunk/cache/prewarm/
 //  factoring-aware — with descriptive-only health + IMMORTAL advantage fields.
 // ============================================================================
 //
-//  SAFETY CONTRACT (v13.0-PRESENCE-IMMORTAL):
+//  SAFETY CONTRACT (v13.0-Presence-Immortal):
 //  -----------------------------------------
 //  • No randomness.
 //  • No timestamps in math (only telemetry if desired).
@@ -20,10 +20,10 @@
 /*
 AI_EXPERIENCE_META = {
   identity: "PulseEarn",
-  version: "v14-IMMORTAL",
+  version: "v14-Immortal",
   layer: "earn_core",
   role: "earn_root_engine",
-  lineage: "PulseEarn-v9 → v10.4 → v11-Evo → v12.3 → v14-IMMORTAL",
+  lineage: "PulseEarn-v9 → v10.4 → v11-Evo → v12.3 → v14-Immortal",
 
   evo: {
     earnRoot: true,
@@ -102,8 +102,8 @@ const CoreMemory = Object.freeze({
 export const EarnMeta = Object.freeze({
   layer: "PulseEarn",
   role: "EARN_ORGAN",
-  version: "v13.0-PRESENCE-IMMORTAL",
-  identity: "PulseEarn-v13.0-PRESENCE-IMMORTAL",
+  version: "v13.0-Presence-Immortal",
+  identity: "PulseEarn-v13.0-Presence-Immortal",
 
   guarantees: Object.freeze({
     deterministic: true,
@@ -160,14 +160,14 @@ export const EarnMeta = Object.freeze({
   }),
 
   lineage: Object.freeze({
-    root: "PulseOS-v13.0-PRESENCE-IMMORTAL",
-    parent: "PulseProxy-v13.0-PRESENCE-IMMORTAL",
+    root: "PulseOS-v13.0-Presence-Immortal",
+    parent: "PulseProxy-v13.0-Presence-Immortal",
     ancestry: [
       "PulseOS-v10",
       "PulseEarn-v10.4",
       "PulseEarn-v11",
-      "PulseEarn-v11.2-EVO",
-      "PulseEarn-v12.3-PRESENCE-EVO+"
+      "PulseEarn-v11.2-Evo",
+      "PulseEarn-v12.3-Presence-Evo+"
     ]
   }),
 
@@ -198,8 +198,8 @@ export const EarnRole = {
   type: "Earn",
   subsystem: "Earn",
   layer: "Organ",
-  version: "14.4-IMMORTAL-INTEL",
-  identity: "Earn-v14.4-IMMORTAL-INTEL",
+  version: "14.4-Immortal-INTEL",
+  identity: "Earn-v14.4-Immortal-INTEL",
 
   evo: {
     // Core evolution awareness
@@ -266,11 +266,11 @@ export const EarnRole = {
     legacyBridgeCapable: true
   },
 
-  routingContract: "PulseRouter-v14.4-IMMORTAL-INTEL",
-  meshContract: "PulseMesh-v14.4-IMMORTAL-INTEL",
-  sendContract: "PulseSend-v14.4-IMMORTAL-INTEL",
-  gpuOrganContract: "PulseGPU-v14.4-IMMORTAL-INTEL",
-  minerContract: "PulseMiner-v14.4-IMMORTAL-INTEL",
+  routingContract: "PulseRouter-v14.4-Immortal-INTEL",
+  meshContract: "PulseMesh-v14.4-Immortal-INTEL",
+  sendContract: "PulseSend-v14.4-Immortal-INTEL",
+  gpuOrganContract: "PulseGPU-v14.4-Immortal-INTEL",
+  minerContract: "PulseMiner-v14.4-Immortal-INTEL",
   pulseCompatibility: "Pulse-v1/v2/v3"
 };
 
@@ -553,7 +553,7 @@ function buildCoreMemoryField({
   const normalizedBand = normalizeBand(band);
 
   return {
-    coreMemoryVersion: "v13.0-PRESENCE-IMMORTAL",
+    coreMemoryVersion: "v13.0-Presence-Immortal",
     band: normalizedBand,
     pattern,
     lineage,
@@ -625,7 +625,7 @@ function buildPresenceField({
   );
 
   return Object.freeze({
-    presenceVersion: "v13.0-PRESENCE-IMMORTAL",
+    presenceVersion: "v13.0-Presence-Immortal",
     presenceTier,
     presenceSignature,
     regionId,

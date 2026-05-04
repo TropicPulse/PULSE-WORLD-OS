@@ -1,5 +1,5 @@
 // ============================================================================
-// [pulse:mesh] PULSE_MESH_ENDOCRINE_SYSTEM v12.3-PRESENCE-EVO-MAX-PRIME // gold
+// [pulse:mesh] PULSE_MESH_ENDOCRINE_SYSTEM v12.3-Presence-Evo-MAX-PRIME // gold
 // Mesh Endocrine Interpreter • Metadata-Only • Zero-Compute • Zero-Mutation
 // Presence-Aware • Binary-Aware • Drift-Proof • Advantage-Field-Aware
 // ============================================================================
@@ -45,7 +45,7 @@ AI_EXPERIENCE_META = {
 }
 */
 // ============================================================================
-// [pulse:mesh] PULSE_MESH_ENDOCRINE_SYSTEM v15-EVO-IMMORTAL  // gold
+// [pulse:mesh] PULSE_MESH_ENDOCRINE_SYSTEM v15-Evo-Immortal  // gold
 // Mesh Hormone Interpreter • Metadata-Only • Deterministic
 // Reads Halo + Field + Echo + Mesh Pressure + Aura Pressure
 // Produces Endocrine Interpretation (no mutation, no routing influence)
@@ -64,7 +64,7 @@ export function createPulseMeshEndocrineSystem({
   const meta = {
     layer: "PulseMeshEndocrineSystem",
     role: "MESH_ENDOCRINE_INTERPRETER",
-    version: "15-EVO-IMMORTAL",
+    version: "15-Evo-Immortal",
     target: "full-mesh",
     selfRepairable: true,
     evo: {
@@ -128,7 +128,7 @@ export function createPulseMeshEndocrineSystem({
 
 
 // ============================================================================
-// Mesh Endocrine Report Builder (v15-EVO-IMMORTAL)
+// Mesh Endocrine Report Builder (v15-Evo-Immortal)
 // ============================================================================
 function buildMeshEndocrineReport({ halo, field, echo, mesh, meta }) {
 

@@ -15,10 +15,10 @@
 /*
 AI_EXPERIENCE_META = {
   identity: "aiGeniusWithoutEgo",
-  version: "v14-IMMORTAL",
+  version: "v14-Immortal",
   layer: "ai_tools",
   role: "ego_filter",
-  lineage: "aiGeniusWithoutEgo-v11 → v12.3-Presence → v14-IMMORTAL",
+  lineage: "aiGeniusWithoutEgo-v11 → v12.3-Presence → v14-Immortal",
 
   evo: {
     egoRemoval: true,
@@ -47,8 +47,8 @@ import { aiHumilityFilter } from "./aiHumilityFilter.js";
 export const GeniusMeta = Object.freeze({
   layer: "PulseAIToneFrame",
   role: "GENIUS_WITHOUT_EGO",
-  version: "14-IMMORTAL",
-  identity: "aiGeniusWithoutEgo-v14-IMMORTAL",
+  version: "14-Immortal",
+  identity: "aiGeniusWithoutEgo-v14-Immortal",
 
   evo: Object.freeze({
     driftProof: true,
@@ -75,7 +75,7 @@ export const GeniusMeta = Object.freeze({
 
     multiInstanceReady: true,
     readOnly: true,
-    epoch: "14-IMMORTAL"
+    epoch: "14-Immortal"
   }),
 
   contract: Object.freeze({

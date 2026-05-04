@@ -7,10 +7,10 @@
 /*
 AI_EXPERIENCE_META = {
   identity: "aiHumilityFilter",
-  version: "v15-IMMORTAL",
+  version: "v15-Immortal",
   layer: "ai_tools",
   role: "humility_filter",
-  lineage: "aiHumilityFilter-v11 → v12.3-Presence → v15-IMMORTAL",
+  lineage: "aiHumilityFilter-v11 → v12.3-Presence → v15-Immortal",
 
   evo: {
     humilityFilter: true,
@@ -52,8 +52,8 @@ export const aiHumilityFilter = {
     type: "Cognitive",
     subsystem: "aiTone",
     layer: "C1-HumilityFilter",
-    version: "15.0-IMMORTAL",
-    identity: "aiHumilityFilter-v15.0-IMMORTAL",
+    version: "15.0-Immortal",
+    identity: "aiHumilityFilter-v15.0-Immortal",
 
     evo: Object.freeze({
       driftProof: true,
@@ -80,7 +80,7 @@ export const aiHumilityFilter = {
 
       multiInstanceReady: true,
       readOnly: true,
-      epoch: "15.0-IMMORTAL"
+      epoch: "15.0-Immortal"
     }),
 
     contract: Object.freeze({

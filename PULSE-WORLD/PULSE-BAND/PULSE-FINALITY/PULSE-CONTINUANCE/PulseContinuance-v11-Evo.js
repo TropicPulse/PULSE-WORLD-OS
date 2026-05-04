@@ -1,6 +1,6 @@
 
 /**
- * PulseContinuance-v12.3-PRESENCE-EVO+.js
+ * PulseContinuance-v12.3-Presence-Evo+.js
  * PULSE-FINALITY / PULSE-CONTINUANCE
  *
  * ROLE:
@@ -22,7 +22,7 @@
 /*
 AI_EXPERIENCE_META = {
   identity: "PulseContinuance",
-  version: "v14-IMMORTAL",
+  version: "v14-Immortal",
   layer: "continuance",
   role: "continuance_engine",
   lineage: "PulseOS-v14",
@@ -117,7 +117,7 @@ export class ReplicationPlan {
 }
 
 /**
- * ContinuanceRiskReport v12.3-PRESENCE-EVO+
+ * ContinuanceRiskReport v12.3-Presence-Evo+
  *
  * perRegion: { [regionId: string]: number }   // 0.0 - 1.0
  * globalRisk: number                          // 0.0 - 1.0

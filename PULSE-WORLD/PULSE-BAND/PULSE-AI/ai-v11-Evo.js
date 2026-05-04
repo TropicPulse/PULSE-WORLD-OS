@@ -1,14 +1,14 @@
 // ============================================================================
-//  ai-v13.0-EVO+++.js
-//  DUALBAND ORGANISM BOOTLOADER — v13.0-EVO+++
+//  ai-v13.0-Evo+++.js
+//  DUALBAND ORGANISM BOOTLOADER — v13.0-Evo+++
 // ============================================================================
 /*
 AI_EXPERIENCE_META = {
   identity: "ai-v11-evo",
-  version: "v14-IMMORTAL",
+  version: "v14-Immortal",
   layer: "ai_core",
   role: "ai_evolution_kernel",
-  lineage: "ai-v9 → ai-v10.4 → ai-v11-evo → v14-IMMORTAL",
+  lineage: "ai-v9 → ai-v10.4 → ai-v11-evo → v14-Immortal",
 
   evo: {
     evolutionKernel: true,
@@ -48,8 +48,8 @@ AI_EXPERIENCE_META = {
 export const OrganismKernelMeta = Object.freeze({
   layer: "OrganismKernel",
   role: "DUALBAND_BOOTLOADER",
-  version: "13.0-EVO+++",
-  identity: "pulse-organism-kernel-v13.0-EVO+++",
+  version: "13.0-Evo+++",
+  identity: "pulse-organism-kernel-v13.0-Evo+++",
 
   evo: Object.freeze({
     deterministic: true,
@@ -63,7 +63,7 @@ export const OrganismKernelMeta = Object.freeze({
     overmindAware: true,
     registryAware: true,
     prewarmAware: true,
-    epoch: "13.0-EVO+++"
+    epoch: "13.0-Evo+++"
   }),
 
   contract: Object.freeze({
@@ -141,7 +141,7 @@ const ORGANISM_CONTEXT = {
 };
 
 // ============================================================================
-//  BINARY ORGANISM PREWARM ENGINE — v13.0-EVO+++
+//  BINARY ORGANISM PREWARM ENGINE — v13.0-Evo+++
 // ============================================================================
 export function prewarmBinaryOrganism(config = {}) {
   try {
@@ -488,7 +488,7 @@ export function createBinaryOrganism({ trace = false, nodeAdminReporter = null, 
     meta: {
       layer: "BinaryOrganismReadiness",
       role: "READINESS_SURFACE",
-      version: "13.0-EVO+++",
+      version: "13.0-Evo+++",
       evo: {
         deterministic: true,
         driftProof: true,

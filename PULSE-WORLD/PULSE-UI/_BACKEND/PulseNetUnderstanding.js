@@ -1,10 +1,10 @@
 // ============================================================================
-//  PulseNetUnderstanding.js — v13-EVO-MAX (HYBRID LOADER)
+//  PulseNetUnderstanding.js — v13-Evo-MAX (HYBRID LOADER)
 //  Cortical Opener • Symbolic Kernel Loader • Binary Shadow Integrator
 //  Deterministic Brainstem • Runtime/Scheduler/Substrate Unifier
 // ============================================================================
 //
-//  v13-EVO HYBRID CONTRACT:
+//  v13-Evo HYBRID CONTRACT:
 //  ------------------------
 //   • DO NOT boot the binary organism (Window already did).
 //   • DO load symbolic kernel + symbolic organs (via User/OS chain).
@@ -19,7 +19,7 @@
 /*
 AI_EXPERIENCE_META = {
   identity: "PulseUnderstanding",
-  version: "v12.5-EVO",
+  version: "v12.5-Evo",
   layer: "frontend",
   role: "intent_interpreter",
   lineage: "PulseOS-v12",
@@ -94,11 +94,11 @@ import createPulseWorldCore from "../../PULSE-BAND/PULSE-EXPANSION/PulseUser-v12
 //  IMPORTS — SYMBOLIC / BINARY ORGANS (UNCHANGED)
 //  - These are still the organ-level pieces we unify under the kernel.
 // ============================================================================
-import { createProxy as PulseProxySym } from "../../PULSE-BAND/PULSE-PROXY/PulseProxy-v11-EVO.js";
-import { PulseRouter as PulseRouterSym } from "../../PULSE-BAND/PULSE-ROUTER/PulseRouter-v11-EVO.js";
-import { createGPUDispatch as PulseGPUSym } from "../../PULSE-BAND/PULSE-GPU/PulseGPU-v11-EVO.js";
-import { createPulseMesh as PulseMeshSym } from "../../PULSE-BAND/PULSE-MESH/PulseMesh-v11-EVO.js";
-import { createPulseSend as PulseSendSym } from "../../PULSE-BAND/PULSE-SEND/PulseSend-v11-EVO.js";
+import { createProxy as PulseProxySym } from "../../PULSE-BAND/PULSE-PROXY/PulseProxy-v11-Evo.js";
+import { PulseRouter as PulseRouterSym } from "../../PULSE-BAND/PULSE-ROUTER/PulseRouter-v11-Evo.js";
+import { createGPUDispatch as PulseGPUSym } from "../../PULSE-BAND/PULSE-GPU/PulseGPU-v11-Evo.js";
+import { createPulseMesh as PulseMeshSym } from "../../PULSE-BAND/PULSE-MESH/PulseMesh-v11-Evo.js";
+import { createPulseSend as PulseSendSym } from "../../PULSE-BAND/PULSE-SEND/PulseSend-v11-Evo.js";
 import { createEarn as PulseEarnSym } from "../../PULSE-BAND/PULSE-EARN/PulseEarn-v12.3-Presence.js";
 
 
@@ -108,20 +108,20 @@ import { createEarn as PulseEarnSym } from "../../PULSE-BAND/PULSE-EARN/PulseEar
 // ============================================================================
 import { createDualBandOrganism as PulseBinaryOrganismBoot } from "../../PULSE-BAND/PULSE-AI/aiDualBand-v11-Evo.js";
 
-import { createBinaryProxy } from "../../PULSE-BAND/PULSE-PROXY/PulseBinaryProxy-v11-EVO.js";
-import { createBinaryRouter as PulseRouterBin } from "../../PULSE-BAND/PULSE-ROUTER/PulseBinaryRouter-v11-EVO.js";
+import { createBinaryProxy } from "../../PULSE-BAND/PULSE-PROXY/PulseBinaryProxy-v11-Evo.js";
+import { createBinaryRouter as PulseRouterBin } from "../../PULSE-BAND/PULSE-ROUTER/PulseBinaryRouter-v11-Evo.js";
 import { PulseBinaryGPU as PulseGPUBin } from "../../PULSE-BAND/PULSE-GPU/PulseBinaryGPU-v11-Evo.js";
-import { createBinaryMesh as PulseMeshBin } from "../../PULSE-BAND/PULSE-MESH/PulseBinaryMesh-v11-EVO.js";
-import { createBinarySend as PulseSendBin } from "../../PULSE-BAND/PULSE-SEND/PulseBinarySend-v11-EVO.js";
+import { createBinaryMesh as PulseMeshBin } from "../../PULSE-BAND/PULSE-MESH/PulseBinaryMesh-v11-Evo.js";
+import { createBinarySend as PulseSendBin } from "../../PULSE-BAND/PULSE-SEND/PulseBinarySend-v11-Evo.js";
 
 
 // ============================================================================
-//  CONTEXT — v13-EVO-MAX
+//  CONTEXT — v13-Evo-MAX
 // ============================================================================
 const PULSE_UNDERSTANDING_CONTEXT = {
   layer: "PulseUnderstanding",
   role: "CORTICAL_OPENER",
-  version: "13.0-EVO-MAX",
+  version: "13.0-Evo-MAX",
   lineage: "cortical-opener-core-v13",
   evo: {
     hybridLoader: true,
@@ -472,7 +472,7 @@ async function buildPulseKernel() {
       executionContext: {
         sceneType: "cortical-opener",
         workloadClass: "frontend-boot",
-        dispatchSignature: "Understanding.v13-EVO-MAX",
+        dispatchSignature: "Understanding.v13-Evo-MAX",
         shapeSignature: "A3-layer",
         extensionId: "Understanding",
         identityKind: identityResult.kind
@@ -566,7 +566,7 @@ if (typeof window !== "undefined") {
     })
     .catch((err) => {
       console.error(
-        "[PulseUnderstanding v13-EVO-MAX] Kernel bootstrap failed:",
+        "[PulseUnderstanding v13-Evo-MAX] Kernel bootstrap failed:",
         err
       );
     });

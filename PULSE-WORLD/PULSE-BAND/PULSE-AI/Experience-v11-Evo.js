@@ -1,15 +1,15 @@
 // ============================================================================
-//  PULSE OS v14-IMMORTAL — EXPERIENCE FRAME ORGAN
+//  PULSE OS v14-Immortal — EXPERIENCE FRAME ORGAN
 //  Conversational Repair • Misalignment Handling • UX Harmonization
 //  PURE FUNCTIONAL ON INPUT/OUTPUT. NO BINARY MUTATION.
 // ============================================================================
 /*
 AI_EXPERIENCE_META = {
   identity: "Experience",
-  version: "v14-IMMORTAL",
+  version: "v14-Immortal",
   layer: "ai_tools",
   role: "experience_surface",
-  lineage: "Experience-v10 → v14-IMMORTAL",
+  lineage: "Experience-v10 → v14-Immortal",
 
   evo: {
     experienceSurface: true,
@@ -38,8 +38,8 @@ export const ExperienceFrameMeta = Object.freeze({
   subsystem: "aiExperienceFrame",
   layer: "PulseAIExperienceFrame",
   role: "EXPERIENCE_FRAME_ORGAN",
-  version: "12.3-EVO+",
-  identity: "aiExperienceFrame-v12.3-EVO+",
+  version: "12.3-Evo+",
+  identity: "aiExperienceFrame-v12.3-Evo+",
 
   evo: Object.freeze({
     driftProof: true,
@@ -55,7 +55,7 @@ export const ExperienceFrameMeta = Object.freeze({
     nonBlocking: true,
     multiInstanceReady: true,
     uxArteryAware: true,
-    epoch: "12.3-EVO+"
+    epoch: "12.3-Evo+"
   }),
 
   contract: Object.freeze({

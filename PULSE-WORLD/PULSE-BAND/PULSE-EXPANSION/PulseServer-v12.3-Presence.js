@@ -1,6 +1,6 @@
 // ============================================================================
 //  PULSE OS v16‑IMMORTAL‑ORGANISM — PULSE SERVER (EXEC ENGINE / ADVANTAGE HUB)
-//  PulseServer-v16-IMMORTAL-ORGANISM.js
+//  PulseServer-v16-Immortal-ORGANISM.js
 //
 //  ROLE:
 //    - Deterministic compute / exec engine for the organism.
@@ -16,10 +16,10 @@
 /*
 AI_EXPERIENCE_META = {
   identity: "PulseServer",
-  version: "v16-IMMORTAL-ORGANISM",
+  version: "v16-Immortal-ORGANISM",
   layer: "presence_server",
   role: "presence_region_server",
-  lineage: "PulsePresence-v15-IMMORTAL → v16-IMMORTAL-ORGANISM",
+  lineage: "PulsePresence-v15-Immortal → v16-Immortal-ORGANISM",
 
   evo: {
     regionServer: true,
@@ -86,7 +86,7 @@ const {
 
 // DualBand / Binary field (optional, advantage-only)
 import { createDualBandOrganism as PulseBinaryOrganismBoot } from "../PULSE-AI/aiDualBand-v11-Evo.js";
-import { createBinarySend as PulseSendBin } from "../PULSE-SEND/PulseBinarySend-v11-EVO.js";
+import { createBinarySend as PulseSendBin } from "../PULSE-SEND/PulseBinarySend-v11-Evo.js";
 
 // Proxy context (v16 IMMORTAL ORGANISM)
 import {
@@ -104,8 +104,8 @@ import {
 export const PulseServerMeta = Object.freeze({
   layer: "PulseServer",
   role: "PRESENCE_EXEC_ENGINE",
-  version: "v16-IMMORTAL-ORGANISM",
-  identity: "PulseServer-v16-IMMORTAL-ORGANISM-EXEC",
+  version: "v16-Immortal-ORGANISM",
+  identity: "PulseServer-v16-Immortal-ORGANISM-EXEC",
 
   guarantees: Object.freeze({
     deterministic: true,
@@ -174,17 +174,17 @@ export const PulseServerMeta = Object.freeze({
   }),
 
   lineage: Object.freeze({
-    root: "PulseOS-v16-IMMORTAL-ORGANISM",
-    parent: "PulseProxy-v16-IMMORTAL-ORGANISM",
+    root: "PulseOS-v16-Immortal-ORGANISM",
+    parent: "PulseProxy-v16-Immortal-ORGANISM",
     ancestry: [
       "PulseServer-v9",
       "PulseServer-v10",
       "PulseServer-v11",
       "PulseServer-v11-Evo",
       "PulseServer-v12-Evo",
-      "PulseServer-v12.3-PRESENCE-EVO+",
-      "PulseServer-v13-PRESENCE-EVO+",
-      "PulseServer-v15-IMMORTAL-PRESENCE-EVO+"
+      "PulseServer-v12.3-Presence-Evo+",
+      "PulseServer-v13-Presence-Evo+",
+      "PulseServer-v15-Immortal-Presence-Evo+"
     ]
   })
 });
@@ -629,7 +629,7 @@ export class PulseServerPresenceExec {
   } = {}) {
     const notes = [];
 
-    notes.push("PulseServer-v16-IMMORTAL-ORGANISM-EXEC: starting job.");
+    notes.push("PulseServer-v16-Immortal-ORGANISM-EXEC: starting job.");
 
     const cached = this.maybeGetCachedJob(cacheKey);
     if (cached) {

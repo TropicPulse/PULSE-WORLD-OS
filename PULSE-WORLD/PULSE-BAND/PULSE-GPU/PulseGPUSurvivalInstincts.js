@@ -20,7 +20,7 @@
 /*
 AI_EXPERIENCE_META = {
   identity: "PulseGPUSurvivalInstincts",
-  version: "v14-IMMORTAL",
+  version: "v14-Immortal",
   layer: "gpu_guardian",
   role: "gpu_survival_instincts",
   lineage: "PulseGPU-v14",

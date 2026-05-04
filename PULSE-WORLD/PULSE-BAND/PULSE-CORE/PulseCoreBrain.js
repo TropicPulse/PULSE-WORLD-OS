@@ -1,5 +1,5 @@
 // ============================================================================
-//  PulseCoreBrain.js — v15-IMMORTAL-BRAIN
+//  PulseCoreBrain.js — v15-Immortal-BRAIN
 //  ORGANISM‑WIDE PATTERN INTELLIGENCE ENGINE
 //  “THINK ONCE. REUSE FOREVER. NEVER DRIFT.”
 //  • v15 AI_EXPERIENCE_META (IMMORTAL identity)
@@ -15,10 +15,10 @@
 /*
 AI_EXPERIENCE_META = {
   identity: "PulseCoreBrain",
-  version: "v15-IMMORTAL-BRAIN",
+  version: "v15-Immortal-BRAIN",
   layer: "corememory_brain",
   role: "corememory_symbolic_brain",
-  lineage: "PulseCoreMemory-v15-IMMORTAL",
+  lineage: "PulseCoreMemory-v15-Immortal",
 
   evo: {
     symbolicPrimary: true,
@@ -58,7 +58,7 @@ export const CoreBrainRole = {
   subsystem: "Core",
   layer: "Brain",
   identity: "PulseCoreBrain",
-  version: "15.0-IMMORTAL-BRAIN",
+  version: "15.0-Immortal-BRAIN",
 
   evo: {
     deterministic: true,
@@ -84,7 +84,7 @@ export const CoreBrainMetaBlock = {
   subsystem: "Core",
   layer: "Brain",
   role: "Pattern-Intelligence",
-  version: "15.0-IMMORTAL-BRAIN",
+  version: "15.0-Immortal-BRAIN",
   evo: CoreBrainRole.evo
 };
 
@@ -115,11 +115,11 @@ function nextBrainEpoch() {
 }
 
 // ---------------------------------------------------------------------------
-//  CREATE BRAIN (v15-IMMORTAL-BRAIN)
+//  CREATE BRAIN (v15-Immortal-BRAIN)
 // ---------------------------------------------------------------------------
 export function createPulseCoreBrain({
   dnaTag = "default-dna",
-  version = "15.0-IMMORTAL-BRAIN",
+  version = "15.0-Immortal-BRAIN",
   overlay = null,
   coreMemory = null,
   coreMemoryRouteId = "brain-patterns",
@@ -216,7 +216,7 @@ export function createPulseCoreBrain({
   }
 
   // -------------------------------------------------------------------------
-  //  REGISTER PATTERN (v15-IMMORTAL)
+  //  REGISTER PATTERN (v15-Immortal)
 // -------------------------------------------------------------------------
   function registerPattern(struct, meta = {}) {
     const normalized = normalizeStructure(struct || {});

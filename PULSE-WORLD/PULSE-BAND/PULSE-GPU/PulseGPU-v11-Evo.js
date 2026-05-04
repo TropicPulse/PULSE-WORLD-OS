@@ -9,7 +9,7 @@
 /*
 AI_EXPERIENCE_META = {
   identity: "PulseGPU",
-  version: "v14-IMMORTAL",
+  version: "v14-Immortal",
   layer: "gpu_symbolic",
   role: "gpu_symbolic_surface",
   lineage: "PulseGPU-v14",

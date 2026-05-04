@@ -6,10 +6,10 @@
 /*
 AI_EXPERIENCE_META = {
   identity: "aiAdminPanel",
-  version: "v14-IMMORTAL",
+  version: "v14-Immortal",
   layer: "ai_tools",
   role: "ai_admin_console",
-  lineage: "aiAdminPanel-v10 → v12 → v14-IMMORTAL",
+  lineage: "aiAdminPanel-v10 → v12 → v14-Immortal",
 
   evo: {
     adminConsole: true,
@@ -43,8 +43,8 @@ AI_EXPERIENCE_META = {
 export const AdminDiagnosticsMeta = Object.freeze({
   layer: "PulseAIAdminDiagnosticsFrame",
   role: "ADMIN_DIAGNOSTICS_ORGAN",
-  version: "12.3-EVO+",
-  identity: "aiAdminDiagnostics-v12.3-EVO+",
+  version: "12.3-Evo+",
+  identity: "aiAdminDiagnostics-v12.3-Evo+",
 
   evo: Object.freeze({
     deterministic: true,
@@ -55,7 +55,7 @@ export const AdminDiagnosticsMeta = Object.freeze({
     readOnly: true,
     multiInstanceReady: true,
     diagnosticsArteryAware: true,
-    epoch: "12.3-EVO+"
+    epoch: "12.3-Evo+"
   }),
 
   contract: Object.freeze({

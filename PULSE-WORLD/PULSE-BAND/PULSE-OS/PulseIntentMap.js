@@ -9,7 +9,7 @@
 /*
 AI_EXPERIENCE_META = {
   identity: "PulseIntentMap",
-  version: "v14.9-IMMORTAL-FOUNDER-INTENT",
+  version: "v14.9-Immortal-FOUNDER-INTENT",
   layer: "founder_intent",
   role: "pre_brain_pre_organism_law_map",
   lineage: "PulseOS-v14",
@@ -321,7 +321,7 @@ export const PulseIntentMap = {
       noMutation: true,
       noExecution: true,
       cognitionLayer: "Cortex",
-      organ: "PulseFileScanner-v12.3-EVO",
+      organ: "PulseFileScanner-v12.3-Evo",
       description: "Scan a file and return a symbolic structural analysis.",
       presenceAware: true
     },

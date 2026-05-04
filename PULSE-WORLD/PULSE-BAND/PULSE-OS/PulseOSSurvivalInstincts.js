@@ -3,7 +3,7 @@
 // PULSE OS — v12.3-Evo-Presence-Max
 // “THE SURVIVAL INSTINCTS / ORGANISM IDENTITY ANCHOR”
 // STRUCTURAL MEMORY • ORGANISM SIGNATURE • EVOLUTION SENTINEL
-// CHUNKED ROUTE-DNA CACHE • PREWARMED MULTI-PRESENCE SNAPSHOTS
+// CHUNKED ROUTE-DNA CACHE • PREWARMED MULTI-Presence SNAPSHOTS
 // ============================================================================
 //
 // ORGAN IDENTITY (v12.3-Evo-Presence-Max):
@@ -27,7 +27,7 @@
 /*
 AI_EXPERIENCE_META = {
   identity: "PulseOSSurvivalInstincts",
-  version: "v14-IMMORTAL",
+  version: "v14-Immortal",
   layer: "cns",
   role: "os_survival_instincts",
   lineage: "PulseOS-v14",
@@ -71,8 +71,8 @@ AI_EXPERIENCE_META = {
 export const PulseOSSurvivalInstinctsMeta = Object.freeze({
   layer: "PulseOSSurvivalInstincts",
   role: "STRUCTURAL_MEMORY_ORGAN",
-  version: "v12.3-EVO-PRESENCE-MAX",
-  identity: "PulseOSSurvivalInstincts-v12.3-EVO-PRESENCE-MAX",
+  version: "v12.3-Evo-Presence-MAX",
+  identity: "PulseOSSurvivalInstincts-v12.3-Evo-Presence-MAX",
 
   guarantees: Object.freeze({
     deterministic: true,
@@ -139,8 +139,8 @@ export const PulseOSSurvivalInstinctsMeta = Object.freeze({
   }),
 
   lineage: Object.freeze({
-    root: "PulseOS-v12-EVO",
-    parent: "PulseOS-v12.3-EVO-PRESENCE",
+    root: "PulseOS-v12-Evo",
+    parent: "PulseOS-v12.3-Evo-Presence",
     ancestry: [
       "PulseOSSurvivalInstincts-v9",
       "PulseOSSurvivalInstincts-v10",
@@ -474,7 +474,7 @@ export const PulseOSSurvivalInstincts = {
   },
 
   // --------------------------------------------------------------------------
-  // MULTI-PRESENCE STRUCTURAL MAP — per-device / per-scene mirrors
+  // MULTI-Presence STRUCTURAL MAP — per-device / per-scene mirrors
   // --------------------------------------------------------------------------
   registerPresence(presenceContext = {}, snapshot) {
     if (!snapshot || !Array.isArray(snapshot?.pathway?.hops)) return;

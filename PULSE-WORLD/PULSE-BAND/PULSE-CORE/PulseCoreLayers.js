@@ -1,5 +1,5 @@
 // ============================================================================
-//  PulseCoreLayers.js — v15-IMMORTAL-LAYERS
+//  PulseCoreLayers.js — v15-Immortal-LAYERS
 //  ORGANISM‑WIDE MEMORY LAYER MANAGER
 //  “RAM IS A SCRATCHPAD. CORE IS THE TRUTH. PRESENCE DECIDES EVERYTHING.”
 //  • MetaBlock (v15 IMMORTAL identity)
@@ -15,10 +15,10 @@
 /*
 AI_EXPERIENCE_META = {
   identity: "PulseCoreLayers",
-  version: "v15-IMMORTAL-LAYERS",
+  version: "v15-Immortal-LAYERS",
   layer: "corememory_layers",
   role: "corememory_physical_layer_map",
-  lineage: "PulseCoreMemory-v15-IMMORTAL",
+  lineage: "PulseCoreMemory-v15-Immortal",
 
   evo: {
     layerMap: true,                // RAM, DiskPrimary, DiskSecondary, GPU, Proxy
@@ -57,7 +57,7 @@ export const CoreLayersRole = {
   subsystem: "Core",
   layer: "LayerManager",
   identity: "PulseCoreLayers",
-  version: "15.0-IMMORTAL-LAYERS",
+  version: "15.0-Immortal-LAYERS",
 
   evo: {
     binaryNative: true,
@@ -83,7 +83,7 @@ export const CoreLayersMetaBlock = {
   subsystem: "Core",
   layer: "LayerManager",
   role: "Memory-Layer-Governor",
-  version: "15.0-IMMORTAL-LAYERS",
+  version: "15.0-Immortal-LAYERS",
   evo: CoreLayersRole.evo
 };
 
@@ -174,7 +174,7 @@ export const PulseCoreLayers = {
 };
 
 // ============================================================================
-//  LAYER DECISION ENGINE (v15-IMMORTAL)
+//  LAYER DECISION ENGINE (v15-Immortal)
 //  • uses dataType + dnaTag + routeId
 //  • GPU‑aware, proxy‑aware
 //  • still compatible with v12 call sites

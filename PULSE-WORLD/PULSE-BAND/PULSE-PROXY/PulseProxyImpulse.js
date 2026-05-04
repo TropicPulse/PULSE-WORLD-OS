@@ -1,5 +1,5 @@
 // ============================================================================
-// FILE: PulseOSImpulseEngine-v15-IMMORTAL-CHUNK.js
+// FILE: PulseOSImpulseEngine-v15-Immortal-CHUNK.js
 // PULSE OS — v15‑IMMORTAL‑CHUNK
 // “THE IMPULSE ENGINE / NEURAL IMPULSE LIFECYCLE ORGAN”
 // CoreMemory‑Integrated • Deterministic • Immortal Lineage • Chunk + Presence
@@ -8,7 +8,7 @@
 /*
 AI_EXPERIENCE_META = {
   identity: "PulseOSImpulseEngine",
-  version: "v15-IMMORTAL-CHUNK",
+  version: "v15-Immortal-CHUNK",
   layer: "impulse_engine",
   role: "neural_impulse_lifecycle",
   lineage: "PulseOS-v15",
@@ -92,14 +92,14 @@ import { createPulseV3 } from "../PULSE-SEND/PulseV3UnifiedOrganism-v11-Evo.js";
 import { createPulseV2 } from "../PULSE-SEND/PulseV2EvolutionEngine-v11-Evo.js";
 import { createLegacyPulse } from "../PULSE-SEND/PulseSendLegacyPulse-v11-Evo.js";
 
-const CORE_MEMORY_NAMESPACE = "PulseImpulse-v15-IMMORTAL-CHUNK";
+const CORE_MEMORY_NAMESPACE = "PulseImpulse-v15-Immortal-CHUNK";
 const coreMemory = new PulseCoreMemory();
 
 // ============================================================================
 // CONTEXT / META — v15 IMMORTAL CHUNK
 // ============================================================================
 const IMPULSE_CONTEXT = {
-  version: "15-IMMORTAL-CHUNK",
+  version: "15-Immortal-CHUNK",
   layer: "ImpulseEngine",
   role: "NeuralImpulseLifecycle",
 
@@ -149,8 +149,8 @@ const IMPULSE_CONTEXT = {
 export const PulseOSImpulseEngineMeta = Object.freeze({
   layer: "PulseOSImpulseEngine",
   role: "NEURAL_IMPULSE_LIFECYCLE_ORGAN",
-  version: "v15-IMMORTAL-CHUNK",
-  identity: "PulseOSImpulseEngine-v15-IMMORTAL-CHUNK",
+  version: "v15-Immortal-CHUNK",
+  identity: "PulseOSImpulseEngine-v15-Immortal-CHUNK",
 
   guarantees: Object.freeze({
     deterministic: true,
@@ -233,7 +233,7 @@ export const PulseOSImpulseEngineMeta = Object.freeze({
 
   lineage: Object.freeze({
     root: "PulseOS-v11",
-    parent: "PulseOS-v12.3-EVO",
+    parent: "PulseOS-v12.3-Evo",
     ancestry: [
       "PulseImpulseEngine-v7",
       "PulseImpulseEngine-v8",
@@ -248,9 +248,9 @@ export const PulseOSImpulseEngineMeta = Object.freeze({
       "PulseBinaryShifterEvolutionaryPulse",
       "PulseV3UnifiedOrganism",
       "PulseV2EvolutionEngine",
-      "PulseOSImpulseEngine-v12.3-EVO-PRESENCE",
-      "PulseOSImpulseEngine-v14-IMMORTAL",
-      "PulseOSImpulseEngine-v15-IMMORTAL-CHUNK"
+      "PulseOSImpulseEngine-v12.3-Evo-Presence",
+      "PulseOSImpulseEngine-v14-Immortal",
+      "PulseOSImpulseEngine-v15-Immortal-CHUNK"
     ]
   }),
 
@@ -392,7 +392,7 @@ function impulseLog(event, data) {
   if (typeof window === "undefined") return;
   if (!window.PULSE_IMPULSE_DIAGNOSTICS) return;
   if (typeof console?.log !== "function") return;
-  console.log("[ImpulseEngine-v15-IMMORTAL]", event, { ...data, ctx: IMPULSE_CONTEXT });
+  console.log("[ImpulseEngine-v15-Immortal]", event, { ...data, ctx: IMPULSE_CONTEXT });
 }
 
 // ============================================================================
@@ -492,7 +492,7 @@ function buildImpulsePrewarmSnapshot(impulse, { maxChunkSize = 64 } = {}) {
   return {
     ...IMPULSE_CONTEXT,
     kind: "ImpulsePrewarmSnapshot",
-    version: "v15-IMMORTAL-CHUNK-PRESENCE",
+    version: "v15-Immortal-CHUNK-Presence",
     tickId: impulse.tickId,
     intent: impulse.intent,
     page: impulse.page?.name || "UNKNOWN_PAGE",
@@ -580,7 +580,7 @@ export const LegacyPulse = {
 };
 
 // ============================================================================
-// CORE v15-IMMORTAL BINARY (base for all 15+ pulses)
+// CORE v15-Immortal BINARY (base for all 15+ pulses)
 // ============================================================================
 function makeDeterministicTickId(seed = "") {
   const tick = nextTick();
@@ -613,7 +613,7 @@ function createBinaryImpulseCore(intent, payload = {}, nowIgnored, patternOverri
     tickId,
     intent,
     payload,
-    version: "v15-IMMORTAL-binary",
+    version: "v15-Immortal-binary",
 
     path: [],
     pathway: {
@@ -735,7 +735,7 @@ export const PulseShifterEvolutionaryPulse = {
       null,
       "PulseShifterEvolutionaryPulse"
     );
-    impulse.version = "v15-IMMORTAL-PulseShifterEvolutionary";
+    impulse.version = "v15-Immortal-PulseShifterEvolutionary";
     impulseLog("PULSE_SHIFTER_CREATE", {
       tickId: impulse.tickId,
       intent,
@@ -764,7 +764,7 @@ export const PulseBinaryShifterEvolutionaryPulse = {
       null,
       "PulseBinaryShifterEvolutionaryPulse"
     );
-    impulse.version = "v15-IMMORTAL-PulseBinaryShifterEvolutionary";
+    impulse.version = "v15-Immortal-PulseBinaryShifterEvolutionary";
     impulse.offline = true;
     impulseLog("PULSE_BINARY_SHIFTER_CREATE", {
       tickId: impulse.tickId,
@@ -786,7 +786,7 @@ export const PulseBinaryShifterEvolutionaryPulse = {
 };
 
 // ============================================================================
-// PRIMARY 15-IMMORTAL IMPULSE (default Impulse)
+// PRIMARY 15-Immortal IMPULSE (default Impulse)
 // ============================================================================
 export const ImpulseBinary = {
   create: (intent, payload = {}) =>
@@ -799,7 +799,7 @@ export const ImpulseBinary = {
 export const Impulse = {
   create(intent, payload = {}) {
     const impulse = ImpulseBinary.create(intent, payload);
-    impulse.version = "v15-IMMORTAL";
+    impulse.version = "v15-Immortal";
     impulseLog("IMPULSE_CREATE", {
       tickId: impulse.tickId,
       intent,
@@ -929,13 +929,13 @@ export const ImpulseStrategy = {
 
     // AUTO = always choose the highest-trust, newest, safest engine
     if (version === "auto") {
-      return Impulse.create(intent, payload);   // v15-IMMORTAL (PRIMARY)
+      return Impulse.create(intent, payload);   // v15-Immortal (PRIMARY)
     }
 
     switch (version) {
 
       // ---------------------------------------------------------------
-      // 1) FULL PULSE 15-IMMORTAL (highest trust)
+      // 1) FULL PULSE 15-Immortal (highest trust)
       // ---------------------------------------------------------------
       case "v15":
       case "immortal":
@@ -958,7 +958,7 @@ export const ImpulseStrategy = {
       // ---------------------------------------------------------------
       case "v12.3":
       case "presence":
-        // 12.3 Presence maps to 15-IMMORTAL primary now
+        // 12.3 Presence maps to 15-Immortal primary now
         return Impulse.create(intent, payload);
 
       case "v11-prime":

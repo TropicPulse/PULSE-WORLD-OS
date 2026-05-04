@@ -6,10 +6,10 @@
 /*
 AI_EXPERIENCE_META = {
   identity: "aiAnatomy",
-  version: "v14-IMMORTAL",
+  version: "v14-Immortal",
   layer: "ai_core",
   role: "ai_organ_topology",
-  lineage: "aiAnatomy-v9 → v11 → v14-IMMORTAL",
+  lineage: "aiAnatomy-v9 → v11 → v14-Immortal",
 
   evo: {
     organTopology: true,
@@ -43,8 +43,8 @@ AI_EXPERIENCE_META = {
 export const AnatomyMeta = Object.freeze({
   layer: "Anatomy",
   role: "STRUCTURAL_MAP",
-  version: "12.3-EVO+",
-  identity: "aiAnatomy-v12.3-EVO+",
+  version: "12.3-Evo+",
+  identity: "aiAnatomy-v12.3-Evo+",
 
   evo: Object.freeze({
     deterministic: true,
@@ -56,7 +56,7 @@ export const AnatomyMeta = Object.freeze({
     binaryEncoding: true,    // emits binary packets, not binary-first compute
     anatomyArteryAware: true,
     multiInstanceReady: true,
-    epoch: "12.3-EVO+"
+    epoch: "12.3-Evo+"
   }),
 
   contract: Object.freeze({

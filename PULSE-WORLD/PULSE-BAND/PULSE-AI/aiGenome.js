@@ -7,10 +7,10 @@
 /*
 AI_EXPERIENCE_META = {
   identity: "aiGenome",
-  version: "v14-IMMORTAL",
+  version: "v14-Immortal",
   layer: "ai_core",
   role: "ai_genome",
-  lineage: "aiGenome-v11 → v11.3-EVO → v14-IMMORTAL",
+  lineage: "aiGenome-v11 → v11.3-Evo → v14-Immortal",
 
   evo: {
     genome: true,
@@ -38,8 +38,8 @@ AI_EXPERIENCE_META = {
 export const GenomeMeta = Object.freeze({
   layer: "BinaryGenetics",
   role: "BINARY_GENOME",
-  version: "14-IMMORTAL",
-  identity: "aiBinaryGenome-v14-IMMORTAL",
+  version: "14-Immortal",
+  identity: "aiBinaryGenome-v14-Immortal",
 
   evo: Object.freeze({
     // Core guarantees
@@ -77,7 +77,7 @@ export const GenomeMeta = Object.freeze({
     // Organism-level guarantees
     multiInstanceReady: true,
     readOnly: true,
-    epoch: "v14-IMMORTAL"
+    epoch: "v14-Immortal"
   })
 });
 
@@ -230,7 +230,7 @@ export class AIBinaryGenome {
 
     const genomeObject = {
       organismId: "pulse-os-binary-organism",
-      version: "v14-IMMORTAL",
+      version: "v14-Immortal",
       organIds,
       signatures,
       artery,

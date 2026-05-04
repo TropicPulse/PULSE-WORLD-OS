@@ -30,10 +30,10 @@ SAFETY:
 ===============================================================================
 AI_EXPERIENCE_META = {
   identity: "PulseUI.EvolutionaryBrain",
-  version: "v15-IMMORTAL",
+  version: "v15-Immortal",
   layer: "pulse_ui",
   role: "page_brain_and_cortex",
-  lineage: "PulseEvolutionaryBrain-v11.3-Evo-Prime → v14-IMMORTAL → v15-IMMORTAL",
+  lineage: "PulseEvolutionaryBrain-v11.3-Evo-Prime → v14-Immortal → v15-Immortal",
 
   evo: {
     pageBrain: true,
@@ -132,7 +132,7 @@ export const BrainRole = {
   type: "Organ",
   subsystem: "UI",
   layer: "PageBrain",
-  version: "15.0-IMMORTAL",
+  version: "15.0-Immortal",
   identity: "PulseEvolutionaryBrain",
 
   evo: {

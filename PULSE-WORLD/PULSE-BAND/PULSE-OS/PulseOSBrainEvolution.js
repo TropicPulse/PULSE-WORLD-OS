@@ -1,13 +1,13 @@
 // ============================================================================
-// FILE: /PulseOS/Brain/PulseOSEvolution-v14-IMMORTAL-CoreMemory.js
-// PULSE OS — v14-IMMORTAL-DUALBAND-PRESENCE
+// FILE: /PulseOS/Brain/PulseOSEvolution-v14-Immortal-CoreMemory.js
+// PULSE OS — v14-Immortal-DUALBAND-Presence
 // “THE EVOLUTION ENGINE — ORGANISM-WIDE CNS GROWTH + DRIFT INTELLIGENCE”
 // CoreMemory-integrated • Immortal Drift/Lineage • Cache/Prewarm-aware
 // ============================================================================
 /*
 AI_EXPERIENCE_META = {
   identity: "PulseOSBrainEvolution",
-  version: "v14-IMMORTAL",
+  version: "v14-Immortal",
   layer: "cns",
   role: "os_evolution_engine",
   lineage: "PulseOS-v14",
@@ -53,14 +53,14 @@ AI_EXPERIENCE_META = {
 import { PulseCoreMemory } from "../PULSE-CORE/PulseCoreMemory.js";
 
 // ============================================================================
-// ROLE + IDENTITY (v14-IMMORTAL)
+// ROLE + IDENTITY (v14-Immortal)
 // ============================================================================
 export const PulseRole = {
   type: "Evolution",
   subsystem: "OS",
   layer: "CNS",
-  version: "14-IMMORTAL",
-  identity: "PulseOSEvolution-v14-IMMORTAL-COREMEMORY",
+  version: "14-Immortal",
+  identity: "PulseOSEvolution-v14-Immortal-COREMEMORY",
 
   evo: {
     deterministic: true,
@@ -74,7 +74,7 @@ export const PulseRole = {
     continuanceAware: true,
 
     routingContract: "PulseRouter-v14",
-    osOrganContract: "PulseOS-v14-IMMORTAL",
+    osOrganContract: "PulseOS-v14-Immortal",
     earnCompatibility: "PulseEarn-v14",
     gpuCompatibility: "PulseGPU-v14",
     sendCompatibility: "PulseSendSystem-v14",
@@ -94,7 +94,7 @@ export const PulseRole = {
     cortexChunkingAware: true,
     cortexPrewarmAware: true,
 
-    // v14-IMMORTAL
+    // v14-Immortal
     coreMemoryIntegrated: true,
     immortalDriftLineage: true,
     immortalOrganismHealth: true,
@@ -106,8 +106,8 @@ export const PulseRole = {
 export const PulseOSEvolutionMeta = Object.freeze({
   layer: "PulseOSEvolution",
   role: "CNS_EVOLUTION_ORGAN",
-  version: "v14-IMMORTAL-COREMEMORY",
-  identity: "PulseOSEvolution-v14-IMMORTAL-COREMEMORY",
+  version: "v14-Immortal-COREMEMORY",
+  identity: "PulseOSEvolution-v14-Immortal-COREMEMORY",
 
   guarantees: Object.freeze({
     deterministic: true,
@@ -150,7 +150,7 @@ export const PulseOSEvolutionMeta = Object.freeze({
     loopTheoryAware: true,
     continuanceAware: true,
 
-    // v14-IMMORTAL
+    // v14-Immortal
     coreMemoryIntegrated: true,
     immortalDriftLineage: true,
     immortalOrganismHealth: true,
@@ -162,7 +162,7 @@ export const PulseOSEvolutionMeta = Object.freeze({
 // Cortex is ONLY imported here — NOT in Brain
 import { createPulseOSCortex } from "./PulseOSBrainCortex.js";
 
-const CORE_MEMORY_NAMESPACE = "PulseOSEvolution-v14-IMMORTAL";
+const CORE_MEMORY_NAMESPACE = "PulseOSEvolution-v14-Immortal";
 
 // ============================================================================
 //  DETERMINISTIC HELPERS (no Date, no randomness)
@@ -276,7 +276,7 @@ function buildOrganismHealthKey(intent) {
 }
 
 // ============================================================================
-//  EVOLUTION ENGINE — v14-IMMORTAL-COREMEMORY
+//  EVOLUTION ENGINE — v14-Immortal-COREMEMORY
 // ============================================================================
 export function PulseOSEvolution({ intent, organism, iq, understanding }) {
 
@@ -474,7 +474,7 @@ export function PulseOSEvolution({ intent, organism, iq, understanding }) {
   }
 
   // --------------------------------------------------------------------------
-  // EVOLUTION → CORTEX BOOTSTRAP (v14-IMMORTAL)
+  // EVOLUTION → CORTEX BOOTSTRAP (v14-Immortal)
 // --------------------------------------------------------------------------
   function bootCortex(Brain, { band = "dual", dnaTag = null } = {}) {
     const normBand = normalizeBand(band);

@@ -29,7 +29,7 @@
 /*
 AI_EXPERIENCE_META = {
   identity: "PulseBinaryOS",
-  version: "v14-IMMORTAL",
+  version: "v14-Immortal",
   layer: "os_binary",
   role: "binary_os_kernel",
   lineage: "PulseOS-v14",
@@ -148,8 +148,8 @@ export const PulseBinaryOSMeta = Object.freeze({
       "PulseBinaryOS-v9",
       "PulseBinaryOS-v10",
       "PulseBinaryOS-v11",
-      "PulseBinaryOS-v11-EVO",
-      "PulseBinaryOS-v11-EVO-MAX",
+      "PulseBinaryOS-v11-Evo",
+      "PulseBinaryOS-v11-Evo-MAX",
       "PulseBinaryOS-v12.3-Spine-Binary"
     ]
   }),
@@ -178,12 +178,12 @@ import * as PulseOSEvolution from "./PulseOSBrainEvolution.js";            // Ev
 import * as PulseSpinalCord from "./PulseOSSpinalCord-v12-Evo.js";         // Wiring organ
 
 // Presence / Mesh presence (symbolic/OS side, optional)
-import * as PulseOSPresence from "./PulseOSPresence-v12.4-EVO.js";         // OS Presence Organ (optional)
+import * as PulseOSPresence from "./PulseOSPresence-v12.4-Evo.js";         // OS Presence Organ (optional)
 import { createBinaryMeshEnvironment as createBinaryMeshEnv } from "../PULSE-MESH/PulseBinaryMesh-v11-Evo.js"; // Mesh env (binary+symbolic)
 
-import { createPulseMeshPresenceRelay as PulseMeshPresence } from "../PULSE-MESH/PulseMeshPresenceRelay-v12.4-EVO.js"; // Mesh env (binary+symbolic)
+import { createPulseMeshPresenceRelay as PulseMeshPresence } from "../PULSE-MESH/PulseMeshPresenceRelay-v12.4-Evo.js"; // Mesh env (binary+symbolic)
 // ============================================================================
-// PULSE OS v13-PRESENCE-EVO+ — WORLD BARREL
+// PULSE OS v13-Presence-Evo+ — WORLD BARREL
 // ============================================================================
 import { createPulseExpansion, pulseExpansion, PulseExpansionMeta} from "../PULSE-EXPANSION/PulseExpansion-v12.3-Presence.js";
 

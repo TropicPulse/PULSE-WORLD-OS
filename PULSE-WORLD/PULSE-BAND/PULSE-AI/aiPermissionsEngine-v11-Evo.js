@@ -7,10 +7,10 @@
 /*
 AI_EXPERIENCE_META = {
   identity: "aiPermissionsEngine",
-  version: "v15-IMMORTAL",
+  version: "v15-Immortal",
   layer: "ai_core",
   role: "permissions_engine",
-  lineage: "aiPermissionsEngine-v11 → v15-IMMORTAL",
+  lineage: "aiPermissionsEngine-v11 → v15-Immortal",
 
   evo: {
     permissionsEngine: true,
@@ -53,8 +53,8 @@ import { getPermissionsForPersona, ForbiddenActions } from "./permissions.js";
 export const PermissionsMeta = Object.freeze({
   layer: "PulseAIPermissionsLayer",
   role: "PERMISSIONS_ENGINE",
-  version: "15-IMMORTAL",
-  identity: "aiPermissionsEngine-v15-IMMORTAL",
+  version: "15-Immortal",
+  identity: "aiPermissionsEngine-v15-Immortal",
 
   // --------------------------------------------------------------------------
   //  EVO — IMMORTAL-GRADE CAPABILITY MAP
@@ -85,7 +85,7 @@ export const PermissionsMeta = Object.freeze({
     readOnly: true,
     multiInstanceReady: true,
 
-    epoch: "15-IMMORTAL"
+    epoch: "15-Immortal"
   }),
 
   // --------------------------------------------------------------------------

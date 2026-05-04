@@ -1,15 +1,15 @@
 // ============================================================================
-//  PULSE OS v14-IMMORTAL — SUPEREGO (DUAL‑BAND BOUNDARIES)
+//  PULSE OS v14-Immortal — SUPEREGO (DUAL‑BAND BOUNDARIES)
 //  Behavioral Constraints • Ethical Boundaries • Binary-Aware Moral Law
 //  PURE CONSTRAINTS. ZERO MUTATION. ZERO RANDOMNESS.
 // ============================================================================
 /*
 AI_EXPERIENCE_META = {
   identity: "boundaries",
-  version: "v14-IMMORTAL",
+  version: "v14-Immortal",
   layer: "ai_core",
   role: "boundary_rules",
-  lineage: "boundaries-v11 → v14-IMMORTAL",
+  lineage: "boundaries-v11 → v14-Immortal",
 
   evo: {
     boundaryRules: true,
@@ -38,8 +38,8 @@ export const SuperegoMeta = Object.freeze({
   subsystem: "aiSuperego",
   layer: "SuperegoBoundaryEngine",
   role: "BOUNDARY_ORGAN",
-  version: "12.3-EVO+",
-  identity: "aiSuperego-v12.3-EVO+",
+  version: "12.3-Evo+",
+  identity: "aiSuperego-v12.3-Evo+",
 
   evo: Object.freeze({
     driftProof: true,
@@ -56,7 +56,7 @@ export const SuperegoMeta = Object.freeze({
     multiInstanceReady: true,
     boundaryCacheAware: true,
     vitalsFusionAware: true,
-    epoch: "v12.3-EVO+"
+    epoch: "v12.3-Evo+"
   }),
 
   contract: Object.freeze({

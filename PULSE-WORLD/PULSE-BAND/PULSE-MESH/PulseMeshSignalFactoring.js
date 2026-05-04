@@ -33,7 +33,7 @@ export function applyMeshSignalFactoring(impulse, context = {}) {
   impulse.meta.signalFactoring = {
     layer: "PulseMeshSignalFactoring",
     role: "MESH_SIGNAL_FACTORS",
-    version: "15-EVO-IMMORTAL",
+    version: "15-Evo-Immortal",
     target: "full-mesh",
     selfRepairable: true,
     evo: {

@@ -1,10 +1,10 @@
 // ============================================================================
-// FILE: PULSE-proxy/CheckIdentity-v12.3-PRESENCE-EVO-BINARY.js
-// PULSE IDENTITY ENGINE — v12.3-PRESENCE-EVO-BINARY
+// FILE: PULSE-proxy/CheckIdentity-v12.3-Presence-Evo-BINARY.js
+// PULSE IDENTITY ENGINE — v12.3-Presence-Evo-BINARY
 // “THE SELF++++ / BINARY‑FIRST IDENTITY ENGINE / DUALBAND PRESENCE CORE”
 // ============================================================================
 //
-// ROLE (v12.3-PRESENCE-EVO-BINARY):
+// ROLE (v12.3-Presence-Evo-BINARY):
 //   • Canonical identity + presence validator for a binary‑first organism
 //   • Dualband identity engine (Symbolic A → Binary B → Symbolic A)
 //   • Backbone of PulseBand / PulseNet / CheckBand identity field
@@ -14,7 +14,7 @@
 //   • Deterministic, replayable, lineage‑safe, drift‑aware
 //   • Returns authoritative v12.3+ identity + presence snapshot
 //
-// CONTRACT (v12.3-PRESENCE-EVO-BINARY):
+// CONTRACT (v12.3-Presence-Evo-BINARY):
 //   • Fail‑open: invalid identity → null (frontend + PulseBand handle fallback)
 //   • Never mutate original input
 //   • Always return structurally complete v12.3 identity snapshot
@@ -26,7 +26,7 @@
 /*
 AI_EXPERIENCE_META = {
   identity: "CheckIdentity",
-  version: "v12.3-PRESENCE-EVO-BINARY-MAX",
+  version: "v12.3-Presence-Evo-BINARY-MAX",
   layer: "backend_identity_engine",
   role: "binary_first_identity_healer",
   lineage: "PulseProxy-v12",
@@ -62,8 +62,8 @@ AI_EXPERIENCE_META = {
 export const PulseOSCheckIdentityMeta = Object.freeze({
   layer: "PulseProxyIdentityEngine",
   role: "BINARY_FIRST_IDENTITY_ORGAN",
-  version: "v12.3-PRESENCE-EVO-BINARY-MAX",
-  identity: "CheckIdentity-v12.3-PRESENCE-EVO-BINARY-MAX",
+  version: "v12.3-Presence-Evo-BINARY-MAX",
+  identity: "CheckIdentity-v12.3-Presence-Evo-BINARY-MAX",
 
   guarantees: Object.freeze({
     deterministic: true,
@@ -134,8 +134,8 @@ export const PulseOSCheckIdentityMeta = Object.freeze({
   }),
 
   lineage: Object.freeze({
-    root: "PulseProxy-v11-EVO",
-    parent: "PulseProxy-v12.3-PRESENCE-EVO",
+    root: "PulseProxy-v11-Evo",
+    parent: "PulseProxy-v12.3-Presence-Evo",
     ancestry: [
       "CheckIdentity-v7",
       "CheckIdentity-v8",
@@ -144,9 +144,9 @@ export const PulseOSCheckIdentityMeta = Object.freeze({
       "CheckIdentity-v11",
       "CheckIdentity-v11-Evo",
       "CheckIdentity-v11-Evo-Binary",
-      "CheckIdentity-v12.0-EVO",
-      "CheckIdentity-v12.1-EVO",
-      "CheckIdentity-v12.2-EVO"
+      "CheckIdentity-v12.0-Evo",
+      "CheckIdentity-v12.1-Evo",
+      "CheckIdentity-v12.2-Evo"
     ]
   }),
 
@@ -171,7 +171,7 @@ export const PulseOSCheckIdentityMeta = Object.freeze({
 const LAYER_ID   = "IDENTITY-LAYER-BINARY";
 const LAYER_NAME = "THE SELF++++";
 const LAYER_ROLE = "BINARY-FIRST SENSE-OF-SELF ENGINE";
-const LAYER_VER  = "12.3-PRESENCE-EVO-BINARY";
+const LAYER_VER  = "12.3-Presence-Evo-BINARY";
 
 const IDENTITY_DIAGNOSTICS_ENABLED =
   process.env.PULSE_IDENTITY_DIAGNOSTICS === "true" ||
@@ -212,7 +212,7 @@ function resolveMode(event) {
 
 
 // ============================================================================
-// BINARY SIGNATURES — v12.3-PRESENCE-EVO-BINARY
+// BINARY SIGNATURES — v12.3-Presence-Evo-BINARY
 // ============================================================================
 function computeBinarySignature(identity) {
   try {
@@ -256,7 +256,7 @@ function computePresenceSignature(identity, presence) {
 
 
 // ============================================================================
-// HELPERS — NORMALIZE IDENTITY TO v12.3-PRESENCE-EVO-BINARY SHAPE
+// HELPERS — NORMALIZE IDENTITY TO v12.3-Presence-Evo-BINARY SHAPE
 // ============================================================================
 function normalizeIdentity(raw, mode, presenceContext = {}, advantageContext = {}) {
   if (!raw || typeof raw !== "object") return null;
@@ -320,7 +320,7 @@ function normalizeIdentity(raw, mode, presenceContext = {}, advantageContext = {
 
     // Context injection
     layer: LAYER_NAME,
-    context: "Canonical backend identity + presence snapshot (v12.3-PRESENCE-EVO-BINARY)",
+    context: "Canonical backend identity + presence snapshot (v12.3-Presence-Evo-BINARY)",
     mode
   };
 
@@ -395,7 +395,7 @@ async function validateAndLoadIdentity(token) {
 
 
 // ============================================================================
-// BACKEND ENTRY POINT — “THE SELF++++” v12.3-PRESENCE-EVO-BINARY
+// BACKEND ENTRY POINT — “THE SELF++++” v12.3-Presence-Evo-BINARY
 // ============================================================================
 export const handler = async (event, context) => {
   const mode = resolveMode(event);
@@ -455,7 +455,7 @@ export const handler = async (event, context) => {
     };
 
   } catch (err) {
-    safeError("CheckIdentity v12.3-PRESENCE-EVO-BINARY error:", err);
+    safeError("CheckIdentity v12.3-Presence-Evo-BINARY error:", err);
 
     logSelf("FATAL_ERROR", {
       message: err?.message || "Unknown error",

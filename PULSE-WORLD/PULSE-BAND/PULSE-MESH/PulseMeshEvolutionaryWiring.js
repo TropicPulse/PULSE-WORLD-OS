@@ -1,5 +1,5 @@
 // ============================================================================
-//  EvolutionaryWiring.js — v15-EVO-IMMORTAL
+//  EvolutionaryWiring.js — v15-Evo-Immortal
 //  PulseMesh Wiring Organ • Nervous System Pathway Selector
 //  Binary-Aware • Presence-Aware • Advantage-Aware • Drift-Proof
 // ============================================================================
@@ -34,7 +34,7 @@
 /*
 AI_EXPERIENCE_META = {
   identity: "PulseMeshEvolutionaryWiring",
-  version: "v15-EVO-IMMORTAL",
+  version: "v15-Evo-Immortal",
   layer: "mesh",
   role: "mesh_lineage_and_wiring_engine",
   lineage: "PulseMesh-v15",
@@ -78,7 +78,7 @@ export const PulseRole = {
   type: "Mesh",
   subsystem: "PulseMesh",
   layer: "Wiring",
-  version: "15-EVO-IMMORTAL",
+  version: "15-Evo-Immortal",
   identity: "PulseMesh-Wiring-v15",
 
   evo: {
@@ -183,7 +183,7 @@ function clamp01(v) {
 
 
 // ============================================================================
-//  FACTORY — Create PulseMesh Wiring Organ (v15-EVO-IMMORTAL)
+//  FACTORY — Create PulseMesh Wiring Organ (v15-Evo-Immortal)
 // ============================================================================
 //
 //  Behavior:
@@ -204,7 +204,7 @@ export function createPulseMeshWiring({ log } = {}) {
   const meta = {
     layer: "PulseMeshWiring",
     role: "WIRING_ORGAN",
-    version: "15-EVO-IMMORTAL",
+    version: "15-Evo-Immortal",
     target: "full-mesh",
     selfRepairable: true,
     evo: {

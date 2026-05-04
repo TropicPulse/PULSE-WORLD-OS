@@ -13,7 +13,7 @@
 /*
 AI_EXPERIENCE_META = {
   identity: "PulseRouterCommandments",
-  version: "v12.5-EVO-LAW",
+  version: "v12.5-Evo-LAW",
   layer: "frontend",
   role: "router_law",
   lineage: "PulseOS-v12",

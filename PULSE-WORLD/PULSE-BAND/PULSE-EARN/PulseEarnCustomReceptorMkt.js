@@ -1,10 +1,10 @@
 // ============================================================================
-// FILE: tropic-pulse-functions/PULSE-WORLD/PULSE-EARN/PulseEarnCustomReceptor-v13.0-PRESENCE-IMMORTAL.js
-// LAYER: THE GENETIC REGULATOR (v13.0-PRESENCE-IMMORTAL A‑B‑A)
+// FILE: tropic-pulse-functions/PULSE-WORLD/PULSE-EARN/PulseEarnCustomReceptor-v13.0-Presence-Immortal.js
+// LAYER: THE GENETIC REGULATOR (v13.0-Presence-Immortal A‑B‑A)
 // (Deterministic Marketplace Interpreter + Receptor Builder + v13 Surfaces)
 // ============================================================================
 //
-// ROLE (v13.0-PRESENCE-IMMORTAL A‑B‑A):
+// ROLE (v13.0-Presence-Immortal A‑B‑A):
 //   THE GENETIC REGULATOR — deterministic marketplace interpreter.
 //   • Reads receptor DNA from static deterministic config (no network).
 //   • Expresses that DNA into a functional v13 receptor phenotype.
@@ -12,7 +12,7 @@
 //   • Emits v13 presence/advantage/chunk surfaces.
 //   • Emits A‑B‑A bandSignature + binaryField + waveField.
 //
-// CONTRACT (v13.0-PRESENCE-IMMORTAL):
+// CONTRACT (v13.0-Presence-Immortal):
 //   • PURE RECEPTOR — deterministic, drift‑proof.
 //   • NO async, NO network, NO randomness, NO timestamps.
 //   • NO eval(), NO Function(), NO dynamic imports.
@@ -23,10 +23,10 @@
 /*
 AI_EXPERIENCE_META = {
   identity: "PulseEarnCustomReceptorMkt",
-  version: "v14-IMMORTAL",
+  version: "v14-Immortal",
   layer: "earn_receptor",
   role: "earn_market_receptor",
-  lineage: "PulseEarnCustomReceptorMkt-v11 → v12.3 → v14-IMMORTAL",
+  lineage: "PulseEarnCustomReceptorMkt-v11 → v12.3 → v14-Immortal",
 
   evo: {
     customReceptor: true,
@@ -61,8 +61,8 @@ AI_EXPERIENCE_META = {
 export const PulseEarnCustomReceptorMeta = Object.freeze({
   layer: "PulseEarnCustomReceptor",
   role: "EARN_RECEPTOR_ORGAN",
-  version: "v13.0-PRESENCE-IMMORTAL",
-  identity: "PulseEarnCustomReceptor-v13.0-PRESENCE-IMMORTAL",
+  version: "v13.0-Presence-Immortal",
+  identity: "PulseEarnCustomReceptor-v13.0-Presence-Immortal",
 
   guarantees: Object.freeze({
     deterministic: true,
@@ -129,7 +129,7 @@ function normalizeBand(band) {
 const DETERMINISTIC_RECEPTOR_DNA = {
   id: "CUSTOM",
   name: "Custom Marketplace",
-  version: "13.0-PRESENCE-IMMORTAL",
+  version: "13.0-Presence-Immortal",
   healthScore: 1.0,
 
   band: "symbolic", // symbolic | binary
@@ -142,7 +142,7 @@ const DETERMINISTIC_RECEPTOR_DNA = {
 
   headers: {},
 
-  lineage: "Receptor-GeneticRegulator-v13.0-PRESENCE-IMMORTAL",
+  lineage: "Receptor-GeneticRegulator-v13.0-Presence-Immortal",
   phenotype: "MarketplaceReceptor"
 };
 
@@ -197,7 +197,7 @@ function buildPresenceField(globalHints = {}, cycle) {
   const dna = loadMarketplaceDNA();
 
   return {
-    presenceVersion: "v13.0-PRESENCE-IMMORTAL",
+    presenceVersion: "v13.0-Presence-Immortal",
     presenceTier,
 
     bandPresence: ghP.bandPresence || normalizeBand(dna.band),
@@ -582,13 +582,13 @@ function submitResult(job, result, globalHints = {}) {
 }
 
 // ============================================================================
-// Export — The Genetic Regulator Organ (v13.0-PRESENCE-IMMORTAL A‑B‑A)
+// Export — The Genetic Regulator Organ (v13.0-Presence-Immortal A‑B‑A)
 // ============================================================================
 export const PulseEarnCustomReceptor = {
   id: "CUSTOM",
   name: "Custom Marketplace",
-  version: "13.0-PRESENCE-IMMORTAL",
-  lineage: "Receptor-GeneticRegulator-v13.0-PRESENCE-IMMORTAL",
+  version: "13.0-Presence-Immortal",
+  lineage: "Receptor-GeneticRegulator-v13.0-Presence-Immortal",
 
   receptorSignature: () => buildReceptorSignature(loadMarketplaceDNA()),
   bandSignature: () => buildBandSignature(loadMarketplaceDNA()),

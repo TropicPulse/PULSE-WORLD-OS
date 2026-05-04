@@ -1,6 +1,6 @@
 // ============================================================================
-//  PulseEarnMuscleSystem-v13.0-PRESENCE-IMMORTAL.js
-//  THE MUSCLE SYSTEM (v13.0 Presence-IMMORTAL + Advantage‑M + Triple Presence)
+//  PulseEarnMuscleSystem-v13.0-Presence-Immortal.js
+//  THE MUSCLE SYSTEM (v13.0 Presence-Immortal + Advantage‑M + Triple Presence)
 //  Deterministic Worker Supervisor + Profit Orchestrator
 //  Zero async, zero compute, zero mutation, zero routing
 //  IMMORTAL: presence/advantage/plan are descriptive-only, no hidden governors.
@@ -8,10 +8,10 @@
 /*
 AI_EXPERIENCE_META = {
   identity: "PulseEarnMuscleSystem",
-  version: "v14-IMMORTAL",
+  version: "v14-Immortal",
   layer: "earn_muscle",
   role: "earn_execution_muscle",
-  lineage: "PulseEarnMuscleSystem-v11 → v12.3 → v14-IMMORTAL",
+  lineage: "PulseEarnMuscleSystem-v11 → v12.3 → v14-Immortal",
 
   evo: {
     muscleSystem: true,
@@ -46,8 +46,8 @@ AI_EXPERIENCE_META = {
 export const PulseEarnMuscleSystemMeta = Object.freeze({
   layer: "PulseEarnMuscleSystem",
   role: "EARN_MUSCLE_ORGAN",
-  version: "v13.0-PRESENCE-IMMORTAL",
-  identity: "PulseEarnMuscleSystem-v13.0-PRESENCE-IMMORTAL",
+  version: "v13.0-Presence-Immortal",
+  identity: "PulseEarnMuscleSystem-v13.0-Presence-Immortal",
 
   guarantees: Object.freeze({
     deterministic: true,
@@ -116,7 +116,7 @@ function normalizeBand(b) {
 }
 
 // ============================================================================
-// Healing Metadata — Muscle Memory Log (v13.0-PRESENCE-IMMORTAL)
+// Healing Metadata — Muscle Memory Log (v13.0-Presence-Immortal)
 // ============================================================================
 const engineHealing = {
   running: false,
@@ -159,7 +159,7 @@ const engineHealing = {
 let engineCycle = 0;
 
 // ============================================================================
-// Presence Field (v13.0-PRESENCE-IMMORTAL)
+// Presence Field (v13.0-Presence-Immortal)
 // Descriptive-only: tiers from simple structural counts, no perf scoring.
 // ============================================================================
 function buildPresenceField(job, device, cycleIndex) {
@@ -178,7 +178,7 @@ function buildPresenceField(job, device, cycleIndex) {
   );
 
   return {
-    presenceVersion: "v13.0-PRESENCE-IMMORTAL",
+    presenceVersion: "v13.0-Presence-Immortal",
     presenceTier,
     jobLen,
     marketLen,
@@ -189,7 +189,7 @@ function buildPresenceField(job, device, cycleIndex) {
 }
 
 // ============================================================================
-// Advantage‑M Field (v13.0-PRESENCE-IMMORTAL)
+// Advantage‑M Field (v13.0-Presence-Immortal)
 // Structural-only: no advantageScore math, just descriptive fields.
 // ============================================================================
 function buildAdvantageField(job, device, bandPack, presenceField) {
@@ -309,14 +309,14 @@ function buildResultSignature(job, result) {
 }
 
 // ============================================================================
-// FACTORY — createEarnEngine (v13.0-PRESENCE-IMMORTAL)
+// FACTORY — createEarnEngine (v13.0-Presence-Immortal)
 // ============================================================================
 export function createEarnEngine({
   pulseSendSystem,
   log = console.log
 } = {}) {
   if (!pulseSendSystem || typeof pulseSendSystem.compute !== "function") {
-    throw new Error("[EarnEngine-v13.0-PRESENCE-IMMORTAL] pulseSendSystem.compute(job, ctx) required.");
+    throw new Error("[EarnEngine-v13.0-Presence-Immortal] pulseSendSystem.compute(job, ctx) required.");
   }
 
   const engine = {

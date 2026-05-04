@@ -1,16 +1,16 @@
 // ============================================================================
-// FILE: /PulseOS/core/PulseLoopScanner-v12.3-EVO.js
-// PULSE OS — v12.3-EVO
-// GENERIC LOOP ORGAN — PRESENCE + HARMONICS + DUAL-BAND + MULTI-SPIN-EVO
+// FILE: /PulseOS/core/PulseLoopScanner-v12.3-Evo.js
+// PULSE OS — v12.3-Evo
+// GENERIC LOOP ORGAN — PRESENCE + HARMONICS + DUAL-BAND + MULTI-SPIN-Evo
 // ============================================================================
-// ROLE (12.3-EVO):
+// ROLE (12.3-Evo):
 //   - Convert ANY numeric signal → deterministic loop indices.
 //   - Presence-aware (presenceAvg, presenceGradient).
 //   - Harmonics-aware (phaseDrift, coherenceScore).
 //   - Dual-band aware (binary + pulse + presence).
-//   - Multi-spin-EVO aware (phase-offset loop paths).
+//   - Multi-spin-Evo aware (phase-offset loop paths).
 //   - Zero randomness, zero timestamps, zero mutation.
-//   - API-compatible with v11-EVO.
+//   - API-compatible with v11-Evo.
 // ============================================================================
 
 export function createLoopScanner({ trace = false } = {}) {
@@ -70,7 +70,7 @@ export function createLoopScanner({ trace = false } = {}) {
   }
 
   // ========================================================================
-  // MODE 3 — MULTI LOOP INDEX (3-PHASE MULTI-SPIN-EVO)
+  // MODE 3 — MULTI LOOP INDEX (3-PHASE MULTI-SPIN-Evo)
   // ========================================================================
   function nextIndexMulti(signal, max, presence = 0, harmonicDrift = 0) {
     const base = signalToNumber(signal);

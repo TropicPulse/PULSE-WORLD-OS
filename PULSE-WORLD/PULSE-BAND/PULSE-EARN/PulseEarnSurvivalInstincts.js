@@ -1,11 +1,11 @@
 // ============================================================================
-// FILE: tropic-pulse-functions/PULSE-WORLD/PULSE-EARN/PulseEarnSurvivalInstincts-v13.0-PRESENCE-IMMORTAL-ADV.js
-// LAYER: THE SURVIVAL INSTINCTS (v13.0-PRESENCE-IMMORTAL-ADV A-B-A)
+// FILE: tropic-pulse-functions/PULSE-WORLD/PULSE-EARN/PulseEarnSurvivalInstincts-v13.0-Presence-Immortal-ADV.js
+// LAYER: THE SURVIVAL INSTINCTS (v13.0-Presence-Immortal-ADV A-B-A)
 // (Worker Protection + Evolutionary Scaling + Fair Workload Defense
 //  + Presence/Advantage-M/Chunk/Prewarm Surfaces)
 // ============================================================================
 //
-// ROLE (v13.0-PRESENCE-IMMORTAL-ADV):
+// ROLE (v13.0-Presence-Immortal-ADV):
 //   THE SURVIVAL INSTINCTS — Pulse‑Earn’s evolved worker‑protection engine.
 //   • Rejects unsafe jobs (structural incompatibility).
 //   • Rejects unfair jobs (low pay, high metabolic cost).
@@ -14,14 +14,14 @@
 //   • Approves only safe, profitable, fair workloads.
 //   • Emits deterministic, pattern‑aware, presence‑aware, advantage‑aware diagnostics.
 //
-// PURPOSE (v13.0-PRESENCE-IMMORTAL-ADV):
+// PURPOSE (v13.0-Presence-Immortal-ADV):
 //   • Provide deterministic, drift‑proof job scoring.
 //   • Apply evolutionary + presence/advantage‑M scaling to device capability.
 //   • Ensure the device is never overloaded or underpaid.
 //   • Guarantee that only profitable, safe workloads enter the pipeline.
 //   • Surface a stable, inspectable survival + presence + advantage signature per job.
 //
-// CONTRACT (v13.0-PRESENCE-IMMORTAL-ADV):
+// CONTRACT (v13.0-Presence-Immortal-ADV):
 //   • PURE SCORING ENGINE — no AI layers, no translation, no memory model.
 //   • NO imports, NO eval(), NO dynamic behavior.
 //   • NEVER mutate job objects.
@@ -32,10 +32,10 @@
 /*
 AI_EXPERIENCE_META = {
   identity: "PulseEarnSurvivalInstincts",
-  version: "v14-IMMORTAL",
+  version: "v14-Immortal",
   layer: "earn_survival",
   role: "earn_survival_brainstem",
-  lineage: "PulseEarnSurvivalInstincts-v11 → v12.3 → v14-IMMORTAL",
+  lineage: "PulseEarnSurvivalInstincts-v11 → v12.3 → v14-Immortal",
 
   evo: {
     survivalBrainstem: true,
@@ -70,8 +70,8 @@ AI_EXPERIENCE_META = {
 export const PulseEarnSurvivalInstinctsMeta = Object.freeze({
   layer: "PulseEarnSurvivalInstincts",
   role: "EARN_SURVIVAL_ORGAN",
-  version: "v13.0-PRESENCE-IMMORTAL-ADV",
-  identity: "PulseEarnSurvivalInstincts-v13.0-PRESENCE-IMMORTAL-ADV",
+  version: "v13.0-Presence-Immortal-ADV",
+  identity: "PulseEarnSurvivalInstincts-v13.0-Presence-Immortal-ADV",
 
   guarantees: Object.freeze({
     deterministic: true,
@@ -137,14 +137,14 @@ export const PulseEarnSurvivalInstinctsMeta = Object.freeze({
   }),
 
   lineage: Object.freeze({
-    root: "PulseOS-v13-PRESENCE-IMMORTAL",
-    parent: "PulseEarn-v13.0-PRESENCE-IMMORTAL",
+    root: "PulseOS-v13-Presence-Immortal",
+    parent: "PulseEarn-v13.0-Presence-Immortal",
     ancestry: [
       "PulseEarnSurvivalInstincts-v9",
       "PulseEarnSurvivalInstincts-v10",
       "PulseEarnSurvivalInstincts-v11",
       "PulseEarnSurvivalInstincts-v11-Evo",
-      "PulseEarnSurvivalInstincts-v12.3-PRESENCE-EVO+"
+      "PulseEarnSurvivalInstincts-v12.3-Presence-Evo+"
     ]
   }),
 
@@ -165,7 +165,7 @@ export const PulseEarnSurvivalInstinctsMeta = Object.freeze({
 
 
 // ---------------------------------------------------------------------------
-// Healing Metadata — Survival Instinct Activity Log (v13.0-PRESENCE-IMMORTAL-ADV)
+// Healing Metadata — Survival Instinct Activity Log (v13.0-Presence-Immortal-ADV)
 // ---------------------------------------------------------------------------
 const survivalHealing = {
   lastJobId: null,
@@ -274,7 +274,7 @@ function classifyDegradationTier(healthScore) {
 
 
 // ---------------------------------------------------------------------------
-// INTERNAL: Presence / Advantage‑M / Hints Surfaces (v13.0-PRESENCE-IMMORTAL-ADV)
+// INTERNAL: Presence / Advantage‑M / Hints Surfaces (v13.0-Presence-Immortal-ADV)
 // ---------------------------------------------------------------------------
 //
 // deviceProfile is assumed to be v13 skeletal phenotype with:
@@ -304,7 +304,7 @@ function buildPresenceField(deviceProfile, dualBandContext) {
   const cacheLines = chunkField.cacheLines || 0;
   const prewarmSlots = chunkField.prewarmSlots || 0;
 
-  const presenceVersion = "v13.0-PRESENCE-IMMORTAL-ADV";
+  const presenceVersion = "v13.0-Presence-Immortal-ADV";
 
   const field = {
     presenceVersion,
@@ -484,7 +484,7 @@ function buildBandBinaryWaveSurfaces(deviceProfile, dualBandContext) {
 
 
 // ---------------------------------------------------------------------------
-// INTERNAL: Build Survival Signature (v13.0-PRESENCE-IMMORTAL-ADV)
+// INTERNAL: Build Survival Signature (v13.0-Presence-Immortal-ADV)
 // ---------------------------------------------------------------------------
 function buildSurvivalSignature({
   jobId,
@@ -512,7 +512,7 @@ function buildSurvivalSignature({
 
 
 // ---------------------------------------------------------------------------
-// scoreJobForDevice — Survival Instinct Approval Process (v13.0-PRESENCE-IMMORTAL-ADV)
+// scoreJobForDevice — Survival Instinct Approval Process (v13.0-Presence-Immortal-ADV)
 // dualBandContext may carry presence/advantage/cache/chunk/prewarm hints.
 // ---------------------------------------------------------------------------
 export function scoreJobForDevice(rawJob, deviceProfile, dualBandContext) {
@@ -663,7 +663,7 @@ export function scoreJobForDevice(rawJob, deviceProfile, dualBandContext) {
 
 
 // ---------------------------------------------------------------------------
-// COMPATIBILITY CHECKS — Worker Safety Rules (v13.0-PRESENCE-IMMORTAL-ADV A-B-A)
+// COMPATIBILITY CHECKS — Worker Safety Rules (v13.0-Presence-Immortal-ADV A-B-A)
 // ---------------------------------------------------------------------------
 function isJobCompatible(rawJob, deviceProfile) {
   if (!rawJob || !deviceProfile) return false;
@@ -685,7 +685,7 @@ function isJobCompatible(rawJob, deviceProfile) {
 
 
 // ---------------------------------------------------------------------------
-// EVOLUTIONARY CAPABILITY BOOST — Organism Advantage‑M (v13.0-PRESENCE-IMMORTAL-ADV)
+// EVOLUTIONARY CAPABILITY BOOST — Organism Advantage‑M (v13.0-Presence-Immortal-ADV)
 // ---------------------------------------------------------------------------
 function computeEvolutionaryBoost(
   deviceProfile,
@@ -835,7 +835,7 @@ function buildDevicePattern(deviceProfile) {
 
 
 // ---------------------------------------------------------------------------
-// Export Healing Metadata — Survival Instinct Report (v13.0-PRESENCE-IMMORTAL-ADV)
+// Export Healing Metadata — Survival Instinct Report (v13.0-Presence-Immortal-ADV)
 // ---------------------------------------------------------------------------
 export function getPulseEarnSurvivalHealingState() {
   return { ...survivalHealing };

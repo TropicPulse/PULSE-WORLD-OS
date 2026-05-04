@@ -1,14 +1,14 @@
 // ============================================================================
-// FILE: tropic-pulse-functions/PULSE-WORLD/PULSE-EARN/PulseEarnMktCourier-v13.0-PRESENCE-IMMORTAL.js
+// FILE: tropic-pulse-functions/PULSE-WORLD/PULSE-EARN/PulseEarnMktCourier-v13.0-Presence-Immortal.js
 // LAYER: THE COURIER (v13.0 Presence + Advantage‑C + Prewarm)
 // ============================================================================
 /*
 AI_EXPERIENCE_META = {
   identity: "PulseEarnMktCourier",
-  version: "v14-IMMORTAL",
+  version: "v14-Immortal",
   layer: "earn_market",
   role: "market_courier",
-  lineage: "PulseEarnMktCourier-v11 → v12.3 → v14-IMMORTAL",
+  lineage: "PulseEarnMktCourier-v11 → v12.3 → v14-Immortal",
 
   evo: {
     marketCourier: true,
@@ -43,8 +43,8 @@ AI_EXPERIENCE_META = {
 export const PulseEarnMktCourierMeta = Object.freeze({
   layer: "PulseEarnMktCourier",
   role: "EARN_MARKETPLACE_RECEPTOR",
-  version: "v13.0-PRESENCE-IMMORTAL",
-  identity: "PulseEarnMktCourier-v13.0-PRESENCE-IMMORTAL",
+  version: "v13.0-Presence-Immortal",
+  identity: "PulseEarnMktCourier-v13.0-Presence-Immortal",
 
   guarantees: Object.freeze({
     deterministic: true,
@@ -132,7 +132,7 @@ function buildPresenceField(jobOrRaw, deviceProfile = {}, cycle, globalHints = {
   const presenceTier = classifyPresenceTier(pressure);
 
   return {
-    presenceVersion: "v13.0-PRESENCE-IMMORTAL",
+    presenceVersion: "v13.0-Presence-Immortal",
     presenceTier,
 
     bandPresence: ghP.bandPresence || "symbolic",
@@ -308,8 +308,8 @@ const SPHERON_RECEPTOR_DNA = {
       type: "compute"
     }
   ],
-  version: "13.0-PRESENCE-IMMORTAL",
-  lineage: "Courier-Spheron-v13.0-PRESENCE-IMMORTAL",
+  version: "13.0-Presence-Immortal",
+  lineage: "Courier-Spheron-v13.0-Presence-Immortal",
   phenotype: "MarketplaceReceptor"
 };
 
@@ -360,8 +360,8 @@ function buildWaveField(cycle, band, presenceField) {
 export const PulseEarnMktCourier = {
   id: "spheron",
   name: "Spheron Compute",
-  version: "v13.0-PRESENCE-IMMORTAL",
-  lineage: "Courier-Spheron-v13.0-PRESENCE-IMMORTAL",
+  version: "v13.0-Presence-Immortal",
+  lineage: "Courier-Spheron-v13.0-Presence-Immortal",
 
   // -------------------------------------------------------------------------
   // PING — unified v13 presence

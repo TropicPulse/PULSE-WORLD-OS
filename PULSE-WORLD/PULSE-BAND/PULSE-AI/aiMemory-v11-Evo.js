@@ -1,5 +1,5 @@
 // ============================================================================
-//  aiMemory.js — Pulse OS v15.0-IMMORTAL-ADV Organ
+//  aiMemory.js — Pulse OS v15.0-Immortal-ADV Organ
 //  Pure PulseCoreMemory Adapter • Dualband • Binary‑Only • Zero Local Storage
 //  Memory Artery v4 • Shard-Aware • Windowed Ops Metrics
 // ----------------------------------------------------------------------------
@@ -27,10 +27,10 @@
 /*
 AI_EXPERIENCE_META = {
   identity: "aiMemory",
-  version: "v15-IMMORTAL-ADV",
+  version: "v15-Immortal-ADV",
   layer: "ai_core",
   role: "symbolic_memory_engine",
-  lineage: "aiMemory-v9 → v11 → v13 → v15-IMMORTAL-ADV",
+  lineage: "aiMemory-v9 → v11 → v13 → v15-Immortal-ADV",
 
   evo: {
     symbolicMemory: true,
@@ -58,13 +58,13 @@ AI_EXPERIENCE_META = {
 import { PulseCoreMemory } from "../PULSE-CORE/PulseCoreMemory.js";
 
 // ============================================================================
-//  META BLOCK — v15.0-IMMORTAL-ADV
+//  META BLOCK — v15.0-Immortal-ADV
 // ============================================================================
 export const MemoryMeta = Object.freeze({
   layer: "OrganismMemory",
   role: "MEMORY_LAYER",
-  version: "15.0-IMMORTAL-ADV",
-  identity: "aiMemory-v15.0-IMMORTAL-ADV",
+  version: "15.0-Immortal-ADV",
+  identity: "aiMemory-v15.0-Immortal-ADV",
 
   evo: Object.freeze({
     deterministic: true,
@@ -85,7 +85,7 @@ export const MemoryMeta = Object.freeze({
     cacheAware: true,      // registry-level, not data cache
     readOnly: false,
     multiInstanceReady: true,
-    epoch: "v15.0-IMMORTAL-ADV"
+    epoch: "v15.0-Immortal-ADV"
   }),
 
   contract: Object.freeze({

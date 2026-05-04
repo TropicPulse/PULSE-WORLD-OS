@@ -6,10 +6,10 @@ LAYER: UI LONG‑TERM MEMORY ORGAN
 ===============================================================================
 AI_EXPERIENCE_META = {
   identity: "PulseUI.EvolutionaryMemory",
-  version: "v15-IMMORTAL",
+  version: "v15-Immortal",
   layer: "pulse_ui",
   role: "ui_long_term_memory",
-  lineage: "PulseEvolutionaryMemory-v11.3-Evo-Prime → v14-IMMORTAL → v15-IMMORTAL",
+  lineage: "PulseEvolutionaryMemory-v11.3-Evo-Prime → v14-Immortal → v15-Immortal",
 
   evo: {
     memoryOrgan: true,
@@ -106,7 +106,7 @@ export const MemoryRole = {
   type: "Organ",
   subsystem: "UI",
   layer: "PageMemory",
-  version: "15.0-IMMORTAL",
+  version: "15.0-Immortal",
   identity: "PulseEvolutionaryMemory",
 
   evo: {

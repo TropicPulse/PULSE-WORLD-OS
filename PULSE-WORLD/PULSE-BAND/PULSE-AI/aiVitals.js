@@ -72,10 +72,10 @@
 /*
 AI_EXPERIENCE_META = {
   identity: "aiVitals",
-  version: "v14-IMMORTAL",
+  version: "v14-Immortal",
   layer: "ai_core",
   role: "vitals_monitor",
-  lineage: "aiVitals-v10 → v14-IMMORTAL",
+  lineage: "aiVitals-v10 → v14-Immortal",
 
   evo: {
     vitalsMonitor: true,
@@ -105,8 +105,8 @@ export const VitalsMeta = Object.freeze({
   subsystem: "aiBinaryVitals",
   layer: "BinaryNervousSystem",
   role: "BINARY_VITALS_ORGAN",
-  version: "12.3-EVO+",
-  identity: "aiBinaryVitals-v12.3-EVO+",
+  version: "12.3-Evo+",
+  identity: "aiBinaryVitals-v12.3-Evo+",
 
   evo: Object.freeze({
     driftProof: true,
@@ -127,7 +127,7 @@ export const VitalsMeta = Object.freeze({
     temporalAware: true,
     arteryAware: true,
     healthFusionAware: true,
-    epoch: "v12.3-EVO+"
+    epoch: "v12.3-Evo+"
   }),
 
   contract: Object.freeze({

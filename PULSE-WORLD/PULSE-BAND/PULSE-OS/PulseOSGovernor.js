@@ -1,5 +1,5 @@
 // ============================================================================
-//  PulseOSGovernor.v12.3-SPINE-DUALBAND-PRESENCE.js
+//  PulseOSGovernor.v12.3-SPINE-DUALBAND-Presence.js
 //  Global Loop, Re-entry & Multi-Instance Governor (v12.3-SPINE)
 //  - No imports
 //  - No routing
@@ -14,7 +14,7 @@
 /*
 AI_EXPERIENCE_META = {
   identity: "PulseOSGovernor",
-  version: "v14-IMMORTAL",
+  version: "v14-Immortal",
   layer: "cns",
   role: "os_governor",
   lineage: "PulseOS-v14",
@@ -89,8 +89,8 @@ export const GOVERNOR_CONTEXT_V12 = {
 export const PulseOSGovernorMeta = Object.freeze({
   layer: "PulseOSGovernor",
   role: "GLOBAL_LOOP_GOVERNOR_ORGAN",
-  version: "v12.3-SPINE-DUALBAND-PRESENCE",
-  identity: "PulseOSGovernor-v12.3-SPINE-DUALBAND-PRESENCE",
+  version: "v12.3-SPINE-DUALBAND-Presence",
+  identity: "PulseOSGovernor-v12.3-SPINE-DUALBAND-Presence",
 
   guarantees: Object.freeze({
     deterministic: true,
@@ -160,7 +160,7 @@ export const PulseOSGovernorMeta = Object.freeze({
       "PulseOSGovernor-v10",
       "PulseOSGovernor-v11",
       "PulseOSGovernor-v11-Evo",
-      "PulseOSGovernor-v11.2-EVO-BINARY-MAX"
+      "PulseOSGovernor-v11.2-Evo-BINARY-MAX"
     ]
   }),
 

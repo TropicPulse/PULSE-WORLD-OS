@@ -14,10 +14,10 @@
 /*
 AI_EXPERIENCE_META = {
   identity: "PulseCoreSendMemoryAdapter",
-  version: "v15-IMMORTAL-SEND-MEMORY",
+  version: "v15-Immortal-SEND-MEMORY",
   layer: "corememory_adapter",
   role: "send_memory_adapter",
-  lineage: "PulseCoreMemory-v15-IMMORTAL",
+  lineage: "PulseCoreMemory-v15-Immortal",
 
   evo: {
     adapter: true,
@@ -60,7 +60,7 @@ function nextSendEpoch() {
 export function createPulseSendMemoryAdapter({
   overlay = createPulseBinaryOverlay(),
   dnaTag = "default-dna",
-  version = "15.0-IMMORTAL-SEND-MEMORY",
+  version = "15.0-Immortal-SEND-MEMORY",
   log = console.log
 } = {}) {
 

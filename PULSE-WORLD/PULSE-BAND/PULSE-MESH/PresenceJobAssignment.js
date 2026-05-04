@@ -1,6 +1,6 @@
 // ============================================================================
-// FILE: PresenceJobAssignment-v15-EVO.js
-// PULSE OS v15.0 — PRESENCE-EVO-MESH-AWARE
+// FILE: PresenceJobAssignment-v15-Evo.js
+// PULSE OS v15.0 — PRESENCE-Evo-MESH-AWARE
 // ---------------------------------------------------------------------------
 //  PRESENCE-BASED JOB ASSIGNMENT ENGINE (IMMORTAL-GRADE COMMENTARY)
 // ---------------------------------------------------------------------------
@@ -51,7 +51,7 @@
 /*
 AI_EXPERIENCE_META = {
   identity: "PresenceJobAssignment",
-  version: "v14.9-PRESENCE-JOB-EVO",
+  version: "v14.9-Presence-JOB-Evo",
   layer: "presence_social",
   role: "job_assignment_engine",
   lineage: "PulseWorld-v14",
@@ -97,7 +97,7 @@ export function createPresenceJobAssignment({
   const meta = Object.freeze({
     layer: "PresenceJobAssignment",
     role: "JOB_ASSIGNMENT_ENGINE",
-    version: "15.0-EVO",
+    version: "15.0-Evo",
     evo: {
       presenceAware: true,            // Reads presenceBand + presence state
       earnAware: true,                // Feeds earn/job pipelines

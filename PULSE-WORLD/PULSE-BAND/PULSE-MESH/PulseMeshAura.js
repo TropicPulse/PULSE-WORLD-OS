@@ -1,12 +1,12 @@
 // ============================================================================
-// FILE: /organs/aura/PulseMeshAura-v15-EVO-IMMORTAL.js
-// [pulse:mesh] PULSE_MESH_AURA v15-EVO-IMMORTAL  // violet
+// FILE: /organs/aura/PulseMeshAura-v15-Evo-Immortal.js
+// [pulse:mesh] PULSE_MESH_AURA v15-Evo-Immortal  // violet
 // System-wide Field Layer • Stabilization Loops • Multi-Instance Resonance
 // Metadata-only • Zero Compute • Zero Payload Mutation (flags-only)
 // Presence-aware • Binary-aware • Advantage-cascade-aware
 // ============================================================================
 //
-// IDENTITY — THE AURA FIELD (v15-EVO-IMMORTAL):
+// IDENTITY — THE AURA FIELD (v15-Evo-Immortal):
 //  --------------------------------------------
 //  • Organism-wide field surrounding all pulses and instances.
 //  • Provides stabilization loops (loop field).
@@ -35,7 +35,7 @@
 /*
 AI_EXPERIENCE_META = {
   identity: "PulseMeshAura",
-  version: "v14.9-MESH-AURA-IMMORTAL",
+  version: "v14.9-MESH-AURA-Immortal",
   layer: "mesh",
   role: "mesh_aura_engine",
   lineage: "PulseMesh-v14",
@@ -99,7 +99,7 @@ const AuraState = {
   meta: {
     layer: "PulseMeshAura",
     role: "AURA_FIELD",
-    version: "15-EVO-IMMORTAL",
+    version: "15-Evo-Immortal",
     target: "full-mesh",
     selfRepairable: true,
     evo: {

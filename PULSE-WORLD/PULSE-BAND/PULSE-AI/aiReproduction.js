@@ -34,10 +34,10 @@
 /*
 AI_EXPERIENCE_META = {
   identity: "aiReproduction",
-  version: "v14-IMMORTAL",
+  version: "v14-Immortal",
   layer: "ai_core",
   role: "reproduction_engine",
-  lineage: "aiReproduction-v11 → v14-IMMORTAL",
+  lineage: "aiReproduction-v11 → v14-Immortal",
 
   evo: {
     reproductionEngine: true,
@@ -69,8 +69,8 @@ AI_EXPERIENCE_META = {
 export const ReproductionMeta = Object.freeze({
   layer: "BinaryOrganism",
   role: "BINARY_REPRODUCTION_ORGAN",
-  version: "13.0-PRESENCE-EVO+++",
-  identity: "aiBinaryReproduction-v13.0-PRESENCE-EVO+++",
+  version: "13.0-Presence-Evo+++",
+  identity: "aiBinaryReproduction-v13.0-Presence-Evo+++",
 
   evo: Object.freeze({
     driftProof: true,
@@ -91,7 +91,7 @@ export const ReproductionMeta = Object.freeze({
     arteryAware: true,
     cacheAware: true,
     prewarmReady: true,
-    epoch: "13.0-PRESENCE-EVO+++"
+    epoch: "13.0-Presence-Evo+++"
   }),
 
   contract: Object.freeze({

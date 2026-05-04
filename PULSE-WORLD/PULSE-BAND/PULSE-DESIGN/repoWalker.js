@@ -2,10 +2,10 @@
 ===============================================================================
 AI_EXPERIENCE_META = {
   identity: "PulseDesign.Cartographer",
-  version: "v14-IMMORTAL",
+  version: "v14-Immortal",
   layer: "pulse_design",
   role: "terrain_explorer_and_directory_mapper",
-  lineage: "Cartographer-v7.1 → v10.4 → v12.3 → v14-IMMORTAL",
+  lineage: "Cartographer-v7.1 → v10.4 → v12.3 → v14-Immortal",
 
   evo: {
     terrainExplorer: true,

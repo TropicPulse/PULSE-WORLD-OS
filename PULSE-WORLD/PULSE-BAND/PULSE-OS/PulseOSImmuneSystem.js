@@ -1,5 +1,5 @@
 // ============================================================================
-//  GLOBAL HEALER — PULSE OS v12.3-PRESENCE-MESH
+//  GLOBAL HEALER — PULSE OS v12.3-Presence-MESH
 //  C-LAYER (TOP-LEVEL IMMUNE SYSTEM)
 //  Deterministic, Drift-Aware, OS-Level Healing Coordinator
 //  PURE HEALING. NO AI. NO COMPUTE. NO MARKETPLACE. NO IMPORTS. NO TIMERS.
@@ -12,7 +12,7 @@
 /*
 AI_EXPERIENCE_META = {
   identity: "PulseOSImmuneSystem",
-  version: "v14-IMMORTAL",
+  version: "v14-Immortal",
   layer: "cns",
   role: "os_immune_engine",
   lineage: "PulseOS-v14",
@@ -57,7 +57,7 @@ export const GLOBAL_HEALER_CONTEXT_V12 = Object.freeze({
   organ: "GlobalHealer",
   layer: "C-Layer",
   role: "Top-Level Immune Coordinator",
-  version: "12.3-PRESENCE-MESH",
+  version: "12.3-Presence-MESH",
   generation: "v12",
   organism: "PulseOS",
   band: "dualband",
@@ -106,8 +106,8 @@ export const GLOBAL_HEALER_CONTEXT_V12 = Object.freeze({
 export const PulseOSGlobalHealerMeta = Object.freeze({
   layer: "GlobalHealer",
   role: "IMMUNE_COORDINATOR_ORGAN",
-  version: "v12.3-PRESENCE-MESH",
-  identity: "PulseOS-GlobalHealer-v12.3-PRESENCE-MESH",
+  version: "v12.3-Presence-MESH",
+  identity: "PulseOS-GlobalHealer-v12.3-Presence-MESH",
 
   guarantees: Object.freeze({
     deterministic: true,
@@ -178,7 +178,7 @@ export const PulseOSGlobalHealerMeta = Object.freeze({
       "GlobalHealer-v10",
       "GlobalHealer-v11",
       "GlobalHealer-v11-Evo",
-      "PulseOS-GlobalHealer-v11.2-EVO-BINARY-MAX"
+      "PulseOS-GlobalHealer-v11.2-Evo-BINARY-MAX"
     ]
   }),
 
@@ -240,7 +240,7 @@ function buildFunctionLogHint(base) {
 
 
 // ============================================================================
-// FACTORY — PURE GLOBAL HEALER ORGAN (v12.3-PRESENCE-MESH)
+// FACTORY — PURE GLOBAL HEALER ORGAN (v12.3-Presence-MESH)
 // ============================================================================
 export function createGlobalHealerV12({ modeKind = "dual" } = {}) {
   const identity = Object.freeze({

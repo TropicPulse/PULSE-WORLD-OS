@@ -1,5 +1,5 @@
 // ============================================================================
-//  PulseBinaryOverlay.js — v15-IMMORTAL-BINARY-OVERLAY
+//  PulseBinaryOverlay.js — v15-Immortal-BINARY-OVERLAY
 //  ORGANISM‑WIDE BINARY MEMORY OVERLAY
 //  “GRAB ONCE. CANONICALIZE ONCE. REUSE FOREVER. NEVER DRIFT.”
 //  • v15 AI_EXPERIENCE_META (IMMORTAL identity)
@@ -16,10 +16,10 @@
 /*
 AI_EXPERIENCE_META = {
   identity: "PulseBinaryCoreOverlay",
-  version: "v15-IMMORTAL-BINARY-OVERLAY",
+  version: "v15-Immortal-BINARY-OVERLAY",
   layer: "corememory_binary",
   role: "binary_overlay_engine",
-  lineage: "PulseCoreMemory-v15-IMMORTAL",
+  lineage: "PulseCoreMemory-v15-Immortal",
 
   evo: {
     binaryPrimary: true,
@@ -60,7 +60,7 @@ export const BinaryOverlayRole = {
   subsystem: "Core",
   layer: "BinaryOverlay",
   identity: "PulseBinaryOverlay",
-  version: "15.0-IMMORTAL-BINARY-OVERLAY",
+  version: "15.0-Immortal-BINARY-OVERLAY",
 
   evo: {
     binaryNative: true,
@@ -86,7 +86,7 @@ export const BinaryOverlayMetaBlock = {
   subsystem: "Core",
   layer: "BinaryOverlay",
   role: "Binary-Memory-Membrane",
-  version: "15.0-IMMORTAL-BINARY-OVERLAY",
+  version: "15.0-Immortal-BINARY-OVERLAY",
   evo: BinaryOverlayRole.evo
 };
 
@@ -113,11 +113,11 @@ function nextOverlayEpoch() {
 }
 
 // ---------------------------------------------------------------------------
-//  CREATE BINARY OVERLAY — v15-IMMORTAL
+//  CREATE BINARY OVERLAY — v15-Immortal
 // ---------------------------------------------------------------------------
 export function createPulseBinaryOverlay({
   dnaTag = "default-dna",
-  version = "15.0-IMMORTAL-BINARY-OVERLAY",
+  version = "15.0-Immortal-BINARY-OVERLAY",
   coreGovernor = null,
   log = console.log,
   warn = console.warn
@@ -181,7 +181,7 @@ export function createPulseBinaryOverlay({
   }
 
   // -------------------------------------------------------------------------
-  //  CANONICALIZE (v15-IMMORTAL)
+  //  CANONICALIZE (v15-Immortal)
 //  • RAM scratchpad first
 //  • CoreMemory second
 //  • New entry last

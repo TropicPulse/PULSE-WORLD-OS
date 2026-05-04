@@ -1,5 +1,5 @@
 /**
- * PulseSchema-CoreMemoryIntegration-v12.3-PRESENCE-EVO+.js
+ * PulseSchema-CoreMemoryIntegration-v12.3-Presence-Evo+.js
  * PULSE-WORLD / PULSE-FINALITY / PULSE-SCHEMA + CORE MEMORY
  *
  * ROLE:
@@ -24,7 +24,7 @@
 /*
 AI_EXPERIENCE_META = {
   identity: "PulseSchema-CoreMemoryIntegration",
-  version: "v14-IMMORTAL",
+  version: "v14-Immortal",
   layer: "integration",
   role: "schema_corememory_wrapper",
   lineage: "PulseSchema-v14",
@@ -71,14 +71,14 @@ const {
 } = PulseSchemaAPI;
 
 // ============================================================================
-// META — v12.3-PRESENCE-EVO+
+// META — v12.3-Presence-Evo+
 // ============================================================================
 
 export const PulseSchemaCoreMemoryMeta = Object.freeze({
   layer: "PulseSchemaCoreMemory",
   role: "SCHEMA_MEMORY_ORGAN",
-  version: "12.3-PRESENCE-EVO+",
-  identity: "PulseSchema-CoreMemory-v12.3-PRESENCE-EVO+",
+  version: "12.3-Presence-Evo+",
+  identity: "PulseSchema-CoreMemory-v12.3-Presence-Evo+",
 
   evo: Object.freeze({
     deterministic: true,
@@ -106,7 +106,7 @@ export const PulseSchemaCoreMemoryMeta = Object.freeze({
     symbolicMemory: true,
     zeroMutationOfPhysics: true,
     zeroRandomness: true,
-    epoch: "12.3-PRESENCE-EVO+"
+    epoch: "12.3-Presence-Evo+"
   })
 });
 
@@ -173,7 +173,7 @@ function stampPresenceHints({
 }
 
 // ============================================================================
-// WRAPPED API — v12.3-PRESENCE-EVO+
+// WRAPPED API — v12.3-Presence-Evo+
 // ============================================================================
 
 export function unifyFromFirestoreWithMemory(firestoreSchema, hints = {}) {

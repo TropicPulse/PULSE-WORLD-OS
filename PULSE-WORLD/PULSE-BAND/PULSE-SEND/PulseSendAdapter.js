@@ -1,11 +1,11 @@
 // ============================================================================
-//  PulseSendAdapter-v14-IMMORTAL.js
+//  PulseSendAdapter-v14-Immortal.js
 //  Pattern‑Shape Adapter • Pulse‑Agnostic Translator • Pre‑Delivery Adapter
-//  v14-IMMORTAL: DualStack + Binary-Front-End + Ancestry Surface + Advantage Echo
+//  v14-Immortal: DualStack + Binary-Front-End + Ancestry Surface + Advantage Echo
 //                + cacheChunkSurface + prewarmSurface + presenceSurface
 // ============================================================================
 //
-//  SAFETY CONTRACT (v14-IMMORTAL):
+//  SAFETY CONTRACT (v14-Immortal):
 //  --------------------------------
 //  • No imports.
 //  • No network.
@@ -17,7 +17,7 @@
 /*
 AI_EXPERIENCE_META = {
   identity: "PulseSendAdapter",
-  version: "v12.4-EVO-BINARY",
+  version: "v12.4-Evo-BINARY",
   layer: "frontend",
   role: "send_adapter",
   lineage: "PulseOS-v12",
@@ -50,14 +50,14 @@ AI_EXPERIENCE_META = {
 
 
 // ============================================================================
-// ⭐ PulseRole — PulseSend Adapter Organ (v14-IMMORTAL)
+// ⭐ PulseRole — PulseSend Adapter Organ (v14-Immortal)
 // ============================================================================
 export const PulseRole = {
   type: "Messenger",
   subsystem: "PulseSend",
   layer: "Adapter",
-  version: "14-IMMORTAL",
-  identity: "PulseSendAdapter-v14-IMMORTAL",
+  version: "14-Immortal",
+  identity: "PulseSendAdapter-v14-Immortal",
 
   evo: {
     driftProof: true,

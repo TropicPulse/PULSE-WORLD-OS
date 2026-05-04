@@ -37,7 +37,7 @@
 /*
 AI_EXPERIENCE_META = {
   identity: "PulseTouchGate",
-  version: "v14-IMMORTAL",
+  version: "v14-Immortal",
   layer: "routing",
   role: "evolutionary_page_selector",
   lineage: "PulseOS-v13",

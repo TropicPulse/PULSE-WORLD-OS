@@ -1,6 +1,6 @@
 // ============================================================================
 //  PULSE OS v16‑IMMORTAL-ORGANISM — PULSE CASTLE (PRESENCE / HOST ORGAN)
-//  PulseCastle-v16-IMMORTAL-ORGANISM.js
+//  PulseCastle-v16-Immortal-ORGANISM.js
 // ============================================================================
 //
 //  ROLE:
@@ -16,10 +16,10 @@
 /*
 AI_EXPERIENCE_META = {
   identity: "PulseCastle",
-  version: "v16-IMMORTAL-ORGANISM",
+  version: "v16-Immortal-ORGANISM",
   layer: "presence_castle",
   role: "region_identity_and_security",
-  lineage: "PulseCastle-v9 → v12.3-PRESENCE-EVO++ → v14-IMMORTAL → v16-IMMORTAL-ORGANISM",
+  lineage: "PulseCastle-v9 → v12.3-Presence-Evo++ → v14-Immortal → v16-Immortal-ORGANISM",
 
   evo: {
     regionIdentity: true,
@@ -143,7 +143,7 @@ import { getEarnContext } from "../PULSE-EARN/PulseEarn-v12.3-Presence.js";
 
 // Dual-band organism + binary send
 import { createDualBandOrganism as PulseBinaryOrganismBoot } from "../PULSE-AI/aiDualBand-v11-Evo.js";
-import { createBinarySend as PulseSendBin } from "../PULSE-SEND/PulseBinarySend-v11-EVO.js";
+import { createBinarySend as PulseSendBin } from "../PULSE-SEND/PulseBinarySend-v11-Evo.js";
 
 // Proxy context (v16 IMMORTAL ORGANISM)
 import {
@@ -159,8 +159,8 @@ import {
 export const PulseUserMeta = Object.freeze({
   layer: "PulseUser",
   role: "PRESENCE_USER",
-  version: "v16-IMMORTAL-ORGANISM",
-  identity: "PulseUser-v16-IMMORTAL-ORGANISM"
+  version: "v16-Immortal-ORGANISM",
+  identity: "PulseUser-v16-Immortal-ORGANISM"
 });
 
 // ============================================================================
@@ -170,8 +170,8 @@ export const PulseUserMeta = Object.freeze({
 export const PulseCastleMeta = Object.freeze({
   layer: "PulseCastle",
   role: "PRESENCE_HOST_ORGAN",
-  version: "v16-IMMORTAL-ORGANISM",
-  identity: "PulseCastle-v16-IMMORTAL-ORGANISM",
+  version: "v16-Immortal-ORGANISM",
+  identity: "PulseCastle-v16-Immortal-ORGANISM",
 
   guarantees: Object.freeze({
     deterministic: true,
@@ -245,16 +245,16 @@ export const PulseCastleMeta = Object.freeze({
   }),
 
   lineage: Object.freeze({
-    root: "PulseOS-v16-IMMORTAL-ORGANISM",
-    parent: "PulseExpansion-v16-IMMORTAL-ORGANISM",
+    root: "PulseOS-v16-Immortal-ORGANISM",
+    parent: "PulseExpansion-v16-Immortal-ORGANISM",
     ancestry: [
       "PulseCastle-v9",
       "PulseCastle-v10",
       "PulseCastle-v11",
       "PulseCastle-v12",
-      "PulseCastle-v12.3-PRESENCE-EVO++",
-      "PulseCastle-v13-PRESENCE-EVO+",
-      "PulseCastle-v14-IMMORTAL"
+      "PulseCastle-v12.3-Presence-Evo++",
+      "PulseCastle-v13-Presence-Evo+",
+      "PulseCastle-v14-Immortal"
     ]
   })
 });

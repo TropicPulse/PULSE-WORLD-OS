@@ -1,12 +1,12 @@
 // ============================================================================
-// FILE: /organs/tendons/PulseMeshTendons-v15.0-IMMORTAL.js
-// PULSE OS — v15.0-MESH-IMMORTAL
+// FILE: /organs/tendons/PulseMeshTendons-v15.0-Immortal.js
+// PULSE OS — v15.0-MESH-Immortal
 // CONNECTIVE TISSUE ORGAN — “PulseMeshTendons”
 // Intent Translation • Earn-Ready Metadata • Deterministic Connective Tissue
 // Full Advantage Stack: Prewarm • Chunk • Cache • Presence-Band • GPU-Warm
 // ============================================================================
 //
-// IDENTITY — THE TENDON ORGAN (v15.0-IMMORTAL):
+// IDENTITY — THE TENDON ORGAN (v15.0-Immortal):
 // --------------------------------------------
 // • Translates Cortex intent into earn-ready metadata.
 // • Classifies impulses (heavy/medium/light) deterministically.
@@ -23,7 +23,7 @@
 /*
 AI_EXPERIENCE_META = {
   identity: "PulseMeshTendons",
-  version: "v15.0-MESH-TENDONS-IMMORTAL",
+  version: "v15.0-MESH-TENDONS-Immortal",
   layer: "mesh",
   role: "mesh_connective_tissue",
   lineage: "PulseMesh-v15",
@@ -75,7 +75,7 @@ export function createPulseMeshTendons({ log, warn, error }) {
   const tendonMeta = {
     layer: "PulseMeshTendons",
     role: "INTENT_TRANSLATION",
-    version: "15.0-MESH-TENDONS-IMMORTAL",
+    version: "15.0-MESH-TENDONS-Immortal",
     target: "full-mesh",
     selfRepairable: true,
     evo: {
@@ -126,7 +126,7 @@ export function createPulseMeshTendons({ log, warn, error }) {
   }
 
   // ========================================================================
-  // Tendon Pack (v15.0-IMMORTAL)
+  // Tendon Pack (v15.0-Immortal)
   // ========================================================================
   const PulseMeshTendons = {
 
@@ -282,7 +282,7 @@ export function createPulseMeshTendons({ log, warn, error }) {
   };
 
   // ========================================================================
-  // Tendon Engine (v15.0-IMMORTAL)
+  // Tendon Engine (v15.0-Immortal)
   // “Apply connective tissue shaping for Mesh → EarnEngine”
   // Full advantage: prewarm + chunk + cache + presence-band + gpu-warm
   // ========================================================================

@@ -6,10 +6,10 @@
 /*
 AI_EXPERIENCE_META = {
   identity: "aiAncestry",
-  version: "v14-IMMORTAL",
+  version: "v14-Immortal",
   layer: "ai_core",
   role: "ai_lineage_tracker",
-  lineage: "aiAncestry-v10 → v12 → v14-IMMORTAL",
+  lineage: "aiAncestry-v10 → v12 → v14-Immortal",
 
   evo: {
     lineageTracking: true,
@@ -44,8 +44,8 @@ AI_EXPERIENCE_META = {
 export const AncestryMeta = Object.freeze({
   layer: "Ancestry",
   role: "ANCESTRY_SYSTEM",
-  version: "12.3-EVO+",
-  identity: "aiAncestry-v12.3-EVO+",
+  version: "12.3-Evo+",
+  identity: "aiAncestry-v12.3-Evo+",
 
   evo: Object.freeze({
     deterministic: true,
@@ -60,7 +60,7 @@ export const AncestryMeta = Object.freeze({
     loggerAware: true,
     ancestryArteryAware: true,
     multiInstanceReady: true,
-    epoch: "12.3-EVO+"
+    epoch: "12.3-Evo+"
   }),
 
   contract: Object.freeze({

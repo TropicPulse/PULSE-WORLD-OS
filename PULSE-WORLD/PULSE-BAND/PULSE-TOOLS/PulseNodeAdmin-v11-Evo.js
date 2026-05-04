@@ -1,15 +1,15 @@
 // ============================================================================
-// FILE: /PulseOS/PULSE-TOOLS/PulseNodeAdmin-v12.3+-PRESENCE-EVO-INTELLECT.js
-// PULSE OS — v12.3+ PRESENCE-EVO
+// FILE: /PulseOS/PULSE-TOOLS/PulseNodeAdmin-v12.3+-Presence-Evo-INTELLECT.js
+// PULSE OS — v12.3+ PRESENCE-Evo
 // NODEADMIN ORGAN — NETWORK BRAIN / SENTINEL COMMAND / INTENT + MEMORY CORTEX
 // OVERMIND-READY • PRESENCE-AWARE • MESH/CASTLE/EXPANSION/ROUTER/BEACON-AWARE
 // PREWARM/CACHE/CHUNK-AWARE • DETERMINISTIC • SYNTHETIC-ONLY
 // ============================================================================
 export const NodeAdminMeta = Object.freeze({
-  organId: "PulseNodeAdmin-v12.3+-PRESENCE-EVO++",
+  organId: "PulseNodeAdmin-v12.3+-Presence-Evo++",
   role: "NODEADMIN_ORGAN",
-  version: "12.3-PRESENCE-EVO++",
-  epoch: "v12.3-PRESENCE-EVO++",
+  version: "12.3-Presence-Evo++",
+  epoch: "v12.3-Presence-Evo++",
   layer: "NetworkBrain",
 
   safety: Object.freeze({
@@ -75,7 +75,7 @@ import PulseNodeAdminIntellect from "./PulseNodeAdmin-v11-Evo-Intellect.js";
 import PulseWaveScanner from "./PulseWaveScanner.js";
 
 // ============================================================================
-// FACTORY: createPulseNodeAdmin — v12.3+ PRESENCE-EVO-INTELLECT
+// FACTORY: createPulseNodeAdmin — v12.3+ PRESENCE-Evo-INTELLECT
 // ============================================================================
 
 export function createPulseNodeAdmin({

@@ -1,11 +1,11 @@
 // ============================================================================
-// FILE: tropic-pulse-functions/PULSE-WORLD/PULSE-EARN/PulseEarnSkeletalSystem-v13.1-PRESENCE-IMMORTAL-ADV.js
-// LAYER: THE SKELETAL SYSTEM + VITAL SIGNS MONITOR (v13.1-PRESENCE-IMMORTAL A-B-A)
+// FILE: tropic-pulse-functions/PULSE-WORLD/PULSE-EARN/PulseEarnSkeletalSystem-v13.1-Presence-Immortal-ADV.js
+// LAYER: THE SKELETAL SYSTEM + VITAL SIGNS MONITOR (v13.1-Presence-Immortal A-B-A)
 // (Deterministic Device Phenotype + Structural Limits + Physiological Baselines
 //  + Presence Field + Chunk/Cache/Prewarm + Advantage‑M Surfaces)
 // ============================================================================
 //
-// ROLE (v13.1-PRESENCE-IMMORTAL-ADV):
+// ROLE (v13.1-Presence-Immortal-ADV):
 //   THE SKELETAL SYSTEM — Pulse‑Earn’s structural capacity declaration.
 //   • CPU cores = bone density (deterministic)
 //   • Memory = marrow capacity (deterministic)
@@ -23,7 +23,7 @@
 //   • chunkField = deterministic chunk/cache/prewarm budget surface
 //   • advantageField = Advantage‑M skeletal surface (gpu/bw/presence/chunk)
 //
-// PURPOSE (v13.1-PRESENCE-IMMORTAL-ADV):
+// PURPOSE (v13.1-Presence-Immortal-ADV):
 //   • Provide deterministic, drift‑proof device profiling.
 //   • Guarantee safe capability declaration.
 //   • Supply Survival Instincts + Reflex + Earn + PulseSend with:
@@ -36,10 +36,10 @@
 /*
 AI_EXPERIENCE_META = {
   identity: "PulseEarnSkeletalSystem",
-  version: "v14-IMMORTAL",
+  version: "v14-Immortal",
   layer: "earn_skeletal",
   role: "earn_structural_support",
-  lineage: "PulseEarnSkeletalSystem-v10.4 → v11-Evo → v14-IMMORTAL",
+  lineage: "PulseEarnSkeletalSystem-v10.4 → v11-Evo → v14-Immortal",
 
   evo: {
     skeletalSystem: true,
@@ -74,8 +74,8 @@ AI_EXPERIENCE_META = {
 export const PulseEarnSkeletalSystemMeta = Object.freeze({
   layer: "PulseEarnSkeletalSystem",
   role: "EARN_SKELETAL_ORGAN",
-  version: "v13.1-PRESENCE-IMMORTAL-ADV",
-  identity: "PulseEarnSkeletalSystem-v13.1-PRESENCE-IMMORTAL-ADV",
+  version: "v13.1-Presence-Immortal-ADV",
+  identity: "PulseEarnSkeletalSystem-v13.1-Presence-Immortal-ADV",
 
   guarantees: Object.freeze({
     deterministic: true,
@@ -138,15 +138,15 @@ export const PulseEarnSkeletalSystemMeta = Object.freeze({
   }),
 
   lineage: Object.freeze({
-    root: "PulseOS-v13-PRESENCE-IMMORTAL",
-    parent: "PulseEarn-v13.0-PRESENCE-IMMORTAL",
+    root: "PulseOS-v13-Presence-Immortal",
+    parent: "PulseEarn-v13.0-Presence-Immortal",
     ancestry: [
       "PulseEarnSkeletalSystem-v9",
       "PulseEarnSkeletalSystem-v10",
       "PulseEarnSkeletalSystem-v11",
       "PulseEarnSkeletalSystem-v11-Evo",
       "PulseEarnSkeletalSystem-v12.3-Presence",
-      "PulseEarnSkeletalSystem-v13.0-PRESENCE-IMMORTAL"
+      "PulseEarnSkeletalSystem-v13.0-Presence-Immortal"
     ]
   }),
 
@@ -205,7 +205,7 @@ const skeletalHealing = {
 
 
 // ---------------------------------------------------------------------------
-// Deterministic Hash Helper — v13.1-PRESENCE-IMMORTAL-ADV
+// Deterministic Hash Helper — v13.1-Presence-Immortal-ADV
 // ---------------------------------------------------------------------------
 function computeHash(str) {
   let h = 0;
@@ -228,14 +228,14 @@ function normalizePresenceBand(presenceBand) {
 
 
 // ---------------------------------------------------------------------------
-// Deterministic Phenotype — v13.1-PRESENCE-IMMORTAL-ADV
+// Deterministic Phenotype — v13.1-Presence-Immortal-ADV
 // ---------------------------------------------------------------------------
 //
 // Still no hardware probing; phenotype is deterministic and override‑only.
 // ---------------------------------------------------------------------------
 
 let phenotype = {
-  id: "DEVICE-13.1-PRESENCE-IMMORTAL-ADV",
+  id: "DEVICE-13.1-Presence-Immortal-ADV",
 
   // Structural capacity (skeletal system)
   cpuCores: 8,
@@ -387,7 +387,7 @@ function buildPresenceField(p, cycleIndex) {
     cycleIndex;
 
   return {
-    presenceVersion: "v13.1-PRESENCE-IMMORTAL-ADV",
+    presenceVersion: "v13.1-Presence-Immortal-ADV",
     presenceBand,
     presenceSignature: computeHash(
       `PRES_FIELD::${presenceBand}::${chunkBudget}::${cacheLines}::${prewarmSlots}::${surface}`
@@ -508,7 +508,7 @@ export function getPulseEarnDeviceProfile() {
     presenceBand: presenceField.presenceBand,
     presenceSignature,
 
-    // v13.1-PRESENCE-IMMORTAL-ADV signatures
+    // v13.1-Presence-Immortal-ADV signatures
     structuralSignature,
     physiologicalSignature,
     phenotypeSignature,
@@ -555,7 +555,7 @@ export function getPulseEarnDeviceProfile() {
 
 
 // ---------------------------------------------------------------------------
-// Export Healing Metadata — Phenotype Health Report (v13.1-PRESENCE-IMMORTAL-ADV)
+// Export Healing Metadata — Phenotype Health Report (v13.1-Presence-Immortal-ADV)
 // ---------------------------------------------------------------------------
 export function getPulseEarnSkeletalHealingState() {
   return { ...skeletalHealing };

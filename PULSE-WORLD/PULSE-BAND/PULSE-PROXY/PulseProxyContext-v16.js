@@ -1,6 +1,6 @@
 // ============================================================================
 //  PULSE PROXY CONTEXT — v16 IMMORTAL ORGANISM
-//  Symbolic wrapper around BinaryProxy-v12.3-EVO-MAX-ABA
+//  Symbolic wrapper around BinaryProxy-v12.3-Evo-MAX-ABA
 //  SAFE: No mutation of BinaryProxy. No binary logic. No routing.
 //  PURPOSE: Provide organism-readable proxy state (pressure, fallback, boost).
 //  ROLE: Circulatory signal → Organism Context Bridge
@@ -10,14 +10,14 @@
 /*
 PULSE_PROXY_CONTEXT_META = {
   identity: "PulseProxyContext",
-  version: "v16-IMMORTAL-ORGANISM",
+  version: "v16-Immortal-ORGANISM",
   layer: "organism_context",
   role: "proxy_context_bridge",
 
   lineage: {
     root: "BinaryProxy-v9",
-    parent: "BinaryProxy-v12.3-EVO-MAX-ABA",
-    organismIntegration: "v16-IMMORTAL"
+    parent: "BinaryProxy-v12.3-Evo-MAX-ABA",
+    organismIntegration: "v16-Immortal"
   },
 
   evo: {
@@ -84,7 +84,7 @@ let _proxyState = Object.freeze({
   boost: 0,             // 0–1 (derived from cacheChunk envelope)
   fallback: false,      // boolean (derived from presence envelope)
   mode: "normal",       // "normal" | "boost" | "fallback"
-  lineage: "BinaryProxy-v12.3-EVO-MAX-ABA",
+  lineage: "BinaryProxy-v12.3-Evo-MAX-ABA",
   timestamp: Date.now()
 });
 

@@ -1,6 +1,6 @@
 // ============================================================================
-// FILE: PresenceAwarenessPage-v15-EVO.js
-// PULSE OS v15.0 — PRESENCE-EVO-MESH-AWARE
+// FILE: PresenceAwarenessPage-v15-Evo.js
+// PULSE OS v15.0 — PRESENCE-Evo-MESH-AWARE
 // ---------------------------------------------------------------------------
 //  PRESENCE AWARENESS PAGE (HUMAN-FACING, IMMORTAL-GRADE COMMENTARY)
 // ---------------------------------------------------------------------------
@@ -52,7 +52,7 @@
 /*
 AI_EXPERIENCE_META = {
   identity: "PresenceAwareness",
-  version: "v14.9-PRESENCE-AWARE",
+  version: "v14.9-Presence-AWARE",
   layer: "presence",
   role: "presence_awareness_engine",
   lineage: "PulsePresence-v14",
@@ -98,7 +98,7 @@ export function createPresenceAwarenessPage({
   const meta = Object.freeze({
     layer: "PresenceAwarenessPage",
     role: "PRESENCE_HUD",
-    version: "15.0-EVO",
+    version: "15.0-Evo",
     evo: {
       presenceAware: true,            // Reads presence bands + state
       meshAware: true,                // Includes mesh hops + relay

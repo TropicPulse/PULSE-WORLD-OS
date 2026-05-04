@@ -35,8 +35,8 @@ export const PulseRole = {
   type: "Organ",
   subsystem: "PulseProxy",
   layer: "Hypothalamus",
-  version: "12.3-EVO",
-  identity: "PulseUserScoring-v12.3-EVO-ABA",
+  version: "12.3-Evo",
+  identity: "PulseUserScoring-v12.3-Evo-ABA",
 
   evo: {
     driftProof: true,
@@ -63,8 +63,8 @@ export const PulseRole = {
 export const PulseUserScoringMeta = Object.freeze({
   layer: "PulseUserScoringHypothalamus",
   role: "HYPOTHALAMUS_HOMEOSTASIS_ORGAN",
-  version: "v12.3-EVO-BINARY-MAX-ABA",
-  identity: "PulseUserScoring-v12.3-EVO-BINARY-MAX-ABA",
+  version: "v12.3-Evo-BINARY-MAX-ABA",
+  identity: "PulseUserScoring-v12.3-Evo-BINARY-MAX-ABA",
 
   guarantees: Object.freeze({
     deterministic: true,
@@ -139,7 +139,7 @@ export const PulseUserScoringMeta = Object.freeze({
 
   lineage: Object.freeze({
     root: "PulseProxy-v11",
-    parent: "PulseProxy-v12.3-EVO",
+    parent: "PulseProxy-v12.3-Evo",
     ancestry: [
       "PulseUserScoring-v7",
       "PulseUserScoring-v8",

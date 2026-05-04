@@ -1,5 +1,5 @@
 /**
- * PulseOmniHosting-CoreMemoryIntegration-v12.3-PRESENCE-EVO+.js
+ * PulseOmniHosting-CoreMemoryIntegration-v12.3-Presence-Evo+.js
  * PULSE-WORLD / PULSE-FINALITY / OMNIHOSTING + CORE MEMORY
  *
  * ROLE:
@@ -18,7 +18,7 @@
 /*
 AI_EXPERIENCE_META = {
   identity: "PulseOmniHosting-CoreMemoryIntegration",
-  version: "v14-IMMORTAL",
+  version: "v14-Immortal",
   layer: "integration",
   role: "omnihosting_corememory_wrapper",
   lineage: "PulseOmniHosting-v14",
@@ -55,14 +55,14 @@ import PulseOmniHostingAPI from "./PulseOmniHosting-v11-Evo.js";
 import { createPulseCoreMemory } from "../../PULSE-CORE/PulseCoreMemory.js";
 
 // -------------------------
-// META — v12.3-PRESENCE-EVO+
+// META — v12.3-Presence-Evo+
 // -------------------------
 
 export const PulseOmniHostingCoreMemoryMeta = Object.freeze({
   layer: "PulseOmniHostingCoreMemory",
   role: "OMNIHOSTING_BACKBONE_ORGAN",
-  version: "12.3-PRESENCE-EVO+",
-  identity: "PulseOmniHosting-CoreMemory-v12.3-PRESENCE-EVO+",
+  version: "12.3-Presence-Evo+",
+  identity: "PulseOmniHosting-CoreMemory-v12.3-Presence-Evo+",
 
   evo: Object.freeze({
     deterministic: true,
@@ -89,7 +89,7 @@ export const PulseOmniHostingCoreMemoryMeta = Object.freeze({
     zeroMutationOfPhysics: true,
     zeroRandomness: true,
     zeroIO: true,
-    epoch: "12.3-PRESENCE-EVO+"
+    epoch: "12.3-Presence-Evo+"
   })
 });
 

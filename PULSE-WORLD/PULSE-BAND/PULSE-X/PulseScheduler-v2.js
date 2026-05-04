@@ -4,7 +4,7 @@
  *  ROOT:  PULSE-X
  *  MODE:  runtime
  *  TARGET: multi-tick-orchestration
- *  VERSION: v2.4-PRESENCE-TOUCH-IMMORTAL
+ *  VERSION: v2.4-Presence-TOUCH-Immortal
  *
  *  ROLE:
  *    - Deterministic orchestrator over Router + Overmind + Runtime.
@@ -22,10 +22,10 @@
 /*
 AI_EXPERIENCE_META = {
   identity: "PulseScheduler",
-  version: "v2.4-PRESENCE-TOUCH-IMMORTAL",
+  version: "v2.4-Presence-TOUCH-Immortal",
   layer: "scheduler",
   role: "macro_orchestrator",
-  lineage: "PulseScheduler-v1 → v11-Evo → v12.3 → v14-IMMORTAL → v2.4-PRESENCE-TOUCH-IMMORTAL",
+  lineage: "PulseScheduler-v1 → v11-Evo → v12.3 → v14-Immortal → v2.4-Presence-TOUCH-Immortal",
 
   evo: {
     macroScheduler: true,
@@ -77,9 +77,9 @@ AI_EXPERIENCE_META = {
 export const PulseSchedulerMeta = Object.freeze({
   layer: "PulseXScheduler",
   role: "SCHEDULER_ORGAN",
-  version: "v2.4-PRESENCE-TOUCH-IMMORTAL",
-  identity: "PulseScheduler-v2.4-PRESENCE-TOUCH-IMMORTAL",
-  epoch: "v13.5-PRESENCE-TOUCH",
+  version: "v2.4-Presence-TOUCH-Immortal",
+  identity: "PulseScheduler-v2.4-Presence-TOUCH-Immortal",
+  epoch: "v13.5-Presence-TOUCH",
 
   guarantees: Object.freeze({
     deterministic: true,
@@ -135,7 +135,7 @@ export const PulseSchedulerMeta = Object.freeze({
 //  IMPORTS
 // ============================================================================
 
-import { routeAIRequest } from "../PULSE-AI/aiRouter-v11-EVO.js";
+import { routeAIRequest } from "../PULSE-AI/aiRouter-v11-Evo.js";
 import { createOvermindOrgan } from "../PULSE-AI/aiOvermindPrime.js";
 
 // UPGRADED RUNTIME (Touch-aware)
@@ -234,7 +234,7 @@ export class PulseScheduler {
     const effectiveScheduleId = scheduleId || buildScheduleId();
 
     reasoning.push(
-      `PulseScheduler-v2.4-PRESENCE-TOUCH-IMMORTAL: macro tick #${tickIndex} (schedule=${effectiveScheduleId}).`
+      `PulseScheduler-v2.4-Presence-TOUCH-Immortal: macro tick #${tickIndex} (schedule=${effectiveScheduleId}).`
     );
 
     const policy =

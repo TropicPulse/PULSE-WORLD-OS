@@ -1,10 +1,10 @@
 // ============================================================================
-// FILE: tropic-pulse-functions/PULSE-WORLD/PULSE-EARN/PulseEarnGenome-v13.0-PRESENCE-IMMORTAL.js
-// LAYER: THE GENOME CORE (v13.0-PRESENCE-IMMORTAL)
+// FILE: tropic-pulse-functions/PULSE-WORLD/PULSE-EARN/PulseEarnGenome-v13.0-Presence-Immortal.js
+// LAYER: THE GENOME CORE (v13.0-Presence-Immortal)
 // (Immutable DNA Sequence + Cross‑Organism Law + v13 Presence Surfaces)
 // ============================================================================
 //
-// ROLE (v13.0-PRESENCE-IMMORTAL):
+// ROLE (v13.0-Presence-Immortal):
 //   THE GENOME CORE — the immutable DNA of Pulse‑Earn v13.
 //   • Defines the canonical v13 job structure (genetic sequence).
 //   • Establishes the cross‑organism treaty all subsystems must obey.
@@ -12,14 +12,14 @@
 //   • Serves as the constitutional backbone of job identity.
 //   • Emits v13‑Presence‑IMMORTAL genome signatures + presence/advantage/hints surfaces.
 //
-// PURPOSE (v13.0-PRESENCE-IMMORTAL):
+// PURPOSE (v13.0-Presence-Immortal):
 //   • Provide a deterministic, drift‑proof v13 job format.
 //   • Ensure universal compatibility across all Earn v13 layers.
 //   • Serve as the legal + biological foundation for v13 job execution,
 //     routing, metabolism, healing, and archival reconstruction.
 //   • Provide signature‑rich constitutional metadata, presence‑aware (metadata‑only).
 //
-// CONTRACT (v13.0-PRESENCE-IMMORTAL):
+// CONTRACT (v13.0-Presence-Immortal):
 //   • PURE STATIC SCHEMA — no logic, no runtime behavior.
 //   • NO dynamic fields, NO optional structural keys.
 //   • NO timestamps, NO environment‑dependent fields.
@@ -29,10 +29,10 @@
 /*
 AI_EXPERIENCE_META = {
   identity: "PulseEarnGenome",
-  version: "v14-IMMORTAL",
+  version: "v14-Immortal",
   layer: "earn_genome",
   role: "earn_genetic_blueprint",
-  lineage: "PulseEarnGenome-v11 → v12.3 → v14-IMMORTAL",
+  lineage: "PulseEarnGenome-v11 → v12.3 → v14-Immortal",
 
   evo: {
     earnGenome: true,
@@ -68,8 +68,8 @@ AI_EXPERIENCE_META = {
 export const PulseEarnGenomeCoreMeta = Object.freeze({
   layer: "PulseEarnGenomeCore",
   role: "EARN_GENOME_CORE",
-  version: "v13.0-PRESENCE-IMMORTAL",
-  identity: "PulseEarnGenomeCore-v13.0-PRESENCE-IMMORTAL",
+  version: "v13.0-Presence-Immortal",
+  identity: "PulseEarnGenomeCore-v13.0-Presence-Immortal",
 
   guarantees: Object.freeze({
     deterministic: true,
@@ -105,14 +105,14 @@ export const PulseEarnGenomeCoreMeta = Object.freeze({
   }),
 
   lineage: Object.freeze({
-    root: "PulseOS-v11-EVO",
-    parent: "PulseEarn-v13.0-PRESENCE-IMMORTAL",
+    root: "PulseOS-v11-Evo",
+    parent: "PulseEarn-v13.0-Presence-Immortal",
     ancestry: [
       "PulseEarnGenomeCore-v9",
       "PulseEarnGenomeCore-v10",
       "PulseEarnGenomeCore-v11",
       "PulseEarnGenomeCore-v11-Evo",
-      "PulseEarnGenomeCore-v12.3-PRESENCE-EVO+"
+      "PulseEarnGenomeCore-v12.3-Presence-Evo+"
     ]
   }),
 
@@ -131,7 +131,7 @@ export const PulseEarnGenomeCoreMeta = Object.freeze({
 });
 
 // ============================================================================
-// INTERNAL: Deterministic Hash Helper (v13.0-PRESENCE-IMMORTAL)
+// INTERNAL: Deterministic Hash Helper (v13.0-Presence-Immortal)
 // ============================================================================
 function computeHash(str) {
   let h = 0;
@@ -177,8 +177,8 @@ export const PulseEarnJobSchemaV13 = {
 // v13.0‑PRESENCE‑IMMORTAL GENOME METADATA (NON‑STRUCTURAL, SAFE, IMMUTABLE)
 // ============================================================================
 export const PulseEarnGenomeMetadata = {
-  genomeVersion: "13.0-PRESENCE-IMMORTAL",
-  genomeIdentity: "PulseEarn-GenomeCore-v13.0-PRESENCE-IMMORTAL",
+  genomeVersion: "13.0-Presence-Immortal",
+  genomeIdentity: "PulseEarn-GenomeCore-v13.0-Presence-Immortal",
   genomeLayer: "GENOME_CORE",
   genomeRole: "Immutable DNA Sequence + Cross‑Organism Law (v13)",
 

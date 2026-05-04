@@ -7,10 +7,10 @@
 /*
 AI_EXPERIENCE_META = {
   identity: "aiLoggerAdapter",
-  version: "v15-IMMORTAL",
+  version: "v15-Immortal",
   layer: "ai_adapter",
   role: "logger_adapter",
-  lineage: "aiLoggerAdapter-v10 → v11.3-EVO → v12.3-Presence → v15-IMMORTAL",
+  lineage: "aiLoggerAdapter-v10 → v11.3-Evo → v12.3-Presence → v15-Immortal",
 
   evo: {
     adapter: true,
@@ -37,8 +37,8 @@ AI_EXPERIENCE_META = {
 export const LoggerAdapterMeta = Object.freeze({
   layer: "OrganismMembrane",
   role: "LOGGER_ADAPTER",
-  version: "15-IMMORTAL",
-  identity: "aiLoggerAdapter-v15-IMMORTAL",
+  version: "15-Immortal",
+  identity: "aiLoggerAdapter-v15-Immortal",
 
   evo: Object.freeze({
     deterministic: true,
@@ -70,7 +70,7 @@ export const LoggerAdapterMeta = Object.freeze({
 
     multiInstanceReady: true,
     readOnly: true,
-    epoch: "15-IMMORTAL"
+    epoch: "15-Immortal"
   }),
 
   contract: Object.freeze({

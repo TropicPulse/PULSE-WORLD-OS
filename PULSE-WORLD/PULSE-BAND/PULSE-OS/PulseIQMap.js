@@ -6,7 +6,7 @@
 /*
 AI_EXPERIENCE_META = {
   identity: "IQMap",
-  version: "v14.9-IMMORTAL-CONSCIOUSNESS",
+  version: "v14.9-Immortal-CONSCIOUSNESS",
   layer: "consciousness",
   role: "ui_identity_and_routing_map",
   lineage: "PulseOS-v14",

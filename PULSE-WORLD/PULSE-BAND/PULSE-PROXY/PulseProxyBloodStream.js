@@ -14,8 +14,8 @@ export const PulseRole = {
   type: "Organ",
   subsystem: "PulseTelemetry",
   layer: "Bloodstream",
-  version: "12.3-EVO",
-  identity: "PulseTelemetryOrgan-v12.3-EVO-ABA",
+  version: "12.3-Evo",
+  identity: "PulseTelemetryOrgan-v12.3-Evo-ABA",
 
   evo: {
     driftProof: true,
@@ -44,8 +44,8 @@ export const PulseRole = {
 export const PulseTelemetryOrganMeta = Object.freeze({
   layer: "PulseTelemetryBloodstream",
   role: "TELEMETRY_ORGAN",
-  version: "v12.3-EVO-BINARY-MAX-ABA",
-  identity: "PulseTelemetryOrgan-v12.3-EVO-BINARY-MAX-ABA",
+  version: "v12.3-Evo-BINARY-MAX-ABA",
+  identity: "PulseTelemetryOrgan-v12.3-Evo-BINARY-MAX-ABA",
 
   guarantees: Object.freeze({
     deterministic: true,
@@ -118,7 +118,7 @@ export const PulseTelemetryOrganMeta = Object.freeze({
 
   lineage: Object.freeze({
     root: "PulseTelemetry-v11",
-    parent: "PulseTelemetry-v12.3-EVO",
+    parent: "PulseTelemetry-v12.3-Evo",
     ancestry: [
       "PulseTelemetryOrgan-v7",
       "PulseTelemetryOrgan-v8",
@@ -127,7 +127,7 @@ export const PulseTelemetryOrganMeta = Object.freeze({
       "PulseTelemetryOrgan-v11",
       "PulseTelemetryOrgan-v11-Evo",
       "PulseTelemetryOrgan-v11-Evo-ABA",
-      "PulseTelemetryOrgan-v11.2-EVO-BINARY-MAX"
+      "PulseTelemetryOrgan-v11.2-Evo-BINARY-MAX"
     ]
   }),
 

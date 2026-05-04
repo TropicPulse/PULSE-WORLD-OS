@@ -1,5 +1,5 @@
 // ============================================================================
-//  BinaryProxy-v12.3-EVO-MAX-ABA.js
+//  BinaryProxy-v12.3-Evo-MAX-ABA.js
 //  PURE BINARY NERVE ROOT — v12.3‑EVO‑A‑B‑A MAX EDITION
 //  + CACHE/CHUNK/PRESENCE ENVELOPES (DETERMINISTIC, BINARY-ONLY META)
 // ============================================================================
@@ -99,8 +99,8 @@ const BinaryProxyRole = Object.freeze({
 export const PulseOSBinaryProxyMeta = Object.freeze({
   layer: "BinaryProxy",
   role: "PURE_BINARY_NERVE_ROOT",
-  version: "v12.3-EVO-BINARY-MAX-ABA",
-  identity: "BinaryProxy-v12.3-EVO-BINARY-MAX-ABA",
+  version: "v12.3-Evo-BINARY-MAX-ABA",
+  identity: "BinaryProxy-v12.3-Evo-BINARY-MAX-ABA",
 
   guarantees: Object.freeze({
     // Absolute binary laws
@@ -165,7 +165,7 @@ export const PulseOSBinaryProxyMeta = Object.freeze({
 
   lineage: Object.freeze({
     root: "BinaryOrganism-v11",
-    parent: "BinaryOrganism-v12.3-EVO",
+    parent: "BinaryOrganism-v12.3-Evo",
     ancestry: [
       "BinaryProxy-v9",
       "BinaryProxy-v10",
@@ -173,7 +173,7 @@ export const PulseOSBinaryProxyMeta = Object.freeze({
       "BinaryProxy-v11-Evo",
       "BinaryProxy-v11-Evo-Max",
       "BinaryProxy-v11-Evo-Max-ABA",
-      "BinaryProxy-v11.2-EVO-BINARY-MAX-ABA"
+      "BinaryProxy-v11.2-Evo-BINARY-MAX-ABA"
     ]
   }),
 

@@ -1,7 +1,7 @@
 // ============================================================================
-//  FILE: PulseShifterEvolutionaryPulse-v14.0-PRESENCE-IMMORTAL.js
+//  FILE: PulseShifterEvolutionaryPulse-v14.0-Presence-Immortal.js
 //  Pulse v2 Organism • Evolution Engine • Pattern + Lineage + Shape + Pulse-Compute
-//  v14.0-PRESENCE-IMMORTAL: Dual-band aware (symbolic/binary) + Presence/Band Surface
+//  v14.0-Presence-Immortal: Dual-band aware (symbolic/binary) + Presence/Band Surface
 //  v14.1-PULSE-COMPUTE: Deterministic pulse-level compute/factoring/evolution hints
 // ============================================================================
 //
@@ -22,13 +22,13 @@
 //    - pulseCompute: deterministic, bounded "compute-on-pulse" factoring/evolution hints
 //
 //  This engine is designed to sit BEHIND a binary front-end such as
-//  PulseBinaryShifterEvolutionaryPulse-v14.0-PRESENCE-IMMORTAL, which will:
+//  PulseBinaryShifterEvolutionaryPulse-v14.0-Presence-Immortal, which will:
 //    - accept bits
 //    - derive pattern/mode/payload/band hints
 //    - call createPulseV2 / evolvePulseV2
 //    - emit compact, binary-friendly summaries
 //
-//  SAFETY CONTRACT (v14.0-PRESENCE-IMMORTAL + v14.1-PULSE-COMPUTE):
+//  SAFETY CONTRACT (v14.0-Presence-Immortal + v14.1-PULSE-COMPUTE):
 //  ---------------------------------------------------------------
 //  • No imports.
 //  • No network.
@@ -89,8 +89,8 @@ export const PulseRole = {
   type: "Pulse",
   subsystem: "Pulse",
   layer: "Organ",
-  version: "14.1-PULSE-COMPUTE-PRESENCE-IMMORTAL",
-  identity: "PulseShifterEvolutionaryPulse-v14.1-PULSE-COMPUTE-PRESENCE-IMMORTAL",
+  version: "14.1-PULSE-COMPUTE-Presence-Immortal",
+  identity: "PulseShifterEvolutionaryPulse-v14.1-PULSE-COMPUTE-Presence-Immortal",
 
   evo: {
     // Core evolution capabilities
@@ -131,17 +131,17 @@ export const PulseRole = {
 
     // Binary integration flags:
     //   - This file is the *back-end* evolution engine.
-    //   - A separate binary organ (PulseBinaryShifterEvolutionaryPulse-v14.0-PRESENCE-IMMORTAL)
+    //   - A separate binary organ (PulseBinaryShifterEvolutionaryPulse-v14.0-Presence-Immortal)
     //     acts as the front-end that speaks in bits.
     binaryBackEndReady: true,
-    binaryFrontEndContract: "PulseBinaryShifterEvolutionaryPulse-v14.0-PRESENCE-IMMORTAL"
+    binaryFrontEndContract: "PulseBinaryShifterEvolutionaryPulse-v14.0-Presence-Immortal"
   },
 
-  routingContract: "PulseRouter-v14.0-PRESENCE-IMMORTAL",
-  meshContract: "PulseMesh-v14.0-PRESENCE-IMMORTAL",
-  sendContract: "PulseSend-v14.0-PRESENCE-IMMORTAL",
-  gpuOrganContract: "PulseGPU-v14.0-PRESENCE-IMMORTAL",
-  earnCompatibility: "PulseEarn-v14.0-PRESENCE-IMMORTAL"
+  routingContract: "PulseRouter-v14.0-Presence-Immortal",
+  meshContract: "PulseMesh-v14.0-Presence-Immortal",
+  sendContract: "PulseSend-v14.0-Presence-Immortal",
+  gpuOrganContract: "PulseGPU-v14.0-Presence-Immortal",
+  earnCompatibility: "PulseEarn-v14.0-Presence-Immortal"
 };
 
 
@@ -270,7 +270,7 @@ function runEvolutionComputeLoopV2({
     harmonicDrift: harmonicDrift ?? null,
     coherenceScore: coherenceScore ?? null,
 
-    experimentalTier: "v2-evolution-engine-v14.0-PRESENCE-IMMORTAL"
+    experimentalTier: "v2-evolution-engine-v14.0-Presence-Immortal"
   };
 
   const maxPattern = 64;
@@ -449,7 +449,7 @@ export function createPulseV2({
     coherenceScore: coherenceScore ?? null,
 
     // Evolution engine type
-    pulseType: "Pulse-v2-EvolutionEngine-v14.1-PULSE-COMPUTE-PRESENCE-IMMORTAL",
+    pulseType: "Pulse-v2-EvolutionEngine-v14.1-PULSE-COMPUTE-Presence-Immortal",
 
     // Advantage + health
     advantageField,
@@ -580,7 +580,7 @@ export function evolvePulseV2(
     coherenceScore: coherenceScore ?? null,
 
     // Evolution engine type
-    pulseType: "Pulse-v2-EvolutionEngine-v14.1-PULSE-COMPUTE-PRESENCE-IMMORTAL",
+    pulseType: "Pulse-v2-EvolutionEngine-v14.1-PULSE-COMPUTE-Presence-Immortal",
 
     // Advantage + health
     advantageField,

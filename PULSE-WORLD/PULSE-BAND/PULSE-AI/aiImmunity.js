@@ -1,5 +1,5 @@
 // ============================================================================
-//  aiImmunity.js — Pulse OS v15-IMMORTAL Organ
+//  aiImmunity.js — Pulse OS v15-Immortal Organ
 //  Binary Immune System • Quarantine Engine • Binary-First • Dualband Artery
 // ----------------------------------------------------------------------------
 //  CANONICAL ROLE:
@@ -39,17 +39,17 @@
 //        cycle: <number>,          // deterministic local immune cycle
 //        band: "binary",
 //        highway: "binary_first_dualband",
-//        immortalityEpoch: "v15-IMMORTAL"
+//        immortalityEpoch: "v15-Immortal"
 //      }
 // ============================================================================
 
 /*
 AI_EXPERIENCE_META = {
   identity: "aiImmunity",
-  version: "v15-IMMORTAL",
+  version: "v15-Immortal",
   layer: "ai_core",
   role: "ai_immune_system",
-  lineage: "aiImmunity-v11 → v14-IMMORTAL → v15-IMMORTAL",
+  lineage: "aiImmunity-v11 → v14-Immortal → v15-Immortal",
 
   evo: {
     immuneSystem: true,
@@ -89,8 +89,8 @@ export const PulseRole = Object.freeze({
   type: "ImmuneCore",
   subsystem: "AIBinaryImmunity",
   layer: "B2-BinaryImmuneSystem",
-  version: "15-IMMORTAL",
-  identity: "AIBinaryImmunity-v15-IMMORTAL",
+  version: "15-Immortal",
+  identity: "AIBinaryImmunity-v15-Immortal",
 
   evo: Object.freeze({
     // Core invariants
@@ -148,8 +148,8 @@ export const PulseRole = Object.freeze({
 export const ImmunityMeta = Object.freeze({
   layer: "BinaryDefense",
   role: "BINARY_IMMUNE_SYSTEM",
-  version: "15-IMMORTAL",
-  identity: "aiBinaryImmunity-v15-IMMORTAL",
+  version: "15-Immortal",
+  identity: "aiBinaryImmunity-v15-Immortal",
   band: "dualband",
   highway: "binary_first_dualband",
   intent: "binary_immune_defense",
@@ -180,7 +180,7 @@ export const ImmunityMeta = Object.freeze({
     prewarmAware: true,
 
     multiInstanceReady: true,
-    epoch: "v15-IMMORTAL"
+    epoch: "v15-Immortal"
   }),
 
   contract: Object.freeze({

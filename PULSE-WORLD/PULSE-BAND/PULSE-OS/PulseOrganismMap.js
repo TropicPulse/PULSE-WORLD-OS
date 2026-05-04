@@ -115,7 +115,7 @@ export function getRouteAPI({ trace = false } = {}) {
         meta: {
           layer: "PulseRouteAPI",
           role: "ROUTE_RESOLUTION",
-          version: "15-EVO-IMMORTAL"
+          version: "15-Evo-Immortal"
         }
       };
     },
@@ -182,7 +182,7 @@ export function getFetchAPI({ trace = false, routes } = {}) {
   const meta = {
     layer: "PulseFetchAPI",
     role: "NETWORK_ADAPTER",
-    version: "15-EVO-IMMORTAL",
+    version: "15-Evo-Immortal",
     evo: {
       deterministicField: true,
       unifiedAdvantageField: true,

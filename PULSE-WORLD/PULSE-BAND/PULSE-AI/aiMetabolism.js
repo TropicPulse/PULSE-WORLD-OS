@@ -1,5 +1,5 @@
 // ============================================================================
-//  aiMetabolism.js — Pulse OS v15.0-IMMORTAL Organ
+//  aiMetabolism.js — Pulse OS v15.0-Immortal Organ
 //  Binary Metabolism Engine • BinaryCore • Deterministic • Metabolic Artery v3
 // ----------------------------------------------------------------------------
 //  CANONICAL ROLE:
@@ -25,10 +25,10 @@
 /*
 AI_EXPERIENCE_META = {
   identity: "aiMetabolism",
-  version: "v15-IMMORTAL",
+  version: "v15-Immortal",
   layer: "ai_core",
   role: "ai_metabolic_engine",
-  lineage: "aiMetabolism-v11 → v12.3-Presence → v15-IMMORTAL",
+  lineage: "aiMetabolism-v11 → v12.3-Presence → v15-Immortal",
 
   evo: {
     metabolismEngine: true,
@@ -53,13 +53,13 @@ AI_EXPERIENCE_META = {
 */
 
 // ---------------------------------------------------------
-//  META BLOCK — v15.0-IMMORTAL
+//  META BLOCK — v15.0-Immortal
 // ---------------------------------------------------------
 export const MetabolismMeta = Object.freeze({
   layer: "BinaryCore",
   role: "BINARY_METABOLISM_ENGINE",
-  version: "15.0-IMMORTAL",
-  identity: "aiBinaryMetabolism-v15.0-IMMORTAL",
+  version: "15.0-Immortal",
+  identity: "aiBinaryMetabolism-v15.0-Immortal",
 
   evo: Object.freeze({
     deterministic: true,
@@ -77,7 +77,7 @@ export const MetabolismMeta = Object.freeze({
     spiralAware: true,      // soft spiral warnings, non-blocking
 
     multiInstanceReady: true,
-    epoch: "v15.0-IMMORTAL"
+    epoch: "v15.0-Immortal"
   }),
 
   contract: Object.freeze({
@@ -124,7 +124,7 @@ export function getGlobalMetabolicArteries() {
 }
 
 // ---------------------------------------------------------
-//  PREWARM — v15.0-IMMORTAL
+//  PREWARM — v15.0-Immortal
 // ---------------------------------------------------------
 export function prewarmAIBinaryMetabolism({ trace = false } = {}) {
   const packet = Object.freeze({
@@ -166,7 +166,7 @@ function bucketCost(v) {
 }
 
 // ============================================================================
-//  ORGAN IMPLEMENTATION — v15.0-IMMORTAL
+//  ORGAN IMPLEMENTATION — v15.0-Immortal
 // ============================================================================
 export class AIBinaryMetabolism {
   constructor(config = {}) {

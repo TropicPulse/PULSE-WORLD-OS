@@ -7,10 +7,10 @@
 /*
 AI_EXPERIENCE_META = {
   identity: "PulseCoreMemory",
-  version: "v15-IMMORTAL",
+  version: "v15-Immortal",
   layer: "corememory",
   role: "corememory_spine",
-  lineage: "PulseCoreMemory-v1 → v11-Evo → v13-DualBand → v14-IMMORTAL → v15-IMMORTAL",
+  lineage: "PulseCoreMemory-v1 → v11-Evo → v13-DualBand → v14-Immortal → v15-Immortal",
 
   evo: {
     symbolicPrimary: true,
@@ -75,7 +75,7 @@ export const CoreMemoryRole = {
   type: "Organ",
   subsystem: "Core",
   layer: "MemorySpine",
-  version: "15.0-IMMORTAL",
+  version: "15.0-Immortal",
   identity: "PulseCoreMemory",
 
   evo: {
@@ -486,13 +486,13 @@ export function createPulseCoreMemory({
   //  ADAPTERS — v15 IMMORTAL MEMORY ORGAN ADAPTER LAYER
   // ========================================================================
   const adapters = {
-    gpu:    createPulseGPUOrchestrator({ dnaTag, version: "15.0-IMMORTAL-GPU-MEMORY", log }),
-    ai:     createPulseAIMemoryAdapter({ dnaTag, version: "15.0-IMMORTAL-AI-MEMORY", log }),
-    earn:   createPulseEarnMemoryAdapter({ dnaTag, version: "15.0-IMMORTAL-EARN-MEMORY", log }),
-    mesh:   createPulseMeshMemoryAdapter({ dnaTag, version: "15.0-IMMORTAL-MESH-MEMORY", log }),
-    proxy:  createPulseProxyMemoryAdapter({ dnaTag, version: "15.0-IMMORTAL-PROXY-MEMORY", log }),
-    router: createPulseRouterMemoryAdapter({ dnaTag, version: "15.0-IMMORTAL-ROUTER-MEMORY", log }),
-    send:   createPulseSendMemoryAdapter({ dnaTag, version: "15.0-IMMORTAL-SEND-MEMORY", log })
+    gpu:    createPulseGPUOrchestrator({ dnaTag, version: "15.0-Immortal-GPU-MEMORY", log }),
+    ai:     createPulseAIMemoryAdapter({ dnaTag, version: "15.0-Immortal-AI-MEMORY", log }),
+    earn:   createPulseEarnMemoryAdapter({ dnaTag, version: "15.0-Immortal-EARN-MEMORY", log }),
+    mesh:   createPulseMeshMemoryAdapter({ dnaTag, version: "15.0-Immortal-MESH-MEMORY", log }),
+    proxy:  createPulseProxyMemoryAdapter({ dnaTag, version: "15.0-Immortal-PROXY-MEMORY", log }),
+    router: createPulseRouterMemoryAdapter({ dnaTag, version: "15.0-Immortal-ROUTER-MEMORY", log }),
+    send:   createPulseSendMemoryAdapter({ dnaTag, version: "15.0-Immortal-SEND-MEMORY", log })
   };
 
   PulseCoreMemory.adapters = adapters;

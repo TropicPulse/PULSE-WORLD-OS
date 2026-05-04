@@ -6,10 +6,10 @@
 /*
 AI_EXPERIENCE_META = {
   identity: "aiEngine",
-  version: "v14-IMMORTAL",
+  version: "v14-Immortal",
   layer: "ai_core",
   role: "ai_execution_engine",
-  lineage: "aiEngine-v9 → v11 → v12.3-Presence → v14-IMMORTAL",
+  lineage: "aiEngine-v9 → v11 → v12.3-Presence → v14-Immortal",
 
   evo: {
     executionEngine: true,
@@ -40,8 +40,8 @@ AI_EXPERIENCE_META = {
 export const ExecutionEngineMeta = Object.freeze({
   layer: "PulseAIExecutionKernel",
   role: "EXECUTION_ENGINE",
-  version: "14-IMMORTAL",
-  identity: "aiExecutionEngine-v14-IMMORTAL",
+  version: "14-Immortal",
+  identity: "aiExecutionEngine-v14-Immortal",
 
   evo: Object.freeze({
     driftProof: true,
@@ -67,7 +67,7 @@ export const ExecutionEngineMeta = Object.freeze({
     gpuFriendly: true,
 
     multiInstanceReady: true,
-    epoch: "14-IMMORTAL"
+    epoch: "14-Immortal"
   }),
 
   contract: Object.freeze({

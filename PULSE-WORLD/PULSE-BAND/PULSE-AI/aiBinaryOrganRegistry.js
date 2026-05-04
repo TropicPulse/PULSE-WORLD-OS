@@ -9,10 +9,10 @@
 /*
 AI_EXPERIENCE_META = {
   identity: "aiBinaryOrganRegistry",
-  version: "v14-IMMORTAL",
+  version: "v14-Immortal",
   layer: "ai_binary",
   role: "binary_organ_registry",
-  lineage: "aiBinaryOrganRegistry-v10 → v12 → v14-IMMORTAL",
+  lineage: "aiBinaryOrganRegistry-v10 → v12 → v14-Immortal",
 
   evo: {
     organRegistry: true,

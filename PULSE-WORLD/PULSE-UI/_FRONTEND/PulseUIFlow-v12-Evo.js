@@ -1,6 +1,6 @@
 /* global log,warn,error */
 // ============================================================================
-// FILE: /PulseOS/PULSE-UI/PulseUIFlow-v14-IMMORTAL.js
+// FILE: /PulseOS/PULSE-UI/PulseUIFlow-v14-Immortal.js
 // PULSE OS — v14‑IMMORTAL
 // “UI FLOW ENGINE / INTENT GLUE / HUMAN‑VISIBLE ORGANISM MAP”
 // ============================================================================
@@ -17,7 +17,7 @@
 /*
 AI_EXPERIENCE_META = {
   identity: "PulseUIFlow",
-  version: "v13-EVO",
+  version: "v13-Evo",
   layer: "frontend",
   role: "ui_flow_engine",
   lineage: "PulseOS-v12",
@@ -149,7 +149,7 @@ export const PulseUIFlowRole = {
   subsystem: "PulseUIFlow",
   layer: "UI-Flow",
   version: "13.0",
-  identity: "PulseUIFlow-v13-EVO-PRIME",
+  identity: "PulseUIFlow-v13-Evo-PRIME",
 
   evo: {
     driftProof: true,

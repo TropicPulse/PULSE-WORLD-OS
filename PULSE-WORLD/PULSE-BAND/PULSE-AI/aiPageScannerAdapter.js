@@ -1,15 +1,15 @@
 // ============================================================================
-//  aiPageScannerAdapter.js — Pulse OS v15-IMMORTAL
+//  aiPageScannerAdapter.js — Pulse OS v15-Immortal
 //  Binary PageScanner Membrane • Drift Intel • Artery Metrics • Beacon Mesh
 //  PURE MEMBRANE. ZERO MUTATION. ZERO RANDOMNESS.
 // ============================================================================
 /*
 AI_EXPERIENCE_META = {
   identity: "aiPageScannerAdapter",
-  version: "v15-IMMORTAL",
+  version: "v15-Immortal",
   layer: "ai_adapter",
   role: "pagescanner_membrane",
-  lineage: "aiPageScannerAdapter-v12.3-EVO → v15-IMMORTAL",
+  lineage: "aiPageScannerAdapter-v12.3-Evo → v15-Immortal",
 
   evo: {
     pageScannerMembrane: true,
@@ -39,8 +39,8 @@ export const PageScannerAdapterMeta = Object.freeze({
   subsystem: "aiPageScannerAdapter",
   layer: "OrganismMembrane",
   role: "PAGESCANNER_ADAPTER",
-  version: "15-IMMORTAL",
-  identity: "aiPageScannerAdapter-v15-IMMORTAL",
+  version: "15-Immortal",
+  identity: "aiPageScannerAdapter-v15-Immortal",
 
   evo: Object.freeze({
     driftProof: true,
@@ -69,7 +69,7 @@ export const PageScannerAdapterMeta = Object.freeze({
 
     readOnly: true,
     multiInstanceReady: true,
-    epoch: "15-IMMORTAL"
+    epoch: "15-Immortal"
   }),
 
   contract: Object.freeze({
@@ -145,7 +145,7 @@ export function prewarmPageScannerAdapter(dualBand = null, { trace = false } = {
 }
 
 // ============================================================================
-//  ORGAN IMPLEMENTATION — v15-IMMORTAL Membrane
+//  ORGAN IMPLEMENTATION — v15-Immortal Membrane
 // ============================================================================
 export class AIBinaryPageScannerAdapter {
   constructor(config = {}) {

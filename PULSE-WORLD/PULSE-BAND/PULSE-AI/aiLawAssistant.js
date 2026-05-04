@@ -1,5 +1,5 @@
 // ============================================================================
-//  aiLawAssistant.js — PulseOS Legal Assistant Organ — v15-IMMORTAL-EVO++
+//  aiLawAssistant.js — PulseOS Legal Assistant Organ — v15-Immortal-Evo++
 //  Structured • Neutral • Doctrine‑Aware • Route‑Based Law Reader
 // ============================================================================
 //
@@ -32,10 +32,10 @@
 /*
 AI_EXPERIENCE_META = {
   identity: "aiLawAssistant",
-  version: "v15-IMMORTAL-EVO++",
+  version: "v15-Immortal-Evo++",
   layer: "ai_tools",
   role: "legal_assistant",
-  lineage: "aiLawyer-v11 → v14-IMMORTAL → v15-IMMORTAL-EVO++ (Law Assistant)",
+  lineage: "aiLawyer-v11 → v14-Immortal → v15-Immortal-Evo++ (Law Assistant)",
 
   evo: {
     legalReasoning: true,
@@ -70,8 +70,8 @@ export const PulseRole = Object.freeze({
   type: "Cognitive",
   subsystem: "aiLawAssistant",
   layer: "C5-LegalMapper",
-  version: "15-IMMORTAL-EVO++",
-  identity: "aiLawAssistant-v15-IMMORTAL-EVO++",
+  version: "15-Immortal-Evo++",
+  identity: "aiLawAssistant-v15-Immortal-Evo++",
 
   // --------------------------------------------------------------------------
   // EVO BLOCK — v15‑IMMORTAL‑EVO++ invariants
@@ -97,7 +97,7 @@ export const PulseRole = Object.freeze({
     lawReaderAware: true,
     multiInstanceReady: true,
     readOnly: true,
-    epoch: "15-IMMORTAL-EVO++",
+    epoch: "15-Immortal-Evo++",
 
     // Network is handled by outer route()/CNS, not by this organ.
     zeroNetwork: true,

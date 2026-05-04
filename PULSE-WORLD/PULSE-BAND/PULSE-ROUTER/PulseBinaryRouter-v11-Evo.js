@@ -19,7 +19,7 @@
 /*
 AI_EXPERIENCE_META = {
   identity: "PulseBinaryRouter",
-  version: "v14.4-IMMORTAL",
+  version: "v14.4-Immortal",
   layer: "frontend",
   role: "binary_router",
   lineage: "PulseOS-v12",

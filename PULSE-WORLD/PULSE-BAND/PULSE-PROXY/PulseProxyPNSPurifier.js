@@ -1,6 +1,6 @@
 /* global log,warn,error */
 // ============================================================================
-//  PULSE OS v12.3-EVO-PRESENCE — PULSEBAND PURIFIER (BACKEND CLEANUP ORGAN)
+//  PULSE OS v12.3-Evo-Presence — PULSEBAND PURIFIER (BACKEND CLEANUP ORGAN)
 //  “THE PURIFIER / SANITY LAYER / ORDER‑KEEPER”
 //  Backend‑Only • Drift Control • Session/Error/Redownload Cleanup
 // ============================================================================
@@ -40,14 +40,14 @@
 const admin = global.db;
 const db    = global.db;
 // ============================================================================
-// ORGAN IDENTITY — v12.3-EVO-PRESENCE
+// ORGAN IDENTITY — v12.3-Evo-Presence
 // ============================================================================
 export const PulseRole = {
   type: "Organ",
   subsystem: "PulseProxy",
   layer: "PulseBandPurifier",
-  version: "12.3-EVO-PRESENCE",
-  identity: "PulseBandCleanup-v12.3-EVO-PRESENCE",
+  version: "12.3-Evo-Presence",
+  identity: "PulseBandCleanup-v12.3-Evo-Presence",
 
   evo: {
     driftProof: true,
@@ -112,8 +112,8 @@ const logCleanup = (stage, details = {}) => {
 export const PulseBandPurifierMeta = Object.freeze({
   layer: "PulseBandPurifier",
   role: "PULSEBAND_PURIFIER_ORGAN",
-  version: "v12.3-EVO-BINARY-MAX-ABA-PRESENCE",
-  identity: "PulseBandPurifier-v12.3-EVO-BINARY-MAX-ABA-PRESENCE",
+  version: "v12.3-Evo-BINARY-MAX-ABA-Presence",
+  identity: "PulseBandPurifier-v12.3-Evo-BINARY-MAX-ABA-Presence",
 
   guarantees: Object.freeze({
     deterministic: true,
@@ -177,7 +177,7 @@ export const PulseBandPurifierMeta = Object.freeze({
 
   lineage: Object.freeze({
     root: "PulseProxy-v11",
-    parent: "PulseProxy-v12.3-EVO",
+    parent: "PulseProxy-v12.3-Evo",
     ancestry: [
       "PulseBandPurifier-v7",
       "PulseBandPurifier-v8",
@@ -186,7 +186,7 @@ export const PulseBandPurifierMeta = Object.freeze({
       "PulseBandPurifier-v11",
       "PulseBandPurifier-v11-Evo",
       "PulseBandPurifier-v11-Evo-Prime",
-      "PulseBandPurifier-v12.3-EVO-PRESENCE"
+      "PulseBandPurifier-v12.3-Evo-Presence"
     ]
   }),
 

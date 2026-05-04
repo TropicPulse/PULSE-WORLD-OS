@@ -6,10 +6,10 @@
 /*
 AI_EXPERIENCE_META = {
   identity: "aiAssistant",
-  version: "v14-IMMORTAL",
+  version: "v14-Immortal",
   layer: "ai_tools",
   role: "assistant_surface",
-  lineage: "aiAssistant-v9 → v12.3 → v14-IMMORTAL",
+  lineage: "aiAssistant-v9 → v12.3 → v14-Immortal",
 
   evo: {
     assistantSurface: true,
@@ -44,8 +44,8 @@ AI_EXPERIENCE_META = {
 export const AssistantMeta = Object.freeze({
   layer: "PulseAIAssistantFrame",
   role: "ASSISTANT_ORGAN",
-  version: "12.3-EVO+",
-  identity: "aiAssistant-v12.3-EVO+",
+  version: "12.3-Evo+",
+  identity: "aiAssistant-v12.3-Evo+",
 
   evo: Object.freeze({
     deterministic: true,
@@ -59,7 +59,7 @@ export const AssistantMeta = Object.freeze({
 
     multiInstanceReady: true,
     assistantArteryAware: true,
-    epoch: "12.3-EVO+"
+    epoch: "12.3-Evo+"
   }),
 
   contract: Object.freeze({

@@ -1,5 +1,5 @@
 // ============================================================================
-//  PulseSendImpulse-v14.4-IMMORTAL.js
+//  PulseSendImpulse-v14.4-Immortal.js
 //  Nerve‑Spark • Pulse‑Agnostic Trigger Organ • Fires the Movement
 //  v14.4: Binary + CacheChunk + Prewarm + Presence + Degradation + Advantage
 //         + DualBand + Immortal Meta Surfaces
@@ -12,7 +12,7 @@
 //    • Binary‑aware + cacheChunk‑aware + prewarm‑aware + multi‑presence‑aware.
 //    • Degradation‑aware + advantage‑aware + dual‑band‑aware + immortal‑meta‑aware.
 //
-//  SAFETY CONTRACT (v14.4-IMMORTAL):
+//  SAFETY CONTRACT (v14.4-Immortal):
 //  --------------------------------
 //  • No imports.
 //  • No network.
@@ -24,7 +24,7 @@
 /*
 AI_EXPERIENCE_META = {
   identity: "PulseSendImpulse",
-  version: "v14.4-IMMORTAL",
+  version: "v14.4-Immortal",
   layer: "frontend",
   role: "send_impulse",
   lineage: "PulseOS-v12",
@@ -55,14 +55,14 @@ AI_EXPERIENCE_META = {
 
 
 // ============================================================================
-// ⭐ PulseRole — identifies this as the PulseSend Impulse Organ (v14.4-IMMORTAL)
+// ⭐ PulseRole — identifies this as the PulseSend Impulse Organ (v14.4-Immortal)
 // ============================================================================
 export const PulseRole = {
   type: "Messenger",
   subsystem: "PulseSend",
   layer: "Impulse",
   version: "14.4",
-  identity: "PulseSendImpulse-v14.4-IMMORTAL",
+  identity: "PulseSendImpulse-v14.4-Immortal",
 
   evo: {
     driftProof: true,
@@ -287,7 +287,7 @@ function buildImpulseDiagnostics({ pulse, targetOrgan, pathway, mode }) {
 
 
 // ============================================================================
-//  FACTORY — Create the Impulse Organ (v14.4-IMMORTAL)
+//  FACTORY — Create the Impulse Organ (v14.4-Immortal)
 // ============================================================================
 export function createPulseSendImpulse({ mover, log }) {
   return {
@@ -324,7 +324,7 @@ export function createPulseSendImpulse({ mover, log }) {
 
       const advantageField = pulse?.advantageField || null;
 
-      log && log("[PulseSendImpulse-v14.4-IMMORTAL] Spark fired", {
+      log && log("[PulseSendImpulse-v14.4-Immortal] Spark fired", {
         jobId: pulse.jobId,
         diagnostics,
         cacheChunkSurface,

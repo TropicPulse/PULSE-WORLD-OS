@@ -6,10 +6,10 @@
 /*
 AI_EXPERIENCE_META = {
   identity: "aiDebug",
-  version: "v14-IMMORTAL",
+  version: "v14-Immortal",
   layer: "ai_tools",
   role: "debug_surface",
-  lineage: "aiDebug-v10 → v12 → v14-IMMORTAL",
+  lineage: "aiDebug-v10 → v12 → v14-Immortal",
 
   evo: {
     debugSurface: true,
@@ -35,8 +35,8 @@ AI_EXPERIENCE_META = {
 export const SCRIBE_META = Object.freeze({
   layer: "PulseAIScribe",
   role: "SCRIBE_ORGAN",
-  version: "11.0-EVO",
-  identity: "aiScribe-v11-EVO",
+  version: "11.0-Evo",
+  identity: "aiScribe-v11-Evo",
 
   evo: Object.freeze({
     driftProof: true,
@@ -59,7 +59,7 @@ export const SCRIBE_META = Object.freeze({
 
     // Lifecycle
     multiInstanceReady: true,
-    epoch: "v11-EVO"
+    epoch: "v11-Evo"
   })
 });
 

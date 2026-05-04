@@ -9,7 +9,7 @@
 /*
 AI_EXPERIENCE_META = {
   identity: "PulseProofBridge",
-  version: "v13-EVO-CNS-PRIME",
+  version: "v13-Evo-CNS-PRIME",
   layer: "frontend",
   role: "cns_bridge",
   lineage: "PulseOS-v12",

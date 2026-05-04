@@ -1,5 +1,5 @@
 // ============================================================================
-// ForwardEngine.js — v13.1-EVO-PRIME + SHIFTER-PULSE
+// ForwardEngine.js — v13.1-Evo-PRIME + SHIFTER-PULSE
 //  • Dual-band aware (symbolic/binary)
 //  • Drift-proof via normalized job/intents (multi-instance safe)
 //  • ShifterPulse-first (binary/regular), chunk/memory aware
@@ -9,7 +9,7 @@
 /*
 AI_EXPERIENCE_META = {
   identity: "ForwardEngine",
-  version: "v14-IMMORTAL",
+  version: "v14-Immortal",
   layer: "pulsenet_engine",
   role: "forward_expansion_engine",
   lineage: "PulseNet-v14",
@@ -55,8 +55,8 @@ import { createShifterPulse as ShifterPulse } from "../PULSE-SHIFTER/PulseBinary
 
 export const ForwardEngineMeta = Object.freeze({
   lane: "forward",
-  version: "13.1-EVO-PRIME-SHIFTER",
-  identity: "ForwardEngine-v13.1-EVO-PRIME-SHIFTER",
+  version: "13.1-Evo-PRIME-SHIFTER",
+  identity: "ForwardEngine-v13.1-Evo-PRIME-SHIFTER",
   evo: Object.freeze({
     deterministic: true,
     driftProof: true,
@@ -135,7 +135,7 @@ function normalizeMetrics(base, extra = {}) {
 }
 
 // ============================================================================
-// Factory — Forward Engine v13.1-EVO-PRIME-SHIFTER
+// Factory — Forward Engine v13.1-Evo-PRIME-SHIFTER
 // ============================================================================
 export function createForwardEngine({
   ShifterPulse,      // new: band-aware binary/regular shifter

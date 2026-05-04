@@ -1,5 +1,5 @@
 // ============================================================================
-// FILE: /PULSE-OS/PulseOSCNSNervousSystem-v12.3-EVO-BINARY-MAX.js
+// FILE: /PULSE-OS/PulseOSCNSNervousSystem-v12.3-Evo-BINARY-MAX.js
 // PULSE OS — v12.3‑EVO‑BINARY‑MAX
 // “THE CENTRAL NERVOUS SYSTEM / COMMUNICATION INTELLIGENCE ORGAN”
 //  • UPGRADED: CNS-level passive/active PageScanner integration (always-on, no timers)
@@ -8,7 +8,7 @@
 /*
 AI_EXPERIENCE_META = {
   identity: "PulseOSNervousSystem",
-  version: "v14-IMMORTAL",
+  version: "v14-Immortal",
   layer: "cns",
   role: "os_nervous_system",
   lineage: "PulseOS-v14",
@@ -57,7 +57,7 @@ export const PulseRole = {
   subsystem: "CNS",
   layer: "B-Layer",
   version: "12.3",
-  identity: "PulseOSCNSNervousSystem-v12.3-EVO-BINARY-MAX",
+  identity: "PulseOSCNSNervousSystem-v12.3-Evo-BINARY-MAX",
 
   evo: {
     deterministic: true,
@@ -87,8 +87,8 @@ export const PulseRole = {
 export const PulseOSCNSNervousSystemMeta = Object.freeze({
   layer: "PulseOSCNSNervousSystem",
   role: "CNS_COMMUNICATION_ORGAN",
-  version: "v12.3-EVO-BINARY-MAX",
-  identity: "PulseOSCNSNervousSystem-v12.3-EVO-BINARY-MAX",
+  version: "v12.3-Evo-BINARY-MAX",
+  identity: "PulseOSCNSNervousSystem-v12.3-Evo-BINARY-MAX",
 
   guarantees: Object.freeze({
     deterministic: true,
@@ -142,14 +142,14 @@ export const PulseOSCNSNervousSystemMeta = Object.freeze({
   }),
 
   lineage: Object.freeze({
-    root: "PulseOS-v12-EVO",
-    parent: "PulseOS-v12.3-EVO",
+    root: "PulseOS-v12-Evo",
+    parent: "PulseOS-v12.3-Evo",
     ancestry: [
       "PulseOSCNSNervousSystem-v9",
       "PulseOSCNSNervousSystem-v10",
       "PulseOSCNSNervousSystem-v11",
-      "PulseOSCNSNervousSystem-v11-EVO-BINARY",
-      "PulseOSCNSNervousSystem-v12.0-EVO-BINARY"
+      "PulseOSCNSNervousSystem-v11-Evo-BINARY",
+      "PulseOSCNSNervousSystem-v12.0-Evo-BINARY"
     ]
   }),
 

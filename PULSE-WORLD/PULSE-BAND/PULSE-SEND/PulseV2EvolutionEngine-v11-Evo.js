@@ -1,5 +1,5 @@
 // ============================================================================
-//  FILE: PulseV2EvolutionEngine-v14.4-IMMORTAL.js
+//  FILE: PulseV2EvolutionEngine-v14.4-Immortal.js
 //  Pulse v2 • Evolution Engine • Experimental Trait Layer (Compute Inside Pulse)
 //  v14.4: Binary-Aware + ImmortalMeta + Degradation v14 + DualBand + Rich Diagnostics
 // ============================================================================
@@ -13,7 +13,7 @@
 //      dualBandMode, shifterBand).
 //    • Deterministic, stable, no randomness.
 //
-//  SAFETY CONTRACT (v14.4-IMMORTAL):
+//  SAFETY CONTRACT (v14.4-Immortal):
 //    • No imports.
 //    • No randomness.
 //    • No timestamps.
@@ -23,7 +23,7 @@
 /*
 AI_EXPERIENCE_META = {
   identity: "PulseV2EvolutionEngine",
-  version: "v14.4-EVO",
+  version: "v14.4-Evo",
   layer: "frontend",
   role: "evolution_engine_v2",
   lineage: "PulseOS-v12",
@@ -58,7 +58,7 @@ export const PulseRole = {
   subsystem: "Pulse",
   layer: "Organ",
   version: "14.4",
-  identity: "Pulse-v2-EvolutionEngine-v14.4-IMMORTAL-INTEL",
+  identity: "Pulse-v2-EvolutionEngine-v14.4-Immortal-INTEL",
 
   evo: {
     driftProof: true,
@@ -87,7 +87,7 @@ export const PulseRole = {
 
     // Binary integration
     binaryBackEndReady: true,
-    binaryFrontEndContract: "PulseBinaryV2EvolutionEngine-v14.4-IMMORTAL-INTEL",
+    binaryFrontEndContract: "PulseBinaryV2EvolutionEngine-v14.4-Immortal-INTEL",
 
     // IMMORTAL META
     immortalMetaAware: true,
@@ -324,7 +324,7 @@ function runEvolutionComputeLoopV2({ pattern, lineage, payload, mode }) {
       mode === "recovery" ? 2 :
       1,
 
-    experimentalTier: "v2-evolution-engine-v14.4-IMMORTAL-INTEL",
+    experimentalTier: "v2-evolution-engine-v14.4-Immortal-INTEL",
 
     // Binary-aware advantage surface
     binaryAware: binarySurface.hasBinary,
@@ -393,7 +393,7 @@ function buildDiagnostics(pattern, lineage, healthScore, tier, binarySurface, im
 
 
 // ============================================================================
-//  FACTORY — Create a Pulse v2 Evolution Engine Organism (v14.4-IMMORTAL-INTEL)
+//  FACTORY — Create a Pulse v2 Evolution Engine Organism (v14.4-Immortal-INTEL)
 // ============================================================================
 export function createPulseV2({
   jobId,
@@ -458,7 +458,7 @@ export function createPulseV2({
     mode,
     pageId,
 
-    pulseType: "Pulse-v2-EvolutionEngine-v14.4-IMMORTAL-INTEL",
+    pulseType: "Pulse-v2-EvolutionEngine-v14.4-Immortal-INTEL",
 
     advantageField,
     healthScore,

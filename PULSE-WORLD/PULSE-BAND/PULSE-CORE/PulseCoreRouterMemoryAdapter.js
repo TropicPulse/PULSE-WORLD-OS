@@ -14,10 +14,10 @@
 /*
 AI_EXPERIENCE_META = {
   identity: "PulseCoreRouterMemoryAdapter",
-  version: "v15-IMMORTAL-ROUTER-MEMORY",
+  version: "v15-Immortal-ROUTER-MEMORY",
   layer: "corememory_adapter",
   role: "router_memory_adapter",
-  lineage: "PulseCoreMemory-v15-IMMORTAL",
+  lineage: "PulseCoreMemory-v15-Immortal",
 
   evo: {
     adapter: true,
@@ -60,7 +60,7 @@ function nextRouterEpoch() {
 export function createPulseRouterMemoryAdapter({
   overlay = createPulseBinaryOverlay(),
   dnaTag = "default-dna",
-  version = "15.0-IMMORTAL-ROUTER-MEMORY",
+  version = "15.0-Immortal-ROUTER-MEMORY",
   log = console.log
 } = {}) {
 

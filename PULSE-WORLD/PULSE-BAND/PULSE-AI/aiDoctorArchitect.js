@@ -6,10 +6,10 @@
 /*
 AI_EXPERIENCE_META = {
   identity: "aiDoctorArchitect",
-  version: "v14-IMMORTAL",
+  version: "v14-Immortal",
   layer: "ai_tools",
   role: "medical_architectural_reasoner",
-  lineage: "aiDoctorArchitect-v11 → v14-IMMORTAL",
+  lineage: "aiDoctorArchitect-v11 → v14-Immortal",
 
   evo: {
     medicalArchitecture: true,
@@ -36,8 +36,8 @@ AI_EXPERIENCE_META = {
 export const DoctorArchitectMeta = Object.freeze({
   layer: "PulseAIStructuralClinicalFrame",
   role: "DOCTOR_ARCHITECT_ORGAN",
-  version: "12.3-EVO+",
-  identity: "aiDoctorArchitect-v12.3-EVO+",
+  version: "12.3-Evo+",
+  identity: "aiDoctorArchitect-v12.3-Evo+",
 
   evo: Object.freeze({
     binaryAware: true,
@@ -55,7 +55,7 @@ export const DoctorArchitectMeta = Object.freeze({
     readOnly: true,
     multiInstanceReady: true,
     archetypeArteryAware: true,
-    epoch: "12.3-EVO+"
+    epoch: "12.3-Evo+"
   }),
 
   contract: Object.freeze({

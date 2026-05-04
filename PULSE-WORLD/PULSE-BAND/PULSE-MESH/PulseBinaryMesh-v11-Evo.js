@@ -1,6 +1,6 @@
 // ============================================================================
-// FILE: BinaryMesh-v15-EVO.js
-// BINARY MESH — v15-EVO-IMMORTAL
+// FILE: BinaryMesh-v15-Evo.js
+// BINARY MESH — v15-Evo-Immortal
 // “PURE BINARY CONNECTIVE TISSUE / BINARY-FIRST / SYMBOLIC FALLBACK”
 // ============================================================================
 //
@@ -42,7 +42,7 @@
 /*
 AI_EXPERIENCE_META = {
   identity: "PulseBinaryMesh",
-  version: "v14-IMMORTAL",
+  version: "v14-Immortal",
   layer: "mesh_binary",
   role: "binary_mesh_kernel",
   lineage: "PulseMesh-v14",
@@ -83,13 +83,13 @@ AI_EXPERIENCE_META = {
 */
 
 // ============================================================================
-// META — v15-EVO-IMMORTAL
+// META — v15-Evo-Immortal
 // ============================================================================
 export const BinaryMeshMeta = Object.freeze({
   layer: "BinaryNervousSystem",
   role: "PURE_BINARY_MESH",
-  version: "v15-EVO-IMMORTAL",
-  identity: "BinaryMesh-v15-EVO-IMMORTAL",
+  version: "v15-Evo-Immortal",
+  identity: "BinaryMesh-v15-Evo-Immortal",
   guarantees: Object.freeze({
     pureBinaryPath: true,            // Only 0/1 arrays on data path
     zeroSymbolicInDataPath: true,    // No strings/objects in binary path
@@ -119,7 +119,7 @@ export const BinaryMeshMeta = Object.freeze({
 // ============================================================================
 
 // 0 — CORE ORGANISM BOOT
-import { createOrganismMesh } from "./OrganismMesh-v1-EVO.js";
+import { createOrganismMesh } from "./OrganismMesh-v1-Evo.js";
 
 // 1 — SPINE (root of mesh nervous system)
 import PulseMeshSpine from "./PulseMeshSpine.js";
@@ -128,7 +128,7 @@ import PulseMeshSpine from "./PulseMeshSpine.js";
 import PulseMeshFlow from "./PulseMeshFlow.js";
 
 // 3 — PRESENCE RELAY (mesh → world presence)
-import PulseMeshPresenceRelay from "./PulseMeshPresenceRelay-v12.4-EVO.js";
+import PulseMeshPresenceRelay from "./PulseMeshPresenceRelay-v12.4-Evo.js";
 
 // 4 — COGNITION (mesh-level cognition)
 import PulseMeshCognition from "./PulseMeshCognition.js";
@@ -179,7 +179,7 @@ function safeLog(fn, fallback) {
   return () => {};
 }
 // ============================================================================
-// BINARY MESH FACTORY — v15-EVO-IMMORTAL (WITH CORTEX + TENDONS APPLIED)
+// BINARY MESH FACTORY — v15-Evo-Immortal (WITH CORTEX + TENDONS APPLIED)
 // ============================================================================
 export function createBinaryMesh({
   symbolicMesh,
@@ -284,7 +284,7 @@ export function createBinaryMesh({
 }
 
 // ============================================================================
-// LOCAL BINARY SUBSYSTEMS — LIVE ON THIS PAGE (v15-IMMORTAL)
+// LOCAL BINARY SUBSYSTEMS — LIVE ON THIS PAGE (v15-Immortal)
 // ============================================================================
 //
 //  PulseBinaryMeshPresence:
@@ -332,7 +332,7 @@ const PulseBinaryMeshPrime = {
 };
 
 // ============================================================================
-// BINARY MESH ENVIRONMENT — v15-EVO-IMMORTAL
+// BINARY MESH ENVIRONMENT — v15-Evo-Immortal
 //   BINARY BARREL: BOOT ORGANISM, LOAD SUBSYSTEMS, WIRE, PREWARM
 // ============================================================================
 export function createBinaryMeshEnvironment({

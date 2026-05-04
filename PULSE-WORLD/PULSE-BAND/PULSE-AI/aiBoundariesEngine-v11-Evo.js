@@ -6,10 +6,10 @@
 /*
 AI_EXPERIENCE_META = {
   identity: "aiBoundariesEngine",
-  version: "v14-IMMORTAL",
+  version: "v14-Immortal",
   layer: "ai_core",
   role: "ai_boundary_enforcer",
-  lineage: "aiBoundariesEngine-v11 → v12.3 → v14-IMMORTAL",
+  lineage: "aiBoundariesEngine-v11 → v12.3 → v14-Immortal",
 
   evo: {
     boundaryEnforcer: true,
@@ -48,8 +48,8 @@ import { getBoundariesForPersona, canPerformDynamic } from "./permissions.js";
 export const BoundariesMeta = Object.freeze({
   layer: "PulseAIBoundariesLayer",
   role: "BOUNDARIES_ENGINE",
-  version: "14-IMMORTAL",
-  identity: "aiBoundariesEngine-v14-IMMORTAL",
+  version: "14-Immortal",
+  identity: "aiBoundariesEngine-v14-Immortal",
 
   evo: Object.freeze({
     deterministic: true,
@@ -71,7 +71,7 @@ export const BoundariesMeta = Object.freeze({
 
     multiInstanceReady: true,
     readOnly: true,
-    epoch: "14-IMMORTAL"
+    epoch: "14-Immortal"
   }),
 
   contract: Object.freeze({
@@ -230,7 +230,7 @@ export function createBoundariesEngine({
   overlay = null,         // PulseBinaryCoreOverlay (optional)
   gpu = null,             // PulseGPUOrchestrator (optional, read-only)
   dnaTag = "default-dna",
-  version = "14-IMMORTAL",
+  version = "14-Immortal",
   routeId = "boundaries",
   log = console.log
 } = {}) {

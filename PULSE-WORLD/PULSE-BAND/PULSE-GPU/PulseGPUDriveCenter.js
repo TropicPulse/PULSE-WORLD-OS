@@ -6,7 +6,7 @@
 /*
 AI_EXPERIENCE_META = {
   identity: "PulseGPUDriveCenter",
-  version: "v14-IMMORTAL",
+  version: "v14-Immortal",
   layer: "gpu_engine",
   role: "gpu_execution_engine",
   lineage: "PulseGPU-v14",

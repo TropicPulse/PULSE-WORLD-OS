@@ -32,8 +32,8 @@ export const PulseRole = {
   type: "Organ",
   subsystem: "PulseProxy",
   layer: "ShortTermMemory",
-  version: "12.3-EVO-PRESENCE",
-  identity: "PulseHistoryRepair-v12.3-EVO-PRESENCE",
+  version: "12.3-Evo-Presence",
+  identity: "PulseHistoryRepair-v12.3-Evo-Presence",
 
   evo: {
     driftProof: true,
@@ -86,8 +86,8 @@ const REPAIR_CONTEXT = {
 export const PulseHistoryRepairMeta = Object.freeze({
   layer: "PulseHistoryRepair",
   role: "SHORT_TERM_MEMORY_REPAIR_ENGINE",
-  version: "v12.3-EVO-BINARY-MAX-ABA-PRESENCE",
-  identity: "PulseHistoryRepair-v12.3-EVO-BINARY-MAX-ABA-PRESENCE",
+  version: "v12.3-Evo-BINARY-MAX-ABA-Presence",
+  identity: "PulseHistoryRepair-v12.3-Evo-BINARY-MAX-ABA-Presence",
 
   guarantees: Object.freeze({
     deterministic: true,
@@ -152,7 +152,7 @@ export const PulseHistoryRepairMeta = Object.freeze({
 
   lineage: Object.freeze({
     root: "PulseProxy-v11",
-    parent: "PulseProxy-v12.3-EVO",
+    parent: "PulseProxy-v12.3-Evo",
     ancestry: [
       "PulseHistoryRepair-v7",
       "PulseHistoryRepair-v8",
@@ -161,7 +161,7 @@ export const PulseHistoryRepairMeta = Object.freeze({
       "PulseHistoryRepair-v11",
       "PulseHistoryRepair-v11-Evo",
       "PulseHistoryRepair-v11-Evo-Prime",
-      "PulseHistoryRepair-v12.3-EVO-PRESENCE"
+      "PulseHistoryRepair-v12.3-Evo-Presence"
     ]
   }),
 
@@ -233,7 +233,7 @@ export async function pulseHistoryRepair() {
 
           if (!data.lineage || typeof data.lineage !== "object") {
             updates.lineage = {
-              version: "12.3-EVO-PRESENCE",
+              version: "12.3-Evo-Presence",
               repairedBy: "pulseHistoryRepair",
               repairRunId: runId
             };

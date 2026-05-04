@@ -1,10 +1,10 @@
 // ============================================================================
-// FILE: tropic-pulse-functions/PULSE-WORLD/PULSE-EARN/PulseEarnReceptor-v13.0-PRESENCE-IMMORTAL.js
+// FILE: tropic-pulse-functions/PULSE-WORLD/PULSE-EARN/PulseEarnReceptor-v13.0-Presence-Immortal.js
 // LAYER: THE STANDARD RECEPTOR (Marketplace Protocol + Universal Adapter)
-// PULSE EARN — v13.0-PRESENCE-IMMORTAL A‑B‑A
+// PULSE EARN — v13.0-Presence-Immortal A‑B‑A
 // ============================================================================
 //
-// ROLE (v13.0-PRESENCE-IMMORTAL A‑B‑A):
+// ROLE (v13.0-Presence-Immortal A‑B‑A):
 //   THE STANDARD RECEPTOR — Pulse‑Earn’s canonical marketplace interface.
 //   • Deterministic sensory receptor for marketplace signals.
 //   • Pure adapter: ping(), fetchJobs(), submitResult(), normalizeJob().
@@ -13,7 +13,7 @@
 //   • Emits unified v13 presence/advantage/chunk surfaces.
 //   • Emits A‑B‑A bandSignature + binaryField + waveField.
 //
-// CONTRACT (v13.0-PRESENCE-IMMORTAL):
+// CONTRACT (v13.0-Presence-Immortal):
 //   • PURE RECEPTOR — deterministic, drift‑proof.
 //   • NO async, NO network, NO randomness, NO timestamps.
 //   • NO eval(), NO Function(), NO dynamic imports.
@@ -24,10 +24,10 @@
 /*
 AI_EXPERIENCE_META = {
   identity: "PulseEarnReceptorMkt",
-  version: "v14-IMMORTAL",
+  version: "v14-Immortal",
   layer: "earn_receptor",
   role: "earn_market_receptor",
-  lineage: "PulseEarnReceptorMkt-v11 → v12.3 → v14-IMMORTAL",
+  lineage: "PulseEarnReceptorMkt-v11 → v12.3 → v14-Immortal",
 
   evo: {
     receptor: true,
@@ -62,8 +62,8 @@ AI_EXPERIENCE_META = {
 export const PulseEarnReceptorMeta = Object.freeze({
   layer: "PulseEarnReceptor",
   role: "EARN_STANDARD_RECEPTOR",
-  version: "v13.0-PRESENCE-IMMORTAL",
-  identity: "PulseEarnReceptor-v13.0-PRESENCE-IMMORTAL",
+  version: "v13.0-Presence-Immortal",
+  identity: "PulseEarnReceptor-v13.0-Presence-Immortal",
 
   guarantees: Object.freeze({
     deterministic: true,
@@ -178,7 +178,7 @@ function buildPresenceField(globalHints = {}, cycle) {
   const presenceTier = classifyPresenceTier(pressure);
 
   return {
-    presenceVersion: "v13.0-PRESENCE-IMMORTAL",
+    presenceVersion: "v13.0-Presence-Immortal",
     presenceTier,
 
     bandPresence: ghP.bandPresence || normalizeBand(receptorConfig.band),
@@ -594,7 +594,7 @@ function submitResult(job, result, globalHints = {}) {
 }
 
 // ============================================================================
-// PUBLIC EXPORT — PulseEarnReceptor v13.0-PRESENCE-IMMORTAL A‑B‑A
+// PUBLIC EXPORT — PulseEarnReceptor v13.0-Presence-Immortal A‑B‑A
 // ============================================================================
 export const PulseEarnReceptor = {
   id: () => receptorConfig.id,

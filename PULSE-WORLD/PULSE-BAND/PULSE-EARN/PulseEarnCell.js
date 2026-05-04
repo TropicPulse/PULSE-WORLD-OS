@@ -1,10 +1,10 @@
 // ============================================================================
-// FILE: tropic-pulse-functions/PULSE-WORLD/PULSE-EARN/PulseEarnCell-v13.0-PRESENCE-IMMORTAL.js
-// LAYER: THE CELL WORKER (v13.0-PRESENCE-IMMORTAL)
+// FILE: tropic-pulse-functions/PULSE-WORLD/PULSE-EARN/PulseEarnCell-v13.0-Presence-Immortal.js
+// LAYER: THE CELL WORKER (v13.0-Presence-Immortal)
 // (Deterministic Cell Compute + Presence/Advantage/Hints + Compute Profile)
 // ============================================================================
 //
-// ROLE (v13.0-PRESENCE-IMMORTAL):
+// ROLE (v13.0-Presence-Immortal):
 //   THE CELL WORKER — Pulse‑Earn’s deterministic micro‑compute organ.
 //   • Executes small, sandboxed, deterministic operations.
 //   • Emits v13‑Presence‑IMMORTAL presence/advantage/hints surfaces.
@@ -12,7 +12,7 @@
 //   • Emits loop + wave fields as structural metadata.
 //   • No speed, no baselines, no governors, no performance math.
 //
-// CONTRACT (v13.0-PRESENCE-IMMORTAL):
+// CONTRACT (v13.0-Presence-Immortal):
 //   • PURE COMPUTE — no AI layers, no translation, no memory model.
 //   • NO eval(), NO Function(), NO dynamic imports.
 //   • NO user scripts, NO network calls, NO filesystem access.
@@ -23,10 +23,10 @@
 /*
 AI_EXPERIENCE_META = {
   identity: "PulseEarnCell",
-  version: "v14-IMMORTAL",
+  version: "v14-Immortal",
   layer: "earn_cell",
   role: "earn_metabolic_cell",
-  lineage: "PulseEarnCell-v9 → v11-Evo → v14-IMMORTAL",
+  lineage: "PulseEarnCell-v9 → v11-Evo → v14-Immortal",
 
   evo: {
     earnCell: true,
@@ -61,8 +61,8 @@ AI_EXPERIENCE_META = {
 export const PulseEarnCellMeta = Object.freeze({
   layer: "PulseEarnCell",
   role: "CELL_WORKER",
-  version: "v13.0-PRESENCE-IMMORTAL",
-  identity: "PulseEarnCell-v13.0-PRESENCE-IMMORTAL",
+  version: "v13.0-Presence-Immortal",
+  identity: "PulseEarnCell-v13.0-Presence-Immortal",
 
   guarantees: Object.freeze({
     deterministic: true,
@@ -110,13 +110,13 @@ export const PulseEarnCellMeta = Object.freeze({
   }),
 
   lineage: Object.freeze({
-    root: "PulseOS-v11-EVO",
-    parent: "PulseEarn-v13.0-PRESENCE-IMMORTAL",
+    root: "PulseOS-v11-Evo",
+    parent: "PulseEarn-v13.0-Presence-Immortal",
     ancestry: [
       "PulseEarnCell-v10",
       "PulseEarnCell-v11",
       "PulseEarnCell-v11-Evo",
-      "PulseEarnCell-v12.3-PRESENCE-EVO+"
+      "PulseEarnCell-v12.3-Presence-Evo+"
     ]
   }),
 
@@ -138,11 +138,11 @@ export const PulseEarnCellMeta = Object.freeze({
 // CELL CONTEXT METADATA
 // ============================================================================
 const EARN_CELL_CONTEXT = {
-  layer: "PulseEarnCell-v13.0-PRESENCE-IMMORTAL",
+  layer: "PulseEarnCell-v13.0-Presence-Immortal",
   role: "CELL_WORKER",
   purpose: "Execute deterministic, sandboxed compute operations for Earn jobs",
   context: "Safe compute participant + healing metadata (cell health)",
-  version: "13.0-PRESENCE-IMMORTAL"
+  version: "13.0-Presence-Immortal"
 };
 
 // ============================================================================
@@ -373,7 +373,7 @@ function buildPresenceFieldFromContext(context = {}) {
   );
 
   return Object.freeze({
-    presenceVersion: "v13.0-PRESENCE-IMMORTAL",
+    presenceVersion: "v13.0-Presence-Immortal",
     presenceTier,
     presenceSignature,
 

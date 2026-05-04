@@ -1,16 +1,16 @@
 // ============================================================================
 // PULSE-WORLD : PulseUser-v12.3-Presence.js
 // ORGAN TYPE: Local OS / Experience Orchestrator
-// VERSION: v16-IMMORTAL-ORGANISM (Hybrid, Every-Advantage, Brain-Aware, Server-Attachable)
+// VERSION: v16-Immortal-ORGANISM (Hybrid, Every-Advantage, Brain-Aware, Server-Attachable)
 // ============================================================================
 
 /*
 AI_EXPERIENCE_META = {
   identity: "PulseUser",
-  version: "v16-IMMORTAL-ORGANISM",
+  version: "v16-Immortal-ORGANISM",
   layer: "presence_user",
   role: "presence_user_core",
-  lineage: "PulseUser-v9 → v12.3-PRESENCE-EVO+ → v15-IMMORTAL → v16-IMMORTAL-ORGANISM",
+  lineage: "PulseUser-v9 → v12.3-Presence-Evo+ → v15-Immortal → v16-Immortal-ORGANISM",
 
   evo: {
     userCore: true,
@@ -67,7 +67,7 @@ import { PulseRouterMeta, createPulseRouter } from "../PULSE-EXPANSION/PulseRout
 // Earn / Band / BinarySend
 import { getEarnContext, evolveEarn, createEarn } from "../PULSE-EARN/PulseEarn-v12.3-Presence.js";
 import { createDualBandOrganism as PulseBinaryOrganismBoot } from "../PULSE-AI/aiDualBand-v11-Evo.js";
-import { createBinarySend as PulseSendBin } from "../PULSE-SEND/PulseBinarySend-v11-EVO.js";
+import { createBinarySend as PulseSendBin } from "../PULSE-SEND/PulseBinarySend-v11-Evo.js";
 
 // PROXY CONTEXT — v16 IMMORTAL ORGANISM
 import {
@@ -84,10 +84,10 @@ import {
 // ============================================================================
 
 export const PulseWorldCoreMeta = Object.freeze({
-  organId: "PulseWorldCore-v16-IMMORTAL-ORGANISM",
+  organId: "PulseWorldCore-v16-Immortal-ORGANISM",
   role: "LOCAL_OS",
-  version: "v16-IMMORTAL-ORGANISM",
-  epoch: "v16-IMMORTAL-ORGANISM",
+  version: "v16-Immortal-ORGANISM",
+  epoch: "v16-Immortal-ORGANISM",
   layer: "Experience",
   safety: Object.freeze({
     deterministic: true,
@@ -135,7 +135,7 @@ export function createPulseWorldCore({
   // 1. Identity
   const Identity = Object.freeze({
     coreID: "PulseWorldCore",
-    version: "v16-IMMORTAL-ORGANISM",
+    version: "v16-Immortal-ORGANISM",
     createdBy: "PulseOS",
     regionID,
     serverMode

@@ -1,5 +1,5 @@
 // ============================================================================
-// BackwardEngine.js — v14.0-PRESENCE-IMMORTAL Backward Lane Engine
+// BackwardEngine.js — v14.0-Presence-Immortal Backward Lane Engine
 //  • Dual-band aware (symbolic/binary)
 //  • Drift-proof via normalized job/intents (multi-instance safe)
 //  • Binary-first, chunk/memory aware
@@ -9,7 +9,7 @@
 /*
 AI_EXPERIENCE_META = {
   identity: "BackwardEngine",
-  version: "v14-IMMORTAL",
+  version: "v14-Immortal",
   layer: "pulsenet_engine",
   role: "backward_compression_engine",
   lineage: "PulseNet-v14",
@@ -55,8 +55,8 @@ import { createShifterPulse as ShifterPulse } from "../PULSE-SHIFTER/PulseBinary
 
 export const BackwardEngineMeta = Object.freeze({
   lane: "backward",
-  version: "14.0-PRESENCE-IMMORTAL",
-  identity: "BackwardEngine-v14.0-PRESENCE-IMMORTAL",
+  version: "14.0-Presence-Immortal",
+  identity: "BackwardEngine-v14.0-Presence-Immortal",
   evo: Object.freeze({
     deterministic: true,
     driftProof: true,
@@ -198,7 +198,7 @@ function normalizeMetrics(base, extra = {}) {
 }
 
 // ============================================================================
-// Factory — Backward Engine v14.0-PRESENCE-IMMORTAL
+// Factory — Backward Engine v14.0-Presence-Immortal
 // ============================================================================
 export function createBackwardEngine({
   BinaryOrgan,

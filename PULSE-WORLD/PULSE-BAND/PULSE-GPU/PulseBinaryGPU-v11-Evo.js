@@ -9,7 +9,7 @@
 /*
 AI_EXPERIENCE_META = {
   identity: "PulseBinaryGPU",
-  version: "v14-IMMORTAL",
+  version: "v14-Immortal",
   layer: "gpu_binary",
   role: "gpu_binary_surface",
   lineage: "PulseGPU-v14",

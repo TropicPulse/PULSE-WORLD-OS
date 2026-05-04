@@ -6,10 +6,10 @@
 /*
 AI_EXPERIENCE_META = {
   identity: "aiReflex",
-  version: "v15-IMMORTAL",
+  version: "v15-Immortal",
   layer: "ai_core",
   role: "reflex_arc",
-  lineage: "aiReflex-v10 → v15-IMMORTAL",
+  lineage: "aiReflex-v10 → v15-Immortal",
 
   evo: {
     reflexArc: true,
@@ -44,8 +44,8 @@ AI_EXPERIENCE_META = {
 export const ReflexMeta = Object.freeze({
   layer: "OrganismReflex",
   role: "REFLEX_ENGINE",
-  version: "15-IMMORTAL",
-  identity: "aiReflex-v15-IMMORTAL",
+  version: "15-Immortal",
+  identity: "aiReflex-v15-Immortal",
 
   evo: Object.freeze({
     driftProof: true,
@@ -70,7 +70,7 @@ export const ReflexMeta = Object.freeze({
     readOnly: true,
     multiInstanceReady: true,
 
-    epoch: "15-IMMORTAL"
+    epoch: "15-Immortal"
   }),
 
   contract: Object.freeze({

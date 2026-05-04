@@ -1,12 +1,12 @@
 // ============================================================================
-// FILE: PulseHalo-v15-EVO-IMMORTAL.js
+// FILE: PulseHalo-v15-Evo-Immortal.js
 // PULSE HALO — AWARENESS RING
 // System-wide Awareness Ring • Mesh + Presence + Advantage Telemetry
 // Metadata-only • Zero Compute (no heavy logic) • Zero Payload Access
 // Presence-aware • Binary-aware • Advantage-cascade-aware
 // ============================================================================
 //
-// IDENTITY — THE HALO FIELD (v15-EVO-IMMORTAL):
+// IDENTITY — THE HALO FIELD (v15-Evo-Immortal):
 //  --------------------------------------------
 //  • Organism-wide awareness ring around all impulses and mesh activity.
 //  • Counts, classifies, and summarizes behavior — never touches payloads.
@@ -118,7 +118,7 @@ export function createPulseHalo({ log, warn, error } = {}) {
     meta: {
       layer: "PulseHalo",
       role: "AWARENESS_RING",
-      version: "15-EVO-IMMORTAL",
+      version: "15-Evo-Immortal",
       target: "full-mesh",
       selfRepairable: true,
       evo: {

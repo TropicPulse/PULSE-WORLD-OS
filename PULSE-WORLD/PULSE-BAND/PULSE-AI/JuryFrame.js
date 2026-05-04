@@ -1,15 +1,15 @@
 // ============================================================================
-//  PULSE OS v14-IMMORTAL — JURY FRAME ORGAN
+//  PULSE OS v14-Immortal — JURY FRAME ORGAN
 //  World-Lens Registry for aiOvermind
 //  PURE FUNCTIONAL • ZERO STATE • ZERO MUTATION
 // ============================================================================
 /*
 AI_EXPERIENCE_META = {
   identity: "JuryFrame",
-  version: "v14-IMMORTAL",
+  version: "v14-Immortal",
   layer: "ai_core",
   role: "jury_frame",
-  lineage: "JuryFrame-v11 → v14-IMMORTAL",
+  lineage: "JuryFrame-v11 → v14-Immortal",
 
   evo: {
     juryFrame: true,
@@ -38,8 +38,8 @@ export const JuryFrameMeta = Object.freeze({
   subsystem: "aiJuryFrame",
   layer: "PulseAIJuryFrame",
   role: "JURY_FRAME_ORGAN",
-  version: "12.3-EVO+",
-  identity: "aiJuryFrame-v12.3-EVO+",
+  version: "12.3-Evo+",
+  identity: "aiJuryFrame-v12.3-Evo+",
 
   evo: Object.freeze({
     driftProof: true,
@@ -54,7 +54,7 @@ export const JuryFrameMeta = Object.freeze({
     nonBlocking: true,
     multiInstanceReady: true,
     worldLensArteryAware: true,
-    epoch: "12.3-EVO+"
+    epoch: "12.3-Evo+"
   }),
 
   contract: Object.freeze({

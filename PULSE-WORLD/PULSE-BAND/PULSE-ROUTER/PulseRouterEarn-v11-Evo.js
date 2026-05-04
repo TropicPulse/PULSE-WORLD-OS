@@ -6,7 +6,7 @@
 /*
 AI_EXPERIENCE_META = {
   identity: "PulseRouterEarn",
-  version: "v14.4-EVO",
+  version: "v14.4-Evo",
   layer: "frontend",
   role: "earn_router",
   lineage: "PulseOS-v12",

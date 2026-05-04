@@ -43,7 +43,7 @@
 /*
 AI_EXPERIENCE_META = {
   identity: "PulseTouchSecurity",
-  version: "v14-IMMORTAL",
+  version: "v14-Immortal",
   layer: "cortex",
   role: "risk_engine",
   lineage: "PulseOS-v13",

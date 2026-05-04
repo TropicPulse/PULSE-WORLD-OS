@@ -1,5 +1,5 @@
 // ============================================================================
-//  FILE: PulseV3UnifiedOrganism-v14.4-IMMORTAL.js
+//  FILE: PulseV3UnifiedOrganism-v14.4-Immortal.js
 //  Pulse v3 • Unified Organism • Evolution-Aware • Deterministic Compute Loop
 //  v14.4: Unified Advantage Surface + Degradation Tier + Rich Diagnostics
 //         + Signature Surface + Binary-Front-End Ready + ImmortalMeta Surface
@@ -22,7 +22,7 @@
 //    - v14.4-INTEL: adds pulseIntelligence (solvedness, factoring, computeTier,
 //      payloadComplexity, readinessScore, evolutionDepth).
 //
-//  SAFETY CONTRACT (v14.4-IMMORTAL):
+//  SAFETY CONTRACT (v14.4-Immortal):
 //  ---------------------------------
 //  • No imports.
 //  • No randomness.
@@ -34,7 +34,7 @@
 /*
 AI_EXPERIENCE_META = {
   identity: "PulseV3UnifiedOrganism",
-  version: "v14.4-EVO-INTEL",
+  version: "v14.4-Evo-INTEL",
   layer: "frontend",
   role: "unified_pulse_organism",
   lineage: "PulseOS-v12",
@@ -73,7 +73,7 @@ export const PulseRole = {
   subsystem: "Pulse",
   layer: "Organ",
   version: "14.4",
-  identity: "Pulse-v3-Unified-v14.4-IMMORTAL-INTEL",
+  identity: "Pulse-v3-Unified-v14.4-Immortal-INTEL",
 
   evo: {
     // Core evolution awareness
@@ -110,7 +110,7 @@ export const PulseRole = {
 
     // Binary integration flags:
     binaryBackEndReady: true,
-    binaryFrontEndContract: "PulseBinaryUnifiedOrganism-v14.4-IMMORTAL-INTEL",
+    binaryFrontEndContract: "PulseBinaryUnifiedOrganism-v14.4-Immortal-INTEL",
 
     // Immortal meta awareness
     immortalMetaAware: true,
@@ -354,7 +354,7 @@ function runEvolutionComputeLoop({ pattern, lineage, payload, mode }) {
       mode === "recovery" ? 2 :
       1,
 
-    unifiedTier: "v3-unified-v14.4-IMMORTAL-INTEL",
+    unifiedTier: "v3-unified-v14.4-Immortal-INTEL",
 
     // Immortal meta surfaced for higher layers
     presenceBandState: immortalMeta.presenceBandState,
@@ -381,7 +381,7 @@ function runEvolutionComputeLoop({ pattern, lineage, payload, mode }) {
 
 
 // ============================================================================
-//  FACTORY — Create a Pulse v3 Unified Organism (v14.4-IMMORTAL-INTEL)
+//  FACTORY — Create a Pulse v3 Unified Organism (v14.4-Immortal-INTEL)
 // ============================================================================
 export function createPulseV3({
   jobId,
@@ -442,7 +442,7 @@ export function createPulseV3({
     pageId,
 
     // Unified organism type
-    pulseType: "Pulse-v3-Unified-v14.4-IMMORTAL-INTEL",
+    pulseType: "Pulse-v3-Unified-v14.4-Immortal-INTEL",
 
     // Advantage + health
     advantageField,

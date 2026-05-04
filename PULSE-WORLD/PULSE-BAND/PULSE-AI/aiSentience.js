@@ -16,10 +16,10 @@
 /*
 AI_EXPERIENCE_META = {
   identity: "aiSentience",
-  version: "v14-IMMORTAL",
+  version: "v14-Immortal",
   layer: "ai_core",
   role: "sentience_simulator",
-  lineage: "aiSentience-v11 → v14-IMMORTAL",
+  lineage: "aiSentience-v11 → v14-Immortal",
 
   evo: {
     sentienceSimulation: true,
@@ -46,8 +46,8 @@ AI_EXPERIENCE_META = {
 export const SentienceMeta = Object.freeze({
   layer: "BinaryNervousSystem",
   role: "BINARY_SENTIENCE_ORGAN",
-  version: "12.3-EVO+",
-  identity: "aiBinarySentience-v12.3-EVO+",
+  version: "12.3-Evo+",
+  identity: "aiBinarySentience-v12.3-Evo+",
 
   evo: Object.freeze({
     driftProof: true,
@@ -62,7 +62,7 @@ export const SentienceMeta = Object.freeze({
     readOnly: true,
     multiInstanceReady: true,
     selfArteryAware: true,
-    epoch: "12.3-EVO+"
+    epoch: "12.3-Evo+"
   }),
 
   contract: Object.freeze({

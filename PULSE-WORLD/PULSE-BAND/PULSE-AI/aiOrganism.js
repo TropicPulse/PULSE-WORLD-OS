@@ -5,10 +5,10 @@
 /*
 AI_EXPERIENCE_META = {
   identity: "aiOrganism",
-  version: "v14-IMMORTAL",
+  version: "v14-Immortal",
   layer: "ai_core",
   role: "organism_definition",
-  lineage: "aiOrganism-v11 → v14-IMMORTAL",
+  lineage: "aiOrganism-v11 → v14-Immortal",
 
   evo: {
     organismDefinition: true,

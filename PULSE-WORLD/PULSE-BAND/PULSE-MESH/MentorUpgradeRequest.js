@@ -1,7 +1,7 @@
 
 // ============================================================================
-// FILE: MentorUpgradeRequest-v15-EVO.js
-// PULSE OS v15.0 — PRESENCE-EVO-MESH-AWARE
+// FILE: MentorUpgradeRequest-v15-Evo.js
+// PULSE OS v15.0 — PRESENCE-Evo-MESH-AWARE
 // ---------------------------------------------------------------------------
 //  MENTOR UPGRADE REQUEST SURFACE (IMMORTAL-GRADE COMMENTARY)
 // ---------------------------------------------------------------------------
@@ -49,7 +49,7 @@
 /*
 AI_EXPERIENCE_META = {
   identity: "MentorUpgradeRequest",
-  version: "v14.9-PRESENCE-WORLD",
+  version: "v14.9-Presence-WORLD",
   layer: "presence_social",
   role: "mentor_upgrade_pipeline",
   lineage: "PulseWorld-v14",
@@ -93,7 +93,7 @@ export function createMentorUpgradeRequest({
   const meta = Object.freeze({
     layer: "MentorUpgradeRequest",
     role: "MENTOR_UPGRADE_SURFACE",
-    version: "15.0-EVO",
+    version: "15.0-Evo",
     evo: {
       presenceAware: true,            // Reads presence bands + system age
       meshAware: true,                // Reads mesh proximity + identity

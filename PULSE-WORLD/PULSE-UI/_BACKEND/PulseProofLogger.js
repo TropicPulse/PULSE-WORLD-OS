@@ -1,5 +1,5 @@
 // ============================================================================
-//  PulseProofLogger.js — v15-IMMORTAL-LOGGER • US/THEM • META-IMMORTAL
+//  PulseProofLogger.js — v15-Immortal-LOGGER • US/THEM • META-Immortal
 //  PROOF LOGGER • AI CONSOLE EXTENSION • OFFLINE-FIRST TELEMETRY + LOCALSTORE
 // ============================================================================
 //  THIS LOGGER IS NOW THE SUPREME MEMBRANE ABOVE ALL LAYERS.
@@ -336,7 +336,7 @@ export function makeTelemetryPacket(subsystem, event, data = {}) {
     data,
     meta: {
       layer: "PulseProofLogger",
-      version: "15.0-EVO-ALWAYS-ON-OFFLINE-FIRST",
+      version: "15.0-Evo-ALWAYS-ON-OFFLINE-FIRST",
       subsystem,
       event,
       band,
@@ -348,7 +348,7 @@ export function makeTelemetryPacket(subsystem, event, data = {}) {
 }
 
 // -----------------------------------------------------------------------------
-// Firebase / telemetry bridge — OFFLINE-FIRST, META-IMMORTAL
+// Firebase / telemetry bridge — OFFLINE-FIRST, META-Immortal
 // -----------------------------------------------------------------------------
 let logIdCounter = Date.now();
 
@@ -514,7 +514,7 @@ export function pulseLog({
 }
 
 // -----------------------------------------------------------------------------
-// Core logging functions — offline-first, META-IMMORTAL
+// Core logging functions — offline-first, META-Immortal
 // -----------------------------------------------------------------------------
 function mark404(message) {
   if (typeof message === "string" && message.trim() === "404") {
@@ -816,7 +816,7 @@ export const VitalsLogger = {
   getLocalLogs,
   flushLocalLogsToFirebase,
   pulseLog,
-  meta: { layer: "PulseProofLogger", version: "15.0-IMMORTAL-META-US-THEM" }
+  meta: { layer: "PulseProofLogger", version: "15.0-Immortal-META-US-THEM" }
 };
 
 export const logger = { ...VitalsLogger };

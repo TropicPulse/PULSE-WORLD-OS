@@ -1,5 +1,5 @@
 // ============================================================================
-//  aiOvermindPrime.js — Pulse OS v14-IMMORTAL
+//  aiOvermindPrime.js — Pulse OS v14-Immortal
 //  Crown-Layer Meta-Governor • World-Lens Engine v3+Superego
 //  Organism-State Fusion • Drift-Governor • Breakthrough Engine
 //  Conversational Stabilizer • Dualband Governor • Zero Mutation
@@ -8,10 +8,10 @@
 /*
 AI_EXPERIENCE_META = {
   identity: "aiOvermindPrime",
-  version: "v14-IMMORTAL",
+  version: "v14-Immortal",
   layer: "ai_core",
   role: "ai_overseer",
-  lineage: "aiOvermind-v11 → v12.3-Presence → v14-IMMORTAL",
+  lineage: "aiOvermind-v11 → v12.3-Presence → v14-Immortal",
 
   evo: {
     overseer: true,
@@ -144,8 +144,8 @@ import createExperienceFrameOrgan from "./Experience-v11-Evo.js";
 export const OvermindPrimeMeta = Object.freeze({
   layer: "PulseAIOvermindPrime",
   role: "OVERMIND_PRIME",
-  version: "v14-IMMORTAL",
-  identity: "aiOvermindPrime-v14-IMMORTAL",
+  version: "v14-Immortal",
+  identity: "aiOvermindPrime-v14-Immortal",
 
   evo: Object.freeze({
     deterministic: true,
@@ -161,7 +161,7 @@ export const OvermindPrimeMeta = Object.freeze({
     breakthroughAware: true,
     multiInstanceReady: true,
     readOnly: true,
-    epoch: "v14-IMMORTAL"
+    epoch: "v14-Immortal"
   }),
 
   contract: Object.freeze({

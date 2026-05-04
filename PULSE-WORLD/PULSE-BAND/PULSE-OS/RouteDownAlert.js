@@ -1,7 +1,7 @@
 /* global log, error */
 // ============================================================================
 // FILE: /PULSE-PROXY/RouteDownAlert.js
-// PULSE OS — v12.3-Presence-EVO-MAX
+// PULSE OS — v12.3-Presence-Evo-MAX
 // “IMMUNE ALERT NODE / ROUTE FAILURE SENTINEL”
 // ============================================================================
 //
@@ -42,12 +42,12 @@
 //   • Always return deterministic JSON
 //
 // VERSION TAG:
-//   version: 12.3-Presence-EVO-MAX
+//   version: 12.3-Presence-Evo-MAX
 // ============================================================================
 /*
 AI_EXPERIENCE_META = {
   identity: "RouteDownAlter",
-  version: "v14-IMMORTAL",
+  version: "v14-Immortal",
   layer: "router",
   role: "router_downstream_alter",
   lineage: "PulseRouter-v14",
@@ -88,8 +88,8 @@ AI_EXPERIENCE_META = {
 export const PulseOSRouteDownAlertMeta = Object.freeze({
   layer: "PulseOSRouteDownAlert",
   role: "IMMUNE_ALERT_NODE",
-  version: "v12.3-PRESENCE-EVO-MAX",
-  identity: "PulseOSRouteDownAlert-v12.3-PRESENCE-EVO-MAX",
+  version: "v12.3-Presence-Evo-MAX",
+  identity: "PulseOSRouteDownAlert-v12.3-Presence-Evo-MAX",
 
   guarantees: Object.freeze({
     deterministic: true,
@@ -139,15 +139,15 @@ export const PulseOSRouteDownAlertMeta = Object.freeze({
   }),
 
   lineage: Object.freeze({
-    root: "PulseOS-v12-EVO",
-    parent: "PulseOS-v12.3-PRESENCE",
+    root: "PulseOS-v12-Evo",
+    parent: "PulseOS-v12.3-Presence",
     ancestry: [
       "RouteDownAlert-v9",
       "RouteDownAlert-v10",
       "RouteDownAlert-v11",
       "RouteDownAlert-v11-Evo",
       "RouteDownAlert-v11-Evo-Prime",
-      "RouteDownAlert-v11.2-EVO-BINARY-MAX"
+      "RouteDownAlert-v11.2-Evo-BINARY-MAX"
     ]
   }),
 
@@ -218,7 +218,7 @@ export const handler = async (event) => {
         workloadClass: context.workloadClass || ""
       },
       organ: "RouteDownAlert",
-      version: "12.3-Presence-EVO-MAX"
+      version: "12.3-Presence-Evo-MAX"
     });
 
     // ------------------------------------------------------------
@@ -235,7 +235,7 @@ export const handler = async (event) => {
         band,
         presenceTag,
         organ: "Immune Alert Node",
-        version: "12.3-Presence-EVO-MAX"
+        version: "12.3-Presence-Evo-MAX"
       })
     };
 
@@ -251,7 +251,7 @@ export const handler = async (event) => {
         ok: false,
         message: "RouteDownAlert internal error",
         organ: "Immune Alert Node",
-        version: "12.3-Presence-EVO-MAX"
+        version: "12.3-Presence-Evo-MAX"
       })
     };
   }

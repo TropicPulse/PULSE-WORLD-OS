@@ -1,6 +1,6 @@
 // ============================================================================
-// FILE: PresenceAIView-v15-EVO.js
-// PULSE OS v15.0 — PRESENCE-EVO-MESH-AWARE
+// FILE: PresenceAIView-v15-Evo.js
+// PULSE OS v15.0 — PRESENCE-Evo-MESH-AWARE
 // ---------------------------------------------------------------------------
 //  PRESENCE AI VIEW (MACHINE-FACING, IMMORTAL-GRADE COMMENTARY)
 // ---------------------------------------------------------------------------
@@ -53,7 +53,7 @@
 /*
 AI_EXPERIENCE_META = {
   identity: "PresenceAIView",
-  version: "v14.9-PRESENCE-VIEW",
+  version: "v14.9-Presence-VIEW",
   layer: "presence",
   role: "presence_ai_surface",
   lineage: "PulsePresence-v14",
@@ -99,7 +99,7 @@ export function createPresenceAIView({
   const meta = Object.freeze({
     layer: "PresenceAIView",
     role: "PRESENCE_AI_API",
-    version: "15.0-EVO",
+    version: "15.0-Evo",
     evo: {
       presenceAware: true,            // Reads presence bands + state
       meshAware: true,                // Includes mesh hops + distance

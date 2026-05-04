@@ -1,5 +1,5 @@
 // ============================================================================
-//  aiDoctorAssistant.js — PulseOS Doctor’s Assistant Organ — v15-IMMORTAL-EVO++
+//  aiDoctorAssistant.js — PulseOS Doctor’s Assistant Organ — v15-Immortal-Evo++
 //  Clinical Mapper • Pattern Interpreter • Route‑Based Medical Info Reader
 // ============================================================================
 //
@@ -37,10 +37,10 @@
 /*
 AI_EXPERIENCE_META = {
   identity: "aiDoctorAssistant",
-  version: "v15-IMMORTAL-EVO++",
+  version: "v15-Immortal-Evo++",
   layer: "ai_tools",
   role: "medical_pattern_explainer",
-  lineage: "aiDoctor-v10 → v12 → v14-IMMORTAL → v15-IMMORTAL-EVO++ (Doctor’s Assistant)",
+  lineage: "aiDoctor-v10 → v12 → v14-Immortal → v15-Immortal-Evo++ (Doctor’s Assistant)",
 
   evo: {
     medicalPatterns: true,
@@ -69,8 +69,8 @@ AI_EXPERIENCE_META = {
 export const DoctorMeta = Object.freeze({
   layer: "PulseAIClinicalFrame",
   role: "DOCTOR_ASSISTANT_ORGAN",
-  version: "15-IMMORTAL-EVO++",
-  identity: "aiDoctorAssistant-v15-IMMORTAL-EVO++",
+  version: "15-Immortal-Evo++",
+  identity: "aiDoctorAssistant-v15-Immortal-Evo++",
 
   evo: Object.freeze({
     binaryAware: true,
@@ -88,7 +88,7 @@ export const DoctorMeta = Object.freeze({
     readOnly: true,
     multiInstanceReady: true,
     archetypeArteryAware: true,
-    epoch: "15-IMMORTAL-EVO++",
+    epoch: "15-Immortal-Evo++",
     zeroNetwork: true,
     zeroFilesystem: true,
     zeroMutationOfInput: true

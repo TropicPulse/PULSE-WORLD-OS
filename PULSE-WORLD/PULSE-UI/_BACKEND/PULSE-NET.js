@@ -1,6 +1,6 @@
 // ============================================================================
 // PULSE-NET — Immortal Local Heartbeat + Forward/Backward Engine ignition
-// v16-FAMILY-NET-IMMORTAL (SUPER INSTANCE MODE)
+// v16-FAMILY-NET-Immortal (SUPER INSTANCE MODE)
 //  • Multi-instance safe (family registry)
 //  • Drift-proof
 //  • Dual-lane (forward/backward)
@@ -17,10 +17,10 @@
 /*
 AI_EXPERIENCE_META = {
   identity: "PulseNet",
-  version: "v16-FAMILY-NET-IMMORTAL",
+  version: "v16-FAMILY-NET-Immortal",
   layer: "frontend",
   role: "network_intelligence",
-  lineage: "PulseOS-v12 → v13-EVO-IMMORTAL → v15-FAMILY-IMMORTAL → v16-FAMILY-NET-IMMORTAL",
+  lineage: "PulseOS-v12 → v13-Evo-Immortal → v15-FAMILY-Immortal → v16-FAMILY-NET-Immortal",
 
   evo: {
     dualBand: true,
@@ -100,7 +100,7 @@ const db =
   null;
 
 // ============================================================================
-// PULSE-NET v14-IMMORTAL — Backend Gateway + Crown Throne Room
+// PULSE-NET v14-Immortal — Backend Gateway + Crown Throne Room
 //  • Single internet edge (via NetworkOrgan → route(...))
 //  • Hybrid crown model: OvermindPrime sees heartbeats + AI requests
 // ============================================================================

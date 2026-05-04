@@ -20,8 +20,8 @@ export const PulseRole = {
   type: "Organ",
   subsystem: "PulseProxy",
   layer: "AdrenalSystem",
-  version: "12.3-PRESENCE-EVO+",
-  identity: "PulseProxyAdrenalSystem-v12.3-PRESENCE-EVO-ABA",
+  version: "12.3-Presence-Evo+",
+  identity: "PulseProxyAdrenalSystem-v12.3-Presence-Evo-ABA",
 
   evo: {
     dualMode: true,
@@ -107,8 +107,8 @@ const activeWorkers = new Map();
 export const PulseProxyAdrenalSystemMeta = Object.freeze({
   layer: "PulseProxyAdrenalSystem",
   role: "ADRENAL_SYSTEM_ORGAN",
-  version: "v12.3-PRESENCE-EVO-BINARY-MAX-ABA",
-  identity: "PulseProxyAdrenalSystem-v12.3-PRESENCE-EVO-BINARY-MAX-ABA",
+  version: "v12.3-Presence-Evo-BINARY-MAX-ABA",
+  identity: "PulseProxyAdrenalSystem-v12.3-Presence-Evo-BINARY-MAX-ABA",
 
   guarantees: Object.freeze({
     deterministic: true,
@@ -179,7 +179,7 @@ export const PulseProxyAdrenalSystemMeta = Object.freeze({
 
   lineage: Object.freeze({
     root: "PulseProxy-v11",
-    parent: "PulseProxy-v12.3-PRESENCE-EVO+",
+    parent: "PulseProxy-v12.3-Presence-Evo+",
     ancestry: [
       "PulseProxyAdrenalSystem-v7",
       "PulseProxyAdrenalSystem-v8",
@@ -187,7 +187,7 @@ export const PulseProxyAdrenalSystemMeta = Object.freeze({
       "PulseProxyAdrenalSystem-v10",
       "PulseProxyAdrenalSystem-v11",
       "PulseProxyAdrenalSystem-v11-Evo",
-      "PulseProxyAdrenalSystem-v11.2-EVO-BINARY-MAX"
+      "PulseProxyAdrenalSystem-v11.2-Evo-BINARY-MAX"
     ]
   }),
 

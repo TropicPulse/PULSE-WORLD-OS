@@ -12,7 +12,7 @@
 export const LIMBIC_SHADOW_CONTEXT = {
   layer: "LimbicShadow",
   role: "UNIFIED_PROJECTION_INSTINCT",
-  version: "12.3-EVO-PRESENCE",
+  version: "12.3-Evo-Presence",
   purpose: "Unified projection + instinct surface for Pulse organs",
   evo: {
     driftProof: true,
@@ -43,8 +43,8 @@ export const LIMBIC_SHADOW_CONTEXT = {
 export const PulseLimbicShadowMeta = Object.freeze({
   layer: "PulseLimbicShadow",
   role: "UNIFIED_PROJECTION_INSTINCT_LAYER",
-  version: "v12.3-EVO-BINARY-MAX-ABA-PRESENCE",
-  identity: "PulseLimbicShadow-v12.3-EVO-BINARY-MAX-ABA-PRESENCE",
+  version: "v12.3-Evo-BINARY-MAX-ABA-Presence",
+  identity: "PulseLimbicShadow-v12.3-Evo-BINARY-MAX-ABA-Presence",
 
   guarantees: Object.freeze({
     deterministic: true,
@@ -110,7 +110,7 @@ export const PulseLimbicShadowMeta = Object.freeze({
 
   lineage: Object.freeze({
     root: "PulseOS-v11",
-    parent: "PulseOS-v12.3-EVO",
+    parent: "PulseOS-v12.3-Evo",
     ancestry: [
       "PulseLimbicShadow-v7",
       "PulseLimbicShadow-v8",
@@ -119,7 +119,7 @@ export const PulseLimbicShadowMeta = Object.freeze({
       "PulseLimbicShadow-v11",
       "PulseLimbicShadow-v11-Evo",
       "PulseLimbicShadow-v11-Evo-Prime",
-      "PulseLimbicShadow-v12.3-EVO-PRESENCE"
+      "PulseLimbicShadow-v12.3-Evo-Presence"
     ]
   }),
 

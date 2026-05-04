@@ -1,15 +1,15 @@
 // ============================================================================
-// FILE: /PULSE-OS/PulseOSSpinalCord-v13.0-PRESENCE-IMMORTAL.js
-// PULSE OS SPINAL CORD — v13.0-PRESENCE-IMMORTAL
+// FILE: /PULSE-OS/PulseOSSpinalCord-v13.0-Presence-Immortal.js
+// PULSE OS SPINAL CORD — v13.0-Presence-Immortal
 // “ORGANISM-WIDE DUAL-BAND SPINE • ADVANTAGE FIELD CONDUCTOR • ROUTE ROOT”
-// CHUNK/PREWARM/CACHE-AWARE • MULTI-PRESENCE-AWARE • FIREWALL-GATED
+// CHUNK/PREWARM/CACHE-AWARE • MULTI-Presence-AWARE • FIREWALL-GATED
 // PASSIVE/ACTIVE PAGESCANNER-AWARE (NO TIMERS, NO POLLING)
-// SDN PREWARM v13.0-PRESENCE-IMMORTAL (Spinal Reflex Ignition)
+// SDN PREWARM v13.0-Presence-Immortal (Spinal Reflex Ignition)
 // ============================================================================
 /*
 AI_EXPERIENCE_META = {
   identity: "PulseOSSpinalCord",
-  version: "v14-IMMORTAL",
+  version: "v14-Immortal",
   layer: "cns",
   role: "os_spinal_cord",
   lineage: "PulseOS-v14",
@@ -54,14 +54,14 @@ import { prewarmSDN } from "./PulseSDN-Prewarm-v12-Evo.js";
 import { PageScannerV12 } from "../../PULSE-UI/_BACKEND/PulseSkinReflex.js";
 
 // ============================================================================
-// SPINAL CORD IDENTITY — v13.0-PRESENCE-IMMORTAL
+// SPINAL CORD IDENTITY — v13.0-Presence-Immortal
 // ============================================================================
 export const PulseRole = {
   type: "NervousSystem",
   subsystem: "OS",
   layer: "SpinalCord",
-  version: "13.0-PRESENCE-IMMORTAL",
-  identity: "PulseOSSpinalCord-v13.0-PRESENCE-IMMORTAL",
+  version: "13.0-Presence-Immortal",
+  identity: "PulseOSSpinalCord-v13.0-Presence-Immortal",
 
   evo: {
     // Core nervous properties
@@ -93,14 +93,14 @@ export const PulseRole = {
     binaryOverlayAware: true,
     coreGovernorAware: true,
 
-    // Updated routing contracts (v13 Presence-IMMORTAL)
-    routingContract: "PulseRouter-v13.0-PRESENCE-IMMORTAL",
-    osOrganContract: "PulseOS-v13.0-PRESENCE-IMMORTAL",
-    earnCompatibility: "PulseEarn-v13.0-PRESENCE-IMMORTAL",
-    gpuCompatibility: "PulseGPU-v13.0-PRESENCE-IMMORTAL",
-    sendCompatibility: "PulseSendSystem-v13.0-PRESENCE-IMMORTAL",
-    meshCompatibility: "PulseMesh-v13.0-PRESENCE-IMMORTAL",
-    aiCompatibility: "PulseAI-v13.0-PRESENCE-IMMORTAL",
+    // Updated routing contracts (v13 Presence-Immortal)
+    routingContract: "PulseRouter-v13.0-Presence-Immortal",
+    osOrganContract: "PulseOS-v13.0-Presence-Immortal",
+    earnCompatibility: "PulseEarn-v13.0-Presence-Immortal",
+    gpuCompatibility: "PulseGPU-v13.0-Presence-Immortal",
+    sendCompatibility: "PulseSendSystem-v13.0-Presence-Immortal",
+    meshCompatibility: "PulseMesh-v13.0-Presence-Immortal",
+    aiCompatibility: "PulseAI-v13.0-Presence-Immortal",
 
     // Firewall awareness
     firewallAware: true,
@@ -114,7 +114,7 @@ export const PulseRole = {
     multiPresenceAware: true,
     presenceSpineAware: true,
 
-    // v13 Presence-IMMORTAL
+    // v13 Presence-Immortal
     presenceImmortalAware: true,
     sdnPrewarmImmortalAware: true
   }
@@ -123,8 +123,8 @@ export const PulseRole = {
 export const PulseOSSpinalCordMeta = Object.freeze({
   layer: "PulseOSSpinalCord",
   role: "CENTRAL_SPINE_ORGAN",
-  version: "v13.0-PRESENCE-IMMORTAL",
-  identity: "PulseOSSpinalCord-v13.0-PRESENCE-IMMORTAL",
+  version: "v13.0-Presence-Immortal",
+  identity: "PulseOSSpinalCord-v13.0-Presence-Immortal",
 
   guarantees: Object.freeze({
     deterministic: true,
@@ -191,7 +191,7 @@ export const PulseOSSpinalCordMeta = Object.freeze({
     multiPresenceSpine: true,
     presenceRouteAware: true,
 
-    // v13 Presence-IMMORTAL
+    // v13 Presence-Immortal
     sdnPrewarmPresenceImmortal: true,
     spinalReflexIgnitionImmortal: true,
 
@@ -216,8 +216,8 @@ export const PulseOSSpinalCordMeta = Object.freeze({
   }),
 
   lineage: Object.freeze({
-    root: "PulseOS-v13.0-PRESENCE-IMMORTAL",
-    parent: "PulseOS-v13.0-PRESENCE-IMMORTAL-MAX",
+    root: "PulseOS-v13.0-Presence-Immortal",
+    parent: "PulseOS-v13.0-Presence-Immortal-MAX",
     ancestry: [
       "PulseOSSpinalCord-v9",
       "PulseOSSpinalCord-v10",
@@ -227,7 +227,7 @@ export const PulseOSSpinalCordMeta = Object.freeze({
       "PulseOSSpinalCord-v12-Evo-Max",
       "PulseOSSpinalCord-v13-Evo-Max-Firewall",
       "PulseOSSpinalCord-v13-Evo-Max-Firewall-12.3-Presence",
-      "PulseOSSpinalCord-v13.0-PRESENCE-IMMORTAL"
+      "PulseOSSpinalCord-v13.0-Presence-Immortal"
     ]
   }),
 
@@ -882,12 +882,12 @@ export function createPulseOSSpinalCord({
   };
 
   // --------------------------------------------------------------------------
-  // SDN PREWARM ENGINE — Spinal Reflex Ignition (v13.0-PRESENCE-IMMORTAL)
+  // SDN PREWARM ENGINE — Spinal Reflex Ignition (v13.0-Presence-Immortal)
   // --------------------------------------------------------------------------
   try {
     prewarmSDN(PulseOSSpinalCord);
     Brain?.log?.(
-      "[PulseOSSpinalCord] SDN prewarm complete (reflex arcs hot, v13.0-PRESENCE-IMMORTAL)."
+      "[PulseOSSpinalCord] SDN prewarm complete (reflex arcs hot, v13.0-Presence-Immortal)."
     );
 
     SpinalPageScanner.emit("spinal-sdn-prewarm-complete", {});
@@ -898,9 +898,9 @@ export function createPulseOSSpinalCord({
   }
 
   Brain?.log?.(
-    "[PulseOSSpinalCord v13.0-PRESENCE-IMMORTAL] Initialized organism-wide dual-band spinal cord with firewall gating, chunk/cache prewarm, multi-presence spine, SDN prewarm, and PageScanner spine-level intel."
+    "[PulseOSSpinalCord v13.0-Presence-Immortal] Initialized organism-wide dual-band spinal cord with firewall gating, chunk/cache prewarm, multi-presence spine, SDN prewarm, and PageScanner spine-level intel."
   );
-  Evolution?.recordLineage?.("spinal-init-v13.0-PRESENCE-IMMORTAL");
+  Evolution?.recordLineage?.("spinal-init-v13.0-Presence-Immortal");
 
   SpinalPageScanner.emit("spinal-init", {});
 

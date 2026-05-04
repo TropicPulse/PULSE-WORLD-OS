@@ -8,7 +8,7 @@
 /*
 AI_EXPERIENCE_META = {
   identity: "PulseOSFightFlightResponse",
-  version: "v14-IMMORTAL",
+  version: "v14-Immortal",
   layer: "cns",
   role: "os_fight_flight_engine",
   lineage: "PulseOS-v14",

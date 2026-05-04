@@ -1,6 +1,6 @@
 // ============================================================================
 //  FILE: /PULSE-PROXY/pulseNetSynapse.js
-//  PULSE OS v12.3-EVO-PRESENCE — PULSENET SYNAPSE
+//  PULSE OS v12.3-Evo-Presence — PULSENET SYNAPSE
 //  Neural Signal Routing Organ • Binary Core + Symbolic Wrapper
 //  Dual-Mode: Binary (pure, deterministic) + Symbolic (browser / fetch / storage)
 //  SAFETY:
@@ -30,14 +30,14 @@ const error = global.error || G.error || console.error;
 
 
 // ============================================================================
-//  ORGAN IDENTITY — v12.3-EVO-PRESENCE Synapse
+//  ORGAN IDENTITY — v12.3-Evo-Presence Synapse
 // ============================================================================
 export const PulseRole = {
   type: "Organ",
   subsystem: "PulseNet",
   layer: "Synapse",
-  version: "12.3-EVO-PRESENCE",
-  identity: "PulseNetSynapse-v12.3-EVO-PRESENCE",
+  version: "12.3-Evo-Presence",
+  identity: "PulseNetSynapse-v12.3-Evo-Presence",
 
   evo: {
     driftProof: true,
@@ -88,8 +88,8 @@ const PULSENET_CONTEXT = {
 export const PulseNetSynapseMeta = Object.freeze({
   layer: "PulseNetSynapse",
   role: "NEURAL_SIGNAL_ROUTING_ORGAN",
-  version: "v12.3-EVO-BINARY-MAX-ABA-PRESENCE",
-  identity: "PulseNetSynapse-v12.3-EVO-BINARY-MAX-ABA-PRESENCE",
+  version: "v12.3-Evo-BINARY-MAX-ABA-Presence",
+  identity: "PulseNetSynapse-v12.3-Evo-BINARY-MAX-ABA-Presence",
 
   guarantees: Object.freeze({
     deterministic: true,
@@ -166,7 +166,7 @@ export const PulseNetSynapseMeta = Object.freeze({
 
   lineage: Object.freeze({
     root: "PulseNet-v11",
-    parent: "PulseNet-v12.3-EVO",
+    parent: "PulseNet-v12.3-Evo",
     ancestry: [
       "PulseNetSynapse-v7",
       "PulseNetSynapse-v8",
@@ -176,7 +176,7 @@ export const PulseNetSynapseMeta = Object.freeze({
       "PulseNetSynapse-v11",
       "PulseNetSynapse-v11-Evo",
       "PulseNetSynapse-v11-Evo-Prime",
-      "PulseNetSynapse-v12.3-EVO-PRESENCE"
+      "PulseNetSynapse-v12.3-Evo-Presence"
     ]
   }),
 
@@ -619,7 +619,7 @@ function getPulseNetState() {
 
 
 // ============================================================================
-//  EXPORTED SYNAPSE API — v12.3-EVO-PRESENCE
+//  EXPORTED SYNAPSE API — v12.3-Evo-Presence
 // ============================================================================
 export const PulseNet = {
   // identity

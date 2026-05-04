@@ -1,15 +1,15 @@
 // ============================================================================
-//  PULSE OS v14-IMMORTAL — THE IDENTITY LAYER (DUAL‑BAND)
+//  PULSE OS v14-Immortal — THE IDENTITY LAYER (DUAL‑BAND)
 //  Self‑Definition • Role Assignment • Binary‑Aware Identity Drift
 //  PURE IDENTITY. ZERO MUTATION. ZERO RANDOMNESS.
 // ============================================================================
 /*
 AI_EXPERIENCE_META = {
   identity: "persona",
-  version: "v14-IMMORTAL",
+  version: "v14-Immortal",
   layer: "ai_core",
   role: "persona_engine",
-  lineage: "persona-v11 → v14-IMMORTAL",
+  lineage: "persona-v11 → v14-Immortal",
 
   evo: {
     personaEngine: true,
@@ -58,8 +58,8 @@ export const PersonaMeta = Object.freeze({
   subsystem: "aiPersona",
   layer: "PulseAIIdentityLayer",
   role: "PERSONA_ENGINE",
-  version: "12.3-EVO+",
-  identity: "aiPersonaEngine-v12.3-EVO+",
+  version: "12.3-Evo+",
+  identity: "aiPersonaEngine-v12.3-Evo+",
 
   evo: Object.freeze({
     deterministic: true,
@@ -72,7 +72,7 @@ export const PersonaMeta = Object.freeze({
     permissionAware: true,
     identityArteryAware: true,
     multiInstanceReady: true,
-    epoch: "12.3-EVO+"
+    epoch: "12.3-Evo+"
   }),
 
   contract: Object.freeze({

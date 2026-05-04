@@ -28,10 +28,10 @@ SAFETY:
 ===============================================================================
 AI_EXPERIENCE_META = {
   identity: "PulseUI.EvolutionaryCode",
-  version: "v15-IMMORTAL",
+  version: "v15-Immortal",
   layer: "pulse_ui",
   role: "page_evolution_organ",
-  lineage: "PulseEvolutionaryCode-v11.3-Evo-Prime → v14-IMMORTAL → v15-IMMORTAL",
+  lineage: "PulseEvolutionaryCode-v11.3-Evo-Prime → v14-Immortal → v15-Immortal",
 
   evo: {
     pageEvolution: true,
@@ -128,7 +128,7 @@ export const PageRole = {
   type: "Organ",
   subsystem: "UI",
   layer: "PageEvo",
-  version: "15.0-IMMORTAL",
+  version: "15.0-Immortal",
   identity: "PulseEvolutionaryCode",
 
   evo: {

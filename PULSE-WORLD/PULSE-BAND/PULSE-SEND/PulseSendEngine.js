@@ -1,10 +1,10 @@
 // ============================================================================
-//  PulseSendMover-v14.4-IMMORTAL.js
+//  PulseSendMover-v14.4-Immortal.js
 //  Movement Organ • Pulse‑Agnostic • Deterministic Transport Muscle
 //  v14.4: Binary + CacheChunk + Prewarm + Presence + Degradation + ImmortalMeta
 // ============================================================================
 //
-//  SAFETY CONTRACT (v14.4-IMMORTAL):
+//  SAFETY CONTRACT (v14.4-Immortal):
 //  --------------------------------
 //  • No randomness.
 //  • No timestamps.
@@ -15,7 +15,7 @@
 /*
 AI_EXPERIENCE_META = {
   identity: "PulseSendEngine",
-  version: "v12.4-EVO-CORE",
+  version: "v12.4-Evo-CORE",
   layer: "frontend",
   role: "send_engine",
   lineage: "PulseOS-v12",
@@ -48,14 +48,14 @@ AI_EXPERIENCE_META = {
 
 
 // ============================================================================
-// ⭐ PulseRole — identifies this as the PulseSend Mover Organ (v14.4-IMMORTAL)
+// ⭐ PulseRole — identifies this as the PulseSend Mover Organ (v14.4-Immortal)
 // ============================================================================
 export const PulseRole = {
   type: "Messenger",
   subsystem: "PulseSend",
   layer: "Mover",
   version: "14.4",
-  identity: "PulseSendMover-v14.4-IMMORTAL",
+  identity: "PulseSendMover-v14.4-Immortal",
 
   evo: {
     driftProof: true,
@@ -274,7 +274,7 @@ function buildMovementDiagnostics({ pulse, targetOrgan, pathway, mode }) {
 
 
 // ============================================================================
-//  FACTORY — Create the Mover Organ (v14.4-IMMORTAL)
+//  FACTORY — Create the Mover Organ (v14.4-Immortal)
 // ============================================================================
 export function createPulseSendMover({ pulseMesh, log }) {
   return {
@@ -320,7 +320,7 @@ export function createPulseSendMover({ pulseMesh, log }) {
         diagnostics.immortal.immortalSignature
       );
 
-      log && log("[PulseSendMover-v14.4-IMMORTAL] Movement fired", {
+      log && log("[PulseSendMover-v14.4-Immortal] Movement fired", {
         jobId: pulse.jobId,
         diagnostics,
         cacheChunkSurface,
@@ -347,7 +347,7 @@ export function createPulseSendMover({ pulseMesh, log }) {
 
 
 // ============================================================================
-//  ORGAN EXPORT — ⭐ PulseSendMover (v14.4-IMMORTAL)
+//  ORGAN EXPORT — ⭐ PulseSendMover (v14.4-Immortal)
 // ============================================================================
 export const PulseSendMover = {
   PulseRole,
@@ -358,7 +358,7 @@ export const PulseSendMover = {
     const lineageDepth = Array.isArray(pulse?.lineage) ? pulse.lineage.length : 0;
 
     throw new Error(
-      `[PulseSendMover-v14.4-IMMORTAL] move() called before initialization.\n` +
+      `[PulseSendMover-v14.4-Immortal] move() called before initialization.\n` +
       `• pulseType: ${pulseType}\n` +
       `• pattern: ${pattern}\n` +
       `• lineageDepth: ${lineageDepth}\n` +

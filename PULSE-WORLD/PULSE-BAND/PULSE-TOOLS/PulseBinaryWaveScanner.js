@@ -1,9 +1,9 @@
 // ============================================================================
 // FILE: /PulseOS/PULSE-TOOLS/PulseBinaryWaveScanner.js
-// PULSE OS — v12.3-EVO
+// PULSE OS — v12.3-Evo
 // PURE BINARY WAVE ORGAN — ZERO DRIFT, MULTI-SPIN, PRESENCE/HARMONICS-AWARE
 // ============================================================================
-// ROLE (12.3-EVO):
+// ROLE (12.3-Evo):
 //   - Convert binary pulses → deterministic waveforms.
 //   - Drive contrast, depth, “see-through”, edge emphasis for all layers.
 //   - Zero randomness, zero timestamps, zero mutation.
@@ -11,7 +11,7 @@
 //   - Dual-band aware: optional presence/harmonics bias depth/contrast, still deterministic.
 //   - Pairs with BinaryPulse‑v12.3‑EVO + PulseBinaryLoopScanner‑v12.3‑EVO.
 //
-// WAVE MODES (v12.3-EVO, API-COMPATIBLE):
+// WAVE MODES (v12.3-Evo, API-COMPATIBLE):
 //   • nextWave       → standard wave (balanced detail)
 //   • nextWaveDeep   → slower, deeper, high-contrast wave
 //   • nextWaveMulti  → 3-phase multi-spin wave set

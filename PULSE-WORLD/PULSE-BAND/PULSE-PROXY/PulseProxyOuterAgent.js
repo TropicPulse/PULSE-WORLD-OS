@@ -36,8 +36,8 @@ export const PulseRole = {
   type: "Organ",
   subsystem: "PulseProxy",
   layer: "OuterAgent",
-  version: "12.3-EVO-PRESENCE",
-  identity: "PulseProxyOuterAgent-v12.3-EVO-PRESENCE",
+  version: "12.3-Evo-Presence",
+  identity: "PulseProxyOuterAgent-v12.3-Evo-Presence",
 
   evo: {
     driftProof: true,
@@ -88,8 +88,8 @@ export const PROXY_OUTER_AGENT_CONTEXT = {
 export const PulseProxyOuterAgentMeta = Object.freeze({
   layer: "PulseProxyOuterAgent",
   role: "EXTERNAL_NEGOTIATOR_BOUNDARY_ORGAN",
-  version: "v12.3-EVO-BINARY-MAX-ABA-PRESENCE",
-  identity: "PulseProxyOuterAgent-v12.3-EVO-BINARY-MAX-ABA-PRESENCE",
+  version: "v12.3-Evo-BINARY-MAX-ABA-Presence",
+  identity: "PulseProxyOuterAgent-v12.3-Evo-BINARY-MAX-ABA-Presence",
 
   guarantees: Object.freeze({
     deterministic: true,
@@ -160,7 +160,7 @@ export const PulseProxyOuterAgentMeta = Object.freeze({
 
   lineage: Object.freeze({
     root: "PulseProxy-v11",
-    parent: "PulseProxy-v12.3-EVO",
+    parent: "PulseProxy-v12.3-Evo",
     ancestry: [
       "PulseProxyOuterAgent-v7",
       "PulseProxyOuterAgent-v8",
@@ -169,7 +169,7 @@ export const PulseProxyOuterAgentMeta = Object.freeze({
       "PulseProxyOuterAgent-v11",
       "PulseProxyOuterAgent-v11-Evo",
       "PulseProxyOuterAgent-v11-Evo-Prime",
-      "PulseProxyOuterAgent-v12.3-EVO-PRESENCE"
+      "PulseProxyOuterAgent-v12.3-Evo-Presence"
     ]
   }),
 

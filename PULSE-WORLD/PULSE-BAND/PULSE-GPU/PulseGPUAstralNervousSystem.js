@@ -34,7 +34,7 @@
 /*
 AI_EXPERIENCE_META = {
   identity: "PulseGPUAstralNervousSystem",
-  version: "v14-IMMORTAL",
+  version: "v14-Immortal",
   layer: "gpu_boundary",
   role: "gpu_astral_nervous_system",
   lineage: "PulseGPU-v14",

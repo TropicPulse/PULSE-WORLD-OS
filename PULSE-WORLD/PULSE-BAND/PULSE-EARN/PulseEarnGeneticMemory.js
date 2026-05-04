@@ -1,10 +1,10 @@
 // ============================================================================
-// FILE: tropic-pulse-functions/PULSE-WORLD/PULSE-EARN/PulseEarnGeneticMemory-v13.0-PRESENCE-IMMORTAL.js
-// LAYER: THE GENETIC MEMORY (v13.0-PRESENCE-IMMORTAL)
+// FILE: tropic-pulse-functions/PULSE-WORLD/PULSE-EARN/PulseEarnGeneticMemory-v13.0-Presence-Immortal.js
+// LAYER: THE GENETIC MEMORY (v13.0-Presence-Immortal)
 // (Keeper of Packets + Guardian of Determinism + DNA Repair Substrate)
 // ============================================================================
 //
-// ROLE (v13.0-PRESENCE-IMMORTAL):
+// ROLE (v13.0-Presence-Immortal):
 //   THE GENETIC MEMORY — Pulse‑Earn’s deterministic packet genome.
 //   • Stores packet data in a safe, in‑memory gene archive.
 //   • Generates deterministic packet values (genetic identity).
@@ -12,7 +12,7 @@
 //   • Emits v13‑Presence‑IMMORTAL genetic signatures.
 //   • Dual-band, binary-aware, wave-aware, presence/advantage/chunk-aware.
 //
-// CONTRACT (v13.0-PRESENCE-IMMORTAL):
+// CONTRACT (v13.0-Presence-Immortal):
 //   • PURE PACKET ENGINE — no AI layers, no translation, no memory model.
 //   • NO eval(), NO Function(), NO dynamic imports.
 //   • NO network calls, NO filesystem, NO timestamps.
@@ -22,10 +22,10 @@
 /*
 AI_EXPERIENCE_META = {
   identity: "PulseEarnGeneticMemory",
-  version: "v14-IMMORTAL",
+  version: "v14-Immortal",
   layer: "earn_genetic",
   role: "earn_genetic_memory",
-  lineage: "PulseEarnGeneticMemory-v11 → v12.3 → v14-IMMORTAL",
+  lineage: "PulseEarnGeneticMemory-v11 → v12.3 → v14-Immortal",
 
   evo: {
     geneticMemory: true,
@@ -62,8 +62,8 @@ import { PulseProofBridge } from "../../PULSE-UI/_BACKEND/PulseProofBridge.js";
 export const PulseEarnGeneticMemoryMeta = Object.freeze({
   layer: "PulseEarnGeneticMemory",
   role: "EARN_GENETIC_MEMORY_ORGAN",
-  version: "v13.0-PRESENCE-IMMORTAL",
-  identity: "PulseEarnGeneticMemory-v13.0-PRESENCE-IMMORTAL",
+  version: "v13.0-Presence-Immortal",
+  identity: "PulseEarnGeneticMemory-v13.0-Presence-Immortal",
 
   guarantees: Object.freeze({
     deterministic: true,
@@ -142,10 +142,10 @@ let geneCycle = 0;
 // PulseProofBridge — deterministic proof surfaces for genetic memory
 // ============================================================================
 const proof = new PulseProofBridge({
-  namespace: "PulseEarnGeneticMemory-v15-IMMORTAL",
+  namespace: "PulseEarnGeneticMemory-v15-Immortal",
   layer: "GeneticMemory",
   role: "GeneProofSurface",
-  version: "v15-IMMORTAL-CHUNK",
+  version: "v15-Immortal-CHUNK",
   deterministic: true,
   driftProof: true
 });
@@ -194,7 +194,7 @@ function buildPresenceField(globalHints = {}, cycle) {
   const presenceTier = classifyPresenceTier(pressure);
 
   return {
-    presenceVersion: "v13.0-PRESENCE-IMMORTAL",
+    presenceVersion: "v13.0-Presence-Immortal",
     presenceTier,
 
     bandPresence: ghP.bandPresence || "symbolic",

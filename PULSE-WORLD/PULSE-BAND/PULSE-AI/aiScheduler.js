@@ -25,10 +25,10 @@
 /*
 AI_EXPERIENCE_META = {
   identity: "aiScheduler",
-  version: "v15-IMMORTAL",
+  version: "v15-Immortal",
   layer: "ai_core",
   role: "ai_scheduler",
-  lineage: "aiScheduler-v10 → v12.3-EVO+ → v15-IMMORTAL",
+  lineage: "aiScheduler-v10 → v12.3-Evo+ → v15-Immortal",
 
   evo: {
     schedulingEngine: true,
@@ -58,8 +58,8 @@ AI_EXPERIENCE_META = {
 export const SchedulerMeta = Object.freeze({
   layer: "BinaryNervousSystem",
   role: "BINARY_SCHEDULER_ORGAN",
-  version: "15-IMMORTAL",
-  identity: "aiBinaryScheduler-v15-IMMORTAL",
+  version: "15-Immortal",
+  identity: "aiBinaryScheduler-v15-Immortal",
 
   evo: Object.freeze({
     driftProof: true,
@@ -77,7 +77,7 @@ export const SchedulerMeta = Object.freeze({
     spiralAware: true,
     readOnly: true,
     multiInstanceReady: true,
-    epoch: "15-IMMORTAL"
+    epoch: "15-Immortal"
   }),
 
   contract: Object.freeze({

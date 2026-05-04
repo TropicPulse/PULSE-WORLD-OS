@@ -1,16 +1,16 @@
 // ============================================================================
-//  aiDualBand-v16-IMMORTAL-ORGANISM.js
-//  PULSE OS v16-IMMORTAL — Dual-Band Bridge (Symbolic ↔ Binary)
+//  aiDualBand-v16-Immortal-ORGANISM.js
+//  PULSE OS v16-Immortal — Dual-Band Bridge (Symbolic ↔ Binary)
 //  Organism Bridge • Context Engine • Clinical + Structural + ScanFile Aware
 //  PURE BRIDGE. ZERO MUTATION. ZERO RANDOMNESS.
 // ============================================================================
 /*
 AI_EXPERIENCE_META = {
   identity: "aiDualband",
-  version: "v16-IMMORTAL-ORGANISM",
+  version: "v16-Immortal-ORGANISM",
   layer: "ai_core",
   role: "dualband_bridge_organism",
-  lineage: "aiDualband-v11 → v13.0-EVO+++ → v14-IMMORTAL → v16-IMMORTAL-ORGANISM",
+  lineage: "aiDualband-v11 → v13.0-Evo+++ → v14-Immortal → v16-Immortal-ORGANISM",
 
   evo: {
     dualBand: true,
@@ -42,8 +42,8 @@ AI_EXPERIENCE_META = {
 export const DualBandMeta = Object.freeze({
   layer: "PulseAIDualBandKernel",
   role: "DUAL_BAND_BRIDGE_ORGAN",
-  version: "v16-IMMORTAL-ORGANISM",
-  identity: "aiDualBandBridge-v16-IMMORTAL-ORGANISM",
+  version: "v16-Immortal-ORGANISM",
+  identity: "aiDualBandBridge-v16-Immortal-ORGANISM",
 
   evo: Object.freeze({
     driftProof: true,
@@ -71,7 +71,7 @@ export const DualBandMeta = Object.freeze({
     proxyAware: true,
     proxyPressureAware: true,
     proxyFallbackAware: true,
-    epoch: "v16-IMMORTAL-ORGANISM"
+    epoch: "v16-Immortal-ORGANISM"
   }),
 
   contract: Object.freeze({
@@ -181,8 +181,8 @@ import {
 const DUAL_BAND_CONTEXT = Object.freeze({
   layer: "DualBandOrganism",
   role: "DUAL_BAND_BRIDGE",
-  version: "v16-IMMORTAL-ORGANISM",
-  lineage: "pulse-dual-band-v16-IMMORTAL-ORGANISM",
+  version: "v16-Immortal-ORGANISM",
+  lineage: "pulse-dual-band-v16-Immortal-ORGANISM",
   evo: Object.freeze({
     dualBand: true,
     binaryFirst: true,

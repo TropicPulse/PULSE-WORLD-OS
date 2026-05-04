@@ -6,10 +6,10 @@
 /*
 AI_EXPERIENCE_META = {
   identity: "createOrgans",
-  version: "v14-IMMORTAL",
+  version: "v14-Immortal",
   layer: "ai_tools",
   role: "organ_creation_engine",
-  lineage: "createOrgans-v11 → v14-IMMORTAL",
+  lineage: "createOrgans-v11 → v14-Immortal",
 
   evo: {
     organCreation: true,
@@ -92,8 +92,8 @@ export const BrainstemMeta = Object.freeze({
 // ⭐ CNS‑SAFE v13 Chunker
 import { createPulseChunker } from "../PULSE-OS/PulseChunker-v2.js";
 
-import PulseOSPresence from "../PULSE-OS/PulseOSPresence-v12.4-EVO.js";
-import PulseMeshPresenceRelay from "../PULSE-MESH/PulseMeshPresenceRelay-v12.4-EVO.js";
+import PulseOSPresence from "../PULSE-OS/PulseOSPresence-v12.4-Evo.js";
+import PulseMeshPresenceRelay from "../PULSE-MESH/PulseMeshPresenceRelay-v12.4-Evo.js";
 
 import { createArchitectAPI } from "./aiArchitect.js";
 import { createTouristAPI, prewarmTourist } from "./aiTourist.js";

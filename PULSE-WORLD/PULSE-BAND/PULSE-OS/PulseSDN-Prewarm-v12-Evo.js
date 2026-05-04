@@ -1,5 +1,5 @@
 // ============================================================================
-// FILE: /Pulse-OS/PulseSDN-Prewarm-v13.0-PRESENCE-IMMORTAL.js
+// FILE: /PULSE-OS/PulseSDN-Prewarm-v13.0-Presence-Immortal.js
 // LAYER: SDN PREWARM ENGINE (Spinal Reflex Ignition, v13 IMMORTAL)
 // ============================================================================
 //
@@ -11,7 +11,7 @@
 //   • NO cognition, NO evolution, NO external mutation.
 //   • Pure, deterministic, CNS warm-up.
 //
-// CONTRACT (v13.0-PRESENCE-IMMORTAL):
+// CONTRACT (v13.0-Presence-Immortal):
 //   • MAY touch SDN internal APIs (registerExtension, emitImpulse, etc.).
 //   • MAY simulate impulses with synthetic packets.
 //   • MAY pre-register extensions (Understanding, Mesh, Send, Earn, Presence, etc.).
@@ -23,7 +23,7 @@
 /*
 AI_EXPERIENCE_META = {
   identity: "PulseSDN-Prewarm",
-  version: "v14-IMMORTAL",
+  version: "v14-Immortal",
   layer: "os_sdn",
   role: "sdn_prewarm_engine",
   lineage: "PulseOS-v14",
@@ -65,8 +65,8 @@ AI_EXPERIENCE_META = {
 export const SDNPrewarmMeta = Object.freeze({
   layer: "PulseSDN",
   role: "SDN_PREWARM_ENGINE",
-  version: "v13.0-PRESENCE-IMMORTAL",
-  identity: "PulseSDN-Prewarm-v13.0-PRESENCE-IMMORTAL",
+  version: "v13.0-Presence-Immortal",
+  identity: "PulseSDN-Prewarm-v13.0-Presence-Immortal",
   evo: Object.freeze({
     spinalReflexIgnition: true,
     dualBandAware: true,
@@ -99,14 +99,14 @@ export function prewarmSDN(SDN) {
 
   try {
     // -----------------------------------------------------------------------
-    // 1) Warm Extension Registry (v13 Presence-IMMORTAL, Earn-aware)
+    // 1) Warm Extension Registry (v13 Presence-Immortal, Earn-aware)
     // -----------------------------------------------------------------------
     const extensionsToPrewarm = [
       {
         name: "Understanding",
         kind: "extension",
         meta: {
-          version: "v13.0-PRESENCE-IMMORTAL",
+          version: "v13.0-Presence-Immortal",
           role: "cortical-opener",
           layer: "A3",
           binaryFirst: true,
@@ -119,7 +119,7 @@ export function prewarmSDN(SDN) {
         name: "Mesh",
         kind: "extension",
         meta: {
-          version: "v13.0-PRESENCE-IMMORTAL",
+          version: "v13.0-Presence-Immortal",
           role: "network-organ",
           layer: "M1",
           presenceAware: true,
@@ -130,7 +130,7 @@ export function prewarmSDN(SDN) {
         name: "Send",
         kind: "extension",
         meta: {
-          version: "v13.0-PRESENCE-IMMORTAL",
+          version: "v13.0-Presence-Immortal",
           role: "output-organ",
           layer: "O1",
           presenceAware: true,
@@ -141,20 +141,20 @@ export function prewarmSDN(SDN) {
         name: "Earn",
         kind: "extension",
         meta: {
-          version: "v13.0-PRESENCE-IMMORTAL",
+          version: "v13.0-Presence-Immortal",
           role: "value-organ",
           layer: "V1",
           presenceAware: true,
           dualBandAware: true,
           advantageFieldAware: true,
-          earnOrganContract: "PulseEarn-v13.0-PRESENCE-IMMORTAL"
+          earnOrganContract: "PulseEarn-v13.0-Presence-Immortal"
         }
       },
       {
         name: "Presence",
         kind: "extension",
         meta: {
-          version: "v13.0-PRESENCE-IMMORTAL",
+          version: "v13.0-Presence-Immortal",
           role: "presence-field-organ",
           layer: "P1",
           presenceFieldAware: true,
@@ -394,7 +394,7 @@ export function prewarmSDN(SDN) {
           executionContext: {
             sceneType: "cortical-opener",
             workloadClass: "frontend-boot",
-            dispatchSignature: "Understanding.v13.0-PRESENCE-IMMORTAL",
+            dispatchSignature: "Understanding.v13.0-Presence-Immortal",
             shapeSignature: "A3-layer",
             extensionId: "Understanding",
             identityKind: "none"
@@ -412,7 +412,7 @@ export function prewarmSDN(SDN) {
           executionContext: {
             sceneType: "network-organ",
             workloadClass: "mesh-boot",
-            dispatchSignature: "Mesh.v13.0-PRESENCE-IMMORTAL",
+            dispatchSignature: "Mesh.v13.0-Presence-Immortal",
             shapeSignature: "M1-layer",
             extensionId: "Mesh",
             identityKind: "none"
@@ -430,7 +430,7 @@ export function prewarmSDN(SDN) {
           executionContext: {
             sceneType: "presence-field",
             workloadClass: "presence-boot",
-            dispatchSignature: "Presence.v13.0-PRESENCE-IMMORTAL",
+            dispatchSignature: "Presence.v13.0-Presence-Immortal",
             shapeSignature: "P1-layer",
             extensionId: "Presence",
             identityKind: "none"
@@ -448,7 +448,7 @@ export function prewarmSDN(SDN) {
           executionContext: {
             sceneType: "value-organ",
             workloadClass: "earn-boot",
-            dispatchSignature: "Earn.v13.0-PRESENCE-IMMORTAL",
+            dispatchSignature: "Earn.v13.0-Presence-Immortal",
             shapeSignature: "V1-layer",
             extensionId: "Earn",
             identityKind: "none"

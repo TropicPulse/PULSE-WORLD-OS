@@ -6,10 +6,10 @@
 /*
 AI_EXPERIENCE_META = {
   identity: "aiEnvironment",
-  version: "v14-IMMORTAL",
+  version: "v14-Immortal",
   layer: "ai_core",
   role: "environment_simulator",
-  lineage: "aiEnvironment-v10 → v12 → v14-IMMORTAL",
+  lineage: "aiEnvironment-v10 → v12 → v14-Immortal",
 
   evo: {
     environmentSimulation: true,

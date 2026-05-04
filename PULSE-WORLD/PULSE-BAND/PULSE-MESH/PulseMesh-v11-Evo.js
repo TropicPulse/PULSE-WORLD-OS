@@ -1,6 +1,6 @@
 // ============================================================================
-// FILE: PulseMesh-v15-EVO.js
-// PULSE SYMBOLIC MESH — v15-EVO-IMMORTAL
+// FILE: PulseMesh-v15-Evo.js
+// PULSE SYMBOLIC MESH — v15-Evo-Immortal
 // “PURE SYMBOLIC CONNECTIVE TISSUE / SEMANTIC PATH / BINARY-AWARE”
 // ============================================================================
 //
@@ -41,7 +41,7 @@
 /*
 AI_EXPERIENCE_META = {
   identity: "PulseMesh",
-  version: "v14-IMMORTAL",
+  version: "v14-Immortal",
   layer: "mesh_symbolic",
   role: "symbolic_mesh_kernel",
   lineage: "PulseMesh-v14",
@@ -84,8 +84,8 @@ AI_EXPERIENCE_META = {
 export const PulseMeshMeta = Object.freeze({
   layer: "SymbolicNervousSystem",
   role: "PURE_SYMBOLIC_MESH",
-  version: "v15-EVO-IMMORTAL",
-  identity: "PulseMesh-v15-EVO-IMMORTAL",
+  version: "v15-Evo-Immortal",
+  identity: "PulseMesh-v15-Evo-Immortal",
   guarantees: Object.freeze({
     pureSymbolicPath: true,          // Only object packets on data path
     deterministic: true,             // Same input → same output
@@ -112,7 +112,7 @@ export const PulseMeshMeta = Object.freeze({
 // ============================================================================
 
 // 0 — CORE ORGANISM BOOT
-import { createOrganismMesh } from "./OrganismMesh-v1-EVO.js";
+import { createOrganismMesh } from "./OrganismMesh-v1-Evo.js";
 
 // 1 — SPINE (root of mesh nervous system)
 import PulseMeshSpine from "./PulseMeshSpine.js";
@@ -121,7 +121,7 @@ import PulseMeshSpine from "./PulseMeshSpine.js";
 import PulseMeshFlow from "./PulseMeshFlow.js";
 
 // 3 — PRESENCE RELAY (mesh → world presence)
-import PulseMeshPresenceRelay from "./PulseMeshPresenceRelay-v12.4-EVO.js";
+import PulseMeshPresenceRelay from "./PulseMeshPresenceRelay-v12.4-Evo.js";
 
 // 4 — COGNITION (mesh-level cognition)
 import PulseMeshCognition from "./PulseMeshCognition.js";

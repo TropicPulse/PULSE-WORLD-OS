@@ -10,10 +10,10 @@
 /*
 AI_EXPERIENCE_META = {
   identity: "aiBinaryHeartbeat",
-  version: "v14-IMMORTAL",
+  version: "v14-Immortal",
   layer: "ai_binary",
   role: "binary_heartbeat",
-  lineage: "aiBinaryHeartbeat-v9 → v11 → v14-IMMORTAL",
+  lineage: "aiBinaryHeartbeat-v9 → v11 → v14-Immortal",
 
   evo: {
     heartbeat: true,

@@ -41,10 +41,10 @@
 /*
 AI_EXPERIENCE_META = {
   identity: "aiWatchdog",
-  version: "v14-IMMORTAL",
+  version: "v14-Immortal",
   layer: "ai_core",
   role: "watchdog_engine",
-  lineage: "aiWatchdog-v11 → v14-IMMORTAL",
+  lineage: "aiWatchdog-v11 → v14-Immortal",
 
   evo: {
     watchdogEngine: true,
@@ -74,8 +74,8 @@ export const WatchdogMeta = Object.freeze({
   subsystem: "aiBinaryWatchdog",
   layer: "BinaryNervousSystem",
   role: "BINARY_WATCHDOG_ORGAN",
-  version: "11.2-EVO+",
-  identity: "aiBinaryWatchdog-v11.2-EVO+",
+  version: "11.2-Evo+",
+  identity: "aiBinaryWatchdog-v11.2-Evo+",
 
   evo: Object.freeze({
     driftProof: true,
@@ -93,7 +93,7 @@ export const WatchdogMeta = Object.freeze({
     mutationSafe: true,
     nonBlocking: true,
     multiInstanceReady: true,
-    epoch: "v11.2-EVO+"
+    epoch: "v11.2-Evo+"
   }),
 
   contract: Object.freeze({

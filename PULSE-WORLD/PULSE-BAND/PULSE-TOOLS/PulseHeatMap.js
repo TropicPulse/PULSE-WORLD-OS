@@ -1,15 +1,15 @@
 // ============================================================================
-// FILE: /PulseOS/Scanner/PulseHeatMap-v12.3-EVO.js
-// PULSE OS — v12.3-EVO
-// UNIVERSAL HEATMAP ORGAN — PRESENCE + HARMONICS + DUAL-BAND + MULTI-SPIN-EVO
+// FILE: /PulseOS/Scanner/PulseHeatMap-v12.3-Evo.js
+// PULSE OS — v12.3-Evo
+// UNIVERSAL HEATMAP ORGAN — PRESENCE + HARMONICS + DUAL-BAND + MULTI-SPIN-Evo
 // ============================================================================
-// ROLE (12.3-EVO):
+// ROLE (12.3-Evo):
 //   - Convert any grid into a universal heatmap representation.
 //   - Environment-aware (body/home/town/kitchen/crab/etc).
 //   - Presence-aware (presenceAvg, presenceGradient).
 //   - Harmonics-aware (phaseDrift, coherenceScore).
 //   - Dual-band aware (binary + pulse + presence).
-//   - Multi-spin-EVO aware (spin divergence weighting).
+//   - Multi-spin-Evo aware (spin divergence weighting).
 //   - Deterministic color mapping (epoch-stable).
 //   - Renderer-agnostic output.
 // ============================================================================
@@ -69,7 +69,7 @@ export function createPulseHeatMap({ trace = false } = {}) {
   }
 
   // ---------------------------------------------------------------------------
-  // MULTI-SPIN-EVO BOOST — divergence weighting
+  // MULTI-SPIN-Evo BOOST — divergence weighting
   // ---------------------------------------------------------------------------
   function spinBoost(spins, x, y) {
     if (!Array.isArray(spins) || spins.length < 2) return 0;
@@ -93,7 +93,7 @@ export function createPulseHeatMap({ trace = false } = {}) {
   }
 
   // ---------------------------------------------------------------------------
-  // CORE: GRID → HEATMAP POINTS (ENV + PRESENCE + HARMONICS + MULTI-SPIN-EVO)
+  // CORE: GRID → HEATMAP POINTS (ENV + PRESENCE + HARMONICS + MULTI-SPIN-Evo)
   // ---------------------------------------------------------------------------
   function buildEnvironmentHeatMap({
     grid,
@@ -120,7 +120,7 @@ export function createPulseHeatMap({ trace = false } = {}) {
           0.20 * cell.wave +
           0.15 * cell.presence;
 
-        // Multi-spin-EVO boost
+        // Multi-spin-Evo boost
         value += spinBoost(spins, x, y);
 
         // Dual-band color mapping

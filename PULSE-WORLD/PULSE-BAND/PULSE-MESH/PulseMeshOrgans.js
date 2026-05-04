@@ -1,5 +1,5 @@
 // ============================================================================
-//  PULSE OS v15.0-MESH-ORGANS-EVO — SURVIVAL / MESH ORGANS LAYER  // orange
+//  PULSE OS v15.0-MESH-ORGANS-Evo — SURVIVAL / MESH ORGANS LAYER  // orange
 //  “Functional Organ Map of the Mesh Body”
 //  Capability Signatures • Deterministic Organ Matching • Metadata-Only
 // ============================================================================
@@ -18,7 +18,7 @@
 /*
 AI_EXPERIENCE_META = {
   identity: "PulseMeshOrgans",
-  version: "v15.0-MESH-ORGANS-EVO",
+  version: "v15.0-MESH-ORGANS-Evo",
   layer: "mesh",
   role: "mesh_organ_registry",
   lineage: "PulseMesh-v15",
@@ -55,7 +55,7 @@ AI_EXPERIENCE_META = {
 }
 */
 // ============================================================================
-//  PULSE OS v15.0-MESH-ORGANS-EVO-IMMORTAL  // orange
+//  PULSE OS v15.0-MESH-ORGANS-Evo-Immortal  // orange
 //  “Functional Organ Map of the Mesh Body”
 //  Capability Signatures • Deterministic Organ Matching • Metadata-Only
 // ============================================================================
@@ -68,7 +68,7 @@ export function createPulseOrgans() {
   const organMeta = {
     layer: "PulseOrgans",
     role: "FUNCTIONAL_ORGAN_MAP",
-    version: "15.0-MESH-ORGANS-EVO-IMMORTAL",
+    version: "15.0-MESH-ORGANS-Evo-Immortal",
     target: "full-mesh",
     selfRepairable: true,
     evo: {

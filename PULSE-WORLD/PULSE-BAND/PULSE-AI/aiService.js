@@ -7,10 +7,10 @@
 /*
 AI_EXPERIENCE_META = {
   identity: "aiService",
-  version: "v14-IMMORTAL",
+  version: "v14-Immortal",
   layer: "ai_tools",
   role: "service_surface",
-  lineage: "aiService-v10 → v14-IMMORTAL",
+  lineage: "aiService-v10 → v14-Immortal",
 
   evo: {
     serviceSurface: true,
@@ -37,8 +37,8 @@ AI_EXPERIENCE_META = {
 export const ServiceGatewayMeta = Object.freeze({
   layer: "PulseAIServiceGateway",
   role: "SERVICE_GATEWAY_ORGAN",
-  version: "12.3-EVO+",
-  identity: "aiServiceGateway-v12.3-EVO+",
+  version: "12.3-Evo+",
+  identity: "aiServiceGateway-v12.3-Evo+",
 
   evo: Object.freeze({
     driftProof: true,
@@ -57,7 +57,7 @@ export const ServiceGatewayMeta = Object.freeze({
     overmindAware: true,
     readOnly: true,
     multiInstanceReady: true,
-    epoch: "12.3-EVO+"
+    epoch: "12.3-Evo+"
   }),
 
   contract: Object.freeze({

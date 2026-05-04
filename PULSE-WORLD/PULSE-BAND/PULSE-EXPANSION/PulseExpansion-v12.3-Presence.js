@@ -1,6 +1,6 @@
 /**
  * ============================================================================
- *  PULSE EXPANSION — v16-IMMORTAL-ORGANISM
+ *  PULSE EXPANSION — v16-Immortal-ORGANISM
  *  Presence Region Governor / Network Stretcher to PULSE-NET
  *  Every-Advantage / Regioning-Aware / Beacon-Aware / Castle-Aware / PulseNet-Aware
  * ============================================================================
@@ -8,10 +8,10 @@
 /*
 AI_EXPERIENCE_META = {
   identity: "PulseExpansion",
-  version: "v16-IMMORTAL-ORGANISM",
+  version: "v16-Immortal-ORGANISM",
   layer: "presence_expansion",
   role: "presence_region_governor",
-  lineage: "PulseExpansion-v14 → v16-IMMORTAL-ORGANISM",
+  lineage: "PulseExpansion-v14 → v16-Immortal-ORGANISM",
 
   evo: {
     expansionGovernor: true,
@@ -128,8 +128,8 @@ function safePulseNetCall(pulseNetBridge, method, payload) {
 export const PulseExpansionMeta = Object.freeze({
   layer: "PulseExpansion",
   role: "PRESENCE_STRATEGIST_ORGAN",
-  version: "v16-IMMORTAL-ORGANISM",
-  identity: "PulseExpansion-v16-IMMORTAL-ORGANISM",
+  version: "v16-Immortal-ORGANISM",
+  identity: "PulseExpansion-v16-Immortal-ORGANISM",
 
   world: Object.freeze({
     castleMeta: PulseCastleMeta,
@@ -425,7 +425,7 @@ const BeaconMesh = BeaconEngine
   : null;
 
 // ============================================================================
-//  CORE ORGAN — PulseExpansion v16-IMMORTAL-ORGANISM
+//  CORE ORGAN — PulseExpansion v16-Immortal-ORGANISM
 // ============================================================================
 
 export class PulseExpansion {

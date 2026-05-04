@@ -1,5 +1,5 @@
 // ============================================================================
-//  FILE: PulseBinaryShifterEvolutionaryPulse-v14.1-PULSE-COMPUTE-PRESENCE-IMMORTAL.js
+//  FILE: PulseBinaryShifterEvolutionaryPulse-v14.1-PULSE-COMPUTE-Presence-Immortal.js
 //  Pulse v2 • Binary Shifter Evolutionary Pulse Front-End (v14.1-PULSE-COMPUTE)
 //  IMMORTAL: BinaryStrength + BitsSummary + Hints Surface + Band/DNA + Presence
 //  • Dual-band aware (symbolic/binary, non-executable binary)
@@ -10,7 +10,7 @@
 /*
 AI_EXPERIENCE_META = {
   identity: "PulseBinaryShifterEvolutionaryPulse",
-  version: "v14.1-PULSE-COMPUTE-IMMORTAL",
+  version: "v14.1-PULSE-COMPUTE-Immortal",
   layer: "frontend",
   role: "binary_evolution_engine",
   lineage: "PulseOS-v12",
@@ -61,8 +61,8 @@ export const PulseBinaryRole = {
   type: "Pulse",
   subsystem: "Pulse",
   layer: "BinaryFrontEnd",
-  version: "14.1-PULSE-COMPUTE-PRESENCE-IMMORTAL",
-  identity: "PulseBinaryShifterEvolutionaryPulse-v14.1-PULSE-COMPUTE-PRESENCE-IMMORTAL",
+  version: "14.1-PULSE-COMPUTE-Presence-Immortal",
+  identity: "PulseBinaryShifterEvolutionaryPulse-v14.1-PULSE-COMPUTE-Presence-Immortal",
 
   evo: {
     binaryFrontEnd: true,
@@ -396,7 +396,7 @@ export function evolveBinaryEvolutionPulse({
 }
 
 // ============================================================================
-//  PUBLIC API — BINARY EVOLUTION FRONT-END (v14.1-PULSE-COMPUTE-PRESENCE-IMMORTAL)
+//  PUBLIC API — BINARY EVOLUTION FRONT-END (v14.1-PULSE-COMPUTE-Presence-Immortal)
 // ============================================================================
 
 export function createPulseBinaryShifterEvolutionaryPulse({ trace = false } = {}) {

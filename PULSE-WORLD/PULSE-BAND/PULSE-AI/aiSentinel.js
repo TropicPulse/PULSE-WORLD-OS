@@ -45,10 +45,10 @@
 /*
 AI_EXPERIENCE_META = {
   identity: "aiSentinel",
-  version: "v14-IMMORTAL",
+  version: "v14-Immortal",
   layer: "ai_core",
   role: "sentinel_guard",
-  lineage: "aiSentinel-v11 → v14-IMMORTAL",
+  lineage: "aiSentinel-v11 → v14-Immortal",
 
   evo: {
     sentinelGuard: true,
@@ -75,8 +75,8 @@ AI_EXPERIENCE_META = {
 export const SentinelMeta = Object.freeze({
   layer: "BinaryImmuneSystem",
   role: "BINARY_SENTINEL_ORGAN",
-  version: "12.3-EVO+",
-  identity: "aiBinarySentinel-v12.3-EVO+",
+  version: "12.3-Evo+",
+  identity: "aiBinarySentinel-v12.3-Evo+",
 
   evo: Object.freeze({
     driftProof: true,
@@ -93,7 +93,7 @@ export const SentinelMeta = Object.freeze({
     immuneArteryAware: true,
     readOnly: true,
     multiInstanceReady: true,
-    epoch: "12.3-EVO+"
+    epoch: "12.3-Evo+"
   }),
 
   contract: Object.freeze({

@@ -14,10 +14,10 @@
 /*
 AI_EXPERIENCE_META = {
   identity: "PulseCoreAIMemoryAdapter",
-  version: "v15-IMMORTAL-AI-MEMORY",
+  version: "v15-Immortal-AI-MEMORY",
   layer: "corememory_adapter",
   role: "ai_memory_adapter",
-  lineage: "PulseCoreMemory-v15-IMMORTAL",
+  lineage: "PulseCoreMemory-v15-Immortal",
 
   evo: {
     adapter: true,
@@ -61,7 +61,7 @@ function nextAIEpoch() {
 export function createPulseAIMemoryAdapter({
   overlay = createPulseBinaryOverlay(),
   dnaTag = "default-dna",
-  version = "15.0-IMMORTAL-AI-MEMORY",
+  version = "15.0-Immortal-AI-MEMORY",
   log = console.log
 } = {}) {
 

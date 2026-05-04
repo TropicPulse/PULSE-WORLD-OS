@@ -1,16 +1,16 @@
 // ============================================================================
-//  PulseEarnNervousSystem-v13.0-PRESENCE-IMMORTAL.js
-//  THE NERVOUS SYSTEM + EXCHANGE OFFICE (v13.0 Presence-IMMORTAL + Advantage‑M)
+//  PulseEarnNervousSystem-v13.0-Presence-Immortal.js
+//  THE NERVOUS SYSTEM + EXCHANGE OFFICE (v13.0 Presence-Immortal + Advantage‑M)
 //  Deterministic Job Intake + Result Forwarding + Reputation Updating
 //  Dual-Band + Binary + Wave + Presence + Chunk/Prewarm (descriptive-only)
 // ============================================================================
 /*
 AI_EXPERIENCE_META = {
   identity: "PulseEarnNervousSystem",
-  version: "v14-IMMORTAL",
+  version: "v14-Immortal",
   layer: "earn_nervous",
   role: "earn_signal_router",
-  lineage: "PulseEarnNervousSystem-v10.4 → v11-Evo → v14-IMMORTAL",
+  lineage: "PulseEarnNervousSystem-v10.4 → v11-Evo → v14-Immortal",
 
   evo: {
     nervousSystem: true,
@@ -46,8 +46,8 @@ AI_EXPERIENCE_META = {
 export const PulseEarnNervousSystemMeta = Object.freeze({
   layer: "PulseEarnNervousSystem",
   role: "EARN_NERVOUS_ORGAN",
-  version: "v13.0-PRESENCE-IMMORTAL",
-  identity: "PulseEarnNervousSystem-v13.0-PRESENCE-IMMORTAL",
+  version: "v13.0-Presence-Immortal",
+  identity: "PulseEarnNervousSystem-v13.0-Presence-Immortal",
 
   guarantees: Object.freeze({
     deterministic: true,
@@ -96,15 +96,15 @@ export const PulseEarnNervousSystemMeta = Object.freeze({
   }),
 
   lineage: Object.freeze({
-    root: "PulseOS-v13.0-PRESENCE-IMMORTAL",
-    parent: "PulseEarn-v13.0-PRESENCE-IMMORTAL",
+    root: "PulseOS-v13.0-Presence-Immortal",
+    parent: "PulseEarn-v13.0-Presence-Immortal",
     ancestry: [
       "PulseEarnNervousSystem-v9",
       "PulseEarnNervousSystem-v10",
       "PulseEarnNervousSystem-v11",
       "PulseEarnNervousSystem-v11-Evo",
-      "PulseEarnNervousSystem-v11.2-EVO",
-      "PulseEarnNervousSystem-v12.3-PRESENCE-EVO+"
+      "PulseEarnNervousSystem-v11.2-Evo",
+      "PulseEarnNervousSystem-v12.3-Presence-Evo+"
     ]
   }),
 
@@ -129,7 +129,7 @@ import { PulseEarnMktEmbassyLedger as marketplaces } from "./PulseEarnMktEmbassy
 import { sendResultToMarketplace } from "./PulseEarnLymphNodes.js";
 
 // ============================================================================
-// Healing Metadata — Neural Activity Log (v13.0-PRESENCE-IMMORTAL)
+// Healing Metadata — Neural Activity Log (v13.0-Presence-Immortal)
 // ============================================================================
 const nervousHealing = {
   lastFetchError: null,
@@ -206,7 +206,7 @@ function buildJobPattern(job) {
 }
 
 // ============================================================================
-// Dual-Band + Binary + Wave Builder — v13.0 Presence-IMMORTAL
+// Dual-Band + Binary + Wave Builder — v13.0 Presence-Immortal
 // ============================================================================
 function buildNervousBandBinaryWave(job, result, cycleIndex, device) {
   const band = normalizeBand(
@@ -255,7 +255,7 @@ function buildNervousBandBinaryWave(job, result, cycleIndex, device) {
 }
 
 // ============================================================================
-// Presence Field — v13.0-PRESENCE-IMMORTAL (descriptive-only)
+// Presence Field — v13.0-Presence-Immortal (descriptive-only)
 // ============================================================================
 function buildNervousPresenceField(job, device, cycleIndex) {
   const jobLen = (job?.id || "").length;
@@ -269,7 +269,7 @@ function buildNervousPresenceField(job, device, cycleIndex) {
   else if (magnitude > 0) presenceTier = "presence_low";
 
   const presenceField = {
-    presenceVersion: "v13.0-PRESENCE-IMMORTAL",
+    presenceVersion: "v13.0-Presence-Immortal",
     presenceTier,
     jobLen,
     marketLen,
@@ -341,7 +341,7 @@ function buildNervousChunkPrewarmPlan(job, device, presenceField) {
 }
 
 // ============================================================================
-// fetchJobFromMarketplace — Sensory Intake (v13.0-PRESENCE-IMMORTAL)
+// fetchJobFromMarketplace — Sensory Intake (v13.0-Presence-Immortal)
 // ============================================================================
 export function fetchJobFromMarketplace() {
   nervousHealing.cycleCount++;
@@ -411,7 +411,7 @@ export function fetchJobFromMarketplace() {
 }
 
 // ============================================================================
-// getNextMarketplaceJob — Neural Encoding Layer (v13.0-PRESENCE-IMMORTAL)
+// getNextMarketplaceJob — Neural Encoding Layer (v13.0-Presence-Immortal)
 // ============================================================================
 export function getNextMarketplaceJob(deviceId) {
   const intake = fetchJobFromMarketplace();
@@ -458,7 +458,7 @@ export function getNextMarketplaceJob(deviceId) {
 }
 
 // ============================================================================
-// submitMarketplaceResult — Motor Output + Synaptic Update (v13.0-PRESENCE-IMMORTAL)
+// submitMarketplaceResult — Motor Output + Synaptic Update (v13.0-Presence-Immortal)
 // ============================================================================
 export function submitMarketplaceResult(job, result) {
   try {
@@ -536,7 +536,7 @@ function buildNervousSignature() {
 }
 
 // ============================================================================
-// Export Healing Metadata — Nervous System Health Report (v13.0-PRESENCE-IMMORTAL)
+// Export Healing Metadata — Nervous System Health Report (v13.0-Presence-Immortal)
 // ============================================================================
 export function getPulseEarnNervousSystemHealingState() {
   nervousHealing.lastNervousSignature = buildNervousSignature();

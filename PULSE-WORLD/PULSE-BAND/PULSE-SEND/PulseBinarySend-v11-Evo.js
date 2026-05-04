@@ -1,5 +1,5 @@
 // ============================================================================
-//  BinarySend-v16-IMMORTAL-ORGANISM.js
+//  BinarySend-v16-Immortal-ORGANISM.js
 //  PURE BINARY SEND ORGAN — v12.3 EVO BINARY CORE + v16 IMMORTAL CONTEXT
 // ============================================================================
 //  ROLE:
@@ -17,10 +17,10 @@
 /*
 AI_EXPERIENCE_META = {
   identity: "PulseBinarySend",
-  version: "v16-IMMORTAL-ORGANISM",
+  version: "v16-Immortal-ORGANISM",
   layer: "frontend",
   role: "binary_send_engine",
-  lineage: "PulseOS-v12 → v14-EVO-IMMORTAL → v16-IMMORTAL-ORGANISM",
+  lineage: "PulseOS-v12 → v14-Evo-Immortal → v16-Immortal-ORGANISM",
 
   evo: {
     binaryCore: true,
@@ -59,8 +59,8 @@ AI_EXPERIENCE_META = {
 export const PulseBinarySendMetaV16 = Object.freeze({
   layer: "BinarySend",
   role: "PURE_BINARY_SEND_ORGAN",
-  version: "v16-IMMORTAL-ORGANISM",
-  identity: "BinarySend-v16-IMMORTAL",
+  version: "v16-Immortal-ORGANISM",
+  identity: "BinarySend-v16-Immortal",
 
   evo: Object.freeze({
     binaryOnly: true,

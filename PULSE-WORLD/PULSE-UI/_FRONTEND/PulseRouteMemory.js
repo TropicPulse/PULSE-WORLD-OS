@@ -6,10 +6,10 @@ LAYER: REFLEX MEMORY ORGAN
 ===============================================================================
 AI_EXPERIENCE_META = {
   identity: "PulseUI.RouteMemory",
-  version: "v14-IMMORTAL",
+  version: "v14-Immortal",
   layer: "pulse_ui",
   role: "reflex_route_memory",
-  lineage: "SkinReflex.RouteMemory-v12 → v14-IMMORTAL",
+  lineage: "SkinReflex.RouteMemory-v12 → v14-Immortal",
 
   evo: {
     reflexMemory: true,
@@ -95,7 +95,7 @@ export const RouteMemoryRole = {
   type: "Organ",
   subsystem: "UI",
   layer: "RouteMemory",
-  version: "14.0-IMMORTAL",
+  version: "14.0-Immortal",
   identity: "PulseRouteMemory",
 
   evo: {

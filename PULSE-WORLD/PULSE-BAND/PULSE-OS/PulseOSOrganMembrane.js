@@ -34,7 +34,7 @@
 /*
 AI_EXPERIENCE_META = {
   identity: "PulseOSOrganMembrane",
-  version: "v14-IMMORTAL",
+  version: "v14-Immortal",
   layer: "membrane",
   role: "os_organ_membrane",
   lineage: "PulseOS-v14",
@@ -119,8 +119,8 @@ export const PulseRole = {
 export const PulseOSOrganMembraneMeta = Object.freeze({
   layer: "PulseOSOrganMembrane",
   role: "A3_ORGAN_REFLEX_MEMBRANE",
-  version: "v12.3-EVO-BINARY-MAX",
-  identity: "PulseOSOrganMembrane-v12.3-EVO-BINARY-MAX",
+  version: "v12.3-Evo-BINARY-MAX",
+  identity: "PulseOSOrganMembrane-v12.3-Evo-BINARY-MAX",
 
   guarantees: Object.freeze({
     deterministic: true,
@@ -176,8 +176,8 @@ export const PulseOSOrganMembraneMeta = Object.freeze({
   }),
 
   lineage: Object.freeze({
-    root: "PulseOS-v12-EVO",
-    parent: "PulseOS-v12.3-EVO",
+    root: "PulseOS-v12-Evo",
+    parent: "PulseOS-v12.3-Evo",
     ancestry: [
       "PulseOSOrganMembrane-v9",
       "PulseOSOrganMembrane-v10",

@@ -1,5 +1,5 @@
 // ============================================================================
-//  PulseProxyAdrenalSystem-v12.3-EVO-ABA.js
+//  PulseProxyAdrenalSystem-v12.3-Evo-ABA.js
 //  ADRENAL SYSTEM — v12.3‑Evo A‑B‑A
 //  Dynamic Band Reflex Organ + Stress Scaling + Instance Orchestrator
 //  12.3+: Dual‑Band + Presence/Harmonics + Prewarm/Cache/Chunk/Remember Hints
@@ -38,8 +38,8 @@ export const PulseRole = {
   type: "Organ",
   subsystem: "PulseProxy",
   layer: "AdrenalSystem",
-  version: "12.3-EVO-ABA",
-  identity: "PulseProxyAdrenalSystem-v12.3-EVO-ABA",
+  version: "12.3-Evo-ABA",
+  identity: "PulseProxyAdrenalSystem-v12.3-Evo-ABA",
 
   evo: {
     dualMode: true,
@@ -102,8 +102,8 @@ export const ORCHESTRATOR_MODES = {
 export const PulseProxyAdrenalSystemMeta = Object.freeze({
   layer: "PulseProxyAdrenalSystem",
   role: "ADRENAL_SYSTEM_ORGAN",
-  version: "v12.3-EVO-BINARY-MAX",
-  identity: "PulseProxyAdrenalSystem-v12.3-EVO-BINARY-MAX",
+  version: "v12.3-Evo-BINARY-MAX",
+  identity: "PulseProxyAdrenalSystem-v12.3-Evo-BINARY-MAX",
 
   guarantees: Object.freeze({
     deterministic: true,
@@ -189,14 +189,14 @@ export const PulseProxyAdrenalSystemMeta = Object.freeze({
 
   lineage: Object.freeze({
     root: "PulseProxy-v11",
-    parent: "PulseProxy-v12.3-EVO",
+    parent: "PulseProxy-v12.3-Evo",
     ancestry: [
       "PulseProxyAdrenalSystem-v9",
       "PulseProxyAdrenalSystem-v10",
       "PulseProxyAdrenalSystem-v11",
       "PulseProxyAdrenalSystem-v11-Evo",
       "PulseProxyAdrenalSystem-v11-Evo-ABA",
-      "PulseProxyAdrenalSystem-v11.2-EVO-BINARY-MAX"
+      "PulseProxyAdrenalSystem-v11.2-Evo-BINARY-MAX"
     ]
   }),
 

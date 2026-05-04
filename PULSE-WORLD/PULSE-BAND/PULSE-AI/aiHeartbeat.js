@@ -6,10 +6,10 @@
 /*
 AI_EXPERIENCE_META = {
   identity: "aiHeartbeat",
-  version: "v14-IMMORTAL",
+  version: "v14-Immortal",
   layer: "ai_core",
   role: "ai_heartbeat",
-  lineage: "aiHeartbeat-v9 → v11 → v14-IMMORTAL",
+  lineage: "aiHeartbeat-v9 → v11 → v14-Immortal",
 
   evo: {
     heartbeat: true,
@@ -37,8 +37,8 @@ AI_EXPERIENCE_META = {
 export const AI_HEARTBEAT_META = Object.freeze({
   layer: "PulseAIHeartbeat",
   role: "HEARTBEAT_ORGAN",
-  version: "v14-EVO-IMMORTAL",
-  identity: "aiHeartbeat-v14-EVO-IMMORTAL",
+  version: "v14-Evo-Immortal",
+  identity: "aiHeartbeat-v14-Evo-Immortal",
 
   evo: Object.freeze({
     driftProof: true,
@@ -59,7 +59,7 @@ export const AI_HEARTBEAT_META = Object.freeze({
     arteryAware: true,
 
     multiInstanceReady: true,
-    epoch: "14-EVO-IMMORTAL"
+    epoch: "14-Evo-Immortal"
   }),
 
   contract: Object.freeze({

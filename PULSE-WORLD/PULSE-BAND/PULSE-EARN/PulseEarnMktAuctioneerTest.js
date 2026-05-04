@@ -5,10 +5,10 @@
 /*
 AI_EXPERIENCE_META = {
   identity: "PulseEarnMktAuctioneerTest",
-  version: "v14-IMMORTAL",
+  version: "v14-Immortal",
   layer: "earn_market_test",
   role: "auctioneer_validation_harness",
-  lineage: "PulseEarnMktAuctioneerTest-v11 → v14-IMMORTAL",
+  lineage: "PulseEarnMktAuctioneerTest-v11 → v14-Immortal",
 
   evo: {
     testHarness: true,

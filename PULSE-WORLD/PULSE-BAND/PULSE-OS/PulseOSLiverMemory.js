@@ -1,11 +1,11 @@
 // ============================================================================
 // FILE: /PulseOS/Organs/Memory/PulseOSMemory.js
-// PULSE OS — v12.3-EVO-BINARY-MAX
+// PULSE OS — v12.3-Evo-BINARY-MAX
 // “THE LIVER” — C‑LAYER METABOLIC ARCHIVE
 // PURE METADATA • ZERO TIMING • ZERO NETWORK • ZERO AUTONOMY • ZERO LOOPS
 // ============================================================================
 //
-// ROLE (v12.3-EVO-BINARY-MAX):
+// ROLE (v12.3-Evo-BINARY-MAX):
 //   • Build OS + subsystem snapshot metadata
 //   • Build drift signature metadata
 //   • Build restore point metadata
@@ -18,7 +18,7 @@
 //   • NEVER derive previews or summaries
 //   • Pure metabolic archive builder (pass-through metadata only)
 //
-// SAFETY CONTRACT (v12.3-EVO-BINARY-MAX):
+// SAFETY CONTRACT (v12.3-Evo-BINARY-MAX):
 //   • Zero timing (no Date.now, no Timestamp.now)
 //   • Zero network (no db, no fetch)
 //   • Zero state (no internal memory)
@@ -31,7 +31,7 @@
 /*
 AI_EXPERIENCE_META = {
   identity: "PulseOSLiverMemory",
-  version: "v14-IMMORTAL",
+  version: "v14-Immortal",
   layer: "cns",
   role: "os_liver_memory",
   lineage: "PulseOS-v14",
@@ -74,7 +74,7 @@ AI_EXPERIENCE_META = {
 
 
 // ============================================================================
-// ORGAN IDENTITY — v12.3-EVO-BINARY-MAX
+// ORGAN IDENTITY — v12.3-Evo-BINARY-MAX
 // ============================================================================
 export const MEMORY_CONTEXT = {
   organ: "PulseOSMemory",
@@ -82,7 +82,7 @@ export const MEMORY_CONTEXT = {
   role: "OS_LIVER",
   purpose: "Metabolic archive: snapshots, drift signatures, restore metadata",
   context: "Pure metadata builder (long-term state organ)",
-  version: "12.3-EVO-BINARY-MAX",
+  version: "12.3-Evo-BINARY-MAX",
   generation: "v12.3",
   target: "os-core",
   selfRepairable: true,
@@ -98,7 +98,7 @@ export const MEMORY_CONTEXT = {
     futureEvolutionReady: true,
 
     routingContract: "PulseSend-v12.3",
-    osOrganContract: "PulseOS-v12.3-EVO",
+    osOrganContract: "PulseOS-v12.3-Evo",
     earnCompatibility: "PulseEarn-v12.3",
 
     zeroTiming: true,
@@ -112,8 +112,8 @@ export const MEMORY_CONTEXT = {
 export const PulseOSMemoryMeta = Object.freeze({
   layer: "PulseOSMemory",
   role: "OS_LIVER_ORGAN",
-  version: "v12.3-EVO-BINARY-MAX",
-  identity: "PulseOSMemory-v12.3-EVO-BINARY-MAX",
+  version: "v12.3-Evo-BINARY-MAX",
+  identity: "PulseOSMemory-v12.3-Evo-BINARY-MAX",
 
   guarantees: Object.freeze({
     deterministic: true,
@@ -172,15 +172,15 @@ export const PulseOSMemoryMeta = Object.freeze({
   }),
 
   lineage: Object.freeze({
-    root: "PulseOS-v12.3-EVO",
-    parent: "PulseOS-v12.3-EVO",
+    root: "PulseOS-v12.3-Evo",
+    parent: "PulseOS-v12.3-Evo",
     ancestry: [
       "PulseOSMemory-v9",
       "PulseOSMemory-v10",
       "PulseOSMemory-v11",
       "PulseOSMemory-v11-Evo",
       "PulseOSMemory-v11-Evo-Prime",
-      "PulseOSMemory-v12.3-EVO-BINARY-MAX"
+      "PulseOSMemory-v12.3-Evo-BINARY-MAX"
     ]
   }),
 
@@ -290,5 +290,5 @@ export const PulseOSMemory = {
 };
 
 // ============================================================================
-// END OF FILE — PULSE OS MEMORY (v12.3-EVO-BINARY-MAX)
+// END OF FILE — PULSE OS MEMORY (v12.3-Evo-BINARY-MAX)
 // ============================================================================

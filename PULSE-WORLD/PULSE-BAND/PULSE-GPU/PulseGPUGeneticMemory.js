@@ -29,7 +29,7 @@
 // ============================================================================
 
 // ============================================================================
-// FILE: PULSE-WORLD/PULSE-GPU/PulseGPUGeneticMemory-v14-IMMORTAL.js
+// FILE: PULSE-WORLD/PULSE-GPU/PulseGPUGeneticMemory-v14-Immortal.js
 // PULSE GPU GENETIC MEMORY v14‑IMMORTAL — THE DNA ARCHIVE
 // Long-Horizon Pattern Memory • Lineage Store • Deterministic Pattern Engine
 // CoreMemory‑Integrated • Binary/NonBinary Dual-Mode • Advantage-Cascade Ready
@@ -37,7 +37,7 @@
 /*
 AI_EXPERIENCE_META = {
   identity: "PulseGPUGeneticMemory",
-  version: "v14-IMMORTAL",
+  version: "v14-Immortal",
   layer: "gpu_brain",
   role: "gpu_genetic_memory",
   lineage: "PulseGPU-v14",
@@ -84,7 +84,7 @@ const GENETIC_MEMORY_CONTEXT = {
   context:
     "Stores lineage, binary-mode outcomes, dispatch signatures, shape signatures, and pattern stats",
   target: "full-gpu+binary",
-  version: "14-IMMORTAL",
+  version: "14-Immortal",
   selfRepairable: true,
 
   evo: {
@@ -104,9 +104,9 @@ const GENETIC_MEMORY_CONTEXT = {
 
     // v14 IMMORTAL contracts
     coreMemoryAware: true,
-    coreMemoryContract: "PulseCoreMemory-v14-IMMORTAL",
-    routingContract: "PulseSend-v14-IMMORTAL",
-    gpuOrganContract: "PulseGPU-v14-IMMORTAL",
+    coreMemoryContract: "PulseCoreMemory-v14-Immortal",
+    routingContract: "PulseSend-v14-Immortal",
+    gpuOrganContract: "PulseGPU-v14-Immortal",
     earnCompatibility: "Earn-v3",
 
     // Legacy compatibility

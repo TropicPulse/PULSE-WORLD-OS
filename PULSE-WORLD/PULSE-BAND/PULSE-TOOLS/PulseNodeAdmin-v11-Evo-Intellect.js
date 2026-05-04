@@ -1,14 +1,14 @@
 
 // ============================================================================
-// FILE: /PulseOS/PULSE-TOOLS/PulseNodeAdmin-v12.3-PRESENCE-EVO-INTELLECT.js
-// PULSE OS — v12.3 PRESENCE-EVO
+// FILE: /PulseOS/PULSE-TOOLS/PulseNodeAdmin-v12.3-Presence-Evo-INTELLECT.js
+// PULSE OS — v12.3 PRESENCE-Evo
 // NODEADMIN ORGAN — SENTINEL COMMAND BRAIN / INTENT + MEMORY + IQ + PRESENCE MAP
 // ============================================================================
 
 const PulseNodeAdminIQMap = {
     identity: {
     name: "PulseNodeAdmin",
-    version: "v12.3+ PRESENCE-EVO-INTELLECT++",
+    version: "v12.3+ PRESENCE-Evo-INTELLECT++",
     role: "Sentinel Command Brain",
     description:
       "Circling guardian cortex that analyzes all layers, manages modes, executes intents, interprets custom actions, integrates memory + backend AI + presence + social graph + earn readiness + mesh/castle/expansion/router/beacon/worldCore signals + band/binary/wave fields + soldier/load maps."

@@ -45,8 +45,8 @@ export const PulseRole = {
   type: "Organ",
   subsystem: "PulseProxy",
   layer: "HeartBeat",
-  version: "12.3-EVO",
-  identity: "PulseProxyHeartbeat-v12.3-EVO-BINARY-MAX-ABA",
+  version: "12.3-Evo",
+  identity: "PulseProxyHeartbeat-v12.3-Evo-BINARY-MAX-ABA",
 
   evo: {
     // Core laws
@@ -81,8 +81,8 @@ export const PulseRole = {
 export const PulseProxyHeartbeatMeta = Object.freeze({
   layer: "PulseProxyHeartbeat",
   role: "PACEMAKER_TIMER_ENGINE",
-  version: "v12.3-EVO-BINARY-MAX-ABA",
-  identity: "PulseProxyHeartbeat-v12.3-EVO-BINARY-MAX-ABA",
+  version: "v12.3-Evo-BINARY-MAX-ABA",
+  identity: "PulseProxyHeartbeat-v12.3-Evo-BINARY-MAX-ABA",
 
   guarantees: Object.freeze({
     deterministic: true,
@@ -151,7 +151,7 @@ export const PulseProxyHeartbeatMeta = Object.freeze({
 
   lineage: Object.freeze({
     root: "PulseProxy-v11",
-    parent: "PulseProxy-v12.3-EVO",
+    parent: "PulseProxy-v12.3-Evo",
     ancestry: [
       "PulseProxyHeartbeat-v7",
       "PulseProxyHeartbeat-v8",
@@ -160,7 +160,7 @@ export const PulseProxyHeartbeatMeta = Object.freeze({
       "PulseProxyHeartbeat-v11",
       "PulseProxyHeartbeat-v11-Evo",
       "PulseProxyHeartbeat-v11-Evo-ABA",
-      "PulseProxyHeartbeat-v11.2-EVO-BINARY-MAX"
+      "PulseProxyHeartbeat-v11.2-Evo-BINARY-MAX"
     ]
   }),
 
@@ -601,7 +601,7 @@ let SECURITY_SWEEP_CYCLE = 0;
 export const SECURITY_SWEEP_CONTEXT = {
   layer: "HeartBeat",
   role: "PACEMAKER_SECURITY_SWEEP",
-  version: "12.3-EVO",
+  version: "12.3-Evo",
   evo: PulseRole.evo
 };
 

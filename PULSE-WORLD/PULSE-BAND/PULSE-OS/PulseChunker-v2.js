@@ -1,17 +1,17 @@
 // ============================================================================
-// FILE: /Pulse-OS/PulseChunker-v2.js
-// PULSE CHUNK ENGINE — v14-IMMORTAL
+// FILE: /PULSE-OS/PulseChunker-v2.js
+// PULSE CHUNK ENGINE — v14-Immortal
 //  - Payload chunking
 //  - Cache/delta engine
 //  - Route-level folding carpet (full route chunking)
 //  - PulseBandSession-aware
-//  - v14-IMMORTAL: 32-lane cache + top-chunk memory + TTL
+//  - v14-Immortal: 32-lane cache + top-chunk memory + TTL
 // ============================================================================
 
 /*
 AI_EXPERIENCE_META = {
   identity: "PulseChunker",
-  version: "v14-IMMORTAL",
+  version: "v14-Immortal",
   layer: "os_chunker",
   role: "chunking_and_prewarm_engine",
   lineage: "PulseOS-v14",
@@ -55,8 +55,8 @@ AI_EXPERIENCE_META = {
 export const PulseChunkerMeta = Object.freeze({
   layer: "Backend",
   role: "PAYLOAD_CHUNK_ENGINE",
-  version: "v14-IMMORTAL",
-  identity: "PulseChunker-v14-IMMORTAL",
+  version: "v14-Immortal",
+  identity: "PulseChunker-v14-Immortal",
   guarantees: Object.freeze({
     deterministicSessionId: true,
     cacheAware: true,
@@ -93,7 +93,7 @@ export const PulseChunkerMeta = Object.freeze({
 });
 
 // ============================================================================
-// ROUTE DESCRIPTOR CONTRACT — v12.4-EVO-ROUTE-FABRIC
+// ROUTE DESCRIPTOR CONTRACT — v12.4-Evo-ROUTE-FABRIC
 // ============================================================================
 function isRouteDescriptor(input) {
   if (!input || typeof input !== "object") return false;
@@ -202,7 +202,7 @@ function normalizeBackendPayload(payload) {
 // ============================================================================
 export function createPulseChunker({ Brain, Logger } = {}) {
   if (!Brain && !Logger) {
-    throw new Error("PulseChunker v14-IMMORTAL: Missing Brain/Logger injection.");
+    throw new Error("PulseChunker v14-Immortal: Missing Brain/Logger injection.");
   }
 
   const log   = Logger?.log   || Brain?.log   || console.log;
@@ -221,7 +221,7 @@ export function createPulseChunker({ Brain, Logger } = {}) {
   const sessions = new Map();
 
   const MetaForLore = {
-    identity: "PulseChunker-v14-IMMORTAL",
+    identity: "PulseChunker-v14-Immortal",
     version: "14.0.0",
     guarantees: {
       laneAware: true,

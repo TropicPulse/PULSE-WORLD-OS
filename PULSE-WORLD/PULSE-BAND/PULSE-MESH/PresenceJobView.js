@@ -1,6 +1,6 @@
 // ============================================================================
-// FILE: PresenceJobView-v15-EVO.js
-// PULSE OS v15.0 — PRESENCE-EVO-MESH-AWARE
+// FILE: PresenceJobView-v15-Evo.js
+// PULSE OS v15.0 — PRESENCE-Evo-MESH-AWARE
 // ---------------------------------------------------------------------------
 //  PRESENCE JOB VIEW (HUMAN + AI HYBRID, IMMORTAL-GRADE COMMENTARY)
 // ---------------------------------------------------------------------------
@@ -59,7 +59,7 @@
 /*
 AI_EXPERIENCE_META = {
   identity: "PresenceJobView",
-  version: "v14.9-PRESENCE-JOB-VIEW",
+  version: "v14.9-Presence-JOB-VIEW",
   layer: "presence",
   role: "job_ready_presence_surface",
   lineage: "PulsePresence-v14",
@@ -111,7 +111,7 @@ export function createPresenceJobView({
   const meta = Object.freeze({
     layer: "PresenceJobView",
     role: "PRESENCE_JOB_SURFACE",
-    version: "15.0-EVO",
+    version: "15.0-Evo",
     evo: {
       presenceAware: true,            // Reads presence bands + state
       earnAware: true,                // Job readiness + earn context

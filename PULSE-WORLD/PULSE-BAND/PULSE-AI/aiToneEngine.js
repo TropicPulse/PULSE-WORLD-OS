@@ -6,10 +6,10 @@
 /*
 AI_EXPERIENCE_META = {
   identity: "aiToneEngine",
-  version: "v15-IMMORTAL",
+  version: "v15-Immortal",
   layer: "ai_core",
   role: "tone_engine",
-  lineage: "aiToneEngine-v11 → v15-IMMORTAL",
+  lineage: "aiToneEngine-v11 → v15-Immortal",
 
   evo: {
     toneEngine: true,
@@ -42,8 +42,8 @@ export const aiToneEngine = {
     type: "Engine",
     subsystem: "aiTone",
     layer: "C1-ToneEngine",
-    version: "15-IMMORTAL",
-    identity: "aiToneEngine-v15-IMMORTAL",
+    version: "15-Immortal",
+    identity: "aiToneEngine-v15-Immortal",
 
     evo: Object.freeze({
       // core invariants
@@ -75,7 +75,7 @@ export const aiToneEngine = {
       speedOptimized: true,
       multiInstanceReady: true,
 
-      epoch: "15-IMMORTAL"
+      epoch: "15-Immortal"
     }),
 
     contract: Object.freeze({

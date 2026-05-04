@@ -6,10 +6,10 @@
 /*
 AI_EXPERIENCE_META = {
   identity: "aiPipeline",
-  version: "v15-IMMORTAL",
+  version: "v15-Immortal",
   layer: "ai_core",
   role: "pipeline_engine",
-  lineage: "aiPipeline-v10 → v15-IMMORTAL",
+  lineage: "aiPipeline-v10 → v15-Immortal",
 
   evo: {
     pipelineEngine: true,
@@ -36,8 +36,8 @@ AI_EXPERIENCE_META = {
 export const PipelineMeta = Object.freeze({
   layer: "OrganismFlow",
   role: "PIPELINE_ORGAN",
-  version: "15-IMMORTAL",
-  identity: "aiBinaryPipeline-v15-IMMORTAL",
+  version: "15-Immortal",
+  identity: "aiBinaryPipeline-v15-Immortal",
 
   // --------------------------------------------------------------------------
   //  EVO — IMMORTAL-GRADE FLOW ENGINE
@@ -64,7 +64,7 @@ export const PipelineMeta = Object.freeze({
 
     readOnly: true,
     multiInstanceReady: true,
-    epoch: "15-IMMORTAL"
+    epoch: "15-Immortal"
   }),
 
   // --------------------------------------------------------------------------

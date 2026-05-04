@@ -1,10 +1,10 @@
 // ============================================================================
-// FILE: tropic-pulse-functions/PULSE-WORLD/PULSE-EARN/PulseEarnEndocrineSystem-v13.0-PRESENCE-IMMORTAL-AGGRESSIVE.js
-// LAYER: THE ENDOCRINE SYSTEM (v13.0-PRESENCE-IMMORTAL AGGRESSIVE)
+// FILE: tropic-pulse-functions/PULSE-WORLD/PULSE-EARN/PulseEarnEndocrineSystem-v13.0-Presence-Immortal-AGGRESSIVE.js
+// LAYER: THE ENDOCRINE SYSTEM (v13.0-Presence-Immortal AGGRESSIVE)
 // (Performance Intelligence + Reputation Hormones + Trust Regulation)
 // ============================================================================
 //
-// ROLE (v13.0-PRESENCE-IMMORTAL AGGRESSIVE):
+// ROLE (v13.0-Presence-Immortal AGGRESSIVE):
 //   THE ENDOCRINE SYSTEM — Pulse‑Earn’s long-term performance regulator.
 //   • Tracks marketplace reliability and profitability (hormone sensing).
 //   • Computes normalized performance signals (signal transduction).
@@ -15,7 +15,7 @@
 //   • Emits v13‑Presence‑IMMORTAL hormonal signatures + binary/wave fields.
 //   • Uses ONLY provided weights/config; no hidden scoring constants.
 //
-// CONTRACT (v13.0-PRESENCE-IMMORTAL):
+// CONTRACT (v13.0-Presence-Immortal):
 //   • PURE INTELLIGENCE ENGINE — no AI layers, no translation, no memory model.
 //   • READ-ONLY except deterministic reputation updates.
 //   • NO eval(), NO Function(), NO dynamic imports.
@@ -28,10 +28,10 @@
 /*
 AI_EXPERIENCE_META = {
   identity: "PulseEarnEndocrineSystem",
-  version: "v14-IMMORTAL",
+  version: "v14-Immortal",
   layer: "earn_endocrine",
   role: "earn_hormone_and_signal_system",
-  lineage: "PulseEarnEndocrineSystem-v11 → v12.3 → v14-IMMORTAL",
+  lineage: "PulseEarnEndocrineSystem-v11 → v12.3 → v14-Immortal",
 
   evo: {
     endocrineSystem: true,
@@ -67,8 +67,8 @@ AI_EXPERIENCE_META = {
 export const PulseEarnEndocrineSystemMeta = Object.freeze({
   layer: "PulseEarnEndocrineSystem",
   role: "EARN_ENDOCRINE_ORGAN",
-  version: "v13.0-PRESENCE-IMMORTAL",
-  identity: "PulseEarnEndocrineSystem-v13.0-PRESENCE-IMMORTAL-AGGRESSIVE",
+  version: "v13.0-Presence-Immortal",
+  identity: "PulseEarnEndocrineSystem-v13.0-Presence-Immortal-AGGRESSIVE",
 
   guarantees: Object.freeze({
     deterministic: true,
@@ -106,13 +106,13 @@ export const PulseEarnEndocrineSystemMeta = Object.freeze({
   }),
 
   lineage: Object.freeze({
-    root: "PulseOS-v11-EVO",
-    parent: "PulseEarn-v13.0-PRESENCE-IMMORTAL",
+    root: "PulseOS-v11-Evo",
+    parent: "PulseEarn-v13.0-Presence-Immortal",
     ancestry: [
       "PulseEarnEndocrineSystem-v10",
       "PulseEarnEndocrineSystem-v11",
       "PulseEarnEndocrineSystem-v11-Evo",
-      "PulseEarnEndocrineSystem-v12.3-PRESENCE-EVO+-AGGRESSIVE"
+      "PulseEarnEndocrineSystem-v12.3-Presence-Evo+-AGGRESSIVE"
     ]
   }),
 
@@ -143,7 +143,7 @@ const ENDOCRINE_SETTINGS = Object.freeze({
 let reputation = new Map();
 
 // ============================================================================
-// Healing Metadata — Endocrine Activity Log (v13.0-PRESENCE-IMMORTAL)
+// Healing Metadata — Endocrine Activity Log (v13.0-Presence-Immortal)
 // ============================================================================
 const endocrineHealing = {
   lastMarketplaceId: null,
@@ -215,7 +215,7 @@ function buildPresenceField(globalHints = {}) {
   else if (pressure > 0) presenceTier = "soft";
 
   return Object.freeze({
-    presenceVersion: "v13.0-PRESENCE-IMMORTAL",
+    presenceVersion: "v13.0-Presence-Immortal",
     presenceTier,
 
     bandPresence: gh.bandPresence || "unknown",
@@ -521,7 +521,7 @@ function normalizeProfit(p) {
 }
 
 // ============================================================================
-// Export Healing Metadata — Endocrine Report (v13.0-PRESENCE-IMMORTAL)
+// Export Healing Metadata — Endocrine Report (v13.0-Presence-Immortal)
 // ============================================================================
 export function getPulseEarnReputationHealingState() {
   return { ...endocrineHealing };

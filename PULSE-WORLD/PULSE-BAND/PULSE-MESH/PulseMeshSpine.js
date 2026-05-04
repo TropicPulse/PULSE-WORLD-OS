@@ -1,12 +1,12 @@
 
 // ============================================================================
-// FILE: PulseMeshSpine-v15.0-IMMORTAL.js
-// [pulse:mesh] PULSE_MESH_SPINE v15.0-MESH-SPINE-IMMORTAL  // deep-orange
+// FILE: PulseMeshSpine-v15.0-Immortal.js
+// [pulse:mesh] PULSE_MESH_SPINE v15.0-MESH-SPINE-Immortal  // deep-orange
 // Deterministic Pathway Engine • Advantage Surfaces • Dual-Band Mesh Spine
 // Metadata-Only • No Payload Access • No Network Fetch • Drift-Proof
 // ============================================================================
 //
-// IDENTITY — MESH SPINE (v15.0-IMMORTAL):
+// IDENTITY — MESH SPINE (v15.0-Immortal):
 // --------------------------------------
 // • Deterministic routing spine for the mesh organism.
 // • Pure pathway engine: chooses next hops, never moves packets itself.
@@ -19,7 +19,7 @@
 // • No timestamps — uses deterministic meshCycle counter.
 // • Presence-aware, binary-aware, dual-band, mesh-aware, SDN-aligned.
 //
-// SAFETY CONTRACT (v15.0-IMMORTAL):
+// SAFETY CONTRACT (v15.0-Immortal):
 // ---------------------------------
 // • No payload access, no payload mutation.
 // • No external network fetch, no CNS access.
@@ -32,7 +32,7 @@
 /*
 AI_EXPERIENCE_META = {
   identity: "PulseMeshSpine",
-  version: "v15.0-MESH-SPINE-IMMORTAL",
+  version: "v15.0-MESH-SPINE-Immortal",
   layer: "mesh",
   role: "mesh_routing_spine",
   lineage: "PulseMesh-v15",
@@ -117,7 +117,7 @@ export const MeshMemory = {
 let meshCycle = 0;
 
 // ============================================================================
-// Mesh Factory (v15.0-MESH-IMMORTAL)
+// Mesh Factory (v15.0-MESH-Immortal)
 // ============================================================================
 export function createPulseMesh() {
   return {
@@ -126,7 +126,7 @@ export function createPulseMesh() {
     meta: {
       layer: "PulseMeshSpine",
       role: "ROUTING_SPINE",
-      version: "15.0-MESH-SPINE-IMMORTAL",
+      version: "15.0-MESH-SPINE-Immortal",
       target: "full-mesh",
       selfRepairable: true,
       evo: {
@@ -360,7 +360,7 @@ function recordPresenceSurface(impulse, node) {
 }
 
 // ============================================================================
-// Routing Entry Point (v15.0-MESH-IMMORTAL)
+// Routing Entry Point (v15.0-MESH-Immortal)
 // Metadata-only • Deterministic • Local-first • Dual-Mode • Full Advantage
 // ============================================================================
 export function routeImpulse(mesh, impulse, entryNodeId, context = {}) {
@@ -396,7 +396,7 @@ export function routeImpulse(mesh, impulse, entryNodeId, context = {}) {
         severity: "warning",
         meshNodeId: currentNodeId,
         note: "Mesh node missing during routing",
-        fileName: "PulseMeshSpine-v15.0-IMMORTAL.js",
+        fileName: "PulseMeshSpine-v15.0-Immortal.js",
         functionName: "routeImpulse",
         fieldName: "nodes"
       });
@@ -448,7 +448,7 @@ export function routeImpulse(mesh, impulse, entryNodeId, context = {}) {
         severity: "warning",
         meshNodeId: node.id,
         note: "Mesh routing exceeded max hops — safety stop",
-        fileName: "PulseMeshSpine-v15.0-IMMORTAL.js",
+        fileName: "PulseMeshSpine-v15.0-Immortal.js",
         functionName: "routeImpulse",
         fieldName: "hops"
       });
@@ -494,7 +494,7 @@ export function routeImpulse(mesh, impulse, entryNodeId, context = {}) {
         severity: "info",
         meshNodeId: node.id,
         note: "Reflex dropped impulse",
-        fileName: "PulseMeshSpine-v15.0-IMMORTAL.js",
+        fileName: "PulseMeshSpine-v15.0-Immortal.js",
         functionName: "routeImpulse",
         fieldName: "reflex"
       });
@@ -567,7 +567,7 @@ export function routeImpulse(mesh, impulse, entryNodeId, context = {}) {
         severity: "warning",
         meshNodeId: node.id,
         note: "Mesh routing stalled — no available neighbors",
-        fileName: "PulseMeshSpine-v15.0-IMMORTAL.js",
+        fileName: "PulseMeshSpine-v15.0-Immortal.js",
         functionName: "routeImpulse",
         fieldName: "neighbors"
       });

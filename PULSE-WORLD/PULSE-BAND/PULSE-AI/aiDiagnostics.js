@@ -6,10 +6,10 @@
 /*
 AI_EXPERIENCE_META = {
   identity: "aiDiagnostics",
-  version: "v14-IMMORTAL",
+  version: "v14-Immortal",
   layer: "ai_tools",
   role: "diagnostics_engine",
-  lineage: "aiDiagnostics-v10 → v12 → v14-IMMORTAL",
+  lineage: "aiDiagnostics-v10 → v12 → v14-Immortal",
 
   evo: {
     diagnosticsEngine: true,

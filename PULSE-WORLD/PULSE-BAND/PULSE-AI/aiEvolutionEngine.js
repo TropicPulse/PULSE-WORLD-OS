@@ -9,7 +9,7 @@ AI_EXPERIENCE_META = {
   version: "v15-OMNI",
   layer: "ai_core",
   role: "evolution_engine",
-  lineage: "aiEvolutionEngine-v10 → v12 → v12.3-Presence → v14-IMMORTAL → v15-OMNI",
+  lineage: "aiEvolutionEngine-v10 → v12 → v12.3-Presence → v14-Immortal → v15-OMNI",
 
   evo: {
     evolutionEngine: true,
@@ -347,7 +347,7 @@ export const aiEvolutionEngine = {
   },
 
   // ------------------------------------------------------------------------
-  // PRE-EVOLUTION — explicit readiness check
+  // PRE-EvoLUTION — explicit readiness check
   // ------------------------------------------------------------------------
   preEvolve() {
     return emitEvolutionPacket("pre-evolve", {

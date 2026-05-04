@@ -21,10 +21,10 @@
 /*
 AI_EXPERIENCE_META = {
   identity: "aiEvolution",
-  version: "v14-IMMORTAL",
+  version: "v14-Immortal",
   layer: "ai_core",
   role: "symbolic_evolution_engine",
-  lineage: "aiEvolution-v9 → v11 → v14-IMMORTAL",
+  lineage: "aiEvolution-v9 → v11 → v14-Immortal",
 
   evo: {
     symbolicEvolution: true,
@@ -51,8 +51,8 @@ AI_EXPERIENCE_META = {
 export const AI_EVOLUTION_META = Object.freeze({
   layer: "PulseAIEvolution",
   role: "EVOLUTION_ORGAN",
-  version: "11.3-EVO",
-  identity: "aiEvolution-v11.3-EVO",
+  version: "11.3-Evo",
+  identity: "aiEvolution-v11.3-Evo",
 
   evo: Object.freeze({
     driftProof: true,
@@ -81,7 +81,7 @@ export const AI_EVOLUTION_META = Object.freeze({
     readOnly: true,
     architectOnly: true,
     multiInstanceReady: true,
-    epoch: "11.3-EVO"
+    epoch: "11.3-Evo"
   }),
 
   contract: Object.freeze({

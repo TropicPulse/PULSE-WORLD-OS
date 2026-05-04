@@ -1,13 +1,13 @@
 // ============================================================================
-// FILE: PulseUIErrors-v14-IMMORTAL.js
-// UNIVERSAL ERROR SPINE — v14-IMMORTAL
+// FILE: PulseUIErrors-v14-Immortal.js
+// UNIVERSAL ERROR SPINE — v14-Immortal
 // Membrane-Safe • Drift-Safe • Organism-Wide Error Unifier
 // Offline-First • LocalStorage-Mirrored • Replay-Aware
 // ============================================================================
 /*
 AI_EXPERIENCE_META = {
   identity: "PulseUIErrors",
-  version: "v13-EVO-PRIME",
+  version: "v13-Evo-PRIME",
   layer: "frontend",
   role: "ui_error_spine",
   lineage: "PulseOS-v12",
@@ -137,7 +137,7 @@ export const PulseUIErrors = (() => {
   const spineMeta = Object.freeze({
     layer: "PulseUIErrors",
     role: "universal-error-spine",
-    version: "13.0-EVO-PRIME",
+    version: "13.0-Evo-PRIME",
     evo: {
       driftSafe: true,
       membraneSafe: true,

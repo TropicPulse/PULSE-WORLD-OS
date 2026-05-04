@@ -7,7 +7,7 @@
 /*
 AI_EXPERIENCE_META = {
   identity: "PulseGPUWisdomCortex",
-  version: "v14-IMMORTAL",
+  version: "v14-Immortal",
   layer: "gpu_brain",
   role: "gpu_wisdom_cortex",
   lineage: "PulseGPU-v14",
@@ -46,13 +46,13 @@ import PulseContinuanceAPI from "./PulseContinuance-v11-Evo.js";
 import { createPulseCoreMemory } from "../../PULSE-CORE/PulseCoreMemory.js";
 
 // ============================================================================
-//  META — v12.3-PRESENCE-EVO+
+//  META — v12.3-Presence-Evo+
 // ============================================================================
 export const PulseContinuanceCoreMemoryMeta = Object.freeze({
   layer: "PulseContinuanceCoreMemory",
   role: "CONTINUANCE_BACKBONE_ORGAN",
-  version: "12.3-PRESENCE-EVO+",
-  identity: "PulseContinuance-CoreMemory-v12.3-PRESENCE-EVO+",
+  version: "12.3-Presence-Evo+",
+  identity: "PulseContinuance-CoreMemory-v12.3-Presence-Evo+",
 
   evo: Object.freeze({
     deterministic: true,
@@ -82,7 +82,7 @@ export const PulseContinuanceCoreMemoryMeta = Object.freeze({
     zeroMutationOfPhysics: true,
     zeroRandomness: true,
     zeroIO: true,
-    epoch: "12.3-PRESENCE-EVO+"
+    epoch: "12.3-Presence-Evo+"
   })
 });
 
@@ -109,7 +109,7 @@ const KEY_LAST_CACHE_HINTS = "last-cache-hints";
 const KEY_LAST_PREWARM_HINTS = "last-prewarm-hints";
 
 // ============================================================================
-//  WRAPPED ENGINE — v12.3-PRESENCE-EVO+
+//  WRAPPED ENGINE — v12.3-Presence-Evo+
 // ============================================================================
 export function computeContinuanceWithMemory({
   regionSignals,
@@ -194,7 +194,7 @@ export function computeContinuanceWithMemory({
 }
 
 // ============================================================================
-//  HOT MEMORY ACCESSORS — v12.3-PRESENCE-EVO+
+//  HOT MEMORY ACCESSORS — v12.3-Presence-Evo+
 // ============================================================================
 export function getLastContinuanceState() {
   CoreMemory.prewarm();

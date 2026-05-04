@@ -1,10 +1,10 @@
 // ============================================================================
-// [pulse:echo] PULSE_OS_DIAGNOSTIC_REFLECTION v15-EVO-IMMORTAL  // silver
+// [pulse:echo] PULSE_OS_DIAGNOSTIC_REFLECTION v15-Evo-Immortal  // silver
 // Diagnostic Reflection Layer • Metadata-Only • Read-Only • Non-Interference
 // Presence-Aware • Binary-Aware • Dual-Band • Drift-Proof • Advantage-Aware
 // ============================================================================
 //
-// IDENTITY — THE SILVER ORGAN (v15-EVO-IMMORTAL):
+// IDENTITY — THE SILVER ORGAN (v15-Evo-Immortal):
 // -----------------------------------------------
 // • Sends metadata-only diagnostic pulses ("echo pulses").
 // • Measures system friction, drift, loops, sync, organ usage, mesh pressure.
@@ -32,7 +32,7 @@
 /*
 AI_EXPERIENCE_META = {
   identity: "PulseMeshEcho",
-  version: "v14.9-MESH-ECHO-IMMORTAL",
+  version: "v14.9-MESH-ECHO-Immortal",
   layer: "mesh",
   role: "mesh_reflex_and_echo_engine",
   lineage: "PulseMesh-v14",
@@ -66,7 +66,7 @@ AI_EXPERIENCE_META = {
 }
 */
 // ============================================================================
-// [pulse:echo] PULSE_OS_DIAGNOSTIC_REFLECTION v15-EVO-IMMORTAL  // silver
+// [pulse:echo] PULSE_OS_DIAGNOSTIC_REFLECTION v15-Evo-Immortal  // silver
 // FULL UTILIZATION EDITION — now fully mesh-aware
 // ============================================================================
 
@@ -81,7 +81,7 @@ export function createPulseEcho({
   const meta = {
     layer: "PulseEcho",
     role: "DIAGNOSTIC_REFLECTION",
-    version: "15-EVO-IMMORTAL-FULL-MESH",
+    version: "15-Evo-Immortal-FULL-MESH",
     target: "full-mesh",
     selfRepairable: true,
     evo: {

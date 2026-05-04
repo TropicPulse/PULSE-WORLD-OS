@@ -6,7 +6,7 @@
 /*
 AI_EXPERIENCE_META = {
   identity: "PulseRouterMesh",
-  version: "v14.4-EVO-MESH",
+  version: "v14.4-Evo-MESH",
   layer: "frontend",
   role: "router_mesh_engine",
   lineage: "PulseOS-v12",

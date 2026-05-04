@@ -1,13 +1,13 @@
 // ============================================================================
-// FILE: PulseOSPresence-v12.4-EVO.js
-// PULSE OS PRESENCE ORGAN — v12.4-EVO
+// FILE: PulseOSPresence-v12.4-Evo.js
+// PULSE OS PRESENCE ORGAN — v12.4-Evo
 // OS-Level Presence • Deterministic • Metadata-Only • Membrane-Safe
 // No Organs Exposed • No Identity Leaks • No Routing
 // ============================================================================
 /*
 AI_EXPERIENCE_META = {
   identity: "PulseOSPresence",
-  version: "v14-IMMORTAL",
+  version: "v14-Immortal",
   layer: "presence",
   role: "os_presence_field",
   lineage: "PulseOS-v14",
@@ -57,7 +57,7 @@ export function createPulseOSPresence({
   const meta = Object.freeze({
     layer: "PulseOSPresence",
     role: "OS_PRESENCE_ORGAN",
-    version: "12.4-EVO",
+    version: "12.4-Evo",
     evo: {
       presenceOrgan: true,
       osLevel: true,

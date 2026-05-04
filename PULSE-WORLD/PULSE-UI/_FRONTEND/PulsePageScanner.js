@@ -6,10 +6,10 @@ LAYER: A2 DRIFT INTELLIGENCE
 ===============================================================================
 AI_EXPERIENCE_META = {
   identity: "PulseUI.PageScanner",
-  version: "v14-IMMORTAL",
+  version: "v14-Immortal",
   layer: "pulse_ui",
   role: "a2_drift_intelligence",
-  lineage: "PageScannerV12 → v14-IMMORTAL",
+  lineage: "PageScannerV12 → v14-Immortal",
 
   evo: {
     driftEngine: true,
@@ -178,7 +178,7 @@ export const PageScannerRole = {
   type: "Organ",
   subsystem: "UI",
   layer: "PageScanner",
-  version: "14.0-IMMORTAL",
+  version: "14.0-Immortal",
   identity: "PulsePageScanner",
 
   evo: {
