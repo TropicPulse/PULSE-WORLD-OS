@@ -54,6 +54,26 @@ AI_EXPERIENCE_META = {
 }
 */
 
+// Global handle
+const g =
+  typeof globalThis !== "undefined"
+    ? globalThis
+    : typeof global !== "undefined"
+    ? global
+    : typeof window !== "undefined"
+    ? window
+    : typeof g !== "undefined"
+    ? g
+    : {};
+
+// Prefer global db if present (logger page / server)
+const db =
+  (g && g.db) ||
+  (typeof global !== "undefined" && global.db) ||
+  (typeof globalThis !== "undefined" && globalThis.db) ||
+  (typeof window !== "undefined" && window.db) ||
+  null;
+
 import { safeRoute as route } from "../_BACKEND/PulseProofBridge.js";
 
 // ============================================================================
@@ -528,9 +548,19 @@ export default {
 // ============================================================================
 try {
   if (typeof window !== "undefined") {
+    window.PulseUIFlow = initUIFlow;
     window.PulseUIFlowStore = PulseUIFlowStore;
   }
   if (typeof globalThis !== "undefined") {
+    globalThis.PulseUIFlow = initUIFlow;
     globalThis.PulseUIFlowStore = PulseUIFlowStore;
+  }
+  if (typeof global !== "undefined") {
+    global.PulseUIFlow = initUIFlow;
+    global.PulseUIFlowStore = PulseUIFlowStore;
+  }
+  if (typeof g !== "undefined") {
+    g.PulseUIFlow = initUIFlow;
+    g.PulseUIFlowStore = PulseUIFlowStore;
   }
 } catch {}

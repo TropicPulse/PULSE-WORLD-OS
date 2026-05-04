@@ -67,6 +67,26 @@ EXPORT_META = {
 
 */
 
+// Global handle
+const g =
+  typeof globalThis !== "undefined"
+    ? globalThis
+    : typeof global !== "undefined"
+    ? global
+    : typeof window !== "undefined"
+    ? window
+    : typeof g !== "undefined"
+    ? g
+    : {};
+
+// Prefer global db if present (logger page / server)
+const db =
+  (g && g.db) ||
+  (typeof global !== "undefined" && global.db) ||
+  (typeof globalThis !== "undefined" && globalThis.db) ||
+  (typeof window !== "undefined" && window.db) ||
+  null;
+
 import PulseUIErrors from "./PulseUIErrors-v12-Evo.js";
 import { PulseProofBridge } from "../_BACKEND/PulseProofBridge.js";
 
@@ -389,10 +409,20 @@ export default createPulseRouteMemory;
 
 try {
   if (typeof window !== "undefined") {
+    window.PulseRouteMemory = createPulseRouteMemory;
     window.PulseRouteMemoryStore = PulseRouteMemoryStore;
   }
   if (typeof globalThis !== "undefined") {
+    globalThis.PulseRouteMemory = createPulseRouteMemory;
     globalThis.PulseRouteMemoryStore = PulseRouteMemoryStore;
+  }
+  if (typeof g !== "undefined") {
+    g.PulseRouteMemory = createPulseRouteMemory;
+    g.PulseRouteMemoryStore = PulseRouteMemoryStore;
+  }
+  if (typeof global !== "undefined") {
+    global.PulseRouteMemory = createPulseRouteMemory;
+    global.PulseRouteMemoryStore = PulseRouteMemoryStore;
   }
 } catch {
   // never throw

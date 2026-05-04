@@ -48,6 +48,25 @@ AI_EXPERIENCE_META = {
 }
 */
 
+const g =
+  typeof globalThis !== "undefined"
+    ? globalThis
+    : typeof global !== "undefined"
+    ? global
+    : typeof window !== "undefined"
+    ? window
+    : typeof g !== "undefined"
+    ? g
+    : {};
+
+// Prefer global db if present (logger page / server)
+const db =
+  (g && g.db) ||
+  (typeof global !== "undefined" && global.db) ||
+  (typeof globalThis !== "undefined" && globalThis.db) ||
+  (typeof window !== "undefined" && window.db) ||
+  null;
+
 // ============================================================================
 // IMMORTAL LOCALSTORAGE MIRROR — PulsePresenceNormalizerStore
 // ============================================================================
@@ -262,9 +281,19 @@ export default PulseChunkNormalizer;
 // ============================================================================
 try {
   if (typeof window !== "undefined") {
+    window.PulseChunkNormalizer = PulseChunkNormalizer;
     window.PulsePresenceNormalizerStore = PulsePresenceNormalizerStore;
   }
   if (typeof globalThis !== "undefined") {
+    globalThis.PulseChunkNormalizer = PulseChunkNormalizer;
     globalThis.PulsePresenceNormalizerStore = PulsePresenceNormalizerStore;
+  }
+  if (typeof global !== "undefined") {
+    global.PulseChunkNormalizer = PulseChunkNormalizer;
+    global.PulsePresenceNormalizerStore = PulsePresenceNormalizerStore;
+  }
+  if (typeof g !== "undefined") {
+    g.PulseChunkNormalizer = PulseChunkNormalizer;
+    g.PulsePresenceNormalizerStore = PulsePresenceNormalizerStore;
   }
 } catch {}

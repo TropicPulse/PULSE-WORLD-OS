@@ -77,6 +77,28 @@ AI_EXPERIENCE_META = {
   }
 }
 */
+
+
+// Global handle
+const g =
+  typeof globalThis !== "undefined"
+    ? globalThis
+    : typeof global !== "undefined"
+    ? global
+    : typeof window !== "undefined"
+    ? window
+    : typeof g !== "undefined"
+    ? g
+    : {};
+
+// Prefer global db if present (logger page / server)
+const db =
+  (g && g.db) ||
+  (typeof global !== "undefined" && global.db) ||
+  (typeof globalThis !== "undefined" && globalThis.db) ||
+  (typeof window !== "undefined" && window.db) ||
+  null;
+
 // ============================================================================
 // PULSE-NET v14-IMMORTAL — Backend Gateway + Crown Throne Room
 //  • Single internet edge (via NetworkOrgan → route(...))
@@ -643,3 +665,25 @@ export function PulseNetInstances() {
     nets: globalThis.__PULSE_NET_FAMILY__
   };
 }
+
+try {
+  if (typeof window !== "undefined") {
+    window.__PULSE_MEM__ = globalThis.__PULSE_MEM__;
+    window.__PULSE_NET_INGRESS__ = globalThis.__PULSE_NET_INGRESS__;
+    window.__PULSE_NET_FAMILY__ = globalThis.__PULSE_NET_FAMILY__;
+    window.__PULSE_ORGANISM_FAMILY__ = globalThis.__PULSE_ORGANISM_FAMILY__;
+  }
+  if (typeof global !== "undefined") {
+    global.__PULSE_MEM__ = globalThis.__PULSE_MEM__;
+    global.__PULSE_NET_INGRESS__ = globalThis.__PULSE_NET_INGRESS__;
+    global.__PULSE_NET_FAMILY__ = globalThis.__PULSE_NET_FAMILY__;
+    global.__PULSE_ORGANISM_FAMILY__ = globalThis.__PULSE_ORGANISM_FAMILY__;
+  }
+  
+  if (typeof g !== "undefined") {
+    g.__PULSE_MEM__ = globalThis.__PULSE_MEM__;
+    g.__PULSE_NET_INGRESS__ = globalThis.__PULSE_NET_INGRESS__;
+    g.__PULSE_NET_FAMILY__ = globalThis.__PULSE_NET_FAMILY__;
+    g.__PULSE_ORGANISM_FAMILY__ = globalThis.__PULSE_ORGANISM_FAMILY__;
+  }
+} catch {}

@@ -79,6 +79,27 @@ EXPORT_META = {
 }
 
 */
+
+// Global handle
+const g =
+  typeof globalThis !== "undefined"
+    ? globalThis
+    : typeof global !== "undefined"
+    ? global
+    : typeof window !== "undefined"
+    ? window
+    : typeof g !== "undefined"
+    ? g
+    : {};
+
+// Prefer global db if present (logger page / server)
+const db =
+  (g && g.db) ||
+  (typeof global !== "undefined" && global.db) ||
+  (typeof globalThis !== "undefined" && globalThis.db) ||
+  (typeof window !== "undefined" && window.db) ||
+  null;
+
 import { PulseProofBridge } from "../_BACKEND/PulseProofBridge.js";
 
 export const MemoryRole = {
@@ -241,3 +262,17 @@ export function createPulseEvolutionaryMemory({
 
   return PulseEvolutionaryMemory;
 }
+try {
+  if (typeof window !== "undefined") {
+    window.PulseEvolutionaryMemory = createPulseEvolutionaryMemory;
+  }
+  if (typeof globalThis !== "undefined") {
+    globalThis.PulseEvolutionaryMemory = createPulseEvolutionaryMemory;
+  }
+  if (typeof global !== "undefined") {
+    global.PulseEvolutionaryMemory = createPulseEvolutionaryMemory;
+  }
+  if (typeof g !== "undefined") {
+    g.PulseEvolutionaryMemory = createPulseEvolutionaryMemory;
+  }
+} catch {}

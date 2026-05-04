@@ -82,6 +82,26 @@ EXPORT_META = {
 
 */
 
+// Global handle
+const g =
+  typeof globalThis !== "undefined"
+    ? globalThis
+    : typeof global !== "undefined"
+    ? global
+    : typeof window !== "undefined"
+    ? window
+    : typeof g !== "undefined"
+    ? g
+    : {};
+
+// Prefer global db if present (logger page / server)
+const db =
+  (g && g.db) ||
+  (typeof global !== "undefined" && global.db) ||
+  (typeof globalThis !== "undefined" && globalThis.db) ||
+  (typeof window !== "undefined" && window.db) ||
+  null;
+
 import PulseUIErrors from "./PulseUIErrors-v12-Evo.js";
 
 // ============================================================================
@@ -539,9 +559,19 @@ export default PulsePageScanner;
 // ============================================================================
 try {
   if (typeof window !== "undefined") {
+    window.PulsePageScanner = PulsePageScanner;
     window.PulsePageScannerStore = PulsePageScannerStore;
   }
   if (typeof globalThis !== "undefined") {
+    globalThis.PulsePageScanner = PulsePageScanner;
     globalThis.PulsePageScannerStore = PulsePageScannerStore;
+  }
+  if (typeof global !== "undefined") {
+    global.PulsePageScanner = PulsePageScanner;
+    global.PulsePageScannerStore = PulsePageScannerStore;
+  }
+  if (typeof g !== "undefined") {
+    g.PulsePageScanner = PulsePageScanner;
+    g.PulsePageScannerStore = PulsePageScannerStore;
   }
 } catch {}

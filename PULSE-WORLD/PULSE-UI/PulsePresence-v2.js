@@ -48,6 +48,25 @@ AI_EXPERIENCE_META = {
 }
 */
 
+const g =
+  typeof globalThis !== "undefined"
+    ? globalThis
+    : typeof global !== "undefined"
+    ? global
+    : typeof window !== "undefined"
+    ? window
+    : typeof g !== "undefined"
+    ? g
+    : {};
+
+// Prefer global db if present (logger page / server)
+const db =
+  (g && g.db) ||
+  (typeof global !== "undefined" && global.db) ||
+  (typeof globalThis !== "undefined" && globalThis.db) ||
+  (typeof window !== "undefined" && window.db) ||
+  null;
+
 console.log("Presence");
 console.log("[PulseChunks-v2.2-MULTILANE-IMMORTAL] Membrane chunker loading...");
 
@@ -863,3 +882,21 @@ if (typeof window !== "undefined") {
 console.log(
   "[PulseChunks-v2.2-MULTILANE-IMMORTAL] Ready — 32-lane membrane active, v14-IMMORTAL DNA-aware cache, TTL-bounded memory, reconstruction helpers online."
 );
+
+try {
+  if (typeof global !== "undefined") {
+    global.PulseBand = window.PulseBand;
+    global.PulseChunks = window.PulseChunks;
+  }
+  if (typeof globalThis !== "undefined") {
+    globalThis.PulseBand = window.PulseBand;
+    globalThis.PulseChunks = window.PulseChunks;
+  }
+  
+  if (typeof g !== "undefined") {
+    g.PulseBand = window.PulseBand;
+    g.PulseChunks = window.PulseChunks;
+  }
+} catch {
+  // never throw
+}

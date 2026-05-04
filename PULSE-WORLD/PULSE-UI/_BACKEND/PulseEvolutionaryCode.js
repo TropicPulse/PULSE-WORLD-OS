@@ -104,6 +104,26 @@ EXPORT_META = {
 
 */
 
+// Global handle
+const g =
+  typeof globalThis !== "undefined"
+    ? globalThis
+    : typeof global !== "undefined"
+    ? global
+    : typeof window !== "undefined"
+    ? window
+    : typeof g !== "undefined"
+    ? g
+    : {};
+
+// Prefer global db if present (logger page / server)
+const db =
+  (g && g.db) ||
+  (typeof global !== "undefined" && global.db) ||
+  (typeof globalThis !== "undefined" && globalThis.db) ||
+  (typeof window !== "undefined" && window.db) ||
+  null;
+
 export const PageRole = {
   type: "Organ",
   subsystem: "UI",
@@ -325,3 +345,17 @@ export function createPulseEvolutionaryCode({
 
   return PulseEvolutionaryCode;
 }
+try {
+  if (typeof window !== "undefined") {
+    window.PulseEvolutionaryCode = createPulseEvolutionaryCode;
+  }
+  if (typeof globalThis !== "undefined") {
+    globalThis.PulseEvolutionaryCode = createPulseEvolutionaryCode;
+  }
+  if (typeof global !== "undefined") {
+    global.PulseEvolutionaryCode = createPulseEvolutionaryCode;
+  }
+  if (typeof g !== "undefined") {
+    g.PulseEvolutionaryCode = createPulseEvolutionaryCode;
+  }
+} catch {}

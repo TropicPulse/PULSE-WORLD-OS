@@ -108,6 +108,26 @@ EXPORT_META = {
 
 */
 
+// Global handle
+const g =
+  typeof globalThis !== "undefined"
+    ? globalThis
+    : typeof global !== "undefined"
+    ? global
+    : typeof window !== "undefined"
+    ? window
+    : typeof g !== "undefined"
+    ? g
+    : {};
+
+// Prefer global db if present (logger page / server)
+const db =
+  (g && g.db) ||
+  (typeof global !== "undefined" && global.db) ||
+  (typeof globalThis !== "undefined" && globalThis.db) ||
+  (typeof window !== "undefined" && window.db) ||
+  null;
+
 export const BrainRole = {
   type: "Organ",
   subsystem: "UI",
@@ -319,3 +339,17 @@ export function createPulseEvolutionaryBrain({
 
   return PulseEvolutionaryBrain;
 }
+try {
+  if (typeof window !== "undefined") {
+    window.PulseEvolutionaryBrain = createPulseEvolutionaryBrain;
+  }
+  if (typeof globalThis !== "undefined") {
+    globalThis.PulseEvolutionaryBrain = createPulseEvolutionaryBrain;
+  }
+  if (typeof global !== "undefined") {
+    global.PulseEvolutionaryBrain = createPulseEvolutionaryBrain;
+  }
+  if (typeof g !== "undefined") {
+    g.PulseEvolutionaryBrain = createPulseEvolutionaryBrain;
+  }
+} catch {}
