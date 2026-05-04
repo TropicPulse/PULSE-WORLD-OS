@@ -7,8 +7,33 @@
 // ============================================================================
 
 
-const admin = global.db;
-const db    = global.db;
+const g =
+  typeof globalThis !== "undefined"
+    ? globalThis
+    : typeof global !== "undefined"
+    ? global
+    : typeof window !== "undefined"
+    ? window
+    : typeof g !== "undefined"
+    ? g
+    : {};
+
+// Prefer global db if present (logger page / server)
+const db =
+  (g && g.db) ||
+  (typeof global !== "undefined" && global.db) ||
+  (typeof globalThis !== "undefined" && globalThis.db) ||
+  (typeof window !== "undefined" && window.db) ||
+  null;
+  
+// Prefer global db if present (logger page / server)
+const admin =
+  (g && g.db) ||
+  (typeof global !== "undefined" && global.db) ||
+  (typeof globalThis !== "undefined" && globalThis.db) ||
+  (typeof window !== "undefined" && window.db) ||
+  null;
+
 
 import { VitalsLogger as logger }        from "../../PULSE-UI/_BACKEND/PulseProofLogger.js";
 import { safeRoute as route } from "../../PULSE-UI/_BACKEND/PulseProofBridge.js";
