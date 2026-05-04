@@ -57,7 +57,7 @@ import { PulseMesh } from "../PULSE-EXPANSION/PulseMesh-v12.3-Presence.js";
 // ============================================================================
 //  EARN ORGANISM (v14.4 IMMORTAL-INTEL)
 // ============================================================================
-import { createEarn, evolveEarn } from "../PULSE-EARN/PulseEarn-v12.3-Presence.js";
+import { createEarn, evolveEarn } from "../PULSE-EARN/PulseEarn-v16.js";
 
 // ============================================================================
 //  SEND ORGANISM (v14.4 IMMORTAL-INTEL)

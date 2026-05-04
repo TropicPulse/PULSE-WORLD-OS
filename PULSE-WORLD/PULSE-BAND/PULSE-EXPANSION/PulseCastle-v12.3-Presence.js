@@ -136,7 +136,7 @@ import { getPulseSchedulerContext } from "../PULSE-X/PulseScheduler-v2.js";
 import { getPulseOvermindContext } from "../PULSE-AI/aiOvermindPrime.js";
 
 // (Optional) Earn / treasury integration hook (symbolic only)
-import { getEarnContext } from "../PULSE-EARN/PulseEarn-v12.3-Presence.js";
+import { getEarnContext } from "../PULSE-EARN/PulseEarn-v16.js";
 
 // Dual-band organism + binary send
 import { createDualBandOrganism as PulseBinaryOrganismBoot } from "../PULSE-AI/aiDualBand-v11-Evo.js";

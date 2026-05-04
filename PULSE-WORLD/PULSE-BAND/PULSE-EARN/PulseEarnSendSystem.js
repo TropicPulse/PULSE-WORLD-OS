@@ -152,7 +152,7 @@ export const PulseEarnSendSystemMeta = Object.freeze({
 });
 
 // Legacy bridge imports (v12.3 Earn / Continuance) kept as compatibility layer.
-import { createEarn, evolveEarn } from "./PulseEarn-v12.3-Presence.js";
+import { createEarn, evolveEarn } from "./PulseEarn-v16.js";
 import { PulseEarnContinuancePulse } from "./PulseEarnContinuancePulse-v12.3-Presence.js";
 
 

@@ -101,6 +101,30 @@ import * as PulseGPUSynapses            from "./PulseGPUSynapses.js";
 
 import * as PulseGPUCommandments        from "./PulseGPUCommandments.js";
 
+import {
+  PulseNetBoot,
+  PulseNet,
+  PulseProofBridge
+} from "../../PULSE-UI/_BACKEND/PulseProofBridge.js";
+
+
+// --- PULSE-CORE MEMORY SPINE (FULL SPINE) ----------------------------------
+import PulseCoreMemory                from "../PULSE-CORE/PulseCoreMemory.js";
+import PulseCoreAIMemoryAdapter      from "../PULSE-CORE/PulseCoreAIMemoryAdapter.js";
+import PulseCoreGPUMemoryAdapter      from "../PULSE-CORE/PulseCoreGPUMemoryAdapter.js";
+import PulseCoreEarnMemoryAdapter     from "../PULSE-CORE/PulseCoreEarnMemoryAdapter.js";
+import PulseBinaryCoreOverlay         from "../PULSE-CORE/PulseBinaryCoreOverlay.js";
+
+
+// CoreMemory bridge: structural, deterministic, keyed by memory surfaces.
+export const CoreMemory = Object.freeze({
+  raw: () => PulseCoreMemory,
+  all: () => PulseCoreAIMemoryAdapter,
+  gpu: () => PulseCoreGPUMemoryAdapter,
+  earn: () => PulseCoreEarnMemoryAdapter,
+  binaryOverlay: () => PulseBinaryCoreOverlay
+});
+
 // ---------------------------------------------------------------------------
 //  CORE ROLE / METABLOCK — UPGRADED TO v16
 // ---------------------------------------------------------------------------
@@ -849,3 +873,5 @@ export function createPulseBinaryGPUImmortal(config = {}) {
     diagnostics: () => core.diagnostics()
   });
 }
+const PulseGPUBridge = PulseProofBridge;
+export default PulseGPUBridge;

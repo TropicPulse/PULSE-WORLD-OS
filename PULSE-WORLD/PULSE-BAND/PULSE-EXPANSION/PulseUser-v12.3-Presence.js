@@ -67,7 +67,7 @@ import { PulseRouterMeta, createPulseRouter } from "../PULSE-EXPANSION/PulseRout
 import { PulseExpansionMeta, createPulseExpansion } from "../PULSE-EXPANSION/PulseExpansion-v12.3-Presence.js";
 
 // Earn / Band / BinarySend
-import { getEarnContext, evolveEarn, createEarn } from "../PULSE-EARN/PulseEarn-v12.3-Presence.js";
+import { getEarnContext, evolveEarn, createEarn } from "../PULSE-EARN/PulseEarn-v16.js";
 import { createDualBandOrganism as PulseBinaryOrganismBoot } from "../PULSE-AI/aiDualBand-v11-Evo.js";
 import { createBinarySend as PulseSendBin } from "../PULSE-SEND/PulseBinarySend-v11-Evo.js";
 

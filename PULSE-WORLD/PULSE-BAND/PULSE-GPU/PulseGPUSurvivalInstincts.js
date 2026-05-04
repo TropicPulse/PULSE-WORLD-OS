@@ -61,7 +61,7 @@ import { PulseGPUHealer } from "./PulseGPULymphNodes.js";
 import { PulseGPUGeneticMemory } from "./PulseGPUGeneticMemory.js";
 import { SCORE_CONSTANTS } from "./PulseGPUCommandments.js";
 // optional Earn field integration (conceptual)
-import { evolveEarn, createEarn } from "../PULSE-EARN/PulseEarn-v12.3-Presence.js";
+import { evolveEarn, createEarn } from "../PULSE-EARN/PulseEarn-v16.js";
 
 
 // ------------------------------------------------------------

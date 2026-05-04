@@ -57,6 +57,26 @@ import PulseProxyBBB from "./PulseProxyBBB.js";
 import pulseHistoryRepair from "./PulseProxyPNSRepair.js";
 
 
+import {
+  PulseNetBoot,
+  PulseProofBridge
+} from "../../PULSE-UI/_BACKEND/PulseProofBridge.js";
+
+
+// --- PULSE-CORE MEMORY SPINE (FULL SPINE) ----------------------------------
+import PulseCoreMemory                from "../PULSE-CORE/PulseCoreMemory.js";
+import PulseCoreAIMemoryAdapter      from "../PULSE-CORE/PulseCoreAIMemoryAdapter.js";
+import PulseCoreProxyMemoryAdapter      from "../PULSE-CORE/PulseCoreProxyMemoryAdapter.js";
+import PulseBinaryCoreOverlay         from "../PULSE-CORE/PulseBinaryCoreOverlay.js";
+
+
+// CoreMemory bridge: structural, deterministic, keyed by memory surfaces.
+export const CoreMemory = Object.freeze({
+  raw: () => PulseCoreMemory,
+  all: () => PulseCoreAIMemoryAdapter,
+  proxy: () => PulseCoreProxyMemoryAdapter,
+  binaryOverlay: () => PulseBinaryCoreOverlay
+});
 // ---------------------------------------------------------------------------
 // BINARY PROXY ROLE / META — tie all imported organs into a single identity
 // ---------------------------------------------------------------------------
@@ -517,3 +537,5 @@ export function createBinaryProxy({
     maintenance
   };
 }
+const PulseProxyBridge = PulseProofBridge;
+export default PulseProxyBridge;

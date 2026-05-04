@@ -99,7 +99,7 @@ import { PulseRouter as PulseRouterSym } from "../../PULSE-BAND/PULSE-ROUTER/Pul
 import { createGPUDispatch as PulseGPUSym } from "../../PULSE-BAND/PULSE-GPU/PulseGPU-v16.js";
 import { createPulseMesh as PulseMeshSym } from "../../PULSE-BAND/PULSE-MESH/PulseMesh-v11-Evo.js";
 import { createPulseSend as PulseSendSym } from "../../PULSE-BAND/PULSE-SEND/PulseSend-v11-Evo.js";
-import { createEarn as PulseEarnSym } from "../../PULSE-BAND/PULSE-EARN/PulseEarn-v12.3-Presence.js";
+import { createEarn as PulseEarnSym } from "../../PULSE-BAND/PULSE-EARN/PulseEarn-v16.js";
 
 
 // ============================================================================

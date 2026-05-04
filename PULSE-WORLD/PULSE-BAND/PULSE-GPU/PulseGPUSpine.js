@@ -77,10 +77,10 @@ import { PulseGPUGeneticMemory } from "./PulseGPUGeneticMemory.js";
 import { DEFAULT_USER_PREFERENCES } from "./PulseGPUCommandments.js";
 
 // Extra 16+ integration organs (conceptual, pure metadata)
-import { PulseEarnBridge } from "../EARN/PulseEarnBridge.js";
+import { PulseEarnBridge } from "../PULSE-EARN/PulseEarn-v16.js";
 import { PulseGPUChunkPlanner } from "./PulseGPUChunkPlanner.js";
 import { PulseGPUWarmPathCache } from "./PulseGPUWarmPathCache.js";
-import { PulseGPUProxyBridge } from "./PulseGPUProxyBridge.js";
+import { PulseGPUBridge } from "./PulseBinaryGPU-v16.js";
 
 // ============================================================================
 //  ORCHESTRATOR META — Brainstem Identity (v16-Immortal-Spine)
@@ -327,7 +327,7 @@ class PulseGPUOrchestrator {
 
     this.proxyBridge =
       options.proxyBridge ||
-      new PulseGPUProxyBridge(options.importProxy || null);
+      new PulseGPUBridge(options.importProxy || null);
 
     // Identity metadata
     this.meta = { ...PULSE_GPU_ORCHESTRATOR_META_V16 };

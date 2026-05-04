@@ -1,12 +1,12 @@
 // ============================================================================
-//  PulseEarn-v13.0-Presence-Immortal.js — Earn Organism v13 Presence-Immortal
-//  IMMORTAL UPGRADE of v12.3-Evo+: dual-band, evolution surfaces, presence/
-//  mesh/castle/expansion/server/globalHints-aware, chunk/cache/prewarm/
-//  factoring-aware — with descriptive-only health + IMMORTAL advantage fields.
+//  PulseEarn-v16.0-Presence-Immortal-GPU-INTEL.js — Earn Organism v16
+//  IMMORTAL UPGRADE of v12.3/v13/v14.4: dual-band, evolution surfaces,
+//  presence/mesh/castle/expansion/server/globalHints-aware, chunk/cache/
+//  prewarm/factoring-aware, GPU-advantage baked, per-page compute intelligence.
 // ============================================================================
 //
-//  SAFETY CONTRACT (v13.0-Presence-Immortal):
-//  -----------------------------------------
+//  SAFETY CONTRACT (v16.0-Presence-Immortal-GPU-INTEL):
+//  ----------------------------------------------------
 //  • No randomness.
 //  • No timestamps in math (only telemetry if desired).
 //  • Pure deterministic string/shape operations.
@@ -17,13 +17,14 @@
 //  • Health is descriptive-only (no performance/baseline math).
 //  • Advantage fields are IMMORTAL, versioned, non-perf-weighted.
 // ============================================================================
+
 /*
 AI_EXPERIENCE_META = {
   identity: "PulseEarn",
-  version: "v14-Immortal",
+  version: "v16-Immortal-GPU-INTEL",
   layer: "earn_core",
   role: "earn_root_engine",
-  lineage: "PulseEarn-v9 → v10.4 → v11-Evo → v12.3 → v14-Immortal",
+  lineage: "PulseEarn-v9 → v10.4 → v11-Evo → v12.3 → v14-Immortal → v16-Immortal-GPU-INTEL",
 
   evo: {
     earnRoot: true,
@@ -77,21 +78,22 @@ import PulseEarnMktForager        from "./PulseEarnMktForager.js";
 
 import {
   PulseNetBoot,
-  PulseNet
+  PulseNet,
+  PulseProofBridge
 } from "../../PULSE-UI/_BACKEND/PulseProofBridge.js";
-
 
 // --- PULSE-CORE MEMORY SPINE (FULL SPINE) ----------------------------------
 import PulseCoreMemory                from "../PULSE-CORE/PulseCoreMemory.js";
-import PulseCoreAIMemoryAdapter      from "../PULSE-CORE/PulseCoreAIMemoryAdapter.js";
+import PulseCoreAIMemoryAdapter       from "../PULSE-CORE/PulseCoreAIMemoryAdapter.js";
+import PulseCoreGPUMemoryAdapter      from "../PULSE-CORE/PulseCoreGPUMemoryAdapter.js";
 import PulseCoreEarnMemoryAdapter     from "../PULSE-CORE/PulseCoreEarnMemoryAdapter.js";
 import PulseBinaryCoreOverlay         from "../PULSE-CORE/PulseBinaryCoreOverlay.js";
 
-
 // CoreMemory bridge: structural, deterministic, keyed by memory surfaces.
-const CoreMemory = Object.freeze({
+export const CoreMemory = Object.freeze({
   raw: () => PulseCoreMemory,
   all: () => PulseCoreAIMemoryAdapter,
+  gpu: () => PulseCoreGPUMemoryAdapter,
   earn: () => PulseCoreEarnMemoryAdapter,
   binaryOverlay: () => PulseBinaryCoreOverlay
 });
@@ -102,8 +104,8 @@ const CoreMemory = Object.freeze({
 export const EarnMeta = Object.freeze({
   layer: "PulseEarn",
   role: "EARN_ORGAN",
-  version: "v13.0-Presence-Immortal",
-  identity: "PulseEarn-v13.0-Presence-Immortal",
+  version: "v16.0-Presence-Immortal-GPU-INTEL",
+  identity: "PulseEarn-v16.0-Presence-Immortal-GPU-INTEL",
 
   guarantees: Object.freeze({
     deterministic: true,
@@ -133,7 +135,12 @@ export const EarnMeta = Object.freeze({
     cacheAware: true,
     prewarmAware: true,
     hotStateAware: true,
-    factoringAware: true
+    factoringAware: true,
+
+    gpuAware: true,
+    gpuAdvantageAware: true,
+    gpuBinaryFieldAware: true,
+    gpuTierAware: true
   }),
 
   contract: Object.freeze({
@@ -148,26 +155,30 @@ export const EarnMeta = Object.freeze({
       "CastleSignals",
       "ExpansionSignals",
       "ServerAdvantageHints",
-      "GlobalHints"
+      "GlobalHints",
+      "GPUHints"
     ],
     output: [
       "EarnOutputShape",
       "EarnDiagnostics",
       "EarnSignatures",
       "EarnPresenceField",
-      "EarnAdvantageField"
+      "EarnAdvantageField",
+      "EarnGPUAdvantageField",
+      "EarnPulseIntelligence"
     ]
   }),
 
   lineage: Object.freeze({
-    root: "PulseOS-v13.0-Presence-Immortal",
-    parent: "PulseProxy-v13.0-Presence-Immortal",
+    root: "PulseOS-v16.0-Presence-Immortal",
+    parent: "PulseProxy-v16.0-Presence-Immortal",
     ancestry: [
       "PulseOS-v10",
       "PulseEarn-v10.4",
       "PulseEarn-v11",
       "PulseEarn-v11.2-Evo",
-      "PulseEarn-v12.3-Presence-Evo+"
+      "PulseEarn-v12.3-Presence-Evo+",
+      "PulseEarn-v14.4-Immortal-INTEL"
     ]
   }),
 
@@ -192,14 +203,14 @@ function normalizeBand(band) {
 }
 
 // ============================================================================
-//  EarnRole — identifies this as the Earn v14.4 IMMORTAL‑INTEL Organism
+//  EarnRole — identifies this as the Earn v16 IMMORTAL-GPU-INTEL Organism
 // ============================================================================
 export const EarnRole = {
   type: "Earn",
   subsystem: "Earn",
   layer: "Organ",
-  version: "14.4-Immortal-INTEL",
-  identity: "Earn-v14.4-Immortal-INTEL",
+  version: "16.0-Immortal-GPU-INTEL",
+  identity: "Earn-v16.0-Immortal-GPU-INTEL",
 
   evo: {
     // Core evolution awareness
@@ -212,6 +223,8 @@ export const EarnRole = {
 
     // Compute surfaces
     gpuAwareReady: true,
+    gpuBinaryFieldReady: true,
+    gpuAdvantageReady: true,
     minerAwareReady: true,
     airAwareReady: true,
     offlineAwareReady: true,
@@ -225,7 +238,7 @@ export const EarnRole = {
     signatureReady: true,
     evolutionSurfaceReady: true,
 
-    // Intelligence (v14.4‑INTEL)
+    // Intelligence
     pulseIntelligenceReady: true,
     solvednessAware: true,
     factoringAware: true,
@@ -236,7 +249,6 @@ export const EarnRole = {
     bandAware: true,
     dualBandReady: true,
     binaryCompressionReady: true,
-    gpuBinaryFieldReady: true,
     waveFieldAware: true,
     cohortAware: true,
     evolutionSurfaceCohortReady: true,
@@ -266,14 +278,13 @@ export const EarnRole = {
     legacyBridgeCapable: true
   },
 
-  routingContract: "PulseRouter-v14.4-Immortal-INTEL",
-  meshContract: "PulseMesh-v14.4-Immortal-INTEL",
-  sendContract: "PulseSend-v14.4-Immortal-INTEL",
-  gpuOrganContract: "PulseGPU-v14.4-Immortal-INTEL",
-  minerContract: "PulseMiner-v14.4-Immortal-INTEL",
+  routingContract: "PulseRouter-v16.0-Immortal-GPU-INTEL",
+  meshContract: "PulseMesh-v16.0-Immortal-GPU-INTEL",
+  sendContract: "PulseSend-v16.0-Immortal-GPU-INTEL",
+  gpuOrganContract: "PulseGPU-v16.0-Immortal-GPU-INTEL",
+  minerContract: "PulseMiner-v16.0-Immortal-GPU-INTEL",
   pulseCompatibility: "Pulse-v1/v2/v3"
 };
-
 
 // ============================================================================
 //  INTERNAL HELPERS — deterministic, tiny, pure
@@ -351,7 +362,7 @@ function buildPageAncestrySignature({ pattern, lineage, pageId, band }) {
   return computeHash(JSON.stringify(shape));
 }
 
-// v13 IMMORTAL: health is descriptive-only, not performance-weighted.
+// v16 IMMORTAL: health is descriptive-only, not performance-weighted.
 function computeHealthScore() {
   return 1.0;
 }
@@ -364,18 +375,19 @@ function classifyDegradationTier(h) {
   return "criticalDegrade";
 }
 
-// v13 IMMORTAL: advantage core is structural, not perf-weighted by pattern length.
+// v16 IMMORTAL: advantage core is structural, not perf-weighted by pattern length.
 function buildAdvantageFieldCore(pattern, lineage, band) {
   const depth = lineage.length;
   const b = normalizeBand(band);
 
   return {
-    advantageVersion: "E-13.0",
+    advantageVersion: "E-16.0",
     lineageDepth: depth,
     patternTag: pattern,
     band: b,
     binaryCompressionBias: b === ROUTE_BANDS.BINARY ? 1 : 0,
-    symbolicPlanningBias: b === ROUTE_BANDS.SYMBOLIC ? 1 : 0
+    symbolicPlanningBias: b === ROUTE_BANDS.SYMBOLIC ? 1 : 0,
+    gpuAffinityBias: pattern.includes("gpu") ? 1 : 0
   };
 }
 
@@ -448,8 +460,9 @@ function buildWaveField(pattern, lineage, band) {
     mode: b === ROUTE_BANDS.BINARY ? "compression-wave" : "symbolic-wave"
   };
 }
+
 // ============================================================================
-// ⭐ Pulse Intelligence (logic-only, IMMORTAL-safe)
+// ⭐ Pulse Intelligence (logic-only, IMMORTAL-safe, GPU-aware)
 // ============================================================================
 function computePulseIntelligence({ advantageField, presenceField, factoringSignal, band }) {
   const advantageScore = advantageField.advantageScore || 0;
@@ -466,12 +479,21 @@ function computePulseIntelligence({ advantageField, presenceField, factoringSign
   const factoring = factoringSignal ? 1 : 0;
   const bandIsBinary = band === "binary" ? 1 : 0;
 
+  const gpuTier = advantageField.gpuTier || "unknown";
+  const gpuAffinity =
+    gpuTier === "critical" ? 1.0 :
+    gpuTier === "high"     ? 0.8 :
+    gpuTier === "normal"   ? 0.5 :
+    gpuTier === "low"      ? 0.2 :
+    0.0;
+
   const solvednessScore = Math.max(
     0,
     Math.min(
-      advantageScore * 10 * 0.5 +
-      presenceWeight * 0.3 +
-      factoring * 0.2,
+      advantageScore * 10 * 0.4 +
+      presenceWeight * 0.25 +
+      factoring * 0.15 +
+      gpuAffinity * 0.2,
       1
     )
   );
@@ -487,8 +509,9 @@ function computePulseIntelligence({ advantageField, presenceField, factoringSign
     0,
     Math.min(
       solvednessScore * 0.6 +
-      (bandIsBinary ? 0.2 : 0) +
-      (advantageTier >= 2 ? 0.2 : advantageTier === 1 ? 0.1 : 0),
+      (bandIsBinary ? 0.15 : 0) +
+      (advantageTier >= 2 ? 0.15 : advantageTier === 1 ? 0.05 : 0) +
+      gpuAffinity * 0.1,
       1
     )
   );
@@ -499,9 +522,12 @@ function computePulseIntelligence({ advantageField, presenceField, factoringSign
     computeTier,
     readinessScore,
     band,
-    advantageTier
+    advantageTier,
+    gpuTier,
+    gpuAffinity
   };
 }
+
 function buildMemorySurface(pattern, lineage, pageId, band) {
   const ancestry = buildPatternAncestry(pattern);
   const lineageSig = buildLineageSignature(lineage);
@@ -553,7 +579,7 @@ function buildCoreMemoryField({
   const normalizedBand = normalizeBand(band);
 
   return {
-    coreMemoryVersion: "v13.0-Presence-Immortal",
+    coreMemoryVersion: "v16.0-Presence-Immortal-GPU-INTEL",
     band: normalizedBand,
     pattern,
     lineage,
@@ -598,7 +624,7 @@ function writeCoreMemoryEarn(memoryKey, coreMemoryField) {
 }
 
 // ============================================================================
-//  PRESENCE / ADVANTAGE FIELDS (v13 IMMORTAL)
+//  PRESENCE / ADVANTAGE FIELDS (v16 IMMORTAL, GPU-aware)
 // ============================================================================
 function buildPresenceField({
   regionId = "unknown-region",
@@ -621,11 +647,11 @@ function buildPresenceField({
   else if (pressure > 0) presenceTier = "soft";
 
   const presenceSignature = computeHash(
-    `EARN_PRESENCE_V13::${presenceTier}::${meshPressureIndex}::${castleLoadLevel}`
+    `EARN_PRESENCE_V16::${presenceTier}::${meshPressureIndex}::${castleLoadLevel}`
   );
 
   return Object.freeze({
-    presenceVersion: "v13.0-Presence-Immortal",
+    presenceVersion: "v16.0-Presence-Immortal-GPU-INTEL",
     presenceTier,
     presenceSignature,
     regionId,
@@ -649,10 +675,18 @@ function buildAdvantageField({
   factoringSignal = 1,
   serverHotStateReuse = true,
   serverPlanCache = true,
-  serverBinaryReuse = true
+  serverBinaryReuse = true,
+
+  // v16 GPU advantage
+  gpuPreferred = true,
+  gpuTier = "normal",
+  gpuBinaryReuse = true,
+  gpuPrewarm = true,
+  gpuChunkAggression = 0,
+  gpuCachePriority = "normal"
 } = {}) {
   return Object.freeze({
-    advantageVersion: "E-13.0",
+    advantageVersion: "E-16.0",
     band: normalizeBand(band),
     chunkAggression,
     cachePriority: normalizeCachePriority(cachePriority),
@@ -662,12 +696,19 @@ function buildAdvantageField({
     factoringSignal,
     serverHotStateReuse,
     serverPlanCache,
-    serverBinaryReuse
+    serverBinaryReuse,
+
+    gpuPreferred,
+    gpuTier,
+    gpuBinaryReuse,
+    gpuPrewarm,
+    gpuChunkAggression,
+    gpuCachePriority: normalizeCachePriority(gpuCachePriority)
   });
 }
 
 // ============================================================================
-//  FACTORY — Create an Earn v14.4 IMMORTAL-INTEL Organism (dual-band)
+//  FACTORY — Create an Earn v16 IMMORTAL-GPU-INTEL Organism (dual-band)
 // ============================================================================
 export function createEarn({
   jobId,
@@ -679,13 +720,14 @@ export function createEarn({
   pageId = "NO_PAGE",
   band = ROUTE_BANDS.SYMBOLIC,
 
-  // presence / mesh / castle / expansion / server / global hints
+  // presence / mesh / castle / expansion / server / global hints / gpu hints
   presenceField = null,
   meshSignals = null,
   castleSignals = null,
   expansionSignals = null, // reserved, symbolic only
   serverAdvantageHints = null,
-  globalHints = null
+  globalHints = null,
+  gpuHints = null
 }) {
   const normalizedBand = normalizeBand(band);
 
@@ -694,6 +736,7 @@ export function createEarn({
   const castle = castleSignals || { loadLevel: "unknown" };
   const gh = globalHints || {};
   const serverHints = serverAdvantageHints || {};
+  const gpu = gpuHints || {};
 
   const cachePriority = normalizeCachePriority(gh.cacheHints?.priority);
   const prewarmNeeded = !!(gh.prewarmHints?.shouldPrewarm);
@@ -791,10 +834,17 @@ export function createEarn({
     factoringSignal,
     serverHotStateReuse: serverHints.hotStateReuse ?? true,
     serverPlanCache: serverHints.planCache ?? true,
-    serverBinaryReuse: serverHints.binaryReuse ?? true
+    serverBinaryReuse: serverHints.binaryReuse ?? true,
+
+    gpuPreferred: gpu.gpuPreferred ?? true,
+    gpuTier: gpu.gpuTier ?? "normal",
+    gpuBinaryReuse: gpu.gpuBinaryReuse ?? true,
+    gpuPrewarm: gpu.gpuPrewarm ?? true,
+    gpuChunkAggression: gpu.gpuChunkAggression ?? (gh.chunkHints?.chunkAggression ?? 0),
+    gpuCachePriority: gpu.gpuCachePriority ?? cachePriority
   });
 
-  // ⭐ Intelligence surface (v14.4 IMMORTAL-INTEL)
+  // ⭐ Intelligence surface (v16 IMMORTAL-GPU-INTEL)
   const pulseIntelligence = computePulseIntelligence({
     advantageField: earnAdvantageField,
     presenceField: earnPresenceField,
@@ -854,7 +904,7 @@ export function createEarn({
       pulseIntelligence,
       pulseIntelligenceSignature: computeHash(JSON.stringify(pulseIntelligence)),
 
-      // v11/v12/v13 signatures
+      // v11/v12/v13/v16 signatures
       earnSignature: computeHash(
         pattern + "::" + lineageSignature + "::" + normalizedBand
       ),
@@ -887,7 +937,6 @@ export function createEarn({
 
   return earnObject;
 }
-
 
 // ============================================================================
 //  EVOLUTION ENGINE — evolve an existing Earn deterministically (dual-band)
@@ -943,6 +992,7 @@ export function evolveEarn(earn, context = {}) {
   const castle = context.castleSignals || null;
   const gh = context.globalHints || null;
   const serverHints = context.serverAdvantageHints || null;
+  const gpu = context.gpuHints || null;
 
   const cachePriority = normalizeCachePriority(
     gh?.cacheHints?.priority ?? adv.cachePriority
@@ -978,10 +1028,17 @@ export function evolveEarn(earn, context = {}) {
     factoringSignal: nextFactoringSignal,
     serverHotStateReuse: serverHints?.hotStateReuse ?? adv.serverHotStateReuse ?? true,
     serverPlanCache: serverHints?.planCache ?? adv.serverPlanCache ?? true,
-    serverBinaryReuse: serverHints?.binaryReuse ?? adv.serverBinaryReuse ?? true
+    serverBinaryReuse: serverHints?.binaryReuse ?? adv.serverBinaryReuse ?? true,
+
+    gpuPreferred: gpu?.gpuPreferred ?? adv.gpuPreferred ?? true,
+    gpuTier: gpu?.gpuTier ?? adv.gpuTier ?? "normal",
+    gpuBinaryReuse: gpu?.gpuBinaryReuse ?? adv.gpuBinaryReuse ?? true,
+    gpuPrewarm: gpu?.gpuPrewarm ?? adv.gpuPrewarm ?? true,
+    gpuChunkAggression: gpu?.gpuChunkAggression ?? adv.gpuChunkAggression ?? 0,
+    gpuCachePriority: gpu?.gpuCachePriority ?? adv.gpuCachePriority ?? cachePriority
   });
 
-  // ⭐ Intelligence surface (v14.4 IMMORTAL-INTEL)
+  // ⭐ Intelligence surface (v16 IMMORTAL-GPU-INTEL)
   const pulseIntelligence = computePulseIntelligence({
     advantageField: nextAdvantageField,
     presenceField: nextPresenceField,
@@ -1105,3 +1162,8 @@ export function evolveEarn(earn, context = {}) {
   return evolved;
 }
 
+// ============================================================================
+//  BRIDGE — Earn namespace alias to PulseProofBridge
+// ============================================================================
+const PulseEarnBridge = PulseProofBridge;
+export default PulseEarnBridge;
