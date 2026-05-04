@@ -1,16 +1,16 @@
 // ============================================================================
-// PULSE-WORLD : PulseUser-v15-IMMORTAL-Presence.js
+// PULSE-WORLD : PulseUser-v16-IMMORTAL-ORGANISM.js
 // ORGAN TYPE: Local OS / Experience Orchestrator
-// VERSION: v15-IMMORTAL-PRESENCE-EVO+ (Hybrid, Every-Advantage, Brain-Aware, Server-Attachable)
+// VERSION: v16-IMMORTAL-ORGANISM (Hybrid, Every-Advantage, Brain-Aware, Server-Attachable)
 // ============================================================================
 
 /*
 AI_EXPERIENCE_META = {
   identity: "PulseUser",
-  version: "v15-IMMORTAL",
+  version: "v16-IMMORTAL-ORGANISM",
   layer: "presence_user",
   role: "presence_user_core",
-  lineage: "PulsePresence-v15-IMMORTAL",
+  lineage: "PulseUser-v9 → v12.3-PRESENCE-EVO+ → v15-IMMORTAL → v16-IMMORTAL-ORGANISM",
 
   evo: {
     userCore: true,
@@ -36,7 +36,11 @@ AI_EXPERIENCE_META = {
     always: [
       "PulseBeaconEngine",
       "PulseBeaconMesh",
-      "PulseExpansion"
+      "PulseExpansion",
+      "PulseCastle",
+      "PulseMesh",
+      "PulseServer",
+      "PulseRouter"
     ],
     never: [
       "safeRoute",
@@ -46,15 +50,35 @@ AI_EXPERIENCE_META = {
 }
 */
 
+// ============================================================================
+// IMPORTS — OS / Mesh / Castle / Server / Router / Expansion / Band
+// ============================================================================
+
+// Primary OS / Binary OS (OSBrain + runtimes)
 import * as PulseBinaryOS from "../PULSE-OS/PulseBinaryOS-v11-Evo-Max.js";
+
+// Mesh + BeaconMesh meta (for advantage context + snapshot meta)
+import { PulseMeshMeta } from "../PULSE-MESH/PulseMesh-v11-Evo.js";
+import { PulseBeaconMeshMeta } from "../PULSE-EXPANSION/PulseBeaconMesh-v12.3-Presence.js";
+
+// Castle / Server / Router / Expansion meta (symbolic only)
+import { PulseCastleMeta } from "../PULSE-EXPANSION/PulseCastle-v12.3-Presence.js";
+import { PulseServerMeta } from "../PULSE-EXPANSION/PulseServer-v12.3-Presence.js";
+import { PulseRouterMeta } from "../PULSE-EXPANSION/PulseRouter-v12.3-Presence.js";
+import { PulseExpansionMeta } from "../PULSE-EXPANSION/PulseExpansion-v12.3-Presence.js";
+
+// Optional Earn / Treasury / Band (symbolic hooks)
+import { getEarnContext } from "../PULSE-EARN/PulseEarn-v12.3-Presence.js";
+import { createDualBandOrganism as PulseBinaryOrganismBoot } from "../PULSE-AI/aiDualBand-v11-Evo.js";
+import { createBinarySend as PulseSendBin } from "../PULSE-SEND/PulseBinarySend-v11-EVO.js";
 
 // ============================================================================
 
 export const PulseWorldCoreMeta = Object.freeze({
-  organId: "PulseWorldCore-v15-IMMORTAL-PRESENCE-EVO+",
+  organId: "PulseWorldCore-v16-IMMORTAL-ORGANISM",
   role: "LOCAL_OS",
-  version: "15-IMMORTAL-PRESENCE-EVO+",
-  epoch: "v15-IMMORTAL-PRESENCE-EVO+",
+  version: "v16-IMMORTAL-ORGANISM",
+  epoch: "v16-IMMORTAL-ORGANISM",
   layer: "Experience",
   safety: Object.freeze({
     deterministic: true,
@@ -77,12 +101,19 @@ export const PulseWorldCoreMeta = Object.freeze({
     runtimeAware: true,
     osBrainAware: true,      // we see brain via primary OS / binary OS puller
     userAttachedToBrain: true,
-    serverAttachedToUser: true // explicit: server attaches above user
+    serverAttachedToUser: true, // explicit: server attaches above user
+    meshOrganismAware: true,
+    beaconMeshAware: true,
+    serverExecAware: true,
+    routerAware: true,
+    earnAware: true,
+    bandAware: true,
+    binarySendAware: true
   })
 });
 
 // ============================================================================
-// FACTORY: createPulseWorldCore — v15-IMMORTAL-PRESENCE-EVO+
+// FACTORY: createPulseWorldCore — v16-IMMORTAL-ORGANISM
 // ============================================================================
 
 export function createPulseWorldCore({
@@ -94,7 +125,7 @@ export function createPulseWorldCore({
   // 1. Identity
   const Identity = Object.freeze({
     coreID: "PulseWorldCore",
-    version: "v15-IMMORTAL-PRESENCE-EVO+",
+    version: "v16-IMMORTAL-ORGANISM",
     createdBy: "PulseOS",
     regionID,
     serverMode
@@ -110,10 +141,17 @@ export function createPulseWorldCore({
   // Optional: explicit server bridge snapshot (PulseNetServerBridge / similar)
   let serverBridgeSnapshot = null;
 
+  // Optional: attached server exec snapshot (PulseServer)
+  let serverExecSnapshot = null;
+
   // This is the "primary OS / binary OS puller" attachment.
   // It may internally own OSBrain + runtimes.
   let primaryOSSnapshot = null; // PulseBinaryOS / PulseOS
   let runtimeSnapshot = null;   // Runtime / Brainstem (if you still attach it separately)
+
+  // Optional: dualband organism + binary send (symbolic only)
+  let dualBandOrganism = null;
+  let binarySend = null;
 
   // Core user/world context we pass into brain / mesh / others
   const userContext = Object.freeze({
@@ -215,6 +253,12 @@ export function createPulseWorldCore({
     return { ok: true };
   }
 
+  function attachServerExec(snapshot) {
+    // snapshot is expected to be a PulseServer facade (createPulseServer result)
+    serverExecSnapshot = snapshot;
+    return { ok: true };
+  }
+
   // Attach primary OS (PulseBinaryOS / PulseOS)
   function attachPrimaryOS(snapshot) {
     primaryOSSnapshot = snapshot;
@@ -252,9 +296,28 @@ export function createPulseWorldCore({
     return { ok: true };
   }
 
+  // Attach dualband organism + binary send (symbolic only)
+  function attachDualBand({ organism, send } = {}) {
+    dualBandOrganism = organism || dualBandOrganism;
+    binarySend = send || binarySend;
+    return { ok: true };
+  }
+
   // If running under server, auto‑attach the primary OS module we imported.
   if (serverMode === true) {
     attachPrimaryOS(PulseBinaryOS);
+
+    // Optionally boot a default dualband organism + binary send in server mode
+    try {
+      dualBandOrganism = PulseBinaryOrganismBoot?.({ trace: false }) || null;
+    } catch {
+      dualBandOrganism = null;
+    }
+    try {
+      binarySend = PulseSendBin?.({ trace: false }) || null;
+    } catch {
+      binarySend = null;
+    }
   }
 
   // 3. Boot Sequence
@@ -312,6 +375,8 @@ export function createPulseWorldCore({
 
   // 6. Advantage Aggregation
   function buildAdvantageContext() {
+    const earn = getEarnContext?.() || {};
+
     return Object.freeze({
       presenceField: beaconSnapshot?.presenceField || null,
       advantageField: beaconSnapshot?.advantageField || null,
@@ -319,7 +384,14 @@ export function createPulseWorldCore({
       meshPressureIndex: meshSnapshot?.densityHealth?.A_metrics?.meshPressureIndex || 0,
       castleLoadLevel: castleSnapshot?.state?.loadLevel || "unknown",
       routeStable: expansionSnapshot?.routeField?.routeStable ?? null,
-      fallbackBandLevel: beaconSnapshot?.globalHints?.fallbackBandLevel ?? 0
+      fallbackBandLevel: beaconSnapshot?.globalHints?.fallbackBandLevel ?? 0,
+      earnContext: earn || null,
+      meshMeta: PulseMeshMeta || null,
+      beaconMeshMeta: PulseBeaconMeshMeta || null,
+      castleMeta: PulseCastleMeta || null,
+      serverMeta: PulseServerMeta || null,
+      routerMeta: PulseRouterMeta || null,
+      expansionMeta: PulseExpansionMeta || null
     });
   }
 
@@ -374,7 +446,10 @@ export function createPulseWorldCore({
         intent,
         userContext,
         worldCoreIdentity: Identity,
-        serverBridge: serverBridgeSnapshot || null
+        serverBridge: serverBridgeSnapshot || null,
+        serverExec: serverExecSnapshot || null,
+        dualBandOrganism,
+        binarySend
       });
     }
 
@@ -384,7 +459,10 @@ export function createPulseWorldCore({
         intent,
         userContext,
         worldCoreIdentity: Identity,
-        serverBridge: serverBridgeSnapshot || null
+        serverBridge: serverBridgeSnapshot || null,
+        serverExec: serverExecSnapshot || null,
+        dualBandOrganism,
+        binarySend
       });
     }
 
@@ -393,7 +471,10 @@ export function createPulseWorldCore({
       return serverBridgeSnapshot.handleBrainNetworkIntent({
         intent,
         userContext,
-        worldCoreIdentity: Identity
+        worldCoreIdentity: Identity,
+        serverExec: serverExecSnapshot || null,
+        dualBandOrganism,
+        binarySend
       });
     }
 
@@ -452,7 +533,10 @@ export function createPulseWorldCore({
         expansion: expansionSnapshot,
         primaryOS: primaryOSSnapshot,
         runtime: runtimeSnapshot,
-        serverBridge: serverBridgeSnapshot
+        serverBridge: serverBridgeSnapshot,
+        serverExec: serverExecSnapshot,
+        dualBandOrganism,
+        binarySend
       },
       advantageContext: buildAdvantageContext(),
       brainView: getBrainView(),
@@ -476,6 +560,8 @@ export function createPulseWorldCore({
     attachPrimaryOS,
     attachRuntime,
     attachServerBridge,
+    attachServerExec,
+    attachDualBand,
 
     // routing
     requestRoute,

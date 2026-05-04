@@ -53,27 +53,16 @@ AI_EXPERIENCE_META = {
 */
 
 import { logger } from "../../PULSE-UI/_BACKEND/PulseProofLogger.js";
-import {
-  pulseCastle,
-  PulseCastleMeta,
-  summarizeCastlePresence
-} from "./PulseCastle-v12.3-Presence.js";
+import { pulseCastle, PulseCastleMeta, summarizeCastlePresence} from "./PulseCastle-v12.3-Presence.js";
 
-import {
-  PulseBeaconMeta as PulseBeaconEngineMeta,
-  createPulseBeaconEngine
-} from "./PulseBeaconEngine-v12.3-Presence.js";
+import { PulseBeaconMeta as PulseBeaconEngineMeta, createPulseBeaconEngine} from "./PulseBeaconEngine-v12.3-Presence.js";
 
-import {
-  PulseBeaconMeshMeta,
-  PulseBeaconMesh
-} from "./PulseBeaconMesh-v12.3-Presence.js";
+import { PulseBeaconMeshMeta, PulseBeaconMesh} from "./PulseBeaconMesh-v12.3-Presence.js";
 
 import { PulseWorldCoreMeta } from "./PulseUser-v12.3-Presence.js";
 import { PulseRouterMeta } from "./PulseRouter-v12.3-Presence.js";
 import { PulseServerMeta } from "./PulseServer-v12.3-Presence.js";
-import { PulseMeshMeta } from "./PulseMesh-v12.3-PRESENCE.js";
-import { PulseMeshMeta as BinaryMeshMeta } from "./PulseMesh-v12.3-PRESENCE.js";
+import { PulseMeshMeta, PulseMeshMeta as BinaryMeshMeta } from "./PulseMesh-v12.3-Presence.js";
 
 // ============================================================================
 //  PULSE-NET BRIDGE CONTRACT (NO IMPORTS, PURELY INJECTED)

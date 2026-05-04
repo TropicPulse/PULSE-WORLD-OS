@@ -1,37 +1,24 @@
-// ============================================================================
-// PULSE-WORLD : PulseRouter-v13-PRESENCE-EVO+.js
-// ORGAN TYPE: Routing / Traffic Brain
-// VERSION: v13-PRESENCE-EVO+ (Hybrid, Every-Advantage, Route-Aware, User-Aware)
-// ============================================================================
-//
-// ROLE:
-//   PulseRouter is the traffic brain of a region. It decides how to route
-//   user requests: via local castle, via mesh, or via remote cloud as a last
-//   resort. In v13 it also becomes a *user-aware route strategist*:
-//
-//     - Reads Castle reproduction / load state
-//     - Reads Mesh pressure + density + presence/advantage fields
-//     - Reads Expansion route / expansion fields
-//     - Reads User / WorldCore / Brain views (when attached)
-//     - Suggests better routes (never auto-applies)
-//     - Suggests corridor reinforcement
-//     - Suggests node placement ideas
-//
-// CONTRACT:
-//   - Prefer local-first routing (castle, then mesh).
-//   - Avoid loops and fragmentation.
-//   - Respect SafetyFrame and user opt-in.
-//   - Be pressure-aware but never auto-expand.
-//   - Suggest improvements, never execute them.
-//   - Be user-aware and OS-brain-aware when attachments are present.
-// ============================================================================
+/**
+ * ============================================================================
+ *  PULSE OS v16‑IMMORTAL — PULSE ROUTER (TRAFFIC BRAIN / ORGANISM-AWARE)
+ *  PulseRouter-v16-IMMORTAL-ORGANISM.js
+ * ============================================================================
+ *
+ *  ROLE:
+ *    - Traffic brain of a region.
+ *    - Decides how to route user requests: castle / mesh / cloud.
+ *    - Reads Castle, Mesh (symbolic + binary), Expansion, Beacon, User, WorldCore,
+ *      Runtime, Scheduler, Overmind, Earn.
+ *    - Suggests better routes and corridor protection (never auto-applies).
+ *    - Pure symbolic planner: no network, no filesystem, no AI execution.
+ */
 /*
 AI_EXPERIENCE_META = {
   identity: "PulseRouter",
-  version: "v14-IMMORTAL",
+  version: "v16-IMMORTAL-ORGANISM",
   layer: "presence_router",
   role: "presence_route_planner",
-  lineage: "PulsePresence-v14",
+  lineage: "PulseRouter-v13-PRESENCE-EVO+ → v16-IMMORTAL-ORGANISM",
 
   evo: {
     routePlanner: true,
@@ -47,14 +34,33 @@ AI_EXPERIENCE_META = {
     driftProof: true,
     zeroMutationOfInput: true,
     zeroNetwork: true,
-    zeroFilesystem: true
+    zeroFilesystem: true,
+
+    userAware: true,
+    worldCoreAware: true,
+    osBrainAware: true,
+    meshWorldAware: true,
+    beaconAware: true,
+    expansionAware: true,
+    earnAware: true,
+    schedulerAware: true,
+    runtimeAware: true,
+    overmindAware: true
   },
 
   contract: {
     always: [
       "PulseServer",
       "PulseCastle",
-      "PulseMesh"
+      "PulseMesh",
+      "PulseBinaryMesh",
+      "PulseExpansion",
+      "PulseBeaconEngine",
+      "PulseUser",
+      "PulseWorldCore",
+      "PulseRuntime",
+      "PulseScheduler",
+      "PulseOvermind"
     ],
     never: [
       "safeRoute",
@@ -64,17 +70,67 @@ AI_EXPERIENCE_META = {
 }
 */
 
+// ============================================================================
+//  IMPORTS (backend-safe, organism-aware)
+// ============================================================================
+import { logger } from "../../PULSE-UI/_BACKEND/PulseProofLogger.js";
+
+// Expansion / world
+import { getPulseExpansionContext } from "./PulseExpansion-v12.3-Presence.js";
+
+// Mesh (symbolic + binary)
+import createBinaryMesh, {
+  BinaryMeshMeta
+} from "../PULSE-MESH/PulseBinaryMesh-v11-Evo.js";
+import createPulseMesh, {
+  PulseMeshMeta
+} from "../PULSE-MESH/PulseMesh-v11-Evo.js";
+
+// Beacon engine (optional, for presence / region signals)
+import PulseBeaconEngine from "./PulseBeaconEngine-v12.3-Presence.js";
+
+// Beacon membrane (for meta only, if needed)
+import PulseBeaconMesh, {
+  PulseBeaconMeshMeta
+} from "./PulseBeaconMesh-v12.3-Presence.js";
+
+// Touch / presence
+import { getPulseTouchContext } from "../../PULSE-UI/PULSE-TOUCH.js";
+
+// Net / connectivity
+import { getPulseNetContext } from "../../PULSE-UI/_BACKEND/PULSE-NET.js";
+
+// Runtime / scheduler / overmind
+import { getPulseRuntimeContext } from "../PULSE-X/PulseRuntime-v2-Evo.js";
+import { getPulseSchedulerContext } from "../PULSE-X/PulseScheduler-v2.js";
+import { getPulseOvermindContext } from "../PULSE-AI/aiOvermindPrime.js";
+
+// User / world core
+import {
+  pulseUser,
+  PulseUserMeta,
+  createPulseWorldCore
+} from "./PulseUser-v12.3-Presence.js";
+
+// (Optional) Earn / treasury integration hook (symbolic only)
+import { getEarnContext } from "../PULSE-EARN/PulseEarn-v12.3-Presence.js";
+
+// ============================================================================
+//  META — Router Identity
+// ============================================================================
 export const PulseRouterMeta = Object.freeze({
-  organId: "PulseRouter-v13-PRESENCE-EVO+",
+  organId: "PulseRouter-v16-IMMORTAL-ORGANISM",
   role: "TRAFFIC_BRAIN",
-  version: "13-PRESENCE-EVO+",
-  epoch: "v13-PRESENCE-EVO+",
+  version: "v16-IMMORTAL-ORGANISM",
+  epoch: "v16-IMMORTAL-ORGANISM",
   layer: "Routing",
   safety: Object.freeze({
     deterministic: true,
     noRandomness: true,
     noAsyncDrift: true,
-    syntheticOnly: true
+    syntheticOnly: true,
+    zeroNetwork: true,
+    zeroFilesystem: true
   }),
   evo: Object.freeze({
     presenceAware: true,
@@ -88,53 +144,112 @@ export const PulseRouterMeta = Object.freeze({
     userAware: true,
     worldCoreAware: true,
     osBrainAware: true,
-    meshWorldAware: true
+    meshWorldAware: true,
+    beaconAware: true,
+    runtimeAware: true,
+    schedulerAware: true,
+    overmindAware: true,
+    earnAware: true
   })
 });
 
 // ============================================================================
-// FACTORY: createPulseRouter — v13-PRESENCE-EVO+
+//  ORGANISM CONTEXT (for meta + introspection)
 // ============================================================================
+function buildOrganismContext() {
+  const expansion = getPulseExpansionContext?.() || {};
+  const touch = getPulseTouchContext?.() || {};
+  const net = getPulseNetContext?.() || {};
+  const runtime = getPulseRuntimeContext?.() || {};
+  const scheduler = getPulseSchedulerContext?.() || {};
+  const overmind = getPulseOvermindContext?.() || {};
+  const earn = getEarnContext?.() || {};
 
+  return {
+    expansion,
+    touch,
+    net,
+    runtime,
+    scheduler,
+    overmind,
+    earn,
+    meshMeta: PulseMeshMeta,
+    binaryMeshMeta: BinaryMeshMeta,
+    beaconMeshMeta: PulseBeaconMeshMeta
+  };
+}
+
+// Optional local beacon engine singleton (symbolic only)
+let _beaconEngineInstance = null;
+function getLocalBeaconEngine() {
+  if (_beaconEngineInstance) return _beaconEngineInstance;
+  try {
+    _beaconEngineInstance =
+      typeof PulseBeaconEngine === "function"
+        ? new PulseBeaconEngine()
+        : PulseBeaconEngine;
+  } catch {
+    _beaconEngineInstance = null;
+  }
+  return _beaconEngineInstance;
+}
+
+// ============================================================================
+// FACTORY: createPulseRouter — v16-IMMORTAL-ORGANISM
+// ============================================================================
 export function createPulseRouter({
   routerID = null,
   regionID = null,
   trace = false,
   globalHints = null
 } = {}) {
-
   // --------------------------------------------------------------------------
-  // 1. Identity & Scope (A)
+  // 1. Identity & Scope
   // --------------------------------------------------------------------------
   const Identity = Object.freeze({
     routerID,
     regionID,
     createdBy: "PulseWorldCore",
-    version: "v13-PRESENCE-EVO+"
+    version: "v16-IMMORTAL-ORGANISM"
   });
 
   function log(...args) {
-    if (trace) console.log("[PulseRouter v13]", ...args);
+    if (trace) console.log("[PulseRouter v16]", ...args);
   }
 
-  log("PulseRouter v13 created:", { routerID, regionID });
+  log("PulseRouter v16 created:", { routerID, regionID });
 
   // --------------------------------------------------------------------------
   // 2. Inputs (What the Router Can See)
-// --------------------------------------------------------------------------
-  let meshSnapshot = null;        // from PulseMesh.getSnapshot()
-  let castleSnapshot = null;      // from PulseCastle presence + state
-  let expansionSnapshot = null;   // from PulseExpansion.buildExpansionPlan() + routeField
-  let beaconSnapshot = null;      // from PulseBeaconEngine (optional)
+  // --------------------------------------------------------------------------
+  // Dual mesh: symbolic + binary
+  let meshSnapshotSymbolic = null; // from PulseMesh.getSnapshot()
+  let meshSnapshotBinary = null;   // from PulseBinaryMesh.getSnapshot()
 
-  // NEW: user / world / brain attachments
-  let userSnapshot = null;        // from PulseUser / local user context
-  let worldCoreSnapshot = null;   // from PulseWorldCore.getSnapshot()
-  let brainSnapshot = null;       // from runtime.getRuntimeStateV2() or OS brain view
+  // Castle / Expansion / Beacon
+  let castleSnapshot = null;       // from PulseCastle presence + state
+  let expansionSnapshot = null;    // from PulseExpansion.buildExpansionPlan() + routeField
+  let beaconSnapshot = null;       // from PulseBeaconEngine (optional)
 
-  function attachMesh(snapshot) {
-    meshSnapshot = snapshot || null;
+  // User / WorldCore / Brain
+  let userSnapshot = null;         // from PulseUser / local user context
+  let worldCoreSnapshot = null;    // from PulseWorldCore.getSnapshot()
+  let brainSnapshot = null;        // from runtime.getRuntimeStateV2() or OS brain view
+
+  // Attachments
+  function attachMeshSymbolic(snapshot) {
+    meshSnapshotSymbolic = snapshot || null;
     return { ok: true };
+  }
+
+  function attachMeshBinary(snapshot) {
+    meshSnapshotBinary = snapshot || null;
+    return { ok: true };
+  }
+
+  // Backward-compatible alias: attachMesh → symbolic mesh
+  function attachMesh(snapshot) {
+    return attachMeshSymbolic(snapshot);
   }
 
   function attachCastle(snapshot) {
@@ -185,8 +300,9 @@ export function createPulseRouter({
     const gh = lastGlobalHints || {};
 
     const meshPresence =
-      meshSnapshot?.presenceField?.meshPresence ||
-      meshSnapshot?.densityHealth?.A_metrics?.meshStrength ||
+      meshSnapshotSymbolic?.presenceField?.meshPresence ||
+      meshSnapshotSymbolic?.densityHealth?.A_metrics?.meshStrength ||
+      meshSnapshotBinary?.presenceField?.meshPresence ||
       "unknown";
 
     const userPresence =
@@ -214,8 +330,16 @@ export function createPulseRouter({
 
   function buildAdvantageField() {
     const gh = lastGlobalHints || {};
-    const meshAdvantageScore = meshSnapshot?.advantageField?.advantageScore ?? null;
-    const meshAdvantageBand = meshSnapshot?.advantageField?.advantageBand ?? "neutral";
+
+    const meshAdvantageScore =
+      meshSnapshotSymbolic?.advantageField?.advantageScore ??
+      meshSnapshotBinary?.advantageField?.advantageScore ??
+      null;
+
+    const meshAdvantageBand =
+      meshSnapshotSymbolic?.advantageField?.advantageBand ??
+      meshSnapshotBinary?.advantageField?.advantageBand ??
+      "neutral";
 
     const userAdvantageScore =
       userSnapshot?.advantageField?.advantageScore ??
@@ -241,7 +365,7 @@ export function createPulseRouter({
   }
 
   // --------------------------------------------------------------------------
-  // 4. Routing Policy (A → B → A)
+  // 4. Routing Policy
   // --------------------------------------------------------------------------
   const Policy = {
     A_baseline: {
@@ -268,15 +392,36 @@ export function createPulseRouter({
   // 5. Helpers: Read Signals
   // --------------------------------------------------------------------------
   function getMeshSignals() {
-    const dh = meshSnapshot?.densityHealth?.A_metrics || {};
-    const presenceField = meshSnapshot?.presenceField || null;
-    const advantageField = meshSnapshot?.advantageField || null;
+    const dhSym = meshSnapshotSymbolic?.densityHealth?.A_metrics || {};
+    const dhBin = meshSnapshotBinary?.densityHealth?.A_metrics || {};
+
+    const presenceField =
+      meshSnapshotSymbolic?.presenceField ||
+      meshSnapshotBinary?.presenceField ||
+      null;
+
+    const advantageField =
+      meshSnapshotSymbolic?.advantageField ||
+      meshSnapshotBinary?.advantageField ||
+      null;
 
     return {
-      meshStrength: dh.meshStrength || "unknown",
-      meshPressureIndex: dh.meshPressureIndex || 0,
-      userCount: dh.userCount || 0,
-      castleCount: dh.castleCount || 0,
+      meshStrength:
+        dhSym.meshStrength ||
+        dhBin.meshStrength ||
+        "unknown",
+      meshPressureIndex:
+        dhSym.meshPressureIndex ??
+        dhBin.meshPressureIndex ??
+        0,
+      userCount:
+        dhSym.userCount ??
+        dhBin.userCount ??
+        0,
+      castleCount:
+        dhSym.castleCount ??
+        dhBin.castleCount ??
+        0,
       presenceField,
       advantageField
     };
@@ -338,6 +483,21 @@ export function createPulseRouter({
   // --------------------------------------------------------------------------
   // 6. Decision Engine (Routing Decisions)
   // --------------------------------------------------------------------------
+  function routeTo(target, reason, context = {}) {
+    return Object.freeze({
+      target,          // "castle" | "mesh" | "cloud"
+      reason,          // symbolic reason
+      hops: 1,
+      safe: true,
+      presenceField: context.presenceField || null,
+      advantageField: context.advantageField || null,
+      meshSignals: context.mesh || null,
+      castleSignals: context.castle || null,
+      userSignals: context.userSignals || null,
+      routeField: context.routeField || null
+    });
+  }
+
   function decideRoute(request) {
     const mesh = getMeshSignals();
     const castle = getCastleSignals();
@@ -352,7 +512,9 @@ export function createPulseRouter({
 
     const userStress = userSignals.stressIndex;
     const fallbackBandLevel =
-      advantageField.fallbackBandLevel ?? userSignals.fallbackBandLevel ?? 0;
+      advantageField.fallbackBandLevel ??
+      userSignals.fallbackBandLevel ??
+      0;
     const osBrainStatus = userSignals.osBrainStatus;
 
     // 0. If OS brain is unhealthy or fallback band is high, bias toward cloud
@@ -447,26 +609,14 @@ export function createPulseRouter({
     });
   }
 
-  function routeTo(target, reason, context = {}) {
-    return Object.freeze({
-      target,          // "castle" | "mesh" | "cloud"
-      reason,          // symbolic reason
-      hops: 1,
-      safe: true,
-      presenceField: context.presenceField || null,
-      advantageField: context.advantageField || null,
-      meshSignals: context.mesh || null,
-      castleSignals: context.castle || null,
-      userSignals: context.userSignals || null,
-      routeField: context.routeField || null
-    });
-  }
-
   // --------------------------------------------------------------------------
   // 7. Route Suggestion Engine (Every-Advantage)
   // --------------------------------------------------------------------------
   function suggestBetterRoutes() {
-    if (!meshSnapshot || !castleSnapshot || !expansionSnapshot) {
+    if (!meshSnapshotSymbolic && !meshSnapshotBinary) {
+      return { ok: false, reason: "missing-mesh" };
+    }
+    if (!castleSnapshot || !expansionSnapshot) {
       return { ok: false, reason: "missing-inputs" };
     }
 
@@ -478,7 +628,10 @@ export function createPulseRouter({
     const suggestions = [];
 
     // Reinforce weak segments
-    if (Array.isArray(routeField.weakSegments) && routeField.weakSegments.length > 0) {
+    if (
+      Array.isArray(routeField.weakSegments) &&
+      routeField.weakSegments.length > 0
+    ) {
       suggestions.push({
         type: "reinforce-route-segment",
         segments: routeField.weakSegments,
@@ -556,8 +709,12 @@ export function createPulseRouter({
     return Object.freeze({
       intent: "optimize-route",
       payload: {
-        routeSuggestions: routeSuggestions.ok ? routeSuggestions.suggestions : [],
-        corridorSuggestions: corridorSuggestions.ok ? corridorSuggestions.suggestions : []
+        routeSuggestions: routeSuggestions.ok
+          ? routeSuggestions.suggestions
+          : [],
+        corridorSuggestions: corridorSuggestions.ok
+          ? corridorSuggestions.suggestions
+          : []
       }
     });
   }
@@ -601,10 +758,11 @@ export function createPulseRouter({
       organId: PulseRouterMeta.organId,
       identity: Identity,
       policy: Policy,
-      meshSnapshot,
+      meshSnapshotSymbolic,
+      meshSnapshotBinary,
       castleSnapshot,
       expansionSnapshot,
-      beaconSnapshot,
+      beaconSnapshot: beaconSnapshot || getLocalBeaconEngine()?.getSnapshot?.() || null,
       userSnapshot,
       worldCoreSnapshot,
       brainSnapshot,
@@ -614,7 +772,8 @@ export function createPulseRouter({
       suggestions: {
         betterRoutes: suggestBetterRoutes(),
         corridorProtection: suggestCorridorProtection()
-      }
+      },
+      organismContext: buildOrganismContext()
     });
   }
 
@@ -626,7 +785,9 @@ export function createPulseRouter({
     identity: Identity,
 
     // attachments
-    attachMesh,
+    attachMesh,            // symbolic (back-compat)
+    attachMeshSymbolic,    // explicit symbolic
+    attachMeshBinary,      // explicit binary
     attachCastle,
     attachExpansion,
     attachBeacon,

@@ -101,10 +101,10 @@ AI_EXPERIENCE_META = {
 import { startPulseNet, pulseNetIngressFromUser } from "./_BACKEND/PULSE-NET.js";
 import { route } from "./_BACKEND/PulseProofBridge.js";
 
-import { PulseTouchDetector } from "./_FRONTEND/PULSE-TOUCH-DETECTOR.js";
-import { PulseTouchWarmup } from "./_FRONTEND/PULSE-TOUCH-WARMUP.js";
-import { PulseTouchSecurity } from "./_FRONTEND/PULSE-TOUCH-SECURITY.js";
-import { PulseTouchGate } from "./_FRONTEND/PULSE-TOUCH-GATE.js";
+import { PulseTouchDetector } from "./_OUTERSENSES/PULSE-TOUCH-DETECTOR.js";
+import { PulseTouchWarmup } from "./_OUTERSENSES/PULSE-TOUCH-WARMUP.js";
+import { PulseTouchSecurity } from "./_OUTERSENSES/PULSE-TOUCH-SECURITY.js";
+import { PulseTouchGate } from "./_OUTERSENSES/PULSE-TOUCH-GATE.js";
 
 // ============================================================
 // CONSTANTS — COOKIE + VERSION

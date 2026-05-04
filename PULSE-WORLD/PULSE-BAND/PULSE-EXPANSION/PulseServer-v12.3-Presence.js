@@ -1,6 +1,6 @@
 // ============================================================================
-//  PULSE OS v15‑IMMORTAL‑PRESENCE‑EVO+ — PULSE SERVER (EXEC ENGINE / ADVANTAGE HUB)
-//  PulseServer-v15-IMMORTAL-Presence
+//  PULSE OS v16‑IMMORTAL‑ORGANISM — PULSE SERVER (EXEC ENGINE / ADVANTAGE HUB)
+//  PulseServer-v16-IMMORTAL-ORGANISM.js
 //
 //  ROLE:
 //    - Deterministic compute / exec engine for the organism.
@@ -9,16 +9,17 @@
 //    - Binds: AdrenalSystem + Scheduler + Runtime v2 (+ Router/Overmind via Scheduler).
 //    - Single entrypoint for “server-as-compute” and “server-as-earn/flow”.
 //    - WorldCore-aware, user-aware, mesh-aware, brain-aware, PulseNet-bridge-aware.
+//    - DualBand-aware + binary send aware (symbolic + binary lanes).
 //    - NO direct network fetch: all network is via higher PulseNet bridge / expansion.
 // ============================================================================
 
 /*
 AI_EXPERIENCE_META = {
   identity: "PulseServer",
-  version: "v15-IMMORTAL",
+  version: "v16-IMMORTAL-ORGANISM",
   layer: "presence_server",
   role: "presence_region_server",
-  lineage: "PulsePresence-v15-IMMORTAL",
+  lineage: "PulsePresence-v15-IMMORTAL → v16-IMMORTAL-ORGANISM",
 
   evo: {
     regionServer: true,
@@ -55,26 +56,22 @@ AI_EXPERIENCE_META = {
 //  IMPORTS — Organs it feeds and orchestrates
 // ============================================================================
 
+import { logger } from "../../PULSE-UI/_BACKEND/PulseProofLogger.js";
+
 // Adrenal (compute starter / circulation governor)
-import {
-  runInstanceOrchestrator as runAdrenalInstanceOrchestrator,
-  PulseProxyAdrenalSystemMeta
-} from "../PULSE-PROXY/PulseProxyAdrenalSystem.js";
+import { runInstanceOrchestrator as runAdrenalInstanceOrchestrator, PulseProxyAdrenalSystemMeta} from "../PULSE-PROXY/PulseProxyAdrenalSystem.js";
 
 // Scheduler (Router + Overmind + Runtime v1 macro pipeline)
-import {
-  createPulseScheduler,
-  PulseSchedulerMeta
-} from "../PULSE-X/PulseScheduler-v2.js";
+import { createPulseScheduler, PulseSchedulerMeta} from "../PULSE-X/PulseScheduler-v2.js";
 
 // Runtime v2 (multi-organism execution + binary frames)
 import PulseRuntimeV2 from "../PULSE-X/PulseRuntime-v2-Evo.js";
 
-const {
-  runPulseTickV2,
-  getRuntimeStateV2,
-  CoreMemory: RuntimeCoreMemory
-} = PulseRuntimeV2;
+const { runPulseTickV2, getRuntimeStateV2, CoreMemory: RuntimeCoreMemory} = PulseRuntimeV2;
+
+// DualBand / Binary field (optional, advantage-only)
+import { createDualBandOrganism as PulseBinaryOrganismBoot } from "../PULSE-AI/aiDualBand-v11-Evo.js";
+import { createBinarySend as PulseSendBin } from "../PULSE-SEND/PulseBinarySend-v11-EVO.js";
 
 
 // ============================================================================
@@ -83,8 +80,8 @@ const {
 export const PulseServerMeta = Object.freeze({
   layer: "PulseServer",
   role: "PRESENCE_EXEC_ENGINE",
-  version: "v15-IMMORTAL-PRESENCE-EVO+",
-  identity: "PulseServer-v15-IMMORTAL-PRESENCE-EXEC",
+  version: "v16-IMMORTAL-ORGANISM",
+  identity: "PulseServer-v16-IMMORTAL-ORGANISM-EXEC",
 
   guarantees: Object.freeze({
     deterministic: true,
@@ -121,6 +118,8 @@ export const PulseServerMeta = Object.freeze({
     waveFieldAware: true,
     binaryFieldAware: true,
     dualMode: true,
+    dualBandExecAware: true,
+    binarySendAware: true,
 
     // Delegation
     usesAdrenalSystem: true,
@@ -165,8 +164,8 @@ export const PulseServerMeta = Object.freeze({
   }),
 
   lineage: Object.freeze({
-    root: "PulseOS-v15-IMMORTAL-PRESENCE-EVO+",
-    parent: "PulseProxy-v15-IMMORTAL-PRESENCE-EVO+",
+    root: "PulseOS-v16-IMMORTAL-ORGANISM",
+    parent: "PulseProxy-v16-IMMORTAL-ORGANISM",
     ancestry: [
       "PulseServer-v9",
       "PulseServer-v10",
@@ -174,7 +173,8 @@ export const PulseServerMeta = Object.freeze({
       "PulseServer-v11-Evo",
       "PulseServer-v12-Evo",
       "PulseServer-v12.3-PRESENCE-EVO+",
-      "PulseServer-v13-PRESENCE-EVO+"
+      "PulseServer-v13-PRESENCE-EVO+",
+      "PulseServer-v15-IMMORTAL-PRESENCE-EVO+"
     ]
   })
 });
@@ -233,7 +233,7 @@ function buildBatchKey(instances, currentStatesById, globalContinuancePolicy) {
 
 
 // ============================================================================
-//  CORE SERVER ENGINE — worldCore/user/mesh/PulseNet-bridge aware
+//  CORE SERVER ENGINE — worldCore/user/mesh/PulseNet-bridge/dualBand aware
 // ============================================================================
 export class PulseServerPresenceExec {
   constructor(config = {}) {
@@ -254,6 +254,10 @@ export class PulseServerPresenceExec {
       pulseNetBridge: null,   // PulseNet bridge / expansion-level sender
       brainNetworkMode: true, // allow brain-intent-shaped jobs
 
+      // DualBand / binary
+      dualBandEngine: null,   // external dualBand engine (optional)
+      binarySend: null,       // external binary send (optional)
+
       ...config
     };
 
@@ -261,6 +265,19 @@ export class PulseServerPresenceExec {
     this.mesh = this.config.mesh || null;
     this.userContext = this.config.userContext || null;
     this.pulseNetBridge = this.config.pulseNetBridge || null;
+
+    // DualBand + Binary send (advantage-only, no network fetch)
+    this.dualBandEngine =
+      this.config.dualBandEngine ||
+      (typeof PulseBinaryOrganismBoot === "function"
+        ? PulseBinaryOrganismBoot({ mode: "presence-server" })
+        : null);
+
+    this.binarySend =
+      this.config.binarySend ||
+      (typeof PulseSendBin === "function"
+        ? PulseSendBin({ source: "PulseServer-v16" })
+        : null);
 
     this.scheduler = createPulseScheduler({
       defaultGlobalPolicy: this.config.defaultGlobalPolicy,
@@ -273,8 +290,10 @@ export class PulseServerPresenceExec {
     if (this.worldCore && typeof this.worldCore.attachRuntime === "function") {
       try {
         this.worldCore.attachRuntime(PulseRuntimeV2);
-      } catch {
-        // never throw from integration
+      } catch (err) {
+        logger?.log?.("server", "worldcore_attach_runtime_error", {
+          error: String(err)
+        });
       }
     }
 
@@ -282,8 +301,10 @@ export class PulseServerPresenceExec {
     if (this.mesh && typeof this.mesh.attachUser === "function") {
       try {
         this.mesh.attachUser(this.userContext || { source: "PulseServer" });
-      } catch {
-        // ignore
+      } catch (err) {
+        logger?.log?.("server", "mesh_attach_user_error", {
+          error: String(err)
+        });
       }
     }
   }
@@ -296,7 +317,11 @@ export class PulseServerPresenceExec {
     if (worldCore && typeof worldCore.attachRuntime === "function") {
       try {
         worldCore.attachRuntime(PulseRuntimeV2);
-      } catch {}
+      } catch (err) {
+        logger?.log?.("server", "worldcore_attach_runtime_error", {
+          error: String(err)
+        });
+      }
     }
     return { ok: true };
   }
@@ -306,7 +331,11 @@ export class PulseServerPresenceExec {
     if (mesh && typeof mesh.attachUser === "function") {
       try {
         mesh.attachUser(this.userContext || { source: "PulseServer" });
-      } catch {}
+      } catch (err) {
+        logger?.log?.("server", "mesh_attach_user_error", {
+          error: String(err)
+        });
+      }
     }
     return { ok: true };
   }
@@ -316,7 +345,11 @@ export class PulseServerPresenceExec {
     if (this.mesh && typeof this.mesh.attachUser === "function") {
       try {
         this.mesh.attachUser(userContext);
-      } catch {}
+      } catch (err) {
+        logger?.log?.("server", "mesh_attach_user_error", {
+          error: String(err)
+        });
+      }
     }
     return { ok: true };
   }
@@ -326,8 +359,22 @@ export class PulseServerPresenceExec {
     if (pulseNetBridge && typeof pulseNetBridge.attachServer === "function") {
       try {
         pulseNetBridge.attachServer({ serverMeta: PulseServerMeta });
-      } catch {}
+      } catch (err) {
+        logger?.log?.("server", "pulsenet_attach_server_error", {
+          error: String(err)
+        });
+      }
     }
+    return { ok: true };
+  }
+
+  attachDualBandEngine(dualBandEngine) {
+    this.dualBandEngine = dualBandEngine || null;
+    return { ok: true };
+  }
+
+  attachBinarySend(binarySend) {
+    this.binarySend = binarySend || null;
     return { ok: true };
   }
 
@@ -425,13 +472,20 @@ export class PulseServerPresenceExec {
         ? this.worldCore.buildAdvantageContext()
         : null;
 
+    const dualBandSnapshot =
+      dualBand ||
+      (this.dualBandEngine &&
+        typeof this.dualBandEngine.getSnapshot === "function"
+        ? this.dualBandEngine.getSnapshot()
+        : null);
+
     const pipelineResult = await this.scheduler.runPipeline({
       instances,
       currentStatesById,
       globalContinuancePolicy:
         globalContinuancePolicy ?? this.config.defaultGlobalPolicy,
       userRequest,
-      dualBand,
+      dualBand: dualBandSnapshot,
       maxTicks: maxTicks ?? this.config.defaultMaxTicks,
       stopOnWorldLens: stopOnWorldLens ?? this.config.defaultStopOnWorldLens,
       advantageContext,
@@ -540,7 +594,7 @@ export class PulseServerPresenceExec {
   } = {}) {
     const notes = [];
 
-    notes.push("PulseServer-v15-IMMORTAL-PRESENCE-EXEC: starting job.");
+    notes.push("PulseServer-v16-IMMORTAL-ORGANISM-EXEC: starting job.");
 
     // 0) Job cache check
     const cached = this.maybeGetCachedJob(cacheKey);
@@ -624,7 +678,7 @@ export class PulseServerPresenceExec {
     const runtimeStateV2 = getRuntimeStateV2();
     notes.push("Runtime v2 state snapshot captured (hot-state + binary frames).");
 
-    // 5) Pull worldCore + mesh advantage context for this job
+    // 5) Pull worldCore + mesh + dualBand advantage context for this job
     const advantageContext =
       this.worldCore && typeof this.worldCore.buildAdvantageContext === "function"
         ? this.worldCore.buildAdvantageContext()
@@ -640,6 +694,13 @@ export class PulseServerPresenceExec {
         ? this.mesh.getSnapshot()
         : null;
 
+    const dualBandSnapshot =
+      dualBand ||
+      (this.dualBandEngine &&
+        typeof this.dualBandEngine.getSnapshot === "function"
+        ? this.dualBandEngine.getSnapshot()
+        : null);
+
     const meta = Object.freeze({
       serverMeta: PulseServerMeta,
       schedulerMeta,
@@ -647,8 +708,10 @@ export class PulseServerPresenceExec {
       advantageContext,
       worldCoreSnapshot,
       meshSnapshot,
+      dualBandSnapshot,
       userContext: this.userContext || null,
       pulseNetBridgeAttached: !!this.pulseNetBridge,
+      binarySendAttached: !!this.binarySend,
       notes
     });
 
@@ -700,6 +763,12 @@ export function createPulseServer(config = {}) {
     },
     attachPulseNetBridge(pulseNetBridge) {
       return core.attachPulseNetBridge(pulseNetBridge);
+    },
+    attachDualBandEngine(dualBandEngine) {
+      return core.attachDualBandEngine(dualBandEngine);
+    },
+    attachBinarySend(binarySend) {
+      return core.attachBinarySend(binarySend);
     }
   });
 }

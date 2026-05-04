@@ -1,24 +1,26 @@
-// ============================================================================
-//  PULSE OS v14‑IMMORTAL — PULSE CASTLE (PRESENCE / HOST ORGAN)
-//  PulseCastle-v14-IMMORTAL.js
-//
-//  ROLE:
-//    - Presence + host organ for PulseServer instances.
-//    - Manages castles (region/host nodes) and their attached servers.
-//    - Manages user bindings + world cores per castle (user‑aware).
-//    - Maintains awareness of other castles (mesh awareness).
-//    - Maintains basic treasury + soldier awareness for economic layer.
-//    - Maintains symbolic expansion routes + NodeAdmin loops to servers.
-//    - Pure symbolic registry + mapping. No compute math, no routing, no AI.
-// ============================================================================
-
+/**
+ * ============================================================================
+ *  PULSE OS v16‑IMMORTAL — PULSE CASTLE (PRESENCE / HOST ORGAN)
+ *  PulseCastle-v16-IMMORTAL-ORGANISM.js
+ * ============================================================================
+ *
+ *  ROLE:
+ *    - Presence + host organ for PulseServer instances.
+ *    - Manages castles (region/host nodes) and their attached servers.
+ *    - Manages user bindings + world cores per castle (user‑aware).
+ *    - Maintains awareness of other castles (mesh awareness).
+ *    - Maintains basic treasury + soldier awareness for economic layer.
+ *    - Maintains symbolic expansion routes + NodeAdmin loops to servers.
+ *    - Integrates with Mesh, BeaconMesh, Touch, Net, Runtime, Scheduler, Overmind, Earn.
+ *    - Pure symbolic registry + mapping. No compute math, no routing, no AI.
+ */
 /*
 AI_EXPERIENCE_META = {
   identity: "PulseCastle",
-  version: "v14-IMMORTAL",
+  version: "v16-IMMORTAL-ORGANISM",
   layer: "presence_castle",
   role: "region_identity_and_security",
-  lineage: "PulsePresence-v14",
+  lineage: "PulseCastle-v9 → v12.3-PRESENCE-EVO++ → v14-IMMORTAL → v16-IMMORTAL-ORGANISM",
 
   evo: {
     regionIdentity: true,
@@ -45,14 +47,31 @@ AI_EXPERIENCE_META = {
     driftProof: true,
     zeroMutationOfInput: true,
     zeroNetwork: true,
-    zeroFilesystem: true
+    zeroFilesystem: true,
+
+    pulseTouchAware: true,
+    pulseNetAware: true,
+    runtimeAware: true,
+    schedulerAware: true,
+    overmindAware: true,
+    meshOrganismAware: true,
+    beaconMeshAware: true,
+    earnAware: true
   },
 
   contract: {
     always: [
       "PulseExpansion",
       "PulseRouter",
-      "PulseServer"
+      "PulseServer",
+      "PulseUser",
+      "PulseMesh",
+      "PulseBeaconMesh",
+      "PulseTouch",
+      "PulseNet",
+      "PulseRuntime",
+      "PulseScheduler",
+      "PulseOvermind"
     ],
     never: [
       "safeRoute",
@@ -63,20 +82,41 @@ AI_EXPERIENCE_META = {
 */
 
 // ============================================================================
-//  IMPORTS (backend-safe)
+//  IMPORTS (backend-safe, organism-aware)
 // ============================================================================
 import { logger } from "../../PULSE-UI/_BACKEND/PulseProofLogger.js";
 
-import {
-  createPulseServer,
-  PulseServerMeta
-} from "./PulseServer-v12.3-Presence.js";
+// Expansion / world
+import { getPulseExpansionContext } from "./PulseExpansion-v12.3-Presence.js";
 
-import {
-  pulseUser,
-  PulseUserMeta,
-  createPulseWorldCore
-} from "./PulseUser-v12.3-Presence.js";
+// Mesh organism
+import createBinaryMesh, { BinaryMeshMeta } from "../PULSE-MESH/PulseBinaryMesh-v11-Evo.js";
+import createPulseMesh, { PulseMeshMeta } from "../PULSE-MESH/PulseMesh-v11-Evo.js";
+import PulseBeaconEngine from "./PulseBeaconEngine-v12.3-Presence.js";
+// Beacon membrane
+import PulseBeaconMesh, { PulseBeaconMeshMeta } from "./PulseBeaconMesh-v12.3-Presence.js";
+
+// Touch / presence
+import { getPulseTouchContext } from "../../PULSE-UI/PULSE-TOUCH.js";
+
+// Net / connectivity
+import { getPulseNetContext } from "../../PULSE-UI/_BACKEND/PULSE-NET.js";
+
+// Runtime / scheduler / overmind
+import { getPulseRuntimeContext } from "../PULSE-X/PulseRuntime-v2-Evo.js";
+import { getPulseSchedulerContext } from "../PULSE-X/PulseScheduler-v2.js";
+import { getPulseOvermindContext } from "../PULSE-AI/aiOvermindPrime.js";
+
+// Server / user
+import { createPulseServer, PulseServerMeta } from "./PulseServer-v12.3-Presence.js";
+import { pulseUser, PulseUserMeta, createPulseWorldCore } from "./PulseUser-v12.3-Presence.js";
+
+// (Optional) Earn / treasury integration hook (symbolic only)
+import { getEarnContext } from "../PULSE-EARN/PulseEarn-v12.3-Presence.js";
+
+// Dual-band organism + binary send
+import { createDualBandOrganism as PulseBinaryOrganismBoot } from "../../PULSE-BAND/PULSE-AI/aiDualBand-v11-Evo.js";
+import { createBinarySend as PulseSendBin } from "../../PULSE-BAND/PULSE-SEND/PulseBinarySend-v11-EVO.js";
 
 // ============================================================================
 //  META — Castle Identity
@@ -84,8 +124,8 @@ import {
 export const PulseCastleMeta = Object.freeze({
   layer: "PulseCastle",
   role: "PRESENCE_HOST_ORGAN",
-  version: "v14-IMMORTAL",
-  identity: "PulseCastle-v14-IMMORTAL",
+  version: "v16-IMMORTAL-ORGANISM",
+  identity: "PulseCastle-v16-IMMORTAL-ORGANISM",
 
   guarantees: Object.freeze({
     deterministic: true,
@@ -101,7 +141,6 @@ export const PulseCastleMeta = Object.freeze({
     treasuryAware: true,
     soldierAware: true,
 
-    // v13+ awareness
     userAware: true,
     worldCoreAware: true,
     serverUserBindingAware: true,
@@ -110,11 +149,19 @@ export const PulseCastleMeta = Object.freeze({
     chunkPrewarmAware: true,
     osBrainAware: true,
 
-    // v14+ expansion / routing awareness (symbolic only)
     routerAware: true,
     expansionRouteAware: true,
     nodeAdminLoopAware: true,
     serverLoopAware: true,
+
+    pulseTouchAware: true,
+    pulseNetAware: true,
+    runtimeAware: true,
+    schedulerAware: true,
+    overmindAware: true,
+    meshOrganismAware: true,
+    beaconMeshAware: true,
+    earnAware: true,
 
     zeroRandomness: true,
     zeroDynamicImports: true,
@@ -122,7 +169,7 @@ export const PulseCastleMeta = Object.freeze({
     zeroNetworkFetch: true,
     zeroAI: true,
     zeroRouting: true,
-    zeroComputeMath: true // delegates to PulseServer / Runtime
+    zeroComputeMath: true
   }),
 
   contract: Object.freeze({
@@ -151,15 +198,16 @@ export const PulseCastleMeta = Object.freeze({
   }),
 
   lineage: Object.freeze({
-    root: "PulseOS-v14-IMMORTAL",
-    parent: "PulseExpansion-v14-IMMORTAL",
+    root: "PulseOS-v16-IMMORTAL",
+    parent: "PulseExpansion-v16-IMMORTAL-ORGANISM",
     ancestry: [
       "PulseCastle-v9",
       "PulseCastle-v10",
       "PulseCastle-v11",
       "PulseCastle-v12",
       "PulseCastle-v12.3-PRESENCE-EVO++",
-      "PulseCastle-v13-PRESENCE-EVO+"
+      "PulseCastle-v13-PRESENCE-EVO+",
+      "PulseCastle-v14-IMMORTAL"
     ]
   })
 });
@@ -275,34 +323,6 @@ export class CastleNodeAdminLoopState {
 // ============================================================================
 //  INTERNAL STATE (symbolic, deterministic)
 // ============================================================================
-//
-// castlesById, usersById, userBindingsByServerId, meshLinksByCastleId
-//   — same as v13.
-//
-// expansionRoutesById: {
-//   [routeId]: {
-//     routeId,
-//     fromCastleId,
-//     toServerId,
-//     toServerUrl,
-//     hops: [castleId],
-//     loopHint: { intervalHint, pressureHint },
-//     tags: []
-//   }
-// }
-//
-// nodeAdminLoopsById: {
-//   [loopId]: {
-//     loopId,
-//     routeId,
-//     originCastleId,
-//     targetServerId,
-//     intervalHint,
-//     pressureHint,
-//     active: boolean
-//   }
-// }
-// ============================================================================
 const castlesById = Object.create(null);
 const meshLinksByCastleId = Object.create(null);
 
@@ -313,7 +333,7 @@ const expansionRoutesById = Object.create(null);
 const nodeAdminLoopsById = Object.create(null);
 
 // ============================================================================
-//  HELPERS
+//  HELPERS + ORGANISM CONTEXT
 // ============================================================================
 function stableHash(str) {
   let h = 0;
@@ -327,6 +347,30 @@ function stableHash(str) {
 function clamp01(x) {
   if (x == null || Number.isNaN(x)) return 0;
   return Math.max(0, Math.min(1, x));
+}
+
+function buildOrganismContext(extra = {}) {
+  const expansion = getPulseExpansionContext?.() || {};
+  const touch = getPulseTouchContext?.() || {};
+  const net = getPulseNetContext?.() || {};
+  const runtime = getPulseRuntimeContext?.() || {};
+  const scheduler = getPulseSchedulerContext?.() || {};
+  const overmind = getPulseOvermindContext?.() || {};
+  const earn = getEarnContext?.() || {};
+
+  return {
+    expansion,
+    touch,
+    net,
+    runtime,
+    scheduler,
+    overmind,
+    earn,
+    meshMeta: PulseMeshMeta,
+    beaconMeshMeta: PulseBeaconMeshMeta,
+    binaryMeshMeta: BinaryMeshMeta,
+    ...extra
+  };
 }
 
 function buildCastleId({ regionId, hostName }) {
@@ -383,7 +427,6 @@ export function computeCastlePresence(castle) {
   };
 }
 
-// v13: richer summary for Expansion / Mesh / Advantage
 export function summarizeCastlePresence(castles = castlesById) {
   const byRegion = {};
   const meshSnapshot = {};
@@ -691,8 +734,31 @@ function snapshotNodeAdminLoops() {
   return loops;
 }
 
+// ---------------------------------------------------------------------------
+// Beacon Engine singleton for Castle + BeaconMesh
+// ---------------------------------------------------------------------------
+let _beaconEngineInstance = null;
+
+export function setBeaconEngineInstance(engine) {
+  _beaconEngineInstance = engine;
+}
+
+export function getBeaconEngineContext() {
+  if (!_beaconEngineInstance) {
+    try {
+      _beaconEngineInstance =
+        typeof PulseBeaconEngine === "function"
+          ? new PulseBeaconEngine()
+          : PulseBeaconEngine;
+    } catch {
+      return null;
+    }
+  }
+  return _beaconEngineInstance;
+}
+
 // ============================================================================
-//  CORE ORGAN
+//  CORE ORGAN — PulseCastle v16 IMMORTAL ORGANISM
 // ============================================================================
 export class PulseCastle {
   constructor(config = {}) {
@@ -700,8 +766,69 @@ export class PulseCastle {
       autoMeshByRegion: true,
       autoMeshAll: false,
       autoBindServerToUser: true,
+      demoUsersOnBoot: true,
       ...config
     };
+
+    // Symbolic mesh for castle topology
+    this.localMesh = createPulseMesh?.({
+      meshID: "castle-mesh",
+      regionID: config.regionId || null,
+      trace: false
+    }) || null;
+
+    // Binary mesh + dual-band organism + binary send (organism-level wiring)
+    this.binaryMesh = createBinaryMesh?.({
+      meshID: "castle-binary-mesh",
+      regionID: config.regionId || null,
+      trace: false
+    }) || null;
+
+    this.binarySend = PulseSendBin?.({
+      meshID: "castle-binary-send",
+      regionID: config.regionId || null,
+      trace: false
+    }) || null;
+
+    this.dualBandOrganism = PulseBinaryOrganismBoot?.({
+      mesh: this.binaryMesh,
+      send: this.binarySend,
+      role: "castle-organism",
+      trace: false
+    }) || null;
+
+    // Beacon membrane over Beacon Engine
+    this.beaconMesh = new PulseBeaconMesh({
+      beacon: getBeaconEngineContext?.() || null,
+      meshID: "castle-beacon-mesh",
+      regionID: config.regionId || null,
+      trace: false
+    });
+
+    if (this.config.demoUsersOnBoot) {
+      this._bootstrapDemoUsers();
+    }
+  }
+
+  _bootstrapDemoUsers() {
+    const regionId = "demo-region";
+    const hostName = "demo-host";
+
+    this.registerCastle({ regionId, hostName });
+
+    this.registerUserAtCastle({
+      regionId,
+      hostName,
+      userKey: "demo-user-1",
+      worldCoreConfig: { demo: true }
+    });
+
+    this.registerUserAtCastle({
+      regionId,
+      hostName,
+      userKey: "demo-user-2",
+      worldCoreConfig: { demo: true }
+    });
   }
 
   // ------------------------------------------------------------------------
@@ -747,7 +874,12 @@ export class PulseCastle {
       hostName: hName,
       presenceField: castle.presenceField,
       meta: {
-        castleMeta: PulseCastleMeta
+        castleMeta: PulseCastleMeta,
+        organismContext: buildOrganismContext({
+          localMesh: !!this.localMesh,
+          binaryMesh: !!this.binaryMesh,
+          beaconMesh: !!this.beaconMesh
+        })
       }
     });
   }
@@ -801,7 +933,8 @@ export class PulseCastle {
       boundServers,
       meta: {
         castleMeta: PulseCastleMeta,
-        userMeta: PulseUserMeta
+        userMeta: PulseUserMeta,
+        organismContext: buildOrganismContext()
       }
     });
   }
@@ -825,7 +958,8 @@ export class PulseCastle {
       meta: {
         castleMeta: PulseCastleMeta,
         ok: result.ok,
-        reason: result.reason || null
+        reason: result.reason || null,
+        organismContext: buildOrganismContext()
       }
     });
   }
@@ -893,7 +1027,8 @@ export class PulseCastle {
       serverMeta: PulseServerMeta,
       attached: true,
       meta: {
-        castleMeta: PulseCastleMeta
+        castleMeta: PulseCastleMeta,
+        organismContext: buildOrganismContext()
       }
     });
   }
@@ -910,7 +1045,8 @@ export class PulseCastle {
         detached: false,
         meta: {
           castleMeta: PulseCastleMeta,
-          reason: "not_found"
+          reason: "not_found",
+          organismContext: buildOrganismContext()
         }
       });
     }
@@ -936,7 +1072,8 @@ export class PulseCastle {
       serverId,
       detached: true,
       meta: {
-        castleMeta: PulseCastleMeta
+        castleMeta: PulseCastleMeta,
+        organismContext: buildOrganismContext()
       }
     });
   }
@@ -959,7 +1096,11 @@ export class PulseCastle {
       balance: next
     });
 
-    return { ok: true, balance: next };
+    return {
+      ok: true,
+      balance: next,
+      organismContext: buildOrganismContext()
+    };
   }
 
   // ------------------------------------------------------------------------
@@ -982,7 +1123,7 @@ export class PulseCastle {
       });
     }
 
-    return { ok: true, soldierId: id };
+    return { ok: true, soldierId: id, organismContext: buildOrganismContext() };
   }
 
   unregisterSoldier({ castleId, soldierId }) {
@@ -1000,7 +1141,7 @@ export class PulseCastle {
       soldierId
     });
 
-    return { ok: true };
+    return { ok: true, organismContext: buildOrganismContext() };
   }
 
   // ------------------------------------------------------------------------
@@ -1013,7 +1154,8 @@ export class PulseCastle {
       castlesById: castlesSnapshot,
       meshLinksByCastleId: meshSnapshot,
       meta: {
-        castleMeta: PulseCastleMeta
+        castleMeta: PulseCastleMeta,
+        organismContext: buildOrganismContext()
       }
     });
   }
@@ -1025,7 +1167,8 @@ export class PulseCastle {
       castlesById: castlesSnapshot,
       meshLinksByCastleId: meshSnapshot,
       meta: {
-        castleMeta: PulseCastleMeta
+        castleMeta: PulseCastleMeta,
+        organismContext: buildOrganismContext()
       }
     });
   }
@@ -1055,7 +1198,8 @@ export class PulseCastle {
       usersById: users,
       bindingsByServerId: bindings,
       meta: {
-        castleMeta: PulseCastleMeta
+        castleMeta: PulseCastleMeta,
+        organismContext: buildOrganismContext()
       }
     });
   }
@@ -1083,7 +1227,8 @@ export class PulseCastle {
       meta: {
         castleMeta: PulseCastleMeta,
         ok: res.ok,
-        reason: res.reason || null
+        reason: res.reason || null,
+        organismContext: buildOrganismContext()
       }
     });
   }
@@ -1092,7 +1237,8 @@ export class PulseCastle {
     return new CastleExpansionRouteState({
       routesById: snapshotExpansionRoutes(),
       meta: {
-        castleMeta: PulseCastleMeta
+        castleMeta: PulseCastleMeta,
+        organismContext: buildOrganismContext()
       }
     });
   }
@@ -1118,7 +1264,8 @@ export class PulseCastle {
       meta: {
         castleMeta: PulseCastleMeta,
         ok: res.ok,
-        reason: res.reason || null
+        reason: res.reason || null,
+        organismContext: buildOrganismContext()
       }
     });
   }
@@ -1127,87 +1274,35 @@ export class PulseCastle {
     return new CastleNodeAdminLoopState({
       loopsById: snapshotNodeAdminLoops(),
       meta: {
-        castleMeta: PulseCastleMeta
+        castleMeta: PulseCastleMeta,
+        organismContext: buildOrganismContext()
       }
     });
   }
+
+  // ------------------------------------------------------------------------
+  // Organism snapshot (for Mesh / Overmind / Debugger)
+// ------------------------------------------------------------------------
+  getOrganismSnapshot() {
+    const { castlesSnapshot, meshSnapshot } = snapshotMesh();
+    const presenceSummary = summarizeCastlePresence(castlesById);
+
+    return {
+      meta: PulseCastleMeta,
+      castles: castlesSnapshot,
+      mesh: meshSnapshot,
+      presenceSummary,
+      users: usersById,
+      expansionRoutes: snapshotExpansionRoutes(),
+      nodeAdminLoops: snapshotNodeAdminLoops(),
+      organismContext: buildOrganismContext({
+        hasLocalMesh: !!this.localMesh,
+        hasBinaryMesh: !!this.binaryMesh,
+        hasBeaconMesh: !!this.beaconMesh,
+        hasDualBandOrganism: !!this.dualBandOrganism
+      })
+    };
+  }
 }
 
-// ============================================================================
-//  PUBLIC API — Create / Singleton
-// ============================================================================
-export function createPulseCastle(config = {}) {
-  const core = new PulseCastle(config);
-
-  return Object.freeze({
-    meta: PulseCastleMeta,
-
-    registerCastle(payload) {
-      return core.registerCastle(payload);
-    },
-
-    registerUserAtCastle(payload) {
-      return core.registerUserAtCastle(payload);
-    },
-
-    bindServerToUser(payload) {
-      return core.bindServerToUser(payload);
-    },
-
-    attachServerToCastle(payload) {
-      return core.attachServerToCastle(payload);
-    },
-
-    detachServerFromCastle(payload) {
-      return core.detachServerFromCastle(payload);
-    },
-
-    getPresenceState() {
-      return core.getPresenceState();
-    },
-
-    getMeshState() {
-      return core.getMeshState();
-    },
-
-    getServersForCastle(castleId) {
-      return core.getServersForCastle(castleId);
-    },
-
-    getUserBindingsForCastle(castleId) {
-      return core.getUserBindingsForCastle(castleId);
-    },
-
-    // v13+ hooks
-    applyTreasuryDelta(payload) {
-      return core.applyTreasuryDelta(payload);
-    },
-
-    registerSoldier(payload) {
-      return core.registerSoldier(payload);
-    },
-
-    unregisterSoldier(payload) {
-      return core.unregisterSoldier(payload);
-    },
-
-    // v14-IMMORTAL expansion / NodeAdmin surface
-    registerExpansionRoute(payload) {
-      return core.registerExpansionRoute(payload);
-    },
-
-    getExpansionRoutes() {
-      return core.getExpansionRoutes();
-    },
-
-    spawnNodeAdminLoop(payload) {
-      return core.spawnNodeAdminLoop(payload);
-    },
-
-    getNodeAdminLoops() {
-      return core.getNodeAdminLoops();
-    }
-  });
-}
-
-export const pulseCastle = createPulseCastle();
+export default PulseCastle;

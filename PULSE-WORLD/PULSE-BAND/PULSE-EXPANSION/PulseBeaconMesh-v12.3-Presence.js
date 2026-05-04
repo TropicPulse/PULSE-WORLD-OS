@@ -1,39 +1,167 @@
+/**
+ * ============================================================================
+ *  PULSE-WORLD : PulseBeaconMesh-v16-IMMORTAL-ORGANISM.js
+ *  ROLE: Local membrane simulator + density/mode/advantage debugger
+ *  VERSION: v16-IMMORTAL-ORGANISM
+ *  LAYER: BeaconMesh
+ *  IDENTITY: PulseBeaconMesh-v16-IMMORTAL-ORGANISM
+ * ============================================================================
+ *
+ *  PURPOSE:
+ *    This organ simulates local world conditions and feeds them into the
+ *    PulseBeaconEngine IMMORTAL chain. It does NOT compute signal physics.
+ *
+ *    In v16-IMMORTAL-ORGANISM, BeaconMesh is no longer an isolated helper.
+ *    It is the LOCAL MEMBRANE of the organism, wired symbolically into:
+ *
+ *      - PulseExpansion (world / region / cluster)
+ *      - PulseCastle (castle / beacon / console)
+ *      - PulseServer (server lanes)
+ *      - PulseUser (user lanes)
+ *      - PulseTouch (presence / mode / page / chunkProfile / trust / identity)
+ *      - PulseNet (mesh family / ingress / pressure)
+ *      - PulseMesh (symbolic mesh organism)
+ *      - PulseRuntime (hot instances / regions / presence / modes / pages)
+ *      - PulseScheduler (macro tick orchestration)
+ *      - PulseOvermind (world-lens / safety)
+ *
+ *    It is the "muscle" of PulseWorld expansion — it lets you:
+ *      - simulate density (low/medium/high/peak)
+ *      - simulate demand (low/medium/high/burst)
+ *      - simulate region types (home/venue/campus/city/metro/hub)
+ *      - simulate mesh strength (unknown/weak/stable/strong/overloaded)
+ *      - inspect broadcast profiles + history
+ *      - inspect presence / band / advantage / chunk-prewarm fields
+ *      - inspect multi-instance behavior
+ *      - inspect regioning / band signatures
+ *      - align scenarios with real organism context (Touch/Net/Mesh/Runtime)
+ *
+ *  CONTRACT:
+ *    - Never mutate the Beacon Engine.
+ *    - Never compute signal shaping.
+ *    - Never override global hints.
+ *    - Only call Beacon Engine APIs.
+ *    - Always deterministic.
+ *    - Pure membrane surface (symbolic composition only).
+ */
+/*
+AI_EXPERIENCE_META = {
+  identity: "PulseBeaconMesh",
+  version: "v16-IMMORTAL-ORGANISM",
+  layer: "beacon_mesh",
+  role: "local_membrane_simulator",
+  lineage: "PulseBeaconMesh-v1 → v11-Evo → v14-IMMORTAL → v16-IMMORTAL-ORGANISM",
+
+  evo: {
+    localMembrane: true,
+    organismAware: true,
+    dualBandAware: true,
+    meshAware: true,
+
+    deterministic: true,
+    driftProof: true,
+    pureCompute: true,
+
+    zeroNetwork: true,
+    zeroFilesystem: true,
+    zeroMutationOfInput: true,
+    zeroDynamicImports: true,
+    zeroEval: true,
+    zeroTimers: true,
+    zeroAsync: true,
+
+    presenceFieldAware: true,
+    bandAware: true,
+    advantageAware: true,
+    chunkPrewarmAware: true,
+    multiInstanceReady: true,
+    regionAware: true,
+    castleAware: true,
+    expansionAware: true,
+    routerAware: true,
+    meshPressureAware: true,
+    presenceTierAware: true,
+    advantageBandAware: true,
+    chunkPlanAware: true,
+    pulseTouchAware: true,
+    pulseNetAware: true,
+    runtimeAware: true,
+    schedulerAware: true,
+    overmindAware: true,
+    meshOrganismAware: true
+  },
+
+  contract: {
+    always: [
+      "PulseBeaconEngine",
+      "PulseExpansion",
+      "PulseCastle",
+      "PulseServer",
+      "PulseUser",
+      "PulseTouch",
+      "PulseNet",
+      "PulseMesh",
+      "PulseRuntime",
+      "PulseScheduler",
+      "PulseOvermind"
+    ],
+    never: [
+      "routerCore",
+      "safeRoute",
+      "fetchViaCNS",
+      "meshKernelExec",
+      "presenceEngineExec"
+    ]
+  }
+}
+*/
+
 // ============================================================================
-//  PULSE-WORLD : PulseBeaconMesh-v14-IMMORTAL.js
-//  ROLE: Local membrane simulator + density/mode/advantage debugger
-//  VERSION: v14-IMMORTAL
-//  LAYER: BeaconMesh
-//  IDENTITY: PulseBeaconMesh-v14-IMMORTAL
+// IMPORTS — ORGANISM CONTEXT + BEACON ENGINE
 // ============================================================================
-//
-// PURPOSE:
-//   This organ simulates local world conditions and feeds them into the
-//   PulseBeaconEngine-v14-IMMORTAL. It does NOT compute signal physics.
-//
-//   It is the "muscle" of PulseWorld expansion — it lets you:
-//     - simulate density (low/medium/high/peak)
-//     - simulate demand (low/medium/high/burst)
-//     - simulate region types (home/venue/campus/city/metro/hub)
-//     - simulate mesh strength (unknown/weak/stable/strong/overloaded)
-//     - inspect broadcast profiles + history
-//     - inspect presence / band / advantage / chunk-prewarm fields
-//     - inspect multi-instance behavior
-//     - inspect regioning / band signatures
-//
-// CONTRACT:
-//   - Never mutate the Beacon Engine.
-//   - Never compute signal shaping.
-//   - Never override global hints.
-//   - Only call Beacon Engine APIs.
-//   - Always deterministic.
-//   - Pure membrane surface (symbolic composition only).
+
+// Expansion / world / region / cluster
+import { getPulseExpansionContext } from "../PULSE-EXPANSION/PulseExpansion-v12.3-Presence.js";
+
+// Castle / beacon / console
+import { getPulseCastleContext } from "../PULSE-EXPANSION/PulseCastle-v12.3-Presence.js";
+import { getBeaconEngineContext } from "../PULSE-EXPANSION/PulseBeaconEngine-v12.3-Presence.js";
+import { getConsoleContext } from "../PULSE-EXPANSION/PulseBeaconConsole-v12.3-Presence.js";
+
+// Server lanes
+import { getPulseServerContext } from "../PULSE-EXPANSION/PulseServer-v12.3-Presence.js";
+
+// User lanes
+import { getPulseUserContext } from "../PULSE-EXPANSION/PulseUser-v12.3-Presence.js";
+
+
+import { getPulseTouchContext } from "../../PULSE-UI/PULSE-TOUCH.js";
+
+// Net / connectivity
+import { getPulseNetContext } from "../../PULSE-UI/_BACKEND/PULSE-NET.js";
+
+// Mesh organism
+import createBinaryMesh, { BinaryMeshMeta } from "../PULSE-MESH/PulseBinaryMesh-v11-Evo.js";
+import createPulseMesh, { PulseMeshMeta } from "../PULSE-MESH/PulseMesh-v11-Evo.js";
+
+// Runtime (hot instances / regions / presence / modes / pages)
+import { getPulseRuntimeContext } from "../PULSE-X/PulseRuntime-v2-Evo.js";
+
+// Scheduler (macro ticks / policies / world-lens stop conditions)
+import { getPulseSchedulerContext } from "../PULSE-X/PulseScheduler-v2.js";
+
+// Overmind (world-lens / safety / persona mix)
+import { getPulseOvermindContext } from "../PULSE-AI/aiOvermindPrime.js";
+
+// ============================================================================
+// META
 // ============================================================================
 
 export const PulseBeaconMeshMeta = Object.freeze({
   layer: "BeaconMesh",
   role: "LOCAL_MEMBRANE_SIMULATOR",
-  version: "v14-IMMORTAL",
-  identity: "PulseBeaconMesh-v14-IMMORTAL",
+  version: "v16-IMMORTAL-ORGANISM",
+  identity: "PulseBeaconMesh-v16-IMMORTAL-ORGANISM",
 
   guarantees: Object.freeze({
     deterministic: true,
@@ -60,13 +188,20 @@ export const PulseBeaconMeshMeta = Object.freeze({
     meshPressureAware: true,
     presenceTierAware: true,
     advantageBandAware: true,
-    chunkPlanAware: true
+    chunkPlanAware: true,
+    pulseTouchAware: true,
+    pulseNetAware: true,
+    runtimeAware: true,
+    schedulerAware: true,
+    overmindAware: true,
+    meshOrganismAware: true
   })
 });
 
 // ============================================================================
-//  INTERNAL HELPERS (symbolic only)
+// INTERNAL HELPERS (symbolic only)
 // ============================================================================
+
 function stableHash(str) {
   let h = 0;
   const s = String(str || "");
@@ -74,6 +209,34 @@ function stableHash(str) {
     h = (h + s.charCodeAt(i) * (i + 1)) % 100000;
   }
   return `bm${h}`;
+}
+
+function buildOrganismContext() {
+  const expansion = getPulseExpansionContext?.() || {};
+  const castle = getPulseCastleContext?.() || {};
+  const beaconEngineCtx = getBeaconEngineContext?.() || {};
+  const consoleCtx = getConsoleContext?.() || {};
+  const server = getPulseServerContext?.() || {};
+  const user = getPulseUserContext?.() || {};
+  const touch = getPulseTouchContext?.() || {};
+  const net = getPulseNetContext?.() || {};
+  const runtime = getPulseRuntimeContext?.() || {};
+  const scheduler = getPulseSchedulerContext?.() || {};
+  const overmind = getPulseOvermindContext?.() || {};
+
+  return {
+    expansion,
+    castle,
+    beaconEngineCtx,
+    console: consoleCtx,
+    server,
+    user,
+    touch,
+    net,
+    runtime,
+    scheduler,
+    overmind
+  };
 }
 
 function buildScenarioProfile({
@@ -100,11 +263,14 @@ function buildScenarioProfile({
 }
 
 // ============================================================================
-//  ORGAN: PulseBeaconMesh (v14-IMMORTAL)
+// ORGAN: PulseBeaconMesh (v16-IMMORTAL-ORGANISM)
 // ============================================================================
-export function PulseBeaconMesh({ beacon }) {
+
+export function PulseBeaconMesh({ beacon, meshID = null, regionID = null, trace = false } = {}) {
   if (!beacon)
     throw new Error("PulseBeaconMesh requires a Beacon Engine instance");
+
+  const log = (...args) => trace && console.log("[PulseBeaconMesh v16]", ...args);
 
   const snapshotMeta = Object.freeze({
     engineIdentity: beacon?.meta?.identity ?? null,
@@ -113,9 +279,12 @@ export function PulseBeaconMesh({ beacon }) {
     engineRole: beacon?.meta?.role ?? null
   });
 
+  // Optional: local mesh organism view for this beacon membrane
+  const localMesh = createPulseMesh?.({ meshID, regionID, trace: false }) || null;
+  const binaryMesh = createBinaryMesh?.({ meshID, regionID, trace: false }) || null;
   // --------------------------------------------------------------------------
   // COMPOSITE FIELD (symbolic composition of presence/band/advantage/chunk)
-// --------------------------------------------------------------------------
+  // --------------------------------------------------------------------------
   function buildCompositeField() {
     const presenceField = beacon.buildPresenceField?.() ?? null;
     const bandField = beacon.buildBandField?.() ?? null;
@@ -148,6 +317,8 @@ export function PulseBeaconMesh({ beacon }) {
       chunkPrewarmField?.planPriority ??
       null;
 
+    const organismCtx = buildOrganismContext();
+
     return Object.freeze({
       presenceField,
       bandField,
@@ -158,6 +329,7 @@ export function PulseBeaconMesh({ beacon }) {
       meshStrength,
       meshPressureIndex,
       chunkPriority,
+      organismContext: organismCtx,
       compositeSignature: stableHash(
         `COMPOSITE::${presenceTier}::${advantageBand}::${meshStrength}::${meshPressureIndex}::${chunkPriority}`
       )
@@ -189,37 +361,64 @@ export function PulseBeaconMesh({ beacon }) {
   }
 
   // --------------------------------------------------------------------------
-  // PRESET SCENARIOS (symbolic only)
-// --------------------------------------------------------------------------
+  // PRESET SCENARIOS (symbolic only, now organism-aware)
+  // --------------------------------------------------------------------------
   function simulateScenarioPreset(preset = "default") {
+    const ctx = buildOrganismContext();
+    const touch = ctx.touch || {};
+    const net = ctx.net || {};
+    const expansion = ctx.expansion || {};
+
     switch (preset) {
       case "home_low":
         return simulate({
           densityHint: "low",
           demandHint: "low",
           regionType: "home",
-          meshStatus: "stable"
+          meshStatus: "stable",
+          presenceTier: touch.presenceTier || "normal",
+          advantageBand: touch.advantageBand || "neutral",
+          fallbackBandLevel: touch.fallbackBandLevel ?? null
         });
       case "venue_peak":
         return simulate({
           densityHint: "high",
           demandHint: "high",
           regionType: "venue",
-          meshStatus: "strong"
+          meshStatus: "strong",
+          presenceTier: touch.presenceTier || "elevated",
+          advantageBand: touch.advantageBand || "advantaged",
+          fallbackBandLevel: touch.fallbackBandLevel ?? 0
         });
       case "campus_burst":
         return simulate({
           densityHint: "high",
           demandHint: "burst",
           regionType: "campus",
-          meshStatus: "stable"
+          meshStatus: "stable",
+          presenceTier: touch.presenceTier || "normal",
+          advantageBand: touch.advantageBand || "neutral",
+          fallbackBandLevel: touch.fallbackBandLevel ?? 0
         });
       case "city_overloaded":
         return simulate({
           densityHint: "peak",
           demandHint: "high",
           regionType: "city",
-          meshStatus: "overloaded"
+          meshStatus: "overloaded",
+          presenceTier: touch.presenceTier || "stressed",
+          advantageBand: touch.advantageBand || "constrained",
+          fallbackBandLevel: touch.fallbackBandLevel ?? 1
+        });
+      case "expansion_region":
+        return simulate({
+          densityHint: expansion.densityHint || "medium",
+          demandHint: expansion.demandHint || "medium",
+          regionType: expansion.regionType || "venue",
+          meshStatus: net.meshStatus || "unknown",
+          presenceTier: touch.presenceTier || "normal",
+          advantageBand: touch.advantageBand || "neutral",
+          fallbackBandLevel: touch.fallbackBandLevel ?? null
         });
       default:
         return simulate({});
@@ -235,7 +434,10 @@ export function PulseBeaconMesh({ beacon }) {
           densityHint: profile.densityHint,
           demandHint: profile.demandHint,
           regionType: profile.regionType,
-          meshStatus: profile.meshStatus
+          meshStatus: profile.meshStatus,
+          presenceTier: profile.presenceTier,
+          advantageBand: profile.advantageBand,
+          fallbackBandLevel: profile.fallbackBandLevel
         });
         return { profile, result };
       })
@@ -249,13 +451,34 @@ export function PulseBeaconMesh({ beacon }) {
     densityHint = "medium",
     demandHint = "medium",
     regionType = "venue",
-    meshStatus = "unknown"
+    meshStatus = "unknown",
+    presenceTier = "normal",
+    advantageBand = "neutral",
+    fallbackBandLevel = null
   } = {}) {
-    return beacon.broadcastOnce({
+    const profile = buildScenarioProfile({
       densityHint,
       demandHint,
       regionType,
-      meshStatus
+      meshStatus,
+      presenceTier,
+      advantageBand,
+      fallbackBandLevel
+    });
+
+    log("Simulate scenario:", profile);
+
+    // Contract: only call Beacon Engine APIs, never mutate it.
+    const result = beacon.broadcastOnce({
+      densityHint: profile.densityHint,
+      demandHint: profile.demandHint,
+      regionType: profile.regionType,
+      meshStatus: profile.meshStatus
+    });
+
+    return Object.freeze({
+      profile,
+      result
     });
   }
 
@@ -265,7 +488,8 @@ export function PulseBeaconMesh({ beacon }) {
   return Object.freeze({
     meta: PulseBeaconMeshMeta,
     engineMeta: snapshotMeta,
-
+    meshIdentity: binaryMesh?.identity || localMesh?.identity,
+    
     simulate,
     simulateScenarioPreset,
     simulateBatch,
@@ -301,3 +525,5 @@ export function PulseBeaconMesh({ beacon }) {
     getMultiInstanceView
   });
 }
+
+export default PulseBeaconMesh;
