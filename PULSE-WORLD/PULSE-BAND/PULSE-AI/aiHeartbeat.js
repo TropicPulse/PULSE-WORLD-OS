@@ -387,6 +387,84 @@ async function aiHeartbeatTick(reason = "unknown") {
   const { context, organs, dualBand } = organism;
 
   const snapshot = getOrganismSnapshot(dualBand);
+  const binaryAgent = organs.binaryAgent;
+  const binaryDelta = organs.binaryDelta;
+
+  if (binaryAgent && binaryDelta) {
+    const prevSurface = aiHeartbeatHealing.lastComputeSurface || null;
+
+    const { surface, deltaPacket } =
+      binaryAgent.computeIntelligenceSnapshot(
+        snapshot?.binary?.inputs || [],
+        {
+          gpuPressure: snapshot?.binary?.gpu?.pressure ?? 0,
+          gpuLoad: snapshot?.binary?.gpu?.load ?? 0,
+          gpuUtil: snapshot?.binary?.gpu?.util ?? 0
+        },
+        prevSurface
+      );
+
+    aiHeartbeatHealing.lastComputeSurface = surface;
+    aiHeartbeatHealing.lastComputeDeltaPacket = deltaPacket || null;
+  }
+  // Build mom compute surface (symbolic heart → presence only)
+  const momComputeSurface = {
+    pressure: 0,
+    load: 0,
+    advantage: 0,
+    speed: 0,
+    pressureBucket: "none",
+    loadBucket: "none",
+    advantageBucket: "none",
+    speedBucket: "none",
+    gpuPressure: 0,
+    gpuLoad: 0,
+    gpuUtil: 0,
+    present: heartbeatArtery.lastPrimaryState === "alive",
+    capacity: 1,
+    capacityBucket: "high",
+    cortexId: "mom",
+    triHeartId: "mom",
+    epoch: "v16-Immortal",
+    band: "symbolic"
+  };
+
+  // Build earn compute surface (earn heart → presence only)
+  const earnComputeSurface = {
+    pressure: 0,
+    load: 0,
+    advantage: 0,
+    speed: 0,
+    pressureBucket: "none",
+    loadBucket: "none",
+    advantageBucket: "none",
+    speedBucket: "none",
+    gpuPressure: 0,
+    gpuLoad: 0,
+    gpuUtil: 0,
+    present: heartbeatArtery.lastEarnState === "alive",
+    capacity: 1,
+    capacityBucket: "high",
+    cortexId: "earn",
+    triHeartId: "earn",
+    epoch: "v16-Immortal",
+    band: "symbolic"
+  };
+
+  if (binaryDelta && aiHeartbeatHealing.lastTriHeartCompute) {
+    const triPrev = aiHeartbeatHealing.lastTriHeartCompute;
+    const triNext = {
+      mom: momComputeSurface,
+      dad: aiHeartbeatHealing.lastComputeSurface,
+      earn: earnComputeSurface
+    };
+
+    const triDeltaPacket = binaryDelta.triHeartComputeDelta(triPrev, triNext);
+    aiHeartbeatHealing.lastTriHeartComputeDelta = triDeltaPacket;
+
+    aiHeartbeatHealing.lastTriHeartCompute = triNext;
+  }
+
   const pressure = snapshot?.binary?.metabolic?.pressure ?? 0;
   const load     = snapshot?.binary?.metabolic?.load ?? 0;
 

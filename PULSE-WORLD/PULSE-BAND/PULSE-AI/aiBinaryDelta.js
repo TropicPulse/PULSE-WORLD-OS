@@ -1,49 +1,28 @@
-// ============================================================================
-//  aiBinaryDelta.js — Pulse OS v12.3‑Presence Organ
-//  Binary Delta Engine • Change Detector • Segment Comparator • Packet‑Ready
-// ============================================================================
-/*
-AI_EXPERIENCE_META = {
-  identity: "aiBinaryDelta",
-  version: "v14-Immortal",
-  layer: "ai_binary",
-  role: "binary_delta_engine",
-  lineage: "aiBinaryDelta-v10 → v12 → v14-Immortal",
+/**
+ * aiBinaryDelta.js — Pulse OS v16‑Immortal Organ
+ * ---------------------------------------------------------
+ * CANONICAL ROLE:
+ *   Binary Delta + Compute‑Genetic Delta Engine
+ *
+ *   It:
+ *     • computes deterministic binary diffs
+ *     • computes segment deltas
+ *     • computes compute‑intelligence deltas
+ *     • computes tri‑heart compute deltas
+ *     • emits IMMORTAL delta packets
+ *
+ *   Binary‑only, dualband‑safe, pure, deterministic.
+ */
 
-  evo: {
-    deltaEngine: true,
-    binaryDiffing: true,
-    symbolicAware: true,
-    dualBand: true,
-    binaryPrimary: true,
-
-    deterministic: true,
-    driftProof: true,
-    pureCompute: true,
-    zeroNetwork: true,
-    zeroFilesystem: true,
-    zeroMutationOfInput: true
-  },
-
-  contract: {
-    always: [
-      "aiBinaryAgent",
-      "aiBinaryEvolution",
-      "aiBinaryHeartbeat"
-    ],
-    never: [
-      "safeRoute",
-      "fetchViaCNS"
-    ]
-  }
-}
-*/
+// ---------------------------------------------------------
+//  META BLOCK — v16‑Immortal DualBand‑Safe Binary Organ
+// ---------------------------------------------------------
 
 export const DeltaMeta = Object.freeze({
   layer: "BinaryDelta",
   role: "BINARY_DELTA_ENGINE",
-  version: "12.3-Presence",
-  identity: "aiBinaryDelta-v12.3-Presence",
+  version: "v16-Immortal-ComputeGenetic",
+  identity: "aiBinaryDelta-v16-Immortal-ComputeGenetic",
 
   evo: Object.freeze({
     deterministic: true,
@@ -58,20 +37,27 @@ export const DeltaMeta = Object.freeze({
     windowAware: true,
     deltaCache: true,
 
+    computeAware: true,
+    computeGeneticAware: true,
+    triHeartAware: true,
+    gpuComputeAware: true,
+    earnComputeAware: true,
+    heartbeatComputeAware: true,
+
     multiInstanceReady: true,
     readOnly: true,
-    epoch: "v12.3-Presence",
+    epoch: "v16-Immortal",
 
     presenceAware: true,
     chunkingAware: true,
     gpuFriendly: true,
-    dualBandSafe: true,      // can live in dualband, but stays binary‑only
+    dualBandSafe: true,
     sideEffectFree: true
   }),
 
   contract: Object.freeze({
     purpose:
-      "Compute deterministic binary diffs, deltas, and change maps without symbolic interpretation.",
+      "Compute deterministic binary and compute‑genetic deltas without symbolic interpretation or mutation.",
 
     never: Object.freeze([
       "interpret symbolic meaning",
@@ -79,13 +65,17 @@ export const DeltaMeta = Object.freeze({
       "apply patches automatically",
       "perform merges",
       "introduce randomness",
-      "modify pipeline or reflex behavior"
+      "modify pipeline or reflex behavior",
+      "schedule compute",
+      "route compute",
+      "govern compute"
     ]),
 
     always: Object.freeze([
       "validate binary inputs",
       "compute diffs deterministically",
-      "return pure binary delta structures",
+      "treat compute surfaces as read‑only",
+      "return pure delta structures",
       "remain pure and minimal",
       "produce frozen results"
     ])
@@ -105,15 +95,21 @@ export const DeltaMeta = Object.freeze({
         "segment-delta",
         "compress",
         "apply",
+        "compute-delta",
+        "compute-gpu-delta",
+        "compute-advantage-delta",
+        "compute-speed-delta",
+        "compute-presence-delta",
+        "triheart-compute-delta",
         "prewarm"
       ]
     }
   })
 });
 
-// ============================================================================
+// ---------------------------------------------------------
 //  PACKET EMITTER — deterministic, delta-scoped
-// ============================================================================
+// ---------------------------------------------------------
 function emitDeltaPacket(type, payload) {
   return Object.freeze({
     meta: DeltaMeta,
@@ -123,13 +119,14 @@ function emitDeltaPacket(type, payload) {
     layer: DeltaMeta.layer,
     role: DeltaMeta.role,
     identity: DeltaMeta.identity,
+    band: "binary",
     ...payload
   });
 }
 
-// ============================================================================
-//  PREWARM — warms diff engine
-// ============================================================================
+// ---------------------------------------------------------
+//  PREWARM — v16‑Immortal
+// ---------------------------------------------------------
 export function prewarmBinaryDelta({ trace = false } = {}) {
   try {
     const sampleA = "000111000";
@@ -155,25 +152,47 @@ export function prewarmBinaryDelta({ trace = false } = {}) {
   }
 }
 
-// ============================================================================
-//  ORGAN IMPLEMENTATION — v12.3‑Presence
-// ============================================================================
+// ---------------------------------------------------------
+//  INTERNAL HELPERS — compute delta primitives (pure, numeric)
+// ---------------------------------------------------------
+
+function safeNumber(v) {
+  return typeof v === "number" && Number.isFinite(v) ? v : 0;
+}
+
+function computeScalarDelta(a, b) {
+  const from = safeNumber(a);
+  const to = safeNumber(b);
+  return Object.freeze({
+    from,
+    to,
+    delta: to - from
+  });
+}
+
+function computeBucketDelta(aBucket, bBucket) {
+  const from = aBucket ?? null;
+  const to = bBucket ?? null;
+  return Object.freeze({ from, to, changed: from !== to });
+}
+
+// ---------------------------------------------------------
+//  ORGAN IMPLEMENTATION — v16‑Immortal
+// ---------------------------------------------------------
 export class AIBinaryDelta {
   constructor(config = {}) {
     this.id = config.id || "ai-binary-delta";
     this.trace = !!config.trace;
 
-    // delta cache for repeated comparisons
     this._cache = new Map();
 
-    // optional presence / performance hints
-    this.windowSize = config.windowSize || 0; // optional temporal window
+    this.windowSize = config.windowSize || 0;
     this.maxCacheEntries = config.maxCacheEntries || 256;
   }
 
-  // ---------------------------------------------------------------------------
+  // ---------------------------------------------------------
   //  VALIDATION
-  // ---------------------------------------------------------------------------
+  // ---------------------------------------------------------
   _assertBinary(str) {
     if (typeof str !== "string" || !/^[01]+$/.test(str)) {
       throw new TypeError("expected binary string");
@@ -182,14 +201,13 @@ export class AIBinaryDelta {
 
   _maybeEvictCache() {
     if (this._cache.size <= this.maxCacheEntries) return;
-    // simple FIFO eviction: delete first inserted key
     const firstKey = this._cache.keys().next().value;
     if (firstKey !== undefined) this._cache.delete(firstKey);
   }
 
-  // ---------------------------------------------------------------------------
-  //  BINARY DIFF CORE — deterministic
-  // ---------------------------------------------------------------------------
+  // ---------------------------------------------------------
+  //  BINARY DIFF CORE — v16 IMMORTAL
+  // ---------------------------------------------------------
   diff(aBin, bBin) {
     this._assertBinary(aBin);
     this._assertBinary(bBin);
@@ -245,9 +263,9 @@ export class AIBinaryDelta {
     return packet;
   }
 
-  // ---------------------------------------------------------------------------
-  //  SEGMENT DELTA — v12.3‑Presence
-  // ---------------------------------------------------------------------------
+  // ---------------------------------------------------------
+  //  SEGMENT DELTA — v16 IMMORTAL
+  // ---------------------------------------------------------
   segmentDelta(aBin, bBin, segmentSize = 64) {
     this._assertBinary(aBin);
     this._assertBinary(bBin);
@@ -283,18 +301,18 @@ export class AIBinaryDelta {
     return packet;
   }
 
-  // ---------------------------------------------------------------------------
-  //  DELTA COMPRESSION (placeholder, presence‑aware)
-// ---------------------------------------------------------------------------
+  // ---------------------------------------------------------
+  //  DELTA COMPRESSION — placeholder
+  // ---------------------------------------------------------
   compressDelta(delta) {
     const packet = emitDeltaPacket("compress", { delta });
     this._trace("compress", { delta });
     return packet;
   }
 
-  // ---------------------------------------------------------------------------
-  //  DELTA APPLICATION (placeholder, presence‑aware)
-// ---------------------------------------------------------------------------
+  // ---------------------------------------------------------
+  //  DELTA APPLICATION — placeholder
+  // ---------------------------------------------------------
   applyDelta(aBin, delta) {
     this._assertBinary(aBin);
     const packet = emitDeltaPacket("apply", {
@@ -306,18 +324,178 @@ export class AIBinaryDelta {
     return packet;
   }
 
-  // ---------------------------------------------------------------------------
+  // ---------------------------------------------------------
+  //  COMPUTE‑INTELLIGENCE DELTA — IMMORTAL v16
+  //  All inputs are treated as read‑only numeric/struct surfaces.
+// ---------------------------------------------------------
+  computeDelta(prev, next) {
+    const prevSafe = prev || {};
+    const nextSafe = next || {};
+
+    const pressure = computeScalarDelta(prevSafe.pressure, nextSafe.pressure);
+    const load = computeScalarDelta(prevSafe.load, nextSafe.load);
+    const advantage = computeScalarDelta(prevSafe.advantage, nextSafe.advantage);
+    const speed = computeScalarDelta(prevSafe.speed, nextSafe.speed);
+
+    const pressureBucket = computeBucketDelta(prevSafe.pressureBucket, nextSafe.pressureBucket);
+    const loadBucket = computeBucketDelta(prevSafe.loadBucket, nextSafe.loadBucket);
+    const advantageBucket = computeBucketDelta(prevSafe.advantageBucket, nextSafe.advantageBucket);
+    const speedBucket = computeBucketDelta(prevSafe.speedBucket, nextSafe.speedBucket);
+
+    const delta = Object.freeze({
+      type: "compute-delta",
+      pressure,
+      load,
+      advantage,
+      speed,
+      pressureBucket,
+      loadBucket,
+      advantageBucket,
+      speedBucket
+    });
+
+    const packet = emitDeltaPacket("compute-delta", { delta });
+    this._trace("compute-delta", { delta });
+    return packet;
+  }
+
+  // ---------------------------------------------------------
+  //  GPU COMPUTE DELTA — IMMORTAL v16
+  // ---------------------------------------------------------
+  computeGpuDelta(prev, next) {
+    const prevSafe = prev || {};
+    const nextSafe = next || {};
+
+    const gpuPressure = computeScalarDelta(prevSafe.gpuPressure, nextSafe.gpuPressure);
+    const gpuLoad = computeScalarDelta(prevSafe.gpuLoad, nextSafe.gpuLoad);
+    const gpuUtil = computeScalarDelta(prevSafe.gpuUtil, nextSafe.gpuUtil);
+
+    const gpuPressureBucket = computeBucketDelta(prevSafe.gpuPressureBucket, nextSafe.gpuPressureBucket);
+    const gpuLoadBucket = computeBucketDelta(prevSafe.gpuLoadBucket, nextSafe.gpuLoadBucket);
+    const gpuUtilBucket = computeBucketDelta(prevSafe.gpuUtilBucket, nextSafe.gpuUtilBucket);
+
+    const delta = Object.freeze({
+      type: "compute-gpu-delta",
+      gpuPressure,
+      gpuLoad,
+      gpuUtil,
+      gpuPressureBucket,
+      gpuLoadBucket,
+      gpuUtilBucket
+    });
+
+    const packet = emitDeltaPacket("compute-gpu-delta", { delta });
+    this._trace("compute-gpu-delta", { delta });
+    return packet;
+  }
+
+  // ---------------------------------------------------------
+  //  ADVANTAGE DELTA — IMMORTAL v16
+  // ---------------------------------------------------------
+  computeAdvantageDelta(prev, next) {
+    const prevSafe = prev || {};
+    const nextSafe = next || {};
+
+    const advantage = computeScalarDelta(prevSafe.advantage, nextSafe.advantage);
+    const advantageBucket = computeBucketDelta(prevSafe.advantageBucket, nextSafe.advantageBucket);
+
+    const delta = Object.freeze({
+      type: "compute-advantage-delta",
+      advantage,
+      advantageBucket
+    });
+
+    const packet = emitDeltaPacket("compute-advantage-delta", { delta });
+    this._trace("compute-advantage-delta", { delta });
+    return packet;
+  }
+
+  // ---------------------------------------------------------
+  //  SPEED DELTA — IMMORTAL v16
+  // ---------------------------------------------------------
+  computeSpeedDelta(prev, next) {
+    const prevSafe = prev || {};
+    const nextSafe = next || {};
+
+    const speed = computeScalarDelta(prevSafe.speed, nextSafe.speed);
+    const speedBucket = computeBucketDelta(prevSafe.speedBucket, nextSafe.speedBucket);
+
+    const delta = Object.freeze({
+      type: "compute-speed-delta",
+      speed,
+      speedBucket
+    });
+
+    const packet = emitDeltaPacket("compute-speed-delta", { delta });
+    this._trace("compute-speed-delta", { delta });
+    return packet;
+  }
+
+  // ---------------------------------------------------------
+  //  PRESENCE / AVAILABILITY DELTA — IMMORTAL v16
+  // ---------------------------------------------------------
+  computePresenceDelta(prev, next) {
+    const prevSafe = prev || {};
+    const nextSafe = next || {};
+
+    const present = {
+      from: !!prevSafe.present,
+      to: !!nextSafe.present,
+      changed: !!prevSafe.present !== !!nextSafe.present
+    };
+
+    const capacity = computeScalarDelta(prevSafe.capacity, nextSafe.capacity);
+    const capacityBucket = computeBucketDelta(prevSafe.capacityBucket, nextSafe.capacityBucket);
+
+    const delta = Object.freeze({
+      type: "compute-presence-delta",
+      present,
+      capacity,
+      capacityBucket
+    });
+
+    const packet = emitDeltaPacket("compute-presence-delta", { delta });
+    this._trace("compute-presence-delta", { delta });
+    return packet;
+  }
+
+  // ---------------------------------------------------------
+  //  TRI‑HEART COMPUTE DELTA — IMMORTAL v16
+  //  Expects surfaces like:
+  //    { mom, dad, earn } each with compute metrics.
+// ---------------------------------------------------------
+  triHeartComputeDelta(prev, next) {
+    const prevSafe = prev || {};
+    const nextSafe = next || {};
+
+    const mom = this.computeDelta(prevSafe.mom || {}, nextSafe.mom || {}).delta;
+    const dad = this.computeDelta(prevSafe.dad || {}, nextSafe.dad || {}).delta;
+    const earn = this.computeDelta(prevSafe.earn || {}, nextSafe.earn || {}).delta;
+
+    const delta = Object.freeze({
+      type: "triheart-compute-delta",
+      mom,
+      dad,
+      earn
+    });
+
+    const packet = emitDeltaPacket("triheart-compute-delta", { delta });
+    this._trace("triheart-compute-delta", { delta });
+    return packet;
+  }
+
+  // ---------------------------------------------------------
   //  TRACE
-  // ---------------------------------------------------------------------------
+  // ---------------------------------------------------------
   _trace(event, payload) {
     if (!this.trace) return;
     console.log(`[${this.id}] ${event}`, payload);
   }
 }
 
-// ============================================================================
-//  FACTORY + PRESENCE SURFACE
-// ============================================================================
+// ---------------------------------------------------------
+//  FACTORY + PRESENCE SURFACE — v16 IMMORTAL
+// ---------------------------------------------------------
 export function createAIBinaryDelta(config = {}) {
   return new AIBinaryDelta(config);
 }
@@ -329,5 +507,6 @@ export const BinaryDeltaPresence = Object.freeze({
   organ: "AIBinaryDelta",
   layer: DeltaMeta.layer,
   role: DeltaMeta.role,
-  version: DeltaMeta.version
+  version: DeltaMeta.version,
+  band: "binary"
 });

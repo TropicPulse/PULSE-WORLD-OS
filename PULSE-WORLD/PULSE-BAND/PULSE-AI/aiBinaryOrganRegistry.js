@@ -1,62 +1,29 @@
 /**
- * aiBinaryOrganRegistry.js — Pulse OS v12.3‑Presence Organ
+ * aiOrganRegistry.js — Pulse OS v16‑Immortal DualBand Organ
  * ---------------------------------------------------------
  * CANONICAL ROLE:
- *   Binary Organ Registry (identity ledger)
- *   Stores organ identity, signatures, timestamps, and type.
- *   Presence‑aware, drift‑proof, deterministic.
+ *   Organ Identity Registry (binary‑primary, dualband‑aware)
+ *   Stores organ identity, signatures, timestamps, type, and band.
+ *   Deterministic • Drift‑Proof • IMMORTAL v16
  */
-/*
-AI_EXPERIENCE_META = {
-  identity: "aiBinaryOrganRegistry",
-  version: "v14-Immortal",
-  layer: "ai_binary",
-  role: "binary_organ_registry",
-  lineage: "aiBinaryOrganRegistry-v10 → v12 → v14-Immortal",
-
-  evo: {
-    organRegistry: true,
-    binaryIndex: true,
-    dualBand: true,
-    symbolicAware: true,
-    binaryPrimary: true,
-
-    deterministic: true,
-    driftProof: true,
-    pureCompute: true,
-    zeroNetwork: true,
-    zeroFilesystem: true,
-    zeroMutationOfInput: true
-  },
-
-  contract: {
-    always: [
-      "aiBinaryHeartbeat",
-      "aiBinaryAgent",
-      "aiAnatomy"
-    ],
-    never: [
-      "safeRoute",
-      "fetchViaCNS"
-    ]
-  }
-}
-*/
 
 // ---------------------------------------------------------
-//  META BLOCK — v12.3‑Presence
+//  META BLOCK — v16‑Immortal DualBand
 // ---------------------------------------------------------
 
 export const OrganRegistryMeta = Object.freeze({
   layer: "OrganismIdentity",
-  role: "BINARY_ORGAN_REGISTRY",
-  version: "12.3-Presence",
-  identity: "aiOrganRegistry-v12.3-Presence",
+  role: "ORGAN_REGISTRY",
+  version: "v16-Immortal-DualBand",
+  identity: "aiOrganRegistry-v16-Immortal-DualBand",
 
   evo: Object.freeze({
     deterministic: true,
     driftProof: true,
-    binaryOnly: true,
+
+    binaryPrimary: true,
+    dualBand: true,
+    symbolicAware: true,
 
     memoryAware: true,
     evolutionAware: true,
@@ -70,12 +37,12 @@ export const OrganRegistryMeta = Object.freeze({
 
     multiInstanceReady: true,
     readOnly: true,
-    epoch: "12.3-Presence"
+    epoch: "v16-Immortal"
   }),
 
   contract: Object.freeze({
     purpose:
-      "Store and retrieve organ identity records in binary memory. Provide a minimal, pure, deterministic registry for organ identity.",
+      "Store and retrieve organ identity records in binary memory, with dualband symbolic surfaces.",
 
     never: Object.freeze([
       "auto-discover organs",
@@ -84,24 +51,23 @@ export const OrganRegistryMeta = Object.freeze({
       "perform routing",
       "perform scanning",
       "perform governance",
-      "perform linter behavior",
       "introduce randomness"
     ]),
 
     always: Object.freeze([
       "encode all keys and values in binary",
       "register only when explicitly called",
-      "store only id/type/signature/timestamp",
+      "store id/type/signature/timestamp/band",
       "remain pure and minimal",
-      "treat organ records as read-only data",
+      "treat organ records as read-only",
       "maintain registry artery metrics"
     ])
   }),
 
   presence: Object.freeze({
-    organId: "BinaryOrganRegistry",
+    organId: "OrganRegistry",
     organKind: "Identity",
-    physiologyBand: "Binary",
+    physiologyBand: "DualBand",
     warmStrategy: "prewarm-on-attach",
     attachStrategy: "on-demand",
     concurrency: "multi-instance",
@@ -120,6 +86,18 @@ export const OrganRegistryMeta = Object.freeze({
 });
 
 // ---------------------------------------------------------
+//  BINARY‑ONLY ORGAN SET — v16 IMMORTAL
+// ---------------------------------------------------------
+
+const BINARY_ONLY_ORGANS = new Set([
+  "aiBinaryAgent",
+  "aiBinaryDelta",
+  "aiBinaryEvolution",
+  "PulseBinaryTech",
+  "PulseBinaryShifterEvolutionaryPulse"
+]);
+
+// ---------------------------------------------------------
 //  PACKET EMITTER — deterministic, identity-scoped
 // ---------------------------------------------------------
 function emitRegistryPacket(type, payload) {
@@ -136,7 +114,7 @@ function emitRegistryPacket(type, payload) {
 }
 
 // ---------------------------------------------------------
-//  PREWARM ENGINE — v12.3‑Presence
+//  PREWARM ENGINE — v16‑Immortal DualBand
 // ---------------------------------------------------------
 export function prewarmAIBinaryOrganRegistry(config = {}) {
   try {
@@ -149,6 +127,7 @@ export function prewarmAIBinaryOrganRegistry(config = {}) {
     const warmJson = JSON.stringify({
       id: "prewarm-organ",
       type: "Prewarm",
+      band: "binary",
       signatureBits: 0,
       timestamp: 0
     });
@@ -173,21 +152,21 @@ export function prewarmAIBinaryOrganRegistry(config = {}) {
       });
     }
 
-    if (trace) console.log("[aiBinaryOrganRegistry] prewarm");
+    if (trace) console.log("[aiOrganRegistry] prewarm");
 
     return emitRegistryPacket("prewarm", {
-      message: "Binary Organ Registry prewarmed."
+      message: "Organ Registry prewarmed."
     });
   } catch (err) {
     return emitRegistryPacket("prewarm-error", {
       error: String(err),
-      message: "Binary Organ Registry prewarm failed."
+      message: "Organ Registry prewarm failed."
     });
   }
 }
 
 // ---------------------------------------------------------
-//  ORGAN IMPLEMENTATION — v12.3‑Presence
+//  ORGAN IMPLEMENTATION — v16‑Immortal DualBand
 // ---------------------------------------------------------
 
 export class AIBinaryOrganRegistry {
@@ -210,26 +189,32 @@ export class AIBinaryOrganRegistry {
       lookups: 0,
       lists: 0,
       lastBits: 0,
-      snapshot: () => Object.freeze({
-        registrations: this.artery.registrations,
-        lookups: this.artery.lookups,
-        lists: this.artery.lists,
-        lastBits: this.artery.lastBits
-      })
+      snapshot: () =>
+        Object.freeze({
+          registrations: this.artery.registrations,
+          lookups: this.artery.lookups,
+          lists: this.artery.lists,
+          lastBits: this.artery.lastBits
+        })
     };
   }
 
   // ---------------------------------------------------------
-  //  REGISTER ORGAN
+  //  REGISTER ORGAN — now dualband aware
   // ---------------------------------------------------------
   registerOrgan(organ) {
     const signature = this.evolution
       ? this.evolution.generateSignature(organ)
       : this.encoder.encode("nosig");
 
+    const band = BINARY_ONLY_ORGANS.has(organ.constructor.name)
+      ? "binary"
+      : "dualband";
+
     const record = {
       id: organ.id || null,
       type: organ.constructor.name,
+      band,
       signatureBits: signature.length,
       timestamp: Date.now()
     };
@@ -246,6 +231,7 @@ export class AIBinaryOrganRegistry {
     this._trace("registerOrgan", {
       organ: record.id,
       type: record.type,
+      band,
       bits: value.length
     });
 
@@ -332,7 +318,7 @@ export class AIBinaryOrganRegistry {
 }
 
 // ---------------------------------------------------------
-//  FACTORY — v12.3‑Presence
+//  FACTORY — v16‑Immortal DualBand
 // ---------------------------------------------------------
 
 export function createAIBinaryOrganRegistry(config = {}) {

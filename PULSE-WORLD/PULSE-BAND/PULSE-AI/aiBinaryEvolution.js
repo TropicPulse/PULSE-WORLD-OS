@@ -1,65 +1,23 @@
 /**
- * aiBinaryEvolution.js — Pulse OS v12.3‑Presence Organ
+ * aiBinaryEvolution.js — Pulse OS v16‑Immortal Organ
  * ---------------------------------------------------------
  * CANONICAL ROLE:
- *   This organ is the **Binary Evolution Engine** of Pulse OS.
- *
- *   It:
- *     • observes other organs
- *     • generates binary signatures
- *     • detects drift and mutation
- *     • detects structural changes
- *     • enforces organism identity
- *
- *   This is the “genetic layer” of Pulse OS.
+ *   Binary Evolution Engine (genetic layer)
+ *   • generates deterministic binary signatures
+ *   • detects drift and mutation
+ *   • enforces organism identity
+ *   • binary‑primary, dualband‑safe
  */
-/*
-AI_EXPERIENCE_META = {
-  identity: "aiBinaryEvolution",
-  version: "v14-Immortal",
-  layer: "ai_binary",
-  role: "binary_evolution_engine",
-  lineage: "aiBinaryEvolution-v10 → v12 → v14-Immortal",
-
-  evo: {
-    binaryEvolution: true,
-    mutationProofing: true,
-    driftCorrection: true,
-    dualBand: true,
-    symbolicAware: true,
-    binaryPrimary: true,
-
-    deterministic: true,
-    driftProof: true,
-    pureCompute: true,
-    zeroNetwork: true,
-    zeroFilesystem: true,
-    zeroMutationOfInput: true
-  },
-
-  contract: {
-    always: [
-      "aiBinaryAgent",
-      "aiBinaryDelta",
-      "ai-v11-evo"
-    ],
-    never: [
-      "safeRoute",
-      "fetchViaCNS"
-    ]
-  }
-}
-*/
 
 // ---------------------------------------------------------
-//  META BLOCK — v12.3‑Presence
+//  META BLOCK — v16‑Immortal DualBand‑Safe Binary Organ
 // ---------------------------------------------------------
 
 export const EvolutionMeta = Object.freeze({
   layer: "BinaryEvolution",
   role: "BINARY_EVOLUTION_ENGINE",
-  version: "12.3-Presence",
-  identity: "aiBinaryEvolution-v12.3-Presence",
+  version: "v16-Immortal",
+  identity: "aiBinaryEvolution-v16-Immortal",
 
   evo: Object.freeze({
     deterministic: true,
@@ -78,12 +36,12 @@ export const EvolutionMeta = Object.freeze({
 
     multiInstanceReady: true,
     readOnly: true,
-    epoch: "12.3-Presence",
+    epoch: "v16-Immortal",
 
     presenceAware: true,
     chunkingAware: true,
     gpuFriendly: true,
-    dualBandSafe: true,      // can live in dualband, stays binary‑only
+    dualBandSafe: true,
     sideEffectFree: true
   }),
 
@@ -103,10 +61,10 @@ export const EvolutionMeta = Object.freeze({
 
     always: Object.freeze([
       "encode signatures deterministically",
+      "canonicalize JSON before encoding",
       "compare signatures without interpretation",
       "store signatures in binary memory",
       "detect drift safely",
-      "remain pure and minimal",
       "return frozen results"
     ])
   }),
@@ -136,35 +94,32 @@ export const EvolutionMeta = Object.freeze({
 });
 
 // ---------------------------------------------------------
-//  PREWARM ENGINE — v12.3‑Presence
-//  - Warms encoder + memory + signature paths.
+//  CANONICAL JSON CANONICALIZER (IMMORTAL v16)
 // ---------------------------------------------------------
+
+function canonicalize(obj) {
+  return JSON.stringify(obj, Object.keys(obj).sort());
+}
+
+// ---------------------------------------------------------
+//  PREWARM ENGINE — v16‑Immortal
+// ---------------------------------------------------------
+
 export function prewarmAIBinaryEvolution(config = {}) {
   try {
     const { encoder, memory, trace } = config;
 
-    if (!encoder || typeof encoder.encode !== "function") {
-      if (trace) {
-        console.warn("[AIBinaryEvolution Prewarm] Missing encoder");
-      }
-      return false;
-    }
-    if (
-      !memory ||
-      typeof memory.write !== "function" ||
-      typeof memory.read !== "function"
-    ) {
-      if (trace) {
-        console.warn("[AIBinaryEvolution Prewarm] Missing memory adapter");
-      }
+    if (!encoder?.encode || !memory?.write || !memory?.read) {
+      if (trace) console.warn("[AIBinaryEvolution Prewarm] Missing encoder/memory");
       return false;
     }
 
-    const warmJson = JSON.stringify({
+    const warmJson = canonicalize({
       id: "prewarm",
       keys: ["id", "keys", "type"],
       type: "organ-signature"
     });
+
     const warmBits = encoder.encode(warmJson);
     const warmKey = encoder.encode("signature:prewarm-organ");
 
@@ -186,7 +141,7 @@ export function prewarmAIBinaryEvolution(config = {}) {
 }
 
 // ---------------------------------------------------------
-//  ORGAN IMPLEMENTATION — v12.3‑Presence
+//  ORGAN IMPLEMENTATION — v16‑Immortal
 // ---------------------------------------------------------
 
 class AIBinaryEvolution {
@@ -196,23 +151,22 @@ class AIBinaryEvolution {
     this.memory = config.memory;
     this.trace = !!config.trace;
 
-    if (!this.encoder || typeof this.encoder.encode !== "function") {
+    if (!this.encoder?.encode) {
       throw new Error("AIBinaryEvolution requires aiBinaryAgent encoder");
     }
-    if (!this.memory || typeof this.memory.write !== "function") {
+    if (!this.memory?.write) {
       throw new Error("AIBinaryEvolution requires aiBinaryMemory");
     }
 
-    // optional presence / performance hints
-    this.maxSignatureBits = config.maxSignatureBits || 0; // 0 = unlimited
+    this.maxSignatureBits = config.maxSignatureBits || 0;
   }
 
   // ---------------------------------------------------------
-  //  ORGAN SIGNATURE GENERATION
+  //  SIGNATURE GENERATION — v16 IMMORTAL
   // ---------------------------------------------------------
 
   generateSignature(organ) {
-    const json = JSON.stringify({
+    const json = canonicalize({
       id: organ.id || null,
       keys: Object.keys(organ),
       type: organ.constructor?.name || "UnknownOrgan"
@@ -221,7 +175,6 @@ class AIBinaryEvolution {
     let binary = this.encoder.encode(json);
 
     if (this.maxSignatureBits > 0 && binary.length > this.maxSignatureBits) {
-      // allow truncation for presence‑aware, bounded signatures
       binary = binary.slice(-this.maxSignatureBits);
       this._trace("generateSignature:truncated", {
         organ: organ.id,
@@ -269,7 +222,7 @@ class AIBinaryEvolution {
   }
 
   // ---------------------------------------------------------
-  //  DRIFT DETECTION
+  //  DRIFT DETECTION — v16 IMMORTAL
   // ---------------------------------------------------------
 
   detectDrift(organ) {
@@ -296,7 +249,7 @@ class AIBinaryEvolution {
   }
 
   // ---------------------------------------------------------
-  //  EVOLUTION UPDATE
+  //  EVOLUTION UPDATE — v16 IMMORTAL
   // ---------------------------------------------------------
 
   evolve(organ) {
@@ -334,7 +287,7 @@ class AIBinaryEvolution {
 }
 
 // ---------------------------------------------------------
-// FACTORY EXPORT — v12.3‑Presence
+// FACTORY EXPORT — v16‑Immortal
 // ---------------------------------------------------------
 
 export function createAIBinaryEvolution(config = {}) {
@@ -342,11 +295,10 @@ export function createAIBinaryEvolution(config = {}) {
   return new AIBinaryEvolution(config);
 }
 
-// direct class export for advanced callers
 export { AIBinaryEvolution };
 
 // ---------------------------------------------------------
-//  COMMONJS FALLBACK EXPORT (Dual‑Mode)
+//  COMMONJS FALLBACK EXPORT
 // ---------------------------------------------------------
 
 if (typeof module !== "undefined") {

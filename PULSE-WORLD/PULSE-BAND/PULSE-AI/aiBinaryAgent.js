@@ -1,16 +1,16 @@
 /**
- * aiBinaryAgent.js — Pulse OS v12.3‑Presence Organ
+ * aiBinaryAgent.js — Pulse OS v16‑Immortal Organ
  * ---------------------------------------------------------
  * CANONICAL ROLE:
  *   This organ is the **Binary Compute Cortex** of the organism.
  *
- *   In the v12.3‑Presence dualband organism:
+ *   In the v16‑Immortal dualband organism:
  *     - This organ remains a **binary‑only physiology organ**
  *     - It provides the organism’s low‑level compute reflexes
  *     - It measures compute throughput, pressure, cost, and budget
  *     - It performs binary encoding/decoding
  *     - It executes binary compute arteries
- *     - It exposes a presence‑aware surface for orchestration
+ *     - It exposes compute‑intelligence surfaces for delta/tri‑heart engines
  *
  *   This organ is NOT symbolic, NOT dualband, NOT cognitive.
  *   It is pure binary physiology — the “bit‑level cortex.”
@@ -18,10 +18,10 @@
 /*
 AI_EXPERIENCE_META = {
   identity: "aiBinaryAgent",
-  version: "v14-Immortal",
+  version: "v16-Immortal",
   layer: "ai_binary",
   role: "binary_reflex_engine",
-  lineage: "aiBinaryAgent-v9 → v11 → v14-Immortal",
+  lineage: "aiBinaryAgent-v9 → v11 → v14-Immortal → v16-Immortal",
 
   evo: {
     binaryPrimary: true,
@@ -33,6 +33,11 @@ AI_EXPERIENCE_META = {
     pressureModel: true,
     costModel: true,
 
+    computeIntelligenceAware: true,
+    computeGeneticAware: true,
+    triHeartAware: true,
+    deltaAware: true,
+
     deterministic: true,
     driftProof: true,
     pureCompute: true,
@@ -43,7 +48,7 @@ AI_EXPERIENCE_META = {
 
   contract: {
     always: [
-      "aiBinaryHeartbeat",
+      "aiHeartbeat",
       "aiBinaryDelta",
       "aiBinaryEvolution"
     ],
@@ -56,26 +61,33 @@ AI_EXPERIENCE_META = {
 */
 
 // ---------------------------------------------------------
-//  META BLOCK — v12.3‑Presence
+//  META BLOCK — v16‑Immortal
 // ---------------------------------------------------------
 
 export const BinaryAgentMeta = Object.freeze({
   layer: "BinaryCompute",
   role: "BINARY_COMPUTE_CORTEX",
-  version: "12.3-Presence",
-  identity: "aiBinaryAgent-v12.3-Presence",
+  version: "v16-Immortal",
+  identity: "aiBinaryAgent-v16-Immortal",
 
   evo: Object.freeze({
     deterministic: true,
     driftProof: true,
     binaryOnly: true,
+
     computeAware: true,
     arteryAware: true,
     metricsAware: true,
     encodingAware: true,
     decodingAware: true,
+
+    computeIntelligenceAware: true,
+    computeGeneticAware: true,
+    triHeartAware: true,
+    deltaAware: true,
+
     multiInstanceReady: true,
-    epoch: "v12.3-Presence",
+    epoch: "v16-Immortal",
 
     presenceAware: true,
     chunkingAware: true,
@@ -86,7 +98,8 @@ export const BinaryAgentMeta = Object.freeze({
 
   contract: Object.freeze({
     purpose:
-      "Provide a pure binary compute cortex that encodes/decodes values, executes binary compute arteries, and measures compute throughput, pressure, cost, and budget.",
+      "Provide a pure binary compute cortex that encodes/decodes values, executes binary compute arteries, " +
+      "measures compute throughput/pressure/cost/budget, and exposes compute‑intelligence surfaces for delta engines.",
 
     never: Object.freeze([
       "interpret symbolic meaning",
@@ -94,7 +107,9 @@ export const BinaryAgentMeta = Object.freeze({
       "act as a router",
       "act as a scheduler",
       "mutate external organs",
-      "introduce randomness"
+      "introduce randomness",
+      "govern compute",
+      "route compute"
     ]),
 
     always: Object.freeze([
@@ -103,7 +118,8 @@ export const BinaryAgentMeta = Object.freeze({
       "encode values into binary",
       "decode binary into requested types",
       "validate binary inputs",
-      "remain pure and minimal"
+      "remain pure and minimal",
+      "expose stable compute-intelligence surfaces for delta engines"
     ])
   }),
 
@@ -122,14 +138,16 @@ export const BinaryAgentMeta = Object.freeze({
         "addBinary",
         "andBinary",
         "orBinary",
-        "bytesToBinary:truncated"
+        "bytesToBinary:truncated",
+        "computeIntelligence:surface",
+        "computeIntelligence:delta"
       ]
     }
   })
 });
 
 // ---------------------------------------------------------
-//  BINARY AGENT PREWARM ENGINE — v12.3‑Presence
+//  BINARY AGENT PREWARM ENGINE — v16‑Immortal
 // ---------------------------------------------------------
 
 export function prewarmAIBinaryAgent(config = {}) {
@@ -141,7 +159,9 @@ export function prewarmAIBinaryAgent(config = {}) {
       measurePressure,
       measureThroughput,
       measureCost,
-      measureBudget
+      measureBudget,
+      deltaEngine,              // optional: AIBinaryDelta or compatible
+      sampleComputeSurface      // optional: (phase) => surface
     } = config;
 
     const localTrace = !!trace;
@@ -183,6 +203,22 @@ export function prewarmAIBinaryAgent(config = {}) {
       traceFn("measureBudget:warm");
     }
 
+    // Warm compute‑intelligence + delta engine if provided
+    if (deltaEngine && typeof deltaEngine.computeDelta === "function") {
+      const prevSurface =
+        (typeof sampleComputeSurface === "function"
+          ? sampleComputeSurface("prev")
+          : { pressure: 0.1, load: 0.1, advantage: 0, speed: 0.1 });
+
+      const nextSurface =
+        (typeof sampleComputeSurface === "function"
+          ? sampleComputeSurface("next")
+          : { pressure: 0.2, load: 0.2, advantage: 0.05, speed: 0.2 });
+
+      deltaEngine.computeDelta(prevSurface, nextSurface);
+      traceFn("deltaEngine:warm", { prevSurface, nextSurface });
+    }
+
     return true;
   } catch (err) {
     console.error("[AIBinaryAgent Prewarm] Failed:", err);
@@ -191,7 +227,7 @@ export function prewarmAIBinaryAgent(config = {}) {
 }
 
 // ---------------------------------------------------------
-//  ORGAN IMPLEMENTATION — v12.3‑Presence
+//  ORGAN IMPLEMENTATION — v16‑Immortal
 // ---------------------------------------------------------
 
 class AIBinaryAgent {
@@ -204,8 +240,19 @@ class AIBinaryAgent {
     this.gpuHints = Object.freeze({
       allowGPU: !!config.allowGPU,
       preferredBatchSize: config.preferredBatchSize || 0,
-      preferredBufferBits: config.preferredBufferBits || this.maxBits
+      preferredBufferBits: config.preferredBufferBits || this.maxBits,
+      pressure: config.gpuPressure ?? 0,
+      load: config.gpuLoad ?? 0,
+      util: config.gpuUtil ?? 0,
+      pressureBucket: config.gpuPressureBucket ?? null,
+      loadBucket: config.gpuLoadBucket ?? null,
+      utilBucket: config.gpuUtilBucket ?? null
     });
+
+    // NEW: compute‑intelligence + delta integration
+    this.deltaEngine = config.deltaEngine || null;          // AIBinaryDelta or compatible
+    this.triHeartId = config.triHeartId || "dad";           // "mom" | "dad" | "earn" etc
+    this.sampleComputeSurface = config.sampleComputeSurface || null;
   }
 
   // ---------------------------------------------------------
@@ -289,6 +336,102 @@ class AIBinaryAgent {
       totalBits,
       avgBits
     };
+  }
+
+  // ---------------------------------------------------------
+  //  COMPUTE‑INTELLIGENCE SURFACE — IMMORTAL v16
+  // ---------------------------------------------------------
+
+  _buildComputeIntelligenceSurface(arteryMetrics = {}, extras = {}) {
+    const {
+      throughput = 0,
+      pressure = 0,
+      cost = 0,
+      budget = 0,
+      throughputBucket,
+      pressureBucket,
+      costBucket,
+      budgetBucket,
+      inputCount = 0,
+      totalBits = 0,
+      avgBits = 0
+    } = arteryMetrics;
+
+    const {
+      gpuPressure = this.gpuHints.pressure ?? 0,
+      gpuLoad = this.gpuHints.load ?? 0,
+      gpuUtil = this.gpuHints.util ?? 0,
+      gpuPressureBucket = this.gpuHints.pressureBucket ?? null,
+      gpuLoadBucket = this.gpuHints.loadBucket ?? null,
+      gpuUtilBucket = this.gpuHints.utilBucket ?? null,
+      capacity = 1,
+      capacityBucket = "high",
+      present = true
+    } = extras;
+
+    return Object.freeze({
+      // core compute metrics
+      pressure,
+      load: 1 - throughput,
+      cost,
+      budget,
+
+      pressureBucket: pressureBucket || this._bucketPressure(pressure),
+      loadBucket: this._bucketLevel(1 - throughput),
+      costBucket: costBucket || this._bucketCost(cost),
+      budgetBucket: budgetBucket || this._bucketLevel(budget),
+
+      // throughput as "speed"
+      speed: throughput,
+      speedBucket: this._bucketLevel(throughput),
+
+      // capacity / presence
+      capacity,
+      capacityBucket,
+      present: !!present,
+
+      // gpu metrics
+      gpuPressure,
+      gpuLoad,
+      gpuUtil,
+      gpuPressureBucket: gpuPressureBucket || this._bucketPressure(gpuPressure),
+      gpuLoadBucket: gpuLoadBucket || this._bucketLevel(gpuLoad),
+      gpuUtilBucket: gpuUtilBucket || this._bucketLevel(gpuUtil),
+
+      // raw artery stats
+      inputCount,
+      totalBits,
+      avgBits,
+
+      // identity
+      cortexId: this.id,
+      triHeartId: this.triHeartId,
+      epoch: BinaryAgentMeta.evo.epoch,
+      band: "binary"
+    });
+  }
+
+  // PUBLIC: computeIntelligenceSnapshot
+  // Given binary inputs (+ optional gpu/extras), returns:
+  //   { artery, surface, deltaPacket? }
+  computeIntelligenceSnapshot(binaryInputs = [], extras = {}, prevSurface = null) {
+    const artery = this._computeArtery(binaryInputs);
+    const surface = this._buildComputeIntelligenceSurface(artery, extras);
+
+    let deltaPacket = null;
+    if (this.deltaEngine && typeof this.deltaEngine.computeDelta === "function" && prevSurface) {
+      deltaPacket = this.deltaEngine.computeDelta(prevSurface, surface);
+      if (this.trace) {
+        console.log("[AIBinaryAgent] computeIntelligence:delta", {
+          prevSurface,
+          surface
+        });
+      }
+    } else if (this.trace) {
+      console.log("[AIBinaryAgent] computeIntelligence:surface", { surface });
+    }
+
+    return { artery, surface, deltaPacket };
   }
 
   // ---------------------------------------------------------
@@ -490,7 +633,7 @@ class AIBinaryAgent {
 }
 
 // ---------------------------------------------------------
-//  PRESENCE SURFACE / FACTORY EXPORT — v12.3‑Presence
+//  PRESENCE SURFACE / FACTORY EXPORT — v16‑Immortal
 // ---------------------------------------------------------
 
 export function createAIBinaryAgent(config = {}) {
@@ -505,7 +648,8 @@ export const BinaryAgentPresence = Object.freeze({
   organ: "AIBinaryAgent",
   layer: BinaryAgentMeta.layer,
   role: BinaryAgentMeta.role,
-  version: BinaryAgentMeta.version
+  version: BinaryAgentMeta.version,
+  band: "binary"
 });
 
 // Keep direct class export for advanced callers
