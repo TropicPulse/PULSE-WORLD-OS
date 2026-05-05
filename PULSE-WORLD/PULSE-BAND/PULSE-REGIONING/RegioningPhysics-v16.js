@@ -99,7 +99,7 @@ const REGIONING_SCHEMA_VERSION = "v3";
 // CoreMemory via PulseProofBridge (only import)
 // ---------------------------------------------------------------------------
 
-import { PulseProofBridge } from "../_BACKEND/PulseProofBridge.js";
+import { PulseProofBridge } from "../../PULSE-UI/_BACKEND/PulseProofBridge.js";
 
 const CoreMemory = PulseProofBridge.coreMemory;
 

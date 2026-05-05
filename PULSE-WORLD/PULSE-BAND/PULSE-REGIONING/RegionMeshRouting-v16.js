@@ -96,7 +96,7 @@ const REGION_MESH_SCHEMA_VERSION = "v3";
 // ---------------------------------------------------------------------------
 
 import RegioningPhysicsAPI from "./RegioningPhysics-v16.js";
-import { PulseProofBridge } from "../_BACKEND/PulseProofBridge.js";
+import { PulseProofBridge } from "../../PULSE-UI/_BACKEND/PulseProofBridge.js";
 
 const {
   RegionDescriptor,
