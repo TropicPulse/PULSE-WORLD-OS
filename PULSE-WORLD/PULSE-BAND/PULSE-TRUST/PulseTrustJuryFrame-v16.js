@@ -1,88 +1,96 @@
 // ============================================================================
-//  PULSE-TRUST v16 — JuryFrame Wrapper
-//  Bridges core JuryFrame (12-lens justice engine) into Trust fabric
+//  PULSE‑TRUST JURY FRAME v16++ IMMORTAL — VERDICT ENGINE WRAPPER
+//  12‑Lens Constitutional Justice Engine • RAW + AI‑Mirror Aware
+//  Bridges JuryFeed → JuryFrame → Trust Fabric
 // ============================================================================
 
 /*
-AI_EXPERIENCE_META = {
-  identity: "PulseTrustJuryFrame",
-  version: "v16-Immortal-ORGANISM",
-  layer: "trust",
-  role: "trust_jury_frame",
-  lineage: "JuryFrame-v12.3-Evo+ → JuryFrame-v16-Immortal-ORGANISM",
+AI_EXPERIENCE_META:
+  organ: PulseTrustJuryFrame
+  version: 16.2.0
+  tier: IMMORTAL
+  role: trust_jury_frame
+  description:
+    "Trust-facing wrapper around the IMMORTAL JuryFrame justice engine.
+     Accepts RAW + AI‑mirror evidence packets from PulseTrustJuryFeed,
+     applies the 12‑lens constitutional justice system,
+     and emits deterministic verdicts for the Trust fabric."
 
-  description: `
-    PulseTrustJuryFrame is the trust-facing wrapper around the core JuryFrame
-    justice engine. It exposes a stable, composable API for aiOvermindPrime,
-    PulseWorldCore, and other organs to evaluate candidates through a
-    multi-lens, multi-perspective justice system.
+  guarantees:
+    - "Never mutates evidence."
+    - "Never performs AI reasoning."
+    - "Never filters or compresses juryFeed."
+    - "Always produces deterministic verdicts."
+    - "Always drift‑proof and immutable."
+    - "Always preserves lens breakdowns."
 
-    The underlying JuryFrame:
-      - runs multiple lenses (safety, user, risk, vulnerability, minimality,
-        consistency, AI-origin, dominance, flow, anomaly, expansion, etc.)
-      - fuses them into a worldLens verdict (consensus, ambiguous, risky, blocked)
-      - emits a world-lens artery snapshot (pressure, budget, boundaries, binary)
+  lineage:
+    parent: "JuryFrame-v12.3-Evo+"
+    evolution: "v16++ IMMORTAL — RAW + AI‑mirror + delta aware"
 
-    PulseTrustJuryFrame does not change the logic of the jury.
-    It simply:
-      - wires in juryFeed (PulseTrustJuryFeed)
-      - accepts binaryVitals and boundaryArtery
-      - returns a deterministic, read-only verdict object for trust fabric.
-  `,
+  identity:
+    type: "organ"
+    name: "PulseTrustJuryFrame"
+    band: "trust"
+    mind: false
+    immutable: true
 
-  evo: {
-    juryAware: true,
-    trustAware: true,
-    dualBand: true,
-    binaryAware: true,
-    symbolicPrimary: true,
-
-    deterministic: true,
-    driftProof: true,
-    zeroNetwork: true,
-    zeroFilesystem: true,
-    zeroMutationOfInput: true
-  },
-
-  contract: {
-    always: [
-      "JuryFrame-v16",
-      "PulseTrustJuryFeed"
-    ],
-    never: [
-      "safeRoute",
-      "fetchViaCNS",
-      "statefulJuryWrappers"
-    ]
-  }
-}
+  integration:
+    receives:
+      - juryFeed (RAW + AI‑mirror + delta + patterns + advantage)
+      - binaryVitals
+      - boundaryArtery
+      - intent / context / candidate
+    feeds:
+      - JuryCouncil
+      - CreatorFlags
+      - ExpansionCompliance
 */
 
 import {
   JuryFrameMeta,
   createJuryFrame,
   evaluateJury
-} from "../PULSE-AI-JURY/JuryFrame-v16.js";
+} from "../PULSE-AI-JURY/JuryFrame-v16++.js";
 
 export const PulseTrustJuryFrameMeta = Object.freeze({
-  organId: "PulseTrustJuryFrame-v16",
-  role: "TRUST_JURY_FRAME",
-  version: "v16-Immortal-ORGANISM",
+  id: "PulseTrustJuryFrame-v16++",
+  version: "16.2.0",
+  role: "trust_jury_frame",
+  mind: false,
+  description:
+    "IMMORTAL trust-facing wrapper around the JuryFrame justice engine.",
+  identity: {
+    type: "organ",
+    name: "PulseTrustJuryFrame",
+    band: "trust",
+    mind: false,
+    immutable: true
+  },
   juryMeta: JuryFrameMeta
 });
 
+// ============================================================================
+//  CLASS — TRUST JURY FRAME WRAPPER
+// ============================================================================
 export function createPulseTrustJuryFrame({ safetyAPI } = {}) {
+  // Underlying IMMORTAL JuryFrame
   const jury = createJuryFrame({ safetyAPI });
 
+  // --------------------------------------------------------------------------
+  //  EVALUATE — MAIN VERDICT ENTRYPOINT
+  // --------------------------------------------------------------------------
   function evaluate({
-    intent,
-    context,
-    candidate,
-    juryFeed,
-    binaryVitals,
-    boundaryArtery
+    intent = null,
+    context = null,
+    candidate = null,
+    juryFeed = null,
+    binaryVitals = null,
+    boundaryArtery = null
   } = {}) {
-    return jury.evaluate({
+
+    // No mutation, no inference, no filtering.
+    const verdict = jury.evaluate({
       intent,
       context,
       candidate,
@@ -90,8 +98,20 @@ export function createPulseTrustJuryFrame({ safetyAPI } = {}) {
       binaryVitals,
       boundaryArtery
     });
+
+    return Object.freeze({
+      meta: PulseTrustJuryFrameMeta,
+      verdict,
+      lenses: verdict?.lenses || null,
+      worldLens: verdict?.worldLens || null,
+      artery: verdict?.artery || null,
+      ts: Date.now()
+    });
   }
 
+  // --------------------------------------------------------------------------
+  //  RETURN IMMUTABLE WRAPPER
+  // --------------------------------------------------------------------------
   return Object.freeze({
     meta: PulseTrustJuryFrameMeta,
     evaluate,
@@ -99,7 +119,9 @@ export function createPulseTrustJuryFrame({ safetyAPI } = {}) {
   });
 }
 
-// Direct helper for one-off evaluations
+// ============================================================================
+//  ONE‑OFF EVALUATION HELPER
+// ============================================================================
 export function evaluateWithTrustJury(args = {}) {
   return evaluateJury(args);
 }

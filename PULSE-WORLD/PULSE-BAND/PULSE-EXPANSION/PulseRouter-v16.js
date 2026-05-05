@@ -80,11 +80,11 @@ AI_EXPERIENCE_META = {
 // ============================================================================
 import { logger } from "../../PULSE-UI/_BACKEND/PulseProofLogger.js";
 
-import { PulseExpansionMeta, createPulseExpansion, getPulseExpansionContext } from "../PULSE-EXPANSION/PulseExpansion-v12.3-Presence.js";
-import { PulseCastleMeta, createPulseCastle } from "../PULSE-EXPANSION/PulseCastle-v12.3-Presence.js";
-import { PulseServerMeta, createPulseServer } from "../PULSE-EXPANSION/PulseServer-v12.3-Presence.js";
+import { PulseExpansionMeta, createPulseExpansion, getPulseExpansionContext } from "./PulseExpansion-v16.js";
+import { PulseCastleMeta, createPulseCastle } from "../PULSE-EXPANSION/PulseCastle-v16.js";
+import { PulseServerMeta, createPulseServer } from "./PulseServer-v16.js";
 // User lanes + world core
-import { getPulseUserContext, createPulseWorldCore, pulseUser, PulseUserMeta } from "../PULSE-EXPANSION/PulseUser-v12.3-Presence.js";
+import { getPulseUserContext, createPulseWorldCore, pulseUser, PulseUserMeta } from "./PulseUser-v16.js";
 
 // Mesh (symbolic + binary)
 import createBinaryMesh, {
@@ -95,12 +95,12 @@ import createPulseMesh, {
 } from "../PULSE-MESH/PulseMesh-v11-Evo.js";
 
 // Beacon engine (optional, for presence / region signals)
-import PulseBeaconEngine from "./PulseBeaconEngine-v12.3-Presence.js";
+import PulseBeaconEngine from "./PulseBeaconEngine-v16.js";
 
 // Beacon membrane (for meta only, if needed)
 import PulseBeaconMesh, {
   PulseBeaconMeshMeta
-} from "./PulseBeaconMesh-v12.3-Presence.js";
+} from "./PulseBeaconMesh-v16.js";
 
 // Touch / presence
 import { getPulseTouchContext } from "../../PULSE-UI/PULSE-TOUCH.js";
@@ -212,7 +212,6 @@ function buildBandSignature(band) {
 function buildOrganismContext() {
   const expansion = getPulseExpansionContext?.() || {};
   const touch = getPulseTouchContext?.() || {};
-  const net = getPulseNetContext?.() || {};
   const runtime = getPulseRuntimeContext?.() || {};
   const scheduler = getPulseSchedulerContext?.() || {};
   const overmind = getPulseOvermindContext?.() || {};
@@ -230,7 +229,6 @@ function buildOrganismContext() {
   return {
     expansion,
     touch,
-    net,
     runtime,
     scheduler,
     overmind,

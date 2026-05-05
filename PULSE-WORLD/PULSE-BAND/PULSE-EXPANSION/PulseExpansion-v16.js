@@ -67,28 +67,28 @@ import { logger } from "../../PULSE-UI/_BACKEND/PulseProofLogger.js";
 import {
   PulseServerMeta,
   createPulseServer
-} from "../PULSE-EXPANSION/PulseServer-v12.3-Presence.js";
+} from "./PulseServer-v16.js";
 
 import {
   PulseRouterMeta,
   createPulseRouter
-} from "../PULSE-EXPANSION/PulseRouter-v12.3-Presence.js";
+} from "./PulseRouter-v16.js";
 
 // v16 world core + castle + beacon mesh
 import {
   PulseWorldCoreMeta,
   createPulseWorldCore
-} from "./PulseUser-v12.3-Presence.js";
+} from "./PulseUser-v16.js";
 
 import {
   PulseCastleMeta,
   summarizeCastlePresence
-} from "./PulseCastle-v16-Immortal-ORGANISM.js";
+} from "./PulseCastle-v16.js";
 
 import {
   PulseBeaconMeshMeta,
   PulseBeaconMesh
-} from "./PulseBeaconMesh-v12.3-Presence.js";
+} from "./PulseBeaconMesh-v16.js";
 
 // v11 mesh + binary mesh metas
 import { PulseMeshMeta } from "../PULSE-MESH/PulseMesh-v11-Evo.js";
@@ -98,7 +98,7 @@ import { BinaryMeshMeta } from "../PULSE-MESH/PulseBinaryMesh-v11-Evo.js";
 import {
   PulseBeaconMeta as PulseBeaconEngineMeta,
   createPulseBeaconEngine
-} from "./PulseBeaconEngine-v12.3-Presence.js";
+} from "./PulseBeaconEngine-v16.js";
 
 // Touch / presence
 import { getPulseTouchContext } from "../../PULSE-UI/PULSE-TOUCH.js";

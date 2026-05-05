@@ -114,34 +114,34 @@ import {
   PulseExpansionMeta,
   createPulseExpansion,
   getPulseExpansionContext
-} from "../PULSE-EXPANSION/PulseExpansion-v12.3-Presence.js";
+} from "./PulseExpansion-v16.js";
 
 // Castle / beacon / console
 import {
   PulseCastleMeta,
   createPulseCastle,
   getPulseCastleContext
-} from "../PULSE-EXPANSION/PulseCastle-v12.3-Presence.js";
+} from "../PULSE-EXPANSION/PulseCastle-v16.js";
 import {
   PulseServerMeta,
   createPulseServer,
   getPulseServerContext
-} from "../PULSE-EXPANSION/PulseServer-v12.3-Presence.js";
+} from "./PulseServer-v16.js";
 import {
   PulseRouterMeta,
   createPulseRouter
-} from "../PULSE-EXPANSION/PulseRouter-v12.3-Presence.js";
+} from "./PulseRouter-v16.js";
 
 // User lanes
-import { getPulseUserContext, createPulseWorldCore } from "../PULSE-EXPANSION/PulseUser-v12.3-Presence.js";
+import { getPulseUserContext, createPulseWorldCore } from "./PulseUser-v16.js";
 
 
 import {
   getBeaconEngineContext, PulseBeaconEngine
-} from "../PULSE-EXPANSION/PulseBeaconEngine-v12.3-Presence.js";
+} from "./PulseBeaconEngine-v16.js";
 import {
   getConsoleContext
-} from "../PULSE-EXPANSION/PulseBeaconConsole-v12.3-Presence.js";
+} from "./PulseBeaconConsole-v16.js";
 
 // Mesh organism (symbolic + binary)
 import createPulseMesh, {

@@ -59,12 +59,12 @@ import * as PulseBinaryOS from "../PULSE-OS/PulseBinaryOS-v11-Evo-Max.js";
 
 // Mesh + BeaconMesh meta
 import { PulseMeshMeta, createPulseMesh } from "../PULSE-MESH/PulseMesh-v11-Evo.js";
-import { PulseBeaconMeshMeta, PulseBeaconMesh } from "../PULSE-EXPANSION/PulseBeaconMesh-v12.3-Presence.js";
+import { PulseBeaconMeshMeta, PulseBeaconMesh } from "./PulseBeaconMesh-v16.js";
 
-import { PulseCastleMeta, createPulseCastle } from "../PULSE-EXPANSION/PulseCastle-v12.3-Presence.js";
-import { PulseServerMeta, createPulseServer } from "../PULSE-EXPANSION/PulseServer-v12.3-Presence.js";
-import { PulseRouterMeta, createPulseRouter } from "../PULSE-EXPANSION/PulseRouter-v12.3-Presence.js";
-import { PulseExpansionMeta, createPulseExpansion } from "../PULSE-EXPANSION/PulseExpansion-v12.3-Presence.js";
+import { PulseCastleMeta, createPulseCastle } from "../PULSE-EXPANSION/PulseCastle-v16.js";
+import { PulseServerMeta, createPulseServer } from "./PulseServer-v16.js";
+import { PulseRouterMeta, createPulseRouter } from "./PulseRouter-v16.js";
+import { PulseExpansionMeta, createPulseExpansion } from "./PulseExpansion-v16.js";
 
 // Earn / Band / BinarySend
 import { getEarnContext, evolveEarn, createEarn } from "../PULSE-EARN/PulseEarn-v16.js";

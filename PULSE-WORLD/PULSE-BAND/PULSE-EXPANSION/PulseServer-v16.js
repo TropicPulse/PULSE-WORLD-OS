@@ -74,31 +74,39 @@ import { logger } from "../../PULSE-UI/_BACKEND/PulseProofLogger.js";
 import {
   PulseExpansionMeta,
   createPulseExpansion
-} from "../PULSE-EXPANSION/PulseExpansion-v16-Immortal-ORGANISM.js";
+} from "../PULSE-EXPANSION/PulseExpansion-v16.js";
 
 import {
   PulseCastleMeta,
   summarizeCastlePresence,
   computeCastlePresence
-} from "../PULSE-EXPANSION/PulseCastle-v16-Immortal-ORGANISM.js";
+} from "../PULSE-EXPANSION/PulseCastle-v16.js";
 
 // Router (still v12.3 presence-era)
 import {
   PulseRouterMeta,
   createPulseRouter
-} from "../PULSE-EXPANSION/PulseRouter-v12.3-Presence.js";
+} from "./PulseRouter-v16.js";
 
 // User lanes / WorldCore
 import {
   getPulseUserContext,
   createPulseWorldCore
-} from "../PULSE-EXPANSION/PulseUser-v12.3-Presence.js";
+} from "./PulseUser-v16.js";
 
 // Adrenal (compute starter / circulation governor)
 import {
   runInstanceOrchestrator as runAdrenalInstanceOrchestrator,
   PulseProxyAdrenalSystemMeta
 } from "../PULSE-PROXY/PulseProxyAdrenalSystem.js";
+
+// PulseNet bridge (symbolic adapter to PULSE-NET)
+import {
+  createPulseNetBridge
+} from "../../PULSE-UI/_BACKEND/PULSE-NET.js";
+
+// Touch / presence
+import { getPulseTouchContext } from "../../PULSE-UI/PULSE-TOUCH.js";
 
 // Scheduler (Router + Overmind + Runtime v2 macro pipeline)
 import {
@@ -129,10 +137,6 @@ import {
   getProxyLineage
 } from "../PULSE-PROXY/PulseProxyContext-v16.js";
 
-// PulseNet bridge (symbolic adapter to PULSE-NET)
-import {
-  createPulseNetBridge
-} from "../../PULSE-UI/_FRONTEND/PulseNet-v16-FAMILY-NET-Immortal.js";
 
 // ============================================================================
 //  META — PulseServer Identity

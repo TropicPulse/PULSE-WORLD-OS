@@ -1,21 +1,22 @@
 // ============================================================================
-//  PULSE TRUST EVIDENCE v16 — IMMORTAL CONSTITUTIONAL EVIDENCE FABRIC
-//  RAW • RAW/AI • AI  —  FULL STACK EVIDENCE FOR TRUST & TRANSPARENCY
+//  PULSE TRUST EVIDENCE v16++ — IMMORTAL CONSTITUTIONAL EVIDENCE FABRIC
+//  RAW • RAW_AI • AI  —  FULL STACK EVIDENCE FOR TRUST & TRANSPARENCY
 // ============================================================================
 
 /*
 AI_EXPERIENCE_META:
   organ: PulseTrustEvidence
-  version: 16.0.0
+  version: 16.2.0
   tier: IMMORTAL
   role: trust_evidence_fabric
   mind: false
 
   description:
-    "Non-mind constitutional evidence fabric. Pulls RAW, RAW/AI, and AI-layer
-     signals from world, user, trust, jury, and overmind subsystems. Freezes
-     them into immutable evidence packets for transparency, drift detection,
-     and creator oversight. Never interprets, never judges, never rewrites."
+    "Non-mind constitutional evidence fabric. Pulls RAW, RAW_AI, and AI-layer
+     signals from world, user, trust, jury, expansion, and overmind subsystems.
+     Freezes them into immutable evidence packets for transparency, drift
+     detection, and creator oversight. Never interprets, never judges,
+     never rewrites."
 
   guarantees:
     - "Never performs AI reasoning."
@@ -41,7 +42,7 @@ AI_EXPERIENCE_META:
 
   lineage:
     parent: "PulseEvidenceCore-v16"
-    evolution: "v16 IMMORTAL — constitutional trust evidence fusion"
+    evolution: "v16++ IMMORTAL — constitutional trust evidence fusion"
 
   safety:
     - "No legal framing."
@@ -51,8 +52,8 @@ AI_EXPERIENCE_META:
 
   integration:
     receives:
-      - PulseWorldCore.buildAdvantageContext()
-      - PulseWorldCore.snapshotWorld()
+      - PulseAIWorldCore.buildAdvantageContext()
+      - PulseAIWorldCore.snapshotWorld()
       - PulseUser.citizenWitness / snapshotUser()
       - PulseTrust.snapshot()
       - JuryFrame.snapshotFeed() / snapshot()
@@ -91,16 +92,18 @@ AI_EXPERIENCE_META:
 //  META EXPORT
 // ============================================================================
 export const PulseTrustEvidenceMeta = Object.freeze({
-  id: "PulseTrustEvidence-v16",
-  version: "16.0.0",
+  id: "PulseTrustEvidence-v16++",
+  version: "16.2.0",
   role: "trust_evidence_fabric",
   mind: false,
-  description: "IMMORTAL non-mind trust evidence fabric for RAW/RAW-AI/AI signals.",
+  description:
+    "IMMORTAL non-mind trust evidence fabric for RAW / RAW_AI / AI signals.",
   identity: {
     type: "organ",
     name: "PulseTrustEvidence",
     band: "trust",
-    mind: false
+    mind: false,
+    immutable: true
   }
 });
 
@@ -114,8 +117,8 @@ export class PulseTrustEvidence {
       ...config
     };
 
-    // Upstream organs / providers (may be null; all are pull-only)
-    this.worldCore = config.worldCore || null;           // PulseWorldCore
+    // Upstream organs / providers (pull-only)
+    this.worldCore = config.worldCore || null;           // PulseAIWorldCore / PulseWorldCore
     this.userCore = config.userCore || null;             // PulseUser / citizenWitness
     this.trustCore = config.trustCore || null;           // PulseTrust
     this.juryFrame = config.juryFrame || null;           // JuryFrame
@@ -130,21 +133,30 @@ export class PulseTrustEvidence {
     this.evidenceCore = config.evidenceCore || null;     // PulseEvidenceCore
     this.records = [];                                   // local append-only if no evidenceCore
 
+    // Lightweight index (metadata-only, never mutates packets)
+    this.index = {
+      byLabel: new Map(),   // label -> [packetRefs]
+      byCategory: {         // RAW / RAW_AI / AI presence
+        RAW: [],
+        RAW_AI: [],
+        AI: []
+      }
+    };
+
     this.logger = config.logger || console;
   }
 
   // ==========================================================================
   //  CAPTURE FULL EVIDENCE PACKET
-  //  - Pulls from all configured sources
-  //  - Categorizes into RAW / RAW_AI / AI
-  //  - Freezes into immutable packet
   // ==========================================================================
   captureEvidence(label = "tick", context = {}) {
     const ts = Date.now();
 
-    // WORLD PERSPECTIVE
-    const worldAdvantage = this._safeCall(this.worldCore, "buildAdvantageContext") || null;
-    const worldSnapshot = this._safeCall(this.worldCore, "snapshotWorld") || null;
+    // WORLD PERSPECTIVE (AI-normalized + advantage)
+    const worldAdvantage =
+      this._safeCall(this.worldCore, "buildAdvantageContext") || null;
+    const worldSnapshot =
+      this._safeCall(this.worldCore, "snapshotWorld") || null;
 
     // USER PERSPECTIVE
     const citizenWitness =
@@ -154,7 +166,8 @@ export class PulseTrustEvidence {
 
     // TRUST / OVERMIND / EXPANSION
     const trustSnapshot = this._safeCall(this.trustCore, "snapshot") || null;
-    const expansionSnapshot = this._safeCall(this.expansionCompliance, "snapshot") || null;
+    const expansionSnapshot =
+      this._safeCall(this.expansionCompliance, "snapshot") || null;
     const overmindMeta =
       this._safeCall(this.overmind, "snapshotMeta") ||
       this._safeCall(this.overmind, "snapshotTrust") ||
@@ -166,16 +179,17 @@ export class PulseTrustEvidence {
       this._safeCall(this.juryFrame, "snapshot") ||
       null;
 
-    const juryBoxSnapshot = this._safeCall(this.juryBoxCamera, "snapshot") || null;
-    const juryCouncilSnapshot = this._safeCall(this.juryCouncil, "snapshot") || null;
+    const juryBoxSnapshot =
+      this._safeCall(this.juryBoxCamera, "snapshot") || null;
+    const juryCouncilSnapshot =
+      this._safeCall(this.juryCouncil, "snapshot") || null;
 
     // INFRASTRUCTURE
     const serverSnapshot = this._safeCall(this.server, "snapshot") || null;
     const castleSnapshot = this._safeCall(this.castle, "snapshot") || null;
 
     // ------------------------------------------------------------------------
-    //  CATEGORIZE: RAW / RAW_AI / AI
-    //  NOTE: This is structural categorization, not judgment.
+    //  CATEGORIZE: RAW / RAW_AI / AI (structural, not judgment)
     // ------------------------------------------------------------------------
     const rawEntries = [];
     const rawAIEntries = [];
@@ -185,20 +199,36 @@ export class PulseTrustEvidence {
     this._pushIfPresent(rawEntries, "world_snapshot", worldSnapshot);
     this._pushIfPresent(rawEntries, "server_snapshot", serverSnapshot);
     this._pushIfPresent(rawEntries, "castle_snapshot", castleSnapshot);
-    this._pushIfPresent(rawEntries, "citizen_witness_raw", citizenWitness?.raw ?? null);
+    this._pushIfPresent(
+      rawEntries,
+      "citizen_witness_raw",
+      citizenWitness?.raw ?? null
+    );
 
     // RAW_AI: AI-built structures grounded in raw data
     this._pushIfPresent(rawAIEntries, "world_advantage_context", worldAdvantage);
     this._pushIfPresent(rawAIEntries, "trust_snapshot", trustSnapshot);
-    this._pushIfPresent(rawAIEntries, "expansion_compliance_snapshot", expansionSnapshot);
+    this._pushIfPresent(
+      rawAIEntries,
+      "expansion_compliance_snapshot",
+      expansionSnapshot
+    );
     this._pushIfPresent(rawAIEntries, "overmind_meta", overmindMeta);
-    this._pushIfPresent(rawAIEntries, "citizen_witness_structured", citizenWitness?.structured ?? null);
+    this._pushIfPresent(
+      rawAIEntries,
+      "citizen_witness_structured",
+      citizenWitness?.structured ?? null
+    );
 
     // AI: AI-generated evaluations / feeds / narratives
     this._pushIfPresent(aiEntries, "jury_feed", juryFeed);
     this._pushIfPresent(aiEntries, "jury_box_snapshot", juryBoxSnapshot);
     this._pushIfPresent(aiEntries, "jury_council_snapshot", juryCouncilSnapshot);
-    this._pushIfPresent(aiEntries, "citizen_witness_ai", citizenWitness?.ai ?? null);
+    this._pushIfPresent(
+      aiEntries,
+      "citizen_witness_ai",
+      citizenWitness?.ai ?? null
+    );
 
     // ------------------------------------------------------------------------
     //  IMMUTABLE EVIDENCE PACKET
@@ -220,7 +250,7 @@ export class PulseTrustEvidence {
         RAW_AI: rawAIEntries,
         AI: aiEntries
       },
-      // For convenience: top-level references (may be null)
+      // Convenience top-level references (may be null)
       worldAdvantage,
       worldSnapshot,
       citizenWitness,
@@ -236,9 +266,10 @@ export class PulseTrustEvidence {
 
     // Store in underlying evidence core if present, else local
     if (this.evidenceCore) {
-      this.evidenceCore.recordRaw(packet); // packet itself is RAW evidence of the system state
+      this.evidenceCore.recordRaw(packet); // packet itself is RAW evidence of system state
     } else {
       this.records.push(packet);
+      this._indexPacket(packet);
     }
 
     this._log("trust-evidence:packet", { packet });
@@ -246,7 +277,7 @@ export class PulseTrustEvidence {
   }
 
   // ==========================================================================
-  //  DIRECT RECORDING HELPERS (DELEGATE TO EVIDENCE CORE OR LOCAL LOG)
+  //  DIRECT RECORDING HELPERS (DELEGATE OR LOCAL APPEND-ONLY)
 // ==========================================================================
   recordRaw(data) {
     if (this.evidenceCore) {
@@ -254,6 +285,7 @@ export class PulseTrustEvidence {
     }
     const entry = this._makeEntry("RAW", data);
     this.records.push(entry);
+    this._indexEntry(entry);
     this._log("trust-evidence:raw", entry);
     return entry;
   }
@@ -264,6 +296,7 @@ export class PulseTrustEvidence {
     }
     const entry = this._makeEntry("RAW_AI", data);
     this.records.push(entry);
+    this._indexEntry(entry);
     this._log("trust-evidence:raw-ai", entry);
     return entry;
   }
@@ -274,6 +307,7 @@ export class PulseTrustEvidence {
     }
     const entry = this._makeEntry("AI", data);
     this.records.push(entry);
+    this._indexEntry(entry);
     this._log("trust-evidence:ai", entry);
     return entry;
   }
@@ -293,16 +327,24 @@ export class PulseTrustEvidence {
 
   getTimeline() {
     if (this.evidenceCore) return this.evidenceCore.getTimeline();
-    return this.records.map(r => ({
+    return this.records.map((r) => ({
       ts: r.ts,
       label: r.label || null,
       meta: r.meta
     }));
   }
 
+  // v16++: category-aware for both packet categories and direct entries
   getByCategory(category) {
     if (this.evidenceCore) return this.evidenceCore.getByCategory(category);
-    return this.records.filter(r => r.category === category);
+
+    // If asking for RAW / RAW_AI / AI presence in packets
+    if (category === "RAW" || category === "RAW_AI" || category === "AI") {
+      return this.index.byCategory[category].slice();
+    }
+
+    // Fallback: direct entries with category field (recordRaw/RawAI/AI)
+    return this.records.filter((r) => r.category === category);
   }
 
   // ==========================================================================
@@ -332,6 +374,37 @@ export class PulseTrustEvidence {
       },
       data
     });
+  }
+
+  _indexPacket(packet) {
+    // byLabel
+    const label = packet.label || null;
+    if (label != null) {
+      if (!this.index.byLabel.has(label)) {
+        this.index.byLabel.set(label, []);
+      }
+      this.index.byLabel.get(label).push(packet);
+    }
+
+    // byCategory presence
+    if (packet.categories?.RAW?.length) {
+      this.index.byCategory.RAW.push(packet);
+    }
+    if (packet.categories?.RAW_AI?.length) {
+      this.index.byCategory.RAW_AI.push(packet);
+    }
+    if (packet.categories?.AI?.length) {
+      this.index.byCategory.AI.push(packet);
+    }
+  }
+
+  _indexEntry(entry) {
+    // Direct entries have a single category field
+    const cat = entry.category;
+    if (!cat) return;
+    if (this.index.byCategory[cat]) {
+      this.index.byCategory[cat].push(entry);
+    }
   }
 
   _log(event, payload) {

@@ -86,7 +86,7 @@ const db =
 // ============================================================================
 import { PulseIntentMap } from "../../PULSE-BAND/PULSE-OS/PulseIntentMap.js";
 import { PulseOrganismMap } from "../../PULSE-BAND/PULSE-OS/PulseOrganismMap.js";
-import createPulseWorldCore from "../../PULSE-BAND/PULSE-EXPANSION/PulseUser-v12.3-Presence.js";
+import createPulseWorldCore from "../../PULSE-BAND/PULSE-EXPANSION/PulseUser-v16.js";
 
 
 

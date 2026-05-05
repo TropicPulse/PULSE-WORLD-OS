@@ -90,18 +90,18 @@ import NodeAdmin from "../PULSE-TOOLS/PulseNodeAdmin-v11-Evo.js";
 // ============================================================================
 
 // WorldCore / User
-import { PulseWorldCoreMeta, createPulseWorldCore} from "../PULSE-EXPANSION/PulseUser-v12.3-Presence.js";
+import { PulseWorldCoreMeta, createPulseWorldCore} from "../PULSE-EXPANSION/PulseUser-v16.js";
 
 // Castle / Mesh / BeaconMesh / Expansion / Server / Router
 import { PulseCastleMeta } from "../PULSE-EXPANSION/PulseCastle-v12.3-Presence.js";
 import createPulseMesh, { PulseMeshMeta } from "../PULSE-MESH/PulseMesh-v11-Evo.js";
 import PulseBeaconMesh, {
   PulseBeaconMeshMeta
-} from "../PULSE-EXPANSION/PulseBeaconMesh-v12.3-Presence.js";
-import PulseBeaconEngine from "../PULSE-EXPANSION/PulseBeaconEngine-v12.3-Presence.js";
-import { PulseExpansionMeta } from "../PULSE-EXPANSION/PulseExpansion-v12.3-Presence.js";
-import { PulseServerMeta } from "../PULSE-EXPANSION/PulseServer-v12.3-Presence.js";
-import { PulseRouterMeta } from "../PULSE-EXPANSION/PulseRouter-v12.3-Presence.js";
+} from "../PULSE-EXPANSION/PulseBeaconMesh-v16.js";
+import PulseBeaconEngine from "../PULSE-EXPANSION/PulseBeaconEngine-v16.js";
+import { PulseExpansionMeta } from "../PULSE-EXPANSION/PulseExpansion-v16.js";
+import { PulseServerMeta } from "../PULSE-EXPANSION/PulseServer-v16.js";
+import { PulseRouterMeta } from "../PULSE-EXPANSION/PulseRouter-v16.js";
 
 // Earn / Band / Send
 import { getEarnContext } from "../PULSE-EARN/PulseEarn-v16.js";

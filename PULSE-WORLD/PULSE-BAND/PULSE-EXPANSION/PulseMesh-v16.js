@@ -120,16 +120,16 @@ AI_EXPERIENCE_META = {
 // ============================================================================
 
 // Castle / Server / Router / Expansion meta
-import { PulseExpansionMeta, createPulseExpansion } from "../PULSE-EXPANSION/PulseExpansion-v12.3-Presence.js";
-import { PulseCastleMeta, createPulseCastle } from "../PULSE-EXPANSION/PulseCastle-v12.3-Presence.js";
-import { PulseServerMeta, createPulseServer } from "../PULSE-EXPANSION/PulseServer-v12.3-Presence.js";
-import { PulseBeaconMesh } from "../PULSE-EXPANSION/PulseMesh-v12.3-Presence.js";
-import { PulseRouterMeta, createPulseRouter } from "../PULSE-EXPANSION/PulseRouter-v12.3-Presence.js";
+import { PulseExpansionMeta, createPulseExpansion } from "./PulseExpansion-v16.js";
+import { PulseCastleMeta, createPulseCastle } from "../PulseCastle-v16.js";
+import { PulseServerMeta, createPulseServer } from "./PulseServer-v16.js";
+import { PulseBeaconMesh } from "./PulseMesh-v16.js";
+import { PulseRouterMeta, createPulseRouter } from "./PulseRouter-v16.js";
 // User lanes
-import { getPulseUserContext, createPulseWorldCore } from "../PULSE-EXPANSION/PulseUser-v12.3-Presence.js";
+import { getPulseUserContext, createPulseWorldCore } from "./PulseUser-v16.js";
 
-import { getBeaconEngineContext } from "../PULSE-EXPANSION/PulseBeaconEngine-v12.3-Presence.js";
-import { getConsoleContext } from "../PULSE-EXPANSION/PulseBeaconConsole-v12.3-Presence.js";
+import { getBeaconEngineContext } from "./PulseBeaconEngine-v16.js";
+import { getConsoleContext } from "./PulseBeaconConsole-v16.js";
 
 // Touch (presence / mode / page / chunkProfile / trust / identity)
 import { getPulseTouchContext } from "../../PULSE-UI/PULSE-TOUCH.js";

@@ -93,25 +93,25 @@ import {
   PulseExpansionMeta,
   createPulseExpansion,
   getPulseExpansionContext
-} from "../PULSE-EXPANSION/PulseExpansion-v12.3-Presence.js";
+} from "./PulseExpansion-v16.js";
 
 // Server
 import {
   PulseServerMeta,
   createPulseServer
-} from "../PULSE-EXPANSION/PulseServer-v12.3-Presence.js";
+} from "./PulseServer-v16.js";
 
 // Router (meta only, for organism context)
 import {
   PulseRouterMeta,
   createPulseRouter
-} from "../PULSE-EXPANSION/PulseRouter-v12.3-Presence.js";
+} from "./PulseRouter-v16.js";
 
 // User lanes / WorldCore (v16 IMMORTAL ORGANISM)
 import {
   PulseWorldCoreMeta,
   createPulseWorldCore
-} from "../PULSE-EXPANSION/PulseUser-v12.3-Presence.js";
+} from "./PulseUser-v16.js";
 
 // Mesh organism (symbolic + binary)
 import createPulseMesh, {
@@ -122,10 +122,10 @@ import createBinaryMesh, {
 } from "../PULSE-MESH/PulseBinaryMesh-v11-Evo.js";
 
 // Beacon engine + membrane
-import PulseBeaconEngine from "./PulseBeaconEngine-v12.3-Presence.js";
+import PulseBeaconEngine from "./PulseBeaconEngine-v16.js";
 import PulseBeaconMesh, {
   PulseBeaconMeshMeta
-} from "./PulseBeaconMesh-v12.3-Presence.js";
+} from "./PulseBeaconMesh-v16.js";
 
 // Touch / presence
 import { getPulseTouchContext } from "../../PULSE-UI/PULSE-TOUCH.js";

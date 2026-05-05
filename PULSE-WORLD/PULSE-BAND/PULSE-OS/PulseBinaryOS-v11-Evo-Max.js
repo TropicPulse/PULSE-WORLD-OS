@@ -185,7 +185,7 @@ import { createPulseMeshPresenceRelay as PulseMeshPresence } from "../PULSE-MESH
 // ============================================================================
 // PULSE OS v13-Presence-Evo+ — WORLD BARREL
 // ============================================================================
-import { createPulseExpansion, pulseExpansion, PulseExpansionMeta} from "../PULSE-EXPANSION/PulseExpansion-v12.3-Presence.js";
+import { createPulseExpansion, pulseExpansion, PulseExpansionMeta} from "../PULSE-EXPANSION/PulseExpansion-v16.js";
 
 // (optional) direct access if you want to surface them:
 const Expansion = pulseExpansion; // singleton

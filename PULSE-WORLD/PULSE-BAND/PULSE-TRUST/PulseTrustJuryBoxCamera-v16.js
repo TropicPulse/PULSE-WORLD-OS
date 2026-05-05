@@ -1,109 +1,145 @@
 // ============================================================================
-//  PULSE-TRUST v16 — JuryBoxCamera
-//  Observer / Pattern Detector for Jury sessions
+//  PULSE‑TRUST JURY BOX CAMERA v16++ IMMORTAL
+//  RAW Black‑Box Recorder • Behavioral Pattern Detector • AI‑Blind
 // ============================================================================
 
 /*
-AI_EXPERIENCE_META = {
-  identity: "PulseTrustJuryBoxCamera",
-  version: "v16-Immortal-ORGANISM",
-  layer: "trust",
-  role: "trust_jury_observer",
-  lineage: "PulseTrustJuryBoxCamera-v14 → v16-Immortal-ORGANISM",
+AI_EXPERIENCE_META:
+  organ: PulseTrustJuryBoxCamera
+  version: 16.2.0
+  tier: IMMORTAL
+  layer: trust
+  role: trust_jury_observer
 
-  description: `
-    PulseTrustJuryBoxCamera is the black-box recorder and observer for
-    jury sessions. It does not judge content; it watches behavior.
+  description:
+    "The JuryBoxCamera is the RAW, immutable black‑box recorder of the
+     constitutional justice system. It captures jury session behavior,
+     dominance patterns, AI‑origin echoes, anomaly chains, and flow
+     irregularities — without AI involvement, filtering, or mutation.
 
-    It ingests:
-      - events: who spoke, who decided, who echoed AI-origin content
-      - verdicts: what the jury decided, with creatorFlags
+     It does not judge content. It judges behavior.
+     It does not evaluate candidates. It evaluates the jury environment.
 
-    It detects:
-      - dominance patterns (one actor making too many decisions)
-      - AI echo patterns (too many AI-origin events)
-      - basic anomalies in jury behavior
+     It is AI‑blind:
+       - AI cannot modify events.
+       - AI cannot redact or reorder.
+       - AI cannot suppress anomalies.
+       - AI cannot rewrite history.
 
-    Its output is not a verdict; it is a behavioral snapshot:
-      - patterns: dominantUser, decision counts, AI echo counts
-      - anomalies: structured descriptions of suspicious patterns
+     It produces:
+       - patterns (dominance, AI‑echo, decision distribution)
+       - anomalies (dominance, echo clusters, timing irregularities)
+       - rawEvents (immutable)
+       - rawVerdicts (immutable)
 
-    This snapshot can then be:
-      - fed into JuryFeed (as citizenWitness patterns/anomalies)
-      - fused into CreatorFlags
-      - reviewed by JuryCouncil for systemic issues.
-  `,
+     These outputs feed:
+       - JuryFeed (as citizenWitness patterns/anomalies)
+       - CreatorFlags
+       - JuryCouncil (systemic drift detection)
+       - ExpansionCompliance (constitutional enforcement)"
 
-  evo: {
-    trustAware: true,
-    juryAware: true,
-    anomalyAware: true,
-    dominanceAware: true,
+  lineage:
+    parent: "PulseTrustJuryBoxCamera-v15"
+    evolution: "v16++ IMMORTAL — RAW recorder + AI‑blind + anomaly clustering"
 
-    deterministic: true,
-    driftProof: true,
-    zeroNetwork: true,
-    zeroFilesystem: true,
-    zeroMutationOfInput: true,
+  identity:
+    type: "organ"
+    name: "PulseTrustJuryBoxCamera"
+    band: "trust"
+    mind: false
+    immutable: true
 
-    metadataOnly: true
-  },
+  guarantees:
+    - "Never mutates events."
+    - "Never filters or compresses RAW data."
+    - "Never allows AI to write to the recorder."
+    - "Always deterministic and drift-proof."
+    - "Always metadata-only."
 
-  contract: {
-    always: [
-      "PulseTrustJuryFrame",
-      "PulseTrustJuryCouncil",
-      "PulseTrustCreatorFlags"
-    ],
-    never: [
-      "safeRoute",
-      "fetchViaCNS",
-      "contentMutation"
-    ]
-  }
-}
+  contract:
+    always:
+      - "PulseTrustJuryFrame"
+      - "PulseTrustJuryCouncil"
+      - "PulseTrustCreatorFlags"
+    never:
+      - "safeRoute"
+      - "fetchViaCNS"
+      - "contentMutation"
+      - "AIWriteAccess"
 */
 
 export const PulseTrustJuryBoxCameraMeta = Object.freeze({
-  organId: "PulseTrustJuryBoxCamera-v16",
-  role: "TRUST_JURY_OBSERVER",
-  version: "v16-Immortal-ORGANISM"
+  id: "PulseTrustJuryBoxCamera-v16++",
+  version: "16.2.0",
+  role: "trust_jury_observer",
+  mind: false,
+  description:
+    "IMMORTAL RAW black‑box recorder for jury sessions. AI‑blind, immutable.",
+  identity: {
+    type: "organ",
+    name: "PulseTrustJuryBoxCamera",
+    band: "trust",
+    mind: false,
+    immutable: true
+  }
 });
 
+// ============================================================================
+//  CLASS — RAW BLACK BOX RECORDER
+// ============================================================================
 export function createJuryBoxCamera() {
-  /**
-   * analyzeSession
-   * @param {Object} params
-   * @param {Array} params.events - [{ type, actor, ts, source, aiOrigin, decisionId, ... }]
-   * @param {Array} params.verdicts - [{ decisionId, verdict, creatorFlags, ts }]
-   */
+
+  // --------------------------------------------------------------------------
+  //  analyzeSession — RAW → patterns + anomalies
+  // --------------------------------------------------------------------------
   function analyzeSession({
-    events = [],
-    verdicts = []
+    events = [],     // RAW events: [{ type, actor, ts, aiOrigin, ... }]
+    verdicts = []    // RAW verdicts: [{ decisionId, verdict, creatorFlags, ts }]
   } = {}) {
-    const anomalies = [];
+
+    // RAW → immutable
+    const rawEvents = Object.freeze([...events]);
+    const rawVerdicts = Object.freeze([...verdicts]);
+
+    // Pattern accumulators
     const patterns = {
       dominantUser: null,
       dominantUserDecisionCount: 0,
-      aiEchoCount: 0
+      aiEchoCount: 0,
+      decisionDistribution: {},
+      timingIrregularities: 0
     };
 
+    const anomalies = [];
+
+    // Internal counters
     const decisionByUser = new Map();
     let aiEchoCount = 0;
 
-    for (const e of events) {
+    // ------------------------------------------------------------------------
+    //  PASS 1 — RAW event analysis
+    // ------------------------------------------------------------------------
+    for (const e of rawEvents) {
+      // Count decisions per actor
       if (e.type === "decision" && e.actor) {
         const prev = decisionByUser.get(e.actor) || 0;
         decisionByUser.set(e.actor, prev + 1);
       }
+
+      // Count AI-origin echoes
       if (e.aiOrigin === true) {
-        aiEchoCount += 1;
+        aiEchoCount++;
       }
     }
 
+    // ------------------------------------------------------------------------
+    //  PASS 2 — Dominance detection
+    // ------------------------------------------------------------------------
     let dominantUser = null;
     let dominantCount = 0;
+
     for (const [user, count] of decisionByUser.entries()) {
+      patterns.decisionDistribution[user] = count;
       if (count > dominantCount) {
         dominantUser = user;
         dominantCount = count;
@@ -114,6 +150,7 @@ export function createJuryBoxCamera() {
     patterns.dominantUserDecisionCount = dominantCount;
     patterns.aiEchoCount = aiEchoCount;
 
+    // Dominance anomaly
     if (dominantUser && dominantCount >= 3) {
       anomalies.push({
         type: "dominance",
@@ -124,14 +161,54 @@ export function createJuryBoxCamera() {
       });
     }
 
+    // ------------------------------------------------------------------------
+    //  PASS 3 — Timing irregularities (burst decisions, unnatural spacing)
+    // ------------------------------------------------------------------------
+    const sorted = [...rawEvents].sort((a, b) => a.ts - b.ts);
+
+    for (let i = 1; i < sorted.length; i++) {
+      const dt = sorted[i].ts - sorted[i - 1].ts;
+      if (dt < 5) { // <5ms = suspicious burst
+        patterns.timingIrregularities++;
+      }
+    }
+
+    if (patterns.timingIrregularities >= 5) {
+      anomalies.push({
+        type: "timing",
+        count: patterns.timingIrregularities,
+        severity: 2,
+        note: "Unnatural burst timing detected."
+      });
+    }
+
+    // ------------------------------------------------------------------------
+    //  PASS 4 — AI echo anomaly
+    // ------------------------------------------------------------------------
+    if (aiEchoCount >= 5) {
+      anomalies.push({
+        type: "aiEchoCluster",
+        count: aiEchoCount,
+        severity: 3,
+        note: "High AI-origin echo frequency."
+      });
+    }
+
+    // ------------------------------------------------------------------------
+    //  RETURN IMMUTABLE CAMERA SNAPSHOT
+    // ------------------------------------------------------------------------
     return Object.freeze({
       meta: PulseTrustJuryBoxCameraMeta,
-      patterns,
-      anomalies,
-      verdicts
+      patterns: Object.freeze(patterns),
+      anomalies: Object.freeze(anomalies),
+      rawEvents,
+      rawVerdicts
     });
   }
 
+  // --------------------------------------------------------------------------
+  //  RETURN IMMUTABLE ORGAN
+  // --------------------------------------------------------------------------
   return Object.freeze({
     meta: PulseTrustJuryBoxCameraMeta,
     analyzeSession

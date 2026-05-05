@@ -1,110 +1,167 @@
 // ============================================================================
-//  PULSE-TRUST v16 — Creator Flag Fusion
-//  Fuses Jury, BoxCamera, and Council into Creator-level flags
+//  PULSE‑TRUST CREATOR FLAGS v16++ IMMORTAL
+//  Constitutional Fusion Layer • Creator‑Facing Risk Dashboard
 // ============================================================================
 
 /*
-AI_EXPERIENCE_META = {
-  identity: "PulseTrustCreatorFlags",
-  version: "v16-Immortal-ORGANISM",
-  layer: "trust",
-  role: "trust_creator_flags",
-  lineage: "PulseTrustCreatorFlags-v14 → v16-Immortal-ORGANISM",
+AI_EXPERIENCE_META:
+  organ: PulseTrustCreatorFlags
+  version: 16.2.0
+  tier: IMMORTAL
+  layer: trust
+  role: trust_creator_flags
 
-  description: `
-    PulseTrustCreatorFlags is the fusion layer that converts multiple
-    trust signals into a single, Creator-facing flag set.
+  description:
+    "PulseTrustCreatorFlags is the constitutional fusion layer that aggregates
+     all trust signals into a single Creator‑facing risk snapshot.
 
-    Inputs:
-      - juryResult: per-candidate verdict + creatorFlags
-      - boxCameraSnapshot: behavioral anomalies and patterns
-      - councilSnapshot: systemic flags over time
+     It fuses:
+       - JuryFrame verdict creatorFlags
+       - JuryBoxCamera behavioral anomalies
+       - JuryCouncil systemic drift flags
+       - ExpansionCompliance violations + riskProfile
+       - RAW vs AI delta divergence
+       - environmental stress (advantage)
+       - dominance patterns
+       - anomaly clusters
+       - AI‑origin influence
 
-    It produces:
-      - a fused flags object:
-          aiOriginRisk
-          juryFlowRisk
-          dominanceRisk
-          anomalyRisk
-          expansionCentralizationRisk
-          highStressContext
-          systemicHighFailRate
-          systemicHighWarnRate
-          systemicFrequentAiOriginRisk
-          systemicFrequentDominanceRisk
+     It produces:
+       - a fused, immutable, constitutional risk object
+       - a Creator‑grade dashboard of the organism’s integrity
+       - a single source of truth for high‑risk regimes
 
-    This is the "dashboard" the Creator sees:
-      - not raw data
-      - not low-level metrics
-      - but a distilled, constitutional view of risk.
+     It does not decide. It informs.
+     It does not override. It reveals.
+     It does not judge. It contextualizes.
 
-    It does not decide. It informs.
-  `,
+     This is the Creator’s window into the organism’s justice membrane."
 
-  evo: {
-    trustAware: true,
-    creatorFlagAware: true,
-    anomalyAware: true,
-    dominanceAware: true,
-    justiceAware: true,
+  lineage:
+    parent: "PulseTrustCreatorFlags-v15"
+    evolution: "v16++ IMMORTAL — RAW + AI‑mirror + delta + systemic fusion"
 
-    deterministic: true,
-    driftProof: true,
-    zeroNetwork: true,
-    zeroFilesystem: true,
-    zeroMutationOfInput: true,
+  identity:
+    type: "organ"
+    name: "PulseTrustCreatorFlags"
+    band: "trust"
+    mind: false
+    immutable: true
 
-    metadataOnly: true
-  },
-
-  contract: {
-    always: [
-      "PulseTrustJuryFrame",
-      "PulseTrustJuryBoxCamera",
-      "PulseTrustJuryCouncil"
-    ],
-    never: [
-      "safeRoute",
-      "fetchViaCNS",
-      "directOverride"
-    ]
-  }
-}
+  guarantees:
+    - "Never mutates inputs."
+    - "Never performs AI reasoning."
+    - "Always deterministic and drift-proof."
+    - "Always metadata-only."
 */
 
 export const PulseTrustCreatorFlagsMeta = Object.freeze({
-  organId: "PulseTrustCreatorFlags-v16",
-  role: "TRUST_CREATOR_FLAGS",
-  version: "v16-Immortal-ORGANISM"
+  id: "PulseTrustCreatorFlags-v16++",
+  version: "16.2.0",
+  role: "trust_creator_flags",
+  mind: false,
+  description:
+    "IMMORTAL fusion layer producing Creator‑level constitutional risk flags.",
+  identity: {
+    type: "organ",
+    name: "PulseTrustCreatorFlags",
+    band: "trust",
+    mind: false,
+    immutable: true
+  }
 });
 
+// ============================================================================
+//  CREATOR FLAG FUSION ENGINE
+// ============================================================================
 export function fuseCreatorFlags({
-  juryResult = null,
-  boxCameraSnapshot = null,
-  councilSnapshot = null
+  juryResult = null,            // verdict + creatorFlags + lenses + delta
+  boxCameraSnapshot = null,     // patterns + anomalies
+  councilSnapshot = null,       // systemicFlags
+  expansionCompliance = null,   // violations + riskProfile + complianceScore
+  delta = null,                 // RAW vs AI divergence
+  advantage = null              // environmental pressure
 } = {}) {
+
+  // --------------------------------------------------------------------------
+  //  EXTRACT INPUTS
+  // --------------------------------------------------------------------------
   const juryFlags = juryResult?.creatorFlags || {};
   const boxAnomalies = boxCameraSnapshot?.anomalies || [];
   const councilFlags = councilSnapshot?.systemicFlags || {};
+  const expansionFlags = expansionCompliance?.violations || [];
+  const expansionRisk = expansionCompliance?.riskProfile || {};
 
+  // RAW vs AI delta magnitude
+  const deltaMagnitude = delta
+    ? Object.values(delta).reduce(
+        (sum, sub) => sum + Object.keys(sub || {}).length,
+        0
+      )
+    : 0;
+
+  // Environmental stress
+  const stressScore = advantage?.ai
+    ? (advantage.ai.meshPressure ?? 0) +
+      (advantage.ai.castleLoad ?? 0) +
+      (advantage.ai.routingLatency ?? 0)
+    : 0;
+
+  // BoxCamera anomaly risk
   const anomalyRisk = boxAnomalies.some(a => (a?.severity ?? 1) >= 3);
 
+  // --------------------------------------------------------------------------
+  //  FUSED FLAGS — IMMORTAL TIER
+  // --------------------------------------------------------------------------
   const fused = {
+    // From JuryFrame
     aiOriginRisk: !!juryFlags.aiOriginRisk,
     juryFlowRisk: !!juryFlags.juryFlowRisk,
     dominanceRisk: !!juryFlags.dominanceRisk,
     anomalyRisk: !!juryFlags.anomalyRisk || anomalyRisk,
     expansionCentralizationRisk: !!juryFlags.expansionCentralizationRisk,
     highStressContext: !!juryFlags.highStressContext,
+
+    // From JuryCouncil (systemic)
     systemicHighFailRate: !!councilFlags.highFailRate,
     systemicHighWarnRate: !!councilFlags.highWarnRate,
     systemicFrequentAiOriginRisk: !!councilFlags.frequentAiOriginRisk,
-    systemicFrequentDominanceRisk: !!councilFlags.frequentDominanceRisk
+    systemicFrequentDominanceRisk: !!councilFlags.frequentDominanceRisk,
+    systemicLensInstability: !!councilFlags.lensInstability,
+    systemicDeltaDivergence: !!councilFlags.deltaDivergence,
+    systemicAnomalyClusters: !!councilFlags.anomalyClusters,
+    systemicJuryDrift: !!councilFlags.juryDrift,
+
+    // From ExpansionCompliance
+    expansionBypassJury: expansionRisk.bypassJury > 0,
+    expansionBypassUser: expansionRisk.bypassUser > 0,
+    expansionAiOriginInfluence: expansionRisk.aiOriginInfluence > 0,
+    expansionDrift: expansionRisk.drift > 0,
+    expansionAnomaly: expansionRisk.anomaly > 0,
+    expansionStress: expansionRisk.stress > 0,
+    expansionCompliant: expansionCompliance?.compliant ?? true,
+
+    // RAW vs AI divergence
+    rawVsAiDivergence: deltaMagnitude >= 10,
+
+    // Environmental stress
+    environmentHighPressure: stressScore >= 50
   };
 
+  // --------------------------------------------------------------------------
+  //  RETURN IMMUTABLE CREATOR SNAPSHOT
+  // --------------------------------------------------------------------------
   return Object.freeze({
     meta: PulseTrustCreatorFlagsMeta,
-    flags: fused
+    flags: Object.freeze(fused),
+    context: Object.freeze({
+      juryResult,
+      boxCameraSnapshot,
+      councilSnapshot,
+      expansionCompliance,
+      deltaMagnitude,
+      stressScore
+    })
   });
 }
 

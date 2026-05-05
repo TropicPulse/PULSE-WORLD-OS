@@ -46,13 +46,13 @@ import { aiOrganism } from "../PULSE-AI/aiOrganism.js";
 //  CORE ORGANISM LAYERS
 // ============================================================================
 import { NodeAdmin } from "../PULSE-TOOLS/PulseNodeAdmin-v11-Evo.js";
-import { BeaconEngine } from "../PULSE-EXPANSION/PulseBeaconEngine-v12.3-Presence.js";
+import { BeaconEngine } from "../PULSE-EXPANSION/PulseBeaconEngine-v16.js";
 
 // ============================================================================
 //  ROUTING + MESH (Presence-Aware v12.3)
 // ============================================================================
-import { PulseRouter } from "../PULSE-EXPANSION/PulseRouter-v12.3-Presence.js";
-import { PulseMesh } from "../PULSE-EXPANSION/PulseMesh-v12.3-Presence.js";
+import { PulseRouter } from "../PULSE-EXPANSION/PulseRouter-v16.js";
+import { PulseMesh } from "../PULSE-EXPANSION/PulseMesh-v16.js";
 
 // ============================================================================
 //  EARN ORGANISM (v14.4 IMMORTAL-INTEL)
