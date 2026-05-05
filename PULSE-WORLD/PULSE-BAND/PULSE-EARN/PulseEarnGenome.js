@@ -1,38 +1,41 @@
 // ============================================================================
-// FILE: tropic-pulse-functions/PULSE-WORLD/PULSE-EARN/PulseEarnGenome-v13.0-Presence-Immortal.js
-// LAYER: THE GENOME CORE (v13.0-Presence-Immortal)
-// (Immutable DNA Sequence + Cross‑Organism Law + v13 Presence Surfaces)
+// FILE: tropic-pulse-functions/PULSE-WORLD/PULSE-EARN/PulseEarnGenome-v16-Immortal-INTEL.js
+// LAYER: THE GENOME CORE (v16-Immortal-INTEL)
+// (Immutable DNA Sequence + Cross‑Organism Law + v16 Presence/Advantage/Compute Surfaces)
 // ============================================================================
 //
-// ROLE (v13.0-Presence-Immortal):
-//   THE GENOME CORE — the immutable DNA of Pulse‑Earn v13.
-//   • Defines the canonical v13 job structure (genetic sequence).
+// ROLE (v16-Immortal-INTEL):
+//   THE GENOME CORE — the immutable DNA of Pulse‑Earn v16.
+//   • Defines the canonical v13 job structure (genetic sequence) — schema remains v13, immutable.
 //   • Establishes the cross‑organism treaty all subsystems must obey.
-//   • Guarantees compatibility across every v13 organ in the Earn organism.
-//   • Serves as the constitutional backbone of job identity.
-//   • Emits v13‑Presence‑IMMORTAL genome signatures + presence/advantage/hints surfaces.
+//   • Guarantees compatibility across every v16 Earn organ that still speaks v13 job DNA.
+//   • Serves as the constitutional backbone of job identity and metabolism.
+//   • Emits v16‑Presence‑IMMORTAL genome signatures + binary/wave/advantage/chunk surfaces.
+//   • Emits v16 computeProfile + pulseIntelligence for the job schema itself (metadata‑only).
+//   • Uses computeHashIntelligence as primary hash, with computeHash as deterministic fallback.
 //
-// PURPOSE (v13.0-Presence-Immortal):
-//   • Provide a deterministic, drift‑proof v13 job format.
-//   • Ensure universal compatibility across all Earn v13 layers.
-//   • Serve as the legal + biological foundation for v13 job execution,
-//     routing, metabolism, healing, and archival reconstruction.
-//   • Provide signature‑rich constitutional metadata, presence‑aware (metadata‑only).
+// PURPOSE (v16-Immortal-INTEL):
+//   • Provide a deterministic, drift‑proof v13 job format as the constitutional layer for v16.
+//   • Ensure universal compatibility across all Earn v16 layers that consume v13 jobs.
+//   • Serve as the legal + biological foundation for job execution, routing, healing, archival.
+//   • Provide signature‑rich constitutional metadata, presence‑aware and compute‑aware (metadata‑only).
 //
-// CONTRACT (v13.0-Presence-Immortal):
-//   • PURE STATIC SCHEMA — no logic, no runtime behavior.
-//   • NO dynamic fields, NO optional structural keys.
+// CONTRACT (v16-Immortal-INTEL):
+//   • PURE STATIC SCHEMA + PURE METADATA ENGINE — no job logic, no runtime behavior on jobs.
+//   • NO dynamic fields, NO optional structural keys in the schema.
 //   • NO timestamps, NO environment‑dependent fields.
-//   • Immutable across versions unless explicitly ratified.
-//   • v13.0‑PRESENCE‑IMMORTAL adds ONLY metadata + signatures OUTSIDE the schema.
+//   • Immutable schema across versions unless explicitly ratified.
+//   • v16‑IMMORTAL‑INTEL adds ONLY metadata + signatures OUTSIDE the schema.
+//   • Presence/advantage/chunk/computeProfile/pulseIntelligence DO NOT change the schema.
+//   • NO async, NO network, NO randomness, NO filesystem.
 // ============================================================================
 /*
 AI_EXPERIENCE_META = {
   identity: "PulseEarnGenome",
-  version: "v14-Immortal",
+  version: "v16-Immortal-INTEL",
   layer: "earn_genome",
   role: "earn_genetic_blueprint",
-  lineage: "PulseEarnGenome-v11 → v12.3 → v14-Immortal",
+  lineage: "PulseEarnGenome-v9 → v10 → v11 → v12.3 → v13 → v14 → v16-Immortal-INTEL",
 
   evo: {
     earnGenome: true,
@@ -48,14 +51,31 @@ AI_EXPERIENCE_META = {
     pureCompute: true,
     zeroMutationOfInput: true,
     zeroNetwork: true,
-    zeroFilesystem: true
+    zeroFilesystem: true,
+
+    presenceAware: true,
+    advantageAware: true,
+    hintsAware: true,
+    waveFieldAware: true,
+    chunkPrewarmAware: true,
+
+    computeProfileAware: true,
+    pulseIntelligenceAware: true,
+    factoringAware: true,
+    deepJobAware: true,
+    multiInstanceHints: true,
+
+    hashIntelligencePrimary: true,
+    legacyHashFallback: true
   },
 
   contract: {
     always: [
       "PulseEarnHeart",
       "PulseEarnMetabolism",
-      "PulseEarnGeneticMemory"
+      "PulseEarnGeneticMemory",
+      "PulseEarnCirculatorySystem",
+      "PulseEarnEndocrineSystem"
     ],
     never: [
       "safeRoute",
@@ -68,8 +88,8 @@ AI_EXPERIENCE_META = {
 export const PulseEarnGenomeCoreMeta = Object.freeze({
   layer: "PulseEarnGenomeCore",
   role: "EARN_GENOME_CORE",
-  version: "v13.0-Presence-Immortal",
-  identity: "PulseEarnGenomeCore-v13.0-Presence-Immortal",
+  version: "v16-Immortal-INTEL",
+  identity: "PulseEarnGenomeCore-v16-Immortal-INTEL",
 
   guarantees: Object.freeze({
     deterministic: true,
@@ -85,8 +105,16 @@ export const PulseEarnGenomeCoreMeta = Object.freeze({
     presenceAware: true,
     advantageAware: true,
     hintsAware: true,
+    chunkPrewarmAware: true,
+    computeProfileAware: true,
+    pulseIntelligenceAware: true,
+    factoringAware: true,
+    deepJobAware: true,
+    multiInstanceHints: true,
     worldLensAware: false,
-    constitutional: true
+    constitutional: true,
+    hashIntelligencePrimary: true,
+    legacyHashFallback: true
   }),
 
   contract: Object.freeze({
@@ -100,19 +128,24 @@ export const PulseEarnGenomeCoreMeta = Object.freeze({
       "BinaryFieldSignatures",
       "WaveFieldSignatures",
       "PresenceFieldSignatures",
+      "AdvantageFieldSignatures",
+      "ChunkPrewarmPlan",
+      "ComputeProfile",
+      "PulseIntelligence",
       "ConstitutionalMetadata"
     ]
   }),
 
   lineage: Object.freeze({
     root: "PulseOS-v11-Evo",
-    parent: "PulseEarn-v13.0-Presence-Immortal",
+    parent: "PulseEarn-v16-Immortal-INTEL",
     ancestry: [
       "PulseEarnGenomeCore-v9",
       "PulseEarnGenomeCore-v10",
       "PulseEarnGenomeCore-v11",
       "PulseEarnGenomeCore-v11-Evo",
-      "PulseEarnGenomeCore-v12.3-Presence-Evo+"
+      "PulseEarnGenomeCore-v12.3-Presence-Evo+",
+      "PulseEarnGenomeCore-v13.0-Presence-Immortal"
     ]
   }),
 
@@ -125,14 +158,25 @@ export const PulseEarnGenomeCoreMeta = Object.freeze({
   architecture: Object.freeze({
     pattern: "A-B-A",
     baseline: "immutable static schema",
-    adaptive: "signature surfaces (binary + wave + presence/advantage/hints)",
+    adaptive: "signature surfaces (binary + wave + presence/advantage/hints/compute)",
     return: "deterministic constitutional metadata"
   })
 });
 
 // ============================================================================
-// INTERNAL: Deterministic Hash Helper (v13.0-Presence-Immortal)
+// INTERNAL: Deterministic Hash Helpers (v16-Immortal-INTEL)
 // ============================================================================
+//
+// computeHashIntelligence:
+//   • Primary hash for v16 surfaces.
+//   • Deterministic, pure, no randomness.
+//   • Mixes a simple FNV‑style core with positional weighting and band/context salt.
+//   • Still bounded and cheap; safe for hot paths.
+//
+// computeHash:
+//   • Legacy v13/v14/v15 helper.
+//   • Used as fallback and for compatibility surfaces.
+//
 function computeHash(str) {
   let h = 0;
   const s = String(str);
@@ -142,14 +186,62 @@ function computeHash(str) {
   return `h${h}`;
 }
 
+function computeHashIntelligence(str, context = "") {
+  const s = String(str || "");
+  const c = String(context || "");
+  const combined = s + "::" + c;
+
+  // FNV‑1a style core with positional weighting, still deterministic and bounded
+  let h = 2166136261 >>> 0;
+  for (let i = 0; i < combined.length; i++) {
+    h ^= combined.charCodeAt(i);
+    h = Math.imul(h, 16777619) >>> 0;
+    // light positional mix
+    h = (h + ((i + 1) * 131)) >>> 0;
+  }
+
+  // Fold down to 5 digits, keep legacy prefix compatibility
+  const reduced = h % 100000;
+  return `hi${reduced}`;
+}
+
+// Convenience: always prefer computeHashIntelligence, fall back to computeHash
+function hashIntelligent(str, context) {
+  try {
+    return computeHashIntelligence(str, context);
+  } catch (_e) {
+    return computeHash(str + "::" + String(context || ""));
+  }
+}
+
+function classifyPresenceTier(pressure) {
+  if (pressure >= 150) return "critical";
+  if (pressure >= 100) return "high";
+  if (pressure >= 50) return "elevated";
+  if (pressure > 0) return "soft";
+  return "idle";
+}
+
+function normalizeBand(band) {
+  const b = String(band || "symbolic").toLowerCase();
+  return b === "binary" ? "binary" : "symbolic";
+}
+
+function clamp01(x) {
+  if (x == null || Number.isNaN(x)) return 0;
+  return Math.max(0, Math.min(1, x));
+}
+
+function normalizeCachePriority(p) {
+  if (!p) return "normal";
+  const v = String(p).toLowerCase();
+  if (v === "critical" || v === "high" || v === "low") return v;
+  return "normal";
+}
+
 // ============================================================================
 // THE IMMUTABLE GENOME CORE — v13 JOB SCHEMA (STRUCTURE CANNOT CHANGE)
 // ============================================================================
-//
-// This is the canonical v13 job schema that all v13 receptors normalize into.
-// It matches the strict v13 receptors you’ve wired (Ambassador, Standard,
-// Custom, etc.): payout/cpu/memory/duration + A‑B‑A + v13 presence/advantage/chunk.
-//
 export const PulseEarnJobSchemaV13 = {
   id: "string",             // Unique job ID (genetic locus)
   marketplaceId: "string",  // Marketplace origin (environmental source)
@@ -174,15 +266,355 @@ export const PulseEarnJobSchemaV13 = {
 };
 
 // ============================================================================
-// v13.0‑PRESENCE‑IMMORTAL GENOME METADATA (NON‑STRUCTURAL, SAFE, IMMUTABLE)
+// v16 Presence / Advantage / Chunk / ComputeProfile / Intelligence
+// ============================================================================
+
+let genomeCycle = 0;
+
+function buildPresenceFieldV16(globalHints = {}) {
+  genomeCycle++;
+
+  const ghP = globalHints.presenceContext || {};
+  const mesh = globalHints.meshSignals || {};
+  const castle = globalHints.castleSignals || {};
+  const region = globalHints.regionContext || {};
+
+  const meshStrength = Number(mesh.meshStrength || 0);
+  const meshPressureExternal = Number(mesh.meshPressureIndex || 0);
+  const castleLoadExternal = Number(castle.loadLevel || 0);
+
+  const internalComposite = genomeCycle * 0.0001;
+  const internalPressure = Math.floor(internalComposite * 1000);
+
+  const meshPressureIndex = meshPressureExternal + internalPressure;
+  const castleLoadLevel = castleLoadExternal;
+
+  const pressure = meshPressureIndex + castleLoadLevel;
+  const presenceTier = classifyPresenceTier(pressure);
+
+  return {
+    presenceVersion: "v16.0-Presence-Immortal-INTEL",
+    presenceTier,
+
+    bandPresence: ghP.bandPresence || "symbolic",
+    routerPresence: ghP.routerPresence || "stable",
+    devicePresence: ghP.devicePresence || "genome-core",
+
+    meshPresence: ghP.meshPresence || (meshStrength > 0 ? "mesh-active" : "mesh-idle"),
+    castlePresence: ghP.castlePresence || castle.castlePresence || "genome-region",
+    regionPresence: ghP.regionPresence || region.regionTag || "unknown-region",
+
+    regionId: region.regionId || "genome-region",
+    castleId: castle.castleId || "genome-castle",
+
+    meshStrength,
+    meshPressureIndex,
+    castleLoadLevel,
+
+    cycle: genomeCycle,
+
+    presenceSignature: hashIntelligent(
+      `GENOME_PRESENCE_V16::${presenceTier}::${meshPressureIndex}::${castleLoadLevel}`,
+      "presenceFieldV16"
+    )
+  };
+}
+
+function buildBinaryFieldV16(schemaString, band) {
+  const size = schemaString.length;
+  const density = size + genomeCycle;
+  const surface = density + size;
+
+  return {
+    binaryGenomeSignature: hashIntelligent(
+      `BGENOME_V16::${band}::${surface}`,
+      "binaryGenome"
+    ),
+    binarySurfaceSignature: hashIntelligent(
+      `BGENOME_SURF_V16::${surface}`,
+      "binarySurface"
+    ),
+    binarySurface: {
+      size,
+      density,
+      surface
+    },
+    parity: surface % 2 === 0 ? 0 : 1,
+    shiftDepth: Math.max(0, Math.floor(Math.log2(surface || 1)))
+  };
+}
+
+function buildWaveFieldV16(schemaString, band) {
+  const size = schemaString.length;
+  const amplitude = size + genomeCycle;
+  const wavelength = genomeCycle + 1;
+  const phase = (size + genomeCycle) % 16;
+
+  return {
+    amplitude,
+    wavelength,
+    phase,
+    band,
+    mode: band === "binary" ? "compression-wave" : "symbolic-wave"
+  };
+}
+
+function buildAdvantageFieldV16(binaryField, waveField, presenceField, globalHints = {}) {
+  const density = binaryField.binarySurface.density;
+  const amplitude = waveField.amplitude;
+
+  const baseScore =
+    density * 0.00001 +
+    amplitude * 0.00001;
+
+  const presenceBoost =
+    presenceField.presenceTier === "critical" ? 0.02 :
+    presenceField.presenceTier === "high" ? 0.015 :
+    presenceField.presenceTier === "elevated" ? 0.01 :
+    presenceField.presenceTier === "soft" ? 0.005 :
+    0;
+
+  const advantageScore = baseScore + presenceBoost;
+
+  let advantageTier = 0;
+  if (advantageScore >= 0.05) advantageTier = 3;
+  else if (advantageScore >= 0.02) advantageTier = 2;
+  else if (advantageScore > 0) advantageTier = 1;
+
+  return {
+    advantageVersion: "C-16.0-INTEL",
+    advantageScore,
+    advantageTier,
+    fallbackBandLevel: globalHints.fallbackBandLevel ?? 0
+  };
+}
+
+function buildChunkPrewarmPlanV16(presenceField, advantageField) {
+  const basePriority =
+    presenceField.presenceTier === "critical"
+      ? 4
+      : presenceField.presenceTier === "high"
+      ? 3
+      : presenceField.presenceTier === "elevated"
+      ? 2
+      : presenceField.presenceTier === "soft"
+      ? 1
+      : 0;
+
+  const advantageBoost =
+    advantageField.advantageTier >= 3 ? 2 :
+    advantageField.advantageTier === 2 ? 1 :
+    0;
+
+  return {
+    planVersion: "v16.0-GenomeCore-AdvantageC-INTEL",
+    priority: basePriority + advantageBoost,
+    band: presenceField.presenceTier,
+    chunks: {
+      genomeConstitution: true,
+      jobSchemaBlueprint: true
+    },
+    cache: {
+      genomeDiagnostics: true
+    },
+    prewarm: {
+      nervousSystem: true,
+      muscleSystem: true,
+      lymphNodes: true
+    }
+  };
+}
+
+function deriveFactoringSignalForGenome({ meshPressureIndex = 0, size = 0, cachePriority = "normal" }) {
+  const pressure = clamp01(meshPressureIndex / 100);
+  const bigSchema = size >= 1024;
+  const highPressure = pressure >= 0.7;
+  const criticalCache = cachePriority === "critical";
+  if (bigSchema || criticalCache || highPressure) return 1;
+  return 0;
+}
+
+function buildComputeProfileV16({ band, globalHints = {}, presenceField, size = 0 }) {
+  const b = normalizeBand(band);
+  const hints = globalHints || {};
+  const cacheHints = hints.cacheHints || {};
+  const prewarmHints = hints.prewarmHints || {};
+
+  const cachePriority = normalizeCachePriority(cacheHints.priority);
+  const prewarmNeeded = !!prewarmHints.shouldPrewarm;
+  const meshPressureIndex = presenceField.meshPressureIndex || 0;
+
+  const factoringSignal = deriveFactoringSignalForGenome({
+    meshPressureIndex,
+    size,
+    cachePriority
+  });
+
+  const deepJobCandidate = size >= 2048 || cachePriority === "critical";
+
+  return {
+    computeProfileVersion: "v16.0-GenomeCore-INTEL",
+    routeBand: b,
+    fallbackBandLevel: hints.fallbackBandLevel ?? 0,
+    chunkAggression: (hints.chunkHints && hints.chunkHints.chunkAggression) ?? 0,
+    cachePriority,
+    prewarmNeeded,
+    binaryPreferred: b === "binary",
+    symbolicPreferred: b === "symbolic",
+    factoringSignal,
+    performanceRatio: 1,
+    deepJobCandidate,
+    multiInstanceHint: deepJobCandidate
+  };
+}
+
+function computePulseIntelligenceForGenome({ band, presenceField, advantageField, computeProfile, size }) {
+  const bandIsBinary = band === "binary" ? 1 : 0;
+  const factoring = computeProfile.factoringSignal ? 1 : 0;
+
+  const advantageScore = advantageField.advantageScore || 0;
+  const advantageTier = advantageField.advantageTier || 0;
+
+  const presenceTier = presenceField.presenceTier || "idle";
+  const presenceWeight =
+    presenceTier === "critical" ? 1.0 :
+    presenceTier === "high"     ? 0.8 :
+    presenceTier === "elevated" ? 0.6 :
+    presenceTier === "soft"     ? 0.4 :
+    0.2;
+
+  const sizeWeight = Math.max(0, Math.min(size / 4096, 1));
+
+  const solvednessScore = Math.max(
+    0,
+    Math.min(
+      advantageScore * 10 * 0.3 +
+      presenceWeight * 0.25 +
+      sizeWeight * 0.25 +
+      factoring * 0.2,
+      1
+    )
+  );
+
+  const computeTier =
+    solvednessScore >= 0.9 ? "nearSolution" :
+    solvednessScore >= 0.7 ? "highValue"    :
+    solvednessScore >= 0.4 ? "normal"       :
+    solvednessScore >= 0.2 ? "lowPriority"  :
+    "avoidCompute";
+
+  const readinessScore = Math.max(
+    0,
+    Math.min(
+      solvednessScore * 0.6 +
+      (bandIsBinary ? 0.2 : 0) +
+      (advantageTier >= 2 ? 0.2 : advantageTier === 1 ? 0.1 : 0),
+      1
+    )
+  );
+
+  return {
+    pulseIntelligenceVersion: "v16.0-GenomeCore-INTEL",
+    solvednessScore,
+    factoringSignal: factoring ? "high" : "low",
+    computeTier,
+    readinessScore,
+    band,
+    advantageTier,
+    size
+  };
+}
+
+// ============================================================================
+// PUBLIC API — Genome Constitutional Surfaces (v16-Immortal-INTEL)
+// ============================================================================
+//
+// buildPulseEarnGenomeConstitutionV16:
+//   • Takes the immutable v13 schema + band + global hints.
+//   • Emits all v16 surfaces + signatures as constitutional metadata.
+//   • Does NOT mutate the schema; does NOT depend on runtime job data.
+//
+export function buildPulseEarnGenomeConstitutionV16(dualBandContext = {}, globalHints = {}) {
+  const band = normalizeBand(dualBandContext.band || "symbolic");
+
+  const schemaString = JSON.stringify(PulseEarnJobSchemaV13);
+  const size = schemaString.length;
+
+  const presenceField = buildPresenceFieldV16(globalHints);
+  const binaryField = buildBinaryFieldV16(schemaString, band);
+  const waveField = buildWaveFieldV16(schemaString, band);
+  const advantageField = buildAdvantageFieldV16(binaryField, waveField, presenceField, globalHints);
+  const chunkPlan = buildChunkPrewarmPlanV16(presenceField, advantageField);
+  const computeProfile = buildComputeProfileV16({
+    band,
+    globalHints,
+    presenceField,
+    size
+  });
+  const pulseIntelligence = computePulseIntelligenceForGenome({
+    band,
+    presenceField,
+    advantageField,
+    computeProfile,
+    size
+  });
+
+  const genomeSignature = hashIntelligent(
+    `GENOME_CORE_V16::${band}::${schemaString.length}`,
+    "genomeCore"
+  );
+
+  const constitutionalMetadata = {
+    genomeVersion: "v16-Immortal-INTEL",
+    schemaVersion: "v13.0-Presence-Immortal",
+    band,
+    genomeSignature,
+    presenceSignature: presenceField.presenceSignature,
+    binarySignature: binaryField.binaryGenomeSignature,
+    waveSignature: hashIntelligent(
+      `WAVE_GENOME_V16::${waveField.amplitude}::${waveField.wavelength}::${waveField.phase}`,
+      "waveGenome"
+    ),
+    advantageSignature: hashIntelligent(
+      `ADV_GENOME_V16::${advantageField.advantageScore}::${advantageField.advantageTier}`,
+      "advGenome"
+    ),
+    computeProfileSignature: hashIntelligent(
+      `CP_GENOME_V16::${computeProfile.routeBand}::${computeProfile.cachePriority}::${computeProfile.factoringSignal}`,
+      "cpGenome"
+    ),
+    pulseIntelligenceSignature: hashIntelligent(
+      `PI_GENOME_V16::${pulseIntelligence.computeTier}::${pulseIntelligence.solvednessScore}`,
+      "piGenome"
+    )
+  };
+
+  return {
+    genomeSignatures: {
+      genomeSignature,
+      bandSignature: hashIntelligent(`GENOME_BAND_V16::${band}`, "genomeBand")
+    },
+    binaryField,
+    waveField,
+    presenceField,
+    advantageField,
+    chunkPlan,
+    computeProfile,
+    pulseIntelligence,
+    constitutionalMetadata
+  };
+}
+
+// ============================================================================
+// v16‑IMMORTAL‑INTEL GENOME METADATA (NON‑STRUCTURAL, SAFE, IMMUTABLE)
 // ============================================================================
 export const PulseEarnGenomeMetadata = {
-  genomeVersion: "13.0-Presence-Immortal",
-  genomeIdentity: "PulseEarn-GenomeCore-v13.0-Presence-Immortal",
+  genomeVersion: "16-Immortal-INTEL",
+  genomeIdentity: "PulseEarn-GenomeCore-v16-Immortal-INTEL",
   genomeLayer: "GENOME_CORE",
-  genomeRole: "Immutable DNA Sequence + Cross‑Organism Law (v13)",
+  genomeRole: "Immutable DNA Sequence + Cross‑Organism Law (v13 schema, v16 surfaces)",
 
-  // Deterministic constitutional pattern
+  // Deterministic constitutional pattern (unchanged v13 schema)
   constitutionalPattern:
     "GENOME_V13::" +
     "id:string::marketplaceId:string::" +
@@ -191,115 +623,144 @@ export const PulseEarnGenomeMetadata = {
     "_abaBand:string::_abaBinaryDensity:number::_abaWaveAmplitude:number::" +
     "presenceField:PresenceFieldV13::advantageField:AdvantageFieldV13::chunkPlan:ChunkPrewarmPlanV13",
 
-  // Deterministic signatures
+  // Deterministic base signatures (legacy + v16‑intelligence)
   genomeSignature: computeHash(JSON.stringify(PulseEarnJobSchemaV13)),
+  genomeSignatureV16: hashIntelligent(
+    "GENOME_CORE_V16::" + JSON.stringify(PulseEarnJobSchemaV13),
+    "genomeMetadata"
+  ),
 
   // -----------------------------
   // A — Dual-Band Metadata
   // -----------------------------
   bandAware: true,
   dualBandReady: true,
-  bandSignature_symbolic: computeHash("band::symbolic::v13"),
-  bandSignature_binary: computeHash("band::binary::v13"),
+  bandSignature_symbolic: hashIntelligent("band::symbolic::v16", "bandSymbolic"),
+  bandSignature_binary: hashIntelligent("band::binary::v16", "bandBinary"),
 
   // -----------------------------
   // B — Binary Surfaces
   // -----------------------------
-  binaryGenomeSignature: computeHash(
-    "binary::v13::" + JSON.stringify(PulseEarnJobSchemaV13)
+  binaryGenomeSignature: hashIntelligent(
+    "binary::v16::" + JSON.stringify(PulseEarnJobSchemaV13),
+    "binaryGenomeMeta"
   ),
 
   binaryFieldSignatures: {
-    id: computeHash("binary::v13::id:string"),
-    marketplaceId: computeHash("binary::v13::marketplaceId:string"),
+    id: hashIntelligent("binary::v16::id:string", "field:id"),
+    marketplaceId: hashIntelligent("binary::v16::marketplaceId:string", "field:marketplaceId"),
 
-    payout: computeHash("binary::v13::payout:number"),
-    cpuRequired: computeHash("binary::v13::cpuRequired:number"),
-    memoryRequired: computeHash("binary::v13::memoryRequired:number"),
-    estimatedSeconds: computeHash("binary::v13::estimatedSeconds:number"),
+    payout: hashIntelligent("binary::v16::payout:number", "field:payout"),
+    cpuRequired: hashIntelligent("binary::v16::cpuRequired:number", "field:cpuRequired"),
+    memoryRequired: hashIntelligent("binary::v16::memoryRequired:number", "field:memoryRequired"),
+    estimatedSeconds: hashIntelligent("binary::v16::estimatedSeconds:number", "field:estimatedSeconds"),
 
-    minGpuScore: computeHash("binary::v13::minGpuScore:number"),
-    bandwidthNeededMbps: computeHash("binary::v13::bandwidthNeededMbps:number"),
+    minGpuScore: hashIntelligent("binary::v16::minGpuScore:number", "field:minGpuScore"),
+    bandwidthNeededMbps: hashIntelligent("binary::v16::bandwidthNeededMbps:number", "field:bandwidthNeededMbps"),
 
-    _abaBand: computeHash("binary::v13::_abaBand:string"),
-    _abaBinaryDensity: computeHash("binary::v13::_abaBinaryDensity:number"),
-    _abaWaveAmplitude: computeHash("binary::v13::_abaWaveAmplitude:number"),
+    _abaBand: hashIntelligent("binary::v16::_abaBand:string", "field:_abaBand"),
+    _abaBinaryDensity: hashIntelligent("binary::v16::_abaBinaryDensity:number", "field:_abaBinaryDensity"),
+    _abaWaveAmplitude: hashIntelligent("binary::v16::_abaWaveAmplitude:number", "field:_abaWaveAmplitude"),
 
-    presenceField: computeHash("binary::v13::presenceField:PresenceFieldV13"),
-    advantageField: computeHash("binary::v13::advantageField:AdvantageFieldV13"),
-    chunkPlan: computeHash("binary::v13::chunkPlan:ChunkPrewarmPlanV13")
+    presenceField: hashIntelligent("binary::v16::presenceField:PresenceFieldV13", "field:presenceField"),
+    advantageField: hashIntelligent("binary::v16::advantageField:AdvantageFieldV13", "field:advantageField"),
+    chunkPlan: hashIntelligent("binary::v16::chunkPlan:ChunkPrewarmPlanV13", "field:chunkPlan")
   },
 
   // -----------------------------
   // C — Wave-Theory Metadata
   // -----------------------------
-  waveSignature: computeHash(
-    "wave::v13::" + computeHash(JSON.stringify(PulseEarnJobSchemaV13))
+  waveSignature: hashIntelligent(
+    "wave::v16::" + computeHash(JSON.stringify(PulseEarnJobSchemaV13)),
+    "waveMeta"
   ),
 
   waveField: {
-    wavelength: 13,
-    amplitude: 5,
-    phase: (13 + 5) % 16,
+    wavelength: 16,
+    amplitude: 7,
+    phase: (16 + 7) % 16,
     mode: "symbolic-wave"
   },
 
   // -----------------------------
   // D — Presence / Advantage / Hints Surfaces (metadata-only)
-  //     These DO NOT change the schema; they describe how the genome
-  //     is seen by presence-aware v13 organs.
 // -----------------------------
   presenceFieldSignatures: {
-    presenceVersionSignature: computeHash("presence::v13::presenceVersion"),
-    presenceTierSignature: computeHash("presence::v13::presenceTier"),
-    bandPresenceSignature: computeHash("presence::v13::bandPresence"),
-    routerPresenceSignature: computeHash("presence::v13::routerPresence"),
-    devicePresenceSignature: computeHash("presence::v13::devicePresence"),
-    meshPresenceSignature: computeHash("presence::v13::meshPresence"),
-    castlePresenceSignature: computeHash("presence::v13::castlePresence"),
-    regionPresenceSignature: computeHash("presence::v13::regionPresence"),
-    regionIdSignature: computeHash("presence::v13::regionId"),
-    castleIdSignature: computeHash("presence::v13::castleId"),
-    castleLoadLevelSignature: computeHash("presence::v13::castleLoadLevel"),
-    meshStrengthSignature: computeHash("presence::v13::meshStrength"),
-    meshPressureIndexSignature: computeHash("presence::v13::meshPressureIndex"),
-    cycleSignature: computeHash("presence::v13::cycle")
+    presenceVersionSignature: hashIntelligent("presence::v16::presenceVersion", "presence:version"),
+    presenceTierSignature: hashIntelligent("presence::v16::presenceTier", "presence:tier"),
+    bandPresenceSignature: hashIntelligent("presence::v16::bandPresence", "presence:band"),
+    routerPresenceSignature: hashIntelligent("presence::v16::routerPresence", "presence:router"),
+    devicePresenceSignature: hashIntelligent("presence::v16::devicePresence", "presence:device"),
+    meshPresenceSignature: hashIntelligent("presence::v16::meshPresence", "presence:mesh"),
+    castlePresenceSignature: hashIntelligent("presence::v16::castlePresence", "presence:castle"),
+    regionPresenceSignature: hashIntelligent("presence::v16::regionPresence", "presence:region"),
+    regionIdSignature: hashIntelligent("presence::v16::regionId", "presence:regionId"),
+    castleIdSignature: hashIntelligent("presence::v16::castleId", "presence:castleId"),
+    castleLoadLevelSignature: hashIntelligent("presence::v16::castleLoadLevel", "presence:castleLoad"),
+    meshStrengthSignature: hashIntelligent("presence::v16::meshStrength", "presence:meshStrength"),
+    meshPressureIndexSignature: hashIntelligent("presence::v16::meshPressureIndex", "presence:meshPressure"),
+    cycleSignature: hashIntelligent("presence::v16::cycle", "presence:cycle")
   },
 
   advantageFieldSignatures: {
-    advantageVersionSignature: computeHash("advantage::v13::version"),
-    advantageScoreSignature: computeHash("advantage::v13::score"),
-    advantageTierSignature: computeHash("advantage::v13::tier"),
-    fallbackBandLevelSignature: computeHash("advantage::v13::fallbackBandLevel")
+    advantageVersionSignature: hashIntelligent("advantage::v16::version", "adv:version"),
+    advantageScoreSignature: hashIntelligent("advantage::v16::score", "adv:score"),
+    advantageTierSignature: hashIntelligent("advantage::v16::tier", "adv:tier"),
+    fallbackBandLevelSignature: hashIntelligent("advantage::v16::fallbackBandLevel", "adv:fallbackBandLevel")
   },
 
   hintsFieldSignatures: {
-    fallbackBandLevelSignature: computeHash("hints::v13::fallbackBandLevel"),
-    chunkHintsSignature: computeHash("hints::v13::chunkHints"),
-    cacheHintsSignature: computeHash("hints::v13::cacheHints"),
-    prewarmHintsSignature: computeHash("hints::v13::prewarmHints"),
-    coldStartHintsSignature: computeHash("hints::v13::coldStartHints")
+    fallbackBandLevelSignature: hashIntelligent("hints::v16::fallbackBandLevel", "hints:fallbackBandLevel"),
+    chunkHintsSignature: hashIntelligent("hints::v16::chunkHints", "hints:chunkHints"),
+    cacheHintsSignature: hashIntelligent("hints::v16::cacheHints", "hints:cacheHints"),
+    prewarmHintsSignature: hashIntelligent("hints::v16::prewarmHints", "hints:prewarmHints"),
+    coldStartHintsSignature: hashIntelligent("hints::v16::coldStartHints", "hints:coldStartHints")
   },
 
-  // Original-style field signatures (v13 schema)
+  // -----------------------------
+  // E — ComputeProfile + PulseIntelligence (v16-only, metadata)
+// -----------------------------
+  computeProfileSignatures: {
+    computeProfileVersionSignature: hashIntelligent("cp::v16::version", "cp:version"),
+    routeBandSignature: hashIntelligent("cp::v16::routeBand", "cp:routeBand"),
+    cachePrioritySignature: hashIntelligent("cp::v16::cachePriority", "cp:cachePriority"),
+    prewarmNeededSignature: hashIntelligent("cp::v16::prewarmNeeded", "cp:prewarmNeeded"),
+    factoringSignalSignature: hashIntelligent("cp::v16::factoringSignal", "cp:factoring"),
+    deepJobCandidateSignature: hashIntelligent("cp::v16::deepJobCandidate", "cp:deepJob"),
+    multiInstanceHintSignature: hashIntelligent("cp::v16::multiInstanceHint", "cp:multiInstance")
+  },
+
+  pulseIntelligenceSignatures: {
+    piVersionSignature: hashIntelligent("pi::v16::version", "pi:version"),
+    solvednessScoreSignature: hashIntelligent("pi::v16::solvednessScore", "pi:solvedness"),
+    computeTierSignature: hashIntelligent("pi::v16::computeTier", "pi:computeTier"),
+    readinessScoreSignature: hashIntelligent("pi::v16::readinessScore", "pi:readiness"),
+    bandSignature: hashIntelligent("pi::v16::band", "pi:band"),
+    advantageTierSignature: hashIntelligent("pi::v16::advantageTier", "pi:advTier"),
+    sizeSignature: hashIntelligent("pi::v16::size", "pi:size")
+  },
+
+  // -----------------------------
+  // F — Original-style field signatures (v13 schema, v16 tag)
+// -----------------------------
   fieldSignatures: {
-    id: computeHash("v13::id:string"),
-    marketplaceId: computeHash("v13::marketplaceId:string"),
+    id: hashIntelligent("v16::id:string", "field:id"),
+    marketplaceId: hashIntelligent("v16::marketplaceId:string", "field:marketplaceId"),
 
-    payout: computeHash("v13::payout:number"),
-    cpuRequired: computeHash("v13::cpuRequired:number"),
-    memoryRequired: computeHash("v13::memoryRequired:number"),
-    estimatedSeconds: computeHash("v13::estimatedSeconds:number"),
+    payout: hashIntelligent("v16::payout:number", "field:payout"),
+    cpuRequired: hashIntelligent("v16::cpuRequired:number", "field:cpuRequired"),
+    memoryRequired: hashIntelligent("v16::memoryRequired:number", "field:memoryRequired"),
+    estimatedSeconds: hashIntelligent("v16::estimatedSeconds:number", "field:estimatedSeconds"),
 
-    minGpuScore: computeHash("v13::minGpuScore:number"),
-    bandwidthNeededMbps: computeHash("v13::bandwidthNeededMbps:number"),
+    minGpuScore: hashIntelligent("v16::minGpuScore:number", "field:minGpuScore"),
+    bandwidthNeededMbps: hashIntelligent("v16::bandwidthNeededMbps:number", "field:bandwidthNeededMbps"),
 
-    _abaBand: computeHash("v13::_abaBand:string"),
-    _abaBinaryDensity: computeHash("v13::_abaBinaryDensity:number"),
-    _abaWaveAmplitude: computeHash("v13::_abaWaveAmplitude:number"),
+    _abaBand: hashIntelligent("v16::_abaBand:string", "field:_abaBand"),
+    _abaBinaryDensity: hashIntelligent("v16::_abaBinaryDensity:number", "field:_abaBinaryDensity"),
+    _abaWaveAmplitude: hashIntelligent("v16::_abaWaveAmplitude:number", "field:_abaWaveAmplitude"),
 
-    presenceField: computeHash("v13::presenceField:PresenceFieldV13"),
-    advantageField: computeHash("v13::advantageField:AdvantageFieldV13"),
-    chunkPlan: computeHash("v13::chunkPlan:ChunkPrewarmPlanV13")
+    presenceField: hashIntelligent("v16::presenceField:PresenceFieldV13", "field:presenceField"),
+    advantageField: hashIntelligent("v16::advantageField:AdvantageFieldV13", "field:advantageField"),
+    chunkPlan: hashIntelligent("v16::chunkPlan:ChunkPrewarmPlanV13", "field:chunkPlan")
   }
 };

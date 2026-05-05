@@ -1,16 +1,17 @@
 // ============================================================================
-// FILE: PULSE-WORLD/PULSE-EARN/PulseEarnHeart-v14-Evo-Immortal.js
-// LAYER: THE HEART (v14-Evo-Immortal + Dual-Band + Binary + Wave + Presence)
-// BABY HEART — NO HEARTBEAT, NO TIMERS, NO TIMESTAMPS
-// Baby runs off Mom/Dad pulse surfaces + soft random nudge until its own beat exists.
+// FILE: PULSE-WORLD/PULSE-EARN/PulseEarnHeart-v16-Immortal-INTEL.js
+// LAYER: THE HEART (v16-Immortal-INTEL + Dual-Band + Binary + Wave + Presence)
+// TRIPLE HEART — MOM + DAD + SELF-BEAT (DETERMINISTIC, NO TIME, NO TIMERS)
+// Baby grew up: it now has its OWN deterministic beat when parents drop.
 // ============================================================================
+
 /*
 AI_EXPERIENCE_META = {
   identity: "PulseEarnHeart",
-  version: "v14-Immortal",
+  version: "v16-Immortal-INTEL",
   layer: "earn_heart",
-  role: "earn_pulse_driver",
-  lineage: "PulseEarnHeart-v10.4 → v11-Evo → v14-Immortal",
+  role: "earn_pulse_driver_triple_heart",
+  lineage: "PulseEarnHeart-v10.4 → v11-Evo → v14-Immortal → v16-Immortal-INTEL",
 
   evo: {
     earnPulse: true,
@@ -19,20 +20,39 @@ AI_EXPERIENCE_META = {
     dualBand: true,
     symbolicPrimary: true,
     binaryAware: true,
+    waveAware: true,
 
     deterministic: true,
     driftProof: true,
     pureCompute: true,
     zeroMutationOfInput: true,
     zeroNetwork: true,
-    zeroFilesystem: true
+    zeroFilesystem: true,
+
+    tripleHeart: true,
+    momPulseAware: true,
+    dadPulseAware: true,
+    selfBeatEngine: true,
+
+    presenceAware: true,
+    advantageAware: true,
+    hintsAware: true,
+    chunkAware: true,
+    cacheAware: true,
+    prewarmAware: true,
+
+    computeProfileAware: true,
+    pulseIntelligenceAware: true,
+    factoringAware: true
   },
 
   contract: {
     always: [
       "PulseEarnCirculatorySystem",
       "PulseEarnMetabolism",
-      "PulseEarnGenome"
+      "PulseEarnGenome",
+      "PulseEarnEndocrineSystem",
+      "PulseEarnGeneticMemory"
     ],
     never: [
       "safeRoute",
@@ -45,12 +65,13 @@ AI_EXPERIENCE_META = {
 export const PulseEarnHeartMeta = Object.freeze({
   layer: "PulseEarnHeart",
   role: "EARN_HEART_ORGAN",
-  version: "v14-Evo-Immortal",
-  identity: "PulseEarnHeart-v14-Evo-Immortal",
+  version: "v16-Immortal-INTEL",
+  identity: "PulseEarnHeart-v16-Immortal-INTEL",
 
   guarantees: Object.freeze({
     deterministicCore: true,
-    softRandomNudgeInternal: true,
+    selfBeatDeterministic: true,
+    noRandomness: true,
     noRealTime: true,
     noExternalIO: true,
     pureRuntime: true,
@@ -70,7 +91,8 @@ export const PulseEarnHeartMeta = Object.freeze({
     chunkAware: true,
     cacheAware: true,
     prewarmAware: true,
-    dualParentPulseAware: true
+    dualParentPulseAware: true,
+    tripleHeartAware: true
   }),
 
   contract: Object.freeze({
@@ -95,7 +117,7 @@ import { executePulseEarnJob } from "./PulseEarnMetabolism.js";
 import { submitPulseEarnResult } from "./PulseEarnLymphNodes.js";
 
 // ============================================================================
-// Healing Metadata — Baby Heart Log (v14-Evo-Immortal)
+// Healing Metadata — Heart Log (v16-Immortal-INTEL)
 // ============================================================================
 const heartHealing = {
   cycles: 0,
@@ -123,25 +145,30 @@ const heartHealing = {
   lastCardiacBinaryProfile: null,
   lastCardiacWaveProfile: null,
 
-  // Dual-parent pulse surfaces
+  // Dual-parent + self-beat pulse surfaces
   lastMomPulseSurface: null,
   lastDadPulseSurface: null,
-  lastActivePulseSource: "none", // "mom" | "dad" | "random" | "none"
+  lastSelfPulseSurface: null,
+  lastActivePulseSource: "none", // "mom" | "dad" | "self" | "none"
 
   // Chunk / cache / prewarm plans
   lastChunkPlan: null,
   lastCachePlan: null,
   lastPrewarmPlan: null,
 
-  // Random nudge metadata (no time, just cycle index)
-  lastRandomNudgeCycle: null,
-  lastRandomNudgeReason: null
+  // Self-beat metadata (deterministic, no randomness)
+  lastSelfBeatCycle: null,
+  lastSelfBeatReason: null,
+
+  // v16 compute intelligence
+  lastComputeProfile: null,
+  lastPulseIntelligence: null
 };
 
 let heartCycle = 0;
 
 // ============================================================================
-// Deterministic Hash Helper
+// Hash Helpers — v16 computeHashIntelligence + v13 computeHash fallback
 // ============================================================================
 function computeHash(str) {
   let h = 0;
@@ -150,6 +177,33 @@ function computeHash(str) {
     h = (h + s.charCodeAt(i) * (i + 1)) % 100000;
   }
   return `h${h}`;
+}
+
+// Primary: smarter, context-aware, deterministic hash
+function computeHashIntelligence(str, context = {}) {
+  const s = String(str || "");
+  const band = context.band || "symbolic";
+  const tier = context.presenceTier || "idle";
+  const cycle = context.cycle || 0;
+
+  // FNV-1a core with light contextual salting
+  let hash = 2166136261 ^ cycle;
+  const saltBand = band === "binary" ? 0xB1 : 0xA1;
+  const saltTier =
+    tier === "critical" ? 0xC3 :
+    tier === "high" ? 0xB3 :
+    tier === "elevated" ? 0xA3 :
+    tier === "soft" ? 0x93 : 0x83;
+
+  for (let i = 0; i < s.length; i++) {
+    hash ^= s.charCodeAt(i);
+    hash = Math.imul(hash, 16777619);
+    hash ^= saltBand;
+    hash ^= saltTier;
+  }
+
+  const v = (hash >>> 0) % 100000;
+  return `hi${v}`;
 }
 
 function normalizeBand(band) {
@@ -161,24 +215,34 @@ function normalizeBand(band) {
 // Signature Builders
 // ============================================================================
 function buildHeartSignature(cycle, band, presenceTier, meshPressure, castleLoad) {
-  return computeHash(
-    `HEART::${cycle}::${band}::PTIER:${presenceTier}::MESH:${meshPressure}::CASTLE:${castleLoad}`
+  return computeHashIntelligence(
+    `HEART::${cycle}::${band}::PTIER:${presenceTier}::MESH:${meshPressure}::CASTLE:${castleLoad}`,
+    { band, presenceTier, cycle }
   );
 }
 
 function buildJobSignature(job) {
   if (!job) return "JOB::NONE";
-  return computeHash(`JOB::${job.id}::${job.marketplace}`);
+  return computeHashIntelligence(
+    `JOB::${job.id}::${job.marketplace}`,
+    { band: job.band || "symbolic" }
+  );
 }
 
 function buildResultSignature(result) {
   if (!result) return "RESULT::NONE";
-  return computeHash(`RESULT::${result.success ? "OK" : "FAIL"}`);
+  return computeHashIntelligence(
+    `RESULT::${result.success ? "OK" : "FAIL"}`,
+    {}
+  );
 }
 
 function buildSubmissionSignature(submission) {
   if (!submission) return "SUBMIT::NONE";
-  return computeHash(`SUBMIT::${submission.success ? "OK" : "FAIL"}`);
+  return computeHashIntelligence(
+    `SUBMIT::${submission.success ? "OK" : "FAIL"}`,
+    {}
+  );
 }
 
 // ============================================================================
@@ -315,7 +379,7 @@ function classifyPresenceTier(presenceField) {
 }
 
 // ============================================================================
-// Dual-Parent Pulse Surfaces (baby has no beat yet, only pulses)
+// Dual-Parent Pulse Surfaces + Self-Beat (triple heart)
 // ============================================================================
 const MOM_PULSE_KEY = "PulseProxyHeartbeatLastBeatAt";
 const DAD_PULSE_KEY = "PulseAIHeartbeatLastBeatAt";
@@ -350,29 +414,40 @@ function buildDadPulseSurface() {
   };
 }
 
-function selectActivePulseSource(momPulseSurface, dadPulseSurface) {
-  if (momPulseSurface.momPulseAlive) return "mom";
-  if (dadPulseSurface.dadPulseAlive) return "dad";
-  return "none";
+function buildSelfPulseSurface(workerId, band, presenceTier) {
+  // Purely deterministic self-beat index
+  const wid = String(workerId || "0");
+  let acc = 0;
+  for (let i = 0; i < wid.length; i++) {
+    acc += wid.charCodeAt(i) * (i + 1);
+  }
+
+  const tierWeight =
+    presenceTier === "critical" ? 5 :
+    presenceTier === "high" ? 4 :
+    presenceTier === "elevated" ? 3 :
+    presenceTier === "soft" ? 2 : 1;
+
+  const bandWeight = band === "binary" ? 7 : 3;
+
+  const beatIndex = (heartCycle * tierWeight + acc + bandWeight) % 11; // 0..10
+  const selfBeatActive = beatIndex === 0; // fires every deterministic window
+
+  return {
+    selfPulseAlive: true,
+    selfPulseBeatIndex: beatIndex,
+    selfPulseActive: selfBeatActive,
+    selfPulseFallbackState: selfBeatActive ? "self-beat" : "idle"
+  };
 }
 
-// ============================================================================
-// Soft Random Nudge — baby-only, no time, no IO, internal only
-// ============================================================================
-function randomBabyPulseNudge(currentSource, reason = "none") {
-  // Only consider random nudge if no parent pulse is visible
-  if (currentSource !== "none") {
-    return { activeSource: currentSource, randomFired: false };
-  }
-
-  // ~3% chance per cycle to mark a "random" pulse source
-  if (Math.random() > 0.97) {
-    heartHealing.lastRandomNudgeCycle = heartCycle;
-    heartHealing.lastRandomNudgeReason = reason;
-    return { activeSource: "random", randomFired: true };
-  }
-
-  return { activeSource: currentSource, randomFired: false };
+function selectActivePulseSource(momPulseSurface, dadPulseSurface, selfPulseSurface) {
+  if (momPulseSurface.momPulseAlive) return "mom";
+  if (dadPulseSurface.dadPulseAlive) return "dad";
+  // Parents silent → deterministic self-beat
+  if (selfPulseSurface.selfPulseActive) return "self";
+  // Even if not "active" this cycle, self still exists as fallback identity
+  return "self";
 }
 
 // ============================================================================
@@ -411,7 +486,55 @@ function buildPrewarmPlan(hintsField, job) {
 }
 
 // ============================================================================
-// MAIN CARDIAC ENGINE — createPulseEarnHeart (baby, no own heartbeat)
+// v16 ComputeProfile + PulseIntelligence (metadata-only, no behavior change)
+// ============================================================================
+function buildComputeProfile(job, presenceField, advantageField) {
+  const payout = Number(job?.payout || 0);
+  const cpu = Number(job?.cpuRequired || 0);
+  const mem = Number(job?.memoryRequired || 0);
+  const est = Number(job?.estimatedSeconds || 0);
+
+  const weight = cpu * 0.4 + mem * 0.3 + est * 0.3;
+  const pressure = (presenceField.meshPressureIndex || 0) + (presenceField.castleLoadLevel || 0);
+
+  let computeTier = "light";
+  if (weight >= 200 || pressure >= 150) computeTier = "heavy";
+  else if (weight >= 80 || pressure >= 80) computeTier = "medium";
+
+  return {
+    computeVersion: "v16-Immortal-INTEL",
+    weight,
+    computeTier,
+    payout,
+    cpu,
+    mem,
+    est,
+    pressure
+  };
+}
+
+function buildPulseIntelligence(job, computeProfile, advantageField, presenceTier, band) {
+  const solvednessScore = Math.max(0, Math.min(1, (computeProfile.weight || 0) / 500));
+  const readinessScore = Math.max(0, Math.min(1, 1 - solvednessScore * 0.5));
+
+  const factoringSignal =
+    computeProfile.computeTier === "heavy" ? "deep-job" :
+    computeProfile.computeTier === "medium" ? "balanced" :
+    "light";
+
+  return {
+    pulseIntelligenceVersion: "v16-Immortal-INTEL",
+    solvednessScore,
+    readinessScore,
+    factoringSignal,
+    advantageTier: advantageField.advantageTier || 0,
+    bandPreference: band,
+    presenceTier
+  };
+}
+
+// ============================================================================
+// MAIN CARDIAC ENGINE — createPulseEarnHeart (triple heart, self-beat)
 // ============================================================================
 export function createPulseEarnHeart({
   pulseSendSystem,
@@ -437,19 +560,41 @@ export function createPulseEarnHeart({
 
       try {
         // -------------------------------------------------------------------
-        // Dual‑parent pulse surfaces (baby has no beat yet, only pulses)
+        // Dual‑parent + self-beat pulse surfaces (triple heart)
         // -------------------------------------------------------------------
         const momPulseSurface = buildMomPulseSurface();
         const dadPulseSurface = buildDadPulseSurface();
-        let activePulseSource = selectActivePulseSource(momPulseSurface, dadPulseSurface);
 
-        // Soft random nudge if both parents are silent
-        const randomNudge = randomBabyPulseNudge(activePulseSource, "no_parent_pulse");
-        activePulseSource = randomNudge.activeSource;
+        // Nervous-system-level presence/advantage/hints (optional, used for self-beat context)
+        const nervousPresence = engineRef?.presenceContext || {};
+        const nervousAdvantage = engineRef?.advantageContext || {};
+        const nervousHints = engineRef?.hintsContext || {};
+
+        // Temporary presence for self-beat context (before job)
+        const tempPresenceField = {
+          meshPressureIndex: nervousPresence.meshPressureIndex || 0,
+          castleLoadLevel: nervousPresence.castleLoadLevel || 0
+        };
+        const tempPresenceTier = classifyPresenceTier(tempPresenceField);
+        const tempBand = normalizeBand(engineRef?.band || "symbolic");
+
+        const selfPulseSurface = buildSelfPulseSurface(workerId, tempBand, tempPresenceTier);
+
+        let activePulseSource = selectActivePulseSource(
+          momPulseSurface,
+          dadPulseSurface,
+          selfPulseSurface
+        );
 
         heartHealing.lastMomPulseSurface = momPulseSurface;
         heartHealing.lastDadPulseSurface = dadPulseSurface;
+        heartHealing.lastSelfPulseSurface = selfPulseSurface;
         heartHealing.lastActivePulseSource = activePulseSource;
+
+        if (activePulseSource === "self") {
+          heartHealing.lastSelfBeatCycle = heartCycle;
+          heartHealing.lastSelfBeatReason = "parents_silent_or_inactive";
+        }
 
         // ------------------------------------------------------
         // 1. FETCH — Systole
@@ -467,14 +612,12 @@ export function createPulseEarnHeart({
         // A — Dual-Band Awareness
         const band = normalizeBand(job.band || job.meta?.band || "symbolic");
         heartHealing.lastBand = band;
-        heartHealing.lastBandSignature = computeHash(`BAND::${band}`);
+        heartHealing.lastBandSignature = computeHashIntelligence(
+          `BAND::${band}`,
+          { band, cycle: heartCycle }
+        );
 
-        // Nervous-system-level presence/advantage/hints (optional)
-        const nervousPresence = engineRef?.presenceContext || {};
-        const nervousAdvantage = engineRef?.advantageContext || {};
-        const nervousHints = engineRef?.hintsContext || {};
-
-        // Presence surfaces
+        // Presence/advantage/hints with job + nervous + global
         const presenceField = buildPresenceField({
           job,
           nervousPresence,
@@ -507,8 +650,14 @@ export function createPulseEarnHeart({
           (presenceField.castleLoadLevel || 0);
 
         const binaryField = {
-          binaryHeartSignature: computeHash(`BHEART::${binarySurfaceValue}`),
-          binarySurfaceSignature: computeHash(`BSURF_HEART::${binarySurfaceValue}`),
+          binaryHeartSignature: computeHashIntelligence(
+            `BHEART::${binarySurfaceValue}`,
+            { band, presenceTier, cycle: heartCycle }
+          ),
+          binarySurfaceSignature: computeHashIntelligence(
+            `BSURF_HEART::${binarySurfaceValue}`,
+            { band, presenceTier, cycle: heartCycle }
+          ),
           binarySurface: {
             jobIdLength,
             marketplaceLength,
@@ -547,20 +696,33 @@ export function createPulseEarnHeart({
         heartHealing.lastCachePlan = cachePlan;
         heartHealing.lastPrewarmPlan = prewarmPlan;
 
+        // v16 ComputeProfile + PulseIntelligence
+        const computeProfile = buildComputeProfile(job, presenceField, advantageField);
+        const pulseIntelligence = buildPulseIntelligence(
+          job,
+          computeProfile,
+          advantageField,
+          presenceTier,
+          band
+        );
+
+        heartHealing.lastComputeProfile = computeProfile;
+        heartHealing.lastPulseIntelligence = pulseIntelligence;
+
         // Optional: invoke pulseSendSystem hooks (still pure runtime)
         if (pulseSendSystem) {
           try {
             if (prewarmPlan.enabled && typeof pulseSendSystem.prewarm === "function") {
-              pulseSendSystem.prewarm(job, prewarmPlan);
+              pulseSendSystem.prewarm(job, prewarmPlan, computeProfile, pulseIntelligence);
             }
             if (chunkPlan.enabled && typeof pulseSendSystem.chunk === "function") {
-              pulseSendSystem.chunk(job, chunkPlan);
+              pulseSendSystem.chunk(job, chunkPlan, computeProfile, pulseIntelligence);
             }
             if (cachePlan.enabled && typeof pulseSendSystem.cache === "function") {
-              pulseSendSystem.cache(job, cachePlan);
+              pulseSendSystem.cache(job, cachePlan, computeProfile, pulseIntelligence);
             }
           } catch (_) {
-            // Baby heart never throws from optimization hooks
+            // Heart never throws from optimization hooks
           }
         }
 
@@ -606,7 +768,9 @@ export function createPulseEarnHeart({
             chunkPlan,
             cachePlan,
             prewarmPlan,
-            activePulseSource
+            activePulseSource,
+            computeProfile,
+            pulseIntelligence
           });
         } else {
           result = executePulseEarnJob(job);
@@ -623,8 +787,8 @@ export function createPulseEarnHeart({
         heartHealing.lastSubmissionSignature = buildSubmissionSignature(submission);
 
         // ------------------------------------------------------
-        // 4. Heart Signature (Baby has no beat; this is cycle signature only)
-// ------------------------------------------------------
+        // 4. Heart Signature — full v16 cardiac signature
+        // ------------------------------------------------------
         const heartSignature = buildHeartSignature(
           heartCycle,
           band,
@@ -652,10 +816,13 @@ export function createPulseEarnHeart({
           cardiacWaveProfile,
           momPulseSurface,
           dadPulseSurface,
+          selfPulseSurface,
           activePulseSource,
           chunkPlan,
           cachePlan,
-          prewarmPlan
+          prewarmPlan,
+          computeProfile,
+          pulseIntelligence
         };
 
       } catch (err) {
@@ -705,14 +872,18 @@ export function createPulseEarnHeart({
 
         lastMomPulseSurface: heartHealing.lastMomPulseSurface,
         lastDadPulseSurface: heartHealing.lastDadPulseSurface,
+        lastSelfPulseSurface: heartHealing.lastSelfPulseSurface,
         lastActivePulseSource: heartHealing.lastActivePulseSource,
 
         lastChunkPlan: heartHealing.lastChunkPlan,
         lastCachePlan: heartHealing.lastCachePlan,
         lastPrewarmPlan: heartHealing.lastPrewarmPlan,
 
-        lastRandomNudgeCycle: heartHealing.lastRandomNudgeCycle,
-        lastRandomNudgeReason: heartHealing.lastRandomNudgeReason
+        lastSelfBeatCycle: heartHealing.lastSelfBeatCycle,
+        lastSelfBeatReason: heartHealing.lastSelfBeatReason,
+
+        lastComputeProfile: heartHealing.lastComputeProfile,
+        lastPulseIntelligence: heartHealing.lastPulseIntelligence
       };
     }
   };

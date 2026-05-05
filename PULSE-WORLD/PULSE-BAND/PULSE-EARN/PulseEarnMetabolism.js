@@ -1,19 +1,21 @@
 // ============================================================================
-// FILE: tropic-pulse-functions/PULSE-WORLD/PULSE-EARN/PulseEarnMetabolism-v13.0-Presence-Immortal.js
-// LAYER: THE METABOLIC ENGINEER (v13.0-Presence-Immortal)
+// FILE: tropic-pulse-functions/PULSE-WORLD/PULSE-EARN/PulseEarnMetabolism-v16-IMMORTAL-INTEL.js
+// LAYER: THE METABOLIC ENGINEER (v16-IMMORTAL-INTEL)
 // (Interpreter of Jobs + Safe Executor + Deterministic Throughput Engine)
 // ============================================================================
 //
-// ROLE (v13.0-Presence-Immortal):
+// ROLE (v16-IMMORTAL-INTEL):
 //   THE METABOLIC ENGINEER — Pulse‑Earn’s deterministic execution organ.
 //   • Reads the blueprint (job payload).
 //   • Selects the correct safe tool (compute/image/script handler).
 //   • Executes deterministically with NO performance math.
-//   • Emits v13‑Presence‑IMMORTAL presence/advantage/hints surfaces.
+//   • Emits v16‑IMMORTAL presence/advantage/hints surfaces.
 //   • Emits binary-first + wave surfaces.
 //   • Emits metabolicComputeProfile (metadata-only).
+//   • Emits metabolicPressureProfile (diagnostic-only).
+//   • Emits dual-hash INTEL signatures (INTEL + classic fallback).
 //
-// CONTRACT (v13.0-Presence-Immortal):
+// CONTRACT (v16-IMMORTAL-INTEL):
 //   • PURE EXECUTION BRIDGE — no AI layers, no translation, no memory model.
 //   • NO eval(), NO Function(), NO dynamic imports.
 //   • NO user scripts, NO network calls, NO filesystem access.
@@ -21,51 +23,51 @@
 //   • Deterministic output only.
 //   • Dual-band + binary + wave + presence metadata are structural-only.
 //   • NO speed, NO baseline, NO governor, NO performance assumptions.
+//   • NO timestamps, NO randomness, NO nondeterministic behavior.
 // ============================================================================
-/*
-AI_EXPERIENCE_META = {
-  identity: "PulseEarnMetabolism",
-  version: "v14-Immortal",
-  layer: "earn_metabolism",
-  role: "earn_metabolic_engine",
-  lineage: "PulseEarnMetabolism-v11 → v12.3 → v14-Immortal",
-
-  evo: {
-    metabolismEngine: true,
-    nutrientFlow: true,
-    jobEnergyModel: true,
-    dualBand: true,
-    symbolicPrimary: true,
-    binaryAware: true,
-
-    deterministic: true,
-    driftProof: true,
-    pureCompute: true,
-    zeroMutationOfInput: true,
-    zeroNetwork: true,
-    zeroFilesystem: true
-  },
-
-  contract: {
-    always: [
-      "PulseEarnHeart",
-      "PulseEarnCirculatorySystem",
-      "PulseEarnGenome",
-      "PulseEarnImmuneSystem"
-    ],
-    never: [
-      "safeRoute",
-      "fetchViaCNS"
-    ]
-  }
-}
-*/
+//
+// AI_EXPERIENCE_META (v16-IMMORTAL-INTEL):
+//
+//   identity: "PulseEarnMetabolism"
+//   version: "v16-IMMORTAL-INTEL"
+//   layer: "earn_metabolism"
+//   role: "earn_metabolic_engine"
+//   lineage: "PulseEarnMetabolism-v11 → v12.3 → v13.0-Presence-Immortal → v16-IMMORTAL-INTEL"
+//
+//   evo:
+//     metabolismEngine: true
+//     nutrientFlow: true
+//     jobEnergyModel: true
+//     dualBand: true
+//     symbolicPrimary: true
+//     binaryAware: true
+//
+//     deterministic: true
+//     driftProof: true
+//     pureCompute: true
+//     zeroMutationOfInput: true
+//     zeroNetwork: true
+//     zeroFilesystem: true
+//
+//   contract.always:
+//     - "PulseEarnHeart"
+//     - "PulseEarnCirculatorySystem"
+//     - "PulseEarnGenome"
+//     - "PulseEarnImmuneSystem"
+//     - "PulseEarnLymphNodes"
+//
+//   contract.never:
+//     - "safeRoute"
+//     - "fetchViaCNS"
+//     - "userScript"
+//     - "dynamicEval"
+// ============================================================================
 
 export const PulseEarnMetabolismMeta = Object.freeze({
   layer: "PulseEarnMetabolism",
   role: "EARN_METABOLISM_ORGAN",
-  version: "v13.0-Presence-Immortal",
-  identity: "PulseEarnMetabolism-v13.0-Presence-Immortal",
+  version: "v16-IMMORTAL-INTEL",
+  identity: "PulseEarnMetabolism-v16-IMMORTAL-INTEL",
 
   guarantees: Object.freeze({
     deterministic: true,
@@ -109,13 +111,14 @@ export const PulseEarnMetabolismMeta = Object.freeze({
 
   lineage: Object.freeze({
     root: "PulseOS-v11-Evo",
-    parent: "PulseEarn-v13.0-Presence-Immortal",
+    parent: "PulseEarn-v16-IMMORTAL-INTEL",
     ancestry: [
       "PulseEarnMetabolism-v9",
       "PulseEarnMetabolism-v10",
       "PulseEarnMetabolism-v11",
       "PulseEarnMetabolism-v11-Evo",
-      "PulseEarnMetabolism-v12.3-Presence-Evo+"
+      "PulseEarnMetabolism-v12.3-Presence-Evo+",
+      "PulseEarnMetabolism-v13.0-Presence-Immortal"
     ]
   }),
 
@@ -128,13 +131,53 @@ export const PulseEarnMetabolismMeta = Object.freeze({
   architecture: Object.freeze({
     pattern: "A-B-A",
     baseline: "validate job → deterministic tool selection",
-    adaptive: "binary/wave surfaces + v13 presence/advantage/hints surfaces",
+    adaptive: "binary/wave surfaces + v16 presence/advantage/hints surfaces",
     return: "deterministic metabolic output + healing metadata"
   })
 });
 
 // ============================================================================
-// Healing Metadata — v13 IMMORTAL
+// ROLE CONTEXT — v16 IMMORTAL-INTEL
+// ============================================================================
+
+export const PulseRole = Object.freeze({
+  type: "MetabolicEngine",
+  subsystem: "PulseEarnMetabolism",
+  layer: "C1-MetabolicExecution",
+  version: "v16-IMMORTAL-INTEL",
+  identity: "PulseEarnMetabolism-v16-IMMORTAL-INTEL",
+
+  evo: {
+    driftProof: true,
+    deterministicField: true,
+    unifiedAdvantageField: true,
+    futureEvolutionReady: true,
+
+    metabolismEngine: true,
+    nutrientFlow: true,
+    jobEnergyModel: true,
+
+    dualBand: true,
+    binaryAware: true,
+    symbolicAware: true,
+    waveAware: true,
+    bandNormalizationAware: true,
+
+    zeroAsync: true,
+    zeroTiming: true,
+    zeroRandomness: true,
+    zeroMutation: true,
+    zeroRouting: true,
+    zeroSending: true,
+    zeroCompute: false,
+
+    environmentAgnostic: true,
+    multiInstanceReady: true
+  }
+});
+
+// ============================================================================
+// Healing Metadata — v16 IMMORTAL-INTEL
 // ============================================================================
 
 const metabolicHealing = {
@@ -146,29 +189,39 @@ const metabolicHealing = {
   executionState: "idle",
   lastCycleIndex: null,
 
-  lastMetabolicSignature: null,
-  lastJobSignature: null,
-  lastPayloadSignature: null,
+  // Dual-hash INTEL signatures
+  lastMetabolicSignatureIntel: null,
+  lastMetabolicSignatureClassic: null,
+  lastJobSignatureIntel: null,
+  lastJobSignatureClassic: null,
+  lastPayloadSignatureIntel: null,
+  lastPayloadSignatureClassic: null,
 
   lastBand: "symbolic",
-  lastBandSignature: null,
+  lastBandSignatureIntel: null,
+  lastBandSignatureClassic: null,
   lastBinaryField: null,
   lastWaveField: null,
 
   lastPresenceField: null,
   lastAdvantageField: null,
   lastHintsField: null,
+
   lastMetabolicPresenceProfile: null,
+  lastMetabolicPressureProfile: null,
   lastBinaryProfile: null,
   lastWaveProfile: null,
-  lastMetabolicComputeProfile: null
+  lastMetabolicComputeProfile: null,
+
+  lastPressureTier: "idle"
 };
 
 let metabolismCycle = 0;
 
 // ============================================================================
-// Deterministic Hash Helper
+// Deterministic Hash Helpers — INTEL + Classic Fallback
 // ============================================================================
+
 
 function computeHash(str) {
   let h = 0;
@@ -179,31 +232,111 @@ function computeHash(str) {
   return `h${h}`;
 }
 
+// Primary INTEL hash — deterministic, structure-aware, no IO, no time.
+function computeHashIntelligence(payload) {
+  const base = JSON.stringify(payload || "");
+  let h = 0;
+  for (let i = 0; i < base.length; i++) {
+    const c = base.charCodeAt(i);
+    h = (h * 131 + c * (i + 7)) % 1000000007;
+  }
+  return `HINTEL_${h}`;
+}
+
+function buildDualHashSignature(label, intelPayload, classicString) {
+  const intelBase = {
+    label,
+    intel: intelPayload || {},
+    classic: classicString || ""
+  };
+  const intelHash = computeHashIntelligence(intelBase);
+  const classicHash = computeHash(
+    `${label}::${classicString || ""}`
+  );
+  return {
+    intel: intelHash,
+    classic: classicHash
+  };
+}
+
 function normalizeBand(band) {
   const b = String(band || "symbolic").toLowerCase();
   return b === "binary" ? "binary" : "symbolic";
 }
 
 // ============================================================================
-// Signature Builders
+// Signature Builders — Dual Hash
 // ============================================================================
 
-function buildJobSignature(job) {
-  if (!job) return "JOB::NONE";
-  return computeHash(`JOB::${job.id}::${job.payload?.type || "NO_TYPE"}`);
+function buildJobSignature(job, cycleIndex, presenceTier, band) {
+  if (!job) {
+    return buildDualHashSignature("JOB::NONE", {}, "JOB::NONE");
+  }
+
+  const intelPayload = {
+    kind: "job",
+    id: job.id,
+    payloadType: job.payload?.type || "NO_TYPE",
+    cycleIndex,
+    band,
+    presenceTier
+  };
+
+  const classicString = `JOB::${job.id}::${job.payload?.type || "NO_TYPE"}::CYCLE::${cycleIndex}::BAND::${band}::PTIER::${presenceTier}`;
+
+  return buildDualHashSignature("JOB", intelPayload, classicString);
 }
 
-function buildPayloadSignature(payload) {
-  if (!payload) return "PAYLOAD::NONE";
-  return computeHash(`PAYLOAD::${payload.type}::${Object.keys(payload).join("::")}`);
+function buildPayloadSignature(payload, cycleIndex, band) {
+  if (!payload) {
+    return buildDualHashSignature("PAYLOAD::NONE", {}, "PAYLOAD::NONE");
+  }
+
+  const intelPayload = {
+    kind: "payload",
+    type: payload.type,
+    keys: Object.keys(payload).sort(),
+    cycleIndex,
+    band
+  };
+
+  const classicString = `PAYLOAD::${payload.type}::${Object.keys(payload)
+    .sort()
+    .join("::")}::CYCLE::${cycleIndex}::BAND::${band}`;
+
+  return buildDualHashSignature("PAYLOAD", intelPayload, classicString);
 }
 
-function buildMetabolicSignature(job, cycle, presenceTier) {
-  return computeHash(`META::${job?.id || "NO_JOB"}::${cycle}::PTIER:${presenceTier}`);
+function buildMetabolicSignature(job, cycleIndex, presenceTier, band, pressureTier) {
+  const intelPayload = {
+    kind: "metabolism",
+    jobId: job?.id || "NO_JOB",
+    payloadType: job?.payload?.type || "NO_TYPE",
+    cycleIndex,
+    band,
+    presenceTier,
+    pressureTier
+  };
+
+  const classicString = `META_V16::${job?.id || "NO_JOB"}::${cycleIndex}::PTIER:${presenceTier}::BAND:${band}::PRESSURE:${pressureTier}`;
+
+  return buildDualHashSignature("META_V16", intelPayload, classicString);
+}
+
+function buildBandSignature(band, cycleIndex) {
+  const intelPayload = {
+    kind: "band",
+    band,
+    cycleIndex
+  };
+
+  const classicString = `BAND::${band}::CYCLE::${cycleIndex}`;
+
+  return buildDualHashSignature("BAND", intelPayload, classicString);
 }
 
 // ============================================================================
-// Presence / Advantage / Hints — v13 IMMORTAL
+// Presence / Advantage / Hints — v16 IMMORTAL-INTEL
 // ============================================================================
 
 function buildPresenceField(job, globalHints = {}) {
@@ -225,14 +358,29 @@ function buildPresenceField(job, globalHints = {}) {
   else if (pressure >= 60) presenceTier = "elevated";
   else if (pressure > 0) presenceTier = "soft";
 
-  const presenceSignature = computeHash(
-    `META_PRESENCE_V13::${presenceTier}::${meshPressureIndex}::${castleLoadLevel}`
+  const intelPayload = {
+    kind: "presence",
+    presenceTier,
+    meshPressureIndex,
+    castleLoadLevel,
+    meshStrength,
+    regionId: region.regionId || "unknown-region",
+    castleId: castle.castleId || "unknown-castle"
+  };
+
+  const classicString = `META_PRESENCE_V16::${presenceTier}::${meshPressureIndex}::${castleLoadLevel}`;
+
+  const presenceSignatureDual = buildDualHashSignature(
+    "META_PRESENCE_V16",
+    intelPayload,
+    classicString
   );
 
   return {
-    presenceVersion: "v13.0-Presence-Immortal",
+    presenceVersion: "v16-IMMORTAL-INTEL",
     presenceTier,
-    presenceSignature,
+    presenceSignatureIntel: presenceSignatureDual.intel,
+    presenceSignatureClassic: presenceSignatureDual.classic,
 
     bandPresence: jp.bandPresence || (globalHints.presenceContext || {}).bandPresence || "unknown",
     routerPresence: jp.routerPresence || (globalHints.presenceContext || {}).routerPresence || "unknown",
@@ -257,7 +405,7 @@ function buildAdvantageField(job, globalHints = {}) {
   const gh = globalHints.advantageContext || {};
 
   return {
-    advantageVersion: "C-13.0",
+    advantageVersion: "C-16.0",
     advantageScore: ja.score ?? gh.score ?? 0,
     advantageBand: ja.band ?? gh.band ?? "neutral",
     advantageTier: ja.tier ?? gh.tier ?? 0
@@ -297,7 +445,7 @@ function buildHintsField(job, globalHints = {}) {
 }
 
 // ============================================================================
-// Metabolic Compute Profile (metadata-only)
+// Metabolic Compute Profile (metadata-only, INTEL)
 // ============================================================================
 
 function normalizeCachePriority(p) {
@@ -319,13 +467,32 @@ function buildMetabolicComputeProfile(band, hintsField) {
 }
 
 // ============================================================================
-// Binary + Wave Surfaces
+// Pressure Tier Classification (diagnostic only, no perf baseline)
+// ============================================================================
+
+function classifyPressureTier(presenceField, errorCount) {
+  const mesh = Number(presenceField.meshPressureIndex || 0);
+  const castle = Number(presenceField.castleLoadLevel || 0);
+  const pressure = mesh + castle + errorCount * 20; // deterministic composite
+
+  if (pressure >= 180) return "critical";
+  if (pressure >= 120) return "high";
+  if (pressure >= 60) return "elevated";
+  if (pressure > 0) return "soft";
+  return "idle";
+}
+
+// ============================================================================
+// Binary + Wave Surfaces (INTEL)
 // ============================================================================
 
 function buildMetabolicBandBinaryWave(job, cycleIndex, presenceField) {
   const band = normalizeBand(job?.band || job?.meta?.band || "symbolic");
+
+  const bandSig = buildBandSignature(band, cycleIndex);
   metabolicHealing.lastBand = band;
-  metabolicHealing.lastBandSignature = computeHash(`BAND::${band}`);
+  metabolicHealing.lastBandSignatureIntel = bandSig.intel;
+  metabolicHealing.lastBandSignatureClassic = bandSig.classic;
 
   const payloadType = job?.payload?.type || "NO_TYPE";
   const payloadKeysCount = job?.payload ? Object.keys(job.payload).length : 0;
@@ -337,9 +504,30 @@ function buildMetabolicBandBinaryWave(job, cycleIndex, presenceField) {
     (presenceField?.meshPressureIndex || 0) +
     (presenceField?.castleLoadLevel || 0);
 
+  const binaryIntelPayload = {
+    kind: "binarySurface",
+    payloadType,
+    payloadTypeLength: payloadType.length,
+    payloadKeysCount,
+    cycleIndex,
+    meshPressureIndex: presenceField?.meshPressureIndex || 0,
+    castleLoadLevel: presenceField?.castleLoadLevel || 0,
+    surface
+  };
+
+  const binaryClassicString = `BMETA_V16::${surface}`;
+
+  const binarySignatureDual = buildDualHashSignature(
+    "BMETA_V16",
+    binaryIntelPayload,
+    binaryClassicString
+  );
+
   const binaryField = {
-    binaryMetabolicSignature: computeHash(`BMETA::${surface}`),
-    binarySurfaceSignature: computeHash(`BSURF_META::${surface}`),
+    binaryMetabolicSignatureIntel: binarySignatureDual.intel,
+    binaryMetabolicSignatureClassic: binarySignatureDual.classic,
+    binarySurfaceSignatureIntel: binarySignatureDual.intel,
+    binarySurfaceSignatureClassic: binarySignatureDual.classic,
     binarySurface: {
       payloadTypeLength: payloadType.length,
       payloadKeysCount,
@@ -354,7 +542,25 @@ function buildMetabolicBandBinaryWave(job, cycleIndex, presenceField) {
   };
   metabolicHealing.lastBinaryField = binaryField;
 
+  const waveIntelPayload = {
+    kind: "waveSurface",
+    payloadKeysCount,
+    cycleIndex,
+    meshStrength: presenceField?.meshStrength || 0,
+    meshPressureIndex: presenceField?.meshPressureIndex || 0
+  };
+
+  const waveClassicString = `WAVE_META_V16::${payloadKeysCount}::${cycleIndex}`;
+
+  const waveSignatureDual = buildDualHashSignature(
+    "WAVE_META_V16",
+    waveIntelPayload,
+    waveClassicString
+  );
+
   const waveField = {
+    waveMetabolicSignatureIntel: waveSignatureDual.intel,
+    waveMetabolicSignatureClassic: waveSignatureDual.classic,
     amplitude: payloadKeysCount + (presenceField?.meshStrength || 0),
     wavelength: cycleIndex,
     phase:
@@ -370,7 +576,7 @@ function buildMetabolicBandBinaryWave(job, cycleIndex, presenceField) {
 }
 
 // ============================================================================
-// executePulseEarnJob — Deterministic Metabolic Workflow (v13 IMMORTAL)
+// executePulseEarnJob — Deterministic Metabolic Workflow (v16 IMMORTAL-INTEL)
 // ============================================================================
 
 export function executePulseEarnJob(job, globalHints = {}) {
@@ -379,26 +585,47 @@ export function executePulseEarnJob(job, globalHints = {}) {
   metabolicHealing.lastCycleIndex = metabolismCycle;
   metabolicHealing.executionState = "validating";
 
+  let errorCount = 0;
+
   try {
     if (!job || !job.id || !job.payload) {
       metabolicHealing.lastError = "invalid_job_format";
       metabolicHealing.executionState = "error";
+      errorCount = 1;
+
+      const presenceField = buildPresenceField(job, globalHints);
+      const advantageField = buildAdvantageField(job, globalHints);
+      const hintsField = buildHintsField(job, globalHints);
+
+      const pressureTier = classifyPressureTier(presenceField, errorCount);
+      metabolicHealing.lastPressureTier = pressureTier;
+
+      const metabolicPressureProfile = {
+        pressureTier,
+        errorCount,
+        band: normalizeBand(job?.band || job?.meta?.band || "symbolic"),
+        meshPressureIndex: presenceField.meshPressureIndex,
+        castleLoadLevel: presenceField.castleLoadLevel,
+        advantageTier: advantageField.advantageTier,
+        fallbackBandLevel: hintsField.fallbackBandLevel
+      };
+
+      metabolicHealing.lastPresenceField = presenceField;
+      metabolicHealing.lastAdvantageField = advantageField;
+      metabolicHealing.lastHintsField = hintsField;
+      metabolicHealing.lastMetabolicPressureProfile = metabolicPressureProfile;
 
       return {
         success: false,
         jobId: job?.id ?? null,
         error: "Invalid job format",
+        pressureTier,
+        metabolicPressureProfile,
         cycleIndex: metabolismCycle
       };
     }
 
     const { payload } = job;
-
-    metabolicHealing.lastJobId = job.id;
-    metabolicHealing.lastPayloadType = payload.type;
-
-    metabolicHealing.lastJobSignature = buildJobSignature(job);
-    metabolicHealing.lastPayloadSignature = buildPayloadSignature(payload);
 
     const presenceField = buildPresenceField(job, globalHints);
     const advantageField = buildAdvantageField(job, globalHints);
@@ -416,9 +643,33 @@ export function executePulseEarnJob(job, globalHints = {}) {
       presenceField
     );
 
-    // NO BOOST. NO SPEED. NO PERFORMANCE MATH.
     const metabolicComputeProfile = buildMetabolicComputeProfile(band, hintsField);
     metabolicHealing.lastMetabolicComputeProfile = metabolicComputeProfile;
+
+    const pressureTier = classifyPressureTier(presenceField, errorCount);
+    metabolicHealing.lastPressureTier = pressureTier;
+
+    const metabolicPressureProfile = {
+      pressureTier,
+      errorCount,
+      band,
+      meshPressureIndex: presenceField.meshPressureIndex,
+      castleLoadLevel: presenceField.castleLoadLevel,
+      advantageTier: advantageField.advantageTier,
+      fallbackBandLevel: hintsField.fallbackBandLevel
+    };
+    metabolicHealing.lastMetabolicPressureProfile = metabolicPressureProfile;
+
+    metabolicHealing.lastJobId = job.id;
+    metabolicHealing.lastPayloadType = payload.type;
+
+    const jobSig = buildJobSignature(job, metabolismCycle, presenceTier, band);
+    const payloadSig = buildPayloadSignature(payload, metabolismCycle, band);
+
+    metabolicHealing.lastJobSignatureIntel = jobSig.intel;
+    metabolicHealing.lastJobSignatureClassic = jobSig.classic;
+    metabolicHealing.lastPayloadSignatureIntel = payloadSig.intel;
+    metabolicHealing.lastPayloadSignatureClassic = payloadSig.classic;
 
     metabolicHealing.executionState = "executing";
 
@@ -440,11 +691,29 @@ export function executePulseEarnJob(job, globalHints = {}) {
       default:
         metabolicHealing.lastError = "unknown_payload_type";
         metabolicHealing.executionState = "error";
+        errorCount = 1;
+
+        const pressureTierUnknown = classifyPressureTier(presenceField, errorCount);
+        metabolicHealing.lastPressureTier = pressureTierUnknown;
+
+        const metabolicPressureProfileUnknown = {
+          pressureTier: pressureTierUnknown,
+          errorCount,
+          band,
+          meshPressureIndex: presenceField.meshPressureIndex,
+          castleLoadLevel: presenceField.castleLoadLevel,
+          advantageTier: advantageField.advantageTier,
+          fallbackBandLevel: hintsField.fallbackBandLevel
+        };
+        metabolicHealing.lastMetabolicPressureProfile = metabolicPressureProfileUnknown;
 
         return {
           success: false,
           jobId: job.id,
           error: `Unknown job type: ${payload.type}`,
+          band,
+          pressureTier: pressureTierUnknown,
+          metabolicPressureProfile: metabolicPressureProfileUnknown,
           cycleIndex: metabolismCycle
         };
     }
@@ -453,12 +722,16 @@ export function executePulseEarnJob(job, globalHints = {}) {
 
     metabolicHealing.executionState = "returning";
 
-    const metabolicSignature = buildMetabolicSignature(
+    const metabolicSig = buildMetabolicSignature(
       job,
       metabolismCycle,
-      presenceTier
+      presenceTier,
+      band,
+      pressureTier
     );
-    metabolicHealing.lastMetabolicSignature = metabolicSignature;
+
+    metabolicHealing.lastMetabolicSignatureIntel = metabolicSig.intel;
+    metabolicHealing.lastMetabolicSignatureClassic = metabolicSig.classic;
 
     const metabolicPresenceProfile = {
       presenceTier,
@@ -469,8 +742,8 @@ export function executePulseEarnJob(job, globalHints = {}) {
       fallbackBandLevel: hintsField.fallbackBandLevel
     };
 
-    const binaryProfile = { binaryField, presenceTier };
-    const waveProfile = { waveField, presenceTier };
+    const binaryProfile = { binaryField, pressureTier };
+    const waveProfile = { waveField, pressureTier };
 
     metabolicHealing.lastMetabolicPresenceProfile = metabolicPresenceProfile;
     metabolicHealing.lastBinaryProfile = binaryProfile;
@@ -480,37 +753,84 @@ export function executePulseEarnJob(job, globalHints = {}) {
       success: true,
       jobId: job.id,
       result,
+
       band,
       binaryField,
       waveField,
+
       presenceField,
       advantageField,
       hintsField,
+
       metabolicPresenceProfile,
       metabolicComputeProfile,
+      metabolicPressureProfile,
+
       binaryProfile,
       waveProfile,
+      pressureTier,
+
       cycleIndex: metabolismCycle,
-      metabolicSignature,
-      jobSignature: metabolicHealing.lastJobSignature,
-      payloadSignature: metabolicHealing.lastPayloadSignature
+
+      metabolicSignatureIntel: metabolicSig.intel,
+      metabolicSignatureClassic: metabolicSig.classic,
+      jobSignatureIntel: jobSig.intel,
+      jobSignatureClassic: jobSig.classic,
+      payloadSignatureIntel: payloadSig.intel,
+      payloadSignatureClassic: payloadSig.classic
     };
 
   } catch (err) {
     metabolicHealing.executionState = "error";
     metabolicHealing.lastError = err.message;
+    errorCount = 1;
+
+    const presenceField = metabolicHealing.lastPresenceField ||
+      buildPresenceField(null, {});
+    const advantageField = metabolicHealing.lastAdvantageField || {
+      advantageVersion: "C-16.0",
+      advantageScore: 0,
+      advantageBand: "neutral",
+      advantageTier: 0
+    };
+    const hintsField = metabolicHealing.lastHintsField || {
+      fallbackBandLevel: 0,
+      chunkHints: {},
+      cacheHints: {},
+      prewarmHints: {},
+      coldStartHints: {}
+    };
+
+    const band = normalizeBand(metabolicHealing.lastBand || "symbolic");
+
+    const pressureTier = classifyPressureTier(presenceField, errorCount);
+    metabolicHealing.lastPressureTier = pressureTier;
+
+    const metabolicPressureProfile = {
+      pressureTier,
+      errorCount,
+      band,
+      meshPressureIndex: presenceField.meshPressureIndex || 0,
+      castleLoadLevel: presenceField.castleLoadLevel || 0,
+      advantageTier: advantageField.advantageTier || 0,
+      fallbackBandLevel: hintsField.fallbackBandLevel || 0
+    };
+    metabolicHealing.lastMetabolicPressureProfile = metabolicPressureProfile;
 
     return {
       success: false,
       jobId: job?.id ?? null,
       error: err.message,
+      band,
+      pressureTier,
+      metabolicPressureProfile,
       cycleIndex: metabolismCycle
     };
   }
 }
 
 // ============================================================================
-// SAFE workload handlers — Deterministic Metabolic Tools (v13 IMMORTAL)
+// SAFE workload handlers — Deterministic Metabolic Tools (v16 IMMORTAL-INTEL)
 // ============================================================================
 
 function runComputeTask(data) {

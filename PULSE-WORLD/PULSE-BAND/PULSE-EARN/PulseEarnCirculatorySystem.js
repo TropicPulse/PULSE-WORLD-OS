@@ -1,31 +1,34 @@
 // ============================================================================
-// FILE: tropic-pulse-functions/PULSE-WORLD/PULSE-EARN/PulseEarnCirculatorySystem-v13.0-Presence-Immortal.js
-// LAYER: THE CIRCULATORY SYSTEM (v13.0-Presence-Immortal)
-// (Deterministic Reflex + Routing + Weighting + Presence + Advantage-C + Multi-Instance)
+// FILE: tropic-pulse-functions/PULSE-WORLD/PULSE-EARN/PulseEarnCirculatorySystem-v16-Immortal-INTEL.js
+// LAYER: THE CIRCULATORY SYSTEM (v16-Immortal-INTEL)
+// (Deterministic Reflex + Routing + Weighting + Presence + Advantage + INTEL +
+//  Multi-Instance + GPU/Capability-Aware + Prewarm/Chunk/Cache surfaces)
 // ============================================================================
 //
-// ROLE (v13.0-Presence-Immortal):
-//   THE CIRCULATORY SYSTEM — Pulse‑Earn’s autonomic routing center.
+// ROLE (v16-Immortal-INTEL):
+//   THE CIRCULATORY SYSTEM — Pulse‑Earn’s autonomic routing + INTEL backbone.
 //   • Deterministically evaluates marketplaces (no real ping).
 //   • Filters unhealthy ones using deterministic healthScore.
 //   • Fetches jobs deterministically (no async, no network).
 //   • Applies reputation weighting (synaptic strength).
 //   • Applies presence/mesh/castle/expansion/globalHints advantage.
 //   • Applies multi-instance + factoring-aware routing.
-//   • Selects the best job for the device (autonomic prioritization).
-//   • Emits v13‑Presence‑IMMORTAL routing signatures + loop/wave fields.
+//   • CapabilityModel + GPU-aware + performanceRatio-aware.
+//   • Emits v16‑IMMORTAL‑INTEL routing signatures + loop/wave fields.
+//   • Emits routing presence/advantage/computeProfile + INTEL surfaces.
 //   • Supports dual-band routing (symbolic + binary) as metadata-only.
 //   • Uses ONLY provided capabilityModel; no internal device constants.
 //
-// PURPOSE (v13.0-Presence-Immortal):
-//   • Provide deterministic, drift‑proof job routing.
+// PURPOSE (v16-Immortal-INTEL):
+//   • Provide deterministic, drift‑proof job routing as Earn backbone.
 //   • Guarantee safe multi‑marketplace discovery.
 //   • Maintain healing metadata for the Immune System.
 //   • Preserve autonomic routing + synaptic weighting.
 //   • Expose routing loop/wave fields + presence/advantage/compute surfaces.
+//   • Expose Pulse‑INTEL surfaces for routing decisions.
 //   • Remain pure: no hardcoded device profile, no internal baseline.
 //
-// CONTRACT (v13.0-Presence-Immortal):
+// CONTRACT (v16-Immortal-INTEL):
 //   • PURE ROUTER — no AI layers, no translation, no memory model.
 //   • READ‑ONLY except for healing metadata.
 //   • NO eval(), NO Function(), NO dynamic imports.
@@ -35,13 +38,14 @@
 //   • Dual-band is metadata-only (no non-deterministic branching).
 //   • Presence/advantage/globalHints/capabilityModel are metadata-only.
 // ============================================================================
+
 /*
 AI_EXPERIENCE_META = {
   identity: "PulseEarnCirculatorySystem",
-  version: "v14-Immortal",
+  version: "v16-Immortal-INTEL",
   layer: "earn_circulatory",
-  role: "earn_circulation_and_flow",
-  lineage: "PulseEarnCirculatorySystem-v11 → v12.3 → v14-Immortal",
+  role: "earn_circulation_and_flow_backbone",
+  lineage: "PulseEarnCirculatorySystem-v11 → v12.3 → v13-Presence-Immortal → v16-Immortal-INTEL",
 
   evo: {
     earnCirculation: true,
@@ -56,7 +60,55 @@ AI_EXPERIENCE_META = {
     pureCompute: true,
     zeroMutationOfInput: true,
     zeroNetwork: true,
-    zeroFilesystem: true
+    zeroFilesystem: true,
+
+    // INTEL + capability + GPU
+    capabilityModelAware: true,
+    performanceRatioAware: true,
+    gpuAwareReady: true,
+    minerAwareReady: true,
+    offlineAwareReady: true,
+    futureEvolutionReady: true,
+
+    // Advantage + tier + diagnostics
+    unifiedAdvantageField: true,
+    advantageFieldAware: true,
+    tierAware: true,
+    diagnosticsReady: true,
+    evolutionSurfaceReady: true,
+
+    // Pulse Intelligence
+    pulseIntelligenceReady: true,
+    solvednessAware: true,
+    factoringAware: true,
+    computeTierAware: true,
+    readinessAware: true,
+
+    // Wave / cohort / band
+    bandAware: true,
+    dualBandReady: true,
+    binaryCompressionReady: true,
+    waveFieldAware: true,
+    cohortAware: true,
+
+    // Presence‑IMMORTAL surfaces
+    presenceAware: true,
+    meshAware: true,
+    castleAware: true,
+    expansionAware: true,
+    serverAware: true,
+    routerAware: true,
+    beaconAware: true,
+
+    // Chunking / caching / prewarm / hot state
+    chunkAware: true,
+    cacheAware: true,
+    prewarmAware: true,
+    hotStateAware: true,
+
+    // Continuance + legacy bridge
+    continuanceAware: true,
+    legacyBridgeCapable: true
   },
 
   contract: {
@@ -76,8 +128,8 @@ AI_EXPERIENCE_META = {
 export const PulseEarnCirculatorySystemMeta = Object.freeze({
   layer: "PulseEarnCirculatorySystem",
   role: "CIRCULATORY_ORGAN",
-  version: "v13.0-Presence-Immortal",
-  identity: "PulseEarnCirculatorySystem-v13.0-Presence-Immortal",
+  version: "v16-Immortal-INTEL",
+  identity: "PulseEarnCirculatorySystem-v16-Immortal-INTEL",
 
   guarantees: Object.freeze({
     deterministic: true,
@@ -105,9 +157,11 @@ export const PulseEarnCirculatorySystemMeta = Object.freeze({
     regionAware: true,
     dualbandSafe: true,
 
-    // v13 IMMORTAL additions
     capabilityModelAware: true,
-    performanceRatioAware: true
+    performanceRatioAware: true,
+    gpuAwareReady: true,
+
+    pulseIntelligenceAware: true
   }),
 
   contract: Object.freeze({
@@ -118,7 +172,7 @@ export const PulseEarnCirculatorySystemMeta = Object.freeze({
       "ReputationWeights",
       "RoutingCycleState",
       "GlobalHintsPresenceField",
-      "CapabilityModel" // { cpuCores, memoryMB, gpuScore, performanceRatio } provided by caller
+      "CapabilityModel" // { cpuCores, memoryMB, gpuScore, performanceRatio, minerScore, offlineScore } provided by caller
     ],
     output: [
       "BestJobSelection",
@@ -126,18 +180,20 @@ export const PulseEarnCirculatorySystemMeta = Object.freeze({
       "RoutingSignatures",
       "RoutingPresenceField",
       "RoutingAdvantageField",
-      "RoutingComputeProfile"
+      "RoutingComputeProfile",
+      "RoutingPulseIntelligence"
     ]
   }),
 
   lineage: Object.freeze({
     root: "PulseOS-v11-Evo",
-    parent: "PulseEarn-v13.0-Presence-Immortal",
+    parent: "PulseEarn-v16-Immortal-INTEL",
     ancestry: [
       "PulseEarnCirculatorySystem-v10",
       "PulseEarnCirculatorySystem-v11",
       "PulseEarnCirculatorySystem-v11-Evo",
-      "PulseEarnCirculatorySystem-v12.3-Presence-Evo+"
+      "PulseEarnCirculatorySystem-v12.3-Presence-Evo+",
+      "PulseEarnCirculatorySystem-v13.0-Presence-Immortal"
     ]
   }),
 
@@ -150,8 +206,8 @@ export const PulseEarnCirculatorySystemMeta = Object.freeze({
   architecture: Object.freeze({
     pattern: "A-B-A",
     baseline: "deterministic routing + health evaluation (pure, capabilityModel-driven)",
-    adaptive: "presence/advantage-aware weighting + multi-instance factoring + capabilityModel scaling",
-    return: "deterministic best-job selection"
+    adaptive: "presence/advantage-aware weighting + multi-instance factoring + capabilityModel + GPU scaling + INTEL surfaces",
+    return: "deterministic best-job selection + routing INTEL surfaces"
   })
 });
 
@@ -169,7 +225,7 @@ function normalizeBand(band) {
 }
 
 // ============================================================================
-// Healing Metadata — Circulatory Reflex Log (v13.0-Presence-Immortal)
+// Healing Metadata — Circulatory Reflex Log (v16-Immortal-INTEL)
 // ============================================================================
 const circulatoryHealing = {
   lastHealthError: null,
@@ -197,9 +253,13 @@ const circulatoryHealing = {
   lastHintsField: null,
   lastComputeProfile: null,
 
-  // v13 capability + performance surfaces
+  // capability + performance surfaces
   lastCapabilityModel: null,
-  lastPerformanceRatio: 1
+  lastPerformanceRatio: 1,
+
+  // INTEL surfaces
+  lastPulseIntelligence: null,
+  lastPulseIntelligenceSignature: null
 };
 
 // ============================================================================
@@ -266,6 +326,7 @@ function buildAdvantageFieldForRouting(jobs, band) {
   const b = normalizeBand(band);
 
   return {
+    advantageVersion: "R-16.0",
     jobCount: count,
     band: b,
     symbolicPlanningBias: b === CIRC_BANDS.SYMBOLIC ? 1 : 0,
@@ -274,8 +335,20 @@ function buildAdvantageFieldForRouting(jobs, band) {
 }
 
 // ============================================================================
-// Presence / Advantage / Hints / Compute Profile (v13 IMMORTAL)
+// Presence / Advantage / Hints / Compute Profile (v16 IMMORTAL-INTEL)
 // ============================================================================
+function clamp01(x) {
+  if (x == null || Number.isNaN(x)) return 0;
+  return Math.max(0, Math.min(1, x));
+}
+
+function normalizeCachePriority(p) {
+  if (!p) return "normal";
+  const v = String(p).toLowerCase();
+  if (v === "critical" || v === "high" || v === "low") return v;
+  return "normal";
+}
+
 function buildPresenceField(context = {}) {
   const gh = context.globalHints || {};
   const pf = context.presenceField || {};
@@ -295,7 +368,7 @@ function buildPresenceField(context = {}) {
   else if (pressure > 0) presenceTier = "soft";
 
   return Object.freeze({
-    presenceVersion: "v13.0-Presence-Immortal",
+    presenceVersion: "v16-Immortal-INTEL",
     presenceTier,
 
     bandPresence: pf.bandPresence || gh.presenceContext?.bandPresence || "unknown",
@@ -314,7 +387,7 @@ function buildPresenceField(context = {}) {
     castleLoadLevel,
 
     presenceSignature: computeHash(
-      `PRESENCE_V13::${presenceTier}::${meshPressureIndex}::${castleLoadLevel}`
+      `PRESENCE_V16::${presenceTier}::${meshPressureIndex}::${castleLoadLevel}`
     )
   });
 }
@@ -324,7 +397,7 @@ function buildAdvantagePresenceField(context = {}) {
   const adv = gh.advantageContext || {};
 
   return Object.freeze({
-    advantageVersion: "C-13.0",
+    advantageVersion: "C-16.0",
     advantageScore: adv.score ?? 0,
     advantageBand: adv.band ?? "neutral",
     advantageTier: adv.tier ?? 0
@@ -340,18 +413,6 @@ function buildHintsField(context = {}) {
     prewarmHints: gh.prewarmHints || {},
     coldStartHints: gh.coldStartHints || {}
   });
-}
-
-function clamp01(x) {
-  if (x == null || Number.isNaN(x)) return 0;
-  return Math.max(0, Math.min(1, x));
-}
-
-function normalizeCachePriority(p) {
-  if (!p) return "normal";
-  const v = String(p).toLowerCase();
-  if (v === "critical" || v === "high" || v === "low") return v;
-  return "normal";
 }
 
 function deriveFactoringSignal({ meshPressureIndex = 0, cachePriority = "normal", prewarmNeeded = false }) {
@@ -378,6 +439,13 @@ function buildComputeProfile({ band, context = {}, capabilityModel = {} }) {
 
   const serverHints = context.serverAdvantageHints || {};
   const performanceRatio = capabilityModel.performanceRatio ?? 1;
+  const gpuScore = capabilityModel.gpuScore ?? 0;
+  const minerScore = capabilityModel.minerScore ?? 0;
+  const offlineScore = capabilityModel.offlineScore ?? 0;
+
+  const gpuPreferred = gpuScore > 0;
+  const minerPreferred = minerScore > 0;
+  const offlinePreferred = offlineScore > 0;
 
   return Object.freeze({
     routeBand: b,
@@ -389,11 +457,74 @@ function buildComputeProfile({ band, context = {}, capabilityModel = {} }) {
     symbolicPreferred: b === CIRC_BANDS.SYMBOLIC,
     factoringSignal,
     performanceRatio,
+
+    gpuPreferred,
+    minerPreferred,
+    offlinePreferred,
+
     hotStateReuse: serverHints.hotStateReuse ?? true,
     multiInstanceBatching: serverHints.multiInstanceBatching ?? true,
     serverPlanCache: serverHints.planCache ?? true,
     serverBinaryReuse: serverHints.binaryReuse ?? true
   });
+}
+
+// ============================================================================
+// ⭐ Pulse Intelligence (logic-only, IMMORTAL-safe, routing-level)
+// ============================================================================
+function computePulseIntelligence({ advantageField, presenceField, computeProfile, band }) {
+  const advantageScore = advantageField.advantageScore || 0;
+  const advantageTier = advantageField.advantageTier || 0;
+
+  const presenceTier = presenceField.presenceTier || "idle";
+  const presenceWeight =
+    presenceTier === "critical" ? 1.0 :
+    presenceTier === "high"     ? 0.8 :
+    presenceTier === "elevated" ? 0.6 :
+    presenceTier === "soft"     ? 0.4 :
+    0.2;
+
+  const factoring = computeProfile.factoringSignal ? 1 : 0;
+  const bandIsBinary = band === "binary" ? 1 : 0;
+  const performanceRatio = computeProfile.performanceRatio || 1;
+
+  const solvednessScore = Math.max(
+    0,
+    Math.min(
+      advantageScore * 10 * 0.4 +
+      presenceWeight * 0.25 +
+      factoring * 0.2 +
+      performanceRatio * 0.15,
+      1
+    )
+  );
+
+  const computeTier =
+    solvednessScore >= 0.9 ? "nearSolution" :
+    solvednessScore >= 0.7 ? "highValue"    :
+    solvednessScore >= 0.4 ? "normal"       :
+    solvednessScore >= 0.2 ? "lowPriority"  :
+    "avoidCompute";
+
+  const readinessScore = Math.max(
+    0,
+    Math.min(
+      solvednessScore * 0.6 +
+      (bandIsBinary ? 0.15 : 0) +
+      (advantageTier >= 2 ? 0.25 : advantageTier === 1 ? 0.1 : 0),
+      1
+    )
+  );
+
+  return {
+    solvednessScore,
+    factoringSignal: computeProfile.factoringSignal ? "high" : "low",
+    computeTier,
+    readinessScore,
+    band,
+    advantageTier,
+    performanceRatio
+  };
 }
 
 // ============================================================================
@@ -434,7 +565,7 @@ export function discoverHealthyMarketplaces(marketplaces) {
     return healthy;
 
   } catch (err) {
-    circulatoryHealing.lastHealthError = err.message;
+    circulatoryHealing.lastHealthError = String(err && err.message ? err.message : err);
     return [];
   }
 }
@@ -463,7 +594,7 @@ export function fetchJobsFromMarketplaces(marketplaces) {
     return allJobs;
 
   } catch (err) {
-    circulatoryHealing.lastFetchError = err.message;
+    circulatoryHealing.lastFetchError = String(err && err.message ? err.message : err);
     return [];
   }
 }
@@ -488,7 +619,7 @@ function scoreJobForCapability(job, capabilityModel = {}) {
 }
 
 // ============================================================================
-// INTERNAL: Deterministic Band-Aware Job Score (v13 + capabilityModel)
+// INTERNAL: Deterministic Band-Aware Job Score (v16 + capabilityModel + INTEL)
 // ============================================================================
 function scoreJobWithBand(job, capabilityModel, band, context = {}) {
   const baseCapability = scoreJobForCapability(job, capabilityModel);
@@ -507,16 +638,27 @@ function scoreJobWithBand(job, capabilityModel, band, context = {}) {
 
   const performanceRatio = capabilityModel.performanceRatio ?? 1;
 
+  const gpuScore = capabilityModel.gpuScore ?? 0;
+  const minerScore = capabilityModel.minerScore ?? 0;
+  const offlineScore = capabilityModel.offlineScore ?? 0;
+
+  const gpuBias = gpuScore > 0 ? 1.05 : 1.0;
+  const minerBias = minerScore > 0 ? 1.03 : 1.0;
+  const offlineBias = offlineScore > 0 ? 1.02 : 1.0;
+
   return baseCapability
     * (0.5 + rep)
     * bandBias
     * pressureBias
     * fallbackBias
-    * performanceRatio;
+    * performanceRatio
+    * gpuBias
+    * minerBias
+    * offlineBias;
 }
 
 // ============================================================================
-// 3. selectBestJob — Deterministic Autonomic Prioritization (v13 IMMORTAL)
+// 3. selectBestJob — Deterministic Autonomic Prioritization (v16 IMMORTAL-INTEL)
 // ============================================================================
 export function selectBestJob(jobs, band = CIRC_BANDS.SYMBOLIC, context = {}, capabilityModel = {}) {
   try {
@@ -544,13 +686,13 @@ export function selectBestJob(jobs, band = CIRC_BANDS.SYMBOLIC, context = {}, ca
     return bestJob;
 
   } catch (err) {
-    circulatoryHealing.lastSelectionError = err.message;
+    circulatoryHealing.lastSelectionError = String(err && err.message ? err.message : err);
     return null;
   }
 }
 
 // ============================================================================
-// 4. getNextJob — Full Autonomic Routing Cycle (v13 IMMORTAL)
+// 4. getNextJob — Full Autonomic Routing Cycle (v16 IMMORTAL-INTEL)
 // ============================================================================
 // capabilityModel is REQUIRED for strict purity: no internal device assumptions.
 export function getNextJob(
@@ -573,26 +715,74 @@ export function getNextJob(
 
     const healthy = discoverHealthyMarketplaces(allMarketplaces);
     if (healthy.length === 0) {
-      circulatoryHealing.lastRoutingCycleSignature =
-        buildRoutingCycleSignature(circulatoryHealing.cycleCount, normalizedBand);
+      const loopField = buildLoopField([], normalizedBand);
+      const waveField = buildWaveField([], normalizedBand);
+      const advantageField = buildAdvantageFieldForRouting([], normalizedBand);
+
+      const pulseIntelligence = computePulseIntelligence({
+        advantageField: {
+          ...advantageField,
+          advantageScore: advantagePresenceField.advantageScore,
+          advantageTier: advantagePresenceField.advantageTier
+        },
+        presenceField,
+        computeProfile,
+        band: normalizedBand
+      });
+
+      circulatoryHealing.lastLoopField = loopField;
+      circulatoryHealing.lastWaveField = waveField;
+      circulatoryHealing.lastAdvantageField = advantageField;
 
       circulatoryHealing.lastPresenceField = presenceField;
       circulatoryHealing.lastAdvantagePresenceField = advantagePresenceField;
       circulatoryHealing.lastHintsField = hintsField;
       circulatoryHealing.lastComputeProfile = computeProfile;
+
+      circulatoryHealing.lastPulseIntelligence = pulseIntelligence;
+      circulatoryHealing.lastPulseIntelligenceSignature = computeHash(
+        JSON.stringify(pulseIntelligence)
+      );
+
+      circulatoryHealing.lastRoutingCycleSignature =
+        buildRoutingCycleSignature(circulatoryHealing.cycleCount, normalizedBand);
 
       return null;
     }
 
     const jobs = fetchJobsFromMarketplaces(healthy);
     if (jobs.length === 0) {
-      circulatoryHealing.lastRoutingCycleSignature =
-        buildRoutingCycleSignature(circulatoryHealing.cycleCount, normalizedBand);
+      const loopField = buildLoopField([], normalizedBand);
+      const waveField = buildWaveField([], normalizedBand);
+      const advantageField = buildAdvantageFieldForRouting([], normalizedBand);
+
+      const pulseIntelligence = computePulseIntelligence({
+        advantageField: {
+          ...advantageField,
+          advantageScore: advantagePresenceField.advantageScore,
+          advantageTier: advantagePresenceField.advantageTier
+        },
+        presenceField,
+        computeProfile,
+        band: normalizedBand
+      });
+
+      circulatoryHealing.lastLoopField = loopField;
+      circulatoryHealing.lastWaveField = waveField;
+      circulatoryHealing.lastAdvantageField = advantageField;
 
       circulatoryHealing.lastPresenceField = presenceField;
       circulatoryHealing.lastAdvantagePresenceField = advantagePresenceField;
       circulatoryHealing.lastHintsField = hintsField;
       circulatoryHealing.lastComputeProfile = computeProfile;
+
+      circulatoryHealing.lastPulseIntelligence = pulseIntelligence;
+      circulatoryHealing.lastPulseIntelligenceSignature = computeHash(
+        JSON.stringify(pulseIntelligence)
+      );
+
+      circulatoryHealing.lastRoutingCycleSignature =
+        buildRoutingCycleSignature(circulatoryHealing.cycleCount, normalizedBand);
 
       return null;
     }
@@ -608,6 +798,17 @@ export function getNextJob(
     const waveField = buildWaveField(weightedJobs, normalizedBand);
     const advantageField = buildAdvantageFieldForRouting(weightedJobs, normalizedBand);
 
+    const pulseIntelligence = computePulseIntelligence({
+      advantageField: {
+        ...advantageField,
+        advantageScore: advantagePresenceField.advantageScore,
+        advantageTier: advantagePresenceField.advantageTier
+      },
+      presenceField,
+      computeProfile,
+      band: normalizedBand
+    });
+
     circulatoryHealing.lastLoopField = loopField;
     circulatoryHealing.lastWaveField = waveField;
     circulatoryHealing.lastAdvantageField = advantageField;
@@ -617,28 +818,63 @@ export function getNextJob(
     circulatoryHealing.lastHintsField = hintsField;
     circulatoryHealing.lastComputeProfile = computeProfile;
 
+    circulatoryHealing.lastPulseIntelligence = pulseIntelligence;
+    circulatoryHealing.lastPulseIntelligenceSignature = computeHash(
+      JSON.stringify(pulseIntelligence)
+    );
+
     circulatoryHealing.lastRoutingCycleSignature =
       buildRoutingCycleSignature(circulatoryHealing.cycleCount, normalizedBand);
 
     return best;
 
   } catch (err) {
-    circulatoryHealing.lastSelectionError = err.message;
+    const msg = String(err && err.message ? err.message : err);
+    circulatoryHealing.lastSelectionError = msg;
+
+    const presenceField = buildPresenceField(context);
+    const advantagePresenceField = buildAdvantagePresenceField(context);
+    const hintsField = buildHintsField(context);
+    const computeProfile = buildComputeProfile({ band: normalizedBand, context, capabilityModel });
+
+    const loopField = buildLoopField([], normalizedBand);
+    const waveField = buildWaveField([], normalizedBand);
+    const advantageField = buildAdvantageFieldForRouting([], normalizedBand);
+
+    const pulseIntelligence = computePulseIntelligence({
+      advantageField: {
+        ...advantageField,
+        advantageScore: advantagePresenceField.advantageScore,
+        advantageTier: advantagePresenceField.advantageTier
+      },
+      presenceField,
+      computeProfile,
+      band: normalizedBand
+    });
+
+    circulatoryHealing.lastLoopField = loopField;
+    circulatoryHealing.lastWaveField = waveField;
+    circulatoryHealing.lastAdvantageField = advantageField;
+
+    circulatoryHealing.lastPresenceField = presenceField;
+    circulatoryHealing.lastAdvantagePresenceField = advantagePresenceField;
+    circulatoryHealing.lastHintsField = hintsField;
+    circulatoryHealing.lastComputeProfile = computeProfile;
+
+    circulatoryHealing.lastPulseIntelligence = pulseIntelligence;
+    circulatoryHealing.lastPulseIntelligenceSignature = computeHash(
+      JSON.stringify(pulseIntelligence)
+    );
 
     circulatoryHealing.lastRoutingCycleSignature =
       buildRoutingCycleSignature(circulatoryHealing.cycleCount, normalizedBand);
-
-    circulatoryHealing.lastPresenceField = buildPresenceField(context);
-    circulatoryHealing.lastAdvantagePresenceField = buildAdvantagePresenceField(context);
-    circulatoryHealing.lastHintsField = buildHintsField(context);
-    circulatoryHealing.lastComputeProfile = buildComputeProfile({ band: normalizedBand, context, capabilityModel });
 
     return null;
   }
 }
 
 // ============================================================================
-// Export Healing Metadata — Circulatory Reflex Report (v13.0-Presence-Immortal)
+// Export Healing Metadata — Circulatory Reflex Report (v16-Immortal-INTEL)
 // ============================================================================
 export function getPulseEarnCirculatorySystemHealingState() {
   return { ...circulatoryHealing };

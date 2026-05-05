@@ -1,18 +1,18 @@
 // ============================================================================
-// FILE: tropic-pulse-functions/PULSE-WORLD/PULSE-EARN/PulseEarnCell-v13.0-Presence-Immortal.js
-// LAYER: THE CELL WORKER (v13.0-Presence-Immortal)
-// (Deterministic Cell Compute + Presence/Advantage/Hints + Compute Profile)
+// FILE: tropic-pulse-functions/PULSE-WORLD/PULSE-EARN/PulseEarnCell-v16-Immortal-INTEL.js
+// LAYER: THE CELL WORKER (v16-Immortal-INTEL)
+// (Deterministic Cell Compute + Presence/Advantage/Hints + Compute/GPU Profile)
 // ============================================================================
 //
-// ROLE (v13.0-Presence-Immortal):
+// ROLE (v16-Immortal-INTEL):
 //   THE CELL WORKER — Pulse‑Earn’s deterministic micro‑compute organ.
 //   • Executes small, sandboxed, deterministic operations.
-//   • Emits v13‑Presence‑IMMORTAL presence/advantage/hints surfaces.
-//   • Emits cell compute profile (metadata-only).
-//   • Emits loop + wave fields as structural metadata.
+//   • Emits v16‑IMMORTAL presence/advantage/hints/compute surfaces.
+//   • Emits cell compute + GPU profile (metadata-only).
+//   • Emits loop + wave + band/binary fields as structural metadata.
 //   • No speed, no baselines, no governors, no performance math.
 //
-// CONTRACT (v13.0-Presence-Immortal):
+// CONTRACT (v16-Immortal-INTEL):
 //   • PURE COMPUTE — no AI layers, no translation, no memory model.
 //   • NO eval(), NO Function(), NO dynamic imports.
 //   • NO user scripts, NO network calls, NO filesystem access.
@@ -23,10 +23,10 @@
 /*
 AI_EXPERIENCE_META = {
   identity: "PulseEarnCell",
-  version: "v14-Immortal",
+  version: "v16-Immortal-INTEL",
   layer: "earn_cell",
   role: "earn_metabolic_cell",
-  lineage: "PulseEarnCell-v9 → v11-Evo → v14-Immortal",
+  lineage: "PulseEarnCell-v9 → v11-Evo → v13-Presence-Immortal → v16-Immortal-INTEL",
 
   evo: {
     earnCell: true,
@@ -41,7 +41,19 @@ AI_EXPERIENCE_META = {
     pureCompute: true,
     zeroMutationOfInput: true,
     zeroNetwork: true,
-    zeroFilesystem: true
+    zeroFilesystem: true,
+
+    // v16 IMMORTAL-INTEL
+    chunkAware: true,
+    cacheAware: true,
+    prewarmAware: true,
+    hotStateAware: true,
+    factoringAware: true,
+    gpuAware: true,
+    minerAware: true,
+    offlineAware: true,
+    computeTierAware: true,
+    pulseIntelligenceReady: true
   },
 
   contract: {
@@ -61,8 +73,8 @@ AI_EXPERIENCE_META = {
 export const PulseEarnCellMeta = Object.freeze({
   layer: "PulseEarnCell",
   role: "CELL_WORKER",
-  version: "v13.0-Presence-Immortal",
-  identity: "PulseEarnCell-v13.0-Presence-Immortal",
+  version: "v16-Immortal-INTEL",
+  identity: "PulseEarnCell-v16-Immortal-INTEL",
 
   guarantees: Object.freeze({
     deterministic: true,
@@ -90,7 +102,14 @@ export const PulseEarnCellMeta = Object.freeze({
     meshAware: true,
     castleAware: true,
     regionAware: true,
-    dualbandSafe: true
+    dualbandSafe: true,
+
+    // v16 IMMORTAL-INTEL
+    gpuAware: true,
+    minerAware: true,
+    offlineAware: true,
+    computeTierAware: true,
+    pulseIntelligenceReady: true
   }),
 
   contract: Object.freeze({
@@ -105,18 +124,20 @@ export const PulseEarnCellMeta = Object.freeze({
       "EarnCellSignatures",
       "EarnCellPresenceField",
       "EarnCellAdvantageField",
-      "EarnCellComputeProfile"
+      "EarnCellComputeProfile",
+      "EarnCellIntelligentPlan"
     ]
   }),
 
   lineage: Object.freeze({
-    root: "PulseOS-v11-Evo",
-    parent: "PulseEarn-v13.0-Presence-Immortal",
+    root: "PulseOS-v16-Immortal-INTEL",
+    parent: "PulseEarn-v16-Immortal-INTEL",
     ancestry: [
       "PulseEarnCell-v10",
       "PulseEarnCell-v11",
       "PulseEarnCell-v11-Evo",
-      "PulseEarnCell-v12.3-Presence-Evo+"
+      "PulseEarnCell-v12.3-Presence-Evo+",
+      "PulseEarnCell-v13.0-Presence-Immortal"
     ]
   }),
 
@@ -129,7 +150,7 @@ export const PulseEarnCellMeta = Object.freeze({
   architecture: Object.freeze({
     pattern: "A-B-A",
     baseline: "deterministic compute",
-    adaptive: "healing metadata + advantage surfaces + presence/hints surfaces",
+    adaptive: "healing metadata + advantage surfaces + presence/hints/compute surfaces + intelligent plan",
     return: "deterministic structured output"
   })
 });
@@ -138,11 +159,11 @@ export const PulseEarnCellMeta = Object.freeze({
 // CELL CONTEXT METADATA
 // ============================================================================
 const EARN_CELL_CONTEXT = {
-  layer: "PulseEarnCell-v13.0-Presence-Immortal",
+  layer: "PulseEarnCell-v16-Immortal-INTEL",
   role: "CELL_WORKER",
   purpose: "Execute deterministic, sandboxed compute operations for Earn jobs",
   context: "Safe compute participant + healing metadata (cell health)",
-  version: "13.0-Presence-Immortal"
+  version: "16-Immortal-INTEL"
 };
 
 // ============================================================================
@@ -159,8 +180,10 @@ function normalizeBand(band) {
 }
 
 // ============================================================================
-// Healing Metadata — Cell Health Log
+// Healing Metadata — Cell Health Log + Advantage Memory
 // ============================================================================
+const MAX_ADV_HISTORY = 32;
+
 const healingState = {
   lastJobType: null,
   lastError: null,
@@ -183,8 +206,40 @@ const healingState = {
   lastLoopField: null,
   lastWaveField: null,
 
+  lastPresenceField: null,
+  lastPresenceAdvantageField: null,
+  lastHintsField: null,
+  lastComputeProfile: null,
+
+  // v16: local advantage memory
+  totalJobs: 0,
+  successfulJobs: 0,
+  failedJobs: 0,
+  cumulativeAdvantageScore: 0,
+  lastAdvantageHistory: [], // array of { jobType, advantageScore, advantageTier, band }
+
   ...EARN_CELL_CONTEXT
 };
+
+function recordAdvantageMemory(jobType, band, advantageField) {
+  const score = advantageField?.advantageScore ?? 0;
+  const tier = advantageField?.advantageTier ?? 0;
+
+  healingState.totalJobs += 1;
+  healingState.cumulativeAdvantageScore += score;
+
+  const entry = {
+    jobType: jobType || "unknown",
+    band: normalizeBand(band),
+    advantageScore: score,
+    advantageTier: tier
+  };
+
+  healingState.lastAdvantageHistory.push(entry);
+  if (healingState.lastAdvantageHistory.length > MAX_ADV_HISTORY) {
+    healingState.lastAdvantageHistory.shift();
+  }
+}
 
 // ============================================================================
 // Deterministic Hash Helper
@@ -216,10 +271,8 @@ function buildOutputSignature(output, band) {
 }
 
 // ============================================================================
-// Health / Tier / Advantage / Loop / Wave
+// Health / Tier
 // ============================================================================
-// v13 IMMORTAL: no performance math, no type/band bias.
-// Health is neutral, descriptive-only.
 function computeHealthScore() {
   return 1.0;
 }
@@ -232,16 +285,216 @@ function classifyDegradationTier(h) {
   return "criticalDegrade";
 }
 
-function buildAdvantageField(jobType, band) {
-  const b = normalizeBand(band);
+// ============================================================================
+// Presence / Advantage / Hints / Compute Profile from globalHints/context
+// ============================================================================
+function cwClamp01(x) {
+  if (x == null || Number.isNaN(x)) return 0;
+  return Math.max(0, Math.min(1, x));
+}
 
-  return {
-    advantageVersion: "C-13.0",
+function cwNormalizeCachePriority(p) {
+  if (!p) return "normal";
+  const v = String(p).toLowerCase();
+  if (v === "critical" || v === "high" || v === "low") return v;
+  return "normal";
+}
+
+function buildPresenceFieldFromContext(context = {}) {
+  const gh = context.globalHints || {};
+  const pf = context.presenceField || {};
+  const mesh = context.meshSignals || {};
+  const castle = context.castleSignals || {};
+  const region = gh.regionContext || {};
+
+  const meshPressureIndex = mesh.meshPressureIndex || 0;
+  const castleLoadLevel = castle.loadLevel || 0;
+  const meshStrength = mesh.meshStrength || 0;
+
+  const pressure = meshPressureIndex + castleLoadLevel;
+  let presenceTier = "idle";
+  if (pressure >= 150) presenceTier = "critical";
+  else if (pressure >= 100) presenceTier = "high";
+  else if (pressure >= 50) presenceTier = "elevated";
+  else if (pressure > 0) presenceTier = "soft";
+
+  const presenceSignature = computeHash(
+    `CELL_PRESENCE_V16::${presenceTier}::${meshPressureIndex}::${castleLoadLevel}`
+  );
+
+  return Object.freeze({
+    presenceVersion: "v16-Immortal-INTEL",
+    presenceTier,
+    presenceSignature,
+
+    bandPresence: pf.bandPresence || gh.presenceContext?.bandPresence || "unknown",
+    routerPresence: pf.routerPresence || gh.presenceContext?.routerPresence || "unknown",
+    devicePresence: pf.devicePresence || gh.presenceContext?.devicePresence || "unknown",
+    meshPresence: pf.meshPresence || mesh.meshStrength || "unknown",
+    castlePresence: pf.castlePresence || castle.castlePresence || "unknown",
+    regionPresence: pf.regionPresence || region.regionTag || "unknown",
+    regionId: region.regionId || "unknown-region",
+    castleId: castle.castleId || "unknown-castle",
+    castleLoadLevel,
+    meshStrength,
+    meshPressureIndex
+  });
+}
+
+function buildAdvantageFieldFromHints(context = {}) {
+  const gh = context.globalHints || {};
+  const adv = gh.advantageContext || {};
+  const compute = gh.computeContext || {};
+  const gpu = compute.gpu || {};
+  const miner = compute.miner || {};
+  const offline = compute.offline || {};
+
+  return Object.freeze({
+    advantageVersion: "C-16.0",
+    advantageScore: adv.score ?? 0,
+    advantageBand: adv.band ?? "neutral",
+    advantageTier: adv.tier ?? 0,
+
+    gpuEligible: !!gpu.eligible,
+    gpuPreferred: !!gpu.preferred,
+    gpuTier: gpu.tier || "unknown",
+
+    minerEligible: !!miner.eligible,
+    minerTier: miner.tier || "unknown",
+
+    offlineEligible: !!offline.eligible,
+    offlineTier: offline.tier || "unknown"
+  });
+}
+
+function buildHintsFieldFromHints(context = {}) {
+  const gh = context.globalHints || {};
+  return Object.freeze({
+    fallbackBandLevel: gh.fallbackBandLevel ?? 0,
+    chunkHints: gh.chunkHints || {},
+    cacheHints: gh.cacheHints || {},
+    prewarmHints: gh.prewarmHints || {},
+    coldStartHints: gh.coldStartHints || {},
+    computeHints: gh.computeHints || {}
+  });
+}
+
+function deriveFactoringSignal({
+  meshPressureIndex = 0,
+  cachePriority = "normal",
+  prewarmNeeded = false
+}) {
+  const pressure = cwClamp01(meshPressureIndex / 100);
+  const highPressure = pressure >= 0.7;
+  const criticalCache = cachePriority === "critical";
+  if (criticalCache || prewarmNeeded) return 1;
+  if (highPressure) return 1;
+  return 0;
+}
+
+function buildComputeProfile({ band, context = {} }) {
+  const b = normalizeBand(band);
+  const hintsField = buildHintsFieldFromHints(context);
+  const cachePriority = cwNormalizeCachePriority(hintsField.cacheHints.priority);
+  const prewarmNeeded = !!hintsField.prewarmHints.shouldPrewarm;
+  const meshPressureIndex =
+    (context.meshSignals && context.meshSignals.meshPressureIndex) || 0;
+
+  const factoringSignal = deriveFactoringSignal({
+    meshPressureIndex,
+    cachePriority,
+    prewarmNeeded
+  });
+
+  const serverHints = context.serverAdvantageHints || {};
+  const computeHints = hintsField.computeHints || {};
+  const gpuHints = computeHints.gpu || {};
+  const minerHints = computeHints.miner || {};
+  const offlineHints = computeHints.offline || {};
+
+  const gpuEligible = !!gpuHints.eligible;
+  const gpuPreferred = !!gpuHints.preferred;
+  const gpuTier = gpuHints.tier || "unknown";
+
+  const minerEligible = !!minerHints.eligible;
+  const minerTier = minerHints.tier || "unknown";
+
+  const offlineEligible = !!offlineHints.eligible;
+  const offlineTier = offlineHints.tier || "unknown";
+
+  const computeTierHint = computeHints.computeTier || "normal";
+
+  return Object.freeze({
+    routeBand: b,
+    fallbackBandLevel: hintsField.fallbackBandLevel,
+    chunkAggression: hintsField.chunkAggression ?? hintsField.chunkHints.chunkAggression ?? 0,
+    cachePriority,
+    prewarmNeeded,
+    binaryPreferred: b === CELL_BANDS.BINARY,
+    symbolicPreferred: b === CELL_BANDS.SYMBOLIC,
+    factoringSignal,
+
+    hotStateReuse: serverHints.hotStateReuse ?? true,
+    multiInstanceBatching: serverHints.multiInstanceBatching ?? true,
+    serverPlanCache: serverHints.planCache ?? true,
+    serverBinaryReuse: serverHints.binaryReuse ?? true,
+
+    gpuEligible,
+    gpuPreferred,
+    gpuTier,
+    minerEligible,
+    minerTier,
+    offlineEligible,
+    offlineTier,
+    computeTierHint
+  });
+}
+
+// ============================================================================
+// Advantage / Diagnostics / Loop / Wave
+// ============================================================================
+function buildAdvantageField(jobType, band, { computeProfile, presenceAdvantageField } = {}) {
+  const b = normalizeBand(band);
+  const cp = computeProfile || {};
+  const pa = presenceAdvantageField || {};
+
+  return Object.freeze({
+    advantageVersion: "C-16.0",
     jobType,
     band: b,
+
     symbolicPlanningBias: b === CELL_BANDS.SYMBOLIC ? 1 : 0,
-    binaryCompressionBias: b === CELL_BANDS.BINARY ? 1 : 0
-  };
+    binaryCompressionBias: b === CELL_BANDS.BINARY ? 1 : 0,
+
+    // Presence / global advantage
+    advantageScore: pa.advantageScore ?? 0,
+    advantageBand: pa.advantageBand ?? "neutral",
+    advantageTier: pa.advantageTier ?? 0,
+
+    // Chunk / cache / prewarm / factoring / hot state
+    chunkAggression: cp.chunkAggression ?? 0,
+    cachePriority: cp.cachePriority || "normal",
+    prewarmNeeded: !!cp.prewarmNeeded,
+    factoringSignal: cp.factoringSignal ?? 0,
+    hotStateReuse: cp.hotStateReuse ?? true,
+    multiInstanceBatching: cp.multiInstanceBatching ?? true,
+    serverPlanCache: cp.serverPlanCache ?? true,
+    serverBinaryReuse: cp.serverBinaryReuse ?? true,
+
+    // Band preferences
+    binaryPreferred: !!cp.binaryPreferred,
+    symbolicPreferred: !!cp.symbolicPreferred,
+
+    // GPU / miner / offline / compute tier
+    gpuEligible: !!cp.gpuEligible,
+    gpuPreferred: !!cp.gpuPreferred,
+    gpuTier: cp.gpuTier || "unknown",
+    minerEligible: !!cp.minerEligible,
+    minerTier: cp.minerTier || "unknown",
+    offlineEligible: !!cp.offlineEligible,
+    offlineTier: cp.offlineTier || "unknown",
+    computeTierHint: cp.computeTierHint || "normal"
+  });
 }
 
 function buildDiagnostics(jobType, band, healthScore, tier) {
@@ -283,17 +536,26 @@ function buildWaveField(jobType, band) {
 // ============================================================================
 // ⭐ Pulse Intelligence (logic-only, IMMORTAL-safe)
 // ============================================================================
-function computePulseIntelligence({ advantageField, presenceField, factoringSignal, band }) {
+function computePulseIntelligence({
+  advantageField,
+  presenceField,
+  factoringSignal,
+  band
+}) {
   const advantageScore = advantageField.advantageScore || 0;
-  const advantageTier  = advantageField.advantageTier  || 0;
+  const advantageTier = advantageField.advantageTier || 0;
 
   const presenceTier = presenceField.presenceTier || "idle";
   const presenceWeight =
-    presenceTier === "critical" ? 1.0 :
-    presenceTier === "high"     ? 0.8 :
-    presenceTier === "elevated" ? 0.6 :
-    presenceTier === "soft"     ? 0.4 :
-    0.2;
+    presenceTier === "critical"
+      ? 1.0
+      : presenceTier === "high"
+      ? 0.8
+      : presenceTier === "elevated"
+      ? 0.6
+      : presenceTier === "soft"
+      ? 0.4
+      : 0.2;
 
   const factoring = factoringSignal ? 1 : 0;
   const bandIsBinary = band === "binary" ? 1 : 0;
@@ -301,26 +563,28 @@ function computePulseIntelligence({ advantageField, presenceField, factoringSign
   const solvednessScore = Math.max(
     0,
     Math.min(
-      advantageScore * 10 * 0.5 +
-      presenceWeight * 0.3 +
-      factoring * 0.2,
+      advantageScore * 10 * 0.5 + presenceWeight * 0.3 + factoring * 0.2,
       1
     )
   );
 
   const computeTier =
-    solvednessScore >= 0.9 ? "nearSolution" :
-    solvednessScore >= 0.7 ? "highValue"    :
-    solvednessScore >= 0.4 ? "normal"       :
-    solvednessScore >= 0.2 ? "lowPriority"  :
-    "avoidCompute";
+    solvednessScore >= 0.9
+      ? "nearSolution"
+      : solvednessScore >= 0.7
+      ? "highValue"
+      : solvednessScore >= 0.4
+      ? "normal"
+      : solvednessScore >= 0.2
+      ? "lowPriority"
+      : "avoidCompute";
 
   const readinessScore = Math.max(
     0,
     Math.min(
       solvednessScore * 0.6 +
-      (bandIsBinary ? 0.2 : 0) +
-      (advantageTier >= 2 ? 0.2 : advantageTier === 1 ? 0.1 : 0),
+        (bandIsBinary ? 0.2 : 0) +
+        (advantageTier >= 2 ? 0.2 : advantageTier === 1 ? 0.1 : 0),
       1
     )
   );
@@ -336,122 +600,96 @@ function computePulseIntelligence({ advantageField, presenceField, factoringSign
 }
 
 // ============================================================================
-// Presence / Advantage / Hints / Compute Profile from globalHints/context
+// ⭐ Intelligent Compute Plan (pure, deterministic)
 // ============================================================================
-function cwClamp01(x) {
-  if (x == null || Number.isNaN(x)) return 0;
-  return Math.max(0, Math.min(1, x));
-}
-
-function cwNormalizeCachePriority(p) {
-  if (!p) return "normal";
-  const v = String(p).toLowerCase();
-  if (v === "critical" || v === "high" || v === "low") return v;
-  return "normal";
-}
-
-function buildPresenceFieldFromContext(context = {}) {
-  const gh = context.globalHints || {};
-  const pf = context.presenceField || {};
-  const mesh = context.meshSignals || {};
-  const castle = context.castleSignals || {};
-  const region = gh.regionContext || {};
-
-  const meshPressureIndex = mesh.meshPressureIndex || 0;
-  const castleLoadLevel = castle.loadLevel || 0;
-  const meshStrength = mesh.meshStrength || 0;
-
-  const pressure = meshPressureIndex + castleLoadLevel;
-  let presenceTier = "idle";
-  if (pressure >= 150) presenceTier = "critical";
-  else if (pressure >= 100) presenceTier = "high";
-  else if (pressure >= 50) presenceTier = "elevated";
-  else if (pressure > 0) presenceTier = "soft";
-
-  const presenceSignature = computeHash(
-    `CELL_PRESENCE_V13::${presenceTier}::${meshPressureIndex}::${castleLoadLevel}`
-  );
-
-  return Object.freeze({
-    presenceVersion: "v13.0-Presence-Immortal",
-    presenceTier,
-    presenceSignature,
-
-    bandPresence: pf.bandPresence || gh.presenceContext?.bandPresence || "unknown",
-    routerPresence: pf.routerPresence || gh.presenceContext?.routerPresence || "unknown",
-    devicePresence: pf.devicePresence || gh.presenceContext?.devicePresence || "unknown",
-    meshPresence: pf.meshPresence || mesh.meshStrength || "unknown",
-    castlePresence: pf.castlePresence || castle.castlePresence || "unknown",
-    regionPresence: pf.regionPresence || region.regionTag || "unknown",
-    regionId: region.regionId || "unknown-region",
-    castleId: castle.castleId || "unknown-castle",
-    castleLoadLevel,
-    meshStrength,
-    meshPressureIndex
-  });
-}
-
-function buildAdvantageFieldFromHints(context = {}) {
-  const gh = context.globalHints || {};
-  const adv = gh.advantageContext || {};
-
-  return Object.freeze({
-    advantageVersion: "C-13.0",
-    advantageScore: adv.score ?? null,
-    advantageBand: adv.band ?? "neutral",
-    advantageTier: adv.tier ?? 0
-  });
-}
-
-function buildHintsFieldFromHints(context = {}) {
-  const gh = context.globalHints || {};
-  return Object.freeze({
-    fallbackBandLevel: gh.fallbackBandLevel ?? 0,
-    chunkHints: gh.chunkHints || {},
-    cacheHints: gh.cacheHints || {},
-    prewarmHints: gh.prewarmHints || {},
-    coldStartHints: gh.coldStartHints || {}
-  });
-}
-
-function deriveFactoringSignal({ meshPressureIndex = 0, cachePriority = "normal", prewarmNeeded = false }) {
-  const pressure = cwClamp01(meshPressureIndex / 100);
-  const highPressure = pressure >= 0.7;
-  const criticalCache = cachePriority === "critical";
-  if (criticalCache || prewarmNeeded) return 1;
-  if (highPressure) return 1;
-  return 0;
-}
-
-function buildComputeProfile({ band, context = {} }) {
+function buildIntelligentComputePlan({
+  job,
+  band,
+  presenceField,
+  presenceAdvantageField,
+  computeProfile
+}) {
+  const jobType = job?.type || "unknown";
   const b = normalizeBand(band);
-  const hintsField = buildHintsFieldFromHints(context);
-  const cachePriority = cwNormalizeCachePriority(hintsField.cacheHints.priority);
-  const prewarmNeeded = !!hintsField.prewarmHints.shouldPrewarm;
-  const meshPressureIndex = (context.meshSignals && context.meshSignals.meshPressureIndex) || 0;
 
-  const factoringSignal = deriveFactoringSignal({
-    meshPressureIndex,
-    cachePriority,
-    prewarmNeeded
-  });
+  const baseAdvantage = {
+    advantageScore: presenceAdvantageField.advantageScore ?? 0,
+    advantageTier: presenceAdvantageField.advantageTier ?? 0
+  };
 
-  const serverHints = context.serverAdvantageHints || {};
+  const avgAdvantage =
+    healingState.totalJobs > 0
+      ? healingState.cumulativeAdvantageScore / healingState.totalJobs
+      : 0;
 
-  return Object.freeze({
-    routeBand: b,
-    fallbackBandLevel: hintsField.fallbackBandLevel,
-    chunkAggression: hintsField.chunkHints.chunkAggression ?? 0,
-    cachePriority,
-    prewarmNeeded,
-    binaryPreferred: b === CELL_BANDS.BINARY,
-    symbolicPreferred: b === CELL_BANDS.SYMBOLIC,
-    factoringSignal,
-    hotStateReuse: serverHints.hotStateReuse ?? true,
-    multiInstanceBatching: serverHints.multiInstanceBatching ?? true,
-    serverPlanCache: serverHints.planCache ?? true,
-    serverBinaryReuse: serverHints.binaryReuse ?? true
-  });
+  const pressureTier = presenceField.presenceTier || "idle";
+  const highPressure =
+    pressureTier === "critical" || pressureTier === "high";
+
+  const preferBinary =
+    computeProfile.binaryPreferred ||
+    (highPressure && computeProfile.gpuEligible);
+
+  const preferGPU =
+    computeProfile.gpuEligible &&
+    (computeProfile.gpuPreferred || baseAdvantage.advantageTier >= 2);
+
+  const preferMiner =
+    computeProfile.minerEligible &&
+    !preferGPU &&
+    (pressureTier === "elevated" || pressureTier === "high");
+
+  const preferOffline =
+    computeProfile.offlineEligible &&
+    !preferGPU &&
+    !preferMiner &&
+    pressureTier === "soft";
+
+  let refinedComputeTier = computeProfile.computeTierHint || "normal";
+  if (avgAdvantage >= 0.8 && baseAdvantage.advantageTier >= 2) {
+    refinedComputeTier = "highValue";
+  } else if (avgAdvantage <= 0.2 && !highPressure) {
+    refinedComputeTier = "lowPriority";
+  }
+
+  const plan = {
+    planVersion: "CELL-INTEL-16.0",
+    jobType,
+    band: b,
+
+    // routing
+    routeBand: preferBinary ? CELL_BANDS.BINARY : CELL_BANDS.SYMBOLIC,
+
+    // compute placement
+    useGPU: preferGPU,
+    useMiner: preferMiner,
+    useOffline: preferOffline,
+
+    // tiering
+    computeTier: refinedComputeTier,
+
+    // prewarm / cache / chunk
+    shouldPrewarm: !!computeProfile.prewarmNeeded,
+    cachePriority: computeProfile.cachePriority,
+    chunkAggression: computeProfile.chunkAggression,
+
+    // factoring / hot state
+    factoringSignal: computeProfile.factoringSignal,
+    hotStateReuse: computeProfile.hotStateReuse,
+    multiInstanceBatching: computeProfile.multiInstanceBatching,
+    serverPlanCache: computeProfile.serverPlanCache,
+    serverBinaryReuse: computeProfile.serverBinaryReuse,
+
+    // local advantage memory snapshot
+    localAdvantageMemory: {
+      totalJobs: healingState.totalJobs,
+      successfulJobs: healingState.successfulJobs,
+      failedJobs: healingState.failedJobs,
+      averageAdvantageScore: avgAdvantage
+    }
+  };
+
+  return Object.freeze(plan);
 }
 
 // ============================================================================
@@ -459,10 +697,14 @@ function buildComputeProfile({ band, context = {} }) {
 // ============================================================================
 function textTransform({ text = "", mode = "upper" }) {
   switch (mode) {
-    case "upper": return text.toUpperCase();
-    case "lower": return text.toLowerCase();
-    case "reverse": return text.split("").reverse().join("");
-    default: throw new Error(`Unknown text mode: ${mode}`);
+    case "upper":
+      return text.toUpperCase();
+    case "lower":
+      return text.toLowerCase();
+    case "reverse":
+      return text.split("").reverse().join("");
+    default:
+      throw new Error(`Unknown text mode: ${mode}`);
   }
 }
 
@@ -471,17 +713,24 @@ function mathCompute({ operation, values = [] }) {
     ? values.map((v) => Number(v)).filter((v) => Number.isFinite(v))
     : [];
   switch (operation) {
-    case "sum": return nums.reduce((a, b) => a + b, 0);
-    case "avg": return nums.length ? nums.reduce((a, b) => a + b, 0) / nums.length : 0;
-    case "max": return nums.length ? Math.max(...nums) : -Infinity;
-    case "min": return nums.length ? Math.min(...nums) : Infinity;
-    default: throw new Error(`Unknown math operation: ${operation}`);
+    case "sum":
+      return nums.reduce((a, b) => a + b, 0);
+    case "avg":
+      return nums.length
+        ? nums.reduce((a, b) => a + b, 0) / nums.length
+        : 0;
+    case "max":
+      return nums.length ? Math.max(...nums) : -Infinity;
+    case "min":
+      return nums.length ? Math.min(...nums) : Infinity;
+    default:
+      throw new Error(`Unknown math operation: ${operation}`);
   }
 }
 
 function dataAggregate({ items = [], field }) {
   if (!field) throw new Error("Missing field for data.aggregate");
-  return items.map(item => item[field]);
+  return items.map((item) => item[field]);
 }
 
 function jsonTransform({ json, pick }) {
@@ -499,8 +748,9 @@ function jsonTransform({ json, pick }) {
   }
   return out;
 }
+
 // ============================================================================
-// computeWork — v14.4 IMMORTAL-INTEL Cell Execution
+// computeWork — v16 IMMORTAL-INTEL Cell Execution
 // ============================================================================
 export function computeWork(job, context = {}) {
   healingState.cycleCount++;
@@ -515,15 +765,32 @@ export function computeWork(job, context = {}) {
   const hintsField = buildHintsFieldFromHints(context);
   const computeProfile = buildComputeProfile({ band, context });
 
+  const intelligentPlan = buildIntelligentComputePlan({
+    job,
+    band,
+    presenceField,
+    presenceAdvantageField,
+    computeProfile
+  });
+
+  healingState.lastPresenceField = presenceField;
+  healingState.lastPresenceAdvantageField = presenceAdvantageField;
+  healingState.lastHintsField = hintsField;
+  healingState.lastComputeProfile = computeProfile;
+
   try {
     if (!job || !job.type || !job.payload) {
       healingState.lastError = "invalid_job_structure";
       healingState.executionState = "error";
       healingState.continuanceFallback = true;
+      healingState.failedJobs += 1;
 
       const healthScore = computeHealthScore();
       const tier = classifyDegradationTier(healthScore);
-      const advantageField = buildAdvantageField("invalid", band);
+      const advantageField = buildAdvantageField("invalid", band, {
+        computeProfile,
+        presenceAdvantageField
+      });
       const diagnostics = buildDiagnostics("invalid", band, healthScore, tier);
       const loopField = buildLoopField(healingState.cycleCount, band);
       const waveField = buildWaveField("invalid", band);
@@ -531,7 +798,7 @@ export function computeWork(job, context = {}) {
       const pulseIntelligence = computePulseIntelligence({
         advantageField,
         presenceField,
-        factoringSignal: null,
+        factoringSignal: computeProfile.factoringSignal,
         band
       });
 
@@ -546,6 +813,8 @@ export function computeWork(job, context = {}) {
         healingState.cycleCount,
         band
       );
+
+      recordAdvantageMemory("invalid", band, advantageField);
 
       return {
         success: false,
@@ -564,9 +833,12 @@ export function computeWork(job, context = {}) {
         presenceAdvantageField,
         hintsField,
         computeProfile,
+        intelligentPlan,
 
         pulseIntelligence,
-        pulseIntelligenceSignature: computeHash(JSON.stringify(pulseIntelligence)),
+        pulseIntelligenceSignature: computeHash(
+          JSON.stringify(pulseIntelligence)
+        ),
 
         ...EARN_CELL_CONTEXT
       };
@@ -598,22 +870,31 @@ export function computeWork(job, context = {}) {
         output = jsonTransform(payload);
         break;
 
-      default:
+      default: {
         healingState.lastError = "unknown_job_type";
         healingState.executionState = "error";
         healingState.continuanceFallback = true;
+        healingState.failedJobs += 1;
 
         const uHealthScore = computeHealthScore();
         const uTier = classifyDegradationTier(uHealthScore);
-        const uAdvantageField = buildAdvantageField(type, band);
-        const uDiagnostics = buildDiagnostics(type, band, uHealthScore, uTier);
+        const uAdvantageField = buildAdvantageField(type, band, {
+          computeProfile,
+          presenceAdvantageField
+        });
+        const uDiagnostics = buildDiagnostics(
+          type,
+          band,
+          uHealthScore,
+          uTier
+        );
         const uLoopField = buildLoopField(healingState.cycleCount, band);
         const uWaveField = buildWaveField(type, band);
 
         const uPulseIntelligence = computePulseIntelligence({
           advantageField: uAdvantageField,
           presenceField,
-          factoringSignal: null,
+          factoringSignal: computeProfile.factoringSignal,
           band
         });
 
@@ -628,6 +909,8 @@ export function computeWork(job, context = {}) {
           healingState.cycleCount,
           band
         );
+
+        recordAdvantageMemory(type, band, uAdvantageField);
 
         return {
           success: false,
@@ -646,22 +929,30 @@ export function computeWork(job, context = {}) {
           presenceAdvantageField,
           hintsField,
           computeProfile,
+          intelligentPlan,
 
           pulseIntelligence: uPulseIntelligence,
-          pulseIntelligenceSignature: computeHash(JSON.stringify(uPulseIntelligence)),
+          pulseIntelligenceSignature: computeHash(
+            JSON.stringify(uPulseIntelligence)
+          ),
 
           ...EARN_CELL_CONTEXT
         };
+      }
     }
 
     healingState.lastOutput = output;
     healingState.lastOutputSignature = buildOutputSignature(output, band);
     healingState.lastError = null;
     healingState.executionState = "returning";
+    healingState.successfulJobs += 1;
 
     const healthScore = computeHealthScore();
     const tier = classifyDegradationTier(healthScore);
-    const advantageField = buildAdvantageField(type, band);
+    const advantageField = buildAdvantageField(type, band, {
+      computeProfile,
+      presenceAdvantageField
+    });
     const diagnostics = buildDiagnostics(type, band, healthScore, tier);
     const loopField = buildLoopField(healingState.cycleCount, band);
     const waveField = buildWaveField(type, band);
@@ -669,7 +960,7 @@ export function computeWork(job, context = {}) {
     const pulseIntelligence = computePulseIntelligence({
       advantageField,
       presenceField,
-      factoringSignal: null,
+      factoringSignal: computeProfile.factoringSignal,
       band
     });
 
@@ -684,6 +975,8 @@ export function computeWork(job, context = {}) {
       healingState.cycleCount,
       band
     );
+
+    recordAdvantageMemory(type, band, advantageField);
 
     return {
       success: true,
@@ -702,25 +995,32 @@ export function computeWork(job, context = {}) {
       presenceAdvantageField,
       hintsField,
       computeProfile,
+      intelligentPlan,
 
       pulseIntelligence,
-      pulseIntelligenceSignature: computeHash(JSON.stringify(pulseIntelligence)),
+      pulseIntelligenceSignature: computeHash(
+        JSON.stringify(pulseIntelligence)
+      ),
 
       ...EARN_CELL_CONTEXT
     };
-
   } catch (err) {
     const msg = String(err && err.message ? err.message : err);
 
     healingState.lastError = msg;
     healingState.executionState = "error";
     healingState.continuanceFallback = true;
+    healingState.failedJobs += 1;
 
     const healthScore = computeHealthScore();
     const tier = classifyDegradationTier(healthScore);
     const advantageField = buildAdvantageField(
       healingState.lastJobType || "error",
-      band
+      band,
+      {
+        computeProfile,
+        presenceAdvantageField
+      }
     );
     const diagnostics = buildDiagnostics(
       healingState.lastJobType || "error",
@@ -729,12 +1029,15 @@ export function computeWork(job, context = {}) {
       tier
     );
     const loopField = buildLoopField(healingState.cycleCount, band);
-    const waveField = buildWaveField(healingState.lastJobType || "error", band);
+    const waveField = buildWaveField(
+      healingState.lastJobType || "error",
+      band
+    );
 
     const pulseIntelligence = computePulseIntelligence({
       advantageField,
       presenceField,
-      factoringSignal: null,
+      factoringSignal: computeProfile.factoringSignal,
       band
     });
 
@@ -749,6 +1052,8 @@ export function computeWork(job, context = {}) {
       healingState.cycleCount,
       band
     );
+
+    recordAdvantageMemory(healingState.lastJobType || "error", band, advantageField);
 
     return {
       success: false,
@@ -767,9 +1072,12 @@ export function computeWork(job, context = {}) {
       presenceAdvantageField,
       hintsField,
       computeProfile,
+      intelligentPlan,
 
       pulseIntelligence,
-      pulseIntelligenceSignature: computeHash(JSON.stringify(pulseIntelligence)),
+      pulseIntelligenceSignature: computeHash(
+        JSON.stringify(pulseIntelligence)
+      ),
 
       ...EARN_CELL_CONTEXT
     };
@@ -782,4 +1090,3 @@ export function computeWork(job, context = {}) {
 export function getPulseEarnCellHealingState() {
   return { ...healingState };
 }
-

@@ -1,31 +1,34 @@
 // ============================================================================
-// FILE: tropic-pulse-functions/PULSE-WORLD/PULSE-EARN/PulseEarnGeneticMemory-v13.0-Presence-Immortal.js
-// LAYER: THE GENETIC MEMORY (v13.0-Presence-Immortal)
-// (Keeper of Packets + Guardian of Determinism + DNA Repair Substrate)
+// FILE: tropic-pulse-functions/PULSE-WORLD/PULSE-EARN/PulseEarnGeneticMemory-v16-Immortal-INTEL.js
+// LAYER: THE GENETIC MEMORY (v16-Immortal-INTEL)
+// (Keeper of Packets + Guardian of Determinism + DNA Repair + Compute Intelligence)
 // ============================================================================
 //
-// ROLE (v13.0-Presence-Immortal):
-//   THE GENETIC MEMORY — Pulse‑Earn’s deterministic packet genome.
+// ROLE (v16-Immortal-INTEL):
+//   THE GENETIC MEMORY — Pulse‑Earn’s deterministic packet genome for v16.
 //   • Stores packet data in a safe, in‑memory gene archive.
 //   • Generates deterministic packet values (genetic identity).
 //   • Maintains packet‑level healing metadata (genetic health).
-//   • Emits v13‑Presence‑IMMORTAL genetic signatures.
+//   • Emits v16‑Presence‑IMMORTAL genetic signatures + binary/wave fields.
+//   • Emits v16 chunk/prewarm/computeProfile + pulseIntelligence surfaces.
 //   • Dual-band, binary-aware, wave-aware, presence/advantage/chunk-aware.
+//   • Deep-job aware via metadata (multi-instance hints only, no routing).
 //
-// CONTRACT (v13.0-Presence-Immortal):
+// CONTRACT (v16-Immortal-INTEL):
 //   • PURE PACKET ENGINE — no AI layers, no translation, no memory model.
 //   • NO eval(), NO Function(), NO dynamic imports.
 //   • NO network calls, NO filesystem, NO timestamps.
 //   • Deterministic hashing + safe in‑memory storage only.
-//   • Presence/advantage/chunk surfaces DO NOT affect behavior.
+//   • Presence/advantage/chunk/computeProfile/pulseIntelligence DO NOT affect behavior.
+//   • All intelligence surfaces are metadata-only for higher organs.
 // ============================================================================
 /*
 AI_EXPERIENCE_META = {
   identity: "PulseEarnGeneticMemory",
-  version: "v14-Immortal",
+  version: "v16-Immortal-INTEL",
   layer: "earn_genetic",
   role: "earn_genetic_memory",
-  lineage: "PulseEarnGeneticMemory-v11 → v12.3 → v14-Immortal",
+  lineage: "PulseEarnGeneticMemory-v11 → v12.3 → v13 → v14 → v16-Immortal-INTEL",
 
   evo: {
     geneticMemory: true,
@@ -40,14 +43,27 @@ AI_EXPERIENCE_META = {
     pureCompute: true,
     zeroMutationOfInput: true,
     zeroNetwork: true,
-    zeroFilesystem: true
+    zeroFilesystem: true,
+
+    presenceAware: true,
+    advantageAware: true,
+    chunkPrewarmAware: true,
+    healingMetadataAware: true,
+    waveFieldAware: true,
+
+    computeProfileAware: true,
+    pulseIntelligenceAware: true,
+    factoringAware: true,
+    deepJobAware: true,
+    multiInstanceHints: true
   },
 
   contract: {
     always: [
       "PulseEarn",
       "PulseEarnEndocrineSystem",
-      "PulseEarnContinuancePulse"
+      "PulseEarnContinuancePulse",
+      "PulseEarnCirculatorySystem"
     ],
     never: [
       "safeRoute",
@@ -62,8 +78,8 @@ import { PulseProofBridge } from "../../PULSE-UI/_BACKEND/PulseProofBridge.js";
 export const PulseEarnGeneticMemoryMeta = Object.freeze({
   layer: "PulseEarnGeneticMemory",
   role: "EARN_GENETIC_MEMORY_ORGAN",
-  version: "v13.0-Presence-Immortal",
-  identity: "PulseEarnGeneticMemory-v13.0-Presence-Immortal",
+  version: "v16-Immortal-INTEL",
+  identity: "PulseEarnGeneticMemory-v16-Immortal-INTEL",
 
   guarantees: Object.freeze({
     deterministic: true,
@@ -80,6 +96,12 @@ export const PulseEarnGeneticMemoryMeta = Object.freeze({
     advantageAware: true,
     chunkPrewarmAware: true,
     healingMetadataAware: true,
+
+    computeProfileAware: true,
+    pulseIntelligenceAware: true,
+    factoringAware: true,
+    deepJobAware: true,
+    multiInstanceHints: true,
 
     genomeSafe: true,
     worldLensAware: false
@@ -104,7 +126,7 @@ export const PulseEarnGeneticMemoryMeta = Object.freeze({
 });
 
 // ============================================================================
-// Healing Metadata — Genetic Health Log (v13 IMMORTAL)
+// Healing Metadata — Genetic Health Log (v16-Immortal-INTEL)
 // ============================================================================
 const geneticHealing = {
   lastKey: null,
@@ -125,10 +147,12 @@ const geneticHealing = {
   lastBinaryField: null,
   lastWaveField: null,
 
-  // v13 Presence / Advantage / Chunk
+  // v16 Presence / Advantage / Chunk / Compute / Intelligence
   lastPresenceField: null,
   lastAdvantageField: null,
-  lastChunkPlan: null
+  lastChunkPlan: null,
+  lastComputeProfile: null,
+  lastPulseIntelligence: null
 };
 
 // ============================================================================
@@ -138,14 +162,15 @@ const genome = new Map();
 
 // Deterministic cycle counter
 let geneCycle = 0;
+
 // ============================================================================
 // PulseProofBridge — deterministic proof surfaces for genetic memory
 // ============================================================================
 const proof = new PulseProofBridge({
-  namespace: "PulseEarnGeneticMemory-v15-Immortal",
+  namespace: "PulseEarnGeneticMemory-v16-Immortal-INTEL",
   layer: "GeneticMemory",
   role: "GeneProofSurface",
-  version: "v15-Immortal-CHUNK",
+  version: "v16-Immortal-INTEL-CHUNK",
   deterministic: true,
   driftProof: true
 });
@@ -174,6 +199,9 @@ function classifyPresenceTier(pressure) {
   return "idle";
 }
 
+// ============================================================================
+// v16 Presence / Advantage / Chunk / ComputeProfile / Intelligence
+// ============================================================================
 function buildPresenceField(globalHints = {}, cycle) {
   const ghP = globalHints.presenceContext || {};
   const mesh = globalHints.meshSignals || {};
@@ -194,7 +222,7 @@ function buildPresenceField(globalHints = {}, cycle) {
   const presenceTier = classifyPresenceTier(pressure);
 
   return {
-    presenceVersion: "v13.0-Presence-Immortal",
+    presenceVersion: "v16.0-Presence-Immortal-INTEL",
     presenceTier,
 
     bandPresence: ghP.bandPresence || "symbolic",
@@ -215,7 +243,7 @@ function buildPresenceField(globalHints = {}, cycle) {
     cycle,
 
     presenceSignature: computeHash(
-      `GENETIC_PRESENCE::${presenceTier}::${meshPressureIndex}::${castleLoadLevel}`
+      `GENETIC_PRESENCE_V16::${presenceTier}::${meshPressureIndex}::${castleLoadLevel}`
     )
   };
 }
@@ -243,7 +271,7 @@ function buildAdvantageField(binaryField, waveField, presenceField, globalHints 
   else if (advantageScore > 0) advantageTier = 1;
 
   return {
-    advantageVersion: "C-13.0",
+    advantageVersion: "C-16.0-INTEL",
     advantageScore,
     advantageTier,
     fallbackBandLevel: globalHints.fallbackBandLevel ?? 0
@@ -268,7 +296,7 @@ function buildChunkPrewarmPlan(presenceField, advantageField) {
     0;
 
   return {
-    planVersion: "v13.0-GeneticMemory-AdvantageC",
+    planVersion: "v16.0-GeneticMemory-AdvantageC-INTEL",
     priority: basePriority + advantageBoost,
     band: presenceField.presenceTier,
     chunks: {
@@ -286,13 +314,134 @@ function buildChunkPrewarmPlan(presenceField, advantageField) {
   };
 }
 
+// --------------------------------------------------------------------------
+// ComputeProfile + Factoring + Deep Job Hints (metadata-only)
+// --------------------------------------------------------------------------
+function clamp01(x) {
+  if (x == null || Number.isNaN(x)) return 0;
+  return Math.max(0, Math.min(1, x));
+}
+
+function normalizeCachePriority(p) {
+  if (!p) return "normal";
+  const v = String(p).toLowerCase();
+  if (v === "critical" || v === "high" || v === "low") return v;
+  return "normal";
+}
+
+function deriveFactoringSignal({ meshPressureIndex = 0, size = 0, cachePriority = "normal" }) {
+  const pressure = clamp01(meshPressureIndex / 100);
+  const bigGene = size >= 4096; // deep packet / large gene
+  const highPressure = pressure >= 0.7;
+  const criticalCache = cachePriority === "critical";
+  if (bigGene || criticalCache || highPressure) return 1;
+  return 0;
+}
+
+function buildComputeProfile({ band, globalHints = {}, presenceField, size = 0 }) {
+  const b = normalizeBand(band);
+  const hints = globalHints || {};
+  const cacheHints = hints.cacheHints || {};
+  const prewarmHints = hints.prewarmHints || {};
+
+  const cachePriority = normalizeCachePriority(cacheHints.priority);
+  const prewarmNeeded = !!prewarmHints.shouldPrewarm;
+  const meshPressureIndex = presenceField.meshPressureIndex || 0;
+
+  const factoringSignal = deriveFactoringSignal({
+    meshPressureIndex,
+    size,
+    cachePriority
+  });
+
+  const deepJobCandidate = size >= 8192 || cachePriority === "critical";
+
+  return {
+    computeProfileVersion: "v16.0-GeneticMemory-INTEL",
+    routeBand: b,
+    fallbackBandLevel: hints.fallbackBandLevel ?? 0,
+    chunkAggression: (hints.chunkHints && hints.chunkHints.chunkAggression) ?? 0,
+    cachePriority,
+    prewarmNeeded,
+    binaryPreferred: b === "binary",
+    symbolicPreferred: b === "symbolic",
+    factoringSignal,
+    performanceRatio: 1,
+    deepJobCandidate,
+    multiInstanceHint: deepJobCandidate
+  };
+}
+
+// --------------------------------------------------------------------------
+// Pulse Intelligence for Genetic Memory (logic-only, metadata-only)
+// --------------------------------------------------------------------------
+function computePulseIntelligenceForGene({ band, presenceField, advantageField, computeProfile, size }) {
+  const bandIsBinary = band === "binary" ? 1 : 0;
+  const factoring = computeProfile.factoringSignal ? 1 : 0;
+
+  const advantageScore = advantageField.advantageScore || 0;
+  const advantageTier = advantageField.advantageTier || 0;
+
+  const presenceTier = presenceField.presenceTier || "idle";
+  const presenceWeight =
+    presenceTier === "critical" ? 1.0 :
+    presenceTier === "high"     ? 0.8 :
+    presenceTier === "elevated" ? 0.6 :
+    presenceTier === "soft"     ? 0.4 :
+    0.2;
+
+  const sizeWeight = Math.max(0, Math.min(size / 8192, 1)); // large genes → closer to 1
+
+  const solvednessScore = Math.max(
+    0,
+    Math.min(
+      advantageScore * 10 * 0.3 +
+      presenceWeight * 0.25 +
+      sizeWeight * 0.25 +
+      factoring * 0.2,
+      1
+    )
+  );
+
+  const computeTier =
+    solvednessScore >= 0.9 ? "nearSolution" :
+    solvednessScore >= 0.7 ? "highValue"    :
+    solvednessScore >= 0.4 ? "normal"       :
+    solvednessScore >= 0.2 ? "lowPriority"  :
+    "avoidCompute";
+
+  const readinessScore = Math.max(
+    0,
+    Math.min(
+      solvednessScore * 0.6 +
+      (bandIsBinary ? 0.2 : 0) +
+      (advantageTier >= 2 ? 0.2 : advantageTier === 1 ? 0.1 : 0),
+      1
+    )
+  );
+
+  return {
+    pulseIntelligenceVersion: "v16.0-GeneticMemory-INTEL",
+    solvednessScore,
+    factoringSignal: factoring ? "high" : "low",
+    computeTier,
+    readinessScore,
+    band,
+    advantageTier,
+    size
+  };
+}
+
+// ============================================================================
+// Binary + Wave Surfaces (v16, same math, upgraded signatures)
+// ============================================================================
 function buildBinaryField(size, cycle) {
   const density = size + cycle;
   const surface = density + size;
 
   return {
-    binaryGeneSignature: computeHash(`BGENE::${surface}`),
-    binarySurfaceSignature: computeHash(`BGENE_SURF::${surface}`),
+    binaryGeneSignature: computeHash(`BGENE_V16::${surface}`),
+    binarySurfaceSignature: computeHash(`BGENE_SURF_V16::${surface}`),
     binarySurface: {
       size,
       density,
@@ -317,6 +466,10 @@ function buildWaveField(size, cycle, band) {
   };
 }
 
+// ============================================================================
+// PUBLIC API — Genetic Memory v16-Immortal-INTEL
+// ============================================================================
+
 export function readPulseEarnGeneExists(fileId, packetIndex, band = "symbolic", globalHints = {}) {
   geneCycle++;
   geneticHealing.cycleCount++;
@@ -331,18 +484,33 @@ export function readPulseEarnGeneExists(fileId, packetIndex, band = "symbolic", 
   const waveField = buildWaveField(0, geneCycle, normalizedBand);
   const advantageField = buildAdvantageField(binaryField, waveField, presenceField, globalHints);
   const chunkPlan = buildChunkPrewarmPlan(presenceField, advantageField);
+  const computeProfile = buildComputeProfile({
+    band: normalizedBand,
+    globalHints,
+    presenceField,
+    size: 0
+  });
+  const pulseIntelligence = computePulseIntelligenceForGene({
+    band: normalizedBand,
+    presenceField,
+    advantageField,
+    computeProfile,
+    size: 0
+  });
 
   geneticHealing.lastPresenceField = presenceField;
   geneticHealing.lastAdvantageField = advantageField;
   geneticHealing.lastChunkPlan = chunkPlan;
+  geneticHealing.lastComputeProfile = computeProfile;
+  geneticHealing.lastPulseIntelligence = pulseIntelligence;
 
   try {
     const key = `${fileId}:${packetIndex}:${normalizedBand}`;
     geneticHealing.lastKey = key;
 
-    geneticHealing.lastGeneSignature = computeHash(`GENE::${key}::${geneCycle}`);
+    geneticHealing.lastGeneSignature = computeHash(`GENE_EXISTS_V16::${key}::${geneCycle}`);
 
-    // 🔥 NEW: Proof surface
+    // Proof surface
     proof.write("read", {
       key,
       fileId,
@@ -353,7 +521,9 @@ export function readPulseEarnGeneExists(fileId, packetIndex, band = "symbolic", 
       binaryField,
       waveField,
       advantageField,
-      chunkPlan
+      chunkPlan,
+      computeProfile,
+      pulseIntelligence
     });
 
     return genome.has(key);
@@ -363,7 +533,6 @@ export function readPulseEarnGeneExists(fileId, packetIndex, band = "symbolic", 
     return false;
   }
 }
-
 
 export function writePulseEarnGene(fileId, packetIndex, data, band = "symbolic", globalHints = {}) {
   geneCycle++;
@@ -388,12 +557,27 @@ export function writePulseEarnGene(fileId, packetIndex, data, band = "symbolic",
     const waveField = buildWaveField(size, geneCycle, normalizedBand);
     const advantageField = buildAdvantageField(binaryField, waveField, presenceField, globalHints);
     const chunkPlan = buildChunkPrewarmPlan(presenceField, advantageField);
+    const computeProfile = buildComputeProfile({
+      band: normalizedBand,
+      globalHints,
+      presenceField,
+      size
+    });
+    const pulseIntelligence = computePulseIntelligenceForGene({
+      band: normalizedBand,
+      presenceField,
+      advantageField,
+      computeProfile,
+      size
+    });
 
     geneticHealing.lastBinaryField = binaryField;
     geneticHealing.lastWaveField = waveField;
     geneticHealing.lastPresenceField = presenceField;
     geneticHealing.lastAdvantageField = advantageField;
     geneticHealing.lastChunkPlan = chunkPlan;
+    geneticHealing.lastComputeProfile = computeProfile;
+    geneticHealing.lastPulseIntelligence = pulseIntelligence;
 
     geneticHealing.lastWrite = {
       key,
@@ -401,10 +585,10 @@ export function writePulseEarnGene(fileId, packetIndex, data, band = "symbolic",
       cycleIndex: geneCycle
     };
 
-    geneticHealing.lastWriteSignature = computeHash(`WRITE::${key}::${size}`);
+    geneticHealing.lastWriteSignature = computeHash(`WRITE_V16::${key}::${size}`);
     geneticHealing.lastError = null;
 
-    // 🔥 NEW: Proof surface
+    // Proof surface
     proof.write("write", {
       key,
       fileId,
@@ -416,7 +600,9 @@ export function writePulseEarnGene(fileId, packetIndex, data, band = "symbolic",
       binaryField,
       waveField,
       advantageField,
-      chunkPlan
+      chunkPlan,
+      computeProfile,
+      pulseIntelligence
     });
 
     return true;
@@ -426,7 +612,6 @@ export function writePulseEarnGene(fileId, packetIndex, data, band = "symbolic",
     return false;
   }
 }
-
 
 export function synthesizePulseEarnGene(fileId, packetIndex, band = "symbolic", globalHints = {}) {
   geneCycle++;
@@ -467,19 +652,34 @@ export function synthesizePulseEarnGene(fileId, packetIndex, band = "symbolic", 
     const waveField = buildWaveField(size, geneCycle, normalizedBand);
     const advantageField = buildAdvantageField(binaryField, waveField, presenceField, globalHints);
     const chunkPlan = buildChunkPrewarmPlan(presenceField, advantageField);
+    const computeProfile = buildComputeProfile({
+      band: normalizedBand,
+      globalHints,
+      presenceField,
+      size
+    });
+    const pulseIntelligence = computePulseIntelligenceForGene({
+      band: normalizedBand,
+      presenceField,
+      advantageField,
+      computeProfile,
+      size
+    });
 
     geneticHealing.lastGenerated = gene;
-    geneticHealing.lastSynthesisSignature = computeHash(`SYNTH::${key}::${value}`);
+    geneticHealing.lastSynthesisSignature = computeHash(`SYNTH_V16::${key}::${value}`);
 
     geneticHealing.lastBinaryField = binaryField;
     geneticHealing.lastWaveField = waveField;
     geneticHealing.lastPresenceField = presenceField;
     geneticHealing.lastAdvantageField = advantageField;
     geneticHealing.lastChunkPlan = chunkPlan;
+    geneticHealing.lastComputeProfile = computeProfile;
+    geneticHealing.lastPulseIntelligence = pulseIntelligence;
 
     geneticHealing.lastError = null;
 
-    // 🔥 NEW: Proof surface
+    // Proof surface
     proof.write("synthesize", {
       key,
       fileId,
@@ -492,7 +692,9 @@ export function synthesizePulseEarnGene(fileId, packetIndex, band = "symbolic", 
       binaryField,
       waveField,
       advantageField,
-      chunkPlan
+      chunkPlan,
+      computeProfile,
+      pulseIntelligence
     });
 
     return gene;
@@ -502,7 +704,6 @@ export function synthesizePulseEarnGene(fileId, packetIndex, band = "symbolic", 
     return null;
   }
 }
-
 
 export function getPulseEarnGeneticMemoryHealingState() {
   return { ...geneticHealing };

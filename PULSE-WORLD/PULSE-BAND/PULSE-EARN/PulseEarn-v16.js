@@ -1,8 +1,12 @@
 // ============================================================================
 //  PulseEarn-v16.0-Presence-Immortal-GPU-INTEL.js — Earn Organism v16
-//  IMMORTAL UPGRADE of v12.3/v13/v14.4: dual-band, evolution surfaces,
-//  presence/mesh/castle/expansion/server/globalHints-aware, chunk/cache/
-//  prewarm/factoring-aware, GPU-advantage baked, per-page compute intelligence.
+//  IMMORTAL UPGRADE of v12.3-Presence-Evo+:
+//  - dual-band (symbolic + binary)
+//  - evolution surfaces
+//  - presence / mesh / castle / expansion / server / globalHints-aware
+//  - chunk / cache / prewarm / factoring-aware
+//  - GPU advantage baked in (lanes, tiers, reuse, prewarm plans)
+//  - per-page compute intelligence + memory surfaces
 // ============================================================================
 //
 //  SAFETY CONTRACT (v16.0-Presence-Immortal-GPU-INTEL):
@@ -24,7 +28,7 @@ AI_EXPERIENCE_META = {
   version: "v16-Immortal-GPU-INTEL",
   layer: "earn_core",
   role: "earn_root_engine",
-  lineage: "PulseEarn-v9 → v10.4 → v11-Evo → v12.3 → v14-Immortal → v16-Immortal-GPU-INTEL",
+  lineage: "PulseEarn-v9 → v10.4 → v11-Evo → v12.3 → v16-Immortal-GPU-INTEL",
 
   evo: {
     earnRoot: true,
@@ -68,6 +72,7 @@ import * as PulseEarnImmuneSystem      from "./PulseEarnImmuneSystem.js";
 import * as PulseEarnMetabolism        from "./PulseEarnMetabolism.js";
 import * as PulseEarnNervousSystem     from "./PulseEarnNervousSystem.js";
 import * as PulseEarnSkeletalSystem    from "./PulseEarnSkeletalSystem.js";
+import { PulseEarnSignalFactoring } from "./PulseEarnSignalFactoring.js";
 
 // --- MARKET EARN ORGANS ----------------------------------------------------
 import PulseEarnMktAuctioneer     from "./PulseEarnMktAuctioneer.js";
@@ -140,7 +145,9 @@ export const EarnMeta = Object.freeze({
     gpuAware: true,
     gpuAdvantageAware: true,
     gpuBinaryFieldAware: true,
-    gpuTierAware: true
+    gpuTierAware: true,
+    gpuLaneAware: true,
+    gpuPrewarmPlanAware: true
   }),
 
   contract: Object.freeze({
@@ -156,7 +163,8 @@ export const EarnMeta = Object.freeze({
       "ExpansionSignals",
       "ServerAdvantageHints",
       "GlobalHints",
-      "GPUHints"
+      "GPUHints",
+      "PageHints"
     ],
     output: [
       "EarnOutputShape",
@@ -164,8 +172,8 @@ export const EarnMeta = Object.freeze({
       "EarnSignatures",
       "EarnPresenceField",
       "EarnAdvantageField",
-      "EarnGPUAdvantageField",
-      "EarnPulseIntelligence"
+      "EarnPulseIntelligence",
+      "EarnPageIntelligence"
     ]
   }),
 
@@ -177,8 +185,7 @@ export const EarnMeta = Object.freeze({
       "PulseEarn-v10.4",
       "PulseEarn-v11",
       "PulseEarn-v11.2-Evo",
-      "PulseEarn-v12.3-Presence-Evo+",
-      "PulseEarn-v14.4-Immortal-INTEL"
+      "PulseEarn-v12.3-Presence-Evo+"
     ]
   }),
 
@@ -223,8 +230,6 @@ export const EarnRole = {
 
     // Compute surfaces
     gpuAwareReady: true,
-    gpuBinaryFieldReady: true,
-    gpuAdvantageReady: true,
     minerAwareReady: true,
     airAwareReady: true,
     offlineAwareReady: true,
@@ -249,6 +254,7 @@ export const EarnRole = {
     bandAware: true,
     dualBandReady: true,
     binaryCompressionReady: true,
+    gpuBinaryFieldReady: true,
     waveFieldAware: true,
     cohortAware: true,
     evolutionSurfaceCohortReady: true,
@@ -329,13 +335,14 @@ function computeEvolutionStage(pattern, lineage, band) {
 }
 
 function evolvePattern(pattern, context = {}) {
-  const { gpuHint, minerHint, airHint } = context;
+  const { gpuHint, minerHint, airHint, pageHint } = context;
 
   const parts = [pattern];
 
   if (gpuHint) parts.push(`g:${gpuHint}`);
   if (minerHint) parts.push(`m:${minerHint}`);
   if (airHint) parts.push(`a:${airHint}`);
+  if (pageHint) parts.push(`p:${pageHint}`);
 
   return parts.join("|");
 }
@@ -375,7 +382,10 @@ function classifyDegradationTier(h) {
   return "criticalDegrade";
 }
 
-// v16 IMMORTAL: advantage core is structural, not perf-weighted by pattern length.
+// ============================================================================
+//  ADVANTAGE CORE + SUBFIELDS (v16, multi-surface, GPU-aware)
+// ============================================================================
+
 function buildAdvantageFieldCore(pattern, lineage, band) {
   const depth = lineage.length;
   const b = normalizeBand(band);
@@ -387,7 +397,112 @@ function buildAdvantageFieldCore(pattern, lineage, band) {
     band: b,
     binaryCompressionBias: b === ROUTE_BANDS.BINARY ? 1 : 0,
     symbolicPlanningBias: b === ROUTE_BANDS.SYMBOLIC ? 1 : 0,
-    gpuAffinityBias: pattern.includes("gpu") ? 1 : 0
+
+    // structural tags only
+    lineageSignature: buildLineageSignature(lineage),
+    patternLength: pattern.length
+  };
+}
+
+function buildCacheAdvantage({
+  cachePriority = "normal",
+  cacheScope = "page",
+  cacheCohort = "global",
+  cacheWarmth = "cold",
+  cacheReuseAllowed = true
+} = {}) {
+  return {
+    cachePriority: normalizeCachePriority(cachePriority),
+    cacheScope,
+    cacheCohort,
+    cacheWarmth,
+    cacheReuseAllowed
+  };
+}
+
+function buildPrewarmAdvantage({
+  prewarmNeeded = false,
+  prewarmScope = "page",
+  prewarmBand = "symbolic",
+  prewarmBudget = 0,
+  prewarmHint = "none"
+} = {}) {
+  return {
+    prewarmNeeded: !!prewarmNeeded,
+    prewarmScope,
+    prewarmBand: normalizeBand(prewarmBand),
+    prewarmBudget,
+    prewarmHint
+  };
+}
+
+function buildServerAdvantage({
+  hotStateReuse = true,
+  multiInstanceBatching = true,
+  serverHotStateReuse = true,
+  serverPlanCache = true,
+  serverBinaryReuse = true,
+  serverTier = "normal"
+} = {}) {
+  return {
+    hotStateReuse,
+    multiInstanceBatching,
+    serverHotStateReuse,
+    serverPlanCache,
+    serverBinaryReuse,
+    serverTier
+  };
+}
+
+function buildGPUAdvantage({
+  gpuPreferred = true,
+  gpuTier = "normal",
+  gpuBinaryReuse = true,
+  gpuPrewarm = true,
+  gpuChunkAggression = 0,
+  gpuCachePriority = "normal",
+  gpuLaneCount = 0,
+  gpuLaneUtilization = 0,
+  gpuBinaryFieldEnabled = true
+} = {}) {
+  return {
+    gpuPreferred,
+    gpuTier,
+    gpuBinaryReuse,
+    gpuPrewarm,
+    gpuChunkAggression,
+    gpuCachePriority: normalizeCachePriority(gpuCachePriority),
+    gpuLaneCount,
+    gpuLaneUtilization,
+    gpuBinaryFieldEnabled
+  };
+}
+
+function buildCohortAdvantage({
+  cohortId = "global",
+  cohortTier = "normal",
+  cohortWaveMode = "steady",
+  cohortPriority = "normal"
+} = {}) {
+  return {
+    cohortId,
+    cohortTier,
+    cohortWaveMode,
+    cohortPriority
+  };
+}
+
+function buildPageAdvantage({
+  pageId = "NO_PAGE",
+  pagePriority = "normal",
+  pageHotState = "cold",
+  pagePatternClass = "generic"
+} = {}) {
+  return {
+    pageId,
+    pagePriority,
+    pageHotState,
+    pagePatternClass
   };
 }
 
@@ -525,6 +640,81 @@ function computePulseIntelligence({ advantageField, presenceField, factoringSign
     advantageTier,
     gpuTier,
     gpuAffinity
+  };
+}
+
+// Per-page intelligence: how “worth it” is GPU + prewarm for this page.
+function computePageIntelligence({
+  pageAdvantage,
+  cacheAdvantage,
+  prewarmAdvantage,
+  gpuAdvantage
+}) {
+  const pagePriority = pageAdvantage.pagePriority || "normal";
+  const pageHotState = pageAdvantage.pageHotState || "cold";
+
+  const cachePriority = cacheAdvantage.cachePriority || "normal";
+  const cacheWarmth = cacheAdvantage.cacheWarmth || "cold";
+
+  const prewarmNeeded = !!prewarmAdvantage.prewarmNeeded;
+  const gpuPreferred = !!gpuAdvantage.gpuPreferred;
+
+  const priorityWeight =
+    pagePriority === "critical" ? 1.0 :
+    pagePriority === "high"     ? 0.8 :
+    pagePriority === "normal"   ? 0.5 :
+    pagePriority === "low"      ? 0.2 :
+    0.1;
+
+  const hotStateWeight =
+    pageHotState === "hot"   ? 1.0 :
+    pageHotState === "warm"  ? 0.7 :
+    pageHotState === "cool"  ? 0.4 :
+    0.2;
+
+  const cacheWeight =
+    cachePriority === "critical" ? 1.0 :
+    cachePriority === "high"     ? 0.8 :
+    cachePriority === "normal"   ? 0.5 :
+    cachePriority === "low"      ? 0.2 :
+    0.1;
+
+  const cacheWarmthWeight =
+    cacheWarmth === "hot"   ? 1.0 :
+    cacheWarmth === "warm"  ? 0.7 :
+    cacheWarmth === "cool"  ? 0.4 :
+    0.2;
+
+  const prewarmWeight = prewarmNeeded ? 1.0 : 0.2;
+  const gpuWeight = gpuPreferred ? 1.0 : 0.3;
+
+  const pageComputeScore = Math.max(
+    0,
+    Math.min(
+      priorityWeight * 0.3 +
+      hotStateWeight * 0.2 +
+      cacheWeight * 0.15 +
+      cacheWarmthWeight * 0.15 +
+      prewarmWeight * 0.1 +
+      gpuWeight * 0.1,
+      1
+    )
+  );
+
+  const pageComputeTier =
+    pageComputeScore >= 0.9 ? "pageCritical" :
+    pageComputeScore >= 0.7 ? "pageHigh"     :
+    pageComputeScore >= 0.4 ? "pageNormal"   :
+    pageComputeScore >= 0.2 ? "pageLow"      :
+    "pageAvoid";
+
+  return {
+    pageComputeScore,
+    pageComputeTier,
+    gpuPreferred,
+    prewarmNeeded,
+    cachePriority,
+    pagePriority
   };
 }
 
@@ -667,43 +857,132 @@ function buildPresenceField({
 
 function buildAdvantageField({
   band = "symbolic",
-  chunkAggression = 0,
+  // cache
   cachePriority = "normal",
+  cacheScope = "page",
+  cacheCohort = "global",
+  cacheWarmth = "cold",
+  cacheReuseAllowed = true,
+
+  // prewarm
   prewarmNeeded = false,
+  prewarmScope = "page",
+  prewarmBand = "symbolic",
+  prewarmBudget = 0,
+  prewarmHint = "none",
+
+  // server
   hotStateReuse = true,
   multiInstanceBatching = true,
-  factoringSignal = 1,
   serverHotStateReuse = true,
   serverPlanCache = true,
   serverBinaryReuse = true,
+  serverTier = "normal",
 
-  // v16 GPU advantage
+  // factoring
+  factoringSignal = 1,
+
+  // GPU
   gpuPreferred = true,
   gpuTier = "normal",
   gpuBinaryReuse = true,
   gpuPrewarm = true,
   gpuChunkAggression = 0,
-  gpuCachePriority = "normal"
+  gpuCachePriority = "normal",
+  gpuLaneCount = 0,
+  gpuLaneUtilization = 0,
+  gpuBinaryFieldEnabled = true,
+
+  // cohort
+  cohortId = "global",
+  cohortTier = "normal",
+  cohortWaveMode = "steady",
+  cohortPriority = "normal",
+
+  // page
+  pageId = "NO_PAGE",
+  pagePriority = "normal",
+  pageHotState = "cold",
+  pagePatternClass = "generic"
 } = {}) {
-  return Object.freeze({
-    advantageVersion: "E-16.0",
-    band: normalizeBand(band),
-    chunkAggression,
-    cachePriority: normalizeCachePriority(cachePriority),
+  const cacheAdv = buildCacheAdvantage({
+    cachePriority,
+    cacheScope,
+    cacheCohort,
+    cacheWarmth,
+    cacheReuseAllowed
+  });
+
+  const prewarmAdv = buildPrewarmAdvantage({
     prewarmNeeded,
+    prewarmScope,
+    prewarmBand,
+    prewarmBudget,
+    prewarmHint
+  });
+
+  const serverAdv = buildServerAdvantage({
     hotStateReuse,
     multiInstanceBatching,
-    factoringSignal,
     serverHotStateReuse,
     serverPlanCache,
     serverBinaryReuse,
+    serverTier
+  });
 
+  const gpuAdv = buildGPUAdvantage({
     gpuPreferred,
     gpuTier,
     gpuBinaryReuse,
     gpuPrewarm,
     gpuChunkAggression,
-    gpuCachePriority: normalizeCachePriority(gpuCachePriority)
+    gpuCachePriority,
+    gpuLaneCount,
+    gpuLaneUtilization,
+    gpuBinaryFieldEnabled
+  });
+
+  const cohortAdv = buildCohortAdvantage({
+    cohortId,
+    cohortTier,
+    cohortWaveMode,
+    cohortPriority
+  });
+
+  const pageAdv = buildPageAdvantage({
+    pageId,
+    pagePriority,
+    pageHotState,
+    pagePatternClass
+  });
+
+  return Object.freeze({
+    advantageVersion: "E-16.0",
+    band: normalizeBand(band),
+    factoringSignal,
+
+    cache: cacheAdv,
+    prewarm: prewarmAdv,
+    server: serverAdv,
+    gpu: gpuAdv,
+    cohort: cohortAdv,
+    page: pageAdv,
+
+    // flattened convenience fields for older callers
+    cachePriority: cacheAdv.cachePriority,
+    prewarmNeeded: prewarmAdv.prewarmNeeded,
+    hotStateReuse: serverAdv.hotStateReuse,
+    multiInstanceBatching: serverAdv.multiInstanceBatching,
+    serverHotStateReuse: serverAdv.serverHotStateReuse,
+    serverPlanCache: serverAdv.serverPlanCache,
+    serverBinaryReuse: serverAdv.serverBinaryReuse,
+
+    gpuPreferred: gpuAdv.gpuPreferred,
+    gpuTier: gpuAdv.gpuTier,
+    gpuBinaryReuse: gpuAdv.gpuBinaryReuse,
+    gpuPrewarm: gpuAdv.gpuPrewarm,
+    gpuChunkAggression: gpuAdv.gpuChunkAggression,
+    gpuCachePriority: gpuAdv.gpuCachePriority
   });
 }
 
@@ -720,14 +999,15 @@ export function createEarn({
   pageId = "NO_PAGE",
   band = ROUTE_BANDS.SYMBOLIC,
 
-  // presence / mesh / castle / expansion / server / global hints / gpu hints
+  // presence / mesh / castle / expansion / server / global hints / gpu hints / page hints
   presenceField = null,
   meshSignals = null,
   castleSignals = null,
   expansionSignals = null, // reserved, symbolic only
   serverAdvantageHints = null,
   globalHints = null,
-  gpuHints = null
+  gpuHints = null,
+  pageHints = null
 }) {
   const normalizedBand = normalizeBand(band);
 
@@ -737,6 +1017,7 @@ export function createEarn({
   const gh = globalHints || {};
   const serverHints = serverAdvantageHints || {};
   const gpu = gpuHints || {};
+  const page = pageHints || {};
 
   const cachePriority = normalizeCachePriority(gh.cacheHints?.priority);
   const prewarmNeeded = !!(gh.prewarmHints?.shouldPrewarm);
@@ -826,30 +1107,66 @@ export function createEarn({
 
   const earnAdvantageField = buildAdvantageField({
     band: normalizedBand,
-    chunkAggression: gh.chunkHints?.chunkAggression ?? 0,
+
     cachePriority,
+    cacheScope: gh.cacheHints?.scope ?? "page",
+    cacheCohort: gh.cacheHints?.cohort ?? "global",
+    cacheWarmth: gh.cacheHints?.warmth ?? "cold",
+    cacheReuseAllowed: gh.cacheHints?.reuseAllowed ?? true,
+
     prewarmNeeded,
+    prewarmScope: gh.prewarmHints?.scope ?? "page",
+    prewarmBand: gh.prewarmHints?.band ?? normalizedBand,
+    prewarmBudget: gh.prewarmHints?.budget ?? 0,
+    prewarmHint: gh.prewarmHints?.hint ?? "none",
+
     hotStateReuse: serverHints.hotStateReuse ?? true,
     multiInstanceBatching: serverHints.multiInstanceBatching ?? true,
-    factoringSignal,
     serverHotStateReuse: serverHints.hotStateReuse ?? true,
     serverPlanCache: serverHints.planCache ?? true,
     serverBinaryReuse: serverHints.binaryReuse ?? true,
+    serverTier: serverHints.serverTier ?? "normal",
+
+    factoringSignal,
 
     gpuPreferred: gpu.gpuPreferred ?? true,
     gpuTier: gpu.gpuTier ?? "normal",
     gpuBinaryReuse: gpu.gpuBinaryReuse ?? true,
     gpuPrewarm: gpu.gpuPrewarm ?? true,
     gpuChunkAggression: gpu.gpuChunkAggression ?? (gh.chunkHints?.chunkAggression ?? 0),
-    gpuCachePriority: gpu.gpuCachePriority ?? cachePriority
+    gpuCachePriority: gpu.gpuCachePriority ?? cachePriority,
+    gpuLaneCount: gpu.gpuLaneCount ?? 0,
+    gpuLaneUtilization: gpu.gpuLaneUtilization ?? 0,
+    gpuBinaryFieldEnabled: gpu.gpuBinaryFieldEnabled ?? true,
+
+    cohortId: gh.cohortHints?.cohortId ?? "global",
+    cohortTier: gh.cohortHints?.cohortTier ?? "normal",
+    cohortWaveMode: gh.cohortHints?.waveMode ?? "steady",
+    cohortPriority: gh.cohortHints?.priority ?? "normal",
+
+    pageId,
+    pagePriority: page.pagePriority ?? "normal",
+    pageHotState: page.pageHotState ?? "cold",
+    pagePatternClass: page.pagePatternClass ?? "generic"
   });
 
   // ⭐ Intelligence surface (v16 IMMORTAL-GPU-INTEL)
   const pulseIntelligence = computePulseIntelligence({
-    advantageField: earnAdvantageField,
+    advantageField: {
+      ...earnAdvantageField,
+      gpuTier: earnAdvantageField.gpu?.gpuTier || earnAdvantageField.gpuTier
+    },
     presenceField: earnPresenceField,
     factoringSignal,
     band: normalizedBand
+  });
+
+  // ⭐ Per-page intelligence surface
+  const pageIntelligence = computePageIntelligence({
+    pageAdvantage: earnAdvantageField.page,
+    cacheAdvantage: earnAdvantageField.cache,
+    prewarmAdvantage: earnAdvantageField.prewarm,
+    gpuAdvantage: earnAdvantageField.gpu
   });
 
   const earnObject = {
@@ -873,6 +1190,7 @@ export function createEarn({
 
     // ⭐ top-level intelligence
     pulseIntelligence,
+    pageIntelligence,
 
     netField,          // PULSE-NET organism snapshot
     coreMemoryField,   // CoreMemory full spine field
@@ -902,9 +1220,11 @@ export function createEarn({
 
       // ⭐ mirrored intelligence + signature
       pulseIntelligence,
+      pageIntelligence,
       pulseIntelligenceSignature: computeHash(JSON.stringify(pulseIntelligence)),
+      pageIntelligenceSignature: computeHash(JSON.stringify(pageIntelligence)),
 
-      // v11/v12/v13/v16 signatures
+      // v11/v12/v13 signatures
       earnSignature: computeHash(
         pattern + "::" + lineageSignature + "::" + normalizedBand
       ),
@@ -993,6 +1313,7 @@ export function evolveEarn(earn, context = {}) {
   const gh = context.globalHints || null;
   const serverHints = context.serverAdvantageHints || null;
   const gpu = context.gpuHints || null;
+  const page = context.pageHints || null;
 
   const cachePriority = normalizeCachePriority(
     gh?.cacheHints?.priority ?? adv.cachePriority
@@ -1020,27 +1341,55 @@ export function evolveEarn(earn, context = {}) {
 
   const nextAdvantageField = buildAdvantageField({
     band: normalizedBand,
-    chunkAggression: gh?.chunkHints?.chunkAggression ?? adv.chunkAggression,
-    cachePriority,
-    prewarmNeeded,
-    hotStateReuse: serverHints?.hotStateReuse ?? adv.hotStateReuse,
-    multiInstanceBatching: serverHints?.multiInstanceBatching ?? adv.multiInstanceBatching,
-    factoringSignal: nextFactoringSignal,
-    serverHotStateReuse: serverHints?.hotStateReuse ?? adv.serverHotStateReuse ?? true,
-    serverPlanCache: serverHints?.planCache ?? adv.serverPlanCache ?? true,
-    serverBinaryReuse: serverHints?.binaryReuse ?? adv.serverBinaryReuse ?? true,
 
-    gpuPreferred: gpu?.gpuPreferred ?? adv.gpuPreferred ?? true,
-    gpuTier: gpu?.gpuTier ?? adv.gpuTier ?? "normal",
-    gpuBinaryReuse: gpu?.gpuBinaryReuse ?? adv.gpuBinaryReuse ?? true,
-    gpuPrewarm: gpu?.gpuPrewarm ?? adv.gpuPrewarm ?? true,
-    gpuChunkAggression: gpu?.gpuChunkAggression ?? adv.gpuChunkAggression ?? 0,
-    gpuCachePriority: gpu?.gpuCachePriority ?? adv.gpuCachePriority ?? cachePriority
+    cachePriority,
+    cacheScope: gh?.cacheHints?.scope ?? adv.cache?.cacheScope ?? "page",
+    cacheCohort: gh?.cacheHints?.cohort ?? adv.cache?.cacheCohort ?? "global",
+    cacheWarmth: gh?.cacheHints?.warmth ?? adv.cache?.cacheWarmth ?? "cold",
+    cacheReuseAllowed: gh?.cacheHints?.reuseAllowed ?? adv.cache?.cacheReuseAllowed ?? true,
+
+    prewarmNeeded,
+    prewarmScope: gh?.prewarmHints?.scope ?? adv.prewarm?.prewarmScope ?? "page",
+    prewarmBand: gh?.prewarmHints?.band ?? adv.prewarm?.prewarmBand ?? normalizedBand,
+    prewarmBudget: gh?.prewarmHints?.budget ?? adv.prewarm?.prewarmBudget ?? 0,
+    prewarmHint: gh?.prewarmHints?.hint ?? adv.prewarm?.prewarmHint ?? "none",
+
+    hotStateReuse: serverHints?.hotStateReuse ?? adv.server?.hotStateReuse ?? adv.hotStateReuse,
+    multiInstanceBatching: serverHints?.multiInstanceBatching ?? adv.server?.multiInstanceBatching ?? adv.multiInstanceBatching,
+    serverHotStateReuse: serverHints?.hotStateReuse ?? adv.server?.serverHotStateReuse ?? adv.serverHotStateReuse ?? true,
+    serverPlanCache: serverHints?.planCache ?? adv.server?.serverPlanCache ?? adv.serverPlanCache ?? true,
+    serverBinaryReuse: serverHints?.binaryReuse ?? adv.server?.serverBinaryReuse ?? adv.serverBinaryReuse ?? true,
+    serverTier: serverHints?.serverTier ?? adv.server?.serverTier ?? "normal",
+
+    factoringSignal: nextFactoringSignal,
+
+    gpuPreferred: gpu?.gpuPreferred ?? adv.gpu?.gpuPreferred ?? adv.gpuPreferred ?? true,
+    gpuTier: gpu?.gpuTier ?? adv.gpu?.gpuTier ?? adv.gpuTier ?? "normal",
+    gpuBinaryReuse: gpu?.gpuBinaryReuse ?? adv.gpu?.gpuBinaryReuse ?? adv.gpuBinaryReuse ?? true,
+    gpuPrewarm: gpu?.gpuPrewarm ?? adv.gpu?.gpuPrewarm ?? adv.gpuPrewarm ?? true,
+    gpuChunkAggression: gpu?.gpuChunkAggression ?? adv.gpu?.gpuChunkAggression ?? adv.gpuChunkAggression ?? 0,
+    gpuCachePriority: gpu?.gpuCachePriority ?? adv.gpu?.gpuCachePriority ?? cachePriority,
+    gpuLaneCount: gpu?.gpuLaneCount ?? adv.gpu?.gpuLaneCount ?? 0,
+    gpuLaneUtilization: gpu?.gpuLaneUtilization ?? adv.gpu?.gpuLaneUtilization ?? 0,
+    gpuBinaryFieldEnabled: gpu?.gpuBinaryFieldEnabled ?? adv.gpu?.gpuBinaryFieldEnabled ?? true,
+
+    cohortId: gh?.cohortHints?.cohortId ?? adv.cohort?.cohortId ?? "global",
+    cohortTier: gh?.cohortHints?.cohortTier ?? adv.cohort?.cohortTier ?? "normal",
+    cohortWaveMode: gh?.cohortHints?.waveMode ?? adv.cohort?.cohortWaveMode ?? "steady",
+    cohortPriority: gh?.cohortHints?.priority ?? adv.cohort?.cohortPriority ?? "normal",
+
+    pageId,
+    pagePriority: page?.pagePriority ?? adv.page?.pagePriority ?? "normal",
+    pageHotState: page?.pageHotState ?? adv.page?.pageHotState ?? "cold",
+    pagePatternClass: page?.pagePatternClass ?? adv.page?.pagePatternClass ?? "generic"
   });
 
   // ⭐ Intelligence surface (v16 IMMORTAL-GPU-INTEL)
   const pulseIntelligence = computePulseIntelligence({
-    advantageField: nextAdvantageField,
+    advantageField: {
+      ...nextAdvantageField,
+      gpuTier: nextAdvantageField.gpu?.gpuTier || nextAdvantageField.gpuTier
+    },
     presenceField: nextPresenceField,
     factoringSignal: nextFactoringSignal,
     band: normalizedBand
@@ -1077,6 +1426,13 @@ export function evolveEarn(earn, context = {}) {
         lastBeatSource: "none"
       };
 
+  const pageIntelligence = computePageIntelligence({
+    pageAdvantage: nextAdvantageField.page,
+    cacheAdvantage: nextAdvantageField.cache,
+    prewarmAdvantage: nextAdvantageField.prewarm,
+    gpuAdvantage: nextAdvantageField.gpu
+  });
+
   const evolved = {
     EarnRole,
     jobId: earn.jobId,
@@ -1098,6 +1454,7 @@ export function evolveEarn(earn, context = {}) {
 
     // ⭐ top-level intelligence
     pulseIntelligence,
+    pageIntelligence,
 
     netField,
     coreMemoryField,
@@ -1127,7 +1484,9 @@ export function evolveEarn(earn, context = {}) {
 
       // ⭐ mirrored intelligence + signature
       pulseIntelligence,
+      pageIntelligence,
       pulseIntelligenceSignature: computeHash(JSON.stringify(pulseIntelligence)),
+      pageIntelligenceSignature: computeHash(JSON.stringify(pageIntelligence)),
 
       earnSignature: computeHash(
         nextPattern + "::" + lineageSignature + "::" + normalizedBand

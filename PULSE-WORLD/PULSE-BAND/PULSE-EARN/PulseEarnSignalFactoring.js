@@ -1,36 +1,38 @@
 // ============================================================================
-// FILE: PulseMeshSignalFactoring-v16-IMMORTAL-INTEL.js
-// [pulse:mesh] SIGNAL FACTORING LAYER — v16‑IMMORTAL‑INTEL‑DUALHASH
+// FILE: PulseEarnSignalFactoring-v16-IMMORTAL-INTEL.js
+// [earn:page] SIGNAL FACTORING LAYER — v16‑IMMORTAL‑INTEL‑DUALHASH
 // ----------------------------------------------------------------------------
 // ROLE:
-//   • Mesh‑level 1/0 factoring engine (metadata‑only, INTEL‑aware).
-//   • Mirrors CNS factoring (stride, depth, /2 pattern) at mesh layer.
-//   • Shapes impulses with factoring pressure from aura, flow, mesh echo.
+//   • Earn‑page‑level 1/0 factoring engine (metadata‑only, INTEL‑aware).
+//   • Mirrors mesh/CNS factoring (stride, depth, /2 pattern) at Earn page layer.
+//   • Shapes Earn pages with factoring pressure from presence, advantage, hints,
+//     job load, mesh pressure, cache priority, and prewarm intent.
 //   • Emits dual INTEL + classic signatures for factoring state.
-//   • NEVER mutates payloads beyond meta/flags — flags + meta only.
-//   • Deterministic: same impulse + same context → same factoring result.
+//   • NEVER mutates core payloads — only meta + flags on the page object.
+//   • Deterministic: same page + same context → same factoring result.
 //   • Zero randomness, zero timestamps, zero async, zero network.
 //   • Drift‑proof, multi‑instance‑ready, chunk/prewarm‑ready.
-//   • Used by: Spine, Tendons, Aura, Flow, Thalamus, Cognition, Endocrine,
-//              Immune, Organs, Earn, MeshEcho, PresenceRelay.
+//   • Used by: PulseEarnHeart, PulseEarnCirculatorySystem, PulseEarnMetabolism,
+//              PulseEarnLymphNodes, PulseEarnImmuneSystem, PulseEarnMkt* organs.
 // ----------------------------------------------------------------------------
 // SAFETY CONTRACT (IMMORTAL v16‑INTEL):
 //   • No payload mutation (only meta/flags fields are allowed).
 //   • No routing influence (metadata only; routers MAY read but not obey).
 //   • No randomness, no timestamps.
 //   • No external I/O, no FS, no network.
-//   • Zero async, zero side‑effects outside impulse.meta/flags.
+//   • Zero async, zero side‑effects outside page.meta/flags.
 //   • Deterministic‑field: identical input → identical output.
 //   • Drift‑proof: stable across versions.
 //   • Dual‑hash: INTEL + classic signatures for every factoring event.
 // ============================================================================
+
 /*
 AI_EXPERIENCE_META = {
-  identity: "PulseMeshSignalFactoring",
+  identity: "PulseEarnSignalFactoring",
   version: "v16-IMMORTAL-INTEL",
-  layer: "mesh",
-  role: "mesh_signal_factoring_engine",
-  lineage: "PulseMeshSignalFactoring-v14 → v15-Evo → v16-IMMORTAL-INTEL",
+  layer: "earn_page",
+  role: "earn_page_signal_factoring_engine",
+  lineage: "PulseEarnSignalFactoring-v14 → v15-Evo → v16-IMMORTAL-INTEL",
 
   evo: {
     // Core factoring traits
@@ -41,10 +43,13 @@ AI_EXPERIENCE_META = {
     factoringIntentEngine: true,
 
     // Awareness traits
-    auraPressureAware: true,
-    meshPressureAware: true,
-    flowPressureAware: true,
     presenceAware: true,
+    advantageAware: true,
+    hintsAware: true,
+    meshPressureAware: true,
+    jobLoadAware: true,
+    cachePriorityAware: true,
+    prewarmAware: true,
     bandAware: true,
 
     // Band traits
@@ -81,21 +86,18 @@ AI_EXPERIENCE_META = {
 
   contract: {
     always: [
-      "PulseMesh",
-      "PulseMeshEcho",
-      "PulseMeshFlow",
-      "PulseMeshAura",
-      "PulseMeshThalamus",
-      "PulseMeshCognition",
-      "PulseMeshEndocrine",
-      "PulseMeshImmune",
-      "PulseMeshOrgans",
-      "PulseMeshPresenceRelay",
+      "PulseEarnHeart",
+      "PulseEarnCirculatorySystem",
+      "PulseEarnGenome",
       "PulseEarnMetabolism",
-      "PulseEarnLymphNodes"
+      "PulseEarnLymphNodes",
+      "PulseEarnImmuneSystem",
+      "PulseEarnMktAmbassador",
+      "PulseEarnMktAuctioneer",
+      "PulseEarnCustomReceptorMkt"
     ],
     never: [
-      "legacyMeshFactoring",
+      "legacyEarnFactoring",
       "safeRoute",
       "fetchViaCNS",
       "userScript",
@@ -109,7 +111,7 @@ AI_EXPERIENCE_META = {
 // HASH HELPERS — v16‑IMMORTAL‑INTEL (dual‑hash)
 // ============================================================================
 
-function computeHash(str) {
+function computeClassicHash(str) {
   let h = 0;
   const s = String(str || "");
   for (let i = 0; i < s.length; i++) {
@@ -118,9 +120,8 @@ function computeHash(str) {
   return `h${h}`;
 }
 
-function computeHashIntelligence(payload) {
+function computeIntelHash(payload) {
   const s = JSON.stringify(payload || {});
-  // Slightly stronger fold, still deterministic and cheap.
   let h = 0;
   for (let i = 0; i < s.length; i++) {
     const c = s.charCodeAt(i);
@@ -135,8 +136,8 @@ function buildDualHashSignature(label, intelPayload, classicString) {
     intel: intelPayload || {},
     classic: classicString || ""
   };
-  const intelHash = computeHashIntelligence(intelBase);
-  const classicHash = computeHash(
+  const intelHash = computeIntelHash(intelBase);
+  const classicHash = computeClassicHash(
     `${label}::${classicString || ""}`
   );
   return {
@@ -146,53 +147,67 @@ function buildDualHashSignature(label, intelPayload, classicString) {
 }
 
 // ============================================================================
-// CLAMP HELPER
+// HELPERS
 // ============================================================================
 function clamp01(v) {
   return Math.max(0, Math.min(1, v));
 }
 
+function safeNumber(v, fallback = 0) {
+  const n = Number(v);
+  return Number.isFinite(n) ? n : fallback;
+}
+
 // ============================================================================
-// IMMORTAL META TEMPLATE — v16‑IMMORTAL‑INTEL
+// IMMORTAL META TEMPLATE — v16‑IMMORTAL‑INTEL (Earn Page)
 // ============================================================================
-function buildMeshSignalFactoringMeta(existingMeta, cycleIndex, factoringProfile) {
+function buildEarnSignalFactoringMeta(existingMeta, cycleIndex, factoringProfile) {
   const base = existingMeta || {};
   const intelPayload = {
-    kind: "meshSignalFactoring",
+    kind: "earnPageSignalFactoring",
     version: "v16-IMMORTAL-INTEL",
     cycleIndex,
     pressure: factoringProfile.pressure,
     signal: factoringProfile.signal,
     depth: factoringProfile.depth,
     stride: factoringProfile.stride,
-    auraBias: factoringProfile.auraBias,
-    flowBias: factoringProfile.flowBias,
-    meshBias: factoringProfile.meshBias,
+    presenceTier: factoringProfile.presenceTier,
+    advantageTier: factoringProfile.advantageTier,
+    jobCount: factoringProfile.jobCount,
+    meshPressureIndex: factoringProfile.meshPressureIndex,
+    cachePriority: factoringProfile.cachePriority,
+    prewarmNeeded: factoringProfile.prewarmNeeded,
     presenceBand: factoringProfile.presenceBand
   };
 
   const classicString =
-    `MESH_FACTORS::CYCLE:${cycleIndex}` +
+    `EARN_FACTORS::CYCLE:${cycleIndex}` +
     `::SIG:${factoringProfile.signal}` +
     `::DEPTH:${factoringProfile.depth}` +
-    `::STRIDE:${factoringProfile.stride}`;
+    `::STRIDE:${factoringProfile.stride}` +
+    `::JOBS:${factoringProfile.jobCount}`;
 
-  const sig = buildDualHashSignature("MESH_SIGNAL_FACTORS", intelPayload, classicString);
+  const sig = buildDualHashSignature("EARN_PAGE_SIGNAL_FACTORS", intelPayload, classicString);
 
   return {
     ...base,
-    signalFactoring: {
-      layer: "PulseMeshSignalFactoring",
-      role: "MESH_SIGNAL_FACTORS",
+    earnSignalFactoring: {
+      layer: "PulseEarnSignalFactoring",
+      role: "EARN_PAGE_SIGNAL_FACTORS",
       version: "v16-IMMORTAL-INTEL",
-      target: "full-mesh",
+      target: "earn-page",
       selfRepairable: true,
       evo: {
         dualMode: true,
         binaryAware: true,
         symbolicAware: true,
-        localAware: true,
-        internetAware: true,
+        jobLoadAware: true,
+        presenceAware: true,
+        advantageAware: true,
+        hintsAware: true,
+        meshPressureAware: true,
+        cachePriorityAware: true,
+        prewarmAware: true,
 
         unifiedAdvantageField: true,
         deterministicField: true,
@@ -200,10 +215,6 @@ function buildMeshSignalFactoringMeta(existingMeta, cycleIndex, factoringProfile
         multiInstanceReady: true,
 
         signalFactoringAware: true,
-        auraPressureAware: true,
-        meshPressureAware: true,
-        flowAware: true,
-        presenceAware: true,
         bandAware: true,
 
         zeroCompute: true,
@@ -220,56 +231,78 @@ function buildMeshSignalFactoringMeta(existingMeta, cycleIndex, factoringProfile
 }
 
 // ============================================================================
-// GLOBAL CYCLE COUNTER (mesh‑local, deterministic)
+// GLOBAL CYCLE COUNTER (earn‑page‑local, deterministic)
 // ============================================================================
-let meshFactoringCycle = 0;
+let earnFactoringCycle = 0;
 
 // ============================================================================
-// CORE API — applyMeshSignalFactoring (v16‑IMMORTAL‑INTEL)
+// CORE API — applyEarnSignalFactoring (v16‑IMMORTAL‑INTEL)
 // ============================================================================
 //
-// NOTE:
-//   • This function is intentionally "big" in metadata, small in math.
-//   • All heavy lifting is in how richly we describe the factoring event.
-//   • The actual factoring (job /2, sub‑jobs, etc.) is done by downstream
-//     organs that read these flags and profiles.
+// page:   Earn "page" object (jobs list, presence, advantage, hints, etc.).
+// context:
+//   • presenceField: { presenceTier, meshPressureIndex, ... }
+//   • advantageField: { advantageTier, advantageScore, ... }
+//   • hintsField: { fallbackBandLevel, prewarmHints, cacheHints, ... }
+//   • jobCountOverride: number
+//   • cachePriority: "normal" | "high" | "critical"
+//   • prewarmNeeded: boolean
+//   • band: "symbolic" | "binary"
 // ============================================================================
-export function applyMeshSignalFactoring(impulse, context = {}) {
-  if (!impulse) return impulse;
+export function applyEarnSignalFactoring(page, context = {}) {
+  if (!page) return page;
 
-  meshFactoringCycle++;
+  earnFactoringCycle++;
+
+  // Ensure meta/flags containers exist
+  page.meta = page.meta || {};
+  page.flags = page.flags || {};
+
+  const presenceField   = context.presenceField   || page.presenceField   || {};
+  const advantageField  = context.advantageField  || page.advantageField  || {};
+  const hintsField      = context.hintsField      || page.hintsField      || {};
+  const jobs            = Array.isArray(page.jobs) ? page.jobs : [];
+  const jobCount        = safeNumber(context.jobCountOverride ?? jobs.length, 0);
+
+  const presenceTier    = presenceField.presenceTier || "idle";
+  const meshPressureIdx = safeNumber(presenceField.meshPressureIndex, 0);
+  const advantageTier   = safeNumber(advantageField.advantageTier, 0);
+  const fallbackBandLvl = safeNumber(hintsField.fallbackBandLevel, 0);
+
+  const cachePriority   = context.cachePriority || page.flags.cachePriority || "normal";
+  const prewarmNeeded   = !!(context.prewarmNeeded || page.flags.prewarmNeeded);
+  const presenceBand    = context.band || page.band || "symbolic";
 
   // -------------------------------------------------------------------------
-  // Ensure meta/flags containers exist (IMMORTAL safety)
-// -------------------------------------------------------------------------
-  impulse.meta = impulse.meta || {};
-  impulse.flags = impulse.flags || {};
-
+  // 1) Build factoring pressure from presence + advantage + job load
   // -------------------------------------------------------------------------
-  // 1) Extract factoring pressures (aura + flow + mesh)
-// -------------------------------------------------------------------------
-  const auraBias  = impulse.flags.aura_factoring_bias ?? 0;
-  const flowBias  = context.flowPressure ?? 0;
-  const meshBias  = context.meshPressure ?? 0;
+  // Normalize mesh pressure to [0,1] assuming 0–200 typical range.
+  const meshPressureNorm = clamp01(meshPressureIdx / 200);
 
-  // unified factoring pressure (IMMORTAL v16 weighting)
+  // Normalize job load: 0 jobs → 0, 100+ jobs → ~1
+  const jobLoadNorm = clamp01(jobCount / 100);
+
+  // Advantage tier: 0–3 → 0–1
+  const advantageNorm = clamp01(advantageTier / 3);
+
+  // Fallback band level: 0–3 → 0–1
+  const fallbackBandNorm = clamp01(fallbackBandLvl / 3);
+
+  // Weighted factoring pressure (earn‑page specific)
   const factoringPressure =
-    (auraBias * 0.5) +
-    (flowBias * 0.3) +
-    (meshBias * 0.2);
+    meshPressureNorm   * 0.30 +
+    jobLoadNorm        * 0.30 +
+    advantageNorm      * 0.20 +
+    fallbackBandNorm   * 0.20;
 
   const clampedPressure = clamp01(factoringPressure);
-  impulse.flags.mesh_factoring_pressure = clampedPressure;
+  page.flags.earn_factoring_pressure = clampedPressure;
 
   // -------------------------------------------------------------------------
   // 2) Compute factoring signal (1 or 0)
 // -------------------------------------------------------------------------
   const highPressure = clampedPressure >= 0.6;
   const lowPressure  = clampedPressure <= 0.2;
-
-  // Allow upstream to override via critical cache / prewarm flags if present.
-  const cachePriority = context.cachePriority || impulse.flags.cachePriority || "normal";
-  const prewarmNeeded = !!(context.prewarmNeeded || impulse.flags.prewarmNeeded);
 
   const criticalCache = cachePriority === "critical";
 
@@ -282,77 +315,77 @@ export function applyMeshSignalFactoring(impulse, context = {}) {
     signal = 0;
   } else {
     // mid‑band: preserve existing factoringSignal if present, else 0
-    signal = impulse.flags.factoringSignal ?? 0;
+    signal = page.flags.earn_factoringSignal ?? 0;
   }
 
-  impulse.flags.factoringSignal = signal;
+  page.flags.earn_factoringSignal = signal;
 
   // -------------------------------------------------------------------------
-  // 3) Compute factoring depth (mirrors CNS stride/depth)
+  // 3) Compute factoring depth (page‑level collapse depth)
 // -------------------------------------------------------------------------
-  const previousDepth = impulse.flags.factoringDepth ?? 0;
+  const previousDepth = page.flags.earn_factoringDepth ?? 0;
   const depth =
     signal === 1
       ? Math.min(previousDepth + 1, 8)
       : 0;
 
-  impulse.flags.factoringDepth = depth;
+  page.flags.earn_factoringDepth = depth;
 
   // -------------------------------------------------------------------------
   // 4) Compute factoring stride (/2‑like pattern)
 // -------------------------------------------------------------------------
   // depth = 0 → stride = 1 (no factoring)
-  // depth = 1 → stride ≈ 1/2
-  // depth = 2 → stride ≈ 1/3
-  // depth = 3 → stride ≈ 1/4
-  // ...
+// depth = 1 → stride ≈ 1/2
+// depth = 2 → stride ≈ 1/3
+// depth = 3 → stride ≈ 1/4
+// ...
   const stride =
     depth > 0 ? 1 / (depth + 1) : 1;
 
-  impulse.flags.factoringStride = stride;
+  page.flags.earn_factoringStride = stride;
 
   // -------------------------------------------------------------------------
   // 5) Tag factoring intent (metadata only)
 // -------------------------------------------------------------------------
-  impulse.flags.mesh_factoring_intent =
+  page.flags.earn_factoring_intent =
     signal === 1
-      ? "prefer_factored_path"
+      ? "prefer_factored_page"
       : "normal";
 
   // -------------------------------------------------------------------------
-  // 6) IMMORTAL ADVANTAGE SURFACE (for Flow, Endocrine, Immune, Earn)
-// -------------------------------------------------------------------------
-  const presenceBand = impulse.band ?? "symbolic";
-
+  // 6) Build factoring profile surface for Earn organs
+  // -------------------------------------------------------------------------
   const factoringProfile = {
     pressure: clampedPressure,
     signal,
     depth,
     stride,
-    auraBias,
-    flowBias,
-    meshBias,
-    presenceBand,
+    presenceTier,
+    advantageTier,
+    jobCount,
+    meshPressureIndex: meshPressureIdx,
     cachePriority,
     prewarmNeeded: !!prewarmNeeded,
-    cycleIndex: meshFactoringCycle,
+    presenceBand,
+    fallbackBandLevel: fallbackBandLvl,
+    cycleIndex: earnFactoringCycle,
     prewarm_surface: true,
     chunk_surface: true,
     cache_surface: true
   };
 
-  impulse.flags.mesh_factoring_advantage = {
+  page.flags.earn_factoring_advantage = {
     ...factoringProfile
   };
 
   // -------------------------------------------------------------------------
   // 7) Attach IMMORTAL META BLOCK with INTEL + classic signatures
   // -------------------------------------------------------------------------
-  impulse.meta = buildMeshSignalFactoringMeta(
-    impulse.meta,
-    meshFactoringCycle,
+  page.meta = buildEarnSignalFactoringMeta(
+    page.meta,
+    earnFactoringCycle,
     factoringProfile
   );
 
-  return impulse;
+  return page;
 }
