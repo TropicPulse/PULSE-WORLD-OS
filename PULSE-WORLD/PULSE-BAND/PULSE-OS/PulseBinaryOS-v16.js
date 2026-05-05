@@ -1,15 +1,16 @@
 // ============================================================================
-//  PulseBinaryOS-v12.3-Spine-Binary.js
-//  BINARY-NATIVE ORGANISM KERNEL — SPINE / REFLEX ENGINE (v12.3-SPINE-BINARY)
+//  PulseBinaryOS-v16-IMMORTAL-Spine.js
+//  BINARY-NATIVE ORGANISM KERNEL — SPINE / REFLEX ENGINE (v16-IMMORTAL-SPINE)
 // ============================================================================
 //  ROLE:
-//    - Binary-native OS kernel of PulseOS v12.3-SPINE-BINARY.
+//    - Binary-native OS kernel of PulseOS v16-IMMORTAL.
 //    - Boots the organism using pure binary cognition, reflex, and wiring.
-//    - ZERO symbolic logic, ZERO browser impurities, ZERO drift inside core.
-//    - Reflex organism: fast, deterministic, mutation-proof, presence-aware.
+//    - ZERO symbolic execution inside core, ZERO browser impurities in kernel.
+//    - Reflex organism: fast, deterministic, mutation-proof, presence + mesh aware.
+//    - Dual-mode organism: binary-primary, symbolic-aware (metadata-only).
 //
 //  SYMBOLIC RELATION:
-//    - Symbolic kernel (PulseOS-v12.3-Spine.js) is the cortex.
+//    - Symbolic kernel (PulseOS-v16 Cortex) is the cortex.
 //    - THIS binary kernel is the spinal brainstem + reflex engine.
 //    - Together they form the dual-mode organism.
 //
@@ -26,13 +27,14 @@
 //    - When THIS file runs, the *binary creature* comes online.
 //    - This is the reflex ignition — the organism’s heartbeat.
 // ============================================================================
+
 /*
 AI_EXPERIENCE_META = {
   identity: "PulseBinaryOS",
-  version: "v14-Immortal",
+  version: "v16-IMMORTAL-SPINE",
   layer: "os_binary",
   role: "binary_os_kernel",
-  lineage: "PulseOS-v14",
+  lineage: "PulseOS-v16-IMMORTAL",
 
   evo: {
     binaryPrimary: true,
@@ -51,15 +53,29 @@ AI_EXPERIENCE_META = {
     prewarmAware: true,
     presenceAware: true,
     meshAware: true,
+    expansionAware: true,
+    worldCoreAware: true,
+    nodeAdminAware: true,
+    meshCoordinatorAware: true,
 
-    safeRouteFree: true
+    safeRouteFree: true,
+
+    // IMMORTAL timing
+    safeSystemClock: true,
+    fullClockAccess: true,
+    clusterCoherence: true,
+    multiInstanceKernel: true
   },
 
   contract: {
     always: [
       "PulseOSBrain",
       "PulseOSBrainCortex",
-      "PulseChunker"
+      "PulseChunker",
+      "BinaryMeshEnvironment-v15",
+      "PulseMeshPresenceRelay-v16",
+      "OrganismMesh-v2-MESH-COORD",
+      "PulseExpansion-v16"
     ],
     never: [
       "legacyBinaryOS",
@@ -73,8 +89,8 @@ AI_EXPERIENCE_META = {
 export const PulseBinaryOSMeta = Object.freeze({
   layer: "PulseBinaryOSKernel",
   role: "BINARY_ORGANISM_BOOTLOADER",
-  version: "v12.3-SPINE-BINARY",
-  identity: "PulseBinaryOS-v12.3-Spine-Binary",
+  version: "v16-IMMORTAL-SPINE",
+  identity: "PulseBinaryOS-v16-IMMORTAL-Spine",
 
   guarantees: Object.freeze({
     deterministic: true,
@@ -108,6 +124,17 @@ export const PulseBinaryOSMeta = Object.freeze({
     bluetoothPresenceAware: true,
     meshPresenceRelayAware: true,
     meshTopologyAware: true,
+    meshBinaryEnvAware: true,
+    meshSymbolicEnvAware: true,
+    meshCoordinatorAware: true,
+
+    // Expansion / world / NodeAdmin
+    expansionAware: true,
+    worldCoreAware: true,
+    nodeAdminAware: true,
+    unifiedAdvantageField: true,
+    advantageCascadeAware: true,
+    pulseEfficiencyAware: true,
 
     // Chunking / prewarm / multi-instance
     kernelChunkingReady: true,
@@ -115,6 +142,10 @@ export const PulseBinaryOSMeta = Object.freeze({
     multiInstanceKernel: true,
     clusterCoherence: true,
     zeroDriftCloning: true,
+
+    // Timing (IMMORTAL)
+    safeSystemClock: true,
+    fullClockAccess: true,
 
     // Safety
     zeroUserCode: true,
@@ -130,27 +161,32 @@ export const PulseBinaryOSMeta = Object.freeze({
       "PulseOSEvolution",
       "PulseSpinalCord",
       "PulseOSPresence",
-      "PulseMeshPresence"
+      "BinaryMeshEnvironment-v15",
+      "PulseExpansion-v16"
     ],
     output: [
       "BinaryOrganismKernel",
       "BinaryBootDiagnostics",
       "BinaryBootSignatures",
       "BinaryPresenceField",
-      "BinaryMeshPresenceRelay"
+      "BinaryMeshEnvironment",
+      "BinaryMeshPresenceRelay",
+      "OrganismMeshRoot",
+      "WorldExpansion"
     ]
   }),
 
   lineage: Object.freeze({
-    root: "PulseOS-v12.3-SPINE",
-    parent: "PulseOS-v12.0-SPINE",
+    root: "PulseOS-v16-IMMORTAL",
+    parent: "PulseOS-v14-Immortal",
     ancestry: [
       "PulseBinaryOS-v9",
       "PulseBinaryOS-v10",
       "PulseBinaryOS-v11",
       "PulseBinaryOS-v11-Evo",
       "PulseBinaryOS-v11-Evo-MAX",
-      "PulseBinaryOS-v12.3-Spine-Binary"
+      "PulseBinaryOS-v12.3-Spine-Binary",
+      "PulseBinaryOS-v16-IMMORTAL-Spine"
     ]
   }),
 
@@ -163,29 +199,34 @@ export const PulseBinaryOSMeta = Object.freeze({
   architecture: Object.freeze({
     pattern: "A-B-A",
     baseline: "binary-native organism bootloader (reflex ignition)",
-    adaptive: "symbolic-aware dual-mode overlay + presence field",
+    adaptive: "symbolic-aware dual-mode overlay + presence + mesh + expansion field",
     return:
-      "online binary organism kernel + boot signatures + presence field + mesh relay"
+      "online binary organism kernel + boot signatures + presence field + mesh env + expansion hooks"
   })
 });
 
 // ============================================================================
-//  ORGANISM BOOTSTRAP SET — v12.3 (SYMBOLIC KERNEL SIDE)
+//  ORGANISM BOOTSTRAP SET — v16 (SYMBOLIC KERNEL SIDE)
 // ============================================================================
 import { withModuleInitGuard, withOrganGuard } from "./PulseOSGovernor.js"; // Supervisor organ
-import * as PulseOSBrain from "./PulseOSBrain-v11-Evo.js";                 // CNS brain organ
+import * as PulseOSBrain from "./PulseOSBrain-v16.js";                 // CNS brain organ
 import * as PulseOSEvolution from "./PulseOSBrainEvolution.js";            // Evolution organ
-import * as PulseSpinalCord from "./PulseOSSpinalCord-v12-Evo.js";         // Wiring organ
+import * as PulseSpinalCord from "./PulseOSSpinalCord-v16.js";         // Wiring organ
 
 // Presence / Mesh presence (symbolic/OS side, optional)
-import * as PulseOSPresence from "./PulseOSPresence-v12.4-Evo.js";         // OS Presence Organ (optional)
-import { createBinaryMeshEnvironment as createBinaryMeshEnv } from "../PULSE-MESH/PulseBinaryMesh-v11-Evo.js"; // Mesh env (binary+symbolic)
+import * as PulseOSPresence from "./PulseOSPresence-v16.js";         // OS Presence Organ (optional)
 
-import { createPulseMeshPresenceRelay as PulseMeshPresence } from "../PULSE-MESH/PulseMeshPresenceRelay-v12.4-Evo.js"; // Mesh env (binary+symbolic)
-// ============================================================================
-// PULSE OS v13-Presence-Evo+ — WORLD BARREL
-// ============================================================================
-import { createPulseExpansion, pulseExpansion, PulseExpansionMeta} from "../PULSE-EXPANSION/PulseExpansion-v16.js";
+// Binary + symbolic mesh environment (IMMORTAL v15)
+import {
+  createBinaryMeshEnvironment as createBinaryMeshEnv
+} from "../PULSE-MESH/BinaryMesh-v15-Evo.js";
+
+// PULSE OS v16-IMMORTAL — WORLD BARREL (Expansion v16)
+import {
+  createPulseExpansion,
+  pulseExpansion,
+  PulseExpansionMeta
+} from "../PULSE-EXPANSION/PulseExpansion-v16.js";
 
 // (optional) direct access if you want to surface them:
 const Expansion = pulseExpansion; // singleton
@@ -210,13 +251,13 @@ export const PulseWorld = Object.freeze({
 });
 
 // ============================================================================
-//  CONTEXT — BINARY OS KERNEL IDENTITY (v12.3-SPINE-BINARY)
+//  CONTEXT — BINARY OS KERNEL IDENTITY (v16-IMMORTAL-SPINE)
 // ============================================================================
 const PULSE_BINARY_OS_CONTEXT = Object.freeze({
   layer: "PulseBinaryOSKernel",
   role: "BINARY_ORGANISM_BOOTLOADER",
-  version: "12.3-SPINE-BINARY",
-  lineage: "pulse-os-v12.3-spine-kernel-binary",
+  version: "16-IMMORTAL-SPINE",
+  lineage: "pulse-os-v16-immortal-kernel-binary",
   evo: {
     binaryNative: true,
     symbolicAware: true,
@@ -236,6 +277,9 @@ const PULSE_BINARY_OS_CONTEXT = Object.freeze({
     bluetoothPresenceAware: true,
     meshPresenceRelayAware: true,
     meshTopologyAware: true,
+    meshBinaryEnvAware: true,
+    meshSymbolicEnvAware: true,
+    meshCoordinatorAware: true,
 
     // Chunking / prewarm / multi-instance
     kernelChunkingReady: true,
@@ -247,12 +291,22 @@ const PULSE_BINARY_OS_CONTEXT = Object.freeze({
     // Advantage field
     unifiedAdvantageField: true,
     advantageCascadeAware: true,
-    pulseEfficiencyAware: true
+    pulseEfficiencyAware: true,
+
+    // Expansion / world / NodeAdmin
+    expansionAware: true,
+    worldCoreAware: true,
+    nodeAdminAware: true,
+
+    // Timing
+    safeSystemClock: true,
+    fullClockAccess: true
   }
 });
 
 // ============================================================================
 //  PURE BINARY KERNEL BOOT — NO WINDOW, NO CONSOLE, NO TIMESTAMPS
+//  (Clock access only via injected SystemClock in mesh/env/organs.)
 // ============================================================================
 async function _buildPulseBinaryOSKernel() {
   const meta = PULSE_BINARY_OS_CONTEXT;
@@ -288,7 +342,7 @@ async function _buildPulseBinaryOSKernel() {
           }))
     : PulseSpinalCord;
 
-  // 4) CORE MEMORY (if v12.3 stack exposes it via Evolution or Brain)
+  // 4) CORE MEMORY (if v16 stack exposes it via Evolution or Brain)
   let MemoryCore = null;
   if (Evolution && typeof Evolution.bootMemoryCore === "function") {
     MemoryCore = Evolution.bootMemoryCore(Brain);
@@ -326,29 +380,10 @@ async function _buildPulseBinaryOSKernel() {
     });
   }
 
-  
-  // 5) Mesh Presence Relay (Mesh-level presence organ)
-  let MeshPresenceRelay = null;
-  if (PulseMeshPresence?.buildMeshPresenceRelay) {
-    MeshPresenceRelay = PulseMeshPresence.buildMeshPresenceRelay({
-      Brain,
-      Evolution,
-      SpinalCord,
-      PresenceField,
-      meta
-    });
-  } else if (PulseMeshPresence?.PulseMeshPresenceRelay) {
-    MeshPresenceRelay = PulseMeshPresence.PulseMeshPresenceRelay({
-      Brain,
-      Evolution,
-      SpinalCord,
-      PresenceField,
-      meta
-    });
-  }
-
   // 7) BINARY MESH ENVIRONMENT (Mesh-level presence + mesh subsystems, optional)
   let BinaryMeshEnv = null;
+  let MeshPresenceRelay = null;
+  let OrganismMeshRoot = null;
 
   if (typeof createBinaryMeshEnv === "function") {
     BinaryMeshEnv = createBinaryMeshEnv({
@@ -365,12 +400,17 @@ async function _buildPulseBinaryOSKernel() {
         // mesh bus + clocks + identity if exposed by organs
         MeshBus: SpinalCord?.MeshBus,
         SystemClock: Brain?.SystemClock,
-        IdentityDirectory: Brain?.IdentityDirectory
+        IdentityDirectory: Brain?.IdentityDirectory,
+
+        // expansion / world hooks
+        Expansion,
+        ExpansionMeta
       },
       trace: false
     });
 
     MeshPresenceRelay = BinaryMeshEnv?.meshPresenceRelay || null;
+    OrganismMeshRoot = BinaryMeshEnv?.organism || null;
   }
 
   // PURE BINARY ORGANISM KERNEL
@@ -384,6 +424,9 @@ async function _buildPulseBinaryOSKernel() {
     PresenceField,
     BinaryMeshEnv,
     MeshPresenceRelay,
+    OrganismMeshRoot,
+    Expansion,
+    ExpansionMeta,
 
     // Binary kernel does NOT have symbolic governor
     Governed: {
@@ -396,7 +439,7 @@ async function _buildPulseBinaryOSKernel() {
 
 // Wrap kernel build with module init guard if available
 const buildPulseBinaryOSKernel = withModuleInitGuard
-  ? withModuleInitGuard("PulseBinaryOSKernel", _buildPulseBinaryOSKernel)
+  ? withModuleInitGuard("PulseBinaryOSKernel-v16-IMMORTAL", _buildPulseBinaryOSKernel)
   : _buildPulseBinaryOSKernel;
 
 // ============================================================================
@@ -419,7 +462,10 @@ if (typeof window !== "undefined") {
       BinaryOverlay: Kernel.BinaryOverlay,
       PresenceField: Kernel.PresenceField,
       BinaryMeshEnv: Kernel.BinaryMeshEnv,
-      MeshPresenceRelay: Kernel.MeshPresenceRelay
+      MeshPresenceRelay: Kernel.MeshPresenceRelay,
+      OrganismMeshRoot: Kernel.OrganismMeshRoot,
+      Expansion: Kernel.Expansion,
+      ExpansionMeta: Kernel.ExpansionMeta
     };
 
     window.PulseBinaryKernel = window.PulseBinaryKernel
@@ -427,16 +473,16 @@ if (typeof window !== "undefined") {
       : Object.freeze(exposed);
   }).catch((_err) => {
     // Outside organism: optional symbolic logging if desired.
-    // console.error("[PulseBinaryOS-v12.3-Spine-Binary] Kernel bootstrap failed:", _err);
+    // console.error("[PulseBinaryOS-v16-IMMORTAL-Spine] Kernel bootstrap failed:", _err);
   });
 }
 
 // ============================================================================
-//  EXPORTS — FULL BINARY OS KERNEL (v12.3-SPINE-BINARY)
+//  EXPORTS — FULL BINARY OS KERNEL (v16-IMMORTAL-SPINE)
 // ============================================================================
-export const PulseBinaryOSv11Evo = {
+export const PulseBinaryOSv16Immortal = {
   ...PULSE_BINARY_OS_CONTEXT,
   Kernel: PulseBinaryOSKernelPromise
 };
 
-export default PulseBinaryOSv11Evo;
+export default PulseBinaryOSv16Immortal;

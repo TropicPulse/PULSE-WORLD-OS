@@ -1,16 +1,28 @@
 // ============================================================================
-// FILE: PulseOSPresence-v12.4-Evo.js
-// PULSE OS PRESENCE ORGAN — v12.4-Evo
+// FILE: PulseOSPresence-v16-Immortal.js
+// PULSE OS PRESENCE ORGAN — v16-Immortal
 // OS-Level Presence • Deterministic • Metadata-Only • Membrane-Safe
-// No Organs Exposed • No Identity Leaks • No Routing
+// No Organs Exposed • No Identity Leaks • No Routing • Dualband-Aware
 // ============================================================================
+//
+// LAWS (v16+IMMORTAL+PRESENCE+MESH):
+//   • Presence organ is OS-level only — NOT a router, NOT a mesh brain.
+//   • Emits metadata-only presence; never exposes organs, routes, CNS, or secrets.
+//   • Never performs network calls, never talks to server directly.
+//   • Internet center is Expansion ⇄ Server; Presence is a local field emitter.
+//   • Binary-aware and dualband-aware, but symbolic-primary in semantics.
+//   • Safe to broadcast into MeshBus / PresenceRelay as a self-presence packet.
+//   • May carry advantage hints, but never computes or fetches advantage itself.
+//   • All advantage/world-lens/topology are snapshots from Brain/Expansion, not here.
+// ============================================================================
+
 /*
 AI_EXPERIENCE_META = {
   identity: "PulseOSPresence",
-  version: "v14-Immortal",
+  version: "v16-Immortal",
   layer: "presence",
   role: "os_presence_field",
-  lineage: "PulseOS-v14",
+  lineage: "PulseOS-v16-Immortal",
 
   evo: {
     presenceField: true,
@@ -30,7 +42,16 @@ AI_EXPERIENCE_META = {
     bluetoothPresenceAware: true,
 
     safeRouteFree: true,
-    zeroMutationOfInput: true
+    zeroMutationOfInput: true,
+    zeroExternalMutation: true,
+
+    // v16 IMMORTAL upgrades
+    internetCenterExternal: true,
+    snapshotOnlyInputs: true,
+    advantageHintAware: true,
+    meshPresenceHintAware: true,
+    multiInstanceReady: true,
+    clusterCoherence: true
   },
 
   contract: {
@@ -57,8 +78,9 @@ export function createPulseOSPresence({
   const meta = Object.freeze({
     layer: "PulseOSPresence",
     role: "OS_PRESENCE_ORGAN",
-    version: "12.4-Evo",
-    evo: {
+    version: "16-Immortal",
+    identity: "PulseOSPresence-v16-Immortal",
+    evo: Object.freeze({
       presenceOrgan: true,
       osLevel: true,
       deterministic: true,
@@ -66,26 +88,45 @@ export function createPulseOSPresence({
       zeroTrustSurface: true,
       zeroSecrets: true,
       zeroRouting: true,
-      zeroOrgans: true
-    },
-    contract: {
+      zeroOrgans: true,
+
+      symbolicPrimary: true,
+      binaryAware: true,
+      dualBand: true,
+
+      meshAware: true,
+      bluetoothPresenceAware: true,
+
+      internetCenterExternal: true,
+      snapshotOnlyInputs: true,
+      advantageHintAware: true,
+      meshPresenceHintAware: true,
+      multiInstanceReady: true,
+      clusterCoherence: true
+    }),
+    contract: Object.freeze({
       never: [
         "expose internal organs",
         "expose routing tables",
         "expose CNS",
         "expose private identity",
-        "expose permissions"
+        "expose permissions",
+        "expose OS internals"
       ],
       always: [
         "emit metadata-only presence",
         "stay deterministic",
         "stay membrane-safe",
         "stay binary-first",
-        "stay read-only"
+        "stay read-only",
+        "stay dualband-aware"
       ]
-    }
+    })
   });
 
+  // --------------------------------------------------------------------------
+  // SAFE ACCESSORS
+  // --------------------------------------------------------------------------
   function safeNow() {
     try {
       return SystemClock?.now
@@ -146,9 +187,61 @@ export function createPulseOSPresence({
     }
   }
 
+  // v16: optional local advantage hint (pure metadata, no network, no secrets)
+function safeAdvantageHint() {
+  try {
+    // Future-ready: if Brain/Expansion injects a snapshot, Presence can surface it.
+    const injected = typeof SystemClock?.advantageHint === "function"
+      ? SystemClock.advantageHint()
+      : null;
+
+    if (injected && typeof injected === "object") {
+      return {
+        band: injected.band ?? "neutral",
+        score: injected.score ?? null,
+        stability: injected.stability ?? 1,
+        ageMs: injected.ageMs ?? 0,
+        source: "injected",
+        confidence: injected.confidence ?? 1
+      };
+    }
+
+    // Default neutral hint (deterministic, metadata-only)
+    return {
+      band: "neutral",
+      score: null,
+      stability: 1,
+      ageMs: 0,
+      source: "os-presence",
+      confidence: 1
+    };
+
+  } catch {
+    // Hard fallback — deterministic, safe, neutral
+    return {
+      band: "neutral",
+      score: null,
+      stability: 1,
+      ageMs: 0,
+      source: "fallback",
+      confidence: 1
+    };
+  }
+}
+
+
+  // v16: mesh presence hint (topology-only, no routing)
+  function safeMeshPresenceHint() {
+    return {
+      topology: "local-os-core",
+      band: "mesh",
+      relayPreferred: true
+    };
+  }
+
   // --------------------------------------------------------------------------
   // OS PRESENCE SIGNATURE (metadata-only, deterministic)
-  // --------------------------------------------------------------------------
+// --------------------------------------------------------------------------
   function getPresenceSignature() {
     const now = safeNow();
     const uptime = safeUptimeSeconds();
@@ -156,6 +249,8 @@ export function createPulseOSPresence({
     const displayName = safeDisplayName();
     const publicId = safePublicId();
     const fingerprint = safeFingerprint();
+    const advantageHint = safeAdvantageHint();
+    const meshHint = safeMeshPresenceHint();
 
     return {
       meta,
@@ -171,30 +266,56 @@ export function createPulseOSPresence({
         organismAgeDays: ageDays
       },
       presenceBand: "OS_CORE",
+      bands: {
+        symbolic: true,
+        binary: true,
+        default: "symbolic"
+      },
       health: {
-        // These can be wired to real vitals later
         status: "alive",
         stability: "stable",
         drift: "none"
+      },
+      mesh: {
+        topologyHint: meshHint.topology,
+        band: meshHint.band,
+        relayPreferred: meshHint.relayPreferred
+      },
+      advantage: {
+        band: advantageHint.band,
+        score: advantageHint.score
       }
     };
   }
 
   // --------------------------------------------------------------------------
-  // SELF PRESENCE PACKET (for PresenceScanner / Mesh / HUD)
+  // SELF PRESENCE PACKET (for PresenceRelay / Mesh / HUD)
 // --------------------------------------------------------------------------
   function getSelfPresencePacket() {
     const sig = getPresenceSignature();
     return {
       uid: sig.os.publicId,
       displayName: sig.os.displayName,
+
+      // presence band for MeshPresenceRelay
       presenceBand: sig.presenceBand,
+
+      // organism age + uptime
       uptimeSeconds: sig.time.uptimeSeconds,
       organismAgeDays: sig.time.organismAgeDays,
-      fingerprint: sig.os.fingerprint
+
+      // optional fingerprint (non-PII)
+      fingerprint: sig.os.fingerprint,
+
+      // v16: advantage + mesh hints (metadata-only)
+      advantageHint: sig.advantage,
+      meshPresenceHint: sig.mesh
     };
   }
 
+  // --------------------------------------------------------------------------
+  // HEARTBEAT — emits local presence packet (no network)
+// --------------------------------------------------------------------------
   function heartbeat() {
     try {
       const packet = getSelfPresencePacket();

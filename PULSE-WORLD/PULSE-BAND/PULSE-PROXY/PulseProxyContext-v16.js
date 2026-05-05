@@ -8,19 +8,22 @@
 // ============================================================================
 
 /*
-PULSE_PROXY_CONTEXT_META = {
+AI_EXPERIENCE_META = {
   identity: "PulseProxyContext",
   version: "v16-Immortal-ORGANISM",
   layer: "organism_context",
   role: "proxy_context_bridge",
-
   lineage: {
     root: "BinaryProxy-v9",
-    parent: "BinaryProxy-v12.3-Evo-MAX-ABA",
-    organismIntegration: "v16-Immortal"
+    parent: "BinaryProxy-v12.3-Evo-BINARY-MAX-ABA",
+    organismIntegration: "v16-Immortal",
+    spinalIntegration: "PulseOSSpinalCord-v13.0-Presence-Immortal",
+    routerIntegration: "PulseRouter-v16-Immortal",
+    meshIntegration: "PulseMesh-v16-Immortal"
   },
 
   evo: {
+    // Organism awareness
     organismAware: true,
     meshAware: true,
     expansionAware: true,
@@ -29,11 +32,29 @@ PULSE_PROXY_CONTEXT_META = {
     worldCoreAware: true,
     dualBandAware: true,
     binarySendAware: true,
+    spinalAware: true,
+    proxyOrganismAware: true,
 
+    // Advantage + presence field
+    unifiedAdvantageField: true,
+    advantageCascadeAware: true,
+    pulseEfficiencyAware: true,
+    presenceAware: true,
+    bandPresenceAware: true,
+    cacheChunkPresenceAware: true,
+
+    // Prewarm / cache / chunk
+    chunkAware: true,
+    cacheAware: true,
+    prewarmAware: true,
+    routeWarmthAware: true,
+
+    // Determinism
     deterministic: true,
     driftProof: true,
     zeroNetwork: true,
     zeroAsync: true,
+    zeroFilesystem: true,
     zeroMutationOfBinaryProxy: true,
     symbolicOnly: true
   },
@@ -43,20 +64,26 @@ PULSE_PROXY_CONTEXT_META = {
     noBinaryLogic: true,
     noRouting: true,
     noCompute: true,
-    noMutation: true,
+    noExternalIO: true,
     noExternalMutation: true,
+    noDynamicImports: true,
+    noEval: true,
 
-    // Organism
+    // Organism context
     providesProxyPressure: true,
     providesProxyFallback: true,
     providesProxyBoost: true,
     providesProxyMode: true,
     providesProxyLineage: true,
+    providesProxyAdvantageHint: true,
+    providesProxyHealthHint: true,
+    providesProxyBandSignature: true,
 
     // Performance
     hotPathSafe: true,
     prewarmAware: true,
-    zeroAllocExceptStateSwap: true
+    zeroAllocExceptStateSwap: true,
+    zeroTimers: true
   },
 
   contract: {
@@ -69,23 +96,170 @@ PULSE_PROXY_CONTEXT_META = {
       "PulseRouter",
       "PulseWorldCore",
       "DualBandOrganism",
-      "BinarySend"
+      "BinarySend",
+      "PulseOSSpinalCord",
+      "PulseProxyOrganism"
     ]
   }
 }
 */
 
 // ============================================================================
-//  INTERNAL STATE — IMMUTABLE SNAPSHOT
+//  INTERNAL HELPERS — deterministic, symbolic-only
 // ============================================================================
 
+function safeNow() {
+  try {
+    return Date.now();
+  } catch {
+    return 0;
+  }
+}
+
+function derivePressureFromBinaryField(binaryField) {
+  if (!binaryField || typeof binaryField !== "object") return 0;
+  const density = typeof binaryField.density === "number" ? binaryField.density : 0;
+  // Map density into [0, 1], tuned for v16 Immortal (higher ceiling than v12.3)
+  const normalized = density / 4096;
+  if (normalized <= 0) return 0;
+  if (normalized >= 1) return 1;
+  return normalized;
+}
+
+function deriveBoostFromCacheChunkEnvelope(cacheChunkEnvelope) {
+  if (!cacheChunkEnvelope || typeof cacheChunkEnvelope !== "object") return 0;
+
+  const sig = cacheChunkEnvelope.cacheChunkSurfaceSignature || "";
+  if (typeof sig !== "string" || !sig.length) return 0;
+
+  const lastChar = sig.charAt(sig.length - 1);
+  // v16: treat hex F/E/D as graded boost
+  if (lastChar === "F" || lastChar === "f") return 1.0;
+  if (lastChar === "E" || lastChar === "e") return 0.75;
+  if (lastChar === "D" || lastChar === "d") return 0.5;
+  return 0;
+}
+
+function deriveFallbackFromPresenceEnvelope(presenceEnvelope) {
+  if (!presenceEnvelope || typeof presenceEnvelope !== "object") return false;
+
+  const sig = presenceEnvelope.presenceSignature || "";
+  if (typeof sig !== "string" || !sig.length) return false;
+
+  const lastChar = sig.charAt(sig.length - 1);
+  // v16: even hex digit → fallback bias, odd → normal
+  const evenHex = ["0", "2", "4", "6", "8", "a", "A", "c", "C", "e", "E"];
+  return evenHex.includes(lastChar);
+}
+
+function deriveMode(pressure, boost, fallback) {
+  if (fallback) return "fallback";
+  if (boost > 0.8 && pressure >= 0.4) return "boost";
+  if (pressure >= 0.8) return "pressure-high";
+  if (pressure <= 0.1) return "pressure-low";
+  return "normal";
+}
+
+// v16: advantage hint is pure metadata, no routing, no network
+function deriveAdvantageHint({ pressure, boost, fallback }) {
+  if (fallback) {
+    return {
+      band: "stability",
+      score: 0.1,
+      reason: "fallback-active"
+    };
+  }
+
+  if (boost > 0.8 && pressure >= 0.4) {
+    return {
+      band: "throughput",
+      score: 0.95,
+      reason: "boost-and-healthy-pressure"
+    };
+  }
+
+  if (pressure >= 0.8) {
+    return {
+      band: "throughput",
+      score: 0.8,
+      reason: "high-pressure"
+    };
+  }
+
+  if (pressure <= 0.1) {
+    return {
+      band: "latency",
+      score: 0.6,
+      reason: "low-pressure"
+    };
+  }
+
+  return {
+    band: "neutral",
+    score: 0.5,
+    reason: "steady-state"
+  };
+}
+
+// v16: health hint is symbolic-only, derived from pressure + fallback
+function deriveHealthHint({ pressure, fallback }) {
+  let status = "stable";
+  let score = 1.0;
+
+  if (fallback) {
+    status = "degraded";
+    score = 0.4;
+  } else if (pressure >= 0.9) {
+    status = "overloaded";
+    score = 0.6;
+  } else if (pressure <= 0.1) {
+    status = "idle";
+    score = 0.9;
+  }
+
+  return { status, score };
+}
+
+function safeBandSignature(envelope) {
+  const sig = envelope && envelope.bandSignature;
+  return typeof sig === "string" ? sig : null;
+}
+
+// ============================================================================
+//  INTERNAL STATE — IMMUTABLE SNAPSHOT (v16 IMMORTAL)
+// ============================================================================
+
+let _proxySeq = 0;
+
 let _proxyState = Object.freeze({
+  // Core organism fields
   pressure: 0,          // 0–1 (derived from binaryField density)
   boost: 0,             // 0–1 (derived from cacheChunk envelope)
   fallback: false,      // boolean (derived from presence envelope)
-  mode: "normal",       // "normal" | "boost" | "fallback"
-  lineage: "BinaryProxy-v12.3-Evo-MAX-ABA",
-  timestamp: Date.now()
+  mode: "normal",       // "normal" | "boost" | "fallback" | "pressure-high" | "pressure-low"
+  lineage: "BinaryProxy-v12.3-Evo-BINARY-MAX-ABA",
+  bandSignature: null,  // last band signature from BinaryProxy envelope
+
+  // v16: advantage + health hints
+  advantageHint: {
+    band: "neutral",
+    score: 0.5,
+    reason: "initial"
+  },
+  healthHint: {
+    status: "stable",
+    score: 1.0
+  },
+
+  // v16: last envelope snapshots (symbolic-only, shallow)
+  lastBinaryField: null,
+  lastCacheChunkEnvelope: null,
+  lastPresenceEnvelope: null,
+
+  // v16: sequence + timestamps (symbolic only)
+  seq: _proxySeq,
+  lastUpdateReason: "init",
+  timestamp: safeNow()
 });
 
 // ============================================================================
@@ -94,57 +268,46 @@ let _proxyState = Object.freeze({
 //  NOTE: This NEVER mutates BinaryProxy or its envelopes.
 // ============================================================================
 
-export function updateProxyStateFromEnvelope(envelope = {}) {
-  // -------------------------------------------------------------------------
-  //  PRESSURE — derived from binaryField.density
-  //  Maps binary density → organism pressure (0–1)
-  // -------------------------------------------------------------------------
-  const pressure =
-    envelope?.binaryField?.density
-      ? Math.min(1, envelope.binaryField.density / 2048)
-      : 0;
+export function updateProxyStateFromEnvelope(envelope = {}, reason = "envelope") {
+  const binaryField = envelope && envelope.binaryField;
+  const cacheChunkEnvelope = envelope && envelope.cacheChunkEnvelope;
+  const presenceEnvelope = envelope && envelope.presenceEnvelope;
 
-  // -------------------------------------------------------------------------
-  //  FALLBACK — derived from presenceSignature parity
-  //  If presenceSignature ends with "0" → fallback mode
-  // -------------------------------------------------------------------------
-  const fallback =
-    envelope?.presenceEnvelope?.presenceSignature?.endsWith("0") || false;
+  const pressure = derivePressureFromBinaryField(binaryField);
+  const boost = deriveBoostFromCacheChunkEnvelope(cacheChunkEnvelope);
+  const fallback = deriveFallbackFromPresenceEnvelope(presenceEnvelope);
+  const mode = deriveMode(pressure, boost, fallback);
 
-  // -------------------------------------------------------------------------
-  //  BOOST — derived from cacheChunkSurfaceSignature
-  //  If signature ends with "F" → boost mode
-  // -------------------------------------------------------------------------
-  const boost =
-    envelope?.cacheChunkEnvelope?.cacheChunkSurfaceSignature?.endsWith("F")
-      ? 1
-      : 0;
+  const advantageHint = deriveAdvantageHint({ pressure, boost, fallback });
+  const healthHint = deriveHealthHint({ pressure, fallback });
+  const bandSignature = safeBandSignature(envelope);
 
-  // -------------------------------------------------------------------------
-  //  MODE — derived from fallback + boost
-  // -------------------------------------------------------------------------
-  const mode = fallback
-    ? "fallback"
-    : boost > 0
-    ? "boost"
-    : "normal";
+  _proxySeq += 1;
 
-  // -------------------------------------------------------------------------
-  //  IMMUTABLE STATE SWAP — drift-proof, deterministic
-  // -------------------------------------------------------------------------
   _proxyState = Object.freeze({
     pressure,
     boost,
     fallback,
     mode,
     lineage: _proxyState.lineage,
-    timestamp: Date.now()
+    bandSignature,
+
+    advantageHint,
+    healthHint,
+
+    lastBinaryField: binaryField || null,
+    lastCacheChunkEnvelope: cacheChunkEnvelope || null,
+    lastPresenceEnvelope: presenceEnvelope || null,
+
+    seq: _proxySeq,
+    lastUpdateReason: typeof reason === "string" ? reason : "envelope",
+    timestamp: safeNow()
   });
 }
 
 // ============================================================================
 //  READ API — used by Mesh / Expansion / Server / Router / WorldCore
-//  NOTE: All getters are pure, zero-allocation, zero-mutation.
+//  NOTE: All getters are pure, zero-mutation.
 // ============================================================================
 
 export const getProxyContext = () => _proxyState;
@@ -153,3 +316,25 @@ export const getProxyBoost = () => _proxyState.boost;
 export const getProxyFallback = () => _proxyState.fallback;
 export const getProxyMode = () => _proxyState.mode;
 export const getProxyLineage = () => _proxyState.lineage;
+export const getProxyBandSignature = () => _proxyState.bandSignature;
+export const getProxyAdvantageHint = () => _proxyState.advantageHint;
+export const getProxyHealthHint = () => _proxyState.healthHint;
+export const getProxySeq = () => _proxyState.seq;
+
+// v16: safe snapshot clone for organisms that want a one-shot view
+export function getProxySnapshot() {
+  const s = _proxyState;
+  return {
+    pressure: s.pressure,
+    boost: s.boost,
+    fallback: s.fallback,
+    mode: s.mode,
+    lineage: s.lineage,
+    bandSignature: s.bandSignature,
+    advantageHint: { ...s.advantageHint },
+    healthHint: { ...s.healthHint },
+    seq: s.seq,
+    lastUpdateReason: s.lastUpdateReason,
+    timestamp: s.timestamp
+  };
+}

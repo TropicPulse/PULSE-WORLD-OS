@@ -74,13 +74,13 @@ import { logger } from "../../PULSE-UI/_BACKEND/PulseProofLogger.js";
 import {
   PulseExpansionMeta,
   createPulseExpansion
-} from "../PULSE-EXPANSION/PulseExpansion-v16.js";
+} from "../PulseExpansion-v16.js";
 
 import {
   PulseCastleMeta,
   summarizeCastlePresence,
   computeCastlePresence
-} from "../PULSE-EXPANSION/PulseCastle-v16.js";
+} from "../PulseCastle-v16.js";
 
 // Router (still v12.3 presence-era)
 import {

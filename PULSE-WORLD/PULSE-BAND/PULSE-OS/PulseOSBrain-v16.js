@@ -1,10 +1,10 @@
 // ============================================================================
-// FILE: /PulseOS/Brain/PulseOSBrain-v15-Immortal.js
-// PULSE OS BRAIN — v15-Immortal-DUALBAND-Presence-ADVANTAGE
-// “THE REAL CNS / ORGANISM-WIDE IDENTITY + INTELLIGENCE KERNEL”
+// FILE: /PulseOS/Brain/PulseOSBrain-v16-Immortal.js
+// PULSE OS BRAIN — v16-Immortal-DUALBAND-Presence-ADVANTAGE-ARTERY
+// “REAL CNS / ORGANISM-WIDE IDENTITY + INTELLIGENCE + ARTERY KERNEL”
 // ============================================================================
 //
-// LAWS (v15+IMMORTAL+PULSE-TOPOLOGY):
+// LAWS (v16+IMMORTAL+PULSE-TOPOLOGY):
 //   • Brain may import ONLY:
 //       - PulseIQMap        (design + logging + long-term memory)
 //       - PulseOrganismMap  (organ layout + organs + lineage)
@@ -14,21 +14,23 @@
 //   • Brain NEVER routes anything.
 //   • Brain is binary-aware, dualband, but symbolic-primary.
 //   • Binary is always post-render, handled by GPU / Send / Binary organs.
-//   • Brain is the CNS identity + contract kernel, not a router, not a GPU.
+//   • Brain is the CNS identity + contract + artery kernel, not a router, not a GPU.
 //   • No presence/mesh/gpu/heartbeat imports — awareness is metadata-only.
-//   • Brain may hold world-lens / advantage / presence / pulse-topology
+//   • Brain may hold world-lens / advantage / presence / pulse-topology / artery
 //     summaries, but only emits view-only, non-network-dependent descriptors.
-//   • All internet / network intent must be emitted upward as symbolic intent
+//   • All internet / network intent MUST be emitted upward as symbolic intent
 //     and fulfilled by Castle → Expansion → Pulse-Net (server / higher power).
+//   • Expansion + server are the *internet center*; Brain is read-only consumer
+//     via snapshots, never the origin of network traffic.
 // ============================================================================
 
 /*
 AI_EXPERIENCE_META = {
   identity: "PulseOSBrain",
-  version: "v15-Immortal",
+  version: "v16-Immortal",
   layer: "cns",
   role: "os_brain",
-  lineage: "PulseOS-v15-Immortal",
+  lineage: "PulseOS-v16-Immortal",
 
   evo: {
     symbolicPrimary: true,
@@ -47,7 +49,19 @@ AI_EXPERIENCE_META = {
     presenceAware: true,
     meshAware: true,
 
-    safeRouteFree: true
+    safeRouteFree: true,
+
+    // v16 IMMORTAL upgrades
+    expansionAware: true,
+    serverRoundtripAware: true,
+    internetCenterExternal: true,
+    worldLensSnapshotOnly: true,
+    advantageSnapshotOnly: true,
+    presenceSnapshotOnly: true,
+    topologySnapshotOnly: true,
+    arteryAware: true,
+    arteryDeterministic: true,
+    arteryDriftProof: true
   },
 
   contract: {
@@ -68,8 +82,8 @@ AI_EXPERIENCE_META = {
 export const PulseOSBrainMeta = Object.freeze({
   layer: "PulseOSBrain",
   role: "CNS_BRAIN_ORGAN",
-  version: "v15-Immortal-DUALBAND-Presence-ADVANTAGE",
-  identity: "PulseOSBrain-v15-Immortal-DUALBAND-Presence-ADVANTAGE",
+  version: "v16-Immortal-DUALBAND-Presence-ADVANTAGE-ARTERY",
+  identity: "PulseOSBrain-v16-Immortal-DUALBAND-Presence-ADVANTAGE-ARTERY",
 
   guarantees: Object.freeze({
     deterministic: true,
@@ -78,6 +92,7 @@ export const PulseOSBrainMeta = Object.freeze({
     // Brain laws
     cnsIdentityKernel: true,
     cnsContractKernel: true,
+    cnsArteryKernel: true,
     symbolicPrimary: true,
     binaryAware: true,
     dualBandAware: true,
@@ -101,6 +116,16 @@ export const PulseOSBrainMeta = Object.freeze({
     unifiedAdvantageField: true,
     pulseTopologyAware: true,
 
+    // Artery awareness
+    arteryAware: true,
+    arteryDeterministic: true,
+    arteryDriftProof: true,
+    arteryMultiBandAware: true,
+    arteryCostAware: true,
+    arteryPressureAware: true,
+    arteryThroughputAware: true,
+    arteryStabilityAware: true,
+
     // Multi-instance / cloning
     multiInstanceReady: true,
     clusterCoherence: true,
@@ -111,7 +136,12 @@ export const PulseOSBrainMeta = Object.freeze({
     zeroDynamicImports: true,
     zeroEval: true,
     worldLensAware: true,
-    zeroNetworkInOrgans: true
+    zeroNetworkInOrgans: true,
+
+    // v16 IMMORTAL internet-center guarantees
+    internetCenterExternal: true,       // Expansion+Server, not Brain
+    networkIntentOnly: true,            // Brain emits intent, never fetches
+    snapshotOnlyInputs: true            // Brain only ingests snapshots
   }),
 
   contract: Object.freeze({
@@ -129,13 +159,14 @@ export const PulseOSBrainMeta = Object.freeze({
       "CNSChunkingProfiles",
       "CNSAdvantageField",
       "CNSWorldLensSnapshot",
-      "CNSPulseTopologyDescriptors"
+      "CNSPulseTopologyDescriptors",
+      "CNSArterySnapshot"
     ]
   }),
 
   lineage: Object.freeze({
-    root: "PulseOS-v15-Immortal",
-    parent: "PulseOS-v13-SPINE",
+    root: "PulseOS-v16-Immortal",
+    parent: "PulseOS-v15-Immortal",
     ancestry: [
       "PulseOSBrain-v9",
       "PulseOSBrain-v10",
@@ -146,7 +177,8 @@ export const PulseOSBrainMeta = Object.freeze({
       "PulseOSBrain-v12.4-SPINE-DUALBAND-Presence",
       "PulseOSBrain-v13-SPINE-DUALBAND-Presence",
       "PulseOSBrain-v13-SPINE-DUALBAND-Presence-ADVANTAGE",
-      "PulseOSBrain-v15-Immortal-DUALBAND-Presence-ADVANTAGE"
+      "PulseOSBrain-v15-Immortal-DUALBAND-Presence-ADVANTAGE",
+      "PulseOSBrain-v16-Immortal-DUALBAND-Presence-ADVANTAGE-ARTERY"
     ]
   }),
 
@@ -158,11 +190,11 @@ export const PulseOSBrainMeta = Object.freeze({
 
   architecture: Object.freeze({
     pattern: "A-B-A",
-    baseline: "CNS identity + contract kernel (symbolic-primary, dualband-aware)",
+    baseline: "CNS identity + contract + artery kernel (symbolic-primary, dualband-aware)",
     adaptive:
-      "binary-aware overlays via GPU/Send/Binary organs + presence/mesh/chunk/prewarm/advantage/world-lens/pulse-topology metadata surfaces",
+      "binary-aware overlays via GPU/Send/Binary organs + presence/mesh/chunk/prewarm/advantage/world-lens/pulse-topology/artery metadata surfaces",
     return:
-      "online CNS identity + contracts + boot signatures + presence/chunking/advantage/world-lens/pulse-topology descriptors"
+      "online CNS identity + contracts + boot signatures + presence/chunking/advantage/world-lens/pulse-topology/artery descriptors"
   })
 });
 
@@ -173,12 +205,12 @@ import { PulseIQMap } from "./PulseIQMap.js";
 import { PulseOrganismMap } from "./PulseOrganismMap.js";
 import { PulseOSEvolution } from "./PulseOSBrainEvolution.js";
 
-import checkBand from "../PULSE-PROXY/CheckBand-v11-Evo.js";
-import checkIdentity from "../PULSE-PROXY/CheckIdentity-v11-Evo.js";
-import checkRouterMemory from "../PULSE-PROXY/CheckRouterMemory-v11-Evo.js";
+import checkBand from "../PULSE-PROXY/CheckBand-v16.js";
+import checkIdentity from "../PULSE-PROXY/CheckIdentity-v16.js";
+import checkRouterMemory from "../PULSE-PROXY/CheckRouterMemory-v16.js";
 
 // ============================================================================
-//  CNS BRAIN — v15-Immortal-DUALBAND-Presence-ADVANTAGE
+//  CNS BRAIN — v16-Immortal-DUALBAND-Presence-ADVANTAGE-ARTERY
 // ============================================================================
 export const PulseOSBrain = {
   // -------------------------------------------------------------------------
@@ -188,7 +220,7 @@ export const PulseOSBrain = {
     type: "Brain",
     subsystem: "OS",
     layer: "CNS",
-    version: "15-Immortal",
+    version: "16-Immortal",
     identity: "PulseOSBrain",
     evo: {
       deterministicNeuron: true,
@@ -197,11 +229,11 @@ export const PulseOSBrain = {
       advantageCascadeAware: true,
       unifiedAdvantageField: true,
 
-      routingContract: "PulseRouter-v15",
-      osOrganContract: "PulseOS-v15-Immortal",
-      earnCompatibility: "PulseEarn-v15.0",
-      proxyCompatibility: "PulseProxySpine-v15",
-      gpuCompatibility: "PulseGPU-v15",
+      routingContract: "PulseRouter-v16",
+      osOrganContract: "PulseOS-v16-Immortal",
+      earnCompatibility: "PulseEarn-v16.0",
+      proxyCompatibility: "PulseProxySpine-v16",
+      gpuCompatibility: "PulseGPU-v16",
 
       loopTheoryAware: true,
       continuanceAware: true,
@@ -220,7 +252,18 @@ export const PulseOSBrain = {
       kernelChunkingReady: true,
       kernelPrewarmReady: true,
       advantageFieldAware: true,
-      pulseTopologyAware: true
+      pulseTopologyAware: true,
+
+      // v16 internet-center awareness
+      expansionAware: true,
+      serverRoundtripAware: true,
+      internetCenterExternal: true,
+
+      // Artery awareness
+      arteryAware: true,
+      arteryDeterministic: true,
+      arteryDriftProof: true,
+      arteryMultiBandAware: true
     }
   },
 
@@ -233,7 +276,7 @@ export const PulseOSBrain = {
 
   intent: {
     mode: "organism-brain",
-    epoch: "15-Immortal",
+    epoch: "16-Immortal",
     dualBand: true,
     symbolicPrimary: true
   },
@@ -254,11 +297,32 @@ export const PulseOSBrain = {
     scanFile: null
   },
 
-  // CNS snapshots (filled by Castle/Expansion/Pulse-Net)
+  // CNS snapshots (filled by Castle/Expansion/Pulse-Net via server roundtrip)
   CNSWorldLensSnapshot: null,
   CNSAdvantageSnapshot: null,
   CNSPresenceSnapshot: null,
   CNSTopologySnapshot: null,
+  CNSArterySnapshot: null,
+
+  // CNS Artery live state (internal, deterministic, drift-proof)
+  CNSArteryState: {
+    pressure: 0,          // 0..1
+    throughput: 0,        // 0..1
+    cost: 0,              // 0..1
+    stability: 1,         // 0..1
+    entropy: 0,           // 0..1
+    expansionReadiness: 0,// 0..1
+    recoveryNeed: 0,      // 0..1
+    cortexLoad: 0,        // 0..1
+    meshLoad: 0,          // 0..1
+    presenceLoad: 0,      // 0..1
+    advantageLoad: 0,     // 0..1
+    worldLensLoad: 0,     // 0..1
+    topologyLoad: 0,      // 0..1
+    organismMeshLoad: 0,  // 0..1
+    dualBandLoad: 0,      // 0..1
+    binaryOverlayLoad: 0  // 0..1
+  },
 
   log: (...args) => {
     if (PulseOSBrain.PulseIQMap?.log) return PulseOSBrain.PulseIQMap.log(...args);
@@ -281,17 +345,13 @@ export const PulseOSBrain = {
   },
 
   // -------------------------------------------------------------------------
-  // UNIFIED NETWORK INTENT SURFACE — v15 IMMORTAL
+  // UNIFIED NETWORK INTENT SURFACE — v16 IMMORTAL
   // -------------------------------------------------------------------------
   //
   // Brain does NOT perform network. It only emits symbolic intent that
-  // Castle/Expansion/Pulse-Net can interpret and fulfill.
+  // Castle → Expansion → Pulse-Net (server) interpret and fulfill.
   //
-  // Example usage:
-  //   const intent = PulseOSBrain.BrainIntent.emitNetworkIntent({
-  //     type: "worldLens.refresh",
-  //     payload: { url: PulseOSBrain.PulseIQMap?.worldLensURL }
-  //   });
+  // Internet center is Expansion+Server; Brain is a pure intent + snapshot node.
   //
   BrainIntent: {
     emitNetworkIntent({ type, payload = {} }) {
@@ -302,11 +362,11 @@ export const PulseOSBrain = {
         payload,
         band: "symbolic",
         source: "PulseOSBrain",
+        // symbolic-only timestamp; Expansion/Server may ignore/override
         timestamp: Date.now()
       };
     },
 
-    // Convenience helpers for common intents (still symbolic-only)
     worldLensRefresh() {
       const iq = PulseOSBrain.PulseIQMap || {};
       return PulseOSBrain.BrainIntent.emitNetworkIntent({
@@ -345,7 +405,7 @@ export const PulseOSBrain = {
   // -------------------------------------------------------------------------
   //
   // These are the ONLY ways network-derived data enters the Brain.
-  // They are called by higher layers after fulfilling BrainIntent.
+  // They are called by higher layers after server roundtrip.
   //
   applyWorldLensSnapshot(snapshot) {
     PulseOSBrain.CNSWorldLensSnapshot = {
@@ -389,6 +449,121 @@ export const PulseOSBrain = {
         dadFallbackToMom: true
       }
     };
+  },
+
+  applyArterySnapshot(snapshot) {
+    const s = snapshot || {};
+    // snapshot is allowed to come from OrganismMesh / Expansion / NodeAdmin
+    PulseOSBrain.CNSArterySnapshot = {
+      pressure: s.pressure ?? PulseOSBrain.CNSArteryState.pressure,
+      throughput: s.throughput ?? PulseOSBrain.CNSArteryState.throughput,
+      cost: s.cost ?? PulseOSBrain.CNSArteryState.cost,
+      stability: s.stability ?? PulseOSBrain.CNSArteryState.stability,
+      entropy: s.entropy ?? PulseOSBrain.CNSArteryState.entropy,
+      expansionReadiness: s.expansionReadiness ?? PulseOSBrain.CNSArteryState.expansionReadiness,
+      recoveryNeed: s.recoveryNeed ?? PulseOSBrain.CNSArteryState.recoveryNeed,
+      cortexLoad: s.cortexLoad ?? PulseOSBrain.CNSArteryState.cortexLoad,
+      meshLoad: s.meshLoad ?? PulseOSBrain.CNSArteryState.meshLoad,
+      presenceLoad: s.presenceLoad ?? PulseOSBrain.CNSArteryState.presenceLoad,
+      advantageLoad: s.advantageLoad ?? PulseOSBrain.CNSArteryState.advantageLoad,
+      worldLensLoad: s.worldLensLoad ?? PulseOSBrain.CNSArteryState.worldLensLoad,
+      topologyLoad: s.topologyLoad ?? PulseOSBrain.CNSArteryState.topologyLoad,
+      organismMeshLoad: s.organismMeshLoad ?? PulseOSBrain.CNSArteryState.organismMeshLoad,
+      dualBandLoad: s.dualBandLoad ?? PulseOSBrain.CNSArteryState.dualBandLoad,
+      binaryOverlayLoad: s.binaryOverlayLoad ?? PulseOSBrain.CNSArteryState.binaryOverlayLoad
+    };
+  },
+
+  // -------------------------------------------------------------------------
+  // CNS Artery Engine — internal, deterministic, drift-proof
+  // -------------------------------------------------------------------------
+  CNSArtery: {
+    // clamp helper
+    _clamp01(x) {
+      if (typeof x !== "number" || Number.isNaN(x)) return 0;
+      if (x < 0) return 0;
+      if (x > 1) return 1;
+      return x;
+    },
+
+    // update from local signals (no network)
+    updateLocalSignals({
+      cortexLoad,
+      meshLoad,
+      presenceLoad,
+      advantageLoad,
+      worldLensLoad,
+      topologyLoad,
+      organismMeshLoad,
+      dualBandLoad,
+      binaryOverlayLoad
+    } = {}) {
+      const s = PulseOSBrain.CNSArteryState;
+
+      if (cortexLoad != null) s.cortexLoad = this._clamp01(cortexLoad);
+      if (meshLoad != null) s.meshLoad = this._clamp01(meshLoad);
+      if (presenceLoad != null) s.presenceLoad = this._clamp01(presenceLoad);
+      if (advantageLoad != null) s.advantageLoad = this._clamp01(advantageLoad);
+      if (worldLensLoad != null) s.worldLensLoad = this._clamp01(worldLensLoad);
+      if (topologyLoad != null) s.topologyLoad = this._clamp01(topologyLoad);
+      if (organismMeshLoad != null) s.organismMeshLoad = this._clamp01(organismMeshLoad);
+      if (dualBandLoad != null) s.dualBandLoad = this._clamp01(dualBandLoad);
+      if (binaryOverlayLoad != null) s.binaryOverlayLoad = this._clamp01(binaryOverlayLoad);
+
+      // derive pressure/throughput/cost/stability/entropy deterministically
+      const avgLoad = (
+        s.cortexLoad +
+        s.meshLoad +
+        s.presenceLoad +
+        s.advantageLoad +
+        s.worldLensLoad +
+        s.topologyLoad +
+        s.organismMeshLoad +
+        s.dualBandLoad +
+        s.binaryOverlayLoad
+      ) / 9;
+
+      s.pressure = this._clamp01(avgLoad);
+      s.throughput = this._clamp01(1 - Math.abs(avgLoad - 0.5) * 1.2);
+      s.cost = this._clamp01(avgLoad * 0.8 + s.dualBandLoad * 0.2);
+      s.stability = this._clamp01(1 - avgLoad * 0.7);
+      s.entropy = this._clamp01(avgLoad * 0.6 + s.meshLoad * 0.2 + s.presenceLoad * 0.2);
+
+      s.expansionReadiness = this._clamp01(
+        (1 - s.pressure) * 0.4 +
+        s.throughput * 0.4 +
+        s.stability * 0.2
+      );
+
+      s.recoveryNeed = this._clamp01(
+        s.pressure * 0.5 +
+        (1 - s.stability) * 0.5
+      );
+
+      return this.getSnapshot();
+    },
+
+    getSnapshot() {
+      const s = PulseOSBrain.CNSArteryState;
+      return {
+        pressure: s.pressure,
+        throughput: s.throughput,
+        cost: s.cost,
+        stability: s.stability,
+        entropy: s.entropy,
+        expansionReadiness: s.expansionReadiness,
+        recoveryNeed: s.recoveryNeed,
+        cortexLoad: s.cortexLoad,
+        meshLoad: s.meshLoad,
+        presenceLoad: s.presenceLoad,
+        advantageLoad: s.advantageLoad,
+        worldLensLoad: s.worldLensLoad,
+        topologyLoad: s.topologyLoad,
+        organismMeshLoad: s.organismMeshLoad,
+        dualBandLoad: s.dualBandLoad,
+        binaryOverlayLoad: s.binaryOverlayLoad
+      };
+    }
   },
 
   // -------------------------------------------------------------------------
@@ -441,7 +616,7 @@ export const PulseOSBrain = {
 
         encoding: {
           format: "application/pulse-organism+json",
-          suggestedTransport: "PulseGPU-v15",
+          suggestedTransport: "PulseGPU-v16",
           suggestedCompression: "post-render",
           executable: false
         }
@@ -454,7 +629,6 @@ export const PulseOSBrain = {
     },
 
     getPresenceDescriptors() {
-      // Prefer snapshot if present, otherwise derive from IQ/organism
       if (PulseOSBrain.CNSPresenceSnapshot) {
         return PulseOSBrain.CNSPresenceSnapshot;
       }
@@ -549,6 +723,14 @@ export const PulseOSBrain = {
           dadFallbackToMom: true
         }
       };
+    },
+
+    getArterySnapshot() {
+      // prefer external snapshot if present, otherwise derive from local state
+      if (PulseOSBrain.CNSArterySnapshot) {
+        return PulseOSBrain.CNSArterySnapshot;
+      }
+      return PulseOSBrain.CNSArtery.getSnapshot();
     }
   },
 
@@ -559,7 +741,7 @@ export const PulseOSBrain = {
       return cortex.scanFile(filePath);
     }
 
-    PulseOSBrain.warn("🧠 [PulseOSBrain v15] scanFile called but Cortex has no scanFile surface.", {
+    PulseOSBrain.warn("🧠 [PulseOSBrain v16] scanFile called but Cortex has no scanFile surface.", {
       filePath
     });
 
@@ -572,7 +754,7 @@ export const PulseOSBrain = {
 };
 
 // ============================================================================
-//  BRAIN PREWARM ENGINE — v15-Immortal
+//  BRAIN PREWARM ENGINE — v16-Immortal
 // ============================================================================
 function prewarmPulseOSBrain() {
   try {
@@ -591,9 +773,12 @@ function prewarmPulseOSBrain() {
       void o;
     }
 
+    // prewarm artery once with neutral loads
+    PulseOSBrain.CNSArtery.updateLocalSignals({});
+
     return true;
   } catch (err) {
-    console.error("[PulseOSBrain Prewarm v15] Failed:", err);
+    console.error("[PulseOSBrain Prewarm v16] Failed:", err);
     return false;
   }
 }
@@ -635,7 +820,7 @@ export function structuralError(expected, found, extraContext = {}) {
     ...extraContext
   };
 
-  PulseOSBrain.warn("[STRUCTURAL_ERROR v15]", payload);
+  PulseOSBrain.warn("[STRUCTURAL_ERROR v16]", payload);
   return payload;
 }
 
@@ -659,11 +844,11 @@ export async function loadOrganByDesign(designIdentity, expectedType, expectedSu
 
   if (candidates.length > 0) {
     const chosen = candidates[0];
-    PulseOSBrain.log(`🧠 [PulseOSBrain v15] Attached organ from ${chosen.path}`);
+    PulseOSBrain.log(`🧠 [PulseOSBrain v16] Attached organ from ${chosen.path}`);
     return chosen.module;
   }
 
-  PulseOSBrain.warn("[PulseOSBrain v15] No matching organ found for designIdentity.", {
+  PulseOSBrain.warn("[PulseOSBrain v16] No matching organ found for designIdentity.", {
     designIdentity,
     expected
   });
@@ -690,7 +875,8 @@ export function getCNSDiagnostics() {
     routerMemoryCheck: safeRun("checkRouterMemory", checkRouterMemory),
     worldLens: PulseOSBrain.BrainIntel.getWorldLensSnapshot(),
     advantageField: PulseOSBrain.BrainIntel.getAdvantageField(),
-    pulseTopology: PulseOSBrain.BrainIntel.getPulseTopologyDescriptors()
+    pulseTopology: PulseOSBrain.BrainIntel.getPulseTopologyDescriptors(),
+    artery: PulseOSBrain.BrainIntel.getArterySnapshot()
   };
 }
 
@@ -701,6 +887,7 @@ export function getCNSState() {
   const advantage = PulseOSBrain.BrainIntel.getAdvantageField();
   const worldLens = PulseOSBrain.BrainIntel.getWorldLensSnapshot();
   const pulseTopology = PulseOSBrain.BrainIntel.getPulseTopologyDescriptors();
+  const artery = PulseOSBrain.BrainIntel.getArterySnapshot();
   const diagnostics = getCNSDiagnostics();
 
   return {
@@ -715,7 +902,8 @@ export function getCNSState() {
     CNSChunkingProfiles: chunking,
     CNSAdvantageField: advantage,
     CNSWorldLensSnapshot: worldLens,
-    CNSPulseTopologyDescriptors: pulseTopology
+    CNSPulseTopologyDescriptors: pulseTopology,
+    CNSArterySnapshot: artery
   };
 }
 
@@ -754,12 +942,21 @@ export async function cognitiveBootstrap({ intent, organism, iqMap, understandin
   const cortex = evolutionOrgan.bootCortex(PulseOSBrain, { band: "dual" });
   PulseOSBrain.cortex = cortex;
 
-  evolutionOrgan.recordLineage("brain-cognitive-bootstrap-v15-immortal", { band: "dual" });
+  evolutionOrgan.recordLineage("brain-cognitive-bootstrap-v16-immortal", { band: "dual" });
   evolutionOrgan.scanDrift(PulseOSBrain, { band: "dual" });
 
-  PulseOSBrain.log("🧠 [PulseOSBrain v15] cognitiveBootstrap complete (advantage-integrated, zero-network).");
+  // update artery from initial cortex/organism signals if any
+  try {
+    const initialLoads = evolutionOrgan.getInitialArteryLoads
+      ? evolutionOrgan.getInitialArteryLoads()
+      : {};
+    PulseOSBrain.CNSArtery.updateLocalSignals(initialLoads);
+  } catch (err) {
+    PulseOSBrain.warn("[PulseOSBrain v16] Initial artery load update failed", { error: String(err) });
+  }
 
-  // Run healers once at boot, attach CNS state snapshot
+  PulseOSBrain.log("🧠 [PulseOSBrain v16] cognitiveBootstrap complete (advantage-integrated, artery-aware, zero-network, internet-center external).");
+
   const diagnostics = getCNSDiagnostics();
   PulseOSBrain.CNSLastDiagnostics = diagnostics;
   PulseOSBrain.CNSLastState = getCNSState();
@@ -768,9 +965,12 @@ export async function cognitiveBootstrap({ intent, organism, iqMap, understandin
 }
 
 // -------------------------------------------------------------------------
-// NOTE: v13 AUTO-CONNECT + connectToInternet REMOVED
+// NOTE: v16 — Brain is NOT the internet center.
 // -------------------------------------------------------------------------
-// Brain no longer performs any fetch or network calls.
-// All internet-class behavior must be fulfilled by Castle/Expansion/Pulse-Net
-// using BrainIntent.emitNetworkIntent(...) and the apply*Snapshot(...) surfaces.
+// • Brain never fetches.
+// • Brain never talks to the server directly.
+// • All network-class behavior flows:
+//     BrainIntent → Expansion → Server → Expansion → Brain.apply*Snapshot → User.
+// • Artery is shared conceptually with OrganismMesh, but Brain’s CNSArtery is
+//   a local, deterministic, metadata-only view — no routing, no network.
 // -------------------------------------------------------------------------

@@ -121,7 +121,7 @@ import {
   PulseCastleMeta,
   createPulseCastle,
   getPulseCastleContext
-} from "../PULSE-EXPANSION/PulseCastle-v16.js";
+} from "../PulseCastle-v16.js";
 import {
   PulseServerMeta,
   createPulseServer,

@@ -1,17 +1,18 @@
 // ============================================================================
-//  PulseOS-v12.3-Spine-Symbolic.js
-//  SYMBOLIC ORGANISM KERNEL — BINARY-AWARE, PRESENCE-AWARE, CHUNK/PREWARM-READY
+//  PulseOS-v16-IMMORTAL-Spine-Symbolic.js
+//  SYMBOLIC ORGANISM KERNEL — IMMORTAL CORTEX / DUAL-MODE / MESH-AWARE
 // ============================================================================
 //  ROLE:
-//    - Symbolic (non-binary) OS kernel of PulseOS v12.3-SPINE.
-//    - Boots the organism using symbolic cognition, lineage, and CNS logic.
-//    - Fully upgraded, drift-proof, deterministic, organ-based.
+//    - Symbolic (non-binary) OS kernel of PulseOS v16-IMMORTAL.
+//    - Boots the organism using symbolic cognition, lineage, CNS logic.
 //    - Cortex-facing OS brainstem, dual-mode with binary kernel.
+//    - Presence-aware, Mesh-aware, Expansion-aware, NodeAdmin-aware.
+//    - Deterministic, drift-proof, organ-based, multi-instance coherent.
 //
 //  BINARY RELATION:
 //    - Binary-aware (knows binary organs exist).
-//    - Binary-ready (can host binary organs).
-//    - Not binary-native — that is the binary kernel file.
+//    - Binary-ready (can host binary organs but does not execute them).
+//    - Dual-mode organism: symbolic cortex + binary spinal brainstem.
 //
 //  PRESENCE / MESH RELATION:
 //    - Presence-aware (OS Presence Organ).
@@ -23,115 +24,146 @@
 //    - Symbolic + Binary coexist as dual-mode cognition.
 //    - All drift eliminated; unified organism identity.
 // ============================================================================
+
 /*
 AI_EXPERIENCE_META = {
   identity: "PulseOSSymbolicKernel",
-  version: "v12.3-SPINE-SYMBOLIC-Immortal",
+  version: "v16-IMMORTAL-Spine-Symbolic",
   layer: "os_kernel_symbolic",
   role: "symbolic_organism_kernel",
-  lineage: "PulseOS-v12.3-SPINE",
+  lineage: "PulseOS-v16-IMMORTAL",
 
   evo: {
-    symbolicPrimary: true,          // This is the symbolic OS kernel
-    binaryAware: true,              // Knows binary organs exist
-    binaryReady: true,              // Can host binary organs but does not execute them
-    dualBand: true,                 // Symbolic + binary coexistence
-    presenceAware: true,            // Must host OS Presence organ
-    meshPresenceAware: true,        // Must host Mesh Presence Relay
-    chunkPrewarmReady: true,        // Chunker + prewarm integration
-    evolutionAware: true,           // Works with Evolution organ
-    governorAligned: true,          // Must obey Governor organ rules
-    spinalCordAligned: true,        // Must wire organs via SpinalCord
-    deterministic: true,            // No randomness in boot sequence
-    driftProof: true,               // No drift allowed in symbolic kernel
-    safeRouteFree: true,            // Kernel must not use safeRoute
-    zeroNetworkFetch: true,         // Kernel must not fetch network resources
-    zeroMutationOfInput: true,      // Must not mutate incoming identity/session
-    zeroExternalMutation: true      // Must not mutate global state outside contract
+    symbolicPrimary: true,
+    binaryAware: true,
+    binaryReady: true,
+    dualBand: true,
+
+    presenceAware: true,
+    meshPresenceAware: true,
+    meshAware: true,
+    meshCoordinatorAware: true,
+
+    chunkPrewarmReady: true,
+    evolutionAware: true,
+    governorAligned: true,
+    spinalCordAligned: true,
+
+    deterministic: true,
+    driftProof: true,
+    safeRouteFree: true,
+    zeroNetworkFetch: true,
+    zeroMutationOfInput: true,
+    zeroExternalMutation: true,
+
+    // IMMORTAL upgrades
+    expansionAware: true,
+    worldCoreAware: true,
+    nodeAdminAware: true,
+    unifiedAdvantageField: true,
+    multiInstanceKernel: true,
+    clusterCoherence: true,
+    symbolicMeshEnvAware: true,
+    binaryMeshEnvAware: true,
+    organismMeshAware: true,
+    futureEvolutionReady: true
   },
 
   contract: {
     always: [
-      "PulseOSBrain",               // CNS symbolic brain organ
-      "PulseOSEvolution",           // Evolution organ
-      "PulseSpinalCord",            // Wiring organ
-      "PulseOSPresence",            // OS Presence organ
-      "PulseMeshPresence",          // Mesh Presence Relay
-      "PulseExpansion",             // Expansion barrel
-      "PulseGovernor"               // Supervisor organ
+      "PulseOSBrain",
+      "PulseOSEvolution",
+      "PulseSpinalCord",
+      "PulseOSPresence",
+      "PulseMeshPresenceRelay",
+      "PulseExpansion",
+      "PulseGovernor",
+      "BinaryMeshEnvironment-v15",
+      "OrganismMesh-v16"
     ],
-
     optional: [
-      "PulseBinaryKernel",          // Binary kernel (external file)
-      "PulseBinaryRouter",          // Binary router
-      "PulseChunker",               // Chunker organ
-      "PulsePrewarm"                // Prewarm organ
+      "PulseBinaryKernel",
+      "PulseBinaryRouter",
+      "PulseChunker",
+      "PulsePrewarm"
     ],
-
     never: [
-      "legacySymbolicKernel",       // No v1.7/v11.x symbolic kernel
-      "legacyPresence",             // No legacy presence organ
-      "legacyMeshPresence",         // No legacy mesh relay
-      "legacySpinalCord",           // No legacy wiring
-      "safeRoute",                  // Forbidden in OS kernel
-      "fetchViaCNS",                // Kernel cannot fetch CNS
-      "legacyChunker",              // No legacy chunker
-      "legacyEvolution"             // No legacy evolution organ
+      "legacySymbolicKernel",
+      "legacyPresence",
+      "legacyMeshPresence",
+      "legacySpinalCord",
+      "safeRoute",
+      "fetchViaCNS",
+      "legacyChunker",
+      "legacyEvolution"
     ]
   }
 }
 */
 
 // ============================================================================
-//  ORGANISM BOOTSTRAP SET — v12.3 (SYMBOLIC KERNEL SIDE)
+//  ORGANISM BOOTSTRAP SET — v16 (SYMBOLIC KERNEL SIDE)
 // ============================================================================
-import { withModuleInitGuard, withOrganGuard } from "./PulseOSGovernor.js"; // Supervisor organ
-import * as PulseOSBrain from "./PulseOSBrain-v11-Evo.js";                 // CNS brain organ
-import * as PulseOSEvolution from "./PulseOSBrainEvolution.js";            // Evolution organ
-import * as PulseSpinalCord from "./PulseOSSpinalCord-v12-Evo.js";         // Wiring organ
+import { withModuleInitGuard, withOrganGuard } from "./PulseOSGovernor.js";
+import * as PulseOSBrain from "./PulseOSBrain-v16.js";
+import * as PulseOSEvolution from "./PulseOSBrainEvolution.js";
+import * as PulseSpinalCord from "./PulseOSSpinalCord-v16.js";
 
-// Presence / Mesh presence (symbolic/OS side, optional)
-import * as PulseOSPresence from "./PulseOSPresence-v12.4-Evo.js";         // OS Presence Organ (optional)
-import { createBinaryMeshEnvironment as createBinaryMeshEnv } from "../PULSE-MESH/PulseBinaryMesh-v11-Evo.js"; // Mesh env (binary+symbolic)
+// Presence / Mesh presence (symbolic/OS side)
+import * as PulseOSPresence from "./PulseOSPresence-v16.js";
 
-import { createPulseMeshPresenceRelay as PulseMeshPresence } from "../PULSE-MESH/PulseMeshPresenceRelay-v12.4-Evo.js"; // Mesh env (binary+symbolic)
-// ============================================================================
-// PULSE OS v13-Presence-Evo+ — WORLD BARREL
-// ============================================================================
-import { createPulseExpansion, pulseExpansion, PulseExpansionMeta} from "../PULSE-EXPANSION/PulseExpansion-v12.3-Presence.js";
-// (optional) direct access if you want to surface them:
-const Expansion = pulseExpansion; // singleton
+// IMMORTAL Mesh Presence Relay v16
+import {
+  createPulseMeshPresenceRelay as PulseMeshPresence
+} from "../PULSE-MESH/PulseMeshPresenceRelay-v16-IMMORTAL.js";
+
+// IMMORTAL Binary Mesh Environment v15
+import {
+  createBinaryMeshEnvironment as createBinaryMeshEnv
+} from "../PULSE-MESH/BinaryMesh-v15-Evo.js";
+
+// IMMORTAL OrganismMesh v16
+import {
+  createOrganismMesh
+} from "../PULSE-MESH/OrganismMesh-v16-IMMORTAL.js";
+
+// IMMORTAL Expansion v16
+import {
+  createPulseExpansion,
+  pulseExpansion,
+  PulseExpansionMeta
+} from "../PULSE-EXPANSION/PulseExpansion-v16.js";
+
+const Expansion = pulseExpansion;
 const ExpansionMeta = PulseExpansionMeta;
 
-// World-facing API
+// ============================================================================
+//  WORLD-FACING API
+// ============================================================================
 export const PulseWorld = Object.freeze({
   meta: ExpansionMeta,
-
-  // region governor
   expansion: Expansion,
-
-  // convenience surfaces (all routed through Expansion)
   castle: ExpansionMeta.world.castle,
   beacons: ExpansionMeta.beacons,
   physics: ExpansionMeta.physics,
-
-  // primary call: build expansion plan from region signals
   buildExpansionPlan(payload) {
     return Expansion.buildExpansionPlan(payload);
   }
 });
 
+// ============================================================================
+//  SYMBOLIC OS KERNEL META — v16 IMMORTAL
+// ============================================================================
 export const PulseOSKernelMeta = Object.freeze({
   layer: "PulseOSKernel",
   role: "ORGANISM_BOOTLOADER",
-  version: "v12.3-SPINE-SYMBOLIC",
-  identity: "PulseOS-v12.3-Spine-Symbolic",
+  version: "v16-IMMORTAL-Spine-Symbolic",
+  identity: "PulseOS-v16-Spine-Symbolic",
 
   guarantees: Object.freeze({
     deterministic: true,
     driftProof: true,
 
-    // Symbolic kernel contract
     symbolicNative: true,
     dualMode: true,
     binaryAware: true,
@@ -142,22 +174,19 @@ export const PulseOSKernelMeta = Object.freeze({
     continuanceAware: true,
     legacyBridgeCapable: true,
 
-    // Presence / Mesh / performance
     presenceFieldAware: true,
-    bluetoothPresenceAware: true,
     meshPresenceRelayAware: true,
     meshTopologyAware: true,
+    meshCoordinatorAware: true,
     kernelChunkingReady: true,
     kernelPrewarmReady: true,
     multiInstanceKernel: true,
     clusterCoherence: true,
     zeroDriftCloning: true,
 
-    // Environment
     browserOnly: true,
     worldLensAware: false,
 
-    // Safety
     zeroUserCode: true,
     zeroDynamicImports: true,
     zeroEval: true
@@ -171,26 +200,30 @@ export const PulseOSKernelMeta = Object.freeze({
       "PulseSpinalCord",
       "OrganRegistry",
       "PulseOSPresence",
-      "PulseMeshPresenceRelay"
+      "PulseMeshPresenceRelay",
+      "BinaryMeshEnvironment-v15",
+      "OrganismMesh-v16"
     ],
     output: [
       "SymbolicOrganismKernel",
       "SymbolicBootDiagnostics",
       "SymbolicBootSignatures",
       "SymbolicPresenceField",
-      "SymbolicMeshPresenceRelay"
+      "SymbolicMeshPresenceRelay",
+      "OrganismMeshRoot"
     ]
   }),
 
   lineage: Object.freeze({
-    root: "PulseOS-v12.3-SPINE",
-    parent: "PulseOS-v12.0-SPINE",
+    root: "PulseOS-v16-IMMORTAL",
+    parent: "PulseOS-v12.3-SPINE",
     ancestry: [
       "PulseOSKernel-v9",
       "PulseOSKernel-v10",
       "PulseOSKernel-v11",
       "PulseOSKernel-v11-Evo",
-      "PulseOSKernel-v12.3-Spine-Symbolic"
+      "PulseOSKernel-v12.3-Spine-Symbolic",
+      "PulseOSKernel-v16-IMMORTAL-Spine-Symbolic"
     ]
   }),
 
@@ -203,21 +236,20 @@ export const PulseOSKernelMeta = Object.freeze({
   architecture: Object.freeze({
     pattern: "A-B-A",
     baseline: "symbolic organism bootloader (organ wiring + artery activation)",
-    adaptive: "binary-aware dual-mode overlay + presence field",
+    adaptive: "binary-aware dual-mode overlay + presence + mesh + expansion field",
     return:
-      "online symbolic organism kernel + boot signatures + presence field + mesh relay"
+      "online symbolic organism kernel + boot signatures + presence field + mesh relay + organism mesh"
   })
 });
 
-
 // ============================================================================
-//  CONTEXT — OS KERNEL IDENTITY (v12.3-SPINE SYMBOLIC)
+//  CONTEXT — OS KERNEL IDENTITY (v16 IMMORTAL SYMBOLIC)
 // ============================================================================
-const PULSE_OS_CONTEXT = {
+const PULSE_OS_CONTEXT = Object.freeze({
   layer: "PulseOSKernel",
   role: "ORGANISM_BOOTLOADER",
-  version: "12.3-SPINE-SYMBOLIC",
-  lineage: "pulse-os-v12.3-spine-kernel-symbolic",
+  version: "16-IMMORTAL-Spine-Symbolic",
+  lineage: "pulse-os-v16-immortal-kernel-symbolic",
   evo: {
     dualMode: true,
     symbolicNative: true,
@@ -231,22 +263,24 @@ const PULSE_OS_CONTEXT = {
     continuanceAware: true,
     zeroDriftIdentity: true,
 
-    // Presence / Mesh / performance
     presenceFieldAware: true,
-    bluetoothPresenceAware: true,
     meshPresenceRelayAware: true,
     meshTopologyAware: true,
+    meshCoordinatorAware: true,
     kernelChunkingReady: true,
     kernelPrewarmReady: true,
     multiInstanceReady: true,
     clusterCoherence: true,
-    zeroDriftCloning: true
-  }
-};
+    zeroDriftCloning: true,
 
+    expansionAware: true,
+    worldCoreAware: true,
+    nodeAdminAware: true
+  }
+});
 
 // ============================================================================
-//  GOVERNED EXECUTION — SYMBOLIC SHELL (LOGGING + DIAGNOSTICS)
+//  GOVERNED EXECUTION — SYMBOLIC SHELL
 // ============================================================================
 function runThroughGovernor(organName, pulseOrImpulse, fn) {
   return withOrganGuard(organName, pulseOrImpulse, async (instanceContext) => {
@@ -276,29 +310,29 @@ function runThroughGovernor(organName, pulseOrImpulse, fn) {
         await diagnosticsWriter({ docId, payload: safe });
       }
     } catch (err) {
-      console.warn("[PulseOS-v12.3-Spine-Symbolic] AI_LOGS write failed:", err);
+      console.warn("[PulseOS-v16-Spine-Symbolic] AI_LOGS write failed:", err);
     }
 
     return result;
   });
 }
+
 // ============================================================================
 //  KERNEL BOOTSTRAP — SYMBOLIC OS BOOT (EVOLUTION + BRAIN + SPINAL CORD + PRESENCE)
 // ============================================================================
-
 async function _buildPulseOSKernel() {
 
-  // 1) Evolution organ (symbolic growth engine)
+  // 1) Evolution organ
   const Evolution = typeof PulseOSEvolution.PulseOSEvolution === "function"
     ? PulseOSEvolution.PulseOSEvolution({ understanding: PULSE_OS_CONTEXT })
     : PulseOSEvolution;
 
-  // 2) Brain organ (symbolic CNS)
+  // 2) Brain organ
   const Brain = typeof PulseOSBrain.PulseOSBrain === "function"
     ? PulseOSBrain.PulseOSBrain()
     : PulseOSBrain;
 
-  // 3) Spinal Cord organ (symbolic wiring fabric) — guarded
+  // 3) Spinal Cord organ
   const createSpinal = PulseSpinalCord?.createPulseOSSpinalCord;
   const SpinalCord = createSpinal
     ? (withOrganGuard
@@ -318,7 +352,7 @@ async function _buildPulseOSKernel() {
 
   const meta = { ...PULSE_OS_CONTEXT };
 
-  // 4) Presence Field (OS-level presence organ)
+  // 4) Presence Field
   let PresenceField = null;
   if (PulseOSPresence?.buildPresenceField) {
     PresenceField = PulseOSPresence.buildPresenceField({
@@ -336,27 +370,20 @@ async function _buildPulseOSKernel() {
     });
   }
 
-  // 5) Mesh Presence Relay (Mesh-level presence organ)
+  // 5) Mesh Presence Relay (IMMORTAL v16)
   let MeshPresenceRelay = null;
-  if (PulseMeshPresence?.buildMeshPresenceRelay) {
-    MeshPresenceRelay = PulseMeshPresence.buildMeshPresenceRelay({
-      Brain,
-      Evolution,
-      SpinalCord,
-      PresenceField,
-      meta
-    });
-  } else if (PulseMeshPresence?.PulseMeshPresenceRelay) {
-    MeshPresenceRelay = PulseMeshPresence.PulseMeshPresenceRelay({
-      Brain,
-      Evolution,
-      SpinalCord,
-      PresenceField,
-      meta
+  if (PulseMeshPresence?.create) {
+    MeshPresenceRelay = PulseMeshPresence.create({
+      MeshBus: SpinalCord?.MeshBus,
+      SystemClock: Brain?.SystemClock,
+      IdentityDirectory: Brain?.IdentityDirectory,
+      log: Brain?.log,
+      warn: Brain?.warn,
+      error: Brain?.error
     });
   }
 
-  // 6) Binary Mesh Environment (optional but fully supported)
+  // 6) Binary Mesh Environment (IMMORTAL v15)
   let BinaryMeshEnv = null;
   if (typeof createBinaryMeshEnv === "function") {
     BinaryMeshEnv = createBinaryMeshEnv({
@@ -375,7 +402,28 @@ async function _buildPulseOSKernel() {
     });
   }
 
-  // FINAL SYMBOLIC KERNEL (v12.6‑EVO)
+  // 7) Organism Mesh Root (IMMORTAL v16)
+  let OrganismMeshRoot = null;
+  if (typeof createOrganismMesh === "function") {
+    OrganismMeshRoot = createOrganismMesh({
+      context: {
+        meta,
+        Brain,
+        Evolution,
+        SpinalCord,
+        PresenceField,
+        MeshPresenceRelay,
+        MeshBus: SpinalCord?.MeshBus,
+        SystemClock: Brain?.SystemClock,
+        IdentityDirectory: Brain?.IdentityDirectory
+      },
+      symbolicMeshEnv: BinaryMeshEnv?.symbolicMeshEnv,
+      binaryMeshEnv: BinaryMeshEnv,
+      trace: false
+    });
+  }
+
+  // FINAL SYMBOLIC KERNEL — v16 IMMORTAL
   const PulseKernel = {
     meta,
     Brain,
@@ -384,6 +432,7 @@ async function _buildPulseOSKernel() {
     PresenceField,
     MeshPresenceRelay,
     BinaryMeshEnv,
+    OrganismMeshRoot,
 
     Governed: {
       run: runThroughGovernor
@@ -395,11 +444,10 @@ async function _buildPulseOSKernel() {
 
 // Wrap with module init guard
 const buildPulseOSKernel = withModuleInitGuard
-  ? withModuleInitGuard("PulseOSKernel", _buildPulseOSKernel)
+  ? withModuleInitGuard("PulseOSKernel-v16-IMMORTAL", _buildPulseOSKernel)
   : _buildPulseOSKernel;
 
 const PulseOSKernelPromise = buildPulseOSKernel();
-
 
 // ============================================================================
 //  GLOBAL BROADCAST — SYMBOLIC SHELL ONLY
@@ -414,6 +462,7 @@ if (typeof window !== "undefined") {
       PresenceField: Kernel.PresenceField,
       MeshPresenceRelay: Kernel.MeshPresenceRelay,
       BinaryMeshEnv: Kernel.BinaryMeshEnv,
+      OrganismMeshRoot: Kernel.OrganismMeshRoot,
       Governed: Kernel.Governed
     };
 
@@ -421,18 +470,17 @@ if (typeof window !== "undefined") {
       ? Object.freeze({ ...window.Pulse, ...exposed })
       : Object.freeze(exposed);
   }).catch((err) => {
-    console.error("[PulseOS-v12.3-Spine-Symbolic] Kernel bootstrap failed:", err);
+    console.error("[PulseOS-v16-Spine-Symbolic] Kernel bootstrap failed:", err);
   });
 }
 
-
 // ============================================================================
-//  EXPORTS — FULL SYMBOLIC OS KERNEL (BINARY- & PRESENCE-AWARE)
+//  EXPORTS — FULL SYMBOLIC OS KERNEL (v16 IMMORTAL)
 // ============================================================================
-export const PulseOSv11Evo = {
+export const PulseOSv16Immortal = {
   ...PULSE_OS_CONTEXT,
   Kernel: PulseOSKernelPromise,
   runThroughGovernor
 };
 
-export default PulseOSv11Evo;
+export default PulseOSv16Immortal;

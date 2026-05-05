@@ -91,8 +91,7 @@ import { createCommunityReflex } from "./PulseMeshFlow.js";
 import { applyPulseCortex } from "./PulseMeshCortex.js";
 import { applyPulseMeshTendons } from "./PulseMeshTendons.js";
 import { applyMeshSignalFactoring } from "./PulseMeshSignalFactoring.js";
-import { createGlobalHealerV12 as recordMeshDriftEvent } from "../PULSE-OS/PulseOSImmuneSystem.js";
-
+import { createPulseMeshImmuneSystem as recordMeshDriftEvent } from "./PulseMeshImmuneSystem.js";
 import * as PulseMeshSkinReflex from "./PulseMeshSkinReflex.js";
 
 export const MeshMemory = {

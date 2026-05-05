@@ -1,16 +1,113 @@
 /* global log,warn,error */
+/*
+AI_EXPERIENCE_META = {
+  identity: "PulseHistoryRepair",
+  version: "v16.3-Immortal-ShortTermMemoryRepair",
+  layer: "short_term_memory",
+  role: "working_memory_repair_engine",
+
+  lineage: {
+    root: "PulseProxy-v11",
+    parent: "PulseHistoryRepair-v12.3-Evo-Presence",
+    organismIntegration: "v16-Immortal"
+  },
+
+  evo: {
+    // Core identity
+    shortTermMemoryLayer: true,
+    workingMemoryRepairEngine: true,
+    memoryRepairEngine: true,
+    lineageSafe: true,
+    boundedScan: true,
+    timerSafe: true,
+    backendOnly: true,
+    symbolicBackend: true,
+
+    // Awareness / presence / advantage
+    bandAware: true,
+    waveFieldAware: true,
+    presenceAware: true,
+    presenceFieldAware: true,
+    unifiedAdvantageField: true,
+    pulseEfficiencyAware: true,
+    experienceAware: true,
+    healingAware: true,
+
+    // Evolution / IMMORTAL
+    deterministic: true,
+    driftProof: true,
+    immortal: true,
+    multiInstanceReady: true,
+    futureEvolutionReady: true,
+
+    // Prohibitions
+    noIQ: true,
+    noRouting: true,
+    noCompute: true,
+    zeroRandomness: true,
+    zeroTimers: false,          // scheduled by OSKernel/Heart, not by organ
+    zeroAsyncLoops: false,      // bounded async loop allowed for scans
+    zeroNetwork: true,
+    zeroIO: true,
+    zeroExternalMutation: true,
+    zeroDynamicImports: true,
+    zeroEval: true,
+    zeroWindow: true,
+    zeroDOM: true,
+    zeroGPU: true
+  },
+
+  contract: {
+    input: [
+      "RepairScheduleTick",
+      "PulseHistorySnapshot",
+      "PulseHistoryDeadEntries",
+      "PulseHistoryMissingFields",
+      "PresenceContext"
+    ],
+    output: [
+      "RepairResult",
+      "RepairBandSignature",
+      "RepairWaveField",
+      "RepairAdvantageField",
+      "RepairExperienceField",
+      "RepairDiagnostics",
+      "RepairHealingState"
+    ],
+    consumers: [
+      "PulseProxySpine",
+      "PulseHealer",
+      "GlobalHealer",
+      "PNSRepair",
+      "PNSPurifier",
+      "PulseWorldCore"
+    ]
+  },
+
+  experience: {
+    description:
+      "PulseHistoryRepair maintains coherent, lineage-safe short-term memory by pruning dead entries " +
+      "and repairing missing fields, exposing deterministic repair surfaces for healers and evolution.",
+    aiUsageHint:
+      "Use RepairExperienceField and RepairHealingState to understand memory drift, repair pressure, " +
+      "and short-term nervous-system stability."
+  }
+}
+*/
+
 // ============================================================================
 // FILE: /PULSE-PROXY/pulseHistoryRepair.js
-// PULSE HISTORY REPAIR — VERSION 12.3‑EVO‑PRESENCE
+// PULSE HISTORY REPAIR — VERSION 16.3‑IMMORTAL‑PRESENCE
 // “THE SHORT‑TERM MEMORY LAYER++ / WORKING MEMORY REPAIR ENGINE++”
 // ============================================================================
 //
-// ROLE (v12.3):
+// ROLE (v16.3):
 //   pulseHistoryRepair is the SHORT‑TERM MEMORY LAYER of PulseProxy.
 //   It is the WORKING MEMORY REPAIR ENGINE — responsible for keeping
-//   recent history coherent, normalized, lineage‑safe, and drift‑safe.
+//   recent history coherent, normalized, lineage‑safe, and drift‑safe,
+//   while emitting IMMORTAL repair/experience surfaces for healers.
 //
-// SAFETY CONTRACT (v12.3):
+// SAFETY CONTRACT (v16.3):
 //   • Fail‑open: errors logged, never fatal
 //   • No randomness in repair logic
 //   • No mutation outside intended collections
@@ -20,20 +117,114 @@
 //   • Bounded scans for multi‑instance safety
 //   • No IQ, no routing, no OS imports
 //   • Pure symbolic backend organ (no binary mode)
+//   • Repair band/wave/advantage/experience surfaces are descriptive‑only
 // ============================================================================
-
 
 const admin = global.db;
 const db    = global.db;
+
 // ============================================================================
-// ORGAN IDENTITY — v12.3‑EVO‑PRESENCE
+// AI EXPERIENCE META (exported) — same schema as commented block above
+// ============================================================================
+export const AI_EXPERIENCE_META = Object.freeze({
+  identity: "PulseHistoryRepair",
+  version: "v16.3-Immortal-ShortTermMemoryRepair",
+  layer: "short_term_memory",
+  role: "working_memory_repair_engine",
+
+  lineage: Object.freeze({
+    root: "PulseProxy-v11",
+    parent: "PulseHistoryRepair-v12.3-Evo-Presence",
+    organismIntegration: "v16-Immortal"
+  }),
+
+  evo: Object.freeze({
+    shortTermMemoryLayer: true,
+    workingMemoryRepairEngine: true,
+    memoryRepairEngine: true,
+    lineageSafe: true,
+    boundedScan: true,
+    timerSafe: true,
+    backendOnly: true,
+    symbolicBackend: true,
+
+    bandAware: true,
+    waveFieldAware: true,
+    presenceAware: true,
+    presenceFieldAware: true,
+    unifiedAdvantageField: true,
+    pulseEfficiencyAware: true,
+    experienceAware: true,
+    healingAware: true,
+
+    deterministic: true,
+    driftProof: true,
+    immortal: true,
+    multiInstanceReady: true,
+    futureEvolutionReady: true,
+
+    noIQ: true,
+    noRouting: true,
+    noCompute: true,
+    zeroRandomness: true,
+    zeroTimers: false,
+    zeroAsyncLoops: false,
+    zeroNetwork: true,
+    zeroIO: true,
+    zeroExternalMutation: true,
+    zeroDynamicImports: true,
+    zeroEval: true,
+    zeroWindow: true,
+    zeroDOM: true,
+    zeroGPU: true
+  }),
+
+  contract: Object.freeze({
+    input: [
+      "RepairScheduleTick",
+      "PulseHistorySnapshot",
+      "PulseHistoryDeadEntries",
+      "PulseHistoryMissingFields",
+      "PresenceContext"
+    ],
+    output: [
+      "RepairResult",
+      "RepairBandSignature",
+      "RepairWaveField",
+      "RepairAdvantageField",
+      "RepairExperienceField",
+      "RepairDiagnostics",
+      "RepairHealingState"
+    ],
+    consumers: [
+      "PulseProxySpine",
+      "PulseHealer",
+      "GlobalHealer",
+      "PNSRepair",
+      "PNSPurifier",
+      "PulseWorldCore"
+    ]
+  }),
+
+  experience: Object.freeze({
+    description:
+      "PulseHistoryRepair maintains coherent, lineage-safe short-term memory by pruning dead entries " +
+      "and repairing missing fields, exposing deterministic repair surfaces for healers and evolution.",
+    aiUsageHint:
+      "Use RepairExperienceField and RepairHealingState to understand memory drift, repair pressure, " +
+      "and short-term nervous-system stability."
+  })
+});
+
+// ============================================================================
+// ORGAN IDENTITY — v16.3‑IMMORTAL‑PRESENCE
 // ============================================================================
 export const PulseRole = {
   type: "Organ",
   subsystem: "PulseProxy",
   layer: "ShortTermMemory",
-  version: "12.3-Evo-Presence",
-  identity: "PulseHistoryRepair-v12.3-Evo-Presence",
+  version: "16.3-Immortal-Presence",
+  identity: "PulseHistoryRepair-v16.3-Immortal-Presence",
 
   evo: {
     driftProof: true,
@@ -54,20 +245,21 @@ export const PulseRole = {
     timerSafe: true,
     organismClusterBoost: true,
 
-    // 12.3 presence + advantage (meta-only)
     unifiedAdvantageField: true,
     pulseEfficiencyAware: true,
     bandAware: true,
     waveFieldAware: true,
     presenceAware: true,
-    presenceFieldAware: false,
-    binaryFieldAware: false
+    presenceFieldAware: true,
+    binaryFieldAware: false,
+
+    experienceAware: true,
+    healingAware: true
   }
 };
 
-
 // ============================================================================
-// HUMAN‑READABLE CONTEXT MAP — v12.3
+// HUMAN‑READABLE CONTEXT MAP — v16.3
 // ============================================================================
 const REPAIR_CONTEXT = {
   label: "PULSE_HISTORY_REPAIR",
@@ -79,15 +271,14 @@ const REPAIR_CONTEXT = {
   evo: PulseRole.evo
 };
 
-
 // ============================================================================
-// META — v12.3‑EVO‑BINARY‑MAX‑ABA‑PRESENCE
+// META — v16.3‑IMMORTAL‑PRESENCE
 // ============================================================================
 export const PulseHistoryRepairMeta = Object.freeze({
   layer: "PulseHistoryRepair",
   role: "SHORT_TERM_MEMORY_REPAIR_ENGINE",
-  version: "v12.3-Evo-BINARY-MAX-ABA-Presence",
-  identity: "PulseHistoryRepair-v12.3-Evo-BINARY-MAX-ABA-Presence",
+  version: "v16.3-Immortal-Presence",
+  identity: "PulseHistoryRepair-v16.3-Immortal-Presence",
 
   guarantees: Object.freeze({
     deterministic: true,
@@ -104,14 +295,13 @@ export const PulseHistoryRepairMeta = Object.freeze({
     memoryRepairEngine: true,
     lineageSafe: true,
 
-    // Execution prohibitions
     zeroIQ: true,
     zeroRouting: true,
     zeroCompute: true,
     zeroRandomness: true,
-    zeroDateNow: false, // deterministic cutoff usage allowed
+    zeroDateNow: false, // Date.now allowed for cutoff + runId (telemetry), not decision math
     zeroTimers: true,
-    zeroAsyncLoops: true,
+    zeroAsyncLoops: false,
     zeroNetwork: true,
     zeroIO: true,
     zeroExternalMutation: true,
@@ -121,16 +311,14 @@ export const PulseHistoryRepairMeta = Object.freeze({
     zeroDOM: true,
     zeroGPU: true,
 
-    // Awareness
     symbolicAware: true,
     binaryAware: false,
     bandAware: true,
     waveFieldAware: true,
     presenceAware: true,
-    presenceFieldAware: false,
+    presenceFieldAware: true,
     binaryFieldAware: false,
 
-    // Environment
     worldLensAware: false
   }),
 
@@ -139,12 +327,15 @@ export const PulseHistoryRepairMeta = Object.freeze({
       "RepairScheduleTick",
       "PulseHistorySnapshot",
       "PulseHistoryDeadEntries",
-      "PulseHistoryMissingFields"
+      "PulseHistoryMissingFields",
+      "PresenceContext"
     ],
     output: [
       "RepairResult",
       "RepairBandSignature",
       "RepairWaveField",
+      "RepairAdvantageField",
+      "RepairExperienceField",
       "RepairDiagnostics",
       "RepairHealingState"
     ]
@@ -152,7 +343,7 @@ export const PulseHistoryRepairMeta = Object.freeze({
 
   lineage: Object.freeze({
     root: "PulseProxy-v11",
-    parent: "PulseProxy-v12.3-Evo",
+    parent: "PulseProxy-v16-Immortal",
     ancestry: [
       "PulseHistoryRepair-v7",
       "PulseHistoryRepair-v8",
@@ -174,17 +365,135 @@ export const PulseHistoryRepairMeta = Object.freeze({
   architecture: Object.freeze({
     pattern: "A-B-A",
     baseline: "scheduled tick → bounded repair → symbolic surfaces",
-    adaptive: "wave-field overlays (no binary mode)",
-    return: "deterministic repair surfaces + signatures"
+    adaptive: "wave-field + advantage + experience overlays (no binary mode)",
+    return: "deterministic repair surfaces + signatures + healing state"
   })
 });
 
+// ============================================================================
+// IMMORTAL REPAIR SURFACES — band / wave / advantage / experience / healing
+// ============================================================================
+const repairHealingState = {
+  ...REPAIR_CONTEXT,
+  lastRunId: null,
+  lastOk: null,
+  lastError: null,
+  lastRepairedCount: 0,
+  lastDeletedCount: 0,
+  lastBand: "symbolic",
+  lastAdvantageScore: null,
+  lastExperienceQuality: null,
+  cycleCount: 0
+};
+
+function computeHash(str) {
+  let h = 0;
+  const s = String(str || "");
+  for (let i = 0; i < s.length; i++) {
+    h = (h + s.charCodeAt(i) * (i + 1)) % 100000;
+  }
+  return `h${h}`;
+}
+
+function buildRepairWaveField(runId) {
+  const key = String(runId || "NO_RUN");
+  const len = key.length;
+  const amplitude = 6 + (len % 10);
+  const wavelength = amplitude + 8;
+  const phase = (len * 3) % 32;
+
+  return {
+    amplitude,
+    wavelength,
+    phase,
+    band: "repair",
+    mode: "symbolic-wave",
+    waveSignature: computeHash(`REPAIR_WAVE::${key}::${amplitude}::${wavelength}::${phase}`)
+  };
+}
+
+function buildRepairAdvantageField({ repairedCount, deletedCount }) {
+  const r = Math.max(0, repairedCount || 0);
+  const d = Math.max(0, deletedCount || 0);
+  const total = r + d;
+
+  const density = total === 0 ? 0 : Math.min(1, r / (total + 1));
+  const stress = Math.min(1, total / 5000);
+  const efficiency = total === 0 ? 0 : (r + 1) / (total + 1);
+  const advantageScore = efficiency * (1 + density) * (1 - 0.25 * stress);
+
+  return {
+    repairedCount: r,
+    deletedCount: d,
+    total,
+    density,
+    stress,
+    efficiency,
+    advantageScore,
+    advantageSignature: computeHash(
+      `REPAIR_ADVANTAGE::${r}::${d}::${density}::${stress}::${efficiency}::${advantageScore}`
+    )
+  };
+}
+
+function buildRepairExperienceField({ runId, ok, repairedCount, deletedCount }) {
+  const total = (repairedCount || 0) + (deletedCount || 0);
+  let quality = "idle";
+  if (!ok) quality = "error";
+  else if (total === 0) quality = "no-op";
+  else if (total < 100) quality = "light";
+  else if (total < 1000) quality = "moderate";
+  else quality = "heavy";
+
+  return {
+    runId,
+    quality,
+    repairedCount: repairedCount || 0,
+    deletedCount: deletedCount || 0,
+    total,
+    experienceSignature: computeHash(
+      `REPAIR_EXPERIENCE::${runId}::${quality}::${total}`
+    )
+  };
+}
+
+function buildRepairBandSignature(runId) {
+  return computeHash(`REPAIR_BAND::symbolic::${runId}`);
+}
+
+function updateRepairHealingState({
+  runId,
+  ok,
+  error,
+  repairedCount,
+  deletedCount,
+  advantageField,
+  experienceField
+}) {
+  repairHealingState.lastRunId = runId;
+  repairHealingState.lastOk = ok;
+  repairHealingState.lastError = error || null;
+  repairHealingState.lastRepairedCount = repairedCount || 0;
+  repairHealingState.lastDeletedCount = deletedCount || 0;
+  repairHealingState.lastBand = "symbolic";
+  repairHealingState.lastAdvantageScore =
+    typeof advantageField?.advantageScore === "number"
+      ? advantageField.advantageScore
+      : repairHealingState.lastAdvantageScore;
+  repairHealingState.lastExperienceQuality =
+    experienceField?.quality || repairHealingState.lastExperienceQuality;
+  repairHealingState.cycleCount += 1;
+}
+
+export function getPulseHistoryRepairHealingState() {
+  return { ...repairHealingState };
+}
 
 // ============================================================================
 // BACKEND ENTRY POINT (CALLED BY HEARTBEAT / OSKernel)
-// (FULL LOGIC UNCHANGED — deterministic, bounded, safe)
+// (LOGIC: deterministic, bounded, safe; surfaces: v16.3 IMMORTAL)
 // ============================================================================
-export async function pulseHistoryRepair() {
+export async function pulseHistoryRepair(presenceContext = null) {
   const runId = `PB_REPAIR_${Date.now()}`;
   const errorPrefix = `ERR_${runId}_`;
 
@@ -233,7 +542,7 @@ export async function pulseHistoryRepair() {
 
           if (!data.lineage || typeof data.lineage !== "object") {
             updates.lineage = {
-              version: "12.3-Evo-Presence",
+              version: PulseRole.version,
               repairedBy: "pulseHistoryRepair",
               repairRunId: runId
             };
@@ -244,7 +553,7 @@ export async function pulseHistoryRepair() {
           }
 
           if (!data.drift) {
-            updates.drift = { repaired: true, version: "12.3" };
+            updates.drift = { repaired: true, version: "16.3" };
           }
 
           if (Object.keys(updates).length > 0) {
@@ -266,6 +575,7 @@ export async function pulseHistoryRepair() {
             docId: id,
             error: String(err),
             runId,
+            presenceContext: presenceContext || null,
             ...REPAIR_CONTEXT,
             createdAt: admin.firestore.FieldValue.serverTimestamp()
           });
@@ -276,13 +586,41 @@ export async function pulseHistoryRepair() {
       if (histSnap.size < 500) break;
     }
 
+    const repairedCount = repairedDocs.length;
+    const deletedCount = deletedDocs.length;
+
+    const waveField = buildRepairWaveField(runId);
+    const advantageField = buildRepairAdvantageField({ repairedCount, deletedCount });
+    const experienceField = buildRepairExperienceField({
+      runId,
+      ok: true,
+      repairedCount,
+      deletedCount
+    });
+    const bandSignature = buildRepairBandSignature(runId);
+
+    updateRepairHealingState({
+      runId,
+      ok: true,
+      error: null,
+      repairedCount,
+      deletedCount,
+      advantageField,
+      experienceField
+    });
+
     await db.collection("TIMER_LOGS").doc(runId).set({
       fn: "pulseHistoryRepair",
       runId,
-      repairedCount: repairedDocs.length,
-      deletedCount: deletedDocs.length,
+      repairedCount,
+      deletedCount,
       repairedDocs,
       deletedDocs,
+      bandSignature,
+      waveField,
+      advantageField,
+      experienceField,
+      presenceContext: presenceContext || null,
       ...REPAIR_CONTEXT,
       createdAt: admin.firestore.FieldValue.serverTimestamp()
     });
@@ -294,21 +632,66 @@ export async function pulseHistoryRepair() {
       runId,
       repairedDocs,
       deletedDocs,
+      bandSignature,
+      waveField,
+      advantageField,
+      experienceField,
+      healingState: getPulseHistoryRepairHealingState(),
+      presenceContext: presenceContext || null,
       ...REPAIR_CONTEXT
     };
 
   } catch (err) {
     error(`%c🟥 FATAL SHORT‑TERM MEMORY ERROR`, "color:#FF5252; font-weight:bold;", err);
 
+    const waveField = buildRepairWaveField(runId);
+    const advantageField = buildRepairAdvantageField({
+      repairedCount: repairedDocs.length,
+      deletedCount: deletedDocs.length
+    });
+    const experienceField = buildRepairExperienceField({
+      runId,
+      ok: false,
+      repairedCount: repairedDocs.length,
+      deletedCount: deletedDocs.length
+    });
+    const bandSignature = buildRepairBandSignature(runId);
+
+    updateRepairHealingState({
+      runId,
+      ok: false,
+      error: String(err),
+      repairedCount: repairedDocs.length,
+      deletedCount: deletedDocs.length,
+      advantageField,
+      experienceField
+    });
+
     await db.collection("FUNCTION_ERRORS").doc(`${errorPrefix}FATAL`).set({
       fn: "pulseHistoryRepair",
       stage: "fatal",
       error: String(err),
       runId,
+      bandSignature,
+      waveField,
+      advantageField,
+      experienceField,
+      presenceContext: presenceContext || null,
       ...REPAIR_CONTEXT,
       createdAt: admin.firestore.FieldValue.serverTimestamp()
     });
 
-    return { ok: false, runId, error: String(err), ...REPAIR_CONTEXT };
+    return {
+      ok: false,
+      runId,
+      error: String(err),
+      bandSignature,
+      waveField,
+      advantageField,
+      experienceField,
+      healingState: getPulseHistoryRepairHealingState(),
+      presenceContext: presenceContext || null,
+      ...REPAIR_CONTEXT
+    };
   }
 }

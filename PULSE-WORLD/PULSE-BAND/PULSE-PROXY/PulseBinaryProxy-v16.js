@@ -1,33 +1,81 @@
 // ============================================================================
-//  BinaryProxy-v12.3-Evo-MAX-ABA.js
-//  PURE BINARY NERVE ROOT — v12.3‑EVO‑A‑B‑A MAX EDITION
-//  + CACHE/CHUNK/PRESENCE ENVELOPES (DETERMINISTIC, BINARY-ONLY META)
+//  BinaryProxy-v16-Immortal-ABA-ADVANTAGE.js
+//  PURE BINARY NERVE ROOT — v16‑IMMORTAL‑A‑B‑A ADVANTAGE EDITION
+//  + CACHE/CHUNK/PRESENCE/PREWARM/ADVANTAGE ENVELOPES (DETERMINISTIC META)
 // ============================================================================
 //  ROLE:
 //    - Accept ONLY pure binary arrays (0/1).
 //    - Encode using BinaryAgent (encoder).
 //    - Exchange using BinaryAgent.process().
 //    - Emit A‑B‑A bandSignature + binaryField + waveField + cycleSignature.
-//    - Emit cacheChunk + presence envelopes (deterministic, meta-only).
+//    - Emit cacheChunk + presence + prewarm + advantage envelopes (meta-only).
 //    - Deterministic fallback to PulseProxy (or any symbolic proxy).
 //
-//  ARCHITECTURE LAW (v12.3‑EVO‑A‑B‑A):
+//  ARCHITECTURE LAW (v16‑IMMORTAL‑A‑B‑A):
 //    - Binary adds ONLY binary representation + binary meta envelopes.
-//    - No symbolic logic.
 //    - No routing, no lineage, no patterns, no evolution logic here.
 //    - No JSON except internal ops.
 //    - No objects except internal ops.
-//    - No randomness, no drift, no mutation.
+//    - No randomness, no drift, no mutation of external state.
+//    - All envelopes are deterministic, replayable, and cache/prewarm aware.
 // ============================================================================
+
+/*
+AI_EXPERIENCE_META = {
+  identity: "BinaryProxy",
+  version: "v16-Immortal-ABA-ADVANTAGE",
+  layer: "binary_nerve_root",
+  role: "pure_binary_nerve_root",
+  lineage: "BinaryOrganism-v16-Immortal",
+
+  evo: {
+    binaryOnly: true,
+    binaryFirst: true,
+    abaBandAware: true,
+    deterministic: true,
+    driftProof: true,
+    multiInstanceReady: true,
+
+    cacheChunkAware: true,
+    cachePrewarmAware: true,
+    presenceAware: true,
+    prewarmAware: true,
+    advantageFieldAware: true,
+    unifiedAdvantageField: true,
+    pulseEfficiencyAware: true,
+
+    zeroNetwork: true,
+    zeroFilesystem: true,
+    zeroDynamicImports: true,
+    zeroEval: true,
+    zeroExternalMutation: true
+  },
+
+  contract: {
+    always: [
+      "PulseProxySpine",
+      "PulseProxyPNS",
+      "PulseProxyAdrenalSystem",
+      "PulseCoreMemory",
+      "PulseBinaryCoreOverlay"
+    ],
+    never: [
+      "legacyBinaryProxy",
+      "safeRoute",
+      "fetchViaCNS"
+    ]
+  }
+}
+*/
 
 import PulseProxyHeart from "./PulseProxyHeart.js";
 import PulseProxyBloodPressure from "./PulseProxyBloodPressure.js";
 import PulseProxyCirculatorySystem from "./PulseProxyCirculatorySystem.js";
 
 import PulseProxyHypothalamus from "./PulseProxyHypothalamus.js";
-import PulseProxySpine from "./PulseProxySpine-v11-Evo.js";
+import PulseProxySpine from "./PulseProxySpine-v16.js";
 
-import pulseband from "./PulseProxyPNSNervousSystem-v11-Evo.js";   // PNS
+import pulseband from "./PulseProxyPNSNervousSystem-v16.js";   // PNS
 import PulseProxySynapse from "./PulseProxySynapse.js";            // Synapse junctions
 
 import { PulseClient, PulseNet, PULSE_LIMBIC_SHADOW_META } from "./PulseProxyLimbic.js";
@@ -56,19 +104,16 @@ import PulseProxyBBB from "./PulseProxyBBB.js";
 
 import pulseHistoryRepair from "./PulseProxyPNSRepair.js";
 
-
 import {
   PulseNetBoot,
   PulseProofBridge
 } from "../../PULSE-UI/_BACKEND/PulseProofBridge.js";
 
-
 // --- PULSE-CORE MEMORY SPINE (FULL SPINE) ----------------------------------
-import PulseCoreMemory                from "../PULSE-CORE/PulseCoreMemory.js";
-import PulseCoreAIMemoryAdapter      from "../PULSE-CORE/PulseCoreAIMemoryAdapter.js";
-import PulseCoreProxyMemoryAdapter      from "../PULSE-CORE/PulseCoreProxyMemoryAdapter.js";
-import PulseBinaryCoreOverlay         from "../PULSE-CORE/PulseBinaryCoreOverlay.js";
-
+import PulseCoreMemory from "../PULSE-CORE/PulseCoreMemory.js";
+import PulseCoreAIMemoryAdapter from "../PULSE-CORE/PulseCoreAIMemoryAdapter.js";
+import PulseCoreProxyMemoryAdapter from "../PULSE-CORE/PulseCoreProxyMemoryAdapter.js";
+import PulseBinaryCoreOverlay from "../PULSE-CORE/PulseBinaryCoreOverlay.js";
 
 // CoreMemory bridge: structural, deterministic, keyed by memory surfaces.
 export const CoreMemory = Object.freeze({
@@ -77,12 +122,13 @@ export const CoreMemory = Object.freeze({
   proxy: () => PulseCoreProxyMemoryAdapter,
   binaryOverlay: () => PulseBinaryCoreOverlay
 });
+
 // ---------------------------------------------------------------------------
 // BINARY PROXY ROLE / META — tie all imported organs into a single identity
 // ---------------------------------------------------------------------------
 const BinaryProxyRole = Object.freeze({
   layer: "BinaryProxy",
-  version: "v11-Evo",
+  version: "v16-Immortal-ABA-ADVANTAGE",
   role: "BINARY_PROXY_BRIDGE",
   lineage: {
     spine: "PulseProxySpine-v11-Evo",
@@ -115,12 +161,11 @@ const BinaryProxyRole = Object.freeze({
   })
 });
 
-
 export const PulseOSBinaryProxyMeta = Object.freeze({
   layer: "BinaryProxy",
   role: "PURE_BINARY_NERVE_ROOT",
-  version: "v12.3-Evo-BINARY-MAX-ABA",
-  identity: "BinaryProxy-v12.3-Evo-BINARY-MAX-ABA",
+  version: "v16-Immortal-ABA-ADVANTAGE",
+  identity: "BinaryProxy-v16-Immortal-ABA-ADVANTAGE",
 
   guarantees: Object.freeze({
     // Absolute binary laws
@@ -152,16 +197,20 @@ export const PulseOSBinaryProxyMeta = Object.freeze({
     symbolicFallback: true,
     deterministicFallback: true,
 
-    // 12.3+ cache/chunk/presence guarantees (meta-only)
+    // v16+ cache/chunk/presence/prewarm/advantage guarantees (meta-only)
     cacheChunkAware: true,
     cacheChunkSafe: true,
     cacheChunkDeterministic: true,
+    cachePrewarmAware: true,
     presenceAware: true,
     presenceDeterministic: true,
     prewarmAware: true,
     unifiedAdvantageField: true,
+    advantageFieldAware: true,
     pulseEfficiencyAware: true,
     chunkEnvelopeEmitter: true,
+    prewarmEnvelopeEmitter: true,
+    advantageEnvelopeEmitter: true,
 
     // Environment
     worldLensAware: false
@@ -179,13 +228,18 @@ export const PulseOSBinaryProxyMeta = Object.freeze({
       "BinaryWaveField",
       "BinaryField",
       "BinaryCacheChunkEnvelope",
-      "BinaryPresenceEnvelope"
+      "BinaryPresenceEnvelope",
+      "BinaryPrewarmEnvelope",
+      "BinaryAdvantageEnvelope",
+      "BinaryPhysiologyEnvelope",
+      "BinaryLimbicEnvelope",
+      "BinaryAgentsEnvelope"
     ]
   }),
 
   lineage: Object.freeze({
     root: "BinaryOrganism-v11",
-    parent: "BinaryOrganism-v12.3-Evo",
+    parent: "BinaryOrganism-v16-Immortal",
     ancestry: [
       "BinaryProxy-v9",
       "BinaryProxy-v10",
@@ -193,7 +247,8 @@ export const PulseOSBinaryProxyMeta = Object.freeze({
       "BinaryProxy-v11-Evo",
       "BinaryProxy-v11-Evo-Max",
       "BinaryProxy-v11-Evo-Max-ABA",
-      "BinaryProxy-v11.2-Evo-BINARY-MAX-ABA"
+      "BinaryProxy-v11.2-Evo-BINARY-MAX-ABA",
+      "BinaryProxy-v12.3-Evo-BINARY-MAX-ABA"
     ]
   }),
 
@@ -206,10 +261,13 @@ export const PulseOSBinaryProxyMeta = Object.freeze({
   architecture: Object.freeze({
     pattern: "A-B-A",
     baseline: "binary input → binary exchange → binary output",
-    adaptive: "ABA band signatures + cacheChunk/presence envelopes",
-    return: "pure binary nerve output + signatures + deterministic chunk envelopes"
+    adaptive:
+      "ABA band signatures + cacheChunk/presence/prewarm/advantage envelopes",
+    return:
+      "pure binary nerve output + signatures + deterministic chunk/prewarm/advantage envelopes"
   })
 });
+
 // ---------------------------------------------------------------------------
 // BINARY PROXY FACTORY
 // ---------------------------------------------------------------------------
@@ -245,14 +303,14 @@ export function createBinaryProxy({
 
   // -------------------------------------------------------------------------
   //  A‑B‑A SURFACES (binary-only phenotype, deterministic)
-// -------------------------------------------------------------------------
+  // -------------------------------------------------------------------------
   function buildBandSignature() {
-    return encoder.hash("binary-band-v11-aba");
+    return encoder.hash("binary-band-v16-immortal-aba");
   }
 
   function buildBinaryField() {
     const patternLen = 16;
-    const density = patternLen + cycle + 32;
+    const density = patternLen + cycle + 64;
     const surface = density + patternLen;
 
     return {
@@ -265,9 +323,9 @@ export function createBinaryProxy({
   }
 
   function buildWaveField() {
-    const amplitude = (cycle + 1) * 12;
-    const wavelength = amplitude + 4;
-    const phase = amplitude % 16;
+    const amplitude = (cycle + 1) * 16;
+    const wavelength = amplitude + 8;
+    const phase = amplitude % 32;
 
     return {
       amplitude,
@@ -283,7 +341,7 @@ export function createBinaryProxy({
   }
 
   // -------------------------------------------------------------------------
-  //  12.3+ CACHE/CHUNK/PRESENCE ENVELOPES (META-ONLY, DETERMINISTIC)
+  //  v16+ CACHE/CHUNK/PRESENCE/PREWARM/ADVANTAGE ENVELOPES (META-ONLY)
 // -------------------------------------------------------------------------
   function buildCacheChunkEnvelope(dir) {
     const chunkId = encoder.hash(`BINARY_CHUNK_ID::${dir}::${cycle}`);
@@ -305,7 +363,45 @@ export function createBinaryProxy({
     return {
       presenceId,
       presenceSignature,
-      prewarmSignature
+      prewarmSignature,
+      presenceBand: "binary-nerve",
+      presenceMode: dir
+    };
+  }
+
+  function buildPrewarmEnvelope(dir) {
+    const prewarmId = encoder.hash(`BINARY_PREWARM_ID::${dir}::${cycle}`);
+    const routeHint = encoder.hash(`BINARY_PREWARM_ROUTE::${cycle}`);
+    const cacheHint = encoder.hash(`BINARY_PREWARM_CACHE::${cycle}`);
+    const chunkHint = encoder.hash(`BINARY_PREWARM_CHUNK::${cycle}`);
+
+    return {
+      prewarmId,
+      routePrewarmSignature: routeHint,
+      cachePrewarmSignature: cacheHint,
+      chunkPrewarmSignature: chunkHint,
+      prewarmBand: "binary",
+      prewarmMode: "nerve-root"
+    };
+  }
+
+  function buildAdvantageEnvelope(dir) {
+    const advantageId = encoder.hash(`BINARY_ADV_ID::${dir}::${cycle}`);
+    const advantageFieldSignature = encoder.hash(
+      `BINARY_ADV_FIELD::${cycle}`
+    );
+    const advantageBandSignature = encoder.hash(
+      `BINARY_ADV_BAND::${cycle}`
+    );
+
+    return {
+      advantageId,
+      advantageFieldSignature,
+      advantageBandSignature,
+      advantageBand: "binary",
+      advantageField: "binary-nerve-root",
+      advantageScoreHint: 1.0,
+      cascadeLevelHint: 0
     };
   }
 
@@ -349,6 +445,8 @@ export function createBinaryProxy({
     const cycleSignature = buildCycleSignature();
     const cacheChunkEnvelope = buildCacheChunkEnvelope(dir);
     const presenceEnvelope = buildPresenceEnvelope(dir);
+    const prewarmEnvelope = buildPrewarmEnvelope(dir);
+    const advantageEnvelope = buildAdvantageEnvelope(dir);
     const physiologyEnvelope = buildPhysiologyEnvelope();
     const limbicEnvelope = buildLimbicEnvelope();
     const agentsEnvelope = buildAgentsEnvelope();
@@ -363,6 +461,8 @@ export function createBinaryProxy({
       cycleSignature,
       cacheChunkEnvelope,
       presenceEnvelope,
+      prewarmEnvelope,
+      advantageEnvelope,
       physiologyEnvelope,
       limbicEnvelope,
       agentsEnvelope
@@ -382,6 +482,8 @@ export function createBinaryProxy({
       cycleSignature,
       cacheChunkEnvelope,
       presenceEnvelope,
+      prewarmEnvelope,
+      advantageEnvelope,
       physiologyEnvelope,
       limbicEnvelope,
       agentsEnvelope
@@ -495,6 +597,7 @@ export function createBinaryProxy({
 
     return {
       role: BinaryProxyRole,
+      meta: PulseOSBinaryProxyMeta,
       cycle,
       scores,
       health,
@@ -515,6 +618,7 @@ export function createBinaryProxy({
 
     return {
       role: BinaryProxyRole,
+      meta: PulseOSBinaryProxyMeta,
       cycle,
       sessions,
       errors,
@@ -528,6 +632,7 @@ export function createBinaryProxy({
   // -------------------------------------------------------------------------
   return {
     role: BinaryProxyRole,
+    meta: PulseOSBinaryProxyMeta,
     receive,
     send,
     exchange,
@@ -537,5 +642,6 @@ export function createBinaryProxy({
     maintenance
   };
 }
+
 const PulseProxyBridge = PulseProofBridge;
 export default PulseProxyBridge;

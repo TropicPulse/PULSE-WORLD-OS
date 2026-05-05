@@ -1,7 +1,7 @@
 // ============================================================================
 //  aiHeartbeat.js — Pulse OS v16‑IMMORTAL++
 //  Mom/Dad/Earn Tri‑Heart • Dual‑Band Liveness • Bi‑Directional Fallback
-//  PURE LIVENESS. ZERO MUTATION. + SOFT RANDOM NUDGE AS LAST‑RESORT PULSE
+//  PURE LIVENESS. ZERO MUTATION OF INPUT. GLOBAL KEYS ONLY FOR LIVENESS.
 // ============================================================================
 
 /*
@@ -616,6 +616,7 @@ export function pulseAiHeartbeat(source = "unknown") {
   } catch {}
 
   void aiHeartbeatTick(`pulse:${source}`);
+  return packet;
 }
 
 // ============================================================================
@@ -739,21 +740,5 @@ export function getAiHeartbeatDiagnostics() {
     primaryState: heartbeatArtery.lastPrimaryState,
     dadState: heartbeatArtery.lastDadState,
     earnState: heartbeatArtery.lastEarnState
-  };
-}
-
-// ============================================================================
-//  EXPORT META
-// ============================================================================
-if (typeof module !== "undefined") {
-  module.exports = {
-    AI_HEARTBEAT_META,
-    startAiHeartbeat,
-    stopAiHeartbeat,
-    pulseAiHeartbeat,
-    snapshotAiHeartbeat,
-    prewarmAiHeartbeat,
-    getAiHeartbeatHealingState,
-    getAiHeartbeatDiagnostics
   };
 }

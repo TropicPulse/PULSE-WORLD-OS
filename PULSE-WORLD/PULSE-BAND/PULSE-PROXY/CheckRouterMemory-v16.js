@@ -1,40 +1,30 @@
+// ============================================================================
+// FILE: /PULSE-PROXY/CheckRouterMemory-v16-Immortal-Presence-Advantage.js
+// PULSE NETWORK MEMORY HEALER — v16-Immortal-Presence-Advantage
+// “THE NETWORK HEALER++++ / BINARY-FIRST LOG INTAKE + DUALBAND REPAIR ENGINE
+//   + PRESENCE FIELD + CHUNK/CACHE/PREWARM/ADVANTAGE/RESOURCE HINT ENGINE”
+// ============================================================================
+//
+// ROLE (v16-Immortal-Presence-Advantage):
+//   • Backend intake + validator for RouterMemory flushes (B-layer, backend-only).
+//   • Binary-first, dualband healer: Symbolic A → Binary B → Symbolic A.
+//   • Normalizes ALL log fields (routeTrace, lineage, evo, importConflict, band).
+//   • Detects structural drift + malformed entries + non-binary core usage.
+//   • Preserves lineage + timestamps (never invents time).
+//   • Presence-aware: band presence, route presence, router health hints.
+//   • Chunk/cache/prewarm/advantage/resource hint engine for PulseBand / PulseNet / CheckBand.
+//   • Returns authoritative, organism-safe, binary-aware log batch.
+//   • Mode-aware: A→B→A compatible, binary-first nervous system.
+//   • Internet / world-lens / advantage are metadata-only: no fetch, no network.
+// ============================================================================
 
-// ============================================================================
-// FILE: /PULSE-PROXY/CheckRouterMemory-v12.3-Presence-Evo-BINARY.js
-// PULSE NETWORK MEMORY HEALER — v12.3-Presence-Evo-BINARY
-// “THE NETWORK HEALER+++ / BINARY-FIRST LOG INTAKE + DUALBAND REPAIR ENGINE
-//   + PRESENCE FIELD + CHUNK/CACHE/PREWARM HINT ENGINE”
-// ============================================================================
-//
-// ROLE (v12.3-Presence-Evo-BINARY):
-//   • Backend intake + validator for RouterMemory flushes
-//   • Binary‑first, dualband healer: Symbolic A → Binary B → Symbolic A
-//   • Normalizes ALL log fields (routeTrace, lineage, evo, importConflict)
-//   • Detects structural drift + malformed entries + non‑binary core usage
-//   • Preserves lineage + timestamps (never invents time)
-//   • Presence‑aware: band presence, route presence, router health hints
-//   • Chunk/cache/prewarm hint engine for PulseBand / PulseNet / CheckBand
-//   • Returns authoritative, organism‑safe, binary‑aware log batch
-//   • Mode‑aware: A→B→A compatible, binary‑first nervous system
-//
-// CONTRACT (v12.3-Presence-Evo-BINARY):
-//   • Never mutate original input
-//   • Fail‑open: invalid payload → empty safe array
-//   • Always return structurally complete log entries
-//   • Lymbic escalation must NEVER throw
-//   • Deterministic, loggable, replayable
-//   • No single point of failure: healer must not crash the proxy
-//   • No synthetic timestamps (no Date.now defaults inside healed logs)
-//   • Binary drift detection + proxy bypass detection
-//   • Presence + chunk/cache/prewarm hints are derived, not time‑based
-// ============================================================================
 /*
 AI_EXPERIENCE_META = {
   identity: "CheckRouterMemory",
-  version: "v14.4-Evo-BINARY-MAX",
+  version: "v16-Immortal-Presence-Advantage",
   layer: "backend_healer",
   role: "router_memory_healer",
-  lineage: "PulseRouter-v12",
+  lineage: "PulseRouter-v16-Immortal",
 
   evo: {
     healerCore: true,
@@ -44,7 +34,31 @@ AI_EXPERIENCE_META = {
     driftAware: true,
     lineageAware: true,
     deterministic: true,
-    safeRouteFree: true
+    safeRouteFree: true,
+
+    presenceAware: true,
+    bandPresenceAware: true,
+    routerPresenceAware: true,
+    advantageFieldAware: true,
+    unifiedAdvantageField: true,
+    chunkAware: true,
+    cacheAware: true,
+    prewarmAware: true,
+    coldStartAware: true,
+    routeWarmthAware: true,
+    resourcePressureAware: true,
+    earnAware: true,
+
+    zeroNetworkFetch: true,
+    zeroSyntheticTimestamps: true,
+    zeroMutationOfInput: true,
+    zeroRandomness: true,
+    zeroTimers: true,
+    zeroAsyncLoops: true,
+    zeroDynamicImports: true,
+    zeroEval: true,
+    zeroFrontendAccess: true,
+    zeroWindowAccess: true
   },
 
   contract: {
@@ -69,9 +83,9 @@ AI_EXPERIENCE_META = {
 // LAYER CONSTANTS + DIAGNOSTICS
 // ============================================================================
 const LAYER_ID   = "NETWORK-LAYER-BINARY";
-const LAYER_NAME = "THE NETWORK HEALER+++";
-const LAYER_ROLE = "B-LAYER MEMORY INTAKE + DUALBAND REPAIR + PRESENCE FIELD";
-const LAYER_VER  = "12.3-Presence-Evo-BINARY";
+const LAYER_NAME = "THE NETWORK HEALER++++";
+const LAYER_ROLE = "B-LAYER MEMORY INTAKE + DUALBAND REPAIR + PRESENCE/ADVANTAGE FIELD";
+const LAYER_VER  = "16-Immortal-Presence-Advantage";
 
 const NETWORK_DIAGNOSTICS_ENABLED =
   process.env.PULSE_NETWORK_DIAGNOSTICS === "true" ||
@@ -99,15 +113,14 @@ const logNetworkHealer = (stage, details = {}) => {
   );
 };
 
-
 // ============================================================================
-// HUMAN‑READABLE CONTEXT MAP (MIRROR OF FRONTEND MEMORY CONTEXT)
+// HUMAN-READABLE CONTEXT MAP (MIRROR OF FRONTEND MEMORY CONTEXT)
 // ============================================================================
 const BASE_MEMORY_CONTEXT = {
   label: "MEMORY",
-  layer: "B‑Layer",
-  purpose: "Log Buffer + Healing + Presence + Chunk/Cache/Prewarm Hints",
-  context: "RouterMemory → CheckRouterMemory-v12.3-Presence-Evo-BINARY",
+  layer: "B-Layer",
+  purpose: "Log Buffer + Healing + Presence + Chunk/Cache/Prewarm/Advantage/Resource Hints",
+  context: "RouterMemory → CheckRouterMemory-v16-Immortal-Presence-Advantage",
   healerVersion: LAYER_VER,
   binaryFirst: true,
   dualband: true
@@ -116,8 +129,8 @@ const BASE_MEMORY_CONTEXT = {
 export const PulseOSCheckRouterMemoryMeta = Object.freeze({
   layer: "PulseProxyNetworkHealer",
   role: "NETWORK_MEMORY_HEALER_ORGAN",
-  version: "v12.3-Presence-Evo-BINARY-MAX",
-  identity: "CheckRouterMemory-v12.3-Presence-Evo-BINARY-MAX",
+  version: "v16-Immortal-Presence-Advantage",
+  identity: "CheckRouterMemory-v16-Immortal-Presence-Advantage",
 
   guarantees: Object.freeze({
     deterministic: true,
@@ -151,6 +164,8 @@ export const PulseOSCheckRouterMemoryMeta = Object.freeze({
     prewarmAware: true,
     coldStartAware: true,
     routeWarmthAware: true,
+    resourcePressureAware: true,
+    earnAware: true,
 
     // Execution prohibitions
     zeroMutationOfInput: true,
@@ -186,20 +201,23 @@ export const PulseOSCheckRouterMemoryMeta = Object.freeze({
       "ProxyContext",
       "DualBandContext",
       "PresenceContext",
-      "AdvantageContext"
+      "AdvantageContext",
+      "ResourceContext"
     ],
     output: [
       "HealedRouterMemoryBatch",
       "NetworkHealerDiagnostics",
       "NetworkHealerSignatures",
       "NetworkHealerPresenceField",
+      "NetworkHealerAdvantageField",
+      "NetworkHealerResourceHints",
       "NetworkHealerHealingState"
     ]
   }),
 
   lineage: Object.freeze({
-    root: "PulseProxy-v11-Evo",
-    parent: "PulseProxy-v12.3-Presence-Evo",
+    root: "PulseProxy-v15-Immortal",
+    parent: "PulseProxy-v16-Immortal-Presence-Advantage",
     ancestry: [
       "CheckRouterMemory-v7",
       "CheckRouterMemory-v8",
@@ -207,7 +225,8 @@ export const PulseOSCheckRouterMemoryMeta = Object.freeze({
       "CheckRouterMemory-v10",
       "CheckRouterMemory-v11",
       "CheckRouterMemory-v11-Evo",
-      "CheckRouterMemory-v11-Evo-Binary"
+      "CheckRouterMemory-v11-Evo-Binary",
+      "CheckRouterMemory-v12.3-Presence-Evo-BINARY"
     ]
   }),
 
@@ -220,14 +239,13 @@ export const PulseOSCheckRouterMemoryMeta = Object.freeze({
   architecture: Object.freeze({
     pattern: "A-B-A",
     baseline: "router memory batch → binary-first healing → safe batch return",
-    adaptive: "dualband repair surfaces + lineage + presence + chunk hints",
-    return: "deterministic healed log batch + signatures + presence field"
+    adaptive: "dualband repair surfaces + lineage + presence + chunk/advantage/resource hints",
+    return: "deterministic healed log batch + signatures + presence/advantage/resource field"
   })
 });
 
-
 // ============================================================================
-// MODE RESOLUTION — A/B/A‑safe routing metadata
+// MODE RESOLUTION — A/B/A-safe routing metadata
 // ============================================================================
 function resolveMode(event) {
   try {
@@ -247,18 +265,18 @@ function resolveMode(event) {
   }
 }
 
-function buildMemoryContext(mode, presenceContext = {}, advantageContext = {}) {
+function buildMemoryContext(mode, presenceContext = {}, advantageContext = {}, resourceContext = {}) {
   return {
     ...BASE_MEMORY_CONTEXT,
     mode,
     presenceContext,
-    advantageContext
+    advantageContext,
+    resourceContext
   };
 }
 
-
 // ============================================================================
-// BINARY SIGNATURE + DRIFT + PRESENCE/CHUNK HELPERS
+// BINARY SIGNATURE + DRIFT + PRESENCE/CHUNK/ADVANTAGE/RESOURCE HELPERS
 // ============================================================================
 function computeBinaryLogSignature(entry) {
   try {
@@ -266,7 +284,9 @@ function computeBinaryLogSignature(entry) {
       eventType: entry.eventType,
       page: entry.page,
       routeTrace: entry.routeTrace,
-      evo: entry.evo
+      evo: entry.evo,
+      bandPresence: entry.bandPresence,
+      routerPresence: entry.routerPresence
     });
 
     let hash = 0;
@@ -319,23 +339,31 @@ function detectBinaryDrift(entry) {
     driftFlags.push("proxy_bypass_suspected");
   }
 
+  const hasLegacyRouter = trace.some((t) =>
+    typeof t === "string" && t.includes("LegacyRouter")
+  );
+  if (hasLegacyRouter) {
+    driftFlags.push("legacy_router_path_detected");
+  }
+
   return driftFlags;
 }
 
-
-// ============================================================================
-// PRESENCE + CHUNK/CACHE/PREWARM HINTS — derived, deterministic
-// ============================================================================
+// Presence: band + router
 function deriveBandPresence(entry, presenceContext) {
   const trace = Array.isArray(entry.routeTrace) ? entry.routeTrace : [];
   const hasPulseBand = trace.some((t) =>
     typeof t === "string" && t.includes("PulseBand")
   );
+  const hasEarn = trace.some((t) =>
+    typeof t === "string" && t.includes("PulseEarn")
+  );
 
   return {
     band: hasPulseBand ? "pulseband" : "unknown",
     route: entry.page || "unknown",
-    deviceId: presenceContext.deviceId || null
+    deviceId: presenceContext.deviceId || null,
+    earnPath: hasEarn
   };
 }
 
@@ -347,13 +375,18 @@ function deriveRouterPresence(entry) {
   const hasHydra = trace.some((t) =>
     typeof t === "string" && t.includes("Hydra")
   );
+  const hasMesh = trace.some((t) =>
+    typeof t === "string" && t.includes("Mesh")
+  );
 
   return {
     routerActive: hasRouter,
-    hydraActive: hasHydra
+    hydraActive: hasHydra,
+    meshActive: hasMesh
   };
 }
 
+// Chunk/cache/prewarm hints
 function deriveChunkCachePrewarmHints(entry) {
   const trace = Array.isArray(entry.routeTrace) ? entry.routeTrace : [];
   const frames = Array.isArray(entry.frames) ? entry.frames : [];
@@ -367,32 +400,123 @@ function deriveChunkCachePrewarmHints(entry) {
   const hasCacheMiss = frames.some((f) =>
     typeof f === "string" && f.toLowerCase().includes("cache_miss")
   );
+  const hasGPUCold = frames.some((f) =>
+    typeof f === "string" && f.toLowerCase().includes("gpu_cold")
+  );
 
   const prewarmHint =
-    hasColdStart || hasChunkMiss || hasCacheMiss;
+    hasColdStart || hasChunkMiss || hasCacheMiss || hasGPUCold;
 
   const chunkHint =
-    hasChunkMiss ? "route-chunk" : (hasColdStart ? "bootstrap-chunk" : "none");
+    hasChunkMiss ? "route-chunk" :
+    hasColdStart ? "bootstrap-chunk" :
+    hasGPUCold ? "gpu-chunk" :
+    "none";
 
   const cacheHint =
-    hasCacheMiss ? "route-cache" : (hasColdStart ? "bootstrap-cache" : "none");
+    hasCacheMiss ? "route-cache" :
+    hasColdStart ? "bootstrap-cache" :
+    "none";
 
   const routeWarmth =
     hasColdStart ? "cold" :
-    hasChunkMiss || hasCacheMiss ? "warming" :
+    hasChunkMiss || hasCacheMiss || hasGPUCold ? "warming" :
     "warm";
 
   return {
     prewarmHint,
     chunkHint,
     cacheHint,
-    routeWarmth
+    routeWarmth,
+    gpuCold: !!hasGPUCold
   };
 }
 
+// Advantage field (local, metadata-only)
+function deriveAdvantageField(entry, advantageContext) {
+  const baseScore = typeof advantageContext.advantageScore === "number"
+    ? advantageContext.advantageScore
+    : 1.0;
+
+  const frames = Array.isArray(entry.frames) ? entry.frames : [];
+  const hasEarn = frames.some((f) =>
+    typeof f === "string" && f.toLowerCase().includes("earn")
+  );
+  const hasLatency = frames.some((f) =>
+    typeof f === "string" && f.toLowerCase().includes("latency")
+  );
+
+  let score = baseScore;
+  if (hasEarn) score += 0.1;
+  if (hasLatency) score -= 0.1;
+
+  if (score > 1.5) score = 1.5;
+  if (score < 0.1) score = 0.1;
+
+  const band =
+    score >= 1.2 ? "high" :
+    score >= 0.8 ? "neutral" :
+    "low";
+
+  return {
+    advantageScore: score,
+    advantageBand: band,
+    timeSavedMs: typeof advantageContext.timeSavedMs === "number"
+      ? advantageContext.timeSavedMs
+      : 0,
+    cascadeLevel: typeof advantageContext.cascadeLevel === "number"
+      ? advantageContext.cascadeLevel
+      : 0,
+    field: advantageContext.field || "router-memory"
+  };
+}
+
+// Resource pressure hints (CPU/GPU/memory) — pure metadata
+function deriveResourceHints(entry, resourceContext = {}) {
+  const frames = Array.isArray(entry.frames) ? entry.frames : [];
+  const trace = Array.isArray(entry.routeTrace) ? entry.routeTrace : [];
+
+  const hasGPULoad = frames.some((f) =>
+    typeof f === "string" && f.toLowerCase().includes("gpu_load")
+  );
+  const hasCPULoad = frames.some((f) =>
+    typeof f === "string" && f.toLowerCase().includes("cpu_load")
+  );
+  const hasMemoryPressure = frames.some((f) =>
+    typeof f === "string" && f.toLowerCase().includes("memory_pressure")
+  );
+
+  const earnPath = trace.some((t) =>
+    typeof t === "string" && t.includes("PulseEarn")
+  );
+
+  const baseCPU = typeof resourceContext.cpu === "number" ? resourceContext.cpu : 0;
+  const baseGPU = typeof resourceContext.gpu === "number" ? resourceContext.gpu : 0;
+  const baseMem = typeof resourceContext.memory === "number" ? resourceContext.memory : 0;
+
+  const cpuPressure =
+    hasCPULoad || earnPath ? Math.min(1, baseCPU + 0.2) : baseCPU;
+  const gpuPressure =
+    hasGPULoad || earnPath ? Math.min(1, baseGPU + 0.2) : baseGPU;
+  const memoryPressure =
+    hasMemoryPressure ? Math.min(1, baseMem + 0.2) : baseMem;
+
+  return {
+    cpuPressure,
+    gpuPressure,
+    memoryPressure,
+    earnPath,
+    resourceBand:
+      cpuPressure > 0.8 || gpuPressure > 0.8 || memoryPressure > 0.8
+        ? "hot"
+        : cpuPressure > 0.4 || gpuPressure > 0.4 || memoryPressure > 0.4
+        ? "warm"
+        : "cool"
+  };
+}
 
 // ============================================================================
-// HELPERS — SAFE PARSE + NORMALIZE LOG BATCH (v12.3-Presence-Evo-BINARY)
+// HELPERS — SAFE PARSE + NORMALIZE LOG BATCH (v16-Immortal-Presence-Advantage)
 // ============================================================================
 function safeParseBody(body) {
   if (!body) return null;
@@ -405,7 +529,7 @@ function safeParseBody(body) {
   }
 }
 
-// Normalize a single log entry to v12.3-Presence-Evo-BINARY shape
+// Normalize a single log entry to v16-Immortal-Presence-Advantage shape
 function normalizeLogEntry(entry, mode, memoryContext) {
   if (!entry || typeof entry !== "object") return null;
 
@@ -449,30 +573,21 @@ function normalizeLogEntry(entry, mode, memoryContext) {
 
   const presenceContext = memoryContext.presenceContext || {};
   const advantageContext = memoryContext.advantageContext || {};
+  const resourceContext = memoryContext.resourceContext || {};
 
   const bandPresence = deriveBandPresence(normalizedBase, presenceContext);
   const routerPresence = deriveRouterPresence(normalizedBase);
   const chunkCacheHints = deriveChunkCachePrewarmHints(normalizedBase);
-
-  const advantage = {
-    advantageScore: typeof advantageContext.advantageScore === "number"
-      ? advantageContext.advantageScore
-      : 1.0,
-    timeSavedMs: typeof advantageContext.timeSavedMs === "number"
-      ? advantageContext.timeSavedMs
-      : 0,
-    cascadeLevel: typeof advantageContext.cascadeLevel === "number"
-      ? advantageContext.cascadeLevel
-      : 0,
-    field: advantageContext.field || "router-memory"
-  };
+  const advantage = deriveAdvantageField(normalizedBase, advantageContext);
+  const resourceHints = deriveResourceHints(normalizedBase, resourceContext);
 
   const normalized = {
     ...normalizedBase,
     bandPresence,
     routerPresence,
     chunkCacheHints,
-    advantage
+    advantage,
+    resourceHints
   };
 
   normalized.binarySignature = computeBinaryLogSignature(normalized);
@@ -482,15 +597,11 @@ function normalizeLogEntry(entry, mode, memoryContext) {
   return normalized;
 }
 
-
 // ============================================================================
 // PART 2/2 — DUALBAND HEALING, LYMBIC HOOK, HANDLER
 // ============================================================================
 
-
-// ============================================================================
 // DUALBAND HEALING — A → B → A
-// ============================================================================
 function dualbandHealLogEntry(entry, mode, memoryContext) {
   const symbolic = normalizeLogEntry(entry, mode, memoryContext);
   if (!symbolic) return null;
@@ -534,12 +645,8 @@ function healLogBatch(raw, mode, memoryContext) {
   return healed;
 }
 
-
-// ============================================================================
-// – LYMBIC ESCALATION HOOK — SAFE, OPTIONAL (v12.3-Presence-Evo-BINARY)
-//   NOTE: kept signature, but still respects zeroNetworkFetch guarantee by
-//         being wired only in environments where fetch is allowed.
-// ============================================================================
+// LYMBIC ESCALATION HOOK — kept, but still respects zeroNetworkFetch by only
+// being wired in environments where fetch is allowed and policy permits.
 async function notifyLymbicOnFatal(err, mode) {
   try {
     if (typeof fetch !== "function") {
@@ -553,7 +660,7 @@ async function notifyLymbicOnFatal(err, mode) {
       body: JSON.stringify({
         error: err?.message || String(err),
         type: "CheckRouterMemoryFatal",
-        source: "CheckRouterMemory-v12.3-Presence-Evo-BINARY",
+        source: "CheckRouterMemory-v16-Immortal-Presence-Advantage",
         mode,
         extra: {
           layer: LAYER_ID,
@@ -569,19 +676,18 @@ async function notifyLymbicOnFatal(err, mode) {
   }
 }
 
-
-// ============================================================================
-// BACKEND ENTRY POINT — “THE NETWORK HEALER+++” (v12.3-Presence-Evo-BINARY)
-// A→B→A‑safe: mode‑aware, fail‑open, never throws outward.
-// Presence + advantage context are injected by caller.
+// BACKEND ENTRY POINT — “THE NETWORK HEALER++++” (v16-Immortal-Presence-Advantage)
+// A→B→A-safe: mode-aware, fail-open, never throws outward.
+// Presence + advantage + resource context are injected by caller.
 // ============================================================================
 export const handler = async (event, context) => {
   const mode = resolveMode(event);
 
   const presenceContext = event?.presenceContext || {};
   const advantageContext = event?.advantageContext || {};
+  const resourceContext = event?.resourceContext || {};
 
-  const memoryContext = buildMemoryContext(mode, presenceContext, advantageContext);
+  const memoryContext = buildMemoryContext(mode, presenceContext, advantageContext, resourceContext);
 
   logNetworkHealer("INTAKE_START", {
     method: event?.httpMethod || "UNKNOWN",
@@ -624,7 +730,7 @@ export const handler = async (event, context) => {
     };
 
   } catch (err) {
-    safeError("CheckRouterMemory v12.3-Presence-Evo-BINARY error:", err);
+    safeError("CheckRouterMemory v16-Immortal-Presence-Advantage error:", err);
 
     logNetworkHealer("FATAL_ERROR", {
       message: err?.message,

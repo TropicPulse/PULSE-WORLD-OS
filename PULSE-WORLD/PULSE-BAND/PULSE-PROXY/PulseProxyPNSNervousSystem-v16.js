@@ -1,6 +1,109 @@
 /* global log,warn,error */
 // ============================================================================
-// GLOBAL WIRING — v12.3 (no imports, organism‑level wiring)
+//  PulseBandSymbolic-v16-Immortal-BINARY-MAX-ABA-Presence.js
+//  PULSE NERVOUS SYSTEM — v16 IMMORTAL ORGANISM EDITION
+//  Symbolic PNS + Binary Partner + GPU Warmup + Presence/Field/Advantage
+//  + Chunk/Cache/Prewarm Hints + DualBand Surfaces + Router/Proxy Bridges
+// ============================================================================
+//
+//  ROLE (v16-Immortal):
+//  --------------------
+//  • Canonical symbolic nervous system for the organism (PNS).
+//  • Bridges CNS/PNS, GPU brain, mesh/pulse, and binary PNS core.
+//  • Emits full band/binaryField/waveField/presenceField/advantage surfaces.
+//  • Emits chunk/cache/prewarm envelopes for router/proxy/memory organs.
+//  • Provides deterministic nervous snapshots + live mirrors + GPU mirrors.
+//  • Drives Impulse/ImpulseStrategy with nervous context + advantage field.
+//  • v16 IMMORTAL: dualband-aware, advantageCascade-aware, chunk/prewarm-aware,
+//    proxy-front-aware, router-memory-aware, identity-aware.
+//
+//  SAFETY CONTRACT (v16-Immortal):
+//  -------------------------------
+//  • No dynamic imports, no eval, no AI, no network fetch.
+//  • Never throws outward from nervous system operations.
+//  • Deterministic math only; Date.now() used only for timestamps.
+//  • Zero mutation of external globals (only internal state).
+//  • Binary PNS core is treated as a pure math partner.
+// ============================================================================
+
+/*
+AI_EXPERIENCE_META = {
+  identity: "PulseBandSymbolic",
+  version: "v16-Immortal-BINARY-MAX-ABA-Presence",
+  layer: "pns_symbolic_nervous_system",
+  role: "organism_nervous_system_core",
+  lineage: {
+    root: "PulseBand-v11",
+    parent: "PulseBand-v12.3-Evo-Presence",
+    organismIntegration: "v16-Immortal"
+  },
+
+  evo: {
+    symbolicPNS: true,
+    binaryPartnerAware: true,
+    gpuBrainAware: true,
+    meshAware: true,
+    routerAware: true,
+    proxyFrontAware: true,
+    proxyContextAware: true,
+    routerMemoryAware: true,
+    identityAware: true,
+
+    dualBandAware: true,
+    unifiedAdvantageField: true,
+    advantageCascadeAware: true,
+    chunkAware: true,
+    cacheAware: true,
+    prewarmAware: true,
+    coldStartAware: true,
+    routeWarmthAware: true,
+
+    deterministic: true,
+    driftProof: true,
+    multiInstanceReady: true,
+    parallelSafe: true,
+    zeroDynamicImports: true,
+    zeroEval: true,
+    zeroNetworkFetch: true,
+    zeroExternalMutation: true
+  },
+
+  contract: {
+    input: [
+      "ImpulseTraveler",
+      "GpuNervousState",
+      "BinaryPnsSnapshot",
+      "DualBandContext",
+      "AdvantageContext"
+    ],
+    output: [
+      "PnsLiveSnapshot",
+      "PnsGpuPerformanceSnapshot",
+      "PnsNervousEvent",
+      "PnsBandSignature",
+      "PnsBinaryField",
+      "PnsWaveField",
+      "PnsPresenceField",
+      "PnsAdvantageField",
+      "PnsChunkCachePrewarmHints",
+      "PnsDiagnostics",
+      "PnsHealingState"
+    ],
+    consumers: [
+      "PulseProxyFront",
+      "PulseProxyContext",
+      "CheckRouterMemory",
+      "CheckIdentity",
+      "PulseMesh",
+      "PulseNet",
+      "GPUOrganism"
+    ]
+  }
+};
+*/
+
+// ============================================================================
+// GLOBAL WIRING — v16 IMMORTAL (no imports, organism‑level wiring)
 // ============================================================================
 const G =
   typeof globalThis !== "undefined"
@@ -12,25 +115,30 @@ const G =
     : {};
 
 const Impulse          = G.PulseProxyImpulse;
-const ImpulseStrategy  = G.PulseProxyImpulseStrategy || null; // NEW: full pulse + fallback
+const ImpulseStrategy  = G.PulseProxyImpulseStrategy || null;
 const PulseGPU         = G.PulseGPUAstralNervousSystem;
 const Pulse            = G.PulseProxyLimbic; // facade side-effects only
 
-const PNSBinary = G.PulseProxyPNSNervousSystemBinary || null;
+const PNSBinary        = G.PulseProxyPNSNervousSystemBinary || null;
 
+// v16+ awareness of other backbone organs (optional, fail-open)
+const CheckIdentity    = G.PulseOSCheckIdentity || null;
+const CheckRouterMemory = G.PulseOSCheckRouterMemory || null;
+const PulseProxyContext = G.PulseProxyContext || null;
+const PulseProxyFront   = G.PulseProxyFront || null;
 
 // ============================================================================
-// OS‑v12.3 CONTEXT METADATA — Nervous System Identity
+// OS‑v16 CONTEXT METADATA — Nervous System Identity
 // ============================================================================
 const PULSEBAND_CONTEXT = {
   layer: "PulseBand",
   role: "NERVOUS_SYSTEM",
   purpose:
-    "Sensorimotor integration + connectivity + GPU warmup control + CNS/PNS bridge",
+    "Sensorimotor integration + connectivity + GPU warmup control + CNS/PNS bridge + chunk/cache/prewarm hinting",
   context:
-    "Maintains live/snapshot/gpuPerformance mirrors, fires nervous events, propagates reflexes, synchronizes with Cortex + Evolution",
+    "Maintains live/snapshot/gpuPerformance mirrors, fires nervous events, propagates reflexes, synchronizes with Cortex + Evolution + Proxy/Router/Identity",
   target: "full-os",
-  version: "12.3-Evo-Presence",
+  version: "16-Immortal-BINARY-MAX-ABA-Presence",
   mode: "symbolic",
   binaryPartner: "PulseProxyPNSNervousSystemBinary",
   selfRepairable: true,
@@ -58,15 +166,22 @@ const PULSEBAND_CONTEXT = {
     binaryFieldAware: true,
     presenceAware: true,
     presenceFieldAware: true,
-    dualBandAware: true
+    dualBandAware: true,
+
+    // v16+ chunk/cache/prewarm
+    chunkAware: true,
+    cacheAware: true,
+    prewarmAware: true,
+    coldStartAware: true,
+    routeWarmthAware: true
   }
 };
 
 export const PulseBandSymbolicMeta = Object.freeze({
   layer: "PulseBandSymbolic",
   role: "PNS_SYMBOLIC_NERVOUS_SYSTEM",
-  version: "v12.3-Evo-BINARY-MAX-ABA-Presence",
-  identity: "PulseBandSymbolic-v12.3-Evo-BINARY-MAX-ABA-Presence",
+  version: "v16-Immortal-BINARY-MAX-ABA-Presence",
+  identity: "PulseBandSymbolic-v16-Immortal-BINARY-MAX-ABA-Presence",
 
   guarantees: Object.freeze({
     deterministic: true,
@@ -90,16 +205,24 @@ export const PulseBandSymbolicMeta = Object.freeze({
     brainSync: true,
     evolutionSync: true,
 
-    // Execution prohibitions (unchanged)
-    zeroConsole: true,
+    // v16+ advantage + chunk/cache/prewarm
+    advantageCascadeAware: true,
+    chunkAware: true,
+    cacheAware: true,
+    prewarmAware: true,
+    coldStartAware: true,
+    routeWarmthAware: true,
+
+    // Execution prohibitions
+    zeroConsole: false, // diagnostics allowed via nervousLog
     zeroRouting: true,
     zeroMarketplace: true,
     zeroScoring: true,
     zeroDynamicImports: true,
     zeroEval: true,
     zeroRandomness: true,
-    zeroTimers: true,
-    zeroAsync: true,
+    zeroTimers: false, // Date.now allowed for timestamps
+    zeroAsync: false,  // async allowed but deterministic
     zeroNetwork: true,
     zeroIO: true,
     zeroExternalMutation: true,
@@ -137,6 +260,8 @@ export const PulseBandSymbolicMeta = Object.freeze({
       "PnsBinaryField",
       "PnsWaveField",
       "PnsPresenceField",
+      "PnsAdvantageField",
+      "PnsChunkCachePrewarmHints",
       "PnsDiagnostics",
       "PnsHealingState"
     ]
@@ -153,7 +278,8 @@ export const PulseBandSymbolicMeta = Object.freeze({
       "PulseBand-v11",
       "PulseBand-v11-Evo",
       "PulseBand-v11-Evo-Prime",
-      "PulseBand-v12.3-Evo-Presence"
+      "PulseBand-v12.3-Evo-Presence",
+      "PulseBandSymbolic-v14-Immortal"
     ]
   }),
 
@@ -166,17 +292,17 @@ export const PulseBandSymbolicMeta = Object.freeze({
   architecture: Object.freeze({
     pattern: "A-B-A",
     baseline: "binary nervous math → symbolic nervous mirror → CNS/PNS sync",
-    adaptive: "binary-field + wave-field + presence overlays + GPU warmup surfaces",
-    return: "deterministic nervous surfaces + signatures"
+    adaptive:
+      "binary-field + wave-field + presence overlays + GPU warmup surfaces + chunk/cache/prewarm hints + advantage field",
+    return: "deterministic nervous surfaces + signatures + advantage + hints"
   })
 });
 
 // ============================================================================
-// NERVOUS SYSTEM LOGGER — v14 IMMORTAL
+// NERVOUS SYSTEM LOGGER — v16 IMMORTAL
 // ============================================================================
 export function nervousLog(stage, payload = {}) {
   try {
-    // Diagnostics gate
     const enabled =
       typeof window !== "undefined"
         ? window.PULSE_NERVOUS_DIAGNOSTICS || window.PULSE_DIAGNOSTICS
@@ -185,16 +311,13 @@ export function nervousLog(stage, payload = {}) {
 
     if (!enabled) return;
 
-    // Safe timestamp
     const ts = Date.now();
 
-    // Safe payload
     const safePayload =
       payload && typeof payload === "object"
         ? payload
         : { value: String(payload) };
 
-    // Final nervous packet
     const packet = {
       layer: "PulseNervousSystem",
       stage,
@@ -202,23 +325,20 @@ export function nervousLog(stage, payload = {}) {
       ...safePayload
     };
 
-    // Browser console
     if (typeof console !== "undefined" && console.log) {
       console.log("[NERV]", JSON.stringify(packet));
     }
 
-    // PulseBand logger (if available)
     if (typeof window !== "undefined" && window.PulseLogger?.nervous) {
       window.PulseLogger.nervous(packet);
     }
-
   } catch (_) {
     // NEVER throw — nervous system must never break flow
   }
 }
 
 // ============================================================================
-// Utility helpers — v12.3 deterministic field + presence surfaces
+// Utility helpers — v16 deterministic field + presence + advantage + hints
 // ============================================================================
 const nowMs = () => Date.now();
 
@@ -300,9 +420,80 @@ function buildPresenceField(connectivityMode, online) {
   };
 }
 
+// v16: unified advantage field derived from latency, gpu, connectivity
+function buildAdvantageFieldFromStatus(status) {
+  const latency = Number.isFinite(status.latency) ? status.latency : 0;
+  const gpuReady = !!status.gpuReady;
+  const online = !!status.online;
+
+  const latencyScore =
+    latency <= 0 ? 1.0 :
+    latency < 80 ? 0.95 :
+    latency < 180 ? 0.8 :
+    latency < 400 ? 0.5 :
+    0.25;
+
+  const gpuScore = gpuReady ? 1.0 : 0.6;
+  const connectivityScore = online ? 1.0 : 0.4;
+
+  const advantageScore = Math.max(
+    0.1,
+    Math.min(1.0, (latencyScore * 0.5 + gpuScore * 0.3 + connectivityScore * 0.2))
+  );
+
+  const timeSavedMs = Math.floor((1 - latencyScore) * 50); // symbolic hint only
+
+  return {
+    advantageScore,
+    timeSavedMs,
+    cascadeLevel: 0,
+    field: "pns-nervous",
+    advantageSignature: computeHash(
+      `PNS_ADVANTAGE::${latency}::${gpuReady ? "1" : "0"}::${online ? "1" : "0"}::${advantageScore}`
+    )
+  };
+}
+
+// v16: chunk/cache/prewarm hints derived from latency + gpu + connectivity
+function buildChunkCachePrewarmHints(status) {
+  const latency = Number.isFinite(status.latency) ? status.latency : 0;
+  const gpuReady = !!status.gpuReady;
+  const online = !!status.online;
+
+  const coldStart =
+    latency <= 0 || (!gpuReady && latency > 250);
+
+  const routeWarmth =
+    coldStart ? "cold" :
+    latency < 120 ? "warm" :
+    "warming";
+
+  const chunkHint =
+    coldStart ? "bootstrap-chunk" :
+    latency > 250 ? "route-chunk" :
+    "none";
+
+  const cacheHint =
+    coldStart ? "bootstrap-cache" :
+    latency > 250 ? "route-cache" :
+    "none";
+
+  const prewarmHint =
+    !gpuReady || !online || coldStart;
+
+  return {
+    prewarmHint,
+    chunkHint,
+    cacheHint,
+    routeWarmth,
+    hintSignature: computeHash(
+      `PNS_HINTS::${latency}::${gpuReady ? "1" : "0"}::${online ? "1" : "0"}::${routeWarmth}`
+    )
+  };
+}
 
 // ------------------------------------------------------------
-// PulseBand v12.3 — Engine State (NERVOUS SYSTEM STATE)
+// PulseBand v16 — Engine State (NERVOUS SYSTEM STATE)
 // ------------------------------------------------------------
 export const pulseband = {
   meta: { ...PULSEBAND_CONTEXT },
@@ -313,7 +504,7 @@ export const pulseband = {
     ready: false,
     packages: null,
     warmupScore: 0,
-    thermalState: "Unknown",
+    thermalState: "Unknown"
   },
 
   engine: {
@@ -321,7 +512,7 @@ export const pulseband = {
     pageEnabled: true,
     globalEnabled: true,
     reflexMode: "auto",
-    cortexLinked: false,
+    cortexLinked: false
   },
 
   connectivity: {
@@ -329,7 +520,7 @@ export const pulseband = {
     online: true,
     source: "unknown",
     lastLatencySpike: null,
-    spikeCount: 0,
+    spikeCount: 0
   },
 
   state: {
@@ -348,7 +539,7 @@ export const pulseband = {
       efficiency: 100,
       efficiencyMode: null,
       phoneKbps: 0,
-      appKbps: 0,
+      appKbps: 0
     },
 
     snapshot: {
@@ -356,7 +547,7 @@ export const pulseband = {
       timeSaved: 0,
       lastUpdateTimestamp: 0,
       driftScore: 0,
-      reflexScore: 1.0,
+      reflexScore: 1.0
     },
 
     gpuPerformance: {
@@ -367,7 +558,7 @@ export const pulseband = {
       efficiency: 100,
       load: 0,
       frameBudget: 16.6,
-      frameVariance: 0,
+      frameVariance: 0
     },
 
     latency: 0,
@@ -389,10 +580,19 @@ export const pulseband = {
 
     connectivityMode: "auto",
     online: true,
+
+    // v16: band/field/advantage/hints mirrors
+    band: "dual",
+    bandSignature: null,
+    binaryField: null,
+    waveField: null,
+    presenceField: null,
+    advantageField: null,
+    chunkCachePrewarmHints: null
   },
 
   // ------------------------------------------------------------
-  // GPU Brain Init — Motor Cortex Warmup (symbolic, v11)
+  // GPU Brain Init — Motor Cortex Warmup (symbolic, v16)
   // ------------------------------------------------------------
   async initGraphics(rawAssets = {}) {
     if (typeof window !== "undefined" && window.PULSE_LOG) {
@@ -411,7 +611,7 @@ export const pulseband = {
         rawMeshes:     rawAssets.meshes     || [],
         rawAnimations: rawAssets.animations || [],
         rawShaders:    rawAssets.shaders    || [],
-        rawScenes:     rawAssets.scenes     || [],
+        rawScenes:     rawAssets.scenes     || []
       });
 
       const packages = PulseGPU.PulseGPUBrainExport.buildAndStore(input);
@@ -438,7 +638,7 @@ export const pulseband = {
   },
 
   // ------------------------------------------------------------
-  // Engine Init — Nervous System Boot (v11)
+  // Engine Init — Nervous System Boot (v16)
   // ------------------------------------------------------------
   async initEngine() {
     if (this.engine.initialized) {
@@ -462,8 +662,8 @@ export const pulseband = {
         networkHealth: "Excellent",
         latencyClass: "Excellent",
         state: "Warm",
-        route: "Pulse",
-      },
+        route: "Pulse"
+      }
     });
 
     if (typeof window !== "undefined" && window.PULSE_LOG) {
@@ -524,7 +724,7 @@ export const pulseband = {
     this.emit("connectivity-change", {
       online,
       source,
-      mode: this.connectivity.mode,
+      mode: this.connectivity.mode
     });
   },
 
@@ -541,13 +741,13 @@ export const pulseband = {
 
   // ------------------------------------------------------------
   // PulseNet + Mesh Integration (Pulse-Once Organ)
-  // ------------------------------------------------------------
+// ------------------------------------------------------------
   pulseStatus: {
     lastPulseTs: null,
     lastPulseOk: false,
     lastError: null,
     lastMeshReach: null,
-    lastDeviceId: null,
+    lastDeviceId: null
   },
 
   onPulseSuccess(payload = {}) {
@@ -588,7 +788,7 @@ export const pulseband = {
     return {
       hops,
       estimatedMeters: hops * 30,
-      mode: hops <= 1 ? "direct" : "mesh",
+      mode: hops <= 1 ? "direct" : "mesh"
     };
   },
 
@@ -613,7 +813,7 @@ export const pulseband = {
   },
 
   // ------------------------------------------------------------
-  // Status API — Nervous System Snapshot (now with band/field/presence)
+  // Status API — Nervous System Snapshot (v16 surfaces)
 // ------------------------------------------------------------
   getStatus() {
     const status = {
@@ -638,7 +838,6 @@ export const pulseband = {
     status.pulseStatus = { ...this.pulseStatus };
     status.meta = { ...PULSEBAND_CONTEXT };
 
-    // NEW: full 12.3 band / field / presence surfaces
     const band = buildBand();
     const bandSignature = buildBandSignature(band);
     const binaryField = buildBinaryField(
@@ -654,37 +853,58 @@ export const pulseband = {
       this.connectivity.online
     );
 
+    const advantageField = buildAdvantageFieldFromStatus({
+      latency: status.live.latency,
+      gpuReady: this.gpu.ready,
+      online: this.connectivity.online
+    });
+
+    const chunkCachePrewarmHints = buildChunkCachePrewarmHints({
+      latency: status.live.latency,
+      gpuReady: this.gpu.ready,
+      online: this.connectivity.online
+    });
+
     status.band = band;
     status.bandSignature = bandSignature;
     status.binaryField = binaryField;
     status.waveField = waveField;
     status.presenceField = presenceField;
+    status.advantageField = advantageField;
+    status.chunkCachePrewarmHints = chunkCachePrewarmHints;
 
     return status;
   },
 
   // ------------------------------------------------------------
-  // IMPULSE FIRING — Nervous System → Impulse Traveler
-  // 12.3: use full ImpulseStrategy (all pulses + safe fallback)
+  // IMPULSE FIRING — Nervous System → Impulse Traveler (v16)
 // ------------------------------------------------------------
   fireImpulse(intent, payload = {}) {
     nervousLog("IMPULSE_FIRE", { intent });
 
+    const status = this.getStatus();
+
     const nervousPayload = {
       ...payload,
       nervousSystem: {
-        latency: this.state.latency,
-        networkHealth: this.state.networkHealth,
-        gpuReady: this.gpu.ready
+        latency: status.latency,
+        networkHealth: status.networkHealth,
+        gpuReady: this.gpu.ready,
+        band: status.band,
+        bandSignature: status.bandSignature,
+        binaryField: status.binaryField,
+        waveField: status.waveField,
+        presenceField: status.presenceField,
+        advantageField: status.advantageField,
+        chunkCachePrewarmHints: status.chunkCachePrewarmHints
       }
     };
 
-    // Prefer full strategy (all pulses + fallback), fallback to legacy Impulse
     if (ImpulseStrategy && typeof ImpulseStrategy.create === "function") {
       const impulse = ImpulseStrategy.create({
         intent,
         payload: nervousPayload,
-        version: "auto" // FULL 12.3 Presence → Shifters → older pulses
+        version: "auto"
       });
 
       if (typeof window !== "undefined" && window.PulseNet?.onImpulse) {
@@ -742,7 +962,6 @@ export const pulseband = {
       }
     }
 
-    // GPU auto‑init (unchanged behavior)
     if (!this.gpu.ready && clean.gpuAssets) {
       if (typeof window !== "undefined" && window.PULSE_LOG) {
         window.PULSE_LOG("PulseBand → GPU auto-init triggered");
@@ -751,9 +970,7 @@ export const pulseband = {
       this.initGraphics(clean.gpuAssets);
     }
 
-    // ------------------------------------------------------------
-    // LIVE MERGE — v11, using binary nervous math when available
-    // ------------------------------------------------------------
+    // LIVE MERGE
     if (clean.live) {
       if (typeof window !== "undefined" && window.PULSE_LOG) {
         window.PULSE_LOG("PulseBand → LIVE merge");
@@ -776,7 +993,6 @@ export const pulseband = {
         latencyClass = PNSBinary.classifyLatency(latency);
         networkHealth = PNSBinary.computeNetworkHealth(latency);
       } else {
-        // fallback to legacy thresholds if binary core missing
         if (!Number.isFinite(latency) || latency <= 0) {
           latencyClass = "Unknown";
           networkHealth = "Unknown";
@@ -818,9 +1034,7 @@ export const pulseband = {
       };
     }
 
-    // ------------------------------------------------------------
-    // SNAPSHOT MERGE — v11 (same semantics, timestamp updated)
-    // ------------------------------------------------------------
+    // SNAPSHOT MERGE
     if (clean.snapshot) {
       if (typeof window !== "undefined" && window.PULSE_LOG) {
         window.PULSE_LOG("PulseBand → SNAPSHOT merge");
@@ -838,9 +1052,7 @@ export const pulseband = {
       window.PULSE_LOG("PulseBand → Flat mirror update");
     }
 
-    // ------------------------------------------------------------
-    // FLAT MIRROR — v11 deterministic flattening
-    // ------------------------------------------------------------
+    // FLAT MIRROR
     const L = this.state.live;
     const S = this.state.snapshot;
 
@@ -871,6 +1083,34 @@ export const pulseband = {
 
     this.state.connectivityMode = this.connectivity.mode;
     this.state.online = this.connectivity.online;
+
+    // v16: recompute band/field/advantage/hints mirrors
+    const band = buildBand();
+    const bandSignature = buildBandSignature(band);
+    const binaryField = buildBinaryField(L.latency, this.gpu.ready);
+    const waveField = buildWaveField(L.latencyClass, L.networkHealth);
+    const presenceField = buildPresenceField(
+      this.connectivity.mode,
+      this.connectivity.online
+    );
+    const advantageField = buildAdvantageFieldFromStatus({
+      latency: L.latency,
+      gpuReady: this.gpu.ready,
+      online: this.connectivity.online
+    });
+    const chunkCachePrewarmHints = buildChunkCachePrewarmHints({
+      latency: L.latency,
+      gpuReady: this.gpu.ready,
+      online: this.connectivity.online
+    });
+
+    this.state.band = band;
+    this.state.bandSignature = bandSignature;
+    this.state.binaryField = binaryField;
+    this.state.waveField = waveField;
+    this.state.presenceField = presenceField;
+    this.state.advantageField = advantageField;
+    this.state.chunkCachePrewarmHints = chunkCachePrewarmHints;
 
     if (typeof window !== "undefined" && window.PULSE_LOG) {
       window.PULSE_LOG("PulseBand → emit(update)");
@@ -917,6 +1157,7 @@ export const pulseband = {
       }
     }
   },
+
   // --------------------------------------------------------------------------
   // LATENCY → CLASSIFIER (binary-safe)
   // --------------------------------------------------------------------------
@@ -977,7 +1218,7 @@ export const pulseband = {
 
   // --------------------------------------------------------------------------
   // LIVE MIRROR BUILDER (binary-safe)
-  // --------------------------------------------------------------------------
+// --------------------------------------------------------------------------
   buildLiveMirror({ latency = 0, prevLatency = 0, lastUpdate = 0, now = 0 }) {
     const spike = this.detectSpike(prevLatency, latency);
 
@@ -985,73 +1226,8 @@ export const pulseband = {
       latency,
       latencyClass: this.classifyLatency(latency),
       networkHealth: this.computeNetworkHealth(latency),
-      microWindowActive: now - lastUpdate < 5000,
       spike,
-      lastUpdateTimestamp: now
+      microWindowActive: now - lastUpdate < 5000
     };
-  },
-  // ------------------------------------------------------------
-  // PulseCache Request Helper — Signal Request/Response
-  // ------------------------------------------------------------
-  _request(type, extra = {}) {
-    if (typeof window !== "undefined" && window.PULSE_LOG) {
-      window.PULSE_LOG(`PulseBand → _request(${type})`);
-    }
-    nervousLog("REQUEST_START", { type });
-
-    return new Promise((resolve, reject) => {
-      try {
-        const sessionId = type + "_" + nowMs();
-        this.emit("request", { type, sessionId, ...extra });
-
-        this.on("response:" + sessionId, (payload) => {
-          nervousLog("RESPONSE_RECEIVED", { type, sessionId });
-          resolve(payload);
-        });
-
-        if (typeof extra.timeoutMs === "number" && extra.timeoutMs > 0) {
-          const timeout = extra.timeoutMs;
-          setTimeout(() => {
-            nervousLog("REQUEST_TIMEOUT", { type, sessionId, timeout });
-            resolve({
-              ok: false,
-              timeout: true,
-              type,
-              sessionId
-            });
-          }, timeout);
-        }
-      } catch (err) {
-        if (typeof window !== "undefined" && window.PULSE_LOG) {
-          window.PULSE_LOG("PulseBand → _request FAILED");
-        }
-        nervousLog("REQUEST_FAILED", { type, error: String(err) });
-        reject(err);
-      }
-    });
   }
 };
-// ---------------------------------------------------------------------------
-// AUTO‑START PULSEBAND ON PNS PAGE (DOM‑READY)
-// ---------------------------------------------------------------------------
-document.addEventListener("DOMContentLoaded", () => {
-  try {
-    if (typeof pulseband === "undefined") {
-      console.warn("[PNS Nervous System] PulseBand not found — cannot auto-start.");
-      return;
-    }
-
-    // Auto-start PulseBand in PNS mode
-    pulseband.initEngine?.({
-      mode: "pns",
-      source: "PNS-NervousSystem",
-      auto: true,
-      silent: true,
-      offlineSafe: true
-    });
-
-    console.log("🧠 [PNS Nervous System] PulseBand auto-started via DOMContentLoaded.");
-  } catch (err) {
-    console.warn("[PNS Nervous System] PulseBand auto-start failed:", err);
-  }
-});

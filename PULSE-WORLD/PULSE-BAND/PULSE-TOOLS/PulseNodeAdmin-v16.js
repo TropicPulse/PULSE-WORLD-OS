@@ -1,15 +1,66 @@
 // ============================================================================
-// FILE: /PulseOS/PULSE-TOOLS/PulseNodeAdmin-v12.3+-Presence-Evo-INTELLECT.js
-// PULSE OS — v12.3+ PRESENCE-Evo
-// NODEADMIN ORGAN — NETWORK BRAIN / SENTINEL COMMAND / INTENT + MEMORY CORTEX
-// OVERMIND-READY • PRESENCE-AWARE • MESH/CASTLE/EXPANSION/ROUTER/BEACON-AWARE
-// PREWARM/CACHE/CHUNK-AWARE • DETERMINISTIC • SYNTHETIC-ONLY
+//  PULSE OS v16‑IMMORTAL‑ADV++ — NODEADMIN ORGAN
+//  Network Brain • Sentinel Command • Intent + Memory Cortex
+//  OVERMIND‑PRIME‑AWARE • PRESENCE‑AWARE • MESH/CASTLE/EXPANSION/ROUTER/BEACON‑AWARE
+//  PREWARM/CACHE/CHUNK‑AWARE • DETERMINISTIC • SYNTHETIC‑ONLY • ARTERY v5
 // ============================================================================
+
+/*
+AI_EXPERIENCE_META = {
+  identity: "aiNodeAdmin",
+  version: "v16-Immortal-Adv++",
+  layer: "ai_core",
+  role: "nodeadmin_organ",
+  lineage: "PulseNodeAdmin-v11-Evo → v12.3-Presence-Evo++ → v16-Immortal-Adv++",
+
+  evo: {
+    nodeAdmin: true,
+    networkBrain: true,
+    sentinelCommand: true,
+    intentCortex: true,
+    memoryCortex: true,
+
+    presenceAware: true,
+    advantageAware: true,
+    chunkPrewarmAware: true,
+    soldierAware: true,
+    treasuryAware: true,
+    castleAware: true,
+    serverAware: true,
+    expansionAware: true,
+    meshAware: true,
+    routeAware: true,
+    bandAware: true,
+    binaryFieldAware: true,
+    waveFieldAware: true,
+
+    deterministic: true,
+    driftProof: true,
+    pureCompute: true,
+    zeroNetwork: true,
+    zeroFilesystem: true,
+    zeroMutationOfInput: true,
+
+    arteryV5: true,
+    spiralAware: true,
+    windowAware: true,
+    multiInstanceIdentity: true,
+    packetAware: true,
+    snapshotAware: true
+  },
+
+  contract: {
+    always: ["aiOvermind", "aiExpansion", "aiReproduction", "aiServiceGateway"],
+    never: ["safeRoute", "fetchViaCNS"]
+  }
+}
+*/
+
 export const NodeAdminMeta = Object.freeze({
-  organId: "PulseNodeAdmin-v12.3+-Presence-Evo++",
+  organId: "PulseNodeAdmin-v16-Immortal-Adv++",
   role: "NODEADMIN_ORGAN",
-  version: "12.3-Presence-Evo++",
-  epoch: "v12.3-Presence-Evo++",
+  version: "16-Immortal-Adv++",
+  epoch: "v16-Immortal-Adv++",
   layer: "NetworkBrain",
 
   safety: Object.freeze({
@@ -21,7 +72,6 @@ export const NodeAdminMeta = Object.freeze({
     backendAdvisoryOnly: true
   }),
 
-  // NEW: NodeAdmin must now legally consume these signals
   awareness: Object.freeze({
     presenceAware: true,
     advantageAware: true,
@@ -35,12 +85,17 @@ export const NodeAdminMeta = Object.freeze({
     routeAware: true,
     bandAware: true,
     binaryFieldAware: true,
-    waveFieldAware: true
+    waveFieldAware: true,
+    arteryAware: true,
+    arteryV5: true,
+    overmindAware: true,
+    earnAware: true,
+    reproductionAware: true
   }),
 
   contract: Object.freeze({
     purpose:
-      "Local coordinator for soldiers, servers, and castle load. Executes Expansion plans, manages soldier lifecycle, applies earning pressure, integrates presence/advantage/chunk/mesh/castle/server signals, and exposes deterministic snapshots.",
+      "Local coordinator for soldiers, servers, and castle load. Executes Expansion plans, manages soldier lifecycle, applies earning pressure, integrates presence/advantage/chunk/mesh/castle/server signals, and exposes deterministic snapshots + artery metrics.",
 
     never: Object.freeze([
       "mutate external state",
@@ -58,10 +113,194 @@ export const NodeAdminMeta = Object.freeze({
       "treat presence/social/earn/mesh/castle/expansion/router/beacon as metadata-only signals",
       "treat prewarm/cache/chunk plans as hints only, not imperative commands",
       "treat soldierDelegation and desiredSoldiers as advisory quotas",
-      "treat treasury deltas as symbolic only"
+      "treat treasury deltas as symbolic only",
+      "emit artery v5 snapshots for Overmind/NodeAdmin/Earn/Reproduction"
     ])
   })
 });
+
+// ============================================================================
+//  GLOBAL NODEADMIN ARTERY REGISTRY — v16 IMMORTAL‑ADV++
+// ============================================================================
+
+const _globalNodeAdminArteryRegistry = new Map();
+/**
+ * Registry key: `${id}#${instanceIndex}`
+ */
+function _registryKey(id, instanceIndex) {
+  return `${id || NodeAdminMeta.organId}#${instanceIndex}`;
+}
+
+export function getGlobalNodeAdminArteries() {
+  const out = {};
+  for (const [k, v] of _globalNodeAdminArteryRegistry.entries()) {
+    out[k] = v;
+  }
+  return out;
+}
+
+// ============================================================================
+//  HELPERS
+// ============================================================================
+
+function clamp(v, min, max) {
+  if (v < min) return min;
+  if (v > max) return max;
+  return v;
+}
+
+function clamp01(v) {
+  const n = typeof v === "number" ? v : 0;
+  if (n <= 0) return 0;
+  if (n >= 1) return 1;
+  return n;
+}
+
+function bucket(v) {
+  if (v >= 0.9) return "elite";
+  if (v >= 0.75) return "high";
+  if (v >= 0.5) return "medium";
+  if (v >= 0.25) return "low";
+  return "critical";
+}
+
+function bucketPressure(v) {
+  if (v >= 0.9) return "overload";
+  if (v >= 0.7) return "high";
+  if (v >= 0.4) return "medium";
+  if (v > 0) return "low";
+  return "none";
+}
+
+function bucketCost(v) {
+  if (v >= 0.8) return "heavy";
+  if (v >= 0.5) return "moderate";
+  if (v >= 0.2) return "light";
+  if (v > 0) return "negligible";
+  return "none";
+}
+
+// ============================================================================
+//  NODEADMIN ARTERY v5 — IMMORTAL‑GRADE
+// ============================================================================
+
+function computeNodeAdminArteryV5({
+  mode,
+  tick,
+  cycle,
+  sentinelCount,
+  soldierRegistry,
+  castleLoad,
+  serverLoad,
+  lastExpansionPlan,
+  windowMs,
+  windowStart,
+  instanceIndex,
+  instanceCount
+}) {
+  const now = Date.now();
+  const elapsedMs = Math.max(1, now - windowStart);
+
+  const soldierCount = Object.keys(soldierRegistry).length;
+  const castleIds = Object.keys(castleLoad);
+  const serverIds = Object.keys(serverLoad);
+
+  const avgCastleLoad =
+    castleIds.length === 0
+      ? 0
+      : castleIds.reduce((sum, id) => sum + (castleLoad[id] || 0), 0) /
+        castleIds.length;
+
+  const avgServerLoad =
+    serverIds.length === 0
+      ? 0
+      : serverIds.reduce((sum, id) => sum + (serverLoad[id] || 0), 0) /
+        serverIds.length;
+
+  const expansionIntensity =
+    lastExpansionPlan && Array.isArray(lastExpansionPlan.expansions)
+      ? clamp01(lastExpansionPlan.expansions.length / 32)
+      : 0;
+
+  const modePressureBase =
+    mode === "boost"
+      ? 0.8
+      : mode === "scan"
+      ? 0.6
+      : mode === "guard"
+      ? 0.5
+      : mode === "presence"
+      ? 0.4
+      : mode === "cool"
+      ? 0.2
+      : 0.1;
+
+  const soldierPressure = clamp01(soldierCount / 256);
+  const castlePressure = clamp01(avgCastleLoad);
+  const serverPressure = clamp01(avgServerLoad);
+
+  const pressure = clamp01(
+    modePressureBase * 0.3 +
+      soldierPressure * 0.2 +
+      castlePressure * 0.2 +
+      serverPressure * 0.2 +
+      expansionIntensity * 0.1
+  );
+
+  const throughput = clamp01(1 - pressure);
+  const cost = clamp01(pressure * (1 - throughput));
+  const budget = clamp01(throughput - cost);
+
+  return Object.freeze({
+    meta: NodeAdminMeta,
+    instanceIndex,
+    instanceCount,
+    windowMs,
+    elapsedMs,
+
+    mode,
+    tick,
+    cycle,
+
+    sentinels: {
+      count: sentinelCount
+    },
+
+    soldiers: {
+      count: soldierCount
+    },
+
+    castles: {
+      count: castleIds.length,
+      avgLoad: avgCastleLoad
+    },
+
+    servers: {
+      count: serverIds.length,
+      avgLoad: avgServerLoad
+    },
+
+    expansion: {
+      hasPlan: !!lastExpansionPlan,
+      expansionIntensity
+    },
+
+    throughput,
+    pressure,
+    cost,
+    budget,
+
+    throughputBucket: bucket(throughput),
+    pressureBucket: bucketPressure(pressure),
+    costBucket: bucketCost(cost),
+    budgetBucket: bucket(budget)
+  });
+}
+
+// ============================================================================
+//  IMPORTS — ANALYSIS / SCANNERS (UNCHANGED)
+// ============================================================================
+
 import PulseAdminInspector from "./PulseAdminInspector.js";
 import PulseBehaviorScanner from "./PulseBehaviorScanner.js";
 import PulseBinaryBehaviorScanner from "./PulseBinaryBehaviorScanner.js";
@@ -71,12 +310,14 @@ import PulseBinaryWaveScanner from "./PulseBinaryWaveScanner.js";
 import PulseEvolutionaryScanner from "./PulseEvolutionaryScanner.js";
 import PulseHeatMap from "./PulseHeatMap.js";
 import PulseLoopScanner from "./PulseLoopScanner.js";
-import PulseNodeAdminIntellect from "./PulseNodeAdmin-v11-Evo-Intellect.js";
+import PulseNodeAdminIntellect from "./PulseNodeAdmin-v16-Intellect.js";
 import PulseWaveScanner from "./PulseWaveScanner.js";
 
 // ============================================================================
-// FACTORY: createPulseNodeAdmin — v12.3+ PRESENCE-Evo-INTELLECT
+//  FACTORY: createPulseNodeAdmin — v16‑IMMORTAL‑ADV++
 // ============================================================================
+
+let _nodeAdminInstanceCount = 0;
 
 export function createPulseNodeAdmin({
   trace = false,
@@ -84,14 +325,16 @@ export function createPulseNodeAdmin({
   backendInterpreter = null, // fn({ message, state }) => { intentName?, mode?, notes?, payload? }
   overmindBridge = null      // { emit?, pullDirectives? }
 } = {}) {
+  const instanceIndex = _nodeAdminInstanceCount++;
+  const instanceId = `${NodeAdminMeta.organId}#${instanceIndex}`;
 
   // ---------------------------------------------------------------------------
   // INTERNAL STATE
   // ---------------------------------------------------------------------------
   let mode = "idle"; // "idle" | "scan" | "boost" | "cool" | "guard" | "presence"
   let tick = 0;
-  let cycle = 0;                 // EVO++: expansion/soldier cycles
-  let lastExpansionPlan = null;  // EVO++: last applied expansion plan
+  let cycle = 0;
+  let lastExpansionPlan = null;
 
   const sentinels = Array.from({ length: instances }, (_, i) => ({
     id: i,
@@ -123,14 +366,15 @@ export function createPulseNodeAdmin({
     SystemClock: null
   };
 
-  // World organ snapshots (mesh / castle / expansion / router / beacon / worldCore)
+  // World organ snapshots
   let meshSnapshot = null;
   let castleSnapshot = null;
   let expansionSnapshot = null;
   let routerSnapshot = null;
   let beaconSnapshot = null;
   let worldCoreSnapshot = null;
-  // EVO++: soldier + load tracking
+
+  // Soldier + load tracking
   const soldierRegistry = Object.create(null); // soldierId -> { castleId, serverId, meta }
   const castleLoad = Object.create(null);      // castleId -> loadIndex
   const serverLoad = Object.create(null);      // serverId -> loadIndex
@@ -160,6 +404,10 @@ export function createPulseNodeAdmin({
     }
   };
 
+  // Artery window
+  let _windowStart = Date.now();
+  const windowMs = 60000;
+
   // ---------------------------------------------------------------------------
   // MEMORY HELPERS
   // ---------------------------------------------------------------------------
@@ -178,7 +426,7 @@ export function createPulseNodeAdmin({
 
   function getMemory({ limit = 50, type = null } = {}) {
     const filtered = type
-      ? memory.events.filter(e => e.type === type)
+      ? memory.events.filter((e) => e.type === type)
       : memory.events;
     return filtered.slice(-limit);
   }
@@ -207,11 +455,7 @@ export function createPulseNodeAdmin({
       return { ok: false, reason: "invalid-directive" };
     }
 
-    const {
-      mode: nextMode,
-      intentName,
-      intentPayload
-    } = directive;
+    const { mode: nextMode, intentName, intentPayload } = directive;
 
     let modeChanged = false;
     let intentResult = null;
@@ -232,7 +476,7 @@ export function createPulseNodeAdmin({
   }
 
   // ---------------------------------------------------------------------------
-  // INTENT SYSTEM (AIS++)
+  // INTENT SYSTEM
   // ---------------------------------------------------------------------------
   function registerIntent(name, handler) {
     intentHandlers[name] = handler;
@@ -298,49 +542,44 @@ export function createPulseNodeAdmin({
     return { ok: true };
   }
 
-    function setCastleSnapshot(snapshot) {
-      castleSnapshot = snapshot || null;
+  function setCastleSnapshot(snapshot) {
+    castleSnapshot = snapshot || null;
 
-      // EVO++: derive simple load map from castle presence fields if available
-      // Expecting shape: { castlesById: { [castleId]: { presenceField?: { loadIndex? } } } }
-      if (snapshot && snapshot.castlesById) {
-        for (const [castleId, c] of Object.entries(snapshot.castlesById)) {
-          const loadIndex = c.presenceField?.loadIndex;
-          if (typeof loadIndex === "number") {
-            castleLoad[castleId] = loadIndex;
-          }
+    if (snapshot && snapshot.castlesById) {
+      for (const [castleId, c] of Object.entries(snapshot.castlesById)) {
+        const loadIndex = c.presenceField?.loadIndex;
+        if (typeof loadIndex === "number") {
+          castleLoad[castleId] = loadIndex;
         }
       }
-
-      const evt = remember("castle-snapshot-set", {
-        hasSnapshot: !!snapshot,
-        castleCount: snapshot?.castlesById ? Object.keys(snapshot.castlesById).length : 0
-      });
-      emitToOvermind("castle-snapshot-set", evt);
-      return { ok: true };
     }
 
+    const evt = remember("castle-snapshot-set", {
+      hasSnapshot: !!snapshot,
+      castleCount: snapshot?.castlesById
+        ? Object.keys(snapshot.castlesById).length
+        : 0
+    });
+    emitToOvermind("castle-snapshot-set", evt);
+    return { ok: true };
+  }
 
-    function setExpansionSnapshot(snapshot) {
-      expansionSnapshot = snapshot || null;
+  function setExpansionSnapshot(snapshot) {
+    expansionSnapshot = snapshot || null;
 
-      // EVO++: track expansion cycles + last plan
-      // Expecting snapshot to optionally carry an ExpansionPlan-like shape
-      // { plan?: { expansions, contractions, soldierDelegation, bandSignature, ... } }
-      if (snapshot && snapshot.plan) {
-        cycle++;
-        lastExpansionPlan = snapshot.plan;
-      }
-
-      const evt = remember("expansion-snapshot-set", {
-        hasSnapshot: !!snapshot,
-        cycle,
-        hasPlan: !!(snapshot && snapshot.plan)
-      });
-      emitToOvermind("expansion-snapshot-set", evt);
-      return { ok: true };
+    if (snapshot && snapshot.plan) {
+      cycle++;
+      lastExpansionPlan = snapshot.plan;
     }
 
+    const evt = remember("expansion-snapshot-set", {
+      hasSnapshot: !!snapshot,
+      cycle,
+      hasPlan: !!(snapshot && snapshot.plan)
+    });
+    emitToOvermind("expansion-snapshot-set", evt);
+    return { ok: true };
+  }
 
   function setRouterSnapshot(snapshot) {
     routerSnapshot = snapshot || null;
@@ -445,7 +684,7 @@ export function createPulseNodeAdmin({
       } else if (mode === "guard") {
         frequency = 1.0;
         wavelength = 1.0;
-        const edgeBias = (i % 2 === 0) ? 0 : maxLoopIndex - 1;
+        const edgeBias = i % 2 === 0 ? 0 : maxLoopIndex - 1;
         s.loopIndex = edgeBias;
       } else if (mode === "presence") {
         frequency = 1.2;
@@ -491,8 +730,8 @@ export function createPulseNodeAdmin({
     const jobView = PresenceJobView.build(entryNodeId, context);
     const nearby = jobView.nearbyPresence || [];
 
-    const powerCount = nearby.filter(p => p.powerUser).length;
-    const newCount = nearby.filter(p => p.ageCategory === "new").length;
+    const powerCount = nearby.filter((p) => p.powerUser).length;
+    const newCount = nearby.filter((p) => p.ageCategory === "new").length;
 
     if (powerCount >= 3) return "boost";
     if (newCount >= 3) return "scan";
@@ -512,9 +751,9 @@ export function createPulseNodeAdmin({
     const nodes = snapshot.nodes || [];
     const edges = snapshot.edges || [];
 
-    const clusterEdges = edges.filter(e => e.type === "presence");
-    const jobEdges = edges.filter(e => e.type === "job");
-    const mentorEdges = edges.filter(e => e.type === "mentor_request");
+    const clusterEdges = edges.filter((e) => e.type === "presence");
+    const jobEdges = edges.filter((e) => e.type === "job");
+    const mentorEdges = edges.filter((e) => e.type === "mentor_request");
 
     const clusterDensity = clusterEdges.length / Math.max(nodes.length, 1);
     const jobFlow = jobEdges.length;
@@ -547,10 +786,10 @@ export function createPulseNodeAdmin({
     const jobView = PresenceJobView.build(entryNodeId, context);
     const nearby = jobView.nearbyPresence || [];
 
-    const newCount = nearby.filter(p => p.ageCategory === "new").length;
+    const newCount = nearby.filter((p) => p.ageCategory === "new").length;
     if (newCount >= 5) return "spawn-node";
 
-    const powerCount = nearby.filter(p => p.powerUser).length;
+    const powerCount = nearby.filter((p) => p.powerUser).length;
     if (powerCount >= 3) return "spawn-advanced-node";
 
     return "none";
@@ -575,7 +814,7 @@ export function createPulseNodeAdmin({
   }
 
   // ---------------------------------------------------------------------------
-  // WORLD-AWARE INTELLECT HELPERS (MESH / CASTLE / EXPANSION / ROUTER / BEACON / WORLDCORE)
+  // WORLD-AWARE INTELLECT HELPERS
   // ---------------------------------------------------------------------------
   function meshAdvice() {
     if (!meshSnapshot) return null;
@@ -608,7 +847,10 @@ export function createPulseNodeAdmin({
 
   function expansionAdvice() {
     if (!expansionSnapshot) return null;
-    const need = expansionSnapshot.MeshBrain?.B_expansionRules?.expansionNeed || expansionSnapshot.expansionNeed || "unknown";
+    const need =
+      expansionSnapshot.MeshBrain?.B_expansionRules?.expansionNeed ||
+      expansionSnapshot.expansionNeed ||
+      "unknown";
     const routeStable = expansionSnapshot.routeField?.routeStable ?? null;
 
     const advice = { expansionNeed: need, routeStable };
@@ -616,7 +858,7 @@ export function createPulseNodeAdmin({
     return advice;
   }
 
-    function routerAdvice() {
+  function routerAdvice() {
     if (!routerSnapshot) return null;
 
     const r = routerSnapshot.routeField || routerSnapshot.metrics || {};
@@ -674,7 +916,6 @@ export function createPulseNodeAdmin({
     return advice;
   }
 
-
   // ---------------------------------------------------------------------------
   // INTELLECT: ANALYZE LAYERS + FLAGS + PRESENCE + WORLD → MODE / FOCUS
   // ---------------------------------------------------------------------------
@@ -686,7 +927,15 @@ export function createPulseNodeAdmin({
     return clamp((d + c + w) / 3, 0, 1);
   }
 
-  function analyzeAndAdvise({ body, home, town, node, flags, entryNodeId, context } = {}) {
+  function analyzeAndAdvise({
+    body,
+    home,
+    town,
+    node,
+    flags,
+    entryNodeId,
+    context
+  } = {}) {
     const scores = {
       body: scoreLayer(body),
       home: scoreLayer(home),
@@ -704,8 +953,8 @@ export function createPulseNodeAdmin({
       }
     }
 
-    const hasHighFlags = (flags || []).some(f => f.severity === "high");
-    const hasMediumFlags = (flags || []).some(f => f.severity === "medium");
+    const hasHighFlags = (flags || []).some((f) => f.severity === "high");
+    const hasMediumFlags = (flags || []).some((f) => f.severity === "medium");
 
     let suggestedMode = "idle";
 
@@ -768,7 +1017,7 @@ export function createPulseNodeAdmin({
   }
 
   // ---------------------------------------------------------------------------
-  // REPORT ENGINE — WHERE AM I / WHAT’S HAPPENING
+  // REPORT ENGINE
   // ---------------------------------------------------------------------------
   function getReport() {
     const report = {
@@ -797,7 +1046,6 @@ export function createPulseNodeAdmin({
     return report;
   }
 
-
   function getStateSnapshot() {
     return Object.freeze({
       organId: NodeAdminMeta.organId,
@@ -814,7 +1062,30 @@ export function createPulseNodeAdmin({
     });
   }
 
+  // ---------------------------------------------------------------------------
+  // NODEADMIN ARTERY API
+  // ---------------------------------------------------------------------------
+  function getNodeAdminArtery() {
+    const artery = computeNodeAdminArteryV5({
+      mode,
+      tick,
+      cycle,
+      sentinelCount: sentinels.length,
+      soldierRegistry,
+      castleLoad,
+      serverLoad,
+      lastExpansionPlan,
+      windowMs,
+      windowStart: _windowStart,
+      instanceIndex,
+      instanceCount: _nodeAdminInstanceCount
+    });
 
+    const key = _registryKey(instanceId, instanceIndex);
+    _globalNodeAdminArteryRegistry.set(key, artery);
+
+    return artery;
+  }
 
   // ---------------------------------------------------------------------------
   // ABILITY / MANUAL INTROSPECTION
@@ -853,7 +1124,8 @@ export function createPulseNodeAdmin({
         "worldCore UI/load awareness",
         "prewarm hint coordination",
         "cache hint coordination",
-        "chunk hint coordination"
+        "chunk hint coordination",
+        "nodeAdmin artery v5 snapshots"
       ]
     };
   }
@@ -863,352 +1135,50 @@ export function createPulseNodeAdmin({
       meta: NodeAdminMeta,
       description: "NodeAdmin is the network brain / sentinel command organ.",
       usage: {
-        setMode: "nodeAdmin.setMode('scan' | 'boost' | 'cool' | 'guard' | 'presence' | 'idle')",
-        updateSentinels: "nodeAdmin.updateSentinels(maxLoopIndex) → sentinel states",
+        setMode:
+          "nodeAdmin.setMode('scan' | 'boost' | 'cool' | 'guard' | 'presence' | 'idle')",
         analyzeAndAdvise:
-          "nodeAdmin.analyzeAndAdvise({ body, home, town, node, flags, entryNodeId, context }) → advice",
-        getReport: "nodeAdmin.getReport() → current state snapshot",
-        getStateSnapshot: "nodeAdmin.getStateSnapshot() → compact state for Overmind",
-        getAbilities: "nodeAdmin.getAbilities() → modes + intents + features",
-        registerIntent: "nodeAdmin.registerIntent(name, handler)",
-        executeIntent: "nodeAdmin.executeIntent(name, payload?)",
-        executeCustom: "nodeAdmin.executeCustom(message, context?)",
-        ask: "nodeAdmin.ask(question, context?)",
-        getMemory: "nodeAdmin.getMemory({ limit?, type? })",
-        setBackendInterpreter: "nodeAdmin.setBackendInterpreter(fn)",
-        attachOvermindBridge: "nodeAdmin.attachOvermindBridge({ emit?, pullDirectives? })",
-        applyDirective: "nodeAdmin.applyDirective({ mode?, intentName?, intentPayload? })",
+          "nodeAdmin.analyzeAndAdvise({ body, home, town, node, flags, entryNodeId, context })",
+        getReport: "nodeAdmin.getReport()",
+        getStateSnapshot: "nodeAdmin.getStateSnapshot()",
+        getNodeAdminArtery: "nodeAdmin.getNodeAdminArtery()",
+        registerIntent:
+          "nodeAdmin.registerIntent('intentName', ({ mode, sentinels, payload }) => result)",
+        applyDirective:
+          "nodeAdmin.applyDirective({ mode?, intentName?, intentPayload? })",
         setPresenceIntegrations:
           "nodeAdmin.setPresenceIntegrations({ PresenceJobView, PulseWorldSocialGraph, PowerUserRanking, SystemClock })",
-        setMeshSnapshot: "nodeAdmin.setMeshSnapshot(meshSnapshot)",
-        setCastleSnapshot: "nodeAdmin.setCastleSnapshot(castleSnapshot)",
-        setExpansionSnapshot: "nodeAdmin.setExpansionSnapshot(expansionSnapshot)",
-        setRouterSnapshot: "nodeAdmin.setRouterSnapshot(routerSnapshot)",
-        setBeaconSnapshot: "nodeAdmin.setBeaconSnapshot(beaconSnapshot)",
-        setWorldCoreSnapshot: "nodeAdmin.setWorldCoreSnapshot(worldCoreSnapshot)",
-        setPrewarmHints: "nodeAdmin.setPrewarmHints({ castle?, expansion?, mesh?, router?, worldCore? })",
-        setCacheHints: "nodeAdmin.setCacheHints({ castle?, expansion?, mesh?, router?, worldCore? })",
-        setChunkHints: "nodeAdmin.setChunkHints({ castle?, expansion?, mesh?, router?, worldCore? })",
-        attachBeaconEngine: "nodeAdmin.attachBeaconEngine(beaconEngine)"
-      },
-      caveat:
-        "Future AI or systems may propose new intents or mode rules. These should be added via registerIntent, applyDirective, or by extending analyzeAndAdvise, not by mutating core safety contracts."
+        setMeshSnapshot: "nodeAdmin.setMeshSnapshot(snapshot)",
+        setCastleSnapshot: "nodeAdmin.setCastleSnapshot(snapshot)",
+        setExpansionSnapshot: "nodeAdmin.setExpansionSnapshot(snapshot)",
+        setRouterSnapshot: "nodeAdmin.setRouterSnapshot(snapshot)",
+        setBeaconSnapshot: "nodeAdmin.setBeaconSnapshot(snapshot)",
+        setWorldCoreSnapshot: "nodeAdmin.setWorldCoreSnapshot(snapshot)",
+        setPrewarmHints:
+          "nodeAdmin.setPrewarmHints({ castle, expansion, mesh, router, worldCore })",
+        setCacheHints:
+          "nodeAdmin.setCacheHints({ castle, expansion, mesh, router, worldCore })",
+        setChunkHints:
+          "nodeAdmin.setChunkHints({ castle, expansion, mesh, router, worldCore })"
+      }
     };
   }
 
   // ---------------------------------------------------------------------------
-  // QUESTION ENGINE — SIMPLE Q&A OVER STATE
+  // PUBLIC API — v16‑IMMORTAL‑ADV++
   // ---------------------------------------------------------------------------
-  function ask(question, context = {}) {
-    const q = (question || "").toLowerCase();
-    const report = getReport();
-    const abilities = getAbilities();
-
-    let answer = null;
-
-    if (q.includes("mode")) {
-      answer = `Current mode is '${mode}'.`;
-    } else if (q.includes("focus")) {
-      const adv = memory.lastAdvice;
-      if (adv) {
-        answer = `Focus is on '${adv.focusLayer}' with score ${adv.focusScore.toFixed(
-          3
-        )} in mode '${adv.suggestedMode}'. Presence mode: '${adv.presenceMode}', social focus: '${adv.socialFocus}'.`;
-      } else {
-        answer = "No recent focus advice available yet.";
-      }
-    } else if (q.includes("sentinel")) {
-      answer = `There are ${sentinels.length} sentinels. Last update had ${
-        report.sentinels?.length || 0
-      } entries.`;
-    } else if (q.includes("ability") || q.includes("can you")) {
-      answer = `I can operate in modes ${abilities.modes.join(
-        ", "
-      )}, execute intents [${abilities.intents.join(
-        ", "
-      )}], and provide advice, reports, presence/mesh/castle/expansion/router/worldCore-aware guidance, social-graph-aware focus, earn/reproduction hints, and prewarm/cache/chunk plans.`;
-    } else if (q.includes("presence")) {
-      const adv = memory.lastAdvice;
-      if (adv) {
-        answer = `Presence mode is '${adv.presenceMode}', social focus is '${adv.socialFocus}', earn readiness is '${adv.earnReadiness}', reproduction trigger is '${adv.reproductionTrigger}'.`;
-      } else {
-        answer = "No presence-aware advice available yet.";
-      }
-    } else if (q.includes("mesh")) {
-      const adv = memory.lastAdvice?.mesh;
-      if (adv) {
-        answer = `Mesh strength is '${adv.meshStrength}', pressure index is ${adv.meshPressureIndex}, status '${adv.status}'.`;
-      } else {
-        answer = "No mesh advice available yet.";
-      }
-    } else if (q.includes("castle")) {
-      const adv = memory.lastAdvice?.castle;
-      if (adv) {
-        answer = `Castle load is '${adv.loadLevel}', mesh support level is ${adv.meshSupportLevel}, status '${adv.status}'.`;
-      } else {
-        answer = "No castle advice available yet.";
-      }
-    } else if (q.includes("route") || q.includes("corridor") || q.includes("expansion")) {
-      const adv = memory.lastAdvice?.expansion;
-      if (adv) {
-        answer = `Expansion need is '${adv.expansionNeed}', routeStable=${adv.routeStable}.`;
-      } else {
-        answer = "No route/expansion advice available yet.";
-      }
-    } else if (q.includes("prewarm") || q.includes("cache") || q.includes("chunk")) {
-      const adv = memory.lastAdvice;
-      if (adv) {
-        answer = `Prewarm hints: ${JSON.stringify(
-          adv.prewarmHints
-        )}; cache hints: ${JSON.stringify(
-          adv.cacheHints
-        )}; chunk hints: ${JSON.stringify(adv.chunkHints)}.`;
-      } else {
-        answer = "No performance hints available yet.";
-      }
-    } else if (q.includes("power user") || q.includes("mentor")) {
-      const adv = memory.lastAdvice;
-      if (adv && adv.powerUserInfluence) {
-        const p = adv.powerUserInfluence;
-        answer = `Top power user nearby: '${p.displayName}' (band=${p.presenceBand}, age=${p.systemAge}, rankScore=${p.rankScore}).`;
-      } else {
-        answer = "No power-user influence data available yet.";
-      }
-    } else if (q.includes("reproduction")) {
-      const adv = memory.lastAdvice;
-      if (adv) {
-        answer = `Reproduction trigger is '${adv.reproductionTrigger}'.`;
-      } else {
-        answer = "No reproduction advice available yet.";
-      }
-    } else {
-      answer =
-        "I don't have a direct answer for that question yet, but you can inspect my report via getReport() or extend my abilities via registerIntent, applyDirective, backendInterpreter, or setPresenceIntegrations()/set*Snapshot()/set*Hints().";
-    }
-
-    const evt = remember("question", { question, context, answer });
-    emitToOvermind("question", evt);
-    return { question, answer };
-  }
-
-  // ---------------------------------------------------------------------------
-  // BEACON ENGINE BRIDGE
-  // ---------------------------------------------------------------------------
-  function handleOvermindMeta(meta) {
-    if (!meta) return;
-
-    const directive = meta.beaconDirective;
-    if (!directive) return;
-
-    if (beaconEngine && typeof beaconEngine.applyDirective === "function") {
-      beaconEngine.applyDirective(directive);
-
-      remember("beacon-directive-applied", {
-        directive,
-        ts: Date.now()
-      });
-    }
-  }
-
-  function attachBeaconEngine(beacon) {
-    beaconEngine = beacon || null;
-    const evt = remember("beacon-engine-set", { hasBeacon: !!beacon });
-    emitToOvermind("beacon-engine-set", evt);
-
-    if (!beaconEngine) return { ok: true };
-
-    registerIntent("beacon-control", ({ payload }) => {
-      return beaconEngine.handleNodeAdminIntent(payload.intentName, payload);
-    });
-
-    if (typeof beaconEngine.attachNodeAdminBridge === "function") {
-      beaconEngine.attachNodeAdminBridge({
-        onBeaconEvent: (evt) => {
-          remember("beacon-event", evt);
-        }
-      });
-    }
-
-    return { ok: true };
-  }
-
-  // ---------------------------------------------------------------------------
-  // CUSTOM ACTION INTERPRETER — EXECUTE CUSTOM MESSAGES
-  // ---------------------------------------------------------------------------
-  function executeCustom(message, context = {}) {
-    const text = String(message || "").toLowerCase();
-
-    // 1) Backend interpreter (adaptive, world-aware)
-    if (backend) {
-      const state = {
-        mode,
-        tick,
-        sentinels: memory.lastSentinels,
-        advice: memory.lastAdvice,
-        abilities: getAbilities(),
-        context,
-        meshSnapshot,
-        castleSnapshot,
-        expansionSnapshot,
-        routerSnapshot,
-        beaconSnapshot,
-        worldCoreSnapshot,
-        perfHints
-      };
-
-      const backendResult = backend({ message, state });
-      const evt = remember("custom-backend", { message, context, backendResult });
-      emitToOvermind("custom-backend", evt);
-
-      if (backendResult) {
-        if (backendResult.mode) {
-          setMode(backendResult.mode);
-        }
-        if (backendResult.intentName) {
-          const res = executeIntent(
-            backendResult.intentName,
-            backendResult.payload || {}
-          );
-          return { source: "backend", backendResult, intentResult: res };
-        }
-        return { source: "backend", backendResult };
-      }
-    }
-
-    // 2) Local heuristics
-    let mappedIntent = null;
-    let mappedMode = null;
-
-    if (text.includes("scan") && text.includes("home")) {
-      mappedMode = "scan";
-      mappedIntent = "focus-home";
-    } else if (text.includes("scan") && text.includes("town")) {
-      mappedMode = "scan";
-      mappedIntent = "focus-town";
-    } else if (text.includes("boost") && text.includes("body")) {
-      mappedMode = "boost";
-      mappedIntent = "focus-body";
-    } else if (text.includes("cool")) {
-      mappedMode = "cool";
-    } else if (text.includes("guard")) {
-      mappedMode = "guard";
-    } else if (text.includes("presence")) {
-      mappedMode = "presence";
-      mappedIntent = "presence-govern";
-    }
-
-    if (mappedMode) {
-      setMode(mappedMode);
-    }
-
-    let intentResult = null;
-    if (mappedIntent && intentHandlers[mappedIntent]) {
-      intentResult = executeIntent(mappedIntent, { context });
-    }
-
-    const result = {
-      source: "local",
-      mappedMode,
-      mappedIntent,
-      intentResult
-    };
-
-    const evt = remember("custom-local", { message, context, result });
-    emitToOvermind("custom-local", evt);
-    return result;
-  }
-
-  // ---------------------------------------------------------------------------
-  // DEFAULT INTENT LIBRARY
-  // ---------------------------------------------------------------------------
-  function registerDefaultIntents() {
-    registerIntent("focus-body", ({ sentinels }) => {
-      sentinels.forEach(s => { s.loopIndex = Math.max(0, s.loopIndex - 1); });
-      return "Focusing sentinels toward body-related loops.";
-    });
-
-    registerIntent("focus-home", ({ sentinels }) => {
-      sentinels.forEach(s => { s.loopIndex = s.loopIndex + 1; });
-      return "Focusing sentinels toward home-related loops.";
-    });
-
-    registerIntent("focus-town", ({ sentinels }) => {
-      sentinels.forEach(s => { s.loopIndex = s.loopIndex + 2; });
-      return "Focusing sentinels toward town-related loops.";
-    });
-
-    registerIntent("focus-node", ({ sentinels }) => {
-      sentinels.forEach(s => { s.loopIndex = Math.floor(s.loopIndex / 2); });
-      return "Focusing sentinels toward node-related loops.";
-    });
-
-    registerIntent("scan-town-deep", () => {
-      setMode("scan");
-      return "Deep scanning town layer (mode=scan).";
-    });
-
-    registerIntent("cool-system", () => {
-      setMode("cool");
-      return "Cooling system (mode=cool).";
-    });
-
-    registerIntent("guard-perimeter", ({ sentinels }) => {
-      setMode("guard");
-      return `Guarding perimeter with ${sentinels.length} sentinels (mode=guard).`;
-    });
-
-    registerIntent("boost-system", () => {
-      setMode("boost");
-      return "Boosting system energy (mode=boost).";
-    });
-
-    registerIntent("presence-govern", () => {
-      setMode("presence");
-      return "Presence-governed mode engaged (mode=presence).";
-    });
-  }
-
-  registerDefaultIntents();
-
-  // ---------------------------------------------------------------------------
-  // PUBLIC API
-  // ---------------------------------------------------------------------------
-  return {
-    // meta
+  return Object.freeze({
     meta: NodeAdminMeta,
+    instanceIndex,
+    instanceId,
 
-    // core
+    // mode / state
     setMode,
     getMode,
     updateSentinels,
-    analyzeAndAdvise,
 
-    // intents / actions
-    registerIntent,
-    executeIntent,
-    executeCustom,
-    applyDirective,
-
-    // introspection
-    getReport,
-    getStateSnapshot,
-    getAbilities,
-    getManual,
-    getMemory,
-
-    // questions
-    ask,
-
-    // backend AI bridge
-    setBackendInterpreter,
-
-    // Overmind bridge
-    attachOvermindBridge,
-
-    // presence / social / earn
+    // presence / world
     setPresenceIntegrations,
-
-    // world snapshots
     setMeshSnapshot,
     setCastleSnapshot,
     setExpansionSnapshot,
@@ -1216,22 +1186,41 @@ export function createPulseNodeAdmin({
     setBeaconSnapshot,
     setWorldCoreSnapshot,
 
-    // perf hints
+    // hints
     setPrewarmHints,
     setCacheHints,
     setChunkHints,
 
-    // beacon bridge
-    attachBeaconEngine,
-    handleOvermindMeta
+    // intents / backend / overmind
+    registerIntent,
+    executeIntent,
+    setBackendInterpreter,
+    attachOvermindBridge,
+    applyDirective,
+
+    // reports / snapshots / artery
+    getReport,
+    getStateSnapshot,
+    getNodeAdminArtery,
+    getMemory,
+
+    // intellect
+    analyzeAndAdvise,
+
+    // introspection
+    getAbilities,
+    getManual
+  });
+}
+
+// ============================================================================
+//  DUAL‑MODE EXPORTS (ESM + CommonJS)
+// ============================================================================
+
+if (typeof module !== "undefined") {
+  module.exports = {
+    NodeAdminMeta,
+    createPulseNodeAdmin,
+    getGlobalNodeAdminArteries
   };
 }
-
-// -----------------------------------------------------------------------------
-// HELPERS
-// -----------------------------------------------------------------------------
-function clamp(v, min, max) {
-  return Math.max(min, Math.min(max, v));
-}
-
-export default createPulseNodeAdmin;

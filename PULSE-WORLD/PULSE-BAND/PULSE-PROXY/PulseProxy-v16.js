@@ -1,27 +1,87 @@
 // ============================================================================
-//  PulseProxy-v12.3-Evo.js — Proxy Organism v12.3+ (NON-BINARY EDITION)
+//  PulseProxy-v16-Immortal.js — Proxy Organism v16 IMMORTAL (SYMBOLIC EDITION)
 //  Evolutionary Proxy Organ • Pattern + Lineage + Shape • Route-Assist
-//  12.3: Ancestry + Loop-Theory + Tier + Advantage Field + Presence/Harmonics
-//        + DualBand Awareness + Passive Prewarm/Cache/Chunk/Remember Hints
+//  v16: Dual-band organism snapshot + unified advantage field +
+//       presence/harmonics + cache/chunk/prewarm/memory envelopes +
+//       CNS/SDN/Spine-aware proxy organism surface.
 // ============================================================================
 //
-//  SAFETY CONTRACT (v12.3-Evo):
-//  ----------------------------
-//  • No imports.
+//  SAFETY CONTRACT (v16-Immortal):
+//  -------------------------------
 //  • No randomness.
-//  • No timestamps.
-//  • Pure deterministic string/shape operations.
+//  • No symbolic routing decisions (proxy is organism snapshot, not router).
+//  • Pure deterministic string/shape operations for organism math.
 //  • Zero mutation outside instance.
+//  • Memory / diagnostics / maintenance are structural only.
 // ============================================================================
+
+/*
+AI_EXPERIENCE_META = {
+  identity: "PulseProxyOrganism",
+  version: "v16-Immortal",
+  layer: "proxy_organism",
+  role: "symbolic_proxy_organism",
+  lineage: "PulseOS-v16",
+
+  evo: {
+    proxyOrganism: true,
+    symbolicPrimary: true,
+    binaryAware: true,
+    dualBand: true,
+
+    patternEngine: true,
+    lineageEngine: true,
+    shapeEngine: true,
+    advantageFieldEngine: true,
+    presenceHarmonicsEngine: true,
+
+    unifiedAdvantageField: true,
+    advantageCascadeAware: true,
+    pulseEfficiencyAware: true,
+
+    chunkAware: true,
+    cacheAware: true,
+    prewarmAware: true,
+    memorySpineAware: true,
+    binaryOverlayAware: true,
+
+    deterministic: true,
+    driftProof: true,
+    zeroNetwork: true,
+    zeroFilesystem: true,
+
+    safeRouteFree: true,
+    zeroMutationOfInput: true
+  },
+
+  contract: {
+    always: [
+      "PulseOSSpinalCord",
+      "BinaryProxy",
+      "PulseRouter",
+      "PulseBand",
+      "CheckBand",
+      "CheckIdentity",
+      "CheckRouterMemory"
+    ],
+    never: [
+      "legacyProxyOrganism",
+      "legacyRouterProxy",
+      "safeRoute",
+      "fetchViaCNS"
+    ]
+  }
+}
+*/
 
 import PulseProxyHeart from "./PulseProxyHeart.js";
 import PulseProxyBloodPressure from "./PulseProxyBloodPressure.js";
 import PulseProxyCirculatorySystem from "./PulseProxyCirculatorySystem.js";
 
 import PulseProxyHypothalamus from "./PulseProxyHypothalamus.js";
-import PulseProxySpine from "./PulseProxySpine-v11-Evo.js";
+import PulseProxySpine from "./PulseProxySpine-v16.js";
 
-import pulseband from "./PulseProxyPNSNervousSystem-v11-Evo.js";   // PNS
+import pulseband from "./PulseProxyPNSNervousSystem-v16.js";   // PNS
 import PulseProxySynapse from "./PulseProxySynapse.js";            // Synapse junctions
 
 import { PulseClient, PulseNet, PULSE_LIMBIC_SHADOW_META } from "./PulseProxyLimbic.js";
@@ -56,11 +116,10 @@ import {
 } from "../../PULSE-UI/_BACKEND/PulseProofBridge.js";
 
 // --- PULSE-CORE MEMORY SPINE (FULL SPINE) ----------------------------------
-import PulseCoreMemory                from "../PULSE-CORE/PulseCoreMemory.js";
-import PulseCoreAIMemoryAdapter      from "../PULSE-CORE/PulseCoreAIMemoryAdapter.js";
-import PulseCoreProxyMemoryAdapter      from "../PULSE-CORE/PulseCoreProxyMemoryAdapter.js";
-import PulseBinaryCoreOverlay         from "../PULSE-CORE/PulseBinaryCoreOverlay.js";
-
+import PulseCoreMemory from "../PULSE-CORE/PulseCoreMemory.js";
+import PulseCoreAIMemoryAdapter from "../PULSE-CORE/PulseCoreAIMemoryAdapter.js";
+import PulseCoreProxyMemoryAdapter from "../PULSE-CORE/PulseCoreProxyMemoryAdapter.js";
+import PulseBinaryCoreOverlay from "../PULSE-CORE/PulseBinaryCoreOverlay.js";
 
 // CoreMemory bridge: structural, deterministic, keyed by memory surfaces.
 export const CoreMemory = Object.freeze({
@@ -69,12 +128,13 @@ export const CoreMemory = Object.freeze({
   proxy: () => PulseCoreProxyMemoryAdapter,
   binaryOverlay: () => PulseBinaryCoreOverlay
 });
+
 // ============================================================================
 //  PROXY ROLE / META — tie all imported organs into a single identity
 // ============================================================================
 const ProxyRole = Object.freeze({
   layer: "SymbolicProxy",
-  version: "v13-Evo",
+  version: "v16-Immortal",
   role: "SYMBOLIC_PROXY_BRIDGE",
   lineage: {
     spine: "PulseProxySpine-v11-Evo",
@@ -107,13 +167,11 @@ const ProxyRole = Object.freeze({
   })
 });
 
-
-
 export const PulseProxyOrganismMeta = Object.freeze({
   layer: "PulseProxyOrganism",
   role: "SYMBOLIC_PROXY_ORGANISM",
-  version: "v12.3-Evo-MAX",
-  identity: "PulseProxy-v12.3-Evo-MAX",
+  version: "v16-Immortal",
+  identity: "PulseProxy-v16-Immortal",
 
   guarantees: Object.freeze({
     deterministic: true,
@@ -137,12 +195,16 @@ export const PulseProxyOrganismMeta = Object.freeze({
     bandAware: true,
     waveFieldAware: true,
     binaryFieldAware: true,
+    dualBandOrganism: true,
 
-    // 12.3+ dual-band + presence/harmonics
+    // v16 presence / harmonics / advantage
     dualBandCompatible: true,
     presenceAware: true,
     harmonicsAware: true,
     epochStable: true,
+    unifiedAdvantageField: true,
+    advantageCascadeAware: true,
+    pulseEfficiencyAware: true,
 
     // Passive band abilities (symbolic hints only)
     passivePrewarm: true,
@@ -150,9 +212,14 @@ export const PulseProxyOrganismMeta = Object.freeze({
     passiveChunk: true,
     passiveRemember: true,
 
+    // Memory spine + overlay
+    memorySpineAware: true,
+    proxyMemoryAware: true,
+    aiMemoryAware: true,
+    binaryOverlayAware: true,
+
     // Safety prohibitions
     zeroRandomness: true,
-    zeroTimestamps: true,
     zeroExternalMutation: true,
     zeroDynamicImports: true,
     zeroEval: true,
@@ -195,7 +262,8 @@ export const PulseProxyOrganismMeta = Object.freeze({
       "PulseProxy-v10",
       "PulseProxy-v11",
       "PulseProxy-v11-Evo",
-      "PulseProxy-v11.2-Evo-MAX"
+      "PulseProxy-v11.2-Evo-MAX",
+      "PulseProxy-v12.3-Evo-MAX"
     ]
   }),
 
@@ -208,10 +276,12 @@ export const PulseProxyOrganismMeta = Object.freeze({
   architecture: Object.freeze({
     pattern: "A-B-A",
     baseline: "pattern → lineage → shape → advantage field",
-    adaptive: "binary-field + wave-field + presence/harmonics overlays",
+    adaptive:
+      "binary-field + wave-field + presence/harmonics overlays + memory/advantage envelopes",
     return: "deterministic organism snapshot + signatures"
   })
 });
+
 // ============================================================================
 //  INTERNAL HELPERS — deterministic, tiny, pure
 // ============================================================================
@@ -461,6 +531,29 @@ function buildPresenceAndHarmonics(pattern, lineage) {
   };
 }
 
+// v16: memory envelope — structural view of core memory surfaces
+function buildMemoryEnvelope() {
+  return {
+    rawAvailable: !!CoreMemory.raw(),
+    aiAdapterAvailable: !!CoreMemory.all(),
+    proxyAdapterAvailable: !!CoreMemory.proxy(),
+    binaryOverlayAvailable: !!CoreMemory.binaryOverlay()
+  };
+}
+
+// v16: dual-band advantage hint (pure metadata, no network)
+function buildAdvantageHint(dualBandContext = {}) {
+  const band = dualBandContext.band || "symbolic";
+  const mode = dualBandContext.mode || "neutral";
+  const score = typeof dualBandContext.score === "number" ? dualBandContext.score : null;
+
+  return {
+    band,
+    mode,
+    score
+  };
+}
+
 // physiology envelope — uses heart, blood, circulatory, hypothalamus, spine, PNS, synapse, bloodstream, adrenal, BBB
 function buildPhysiologyEnvelope() {
   return {
@@ -497,7 +590,7 @@ function buildAgentsEnvelope() {
 }
 
 // ============================================================================
-//  FACTORY — v13+ symbolic proxy
+//  FACTORY — v16+ symbolic proxy organism
 // ============================================================================
 export function createProxy({
   jobId,
@@ -506,25 +599,26 @@ export function createProxy({
   priority = "normal",
   returnTo = null,
   parentLineage = null,
-  pageId = "NO_PAGE"
+  pageId = "NO_PAGE",
+  dualBandContext = {}
 }) {
-  const lineage        = buildLineage(parentLineage, pattern);
+  const lineage = buildLineage(parentLineage, pattern);
   const shapeSignature = computeShapeSignature(pattern, lineage);
   const evolutionStage = computeEvolutionStage(pattern, lineage);
 
-  const patternAncestry       = buildPatternAncestry(pattern);
-  const lineageSignature      = buildLineageSignature(lineage);
+  const patternAncestry = buildPatternAncestry(pattern);
+  const lineageSignature = buildLineageSignature(lineage);
   const pageAncestrySignature = buildPageAncestrySignature({
     pattern,
     lineage,
     pageId
   });
 
-  const healthScore    = computeHealthScore(pattern, lineage);
-  const tier           = classifyDegradationTier(healthScore);
+  const healthScore = computeHealthScore(pattern, lineage);
+  const tier = classifyDegradationTier(healthScore);
   const advantageField = buildAdvantageField(pattern, lineage);
-  const proxyMode      = computeProxyMode(tier, pattern);
-  const diagnostics    = buildProxyDiagnostics(
+  const proxyMode = computeProxyMode(tier, pattern);
+  const diagnostics = buildProxyDiagnostics(
     pattern,
     lineage,
     healthScore,
@@ -532,13 +626,15 @@ export function createProxy({
   );
 
   const { band, bandSignature } = buildBandSignature(pattern);
-  const binaryField             = buildBinaryField(pattern, lineage);
-  const waveField               = buildWaveField(pattern, lineage);
-  const presenceHarmonics       = buildPresenceAndHarmonics(pattern, lineage);
+  const binaryField = buildBinaryField(pattern, lineage);
+  const waveField = buildWaveField(pattern, lineage);
+  const presenceHarmonics = buildPresenceAndHarmonics(pattern, lineage);
 
   const physiologyEnvelope = buildPhysiologyEnvelope();
-  const limbicEnvelope     = buildLimbicEnvelope();
-  const agentsEnvelope     = buildAgentsEnvelope();
+  const limbicEnvelope = buildLimbicEnvelope();
+  const agentsEnvelope = buildAgentsEnvelope();
+  const memoryEnvelope = buildMemoryEnvelope();
+  const advantageHint = buildAdvantageHint(dualBandContext);
 
   const evolvedPattern = evolvePattern(pattern, {
     routerHint: pattern.includes("router") ? "router" : null,
@@ -574,6 +670,9 @@ export function createProxy({
     physiologyEnvelope,
     limbicEnvelope,
     agentsEnvelope,
+    memoryEnvelope,
+    advantageHint,
+    dualBandContext,
     priority,
     returnTo,
     payload
@@ -615,7 +714,7 @@ export function createProxy({
 
   // -------------------------------------------------------------------------
   //  DIAGNOSTICS — uses WB cells (scores + health metrics)
-// -------------------------------------------------------------------------
+  // -------------------------------------------------------------------------
   async function runDiagnostics({ instanceId, beforeTimestamp } = {}) {
     const scores = await scanUserScoresForInstanceHints(instanceId || null);
     const health = await checkProxyHealthAndMetrics();
@@ -633,14 +732,14 @@ export function createProxy({
 
   // -------------------------------------------------------------------------
   //  MAINTENANCE — uses PNS purifier + history repair
-// -------------------------------------------------------------------------
+  // -------------------------------------------------------------------------
   async function runMaintenance({ beforeTimestamp } = {}) {
     const ts = beforeTimestamp || Date.now();
 
-    const sessions    = await cleanupSessionsBefore(ts);
-    const errors      = await cleanupErrorsBefore(ts);
+    const sessions = await cleanupSessionsBefore(ts);
+    const errors = await cleanupErrorsBefore(ts);
     const redownloads = await cleanupRedownloadsBefore(ts);
-    const historyFix  = await pulseHistoryRepair({ before: ts });
+    const historyFix = await pulseHistoryRepair({ before: ts });
 
     return {
       role: ProxyRole,
@@ -655,7 +754,7 @@ export function createProxy({
   }
 
   // -------------------------------------------------------------------------
-  //  PUBLIC PROXY OBJECT — no abilities removed, only enriched
+  //  PUBLIC PROXY OBJECT — enriched, no abilities removed
   // -------------------------------------------------------------------------
   return {
     role: ProxyRole,
@@ -695,6 +794,14 @@ export function createProxy({
       return { ...agentsEnvelope };
     },
 
+    getMemoryEnvelope() {
+      return { ...memoryEnvelope };
+    },
+
+    getAdvantageHint() {
+      return { ...advantageHint };
+    },
+
     // agents / impulses
     createInnerAgent,
     dispatchToOuterAgent,
@@ -705,5 +812,6 @@ export function createProxy({
     runMaintenance
   };
 }
+
 const PulseProxyBridge = PulseProofBridge;
 export default PulseProxyBridge;

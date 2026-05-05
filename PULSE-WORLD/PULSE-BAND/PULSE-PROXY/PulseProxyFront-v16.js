@@ -1,20 +1,23 @@
 // ============================================================================
-//  PulseProxyFront-v14-Immortal-PROXY-FRONT.js
+//  PulseProxyFront-v16-Immortal-PROXY-FRONT.js
 //  Binary-First Proxy Front • Legacy Fallback • Earned Route Memory
-//  v14-Immortal: CoreMemory-integrated, immortal route memory, deterministic surfaces
+//  v16-Immortal: CoreMemory-integrated, immortal route memory, dualband overlays,
+//                route warmth + chunk/cache/prewarm hints, deterministic surfaces
 //  Connects Proxy → Field (binary descriptor) OR Proxy → Legacy Router (symbolic)
 // ============================================================================
 //
-//  ROLE (v14-Immortal-PROXY-FRONT):
+//  ROLE (v16-Immortal-PROXY-FRONT):
 //  --------------------------------
 //  • Binary-first route planner at the proxy front.
 //  • Treats binary as a DATA SURFACE ONLY (non-executable).
 //  • Falls back to legacy symbolic router when bits are not pure binary.
 //  • Uses earned route memory (previousRouteMemory + CoreMemory) deterministically.
 //  • Emits band + dnaTag + A‑B‑A surfaces so CNS/Brain can classify routes.
+//  • Emits routeWarmth + chunk/cache/prewarm hints for Mesh/Router/SDN prewarm.
 //  • Immortal route memory via PulseCoreMemory (organ-local + global).
+//  • DualBand overlay snapshot for organism-level advantage field.
 //
-//  SAFETY CONTRACT (v14-Immortal):
+//  SAFETY CONTRACT (v16-Immortal):
 //  -------------------------------
 //  • Single import: PulseCoreMemory (immortal, in-process only).
 //  • No randomness.
@@ -22,16 +25,87 @@
 //  • Pure deterministic logic.
 //  • Zero mutation outside instance (except CoreMemory writes).
 //  • Binary is NEVER executed, only described (phenotype/surface fields).
+//  • No network, no IO, no async, no AI.
 // ============================================================================
 
-// v14-Immortal upgrade: CoreMemory integration
-import { PulseCoreMemory } from "./PulseCoreMemory.js";
+/*
+AI_EXPERIENCE_META = {
+  identity: "PulseProxyFront",
+  version: "v16-Immortal-PROXY-FRONT",
+  layer: "proxy_front",
+  role: "binary_first_proxy_front",
+  lineage: {
+    root: "PulseProxy-v11",
+    parent: "PulseProxy-v14-Immortal-PROXY-FRONT",
+    organismIntegration: "v16-Immortal"
+  },
+
+  evo: {
+    proxyFront: true,
+    binaryFirst: true,
+    symbolicFallback: true,
+    dualBandAware: true,
+    abaBandAware: true,
+    advantageFieldAware: true,
+    routeWarmthAware: true,
+    chunkCachePrewarmAware: true,
+    coreMemoryIntegrated: true,
+    immortalRouteMemory: true,
+
+    deterministic: true,
+    driftProof: true,
+    zeroNetwork: true,
+    zeroAsync: true,
+    zeroRandomness: true,
+    zeroTimestamps: true,
+    zeroMutationOfInput: true,
+    zeroExternalMutation: true
+  },
+
+  contract: {
+    input: [
+      "BinaryBits",
+      "Pattern",
+      "PageId",
+      "SourceId",
+      "PreviousRouteMemory",
+      "DualBandContext"
+    ],
+    output: [
+      "ProxyFrontDecision",
+      "RouteKey",
+      "BinaryField",
+      "BinaryWaveField",
+      "BandSignature",
+      "FrontCycleSignature",
+      "AdvantageField",
+      "RouteWarmth",
+      "ChunkCacheHints",
+      "DualBandOverlay",
+      "DnaTag",
+      "ProxyFrontDiagnostics",
+      "ProxyFrontHealingState"
+    ],
+    consumers: [
+      "PulseProxy",
+      "BinaryProxy",
+      "PulseRouter",
+      "PulseMesh",
+      "PulseSDNPrewarm",
+      "PulseWorldCore"
+    ]
+  }
+}
+*/
+
+// v16-Immortal: CoreMemory integration (unchanged import surface)
+import { PulseCoreMemory } from "../PULSE-CORE/PulseCoreMemory.js";
 
 export const PulseProxyFrontMeta = Object.freeze({
   layer: "PulseProxyFront",
   role: "BINARY_FIRST_PROXY_FRONT",
-  version: "v14-Immortal-PROXY-FRONT",
-  identity: "PulseProxyFront-v14-Immortal-PROXY-FRONT",
+  version: "v16-Immortal-PROXY-FRONT",
+  identity: "PulseProxyFront-v16-Immortal-PROXY-FRONT",
 
   guarantees: Object.freeze({
     deterministic: true,
@@ -63,12 +137,18 @@ export const PulseProxyFrontMeta = Object.freeze({
     internetAware: true,
     abaBandAware: true,
 
+    // Route warmth + chunk/cache/prewarm overlays
+    routeWarmthAware: true,
+    chunkAware: true,
+    cacheAware: true,
+    prewarmAware: true,
+
     // CoreMemory / immortal memory
     coreMemoryIntegrated: true,
     immortalRouteMemory: true,
     coreMemoryDeterministicKeys: true,
 
-    // Execution prohibitions (v14: imports allowed only for CoreMemory)
+    // Execution prohibitions (v16: imports allowed only for CoreMemory)
     zeroRandomness: true,
     zeroTimestamps: true,
     zeroDateNow: true,
@@ -106,6 +186,9 @@ export const PulseProxyFrontMeta = Object.freeze({
       "BandSignature",
       "FrontCycleSignature",
       "AdvantageField",
+      "RouteWarmth",
+      "ChunkCacheHints",
+      "DualBandOverlay",
       "DnaTag",
       "ProxyFrontDiagnostics",
       "ProxyFrontHealingState"
@@ -114,7 +197,7 @@ export const PulseProxyFrontMeta = Object.freeze({
 
   lineage: Object.freeze({
     root: "PulseProxy-v11",
-    parent: "PulseProxy-v12.3-Evo",
+    parent: "PulseProxy-v14-Immortal-PROXY-FRONT",
     ancestry: [
       "PulseProxyFront-v7",
       "PulseProxyFront-v8",
@@ -125,7 +208,8 @@ export const PulseProxyFrontMeta = Object.freeze({
       "PulseProxyFront-v11-Evo-Binary",
       "PulseProxyFront-v11-Evo-Binary-Max",
       "PulseProxyFront-v11.2-Evo-BINARY-MAX",
-      "PulseProxyFront-v12.3-Evo-BINARY-MAX-ABA"
+      "PulseProxyFront-v12.3-Evo-BINARY-MAX-ABA",
+      "PulseProxyFront-v14-Immortal-PROXY-FRONT"
     ]
   }),
 
@@ -138,8 +222,12 @@ export const PulseProxyFrontMeta = Object.freeze({
   architecture: Object.freeze({
     pattern: "A-B-A",
     baseline: "binary descriptor → route plan → symbolic fallback",
-    adaptive: "earned route memory + binary phenotype + wave + advantage surfaces + CoreMemory",
-    return: "deterministic proxy-front surfaces + signatures + immortal route memory"
+    adaptive:
+      "earned route memory + binary phenotype + wave + advantage surfaces " +
+      "+ routeWarmth + chunk/cache/prewarm hints + CoreMemory + DualBand overlay",
+    return:
+      "deterministic proxy-front surfaces + signatures + immortal route memory " +
+      "+ organism-ready overlays"
   })
 });
 
@@ -148,7 +236,7 @@ export const PulseProxyFrontMeta = Object.freeze({
 //  INTERNAL HELPERS — deterministic, pure
 // ============================================================================
 
-const CORE_MEMORY_NAMESPACE = "PulseProxyFrontRoute-v14-Immortal";
+const CORE_MEMORY_NAMESPACE = "PulseProxyFrontRoute-v16-Immortal";
 
 function computeHash(str) {
   let h = 0;
@@ -175,7 +263,7 @@ function buildBinaryField(bits) {
   const density = len === 0 ? 0 : ones / len;
   const surface = len + ones * 3 + zeros;
 
-  return {
+  return Object.freeze({
     length: len,
     ones,
     zeros,
@@ -185,7 +273,7 @@ function buildBinaryField(bits) {
     binarySurfaceSignature: `front-binary-surface-${(surface * 7) % 99991}`,
     parity: surface % 2 === 0 ? 0 : 1,
     shiftDepth: Math.max(0, Math.floor(Math.log2(surface || 1)))
-  };
+  });
 }
 
 function buildWaveField(pattern) {
@@ -202,7 +290,7 @@ function buildWaveField(pattern) {
   else if (safePattern.includes("send")) band = "send";
   else if (safePattern.includes("proxy")) band = "proxy";
 
-  return {
+  return Object.freeze({
     pattern: safePattern,
     amplitude,
     wavelength,
@@ -212,7 +300,7 @@ function buildWaveField(pattern) {
     waveSignature: computeHash(
       `WAVE::${safePattern}::${amplitude}::${wavelength}::${phase}::${band}`
     )
-  };
+  });
 }
 
 function buildFrontCycleSignature(cycle) {
@@ -232,7 +320,7 @@ function buildAdvantageField(binaryField, waveField, band) {
   const stress = Math.min(1, density * 2);
   const advantageScore = efficiency * (1 + stress);
 
-  return {
+  return Object.freeze({
     band,
     density,
     amplitude,
@@ -243,7 +331,7 @@ function buildAdvantageField(binaryField, waveField, band) {
     advantageSignature: computeHash(
       `ADVANTAGE::${band}::${density}::${amplitude}::${wavelength}::${advantageScore}`
     )
-  };
+  });
 }
 
 function isPureBinary(bits) {
@@ -252,6 +340,81 @@ function isPureBinary(bits) {
     if (bits[i] !== 0 && bits[i] !== 1) return false;
   }
   return true;
+}
+
+// ---------------------------------------------------------------------------
+//  ROUTE WARMTH + CHUNK/CACHE/PREWARM HINTS — deterministic overlays
+// ---------------------------------------------------------------------------
+
+function buildRouteWarmth({ binaryField, usedMemory }) {
+  const len = binaryField.length || 0;
+  const density = binaryField.density || 0;
+
+  let warmth = "cold";
+  if (usedMemory && len > 0) {
+    warmth = density > 0.5 ? "hot" : "warm";
+  } else if (len > 0) {
+    warmth = density > 0.5 ? "warm" : "cool";
+  }
+
+  return Object.freeze({
+    routeWarmth: warmth,
+    length: len,
+    density,
+    usedMemory: !!usedMemory
+  });
+}
+
+function buildChunkCacheHints({ binaryField, routeWarmth }) {
+  const len = binaryField.length || 0;
+  const density = binaryField.density || 0;
+
+  const multiChunk = len > 1024;
+  const heavyDensity = density > 0.7;
+
+  const chunkHint =
+    multiChunk ? "multi-chunk" :
+    len > 0 ? "single-chunk" :
+    "none";
+
+  const cacheHint =
+    heavyDensity ? "route-cache-heavy" :
+    len > 0 ? "route-cache-light" :
+    "none";
+
+  const prewarmHint =
+    routeWarmth === "cold" || routeWarmth === "cool"
+      ? "prewarm-preferred"
+      : "prewarm-optional";
+
+  return Object.freeze({
+    chunkHint,
+    cacheHint,
+    prewarmHint
+  });
+}
+
+// ---------------------------------------------------------------------------
+//  DUALBAND OVERLAY SNAPSHOT — symbolic-only view of DualBandContext
+// ---------------------------------------------------------------------------
+
+function buildDualBandOverlay(dualBandContext) {
+  const ctx = dualBandContext && typeof dualBandContext === "object"
+    ? dualBandContext
+    : {};
+
+  const band = typeof ctx.band === "string" ? ctx.band : "unknown";
+  const mode = typeof ctx.mode === "string" ? ctx.mode : "unknown";
+  const presence = typeof ctx.presence === "string" ? ctx.presence : "unknown";
+
+  return Object.freeze({
+    band,
+    mode,
+    presence,
+    overlaySignature: computeHash(
+      `DUALBAND::${band}::${mode}::${presence}`
+    )
+  });
 }
 
 // ============================================================================
@@ -267,6 +430,9 @@ function coreMemoryRecordRoute(routeMemory) {
     band: routeMemory.band,
     bandSignature: routeMemory.bandSignature,
     advantageField: routeMemory.advantageField,
+    routeWarmth: routeMemory.routeWarmth,
+    chunkCacheHints: routeMemory.chunkCacheHints,
+    dualBandOverlay: routeMemory.dualBandOverlay,
     dnaTag: routeMemory.dnaTag,
     frontCycle: routeMemory.frontCycle,
     frontCycleSignature: routeMemory.frontCycleSignature
@@ -274,7 +440,11 @@ function coreMemoryRecordRoute(routeMemory) {
 
   try {
     if (PulseCoreMemory && typeof PulseCoreMemory.record === "function") {
-      PulseCoreMemory.record(CORE_MEMORY_NAMESPACE, routeMemory.routeKey, summary);
+      PulseCoreMemory.record(
+        CORE_MEMORY_NAMESPACE,
+        routeMemory.routeKey,
+        summary
+      );
     }
   } catch {
     // Fail-open: never throw, never break proxy front.
@@ -295,6 +465,9 @@ function coreMemoryRecallRoute(routeKey) {
           band: stored.band || "binary",
           bandSignature: stored.bandSignature || null,
           advantageField: stored.advantageField || null,
+          routeWarmth: stored.routeWarmth || null,
+          chunkCacheHints: stored.chunkCacheHints || null,
+          dualBandOverlay: stored.dualBandOverlay || null,
           frontCycle: stored.frontCycle || 0,
           frontCycleSignature: stored.frontCycleSignature || null,
           dnaTag: stored.dnaTag || null
@@ -319,7 +492,8 @@ export function planProxyRoute({
   pattern,
   pageId,
   sourceId,
-  previousRouteMemory
+  previousRouteMemory,
+  dualBandContext
 }) {
   frontCycle++;
 
@@ -330,7 +504,7 @@ export function planProxyRoute({
 
   const pureBinary = isPureBinary(bits);
 
-  // v14-Immortal: merge local previousRouteMemory with CoreMemory recall
+  // v16-Immortal: merge local previousRouteMemory with CoreMemory recall
   let usedMemory = false;
   let decision = { mode: "binary" };
 
@@ -357,6 +531,13 @@ export function planProxyRoute({
   const bandSignature = buildBandSignature(band, routeKey);
   const advantageField = buildAdvantageField(binaryField, waveField, band);
 
+  const routeWarmth = buildRouteWarmth({ binaryField, usedMemory });
+  const chunkCacheHints = buildChunkCacheHints({
+    binaryField,
+    routeWarmth: routeWarmth.routeWarmth
+  });
+  const dualBandOverlay = buildDualBandOverlay(dualBandContext);
+
   const routeMemory = {
     routeKey,
     decision,
@@ -365,6 +546,9 @@ export function planProxyRoute({
     band,
     bandSignature,
     advantageField,
+    routeWarmth,
+    chunkCacheHints,
+    dualBandOverlay,
     frontCycle,
     frontCycleSignature,
     dnaTag:
@@ -373,7 +557,7 @@ export function planProxyRoute({
         : "PROXY_FRONT_LEGACY"
   };
 
-  // v14-Immortal: persist route memory into CoreMemory (immortal, deterministic)
+  // v16-Immortal: persist route memory into CoreMemory (immortal, deterministic)
   coreMemoryRecordRoute(routeMemory);
 
   return {
@@ -385,7 +569,10 @@ export function planProxyRoute({
     waveField,
     bandSignature,
     frontCycleSignature,
-    advantageField
+    advantageField,
+    routeWarmth,
+    chunkCacheHints,
+    dualBandOverlay
   };
 }
 
@@ -399,6 +586,7 @@ export function proxyFrontRoute({
   pageId = "NO_PAGE",
   sourceId = "NO_SOURCE",
   previousRouteMemory = null,
+  dualBandContext = null,
 
   // external wiring (you pass these in)
   fieldIngest,     // function(bits) → packet (non-executable binary descriptor)
@@ -409,7 +597,8 @@ export function proxyFrontRoute({
     pattern,
     pageId,
     sourceId,
-    previousRouteMemory
+    previousRouteMemory,
+    dualBandContext
   });
 
   if (plan.decision.mode === "binary") {
@@ -426,6 +615,9 @@ export function proxyFrontRoute({
       bandSignature: plan.bandSignature,
       frontCycleSignature: plan.frontCycleSignature,
       advantageField: plan.advantageField,
+      routeWarmth: plan.routeWarmth,
+      chunkCacheHints: plan.chunkCacheHints,
+      dualBandOverlay: plan.dualBandOverlay,
       routeMemory: plan.routeMemory,
       usedMemory: plan.usedMemory
     };
@@ -452,6 +644,9 @@ export function proxyFrontRoute({
     bandSignature: plan.bandSignature,
     frontCycleSignature: plan.frontCycleSignature,
     advantageField: plan.advantageField,
+    routeWarmth: plan.routeWarmth,
+    chunkCacheHints: plan.chunkCacheHints,
+    dualBandOverlay: plan.dualBandOverlay,
     routeMemory: plan.routeMemory,
     usedMemory: plan.usedMemory
   };

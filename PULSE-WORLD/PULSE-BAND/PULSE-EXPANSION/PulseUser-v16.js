@@ -55,13 +55,13 @@ AI_EXPERIENCE_META = {
 // ============================================================================
 
 // Primary OS / Binary OS (OSBrain + runtimes)
-import * as PulseBinaryOS from "../PULSE-OS/PulseBinaryOS-v11-Evo-Max.js";
+import * as PulseBinaryOS from "../PULSE-OS/PulseBinaryOS-v16.js";
 
 // Mesh + BeaconMesh meta
 import { PulseMeshMeta, createPulseMesh } from "../PULSE-MESH/PulseMesh-v11-Evo.js";
 import { PulseBeaconMeshMeta, PulseBeaconMesh } from "./PulseBeaconMesh-v16.js";
 
-import { PulseCastleMeta, createPulseCastle } from "../PULSE-EXPANSION/PulseCastle-v16.js";
+import { PulseCastleMeta, createPulseCastle } from "../PulseCastle-v16.js";
 import { PulseServerMeta, createPulseServer } from "./PulseServer-v16.js";
 import { PulseRouterMeta, createPulseRouter } from "./PulseRouter-v16.js";
 import { PulseExpansionMeta, createPulseExpansion } from "./PulseExpansion-v16.js";

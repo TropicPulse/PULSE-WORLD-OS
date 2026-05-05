@@ -1,18 +1,19 @@
 // ============================================================================
-// FILE: /PULSE-OS/PulseOSSpinalCord-v13.0-Presence-Immortal.js
-// PULSE OS SPINAL CORD — v13.0-Presence-Immortal
+// FILE: /PULSE-OS/PulseOSSpinalCord-v16-Immortal.js
+// PULSE OS SPINAL CORD — v16-Immortal-DUALBAND-Presence-ADVANTAGE
 // “ORGANISM-WIDE DUAL-BAND SPINE • ADVANTAGE FIELD CONDUCTOR • ROUTE ROOT”
 // CHUNK/PREWARM/CACHE-AWARE • MULTI-Presence-AWARE • FIREWALL-GATED
 // PASSIVE/ACTIVE PAGESCANNER-AWARE (NO TIMERS, NO POLLING)
-// SDN PREWARM v13.0-Presence-Immortal (Spinal Reflex Ignition)
+// SDN PREWARM v16-Immortal (Spinal Reflex Ignition)
 // ============================================================================
+
 /*
 AI_EXPERIENCE_META = {
   identity: "PulseOSSpinalCord",
-  version: "v14-Immortal",
+  version: "v16-Immortal",
   layer: "cns",
   role: "os_spinal_cord",
-  lineage: "PulseOS-v14",
+  lineage: "PulseOS-v16-Immortal",
 
   evo: {
     spinalCord: true,
@@ -32,7 +33,22 @@ AI_EXPERIENCE_META = {
     meshAware: true,
 
     safeRouteFree: true,
-    zeroMutationOfInput: true
+    zeroMutationOfInput: true,
+    zeroExternalMutation: true,
+
+    // v16 IMMORTAL upgrades
+    unifiedAdvantageField: true,
+    advantageCascadeAware: true,
+    pulseEfficiencyAware: true,
+    loopTheoryAware: true,
+    multiPresenceAware: true,
+    presenceSpineAware: true,
+    sdnPrewarmImmortalAware: true,
+    chunkPrewarmSpine: true,
+    cachePrewarmSpine: true,
+    routePrewarmSpine: true,
+    meshPresenceRelayAware: true,
+    meshTopologyAware: true
   },
 
   contract: {
@@ -50,18 +66,18 @@ AI_EXPERIENCE_META = {
 }
 */
 
-import { prewarmSDN } from "./PulseSDN-Prewarm-v12-Evo.js";
+import { prewarmSDN } from "./PulseSDN-Prewarm-v16.js";
 import { PageScannerV12 } from "../../PULSE-UI/_BACKEND/PulseSkinReflex.js";
 
 // ============================================================================
-// SPINAL CORD IDENTITY — v13.0-Presence-Immortal
+// SPINAL CORD IDENTITY — v16-Immortal-DUALBAND-Presence-ADVANTAGE
 // ============================================================================
 export const PulseRole = {
   type: "NervousSystem",
   subsystem: "OS",
   layer: "SpinalCord",
-  version: "13.0-Presence-Immortal",
-  identity: "PulseOSSpinalCord-v13.0-Presence-Immortal",
+  version: "16-Immortal",
+  identity: "PulseOSSpinalCord-v16-Immortal",
 
   evo: {
     // Core nervous properties
@@ -93,20 +109,20 @@ export const PulseRole = {
     binaryOverlayAware: true,
     coreGovernorAware: true,
 
-    // Updated routing contracts (v13 Presence-Immortal)
-    routingContract: "PulseRouter-v13.0-Presence-Immortal",
-    osOrganContract: "PulseOS-v13.0-Presence-Immortal",
-    earnCompatibility: "PulseEarn-v13.0-Presence-Immortal",
-    gpuCompatibility: "PulseGPU-v13.0-Presence-Immortal",
-    sendCompatibility: "PulseSendSystem-v13.0-Presence-Immortal",
-    meshCompatibility: "PulseMesh-v13.0-Presence-Immortal",
-    aiCompatibility: "PulseAI-v13.0-Presence-Immortal",
+    // Updated routing contracts (v16 Immortal)
+    routingContract: "PulseRouter-v16-Immortal",
+    osOrganContract: "PulseOS-v16-Immortal",
+    earnCompatibility: "PulseEarn-v16-Immortal",
+    gpuCompatibility: "PulseGPU-v16-Immortal",
+    sendCompatibility: "PulseSendSystem-v16-Immortal",
+    meshCompatibility: "PulseMesh-v16-Immortal",
+    aiCompatibility: "PulseAI-v16-Immortal",
 
     // Firewall awareness
     firewallAware: true,
     firewallEnforcedAtSpine: true,
 
-    // v12.3+ chunk / prewarm / cache / presence
+    // chunk / prewarm / cache / presence
     chunkAware: true,
     prewarmAware: true,
     cacheAware: true,
@@ -114,7 +130,7 @@ export const PulseRole = {
     multiPresenceAware: true,
     presenceSpineAware: true,
 
-    // v13 Presence-Immortal
+    // Presence-Immortal
     presenceImmortalAware: true,
     sdnPrewarmImmortalAware: true
   }
@@ -123,8 +139,8 @@ export const PulseRole = {
 export const PulseOSSpinalCordMeta = Object.freeze({
   layer: "PulseOSSpinalCord",
   role: "CENTRAL_SPINE_ORGAN",
-  version: "v13.0-Presence-Immortal",
-  identity: "PulseOSSpinalCord-v13.0-Presence-Immortal",
+  version: "v16-Immortal",
+  identity: "PulseOSSpinalCord-v16-Immortal",
 
   guarantees: Object.freeze({
     deterministic: true,
@@ -184,14 +200,14 @@ export const PulseOSSpinalCordMeta = Object.freeze({
     binaryOverlayAware: true,
     coreGovernorAware: true,
 
-    // v12.3+ chunk / prewarm / cache / presence guarantees
+    // chunk / prewarm / cache / presence guarantees
     chunkPrewarmSpine: true,
     cachePrewarmSpine: true,
     routePrewarmSpine: true,
     multiPresenceSpine: true,
     presenceRouteAware: true,
 
-    // v13 Presence-Immortal
+    // Presence-Immortal
     sdnPrewarmPresenceImmortal: true,
     spinalReflexIgnitionImmortal: true,
 
@@ -211,13 +227,15 @@ export const PulseOSSpinalCordMeta = Object.freeze({
       "SpineRoute",
       "SpineDiagnostics",
       "SpineSignatures",
-      "SpineHealingState"
+      "SpineHealingState",
+      "SpineAdvantageSnapshot",
+      "SpinePresenceSnapshot"
     ]
   }),
 
   lineage: Object.freeze({
-    root: "PulseOS-v13.0-Presence-Immortal",
-    parent: "PulseOS-v13.0-Presence-Immortal-MAX",
+    root: "PulseOS-v16-Immortal",
+    parent: "PulseOS-v15-Immortal",
     ancestry: [
       "PulseOSSpinalCord-v9",
       "PulseOSSpinalCord-v10",
@@ -226,8 +244,8 @@ export const PulseOSSpinalCordMeta = Object.freeze({
       "PulseOSSpinalCord-v11-Evo-Max",
       "PulseOSSpinalCord-v12-Evo-Max",
       "PulseOSSpinalCord-v13-Evo-Max-Firewall",
-      "PulseOSSpinalCord-v13-Evo-Max-Firewall-12.3-Presence",
-      "PulseOSSpinalCord-v13.0-Presence-Immortal"
+      "PulseOSSpinalCord-v13.0-Presence-Immortal",
+      "PulseOSSpinalCord-v16-Immortal"
     ]
   }),
 
@@ -241,8 +259,8 @@ export const PulseOSSpinalCordMeta = Object.freeze({
     pattern: "A-B-A",
     baseline: "impulse → band separation → route root → Router/Cortex/Brain",
     adaptive:
-      "binary-overlay + extension-aware routing surfaces + firewall gating + route prewarm surfaces",
-    return: "deterministic spine route + signatures"
+      "binary-overlay + extension-aware routing surfaces + firewall gating + route prewarm surfaces + multi-presence + advantage field conduction",
+    return: "deterministic spine route + signatures + advantage/presence snapshots"
   })
 });
 
@@ -257,16 +275,15 @@ export function createPulseOSSpinalCord({
   CoreGovernor,  // optional: CoreGovernor (for context-only, no compute)
   BinaryOverlay, // optional: PulseBinaryOverlay (for context-only, no compute)
   Firewall,      // PulseChunks-v1 / firewall surface (optional but recommended)
-  Chunker,       // v12.3+ route chunk/prewarm surface (context-only)
-  PrewarmCache,  // v12.3+ cache prewarm surface (context-only)
-  PresenceMesh,  // v12.3+ multi-presence mesh (context-only)
+  Chunker,       // route chunk/prewarm surface (context-only)
+  PrewarmCache,  // cache prewarm surface (context-only)
+  PresenceMesh,  // multi-presence mesh (context-only)
+  MeshBus,       // optional: mesh event bus (metadata-only)
   log = console.log,
   warn = console.warn
 }) {
   // --------------------------------------------------------------------------
   // SPINAL-LEVEL PAGESCANNER BRIDGE — ALWAYS-ON PASSIVE/ACTIVE
-  //  • No timers, no polling
-  //  • Called on impulses, routes, firewall decisions, prewarm, health
   // --------------------------------------------------------------------------
   const SpinalPageScanner = {
     emit(event, context = {}) {
@@ -329,14 +346,15 @@ export function createPulseOSSpinalCord({
       dual: 0
     },
     advantageField: {
-      // purely logical flags / counters, no timestamps
       binaryHot: false,
       symbolicHot: false,
       dualHot: false,
-      lastModeKind: "symbolic"
+      lastModeKind: "symbolic",
+      // v16: simple confidence band (no time)
+      confidenceBand: "neutral"
     },
 
-    // v12.3+ multi-presence + prewarm surfaces (pure metadata)
+    // multi-presence + prewarm surfaces (pure metadata)
     presence: {
       sessions: Object.create(null), // { presenceId: { extensionId, systemId, modeKind } }
       multiPresenceEnabled: true
@@ -383,6 +401,38 @@ export function createPulseOSSpinalCord({
       SpinalState.loopCounters.symbolic > SpinalState.loopCounters.binary;
     SpinalState.advantageField.dualHot =
       SpinalState.loopCounters.dual > 0;
+
+    // v16: simple confidence band based on total impulses
+    const total =
+      SpinalState.loopCounters.binary +
+      SpinalState.loopCounters.symbolic +
+      SpinalState.loopCounters.dual;
+
+    SpinalState.advantageField.confidenceBand =
+      total > 100 ? "high" :
+      total > 20 ? "medium" :
+      "neutral";
+  }
+
+  // --------------------------------------------------------------------------
+  // v16: SPINAL ADVANTAGE SNAPSHOT (for Brain/Expansion)
+// --------------------------------------------------------------------------
+  function getSpinalAdvantageSnapshot() {
+    return {
+      impulseCount: SpinalState.impulseCount,
+      loopCounters: { ...SpinalState.loopCounters },
+      advantageField: { ...SpinalState.advantageField }
+    };
+  }
+
+  // --------------------------------------------------------------------------
+  // v16: SPINAL PRESENCE SNAPSHOT (for Brain/Presence/Mesh)
+// --------------------------------------------------------------------------
+  function getSpinalPresenceSnapshot() {
+    return {
+      sessions: { ...SpinalState.presence.sessions },
+      multiPresenceEnabled: SpinalState.presence.multiPresenceEnabled
+    };
   }
 
   // --------------------------------------------------------------------------
@@ -404,6 +454,19 @@ export function createPulseOSSpinalCord({
       systemId: systemId || null,
       modeKind: modeKind || "symbolic"
     });
+
+    if (PresenceMesh?.registerSpinePresence) {
+      try {
+        PresenceMesh.registerSpinePresence({
+          presenceId,
+          extensionId: extensionId || null,
+          systemId: systemId || null,
+          modeKind: modeKind || "symbolic"
+        });
+      } catch (err) {
+        warn?.("[SpinalCord] PresenceMesh.registerSpinePresence failed:", err);
+      }
+    }
   }
 
   function unregisterPresence(presenceId) {
@@ -416,11 +479,19 @@ export function createPulseOSSpinalCord({
       SpinalPageScanner.emit("spinal-presence-unregister", {
         presenceId
       });
+
+      if (PresenceMesh?.unregisterSpinePresence) {
+        try {
+          PresenceMesh.unregisterSpinePresence({ presenceId });
+        } catch (err) {
+          warn?.("[SpinalCord] PresenceMesh.unregisterSpinePresence failed:", err);
+        }
+      }
     }
   }
 
   // --------------------------------------------------------------------------
-  // v12.3+ PREWARM HELPERS — chunk/cache/route prewarm (context-only)
+  // PREWARM HELPERS — chunk/cache/route prewarm (context-only)
 // --------------------------------------------------------------------------
   function buildRoutePrewarmContext(source, impulse, impulseSignature) {
     const modeKind = impulse.modeKind || "symbolic";
@@ -438,7 +509,8 @@ export function createPulseOSSpinalCord({
       spinalAdvantageField: SpinalState.advantageField,
       spinalLoopCounters: SpinalState.loopCounters,
       spinalExtensions: SpinalState.extensions,
-      spinalSystems: SpinalState.systems
+      spinalSystems: SpinalState.systems,
+      spinalPresence: SpinalState.presence
     };
   }
 
@@ -681,6 +753,19 @@ export function createPulseOSSpinalCord({
       loopCounters: SpinalState.loopCounters
     });
 
+    if (MeshBus?.emit) {
+      try {
+        MeshBus.emit("spine:impulse", {
+          source,
+          modeKind,
+          impulseSignature,
+          advantageField: SpinalState.advantageField
+        });
+      } catch {
+        // mesh emission must never break spine
+      }
+    }
+
     const bucket = SpinalState.receptors[modeKind];
     const set = bucket?.[source];
 
@@ -861,9 +946,10 @@ export function createPulseOSSpinalCord({
     registerExtension,
     registerSystem,
 
-    // Presence (v12.3+)
+    // Presence
     registerPresence,
     unregisterPresence,
+    getSpinalPresenceSnapshot,
 
     // Receptors
     registerReceptor,
@@ -878,16 +964,19 @@ export function createPulseOSSpinalCord({
 
     // Health
     updateHealth,
-    getHealth
+    getHealth,
+
+    // Advantage snapshot
+    getSpinalAdvantageSnapshot
   };
 
   // --------------------------------------------------------------------------
-  // SDN PREWARM ENGINE — Spinal Reflex Ignition (v13.0-Presence-Immortal)
-  // --------------------------------------------------------------------------
+  // SDN PREWARM ENGINE — Spinal Reflex Ignition (v16-Immortal)
+// --------------------------------------------------------------------------
   try {
     prewarmSDN(PulseOSSpinalCord);
     Brain?.log?.(
-      "[PulseOSSpinalCord] SDN prewarm complete (reflex arcs hot, v13.0-Presence-Immortal)."
+      "[PulseOSSpinalCord] SDN prewarm complete (reflex arcs hot, v16-Immortal)."
     );
 
     SpinalPageScanner.emit("spinal-sdn-prewarm-complete", {});
@@ -898,9 +987,9 @@ export function createPulseOSSpinalCord({
   }
 
   Brain?.log?.(
-    "[PulseOSSpinalCord v13.0-Presence-Immortal] Initialized organism-wide dual-band spinal cord with firewall gating, chunk/cache prewarm, multi-presence spine, SDN prewarm, and PageScanner spine-level intel."
+    "[PulseOSSpinalCord v16-Immortal] Initialized organism-wide dual-band spinal cord with firewall gating, chunk/cache/route prewarm, multi-presence spine, SDN prewarm, mesh-aware impulses, and PageScanner spine-level intel."
   );
-  Evolution?.recordLineage?.("spinal-init-v13.0-Presence-Immortal");
+  Evolution?.recordLineage?.("spinal-init-v16-Immortal");
 
   SpinalPageScanner.emit("spinal-init", {});
 

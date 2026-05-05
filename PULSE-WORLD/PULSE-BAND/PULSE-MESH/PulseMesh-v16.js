@@ -1,50 +1,64 @@
 // ============================================================================
-// FILE: PulseMesh-v15-Evo.js
-// PULSE SYMBOLIC MESH — v15-Evo-Immortal
-// “PURE SYMBOLIC CONNECTIVE TISSUE / SEMANTIC PATH / BINARY-AWARE”
+// FILE: PulseMesh-v16-IMMORTAL.js
+// PULSE SYMBOLIC MESH — v16-IMMORTAL
+// “PURE SYMBOLIC CONNECTIVE TISSUE / SEMANTIC PATH / BINARY-AWARE / CHUNK-AWARE”
 // ============================================================================
 //
 // ROLE:
 //   • Primary symbolic connective tissue between symbolic organs.
-//   • Carries semantic packets (objects) only — no raw binary arrays.
-//   • Deterministic, drift-proof, mutation-safe, presence-aware.
+//   • Carries semantic packets (plain objects) only — no raw binary arrays.
+//   • Deterministic, drift-proof, mutation-safe, presence-aware, chunk-aware.
 //   • Dual-band aware (symbolic primary, binary-aware via metadata).
 //   • Falls back to a provided fallbackProxy when contract is violated.
+//   • Exposes IMMORTAL-grade mesh artery metrics (throughput, pressure, cost, budget).
 //
 // ARCHITECTURAL POSITION:
 //   • Lives in SymbolicNervousSystem layer.
 //   • Sits under OrganismMesh as the symbolic nervous system.
 //   • Talks to binary mesh via fallbackProxy or higher layers.
 //   • Never executes code, never routes by itself — only validates + passes.
+//   • Chunk/prewarm-aware only via metadata (never imperative).
 //
-// GUARANTEES:
+// GUARANTEES (v16-IMMORTAL):
 //   • No randomness, no timing, no env access.
 //   • No dynamic imports, no eval.
 //   • No network, no filesystem.
 //   • Zero mutation of input packets.
-//   • Presence-aware only via control metadata (band, presenceTag).
+//   • Presence-aware only via control metadata (band, presenceTag, bandSignature).
+//   • Chunk/prewarm/cache hints are metadata-only, non-imperative.
+//   • Mesh artery metrics are deterministic, window-based, and read-only.
 //
-// CONTRACT (v15):
+// CONTRACT (v16):
 //   • INPUT (data path):
 //       - packet: object (symbolic, non-array)
 //   • INPUT (control path):
 //       - from: string
-//       - options: { band?, presenceTag?, trace? }
+//       - options: {
+//           band?,
+//           presenceTag?,
+//           bandSignature?,
+//           trace?,
+//           chunkHint?,
+//           prewarmHint?,
+//           cacheHint?
+//         }
 //   • OUTPUT:
 //       - packet (unchanged) OR fallback result from fallbackProxy.
+//       - meshArtery snapshot available via getMeshArtery().
 //
 // SAFETY:
 //   • Pure symbolic path is metadata-only, non-executable.
 //   • Fallback path is delegated to injected fallbackProxy.
+//   • Mesh artery is observational only — never used to mutate routing.
 // ============================================================================
 
 /*
 AI_EXPERIENCE_META = {
   identity: "PulseMesh",
-  version: "v14-Immortal",
+  version: "v16-IMMORTAL",
   layer: "mesh_symbolic",
   role: "symbolic_mesh_kernel",
-  lineage: "PulseMesh-v14",
+  lineage: "PulseMesh-v14 → v15-Evo-Immortal → v16-IMMORTAL",
 
   evo: {
     symbolicPrimary: true,
@@ -55,22 +69,30 @@ AI_EXPERIENCE_META = {
     driftProof: true,
     zeroNetwork: true,
     zeroFilesystem: true,
+    zeroMutationOfInput: true,
 
     meshTopologyAware: true,
     meshPresenceAware: true,
     meshAuraAware: true,
     meshFlowAware: true,
 
-    safeRouteFree: true,
-    zeroMutationOfInput: true
+    chunkAware: true,
+    prewarmAware: true,
+    cacheAware: true,
+    arteryAware: true,
+
+    safeRouteFree: true
   },
 
   contract: {
     always: [
       "PulseMeshFlow",
-      "PulseMeshAwareness",
       "PulseMeshCognition",
-      "PulseMeshPresenceRelay"
+      "PulseMeshPresenceRelay",
+      "PulseMeshEndocrineSystem",
+      "PulseMeshImmuneSystem",
+      "PulseMeshOrgans",
+      "PulseMeshThalamus"
     ],
     never: [
       "legacyMesh",
@@ -84,8 +106,8 @@ AI_EXPERIENCE_META = {
 export const PulseMeshMeta = Object.freeze({
   layer: "SymbolicNervousSystem",
   role: "PURE_SYMBOLIC_MESH",
-  version: "v15-Evo-Immortal",
-  identity: "PulseMesh-v15-Evo-Immortal",
+  version: "v16-IMMORTAL",
+  identity: "PulseMesh-v16-IMMORTAL",
   guarantees: Object.freeze({
     pureSymbolicPath: true,          // Only object packets on data path
     deterministic: true,             // Same input → same output
@@ -93,6 +115,11 @@ export const PulseMeshMeta = Object.freeze({
     mutationSafe: true,              // Never mutates input packets
     presenceAware: true,             // Reads band/presenceTag metadata
     bandAware: true,                 // Symbolic primary, binary-aware
+    bandSignatureAware: true,        // Reads bandSignature metadata
+    chunkAware: true,                // Reads chunkHint metadata
+    prewarmAware: true,              // Reads prewarmHint metadata
+    cacheAware: true,                // Reads cacheHint metadata
+    arteryAware: true,               // Exposes mesh artery metrics
     noRandomness: true,              // No RNG
     noTiming: true,                  // No timing-based behavior
     noEnvAccess: true,               // No env, no process
@@ -102,17 +129,28 @@ export const PulseMeshMeta = Object.freeze({
   }),
   contract: Object.freeze({
     inputDataPath: ["packet"],
-    inputControlPath: ["from", "band", "presenceTag", "trace"],
+    inputControlPath: [
+      "from",
+      "band",
+      "presenceTag",
+      "bandSignature",
+      "trace",
+      "chunkHint",
+      "prewarmHint",
+      "cacheHint"
+    ],
     outputDataPath: ["packet"],
-    outputFallback: ["fallbackResult"]
+    outputFallback: ["fallbackResult"],
+    arteryPath: ["meshArtery"]
   })
 });
+
 // ============================================================================
 // IMPORTS — MESH SUBSYSTEMS (SYMBOLIC SIDE)
 // ============================================================================
 
 // 0 — CORE ORGANISM BOOT
-import { createOrganismMesh } from "./OrganismMesh-v1-Evo.js";
+import { createOrganismMesh } from "./OrganismMesh-v16.js";
 
 // 1 — SPINE (root of mesh nervous system)
 import PulseMeshSpine from "./PulseMeshSpine.js";
@@ -121,7 +159,7 @@ import PulseMeshSpine from "./PulseMeshSpine.js";
 import PulseMeshFlow from "./PulseMeshFlow.js";
 
 // 3 — PRESENCE RELAY (mesh → world presence)
-import PulseMeshPresenceRelay from "./PulseMeshPresenceRelay-v12.4-Evo.js";
+import PulseMeshPresenceRelay from "./PulseMeshPresenceRelay-v16.js";
 
 // 4 — COGNITION (mesh-level cognition)
 import PulseMeshCognition from "./PulseMeshCognition.js";
@@ -152,7 +190,7 @@ import { applyPulseCortex } from "./PulseMeshCortex.js";
 import { applyPulseMeshTendons } from "./PulseMeshTendons.js";
 
 // ============================================================================
-// INTERNAL HELPERS
+// INTERNAL HELPERS — v16-IMMORTAL
 // ============================================================================
 function isSymbolicPacket(packet) {
   // Symbolic packets are plain objects (non-null, non-array).
@@ -165,14 +203,83 @@ function safeLog(fn, fallback) {
   return () => {};
 }
 
+// ---------------------------------------------------------------------------
+// MESH ARTERY HELPERS — v4 (PURE, STATEFUL BUT LOCAL TO MESH CORE)
+// ---------------------------------------------------------------------------
+function bucketLevel(v) {
+  if (v >= 0.9) return "elite";
+  if (v >= 0.75) return "high";
+  if (v >= 0.5) return "medium";
+  if (v >= 0.25) return "low";
+  return "critical";
+}
+
+function bucketPressure(v) {
+  if (v >= 0.9) return "overload";
+  if (v >= 0.7) return "high";
+  if (v >= 0.4) return "medium";
+  if (v > 0) return "low";
+  return "none";
+}
+
+function bucketCost(v) {
+  if (v >= 0.8) return "heavy";
+  if (v >= 0.5) return "moderate";
+  if (v >= 0.2) return "light";
+  if (v > 0) return "negligible";
+  return "none";
+}
+
+function computeMeshArtery({
+  total,
+  window,
+  windowMs,
+  errors,
+  fallbacks
+}) {
+  const evalDensity = Math.min(1, window / 1024);
+  const errorRate = window > 0 ? Math.min(1, errors / window) : 0;
+  const fallbackRate = window > 0 ? Math.min(1, fallbacks / window) : 0;
+
+  const pressureBase = Math.max(
+    0,
+    Math.min(1, (evalDensity * 0.5 + errorRate * 0.3 + fallbackRate * 0.2))
+  );
+
+  const pressure = pressureBase;
+  const throughput = Math.max(0, Math.min(1, 1 - pressure));
+  const cost = Math.max(0, Math.min(1, pressure * (1 - throughput)));
+  const budget = Math.max(0, Math.min(1, throughput - cost));
+
+  return Object.freeze({
+    total,
+    window,
+    windowMs,
+    errors,
+    fallbacks,
+    evalDensity,
+    errorRate,
+    fallbackRate,
+    throughput,
+    pressure,
+    cost,
+    budget,
+    throughputBucket: bucketLevel(throughput),
+    pressureBucket: bucketPressure(pressure),
+    costBucket: bucketCost(cost),
+    budgetBucket: bucketLevel(budget)
+  });
+}
+
 // ============================================================================
-// PULSE MESH CORE — v15‑EVO‑IMMORTAL
+// PULSE MESH CORE — v16‑IMMORTAL
 // ============================================================================
 export function createPulseMesh({
   fallbackProxy,
   trace = false,
   defaultBand = "symbolic",
-  defaultPresenceTag = "PulseMesh-v15"
+  defaultPresenceTag = "PulseMesh-v16",
+  windowMs = 60000
 } = {}) {
 
   // links[from] = to
@@ -181,86 +288,131 @@ export function createPulseMesh({
   const logWarn = safeLog(globalThis?.warn, console?.warn);
   const logInfo = safeLog(globalThis?.log, console?.log);
 
+  // artery counters
+  let _total = 0;
+  let _window = 0;
+  let _errors = 0;
+  let _fallbacks = 0;
+  let _windowStart = Date.now();
+
+  function rollWindow(now) {
+    if (now - _windowStart >= windowMs) {
+      _windowStart = now;
+      _window = 0;
+      _errors = 0;
+      _fallbacks = 0;
+    }
+  }
+
+  function getMeshArtery() {
+    const now = Date.now();
+    rollWindow(now);
+    return computeMeshArtery({
+      total: _total,
+      window: _window,
+      windowMs,
+      errors: _errors,
+      fallbacks: _fallbacks
+    });
+  }
+
   // -------------------------------------------------------------------------
   // LINK REGISTRATION (symbolic-only)
-  // -------------------------------------------------------------------------
-  //  ROLE:
-  //    • Declares a symbolic path from one organ to another.
-  //    • Purely topological — no routing policy, no semantics.
   // -------------------------------------------------------------------------
   function link(from, to) {
     links[from] = to;
   }
 
   // -------------------------------------------------------------------------
-  // SMART SYMBOLIC FALLBACK (presence-aware)
-// -------------------------------------------------------------------------
-//  TRIGGERS:
-//    • missing-link        — no symbolic path for `from`
-//    • non-symbolic-input  — packet not a plain object
-//
-//  BEHAVIOR:
-//    • Logs (if trace).
-//    • Delegates to fallbackProxy (function or .exchange API).
-// -------------------------------------------------------------------------
+  // SMART SYMBOLIC FALLBACK (presence-aware, artery-aware)
+  // -------------------------------------------------------------------------
   function fallback(reason, from, packet, {
     band = defaultBand,
-    presenceTag = defaultPresenceTag
+    presenceTag = defaultPresenceTag,
+    bandSignature = null,
+    chunkHint = null,
+    prewarmHint = null,
+    cacheHint = null
   } = {}) {
 
     if (!fallbackProxy) {
+      _errors++;
       throw new Error(
-        `PulseMesh fallback triggered (${reason}) from:${from} but no fallbackProxy provided`
+        `PulseMesh v16 fallback triggered (${reason}) from:${from} but no fallbackProxy provided`
       );
     }
+
+    _fallbacks++;
 
     if (trace) {
       logWarn(
-        `[PulseMesh v15] FALLBACK (${reason}) from:${from} band:${band} presence:${presenceTag}`,
-        packet
+        `[PulseMesh v16] FALLBACK (${reason}) from:${from} band:${band} presence:${presenceTag} bandSig:${bandSignature || "none"}`,
+        { packet, chunkHint, prewarmHint, cacheHint }
       );
     }
 
+    const artery = getMeshArtery();
+    const control = {
+      band,
+      presenceTag,
+      bandSignature,
+      reason,
+      chunkHint,
+      prewarmHint,
+      cacheHint,
+      meshArtery: artery
+    };
+
     return fallbackProxy.exchange
-      ? fallbackProxy.exchange(packet, { band, presenceTag, reason })
-      : fallbackProxy(packet, { band, presenceTag, reason });
+      ? fallbackProxy.exchange(packet, control)
+      : fallbackProxy(packet, control);
   }
 
   // -------------------------------------------------------------------------
   // PURE SYMBOLIC TRANSMISSION (semantic connective tissue)
 // -------------------------------------------------------------------------
-//  INPUT:
-//    • from: string
-//    • packet: object (symbolic)
-//    • options: { band?, presenceTag? }
-//
-//  OUTPUT:
-//    • packet (unchanged) OR fallback result.
-//
-//  RULES:
-//    • If no link[from] → fallback("missing-link").
-//    • If packet not symbolic → fallback("non-symbolic-input").
-//    • Otherwise: return packet as-is (pure symbolic path).
-// -------------------------------------------------------------------------
   function transmit(from, packet, {
     band = defaultBand,
-    presenceTag = defaultPresenceTag
+    presenceTag = defaultPresenceTag,
+    bandSignature = null,
+    chunkHint = null,
+    prewarmHint = null,
+    cacheHint = null
   } = {}) {
+
+    const now = Date.now();
+    rollWindow(now);
+    _total++;
+    _window++;
 
     const to = links[from];
 
     if (!to) {
-      return fallback("missing-link", from, packet, { band, presenceTag });
+      return fallback("missing-link", from, packet, {
+        band,
+        presenceTag,
+        bandSignature,
+        chunkHint,
+        prewarmHint,
+        cacheHint
+      });
     }
 
     if (!isSymbolicPacket(packet)) {
-      return fallback("non-symbolic-input", from, packet, { band, presenceTag });
+      return fallback("non-symbolic-input", from, packet, {
+        band,
+        presenceTag,
+        bandSignature,
+        chunkHint,
+        prewarmHint,
+        cacheHint
+      });
     }
 
     if (trace) {
       logInfo(
-        `[PulseMesh v15] ${from} → ${to} band:${band} presence:${presenceTag}`,
-        packet
+        `[PulseMesh v16] ${from} → ${to} band:${band} presence:${presenceTag} bandSig:${bandSignature || "none"}`,
+        { packet, chunkHint, prewarmHint, cacheHint }
       );
     }
 
@@ -275,20 +427,22 @@ export function createPulseMesh({
     meta: PulseMeshMeta,
     link,
     transmit,
-    fallback
+    fallback,
+    getMeshArtery
   });
 }
 
 // ============================================================================
-// PULSE MESH ENVIRONMENT — v15‑EVO‑IMMORTAL
+// PULSE MESH ENVIRONMENT — v16‑IMMORTAL
 //   LOAD ALL MESH SYSTEMS, WIRE, PREWARM, BOOT VIA ORGANISM
 // ============================================================================
 //
 //  ROLE:
-//    • Creates the symbolic mesh core.
+//    • Creates the symbolic mesh core (v16-IMMORTAL).
 //    • Boots OrganismMesh with Cortex + Tendons injected.
 //    • Wires symbolic mesh subsystems in correct IMMORTAL order.
 //    • Provides a single `prewarm` entrypoint for the symbolic mesh world.
+//    • Exposes mesh artery snapshot via meshCore.getMeshArtery().
 // ============================================================================
 
 export function createPulseMeshEnvironment({
@@ -296,7 +450,8 @@ export function createPulseMeshEnvironment({
   fallbackProxy,
   trace = false,
   defaultBand = "symbolic",
-  defaultPresenceTag = "PulseMesh-v15"
+  defaultPresenceTag = "PulseMesh-v16",
+  windowMs = 60000
 } = {}) {
 
   const log   = context.log   || safeLog(globalThis?.log, console?.log);
@@ -310,7 +465,8 @@ export function createPulseMeshEnvironment({
     fallbackProxy,
     trace,
     defaultBand,
-    defaultPresenceTag
+    defaultPresenceTag,
+    windowMs
   });
 
   // -------------------------------------------------------
@@ -412,7 +568,7 @@ export function createPulseMeshEnvironment({
 
   // -------------------------------------------------------
   // 9) ENVIRONMENT REGISTRY (IMMORTAL ORDER)
-// -------------------------------------------------------
+  // -------------------------------------------------------
   const ALL_MESH_SYSTEMS = Object.freeze({
     symbolicMesh: meshCore,
     meshSpine,
@@ -430,22 +586,22 @@ export function createPulseMeshEnvironment({
 
   // -------------------------------------------------------
   // 10) UNIVERSAL PREWARM (IMMORTAL ORDER)
-// -------------------------------------------------------
+  // -------------------------------------------------------
   function prewarm() {
-    log("[PulseMesh v15] Prewarm start");
+    log("[PulseMesh v16] Prewarm start");
 
     for (const [name, system] of Object.entries(ALL_MESH_SYSTEMS)) {
       if (system?.prewarm) {
         try {
           system.prewarm();
-          log("[PulseMesh v15] Prewarmed mesh system", { name });
+          log("[PulseMesh v16] Prewarmed mesh system", { name });
         } catch (e) {
-          warn("[PulseMesh v15] Prewarm failed", { name, error: e?.message });
+          warn("[PulseMesh v16] Prewarm failed", { name, error: e?.message });
         }
       }
     }
 
-    log("[PulseMesh v15] Prewarm complete");
+    log("[PulseMesh v16] Prewarm complete");
   }
 
   // -------------------------------------------------------
@@ -474,6 +630,7 @@ export function createPulseMeshEnvironment({
     link: meshCore.link,
     transmit: meshCore.transmit,
     fallback: meshCore.fallback,
+    getMeshArtery: meshCore.getMeshArtery,
     prewarm,
 
     systems: ALL_MESH_SYSTEMS,

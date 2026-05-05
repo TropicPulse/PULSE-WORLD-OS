@@ -81,7 +81,7 @@ AI_EXPERIENCE_META = {
 import { logger } from "../../PULSE-UI/_BACKEND/PulseProofLogger.js";
 
 import { PulseExpansionMeta, createPulseExpansion, getPulseExpansionContext } from "./PulseExpansion-v16.js";
-import { PulseCastleMeta, createPulseCastle } from "../PULSE-EXPANSION/PulseCastle-v16.js";
+import { PulseCastleMeta, createPulseCastle } from "../PulseCastle-v16.js";
 import { PulseServerMeta, createPulseServer } from "./PulseServer-v16.js";
 // User lanes + world core
 import { getPulseUserContext, createPulseWorldCore, pulseUser, PulseUserMeta } from "./PulseUser-v16.js";

@@ -210,7 +210,7 @@ import {
   synthesizePulseEarnGene,
   writePulseEarnGene
 } from "./PulseEarnGeneticMemory.js";
-import { getPulseEarnCellHealingState } from "./PulseEarnCell-v16.js";
+
 import { getPulseEarnNervousSystemHealingState } from "./PulseEarnNervousSystem.js";
 
 // ============================================================================
@@ -697,7 +697,6 @@ export function runHealthCheck(globalHints = {}) {
       worker: getPulseEarnMetabolismHealingState(),
       submission: getPulseEarnLymphHealingState(),
       packets: getPulseEarnGeneticMemoryHealingState(),
-      cell: getPulseEarnCellHealingState(),
       connector: getPulseEarnNervousSystemHealingState(),
       cycleIndex: immuneCycle,
       ...PULSE_EARN_IMMUNE_CONTEXT

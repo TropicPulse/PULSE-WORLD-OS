@@ -34,6 +34,8 @@
 //   • CORS must remain consistent across all endpoints
 //   • Do NOT weaken CORS rules without explicit approval
 //   • fetch re-export must remain stable for server-side HTTP calls
+//
+//PLEASE REMEMBER WE OUR PROXYING THEIR DEVICES.. EVERY SINGLE INTERNET CONNECTION OR PAGE OR ANYTHING GOES THROUGH HERE.. WE MUST CORS EVERYTHING TO ALLOW EVERYTHING OR WE ARE BLOCKING THEM
 /*
 AI_EXPERIENCE_META = {
   identity: "PulseCors",

@@ -133,14 +133,14 @@ export const PulseEarnNervousSystemMeta = Object.freeze({
 import {
   updateMarketplaceReputation,
   computeReputationSignals
-} from "./PulseEarnEndocrineSystem-v16.js";
+} from "./PulseEarnEndocrineSystem.js";
 
-import { getNextJob } from "./PulseEarnCirculatorySystem-v16.js";
+import { getNextJob } from "./PulseEarnCirculatorySystem.js";
 import {
   getPulseEarnDeviceProfile
-} from "./PulseEarnSkeletalSystem-v13.1-Presence-Immortal-ADV.js";
+} from "./PulseEarnSkeletalSystem.js";
 
-import { sendResultToMarketplace } from "./PulseEarnLymphNodes-v16.js";
+import { sendResultToMarketplace } from "./PulseEarnLymphNodes.js";
 
 // ============================================================================
 // Healing Metadata — Neural Activity Log (v16-Superior)

@@ -1,6 +1,6 @@
 // ============================================================================
-// FILE: BinaryMesh-v15-Evo.js
-// BINARY MESH — v15-Evo-Immortal
+// FILE: BinaryMesh-v16-Immortal.js
+// BINARY MESH — v16-Immortal
 // “PURE BINARY CONNECTIVE TISSUE / BINARY-FIRST / SYMBOLIC FALLBACK”
 // ============================================================================
 //
@@ -10,6 +10,7 @@
 //   • Deterministic, drift-proof, mutation-safe, presence-aware.
 //   • Dual-band aware (binary primary, symbolic fallback).
 //   • Falls back to symbolic PulseMesh when binary contract is violated.
+//   • Exposes read-only BinaryMeshArtery v2 for NodeAdmin/Overmind.
 //
 // ARCHITECTURAL POSITION:
 //   • Lives in mesh_binary layer.
@@ -18,14 +19,15 @@
 //   • Never routes, never computes semantics — only validates and passes bits.
 //
 // GUARANTEES:
-//   • No randomness, no timing, no env access.
+//   • No randomness, no timing-based behavior, no env access.
 //   • No dynamic imports, no eval.
 //   • No network, no filesystem.
 //   • Zero mutation of input bits.
 //   • Mesh-topology-aware only via symbolic fallback.
 //   • Presence-aware only via control metadata (band, presenceTag).
+//   • Artery metrics are local, read-only, advisory-only.
 //
-// CONTRACT (v15):
+// CONTRACT (v16-Immortal):
 //   • INPUT (data path):
 //       - bits: number[] (0 or 1 only)
 //   • INPUT (control path):
@@ -33,19 +35,20 @@
 //       - options: { band?, presenceTag?, trace? }
 //   • OUTPUT:
 //       - bits (unchanged) OR symbolic fallback result
-//
-// SAFETY:
-//   • Pure binary path is metadata-only, non-executable.
-//   • Fallback path is symbolicMesh.transmit with explicit reason.
+//       - optional: binaryMeshArtery snapshot (read-only)
 // ============================================================================
 
 /*
 AI_EXPERIENCE_META = {
   identity: "PulseBinaryMesh",
-  version: "v14-Immortal",
+  version: "v16-Immortal",
   layer: "mesh_binary",
   role: "binary_mesh_kernel",
-  lineage: "PulseMesh-v14",
+  lineage: [
+    "PulseMesh-v14",
+    "BinaryMesh-v15-Evo-Immortal",
+    "BinaryMesh-v16-Immortal"
+  ],
 
   evo: {
     binaryPrimary: true,
@@ -64,53 +67,63 @@ AI_EXPERIENCE_META = {
 
     nonExecutableBinary: true,
     metadataOnly: true,
-    safeRouteFree: true
+    safeRouteFree: true,
+
+    arteryAware: true,
+    nodeAdminAware: true,
+    overmindAware: true
   },
 
   contract: {
     always: [
       "PulseMeshFlow",
       "PulseMeshAwareness",
-      "PulseMeshPresenceRelay"
+      "PulseMeshPresenceRelay",
+      "PulseNodeAdmin",
+      "PulseOvermindPrime"
     ],
     never: [
       "safeRoute",
       "fetchViaCNS",
-      "legacyBinaryMesh"
+      "legacyBinaryMesh",
+      "directNetworkIO",
+      "directFilesystemIO"
     ]
   }
 }
 */
 
 // ============================================================================
-// META — v15-Evo-Immortal
+// META — v16-Immortal
 // ============================================================================
 export const BinaryMeshMeta = Object.freeze({
   layer: "BinaryNervousSystem",
   role: "PURE_BINARY_MESH",
-  version: "v15-Evo-Immortal",
-  identity: "BinaryMesh-v15-Evo-Immortal",
+  version: "v16-Immortal",
+  identity: "BinaryMesh-v16-Immortal",
   guarantees: Object.freeze({
     pureBinaryPath: true,            // Only 0/1 arrays on data path
     zeroSymbolicInDataPath: true,    // No strings/objects in binary path
-    deterministic: true,             // Same input → same output
+    deterministic: true,             // Same call sequence → same behavior
     driftProof: true,                // No topology or behavior drift
     mutationSafe: true,              // Never mutates input bits
     presenceAware: true,             // Reads band/presenceTag metadata
     bandAware: true,                 // Binary primary, symbolic fallback
     noRandomness: true,              // No RNG
-    noTiming: true,                  // No timing-based behavior
+    noTiming: true,                  // No timing-based branching
     noEnvAccess: true,               // No env, no process
     zeroNetwork: true,               // No network access
     zeroFilesystem: true,            // No FS access
     nonExecutableBinary: true,       // Bits are data, never code
-    metadataOnly: true               // No semantic interpretation of bits
+    metadataOnly: true,              // No semantic interpretation of bits
+    arteryAware: true                // Exposes local BinaryMeshArtery v2
   }),
   contract: Object.freeze({
     inputDataPath: ["bits"],
     inputControlPath: ["from", "band", "presenceTag", "trace"],
     outputDataPath: ["bits"],
-    outputFallback: ["fallbackResult"]
+    outputFallback: ["fallbackResult"],
+    arteryPath: ["binaryMeshArtery"]
   })
 });
 
@@ -119,7 +132,7 @@ export const BinaryMeshMeta = Object.freeze({
 // ============================================================================
 
 // 0 — CORE ORGANISM BOOT
-import { createOrganismMesh } from "./OrganismMesh-v1-Evo.js";
+import { createOrganismMesh } from "./OrganismMesh-v16.js";
 
 // 1 — SPINE (root of mesh nervous system)
 import PulseMeshSpine from "./PulseMeshSpine.js";
@@ -128,7 +141,7 @@ import PulseMeshSpine from "./PulseMeshSpine.js";
 import PulseMeshFlow from "./PulseMeshFlow.js";
 
 // 3 — PRESENCE RELAY (mesh → world presence)
-import PulseMeshPresenceRelay from "./PulseMeshPresenceRelay-v12.4-Evo.js";
+import PulseMeshPresenceRelay from "./PulseMeshPresenceRelay-v16.js";
 
 // 4 — COGNITION (mesh-level cognition)
 import PulseMeshCognition from "./PulseMeshCognition.js";
@@ -158,7 +171,6 @@ import { createPulseWorldSocialGraph } from "./PulseWorldSocialGraph.js";
 import { applyPulseCortex } from "./PulseMeshCortex.js";
 import { applyPulseMeshTendons } from "./PulseMeshTendons.js";
 
-
 // ============================================================================
 // INTERNAL HELPERS
 // ============================================================================
@@ -178,15 +190,74 @@ function safeLog(fn, fallback) {
   if (typeof console !== "undefined" && typeof fallback === "function") return fallback;
   return () => {};
 }
+
+// BinaryMeshArtery v2 — local, read-only, no timing-based branching
+function computeBinaryMeshArtery(state) {
+  const total = state.totalTransmits;
+  const fallbacks = state.totalFallbacks;
+  const maxBits = state.maxBitsLength || 1;
+
+  const fallbackRatio = total > 0 ? Math.min(1, fallbacks / total) : 0;
+  const avgBits = total > 0 ? Math.min(1, state.totalBits / (total * maxBits)) : 0;
+
+  const pressure = Math.max(0, Math.min(1, (fallbackRatio * 0.7 + avgBits * 0.3)));
+  const throughput = Math.max(0, Math.min(1, 1 - pressure));
+  const cost = Math.max(0, Math.min(1, pressure * (1 - throughput)));
+  const budget = Math.max(0, Math.min(1, throughput - cost));
+
+  function bucket(v) {
+    if (v >= 0.9) return "elite";
+    if (v >= 0.75) return "high";
+    if (v >= 0.5) return "medium";
+    if (v >= 0.25) return "low";
+    return "critical";
+  }
+
+  function bucketPressure(v) {
+    if (v >= 0.9) return "overload";
+    if (v >= 0.7) return "high";
+    if (v >= 0.4) return "medium";
+    if (v > 0) return "low";
+    return "none";
+  }
+
+  function bucketCost(v) {
+    if (v >= 0.8) return "heavy";
+    if (v >= 0.5) return "moderate";
+    if (v >= 0.2) return "light";
+    if (v > 0) return "negligible";
+    return "none";
+  }
+
+  return Object.freeze({
+    totalTransmits: total,
+    totalFallbacks: fallbacks,
+    totalBits: state.totalBits,
+    maxBitsLength: maxBits,
+    fallbackRatio,
+    avgBitsRatio: avgBits,
+    throughput,
+    pressure,
+    cost,
+    budget,
+    throughputBucket: bucket(throughput),
+    pressureBucket: bucketPressure(pressure),
+    costBucket: bucketCost(cost),
+    budgetBucket: bucket(budget),
+    lastFallbackReason: state.lastFallbackReason || null,
+    lastFrom: state.lastFrom || null
+  });
+}
+
 // ============================================================================
-// BINARY MESH FACTORY — v15-Evo-Immortal (WITH CORTEX + TENDONS APPLIED)
+// BINARY MESH FACTORY — v16-Immortal (WITH CORTEX + TENDONS APPLIED)
 // ============================================================================
 export function createBinaryMesh({
   symbolicMesh,
   trace = false,
   maxBitsLength = 64,
   defaultBand = "binary",
-  defaultPresenceTag = "BinaryMesh-v15"
+  defaultPresenceTag = "BinaryMesh-v16"
 } = {}) {
 
   const links = Object.create(null);
@@ -194,8 +265,22 @@ export function createBinaryMesh({
   const logWarn = safeLog(globalThis?.warn, console?.warn);
   const logInfo = safeLog(globalThis?.log, console?.log);
 
+  // local artery state (no timing-based branching)
+  const arteryState = {
+    totalTransmits: 0,
+    totalFallbacks: 0,
+    totalBits: 0,
+    lastFallbackReason: null,
+    lastFrom: null,
+    maxBitsLength
+  };
+
   function link(from, to) {
     links[from] = to;
+  }
+
+  function getBinaryMeshArtery() {
+    return computeBinaryMeshArtery(arteryState);
   }
 
   // -------------------------------------------------------------------------
@@ -206,18 +291,22 @@ export function createBinaryMesh({
     presenceTag = defaultPresenceTag
   } = {}) {
 
+    arteryState.totalFallbacks += 1;
+    arteryState.lastFallbackReason = reason;
+    arteryState.lastFrom = from;
+    arteryState.totalBits += Array.isArray(bits) ? bits.length : 0;
+
     if (!symbolicMesh) {
       throw new Error(`BinaryMesh fallback (${reason}) from:${from} but no symbolicMesh provided`);
     }
 
     if (trace) {
       logWarn(
-        `[BinaryMesh v15] FALLBACK (${reason}) from:${from} band:${band} presence:${presenceTag}`,
+        `[BinaryMesh v16] FALLBACK (${reason}) from:${from} band:${band} presence:${presenceTag}`,
         bits
       );
     }
 
-    // IMMORTAL: wrap bits into a symbolic impulse
     const impulse = {
       type: "binaryFallback",
       reason,
@@ -232,7 +321,6 @@ export function createBinaryMesh({
       }
     };
 
-    // IMMORTAL: apply Cortex → Tendons before symbolic routing
     applyPulseCortex(impulse, {
       binaryMode: false,
       dualMode: false,
@@ -243,7 +331,7 @@ export function createBinaryMesh({
 
     return symbolicMesh.transmit(from, impulse, {
       band: "symbolic",
-      presenceTag: "PulseMesh-v15"
+      presenceTag: "PulseMesh-v16"
     });
   }
 
@@ -254,6 +342,9 @@ export function createBinaryMesh({
     band = defaultBand,
     presenceTag = defaultPresenceTag
   } = {}) {
+
+    arteryState.totalTransmits += 1;
+    arteryState.totalBits += Array.isArray(bits) ? bits.length : 0;
 
     const to = links[from];
 
@@ -267,24 +358,26 @@ export function createBinaryMesh({
 
     if (trace) {
       logInfo(
-        `[BinaryMesh v15] ${from} → ${to} band:${band} presence:${presenceTag}`,
+        `[BinaryMesh v16] ${from} → ${to} band:${band} presence:${presenceTag}`,
         bits
       );
     }
 
-    return bits; // pure binary path
+    // pure binary path: bits are passed unchanged
+    return bits;
   }
 
   return Object.freeze({
     meta: BinaryMeshMeta,
     link,
     transmit,
-    fallback
+    fallback,
+    getBinaryMeshArtery
   });
 }
 
 // ============================================================================
-// LOCAL BINARY SUBSYSTEMS — LIVE ON THIS PAGE (v15-Immortal)
+// LOCAL BINARY SUBSYSTEMS — LIVE ON THIS PAGE (v16-Immortal)
 // ============================================================================
 //
 //  PulseBinaryMeshPresence:
@@ -295,20 +388,25 @@ export function createBinaryMesh({
 //    • Extension point for future binary-first logic.
 //    • Currently just forwards to binaryMesh.transmit (pure connective tissue).
 // ============================================================================
+
 const PulseBinaryMeshPresence = {
   create({ context, binaryMesh, log, warn }) {
     function prewarm() {
-      log?.("[BinaryPresence v15] prewarm");
+      log?.("[BinaryPresence v16] prewarm");
     }
 
     function pulse(from, bits, options) {
-      // pure binary path; Cortex/Tendons are applied only on fallback in binaryMesh
       return binaryMesh.transmit(from, bits, options);
+    }
+
+    function artery() {
+      return binaryMesh.getBinaryMeshArtery();
     }
 
     return Object.freeze({
       prewarm,
-      pulse
+      pulse,
+      artery
     });
   }
 };
@@ -316,23 +414,27 @@ const PulseBinaryMeshPresence = {
 const PulseBinaryMeshPrime = {
   create({ context, binaryMesh, log, warn }) {
     function prewarm() {
-      log?.("[BinaryPrime v15] prewarm");
+      log?.("[BinaryPrime v16] prewarm");
     }
 
     function process(from, bits, options) {
-      // extension point for prime binary logic — keep pure, metadata-only
       return binaryMesh.transmit(from, bits, options);
+    }
+
+    function artery() {
+      return binaryMesh.getBinaryMeshArtery();
     }
 
     return Object.freeze({
       prewarm,
-      process
+      process,
+      artery
     });
   }
 };
 
 // ============================================================================
-// BINARY MESH ENVIRONMENT — v15-Evo-Immortal
+// BINARY MESH ENVIRONMENT — v16-Immortal
 //   BINARY BARREL: BOOT ORGANISM, LOAD SUBSYSTEMS, WIRE, PREWARM
 // ============================================================================
 export function createBinaryMeshEnvironment({
@@ -340,7 +442,7 @@ export function createBinaryMeshEnvironment({
   trace = false,
   maxBitsLength = 64,
   defaultBand = "binary",
-  defaultPresenceTag = "BinaryMesh-v15"
+  defaultPresenceTag = "BinaryMesh-v16"
 } = {}) {
 
   const log   = context.log   || safeLog(globalThis?.log, console?.log);
@@ -361,10 +463,9 @@ export function createBinaryMeshEnvironment({
     trace
   });
 
-  // organism exposes both meshes via its envs
-  const symbolicMesh = organism.symbolicMeshEnv?.symbolicMesh || organism.symbolicMeshEnv;
+  const symbolicMesh =
+    organism.symbolicMeshEnv?.symbolicMesh || organism.symbolicMeshEnv;
 
-  // IMMORTAL: binaryMesh created here, with Cortex/Tendons-aware fallback
   const binaryMesh = createBinaryMesh({
     symbolicMesh,
     trace,
@@ -374,8 +475,8 @@ export function createBinaryMeshEnvironment({
   });
 
   // -------------------------------------------------------
-  // 1) BINARY SUBSYSTEMS (LOCAL)
-// -------------------------------------------------------
+  // 1) BINARY SUBSYSTEMS
+  // -------------------------------------------------------
   const binaryPresence = PulseBinaryMeshPresence?.create
     ? PulseBinaryMeshPresence.create({ context, binaryMesh, log, warn })
     : null;
@@ -476,20 +577,20 @@ export function createBinaryMeshEnvironment({
   // 4) PREWARM
   // -------------------------------------------------------
   function prewarm() {
-    log("[BinaryMesh v15] Prewarm start");
+    log("[BinaryMesh v16] Prewarm start");
 
     for (const [name, system] of Object.entries(ALL_SYSTEMS)) {
       if (system && typeof system.prewarm === "function") {
         try {
           system.prewarm();
-          log("[BinaryMesh v15] Prewarmed system", { name });
+          log("[BinaryMesh v16] Prewarmed system", { name });
         } catch (e) {
-          warn("[BinaryMesh v15] Prewarm failed", { name, error: e?.message });
+          warn("[BinaryMesh v16] Prewarm failed", { name, error: e?.message });
         }
       }
     }
 
-    log("[BinaryMesh v15] Prewarm complete");
+    log("[BinaryMesh v16] Prewarm complete");
   }
 
   // -------------------------------------------------------

@@ -1,48 +1,63 @@
 // ============================================================================
-// FILE: PulseOSImpulseEngine-v15-Immortal-CHUNK.js
-// PULSE OS — v15‑IMMORTAL‑CHUNK
+// FILE: PulseOSImpulseEngine-v16-Immortal-CHUNK.js
+// PULSE OS — v16‑IMMORTAL‑CHUNK
 // “THE IMPULSE ENGINE / NEURAL IMPULSE LIFECYCLE ORGAN”
 // CoreMemory‑Integrated • Deterministic • Immortal Lineage • Chunk + Presence
+// Band/Wave/Binary/Presence Fields • Speed‑Aware Impulse Dynamics
 // ============================================================================
 
 /*
 AI_EXPERIENCE_META = {
   identity: "PulseOSImpulseEngine",
-  version: "v15-Immortal-CHUNK",
+  version: "v16-Immortal-CHUNK",
   layer: "impulse_engine",
   role: "neural_impulse_lifecycle",
-  lineage: "PulseOS-v15",
+  lineage: {
+    root: "PulseOS-v11",
+    parent: "PulseOSImpulseEngine-v15-Immortal-CHUNK",
+    organismIntegration: "v16-Immortal"
+  },
 
   evo: {
+    // Core
     deterministic: true,
     driftProof: true,
     immortalReady: true,
+    immortal: true,
+    multiInstanceReady: true,
 
     // dual-band
     symbolicAware: true,
     binaryAware: true,
     dualModeReady: true,
+    dualBandChunking: true,
 
     // impulse surfaces
     bandAware: true,
     waveFieldAware: true,
     binaryFieldAware: true,
     presenceFieldAware: true,
+    advantageFieldAware: true,
+    experienceFieldAware: true,
 
-    // v15 upgrades
+    // v16 upgrades
     chunkAware: true,
     cacheAware: true,
     prewarmAware: true,
-    dualBandChunking: true,
+    chunkCachePrewarmAware: true,
     presenceAware: true,
     streamingFriendly: true,
     batchFriendly: true,
     gpuBufferAware: true,
+    impulseSpeedAware: true,
+    impulseQuickenAware: true,
+    impulseExtensionAware: true,
 
     // memory
     coreMemoryAware: true,
     impulseMemoryAware: true,
     returnSurfaceMemoryAware: true,
+    immortalImpulseMemory: true,
 
     // safety
     zeroRandomness: true,
@@ -61,7 +76,8 @@ AI_EXPERIENCE_META = {
       "BinaryImpulseContext",
       "SymbolicImpulseContext",
       "DualBandContext",
-      "PresenceContext"
+      "PresenceContext",
+      "SpeedProfile"
     ],
     output: [
       "BinaryImpulse",
@@ -74,12 +90,36 @@ AI_EXPERIENCE_META = {
       "ImpulseBinaryField",
       "ImpulseWaveField",
       "ImpulsePresenceField",
+      "ImpulseSpeedField",
+      "ImpulseAdvantageField",
+      "ImpulseExperienceField",
       "ImpulseDiagnostics",
       "ImpulseHealingState",
       "ImpulseChunks",
       "ImpulsePrewarmSnapshot",
       "ImpulsePresenceView"
+    ],
+    consumers: [
+      "PulseBand",
+      "PulseProxySpine",
+      "PulseRouter",
+      "PulseMesh",
+      "PulseSDNPrewarm",
+      "PNSRepair",
+      "PNSPurifier",
+      "PulseWorldCore"
     ]
+  },
+
+  experience: {
+    description:
+      "The v16 Immortal Impulse Engine manages the full lifecycle of neural impulses, " +
+      "including band/wave/binary/presence fields, chunked views, prewarm snapshots, " +
+      "and speed-aware impulse dynamics for quickening or extending routes.",
+    aiUsageHint:
+      "Use ImpulseSpeedField, ImpulseAdvantageField, and ImpulseExperienceField to reason about " +
+      "how fast impulses propagate, how much advantage they generate, and how stable their " +
+      "routes are across the organism."
   }
 };
 */
@@ -91,15 +131,16 @@ import { PulseCoreMemory } from "../PULSE-CORE/PulseCoreMemory.js";
 import { createPulseV3 } from "../PULSE-SEND/PulseV3UnifiedOrganism-v16.js";
 import { createPulseV2 } from "../PULSE-SEND/PulseV2EvolutionEngine-v16.js";
 import { createLegacyPulse } from "../PULSE-SEND/PulseSendLegacyPulse-v16.js";
+import { computeSpeedPolicy } from "../PULSE-PROXY/PulseProxyImpulseSpeed.js";
 
-const CORE_MEMORY_NAMESPACE = "PulseImpulse-v15-Immortal-CHUNK";
+const CORE_MEMORY_NAMESPACE = "PulseImpulse-v16-Immortal-CHUNK";
 const coreMemory = new PulseCoreMemory();
 
 // ============================================================================
-// CONTEXT / META — v15 IMMORTAL CHUNK
+// CONTEXT / META — v16 IMMORTAL CHUNK
 // ============================================================================
 const IMPULSE_CONTEXT = {
-  version: "15-Immortal-CHUNK",
+  version: "16-Immortal-CHUNK",
   layer: "ImpulseEngine",
   role: "NeuralImpulseLifecycle",
 
@@ -107,6 +148,7 @@ const IMPULSE_CONTEXT = {
     deterministic: true,
     driftProof: true,
     immortalReady: true,
+    immortal: true,
 
     // dual-band
     symbolicAware: true,
@@ -118,16 +160,21 @@ const IMPULSE_CONTEXT = {
     waveFieldAware: true,
     binaryFieldAware: true,
     presenceFieldAware: true,
-
-    // v15 chunk/presence
+    
+    // v16 chunk/presence/speed
     chunkAware: true,
     cacheAware: true,
     prewarmAware: true,
+    chunkCachePrewarmAware: true,
     dualBandChunking: true,
     presenceAware: true,
     streamingFriendly: true,
     batchFriendly: true,
     gpuBufferAware: true,
+    impulseSpeedAware: true,
+    impulseQuickenAware: true,
+    impulseExtensionAware: true,
+    impulseSpeedPolicyAware: true,
 
     // memory
     coreMemoryAware: true,
@@ -146,11 +193,74 @@ const IMPULSE_CONTEXT = {
   }
 };
 
+export const AI_EXPERIENCE_META = Object.freeze({
+  identity: "PulseOSImpulseEngine",
+  version: "v16-Immortal-CHUNK",
+  layer: "impulse_engine",
+  role: "neural_impulse_lifecycle",
+  lineage: Object.freeze({
+    root: "PulseOS-v11",
+    parent: "PulseOSImpulseEngine-v15-Immortal-CHUNK",
+    organismIntegration: "v16-Immortal"
+  }),
+  evo: Object.freeze(IMPULSE_CONTEXT.evo),
+  contract: Object.freeze({
+    input: [
+      "ImpulsePayload",
+      "BinaryImpulseContext",
+      "SymbolicImpulseContext",
+      "DualBandContext",
+      "PresenceContext",
+      "SpeedProfile"
+    ],
+    output: [
+      "BinaryImpulse",
+      "SymbolicImpulse",
+      "ImpulseLineage",
+      "ImpulseShapeSignature",
+      "ImpulseEvolutionStage",
+      "ImpulseReturnSurface",
+      "ImpulseBandSignature",
+      "ImpulseBinaryField",
+      "ImpulseWaveField",
+      "ImpulsePresenceField",
+      "ImpulseSpeedField",
+      "ImpulseAdvantageField",
+      "ImpulseExperienceField",
+      "ImpulseDiagnostics",
+      "ImpulseHealingState",
+      "ImpulseChunks",
+      "ImpulsePrewarmSnapshot",
+      "ImpulsePresenceView"
+    ],
+    consumers: [
+      "PulseBand",
+      "PulseProxySpine",
+      "PulseRouter",
+      "PulseMesh",
+      "PulseSDNPrewarm",
+      "PNSRepair",
+      "PNSPurifier",
+      "PulseWorldCore"
+    ]
+  }),
+  experience: Object.freeze({
+    description:
+      "The v16 Immortal Impulse Engine manages the full lifecycle of neural impulses, " +
+      "including band/wave/binary/presence fields, chunked views, prewarm snapshots, " +
+      "and speed-aware impulse dynamics for quickening or extending routes.",
+    aiUsageHint:
+      "Use ImpulseSpeedField, ImpulseAdvantageField, and ImpulseExperienceField to reason about " +
+      "how fast impulses propagate, how much advantage they generate, and how stable their " +
+      "routes are across the organism."
+  })
+});
+
 export const PulseOSImpulseEngineMeta = Object.freeze({
   layer: "PulseOSImpulseEngine",
   role: "NEURAL_IMPULSE_LIFECYCLE_ORGAN",
-  version: "v15-Immortal-CHUNK",
-  identity: "PulseOSImpulseEngine-v15-Immortal-CHUNK",
+  version: "v16-Immortal-CHUNK",
+  identity: "PulseOSImpulseEngine-v16-Immortal-CHUNK",
 
   guarantees: Object.freeze({
     deterministic: true,
@@ -175,16 +285,18 @@ export const PulseOSImpulseEngineMeta = Object.freeze({
     binaryAware: true,
     symbolicAware: true,
 
-    // v15 chunk/presence
     chunkAware: true,
     cacheAware: true,
     prewarmAware: true,
+    chunkCachePrewarmAware: true,
     dualBandChunking: true,
     streamingFriendly: true,
     batchFriendly: true,
     gpuBufferAware: true,
+    impulseSpeedAware: true,
+    impulseQuickenAware: true,
+    impulseExtensionAware: true,
 
-    // safety
     zeroRandomness: true,
     zeroJSON: true,
     zeroWindowInCore: true,
@@ -204,32 +316,7 @@ export const PulseOSImpulseEngineMeta = Object.freeze({
     immortalImpulseMemory: true
   }),
 
-  contract: Object.freeze({
-    input: [
-      "ImpulsePayload",
-      "BinaryImpulseContext",
-      "SymbolicImpulseContext",
-      "DualBandContext",
-      "PresenceContext"
-    ],
-    output: [
-      "BinaryImpulse",
-      "SymbolicImpulse",
-      "ImpulseLineage",
-      "ImpulseShapeSignature",
-      "ImpulseEvolutionStage",
-      "ImpulseReturnSurface",
-      "ImpulseBandSignature",
-      "ImpulseBinaryField",
-      "ImpulseWaveField",
-      "ImpulsePresenceField",
-      "ImpulseDiagnostics",
-      "ImpulseHealingState",
-      "ImpulseChunks",
-      "ImpulsePrewarmSnapshot",
-      "ImpulsePresenceView"
-    ]
-  }),
+  contract: AI_EXPERIENCE_META.contract,
 
   lineage: Object.freeze({
     root: "PulseOS-v11",
@@ -250,7 +337,8 @@ export const PulseOSImpulseEngineMeta = Object.freeze({
       "PulseV2EvolutionEngine",
       "PulseOSImpulseEngine-v12.3-Evo-Presence",
       "PulseOSImpulseEngine-v14-Immortal",
-      "PulseOSImpulseEngine-v15-Immortal-CHUNK"
+      "PulseOSImpulseEngine-v15-Immortal-CHUNK",
+      "PulseOSImpulseEngine-v16-Immortal-CHUNK"
     ]
   }),
 
@@ -263,8 +351,8 @@ export const PulseOSImpulseEngineMeta = Object.freeze({
   architecture: Object.freeze({
     pattern: "A-B-A",
     baseline: "binary impulse → symbolic wrapper → unified return",
-    adaptive: "dual-band + presence overlays + chunked impulse views",
-    return: "deterministic impulse surfaces + signatures + coreMemory + chunk/presence"
+    adaptive: "dual-band + presence overlays + chunked impulse views + speed-aware dynamics",
+    return: "deterministic impulse surfaces + signatures + coreMemory + chunk/presence/speed"
   })
 });
 
@@ -388,17 +476,89 @@ function buildImpulseCycleSignature(cycle) {
   return computeHash(`IMPULSE_CYCLE::${cycle}`);
 }
 
+// ============================================================================
+// SPEED / ADVANTAGE / EXPERIENCE FIELDS — v16 IMPULSE SPEED
+// ============================================================================
+function buildImpulseSpeedField({ hops, urgency, factor }) {
+  const h = Math.max(0, hops || 0);
+  const u = Math.max(0, Math.min(1, urgency || 0));
+  const f = factor > 0 ? factor : 1;
+
+  // speedScore ~ more urgency, fewer hops, higher factor → faster
+  const hopPenalty = 1 / (1 + h);
+  const speedScore = Math.min(1, u * 0.6 + hopPenalty * 0.3 + (1 / f) * 0.1);
+
+  let speedBand = "steady";
+  if (speedScore < 0.25) speedBand = "slow";
+  else if (speedScore < 0.6) speedBand = "steady";
+  else speedBand = "quickened";
+
+  return {
+    hops: h,
+    urgency: u,
+    factor: f,
+    speedScore,
+    speedBand,
+    speedSignature: computeHash(
+      `IMPULSE_SPEED::${h}::${u}::${f}::${speedScore}::${speedBand}`
+    )
+  };
+}
+
+function buildImpulseAdvantageField({ energy, factor, hops }) {
+  const e = energy > 0 ? energy : 0;
+  const f = factor > 0 ? factor : 1;
+  const h = Math.max(0, hops || 0);
+
+  const efficiency = e / (1 + h);
+  const stability = 1 / (1 + Math.abs(1 - f));
+  const advantageScore = Math.min(1, (efficiency * 0.6 + stability * 0.4));
+
+  return {
+    energy: e,
+    factor: f,
+    hops: h,
+    efficiency,
+    stability,
+    advantageScore,
+    advantageSignature: computeHash(
+      `IMPULSE_ADVANTAGE::${e}::${f}::${h}::${efficiency}::${stability}::${advantageScore}`
+    )
+  };
+}
+
+function buildImpulseExperienceField({ hops, band, speedBand }) {
+  const h = Math.max(0, hops || 0);
+  const b = band || "unknown";
+  const s = speedBand || "steady";
+
+  let load = "light";
+  if (h === 0) load = "idle";
+  else if (h < 4) load = "light";
+  else if (h < 12) load = "moderate";
+  else load = "heavy";
+
+  return {
+    hops: h,
+    band: b,
+    speedBand: s,
+    load,
+    experienceSignature: computeHash(
+      `IMPULSE_EXPERIENCE::${h}::${b}::${s}::${load}`
+    )
+  };
+}
+
 function impulseLog(event, data) {
   if (typeof window === "undefined") return;
   if (!window.PULSE_IMPULSE_DIAGNOSTICS) return;
   if (typeof console?.log !== "function") return;
-  console.log("[ImpulseEngine-v15-Immortal]", event, { ...data, ctx: IMPULSE_CONTEXT });
+  console.log("[ImpulseEngine-v16-Immortal]", event, { ...data, ctx: IMPULSE_CONTEXT });
 }
 
 // ============================================================================
-// CHUNK + PRESENCE HELPERS — v15 IMMORTAL IMPULSE VIEWS
+// CHUNK + PRESENCE HELPERS — v16 IMMORTAL IMPULSE VIEWS
 // ============================================================================
-
 function stableStringify(value) {
   if (value === null || typeof value !== "object") {
     return JSON.stringify(value);
@@ -492,7 +652,7 @@ function buildImpulsePrewarmSnapshot(impulse, { maxChunkSize = 64 } = {}) {
   return {
     ...IMPULSE_CONTEXT,
     kind: "ImpulsePrewarmSnapshot",
-    version: "v15-Immortal-CHUNK-Presence",
+    version: "v16-Immortal-CHUNK-Presence",
     tickId: impulse.tickId,
     intent: impulse.intent,
     page: impulse.page?.name || "UNKNOWN_PAGE",
@@ -524,7 +684,6 @@ function persistImpulseSnapshot(label, impulse) {
     meta:    { ...IMPULSE_CONTEXT },
     label,
 
-    // v15+ additions (non-breaking)
     impulseSignature: buildImpulseSignature(impulse),
     chunks,
     presenceView: presence
@@ -533,7 +692,7 @@ function persistImpulseSnapshot(label, impulse) {
   try {
     coreMemory.write(CORE_MEMORY_NAMESPACE, snap.tickId, snap);
   } catch {
-    // fail-open, never crash
+    // fail-open
   }
 
   return snap;
@@ -547,6 +706,7 @@ function persistReturnSurface(label, impulse, snap) {
     jobId: impulse.pulse?.jobId || null,
     pattern: impulse.pulse?.pattern || "UNKNOWN_PATTERN",
     band: impulse.pulse?.meta?.band || "unknown",
+    speedPolicy: impulse.meta.speedPolicy || null,
     presenceField: impulse.pulse?.meta?.presenceField || null,
     snapshotTickId: snap?.tickId || null,
     impulseSignature: snap?.impulseSignature || null
@@ -580,7 +740,7 @@ export const LegacyPulse = {
 };
 
 // ============================================================================
-// CORE v15-Immortal BINARY (base for all 15+ pulses)
+// CORE v16-Immortal BINARY (base for all 16+ pulses)
 // ============================================================================
 function makeDeterministicTickId(seed = "") {
   const tick = nextTick();
@@ -613,7 +773,7 @@ function createBinaryImpulseCore(intent, payload = {}, nowIgnored, patternOverri
     tickId,
     intent,
     payload,
-    version: "v15-Immortal-binary",
+    version: "v16-Immortal-binary",
 
     path: [],
     pathway: {
@@ -641,6 +801,7 @@ function createBinaryImpulseCore(intent, payload = {}, nowIgnored, patternOverri
 
     offline: true,
     externalDependencies: [],
+    speedPolicy: null,
 
     pulse: {
       jobId,
@@ -693,11 +854,12 @@ function annotateBinaryCore(impulse, layerIdentity, layerState, delta, nowIgnore
     state: layerState,
     delta,
     urgency: impulse.urgency,
-    timestamp: hopIndex + 1, // deterministic, no Date.now
+    timestamp: hopIndex + 1, // deterministic
 
     page:           impulse.page.name,
     repairSeed:     impulse.repairSeed,
     identityHealth: impulse.identityHealth,
+    speedPolicy: null,
 
     band,
     bandSignature,
@@ -723,10 +885,8 @@ function annotateBinaryCore(impulse, layerIdentity, layerState, delta, nowIgnore
 }
 
 // ============================================================================
-// 15+ PULSE VARIANTS (upgraded from 14, same names, immortal core)
+// 16+ PULSE VARIANTS (upgraded from 15, same names, immortal core)
 // ============================================================================
-
-// 1) PulseShifterEvolutionaryPulse — symbolic wrapper over immortal core
 export const PulseShifterEvolutionaryPulse = {
   create(intent, payload = {}) {
     const impulse = createBinaryImpulseCore(
@@ -735,7 +895,7 @@ export const PulseShifterEvolutionaryPulse = {
       null,
       "PulseShifterEvolutionaryPulse"
     );
-    impulse.version = "v15-Immortal-PulseShifterEvolutionary";
+    impulse.version = "v16-Immortal-PulseShifterEvolutionary";
     impulseLog("PULSE_SHIFTER_CREATE", {
       tickId: impulse.tickId,
       intent,
@@ -755,7 +915,6 @@ export const PulseShifterEvolutionaryPulse = {
   }
 };
 
-// 2) PulseBinaryShifterEvolutionaryPulse — binary‑emphasized variant
 export const PulseBinaryShifterEvolutionaryPulse = {
   create(intent, payload = {}) {
     const impulse = createBinaryImpulseCore(
@@ -764,7 +923,7 @@ export const PulseBinaryShifterEvolutionaryPulse = {
       null,
       "PulseBinaryShifterEvolutionaryPulse"
     );
-    impulse.version = "v15-Immortal-PulseBinaryShifterEvolutionary";
+    impulse.version = "v16-Immortal-PulseBinaryShifterEvolutionary";
     impulse.offline = true;
     impulseLog("PULSE_BINARY_SHIFTER_CREATE", {
       tickId: impulse.tickId,
@@ -786,7 +945,7 @@ export const PulseBinaryShifterEvolutionaryPulse = {
 };
 
 // ============================================================================
-// PRIMARY 15-Immortal IMPULSE (default Impulse)
+// PRIMARY 16-Immortal IMPULSE (default Impulse) + SPEED AWARENESS
 // ============================================================================
 export const ImpulseBinary = {
   create: (intent, payload = {}) =>
@@ -799,7 +958,7 @@ export const ImpulseBinary = {
 export const Impulse = {
   create(intent, payload = {}) {
     const impulse = ImpulseBinary.create(intent, payload);
-    impulse.version = "v15-Immortal";
+    impulse.version = "v16-Immortal";
     impulseLog("IMPULSE_CREATE", {
       tickId: impulse.tickId,
       intent,
@@ -817,20 +976,55 @@ export const Impulse = {
     return ImpulseBinary.computeUrgency(layerState);
   },
 
-  factorImpulse(impulse) {
-    impulse.factor *= 0.5;
+  factorImpulse(impulse, speedProfile = { mode: "auto" }) {
+    const mode = speedProfile?.mode || "auto";
+
+    let factorDecay = 0.5;
+    if (mode === "quicken") factorDecay = 0.35;
+    else if (mode === "extend") factorDecay = 0.65;
+
+    impulse.factor *= factorDecay;
     impulse.energy *= impulse.factor;
+
     if (impulse.urgency > 0) {
       impulse.energy += impulse.urgency * 0.1;
     }
-    impulseLog("IMPULSE_FACTOR", {
-      tickId: impulse.tickId,
-      factor: impulse.factor,
-      energy: impulse.energy,
+
+    // Build impulse-level speed fields
+    const speedField = buildImpulseSpeedField({
+      hops: impulse.path.length,
       urgency: impulse.urgency,
-      hopsSoFar: impulse.path.length,
-      band: impulse.pulse.meta.band
+      factor: impulse.factor
     });
+
+    const advantageField = buildImpulseAdvantageField({
+      energy: impulse.energy,
+      factor: impulse.factor,
+      hops: impulse.path.length
+    });
+
+    const experienceField = buildImpulseExperienceField({
+      hops: impulse.path.length,
+      band: impulse.pulse.meta.band,
+      speedBand: speedField.speedBand
+    });
+
+    // ⭐ NEW — compute speed policy from governor
+    const speedPolicy = computeSpeedPolicy({
+      impulseSpeed: speedField,
+      innerSpeed: impulse.meta.innerAgentSpeedField || null,
+      outerSpeed: impulse.meta.outerAgentSpeedField || null,
+      proxySpeed: impulse.meta.proxySpineSpeedField || null,
+      advantage: advantageField,
+      experience: experienceField,
+      healing: impulse.meta.healingState || null
+    });
+
+    impulse.meta.speedField = speedField;
+    impulse.meta.advantageField = advantageField;
+    impulse.meta.experienceField = experienceField;
+    impulse.meta.speedPolicy = speedPolicy;
+
     persistImpulseSnapshot("factor", impulse);
     return impulse;
   },
@@ -842,6 +1036,37 @@ export const Impulse = {
       layerState,
       delta
     );
+
+    const speedField = buildImpulseSpeedField({
+      hops: updated.path.length,
+      urgency: updated.urgency,
+      factor: updated.factor
+    });
+    const advantageField = buildImpulseAdvantageField({
+      energy: updated.energy,
+      factor: updated.factor,
+      hops: updated.path.length
+    });
+    const experienceField = buildImpulseExperienceField({
+      hops: updated.path.length,
+      band: updated.pulse.meta.band,
+      speedBand: speedField.speedBand
+    });
+    const speedPolicy = computeSpeedPolicy({
+      impulseSpeed: speedField,
+      innerSpeed: impulse.meta.innerAgentSpeedField || null,
+      outerSpeed: impulse.meta.outerAgentSpeedField || null,
+      proxySpeed: impulse.meta.proxySpineSpeedField || null,
+      advantage: advantageField,
+      experience: experienceField,
+      healing: impulse.meta.healingState || null
+    });
+
+    updated.meta.speedPolicy = speedPolicy;
+    updated.meta.speedField = speedField;
+    updated.meta.advantageField = advantageField;
+    updated.meta.experienceField = experienceField;
+
     impulseLog("IMPULSE_ANNOTATE", {
       tickId: updated.tickId,
       layer: layerIdentity.id,
@@ -850,7 +1075,10 @@ export const Impulse = {
       hopIndex: updated.path.length - 1,
       totalHops: updated.path.length,
       band: updated.pulse.meta.band,
-      presenceField: updated.pulse.meta.presenceField
+      presenceField: updated.pulse.meta.presenceField,
+      speedField,
+      advantageField,
+      experienceField
     });
     return updated;
   },
@@ -861,6 +1089,7 @@ export const Impulse = {
       tickId: snap.tickId,
       hops:   snap.hops,
       pulsePattern: snap.pulse.pattern,
+      speedPolicy: impulse.meta.speedPolicy || null,
       band: snap.pulse.meta.band
     });
     return snap;
@@ -905,7 +1134,7 @@ export const Impulse = {
     }
   },
 
-  // v15+ chunk/presence surfaces (non-breaking)
+  // v16+ chunk/presence/speed surfaces
   chunks(impulse, { maxChunkSize = 64 } = {}) {
     return buildImpulseChunksFromImpulse(impulse, { maxChunkSize });
   },
@@ -916,7 +1145,36 @@ export const Impulse = {
 
   presenceView(impulse) {
     return buildImpulsePresenceView(impulse);
+  },
+
+  speedField(impulse) {
+    return buildImpulseSpeedField({
+      hops: impulse.path.length,
+      urgency: impulse.urgency,
+      factor: impulse.factor
+    });
+  },
+
+  advantageField(impulse) {
+    return buildImpulseAdvantageField({
+      energy: impulse.energy,
+      factor: impulse.factor,
+      hops: impulse.path.length
+    });
+  },
+
+  experienceField(impulse) {
+    const speedField = this.speedField(impulse);
+    return buildImpulseExperienceField({
+      hops: impulse.path.length,
+      band: impulse.pulse.meta.band,
+      speedBand: speedField.speedBand
+    });
+  },
+  speedPolicy(impulse) {
+    return impulse.meta.speedPolicy || null;
   }
+
 };
 
 export const IMPULSE_META = { ...IMPULSE_CONTEXT };
@@ -927,24 +1185,16 @@ export const IMPULSE_META = { ...IMPULSE_CONTEXT };
 export const ImpulseStrategy = {
   create({ intent, payload = {}, version = "auto" }) {
 
-    // AUTO = always choose the highest-trust, newest, safest engine
     if (version === "auto") {
-      return Impulse.create(intent, payload);   // v15-Immortal (PRIMARY)
+      return Impulse.create(intent, payload);   // v16-Immortal (PRIMARY)
     }
 
     switch (version) {
-
-      // ---------------------------------------------------------------
-      // 1) FULL PULSE 15-Immortal (highest trust)
-      // ---------------------------------------------------------------
-      case "v15":
+      case "v16":
       case "immortal":
       case "full":
         return Impulse.create(intent, payload);
 
-      // ---------------------------------------------------------------
-      // 2) SHIFTER EVOLUTIONARY PULSES (risk + potential improvement)
-      // ---------------------------------------------------------------
       case "PulseShifterEvolutionaryPulse":
       case "shifter":
         return PulseShifterEvolutionaryPulse.create(intent, payload);
@@ -953,22 +1203,12 @@ export const ImpulseStrategy = {
       case "binary-shifter":
         return PulseBinaryShifterEvolutionaryPulse.create(intent, payload);
 
-      // ---------------------------------------------------------------
-      // 3) REGULAR OLDER PULSES (stable fallbacks)
-      // ---------------------------------------------------------------
-      case "v12.3":
-      case "presence":
-        // 12.3 Presence maps to 15-Immortal primary now
+      case "v15":
         return Impulse.create(intent, payload);
 
-      case "v11-prime":
-        return Impulse_v11_Prime.create(intent, payload);
-
-      case "v11-evo":
-        return Impulse_v11_Evo.create(intent, payload);
-
-      case "v11":
-        return Impulse_v11.create(intent, payload);
+      case "v12.3":
+      case "presence":
+        return Impulse.create(intent, payload);
 
       case "legacy-pulse":
       case "v10":
@@ -978,16 +1218,9 @@ export const ImpulseStrategy = {
       case "legacy":
         return ImpulseLegacy.create(intent, payload);
 
-      // ---------------------------------------------------------------
-      // DEFAULT → ALWAYS the newest, safest engine
-      // ---------------------------------------------------------------
       default:
         return Impulse.create(intent, payload);
     }
   }
 };
-
-// v11 lineage bindings (unchanged, but still available)
-export const Impulse_v11_Prime = { create: createPulseV3 };
-export const Impulse_v11_Evo   = { create: createPulseV2 };
-export const Impulse_v11       = { create: createLegacyPulse };
+export const ImpulseSpeedPolicy = computeSpeedPolicy;
