@@ -114,9 +114,9 @@ export const PulseRuntimeV2Meta = Object.freeze({
 import * as PulseWorldRegioning from "../PULSE-EXPANSION/PulseExpansion-v16.js";
 
 // Delta Engine (CoreMemory integrations)
-import * as PulseContinuance from "../PULSE-FINALITY/PULSE-CONTINUANCE/PulseContinuance-CoreMemoryIntegration-v1.js";
-import * as PulseOmniHosting from "../PULSE-FINALITY/PULSE-OMNIHOSTING/PulseOmniHosting-CoreMemoryIntegration-v1.js";
-import * as PulseSchema from "../PULSE-FINALITY/PULSE-SCHEMA/PulseSchema-CoreMemoryIntegration-v1.js";
+import * as PulseContinuance from "../PULSE-FINALITY/PULSE-CONTINUANCE/PulseContinuance-CoreMemoryIntegration-v16.js";
+import * as PulseOmniHosting from "../PULSE-FINALITY/PULSE-OMNIHOSTING/PulseOmniHosting-CoreMemoryIntegration-v16.js";
+import * as PulseSchema from "../PULSE-FINALITY/PULSE-SCHEMA/PulseSchema-CoreMemoryIntegration-v16.js";
 
 // Core Memory
 import { createPulseCoreMemory } from "../PULSE-CORE/PulseCoreMemory.js";

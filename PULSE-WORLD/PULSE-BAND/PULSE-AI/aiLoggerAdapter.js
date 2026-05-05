@@ -1,16 +1,16 @@
 // ============================================================================
-//  aiLoggerAdapter.js — Pulse OS v15‑IMMORTAL
+//  aiLoggerAdapter.js — Pulse OS v16‑IMMORTAL
 //  Binary Logger Membrane • Shadow Forensics • Artery Metrics • Window‑Safe
-//  PURE MEMBRANE. ZERO INTERPRETATION. ZERO RANDOMNESS.
+//  PURE MEMBRANE. ZERO INTERPRETATION. ZERO RANDOMNESS. DELTA‑AWARE, CI‑AWARE.
 // ============================================================================
 
 /*
 AI_EXPERIENCE_META = {
   identity: "aiLoggerAdapter",
-  version: "v15-Immortal",
+  version: "v16-Immortal",
   layer: "ai_adapter",
   role: "logger_adapter",
-  lineage: "aiLoggerAdapter-v10 → v11.3-Evo → v12.3-Presence → v15-Immortal",
+  lineage: "aiLoggerAdapter-v10 → v11.3-Evo → v12.3-Presence → v15-Immortal → v16-Immortal",
 
   evo: {
     adapter: true,
@@ -18,6 +18,15 @@ AI_EXPERIENCE_META = {
     symbolicPrimary: true,
     binaryAware: true,
     dualBand: true,
+
+    loggerMembrane: true,
+    shadowForensics: true,
+    arteryMetrics: true,
+    windowSafe: true,
+
+    computeIntelligenceAware: true,
+    binaryDeltaAware: true,
+    triHeartAware: true,
 
     deterministic: true,
     driftProof: true,
@@ -37,8 +46,8 @@ AI_EXPERIENCE_META = {
 export const LoggerAdapterMeta = Object.freeze({
   layer: "OrganismMembrane",
   role: "LOGGER_ADAPTER",
-  version: "15-Immortal",
-  identity: "aiLoggerAdapter-v15-Immortal",
+  version: "v16-Immortal",
+  identity: "aiLoggerAdapter-v16-Immortal",
 
   evo: Object.freeze({
     deterministic: true,
@@ -63,6 +72,10 @@ export const LoggerAdapterMeta = Object.freeze({
     arteryAware: true,
     identitySafe: true,
 
+    computeIntelligenceAware: true,
+    binaryDeltaAware: true,
+    triHeartAware: true,
+
     pureCompute: true,
     zeroNetwork: true,
     zeroFilesystem: true,
@@ -70,12 +83,13 @@ export const LoggerAdapterMeta = Object.freeze({
 
     multiInstanceReady: true,
     readOnly: true,
-    epoch: "15-Immortal"
+    epoch: "v16-Immortal"
   }),
 
   contract: Object.freeze({
     purpose:
-      "Transport binary packets safely from the organism to ProofLogger and shadow forensics without decoding or interpreting.",
+      "Transport binary packets safely from the organism to ProofLogger and shadow forensics without decoding or interpreting, " +
+      "while exposing window-safe artery metrics and optional compute-intelligence / delta context.",
 
     never: Object.freeze([
       "decode binary",
@@ -87,7 +101,9 @@ export const LoggerAdapterMeta = Object.freeze({
       "introduce randomness",
       "recursively log itself",
       "store or infer user identity from bits",
-      "apply policy logic on bits"
+      "apply policy logic on bits",
+      "derive cognition from bits",
+      "derive user profile from bits"
     ]),
 
     always: Object.freeze([
@@ -98,7 +114,8 @@ export const LoggerAdapterMeta = Object.freeze({
       "remain pure and minimal",
       "act as a safe membrane",
       "emit deterministic logger packets",
-      "expose artery metrics for observability"
+      "expose artery metrics for observability",
+      "remain identity-safe and policy-neutral"
     ])
   }),
 
@@ -123,10 +140,19 @@ function emitLoggerPacket(type, payload, { severity = "info" } = {}) {
 }
 
 // ============================================================================
-//  PREWARM — v15‑IMMORTAL membrane + artery warmup
+//  PREWARM — v16‑IMMORTAL membrane + artery + CI warmup
 // ============================================================================
-export function prewarmLoggerAdapter(dualBand = null, { trace = false } = {}) {
+export function prewarmLoggerAdapter(
+  dualBand = null,
+  {
+    trace = false,
+    computeSurface = null,   // optional: current compute-intelligence surface
+    computeDeltaPacket = null // optional: last compute delta packet
+  } = {}
+) {
   const binaryPressure = dualBand?.binary?.metabolic?.pressure ?? 0;
+  const binaryLoad = dualBand?.binary?.metabolic?.load ?? 0;
+
   const evolutionMode =
     dualBand?.symbolic?.evolution?.mode ||
     dualBand?.symbolic?.persona?.evolutionMode ||
@@ -135,7 +161,10 @@ export function prewarmLoggerAdapter(dualBand = null, { trace = false } = {}) {
   const packet = emitLoggerPacket("prewarm", {
     message: "Logger adapter prewarmed and membrane artery aligned.",
     binaryPressure,
-    evolutionMode
+    binaryLoad,
+    evolutionMode,
+    computeSurface: computeSurface || null,
+    computeDeltaPacket: computeDeltaPacket || null
   });
 
   if (trace) console.log("[LoggerAdapter] prewarm", packet);
@@ -143,7 +172,7 @@ export function prewarmLoggerAdapter(dualBand = null, { trace = false } = {}) {
 }
 
 // ============================================================================
-//  ORGAN IMPLEMENTATION — v15‑IMMORTAL
+//  ORGAN IMPLEMENTATION — v16‑IMMORTAL
 // ============================================================================
 export class AIBinaryLoggerAdapter {
   constructor(config = {}) {
@@ -153,6 +182,11 @@ export class AIBinaryLoggerAdapter {
     this.shadowLogger = config.shadowLogger || null;
     this.trace = !!config.trace;
 
+    // optional CI / delta context (read-only, never interpreted)
+    this.computeSurfaceProvider = config.computeSurfaceProvider || null;
+    this.computeDeltaProvider = config.computeDeltaProvider || null;
+    this.triHeartId = config.triHeartId || "dad"; // which heart this membrane is closest to
+
     if (!this.logger || typeof this.logger.log !== "function") {
       throw new Error("AIBinaryLoggerAdapter requires a ProofLogger-like object with .log()");
     }
@@ -161,11 +195,14 @@ export class AIBinaryLoggerAdapter {
       throw new Error("shadowLogger must implement .logRaw(binaryString, meta)");
     }
 
-    // v15‑IMMORTAL artery — membrane load + pressure metrics
+    // v16‑IMMORTAL artery — membrane load + pressure metrics + CI counters
     this.artery = {
       packetsIn: 0,
       packetsOut: 0,
       lastPacketBits: 0,
+      ciTaggedPackets: 0,
+      deltaTaggedPackets: 0,
+      lastSeverity: "info",
       snapshot: () => Object.freeze(this._snapshotArtery())
     };
   }
@@ -174,9 +211,17 @@ export class AIBinaryLoggerAdapter {
   //  ARTERY SNAPSHOT + BUCKETS — window-safe metrics
   // ---------------------------------------------------------------------------
   _snapshotArtery() {
-    const { packetsIn, packetsOut, lastPacketBits } = this.artery;
-    const load = Math.min(1, (packetsIn + packetsOut) / 2000);
-    const pressure = Math.min(1, lastPacketBits / 131072);
+    const {
+      packetsIn,
+      packetsOut,
+      lastPacketBits,
+      ciTaggedPackets,
+      deltaTaggedPackets,
+      lastSeverity
+    } = this.artery;
+
+    const load = Math.min(1, (packetsIn + packetsOut) / 4000);
+    const pressure = Math.min(1, lastPacketBits / 262144); // 256 KiB window
 
     return {
       packetsIn,
@@ -185,39 +230,88 @@ export class AIBinaryLoggerAdapter {
       load,
       loadBucket: this._bucketLoad(load),
       pressure,
-      pressureBucket: this._bucketPressure(pressure)
+      pressureBucket: this._bucketPressure(pressure),
+      ciTaggedPackets,
+      deltaTaggedPackets,
+      lastSeverity
     };
   }
 
   _bucketLoad(v) {
-    if (v >= 0.9) return "saturated";
-    if (v >= 0.7) return "high";
-    if (v >= 0.4) return "medium";
-    if (v > 0)   return "low";
+    if (v >= 0.95) return "saturated";
+    if (v >= 0.75) return "high";
+    if (v >= 0.4)  return "medium";
+    if (v > 0)     return "low";
     return "idle";
   }
 
   _bucketPressure(v) {
-    if (v >= 0.9) return "overload";
-    if (v >= 0.7) return "high";
-    if (v >= 0.4) return "medium";
-    if (v > 0)   return "low";
+    if (v >= 0.95) return "overload";
+    if (v >= 0.75) return "high";
+    if (v >= 0.4)  return "medium";
+    if (v > 0)     return "low";
     return "none";
+  }
+
+  // ---------------------------------------------------------------------------
+  //  OPTIONAL CI / DELTA CONTEXT — read-only, non-interpreting
+  // ---------------------------------------------------------------------------
+  _getComputeContext() {
+    let computeSurface = null;
+    let computeDeltaPacket = null;
+
+    try {
+      if (typeof this.computeSurfaceProvider === "function") {
+        computeSurface = this.computeSurfaceProvider() || null;
+      }
+    } catch (_) {
+      computeSurface = null;
+    }
+
+    try {
+      if (typeof this.computeDeltaProvider === "function") {
+        computeDeltaPacket = this.computeDeltaProvider() || null;
+      }
+    } catch (_) {
+      computeDeltaPacket = null;
+    }
+
+    return { computeSurface, computeDeltaPacket };
   }
 
   // ---------------------------------------------------------------------------
   //  PACKET BUILDER — pure, deterministic, identity-safe
   // ---------------------------------------------------------------------------
-  _buildPacket(bits, meta = {}) {
+  _buildPacket(bits, meta = {}, severity = "info") {
+    const { computeSurface, computeDeltaPacket } = this._getComputeContext();
+
+    const ciMeta =
+      computeSurface || computeDeltaPacket
+        ? {
+            triHeartId: this.triHeartId,
+            computeSurface: computeSurface || null,
+            computeDeltaPacket: computeDeltaPacket || null
+          }
+        : null;
+
+    if (ciMeta && computeSurface) {
+      this.artery.ciTaggedPackets++;
+    }
+    if (ciMeta && computeDeltaPacket) {
+      this.artery.deltaTaggedPackets++;
+    }
+
     return Object.freeze({
       type: "binary-event",
       source: this.id,
       bits,
       bitLength: bits.length,
       timestamp: Date.now(),
+      severity,
       meta: Object.freeze({
         ...meta,
-        identitySafe: true
+        identitySafe: true,
+        ci: ciMeta
       })
     });
   }
@@ -238,16 +332,17 @@ export class AIBinaryLoggerAdapter {
   // ---------------------------------------------------------------------------
   //  PRIMARY LOGGING — ProofLogger (human-facing)
 // ---------------------------------------------------------------------------
-  logBinary(binaryStr, meta = {}) {
+  logBinary(binaryStr, meta = {}, { severity = "info" } = {}) {
     this._assertBinary(binaryStr);
 
-    const packet = this._buildPacket(binaryStr, meta);
+    const packet = this._buildPacket(binaryStr, meta, severity);
 
     // Shadow logger ALWAYS fires first
     this._shadowLog(binaryStr, packet.meta);
 
     this._trace("logBinary:packet", {
       bitLength: packet.bitLength,
+      severity: packet.severity,
       meta: packet.meta
     });
 
@@ -256,20 +351,22 @@ export class AIBinaryLoggerAdapter {
     this.artery.packetsIn++;
     this.artery.packetsOut++;
     this.artery.lastPacketBits = packet.bitLength;
+    this.artery.lastSeverity = severity;
 
     return emitLoggerPacket(
       "logged",
       {
         bitLength: packet.bitLength,
+        severity: packet.severity,
         meta: packet.meta,
         artery: this._snapshotArtery()
       },
-      { severity: "info" }
+      { severity }
     );
   }
 
   // ---------------------------------------------------------------------------
-  //  PIPELINE ATTACHMENT — logs every stage output
+  //  PIPELINE ATTACHMENT — window-safe observer
   // ---------------------------------------------------------------------------
   attachToPipeline(pipeline) {
     if (!pipeline || typeof pipeline.addObserver !== "function") {
@@ -291,7 +388,7 @@ export class AIBinaryLoggerAdapter {
   }
 
   // ---------------------------------------------------------------------------
-  //  REFLEX ATTACHMENT — logs every reflex output
+  //  REFLEX ATTACHMENT — window-safe reflex logging
   // ---------------------------------------------------------------------------
   attachToReflex(reflex) {
     if (!reflex || typeof reflex.run !== "function") {
@@ -321,7 +418,7 @@ export class AIBinaryLoggerAdapter {
   }
 
   // ---------------------------------------------------------------------------
-  //  WINDOW-SAFE ARTERY SNAPSHOT
+  //  SNAPSHOT — window-safe membrane state
   // ---------------------------------------------------------------------------
   snapshotMembrane() {
     return emitLoggerPacket("snapshot", {
@@ -330,7 +427,7 @@ export class AIBinaryLoggerAdapter {
   }
 
   // ---------------------------------------------------------------------------
-  //  VALIDATION
+  //  INTERNAL HELPERS
   // ---------------------------------------------------------------------------
   _assertBinary(str) {
     if (typeof str !== "string" || !/^[01]+$/.test(str)) {
@@ -338,9 +435,6 @@ export class AIBinaryLoggerAdapter {
     }
   }
 
-  // ---------------------------------------------------------------------------
-  //  TRACE
-  // ---------------------------------------------------------------------------
   _trace(event, payload) {
     if (!this.trace) return;
     console.log(`[${this.id}] ${event}`, payload);

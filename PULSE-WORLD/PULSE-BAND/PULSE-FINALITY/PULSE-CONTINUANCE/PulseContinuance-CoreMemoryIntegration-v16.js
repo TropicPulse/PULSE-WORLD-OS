@@ -1,62 +1,23 @@
 // ============================================================================
-//  PULSE OS v12.3‑PRESENCE‑EVO+
+//  PULSE OS v16‑IMMORTAL
 //  CONTINUANCE + CORE MEMORY INTEGRATION ENGINE
-//  “THE CONTINUANCE BACKBONE+++ / HOT MEMORY ORGAN / PRESENCE‑AWARE”
+//  “THE CONTINUANCE BACKBONE+++ / HOT MEMORY ORGAN / PRESENCE‑AWARE / CI‑AWARE”
 //  PURE SYMBOLIC CACHING • ZERO MUTATION OF PHYSICS • ZERO RANDOMNESS
 // ============================================================================
+
 /*
 AI_EXPERIENCE_META = {
-  identity: "PulseGPUWisdomCortex",
-  version: "v14-Immortal",
-  layer: "gpu_brain",
-  role: "gpu_wisdom_cortex",
-  lineage: "PulseGPU-v14",
+  identity: "PulseContinuanceCoreMemory",
+  version: "v16-Immortal",
+  layer: "continuance_core",
+  role: "continuance_backbone_organ",
+  lineage: "PulseContinuance-CoreMemory-v12.3-Presence-Evo+ → v16-Immortal",
 
   evo: {
-    gpuCognition: true,
-    gpuHeuristics: true,
-    gpuMetaReasoning: true,
+    continuanceBackbone: true,
+    hotMemoryOrgan: true,
+    symbolicMemory: true,
 
-    gpuCompute: true,
-    deterministic: true,
-    driftProof: true,
-    pureCompute: true,
-
-    zeroNetwork: true,
-    zeroFilesystem: true,
-    zeroMutationOfInput: true
-  },
-
-  contract: {
-    always: [
-      "PulseGPUBrain",
-      "PulseGPUCognitiveLayer",
-      "PulseGPUGeneticMemory"
-    ],
-    never: [
-      "safeRoute",
-      "fetchViaCNS",
-      "legacyWisdomCortex"
-    ]
-  }
-}
-*/
-
-import PulseContinuanceAPI from "./PulseContinuance-v11-Evo.js";
-import { createPulseCoreMemory } from "../../PULSE-CORE/PulseCoreMemory.js";
-
-// ============================================================================
-//  META — v12.3-Presence-Evo+
-// ============================================================================
-export const PulseContinuanceCoreMemoryMeta = Object.freeze({
-  layer: "PulseContinuanceCoreMemory",
-  role: "CONTINUANCE_BACKBONE_ORGAN",
-  version: "12.3-Presence-Evo+",
-  identity: "PulseContinuance-CoreMemory-v12.3-Presence-Evo+",
-
-  evo: Object.freeze({
-    deterministic: true,
-    driftProof: true,
     continuanceAware: true,
     outageAware: true,
     fluctuationAware: true,
@@ -65,26 +26,135 @@ export const PulseContinuanceCoreMemoryMeta = Object.freeze({
     regionAware: true,
     gridAware: true,
 
-    // 12.3+ advantages
     presenceAware: true,
     bandPresenceAware: true,
     routerPresenceAware: true,
     advantageAware: true,
     fallbackBandAware: true,
+
     chunkAware: true,
     cacheAware: true,
     prewarmAware: true,
     coldStartAware: true,
 
-    // memory
+    triHeartAware: true,
+    computeIntelligenceAware: true,
+
+    deterministic: true,
+    driftProof: true,
+    pureCompute: true,
+    zeroRandomness: true,
+    zeroMutationOfPhysics: true,
+    zeroNetwork: true,
+    zeroFilesystem: true
+  },
+
+  contract: {
+    always: [
+      "PulseContinuanceAPI",
+      "PulseCoreMemory",
+      "PulseRouterPresence",
+      "PulseAdvantageField"
+    ],
+    never: [
+      "safeRoute",
+      "fetchViaCNS",
+      "mutatePhysics",
+      "introduceRandomness"
+    ]
+  }
+}
+*/
+
+import PulseContinuanceAPI from "./PulseContinuance-v16.js";
+import { createPulseCoreMemory } from "../../PULSE-CORE/PulseCoreMemory.js";
+
+// ============================================================================
+//  META — v16‑IMMORTAL
+// ============================================================================
+export const PulseContinuanceCoreMemoryMeta = Object.freeze({
+  layer: "PulseContinuanceCoreMemory",
+  role: "CONTINUANCE_BACKBONE_ORGAN",
+  version: "16-Immortal",
+  identity: "PulseContinuance-CoreMemory-v16-Immortal",
+
+  evo: Object.freeze({
+    deterministic: true,
+    driftProof: true,
+
+    continuanceAware: true,
+    outageAware: true,
+    fluctuationAware: true,
+    replicationAware: true,
+    placementAware: true,
+    regionAware: true,
+    gridAware: true,
+
+    presenceAware: true,
+    bandPresenceAware: true,
+    routerPresenceAware: true,
+    advantageAware: true,
+    fallbackBandAware: true,
+
+    chunkAware: true,
+    cacheAware: true,
+    prewarmAware: true,
+    coldStartAware: true,
+
     hotMemoryOrgan: true,
     symbolicMemory: true,
     zeroMutationOfPhysics: true,
     zeroRandomness: true,
     zeroIO: true,
-    epoch: "12.3-Presence-Evo+"
+
+    triHeartAware: true,
+    computeIntelligenceAware: true,
+
+    multiInstanceReady: true,
+    readOnly: true,
+    epoch: "16-Immortal"
+  }),
+
+  contract: Object.freeze({
+    purpose:
+      "Compute continuance risk, preemptive moves, and replication plans while caching hot symbolic state " +
+      "for presence, advantage, and band fallback — without mutating physics or introducing randomness.",
+
+    never: Object.freeze([
+      "mutate physical topology directly",
+      "perform network IO",
+      "perform filesystem IO",
+      "introduce randomness",
+      "derive user identity",
+      "apply routing policy",
+      "act as a scheduler",
+      "act as a router"
+    ]),
+
+    always: Object.freeze([
+      "remain pure symbolic compute",
+      "cache last continuance state in hot memory",
+      "remain deterministic across identical inputs",
+      "expose window-safe continuance snapshots",
+      "remain presence-aware and band-aware",
+      "remain identity-safe and policy-neutral"
+    ])
   })
 });
+
+// ============================================================================
+//  PACKET EMITTER — deterministic, continuance-scoped
+// ============================================================================
+function emitContinuancePacket(type, payload) {
+  return Object.freeze({
+    meta: PulseContinuanceCoreMemoryMeta,
+    packetType: `continuance-${type}`,
+    packetId: `continuance-${type}-${Date.now()}`,
+    timestamp: Date.now(),
+    epoch: PulseContinuanceCoreMemoryMeta.evo.epoch,
+    ...payload
+  });
+}
 
 // ============================================================================
 //  CORE MEMORY SETUP
@@ -108,8 +178,48 @@ const KEY_LAST_CHUNK_HINTS = "last-chunk-hints";
 const KEY_LAST_CACHE_HINTS = "last-cache-hints";
 const KEY_LAST_PREWARM_HINTS = "last-prewarm-hints";
 
+const KEY_LAST_PACKET = "last-continuance-packet";
+
 // ============================================================================
-//  WRAPPED ENGINE — v12.3-Presence-Evo+
+//  ARTERY — window-safe continuance metrics
+// ============================================================================
+const ContinuanceArtery = {
+  computations: 0,
+  lastDurationMs: 0,
+  lastRiskRegions: 0,
+  lastReplicationTargets: 0,
+  snapshot() {
+    const { computations, lastDurationMs, lastRiskRegions, lastReplicationTargets } =
+      ContinuanceArtery;
+
+    const load = Math.min(1, computations / 1000);
+    const durationPressure = Math.min(1, lastDurationMs / 500); // 500ms window
+
+    return Object.freeze({
+      computations,
+      lastDurationMs,
+      lastRiskRegions,
+      lastReplicationTargets,
+      load,
+      loadBucket:
+        load >= 0.9 ? "saturated" :
+        load >= 0.7 ? "high" :
+        load >= 0.4 ? "medium" :
+        load > 0    ? "low" :
+                      "idle",
+      durationPressure,
+      durationBucket:
+        durationPressure >= 0.9 ? "overload" :
+        durationPressure >= 0.7 ? "high" :
+        durationPressure >= 0.4 ? "medium" :
+        durationPressure > 0    ? "low" :
+                                  "none"
+    });
+  }
+};
+
+// ============================================================================
+//  WRAPPED ENGINE — v16‑IMMORTAL
 // ============================================================================
 export function computeContinuanceWithMemory({
   regionSignals,
@@ -121,8 +231,13 @@ export function computeContinuanceWithMemory({
   fallbackBandLevel = 0,
   chunkHints = {},
   cacheHints = {},
-  prewarmHints = {}
+  prewarmHints = {},
+  triHeartId = "dad",          // which heart this continuance snapshot is closest to
+  computeSurface = null,       // optional: current compute-intelligence surface
+  computeDeltaPacket = null    // optional: last compute delta packet
 }) {
+  const start = Date.now();
+
   // Prewarm memory (bulk load)
   CoreMemory.prewarm();
 
@@ -168,7 +283,8 @@ export function computeContinuanceWithMemory({
     band: presenceContext.band || "pulseband",
     deviceId: presenceContext.deviceId || null,
     hydraNodeId: presenceContext.hydraNodeId || null,
-    route: presenceContext.route || "/"
+    route: presenceContext.route || "/",
+    triHeartId
   };
 
   // 5. Build advantage field
@@ -178,9 +294,20 @@ export function computeContinuanceWithMemory({
     timeSavedMs: advantageContext.timeSavedMs ?? 0
   };
 
-  // Return combined symbolic output
-  return {
-    meta: PulseContinuanceCoreMemoryMeta,
+  const durationMs = Date.now() - start;
+
+  ContinuanceArtery.computations += 1;
+  ContinuanceArtery.lastDurationMs = durationMs;
+  ContinuanceArtery.lastRiskRegions = Array.isArray(riskReport?.perRegion)
+    ? riskReport.perRegion.length
+    : Object.keys(riskReport?.perRegion || {}).length;
+  ContinuanceArtery.lastReplicationTargets = Array.isArray(
+    replicationPlan?.targets
+  )
+    ? replicationPlan.targets.length
+    : 0;
+
+  const packet = emitContinuancePacket("compute", {
     riskReport,
     preemptivePlan,
     replicationPlan,
@@ -189,17 +316,27 @@ export function computeContinuanceWithMemory({
     fallbackBandLevel,
     chunkHints,
     cacheHints,
-    prewarmHints
-  };
+    prewarmHints,
+    computeSurface: computeSurface || null,
+    computeDeltaPacket: computeDeltaPacket || null,
+    artery: ContinuanceArtery.snapshot()
+  });
+
+  CoreMemory.set(ROUTE, KEY_LAST_PACKET, packet);
+
+  return packet;
 }
 
 // ============================================================================
-//  HOT MEMORY ACCESSORS — v12.3-Presence-Evo+
+//  HOT MEMORY ACCESSORS — v16‑IMMORTAL
 // ============================================================================
 export function getLastContinuanceState() {
   CoreMemory.prewarm();
 
   return {
+    meta: PulseContinuanceCoreMemoryMeta,
+    artery: ContinuanceArtery.snapshot(),
+
     regionSignals: CoreMemory.get(ROUTE, KEY_LAST_REGION),
     gridSignals: CoreMemory.get(ROUTE, KEY_LAST_GRID),
     placement: CoreMemory.get(ROUTE, KEY_LAST_PLACEMENT),
@@ -214,7 +351,9 @@ export function getLastContinuanceState() {
 
     chunkHints: CoreMemory.get(ROUTE, KEY_LAST_CHUNK_HINTS),
     cacheHints: CoreMemory.get(ROUTE, KEY_LAST_CACHE_HINTS),
-    prewarmHints: CoreMemory.get(ROUTE, KEY_LAST_PREWARM_HINTS)
+    prewarmHints: CoreMemory.get(ROUTE, KEY_LAST_PREWARM_HINTS),
+
+    lastContinuancePacket: CoreMemory.get(ROUTE, KEY_LAST_PACKET)
   };
 }
 
@@ -222,9 +361,11 @@ export function getLastContinuanceState() {
 //  EXPORT
 // ============================================================================
 const PulseContinuanceCoreMemory = {
+  meta: PulseContinuanceCoreMemoryMeta,
   computeContinuanceWithMemory,
   getLastContinuanceState,
-  CoreMemory
+  CoreMemory,
+  artery: ContinuanceArtery
 };
 
 export default PulseContinuanceCoreMemory;
