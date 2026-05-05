@@ -1,13 +1,14 @@
 // ============================================================================
-//  PULSE ROUTER EVOLUTIONARY INSTINCTS v12.3‑Evo‑DualStack — ROUTER EVOLUTION CORE
+//  PULSE ROUTER EVOLUTIONARY INSTINCTS v16‑IMMORTAL‑CORE‑DUALSTACK
 //  Adaptive Routing Identity • Genetic Route Memory • Best‑Path Preservation
-//  Symbolic + Binary + Presence + CacheChunk Ancestry • Deterministic • Drift‑Proof
+//  Symbolic + Binary + Presence + CacheChunk + Cosmos Ancestry • Deterministic • Drift‑Proof
+//  FULL ORGAN — Context, Helpers, Hashing, Scoring, Advantage, Store, Wrapper, Exports
 // ============================================================================
 //
 //  ROLE:
 //    • Stores evolutionary routing memory (success/failure/degrade).
-//    • Symbolic + Binary + Presence + CacheChunk dual‑stack ancestry.
-//    • Deterministic scoring + regression detection.
+//    • Symbolic + Binary + Presence + CacheChunk + Cosmos dual‑stack ancestry.
+//    • Deterministic scoring + regression detection + advantage field.
 //    • Loop‑Theory‑Aware.
 //    • Pure memory organ — NO routing, NO compute, NO mutation outside instance.
 //
@@ -16,10 +17,10 @@
 /*
 AI_EXPERIENCE_META = {
   identity: "PulseRouterEvolutionaryInstincts",
-  version: "v14.4-Evo-INSTINCTS",
+  version: "v16.0-IMMORTAL-INSTINCTS",
   layer: "frontend",
   role: "router_evolutionary_memory",
-  lineage: "PulseOS-v12",
+  lineage: "PulseOS-v16-IMMORTAL",
 
   evo: {
     instinctCore: true,
@@ -29,7 +30,15 @@ AI_EXPERIENCE_META = {
     chunkAligned: true,
     safeRouteFree: true,
     reflexMemory: true,
-    ancestryAware: true
+    ancestryAware: true,
+    cosmosAware: true,
+    cacheChunkAware: true,
+    prewarmAware: true,
+    advantageFieldAware: true,
+    intelDualHashAware: true,
+    triHashAware: true,
+    driftProof: true,
+    snapshotReady: true
   },
 
   contract: {
@@ -37,7 +46,8 @@ AI_EXPERIENCE_META = {
       "PulseRouter",
       "PulseBinaryRouter",
       "PulseRouterEvolutionaryDesign",
-      "PulseRouterEvolutionaryThought"
+      "PulseRouterEvolutionaryThought",
+      "PulseRouterCommandments"
     ],
     never: [
       "legacyRouterInstincts",
@@ -49,16 +59,18 @@ AI_EXPERIENCE_META = {
 }
 */
 
+
 // ------------------------------------------------------------
-// v12.3‑Evo CONTEXT METADATA — Router Evolution Identity
+// v16‑IMMORTAL CONTEXT METADATA — Router Evolution Identity
 // ------------------------------------------------------------
-const ROUTER_EVOLUTION_CONTEXT = {
+const ROUTER_EVOLUTION_CONTEXT_V16 = {
   layer: "PulseRouterEvolutionaryInstincts",
   role: "ROUTER_EVOLUTION_CORE",
   purpose: "Adaptive routing identity + genetic memory for symbolic + binary routes",
-  context: "Stores best-known routes, lineage, stability, regression, binary + presence + cache ancestry",
+  context:
+    "Stores best-known routes, lineage, stability, regression, binary + presence + cache + cosmos ancestry",
   target: "dual-stack-router",
-  version: 12.3,
+  version: "16.0-IMMORTAL",
   selfRepairable: true,
 
   evo: {
@@ -73,11 +85,11 @@ const ROUTER_EVOLUTION_CONTEXT = {
     routerOrganContract: "PulseRouter-v11",
     earnCompatibility: "Earn-v3",
 
-    // ⭐ binary + presence + cache-aware instincts cortex
     binaryAware: true,
     presenceAware: true,
     cacheChunkAware: true,
-    prewarmAware: true
+    prewarmAware: true,
+    cosmosAware: true
   },
 
   loopTheory: {
@@ -87,6 +99,29 @@ const ROUTER_EVOLUTION_CONTEXT = {
     errorRouteAround: true
   }
 };
+
+
+// ------------------------------------------------------------
+// COSMOS HELPERS — v16 IMMORTAL
+// ------------------------------------------------------------
+function normalizeCosmos(cosmos = {}) {
+  return {
+    universeId: cosmos.universeId || "u:default",
+    timelineId: cosmos.timelineId || "t:main",
+    branchId: cosmos.branchId || "b:root",
+    worldId: cosmos.worldId || "w:primary",
+    shardId: cosmos.shardId || "s:0"
+  };
+}
+
+function cosmosSignature(cosmos) {
+  const raw = `${cosmos.universeId}|${cosmos.timelineId}|${cosmos.branchId}|${cosmos.worldId}|${cosmos.shardId}`;
+  let h = 0;
+  for (let i = 0; i < raw.length; i++) {
+    h = (h * 31 + raw.charCodeAt(i)) >>> 0;
+  }
+  return `cx16-${h.toString(16)}`;
+}
 
 
 // ------------------------------------------------------------
@@ -101,15 +136,76 @@ function stableStringify(value) {
 
 
 // ------------------------------------------------------------
-// Utility: deterministic hash
+// Utility: deterministic hash (32‑bit hex)
 // ------------------------------------------------------------
-function simpleHash(str) {
+function simpleHash32(str) {
   let hash = 0;
   for (let i = 0; i < str.length; i++) {
     hash = (hash << 5) - hash + str.charCodeAt(i);
     hash |= 0;
   }
-  return (hash >>> 0).toString(16);
+  return (hash >>> 0) >>> 0;
+}
+
+function simpleHash(str) {
+  return simpleHash32(str).toString(16);
+}
+
+
+// ------------------------------------------------------------
+// IntelDualHash + TriHash — v16 Route Fingerprints
+// ------------------------------------------------------------
+function intelDualHash(shape) {
+  const raw = stableStringify(shape || {});
+  const mid = Math.floor(raw.length / 2);
+
+  const left = raw.slice(0, mid);
+  const right = raw.slice(mid);
+
+  const h1 = simpleHash32(left);
+  const h2 = simpleHash32(right);
+
+  const hi = (BigInt(h1) << 32n) | BigInt(h2);
+  const lo = BigInt(simpleHash32(raw));
+
+  const combined = (hi ^ (lo << 1n)) & ((1n << 96n) - 1n);
+
+  const hiHex = hi.toString(16);
+  const loHex = combined.toString(16);
+
+  return {
+    primary: `idh16-${hiHex}`,
+    secondary: `idh16s-${loHex}`,
+    hi,
+    lo
+  };
+}
+
+function triHash(shape) {
+  const raw = stableStringify(shape || {});
+  const len = raw.length || 1;
+  const third = Math.floor(len / 3);
+
+  const a = raw.slice(0, third);
+  const b = raw.slice(third, 2 * third);
+  const c = raw.slice(2 * third);
+
+  const hA = simpleHash32(a);
+  const hB = simpleHash32(b);
+  const hC = simpleHash32(c);
+
+  const hi = (BigInt(hA) << 32n) | BigInt(hB);
+  const mid = BigInt(hC);
+  const lo = BigInt(simpleHash32(raw));
+
+  const combined = (hi ^ (mid << 16n) ^ (lo << 1n)) & ((1n << 112n) - 1n);
+
+  return {
+    triPrimary: `th16-${combined.toString(16)}`,
+    hi,
+    mid,
+    lo
+  };
 }
 
 
@@ -126,7 +222,7 @@ function buildLineageSignature(lineage) {
   return lineage.join(">");
 }
 
-function buildPageAncestrySignature({ pattern, lineage, pageId }) {
+function buildPageAncestrySignature({ pattern, lineage, pageId, cosmos }) {
   const safePattern = typeof pattern === "string" ? pattern : "";
   const safeLineage = Array.isArray(lineage) ? lineage : [];
   const safePageId = pageId || "NO_PAGE";
@@ -135,7 +231,8 @@ function buildPageAncestrySignature({ pattern, lineage, pageId }) {
     pattern: safePattern,
     patternAncestry: buildPatternAncestry(safePattern),
     lineageSignature: buildLineageSignature(safeLineage),
-    pageId: safePageId
+    pageId: safePageId,
+    cosmosSignature: cosmosSignature(cosmos)
   };
 
   return simpleHash(stableStringify(shape));
@@ -176,12 +273,12 @@ function extractBinarySurface(payload = {}) {
 // Presence / multi‑presence helpers
 // ------------------------------------------------------------
 function extractPresenceSurface(payload = {}) {
-  const instanceId   = payload.instanceId || null;
-  const presenceId   = payload.presenceId || null;
-  const presenceRole = payload.presenceRole || null;
+  const instanceId      = payload.instanceId || null;
+  const presenceId      = payload.presenceId || null;
+  const presenceRole    = payload.presenceRole || null;
   const presenceGroupId = payload.presenceGroupId || null;
-  const regionId     = payload.regionId || null;
-  const hostName     = payload.hostName || null;
+  const regionId        = payload.regionId || null;
+  const hostName        = payload.hostName || null;
 
   const hasPresence =
     !!instanceId ||
@@ -220,7 +317,7 @@ function extractCacheChunkSurface(payload = {}) {
     !!prewarmKey ||
     !!prewarmHint ||
     !!cacheStrategy ||
-    !!advantageField;
+    advantageField !== null;
 
   return {
     hasCacheChunk,
@@ -235,21 +332,57 @@ function extractCacheChunkSurface(payload = {}) {
 
 
 // ------------------------------------------------------------
-// Route hash — Genetic Route Fingerprint (Symbolic + Binary + Presence + Cache)
+// Route hash — Genetic Route Fingerprint (Symbolic + Binary + Presence + Cache + Cosmos)
 // ------------------------------------------------------------
-function computeRouteHash(routeShape, payload = {}) {
+function computeRouteHash(routeShape, payload = {}, cosmos = {}) {
   const binary   = extractBinarySurface(payload);
   const presence = extractPresenceSurface(payload);
   const cache    = extractCacheChunkSurface(payload);
+  const cx       = normalizeCosmos(cosmos);
 
   const base = {
     routeShape,
     binary,
     presence,
-    cache
+    cache,
+    cosmos: cx
   };
 
   return simpleHash(stableStringify(base));
+}
+
+function computeRouteDualHash(routeShape, payload = {}, cosmos = {}) {
+  const binary   = extractBinarySurface(payload);
+  const presence = extractPresenceSurface(payload);
+  const cache    = extractCacheChunkSurface(payload);
+  const cx       = normalizeCosmos(cosmos);
+
+  const base = {
+    routeShape,
+    binary,
+    presence,
+    cache,
+    cosmos: cx
+  };
+
+  return intelDualHash(base);
+}
+
+function computeRouteTriHash(routeShape, payload = {}, cosmos = {}) {
+  const binary   = extractBinarySurface(payload);
+  const presence = extractPresenceSurface(payload);
+  const cache    = extractCacheChunkSurface(payload);
+  const cx       = normalizeCosmos(cosmos);
+
+  const base = {
+    routeShape,
+    binary,
+    presence,
+    cache,
+    cosmos: cx
+  };
+
+  return triHash(base);
 }
 
 
@@ -301,20 +434,75 @@ function classifyDegradationTier(healthScore) {
 
 
 // ------------------------------------------------------------
-// Memory entry model — Evolutionary Route Record (DualStack + Presence + Cache)
+// Advantage field — unified instinct advantage v4
+// ------------------------------------------------------------
+function clamp01(v) {
+  if (typeof v !== "number" || Number.isNaN(v)) return 0;
+  if (v < 0) return 0;
+  if (v > 1) return 1;
+  return v;
+}
+
+function computeInstinctAdvantageField({
+  healthScore,
+  routeScore,
+  regressionDelta,
+  binarySurface,
+  presenceSurface,
+  cacheSurface,
+  cosmos
+}) {
+  const h = typeof healthScore === "number" ? clamp01(healthScore) : 1.0;
+  const rs = typeof routeScore === "number"
+    ? clamp01(routeScore / 100000)
+    : 0.5;
+
+  const reg = typeof regressionDelta === "number"
+    ? clamp01(1 - Math.max(-100, Math.min(100, regressionDelta)) / 200)
+    : 0.8;
+
+  const b = binarySurface && binarySurface.hasBinary ? 0.8 : 0.5;
+  const p = presenceSurface && presenceSurface.hasPresence ? 0.8 : 0.5;
+  const c = cacheSurface && cacheSurface.hasCacheChunk ? 0.8 : 0.5;
+
+  const cx = normalizeCosmos(cosmos || {});
+  const cosmosStability = cx.universeId === "u:default" ? 0.9 : 0.8;
+
+  const base = h * 0.35 + rs * 0.25 + reg * 0.2 + cosmosStability * 0.2;
+  const envBoost = (b + p + c) / 3;
+
+  const adv = base * 0.75 + envBoost * 0.25;
+  return clamp01(adv);
+}
+
+
+// ------------------------------------------------------------
+// Memory entry model — Evolutionary Route Record (DualStack + Presence + Cache + Cosmos)
 // ------------------------------------------------------------
 class PulseRouterEvolutionaryStore {
   constructor() {
     this.entries = new Map();
-    this.meta = { ...ROUTER_EVOLUTION_CONTEXT };
+    this.meta = { ...ROUTER_EVOLUTION_CONTEXT_V16 };
   }
 
   clear() {
     this.entries.clear();
   }
 
-  recordRoute({ routeShape, routeStats, healthScore, pattern, lineage, pageId, payload }) {
-    const routeHash = computeRouteHash(routeShape, payload || {});
+  recordRoute({
+    routeShape,
+    routeStats,
+    healthScore,
+    pattern,
+    lineage,
+    pageId,
+    payload,
+    cosmos
+  }) {
+    const cx = normalizeCosmos(cosmos || {});
+    const routeHash = computeRouteHash(routeShape, payload || {}, cx);
+    const routeDualHash = computeRouteDualHash(routeShape, payload || {}, cx);
+    const routeTriHash = computeRouteTriHash(routeShape, payload || {}, cx);
     const score = scoreRoute(routeStats);
 
     const existing = this.entries.get(routeHash);
@@ -330,12 +518,13 @@ class PulseRouterEvolutionaryStore {
     const pageAncestrySignature = buildPageAncestrySignature({
       pattern: safePattern,
       lineage: safeLineage,
-      pageId: safePageId
+      pageId: safePageId,
+      cosmos: cx
     });
 
-    const binary    = extractBinarySurface(payload || {});
-    const presence  = extractPresenceSurface(payload || {});
-    const cache     = extractCacheChunkSurface(payload || {});
+    const binary   = extractBinarySurface(payload || {});
+    const presence = extractPresenceSurface(payload || {});
+    const cache    = extractCacheChunkSurface(payload || {});
 
     const loopTheory = {
       routingCompletion: true,
@@ -344,13 +533,25 @@ class PulseRouterEvolutionaryStore {
       errorRouteAround: true
     };
 
+    const baselineStats = existing ? existing.bestStats || {} : routeStats || {};
+    const regressionDelta = detectRegression(routeStats || {}, baselineStats);
+
+    const advantageField = computeInstinctAdvantageField({
+      healthScore: safeHealth,
+      routeScore: score,
+      regressionDelta,
+      binarySurface: binary,
+      presenceSurface: presence,
+      cacheSurface: cache,
+      cosmos: cx
+    });
+
     const baseEntry = {
       key: routeHash,
       routeShape: routeShape || {},
       bestStats: routeStats || {},
       bestScore: score,
 
-      // symbolic ancestry
       pattern: safePattern,
       patternAncestry,
       lineage: safeLineage,
@@ -358,19 +559,21 @@ class PulseRouterEvolutionaryStore {
       pageId: safePageId,
       pageAncestrySignature,
 
-      // ⭐ binary ancestry
       binary,
-
-      // ⭐ presence / multi‑presence surface
       presence,
-
-      // ⭐ cacheChunk / prewarm surface
       cache,
+
+      cosmos: cx,
+      cosmosSignature: cosmosSignature(cx),
 
       healthScore: safeHealth,
       tier,
+      advantageField,
+      routeDualHash,
+      routeTriHash,
+
       loopTheory,
-      meta: { ...ROUTER_EVOLUTION_CONTEXT }
+      meta: { ...ROUTER_EVOLUTION_CONTEXT_V16 }
     };
 
     if (!existing || score > existing.bestScore) {
@@ -379,24 +582,35 @@ class PulseRouterEvolutionaryStore {
       const merged = {
         ...existing,
 
+        routeShape: routeShape || existing.routeShape,
+        bestStats: routeStats || existing.bestStats,
+        bestScore: score > existing.bestScore ? score : existing.bestScore,
+
         pattern: safePattern || existing.pattern,
-        patternAncestry: patternAncestry.length ? patternAncestry : existing.patternAncestry,
+        patternAncestry: patternAncestry.length
+          ? patternAncestry
+          : existing.patternAncestry,
 
         lineage: safeLineage.length ? safeLineage : existing.lineage,
         lineageSignature: lineageSignature || existing.lineageSignature,
 
         pageId: safePageId || existing.pageId,
-        pageAncestrySignature: pageAncestrySignature || existing.pageAncestrySignature,
+        pageAncestrySignature:
+          pageAncestrySignature || existing.pageAncestrySignature,
 
-        // ⭐ always update binary surface
         binary,
-
-        // ⭐ always update presence + cache surfaces
         presence,
         cache,
 
+        cosmos: cx,
+        cosmosSignature: cosmosSignature(cx),
+
         healthScore: safeHealth,
         tier,
+        advantageField,
+        routeDualHash,
+        routeTriHash,
+
         loopTheory
       };
 
@@ -406,8 +620,9 @@ class PulseRouterEvolutionaryStore {
     return this.entries.get(routeHash);
   }
 
-  getBestRoute(routeShape, payload = {}) {
-    const routeHash = computeRouteHash(routeShape, payload || {});
+  getBestRoute(routeShape, payload = {}, cosmos = {}) {
+    const cx = normalizeCosmos(cosmos || {});
+    const routeHash = computeRouteHash(routeShape, payload || {}, cx);
     return this.entries.get(routeHash) || null;
   }
 
@@ -416,10 +631,10 @@ class PulseRouterEvolutionaryStore {
     for (const [key, entry] of this.entries.entries()) {
       out[key] = {
         key: entry.key,
+        routeShape: entry.routeShape,
         bestScore: entry.bestScore,
         bestStats: entry.bestStats,
 
-        // symbolic ancestry
         pattern: entry.pattern,
         patternAncestry: entry.patternAncestry.slice(),
         lineage: entry.lineage.slice(),
@@ -427,17 +642,19 @@ class PulseRouterEvolutionaryStore {
         pageId: entry.pageId,
         pageAncestrySignature: entry.pageAncestrySignature,
 
-        // ⭐ binary ancestry
         binary: { ...entry.binary },
-
-        // ⭐ presence / multi‑presence snapshot
         presence: { ...entry.presence },
-
-        // ⭐ cacheChunk / prewarm snapshot
         cache: { ...entry.cache },
+
+        cosmos: { ...entry.cosmos },
+        cosmosSignature: entry.cosmosSignature,
 
         healthScore: entry.healthScore,
         tier: entry.tier,
+        advantageField: entry.advantageField,
+        routeDualHash: entry.routeDualHash,
+        routeTriHash: entry.routeTriHash,
+
         loopTheory: { ...entry.loopTheory }
       };
     }
@@ -464,8 +681,11 @@ class PulseRouterEvolutionaryStore {
     arr.forEach((entry) => {
       if (!entry || typeof entry !== "object" || !entry.key) return;
 
+      const cx = normalizeCosmos(entry.cosmos || {});
       const safePattern = typeof entry.pattern === "string" ? entry.pattern : "";
-      const safeLineage = Array.isArray(entry.lineage) ? entry.lineage.slice() : [];
+      const safeLineage = Array.isArray(entry.lineage)
+        ? entry.lineage.slice()
+        : [];
       const safePageId = entry.pageId || "NO_PAGE";
 
       const patternAncestry = Array.isArray(entry.patternAncestry)
@@ -483,7 +703,8 @@ class PulseRouterEvolutionaryStore {
           : buildPageAncestrySignature({
               pattern: safePattern,
               lineage: safeLineage,
-              pageId: safePageId
+              pageId: safePageId,
+              cosmos: cx
             });
 
       const binary =
@@ -504,12 +725,38 @@ class PulseRouterEvolutionaryStore {
       const healthScore =
         typeof entry.healthScore === "number" ? entry.healthScore : 1.0;
 
+      const bestStats = entry.bestStats || {};
+      const bestScore =
+        typeof entry.bestScore === "number" ? entry.bestScore : 0;
+
+      const regressionDelta = 0;
+
+      const advantageField =
+        typeof entry.advantageField === "number"
+          ? clamp01(entry.advantageField)
+          : computeInstinctAdvantageField({
+              healthScore,
+              routeScore: bestScore,
+              regressionDelta,
+              binarySurface: binary,
+              presenceSurface: presence,
+              cacheSurface: cache,
+              cosmos: cx
+            });
+
+      const routeDualHash =
+        entry.routeDualHash ||
+        computeRouteDualHash(entry.routeShape || {}, entry.payload || {}, cx);
+
+      const routeTriHash =
+        entry.routeTriHash ||
+        computeRouteTriHash(entry.routeShape || {}, entry.payload || {}, cx);
+
       const safeEntry = {
         key: entry.key,
         routeShape: entry.routeShape || {},
-        bestStats: entry.bestStats || {},
-        bestScore:
-          typeof entry.bestScore === "number" ? entry.bestScore : 0,
+        bestStats,
+        bestScore,
 
         pattern: safePattern,
         patternAncestry,
@@ -518,15 +765,18 @@ class PulseRouterEvolutionaryStore {
         pageId: safePageId,
         pageAncestrySignature,
 
-        // ⭐ restore binary surface
         binary,
-
-        // ⭐ restore presence + cache surfaces
         presence,
         cache,
 
+        cosmos: cx,
+        cosmosSignature: cosmosSignature(cx),
+
         healthScore,
         tier: classifyDegradationTier(healthScore),
+        advantageField,
+        routeDualHash,
+        routeTriHash,
 
         loopTheory: {
           routingCompletion: true,
@@ -535,7 +785,7 @@ class PulseRouterEvolutionaryStore {
           errorRouteAround: true
         },
 
-        meta: { ...ROUTER_EVOLUTION_CONTEXT }
+        meta: { ...ROUTER_EVOLUTION_CONTEXT_V16 }
       };
 
       this.entries.set(safeEntry.key, safeEntry);
@@ -545,20 +795,20 @@ class PulseRouterEvolutionaryStore {
 
 
 // ------------------------------------------------------------
-// Public API wrapper — Evolution Core Surface
+// Public API wrapper — Evolution Core Surface v16 IMMORTAL
 // ------------------------------------------------------------
 class PulseRouterEvolutionaryInstincts {
   constructor() {
     this.store = new PulseRouterEvolutionaryStore();
-    this.meta = { ...ROUTER_EVOLUTION_CONTEXT };
+    this.meta = { ...ROUTER_EVOLUTION_CONTEXT_V16 };
   }
 
   recordRoute(route) {
     return this.store.recordRoute(route);
   }
 
-  getBestRoute(routeShape, payload) {
-    return this.store.getBestRoute(routeShape, payload);
+  getBestRoute(routeShape, payload, cosmos) {
+    return this.store.getBestRoute(routeShape, payload, cosmos);
   }
 
   detectRegression(currentStats, baselineStats) {
@@ -591,8 +841,30 @@ class PulseRouterEvolutionaryInstincts {
 // EXPORTS
 // ------------------------------------------------------------
 export {
+  // Core organ
   PulseRouterEvolutionaryInstincts,
+  PulseRouterEvolutionaryStore,
+
+  // Hash / scoring / advantage
   computeRouteHash,
+  computeRouteDualHash,
+  computeRouteTriHash,
   scoreRoute,
-  detectRegression
+  detectRegression,
+  classifyDegradationTier,
+  computeInstinctAdvantageField,
+
+  // Ancestry / surfaces / cosmos
+  buildPatternAncestry,
+  buildLineageSignature,
+  buildPageAncestrySignature,
+  extractBinarySurface,
+  extractPresenceSurface,
+  extractCacheChunkSurface,
+  normalizeCosmos,
+  cosmosSignature,
+
+  // Hash helpers
+  intelDualHash,
+  triHash
 };

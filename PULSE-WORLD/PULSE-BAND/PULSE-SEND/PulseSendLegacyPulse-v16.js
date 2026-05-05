@@ -1,37 +1,43 @@
 // ============================================================================
-//  PulseSendLegacyPulse-v14.4-Immortal.js
+//  PulseSendLegacyPulse-v16-Immortal-ORGANISM.js
 //  Pulse v1 Organism • Stable Evolutionary Floor • Non-Evolving
-//  v14.4: Binary + CacheChunk + Prewarm + Presence + Degradation + ImmortalMeta
-//         (Stable-Plus-Immortal)
+//  v16-Immortal-ORGANISM:
+//    - Binary-aware surfaces
+//    - CacheChunk + Prewarm + Presence + Degradation + ImmortalMeta
+//    - DualHash surfaces (primary + secondary, fallback-safe)
+//    - Still: stable, non-evolving, metadata-only
 // ============================================================================
 //
 //  ROLE:
 //    • v1 is the *stable floor* of the organism stack.
 //    • It never evolves, never mutates, never computes evolution tiers.
-//    • It surfaces 12.3+ metadata (cacheChunk, prewarm, presence, degradation, immortalMeta).
+//    • It surfaces 12.3+ / 14.4+ / 16 metadata (cacheChunk, prewarm, presence,
+//      degradation, immortalMeta, ancestry).
 //    • It does NOT use these surfaces to evolve or change behavior.
 //    • Deterministic, stable, non-evolving, non-computing.
 //
-//  SAFETY CONTRACT (v14.4-Immortal-EvoStable):
-//  ------------------------------------------
+//  SAFETY CONTRACT (v16-Immortal-ORGANISM-EvoStable):
+//  --------------------------------------------------
 //  • No randomness.
 //  • No timestamps.
 //  • No external mutation.
 //  • Deterministic, stable, non-evolving organism.
 // ============================================================================
+
 /*
 AI_EXPERIENCE_META = {
   identity: "PulseSendLegacyPulse",
-  version: "v14.4-Immortal",
+  version: "v16-Immortal-ORGANISM",
   layer: "frontend",
   role: "legacy_pulse_floor",
-  lineage: "PulseOS-v12",
+  lineage: "PulseOS-v12 → v14.4-Immortal → v16-Immortal-ORGANISM",
 
   evo: {
     immutable: true,
     noEvolution: true,
     deterministic: true,
-    safeRouteFree: true
+    safeRouteFree: true,
+    dualHashSurfaces: true
   },
 
   contract: {
@@ -49,14 +55,14 @@ AI_EXPERIENCE_META = {
 */
 
 // ============================================================================
-// ⭐ PulseRole — identifies this as the Pulse v1 Stable Organism (v14.4 IMMORTAL)
+// ⭐ PulseRole — Pulse v1 Stable Organism (v16 IMMORTAL ORGANISM)
 // ============================================================================
 export const PulseRole = {
   type: "Pulse",
   subsystem: "Pulse",
   layer: "Organ",
-  version: "14.4",
-  identity: "Pulse-v1-EvoStable-v14.4-Immortal",
+  version: "16-Immortal-ORGANISM",
+  identity: "Pulse-v1-EvoStable-v16-Immortal-ORGANISM",
 
   evo: {
     // v1 is stable, non-evolving, deterministic
@@ -95,7 +101,10 @@ export const PulseRole = {
     pulseIntelligenceReady: false,
     solvednessAware: false,
     factoringAware: false,
-    computeTierAware: false
+    computeTierAware: false,
+
+    // v16: dual-hash surfaces
+    dualHashSurfaces: true
   },
 
   // Contracts for compatibility with the rest of the organism
@@ -112,10 +121,20 @@ export const PulseRole = {
 // ============================================================================
 function computeHash(str) {
   let h = 0;
-  for (let i = 0; i < str.length; i++) {
-    h = (h + str.charCodeAt(i) * (i + 3)) % 131072;
+  const s = String(str || "");
+  for (let i = 0; i < s.length; i++) {
+    h = (h + s.charCodeAt(i) * (i + 3)) % 131072;
   }
   return `h12_${h}`;
+}
+
+function computeHashAlt(str) {
+  let h = 1;
+  const s = String(str || "");
+  for (let i = 0; i < s.length; i++) {
+    h = (h * 131 + s.charCodeAt(i) * (i + 11)) % 262139;
+  }
+  return `h13_${h}`;
 }
 
 function stableStringify(v) {
@@ -125,17 +144,30 @@ function stableStringify(v) {
   return "{" + keys.map(k => JSON.stringify(k) + ":" + stableStringify(v[k])).join(",") + "}";
 }
 
+function computeDualHash(value) {
+  const s = typeof value === "string" ? value : stableStringify(value);
+  return {
+    primary: computeHash(s),
+    secondary: computeHashAlt(s)
+  };
+}
+
 function buildLineage(parentLineage, pattern) {
   const base = Array.isArray(parentLineage) ? parentLineage : [];
   return [...base, pattern];
 }
 
 function computeShapeSignature(pattern, lineage) {
-  return `shape-${computeHash(pattern + "::" + lineage.join("::"))}`;
+  const raw = pattern + "::" + (Array.isArray(lineage) ? lineage.join("::") : "");
+  const dual = computeDualHash(raw);
+  return {
+    shapeSignature: `shape-${dual.primary}`,
+    shapeSignatureDual: dual
+  };
 }
 
 function computeEvolutionStage(pattern, lineage) {
-  const depth = lineage.length;
+  const depth = Array.isArray(lineage) ? lineage.length : 0;
   if (depth === 1) return "seed";
   if (depth === 2) return "sprout";
   if (depth === 3) return "branch";
@@ -159,7 +191,11 @@ function buildPageAncestrySignature({ pattern, lineage, pageId }) {
     lineageSignature: buildLineageSignature(lineage),
     pageId: pageId || "NO_PAGE"
   };
-  return computeHash(stableStringify(shape));
+  const dual = computeDualHash(shape);
+  return {
+    pageAncestrySignature: dual.primary,
+    pageAncestrySignatureDual: dual
+  };
 }
 
 function extractBinarySurface(payload) {
@@ -210,16 +246,19 @@ function extractImmortalMeta(payload) {
 
 
 // ============================================================================
-//  12.3 surfaces — surfaced only, never used for evolution
+//  16 surfaces — surfaced only, never used for evolution
 // ============================================================================
+
 function buildCacheChunkSurface({ pattern, lineage, pageId }) {
   const shape = { pattern, lineage, pageId };
   const raw = stableStringify(shape);
   const cacheChunkKey = "pulse-v1-cache::" + computeHash(raw);
+  const dual = computeDualHash(cacheChunkKey);
 
   return {
     cacheChunkKey,
-    cacheChunkSignature: computeHash(cacheChunkKey)
+    cacheChunkSignature: dual.primary,
+    cacheChunkSignatureDual: dual
   };
 }
 
@@ -231,10 +270,13 @@ function buildPrewarmSurface({ priority }) {
 
   const raw = stableStringify({ priority });
   const prewarmKey = "pulse-v1-prewarm::" + computeHash(raw);
+  const dual = computeDualHash(prewarmKey);
 
   return {
     level,
-    prewarmKey
+    prewarmKey,
+    prewarmSignature: dual.primary,
+    prewarmSignatureDual: dual
   };
 }
 
@@ -245,37 +287,44 @@ function buildPresenceSurface({ pattern }) {
 
   const raw = stableStringify({ pattern, scope });
   const presenceKey = "pulse-v1-presence::" + computeHash(raw);
+  const dual = computeDualHash(presenceKey);
 
   return {
     scope,
-    presenceKey
+    presenceKey,
+    presenceSignature: dual.primary,
+    presenceSignatureDual: dual
   };
 }
 
-
-// ============================================================================
-//  14.4 surfaces — degradation + immortalMeta (metadata only)
-// ============================================================================
 function buildDegradationSurface({ healthScore }) {
-  const tier = classifyDegradationTier(healthScore);
+  const score = typeof healthScore === "number" ? healthScore : 1.0;
+  const degradationTier = classifyDegradationTier(score);
+  const shape = { healthScore: score, degradationTier };
+  const dual = computeDualHash(shape);
+
   return {
-    healthScore,
-    degradationTier: tier,
-    degradationSignature: computeHash(tier)
+    healthScore: score,
+    degradationTier,
+    degradationHash: dual.primary,
+    degradationHashDual: dual
   };
 }
 
 function buildImmortalSurface({ immortalMeta }) {
   const raw = stableStringify(immortalMeta);
+  const dual = computeDualHash("immortal-v1::" + raw);
+
   return {
     immortalMeta,
-    immortalSignature: computeHash("immortal-v1::" + raw)
+    immortalSignature: dual.primary,
+    immortalSignatureDual: dual
   };
 }
 
 
 // ============================================================================
-//  DIAGNOSTICS (stable, non-evolving)
+//  DIAGNOSTICS (stable, non-evolving, v16 surfaces)
 // ============================================================================
 function buildDiagnostics(pattern, lineage, payload, healthScore) {
   const binarySurface = extractBinarySurface(payload);
@@ -283,21 +332,33 @@ function buildDiagnostics(pattern, lineage, payload, healthScore) {
   const immortalMeta = extractImmortalMeta(payload);
   const immortalSurface = buildImmortalSurface({ immortalMeta });
 
+  const patternLen = (pattern || "").length;
+  const lineageDepth = Array.isArray(lineage) ? lineage.length : 0;
+
+  const patternDual = computeDualHash(pattern || "NO_PATTERN");
+  const lineageDual = computeDualHash(buildLineageSignature(lineage));
+
   return {
-    patternLength: pattern.length,
-    lineageDepth: lineage.length,
-    lineageDensity: lineage.length === 0 ? 0 : pattern.length / lineage.length,
-    stabilityTier: "v1-evo-stable-14.4-Immortal",
+    patternLength: patternLen,
+    lineageDepth,
+    lineageDensity: lineageDepth === 0 ? 0 : patternLen / lineageDepth,
+    stabilityTier: "v1-evo-stable-16-Immortal-ORGANISM",
 
     binary: binarySurface,
     degradation: degradationSurface,
-    immortal: immortalSurface
+    immortal: immortalSurface,
+
+    patternHash: patternDual.primary,
+    patternHashDual: patternDual,
+    lineageHash: lineageDual.primary,
+    lineageHashDual: lineageDual
   };
 }
 
 
 // ============================================================================
-//  FACTORY — Create a Pulse v1 Organism (v14.4 Stable-Plus-Immortal)
+//  FACTORY — Create a Pulse v1 Organism (v16 Stable-Plus-Immortal ORGANISM)
+//  NOTE: Signature kept compatible with v14.4 usage in createPulseSend(...)
 // ============================================================================
 export function createLegacyPulse({
   jobId,
@@ -309,31 +370,35 @@ export function createLegacyPulse({
   mode = "normal",
   pageId = "NO_PAGE"
 }) {
-  const lineage = buildLineage(parentLineage, pattern);
+  const safePattern = pattern || "NO_PATTERN";
+  const lineage = buildLineage(parentLineage, safePattern);
 
-  const shapeSignature = computeShapeSignature(pattern, lineage);
-  const evolutionStage = computeEvolutionStage(pattern, lineage);
+  const { shapeSignature, shapeSignatureDual } = computeShapeSignature(
+    safePattern,
+    lineage
+  );
+  const evolutionStage = computeEvolutionStage(safePattern, lineage);
 
-  const patternAncestry       = buildPatternAncestry(pattern);
+  const patternAncestry       = buildPatternAncestry(safePattern);
   const lineageSignature      = buildLineageSignature(lineage);
-  const pageAncestrySignature = buildPageAncestrySignature({
-    pattern,
+  const pageAncestry          = buildPageAncestrySignature({
+    pattern: safePattern,
     lineage,
     pageId
   });
 
   const advantageField = {
-    patternStrength: pattern.length,
+    patternStrength: safePattern.length,
     lineageDepth: lineage.length,
     modeBias: mode === "stress" ? 2 : 1,
-    stabilityTier: "v1-evo-stable-14.4-Immortal"
+    stabilityTier: "v1-evo-stable-16-Immortal-ORGANISM"
   };
 
   const healthScore = 1.0;
   const tier = "stable";
 
   const cacheChunkSurface = buildCacheChunkSurface({
-    pattern,
+    pattern: safePattern,
     lineage,
     pageId
   });
@@ -343,17 +408,16 @@ export function createLegacyPulse({
   });
 
   const presenceSurface = buildPresenceSurface({
-    pattern
+    pattern: safePattern
   });
 
-  const diagnostics = buildDiagnostics(pattern, lineage, payload, healthScore);
-
+  const diagnostics = buildDiagnostics(safePattern, lineage, payload, healthScore);
   const immortalMeta = diagnostics.immortal.immortalMeta;
 
   return {
     PulseRole,
     jobId,
-    pattern,
+    pattern: safePattern,
     payload,
     priority,
     returnTo,
@@ -361,7 +425,7 @@ export function createLegacyPulse({
     mode,
     pageId,
 
-    pulseType: "Pulse-v1-EvoStable-v14.4-Immortal",
+    pulseType: "Pulse-v1-EvoStable-v16-Immortal-ORGANISM",
 
     advantageField,
     healthScore,
@@ -375,16 +439,20 @@ export function createLegacyPulse({
 
     meta: {
       shapeSignature,
+      shapeSignatureDual,
       evolutionStage,
 
       patternAncestry,
       lineageSignature,
-      pageAncestrySignature,
+      pageAncestrySignature: pageAncestry.pageAncestrySignature,
+      pageAncestrySignatureDual: pageAncestry.pageAncestrySignatureDual,
 
       diagnostics,
 
-      stableSignature: computeHash(pattern + "::" + lineageSignature),
-      patternSignature: computeHash(pattern),
+      stableSignature: computeHash(safePattern + "::" + lineageSignature),
+      stableSignatureDual: computeDualHash(safePattern + "::" + lineageSignature),
+
+      patternSignature: diagnostics.patternHash,
       lineageSurface: computeHash(String(lineage.length)),
       advantageSignature: computeHash(stableStringify(advantageField)),
       healthSignature: computeHash("1.0"),
@@ -395,7 +463,8 @@ export function createLegacyPulse({
 
 
 // ============================================================================
-//  FROM IMPULSE — build a v1 Pulse from an Impulse traveler (14.4 IMMORTAL)
+//  FROM IMPULSE — build a v1 Pulse from an Impulse traveler (v16 IMMORTAL)
+//  (fallback path from higher-band impulse into stable v1 floor)
 // ============================================================================
 export function legacyPulseFromImpulse(impulse, overrides = {}) {
   if (!impulse) return null;

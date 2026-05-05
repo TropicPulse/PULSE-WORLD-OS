@@ -1,33 +1,35 @@
 // ============================================================================
-// FILE: tropic-pulse-functions/PULSE-WORLD/PULSE-EARN/PulseEarnReceptor-v13.0-Presence-Immortal.js
+// FILE: tropic-pulse-functions/PULSE-WORLD/PULSE-EARN/PulseEarnReceptor-v16-IMMORTAL-INTEL.js
 // LAYER: THE STANDARD RECEPTOR (Marketplace Protocol + Universal Adapter)
-// PULSE EARN — v13.0-Presence-Immortal A‑B‑A
+// PULSE EARN — v16-IMMORTAL-INTEL A‑B‑A + DualHash + Presence + Advantage + Chunk
 // ============================================================================
 //
-// ROLE (v13.0-Presence-Immortal A‑B‑A):
+// ROLE (v16-IMMORTAL-INTEL):
 //   THE STANDARD RECEPTOR — Pulse‑Earn’s canonical marketplace interface.
 //   • Deterministic sensory receptor for marketplace signals.
 //   • Pure adapter: ping(), fetchJobs(), submitResult(), normalizeJob().
 //   • Configurable receptor DNA (no network).
-//   • Emits receptorPattern, receptorSignature, endpointSignature.
-//   • Emits unified v13 presence/advantage/chunk surfaces.
-//   • Emits A‑B‑A bandSignature + binaryField + waveField.
+//   • Emits receptorPattern, receptorSignature(+Intel), endpointSignature(+Intel).
+//   • Emits unified v16 presence/advantage/chunk surfaces.
+//   • Emits A‑B‑A bandSignature(+Intel) + binaryField + waveField.
+//   • Dual‑hash signatures: classic + intel for core surfaces.
 //
-// CONTRACT (v13.0-Presence-Immortal):
+// CONTRACT (v16-IMMORTAL-INTEL):
 //   • PURE RECEPTOR — deterministic, drift‑proof.
 //   • NO async, NO network, NO randomness, NO timestamps.
 //   • NO eval(), NO Function(), NO dynamic imports.
 //   • READ‑ONLY except deterministic config override.
 //   • NEVER mutate job objects.
-//   • Unified Earn v13 presence/advantage/chunk schema.
+//   • Unified Earn v16 presence/advantage/chunk schema.
 // ============================================================================
+
 /*
 AI_EXPERIENCE_META = {
   identity: "PulseEarnReceptorMkt",
-  version: "v14-Immortal",
+  version: "v16-IMMORTAL-INTEL",
   layer: "earn_receptor",
   role: "earn_market_receptor",
-  lineage: "PulseEarnReceptorMkt-v11 → v12.3 → v14-Immortal",
+  lineage: "PulseEarnReceptorMkt-v11 → v12.3 → v13.0-Presence-Immortal → v16-IMMORTAL-INTEL",
 
   evo: {
     receptor: true,
@@ -38,11 +40,23 @@ AI_EXPERIENCE_META = {
     binaryAware: true,
 
     deterministic: true,
+    deterministicField: true,
     driftProof: true,
     pureCompute: true,
     zeroNetwork: true,
     zeroFilesystem: true,
-    zeroMutationOfInput: true
+    zeroMutationOfInput: true,
+    zeroAsync: true,
+    zeroRandomness: true,
+
+    chunkAware: true,
+    prewarmAware: true,
+    cacheAware: true,
+
+    intelSignatureAware: true,
+    dualHashAware: true,
+    structureAware: true,
+    contextAware: true
   },
 
   contract: {
@@ -62,11 +76,12 @@ AI_EXPERIENCE_META = {
 export const PulseEarnReceptorMeta = Object.freeze({
   layer: "PulseEarnReceptor",
   role: "EARN_STANDARD_RECEPTOR",
-  version: "v13.0-Presence-Immortal",
-  identity: "PulseEarnReceptor-v13.0-Presence-Immortal",
+  version: "v16-IMMORTAL-INTEL",
+  identity: "PulseEarnReceptor-v16-IMMORTAL-INTEL",
 
   guarantees: Object.freeze({
     deterministic: true,
+    deterministicField: true,
     driftProof: true,
     noRandomness: true,
     noRealTime: true,
@@ -131,8 +146,9 @@ let receptorConfig = {
 let receptorCycle = 0;
 
 // ============================================================================
-// Deterministic Hash Helper
+// HASH HELPERS — v16 IMMORTAL INTEL
 // ============================================================================
+
 function computeHash(str) {
   let h = 0;
   const s = String(str || "");
@@ -142,13 +158,40 @@ function computeHash(str) {
   return `h${h}`;
 }
 
-function normalizeBand(band) {
-  const b = String(band || "symbolic").toLowerCase();
-  return b === "binary" ? "binary" : "symbolic";
+// Primary INTEL hash — deterministic, structure-aware, no IO, no time.
+function computeHashIntelligence(payload) {
+  const base = JSON.stringify(payload || "");
+  let h = 0;
+  for (let i = 0; i < base.length; i++) {
+    const c = base.charCodeAt(i);
+    h = (h * 131 + c * (i + 7)) % 1000000007;
+  }
+  return `HINTEL_${h}`;
+}
+
+function buildDualHashSignature(label, intelPayload, classicString) {
+  const intelBase = {
+    label,
+    intel: intelPayload || {},
+    classic: classicString || ""
+  };
+  const intelHash = computeHashIntelligence(intelBase);
+  const classicHash = computeHash(
+    `${label}::${classicString || ""}`
+  );
+  return {
+    intel: intelHash,
+    classic: classicHash
+  };
+}
+
+function normalizeBand(b) {
+  const x = String(b || "symbolic").toLowerCase();
+  return x === "binary" ? "binary" : "symbolic";
 }
 
 // ============================================================================
-// Unified v13 Presence Field
+// Unified v16 Presence Field
 // ============================================================================
 function classifyPresenceTier(pressure) {
   if (pressure >= 150) return "critical";
@@ -177,8 +220,24 @@ function buildPresenceField(globalHints = {}, cycle) {
   const pressure = meshPressureIndex + castleLoadLevel;
   const presenceTier = classifyPresenceTier(pressure);
 
+  const intelPayload = {
+    kind: "receptorPresence",
+    version: "v16-IMMORTAL-INTEL",
+    presenceTier,
+    meshPressureIndex,
+    castleLoadLevel,
+    meshStrength,
+    cycleIndex: cycle,
+    bandPresence: ghP.bandPresence || normalizeBand(receptorConfig.band)
+  };
+
+  const classicString =
+    `RECEPTOR_PRESENCE::${presenceTier}::${meshPressureIndex}::${castleLoadLevel}`;
+
+  const sig = buildDualHashSignature("RECEPTOR_PRESENCE", intelPayload, classicString);
+
   return {
-    presenceVersion: "v13.0-Presence-Immortal",
+    presenceVersion: "v16-IMMORTAL-INTEL",
     presenceTier,
 
     bandPresence: ghP.bandPresence || normalizeBand(receptorConfig.band),
@@ -198,14 +257,13 @@ function buildPresenceField(globalHints = {}, cycle) {
 
     cycle,
 
-    presenceSignature: computeHash(
-      `RECEPTOR_PRESENCE::${presenceTier}::${meshPressureIndex}::${castleLoadLevel}`
-    )
+    presenceSignatureIntel: sig.intel,
+    presenceSignatureClassic: sig.classic
   };
 }
 
 // ============================================================================
-// Advantage‑C v13
+// Advantage‑C v16
 // ============================================================================
 function buildAdvantageField(bandPack, presenceField, globalHints = {}) {
   const density = bandPack.binaryField.binarySurface.density;
@@ -231,16 +289,34 @@ function buildAdvantageField(bandPack, presenceField, globalHints = {}) {
 
   const fallbackBandLevel = globalHints.fallbackBandLevel ?? 0;
 
-  return {
-    advantageVersion: "C-13.0",
+  const intelPayload = {
+    kind: "receptorAdvantage",
+    version: "C-16.0",
+    density,
+    amplitude,
+    presenceTier: presenceField.presenceTier,
     advantageScore,
     advantageTier,
     fallbackBandLevel
   };
+
+  const classicString =
+    `RECEPTOR_ADVANTAGE::${presenceField.presenceTier}::${advantageTier}`;
+
+  const sig = buildDualHashSignature("RECEPTOR_ADVANTAGE", intelPayload, classicString);
+
+  return {
+    advantageVersion: "C-16.0",
+    advantageScore,
+    advantageTier,
+    fallbackBandLevel,
+    advantageSignatureIntel: sig.intel,
+    advantageSignatureClassic: sig.classic
+  };
 }
 
 // ============================================================================
-// Chunk / Cache / Prewarm Plan v13
+// Chunk / Cache / Prewarm Plan v16
 // ============================================================================
 function buildChunkPrewarmPlan(presenceField, advantageField) {
   const basePriority =
@@ -261,8 +337,21 @@ function buildChunkPrewarmPlan(presenceField, advantageField) {
 
   const priority = basePriority + advantageBoost;
 
+  const intelPayload = {
+    kind: "receptorChunkPlan",
+    version: "v16-StandardReceptor-AdvantageC",
+    priority,
+    presenceTier: presenceField.presenceTier,
+    advantageTier: advantageField.advantageTier
+  };
+
+  const classicString =
+    `RECEPTOR_CHUNK_PLAN::${presenceField.presenceTier}::${priority}`;
+
+  const sig = buildDualHashSignature("RECEPTOR_CHUNK_PLAN", intelPayload, classicString);
+
   return {
-    planVersion: "v13.0-StandardReceptor-AdvantageC",
+    planVersion: "v16-StandardReceptor-AdvantageC",
     priority,
     band: presenceField.presenceTier,
     chunks: {
@@ -276,12 +365,14 @@ function buildChunkPrewarmPlan(presenceField, advantageField) {
       nervousSystem: true,
       muscleSystem: true,
       lymphNodes: true
-    }
+    },
+    chunkPlanSignatureIntel: sig.intel,
+    chunkPlanSignatureClassic: sig.classic
   };
 }
 
 // ============================================================================
-// A‑B‑A Binary + Wave Surfaces (v13)
+// A‑B‑A Binary + Wave Surfaces (v16)
 // ============================================================================
 function buildBinaryField(cfg, cycle) {
   const patternLen =
@@ -295,9 +386,24 @@ function buildBinaryField(cfg, cycle) {
 
   const surface = density + patternLen;
 
+  const intelPayload = {
+    kind: "receptorBinarySurface",
+    cycleIndex: cycle,
+    patternLen,
+    density,
+    surface,
+    jobCount: Array.isArray(cfg.endpoints.jobs) ? cfg.endpoints.jobs.length : 0,
+    healthScore: cfg.healthScore
+  };
+
+  const classicString = `BRECEPTOR::${surface}`;
+  const sig = buildDualHashSignature("RECEPTOR_BIN", intelPayload, classicString);
+
   return {
-    binaryPhenotypeSignature: computeHash(`BRECEPTOR::${surface}`),
-    binarySurfaceSignature: computeHash(`BRECEPTOR_SURF::${surface}`),
+    binaryPhenotypeSignatureIntel: sig.intel,
+    binaryPhenotypeSignatureClassic: sig.classic,
+    binarySurfaceSignatureIntel: sig.intel,
+    binarySurfaceSignatureClassic: sig.classic,
     binarySurface: {
       patternLen,
       density,
@@ -314,7 +420,22 @@ function buildWaveField(cfg, cycle, band) {
   const phase = (cfg.id.charCodeAt(0) || 1) % 16;
   const b = normalizeBand(band || cfg.band);
 
+  const intelPayload = {
+    kind: "receptorWaveSurface",
+    cycleIndex: cycle,
+    band: b,
+    amplitude,
+    wavelength,
+    phase,
+    healthScore: cfg.healthScore
+  };
+
+  const classicString = `RECEPTOR_WAVE::${b}::AMP::${amplitude}`;
+  const sig = buildDualHashSignature("RECEPTOR_WAVE", intelPayload, classicString);
+
   return {
+    wavePhenotypeSignatureIntel: sig.intel,
+    wavePhenotypeSignatureClassic: sig.classic,
     amplitude,
     wavelength,
     phase,
@@ -337,13 +458,25 @@ function buildReceptorPattern(cfg) {
   );
 }
 
-function buildReceptorSignature(cfg) {
+function buildReceptorSignatureClassic(cfg) {
   return computeHash(
     `${cfg.id}::${cfg.name}::${cfg.healthScore}::${cfg.endpoints.submitStatus}::${normalizeBand(cfg.band)}`
   );
 }
 
-function buildEndpointSignature(cfg) {
+function buildReceptorSignatureIntel(cfg) {
+  const payload = {
+    id: cfg.id,
+    name: cfg.name,
+    healthScore: cfg.healthScore,
+    submitStatus: cfg.endpoints.submitStatus,
+    band: normalizeBand(cfg.band),
+    jobCount: Array.isArray(cfg.endpoints.jobs) ? cfg.endpoints.jobs.length : 0
+  };
+  return computeHashIntelligence({ label: "RECEPTOR_SIGNATURE", payload });
+}
+
+function buildEndpointSignatureClassic(cfg) {
   return computeHash(
     `ENDPOINTS::jobs:${Array.isArray(cfg.endpoints.jobs) ? cfg.endpoints.jobs.length : 0}` +
     `::submit:${cfg.endpoints.submitStatus}` +
@@ -351,8 +484,25 @@ function buildEndpointSignature(cfg) {
   );
 }
 
-function buildBandSignature(cfg) {
+function buildEndpointSignatureIntel(cfg) {
+  const payload = {
+    jobs: Array.isArray(cfg.endpoints.jobs) ? cfg.endpoints.jobs.length : 0,
+    submitStatus: cfg.endpoints.submitStatus,
+    band: normalizeBand(cfg.band)
+  };
+  return computeHashIntelligence({ label: "ENDPOINT_SIGNATURE", payload });
+}
+
+function buildBandSignatureClassic(cfg) {
   return computeHash(`RECEPTOR_BAND::${normalizeBand(cfg.band)}::${cfg.id}`);
+}
+
+function buildBandSignatureIntel(cfg) {
+  const payload = {
+    band: normalizeBand(cfg.band),
+    id: cfg.id
+  };
+  return computeHashIntelligence({ label: "RECEPTOR_BAND", payload });
 }
 
 // ============================================================================
@@ -383,7 +533,7 @@ export function configurePulseEarnReceptor(config) {
 }
 
 // ============================================================================
-// normalizeJob — strict unified v13 job schema
+// normalizeJob — strict unified v16 job schema
 // ============================================================================
 function normalizeJob(raw, globalHints = {}) {
   if (!raw || typeof raw !== "object") {
@@ -459,7 +609,7 @@ function normalizeJob(raw, globalHints = {}) {
     _abaBinaryDensity: binaryField.binarySurface.density,
     _abaWaveAmplitude: waveField.amplitude,
 
-    // Unified v13 presence/advantage/chunk
+    // Unified v16 presence/advantage/chunk
     presenceField,
     advantageField,
     chunkPlan
@@ -468,7 +618,7 @@ function normalizeJob(raw, globalHints = {}) {
 
 // ============================================================================
 // Sensory Functions — ping(), fetchJobs(), submitResult()
-// PURE deterministic behavior, unified v13 presence surfaces.
+// PURE deterministic behavior, unified v16 presence surfaces.
 // ============================================================================
 function ping(globalHints = {}) {
   receptorCycle++;
@@ -495,11 +645,25 @@ function ping(globalHints = {}) {
 
   const chunkPlan = buildChunkPrewarmPlan(presenceField, advantageField);
 
+  const sig = buildDualHashSignature(
+    "RECEPTOR_PING",
+    { latency, cycleIndex: receptorCycle, receptorId: receptorConfig.id },
+    `PING::${latency}::${receptorConfig.id}::CYCLE::${receptorCycle}`
+  );
+
+  const bandSig = buildDualHashSignature(
+    "RECEPTOR_BAND",
+    { band, receptorId: receptorConfig.id },
+    `BAND::${band}::${receptorConfig.id}`
+  );
+
   return {
     latency,
     receptorId: receptorConfig.id,
-    signature: computeHash(`PING::${latency}`),
-    bandSignature: buildBandSignature(receptorConfig),
+    signature: sig.classic,
+    signatureIntel: sig.intel,
+    bandSignature: bandSig.classic,
+    bandSignatureIntel: bandSig.intel,
     binaryField,
     waveField,
     presenceField,
@@ -531,11 +695,25 @@ function fetchJobs(globalHints = {}) {
 
   const chunkPlan = buildChunkPrewarmPlan(presenceField, advantageField);
 
+  const sig = buildDualHashSignature(
+    "RECEPTOR_FETCH",
+    { count: normalizedJobs.length, cycleIndex: receptorCycle, receptorId: receptorConfig.id },
+    `JOBS::${normalizedJobs.length}::${receptorConfig.id}::CYCLE::${receptorCycle}`
+  );
+
+  const bandSig = buildDualHashSignature(
+    "RECEPTOR_BAND",
+    { band, receptorId: receptorConfig.id },
+    `BAND::${band}::${receptorConfig.id}`
+  );
+
   return {
     jobs: normalizedJobs,
     receptorId: receptorConfig.id,
-    signature: computeHash(`JOBS::${normalizedJobs.length}`),
-    bandSignature: buildBandSignature(receptorConfig),
+    signature: sig.classic,
+    signatureIntel: sig.intel,
+    bandSignature: bandSig.classic,
+    bandSignatureIntel: bandSig.intel,
     binaryField,
     waveField,
     presenceField,
@@ -561,12 +739,26 @@ function submitResult(job, result, globalHints = {}) {
   const chunkPlan = buildChunkPrewarmPlan(presenceField, advantageField);
 
   if (!job || !job.id) {
+    const sig = buildDualHashSignature(
+      "RECEPTOR_SUBMIT",
+      { jobId: null, cycleIndex: receptorCycle, receptorId: receptorConfig.id, ok: false },
+      `SUBMIT::NONE::INVALID::${receptorConfig.id}::CYCLE::${receptorCycle}`
+    );
+
+    const bandSig = buildDualHashSignature(
+      "RECEPTOR_BAND",
+      { band, receptorId: receptorConfig.id },
+      `BAND::${band}::${receptorConfig.id}`
+    );
+
     return {
       success: false,
       error: "invalid_job",
       receptorId: receptorConfig.id,
-      signature: computeHash(`SUBMIT::NONE::INVALID`),
-      bandSignature: buildBandSignature(receptorConfig),
+      signature: sig.classic,
+      signatureIntel: sig.intel,
+      bandSignature: bandSig.classic,
+      bandSignatureIntel: bandSig.intel,
       binaryField,
       waveField,
       presenceField,
@@ -577,14 +769,28 @@ function submitResult(job, result, globalHints = {}) {
 
   const status = receptorConfig.endpoints.submitStatus;
 
+  const sig = buildDualHashSignature(
+    "RECEPTOR_SUBMIT",
+    { jobId: job.id, cycleIndex: receptorCycle, receptorId: receptorConfig.id, status },
+    `SUBMIT::${job.id}::${status}::${receptorConfig.id}::CYCLE::${receptorCycle}`
+  );
+
+  const bandSig = buildDualHashSignature(
+    "RECEPTOR_BAND",
+    { band, receptorId: receptorConfig.id },
+    `BAND::${band}::${receptorConfig.id}`
+  );
+
   return {
     success: true,
     receptorId: receptorConfig.id,
     jobId: job.id,
     result,
     status,
-    signature: computeHash(`SUBMIT::${job.id}::${status}`),
-    bandSignature: buildBandSignature(receptorConfig),
+    signature: sig.classic,
+    signatureIntel: sig.intel,
+    bandSignature: bandSig.classic,
+    bandSignatureIntel: bandSig.intel,
     binaryField,
     waveField,
     presenceField,
@@ -594,16 +800,23 @@ function submitResult(job, result, globalHints = {}) {
 }
 
 // ============================================================================
-// PUBLIC EXPORT — PulseEarnReceptor v13.0-Presence-Immortal A‑B‑A
+// PUBLIC EXPORT — PulseEarnReceptor v16-IMMORTAL-INTEL A‑B‑A
 // ============================================================================
 export const PulseEarnReceptor = {
   id: () => receptorConfig.id,
   name: () => receptorConfig.name,
 
-  receptorSignature: () => buildReceptorSignature(receptorConfig),
-  endpointSignature: () => buildEndpointSignature(receptorConfig),
+  // classic signatures (backwards compatible)
+  receptorSignature: () => buildReceptorSignatureClassic(receptorConfig),
+  endpointSignature: () => buildEndpointSignatureClassic(receptorConfig),
+  bandSignature: () => buildBandSignatureClassic(receptorConfig),
+
+  // intel signatures (new)
+  receptorSignatureIntel: () => buildReceptorSignatureIntel(receptorConfig),
+  endpointSignatureIntel: () => buildEndpointSignatureIntel(receptorConfig),
+  bandSignatureIntel: () => buildBandSignatureIntel(receptorConfig),
+
   receptorPattern: () => buildReceptorPattern(receptorConfig),
-  bandSignature: () => buildBandSignature(receptorConfig),
 
   binaryField: () => buildBinaryField(receptorConfig, receptorCycle),
   waveField: () => buildWaveField(receptorConfig, receptorCycle, receptorConfig.band),
@@ -634,10 +847,13 @@ export const PulseEarnReceptor = {
       healthTier: classifyHealth(receptorConfig.healthScore),
 
       band,
-      bandSignature: buildBandSignature(receptorConfig),
+      bandSignature: buildBandSignatureClassic(receptorConfig),
+      bandSignatureIntel: buildBandSignatureIntel(receptorConfig),
 
-      receptorSignature: buildReceptorSignature(receptorConfig),
-      endpointSignature: buildEndpointSignature(receptorConfig),
+      receptorSignature: buildReceptorSignatureClassic(receptorConfig),
+      receptorSignatureIntel: buildReceptorSignatureIntel(receptorConfig),
+      endpointSignature: buildEndpointSignatureClassic(receptorConfig),
+      endpointSignatureIntel: buildEndpointSignatureIntel(receptorConfig),
       receptorPattern: buildReceptorPattern(receptorConfig),
 
       binaryField,

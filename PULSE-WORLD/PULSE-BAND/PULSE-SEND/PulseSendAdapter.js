@@ -1,34 +1,44 @@
 // ============================================================================
-//  PulseSendAdapter-v14-Immortal.js
+//  PulseSendAdapter-v16-Immortal-ORGANISM.js
 //  Pattern‑Shape Adapter • Pulse‑Agnostic Translator • Pre‑Delivery Adapter
-//  v14-Immortal: DualStack + Binary-Front-End + Ancestry Surface + Advantage Echo
-//                + cacheChunkSurface + prewarmSurface + presenceSurface
+//  v16-Immortal-ORGANISM:
+//    - DualStack + Binary-Front-End + Ancestry Surface + Advantage Echo
+//    - cacheChunkSurface + prewarmSurface + presenceSurface
+//    - DualHash (primary/secondary) on all keys/signatures
+//    - IMMORTAL-INTEL adapterIntelligence field
 // ============================================================================
 //
-//  SAFETY CONTRACT (v14-Immortal):
-//  --------------------------------
+//  SAFETY CONTRACT (v16-Immortal-ORGANISM):
+//  ----------------------------------------
 //  • No imports.
 //  • No network.
-//  • No compute beyond local helpers.
-//  • Zero randomness.
-//  • Zero timestamps.
-//  • Zero mutation outside instance.
+//  • No async.
+//  • No timestamps.
+//  • No external IO.
+//  • No mutation outside instance.
+//  • Pure structural math only.
 // ============================================================================
+
 /*
 AI_EXPERIENCE_META = {
   identity: "PulseSendAdapter",
-  version: "v12.4-Evo-BINARY",
+  version: "v16-Immortal-ORGANISM",
   layer: "frontend",
-  role: "send_adapter",
-  lineage: "PulseOS-v12",
+  role: "send_adapter_organ",
+  lineage: "PulseSendAdapter-v12.4 → v14-Immortal → v16-Immortal-ORGANISM",
 
   evo: {
     binaryAware: true,
     dualBand: true,
     presenceAware: true,
     chunkAligned: true,
-    safeRouteFree: true,
-    deterministic: true
+    deterministic: true,
+    adapterOrganism: true,
+    immortalIntel: true,
+    dualHashSurfaces: true,
+    cachePrewarmPresenceSurfaces: true,
+    advantageEcho: true,
+    ancestrySurface: true
   },
 
   contract: {
@@ -36,7 +46,8 @@ AI_EXPERIENCE_META = {
       "PulseSend",
       "PulseSendEngine",
       "PulseBinarySend",
-      "PulsePresence"
+      "PulsePresence",
+      "PulseChunks"
     ],
     never: [
       "legacySendAdapter",
@@ -50,14 +61,14 @@ AI_EXPERIENCE_META = {
 
 
 // ============================================================================
-// ⭐ PulseRole — PulseSend Adapter Organ (v14-Immortal)
+// ⭐ PulseRole — PulseSend Adapter Organ (v16-Immortal-ORGANISM)
 // ============================================================================
 export const PulseRole = {
   type: "Messenger",
   subsystem: "PulseSend",
   layer: "Adapter",
-  version: "14-Immortal",
-  identity: "PulseSendAdapter-v14-Immortal",
+  version: "16-Immortal-ORGANISM",
+  identity: "PulseSendAdapter-v16-Immortal-ORGANISM",
 
   evo: {
     driftProof: true,
@@ -83,17 +94,23 @@ export const PulseRole = {
     binaryFrontEndReady: true,
     dualStackReady: true,
 
-    // 14+: cache / prewarm / presence
+    // cache / prewarm / presence
     cacheChunkAware: true,
     prewarmAware: true,
-    multiPresenceAware: true
+    multiPresenceAware: true,
+
+    // v16 IMMORTAL
+    dualHashSurfaces: true,
+    adapterIntelligenceReady: true,
+    ancestrySurfaceReady: true,
+    advantageEchoReady: true
   },
 
-  routingContract: "PulseRouter-v14",
-  meshContract: "PulseMesh-v14",
+  routingContract: "PulseRouter-v16",
+  meshContract: "PulseMesh-v16",
   pulseContract: "Pulse-v1/v2/v3",
-  gpuOrganContract: "PulseGPU-v14",
-  earnCompatibility: "PulseEarn-v14"
+  gpuOrganContract: "PulseGPU-v16",
+  earnCompatibility: "PulseEarn-v16"
 };
 
 
@@ -103,11 +120,20 @@ export const PulseRole = {
 
 function computeHash(str) {
   let h = 0;
-  const s = String(str);
+  const s = String(str || "");
   for (let i = 0; i < s.length; i++) {
     h = (h + s.charCodeAt(i) * (i + 1)) % 100000;
   }
   return `h${h}`;
+}
+
+function computeHashAlt(str) {
+  let h = 1;
+  const s = String(str || "");
+  for (let i = 0; i < s.length; i++) {
+    h = (h * 131 + s.charCodeAt(i) * (i + 7)) % 131071;
+  }
+  return `h2_${h}`;
 }
 
 function stableStringify(value) {
@@ -123,6 +149,18 @@ function stableStringify(value) {
   );
 }
 
+function computeDualHash(value) {
+  const s = typeof value === "string" ? value : stableStringify(value);
+  return {
+    primary: computeHash(s),
+    secondary: computeHashAlt(s)
+  };
+}
+
+
+// ============================================================================
+//  BINARY SURFACE EXTRACTION
+// ============================================================================
 function extractBinarySurfaceFromPulse(pulse) {
   const payload = pulse?.payload || {};
 
@@ -158,6 +196,10 @@ function extractBinarySurfaceFromPulse(pulse) {
   };
 }
 
+
+// ============================================================================
+//  DIAGNOSTICS + ANCESTRY + ADVANTAGE ECHO
+// ============================================================================
 function buildAdapterDiagnostics({ pulse, targetOrgan, mode }) {
   const pattern = pulse?.pattern || "NO_PATTERN";
   const lineageDepth = Array.isArray(pulse?.lineage) ? pulse.lineage.length : 0;
@@ -165,48 +207,113 @@ function buildAdapterDiagnostics({ pulse, targetOrgan, mode }) {
 
   const binarySurface = extractBinarySurfaceFromPulse(pulse);
 
+  const patternHashDual   = computeDualHash(pattern);
+  const lineageHashDual   = computeDualHash(String(lineageDepth));
+  const pulseTypeHashDual = computeDualHash(pulseType);
+  const organHashDual     = computeDualHash(String(targetOrgan || "NO_ORGAN"));
+  const modeHashDual      = computeDualHash(mode || "normal");
+
+  const binaryPatternHashDual = binarySurface.binaryPattern
+    ? computeDualHash(binarySurface.binaryPattern)
+    : null;
+  const binaryModeHashDual = binarySurface.binaryMode
+    ? computeDualHash(binarySurface.binaryMode)
+    : null;
+  const binaryRouterHintHashDual = binarySurface.routerHint
+    ? computeDualHash(binarySurface.routerHint)
+    : null;
+  const binaryMeshHintHashDual = binarySurface.meshHint
+    ? computeDualHash(binarySurface.meshHint)
+    : null;
+  const binaryOrganHintHashDual = binarySurface.organHint
+    ? computeDualHash(binarySurface.organHint)
+    : null;
+
   return {
-    // Symbolic surface
     pattern,
     lineageDepth,
     pulseType,
     targetOrgan: targetOrgan || "NO_ORGAN",
     mode,
 
-    // Binary surface (optional)
     binary: binarySurface,
 
-    // Hashes
-    patternHash: computeHash(pattern),
-    lineageHash: computeHash(String(lineageDepth)),
-    pulseTypeHash: computeHash(pulseType),
-    organHash: computeHash(String(targetOrgan)),
-    modeHash: computeHash(mode),
+    patternHash: patternHashDual.primary,
+    patternHashDual,
+    lineageHash: lineageHashDual.primary,
+    lineageHashDual,
+    pulseTypeHash: pulseTypeHashDual.primary,
+    pulseTypeHashDual,
+    organHash: organHashDual.primary,
+    organHashDual,
+    modeHash: modeHashDual.primary,
+    modeHashDual,
 
-    // Binary hashes
-    binaryPatternHash: binarySurface.binaryPattern
-      ? computeHash(binarySurface.binaryPattern)
-      : null,
-    binaryModeHash: binarySurface.binaryMode
-      ? computeHash(binarySurface.binaryMode)
-      : null,
-    binaryRouterHintHash: binarySurface.routerHint
-      ? computeHash(binarySurface.routerHint)
-      : null,
-    binaryMeshHintHash: binarySurface.meshHint
-      ? computeHash(binarySurface.meshHint)
-      : null,
-    binaryOrganHintHash: binarySurface.organHint
-      ? computeHash(binarySurface.organHint)
-      : null
+    binaryPatternHash: binaryPatternHashDual ? binaryPatternHashDual.primary : null,
+    binaryPatternHashDual,
+    binaryModeHash: binaryModeHashDual ? binaryModeHashDual.primary : null,
+    binaryModeHashDual,
+    binaryRouterHintHash: binaryRouterHintHashDual ? binaryRouterHintHashDual.primary : null,
+    binaryRouterHintHashDual,
+    binaryMeshHintHash: binaryMeshHintHashDual ? binaryMeshHintHashDual.primary : null,
+    binaryMeshHintHashDual,
+    binaryOrganHintHash: binaryOrganHintHashDual ? binaryOrganHintHashDual.primary : null,
+    binaryOrganHintHashDual
+  };
+}
+
+function buildAncestrySurface(pulse) {
+  const jobId = pulse?.jobId || "NO_JOB";
+  const lineage = Array.isArray(pulse?.lineage) ? pulse.lineage : [];
+  const originIdentity = pulse?.PulseRole?.identity || "UNKNOWN_ORIGIN";
+
+  const shape = {
+    jobId,
+    lineageDepth: lineage.length,
+    originIdentity,
+    lineage
+  };
+
+  const hashDual = computeDualHash(shape);
+
+  return {
+    jobId,
+    lineageDepth: lineage.length,
+    originIdentity,
+    ancestrySignature: hashDual.primary,
+    ancestrySignatureDual: hashDual
+  };
+}
+
+function buildAdvantageEchoSurface(pulse) {
+  const advantageField = pulse?.advantageField || {};
+  const presenceField  = pulse?.presenceField  || {};
+  const factoringSignal = pulse?.factoringSignal || null;
+  const band = pulse?.band || "symbolic";
+
+  const shape = {
+    advantageField,
+    presenceField,
+    factoringSignal,
+    band
+  };
+
+  const hashDual = computeDualHash(shape);
+
+  return {
+    advantageField,
+    presenceField,
+    factoringSignal,
+    band,
+    advantageEchoSignature: hashDual.primary,
+    advantageEchoSignatureDual: hashDual
   };
 }
 
 
 // ============================================================================
-//  14+ surfaces — cacheChunk / prewarm / presence
+//  cacheChunk / prewarm / presence surfaces (v16 dual-hash)
 // ============================================================================
-
 function buildCacheChunkSurface({ pulse, targetOrgan, mode }) {
   const pattern = pulse?.pattern || "NO_PATTERN";
   const jobId = pulse?.jobId || "NO_JOB";
@@ -222,10 +329,12 @@ function buildCacheChunkSurface({ pulse, targetOrgan, mode }) {
 
   const serialized = stableStringify(shape);
   const cacheChunkKey = "psend-adapter-cache::" + computeHash(serialized);
+  const cacheChunkKeyDual = computeDualHash(cacheChunkKey);
 
   return {
     cacheChunkKey,
-    cacheChunkSignature: computeHash(cacheChunkKey)
+    cacheChunkSignature: cacheChunkKeyDual.primary,
+    cacheChunkSignatureDual: cacheChunkKeyDual
   };
 }
 
@@ -250,10 +359,13 @@ function buildPrewarmSurface({ pulse, targetOrgan, mode }) {
   });
 
   const prewarmKey = "psend-adapter-prewarm::" + computeHash(raw);
+  const prewarmKeyDual = computeDualHash(prewarmKey);
 
   return {
     level,
-    prewarmKey
+    prewarmKey,
+    prewarmSignature: prewarmKeyDual.primary,
+    prewarmSignatureDual: prewarmKeyDual
   };
 }
 
@@ -275,10 +387,90 @@ function buildPresenceSurface({ pulse, targetOrgan }) {
   });
 
   const presenceKey = "psend-adapter-presence::" + computeHash(raw);
+  const presenceKeyDual = computeDualHash(presenceKey);
 
   return {
     scope,
-    presenceKey
+    presenceKey,
+    presenceSignature: presenceKeyDual.primary,
+    presenceSignatureDual: presenceKeyDual
+  };
+}
+
+
+// ============================================================================
+//  IMMORTAL-INTEL — Adapter Intelligence (symbolic-only)
+// ============================================================================
+function computeAdapterIntelligence({ diagnostics, cacheChunkSurface, prewarmSurface, presenceSurface }) {
+  const patternLen = (diagnostics.pattern || "").length;
+  const lineageDepth = diagnostics.lineageDepth || 0;
+  const hasBinary = diagnostics.binary?.hasBinary ? 1 : 0;
+
+  const presenceScope = presenceSurface.scope || "local";
+  const presenceWeight =
+    presenceScope === "global" ? 1.0 :
+    presenceScope === "page"   ? 0.7 :
+    presenceScope === "local"  ? 0.4 :
+    0.2;
+
+  const prewarmLevel = prewarmSurface.level || "none";
+  const prewarmWeight =
+    prewarmLevel === "aggressive" ? 1.0 :
+    prewarmLevel === "medium"     ? 0.7 :
+    prewarmLevel === "light"      ? 0.4 :
+    0.1;
+
+  const cacheWeight = cacheChunkSurface.cacheChunkKey ? 0.6 : 0.2;
+
+  const structuralScore =
+    patternLen * 0.0005 +
+    lineageDepth * 0.001 +
+    hasBinary * 0.1;
+
+  const solvednessScore = Math.max(
+    0,
+    Math.min(
+      structuralScore * 0.5 +
+      presenceWeight * 0.25 +
+      prewarmWeight * 0.15 +
+      cacheWeight * 0.1,
+      1
+    )
+  );
+
+  const computeTier =
+    solvednessScore >= 0.9 ? "nearSolution" :
+    solvednessScore >= 0.7 ? "highValue"    :
+    solvednessScore >= 0.4 ? "normal"       :
+    solvednessScore >= 0.2 ? "lowPriority"  :
+    "avoidCompute";
+
+  const readinessScore = Math.max(
+    0,
+    Math.min(
+      solvednessScore * 0.7 +
+      hasBinary * 0.1,
+      1
+    )
+  );
+
+  const intelShape = {
+    solvednessScore,
+    computeTier,
+    readinessScore,
+    presenceScope,
+    prewarmLevel,
+    hasBinary: !!hasBinary,
+    patternLen,
+    lineageDepth
+  };
+
+  const intelHashDual = computeDualHash(intelShape);
+
+  return {
+    ...intelShape,
+    adapterIntelligenceSignature: intelHashDual.primary,
+    adapterIntelligenceSignatureDual: intelHashDual
   };
 }
 
@@ -342,7 +534,7 @@ const ORGAN_ADAPTERS = {
 
 
 // ============================================================================
-//  FACTORY — Create an Adapter for ANY Pulse organism (v1/v2/v3)
+//  FACTORY — Create an Adapter for ANY Pulse organism (v16 IMMORTAL)
 // ============================================================================
 export function adaptPulseSendPacket(pulse, targetOrgan, mode = "normal") {
   const pulseType = pulse?.pulseType || pulse?.PulseRole?.identity || "UNKNOWN_PULSE_TYPE";
@@ -353,23 +545,6 @@ export function adaptPulseSendPacket(pulse, targetOrgan, mode = "normal") {
     targetOrgan,
     mode
   });
-
-  // ⭐ v14 adapter signature (binary + hints + cacheChunk aware)
-  const adapterSignature = computeHash(
-    diagnostics.pattern +
-    "::" +
-    diagnostics.targetOrgan +
-    "::" +
-    diagnostics.mode +
-    "::" +
-    (diagnostics.binary.binaryPattern || "NO_BINARY_PATTERN") +
-    "::" +
-    (diagnostics.binary.routerHint || "NO_ROUTER_HINT") +
-    "::" +
-    (diagnostics.binary.meshHint || "NO_MESH_HINT") +
-    "::" +
-    (diagnostics.binary.organHint || "NO_ORGAN_HINT")
-  );
 
   const cacheChunkSurface = buildCacheChunkSurface({
     pulse,
@@ -388,6 +563,28 @@ export function adaptPulseSendPacket(pulse, targetOrgan, mode = "normal") {
     targetOrgan
   });
 
+  const ancestrySurface = buildAncestrySurface(pulse);
+  const advantageEchoSurface = buildAdvantageEchoSurface(pulse);
+
+  const adapterIntelligence = computeAdapterIntelligence({
+    diagnostics,
+    cacheChunkSurface,
+    prewarmSurface,
+    presenceSurface
+  });
+
+  // v16 dual-hash adapter signature
+  const adapterSignatureShape = {
+    pattern: diagnostics.pattern,
+    targetOrgan: diagnostics.targetOrgan,
+    mode: diagnostics.mode,
+    binaryPattern: diagnostics.binary.binaryPattern || "NO_BINARY_PATTERN",
+    routerHint: diagnostics.binary.routerHint || "NO_ROUTER_HINT",
+    meshHint: diagnostics.binary.meshHint || "NO_MESH_HINT",
+    organHint: diagnostics.binary.organHint || "NO_ORGAN_HINT"
+  };
+  const adapterSignatureDual = computeDualHash(adapterSignatureShape);
+
   const adapter = ORGAN_ADAPTERS[targetOrgan];
 
   if (typeof adapter === "function") {
@@ -397,11 +594,16 @@ export function adaptPulseSendPacket(pulse, targetOrgan, mode = "normal") {
         targetOrgan,
         mode
       ),
-      adapterSignature,
+      PulseRole,
+      adapterSignature: adapterSignatureDual.primary,
+      adapterSignatureDual,
       diagnostics,
       cacheChunkSurface,
       prewarmSurface,
-      presenceSurface
+      presenceSurface,
+      ancestrySurface,
+      advantageEchoSurface,
+      adapterIntelligence
     };
   }
 
@@ -417,10 +619,56 @@ export function adaptPulseSendPacket(pulse, targetOrgan, mode = "normal") {
     pulseType,
     advantageField,
     neutral: true,
-    adapterSignature,
+
+    PulseRole,
+    adapterSignature: adapterSignatureDual.primary,
+    adapterSignatureDual,
     diagnostics,
     cacheChunkSurface,
     prewarmSurface,
-    presenceSurface
+    presenceSurface,
+    ancestrySurface,
+    advantageEchoSurface,
+    adapterIntelligence
   };
 }
+
+
+// ============================================================================
+//  ORGAN EXPORT — BinarySend tech-surface compatibility
+// ============================================================================
+//
+//  BinarySend-v16 imports:
+//    import { adaptPulseSendPacket as PulseSendAdapter } from "./PulseSendAdapter.js";
+//    const adapter = PulseSendAdapter?.adapt ? PulseSendAdapter.adapt(bits) : null;
+//
+//  So we expose an object with .adapt(...) that delegates to adaptPulseSendPacket.
+// ============================================================================
+export const PulseSendAdapter = {
+  PulseRole,
+
+  adapt(bitsOrPulse, targetOrgan, mode) {
+    // If it's already a pulse-shaped object, pass through.
+    if (bitsOrPulse && typeof bitsOrPulse === "object" && !Array.isArray(bitsOrPulse)) {
+      return adaptPulseSendPacket(bitsOrPulse, targetOrgan, mode);
+    }
+
+    // Binary path: wrap bits into a synthetic pulse envelope.
+    const bits = Array.isArray(bitsOrPulse) ? bitsOrPulse : [];
+    const pseudoPulse = {
+      jobId: "BINARY_SEND_ADAPTER",
+      pattern: "binary/send/adapter",
+      payload: {
+        binaryPayload: bits,
+        binaryPattern: "binary/send",
+        binaryMode: mode || "normal"
+      },
+      priority: "normal",
+      returnTo: null,
+      band: "binary",
+      lineage: []
+    };
+
+    return adaptPulseSendPacket(pseudoPulse, targetOrgan, mode);
+  }
+};

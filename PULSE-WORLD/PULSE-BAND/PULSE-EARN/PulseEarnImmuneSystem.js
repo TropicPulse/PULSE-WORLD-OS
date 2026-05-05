@@ -210,7 +210,7 @@ import {
   synthesizePulseEarnGene,
   writePulseEarnGene
 } from "./PulseEarnGeneticMemory.js";
-import { getPulseEarnCellHealingState } from "./PulseEarnCell.js";
+import { getPulseEarnCellHealingState } from "./PulseEarnCell-v16.js";
 import { getPulseEarnNervousSystemHealingState } from "./PulseEarnNervousSystem.js";
 
 // ============================================================================

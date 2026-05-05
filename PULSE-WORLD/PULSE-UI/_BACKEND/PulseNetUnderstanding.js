@@ -95,10 +95,10 @@ import createPulseWorldCore from "../../PULSE-BAND/PULSE-EXPANSION/PulseUser-v12
 //  - These are still the organ-level pieces we unify under the kernel.
 // ============================================================================
 import { createProxy as PulseProxySym } from "../../PULSE-BAND/PULSE-PROXY/PulseProxy-v11-Evo.js";
-import { PulseRouter as PulseRouterSym } from "../../PULSE-BAND/PULSE-ROUTER/PulseRouter-v11-Evo.js";
+import { PulseRouter as PulseRouterSym } from "../../PULSE-BAND/PULSE-ROUTER/PulseRouter-v16.js";
 import { createGPUDispatch as PulseGPUSym } from "../../PULSE-BAND/PULSE-GPU/PulseGPU-v16.js";
 import { createPulseMesh as PulseMeshSym } from "../../PULSE-BAND/PULSE-MESH/PulseMesh-v11-Evo.js";
-import { createPulseSend as PulseSendSym } from "../../PULSE-BAND/PULSE-SEND/PulseSend-v11-Evo.js";
+import { createPulseSend as PulseSendSym } from "../../PULSE-BAND/PULSE-SEND/PulseSend-v16.js";
 import { createEarn as PulseEarnSym } from "../../PULSE-BAND/PULSE-EARN/PulseEarn-v16.js";
 
 
@@ -109,10 +109,10 @@ import { createEarn as PulseEarnSym } from "../../PULSE-BAND/PULSE-EARN/PulseEar
 import { createDualBandOrganism as PulseBinaryOrganismBoot } from "../../PULSE-BAND/PULSE-AI/aiDualBand-v11-Evo.js";
 
 import { createBinaryProxy } from "../../PULSE-BAND/PULSE-PROXY/PulseBinaryProxy-v11-Evo.js";
-import { createBinaryRouter as PulseRouterBin } from "../../PULSE-BAND/PULSE-ROUTER/PulseBinaryRouter-v11-Evo.js";
+import { createBinaryRouter as PulseRouterBin } from "../../PULSE-BAND/PULSE-ROUTER/PulseBinaryRouter-v16.js";
 import { PulseBinaryGPU as PulseGPUBin } from "../../PULSE-BAND/PULSE-GPU/PulseBinaryGPU-v16.js";
 import { createBinaryMesh as PulseMeshBin } from "../../PULSE-BAND/PULSE-MESH/PulseBinaryMesh-v11-Evo.js";
-import { createBinarySend as PulseSendBin } from "../../PULSE-BAND/PULSE-SEND/PulseBinarySend-v11-Evo.js";
+import { createBinarySend as PulseSendBin } from "../../PULSE-BAND/PULSE-SEND/PulseBinarySend-v16.js";
 
 
 // ============================================================================

@@ -105,15 +105,66 @@ export const PulseBinarySendMetaV16 = Object.freeze({
   })
 });
 
+// ============================================================================
+//  v16-IMMORTAL-INTEL — dual-hash + healing meta (symbolic-only)
+// ============================================================================
+function computeClassicHash(str) {
+  let h = 0;
+  const s = String(str || "");
+  for (let i = 0; i < s.length; i++) {
+    h = (h + s.charCodeAt(i) * (i + 1)) % 100000;
+  }
+  return `h${h}`;
+}
+
+function computeIntelHash(payload) {
+  const s = JSON.stringify(payload || {});
+  let h = 0;
+  for (let i = 0; i < s.length; i++) {
+    const c = s.charCodeAt(i);
+    h = (h * 131 + c * (i + 7)) % 1000000007;
+  }
+  return `i${h}`;
+}
+
+function buildDualHashSignature(label, intelPayload, classicString) {
+  const intelBase = {
+    label,
+    intel: intelPayload || {},
+    classic: classicString || ""
+  };
+  const intel = computeIntelHash(intelBase);
+  const classic = computeClassicHash(`${label}::${classicString || ""}`);
+  return { intel, classic };
+}
+
+// IMMORTAL healing/meta surface for BinarySend
+const binarySendHealing = {
+  cycleCount: 0,
+  lastLength: 0,
+  lastSignature: null,
+  lastCacheChunk: null,
+  lastPrewarm: null,
+  lastPresenceScope: null,
+  lastProxyMode: null,
+  lastMaxThroughput: null,
+  lastIntelSignature: null,
+  lastClassicSignature: null
+};
+
+export function getBinarySendHealingState() {
+  return { ...binarySendHealing };
+}
+
 // --- Evolution Engines ------------------------------------------------------
-import { createPulseV2 as PulseV2EvolutionEngine } from "./PulseV2EvolutionEngine-v11-Evo.js";
-import { createPulseV3 as PulseV3UnifiedOrganism } from "./PulseV3UnifiedOrganism-v11-Evo.js";
+import { createPulseV2 as PulseV2EvolutionEngine } from "./PulseV2EvolutionEngine-v16.js";
+import { createPulseV3 as PulseV3UnifiedOrganism } from "./PulseV3UnifiedOrganism-v16.js";
 
 // --- Impulse Layer ----------------------------------------------------------
-import { createPulseSendImpulse as PulseSendImpulse } from "./PulseSendImpulse-v11-Evo.js";
+import { createPulseSendImpulse as PulseSendImpulse } from "./PulseSendImpulse-v16.js";
 
 // --- Legacy Pulse Layer -----------------------------------------------------
-import { createLegacyPulse as PulseSendLegacyPulse } from "./PulseSendLegacyPulse-v11-Evo.js";
+import { createLegacyPulse as PulseSendLegacyPulse } from "./PulseSendLegacyPulse-v16.js";
 
 // --- Adapter Layer ----------------------------------------------------------
 import { adaptPulseSendPacket as PulseSendAdapter } from "./PulseSendAdapter.js";
@@ -139,8 +190,6 @@ import {
 
 // ============================================================================
 //  PROXY INTEGRATION — BinarySend Throughput Control (symbolic-only)
-//  NOTE: This is symbolic meta; it does NOT alter binary bits, only informs
-//        consumers about recommended throughput based on proxy state.
 // ============================================================================
 function computeMaxBinaryThroughput() {
   let maxBinaryThroughput = 8; // default safe throughput
@@ -244,7 +293,7 @@ export function createBinarySend({
 
   // ---------------------------------------------------------------------------
   //  12.3+: deterministic binary signature (dual-band safe)
-// ---------------------------------------------------------------------------
+  // ---------------------------------------------------------------------------
   function computeSignature(bits) {
     let h = 0;
     for (let i = 0; i < bits.length; i++) {
@@ -255,7 +304,7 @@ export function createBinarySend({
 
   // ---------------------------------------------------------------------------
   //  12.3+: cacheChunk fingerprint (binary-only)
-// ---------------------------------------------------------------------------
+  // ---------------------------------------------------------------------------
   function computeCacheChunk(bits) {
     let acc = 1;
     for (let i = 0; i < bits.length; i++) {
@@ -266,7 +315,7 @@ export function createBinarySend({
 
   // ---------------------------------------------------------------------------
   //  12.3+: prewarm hint (binary-only)
-// ---------------------------------------------------------------------------
+  // ---------------------------------------------------------------------------
   function computePrewarm(bits) {
     if (bits.length >= 512) return "prewarm-aggressive";
     if (bits.length >= 128) return "prewarm-medium";
@@ -276,7 +325,7 @@ export function createBinarySend({
 
   // ---------------------------------------------------------------------------
   //  12.3+: presence scope (binary-only)
-// ---------------------------------------------------------------------------
+  // ---------------------------------------------------------------------------
   function computePresence(bits) {
     const len = bits.length;
     if (len >= 1024) return "presence-global";
@@ -363,7 +412,7 @@ export function createBinarySend({
 
   // ---------------------------------------------------------------------------
   //  INTERNAL: USE ALL IMPORTS (12.3+ integration surfaces)
-// ---------------------------------------------------------------------------
+  // ---------------------------------------------------------------------------
   function runTechSurfaces(bits) {
 
     const v2 = PulseV2EvolutionEngine?.createPulseV2
@@ -416,10 +465,25 @@ export function createBinarySend({
   function send(bits) {
     const pure = ensurePureBinaryOrFallback("send", bits, "non-binary-output");
 
+    // v16 IMMORTAL-INTEL cycle + base surfaces
+    binarySendHealing.cycleCount++;
+    binarySendHealing.lastLength = pure.length;
+
     const signature  = computeSignature(pure);
     const cacheChunk = computeCacheChunk(pure);
     const prewarm    = computePrewarm(pure);
     const presence   = computePresence(pure);
+
+    binarySendHealing.lastSignature = signature;
+    binarySendHealing.lastCacheChunk = cacheChunk;
+    binarySendHealing.lastPrewarm = prewarm;
+    binarySendHealing.lastPresenceScope = presence;
+
+    const recommendedThroughput = computeMaxBinaryThroughput();
+    const proxyMode = getProxyMode();
+
+    binarySendHealing.lastMaxThroughput = recommendedThroughput;
+    binarySendHealing.lastProxyMode = proxyMode;
 
     const tech = runTechSurfaces(pure);
 
@@ -431,12 +495,42 @@ export function createBinarySend({
       proxyPressure: getProxyPressure(),
       proxyFallback: getProxyFallback(),
       proxyBoost: getProxyBoost(),
-      proxyMode: getProxyMode(),
+      proxyMode,
       proxyLineage: getProxyLineage()
     };
 
-    // ORGANISM-AWARE: recommended throughput (symbolic-only)
-    const recommendedThroughput = computeMaxBinaryThroughput();
+    // v16-IMMORTAL-INTEL: build dualhash INTEL signature
+    const intelPayload = {
+      kind: "binarySend",
+      version: "v16-Immortal-ORGANISM",
+      cycleIndex: binarySendHealing.cycleCount,
+      length: pure.length,
+      signature,
+      cacheChunk,
+      prewarm,
+      presenceScope: presence,
+      recommendedThroughput,
+      proxyMode,
+      proxyPressure: proxyMeta.proxyPressure,
+      proxyBoost: proxyMeta.proxyBoost,
+      proxyFallback: proxyMeta.proxyFallback,
+      proxyLineage: proxyMeta.proxyLineage,
+      pulseIntelligence
+    };
+
+    const classicString =
+      `LEN:${pure.length}` +
+      `::SIG:${signature}` +
+      `::CC:${cacheChunk}` +
+      `::PRE:${prewarm}` +
+      `::PRES:${presence}` +
+      `::THR:${recommendedThroughput}` +
+      `::MODE:${proxyMode}`;
+
+    const dual = buildDualHashSignature("BINARY_SEND_ORGAN", intelPayload, classicString);
+
+    binarySendHealing.lastIntelSignature = dual.intel;
+    binarySendHealing.lastClassicSignature = dual.classic;
 
     if (trace) {
       console.log("[BinarySend-v16] OUT:", pure, {
@@ -447,7 +541,9 @@ export function createBinarySend({
         tech,
         pulseIntelligence,
         proxyMeta,
-        recommendedThroughput
+        recommendedThroughput,
+        intelSignature: dual.intel,
+        classicSignature: dual.classic
       });
     }
 
@@ -463,7 +559,28 @@ export function createBinarySend({
       pulseIntelligenceSignature: computeSignature(pure),
       length: pure.length,
       proxyMeta,
-      recommendedThroughput
+      recommendedThroughput,
+
+      // v16-IMMORTAL-INTEL meta
+      intelSignature: dual.intel,
+      classicSignature: dual.classic,
+      binarySendMeta: {
+        layer: "BinarySend",
+        role: "PURE_BINARY_SEND_ORGAN",
+        version: "v16-Immortal-ORGANISM",
+        signatures: {
+          intel: dual.intel,
+          classic: dual.classic
+        },
+        profile: {
+          cycleIndex: binarySendHealing.cycleCount,
+          length: pure.length,
+          prewarm,
+          presenceScope: presence,
+          recommendedThroughput,
+          proxyMode
+        }
+      }
     };
   }
 
@@ -487,6 +604,25 @@ export function createBinarySend({
 
     const safe = Array.isArray(result) ? result : [];
 
+    binarySendHealing.cycleCount++;
+    binarySendHealing.lastLength = safe.length;
+
+    const signature  = computeSignature(safe);
+    const cacheChunk = computeCacheChunk(safe);
+    const prewarm    = computePrewarm(safe);
+    const presence   = computePresence(safe);
+
+    binarySendHealing.lastSignature = signature;
+    binarySendHealing.lastCacheChunk = cacheChunk;
+    binarySendHealing.lastPrewarm = prewarm;
+    binarySendHealing.lastPresenceScope = presence;
+
+    const recommendedThroughput = computeMaxBinaryThroughput();
+    const proxyMode = getProxyMode();
+
+    binarySendHealing.lastMaxThroughput = recommendedThroughput;
+    binarySendHealing.lastProxyMode = proxyMode;
+
     const tech = runTechSurfaces(safe);
 
     const pulseIntelligence = computeBinaryIntelligence(safe);
@@ -495,27 +631,82 @@ export function createBinarySend({
       proxyPressure: getProxyPressure(),
       proxyFallback: getProxyFallback(),
       proxyBoost: getProxyBoost(),
-      proxyMode: getProxyMode(),
+      proxyMode,
       proxyLineage: getProxyLineage()
     };
 
-    const recommendedThroughput = computeMaxBinaryThroughput();
+    const intelPayload = {
+      kind: "binarySendFallback",
+      version: "v16-Immortal-ORGANISM",
+      cycleIndex: binarySendHealing.cycleCount,
+      length: safe.length,
+      signature,
+      cacheChunk,
+      prewarm,
+      presenceScope: presence,
+      recommendedThroughput,
+      proxyMode,
+      proxyPressure: proxyMeta.proxyPressure,
+      proxyBoost: proxyMeta.proxyBoost,
+      proxyFallback: proxyMeta.proxyFallback,
+      proxyLineage: proxyMeta.proxyLineage,
+      pulseIntelligence,
+      reason
+    };
+
+    const classicString =
+      `FALLBACK` +
+      `::LEN:${safe.length}` +
+      `::SIG:${signature}` +
+      `::CC:${cacheChunk}` +
+      `::PRE:${prewarm}` +
+      `::PRES:${presence}` +
+      `::THR:${recommendedThroughput}` +
+      `::MODE:${proxyMode}` +
+      `::REASON:${reason}`;
+
+    const dual = buildDualHashSignature("BINARY_SEND_ORGAN_FALLBACK", intelPayload, classicString);
+
+    binarySendHealing.lastIntelSignature = dual.intel;
+    binarySendHealing.lastClassicSignature = dual.classic;
 
     return {
       ok: false,
       fallback: true,
       reason,
       bits: safe,
-      signature: computeSignature(safe),
-      cacheChunk: computeCacheChunk(safe),
-      prewarm: computePrewarm(safe),
-      presence: computePresence(safe),
+      signature,
+      cacheChunk,
+      prewarm,
+      presence,
       tech,
       pulseIntelligence,
       pulseIntelligenceSignature: computeSignature(safe),
       length: safe.length,
       proxyMeta,
-      recommendedThroughput
+      recommendedThroughput,
+
+      intelSignature: dual.intel,
+      classicSignature: dual.classic,
+      binarySendMeta: {
+        layer: "BinarySend",
+        role: "PURE_BINARY_SEND_ORGAN",
+        version: "v16-Immortal-ORGANISM",
+        fallback: true,
+        signatures: {
+          intel: dual.intel,
+          classic: dual.classic
+        },
+        profile: {
+          cycleIndex: binarySendHealing.cycleCount,
+          length: safe.length,
+          prewarm,
+          presenceScope: presence,
+          recommendedThroughput,
+          proxyMode,
+          reason
+        }
+      }
     };
   }
 

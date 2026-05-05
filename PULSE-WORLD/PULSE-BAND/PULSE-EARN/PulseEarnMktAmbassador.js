@@ -231,7 +231,7 @@ let ambassadorCycle = 0;
 // Deterministic Hash Helpers — INTEL + Classic Fallback
 // ============================================================================
 
-function computeClassicHash(str) {
+function computeHash(str) {
   let h = 0;
   const s = String(str || "");
   for (let i = 0; i < s.length; i++) {
@@ -240,9 +240,15 @@ function computeClassicHash(str) {
   return `h${h}`;
 }
 
-function computeIntelHash(payload) {
-  const s = JSON.stringify(payload || {});
-  return `i${computeClassicHash(s)}`;
+// Primary INTEL hash — deterministic, structure-aware, no IO, no time.
+function computeHashIntelligence(payload) {
+  const base = JSON.stringify(payload || "");
+  let h = 0;
+  for (let i = 0; i < base.length; i++) {
+    const c = base.charCodeAt(i);
+    h = (h * 131 + c * (i + 7)) % 1000000007;
+  }
+  return `HINTEL_${h}`;
 }
 
 function buildDualHashSignature(label, intelPayload, classicString) {
@@ -251,8 +257,8 @@ function buildDualHashSignature(label, intelPayload, classicString) {
     intel: intelPayload || {},
     classic: classicString || ""
   };
-  const intelHash = computeIntelHash(intelBase);
-  const classicHash = computeClassicHash(
+  const intelHash = computeHashIntelligence(intelBase);
+  const classicHash = computeHash(
     `${label}::${classicString || ""}`
   );
   return {
@@ -260,6 +266,7 @@ function buildDualHashSignature(label, intelPayload, classicString) {
     classic: classicHash
   };
 }
+
 
 function normalizeBand(band) {
   const b = String(band || "symbolic").toLowerCase();

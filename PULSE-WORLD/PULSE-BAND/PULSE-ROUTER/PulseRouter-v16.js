@@ -1,5 +1,5 @@
 // ============================================================================
-//  PulseRouter-v13-COSMOS-MULTIVERSE
+//  PulseRouter-v16-IMMORTAL-DualHash-INTEL
 //  SYMBOLIC EVOLUTION ROUTER — Multiverse-Aware Routing Spine
 // ============================================================================
 //
@@ -9,17 +9,18 @@
 //    - Integrates Commandments, Instincts, Design, Thought.
 //    - Zero randomness, zero mutation, zero drift.
 //    - Pure symbolic (no binary).
-//    - Reversible routing signatures.
+//    - DualHash reversible routing signatures.
 //    - Cosmos-aware routing metadata.
+//    - Router-intelligence surface (pattern/lineage/page/cosmos/advantage/pulse-compute).
 //
 // ============================================================================
 /*
 AI_EXPERIENCE_META = {
   identity: "PulseRouter",
-  version: "v12.5-Evo",
+  version: "v16-Immortal-DualHash-INTEL",
   layer: "frontend",
   role: "symbolic_router",
-  lineage: "PulseOS-v12",
+  lineage: "PulseOS-v16",
 
   evo: {
     symbolicCore: true,
@@ -27,7 +28,12 @@ AI_EXPERIENCE_META = {
     presenceAware: true,
     chunkAligned: true,
     safeRouteFree: true,
-    deterministic: true
+    deterministic: true,
+    dualHashReady: true,
+    routerIntelligenceReady: true,
+    cosmosAware: true,
+    advantageAware: true,
+    evolutionAware: true
   },
 
   contract: {
@@ -53,22 +59,24 @@ import * as PulseRouterEvolutionaryInstincts  from "./PulseRouterEvolutionaryIns
 import * as PulseRouterEvolutionaryThought    from "./PulseRouterEvolutionaryThought.js";
 
 // --- MESH ROUTER ------------------------------------------------------------
-import * as PulseRouterMesh           from "./PulseRouterMesh-v11-Evo.js";
+import * as PulseRouterMesh           from "./PulseRouterMesh-v16.js";
 
 // --- EARN-AWARE ROUTER ------------------------------------------------------
-import * as PulseRouterEarn           from "./PulseRouterEarn-v11-Evo.js";
+import * as PulseRouterEarn           from "./PulseRouterEarn-v16.js";
 
 // --- ROUTER COMMANDMENTS ----------------------------------------------------
 import * as PulseRouterCommandments   from "./PulseRouterCommandments.js";
+
+
 // ============================================================================
-// ⭐ PulseRole — identifies this as the PulseRouter Organ (v13-COSMOS)
+// ⭐ PulseRole — identifies this as the PulseRouter Organ (v16-IMMORTAL)
 // ============================================================================
 export const PulseRole = {
   type: "Router",
   subsystem: "PulseRouter",
   layer: "RoutingSpine",
-  version: "13.0",
-  identity: "PulseRouter-v13-COSMOS-MULTIVERSE",
+  version: "16.0-Immortal-DualHash-INTEL",
+  identity: "PulseRouter-v16-IMMORTAL-DualHash-INTEL",
 
   evo: {
     driftProof: true,
@@ -81,7 +89,10 @@ export const PulseRole = {
     advantageAware: true,
     deterministicRouting: true,
     memoryReady: true,
-    futureEvolutionReady: true
+    futureEvolutionReady: true,
+    dualHashReady: true,
+    routerIntelligenceReady: true,
+    evolutionAware: true
   },
 
   loopTheory: {
@@ -92,8 +103,8 @@ export const PulseRole = {
   },
 
   pulseContract: "Pulse-v1/v2/v3",
-  meshContract: "PulseMesh-v13",
-  sendContract: "PulseSend-v13"
+  meshContract: "PulseMesh-v16",
+  sendContract: "PulseSend-v16"
 };
 
 
@@ -117,6 +128,35 @@ function rememberFailure(pattern, target) {
 
 
 // ============================================================================
+// HASH / DUALHASH HELPERS (pure, deterministic)
+// ============================================================================
+function computeHash(str) {
+  let h = 0;
+  const s = String(str);
+  for (let i = 0; i < s.length; i++) {
+    h = (h * 131 + s.charCodeAt(i) * (i + 3)) >>> 0;
+  }
+  return `pr16-h${h.toString(16)}`;
+}
+
+function computeAltHash(str) {
+  let h = 1;
+  const s = String(str);
+  for (let i = 0; i < s.length; i++) {
+    h = (h * 257 + s.charCodeAt(i) * (i + 11)) >>> 0;
+  }
+  return `pr16-a${h.toString(16)}`;
+}
+
+function computeDualHash(str) {
+  const primary = computeHash(str);
+  const secondary = computeAltHash(str);
+  const combined = computeHash(primary + "::" + secondary);
+  return { primary, secondary, combined };
+}
+
+
+// ============================================================================
 // COSMOS CONTEXT HELPERS
 // ============================================================================
 function normalizeCosmos(cosmos = {}) {
@@ -129,11 +169,7 @@ function normalizeCosmos(cosmos = {}) {
 
 function cosmosSignature(cosmos) {
   const raw = `${cosmos.universeId}|${cosmos.timelineId}|${cosmos.branchId}`;
-  let h = 0;
-  for (let i = 0; i < raw.length; i++) {
-    h = (h * 31 + raw.charCodeAt(i)) >>> 0;
-  }
-  return `cx${h.toString(16)}`;
+  return computeDualHash(raw);
 }
 
 
@@ -156,16 +192,11 @@ function buildPageAncestrySignature({ pattern, lineage, pageId, cosmos }) {
     patternAncestry: buildPatternAncestry(pattern || ""),
     lineageSignature: buildLineageSignature(lineage || []),
     pageId: pageId || "NO_PAGE",
-    cosmosSignature: cosmosSignature(cosmos)
+    cosmos: normalizeCosmos(cosmos)
   };
 
   const raw = JSON.stringify(shape);
-  let hash = 0;
-  for (let i = 0; i < raw.length; i++) {
-    hash = (hash << 5) - hash + raw.charCodeAt(i);
-    hash |= 0;
-  }
-  return (hash >>> 0).toString(16);
+  return computeDualHash(raw);
 }
 
 
@@ -183,7 +214,7 @@ function classifyDegradationTier(h) {
 
 
 // ============================================================================
-// fallback deterministic routing (legacy spine)
+// fallback deterministic routing (legacy spine → v16 surface)
 // ============================================================================
 function fallbackRouteTarget(pulse) {
   const pattern = pulse.pattern || "UNKNOWN_PATTERN";
@@ -204,7 +235,71 @@ function fallbackRouteTarget(pulse) {
 
 
 // ============================================================================
-// evolution-aware routing (COSMOS v13)
+// ROUTER INTELLIGENCE — symbolic routing insight surface
+// ============================================================================
+function computeRoutingIntelligence({
+  pulse,
+  targetOrgan,
+  source,
+  tier,
+  cosmos,
+  pattern,
+  patternAncestry,
+  lineage,
+  lineageSignature,
+  pageId,
+  pageAncestrySignature
+}) {
+  const healthScore = pulse.healthScore ?? 1;
+  const advantageField = pulse.advantageField ?? null;
+  const pulseIntelligence = pulse.pulseIntelligence ?? pulse.pulseCompute ?? null;
+
+  const shape = {
+    targetOrgan,
+    source,
+    tier,
+    cosmos: normalizeCosmos(cosmos),
+    pattern,
+    patternAncestry,
+    lineage,
+    lineageSignature,
+    pageId,
+    pageAncestrySignature,
+    healthScore
+  };
+
+  const routeDualHash = computeDualHash(JSON.stringify(shape));
+  const advantageDualHash = advantageField
+    ? computeDualHash(JSON.stringify(advantageField))
+    : null;
+  const pulseIntelDualHash = pulseIntelligence
+    ? computeDualHash(JSON.stringify(pulseIntelligence))
+    : null;
+
+  const readinessScore = Math.max(
+    0,
+    Math.min(
+      0.5 * healthScore +
+      0.3 * (patternAncestry.length > 0 ? 1 : 0) +
+      0.2 * (lineage.length > 0 ? 1 : 0),
+      1
+    )
+  );
+
+  return {
+    healthScore,
+    advantageField,
+    pulseIntelligence,
+    readinessScore,
+    routeDualHash,
+    advantageDualHash,
+    pulseIntelDualHash
+  };
+}
+
+
+// ============================================================================
+// evolution-aware routing (COSMOS v16-IMMORTAL-DUALHASH-INTEL)
 // ============================================================================
 function evolutionAwareRouteTarget(pulse) {
   const cosmos = normalizeCosmos(pulse.cosmos || {});
@@ -232,10 +327,12 @@ function evolutionAwareRouteTarget(pulse) {
 
   // 1) Commandments
   if (pulse.commandmentsDecision?.targetOrgan) {
-    const target = pulse.commandmentsDecision.targetOrgan;
-    rememberSuccess(pattern, target);
-    return {
-      targetOrgan: target,
+    const targetOrgan = pulse.commandmentsDecision.targetOrgan;
+    rememberSuccess(pattern, targetOrgan);
+
+    const routingIntelligence = computeRoutingIntelligence({
+      pulse,
+      targetOrgan,
       source: "Commandments",
       tier,
       cosmos,
@@ -245,15 +342,31 @@ function evolutionAwareRouteTarget(pulse) {
       lineageSignature,
       pageId,
       pageAncestrySignature
+    });
+
+    return {
+      targetOrgan,
+      source: "Commandments",
+      tier,
+      cosmos,
+      pattern,
+      patternAncestry,
+      lineage,
+      lineageSignature,
+      pageId,
+      pageAncestrySignature,
+      routingIntelligence
     };
   }
 
   // 2) Instincts
   if (pulse.instinctsDecision?.targetOrgan) {
-    const target = pulse.instinctsDecision.targetOrgan;
-    rememberSuccess(pattern, target);
-    return {
-      targetOrgan: target,
+    const targetOrgan = pulse.instinctsDecision.targetOrgan;
+    rememberSuccess(pattern, targetOrgan);
+
+    const routingIntelligence = computeRoutingIntelligence({
+      pulse,
+      targetOrgan,
       source: "Instincts",
       tier,
       cosmos,
@@ -263,15 +376,31 @@ function evolutionAwareRouteTarget(pulse) {
       lineageSignature,
       pageId,
       pageAncestrySignature
+    });
+
+    return {
+      targetOrgan,
+      source: "Instincts",
+      tier,
+      cosmos,
+      pattern,
+      patternAncestry,
+      lineage,
+      lineageSignature,
+      pageId,
+      pageAncestrySignature,
+      routingIntelligence
     };
   }
 
   // 3) Design
   if (pulse.designDecision?.targetOrgan) {
-    const target = pulse.designDecision.targetOrgan;
-    rememberSuccess(pattern, target);
-    return {
-      targetOrgan: target,
+    const targetOrgan = pulse.designDecision.targetOrgan;
+    rememberSuccess(pattern, targetOrgan);
+
+    const routingIntelligence = computeRoutingIntelligence({
+      pulse,
+      targetOrgan,
       source: "Design",
       tier,
       cosmos,
@@ -281,31 +410,83 @@ function evolutionAwareRouteTarget(pulse) {
       lineageSignature,
       pageId,
       pageAncestrySignature
+    });
+
+    return {
+      targetOrgan,
+      source: "Design",
+      tier,
+      cosmos,
+      pattern,
+      patternAncestry,
+      lineage,
+      lineageSignature,
+      pageId,
+      pageAncestrySignature,
+      routingIntelligence
     };
   }
 
   // 4) Thought
   if (pulse.thoughtDecision?.targetOrgan) {
-    const target = pulse.thoughtDecision.targetOrgan;
-    rememberSuccess(pattern, target);
-    return {
-      targetOrgan: target,
+    const targetOrgan = pulse.thoughtDecision.targetOrgan;
+    rememberSuccess(pattern, targetOrgan);
+
+    const routedTier = pulse.thoughtDecision.tier || tier;
+    const routedPatternAncestry =
+      pulse.thoughtDecision.patternAncestry || patternAncestry;
+    const routedLineageSignature =
+      pulse.thoughtDecision.lineageSignature || lineageSignature;
+    const routedPageId = pulse.thoughtDecision.pageId || pageId;
+    const routedPageAncestrySignature =
+      pulse.thoughtDecision.pageAncestrySignature || pageAncestrySignature;
+
+    const routingIntelligence = computeRoutingIntelligence({
+      pulse,
+      targetOrgan,
       source: "Thought",
-      tier: pulse.thoughtDecision.tier || tier,
+      tier: routedTier,
       cosmos,
       pattern,
-      patternAncestry: pulse.thoughtDecision.patternAncestry || patternAncestry,
+      patternAncestry: routedPatternAncestry,
       lineage,
-      lineageSignature: pulse.thoughtDecision.lineageSignature || lineageSignature,
-      pageId: pulse.thoughtDecision.pageId || pageId,
-      pageAncestrySignature:
-        pulse.thoughtDecision.pageAncestrySignature || pageAncestrySignature
+      lineageSignature: routedLineageSignature,
+      pageId: routedPageId,
+      pageAncestrySignature: routedPageAncestrySignature
+    });
+
+    return {
+      targetOrgan,
+      source: "Thought",
+      tier: routedTier,
+      cosmos,
+      pattern,
+      patternAncestry: routedPatternAncestry,
+      lineage,
+      lineageSignature: routedLineageSignature,
+      pageId: routedPageId,
+      pageAncestrySignature: routedPageAncestrySignature,
+      routingIntelligence
     };
   }
 
   // 5) Fallback
   const fallbackTarget = fallbackRouteTarget(pulse);
   rememberSuccess(pattern, fallbackTarget);
+
+  const routingIntelligence = computeRoutingIntelligence({
+    pulse,
+    targetOrgan: fallbackTarget,
+    source: "Fallback",
+    tier,
+    cosmos,
+    pattern,
+    patternAncestry,
+    lineage,
+    lineageSignature,
+    pageId,
+    pageAncestrySignature
+  });
 
   return {
     targetOrgan: fallbackTarget,
@@ -317,13 +498,14 @@ function evolutionAwareRouteTarget(pulse) {
     lineage,
     lineageSignature,
     pageId,
-    pageAncestrySignature
+    pageAncestrySignature,
+    routingIntelligence
   };
 }
 
 
 // ============================================================================
-// PUBLIC API — PulseRouter (v13 COSMOS)
+// PUBLIC API — PulseRouter (v16-IMMORTAL-DUALHASH-INTEL)
 // ============================================================================
 export const PulseRouter = {
 
@@ -349,22 +531,42 @@ export const PulseRouter = {
       const lineage = pulse.lineage || [];
       const pageId = pulse.pageId || "NO_PAGE";
 
+      const tier = classifyDegradationTier(pulse.healthScore ?? 1);
+      const patternAncestry = buildPatternAncestry(pattern);
+      const lineageSignature = buildLineageSignature(lineage);
+      const pageAncestrySignature = buildPageAncestrySignature({
+        pattern,
+        lineage,
+        pageId,
+        cosmos
+      });
+
+      const routingIntelligence = computeRoutingIntelligence({
+        pulse,
+        targetOrgan: pulse.targetHint,
+        source: "Hint",
+        tier,
+        cosmos,
+        pattern,
+        patternAncestry,
+        lineage,
+        lineageSignature,
+        pageId,
+        pageAncestrySignature
+      });
+
       return {
         targetOrgan: pulse.targetHint,
         source: "Hint",
-        tier: classifyDegradationTier(pulse.healthScore ?? 1),
+        tier,
         cosmos,
         pattern,
-        patternAncestry: buildPatternAncestry(pattern),
+        patternAncestry,
         lineage,
-        lineageSignature: buildLineageSignature(lineage),
+        lineageSignature,
         pageId,
-        pageAncestrySignature: buildPageAncestrySignature({
-          pattern,
-          lineage,
-          pageId,
-          cosmos
-        })
+        pageAncestrySignature,
+        routingIntelligence
       };
     }
 

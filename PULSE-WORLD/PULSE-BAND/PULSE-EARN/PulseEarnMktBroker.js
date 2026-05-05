@@ -1,14 +1,30 @@
 // ============================================================================
-// FILE: tropic-pulse-functions/PULSE-WORLD/PULSE-EARN/PulseEarnMktBroker-v13.0-Presence-Immortal.js
-// LAYER: THE RUNPOD BROKER (v13.0 Presence + Advantage‑C + Prewarm)
+// FILE: tropic-pulse-functions/PULSE-WORLD/PULSE-EARN/PulseEarnMktBroker-v16-IMMORTAL-INTEL.js
+// LAYER: THE RUNPOD BROKER (v16‑IMMORTAL‑INTEL‑DUALHASH)
 // ============================================================================
+//
+// ROLE (v16‑IMMORTAL‑INTEL):
+//   • Deterministic RunPod → Pulse‑Earn broker.
+//   • Pure receptor phenotype: registerDevice(), requestJob(), submitJob(), normalizeJob().
+//   • Emits A‑B‑A bandSignature + binaryField + waveField + presence/advantage/chunk surfaces.
+//   • Emits dual INTEL + classic signatures for all broker events.
+//   • Zero async, zero randomness, zero timestamps.
+//
+// CONTRACT:
+//   • PURE RECEPTOR — deterministic, drift‑proof.
+//   • NO network, NO fetch, NO async, NO randomness.
+//   • NEVER mutate external objects.
+//   • Presence/advantage/chunk are metadata-only.
+//   • Dual‑hash INTEL signatures (INTEL + classic fallback).
+// ============================================================================
+
 /*
 AI_EXPERIENCE_META = {
   identity: "PulseEarnMktBroker",
-  version: "v14-Immortal",
+  version: "v16-IMMORTAL-INTEL",
   layer: "earn_market",
   role: "market_broker",
-  lineage: "PulseEarnMktBroker-v11 → v12.3 → v14-Immortal",
+  lineage: "PulseEarnMktBroker-v11 → v12.3 → v13.0-Presence-Immortal → v16-IMMORTAL-INTEL",
 
   evo: {
     marketBroker: true,
@@ -19,22 +35,38 @@ AI_EXPERIENCE_META = {
     binaryAware: true,
 
     deterministic: true,
+    deterministicField: true,
     driftProof: true,
     pureCompute: true,
     zeroNetwork: true,
     zeroFilesystem: true,
-    zeroMutationOfInput: true
+    zeroMutationOfInput: true,
+    zeroAsync: true,
+    zeroRandomness: true,
+
+    chunkAware: true,
+    prewarmAware: true,
+    cacheAware: true,
+
+    intelSignatureAware: true,
+    dualHashAware: true,
+    structureAware: true,
+    contextAware: true
   },
 
   contract: {
     always: [
       "PulseEarnMktAuctioneer",
       "PulseEarnMktConsulate",
-      "PulseEarnMktCourier"
+      "PulseEarnMktCourier",
+      "PulseEarnMetabolism",
+      "PulseEarnLymphNodes"
     ],
     never: [
       "safeRoute",
-      "fetchViaCNS"
+      "fetchViaCNS",
+      "userScript",
+      "dynamicEval"
     ]
   }
 }
@@ -43,8 +75,8 @@ AI_EXPERIENCE_META = {
 export const PulseEarnMktBrokerMeta = Object.freeze({
   layer: "PulseEarnMktBroker",
   role: "EARN_MARKETPLACE_RECEPTOR",
-  version: "v13.0-Presence-Immortal",
-  identity: "PulseEarnMktBroker-v13.0-Presence-Immortal",
+  version: "v16-IMMORTAL-INTEL",
+  identity: "PulseEarnMktBroker-v16-IMMORTAL-INTEL",
 
   guarantees: Object.freeze({
     deterministic: true,
@@ -90,7 +122,7 @@ export const PulseEarnMktBrokerMeta = Object.freeze({
 });
 
 export const RUNPOD_RECEPTOR_DNA = {
-  version: "13.0-Presence-Immortal",
+  version: "v16-IMMORTAL-INTEL",
   receptorType: "runpod",
   jobs: [
     { id: "ping", payload: { type: "ping" } },
@@ -100,14 +132,43 @@ export const RUNPOD_RECEPTOR_DNA = {
 };
 
 // ============================================================================
-// Deterministic Hash Helper
+// HASH HELPERS — v16‑IMMORTAL‑INTEL (dual‑hash)
 // ============================================================================
+
 function computeHash(str) {
   let h = 0;
   const s = String(str || "");
-  for (let i = 0; i < s.length; i++)
+  for (let i = 0; i < s.length; i++) {
     h = (h + s.charCodeAt(i) * (i + 1)) % 100000;
+  }
   return `h${h}`;
+}
+
+// Primary INTEL hash — deterministic, structure-aware, no IO, no time.
+function computeHashIntelligence(payload) {
+  const base = JSON.stringify(payload || "");
+  let h = 0;
+  for (let i = 0; i < base.length; i++) {
+    const c = base.charCodeAt(i);
+    h = (h * 131 + c * (i + 7)) % 1000000007;
+  }
+  return `HINTEL_${h}`;
+}
+
+function buildDualHashSignature(label, intelPayload, classicString) {
+  const intelBase = {
+    label,
+    intel: intelPayload || {},
+    classic: classicString || ""
+  };
+  const intelHash = computeHashIntelligence(intelBase);
+  const classicHash = computeHash(
+    `${label}::${classicString || ""}`
+  );
+  return {
+    intel: intelHash,
+    classic: classicHash
+  };
 }
 
 function normalizeBand(b) {
@@ -115,21 +176,50 @@ function normalizeBand(b) {
   return x === "binary" ? "binary" : "symbolic";
 }
 
-function buildBandSignature(band) {
-  return computeHash(`RUNPOD_BAND::${normalizeBand(band)}`);
+function clamp01(v) {
+  return Math.max(0, Math.min(1, v));
+}
+
+function safeNumber(v, fallback = 0) {
+  const n = Number(v);
+  return Number.isFinite(n) ? n : fallback;
+}
+
+function buildBandSignature(band, cycleIndex) {
+  const bandNorm = normalizeBand(band);
+  const intelPayload = {
+    kind: "runpodBand",
+    band: bandNorm,
+    cycleIndex
+  };
+  const classicString = `RUNPOD_BAND::${bandNorm}::CYCLE::${cycleIndex}`;
+  return buildDualHashSignature("RUNPOD_BAND", intelPayload, classicString);
 }
 
 // ============================================================================
-// A‑B‑A Binary + Wave Surfaces
+// A‑B‑A Binary + Wave Surfaces (INTEL)
 // ============================================================================
+
 function buildBinaryField(cycle) {
   const patternLen = 12;
   const density = patternLen + cycle * 3;
   const surface = density + patternLen;
 
+  const intelPayload = {
+    kind: "runpodBinarySurface",
+    patternLen,
+    density,
+    surface,
+    cycleIndex: cycle
+  };
+  const classicString = `BRUNPOD::${surface}`;
+  const sig = buildDualHashSignature("BRUNPOD", intelPayload, classicString);
+
   return {
-    binaryPhenotypeSignature: computeHash(`BRUNPOD::${surface}`),
-    binarySurfaceSignature: computeHash(`BRUNPOD_SURF::${surface}`),
+    binaryPhenotypeSignatureIntel: sig.intel,
+    binaryPhenotypeSignatureClassic: sig.classic,
+    binarySurfaceSignatureIntel: sig.intel,
+    binarySurfaceSignatureClassic: sig.classic,
     binarySurface: {
       patternLen,
       density,
@@ -145,7 +235,20 @@ function buildWaveField(cycle, band) {
   const wavelength = amplitude + 3;
   const phase = amplitude % 16;
 
+  const intelPayload = {
+    kind: "runpodWaveSurface",
+    band,
+    amplitude,
+    wavelength,
+    phase,
+    cycleIndex: cycle
+  };
+  const classicString = `BRUNPOD_WAVE::${band}::AMP::${amplitude}`;
+  const sig = buildDualHashSignature("BRUNPOD_WAVE", intelPayload, classicString);
+
   return {
+    wavePhenotypeSignatureIntel: sig.intel,
+    wavePhenotypeSignatureClassic: sig.classic,
     amplitude,
     wavelength,
     phase,
@@ -155,8 +258,9 @@ function buildWaveField(cycle, band) {
 }
 
 // ============================================================================
-// Presence Field (v13.0‑PRESENCE‑IMMORTAL)
+// Presence Field (v16‑IMMORTAL‑INTEL)
 // ============================================================================
+
 function buildPresenceField(jobOrRaw, device, cycle) {
   const idLen = (jobOrRaw?.id || "").length;
   const typeLen = (jobOrRaw?.priority || "").length;
@@ -172,22 +276,37 @@ function buildPresenceField(jobOrRaw, device, cycle) {
     composite >= 0.005 ? "presence_mid" :
     "presence_low";
 
+  const intelPayload = {
+    kind: "runpodPresence",
+    presenceVersion: "v16-IMMORTAL-INTEL",
+    presenceTier,
+    idLen,
+    typeLen,
+    stability,
+    cycleIndex: cycle
+  };
+
+  const classicString =
+    `RUNPOD_PRESENCE::${presenceTier}::${idLen}::${typeLen}::${cycle}`;
+
+  const sig = buildDualHashSignature("RUNPOD_PRESENCE", intelPayload, classicString);
+
   return {
-    presenceVersion: "v13.0-Presence-Immortal",
+    presenceVersion: "v16-IMMORTAL-INTEL",
     presenceTier,
     idLen,
     typeLen,
     stability,
     cycle,
-    presenceSignature: computeHash(
-      `RUNPOD_PRESENCE::${presenceTier}::${idLen}::${typeLen}::${cycle}`
-    )
+    presenceSignatureIntel: sig.intel,
+    presenceSignatureClassic: sig.classic
   };
 }
 
 // ============================================================================
-// Advantage‑C Field (v13.0)
+// Advantage‑C Field (v16.0)
 // ============================================================================
+
 function buildAdvantageField(jobOrRaw, device, bandPack, presenceField) {
   const gpuScore = device?.gpuScore || 0;
   const bandwidth = device?.bandwidthMbps || 0;
@@ -201,8 +320,9 @@ function buildAdvantageField(jobOrRaw, device, bandPack, presenceField) {
     amplitude * 0.00001 +
     (presenceField.presenceTier === "presence_high" ? 0.01 : 0);
 
-  return {
-    advantageVersion: "C-13.0",
+  const intelPayload = {
+    kind: "runpodAdvantage",
+    advantageVersion: "C-16.0",
     band: bandPack.band,
     gpuScore,
     bandwidth,
@@ -211,11 +331,30 @@ function buildAdvantageField(jobOrRaw, device, bandPack, presenceField) {
     presenceTier: presenceField.presenceTier,
     advantageScore
   };
+
+  const classicString =
+    `RUNPOD_ADVANTAGE::${bandPack.band}::GPU:${gpuScore}::BW:${bandwidth}`;
+
+  const sig = buildDualHashSignature("RUNPOD_ADVANTAGE", intelPayload, classicString);
+
+  return {
+    advantageVersion: "C-16.0",
+    band: bandPack.band,
+    gpuScore,
+    bandwidth,
+    binaryDensity: density,
+    waveAmplitude: amplitude,
+    presenceTier: presenceField.presenceTier,
+    advantageScore,
+    advantageSignatureIntel: sig.intel,
+    advantageSignatureClassic: sig.classic
+  };
 }
 
 // ============================================================================
-// Chunk / Cache / Prewarm Plan (v13.0)
+// Chunk / Cache / Prewarm Plan (v16‑IMMORTAL‑INTEL)
 // ============================================================================
+
 function buildChunkPrewarmPlan(jobOrRaw, device, presenceField) {
   const basePriority =
     presenceField.presenceTier === "presence_high"
@@ -227,8 +366,21 @@ function buildChunkPrewarmPlan(jobOrRaw, device, presenceField) {
   const gpuBoost = (device?.gpuScore || 0) > 600 ? 1 : 0;
   const priority = basePriority + gpuBoost;
 
+  const intelPayload = {
+    kind: "runpodChunkPrewarmPlan",
+    planVersion: "v16-IMMORTAL-INTEL",
+    priority,
+    presenceTier: presenceField.presenceTier,
+    gpuScore: device?.gpuScore || 0
+  };
+
+  const classicString =
+    `RUNPOD_CHUNK_PLAN::PTIER:${presenceField.presenceTier}::PRIORITY:${priority}`;
+
+  const sig = buildDualHashSignature("RUNPOD_CHUNK_PLAN", intelPayload, classicString);
+
   return {
-    planVersion: "v13.0-AdvantageC",
+    planVersion: "v16-IMMORTAL-INTEL",
     priority,
     band: presenceField.presenceTier,
     chunks: {
@@ -243,13 +395,16 @@ function buildChunkPrewarmPlan(jobOrRaw, device, presenceField) {
       nervousSystem: presenceField.presenceTier !== "presence_low",
       muscleSystem: presenceField.presenceTier !== "presence_low",
       lymphNodes: presenceField.presenceTier !== "presence_low"
-    }
+    },
+    chunkPlanSignatureIntel: sig.intel,
+    chunkPlanSignatureClassic: sig.classic
   };
 }
 
 // ============================================================================
-// Healing Metadata
+// Healing Metadata — v16‑IMMORTAL‑INTEL
 // ============================================================================
+
 const runpodHealing = {
   lastRegister: null,
   lastRequest: null,
@@ -261,14 +416,25 @@ const runpodHealing = {
   cycleCount: 0,
   lastCycleIndex: null,
 
-  lastRegisterSignature: null,
-  lastRequestSignature: null,
-  lastNormalizationSignature: null,
-  lastSubmitSignature: null,
-  lastRunPodCycleSignature: null,
+  // Dual‑hash signatures
+  lastRegisterSignatureIntel: null,
+  lastRegisterSignatureClassic: null,
+
+  lastRequestSignatureIntel: null,
+  lastRequestSignatureClassic: null,
+
+  lastNormalizationSignatureIntel: null,
+  lastNormalizationSignatureClassic: null,
+
+  lastSubmitSignatureIntel: null,
+  lastSubmitSignatureClassic: null,
+
+  lastRunPodCycleSignatureIntel: null,
+  lastRunPodCycleSignatureClassic: null,
 
   lastBand: "symbolic",
-  lastBandSignature: null,
+  lastBandSignatureIntel: null,
+  lastBandSignatureClassic: null,
   lastBinaryField: null,
   lastWaveField: null,
 
@@ -280,8 +446,63 @@ const runpodHealing = {
 let runpodCycle = 0;
 
 // ============================================================================
-// normalizeJob — deterministic + Presence + Advantage‑C
+// Signature builders — v16‑IMMORTAL‑INTEL
 // ============================================================================
+
+function buildRegisterSignature(deviceId, cycleIndex) {
+  const intelPayload = {
+    kind: "runpodRegister",
+    deviceId,
+    cycleIndex
+  };
+  const classicString = `REGISTER::${deviceId}::CYCLE::${cycleIndex}`;
+  return buildDualHashSignature("RUNPOD_REGISTER", intelPayload, classicString);
+}
+
+function buildRequestSignature(jobId, cycleIndex) {
+  const intelPayload = {
+    kind: "runpodRequest",
+    jobId: jobId || "NONE",
+    cycleIndex
+  };
+  const classicString = `REQUEST::${jobId || "NONE"}::CYCLE::${cycleIndex}`;
+  return buildDualHashSignature("RUNPOD_REQUEST", intelPayload, classicString);
+}
+
+function buildSubmitSignature(jobId, cycleIndex) {
+  const intelPayload = {
+    kind: "runpodSubmit",
+    jobId: jobId || "NONE",
+    cycleIndex
+  };
+  const classicString = `SUBMIT::${jobId || "NONE"}::CYCLE::${cycleIndex}`;
+  return buildDualHashSignature("RUNPOD_SUBMIT", intelPayload, classicString);
+}
+
+function buildNormalizationSignature(jobId, cycleIndex) {
+  const intelPayload = {
+    kind: "runpodNormalize",
+    jobId: jobId || "NONE",
+    cycleIndex
+  };
+  const classicString = `NORM::${jobId || "NONE"}::CYCLE::${cycleIndex}`;
+  return buildDualHashSignature("RUNPOD_NORMALIZE", intelPayload, classicString);
+}
+
+function buildRunPodCycleSignature(cycleIndex, band) {
+  const intelPayload = {
+    kind: "runpodCycle",
+    cycleIndex,
+    band
+  };
+  const classicString = `RUNPOD_CYCLE::${cycleIndex}::BAND::${band}`;
+  return buildDualHashSignature("RUNPOD_CYCLE", intelPayload, classicString);
+}
+
+// ============================================================================
+// normalizeJob — deterministic + Presence + Advantage‑C + dual‑hash
+// ============================================================================
+
 function normalizeJob(raw, deviceProfile = {}) {
   runpodCycle++;
   runpodHealing.cycleCount++;
@@ -289,11 +510,20 @@ function normalizeJob(raw, deviceProfile = {}) {
 
   const band = normalizeBand("symbolic");
   runpodHealing.lastBand = band;
-  runpodHealing.lastBandSignature = buildBandSignature(band);
+
+  const bandSig = buildBandSignature(band, runpodCycle);
+  const cycleSig = buildRunPodCycleSignature(runpodCycle, band);
+
+  runpodHealing.lastBandSignatureIntel = bandSig.intel;
+  runpodHealing.lastBandSignatureClassic = bandSig.classic;
+  runpodHealing.lastRunPodCycleSignatureIntel = cycleSig.intel;
+  runpodHealing.lastRunPodCycleSignatureClassic = cycleSig.classic;
 
   if (!raw) {
+    const sig = buildNormalizationSignature(null, runpodCycle);
     runpodHealing.lastNormalizationError = "invalid_job";
-    runpodHealing.lastNormalizationSignature = computeHash("NORM::NONE");
+    runpodHealing.lastNormalizationSignatureIntel = sig.intel;
+    runpodHealing.lastNormalizationSignatureClassic = sig.classic;
     return null;
   }
 
@@ -317,10 +547,11 @@ function normalizeJob(raw, deviceProfile = {}) {
     priority
   };
 
+  const normSig = buildNormalizationSignature(jobId, runpodCycle);
   runpodHealing.lastNormalizedJobId = jobId;
   runpodHealing.lastNormalizationError = null;
-  runpodHealing.lastNormalizationSignature = computeHash(`NORM::${jobId}`);
-  runpodHealing.lastRunPodCycleSignature = computeHash(`RUNPOD_CYCLE::${runpodCycle}`);
+  runpodHealing.lastNormalizationSignatureIntel = normSig.intel;
+  runpodHealing.lastNormalizationSignatureClassic = normSig.classic;
 
   const binaryField = buildBinaryField(runpodCycle);
   const waveField = buildWaveField(runpodCycle, band);
@@ -350,8 +581,9 @@ function normalizeJob(raw, deviceProfile = {}) {
 }
 
 // ============================================================================
-// registerDevice — deterministic + Presence + Advantage‑C
+// registerDevice — deterministic + Presence + Advantage‑C + dual‑hash
 // ============================================================================
+
 function registerDevice({ deviceId, gpuInfo = {}, meta = {} } = {}, deviceProfile = {}) {
   runpodCycle++;
   runpodHealing.cycleCount++;
@@ -359,7 +591,15 @@ function registerDevice({ deviceId, gpuInfo = {}, meta = {} } = {}, deviceProfil
 
   const band = normalizeBand("symbolic");
   runpodHealing.lastBand = band;
-  runpodHealing.lastBandSignature = buildBandSignature(band);
+
+  const bandSig = buildBandSignature(band, runpodCycle);
+  const cycleSig = buildRunPodCycleSignature(runpodCycle, band);
+  const regSig = buildRegisterSignature(deviceId, runpodCycle);
+
+  runpodHealing.lastBandSignatureIntel = bandSig.intel;
+  runpodHealing.lastBandSignatureClassic = bandSig.classic;
+  runpodHealing.lastRunPodCycleSignatureIntel = cycleSig.intel;
+  runpodHealing.lastRunPodCycleSignatureClassic = cycleSig.classic;
 
   runpodHealing.lastRegister = {
     deviceId,
@@ -368,8 +608,8 @@ function registerDevice({ deviceId, gpuInfo = {}, meta = {} } = {}, deviceProfil
     cycleIndex: runpodCycle
   };
 
-  runpodHealing.lastRegisterSignature = computeHash(`REGISTER::${deviceId}`);
-  runpodHealing.lastRunPodCycleSignature = computeHash(`RUNPOD_CYCLE::${runpodCycle}`);
+  runpodHealing.lastRegisterSignatureIntel = regSig.intel;
+  runpodHealing.lastRegisterSignatureClassic = regSig.classic;
 
   const binaryField = buildBinaryField(runpodCycle);
   const waveField = buildWaveField(runpodCycle, band);
@@ -392,8 +632,12 @@ function registerDevice({ deviceId, gpuInfo = {}, meta = {} } = {}, deviceProfil
     result: {
       registered: true,
       cycleIndex: runpodCycle,
-      signature: runpodHealing.lastRegisterSignature,
-      bandSignature: runpodHealing.lastBandSignature,
+      signatureIntel: regSig.intel,
+      signatureClassic: regSig.classic,
+      bandSignatureIntel: bandSig.intel,
+      bandSignatureClassic: bandSig.classic,
+      cycleSignatureIntel: cycleSig.intel,
+      cycleSignatureClassic: cycleSig.classic,
       binaryField,
       waveField,
       presenceField,
@@ -404,8 +648,9 @@ function registerDevice({ deviceId, gpuInfo = {}, meta = {} } = {}, deviceProfil
 }
 
 // ============================================================================
-// requestJob — deterministic + Presence + Advantage‑C
+// requestJob — deterministic + Presence + Advantage‑C + dual‑hash
 // ============================================================================
+
 function requestJob({ deviceId, filters = {} } = {}, deviceProfile = {}) {
   runpodCycle++;
   runpodHealing.cycleCount++;
@@ -413,7 +658,9 @@ function requestJob({ deviceId, filters = {} } = {}, deviceProfile = {}) {
 
   const band = normalizeBand("symbolic");
   runpodHealing.lastBand = band;
-  runpodHealing.lastBandSignature = buildBandSignature(band);
+
+  const bandSig = buildBandSignature(band, runpodCycle);
+  const cycleSig = buildRunPodCycleSignature(runpodCycle, band);
 
   const job =
     RUNPOD_RECEPTOR_DNA.jobs[
@@ -421,16 +668,24 @@ function requestJob({ deviceId, filters = {} } = {}, deviceProfile = {}) {
     ];
 
   const normalized = normalizeJob(job, deviceProfile);
+  const jobId = normalized?.id ?? null;
+
+  const reqSig = buildRequestSignature(jobId, runpodCycle);
+
+  runpodHealing.lastBandSignatureIntel = bandSig.intel;
+  runpodHealing.lastBandSignatureClassic = bandSig.classic;
+  runpodHealing.lastRunPodCycleSignatureIntel = cycleSig.intel;
+  runpodHealing.lastRunPodCycleSignatureClassic = cycleSig.classic;
 
   runpodHealing.lastRequest = {
     deviceId,
     filters,
-    jobId: normalized?.id ?? null,
+    jobId,
     cycleIndex: runpodCycle
   };
 
-  runpodHealing.lastRequestSignature = computeHash(`REQUEST::${normalized?.id}`);
-  runpodHealing.lastRunPodCycleSignature = computeHash(`RUNPOD_CYCLE::${runpodCycle}`);
+  runpodHealing.lastRequestSignatureIntel = reqSig.intel;
+  runpodHealing.lastRequestSignatureClassic = reqSig.classic;
 
   const binaryField = buildBinaryField(runpodCycle);
   const waveField = buildWaveField(runpodCycle, band);
@@ -451,8 +706,12 @@ function requestJob({ deviceId, filters = {} } = {}, deviceProfile = {}) {
   return {
     ok: true,
     job: normalized,
-    signature: runpodHealing.lastRequestSignature,
-    bandSignature: runpodHealing.lastBandSignature,
+    signatureIntel: reqSig.intel,
+    signatureClassic: reqSig.classic,
+    bandSignatureIntel: bandSig.intel,
+    bandSignatureClassic: bandSig.classic,
+    cycleSignatureIntel: cycleSig.intel,
+    cycleSignatureClassic: cycleSig.classic,
     binaryField,
     waveField,
     presenceField,
@@ -462,8 +721,9 @@ function requestJob({ deviceId, filters = {} } = {}, deviceProfile = {}) {
 }
 
 // ============================================================================
-// submitJob — deterministic + Presence + Advantage‑C
+// submitJob — deterministic + Presence + Advantage‑C + dual‑hash
 // ============================================================================
+
 function submitJob({ jobId, result, error: jobError = null } = {}, deviceProfile = {}) {
   runpodCycle++;
   runpodHealing.cycleCount++;
@@ -471,7 +731,15 @@ function submitJob({ jobId, result, error: jobError = null } = {}, deviceProfile
 
   const band = normalizeBand("symbolic");
   runpodHealing.lastBand = band;
-  runpodHealing.lastBandSignature = buildBandSignature(band);
+
+  const bandSig = buildBandSignature(band, runpodCycle);
+  const cycleSig = buildRunPodCycleSignature(runpodCycle, band);
+  const subSig = buildSubmitSignature(jobId, runpodCycle);
+
+  runpodHealing.lastBandSignatureIntel = bandSig.intel;
+  runpodHealing.lastBandSignatureClassic = bandSig.classic;
+  runpodHealing.lastRunPodCycleSignatureIntel = cycleSig.intel;
+  runpodHealing.lastRunPodCycleSignatureClassic = cycleSig.classic;
 
   runpodHealing.lastSubmit = {
     jobId,
@@ -480,8 +748,8 @@ function submitJob({ jobId, result, error: jobError = null } = {}, deviceProfile
     cycleIndex: runpodCycle
   };
 
-  runpodHealing.lastSubmitSignature = computeHash(`SUBMIT::${jobId}`);
-  runpodHealing.lastRunPodCycleSignature = computeHash(`RUNPOD_CYCLE::${runpodCycle}`);
+  runpodHealing.lastSubmitSignatureIntel = subSig.intel;
+  runpodHealing.lastSubmitSignatureClassic = subSig.classic;
 
   const binaryField = buildBinaryField(runpodCycle);
   const waveField = buildWaveField(runpodCycle, band);
@@ -505,14 +773,18 @@ function submitJob({ jobId, result, error: jobError = null } = {}, deviceProfile
       submitted: true,
       jobId,
       cycleIndex: runpodCycle,
-      signature: runpodHealing.lastSubmitSignature,
-      bandSignature: runpodHealing.lastBandSignature,
+      signatureIntel: subSig.intel,
+      signatureClassic: subSig.classic,
+      bandSignatureIntel: bandSig.intel,
+      bandSignatureClassic: bandSig.classic,
+      cycleSignatureIntel: cycleSig.intel,
+      cycleSignatureClassic: cycleSig.classic,
       binaryField,
       waveField,
       presenceField,
       advantageField,
       chunkPlan,
-      note: "RunPod submission simulated deterministically (v13.0-Presence-Immortal)."
+      note: "RunPod submission simulated deterministically (v16-IMMORTAL-INTEL)."
     }
   };
 }
@@ -520,11 +792,12 @@ function submitJob({ jobId, result, error: jobError = null } = {}, deviceProfile
 // ============================================================================
 // Exported Marketplace Organ (Unified, like Forager/Courier)
 // ============================================================================
+
 export const PulseEarnMktBroker = {
   id: "runpod",
   name: "RunPod",
-  version: "v13.0-Presence-Immortal",
-  lineage: "RunPodAdapter-v13.0-Presence-Immortal",
+  version: "v16-IMMORTAL-INTEL",
+  lineage: "RunPodAdapter-v16-IMMORTAL-INTEL",
 
   registerDevice,
   requestJob,
@@ -535,6 +808,7 @@ export const PulseEarnMktBroker = {
 // ============================================================================
 // Healing State Export
 // ============================================================================
+
 export function getRunPodHealingState() {
   return { ...runpodHealing };
 }

@@ -1,28 +1,18 @@
 // ============================================================================
-//  PulseEarnSendSystem-v13.0-Presence-Immortal.js
-//  Earn Nervous System Conductor (v13.0 Presence‑IMMORTAL + Advantage‑M + Prewarm)
+//  PulseEarnSendSystem-v16-IMMORTAL-INTEL.js
+//  Earn Nervous System Conductor (v16-IMMORTAL-INTEL + Advantage‑M + Prewarm)
 //  Deterministic Single‑Pass Earn → Pulse → Send (No async, No loops)
-//  v13.0: Presence surfaces + Advantage‑M + Chunk/Prewarm + Factoring signal
+//  v16: INTEL dualhash + Presence surfaces + Advantage‑M + Chunk/Prewarm + Factoring
+//       + full meta blocks on send conductor surfaces.
 // ============================================================================
-//
-//  SAFETY CONTRACT (v13.0-Presence-Immortal):
-//  -----------------------------------------
-//  • No async.
-//  • No network.
-//  • No GPU.
-//  • No miner.
-//  • No compute beyond structural math.
-//  • Zero randomness.
-//  • Zero timestamps.
-//  • Zero mutation outside instance.
-// ============================================================================
+
 /*
 AI_EXPERIENCE_META = {
   identity: "PulseEarnSendSystem",
-  version: "v14-Immortal",
+  version: "v16-IMMORTAL-INTEL",
   layer: "earn_send",
   role: "earn_send_conductor",
-  lineage: "PulseEarnSendSystem-v10.4 → v11-Evo → v14-Immortal",
+  lineage: "PulseEarnSendSystem-v10.4 → v11-Evo → v14-Immortal → v16-IMMORTAL-INTEL",
 
   evo: {
     sendConductor: true,
@@ -33,11 +23,21 @@ AI_EXPERIENCE_META = {
     binaryAware: true,
 
     deterministic: true,
+    deterministicField: true,
     driftProof: true,
     pureCompute: true,
     zeroNetwork: true,
     zeroFilesystem: true,
-    zeroMutationOfInput: true
+    zeroMutationOfInput: true,
+
+    intelSignatureAware: true,
+    dualHashAware: true,
+    structureAware: true,
+    contextAware: true,
+    chunkAware: true,
+    prewarmAware: true,
+    cacheAware: true,
+    factoringAware: true
   },
 
   contract: {
@@ -57,17 +57,17 @@ AI_EXPERIENCE_META = {
 export const PulseEarnSendSystemMeta = Object.freeze({
   layer: "PulseEarnSendSystem",
   role: "EARN_SEND_CONDUCTOR",
-  version: "v13.0-Presence-Immortal",
-  identity: "PulseEarnSendSystem-v13.0-Presence-Immortal",
+  version: "v16-IMMORTAL-INTEL",
+  identity: "PulseEarnSendSystem-v16-IMMORTAL-INTEL",
 
   guarantees: Object.freeze({
     deterministic: true,
+    deterministicField: true,
     driftProof: true,
     noRandomness: true,
     noRealTime: true,
     noExternalIO: true,
 
-    // GOVERNED laws
     governedSinglePass: true,
     governedNoLoops: true,
     governedNoAsync: true,
@@ -78,27 +78,26 @@ export const PulseEarnSendSystemMeta = Object.freeze({
     governedNoTimestamps: true,
     governedNoMutationOutsideInstance: true,
 
-    // Band + metadata
     dualBandAware: true,
     binaryAware: true,
     waveFieldAware: true,
     healingMetadataAware: true,
 
-    // Presence + Advantage‑M + prewarm + factoring
     presenceAware: true,
     advantageFieldAware: true,
     chunkPrewarmAware: true,
     factoringAware: true,
     continuanceAware: true,
 
-    // Safety
     zeroUserCode: true,
     zeroDynamicImports: true,
     zeroEval: true,
     worldLensAware: false,
 
-    // Environment
-    multiInstanceReady: true
+    multiInstanceReady: true,
+
+    intelSignatureAware: true,
+    dualHashAware: true
   }),
 
   contract: Object.freeze({
@@ -124,15 +123,16 @@ export const PulseEarnSendSystemMeta = Object.freeze({
   }),
 
   lineage: Object.freeze({
-    root: "PulseOS-v13-Presence-Immortal",
-    parent: "PulseEarn-v13.0-Presence-Immortal",
+    root: "PulseOS-v16-IMMORTAL-INTEL",
+    parent: "PulseEarn-v16-IMMORTAL-INTEL",
     ancestry: [
       "PulseEarnSendSystem-v9",
       "PulseEarnSendSystem-v10",
       "PulseEarnSendSystem-v11",
       "PulseEarnSendSystem-v11-Evo",
       "PulseEarnSendSystem-v11.2-Evo",
-      "PulseEarnSendSystem-v12.3-Presence"
+      "PulseEarnSendSystem-v12.3-Presence",
+      "PulseEarnSendSystem-v13.0-Presence-Immortal"
     ]
   }),
 
@@ -146,21 +146,20 @@ export const PulseEarnSendSystemMeta = Object.freeze({
   architecture: Object.freeze({
     pattern: "A-B-A",
     baseline: "deterministic Earn → Pulse → Send conductor",
-    adaptive: "binary/wave surfaces + dual-band signatures + presence/advantage/factoring fields",
-    return: "deterministic send result + healing metadata + prewarm hints"
+    adaptive: "binary/wave surfaces + dual-band signatures + presence/advantage/factoring fields + dualhash",
+    return: "deterministic send result + healing metadata + prewarm hints + INTEL meta"
   })
 });
 
-// Legacy bridge imports (v12.3 Earn / Continuance) kept as compatibility layer.
+// Legacy bridge imports
 import { createEarn, evolveEarn } from "./PulseEarn-v16.js";
 import { PulseEarnContinuancePulse } from "./PulseEarnContinuancePulse.js";
 
-
 // ============================================================================
-//  INTERNAL HELPERS — deterministic, tiny, pure
+//  HASH HELPERS — v16-IMMORTAL-INTEL (dualhash)
 // ============================================================================
 
-function computeHash(str) {
+function computeClassicHash(str) {
   let h = 0;
   const s = String(str || "");
   for (let i = 0; i < s.length; i++) {
@@ -168,6 +167,36 @@ function computeHash(str) {
   }
   return `h${h}`;
 }
+
+function computeIntelHash(payload) {
+  const s = JSON.stringify(payload || {});
+  let h = 0;
+  for (let i = 0; i < s.length; i++) {
+    const c = s.charCodeAt(i);
+    h = (h * 131 + c * (i + 7)) % 1000000007;
+  }
+  return `i${h}`;
+}
+
+function buildDualHashSignature(label, intelPayload, classicString) {
+  const intelBase = {
+    label,
+    intel: intelPayload || {},
+    classic: classicString || ""
+  };
+  const intelHash = computeIntelHash(intelBase);
+  const classicHash = computeClassicHash(
+    `${label}::${classicString || ""}`
+  );
+  return {
+    intel: intelHash,
+    classic: classicHash
+  };
+}
+
+// ============================================================================
+//  INTERNAL HELPERS
+// ============================================================================
 
 function normalizeBand(band) {
   const b = String(band || "symbolic").toLowerCase();
@@ -200,9 +229,8 @@ function deriveFactoringSignalFromContext({
   return 0;
 }
 
-
 // ============================================================================
-//  HEALING STATE — Send Conductor Health Snapshot (v13.0-Presence-Immortal)
+//  HEALING STATE — v16-IMMORTAL-INTEL
 // ============================================================================
 
 const sendHealing = {
@@ -213,16 +241,31 @@ const sendHealing = {
   lastFallbackUsed: false,
 
   lastBand: "symbolic",
-  lastBandSignature: null,
+  lastBandSignatureClassic: null,
+  lastBandSignatureIntel: null,
   lastBinaryField: null,
   lastWaveField: null,
 
   lastPresenceField: null,
+  lastPresenceSignatureClassic: null,
+  lastPresenceSignatureIntel: null,
+
   lastAdvantageField: null,
+  lastAdvantageSignatureClassic: null,
+  lastAdvantageSignatureIntel: null,
+
   lastChunkPrewarmPlan: null,
+  lastChunkPrewarmSignatureClassic: null,
+  lastChunkPrewarmSignatureIntel: null,
+
   lastFactoringSignal: 0,
 
-  lastSendSignature: null,
+  lastSendSignatureClassic: null,
+  lastSendSignatureIntel: null,
+
+  lastMetaSignatureClassic: null,
+  lastMetaSignatureIntel: null,
+
   lastError: null
 };
 
@@ -230,9 +273,8 @@ export function getPulseEarnSendSystemHealingState() {
   return { ...sendHealing };
 }
 
-
 // ============================================================================
-//  GOVERNOR — Earn Loop Guard (v13.0-Presence-Immortal)
+//  GOVERNOR — Earn Loop Guard
 // ============================================================================
 
 function isEarnReentryImpulse(impulse) {
@@ -263,9 +305,8 @@ function tagImpulseAsEarnSent(impulse, pulseCompatibleEarn) {
   };
 }
 
-
 // ============================================================================
-//  LEGACY BRIDGE — Try Earn v11 / v1 (kept as compatibility path)
+//  LEGACY BRIDGE
 // ============================================================================
 
 function tryEarnV11(impulse) {
@@ -286,7 +327,7 @@ function tryEarnV11(impulse) {
     const evolved =
       typeof evolveEarn === "function"
         ? evolveEarn(baseEarn, {
-            source: "PulseEarnSendSystem-v13.0-Presence-Immortal",
+            source: "PulseEarnSendSystem-v16-IMMORTAL-INTEL",
             intent: impulse.intent,
             lineage: impulse.payload?.parentLineage || null
           })
@@ -303,9 +344,8 @@ function buildEarnV1Continuance(impulse) {
   return cont.earn;
 }
 
-
 // ============================================================================
-//  WRAP Earn organism into Pulse-compatible shape (bridge-safe)
+//  WRAP Earn organism into Pulse-compatible shape
 // ============================================================================
 
 function wrapEarnForPulse(earn) {
@@ -336,9 +376,8 @@ function wrapEarnForPulse(earn) {
   };
 }
 
-
 // ============================================================================
-//  A-B-A Dual-Band + Binary + Wave Builder (v13.0-Presence-Immortal)
+//  A-B-A Dual-Band + Binary + Wave Builder (dualhash surfaces)
 // ============================================================================
 
 function buildEarnSendBandBinaryWave(earn, fallbackUsed, cycleIndex, deviceProfile) {
@@ -352,54 +391,75 @@ function buildEarnSendBandBinaryWave(earn, fallbackUsed, cycleIndex, deviceProfi
   const patternLen = String(earn.pattern || "").length;
   const lineageDepth = earn.lineage?.length || 0;
   const fallbackFlag = fallbackUsed ? 1 : 0;
+  const gpuScore = deviceProfile?.gpuScore || 0;
 
   const surface =
     patternLen +
     lineageDepth +
     fallbackFlag +
-    (deviceProfile?.gpuScore || 0) +
+    gpuScore +
     cycleIndex;
 
+  const intelPayload = {
+    kind: "earnSendBand",
+    version: "v16-IMMORTAL-INTEL",
+    cycleIndex,
+    band,
+    patternLen,
+    lineageDepth,
+    fallbackFlag,
+    gpuScore,
+    surface
+  };
+
+  const classicString =
+    `BAND:${band}` +
+    `::PAT:${patternLen}` +
+    `::LIN:${lineageDepth}` +
+    `::FB:${fallbackFlag}` +
+    `::GPU:${gpuScore}` +
+    `::CYCLE:${cycleIndex}`;
+
+  const sig = buildDualHashSignature("EARN_SEND_BAND", intelPayload, classicString);
+
   const binaryField = {
-    binaryEarnSendSignature: computeHash(`BESEND::${surface}`),
-    binarySurfaceSignature: computeHash(`BSURF_ESEND::${surface}`),
+    binaryEarnSendSignature: computeClassicHash(`BESEND::${surface}`),
+    binarySurfaceSignature: computeClassicHash(`BSURF_ESEND::${surface}`),
     binarySurface: {
       patternLen,
       lineageDepth,
       fallbackFlag,
-      gpuScore: deviceProfile?.gpuScore || 0,
+      gpuScore,
       cycle: cycleIndex,
       surface
     },
     parity: surface % 2 === 0 ? 0 : 1,
-    density: patternLen + lineageDepth + (deviceProfile?.gpuScore || 0),
+    density: patternLen + lineageDepth + gpuScore,
     shiftDepth: Math.max(0, Math.floor(Math.log2(surface || 1)))
   };
 
   const waveField = {
-    amplitude: patternLen + (deviceProfile?.gpuScore || 0),
+    amplitude: patternLen + gpuScore,
     wavelength: cycleIndex || 1,
     phase: (patternLen + lineageDepth + cycleIndex) % 8,
     band,
     mode: band === "binary" ? "compression-wave" : "symbolic-wave"
   };
 
-  const bandSignature = computeHash(`BAND::ESEND::${band}::${cycleIndex}`);
-
   sendHealing.lastBand = band;
-  sendHealing.lastBandSignature = bandSignature;
+  sendHealing.lastBandSignatureClassic = sig.classic;
+  sendHealing.lastBandSignatureIntel = sig.intel;
   sendHealing.lastBinaryField = binaryField;
   sendHealing.lastWaveField = waveField;
 
-  return { band, bandSignature, binaryField, waveField };
+  return { band, bandSignatureClassic: sig.classic, bandSignatureIntel: sig.intel, binaryField, waveField };
 }
 
-
 // ============================================================================
-//  Presence + Advantage‑M + Chunk/Prewarm + Factoring (v13.0-Presence-Immortal)
+//  Presence Field (dualhash)
 // ============================================================================
 
-function buildPresenceField(earn, deviceProfile, fallbackUsed) {
+function buildPresenceField(earn, deviceProfile, fallbackUsed, cycleIndex) {
   const patternLen = String(earn.pattern || "").length;
   const lineageDepth = earn.lineage?.length || 0;
   const band = normalizeBand(deviceProfile?.band || earn.band || "symbolic");
@@ -417,7 +477,19 @@ function buildPresenceField(earn, deviceProfile, fallbackUsed) {
     "presence_idle";
 
   const presenceField = {
-    presenceVersion: "v13.0-Presence-Immortal",
+    presenceVersion: "v16-IMMORTAL-INTEL-SEND",
+    presenceTier,
+    band,
+    patternLen,
+    lineageDepth,
+    fallbackUsed,
+    cycleIndex
+  };
+
+  const intelPayload = {
+    kind: "earnSendPresence",
+    version: "v16-IMMORTAL-INTEL",
+    cycleIndex,
     presenceTier,
     band,
     patternLen,
@@ -425,43 +497,50 @@ function buildPresenceField(earn, deviceProfile, fallbackUsed) {
     fallbackUsed
   };
 
+  const classicString =
+    `PRES:${presenceTier}` +
+    `::BAND:${band}` +
+    `::PAT:${patternLen}` +
+    `::LIN:${lineageDepth}` +
+    `::FB:${fallbackUsed ? 1 : 0}` +
+    `::CYCLE:${cycleIndex}`;
+
+  const sig = buildDualHashSignature("EARN_SEND_PRESENCE", intelPayload, classicString);
+
   sendHealing.lastPresenceField = presenceField;
-  return presenceField;
+  sendHealing.lastPresenceSignatureClassic = sig.classic;
+  sendHealing.lastPresenceSignatureIntel = sig.intel;
+
+  return { presenceField, presenceSignatureClassic: sig.classic, presenceSignatureIntel: sig.intel };
 }
+
+// ============================================================================
+//  Advantage Field (dualhash)
+// ============================================================================
 
 function buildAdvantageField({
   earn,
   deviceProfile,
   bandPack,
   presenceField,
-  factoringSignal
+  factoringSignal,
+  serverPressure = 0,
+  serverBoost = 0,
+  earnLineageDepth = 0,
+  earnPatternLen = 0,
+  earnFallbackPenalty = 0,
+  cycleIndex
 }) {
-  // ------------------------------------------------------------
-  // 1. Extract device metrics (now fully used)
-  // ------------------------------------------------------------
   const gpuScore = Number(deviceProfile?.gpuScore || 0);
   const bandwidth = Number(deviceProfile?.bandwidthMbps || 0);
   const cpuScore = Number(deviceProfile?.cpuScore || 0);
   const thermalHeadroom = Number(deviceProfile?.thermalHeadroom || 0);
   const deviceTier = deviceProfile?.tier || "unknown";
 
-  // ------------------------------------------------------------
-  // 2. Extract Earn organism metrics
-  // ------------------------------------------------------------
-  const lineageDepth = earn?.lineage?.length || 0;
-  const earnPatternLen = (earn?.pattern || "").length;
-  const earnFallbackPenalty = earn?.usedFallback ? -0.02 : 0;
-
-  // ------------------------------------------------------------
-  // 3. Extract bandPack metrics (binary + wave)
-  // ------------------------------------------------------------
   const density = Number(bandPack?.binaryField?.density || 0);
   const amplitude = Number(bandPack?.waveField?.amplitude || 0);
   const band = bandPack?.band || "symbolic";
 
-  // ------------------------------------------------------------
-  // 4. Presence influence
-  // ------------------------------------------------------------
   const presenceTier = presenceField?.presenceTier || "presence_idle";
 
   const presenceBoost =
@@ -470,9 +549,6 @@ function buildAdvantageField({
     presenceTier === "presence_low"  ? 0.005 :
     0;
 
-  // ------------------------------------------------------------
-  // 5. Factoring signal influence
-  // ------------------------------------------------------------
   const factoringIntensity =
     factoringSignal === "critical" ? 3 :
     factoringSignal === "high"     ? 2 :
@@ -481,9 +557,6 @@ function buildAdvantageField({
 
   const factoringBoost = factoringIntensity * 0.01;
 
-  // ------------------------------------------------------------
-  // 6. Device tier influence
-  // ------------------------------------------------------------
   const tierBoost =
     deviceTier === "ultra" ? 0.02 :
     deviceTier === "high"  ? 0.015 :
@@ -491,9 +564,9 @@ function buildAdvantageField({
     deviceTier === "low"   ? 0.005 :
     0;
 
-  // ------------------------------------------------------------
-  // 7. Compute final advantage score (deterministic)
-  // ------------------------------------------------------------
+  const serverPressureBoost = Math.min(serverPressure * 0.01, 0.05);
+  const serverBoostBoost = Math.min(serverBoost * 0.01, 0.05);
+
   const advantageScore =
     gpuScore * 0.0004 +
     cpuScore * 0.0002 +
@@ -503,62 +576,95 @@ function buildAdvantageField({
     presenceBoost +
     factoringBoost +
     tierBoost +
+    serverPressureBoost +
+    serverBoostBoost +
     earnFallbackPenalty +
-    lineageDepth * 0.0005 +
+    earnLineageDepth * 0.0005 +
     earnPatternLen * 0.00001;
 
-  // ------------------------------------------------------------
-  // 8. Build final advantage field (v15 IMMORTAL CHUNK)
-  // ------------------------------------------------------------
   const advantageField = {
-    advantageVersion: "M-15.0-Immortal-CHUNK",
-
-    // core
+    advantageVersion: "M-16.0-Immortal-CHUNK-SEND",
     band,
     advantageScore,
     presenceTier,
     factoringSignal,
-
-    // device
     gpuScore,
     cpuScore,
     bandwidth,
     thermalHeadroom,
     deviceTier,
-
-    // earn organism
-    lineageDepth,
+    lineageDepth: earnLineageDepth,
     earnPatternLen,
     earnFallbackPenalty,
-
-    // binary/wave
     binaryDensity: density,
     waveAmplitude: amplitude,
-
-    // meta
     boosts: {
       presenceBoost,
       factoringBoost,
-      tierBoost
-    }
+      tierBoost,
+      serverPressureBoost,
+      serverBoostBoost
+    },
+    cycleIndex
   };
 
+  const intelPayload = {
+    kind: "earnSendAdvantage",
+    version: "v16-IMMORTAL-INTEL",
+    cycleIndex,
+    advantageScore,
+    presenceTier,
+    factoringSignal,
+    gpuScore,
+    cpuScore,
+    bandwidth,
+    thermalHeadroom,
+    deviceTier,
+    lineageDepth: earnLineageDepth,
+    earnPatternLen,
+    earnFallbackPenalty,
+    binaryDensity: density,
+    waveAmplitude: amplitude
+  };
+
+  const classicString =
+    `ADV:${advantageScore.toFixed(6)}` +
+    `::PRES:${presenceTier}` +
+    `::FACT:${factoringSignal}` +
+    `::GPU:${gpuScore}` +
+    `::CPU:${cpuScore}` +
+    `::BW:${bandwidth}` +
+    `::TIER:${deviceTier}` +
+    `::LIN:${earnLineageDepth}` +
+    `::PAT:${earnPatternLen}` +
+    `::FB:${earnFallbackPenalty}`;
+
+  const sig = buildDualHashSignature("EARN_SEND_ADVANTAGE", intelPayload, classicString);
+
   sendHealing.lastAdvantageField = advantageField;
+  sendHealing.lastAdvantageSignatureClassic = sig.classic;
+  sendHealing.lastAdvantageSignatureIntel = sig.intel;
   sendHealing.lastFactoringSignal = factoringSignal;
 
-  return advantageField;
+  return { advantageField, advantageSignatureClassic: sig.classic, advantageSignatureIntel: sig.intel };
 }
 
+// ============================================================================
+//  Chunk / Prewarm Plan (dualhash)
+// ============================================================================
 
 function buildChunkPrewarmPlan({
   earn,
   deviceProfile,
   presenceField,
-  factoringSignal
+  factoringSignal,
+  serverPressure = 0,
+  serverRecommendedChunk = null,
+  serverRecommendedPrewarm = null,
+  earnLineageDepth = 0,
+  earnPatternLen = 0,
+  cycleIndex
 }) {
-  // ------------------------------------------------------------
-  // 1. PRIORITY LABEL — now uses presence + earn lineage depth
-  // ------------------------------------------------------------
   let priorityLabel = "idle";
 
   if (presenceField.presenceTier === "presence_high") {
@@ -569,15 +675,10 @@ function buildChunkPrewarmPlan({
     priorityLabel = "low";
   }
 
-  // Earn lineage depth influences priority subtly
-  const lineageDepth = earn?.lineage?.length || 0;
-  if (lineageDepth > 6 && priorityLabel !== "high") {
+  if (earnLineageDepth > 6 && priorityLabel !== "high") {
     priorityLabel = "medium";
   }
 
-  // ------------------------------------------------------------
-  // 2. DEVICE PROFILE INFLUENCE — GPU / mobile / low‑power
-  // ------------------------------------------------------------
   const deviceTier = deviceProfile?.tier || "unknown";
   const deviceKind = deviceProfile?.kind || "generic";
   const devicePerf = Number(deviceProfile?.performanceIndex || 0);
@@ -588,9 +689,6 @@ function buildChunkPrewarmPlan({
     devicePerf >= 40 ? "medium" :
     "low";
 
-  // ------------------------------------------------------------
-  // 3. FACTORING SIGNAL — influences chunk + prewarm intensity
-  // ------------------------------------------------------------
   const factoringIntensity =
     factoringSignal === "critical"
       ? 3
@@ -600,89 +698,170 @@ function buildChunkPrewarmPlan({
       ? 1
       : 0;
 
-  // ------------------------------------------------------------
-  // 4. BUILD PLAN — every variable contributes
-  // ------------------------------------------------------------
   const plan = {
-    planVersion: "v15.0-AdvantageM-Immortal-CHUNK",
-
+    planVersion: "v16.0-AdvantageM-Immortal-CHUNK-SEND",
     priorityLabel,
     presenceTier: presenceField.presenceTier,
     factoringSignal,
-    lineageDepth,
+    lineageDepth: earnLineageDepth,
     deviceTier,
     deviceKind,
     deviceBoost,
-
     chunks: {
       jobEnvelope: true,
       metabolismBlueprint: true,
       marketplaceHandshake: true,
-
-      // Earn lineage depth influences chunking
-      lineageChunk: lineageDepth > 4,
-
-      // Device performance influences chunking
-      devicePerfChunk: deviceBoost !== "low"
+      lineageChunk: earnLineageDepth > 4,
+      devicePerfChunk: deviceBoost !== "low",
+      serverRecommendedChunk: !!serverRecommendedChunk
     },
-
     cache: {
       deviceProfile: true,
       survivalDiagnostics: true,
-
-      // High‑tier devices get extra caching
       performanceCache: deviceBoost === "ultra" || deviceBoost === "high"
     },
-
     prewarm: {
-      // Presence tier controls metabolic prewarm
       metabolismOrgan: presenceField.presenceTier !== "presence_idle",
-
-      // Device performance influences prewarm aggressiveness
       lymphaticHandshake:
         presenceField.presenceTier !== "presence_idle" &&
         deviceBoost !== "low",
-
-      // Only high presence + high factoring triggers immune scan
       immuneSystemScan:
         presenceField.presenceTier === "presence_high" ||
         factoringIntensity >= 2,
-
-      // Earn lineage depth influences prewarm
-      lineagePrewarm: lineageDepth >= 5
+      lineagePrewarm: earnLineageDepth >= 5,
+      serverRecommendedPrewarm: !!serverRecommendedPrewarm
     },
-
-    // Deterministic metadata for debugging
     meta: {
-      cycle: presenceField.cycle,
+      cycleIndex,
       devicePerf,
-      factoringIntensity
+      factoringIntensity,
+      serverPressure,
+      earnPatternLen
     }
   };
 
+  const intelPayload = {
+    kind: "earnSendChunkPrewarm",
+    version: "v16-IMMORTAL-INTEL",
+    cycleIndex,
+    priorityLabel,
+    presenceTier: presenceField.presenceTier,
+    factoringSignal,
+    lineageDepth: earnLineageDepth,
+    deviceTier,
+    deviceKind,
+    deviceBoost,
+    devicePerf,
+    factoringIntensity,
+    serverPressure,
+    earnPatternLen
+  };
+
+  const classicString =
+    `PLAN:${priorityLabel}` +
+    `::PRES:${presenceField.presenceTier}` +
+    `::FACT:${factoringSignal}` +
+    `::LIN:${earnLineageDepth}` +
+    `::DTIER:${deviceTier}` +
+    `::DKIND:${deviceKind}` +
+    `::DBOOST:${deviceBoost}` +
+    `::DPERF:${devicePerf}` +
+    `::SP:${serverPressure}` +
+    `::PAT:${earnPatternLen}` +
+    `::CYCLE:${cycleIndex}`;
+
+  const sig = buildDualHashSignature("EARN_SEND_CHUNK_PREWARM", intelPayload, classicString);
+
   sendHealing.lastChunkPrewarmPlan = plan;
-  return plan;
+  sendHealing.lastChunkPrewarmSignatureClassic = sig.classic;
+  sendHealing.lastChunkPrewarmSignatureIntel = sig.intel;
+
+  return { chunkPrewarmPlan: plan, chunkPrewarmSignatureClassic: sig.classic, chunkPrewarmSignatureIntel: sig.intel };
 }
 
+// ============================================================================
+//  META BLOCK — Send Conductor Meta (dualhash)
+// ============================================================================
 
+function buildSendConductorMeta({
+  cycleIndex,
+  earn,
+  bandPack,
+  presenceField,
+  advantageField,
+  chunkPrewarmPlan,
+  factoringSignal
+}) {
+  const intelPayload = {
+    kind: "earnSendConductor",
+    version: "v16-IMMORTAL-INTEL",
+    cycleIndex,
+    pattern: earn.pattern || "NO_PATTERN",
+    lineageDepth: earn.lineage?.length || 0,
+    band: bandPack.band,
+    factoringSignal,
+    presenceTier: presenceField.presenceTier,
+    advantageScore: advantageField.advantageScore,
+    chunkPriority: chunkPrewarmPlan.priorityLabel
+  };
+
+  const classicString =
+    `SEND_COND` +
+    `::PAT:${earn.pattern || "NO_PATTERN"}` +
+    `::LIN:${earn.lineage?.length || 0}` +
+    `::BAND:${bandPack.band}` +
+    `::FACT:${factoringSignal}` +
+    `::PRES:${presenceField.presenceTier}` +
+    `::ADV:${advantageField.advantageScore.toFixed(6)}` +
+    `::CHUNK:${chunkPrewarmPlan.priorityLabel}` +
+    `::CYCLE:${cycleIndex}`;
+
+  const sig = buildDualHashSignature("EARN_SEND_CONDUCTOR_META", intelPayload, classicString);
+
+  sendHealing.lastMetaSignatureClassic = sig.classic;
+  sendHealing.lastMetaSignatureIntel = sig.intel;
+
+  return {
+    layer: "PulseEarnSendSystem",
+    role: "EARN_SEND_CONDUCTOR_META",
+    version: "v16-IMMORTAL-INTEL",
+    signatures: {
+      metaSignatureIntel: sig.intel,
+      metaSignatureClassic: sig.classic,
+      bandSignatureIntel: bandPack.bandSignatureIntel,
+      bandSignatureClassic: bandPack.bandSignatureClassic,
+      presenceSignatureIntel: sendHealing.lastPresenceSignatureIntel,
+      presenceSignatureClassic: sendHealing.lastPresenceSignatureClassic,
+      advantageSignatureIntel: sendHealing.lastAdvantageSignatureIntel,
+      advantageSignatureClassic: sendHealing.lastAdvantageSignatureClassic,
+      chunkPrewarmSignatureIntel: sendHealing.lastChunkPrewarmSignatureIntel,
+      chunkPrewarmSignatureClassic: sendHealing.lastChunkPrewarmSignatureClassic
+    },
+    profile: {
+      cycleIndex,
+      pattern: earn.pattern || "NO_PATTERN",
+      lineageDepth: earn.lineage?.length || 0,
+      band: bandPack.band,
+      factoringSignal,
+      presenceTier: presenceField.presenceTier,
+      advantageScore: advantageField.advantageScore,
+      chunkPriority: chunkPrewarmPlan.priorityLabel
+    }
+  };
+}
 
 // ============================================================================
-//  FACTORY — Presence‑IMMORTAL PulseEarnSendSystem (v13.0)
+//  FACTORY — createPulseEarnSendSystem (v16-IMMORTAL-INTEL)
 // ============================================================================
-//
-//  NOTE: This is the canonical v13 conductor. Legacy Earn (v11/v1) is treated
-//  as a bridge path; once Earn v13 is universal, the bridge can be removed
-//  without changing this contract.
-//
 
 export function createPulseEarnSendSystem({
   sendSystem,
   sdn = null,
   log = console.log,
-  deviceProfile = null // Presence‑aware skeletal phenotype
+  deviceProfile = null
 }) {
   if (!sendSystem || typeof sendSystem.send !== "function") {
-    throw new Error("[PulseEarnSendSystem-v13.0-Presence-Immortal] sendSystem.send(impulse) required.");
+    throw new Error("[PulseEarnSendSystem-v16-IMMORTAL-INTEL] sendSystem.send(impulse) required.");
   }
 
   function emitSDN(event, payload) {
@@ -690,7 +869,7 @@ export function createPulseEarnSendSystem({
     try {
       sdn.emitImpulse(event, payload);
     } catch (err) {
-      log && log("[PulseEarnSendSystem-v13.0-Presence-Immortal] SDN emit failed (non‑fatal)", {
+      log && log("[PulseEarnSendSystem-v16-IMMORTAL-INTEL] SDN emit failed (non‑fatal)", {
         event,
         err
       });
@@ -698,10 +877,7 @@ export function createPulseEarnSendSystem({
   }
 
   return {
-    // -----------------------------------------------------------------------
-    // send(impulse, context?) — Deterministic Single‑Pass Earn → Pulse → Send
-    // context: { meshSignals, serverAdvantageHints, globalHints }
-    // -----------------------------------------------------------------------
+    // Deterministic Single‑Pass Earn → Pulse → Send
     send(impulse, context = {}) {
       sendHealing.cycleCount++;
 
@@ -733,7 +909,7 @@ export function createPulseEarnSendSystem({
       sendHealing.lastImpulseId = impulse?.tickId || null;
       sendHealing.lastError = null;
 
-      // 0. GOVERNOR — block Earn re-entry
+      // GOVERNOR — block Earn re-entry
       if (isEarnReentryImpulse(impulse)) {
         const blocked = {
           ok: false,
@@ -748,7 +924,7 @@ export function createPulseEarnSendSystem({
         return blocked;
       }
 
-      // 1. Legacy bridge: Try Earn v11, then v1 continuance
+      // Legacy bridge
       const v11 = tryEarnV11(impulse);
 
       let earn = null;
@@ -775,7 +951,7 @@ export function createPulseEarnSendSystem({
       sendHealing.lastEarnLineageDepth = earn.lineage?.length || 0;
       sendHealing.lastFallbackUsed = usedFallback;
 
-      // 2. Wrap Earn organism for Pulse
+      // Wrap Earn organism for Pulse
       const pulseCompatibleEarn = wrapEarnForPulse(earn);
 
       emitSDN("earnSend:wrapped", {
@@ -784,13 +960,13 @@ export function createPulseEarnSendSystem({
         pulseCompatibleEarn
       });
 
-      // 3. Tag impulse as Earn → Pulse (single-pass)
+      // Tag impulse as Earn → Pulse
       const governedImpulse = tagImpulseAsEarnSent(
         impulse,
         pulseCompatibleEarn
       );
 
-      // 4. A‑B‑A Dual-Band + Binary + Wave metadata
+      // Band/Binary/Wave
       const bandPack = buildEarnSendBandBinaryWave(
         earn,
         usedFallback,
@@ -798,51 +974,31 @@ export function createPulseEarnSendSystem({
         deviceProfile || {}
       );
 
-      const earnSendSignature = computeHash(
-        earn.pattern +
-        "::" +
-        earn.lineage.length +
-        "::" +
-        (usedFallback ? "fallback" : "primary") +
-        "::" +
-        bandPack.band +
-        "::" +
-        factoringSignal
-      );
-
-      sendHealing.lastSendSignature = earnSendSignature;
-
-      // 5. Presence + Advantage‑M + Chunk/Prewarm + Factoring
-      // ------------------------------------------------------
-      // NEW: serverAdvantageHints + earn organism fully used
-      // ------------------------------------------------------
-
-      const presenceField = buildPresenceField(
+      // Presence
+      const { presenceField } = buildPresenceField(
         earn,
         deviceProfile || {},
-        usedFallback
+        usedFallback,
+        cycleIndex
       );
 
-      // Extract server-side hints
+      // Server hints
       const serverPressure = Number(serverAdvantageHints.pressure || 0);
       const serverBoost = Number(serverAdvantageHints.boost || 0);
-      const serverRecommendedBand = serverAdvantageHints.recommendedBand || null;
       const serverRecommendedFactoring = serverAdvantageHints.recommendedFactoring || null;
       const serverRecommendedChunk = serverAdvantageHints.recommendedChunk || null;
       const serverRecommendedPrewarm = serverAdvantageHints.recommendedPrewarm || null;
 
-      // Earn organism metrics
       const earnLineageDepth = earn?.lineage?.length || 0;
       const earnPatternLen = (earn?.pattern || "").length;
       const earnFallbackPenalty = usedFallback ? -0.02 : 0;
 
-      // Merge factoring with server hints
       const factoringMerged =
         serverRecommendedFactoring ||
         factoringSignal;
 
-      // Build advantage field (now uses earn + server hints)
-      const advantageField = buildAdvantageField({
+      // Advantage
+      const { advantageField } = buildAdvantageField({
         earn,
         deviceProfile: deviceProfile || {},
         bandPack,
@@ -852,11 +1008,12 @@ export function createPulseEarnSendSystem({
         serverBoost,
         earnLineageDepth,
         earnPatternLen,
-        earnFallbackPenalty
+        earnFallbackPenalty,
+        cycleIndex
       });
 
-      // Build chunk/prewarm plan (now uses earn + server hints)
-      const chunkPrewarmPlan = buildChunkPrewarmPlan({
+      // Chunk/Prewarm
+      const { chunkPrewarmPlan } = buildChunkPrewarmPlan({
         earn,
         deviceProfile: deviceProfile || {},
         presenceField,
@@ -865,11 +1022,51 @@ export function createPulseEarnSendSystem({
         serverRecommendedChunk,
         serverRecommendedPrewarm,
         earnLineageDepth,
-        earnPatternLen
+        earnPatternLen,
+        cycleIndex
       });
 
+      // Send signature (dualhash)
+      const sendIntelPayload = {
+        kind: "earnSend",
+        version: "v16-IMMORTAL-INTEL",
+        cycleIndex,
+        pattern: earn.pattern || "NO_PATTERN",
+        lineageDepth: earn.lineage?.length || 0,
+        fallback: !!usedFallback,
+        band: bandPack.band,
+        factoringSignal: factoringMerged
+      };
 
-      // 6. Delegate to PulseSendSystem (deterministic)
+      const sendClassicString =
+        `${earn.pattern || "NO_PATTERN"}` +
+        `::LINEAGE:${earn.lineage?.length || 0}` +
+        `::${usedFallback ? "fallback" : "primary"}` +
+        `::BAND:${bandPack.band}` +
+        `::FACT:${factoringMerged}` +
+        `::CYCLE:${cycleIndex}`;
+
+      const sendSig = buildDualHashSignature(
+        "EARN_SEND_CONDUCTOR",
+        sendIntelPayload,
+        sendClassicString
+      );
+
+      sendHealing.lastSendSignatureClassic = sendSig.classic;
+      sendHealing.lastSendSignatureIntel = sendSig.intel;
+
+      // Meta block
+      const sendConductorMeta = buildSendConductorMeta({
+        cycleIndex,
+        earn,
+        bandPack,
+        presenceField,
+        advantageField,
+        chunkPrewarmPlan,
+        factoringSignal: factoringMerged
+      });
+
+      // Delegate to PulseSendSystem
       let result;
       try {
         result = sendSystem.send(governedImpulse);
@@ -881,15 +1078,22 @@ export function createPulseEarnSendSystem({
           earn,
           pulseCompatibleEarn,
           fallback: usedFallback,
-          earnSendSignature,
+
+          sendSignatureClassic: sendSig.classic,
+          sendSignatureIntel: sendSig.intel,
+
           band: bandPack.band,
-          bandSignature: bandPack.bandSignature,
+          bandSignatureClassic: bandPack.bandSignatureClassic,
+          bandSignatureIntel: bandPack.bandSignatureIntel,
           binaryField: bandPack.binaryField,
           waveField: bandPack.waveField,
+
           presenceField,
           advantageField,
           chunkPrewarmPlan,
-          factoringSignal
+          factoringSignal: factoringMerged,
+
+          sendConductorMeta
         };
         emitSDN("earnSend:error", failure);
         return failure;
@@ -901,17 +1105,22 @@ export function createPulseEarnSendSystem({
         pulseCompatibleEarn,
         result,
         fallback: usedFallback,
-        earnSendSignature,
+
+        sendSignatureClassic: sendSig.classic,
+        sendSignatureIntel: sendSig.intel,
 
         band: bandPack.band,
-        bandSignature: bandPack.bandSignature,
+        bandSignatureClassic: bandPack.bandSignatureClassic,
+        bandSignatureIntel: bandPack.bandSignatureIntel,
         binaryField: bandPack.binaryField,
         waveField: bandPack.waveField,
 
         presenceField,
         advantageField,
         chunkPrewarmPlan,
-        factoringSignal
+        factoringSignal: factoringMerged,
+
+        sendConductorMeta
       };
 
       emitSDN("earnSend:complete", out);

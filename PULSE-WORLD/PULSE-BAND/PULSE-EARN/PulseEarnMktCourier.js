@@ -1,14 +1,15 @@
 // ============================================================================
-// FILE: tropic-pulse-functions/PULSE-WORLD/PULSE-EARN/PulseEarnMktCourier-v13.0-Presence-Immortal.js
-// LAYER: THE COURIER (v13.0 Presence + Advantage‑C + Prewarm)
+// FILE: tropic-pulse-functions/PULSE-WORLD/PULSE-EARN/PulseEarnMktCourier-v16-IMMORTAL-INTEL.js
+// LAYER: THE COURIER (v16 IMMORTAL + INTEL + DualHash + Presence + Advantage + Chunk)
 // ============================================================================
+
 /*
 AI_EXPERIENCE_META = {
   identity: "PulseEarnMktCourier",
-  version: "v14-Immortal",
+  version: "v16-IMMORTAL-INTEL",
   layer: "earn_market",
   role: "market_courier",
-  lineage: "PulseEarnMktCourier-v11 → v12.3 → v14-Immortal",
+  lineage: "PulseEarnMktCourier-v11 → v12.3 → v13.0-Presence-Immortal → v16-IMMORTAL-INTEL",
 
   evo: {
     marketCourier: true,
@@ -19,22 +20,39 @@ AI_EXPERIENCE_META = {
     binaryAware: true,
 
     deterministic: true,
+    deterministicField: true,
     driftProof: true,
     pureCompute: true,
     zeroNetwork: true,
     zeroFilesystem: true,
-    zeroMutationOfInput: true
+    zeroMutationOfInput: true,
+    zeroAsync: true,
+    zeroRandomness: true,
+
+    chunkAware: true,
+    prewarmAware: true,
+    cacheAware: true,
+
+    intelSignatureAware: true,
+    dualHashAware: true,
+    structureAware: true,
+    contextAware: true,
+    factoringAware: true
   },
 
   contract: {
     always: [
       "PulseEarnMktBroker",
       "PulseEarnMktForager",
-      "PulseEarnMktEmbassyLedger"
+      "PulseEarnMktEmbassyLedger",
+      "PulseEarnMetabolism",
+      "PulseEarnLymphNodes"
     ],
     never: [
       "safeRoute",
-      "fetchViaCNS"
+      "fetchViaCNS",
+      "userScript",
+      "dynamicEval"
     ]
   }
 }
@@ -43,14 +61,13 @@ AI_EXPERIENCE_META = {
 export const PulseEarnMktCourierMeta = Object.freeze({
   layer: "PulseEarnMktCourier",
   role: "EARN_MARKETPLACE_RECEPTOR",
-  version: "v13.0-Presence-Immortal",
-  identity: "PulseEarnMktCourier-v13.0-Presence-Immortal",
+  version: "v16-IMMORTAL-INTEL",
+  identity: "PulseEarnMktCourier-v16-IMMORTAL-INTEL",
 
   guarantees: Object.freeze({
     deterministic: true,
-    noRandomness: true,
-    noRealTime: true,
-    noExternalIO: true,
+    deterministicField: true,
+    driftProof: true,
     pureReceptor: true,
 
     dualBandAware: true,
@@ -70,27 +87,132 @@ export const PulseEarnMktCourierMeta = Object.freeze({
 });
 
 // ============================================================================
-// Deterministic Hash Helper
+// HASH HELPERS — v16 IMMORTAL INTEL
 // ============================================================================
+
 function computeHash(str) {
   let h = 0;
   const s = String(str || "");
-  for (let i = 0; i < s.length; i++)
+  for (let i = 0; i < s.length; i++) {
     h = (h + s.charCodeAt(i) * (i + 1)) % 100000;
+  }
   return `h${h}`;
 }
 
-function normalizeBand(band) {
-  const b = String(band || "symbolic").toLowerCase();
-  return b === "binary" ? "binary" : "symbolic";
+// Primary INTEL hash — deterministic, structure-aware, no IO, no time.
+function computeHashIntelligence(payload) {
+  const base = JSON.stringify(payload || "");
+  let h = 0;
+  for (let i = 0; i < base.length; i++) {
+    const c = base.charCodeAt(i);
+    h = (h * 131 + c * (i + 7)) % 1000000007;
+  }
+  return `HINTEL_${h}`;
 }
 
-function buildBandSignature(band) {
-  return computeHash(`COURIER_BAND::${normalizeBand(band)}`);
+function buildDualHashSignature(label, intelPayload, classicString) {
+  const intelBase = {
+    label,
+    intel: intelPayload || {},
+    classic: classicString || ""
+  };
+  const intelHash = computeHashIntelligence(intelBase);
+  const classicHash = computeHash(
+    `${label}::${classicString || ""}`
+  );
+  return {
+    intel: intelHash,
+    classic: classicHash
+  };
+}
+
+function normalizeBand(b) {
+  const x = String(b || "symbolic").toLowerCase();
+  return x === "binary" ? "binary" : "symbolic";
+}
+
+function clamp01(v) {
+  return Math.max(0, Math.min(1, v));
 }
 
 // ============================================================================
-// Unified Earn v13 Presence Tier
+// COURIER STATE — v16 IMMORTAL INTEL
+// ============================================================================
+const healingState = {
+  lastPingMs: null,
+  lastPingError: null,
+  lastFetchCount: 0,
+  lastFetchError: null,
+  lastSubmitJobId: null,
+  lastSubmitError: null,
+  lastNormalizedJobId: null,
+  lastNormalizationError: null,
+
+  cycleCount: 0,
+  lastCycleIndex: null,
+
+  // Dual signatures
+  lastPingSignatureIntel: null,
+  lastPingSignatureClassic: null,
+
+  lastFetchSignatureIntel: null,
+  lastFetchSignatureClassic: null,
+
+  lastNormalizationSignatureIntel: null,
+  lastNormalizationSignatureClassic: null,
+
+  lastSubmitSignatureIntel: null,
+  lastSubmitSignatureClassic: null,
+
+  lastCourierCycleSignatureIntel: null,
+  lastCourierCycleSignatureClassic: null,
+
+  lastBand: "symbolic",
+  lastBandSignatureIntel: null,
+  lastBandSignatureClassic: null,
+
+  lastBinaryField: null,
+  lastWaveField: null,
+
+  lastPresenceField: null,
+  lastAdvantageField: null,
+  lastChunkPrewarmPlan: null
+};
+
+let courierCycle = 0;
+
+// ============================================================================
+// SPHERON DNA (deterministic)
+// ============================================================================
+const SPHERON_RECEPTOR_DNA = {
+  pingLatency: 42,
+  jobs: [
+    {
+      id: "spheron-001",
+      payout: 0.05,
+      cpu: 2,
+      memory: 2048,
+      estimatedSeconds: 300,
+      gpu: false,
+      type: "compute"
+    },
+    {
+      id: "spheron-002",
+      payout: 0.12,
+      cpu: 4,
+      memory: 4096,
+      estimatedSeconds: 600,
+      gpu: true,
+      type: "compute"
+    }
+  ],
+  version: "v16-IMMORTAL-INTEL",
+  lineage: "Courier-Spheron-v16-IMMORTAL-INTEL",
+  phenotype: "MarketplaceReceptor"
+};
+
+// ============================================================================
+// PRESENCE FIELD — v16 IMMORTAL INTEL
 // ============================================================================
 function classifyPresenceTier(pressure) {
   if (pressure >= 150) return "critical";
@@ -100,9 +222,6 @@ function classifyPresenceTier(pressure) {
   return "idle";
 }
 
-// ============================================================================
-// Unified v13 Presence Field
-// ============================================================================
 function buildPresenceField(jobOrRaw, deviceProfile = {}, cycle, globalHints = {}) {
   const ghP = globalHints.presenceContext || {};
   const mesh = globalHints.meshSignals || {};
@@ -113,7 +232,6 @@ function buildPresenceField(jobOrRaw, deviceProfile = {}, cycle, globalHints = {
   const meshPressureExternal = Number(mesh.meshPressureIndex || 0);
   const castleLoadExternal = Number(castle.loadLevel || 0);
 
-  // Courier internal signal: job complexity
   const idLen = (jobOrRaw?.id || "").length;
   const typeLen = (jobOrRaw?.type || "").length;
   const stability = deviceProfile?.stabilityScore || 0.7;
@@ -131,38 +249,40 @@ function buildPresenceField(jobOrRaw, deviceProfile = {}, cycle, globalHints = {
   const pressure = meshPressureIndex + castleLoadLevel;
   const presenceTier = classifyPresenceTier(pressure);
 
-  return {
-    presenceVersion: "v13.0-Presence-Immortal",
+  const intelPayload = {
+    kind: "courierPresence",
+    version: "v16-IMMORTAL-INTEL",
     presenceTier,
-
-    bandPresence: ghP.bandPresence || "symbolic",
-    routerPresence: ghP.routerPresence || "stable",
-    devicePresence: ghP.devicePresence || "courier",
-
-    meshPresence: ghP.meshPresence || (meshStrength > 0 ? "mesh-active" : "mesh-idle"),
-    castlePresence: ghP.castlePresence || castle.castlePresence || "courier-region",
-    regionPresence: ghP.regionPresence || region.regionTag || "unknown-region",
-
-    regionId: region.regionId || "courier-region",
-    castleId: castle.castleId || "courier-castle",
-
-    meshStrength,
     meshPressureIndex,
     castleLoadLevel,
+    idLen,
+    typeLen,
+    stability,
+    cycleIndex: cycle
+  };
 
+  const classicString =
+    `COURIER_PRESENCE::${presenceTier}::${meshPressureIndex}::${castleLoadLevel}`;
+
+  const sig = buildDualHashSignature("COURIER_PRESENCE", intelPayload, classicString);
+
+  return {
+    presenceVersion: "v16-IMMORTAL-INTEL",
+    presenceTier,
+    meshPressureIndex,
+    castleLoadLevel,
+    meshStrength,
     idLen,
     typeLen,
     stability,
     cycle,
-
-    presenceSignature: computeHash(
-      `COURIER_PRESENCE::${presenceTier}::${meshPressureIndex}::${castleLoadLevel}::${idLen}::${typeLen}`
-    )
+    presenceSignatureIntel: sig.intel,
+    presenceSignatureClassic: sig.classic
   };
 }
 
 // ============================================================================
-// Advantage‑C v13
+// ADVANTAGE FIELD — v16 IMMORTAL INTEL
 // ============================================================================
 function buildAdvantageField(jobOrRaw, deviceProfile, bandPack, presenceField, globalHints = {}) {
   const gpuScore = deviceProfile?.gpuScore || 0;
@@ -193,9 +313,26 @@ function buildAdvantageField(jobOrRaw, deviceProfile, bandPack, presenceField, g
 
   const fallbackBandLevel = globalHints.fallbackBandLevel ?? 0;
 
+  const intelPayload = {
+    kind: "courierAdvantage",
+    version: "C-16.0",
+    gpuScore,
+    bandwidth,
+    density,
+    amplitude,
+    presenceTier: presenceField.presenceTier,
+    advantageScore,
+    advantageTier,
+    fallbackBandLevel
+  };
+
+  const classicString =
+    `COURIER_ADVANTAGE::${presenceField.presenceTier}::${advantageTier}`;
+
+  const sig = buildDualHashSignature("COURIER_ADVANTAGE", intelPayload, classicString);
+
   return {
-    advantageVersion: "C-13.0",
-    band: bandPack.band,
+    advantageVersion: "C-16.0",
     gpuScore,
     bandwidth,
     binaryDensity: density,
@@ -203,12 +340,14 @@ function buildAdvantageField(jobOrRaw, deviceProfile, bandPack, presenceField, g
     presenceTier: presenceField.presenceTier,
     advantageScore,
     advantageTier,
-    fallbackBandLevel
+    fallbackBandLevel,
+    advantageSignatureIntel: sig.intel,
+    advantageSignatureClassic: sig.classic
   };
 }
 
 // ============================================================================
-// Chunk / Cache / Prewarm Plan v13
+// CHUNK / PREWARM PLAN — v16 IMMORTAL INTEL
 // ============================================================================
 function buildChunkPrewarmPlan(jobOrRaw, deviceProfile, presenceField, advantageField) {
   const basePriority =
@@ -229,8 +368,21 @@ function buildChunkPrewarmPlan(jobOrRaw, deviceProfile, presenceField, advantage
 
   const priority = basePriority + advantageBoost;
 
+  const intelPayload = {
+    kind: "courierChunkPlan",
+    version: "v16-IMMORTAL-INTEL",
+    priority,
+    presenceTier: presenceField.presenceTier,
+    advantageTier: advantageField.advantageTier
+  };
+
+  const classicString =
+    `COURIER_CHUNK_PLAN::${presenceField.presenceTier}::${priority}`;
+
+  const sig = buildDualHashSignature("COURIER_CHUNK_PLAN", intelPayload, classicString);
+
   return {
-    planVersion: "v13.0-Courier-AdvantageC",
+    planVersion: "v16-IMMORTAL-INTEL",
     priority,
     band: presenceField.presenceTier,
     chunks: {
@@ -245,76 +397,14 @@ function buildChunkPrewarmPlan(jobOrRaw, deviceProfile, presenceField, advantage
       nervousSystem: true,
       muscleSystem: true,
       lymphNodes: true
-    }
+    },
+    chunkPlanSignatureIntel: sig.intel,
+    chunkPlanSignatureClassic: sig.classic
   };
 }
 
 // ============================================================================
-// Healing State
-// ============================================================================
-const healingState = {
-  lastPingMs: null,
-  lastPingError: null,
-  lastFetchCount: 0,
-  lastFetchError: null,
-  lastSubmitJobId: null,
-  lastSubmitError: null,
-  lastNormalizedJobId: null,
-  lastNormalizationError: null,
-
-  cycleCount: 0,
-  lastCycleIndex: null,
-
-  lastPingSignature: null,
-  lastFetchSignature: null,
-  lastNormalizationSignature: null,
-  lastSubmitSignature: null,
-  lastCourierCycleSignature: null,
-
-  lastBand: "symbolic",
-  lastBandSignature: null,
-  lastBinaryField: null,
-  lastWaveField: null,
-
-  lastPresenceField: null,
-  lastAdvantageField: null,
-  lastChunkPrewarmPlan: null
-};
-
-let courierCycle = 0;
-
-// ============================================================================
-// Spheron DNA (unchanged deterministic payload)
-// ============================================================================
-const SPHERON_RECEPTOR_DNA = {
-  pingLatency: 42,
-  jobs: [
-    {
-      id: "spheron-001",
-      payout: 0.05,
-      cpu: 2,
-      memory: 2048,
-      estimatedSeconds: 300,
-      gpu: false,
-      type: "compute"
-    },
-    {
-      id: "spheron-002",
-      payout: 0.12,
-      cpu: 4,
-      memory: 4096,
-      estimatedSeconds: 600,
-      gpu: true,
-      type: "compute"
-    }
-  ],
-  version: "13.0-Presence-Immortal",
-  lineage: "Courier-Spheron-v13.0-Presence-Immortal",
-  phenotype: "MarketplaceReceptor"
-};
-
-// ============================================================================
-// A‑B‑A Surfaces
+// A‑B‑A SURFACES — v16 IMMORTAL INTEL
 // ============================================================================
 function buildBinaryField(cycle, hasGpu, presenceField) {
   const patternLen = hasGpu ? 16 : 10;
@@ -324,9 +414,24 @@ function buildBinaryField(cycle, hasGpu, presenceField) {
   const density = baseDensity + mesh + castle;
   const surface = density + patternLen;
 
+  const intelPayload = {
+    kind: "courierBinarySurface",
+    patternLen,
+    density,
+    surface,
+    meshPressureIndex: mesh,
+    castleLoadLevel: castle,
+    cycleIndex: cycle
+  };
+
+  const classicString = `COURIER_BIN::${surface}`;
+  const sig = buildDualHashSignature("COURIER_BIN", intelPayload, classicString);
+
   return {
-    binaryPhenotypeSignature: computeHash(`COURIER_BIN::${surface}`),
-    binarySurfaceSignature: computeHash(`COURIER_BIN_SURF::${surface}`),
+    binaryPhenotypeSignatureIntel: sig.intel,
+    binaryPhenotypeSignatureClassic: sig.classic,
+    binarySurfaceSignatureIntel: sig.intel,
+    binarySurfaceSignatureClassic: sig.classic,
     binarySurface: {
       patternLen,
       density,
@@ -345,7 +450,22 @@ function buildWaveField(cycle, band, presenceField) {
   const wavelength = amplitude + 5;
   const phase = (amplitude + (presenceField?.meshPressureIndex || 0)) % 16;
 
+  const intelPayload = {
+    kind: "courierWaveSurface",
+    band,
+    amplitude,
+    wavelength,
+    phase,
+    meshStrength: presenceField?.meshStrength || 0,
+    cycleIndex: cycle
+  };
+
+  const classicString = `COURIER_WAVE::${band}::AMP::${amplitude}`;
+  const sig = buildDualHashSignature("COURIER_WAVE", intelPayload, classicString);
+
   return {
+    wavePhenotypeSignatureIntel: sig.intel,
+    wavePhenotypeSignatureClassic: sig.classic,
     amplitude,
     wavelength,
     phase,
@@ -355,16 +475,16 @@ function buildWaveField(cycle, band, presenceField) {
 }
 
 // ============================================================================
-// COURIER ORGAN — v13.0‑PRESENCE‑IMMORTAL
+// COURIER ORGAN — v16 IMMORTAL INTEL
 // ============================================================================
 export const PulseEarnMktCourier = {
   id: "spheron",
   name: "Spheron Compute",
-  version: "v13.0-Presence-Immortal",
-  lineage: "Courier-Spheron-v13.0-Presence-Immortal",
+  version: "v16-IMMORTAL-INTEL",
+  lineage: "Courier-Spheron-v16-IMMORTAL-INTEL",
 
   // -------------------------------------------------------------------------
-  // PING — unified v13 presence
+  // PING — v16 dual-hash + presence + advantage + chunk
   // -------------------------------------------------------------------------
   ping(deviceProfile = {}, globalHints = {}) {
     courierCycle++;
@@ -375,7 +495,10 @@ export const PulseEarnMktCourier = {
 
     const band = "symbolic";
     healingState.lastBand = band;
-    healingState.lastBandSignature = buildBandSignature(band);
+
+    const bandSig = buildDualHashSignature("COURIER_BAND", { band, cycleIndex: courierCycle }, band);
+    healingState.lastBandSignatureIntel = bandSig.intel;
+    healingState.lastBandSignatureClassic = bandSig.classic;
 
     const presenceField = buildPresenceField(null, deviceProfile, courierCycle, globalHints);
     const binaryField = buildBinaryField(courierCycle, false, presenceField);
@@ -391,8 +514,10 @@ export const PulseEarnMktCourier = {
 
     const chunkPlan = buildChunkPrewarmPlan(null, deviceProfile, presenceField, advantageField);
 
-    healingState.lastPingMs = latency;
-    healingState.lastPingSignature = computeHash(`PING::${latency}`);
+    const pingSig = buildDualHashSignature("COURIER_PING", { latency, cycleIndex: courierCycle }, `${latency}`);
+    healingState.lastPingSignatureIntel = pingSig.intel;
+    healingState.lastPingSignatureClassic = pingSig.classic;
+
     healingState.lastBinaryField = binaryField;
     healingState.lastWaveField = waveField;
     healingState.lastPresenceField = presenceField;
@@ -401,8 +526,11 @@ export const PulseEarnMktCourier = {
 
     return {
       latency,
-      signature: healingState.lastPingSignature,
-      bandSignature: healingState.lastBandSignature,
+      cycleIndex: courierCycle,
+      signatureIntel: pingSig.intel,
+      signatureClassic: pingSig.classic,
+      bandSignatureIntel: bandSig.intel,
+      bandSignatureClassic: bandSig.classic,
       binaryField,
       waveField,
       presenceField,
@@ -411,8 +539,8 @@ export const PulseEarnMktCourier = {
     };
   },
 
-  // -------------------------------------------------------------------------
-  // FETCH JOBS — unified v13 presence
+   // -------------------------------------------------------------------------
+  // FETCH JOBS — v16 dual-hash + presence + advantage + chunk
   // -------------------------------------------------------------------------
   fetchJobs(deviceProfile = {}, globalHints = {}) {
     courierCycle++;
@@ -424,12 +552,26 @@ export const PulseEarnMktCourier = {
       .map(raw => this.normalizeJob(raw, deviceProfile, globalHints))
       .filter(j => j !== null);
 
+    const fetchSig = buildDualHashSignature(
+      "COURIER_FETCH",
+      { count: jobs.length, cycleIndex: courierCycle },
+      `FETCH::${jobs.length}::CYCLE::${courierCycle}`
+    );
+
     healingState.lastFetchCount = jobs.length;
-    healingState.lastFetchSignature = computeHash(`FETCH::${jobs.length}`);
+    healingState.lastFetchSignatureIntel = fetchSig.intel;
+    healingState.lastFetchSignatureClassic = fetchSig.classic;
 
     const band = "symbolic";
     healingState.lastBand = band;
-    healingState.lastBandSignature = buildBandSignature(band);
+
+    const bandSig = buildDualHashSignature(
+      "COURIER_BAND",
+      { band, cycleIndex: courierCycle },
+      `BAND::${band}`
+    );
+    healingState.lastBandSignatureIntel = bandSig.intel;
+    healingState.lastBandSignatureClassic = bandSig.classic;
 
     const presenceField = buildPresenceField(null, deviceProfile, courierCycle, globalHints);
     const binaryField = buildBinaryField(courierCycle, false, presenceField);
@@ -443,7 +585,12 @@ export const PulseEarnMktCourier = {
       globalHints
     );
 
-    const chunkPlan = buildChunkPrewarmPlan(null, deviceProfile, presenceField, advantageField);
+    const chunkPlan = buildChunkPrewarmPlan(
+      null,
+      deviceProfile,
+      presenceField,
+      advantageField
+    );
 
     healingState.lastBinaryField = binaryField;
     healingState.lastWaveField = waveField;
@@ -453,8 +600,11 @@ export const PulseEarnMktCourier = {
 
     return {
       jobs,
-      signature: healingState.lastFetchSignature,
-      bandSignature: healingState.lastBandSignature,
+      cycleIndex: courierCycle,
+      signatureIntel: fetchSig.intel,
+      signatureClassic: fetchSig.classic,
+      bandSignatureIntel: bandSig.intel,
+      bandSignatureClassic: bandSig.classic,
       binaryField,
       waveField,
       presenceField,
@@ -464,7 +614,7 @@ export const PulseEarnMktCourier = {
   },
 
   // -------------------------------------------------------------------------
-  // SUBMIT RESULT — unified v13 presence
+  // SUBMIT RESULT — v16 dual-hash + presence + advantage + chunk
   // -------------------------------------------------------------------------
   submitResult(job, result, deviceProfile = {}, globalHints = {}) {
     courierCycle++;
@@ -472,13 +622,19 @@ export const PulseEarnMktCourier = {
     healingState.lastCycleIndex = courierCycle;
 
     const jobId = job?.id ?? null;
-
     const band = "symbolic";
     healingState.lastBand = band;
-    healingState.lastBandSignature = buildBandSignature(band);
+
+    const bandSig = buildDualHashSignature(
+      "COURIER_BAND",
+      { band, cycleIndex: courierCycle },
+      `BAND::${band}`
+    );
+    healingState.lastBandSignatureIntel = bandSig.intel;
+    healingState.lastBandSignatureClassic = bandSig.classic;
 
     const presenceField = buildPresenceField(job, deviceProfile, courierCycle, globalHints);
-    const binaryField = buildBinaryField(courierCycle, false, presenceField);
+    const binaryField = buildBinaryField(courierCycle, !!job?.gpu, presenceField);
     const waveField = buildWaveField(courierCycle, band, presenceField);
 
     const advantageField = buildAdvantageField(
@@ -489,10 +645,23 @@ export const PulseEarnMktCourier = {
       globalHints
     );
 
-    const chunkPlan = buildChunkPrewarmPlan(job, deviceProfile, presenceField, advantageField);
+    const chunkPlan = buildChunkPrewarmPlan(
+      job,
+      deviceProfile,
+      presenceField,
+      advantageField
+    );
+
+    const submitSig = buildDualHashSignature(
+      "COURIER_SUBMIT",
+      { jobId, cycleIndex: courierCycle },
+      `SUBMIT::${jobId}::CYCLE::${courierCycle}`
+    );
 
     healingState.lastSubmitJobId = jobId;
-    healingState.lastSubmitSignature = computeHash(`SUBMIT::${jobId}`);
+    healingState.lastSubmitSignatureIntel = submitSig.intel;
+    healingState.lastSubmitSignatureClassic = submitSig.classic;
+
     healingState.lastBinaryField = binaryField;
     healingState.lastWaveField = waveField;
     healingState.lastPresenceField = presenceField;
@@ -504,8 +673,10 @@ export const PulseEarnMktCourier = {
       marketplace: "spheron",
       jobId,
       cycleIndex: courierCycle,
-      signature: healingState.lastSubmitSignature,
-      bandSignature: healingState.lastBandSignature,
+      signatureIntel: submitSig.intel,
+      signatureClassic: submitSig.classic,
+      bandSignatureIntel: bandSig.intel,
+      bandSignatureClassic: bandSig.classic,
       binaryField,
       waveField,
       presenceField,
@@ -515,33 +686,40 @@ export const PulseEarnMktCourier = {
     };
   },
 
-    // -------------------------------------------------------------------------
-  // NORMALIZE JOB — unified v13 presence
+  // -------------------------------------------------------------------------
+  // NORMALIZE JOB — v16 dual-hash + presence + advantage + chunk
   // -------------------------------------------------------------------------
   normalizeJob(raw, deviceProfile = {}, globalHints = {}) {
     try {
       if (!raw || typeof raw !== "object" || !raw.id) {
+        const sig = buildDualHashSignature("COURIER_NORM", { jobId: null }, "NORM::NONE");
         healingState.lastNormalizationError = "invalid_raw_job";
         healingState.lastNormalizedJobId = null;
-        healingState.lastNormalizationSignature = computeHash("NORM::NONE");
+        healingState.lastNormalizationSignatureIntel = sig.intel;
+        healingState.lastNormalizationSignatureClassic = sig.classic;
         return null;
       }
 
       const payout = Number(raw.payout ?? 0);
       if (!Number.isFinite(payout) || payout <= 0) {
+        const sig = buildDualHashSignature("COURIER_NORM", { jobId: null }, "NORM::NONE");
         healingState.lastNormalizationError = "non_positive_payout";
         healingState.lastNormalizedJobId = null;
-        healingState.lastNormalizationSignature = computeHash("NORM::NONE");
+        healingState.lastNormalizationSignatureIntel = sig.intel;
+        healingState.lastNormalizationSignatureClassic = sig.classic;
         return null;
       }
 
       const cpuRequired = Number(raw.cpu ?? 1);
       const memoryRequired = Number(raw.memory ?? 1024);
       const estimatedSeconds = Number(raw.estimatedSeconds ?? 600);
+
       if (!Number.isFinite(estimatedSeconds) || estimatedSeconds <= 0) {
+        const sig = buildDualHashSignature("COURIER_NORM", { jobId: null }, "NORM::NONE");
         healingState.lastNormalizationError = "non_positive_duration";
         healingState.lastNormalizedJobId = null;
-        healingState.lastNormalizationSignature = computeHash("NORM::NONE");
+        healingState.lastNormalizationSignatureIntel = sig.intel;
+        healingState.lastNormalizationSignatureClassic = sig.classic;
         return null;
       }
 
@@ -560,7 +738,12 @@ export const PulseEarnMktCourier = {
         globalHints
       );
 
-      const chunkPlan = buildChunkPrewarmPlan(raw, deviceProfile, presenceField, advantageField);
+      const chunkPlan = buildChunkPrewarmPlan(
+        raw,
+        deviceProfile,
+        presenceField,
+        advantageField
+      );
 
       const normalized = {
         id: String(raw.id),
@@ -583,19 +766,33 @@ export const PulseEarnMktCourier = {
         chunkPlan
       };
 
+      const sig = buildDualHashSignature(
+        "COURIER_NORM",
+        { jobId: normalized.id, cycleIndex: courierCycle },
+        `NORM::${normalized.id}`
+      );
+
       healingState.lastNormalizedJobId = normalized.id;
       healingState.lastNormalizationError = null;
-      healingState.lastNormalizationSignature =
-        computeHash(`NORM::${normalized.id}`);
+      healingState.lastNormalizationSignatureIntel = sig.intel;
+      healingState.lastNormalizationSignatureClassic = sig.classic;
 
       return normalized;
 
     } catch (err) {
+      const sig = buildDualHashSignature("COURIER_NORM", { jobId: null }, "NORM::NONE");
       healingState.lastNormalizationError = err?.message || String(err);
       healingState.lastNormalizedJobId = null;
-      healingState.lastNormalizationSignature = computeHash("NORM::NONE");
+      healingState.lastNormalizationSignatureIntel = sig.intel;
+      healingState.lastNormalizationSignatureClassic = sig.classic;
       return null;
     }
   }
 };
 
+// ============================================================================
+// HEALING STATE EXPORT
+// ============================================================================
+export function getPulseEarnMktCourierHealingState() {
+  return { ...healingState };
+}

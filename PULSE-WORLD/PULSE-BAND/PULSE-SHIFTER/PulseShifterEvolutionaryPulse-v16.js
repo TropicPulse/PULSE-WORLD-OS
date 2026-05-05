@@ -25,7 +25,7 @@
 //  PulseBinaryShifterEvolutionaryPulse-v14.0-Presence-Immortal, which will:
 //    - accept bits
 //    - derive pattern/mode/payload/band hints
-//    - call createPulseV2 / evolvePulseV2
+//    - call createSymPulseV2 / evolvePulseV2
 //    - emit compact, binary-friendly summaries
 //
 //  SAFETY CONTRACT (v14.0-Presence-Immortal + v14.1-PULSE-COMPUTE):
@@ -150,12 +150,39 @@ export const PulseRole = {
 // ============================================================================
 
 function computeHash(str) {
-  // v2-specific deterministic hash; small, bounded, and stable.
   let h = 0;
-  for (let i = 0; i < str.length; i++) {
-    h = (h + str.charCodeAt(i) * (i + 3)) % 100000;
+  const s = String(str || "");
+  for (let i = 0; i < s.length; i++) {
+    h = (h + s.charCodeAt(i) * (i + 1)) % 100000;
   }
   return `h${h}`;
+}
+
+// Primary INTEL hash — deterministic, structure-aware, no IO, no time.
+function computeHashIntelligence(payload) {
+  const base = JSON.stringify(payload || "");
+  let h = 0;
+  for (let i = 0; i < base.length; i++) {
+    const c = base.charCodeAt(i);
+    h = (h * 131 + c * (i + 7)) % 1000000007;
+  }
+  return `HINTEL_${h}`;
+}
+
+function buildDualHashSignature(label, intelPayload, classicString) {
+  const intelBase = {
+    label,
+    intel: intelPayload || {},
+    classic: classicString || ""
+  };
+  const intelHash = computeHashIntelligence(intelBase);
+  const classicHash = computeHash(
+    `${label}::${classicString || ""}`
+  );
+  return {
+    intel: intelHash,
+    classic: classicHash
+  };
 }
 
 function buildLineage(parentLineage, pattern) {
@@ -169,6 +196,11 @@ function computeShapeSignature(pattern, lineage) {
   return `shape-${computeHash(raw)}`;
 }
 
+function computeShapeSignatureAlt(pattern, lineage) {
+  const lineageKey = lineage.join("::");
+  const raw = `${pattern}::${lineageKey}`;
+  return `shape2-${computeHashIntelligence(raw)}`;
+}
 function computeEvolutionStage(pattern, lineage) {
   const depth = lineage.length;
 
@@ -304,7 +336,7 @@ function runEvolutionComputeLoopV2({
 //    - no side effects, no external calls
 // ============================================================================
 
-function runPulseComputeV2({
+function runSymPulseV2({
   pattern,
   lineage,
   payload,
@@ -371,7 +403,11 @@ function runPulseComputeV2({
 //    - presenceBandState / harmonicDrift / coherenceScore (optional)
 // ============================================================================
 
-export function createPulseV2({
+
+// ============================================================================
+//  FACTORY — Create a Pulse v2 Evolution Engine Organism (v16-IMMORTAL-INTEL)
+// ============================================================================
+export function createSymPulseV2({
   jobId,
   pattern,
   payload = {},
@@ -387,9 +423,10 @@ export function createPulseV2({
   harmonicDrift = null,
   coherenceScore = null
 }) {
-  const lineage        = buildLineage(parentLineage, pattern);
-  const shapeSignature = computeShapeSignature(pattern, lineage);
-  const evolutionStage = computeEvolutionStage(pattern, lineage);
+  const lineage         = buildLineage(parentLineage, pattern);
+  const shapeSignature  = computeShapeSignature(pattern, lineage);
+  const shapeSignature2 = computeShapeSignatureAlt(pattern, lineage);
+  const evolutionStage  = computeEvolutionStage(pattern, lineage);
 
   const patternAncestry       = buildPatternAncestry(pattern);
   const lineageSignature      = buildLineageSignature(lineage);
@@ -399,7 +436,13 @@ export function createPulseV2({
     pageId
   });
 
-  const { advantageField, healthScore } = runEvolutionComputeLoopV2({
+  const {
+    advantageField,
+    healthScore,
+    binarySurface,
+    immortalMeta,
+    pulseIntelligence
+  } = runEvolutionComputeLoopV2({
     pattern,
     lineage,
     payload,
@@ -410,8 +453,7 @@ export function createPulseV2({
     coherenceScore
   });
 
-  // NEW: pulse-level compute / factoring / evolution hints
-  const pulseCompute = runPulseComputeV2({
+  const pulseCompute = runSymPulseV2({
     pattern,
     lineage,
     payload,
@@ -426,7 +468,21 @@ export function createPulseV2({
     healthScore >= 0.15 ? "hardDegrade" :
     "criticalDegrade";
 
-  const diagnostics = buildDiagnostics(pattern, lineage, healthScore, tier);
+  const diagnostics = buildDiagnostics(
+    pattern,
+    lineage,
+    healthScore,
+    tier,
+    binarySurface,
+    immortalMeta,
+    pulseIntelligence
+  );
+
+  const evolutionSignature  = computeHash(pattern + "::" + lineageSignature);
+  const evolutionSignature2 = computeHashIntelligence(pattern + "::" + lineageSignature);
+  const dualHashSignature   = computeHash(
+    `${shapeSignature}::${shapeSignature2}::${evolutionSignature}::${evolutionSignature2}`
+  );
 
   return {
     // Identity + contracts
@@ -444,17 +500,22 @@ export function createPulseV2({
 
     // Band / presence surface
     bandMode: bandMode === "binary" ? "binary" : "symbolic",
-    presenceBandState: presenceBandState ?? null,
-    harmonicDrift: harmonicDrift ?? null,
-    coherenceScore: coherenceScore ?? null,
+    presenceBandState: immortalMeta.presenceBandState,
+    harmonicDrift: immortalMeta.harmonicDrift,
+    coherenceScore: immortalMeta.coherenceScore,
 
     // Evolution engine type
-    pulseType: "Pulse-v2-EvolutionEngine-v14.1-PULSE-COMPUTE-Presence-Immortal",
+    pulseType: "Pulse-v2-EvolutionEngine-v16-IMMORTAL-INTEL",
 
     // Advantage + health
     advantageField,
     healthScore,
     tier,
+
+    // Immortal + binary + intelligence surfaces
+    immortalMeta,
+    binarySurface,
+    pulseIntelligence,
 
     // Pulse-level compute / factoring / evolution hints
     pulseCompute,
@@ -462,6 +523,7 @@ export function createPulseV2({
     // Meta: signatures + diagnostics
     meta: {
       shapeSignature,
+      shapeSignature2,
       evolutionStage,
 
       patternAncestry,
@@ -470,15 +532,36 @@ export function createPulseV2({
 
       diagnostics,
 
-      evolutionSignature: computeHash(pattern + "::" + lineageSignature),
-      patternSignature: computeHash(pattern),
-      lineageSurface: computeHash(String(lineage.length)),
-      advantageSignature: computeHash(JSON.stringify(advantageField)),
-      healthSignature: computeHash(String(healthScore)),
-      tierSignature: computeHash(tier),
+      evolutionSignature,
+      evolutionSignature2,
+      dualHashSignature,
 
-      // NEW: pulse-compute signature
-      pulseComputeSignature: computeHash(JSON.stringify(pulseCompute))
+      patternSignature: computeHash(pattern),
+      patternSignature2: computeHashIntelligence(pattern),
+
+      lineageSurface: computeHash(String(lineage.length)),
+      lineageSurface2: computeHashIntelligence(String(lineage.length)),
+
+      advantageSignature: computeHash(JSON.stringify(advantageField)),
+      advantageSignature2: computeHashIntelligence(JSON.stringify(advantageField)),
+
+      healthSignature: computeHash(String(healthScore)),
+      healthSignature2: computeHashIntelligence(String(healthScore)),
+
+      tierSignature: computeHash(tier),
+      tierSignature2: computeHashIntelligence(tier),
+
+      pulseComputeSignature: computeHash(JSON.stringify(pulseCompute)),
+      pulseComputeSignature2: computeHashIntelligence(JSON.stringify(pulseCompute)),
+
+      pulseIntelligenceSignature: computeHash(JSON.stringify(pulseIntelligence)),
+      pulseIntelligenceSignature2: computeHashIntelligence(JSON.stringify(pulseIntelligence)),
+
+      binarySurfaceSignature: computeHash(JSON.stringify(binarySurface)),
+      binarySurfaceSignature2: computeHashIntelligence(JSON.stringify(binarySurface)),
+
+      immortalMetaSignature: computeHash(JSON.stringify(immortalMeta)),
+      immortalMetaSignature2: computeHashIntelligence(JSON.stringify(immortalMeta))
     }
   };
 }
@@ -487,14 +570,6 @@ export function createPulseV2({
 // ============================================================================
 //  EVOLUTION ENGINE — evolve an existing Pulse deterministically (v2 style)
 // ============================================================================
-//  Front-ends (router/mesh/binary SHIFTER) can:
-//    - take an existing pulse
-//    - provide context hints (routerHint, meshHint, organHint)
-//    - optionally override band/presence metadata
-//    - get back a new pulse with updated pattern/lineage/advantage/health
-//      + pulse-level compute/factoring/evolution hints
-// ============================================================================
-
 export function evolvePulseV2(
   pulse,
   context = {}
@@ -504,7 +579,6 @@ export function evolvePulseV2(
     meshHint,
     organHint,
 
-    // Optional band/presence overrides (if front-end wants to shift band)
     bandMode = pulse.bandMode || "symbolic",
     presenceBandState = pulse.presenceBandState ?? null,
     harmonicDrift = pulse.harmonicDrift ?? null,
@@ -517,20 +591,26 @@ export function evolvePulseV2(
     organHint
   });
 
-  const nextLineage    = buildLineage(pulse.lineage, nextPattern);
-  const shapeSignature = computeShapeSignature(nextPattern, nextLineage);
-  const evolutionStage = computeEvolutionStage(nextPattern, nextLineage);
-
-  const patternAncestry       = buildPatternAncestry(nextPattern);
-  const lineageSignature      = buildLineageSignature(nextLineage);
-  const pageId                = pulse.pageId || "NO_PAGE";
+  const nextLineage         = buildLineage(pulse.lineage, nextPattern);
+  const shapeSignature      = computeShapeSignature(nextPattern, nextLineage);
+  const shapeSignature2     = computeShapeSignatureAlt(nextPattern, nextLineage);
+  const evolutionStage      = computeEvolutionStage(nextPattern, nextLineage);
+  const patternAncestry     = buildPatternAncestry(nextPattern);
+  const lineageSignature    = buildLineageSignature(nextLineage);
+  const pageId              = pulse.pageId || "NO_PAGE";
   const pageAncestrySignature = buildPageAncestrySignature({
     pattern: nextPattern,
     lineage: nextLineage,
     pageId
   });
 
-  const { advantageField, healthScore } = runEvolutionComputeLoopV2({
+  const {
+    advantageField,
+    healthScore,
+    binarySurface,
+    immortalMeta,
+    pulseIntelligence
+  } = runEvolutionComputeLoopV2({
     pattern: nextPattern,
     lineage: nextLineage,
     payload: pulse.payload,
@@ -541,8 +621,7 @@ export function evolvePulseV2(
     coherenceScore
   });
 
-  // NEW: pulse-level compute / factoring / evolution hints on evolved pulse
-  const pulseCompute = runPulseComputeV2({
+  const pulseCompute = runSymPulseV2({
     pattern: nextPattern,
     lineage: nextLineage,
     payload: pulse.payload,
@@ -557,7 +636,21 @@ export function evolvePulseV2(
     healthScore >= 0.15 ? "hardDegrade" :
     "criticalDegrade";
 
-  const diagnostics = buildDiagnostics(nextPattern, nextLineage, healthScore, tier);
+  const diagnostics = buildDiagnostics(
+    nextPattern,
+    nextLineage,
+    healthScore,
+    tier,
+    binarySurface,
+    immortalMeta,
+    pulseIntelligence
+  );
+
+  const evolutionSignature  = computeHash(nextPattern + "::" + lineageSignature);
+  const evolutionSignature2 = computeHashIntelligence(nextPattern + "::" + lineageSignature);
+  const dualHashSignature   = computeHash(
+    `${shapeSignature}::${shapeSignature2}::${evolutionSignature}::${evolutionSignature2}`
+  );
 
   return {
     // Identity + contracts
@@ -575,17 +668,22 @@ export function evolvePulseV2(
 
     // Band / presence surface
     bandMode: bandMode === "binary" ? "binary" : "symbolic",
-    presenceBandState: presenceBandState ?? null,
-    harmonicDrift: harmonicDrift ?? null,
-    coherenceScore: coherenceScore ?? null,
+    presenceBandState: immortalMeta.presenceBandState,
+    harmonicDrift: immortalMeta.harmonicDrift,
+    coherenceScore: immortalMeta.coherenceScore,
 
     // Evolution engine type
-    pulseType: "Pulse-v2-EvolutionEngine-v14.1-PULSE-COMPUTE-Presence-Immortal",
+    pulseType: "Pulse-v2-EvolutionEngine-v16-IMMORTAL-INTEL",
 
     // Advantage + health
     advantageField,
     healthScore,
     tier,
+
+    // Immortal + binary + intelligence surfaces
+    immortalMeta,
+    binarySurface,
+    pulseIntelligence,
 
     // Pulse-level compute / factoring / evolution hints
     pulseCompute,
@@ -593,6 +691,7 @@ export function evolvePulseV2(
     // Meta: signatures + diagnostics
     meta: {
       shapeSignature,
+      shapeSignature2,
       evolutionStage,
 
       patternAncestry,
@@ -601,15 +700,36 @@ export function evolvePulseV2(
 
       diagnostics,
 
-      evolutionSignature: computeHash(nextPattern + "::" + lineageSignature),
-      patternSignature: computeHash(nextPattern),
-      lineageSurface: computeHash(String(nextLineage.length)),
-      advantageSignature: computeHash(JSON.stringify(advantageField)),
-      healthSignature: computeHash(String(healthScore)),
-      tierSignature: computeHash(tier),
+      evolutionSignature,
+      evolutionSignature2,
+      dualHashSignature,
 
-      // NEW: pulse-compute signature
-      pulseComputeSignature: computeHash(JSON.stringify(pulseCompute))
+      patternSignature: computeHash(nextPattern),
+      patternSignature2: computeHashIntelligence(nextPattern),
+
+      lineageSurface: computeHash(String(nextLineage.length)),
+      lineageSurface2: computeHashIntelligence(String(nextLineage.length)),
+
+      advantageSignature: computeHash(JSON.stringify(advantageField)),
+      advantageSignature2: computeHashIntelligence(JSON.stringify(advantageField)),
+
+      healthSignature: computeHash(String(healthScore)),
+      healthSignature2: computeHashIntelligence(String(healthScore)),
+
+      tierSignature: computeHash(tier),
+      tierSignature2: computeHashIntelligence(tier),
+
+      pulseComputeSignature: computeHash(JSON.stringify(pulseCompute)),
+      pulseComputeSignature2: computeHashIntelligence(JSON.stringify(pulseCompute)),
+
+      pulseIntelligenceSignature: computeHash(JSON.stringify(pulseIntelligence)),
+      pulseIntelligenceSignature2: computeHashIntelligence(JSON.stringify(pulseIntelligence)),
+
+      binarySurfaceSignature: computeHash(JSON.stringify(binarySurface)),
+      binarySurfaceSignature2: computeHashIntelligence(JSON.stringify(binarySurface)),
+
+      immortalMetaSignature: computeHash(JSON.stringify(immortalMeta)),
+      immortalMetaSignature2: computeHashIntelligence(JSON.stringify(immortalMeta))
     }
   };
 }

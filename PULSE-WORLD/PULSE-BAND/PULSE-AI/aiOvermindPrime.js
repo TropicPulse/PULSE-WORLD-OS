@@ -62,12 +62,12 @@ import { createEarn, evolveEarn } from "../PULSE-EARN/PulseEarn-v16.js";
 // ============================================================================
 //  SEND ORGANISM (v14.4 IMMORTAL-INTEL)
 // ============================================================================
-import { createPulseSend } from "../PULSE-SEND/PulseSend-v11-Evo.js";
+import { createPulseSend } from "../PULSE-SEND/PulseSend-v16.js";
 
 // ============================================================================
 //  BINARY SEND ORGANISM (v14.4 IMMORTAL-INTEL)
 // ============================================================================
-import { createBinarySend } from "../PULSE-SEND/PulseBinarySend-v11-Evo.js";
+import { createBinarySend } from "../PULSE-SEND/PulseBinarySend-v16.js";
 
 // ============================================================================
 //  MEMORY + STATE
@@ -82,7 +82,7 @@ import { PulseIntentMap } from "../PULSE-OS/PulseIntentMap.js";
 import { PulseUnderstanding } from "../../PULSE-UI/_BACKEND/PulseNetUnderstanding.js";
 import { PulseGovernor } from "../PULSE-OS/PulseOSGovernor.js";
 import { PulseVitalsMonitor } from "../../PULSE-UI/_BACKEND/PulseProofMonitor.js";
-import { PulseBinaryTech } from "../PULSE-TECH/PulseBinaryTech-v14-Presence-Immortal.js";
+import { PulseBinaryTech } from "../PULSE-TECH/PulseBinaryTech-v16.js";
 
 // ———————————————————————————————
 // 1. CORE CROWN CONTRACTS

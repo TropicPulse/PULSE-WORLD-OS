@@ -108,7 +108,6 @@ AI_EXPERIENCE_META = {
 // ============================================================================
 // HASH HELPERS — v16‑IMMORTAL‑INTEL (dual‑hash)
 // ============================================================================
-
 function computeHash(str) {
   let h = 0;
   const s = String(str || "");
@@ -118,15 +117,15 @@ function computeHash(str) {
   return `h${h}`;
 }
 
+// Primary INTEL hash — deterministic, structure-aware, no IO, no time.
 function computeHashIntelligence(payload) {
-  const s = JSON.stringify(payload || {});
-  // Slightly stronger fold, still deterministic and cheap.
+  const base = JSON.stringify(payload || "");
   let h = 0;
-  for (let i = 0; i < s.length; i++) {
-    const c = s.charCodeAt(i);
+  for (let i = 0; i < base.length; i++) {
+    const c = base.charCodeAt(i);
     h = (h * 131 + c * (i + 7)) % 1000000007;
   }
-  return `i${h}`;
+  return `HINTEL_${h}`;
 }
 
 function buildDualHashSignature(label, intelPayload, classicString) {
@@ -150,6 +149,137 @@ function buildDualHashSignature(label, intelPayload, classicString) {
 // ============================================================================
 function clamp01(v) {
   return Math.max(0, Math.min(1, v));
+}
+
+function safeNumber(v, fallback = 0) {
+  const n = Number(v);
+  return Number.isFinite(n) ? n : fallback;
+}
+
+function normalizeBand(band) {
+  const x = String(band || "symbolic").toLowerCase();
+  return x === "binary" ? "binary" : "symbolic";
+}
+
+function buildPageBandBinaryWave(page, cycleIndex, deviceProfile = {}) {
+  const band = normalizeBand(
+    page?.meta?.band ||
+    page?.band ||
+    deviceProfile?.band ||
+    deviceProfile?.presenceBand ||
+    "symbolic"
+  );
+
+  const idLen = String(page?.id || page?.key || "NO_PAGE_ID").length;
+  const jobCount = safeNumber(Array.isArray(page?.jobs) ? page.jobs.length : 0);
+  const meshPressure = safeNumber(page?.presenceField?.meshPressureIndex || 0);
+  const gpuScore = safeNumber(deviceProfile?.gpuScore || 0);
+
+  const surface = idLen + jobCount + meshPressure + gpuScore + cycleIndex;
+
+  const binaryField = {
+    binaryPageSignature: computeHash(`BPAGE::${surface}`),
+    binarySurfaceSignature: computeHash(`BSURF_EARN_PAGE::${surface}`),
+    binarySurface: {
+      idLen,
+      jobCount,
+      meshPressure,
+      gpuScore,
+      cycle: cycleIndex,
+      surface
+    },
+    parity: surface % 2 === 0 ? 0 : 1,
+    density: jobCount + meshPressure + gpuScore,
+    shiftDepth: Math.max(0, Math.floor(Math.log2(surface || 1)))
+  };
+
+  const waveField = {
+    amplitude: jobCount + meshPressure + gpuScore,
+    wavelength: cycleIndex || 1,
+    phase: (idLen + jobCount + cycleIndex) % 16,
+    band,
+    mode: band === "binary" ? "compression-wave" : "symbolic-wave"
+  };
+
+  return { band, binaryField, waveField };
+}
+
+function buildPageAdvantageField(page, deviceProfile, bandPack, factoringProfile) {
+  const gpuScore = safeNumber(deviceProfile?.gpuScore || 0);
+  const bandwidth = safeNumber(deviceProfile?.bandwidthMbps || 0);
+  const chunkBudgetKB = safeNumber(deviceProfile?.chunkField?.chunkBudgetKB || 0);
+  const cacheLines = safeNumber(deviceProfile?.chunkField?.cacheLines || 0);
+  const prewarmSlots = safeNumber(deviceProfile?.chunkField?.prewarmSlots || 0);
+
+  const density = bandPack.binaryField.density;
+  const amplitude = bandPack.waveField.amplitude;
+
+  const presenceTier = factoringProfile.presenceTier;
+  const advantageTier = factoringProfile.advantageTier;
+
+  const advantageScore =
+    gpuScore * 0.0005 +
+    bandwidth * 0.0002 +
+    density * 0.00001 +
+    amplitude * 0.00001 +
+    (chunkBudgetKB + cacheLines + prewarmSlots) * 0.000001 +
+    (presenceTier === "presence_high" ? 0.01 : 0) +
+    (advantageTier >= 2 ? 0.005 : 0);
+
+  return {
+    advantageVersion: "M-16.0-EARN-PAGE",
+    band: bandPack.band,
+    gpuScore,
+    bandwidth,
+    binaryDensity: density,
+    waveAmplitude: amplitude,
+    chunkBudgetKB,
+    cacheLines,
+    prewarmSlots,
+    presenceTier,
+    advantageTier,
+    advantageScore
+  };
+}
+
+function buildPageChunkPrewarmPlan(page, factoringProfile, bandPack, advantageField) {
+  let priorityLabel = "normal";
+  if (factoringProfile.presenceTier === "presence_high") priorityLabel = "high";
+  else if (factoringProfile.presenceTier === "presence_mid") priorityLabel = "medium";
+  else if (factoringProfile.presenceTier === "presence_low") priorityLabel = "low";
+
+  if (advantageField.advantageScore >= 0.05) priorityLabel = "high";
+  else if (advantageField.advantageScore >= 0.02 && priorityLabel === "normal") {
+    priorityLabel = "medium";
+  }
+
+  const jobCount = factoringProfile.jobCount;
+  const planSurface =
+    jobCount +
+    (factoringProfile.meshPressureIndex || 0) * 2 +
+    (factoringProfile.cachePriority || 0) * 3;
+
+  return {
+    planVersion: "v16-IMMORTAL-INTEL-EARN-PAGE",
+    priorityLabel,
+    bandPresence: factoringProfile.presenceTier,
+    band: bandPack.band,
+    planSurface,
+    chunks: {
+      pageEnvelope: true,
+      jobList: true,
+      presenceAdvantageEnvelope: true
+    },
+    cache: {
+      pageDiagnostics: true,
+      factoringProfile: true
+    },
+    prewarm: {
+      circulatorySystem: factoringProfile.prewarmNeeded,
+      lymphNodes: factoringProfile.prewarmNeeded,
+      metabolism: factoringProfile.prewarmNeeded && jobCount > 0
+    }
+  };
 }
 
 // ============================================================================
@@ -239,11 +369,25 @@ export function applyMeshSignalFactoring(impulse, context = {}) {
 
   meshFactoringCycle++;
 
-  // -------------------------------------------------------------------------
-  // Ensure meta/flags containers exist (IMMORTAL safety)
-// -------------------------------------------------------------------------
+  
+  // Ensure meta/flags containers exist
   impulse.meta = impulse.meta || {};
   impulse.flags = impulse.flags || {};
+
+  const presenceField   = context.presenceField   || impulse.presenceField   || {};
+  const advantageField  = context.advantageField  || impulse.advantageField  || {};
+  const hintsField      = context.hintsField      || impulse.hintsField      || {};
+  const jobs            = Array.isArray(impulse.jobs) ? impulse.jobs : [];
+  const jobCount        = safeNumber(context.jobCountOverride ?? jobs.length, 0);
+
+  const presenceTier    = presenceField.presenceTier || "idle";
+  const meshPressureIdx = safeNumber(presenceField.meshPressureIndex, 0);
+  const advantageTier   = safeNumber(advantageField.advantageTier, 0);
+  const fallbackBandLvl = safeNumber(hintsField.fallbackBandLevel, 0);
+
+  const cachePriority   = context.cachePriority || impulse.flags.cachePriority || "normal";
+  const prewarmNeeded   = !!(context.prewarmNeeded || impulse.flags.prewarmNeeded);
+  const presenceBand    = context.band || impulse.band || "symbolic";
 
   // -------------------------------------------------------------------------
   // 1) Extract factoring pressures (aura + flow + mesh)
@@ -266,10 +410,6 @@ export function applyMeshSignalFactoring(impulse, context = {}) {
 // -------------------------------------------------------------------------
   const highPressure = clampedPressure >= 0.6;
   const lowPressure  = clampedPressure <= 0.2;
-
-  // Allow upstream to override via critical cache / prewarm flags if present.
-  const cachePriority = context.cachePriority || impulse.flags.cachePriority || "normal";
-  const prewarmNeeded = !!(context.prewarmNeeded || impulse.flags.prewarmNeeded);
 
   const criticalCache = cachePriority === "critical";
 
@@ -319,40 +459,70 @@ export function applyMeshSignalFactoring(impulse, context = {}) {
       ? "prefer_factored_path"
       : "normal";
 
+  
+    // -------------------------------------------------------------------------
+  // 6) Build factoring profile surface for Earn organs
   // -------------------------------------------------------------------------
-  // 6) IMMORTAL ADVANTAGE SURFACE (for Flow, Endocrine, Immune, Earn)
-// -------------------------------------------------------------------------
-  const presenceBand = impulse.band ?? "symbolic";
-
   const factoringProfile = {
     pressure: clampedPressure,
     signal,
     depth,
     stride,
-    auraBias,
-    flowBias,
-    meshBias,
-    presenceBand,
+    presenceTier,
+    advantageTier,
+    jobCount,
+    meshPressureIndex: meshPressureIdx,
     cachePriority,
     prewarmNeeded: !!prewarmNeeded,
+    presenceBand,
+    fallbackBandLevel: fallbackBandLvl,
     cycleIndex: meshFactoringCycle,
     prewarm_surface: true,
     chunk_surface: true,
     cache_surface: true
   };
 
-  impulse.flags.mesh_factoring_advantage = {
+  impulse.flags.earn_factoring_advantage = {
     ...factoringProfile
   };
 
   // -------------------------------------------------------------------------
-  // 7) Attach IMMORTAL META BLOCK with INTEL + classic signatures
+  // 7) Band/Binary/Wave + Advantage‑M16 + Chunk/Prewarm (v16 IMMORTAL INTEL)
+  // -------------------------------------------------------------------------
+  const bandPack = buildPageBandBinaryWave(impulse, meshFactoringCycle, context.deviceProfile || {});
+  const pageAdvantageField = buildPageAdvantageField(
+    impulse,
+    context.deviceProfile || {},
+    bandPack,
+    factoringProfile
+  );
+  const pageChunkPrewarmPlan = buildPageChunkPrewarmPlan(
+    impulse,
+    factoringProfile,
+    bandPack,
+    pageAdvantageField
+  );
+
+  // -------------------------------------------------------------------------
+  // 8) Attach IMMORTAL META BLOCK with INTEL + classic signatures + surfaces
   // -------------------------------------------------------------------------
   impulse.meta = buildMeshSignalFactoringMeta(
     impulse.meta,
     meshFactoringCycle,
-    factoringProfile
+    {
+      ...factoringProfile,
+      band: bandPack.band,
+      binaryDensity: bandPack.binaryField.density,
+      waveAmplitude: bandPack.waveField.amplitude,
+      advantageScore: pageAdvantageField.advantageScore
+    }
   );
+
+  impulse.meta.earnSignalFactoring.bandBinaryWave = bandPack;
+  impulse.meta.earnSignalFactoring.advantageField = pageAdvantageField;
+  impulse.meta.earnSignalFactoring.chunkPrewarmPlan = pageChunkPrewarmPlan;
+
+  impulse.flags.earnSignalFactoring = true;
 
   return impulse;
 }

@@ -1,15 +1,16 @@
 // ============================================================================
-//  PulseEarnMktForager-v13.0-Presence-Immortal.js
-//  THE FORAGER — Salad Marketplace Receptor (v13.0 Presence + Advantage‑C‑13.0)
-//  Deterministic receptor DNA + A‑B‑A + Unified Presence + Chunk/Prewarm v13
+// FILE: tropic-pulse-functions/PULSE-WORLD/PULSE-EARN/PulseEarnMktForager-v16-IMMORTAL-INTEL.js
+// LAYER: THE FORAGER — Salad Marketplace Receptor
+//        v16 IMMORTAL + INTEL + DualHash + Presence + Advantage + Chunk
 // ============================================================================
+
 /*
 AI_EXPERIENCE_META = {
   identity: "PulseEarnMktForager",
-  version: "v14-Immortal",
+  version: "v16-IMMORTAL-INTEL",
   layer: "earn_market",
   role: "market_forager",
-  lineage: "PulseEarnMktForager-v11 → v12.3 → v14-Immortal",
+  lineage: "PulseEarnMktForager-v11 → v12.3 → v13.0-Presence-Immortal → v16-IMMORTAL-INTEL",
 
   evo: {
     marketForager: true,
@@ -21,22 +22,39 @@ AI_EXPERIENCE_META = {
     binaryAware: true,
 
     deterministic: true,
+    deterministicField: true,
     driftProof: true,
     pureCompute: true,
     zeroNetwork: true,
     zeroFilesystem: true,
-    zeroMutationOfInput: true
+    zeroMutationOfInput: true,
+    zeroAsync: true,
+    zeroRandomness: true,
+
+    chunkAware: true,
+    prewarmAware: true,
+    cacheAware: true,
+
+    intelSignatureAware: true,
+    dualHashAware: true,
+    structureAware: true,
+    contextAware: true,
+    factoringAware: true
   },
 
   contract: {
     always: [
       "PulseEarnMktCourier",
       "PulseEarnMktEmbassyLedger",
-      "PulseEarnMktBroker"
+      "PulseEarnMktBroker",
+      "PulseEarnMetabolism",
+      "PulseEarnLymphNodes"
     ],
     never: [
       "safeRoute",
-      "fetchViaCNS"
+      "fetchViaCNS",
+      "userScript",
+      "dynamicEval"
     ]
   }
 }
@@ -45,14 +63,13 @@ AI_EXPERIENCE_META = {
 export const PulseEarnMktForagerMeta = Object.freeze({
   layer: "PulseEarnMktForager",
   role: "EARN_MARKETPLACE_RECEPTOR",
-  version: "v13.0-Presence-Immortal",
-  identity: "PulseEarnMktForager-v13.0-Presence-Immortal",
+  version: "v16-IMMORTAL-INTEL",
+  identity: "PulseEarnMktForager-v16-IMMORTAL-INTEL",
 
   guarantees: Object.freeze({
     deterministic: true,
-    noRandomness: true,
-    noRealTime: true,
-    noExternalIO: true,
+    deterministicField: true,
+    driftProof: true,
     pureReceptor: true,
 
     dualBandAware: true,
@@ -72,14 +89,43 @@ export const PulseEarnMktForagerMeta = Object.freeze({
 });
 
 // ============================================================================
-// Deterministic Hash Helper
+// HASH HELPERS — v16 IMMORTAL INTEL
 // ============================================================================
+
 function computeHash(str) {
   let h = 0;
   const s = String(str || "");
-  for (let i = 0; i < s.length; i++)
+  for (let i = 0; i < s.length; i++) {
     h = (h + s.charCodeAt(i) * (i + 1)) % 100000;
+  }
   return `h${h}`;
+}
+
+// Primary INTEL hash — deterministic, structure-aware, no IO, no time.
+function computeHashIntelligence(payload) {
+  const base = JSON.stringify(payload || "");
+  let h = 0;
+  for (let i = 0; i < base.length; i++) {
+    const c = base.charCodeAt(i);
+    h = (h * 131 + c * (i + 7)) % 1000000007;
+  }
+  return `HINTEL_${h}`;
+}
+
+function buildDualHashSignature(label, intelPayload, classicString) {
+  const intelBase = {
+    label,
+    intel: intelPayload || {},
+    classic: classicString || ""
+  };
+  const intelHash = computeHashIntelligence(intelBase);
+  const classicHash = computeHash(
+    `${label}::${classicString || ""}`
+  );
+  return {
+    intel: intelHash,
+    classic: classicHash
+  };
 }
 
 function normalizeBand(b) {
@@ -87,12 +133,12 @@ function normalizeBand(b) {
   return x === "binary" ? "binary" : "symbolic";
 }
 
-function buildBandSignature(band) {
-  return computeHash(`FORAGER_BAND::${normalizeBand(band)}`);
+function clamp01(v) {
+  return Math.max(0, Math.min(1, v));
 }
 
 // ============================================================================
-// A‑B‑A Binary + Wave Surfaces (v13 unified)
+// A‑B‑A Binary + Wave Surfaces (v16)
 // ============================================================================
 function buildBinaryField(cycle, gpuTier, presenceField) {
   const tierWeight =
@@ -107,9 +153,25 @@ function buildBinaryField(cycle, gpuTier, presenceField) {
   const density = patternLen + cycle + (tierWeight * 2) + mesh + castle;
   const surface = density + patternLen;
 
+  const intelPayload = {
+    kind: "foragerBinarySurface",
+    cycleIndex: cycle,
+    gpuTier,
+    patternLen,
+    density,
+    surface,
+    meshPressureIndex: mesh,
+    castleLoadLevel: castle
+  };
+
+  const classicString = `BFORAGER::${surface}`;
+  const sig = buildDualHashSignature("FORAGER_BIN", intelPayload, classicString);
+
   return {
-    binaryPhenotypeSignature: computeHash(`BFORAGER::${surface}`),
-    binarySurfaceSignature: computeHash(`BFORAGER_SURF::${surface}`),
+    binaryPhenotypeSignatureIntel: sig.intel,
+    binaryPhenotypeSignatureClassic: sig.classic,
+    binarySurfaceSignatureIntel: sig.intel,
+    binarySurfaceSignatureClassic: sig.classic,
     binarySurface: {
       patternLen,
       density,
@@ -128,7 +190,22 @@ function buildWaveField(cycle, band, presenceField) {
   const wavelength = amplitude + 3;
   const phase = (amplitude + (presenceField?.meshPressureIndex || 0)) % 16;
 
+  const intelPayload = {
+    kind: "foragerWaveSurface",
+    cycleIndex: cycle,
+    band,
+    amplitude,
+    wavelength,
+    phase,
+    meshStrength: presenceField?.meshStrength || 0
+  };
+
+  const classicString = `FORAGER_WAVE::${band}::AMP::${amplitude}`;
+  const sig = buildDualHashSignature("FORAGER_WAVE", intelPayload, classicString);
+
   return {
+    wavePhenotypeSignatureIntel: sig.intel,
+    wavePhenotypeSignatureClassic: sig.classic,
     amplitude,
     wavelength,
     phase,
@@ -138,7 +215,7 @@ function buildWaveField(cycle, band, presenceField) {
 }
 
 // ============================================================================
-// Unified Earn v13 Presence Tier
+// Unified v16 Presence Tier
 // ============================================================================
 function classifyPresenceTier(pressure) {
   if (pressure >= 150) return "critical";
@@ -149,7 +226,7 @@ function classifyPresenceTier(pressure) {
 }
 
 // ============================================================================
-// Unified v13 Presence Field
+// Unified v16 Presence Field
 // ============================================================================
 function buildPresenceField(jobOrRaw, deviceProfile, cycle, globalHints = {}) {
   const ghP = globalHints.presenceContext || {};
@@ -161,7 +238,6 @@ function buildPresenceField(jobOrRaw, deviceProfile, cycle, globalHints = {}) {
   const meshPressureExternal = Number(mesh.meshPressureIndex || 0);
   const castleLoadExternal = Number(castle.loadLevel || 0);
 
-  // Forager internal signal: job complexity
   const idLen = (jobOrRaw?.id || "").length;
   const typeLen = (jobOrRaw?.type || "").length;
   const stability = deviceProfile?.stabilityScore || 0.7;
@@ -179,8 +255,26 @@ function buildPresenceField(jobOrRaw, deviceProfile, cycle, globalHints = {}) {
   const pressure = meshPressureIndex + castleLoadLevel;
   const presenceTier = classifyPresenceTier(pressure);
 
+  const intelPayload = {
+    kind: "foragerPresence",
+    version: "v16-IMMORTAL-INTEL",
+    presenceTier,
+    meshPressureIndex,
+    castleLoadLevel,
+    meshStrength,
+    idLen,
+    typeLen,
+    stability,
+    cycleIndex: cycle
+  };
+
+  const classicString =
+    `FORAGER_PRESENCE::${presenceTier}::${meshPressureIndex}::${castleLoadLevel}`;
+
+  const sig = buildDualHashSignature("FORAGER_PRESENCE", intelPayload, classicString);
+
   return {
-    presenceVersion: "v13.0-Presence-Immortal",
+    presenceVersion: "v16-IMMORTAL-INTEL",
     presenceTier,
 
     bandPresence: ghP.bandPresence || "symbolic",
@@ -203,14 +297,13 @@ function buildPresenceField(jobOrRaw, deviceProfile, cycle, globalHints = {}) {
     stability,
     cycle,
 
-    presenceSignature: computeHash(
-      `FORAGER_PRESENCE::${presenceTier}::${meshPressureIndex}::${castleLoadLevel}`
-    )
+    presenceSignatureIntel: sig.intel,
+    presenceSignatureClassic: sig.classic
   };
 }
 
 // ============================================================================
-// Advantage‑C v13
+// Advantage‑C v16
 // ============================================================================
 function buildAdvantageField(jobOrRaw, deviceProfile, bandPack, presenceField, globalHints = {}) {
   const gpuScore = deviceProfile?.gpuScore || 0;
@@ -241,8 +334,26 @@ function buildAdvantageField(jobOrRaw, deviceProfile, bandPack, presenceField, g
 
   const fallbackBandLevel = globalHints.fallbackBandLevel ?? 0;
 
+  const intelPayload = {
+    kind: "foragerAdvantage",
+    version: "C-16.0",
+    gpuScore,
+    bandwidth,
+    density,
+    amplitude,
+    presenceTier: presenceField.presenceTier,
+    advantageScore,
+    advantageTier,
+    fallbackBandLevel
+  };
+
+  const classicString =
+    `FORAGER_ADVANTAGE::${presenceField.presenceTier}::${advantageTier}`;
+
+  const sig = buildDualHashSignature("FORAGER_ADVANTAGE", intelPayload, classicString);
+
   return {
-    advantageVersion: "C-13.0",
+    advantageVersion: "C-16.0",
     band: bandPack.band,
     gpuScore,
     bandwidth,
@@ -251,12 +362,14 @@ function buildAdvantageField(jobOrRaw, deviceProfile, bandPack, presenceField, g
     presenceTier: presenceField.presenceTier,
     advantageScore,
     advantageTier,
-    fallbackBandLevel
+    fallbackBandLevel,
+    advantageSignatureIntel: sig.intel,
+    advantageSignatureClassic: sig.classic
   };
 }
 
 // ============================================================================
-// Chunk / Cache / Prewarm Plan v13
+// Chunk / Cache / Prewarm Plan v16
 // ============================================================================
 function buildChunkPrewarmPlan(jobOrRaw, deviceProfile, presenceField, advantageField) {
   const basePriority =
@@ -277,8 +390,21 @@ function buildChunkPrewarmPlan(jobOrRaw, deviceProfile, presenceField, advantage
 
   const priority = basePriority + advantageBoost;
 
+  const intelPayload = {
+    kind: "foragerChunkPlan",
+    version: "v16-IMMORTAL-INTEL",
+    priority,
+    presenceTier: presenceField.presenceTier,
+    advantageTier: advantageField.advantageTier
+  };
+
+  const classicString =
+    `FORAGER_CHUNK_PLAN::${presenceField.presenceTier}::${priority}`;
+
+  const sig = buildDualHashSignature("FORAGER_CHUNK_PLAN", intelPayload, classicString);
+
   return {
-    planVersion: "v13.0-Forager-AdvantageC",
+    planVersion: "v16-IMMORTAL-INTEL",
     priority,
     band: presenceField.presenceTier,
     chunks: {
@@ -293,12 +419,14 @@ function buildChunkPrewarmPlan(jobOrRaw, deviceProfile, presenceField, advantage
       nervousSystem: true,
       survivalInstincts: true,
       lymphNodes: true
-    }
+    },
+    chunkPlanSignatureIntel: sig.intel,
+    chunkPlanSignatureClassic: sig.classic
   };
 }
 
 // ============================================================================
-// Healing Metadata
+// Healing Metadata — v16 IMMORTAL INTEL
 // ============================================================================
 const healingState = {
   lastPingMs: null,
@@ -310,7 +438,7 @@ const healingState = {
   lastNormalizedJobId: null,
   lastNormalizationError: null,
 
-  lastPayloadVersion: "13-salad-dna",
+  lastPayloadVersion: "16-salad-dna",
   lastJobType: null,
   lastGpuTier: null,
   lastResourceShape: null,
@@ -318,13 +446,20 @@ const healingState = {
   liquidityScore: 0,
   cycleCount: 0,
 
-  lastPingSignature: null,
-  lastFetchSignature: null,
-  lastNormalizationSignature: null,
-  lastSubmitSignature: null,
+  // dual signatures
+  lastPingSignatureIntel: null,
+  lastPingSignatureClassic: null,
+  lastFetchSignatureIntel: null,
+  lastFetchSignatureClassic: null,
+  lastNormalizationSignatureIntel: null,
+  lastNormalizationSignatureClassic: null,
+  lastSubmitSignatureIntel: null,
+  lastSubmitSignatureClassic: null,
 
   lastBand: "symbolic",
-  lastBandSignature: null,
+  lastBandSignatureIntel: null,
+  lastBandSignatureClassic: null,
+
   lastBinaryField: null,
   lastWaveField: null,
 
@@ -347,7 +482,7 @@ function safeGet(obj, path, fallback = null) {
 }
 
 // ============================================================================
-// Deterministic Salad Receptor DNA (unchanged payload)
+// Deterministic Salad Receptor DNA (v16)
 // ============================================================================
 const SALAD_RECEPTOR_DNA = {
   pingLatency: 55,
@@ -373,22 +508,22 @@ const SALAD_RECEPTOR_DNA = {
       type: "ai-task"
     }
   ],
-  version: "13.0-Presence-Immortal",
-  lineage: "Forager-Salad-v13.0-Presence-Immortal",
+  version: "v16-IMMORTAL-INTEL",
+  lineage: "Forager-Salad-v16-IMMORTAL-INTEL",
   phenotype: "MarketplaceReceptor"
 };
 
 // ============================================================================
-// FORAGER CLIENT — v13.0 Presence + Advantage‑C‑13.0
+// FORAGER CLIENT — v16 IMMORTAL INTEL
 // ============================================================================
 export const PulseEarnMktForager = {
   id: "salad",
   name: "Salad Marketplace",
-  version: "v13.0-Presence-Immortal",
-  lineage: "Forager-Salad-v13.0-Presence-Immortal",
+  version: "v16-IMMORTAL-INTEL",
+  lineage: "Forager-Salad-v16-IMMORTAL-INTEL",
 
   // -------------------------------------------------------------------------
-  // Ping — unified v13 presence
+  // Ping — v16 dual-hash + presence + advantage + chunk
   // -------------------------------------------------------------------------
   ping(deviceProfile = {}, globalHints = {}) {
     const latency = SALAD_RECEPTOR_DNA.pingLatency;
@@ -396,13 +531,32 @@ export const PulseEarnMktForager = {
     healingState.cycleCount++;
     healingState.lastPingMs = latency;
     healingState.lastPingError = null;
-    healingState.lastPingSignature = computeHash(`PING::SALAD::${latency}`);
+
+    const pingSig = buildDualHashSignature(
+      "FORAGER_PING",
+      { latency, cycleIndex: healingState.cycleCount },
+      `PING::SALAD::${latency}::CYCLE::${healingState.cycleCount}`
+    );
+    healingState.lastPingSignatureIntel = pingSig.intel;
+    healingState.lastPingSignatureClassic = pingSig.classic;
 
     const band = "symbolic";
     healingState.lastBand = band;
-    healingState.lastBandSignature = buildBandSignature(band);
 
-    const presenceField = buildPresenceField(null, deviceProfile, healingState.cycleCount, globalHints);
+    const bandSig = buildDualHashSignature(
+      "FORAGER_BAND",
+      { band, cycleIndex: healingState.cycleCount },
+      `BAND::${band}`
+    );
+    healingState.lastBandSignatureIntel = bandSig.intel;
+    healingState.lastBandSignatureClassic = bandSig.classic;
+
+    const presenceField = buildPresenceField(
+      null,
+      deviceProfile,
+      healingState.cycleCount,
+      globalHints
+    );
     const binaryField = buildBinaryField(healingState.cycleCount, "low", presenceField);
     const waveField = buildWaveField(healingState.cycleCount, band, presenceField);
 
@@ -414,7 +568,12 @@ export const PulseEarnMktForager = {
       globalHints
     );
 
-    const chunkPlan = buildChunkPrewarmPlan(null, deviceProfile, presenceField, advantageField);
+    const chunkPlan = buildChunkPrewarmPlan(
+      null,
+      deviceProfile,
+      presenceField,
+      advantageField
+    );
 
     healingState.lastBinaryField = binaryField;
     healingState.lastWaveField = waveField;
@@ -424,8 +583,11 @@ export const PulseEarnMktForager = {
 
     return {
       latency,
-      signature: healingState.lastPingSignature,
-      bandSignature: healingState.lastBandSignature,
+      cycleIndex: healingState.cycleCount,
+      signatureIntel: pingSig.intel,
+      signatureClassic: pingSig.classic,
+      bandSignatureIntel: bandSig.intel,
+      bandSignatureClassic: bandSig.classic,
       binaryField,
       waveField,
       presenceField,
@@ -435,17 +597,23 @@ export const PulseEarnMktForager = {
   },
 
   // -------------------------------------------------------------------------
-  // Fetch Jobs — unified v13 presence
+  // Fetch Jobs — v16 dual-hash + presence + advantage + chunk
   // -------------------------------------------------------------------------
   fetchJobs(deviceProfile = {}, globalHints = {}) {
     try {
       const data = { jobs: SALAD_RECEPTOR_DNA.jobs };
-      healingState.lastPayloadVersion = "13-salad-dna";
+      healingState.lastPayloadVersion = "16-salad-dna";
 
       if (!data || !Array.isArray(data.jobs)) {
+        const sig = buildDualHashSignature(
+          "FORAGER_FETCH",
+          { count: 0, cycleIndex: healingState.cycleCount },
+          "FETCH::SALAD::0"
+        );
         healingState.lastFetchError = "invalid_jobs_payload";
         healingState.lastFetchCount = 0;
-        healingState.lastFetchSignature = computeHash(`FETCH::SALAD::0`);
+        healingState.lastFetchSignatureIntel = sig.intel;
+        healingState.lastFetchSignatureClassic = sig.classic;
         return [];
       }
 
@@ -456,13 +624,32 @@ export const PulseEarnMktForager = {
       healingState.lastFetchError = null;
       healingState.lastFetchCount = jobs.length;
       healingState.cycleCount++;
-      healingState.lastFetchSignature = computeHash(`FETCH::SALAD::${jobs.length}`);
+
+      const fetchSig = buildDualHashSignature(
+        "FORAGER_FETCH",
+        { count: jobs.length, cycleIndex: healingState.cycleCount },
+        `FETCH::SALAD::${jobs.length}::CYCLE::${healingState.cycleCount}`
+      );
+      healingState.lastFetchSignatureIntel = fetchSig.intel;
+      healingState.lastFetchSignatureClassic = fetchSig.classic;
 
       const band = "symbolic";
       healingState.lastBand = band;
-      healingState.lastBandSignature = buildBandSignature(band);
 
-      const presenceField = buildPresenceField(null, deviceProfile, healingState.cycleCount, globalHints);
+      const bandSig = buildDualHashSignature(
+        "FORAGER_BAND",
+        { band, cycleIndex: healingState.cycleCount },
+        `BAND::${band}`
+      );
+      healingState.lastBandSignatureIntel = bandSig.intel;
+      healingState.lastBandSignatureClassic = bandSig.classic;
+
+      const presenceField = buildPresenceField(
+        null,
+        deviceProfile,
+        healingState.cycleCount,
+        globalHints
+      );
       const binaryField = buildBinaryField(healingState.cycleCount, "low", presenceField);
       const waveField = buildWaveField(healingState.cycleCount, band, presenceField);
 
@@ -474,7 +661,12 @@ export const PulseEarnMktForager = {
         globalHints
       );
 
-      const chunkPlan = buildChunkPrewarmPlan(null, deviceProfile, presenceField, advantageField);
+      const chunkPlan = buildChunkPrewarmPlan(
+        null,
+        deviceProfile,
+        presenceField,
+        advantageField
+      );
 
       healingState.lastBinaryField = binaryField;
       healingState.lastWaveField = waveField;
@@ -484,8 +676,11 @@ export const PulseEarnMktForager = {
 
       return {
         jobs,
-        signature: healingState.lastFetchSignature,
-        bandSignature: healingState.lastBandSignature,
+        cycleIndex: healingState.cycleCount,
+        signatureIntel: fetchSig.intel,
+        signatureClassic: fetchSig.classic,
+        bandSignatureIntel: bandSig.intel,
+        bandSignatureClassic: bandSig.classic,
         binaryField,
         waveField,
         presenceField,
@@ -494,15 +689,21 @@ export const PulseEarnMktForager = {
       };
 
     } catch (err) {
-      healingState.lastFetchError = err.message;
+      const sig = buildDualHashSignature(
+        "FORAGER_FETCH",
+        { count: 0, error: String(err) },
+        "FETCH::SALAD::0"
+      );
+      healingState.lastFetchError = err.message || String(err);
       healingState.lastFetchCount = 0;
-      healingState.lastFetchSignature = computeHash(`FETCH::SALAD::0`);
+      healingState.lastFetchSignatureIntel = sig.intel;
+      healingState.lastFetchSignatureClassic = sig.classic;
       return [];
     }
   },
 
   // -------------------------------------------------------------------------
-  // Submit Result — unified v13 presence
+  // Submit Result — v16 dual-hash + presence + advantage + chunk
   // -------------------------------------------------------------------------
   submitResult(job, result, deviceProfile = {}, globalHints = {}) {
     const jobId = job?.id ?? null;
@@ -510,13 +711,32 @@ export const PulseEarnMktForager = {
     healingState.lastSubmitJobId = jobId;
     healingState.lastSubmitError = null;
     healingState.cycleCount++;
-    healingState.lastSubmitSignature = computeHash(`SUBMIT::SALAD::${jobId}`);
+
+    const submitSig = buildDualHashSignature(
+      "FORAGER_SUBMIT",
+      { jobId, cycleIndex: healingState.cycleCount },
+      `SUBMIT::SALAD::${jobId}::CYCLE::${healingState.cycleCount}`
+    );
+    healingState.lastSubmitSignatureIntel = submitSig.intel;
+    healingState.lastSubmitSignatureClassic = submitSig.classic;
 
     const band = "symbolic";
     healingState.lastBand = band;
-    healingState.lastBandSignature = buildBandSignature(band);
 
-    const presenceField = buildPresenceField(job, deviceProfile, healingState.cycleCount, globalHints);
+    const bandSig = buildDualHashSignature(
+      "FORAGER_BAND",
+      { band, cycleIndex: healingState.cycleCount },
+      `BAND::${band}`
+    );
+    healingState.lastBandSignatureIntel = bandSig.intel;
+    healingState.lastBandSignatureClassic = bandSig.classic;
+
+    const presenceField = buildPresenceField(
+      job,
+      deviceProfile,
+      healingState.cycleCount,
+      globalHints
+    );
     const binaryField = buildBinaryField(healingState.cycleCount, "low", presenceField);
     const waveField = buildWaveField(healingState.cycleCount, band, presenceField);
 
@@ -528,7 +748,12 @@ export const PulseEarnMktForager = {
       globalHints
     );
 
-    const chunkPlan = buildChunkPrewarmPlan(job, deviceProfile, presenceField, advantageField);
+    const chunkPlan = buildChunkPrewarmPlan(
+      job,
+      deviceProfile,
+      presenceField,
+      advantageField
+    );
 
     healingState.lastBinaryField = binaryField;
     healingState.lastWaveField = waveField;
@@ -540,8 +765,11 @@ export const PulseEarnMktForager = {
       ok: true,
       marketplace: "salad",
       jobId,
-      signature: healingState.lastSubmitSignature,
-      bandSignature: healingState.lastBandSignature,
+      cycleIndex: healingState.cycleCount,
+      signatureIntel: submitSig.intel,
+      signatureClassic: submitSig.classic,
+      bandSignatureIntel: bandSig.intel,
+      bandSignatureClassic: bandSig.classic,
       binaryField,
       waveField,
       presenceField,
@@ -550,20 +778,26 @@ export const PulseEarnMktForager = {
       result
     };
   },
-  
+
   // -------------------------------------------------------------------------
-  // Normalize Job — unified v13 presence
+  // Normalize Job — v16 dual-hash + presence + advantage + chunk
   // -------------------------------------------------------------------------
   normalizeJob(raw, deviceProfile = {}, globalHints = {}) {
     try {
       if (!raw || typeof raw !== "object") {
+        const sig = buildDualHashSignature("FORAGER_NORM", { jobId: null }, "NORM::SALAD::NONE");
         healingState.lastNormalizationError = "invalid_raw_job";
-        healingState.lastNormalizationSignature = computeHash(`NORM::SALAD::NONE`);
+        healingState.lastNormalizedJobId = null;
+        healingState.lastNormalizationSignatureIntel = sig.intel;
+        healingState.lastNormalizationSignatureClassic = sig.classic;
         return null;
       }
       if (!raw.id) {
+        const sig = buildDualHashSignature("FORAGER_NORM", { jobId: null }, "NORM::SALAD::NONE");
         healingState.lastNormalizationError = "missing_id";
-        healingState.lastNormalizationSignature = computeHash(`NORM::SALAD::NONE`);
+        healingState.lastNormalizedJobId = null;
+        healingState.lastNormalizationSignatureIntel = sig.intel;
+        healingState.lastNormalizationSignatureClassic = sig.classic;
         return null;
       }
 
@@ -571,8 +805,11 @@ export const PulseEarnMktForager = {
 
       const payout = Number(raw.reward ?? raw.payout ?? 0);
       if (!Number.isFinite(payout) || payout <= 0) {
+        const sig = buildDualHashSignature("FORAGER_NORM", { jobId: null }, "NORM::SALAD::NONE");
         healingState.lastNormalizationError = "non_positive_payout";
-        healingState.lastNormalizationSignature = computeHash(`NORM::SALAD::NONE`);
+        healingState.lastNormalizedJobId = null;
+        healingState.lastNormalizationSignatureIntel = sig.intel;
+        healingState.lastNormalizationSignatureClassic = sig.classic;
         return null;
       }
 
@@ -587,8 +824,11 @@ export const PulseEarnMktForager = {
       };
 
       if (!Number.isFinite(estimatedSeconds) || estimatedSeconds <= 0) {
+        const sig = buildDualHashSignature("FORAGER_NORM", { jobId: null }, "NORM::SALAD::NONE");
         healingState.lastNormalizationError = "non_positive_duration";
-        healingState.lastNormalizationSignature = computeHash(`NORM::SALAD::NONE`);
+        healingState.lastNormalizedJobId = null;
+        healingState.lastNormalizationSignatureIntel = sig.intel;
+        healingState.lastNormalizationSignatureClassic = sig.classic;
         return null;
       }
 
@@ -608,7 +848,14 @@ export const PulseEarnMktForager = {
 
       const band = gpuTier === "high" ? "binary" : "symbolic";
       healingState.lastBand = band;
-      healingState.lastBandSignature = buildBandSignature(band);
+
+      const bandSig = buildDualHashSignature(
+        "FORAGER_BAND",
+        { band, cycleIndex: healingState.cycleCount },
+        `BAND::${band}`
+      );
+      healingState.lastBandSignatureIntel = bandSig.intel;
+      healingState.lastBandSignatureClassic = bandSig.classic;
 
       const presenceField = buildPresenceField(
         raw,
@@ -642,8 +889,14 @@ export const PulseEarnMktForager = {
 
       healingState.lastNormalizedJobId = raw.id;
       healingState.lastNormalizationError = null;
-      healingState.lastNormalizationSignature =
-        computeHash(`NORM::SALAD::${raw.id}`);
+
+      const normSig = buildDualHashSignature(
+        "FORAGER_NORM",
+        { jobId: raw.id, cycleIndex: healingState.cycleCount },
+        `NORM::SALAD::${raw.id}`
+      );
+      healingState.lastNormalizationSignatureIntel = normSig.intel;
+      healingState.lastNormalizationSignatureClassic = normSig.classic;
 
       return {
         id: String(raw.id),
@@ -667,16 +920,18 @@ export const PulseEarnMktForager = {
       };
 
     } catch (err) {
-      healingState.lastNormalizationError = err.message;
-      healingState.lastNormalizationSignature =
-        computeHash(`NORM::SALAD::NONE`);
+      const sig = buildDualHashSignature("FORAGER_NORM", { jobId: null, error: String(err) }, "NORM::SALAD::NONE");
+      healingState.lastNormalizationError = err.message || String(err);
+      healingState.lastNormalizedJobId = null;
+      healingState.lastNormalizationSignatureIntel = sig.intel;
+      healingState.lastNormalizationSignatureClassic = sig.classic;
       return null;
     }
   }
 };
 
 // ---------------------------------------------------------------------------
-// Healing State Export — Forager Interaction Log (v13.0-Presence-Immortal)
+// Healing State Export — Forager Interaction Log (v16-IMMORTAL-INTEL)
 // ---------------------------------------------------------------------------
 export function getPulseEarnMktForagerHealingState() {
   return { ...healingState };

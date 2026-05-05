@@ -1,14 +1,15 @@
 // ============================================================================
-// FILE: tropic-pulse-functions/PULSE-WORLD/PULSE-EARN/PulseEarnMktAuctioneer-v13.0-Presence-Immortal.js
-// LAYER: MARKETPLACE AUCTIONEER (v13.0‑PRESENCE‑IMMORTAL A‑B‑A)
-// Vast.ai Deterministic Adapter + Presence/Advantage/Hints Surfaces
+// FILE: tropic-pulse-functions/PULSE-WORLD/PULSE-EARN/PulseEarnMktAuctioneer-v16-IMMORTAL-INTEL.js
+// LAYER: MARKETPLACE AUCTIONEER (v16‑IMMORTAL‑INTEL‑DUALHASH A‑B‑A)
+// Vast.ai Deterministic Adapter + Presence/Advantage/Hints/Factoring Surfaces
 // ============================================================================
 //
-// ROLE (v13.0‑PRESENCE‑IMMORTAL A‑B‑A):
+// ROLE (v16‑IMMORTAL‑INTEL A‑B‑A):
 //   • Deterministic Vast.ai → Pulse‑Earn adapter.
 //   • Pure receptor phenotype: ping(), fetchJobs(), normalizeJob(), submitResult().
 //   • Emits A‑B‑A bandSignature + binaryField + waveField + presence/advantage/hints.
 //   • Emits deterministic volatility + healing metadata.
+//   • Emits dual INTEL + classic signatures for all receptor events.
 //   • Zero async, zero randomness, zero timestamps.
 //
 // CONTRACT:
@@ -16,14 +17,16 @@
 //   • NO network, NO fetch, NO async, NO randomness.
 //   • NEVER mutate external objects.
 //   • Presence/advantage/hints are metadata-only.
+//   • Dual‑hash INTEL signatures (INTEL + classic fallback).
 // ============================================================================
+
 /*
 AI_EXPERIENCE_META = {
   identity: "PulseEarnMktAuctioneer",
-  version: "v14-Immortal",
+  version: "v16-IMMORTAL-INTEL",
   layer: "earn_market",
   role: "earn_market_auctioneer",
-  lineage: "PulseEarnMktAuctioneer-v11 → v12.3 → v14-Immortal",
+  lineage: "PulseEarnMktAuctioneer-v11 → v12.3 → v13.0-Presence-Immortal → v16-IMMORTAL-INTEL",
 
   evo: {
     marketAuctioneer: true,
@@ -35,22 +38,38 @@ AI_EXPERIENCE_META = {
     binaryAware: true,
 
     deterministic: true,
+    deterministicField: true,
     driftProof: true,
     pureCompute: true,
     zeroMutationOfInput: true,
     zeroNetwork: true,
-    zeroFilesystem: true
+    zeroFilesystem: true,
+    zeroAsync: true,
+    zeroRandomness: true,
+
+    chunkAware: true,
+    prewarmAware: true,
+    cacheAware: true,
+
+    intelSignatureAware: true,
+    dualHashAware: true,
+    structureAware: true,
+    contextAware: true
   },
 
   contract: {
     always: [
       "PulseEarnMktAmbassador",
       "PulseEarnCustomReceptorMkt",
-      "PulseEarnCirculatorySystem"
+      "PulseEarnCirculatorySystem",
+      "PulseEarnMetabolism",
+      "PulseEarnLymphNodes"
     ],
     never: [
       "safeRoute",
-      "fetchViaCNS"
+      "fetchViaCNS",
+      "userScript",
+      "dynamicEval"
     ]
   }
 }
@@ -59,8 +78,8 @@ AI_EXPERIENCE_META = {
 export const PulseEarnMktAuctioneerMeta = Object.freeze({
   layer: "PulseEarnMktAuctioneer",
   role: "EARN_MARKETPLACE_RECEPTOR",
-  version: "v13.0-Presence-Immortal",
-  identity: "PulseEarnMktAuctioneer-v13.0-Presence-Immortal",
+  version: "v16-IMMORTAL-INTEL",
+  identity: "PulseEarnMktAuctioneer-v16-IMMORTAL-INTEL",
 
   guarantees: Object.freeze({
     deterministic: true,
@@ -105,13 +124,14 @@ export const PulseEarnMktAuctioneerMeta = Object.freeze({
 
   lineage: Object.freeze({
     root: "PulseOS-v11-Evo",
-    parent: "PulseEarn-v13.0-Presence-Immortal",
+    parent: "PulseEarn-v16-IMMORTAL-INTEL",
     ancestry: [
       "PulseEarnMktAuctioneer-v9",
       "PulseEarnMktAuctioneer-v10",
       "PulseEarnMktAuctioneer-v11",
       "PulseEarnMktAuctioneer-v11-Evo",
-      "PulseEarnMktAuctioneer-v12.3-Presence-Evo+"
+      "PulseEarnMktAuctioneer-v12.3-Presence-Evo+",
+      "PulseEarnMktAuctioneer-v13.0-Presence-Immortal"
     ]
   }),
 
@@ -129,10 +149,69 @@ export const PulseEarnMktAuctioneerMeta = Object.freeze({
   })
 });
 
+// ============================================================================
+// HASH HELPERS — v16‑IMMORTAL‑INTEL (dual‑hash)
+// ============================================================================
+
+function computeHash(str) {
+  let h = 0;
+  const s = String(str || "");
+  for (let i = 0; i < s.length; i++) {
+    h = (h + s.charCodeAt(i) * (i + 1)) % 100000;
+  }
+  return `h${h}`;
+}
+
+// Primary INTEL hash — deterministic, structure-aware, no IO, no time.
+function computeHashIntelligence(payload) {
+  const base = JSON.stringify(payload || "");
+  let h = 0;
+  for (let i = 0; i < base.length; i++) {
+    const c = base.charCodeAt(i);
+    h = (h * 131 + c * (i + 7)) % 1000000007;
+  }
+  return `HINTEL_${h}`;
+}
+
+function buildDualHashSignature(label, intelPayload, classicString) {
+  const intelBase = {
+    label,
+    intel: intelPayload || {},
+    classic: classicString || ""
+  };
+  const intelHash = computeHashIntelligence(intelBase);
+  const classicHash = computeHash(
+    `${label}::${classicString || ""}`
+  );
+  return {
+    intel: intelHash,
+    classic: classicHash
+  };
+}
+
+function normalizeBand(band) {
+  const b = String(band || "symbolic").toLowerCase();
+  return b === "binary" ? "binary" : "symbolic";
+}
+
+function safeGet(obj, path, fallback = null) {
+  try {
+    return path
+      .split(".")
+      .reduce((o, k) => (o && o[k] !== undefined ? o[k] : null), obj) ?? fallback;
+  } catch {
+    return fallback;
+  }
+}
+
+function clamp01(v) {
+  return Math.max(0, Math.min(1, v));
+}
 
 // ============================================================================
-// Healing Metadata — deterministic receptor log (v13.0‑PRESENCE‑IMMORTAL A‑B‑A)
+// HEALING METADATA — v16‑IMMORTAL‑INTEL
 // ============================================================================
+
 const healingState = {
   lastPingMs: null,
   lastPingError: null,
@@ -146,7 +225,7 @@ const healingState = {
   lastNormalizedJobId: null,
   lastNormalizationError: null,
 
-  lastPayloadVersion: "13-Immortal",
+  lastPayloadVersion: "16-IMMORTAL-INTEL",
   lastJobType: null,
   lastGpuScore: null,
   lastResourceShape: null,
@@ -156,20 +235,32 @@ const healingState = {
   listingVolatility: 0,
 
   cycleCount: 0,
+  lastCycleIndex: null,
 
-  lastPingSignature: null,
-  lastFetchSignature: null,
-  lastNormalizationSignature: null,
-  lastSubmitSignature: null,
-  lastAuctioneerCycleSignature: null,
+  // Dual‑hash INTEL signatures
+  lastPingSignatureIntel: null,
+  lastPingSignatureClassic: null,
+
+  lastFetchSignatureIntel: null,
+  lastFetchSignatureClassic: null,
+
+  lastNormalizationSignatureIntel: null,
+  lastNormalizationSignatureClassic: null,
+
+  lastSubmitSignatureIntel: null,
+  lastSubmitSignatureClassic: null,
+
+  lastAuctioneerCycleSignatureIntel: null,
+  lastAuctioneerCycleSignatureClassic: null,
 
   // A‑B‑A surfaces
   lastBand: "symbolic",
-  lastBandSignature: null,
+  lastBandSignatureIntel: null,
+  lastBandSignatureClassic: null,
   lastBinaryField: null,
   lastWaveField: null,
 
-  // Presence‑IMMORTAL additions
+  // Presence / advantage / hints
   lastPresenceField: null,
   lastAdvantageField: null,
   lastHintsField: null,
@@ -178,70 +269,78 @@ const healingState = {
   lastWaveProfile: null
 };
 
+// ============================================================================
+// SIGNATURE BUILDERS — v16‑IMMORTAL‑INTEL
+// ============================================================================
+
+function buildPingSignature(latency, cycleIndex, presenceTier) {
+  const intelPayload = {
+    kind: "auctioneerPing",
+    latency,
+    cycleIndex,
+    presenceTier
+  };
+  const classicString = `PING::${latency}::CYCLE::${cycleIndex}::PTIER::${presenceTier}`;
+  return buildDualHashSignature("AUCTIONEER_PING", intelPayload, classicString);
+}
+
+function buildFetchSignature(count, cycleIndex, presenceTier) {
+  const intelPayload = {
+    kind: "auctioneerFetch",
+    count,
+    cycleIndex,
+    presenceTier
+  };
+  const classicString = `FETCH::${count}::CYCLE::${cycleIndex}::PTIER::${presenceTier}`;
+  return buildDualHashSignature("AUCTIONEER_FETCH", intelPayload, classicString);
+}
+
+function buildNormalizationSignature(jobId, cycleIndex) {
+  const intelPayload = {
+    kind: "auctioneerNormalize",
+    jobId: jobId || "NONE",
+    cycleIndex
+  };
+  const classicString = `NORM::${jobId || "NONE"}::CYCLE::${cycleIndex}`;
+  return buildDualHashSignature("AUCTIONEER_NORMALIZE", intelPayload, classicString);
+}
+
+function buildSubmitSignature(jobId, cycleIndex, presenceTier) {
+  const intelPayload = {
+    kind: "auctioneerSubmit",
+    jobId: jobId || "NONE",
+    cycleIndex,
+    presenceTier
+  };
+  const classicString = `SUBMIT::${jobId || "NONE"}::CYCLE::${cycleIndex}::PTIER::${presenceTier}`;
+  return buildDualHashSignature("AUCTIONEER_SUBMIT", intelPayload, classicString);
+}
+
+function buildAuctioneerCycleSignature(cycle, presenceTier, band) {
+  const intelPayload = {
+    kind: "auctioneerCycle",
+    cycleIndex: cycle,
+    presenceTier,
+    band
+  };
+  const classicString = `AUCTIONEER_CYCLE::${cycle}::PTIER:${presenceTier}::BAND:${band}`;
+  return buildDualHashSignature("AUCTIONEER_CYCLE", intelPayload, classicString);
+}
+
+function buildBandSignature(band, cycleIndex) {
+  const intelPayload = {
+    kind: "auctioneerBand",
+    band: normalizeBand(band),
+    cycleIndex
+  };
+  const classicString = `AUCTIONEER_BAND::${normalizeBand(band)}::CYCLE::${cycleIndex}`;
+  return buildDualHashSignature("AUCTIONEER_BAND", intelPayload, classicString);
+}
 
 // ============================================================================
-// Deterministic Hash Helper — v13‑IMMORTAL
+// A‑B‑A Binary + Wave Surfaces (Presence‑aware, INTEL)
 // ============================================================================
-function computeHash(str) {
-  let h = 0;
-  const s = String(str || "");
-  for (let i = 0; i < s.length; i++) {
-    h = (h + s.charCodeAt(i) * (i + 1)) % 100000;
-  }
-  return `h${h}`;
-}
 
-function normalizeBand(band) {
-  const b = String(band || "symbolic").toLowerCase();
-  return b === "binary" ? "binary" : "symbolic";
-}
-
-
-// ============================================================================
-// Signature Builders — v13‑IMMORTAL
-// ============================================================================
-function buildPingSignature(latency) {
-  return computeHash(`PING::${latency}`);
-}
-
-function buildFetchSignature(count) {
-  return computeHash(`FETCH::${count}`);
-}
-
-function buildNormalizationSignature(jobId) {
-  return computeHash(`NORM::${jobId || "NONE"}`);
-}
-
-function buildSubmitSignature(jobId) {
-  return computeHash(`SUBMIT::${jobId || "NONE"}`);
-}
-
-function buildAuctioneerCycleSignature(cycle, presenceTier) {
-  return computeHash(`AUCTIONEER_CYCLE::${cycle}::PTIER:${presenceTier}`);
-}
-
-function buildBandSignature(band) {
-  return computeHash(`AUCTIONEER_BAND::${normalizeBand(band)}`);
-}
-
-
-// ============================================================================
-// SAFE GET — deterministic path reader
-// ============================================================================
-function safeGet(obj, path, fallback = null) {
-  try {
-    return path
-      .split(".")
-      .reduce((o, k) => (o && o[k] !== undefined ? o[k] : null), obj) ?? fallback;
-  } catch {
-    return fallback;
-  }
-}
-
-
-// ============================================================================
-// A‑B‑A Binary + Wave Surfaces (Presence‑aware)
-// ============================================================================
 function buildBinaryField(presenceField) {
   const patternLen = 8;
   const mesh = Number(presenceField?.meshPressureIndex || 0);
@@ -249,16 +348,30 @@ function buildBinaryField(presenceField) {
 
   const density =
     patternLen +
-    healingState.lastFetchCount +
+    (healingState.lastFetchCount || 0) +
     (healingState.lastPingMs || 0) +
     mesh +
     castle;
 
   const surface = density + patternLen;
 
+  const intelPayload = {
+    kind: "auctioneerBinarySurface",
+    patternLen,
+    density,
+    meshPressureIndex: mesh,
+    castleLoadLevel: castle,
+    surface
+  };
+
+  const classicString = `BAUCTIONEER::${surface}`;
+  const sig = buildDualHashSignature("BAUCTIONEER", intelPayload, classicString);
+
   const field = {
-    binaryPhenotypeSignature: computeHash(`BAUCTIONEER::${surface}`),
-    binarySurfaceSignature: computeHash(`BAUCTIONEER_SURF::${surface}`),
+    binaryPhenotypeSignatureIntel: sig.intel,
+    binaryPhenotypeSignatureClassic: sig.classic,
+    binarySurfaceSignatureIntel: sig.intel,
+    binarySurfaceSignatureClassic: sig.classic,
     binarySurface: {
       patternLen,
       density,
@@ -281,7 +394,21 @@ function buildWaveField(band, presenceField) {
   const wavelength = (healingState.lastPingMs || 10) + 1;
   const phase = (amplitude + (presenceField?.meshPressureIndex || 0)) % 16;
 
+  const intelPayload = {
+    kind: "auctioneerWaveSurface",
+    band,
+    amplitude,
+    wavelength,
+    phase,
+    meshStrength: presenceField?.meshStrength || 0
+  };
+
+  const classicString = `BAUCTIONEER_WAVE::${band}::AMP::${amplitude}`;
+  const sig = buildDualHashSignature("BAUCTIONEER_WAVE", intelPayload, classicString);
+
   const field = {
+    wavePhenotypeSignatureIntel: sig.intel,
+    wavePhenotypeSignatureClassic: sig.classic,
     amplitude,
     wavelength,
     phase,
@@ -293,10 +420,10 @@ function buildWaveField(band, presenceField) {
   return field;
 }
 
+// ============================================================================
+// DETERMINISTIC VAST.AI DNA — v16‑IMMORTAL‑INTEL baseline
+// ============================================================================
 
-// ============================================================================
-// DETERMINISTIC VAST.AI DNA — v13‑IMMORTAL baseline
-// ============================================================================
 const VAST_RECEPTOR_DNA = {
   pingLatency: 42,
 
@@ -321,53 +448,40 @@ const VAST_RECEPTOR_DNA = {
     }
   ],
 
-  version: "13-Immortal",
-  lineage: "Auctioneer-Vast-v13-Immortal",
+  version: "16-IMMORTAL-INTEL",
+  lineage: "Auctioneer-Vast-v16-IMMORTAL-INTEL",
   phenotype: "MarketplaceAuctioneer"
 };
 
+// ============================================================================
+// Presence / Advantage / Hints Surfaces (auctioneer-level, v16)
+// ============================================================================
 
-// ============================================================================
-// Presence / Advantage / Hints Surfaces (auctioneer-level)
-// ============================================================================
 function buildPresenceField(globalHints = {}) {
   const ghP = globalHints.presenceContext || {};
   const mesh = globalHints.meshSignals || {};
   const castle = globalHints.castleSignals || {};
   const region = globalHints.regionContext || {};
 
+  const meshStrength = mesh.meshStrength || 0;
+  const meshPressureIndex = mesh.meshPressureIndex || 0;
+  const castleLoadLevel = castle.loadLevel || 0;
+
   return {
+    presenceVersion: "v16-IMMORTAL-INTEL",
+
     bandPresence: ghP.bandPresence || "unknown",
     routerPresence: ghP.routerPresence || "unknown",
     devicePresence: ghP.devicePresence || "unknown",
     meshPresence: ghP.meshPresence || mesh.meshStrength || "unknown",
     castlePresence: ghP.castlePresence || castle.castlePresence || "unknown",
     regionPresence: ghP.regionPresence || region.regionTag || "unknown",
+
     regionId: region.regionId || "unknown-region",
     castleId: castle.castleId || "unknown-castle",
-    castleLoadLevel: castle.loadLevel || 0,
-    meshStrength: mesh.meshStrength || 0,
-    meshPressureIndex: mesh.meshPressureIndex || 0
-  };
-}
-
-function buildAdvantageField(globalHints = {}) {
-  const gh = globalHints.advantageContext || {};
-
-  return {
-    advantageScore: gh.score ?? 0,
-    advantageBand: gh.band ?? "neutral",
-    advantageTier: gh.tier ?? 0
-  };
-}
-
-function buildHintsField(globalHints = {}) {
-  return {
-    fallbackBandLevel: globalHints.fallbackBandLevel ?? 0,
-    chunkHints: { ...(globalHints.chunkHints || {}) },
-    cacheHints: { ...(globalHints.cacheHints || {}) },
-    prewarmHints: { ...(globalHints.prewarmHints || {}) },
-    coldStartHints: { ...(globalHints.coldStartHints || {}) }
+    castleLoadLevel,
+    meshStrength,
+    meshPressureIndex
   };
 }
 
@@ -383,16 +497,41 @@ function classifyAuctioneerPresenceTier(presenceField) {
   return "idle";
 }
 
+function buildAdvantageField(globalHints = {}) {
+  const gh = globalHints.advantageContext || {};
+
+  const advantageScore = gh.score ?? 0;
+  const advantageBand = gh.band ?? "neutral";
+  const advantageTier = gh.tier ?? 0;
+
+  return {
+    advantageVersion: "C-16.0",
+    advantageScore,
+    advantageBand,
+    advantageTier
+  };
+}
+
+function buildHintsField(globalHints = {}) {
+  return {
+    fallbackBandLevel: globalHints.fallbackBandLevel ?? 0,
+    chunkHints: { ...(globalHints.chunkHints || {}) },
+    cacheHints: { ...(globalHints.cacheHints || {}) },
+    prewarmHints: { ...(globalHints.prewarmHints || {}) },
+    coldStartHints: { ...(globalHints.coldStartHints || {}) }
+  };
+}
 
 // ============================================================================
 // Deterministic Cycle Counter
 // ============================================================================
-let auctioneerCycle = 0;
 
+let auctioneerCycle = 0;
 
 // ============================================================================
 // VOLATILITY — deterministic
 // ============================================================================
+
 function updateVolatility(jobs) {
   const count = jobs.length;
 
@@ -409,16 +548,15 @@ function updateVolatility(jobs) {
   }
 }
 
+// ============================================================================
+// AUCTIONEER — Vast.ai Marketplace Adapter (v16‑IMMORTAL‑INTEL A‑B‑A)
+// ============================================================================
 
-// ============================================================================
-// AUCTIONEER — Vast.ai Marketplace Adapter (v13.0‑PRESENCE‑IMMORTAL A‑B‑A)
-// globalHints is optional; if omitted, defaults to {}
-// ============================================================================
 export const PulseEarnMktAuctioneer = {
   id: "vast",
   name: "Vast.ai",
-  version: "v13-Immortal",
-  lineage: "Auctioneer-Vast-v13-Immortal",
+  version: "v16-IMMORTAL-INTEL",
+  lineage: "Auctioneer-Vast-v16-IMMORTAL-INTEL",
 
   // -------------------------------------------------------------------------
   // PING — deterministic latency + A‑B‑A + presence surfaces
@@ -426,23 +564,30 @@ export const PulseEarnMktAuctioneer = {
   ping(globalHints = {}) {
     auctioneerCycle++;
     healingState.cycleCount++;
+    healingState.lastCycleIndex = auctioneerCycle;
 
     const latency = VAST_RECEPTOR_DNA.pingLatency;
     const band = normalizeBand(VAST_RECEPTOR_DNA.band);
 
     const presenceField = buildPresenceField(globalHints);
+    const presenceTier = classifyAuctioneerPresenceTier(presenceField);
     const advantageField = buildAdvantageField(globalHints);
     const hintsField = buildHintsField(globalHints);
-    const presenceTier = classifyAuctioneerPresenceTier(presenceField);
 
     healingState.lastBand = band;
     healingState.lastPingMs = latency;
     healingState.lastPingError = null;
 
-    healingState.lastPingSignature = buildPingSignature(latency);
-    healingState.lastBandSignature = buildBandSignature(band);
-    healingState.lastAuctioneerCycleSignature =
-      buildAuctioneerCycleSignature(auctioneerCycle, presenceTier);
+    const pingSig = buildPingSignature(latency, auctioneerCycle, presenceTier);
+    const bandSig = buildBandSignature(band, auctioneerCycle);
+    const cycleSig = buildAuctioneerCycleSignature(auctioneerCycle, presenceTier, band);
+
+    healingState.lastPingSignatureIntel = pingSig.intel;
+    healingState.lastPingSignatureClassic = pingSig.classic;
+    healingState.lastBandSignatureIntel = bandSig.intel;
+    healingState.lastBandSignatureClassic = bandSig.classic;
+    healingState.lastAuctioneerCycleSignatureIntel = cycleSig.intel;
+    healingState.lastAuctioneerCycleSignatureClassic = cycleSig.classic;
 
     const binaryField = buildBinaryField(presenceField);
     const waveField = buildWaveField(band, presenceField);
@@ -470,8 +615,14 @@ export const PulseEarnMktAuctioneer = {
 
     return {
       latency,
-      signature: healingState.lastPingSignature,
-      bandSignature: healingState.lastBandSignature,
+      cycleIndex: auctioneerCycle,
+      band,
+      signatureIntel: pingSig.intel,
+      signatureClassic: pingSig.classic,
+      bandSignatureIntel: bandSig.intel,
+      bandSignatureClassic: bandSig.classic,
+      cycleSignatureIntel: cycleSig.intel,
+      cycleSignatureClassic: cycleSig.classic,
       binaryField,
       waveField,
       presenceField,
@@ -489,12 +640,13 @@ export const PulseEarnMktAuctioneer = {
   fetchJobs(globalHints = {}) {
     auctioneerCycle++;
     healingState.cycleCount++;
+    healingState.lastCycleIndex = auctioneerCycle;
 
     const band = normalizeBand(VAST_RECEPTOR_DNA.band);
     const presenceField = buildPresenceField(globalHints);
+    const presenceTier = classifyAuctioneerPresenceTier(presenceField);
     const advantageField = buildAdvantageField(globalHints);
     const hintsField = buildHintsField(globalHints);
-    const presenceTier = classifyAuctioneerPresenceTier(presenceField);
 
     healingState.lastBand = band;
 
@@ -507,12 +659,18 @@ export const PulseEarnMktAuctioneer = {
 
       updateVolatility(jobs);
 
+      const fetchSig = buildFetchSignature(jobs.length, auctioneerCycle, presenceTier);
+      const bandSig = buildBandSignature(band, auctioneerCycle);
+      const cycleSig = buildAuctioneerCycleSignature(auctioneerCycle, presenceTier, band);
+
       healingState.lastFetchError = null;
       healingState.lastFetchCount = jobs.length;
-      healingState.lastFetchSignature = buildFetchSignature(jobs.length);
-      healingState.lastBandSignature = buildBandSignature(band);
-      healingState.lastAuctioneerCycleSignature =
-        buildAuctioneerCycleSignature(auctioneerCycle, presenceTier);
+      healingState.lastFetchSignatureIntel = fetchSig.intel;
+      healingState.lastFetchSignatureClassic = fetchSig.classic;
+      healingState.lastBandSignatureIntel = bandSig.intel;
+      healingState.lastBandSignatureClassic = bandSig.classic;
+      healingState.lastAuctioneerCycleSignatureIntel = cycleSig.intel;
+      healingState.lastAuctioneerCycleSignatureClassic = cycleSig.classic;
 
       const binaryField = buildBinaryField(presenceField);
       const waveField = buildWaveField(band, presenceField);
@@ -539,9 +697,17 @@ export const PulseEarnMktAuctioneer = {
       healingState.lastWaveProfile = waveProfile;
 
       return {
+        success: true,
+        cycleIndex: auctioneerCycle,
+        band,
         jobs,
-        signature: healingState.lastFetchSignature,
-        bandSignature: healingState.lastBandSignature,
+        errors: [],
+        signatureIntel: fetchSig.intel,
+        signatureClassic: fetchSig.classic,
+        bandSignatureIntel: bandSig.intel,
+        bandSignatureClassic: bandSig.classic,
+        cycleSignatureIntel: cycleSig.intel,
+        cycleSignatureClassic: cycleSig.classic,
         binaryField,
         waveField,
         presenceField,
@@ -553,29 +719,28 @@ export const PulseEarnMktAuctioneer = {
       };
 
     } catch (err) {
+      const fetchSig = buildFetchSignature(0, auctioneerCycle, "idle");
       healingState.lastFetchError = err?.message || String(err);
       healingState.lastFetchCount = 0;
-      healingState.lastFetchSignature = buildFetchSignature(0);
-
-      const auctioneerPresenceProfile = {
-        presenceTier,
-        band,
-        meshPressureIndex: presenceField.meshPressureIndex,
-        castleLoadLevel: presenceField.castleLoadLevel,
-        advantageTier: advantageField.advantageTier,
-        fallbackBandLevel: hintsField.fallbackBandLevel
-      };
+      healingState.lastFetchSignatureIntel = fetchSig.intel;
+      healingState.lastFetchSignatureClassic = fetchSig.classic;
 
       return {
+        success: false,
+        cycleIndex: auctioneerCycle,
+        band,
         jobs: [],
-        signature: healingState.lastFetchSignature,
-        bandSignature: null,
+        errors: [{ error: err?.message || String(err) }],
+        signatureIntel: fetchSig.intel,
+        signatureClassic: fetchSig.classic,
+        bandSignatureIntel: null,
+        bandSignatureClassic: null,
         binaryField: null,
         waveField: null,
         presenceField,
         advantageField,
         hintsField,
-        auctioneerPresenceProfile,
+        auctioneerPresenceProfile: null,
         binaryProfile: null,
         waveProfile: null
       };
@@ -584,25 +749,32 @@ export const PulseEarnMktAuctioneer = {
 
   // -------------------------------------------------------------------------
   // SUBMIT RESULT — Vast.ai does NOT accept compute results (presence‑aware)
-  // -------------------------------------------------------------------------
+// -------------------------------------------------------------------------
   submitResult(job, result, globalHints = {}) {
     auctioneerCycle++;
     healingState.cycleCount++;
+    healingState.lastCycleIndex = auctioneerCycle;
 
     const band = normalizeBand(VAST_RECEPTOR_DNA.band);
     const presenceField = buildPresenceField(globalHints);
+    const presenceTier = classifyAuctioneerPresenceTier(presenceField);
     const advantageField = buildAdvantageField(globalHints);
     const hintsField = buildHintsField(globalHints);
-    const presenceTier = classifyAuctioneerPresenceTier(presenceField);
 
     const jobId = job?.id ?? null;
 
+    const submitSig = buildSubmitSignature(jobId, auctioneerCycle, presenceTier);
+    const bandSig = buildBandSignature(band, auctioneerCycle);
+    const cycleSig = buildAuctioneerCycleSignature(auctioneerCycle, presenceTier, band);
+
     healingState.lastSubmitJobId = jobId;
     healingState.lastSubmitError = null;
-    healingState.lastSubmitSignature = buildSubmitSignature(jobId);
-    healingState.lastBandSignature = buildBandSignature(band);
-    healingState.lastAuctioneerCycleSignature =
-      buildAuctioneerCycleSignature(auctioneerCycle, presenceTier);
+    healingState.lastSubmitSignatureIntel = submitSig.intel;
+    healingState.lastSubmitSignatureClassic = submitSig.classic;
+    healingState.lastBandSignatureIntel = bandSig.intel;
+    healingState.lastBandSignatureClassic = bandSig.classic;
+    healingState.lastAuctioneerCycleSignatureIntel = cycleSig.intel;
+    healingState.lastAuctioneerCycleSignatureClassic = cycleSig.classic;
 
     const binaryField = buildBinaryField(presenceField);
     const waveField = buildWaveField(band, presenceField);
@@ -629,12 +801,18 @@ export const PulseEarnMktAuctioneer = {
     healingState.lastWaveProfile = waveProfile;
 
     return {
-      ok: true,
+      success: true,
+      cycleIndex: auctioneerCycle,
       marketplace: "vast",
+      band,
       jobId,
       result,
-      signature: healingState.lastSubmitSignature,
-      bandSignature: healingState.lastBandSignature,
+      signatureIntel: submitSig.intel,
+      signatureClassic: submitSig.classic,
+      bandSignatureIntel: bandSig.intel,
+      bandSignatureClassic: bandSig.classic,
+      cycleSignatureIntel: cycleSig.intel,
+      cycleSignatureClassic: cycleSig.classic,
       binaryField,
       waveField,
       presenceField,
@@ -643,35 +821,32 @@ export const PulseEarnMktAuctioneer = {
       auctioneerPresenceProfile,
       binaryProfile,
       waveProfile,
-      note: "Vast.ai does not accept compute results (v13.0-Presence-Immortal deterministic)."
+      note: "Vast.ai does not accept compute results (v16-IMMORTAL-INTEL deterministic)."
     };
   },
 
   // -------------------------------------------------------------------------
-  // NORMALIZE JOB — Vast → Pulse‑Earn schema (v13‑IMMORTAL)
-  // Never returns null unless job is truly invalid.
-  // Auto-fills missing fields, presence-aware, deterministic.
+  // NORMALIZE JOB — Vast → Pulse‑Earn schema (v16‑IMMORTAL‑INTEL)
 // -------------------------------------------------------------------------
   normalizeJob(raw, globalHints = {}) {
-    try {
-      // -------------------------------------------------------------
-      // 0. Build presence/advantage/hints surfaces (v13)
-      // -------------------------------------------------------------
-      const presenceField = buildPresenceField(globalHints);
-      const advantageField = buildAdvantageField(globalHints);
-      const hintsField = buildHintsField(globalHints);
-      const presenceTier = classifyAuctioneerPresenceTier(presenceField);
+    auctioneerCycle++;
+    healingState.cycleCount++;
+    healingState.lastCycleIndex = auctioneerCycle;
 
-      // -------------------------------------------------------------
-      // 1. Validate raw job
-      // -------------------------------------------------------------
+    const presenceField = buildPresenceField(globalHints);
+    const presenceTier = classifyAuctioneerPresenceTier(presenceField);
+    const advantageField = buildAdvantageField(globalHints);
+    const hintsField = buildHintsField(globalHints);
+
+    try {
       if (!raw || typeof raw !== "object") {
+        const sig = buildNormalizationSignature(null, auctioneerCycle);
         healingState.lastNormalizationError = "invalid_raw_job";
-        healingState.lastNormalizationSignature = buildNormalizationSignature(null);
+        healingState.lastNormalizationSignatureIntel = sig.intel;
+        healingState.lastNormalizationSignatureClassic = sig.classic;
         return null;
       }
 
-      // Vast sometimes uses id, sometimes uses "job_id", sometimes "id_str"
       const id =
         raw.id ??
         raw.job_id ??
@@ -680,14 +855,13 @@ export const PulseEarnMktAuctioneer = {
         null;
 
       if (!id) {
+        const sig = buildNormalizationSignature(null, auctioneerCycle);
         healingState.lastNormalizationError = "missing_id";
-        healingState.lastNormalizationSignature = buildNormalizationSignature(null);
+        healingState.lastNormalizationSignatureIntel = sig.intel;
+        healingState.lastNormalizationSignatureClassic = sig.classic;
         return null;
       }
 
-      // -------------------------------------------------------------
-      // 2. Extract payout (Vast uses many fields)
-      // -------------------------------------------------------------
       const payout =
         Number(raw.dph_total) ||
         Number(raw.price_per_hour) ||
@@ -696,16 +870,11 @@ export const PulseEarnMktAuctioneer = {
         0;
 
       if (!Number.isFinite(payout) || payout <= 0) {
-        // v13: DO NOT return null — fallback to tiny payout
         healingState.lastNormalizationError = "non_positive_payout_fallback";
       }
 
       const finalPayout = payout > 0 ? payout : 0.01;
 
-      // -------------------------------------------------------------
-      // 3. Extract CPU / RAM / GPU / Bandwidth
-      // Vast job shapes vary wildly — v13 normalizer handles all.
-      // -------------------------------------------------------------
       const cpuRequired =
         Number(raw.cpu_cores) ||
         Number(raw.cpu) ||
@@ -723,7 +892,6 @@ export const PulseEarnMktAuctioneer = {
         Number(raw.duration) ||
         3600;
 
-      // GPU score heuristic
       const gpuScore =
         Number(raw.gpu_ram) * 10 ||
         Number(raw.gpu_score) ||
@@ -736,9 +904,6 @@ export const PulseEarnMktAuctioneer = {
         Number(raw.net_mbps) ||
         5;
 
-      // -------------------------------------------------------------
-      // 4. Build normalized job (v13)
-      // -------------------------------------------------------------
       const normalized = {
         id: String(id),
         marketplaceId: "vast",
@@ -751,45 +916,48 @@ export const PulseEarnMktAuctioneer = {
         minGpuScore: gpuScore,
         bandwidthNeededMbps: bandwidth,
 
-        // v13 presence-aware metadata
         presenceField,
         advantageField,
         hintsField,
         presenceTier,
 
-        // v13 meta
         meta: {
           rawSource: "vast",
           rawJob: raw,
-          version: "v13-Immortal",
-          band: raw.band || raw.meta?.band || "symbolic"
+          version: "v16-IMMORTAL-INTEL",
+          band: raw.band || safeGet(raw, "meta.band") || "symbolic"
         }
       };
 
-      // -------------------------------------------------------------
-      // 5. Healing state updates
-      // -------------------------------------------------------------
+      const normSig = buildNormalizationSignature(normalized.id, auctioneerCycle);
+
       healingState.lastNormalizedJobId = normalized.id;
       healingState.lastNormalizationError = null;
-      healingState.lastNormalizationSignature =
-        buildNormalizationSignature(normalized.id);
+      healingState.lastNormalizationSignatureIntel = normSig.intel;
+      healingState.lastNormalizationSignatureClassic = normSig.classic;
+
+      healingState.lastResourceShape = {
+        cpu: cpuRequired,
+        mem: memoryRequired,
+        duration: estimatedSeconds
+      };
 
       return normalized;
 
     } catch (err) {
+      const sig = buildNormalizationSignature(null, auctioneerCycle);
       healingState.lastNormalizationError = err.message;
-      healingState.lastNormalizationSignature =
-        buildNormalizationSignature(null);
+      healingState.lastNormalizationSignatureIntel = sig.intel;
+      healingState.lastNormalizationSignatureClassic = sig.classic;
       return null;
     }
   }
-
 };
 
+// ============================================================================
+// HEALING STATE EXPORT — v16‑IMMORTAL‑INTEL A‑B‑A
+// ============================================================================
 
-// ============================================================================
-// HEALING STATE EXPORT — v13.0‑PRESENCE‑IMMORTAL A‑B‑A
-// ============================================================================
 export function getPulseEarnMktAuctioneerHealingState() {
   return { ...healingState };
 }

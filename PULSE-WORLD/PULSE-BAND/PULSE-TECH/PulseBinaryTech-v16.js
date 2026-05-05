@@ -1,36 +1,18 @@
 // ============================================================================
-// FILE: PulseBinaryTech-v14.4-Presence-Immortal.js
-// Pulse OS v14.4-Presence-Immortal — Unified Binary Carrier Organ
-// PURE BINARY WAVEFORM • MULTI-PULSE SURFACE • SHIFTER/V2/V3/LEGACY/SEND/EARN/IMMORTAL
+// FILE: PulseBinaryTech-v16-Immortal-DualHash-INTEL.js
+// Pulse OS v16-Immortal — Unified Binary Carrier Organ
+// PURE BINARY WAVEFORM • MULTI-PULSE SURFACE • SHIFTER/V2/V3/LEGACY/SEND/EARN
+// v16: DualHash signatures + ImmortalMeta + Advantage/Intelligence surfacing
+//      Snapshot/Chunk/Prewarm-friendly, no randomness, no IO, no time.
 // ============================================================================
-// ROLE:
-//   • Root binary heartbeat for the organism.
-//   • Generates deterministic bit patterns (base/fast/slow/deep/multi/echo/reflect/burst).
-//   • For each waveform, invokes ALL pulse families:
-//       - v1 Legacy
-//       - v2 Evolution Engine (shifter-tech + earn-regular)
-//       - v3 Continuance / Unified
-//       - Binary Shifter
-//       - Shifter Evolution (via v2 core)
-//       - Presence
-//       - Harmonics
-//       - Coherence
-//       - Band (dual-band)
-//       - Continuance (long-form)
-//       - SendLegacy (send surface only, no IO)
-//       - SendEarn (earn/send surface only, no IO)
-//       - NormalPulse (baseline symbolic surface)
-//   • Returns a unified carrier packet with all surfaces attached.
-//   • Binary math stays pure; all pulse engines are consumers only.
-//   • No randomness, no time, no IO, no network.
-// ============================================================================
+
 /*
 AI_EXPERIENCE_META = {
   identity: "PulseBinaryTech",
-  version: "v14.4-Presence-Immortal",
+  version: "v16-Immortal-DualHash-INTEL",
   layer: "frontend",
   role: "binary_tech_engine",
-  lineage: "PulseOS-v12",
+  lineage: "PulseOS-v16",
 
   evo: {
     binaryCore: true,
@@ -42,13 +24,16 @@ AI_EXPERIENCE_META = {
     cnsAligned: true,
     advantageV2: true,
     multiPulseFamily: true,
-    noInlineBuilders: true
+    noInlineBuilders: true,
+    snapshotReady: true,
+    dualHashReady: true,
+    pulseIntelligenceAware: true
   },
 
   contract: {
     always: [
       "PulseBinaryPulse",
-      "PulseBinaryShifter",
+      "PulseBinaryShifterEvolutionaryPulse-v16-Immortal-INTEL",
       "PulseBinaryEarn",
       "PulsePresence",
       "PulseChunks",
@@ -69,38 +54,65 @@ AI_EXPERIENCE_META = {
 */
 
 // ---------------------------------------------------------------------------
-// IMPORTS — adjust paths to match your repo layout
+// IMPORTS — v16 IMMORTAL / INTEL surfaces
 // ---------------------------------------------------------------------------
 
-// v2 Evolution Engine core (shifter-side v2)
-import { createPulseV2 as createPulseV2Shifter } from "../PULSE-SHIFTER/PulseShifterEvolutionaryPulse-v11-Evo.js";
+// v2 Evolution Engine core (shifter-side v2, symbolic)
+import { createPulseV2 as createPulseV2Shifter } from "../PULSE-SHIFTER/PulseShifterEvolutionaryPulse-v16-Immortal-INTEL.js";
 
 // Binary Shifter Evolutionary Pulse front-end
-import { createPulseBinaryShifterEvolutionaryPulse } from "../PULSE-SHIFTER/PulseBinaryShifterEvolutionaryPulse-v11-Evo.js";
+import { createPulseBinaryShifterEvolutionaryPulse } from "../PULSE-SHIFTER/PulseBinaryShifterEvolutionaryPulse-v16-Immortal-INTEL.js";
 
 // v1 Legacy Pulse surface (PULSE-SEND)
-import { createLegacyPulse as createPulseV1Legacy } from "../PULSE-SEND/PulseSendLegacyPulse-v11-Evo.js";
+import { createLegacyPulse as createPulseV1Legacy } from "../PULSE-SEND/PulseSendLegacyPulse-v16-Immortal.js";
 
-// v3 Continuance Pulse surface
-import { PulseEarnContinuancePulse as createPulseV3Continuance } from "../PULSE-EARN/PulseEarnContinuancePulse.js";
+// v3 Continuance Pulse surface (earn/continuance)
+import { PulseEarnContinuancePulse as createPulseV3Continuance } from "../PULSE-EARN/PulseEarnContinuancePulse-v16-Immortal.js";
 
 // v2 Evolution Engine (earn-side v2)
-import { createPulseV2 as createPulseV2Earn } from "../PULSE-SEND/PulseV2EvolutionEngine-v11-Evo.js";
+import { createPulseV2 as createPulseV2Earn } from "../PULSE-SEND/PulseV2EvolutionEngine-v16-Immortal-INTEL.js";
 
 // v3 Unified organism pulse
-import { createPulseV3 } from "../PULSE-SEND/PulseV3UnifiedOrganism-v11-Evo.js";
+import { createPulseV3 } from "../PULSE-SEND/PulseV3UnifiedOrganism-v16-Immortal-INTEL.js";
 
 
 // ---------------------------------------------------------------------------
-// INLINE PULSE SURFACES
+// INTERNAL HASH / DUALHASH HELPERS (deterministic, bounded)
 // ---------------------------------------------------------------------------
+function computeHash(str) {
+  let h = 0;
+  const s = String(str);
+  for (let i = 0; i < s.length; i++) {
+    h = (h + s.charCodeAt(i) * (i + 1)) % 100000;
+  }
+  return `h${h}`;
+}
 
-// Presence / Harmonics / Coherence / Band / Continuance pulses
+function computeAltHash(str) {
+  let h = 1;
+  const s = String(str);
+  for (let i = 0; i < s.length; i++) {
+    h = (h * 31 + s.charCodeAt(i) * (i + 7)) % 1000003;
+  }
+  return `a${h}`;
+}
+
+function computeDualHash(str) {
+  const primary = computeHash(str);
+  const secondary = computeAltHash(str);
+  const combined = computeHash(primary + "::" + secondary);
+  return { primary, secondary, combined };
+}
+
+
+// ---------------------------------------------------------------------------
+// INLINE PULSE SURFACES (Presence / Harmonics / Coherence / Band / Continuance)
+// ---------------------------------------------------------------------------
 function createPresencePulse() {
   return function surfacePresence({ bits, mode, sequenceId, immortalMeta }) {
     const len = Array.isArray(bits) ? bits.length : 0;
     return {
-      type: "PulsePresence-v14",
+      type: "PulsePresence-v16",
       mode,
       sequenceId,
       bitsLength: len,
@@ -113,7 +125,7 @@ function createHarmonicsPulse() {
   return function surfaceHarmonics({ bits, mode, sequenceId, immortalMeta }) {
     const len = Array.isArray(bits) ? bits.length : 0;
     return {
-      type: "PulseHarmonics-v14",
+      type: "PulseHarmonics-v16",
       mode,
       sequenceId,
       bitsLength: len,
@@ -126,7 +138,7 @@ function createCoherencePulse() {
   return function surfaceCoherence({ bits, mode, sequenceId, immortalMeta }) {
     const len = Array.isArray(bits) ? bits.length : 0;
     return {
-      type: "PulseCoherence-v14",
+      type: "PulseCoherence-v16",
       mode,
       sequenceId,
       bitsLength: len,
@@ -139,7 +151,7 @@ function createBandPulse() {
   return function surfaceBand({ bits, mode, sequenceId, immortalMeta }) {
     const len = Array.isArray(bits) ? bits.length : 0;
     return {
-      type: "PulseBand-v14",
+      type: "PulseBand-v16",
       mode,
       sequenceId,
       bitsLength: len,
@@ -153,7 +165,7 @@ function createContinuancePulse() {
   return function surfaceContinuance({ bits, mode, sequenceId, immortalMeta }) {
     const len = Array.isArray(bits) ? bits.length : 0;
     return {
-      type: "PulseContinuance-v14",
+      type: "PulseContinuance-v16",
       mode,
       sequenceId,
       bitsLength: len,
@@ -167,15 +179,20 @@ function createContinuancePulse() {
 function createSendLegacyPulse() {
   return function surfaceSendLegacy({ bits, mode, sequenceId, v2Pulse, immortalMeta }) {
     const len = Array.isArray(bits) ? bits.length : 0;
+    const healthScore = v2Pulse?.healthScore ?? null;
+    const tier = v2Pulse?.tier ?? null;
+
     return {
-      type: "PulseSendLegacy-v14",
+      type: "PulseSendLegacy-v16",
       mode,
       sequenceId,
       bitsLength: len,
       sendIntent: "legacy",
-      healthScore: v2Pulse?.healthScore ?? null,
-      tier: v2Pulse?.tier ?? null,
-      presenceBandState: immortalMeta?.presenceBandState ?? null
+      healthScore,
+      tier,
+      presenceBandState: immortalMeta?.presenceBandState ?? null,
+      healthDualHash: healthScore != null ? computeDualHash(String(healthScore)) : null,
+      tierDualHash: tier != null ? computeDualHash(String(tier)) : null
     };
   };
 }
@@ -183,15 +200,20 @@ function createSendLegacyPulse() {
 function createSendEarnPulse() {
   return function surfaceSendEarn({ bits, mode, sequenceId, v2Pulse, immortalMeta }) {
     const len = Array.isArray(bits) ? bits.length : 0;
+    const advantageField = v2Pulse?.advantageField ?? null;
+    const healthScore = v2Pulse?.healthScore ?? null;
+
     return {
-      type: "PulseSendEarn-v14",
+      type: "PulseSendEarn-v16",
       mode,
       sequenceId,
       bitsLength: len,
       sendIntent: "earn",
-      advantageField: v2Pulse?.advantageField ?? null,
-      healthScore: v2Pulse?.healthScore ?? null,
-      coherenceScore: immortalMeta?.coherenceScore ?? null
+      advantageField,
+      healthScore,
+      coherenceScore: immortalMeta?.coherenceScore ?? null,
+      advantageDualHash: advantageField ? computeDualHash(JSON.stringify(advantageField)) : null,
+      healthDualHash: healthScore != null ? computeDualHash(String(healthScore)) : null
     };
   };
 }
@@ -199,19 +221,21 @@ function createSendEarnPulse() {
 function createNormalPulseSurface() {
   return function surfaceNormal({ bits, mode, sequenceId }) {
     const len = Array.isArray(bits) ? bits.length : 0;
+    const baselineScore = Math.min(len / 32, 1);
     return {
-      type: "PulseNormal-v14",
+      type: "PulseNormal-v16",
       mode,
       sequenceId,
       bitsLength: len,
-      baselineScore: Math.min(len / 32, 1)
+      baselineScore,
+      baselineDualHash: computeDualHash(String(baselineScore))
     };
   };
 }
 
 
 // ============================================================================
-// MAIN ORGAN: createBinaryPulse — v14.4-Presence-Immortal
+// MAIN ORGAN: createBinaryPulse — v16-Immortal-DualHash-INTEL
 // ============================================================================
 export function createBinaryPulse({
   fallbackProxy,
@@ -283,7 +307,7 @@ export function createBinaryPulse({
     };
 
     if (trace && typeof console !== "undefined") {
-      console.warn("[PulseBinaryTech IMMORTAL] FALLBACK:", report);
+      console.warn("[PulseBinaryTech v16-IMMORTAL] FALLBACK:", report);
     }
 
     if (fallbackProxy?.exchange) return fallbackProxy.exchange(bits, reason, report);
@@ -360,7 +384,12 @@ export function createBinaryPulse({
       return createPulseV2Shifter({
         jobId: `v2shifter-${mode}-${counter}`,
         pattern: `binary/${mode}/${bits.length}`,
-        payload: { bitsLength: bits.length, mode, sequenceId: counter },
+        payload: {
+          bitsLength: bits.length,
+          mode,
+          sequenceId: counter,
+          immortalMeta
+        },
         priority: "normal",
         returnTo: null,
         parentLineage: null,
@@ -377,7 +406,12 @@ export function createBinaryPulse({
       return createPulseV2Earn({
         jobId: `v2earn-${mode}-${counter}`,
         pattern: `binary/${mode}/${bits.length}`,
-        payload: { bitsLength: bits.length, mode, sequenceId: counter },
+        payload: {
+          bitsLength: bits.length,
+          mode,
+          sequenceId: counter,
+          immortalMeta
+        },
         priority: "normal",
         returnTo: null,
         parentLineage: null,
@@ -422,11 +456,23 @@ export function createBinaryPulse({
 
   function surfaceV3Unified(bits, mode) {
     try {
-      return createPulseV3({
-        bits,
+      // v3 unified is symbolic; we just pass a synthetic pattern/payload
+      const pattern = `binary/${mode}/${bits.length}`;
+      const payload = {
+        bitsLength: bits.length,
         mode,
         sequenceId: counter,
         immortalMeta
+      };
+      return createPulseV3({
+        jobId: `v3unified-${mode}-${counter}`,
+        pattern,
+        payload,
+        priority: "normal",
+        returnTo: null,
+        parentLineage: null,
+        mode: "normal",
+        pageId: "BINARY_V3_UNIFIED"
       });
     } catch {
       return null;
@@ -514,8 +560,8 @@ export function createBinaryPulse({
   }
 
   // -------------------------------------------------------------------------
-  // WRAPPER — UNIFIED CARRIER PACKET
-  // -------------------------------------------------------------------------
+  // WRAPPER — UNIFIED CARRIER PACKET (v16 DualHash + Intelligence Surface)
+// -------------------------------------------------------------------------
   function wrap(mode, bitsOrMulti) {
     const primaryBits =
       Array.isArray(bitsOrMulti) && typeof bitsOrMulti[0] === "number"
@@ -523,6 +569,11 @@ export function createBinaryPulse({
         : Array.isArray(bitsOrMulti) && Array.isArray(bitsOrMulti[0])
           ? bitsOrMulti[0]
           : [];
+
+    const bitsSignature = computeDualHash(JSON.stringify(primaryBits));
+    const modeSignature = computeDualHash(mode);
+    const sequenceSignature = computeDualHash(String(counter));
+    const immortalSignature = computeDualHash(JSON.stringify(immortalMeta));
 
     // TECH FIRST: shifter v2 primary, earn v2 backup
     const v2PulseShifter = surfaceV2Shifter(primaryBits, mode);
@@ -539,11 +590,41 @@ export function createBinaryPulse({
     const coherencePulse   = surfaceCoherence(primaryBits, mode);
     const bandPulse        = surfaceBand(primaryBits, mode);
 
-    // send surfaces use primary v2 = shifter-tech
     const sendLegacy       = surfaceSendLegacy(primaryBits, mode, v2PulseShifter);
     const sendEarn         = surfaceSendEarn(primaryBits, mode, v2PulseShifter);
 
-    // IMPORTANT: this organ NEVER sends. All send* surfaces are descriptors only.
+    // Intelligence / advantage surfaces (if present)
+    const v2PrimaryAdvantage = v2PulseShifter?.advantageField ?? null;
+    const v2PrimaryHealth    = v2PulseShifter?.healthScore ?? null;
+    const v2PrimaryTier      = v2PulseShifter?.tier ?? null;
+    const v2PrimaryIntel     = v2PulseShifter?.pulseIntelligence ?? v2PulseShifter?.pulseCompute ?? null;
+
+    const v3UnifiedIntel     = v3UnifiedPulse?.pulseIntelligence ?? null;
+    const v3UnifiedHealth    = v3UnifiedPulse?.healthScore ?? null;
+    const v3UnifiedTier      = v3UnifiedPulse?.tier ?? null;
+
+    const carrierIntel = {
+      v2Primary: v2PrimaryIntel,
+      v3Unified: v3UnifiedIntel
+    };
+
+    const carrierAdvantage = {
+      v2PrimaryAdvantage,
+      v2PrimaryHealth,
+      v2PrimaryTier,
+      v3UnifiedHealth,
+      v3UnifiedTier
+    };
+
+    const carrierSignature = computeDualHash(
+      JSON.stringify({
+        mode,
+        sequenceId: counter,
+        bitsSignature,
+        carrierAdvantage,
+        carrierIntel
+      })
+    );
 
     return {
       mode,
@@ -573,7 +654,20 @@ export function createBinaryPulse({
 
       // Send descriptors
       sendLegacyPulse: sendLegacy,
-      sendEarnPulse: sendEarn
+      sendEarnPulse: sendEarn,
+
+      // Intelligence / advantage surfaces
+      carrierAdvantage,
+      carrierIntel,
+
+      // DualHash surfaces
+      signatures: {
+        bitsSignature,
+        modeSignature,
+        sequenceSignature,
+        immortalSignature,
+        carrierSignature
+      }
     };
   }
 
@@ -583,28 +677,28 @@ export function createBinaryPulse({
   function nextPulse() {
     counter++;
     const bits = ensurePureBinaryOrFallback("invalid-base", generateBits(counter));
-    if (trace) console.log("[PulseBinaryTech IMMORTAL] BASE:", bits);
+    if (trace) console.log("[PulseBinaryTech v16-IMMORTAL] BASE:", bits);
     return wrap("base", bits);
   }
 
   function nextPulseFast() {
     counter++;
     const bits = ensurePureBinaryOrFallback("invalid-fast", generateBits(counter));
-    if (trace) console.log("[PulseBinaryTech IMMORTAL] FAST:", bits);
+    if (trace) console.log("[PulseBinaryTech v16-IMMORTAL] FAST:", bits);
     return wrap("fast", bits);
   }
 
   function nextPulseSlow() {
     counter += 0.25;
     const bits = ensurePureBinaryOrFallback("invalid-slow", generateBits(Math.floor(counter)));
-    if (trace) console.log("[PulseBinaryTech IMMORTAL] SLOW:", bits);
+    if (trace) console.log("[PulseBinaryTech v16-IMMORTAL] SLOW:", bits);
     return wrap("slow", bits);
   }
 
   function nextPulseDeep() {
     counter += 0.05;
     const bits = ensurePureBinaryOrFallback("invalid-deep", generateBits(Math.floor(counter)));
-    if (trace) console.log("[PulseBinaryTech IMMORTAL] DEEP:", bits);
+    if (trace) console.log("[PulseBinaryTech v16-IMMORTAL] DEEP:", bits);
     return wrap("deep", bits);
   }
 
@@ -612,14 +706,14 @@ export function createBinaryPulse({
     counter++;
     const bits = ensurePureBinaryOrFallback("invalid-multi", generateBits(counter));
     const multi = generateMultiSpin(bits);
-    if (trace) console.log("[PulseBinaryTech IMMORTAL] MULTI:", multi);
+    if (trace) console.log("[PulseBinaryTech v16-IMMORTAL] MULTI:", multi);
     return wrap("multi", multi);
   }
 
   function nextPulseEcho() {
     counter++;
     const bits = ensurePureBinaryOrFallback("invalid-echo", generateBits(counter));
-    if (trace) console.log("[PulseBinaryTech IMMORTAL] ECHO:", bits);
+    if (trace) console.log("[PulseBinaryTech v16-IMMORTAL] ECHO:", bits);
     return wrap("echo", bits);
   }
 
@@ -627,7 +721,7 @@ export function createBinaryPulse({
     counter++;
     const bits = ensurePureBinaryOrFallback("invalid-reflect", generateBits(counter));
     const inverted = invertBits(bits);
-    if (trace) console.log("[PulseBinaryTech IMMORTAL] REFLECT:", inverted);
+    if (trace) console.log("[PulseBinaryTech v16-IMMORTAL] REFLECT:", inverted);
     return wrap("reflect", inverted);
   }
 
@@ -635,7 +729,7 @@ export function createBinaryPulse({
     counter++;
     const base = ensurePureBinaryOrFallback("invalid-burst", generateBits(counter));
     const burst = [base, invertBits(base), rotateBits(base, 1)];
-    if (trace) console.log("[PulseBinaryTech IMMORTAL] BURST:", burst);
+    if (trace) console.log("[PulseBinaryTech v16-IMMORTAL] BURST:", burst);
     return wrap("burst", burst);
   }
 

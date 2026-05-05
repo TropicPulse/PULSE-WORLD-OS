@@ -117,7 +117,7 @@ const {
 
 // DualBand / Binary field (optional, advantage-only)
 import { createDualBandOrganism as PulseBinaryOrganismBoot } from "../PULSE-AI/aiDualBand-v11-Evo.js";
-import { createBinarySend as PulseSendBin } from "../PULSE-SEND/PulseBinarySend-v11-Evo.js";
+import { createBinarySend as PulseSendBin } from "../PULSE-SEND/PulseBinarySend-v16.js";
 
 // Proxy context (v16 IMMORTAL ORGANISM)
 import {

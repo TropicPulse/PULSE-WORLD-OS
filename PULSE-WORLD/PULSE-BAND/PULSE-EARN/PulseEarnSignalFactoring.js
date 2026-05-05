@@ -110,8 +110,7 @@ AI_EXPERIENCE_META = {
 // ============================================================================
 // HASH HELPERS — v16‑IMMORTAL‑INTEL (dual‑hash)
 // ============================================================================
-
-function computeClassicHash(str) {
+function computeHash(str) {
   let h = 0;
   const s = String(str || "");
   for (let i = 0; i < s.length; i++) {
@@ -120,14 +119,15 @@ function computeClassicHash(str) {
   return `h${h}`;
 }
 
-function computeIntelHash(payload) {
-  const s = JSON.stringify(payload || {});
+// Primary INTEL hash — deterministic, structure-aware, no IO, no time.
+function computeHashIntelligence(payload) {
+  const base = JSON.stringify(payload || "");
   let h = 0;
-  for (let i = 0; i < s.length; i++) {
-    const c = s.charCodeAt(i);
+  for (let i = 0; i < base.length; i++) {
+    const c = base.charCodeAt(i);
     h = (h * 131 + c * (i + 7)) % 1000000007;
   }
-  return `i${h}`;
+  return `HINTEL_${h}`;
 }
 
 function buildDualHashSignature(label, intelPayload, classicString) {
@@ -136,8 +136,8 @@ function buildDualHashSignature(label, intelPayload, classicString) {
     intel: intelPayload || {},
     classic: classicString || ""
   };
-  const intelHash = computeIntelHash(intelBase);
-  const classicHash = computeClassicHash(
+  const intelHash = computeHashIntelligence(intelBase);
+  const classicHash = computeHash(
     `${label}::${classicString || ""}`
   );
   return {
@@ -157,6 +157,133 @@ function safeNumber(v, fallback = 0) {
   const n = Number(v);
   return Number.isFinite(n) ? n : fallback;
 }
+
+function normalizeBand(band) {
+  const x = String(band || "symbolic").toLowerCase();
+  return x === "binary" ? "binary" : "symbolic";
+}
+
+function buildPageBandBinaryWave(page, cycleIndex, deviceProfile = {}) {
+  const band = normalizeBand(
+    page?.meta?.band ||
+    page?.band ||
+    deviceProfile?.band ||
+    deviceProfile?.presenceBand ||
+    "symbolic"
+  );
+
+  const idLen = String(page?.id || page?.key || "NO_PAGE_ID").length;
+  const jobCount = safeNumber(Array.isArray(page?.jobs) ? page.jobs.length : 0);
+  const meshPressure = safeNumber(page?.presenceField?.meshPressureIndex || 0);
+  const gpuScore = safeNumber(deviceProfile?.gpuScore || 0);
+
+  const surface = idLen + jobCount + meshPressure + gpuScore + cycleIndex;
+
+  const binaryField = {
+    binaryPageSignature: computeHash(`BPAGE::${surface}`),
+    binarySurfaceSignature: computeHash(`BSURF_EARN_PAGE::${surface}`),
+    binarySurface: {
+      idLen,
+      jobCount,
+      meshPressure,
+      gpuScore,
+      cycle: cycleIndex,
+      surface
+    },
+    parity: surface % 2 === 0 ? 0 : 1,
+    density: jobCount + meshPressure + gpuScore,
+    shiftDepth: Math.max(0, Math.floor(Math.log2(surface || 1)))
+  };
+
+  const waveField = {
+    amplitude: jobCount + meshPressure + gpuScore,
+    wavelength: cycleIndex || 1,
+    phase: (idLen + jobCount + cycleIndex) % 16,
+    band,
+    mode: band === "binary" ? "compression-wave" : "symbolic-wave"
+  };
+
+  return { band, binaryField, waveField };
+}
+
+function buildPageAdvantageField(page, deviceProfile, bandPack, factoringProfile) {
+  const gpuScore = safeNumber(deviceProfile?.gpuScore || 0);
+  const bandwidth = safeNumber(deviceProfile?.bandwidthMbps || 0);
+  const chunkBudgetKB = safeNumber(deviceProfile?.chunkField?.chunkBudgetKB || 0);
+  const cacheLines = safeNumber(deviceProfile?.chunkField?.cacheLines || 0);
+  const prewarmSlots = safeNumber(deviceProfile?.chunkField?.prewarmSlots || 0);
+
+  const density = bandPack.binaryField.density;
+  const amplitude = bandPack.waveField.amplitude;
+
+  const presenceTier = factoringProfile.presenceTier;
+  const advantageTier = factoringProfile.advantageTier;
+
+  const advantageScore =
+    gpuScore * 0.0005 +
+    bandwidth * 0.0002 +
+    density * 0.00001 +
+    amplitude * 0.00001 +
+    (chunkBudgetKB + cacheLines + prewarmSlots) * 0.000001 +
+    (presenceTier === "presence_high" ? 0.01 : 0) +
+    (advantageTier >= 2 ? 0.005 : 0);
+
+  return {
+    advantageVersion: "M-16.0-EARN-PAGE",
+    band: bandPack.band,
+    gpuScore,
+    bandwidth,
+    binaryDensity: density,
+    waveAmplitude: amplitude,
+    chunkBudgetKB,
+    cacheLines,
+    prewarmSlots,
+    presenceTier,
+    advantageTier,
+    advantageScore
+  };
+}
+
+function buildPageChunkPrewarmPlan(page, factoringProfile, bandPack, advantageField) {
+  let priorityLabel = "normal";
+  if (factoringProfile.presenceTier === "presence_high") priorityLabel = "high";
+  else if (factoringProfile.presenceTier === "presence_mid") priorityLabel = "medium";
+  else if (factoringProfile.presenceTier === "presence_low") priorityLabel = "low";
+
+  if (advantageField.advantageScore >= 0.05) priorityLabel = "high";
+  else if (advantageField.advantageScore >= 0.02 && priorityLabel === "normal") {
+    priorityLabel = "medium";
+  }
+
+  const jobCount = factoringProfile.jobCount;
+  const planSurface =
+    jobCount +
+    (factoringProfile.meshPressureIndex || 0) * 2 +
+    (factoringProfile.cachePriority || 0) * 3;
+
+  return {
+    planVersion: "v16-IMMORTAL-INTEL-EARN-PAGE",
+    priorityLabel,
+    bandPresence: factoringProfile.presenceTier,
+    band: bandPack.band,
+    planSurface,
+    chunks: {
+      pageEnvelope: true,
+      jobList: true,
+      presenceAdvantageEnvelope: true
+    },
+    cache: {
+      pageDiagnostics: true,
+      factoringProfile: true
+    },
+    prewarm: {
+      circulatorySystem: factoringProfile.prewarmNeeded,
+      lymphNodes: factoringProfile.prewarmNeeded,
+      metabolism: factoringProfile.prewarmNeeded && jobCount > 0
+    }
+  };
+}
+
 
 // ============================================================================
 // IMMORTAL META TEMPLATE — v16‑IMMORTAL‑INTEL (Earn Page)
@@ -352,7 +479,7 @@ export function applyEarnSignalFactoring(page, context = {}) {
       ? "prefer_factored_page"
       : "normal";
 
-  // -------------------------------------------------------------------------
+    // -------------------------------------------------------------------------
   // 6) Build factoring profile surface for Earn organs
   // -------------------------------------------------------------------------
   const factoringProfile = {
@@ -379,13 +506,42 @@ export function applyEarnSignalFactoring(page, context = {}) {
   };
 
   // -------------------------------------------------------------------------
-  // 7) Attach IMMORTAL META BLOCK with INTEL + classic signatures
+  // 7) Band/Binary/Wave + Advantage‑M16 + Chunk/Prewarm (v16 IMMORTAL INTEL)
+  // -------------------------------------------------------------------------
+  const bandPack = buildPageBandBinaryWave(page, earnFactoringCycle, context.deviceProfile || {});
+  const pageAdvantageField = buildPageAdvantageField(
+    page,
+    context.deviceProfile || {},
+    bandPack,
+    factoringProfile
+  );
+  const pageChunkPrewarmPlan = buildPageChunkPrewarmPlan(
+    page,
+    factoringProfile,
+    bandPack,
+    pageAdvantageField
+  );
+
+  // -------------------------------------------------------------------------
+  // 8) Attach IMMORTAL META BLOCK with INTEL + classic signatures + surfaces
   // -------------------------------------------------------------------------
   page.meta = buildEarnSignalFactoringMeta(
     page.meta,
     earnFactoringCycle,
-    factoringProfile
+    {
+      ...factoringProfile,
+      band: bandPack.band,
+      binaryDensity: bandPack.binaryField.density,
+      waveAmplitude: bandPack.waveField.amplitude,
+      advantageScore: pageAdvantageField.advantageScore
+    }
   );
+
+  page.meta.earnSignalFactoring.bandBinaryWave = bandPack;
+  page.meta.earnSignalFactoring.advantageField = pageAdvantageField;
+  page.meta.earnSignalFactoring.chunkPrewarmPlan = pageChunkPrewarmPlan;
+
+  page.flags.earnSignalFactoring = true;
 
   return page;
 }

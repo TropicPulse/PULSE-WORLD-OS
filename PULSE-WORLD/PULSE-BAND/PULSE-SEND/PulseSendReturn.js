@@ -1,22 +1,28 @@
 // ============================================================================
-//  PulseSendReturn-v14-Immortal.js
+//  PulseSendReturn-v16-Immortal-ORGANISM.js
 //  Return Arc • Pulse‑Agnostic Bounce‑Back Organ • Handles returnTo Logic
-//  v14-Immortal: Binary-Aware + Movement-Aware + DualStack-Aware Return Surface
-//                + Ancestry Surface + Advantage Echo
+//  v16-Immortal-ORGANISM:
+//    • Binary-aware + Movement-aware + DualStack-aware Return Surface
+//    • DualHash surfaces (primary + secondary)
+//    • Return Intelligence (IMMORTAL-safe, logic-only)
+//    • Ancestry + Advantage echo preserved
 // ============================================================================
+
 /*
 AI_EXPERIENCE_META = {
   identity: "PulseSendReturn",
-  version: "v14.4-Evo",
+  version: "v16-Immortal-ORGANISM",
   layer: "frontend",
   role: "send_return",
-  lineage: "PulseOS-v12",
+  lineage: "PulseOS-v12 → v14.4-Immortal → v16-Immortal-ORGANISM",
 
   evo: {
     deterministic: true,
     presenceAware: true,
     chunkAligned: true,
-    safeRouteFree: true
+    safeRouteFree: true,
+    dualHashSurfaces: true,
+    returnIntelligence: true
   },
 
   contract: {
@@ -37,8 +43,8 @@ export const PulseRole = {
   type: "Messenger",
   subsystem: "PulseSend",
   layer: "Return",
-  version: "14-Immortal",
-  identity: "PulseSendReturn-v14-Immortal",
+  version: "16-Immortal-ORGANISM",
+  identity: "PulseSendReturn-v16-Immortal-ORGANISM",
 
   evo: {
     driftProof: true,
@@ -63,7 +69,11 @@ export const PulseRole = {
     dualStackReady: true,
 
     // Movement/packet aware
-    movementPacketAware: true
+    movementPacketAware: true,
+
+    // v16:
+    dualHashSurfaces: true,
+    returnIntelligenceReady: true
   },
 
   routingContract: "PulseRouter-v14",
@@ -80,11 +90,28 @@ export const PulseRole = {
 
 function computeHash(str) {
   let h = 0;
-  const s = String(str);
+  const s = String(str || "");
   for (let i = 0; i < s.length; i++) {
     h = (h + s.charCodeAt(i) * (i + 1)) % 100000;
   }
   return `h${h}`;
+}
+
+function computeHashAlt(str) {
+  let h = 1;
+  const s = String(str || "");
+  for (let i = 0; i < s.length; i++) {
+    h = (h * 131 + s.charCodeAt(i) * (i + 7)) % 262139;
+  }
+  return `h2_${h}`;
+}
+
+function computeDualHash(value) {
+  const s = typeof value === "string" ? value : JSON.stringify(value || {});
+  return {
+    primary: computeHash(s),
+    secondary: computeHashAlt(s)
+  };
 }
 
 function extractBinarySurfaceFromPulse(pulse) {
@@ -122,6 +149,60 @@ function extractBinarySurfaceFromPulse(pulse) {
   };
 }
 
+
+// ============================================================================
+//  RETURN INTELLIGENCE (IMMORTAL-safe, logic-only)
+// ============================================================================
+function computeReturnIntelligence({
+  binarySurface,
+  hasReturnTarget,
+  hasMovementSignature,
+  lineageDepth
+}) {
+  const binaryWeight = binarySurface.hasBinary ? 0.4 : 0.1;
+  const returnWeight = hasReturnTarget ? 0.4 : 0.0;
+  const movementWeight = hasMovementSignature ? 0.2 : 0.0;
+  const lineageWeight = lineageDepth > 0 ? Math.min(lineageDepth / 10, 0.2) : 0;
+
+  const solvednessScore = Math.max(
+    0,
+    Math.min(
+      binaryWeight + returnWeight + movementWeight + lineageWeight,
+      1
+    )
+  );
+
+  const computeTier =
+    solvednessScore >= 0.9 ? "nearSolution" :
+    solvednessScore >= 0.7 ? "highValue"    :
+    solvednessScore >= 0.4 ? "normal"       :
+    solvednessScore >= 0.2 ? "lowPriority"  :
+    "avoidCompute";
+
+  const readinessScore = Math.max(
+    0,
+    Math.min(
+      solvednessScore * 0.7 +
+      (hasReturnTarget ? 0.1 : 0) +
+      (binarySurface.hasBinary ? 0.1 : 0),
+      1
+    )
+  );
+
+  return {
+    solvednessScore,
+    computeTier,
+    readinessScore,
+    hasReturnTarget,
+    hasBinary: binarySurface.hasBinary,
+    hasMovementSignature
+  };
+}
+
+
+// ============================================================================
+//  DIAGNOSTICS — v16 dual-hash + intelligence
+// ============================================================================
 function buildReturnDiagnostics({
   pulse,
   movementPacket,
@@ -138,6 +219,38 @@ function buildReturnDiagnostics({
 
   const movementSignature = movementPacket?.movementSignature || null;
   const movementDiagnostics = movementPacket?.diagnostics || null;
+
+  const patternDual = computeDualHash(pattern);
+  const lineageDual = computeDualHash(String(lineageDepth));
+  const pulseTypeDual = computeDualHash(pulseType);
+  const returnTargetDual = computeDualHash(String(returnTo));
+  const organDual = computeDualHash(String(targetOrgan));
+  const pathwayDual = computeDualHash(JSON.stringify(pathway || {}));
+
+  const binaryPatternHashDual = binarySurface.binaryPattern
+    ? computeDualHash(binarySurface.binaryPattern)
+    : null;
+  const binaryModeHashDual = binarySurface.binaryMode
+    ? computeDualHash(binarySurface.binaryMode)
+    : null;
+  const binaryRouterHintHashDual = binarySurface.routerHint
+    ? computeDualHash(binarySurface.routerHint)
+    : null;
+  const binaryMeshHintHashDual = binarySurface.meshHint
+    ? computeDualHash(binarySurface.meshHint)
+    : null;
+  const binaryOrganHintHashDual = binarySurface.organHint
+    ? computeDualHash(binarySurface.organHint)
+    : null;
+
+  const intelligence = computeReturnIntelligence({
+    binarySurface,
+    hasReturnTarget: !!returnTo,
+    hasMovementSignature: !!movementSignature,
+    lineageDepth
+  });
+
+  const intelligenceDual = computeDualHash(JSON.stringify(intelligence));
 
   return {
     // Core symbolic surface
@@ -156,36 +269,42 @@ function buildReturnDiagnostics({
     movementSignature,
     movementDiagnostics,
 
-    // Hashes
-    patternHash: computeHash(pattern),
-    lineageHash: computeHash(String(lineageDepth)),
-    pulseTypeHash: computeHash(pulseType),
-    returnTargetHash: computeHash(String(returnTo)),
-    organHash: computeHash(String(targetOrgan)),
-    pathwayHash: computeHash(JSON.stringify(pathway || {})),
+    // Intelligence
+    returnIntelligence: intelligence,
+    returnIntelligenceSignature: intelligenceDual.primary,
+    returnIntelligenceSignatureDual: intelligenceDual,
 
-    // Binary hashes
-    binaryPatternHash: binarySurface.binaryPattern
-      ? computeHash(binarySurface.binaryPattern)
-      : null,
-    binaryModeHash: binarySurface.binaryMode
-      ? computeHash(binarySurface.binaryMode)
-      : null,
-    binaryRouterHintHash: binarySurface.routerHint
-      ? computeHash(binarySurface.routerHint)
-      : null,
-    binaryMeshHintHash: binarySurface.meshHint
-      ? computeHash(binarySurface.meshHint)
-      : null,
-    binaryOrganHintHash: binarySurface.organHint
-      ? computeHash(binarySurface.organHint)
-      : null
+    // Hashes (dual)
+    patternHash: patternDual.primary,
+    patternHashDual: patternDual,
+    lineageHash: lineageDual.primary,
+    lineageHashDual: lineageDual,
+    pulseTypeHash: pulseTypeDual.primary,
+    pulseTypeHashDual: pulseTypeDual,
+    returnTargetHash: returnTargetDual.primary,
+    returnTargetHashDual: returnTargetDual,
+    organHash: organDual.primary,
+    organHashDual: organDual,
+    pathwayHash: pathwayDual.primary,
+    pathwayHashDual: pathwayDual,
+
+    // Binary hashes (dual)
+    binaryPatternHash: binaryPatternHashDual ? binaryPatternHashDual.primary : null,
+    binaryPatternHashDual,
+    binaryModeHash: binaryModeHashDual ? binaryModeHashDual.primary : null,
+    binaryModeHashDual,
+    binaryRouterHintHash: binaryRouterHintHashDual ? binaryRouterHintHashDual.primary : null,
+    binaryRouterHintHashDual,
+    binaryMeshHintHash: binaryMeshHintHashDual ? binaryMeshHintHashDual.primary : null,
+    binaryMeshHintHashDual,
+    binaryOrganHintHash: binaryOrganHintHashDual ? binaryOrganHintHashDual.primary : null,
+    binaryOrganHintHashDual
   };
 }
 
 
 // ============================================================================
-//  FACTORY — Return Organ (v14-Immortal + Binary/DualStack/Movement-Aware)
+//  FACTORY — Return Organ (v16-Immortal-ORGANISM)
 // ============================================================================
 export function createPulseSendReturn({ impulse, pulseRouter, pulseMesh, log }) {
   return {
@@ -222,7 +341,7 @@ export function createPulseSendReturn({ impulse, pulseRouter, pulseMesh, log }) 
           mode
         });
 
-        log && log("[PulseSendReturn-v14-Immortal] No returnTo target — chain complete", {
+        log && log("[PulseSendReturn-v16-Immortal-ORGANISM] No returnTo target — chain complete", {
           jobId: pulse.jobId,
           diagnostics
         });
@@ -237,7 +356,7 @@ export function createPulseSendReturn({ impulse, pulseRouter, pulseMesh, log }) 
       }
 
       // ⭐ Return target exists → route the return pulse
-      log && log("[PulseSendReturn-v14-Immortal] Returning pulse", {
+      log && log("[PulseSendReturn-v16-Immortal-ORGANISM] Returning pulse", {
         jobId: pulse.jobId,
         pattern,
         returnTo,
@@ -265,26 +384,20 @@ export function createPulseSendReturn({ impulse, pulseRouter, pulseMesh, log }) 
         mode
       });
 
-      // ⭐ v14 return signature (binary + hints + movement aware)
-      const returnSignature = computeHash(
-        diagnostics.pattern +
-        "::" +
-        diagnostics.returnTo +
-        "::" +
-        diagnostics.targetOrgan +
-        "::" +
-        diagnostics.mode +
-        "::" +
-        (diagnostics.binary.binaryPattern || "NO_BINARY_PATTERN") +
-        "::" +
-        (diagnostics.binary.routerHint || "NO_ROUTER_HINT") +
-        "::" +
-        (diagnostics.binary.meshHint || "NO_MESH_HINT") +
-        "::" +
-        (diagnostics.binary.organHint || "NO_ORGAN_HINT") +
-        "::" +
-        (diagnostics.movementSignature || "NO_MOVEMENT_SIGNATURE")
-      );
+      // ⭐ v16 return signature (dual-hash, binary + hints + movement aware)
+      const signatureShape = {
+        pattern: diagnostics.pattern,
+        returnTo: diagnostics.returnTo,
+        targetOrgan: diagnostics.targetOrgan,
+        mode: diagnostics.mode,
+        binaryPattern: diagnostics.binary.binaryPattern || "NO_BINARY_PATTERN",
+        routerHint: diagnostics.binary.routerHint || "NO_ROUTER_HINT",
+        meshHint: diagnostics.binary.meshHint || "NO_MESH_HINT",
+        organHint: diagnostics.binary.organHint || "NO_ORGAN_HINT",
+        movementSignature: diagnostics.movementSignature || "NO_MOVEMENT_SIGNATURE"
+      };
+
+      const returnSignatureDual = computeDualHash(JSON.stringify(signatureShape));
 
       // ⭐ Step 3 — fire impulse back (prevent infinite loops)
       const backMovement = impulse.fire({
@@ -301,7 +414,8 @@ export function createPulseSendReturn({ impulse, pulseRouter, pulseMesh, log }) 
       return {
         completed: true,
         returned: true,
-        returnSignature,
+        returnSignature: returnSignatureDual.primary,
+        returnSignatureDual,
         diagnostics,
         movement: backMovement,
         movementIn: packet

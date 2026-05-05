@@ -1,8 +1,10 @@
 // ============================================================================
-//  PulseSendSystem-v12.4-EvoBinary.js
-//  Nervous System Conductor (v12.4‑EvoBinary + SDN‑Aware + DualStack‑Aware)
+//  PulseSendSystem-v16-Immortal-Intel.js
+//  Nervous System Conductor (v16‑Immortal‑Intel + SDN‑Aware + DualStack‑Aware)
 //  Impulse → Pulse v3 → Pulse v2 → Pulse v1 → Router → Mesh → Send → Return
-//  v12.4: Fully Binary-Aware + Ancestry + Degradation Tier + Advantage Surface
+//  v16: Fully Binary-Aware + Ancestry + Degradation Tier + Advantage Surface
+//       + cacheChunkSurface + prewarmSurface + presenceSurface
+//       + IMMORTAL-INTEL pulseIntelligence + dualHash signatures
 // ============================================================================
 //
 //  ROLE:
@@ -12,10 +14,11 @@
 //        - Optionally "unbinary" into symbolic fields.
 //    • Try Pulse v3 (unified organism).
 //    • If v3 fails → try Pulse v2 (evolution engine).
-//    • If v2 fails → fallback to Pulse v1 (EvoStable).
+//    • If v2 fails → fallback to Pulse v1 (EvoStable-Immortal).
 //    • Route → Mesh → Send → ReturnArc.
 //    • Emit SDN impulses at every stage (non‑blocking).
 //    • Surface ancestry, degradation tier, advantage field, binary summary.
+//    • Surface cacheChunk / prewarm / presence + IMMORTAL-INTEL intelligence.
 //    • Return result to PulseBand (if present).
 //
 //  SAFETY:
@@ -24,11 +27,13 @@
 //    • No Earn
 //    • Pure internal routing + transport
 //    • Deterministic bit → pattern/mode/payload mapping
+//    • No randomness, no timestamps
 // ============================================================================
+
 /*
 AI_EXPERIENCE_META = {
   identity: "PulseSendSystem",
-  version: "v14.4-Evo",
+  version: "v16-Immortal-Intel",
   layer: "frontend",
   role: "send_system_conductor",
   lineage: "PulseOS-v12",
@@ -39,7 +44,8 @@ AI_EXPERIENCE_META = {
     chunkAligned: true,
     safeRouteFree: true,
     deterministic: true,
-    unifiedPulseFamily: true
+    unifiedPulseFamily: true,
+    immortalIntel: true
   },
 
   contract: {
@@ -64,21 +70,80 @@ AI_EXPERIENCE_META = {
 // ============================================================================
 //  IMPORTS — Pulse v1 / v2 / v3 creators
 // ============================================================================
-import { createPulseV3 } from "./PulseV3UnifiedOrganism-v11-Evo.js";
-import { createPulseV2 } from "./PulseV2EvolutionEngine-v11-Evo.js";
-import { createLegacyPulse } from "./PulseSendLegacyPulse-v11-Evo.js";
+import { createPulseV3 } from "./PulseV3UnifiedOrganism-v16.js";
+import { createPulseV2 } from "./PulseV2EvolutionEngine-v16.js";
+import { createLegacyPulse } from "./PulseSendLegacyPulse-v14.4-Immortal.js";
 
 // Router + Mesh + Send
-import { PulseRouter } from "../PULSE-ROUTER/PulseRouter-v11-evo.js";
+import { PulseRouter } from "../PULSE-ROUTER/PulseRouter-v16.js";
 import { PulseMesh } from "../PULSE-MESH/PulseMesh-v11-evo.js";
-import { createPulseSendImpulse as createPulseSend } from "./PulseSendImpulse-v11-Evo.js";
-import { createPulseSendReturn } from "./PulseSendReturn.js";
+import { createPulseSendImpulse as createPulseSend } from "./PulseSendImpulse-v14.4-Immortal.js";
+import { createPulseSendReturn } from "./PulseSendReturn-v14-Immortal.js";
 
 
 // ============================================================================
-//  INTERNAL: GENERIC HELPERS
+//  PulseRole — System Conductor (v16-Immortal-Intel)
 // ============================================================================
-function computeHash(str) {
+export const PulseRole = {
+  type: "Messenger",
+  subsystem: "PulseSend",
+  layer: "System",
+  version: "16-Immortal-Intel",
+  identity: "PulseSendSystem-v16-Immortal-Intel",
+
+  evo: {
+    driftProof: true,
+    systemConductorReady: true,
+    patternAware: true,
+    lineageAware: true,
+    modeAware: true,
+    identityAware: true,
+    multiOrganReady: true,
+    deterministicImpulseFlow: true,
+    futureEvolutionReady: true,
+
+    unifiedAdvantageField: true,
+    pulseSend11Ready: true,
+
+    diagnosticsReady: true,
+    signatureReady: true,
+    systemSurfaceReady: true,
+
+    // Binary + dual-stack
+    binaryAwareSystemReady: true,
+    dualStackReady: true,
+    dualBandAware: true,
+
+    // 12.3+ style surfaces
+    cacheChunkAware: true,
+    prewarmAware: true,
+    multiPresenceAware: true,
+
+    // IMMORTAL-INTEL
+    degradationAware: true,
+    immortalMetaAware: true,
+    pulseIntelligenceReady: true
+  }
+};
+
+
+// ============================================================================
+//  INTERNAL: GENERIC HELPERS (dual-hash + stable stringify)
+// ============================================================================
+function stableStringify(value) {
+  if (value === null || typeof value !== "object") return JSON.stringify(value);
+  if (Array.isArray(value)) {
+    return "[" + value.map(stableStringify).join(",") + "]";
+  }
+  const keys = Object.keys(value).sort();
+  return (
+    "{" +
+    keys.map((k) => JSON.stringify(k) + ":" + stableStringify(value[k])).join(",") +
+    "}"
+  );
+}
+
+function computeHashV1(str) {
   let h = 0;
   const s = String(str);
   for (let i = 0; i < s.length; i++) {
@@ -87,6 +152,35 @@ function computeHash(str) {
   return `h${h}`;
 }
 
+function computeHashV2(str) {
+  let h = 0;
+  const s = String(str);
+  for (let i = 0; i < s.length; i++) {
+    h = (h + s.charCodeAt(i) * (i + 3)) % 131072;
+  }
+  return `h12_${h}`;
+}
+
+function dualHash(str) {
+  const raw = String(str);
+  const h1 = computeHashV1(raw);
+  const h2 = computeHashV2(raw);
+  return {
+    h1,
+    h2,
+    signature: `${h1}::${h2}`
+  };
+}
+
+function computeHash(str) {
+  // Backward-compatible single hash, using dualHash as backing
+  return dualHash(str).h1;
+}
+
+
+// ============================================================================
+//  INTERNAL: ANCESTRY HELPERS
+// ============================================================================
 function buildPatternAncestry(pattern) {
   if (!pattern || typeof pattern !== "string") return [];
   return pattern.split("/").filter(Boolean);
@@ -109,15 +203,14 @@ function buildPageAncestrySignature({ pattern, lineage, pageId }) {
     pageId: safePageId
   };
 
-  const raw = JSON.stringify(shape);
-  let hash = 0;
-  for (let i = 0; i < raw.length; i++) {
-    hash = (hash << 5) - hash + raw.charCodeAt(i);
-    hash |= 0;
-  }
-  return (hash >>> 0).toString(16);
+  const raw = stableStringify(shape);
+  return dualHash(raw).signature;
 }
 
+
+// ============================================================================
+//  INTERNAL: DEGRADATION + BINARY SURFACE
+// ============================================================================
 function classifyDegradationTier(healthScore) {
   const h = typeof healthScore === "number" ? healthScore : 1.0;
   if (h >= 0.95) return "microDegrade";
@@ -294,9 +387,73 @@ function normalizeImpulse(impulse) {
 
 
 // ============================================================================
-//  INTERNAL: SYSTEM DIAGNOSTICS (Ancestry + Degradation + Advantage)
+//  INTERNAL: IMMORTAL-INTEL — pulseIntelligence
 // ============================================================================
-function buildSystemDiagnostics({ pulse, fallbackTier }) {
+function computePulseIntelligence({ advantageField, degradationTier, binarySummary, fallbackTier }) {
+  const advantageScore = advantageField?.advantageScore || advantageField?.patternStrength || 0;
+  const advantageTier  = advantageField?.advantageTier || 0;
+
+  const presenceTier = advantageField?.presenceTier || "idle";
+  const presenceWeight =
+    presenceTier === "critical" ? 1.0 :
+    presenceTier === "high"     ? 0.8 :
+    presenceTier === "elevated" ? 0.6 :
+    presenceTier === "soft"     ? 0.4 :
+    0.2;
+
+  const degradationPenalty =
+    degradationTier === "microDegrade" ? 0.0 :
+    degradationTier === "softDegrade"  ? 0.05 :
+    degradationTier === "midDegrade"   ? 0.15 :
+    degradationTier === "hardDegrade"  ? 0.3 :
+    0.5;
+
+  const binaryWeight = binarySummary?.hasBits ? (binarySummary.binaryStrength || 0) : 0;
+  const fallbackBias =
+    fallbackTier === "v3" ? 0.2 :
+    fallbackTier === "v2" ? 0.1 :
+    0.0;
+
+  let solvednessScore =
+    advantageScore * 0.4 +
+    presenceWeight * 0.3 +
+    binaryWeight * 0.2 +
+    fallbackBias * 0.1;
+
+  solvednessScore = Math.max(0, Math.min(1, solvednessScore - degradationPenalty));
+
+  const computeTier =
+    solvednessScore >= 0.9 ? "nearSolution" :
+    solvednessScore >= 0.7 ? "highValue"    :
+    solvednessScore >= 0.4 ? "normal"       :
+    solvednessScore >= 0.2 ? "lowPriority"  :
+    "avoidCompute";
+
+  const readinessScore = Math.max(
+    0,
+    Math.min(
+      solvednessScore * 0.7 +
+      (advantageTier >= 2 ? 0.2 : advantageTier === 1 ? 0.1 : 0),
+      1
+    )
+  );
+
+  return {
+    solvednessScore,
+    computeTier,
+    readinessScore,
+    degradationTier,
+    binaryHasBits: !!binarySummary?.hasBits,
+    fallbackTier,
+    advantageTier
+  };
+}
+
+
+// ============================================================================
+//  INTERNAL: SYSTEM DIAGNOSTICS (Ancestry + Degradation + Advantage + Intel)
+// ============================================================================
+function buildSystemDiagnostics({ pulse, fallbackTier, binarySummary }) {
   const pattern = pulse?.pattern || "NO_PATTERN";
   const lineage = Array.isArray(pulse?.lineage) ? pulse.lineage : [];
   const lineageDepth = lineage.length;
@@ -320,6 +477,15 @@ function buildSystemDiagnostics({ pulse, fallbackTier }) {
 
   const binarySurface = extractBinarySurfaceFromPulse(pulse);
 
+  const pulseIntelligence = computePulseIntelligence({
+    advantageField,
+    degradationTier,
+    binarySummary,
+    fallbackTier
+  });
+
+  const intelHash = dualHash(stableStringify(pulseIntelligence)).signature;
+
   return {
     pattern,
     lineageDepth,
@@ -336,6 +502,8 @@ function buildSystemDiagnostics({ pulse, fallbackTier }) {
     advantageField,
 
     binary: binarySurface,
+    pulseIntelligence,
+    pulseIntelligenceSignature: intelHash,
 
     patternHash: computeHash(pattern),
     lineageHash: computeHash(String(lineageDepth)),
@@ -355,10 +523,68 @@ function buildSystemDiagnostics({ pulse, fallbackTier }) {
 
 
 // ============================================================================
-//  NEW: TECH SURFACE — use all imports deterministically
+//  16 Surfaces — cacheChunk / prewarm / presence (System-level)
+// ============================================================================
+function buildCacheChunkSurfaceSystem({ impulse, normalized, pulse, fallbackTier }) {
+  const shape = {
+    tickId: impulse.tickId,
+    intent: normalized.intent,
+    mode: normalized.mode,
+    pageId: normalized.pageId,
+    pulseType: pulse?.pulseType || pulse?.PulseRole?.identity || "UNKNOWN_PULSE_TYPE",
+    fallbackTier
+  };
+
+  const raw = stableStringify(shape);
+  const key = "psend-system-cache::" + computeHash(raw);
+  const dual = dualHash(key);
+
+  return {
+    cacheChunkKey: key,
+    cacheChunkSignature: dual.signature
+  };
+}
+
+function buildPrewarmSurfaceSystem({ pulse, normalized }) {
+  const priority = pulse?.priority || normalized.payload?.priority || "normal";
+  const mode = pulse?.mode || normalized.mode || "normal";
+
+  let level = "none";
+  if (priority === "critical" || priority === "high") level = "aggressive";
+  else if (priority === "normal") level = "medium";
+  else if (priority === "low") level = "light";
+
+  const raw = stableStringify({ priority, mode });
+  const key = "psend-system-prewarm::" + computeHash(raw);
+
+  return {
+    level,
+    prewarmKey: key
+  };
+}
+
+function buildPresenceSurfaceSystem({ pulse, normalized }) {
+  const pattern = pulse?.pattern || normalized.intent || "NO_PATTERN";
+  const pageId = pulse?.pageId || normalized.pageId || "NO_PAGE";
+
+  let scope = "local";
+  if (pattern.includes("/global")) scope = "global";
+  else if (pattern.includes("/page")) scope = "page";
+
+  const raw = stableStringify({ pattern, pageId, scope });
+  const key = "psend-system-presence::" + computeHash(raw);
+
+  return {
+    scope,
+    presenceKey: key
+  };
+}
+
+
+// ============================================================================
+//  NEW: TECH SURFACE — use all imports deterministically (v16)
 // ============================================================================
 function buildTechSurface({ impulse, normalized, pulse }) {
-  // Probe v3/v2/v1 creators in a safe, non-throwing way
   const v3Available = typeof createPulseV3 === "function";
   const v2Available = typeof createPulseV2 === "function";
   const v1Available = typeof createLegacyPulse === "function";
@@ -380,11 +606,14 @@ function buildTechSurface({ impulse, normalized, pulse }) {
     routerType,
     meshType,
     sendFactoryName,
-    sendReturnFactory
+    sendReturnFactory,
+    pulseType: pulse?.pulseType || pulse?.PulseRole?.identity || "UNKNOWN_PULSE_TYPE"
   };
 
+  const techSignature = dualHash(stableStringify(techShape)).signature;
+
   return {
-    techSignature: computeHash(JSON.stringify(techShape)),
+    techSignature,
     v3Available,
     v2Available,
     v1Available,
@@ -397,7 +626,7 @@ function buildTechSurface({ impulse, normalized, pulse }) {
 
 
 // ============================================================================
-//  FACTORY — Build SDN‑Aware, Binary‑Aware PulseSendSystem (v12.4-EvoBinary)
+//  FACTORY — Build SDN‑Aware, Binary‑Aware PulseSendSystem (v16-Immortal-Intel)
 // ============================================================================
 export function createPulseSendSystem({
   sdn = null,
@@ -409,7 +638,7 @@ export function createPulseSendSystem({
     try {
       sdn.emitImpulse(event, payload);
     } catch (err) {
-      log && log("[PulseSendSystem-v12.4-EvoBinary] SDN emit failed (non‑fatal)", { event, err });
+      log && log("[PulseSendSystem-v16-Immortal-Intel] SDN emit failed (non‑fatal)", { event, err });
     }
   }
 
@@ -470,8 +699,8 @@ export function createPulseSendSystem({
   }
 
   // ------------------------------------------------------------------------
-  //  INTERNAL: Build Pulse v1 (EvoStable)
-  // ------------------------------------------------------------------------
+  //  INTERNAL: Build Pulse v1 (EvoStable-Immortal)
+// ------------------------------------------------------------------------
   function buildPulseV1(impulse, normalized) {
     return createLegacyPulse({
       jobId: impulse.tickId,
@@ -486,8 +715,8 @@ export function createPulseSendSystem({
   }
 
   // ------------------------------------------------------------------------
-  //  PUBLIC API — PulseSendSystem (v12.4‑EvoBinary + SDN‑Aware)
-  // ------------------------------------------------------------------------
+  //  PUBLIC API — PulseSendSystem (v16‑Immortal‑Intel + SDN‑Aware)
+// ------------------------------------------------------------------------
   return {
     async send(impulse) {
       const normalized = normalizeImpulse(impulse);
@@ -564,7 +793,28 @@ export function createPulseSendSystem({
         });
       }
 
-      const systemDiagnostics = buildSystemDiagnostics({ pulse, fallbackTier });
+      const systemDiagnostics = buildSystemDiagnostics({
+        pulse,
+        fallbackTier,
+        binarySummary: normalized.binarySummary
+      });
+
+      const cacheChunkSurface = buildCacheChunkSurfaceSystem({
+        impulse,
+        normalized,
+        pulse,
+        fallbackTier
+      });
+
+      const prewarmSurface = buildPrewarmSurfaceSystem({
+        pulse,
+        normalized
+      });
+
+      const presenceSurface = buildPresenceSurfaceSystem({
+        pulse,
+        normalized
+      });
 
       emitSDN("sendSystem:transport-begin", {
         tickId: impulse.tickId,
@@ -573,7 +823,10 @@ export function createPulseSendSystem({
         pulseType: pulse.pulseType,
         mode: pulse.mode,
         diagnostics: systemDiagnostics,
-        binary: normalized.binarySummary
+        binary: normalized.binarySummary,
+        cacheChunkSurface,
+        prewarmSurface,
+        presenceSurface
       });
 
       const result = PulseSend.send({
@@ -595,7 +848,10 @@ export function createPulseSendSystem({
         mode: pulse.mode,
         ok,
         diagnostics: systemDiagnostics,
-        binary: normalized.binarySummary
+        binary: normalized.binarySummary,
+        cacheChunkSurface,
+        prewarmSurface,
+        presenceSurface
       });
 
       if (typeof window !== "undefined" && window.PulseBand?.receivePulseSendResult) {
@@ -605,7 +861,10 @@ export function createPulseSendSystem({
           pulse,
           result,
           fallbackTier,
-          diagnostics: systemDiagnostics
+          diagnostics: systemDiagnostics,
+          cacheChunkSurface,
+          prewarmSurface,
+          presenceSurface
         });
       }
 
@@ -620,6 +879,9 @@ export function createPulseSendSystem({
         ok,
         diagnostics: systemDiagnostics,
         binary: normalized.binarySummary,
+        cacheChunkSurface,
+        prewarmSurface,
+        presenceSurface,
         techSurface
       });
 
@@ -630,6 +892,9 @@ export function createPulseSendSystem({
         fallbackTier,
         binary: normalized.binarySummary,
         diagnostics: systemDiagnostics,
+        cacheChunkSurface,
+        prewarmSurface,
+        presenceSurface,
         techSurface
       };
     }

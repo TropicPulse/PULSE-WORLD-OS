@@ -1,15 +1,18 @@
 // ============================================================================
-//  PulseEarnRouter-v11-Evo-DualStack — EARN ROUTING ORGAN (Symbolic + Binary)
+//  PulseEarnRouter-v16-IMMORTAL-INTEL-DualHash
+//  EARN ROUTING ORGAN (Symbolic + Binary + Intel)
 //  Deterministic Earn Routing • Pattern/Lineage/Page/Binary-Aware
 //  + CoreMemory Integration: hot patterns/pages/binary surfaces
+//  + DualHash Decision Keys + EarnIntel Surface
 // ============================================================================
+
 /*
 AI_EXPERIENCE_META = {
   identity: "PulseRouterEarn",
-  version: "v14.4-Evo",
+  version: "v16-IMMORTAL-INTEL-DualHash",
   layer: "frontend",
   role: "earn_router",
-  lineage: "PulseOS-v12",
+  lineage: "PulseOS-v16",
 
   evo: {
     earnCore: true,
@@ -18,7 +21,11 @@ AI_EXPERIENCE_META = {
     presenceAware: true,
     chunkAligned: true,
     safeRouteFree: true,
-    deterministic: true
+    deterministic: true,
+    dualHashReady: true,
+    intelReady: true,
+    coreMemoryAware: true,
+    binarySurfaceReady: true
   },
 
   contract: {
@@ -45,8 +52,8 @@ export const PulseEarnRole = {
   type: "EarnRouter",
   subsystem: "PulseEarn",
   layer: "Routing",
-  version: "11.0",
-  identity: "PulseEarnRouter-v11-Evo-DualStack",
+  version: "16.0-IMMORTAL-INTEL-DualHash",
+  identity: "PulseEarnRouter-v16-IMMORTAL-INTEL-DualHash",
 
   evo: {
     driftProof: true,
@@ -57,14 +64,14 @@ export const PulseEarnRole = {
     unifiedAdvantageField: true,
     loopTheoryAware: true,
 
-    // ⭐ NEW: binary-aware earn routing
     binaryAware: true,
-
-    // ⭐ NEW: core-memory-aware
     coreMemoryAware: true,
     hotPatternAware: true,
     hotPageAware: true,
-    hotBinarySurfaceAware: true
+    hotBinarySurfaceAware: true,
+
+    dualHashReady: true,
+    intelReady: true
   },
 
   loopTheory: {
@@ -74,8 +81,8 @@ export const PulseEarnRole = {
     errorRouteAround: true
   },
 
-  earnContract: "PulseEarn-v11",
-  sendContract: "PulseSend-v11"
+  earnContract: "PulseEarn-v16",
+  sendContract: "PulseSend-v16"
 };
 
 
@@ -188,6 +195,40 @@ function extractBinarySurface(payload = {}) {
 
 
 // ============================================================================
+//  HASH / DUALHASH HELPERS (Earn Decision)
+// ============================================================================
+function hash131(raw) {
+  let h = 0;
+  const s = String(raw);
+  for (let i = 0; i < s.length; i++) {
+    h = (h * 131 + s.charCodeAt(i)) >>> 0;
+  }
+  return h >>> 0;
+}
+
+function hash257(raw) {
+  let h = 1;
+  const s = String(raw);
+  for (let i = 0; i < s.length; i++) {
+    h = (h * 257 + s.charCodeAt(i)) >>> 0;
+  }
+  return h >>> 0;
+}
+
+function computeDualHashEarnDecision(shape) {
+  const raw = JSON.stringify(shape);
+  const h1 = hash131(raw);
+  const h2 = hash257(raw);
+  const combined = hash131(`${h1.toString(16)}::${h2.toString(16)}`);
+  return {
+    primary: `ed16-p${h1.toString(16)}`,
+    secondary: `ed16-s${h2.toString(16)}`,
+    combined: `ed16-c${combined.toString(16)}`
+  };
+}
+
+
+// ============================================================================
 //  DEGRADATION TIER
 // ============================================================================
 function classifyDegradationTier(healthScore) {
@@ -209,12 +250,10 @@ function chooseEarnPath(pulse) {
 
   const binary = extractBinarySurface(pulse.payload || {});
 
-  // ⭐ If binary hints exist, use them deterministically
   if (binary.hasBinary && binary.binaryHints?.organHint) {
     return binary.binaryHints.organHint;
   }
 
-  // ⭐ Otherwise symbolic deterministic fallback
   const raw = `${pattern}::${health}`;
   let acc = 0;
   for (let i = 0; i < raw.length; i++) {
@@ -223,6 +262,49 @@ function chooseEarnPath(pulse) {
 
   const paths = ["earn-core", "earn-cache", "earn-os-fallback"];
   return paths[acc % paths.length];
+}
+
+
+// ============================================================================
+//  EARN INTEL SURFACE (IMMORTAL v16)
+// ============================================================================
+function buildEarnIntel(pulse, decisionShape) {
+  const healthScore = typeof pulse.healthScore === "number"
+    ? pulse.healthScore
+    : 1.0;
+
+  const tier = classifyDegradationTier(healthScore);
+
+  const advantageField = pulse.advantageField || null;
+  const pulseCompute   = pulse.pulseCompute || null;
+
+  const solvednessScore =
+    pulseCompute && typeof pulseCompute.solvednessScore === "number"
+      ? pulseCompute.solvednessScore
+      : null;
+
+  const computeTier =
+    pulseCompute && typeof pulseCompute.computeTier === "string"
+      ? pulseCompute.computeTier
+      : null;
+
+  const factoringSignal =
+    pulseCompute && typeof pulseCompute.factoringSignal === "string"
+      ? pulseCompute.factoringSignal
+      : null;
+
+  const dualHash = computeDualHashEarnDecision(decisionShape);
+
+  return {
+    healthScore,
+    tier,
+    advantageField,
+    pulseCompute,
+    solvednessScore,
+    computeTier,
+    factoringSignal,
+    dualHash
+  };
 }
 
 
@@ -254,12 +336,25 @@ function buildEarnDecision(pulse) {
 
   const targetPath = chooseEarnPath(pulse);
 
+  const decisionShape = {
+    targetPath,
+    tier,
+    pattern,
+    patternAncestry,
+    lineage,
+    lineageSignature,
+    pageId,
+    pageAncestrySignature,
+    binary
+  };
+
+  const earnIntel = buildEarnIntel(pulse, decisionShape);
+
   return {
     decision: {
       targetPath,
       tier,
 
-      // symbolic ancestry
       pattern,
       patternAncestry,
       lineage,
@@ -267,10 +362,11 @@ function buildEarnDecision(pulse) {
       pageId,
       pageAncestrySignature,
 
-      // ⭐ NEW: binary ancestry
       binary,
 
-      loopTheory: { ...PulseEarnRole.loopTheory }
+      loopTheory: { ...PulseEarnRole.loopTheory },
+
+      earnIntel
     },
     surface: {
       pattern,
@@ -279,14 +375,15 @@ function buildEarnDecision(pulse) {
       lineageSignature,
       pageId,
       pageAncestrySignature,
-      binary
+      binary,
+      earnIntel
     }
   };
 }
 
 
 // ============================================================================
-//  PUBLIC API — PulseEarnRouter (DualStack + CoreMemory)
+//  PUBLIC API — PulseEarnRouter (DualStack + CoreMemory + INTEL + DualHash)
 // ============================================================================
 export const PulseEarnRouter = {
 
@@ -301,7 +398,6 @@ export const PulseEarnRouter = {
     return decision;
   },
 
-  // Hot memory diagnostics / presence
   getEarnRoutingState() {
     CoreMemory.prewarm();
 

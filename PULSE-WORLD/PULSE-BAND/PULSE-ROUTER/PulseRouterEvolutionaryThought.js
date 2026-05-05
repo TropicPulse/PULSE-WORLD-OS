@@ -1,28 +1,30 @@
 // ============================================================================
-//  EvolutionaryThought-v12.3-Evo-DualStack
-//  PulseRouter v12.3 • Pattern + Binary + Presence + CacheChunk Brainstem
-//  Degradation + Route DNA Router • Multi-Presence + Prewarm/Cache-Aware
+//  PulseRouterEvolutionaryThought v16‑IMMORTAL‑BRAINSTEM‑DUALSTACK
+//  Pattern + Binary + Presence + CacheChunk + Cosmos Brainstem
+//  Degradation + Route DNA Router • Multi‑Presence + Prewarm/Cache‑Aware
+//  IntelDualHash + TriHash • AdvantageField‑Aligned • Drift‑Proof
 // ============================================================================
 //
 //  ROLE:
 //    • The routing brainstem for Pulse organisms.
-//    • Symbolic + Binary + Presence + CacheChunk dual-stack ancestry.
+//    • Symbolic + Binary + Presence + CacheChunk + Cosmos dual‑stack ancestry.
 //    • Chooses target organs based on pattern, lineage, page, binary hints,
-//      presence hints, cacheChunk/prewarm hints, advantageField.
+//      presence hints, cacheChunk/prewarm hints, advantageField, cosmos.
 //    • Maintains reflex arcs + avoidance arcs.
-//    • Maintains route DNA (symbolic + binary + presence + cacheChunk).
-//    • Deterministic, drift-proof, degradation-aware.
-//    • Page inheritance + binary/presence/cache inheritance.
-//    • Pure memory organ — NO external mutation.
+//    • Maintains route DNA (symbolic + binary + presence + cacheChunk + cosmos).
+//    • Deterministic, drift‑proof, degradation‑aware.
+//    • Page inheritance + binary/presence/cache/cosmos inheritance.
+//    • Pure reasoning organ — NO external mutation.
 //
 // ============================================================================
+
 /*
 AI_EXPERIENCE_META = {
   identity: "PulseRouterEvolutionaryThought",
-  version: "v14.4-Evo-THOUGHT",
+  version: "v16.0-IMMORTAL-THOUGHT",
   layer: "frontend",
   role: "router_reasoning_engine",
-  lineage: "PulseOS-v12",
+  lineage: "PulseOS-v16-IMMORTAL",
 
   evo: {
     thoughtCore: true,
@@ -32,7 +34,12 @@ AI_EXPERIENCE_META = {
     chunkAligned: true,
     safeRouteFree: true,
     noMutation: true,
-    noDrift: true
+    noDrift: true,
+    cosmosAware: true,
+    advantageFieldAware: true,
+    intelDualHashAware: true,
+    triHashAware: true,
+    prewarmAware: true
   },
 
   contract: {
@@ -40,7 +47,8 @@ AI_EXPERIENCE_META = {
       "PulseRouter",
       "PulseBinaryRouter",
       "PulseRouterEvolutionaryDesign",
-      "PulseRouterEvolutionaryInstincts"
+      "PulseRouterEvolutionaryInstincts",
+      "PulseRouterCommandments"
     ],
     never: [
       "legacyRouterThought",
@@ -54,14 +62,14 @@ AI_EXPERIENCE_META = {
 
 
 // ============================================================================
-// ⭐ PulseRole — identifies this as the PulseRouter v12.3-Evo DualStack Organ
+// ⭐ PulseRole — identifies this as the PulseRouter v16‑IMMORTAL DualStack Organ
 // ============================================================================
 export const PulseRole = {
   type: "Router",
   subsystem: "PulseRouter",
   layer: "Brainstem",
-  version: "12.3",
-  identity: "PulseRouter-v12.3-Evo-DualStack",
+  version: "16.0-IMMORTAL",
+  identity: "PulseRouter-v16-IMMORTAL-DualStack-Thought",
 
   evo: {
     driftProof: true,
@@ -80,16 +88,12 @@ export const PulseRole = {
     futureEvolutionReady: true,
     pageInheritanceReady: true,
 
-    // ⭐ NEW: binary-aware routing brainstem
     binaryAware: true,
-
-    // ⭐ NEW: presence-aware routing brainstem
     presenceAware: true,
     multiPresenceAware: true,
-
-    // ⭐ NEW: cacheChunk/prewarm-aware routing brainstem
     cacheChunkAware: true,
-    prewarmAware: true
+    prewarmAware: true,
+    cosmosAware: true
   },
 
   pulseContract: "Pulse-v-unified",
@@ -101,11 +105,172 @@ export const PulseRole = {
 
 
 // ============================================================================
-// INTERNAL HELPERS — deterministic, pure
+// INTERNAL CONTEXT — deterministic, pure
 // ============================================================================
+const ROUTER_THOUGHT_CONTEXT_V16 = {
+  layer: "PulseRouterEvolutionaryThought",
+  role: "ROUTER_THOUGHT_CORE",
+  version: "16.0-IMMORTAL",
+  purpose: "Deterministic routing brainstem for symbolic + binary + presence + cache + cosmos",
+  context:
+    "Computes target organ + routing mode from pattern, lineage, page, binary, presence, cache, advantage, cosmos",
+  selfRepairable: true,
 
-const ROUTER_VERSION = "12.3-Evo-DualStack";
+  evo: {
+    driftProof: true,
+    noMutation: true,
+    dualBand: true,
+    presenceAware: true,
+    cacheChunkAware: true,
+    prewarmAware: true,
+    cosmosAware: true,
+    unifiedAdvantageField: true,
+    degradationAware: true,
+    routeDNAReady: true
+  },
 
+  loopTheory: {
+    routingCompletion: true,
+    allowLoopfieldPropulsion: true,
+    pulseComputeContinuity: true,
+    errorRouteAround: true
+  }
+};
+
+const ROUTER_VERSION = ROUTER_THOUGHT_CONTEXT_V16.version;
+
+
+// ============================================================================
+// Utility helpers
+// ============================================================================
+function stableStringify(value) {
+  if (value === null || typeof value !== "object") return JSON.stringify(value);
+  if (Array.isArray(value)) return "[" + value.map(stableStringify).join(",") + "]";
+  const keys = Object.keys(value).sort();
+  return "{" + keys.map(k => JSON.stringify(k) + ":" + stableStringify(value[k])).join(",") + "}";
+}
+
+function simpleHash32(str) {
+  let hash = 0;
+  for (let i = 0; i < str.length; i++) {
+    hash = (hash << 5) - hash + str.charCodeAt(i);
+    hash |= 0;
+  }
+  return (hash >>> 0) >>> 0;
+}
+
+function simpleHash(str) {
+  return simpleHash32(str).toString(16);
+}
+
+function clamp01(v) {
+  if (typeof v !== "number" || Number.isNaN(v)) return 0;
+  if (v < 0) return 0;
+  if (v > 1) return 1;
+  return v;
+}
+
+function clampRange(v, min, max) {
+  if (typeof v !== "number" || Number.isNaN(v)) return min;
+  if (v < min) return min;
+  if (v > max) return max;
+  return v;
+}
+
+
+// ============================================================================
+// Cosmos helpers
+// ============================================================================
+function normalizeCosmos(cosmos = {}) {
+  return {
+    universeId: cosmos.universeId || "u:default",
+    timelineId: cosmos.timelineId || "t:main",
+    branchId: cosmos.branchId || "b:root",
+    worldId: cosmos.worldId || "w:primary",
+    shardId: cosmos.shardId || "s:0"
+  };
+}
+
+function cosmosSignature(cosmos) {
+  const raw = `${cosmos.universeId}|${cosmos.timelineId}|${cosmos.branchId}|${cosmos.worldId}|${cosmos.shardId}`;
+  let h = 0;
+  for (let i = 0; i < raw.length; i++) {
+    h = (h * 31 + raw.charCodeAt(i)) >>> 0;
+  }
+  return `cx16-${h.toString(16)}`;
+}
+
+
+// ============================================================================
+// Hash helpers — IntelDualHash + TriHash + RouteHash
+// ============================================================================
+function intelDualHash(shape) {
+  const raw = stableStringify(shape || {});
+  const mid = Math.floor(raw.length / 2);
+
+  const left = raw.slice(0, mid);
+  const right = raw.slice(mid);
+
+  const h1 = simpleHash32(left);
+  const h2 = simpleHash32(right);
+
+  const hi = (BigInt(h1) << 32n) | BigInt(h2);
+  const lo = BigInt(simpleHash32(raw));
+
+  const combined = (hi ^ (lo << 1n)) & ((1n << 96n) - 1n);
+
+  const hiHex = hi.toString(16);
+  const loHex = combined.toString(16);
+
+  return {
+    primary: `idh16-${hiHex}`,
+    secondary: `idh16s-${loHex}`,
+    hi,
+    lo
+  };
+}
+
+function triHash(shape) {
+  const raw = stableStringify(shape || {});
+  const len = raw.length || 1;
+  const third = Math.floor(len / 3);
+
+  const a = raw.slice(0, third);
+  const b = raw.slice(third, 2 * third);
+  const c = raw.slice(2 * third);
+
+  const hA = simpleHash32(a);
+  const hB = simpleHash32(b);
+  const hC = simpleHash32(c);
+
+  const hi = (BigInt(hA) << 32n) | BigInt(hB);
+  const mid = BigInt(hC);
+  const lo = BigInt(simpleHash32(raw));
+
+  const combined = (hi ^ (mid << 16n) ^ (lo << 1n)) & ((1n << 112n) - 1n);
+
+  return {
+    triPrimary: `th16-${combined.toString(16)}`,
+    hi,
+    mid,
+    lo
+  };
+}
+
+function computeRouteHashV16(routeShape) {
+  const dual = intelDualHash(routeShape || {});
+  const tri = triHash(routeShape || {});
+  return {
+    routePrimary: dual.primary,
+    routeSecondary: dual.secondary,
+    triPrimary: tri.triPrimary
+  };
+}
+
+
+// ============================================================================
+// Surfaces — Binary / Presence / CacheChunk / Advantage
+// ============================================================================
 function extractBinarySurface(payload = {}) {
   const binaryPattern  = payload.binaryPattern || null;
   const binaryMode     = payload.binaryMode || null;
@@ -132,9 +297,6 @@ function extractBinarySurface(payload = {}) {
   };
 }
 
-// ---------------------------------------------------------------------------
-// Presence / Multi-Presence surface
-// ---------------------------------------------------------------------------
 function extractPresenceSurface(payload = {}) {
   const presenceId       = payload.presenceId || null;
   const presenceMode     = payload.presenceMode || null;
@@ -166,9 +328,6 @@ function extractPresenceSurface(payload = {}) {
   };
 }
 
-// ---------------------------------------------------------------------------
-// CacheChunk / Prewarm surface
-// ---------------------------------------------------------------------------
 function extractCacheChunkSurface(payload = {}) {
   const cacheChunkId   = payload.cacheChunkId || null;
   const cacheMode      = payload.cacheMode || null;
@@ -195,9 +354,6 @@ function extractCacheChunkSurface(payload = {}) {
   };
 }
 
-// ---------------------------------------------------------------------------
-// AdvantageField surface (symbolic + numeric)
-// ---------------------------------------------------------------------------
 function extractAdvantageSurface(pulse = {}) {
   const adv = pulse.advantageField || {};
 
@@ -227,22 +383,10 @@ function extractAdvantageSurface(pulse = {}) {
   };
 }
 
-function buildRouteKey(pulse) {
-  const pattern = pulse.pattern || "";
-  const depth = Array.isArray(pulse.lineage) ? pulse.lineage.length : 0;
-  const pageId = pulse.pageId || "NO_PAGE";
 
-  const binary    = extractBinarySurface(pulse.payload || {});
-  const presence  = extractPresenceSurface(pulse.payload || {});
-  const cacheSurf = extractCacheChunkSurface(pulse.payload || {});
-
-  const binaryKey    = binary.binaryPattern || "NONE";
-  const presenceKey  = presence.presenceId || "NONE";
-  const cacheKey     = cacheSurf.cacheChunkId || "NONE";
-
-  return `${pattern}::d${depth}::p${pageId}::b${binaryKey}::pr${presenceKey}::cc${cacheKey}`;
-}
-
+// ============================================================================
+// Ancestry helpers
+// ============================================================================
 function buildPatternAncestry(pattern) {
   if (!pattern || typeof pattern !== "string") return [];
   return pattern.split("/").filter(Boolean);
@@ -253,43 +397,32 @@ function buildLineageSignature(lineage) {
   return lineage.join(">");
 }
 
-function inferOrganHint(pattern, binary, presence, cacheSurf) {
-  // 1) Binary organHint wins
-  if (binary.hasBinary && binary.binaryHints?.organHint) {
-    return binary.binaryHints.organHint;
-  }
+function buildPageAncestrySignature({ pattern, lineage, pageId, cosmos }) {
+  const safePattern = typeof pattern === "string" ? pattern : "";
+  const safeLineage = Array.isArray(lineage) ? lineage : [];
+  const safePageId = pageId || "NO_PAGE";
 
-  // 2) Presence hints
-  if (presence.hasPresence && presence.presenceHints?.organHint) {
-    return presence.presenceHints.organHint;
-  }
+  const shape = {
+    pattern: safePattern,
+    patternAncestry: buildPatternAncestry(safePattern),
+    lineageSignature: buildLineageSignature(safeLineage),
+    pageId: safePageId,
+    cosmosSignature: cosmosSignature(cosmos)
+  };
 
-  // 3) CacheChunk hints (e.g., GPU-heavy cache, OS prewarm, etc.)
-  if (cacheSurf.hasCacheChunk && cacheSurf.prewarmHints?.organHint) {
-    return cacheSurf.prewarmHints.organHint;
-  }
-
-  // 4) Pattern-based inference
-  const p = (pattern || "").toLowerCase();
-  if (p.includes("gpu")) return "GPU";
-  if (p.includes("earn")) return "Earn";
-  if (p.includes("os")) return "OS";
-  if (p.includes("mesh")) return "Mesh";
-  return "OS";
+  return simpleHash(stableStringify(shape));
 }
 
-function defaultRoute(pulse) {
-  const binary    = extractBinarySurface(pulse.payload || {});
-  const presence  = extractPresenceSurface(pulse.payload || {});
-  const cacheSurf = extractCacheChunkSurface(pulse.payload || {});
-  return inferOrganHint(pulse.pattern, binary, presence, cacheSurf);
-}
 
+// ============================================================================
+// Degradation + mode mapping
+// ============================================================================
 function classifyDegradationTier(h) {
-  if (h >= 0.95) return "microDegrade";
-  if (h >= 0.85) return "softDegrade";
-  if (h >= 0.50) return "midDegrade";
-  if (h >= 0.15) return "hardDegrade";
+  const v = typeof h === "number" ? h : 1.0;
+  if (v >= 0.95) return "microDegrade";
+  if (v >= 0.85) return "softDegrade";
+  if (v >= 0.50) return "midDegrade";
+  if (v >= 0.15) return "hardDegrade";
   return "criticalDegrade";
 }
 
@@ -309,12 +442,125 @@ function setRoutingMode(entry, newMode) {
   entry.degraded = newMode !== "direct";
 }
 
+
+// ============================================================================
+// Route key + organ inference
+// ============================================================================
+function inferOrganHint(pattern, binary, presence, cacheSurf) {
+  if (binary.hasBinary && binary.binaryHints && binary.binaryHints.organHint) {
+    return binary.binaryHints.organHint;
+  }
+
+  if (presence.hasPresence && presence.presenceHints && presence.presenceHints.organHint) {
+    return presence.presenceHints.organHint;
+  }
+
+  if (cacheSurf.hasCacheChunk && cacheSurf.prewarmHints && cacheSurf.prewarmHints.organHint) {
+    return cacheSurf.prewarmHints.organHint;
+  }
+
+  const p = (pattern || "").toLowerCase();
+  if (p.includes("gpu")) return "GPU";
+  if (p.includes("earn")) return "Earn";
+  if (p.includes("mesh")) return "Mesh";
+  if (p.includes("os")) return "OS";
+  return "OS";
+}
+
+function buildRouteKey(pulse, cosmos) {
+  const pattern = pulse.pattern || "";
+  const depth = Array.isArray(pulse.lineage) ? pulse.lineage.length : 0;
+  const pageId = pulse.pageId || "NO_PAGE";
+
+  const binary    = extractBinarySurface(pulse.payload || {});
+  const presence  = extractPresenceSurface(pulse.payload || {});
+  const cacheSurf = extractCacheChunkSurface(pulse.payload || {});
+
+  const binaryKey    = binary.binaryPattern || "NONE";
+  const presenceKey  = presence.presenceId || "NONE";
+  const cacheKey     = cacheSurf.cacheChunkId || "NONE";
+  const cxSig        = cosmosSignature(cosmos);
+
+  return `${pattern}::d${depth}::p${pageId}::b${binaryKey}::pr${presenceKey}::cc${cacheKey}::cx${cxSig}`;
+}
+
+function defaultRoute(pulse) {
+  const binary    = extractBinarySurface(pulse.payload || {});
+  const presence  = extractPresenceSurface(pulse.payload || {});
+  const cacheSurf = extractCacheChunkSurface(pulse.payload || {});
+  return inferOrganHint(pulse.pattern, binary, presence, cacheSurf);
+}
+
+
+// ============================================================================
+// Route DNA builder
+// ============================================================================
+function buildRouteDNA({ pulse, cosmos }) {
+  const pattern = pulse.pattern || "";
+  const lineage = Array.isArray(pulse.lineage) ? pulse.lineage.slice() : [];
+  const pageId = pulse.pageId || "NO_PAGE";
+
+  const binary    = extractBinarySurface(pulse.payload || {});
+  const presence  = extractPresenceSurface(pulse.payload || {});
+  const cacheSurf = extractCacheChunkSurface(pulse.payload || {});
+  const advSurf   = extractAdvantageSurface(pulse || {});
+  const cx        = normalizeCosmos(pulse.cosmos || cosmos || {});
+
+  const patternAncestry = buildPatternAncestry(pattern);
+  const lineageSignature = buildLineageSignature(lineage);
+  const pageAncestrySignature = buildPageAncestrySignature({
+    pattern,
+    lineage,
+    pageId,
+    cosmos: cx
+  });
+
+  const dnaShape = {
+    pattern,
+    patternAncestry,
+    lineage,
+    lineageSignature,
+    pageId,
+    pageAncestrySignature,
+    binary,
+    presence,
+    cache: cacheSurf,
+    advantage: advSurf,
+    cosmos: cx,
+    cosmosSignature: cosmosSignature(cx)
+  };
+
+  const dual = intelDualHash(dnaShape);
+  const tri = triHash(dnaShape);
+
+  return {
+    pattern,
+    patternAncestry,
+    lineage,
+    lineageSignature,
+    pageId,
+    pageAncestrySignature,
+    binary,
+    presence,
+    cache: cacheSurf,
+    advantage: advSurf,
+    cosmos: cx,
+    cosmosSignature: cosmosSignature(cx),
+    intelDualHash: dual,
+    triHash: tri
+  };
+}
+
+
+// ============================================================================
+// Health score derivation
+// ============================================================================
 function deriveHealthScore(pulse, context = {}) {
   const advSurface = extractAdvantageSurface(pulse);
 
-  if (typeof context.healthScore === "number") return context.healthScore;
-  if (typeof pulse.healthScore === "number") return pulse.healthScore;
-  if (advSurface.healthScoreHint !== null) return advSurface.healthScoreHint;
+  if (typeof context.healthScore === "number") return clamp01(context.healthScore);
+  if (typeof pulse.healthScore === "number") return clamp01(pulse.healthScore);
+  if (advSurface.healthScoreHint !== null) return clamp01(advSurface.healthScoreHint);
 
   const adv = pulse.advantageField || {};
   const lineageDepth = typeof adv.lineageDepth === "number"
@@ -328,12 +574,10 @@ function deriveHealthScore(pulse, context = {}) {
   const base = 0.7 + Math.min(0.3, (lineageDepth * 0.02) + (patternStrength * 0.001));
   return Math.max(0.15, Math.min(1.0, base));
 }
-
-
 // ============================================================================
-// PAGE INHERITANCE (symbolic + binary + presence + cacheChunk)
+// PAGE INHERITANCE (symbolic + binary + presence + cacheChunk + cosmos)
 // ============================================================================
-function buildPageKey(pulse) {
+function buildPageKey(pulse, cosmos) {
   const pattern = pulse.pattern || "";
   const pageId = pulse.pageId || "NO_PAGE";
   const binary    = extractBinarySurface(pulse.payload || {});
@@ -343,12 +587,14 @@ function buildPageKey(pulse) {
   const binaryKey    = binary.binaryPattern || "NONE";
   const presenceKey  = presence.presenceId || "NONE";
   const cacheKey     = cacheSurf.cacheChunkId || "NONE";
+  const cxSig        = cosmosSignature(cosmos);
 
-  return `${pattern}::p${pageId}::b${binaryKey}::pr${presenceKey}::cc${cacheKey}`;
+  return `${pattern}::p${pageId}::b${binaryKey}::pr${presenceKey}::cc${cacheKey}::cx${cxSig}`;
 }
 
 function ensurePageEntry(pageMemory, pulse, context = {}) {
-  const key = buildPageKey(pulse);
+  const cosmos = normalizeCosmos(pulse.cosmos || {});
+  const key = buildPageKey(pulse, cosmos);
   let entry = pageMemory[key];
 
   const patternAncestry = buildPatternAncestry(pulse.pattern);
@@ -366,11 +612,13 @@ function ensurePageEntry(pageMemory, pulse, context = {}) {
       patternAncestry,
       lineageSignature,
 
-      // dual-stack surfaces
       binary,
       presence,
       cacheChunk: cacheSurf,
       advantage,
+
+      cosmos,
+      cosmosSignature: cosmosSignature(cosmos),
 
       imports: Array.isArray(context.imports) ? context.imports.slice() : [],
       settings:
@@ -386,6 +634,8 @@ function ensurePageEntry(pageMemory, pulse, context = {}) {
     entry.presence = presence;
     entry.cacheChunk = cacheSurf;
     entry.advantage = advantage;
+    entry.cosmos = cosmos;
+    entry.cosmosSignature = cosmosSignature(cosmos);
 
     if (Array.isArray(context.imports)) entry.imports = context.imports.slice();
     if (context.settings && typeof context.settings === "object") {
@@ -397,6 +647,7 @@ function ensurePageEntry(pageMemory, pulse, context = {}) {
 }
 
 function resolveInheritedPageContext(pageMemory, pulse) {
+  const cosmos = normalizeCosmos(pulse.cosmos || {});
   const lineage = Array.isArray(pulse.lineage) ? pulse.lineage : [];
   const patternAncestry = buildPatternAncestry(pulse.pattern);
 
@@ -419,36 +670,34 @@ function resolveInheritedPageContext(pageMemory, pulse) {
     }
   }
 
-  // Pattern ancestry pages (symbolic-only key for inheritance baseline)
   for (let i = 0; i < patternAncestry.length; i++) {
     const subPattern = patternAncestry.slice(0, i + 1).join("/");
-    const key = `${subPattern}::pNO_PAGE::bNONE::prNONE::ccNONE`;
+    const key = `${subPattern}::pNO_PAGE::bNONE::prNONE::ccNONE::cx${cosmosSignature(cosmos)}`;
     merge(pageMemory[key]);
   }
 
-  // Lineage pages (symbolic-only key for inheritance baseline)
   for (let i = 0; i < lineage.length; i++) {
     const ancestorPageId = lineage[i];
-    const key = `${pulse.pattern}::p${ancestorPageId}::bNONE::prNONE::ccNONE`;
+    const key = `${pulse.pattern}::p${ancestorPageId}::bNONE::prNONE::ccNONE::cx${cosmosSignature(cosmos)}`;
     merge(pageMemory[key]);
   }
 
-  // Current page (full dual-stack key)
-  merge(pageMemory[buildPageKey(pulse)]);
+  merge(pageMemory[buildPageKey(pulse, cosmos)]);
 
   return { imports: mergedImports, settings: mergedSettings };
 }
 
 
 // ============================================================================
-// FACTORY — createPulseRouter (DualStack v12.3)
+// FACTORY — createPulseRouter (DualStack v16‑IMMORTAL)
 // ============================================================================
 export function createPulseRouter({ log } = {}) {
-  const memory = {};     // routeKey → route DNA entry
-  const pageMemory = {}; // pageKey → page inheritance entry
+  const memory = {};
+  const pageMemory = {};
 
   function ensureEntry(pulse, healthScore) {
-    const key = buildRouteKey(pulse);
+    const cosmos = normalizeCosmos(pulse.cosmos || {});
+    const key = buildRouteKey(pulse, cosmos);
     let entry = memory[key];
 
     const patternAncestry = buildPatternAncestry(pulse.pattern);
@@ -459,9 +708,12 @@ export function createPulseRouter({ log } = {}) {
     const cacheSurf = extractCacheChunkSurface(pulse.payload || {});
     const advantage = extractAdvantageSurface(pulse);
 
-    const h = typeof healthScore === "number" ? healthScore : 1.0;
+    const h = typeof healthScore === "number" ? clamp01(healthScore) : 1.0;
     const tier = classifyDegradationTier(h);
     const mode = mapTierToMode(tier);
+
+    const routeDNA = buildRouteDNA({ pulse, cosmos });
+    const routeHash = computeRouteHashV16(routeDNA);
 
     if (!entry) {
       const idealOrgan = defaultRoute(pulse);
@@ -470,6 +722,10 @@ export function createPulseRouter({ log } = {}) {
       if (mode === "routeAround") currentOrgan = "OS";
 
       entry = {
+        key,
+        routeHash,
+        routeDNA,
+
         idealOrgan,
         currentOrgan,
         successCount: 0,
@@ -483,16 +739,20 @@ export function createPulseRouter({ log } = {}) {
         patternAncestry,
         lineageSignature,
 
-        // dual-stack surfaces
         binary,
         presence,
         cacheChunk: cacheSurf,
         advantage,
 
+        cosmos,
+        cosmosSignature: cosmosSignature(cosmos),
+
         degradationHistory: [],
         bypassHistory: [],
         stabilityScore: 0.5,
-        healingScore: h
+        healingScore: h,
+        lastUpdatedAt: Date.now(),
+        createdAt: Date.now()
       };
 
       setRoutingMode(entry, mode);
@@ -513,6 +773,13 @@ export function createPulseRouter({ log } = {}) {
       entry.currentOrgan = entry.mode === "routeAround"
         ? "OS"
         : entry.idealOrgan;
+
+      entry.cosmos = cosmos;
+      entry.cosmosSignature = cosmosSignature(cosmos);
+
+      entry.routeDNA = routeDNA;
+      entry.routeHash = computeRouteHashV16(routeDNA);
+      entry.lastUpdatedAt = Date.now();
     }
 
     return { key, entry };
@@ -521,7 +788,7 @@ export function createPulseRouter({ log } = {}) {
 
   // --------------------------------------------------------------------------
   //  route(pulse, context)
-  // --------------------------------------------------------------------------
+// --------------------------------------------------------------------------
   function route(pulse, context = {}) {
     const healthScore = deriveHealthScore(pulse, context);
     const { key, entry } = ensureEntry(pulse, healthScore);
@@ -531,10 +798,15 @@ export function createPulseRouter({ log } = {}) {
 
     const targetOrgan = entry.currentOrgan || entry.idealOrgan || "OS";
 
-    return {
+    const result = {
       routerIdentity: PulseRole.identity,
       routerVersion: ROUTER_VERSION,
+      routerContext: { ...ROUTER_THOUGHT_CONTEXT_V16 },
+
       routeKey: key,
+      routeHash: entry.routeHash,
+      routeDNA: entry.routeDNA,
+
       targetOrgan,
       mode: entry.mode,
       tier: entry.tier,
@@ -546,15 +818,26 @@ export function createPulseRouter({ log } = {}) {
       patternAncestry: entry.patternAncestry,
       lineageSignature: entry.lineageSignature,
 
-      // dual-stack ancestry surfaces
       binary: entry.binary,
       presence: entry.presence,
       cacheChunk: entry.cacheChunk,
       advantage: entry.advantage,
 
+      cosmos: entry.cosmos,
+      cosmosSignature: entry.cosmosSignature,
+
       inheritedImports: inherited.imports,
       inheritedSettings: inherited.settings
     };
+
+    if (log && typeof log === "function") {
+      try {
+        log({ type: "route", result });
+      } catch {
+      }
+    }
+
+    return result;
   }
 
 
@@ -566,16 +849,38 @@ export function createPulseRouter({ log } = {}) {
     const { key, entry } = ensureEntry(pulse, healthScore);
 
     entry.successCount += 1;
-    entry.stabilityScore = Math.min(1.0, entry.stabilityScore + 0.05);
-    entry.healingScore = Math.min(1.0, (entry.healingScore + entry.healthScore) / 2);
+    entry.stabilityScore = clamp01(entry.stabilityScore + 0.05);
+    entry.healingScore = clamp01((entry.healingScore + entry.healthScore) / 2);
 
-    entry.degradationHistory.push({ event: "success", tier: entry.tier, mode: entry.mode });
-    if (entry.degraded) entry.bypassHistory.push({ mode: entry.mode, tier: entry.tier });
+    entry.degradationHistory.push({
+      event: "success",
+      tier: entry.tier,
+      mode: entry.mode,
+      at: Date.now()
+    });
+
+    if (entry.degraded) {
+      entry.bypassHistory.push({
+        mode: entry.mode,
+        tier: entry.tier,
+        at: Date.now(),
+        reason: "successWhileDegraded"
+      });
+    }
+
+    if (log && typeof log === "function") {
+      try {
+        log({ type: "success", routeKey: key, stabilityScore: entry.stabilityScore });
+      } catch {
+      }
+    }
 
     return {
       routeKey: key,
       stabilityScore: entry.stabilityScore,
-      healingScore: entry.healingScore
+      healingScore: entry.healingScore,
+      successCount: entry.successCount,
+      failureCount: entry.failureCount
     };
   }
 
@@ -584,16 +889,38 @@ export function createPulseRouter({ log } = {}) {
     const { key, entry } = ensureEntry(pulse, healthScore);
 
     entry.failureCount += 1;
-    entry.stabilityScore = Math.max(0.0, entry.stabilityScore - 0.1);
-    entry.healingScore = Math.max(0.0, entry.healingScore - 0.1);
+    entry.stabilityScore = clamp01(entry.stabilityScore - 0.1);
+    entry.healingScore = clamp01(entry.healingScore - 0.1);
 
-    entry.degradationHistory.push({ event: "failure", tier: entry.tier, mode: entry.mode });
-    if (entry.degraded) entry.bypassHistory.push({ mode: entry.mode, tier: entry.tier });
+    entry.degradationHistory.push({
+      event: "failure",
+      tier: entry.tier,
+      mode: entry.mode,
+      at: Date.now()
+    });
+
+    if (entry.degraded) {
+      entry.bypassHistory.push({
+        mode: entry.mode,
+        tier: entry.tier,
+        at: Date.now(),
+        reason: "failureWhileDegraded"
+      });
+    }
+
+    if (log && typeof log === "function") {
+      try {
+        log({ type: "failure", routeKey: key, stabilityScore: entry.stabilityScore });
+      } catch {
+      }
+    }
 
     return {
       routeKey: key,
       stabilityScore: entry.stabilityScore,
-      healingScore: entry.healingScore
+      healingScore: entry.healingScore,
+      successCount: entry.successCount,
+      failureCount: entry.failureCount
     };
   }
 
@@ -602,12 +929,15 @@ export function createPulseRouter({ log } = {}) {
   //  getRouteDNA
   // --------------------------------------------------------------------------
   function getRouteDNA(pulse) {
-    const key = buildRouteKey(pulse);
+    const cosmos = normalizeCosmos(pulse.cosmos || {});
+    const key = buildRouteKey(pulse, cosmos);
     const entry = memory[key] || null;
     if (!entry) return null;
 
     return {
       routeKey: key,
+      routeHash: entry.routeHash,
+      routeDNA: entry.routeDNA,
       idealOrgan: entry.idealOrgan,
       currentOrgan: entry.currentOrgan,
       successCount: entry.successCount,
@@ -621,11 +951,13 @@ export function createPulseRouter({ log } = {}) {
       patternAncestry: entry.patternAncestry.slice(),
       lineageSignature: entry.lineageSignature,
 
-      // dual-stack ancestry
       binary: entry.binary,
       presence: entry.presence,
       cacheChunk: entry.cacheChunk,
       advantage: entry.advantage,
+
+      cosmos: entry.cosmos,
+      cosmosSignature: entry.cosmosSignature,
 
       stabilityScore: entry.stabilityScore,
       healingScore: entry.healingScore,
@@ -633,8 +965,6 @@ export function createPulseRouter({ log } = {}) {
       bypassHistory: entry.bypassHistory.slice()
     };
   }
-
-
   // --------------------------------------------------------------------------
   //  Snapshots
   // --------------------------------------------------------------------------
@@ -642,6 +972,9 @@ export function createPulseRouter({ log } = {}) {
     const out = {};
     for (const [key, entry] of Object.entries(memory)) {
       out[key] = {
+        routeHash: entry.routeHash,
+        routeDNA: entry.routeDNA,
+
         idealOrgan: entry.idealOrgan,
         currentOrgan: entry.currentOrgan,
         successCount: entry.successCount,
@@ -655,11 +988,16 @@ export function createPulseRouter({ log } = {}) {
         stabilityScore: entry.stabilityScore,
         healingScore: entry.healingScore,
 
-        // dual-stack ancestry
         binary: entry.binary,
         presence: entry.presence,
         cacheChunk: entry.cacheChunk,
-        advantage: entry.advantage
+        advantage: entry.advantage,
+
+        cosmos: entry.cosmos,
+        cosmosSignature: entry.cosmosSignature,
+
+        createdAt: entry.createdAt,
+        lastUpdatedAt: entry.lastUpdatedAt
       };
     }
     return out;
@@ -674,11 +1012,13 @@ export function createPulseRouter({ log } = {}) {
         patternAncestry: entry.patternAncestry.slice(),
         lineageSignature: entry.lineageSignature,
 
-        // dual-stack ancestry
         binary: entry.binary,
         presence: entry.presence,
         cacheChunk: entry.cacheChunk,
         advantage: entry.advantage,
+
+        cosmos: entry.cosmos,
+        cosmosSignature: entry.cosmosSignature,
 
         imports: entry.imports.slice(),
         settings: { ...entry.settings }
@@ -688,6 +1028,168 @@ export function createPulseRouter({ log } = {}) {
   }
 
 
+  // --------------------------------------------------------------------------
+  //  Serialization / Deserialization
+  // --------------------------------------------------------------------------
+  function serialize() {
+    const payload = {
+      meta: {
+        routerIdentity: PulseRole.identity,
+        routerVersion: ROUTER_VERSION,
+        context: ROUTER_THOUGHT_CONTEXT_V16
+      },
+      memory: getMemorySnapshot(),
+      pageMemory: getPageInheritanceSnapshot()
+    };
+    return JSON.stringify(payload);
+  }
+
+  function deserialize(jsonString) {
+    if (!jsonString) return;
+    let parsed;
+    try {
+      parsed = JSON.parse(jsonString);
+    } catch {
+      return;
+    }
+
+    if (!parsed || typeof parsed !== "object") return;
+
+    const mem = parsed.memory || {};
+    const pages = parsed.pageMemory || {};
+
+    for (const [key, entry] of Object.entries(mem)) {
+      const patternAncestry = Array.isArray(entry.routeDNA?.patternAncestry)
+        ? entry.routeDNA.patternAncestry.slice()
+        : buildPatternAncestry(entry.routeDNA?.pattern || "");
+
+      const lineageSignature =
+        typeof entry.routeDNA?.lineageSignature === "string"
+          ? entry.routeDNA.lineageSignature
+          : buildLineageSignature(entry.routeDNA?.lineage || []);
+
+      const cosmos = normalizeCosmos(entry.cosmos || {});
+      const routeDNA = entry.routeDNA || buildRouteDNA({
+        pulse: {
+          pattern: entry.routeDNA?.pattern || "",
+          lineage: entry.routeDNA?.lineage || [],
+          pageId: entry.routeDNA?.pageId || "NO_PAGE",
+          payload: {
+            binaryPattern: entry.binary?.binaryPattern || null
+          }
+        },
+        cosmos
+      });
+
+      memory[key] = {
+        key,
+        routeHash: entry.routeHash || computeRouteHashV16(routeDNA),
+        routeDNA,
+
+        idealOrgan: entry.idealOrgan || "OS",
+        currentOrgan: entry.currentOrgan || entry.idealOrgan || "OS",
+        successCount: entry.successCount || 0,
+        failureCount: entry.failureCount || 0,
+        degraded: !!entry.degraded,
+        healthScore: typeof entry.healthScore === "number" ? entry.healthScore : 1.0,
+        tier: entry.tier || classifyDegradationTier(entry.healthScore || 1.0),
+        mode: entry.mode || "direct",
+        lastMode: entry.lastMode || entry.mode || "direct",
+        modeTransition: entry.modeTransition || "restored",
+
+        patternAncestry,
+        lineageSignature,
+
+        binary: entry.binary || extractBinarySurface({}),
+        presence: entry.presence || extractPresenceSurface({}),
+        cacheChunk: entry.cacheChunk || extractCacheChunkSurface({}),
+        advantage: entry.advantage || extractAdvantageSurface({}),
+
+        cosmos,
+        cosmosSignature: entry.cosmosSignature || cosmosSignature(cosmos),
+
+        stabilityScore: typeof entry.stabilityScore === "number" ? entry.stabilityScore : 0.5,
+        healingScore: typeof entry.healingScore === "number" ? entry.healingScore : 1.0,
+        degradationHistory: Array.isArray(entry.degradationHistory)
+          ? entry.degradationHistory.slice()
+          : [],
+        bypassHistory: Array.isArray(entry.bypassHistory)
+          ? entry.bypassHistory.slice()
+          : [],
+        createdAt: entry.createdAt || Date.now(),
+        lastUpdatedAt: entry.lastUpdatedAt || Date.now()
+      };
+    }
+
+    for (const [key, entry] of Object.entries(pages)) {
+      const cosmos = normalizeCosmos(entry.cosmos || {});
+      pageMemory[key] = {
+        key,
+        pattern: entry.pattern || "",
+        pageId: entry.pageId || "NO_PAGE",
+        patternAncestry: Array.isArray(entry.patternAncestry)
+          ? entry.patternAncestry.slice()
+          : buildPatternAncestry(entry.pattern || ""),
+        lineageSignature:
+          typeof entry.lineageSignature === "string"
+            ? entry.lineageSignature
+            : "NO_LINEAGE",
+
+        binary: entry.binary || extractBinarySurface({}),
+        presence: entry.presence || extractPresenceSurface({}),
+        cacheChunk: entry.cacheChunk || extractCacheChunkSurface({}),
+        advantage: entry.advantage || extractAdvantageSurface({}),
+
+        cosmos,
+        cosmosSignature: entry.cosmosSignature || cosmosSignature(cosmos),
+
+        imports: Array.isArray(entry.imports) ? entry.imports.slice() : [],
+        settings: entry.settings && typeof entry.settings === "object"
+          ? { ...entry.settings }
+          : {}
+      };
+    }
+  }
+
+
+  // --------------------------------------------------------------------------
+  //  Debug / Introspection helpers
+  // --------------------------------------------------------------------------
+  function getRouteSummary() {
+    const summary = {
+      totalRoutes: 0,
+      degradedRoutes: 0,
+      routeAroundRoutes: 0,
+      byTier: {
+        microDegrade: 0,
+        softDegrade: 0,
+        midDegrade: 0,
+        hardDegrade: 0,
+        criticalDegrade: 0
+      }
+    };
+
+    for (const entry of Object.values(memory)) {
+      summary.totalRoutes += 1;
+      if (entry.degraded) summary.degradedRoutes += 1;
+      if (entry.mode === "routeAround") summary.routeAroundRoutes += 1;
+      if (summary.byTier[entry.tier] !== undefined) {
+        summary.byTier[entry.tier] += 1;
+      }
+    }
+
+    return summary;
+  }
+
+  function clear() {
+    for (const key of Object.keys(memory)) delete memory[key];
+    for (const key of Object.keys(pageMemory)) delete pageMemory[key];
+  }
+
+
+  // --------------------------------------------------------------------------
+  //  Public API surface
+  // --------------------------------------------------------------------------
   return {
     PulseRole,
     version: ROUTER_VERSION,
@@ -696,6 +1198,10 @@ export function createPulseRouter({ log } = {}) {
     recordFailure,
     getRouteDNA,
     getMemorySnapshot,
-    getPageInheritanceSnapshot
+    getPageInheritanceSnapshot,
+    getRouteSummary,
+    serialize,
+    deserialize,
+    clear
   };
 }

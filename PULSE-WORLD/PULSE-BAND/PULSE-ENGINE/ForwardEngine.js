@@ -51,7 +51,7 @@ AI_EXPERIENCE_META = {
 }
 */
 
-import { createShifterPulse as ShifterPulse } from "../PULSE-SHIFTER/PulseBinaryShifterEvolutionaryPulse-v11-Evo.js";
+import { createShifterPulse as ShifterPulse } from "../PULSE-SHIFTER/PulseBinaryShifterEvolutionaryPulse-v16.js";
 
 export const ForwardEngineMeta = Object.freeze({
   lane: "forward",

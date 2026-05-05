@@ -1,17 +1,17 @@
 // ============================================================================
-//  PulseEarnMuscleSystem-v13.0-Presence-Immortal.js
-//  THE MUSCLE SYSTEM (v13.0 Presence-Immortal + Advantage‑M + Triple Presence)
+//  PulseEarnMuscleSystem-v16-IMMORTAL.js
+//  THE MUSCLE SYSTEM (v16-IMMORTAL + Advantage‑M + Triple Presence + Dual-Hash)
 //  Deterministic Worker Supervisor + Profit Orchestrator
-//  Zero async, zero compute, zero mutation, zero routing
+//  Zero async, zero compute mutation, zero routing mutation
 //  IMMORTAL: presence/advantage/plan are descriptive-only, no hidden governors.
 // ============================================================================
 /*
 AI_EXPERIENCE_META = {
   identity: "PulseEarnMuscleSystem",
-  version: "v14-Immortal",
+  version: "v16-Immortal",
   layer: "earn_muscle",
   role: "earn_execution_muscle",
-  lineage: "PulseEarnMuscleSystem-v11 → v12.3 → v14-Immortal",
+  lineage: "PulseEarnMuscleSystem-v11 → v12.3 → v13.0-Presence-Immortal → v16-Immortal",
 
   evo: {
     muscleSystem: true,
@@ -33,7 +33,7 @@ AI_EXPERIENCE_META = {
     always: [
       "PulseEarnNervousSystem",
       "PulseEarnSkeletalSystem",
-      "PulseEarnReflex"
+      "PulseEarnLymphNodes"
     ],
     never: [
       "safeRoute",
@@ -46,8 +46,8 @@ AI_EXPERIENCE_META = {
 export const PulseEarnMuscleSystemMeta = Object.freeze({
   layer: "PulseEarnMuscleSystem",
   role: "EARN_MUSCLE_ORGAN",
-  version: "v13.0-Presence-Immortal",
-  identity: "PulseEarnMuscleSystem-v13.0-Presence-Immortal",
+  version: "v16-Immortal",
+  identity: "PulseEarnMuscleSystem-v16-Immortal",
 
   guarantees: Object.freeze({
     deterministic: true,
@@ -100,14 +100,43 @@ import { submitMarketplaceResult } from "./PulseEarnLymphNodes.js";
 import { getPulseEarnDeviceProfile } from "./PulseEarnSkeletalSystem.js";
 
 // ============================================================================
-// Deterministic Hash Helper
+// Deterministic Hash + Dual-Hash Helper (v16-IMMORTAL)
 // ============================================================================
+
 function computeHash(str) {
   let h = 0;
   const s = String(str || "");
-  for (let i = 0; i < s.length; i++)
+  for (let i = 0; i < s.length; i++) {
     h = (h + s.charCodeAt(i) * (i + 1)) % 100000;
+  }
   return `h${h}`;
+}
+
+// Primary INTEL hash — deterministic, structure-aware, no IO, no time.
+function computeHashIntelligence(payload) {
+  const base = JSON.stringify(payload || "");
+  let h = 0;
+  for (let i = 0; i < base.length; i++) {
+    const c = base.charCodeAt(i);
+    h = (h * 131 + c * (i + 7)) % 1000000007;
+  }
+  return `HINTEL_${h}`;
+}
+
+function buildDualHashSignature(label, intelPayload, classicString) {
+  const intelBase = {
+    label,
+    intel: intelPayload || {},
+    classic: classicString || ""
+  };
+  const intelHash = computeHashIntelligence(intelBase);
+  const classicHash = computeHash(
+    `${label}::${classicString || ""}`
+  );
+  return {
+    intel: intelHash,
+    classic: classicHash
+  };
 }
 
 function normalizeBand(b) {
@@ -116,7 +145,7 @@ function normalizeBand(b) {
 }
 
 // ============================================================================
-// Healing Metadata — Muscle Memory Log (v13.0-Presence-Immortal)
+// Healing Metadata — Muscle Memory Log (v16-IMMORTAL)
 // ============================================================================
 const engineHealing = {
   running: false,
@@ -124,6 +153,7 @@ const engineHealing = {
   cycleCount: 0,
   lastJob: null,
   lastResult: null,
+  lastSubmission: null,
   lastError: null,
   lastReason: null,
 
@@ -132,9 +162,11 @@ const engineHealing = {
 
   eventSeq: 0,
 
+  // Dual-hash signatures
   lastEngineSignature: null,
   lastJobSignature: null,
   lastResultSignature: null,
+  lastSubmissionSignature: null,
 
   // A-B-A + Presence
   lastBand: "symbolic",
@@ -142,7 +174,7 @@ const engineHealing = {
   lastBinaryField: null,
   lastWaveField: null,
 
-  // Triple Presence
+  // Triple Presence (v13 carried into v16)
   lastPresencePreFetch: null,
   lastPresencePreExecute: null,
   lastPresencePostExecute: null,
@@ -159,7 +191,7 @@ const engineHealing = {
 let engineCycle = 0;
 
 // ============================================================================
-// Presence Field (v13.0-Presence-Immortal)
+// Presence Field (v16-IMMORTAL)
 // Descriptive-only: tiers from simple structural counts, no perf scoring.
 // ============================================================================
 function buildPresenceField(job, device, cycleIndex) {
@@ -173,23 +205,27 @@ function buildPresenceField(job, device, cycleIndex) {
   else if (magnitude >= 10) presenceTier = "presence_mid";
   else if (magnitude > 0) presenceTier = "presence_low";
 
-  const presenceSignature = computeHash(
-    `MUSCLE_PRESENCE_V13::${presenceTier}::${jobLen}::${marketLen}::${cycleIndex}`
-  );
-
-  return {
-    presenceVersion: "v13.0-Presence-Immortal",
+  const payload = {
+    presenceVersion: "v16-IMMORTAL",
     presenceTier,
     jobLen,
     marketLen,
     stability,
-    cycleIndex,
-    presenceSignature
+    cycleIndex
+  };
+
+  const sig = buildDualHashSignature("MUSCLE_PRESENCE_V16", payload);
+
+  return {
+    ...payload,
+    presenceSignaturePrimary: sig.primary,
+    presenceSignatureSecondary: sig.secondary,
+    presenceSignature: sig.combined
   };
 }
 
 // ============================================================================
-// Advantage‑M Field (v13.0-Presence-Immortal)
+// Advantage‑M Field (v16-IMMORTAL)
 // Structural-only: no advantageScore math, just descriptive fields.
 // ============================================================================
 function buildAdvantageField(job, device, bandPack, presenceField) {
@@ -198,8 +234,8 @@ function buildAdvantageField(job, device, bandPack, presenceField) {
   const density = bandPack.binaryField.density;
   const amplitude = bandPack.waveField.amplitude;
 
-  return {
-    advantageVersion: "M-13.0",
+  const payload = {
+    advantageVersion: "M-16.0",
     band: bandPack.band,
     gpuScore,
     bandwidth,
@@ -207,10 +243,19 @@ function buildAdvantageField(job, device, bandPack, presenceField) {
     waveAmplitude: amplitude,
     presenceTier: presenceField.presenceTier
   };
+
+  const sig = buildDualHashSignature("MUSCLE_ADVANTAGE_V16", payload);
+
+  return {
+    ...payload,
+    advantageSignaturePrimary: sig.primary,
+    advantageSignatureSecondary: sig.secondary,
+    advantageSignature: sig.combined
+  };
 }
 
 // ============================================================================
-// Chunk / Cache / Prewarm Plan (v13 IMMORTAL)
+// Chunk / Cache / Prewarm Plan (v16 IMMORTAL)
 // Plan surface only; no hidden throttling or perf governors.
 // ============================================================================
 function buildChunkPrewarmPlan(job, device, presenceField) {
@@ -219,8 +264,8 @@ function buildChunkPrewarmPlan(job, device, presenceField) {
   else if (presenceField.presenceTier === "presence_mid") priorityLabel = "medium";
   else if (presenceField.presenceTier === "presence_low") priorityLabel = "low";
 
-  return {
-    planVersion: "v13.0-AdvantageM",
+  const payload = {
+    planVersion: "v16.0-AdvantageM",
     priorityLabel,
     bandPresence: presenceField.presenceTier,
     chunks: {
@@ -238,10 +283,19 @@ function buildChunkPrewarmPlan(job, device, presenceField) {
       nervousSystem: presenceField.presenceTier !== "presence_idle"
     }
   };
+
+  const sig = buildDualHashSignature("MUSCLE_CHUNKPLAN_V16", payload);
+
+  return {
+    ...payload,
+    chunkPlanSignaturePrimary: sig.primary,
+    chunkPlanSignatureSecondary: sig.secondary,
+    chunkPlanSignature: sig.combined
+  };
 }
 
 // ============================================================================
-// A-B-A Band/Binary/Wave
+// A-B-A Band/Binary/Wave (v16-IMMORTAL)
 // ============================================================================
 function buildEngineBandBinaryWave(job, result, cycleIndex) {
   const band = normalizeBand(
@@ -285,17 +339,23 @@ function buildEngineBandBinaryWave(job, result, cycleIndex) {
 }
 
 // ============================================================================
-// Signature Builders
+// Signature Builders (v16 dual-hash surfaces)
 // ============================================================================
 function buildEngineSignature() {
-  return computeHash(
-    `ENGINE::${engineHealing.engineState}::${engineHealing.cycleCount}::${engineHealing.lastJob?.id || "NO_JOB"}`
-  );
+  const payload = {
+    engineState: engineHealing.engineState,
+    cycleCount: engineHealing.cycleCount,
+    lastJobId: engineHealing.lastJob?.id || "NO_JOB"
+  };
+  return buildDualHashSignature("ENGINE_V16", payload);
 }
 
 function buildJobSignature(job) {
-  if (!job) return "JOB::NONE";
-  return computeHash(`JOB::${job.id}::${job.marketplaceId || "NO_MARKET"}`);
+  const payload = {
+    jobId: job?.id || null,
+    marketplaceId: job?.marketplaceId || null
+  };
+  return buildDualHashSignature("JOB_V16", payload);
 }
 
 function buildResultSignature(job, result) {
@@ -303,20 +363,30 @@ function buildResultSignature(job, result) {
     ? result.success
     : null;
 
-  return computeHash(
-    `RESULT::${job?.id || "NO_JOB"}::${success === null ? "NA" : success}`
-  );
+  const payload = {
+    jobId: job?.id || null,
+    success
+  };
+  return buildDualHashSignature("RESULT_V16", payload);
+}
+
+function buildSubmissionSignature(job, submission) {
+  const payload = {
+    jobId: job?.id || null,
+    submissionOk: submission?.ok ?? null
+  };
+  return buildDualHashSignature("SUBMISSION_V16", payload);
 }
 
 // ============================================================================
-// FACTORY — createEarnEngine (v13.0-Presence-Immortal)
+// FACTORY — createEarnEngine (v16-IMMORTAL)
 // ============================================================================
 export function createEarnEngine({
   pulseSendSystem,
   log = console.log
 } = {}) {
   if (!pulseSendSystem || typeof pulseSendSystem.compute !== "function") {
-    throw new Error("[EarnEngine-v13.0-Presence-Immortal] pulseSendSystem.compute(job, ctx) required.");
+    throw new Error("[EarnEngine-v16-IMMORTAL] pulseSendSystem.compute(job, ctx) required.");
   }
 
   const engine = {
@@ -329,11 +399,12 @@ export function createEarnEngine({
 
       engineHealing.running = true;
       engineHealing.engineState = "running";
-      engineHealing.lastEngineSignature = buildEngineSignature();
+      const sig = buildEngineSignature();
+      engineHealing.lastEngineSignature = sig.combined;
 
       this.running = true;
       this.engineState = "running";
-      this.lastEngineSignature = engineHealing.lastEngineSignature;
+      this.lastEngineSignature = sig.combined;
     },
 
     // -----------------------------------------------------------------------
@@ -344,165 +415,185 @@ export function createEarnEngine({
 
       engineHealing.running = false;
       engineHealing.engineState = "stopped";
-      engineHealing.lastEngineSignature = buildEngineSignature();
+      const sig = buildEngineSignature();
+      engineHealing.lastEngineSignature = sig.combined;
 
       this.running = false;
       this.engineState = "stopped";
-      this.lastEngineSignature = engineHealing.lastEngineSignature;
+      this.lastEngineSignature = sig.combined;
     },
 
     // -----------------------------------------------------------------------
-    // cycle() — ONE deterministic contraction cycle (TRIPLE PRESENCE)
+    // cycle() — ONE deterministic contraction cycle (TRIPLE PRESENCE + dual-hash)
 // -----------------------------------------------------------------------
-cycle() {
-  if (!engineHealing.running) return null;
+    cycle() {
+      if (!engineHealing.running) return null;
 
-  try {
-    engineCycle++;
-    engineHealing.cycleCount++;
+      try {
+        engineCycle++;
+        engineHealing.cycleCount++;
 
-    // ============================================================
-    // 0. PRE-FETCH PRESENCE (deviceProfile A)
-    // ============================================================
-    const deviceA = getPulseEarnDeviceProfile();
-    const preFetchPresence = buildPresenceField(null, deviceA, engineHealing.cycleCount);
-    const preFetchAdvantage = buildAdvantageField(null, deviceA, {
-      band: "symbolic",
-      binaryField: { density: 0 },
-      waveField: { amplitude: 0 }
-    }, preFetchPresence);
-    const preFetchChunk = buildChunkPrewarmPlan(null, deviceA, preFetchPresence);
+        // ============================================================
+        // 0. PRE-FETCH PRESENCE (deviceProfile A)
+        // ============================================================
+        const deviceA = getPulseEarnDeviceProfile();
+        const preFetchPresence = buildPresenceField(null, deviceA, engineHealing.cycleCount);
+        const preFetchAdvantage = buildAdvantageField(null, deviceA, {
+          band: "symbolic",
+          binaryField: { density: 0 },
+          waveField: { amplitude: 0 }
+        }, preFetchPresence);
+        const preFetchChunk = buildChunkPrewarmPlan(null, deviceA, preFetchPresence);
 
-    engineHealing.lastPresencePreFetch = preFetchPresence;
-    engineHealing.lastAdvantagePreFetch = preFetchAdvantage;
-    engineHealing.lastChunkPlanPreFetch = preFetchChunk;
+        engineHealing.lastPresencePreFetch = preFetchPresence;
+        engineHealing.lastAdvantagePreFetch = preFetchAdvantage;
+        engineHealing.lastChunkPlanPreFetch = preFetchChunk;
 
-    // ============================================================
-    // 1. FETCH JOB
-    // ============================================================
-    const job = fetchJobFromMarketplace();
-    if (!job) return null;
+        // ============================================================
+        // 1. FETCH JOB
+        // ============================================================
+        const job = fetchJobFromMarketplace();
+        if (!job) return null;
 
-    engineHealing.lastJob = job;
-    engineHealing.lastJobSignature = buildJobSignature(job);
+        engineHealing.lastJob = job;
+        const jobSig = buildJobSignature(job);
+        engineHealing.lastJobSignature = jobSig.combined;
 
-    const tendonContext = job.impulse?.flags?.earner_context || null;
-    const volatility = job.impulse?.flags?.earner_volatility ?? null;
+        const tendonContext = job.impulse?.flags?.earner_context || null;
+        const volatility = job.impulse?.flags?.earner_volatility ?? null;
 
-    engineHealing.lastTendonContext = tendonContext;
-    engineHealing.lastVolatility = volatility;
+        engineHealing.lastTendonContext = tendonContext;
+        engineHealing.lastVolatility = volatility;
 
-    // ============================================================
-    // 2. PRE-EXECUTE PRESENCE (deviceProfile B)
-    // ============================================================
-    const deviceB = getPulseEarnDeviceProfile();
-    const preExecutePresence = buildPresenceField(job, deviceB, engineHealing.cycleCount);
-    const preExecuteBandPack = buildEngineBandBinaryWave(job, null, engineHealing.cycleCount);
-    const preExecuteAdvantage = buildAdvantageField(job, deviceB, preExecuteBandPack, preExecutePresence);
-    const preExecuteChunk = buildChunkPrewarmPlan(job, deviceB, preExecutePresence);
+        // ============================================================
+        // 2. PRE-EXECUTE PRESENCE (deviceProfile B)
+        // ============================================================
+        const deviceB = getPulseEarnDeviceProfile();
+        const preExecutePresence = buildPresenceField(job, deviceB, engineHealing.cycleCount);
+        const preExecuteBandPack = buildEngineBandBinaryWave(job, null, engineHealing.cycleCount);
+        const preExecuteAdvantage = buildAdvantageField(job, deviceB, preExecuteBandPack, preExecutePresence);
+        const preExecuteChunk = buildChunkPrewarmPlan(job, deviceB, preExecutePresence);
 
-    engineHealing.lastPresencePreExecute = preExecutePresence;
-    engineHealing.lastAdvantagePreExecute = preExecuteAdvantage;
-    engineHealing.lastChunkPlanPreExecute = preExecuteChunk;
+        engineHealing.lastPresencePreExecute = preExecutePresence;
+        engineHealing.lastAdvantagePreExecute = preExecuteAdvantage;
+        engineHealing.lastChunkPlanPreExecute = preExecuteChunk;
 
-    // ============================================================
-    // 3. EXECUTE JOB
-    // ============================================================
-    const result = pulseSendSystem.compute(job, {
-      tendonContext,
-      volatility
-    });
+        // ============================================================
+        // 3. EXECUTE JOB
+        // ============================================================
+        const result = pulseSendSystem.compute(job, {
+          tendonContext,
+          volatility
+        });
 
-    engineHealing.lastResult = result;
-    engineHealing.lastResultSignature = buildResultSignature(job, result);
+        engineHealing.lastResult = result;
+        const resultSig = buildResultSignature(job, result);
+        engineHealing.lastResultSignature = resultSig.combined;
 
-    const postExecuteBandPack = buildEngineBandBinaryWave(job, result, engineHealing.cycleCount);
+        const postExecuteBandPack = buildEngineBandBinaryWave(job, result, engineHealing.cycleCount);
 
-    // ============================================================
-    // 4. POST-EXECUTE PRESENCE (deviceProfile B reused)
-    // ============================================================
-    const postExecutePresence = buildPresenceField(job, deviceB, engineHealing.cycleCount);
-    const postExecuteAdvantage = buildAdvantageField(job, deviceB, postExecuteBandPack, postExecutePresence);
-    const postExecuteChunk = buildChunkPrewarmPlan(job, deviceB, postExecutePresence);
+        // ============================================================
+        // 4. POST-EXECUTE PRESENCE (deviceProfile B reused)
+        // ============================================================
+        const postExecutePresence = buildPresenceField(job, deviceB, engineHealing.cycleCount);
+        const postExecuteAdvantage = buildAdvantageField(job, deviceB, postExecuteBandPack, postExecutePresence);
+        const postExecuteChunk = buildChunkPrewarmPlan(job, deviceB, postExecutePresence);
 
-    engineHealing.lastPresencePostExecute = postExecutePresence;
-    engineHealing.lastAdvantagePostExecute = postExecuteAdvantage;
-    engineHealing.lastChunkPlanPostExecute = postExecuteChunk;
+        engineHealing.lastPresencePostExecute = postExecutePresence;
+        engineHealing.lastAdvantagePostExecute = postExecuteAdvantage;
+        engineHealing.lastChunkPlanPostExecute = postExecuteChunk;
 
-    // ============================================================
-    // 5. SUBMIT RESULT
-    // ============================================================
-    const submission = submitMarketplaceResult(job, result);
+        // ============================================================
+        // 5. SUBMIT RESULT
+        // ============================================================
+        const submission = submitMarketplaceResult(job, result);
+        engineHealing.lastSubmission = submission;
+        const subSig = buildSubmissionSignature(job, submission);
+        engineHealing.lastSubmissionSignature = subSig.combined;
 
-    engineHealing.lastEngineSignature = buildEngineSignature();
+        const engineSig = buildEngineSignature();
+        engineHealing.lastEngineSignature = engineSig.combined;
 
-    return {
-      job,
-      result,
-      submission,
+        return {
+          job,
+          result,
+          submission,
 
-      // A-B-A
-      band: postExecuteBandPack.band,
-      binaryField: postExecuteBandPack.binaryField,
-      waveField: postExecuteBandPack.waveField,
+          // A-B-A
+          band: postExecuteBandPack.band,
+          binaryField: postExecuteBandPack.binaryField,
+          waveField: postExecuteBandPack.waveField,
 
-      // Triple Presence
-      presencePreFetch: preFetchPresence,
-      presencePreExecute: preExecutePresence,
-      presencePostExecute: postExecutePresence,
+          // Triple Presence
+          presencePreFetch: preFetchPresence,
+          presencePreExecute: preExecutePresence,
+          presencePostExecute: postExecutePresence,
 
-      advantagePreFetch: preFetchAdvantage,
-      advantagePreExecute: preExecuteAdvantage,
-      advantagePostExecute: postExecuteAdvantage,
+          advantagePreFetch: preFetchAdvantage,
+          advantagePreExecute: preExecuteAdvantage,
+          advantagePostExecute: postExecuteAdvantage,
 
-      chunkPrewarmPreFetch: preFetchChunk,
-      chunkPrewarmPreExecute: preExecuteChunk,
-      chunkPrewarmPostExecute: postExecuteChunk,
+          chunkPrewarmPreFetch: preFetchChunk,
+          chunkPrewarmPreExecute: preExecuteChunk,
+          chunkPrewarmPostExecute: postExecuteChunk,
 
-      cycleIndex: engineHealing.cycleCount
-    };
+          // Dual-hash surfaces
+          engineSignature: engineSig.combined,
+          jobSignature: jobSig.combined,
+          resultSignature: resultSig.combined,
+          submissionSignature: subSig.combined,
 
-  } catch (err) {
-    engineHealing.lastError = err.message;
-    return null;
-  }
-},
+          cycleIndex: engineHealing.cycleCount
+        };
 
+      } catch (err) {
+        engineHealing.lastError = err.message;
+        return null;
+      }
+    },
+
+    // -----------------------------------------------------------------------
+    // diagnostics()
 // -----------------------------------------------------------------------
-// diagnostics()
-// -----------------------------------------------------------------------
-diagnostics() {
-  return {
-    engineState: engineHealing.engineState,
-    cycleCount: engineHealing.cycleCount,
-    lastJobId: engineHealing.lastJob?.id || null,
-    lastError: engineHealing.lastError || null,
-    lastTendonContext: engineHealing.lastTendonContext,
-    lastVolatility: engineHealing.lastVolatility,
+    diagnostics() {
+      return {
+        engineState: engineHealing.engineState,
+        cycleCount: engineHealing.cycleCount,
+        lastJobId: engineHealing.lastJob?.id || null,
+        lastError: engineHealing.lastError || null,
+        lastTendonContext: engineHealing.lastTendonContext,
+        lastVolatility: engineHealing.lastVolatility,
 
-    // A-B-A
-    band: engineHealing.lastBand,
-    binaryField: engineHealing.lastBinaryField,
-    waveField: engineHealing.lastWaveField,
+        // Dual-hash
+        lastEngineSignature: engineHealing.lastEngineSignature,
+        lastJobSignature: engineHealing.lastJobSignature,
+        lastResultSignature: engineHealing.lastResultSignature,
+        lastSubmissionSignature: engineHealing.lastSubmissionSignature,
 
-    // Triple Presence
-    presencePreFetch: engineHealing.lastPresencePreFetch,
-    presencePreExecute: engineHealing.lastPresencePreExecute,
-    presencePostExecute: engineHealing.lastPresencePostExecute,
+        // A-B-A
+        band: engineHealing.lastBand,
+        bandSignature: engineHealing.lastBandSignature,
+        binaryField: engineHealing.lastBinaryField,
+        waveField: engineHealing.lastWaveField,
 
-    advantagePreFetch: engineHealing.lastAdvantagePreFetch,
-    advantagePreExecute: engineHealing.lastAdvantagePreExecute,
-    advantagePostExecute: engineHealing.lastAdvantagePostExecute,
+        // Triple Presence
+        presencePreFetch: engineHealing.lastPresencePreFetch,
+        presencePreExecute: engineHealing.lastPresencePreExecute,
+        presencePostExecute: engineHealing.lastPresencePostExecute,
 
-    chunkPrewarmPreFetch: engineHealing.lastChunkPlanPreFetch,
-    chunkPrewarmPreExecute: engineHealing.lastChunkPlanPreExecute,
-    chunkPrewarmPostExecute: engineHealing.lastChunkPlanPostExecute
+        advantagePreFetch: engineHealing.lastAdvantagePreFetch,
+        advantagePreExecute: engineHealing.lastAdvantagePreExecute,
+        advantagePostExecute: engineHealing.lastAdvantagePostExecute,
+
+        chunkPrewarmPreFetch: engineHealing.lastChunkPlanPreFetch,
+        chunkPrewarmPreExecute: engineHealing.lastChunkPlanPreExecute,
+        chunkPrewarmPostExecute: engineHealing.lastChunkPlanPostExecute
+      };
+    }
+
   };
-}
 
-};
-
-return engine;
+  return engine;
 }
 
 // ============================================================================

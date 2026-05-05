@@ -1,27 +1,31 @@
 // ============================================================================
-// FILE: tropic-pulse-functions/PULSE-WORLD/PULSE-EARN/PulseEarnMktEmbassyLedger-v13.0-Presence-Immortal.js
-// LAYER: THE EMBASSY LEDGER (v13.0-Presence-Immortal)
-// Marketplace Registry + Identity Verifier + Diplomatic Roster + Presence/Advantage/Prewarm
+// FILE: tropic-pulse-functions/PULSE-WORLD/PULSE-EARN/PulseEarnMktEmbassyLedger-v16-IMMORTAL-INTEL.js
+// LAYER: THE EMBASSY LEDGER (v16-IMMORTAL-INTEL)
+// Marketplace Registry + Identity Verifier + Diplomatic Roster
+// + Presence/Advantage/Chunk/Prewarm + DualHash Intel Signatures
 // ============================================================================
 //
-// ROLE (v13.0-Presence-Immortal):
+// ROLE (v16-IMMORTAL-INTEL):
 //   The Embassy Ledger is the authoritative registry of all Pulse‑Earn marketplace
 //   representatives. It validates identity, ensures deterministic readiness,
-//   and emits unified v13 presence/advantage/chunk-prewarm surfaces for each adapter.
+//   and emits unified v16 presence/advantage/chunk-prewarm surfaces for each adapter,
+//   with dual-hash (classic + intel) signatures.
 //
-// CONTRACT (v13.0-Presence-Immortal):
+// CONTRACT (v16-IMMORTAL-INTEL):
 //   • PURE REGISTRY — no async, no randomness, no timestamps.
 //   • Deterministic validation + readiness surfaces only.
-//   • Unified Earn v13 presence model (mesh/castle/region).
+//   • Unified Earn v16 presence model (mesh/castle/region).
+//   • DualHash intel signatures for adapters, roster, cycles, presence, advantage, chunk.
 //   • Public API unchanged: marketplaces[], getHealingState().
 // ============================================================================
+
 /*
 AI_EXPERIENCE_META = {
   identity: "PulseEarnMktEmbassyLedger",
-  version: "v14-Immortal",
+  version: "v16-IMMORTAL-INTEL",
   layer: "earn_market",
   role: "market_embassy_ledger",
-  lineage: "PulseEarnMktEmbassyLedger-v11 → v12.3 → v14-Immortal",
+  lineage: "PulseEarnMktEmbassyLedger-v11 → v12.3 → v13.0-Presence-Immortal → v16-IMMORTAL-INTEL",
 
   evo: {
     embassyLedger: true,
@@ -33,11 +37,23 @@ AI_EXPERIENCE_META = {
     binaryAware: true,
 
     deterministic: true,
+    deterministicField: true,
     driftProof: true,
     pureCompute: true,
     zeroNetwork: true,
     zeroFilesystem: true,
-    zeroMutationOfInput: true
+    zeroMutationOfInput: true,
+    zeroAsync: true,
+    zeroRandomness: true,
+
+    chunkAware: true,
+    prewarmAware: true,
+    cacheAware: true,
+
+    intelSignatureAware: true,
+    dualHashAware: true,
+    structureAware: true,
+    contextAware: true
   },
 
   contract: {
@@ -45,7 +61,8 @@ AI_EXPERIENCE_META = {
       "PulseEarnMktConsulate",
       "PulseEarnMktBroker",
       "PulseEarnMktCourier",
-      "PulseEarnMktForager"
+      "PulseEarnMktForager",
+      "PulseEarnMktAuctioneer"
     ],
     never: [
       "safeRoute",
@@ -58,11 +75,12 @@ AI_EXPERIENCE_META = {
 export const PulseEarnMktEmbassyLedgerMeta = Object.freeze({
   layer: "PulseEarnMktEmbassyLedger",
   role: "EARN_MARKETPLACE_REGISTRY",
-  version: "v13.0-Presence-Immortal",
-  identity: "PulseEarnMktEmbassyLedger-v13.0-Presence-Immortal",
+  version: "v16-IMMORTAL-INTEL",
+  identity: "PulseEarnMktEmbassyLedger-v16-IMMORTAL-INTEL",
 
   guarantees: Object.freeze({
     deterministic: true,
+    deterministicField: true,
     driftProof: true,
     noRandomness: true,
     noRealTime: true,
@@ -87,7 +105,7 @@ export const PulseEarnMktEmbassyLedgerMeta = Object.freeze({
 });
 
 // ---------------------------------------------------------------------------
-// Imports — Deterministic Marketplace Representatives (v13)
+// Imports — Deterministic Marketplace Representatives (v16 stack compatible)
 // ---------------------------------------------------------------------------
 import { PulseEarnMktAmbassador } from "./PulseEarnMktAmbassador.js";   // Akash
 import { PulseEarnMktBroker } from "./PulseEarnMktBroker.js";           // RunPod
@@ -96,9 +114,9 @@ import { PulseEarnMktCourier } from "./PulseEarnMktCourier.js";         // Spher
 import { PulseEarnMktAuctioneer } from "./PulseEarnMktAuctioneer.js";   // Vast
 
 // ---------------------------------------------------------------------------
-// Deterministic Hash Helper
+// DualHash Helpers — Classic + Intel
 // ---------------------------------------------------------------------------
-function computeHash(str) {
+function computeClassicHash(str) {
   let h = 0;
   const s = String(str || "");
   for (let i = 0; i < s.length; i++)
@@ -106,16 +124,21 @@ function computeHash(str) {
   return `h${h}`;
 }
 
-function buildAdapterSignature(name) {
-  return computeHash(`ADAPTER::${name}`);
+function computeIntelHash(payload) {
+  const s = JSON.stringify(payload || {});
+  let h = 0;
+  for (let i = 0; i < s.length; i++) {
+    const c = s.charCodeAt(i);
+    h = (h * 131 + c * (i + 7)) % 1000000007;
+  }
+  return `i${h}`;
 }
 
-function buildRosterSignature(list) {
-  return computeHash(`ROSTER::${list.join("|")}`);
-}
-
-function buildCycleSignature(cycle) {
-  return computeHash(`EMBASSY_CYCLE::${cycle}`);
+function dualSig(label, intelPayload, classicString) {
+  return {
+    intel: computeIntelHash({ label, intelPayload, classicString }),
+    classic: computeClassicHash(`${label}::${classicString}`)
+  };
 }
 
 function normalizeBand(band) {
@@ -124,7 +147,22 @@ function normalizeBand(band) {
 }
 
 // ---------------------------------------------------------------------------
-// Unified Earn v13 Presence Tier
+// Classic Signatures (backwards compatible)
+// ---------------------------------------------------------------------------
+function buildAdapterSignatureClassic(name) {
+  return computeClassicHash(`ADAPTER::${name}`);
+}
+
+function buildRosterSignatureClassic(list) {
+  return computeClassicHash(`ROSTER::${list.join("|")}`);
+}
+
+function buildCycleSignatureClassic(cycle) {
+  return computeClassicHash(`EMBASSY_CYCLE::${cycle}`);
+}
+
+// ---------------------------------------------------------------------------
+// Unified Earn v16 Presence Tier
 // ---------------------------------------------------------------------------
 function classifyPresenceTier(pressure) {
   if (pressure >= 150) return "critical";
@@ -135,7 +173,7 @@ function classifyPresenceTier(pressure) {
 }
 
 // ---------------------------------------------------------------------------
-// Unified v13 Presence Field for Adapters
+// Unified v16 Presence Field for Adapters (with DualHash)
 // ---------------------------------------------------------------------------
 function buildAdapterPresenceField(name, adapter, cycleIndex, globalHints = {}) {
   const ghP = globalHints.presenceContext || {};
@@ -147,7 +185,6 @@ function buildAdapterPresenceField(name, adapter, cycleIndex, globalHints = {}) 
   const meshPressureExternal = Number(mesh.meshPressureIndex || 0);
   const castleLoadExternal = Number(castle.loadLevel || 0);
 
-  // Internal adapter identity signal
   const idLen = (adapter?.id || "").length;
   const roleLen = (adapter?.name || "").length;
   const internalComposite = idLen * 0.001 + roleLen * 0.001 + cycleIndex * 0.0001;
@@ -159,8 +196,27 @@ function buildAdapterPresenceField(name, adapter, cycleIndex, globalHints = {}) 
   const pressure = meshPressureIndex + castleLoadLevel;
   const presenceTier = classifyPresenceTier(pressure);
 
+  const intelPayload = {
+    kind: "embassyAdapterPresence",
+    version: "v16-IMMORTAL-INTEL",
+    adapterName: name,
+    adapterId: adapter?.id || null,
+    presenceTier,
+    meshPressureIndex,
+    castleLoadLevel,
+    meshStrength,
+    idLen,
+    roleLen,
+    cycleIndex
+  };
+
+  const classicString =
+    `EMBASSY_PRESENCE::${name}::${presenceTier}::${meshPressureIndex}::${castleLoadLevel}`;
+
+  const sig = dualSig("EMBASSY_ADAPTER_PRESENCE", intelPayload, classicString);
+
   return {
-    presenceVersion: "v13.0-Presence-Immortal",
+    presenceVersion: "v16-IMMORTAL-INTEL",
     presenceTier,
 
     adapterName: name,
@@ -185,14 +241,13 @@ function buildAdapterPresenceField(name, adapter, cycleIndex, globalHints = {}) 
     roleLen,
     cycleIndex,
 
-    presenceSignature: computeHash(
-      `EMBASSY_PRESENCE::${name}::${presenceTier}::${meshPressureIndex}::${castleLoadLevel}`
-    )
+    presenceSignatureIntel: sig.intel,
+    presenceSignatureClassic: sig.classic
   };
 }
 
 // ---------------------------------------------------------------------------
-// Unified v13 Advantage‑C
+// Unified v16 Advantage‑C for Adapters (with DualHash)
 // ---------------------------------------------------------------------------
 function buildAdapterAdvantageField(name, adapter, band, cycleIndex, presenceField, globalHints = {}) {
   const hasPing = typeof adapter?.ping === "function";
@@ -223,8 +278,9 @@ function buildAdapterAdvantageField(name, adapter, band, cycleIndex, presenceFie
 
   const fallbackBandLevel = globalHints.fallbackBandLevel ?? 0;
 
-  return {
-    advantageVersion: "C-13.0",
+  const intelPayload = {
+    kind: "embassyAdapterAdvantage",
+    version: "C-16.0",
     adapterName: name,
     adapterId: adapter?.id || null,
     band,
@@ -232,12 +288,32 @@ function buildAdapterAdvantageField(name, adapter, band, cycleIndex, presenceFie
     bandScore,
     advantageScore,
     advantageTier,
-    fallbackBandLevel
+    fallbackBandLevel,
+    presenceTier: presenceField.presenceTier
+  };
+
+  const classicString =
+    `EMBASSY_ADVANTAGE::${name}::${presenceField.presenceTier}::${advantageTier}`;
+
+  const sig = dualSig("EMBASSY_ADAPTER_ADVANTAGE", intelPayload, classicString);
+
+  return {
+    advantageVersion: "C-16.0",
+    adapterName: name,
+    adapterId: adapter?.id || null,
+    band,
+    methodScore,
+    bandScore,
+    advantageScore,
+    advantageTier,
+    fallbackBandLevel,
+    advantageSignatureIntel: sig.intel,
+    advantageSignatureClassic: sig.classic
   };
 }
 
 // ---------------------------------------------------------------------------
-// Unified v13 Chunk/Prewarm Plan
+// Unified v16 Chunk/Prewarm Plan for Adapters (with DualHash)
 // ---------------------------------------------------------------------------
 function buildAdapterChunkPrewarmPlan(name, adapter, presenceField, advantageField) {
   const basePriority =
@@ -258,8 +334,23 @@ function buildAdapterChunkPrewarmPlan(name, adapter, presenceField, advantageFie
 
   const priority = basePriority + advantageBoost;
 
+  const intelPayload = {
+    kind: "embassyAdapterChunkPlan",
+    version: "v16-Embassy-AdvantageC",
+    adapterName: name,
+    adapterId: adapter?.id || null,
+    priority,
+    presenceTier: presenceField.presenceTier,
+    advantageTier: advantageField.advantageTier
+  };
+
+  const classicString =
+    `EMBASSY_CHUNK_PLAN::${name}::${presenceField.presenceTier}::${priority}`;
+
+  const sig = dualSig("EMBASSY_ADAPTER_CHUNK_PLAN", intelPayload, classicString);
+
   return {
-    planVersion: "v13.0-Embassy-AdvantageC",
+    planVersion: "v16-Embassy-AdvantageC",
     adapterName: name,
     adapterId: adapter?.id || null,
     priority,
@@ -279,7 +370,9 @@ function buildAdapterChunkPrewarmPlan(name, adapter, presenceField, advantageFie
       muscleSystem: true,
       foragerLayer: true,
       lymphNodes: true
-    }
+    },
+    chunkPlanSignatureIntel: sig.intel,
+    chunkPlanSignatureClassic: sig.classic
   };
 }
 
@@ -293,9 +386,12 @@ const embassyHealing = {
   cycleCount: 0,
   lastCycleIndex: null,
 
-  lastAdapterSignature: null,
-  lastRosterSignature: null,
-  lastCycleSignature: null,
+  lastAdapterSignatureClassic: null,
+  lastAdapterSignatureIntel: null,
+  lastRosterSignatureClassic: null,
+  lastRosterSignatureIntel: null,
+  lastCycleSignatureClassic: null,
+  lastCycleSignatureIntel: null,
 
   adapterPresence: {},
   adapterAdvantage: {},
@@ -305,12 +401,20 @@ const embassyHealing = {
 let embassyCycle = 0;
 
 // ---------------------------------------------------------------------------
-// Adapter Validation (Unified v13 Presence)
+// Adapter Validation (Unified v16 Presence + DualHash)
 // ---------------------------------------------------------------------------
 function validateAdapter(name, adapter, globalHints = {}) {
   embassyCycle++;
   embassyHealing.cycleCount++;
   embassyHealing.lastCycleIndex = embassyCycle;
+
+  const cycleSig = dualSig(
+    "EMBASSY_CYCLE",
+    { cycleIndex: embassyCycle, adapterName: name },
+    `EMBASSY_CYCLE::${embassyCycle}::${name}`
+  );
+  embassyHealing.lastCycleSignatureClassic = cycleSig.classic;
+  embassyHealing.lastCycleSignatureIntel = cycleSig.intel;
 
   if (!adapter) {
     embassyHealing.missingAdapters.push(name);
@@ -326,8 +430,16 @@ function validateAdapter(name, adapter, globalHints = {}) {
   }
 
   embassyHealing.adaptersLoaded.push(name);
-  embassyHealing.lastAdapterSignature = buildAdapterSignature(name);
-  embassyHealing.lastCycleSignature = buildCycleSignature(embassyCycle);
+
+  const adapterSigClassic = buildAdapterSignatureClassic(name);
+  const adapterSigIntel = computeIntelHash({
+    label: "EMBASSY_ADAPTER",
+    name,
+    id: adapter?.id || null
+  });
+
+  embassyHealing.lastAdapterSignatureClassic = adapterSigClassic;
+  embassyHealing.lastAdapterSignatureIntel = adapterSigIntel;
 
   const band = normalizeBand(adapter.bandSignature || "symbolic");
 
@@ -369,9 +481,16 @@ const marketplaces = [
   PulseEarnMktAuctioneer
 ];
 
-embassyHealing.lastRosterSignature = buildRosterSignature(
-  marketplaces.map(m => m.id || "unknown")
-);
+const rosterIds = marketplaces.map(m => m.id || "unknown");
+
+const rosterSigClassic = buildRosterSignatureClassic(rosterIds);
+const rosterSigIntel = computeIntelHash({
+  label: "EMBASSY_ROSTER",
+  ids: rosterIds
+});
+
+embassyHealing.lastRosterSignatureClassic = rosterSigClassic;
+embassyHealing.lastRosterSignatureIntel = rosterSigIntel;
 
 // ---------------------------------------------------------------------------
 // Healing State Accessor
@@ -381,7 +500,7 @@ function getPulseEarnMktEmbassyHealingState() {
 }
 
 // ---------------------------------------------------------------------------
-// Exported API
+// Exported API (unchanged external shape)
 // ---------------------------------------------------------------------------
 export const PulseEarnMktEmbassyLedger = {
   marketplaces,

@@ -69,7 +69,7 @@ import { PulseExpansionMeta, createPulseExpansion } from "../PULSE-EXPANSION/Pul
 // Earn / Band / BinarySend
 import { getEarnContext, evolveEarn, createEarn } from "../PULSE-EARN/PulseEarn-v16.js";
 import { createDualBandOrganism as PulseBinaryOrganismBoot } from "../PULSE-AI/aiDualBand-v11-Evo.js";
-import { createBinarySend as PulseSendBin } from "../PULSE-SEND/PulseBinarySend-v11-Evo.js";
+import { createBinarySend as PulseSendBin } from "../PULSE-SEND/PulseBinarySend-v16.js";
 
 // PROXY CONTEXT — v16 IMMORTAL ORGANISM
 import {

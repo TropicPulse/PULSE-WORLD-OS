@@ -1,28 +1,17 @@
 // ============================================================================
-//  FILE: PulseV3UnifiedOrganism-v14.4-Immortal.js
+//  FILE: PulseV3UnifiedOrganism-v16-Immortal.js
 //  Pulse v3 • Unified Organism • Evolution-Aware • Deterministic Compute Loop
-//  v14.4: Unified Advantage Surface + Degradation Tier + Rich Diagnostics
-//         + Signature Surface + Binary-Front-End Ready + ImmortalMeta Surface
-//         + PulseIntelligence Surface (solvedness + factoring + computeTier)
+//  v16-Immortal:
+//    • Unified Advantage Surface (INTEL) + Degradation Tier v16
+//    • Rich Diagnostics + Signature Surface
+//    • Binary-Front-End Ready (full binary surface)
+//    • ImmortalMeta v16 Surface (dual-band, harmonic, coherence)
+//    • PulseIntelligence Surface (solvedness + factoring + computeTier)
+//    • 16+: cacheChunk / prewarm / presence / degradation / immortal surfaces
+//           exposed as first-class organism metadata
 // ============================================================================
 //
-//  ROLE (v3 vs v2):
-//  ----------------
-//  • Pulse v2 (evolution engine) is a *specialized evolution core*.
-//  • Pulse v3 is the *unified organism* view: pattern+lineage+payload as a
-//    single organism surface with a unified advantage field.
-//
-//  This file is the *symbolic* v3 organism core:
-//    - It does NOT know about bits directly.
-//    - It is designed to sit behind a binary front-end.
-//    - It exposes a unified advantage surface + tier + diagnostics that
-//      binary layers can read without understanding all symbolic details.
-//    - v14.4: also surfaces immortalMeta (presenceBandState, harmonicDrift,
-//      coherenceScore, dualBandMode, shifterBand).
-//    - v14.4-INTEL: adds pulseIntelligence (solvedness, factoring, computeTier,
-//      payloadComplexity, readinessScore, evolutionDepth).
-//
-//  SAFETY CONTRACT (v14.4-Immortal):
+//  SAFETY CONTRACT (v16-Immortal):
 //  ---------------------------------
 //  • No imports.
 //  • No randomness.
@@ -34,10 +23,10 @@
 /*
 AI_EXPERIENCE_META = {
   identity: "PulseV3UnifiedOrganism",
-  version: "v14.4-Evo-INTEL",
+  version: "v16-Immortal-INTEL",
   layer: "frontend",
   role: "unified_pulse_organism",
-  lineage: "PulseOS-v12",
+  lineage: "PulseOS-v16",
 
   evo: {
     unifiedOrganism: true,
@@ -46,7 +35,13 @@ AI_EXPERIENCE_META = {
     presenceAware: true,
     chunkAligned: true,
     safeRouteFree: true,
-    pulseIntelligenceReady: true
+    pulseIntelligenceReady: true,
+    cacheChunkAware: true,
+    prewarmAware: true,
+    multiPresenceAware: true,
+    degradationAware: true,
+    immortalMetaAware: true,
+    binaryFrontEndReady: true
   },
 
   contract: {
@@ -66,14 +61,14 @@ AI_EXPERIENCE_META = {
 
 
 // ============================================================================
-// ⭐ PulseRole — identifies this as the Pulse v3 unified organism (v14.4)
+// ⭐ PulseRole — identifies this as the Pulse v3 unified organism (v16)
 // ============================================================================
 export const PulseRole = {
   type: "Pulse",
   subsystem: "Pulse",
   layer: "Organ",
-  version: "14.4",
-  identity: "Pulse-v3-Unified-v14.4-Immortal-INTEL",
+  version: "16",
+  identity: "Pulse-v3-Unified-v16-Immortal-INTEL",
 
   evo: {
     // Core evolution awareness
@@ -110,20 +105,26 @@ export const PulseRole = {
 
     // Binary integration flags:
     binaryBackEndReady: true,
-    binaryFrontEndContract: "PulseBinaryUnifiedOrganism-v14.4-Immortal-INTEL",
+    binaryFrontEndContract: "PulseBinaryUnifiedOrganism-v16-Immortal-INTEL",
 
     // Immortal meta awareness
     immortalMetaAware: true,
     dualBandAware: true,
     harmonicAware: true,
-    coherenceAware: true
+    coherenceAware: true,
+
+    // 16+: cacheChunk / prewarm / presence / degradation / immortal surfaces
+    cacheChunkAware: true,
+    prewarmAware: true,
+    multiPresenceAware: true,
+    degradationAware: true
   },
 
-  routingContract: "PulseRouter-v14.4",
-  meshContract: "PulseMesh-v14.4",
-  sendContract: "PulseSend-v14.4",
-  gpuOrganContract: "PulseGPU-v14.4",
-  earnCompatibility: "PulseEarn-v14.4"
+  routingContract: "PulseRouter-v16",
+  meshContract: "PulseMesh-v16",
+  sendContract: "PulseSend-v16",
+  gpuOrganContract: "PulseGPU-v16",
+  earnCompatibility: "PulseEarn-v16"
 };
 
 
@@ -132,10 +133,18 @@ export const PulseRole = {
 // ============================================================================
 function computeHash(str) {
   let h = 0;
-  for (let i = 0; i < str.length; i++) {
-    h = (h + str.charCodeAt(i) * (i + 1)) % 100000;
+  const s = String(str);
+  for (let i = 0; i < s.length; i++) {
+    h = (h + s.charCodeAt(i) * (i + 1)) % 131072;
   }
-  return `h${h}`;
+  return `h16_${h}`;
+}
+
+function stableStringify(v) {
+  if (v === null || typeof v !== "object") return JSON.stringify(v);
+  if (Array.isArray(v)) return "[" + v.map(stableStringify).join(",") + "]";
+  const keys = Object.keys(v).sort();
+  return "{" + keys.map(k => JSON.stringify(k) + ":" + stableStringify(v[k])).join(",") + "}";
 }
 
 function buildLineage(parentLineage, pattern) {
@@ -176,22 +185,62 @@ function buildPageAncestrySignature({ pattern, lineage, pageId }) {
     pageId: pageId || "NO_PAGE"
   };
 
-  return computeHash(JSON.stringify(shape));
+  return computeHash(stableStringify(shape));
 }
 
-function computeDegradationTier(healthScore) {
+function computeDegradationTierV16(healthScore) {
+  const h = typeof healthScore === "number" ? healthScore : 1.0;
   return (
-    healthScore >= 0.95 ? "microDegrade" :
-    healthScore >= 0.85 ? "softDegrade"  :
-    healthScore >= 0.50 ? "midDegrade"   :
-    healthScore >= 0.15 ? "hardDegrade"  :
+    h >= 0.98 ? "microDegrade" :
+    h >= 0.92 ? "softDegrade"  :
+    h >= 0.60 ? "midDegrade"   :
+    h >= 0.25 ? "hardDegrade"  :
     "criticalDegrade"
   );
 }
 
 
 // ============================================================================
-//  IMMORTAL META SURFACE (v14.4)
+//  BINARY SURFACE (v16) — optional, non-breaking
+// ============================================================================
+function extractBinarySurfaceFromPayload(payload) {
+  const p = payload || {};
+
+  const binaryPattern  = p.binaryPattern || null;
+  const binaryMode     = p.binaryMode || null;
+  const binaryPayload  = p.binaryPayload || null;
+  const binaryHints    = p.binaryHints || null;
+  const binaryStrength = typeof p.binaryStrength === "number"
+    ? p.binaryStrength
+    : null;
+
+  const hasBinary =
+    !!binaryPattern ||
+    !!binaryMode ||
+    !!binaryPayload ||
+    !!binaryHints ||
+    binaryStrength !== null;
+
+  const routerHint = p.routerHint ?? (binaryHints && binaryHints.routerHint) ?? null;
+  const meshHint   = p.meshHint   ?? (binaryHints && binaryHints.meshHint)   ?? null;
+  const organHint  = p.organHint  ?? (binaryHints && binaryHints.organHint)  ?? null;
+
+  return {
+    hasBinary,
+    binaryPattern,
+    binaryMode,
+    binaryPayload,
+    binaryHints,
+    binaryStrength,
+    routerHint,
+    meshHint,
+    organHint
+  };
+}
+
+
+// ============================================================================
+//  IMMORTAL META SURFACE (v16)
 // ============================================================================
 function extractImmortalMeta(payload) {
   const m = payload?.immortalMeta || {};
@@ -206,16 +255,9 @@ function extractImmortalMeta(payload) {
 
 
 // ============================================================================
-//  PULSE INTELLIGENCE SURFACE (v14.4-INTEL)
-//  Deterministic, symbolic "compute" surface: no device load, pure logic.
-//  - solvednessScore: how close this pulse feels to "ready / solved"
-//  - factoringSignal: how much structure / reuse potential exists
-//  - computeTier: how much real compute this pulse *deserves* if any
-//  - payloadComplexity: structural richness of payload
-//  - evolutionDepth: lineage depth as an intelligence proxy
-//  - readinessScore: combined readiness for heavy work
+//  PULSE INTELLIGENCE SURFACE (v16-INTEL)
 // ============================================================================
-function computePulseIntelligence({ pattern, lineage, payload, healthScore }) {
+function computePulseIntelligence({ pattern, lineage, payload, healthScore, binarySurface }) {
   const lineageDepth = Array.isArray(lineage) ? lineage.length : 0;
   const payloadSize = payload && typeof payload === "object"
     ? Object.keys(payload).length
@@ -223,23 +265,27 @@ function computePulseIntelligence({ pattern, lineage, payload, healthScore }) {
 
   const patternLen = typeof pattern === "string" ? pattern.length : 0;
 
-  // Normalized structural complexity
   const maxPattern = 128;
   const maxPayload = 64;
 
   const patternComplexity = Math.min(patternLen / maxPattern, 1);
   const payloadComplexity = Math.min(payloadSize / maxPayload, 1);
 
-  // More health + less complexity → higher solvedness
+  const binaryStrength = typeof binarySurface?.binaryStrength === "number"
+    ? Math.min(Math.max(binarySurface.binaryStrength, 0), 1)
+    : 0;
+
   const solvednessScore = Math.max(
     0,
     Math.min(
-      healthScore * 0.7 + (1 - patternComplexity) * 0.15 + (1 - payloadComplexity) * 0.15,
+      healthScore * 0.6 +
+      (1 - patternComplexity) * 0.15 +
+      (1 - payloadComplexity) * 0.15 +
+      binaryStrength * 0.10,
       1
     )
   );
 
-  // Factoring signal: how much structure is available to reuse
   const factoringSignal =
     lineageDepth >= 4 || payloadSize >= 12
       ? "high"
@@ -247,7 +293,6 @@ function computePulseIntelligence({ pattern, lineage, payload, healthScore }) {
         ? "medium"
         : "low";
 
-  // Compute tier: how much heavy compute this pulse deserves
   const computeTier =
     solvednessScore >= 0.9 ? "nearSolution" :
     solvednessScore >= 0.7 ? "highValue"    :
@@ -255,7 +300,6 @@ function computePulseIntelligence({ pattern, lineage, payload, healthScore }) {
     solvednessScore >= 0.2 ? "lowPriority"  :
     "avoidCompute";
 
-  // Readiness: how "ready" this pulse is to be handed to a miner/GPU
   const readinessScore = Math.max(
     0,
     Math.min(
@@ -278,9 +322,94 @@ function computePulseIntelligence({ pattern, lineage, payload, healthScore }) {
 
 
 // ============================================================================
-//  DIAGNOSTICS (unified organism view + immortalMeta + intelligence)
+//  16+ Surfaces — cacheChunk / prewarm / presence / degradation / immortal
 // ============================================================================
-function buildDiagnostics({ pattern, lineage, healthScore, tier, immortalMeta, pulseIntelligence }) {
+function buildCacheChunkSurface({ pattern, lineage, pageId, mode }) {
+  const shape = {
+    pattern,
+    lineageDepth: Array.isArray(lineage) ? lineage.length : 0,
+    pageId,
+    mode
+  };
+  const raw = stableStringify(shape);
+  const cacheChunkKey = "pulse-v3-cache::" + computeHash(raw);
+
+  return {
+    cacheChunkKey,
+    cacheChunkSignature: computeHash(cacheChunkKey)
+  };
+}
+
+function buildPrewarmSurface({ priority, mode }) {
+  let level = "none";
+
+  if (priority === "critical" || priority === "high") level = "aggressive";
+  else if (priority === "normal") level = "medium";
+  else if (priority === "low") level = "light";
+
+  const shape = { priority, mode };
+  const raw = stableStringify(shape);
+  const prewarmKey = "pulse-v3-prewarm::" + computeHash(raw);
+
+  return {
+    level,
+    prewarmKey
+  };
+}
+
+function buildPresenceSurface({ pattern, pageId }) {
+  let scope = "local";
+  if (typeof pattern === "string") {
+    if (pattern.includes("/global")) scope = "global";
+    else if (pattern.includes("/page")) scope = "page";
+  }
+
+  const shape = { pattern, pageId, scope };
+  const raw = stableStringify(shape);
+  const presenceKey = "pulse-v3-presence::" + computeHash(raw);
+
+  return {
+    scope,
+    presenceKey
+  };
+}
+
+function buildDegradationSurface({ healthScore }) {
+  const tier = computeDegradationTierV16(healthScore);
+  return {
+    healthScore,
+    degradationTier: tier,
+    degradationSignature: computeHash(tier)
+  };
+}
+
+function buildImmortalSurface({ immortalMeta }) {
+  const raw = stableStringify(immortalMeta);
+  return {
+    immortalMeta,
+    immortalSignature: computeHash("immortal-v3::" + raw)
+  };
+}
+
+
+// ============================================================================
+//  DIAGNOSTICS (unified organism view + immortalMeta + intelligence + binary)
+// ============================================================================
+function buildDiagnostics({
+  pattern,
+  lineage,
+  healthScore,
+  tier,
+  immortalSurface,
+  pulseIntelligence,
+  binarySurface,
+  cacheChunkSurface,
+  prewarmSurface,
+  presenceSurface,
+  degradationSurface
+}) {
+  const immortalMeta = immortalSurface.immortalMeta;
+
   return {
     patternLength: pattern.length,
     lineageDepth: lineage.length,
@@ -291,29 +420,42 @@ function buildDiagnostics({ pattern, lineage, healthScore, tier, immortalMeta, p
     tier,
     lineageDensity: lineage.length === 0 ? 0 : pattern.length / lineage.length,
 
+    // Immortal + intelligence
     immortal: immortalMeta,
-    immortalSignature: computeHash(JSON.stringify(immortalMeta)),
+    immortalSignature: immortalSurface.immortalSignature,
 
     intelligence: pulseIntelligence,
-    intelligenceSignature: computeHash(JSON.stringify(pulseIntelligence))
+    intelligenceSignature: computeHash(stableStringify(pulseIntelligence)),
+
+    // Binary surface
+    binary: binarySurface,
+    binaryPatternHash: binarySurface.binaryPattern
+      ? computeHash(binarySurface.binaryPattern)
+      : null,
+    binaryModeHash: binarySurface.binaryMode
+      ? computeHash(binarySurface.binaryMode)
+      : null,
+    binaryRouterHintHash: binarySurface.routerHint
+      ? computeHash(binarySurface.routerHint)
+      : null,
+    binaryMeshHintHash: binarySurface.meshHint
+      ? computeHash(binarySurface.meshHint)
+      : null,
+    binaryOrganHintHash: binarySurface.organHint
+      ? computeHash(binarySurface.organHint)
+      : null,
+
+    // 16+ movement surfaces
+    cacheChunkSurface,
+    prewarmSurface,
+    presenceSurface,
+    degradationSurface
   };
 }
 
 
 // ============================================================================
-//  INTERNAL: Deterministic evolution compute loop (v3, v14.4 surface)
-// ============================================================================
-//
-//  v3's compute loop is a *unified advantage surface*:
-//
-//    - patternScore: how "large/complex" the pattern is
-//    - lineageScore: how deep the ancestry is
-//    - payloadScore: how rich the payload is
-//
-//  v14.4: immortalMeta is surfaced into advantageField but does not
-//         change the core scoring behavior (non-breaking).
-//  v14.4-INTEL: pulseIntelligence is computed alongside healthScore and
-//               surfaced for higher layers (Shifter, Mesh, Earn, etc.).
+//  INTERNAL: Deterministic evolution compute loop (v3, v16 surface)
 // ============================================================================
 function runEvolutionComputeLoop({ pattern, lineage, payload, mode }) {
   const lineageDepth = Array.isArray(lineage) ? lineage.length : 0;
@@ -329,7 +471,8 @@ function runEvolutionComputeLoop({ pattern, lineage, payload, mode }) {
   const lineageScore = Math.min(lineageDepth / maxLineage, 1);
   const payloadScore = Math.min(payloadSize / maxPayload, 1);
 
-  const immortalMeta = extractImmortalMeta(payload);
+  const binarySurface = extractBinarySurfaceFromPayload(payload);
+  const immortalMeta  = extractImmortalMeta(payload);
 
   const healthScore = (
     patternScore * 0.4 +
@@ -341,7 +484,8 @@ function runEvolutionComputeLoop({ pattern, lineage, payload, mode }) {
     pattern,
     lineage,
     payload,
-    healthScore
+    healthScore,
+    binarySurface
   });
 
   const advantageField = {
@@ -354,7 +498,7 @@ function runEvolutionComputeLoop({ pattern, lineage, payload, mode }) {
       mode === "recovery" ? 2 :
       1,
 
-    unifiedTier: "v3-unified-v14.4-Immortal-INTEL",
+    unifiedTier: "v3-unified-v16-Immortal-INTEL",
 
     // Immortal meta surfaced for higher layers
     presenceBandState: immortalMeta.presenceBandState,
@@ -368,20 +512,30 @@ function runEvolutionComputeLoop({ pattern, lineage, payload, mode }) {
     factoringSignal: pulseIntelligence.factoringSignal,
     computeTier: pulseIntelligence.computeTier,
     payloadComplexity: pulseIntelligence.payloadComplexity,
-    readinessScore: pulseIntelligence.readinessScore
+    readinessScore: pulseIntelligence.readinessScore,
+
+    // Binary-aware advantage surface
+    binaryAware: binarySurface.hasBinary,
+    binaryStrength: binarySurface.binaryStrength,
+    binaryMode: binarySurface.binaryMode,
+    binaryPattern: binarySurface.binaryPattern,
+    routerHint: binarySurface.routerHint,
+    meshHint: binarySurface.meshHint,
+    organHint: binarySurface.organHint
   };
 
   return {
     advantageField,
     healthScore,
     immortalMeta,
-    pulseIntelligence
+    pulseIntelligence,
+    binarySurface
   };
 }
 
 
 // ============================================================================
-//  FACTORY — Create a Pulse v3 Unified Organism (v14.4-Immortal-INTEL)
+//  FACTORY — Create a Pulse v3 Unified Organism (v16-Immortal-INTEL)
 // ============================================================================
 export function createPulseV3({
   jobId,
@@ -409,7 +563,8 @@ export function createPulseV3({
     advantageField,
     healthScore,
     immortalMeta,
-    pulseIntelligence
+    pulseIntelligence,
+    binarySurface
   } = runEvolutionComputeLoop({
     pattern,
     lineage,
@@ -417,14 +572,45 @@ export function createPulseV3({
     mode
   });
 
-  const tier = computeDegradationTier(healthScore);
+  const tier = computeDegradationTierV16(healthScore);
+
+  const cacheChunkSurface = buildCacheChunkSurface({
+    pattern,
+    lineage,
+    pageId,
+    mode
+  });
+
+  const prewarmSurface = buildPrewarmSurface({
+    priority,
+    mode
+  });
+
+  const presenceSurface = buildPresenceSurface({
+    pattern,
+    pageId
+  });
+
+  const degradationSurface = buildDegradationSurface({
+    healthScore
+  });
+
+  const immortalSurface = buildImmortalSurface({
+    immortalMeta
+  });
+
   const diagnostics = buildDiagnostics({
     pattern,
     lineage,
     healthScore,
     tier,
-    immortalMeta,
-    pulseIntelligence
+    immortalSurface,
+    pulseIntelligence,
+    binarySurface,
+    cacheChunkSurface,
+    prewarmSurface,
+    presenceSurface,
+    degradationSurface
   });
 
   return {
@@ -442,7 +628,7 @@ export function createPulseV3({
     pageId,
 
     // Unified organism type
-    pulseType: "Pulse-v3-Unified-v14.4-Immortal-INTEL",
+    pulseType: "Pulse-v3-Unified-v16-Immortal-INTEL",
 
     // Advantage + health
     advantageField,
@@ -454,6 +640,13 @@ export function createPulseV3({
 
     // Intelligence surfaced at organism level
     pulseIntelligence,
+
+    // 16+ movement / presence surfaces
+    cacheChunkSurface,
+    prewarmSurface,
+    presenceSurface,
+    degradationSurface,
+    immortalSurface,
 
     // Meta: signatures + diagnostics
     meta: {
@@ -469,10 +662,10 @@ export function createPulseV3({
       evolutionSignature: computeHash(pattern + "::" + lineageSignature),
       patternSignature: computeHash(pattern),
       lineageSurface: computeHash(String(lineage.length)),
-      advantageSignature: computeHash(JSON.stringify(advantageField)),
+      advantageSignature: computeHash(stableStringify(advantageField)),
       healthSignature: computeHash(String(healthScore)),
       tierSignature: computeHash(tier),
-      pulseIntelligenceSignature: computeHash(JSON.stringify(pulseIntelligence))
+      pulseIntelligenceSignature: computeHash(stableStringify(pulseIntelligence))
     }
   };
 }

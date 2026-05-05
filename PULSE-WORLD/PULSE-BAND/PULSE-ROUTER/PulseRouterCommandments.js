@@ -1,22 +1,24 @@
 // ============================================================================
-//  PulseRouterCommandmentsStore-v13-COSMOS-MULTIVERSE
-//  Deterministic Commandment Memory for PulseRouter-v13
+//  PulseRouterCommandmentsStore-v16-IMMORTAL-DualHash
+//  Deterministic Commandment Memory for PulseRouter-v16 / BinaryRouter-v16
 // ============================================================================
 //
 //  ROLE:
 //    - Stores symbolic routing commandments across universes/timelines/branches.
 //    - Deterministic ancestry signatures (pattern, lineage, page, cosmos).
-//    - Binary-surface extraction for dual-stack routing.
+//    - DualHash route keys for drift-proof lookup.
+//    - Binary-surface extraction for dual-stack routing (symbolic + binary).
 //    - Zero randomness, zero mutation, drift-proof.
 //    - Reversible serialization.
 // ============================================================================
+
 /*
 AI_EXPERIENCE_META = {
   identity: "PulseRouterCommandments",
-  version: "v12.5-Evo-LAW",
+  version: "v16-IMMORTAL-DualHash",
   layer: "frontend",
   role: "router_law",
-  lineage: "PulseOS-v12",
+  lineage: "PulseOS-v16",
 
   evo: {
     lawCore: true,
@@ -24,7 +26,9 @@ AI_EXPERIENCE_META = {
     dualBand: true,
     presenceAware: true,
     chunkAligned: true,
-    safeRouteFree: true
+    safeRouteFree: true,
+    dualHashReady: true,
+    binarySurfaceReady: true
   },
 
   contract: {
@@ -62,6 +66,40 @@ function cosmosSignature(cosmos) {
     h = (h * 31 + raw.charCodeAt(i)) >>> 0;
   }
   return `cx${h.toString(16)}`;
+}
+
+
+// ------------------------------------------------------------
+// HASH / DUALHASH HELPERS
+// ------------------------------------------------------------
+function hash131(raw) {
+  let h = 0;
+  const s = String(raw);
+  for (let i = 0; i < s.length; i++) {
+    h = (h * 131 + s.charCodeAt(i)) >>> 0;
+  }
+  return h >>> 0;
+}
+
+function hash257(raw) {
+  let h = 1;
+  const s = String(raw);
+  for (let i = 0; i < s.length; i++) {
+    h = (h * 257 + s.charCodeAt(i)) >>> 0;
+  }
+  return h >>> 0;
+}
+
+function computeDualHashRouteKey(rawShape) {
+  const raw = JSON.stringify(rawShape);
+  const h1 = hash131(raw);
+  const h2 = hash257(raw);
+  const combined = hash131(`${h1.toString(16)}::${h2.toString(16)}`);
+  return {
+    primary: `rk16-p${h1.toString(16)}`,
+    secondary: `rk16-s${h2.toString(16)}`,
+    combined: `rk16-c${combined.toString(16)}`
+  };
 }
 
 
@@ -114,7 +152,7 @@ function extractBinarySurface(payload) {
 
 
 // ------------------------------------------------------------
-// ROUTE KEY (v13 COSMOS)
+// ROUTE KEY (v16 IMMORTAL DualHash)
 // ------------------------------------------------------------
 function buildRouteKey({
   routeId,
@@ -142,17 +180,17 @@ function buildRouteKey({
     binary: extractBinarySurface(payload)
   };
 
-  const raw = JSON.stringify(shape);
-  let h = 0;
-  for (let i = 0; i < raw.length; i++) {
-    h = (h * 131 + raw.charCodeAt(i)) >>> 0;
-  }
-  return `rk13-${h.toString(16)}`;
+  const dualHash = computeDualHashRouteKey(shape);
+  return {
+    key: dualHash.combined,
+    dualHash,
+    shape
+  };
 }
 
 
 // ------------------------------------------------------------
-// NORMALIZATION (unchanged semantics, v13-stable)
+// NORMALIZATION (unchanged semantics, v16-stable)
 // ------------------------------------------------------------
 function normalizeCommandments(cmd = {}) {
   const out = {};
@@ -166,12 +204,12 @@ function normalizeCommandments(cmd = {}) {
 
 
 // ------------------------------------------------------------
-// STORE — v13 COSMOS
+// STORE — v16 IMMORTAL DualHash
 // ------------------------------------------------------------
 class PulseRouterCommandmentsStore {
   constructor() {
     this.entries = new Map();
-    this.meta = { version: "13-COSMOS-MULTIVERSE" };
+    this.meta = { version: "16-IMMORTAL-DualHash" };
   }
 
   clear() {
@@ -205,7 +243,7 @@ class PulseRouterCommandmentsStore {
       cosmos: cx
     });
 
-    const key = buildRouteKey({
+    const { key, dualHash } = buildRouteKey({
       routeId,
       tierId,
       context,
@@ -220,6 +258,7 @@ class PulseRouterCommandmentsStore {
 
     const entry = {
       key,
+      dualHash,
       routeId: String(routeId || "unknown-route"),
       tierId: String(tierId || "default"),
       context: context || {},
@@ -234,7 +273,7 @@ class PulseRouterCommandmentsStore {
 
       binary,
       commandments: normalized,
-      meta: { version: "13-COSMOS-MULTIVERSE" }
+      meta: { version: "16-IMMORTAL-DualHash" }
     };
 
     this.entries.set(key, entry);
@@ -256,7 +295,7 @@ class PulseRouterCommandmentsStore {
     const safeLineage = Array.isArray(lineage) ? lineage.slice() : [];
     const safePageId = pageId || "NO_PAGE";
 
-    const key = buildRouteKey({
+    const { key, dualHash } = buildRouteKey({
       routeId,
       tierId,
       context,
@@ -272,6 +311,7 @@ class PulseRouterCommandmentsStore {
 
     return {
       key,
+      dualHash,
       routeId: String(routeId || "unknown-route"),
       tierId: String(tierId || "default"),
       context: context || {},
@@ -291,7 +331,7 @@ class PulseRouterCommandmentsStore {
 
       binary: extractBinarySurface(payload),
       commandments: normalizeCommandments({}),
-      meta: { version: "13-COSMOS-MULTIVERSE" }
+      meta: { version: "16-IMMORTAL-DualHash" }
     };
   }
 
@@ -311,7 +351,8 @@ class PulseRouterCommandmentsStore {
         pageAncestrySignature: entry.pageAncestrySignature,
 
         binary: { ...entry.binary },
-        commandments: { ...entry.commandments }
+        commandments: { ...entry.commandments },
+        dualHash: { ...entry.dualHash }
       };
     }
     return out;
@@ -344,39 +385,60 @@ class PulseRouterCommandmentsStore {
         : [];
       const safePageId = entry.pageId || "NO_PAGE";
 
+      const patternAncestry =
+        Array.isArray(entry.patternAncestry)
+          ? entry.patternAncestry.slice()
+          : buildPatternAncestry(safePattern);
+
+      const lineageSignature =
+        typeof entry.lineageSignature === "string"
+          ? entry.lineageSignature
+          : buildLineageSignature(safeLineage);
+
+      const pageAncestrySignature =
+        typeof entry.pageAncestrySignature === "string"
+          ? entry.pageAncestrySignature
+          : buildPageAncestrySignature({
+              pattern: safePattern,
+              lineage: safeLineage,
+              pageId: safePageId,
+              cosmos: cx
+            });
+
+      const reconstructedShape = {
+        routeId: entry.routeId || "unknown-route",
+        tierId: entry.tierId || "default",
+        context: entry.context || {},
+        pattern: safePattern,
+        lineage: safeLineage,
+        pageId: safePageId,
+        cosmos: cx,
+        binary: entry.binary || {}
+      };
+
+      const dualHash =
+        entry.dualHash && entry.dualHash.combined
+          ? entry.dualHash
+          : computeDualHashRouteKey(reconstructedShape);
+
       const safeEntry = {
         key: entry.key,
+        dualHash,
         routeId: entry.routeId || "unknown-route",
         tierId: entry.tierId || "default",
         context: entry.context || {},
         cosmos: cx,
 
         pattern: safePattern,
-        patternAncestry:
-          Array.isArray(entry.patternAncestry)
-            ? entry.patternAncestry.slice()
-            : buildPatternAncestry(safePattern),
-
+        patternAncestry,
         lineage: safeLineage,
-        lineageSignature:
-          typeof entry.lineageSignature === "string"
-            ? entry.lineageSignature
-            : buildLineageSignature(safeLineage),
-
+        lineageSignature,
         pageId: safePageId,
-        pageAncestrySignature:
-          typeof entry.pageAncestrySignature === "string"
-            ? entry.pageAncestrySignature
-            : buildPageAncestrySignature({
-                pattern: safePattern,
-                lineage: safeLineage,
-                pageId: safePageId,
-                cosmos: cx
-              }),
+        pageAncestrySignature,
 
-        binary: entry.binary || extractBinarySurface({}),
+        binary: entry.binary || {},
         commandments: normalizeCommandments(entry.commandments || {}),
-        meta: { version: "13-COSMOS-MULTIVERSE" }
+        meta: { version: "16-IMMORTAL-DualHash" }
       };
 
       this.entries.set(safeEntry.key, safeEntry);
@@ -391,7 +453,7 @@ class PulseRouterCommandmentsStore {
 class PulseRouterCommandments {
   constructor() {
     this.store = new PulseRouterCommandmentsStore();
-    this.meta = { version: "13-COSMOS-MULTIVERSE" };
+    this.meta = { version: "16-IMMORTAL-DualHash" };
   }
 
   setCommandments(payload) {

@@ -1,32 +1,39 @@
 // ============================================================================
-//  FILE: PulseV2EvolutionEngine-v14.4-Immortal.js
+//  FILE: PulseV2EvolutionEngine-v16-Immortal-COMPUTE.js
 //  Pulse v2 • Evolution Engine • Experimental Trait Layer (Compute Inside Pulse)
-//  v14.4: Binary-Aware + ImmortalMeta + Degradation v14 + DualBand + Rich Diagnostics
+//  v16-Immortal-COMPUTE:
+//    • Binary-Aware + ImmortalMeta + Degradation v16 + DualBand
+//    • Intelligence Surface (COMPUTE_INTELLIGENCE v16)
+//    • DualHash surfaces (primary v16 + legacy fallback)
+//    • cacheChunk / prewarm / presence v16 surfaces
+//    • Deterministic, stable, no randomness
 // ============================================================================
 //
 //  ROLE:
 //    • Symbolic evolution engine (v2 tier).
 //    • Computes deterministic advantageField.
-//    • Computes healthScore + 14.4 degradation tier.
+//    • Computes healthScore + v16 degradation tier.
 //    • Surfaces binary metadata (non-breaking).
 //    • Surfaces immortalMeta (presenceBandState, harmonicDrift, coherenceScore,
 //      dualBandMode, shifterBand).
-//    • Deterministic, stable, no randomness.
+//    • Surfaces v16 COMPUTE_INTELLIGENCE for routing / Earn / GPU.
+//    • DualHash-aware cacheChunk / prewarm / presence surfaces.
 //
-//  SAFETY CONTRACT (v14.4-Immortal):
+//  SAFETY CONTRACT (v16-Immortal-COMPUTE):
 //    • No imports.
 //    • No randomness.
 //    • No timestamps.
 //    • No external mutation.
 //    • Pure deterministic compute loop.
 // ============================================================================
+
 /*
 AI_EXPERIENCE_META = {
   identity: "PulseV2EvolutionEngine",
-  version: "v14.4-Evo",
+  version: "v16-Immortal-COMPUTE",
   layer: "frontend",
   role: "evolution_engine_v2",
-  lineage: "PulseOS-v12",
+  lineage: "PulseOS-v16",
 
   evo: {
     evolutionCore: true,
@@ -34,7 +41,9 @@ AI_EXPERIENCE_META = {
     dualBand: true,
     presenceAware: true,
     chunkAligned: true,
-    safeRouteFree: true
+    safeRouteFree: true,
+    computeIntelligence: true,
+    dualHash: true
   },
 
   contract: {
@@ -50,15 +59,16 @@ AI_EXPERIENCE_META = {
   }
 }
 */
+
 // ============================================================================
-// ⭐ PulseRole — identifies this as the Pulse v2 evolution engine (v14.4)
+// ⭐ PulseRole — identifies this as the Pulse v2 evolution engine (v16-Immortal)
 // ============================================================================
 export const PulseRole = {
   type: "Pulse",
   subsystem: "Pulse",
   layer: "Organ",
-  version: "14.4",
-  identity: "Pulse-v2-EvolutionEngine-v14.4-Immortal-INTEL",
+  version: "16-Immortal",
+  identity: "Pulse-v2-EvolutionEngine-v16-Immortal-COMPUTE",
 
   evo: {
     driftProof: true,
@@ -84,10 +94,11 @@ export const PulseRole = {
     solvednessAware: true,
     factoringAware: true,
     computeTierAware: true,
+    computeIntelligenceReady: true,
 
     // Binary integration
     binaryBackEndReady: true,
-    binaryFrontEndContract: "PulseBinaryV2EvolutionEngine-v14.4-Immortal-INTEL",
+    binaryFrontEndContract: "PulseBinaryV2EvolutionEngine-v16-Immortal-COMPUTE",
 
     // IMMORTAL META
     immortalMetaAware: true,
@@ -95,8 +106,14 @@ export const PulseRole = {
     harmonicAware: true,
     coherenceAware: true,
 
-    // 14.4 degradation
-    degradationAware: true
+    // v16 degradation
+    degradationAware: true,
+
+    // v16 cache / prewarm / presence + dualHash
+    cacheChunkAware: true,
+    prewarmAware: true,
+    multiPresenceAware: true,
+    dualHashAware: true
   },
 
   routingContract: "PulseRouter-v11",
@@ -110,12 +127,38 @@ export const PulseRole = {
 // ============================================================================
 //  INTERNAL HELPERS — deterministic, tiny, pure
 // ============================================================================
-function computeHash(str) {
+
+function computeHashLegacy(str) {
   let h = 0;
-  for (let i = 0; i < str.length; i++) {
-    h = (h + str.charCodeAt(i) * (i + 3)) % 100000;
+  const s = String(str);
+  for (let i = 0; i < s.length; i++) {
+    h = (h + s.charCodeAt(i) * (i + 3)) % 100000;
   }
   return `h${h}`;
+}
+
+function computeHashV16(str) {
+  let h = 0;
+  const s = String(str);
+  for (let i = 0; i < s.length; i++) {
+    h = (h + s.charCodeAt(i) * (i + 7)) % 131071;
+  }
+  return `h16_${h}`;
+}
+
+function computeHash(str) {
+  // Primary v16 hash (used where a single hash string is expected)
+  return computeHashV16(str);
+}
+
+function computeDualHashSignature(shape) {
+  const raw = typeof shape === "string" ? shape : JSON.stringify(shape);
+  const primary = computeHashV16(raw);
+  const fallback = computeHashLegacy(raw);
+  return {
+    primary,
+    fallback
+  };
 }
 
 function buildLineage(parentLineage, pattern) {
@@ -190,7 +233,7 @@ function extractBinarySurfaceFromPayload(payload) {
 
 
 // ============================================================================
-//  IMMORTAL META SURFACE (14.4)
+//  IMMORTAL META SURFACE (v16)
 // ============================================================================
 function extractImmortalMeta(payload) {
   const m = payload?.immortalMeta || {};
@@ -205,7 +248,7 @@ function extractImmortalMeta(payload) {
 
 
 // ============================================================================
-//  PULSE INTELLIGENCE SURFACE (v14.4-INTEL)
+//  PULSE INTELLIGENCE SURFACE (v16-IMMORTAL-COMPUTE)
 // ============================================================================
 function computePulseIntelligence({ pattern, lineage, payload, healthScore, binarySurface }) {
   const lineageDepth = Array.isArray(lineage) ? lineage.length : 0;
@@ -272,7 +315,64 @@ function computePulseIntelligence({ pattern, lineage, payload, healthScore, bina
 
 
 // ============================================================================
-//  INTERNAL: Deterministic evolution compute loop (v14.4)
+//  v16 Surfaces — cacheChunk / prewarm / presence (dualHash-aware)
+// ============================================================================
+function buildCacheChunkSurface({ pattern, lineage, pageId, mode }) {
+  const shape = {
+    pattern,
+    lineageDepth: Array.isArray(lineage) ? lineage.length : 0,
+    pageId: pageId || "NO_PAGE",
+    mode: mode || "normal"
+  };
+  const raw = JSON.stringify(shape);
+  const cacheChunkKey = "pulse-v2-cache::" + computeHash(raw);
+  const dualHash = computeDualHashSignature(shape);
+
+  return {
+    cacheChunkKey,
+    cacheChunkSignature: computeHash(cacheChunkKey),
+    cacheChunkDualHash: dualHash
+  };
+}
+
+function buildPrewarmSurface({ priority, mode }) {
+  let level = "none";
+  if (priority === "critical" || priority === "high") level = "aggressive";
+  else if (priority === "normal") level = "medium";
+  else if (priority === "low") level = "light";
+
+  const shape = { priority, mode: mode || "normal" };
+  const raw = JSON.stringify(shape);
+  const prewarmKey = "pulse-v2-prewarm::" + computeHash(raw);
+  const dualHash = computeDualHashSignature(shape);
+
+  return {
+    level,
+    prewarmKey,
+    prewarmDualHash: dualHash
+  };
+}
+
+function buildPresenceSurface({ pattern, pageId }) {
+  let scope = "local";
+  if (pattern && pattern.includes("/global")) scope = "global";
+  else if (pattern && pattern.includes("/page")) scope = "page";
+
+  const shape = { pattern: pattern || "", pageId: pageId || "NO_PAGE", scope };
+  const raw = JSON.stringify(shape);
+  const presenceKey = "pulse-v2-presence::" + computeHash(raw);
+  const dualHash = computeDualHashSignature(shape);
+
+  return {
+    scope,
+    presenceKey,
+    presenceDualHash: dualHash
+  };
+}
+
+
+// ============================================================================
+//  INTERNAL: Deterministic evolution compute loop (v16)
 // ============================================================================
 function runEvolutionComputeLoopV2({ pattern, lineage, payload, mode }) {
   const lineageDepth = Array.isArray(lineage) ? lineage.length : 0;
@@ -324,7 +424,7 @@ function runEvolutionComputeLoopV2({ pattern, lineage, payload, mode }) {
       mode === "recovery" ? 2 :
       1,
 
-    experimentalTier: "v2-evolution-engine-v14.4-Immortal-INTEL",
+    experimentalTier: "v2-evolution-engine-v16-Immortal-COMPUTE",
 
     // Binary-aware advantage surface
     binaryAware: binarySurface.hasBinary,
@@ -358,9 +458,12 @@ function runEvolutionComputeLoopV2({ pattern, lineage, payload, mode }) {
 
 
 // ============================================================================
-//  DIAGNOSTICS (14.4)
+//  DIAGNOSTICS (v16)
 // ============================================================================
 function buildDiagnostics(pattern, lineage, healthScore, tier, binarySurface, immortalMeta, pulseIntelligence) {
+  const immortalSignatureShape = immortalMeta || {};
+  const intelligenceShape = pulseIntelligence || {};
+
   return {
     patternLength: pattern.length,
     lineageDepth: lineage.length,
@@ -384,16 +487,16 @@ function buildDiagnostics(pattern, lineage, healthScore, tier, binarySurface, im
       ? computeHash(binarySurface.binaryMode)
       : null,
 
-    immortalSignature: computeHash(JSON.stringify(immortalMeta)),
+    immortalSignature: computeHash(JSON.stringify(immortalSignatureShape)),
 
     intelligence: pulseIntelligence,
-    intelligenceSignature: computeHash(JSON.stringify(pulseIntelligence))
+    intelligenceSignature: computeHash(JSON.stringify(intelligenceShape))
   };
 }
 
 
 // ============================================================================
-//  FACTORY — Create a Pulse v2 Evolution Engine Organism (v14.4-Immortal-INTEL)
+//  FACTORY — Create a Pulse v2 Evolution Engine Organism (v16-Immortal-COMPUTE)
 // ============================================================================
 export function createPulseV2({
   jobId,
@@ -446,6 +549,23 @@ export function createPulseV2({
     pulseIntelligence
   );
 
+  const cacheChunkSurface = buildCacheChunkSurface({
+    pattern,
+    lineage,
+    pageId,
+    mode
+  });
+
+  const prewarmSurface = buildPrewarmSurface({
+    priority,
+    mode
+  });
+
+  const presenceSurface = buildPresenceSurface({
+    pattern,
+    pageId
+  });
+
   return {
     PulseRole,
 
@@ -458,7 +578,7 @@ export function createPulseV2({
     mode,
     pageId,
 
-    pulseType: "Pulse-v2-EvolutionEngine-v14.4-Immortal-INTEL",
+    pulseType: "Pulse-v2-EvolutionEngine-v16-Immortal-COMPUTE",
 
     advantageField,
     healthScore,
@@ -468,6 +588,14 @@ export function createPulseV2({
 
     // Intelligence surfaced at organism level
     pulseIntelligence,
+
+    // v16 cache / prewarm / presence surfaces
+    cacheChunkSurface,
+    prewarmSurface,
+    presenceSurface,
+
+    // Binary surfaced at organism level for v16 stack
+    binarySurface,
 
     meta: {
       shapeSignature,
@@ -485,7 +613,11 @@ export function createPulseV2({
       advantageSignature: computeHash(JSON.stringify(advantageField)),
       healthSignature: computeHash(String(healthScore)),
       tierSignature: computeHash(tier),
-      pulseIntelligenceSignature: computeHash(JSON.stringify(pulseIntelligence))
+      pulseIntelligenceSignature: computeHash(JSON.stringify(pulseIntelligence)),
+
+      cacheChunkDualHash: cacheChunkSurface.cacheChunkDualHash,
+      prewarmDualHash: prewarmSurface.prewarmDualHash,
+      presenceDualHash: presenceSurface.presenceDualHash
     }
   };
 }

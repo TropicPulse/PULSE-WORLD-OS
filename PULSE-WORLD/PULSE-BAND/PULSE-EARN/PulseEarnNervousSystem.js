@@ -1,23 +1,32 @@
 // ============================================================================
-//  PulseEarnNervousSystem-v13.0-Presence-Immortal.js
-//  THE NERVOUS SYSTEM + EXCHANGE OFFICE (v13.0 Presence-Immortal + Advantage‑M)
-//  Deterministic Job Intake + Result Forwarding + Reputation Updating
-//  Dual-Band + Binary + Wave + Presence + Chunk/Prewarm (descriptive-only)
+//  PulseEarnNervousSystem-v16-Superior.js
+//  THE NERVOUS SYSTEM + EXCHANGE OFFICE (v16-Superior + Advantage‑M‑16)
+//  Skeletal-aware Job Intake + Result Forwarding + Reputation Updating
+//  Dual-Band + Dual-Hash + Binary + Wave + Presence + Chunk/Prewarm (IMMORTAL)
 // ============================================================================
+
 /*
 AI_EXPERIENCE_META = {
   identity: "PulseEarnNervousSystem",
-  version: "v14-Immortal",
+  version: "v16-Superior",
   layer: "earn_nervous",
   role: "earn_signal_router",
-  lineage: "PulseEarnNervousSystem-v10.4 → v11-Evo → v14-Immortal",
+  lineage: "PulseEarnNervousSystem-v10.4 → v11-Evo → v13-Presence → v16-Immortal → v16-Superior",
 
   evo: {
     nervousSystem: true,
     signalRouting: true,
     sensoryIntake: true,
     motorOutput: true,
+
     dualBand: true,
+    dualHash: true,
+    intelHash: true,
+
+    skeletalAware: true,
+    skeletalAdvantageAware: true,
+    skeletalChunkAware: true,
+
     symbolicPrimary: true,
     binaryAware: true,
 
@@ -33,7 +42,10 @@ AI_EXPERIENCE_META = {
     always: [
       "PulseEarnMuscleSystem",
       "PulseEarnReflexRouter",
-      "PulseEarnSkeletalSystem"
+      "PulseEarnSkeletalSystem",
+      "PulseEarnEndocrineSystem",
+      "PulseEarnLymphNodes",
+      "PulseEarnCirculatorySystem"
     ],
     never: [
       "safeRoute",
@@ -46,11 +58,12 @@ AI_EXPERIENCE_META = {
 export const PulseEarnNervousSystemMeta = Object.freeze({
   layer: "PulseEarnNervousSystem",
   role: "EARN_NERVOUS_ORGAN",
-  version: "v13.0-Presence-Immortal",
-  identity: "PulseEarnNervousSystem-v13.0-Presence-Immortal",
+  version: "v16-Superior",
+  identity: "PulseEarnNervousSystem-v16-Superior",
 
   guarantees: Object.freeze({
     deterministic: true,
+    driftProof: true,
     noRandomness: true,
     noRealTime: true,
     noExternalIO: true,
@@ -63,6 +76,11 @@ export const PulseEarnNervousSystemMeta = Object.freeze({
     advantageAware: true,
     chunkPrewarmAware: true,
     healingMetadataAware: true,
+
+    dualHashAware: true,
+    intelHashAware: true,
+    skeletalAdvantageAware: true,
+    skeletalChunkAware: true,
 
     worldLensAware: false,
     zeroNetwork: true,
@@ -95,19 +113,6 @@ export const PulseEarnNervousSystemMeta = Object.freeze({
     ]
   }),
 
-  lineage: Object.freeze({
-    root: "PulseOS-v13.0-Presence-Immortal",
-    parent: "PulseEarn-v13.0-Presence-Immortal",
-    ancestry: [
-      "PulseEarnNervousSystem-v9",
-      "PulseEarnNervousSystem-v10",
-      "PulseEarnNervousSystem-v11",
-      "PulseEarnNervousSystem-v11-Evo",
-      "PulseEarnNervousSystem-v11.2-Evo",
-      "PulseEarnNervousSystem-v12.3-Presence-Evo+"
-    ]
-  }),
-
   bands: Object.freeze({
     supported: ["symbolic", "binary"],
     default: "symbolic",
@@ -117,19 +122,28 @@ export const PulseEarnNervousSystemMeta = Object.freeze({
   architecture: Object.freeze({
     pattern: "A-B-A",
     baseline: "deterministic sensory intake → deterministic motor output",
-    adaptive: "binary/wave surfaces + dual-band signatures + presence/advantage fields",
+    adaptive: "binary/wave surfaces + dual-band signatures + presence/advantage fields + dual-hash intel surfaces",
     return: "deterministic job intake + deterministic result forwarding + prewarm hints"
   })
 });
 
-import { updateMarketplaceReputation, computeReputationSignals } from "./PulseEarnEndocrineSystem.js";
-import { getNextJob } from "./PulseEarnCirculatorySystem.js";
-import { getPulseEarnDeviceProfile } from "./PulseEarnSkeletalSystem.js";
-import { PulseEarnMktEmbassyLedger as marketplaces } from "./PulseEarnMktEmbassyLedger.js";
-import { sendResultToMarketplace } from "./PulseEarnLymphNodes.js";
+// ---------------------------------------------------------------------------
+// Imports — v16 / v13.1 organs
+// ---------------------------------------------------------------------------
+import {
+  updateMarketplaceReputation,
+  computeReputationSignals
+} from "./PulseEarnEndocrineSystem-v16.js";
+
+import { getNextJob } from "./PulseEarnCirculatorySystem-v16.js";
+import {
+  getPulseEarnDeviceProfile
+} from "./PulseEarnSkeletalSystem-v13.1-Presence-Immortal-ADV.js";
+
+import { sendResultToMarketplace } from "./PulseEarnLymphNodes-v16.js";
 
 // ============================================================================
-// Healing Metadata — Neural Activity Log (v13.0-Presence-Immortal)
+// Healing Metadata — Neural Activity Log (v16-Superior)
 // ============================================================================
 const nervousHealing = {
   lastFetchError: null,
@@ -161,12 +175,22 @@ const nervousHealing = {
 
   lastPresenceField: null,
   lastAdvantageField: null,
-  lastChunkPrewarmPlan: null
+  lastChunkPrewarmPlan: null,
+
+  // v16 dual-hash / intel surfaces
+  lastDualHash: null,
+  lastIntelHash: null,
+  lastIntelContext: null,
+
+  // Skeletal awareness
+  lastSkeletalAdvantageField: null,
+  lastSkeletalChunkField: null
 };
 
 // ============================================================================
-// Deterministic Hash Helper
+// Deterministic Hash Helpers (v16 dual-hash + intel)
 // ============================================================================
+
 function computeHash(str) {
   let h = 0;
   const s = String(str || "");
@@ -175,6 +199,34 @@ function computeHash(str) {
   }
   return `h${h}`;
 }
+
+// Primary INTEL hash — deterministic, structure-aware, no IO, no time.
+function computeHashIntelligence(payload) {
+  const base = JSON.stringify(payload || "");
+  let h = 0;
+  for (let i = 0; i < base.length; i++) {
+    const c = base.charCodeAt(i);
+    h = (h * 131 + c * (i + 7)) % 1000000007;
+  }
+  return `HINTEL_${h}`;
+}
+
+function buildDualHashSignature(label, intelPayload, classicString) {
+  const intelBase = {
+    label,
+    intel: intelPayload || {},
+    classic: classicString || ""
+  };
+  const intelHash = computeHashIntelligence(intelBase);
+  const classicHash = computeHash(
+    `${label}::${classicString || ""}`
+  );
+  return {
+    intel: intelHash,
+    classic: classicHash
+  };
+}
+
 
 function normalizeBand(band) {
   const b = String(band || "symbolic").toLowerCase();
@@ -190,7 +242,9 @@ function buildDevicePattern(device) {
     `::mem:${device.memoryMB}` +
     `::gpu:${device.gpuScore}` +
     `::bw:${device.bandwidthMbps}` +
-    `::stab:${device.stabilityScore}`
+    `::stab:${device.stabilityScore}` +
+    `::band:${device.band}` +
+    `::presence:${device.presenceBand}`
   );
 }
 
@@ -206,7 +260,7 @@ function buildJobPattern(job) {
 }
 
 // ============================================================================
-// Dual-Band + Binary + Wave Builder — v13.0 Presence-Immortal
+// Dual-Band + Binary + Wave Builder — v16-Superior
 // ============================================================================
 function buildNervousBandBinaryWave(job, result, cycleIndex, device) {
   const band = normalizeBand(
@@ -217,8 +271,20 @@ function buildNervousBandBinaryWave(job, result, cycleIndex, device) {
     "symbolic"
   );
   nervousHealing.lastBand = band;
-  const bandSignature = computeHash(`BAND::NERVOUS::${band}::${cycleIndex}`);
+
+  const bandSigPayload = {
+    band,
+    cycleIndex,
+    jobId: job?.id || null,
+    marketplaceId: job?.marketplaceId || null
+  };
+  const bandDual = buildDualHashSignature("NERVOUS_BAND_V16_SUP", bandSigPayload);
+  const bandSignature = bandDual.primary;
+
   nervousHealing.lastBandSignature = bandSignature;
+  nervousHealing.lastDualHash = bandDual.primary;
+  nervousHealing.lastIntelHash = bandDual.intel;
+  nervousHealing.lastIntelContext = bandSigPayload;
 
   const jobIdLength = (job?.id || "").length;
   const marketplaceLength = (job?.marketplaceId || "").length;
@@ -227,8 +293,8 @@ function buildNervousBandBinaryWave(job, result, cycleIndex, device) {
   const surface = jobIdLength + marketplaceLength + gpuScore + cycleIndex;
 
   const binaryField = {
-    binaryNervousSignature: computeHash(`BNERV::${surface}`),
-    binarySurfaceSignature: computeHash(`BSURF_NERV::${surface}`),
+    binaryNervousSignature: computeHash(`BNERV_SUP::${surface}`),
+    binarySurfaceSignature: computeHash(`BSURF_NERV_SUP::${surface}`),
     binarySurface: {
       jobIdLength,
       marketplaceLength,
@@ -251,11 +317,11 @@ function buildNervousBandBinaryWave(job, result, cycleIndex, device) {
   };
   nervousHealing.lastWaveField = waveField;
 
-  return { band, bandSignature, binaryField, waveField };
+  return { band, bandSignature, binaryField, waveField, bandDual };
 }
 
 // ============================================================================
-// Presence Field — v13.0-Presence-Immortal (descriptive-only)
+// Presence Field — v16-Superior (descriptive-only, M-16 compatible)
 // ============================================================================
 function buildNervousPresenceField(job, device, cycleIndex) {
   const jobLen = (job?.id || "").length;
@@ -268,16 +334,28 @@ function buildNervousPresenceField(job, device, cycleIndex) {
   else if (magnitude >= 10) presenceTier = "presence_mid";
   else if (magnitude > 0) presenceTier = "presence_low";
 
-  const presenceField = {
-    presenceVersion: "v13.0-Presence-Immortal",
+  const payload = {
     presenceTier,
     jobLen,
     marketLen,
     stability,
     cycleIndex,
-    presenceSignature: computeHash(
-      `NERV_PRESENCE_V13::${presenceTier}::${jobLen}::${marketLen}::${cycleIndex}`
-    )
+    skeletalPresenceBand: device.presenceBand,
+    skeletalChunkSurface: device.chunkField?.surface ?? null
+  };
+  const sig = buildDualHashSignature("NERV_PRESENCE_V16_SUP", payload);
+
+  const presenceField = {
+    presenceVersion: "v16-Superior",
+    presenceTier,
+    jobLen,
+    marketLen,
+    stability,
+    cycleIndex,
+    skeletalPresenceBand: device.presenceBand,
+    skeletalChunkSurface: device.chunkField?.surface ?? null,
+    presenceSignature: sig.primary,
+    presenceIntelSignature: sig.intel
   };
 
   nervousHealing.lastPresenceField = presenceField;
@@ -285,7 +363,7 @@ function buildNervousPresenceField(job, device, cycleIndex) {
 }
 
 // ============================================================================
-// Advantage‑M Field — v13.0 (structural-only, no advantageScore)
+// Advantage‑M‑16-Superior — merges skeletal + nervous structural view
 // ============================================================================
 function buildNervousAdvantageField(job, device, bandPack, presenceField) {
   const gpuScore = device?.gpuScore || 0;
@@ -293,14 +371,41 @@ function buildNervousAdvantageField(job, device, bandPack, presenceField) {
   const density = bandPack.binaryField.density;
   const amplitude = bandPack.waveField.amplitude;
 
+  const skeletalAdv = device.advantageField || null;
+  nervousHealing.lastSkeletalAdvantageField = skeletalAdv || null;
+
+  const skeletalScore = skeletalAdv?.advantageScore ?? 0;
+  const combinedScore =
+    skeletalScore +
+    gpuScore * 0.0002 +
+    bandwidth * 0.0001 +
+    density * 0.00001 +
+    amplitude * 0.00001;
+
+  const payload = {
+    band: bandPack.band,
+    gpuScore,
+    bandwidth,
+    density,
+    amplitude,
+    presenceTier: presenceField.presenceTier,
+    skeletalAdvantageScore: skeletalScore,
+    combinedScore
+  };
+  const sig = buildDualHashSignature("NERV_ADV_M16_SUP", payload);
+
   const advantageField = {
-    advantageVersion: "M-13.0",
+    advantageVersion: "M-16.0-Superior",
     band: bandPack.band,
     gpuScore,
     bandwidth,
     binaryDensity: density,
     waveAmplitude: amplitude,
-    presenceTier: presenceField.presenceTier
+    presenceTier: presenceField.presenceTier,
+    skeletalAdvantageScore: skeletalScore,
+    combinedAdvantageScore: combinedScore,
+    advantageSignature: sig.primary,
+    advantageIntelSignature: sig.intel
   };
 
   nervousHealing.lastAdvantageField = advantageField;
@@ -308,7 +413,7 @@ function buildNervousAdvantageField(job, device, bandPack, presenceField) {
 }
 
 // ============================================================================
-// Chunk / Cache / Prewarm Plan — v13.0 (plan surface only)
+// Chunk / Cache / Prewarm Plan — v16-Superior (spine-aware)
 // ============================================================================
 function buildNervousChunkPrewarmPlan(job, device, presenceField) {
   let priorityLabel = "normal";
@@ -316,8 +421,21 @@ function buildNervousChunkPrewarmPlan(job, device, presenceField) {
   else if (presenceField.presenceTier === "presence_mid") priorityLabel = "medium";
   else if (presenceField.presenceTier === "presence_low") priorityLabel = "low";
 
+  const skeletalChunk = device.chunkField || null;
+  nervousHealing.lastSkeletalChunkField = skeletalChunk;
+
+  const payload = {
+    priorityLabel,
+    presenceTier: presenceField.presenceTier,
+    jobId: job?.id || null,
+    marketplaceId: job?.marketplaceId || null,
+    skeletalChunkSurface: skeletalChunk?.surface ?? null,
+    skeletalChunkBudgetKB: skeletalChunk?.chunkBudgetKB ?? null
+  };
+  const sig = buildDualHashSignature("NERV_CHUNK_M16_SUP", payload);
+
   const plan = {
-    planVersion: "v13.0-AdvantageM",
+    planVersion: "v16-AdvantageM-Superior",
     priorityLabel,
     bandPresence: presenceField.presenceTier,
     chunks: {
@@ -327,13 +445,17 @@ function buildNervousChunkPrewarmPlan(job, device, presenceField) {
     },
     cache: {
       deviceProfile: true,
-      nervousDiagnostics: true
+      nervousDiagnostics: true,
+      skeletalProfile: true
     },
     prewarm: {
       survivalInstincts: true,
       circulatorySystem: presenceField.presenceTier !== "presence_idle",
       lymphNodes: presenceField.presenceTier !== "presence_idle"
-    }
+    },
+    skeletalChunkField: skeletalChunk,
+    chunkSignature: sig.primary,
+    chunkIntelSignature: sig.intel
   };
 
   nervousHealing.lastChunkPrewarmPlan = plan;
@@ -341,7 +463,7 @@ function buildNervousChunkPrewarmPlan(job, device, presenceField) {
 }
 
 // ============================================================================
-// fetchJobFromMarketplace — Sensory Intake (v13.0-Presence-Immortal)
+// fetchJobFromMarketplace — Sensory Intake (v16-Superior)
 // ============================================================================
 export function fetchJobFromMarketplace() {
   nervousHealing.cycleCount++;
@@ -356,16 +478,19 @@ export function fetchJobFromMarketplace() {
       memoryAvailable: device.memoryMB
     };
 
-    const job = getNextJob(marketplaces, capacity);
+    const job = getNextJob(capacity);
 
     if (job) {
       nervousHealing.lastJobId = job.id;
       nervousHealing.lastMarketplaceId = job.marketplaceId;
       nervousHealing.lastJobPattern = buildJobPattern(job);
 
-      nervousHealing.lastJobIntakeSignature = computeHash(
-        `${job.id}::${job.marketplaceId}::${nervousHealing.cycleCount}`
-      );
+      const intakeSig = buildDualHashSignature("NERV_JOB_INTAKE_V16_SUP", {
+        jobId: job.id,
+        marketplaceId: job.marketplaceId,
+        cycle: nervousHealing.cycleCount
+      });
+      nervousHealing.lastJobIntakeSignature = intakeSig.primary;
 
       const bandPack = buildNervousBandBinaryWave(
         job,
@@ -398,7 +523,9 @@ export function fetchJobFromMarketplace() {
         waveField: bandPack.waveField,
         presenceField,
         advantageField,
-        chunkPrewarmPlan
+        chunkPrewarmPlan,
+        dualHash: nervousHealing.lastDualHash,
+        intelHash: nervousHealing.lastIntelHash
       };
     }
 
@@ -411,7 +538,7 @@ export function fetchJobFromMarketplace() {
 }
 
 // ============================================================================
-// getNextMarketplaceJob — Neural Encoding Layer (v13.0-Presence-Immortal)
+// getNextMarketplaceJob — Neural Encoding Layer (v16-Superior)
 // ============================================================================
 export function getNextMarketplaceJob(deviceId) {
   const intake = fetchJobFromMarketplace();
@@ -453,12 +580,15 @@ export function getNextMarketplaceJob(deviceId) {
     waveField: intake.waveField,
     presenceField: intake.presenceField,
     advantageField: intake.advantageField,
-    chunkPrewarmPlan: intake.chunkPrewarmPlan
+    chunkPrewarmPlan: intake.chunkPrewarmPlan,
+
+    dualHash: intake.dualHash,
+    intelHash: intake.intelHash
   };
 }
 
 // ============================================================================
-// submitMarketplaceResult — Motor Output + Synaptic Update (v13.0-Presence-Immortal)
+// submitMarketplaceResult — Motor Output + Synaptic Update (v16-Superior)
 // ============================================================================
 export function submitMarketplaceResult(job, result) {
   try {
@@ -482,9 +612,12 @@ export function submitMarketplaceResult(job, result) {
 
     const submission = sendResultToMarketplace(job, result);
 
-    nervousHealing.lastResultForwardSignature = computeHash(
-      `${job.id}::${job.marketplaceId}::${result.jobSuccessRate ?? 0}`
-    );
+    const forwardSig = buildDualHashSignature("NERV_RESULT_FORWARD_V16_SUP", {
+      jobId: job.id,
+      marketplaceId: job.marketplaceId,
+      jobSuccessRate: result.jobSuccessRate ?? 0
+    });
+    nervousHealing.lastResultForwardSignature = forwardSig.primary;
 
     const bandPack = buildNervousBandBinaryWave(
       job,
@@ -517,7 +650,9 @@ export function submitMarketplaceResult(job, result) {
       waveField: bandPack.waveField,
       presenceField,
       advantageField,
-      chunkPrewarmPlan
+      chunkPrewarmPlan,
+      dualHash: nervousHealing.lastDualHash,
+      intelHash: nervousHealing.lastIntelHash
     };
 
   } catch (err) {
@@ -527,18 +662,24 @@ export function submitMarketplaceResult(job, result) {
 }
 
 // ============================================================================
-// Nervous System Signature
+// Nervous System Signature (v16-Superior dual-hash)
 // ============================================================================
 function buildNervousSignature() {
-  return computeHash(
-    `${nervousHealing.lastJobId}::${nervousHealing.lastMarketplaceId}::${nervousHealing.cycleCount}`
-  );
+  const payload = {
+    lastJobId: nervousHealing.lastJobId,
+    lastMarketplaceId: nervousHealing.lastMarketplaceId,
+    cycleCount: nervousHealing.cycleCount
+  };
+  const sig = buildDualHashSignature("NERV_SYSTEM_V16_SUP", payload);
+  return { primary: sig.primary, intel: sig.intel };
 }
 
 // ============================================================================
-// Export Healing Metadata — Nervous System Health Report (v13.0-Presence-Immortal)
+// Export Healing Metadata — Nervous System Health Report (v16-Superior)
 // ============================================================================
 export function getPulseEarnNervousSystemHealingState() {
-  nervousHealing.lastNervousSignature = buildNervousSignature();
+  const sig = buildNervousSignature();
+  nervousHealing.lastNervousSignature = sig.primary;
+  nervousHealing.lastIntelHash = sig.intel;
   return { ...nervousHealing };
 }
