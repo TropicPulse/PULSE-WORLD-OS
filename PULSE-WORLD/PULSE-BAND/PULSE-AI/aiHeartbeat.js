@@ -586,6 +586,7 @@ async function aiHeartbeatTick(reason = "unknown") {
 
 // ============================================================================
 //  PULSE ENTRY — ANY internal signal triggers a heartbeat (independent dad)
+//  Now symbolic/binary aware, mode-resolved per pulse.
 // ============================================================================
 export function pulseAiHeartbeat(source = "unknown") {
   const now = Date.now();
@@ -593,16 +594,25 @@ export function pulseAiHeartbeat(source = "unknown") {
   updateDadStateFlag(now);
   updateEarnStateFlag(now);
 
+  const mode = resolveHeartbeatMode(source);
+
   const organism = bootAiOrganism();
   organism.context.logStep?.(
-    `[HEARTBEAT] Pulse detected from: ${source}, primary=${heartbeatArtery.lastPrimaryState}, dad=${heartbeatArtery.lastDadState}, earn=${heartbeatArtery.lastEarnState}`
+    `[HEARTBEAT] Pulse detected from: ${
+      typeof source === "string" ? source : source?.label || "unknown"
+    }, mode=${mode}, primary=${heartbeatArtery.lastPrimaryState}, dad=${heartbeatArtery.lastDadState}, earn=${heartbeatArtery.lastEarnState}`
   );
 
   heartbeatArtery.pulses++;
   aiHeartbeatHealing.pulses++;
+  aiHeartbeatHealing.lastMode = mode;
+  heartbeatArtery.lastMode = mode;
 
   const packet = emitHeartbeatPacket("pulse", {
     source,
+    mode,
+    isBinary: mode === "binary" || mode === "both",
+    isSymbolic: mode === "symbolic" || mode === "both",
     primaryState: heartbeatArtery.lastPrimaryState,
     dadState: heartbeatArtery.lastDadState,
     earnState: heartbeatArtery.lastEarnState
@@ -612,15 +622,19 @@ export function pulseAiHeartbeat(source = "unknown") {
   try {
     if (typeof globalThis !== "undefined") {
       globalThis[AI_HEARTBEAT_KEY] = now;
+      globalThis.PulseAIHeartbeatMode = mode;
     }
   } catch {}
 
-  void aiHeartbeatTick(`pulse:${source}`);
+  // Symbolic tick still drives the organism; mode just annotates the pulse.
+  void aiHeartbeatTick(`pulse:${typeof source === "string" ? source : "object"}`);
   return packet;
 }
 
+
 // ============================================================================
 //  TIME FALLBACK — fires only if idle too long (dad self‑fallback)
+//  Now annotated with current heartbeat mode.
 // ============================================================================
 function timeFallbackCheck() {
   const now = Date.now();
@@ -638,26 +652,37 @@ function timeFallbackCheck() {
   heartbeatArtery.lastPressure = pressure;
   aiHeartbeatHealing.lastIdleMs = idleFor;
 
+  const mode = getCurrentHeartbeatMode();
+  heartbeatArtery.lastMode = mode;
+  aiHeartbeatHealing.lastMode = mode;
+
   if (idleFor >= AI_MAX_IDLE_MS) {
     context.logStep?.(
-      `[HEARTBEAT] Time fallback triggered (idle=${idleFor}ms, pressure=${pressure}, primary=${heartbeatArtery.lastPrimaryState}, dad=${heartbeatArtery.lastDadState}, earn=${heartbeatArtery.lastEarnState})`
+      `[HEARTBEAT] Time fallback triggered (idle=${idleFor}ms, pressure=${pressure}, mode=${mode}, primary=${heartbeatArtery.lastPrimaryState}, dad=${heartbeatArtery.lastDadState}, earn=${heartbeatArtery.lastEarnState})`
     );
     const packet = emitHeartbeatPacket("time-fallback", {
       idleMs: idleFor,
       pressure,
+      mode,
       primaryState: heartbeatArtery.lastPrimaryState,
       dadState: heartbeatArtery.lastDadState,
       earnState: heartbeatArtery.lastEarnState
     });
     aiHeartbeatHealing.lastPacket = packet;
+    try {
+      if (typeof globalThis !== "undefined") {
+        globalThis.PulseAIHeartbeatMode = mode;
+      }
+    } catch {}
     void aiHeartbeatTick("time-fallback");
   } else {
     context.logStep?.(
-      `[HEARTBEAT] Time fallback check: idle=${idleFor}ms (no tick), primary=${heartbeatArtery.lastPrimaryState}, dad=${heartbeatArtery.lastDadState}, earn=${heartbeatArtery.lastEarnState}`
+      `[HEARTBEAT] Time fallback check: idle=${idleFor}ms (no tick), mode=${mode}, primary=${heartbeatArtery.lastPrimaryState}, dad=${heartbeatArtery.lastDadState}, earn=${heartbeatArtery.lastEarnState}`
     );
     const packet = emitHeartbeatPacket("time-check", {
       idleMs: idleFor,
       pressure,
+      mode,
       primaryState: heartbeatArtery.lastPrimaryState,
       dadState: heartbeatArtery.lastDadState,
       earnState: heartbeatArtery.lastEarnState,
@@ -669,23 +694,30 @@ function timeFallbackCheck() {
   }
 }
 
+
 // ============================================================================
 //  START — enable time fallback (independent pacer mode)
+//  Default mode: symbolic (can be overridden by pulses later).
 // ============================================================================
 export function startAiHeartbeat() {
   if (aiTimeFallbackTimer) return;
 
   const organism = bootAiOrganism();
 
+  const mode = getCurrentHeartbeatMode();
+  heartbeatArtery.lastMode = mode;
+  aiHeartbeatHealing.lastMode = mode;
+
   aiTimeFallbackTimer = setInterval(() => {
     timeFallbackCheck();
   }, AI_TIME_CHECK_MS);
 
   organism.context.logStep?.(
-    `[HEARTBEAT] Time fallback active; check=${AI_TIME_CHECK_MS}ms, maxIdle=${AI_MAX_IDLE_MS}ms, primaryKey=${PRIMARY_HEARTBEAT_KEY}, earnKey=${EARN_HEARTBEAT_KEY}`
+    `[HEARTBEAT] Time fallback active; mode=${mode}, check=${AI_TIME_CHECK_MS}ms, maxIdle=${AI_MAX_IDLE_MS}ms, primaryKey=${PRIMARY_HEARTBEAT_KEY}, earnKey=${EARN_HEARTBEAT_KEY}`
   );
 
   const packet = emitHeartbeatPacket("start", {
+    mode,
     checkMs: AI_TIME_CHECK_MS,
     maxIdleMs: AI_MAX_IDLE_MS,
     primaryKey: PRIMARY_HEARTBEAT_KEY,
@@ -694,7 +726,51 @@ export function startAiHeartbeat() {
     earnMaxSilenceMs: EARN_MAX_SILENCE_MS
   });
   aiHeartbeatHealing.lastPacket = packet;
+
+  try {
+    if (typeof globalThis !== "undefined") {
+      globalThis.PulseAIHeartbeatMode = mode;
+    }
+  } catch {}
 }
+
+
+// ============================================================================
+//  MODE RESOLUTION — symbolic / binary / both
+// ============================================================================
+function resolveHeartbeatMode(source) {
+  // Object-style source: { mode, binary, symbolic, ... }
+  if (source && typeof source === "object") {
+    if (source.mode === "binary" || source.mode === "symbolic" || source.mode === "both") {
+      return source.mode;
+    }
+    if (source.binary === true && source.symbolic === true) return "both";
+    if (source.binary === true) return "binary";
+    if (source.symbolic === true) return "symbolic";
+  }
+
+  // String-style hints
+  if (typeof source === "string") {
+    const s = source.toLowerCase();
+    if (s.startsWith("binary:") || s === "binary") return "binary";
+    if (s.startsWith("symbolic:") || s === "symbolic") return "symbolic";
+    if (s === "both" || s === "dual") return "both";
+  }
+
+  // Default: symbolic primary
+  return "symbolic";
+}
+
+// Current mode helper (fallback for internal paths)
+function getCurrentHeartbeatMode() {
+  return (
+    aiHeartbeatHealing.lastMode ||
+    heartbeatArtery.lastMode ||
+    "symbolic"
+  );
+}
+
+
 
 // ============================================================================
 //  STOP — disable fallback
@@ -704,13 +780,18 @@ export function stopAiHeartbeat() {
   clearInterval(aiTimeFallbackTimer);
   aiTimeFallbackTimer = null;
 
-  aiOrganism?.context?.logStep?.("[HEARTBEAT] Time fallback stopped.");
-  const packet = emitHeartbeatPacket("stop", {});
+  const mode = getCurrentHeartbeatMode();
+
+  aiOrganism?.context?.logStep?.(
+    `[HEARTBEAT] Time fallback stopped. mode=${mode}`
+  );
+  const packet = emitHeartbeatPacket("stop", { mode });
   aiHeartbeatHealing.lastPacket = packet;
 }
 
+
 // ============================================================================
-//  WINDOW‑SAFE ARTERY SNAPSHOT
+//  WINDOW‑SAFE ARTERY SNAPSHOT — now mode-aware
 // ============================================================================
 export function snapshotAiHeartbeat() {
   const momPulseSurface = buildMomPulseSurface();
@@ -718,7 +799,18 @@ export function snapshotAiHeartbeat() {
   aiHeartbeatHealing.lastMomPulseSurface = momPulseSurface;
   aiHeartbeatHealing.lastEarnPulseSurface = earnPulseSurface;
 
+  const mode = getCurrentHeartbeatMode();
+  heartbeatArtery.lastMode = mode;
+  aiHeartbeatHealing.lastMode = mode;
+
+  try {
+    if (typeof globalThis !== "undefined") {
+      globalThis.PulseAIHeartbeatMode = mode;
+    }
+  } catch {}
+
   return emitHeartbeatPacket("snapshot", {
+    mode,
     artery: heartbeatArtery.snapshot(),
     healing: { ...aiHeartbeatHealing },
     momPulseSurface,
@@ -727,16 +819,26 @@ export function snapshotAiHeartbeat() {
 }
 
 // ============================================================================
-//  HEALING + DIAGNOSTICS EXPORTS
+//  HEALING + DIAGNOSTICS EXPORTS — mode surfaced
 // ============================================================================
 export function getAiHeartbeatHealingState() {
-  return { ...aiHeartbeatHealing };
+  return {
+    ...aiHeartbeatHealing,
+    lastMode: getCurrentHeartbeatMode()
+  };
 }
 
 export function getAiHeartbeatDiagnostics() {
+  const mode = getCurrentHeartbeatMode();
   return {
-    artery: heartbeatArtery.snapshot(),
-    healing: { ...aiHeartbeatHealing },
+    artery: {
+      ...heartbeatArtery.snapshot(),
+      mode
+    },
+    healing: {
+      ...aiHeartbeatHealing,
+      lastMode: mode
+    },
     primaryState: heartbeatArtery.lastPrimaryState,
     dadState: heartbeatArtery.lastDadState,
     earnState: heartbeatArtery.lastEarnState
