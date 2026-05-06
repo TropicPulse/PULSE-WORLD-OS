@@ -66,6 +66,10 @@ import { PulseBinaryGPU as PulseGPUBin } from "../../PULSE-BAND/PULSE-GPU/PulseB
 import { createBinaryMesh as PulseMeshBin } from "../../PULSE-BAND/PULSE-MESH/PulseBinaryMesh-v16.js";
 import { createBinarySend as PulseSendBin } from "../../PULSE-BAND/PULSE-SEND/PulseBinarySend-v16.js";
 
+// ============================================================================
+//  IMPORTS — PRESENTATION / POWER (v16)
+// ============================================================================
+import PulsePowerAPI from "../_FRONTEND/PulsePower-v16.js";
 
 // ============================================================================
 //  CONTEXT — v16-IMMORTAL
