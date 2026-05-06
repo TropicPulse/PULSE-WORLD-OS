@@ -107,7 +107,7 @@ import pulseHistoryRepair from "./PulseProxyPNSRepair.js";
 import {
   PulseNetBoot,
   PulseProofBridge
-} from "../../PULSE-UI/_BACKEND/PulseProofBridge.js";
+} from "../../PULSE-UI/_BACKEND/PulseWorldBridge.js";
 
 // --- PULSE-CORE MEMORY SPINE (FULL SPINE) ----------------------------------
 import PulseCoreMemory from "../PULSE-CORE/PulseCoreMemory.js";

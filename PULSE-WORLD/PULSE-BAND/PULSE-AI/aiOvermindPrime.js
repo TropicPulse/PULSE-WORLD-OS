@@ -79,7 +79,7 @@ import { readCoreMemoryEarn, writeCoreMemoryEarn} from "../PULSE-CORE/PulseCoreE
 
 import { readCoreMemorySend, writeCoreMemorySend} from "../PULSE-CORE/PulseCoreSendMemoryAdapter.js";
 
-import { PulseUnderstanding } from "../../PULSE-UI/_BACKEND/PulseNetUnderstanding.js";
+import { PulseUnderstanding } from "../../PULSE-UI/_BACKEND/PulseWorldUnderstanding.js";
 import { PulseGovernor } from "../PULSE-OS/PulseOSGovernor.js";
 import { PulseVitalsMonitor } from "../../PULSE-UI/_BACKEND/PulseProofMonitor.js";
 import { PulseBinaryTech } from "../PULSE-TECH/PulseBinaryTech-v16.js";

@@ -43,7 +43,7 @@
 // ============================================================================
 
 console.log("Logger v16-Immortal");
-import { PulseProofBridge } from "./PulseProofBridge.js";
+import { PulseProofBridge } from "./PulseWorldBridge.js";
 
 // Capture original console to avoid recursion
 const _c = { ...console };

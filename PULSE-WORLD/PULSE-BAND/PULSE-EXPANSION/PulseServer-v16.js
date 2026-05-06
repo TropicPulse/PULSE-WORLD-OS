@@ -103,7 +103,7 @@ import {
 // PulseNet bridge (symbolic adapter to PULSE-NET)
 import {
   createPulseNetBridge
-} from "../../PULSE-UI/_BACKEND/PULSE-NET.js";
+} from "../../PULSE-UI/_BACKEND/PULSE-WORLD.js";
 
 // Touch / presence
 import { getPulseTouchContext } from "../../PULSE-UI/PULSE-TOUCH.js";

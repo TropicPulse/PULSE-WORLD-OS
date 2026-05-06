@@ -36,7 +36,7 @@ const admin =
 
 
 import { VitalsLogger as logger }        from "../../PULSE-UI/_BACKEND/PulseProofLogger.js";
-import { safeRoute as route } from "../../PULSE-UI/_BACKEND/PulseProofBridge.js";
+import { safeRoute as route } from "../../PULSE-UI/_BACKEND/PulseWorldBridge.js";
 import { PulseLineage } from "./PulseProxyBBB.js";
 // ============================================================================
 // HEARTBEAT IDENTITY — v12.3‑EVO‑BINARY‑MAX‑ABA

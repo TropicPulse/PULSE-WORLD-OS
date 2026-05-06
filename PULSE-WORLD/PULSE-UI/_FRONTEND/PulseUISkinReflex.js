@@ -1,6 +1,6 @@
 /*
 ===============================================================================
-FILE: /PULSE-UI/PulseSkinReflex.js
+FILE: /PULSE-UI/PulseUISkinReflex.js
 LAYER: A1 SURFACE REFLEX + A3 ERROR SPINE
 ===============================================================================
 ===============================================================================
@@ -96,9 +96,9 @@ const db =
   null;
 
 import PulseUIErrors from "./PulseUIErrors-v16.js";
-import PulsePageScanner from "./PulsePageScanner-v16.js";
-import createPulseRouteMemory from "./PulseRouteMemory-v16.js";
-import { safeRoute as route } from "../_BACKEND/PulseProofBridge.js";
+import PulsePageScanner from "./PulseUIPageScanner-v16.js";
+import createPulseRouteMemory from "./PulseUIRouteMemory-v16.js";
+import { safeRoute as route } from "../_BACKEND/PulseWorldBridge.js";
 import { getUIFlowSnapshot } from "./PulseUIFlow-v16.js";
 
 function isOnline() {

@@ -112,7 +112,7 @@ const db =
   (typeof window !== "undefined" && window.db) ||
   null;
 
-import { PulseProofBridge } from "../_BACKEND/PulseProofBridge.js";
+import { PulseProofBridge } from "../_BACKEND/PulseWorldBridge.js";
 
 const route = PulseProofBridge?.route;
 const CoreMemory = PulseProofBridge?.coreMemory || null;

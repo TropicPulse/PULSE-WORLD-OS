@@ -61,7 +61,7 @@ AI_EXPERIENCE_META = {
 ===============================================================================
 */
 
-import { PulseProofBridge } from "../_BACKEND/PulseProofBridge.js";
+import { PulseProofBridge } from "../_BACKEND/PulseWorldBridge.js";
 
 // Global handle
 const g =

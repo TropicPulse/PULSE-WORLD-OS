@@ -1,5 +1,5 @@
 // ============================================================================
-// FILE: /PulsePortal-v16.js
+// FILE: /PulseWorldPortal-v16.js
 // OLD: /PulseNetEvolutionaryWindow.js
 // PULSE PORTAL — v16-Immortal-PORTAL-TRUST
 // PORTAL-MEMBRANE • ONE-WAY GLASS • ZERO-TRUST SURFACE • ORGANISM BOOT SIGNAL
@@ -87,21 +87,14 @@ AI_EXPERIENCE_META = {
 // ============================================================================
 import * as PulseLogger        from "./_BACKEND/PulseProofLogger.js";
 import * as PulseVitalsMonitor from "./_BACKEND/PulseProofMonitor.js";
+import { route as BridgeRoute, PulseProofLogger, log, warn, error, startUnderstanding as PulseUnderstanding, PulseBinaryOrganismBoot} from "./_BACKEND/PulseWorldBridge.js";
+import * as PulsePower         from "./_BACKEND/PulseWorldPower-v16.js";
 import * as PulseUIErrors      from "./_FRONTEND/PulseUIErrors-v16.js";
 import * as PulseUIFlow        from "./_FRONTEND/PulseUIFlow-v16.js";
 /* 1. SKIN REFLEX — SIDE‑EFFECT IMPORT, AUTO‑ATTACHES (SCANNER) */
-import * as PulseSkinReflex    from "./_FRONTEND/PulseSkinReflex.js"; // PageScannerV12 auto hooks surface here
-import * as PulsePower         from "./_FRONTEND/PulsePower-v16.js";
+import * as PulseSkinReflex    from "./_FRONTEND/PulseUISkinReflex.js"; // PageScannerV12 auto hooks surface here
 
-import {
-  route as BridgeRoute,
-  PulseProofLogger,
-  log,
-  warn,
-  error,
-  startUnderstanding as PulseUnderstanding,
-  PulseBinaryOrganismBoot
-} from "./_BACKEND/PulseProofBridge.js";
+
 
 // ============================================================================
 // GLOBAL HANDLE + OPTIONAL DB
