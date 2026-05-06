@@ -429,12 +429,34 @@ export function createPulseTouch(options = {}) {
     appendTouchTimeline("ingress_initial_failed", {});
   }
 
-  // 11) Start continuous fast‑lane pulse stream
-  try {
-    startContinuousPulseStream(detected, security, gateDecision);
-  } catch {
-    appendTouchTimeline("pulse_stream_start_failed", {});
-  }
+    // 11) Start continuous fast‑lane pulse stream
+    try {
+      startContinuousPulseStream(detected, security, gateDecision);
+    } catch {
+      appendTouchTimeline("pulse_stream_start_failed", {});
+    }
+
+    // 12) Compiler signal — TOUCH → BRIDGE → COMPILER
+    // This does NOT run the compiler in the browser.
+    // It only sends a semantic "please compile" pulse
+    // to the backend / bridge, which will call
+    // PulseWorldCompiler-v17 on its side.
+    try {
+      bridgeRoute?.("compiler.request", {
+        source: "pulse-touch",
+        reason: "first_contact",
+        page: detected.page,
+        chunkProfile: detected.chunkProfile,
+        ts: Date.now()
+      }).catch?.(() => {});
+      appendTouchTimeline("compiler_request_sent", {
+        page: detected.page,
+        chunkProfile: detected.chunkProfile
+      });
+    } catch {
+      appendTouchTimeline("compiler_request_failed", {});
+    }
+
 
   function updatePulseTouchField(key, value) {
     const current = readPulseTouchInternal(defaults);

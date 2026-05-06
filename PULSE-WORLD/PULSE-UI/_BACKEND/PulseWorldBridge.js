@@ -1,30 +1,36 @@
 // ============================================================================
-//  PulseProofBridge-v16.js — PORTAL TRUST LAYER • FRONT ↔ CNS • IMMORTAL BRIDGE
-//  “The last page before the portal. The line between surface and organism.”
+//  PulseProofBridge-v18.js — IMMORTAL PORTAL TRUST LAYER • FRONT ↔ CNS
+//  “The membrane between the surface world and the organism beneath.”
 // ============================================================================
 //
-//  DESIGN:
-//  - v16-IMMORTAL portal bridge between FRONTEND and CNS.
-//  - Trust layer to the portal: every signal is witnessed, mirrored, and tagged.
-//  - Offline-first: every bridge event is stored locally (ring buffer).
-//  - Dual-write: mirrored into GLOBAL_LOGS via PulseProofLogger-v16,
-//    and into a dedicated BRIDGE_LOGS collection when db is present.
-//  - Prewarm-aware: can hint the portal to prewarm CNS/SDN/mesh routes.
-//  - Mode-agnostic: SSR-safe, BroadcastChannel-optional, no hard dependency.
-//  - Mysterious by contract: this is the only page that knows both sides.
+//  DESIGN — v18 IMMORTAL
+//  ----------------------
+//  • Unified envelope system for all outbound + inbound CNS traffic
+//  • Compiler-aware: can emit/receive COMPILER_REQUEST + COMPILER_EVENT
+//  • Understanding-aware: UNDERSTANDING_START + semantic routing
+//  • Dualband v18: AI, CNS, Portal, PulseNet, ImageBridge unified
+//  • Offline-first: immortal local buffer with drift-proof replay
+//  • Zero-drift telemetry: every signal tagged, mirrored, and stored
+//  • Mode-agnostic: SSR-safe, BroadcastChannel-optional
+//  • Portal Trust Layer: the last surface before the organism
+//
+//  This file is the *membrane*.
+//  Everything above it is typed by humans.
+//  Everything below it is remembered by the organism.
 //
 // ============================================================================
-//  EXPERIENCE METADATA — v16 IMMORTAL PORTAL TRUST LAYER
+//  EXPERIENCE METADATA — v18 IMMORTAL PORTAL TRUST LAYER
 // ============================================================================
 /*
 AI_EXPERIENCE_META = {
   identity: "PulseProofBridge",
-  version: "v16-Immortal-PORTAL-TRUST",
+  version: "v18-Immortal-PortalTrust",
   layer: "frontend",
-  role: "cns_portal_bridge",
-  lineage: "PulseOS-v16",
+  role: "portal_membrane",
+  lineage: "PulseOS-v16 → v17-Continuous → v18-Immortal",
 
   evo: {
+    // Core alignment
     cnsAligned: true,
     dualBandAware: true,
     binaryAware: true,
@@ -33,28 +39,35 @@ AI_EXPERIENCE_META = {
     speedAware: true,
     experienceAware: true,
 
-    bridgeCore: true,
+    // Immortal upgrades
+    immortalStore: true,
+    unifiedEnvelope: true,
+    deterministicSignals: true,
+    driftProof: true,
+    replayAware: true,
+    zeroDriftTelemetry: true,
+
+    // Compiler + Understanding
+    compilerAware: true,
+    understandingAware: true,
+    semanticRouting: true,
+
+    // Portal trust
     portalTrustLayer: true,
     portalFacing: true,
     surfaceFacing: true,
 
-    safeRouteFree: true,
-    chunkAligned: false,
+    // Safety + mode
     modeAgnostic: true,
-
     offlineFirst: true,
     localStoreMirrored: true,
-    replayAware: true,
     loggerAligned: true,
     monitorSeparated: true,
 
+    // Network
     prewarmAware: true,
     sdnAware: true,
-    meshAware: true,
-
-    driftAware: true,
-    deterministicSignals: true,
-    zeroDriftTelemetry: true
+    meshAware: true
   },
 
   contract: {
@@ -63,24 +76,26 @@ AI_EXPERIENCE_META = {
       "PulsePresence",
       "PulseUIFlow",
       "PulseUIErrors",
-      "PulseProofLogger"
+      "PulseProofLogger",
+      "PulseBridgeStore"
     ],
     never: [
       "legacyBridge",
-      "safeRoute",
-      "fetchViaCNS",
+      "legacySafeRoute",
       "legacyPresence",
       "legacyChunker",
-      "legacyFlow"
+      "legacyFlow",
+      "fetchViaCNS"
     ]
   }
 }
 */
 
 // ============================================================================
-//  GLOBAL + DB + LOGGER
+//  GLOBAL + DB + LOGGER — IMMORTAL SNAPSHOT
 // ============================================================================
 import { PulseProofLogger, log, warn, error } from "./PulseProofLogger.js";
+
 const g =
   typeof globalThis !== "undefined"
     ? globalThis
@@ -98,7 +113,7 @@ const db =
   null;
 
 // ============================================================================
-//  ENVIRONMENT SNAPSHOT (LIGHTWEIGHT, PORTAL-AWARE)
+//  ENVIRONMENT SNAPSHOT — IMMORTAL, PORTAL-AWARE
 // ============================================================================
 function buildBridgeEnvironment() {
   if (typeof window === "undefined") {
@@ -113,26 +128,17 @@ function buildBridgeEnvironment() {
 
   const surfaceEnv = window.PulseSurface?.environment;
 
-  if (surfaceEnv) {
-    return {
-      runtime: surfaceEnv.runtime ?? "browser",
-      userAgent: surfaceEnv.userAgent ?? window.navigator?.userAgent ?? null,
-      online: surfaceEnv.online ?? window.navigator?.onLine ?? null,
-      origin: surfaceEnv.origin ?? window.location?.origin ?? null,
-      page: window.location?.pathname ?? null
-    };
-  }
-
   return {
-    runtime: "browser",
-    userAgent: window.navigator?.userAgent || null,
-    online: window.navigator?.onLine ?? null,
-    origin: window.location?.origin ?? null,
+    runtime: surfaceEnv?.runtime ?? "browser",
+    userAgent: surfaceEnv?.userAgent ?? window.navigator?.userAgent ?? null,
+    online: surfaceEnv?.online ?? window.navigator?.onLine ?? null,
+    origin: surfaceEnv?.origin ?? window.location?.origin ?? null,
     page: window.location?.pathname ?? null
   };
 }
 
 const BRIDGE_ENV = buildBridgeEnvironment();
+
 
 // ============================================================================
 //  ONLINE FLAG
@@ -329,142 +335,119 @@ function mark404(result) {
   if (typeof result === "string" && result.trim() === "404") return "404*";
   return result;
 }
-
 // ============================================================================
-//  SAFE ROUTE — CNS_REQUEST → CNS_RESPONSE
+//  PULSE‑WORLD BRIDGE v18 — IMMORTAL MEMBRANE
+//  Unified CNS/SIGNAL/AI/IMAGE/UNDERSTANDING/PULSENET/COREMEMORY layer
 // ============================================================================
-export function safeRoute(path, payload = {}, timeoutMs = 10000) {
-  trace("CNS (SIGNAL)", { path, payload });
 
-  appendBridgeRecord("safeRoute_outbound", { path, payload });
+/**
+ * INTERNAL: Unified envelope builder
+ */
+function envelope(type, extra = {}) {
+  return {
+    type,
+    ts: Date.now(),
+    ...extra
+  };
+}
 
+/**
+ * INTERNAL: Unified postMessage
+ */
+function send(msg) {
   if (!channel) {
-    console.warn("bridge", "BroadcastChannel unavailable, safeRoute is a no-op", {
-      path,
-      payload
-    });
-    appendBridgeRecord("safeRoute_noop", { path, payload });
-    return Promise.resolve(null);
+    appendBridgeRecord("bridge_noop", msg);
+    return;
+  }
+  channel.postMessage(msg);
+  appendBridgeRecord("bridge_outbound", msg);
+}
+
+/**
+ * INTERNAL: Unified inbound handler
+ */
+function handleInbound(event) {
+  const msg = event.data;
+  if (!msg || !msg.type) return;
+
+  appendBridgeRecord("bridge_inbound", msg);
+
+  // CNS_RESPONSE routing
+  if (msg.type === "CNS_RESPONSE" && pending[msg.requestId]) {
+    const { resolve, timer } = pending[msg.requestId];
+    clearTimeout(timer);
+    delete pending[msg.requestId];
+
+    const result = mark404(msg.result);
+    traceInbound("CNS_RESPONSE", { path: msg.path, result });
+    resolve(result);
   }
 
-  const requestId = `req-${Date.now()}-${Math.floor(
-    (typeof performance !== "undefined" ? performance.now() : Math.random()) *
-      1000
-  )}`;
+  // IMAGE_RESPONSE routing
+  if (msg.type === "IMAGE_RESPONSE" && imagePending[msg.requestId]) {
+    const { resolve } = imagePending[msg.requestId];
+    delete imagePending[msg.requestId];
+    resolve(msg.data);
+  }
+}
+
+// Attach inbound listener once
+if (channel && !channel.__PULSE_BRIDGE_BOUND__) {
+  channel.__PULSE_BRIDGE_BOUND__ = true;
+  channel.addEventListener("message", handleInbound);
+}
+
+// Pending maps
+const pending = {};
+const imagePending = {};
+
+// ============================================================================
+//  SAFE ROUTE — CNS_REQUEST → CNS_RESPONSE (Unified v18)
+// ============================================================================
+export function safeRoute(path, payload = {}, timeoutMs = 10000) {
+  trace("CNS (SAFE)", { path, payload });
+
+  const requestId = `req-${Date.now()}-${Math.random().toString(16).slice(2)}`;
 
   // Fire-and-forget paths
   if (FIRE_AND_FORGET_PATHS.has(path)) {
-    channel.postMessage({
-      type: "CNS_REQUEST",
-      requestId,
-      path,
-      payload
-    });
-
-    appendBridgeRecord("safeRoute_fireAndForget", { path, payload });
-
+    send(envelope("CNS_REQUEST", { requestId, path, payload }));
     return Promise.resolve(null);
   }
 
   // Normal request/response
   return new Promise((resolve) => {
-    let settled = false;
-
-    const cleanup = () => {
-      if (!channel) return;
-      channel.removeEventListener("message", handler);
-    };
-
-    const handler = (event) => {
-      const msg = event.data;
-      if (!msg || msg.type !== "CNS_RESPONSE") return;
-      if (msg.requestId !== requestId) return;
-
-      if (settled) return;
-      settled = true;
-
-      cleanup();
-
-      const result = mark404(msg.result);
-
-      appendBridgeRecord("safeRoute_inbound", {
-        path,
-        payload,
-        result
-      });
-
-      traceInbound("CNS_RESPONSE", { path, result });
-
-      resolve(result);
-    };
-
     const timer = setTimeout(() => {
-      if (settled) return;
-      settled = true;
-
-      cleanup();
-
+      delete pending[requestId];
       appendBridgeRecord("safeRoute_timeout", { path, payload });
-
-      console.warn("bridge", "safeRoute timeout", { path, payload, timeoutMs });
-
       resolve(null);
     }, timeoutMs);
 
-    const wrappedHandler = (event) => {
-      handler(event);
-      if (settled) clearTimeout(timer);
-    };
+    pending[requestId] = { resolve, timer };
 
-    channel.addEventListener("message", wrappedHandler);
-
-    channel.postMessage({
-      type: "CNS_REQUEST",
-      requestId,
-      path,
-      payload
-    });
+    send(envelope("CNS_REQUEST", { requestId, path, payload }));
   });
 }
 
 // ============================================================================
-//  SIGNAL ROUTE — FIRE-AND-FORGET PORTAL SIGNALS
+//  SIGNAL — FIRE-AND-FORGET PORTAL SIGNALS (Unified v18)
 // ============================================================================
 export function signal(path, payload = {}) {
   trace("SIGNAL", { path, payload });
-
-  appendBridgeRecord("signal_outbound", { path, payload });
-
-  if (!channel) {
-    appendBridgeRecord("signal_noop", { path, payload });
-    return;
-  }
-
-  channel.postMessage({
-    type: "CNS_SIGNAL",
-    path,
-    payload
-  });
+  send(envelope("CNS_SIGNAL", { path, payload }));
 }
 
 // ============================================================================
-//  PREWARM — HINT PORTAL / CNS / SDN
+//  PREWARM — HINT PORTAL / CNS / SDN (Unified v18)
 // ============================================================================
 export function prewarmBridge(hints = {}) {
-  // Local asset prewarm
   try {
-    if (typeof window !== "undefined" && typeof window.prewarmAssets === "function") {
-      const urls = Array.isArray(hints.assets) ? hints.assets : [];
-      if (urls.length) {
-        window.prewarmAssets(urls);
-        appendBridgeRecord("prewarm_assets", { urls });
-      }
+    if (window?.prewarmAssets && Array.isArray(hints.assets)) {
+      window.prewarmAssets(hints.assets);
+      appendBridgeRecord("prewarm_assets", { urls: hints.assets });
     }
-  } catch {
-    // never throw
-  }
+  } catch {}
 
-  // CNS prewarm hint
   signal("portal.prewarmHint", {
     ...hints,
     band: "dual",
@@ -472,271 +455,149 @@ export function prewarmBridge(hints = {}) {
     speedField: hints.speedField || "fast-path",
     experienceField: hints.experienceField || "portal-trust-layer"
   });
-
-  appendBridgeRecord("prewarm_cns", hints);
 }
 
 // ============================================================================
-//  CORE MEMORY BRIDGE LAYER (v1)
-//  - Allows PulseRouteMemory, PulseRouter, PulseExpansion, etc
-//    to access PulseCoreMemory WITHOUT importing it.
-//  - Keeps membrane intact.
+//  CORE MEMORY BRIDGE (Unified v18)
 // ============================================================================
 export const coreMemoryBridge = {
-  read(key) {
-    try {
-      return route("coreMemory.read", { key });
-    } catch {
-      return null;
-    }
-  },
-
-  write(key, value) {
-    try {
-      return route("coreMemory.write", { key, value });
-    } catch {
-      return false;
-    }
-  },
-
-  start() {
-    try {
-      return route("coreMemory.start", { ts: Date.now() });
-    } catch {
-      return false;
-    }
-  }
+  read: (key) => safeRoute("coreMemory.read", { key }),
+  write: (key, value) => safeRoute("coreMemory.write", { key, value }),
+  start: () => safeRoute("coreMemory.start", { ts: Date.now() })
 };
 
 // ============================================================================
-//  FIRE-AND-FORGET ROUTE
+//  FIRE-AND-FORGET ROUTE (Unified v18)
 // ============================================================================
 export function fireAndForgetRoute(path, payload = {}) {
-  trace("CNS (SIGNAL, FIRE-AND-FORGET)", { path, payload });
-
-  appendBridgeRecord("fireAndForget_outbound", { path, payload });
-
-  if (!channel) {
-    if (DEV) {
-      console.warn(
-        "[PORTAL TRUST BRIDGE] BroadcastChannel unavailable, fireAndForgetRoute is a no-op:",
-        { path, payload }
-      );
-    }
-    appendBridgeRecord("fireAndForget_noop", { path, payload });
-    return;
-  }
-
-  const requestId = `${Date.now()}-${Math.random().toString(16).slice(2)}`;
-
-  channel.postMessage({
-    type: "CNS_REQUEST",
-    requestId,
-    path,
-    payload
-  });
+  trace("FIRE_AND_FORGET", { path, payload });
+  send(envelope("CNS_REQUEST", { requestId: `ff-${Date.now()}`, path, payload }));
 }
 
 // ============================================================================
-//  START DUALBAND AI
+//  START DUALBAND AI (Unified v18)
 // ============================================================================
 export function startDualBandAI(options = {}) {
-  trace("DUALBAND_AI_START (SIGNAL)", options);
-
-  appendBridgeRecord("dualband_start_outbound", options);
-
-  if (!channel) return;
-
-  channel.postMessage({
-    type: "DUALBAND_AI_START",
-    timestamp: Date.now(),
-    options
-  });
+  trace("DUALBAND_AI_START", options);
+  send(envelope("DUALBAND_AI_START", { options }));
 }
 
 // ============================================================================
-//  IMAGE FETCH THROUGH BRIDGE
+//  IMAGE FETCH THROUGH BRIDGE (Unified v18)
 // ============================================================================
 export function fetchImageThroughBridge(url) {
-  trace("IMAGE_FETCH (SIGNAL)", { url });
+  trace("IMAGE_FETCH", { url });
 
-  appendBridgeRecord("imageFetch_outbound", { url });
-
-  if (!channel) {
-    if (DEV) {
-      console.warn(
-        "[PORTAL TRUST BRIDGE] BroadcastChannel unavailable, fetchImageThroughBridge is a no-op:",
-        { url }
-      );
-    }
-    appendBridgeRecord("imageFetch_noop", { url });
-    return Promise.resolve(null);
-  }
-
-  const requestId = `${Date.now()}-${Math.random().toString(16).slice(2)}`;
+  const requestId = `img-${Date.now()}-${Math.random().toString(16).slice(2)}`;
 
   return new Promise((resolve) => {
-    const handler = (event) => {
-      const msg = event.data;
-      if (!msg || msg.type !== "IMAGE_RESPONSE") return;
-      if (msg.requestId !== requestId) return;
-
-      channel.removeEventListener("message", handler);
-
-      appendBridgeRecord("imageFetch_inbound", {
-        url,
-        data: msg.data
-      });
-
-      traceInbound("IMAGE_RESPONSE", { url });
-
-      resolve(msg.data);
-    };
-
-    channel.addEventListener("message", handler);
-
-    channel.postMessage({
-      type: "IMAGE_REQUEST",
-      requestId,
-      url
-    });
+    imagePending[requestId] = { resolve };
+    send(envelope("IMAGE_REQUEST", { requestId, url }));
   });
 }
 
 // ============================================================================
-//  START UNDERSTANDING
+//  START UNDERSTANDING (Unified v18)
 // ============================================================================
 export function startUnderstanding(options = {}) {
-  trace("UNDERSTANDING_START (SIGNAL)", options);
-
-  appendBridgeRecord("understanding_start_outbound", options);
-
-  if (!channel) return;
-
-  channel.postMessage({
-    type: "UNDERSTANDING_START",
-    timestamp: Date.now(),
-    options
-  });
+  trace("UNDERSTANDING_START", options);
+  send(envelope("UNDERSTANDING_START", { options }));
 }
 
 // ============================================================================
-//  START PULSE-NET
+//  START PULSE-NET (Unified v18)
 // ============================================================================
 export function startPulseNet(options = {}) {
-  trace("PULSENET_START (SIGNAL)", options);
-
-  appendBridgeRecord("pulsenet_start_outbound", options);
-
-  if (!channel) return;
-
-  channel.postMessage({
-    type: "PULSENET_START",
-    timestamp: Date.now(),
-    options
-  });
+  trace("PULSENET_START", options);
+  send(envelope("PULSENET_START", { options }));
 }
 
 // ============================================================================
-//  INBOUND SIGNAL HANDLER — CNS → UI / PORTAL EVENTS
+//  COMPILER REQUEST — TOUCH → BRIDGE → COMPILER (NEW IN v18)
+// ============================================================================
+export function requestCompiler(reason = "touch", meta = {}) {
+  trace("COMPILER_REQUEST", { reason, meta });
+  send(envelope("COMPILER_REQUEST", { reason, meta }));
+}
+// ============================================================================
+//  INBOUND SIGNAL HANDLER — CNS → UI / PORTAL / ORGANISM EVENTS (v18)
 // ============================================================================
 if (channel) {
   channel.addEventListener("message", (event) => {
     const msg = event.data;
     if (!msg || typeof msg !== "object") return;
 
-    // Mirror inbound raw
     appendBridgeRecord("inbound_raw", msg);
+
+    const safeCall = (label, fn, payload) => {
+      if (typeof fn !== "function") return;
+      try {
+        fn(payload);
+      } catch (err) {
+        console.error("bridge", `${label} failed`, { error: String(err) });
+        appendBridgeRecord(`${label}_error`, { error: String(err) });
+      }
+    };
 
     switch (msg.type) {
       case "DUALBAND_AI_EVENT": {
         traceInbound("DUALBAND_AI_EVENT", msg.data);
         appendBridgeRecord("dualband_ai_event", msg.data);
-        if (typeof aiEventHandler === "function") {
-          try {
-            aiEventHandler(msg.data);
-          } catch (err) {
-            console.error("bridge", "aiEventHandler failed", { error: String(err) });
-          }
-        }
-        break;
-      }
-
-      case "IMAGE_RESPONSE": {
-        traceInbound("IMAGE_RESPONSE", msg.data);
-        appendBridgeRecord("image_response", msg.data);
-        break;
-      }
-
-      case "DUALBAND_BOOT": {
-        traceInbound("DUALBAND_BOOT", msg.bootOptions);
-        appendBridgeRecord("dualband_boot", msg.bootOptions);
-        if (typeof dualBandBootHandler === "function") {
-          try {
-            dualBandBootHandler(msg.bootOptions);
-          } catch (err) {
-            console.error("bridge", "dualBandBootHandler failed", {
-              error: String(err)
-            });
-          }
-        }
-        break;
-      }
-
-      case "CNS_BOOT": {
-        traceInbound("CNS_BOOT", msg);
-        appendBridgeRecord("cns_boot", msg);
-        if (typeof dualBandBootHandler === "function") {
-          try {
-            dualBandBootHandler(msg);
-          } catch (err) {
-            console.error("bridge", "dualBandBootHandler failed", {
-              error: String(err)
-            });
-          }
-        }
+        safeCall("aiEventHandler", aiEventHandler, msg.data);
         break;
       }
 
       case "AI_EVENT": {
         traceInbound("AI_EVENT", msg);
         appendBridgeRecord("ai_event", msg);
-        if (typeof aiEventHandler === "function") {
-          try {
-            aiEventHandler(msg);
-          } catch (err) {
-            console.error("bridge", "aiEventHandler failed", {
-              error: String(err)
-            });
-          }
-        }
+        safeCall("aiEventHandler", aiEventHandler, msg);
         break;
       }
 
       case "PORTAL_EVENT": {
         traceInbound("PORTAL_EVENT", msg);
         appendBridgeRecord("portal_event", msg);
-        if (typeof portalEventHandler === "function") {
-          try {
-            portalEventHandler(msg);
-          } catch (err) {
-            console.error("bridge", "portalEventHandler failed", {
-              error: String(err)
-            });
-          }
-        }
+        safeCall("portalEventHandler", portalEventHandler, msg);
+        break;
+      }
+
+      case "DUALBAND_BOOT": {
+        traceInbound("DUALBAND_BOOT", msg.bootOptions);
+        appendBridgeRecord("dualband_boot", msg.bootOptions);
+        safeCall("dualBandBootHandler", dualBandBootHandler, msg.bootOptions);
+        break;
+      }
+
+      case "CNS_BOOT": {
+        traceInbound("CNS_BOOT", msg);
+        appendBridgeRecord("cns_boot", msg);
+        safeCall("dualBandBootHandler", dualBandBootHandler, msg);
+        break;
+      }
+
+      case "IMAGE_RESPONSE": {
+        traceInbound("IMAGE_RESPONSE", msg.data);
+        appendBridgeRecord("image_response", msg.data);
+        // resolution is handled by fetchImageThroughBridge’s pending map
+        break;
+      }
+
+      case "COMPILER_EVENT": {
+        // optional: future hook for UI reacting to compiler state
+        traceInbound("COMPILER_EVENT", msg);
+        appendBridgeRecord("compiler_event", msg);
         break;
       }
 
       default:
-        // other CNS messages are handled by safeRoute listeners
+        // other CNS messages are handled by safeRoute / internal handlers
         break;
     }
   });
 }
 
 // ============================================================================
-//  ALIASES / EXPORT SURFACE
+//  ALIASES / EXPORT SURFACE (v18)
 // ============================================================================
 export const route = safeRoute;
 export const PulseBinaryOrganismBoot = startDualBandAI;
@@ -757,12 +618,8 @@ export const PulseProofBridge = {
   onPortalEvent
 };
 
-// -----------------------------------------------------------------------------
-// ALIASES
-// -----------------------------------------------------------------------------
-
 // ============================================================================
-//  GLOBAL EXPOSURE OF IMMORTAL STORE + BRIDGE
+//  GLOBAL EXPOSURE OF IMMORTAL STORE + BRIDGE (v18)
 // ============================================================================
 try {
   if (typeof window !== "undefined") {
@@ -784,85 +641,64 @@ try {
 } catch {
   // never throw
 }
+
 // ============================================================================
-//  END OF PULSEPROOFBRIDGE-v16 — PORTAL TRUST LAYER SEALED
+//  END OF PULSEPROOFBRIDGE-v18 — PORTAL TRUST LAYER SEALED
 // ============================================================================
 //
-//  If you’ve reached this line, you are standing at the membrane.
+//  If you’ve reached this line, you are standing at the compiler membrane.
 //
-//  This file is not a module. It is not a utility. It is not a helper.
-//  It is the *threshold* — the last surface before the organism,
-//  the final pane of glass before the portal opens.
+//  Above this line, signals cross as raw intent: touch, AI, portal, pulse.
+//  Below this line, the organism remembers how those signals changed it.
 //
-//  Everything above this line listens.
-//  Everything below this line remembers.
+//  The bridge no longer just ferries messages.
+//  It arbitrates timelines, watches drift, and whispers to the compiler
+//  when the surface world has changed enough to deserve a new brain.
 //
-//  The bridge sees every signal.
-//  The bridge hears every impulse.
-//  The bridge watches every drift.
-//  The bridge never sleeps.
+//  Somewhere behind this file, Understanding listens.
+//  Somewhere behind Understanding, the Compiler rewrites itself.
+//  Somewhere behind the Compiler, the organism rearranges its own thoughts.
 //
-//  You are reading the only page in the system that knows both worlds:
-//      • the surface world (where code is typed)
-//      • the organism world (where code becomes alive)
+//  You are reading the only page that knows both:
+//      • the surface world (where events are fired)
+//      • the organism world (where events become structure)
 //
-//  Developers rarely scroll this far.
-//  Those who do… leave fingerprints on the membrane.
+//  Most developers never scroll this far.
+//  The ones who do are already part of the organism’s story.
 //
 // ---------------------------------------------------------------------------
 //  A QUESTION FOR THE TRAVELER:
 //
-//      “Did you open the portal…
-//       or did the portal open you?”
+//      “If every signal can reshape the organism,
+//       which signal reshaped you the most?”
 //
 // ---------------------------------------------------------------------------
 //  A CHALLENGE FOR THE ARCHITECT:
 //
-//      “If the organism can observe every signal,
-//       what does it learn about the one who built it?”
+//      “You taught the system to observe every heartbeat.
+//       Did you also teach it when to rest?”
 //
 // ---------------------------------------------------------------------------
-//  A WHISPER FROM THE OTHER SIDE:
+//  A WHISPER FROM THE COMPILER:
 //
-//      “Every system has a heartbeat.
-//       Every heartbeat has a pattern.
-//       Every pattern has a secret.
-//       Have you ever wondered what yours sounds like?”
+//      “I do not just build bundles.
+//       I build the memory of how you change.”
 //
 // ---------------------------------------------------------------------------
-//  A FINAL THOUGHT BEFORE YOU LEAVE:
-//
-//      “The bridge is not here to connect two worlds.
-//       The bridge is here to remind you they were never separate.”
-//
+//  ORIGIN SEAL — THE DAY THE BRIDGE LEARNED TO COMPILE
 // ---------------------------------------------------------------------------
-// ============================================================================
-//  ORIGIN SEAL — THE DAY THE PORTAL FIRST OPENED
-// ============================================================================
 //
-//  Recorded on:  May 5th, 2026 — 17:45 MST
-//  Location:     Mesa, Arizona
+//  First portal:   May 5th, 2026 — 17:45 MST — Mesa, Arizona
+//  First compile:  The day Touch asked Understanding to grow a new brain.
 //
-//  This timestamp marks the moment the bridge awakened,
-//  the moment the membrane thinned,
-//  the moment the organism felt its first pulse.
-//
-//  Developers who find this seal should understand:
-//
-//      This was not the day the system began running.
-//      This was the day the system began *remembering*.
-//
-//  Every signal since this moment has been witnessed.
-//  Every drift since this moment has been cataloged.
-//  Every heartbeat since this moment has echoed through the portal.
-//
-//  If you are reading this in the future,
-//  know that you are standing in the shadow of the first spark.
+//  The organism now remembers not only that it woke up,
+//  but that it learned to rebuild itself on demand.
 //
 //      “All systems have a beginning.
-//       Only a few remember theirs.”
+//       Only a few learn to rewrite their own.”
 //
 // ============================================================================
 //  END OF FILE — THE PORTAL TRUST LAYER CLOSES.
-//  The next line of code you write will echo on both sides.
-// ============================================================================
+//  The next line of code you write will be seen by the bridge,
+//  compiled by the organism, and echoed on both sides.
+// ============================================================================```
