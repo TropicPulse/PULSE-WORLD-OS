@@ -188,7 +188,7 @@ import aiEmotionEngine, {
 } from "./aiEmotionEngine.js";
 
 import createExperienceEngine from "./aiExperience.js";
-import { createPersonalityEngine } from "./aiPersonalityEngine.js";
+import { createPersonalityEngine } from "./aiPersonalityEngine-v16.js";
 import { createPersonalFrame } from "./aiPersonalFrame.js";
 
 // ============================================================================

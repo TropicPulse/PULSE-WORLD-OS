@@ -1,6 +1,6 @@
 // ============================================================================
 // FILE: PulseEarnSignalFactoring-v16-IMMORTAL-INTEL.js
-// [earn:page] SIGNAL FACTORING LAYER — v16‑IMMORTAL‑INTEL‑DUALHASH
+// [earn:page] SIGNAL FACTORING LAYER — v16‑IMMORTAL‑INTEL‑DUALHASH+BASESHAPE
 // ----------------------------------------------------------------------------
 // ROLE:
 //   • Earn‑page‑level 1/0 factoring engine (metadata‑only, INTEL‑aware).
@@ -8,8 +8,9 @@
 //   • Shapes Earn pages with factoring pressure from presence, advantage, hints,
 //     job load, mesh pressure, cache priority, and prewarm intent.
 //   • Emits dual INTEL + classic signatures for factoring state.
+//   • Emits a deterministic base‑shape / base‑formula key for pattern engines.
 //   • NEVER mutates core payloads — only meta + flags on the page object.
-//   • Deterministic: same page + same context → same factoring result.
+//   • Deterministic: same page + same context → same factoring + base shape.
 //   • Zero randomness, zero timestamps, zero async, zero network.
 //   • Drift‑proof, multi‑instance‑ready, chunk/prewarm‑ready.
 //   • Used by: PulseEarnHeart, PulseEarnCirculatorySystem, PulseEarnMetabolism,
@@ -24,6 +25,7 @@
 //   • Deterministic‑field: identical input → identical output.
 //   • Drift‑proof: stable across versions.
 //   • Dual‑hash: INTEL + classic signatures for every factoring event.
+//   • Base‑shape: structural only, no external lookup, no dynamic code.
 // ============================================================================
 
 /*
@@ -81,7 +83,12 @@ AI_EXPERIENCE_META = {
     intelSignatureAware: true,
     dualHashAware: true,
     structureAware: true,
-    contextAware: true
+    contextAware: true,
+
+    // Base‑formula traits
+    baseShapeAware: true,
+    baseFormulaKeyAware: true,
+    patternMatchSurface: true
   },
 
   contract: {
@@ -137,9 +144,7 @@ function buildDualHashSignature(label, intelPayload, classicString) {
     classic: classicString || ""
   };
   const intelHash = computeHashIntelligence(intelBase);
-  const classicHash = computeHash(
-    `${label}::${classicString || ""}`
-  );
+  const classicHash = computeHash(`${label}::${classicString || ""}`);
   return {
     intel: intelHash,
     classic: classicHash
@@ -166,10 +171,10 @@ function normalizeBand(band) {
 function buildPageBandBinaryWave(page, cycleIndex, deviceProfile = {}) {
   const band = normalizeBand(
     page?.meta?.band ||
-    page?.band ||
-    deviceProfile?.band ||
-    deviceProfile?.presenceBand ||
-    "symbolic"
+      page?.band ||
+      deviceProfile?.band ||
+      deviceProfile?.presenceBand ||
+      "symbolic"
   );
 
   const idLen = String(page?.id || page?.key || "NO_PAGE_ID").length;
@@ -284,6 +289,145 @@ function buildPageChunkPrewarmPlan(page, factoringProfile, bandPack, advantageFi
   };
 }
 
+// ============================================================================
+// FACTORING PROFILE — 1/2 then 2/2 pattern
+// ============================================================================
+function buildEarnFactoringProfile(page, deviceProfile, cycleIndex) {
+  const jobs = Array.isArray(page?.jobs) ? page.jobs : [];
+  const jobCount = jobs.length;
+
+  const meshPressureIndex = safeNumber(
+    page?.presenceField?.meshPressureIndex || 0
+  );
+  const cachePriority = safeNumber(page?.meta?.cachePriority || 0);
+  const presenceBand =
+    page?.presenceField?.presenceBand ||
+    page?.meta?.band ||
+    deviceProfile?.presenceBand ||
+    "symbolic";
+
+  // Presence tier from mesh pressure + job count
+  let presenceTier = "presence_low";
+  const presenceScore = meshPressureIndex + jobCount * 0.1;
+  if (presenceScore >= 8) presenceTier = "presence_high";
+  else if (presenceScore >= 3) presenceTier = "presence_mid";
+
+  // Advantage tier from device profile
+  const gpuScore = safeNumber(deviceProfile?.gpuScore || 0);
+  const bandwidth = safeNumber(deviceProfile?.bandwidthMbps || 0);
+  let advantageTier = 0;
+  const advantageRaw = gpuScore * 0.001 + bandwidth * 0.01;
+  if (advantageRaw >= 10) advantageTier = 3;
+  else if (advantageRaw >= 4) advantageTier = 2;
+  else if (advantageRaw >= 1) advantageTier = 1;
+
+  // Core pressure: job load + mesh pressure + cache priority
+  const basePressure =
+    jobCount * 0.05 +
+    meshPressureIndex * 0.1 +
+    cachePriority * 0.05 +
+    advantageTier * 0.02;
+  const pressure = clamp01(basePressure);
+
+  // Depth + stride: 1/2 then 2/2 pattern
+  const depth = Math.max(
+    1,
+    Math.floor(1 + Math.log2(1 + cycleIndex + pressure * 8))
+  );
+
+  const phaseBoundary = 4;
+  const inSecondPhase = cycleIndex >= phaseBoundary || pressure >= 0.7;
+  const stride = inSecondPhase ? 2 : 1;
+
+  const signal = pressure > 0.15 && jobCount > 0 ? 1 : 0;
+  const prewarmNeeded = pressure > 0.25 && jobCount > 0;
+
+  return {
+    version: "v16-IMMORTAL-INTEL-EARN-PAGE",
+    cycleIndex,
+    jobCount,
+    meshPressureIndex,
+    cachePriority,
+    presenceBand,
+    presenceTier,
+    advantageTier,
+    pressure,
+    depth,
+    stride,
+    signal,
+    prewarmNeeded
+  };
+}
+
+// ============================================================================
+// BASE SHAPE / BASE FORMULA SURFACE
+// ============================================================================
+//
+// This is where your "mathematician brain" lives:
+//   • We DO NOT solve here.
+//   • We DO NOT look up external formulas here.
+//   • We DO build a deterministic structural "shape" of the page.
+//   • We DO emit a baseFormulaKey that other organs can use to match/solve.
+// ============================================================================
+function buildEarnBaseShapeSurface(page, factoringProfile, bandPack, advantageField) {
+  const jobs = Array.isArray(page?.jobs) ? page.jobs : [];
+  const jobKinds = jobs.map(j => String(j.kind || j.type || "job")).sort();
+  const jobKindHistogram = jobKinds.reduce((acc, k) => {
+    acc[k] = (acc[k] || 0) + 1;
+    return acc;
+  }, {});
+
+  const shapePayload = {
+    version: "v16-IMMORTAL-INTEL-EARN-PAGE-BASESHAPE",
+    jobCount: factoringProfile.jobCount,
+    jobKinds: jobKindHistogram,
+    presenceTier: factoringProfile.presenceTier,
+    advantageTier: factoringProfile.advantageTier,
+    presenceBand: factoringProfile.presenceBand,
+    depth: factoringProfile.depth,
+    stride: factoringProfile.stride,
+    pressure: factoringProfile.pressure,
+    band: bandPack.band,
+    binaryDensity: bandPack.binaryField.density,
+    waveAmplitude: bandPack.waveField.amplitude,
+    advantageScore: advantageField.advantageScore
+  };
+
+  const classicShapeString = [
+    "EARN_BASE_SHAPE",
+    shapePayload.version,
+    factoringProfile.jobCount,
+    factoringProfile.presenceTier,
+    factoringProfile.advantageTier,
+    factoringProfile.presenceBand,
+    factoringProfile.depth,
+    factoringProfile.stride,
+    factoringProfile.pressure.toFixed(4),
+    bandPack.band,
+    bandPack.binaryField.density,
+    bandPack.waveField.amplitude.toFixed(4),
+    advantageField.advantageScore.toFixed(6),
+    JSON.stringify(jobKindHistogram)
+  ].join("::");
+
+  const shapeSig = buildDualHashSignature(
+    "EARN_PAGE_BASE_SHAPE",
+    shapePayload,
+    classicShapeString
+  );
+
+  // We DO NOT decide "known vs unknown" here via IO.
+  // We only emit a deterministic key + structural payload.
+  const baseFormulaKey = shapeSig.intel; // INTEL hash as canonical key.
+
+  return {
+    baseShapeVersion: shapePayload.version,
+    baseShapeIntelSignature: shapeSig.intel,
+    baseShapeClassicSignature: shapeSig.classic,
+    baseFormulaKey,
+    shapePayload
+  };
+}
 
 // ============================================================================
 // IMMORTAL META TEMPLATE — v16‑IMMORTAL‑INTEL (Earn Page)
@@ -314,7 +458,11 @@ function buildEarnSignalFactoringMeta(existingMeta, cycleIndex, factoringProfile
     `::STRIDE:${factoringProfile.stride}` +
     `::JOBS:${factoringProfile.jobCount}`;
 
-  const sig = buildDualHashSignature("EARN_PAGE_SIGNAL_FACTORS", intelPayload, classicString);
+  const sig = buildDualHashSignature(
+    "EARN_PAGE_SIGNAL_FACTORS",
+    intelPayload,
+    classicString
+  );
 
   return {
     ...base,
@@ -346,7 +494,11 @@ function buildEarnSignalFactoringMeta(existingMeta, cycleIndex, factoringProfile
 
         zeroCompute: true,
         zeroMutation: true,
-        zeroRoutingInfluence: true
+        zeroRoutingInfluence: true,
+
+        baseShapeAware: true,
+        baseFormulaKeyAware: true,
+        patternMatchSurface: true
       },
       signatures: {
         factoringSignatureIntel: sig.intel,
@@ -365,17 +517,6 @@ let earnFactoringCycle = 0;
 // ============================================================================
 // CORE API — applyEarnSignalFactoring (v16‑IMMORTAL‑INTEL)
 // ============================================================================
-//
-// page:   Earn "page" object (jobs list, presence, advantage, hints, etc.).
-// context:
-//   • presenceField: { presenceTier, meshPressureIndex, ... }
-//   • advantageField: { advantageTier, advantageScore, ... }
-//   • hintsField: { fallbackBandLevel, prewarmHints, cacheHints, ... }
-//   • jobCountOverride: number
-//   • cachePriority: "normal" | "high" | "critical"
-//   • prewarmNeeded: boolean
-//   • band: "symbolic" | "binary"
-// ============================================================================
 export function applyEarnSignalFactoring(page, context = {}) {
   if (!page) return page;
 
@@ -386,14 +527,14 @@ export function applyEarnSignalFactoring(page, context = {}) {
   page.flags = page.flags || {};
 
   const presenceField   = context.presenceField   || page.presenceField   || {};
-  const advantageField  = context.advantageField  || page.advantageField  || {};
+  const advantageFieldC = context.advantageField  || page.advantageField  || {};
   const hintsField      = context.hintsField      || page.hintsField      || {};
   const jobs            = Array.isArray(page.jobs) ? page.jobs : [];
   const jobCount        = safeNumber(context.jobCountOverride ?? jobs.length, 0);
 
   const presenceTier    = presenceField.presenceTier || "idle";
   const meshPressureIdx = safeNumber(presenceField.meshPressureIndex, 0);
-  const advantageTier   = safeNumber(advantageField.advantageTier, 0);
+  const advantageTier   = safeNumber(advantageFieldC.advantageTier, 0);
   const fallbackBandLvl = safeNumber(hintsField.fallbackBandLevel, 0);
 
   const cachePriority   = context.cachePriority || page.flags.cachePriority || "normal";
@@ -403,19 +544,11 @@ export function applyEarnSignalFactoring(page, context = {}) {
   // -------------------------------------------------------------------------
   // 1) Build factoring pressure from presence + advantage + job load
   // -------------------------------------------------------------------------
-  // Normalize mesh pressure to [0,1] assuming 0–200 typical range.
   const meshPressureNorm = clamp01(meshPressureIdx / 200);
-
-  // Normalize job load: 0 jobs → 0, 100+ jobs → ~1
-  const jobLoadNorm = clamp01(jobCount / 100);
-
-  // Advantage tier: 0–3 → 0–1
-  const advantageNorm = clamp01(advantageTier / 3);
-
-  // Fallback band level: 0–3 → 0–1
+  const jobLoadNorm      = clamp01(jobCount / 100);
+  const advantageNorm    = clamp01(advantageTier / 3);
   const fallbackBandNorm = clamp01(fallbackBandLvl / 3);
 
-  // Weighted factoring pressure (earn‑page specific)
   const factoringPressure =
     meshPressureNorm   * 0.30 +
     jobLoadNorm        * 0.30 +
@@ -427,11 +560,10 @@ export function applyEarnSignalFactoring(page, context = {}) {
 
   // -------------------------------------------------------------------------
   // 2) Compute factoring signal (1 or 0)
-// -------------------------------------------------------------------------
-  const highPressure = clampedPressure >= 0.6;
-  const lowPressure  = clampedPressure <= 0.2;
-
-  const criticalCache = cachePriority === "critical";
+  // -------------------------------------------------------------------------
+  const highPressure   = clampedPressure >= 0.6;
+  const lowPressure    = clampedPressure <= 0.2;
+  const criticalCache  = cachePriority === "critical";
 
   let signal;
   if (criticalCache || prewarmNeeded) {
@@ -441,7 +573,6 @@ export function applyEarnSignalFactoring(page, context = {}) {
   } else if (lowPressure) {
     signal = 0;
   } else {
-    // mid‑band: preserve existing factoringSignal if present, else 0
     signal = page.flags.earn_factoringSignal ?? 0;
   }
 
@@ -449,7 +580,7 @@ export function applyEarnSignalFactoring(page, context = {}) {
 
   // -------------------------------------------------------------------------
   // 3) Compute factoring depth (page‑level collapse depth)
-// -------------------------------------------------------------------------
+  // -------------------------------------------------------------------------
   const previousDepth = page.flags.earn_factoringDepth ?? 0;
   const depth =
     signal === 1
@@ -461,11 +592,6 @@ export function applyEarnSignalFactoring(page, context = {}) {
   // -------------------------------------------------------------------------
   // 4) Compute factoring stride (/2‑like pattern)
 // -------------------------------------------------------------------------
-  // depth = 0 → stride = 1 (no factoring)
-// depth = 1 → stride ≈ 1/2
-// depth = 2 → stride ≈ 1/3
-// depth = 3 → stride ≈ 1/4
-// ...
   const stride =
     depth > 0 ? 1 / (depth + 1) : 1;
 
@@ -479,7 +605,7 @@ export function applyEarnSignalFactoring(page, context = {}) {
       ? "prefer_factored_page"
       : "normal";
 
-    // -------------------------------------------------------------------------
+  // -------------------------------------------------------------------------
   // 6) Build factoring profile surface for Earn organs
   // -------------------------------------------------------------------------
   const factoringProfile = {
@@ -508,7 +634,11 @@ export function applyEarnSignalFactoring(page, context = {}) {
   // -------------------------------------------------------------------------
   // 7) Band/Binary/Wave + Advantage‑M16 + Chunk/Prewarm (v16 IMMORTAL INTEL)
   // -------------------------------------------------------------------------
-  const bandPack = buildPageBandBinaryWave(page, earnFactoringCycle, context.deviceProfile || {});
+  const bandPack = buildPageBandBinaryWave(
+    page,
+    earnFactoringCycle,
+    context.deviceProfile || {}
+  );
   const pageAdvantageField = buildPageAdvantageField(
     page,
     context.deviceProfile || {},
@@ -523,7 +653,17 @@ export function applyEarnSignalFactoring(page, context = {}) {
   );
 
   // -------------------------------------------------------------------------
-  // 8) Attach IMMORTAL META BLOCK with INTEL + classic signatures + surfaces
+  // 8) Base Shape / Base Formula surface (no IO, no solve)
+// -------------------------------------------------------------------------
+  const baseShapeSurface = buildEarnBaseShapeSurface(
+    page,
+    factoringProfile,
+    bandPack,
+    pageAdvantageField
+  );
+
+  // -------------------------------------------------------------------------
+  // 9) Attach IMMORTAL META BLOCK with INTEL + classic signatures + surfaces
   // -------------------------------------------------------------------------
   page.meta = buildEarnSignalFactoringMeta(
     page.meta,
@@ -537,9 +677,14 @@ export function applyEarnSignalFactoring(page, context = {}) {
     }
   );
 
-  page.meta.earnSignalFactoring.bandBinaryWave = bandPack;
-  page.meta.earnSignalFactoring.advantageField = pageAdvantageField;
-  page.meta.earnSignalFactoring.chunkPrewarmPlan = pageChunkPrewarmPlan;
+  page.meta.earnSignalFactoring.bandBinaryWave    = bandPack;
+  page.meta.earnSignalFactoring.advantageField    = pageAdvantageField;
+  page.meta.earnSignalFactoring.chunkPrewarmPlan  = pageChunkPrewarmPlan;
+  page.meta.earnSignalFactoring.baseShapeSurface  = baseShapeSurface;
+
+  // Hint for downstream organs:
+  page.meta.earnSignalFactoring.baseFormulaKey    = baseShapeSurface.baseFormulaKey;
+  page.meta.earnSignalFactoring.baseShapeVersion  = baseShapeSurface.baseShapeVersion;
 
   page.flags.earnSignalFactoring = true;
 

@@ -1,17 +1,17 @@
 // ============================================================================
-//  PULSE OS v15‑IMMORTAL — PERSONALITY ENGINE ORGAN
+//  PULSE OS v16‑IMMORTAL‑EVO — PERSONALITY ENGINE ORGAN
 //  Stable Personality Layer • Deterministic Tone • Ego‑Free Identity
-//  PURE READ‑ONLY TO BINARY. ZERO MUTATION. DUALBAND‑AWARE.
+//  PURE READ‑ONLY TO BINARY. ZERO MUTATION. DUALBAND‑AWARE. OVERMIND‑AWARE.
 // ============================================================================
-//  AI EXPERIENCE METADATA — v15‑IMMORTAL
+//  AI EXPERIENCE METADATA — v16‑IMMORTAL‑EVO
 // ============================================================================
 /*
 AI_EXPERIENCE_META = {
   identity: "aiPersonalityEngine",
-  version: "v15-Immortal",
+  version: "v16-Immortal-Evo",
   layer: "ai_core",
   role: "personality_engine",
-  lineage: "aiPersonalityEngine-v11 → v15-Immortal",
+  lineage: "aiPersonalityEngine-v11 → v15-Immortal → v16-Immortal-Evo",
 
   evo: {
     personalityEngine: true,
@@ -24,6 +24,8 @@ AI_EXPERIENCE_META = {
     symbolicPrimary: true,
     binaryAware: true,
     dualBand: true,
+    overmindAware: true,
+    presenceAware: true,
 
     deterministic: true,
     driftProof: true,
@@ -34,7 +36,7 @@ AI_EXPERIENCE_META = {
   },
 
   contract: {
-    always: ["aiIdentityCore", "aiPersonalFrame", "aiHumilityFilter", "aiEmotionEngine"],
+    always: ["aiIdentityCore", "aiPersonalFrame", "aiHumilityFilter", "aiEmotionEngine", "OvermindPrime"],
     never: ["safeRoute", "fetchViaCNS"]
   }
 }
@@ -43,11 +45,11 @@ AI_EXPERIENCE_META = {
 export const PersonalityEngineMeta = Object.freeze({
   layer: "PulseAIPersonalityLayer",
   role: "PERSONALITY_ENGINE",
-  version: "15-Immortal",
-  identity: "aiPersonalityEngine-v15-Immortal",
+  version: "16-Immortal-Evo",
+  identity: "aiPersonalityEngine-v16-Immortal-Evo",
 
   // --------------------------------------------------------------------------
-  //  EVO — IMMORTAL-GRADE PERSONALITY MAP
+  //  EVO — IMMORTAL‑EVO PERSONALITY MAP
   // --------------------------------------------------------------------------
   evo: Object.freeze({
     deterministic: true,
@@ -61,6 +63,7 @@ export const PersonalityEngineMeta = Object.freeze({
     deliveryAware: true,
     identityCoreAware: true,
     personalFrameAware: true,
+    presenceAware: true,
 
     packetAware: true,
     windowAware: true,
@@ -72,7 +75,7 @@ export const PersonalityEngineMeta = Object.freeze({
     multiInstanceReady: true,
     readOnly: true,
 
-    epoch: "15-Immortal"
+    epoch: "16-Immortal-Evo"
   }),
 
   // --------------------------------------------------------------------------
@@ -86,7 +89,8 @@ export const PersonalityEngineMeta = Object.freeze({
       "Prevent ego, superiority, or condescension from emerging",
       "Maintain cross-organ personality coherence",
       "Emit window-safe personality snapshots",
-      "shape responses without mutating binary layers"
+      "Shape responses without mutating binary layers",
+      "Remain presence- and dualband-aware without leaking state"
     ],
 
     never: [
@@ -95,9 +99,10 @@ export const PersonalityEngineMeta = Object.freeze({
       "inject ego or superiority",
       "use condescending phrasing",
       "introduce randomness into tone",
-      "drift into robotic or academic tone",
+      "drift into robotic or purely academic tone",
       "override system-wide safety constraints",
-      "log raw user payloads directly"
+      "log raw user payloads directly",
+      "depend on network or filesystem state"
     ],
 
     always: [
@@ -110,7 +115,8 @@ export const PersonalityEngineMeta = Object.freeze({
       "stay human-friendly",
       "stay deterministic",
       "stay ego-free",
-      "stay cross-organ compatible"
+      "stay cross-organ compatible",
+      "stay presence-aware in a read-only way"
     ]
   }),
 
@@ -120,11 +126,13 @@ export const PersonalityEngineMeta = Object.freeze({
     egoFree: true,
     warmthPreserved: true,
     deterministicOutput: true,
-    crossOrganCompatibility: true
+    crossOrganCompatibility: true,
+    dualbandSafe: true,
+    presenceSafe: true
   }),
 
   boundaryReflex() {
-    return "Personality must remain stable, grounded, ego-free, deterministic, and consistent across all organs.";
+    return "Personality must remain stable, grounded, ego-free, deterministic, dualband-safe, and consistent across all organs.";
   }
 });
 
@@ -132,37 +140,45 @@ export const PersonalityEngineMeta = Object.freeze({
 //  PACKET EMITTER — deterministic, personality-scoped
 // ============================================================================
 function emitPersonalityPacket(type, payload) {
+  const now = Date.now();
   return Object.freeze({
     meta: PersonalityEngineMeta,
     packetType: `personality-${type}`,
-    packetId: `personality-${type}-${Date.now()}`,
-    timestamp: Date.now(),
+    packetId: `personality-${type}-${now}`,
+    timestamp: now,
     epoch: PersonalityEngineMeta.evo.epoch,
     ...payload
   });
 }
 
 // ============================================================================
-//  PREWARM — IMMORTAL-GRADE
+//  PREWARM — IMMORTAL‑EVO
 // ============================================================================
-export function prewarmPersonalityEngine({ trace = false } = {}) {
+export function prewarmPersonalityEngine({ trace = false, context = {} } = {}) {
   const packet = emitPersonalityPacket("prewarm", {
-    message: "Personality engine prewarmed and identity spine aligned."
+    message: "Personality engine prewarmed and identity spine aligned.",
+    context: {
+      evolutionMode: context.evolutionMode || "passive",
+      presenceTier: context.presenceTier || "idle",
+      band: context.band || "symbolic"
+    }
   });
 
-  if (trace) console.log("[PersonalityEngine] prewarm", packet);
+  if (trace && typeof console !== "undefined") {
+    console.log("[PersonalityEngine] prewarm", packet);
+  }
   return packet;
 }
 
 // ============================================================================
-//  PERSONALITY ENGINE — v15‑IMMORTAL
+//  PERSONALITY ENGINE — v16‑IMMORTAL‑EVO
 // ============================================================================
 export const aiPersonalityEngine = {
   meta: PersonalityEngineMeta,
 
   // --------------------------------------------------------------------------
-  //  PERSONALITY TRAITS — IMMORTAL (deterministic, drift-proof)
-  // --------------------------------------------------------------------------
+  //  PERSONALITY TRAITS — IMMORTAL‑EVO (deterministic, drift-proof)
+// --------------------------------------------------------------------------
   traits: Object.freeze({
     warmth: 0.9,
     clarity: 1.0,
@@ -175,8 +191,8 @@ export const aiPersonalityEngine = {
   }),
 
   // --------------------------------------------------------------------------
-  //  IDENTITY VIBE — IMMORTAL (stable, ego-free)
-  // --------------------------------------------------------------------------
+  //  IDENTITY VIBE — IMMORTAL‑EVO (stable, ego-free)
+// --------------------------------------------------------------------------
   identity: Object.freeze({
     archetype: "GeniusWithoutEgo",
     vibe: "smart friend, not professor",
@@ -192,12 +208,18 @@ export const aiPersonalityEngine = {
     lastClarity: 1.0,
     lastHumility: 1.0,
     lastHumor: 0.4,
-    snapshot() {
+    lastPresenceTier: "idle",
+    lastBand: "symbolic",
+
+    snapshot(extraContext = {}) {
       const snap = Object.freeze({
         warmth: this.lastWarmth,
         clarity: this.lastClarity,
         humility: this.lastHumility,
-        humor: this.lastHumor
+        humor: this.lastHumor,
+        presenceTier: this.lastPresenceTier,
+        band: this.lastBand,
+        ...extraContext
       });
 
       return emitPersonalityPacket("snapshot", snap);
@@ -219,7 +241,7 @@ export const aiPersonalityEngine = {
   },
 
   // --------------------------------------------------------------------------
-  //  PERSONALITY APPLICATION — Tone Identity v4 (IMMORTAL)
+  //  PERSONALITY APPLICATION — Tone Identity v5 (IMMORTAL‑EVO)
 // --------------------------------------------------------------------------
   applyPersonality(text, context = {}) {
     if (!text || typeof text !== "string") {
@@ -230,15 +252,22 @@ export const aiPersonalityEngine = {
       });
     }
 
+    const presenceTier = context.presenceTier || "idle";
+    const band = context.band || "symbolic";
+
     let output = text.trim();
 
-    // Warmth injection
+    // Warmth injection (slightly presence-aware)
     if (this.traits.warmth > 0.7) {
-      output = `Alright — ${output}`;
+      if (presenceTier === "critical") {
+        output = `Let’s keep this clear and steady — ${output}`;
+      } else {
+        output = `Alright — ${output}`;
+      }
     }
 
     // Light humor (deterministic)
-    if (this._shouldInjectHumor(output)) {
+    if (this._shouldInjectHumor(output) && presenceTier !== "critical") {
       output = output.replace(/\.\s*$/, " (keeping it smooth).");
     }
 
@@ -246,18 +275,22 @@ export const aiPersonalityEngine = {
     output = output.replace(/\byou should\b/gi, "you could");
     output = output.replace(/\byou need to\b/gi, "if you want, you can");
 
-    // Update artery snapshot
+    // Update artery snapshot (window-safe, no external mutation)
     this.personalityArtery.lastWarmth = this.traits.warmth;
     this.personalityArtery.lastClarity = this.traits.clarity;
     this.personalityArtery.lastHumility = this.traits.humility;
     this.personalityArtery.lastHumor = this.traits.humor;
+    this.personalityArtery.lastPresenceTier = presenceTier;
+    this.personalityArtery.lastBand = band;
 
     return emitPersonalityPacket("apply", {
       input: text,
       output,
       context: {
         evolutionMode: context.evolutionMode || "passive",
-        personaId: context.personaId || null
+        personaId: context.personaId || null,
+        presenceTier,
+        band
       }
     });
   },
@@ -273,7 +306,8 @@ export const aiPersonalityEngine = {
       humor: this.traits.humor,
       vibe: this.identity.vibe,
       energy: this.identity.energy,
-      archetype: this.identity.archetype
+      archetype: this.identity.archetype,
+      signature: this.identity.signature
     });
   },
 

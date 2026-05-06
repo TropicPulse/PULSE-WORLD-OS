@@ -1,15 +1,15 @@
 // ============================================================================
-//  PULSE OS v15‑IMMORTAL — REFLEX ENGINE ORGAN
-//  Pure‑Binary Reflex Engine • Reflex Artery v4 • IMMORTAL‑Grade Metrics
+//  PULSE OS v16‑IMMORTAL‑EVO — REFLEX ENGINE ORGAN
+//  Pure‑Binary Reflex Engine • Reflex Artery v5 • IMMORTAL‑EVO Metrics
 //  PURE BINARY ARC. ZERO SYMBOLIC. ZERO COGNITION. ZERO RANDOMNESS.
 // ============================================================================
 /*
 AI_EXPERIENCE_META = {
   identity: "aiReflex",
-  version: "v15-Immortal",
+  version: "v16‑IMMORTAL‑EVO",
   layer: "ai_core",
   role: "reflex_arc",
-  lineage: "aiReflex-v10 → v15-Immortal",
+  lineage: "aiReflex-v10 → v15-Immortal → v16‑IMMORTAL‑EVO",
 
   evo: {
     reflexArc: true,
@@ -37,45 +37,84 @@ AI_EXPERIENCE_META = {
 }
 */
 
-// ---------------------------------------------------------
-//  META BLOCK — v15‑IMMORTAL
-// ---------------------------------------------------------
 
-export const ReflexMeta = Object.freeze({
-  layer: "OrganismReflex",
-  role: "REFLEX_ENGINE",
-  version: "15-Immortal",
-  identity: "aiReflex-v15-Immortal",
+// ============================================================================
+//  AI EXPERIENCE META — IMMORTAL‑EVO
+// ============================================================================
+export const AI_EXPERIENCE_META = Object.freeze({
+  identity: "aiReflexEngine",
+  version: "v16-Immortal-Evo",
+  layer: "ai_core",
+  role: "reflex_arc",
+  lineage: "aiReflex-v10 → v15-Immortal → v16-Immortal-Evo",
 
   evo: Object.freeze({
-    driftProof: true,
-    deterministic: true,
+    reflexArc: true,
+    reflexArteryV5: true,
+    fastPath: true,
+    threatResponse: true,
+    sliceAware: true,
 
-    dualband: false,          // PURE BINARY
+    symbolicPrimary: false,
     binaryAware: true,
-    reflexAware: true,
+    dualBand: false,
+
+    deterministic: true,
+    driftProof: true,
+    pureCompute: true,
+    zeroNetwork: true,
+    zeroFilesystem: true,
+    zeroMutationOfInput: true,
+
+    packetAware: true,
+    windowAware: true,
     arteryAware: true,
     pipelineAware: true,
 
-    safetyFrameAware: true,
-    governorAware: true,
-    loggerAware: true,
-
-    sliceAware: true,
-    packetAware: true,
-    windowAware: true,
-
     microPipeline: true,
     speedOptimized: true,
-    readOnly: true,
     multiInstanceReady: true,
-
-    epoch: "15-Immortal"
+    epoch: "16-Immortal-Evo"
   }),
 
   contract: Object.freeze({
+    always: ["aiNervousSystem", "aiImmunity", "aiMetabolism"],
+    never: ["safeRoute", "fetchViaCNS"]
+  })
+});
+
+// ============================================================================
+//  EXPORT META — IMMORTAL‑EVO
+// ============================================================================
+export const EXPORT_META = Object.freeze({
+  organ: "ReflexEngine",
+  layer: "binary_reflex",
+  stability: "IMMORTAL-EVO",
+  deterministic: true,
+  exposes: [
+    "addReflex",
+    "run",
+    "getReflexArtery",
+    "prewarmReflexEngine"
+  ],
+  sideEffects: "none",
+  network: "none"
+});
+
+// ============================================================================
+//  META BLOCK — v16‑IMMORTAL‑EVO
+// ============================================================================
+export const ReflexMeta = Object.freeze({
+  layer: "OrganismReflex",
+  role: "REFLEX_ENGINE",
+  version: "16-Immortal-Evo",
+  identity: "aiReflex-v16-Immortal-Evo",
+
+  evo: AI_EXPERIENCE_META.evo,
+
+  contract: Object.freeze({
     purpose:
-      "Provide deterministic binary reflex triggers, actions, and IMMORTAL-grade reflex artery metrics for the organism.",
+      "Provide deterministic binary reflex triggers, actions, and IMMORTAL‑EVO reflex artery metrics for the organism.",
 
     never: Object.freeze([
       "introduce randomness",
@@ -109,25 +148,25 @@ export const ReflexMeta = Object.freeze({
   }
 });
 
-// ---------------------------------------------------------
+// ============================================================================
 //  PACKET EMITTER — deterministic, reflex-scoped
-// ---------------------------------------------------------
-
+// ============================================================================
 function emitReflexPacket(type, payload) {
+  const now = Date.now();
   return Object.freeze({
     meta: ReflexMeta,
+    exportMeta: EXPORT_META,
     packetType: `reflex-${type}`,
-    packetId: `reflex-${type}-${Date.now()}`,
-    timestamp: Date.now(),
+    packetId: `reflex-${type}-${now}`,
+    timestamp: now,
     epoch: ReflexMeta.evo.epoch,
     ...payload
   });
 }
 
-// ---------------------------------------------------------
-//  PREWARM — IMMORTAL-grade
-// ---------------------------------------------------------
-
+// ============================================================================
+//  PREWARM — IMMORTAL‑EVO
+// ============================================================================
 export function prewarmReflexEngine({ trace = false } = {}) {
   const packet = emitReflexPacket("prewarm", {
     message: "Reflex engine prewarmed and artery metrics aligned."
@@ -137,62 +176,56 @@ export function prewarmReflexEngine({ trace = false } = {}) {
   return packet;
 }
 
-// ---------------------------------------------------------
-//  ORGAN IMPLEMENTATION — PURE BINARY REFLEX ENGINE
-// ---------------------------------------------------------
-
+// ============================================================================
+//  ORGAN IMPLEMENTATION — PURE BINARY REFLEX ENGINE (v16‑IMMORTAL‑EVO)
+// ============================================================================
 export class AIBinaryReflex {
   constructor(config = {}) {
     this.id = config.id || ReflexMeta.identity;
     this.trace = !!config.trace;
 
-    this.slice = config.slice || "default"; // multi-instance identity
+    this.slice = config.slice || "default";
     this.reflexes = [];
 
-    // window-safe artery snapshot
     this.reflexArtery = {
       lastThroughput: 1,
       lastPressure: 0,
       lastCost: 0,
       lastBudget: 1,
       lastReflexCount: 0,
+      lastTightTriggers: 0,
       snapshot: () =>
-        Object.freeze({
+        emitReflexPacket("snapshot", Object.freeze({
           throughput: this.reflexArtery.lastThroughput,
           pressure: this.reflexArtery.lastPressure,
           cost: this.reflexArtery.lastCost,
           budget: this.reflexArtery.lastBudget,
           reflexCount: this.reflexArtery.lastReflexCount,
+          tightTriggers: this.reflexArtery.lastTightTriggers,
           slice: this.slice
-        })
+        }))
     };
   }
 
-  // ---------------------------------------------------------
-  //  REFLEX ARTERY METRICS v4 (IMMORTAL)
-  // ---------------------------------------------------------
-
+  // ========================================================================
+  //  REFLEX ARTERY v5 — IMMORTAL‑EVO
+  // ========================================================================
   _computeReflexThroughput(reflexCount, avgTriggerCost) {
     const countFactor = Math.min(1, reflexCount / 64);
     const costFactor = Math.min(1, avgTriggerCost / 64);
-    const raw = Math.max(0, 1 - (countFactor * 0.5 + costFactor * 0.5));
-    return Math.min(1, raw);
+    return Math.max(0, 1 - (countFactor * 0.5 + costFactor * 0.5));
   }
 
   _computeReflexPressure(reflexCount, tightTriggers) {
-    const density = reflexCount + tightTriggers;
-    const raw = Math.min(1, density / 48);
-    return Math.max(0, raw);
+    return Math.min(1, (reflexCount + tightTriggers) / 48);
   }
 
   _computeReflexCost(pressure, throughput) {
-    const raw = pressure * (1 - throughput);
-    return Math.max(0, Math.min(1, raw));
+    return Math.max(0, Math.min(1, pressure * (1 - throughput)));
   }
 
   _computeReflexBudget(throughput, cost) {
-    const raw = throughput - cost;
-    return Math.max(0, Math.min(1, raw));
+    return Math.max(0, Math.min(1, throughput - cost));
   }
 
   _bucketLevel(v) {
@@ -219,10 +252,9 @@ export class AIBinaryReflex {
     return "none";
   }
 
-  // ---------------------------------------------------------
-  //  REFLEX ARTERY SNAPSHOT (EXPORTED + WINDOW-SAFE)
-  // ---------------------------------------------------------
-
+  // ========================================================================
+  //  REFLEX ARTERY SNAPSHOT — window-safe
+  // ========================================================================
   _computeReflexArtery() {
     const reflexCount = this.reflexes.length;
 
@@ -237,20 +269,17 @@ export class AIBinaryReflex {
 
     const avgTriggerCost = reflexCount > 0 ? totalTriggerCost / reflexCount : 0;
 
-    const throughput = this._computeReflexThroughput(
-      reflexCount,
-      avgTriggerCost
-    );
+    const throughput = this._computeReflexThroughput(reflexCount, avgTriggerCost);
     const pressure = this._computeReflexPressure(reflexCount, tightTriggers);
     const cost = this._computeReflexCost(pressure, throughput);
     const budget = this._computeReflexBudget(throughput, cost);
 
-    // update window-safe artery snapshot
     this.reflexArtery.lastThroughput = throughput;
     this.reflexArtery.lastPressure = pressure;
     this.reflexArtery.lastCost = cost;
     this.reflexArtery.lastBudget = budget;
     this.reflexArtery.lastReflexCount = reflexCount;
+    this.reflexArtery.lastTightTriggers = tightTriggers;
 
     const artery = {
       slice: this.slice,
@@ -271,26 +300,17 @@ export class AIBinaryReflex {
       budgetBucket: this._bucketLevel(budget)
     };
 
-    emitReflexPacket("artery", {
-      slice: this.slice,
-      reflexCount,
-      throughput,
-      pressure,
-      budget
-    });
-
+    emitReflexPacket("artery", artery);
     return artery;
   }
 
-  // PUBLIC EXPORT
   getReflexArtery() {
     return this._computeReflexArtery();
   }
 
-  // ---------------------------------------------------------
+  // ========================================================================
   //  REFLEX CONFIGURATION
-  // ---------------------------------------------------------
-
+  // ========================================================================
   addReflex(triggerFn, actionFn) {
     if (typeof triggerFn !== "function") {
       throw new TypeError("addReflex: trigger must be a function");
@@ -310,10 +330,9 @@ export class AIBinaryReflex {
     });
   }
 
-  // ---------------------------------------------------------
-  //  REFLEX EXECUTION
-  // ---------------------------------------------------------
-
+  // ========================================================================
+  //  REFLEX EXECUTION — PURE BINARY ARC
+  // ========================================================================
   run(binaryInput) {
     this._assertBinary(binaryInput);
 
@@ -365,10 +384,9 @@ export class AIBinaryReflex {
     return null;
   }
 
-  // ---------------------------------------------------------
+  // ========================================================================
   //  INTERNAL HELPERS
-  // ---------------------------------------------------------
-
+  // ========================================================================
   _assertBinary(str) {
     if (typeof str !== "string" || !/^[01]+$/.test(str)) {
       throw new TypeError("expected binary string");
@@ -381,23 +399,23 @@ export class AIBinaryReflex {
   }
 }
 
-// ---------------------------------------------------------
-//  FACTORY — v15‑IMMORTAL
-// ---------------------------------------------------------
-
+// ============================================================================
+//  FACTORY — v16‑IMMORTAL‑EVO
+// ============================================================================
 export function createAIBinaryReflex(config) {
   return new AIBinaryReflex(config);
 }
 
-// ---------------------------------------------------------
-//  DUAL‑MODE EXPORTS (ESM + CommonJS)
-// ---------------------------------------------------------
-
+// ============================================================================
+//  DUAL‑MODE EXPORTS
+// ============================================================================
 if (typeof module !== "undefined") {
   module.exports = {
     ReflexMeta,
     AIBinaryReflex,
     createAIBinaryReflex,
-    prewarmReflexEngine
+    prewarmReflexEngine,
+    AI_EXPERIENCE_META,
+    EXPORT_META
   };
 }

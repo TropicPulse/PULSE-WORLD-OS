@@ -1,15 +1,16 @@
 // ============================================================================
-//  PULSE OS v15‑IMMORTAL — BINARY PIPELINE ORGAN
+//  PULSE OS v16‑IMMORTAL‑EVO — BINARY PIPELINE ORGAN
 //  Compute Bloodstream • Flow Artery Metrics • Deterministic Binary Engine
 //  PURE FLOW ENGINE. ZERO RANDOMNESS. ZERO EXTERNAL MUTATION.
+//  DUALBAND‑AWARE • GPU‑FRIENDLY • OVERMIND‑AWARE
 // ============================================================================
 /*
 AI_EXPERIENCE_META = {
   identity: "aiPipeline",
-  version: "v15-Immortal",
+  version: "v16‑IMMORTAL‑EVO",
   layer: "ai_core",
   role: "pipeline_engine",
-  lineage: "aiPipeline-v10 → v15-Immortal",
+  lineage: "aiPipeline-v10 → v15-Immortal → v16‑IMMORTAL‑EVO",
 
   evo: {
     pipelineEngine: true,
@@ -33,15 +34,13 @@ AI_EXPERIENCE_META = {
 }
 */
 
+
 export const PipelineMeta = Object.freeze({
   layer: "OrganismFlow",
   role: "PIPELINE_ORGAN",
-  version: "15-Immortal",
-  identity: "aiBinaryPipeline-v15-Immortal",
+  version: "16-Immortal-Evo",
+  identity: "aiBinaryPipeline-v16-Immortal-Evo",
 
-  // --------------------------------------------------------------------------
-  //  EVO — IMMORTAL-GRADE FLOW ENGINE
-  // --------------------------------------------------------------------------
   evo: Object.freeze({
     driftProof: true,
     deterministic: true,
@@ -61,15 +60,14 @@ export const PipelineMeta = Object.freeze({
     speedOptimized: true,
     genomeAware: true,
     safetyFrameAware: true,
+    overmindAware: true,
+    presenceAware: true,
 
     readOnly: true,
     multiInstanceReady: true,
-    epoch: "15-Immortal"
+    epoch: "16-Immortal-Evo"
   }),
 
-  // --------------------------------------------------------------------------
-  //  CONTRACT — IMMUTABLE FLOW CONTRACT
-  // --------------------------------------------------------------------------
   contract: Object.freeze({
     purpose:
       "Provide deterministic compute flow, layered transformations, observer taps, reflex hooks, and flow artery metrics over binary.",
@@ -106,30 +104,37 @@ export const PipelineMeta = Object.freeze({
 //  PACKET EMITTER — deterministic, pipeline-scoped
 // ============================================================================
 function emitPipelinePacket(type, payload) {
+  const now = Date.now();
   return Object.freeze({
     meta: PipelineMeta,
     packetType: `pipeline-${type}`,
-    packetId: `pipeline-${type}-${Date.now()}`,
-    timestamp: Date.now(),
+    packetId: `pipeline-${type}-${now}`,
+    timestamp: now,
     epoch: PipelineMeta.evo.epoch,
     ...payload
   });
 }
 
 // ============================================================================
-//  PREWARM — IMMORTAL-GRADE
+//  PREWARM — IMMORTAL‑EVO
 // ============================================================================
-export function prewarmBinaryPipeline({ trace = false } = {}) {
+export function prewarmBinaryPipeline({ trace = false, context = {} } = {}) {
   const packet = emitPipelinePacket("prewarm", {
-    message: "Binary pipeline prewarmed and flow artery aligned."
+    message: "Binary pipeline prewarmed and flow artery aligned.",
+    context: {
+      presenceTier: context.presenceTier || "idle",
+      band: context.band || "binary"
+    }
   });
 
-  if (trace) console.log("[BinaryPipeline] prewarm", packet);
+  if (trace && typeof console !== "undefined") {
+    console.log("[BinaryPipeline] prewarm", packet);
+  }
   return packet;
 }
 
 // ============================================================================
-//  ORGAN IMPLEMENTATION — v15‑IMMORTAL
+//  ORGAN IMPLEMENTATION — v16‑IMMORTAL‑EVO
 // ============================================================================
 export class AIBinaryPipeline {
   constructor(config = {}) {
@@ -140,13 +145,14 @@ export class AIBinaryPipeline {
     this.observers = [];
     this.reflexes = [];
 
-    // window-safe artery snapshot
     this.flowArtery = {
       lastThroughput: 1,
       lastPressure: 0,
       lastCost: 0,
       lastBudget: 1,
-      snapshot: () =>
+      lastPresenceTier: "idle",
+      lastBand: "binary",
+      snapshot: (extra = {}) =>
         Object.freeze({
           throughput: this.flowArtery.lastThroughput,
           pressure: this.flowArtery.lastPressure,
@@ -154,7 +160,10 @@ export class AIBinaryPipeline {
           budget: this.flowArtery.lastBudget,
           stageCount: this.stages.length,
           observerCount: this.observers.length,
-          reflexCount: this.reflexes.length
+          reflexCount: this.reflexes.length,
+          presenceTier: this.flowArtery.lastPresenceTier,
+          band: this.flowArtery.lastBand,
+          ...extra
         })
     };
   }
@@ -215,9 +224,9 @@ export class AIBinaryPipeline {
   }
 
   // ---------------------------------------------------------
-  //  FLOW ARTERY SNAPSHOT (INTERNAL + WINDOW-SAFE)
+  //  FLOW ARTERY SNAPSHOT
   // ---------------------------------------------------------
-  _computeFlowArtery() {
+  _computeFlowArtery(presenceTier = "idle", band = "binary") {
     const stageCount = this.stages.length;
     const observerCount = this.observers.length;
     const reflexCount = this.reflexes.length;
@@ -235,11 +244,12 @@ export class AIBinaryPipeline {
     const cost = this._computeFlowCost(pressure, throughput);
     const budget = this._computeFlowBudget(throughput, cost);
 
-    // update artery snapshot
     this.flowArtery.lastThroughput = throughput;
     this.flowArtery.lastPressure = pressure;
     this.flowArtery.lastCost = cost;
     this.flowArtery.lastBudget = budget;
+    this.flowArtery.lastPresenceTier = presenceTier;
+    this.flowArtery.lastBand = band;
 
     return {
       throughput,
@@ -256,13 +266,18 @@ export class AIBinaryPipeline {
 
       stageCount,
       observerCount,
-      reflexCount
+      reflexCount,
+      presenceTier,
+      band
     };
   }
 
-  getFlowArterySnapshot() {
-    const artery = this._computeFlowArtery();
-    return emitPipelinePacket("snapshot", { artery });
+  getFlowArterySnapshot(extra = {}) {
+    const artery = this._computeFlowArtery(
+      this.flowArtery.lastPresenceTier,
+      this.flowArtery.lastBand
+    );
+    return emitPipelinePacket("snapshot", { artery, ...extra });
   }
 
   // ---------------------------------------------------------
@@ -274,7 +289,10 @@ export class AIBinaryPipeline {
     }
     this.stages.push(fn);
 
-    const artery = this._computeFlowArtery();
+    const artery = this._computeFlowArtery(
+      this.flowArtery.lastPresenceTier,
+      this.flowArtery.lastBand
+    );
     this._trace("addStage", { totalStages: this.stages.length, artery });
     emitPipelinePacket("stage-added", {
       pipelineId: this.id,
@@ -288,7 +306,10 @@ export class AIBinaryPipeline {
     }
     this.observers.push(fn);
 
-    const artery = this._computeFlowArtery();
+    const artery = this._computeFlowArtery(
+      this.flowArtery.lastPresenceTier,
+      this.flowArtery.lastBand
+    );
     this._trace("addObserver", {
       totalObservers: this.observers.length,
       artery
@@ -305,7 +326,10 @@ export class AIBinaryPipeline {
     }
     this.reflexes.push(fn);
 
-    const artery = this._computeFlowArtery();
+    const artery = this._computeFlowArtery(
+      this.flowArtery.lastPresenceTier,
+      this.flowArtery.lastBand
+    );
     this._trace("addReflex", {
       totalReflexes: this.reflexes.length,
       artery
@@ -319,10 +343,13 @@ export class AIBinaryPipeline {
   // ---------------------------------------------------------
   //  PIPELINE EXECUTION
   // ---------------------------------------------------------
-  run(inputBinary) {
+  run(inputBinary, context = {}) {
     this._assertBinary(inputBinary);
 
-    const artery = this._computeFlowArtery();
+    const presenceTier = context.presenceTier || "idle";
+    const band = context.band || "binary";
+
+    const artery = this._computeFlowArtery(presenceTier, band);
     this._trace("run:start", { bitLength: inputBinary.length, artery });
 
     emitPipelinePacket("run-start", {
@@ -343,7 +370,9 @@ export class AIBinaryPipeline {
         obs({
           stageIndex: i,
           input: current,
-          output
+          output,
+          presenceTier,
+          band
         });
       }
 
@@ -364,7 +393,7 @@ export class AIBinaryPipeline {
     }
 
     for (const reflex of this.reflexes) {
-      reflex(current);
+      reflex(current, { presenceTier, band });
     }
 
     this._trace("run:end", { outputBits: current.length });
@@ -393,7 +422,7 @@ export class AIBinaryPipeline {
 }
 
 // ============================================================================
-//  FACTORY — v15‑IMMORTAL
+//  FACTORY — v16‑IMMORTAL‑EVO
 // ============================================================================
 export function createAIBinaryPipeline(config = {}) {
   return new AIBinaryPipeline(config);

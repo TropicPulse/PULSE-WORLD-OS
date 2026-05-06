@@ -43,7 +43,7 @@ AI_EXPERIENCE_META = {
 */
 
 import { aiToneEngine } from "./aiToneEngine.js";
-import { aiPersonalityEngine } from "./aiPersonalityEngine.js";
+import { aiPersonalityEngine } from "./aiPersonalityEngine-v16.js";
 import { aiIdentityCore } from "./aiIdentityCore.js";
 
 export const aiToneRouter = {

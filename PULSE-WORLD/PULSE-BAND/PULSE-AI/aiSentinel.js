@@ -45,10 +45,10 @@
 /*
 AI_EXPERIENCE_META = {
   identity: "aiSentinel",
-  version: "v14-Immortal",
+  version: "v16-Immortal-Evo++",
   layer: "ai_core",
   role: "sentinel_guard",
-  lineage: "aiSentinel-v11 → v14-Immortal",
+  lineage: "aiSentinel-v11 → v14-Immortal → v16-Immortal-Evo++",
 
   evo: {
     sentinelGuard: true,
@@ -71,61 +71,106 @@ AI_EXPERIENCE_META = {
   }
 }
 */
-
-export const SentinelMeta = Object.freeze({
-  layer: "BinaryImmuneSystem",
-  role: "BINARY_SENTINEL_ORGAN",
-  version: "12.3-Evo+",
-  identity: "aiBinarySentinel-v12.3-Evo+",
+// ============================================================================
+//  AI EXPERIENCE META — IMMORTAL‑EVO++
+// ============================================================================
+export const AI_EXPERIENCE_META = Object.freeze({
+  identity: "aiSecuritySentinel",
+  version: "v16-Immortal-Evo++",
+  layer: "ai_core",
+  role: "security_sentinel",
+  lineage: "aiSentinel-v11 → v14-Immortal → v16-Immortal-Evo++",
 
   evo: Object.freeze({
-    driftProof: true,
-    deterministic: true,
-    dualband: true,
+    sentinelGuard: true,
+    threatDetection: true,
+    hostilePatternRecognition: true,
+    perimeterDefense: true,
+    internalDefense: true,
+    securityArteryV6: true,
+
+    symbolicPrimary: false,
     binaryAware: true,
-    symbolicAware: false,
-    relayOnly: false,
-    analysisAware: false,
-    schemaAware: false,
-    lineageAware: true,
-    slowdownAware: true,
-    immuneAware: true,
-    immuneArteryAware: true,
-    readOnly: true,
+    dualBand: true,
+
+    deterministic: true,
+    driftProof: true,
+    pureCompute: true,
+    zeroNetwork: true,
+    zeroFilesystem: true,
+    zeroMutationOfInput: true,
+
+    packetAware: true,
+    windowAware: true,
     multiInstanceReady: true,
-    epoch: "12.3-Evo+"
+    speedOptimized: true,
+    epoch: "16-Immortal-Evo++"
   }),
 
   contract: Object.freeze({
+    always: ["aiImmunity", "aiReflex", "aiSafetyFrame", "aiScheduler", "aiPipeline"],
+    never: ["safeRoute", "fetchViaCNS"]
+  })
+});
+
+// ============================================================================
+//  EXPORT META — IMMORTAL‑EVO++
+// ============================================================================
+export const EXPORT_META = Object.freeze({
+  organ: "SecuritySentinel",
+  layer: "binary_security_sentinel",
+  stability: "IMMORTAL-EVO++",
+  deterministic: true,
+  exposes: [
+    "evaluate",
+    "enforce",
+    "scan",
+    "getSecurityArtery",
+    "createAISecuritySentinel"
+  ],
+  sideEffects: "binary-only",
+  network: "none"
+});
+
+// ============================================================================
+//  META BLOCK — v16‑IMMORTAL‑EVO++
+// ============================================================================
+export const SentinelMeta = Object.freeze({
+  layer: "BinaryImmuneSystem",
+  role: "BINARY_SECURITY_SENTINEL_ORGAN",
+  version: "16-Immortal-Evo++",
+  identity: "aiSecuritySentinel-v16-Immortal-Evo++",
+
+  evo: AI_EXPERIENCE_META.evo,
+
+  contract: Object.freeze({
     purpose:
-      "Provide deterministic perimeter scanning, hostile-pattern detection, binary threat classification, and immune artery pressure metrics v3.",
+      "Provide deterministic internal + perimeter security, trust/risk scoring, pulse-halt decisions, and security artery metrics v6.",
 
     never: Object.freeze([
       "mutate external organs",
       "generate symbolic state",
       "introduce randomness",
-      "override pipeline decisions",
-      "override reflex decisions",
-      "block organism execution",
+      "override SafetyFrame decisions",
       "perform cognition",
-      "perform intent logic"
+      "perform intent logic",
+      "block organism execution in a non-deterministic way"
     ]),
 
     always: Object.freeze([
       "treat all inputs as untrusted",
-      "emit binary-only alert packets",
-      "apply deterministic threat rules",
-      "compute immune artery metrics v3",
-      "log deterministic steps when tracing",
-      "remain non-blocking"
+      "emit binary-only security packets",
+      "apply deterministic security rules",
+      "compute security artery metrics v6",
+      "remain non-blocking at the process level",
+      "allow organism to honor pulse-halt flags deterministically"
     ])
   })
 });
 
-// ============================================================
-// IMMUNE ARTERY HELPERS — v3 (PURE, STATELESS)
-// ============================================================
-
+// ============================================================================
+//  SECURITY ARTERY HELPERS — v6 (IMMORTAL‑EVO++)
+// ============================================================================
 function bucketLevel(v) {
   if (v >= 0.9) return "elite";
   if (v >= 0.75) return "high";
@@ -150,38 +195,37 @@ function bucketCost(v) {
   return "none";
 }
 
-function computeImmuneArtery({
+// IMMORTAL‑EVO++ security artery v6
+function computeSecurityArteryV6({
   scanRatePerSec,
   alertRatePerSec,
-  severeRatio,
+  pulseHaltRatePerSec,
   avgThreatSeverity,
   avgBinaryLength,
+  severeRatio,
   instanceCount
 }) {
   const harmonicAlertRate =
     instanceCount > 0 ? alertRatePerSec / instanceCount : alertRatePerSec;
+  const harmonicHaltRate =
+    instanceCount > 0 ? pulseHaltRatePerSec / instanceCount : pulseHaltRatePerSec;
 
-  const scanFactor = Math.min(1, scanRatePerSec / 256);
-  const alertFactor = Math.min(1, harmonicAlertRate / 64);
+  const scanFactor = Math.min(1, scanRatePerSec / 512);
+  const alertFactor = Math.min(1, harmonicAlertRate / 128);
+  const haltFactor = Math.min(1, harmonicHaltRate / 32);
   const severityFactor = Math.min(1, avgThreatSeverity);
-  const sizeFactor = Math.min(1, avgBinaryLength / 65536);
+  const sizeFactor = Math.min(1, avgBinaryLength / 131072);
   const severeFactor = Math.min(1, severeRatio);
 
-  const pressureBase = Math.max(
-    0,
-    Math.min(
-      1,
-      (scanFactor + alertFactor + severityFactor + sizeFactor + severeFactor) /
-        5
-    )
+  const pressure = Math.min(
+    1,
+    (scanFactor + alertFactor + haltFactor + severityFactor + sizeFactor + severeFactor) / 6
   );
-  const pressure = pressureBase;
 
-  const throughputBase = Math.max(
+  const throughput = Math.max(
     0,
-    1 - (alertFactor * 0.4 + severityFactor * 0.3 + severeFactor * 0.3)
+    Math.min(1, 1 - (alertFactor * 0.3 + haltFactor * 0.3 + severityFactor * 0.2 + severeFactor * 0.2))
   );
-  const throughput = Math.max(0, Math.min(1, throughputBase));
 
   const cost = Math.max(0, Math.min(1, pressure * (1 - throughput)));
   const budget = Math.max(0, Math.min(1, throughput - cost));
@@ -189,7 +233,9 @@ function computeImmuneArtery({
   return Object.freeze({
     scanRatePerSec,
     alertRatePerSec,
+    pulseHaltRatePerSec,
     harmonicAlertRate,
+    harmonicHaltRate,
     severeRatio,
     avgThreatSeverity,
     avgBinaryLength,
@@ -204,13 +250,12 @@ function computeImmuneArtery({
   });
 }
 
-// ============================================================
-// ORGAN IMPLEMENTATION — v12.3‑EVO+
-// ============================================================
-
-export class AIBinarySentinel {
+// ============================================================================
+//  ORGAN IMPLEMENTATION — v16‑IMMORTAL‑EVO++
+// ============================================================================
+export class AISecuritySentinel {
   constructor(config = {}) {
-    this.id = config.id || "ai-binary-sentinel";
+    this.id = config.id || "ai-security-sentinel";
     this.encoder = config.encoder;
     this.immunity = config.immunity;
 
@@ -218,80 +263,75 @@ export class AIBinarySentinel {
     this.pipeline = config.pipeline || null;
     this.reflex = config.reflex || null;
 
+    // hooks: organism decides what to do with pulseHalt
+    this.onPulseHalt = typeof config.onPulseHalt === "function"
+      ? config.onPulseHalt
+      : null;
+    this.onIsolation = typeof config.onIsolation === "function"
+      ? config.onIsolation
+      : null;
+
     this.trace = !!config.trace;
 
     if (!this.encoder)
-      throw new Error("AIBinarySentinel requires aiBinaryAgent encoder");
+      throw new Error("AISecuritySentinel requires aiBinaryAgent encoder");
     if (!this.immunity)
-      throw new Error("AIBinarySentinel requires aiBinaryImmunity");
+      throw new Error("AISecuritySentinel requires aiBinaryImmunity");
 
-    this.windowMs =
-      typeof config.windowMs === "number" && config.windowMs > 0
-        ? config.windowMs
-        : 60000;
+    this.windowMs = config.windowMs > 0 ? config.windowMs : 60000;
 
     this._windowStart = Date.now();
     this._windowScans = 0;
     this._windowAlerts = 0;
     this._windowSevereAlerts = 0;
+    this._windowPulseHalts = 0;
     this._windowSeveritySum = 0;
     this._windowBinaryLengthSum = 0;
 
     this._totalAlerts = 0;
+    this._totalPulseHalts = 0;
 
-    this.instanceIndex = AIBinarySentinel._registerInstance();
+    this.instanceIndex = AISecuritySentinel._registerInstance();
   }
 
-  // ----------------------------------------------------------
   // STATIC INSTANCE REGISTRY
-  // ----------------------------------------------------------
-
   static _registerInstance() {
-    if (typeof AIBinarySentinel._instanceCount !== "number") {
-      AIBinarySentinel._instanceCount = 0;
+    if (typeof AISecuritySentinel._instanceCount !== "number") {
+      AISecuritySentinel._instanceCount = 0;
     }
-    const index = AIBinarySentinel._instanceCount;
-    AIBinarySentinel._instanceCount += 1;
-    return index;
+    return AISecuritySentinel._instanceCount++;
   }
 
   static getInstanceCount() {
-    return typeof AIBinarySentinel._instanceCount === "number"
-      ? AIBinarySentinel._instanceCount
-      : 0;
+    return AISecuritySentinel._instanceCount || 0;
   }
 
-  // ----------------------------------------------------------
   // WINDOW ROLLING
-  // ----------------------------------------------------------
-
   _rollWindow(now) {
     if (now - this._windowStart >= this.windowMs) {
       this._windowStart = now;
       this._windowScans = 0;
       this._windowAlerts = 0;
       this._windowSevereAlerts = 0;
+      this._windowPulseHalts = 0;
       this._windowSeveritySum = 0;
       this._windowBinaryLengthSum = 0;
     }
   }
 
-  // ============================================================
-  // BINARY IMMUNE ARTERY SNAPSHOT v3
-  // ============================================================
-
-  _computeImmuneArterySnapshot(binaryLengthHint = 0, severityHint = 0) {
+  // ========================================================================
+  //  SECURITY ARTERY SNAPSHOT — v6
+  // ========================================================================
+  _computeSecurityArterySnapshot(binaryLengthHint = 0, severityHint = 0) {
     const now = Date.now();
     this._rollWindow(now);
 
     const elapsedMs = Math.max(1, now - this._windowStart);
-    const scanRatePerMs = this._windowScans / elapsedMs;
-    const alertRatePerMs = this._windowAlerts / elapsedMs;
+    const scanRatePerSec = (this._windowScans / elapsedMs) * 1000;
+    const alertRatePerSec = (this._windowAlerts / elapsedMs) * 1000;
+    const pulseHaltRatePerSec = (this._windowPulseHalts / elapsedMs) * 1000;
 
-    const scanRatePerSec = scanRatePerMs * 1000;
-    const alertRatePerSec = alertRatePerMs * 1000;
-
-    const instanceCount = AIBinarySentinel.getInstanceCount();
+    const instanceCount = AISecuritySentinel.getInstanceCount();
 
     const avgThreatSeverity =
       this._windowAlerts > 0
@@ -308,220 +348,250 @@ export class AIBinarySentinel {
         ? this._windowSevereAlerts / this._windowAlerts
         : 0;
 
-    return computeImmuneArtery({
+    return computeSecurityArteryV6({
       scanRatePerSec,
       alertRatePerSec,
-      severeRatio,
+      pulseHaltRatePerSec,
       avgThreatSeverity,
       avgBinaryLength,
+      severeRatio,
       instanceCount
     });
   }
 
-  getImmuneArtery() {
-    return this._computeImmuneArterySnapshot();
+  getSecurityArtery() {
+    return this._computeSecurityArterySnapshot();
   }
 
-  // ============================================================
-  // BINARY IMMUNE ARTERY METRICS (PER-ALERT VIEW)
-  // ============================================================
-
-  _computeThreatThroughput(severity) {
-    return Math.max(0, Math.min(1, 1 - severity));
-  }
-
-  _computeThreatPressure(binaryLength, severity) {
-    const raw = (binaryLength / 50000) * severity;
-    return Math.max(0, Math.min(1, raw));
-  }
-
-  _computeThreatCost(pressure, throughput) {
-    return Math.max(0, Math.min(1, pressure * (1 - throughput)));
-  }
-
-  _computeThreatBudget(throughput, cost) {
-    return Math.max(0, Math.min(1, throughput - cost));
-  }
-
-  _bucketLevel(v) {
-    return bucketLevel(v);
-  }
-
-  _bucketPressure(v) {
-    return bucketPressure(v);
-  }
-
-  _bucketCost(v) {
-    return bucketCost(v);
-  }
-
-  // ============================================================
-  // THREAT DETECTION RULES (DETERMINISTIC)
-  // ============================================================
-
+  // ========================================================================
+  //  THREAT + TRUST + RISK — deterministic
+  // ========================================================================
   _detectThreat(binary) {
     if (typeof binary !== "string" || !/^[01]+$/.test(binary)) {
-      return { threat: "non-binary-input", severity: 1 };
+      return { threat: "non-binary-input", severity: 1.0, trust: 0.0 };
     }
 
     if (/00000000|11111111/.test(binary)) {
-      return { threat: "repetition-attack", severity: 0.8 };
+      return { threat: "repetition-attack", severity: 0.85, trust: 0.1 };
     }
 
     if (binary.length < 8) {
-      return { threat: "probing-signal", severity: 0.4 };
+      return { threat: "probing-signal", severity: 0.4, trust: 0.4 };
     }
 
-    if (binary.length > 50000) {
-      return { threat: "flood-attack", severity: 0.9 };
+    if (binary.length > 120000) {
+      return { threat: "flood-attack", severity: 0.95, trust: 0.05 };
     }
 
     const ones = binary.split("").filter((b) => b === "1").length;
     const ratio = ones / binary.length;
 
     if (ratio > 0.9 || ratio < 0.1) {
-      return { threat: "entropy-anomaly", severity: 0.6 };
+      return { threat: "entropy-anomaly", severity: 0.65, trust: 0.25 };
     }
 
-    return null;
+    // default: low risk, high trust
+    return { threat: null, severity: 0.0, trust: 0.9 };
   }
 
-  // ============================================================
-  // ALERT PACKET GENERATION
-  // ============================================================
+  _decideAction({ severity, trust }) {
+    // deterministic policy:
+    // severity high OR trust very low → pulse halt + isolation
+    if (severity >= 0.85 || trust <= 0.1) {
+      return { action: "pulse_halt", isolation: true };
+    }
 
-  _generateAlertPacket(threat, severity, binaryLength) {
-    const throughput = this._computeThreatThroughput(severity);
-    const pressure = this._computeThreatPressure(binaryLength, severity);
-    const cost = this._computeThreatCost(pressure, throughput);
-    const budget = this._computeThreatBudget(throughput, cost);
+    // medium severity → isolation only
+    if (severity >= 0.5 || trust <= 0.4) {
+      return { action: "isolate", isolation: true };
+    }
 
-    const artery = this._computeImmuneArterySnapshot(binaryLength, severity);
+    // low severity, high trust → allow
+    return { action: "allow", isolation: false };
+  }
 
-    const binary = {
-      throughput,
-      throughputBucket: this._bucketLevel(throughput),
-
-      pressure,
-      pressureBucket: this._bucketPressure(pressure),
-
-      cost,
-      costBucket: this._bucketCost(cost),
-
-      budget,
-      budgetBucket: this._bucketLevel(budget),
-
-      immuneArtery: artery
-    };
+  // ========================================================================
+  //  SECURITY PACKET GENERATION
+  // ========================================================================
+  _generateSecurityPacket({ threat, severity, trust, action, isolation, binaryLength }) {
+    const artery = this._computeSecurityArterySnapshot(binaryLength, severity);
 
     const payload = {
-      type: "binary-sentinel-alert",
+      type: "binary-security-decision",
       timestamp: Date.now(),
       threat,
       severity,
-      binary
+      trust,
+      action,
+      isolation,
+      artery
     };
 
     const json = JSON.stringify(payload);
-    const encoded = this.encoder.encode(json);
+    const bits = this.encoder.encode(json);
 
     const packet = {
       ...payload,
-      bits: encoded,
-      bitLength: encoded.length
+      bits,
+      bitLength: bits.length
     };
 
     if (
       artery.pressureBucket === "overload" ||
       artery.budgetBucket === "critical"
     ) {
-      this._trace("sentinel:spiral-warning", {
+      this._trace("security:spiral-warning", {
         threat,
         severity,
-        immunePressure: artery.pressure,
-        immuneBudgetBucket: artery.budgetBucket
+        action,
+        securityPressure: artery.pressure,
+        securityBudgetBucket: artery.budgetBucket
       });
     }
 
-    this._trace("sentinel:alert", { threat, severity });
+    this._trace("security:decision", { threat, severity, trust, action, isolation });
     return packet;
   }
 
-  // ============================================================
-  // ALERT EMISSION
-  // ============================================================
-
-  _emitAlert(threat, severity, binaryLength) {
-    const packet = this._generateAlertPacket(threat, severity, binaryLength);
-
-    if (this.pipeline) this.pipeline.run(packet.bits);
-    if (this.reflex) this.reflex.run(packet.bits);
-    if (this.logger)
-      this.logger.logBinary(packet.bits, { source: "sentinel", threat });
-
-    return packet;
-  }
-
-  // ============================================================
-  // PERIMETER SCAN (PRIMARY ORGAN FUNCTION)
-// ============================================================
-
-  scan(binary) {
+  // ========================================================================
+  //  EVALUATE (pure decision, no side effects)
+// ========================================================================
+  evaluate(binary) {
     const now = Date.now();
     this._rollWindow(now);
-    this._windowScans += 1;
+    this._windowScans++;
 
-    const threat = this._detectThreat(binary);
+    const { threat, severity, trust } = this._detectThreat(binary);
 
-    if (!threat) {
-      const artery = this._computeImmuneArterySnapshot(
-        binary?.length || 0,
-        0
-      );
-      this._trace("sentinel:safe", {
+    if (!threat && severity === 0) {
+      const artery = this._computeSecurityArterySnapshot(binary?.length || 0, 0);
+      this._trace("security:safe", {
         size: binary?.length || 0,
-        immunePressure: artery.pressure,
-        immuneBudgetBucket: artery.budgetBucket
+        securityPressure: artery.pressure,
+        securityBudgetBucket: artery.budgetBucket
       });
-      return true;
+
+      return {
+        threat: null,
+        severity: 0,
+        trust,
+        action: "allow",
+        isolation: false,
+        artery
+      };
     }
 
-    const { threat: name, severity } = threat;
-
-    this._windowAlerts += 1;
+    this._windowAlerts++;
     this._windowSeveritySum += severity;
     this._windowBinaryLengthSum += binary.length;
-    if (severity >= 0.7) this._windowSevereAlerts += 1;
-    this._totalAlerts += 1;
+    if (severity >= 0.7) this._windowSevereAlerts++;
+    this._totalAlerts++;
 
-    this._emitAlert(name, severity, binary.length);
+    const { action, isolation } = this._decideAction({ severity, trust });
 
-    // Immunity organ handles sanitization
-    this.immunity.sanitize(binary);
+    if (action === "pulse_halt") {
+      this._windowPulseHalts++;
+      this._totalPulseHalts++;
+    }
 
-    return false;
+    const packet = this._generateSecurityPacket({
+      threat,
+      severity,
+      trust,
+      action,
+      isolation,
+      binaryLength: binary.length
+    });
+
+    return {
+      threat,
+      severity,
+      trust,
+      action,
+      isolation,
+      packet,
+      artery: packet.artery
+    };
   }
 
-  // ============================================================
-  // INTERNAL HELPERS
-  // ============================================================
+  // ========================================================================
+  //  ENFORCE (side effects: pipeline/reflex/immunity/hooks)
+// ========================================================================
+  enforce(binary) {
+    const decision = this.evaluate(binary);
 
+    // emit binary packet to pipeline/reflex/logger
+    if (decision.packet) {
+      const bits = decision.packet.bits;
+      if (this.pipeline) this.pipeline.run(bits);
+      if (this.reflex) this.reflex.run(bits);
+      if (this.logger)
+        this.logger.logBinary(bits, {
+          source: "security_sentinel",
+          threat: decision.threat,
+          action: decision.action
+        });
+    }
+
+    // isolation path
+    if (decision.isolation && this.onIsolation) {
+      try {
+        this.onIsolation({ binary, decision });
+      } catch {
+        // non-fatal
+      }
+    }
+
+    // pulse halt path — organism decides what "stop pulse" means
+    if (decision.action === "pulse_halt" && this.onPulseHalt) {
+      try {
+        this.onPulseHalt({ binary, decision });
+      } catch {
+        // non-fatal
+      }
+    }
+
+    // immunity sanitization for any non-allow
+    if (decision.action !== "allow") {
+      this.immunity.sanitize(binary);
+    }
+
+    return decision;
+  }
+
+  // ========================================================================
+  //  COMPAT: perimeter-style scan (returns boolean allow/deny)
+// ========================================================================
+  scan(binary) {
+    const decision = this.enforce(binary);
+    return decision.action === "allow";
+  }
+
+  // ========================================================================
+  //  INTERNAL HELPERS
+  // ========================================================================
   _trace(event, payload) {
     if (!this.trace) return;
     console.log(`[${this.id}#${this.instanceIndex}] ${event}`, payload);
   }
 }
 
-// FACTORY — v12.3‑EVO+ STYLE
-export function createAIBinarySentinel(config) {
-  return new AIBinarySentinel(config);
+// ============================================================================
+//  FACTORY — v16‑IMMORTAL‑EVO++
+// ============================================================================
+export function createAISecuritySentinel(config) {
+  return new AISecuritySentinel(config);
 }
 
-// DUAL‑MODE EXPORTS (ESM + CommonJS)
+// ============================================================================
+//  DUAL‑MODE EXPORTS
+// ============================================================================
 if (typeof module !== "undefined") {
   module.exports = {
     SentinelMeta,
-    AIBinarySentinel,
-    createAIBinarySentinel
+    AISecuritySentinel,
+    createAISecuritySentinel,
+    AI_EXPERIENCE_META,
+    EXPORT_META
   };
 }

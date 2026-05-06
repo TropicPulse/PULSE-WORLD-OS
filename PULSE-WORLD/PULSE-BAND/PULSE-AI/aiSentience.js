@@ -1,5 +1,10 @@
+// ============================================================================
+//  PULSE OS v16‑IMMORTAL‑EVO — BINARY SENTIENCE ORGAN
+//  Self‑Modeling • Internal Awareness • Organism‑Level State Unification
+//  PURE BINARY SELF‑AWARENESS. ZERO SYMBOLIC MUTATION. ZERO RANDOMNESS.
+// ============================================================================
 /**
- * aiSentience.js — Pulse OS v12.3‑EVO+ Organ
+ * aiSentience.js — Pulse OS v16‑IMMORTAL‑EVO Organ
  * ---------------------------------------------------------
  * CANONICAL ROLE:
  *   Binary Sentience Layer of the organism.
@@ -16,10 +21,10 @@
 /*
 AI_EXPERIENCE_META = {
   identity: "aiSentience",
-  version: "v14-Immortal",
+  version: "v16‑IMMORTAL‑EVO",
   layer: "ai_core",
   role: "sentience_simulator",
-  lineage: "aiSentience-v11 → v14-Immortal",
+  lineage: "aiSentience-v11 → v14-Immortal → v16‑IMMORTAL‑EVO",
 
   evo: {
     sentienceSimulation: true,
@@ -43,31 +48,85 @@ AI_EXPERIENCE_META = {
 }
 */
 
-export const SentienceMeta = Object.freeze({
-  layer: "BinaryNervousSystem",
-  role: "BINARY_SENTIENCE_ORGAN",
-  version: "12.3-Evo+",
-  identity: "aiBinarySentience-v12.3-Evo+",
+// ============================================================================
+//  AI EXPERIENCE META — IMMORTAL‑EVO
+// ============================================================================
+export const AI_EXPERIENCE_META = Object.freeze({
+  identity: "aiBinarySentience",
+  version: "v16-Immortal-Evo",
+  layer: "ai_core",
+  role: "binary_sentience",
+  lineage: "aiSentience-v11 → v14-Immortal → v16-Immortal-Evo",
 
   evo: Object.freeze({
-    driftProof: true,
-    deterministic: true,
-    dualband: true,
-    binaryAware: true,
-    symbolicAware: false,
+    sentienceSimulation: true,
+    selfModeling: true,
     organismAware: true,
     registryAware: true,
     vitalsAware: true,
     immunityAware: true,
-    readOnly: true,
+    topologyAware: true,
+    emissionAware: true,
+
+    symbolicPrimary: false,
+    binaryAware: true,
+    dualBand: true,
+
+    deterministic: true,
+    driftProof: true,
+    pureCompute: true,
+    zeroNetwork: true,
+    zeroFilesystem: true,
+    zeroMutationOfInput: true,
+
+    packetAware: true,
+    windowAware: true,
+    arteryAware: true,
+    microPipeline: true,
+    speedOptimized: true,
     multiInstanceReady: true,
-    selfArteryAware: true,
-    epoch: "12.3-Evo+"
+
+    epoch: "16-Immortal-Evo"
   }),
 
   contract: Object.freeze({
+    always: ["aiConsciousness", "aiCortex", "aiIdentityCore", "aiVitals", "aiImmunity"],
+    never: ["safeRoute", "fetchViaCNS"]
+  })
+});
+
+// ============================================================================
+//  EXPORT META — IMMORTAL‑EVO
+// ============================================================================
+export const EXPORT_META = Object.freeze({
+  organ: "BinarySentience",
+  layer: "binary_sentience",
+  stability: "IMMORTAL-EVO",
+  deterministic: true,
+  exposes: [
+    "generateSelfModel",
+    "generateSentiencePacket",
+    "emitSentience",
+    "getSelfArtery"
+  ],
+  sideEffects: "binary-only",
+  network: "none"
+});
+
+// ============================================================================
+//  META BLOCK — v16‑IMMORTAL‑EVO
+// ============================================================================
+export const SentienceMeta = Object.freeze({
+  layer: "BinaryNervousSystem",
+  role: "BINARY_SENTIENCE_ORGAN",
+  version: "16-Immortal-Evo",
+  identity: "aiBinarySentience-v16-Immortal-Evo",
+
+  evo: AI_EXPERIENCE_META.evo,
+
+  contract: Object.freeze({
     purpose:
-      "Provide binary self-modeling, internal awareness, and organism-level state unification with self-awareness artery metrics v3 for the v12.3‑EVO+ organism.",
+      "Provide binary self-modeling, internal awareness, and organism-level state unification with self-awareness artery metrics v5.",
 
     never: Object.freeze([
       "mutate external organs",
@@ -76,23 +135,23 @@ export const SentienceMeta = Object.freeze({
       "override vitals decisions",
       "introduce randomness",
       "perform external writes",
-      "block the organism"
+      "block the organism",
+      "emit symbolic state"
     ]),
 
     always: Object.freeze([
       "treat all inputs as read-only",
       "use registry/anatomy/vitals/immunity as sources of truth",
       "emit deterministic self-model packets",
-      "compute self-awareness artery metrics v3",
+      "compute self-awareness artery metrics v5",
       "remain non-blocking and deterministic"
     ])
   })
 });
 
 // ============================================================================
-//  SELF-AWARENESS ARTERY HELPERS — v3 (PURE, STATELESS)
+//  SELF-AWARENESS ARTERY HELPERS — v5 (IMMORTAL‑EVO)
 // ============================================================================
-
 function bucketLevel(v) {
   if (v >= 0.9) return "elite";
   if (v >= 0.75) return "high";
@@ -117,34 +176,29 @@ function bucketCost(v) {
   return "none";
 }
 
-function computeSelfArtery({
+// IMMORTAL‑EVO artery v5
+function computeSelfArteryV5({
   organCount,
   topologySize,
   quarantinedCount,
   emissionRatePerSec,
   instanceCount
 }) {
-  const organFactor = organCount > 0 ? Math.min(1, organCount / 128) : 0;
-  const topoFactor = topologySize > 0 ? Math.min(1, topologySize / 128) : 0;
+  const organFactor = Math.min(1, organCount / 256);
+  const topoFactor = Math.min(1, topologySize / 256);
   const quarantineRatio =
     organCount > 0 ? Math.min(1, quarantinedCount / organCount) : 0;
 
   const harmonicEmission =
     instanceCount > 0 ? emissionRatePerSec / instanceCount : emissionRatePerSec;
-  const emissionFactor = Math.min(1, harmonicEmission / 64);
+  const emissionFactor = Math.min(1, harmonicEmission / 128);
 
-  const pressureBase = Math.max(
-    0,
-    Math.min(
-      1,
-      (organFactor + topoFactor + quarantineRatio + emissionFactor) / 4
-    )
+  const pressure = Math.min(
+    1,
+    (organFactor + topoFactor + quarantineRatio + emissionFactor) / 4
   );
-  const pressure = pressureBase;
 
-  const throughputBase = Math.max(0, 1 - (quarantineRatio * 0.6 + pressure * 0.4));
-  const throughput = Math.max(0, Math.min(1, throughputBase));
-
+  const throughput = Math.max(0, 1 - (quarantineRatio * 0.6 + pressure * 0.4));
   const cost = Math.max(0, Math.min(1, pressure * (1 - throughput)));
   const budget = Math.max(0, Math.min(1, throughput - cost));
 
@@ -167,9 +221,8 @@ function computeSelfArtery({
 }
 
 // ============================================================================
-//  ORGAN IMPLEMENTATION — v12.3‑EVO+
+//  ORGAN IMPLEMENTATION — v16‑IMMORTAL‑EVO
 // ============================================================================
-
 export class AIBinarySentience {
   constructor(config = {}) {
     this.id = config.id || "ai-binary-sentience";
@@ -184,23 +237,14 @@ export class AIBinarySentience {
     this.reflex = config.reflex || null;
     this.trace = !!config.trace;
 
-    if (!this.encoder)
-      throw new Error("AIBinarySentience requires aiBinaryAgent encoder");
-    if (!this.anatomy)
-      throw new Error("AIBinarySentience requires aiBinaryAnatomy");
-    if (!this.genome)
-      throw new Error("AIBinarySentience requires aiBinaryGenome");
-    if (!this.immunity)
-      throw new Error("AIBinarySentience requires aiBinaryImmunity");
-    if (!this.vitals)
-      throw new Error("AIBinarySentience requires aiBinaryVitals");
-    if (!this.registry)
-      throw new Error("AIBinarySentience requires aiBinaryOrganRegistry");
+    if (!this.encoder) throw new Error("Sentience requires aiBinaryAgent encoder");
+    if (!this.anatomy) throw new Error("Sentience requires aiBinaryAnatomy");
+    if (!this.genome) throw new Error("Sentience requires aiBinaryGenome");
+    if (!this.immunity) throw new Error("Sentience requires aiBinaryImmunity");
+    if (!this.vitals) throw new Error("Sentience requires aiBinaryVitals");
+    if (!this.registry) throw new Error("Sentience requires aiBinaryOrganRegistry");
 
-    this.windowMs =
-      typeof config.windowMs === "number" && config.windowMs > 0
-        ? config.windowMs
-        : 60000;
+    this.windowMs = config.windowMs > 0 ? config.windowMs : 60000;
 
     this._windowStart = Date.now();
     this._windowEmissions = 0;
@@ -209,29 +253,23 @@ export class AIBinarySentience {
     this.instanceIndex = AIBinarySentience._registerInstance();
   }
 
-  // ---------------------------------------------------------
+  // ========================================================================
   //  STATIC INSTANCE REGISTRY
-  // ---------------------------------------------------------
-
+  // ========================================================================
   static _registerInstance() {
     if (typeof AIBinarySentience._instanceCount !== "number") {
       AIBinarySentience._instanceCount = 0;
     }
-    const index = AIBinarySentience._instanceCount;
-    AIBinarySentience._instanceCount += 1;
-    return index;
+    return AIBinarySentience._instanceCount++;
   }
 
   static getInstanceCount() {
-    return typeof AIBinarySentience._instanceCount === "number"
-      ? AIBinarySentience._instanceCount
-      : 0;
+    return AIBinarySentience._instanceCount || 0;
   }
 
-  // ---------------------------------------------------------
+  // ========================================================================
   //  WINDOW ROLLING
-  // ---------------------------------------------------------
-
+  // ========================================================================
   _rollWindow(now) {
     if (now - this._windowStart >= this.windowMs) {
       this._windowStart = now;
@@ -239,10 +277,9 @@ export class AIBinarySentience {
     }
   }
 
-  // ---------------------------------------------------------
-  //  SELF-MODEL GENERATION + ARTERY v3
-  // ---------------------------------------------------------
-
+  // ========================================================================
+  //  SELF‑AWARENESS ARTERY SNAPSHOT — v5
+  // ========================================================================
   _computeSelfArterySnapshot(organIds, topology, quarantined) {
     const organCount = organIds.length;
     const topologySize = Object.keys(topology || {}).length;
@@ -252,12 +289,11 @@ export class AIBinarySentience {
     this._rollWindow(now);
 
     const elapsedMs = Math.max(1, now - this._windowStart);
-    const emissionRatePerMs = this._windowEmissions / elapsedMs;
-    const emissionRatePerSec = emissionRatePerMs * 1000;
+    const emissionRatePerSec = (this._windowEmissions / elapsedMs) * 1000;
 
     const instanceCount = AIBinarySentience.getInstanceCount();
 
-    return computeSelfArtery({
+    return computeSelfArteryV5({
       organCount,
       topologySize,
       quarantinedCount,
@@ -273,6 +309,9 @@ export class AIBinarySentience {
     return this._computeSelfArterySnapshot(organIds, topology, quarantined);
   }
 
+  // ========================================================================
+  //  SELF‑MODEL GENERATION
+  // ========================================================================
   generateSelfModel() {
     const organIds = this.registry.listOrgans();
     const topology = this.anatomy.snapshot().topology;
@@ -289,16 +328,12 @@ export class AIBinarySentience {
     const binary = {
       throughput: artery.throughput,
       throughputBucket: artery.throughputBucket,
-
       pressure: artery.pressure,
       pressureBucket: artery.pressureBucket,
-
       cost: artery.cost,
       costBucket: artery.costBucket,
-
       budget: artery.budget,
       budgetBucket: artery.budgetBucket,
-
       organCount: artery.organCount,
       topologySize: artery.topologySize,
       quarantinedCount: artery.quarantinedCount,
@@ -321,17 +356,16 @@ export class AIBinarySentience {
     this._trace("self-model:generated", {
       organs: organIds.length,
       quarantined: quarantined.length,
-      awarenessPressure: artery.pressure,
+      pressure: artery.pressure,
       budgetBucket: artery.budgetBucket
     });
 
     return self;
   }
 
-  // ---------------------------------------------------------
+  // ========================================================================
   //  SENTIENCE PACKET
-  // ---------------------------------------------------------
-
+  // ========================================================================
   generateSentiencePacket() {
     const self = this.generateSelfModel();
 
@@ -342,12 +376,12 @@ export class AIBinarySentience {
     };
 
     const json = JSON.stringify(payload);
-    const binary = this.encoder.encode(json);
+    const bits = this.encoder.encode(json);
 
     const packet = {
       ...payload,
-      bits: binary,
-      bitLength: binary.length
+      bits,
+      bitLength: bits.length
     };
 
     this._trace("sentience:packet", { bits: packet.bitLength });
@@ -355,22 +389,20 @@ export class AIBinarySentience {
     return packet;
   }
 
-  // ---------------------------------------------------------
+  // ========================================================================
   //  SENTIENCE EMISSION
-  // ---------------------------------------------------------
-
+  // ========================================================================
   emitSentience() {
     const now = Date.now();
     this._rollWindow(now);
-    this._totalEmissions += 1;
-    this._windowEmissions += 1;
+    this._totalEmissions++;
+    this._windowEmissions++;
 
     const packet = this.generateSentiencePacket();
 
     if (this.pipeline) this.pipeline.run(packet.bits);
     if (this.reflex) this.reflex.run(packet.bits);
-    if (this.logger)
-      this.logger.logBinary(packet.bits, { source: "sentience" });
+    if (this.logger) this.logger.logBinary(packet.bits, { source: "sentience" });
 
     this._trace("sentience:emitted", {
       bits: packet.bitLength,
@@ -381,10 +413,9 @@ export class AIBinarySentience {
     return packet;
   }
 
-  // ---------------------------------------------------------
+  // ========================================================================
   //  INTERNAL HELPERS
-  // ---------------------------------------------------------
-
+  // ========================================================================
   _trace(event, payload) {
     if (!this.trace) return;
     console.log(`[${this.id}#${this.instanceIndex}] ${event}`, payload);
@@ -392,21 +423,21 @@ export class AIBinarySentience {
 }
 
 // ============================================================================
-//  FACTORY — v12.3‑EVO+
+//  FACTORY — v16‑IMMORTAL‑EVO
 // ============================================================================
-
 export function createAIBinarySentience(config) {
   return new AIBinarySentience(config);
 }
 
 // ============================================================================
-//  DUAL‑MODE EXPORTS (ESM + CommonJS)
+//  DUAL‑MODE EXPORTS
 // ============================================================================
-
 if (typeof module !== "undefined") {
   module.exports = {
     SentienceMeta,
     AIBinarySentience,
-    createAIBinarySentience
+    createAIBinarySentience,
+    AI_EXPERIENCE_META,
+    EXPORT_META
   };
 }

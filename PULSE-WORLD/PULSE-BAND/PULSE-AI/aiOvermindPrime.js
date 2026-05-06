@@ -37,6 +37,9 @@ AI_EXPERIENCE_META = {
 
 import { PulseProofLogger } from "../../PULSE-UI/_BACKEND/PulseProofLogger.js";
 
+import { PulseOrganismMap } from "../PULSE-OS/PulseOrganismMap.js";
+import { PulseIQMap } from "../PULSE-OS/PulseIQMap.js";
+import { PulseIntentMap } from "../PULSE-OS/PulseIntentMap.js";
 // ============================================================================
 //  AI ORGANISM (v14.4 IMMORTAL-INTEL)
 // ============================================================================
@@ -76,9 +79,6 @@ import { readCoreMemoryEarn, writeCoreMemoryEarn} from "../PULSE-CORE/PulseCoreE
 
 import { readCoreMemorySend, writeCoreMemorySend} from "../PULSE-CORE/PulseCoreSendMemoryAdapter.js";
 
-import { PulseOrganismMap } from "../PULSE-OS/PulseOrganismMap.js";
-import { PulseIQMap } from "../PULSE-OS/PulseIQMap.js";
-import { PulseIntentMap } from "../PULSE-OS/PulseIntentMap.js";
 import { PulseUnderstanding } from "../../PULSE-UI/_BACKEND/PulseNetUnderstanding.js";
 import { PulseGovernor } from "../PULSE-OS/PulseOSGovernor.js";
 import { PulseVitalsMonitor } from "../../PULSE-UI/_BACKEND/PulseProofMonitor.js";
@@ -90,7 +90,7 @@ import { PulseBinaryTech } from "../PULSE-TECH/PulseBinaryTech-v16.js";
 import createBoundariesEngine from "./aiBoundariesEngine-v16.js";
 import createPermissionsEngine from "./aiPermissionsEngine-v16.js";
 import aiIdentityCore from "./aiIdentityCore.js";
-import aiPersonalityEngine from "./aiPersonalityEngine.js";
+import aiPersonalityEngine from "./aiPersonalityEngine-v16.js";
 
 // ———————————————————————————————
 // 2. CONTEXT + CORTEX
