@@ -118,7 +118,7 @@ AI_EXPERIENCE_META = {
 */
 
 
-import { corsHandler, pulseCors } from "./PulseCORS.js";
+import { corsHandler, pulseCors } from "../PULSE-X/PulseWorldTransport-v17.js";
 
 // ============================================================================
 //  ORGAN IDENTITY — v16.3‑IMMORTAL‑BRIDGE

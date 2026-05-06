@@ -47,12 +47,8 @@
 /* ============================================================================
    AI_EXPERIENCE_META — PulseEngineBlock-v16
    ----------------------------------------------------------------------------
-   This page is the ENGINE BLOCK for the entire motion subsystem.
-   It does NOT contain motion logic.
-   It loads:
-     • PulseMotionEngine-v16 (unified engine)
-     • A lane wrapper (ForwardMotion-v16.js or BackwardMotion-v16.js)
-     • UI organism organs (Memory, Code, Brain, Router, Impulse, Binary)
+   The ENGINE BLOCK for the entire motion subsystem.
+   Boots UI organism, loads PulseCompass-v16-IMMORTAL+, and prewarms all organs.
    ============================================================================ */
 const AI_EXPERIENCE_META = {
   identity: "PulseEngineBlock",
@@ -68,7 +64,8 @@ const AI_EXPERIENCE_META = {
     pureBootstrap: true,
     presenceAware: true,
     advantageAware: true,
-    triHeartAware: true
+    triHeartAware: true,
+    prewarmAware: true
   }
 };
 
@@ -76,14 +73,13 @@ const AI_EXPERIENCE_META = {
    PAGE_INDEX — PulseEngineBlock-v16
    ----------------------------------------------------------------------------
    PURPOSE:
-     The PulseEngineBlock is the root membrane for all motion lanes.
-     It boots the UI organism, loads the unified motion engine, and exposes
-     lane-specific wrappers to the global window.
+     Root membrane for all motion lanes.
+     Boots UI organism, loads PulseCompass-v16-IMMORTAL+, and exposes Motion API.
 
    RESPONSIBILITIES:
      • Load UI organs in correct v16 IMMORTAL order
-     • Load lane wrapper (ForwardMotion-v16 or BackwardMotion-v16)
-     • Prewarm the membrane
+     • Load PulseCompass-v16-IMMORTAL+ (lane orchestrator)
+     • Prewarm ALL organs (UI + Compass + lanes + DB)
      • Handle trust boundary (INSIDE / OUTSIDE)
      • Expose Motion API to window.PulseEngineBlock
 
@@ -95,7 +91,7 @@ const AI_EXPERIENCE_META = {
      • No direct engine manipulation
 
    NOTES:
-     This file must remain thin, deterministic, and drift-proof.
+     Must remain thin, deterministic, drift-proof.
    ============================================================================ */
 
 /* ============================================================================
@@ -124,11 +120,7 @@ import { createPulseEvolutionaryRouter } from "../../PULSE-UI/PulseEvolutionaryR
 import { createPulseEvolutionaryBinary } from "../../PULSE-UI/PulseEvolutionaryBinary.js";
 
 /* ============================================================================
-   4. MOTION WRAPPER (choose lane)
-   ----------------------------------------------------------------------------
-   Swap this import to:
-     • "./ForwardMotion-v16.js"
-     • "./BackwardMotion-v16.js"
+   4. MOTION ORCHESTRATOR (PulseCompass IMMORTAL+)
    ============================================================================ */
 import { createPulseCompass } from "./PulseCompass-v16.js";
 
@@ -197,30 +189,38 @@ const BinaryOrgan = createPulseEvolutionaryBinary({
   MemoryOrgan
 });
 
+/* ============================================================================
+   8. CREATE MOTION ORCHESTRATOR (PulseCompass IMMORTAL+)
+   ============================================================================ */
 const Motion = createPulseCompass({
   MemoryOrgan,
   trace: false
 });
 
-
 /* ============================================================================
-   8. PREWARM — v16 IMMORTAL
+   9. FULL PREWARM — IMMORTAL+ (ALL ORGANS + COMPASS + LANES + DB)
    ============================================================================ */
 async function prewarmEngineBlock() {
   try {
+    // UI organism prewarm
     await MemoryOrgan.prewarm?.();
     await BinaryOrgan.prewarm?.();
     await BrainOrgan.prewarm?.();
+    await RouterOrgan.prewarm?.();
+    await ImpulseOrgan.prewarm?.();
+    await CodeOrgan.prewarm?.();
+
+    // Motion orchestrator prewarm (prewarms lanes + DB)
     await Motion.prewarm?.();
 
-    console.log("[PREWARM] PulseEngineBlock membrane prewarmed.");
+    console.log("[PREWARM] PulseEngineBlock IMMORTAL+ membrane fully prewarmed.");
   } catch (err) {
     console.warn("[PREWARM] PulseEngineBlock prewarm failed:", err);
   }
 }
 
 /* ============================================================================
-   9. BACKGROUND MOTION TICK
+   10. BACKGROUND MOTION TICK
    ============================================================================ */
 async function runMotionTick() {
   const res = Motion.tick?.();
@@ -230,7 +230,7 @@ async function runMotionTick() {
 }
 
 /* ============================================================================
-   10. BOOT SEQUENCE — TRUSTED / UNTRUSTED
+   11. BOOT SEQUENCE — TRUSTED / UNTRUSTED
    ============================================================================ */
 (async () => {
   console.log("[BOOT] PulseEngineBlock starting…");
@@ -303,6 +303,7 @@ async function runMotionTick() {
   console.log("[BOOT] PulseEngineBlock ready in INSIDE mode.");
 })();
 </script>
+
 
 </body>
 </html>

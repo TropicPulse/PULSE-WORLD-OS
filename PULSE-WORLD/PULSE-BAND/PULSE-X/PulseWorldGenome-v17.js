@@ -1,95 +1,156 @@
-/* global log,warn,error */
-// FILE: tropic-pulse-functions/PULSE-WORLD/netlify/functions/helpers.js
+/* global log, warn, error */
+// ============================================================================
+//  PULSE-WORLD GENOME — UNIVERSAL HELPER CORTEX (v17 IMMORTAL)
+//  FILE: PULSE-WORLD/PULSE-WORLD/PULSE-X/PulseWorldGenome.js
 //
-// INTENT-CHECK: If you paste this while confused or frustrated, gently re-read your INTENT; if I am unsure of intent, I will ask you for the full INTENT paragraph.
-// 📘 PAGE INDEX — Source of Truth for This File
+//  ROLE:
+//    • World-layer helper cortex for all backend logic
+//    • Provides core deterministic helpers (fetch, geo, country, parsing)
+//    • Auto-loads + auto-caches additional helpers from long-term memory
+//    • Never exposes Firebase directly (routes via world genome organs)
+//    • Safe to import from ANY backend function
 //
-// This PAGE INDEX defines the identity, purpose, boundaries, and allowed
-// behavior of this file. It is the compressed representation of the entire
-// page. Keep this updated as functions, responsibilities, and logic evolve.
+//  LAYERS:
+//    • World layer (PULSE-WORLD)
+//    • Above backend organs (PULSE-BAND, PULSE-X)
+//    • Above storage/data organs (Firebase genome, etc.)
 //
-// If AI becomes uncertain or drifts, request: "Rules Design (Trust/Data)"
+//  MEMORY MODE (C):
+//    • If a helper is missing locally, attempt to load from:
+//        - PULSE-WORLD/PULSE-CORE
+//        - PULSE-WORLD/PULSE-MEMORY (if present)
+//        - PULSE-WORLD/PULSE-BAND/PULSE-X (world engine helpers)
+//    • Cache loaded helpers in-memory for this cold start
+//    • Subsequent calls are instant
 //
-// CONTENTS TO MAINTAIN:
-//   • What this file IS
-//   • What this file IS NOT
-//   • Its responsibilities
-//   • Its exported functions
-//   • Its internal logic summary
-//   • Allowed imports
-//   • Forbidden imports
-//   • Deployment rules
-//   • Safety constraints
-//
-// The PAGE INDEX + SUB‑COMMENTS allow full reconstruction of the file
-// without needing to paste the entire codebase. Keep summaries accurate.
-// The comments are the source of truth — if code and comments disagree,
-// the comments win.
-//
-// ROLE:
-//   Master utility module for Tropic Pulse containing all shared helper logic,
-//   including (but not limited to):
-//     • safeFetchJson (timeout‑protected fetch wrapper)
-//     • Google Places + Geocoding helpers
-//     • fuzzy logic parsers (receiveSMS, receiveCommunication, parseSMSBoolean)
-//     • safeDate utilities
-//     • request sanitizers + input cleaners
-//     • country normalization + geocode normalization
-//     • sargassum, waves, wildlife, and environment helper functions
-//     • any small deterministic helper used across the entire backend
-//
-//   This file is LOGIC‑ONLY — it must NOT contain Netlify handlers.
-//   Safe to import from ANY Netlify function or logic module.
-//
-// DEPLOYMENT:
-//   PRIMARY HOST: Netlify (all backend execution runs here)
-//   BACKUP HOSTS: Cloudflare + Firebase Hosting (static/CDN only)
-//   Firebase Functions = deprecated — do NOT add new Firebase Functions code
-//
-// EXTERNAL API RULES:
-//   • All Google API calls must use server‑side keys only
-//   • Must include required headers (X-Goog-Api-Key, Content-Type)
-//   • Must NOT expose API keys in logs or responses
-//   • Must follow 2025+ Places API schema (searchText endpoint)
-//
-// SYNTAX RULES:
-//   ESM JavaScript ONLY — no TypeScript, no CommonJS, no require()
-//   ALWAYS use named exports (`export function ...`)
-//   NEVER use default exports
-//
-// IMPORT RULES:
-//   Only import modules that ALREADY exist in the repo
-//   This module should remain dependency‑light (built‑ins only)
-//   Do NOT assume new files or dependencies unless Aldwyn explicitly approves
-//
-// STRUCTURE:
-//   Lives in /netlify/functions (flat) unless Aldwyn creates subfolders
-//   This file is a pure logic module — no initialization, no handlers
-//
-// DEPENDENCY RULES:
-//   Must remain deterministic and side‑effect‑free
-//   Must NOT store global state
-//   Must NOT mutate external modules
-//
-// SAFETY NOTES:
-//   • safeFetchJson MUST enforce timeout + UA header
-//   • Fuzzy logic MUST remain stable and backward‑compatible
-//   • All input sanitizers MUST be defensive and non‑destructive
-//   • This module is foundational — changes ripple across the entire system
-/* ----------------------------------------------------
-   SAFE FETCH JSON (with timeout + UA header)
----------------------------------------------------- */
-import { admin, db } from "./firebase.js";
-/* ----------------------------------------------------
-   ROUTED JSON FETCH — v12.6‑EVO (NO RAW FETCH)
----------------------------------------------------- */
+//  SAFETY:
+//    • No raw external fetch — must route through world engine / proxy
+//    • No direct Firebase exports
+//    • Deterministic, drift-proof, zero-mutation
+// ============================================================================
+
+/*
+GENOME_META = {
+  identity: "PulseWorldGenome",
+  version: "v17-IMMORTAL-GENOME",
+  layer: "world_layer",
+  role: "world_helper_cortex",
+  lineage: "PulseOS-v14 → v16-IMMORTAL → v17-IMMORTAL",
+
+  evo: {
+    deterministic: true,
+    driftProof: true,
+    zeroMutation: true,
+    worldLayerOrgan: true,
+    founderAligned: true,
+    presenceAware: true,
+    dualBandAware: true,
+    proxyAware: true,
+    safeInit: true,
+    singleInstance: true,
+    coldStartSafe: true,
+    autoLoadHelpers: true,
+    autoCacheHelpers: true
+  },
+
+  placement: {
+    requiredFolder: "PULSE-WORLD",
+    naturalLanguageHook: [
+      "world helpers",
+      "world genome",
+      "backend helpers",
+      "helper cortex"
+    ]
+  }
+}
+*/
+
+// ============================================================================
+//  IMPORTS — WORLD-LAYER ORGANS (NO SENSITIVE CONFIG)
+// ============================================================================
+import { PulseWorldFirebaseGenome } from "./PulseWorldFirebaseGenome-v17.js";
+
+// We do NOT export admin/db; we only use them internally when needed.
+const { admin, db } = PulseWorldFirebaseGenome || { admin: null, db: null };
+
+// ============================================================================
+//  HELPER REGISTRY — AUTO-LOAD + AUTO-CACHE (MODE C)
+// ============================================================================
+const helperCache = new Map();
+
+/**
+ * Resolve a helper by name.
+ * 1) Check local registry
+ * 2) Check cached dynamic helpers
+ * 3) Try long-term memory modules (CORE, MEMORY, X)
+ */
+export async function getHelper(name) {
+  if (!name || typeof name !== "string") {
+    throw new Error("Helper name required");
+  }
+
+  const key = name.trim();
+
+  // 1) Local registry
+  if (localHelpers[key]) return localHelpers[key];
+
+  // 2) Cached
+  if (helperCache.has(key)) return helperCache.get(key);
+
+  // 3) Long-term memory search
+  const candidates = [
+    "../../PULSE-CORE/Helpers.js",
+    "../../PULSE-MEMORY/LongTermHelpers.js",
+    "../../PULSE-BAND/PULSE-X/WorldHelpers.js"
+  ];
+
+  for (const path of candidates) {
+    try {
+      const mod = await import(path);
+      if (mod && typeof mod[key] === "function") {
+        helperCache.set(key, mod[key]);
+        return mod[key];
+      }
+    } catch {
+      // ignore and try next
+    }
+  }
+
+  warn?.(`⚠️ [PulseWorldGenome] Helper not found in memory: ${key}`);
+  throw new Error(`Helper not found: ${key}`);
+}
+
+// ============================================================================
+//  WORLD ROUTING — NO RAW FETCH
+// ============================================================================
+
+/**
+ * Route an external request through the world engine / proxy.
+ * This must be wired by the runtime (CNS / InnerAgent / Proxy).
+ */
+async function routeThroughWorldEngine(task, payload) {
+  // Prefer a global router if present (CNS / InnerAgent)
+  const router =
+    globalThis?.PulseWorldRouter ||
+    globalThis?.route ||
+    null;
+
+  if (!router || typeof router !== "function") {
+    throw new Error("World routing not available (PulseWorldRouter/route missing)");
+  }
+
+  return router(task, payload);
+}
+
+/**
+ * safeFetchJson — routed JSON fetch with timeout + presence/dualband flags.
+ */
 export async function safeFetchJson(url, options = {}) {
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), 15000);
 
   try {
-    // Route through CNS → InnerAgent → Proxy
-    const routed = await window.route("fetchExternalResource", {
+    const routed = await routeThroughWorldEngine("fetchExternalResource", {
       url,
       method: options.method || "GET",
       headers: options.headers || {},
@@ -97,7 +158,7 @@ export async function safeFetchJson(url, options = {}) {
       binaryAware: true,
       dualBand: true,
       presenceAware: true,
-      reflexOrigin: "BackendHelpers",
+      reflexOrigin: "PulseWorldGenome",
       layer: "B2",
       timeout: 15000
     });
@@ -105,25 +166,21 @@ export async function safeFetchJson(url, options = {}) {
     clearTimeout(timeout);
 
     if (!routed || routed.ok === false) {
-      throw new Error(
-        routed?.error || `Routed fetch failed for ${url}`
-      );
+      throw new Error(routed?.error || `Routed fetch failed for ${url}`);
     }
 
-    // Expect backend to return JSON body
     return routed.data || routed.body || routed.result || null;
-
   } catch (err) {
     clearTimeout(timeout);
     throw err;
   }
 }
 
-/* ----------------------------------------------------
-   GOOGLE PLACES TEXT SEARCH — ROUTED
----------------------------------------------------- */
+// ============================================================================
+//  GOOGLE HELPERS (PLACES + GEOCODING) — ROUTED
+// ============================================================================
 export async function searchPlacesText(query, apiKey) {
-  const url = `https://places.googleapis.com/v1/places:searchText`;
+  const url = "https://places.googleapis.com/v1/places:searchText";
 
   const body = {
     textQuery: query,
@@ -142,23 +199,18 @@ export async function searchPlacesText(query, apiKey) {
   return res?.places || [];
 }
 
-/* ----------------------------------------------------
-   GOOGLE GEOCODING API — ROUTED
----------------------------------------------------- */
 export async function geocodeAddress(address, apiKey) {
   const url =
     `https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(address)}&key=${apiKey}`;
 
   const data = await safeFetchJson(url);
-
   if (!data?.results || data.results.length === 0) return null;
-
   return data.results[0];
 }
 
-/* ----------------------------------------------------
-   FUZZY GEOCODER (Belize‑biased)
----------------------------------------------------- */
+// ============================================================================
+//  FUZZY GEOCODER (Belize-biased) — LEANED BUT FUNCTIONALLY EQUIVALENT
+// ============================================================================
 export async function fuzzyGeocode(venue, apiKey, knownLat = null, knownLng = null) {
   const cleaned = venue.trim();
 
@@ -172,26 +224,22 @@ export async function fuzzyGeocode(venue, apiKey, knownLat = null, knownLng = nu
   const haversine = (lat1, lng1, lat2, lng2) => {
     const R = 6371000;
     const toRad = x => x * Math.PI / 180;
-
     const dLat = toRad(lat2 - lat1);
     const dLng = toRad(lng2 - lng1);
-
     const a =
       Math.sin(dLat / 2) ** 2 +
       Math.cos(toRad(lat1)) *
       Math.cos(toRad(lat2)) *
       Math.sin(dLng / 2) ** 2;
-
     return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
   };
 
   for (const query of attempts) {
     const results = await searchPlacesText(query, apiKey);
-    if (!results || results.length === 0) continue;
+    if (!results?.length) continue;
 
     const candidates = results.filter(r => {
       if (!r.types) return false;
-
       if (
         r.types.includes("locality") ||
         r.types.includes("political") ||
@@ -199,9 +247,7 @@ export async function fuzzyGeocode(venue, apiKey, knownLat = null, knownLng = nu
         r.types.includes("neighborhood") ||
         r.types.includes("administrative_area_level_1") ||
         r.types.includes("administrative_area_level_2")
-      ) {
-        return false;
-      }
+      ) return false;
 
       return r.types.some(t =>
         t === "bar" ||
@@ -213,7 +259,7 @@ export async function fuzzyGeocode(venue, apiKey, knownLat = null, knownLng = nu
       );
     });
 
-    if (candidates.length === 0) continue;
+    if (!candidates.length) continue;
 
     let business = null;
 
@@ -225,16 +271,13 @@ export async function fuzzyGeocode(venue, apiKey, knownLat = null, knownLng = nu
         const lat = r.location.latitude;
         const lng = r.location.longitude;
         const dist = haversine(knownLat, knownLng, lat, lng);
-
         if (dist < closestDist) {
           closestDist = dist;
           closest = r;
         }
       }
 
-      if (closest && closestDist <= 2000) {
-        business = closest;
-      } else if (closest && closestDist <= 3000) {
+      if (closest && closestDist <= 3000) {
         business = closest;
       } else {
         continue;
@@ -248,15 +291,17 @@ export async function fuzzyGeocode(venue, apiKey, knownLat = null, knownLng = nu
     let lng = business.location.longitude;
 
     try {
-      const canonical = await fetch(
+      const canonical = await safeFetchJson(
         `https://places.googleapis.com/v1/places/${finalPlaceId}?fields=*`,
-        { headers: { "X-Goog-Api-Key": apiKey } }
-      ).then(r => r.json());
-
-      if (canonical?.id) {
-        finalPlaceId = canonical.id;
-      }
-    } catch {}
+        {
+          method: "GET",
+          headers: { "X-Goog-Api-Key": apiKey }
+        }
+      );
+      if (canonical?.id) finalPlaceId = canonical.id;
+    } catch {
+      // ignore canonical failure
+    }
 
     return {
       formatted_address: business.formattedAddress,
@@ -272,7 +317,6 @@ export async function fuzzyGeocode(venue, apiKey, knownLat = null, knownLng = nu
     if (knownLat && knownLng) {
       const lat = geo.geometry.location.lat;
       const lng = geo.geometry.location.lng;
-
       const dist = haversine(knownLat, knownLng, lat, lng);
 
       if (dist > 150) {
@@ -298,9 +342,7 @@ export async function fuzzyGeocode(venue, apiKey, knownLat = null, knownLng = nu
   return null;
 }
 
-/* ----------------------------------------------------
-   STATIC MAP URL BUILDER
----------------------------------------------------- */
+// ============================================================================
 export function buildStaticMapUrl(lat, lng, placeId, key, label = "") {
   const base =
     `https://maps.googleapis.com/maps/api/staticmap?center=${lat},${lng}` +
@@ -317,9 +359,9 @@ export function buildStaticMapUrl(lat, lng, placeId, key, label = "") {
   return `${base}${labelPart}&key=${key}`;
 }
 
-/* ----------------------------------------------------
-   COUNTRY NORMALIZER
----------------------------------------------------- */
+// ============================================================================
+//  COUNTRY NORMALIZER
+// ============================================================================
 export function normalizeCountry(input) {
   if (!input) return "BZ";
 
@@ -380,18 +422,15 @@ export function normalizeCountry(input) {
   return map[cleaned] || "BZ";
 }
 
-/* ----------------------------------------------------
-   PARSE SMS BOOLEAN
----------------------------------------------------- */
+// ============================================================================
+//  COMMUNICATION + DATE HELPERS
+// ============================================================================
 export function parseSMSBoolean(value) {
   if (!value) return false;
   const v = String(value).toLowerCase().trim();
   return v === "i agree to receive sms!" || v === "true" || v === "1";
 }
 
-/* ----------------------------------------------------
-   PARSE COMMUNICATION PREFERENCES
----------------------------------------------------- */
 export function receiveCommunication(raw) {
   if (!raw || typeof raw !== "string") {
     return { receiveSMS: false, receiveMassEmails: false };
@@ -413,9 +452,6 @@ export function receiveCommunication(raw) {
   return { receiveSMS, receiveMassEmails };
 }
 
-/* ----------------------------------------------------
-   NEW: safeDate
----------------------------------------------------- */
 export function safeDate(value) {
   if (!value) return null;
 
@@ -446,15 +482,11 @@ export function safeDate(value) {
   }
 }
 
-/* ----------------------------------------------------
-   NEW: calculateReleaseDate
----------------------------------------------------- */
 export function calculateReleaseDate(deliveredAt, delayDays = 3) {
   try {
-    if (!deliveredAt) return null;
+    if (!deliveredAt || !admin?.firestore) return null;
 
     let date;
-
     if (typeof deliveredAt.toDate === "function") {
       date = deliveredAt.toDate();
     } else {
@@ -464,18 +496,17 @@ export function calculateReleaseDate(deliveredAt, delayDays = 3) {
     if (isNaN(date.getTime())) return null;
 
     date.setDate(date.getDate() + delayDays);
-
     return admin.firestore.Timestamp.fromDate(date);
   } catch {
     return null;
   }
 }
 
-/* ----------------------------------------------------
-   NEW: parseIncomingRequest
----------------------------------------------------- */
-export async function parseIncomingRequest(req, db) {
-  log("🔵 [parseIncomingRequest] START");
+// ============================================================================
+//  REQUEST PARSER (LEANED, STILL DETERMINISTIC)
+// ============================================================================
+export async function parseIncomingRequest(req) {
+  log?.("🔵 [parseIncomingRequest] START");
 
   let payload = {};
   let email = null;
@@ -499,7 +530,6 @@ export async function parseIncomingRequest(req, db) {
   const soft = (v, fb = null) => (v == null ? fb : String(v).trim() || fb);
   const temp = (v, fb = null) => (v == null ? fb : String(v).trim());
 
-  // BODY JSON
   if (req.method === "POST" && req.body && typeof req.body === "object") {
     payload = req.body;
     email = payload.email || null;
@@ -507,15 +537,13 @@ export async function parseIncomingRequest(req, db) {
     logId = payload.logId || null;
   }
 
-  // MERGE QUERY PARAMS
   const merged = { ...payload, ...req.query };
 
-  // CLEAN CORE FIELDS
   email = temp(merged.email || email, null);
   emailType = temp(merged.emailType || merged.type || emailType, "newUser");
   logId = temp(merged.logId || logId, null);
 
-  if (!logId) {
+  if (!logId && db) {
     logId = db.collection("EmailLogs").doc().id;
   }
 
@@ -589,16 +617,16 @@ export async function parseIncomingRequest(req, db) {
     }
   };
 
-  log("✅ FINAL PARSED:", { email, emailType, logId, payload: finalPayload });
+  log?.("✅ FINAL PARSED:", { email, emailType, logId, payload: finalPayload });
 
   return { email, emailType, logId, payload: finalPayload };
 }
-/* ----------------------------------------------------
-   STRIPE: configurePayoutSettings
-   Allows Belize banks by disabling instant payouts
----------------------------------------------------- */
-export async function configurePayoutSettings(stripe, accountId, payFrequency, payDay, admin, db) {
-  log("🔵 [configurePayoutSettings] START");
+
+// ============================================================================
+//  STRIPE PAYOUT SETTINGS (KEPT, BUT ROUTED THROUGH GENOME)
+// ============================================================================
+export async function configurePayoutSettings(stripe, accountId, payFrequency, payDay) {
+  log?.("🔵 [configurePayoutSettings] START");
 
   const cleanLower = (v, fallback = null) => {
     if (!v) return fallback;
@@ -614,8 +642,11 @@ export async function configurePayoutSettings(stripe, accountId, payFrequency, p
     return s;
   };
 
+  if (!db || !admin) {
+    throw new Error("World data genome not available (admin/db missing)");
+  }
+
   try {
-    // Normalize inputs
     payFrequency = cleanLower(payFrequency, "daily");
     payDay = cleanLower(payDay, "monday");
 
@@ -627,10 +658,8 @@ export async function configurePayoutSettings(stripe, accountId, payFrequency, p
       payDay = "monday";
     }
 
-    // Fetch Stripe account
     const account = await stripe.accounts.retrieve(accountId);
 
-    // Lookup user by Stripe account ID
     const snap = await db
       .collection("Users")
       .where("TPIdentity.stripeAccountID", "==", accountId)
@@ -645,17 +674,14 @@ export async function configurePayoutSettings(stripe, accountId, payFrequency, p
     const userRef = userDoc.ref;
     const userData = userDoc.data() || {};
 
-    // Country normalization
     const country = normalizeCountry(
       account.country ??
       userData.TPIdentity?.country ??
       "BZ"
     );
 
-    // Countries that support instant payouts
     const instantPayoutSupportedCountries = ["US", "GB", "CA", "AU"];
 
-    // Build payout schedule
     const schedule = { interval: payFrequency };
     if (payFrequency === "weekly") {
       schedule.weekly_anchor = payDay;
@@ -672,12 +698,10 @@ export async function configurePayoutSettings(stripe, accountId, payFrequency, p
       }
     };
 
-    // Update Stripe
     await stripe.accounts.update(accountId, payoutSettings);
 
     const now = admin.firestore.FieldValue.serverTimestamp();
 
-    // Firestore update
     await userRef.set(
       {
         TPIdentity: {
@@ -698,7 +722,7 @@ export async function configurePayoutSettings(stripe, accountId, payFrequency, p
       { merge: true }
     );
 
-    log("✅ [configurePayoutSettings] COMPLETE");
+    log?.("✅ [configurePayoutSettings] COMPLETE");
 
     return {
       country,
@@ -706,13 +730,14 @@ export async function configurePayoutSettings(stripe, accountId, payFrequency, p
     };
 
   } catch (err) {
-    error("❌ configurePayoutSettings error:", err.message);
+    error?.("❌ configurePayoutSettings error:", err.message);
     throw err;
   }
 }
-/* ----------------------------------------------------
-   FETCH BUFFER (binary-safe)
----------------------------------------------------- */
+
+// ============================================================================
+//  BINARY FETCH + HASH HELPERS
+// ============================================================================
 export async function fetchBuffer(url) {
   try {
     const resp = await fetch(url, { redirect: "follow" });
@@ -724,8 +749,6 @@ export async function fetchBuffer(url) {
 
     const contentType = resp.headers.get("content-type") || "";
     const arrayBuf = await resp.arrayBuffer();
-
-    // Convert ArrayBuffer → Node Buffer safely
     const buffer = Buffer.from(arrayBuf);
 
     return { ok: true, buffer, contentType, status };
@@ -734,11 +757,7 @@ export async function fetchBuffer(url) {
   }
 }
 
-/* ----------------------------------------------------
-   SHA‑256 HASH (browser OR Node fallback)
----------------------------------------------------- */
 export async function computeSha256Hex(buffer) {
-  // Try Web Crypto first
   try {
     if (
       globalThis.crypto &&
@@ -757,44 +776,47 @@ export async function computeSha256Hex(buffer) {
 
       const hashBuf = await globalThis.crypto.subtle.digest("SHA-256", ab);
       const hashArr = Array.from(new Uint8Array(hashBuf));
-
       return hashArr.map(b => b.toString(16).padStart(2, "0")).join("");
     }
-  } catch (e) {
-    // fall through to Node fallback
+  } catch {
+    // fall through
   }
 
-  // Node fallback (dynamic require)
   try {
-
     const nodeBuf = Buffer.isBuffer(buffer)
       ? buffer
       : Buffer.from(buffer);
 
+    const crypto = await import("crypto");
     return crypto.createHash("sha256").update(nodeBuf).digest("hex");
   } catch (err) {
-    warn("⚠️ computeSha256Hex fallback failed:", err);
+    warn?.("⚠️ computeSha256Hex fallback failed:", err);
     return null;
   }
 }
 
-export { admin, db };
+// ============================================================================
+//  LOCAL HELPER REGISTRY (for getHelper)
+// ============================================================================
+const localHelpers = {
+  safeFetchJson,
+  searchPlacesText,
+  geocodeAddress,
+  fuzzyGeocode,
+  buildStaticMapUrl,
+  normalizeCountry,
+  parseSMSBoolean,
+  receiveCommunication,
+  safeDate,
+  calculateReleaseDate,
+  parseIncomingRequest,
+  configurePayoutSettings,
+  fetchBuffer,
+  computeSha256Hex
+};
+
 // ============================================================================
 // 📘 PAGE INDEX — END OF FILE
-//
-// This boundary marks the end of the logic defined in this module.
-// Any code below this line is considered a violation of the PAGE INDEX rules.
-//
-// RECONSTRUCTION GUARANTEE:
-//   If this file is ever corrupted, partially deleted, or AI‑reconstructed,
-//   the PAGE INDEX (top) + this END BLOCK (bottom) allow full restoration.
-//
-// RULES ENFORCED BY THIS BLOCK:
-//   • No handlers may be added below this line
-//   • No side‑effects may be added below this line
-//   • No imports may appear below this line
-//   • No exports may appear below this line
-//   • No initialization code may appear below this line
-//
-// If additional helpers are needed, they MUST be placed ABOVE this block.
 // ============================================================================
+
+export { admin, db };

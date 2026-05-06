@@ -1,5 +1,5 @@
 // ============================================================================
-// PulseOrganismMap.js — v16‑IMMORTAL‑EVO
+// PulseOrganismMap.js — v17‑IMMORTAL‑EVO
 // THE JEWEL OF THE ORGANISM — THE GENOME
 // ----------------------------------------------------------------------------
 // LAWS OF THE ORGANISM:
@@ -43,7 +43,6 @@ export function prewarmLayer() {
     schema.getSchema("prewarm");
 
     fetchAPI = getFetchAPI({ trace: false, routes });
-
   } catch (err) {
     console.error("[OrganismMap:Prewarm] Failed:", err);
   }
@@ -88,7 +87,7 @@ export function getFsAPI({ trace = false } = {}) {
 }
 
 // ============================================================================
-// ROUTE API — NOW FETCH‑AWARE (IMMORTAL v16)
+// ROUTE API — FETCH‑AWARE (IMMORTAL v16+)
 // ============================================================================
 export function getRouteAPI({ trace = false } = {}) {
   const log = (msg, data) => trace && console.log(`[aiDeps:routes] ${msg}`, data);
@@ -115,7 +114,7 @@ export function getRouteAPI({ trace = false } = {}) {
         meta: {
           layer: "PulseRouteAPI",
           role: "ROUTE_RESOLUTION",
-          version: "16-IMMORTAL-EVO"
+          version: "17-IMMORTAL-EVO"
         }
       };
     },
@@ -153,7 +152,6 @@ export function getRouteAPI({ trace = false } = {}) {
   });
 }
 
-
 // ============================================================================
 //  SCHEMA API — Required by aiEvolution
 // ============================================================================
@@ -174,7 +172,7 @@ export function getSchemaAPI({ trace = false } = {}) {
 }
 
 // ============================================================================
-// FETCH API — ROUTE‑AWARE, IMMORTAL v16
+// FETCH API — ROUTE‑AWARE, IMMORTAL v17
 // ============================================================================
 export function getFetchAPI({ trace = false, routes } = {}) {
   const log = (msg, data) => trace && console.log(`[aiDeps:fetch] ${msg}`, data);
@@ -182,7 +180,7 @@ export function getFetchAPI({ trace = false, routes } = {}) {
   const meta = {
     layer: "PulseFetchAPI",
     role: "NETWORK_ADAPTER",
-    version: "16-IMMORTAL-EVO",
+    version: "17-IMMORTAL-EVO",
     evo: {
       deterministicField: true,
       unifiedAdvantageField: true,
@@ -216,13 +214,7 @@ export function getFetchAPI({ trace = false, routes } = {}) {
 }
 
 // ============================================================================
-// CACHESTORAGE ORGAN — v16‑IMMORTAL‑EVO
-// First‑Frame Freezer, Pattern‑Driven, Self‑Evolving
-// ============================================================================
-// • Never caches anything with a mind (brains, loggers, monitors, flows, touch, net, overmind, heartbeats).
-// • Never caches dashboards, admin, reports, or user‑specific pages.
-// • Only caches static shells, static pages, static Pulse frontends, static micro‑chunks.
-// • Uses words/patterns, not versions — evolvable by naming discipline.
+// CACHESTORAGE ORGAN — v17‑IMMORTAL‑EVO
 // ============================================================================
 export function getCacheStorageOrgan({ trace = false } = {}) {
   const log = (msg, data) => trace && console.log(`[aiDeps:cache] ${msg}`, data);
@@ -281,7 +273,7 @@ export function getCacheStorageOrgan({ trace = false } = {}) {
     }
 
     const allFiles = await fsAPI.getAllFiles();
-    const cache = await caches.open("pulse-immortal-v16");
+    const cache = await caches.open("pulse-immortal-v17");
 
     for (const file of allFiles) {
       if (file.type !== "file") continue;
@@ -302,7 +294,7 @@ export function getCacheStorageOrgan({ trace = false } = {}) {
     meta: {
       layer: "PulseCacheStorageOrgan",
       role: "FIRST_FRAME_FREEZER",
-      version: "16-IMMORTAL-EVO",
+      version: "17-IMMORTAL-EVO",
       evo: {
         patternDriven: true,
         driftProof: true,
@@ -317,7 +309,41 @@ export function getCacheStorageOrgan({ trace = false } = {}) {
 }
 
 // ============================================================================
-// SCAN SYSTEMS — Pure FS API
+// SYSTEM CLASSIFIER — v17 (WORLD / UI / BAND / CORE / PROXY)
+// ============================================================================
+function classifySystem(system) {
+  const name = system.name.toLowerCase();
+  const path = system.path.toLowerCase();
+
+  // Root world
+  if (name === "pulse-world") return { layer: "world_root", kind: "world" };
+
+  // Frontend universe
+  if (name === "pulse-ui" || path.includes("/pulse-world/pulse-ui")) {
+    return { layer: "frontend", kind: "ui" };
+  }
+
+  // Backend universe (band)
+  if (name === "pulse-band" || path.includes("/pulse-world/pulse-band")) {
+    return { layer: "backend", kind: "band" };
+  }
+
+  // Backend core engine (PULSE-X under PULSE-BAND)
+  if (name === "pulse-x" && path.includes("/pulse-world/pulse-band")) {
+    return { layer: "backend_core", kind: "world_engine" };
+  }
+
+  // Proxy / boundary
+  if (name === "pulse-proxy") {
+    return { layer: "proxy", kind: "boundary" };
+  }
+
+  // Default: generic system
+  return { layer: "generic", kind: "system" };
+}
+
+// ============================================================================
+// SCAN SYSTEMS — Pure FS API, v17‑IMMORTAL
 // ============================================================================
 async function scanPulseSystems() {
   fs = getFsAPI({ trace: false });
@@ -342,8 +368,13 @@ async function scanPulseSystems() {
       .filter(f => f.type === "file" && f.name.endsWith(".js"))
       .map(f => f.name.replace(".js", ""));
 
+    const classification = classifySystem(system);
+
     systems[system.name.toLowerCase()] = {
       root: system.name,
+      path: system.path,
+      layer: classification.layer,
+      kind: classification.kind,
       organs
     };
   }
@@ -365,7 +396,7 @@ export async function buildPulseOrganismMap(baseDir = "/") {
   const cacheOrgan = getCacheStorageOrgan({ trace: false });
 
   return Object.freeze({
-    version: "16‑IMMORTAL‑EVO‑GENOME",
+    version: "17‑IMMORTAL‑EVO‑GENOME",
     generatedAt: new Date().toISOString(),
     systems,
 
@@ -385,5 +416,5 @@ export async function buildPulseOrganismMap(baseDir = "/") {
 // ============================================================================
 export const PulseOrganismMap = await buildPulseOrganismMap("/");
 
-// NOTE: from your boot / SW init, you can do:
+// Example boot usage:
 // await PulseOrganismMap.adapters.cache.autoCacheFiles(PulseOrganismMap.adapters.fs);

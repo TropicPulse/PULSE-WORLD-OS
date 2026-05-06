@@ -52,7 +52,7 @@
 // ------------------------------------------------------
 // massEmailWebhook — Backend Mass Email Engine (A Layer)
 // ------------------------------------------------------
-import { admin, db } from "./helpers.js";
+import { admin, db } from "../../PULSE-BAND/PULSE-X/PulseWorldGenome-v17.js";
 import { onRequest } from "firebase-functions/v2/https";
 import { defineSecret } from "firebase-functions/params";
 import nodemailer from "nodemailer";

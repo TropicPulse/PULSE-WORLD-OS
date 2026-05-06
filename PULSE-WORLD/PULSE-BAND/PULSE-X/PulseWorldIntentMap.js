@@ -1,5 +1,5 @@
 // ============================================================================
-//  PULSE INTENT MAP — FOUNDER CONTRACT (v16‑IMMORTAL‑FOUNDER‑INTENT)
+//  PULSE INTENT MAP — FOUNDER CONTRACT (v17‑IMMORTAL‑FOUNDER‑INTENT)
 //  Deterministic. Static. Non‑evolvable. Loaded FIRST.
 //  Defines WHAT THE ORGANISM IS ALLOWED TO BE.
 //  Defines the organism’s identity, boundaries, laws, and philosophy.
@@ -11,10 +11,10 @@
 /*
 AI_EXPERIENCE_META = {
   identity: "PulseIntentMap",
-  version: "v16-Immortal-FOUNDER-INTENT",
+  version: "v17-IMMORTAL-FOUNDER-INTENT",
   layer: "founder_intent",
   role: "pre_brain_pre_organism_law_map",
-  lineage: "PulseOS-v14 → PulseOS-v16-IMMORTAL",
+  lineage: "PulseOS-v14 → PulseOS-v16-IMMORTAL → PulseOS-v17-IMMORTAL",
 
   evo: {
     // -----------------------------------------------------------------------
@@ -31,71 +31,66 @@ AI_EXPERIENCE_META = {
     // -----------------------------------------------------------------------
     //  LOAD ORDER — NOTHING MAY LOAD BEFORE THIS MAP
     // -----------------------------------------------------------------------
-    preOrganism: true,              // BEFORE OrganismMap
-    preBrain: true,                 // BEFORE OSBrain
-    preConsciousness: true,         // BEFORE IQMap
-    preChunker: true,               // BEFORE PulseAIChunker
-    prePresence: true,              // BEFORE presence field
-    preMesh: true,                  // BEFORE mesh relay
-    preBand: true,                  // BEFORE PulseBand
-    preRouter: true,                // BEFORE routers
-    preTrustFabric: true,           // BEFORE Jury/Evidence/CreatorFlags
-    preDualBand: true,              // BEFORE DualBandKernel
-    prePulseNet: true,              // BEFORE Pulse‑Net routing spine
+    preOrganism: true,
+    preBrain: true,
+    preConsciousness: true,
+    preChunker: true,
+    prePresence: true,
+    preMesh: true,
+    preBand: true,
+    preRouter: true,
+    preTrustFabric: true,
+    preDualBand: true,
+    prePulseNet: true,
 
     // -----------------------------------------------------------------------
     //  ZERO‑RISK GUARANTEES
     // -----------------------------------------------------------------------
-    zeroNetworkFetch: true,         // No direct internet access
-    zeroExternalIO: true,           // No external HTTP/DNS/Websocket
-    zeroExternalMutation: true,     // Cannot mutate global state
-    zeroMutationOfInput: true,      // Cannot mutate incoming identity/session
-    safeRouteFree: true,            // No safeRoute allowed at this layer
+    zeroNetworkFetch: true,
+    zeroExternalIO: true,
+    zeroExternalMutation: true,
+    zeroMutationOfInput: true,
+    safeRouteFree: true,
 
     // -----------------------------------------------------------------------
     //  AWARENESS FLAGS (NON‑MUTATING)
     // -----------------------------------------------------------------------
-    trustFabricAware: true,         // JuryFrame, JuryCouncil, BoxCamera, Evidence
+    trustFabricAware: true,
     juryAware: true,
     evidenceFabricAware: true,
     creatorFlagsAware: true,
 
-    chunkerAware: true,             // 32‑lane deterministic chunker
-    dualBandAware: true,            // DualBand organism + artery
-    binaryAware: true,              // Binary organism identity
-    presenceAware: true,            // Presence field
-    meshAware: true,                // Mesh relay
-    proxyAware: true,               // Pulse‑Net proxy spine
-    pulseNetAware: true,            // Pulse‑Net is the ONLY external gateway
+    chunkerAware: true,
+    dualBandAware: true,
+    binaryAware: true,
+    presenceAware: true,
+    meshAware: true,
+    proxyAware: true,
+    pulseNetAware: true,
 
-    // -----------------------------------------------------------------------
-    //  INTERNET ISOLATION (v16 IMMORTAL)
-    // -----------------------------------------------------------------------
-    forbidDirectInternetAccess: true,
-    forbidDirectExternalFetch: true,
-    forbidExternalNetworkIO: true,
-    forbidExternalDNS: true,
-    forbidExternalHTTP: true,
-    forbidExternalWebsocket: true,
+    // v17 WORLD ARCHITECTURE AWARENESS
+    pulseWorldAware: true,
+    pulseUIAware: true,
+    pulseBandAware: true,
+    pulseXAware: true,
+    proxyBoundaryAware: true,
 
-    // -----------------------------------------------------------------------
-    //  ORGANISM / USER SEGREGATION (v16 IMMORTAL)
-    // -----------------------------------------------------------------------
-    organismUserSegregationRequired: true,
-    organismCannotSeeUserNetwork: true,
-    organismCannotSeeUserIdentity: true,
-    organismCannotSeeUserIP: true,
-    organismCannotSeeUserBrowser: true,
-
-    // -----------------------------------------------------------------------
-    //  PULSE‑NET SUPREMACY (v16 IMMORTAL)
-    // -----------------------------------------------------------------------
-    pulseNetSupremacy: true,        // Pulse‑Net is the ONLY allowed gateway
-    pulseNetDeterministicRouting: true,
-    pulseNetZeroMutation: true,
-    pulseNetProxySpineRequired: true,
-    pulseNetProxyFallbackAllowed: true,
-    pulseNetProxyAuditRequired: true
+    // v17 SUBSYSTEM AWARENESS (THE ORIGINAL COLONIES)
+    pulseCoreAware: true,
+    pulseDesignAware: true,
+    pulseEngineAware: true,
+    pulseExpansionAware: true,
+    pulseFinalityAware: true,
+    pulseGridAware: true,
+    pulseMeshAware: true,
+    pulseOSAware: true,
+    pulseRegioningAware: true,
+    pulseRouterAware: true,
+    pulseSpecsAware: true,
+    pulseTechAware: true,
+    pulseToolsAware: true,
+    pulseTranslatorAware: true,
+    pulseTrustAware: true
   },
 
   contract: {
@@ -121,7 +116,21 @@ AI_EXPERIENCE_META = {
       "PulseTrustJuryBoxCamera",
       "PulseTrustCreatorFlags",
       "DualBandKernel",
-      "PulseNetProxySpine"
+      "PulseNetProxySpine",
+
+      // v17 WORLD‑LAYER ORGANS
+      "PulseWorldOrganismMap",
+      "PulseWorldIdentity",
+      "PulseWorldBand",
+      "PulseWorldTransport",
+      "PulseWorldLogger",
+      "PulseWorldEmailAlert",
+      "PulseWorldMemory",
+      "PulseWorldState",
+      "PulseWorldPresence",
+
+      // v17 PROXY MEMORY
+      "PulseProxyMemoryRouter"
     ],
 
     // -----------------------------------------------------------------------
@@ -162,7 +171,7 @@ export const PulseIntentMap = {
     codeAnalysisAllowed: true,
     forbidCodeMutation: true,
 
-    version: "v16-IMMORTAL-ORGANISM",
+    version: "v17-IMMORTAL-ORGANISM",
     deterministicOrganism: true,
 
     noAstralLayers: true,
@@ -344,7 +353,19 @@ export const PulseIntentMap = {
     includeMiddleLayerState: true,
 
     includePresenceFieldState: true,
-    includePresenceIntegrityState: true
+    includePresenceIntegrityState: true,
+
+    // Founder contact channels (AdminEmail / AdminSMS / AdminMessenger)
+    adminEmail: [
+      "fordfamilydistribution@gmail.com",
+      "aldwynfox101@gmail.com",
+      "sales@tropicpulse.bz"
+    ],
+    adminSMS: "+15096077261",
+    adminMessenger: [
+      "+15096077261",
+      "aldwynfox101@gmail.com"
+    ]
   },
 
   // ========================================================================
@@ -380,7 +401,7 @@ export const PulseIntentMap = {
       noMutation: true,
       noExecution: true,
       cognitionLayer: "Cortex",
-      organ: "PulseFileScanner-v12.3-Evo",
+      organ: "PulseFileScanner-v16",
       description: "Scan a file and return a symbolic structural analysis.",
       presenceAware: true
     },
@@ -401,7 +422,7 @@ export const PulseIntentMap = {
   },
 
   // ========================================================================
-  // 11. IMMORTAL TRUST FABRIC EXTENSIONS (v16)
+  // 11. IMMORTAL TRUST FABRIC EXTENSIONS (v17)
   // ========================================================================
   trustFabric: {
     trustFabricRequired: true,
@@ -460,17 +481,14 @@ export const PulseIntentMap = {
   },
 
   // ========================================================================
-  // 12. PULSE‑NET SUPREMACY & INTERNET ISOLATION (v16 IMMORTAL)
+  // 12. PULSE‑NET SUPREMACY & INTERNET ISOLATION
   // ========================================================================
   pulseNet: {
-
-    // 12.1  PULSE‑NET IS THE ONLY EXTERNAL ROUTE
     pulseNetSupremacy: true,
     pulseNetIsOnlyGateway: true,
     pulseNetDeterministicRouting: true,
     pulseNetZeroMutation: true,
 
-    // 12.2  INTERNET ISOLATION
     forbidDirectInternetAccess: true,
     forbidDirectExternalFetch: true,
     forbidExternalNetworkIO: true,
@@ -478,31 +496,26 @@ export const PulseIntentMap = {
     forbidExternalHTTP: true,
     forbidExternalWebsocket: true,
 
-    // 12.3  ORGANISM/USER SEGREGATION
     organismUserSegregationRequired: true,
     organismCannotSeeUserNetwork: true,
     organismCannotSeeUserIdentity: true,
     organismCannotSeeUserIP: true,
     organismCannotSeeUserBrowser: true,
 
-    // 12.4  ALL EXTERNAL ACCESS MUST GO THROUGH PULSE‑NET
     requirePulseNetProxySpine: true,
     requirePulseNetProxyHealth: true,
     requirePulseNetProxyFallback: true,
     requirePulseNetProxyAudit: true,
 
-    // 12.5  NEW SKIN / REFLEX / LOGGER GUARANTEES
     reflexLayerNetworkSafe: true,
     loggerLayerNetworkSafe: true,
     uiSkinNetworkSafe: true,
 
-    // 12.6  DUALBAND + CHUNKER + JURY MUST RESPECT PULSE‑NET
     dualBandMustUsePulseNet: true,
     chunkerMustUsePulseNet: true,
     juryMustUsePulseNet: true,
     evidenceFabricMustUsePulseNet: true,
 
-    // 12.7  PULSE‑NET PRECEDENCE
     pulseNetPrecedes: [
       "DualBandKernel",
       "PulseAIWorldCore",
@@ -512,5 +525,174 @@ export const PulseIntentMap = {
       "PulsePresence",
       "PulseMesh"
     ]
+  },
+
+  // ========================================================================
+  // 13. ARCHITECTURE — PULSE‑WORLD v17 IMMORTAL
+  // ========================================================================
+  architecture: {
+
+    // -----------------------------------------------------------------------
+    // 13.1  ROOT ORGANISM — PULSE‑WORLD
+    // -----------------------------------------------------------------------
+    pulseWorldRootRequired: true,
+    pulseWorldIsRootOrganism: true,
+    pulseWorldFolderRequired: true,
+
+    // -----------------------------------------------------------------------
+    // 13.2  FRONTEND ORGANISM — PULSE‑UI
+    // -----------------------------------------------------------------------
+    pulseUIOrganismRequired: true,
+    pulseUIFolderRequired: true,
+    pulseUILayer: "frontend",
+    pulseUIIsFrontendUniverse: true,
+
+    // -----------------------------------------------------------------------
+    // 13.3  BACKEND ORGANISM — PULSE‑BAND
+    // -----------------------------------------------------------------------
+    pulseBandBackendRequired: true,
+    pulseBandFolderRequired: true,
+    pulseBandLayer: "backend",
+    pulseBandIsBackendUniverse: true,
+
+    // -----------------------------------------------------------------------
+    // 13.4  WORLD ENGINE — PULSE‑X
+    // -----------------------------------------------------------------------
+    pulseXWorldEngineRequired: true,
+    pulseXFolderRequired: true,
+    pulseXLayer: "world_engine",
+    pulseXPrecedesAllBackend: true,
+    pulseXIsWorldLayer: true,
+
+    pulseXIdentityRequired: true,
+    pulseXBandRequired: true,
+    pulseXTransportRequired: true,
+    pulseXPresenceRequired: true,
+    pulseXMemoryRequired: true,
+    pulseXStateRequired: true,
+    pulseXLoggerRequired: true,
+    pulseXEmailAlertRequired: true,
+    pulseXOrganismMapRequired: true,
+
+    // -----------------------------------------------------------------------
+    // 13.5  PROXY BOUNDARY — PULSE‑PROXY
+    // -----------------------------------------------------------------------
+    pulseProxyBoundaryLayer: true,
+    pulseProxyFolderRequired: true,
+    pulseProxyOnlyRouting: true,
+    pulseProxyMemoryRouterRequired: true,
+
+    // -----------------------------------------------------------------------
+    // 13.6  THE ORIGINAL COLONIES — FIRST‑CLASS SYSTEMS
+    //  These are the original backbone systems — 99% designed so that
+    //  future evolution is light, layered, and playful on the remaining 1%.
+    // -----------------------------------------------------------------------
+    pulseCoreRequired: true,
+    pulseDesignRequired: true,
+    pulseEngineRequired: true,
+    pulseExpansionRequired: true,
+    pulseFinalityRequired: true,
+    pulseGridRequired: true,
+    pulseMeshRequired: true,
+    pulseOSRequired: true,
+    pulseRegioningRequired: true,
+    pulseRouterRequired: true,
+    pulseSpecsRequired: true,
+    pulseTechRequired: true,
+    pulseToolsRequired: true,
+    pulseTranslatorRequired: true,
+    pulseTrustRequired: true,
+
+    // -----------------------------------------------------------------------
+    // 13.7  NATURAL LANGUAGE → SUBSYSTEM MAPPING
+    // -----------------------------------------------------------------------
+    naturalLanguageMapping: {
+      // -----------------------------------------------------------------------
+      // 1. TOP‑LEVEL ARCHITECTURE (explicit)
+      // -----------------------------------------------------------------------
+      "frontend": "PULSE-WORLD/PULSE-UI",
+      "frontend connection": "PULSE-WORLD/PULSE-UI/Pulse",
+      "frontend backend connectors": "PULSE-WORLD/PULSE-UI/_BACKEND",
+      "frontend connectors": "PULSE-WORLD/PULSE-UI/_FRONTEND",
+      "frontend components": "PULSE-WORLD/PULSE-UI/_COMPONENTS",
+      "frontend helpers": "PULSE-WORLD/PULSE-UI/_HELPERS",
+      "frontend loaders": "PULSE-WORLD/PULSE-UI/_LOADERS",
+      "frontend pictures": "PULSE-WORLD/PULSE-UI/_PICTURES",
+      "frontend redirect": "PULSE-WORLD/PULSE-UI/_REDIRECT",
+      "frontend readme": "PULSE-WORLD/PULSE-UI/_README",
+      "frontend sounds": "PULSE-WORLD/PULSE-UI/_SOUNDS",
+      "frontend senses": "PULSE-WORLD/PULSE-UI/_OUTERSENSES",
+      "frontend admin": "PULSE-WORLD/PULSE-UI/PulseAdmin",
+      "frontend delivery": "PULSE-WORLD/PULSE-UI/PulseDelivery",
+      "frontend directory": "PULSE-WORLD/PULSE-UI/PulseDirectory",
+      "frontend rewards": "PULSE-WORLD/PULSE-UI/PulseRewards",
+
+      "backend": "PULSE-WORLD/PULSE-BAND",
+      "backend connection": "PULSE-WORLD/PULSE-BAND/PULSE-X",
+      "backend connectors": "PULSE-WORLD/PULSE-UI/_BACKEND",
+      "backend engine": "PULSE-WORLD/PULSE-BAND/PULSE-X",
+
+      "world connection": "PULSE-WORLD/PULSE-BAND/PULSE-X",
+      "world engine": "PULSE-WORLD/PULSE-BAND/PULSE-X",
+
+      "world boundary": "PULSE-WORLD/PULSE-PROXY",
+      "boundary": "PULSE-WORLD/PULSE-PROXY",
+      "network connection": "PULSE-WORLD/PULSE-PROXY",
+      "world network": "PULSE-WORLD/PULSE-PROXY",
+
+      // -----------------------------------------------------------------------
+      // 2. AUTO‑MAP ANY SUBSYSTEM BY NAME
+      // -----------------------------------------------------------------------
+      "*": "PULSE-WORLD/PULSE-${SYSTEM}"
+    }, 
+
+    // -----------------------------------------------------------------------
+    // 13.8  ORGAN PLACEMENT RULES (NON‑BLOCKING)
+    // -----------------------------------------------------------------------
+    forbidWorldOrgansInProxy: true,
+    forbidIdentityInProxy: true,
+    forbidBandInProxy: true,
+    forbidTransportInProxy: true,
+
+    detectOrganMisplacement: true,
+    detectSubsystemViolation: true,
+    detectFolderMismatch: true,
+
+    // -----------------------------------------------------------------------
+    // 13.9  MISPLACEMENT NOTIFICATION MODE — ADAPTIVE (MODE E)
+    // -----------------------------------------------------------------------
+    notifyOnMisplacement: true,
+    notifyMode: "adaptive",
+
+    // Minor issue → log only
+    misplacementMinorLogOnly: true,
+
+    // Medium issue → email
+    misplacementMediumEmail: true,
+
+    // Major issue (world organ in proxy, etc.) → email + SMS
+    misplacementMajorEmailAndSMS: true,
+
+    // -----------------------------------------------------------------------
+    // 13.10  NOTIFICATION CHANNELS (REUSE ADMIN CONTACTS)
+    // -----------------------------------------------------------------------
+    notifyEmail: [
+      "fordfamilydistribution@gmail.com",
+      "aldwynfox101@gmail.com",
+      "sales@tropicpulse.bz"
+    ],
+    notifySMS: "+15096077261",
+    notifyMessenger: [
+      "+15096077261",
+      "aldwynfox101@gmail.com"
+    ],
+
+    // -----------------------------------------------------------------------
+    // 13.11  NON‑BLOCKING GUARANTEE
+    // -----------------------------------------------------------------------
+    neverBlockFounder: true,
+    neverPreventFileCreation: true,
+    neverFailCloseOnMisplacement: true,
+    allowFounderOverrideByAction: true
   }
 };

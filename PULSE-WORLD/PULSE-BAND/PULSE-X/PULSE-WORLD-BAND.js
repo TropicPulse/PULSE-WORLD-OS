@@ -107,7 +107,7 @@ AI_EXPERIENCE_META = {
 const admin = global.db;
 const db    = global.db;
 import { VitalsLogger as logger } from "../../PULSE-UI/_BACKEND/PulseProofLogger.js";
-import { PulseLineage } from "./PulseProxyBBB.js";
+import { PulseLineage } from "../PULSE-PROXY/PulseProxyBBB.js";
 
 // ============================================================================
 //  ORGAN META — v16 IMMORTAL

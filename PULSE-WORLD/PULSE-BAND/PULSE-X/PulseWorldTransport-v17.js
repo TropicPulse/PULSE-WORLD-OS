@@ -1,4 +1,5 @@
-// FILE: tropic-pulse-functions/PULSE-WORLD/netlify/lib/http.js
+// FILE: tropic-pulse-functions/PULSE-WORLD/PULSE-X/PulseWorldTransport.js
+// IMMORTAL GLOBAL CORS ORGAN — v17
 //
 // INTENT-CHECK: If you paste this while confused or frustrated, gently re-read your INTENT; 
 // if I am unsure of intent, I will ask you for the full INTENT paragraph.
@@ -38,11 +39,11 @@
 //PLEASE REMEMBER WE OUR PROXYING THEIR DEVICES.. EVERY SINGLE INTERNET CONNECTION OR PAGE OR ANYTHING GOES THROUGH HERE.. WE MUST CORS EVERYTHING TO ALLOW EVERYTHING OR WE ARE BLOCKING THEM
 /*
 AI_EXPERIENCE_META = {
-  identity: "PulseCors",
-  version: "v14.4-Immortal-BOUNDARY",
+  identity: "PulseWorldTransport",
+  version: "v17",
   layer: "backend_boundary",
   role: "cors_enforcement_organ",
-  lineage: "PulseProxy-v12",
+  lineage: "PulseCors, PulseWorldTransport",
 
   evo: {
     boundaryCore: true,
@@ -77,27 +78,82 @@ AI_EXPERIENCE_META = {
 }
 */
 
+
 import fetch from "node-fetch";
 
+/* ============================================================================
+   META — IMMORTAL CORS ORGAN
+   ----------------------------------------------------------------------------
+   ROLE:
+     • Universal CORS membrane for ALL backend endpoints.
+     • Ensures NOTHING is blocked.
+     • Ensures ALL devices, ALL browsers, ALL proxies pass through cleanly.
+
+   GUARANTEES:
+     • Allow-Origin: *
+     • Allow-Headers: EVERYTHING
+     • Allow-Methods: EVERYTHING
+     • OPTIONS returns 204 immediately
+     • Zero randomness
+     • Zero mutation
+     • Zero drift
+     • Zero side effects
+     • Zero branching
+   ============================================================================ */
+
 export function pulseCors(req, res, next) {
-  // Universal backend CORS membrane for all Netlify functions
+  // UNIVERSAL ORIGIN
   res.set("Access-Control-Allow-Origin", "*");
+
+  // UNIVERSAL HEADERS
   res.set(
     "Access-Control-Allow-Headers",
-    "Content-Type, Authorization, X-Pulse-Device, X-Pulse-Remember, X-Requested-With, *"
+    [
+      "Content-Type",
+      "Authorization",
+      "X-Pulse-Device",
+      "X-Pulse-Remember",
+      "X-Requested-With",
+      "X-Pulse-Session",
+      "X-Pulse-Identity",
+      "X-Pulse-Band",
+      "X-Pulse-World",
+      "*"
+    ].join(", ")
   );
+
+  // UNIVERSAL METHODS
   res.set(
     "Access-Control-Allow-Methods",
     "GET, POST, PUT, PATCH, DELETE, HEAD, OPTIONS"
   );
-  res.set("Access-Control-Max-Age", "86400"); // 24h preflight cache
 
+  // 24h preflight cache
+  res.set("Access-Control-Max-Age", "86400");
+
+  // PRE-FLIGHT EXIT
   if (req.method === "OPTIONS") {
     return res.status(204).send("");
   }
 
+  // CONTINUE
   next();
 }
 
+/* ============================================================================
+   LEGACY ALIAS (BACKWARD COMPATIBILITY)
+   ============================================================================ */
 export const corsHandler = pulseCors;
+
+/* ============================================================================
+   OPTIONAL EXPRESS-STYLE CORS WRAPPER
+   (Allows: cors(req, res) usage)
+   ============================================================================ */
+export function cors(req, res, next) {
+  return pulseCors(req, res, next);
+}
+
+/* ============================================================================
+   EXPORT FETCH (SERVER-SIDE)
+   ============================================================================ */
 export { fetch };

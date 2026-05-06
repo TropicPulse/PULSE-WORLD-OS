@@ -65,7 +65,7 @@
 
 // Shared Vault utilities for TPSecurity patching + logging
 
-import { admin, db } from "./helpers.js";
+import { admin, db } from "../../PULSE-BAND/PULSE-X/PulseWorldGenome-v17.js";
 import { getStripe as Stripe } from "./stripe.js";
 import emailTemplates from "../../PULSE-BAND/PULSE-OS/PulseOSLongTermMemory.js";
 

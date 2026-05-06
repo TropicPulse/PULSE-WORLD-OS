@@ -1,3 +1,4 @@
+/* global log,warn,error */
 // FILE: tropic-pulse-functions/PULSE-WORLD/functions/vault-reminders.js
 //
 // INTENT-CHECK: If you paste this while confused or frustrated, gently re-read
@@ -49,6 +50,7 @@
 //   • Must remain deterministic — same input → same output
 //
 
+import { onRequest } from "firebase-functions/v2/https";
 /* ------------------------------------------------------
    NORMALIZE REMINDER TRIGGER
 ------------------------------------------------------ */
@@ -233,3 +235,54 @@ export function buildParsedReminder(raw) {
     location: parsed?.location || null
   };
 }
+
+export const parseReminder = onRequest(
+  {
+    region: "us-central1",
+    timeoutSeconds: 15,
+    memory: "256MiB"
+  },
+  async (req, res) => {
+    // CORS
+    res.set("Access-Control-Allow-Origin", "*");
+    res.set("Access-Control-Allow-Headers", "Content-Type, Authorization");
+    res.set("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
+
+    if (req.method === "OPTIONS") {
+      return res.status(204).send("");
+    }
+
+    try {
+      const text = req.body?.text || "";
+
+      if (!text.trim()) {
+        return res.json({
+          success: false,
+          error: "Empty reminder text",
+          parsed: null
+        });
+      }
+
+      // Call vaultcore logic
+      const parsed = parseReminderText(text);
+
+      if (!parsed?.trigger) {
+        return res.json({
+          success: false,
+          error: "Unable to parse reminder",
+          parsed: null
+        });
+      }
+
+      return res.json({ success: true, parsed });
+
+    } catch (err) {
+      error("parseReminder error:", err);
+      return res.json({
+        success: false,
+        error: "Server error: " + err.message,
+        parsed: null
+      });
+    }
+  }
+);
