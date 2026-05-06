@@ -115,7 +115,7 @@ import {
 } from "../PULSE-X/PulseScheduler-v2.js";
 
 // Runtime v2 (multi-organism execution + binary frames)
-import PulseRuntimeV2 from "../PULSE-X/PulseRuntime-v2-Evo.js";
+import PulseRuntimeV2 from "../PULSE-X/PulseRuntime-v2.js";
 
 const {
   runPulseTickV2,

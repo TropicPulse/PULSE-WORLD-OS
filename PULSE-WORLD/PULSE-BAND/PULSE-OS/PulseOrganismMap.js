@@ -1,5 +1,5 @@
 // ============================================================================
-// PulseOrganismMap.js — v15‑EVO‑IMMORTAL
+// PulseOrganismMap.js — v16‑IMMORTAL‑EVO
 // THE JEWEL OF THE ORGANISM — THE GENOME
 // ----------------------------------------------------------------------------
 // LAWS OF THE ORGANISM:
@@ -11,6 +11,7 @@
 //   • All subsystems read from THIS file.
 //   • ALL network fetch MUST go through Route API.
 //   • Genome must NEVER fetch directly.
+//   • Patterns > versions. Naming discipline IS evolution.
 // ============================================================================
 
 let fs = null;
@@ -87,7 +88,7 @@ export function getFsAPI({ trace = false } = {}) {
 }
 
 // ============================================================================
-// ROUTE API — NOW FETCH‑AWARE (IMMORTAL v15)
+// ROUTE API — NOW FETCH‑AWARE (IMMORTAL v16)
 // ============================================================================
 export function getRouteAPI({ trace = false } = {}) {
   const log = (msg, data) => trace && console.log(`[aiDeps:routes] ${msg}`, data);
@@ -103,11 +104,10 @@ export function getRouteAPI({ trace = false } = {}) {
       return null;
     },
 
-    // NEW — resolve URL to route
+    // IMMORTAL: deterministic route resolution
     async resolve(url) {
       log("resolve", { url });
 
-      // IMMORTAL: deterministic route resolution
       return {
         id: "default",
         target: url,
@@ -115,12 +115,12 @@ export function getRouteAPI({ trace = false } = {}) {
         meta: {
           layer: "PulseRouteAPI",
           role: "ROUTE_RESOLUTION",
-          version: "15-Evo-Immortal"
+          version: "16-IMMORTAL-EVO"
         }
       };
     },
 
-    // NEW — perform fetch THROUGH the route
+    // Perform fetch THROUGH the route
     async fetchThroughRoute(route, options = {}) {
       log("fetchThroughRoute", { route, options });
 
@@ -174,7 +174,7 @@ export function getSchemaAPI({ trace = false } = {}) {
 }
 
 // ============================================================================
-// FETCH API — ROUTE‑AWARE, IMMORTAL v15
+// FETCH API — ROUTE‑AWARE, IMMORTAL v16
 // ============================================================================
 export function getFetchAPI({ trace = false, routes } = {}) {
   const log = (msg, data) => trace && console.log(`[aiDeps:fetch] ${msg}`, data);
@@ -182,7 +182,7 @@ export function getFetchAPI({ trace = false, routes } = {}) {
   const meta = {
     layer: "PulseFetchAPI",
     role: "NETWORK_ADAPTER",
-    version: "15-Evo-Immortal",
+    version: "16-IMMORTAL-EVO",
     evo: {
       deterministicField: true,
       unifiedAdvantageField: true,
@@ -212,6 +212,107 @@ export function getFetchAPI({ trace = false, routes } = {}) {
   return Object.freeze({
     fetch: fetchViaRoute,
     meta
+  });
+}
+
+// ============================================================================
+// CACHESTORAGE ORGAN — v16‑IMMORTAL‑EVO
+// First‑Frame Freezer, Pattern‑Driven, Self‑Evolving
+// ============================================================================
+// • Never caches anything with a mind (brains, loggers, monitors, flows, touch, net, overmind, heartbeats).
+// • Never caches dashboards, admin, reports, or user‑specific pages.
+// • Only caches static shells, static pages, static Pulse frontends, static micro‑chunks.
+// • Uses words/patterns, not versions — evolvable by naming discipline.
+// ============================================================================
+export function getCacheStorageOrgan({ trace = false } = {}) {
+  const log = (msg, data) => trace && console.log(`[aiDeps:cache] ${msg}`, data);
+
+  const CACHE_PATTERNS = Object.freeze({
+    // Root publish folder: index + static pages + static assets
+    rootStatic: /^\/[^\/]+\.(html|css|js|json|png|jpe?g|webp|svg)$/i,
+
+    // Frontend Pulse folders: PULSE* but NOT PULSE-* (Pulse, PulseAdmin, PulseDelivery, etc.)
+    pulseFrontend: /^\/PULSE(?!-)[^\/]*\/.*\.(html|css|js|json|png|jpe?g|webp|svg)$/i,
+
+    // Static micro‑chunks (by naming convention)
+    microChunks: /micro\-chunk/i
+  });
+
+  const EXCLUDE_PATTERNS = Object.freeze({
+    // Thinking / reactive / observing organs
+    brain: /OSBrain/i,
+    logger: /ProofLogger/i,
+    monitor: /ProofMonitor/i,
+    bridge: /ProofBridge/i,
+    flow: /UIFlow/i,
+    errors: /UIErrors/i,
+    touch: /PULSE\-TOUCH/i,
+    net: /PULSE\-NET/i,
+    overmind: /Overmind/i,
+    heartbeat: /Heartbeat/i,
+
+    // Dynamic / user / backend‑driven
+    dashboard: /dashboard/i,
+    admin: /admin/i,
+    report: /report/i,
+    userSpecific: /(profile|wallet|settings|notifications|messages)/i
+  });
+
+  function shouldCache(path) {
+    const p = path.toLowerCase();
+
+    // Exclusions first — anything with a mind or live data
+    for (const key in EXCLUDE_PATTERNS) {
+      if (EXCLUDE_PATTERNS[key].test(p)) return false;
+    }
+
+    // Inclusions — static, shell, micro‑page, micro‑chunk
+    for (const key in CACHE_PATTERNS) {
+      if (CACHE_PATTERNS[key].test(p)) return true;
+    }
+
+    return false;
+  }
+
+  async function autoCacheFiles(fsAPI) {
+    if (typeof caches === "undefined") {
+      log("caches_unavailable", {});
+      return;
+    }
+
+    const allFiles = await fsAPI.getAllFiles();
+    const cache = await caches.open("pulse-immortal-v16");
+
+    for (const file of allFiles) {
+      if (file.type !== "file") continue;
+      if (!shouldCache(file.path)) continue;
+
+      try {
+        await cache.add(file.path);
+        log("cached", file.path);
+      } catch (err) {
+        log("cache_failed", { file: file.path, err });
+      }
+    }
+  }
+
+  return Object.freeze({
+    shouldCache,
+    autoCacheFiles,
+    meta: {
+      layer: "PulseCacheStorageOrgan",
+      role: "FIRST_FRAME_FREEZER",
+      version: "16-IMMORTAL-EVO",
+      evo: {
+        patternDriven: true,
+        driftProof: true,
+        selfEvolving: true,
+        staticOnly: true,
+        noBrains: true,
+        noDashboards: true,
+        noUserData: true
+      }
+    }
   });
 }
 
@@ -256,22 +357,33 @@ async function scanPulseSystems() {
 export async function buildPulseOrganismMap(baseDir = "/") {
   const systems = await scanPulseSystems(baseDir);
 
-  return {
-    version: "15‑EVO‑IMMORTAL‑GENOME",
+  const dbAdapter = getDb({ trace: false });
+  const fsAdapter = getFsAPI({ trace: false });
+  const routesAdapter = getRouteAPI({ trace: false });
+  const fetchAdapter = getFetchAPI({ trace: false, routes: routesAdapter });
+  const schemaAdapter = getSchemaAPI({ trace: false });
+  const cacheOrgan = getCacheStorageOrgan({ trace: false });
+
+  return Object.freeze({
+    version: "16‑IMMORTAL‑EVO‑GENOME",
     generatedAt: new Date().toISOString(),
     systems,
 
     adapters: {
-      db: getDb({ trace: false }),
-      fs: getFsAPI({ trace: false }),
-      routes: getRouteAPI({ trace: false }),
-      fetch: getFetchAPI({ trace: false, routes: getRouteAPI({ trace: false }) }),
-      schema: getSchemaAPI({ trace: false })
+      db: dbAdapter,
+      fs: fsAdapter,
+      routes: routesAdapter,
+      fetch: fetchAdapter,
+      schema: schemaAdapter,
+      cache: cacheOrgan
     }
-  };
+  });
 }
 
 // ============================================================================
 // EXPORT — The Genome (async)
 // ============================================================================
 export const PulseOrganismMap = await buildPulseOrganismMap("/");
+
+// NOTE: from your boot / SW init, you can do:
+// await PulseOrganismMap.adapters.cache.autoCacheFiles(PulseOrganismMap.adapters.fs);

@@ -6,10 +6,10 @@ LAYER: A1 SURFACE REFLEX + A3 ERROR SPINE
 ===============================================================================
 AI_EXPERIENCE_META = {
   identity: "PulseUI.SkinReflex",
-  version: "v14-Immortal",
+  version: "v16-Immortal-Evo",
   layer: "pulse_ui",
   role: "a1_surface_reflex + a3_error_spine",
-  lineage: "PulseSkinReflex-v12-Evo-BINARY-MAX → v14-Immortal",
+  lineage: "PulseSkinReflex-v12-Evo-BINARY-MAX → v14-Immortal → v16-Immortal-Evo",
 
   evo: {
     driftProof: true,
@@ -29,6 +29,10 @@ AI_EXPERIENCE_META = {
     routeMemoryAware: true,
     coreMemoryAware: true,
 
+    cacheAware: true,
+    offlineAware: true,
+    pageCacheAware: true,
+
     futureEvolutionReady: true
   },
 
@@ -42,9 +46,7 @@ AI_EXPERIENCE_META = {
     never: [
       "eval",
       "Function",
-      "dynamicImport",
-      "setInterval",
-      "setTimeout"
+      "dynamicImport"
     ]
   }
 }
@@ -52,7 +54,7 @@ AI_EXPERIENCE_META = {
 EXPORT_META = {
   organ: "PulseUI.SkinReflex",
   layer: "pulse_ui",
-  stability: "IMMORTAL",
+  stability: "IMMORTAL-EVO",
   deterministic: true,
 
   exposes: [
@@ -99,18 +101,17 @@ import createPulseRouteMemory from "../_FRONTEND/PulseRouteMemory-v16.js";
 import { safeRoute as route } from "./PulseProofBridge.js";
 import { getUIFlowSnapshot } from "../_FRONTEND/PulseUIFlow-v16.js";
 
-
 function isOnline() {
   if (typeof window !== "undefined" && typeof window.PULSE_ONLINE === "boolean") {
     return window.PULSE_ONLINE === true;
   }
-  if (typeof global.PULSE_ONLINE === "boolean") {
+  if (typeof global !== "undefined" && typeof global.PULSE_ONLINE === "boolean") {
     return global.PULSE_ONLINE === true;
   }
-  if (typeof globalThis.PULSE_ONLINE === "boolean") {
+  if (typeof globalThis !== "undefined" && typeof globalThis.PULSE_ONLINE === "boolean") {
     return globalThis.PULSE_ONLINE === true;
   }
-  if (typeof g.PULSE_ONLINE === "boolean") {
+  if (typeof g !== "undefined" && typeof g.PULSE_ONLINE === "boolean") {
     return g.PULSE_ONLINE === true;
   }
   return false;
@@ -123,8 +124,8 @@ export const SkinReflexRole = {
   type: "Skin",
   subsystem: "PulseSkinReflex",
   layer: "A1-SurfaceReflex",
-  version: "14.0-Immortal",
-  identity: "PulseSkinReflex-v14-Immortal",
+  version: "16.0-Immortal-Evo",
+  identity: "PulseSkinReflex-v16-Immortal-Evo",
 
   evo: {
     driftProof: true,
@@ -141,6 +142,9 @@ export const SkinReflexRole = {
     pageScannerAware: true,
     routeMemoryAware: true,
     coreMemoryAware: true,
+    cacheAware: true,
+    offlineAware: true,
+    pageCacheAware: true,
     futureEvolutionReady: true
   },
 
@@ -153,8 +157,8 @@ export const SkinReflexRole = {
   },
 
   pulseContract: "Pulse-v1/v2/v3",
-  meshContract: "PulseMesh-v14-ready",
-  sendContract: "PulseSend-v14-ready"
+  meshContract: "PulseMesh-v16-ready",
+  sendContract: "PulseSend-v16-ready"
 };
 
 // ---------------------------------------------------------------------------
@@ -243,7 +247,7 @@ function emitReflexSenseReport(context = {}) {
   if (typeof console === "undefined" || !console.groupCollapsed) return;
 
   console.groupCollapsed(
-    "%c[SkinReflex SENSE REPORT — v14-Immortal]",
+    "%c[SkinReflex SENSE REPORT — v16-Immortal-Evo]",
     "color:#FF9800; font-weight:bold;"
   );
 
@@ -263,6 +267,7 @@ function emitReflexSenseReport(context = {}) {
 
   console.log("• binaryAware:", context.binaryAware || false);
   console.log("• dualBand:", true);
+  console.log("• online:", isOnline());
 
   console.log("• page:", context.page || "unknown");
   console.log("• reflexSeq:", context.seq || "n/a");
@@ -448,7 +453,7 @@ export function createPulseSkinReflex({
     warn: injectedWarn
   });
 
-  const SKINREFLEX_STORE_KEY = "PulseSkinReflexStore_v14";
+  const SKINREFLEX_STORE_KEY = "PulseSkinReflexStore_v16";
 
   function loadSkinReflexStore() {
     if (!hasWindow || !window.localStorage) return [];
@@ -493,7 +498,7 @@ export function createPulseSkinReflex({
 
   if (typeof console !== "undefined" && typeof console.log === "function") {
     console.log(
-      "%c[PulseSkinReflex v14-Immortal] Loaded — A1/A2/A3 Universal Membrane Active",
+      "%c[PulseSkinReflex v16-Immortal-Evo] Loaded — A1/A2/A3 Universal Membrane Active",
       "color:#4CAF50; font-weight:bold;"
     );
   }
@@ -516,7 +521,7 @@ export function createPulseSkinReflex({
   // -------------------------------------------------------------------------
   async function attach() {
     try {
-      logProtector("SCANNER_ATTACH_START", {});
+      logProtector("SCANNER_ATTACH_START", { online: isOnline() });
 
       const identity = await sessionCheck();
       if (!identity) {
@@ -572,7 +577,7 @@ export function createPulseSkinReflex({
   }
 
   // -------------------------------------------------------------------------
-  // PUBLIC: identity + continuity helpers (v14 API)
+  // PUBLIC: identity + continuity helpers (v16 API-compatible)
   // -------------------------------------------------------------------------
   async function identity() {
     return sessionCheck();
@@ -583,7 +588,7 @@ export function createPulseSkinReflex({
   }
 
   // -------------------------------------------------------------------------
-  // PUBLIC: dualband nervous entry helpers (v14 API, keep abilities)
+  // PUBLIC: dualband nervous entry helpers
   // -------------------------------------------------------------------------
   async function getAuth(jwtToken) {
     try {
@@ -791,7 +796,7 @@ export function createPulseSkinReflex({
         // External resource classifier
         if (isExternal(msg)) {
           logProtector("EXTERNAL_RESOURCE_REQUEST", {
-            note: "External resource detected — routing through CNS (v14-Immortal)",
+            note: "External resource detected — routing through CNS (v16-Immortal-Evo)",
             url: msg
           });
 
@@ -845,7 +850,7 @@ export function createPulseSkinReflex({
 
         if (msg.includes("Cannot find module")) {
           logProtector("IMPORT_DEGRADED", {
-            note: "Import errors are degradation signals in v14-Immortal",
+            note: "Import errors are degradation signals in v16-Immortal-Evo",
             details: msg
           });
 
@@ -874,7 +879,7 @@ export function createPulseSkinReflex({
           logProtector("PULSECORS_REQUIRED", {
             error: "corsMismatch",
             hint: "Use PulseCORS instead of default browser CORS.",
-            note: "PulseCORS is the unified v14 CORS layer."
+            note: "PulseCORS is the unified v16 IMMORTAL CORS layer."
           });
 
           RouteMemory.markDegraded(msg, rawFrames, 0.72, false);
@@ -1251,29 +1256,48 @@ export function createPulseSkinReflex({
         identityTrusted: !!identity?.trustedDevice,
         layer: "A1/A2",
         subsystem: "PulsePageScanner",
-        note: "attachScanner completed"
+        note: "attachScanner completed",
+        online: isOnline()
       };
 
       emitPageScannerIntel(context);
-
       appendSkinReflexEntry("A2_PAGESCANNER_ATTACH", context);
+
+      // ---------------------------------------------------------------------
+      // IMMORTAL v16‑EVO — AUTO CACHE STORAGE ORGAN (Pattern‑Driven)
+      // ---------------------------------------------------------------------
+      if (window.PulseOrganismMap?.adapters?.cache &&
+          window.PulseOrganismMap?.adapters?.fs) {
+
+        // Run asynchronously so it never blocks UI
+        setTimeout(() => {
+          try {
+            window.PulseOrganismMap.adapters.cache
+              .autoCacheFiles(window.PulseOrganismMap.adapters.fs);
+          } catch (err) {
+            console.warn("[CacheOrgan:A2] Cache attach failed:", err);
+          }
+        }, 0);
+      }
+      // ---------------------------------------------------------------------
+
     } catch (err) {
       safeSpine(err, "pagescanner.attachIntel");
     }
   })();
 
   // -------------------------------------------------------------------------
-  // PUBLIC ORGAN OBJECT (v14 API)
+  // PUBLIC ORGAN OBJECT (v16 IMMORTAL-EVO API)
   // -------------------------------------------------------------------------
   const PulseSkinReflex = {
     SkinReflexRole,
 
-    // v14 API
     init() {
       installErrorInterceptor();
       membraneAlive("init");
       appendSkinReflexEntry("A1_INIT", {
-        note: "SkinReflex init called"
+        note: "SkinReflex init called",
+        online: isOnline()
       });
       return PulseSkinReflex;
     },
@@ -1282,7 +1306,6 @@ export function createPulseSkinReflex({
     identity,
     continuity,
 
-    // error spine hook (if others want to forward)
     onError(err, origin = "skinreflex.external") {
       try {
         const packet = PulseUIErrors.normalizeError(err, origin);
@@ -1296,19 +1319,18 @@ export function createPulseSkinReflex({
       }
     },
 
-    // dualband nervous entry helpers
     route: route,
     getAuth,
     getHook,
     getMap,
     callHelper,
 
-    // legacy-compatible helpers (if needed)
     membraneAlive
   };
 
   return PulseSkinReflex;
 }
+
 const DefaultSkinReflex = createPulseSkinReflex();
 
 // Auto‑attach on import

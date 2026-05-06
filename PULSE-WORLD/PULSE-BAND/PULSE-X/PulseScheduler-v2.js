@@ -139,7 +139,7 @@ import { routeAIRequest } from "../PULSE-AI/aiRouter-v16.js";
 import { createOvermindOrgan } from "../PULSE-AI/aiOvermindPrime.js";
 
 // UPGRADED RUNTIME (Touch-aware)
-import PulseRuntimeAPI from "../PULSE-X/PulseRuntime-v2-Evo.js";
+import PulseRuntimeAPI from "./PulseRuntime-v2.js";
 
 const {
   runPulseTickV2: runPulseTick,

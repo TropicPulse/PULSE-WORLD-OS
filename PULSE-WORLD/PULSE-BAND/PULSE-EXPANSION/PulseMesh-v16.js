@@ -136,7 +136,7 @@ import { getPulseTouchContext } from "../../PULSE-UI/PULSE-TOUCH.js";
 
 
 // Runtime (hot instances / regions / presence / modes / pages / trust)
-import { getPulseRuntimeContext } from "../PULSE-X/PulseRuntime-v2-Evo.js";
+import { getPulseRuntimeContext } from "../PULSE-X/PulseRuntime-v2.js";
 
 // Scheduler (macro ticks / policies / world-lens stop conditions)
 import { getPulseSchedulerContext } from "../PULSE-X/PulseScheduler-v2.js";

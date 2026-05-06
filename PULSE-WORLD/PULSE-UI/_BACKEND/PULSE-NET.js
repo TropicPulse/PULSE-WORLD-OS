@@ -96,26 +96,19 @@ const g =
     ? g
     : {};
 
-// Prefer global db if present (logger page / server)
-const db =
-  (g && g.db) ||
-  (typeof global !== "undefined" && global.db) ||
-  (typeof globalThis !== "undefined" && globalThis.db) ||
-  (typeof window !== "undefined" && window.db) ||
-  null;
+import {db, admin} from "../../NETLIFY/FUNCTIONS/helpers.js"
 
 // ============================================================================
 // PULSE-NET v14-Immortal — Backend Gateway + Crown Throne Room
 //  • Single internet edge (via NetworkOrgan → route(...))
 //  • Hybrid crown model: OvermindPrime sees heartbeats + AI requests
 // ============================================================================
-import VitalsLogger from "../_BACKEND/PulseProofLogger.js";
 import { aiOvermindPrime } from "../../PULSE-BAND/PULSE-AI/aiOvermindPrime.js";
 import { createForwardEngine } from "../../PULSE-BAND/PULSE-ENGINE/ForwardEngine.js";
 import { createBackwardEngine } from "../../PULSE-BAND/PULSE-ENGINE/BackwardEngine.js";
 import PulseUIErrors from "../_FRONTEND/PulseUIErrors-v16.js";
 import { initUIFlow } from "../_FRONTEND/PulseUIFlow-v16.js";
-import { safeRoute as route } from "./PulseProofBridge.js";
+import { route, PulseProofLogger, log, warn, error } from "./PulseProofBridge.js";
 import { PulseUnderstanding } from "../../PULSE-UI/_BACKEND/PulseNetUnderstanding.js";
 
 // ============================================================================
@@ -876,7 +869,8 @@ try {
     g.__PULSE_NET_TEMPORAL_CACHE__ = globalThis.__PULSE_NET_TEMPORAL_CACHE__;
   }
 } catch {}
-
+export default db;
+global.db = db;
 // ============================================================================
 // FOOTER — FASTLANE LORE + ORIGIN STAMP
 // ============================================================================

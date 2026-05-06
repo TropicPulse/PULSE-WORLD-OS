@@ -131,7 +131,7 @@ import PulseBeaconMesh, {
 import { getPulseTouchContext } from "../../PULSE-UI/PULSE-TOUCH.js";
 
 // Runtime / scheduler / overmind
-import { getPulseRuntimeContext } from "../PULSE-X/PulseRuntime-v2-Evo.js";
+import { getPulseRuntimeContext } from "../PULSE-X/PulseRuntime-v2.js";
 import { getPulseSchedulerContext } from "../PULSE-X/PulseScheduler-v2.js";
 import { getPulseOvermindContext } from "../PULSE-AI/aiOvermindPrime.js";
 

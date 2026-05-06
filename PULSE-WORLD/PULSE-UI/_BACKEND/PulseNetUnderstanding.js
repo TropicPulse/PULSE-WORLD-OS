@@ -38,7 +38,7 @@ const db =
   (typeof globalThis !== "undefined" && globalThis.db) ||
   (typeof window !== "undefined" && window.db) ||
   null;
-
+import { route, PulseProofLogger, log, warn, error } from "./PulseProofBridge.js";
 // ============================================================================
 //  IMPORTS — MAPS (Intent, Organism, IQ)
 // ============================================================================

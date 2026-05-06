@@ -111,7 +111,7 @@ import createBinaryRouter from "../PULSE-ROUTER/PulseBinaryRouter-v16.js";
 import PulseRouter from "../PULSE-ROUTER/PulseRouter-v16.js";
 
 // Runtime / Scheduler (symbolic context only)
-import PulseRuntimeV2 from "../PULSE-X/PulseRuntime-v2-Evo.js";
+import PulseRuntimeV2 from "../PULSE-X/PulseRuntime-v2.js";
 import { createPulseScheduler } from "../PULSE-X/PulseScheduler-v2.js";
 
 const { getRuntimeStateV2: getRuntimeStateV2Context } = PulseRuntimeV2;

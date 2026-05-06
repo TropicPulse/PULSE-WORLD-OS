@@ -100,35 +100,14 @@ AI_EXPERIENCE_META = {
 // ============================================================
 // IMPORTS — PULSE-NET + TOUCH ORGANS + BRIDGE
 // ============================================================
-import {
-  startPulseNet,
-  pulseNetIngressFromUser,
-  pulseNetFastLanePulse
-} from "./_BACKEND/PULSE-NET-v17.js";
+import { startPulseNet, pulseNetIngressFromUser, pulseNetFastLanePulse} from "./_BACKEND/PULSE-NET-v17.js";
 
-import { route as bridgeRoute } from "./_BACKEND/PulseProofBridge-v16.js";
+import { route as bridgeRoute, PulseProofLogger as PulseLogger, log, warn, error, startUnderstanding as PulseUnderstanding, PulseBinaryOrganismBoot} from "./_BACKEND/PulseProofBridge.js";
 
 import { PulseTouchDetector } from "./_OUTERSENSES/PULSE-TOUCH-DETECTOR.js";
 import { PulseTouchWarmup } from "./_OUTERSENSES/PULSE-TOUCH-WARMUP.js";
 import { PulseTouchSecurity } from "./_OUTERSENSES/PULSE-TOUCH-SECURITY.js";
 import { PulseTouchGate } from "./_OUTERSENSES/PULSE-TOUCH-GATE.js";
-
-// Optional logger (if present)
-const g =
-  typeof globalThis !== "undefined"
-    ? globalThis
-    : typeof global !== "undefined"
-    ? global
-    : typeof window !== "undefined"
-    ? window
-    : typeof g !== "undefined"
-    ? g
-    : {};
-
-const PulseLogger =
-  (typeof window !== "undefined" && window.PulseLogger) ||
-  (typeof g !== "undefined" && g.PulseLogger) ||
-  null;
 
 // ============================================================
 // CONSTANTS — COOKIE + VERSION + TIMELINE + PULSE CONFIG

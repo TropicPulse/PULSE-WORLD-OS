@@ -1,5 +1,6 @@
 // ============================================================================
-// FILE: /PulseOS/Surface/PulseEvolutionaryWindow-v16.js
+// FILE: /PulsePower-v16.js
+// OLD: /PulseNetEvolutionaryWindow.js
 // PULSE PORTAL WINDOW — v16-Immortal-PORTAL-TRUST
 // PORTAL-MEMBRANE • ONE-WAY GLASS • ZERO-TRUST SURFACE • NO ORGANS BEYOND GLASS
 // “The last surface before the organism. The first reflection of the portal.”
@@ -100,12 +101,7 @@ const db =
   null;
 
 console.log("Pulse Portal Window v16-Immortal-PORTAL-TRUST");
-
-import {
-  route as BridgeRoute,
-  startUnderstanding as PulseUnderstanding,
-  PulseBinaryOrganismBoot
-} from "./_BACKEND/PulseProofBridge-v16.js";
+import { route as BridgeRoute, PulseProofLogger, log, warn, error, startUnderstanding as PulseUnderstanding, PulseBinaryOrganismBoot} from "./_BACKEND/PulseProofBridge.js";
 
 // ============================================================================
 // BROWSER DETECTION — HARD MEMBRANE

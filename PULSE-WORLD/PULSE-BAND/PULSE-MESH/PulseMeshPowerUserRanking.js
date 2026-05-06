@@ -1,5 +1,5 @@
 // ============================================================================
-// FILE: PulseMeshPowerUserRanking-v15-Evo.js
+// FILE: PulseMeshPowerUserRanking.js
 // PULSE OS v15.0 — PRESENCE-Evo-MESH-AWARE
 // ---------------------------------------------------------------------------
 //  POWER USER RANKING ENGINE (IMMORTAL-GRADE COMMENTARY)

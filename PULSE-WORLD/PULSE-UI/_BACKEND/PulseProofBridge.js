@@ -80,8 +80,7 @@ AI_EXPERIENCE_META = {
 // ============================================================================
 //  GLOBAL + DB + LOGGER
 // ============================================================================
-import { pulseLog, log, warn, error } from "./PulseProofLogger-v16.js";
-
+import { PulseProofLogger, log, warn, error } from "./PulseProofLogger.js";
 const g =
   typeof globalThis !== "undefined"
     ? globalThis
@@ -204,7 +203,7 @@ function appendBridgeRecord(kind, payload) {
   saveBridgeBuffer(buf);
 
   // Mirror into GLOBAL_LOGS via logger (portal trust tagging)
-  pulseLog({
+  PulseProofLogger({
     subsystem: "bridge",
     system: "PortalTrustLayer",
     organ: "PulseProofBridge",
@@ -340,7 +339,7 @@ export function safeRoute(path, payload = {}, timeoutMs = 10000) {
   appendBridgeRecord("safeRoute_outbound", { path, payload });
 
   if (!channel) {
-    warn("bridge", "BroadcastChannel unavailable, safeRoute is a no-op", {
+    console.warn("bridge", "BroadcastChannel unavailable, safeRoute is a no-op", {
       path,
       payload
     });
@@ -407,7 +406,7 @@ export function safeRoute(path, payload = {}, timeoutMs = 10000) {
 
       appendBridgeRecord("safeRoute_timeout", { path, payload });
 
-      warn("bridge", "safeRoute timeout", { path, payload, timeoutMs });
+      console.warn("bridge", "safeRoute timeout", { path, payload, timeoutMs });
 
       resolve(null);
     }, timeoutMs);
@@ -657,7 +656,7 @@ if (channel) {
           try {
             aiEventHandler(msg.data);
           } catch (err) {
-            error("bridge", "aiEventHandler failed", { error: String(err) });
+            console.error("bridge", "aiEventHandler failed", { error: String(err) });
           }
         }
         break;
@@ -676,7 +675,7 @@ if (channel) {
           try {
             dualBandBootHandler(msg.bootOptions);
           } catch (err) {
-            error("bridge", "dualBandBootHandler failed", {
+            console.error("bridge", "dualBandBootHandler failed", {
               error: String(err)
             });
           }
@@ -691,7 +690,7 @@ if (channel) {
           try {
             dualBandBootHandler(msg);
           } catch (err) {
-            error("bridge", "dualBandBootHandler failed", {
+            console.error("bridge", "dualBandBootHandler failed", {
               error: String(err)
             });
           }
@@ -706,7 +705,7 @@ if (channel) {
           try {
             aiEventHandler(msg);
           } catch (err) {
-            error("bridge", "aiEventHandler failed", {
+            console.error("bridge", "aiEventHandler failed", {
               error: String(err)
             });
           }
@@ -721,7 +720,7 @@ if (channel) {
           try {
             portalEventHandler(msg);
           } catch (err) {
-            error("bridge", "portalEventHandler failed", {
+            console.error("bridge", "portalEventHandler failed", {
               error: String(err)
             });
           }
@@ -757,6 +756,10 @@ export const PulseProofBridge = {
   onAIEvent,
   onPortalEvent
 };
+
+// -----------------------------------------------------------------------------
+// ALIASES
+// -----------------------------------------------------------------------------
 
 // ============================================================================
 //  GLOBAL EXPOSURE OF IMMORTAL STORE + BRIDGE

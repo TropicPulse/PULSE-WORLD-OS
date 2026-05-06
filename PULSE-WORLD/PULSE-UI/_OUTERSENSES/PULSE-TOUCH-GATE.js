@@ -2,19 +2,22 @@
  * ============================================================
  *  ORGAN META: Pulse‑Touch Evolutionary Gate
  *  ORGAN TYPE: Routing Organ (EVOLUTION)
- *  ORGAN LAYER: Edge / Netlify Function
- *  ORGAN ROLE: Page Evolution Selector
- *  ORGAN VERSION: v3.0‑IMMORTAL
+ *  ORGAN LAYER: Edge / Netlify Function / Portal Trust Layer
+ *  ORGAN ROLE: Page Evolution Selector (v17 FastLane‑Aware)
+ *  ORGAN VERSION: v17.0‑IMMORTAL‑FASTLANE
  *  ORGAN LINEAGE:
  *      - Gate v1 (Basic Routing)
  *      - Gate v2 (Trust‑Based Evolution)
  *      - Gate v3 (IMMORTAL Evolutionary Organ)
+ *      - Gate v14 (Advantage Cortex)
+ *      - Gate v17 (FastLane + Continuous Pulse Aware)
  *
  *  ORGAN CONTRACT:
  *      - MUST map securityDecision → page
  *      - MUST NOT infer identity
  *      - MUST NOT leak internal logic
  *      - MUST remain deterministic
+ *      - MUST remain drift‑proof
  *
  *  ORGAN PURPOSE:
  *      This organ EVOLVES THE PAGE.
@@ -23,24 +26,30 @@
  *          - challenge page
  *          - HELLNO page
  *
+ *      v17 adds:
+ *          - FastLane pulse awareness
+ *          - continuous‑pulse advantage routing
+ *          - temporal hint integration
+ *          - hydration/animation tier evolution
+ *
  *  ORGAN GUARANTEES:
  *      - Deterministic routing
  *      - Zero ambiguity
  *      - Zero drift
+ *      - Zero inference
  *
- *  ORGAN EXPERIENCE META:
- *      - Tone: Final, decisive, absolute
- *      - Behavior: No hesitation, no negotiation
- *
+ *  ORIGIN SEAL:
+ *      May 5th, 2026 — 17:45 MST
+ *      “The day the Gate learned to feel the rhythm.”
  * ============================================================
  */
 /*
 AI_EXPERIENCE_META = {
   identity: "PulseTouchGate",
-  version: "v14-Immortal",
+  version: "v17-Immortal-FastLane",
   layer: "routing",
   role: "evolutionary_page_selector",
-  lineage: "PulseOS-v13",
+  lineage: "PulseOS-v13 → v14 → v17",
 
   evo: {
     deterministic: true,
@@ -50,13 +59,13 @@ AI_EXPERIENCE_META = {
     challengeAware: true,
     regionAware: true,
 
-    // IMMORTAL upgrades (ADDED — nothing removed)
+    // IMMORTAL guarantees
     zeroPII: true,
     zeroTracking: true,
     absoluteRouting: true,
     noAmbiguity: true,
 
-    // NEW IMMORTAL ADVANTAGES
+    // IMMORTAL advantage cortex
     dualBandAware: true,
     chunkProfileAware: true,
     pageHintAware: true,
@@ -70,13 +79,18 @@ AI_EXPERIENCE_META = {
     driftProofPaths: true,
     regionClusterAware: true,
     modeAware: true,
-    presenceIntensityAware: true
+    presenceIntensityAware: true,
+
+    // v17 FastLane / Continuous Pulse
+    pulseStreamAware: true,
+    fastLaneAware: true,
+    temporalHintAware: true,
+    cookieEvolutionAware: true
   },
 
   contract: {
     always: [
       "PulseTouchSecurity",
-      // NEW IMMORTAL ADVANTAGE CONTRACTS
       "PulseTouchWarmup",
       "PulseTouch",
       "PulseTouchAdvantageCortex"
@@ -85,7 +99,6 @@ AI_EXPERIENCE_META = {
       "identityInference",
       "tracking",
       "legacyRouting",
-      // NEW NEVER CONTRACTS
       "behaviorInference",
       "emotionInference",
       "deviceFingerprinting"
@@ -94,11 +107,10 @@ AI_EXPERIENCE_META = {
 }
 */
 
+// ============================================================
+//  v17 IMMORTAL — CORE ROUTING (UNCHANGED, UNTOUCHABLE)
+// ============================================================
 export function evolutionaryGate(securityDecision) {
-  // ============================================================
-  // ORIGINAL LOGIC — PRESERVED EXACTLY
-  // ============================================================
-
   if (securityDecision.action === "hellno") {
     return "/hellno.html";
   }
@@ -110,29 +122,21 @@ export function evolutionaryGate(securityDecision) {
   return "/index.html";
 }
 
-/**
- * ============================================================
- *  IMMORTAL ADVANTAGE LAYER (ADDED — nothing removed)
- * ============================================================
- *
- *  This layer does NOT change routing.
- *  It only provides ADVANTAGE HINTS to the organism.
- *
- *  These hints can be used by:
- *    - Pulse‑Touch Warmup
- *    - Pulse‑Touch Advantage Cortex
- *    - Pulse‑OS hydration engine
- *    - Pulse‑OS chunk engine
- *    - Pulse‑OS page evolution engine
- *
- *  They NEVER affect the routing decision.
- *  They NEVER override the original logic.
- *  They NEVER classify the user.
- */
-export function evolutionaryGateAdvantages(securityDecision) {
+// ============================================================
+//  v17 IMMORTAL — ADVANTAGE CORTEX (ADDED, NEVER OVERRIDES ROUTING)
+// ============================================================
+export function evolutionaryGateAdvantages(securityDecision, touchState = {}) {
   const { trustLevel, action } = securityDecision;
 
+  // v17 continuous pulse + fastlane hints
+  const pulseStream = touchState.pulseStream || "continuous";
+  const fastLane = touchState.fastLane || "enabled";
+
+  // presence intensity (never inferred — only normalized)
+  const presenceIntensity = touchState.presence || "unknown";
+
   return {
+    // Hydration tier
     hydrationTier:
       action === "hellno"
         ? "minimal"
@@ -140,6 +144,7 @@ export function evolutionaryGateAdvantages(securityDecision) {
         ? "safe"
         : "full",
 
+    // Animation tier
     animationTier:
       action === "hellno"
         ? "none"
@@ -147,6 +152,7 @@ export function evolutionaryGateAdvantages(securityDecision) {
         ? "reduced"
         : "smooth",
 
+    // Chunk strategy
     chunkStrategy:
       action === "hellno"
         ? "minimal"
@@ -154,6 +160,7 @@ export function evolutionaryGateAdvantages(securityDecision) {
         ? "safe"
         : "aggressive",
 
+    // Warmup profile
     warmupProfile:
       action === "hellno"
         ? "minimal"
@@ -161,14 +168,26 @@ export function evolutionaryGateAdvantages(securityDecision) {
         ? "safe"
         : "full",
 
-    regionCluster:
-      securityDecision.region || "unknown",
+    // Region cluster
+    regionCluster: securityDecision.region || "unknown",
 
+    // Mode hint
     modeHint:
       trustLevel === "hostile"
         ? "safe"
         : trustLevel === "suspicious"
         ? "balanced"
-        : "fast"
+        : "fast",
+
+    // v17 continuous pulse awareness
+    pulseStream, // "continuous" | "burst" | "single"
+    fastLane,    // "enabled" | "disabled"
+
+    // v17 presence intensity
+    presenceIntensity,
+
+    // v17 temporal hints (if Touch v17 writes them)
+    originTs: touchState.originTs || null,
+    lastPulseTs: touchState.lastPulseTs || null
   };
 }

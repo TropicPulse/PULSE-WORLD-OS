@@ -931,7 +931,7 @@ export const logger = { ...VitalsLogger };
   }
 })();
 
-const PulseProofLogger = PulseProofBridge;
+const PulseProofLogger = logger;
 
 // -----------------------------------------------------------------------------
 // ALIASES

@@ -71,7 +71,7 @@ AI_EXPERIENCE_META = {
 
 console.log("Monitor v16-Immortal");
 
-import { pulseLog, log, warn, error } from "./PulseProofLogger-v16.js";
+import { pulseLog, log, warn, error } from "./PulseProofLogger.js";
 
 // ============================================================================
 //  GLOBAL + DB
