@@ -1,5 +1,5 @@
 // ============================================================================
-// FILE: /PULSE-PORTAL/PulsePower-v16.js
+// FILE: /PulsePower-v16.js
 // LAYER: PULSE-PORTAL — PRESENTATION / POWER LAYER (IMMORTAL v16)
 // ----------------------------------------------------------------------------
 // ROLE:

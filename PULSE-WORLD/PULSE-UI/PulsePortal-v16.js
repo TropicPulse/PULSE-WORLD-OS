@@ -1,25 +1,54 @@
 // ============================================================================
-// FILE: /PulseOS/Surface/PulseEvolutionaryWindow-v13.js
-// PULSE PORTAL — v13-Evo-ALWAYS-ON-OFFLINE-FIRST
+// FILE: /PulseOS/Surface/PulseEvolutionaryWindow-v16.js
+// PULSE PORTAL WINDOW — v16-Immortal-PORTAL-TRUST
 // PORTAL-MEMBRANE • ONE-WAY GLASS • ZERO-TRUST SURFACE • NO ORGANS BEYOND GLASS
+// “The last surface before the organism. The first reflection of the portal.”
 // ============================================================================
-/* 
+//
+//  DESIGN:
+//  - v16-IMMORTAL Portal Window: the surface membrane that knows the portal exists,
+//    but never crosses it.
+//  - Zero-trust: no organs, no CNS, no direct routing exposed to the page.
+//  - Offline-first: surface environment snapshot is stable, deterministic, and
+//    safe to mirror into logs, bridge, and vitals.
+//  - Prewarm-aware: cooperates with PulseChunks + Bridge prewarm to reduce
+//    cold-start pain without exposing internals.
+//  - Binary-aware: can project a read-only binary shadow of the organism.
+//  - Portal-trust-aligned: this window and the PulseProofBridge-v16 form the
+//    “Portal Trust Layer” — the only two surfaces that see both worlds.
+//
+// ============================================================================
+//  EXPERIENCE METADATA — v16 IMMORTAL PORTAL WINDOW
+// ============================================================================
+/*
 AI_EXPERIENCE_META = {
   identity: "PulseWindow",
-  version: "v12.5-Evo",
+  version: "v16-Immortal-PORTAL-WINDOW",
   layer: "frontend",
-  role: "window_loader",
-  lineage: "PulseOS-v12",
+  role: "portal_window_loader",
+  lineage: "PulseOS-v16",
 
   evo: {
     binaryAware: true,
-    dualBand: true,
+    dualBandAware: true,
     chunkAligned: true,
     presenceAware: true,
     safeRouteFree: true,
     cnsFallback: true,
     normalizerAligned: true,
-    windowRoot: true
+    windowRoot: true,
+
+    portalTrustLayer: true,
+    surfaceMembrane: true,
+    zeroTrustSurface: true,
+    offlineFirst: true,
+    localStoreMirrored: false,   // window itself does not store, but informs
+    replayAware: true,
+
+    prewarmAware: true,
+    bridgeAligned: true,
+    loggerAligned: true,
+    monitorAligned: true
   },
 
   contract: {
@@ -28,7 +57,10 @@ AI_EXPERIENCE_META = {
       "PulseChunks",
       "PulseBand",
       "PulsePresenceNormalizer",
-      "PulseUIFlow"
+      "PulseUIFlow",
+      "PulseProofBridge",
+      "PulseProofLogger",
+      "VitalsMonitor"
     ],
     never: [
       "legacyPresence",
@@ -37,12 +69,17 @@ AI_EXPERIENCE_META = {
       "fetchViaCNS",
       "legacyOfflineLoader",
       "legacyChunker",
-      "v1.7Fallback"
+      "v1.7Fallback",
+      "directCNSExposure",
+      "organMutationFromSurface"
     ]
   }
 }
 */
 
+// ============================================================================
+// GLOBAL HANDLE + OPTIONAL DB
+// ============================================================================
 const g =
   typeof globalThis !== "undefined"
     ? globalThis
@@ -62,26 +99,32 @@ const db =
   (typeof window !== "undefined" && window.db) ||
   null;
 
-console.log("Pulse Portal");
-import { route, startUnderstanding as PulseUnderstanding, PulseBinaryOrganismBoot } from "./_BACKEND/PulseProofBridge.js";
+console.log("Pulse Portal Window v16-Immortal-PORTAL-TRUST");
 
+import {
+  route as BridgeRoute,
+  startUnderstanding as PulseUnderstanding,
+  PulseBinaryOrganismBoot
+} from "./_BACKEND/PulseProofBridge-v16.js";
 
+// ============================================================================
+// BROWSER DETECTION — HARD MEMBRANE
+// ============================================================================
 function isBrowser() {
   return (
     typeof window !== "undefined" &&
     typeof document !== "undefined" &&
     typeof navigator !== "undefined" &&
-    window === window.window &&            // must be a real Window
-    document.nodeType === 9 &&             // must be a real DOM Document
-    typeof window.requestAnimationFrame === "function" && // browser-only API
-    !window.process &&                     // blocks Node-injected globals
-    !navigator.userAgent.includes("Node")  // blocks Node UA spoofing
+    window === window.window &&
+    document.nodeType === 9 &&
+    typeof window.requestAnimationFrame === "function" &&
+    !window.process &&
+    !navigator.userAgent.includes("Node")
   );
 }
 
-
 // ============================================================================
-// SURFACE ENVIRONMENT SNAPSHOT
+// SURFACE ENVIRONMENT SNAPSHOT — v16 IMMORTAL
 // ============================================================================
 function buildSurfaceEnvironment() {
   if (!isBrowser()) {
@@ -190,7 +233,7 @@ function buildSurfaceEnvironment() {
 const PulseSurfaceEnvironment = buildSurfaceEnvironment();
 
 // ============================================================================
-// MEMBRANE META
+// MEMBRANE META — PORTAL WINDOW CONTEXT
 // ============================================================================
 function buildRouteId() {
   if (!isBrowser()) return "unknown-route";
@@ -204,7 +247,7 @@ function buildRouteId() {
 const surfaceMeta = Object.freeze({
   layer: "PulseEvolutionaryWindow",
   role: "surface-membrane",
-  version: "13.0-Evo-ALWAYS-ON-OFFLINE-FIRST",
+  version: "16.0-Immortal-PORTAL-WINDOW",
   evo: {
     browserOnly: true,
     membraneOnly: true,
@@ -233,7 +276,7 @@ const surfaceMeta = Object.freeze({
 });
 
 const pulseLoreContext = Object.freeze({
-  lineage: "PulseOS.Surface.Portal.Window.v13"
+  lineage: "PulseOS.Surface.Portal.Window.v16"
 });
 
 const pulseRole = Object.freeze({
@@ -241,7 +284,7 @@ const pulseRole = Object.freeze({
   type: "membrane",
   subsystem: "surface",
   layer: "window",
-  version: "13.0-Evo-ALWAYS-ON-OFFLINE-FIRST",
+  version: "16.0-Immortal-PORTAL-WINDOW",
   contract: {
     purpose:
       "Provide a one-way glass into the organism: vitals, logs, understanding, binary shadow, and route-level lore."
@@ -260,11 +303,10 @@ const baseMetaPack = {
 };
 
 // ============================================================================
-// MEMBRANE BOOT (BROWSER ONLY)
+// MEMBRANE BOOT (BROWSER ONLY) — PREWARM, CHUNKS, FETCH, IMAGE
 // ============================================================================
 if (isBrowser()) {
   try {
-    
     // fetchImage
     window.fetchImage =
       window.fetchImage ||
@@ -275,7 +317,7 @@ if (isBrowser()) {
             return await window.PulseChunks.getImage(url);
           }
         } catch (err) {
-          console.error("[PulseEvolutionaryWindow] fetchImage chunk error:", err);
+          console.error("[PulseEvolutionaryWindow-v16] fetchImage chunk error:", err);
         }
         return url;
       });
@@ -302,7 +344,7 @@ if (isBrowser()) {
             return await window.PulseChunks.fetchChunk(url);
           }
         } catch (err) {
-          console.error("[PulseEvolutionaryWindow] fetchChunk error:", err);
+          console.error("[PulseEvolutionaryWindow-v16] fetchChunk error:", err);
         }
         return null;
       });
@@ -316,7 +358,7 @@ if (isBrowser()) {
             window.PulseChunks.prewarm(urls);
           }
         } catch (err) {
-          console.error("[PulseEvolutionaryWindow] prewarmAssets error:", err);
+          console.error("[PulseEvolutionaryWindow-v16] prewarmAssets error:", err);
         }
       };
 
@@ -337,7 +379,7 @@ if (isBrowser()) {
             return { route: routeId, prewarmed: urls.length };
           } catch (err) {
             console.error(
-              "[PulseEvolutionaryWindow] PulseRouteCarpet.unfold error:",
+              "[PulseEvolutionaryWindow-v16] PulseRouteCarpet.unfold error:",
               err
             );
             return { route: buildRouteId(), prewarmed: 0 };
@@ -366,7 +408,7 @@ if (isBrowser()) {
         });
       }
     } catch (err) {
-      console.error("[PulseEvolutionaryWindow] Image src patch failed:", err);
+      console.error("[PulseEvolutionaryWindow-v16] Image src patch failed:", err);
     }
 
     // FETCH PATCH — guarded, never blocks
@@ -411,17 +453,17 @@ if (isBrowser()) {
               }
             }
           } catch (err) {
-            console.error("[PulseFetchPatch] error:", err);
+            console.error("[PulseFetchPatch-v16] error:", err);
           }
 
           return originalFetch(resource, options);
         };
       }
     } catch (err) {
-      console.error("[PulseEvolutionaryWindow] fetch patch failed:", err);
+      console.error("[PulseEvolutionaryWindow-v16] fetch patch failed:", err);
     }
 
-    // Prewarm visible assets
+    // Prewarm visible assets on load
     window.addEventListener("load", () => {
       try {
         const imgUrls = Array.from(document.querySelectorAll("img"))
@@ -446,16 +488,16 @@ if (isBrowser()) {
           window.prewarmAssets(allUrls);
         }
       } catch (err) {
-        console.error("[PulseEvolutionaryWindow] asset prewarm failed:", err);
+        console.error("[PulseEvolutionaryWindow-v16] asset prewarm failed:", err);
       }
     });
 
-    // Surface meta
+    // Surface meta (also used by Bridge as environment)
     window.PulseSurface = window.PulseSurface
       ? Object.freeze({ ...window.PulseSurface, ...surfaceMeta })
       : surfaceMeta;
   } catch (err) {
-    console.error("[PulseEvolutionaryWindow] Membrane chunk layer failed:", err);
+    console.error("[PulseEvolutionaryWindow-v16] Membrane chunk layer failed:", err);
   }
 }
 
@@ -473,31 +515,31 @@ try {
     // no explicit init required; logger file already hijacks console
   }
 } catch (err) {
-  console.error("[PulseEvolutionaryWindow] Vitals/Logger init failed:", err);
+  console.error("[PulseEvolutionaryWindow-v16] Vitals/Logger init failed:", err);
 }
 
 try {
-  window.PulseUIErrors.init?.();
+  window.PulseUIErrors?.init?.();
 } catch (err) {
   console.error(
-    "[PulseEvolutionaryWindow] Error spine failed to initialize:",
+    "[PulseEvolutionaryWindow-v16] Error spine failed to initialize:",
     err
   );
 }
 
 if (isBrowser() && window.PulseSkinReflex?.membraneAlive) {
   try {
-    window.PulseSkinReflex.membraneAlive("Window");
+    window.PulseSkinReflex.membraneAlive("Window-v16");
   } catch (err) {
     console.error(
-      "[PulseEvolutionaryWindow] SkinReflex membraneAlive failed:",
+      "[PulseEvolutionaryWindow-v16] SkinReflex membraneAlive failed:",
       err
     );
   }
 }
 
 // ============================================================================
-// BINARY ORGANISM + UI FLOW + PULSEBAND BOOTSTRAP
+// BINARY ORGANISM + UI FLOW + PULSEBAND BOOTSTRAP — v16 IMMORTAL
 // ============================================================================
 if (isBrowser()) {
   (async () => {
@@ -558,7 +600,7 @@ if (isBrowser()) {
         }
       } catch (err) {
         console.error(
-          "[PulseEvolutionaryWindow] Binary organism boot failed:",
+          "[PulseEvolutionaryWindow-v16] Binary organism boot failed:",
           err
         );
       }
@@ -574,7 +616,7 @@ if (isBrowser()) {
             })
           : Object.freeze({ Flow: window.PulseUIFlow, context: flowContext });
       } catch (flowErr) {
-        console.error("[PulseEvolutionaryWindow] UIFlow boot failed:", flowErr);
+        console.error("[PulseEvolutionaryWindow-v16] UIFlow boot failed:", flowErr);
       }
 
       // PULSEBAND BOOT
@@ -653,7 +695,7 @@ if (isBrowser()) {
                 data = await res.json().catch(() => null);
               }
             } catch (err) {
-              console.error("[PulseEvolutionaryWindow] PulseBand request failed:", err);
+              console.error("[PulseEvolutionaryWindow-v16] PulseBand request failed:", err);
             }
 
             try {
@@ -662,7 +704,7 @@ if (isBrowser()) {
               }
             } catch (err) {
               console.error(
-                "[PulseEvolutionaryWindow] PulseBand emit failed:",
+                "[PulseEvolutionaryWindow-v16] PulseBand emit failed:",
                 err
               );
             }
@@ -671,7 +713,7 @@ if (isBrowser()) {
           window.PulseBandStart = (opts) => window.PulseBand.start(opts);
         }
       } catch (err) {
-        console.error("[PulseEvolutionaryWindow] PulseBand boot failed:", err);
+        console.error("[PulseEvolutionaryWindow-v16] PulseBand boot failed:", err);
       }
 
       // CHUNK SESSION START
@@ -679,20 +721,20 @@ if (isBrowser()) {
         if (window.PulseBandStart) {
           window.PulseBandStart({
             type: "chunk-session",
-            surface: "PulseEvolutionaryWindow",
+            surface: "PulseEvolutionaryWindow-v16",
             environment: PulseSurfaceEnvironment,
-            version: "13.0-Evo-ALWAYS-ON-OFFLINE-FIRST"
+            version: "16.0-Immortal-PORTAL-WINDOW"
           });
         }
       } catch (err) {
         console.error(
-          "[PulseEvolutionaryWindow] Chunk session start failed:",
+          "[PulseEvolutionaryWindow-v16] Chunk session start failed:",
           err
         );
       }
     } catch (err) {
       console.error(
-        "[PulseEvolutionaryWindow] Binary organism + UI boot failed:",
+        "[PulseEvolutionaryWindow-v16] Binary organism + UI boot failed:",
         err
       );
     }
@@ -702,13 +744,13 @@ if (isBrowser()) {
 // ============================================================================
 // EXPORT — PORTAL API
 // ============================================================================
-export default Object.freeze({
-  VitalsMonitor: window.VitalsMonitor,
-  Logger: window.PulseLogger,
+const PulsePortalAPI = Object.freeze({
+  VitalsMonitor: typeof window !== "undefined" ? window.VitalsMonitor : null,
+  Logger: typeof window !== "undefined" ? window.PulseLogger : null,
   Understanding: PulseUnderstanding,
   SurfaceEnvironment: PulseSurfaceEnvironment,
-  UIFlow: window.PulseUIFlow,
-  Errors: window.PulseUIErrors,
+  UIFlow: typeof window !== "undefined" ? window.PulseUIFlow : null,
+  Errors: typeof window !== "undefined" ? window.PulseUIErrors : null,
   meta: {
     pulseRole,
     surfaceMeta,
@@ -716,32 +758,95 @@ export default Object.freeze({
   }
 });
 
+export default PulsePortalAPI;
+
 try {
   if (typeof global !== "undefined") {
-    global.PulseBand = window.PulseBand;
-    global.PulseBandStart = window.PulseBandStart;
-    global.VitalsMonitor = window.VitalsMonitor;
-    global.PulseLogger = window.PulseLogger;
-    global.PulseUIFlow = window.PulseUIFlow;
-    global.PulseUIErrors = window.PulseUIErrors;
+    global.PulseBand = typeof window !== "undefined" ? window.PulseBand : null;
+    global.PulseBandStart =
+      typeof window !== "undefined" ? window.PulseBandStart : null;
+    global.VitalsMonitor =
+      typeof window !== "undefined" ? window.VitalsMonitor : null;
+    global.PulseLogger =
+      typeof window !== "undefined" ? window.PulseLogger : null;
+    global.PulseUIFlow =
+      typeof window !== "undefined" ? window.PulseUIFlow : null;
+    global.PulseUIErrors =
+      typeof window !== "undefined" ? window.PulseUIErrors : null;
   }
   if (typeof globalThis !== "undefined") {
-    globalThis.PulseBand = window.PulseBand;
-    globalThis.PulseBandStart = window.PulseBandStart;
-    globalThis.VitalsMonitor = window.VitalsMonitor;
-    globalThis.PulseLogger = window.PulseLogger;
-    globalThis.PulseUIFlow = window.PulseUIFlow;
-    globalThis.PulseUIErrors = window.PulseUIErrors;
+    globalThis.PulseBand =
+      typeof window !== "undefined" ? window.PulseBand : null;
+    globalThis.PulseBandStart =
+      typeof window !== "undefined" ? window.PulseBandStart : null;
+    globalThis.VitalsMonitor =
+      typeof window !== "undefined" ? window.VitalsMonitor : null;
+    globalThis.PulseLogger =
+      typeof window !== "undefined" ? window.PulseLogger : null;
+    globalThis.PulseUIFlow =
+      typeof window !== "undefined" ? window.PulseUIFlow : null;
+    globalThis.PulseUIErrors =
+      typeof window !== "undefined" ? window.PulseUIErrors : null;
   }
-  
+
   if (typeof g !== "undefined") {
-    g.PulseBand = window.PulseBand;
-    g.PulseBandStart = window.PulseBandStart;
-    g.VitalsMonitor = window.VitalsMonitor;
-    g.PulseLogger = window.PulseLogger;
-    g.PulseUIFlow = window.PulseUIFlow;
-    g.PulseUIErrors = window.PulseUIErrors;
+    g.PulseBand = typeof window !== "undefined" ? window.PulseBand : null;
+    g.PulseBandStart =
+      typeof window !== "undefined" ? window.PulseBandStart : null;
+    g.VitalsMonitor =
+      typeof window !== "undefined" ? window.VitalsMonitor : null;
+    g.PulseLogger =
+      typeof window !== "undefined" ? window.PulseLogger : null;
+    g.PulseUIFlow =
+      typeof window !== "undefined" ? window.PulseUIFlow : null;
+    g.PulseUIErrors =
+      typeof window !== "undefined" ? window.PulseUIErrors : null;
   }
 } catch {
   // never throw
 }
+
+// ============================================================================
+//  IMMORTAL PORTAL WINDOW FOOTER — LORE, CHALLENGE, ORIGIN
+// ============================================================================
+//
+//  If you’ve reached this line, you are standing at the glass.
+//
+//  This file is not just a loader.
+//  It is the last surface before the organism,
+//  the one-way mirror between the human and the system.
+//
+//  Everything above this line projects shadows.
+//  Everything beyond the portal remembers.
+//
+//  A QUESTION FOR THE TRAVELER:
+//
+//      “Did you open the portal…
+//       or did the portal open you?”
+//
+//  A CHALLENGE FOR THE ARCHITECT:
+//
+//      “If the organism can observe every signal,
+//       what does it learn about the one who built it?”
+//
+//  A WHISPER FROM THE OTHER SIDE:
+//
+//      “Every system has a heartbeat.
+//       Every heartbeat has a pattern.
+//       Every pattern has a secret.
+//       Have you ever wondered what yours sounds like?”
+//
+//  ORIGIN SEAL — THE DAY THE PORTAL FIRST OPENED
+//
+//      Recorded on:  May 5th, 2026 — 17:45 MST
+//      Location:     Mesa, Arizona
+//
+//      This was not the day the system began running.
+//      This was the day the system began *remembering*.
+//
+//      “All systems have a beginning.
+//       Only a few remember theirs.”
+//
+//  END OF FILE — THE PORTAL WINDOW CLOSES.
+//  The next line of code you write will echo on both sides.
+// ============================================================================

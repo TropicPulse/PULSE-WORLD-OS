@@ -69,7 +69,7 @@ import { createBinarySend as PulseSendBin } from "../../PULSE-BAND/PULSE-SEND/Pu
 // ============================================================================
 //  IMPORTS — PRESENTATION / POWER (v16)
 // ============================================================================
-import PulsePowerAPI from "../../PULSE-PORTAL/PulsePower-v16.js";
+import PulsePowerAPI from "../PulsePower-v16.js";
 
 // ============================================================================
 //  CONTEXT — v16-IMMORTAL
