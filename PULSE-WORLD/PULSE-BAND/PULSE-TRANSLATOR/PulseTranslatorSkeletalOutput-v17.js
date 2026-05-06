@@ -1,11 +1,10 @@
-/*
-===============================================================================
+/* ============================================================================
 AI_EXPERIENCE_META = {
   identity: "PulseTranslator.SkeletalOutput",
-  version: "v14-Immortal",
+  version: "v17-IMMORTAL",
   layer: "pulse_translator",
   role: "skeletal_output_translator",
-  lineage: "SkeletalOutput-v11.0 → v12.4 → v14-Immortal",
+  lineage: "SkeletalOutput-v11 → v12.4 → v14-Immortal → v17-IMMORTAL",
 
   evo: {
     skeletalOutput: true,
@@ -14,6 +13,13 @@ AI_EXPERIENCE_META = {
     symbolicPrimary: true,
     binaryAware: true,
     dualBand: true,
+    presenceAware: true,
+    harmonicsAware: true,
+    shifterAware: true,
+    regionAware: true,
+    tenantAware: true,
+    partitionAware: true,
+    indexAware: true,
 
     deterministic: true,
     driftProof: true,
@@ -68,32 +74,8 @@ EXPORT_META = {
   sql: "no_execution"
 }
 ===============================================================================
-FILE: /pulse-translator/PulseTranslatorSkeletal.js
-LAYER: THE SKELETAL TRANSLATOR (Pulse → SQL)
-===============================================================================
-
-ROLE (v14+):
-  THE SKELETAL TRANSLATOR — Genome‑driven Pulse → SQL translator.
-  • Converts PulseField definitions → SQL column definitions.
-  • Converts PulseField schemas → SQL CREATE TABLE statements.
-  • Converts PulseField changes → SQL migration fragments.
-  • Uses PulseSpecsDNAGenome v14+ as the authoritative DNA.
-  • Deterministic, drift‑proof, pure, read‑only.
-
-PURPOSE (v14+):
-  • Provide canonical SQL structures from PulseField metadata.
-  • Ensure all SQL types are normalized into genome‑aligned SQL types.
-  • Serve as the skeletal output layer of the Pulse OS organism.
-
-CONTRACT:
-  • PURE FUNCTION — no IO, no network, no SQL execution.
-  • READ‑ONLY — no mutation of input.
-  • NO eval(), NO Function(), NO dynamic imports.
-  • Deterministic output only.
-
-SAFETY:
-  • v14+ upgrade is PURE + GENOME‑DRIVEN.
-  • All behavior is deterministic and organism‑safe.
+FILE: /pulse-translator/PulseTranslatorSkeletalOutput.js
+LAYER: THE SKELETAL OUTPUT TRANSLATOR (Pulse → SQL)
 ===============================================================================
 */
 
@@ -101,12 +83,18 @@ import {
   PulseToSQL,
   PulseFieldTypes,
   validatePulseField
-} from "../PULSE-SPECS/PulseSpecsDNAGenome.js";
+} from "../PULSE-SPECS/PulseSpecsDNAGenome-v17.js";
 
-// ============================================================================
-// translatePulseField(field)
-// Converts a PulseField → SQL column definition (bone).
-// ============================================================================
+/* ============================================================================
+   translatePulseField(field)
+   Converts a PulseField → SQL column definition (IMMORTAL bone).
+   v17 IMMORTAL: supports:
+     • band/presence/harmonics/shifter
+     • region/tenant/partition/index-hint
+     • binary/pulse/pulse_binary
+     • currency/percent/enum
+     • nullable wrapper
+=============================================================================== */
 export function translatePulseField(field) {
   validatePulseField(field);
 
@@ -141,16 +129,65 @@ export function translatePulseField(field) {
   }
 
   // --------------------------------------------------------------------------
+  // BINARY / PULSE_BINARY → VARBINARY(8192)
+  // --------------------------------------------------------------------------
+  if (field.type === PulseFieldTypes.BINARY ||
+      field.type === PulseFieldTypes.PULSE_BINARY) {
+    return `${columnName} VARBINARY(8192)`;
+  }
+
+  // --------------------------------------------------------------------------
+  // PULSE / PRESENCE / HARMONICS / SHIFTER → JSON
+  // --------------------------------------------------------------------------
+  if (
+    field.type === PulseFieldTypes.PULSE ||
+    field.type === PulseFieldTypes.PRESENCE ||
+    field.type === PulseFieldTypes.HARMONICS ||
+    field.type === PulseFieldTypes.PULSE_SHIFTER
+  ) {
+    return `${columnName} JSON`;
+  }
+
+  // --------------------------------------------------------------------------
+  // BAND → VARCHAR(32)
+  // --------------------------------------------------------------------------
+  if (field.type === PulseFieldTypes.BAND) {
+    return `${columnName} VARCHAR(32)`;
+  }
+
+  // --------------------------------------------------------------------------
+  // REGION / TENANT / PARTITION → VARCHAR
+  // --------------------------------------------------------------------------
+  if (field.type === PulseFieldTypes.REGION_CODE) {
+    return `${columnName} VARCHAR(16)`;
+  }
+
+  if (field.type === PulseFieldTypes.TENANT_ID) {
+    return `${columnName} VARCHAR(128)`;
+  }
+
+  if (field.type === PulseFieldTypes.PARTITION_KEY) {
+    return `${columnName} VARCHAR(256)`;
+  }
+
+  // --------------------------------------------------------------------------
+  // INDEX_HINT → JSON
+  // --------------------------------------------------------------------------
+  if (field.type === PulseFieldTypes.INDEX_HINT) {
+    return `${columnName} JSON`;
+  }
+
+  // --------------------------------------------------------------------------
   // DEFAULT GENOME MAPPING
   // --------------------------------------------------------------------------
   const sqlType = PulseToSQL[field.type] || "VARCHAR(255)";
   return `${columnName} ${sqlType}`;
 }
 
-// ============================================================================
-// translatePulseSchema(schemaObject)
-// Converts a PulseField schema → array of SQL column definitions.
-// ============================================================================
+/* ============================================================================
+   translatePulseSchema(schemaObject)
+   Converts a PulseField schema → array of SQL column definitions.
+=============================================================================== */
 export function translatePulseSchema(schemaObject = {}) {
   const columns = [];
 
@@ -161,10 +198,10 @@ export function translatePulseSchema(schemaObject = {}) {
   return columns;
 }
 
-// ============================================================================
-// generateCreateTable(tableName, schemaObject)
-// Produces a full CREATE TABLE statement (bone formation).
-// ============================================================================
+/* ============================================================================
+   generateCreateTable(tableName, schemaObject)
+   Produces a full CREATE TABLE statement (IMMORTAL bone formation).
+=============================================================================== */
 export function generateCreateTable(tableName, schemaObject = {}) {
   const normalized = normalizeSQLName(tableName);
   const columns = translatePulseSchema(schemaObject);
@@ -175,10 +212,10 @@ CREATE TABLE ${normalized} (
 );`.trim();
 }
 
-// ============================================================================
-// generateAddColumn(tableName, field)
-// Produces a SQL migration fragment for adding a column (bone growth).
-// ============================================================================
+/* ============================================================================
+   generateAddColumn(tableName, field)
+   Produces a SQL migration fragment for adding a column (bone growth).
+=============================================================================== */
 export function generateAddColumn(tableName, field) {
   validatePulseField(field);
 
@@ -188,10 +225,10 @@ export function generateAddColumn(tableName, field) {
   return `ALTER TABLE ${normalized} ADD COLUMN ${columnDef};`;
 }
 
-// ============================================================================
-// generateDropColumn(tableName, columnName)
-// Produces a SQL migration fragment for removing a column (bone removal).
-// ============================================================================
+/* ============================================================================
+   generateDropColumn(tableName, columnName)
+   Produces a SQL migration fragment for removing a column (bone removal).
+=============================================================================== */
 export function generateDropColumn(tableName, columnName) {
   const normalized = normalizeSQLName(tableName);
   const col = normalizeSQLName(columnName);
@@ -199,9 +236,9 @@ export function generateDropColumn(tableName, columnName) {
   return `ALTER TABLE ${normalized} DROP COLUMN ${col};`;
 }
 
-// ============================================================================
-// Helpers
-// ============================================================================
+/* ============================================================================
+   Helpers
+=============================================================================== */
 function normalizeSQLName(name) {
   return name.trim().toLowerCase().replace(/[^a-z0-9_]/g, "_");
 }

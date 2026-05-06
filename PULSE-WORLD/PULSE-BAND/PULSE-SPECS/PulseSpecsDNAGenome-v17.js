@@ -1,53 +1,61 @@
 // ============================================================================
-// FILE: /specs/PulseSpecsDNAGenome-v14.0-Presence-Immortal.js
-// [pulse:specs] PULSE_SPECS_DNA_GENOME v14.0-Presence-Immortal
+// FILE: /specs/PulseSpecsDNAGenome-v17-IMMORTAL.js
+// [pulse:specs] PULSE_SPECS_DNA_GENOME v17-IMMORTAL
 // OS Data Genome • Canonical Field Language • Deterministic Translation Spec
 // PURE SPEC — NO IO • NO NETWORK • NO AI • NO RUNTIME
 // ============================================================================
 //
-// IDENTITY — THE OS DNA GENOME (v14.0-Presence-Immortal):
-// ------------------------------------------------------
-// • Immutable genetic blueprint of Pulse OS (v10.4 → v14 IMMORTAL).
+// IDENTITY — THE OS DNA GENOME (v17-IMMORTAL):
+// -------------------------------------------
+// • Immutable genetic blueprint of Pulse OS (v10.4 → v17 IMMORTAL).
 // • Canonical PulseField language for all v12+ subsystems.
-// • Source of truth for SQL ↔ Pulse ↔ Firestore mappings.
+// • Source of truth for SQL ↔ Pulse ↔ Firestore ↔ WorldDataProvider mappings.
 // • Validation rulebook for translators + healers + shifter engines.
 // • Schema cortex foundation for AI reasoning + component generation.
 // • Drift‑proof, deterministic, backwards‑compatible, evolution‑safe.
-// • ⭐ Binary‑aware, pulse‑aware, dual‑band, shifter‑aware (symbolic + binary).
-// • ⭐ Presence/harmonics/IMMORTAL band metadata surfaced as pure schema only.
+// • Binary‑aware, pulse‑aware, dual‑band, shifter‑aware (symbolic + binary).
+// • Presence/harmonics/IMMORTAL band metadata surfaced as pure schema only.
+// • Multi‑backend aware (firebase/sql/custom) as *metadata only*.
 // ============================================================================
+
 /*
 AI_EXPERIENCE_META = {
   identity: "PulseSpecsDNAGenome",
-  version: "v14-Immortal",
+  version: "v17-IMMORTAL",
   layer: "genome",
   role: "os_data_genome",
-  lineage: "PulseSpecsDNAGenome-v1 → v9.1 → v10.4 → v11-Evo → v12.3 → v14-Immortal",
+  lineage: "v1 → v9.1 → v10.4 → v11-Evo → v12.3 → v14-Immortal → v17-IMMORTAL",
 
   evo: {
-    genomeCore: true,               // canonical PulseField language
-    immutable: true,                // structure MUST NEVER change
-    schemaOnly: true,               // no logic, no runtime, no execution
-    deterministic: true,            // pure static spec
-    driftProof: true,               // cannot drift across versions
-    translationSpec: true,          // SQL ↔ Firestore ↔ PulseField
-    validationRules: true,          // PulseField rule definitions
-    mappingRules: true,             // type mapping law
-    nonExecutable: true,            // MUST NOT contain executable logic
-    metadataOnlyEvolution: true,    // only version + identity may evolve
+    genomeCore: true,
+    immutable: true,
+    schemaOnly: true,
+    deterministic: true,
+    driftProof: true,
+    translationSpec: true,
+    validationRules: true,
+    mappingRules: true,
+    nonExecutable: true,
+    metadataOnlyEvolution: true,
 
     zeroNetwork: true,
     zeroFilesystem: true,
     zeroMutationOfInput: true,
-    pureSpec: true
+    pureSpec: true,
+
+    multiBackendAware: true,
+    regionAware: true,
+    tenancyAware: true,
+    indexAware: true,
+    immortalBandAware: true
   },
 
   contract: {
     always: [
-      "PulseSchema",                // schema unification engine
-      "PulseContinuance",           // continuity + survival modeling
-      "PulseOmniHosting",           // hosting + placement logic
-      "PulseCoreMemory"             // core memory integration
+      "PulseSchema",
+      "PulseContinuance",
+      "PulseOmniHosting",
+      "PulseCoreMemory"
     ],
     never: [
       "safeRoute",
@@ -65,21 +73,21 @@ export const PULSE_FIELDS_CONTEXT = {
   role: "OS_DATA_GENOME",
   purpose: "Define canonical PulseField types, rules, and mappings",
   context: "Deterministic data language for all Pulse subsystems",
-  version: 14.0,
-  target: "os-core-v14-Presence-Immortal",
+  version: 17.0,
+  target: "os-core-v17-IMMORTAL",
   selfRepairable: false,
 
   evolution: {
     "1.1":  "Base genome: core types + SQL/Firestore mappings.",
     "1.2":  "Extended numeric semantics (currency/percent) and enum support.",
     "1.3":  "Explicit null handling + stricter URL/email patterns + frozen spec snapshot.",
-    "10.4": "Identity uplift, organism alignment, gold‑white genome header, v10.4 contract sync.",
-    "11.0": "Binary‑aware genome extension, v11‑Evo alignment, pulse/binary field layer (backwards‑compatible).",
-    "12.3": "Every‑advantage period uplift: v12-core alignment, no new primitives, stricter determinism + drift guards.",
-    "14.0": "IMMORTAL uplift: dual‑band + presence/harmonics/shifter surfaces, no breaking changes, symbolic/binary co‑existence."
+    "10.4": "Identity uplift, organism alignment, v10.4 contract sync.",
+    "11.0": "Binary‑aware genome extension, v11‑Evo alignment, pulse/binary field layer.",
+    "12.3": "Every‑advantage uplift: v12-core alignment, stricter determinism + drift guards.",
+    "14.0": "IMMORTAL uplift: dual‑band + presence/harmonics/shifter surfaces.",
+    "17.0": "WorldDataProvider + multi‑backend hints (Firestore/SQL), region/tenant/index metadata."
   },
 
-  // IMMORTAL / band metadata (schema‑only, no runtime behavior)
   immortal: {
     presenceAware: true,
     harmonicsAware: true,
@@ -93,6 +101,26 @@ export const PULSE_FIELDS_CONTEXT = {
     shifterPulseAware: true,
     binaryFrontEndReady: true,
     symbolicBackEndReady: true
+  },
+
+  backends: {
+    firebase: {
+      dialect: "firestore",
+      supportsSubcollections: true,
+      supportsTimestamps: true
+    },
+    sql: {
+      dialect: "generic-sql",
+      supportsJson: true,
+      supportsIndexes: true,
+      supportsCompositeKeys: true
+    },
+    worldDataProvider: {
+      dialect: "abstract",
+      routingByDNA: true,
+      regionAware: true,
+      tenantAware: true
+    }
   }
 };
 
@@ -100,7 +128,7 @@ export const PULSE_FIELDS_CONTEXT = {
 // ============================================================================
 // PulseField Types — the universal data language (GENETIC ALPHABET)
 // ============================================================================
-// NOTE: v14 adds *no* breaking primitives. New types must degrade cleanly.
+// NOTE: v17 adds no breaking primitives. New types must degrade cleanly.
 export const PulseFieldTypes = {
   STRING: "string",
   NUMBER: "number",
@@ -115,24 +143,30 @@ export const PulseFieldTypes = {
   URL: "url",
   JSON: "json",
 
-  // v1.2+ extensions (backwards‑compatible)
+  // v1.2+ extensions
   ENUM: "enum",
   CURRENCY: "currency",
   PERCENT: "percent",
   NULLABLE: "nullable",
 
-  // v11‑Evo binary/pulse extensions (must degrade to primitives)
-  BINARY: "binary",            // degrades to string/bytes
-  BITFIELD: "bitfield",        // degrades to number
-  PULSE: "pulse",              // degrades to json/map
-  PULSE_BINARY: "pulse_binary",// degrades to binary
+  // v11‑Evo binary/pulse extensions
+  BINARY: "binary",
+  BITFIELD: "bitfield",
+  PULSE: "pulse",
+  PULSE_BINARY: "pulse_binary",
 
-  // v14 IMMORTAL band/shifter extensions (schema‑only, must degrade)
-  BAND: "band",                // symbolic band descriptor (degrades to string)
-  PRESENCE: "presence",        // presence band state (degrades to json/string)
-  HARMONICS: "harmonics",      // harmonic drift/coherence (degrades to json/string)
-  PULSE_SHIFTER: "pulse_shifter",          // symbolic shifter pulse snapshot (degrades to json)
-  PULSE_SHIFTER_BINARY: "pulse_shifter_binary" // binary shifter pulse snapshot (degrades to binary)
+  // v14 IMMORTAL band/shifter extensions
+  BAND: "band",
+  PRESENCE: "presence",
+  HARMONICS: "harmonics",
+  PULSE_SHIFTER: "pulse_shifter",
+  PULSE_SHIFTER_BINARY: "pulse_shifter_binary",
+
+  // v17 multi‑backend / world‑layer hints
+  REGION_CODE: "region_code",
+  TENANT_ID: "tenant_id",
+  PARTITION_KEY: "partition_key",
+  INDEX_HINT: "index_hint"
 };
 
 
@@ -153,7 +187,6 @@ export const PulseFieldRules = {
   url: { pattern: /^https?:\/\/[^\s]+$/ },
   json: {},
 
-  // v1.2+ extensions
   enum: {
     baseType: "string",
     allowedValues: [],
@@ -176,9 +209,8 @@ export const PulseFieldRules = {
     allowNull: true
   },
 
-  // v11‑Evo binary/pulse extensions
   binary: {
-    baseType: "string",       // can be stored as base64 string or bytes
+    baseType: "string",
     encoding: "base64",
     maxLength: 8192
   },
@@ -187,33 +219,49 @@ export const PulseFieldRules = {
     min: 0
   },
   pulse: {
-    baseType: "json",         // full pulse organism snapshot
+    baseType: "json",
     strict: false
   },
   pulse_binary: {
-    baseType: "binary"        // binary‑encoded pulse snapshot
+    baseType: "binary"
   },
 
-  // v14 IMMORTAL band/shifter extensions
   band: {
-    baseType: "string",       // e.g. "symbolic", "binary", "dual"
+    baseType: "string",
     allowedValues: ["symbolic", "binary", "dual"],
     maxLength: 32
   },
   presence: {
-    baseType: "json",         // presence band state snapshot
+    baseType: "json",
     strict: false
   },
   harmonics: {
-    baseType: "json",         // harmonic drift/coherence snapshot
+    baseType: "json",
     strict: false
   },
   pulse_shifter: {
-    baseType: "json",         // PulseShifterEvolutionaryPulse-v12.3/v14 snapshot
+    baseType: "json",
     strict: false
   },
   pulse_shifter_binary: {
-    baseType: "binary"        // binary‑encoded shifter pulse snapshot
+    baseType: "binary"
+  },
+
+  region_code: {
+    baseType: "string",
+    maxLength: 16
+  },
+  tenant_id: {
+    baseType: "string",
+    maxLength: 128
+  },
+  partition_key: {
+    baseType: "string",
+    maxLength: 256
+  },
+  index_hint: {
+    baseType: "json",
+    strict: false
   }
 };
 
@@ -237,13 +285,9 @@ export const SQLToPulse = {
   DECIMAL:   PulseFieldTypes.NUMBER,
   NUMERIC:   PulseFieldTypes.NUMBER,
 
-  // v11‑Evo binary mappings
   VARBINARY: PulseFieldTypes.BINARY,
   BLOB:      PulseFieldTypes.BINARY,
   BIT:       PulseFieldTypes.BITFIELD
-
-  // NOTE: v14 IMMORTAL adds no new SQL primitives; shifter/presence/harmonics
-  // are expressed via existing JSON/BINARY mappings at the DB layer.
 };
 
 
@@ -258,11 +302,7 @@ export const FirestoreToPulse = {
   array:     PulseFieldTypes.ARRAY,
   map:       PulseFieldTypes.OBJECT,
   null:      PulseFieldTypes.JSON,
-
-  // v11‑Evo binary mapping
   bytes:     PulseFieldTypes.BINARY
-
-  // v14 IMMORTAL: presence/harmonics/shifter all map to map/bytes at Firestore.
 };
 
 
@@ -288,18 +328,21 @@ export const PulseToSQL = {
   percent:  "DOUBLE",
   nullable: "JSON",
 
-  // v11‑Evo binary/pulse
   binary:        "VARBINARY(8192)",
   bitfield:      "BIGINT",
   pulse:         "JSON",
   pulse_binary:  "VARBINARY(8192)",
 
-  // v14 IMMORTAL band/shifter
-  band:                 "VARCHAR(32)",     // symbolic band label
-  presence:             "JSON",           // presence band snapshot
-  harmonics:            "JSON",           // harmonic snapshot
-  pulse_shifter:        "JSON",           // symbolic shifter pulse
-  pulse_shifter_binary: "VARBINARY(8192)" // binary shifter pulse
+  band:                 "VARCHAR(32)",
+  presence:             "JSON",
+  harmonics:            "JSON",
+  pulse_shifter:        "JSON",
+  pulse_shifter_binary: "VARBINARY(8192)",
+
+  region_code:   "VARCHAR(16)",
+  tenant_id:     "VARCHAR(128)",
+  partition_key: "VARCHAR(256)",
+  index_hint:    "JSON"
 };
 
 
@@ -325,18 +368,61 @@ export const PulseToFirestore = {
   percent:  "number",
   nullable: "map",
 
-  // v11‑Evo binary/pulse
   binary:        "bytes",
   bitfield:      "number",
   pulse:         "map",
   pulse_binary:  "bytes",
 
-  // v14 IMMORTAL band/shifter
   band:                 "string",
   presence:             "map",
   harmonics:            "map",
   pulse_shifter:        "map",
-  pulse_shifter_binary: "bytes"
+  pulse_shifter_binary: "bytes",
+
+  region_code:   "string",
+  tenant_id:     "string",
+  partition_key: "string",
+  index_hint:    "map"
+};
+
+
+// ============================================================================
+// WorldDataProvider mapping hints — Genome → Abstract World Backend
+// ============================================================================
+export const PulseToWorldDataProvider = {
+  string:   "string",
+  number:   "number",
+  boolean:  "boolean",
+  date:     "date",
+  timestamp:"timestamp",
+  array:    "array",
+  object:   "object",
+  id:       "id",
+  email:    "string",
+  phone:    "string",
+  url:      "string",
+  json:     "json",
+
+  enum:     "string",
+  currency: "number",
+  percent:  "number",
+  nullable: "nullable",
+
+  binary:        "binary",
+  bitfield:      "number",
+  pulse:         "json",
+  pulse_binary:  "binary",
+
+  band:                 "string",
+  presence:             "json",
+  harmonics:            "json",
+  pulse_shifter:        "json",
+  pulse_shifter_binary: "binary",
+
+  region_code:   "string",
+  tenant_id:     "string",
+  partition_key: "string",
+  index_hint:    "json"
 };
 
 
@@ -370,7 +456,7 @@ export function validatePulseField(field) {
 
 
 // ============================================================================
-// PULSE_FIELDS_SPEC — FROZEN GENOME SNAPSHOT (v14.0-Presence-Immortal)
+// PULSE_FIELDS_SPEC — FROZEN GENOME SNAPSHOT (v17-IMMORTAL)
 // ============================================================================
 export const PULSE_FIELDS_SPEC = Object.freeze({
   ...PULSE_FIELDS_CONTEXT,
@@ -379,5 +465,6 @@ export const PULSE_FIELDS_SPEC = Object.freeze({
   sqlToPulse: Object.freeze({ ...SQLToPulse }),
   firestoreToPulse: Object.freeze({ ...FirestoreToPulse }),
   pulseToSQL: Object.freeze({ ...PulseToSQL }),
-  pulseToFirestore: Object.freeze({ ...PulseToFirestore })
+  pulseToFirestore: Object.freeze({ ...PulseToFirestore }),
+  pulseToWorldDataProvider: Object.freeze({ ...PulseToWorldDataProvider })
 });

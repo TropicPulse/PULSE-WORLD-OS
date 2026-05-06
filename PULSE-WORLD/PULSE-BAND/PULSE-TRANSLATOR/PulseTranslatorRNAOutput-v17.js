@@ -1,11 +1,10 @@
-/*
-===============================================================================
+/* ============================================================================
 AI_EXPERIENCE_META = {
   identity: "PulseTranslator.RNAOutput",
-  version: "v14-Immortal",
+  version: "v17-IMMORTAL",
   layer: "pulse_translator",
   role: "rna_output_translator",
-  lineage: "RNAOutput-v11.0 → v12.4 → v14-Immortal",
+  lineage: "RNAOutput-v11 → v12.4 → v14-Immortal → v17-IMMORTAL",
 
   evo: {
     rnaOutput: true,
@@ -14,6 +13,12 @@ AI_EXPERIENCE_META = {
     symbolicPrimary: true,
     binaryAware: true,
     dualBand: true,
+    presenceAware: true,
+    harmonicsAware: true,
+    shifterAware: true,
+    regionAware: true,
+    tenantAware: true,
+    partitionAware: true,
 
     deterministic: true,
     driftProof: true,
@@ -68,41 +73,24 @@ EXPORT_META = {
 FILE: /pulse-translator/PulseTranslatorRNAOutput.js
 LAYER: THE RNA OUTPUT TRANSLATOR (Pulse → Firestore)
 ===============================================================================
-
-ROLE (v14+):
-  THE RNA OUTPUT TRANSLATOR — Genome‑driven Pulse → Firestore translator.
-  • Converts PulseField definitions + values → Firestore‑safe payloads.
-  • Converts PulseField schemas → Firestore document objects.
-  • Uses PulseSpecsDNAGenome v14+ as the authoritative DNA.
-  • Deterministic, drift‑proof, pure, read‑only.
-
-PURPOSE (v14+):
-  • Provide Firestore‑safe, deterministic output values.
-  • Guarantee genome‑aligned typing and schema consistency.
-  • Serve as the RNA output layer of the Pulse OS organism.
-
-CONTRACT:
-  • PURE FUNCTION — no IO, no network, no Firestore execution.
-  • READ‑ONLY — no mutation of input.
-  • NO eval(), NO Function(), NO dynamic imports.
-  • Deterministic output only.
-
-SAFETY:
-  • v14+ upgrade is PURE + GENOME‑DRIVEN.
-  • All behavior is deterministic and organism‑safe.
-===============================================================================
 */
 
 import {
   PulseToFirestore,
   PulseFieldTypes,
   validatePulseField
-} from "../PULSE-SPECS/PulseSpecsDNAGenome.js";
+} from "../PULSE-SPECS/PulseSpecsDNAGenome-v17.js";
 
-// ============================================================================
-// translatePulseFieldToFirestore(field, value)
-// Converts a PulseField + value → Firestore‑safe value.
-// ============================================================================
+/* ============================================================================
+   translatePulseFieldToFirestore(field, value)
+   Converts a PulseField + value → Firestore‑safe value.
+   v17 IMMORTAL: supports:
+     • band/presence/harmonics/shifter
+     • region/tenant/partition/index hints
+     • binary/pulse/pulse_binary
+     • currency/percent/enum
+     • nullable wrapper
+=============================================================================== */
 export function translatePulseFieldToFirestore(field, value) {
   validatePulseField(field);
 
@@ -111,16 +99,13 @@ export function translatePulseFieldToFirestore(field, value) {
   // --------------------------------------------------------------------------
   if (field.type === PulseFieldTypes.NULLABLE) {
     if (value === null || value === undefined) {
-      return { isNull: true, value: null };
+      return null;
     }
 
-    return {
-      isNull: false,
-      value: translatePulseFieldToFirestore(
-        { type: field.innerType || PulseFieldTypes.JSON },
-        value
-      )
-    };
+    return translatePulseFieldToFirestore(
+      { type: field.innerType || PulseFieldTypes.JSON },
+      value
+    );
   }
 
   // --------------------------------------------------------------------------
@@ -153,6 +138,57 @@ export function translatePulseFieldToFirestore(field, value) {
   }
 
   // --------------------------------------------------------------------------
+  // BINARY / PULSE_BINARY → Firestore bytes (base64 string allowed)
+  // --------------------------------------------------------------------------
+  if (field.type === PulseFieldTypes.BINARY ||
+      field.type === PulseFieldTypes.PULSE_BINARY) {
+    if (!value) return null;
+
+    if (value instanceof Uint8Array) return value;
+    if (typeof value === "string") return value; // base64 allowed
+
+    return null;
+  }
+
+  // --------------------------------------------------------------------------
+  // PULSE / PRESENCE / HARMONICS / SHIFTER → map
+  // --------------------------------------------------------------------------
+  if (
+    field.type === PulseFieldTypes.PULSE ||
+    field.type === PulseFieldTypes.PRESENCE ||
+    field.type === PulseFieldTypes.HARMONICS ||
+    field.type === PulseFieldTypes.PULSE_SHIFTER
+  ) {
+    return typeof value === "object" && value !== null ? value : {};
+  }
+
+  // --------------------------------------------------------------------------
+  // BAND → string
+  // --------------------------------------------------------------------------
+  if (field.type === PulseFieldTypes.BAND) {
+    return String(value ?? "");
+  }
+
+  // --------------------------------------------------------------------------
+  // REGION / TENANT / PARTITION / INDEX_HINT → string/map
+  // --------------------------------------------------------------------------
+  if (field.type === PulseFieldTypes.REGION_CODE) {
+    return String(value ?? "");
+  }
+
+  if (field.type === PulseFieldTypes.TENANT_ID) {
+    return String(value ?? "");
+  }
+
+  if (field.type === PulseFieldTypes.PARTITION_KEY) {
+    return String(value ?? "");
+  }
+
+  if (field.type === PulseFieldTypes.INDEX_HINT) {
+    return typeof value === "object" && value !== null ? value : {};
+  }
+
+  // --------------------------------------------------------------------------
   // BASE TYPE MAPPING (Genome → Firestore)
   // --------------------------------------------------------------------------
   const fsType = PulseToFirestore[field.type] || "string";
@@ -168,11 +204,9 @@ export function translatePulseFieldToFirestore(field, value) {
       return Boolean(value);
 
     case "timestamp":
-      // Deterministic timestamp conversion
       if (value instanceof Date) return value;
       if (typeof value === "number") return new Date(value);
       if (typeof value === "string") return new Date(value);
-      // Deterministic fallback: Unix epoch
       return new Date(0);
 
     case "array":
@@ -181,15 +215,18 @@ export function translatePulseFieldToFirestore(field, value) {
     case "map":
       return typeof value === "object" && value !== null ? value : {};
 
+    case "bytes":
+      return value ?? null;
+
     default:
       return value;
   }
 }
 
-// ============================================================================
-// translatePulseSchemaToFirestore(schemaObject, dataObject)
-// Converts a PulseField schema + data → Firestore document.
-// ============================================================================
+/* ============================================================================
+   translatePulseSchemaToFirestore(schemaObject, dataObject)
+   Converts a PulseField schema + data → Firestore document.
+=============================================================================== */
 export function translatePulseSchemaToFirestore(schemaObject = {}, dataObject = {}) {
   const out = {};
 
@@ -201,17 +238,17 @@ export function translatePulseSchemaToFirestore(schemaObject = {}, dataObject = 
   return out;
 }
 
-// ============================================================================
-// generateFirestoreWritePayload(schemaObject, dataObject)
-// Produces a Firestore‑ready payload for setDoc/updateDoc.
-// ============================================================================
+/* ============================================================================
+   generateFirestoreWritePayload(schemaObject, dataObject)
+   Produces a Firestore‑ready payload for setDoc/updateDoc.
+=============================================================================== */
 export function generateFirestoreWritePayload(schemaObject = {}, dataObject = {}) {
   return translatePulseSchemaToFirestore(schemaObject, dataObject);
 }
 
-// ============================================================================
-// Helpers
-// ============================================================================
+/* ============================================================================
+   Helpers
+=============================================================================== */
 function normalizeFieldName(name) {
   return name.trim().toLowerCase().replace(/[^a-z0-9_]/g, "_");
 }

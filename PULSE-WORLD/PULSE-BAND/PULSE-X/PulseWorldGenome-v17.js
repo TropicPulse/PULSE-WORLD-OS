@@ -7,13 +7,14 @@
 //    • World-layer helper cortex for all backend logic
 //    • Provides core deterministic helpers (fetch, geo, country, parsing)
 //    • Auto-loads + auto-caches additional helpers from long-term memory
-//    • Never exposes Firebase directly (routes via world genome organs)
+//    • Re-exports world data genome (admin/db/storage) as pass-through
+//    • Abstracts “world data” so we can target Firebase OR SQL
 //    • Safe to import from ANY backend function
 //
 //  LAYERS:
 //    • World layer (PULSE-WORLD)
 //    • Above backend organs (PULSE-BAND, PULSE-X)
-//    • Above storage/data organs (Firebase genome, etc.)
+//    • Above storage/data organs (Firebase genome, SQL, etc.)
 //
 //  MEMORY MODE (C):
 //    • If a helper is missing locally, attempt to load from:
@@ -24,8 +25,7 @@
 //    • Subsequent calls are instant
 //
 //  SAFETY:
-//    • No raw external fetch — must route through world engine / proxy
-//    • No direct Firebase exports
+//    • No raw external fetch for JSON — must route through world engine / proxy
 //    • Deterministic, drift-proof, zero-mutation
 // ============================================================================
 
@@ -50,7 +50,9 @@ GENOME_META = {
     singleInstance: true,
     coldStartSafe: true,
     autoLoadHelpers: true,
-    autoCacheHelpers: true
+    autoCacheHelpers: true,
+    perfAware: true,
+    multiBackendAware: true
   },
 
   placement: {
@@ -66,24 +68,144 @@ GENOME_META = {
 */
 
 // ============================================================================
-//  IMPORTS — WORLD-LAYER ORGANS (NO SENSITIVE CONFIG)
+//  IMPORTS — WORLD-LAYER GENOMES (NO SENSITIVE CONFIG)
 // ============================================================================
-import { PulseWorldFirebaseGenome } from "./PulseWorldFirebaseGenome-v17.js";
 
-// We do NOT export admin/db; we only use them internally when needed.
-const { admin, db } = PulseWorldFirebaseGenome || { admin: null, db: null };
+// Data genome (Firebase owner)
+import {
+  PulseWorldFirebaseGenome,
+  admin as FirebaseAdmin,
+  db as FirebaseDB,
+  storage as FirebaseStorage,
+  checkWorldDataHealth,
+  appendWorldSnapshot
+} from "./PulseWorldFirebaseGenome-v17.js";
+
+// Specs genome (schema + DNAs)
+import * as PulseSpecsDNAGenome from "../PULSE-SPECS/PulseSpecsDNAGenome-v17.js";
+
+// Translators (RNA/Skeletal → backend shapes)
+import * as PulseTranslatorRNAIntake from "../PULSE-TRANSLATOR/PulseTranslatorRNAIntake-v17.js";
+import * as PulseTranslatorRNAOutput from "../PULSE-TRANSLATOR/PulseTranslatorRNAOutput-v17.js";
+import * as PulseTranslatorSkeletalIntake from "../PULSE-TRANSLATOR/PulseTranslatorSkeletalIntake-v17.js";
+import * as PulseTranslatorSkeletalOutput from "../PULSE-TRANSLATOR/PulseTranslatorSkeletalOutput-v17.js";
+
+// ============================================================================
+//  WORLD-LAYER DATA BINDINGS (PASS-THROUGH)
+// ============================================================================
+
+export const admin = FirebaseAdmin;
+export const db = FirebaseDB;
+export const storage = FirebaseStorage;
+
+// ============================================================================
+//  BACKEND ABSTRACTION — FIREBASE OR SQL (OR OTHER)
+// ============================================================================
+
+const WORLD_DATA_BACKEND =
+  process.env.PULSE_WORLD_BACKEND || "firebase"; // "firebase" | "sql" | "mock"
+
+let sqlClient = null;
+
+// Lazy-load SQL client if needed (placeholder; you wire real client)
+async function getSqlClient() {
+  if (WORLD_DATA_BACKEND !== "sql") return null;
+  if (sqlClient) return sqlClient;
+
+  try {
+    const mod = await import("../PULSE-BAND/PULSE-DATA/PulseSqlClient.js");
+    sqlClient = mod.default || mod.sqlClient || mod;
+    return sqlClient;
+  } catch (err) {
+    warn?.("⚠️ [PulseWorldGenome] SQL client load failed:", err?.message || err);
+    return null;
+  }
+}
+
+/**
+ * WorldDataProvider — unified interface:
+ *   • respects PulseSpecsDNAGenome
+ *   • uses Translators to map to/from backend shapes
+ *   • routes to Firebase OR SQL based on WORLD_DATA_BACKEND
+ */
+export const WorldDataProvider = Object.freeze({
+  backend: WORLD_DATA_BACKEND,
+
+  async getCollection(dnaName) {
+    const dna = PulseSpecsDNAGenome?.getDNA?.(dnaName) || null;
+    if (!dna) throw new Error(`Unknown DNA: ${dnaName}`);
+
+    if (WORLD_DATA_BACKEND === "firebase") {
+      const path = PulseTranslatorSkeletalOutput.toFirebasePath(dna);
+      return db.collection(path);
+    }
+
+    if (WORLD_DATA_BACKEND === "sql") {
+      const client = await getSqlClient();
+      if (!client) throw new Error("SQL backend not available");
+      const table = PulseTranslatorSkeletalOutput.toSqlTable(dna);
+      return { client, table };
+    }
+
+    throw new Error(`Unsupported backend: ${WORLD_DATA_BACKEND}`);
+  },
+
+  async create(dnaName, payload) {
+    const dna = PulseSpecsDNAGenome?.getDNA?.(dnaName) || null;
+    if (!dna) throw new Error(`Unknown DNA: ${dnaName}`);
+
+    const intake = PulseTranslatorRNAIntake.fromWorldPayload(dna, payload);
+
+    if (WORLD_DATA_BACKEND === "firebase") {
+      const col = await this.getCollection(dnaName);
+      const docRef = col.doc(intake.id || undefined);
+      await docRef.set(intake.body, { merge: true });
+      return { id: docRef.id };
+    }
+
+    if (WORLD_DATA_BACKEND === "sql") {
+      const { client, table } = await this.getCollection(dnaName);
+      const row = PulseTranslatorSkeletalIntake.toSqlRow(dna, intake);
+      const res = await client.insert(table, row);
+      return PulseTranslatorRNAOutput.toWorldPayload(dna, res);
+    }
+
+    throw new Error(`Unsupported backend: ${WORLD_DATA_BACKEND}`);
+  },
+
+  async get(dnaName, id) {
+    const dna = PulseSpecsDNAGenome?.getDNA?.(dnaName) || null;
+    if (!dna) throw new Error(`Unknown DNA: ${dnaName}`);
+    if (!id) throw new Error("id required");
+
+    if (WORLD_DATA_BACKEND === "firebase") {
+      const col = await this.getCollection(dnaName);
+      const snap = await col.doc(id).get();
+      if (!snap.exists) return null;
+      return PulseTranslatorRNAOutput.fromFirebaseDoc(dna, snap);
+    }
+
+    if (WORLD_DATA_BACKEND === "sql") {
+      const { client, table } = await this.getCollection(dnaName);
+      const row = await client.getById(table, id);
+      if (!row) return null;
+      return PulseTranslatorRNAOutput.fromSqlRow(dna, row);
+    }
+
+    throw new Error(`Unsupported backend: ${WORLD_DATA_BACKEND}`);
+  }
+});
+
+// ============================================================================
+//  INTERNAL PERF CACHES
+// ============================================================================
+const helperCache = new Map();
+const geoCache = new Map();          // key: query|lat|lng → result
+const staticMapCache = new Map();    // key: lat|lng|placeId|label → url
 
 // ============================================================================
 //  HELPER REGISTRY — AUTO-LOAD + AUTO-CACHE (MODE C)
 // ============================================================================
-const helperCache = new Map();
-
-/**
- * Resolve a helper by name.
- * 1) Check local registry
- * 2) Check cached dynamic helpers
- * 3) Try long-term memory modules (CORE, MEMORY, X)
- */
 export async function getHelper(name) {
   if (!name || typeof name !== "string") {
     throw new Error("Helper name required");
@@ -91,13 +213,9 @@ export async function getHelper(name) {
 
   const key = name.trim();
 
-  // 1) Local registry
   if (localHelpers[key]) return localHelpers[key];
-
-  // 2) Cached
   if (helperCache.has(key)) return helperCache.get(key);
 
-  // 3) Long-term memory search
   const candidates = [
     "../../PULSE-CORE/Helpers.js",
     "../../PULSE-MEMORY/LongTermHelpers.js",
@@ -112,24 +230,43 @@ export async function getHelper(name) {
         return mod[key];
       }
     } catch {
-      // ignore and try next
+      // ignore and continue
     }
   }
 
-  warn?.(`⚠️ [PulseWorldGenome] Helper not found in memory: ${key}`);
+  warn?.(`⚠️ [PulseWorldGenome] Missing helper: ${key}`);
   throw new Error(`Helper not found: ${key}`);
 }
 
-// ============================================================================
-//  WORLD ROUTING — NO RAW FETCH
-// ============================================================================
+export async function prewarmWorldHelpers() {
+  const hotHelpers = [
+    "safeFetchJson",
+    "searchPlacesText",
+    "geocodeAddress",
+    "fuzzyGeocode",
+    "normalizeCountry",
+    "parseIncomingRequest"
+  ];
 
-/**
- * Route an external request through the world engine / proxy.
- * This must be wired by the runtime (CNS / InnerAgent / Proxy).
- */
+  for (const h of hotHelpers) {
+    try {
+      await getHelper(h);
+    } catch {
+      // best-effort only
+    }
+  }
+
+  try {
+    await checkWorldDataHealth?.();
+  } catch {
+    // best-effort
+  }
+}
+
+// ============================================================================
+//  WORLD ROUTING — NO RAW FETCH FOR JSON
+// ============================================================================
 async function routeThroughWorldEngine(task, payload) {
-  // Prefer a global router if present (CNS / InnerAgent)
   const router =
     globalThis?.PulseWorldRouter ||
     globalThis?.route ||
@@ -142,9 +279,6 @@ async function routeThroughWorldEngine(task, payload) {
   return router(task, payload);
 }
 
-/**
- * safeFetchJson — routed JSON fetch with timeout + presence/dualband flags.
- */
 export async function safeFetchJson(url, options = {}) {
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), 15000);
@@ -177,15 +311,14 @@ export async function safeFetchJson(url, options = {}) {
 }
 
 // ============================================================================
-//  GOOGLE HELPERS (PLACES + GEOCODING) — ROUTED
+//  GOOGLE HELPERS (PLACES + GEOCODING) — ROUTED + CACHED
 // ============================================================================
 export async function searchPlacesText(query, apiKey) {
-  const url = "https://places.googleapis.com/v1/places:searchText";
+  const cacheKey = `places:${query}`;
+  if (geoCache.has(cacheKey)) return geoCache.get(cacheKey);
 
-  const body = {
-    textQuery: query,
-    languageCode: "en"
-  };
+  const url = "https://places.googleapis.com/v1/places:searchText";
+  const body = { textQuery: query, languageCode: "en" };
 
   const res = await safeFetchJson(url, {
     method: "POST",
@@ -196,23 +329,32 @@ export async function searchPlacesText(query, apiKey) {
     body: JSON.stringify(body)
   });
 
-  return res?.places || [];
+  const places = res?.places || [];
+  geoCache.set(cacheKey, places);
+  return places;
 }
 
 export async function geocodeAddress(address, apiKey) {
+  const cacheKey = `geocode:${address}`;
+  if (geoCache.has(cacheKey)) return geoCache.get(cacheKey);
+
   const url =
     `https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(address)}&key=${apiKey}`;
 
   const data = await safeFetchJson(url);
-  if (!data?.results || data.results.length === 0) return null;
-  return data.results[0];
+  const result = (!data?.results || data.results.length === 0) ? null : data.results[0];
+
+  geoCache.set(cacheKey, result);
+  return result;
 }
 
 // ============================================================================
-//  FUZZY GEOCODER (Belize-biased) — LEANED BUT FUNCTIONALLY EQUIVALENT
+//  FUZZY GEOCODER (Belize-biased)
 // ============================================================================
 export async function fuzzyGeocode(venue, apiKey, knownLat = null, knownLng = null) {
   const cleaned = venue.trim();
+  const cacheKey = `fuzzy:${cleaned}|${knownLat || ""}|${knownLng || ""}`;
+  if (geoCache.has(cacheKey)) return geoCache.get(cacheKey);
 
   const attempts = [
     `${cleaned} San Pedro Belize`,
@@ -303,11 +445,14 @@ export async function fuzzyGeocode(venue, apiKey, knownLat = null, knownLng = nu
       // ignore canonical failure
     }
 
-    return {
+    const result = {
       formatted_address: business.formattedAddress,
       geometry: { location: { lat, lng } },
       place_id: finalPlaceId
     };
+
+    geoCache.set(cacheKey, result);
+    return result;
   }
 
   for (const query of attempts) {
@@ -320,43 +465,57 @@ export async function fuzzyGeocode(venue, apiKey, knownLat = null, knownLng = nu
       const dist = haversine(knownLat, knownLng, lat, lng);
 
       if (dist > 150) {
-        return {
+        const result = {
           formatted_address: geo.formatted_address,
           geometry: { location: { lat: knownLat, lng: knownLng } },
           place_id: null
         };
+        geoCache.set(cacheKey, result);
+        return result;
       }
     }
 
+    geoCache.set(cacheKey, geo);
     return geo;
   }
 
   if (knownLat && knownLng) {
-    return {
+    const result = {
       formatted_address: venue,
       geometry: { location: { lat: knownLat, lng: knownLng } },
       place_id: null
     };
+    geoCache.set(cacheKey, result);
+    return result;
   }
 
+  geoCache.set(cacheKey, null);
   return null;
 }
 
 // ============================================================================
+//  STATIC MAP URL (CACHED)
+// ============================================================================
 export function buildStaticMapUrl(lat, lng, placeId, key, label = "") {
+  const cacheKey = `static:${lat}|${lng}|${placeId || ""}|${label || ""}`;
+  if (staticMapCache.has(cacheKey)) return staticMapCache.get(cacheKey);
+
   const base =
     `https://maps.googleapis.com/maps/api/staticmap?center=${lat},${lng}` +
     `&zoom=17&size=600x400&scale=2&maptype=roadmap`;
 
+  let url;
   if (placeId) {
-    return `${base}&markers=color:red|place_id:${placeId}&key=${key}`;
+    url = `${base}&markers=color:red|place_id:${placeId}&key=${key}`;
+  } else {
+    const labelPart = label
+      ? `&markers=color:red|label:${encodeURIComponent(label)}|${lat},${lng}`
+      : `&markers=color:red|${lat},${lng}`;
+    url = `${base}${labelPart}&key=${key}`;
   }
 
-  const labelPart = label
-    ? `&markers=color:red|label:${encodeURIComponent(label)}|${lat},${lng}`
-    : `&markers=color:red|${lat},${lng}`;
-
-  return `${base}${labelPart}&key=${key}`;
+  staticMapCache.set(cacheKey, url);
+  return url;
 }
 
 // ============================================================================
@@ -503,7 +662,7 @@ export function calculateReleaseDate(deliveredAt, delayDays = 3) {
 }
 
 // ============================================================================
-//  REQUEST PARSER (LEANED, STILL DETERMINISTIC)
+//  REQUEST PARSER
 // ============================================================================
 export async function parseIncomingRequest(req) {
   log?.("🔵 [parseIncomingRequest] START");
@@ -623,7 +782,7 @@ export async function parseIncomingRequest(req) {
 }
 
 // ============================================================================
-//  STRIPE PAYOUT SETTINGS (KEPT, BUT ROUTED THROUGH GENOME)
+//  STRIPE PAYOUT SETTINGS
 // ============================================================================
 export async function configurePayoutSettings(stripe, accountId, payFrequency, payDay) {
   log?.("🔵 [configurePayoutSettings] START");
@@ -818,5 +977,3 @@ const localHelpers = {
 // ============================================================================
 // 📘 PAGE INDEX — END OF FILE
 // ============================================================================
-
-export { admin, db };
