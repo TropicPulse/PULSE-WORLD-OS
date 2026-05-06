@@ -78,6 +78,15 @@ AI_EXPERIENCE_META = {
 }
 */
 
+
+import * as PulseLogger        from "./_BACKEND/PulseProofLogger.js";
+import * as PulseVitalsMonitor from "./_BACKEND/PulseProofMonitor.js";
+import * as PulseUIErrors from "./_FRONTEND/PulseUIErrors-v16.js";
+import * as PulseUIFlow from "./_FRONTEND/PulseUIFlow-v16.js";
+/* 1. SKIN REFLEX — SIDE‑EFFECT IMPORT, AUTO‑ATTACHES */
+import * as PulseSkinReflex from "./_BACKEND/PulseSkinReflex.js"; // PageScannerV12 auto hooks window here
+import * as PulsePower from "./PulsePower-v16.js";
+
 // ============================================================================
 // GLOBAL HANDLE + OPTIONAL DB
 // ============================================================================

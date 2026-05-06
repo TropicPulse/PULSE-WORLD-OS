@@ -3175,7 +3175,7 @@ async function sendPinEmail(email, pin, payload, emailPassword) {
       <div style="max-width: 480px; margin:auto; background:#ffffff; border-radius:16px; padding:28px; box-shadow:0 4px 14px rgba(0,0,0,0.08);">
 
         <div style="text-align:center; margin-bottom:20px;">
-          <img src="https://www.tropicpulse.bze.bz/ToucanLogo-Mini.png?v8"
+          <img src="https://www.tropicpulse.bze.bz/ToucanLogo-Mini.png"
                alt="Tropic Pulse"
                style="width:120px; border-radius:12px;">
         </div>
@@ -3207,7 +3207,7 @@ async function sendPinEmail(email, pin, payload, emailPassword) {
         </p>
 
         <div style="text-align:center; margin-top:20px;">
-          <img src="/_PICTURES/ToucanThumbsUp.png?v8"
+          <img src="/_PICTURES/ToucanThumbsUp.png"
                alt="Toucan"
                style="width:110px;">
         </div>
@@ -7795,7 +7795,7 @@ newUser: {
             <!-- BIG HEADER IMAGE -->
             <tr>
               <td>
-                <img src="https://www.tropicpulse.bze.bze.bz/Welcome.png?v8"
+                <img src="https://www.tropicpulse.bze.bze.bz/Welcome.png"
                      alt="Tropic Pulse Header"
                      width="600"
                      style="display:block; width:100%; max-width:600px;">
@@ -7825,7 +7825,7 @@ newUser: {
                   <!-- Toucan Image -->
                   <tr>
                     <td align="center" style="padding:25px 0;">
-                      <img src="https://www.tropicpulse.bze.bz/ToucanLogo-Mini.png?v8"
+                      <img src="https://www.tropicpulse.bze.bz/ToucanLogo-Mini.png"
                            alt="Tropic Pulse Toucan"
                            width="180"
                            style="display:block; border-radius:12px;">
@@ -7849,7 +7849,7 @@ newUser: {
                         Enjoy these moments! Share your successes with Tropic Pulse on social media.
                       </div>
                       <a href="https://linktr.ee/tropicpulse" target="_blank">
-                        <img src="/_PICTURES/SocialMedia.png?v8"
+                        <img src="/_PICTURES/SocialMedia.png"
                              alt="Social Media Icons"
                              width="180"
                              style="display:block; margin:auto;">
@@ -8064,7 +8064,7 @@ newUser: {
             <div style="display:inline-block; text-align:center;">
               <div class="logo-circle" style="margin:0 auto 10px auto;">
                 <img 
-                  src="/_PICTURES/ToucanLogo-Mini.png?v8"
+                  src="/_PICTURES/ToucanLogo-Mini.png"
                   alt="Tropic Pulse Toucan"
                   width="60"
                   style="display:block; border-radius:50%;">
@@ -8274,7 +8274,7 @@ return `<!DOCTYPE html>
 
         <!-- Logo -->
         <img 
-          src="/_PICTURES/ToucanLogo-Mini.png?v8"
+          src="/_PICTURES/ToucanLogo-Mini.png"
           alt="Tropic Pulse Logo"
           width="70"
           height="70"
@@ -8400,7 +8400,7 @@ return `<!DOCTYPE html>
                   <!-- Toucan Image -->
                   <tr>
                     <td align="center" style="padding:25px 0;">
-                      <img src="/_PICTURES/ToucanLogo-Mini.png?v8"
+                      <img src="/_PICTURES/ToucanLogo-Mini.png"
                            alt="Tropic Pulse Toucan"
                            width="220"
                            style="display:block; border-radius:12px;">
@@ -8475,7 +8475,7 @@ return `<!DOCTYPE html>
                         Enjoy these moments! Share your successes with Tropic Pulse on social media.
                       </div>
                       <a href="https://linktr.ee/tropicpulse" target="_blank">
-                        <img src="/_PICTURES/SocialMedia.png?v8"
+                        <img src="/_PICTURES/SocialMedia.png"
                              alt="Social Media Icons"
                              width="180"
                              style="display:block; margin:auto;">
@@ -8544,7 +8544,7 @@ return `<!DOCTYPE html>
             <!-- Toucan Image -->
             <tr>
               <td align="center" style="padding:25px 0;">
-                <img src="/_PICTURES/ToucanLogo-Mini.png?v8"
+                <img src="/_PICTURES/ToucanLogo-Mini.png"
                      alt="Tropic Pulse Toucan"
                      width="220"
                      style="display:block; border-radius:12px;">
@@ -8618,7 +8618,7 @@ return `<!DOCTYPE html>
                   Enjoy these moments! Share your successes with Tropic Pulse on social media.
                 </div>
                 <a href="https://linktr.ee/tropicpulse" target="_blank">
-                  <img src="https://www.tropicpulse.bze.bz/SocialMedia.png?v8"
+                  <img src="https://www.tropicpulse.bze.bz/SocialMedia.png"
                        alt="Social Media Icons"
                        width="180"
                        style="display:block; margin:auto;">
@@ -8797,7 +8797,7 @@ return `<!DOCTYPE html>
           <tr>
             <td align="center">
               <img 
-                src="https://www.tropicpulse.bze.bz/ToucanLogo-Mini.png?v8"
+                src="https://www.tropicpulse.bze.bz/ToucanLogo-Mini.png"
                 alt="Tropic Pulse Logo"
                 width="70"
                 height="70"
@@ -8813,7 +8813,7 @@ return `<!DOCTYPE html>
           <tr>
             <td align="center">
               <img 
-                src="/_PICTURES/CointoWallet.png?v8"
+                src="/_PICTURES/CointoWallet.png"
                 alt="Coin to Wallet"
                 width="120"
                 style="display:block; margin:0 auto 10px auto;">
@@ -9073,7 +9073,7 @@ pulsePointsGifted: {
             <div style="display:inline-block; text-align:center;">
               <div class="logo-circle" style="margin:0 auto 10px auto;">
                 <img 
-                  src="/_PICTURES/ToucanLogo-Mini.png?v8"
+                  src="/_PICTURES/ToucanLogo-Mini.png"
                   alt="Tropic Pulse Toucan"
                   width="60"
                   style="display:block; border-radius:50%;">
@@ -9197,7 +9197,7 @@ rolechange: {
             <!-- Logo -->
             <tr>
               <td align="center" style="padding:20px 20px 10px 20px;">
-                <img src="/_PICTURES/ToucanLogo-Mini.png?v8" alt="Tropic Pulse" style="max-width:180px;height:auto;display:block;">
+                <img src="/_PICTURES/ToucanLogo-Mini.png" alt="Tropic Pulse" style="max-width:180px;height:auto;display:block;">
               </td>
             </tr>
 
@@ -9278,7 +9278,7 @@ rolechange: {
         <!-- Header -->
         <tr>
           <td align="center" style="background:#ffff99;padding:30px 20px;">
-            <img src="/_PICTURES/ToucanLogo-Mini.png?v8" 
+            <img src="/_PICTURES/ToucanLogo-Mini.png" 
                  alt="Tropic Pulse Toucan" width="120" style="display:block;margin-bottom:10px;border-radius:50%;border:3px solid #000;">
             <h1 style="margin:0;font-size:26px;color:#000;">A New Event Just Hit Tropic Pulse!</h1>
           </td>
@@ -9287,7 +9287,7 @@ rolechange: {
         <!-- Cartoon Event Icon -->
         <tr>
           <td align="center" style="padding:20px;">
-            <img src="/_PICTURES/NewEvent.png?v8" 
+            <img src="/_PICTURES/NewEvent.png" 
                  alt="New Event Illustration" width="160" 
                  style="display:block;margin:0 auto 10px;">
           </td>
@@ -9361,7 +9361,7 @@ rolechange: {
               <td align="center" style="padding:10px;">
 
                 <img 
-                  src="/_PICTURES/Welcome.png?v8"
+                  src="/_PICTURES/Welcome.png"
                   alt="Tropic Pulse Logo"
                   width="120"
                   style="display:block; margin-bottom:10px; border-radius:12px;"
@@ -9422,7 +9422,7 @@ rolechange: {
         <!-- Header -->
         <tr>
           <td align="center" style="background:#ffff99;padding:30px 20px;">
-            <img src="/_PICTURES/ToucanLogo-Mini.png?v8" 
+            <img src="/_PICTURES/ToucanLogo-Mini.png" 
                  alt="Tropic Pulse Toucan" width="120" style="display:block;margin-bottom:10px;border-radius:50%;border:3px solid #000;">
             <h1 style="margin:0;font-size:26px;color:#000;">A New Business Just Joined Tropic Pulse!</h1>
           </td>
@@ -9431,7 +9431,7 @@ rolechange: {
         <!-- Cartoon Building -->
         <tr>
           <td align="center" style="padding:20px;">
-            <img src="/_PICTURES/NewBusiness.png?v8" 
+            <img src="/_PICTURES/NewBusiness.png" 
                  alt="New Business Illustration" width="160" 
                  style="display:block;margin:0 auto 10px;">
           </td>
@@ -9501,7 +9501,7 @@ rolechange: {
               <td align="center" style="padding:10px;">
 
                 <img 
-                  src="/_PICTURES/Welcome.png?v8"
+                  src="/_PICTURES/Welcome.png"
                   alt="Tropic Pulse Logo"
                   width="120"
                   style="display:block; margin-bottom:10px; border-radius:12px;"
@@ -9625,7 +9625,7 @@ NoCredits: {
         <!-- Header -->
         <tr>
           <td style="background:linear-gradient(135deg,#00c6ff,#0072ff); padding:30px; text-align:center;">
-            <img src="/_PICTURES/ToucanLogo-Mini.png?v8" alt="Tropic Pulse" width="90" style="margin-bottom:10px;">
+            <img src="/_PICTURES/ToucanLogo-Mini.png" alt="Tropic Pulse" width="90" style="margin-bottom:10px;">
             <h1 style="color:white; margin:0; font-size:26px; font-weight:bold;">
               You're Out of Credits
             </h1>
@@ -9733,11 +9733,11 @@ export const fixTierMetadata = onRequest(
   async (req,res) => {
   const bucket = admin.storage().bucket();
   const tierFiles = [
-    "tiers/HurricaneLegend.png?v8",
-    "tiers/ReefDiver.png?v8",
-    "tiers/Seashell.png?v8",
-    "tiers/ToucanSpirit.png?v8",
-    "tiers/VolcanoHeart.png?v8"
+    "tiers/HurricaneLegend.png",
+    "tiers/ReefDiver.png",
+    "tiers/Seashell.png",
+    "tiers/ToucanSpirit.png",
+    "tiers/VolcanoHeart.png"
   ];
 
   for (const path of tierFiles) {
@@ -16675,7 +16675,7 @@ async function sendAdminInfoEmail(subject, payload = {}) {
         <!-- Tropic Pulse Logo -->
         <div style="text-align:center; margin-bottom:20px;">
           <img 
-            src="/_PICTURES/ToucanLogo-Mini.png?v8" 
+            src="/_PICTURES/ToucanLogo-Mini.png" 
             alt="Tropic Pulse Logo" 
             style="width:80px; height:auto;"
           />
@@ -24651,7 +24651,7 @@ export const massEmailWebhook = onRequest(
         // No credits → send payment email
         // ---------------------------------------------------------
         if (freeRemaining <= 0 && paidRemaining <= 0) {
-          const eventImageUrl = "/_PICTURES/NewEvent.png?v8";
+          const eventImageUrl = "/_PICTURES/NewEvent.png";
 
           const paymentLink = await createMassEmailPaymentLink(
             eventID,
@@ -25958,7 +25958,7 @@ async function sendAdminAlertEmail(subject, error, context = {}) {
         <!-- Tropic Pulse Logo -->
         <div style="text-align:center; margin-bottom:20px;">
           <img 
-            src="/_PICTURES/ToucanLogo-Mini.png?v8" 
+            src="/_PICTURES/ToucanLogo-Mini.png" 
             alt="Tropic Pulse Logo" 
             style="width:80px; height:auto;"
           />
@@ -27178,7 +27178,7 @@ export const resolveVenue = onRequest(
 //         const buffer = await imgRes.buffer();
 
 //         const ts = admin.firestore.Timestamp.now().toMillis();
-//         const filePath = `maps/${ts}_${lat}_${lng}.png?v8`;
+//         const filePath = `maps/${ts}_${lat}_${lng}.png`;
 //         const file = storage.file(filePath);
 
 //         await file.save(buffer, {
