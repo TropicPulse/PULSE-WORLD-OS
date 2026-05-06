@@ -1,8 +1,8 @@
 /**
  * ============================================================================
- *  PULSE-WORLD : PulseBeaconMesh-v12.3-Presence.js
+ *  PULSE-WORLD : PulseBeaconMesh-v16-Immortal-ORGANISM.js
  *  ROLE: Local membrane simulator + density/mode/advantage debugger
- *  VERSION: v16-Immortal-ORGANISM
+ *  VERSION: v16-Immortal-ORGANISM (v16→v18 Every-Advantage, Shifter-Aware)
  *  LAYER: BeaconMesh
  *  IDENTITY: PulseBeaconMesh-v16-Immortal-ORGANISM
  * ============================================================================
@@ -24,6 +24,12 @@
  *      - PulseRuntime (hot instances / regions / presence / modes / pages)
  *      - PulseScheduler (macro tick orchestration)
  *      - PulseOvermind (world-lens / safety)
+ *
+ *    v16→v18 upgrade:
+ *      - Every‑Advantage overlays (mesh + user + proxy).
+ *      - Shifter‑aware presence tiers and band shifts.
+ *      - Chunk‑prewarm + chunk‑plan hints surfaced to Beacon Engine.
+ *      - Proxy envelope surfaced but never mutated.
  *
  *    CONTRACT:
  *      - Never mutate the Beacon Engine.
@@ -77,7 +83,8 @@ AI_EXPERIENCE_META = {
     runtimeAware: true,
     schedulerAware: true,
     overmindAware: true,
-    meshOrganismAware: true
+    meshOrganismAware: true,
+    proxyAware: true
   },
 
   contract: {
@@ -135,13 +142,11 @@ import {
 // User lanes
 import { getPulseUserContext, createPulseWorldCore } from "./PulseUser-v16.js";
 
-
 import {
-  getBeaconEngineContext, PulseBeaconEngine
+  getBeaconEngineContext,
+  PulseBeaconEngine
 } from "./PulseBeaconEngine-v16.js";
-import {
-  getConsoleContext
-} from "./PulseBeaconConsole-v16.js";
+import { getConsoleContext } from "./PulseBeaconConsole-v16.js";
 
 // Mesh organism (symbolic + binary)
 import createPulseMesh, {
@@ -244,6 +249,15 @@ function buildOrganismContext() {
   const scheduler = getPulseSchedulerContext?.() || {};
   const overmind = getPulseOvermindContext?.() || {};
 
+  const proxyMeta = {
+    context: getProxyContext?.() || null,
+    pressure: getProxyPressure?.() ?? 0,
+    boost: getProxyBoost?.() ?? 0,
+    fallback: getProxyFallback?.() ?? false,
+    mode: getProxyMode?.() || "normal",
+    lineage: getProxyLineage?.() || null
+  };
+
   return {
     expansion,
     castle,
@@ -261,7 +275,7 @@ function buildOrganismContext() {
     castleMeta: PulseCastleMeta,
     serverMeta: PulseServerMeta,
     routerMeta: PulseRouterMeta,
-    proxy: getProxyContext?.() || null
+    proxyMeta
   };
 }
 
@@ -289,7 +303,7 @@ function buildScenarioProfile({
 }
 
 // ============================================================================
-// ORGAN: PulseBeaconMesh (v16-Immortal-ORGANISM)
+// ORGAN: PulseBeaconMesh (v16-Immortal-ORGANISM, Every-Advantage / Shifter)
 // ============================================================================
 
 export function PulseBeaconMesh({
@@ -311,7 +325,6 @@ export function PulseBeaconMesh({
     engineRole: beacon?.meta?.role ?? null
   });
 
-  // Optional: local mesh organism view for this beacon membrane
   const localMesh =
     createPulseMesh?.({
       meshID: meshID || "beacon-mesh",
@@ -326,14 +339,214 @@ export function PulseBeaconMesh({
       trace: false
     }) || null;
 
-  // --------------------------------------------------------------------------
-  // COMPOSITE FIELD (symbolic composition of presence/band/advantage/chunk+proxy)
-  // --------------------------------------------------------------------------
+  // ---------------------------------------------------------------------------
+  // 1. Presence / Advantage Fields (Every-Advantage + Shifter-aware)
+  // ---------------------------------------------------------------------------
+  function buildPresenceField() {
+    const ctx = buildOrganismContext();
+    const touch = ctx.touch || {};
+    const runtime = ctx.runtime || {};
+    const expansion = ctx.expansion || {};
+    const overmind = ctx.overmind || {};
+    const proxyMeta = ctx.proxyMeta || {};
+
+    const meshSnapshot = localMesh?.getSnapshot?.() || null;
+    const meshPresence =
+      meshSnapshot?.presenceField?.meshPresence ||
+      meshSnapshot?.densityHealth?.metrics?.meshStrength ||
+      "unknown";
+
+    const presenceTier =
+      overmind.presenceTier ||
+      touch.presenceTier ||
+      "normal";
+
+    return Object.freeze({
+      bandPresence: touch.bandPresence || "unknown",
+      devicePresence: touch.devicePresence || "unknown",
+      routerPresence: expansion.routerPresence || "unknown",
+      meshPresence,
+      regionPresence: expansion.regionPresence || regionID || "unknown",
+
+      touchPresence: touch.presence || "unknown",
+      touchMode: touch.mode || "unknown",
+      touchPage: touch.page || "unknown",
+      touchChunkProfile: touch.chunkProfile || "default",
+      touchTrusted: touch.trusted || "unknown",
+      touchIdentityTier: touch.identityTier || "anon",
+
+      runtimeHotPresence: runtime.hotPresence || null,
+      runtimeHotModes: runtime.hotModes || null,
+      runtimeHotPages: runtime.hotPages || null,
+
+      presenceTier,
+      shifterBand: touch.shifterBand || null,
+
+      proxyMode: proxyMeta.mode || "normal",
+      proxyFallback: !!proxyMeta.fallback
+    });
+  }
+
+  function buildAdvantageField() {
+    const ctx = buildOrganismContext();
+    const touch = ctx.touch || {};
+    const runtime = ctx.runtime || {};
+    const user = ctx.user || {};
+    const expansion = ctx.expansion || {};
+    const proxyMeta = ctx.proxyMeta || {};
+
+    const meshSnapshot = localMesh?.getSnapshot?.() || null;
+    const meshAdvantage = meshSnapshot?.advantageField || {};
+
+    const advantageBand =
+      touch.advantageBand ??
+      meshAdvantage.advantageBand ??
+      "neutral";
+
+    const fallbackBandLevel =
+      touch.fallbackBandLevel ??
+      meshAdvantage.fallbackBandLevel ??
+      0;
+
+    return Object.freeze({
+      advantageScore:
+        touch.advantageScore ??
+        meshAdvantage.advantageScore ??
+        null,
+      advantageBand,
+      fallbackBandLevel,
+
+      touchTrust: touch.trust || "unknown",
+      touchIdentityTier: touch.identityTier || "anon",
+
+      runtimeContributionHeat: runtime.hotInstances || null,
+      userContributionScore: user.contributionScore ?? null,
+      expansionTier: expansion.tier || null,
+
+      proxyPressure: proxyMeta.pressure ?? 0,
+      proxyBoost: proxyMeta.boost ?? 0,
+      proxyFallback: !!proxyMeta.fallback
+    });
+  }
+
+  // ---------------------------------------------------------------------------
+  // 2. Chunk‑Prewarm / Chunk‑Plan Hints (symbolic only)
+  // ---------------------------------------------------------------------------
+  function buildChunkPlanHints() {
+    const ctx = buildOrganismContext();
+    const touch = ctx.touch || {};
+    const runtime = ctx.runtime || {};
+    const overmind = ctx.overmind || {};
+
+    const page = touch.page || "unknown";
+    const mode = touch.mode || "unknown";
+    const chunkProfile = touch.chunkProfile || "default";
+
+    const hotPages = runtime.hotPages || [];
+    const hotChunkProfiles = runtime.hotChunkProfiles || [];
+
+    const shouldPrewarm =
+      chunkProfile !== "default" ||
+      hotPages.includes(page) ||
+      hotChunkProfiles.includes(chunkProfile);
+
+    return Object.freeze({
+      page,
+      mode,
+      chunkProfile,
+      shouldPrewarm,
+      hotPages,
+      hotChunkProfiles,
+      worldLens: overmind.worldLens || null
+    });
+  }
+
+  // ---------------------------------------------------------------------------
+  // 3. Scenario + Membrane Payload
+  // ---------------------------------------------------------------------------
+  function buildScenario() {
+    const ctx = buildOrganismContext();
+    const meshSnapshot = localMesh?.getSnapshot?.() || null;
+
+    const densityMetrics = meshSnapshot?.densityHealth?.metrics || {};
+    const userCount = densityMetrics.userCount || 0;
+
+    let densityHint = "low";
+    if (userCount >= 20) densityHint = "high";
+    else if (userCount >= 5) densityHint = "medium";
+
+    const meshStatus = densityMetrics.meshStrength || "unknown";
+
+    const presenceField = buildPresenceField();
+    const advantageField = buildAdvantageField();
+
+    const presenceTier = presenceField.presenceTier || "normal";
+    const advantageBand = advantageField.advantageBand || "neutral";
+
+    const fallbackBandLevel = advantageField.fallbackBandLevel ?? null;
+
+    return buildScenarioProfile({
+      densityHint,
+      demandHint: "medium",
+      regionType: "venue",
+      meshStatus,
+      presenceTier,
+      advantageBand,
+      fallbackBandLevel
+    });
+  }
+
+  function buildMembraneInput() {
+    const organismContext = buildOrganismContext();
+    const presenceField = buildPresenceField();
+    const advantageField = buildAdvantageField();
+    const chunkPlanHints = buildChunkPlanHints();
+    const scenario = buildScenario();
+
+    const meshSnapshot = localMesh?.getSnapshot?.() || null;
+    const binaryMeshSnapshot = binaryMesh?.getSnapshot?.() || null;
+
+    const meshPressureIndex =
+      meshSnapshot?.densityHealth?.metrics?.meshPressureIndex ?? 0;
+
+    return Object.freeze({
+      meta: PulseBeaconMeshMeta,
+      snapshotMeta,
+      regionID,
+      meshID,
+      presenceField,
+      advantageField,
+      chunkPlanHints,
+      scenario,
+      meshPressureIndex,
+      meshSnapshot,
+      binaryMeshSnapshot,
+      organismContext
+    });
+  }
+
+  // ---------------------------------------------------------------------------
+  // 4. Beacon Engine Surface (no mutation, pure calls)
+  // ---------------------------------------------------------------------------
+  function buildBeaconRequest() {
+    const membraneInput = buildMembraneInput();
+
+    return Object.freeze({
+      intent: "membrane-update",
+      payload: membraneInput
+    });
+  }
+
+  // ---------------------------------------------------------------------------
+  // 5. Composite Field (presence/band/advantage/chunk + proxy)
+// ---------------------------------------------------------------------------
   function buildCompositeField() {
-    const presenceField = beacon.buildPresenceField?.() ?? null;
-    const bandField = beacon.buildBandField?.() ?? null;
-    const advantageField = beacon.buildAdvantageField?.() ?? null;
-    const chunkPrewarmField = beacon.buildChunkPrewarmField?.() ?? null;
+    const membraneInput = buildMembraneInput();
+    const presenceField = membraneInput.presenceField;
+    const advantageField = membraneInput.advantageField;
+    const chunkPrewarmField = membraneInput.chunkPlanHints;
+    const organismCtx = membraneInput.organismContext;
+    const proxyMeta = organismCtx.proxyMeta || {};
 
     const presenceTier =
       presenceField?.presenceTier ??
@@ -343,7 +556,6 @@ export function PulseBeaconMesh({
 
     const advantageBand =
       advantageField?.advantageBand ??
-      advantageField?.band ??
       "neutral";
 
     const meshStrength =
@@ -352,27 +564,19 @@ export function PulseBeaconMesh({
       "unknown";
 
     const meshPressureIndex =
-      presenceField?.meshPressureIndex ??
-      advantageField?.meshPressureIndex ??
-      null;
+      membraneInput.meshPressureIndex ?? null;
 
     const chunkPriority =
-      chunkPrewarmField?.priority ??
-      chunkPrewarmField?.planPriority ??
-      null;
+      chunkPrewarmField?.shouldPrewarm ? "high" : null;
 
-    // Proxy overlay (IMMORTAL dual-band envelope)
-    const proxyPressure = getProxyPressure?.() ?? 0;
-    const proxyFallback = !!getProxyFallback?.();
-    const proxyBoost = getProxyBoost?.() ?? 0;
-    const proxyMode = getProxyMode?.() ?? "normal";
-    const proxyLineage = getProxyLineage?.() ?? null;
-
-    const organismCtx = buildOrganismContext();
+    const proxyPressure = proxyMeta.pressure ?? 0;
+    const proxyFallback = !!proxyMeta.fallback;
+    const proxyBoost = proxyMeta.boost ?? 0;
+    const proxyMode = proxyMeta.mode || "normal";
+    const proxyLineage = proxyMeta.lineage || null;
 
     return Object.freeze({
       presenceField,
-      bandField,
       advantageField,
       chunkPrewarmField,
       presenceTier,
@@ -394,9 +598,9 @@ export function PulseBeaconMesh({
     });
   }
 
-  // --------------------------------------------------------------------------
-  // REGIONING SIGNATURE
-  // --------------------------------------------------------------------------
+  // ---------------------------------------------------------------------------
+  // 6. Regioning + Multi-instance
+  // ---------------------------------------------------------------------------
   function getRegioningSignature() {
     if (typeof beacon.getRegioningSignature === "function") {
       return beacon.getRegioningSignature();
@@ -404,9 +608,6 @@ export function PulseBeaconMesh({
     return beacon?.meta?.regioningPhysicsSignature ?? null;
   }
 
-  // --------------------------------------------------------------------------
-  // MULTI-INSTANCE VIEW
-  // --------------------------------------------------------------------------
   function getMultiInstanceView() {
     if (typeof beacon.getMultiInstanceSnapshot === "function") {
       return beacon.getMultiInstanceSnapshot();
@@ -419,9 +620,43 @@ export function PulseBeaconMesh({
     };
   }
 
-  // --------------------------------------------------------------------------
-  // PRESET SCENARIOS (symbolic only, organism-aware)
-  // --------------------------------------------------------------------------
+  // ---------------------------------------------------------------------------
+  // 7. Simulation (symbolic only, delegates to beacon)
+// ---------------------------------------------------------------------------
+  function simulate({
+    densityHint = "medium",
+    demandHint = "medium",
+    regionType = "venue",
+    meshStatus = "unknown",
+    presenceTier = "normal",
+    advantageBand = "neutral",
+    fallbackBandLevel = null
+  } = {}) {
+    const profile = buildScenarioProfile({
+      densityHint,
+      demandHint,
+      regionType,
+      meshStatus,
+      presenceTier,
+      advantageBand,
+      fallbackBandLevel
+    });
+
+    log("Simulate scenario:", profile);
+
+    const result = beacon.broadcastOnce({
+      densityHint: profile.densityHint,
+      demandHint: profile.demandHint,
+      regionType: profile.regionType,
+      meshStatus: profile.meshStatus
+    });
+
+    return Object.freeze({
+      profile,
+      result
+    });
+  }
+
   function simulateScenarioPreset(preset = "default") {
     const ctx = buildOrganismContext();
     const touch = ctx.touch || {};
@@ -503,85 +738,78 @@ export function PulseBeaconMesh({
     );
   }
 
-  // --------------------------------------------------------------------------
-  // CORE SIMULATION SURFACE (delegates to beacon)
-  // --------------------------------------------------------------------------
-  function simulate({
-    densityHint = "medium",
-    demandHint = "medium",
-    regionType = "venue",
-    meshStatus = "unknown",
-    presenceTier = "normal",
-    advantageBand = "neutral",
-    fallbackBandLevel = null
-  } = {}) {
-    const profile = buildScenarioProfile({
-      densityHint,
-      demandHint,
-      regionType,
-      meshStatus,
-      presenceTier,
-      advantageBand,
-      fallbackBandLevel
-    });
-
-    log("Simulate scenario:", profile);
-
-    const result = beacon.broadcastOnce({
-      densityHint: profile.densityHint,
-      demandHint: profile.demandHint,
-      regionType: profile.regionType,
-      meshStatus: profile.meshStatus
-    });
+  // ---------------------------------------------------------------------------
+  // 8. Snapshots
+  // ---------------------------------------------------------------------------
+  function getMembraneSnapshot() {
+    const membraneInput = buildMembraneInput();
 
     return Object.freeze({
-      profile,
-      result
+      organId: PulseBeaconMeshMeta.identity,
+      meta: PulseBeaconMeshMeta,
+      snapshotMeta,
+      regionID,
+      meshID,
+      presenceField: membraneInput.presenceField,
+      advantageField: membraneInput.advantageField,
+      chunkPlanHints: membraneInput.chunkPlanHints,
+      scenario: membraneInput.scenario,
+      meshPressureIndex: membraneInput.meshPressureIndex,
+      meshMeta: PulseMeshMeta,
+      binaryMeshMeta: BinaryMeshMeta,
+      expansionMeta: PulseExpansionMeta,
+      castleMeta: PulseCastleMeta,
+      serverMeta: PulseServerMeta,
+      routerMeta: PulseRouterMeta,
+      proxyMeta: membraneInput.organismContext.proxyMeta,
+      organismContext: membraneInput.organismContext
     });
   }
 
-  // --------------------------------------------------------------------------
-  // PUBLIC ORGAN SURFACE
-  // --------------------------------------------------------------------------
+  function getSnapshot() {
+    const engineSnapshot = beacon.getStateSnapshot?.() ?? null;
+    return Object.freeze({
+      engineSnapshot,
+      composite: buildCompositeField()
+    });
+  }
+
+  // ---------------------------------------------------------------------------
+  // 9. Public Organ Surface
+  // ---------------------------------------------------------------------------
   return Object.freeze({
     meta: PulseBeaconMeshMeta,
     engineMeta: snapshotMeta,
     meshIdentity: binaryMesh?.identity || localMesh?.identity || null,
 
+    // simulation
     simulate,
     simulateScenarioPreset,
     simulateBatch,
     buildScenarioProfile,
 
+    // fields
+    buildPresenceField,
+    buildAdvantageField,
+    buildChunkPlanHints,
+    buildScenario,
+    buildMembraneInput,
+    buildBeaconRequest,
+    buildCompositeField,
+
+    // telemetry + snapshots
     getTelemetry() {
       return beacon.getTelemetry?.() ?? null;
     },
-
-    getSnapshot() {
-      const engineSnapshot = beacon.getStateSnapshot?.() ?? null;
-      return Object.freeze({
-        engineSnapshot,
-        composite: buildCompositeField()
-      });
-    },
+    getSnapshot,
+    getMembraneSnapshot,
 
     getPresenceField() {
-      return beacon.buildPresenceField?.() ?? null;
+      return buildPresenceField();
     },
-
-    getBandField() {
-      return beacon.buildBandField?.() ?? null;
-    },
-
     getAdvantageField() {
-      return beacon.buildAdvantageField?.() ?? null;
+      return buildAdvantageField();
     },
-
-    getChunkPrewarmField() {
-      return beacon.buildChunkPrewarmField?.() ?? null;
-    },
-
-    getCompositeField: buildCompositeField,
 
     getRegioningSignature,
     getMultiInstanceView
