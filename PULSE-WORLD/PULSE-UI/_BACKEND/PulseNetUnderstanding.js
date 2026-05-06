@@ -1,65 +1,23 @@
 // ============================================================================
-//  PulseNetUnderstanding.js — v13-Evo-MAX (HYBRID LOADER)
+//  PulseNetUnderstanding-v16-Immortal.js — v16-IMMORTAL (HYBRID LOADER)
 //  Cortical Opener • Symbolic Kernel Loader • Binary Shadow Integrator
 //  Deterministic Brainstem • Runtime/Scheduler/Substrate Unifier
 // ============================================================================
 //
-//  v13-Evo HYBRID CONTRACT:
-//  ------------------------
+//  v16-IMMORTAL HYBRID CONTRACT:
+//  -----------------------------
 //   • DO NOT boot the binary organism (Window already did).
 //   • DO load symbolic kernel + symbolic organs (via User/OS chain).
 //   • DO integrate binary shadow from window.PulseBinary.
-//   • DO integrate Flow (window.PulseUI) and PageScanner intel.
+//   • DO integrate Flow (window.PulseUI) and Page/Portal intel.
 //   • DO unify runtime, scheduler, substrate.
 //   • DO expose OS API (symbolic + binary shadow).
 //   • DO NOT expose raw organs to the outside.
 //   • DO NOT mutate Window or Page.
-//   • MAY read membrane intel from window.PulseSurface + PulseChunks portal.
+//   • MAY read membrane intel from window.PulseSurface, PulsePower, and portals.
 // ============================================================================
-/*
-AI_EXPERIENCE_META = {
-  identity: "PulseUnderstanding",
-  version: "v12.5-Evo",
-  layer: "frontend",
-  role: "intent_interpreter",
-  lineage: "PulseOS-v12",
 
-  evo: {
-    binaryAware: true,
-    dualBand: true,
-    chunkAligned: true,
-    presenceAware: true,
-    safeRouteFree: true,
-    cnsFallback: true,
-    normalizerAligned: true,
-    interpreterCore: true,
-    mapDriven: true
-  },
-
-  contract: {
-    always: [
-      "PulseWindow",
-      "PulsePresence",
-      "PulseChunks",
-      "PulseBand",
-      "PulseUIFlow",
-      "PulsePresenceNormalizer"
-    ],
-    never: [
-      "legacyUnderstanding",
-      "legacyThink",
-      "legacyBrainstem",
-      "safeRoute",
-      "fetchViaCNS",
-      "legacyOfflineLoader",
-      "legacyChunker",
-      "v1.7Fallback"
-    ]
-  }
-}
-*/
-
-console.log("Come to Understanding");
+console.log("Come to Understanding v16-Immortal");
 
 // Global handle
 const g =
@@ -87,14 +45,10 @@ const db =
 import { PulseIntentMap } from "../../PULSE-BAND/PULSE-OS/PulseIntentMap.js";
 import { PulseOrganismMap } from "../../PULSE-BAND/PULSE-OS/PulseOrganismMap.js";
 import createPulseWorldCore from "../../PULSE-BAND/PULSE-EXPANSION/PulseUser-v16.js";
-
-
-
 import { createDualBandOrganism as PulseBinaryOrganismBoot } from "../../PULSE-BAND/PULSE-AI/aiDualBand-v16.js";
 
 // ============================================================================
-//  IMPORTS — SYMBOLIC / BINARY ORGANS (UNCHANGED)
-//  - These are still the organ-level pieces we unify under the kernel.
+//  IMPORTS — SYMBOLIC / BINARY ORGANS
 // ============================================================================
 import { createProxy as PulseProxySym } from "../../PULSE-BAND/PULSE-PROXY/PulseProxy-v16.js";
 import { PulseRouter as PulseRouterSym } from "../../PULSE-BAND/PULSE-ROUTER/PulseRouter-v16.js";
@@ -103,10 +57,8 @@ import { createPulseMesh as PulseMeshSym } from "../../PULSE-BAND/PULSE-MESH/Pul
 import { createPulseSend as PulseSendSym } from "../../PULSE-BAND/PULSE-SEND/PulseSend-v16.js";
 import { createEarn as PulseEarnSym } from "../../PULSE-BAND/PULSE-EARN/PulseEarn-v16.js";
 
-
 // ============================================================================
 //  IMPORTS — BINARY SHADOW (NO BOOT HERE)
-//  Window already booted ai-v11-Evo and exposed window.PulseBinary.
 // ============================================================================
 import { createBinaryProxy } from "../../PULSE-BAND/PULSE-PROXY/PulseBinaryProxy-v16.js";
 import { createBinaryRouter as PulseRouterBin } from "../../PULSE-BAND/PULSE-ROUTER/PulseBinaryRouter-v16.js";
@@ -114,15 +66,19 @@ import { PulseBinaryGPU as PulseGPUBin } from "../../PULSE-BAND/PULSE-GPU/PulseB
 import { createBinaryMesh as PulseMeshBin } from "../../PULSE-BAND/PULSE-MESH/PulseBinaryMesh-v16.js";
 import { createBinarySend as PulseSendBin } from "../../PULSE-BAND/PULSE-SEND/PulseBinarySend-v16.js";
 
+// ============================================================================
+//  IMPORTS — PRESENTATION / POWER (v16)
+// ============================================================================
+import PulsePowerAPI from "../../PULSE-PORTAL/PulsePower-v16.js";
 
 // ============================================================================
-//  CONTEXT — v13-Evo-MAX
+//  CONTEXT — v16-IMMORTAL
 // ============================================================================
 const PULSE_UNDERSTANDING_CONTEXT = {
   layer: "PulseUnderstanding",
   role: "CORTICAL_OPENER",
-  version: "13.0-Evo-MAX",
-  lineage: "cortical-opener-core-v13",
+  version: "16.0-Immortal",
+  lineage: "cortical-opener-core-v16",
   evo: {
     hybridLoader: true,
     symbolicKernel: true,
@@ -130,6 +86,7 @@ const PULSE_UNDERSTANDING_CONTEXT = {
     runtimeUnifier: true,
     schedulerUnifier: true,
     substrateUnifier: true,
+
     driftAware: true,
     flowAware: true,
     pageScannerAware: true,
@@ -139,14 +96,24 @@ const PULSE_UNDERSTANDING_CONTEXT = {
     browserOnly: true,
     portalAware: true,
     surfaceEnvironmentAware: true,
-    chunkMembraneAware: true,
-    userPulledOS: true // NEW: User → OS → Brain chain
+    pulsePowerAware: true,
+    chunkMembraneAware: false, // legacy chunker removed from critical path
+    userPulledOS: true,
+
+    presenceAware: true,
+    advantageFieldAware: true,
+    speedFieldAware: true,
+    experienceFieldAware: true,
+    prewarmAware: true,
+    chunkCachePrewarmAware: true,
+    routerPrewarmAware: true,
+    sdnPrewarmAware: true,
+    meshPrewarmAware: true
   }
 };
 
-
 // ============================================================================
-//  ENVIRONMENT SNAPSHOT (UPGRADED — USE PORTAL IF PRESENT)
+//  ENVIRONMENT SNAPSHOT (UPGRADED — USE PORTAL / POWER IF PRESENT)
 // ============================================================================
 function buildEnvironmentSnapshot() {
   if (typeof window === "undefined") {
@@ -160,14 +127,27 @@ function buildEnvironmentSnapshot() {
   }
 
   const surfaceEnv = window.PulseSurface?.environment;
+  const powerSnapshot =
+    typeof PulsePowerAPI?.getPulsePowerSnapshot === "function"
+      ? PulsePowerAPI.getPulsePowerSnapshot()
+      : null;
+
+  const base = {
+    runtime: "browser",
+    userAgent: window.navigator?.userAgent || null,
+    language: window.navigator?.language || null,
+    online: window.navigator?.onLine ?? null,
+    platform: window.navigator?.platform || null
+  };
 
   if (surfaceEnv) {
     return {
-      runtime: surfaceEnv.runtime ?? "browser",
-      userAgent: surfaceEnv.userAgent ?? window.navigator?.userAgent ?? null,
-      language: surfaceEnv.language ?? window.navigator?.language ?? null,
-      online: surfaceEnv.online ?? window.navigator?.onLine ?? null,
-      platform: surfaceEnv.platform ?? window.navigator?.platform ?? null,
+      ...base,
+      runtime: surfaceEnv.runtime ?? base.runtime,
+      userAgent: surfaceEnv.userAgent ?? base.userAgent,
+      language: surfaceEnv.language ?? base.language,
+      online: surfaceEnv.online ?? base.online,
+      platform: surfaceEnv.platform ?? base.platform,
       screen: surfaceEnv.screen ?? null,
       device: surfaceEnv.device ?? null,
       input: surfaceEnv.input ?? null,
@@ -175,26 +155,21 @@ function buildEnvironmentSnapshot() {
       location: surfaceEnv.location ?? null,
       network: surfaceEnv.network ?? null,
       referrer: surfaceEnv.referrer ?? null,
-      origin: surfaceEnv.origin ?? null
+      origin: surfaceEnv.origin ?? null,
+      pulsePower: powerSnapshot || null
     };
   }
 
   return {
-    runtime: "browser",
-    userAgent: window.navigator?.userAgent || null,
-    language: window.navigator?.language || null,
-    online: window.navigator?.onLine ?? null,
-    platform: window.navigator?.platform || null
+    ...base,
+    pulsePower: powerSnapshot || null
   };
 }
 
 const PulseEnvironment = buildEnvironmentSnapshot();
 
-
 // ============================================================================
 //  USER / LOCAL OS CORE (SIDE-EFFECT LOAD)
-//  - This is the "user pulls OS" connection.
-//  - We don't call into it directly here; we just ensure it's loaded.
 // ============================================================================
 let PulseWorldCore = null;
 try {
@@ -204,15 +179,11 @@ try {
     serverMode: false
   });
 } catch {
-  // Understanding must not throw if user core fails; it degrades to window.PulseBinary-only.
   PulseWorldCore = null;
 }
 
-
 // ============================================================================
-//  GOVERNOR (symbolic only, now via global Pulse if present)
-//  - Previously: PulseOSv11Evo.runThroughGovernor(...)
-//  - Now: delegate to window.Pulse.Governed.run if available, else direct fn.
+//  GOVERNOR (symbolic only, via global Pulse if present)
 // ============================================================================
 function runThroughGovernor(organName, pulseOrImpulse, fn) {
   const governedRun =
@@ -224,10 +195,8 @@ function runThroughGovernor(organName, pulseOrImpulse, fn) {
     return governedRun(organName, pulseOrImpulse, fn);
   }
 
-  // Fallback: just run the function directly.
   return fn(pulseOrImpulse);
 }
-
 
 // ============================================================================
 //  BINARY-FIRST IDENTITY (HYBRID MODE)
@@ -255,11 +224,8 @@ async function resolveIdentityBinaryFirst(ProxyBin, ProxySym) {
   return { kind: "none", value: null };
 }
 
-
 // ============================================================================
 //  HYBRID KERNEL RESOLUTION (NO BINARY BOOT HERE)
-//  - Symbolic kernel is now resolved via User/OS chain or window.Pulse.
-//  - Binary kernel is still read from window.PulseBinary.
 // ============================================================================
 async function resolveKernelsBinaryFirst() {
   const BinaryKernel =
@@ -267,7 +233,6 @@ async function resolveKernelsBinaryFirst() {
 
   let SymbolicKernel = null;
 
-  // Try to get symbolic kernel from User/OS chain first
   try {
     if (PulseWorldCore?.getPrimaryOSView) {
       const osView = PulseWorldCore.getPrimaryOSView();
@@ -277,7 +242,6 @@ async function resolveKernelsBinaryFirst() {
     }
   } catch {}
 
-  // Fallback: try window.Pulse.SymbolicKernel or window.Pulse.Kernel
   if (!SymbolicKernel && typeof window !== "undefined") {
     SymbolicKernel =
       window.Pulse?.SymbolicKernel ??
@@ -285,7 +249,6 @@ async function resolveKernelsBinaryFirst() {
       null;
   }
 
-  // If it's a promise-like, await it
   if (SymbolicKernel && typeof SymbolicKernel.then === "function") {
     SymbolicKernel = await SymbolicKernel;
   }
@@ -295,7 +258,6 @@ async function resolveKernelsBinaryFirst() {
     SymbolicKernel: SymbolicKernel || {}
   };
 }
-
 
 // ============================================================================
 //  KERNEL BOOTSTRAP — UNDERSTANDING LAYER (HYBRID UNDER WINDOW)
@@ -357,7 +319,7 @@ async function buildPulseKernel() {
     (PulseGPUBin && Object.keys(PulseGPUBin).length ? PulseGPUBin : null) ||
     PulseGPUSym;
 
-  const ProxySym = PulseProxySym.createProxy
+  const ProxySymInstance = PulseProxySym.createProxy
     ? PulseProxySym.createProxy({
         Router,
         Brain,
@@ -380,11 +342,11 @@ async function buildPulseKernel() {
     ProxyBin = createBinaryProxy({
       encoder,
       fallbackProxyFactory: (job) => {
-        if (typeof ProxySym.send === "function") {
-          return ProxySym.send(job);
+        if (typeof ProxySymInstance.send === "function") {
+          return ProxySymInstance.send(job);
         }
-        if (typeof ProxySym.exchange === "function") {
-          return ProxySym.exchange(job);
+        if (typeof ProxySymInstance.exchange === "function") {
+          return ProxySymInstance.exchange(job);
         }
         return job;
       },
@@ -392,24 +354,27 @@ async function buildPulseKernel() {
     });
   }
 
-  const identityResult = await resolveIdentityBinaryFirst(ProxyBin, ProxySym);
+  const identityResult = await resolveIdentityBinaryFirst(ProxyBin, ProxySymInstance);
   const identity = identityResult.value;
 
-  if (ProxySym && typeof ProxySym.setIdentity === "function") {
+  if (ProxySymInstance && typeof ProxySymInstance.setIdentity === "function") {
     try {
-      ProxySym.setIdentity(identity);
+      ProxySymInstance.setIdentity(identity);
     } catch {}
   }
 
-  const Proxy = ProxyBin || ProxySym;
+  const Proxy = ProxyBin || ProxySymInstance;
 
   try {
     SpinalCord?.registerExtension?.("Understanding", "extension", {
-      version: "v13",
+      version: "v16",
       role: "cortical-opener",
       layer: "A3",
       binaryFirst: true,
-      hybridLoader: true
+      hybridLoader: true,
+      presenceAware: true,
+      advantageAware: true,
+      speedAware: true
     });
   } catch {}
 
@@ -472,7 +437,7 @@ async function buildPulseKernel() {
       executionContext: {
         sceneType: "cortical-opener",
         workloadClass: "frontend-boot",
-        dispatchSignature: "Understanding.v13-Evo-MAX",
+        dispatchSignature: "Understanding.v16-Immortal",
         shapeSignature: "A3-layer",
         extensionId: "Understanding",
         identityKind: identityResult.kind
@@ -529,7 +494,6 @@ async function buildPulseKernel() {
 
 const PulseKernelPromise = buildPulseKernel();
 
-
 // ============================================================================
 //  GLOBAL BROADCAST
 // ============================================================================
@@ -566,36 +530,93 @@ if (typeof window !== "undefined") {
     })
     .catch((err) => {
       console.error(
-        "[PulseUnderstanding v13-Evo-MAX] Kernel bootstrap failed:",
+        "[PulseUnderstanding v16-Immortal] Kernel bootstrap failed:",
         err
       );
     });
 }
 
-
 // ============================================================================
-//  UNDERSTANDING PREWARM — uses portal chunk membrane if available
+//  UNDERSTANDING PREWARM — v16 IMMORTAL
+//  - Talks to PulsePower, SDN, Router, Mesh, and asset prewarm surfaces.
 // ============================================================================
-export function prewarmUnderstanding(urls = []) {
+export async function prewarmUnderstanding({
+  pages = [],
+  routes = [],
+  assets = []
+} = {}) {
   if (typeof window === "undefined") return;
+
   try {
-    if (Array.isArray(urls) && urls.length && window.prewarmAssets) {
-      window.prewarmAssets(urls);
+    // Ensure kernel is at least resolving so SDN/Router exist
+    const PulseKernel = await PulseKernelPromise.catch(() => null);
+    const SDN = PulseKernel?.SDN;
+    const Router = PulseKernel?.Router;
+    const Mesh = PulseKernel?.Mesh;
+
+    // 1) PulsePower prewarm (presentation + asset memory)
+    try {
+      if (PulsePowerAPI?.pulsePowerTouch) {
+        PulsePowerAPI.pulsePowerTouch({
+          pageId: pages[0] || null,
+          route: routes[0] || null,
+          assets: {
+            images: assets.filter((a) => a.kind === "image").map((a) => a.href),
+            fonts: assets.filter((a) => a.kind === "font").map((a) => a.href),
+            scripts: assets.filter((a) => a.kind === "script").map((a) => a.href),
+            styles: assets.filter((a) => a.kind === "style").map((a) => a.href)
+          }
+        });
+      }
+    } catch (err) {
+      console.error("[PulseUnderstanding] PulsePower prewarm failed:", err);
+    }
+
+    // 2) SDN / Router prewarm (routes / pages)
+    try {
+      if (SDN?.prewarmRoutes && routes.length) {
+        SDN.prewarmRoutes(routes);
+      } else if (Router?.prewarm && routes.length) {
+        Router.prewarm(routes);
+      }
+    } catch (err) {
+      console.error("[PulseUnderstanding] SDN/Router prewarm failed:", err);
+    }
+
+    // 3) Mesh prewarm (if supported)
+    try {
+      if (Mesh?.prewarm && pages.length) {
+        Mesh.prewarm({ pages, routes });
+      }
+    } catch (err) {
+      console.error("[PulseUnderstanding] Mesh prewarm failed:", err);
+    }
+
+    // 4) Legacy asset prewarm (if still wired)
+    try {
+      const urls = assets.map((a) => a.href).filter(Boolean);
+      if (urls.length && window.prewarmAssets) {
+        window.prewarmAssets(urls);
+      }
+    } catch (err) {
+      console.error("[PulseUnderstanding] legacy prewarmAssets failed:", err);
     }
   } catch (err) {
     console.error("[PulseUnderstanding] prewarmUnderstanding failed:", err);
   }
 }
 
-
+// ============================================================================
+//  EXPORTED UNDERSTANDING OBJECT
+// ============================================================================
 export const PulseUnderstanding = {
   ...PULSE_UNDERSTANDING_CONTEXT,
   Environment: PulseEnvironment,
   IntentMap: PulseIntentMap,
   OrganismMap: PulseOrganismMap,
-  IQMap: window.PulseIQMap,
+  IQMap: typeof window !== "undefined" ? window.PulseIQMap : null,
   Kernel: PulseKernelPromise,
-  Errors: window.PulseUIErrors,
+  Errors: typeof window !== "undefined" ? window.PulseUIErrors : null,
   Identity: () =>
     typeof window !== "undefined" ? window?.Pulse?.Identity ?? null : null,
   IdentityKind: () =>
