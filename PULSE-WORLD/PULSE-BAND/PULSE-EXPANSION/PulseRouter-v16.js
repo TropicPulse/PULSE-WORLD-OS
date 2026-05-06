@@ -80,11 +80,20 @@ AI_EXPERIENCE_META = {
 // ============================================================================
 import { logger } from "../../PULSE-UI/_BACKEND/PulseProofLogger.js";
 
-import { PulseExpansionMeta, createPulseExpansion, getPulseExpansionContext } from "./PulseExpansion-v16.js";
+import {
+  PulseExpansionMeta,
+  createPulseExpansion,
+  getPulseExpansionContext
+} from "./PulseExpansion-v16.js";
 import { PulseCastleMeta, createPulseCastle } from "../PulseCastle-v16.js";
 import { PulseServerMeta, createPulseServer } from "./PulseServer-v16.js";
 // User lanes + world core
-import { getPulseUserContext, createPulseWorldCore, pulseUser, PulseUserMeta } from "./PulseUser-v16.js";
+import {
+  getPulseUserContext,
+  createPulseWorldCore,
+  pulseUser,
+  PulseUserMeta
+} from "./PulseUser-v16.js";
 
 // Mesh (symbolic + binary)
 import createBinaryMesh, {
@@ -104,7 +113,6 @@ import PulseBeaconMesh, {
 
 // Touch / presence
 import { getPulseTouchContext } from "../../PULSE-UI/PULSE-TOUCH.js";
-
 
 // Runtime / scheduler / overmind
 import { getPulseRuntimeContext } from "../PULSE-X/PulseRuntime-v2.js";
@@ -209,25 +217,67 @@ function buildBandSignature(band) {
 // ============================================================================
 //  ORGANISM CONTEXT (for meta + introspection)
 // ============================================================================
+
+// Lightweight, synthetic singletons (no IO, no routing)
+const _expansionSingleton =
+  (typeof createPulseExpansion === "function"
+    ? createPulseExpansion({})
+    : null) || null;
+
+const _castleSingleton =
+  (typeof createPulseCastle === "function"
+    ? createPulseCastle({})
+    : null) || null;
+
+const _serverSingleton =
+  (typeof createPulseServer === "function"
+    ? createPulseServer({})
+    : null) || null;
+
+const _worldCoreSingleton =
+  (typeof createPulseWorldCore === "function"
+    ? createPulseWorldCore({ serverMode: false })
+    : null) || null;
+
 function buildOrganismContext() {
-  const expansion = getPulseExpansionContext?.() || {};
+  const expansionCtx = getPulseExpansionContext?.() || {};
   const touch = getPulseTouchContext?.() || {};
   const runtime = getPulseRuntimeContext?.() || {};
   const scheduler = getPulseSchedulerContext?.() || {};
   const overmind = getPulseOvermindContext?.() || {};
   const earn = getEarnContext?.() || {};
+  const userCtx = getPulseUserContext?.() || {};
+  const worldCore = _worldCoreSingleton || null;
 
   const proxyMeta = {
-    proxy: getProxyContext() || null,
-    proxyPressure: getProxyPressure(),
-    proxyBoost: getProxyBoost(),
-    proxyFallback: getProxyFallback(),
-    proxyMode: getProxyMode(),
-    proxyLineage: getProxyLineage()
+    proxy: getProxyContext?.() || null,
+    proxyPressure: getProxyPressure?.() ?? 0,
+    proxyBoost: getProxyBoost?.() ?? 0,
+    proxyFallback: getProxyFallback?.() ?? false,
+    proxyMode: getProxyMode?.() || "normal",
+    proxyLineage: getProxyLineage?.() || null
   };
 
   return {
-    expansion,
+    expansion: {
+      meta: PulseExpansionMeta,
+      context: expansionCtx,
+      core: _expansionSingleton
+    },
+    castle: {
+      meta: PulseCastleMeta,
+      core: _castleSingleton
+    },
+    server: {
+      meta: PulseServerMeta,
+      core: _serverSingleton
+    },
+    user: {
+      meta: PulseUserMeta,
+      instance: pulseUser || null,
+      context: userCtx
+    },
+    worldCore,
     touch,
     runtime,
     scheduler,
@@ -236,6 +286,7 @@ function buildOrganismContext() {
     meshMeta: PulseMeshMeta,
     binaryMeshMeta: BinaryMeshMeta,
     beaconMeshMeta: PulseBeaconMeshMeta,
+    routerMeta: PulseRouterMeta,
     proxyMeta
   };
 }
@@ -323,7 +374,6 @@ export function createPulseRouter({
     castleSnapshot = snapshot || null;
     return { ok: true };
   }
-
   function attachExpansion(snapshot) {
     expansionSnapshot = snapshot || null;
     return { ok: true };
@@ -423,10 +473,12 @@ export function createPulseRouter({
         gh?.advantageContext?.score ??
         userAdvantageScore ??
         meshAdvantageScore,
+
       advantageBand:
         gh?.advantageContext?.band ??
         userAdvantageBand ??
         meshAdvantageBand,
+
       fallbackBandLevel: gh?.fallbackBandLevel ?? null
     });
   }
@@ -477,18 +529,22 @@ export function createPulseRouter({
         dhSym.meshStrength ||
         dhBin.meshStrength ||
         "unknown",
+
       meshPressureIndex:
         dhSym.meshPressureIndex ??
         dhBin.meshPressureIndex ??
         0,
+
       userCount:
         dhSym.userCount ??
         dhBin.userCount ??
         0,
+
       castleCount:
         dhSym.castleCount ??
         dhBin.castleCount ??
         0,
+
       presenceField,
       advantageField
     };
@@ -496,7 +552,7 @@ export function createPulseRouter({
 
   function getCastleSignals() {
     const state = castleSnapshot?.state || {};
-    const loadLevel = state.loadLevel || "unknown"; // low | normal | high | critical
+    const loadLevel = state.loadLevel || "unknown";
     const presenceField = castleSnapshot?.presenceField || null;
 
     return {
@@ -512,9 +568,7 @@ export function createPulseRouter({
       routeStable: true
     };
 
-    return {
-      routeField
-    };
+    return { routeField };
   }
 
   function getUserSignals() {
@@ -552,8 +606,8 @@ export function createPulseRouter({
   // --------------------------------------------------------------------------
   function routeTo(target, reason, context = {}) {
     return Object.freeze({
-      target,          // "castle" | "mesh" | "cloud"
-      reason,          // symbolic reason
+      target,
+      reason,
       hops: 1,
       safe: true,
       presenceField: context.presenceField || null,
@@ -570,9 +624,9 @@ export function createPulseRouter({
   }
 
   function decideRoute(request) {
-    // A-B-A tick
     cycle += 1;
     const band = "symbolic";
+
     lastBinaryField = buildBinaryField(cycle);
     lastWaveField = buildWaveField(cycle, band);
     lastBandSignature = buildBandSignature(band);
@@ -593,6 +647,7 @@ export function createPulseRouter({
       advantageField.fallbackBandLevel ??
       userSignals.fallbackBandLevel ??
       0;
+
     const osBrainStatus = userSignals.osBrainStatus;
 
     const proxyMeta = {
@@ -642,7 +697,6 @@ export function createPulseRouter({
         proxyMeta
       });
     }
-
     // 0. If OS brain is unhealthy or fallback band is high, bias toward cloud
     if (osBrainStatus !== "healthy" || fallbackBandLevel >= 3) {
       return routeTo("cloud", "osBrainUnhealthyOrHighFallback", {
@@ -804,7 +858,7 @@ export function createPulseRouter({
 
     return Object.freeze({
       ok: true,
-      suggestions
+      suggestions: Object.freeze(suggestions)
     });
   }
 
@@ -827,7 +881,7 @@ export function createPulseRouter({
 
     return Object.freeze({
       ok: true,
-      suggestions
+      suggestions: Object.freeze(suggestions)
     });
   }
 
@@ -840,14 +894,14 @@ export function createPulseRouter({
 
     return Object.freeze({
       intent: "optimize-route",
-      payload: {
+      payload: Object.freeze({
         routeSuggestions: routeSuggestions.ok
           ? routeSuggestions.suggestions
           : [],
         corridorSuggestions: corridorSuggestions.ok
           ? corridorSuggestions.suggestions
           : []
-      }
+      })
     });
   }
 
@@ -904,10 +958,10 @@ export function createPulseRouter({
       binaryField: lastBinaryField,
       waveField: lastWaveField,
       telemetry: Telemetry,
-      suggestions: {
+      suggestions: Object.freeze({
         betterRoutes: suggestBetterRoutes(),
         corridorProtection: suggestCorridorProtection()
-      },
+      }),
       organismContext: buildOrganismContext()
     });
   }
@@ -949,5 +1003,3 @@ export function createPulseRouter({
     getSnapshot
   });
 }
-
-export default createPulseRouter;
