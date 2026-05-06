@@ -201,8 +201,8 @@ export const PulseOSBrainMeta = Object.freeze({
 // ============================================================================
 //  IMPORTS — LAW: BRAIN MAY IMPORT ONLY PULSEIQ + ORGANISM + EVOLUTION
 // ============================================================================
-import { PulseIQMap } from "../PULSE-X/PulseWorldIQMap.js";
-import { PulseOrganismMap } from "../PULSE-X/PulseWorldOrganismMap.js";
+import { PulseIQMap } from "../PULSE-X/PulseWorldIQMap-v16.js";
+import { PulseOrganismMap } from "../PULSE-X/PulseWorldOrganismMap-v17.js";
 import { PulseOSEvolution } from "./PulseOSBrainEvolution.js";
 
 import checkBand from "../PULSE-X/PULSE-WORLD-BAND.js";

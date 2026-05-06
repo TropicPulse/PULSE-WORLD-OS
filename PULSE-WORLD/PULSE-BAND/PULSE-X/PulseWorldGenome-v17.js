@@ -28,48 +28,45 @@
 //    • No raw external fetch for JSON — must route through world engine / proxy
 //    • Deterministic, drift-proof, zero-mutation
 // ============================================================================
+// ============================================================================
+// FILE: /PULSE-X/PULSE-WORLD/PulseWorldGenome-v17.js
+// PULSE OS v17 — WORLD GENOME (Social Graph Only)
+// Deterministic • Metadata‑Only • IMMORTAL
+// ============================================================================
 
 /*
-GENOME_META = {
+AI_EXPERIENCE_META = {
   identity: "PulseWorldGenome",
-  version: "v17-IMMORTAL-GENOME",
-  layer: "world_layer",
-  role: "world_helper_cortex",
-  lineage: "PulseOS-v14 → v16-IMMORTAL → v17-IMMORTAL",
+  version: "v17-IMMORTAL",
+  layer: "world",
+  role: "world_genome_conductor",
+  lineage: "PulseWorld-v15 → PulseWorld-v17",
 
   evo: {
+    worldGenome: true,
+    socialGraphAware: true,
     deterministic: true,
     driftProof: true,
-    zeroMutation: true,
-    worldLayerOrgan: true,
-    founderAligned: true,
-    presenceAware: true,
-    dualBandAware: true,
-    proxyAware: true,
-    safeInit: true,
-    singleInstance: true,
-    coldStartSafe: true,
-    autoLoadHelpers: true,
-    autoCacheHelpers: true,
-    perfAware: true,
-    multiBackendAware: true
+    metadataOnly: true,
+    zeroNetwork: true,
+    zeroFilesystem: true,
+    zeroMutationOfInput: true
   },
 
-  placement: {
-    requiredFolder: "PULSE-WORLD",
-    naturalLanguageHook: [
-      "world helpers",
-      "world genome",
-      "backend helpers",
-      "helper cortex"
+  contract: {
+    always: [
+      "PulseWorldSocialGraph"
+    ],
+    never: [
+      "safeRoute",
+      "fetchViaCNS",
+      "dynamicImport",
+      "eval",
+      "Function"
     ]
   }
 }
 */
-
-// ============================================================================
-//  IMPORTS — WORLD-LAYER GENOMES (NO SENSITIVE CONFIG)
-// ============================================================================
 
 // Data genome (Firebase owner)
 import {
@@ -89,6 +86,38 @@ import * as PulseTranslatorRNAIntake from "../PULSE-TRANSLATOR/PulseTranslatorRN
 import * as PulseTranslatorRNAOutput from "../PULSE-TRANSLATOR/PulseTranslatorRNAOutput-v17.js";
 import * as PulseTranslatorSkeletalIntake from "../PULSE-TRANSLATOR/PulseTranslatorSkeletalIntake-v17.js";
 import * as PulseTranslatorSkeletalOutput from "../PULSE-TRANSLATOR/PulseTranslatorSkeletalOutput-v17.js";
+
+import { createPulseWorldSocialGraph } from "./PulseWorldSocialGraph-v17.js";
+
+// ============================================================================
+// WORLD GENOME (v17 IMMORTAL)
+// ============================================================================
+export function createPulseWorldGenome({ PowerUserRanking, log, warn, error } = {}) {
+  // Create the world social graph organ
+  const socialGraph = createPulseWorldSocialGraph({
+    PowerUserRanking,
+    log,
+    warn,
+    error
+  });
+
+  // Genome metadata
+  const meta = {
+    layer: "PulseWorldGenome",
+    role: "WORLD_GENOME",
+    version: "v17-IMMORTAL",
+    organs: {
+      socialGraph: socialGraph.meta
+    }
+  };
+
+  // IMMORTAL genome object
+  return Object.freeze({
+    meta,
+    socialGraph
+  });
+}
+
 
 // ============================================================================
 //  WORLD-LAYER DATA BINDINGS (PASS-THROUGH)
@@ -977,3 +1006,6 @@ const localHelpers = {
 // ============================================================================
 // 📘 PAGE INDEX — END OF FILE
 // ============================================================================
+
+// Default export instance
+export const pulseWorldGenome = createPulseWorldGenome();

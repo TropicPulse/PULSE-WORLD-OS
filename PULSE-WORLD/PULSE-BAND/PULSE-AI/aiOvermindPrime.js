@@ -37,9 +37,9 @@ AI_EXPERIENCE_META = {
 
 import { PulseProofLogger } from "../../PULSE-UI/_BACKEND/PulseProofLogger.js";
 
-import { PulseOrganismMap } from "../PULSE-X/PulseWorldOrganismMap.js";
-import { PulseIQMap } from "../PULSE-X/PulseWorldIQMap.js";
-import { PulseIntentMap } from "../PULSE-X/PulseWorldIntentMap.js";
+import { PulseOrganismMap } from "../PULSE-X/PulseWorldOrganismMap-v17.js";
+import { PulseIQMap } from "../PULSE-X/PulseWorldIQMap-v16.js";
+import { PulseIntentMap } from "../PULSE-X/PulseWorldIntentMap-v17.js";
 // ============================================================================
 //  AI ORGANISM (v14.4 IMMORTAL-INTEL)
 // ============================================================================
@@ -131,7 +131,7 @@ import createAIExperience from "./aiExperience.js";
 // ———————————————————————————————
 import createAIBinaryPipeline from "./aiPipeline.js";
 import runAI from "./aiEngine-v16.js";
-import pulseAIChunker from "./PulseAIChunker-v16.js";
+import pulseAIChunker from "./PulseAIChunker-v17.js";
 import createPulseFileScanner from "./PulseFileScanner-v16.js";
 // ———————————————————————————————
 // 7. WATCHDOG + VITALS + LOGGING

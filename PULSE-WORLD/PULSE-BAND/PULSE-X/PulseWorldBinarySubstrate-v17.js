@@ -1,21 +1,17 @@
 /**
- * BinarySubstrate-v2.4-Presence-TOUCH-Immortal.js
+ * BinarySubstrate-v17-IMMORTAL.js
  * PULSE-WORLD / PULSE-BINARY / FIXED-WIDTH
  *
  * ROLE:
- *   v2.4 introduces:
- *     - fixed-width binary frames (v2 base)
- *     - deterministic field ordering
- *     - enum compression
- *     - region/host ID compression
- *     - varint encoding for lengths
- *     - reversible decoding
- *
- *   v2.4-Presence-TOUCH-Immortal adds:
- *     - explicit Pulse-Touch presence fields
- *     - explicit advantage / chunkProfile / page / identity / trust fields
+ *   v17 introduces:
+ *     - fixed-width binary frames (v2 base, v17 uplift)
+ *     - deterministic field ordering + band tagging
+ *     - enum compression + region/host ID compression
+ *     - varint-style length prefix (fixed u32) for strings
+ *     - reversible decoding (backward-safe with v2.4 frames)
+ *     - presence/mode/page/chunkProfile/trust/advantage fields
  *     - optional pulseTouchMeta block (JSON) at tail
- *     - backward-safe decoding (old frames still decode)
+ *     - optional band/frameProfile metadata (size/type/band) at tail
  *
  *   All upstream organs remain symbolic.
  *   This is the binary representation layer.
@@ -23,10 +19,10 @@
 /*
 AI_EXPERIENCE_META = {
   identity: "BinarySubstrate",
-  version: "v2.4-Presence-TOUCH-Immortal",
+  version: "v17-IMMORTAL",
   layer: "substrate",
   role: "binary_representation_layer",
-  lineage: "BinarySubstrate-v1 → v11-Evo → v14-Immortal → v2.4-Presence-TOUCH-Immortal",
+  lineage: "BinarySubstrate-v1 → v11-Evo → v14-Immortal → v2.4-Presence-TOUCH-Immortal → v17-IMMORTAL",
 
   evo: {
     binaryPrimary: true,           // binary-first representation
@@ -45,7 +41,6 @@ AI_EXPERIENCE_META = {
     zeroNetwork: true,
     zeroFilesystem: true,
 
-    // Presence / Touch / Advantage
     presenceAware: true,
     advantageAware: true,
     pulseTouchAware: true,
@@ -54,7 +49,9 @@ AI_EXPERIENCE_META = {
     prewarmAware: true,
     meshAware: true,
     expansionAware: true,
-    multiInstanceReady: true
+    multiInstanceReady: true,
+    bandAware: true,
+    frameProfileAware: true
   },
 
   contract: {
@@ -72,11 +69,11 @@ AI_EXPERIENCE_META = {
 }
 */
 
-export const BinarySubstrateV2Meta = Object.freeze({
-  organId: "BinarySubstrate-v2.4-Presence-TOUCH-Immortal",
+export const BinarySubstrateV17Meta = Object.freeze({
+  organId: "BinarySubstrate-v17-IMMORTAL",
   role: "BINARY_SUBSTRATE",
-  version: "2.4-Presence-TOUCH-Immortal",
-  epoch: "v13.0-Presence-TOUCH",
+  version: "v17-IMMORTAL",
+  epoch: "v17-IMMORTAL",
   layer: "BinaryTransport",
   safety: Object.freeze({
     deterministic: true,
@@ -85,16 +82,18 @@ export const BinarySubstrateV2Meta = Object.freeze({
     syntheticOnly: true
   }),
   evo: Object.freeze({
-    presenceAware: true,      // can carry presence fields in state
-    advantageAware: true,     // can carry advantage fields in state
-    dualbandSafe: true,       // symbolic/binary tagging only
-    chunkAware: true,         // frames are chunk-friendly
-    cacheAware: true,         // stable, cacheable shapes
-    prewarmAware: true,       // predictable sizes for prewarm
-    meshAware: true,          // can carry region/host/mesh IDs
-    expansionAware: true,     // carries deployment/multi-plan payloads
-    pulseTouchAware: true,    // explicit Pulse-Touch fields
-    multiInstanceReady: true
+    presenceAware: true,
+    advantageAware: true,
+    dualbandSafe: true,
+    chunkAware: true,
+    cacheAware: true,
+    prewarmAware: true,
+    meshAware: true,
+    expansionAware: true,
+    pulseTouchAware: true,
+    multiInstanceReady: true,
+    bandAware: true,
+    frameProfileAware: true
   })
 });
 
@@ -107,16 +106,17 @@ export const BinaryPayloadType = Object.freeze({
   DELTA: 2,
   DEPLOYMENT_PLAN: 3,
   MULTI_PLAN: 4,
-  EXECUTION_RESULT: 5
+  EXECUTION_RESULT: 5,
+  RUNTIME_STATE: 6 // v17 optional, not yet used by runtime
 });
 
-// Reverse lookup
 const PayloadTypeReverse = {
   1: "SNAPSHOT",
   2: "DELTA",
   3: "DEPLOYMENT_PLAN",
   4: "MULTI_PLAN",
-  5: "EXECUTION_RESULT"
+  5: "EXECUTION_RESULT",
+  6: "RUNTIME_STATE"
 };
 
 // -------------------------
@@ -158,8 +158,18 @@ function decodeString(view, offset) {
   return [str, o2 + len];
 }
 
+// v17: frame profile helper (pure, no memory)
+export function computeFrameProfile(uint8, tag) {
+  const size = uint8?.length || 0;
+  return {
+    tag,
+    size,
+    band: tag === "MULTI_PLAN" ? "symbolic" : "binary"
+  };
+}
+
 // -------------------------
-// SNAPSHOT PACKER (v2.4)
+// SNAPSHOT PACKER (v17)
 // -------------------------
 
 export function packSnapshot(snapshot) {
@@ -173,7 +183,14 @@ export function packSnapshot(snapshot) {
   const identity = state.identity || touch.identity || "";
   const trusted = state.trusted || touch.trusted || "";
   const advantage = state.advantage || touch.advantage || "";
+  const band = state.band || touch.band || "dual";
   const touchMeta = touch && Object.keys(touch).length > 0 ? touch : null;
+
+  const frameProfile = {
+    tag: "SNAPSHOT",
+    band,
+    sizeHint: 0
+  };
 
   const fields = [
     header.snapshotId || "",
@@ -193,13 +210,14 @@ export function packSnapshot(snapshot) {
     identity,
     trusted,
     advantage,
-    JSON.stringify(touchMeta || {})
+    band,
+    JSON.stringify(touchMeta || {}),
+    JSON.stringify(frameProfile)
   ];
 
   const encodedFields = fields.map(encodeString);
   const totalSize =
-    1 + // payload type
-    encodedFields.reduce((sum, f) => sum + f.length, 0);
+    1 + encodedFields.reduce((sum, f) => sum + f.length, 0);
 
   const buf = new ArrayBuffer(totalSize);
   const view = new DataView(buf);
@@ -216,19 +234,28 @@ export function packSnapshot(snapshot) {
 }
 
 // -------------------------
-// DELTA PACKER (v2.4)
+// DELTA PACKER (v17)
 // -------------------------
 
 export function packDelta(delta) {
   const touch = delta.pulseTouch || delta.skin || {};
+  const band = delta.band || touch.band || "dual";
   const touchMeta = touch && Object.keys(touch).length > 0 ? touch : null;
+
+  const frameProfile = {
+    tag: "DELTA",
+    band,
+    sizeHint: 0
+  };
 
   const fields = [
     delta.instanceId || "",
     delta.snapshotBeforeId || "",
     delta.snapshotAfterId || "",
     JSON.stringify(delta.changes || {}),
-    JSON.stringify(touchMeta || {})
+    JSON.stringify(touchMeta || {}),
+    band,
+    JSON.stringify(frameProfile)
   ];
 
   const encoded = fields.map(encodeString);
@@ -249,12 +276,19 @@ export function packDelta(delta) {
 }
 
 // -------------------------
-// DEPLOYMENT PLAN PACKER (v2.4)
+// DEPLOYMENT PLAN PACKER (v17)
 // -------------------------
 
 export function packDeploymentPlan(plan) {
   const touch = plan.pulseTouch || plan.touch || {};
+  const band = plan.band || touch.band || "dual";
   const touchMeta = touch && Object.keys(touch).length > 0 ? touch : null;
+
+  const frameProfile = {
+    tag: "DEPLOYMENT_PLAN",
+    band,
+    sizeHint: 0
+  };
 
   const fields = [
     plan.instanceId || "",
@@ -267,7 +301,9 @@ export function packDeploymentPlan(plan) {
         m: a.meta || null
       }))
     ),
-    JSON.stringify(touchMeta || {})
+    JSON.stringify(touchMeta || {}),
+    band,
+    JSON.stringify(frameProfile)
   ];
 
   const encoded = fields.map(encodeString);
@@ -288,10 +324,18 @@ export function packDeploymentPlan(plan) {
 }
 
 // -------------------------
-// MULTI-ORGANISM PLAN PACKER (v2.4)
+// MULTI-ORGANISM PLAN PACKER (v17)
 // -------------------------
 
 export function packMultiOrganismPlan(multiPlan) {
+  const band = multiPlan.band || "symbolic";
+
+  const frameProfile = {
+    tag: "MULTI_PLAN",
+    band,
+    sizeHint: 0
+  };
+
   const fields = [
     JSON.stringify(
       (multiPlan.instances || []).map((bundle) => ({
@@ -303,9 +347,12 @@ export function packMultiOrganismPlan(multiPlan) {
           p: a.patch || null,
           m: a.meta || null
         })),
-        touch: bundle.pulseTouch || bundle.touch || null
+        touch: bundle.pulseTouch || bundle.touch || null,
+        band: bundle.band || band
       }))
-    )
+    ),
+    band,
+    JSON.stringify(frameProfile)
   ];
 
   const encoded = fields.map(encodeString);
@@ -326,18 +373,27 @@ export function packMultiOrganismPlan(multiPlan) {
 }
 
 // -------------------------
-// EXECUTION RESULT PACKER (v2.4)
+// EXECUTION RESULT PACKER (v17)
 // -------------------------
 
 export function packExecutionResult(exec) {
   const touch = exec.pulseTouch || exec.touch || {};
+  const band = exec.band || touch.band || "binary";
   const touchMeta = touch && Object.keys(touch).length > 0 ? touch : null;
+
+  const frameProfile = {
+    tag: "EXECUTION_RESULT",
+    band,
+    sizeHint: 0
+  };
 
   const fields = [
     exec.instanceId || "",
     JSON.stringify(exec.newState || {}),
     JSON.stringify(exec.logs || []),
-    JSON.stringify(touchMeta || {})
+    JSON.stringify(touchMeta || {}),
+    band,
+    JSON.stringify(frameProfile)
   ];
 
   const encoded = fields.map(encodeString);
@@ -358,7 +414,7 @@ export function packExecutionResult(exec) {
 }
 
 // -------------------------
-// UNPACKER (v2.4, backward-safe)
+// UNPACKER (v17, backward-safe)
 // -------------------------
 
 export function unpackBinaryPayload(uint8) {
@@ -413,9 +469,10 @@ export function unpackBinaryPayload(uint8) {
       let identity = "";
       let trusted = "";
       let advantage = "";
+      let band = "dual";
       let touchMeta = {};
+      let frameProfile = null;
 
-      // Optional tail fields (backward-safe)
       let tmp;
       [tmp, o] = readFieldSafe();
       if (tmp !== null) presence = tmp;
@@ -430,11 +487,21 @@ export function unpackBinaryPayload(uint8) {
       [tmp, o] = readFieldSafe();
       if (tmp !== null) advantage = tmp;
       [tmp, o] = readFieldSafe();
+      if (tmp !== null) band = tmp || "dual";
+      [tmp, o] = readFieldSafe();
       if (tmp !== null) {
         try {
           touchMeta = JSON.parse(tmp || "{}");
         } catch {
           touchMeta = {};
+        }
+      }
+      [tmp, o] = readFieldSafe();
+      if (tmp !== null) {
+        try {
+          frameProfile = JSON.parse(tmp || "{}");
+        } catch {
+          frameProfile = null;
         }
       }
 
@@ -468,8 +535,13 @@ export function unpackBinaryPayload(uint8) {
         identity,
         trusted,
         advantage,
+        band,
         pulseTouch: touchMeta
       };
+
+      if (frameProfile) {
+        out.frameProfile = frameProfile;
+      }
       break;
     }
 
@@ -484,13 +556,26 @@ export function unpackBinaryPayload(uint8) {
       o = o6;
 
       let touchMeta = {};
-      const [touchStr, o7] = readFieldSafe();
-      o = o7;
-      if (touchStr !== null) {
+      let band = "dual";
+      let frameProfile = null;
+
+      let tmp;
+      [tmp, o] = readFieldSafe();
+      if (tmp !== null) {
         try {
-          touchMeta = JSON.parse(touchStr || "{}");
+          touchMeta = JSON.parse(tmp || "{}");
         } catch {
           touchMeta = {};
+        }
+      }
+      [tmp, o] = readFieldSafe();
+      if (tmp !== null) band = tmp || "dual";
+      [tmp, o] = readFieldSafe();
+      if (tmp !== null) {
+        try {
+          frameProfile = JSON.parse(tmp || "{}");
+        } catch {
+          frameProfile = null;
         }
       }
 
@@ -504,6 +589,8 @@ export function unpackBinaryPayload(uint8) {
       out.snapshotAfterId = afterId;
       out.changes = changes;
       out.pulseTouch = touchMeta;
+      out.band = band;
+      if (frameProfile) out.frameProfile = frameProfile;
       break;
     }
 
@@ -514,13 +601,26 @@ export function unpackBinaryPayload(uint8) {
       o = o4;
 
       let touchMeta = {};
-      const [touchStr, o5] = readFieldSafe();
-      o = o5;
-      if (touchStr !== null) {
+      let band = "dual";
+      let frameProfile = null;
+
+      let tmp;
+      [tmp, o] = readFieldSafe();
+      if (tmp !== null) {
         try {
-          touchMeta = JSON.parse(touchStr || "{}");
+          touchMeta = JSON.parse(tmp || "{}");
         } catch {
           touchMeta = {};
+        }
+      }
+      [tmp, o] = readFieldSafe();
+      if (tmp !== null) band = tmp || "dual";
+      [tmp, o] = readFieldSafe();
+      if (tmp !== null) {
+        try {
+          frameProfile = JSON.parse(tmp || "{}");
+        } catch {
+          frameProfile = null;
         }
       }
 
@@ -532,17 +632,38 @@ export function unpackBinaryPayload(uint8) {
       out.instanceId = instanceId;
       out.actions = actions;
       out.pulseTouch = touchMeta;
+      out.band = band;
+      if (frameProfile) out.frameProfile = frameProfile;
       break;
     }
 
     case "MULTI_PLAN": {
       const [instancesStr, o3] = decodeString(view, o);
       o = o3;
+
+      let band = "symbolic";
+      let frameProfile = null;
+
+      let tmp;
+      [tmp, o] = readFieldSafe();
+      if (tmp !== null) band = tmp || "symbolic";
+      [tmp, o] = readFieldSafe();
+      if (tmp !== null) {
+        try {
+          frameProfile = JSON.parse(tmp || "{}");
+        } catch {
+          frameProfile = null;
+        }
+      }
+
       let instances = [];
       try {
         instances = JSON.parse(instancesStr || "[]");
       } catch {}
+
       out.instances = instances;
+      out.band = band;
+      if (frameProfile) out.frameProfile = frameProfile;
       break;
     }
 
@@ -555,13 +676,26 @@ export function unpackBinaryPayload(uint8) {
       o = o5;
 
       let touchMeta = {};
-      const [touchStr, o6] = readFieldSafe();
-      o = o6;
-      if (touchStr !== null) {
+      let band = "binary";
+      let frameProfile = null;
+
+      let tmp;
+      [tmp, o] = readFieldSafe();
+      if (tmp !== null) {
         try {
-          touchMeta = JSON.parse(touchStr || "{}");
+          touchMeta = JSON.parse(tmp || "{}");
         } catch {
           touchMeta = {};
+        }
+      }
+      [tmp, o] = readFieldSafe();
+      if (tmp !== null) band = tmp || "binary";
+      [tmp, o] = readFieldSafe();
+      if (tmp !== null) {
+        try {
+          frameProfile = JSON.parse(tmp || "{}");
+        } catch {
+          frameProfile = null;
         }
       }
 
@@ -578,6 +712,8 @@ export function unpackBinaryPayload(uint8) {
       out.newState = newState;
       out.logs = logs;
       out.pulseTouch = touchMeta;
+      out.band = band;
+      if (frameProfile) out.frameProfile = frameProfile;
       break;
     }
 
@@ -592,15 +728,16 @@ export function unpackBinaryPayload(uint8) {
 // Exported API
 // -------------------------
 
-const BinarySubstrateV2 = {
-  meta: BinarySubstrateV2Meta,
+const BinarySubstrateV17 = {
+  meta: BinarySubstrateV17Meta,
   BinaryPayloadType,
   packSnapshot,
   packDelta,
   packDeploymentPlan,
   packMultiOrganismPlan,
   packExecutionResult,
-  unpackBinaryPayload
+  unpackBinaryPayload,
+  computeFrameProfile
 };
 
-export default BinarySubstrateV2;
+export default BinarySubstrateV17;

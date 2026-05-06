@@ -136,12 +136,12 @@ import {
   computePowerRiskVector,
   buildPowerRiskSummary,
   buildPowerBeaconSignals
-} from "../PULSE-GRID/powerRiskEngine.js";
+} from "../PULSE-GRID/PulseGridRiskEngine.js";
 import {
   computeContinuanceMetricsV3,
   detectFluctuationsV3,
   detectOutagesV3
-} from "../PULSE-GRID/powerContinuanceEngine.js";
+} from "../PULSE-GRID/PulseGridContinuanceEngine.js";
 
 // ---------------------------------------------------------------------------
 //  IDENTITY‑SAFE HELPERS
