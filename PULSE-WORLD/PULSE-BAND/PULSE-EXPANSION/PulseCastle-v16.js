@@ -151,6 +151,12 @@ import {
   getProxyMode,
   getProxyLineage
 } from "../PULSE-PROXY/PulseProxyContext-v16.js";
+import { createPulseNodeEvolutionV16 } from "./PulseNodeAdminEvolution-v16.js";
+
+const _castleEvolution = createPulseNodeEvolutionV16({
+  nodeType: "castle",
+  trace: false
+});
 
 // Lightweight user meta (symbolic only, for snapshots)
 export const PulseUserMeta = Object.freeze({
@@ -1173,7 +1179,8 @@ export class PulseCastle {
       presenceField: castle.presenceField
     });
 
-    return new CastleRegistrationResult({
+    return this._evolveCastlePacket(
+  new CastleRegistrationResult({
       castleId,
       regionId: rId,
       hostName: hName,
@@ -1188,7 +1195,7 @@ export class PulseCastle {
           binarySend: !!this.binarySend
         })
       }
-    });
+    }));
   }
 
   // ============================================================================
@@ -1335,6 +1342,29 @@ requestExpansionHelp(reason = "castle_requests_help") {
   }
 }
 
+_evolveCastlePacket(packet, extraCtx = {}) {
+  if (!_castleEvolution || typeof _castleEvolution.evolveNodePulse !== "function") {
+    return packet;
+  }
+
+  const context = {
+    regionId: this.config.regionId,
+    meshMeta: PulseMeshMeta,
+    beaconMeshMeta: PulseBeaconMeshMeta,
+    binaryMeshMeta: BinaryMeshMeta,
+    proxyMode: getProxyMode?.() || "normal",
+    proxyPressure: getProxyPressure?.() ?? 0,
+    proxyBoost: getProxyBoost?.() ?? 0,
+    ...extraCtx
+  };
+
+  return _castleEvolution.evolveNodePulse({
+    nodeType: "castle",
+    pulse: packet,
+    context
+  });
+}
+
 
   // ------------------------------------------------------------------------
 // Apply ExpansionPlan from PulseExpansion (symbolic executor)
@@ -1448,7 +1478,8 @@ applyExpansionPlan(plan) {
 
   const { castlesSnapshot, meshSnapshot } = snapshotMesh();
 
-  return new CastlePresenceState({
+  return this._evolveCastlePacket(
+  new CastlePresenceState({
     castlesById: castlesSnapshot,
     meshLinksByCastleId: meshSnapshot,
     meta: {
@@ -1460,7 +1491,7 @@ applyExpansionPlan(plan) {
       appliedMeshRebalances: rebalanceLinks.length,
       organismContext: buildOrganismContext()
     }
-  });
+  }));
 }
 
 
@@ -1471,7 +1502,8 @@ applyExpansionPlan(plan) {
   defendRoute({ routeId, soldierCount = 2 }) {
     const result = defendRouteInternal({ routeId, soldierCount });
 
-    return new CastleExpansionRouteState({
+    return this._evolveCastlePacket(
+  new CastleExpansionRouteState({
       routesById: snapshotExpansionRoutes(),
       meta: {
         castleMeta: PulseCastleMeta,
@@ -1481,7 +1513,7 @@ applyExpansionPlan(plan) {
         soldiers: result.soldiers || soldierCount,
         organismContext: buildOrganismContext()
       }
-    });
+    }));
   }
 
     // ------------------------------------------------------------------------
@@ -1499,7 +1531,8 @@ applyExpansionPlan(plan) {
       pressureHint
     });
 
-    return new CastleNodeAdminLoopState({
+    return this._evolveCastlePacket(
+  new CastleNodeAdminLoopState({
       loopsById: snapshotNodeAdminLoops(),
       meta: {
         castleMeta: PulseCastleMeta,
@@ -1509,7 +1542,7 @@ applyExpansionPlan(plan) {
         orbitLoopId: result.loopId || null,
         organismContext: buildOrganismContext()
       }
-    });
+    }));
   }
 
   // ------------------------------------------------------------------------
@@ -1552,7 +1585,8 @@ applyExpansionPlan(plan) {
 
     const boundServers = Array.from(user.servers);
 
-    return new CastleUserRegistrationResult({
+    return this._evolveCastlePacket(
+  new CastleUserRegistrationResult({
       castleId: effectiveCastleId,
       userId: user.userId,
       regionId: rId,
@@ -1566,7 +1600,7 @@ applyExpansionPlan(plan) {
         worldCoreMeta: PulseWorldCoreMeta,
         organismContext: buildOrganismContext()
       }
-    });
+    }));
   }
 
   // ------------------------------------------------------------------------
@@ -1578,7 +1612,8 @@ applyExpansionPlan(plan) {
 
     const { users, bindings } = snapshotUsersForCastle(castleId);
 
-    return new CastleUserBindingState({
+    return this._evolveCastlePacket(
+  new CastleUserBindingState({
       castleId,
       usersById: users,
       bindingsByServerId: bindings,
@@ -1588,7 +1623,7 @@ applyExpansionPlan(plan) {
         reason: result.reason || null,
         organismContext: buildOrganismContext()
       }
-    });
+    }));
   }
 
   // ------------------------------------------------------------------------
@@ -1664,8 +1699,8 @@ applyExpansionPlan(plan) {
       role: "general_candidate"
     });
 
-
-    return new ServerAttachResult({
+return this._evolveCastlePacket(
+  new ServerAttachResult({
       castleId,
       serverId: effectiveServerId,
       serverMeta: PulseServerMeta,
@@ -1675,7 +1710,7 @@ applyExpansionPlan(plan) {
         boundUserId,
         organismContext: buildOrganismContext()
       }
-    });
+    }));
   }
 
   // ------------------------------------------------------------------------
@@ -1685,7 +1720,9 @@ applyExpansionPlan(plan) {
   detachServerFromCastle({ castleId, serverId }) {
     const castle = castlesById[castleId];
     if (!castle || !castle.serversById[serverId]) {
-      return new ServerDetachResult({
+      
+return this._evolveCastlePacket(
+  new ServerDetachResult({
         castleId,
         serverId,
         detached: false,
@@ -1694,7 +1731,7 @@ applyExpansionPlan(plan) {
           reason: "server_not_found",
           organismContext: buildOrganismContext()
         }
-      });
+      }));
     }
 
     const serverEntry = castle.serversById[serverId];
@@ -1722,7 +1759,8 @@ applyExpansionPlan(plan) {
       serverId
     });
 
-    return new ServerDetachResult({
+    return this._evolveCastlePacket(
+  new ServerDetachResult({
       castleId,
       serverId,
       detached: true,
@@ -1730,7 +1768,7 @@ applyExpansionPlan(plan) {
         castleMeta: PulseCastleMeta,
         organismContext: buildOrganismContext()
       }
-    });
+    }));
   }
 
   // ------------------------------------------------------------------------
@@ -1739,14 +1777,15 @@ applyExpansionPlan(plan) {
 
   getMeshState() {
     const { castlesSnapshot, meshSnapshot } = snapshotMesh();
-    return new CastleMeshState({
+    return this._evolveCastlePacket(
+  new CastleMeshState({
       castlesById: castlesSnapshot,
       meshLinksByCastleId: meshSnapshot,
       meta: {
         castleMeta: PulseCastleMeta,
         organismContext: buildOrganismContext()
       }
-    });
+    }));
   }
 
   // ------------------------------------------------------------------------
@@ -1755,7 +1794,8 @@ applyExpansionPlan(plan) {
 
   registerExpansionRoute(payload) {
     const result = registerExpansionRouteInternal(payload);
-    return new CastleExpansionRouteState({
+    return this._evolveCastlePacket(
+  new CastleExpansionRouteState({
       routesById: snapshotExpansionRoutes(),
       meta: {
         castleMeta: PulseCastleMeta,
@@ -1763,12 +1803,13 @@ applyExpansionPlan(plan) {
         routeId: result.routeId || null,
         organismContext: buildOrganismContext()
       }
-    });
+    }));
   }
 
   spawnNodeAdminLoop(payload) {
     const result = spawnNodeAdminLoopInternal(payload);
-    return new CastleNodeAdminLoopState({
+    return this._evolveCastlePacket(
+  new CastleNodeAdminLoopState({
       loopsById: snapshotNodeAdminLoops(),
       meta: {
         castleMeta: PulseCastleMeta,
@@ -1776,7 +1817,7 @@ applyExpansionPlan(plan) {
         loopId: result.loopId || null,
         organismContext: buildOrganismContext()
       }
-    });
+    }));
   }
 
   // ------------------------------------------------------------------------

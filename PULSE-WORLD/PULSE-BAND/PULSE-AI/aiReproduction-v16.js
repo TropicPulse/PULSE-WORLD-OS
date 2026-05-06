@@ -166,9 +166,14 @@ export const ReproductionMeta = Object.freeze({
   })
 });
 
+import { createPulseNodeEvolutionV16 as PulseNodeAdminEvolution } from "./PulseNodeAdminEvolution-v16.js";
 // ============================================================================
 //  GLOBAL ARTERY REGISTRY (READ-ONLY, METRICS-ONLY)
 // ============================================================================
+const _reproductionEvolution = PulseNodeAdminEvolution({
+  nodeType: "reproduction",
+  trace: false
+});
 
 const _globalReproductionArteryRegistry = new Map();
 /**
@@ -775,6 +780,37 @@ export class AIBinaryReproduction {
     return childId;
   }
 
+  _evolveReproductionPacket(packet, extraCtx = {}) {
+  if (!_reproductionEvolution || typeof _reproductionEvolution.evolveNodePulse !== "function") {
+    return packet;
+  }
+
+  const context = {
+    slice: this.slice,
+    instanceIndex: this.instanceIndex,
+    windowMs: this.windowMs,
+    recommendedRate: this.recommendedRate,
+
+    presence: this._safePresenceContext(),
+    routes: this._safeRouteContext(),
+    nodeAdmin: this._safeNodeAdminContext(),
+    earn: this._safeEarnContext(),
+    heartbeat: this._safeHeartbeatContext(),
+    cortex: this._safeCortexContext(),
+    memory: this._safeMemoryContext(),
+
+    artery: this._computeReproductionArtery(),
+    ...extraCtx
+  };
+
+  return _reproductionEvolution.evolveNodePulse({
+    nodeType: "reproduction",
+    pulse: packet,
+    context
+  });
+}
+
+
   // ---------------------------------------------------------
   //  REPRODUCTION PACKET
   // ---------------------------------------------------------
@@ -788,15 +824,21 @@ export class AIBinaryReproduction {
       genomeFingerprint: genome.fingerprint,
       ownerId: ReproductionMeta.owner.ownerId
     };
-
     const json = JSON.stringify(payload);
     const binary = this.encoder.encode(json);
 
-    const packet = {
+    let packet = {
       ...payload,
       bits: binary,
       bitLength: binary.length
     };
+
+    // ⭐ NEW: evolve packet (shifter-first, sectional fallback)
+    packet = this._evolveReproductionPacket(packet, {
+      parentId,
+      childId,
+      genomeFingerprint: genome.fingerprint
+    });
 
     this._trace("reproduction:packet", {
       parentId,
@@ -807,6 +849,7 @@ export class AIBinaryReproduction {
 
     return packet;
   }
+
 
   // ---------------------------------------------------------
   //  CLONING

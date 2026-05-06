@@ -310,7 +310,8 @@ import PulseBinaryWaveScanner from "./PulseBinaryWaveScanner.js";
 import PulseEvolutionaryScanner from "./PulseEvolutionaryScanner.js";
 import PulseHeatMap from "./PulseHeatMap.js";
 import PulseLoopScanner from "./PulseLoopScanner.js";
-import PulseNodeAdminIntellect from "./PulseNodeAdmin-v16-Intellect.js";
+import PulseNodeAdminIntellect from "./PulseNodeAdminIntellect-v16.js";
+import { createPulseNodeEvolutionV16 as PulseNodeAdminEvolution } from "./PulseNodeAdminEvolution-v16.js";
 import PulseWaveScanner from "./PulseWaveScanner.js";
 
 // ============================================================================
@@ -318,6 +319,13 @@ import PulseWaveScanner from "./PulseWaveScanner.js";
 // ============================================================================
 
 let _nodeAdminInstanceCount = 0;
+
+// Shared evolution organ for all NodeAdmin instances (sectional, stateless, deterministic)
+const _nodeAdminEvolution = PulseNodeAdminEvolution({
+  nodeType: "admin",
+  trace: false // or true if you want evolution‑level tracing
+});
+
 
 export function createPulseNodeAdmin({
   trace = false,
@@ -327,6 +335,7 @@ export function createPulseNodeAdmin({
 } = {}) {
   const instanceIndex = _nodeAdminInstanceCount++;
   const instanceId = `${NodeAdminMeta.organId}#${instanceIndex}`;
+  const nodeType = "admin";
 
   // ---------------------------------------------------------------------------
   // INTERNAL STATE
@@ -407,6 +416,40 @@ export function createPulseNodeAdmin({
   // Artery window
   let _windowStart = Date.now();
   const windowMs = 60000;
+
+  // ---------------------------------------------------------------------------
+  // EVOLUTION LAYER HELPER (Shifter‑first, sectional fallback)
+// ---------------------------------------------------------------------------
+  function evolveAdminPulse(pulse, extraCtx = {}) {
+    if (!_nodeAdminEvolution || typeof _nodeAdminEvolution.evolveNodePulse !== "function") {
+      return pulse;
+    }
+
+    const context = {
+      instanceId,
+      instanceIndex,
+      nodeType,
+      mode,
+      tick,
+      cycle,
+      perfHints,
+      meshSnapshot,
+      castleSnapshot,
+      expansionSnapshot,
+      routerSnapshot,
+      beaconSnapshot,
+      worldCoreSnapshot,
+      artery: getNodeAdminArtery?.(), // safe: function defined later
+      lastAdvice: memory.lastAdvice,
+      ...extraCtx
+    };
+
+    return _nodeAdminEvolution.evolveNodePulse({
+      nodeType,
+      pulse,
+      context
+    });
+  }
 
   // ---------------------------------------------------------------------------
   // MEMORY HELPERS
@@ -1167,7 +1210,7 @@ export function createPulseNodeAdmin({
   // ---------------------------------------------------------------------------
   // PUBLIC API — v16‑IMMORTAL‑ADV++
   // ---------------------------------------------------------------------------
-  return Object.freeze({
+    return Object.freeze({
     meta: NodeAdminMeta,
     instanceIndex,
     instanceId,
@@ -1207,10 +1250,14 @@ export function createPulseNodeAdmin({
     // intellect
     analyzeAndAdvise,
 
+    // evolution (fallback pulse system layer, shifter‑first)
+    evolveAdminPulse,
+
     // introspection
     getAbilities,
     getManual
   });
+
 }
 
 // ============================================================================

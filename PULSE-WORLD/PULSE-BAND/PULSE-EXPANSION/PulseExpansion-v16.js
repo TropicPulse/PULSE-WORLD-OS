@@ -103,6 +103,14 @@ import {
 // Touch / presence
 import { getPulseTouchContext } from "../../PULSE-UI/PULSE-TOUCH.js";
 
+// Runtime / scheduler / overmind
+import { getPulseRuntimeContext } from "../PULSE-X/PulseRuntime-v2.js";
+import { getPulseSchedulerContext } from "../PULSE-X/PulseScheduler-v2.js";
+import { getPulseOvermindContext } from "../PULSE-AI/aiOvermindPrime.js";
+
+// (Optional) Earn / treasury integration hook (symbolic only)
+import { getEarnContext } from "../PULSE-EARN/PulseEarn-v16.js";
+
 // PROXY CONTEXT — v16 IMMORTAL ORGANISM
 import {
   getProxyContext,
@@ -113,6 +121,7 @@ import {
   getProxyLineage
 } from "../PULSE-PROXY/PulseProxyContext-v16.js";
 
+import { createPulseNodeEvolutionV16 } from "./PulseNodeAdminEvolution-v16.js";
 // ============================================================================
 //  PULSE-NET BRIDGE CONTRACT (NO IMPORTS, PURELY INJECTED)
 // ============================================================================
@@ -199,6 +208,7 @@ export const PulseExpansionMeta = Object.freeze({
     zeroComputeMath: true
   })
 });
+
 
 // ============================================================================
 //  TYPES
@@ -519,6 +529,11 @@ export class PulseExpansion {
       defaultDesiredSoldiersPerCastle: 3,
       ...config
     };
+    this._expansionEvolution = createPulseNodeEvolutionV16({
+      nodeType: "expansion",
+      trace: false
+    });
+
     this.cycle = 0;
     this.pulseNetBridge = config.pulseNetBridge || null;
 
@@ -657,6 +672,49 @@ rebalanceGovernance({ imbalance }) {
   };
 }
 
+_evolveExpansionPlan(plan, extraCtx = {}) {
+  if (!this._expansionEvolution) return plan;
+
+  const context = {
+    cycle: this.cycle,
+    heartbeat: this.heartbeat,
+    aiHeartbeat: this.aiHeartbeat,
+    earnHeartbeat: this.earnHeartbeat,
+
+    // PROXY CONTEXT
+    proxyMode: getProxyMode?.(),
+    proxyPressure: getProxyPressure?.(),
+    proxyBoost: getProxyBoost?.(),
+    proxyFallback: getProxyFallback?.(),
+    proxyLineage: getProxyLineage?.(),
+    proxyContext: getProxyContext?.(),
+
+    // TOUCH / RUNTIME / SCHEDULER / OVERMIND / EARN
+    touch: getPulseTouchContext?.(),
+    runtime: getPulseRuntimeContext?.(),
+    scheduler: getPulseSchedulerContext?.(),
+    overmind: getPulseOvermindContext?.(),
+    earn: getEarnContext?.(),
+
+    // METAS (USE ALL IMPORTS)
+    meshMeta: PulseMeshMeta,
+    binaryMeshMeta: BinaryMeshMeta,
+    beaconMeshMeta: PulseBeaconMeshMeta,
+    beaconEngineMeta: PulseBeaconEngineMeta,
+    serverMeta: PulseServerMeta,
+    routerMeta: PulseRouterMeta,
+    castleMeta: PulseCastleMeta,
+    worldCoreMeta: PulseWorldCoreMeta,
+
+    ...extraCtx
+  };
+
+  return this._expansionEvolution.evolveNodePulse({
+    nodeType: "expansion",
+    pulse: plan,
+    context
+  });
+}
 
 
   // Build expansion plan + emit PULSE-NET routing intents
@@ -1044,128 +1102,150 @@ if (rebalanceIntent) {
     proxyPressure
   });
 }
+    // ============================================================================
+    // EMIT INTENTS TO PULSE-NET BRIDGE
+    // ============================================================================
+    const bridge = this.pulseNetBridge;
+    if (bridge) {
+      safePulseNetCall(bridge, "routeExpansion", {
+        cycle: this.cycle,
+        expansions,
+        contractions,
+        regionPresence,
+        regionAdvantage,
+        regionChunkPlan,
+        proxyMode,
+        proxyPressure,
+        proxyFallback
+      });
 
-// ============================================================================
-// EMIT INTENTS TO PULSE-NET BRIDGE
-// ============================================================================
-const bridge = this.pulseNetBridge;
-if (bridge) {
-  safePulseNetCall(bridge, "routeExpansion", {
-    cycle: this.cycle,
-    expansions,
-    contractions,
-    regionPresence,
-    regionAdvantage,
-    regionChunkPlan,
-    proxyMode,
-    proxyPressure,
-    proxyFallback
-  });
+      safePulseNetCall(bridge, "routeSoldiers", {
+        cycle: this.cycle,
+        soldierDelegation,
+        proxyMode,
+        proxyPressure
+      });
 
-  safePulseNetCall(bridge, "routeSoldiers", {
-    cycle: this.cycle,
-    soldierDelegation,
-    proxyMode,
-    proxyPressure
-  });
+      safePulseNetCall(bridge, "routeMesh", {
+        cycle: this.cycle,
+        rebalanceLinks,
+        proxyMode,
+        proxyPressure
+      });
 
-  safePulseNetCall(bridge, "routeMesh", {
-    cycle: this.cycle,
-    rebalanceLinks,
-    proxyMode,
-    proxyPressure
-  });
+      safePulseNetCall(bridge, "routeDefense", {
+        cycle: this.cycle,
+        routeDefenseActions,
+        proxyMode,
+        proxyPressure
+      });
 
-  safePulseNetCall(bridge, "routeDefense", {
-    cycle: this.cycle,
-    routeDefenseActions,
-    proxyMode,
-    proxyPressure
-  });
+      safePulseNetCall(bridge, "routeNodeAdmin", {
+        cycle: this.cycle,
+        nodeAdminOrbitActions,
+        proxyMode,
+        proxyPressure
+      });
 
-  safePulseNetCall(bridge, "routeNodeAdmin", {
-    cycle: this.cycle,
-    nodeAdminOrbitActions,
-    proxyMode,
-    proxyPressure
-  });
-}
-
-// ============================================================================
-// LOG + RETURN FINAL FEDERALLY-AWARE EXPANSION PLAN
-// ============================================================================
-logger?.log?.("expansion", "plan_built_v16_federal", {
-  cycle: this.cycle,
-  expansions: expansions.length,
-  contractions: contractions.length,
-  soldierDelegation: soldierDelegation.length,
-  rebalanceLinks: rebalanceLinks.length,
-  routeDefenseActions: routeDefenseActions.length,
-  nodeAdminOrbitActions: nodeAdminOrbitActions.length,
-  beaconSnapshotPresent: !!beaconSnapshot,
-  pulseNetBridgePresent: !!bridge,
-  proxyMode,
-  proxyPressure,
-  proxyFallback,
-  heartbeatTick: hb.tick ?? null,
-  federal: {
-    castleHealth,
-    serverTakeover,
-    imbalance,
-    haltIntent,
-    rebalanceIntent
-  }
-});
-
-return new ExpansionPlan({
-  expansions,
-  contractions,
-  rebalanceLinks,
-  soldierDelegation,
-  routeDefenseActions,
-  nodeAdminOrbitActions,
-  regionPresence,
-  regionAdvantage,
-  regionChunkPlan,
-  bandSignature,
-  binaryField,
-  waveField,
-  pulseNetIntents,
-  meta: {
-    expansionMeta: PulseExpansionMeta,
-    castleMeta: PulseCastleMeta,
-    beaconEngineMeta: BeaconEngine?.meta ?? PulseBeaconEngineMeta ?? null,
-    beaconMeshMeta: PulseBeaconMeshMeta,
-    routerMeta: PulseRouterMeta,
-    serverMeta: PulseServerMeta,
-    meshMeta: PulseMeshMeta,
-    binaryMeshMeta: BinaryMeshMeta,
-    osMeta: PulseWorldCoreMeta,
-    beaconSnapshot,
-    beaconPresenceField,
-    beaconAdvantageField,
-    proxy: {
-      context: proxyCtx,
-      mode: proxyMode,
-      pressure: proxyPressure,
-      boost: proxyBoost,
-      fallback: proxyFallback,
-      lineage: proxyLineage
-    },
-    heartbeat: hb,
-    aiHeartbeat: aiHb,
-    earnHeartbeat: earnHb,
-    federal: {
-      castleHealth,
-      serverTakeover,
-      imbalance,
-      haltIntent,
-      rebalanceIntent
+      // Optional: unified intent stream for Pulse-Net
+      safePulseNetCall(bridge, "routeIntents", {
+        cycle: this.cycle,
+        intents: pulseNetIntents,
+        proxyMode,
+        proxyPressure,
+        proxyFallback
+      });
     }
-  }
-});
+
+    // ============================================================================
+    // BUILD RAW PLAN + EVOLVE VIA NODE EVOLUTION
+    // ============================================================================
+    const rawPlan = new ExpansionPlan({
+      expansions,
+      contractions,
+      rebalanceLinks,
+      soldierDelegation,
+      routeDefenseActions,
+      nodeAdminOrbitActions,
+      regionPresence,
+      regionAdvantage,
+      regionChunkPlan,
+      bandSignature,
+      binaryField,
+      waveField,
+      pulseNetIntents,
+      meta: {
+        expansionMeta: PulseExpansionMeta,
+        castleMeta: PulseCastleMeta,
+        beaconEngineMeta: BeaconEngine?.meta ?? PulseBeaconEngineMeta ?? null,
+        beaconMeshMeta: PulseBeaconMeshMeta,
+        routerMeta: PulseRouterMeta,
+        serverMeta: PulseServerMeta,
+        meshMeta: PulseMeshMeta,
+        binaryMeshMeta: BinaryMeshMeta,
+        osMeta: PulseWorldCoreMeta,
+        beaconSnapshot,
+        beaconPresenceField,
+        beaconAdvantageField,
+        proxy: {
+          context: proxyCtx,
+          mode: proxyMode,
+          pressure: proxyPressure,
+          boost: proxyBoost,
+          fallback: proxyFallback,
+          lineage: proxyLineage
+        },
+        heartbeat: hb,
+        aiHeartbeat: aiHb,
+        earnHeartbeat: earnHb,
+        federal: {
+          castleHealth,
+          serverTakeover,
+          imbalance,
+          haltIntent,
+          rebalanceIntent
+        }
+      }
+    });
+
+    const evolvedPlan = this._evolveExpansionPlan(rawPlan, {
+      castlePresence: {
+        byRegion,
+        meshLinksByCastleId
+      },
+      serverFallbackContext
+    });
+
+    // ============================================================================
+    // LOG + RETURN FINAL FEDERALLY-AWARE, EVOLVED EXPANSION PLAN
+    // ============================================================================
+    logger?.log?.("expansion", "plan_built_v16_federal", {
+      cycle: this.cycle,
+      expansions: evolvedPlan.expansions.length,
+      contractions: evolvedPlan.contractions.length,
+      soldierDelegation: evolvedPlan.soldierDelegation.length,
+      rebalanceLinks: evolvedPlan.rebalanceLinks.length,
+      routeDefenseActions: evolvedPlan.routeDefenseActions.length,
+      nodeAdminOrbitActions: evolvedPlan.nodeAdminOrbitActions.length,
+      beaconSnapshotPresent: !!beaconSnapshot,
+      pulseNetBridgePresent: !!bridge,
+      proxyMode,
+      proxyPressure,
+      proxyFallback,
+      heartbeatTick: hb.tick ?? null,
+      federal: {
+        castleHealth,
+        serverTakeover,
+        imbalance,
+        haltIntent,
+        rebalanceIntent
+      }
+    });
+
+    return evolvedPlan;
   }
 }
+
 // ============================================================================
 //  PUBLIC API — v16 IMMORTAL (Federal-Aware)
 // ============================================================================
@@ -1192,7 +1272,7 @@ export function createPulseExpansion(config = {}) {
       return { ok: true };
     },
 
-    // Build the full expansion plan (now federal-aware)
+    // Build the full expansion plan (now federal-aware + evolution-aware)
     buildExpansionPlan(payload) {
       return core.buildExpansionPlan(payload);
     }

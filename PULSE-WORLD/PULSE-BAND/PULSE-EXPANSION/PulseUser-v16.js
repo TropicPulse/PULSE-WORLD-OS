@@ -66,9 +66,9 @@ import { PulseServerMeta, createPulseServer } from "./PulseServer-v16.js";
 import { PulseRouterMeta, createPulseRouter } from "./PulseRouter-v16.js";
 import { PulseExpansionMeta, createPulseExpansion } from "./PulseExpansion-v16.js";
 import { createDualBandOrganism as PulseBinaryOrganismBoot } from "../PULSE-AI/aiDualBand-v16.js";
+
 // Earn / Band / BinarySend
 import { getEarnContext, evolveEarn, createEarn } from "../PULSE-EARN/PulseEarn-v16.js";
-
 import { createBinarySend as PulseSendBin } from "../PULSE-SEND/PulseBinarySend-v16.js";
 
 // PROXY CONTEXT — v16 IMMORTAL ORGANISM
@@ -80,6 +80,14 @@ import {
   getProxyMode,
   getProxyLineage
 } from "../PULSE-PROXY/PulseProxyContext-v16.js";
+
+// ⭐ SUBIMPORTS YOU REQUESTED (runtime / scheduler / overmind)
+import { getPulseRuntimeContext } from "../PULSE-X/PulseRuntime-v2.js";
+import { getPulseSchedulerContext } from "../PULSE-X/PulseScheduler-v2.js";
+import { getPulseOvermindContext } from "../PULSE-AI/aiOvermindPrime.js";
+
+// Evolution engine
+import { createPulseNodeEvolutionV16 } from "../PulseNodeAdminEvolution-v16.js";
 
 // ============================================================================
 // META — PulseWorldCore
@@ -141,6 +149,10 @@ export function createPulseWorldCore({
   trace = false,
   serverMode = false
 } = {}) {
+  const _userEvolution = createPulseNodeEvolutionV16({
+    nodeType: "user",
+    trace: false
+  });
 
   // 1. Identity
   const Identity = Object.freeze({
@@ -366,11 +378,18 @@ export function createPulseWorldCore({
   // ---------------------------------------------------------------------------
   // ADAPTIVE UI (FULLY UPGRADED + PROXY AWARE)
   // ---------------------------------------------------------------------------
-
+  // ---------------------------------------------------------------------------
+  // ADAPTIVE UI (FULLY UPGRADED + PROXY / ADVANTAGE / RUNTIME / SCHEDULER / OVERMIND AWARE)
+  // ---------------------------------------------------------------------------
   function computeAdaptiveUI() {
     const ctx = buildAdvantageContext();
     const brain = getBrainView();
     const primaryOS = getPrimaryOSView();
+
+    // NEW SUBIMPORT CONTEXT
+    const runtimeCtx = getPulseRuntimeContext?.();
+    const schedulerCtx = getPulseSchedulerContext?.();
+    const overmindCtx = getPulseOvermindContext?.();
 
     const runtimeHealthy =
       brain && typeof brain.tick === "number" && brain.tick >= 0;
@@ -379,25 +398,114 @@ export function createPulseWorldCore({
       primaryOS &&
       (primaryOS.status === "healthy" || primaryOS.osBrainStatus === "healthy");
 
-    return Object.freeze({
+    const ui = Object.freeze({
+      // --- REGION / MESH / CASTLE / ROUTE ---
       showMeshWarning: ctx.meshPressureIndex >= 70,
-      showCastleLoadWarning: ctx.castleLoadLevel === "high" || ctx.castleLoadLevel === "critical",
+      showCastleLoadWarning:
+        ctx.castleLoadLevel === "high" || ctx.castleLoadLevel === "critical",
       showRouteUnstableWarning: ctx.routeStable === false,
+
+      // --- ADVANTAGE / FALLBACK ---
       showFallbackMode: ctx.fallbackBandLevel >= 2,
       showAdvantageBoost: ctx.advantageField?.advantageBand === "high",
 
+      // --- RUNTIME / OS BRAIN ---
       showRuntimePanel: !!brain,
       showRuntimeWarning: brain && !runtimeHealthy,
 
       showOSBrainPanel: !!primaryOS,
       showOSBrainWarning: primaryOS && !osBrainHealthy,
 
-      // ⭐ PROXY UI INTEGRATION
+      // --- PROXY UI INTEGRATION ---
       showProxyWarning: ctx.proxyPressure > 0.7,
       showProxyFallback: ctx.proxyFallback === true,
-      showProxyBoost: ctx.proxyBoost > 0.5
+      showProxyBoost: ctx.proxyBoost > 0.5,
+
+      // --- NEW SUBIMPORT UI SIGNALS ---
+      runtimeMode: runtimeCtx?.mode || null,
+      runtimeLoad: runtimeCtx?.loadIndex ?? null,
+
+      schedulerActive: schedulerCtx?.active ?? null,
+      schedulerLoad: schedulerCtx?.loadIndex ?? null,
+
+      overmindState: overmindCtx?.state || null,
+      overmindBand: overmindCtx?.band || null,
+
+      // --- EXTRA CONTEXT FOR EVOLUTION ---
+      regionID,
+      serverMode,
+      proxyMode: ctx.proxyMode,
+      proxyPressure: ctx.proxyPressure,
+      proxyFallback: ctx.proxyFallback,
+      proxyBoost: ctx.proxyBoost
+    });
+
+    return _evolveUserPacket(ui, { mode: "adaptive_ui" });
+  }
+
+  // ---------------------------------------------------------------------------
+  // EVOLUTION WRAPPER — SHIFTER-FIRST + SECTIONAL FALLBACK + SUBIMPORT CONTEXT
+  // ---------------------------------------------------------------------------
+  function _evolveUserPacket(packet, extraCtx = {}) {
+    if (!_userEvolution) return packet;
+
+    const context = {
+      regionID,
+      serverMode,
+      identity: Identity,
+
+      // ATTACHED ORGANS
+      beaconSnapshot,
+      routerSnapshot,
+      castleSnapshot,
+      meshSnapshot,
+      expansionSnapshot,
+      primaryOSSnapshot,
+      runtimeSnapshot,
+      serverBridgeSnapshot,
+      serverExecSnapshot,
+      dualBandOrganism,
+      binarySend,
+
+      // PROXY CONTEXT
+      proxyMode: getProxyMode?.(),
+      proxyPressure: getProxyPressure?.(),
+      proxyBoost: getProxyBoost?.(),
+      proxyFallback: getProxyFallback?.(),
+      proxyLineage: getProxyLineage?.(),
+      proxyContext: getProxyContext?.(),
+
+      // EARN CONTEXT
+      earnContext: getEarnContext?.(),
+
+      // NEW SUBIMPORT CONTEXT
+      runtimeContext: getPulseRuntimeContext?.(),
+      schedulerContext: getPulseSchedulerContext?.(),
+      overmindContext: getPulseOvermindContext?.(),
+
+      // METAS
+      meshMeta: PulseMeshMeta,
+      beaconMeshMeta: PulseBeaconMeshMeta,
+      castleMeta: PulseCastleMeta,
+      serverMeta: PulseServerMeta,
+      routerMeta: PulseRouterMeta,
+      expansionMeta: PulseExpansionMeta,
+
+      // JURY CONTEXT
+      interactionLog,
+      anomalyLog,
+      decisionTimeline,
+
+      ...extraCtx
+    };
+
+    return _userEvolution.evolveNodePulse({
+      nodeType: "user",
+      pulse: packet,
+      context
     });
   }
+
 
   // ---------------------------------------------------------------------------
   // BRAIN / RUNTIME VIEW
@@ -591,11 +699,11 @@ export function createPulseWorldCore({
       identityLoops: Object.freeze(identityLoopMap)
     });
   }
-
   /**
    * Detect simple contextual divergence:
    * - proposalContextHash does not match last known contextHash
    * - or proposal is marked as aiOrigin and contextHash is null
+   * - proxy / mesh pressure can amplify suspicion
    */
   function detectContextDivergence({ proposalContextHash, aiOrigin }) {
     const last = interactionLog.length > 0 ? interactionLog[interactionLog.length - 1] : null;
@@ -612,13 +720,21 @@ export function createPulseWorldCore({
 
     const divergent = !!(mismatch || suspiciousAI);
 
+    const proxyMode = getProxyMode?.();
+    const proxyPressure = getProxyPressure?.();
+    const proxyFallback = getProxyFallback?.();
+
     return Object.freeze({
       divergent,
       reason: divergent
         ? (mismatch ? "context-hash-mismatch" : "ai-origin-without-context")
         : null,
       lastContextHash: lastHash,
-      proposalContextHash: proposalContextHash || null
+      proposalContextHash: proposalContextHash || null,
+      lastEventType: last?.type || null,
+      proxyMode: proxyMode || null,
+      proxyPressure: typeof proxyPressure === "number" ? proxyPressure : null,
+      proxyFallback: proxyFallback === true
     });
   }
 
@@ -636,11 +752,18 @@ export function createPulseWorldCore({
       return { ok: false, reason: "invalid-anomaly" };
     }
 
+    const proxyMode = getProxyMode?.();
+    const proxyPressure = getProxyPressure?.();
+    const proxyFallback = getProxyFallback?.();
+
     const safeAnomaly = Object.freeze({
       type: anomaly.type || "unknown",
       severity: anomaly.severity ?? 1,
       details: anomaly.details ?? null,
-      timestamp: anomaly.timestamp ?? null
+      timestamp: anomaly.timestamp ?? null,
+      proxyMode: proxyMode || null,
+      proxyPressure: typeof proxyPressure === "number" ? proxyPressure : null,
+      proxyFallback: proxyFallback === true
     });
 
     pushBounded(anomalyLog, safeAnomaly, MAX_ANOMALIES);
@@ -674,7 +797,7 @@ export function createPulseWorldCore({
       timestamp: e.timestamp
     }));
 
-    return Object.freeze({
+    const report = Object.freeze({
       identity: Identity,
       regionID,
       serverMode,
@@ -683,6 +806,8 @@ export function createPulseWorldCore({
       interactions: Object.freeze(interactionsSummary),
       anomalies: Object.freeze(anomalyLog.slice())
     });
+
+    return _evolveUserPacket(report, { mode: "citizen_witness" });
   }
 
   /**
@@ -693,7 +818,7 @@ export function createPulseWorldCore({
    * - brain / OS views (for health correlation)
    */
   function buildJuryFeed() {
-    return Object.freeze({
+    const feed = Object.freeze({
       identity: Identity,
       advantageContext: buildAdvantageContext(),
       adaptiveUI: computeAdaptiveUI(),
@@ -701,6 +826,8 @@ export function createPulseWorldCore({
       primaryOSView: getPrimaryOSView(),
       citizenWitness: buildCitizenWitnessReport()
     });
+
+    return _evolveUserPacket(feed, { mode: "jury_feed" });
   }
 
   /**
@@ -737,7 +864,7 @@ export function createPulseWorldCore({
    * Expose a compact Jury snapshot for Creator / aiJury:
    */
   function getJurySnapshot() {
-    return Object.freeze({
+    const snapshot = Object.freeze({
       identity: Identity,
       patterns: analyzeBehaviorPatterns(),
       flow: analyzeJuryFlow(),
@@ -745,6 +872,8 @@ export function createPulseWorldCore({
       decisions: decisionTimeline.slice(),
       interactions: interactionLog.slice()
     });
+
+    return _evolveUserPacket(snapshot, { mode: "jury_snapshot" });
   }
 
   // ---------------------------------------------------------------------------
@@ -752,32 +881,32 @@ export function createPulseWorldCore({
   // ---------------------------------------------------------------------------
 
   function getSnapshot() {
-    return Object.freeze({
-      organId: PulseWorldCoreMeta.organId,
-      identity: Identity,
+    return _evolveUserPacket(
+      Object.freeze({
+        organId: PulseWorldCoreMeta.organId,
+        identity: Identity,
+        attached: {
+          beacon: beaconSnapshot,
+          router: routerSnapshot,
+          castle: castleSnapshot,
+          mesh: meshSnapshot,
+          expansion: expansionSnapshot,
+          primaryOS: primaryOSSnapshot,
+          runtime: runtimeSnapshot,
+          serverBridge: serverBridgeSnapshot,
+          serverExec: serverExecSnapshot,
+          dualBandOrganism,
+          binarySend
+        },
+        advantageContext: buildAdvantageContext(),
+        adaptiveUI: computeAdaptiveUI(),
+        brainView: getBrainView(),
+        primaryOSView: getPrimaryOSView(),
+        jurySnapshot: getJurySnapshot()
+      }),
+      { mode: "snapshot" }
+    );
 
-      attached: {
-        beacon: beaconSnapshot,
-        router: routerSnapshot,
-        castle: castleSnapshot,
-        mesh: meshSnapshot,
-        expansion: expansionSnapshot,
-        primaryOS: primaryOSSnapshot,
-        runtime: runtimeSnapshot,
-        serverBridge: serverBridgeSnapshot,
-        serverExec: serverExecSnapshot,
-        dualBandOrganism,
-        binarySend
-      },
-
-      advantageContext: buildAdvantageContext(),
-      adaptiveUI: computeAdaptiveUI(),
-      brainView: getBrainView(),
-      primaryOSView: getPrimaryOSView(),
-
-      // Jury-ready views
-      jurySnapshot: getJurySnapshot()
-    });
   }
 
   // ---------------------------------------------------------------------------
