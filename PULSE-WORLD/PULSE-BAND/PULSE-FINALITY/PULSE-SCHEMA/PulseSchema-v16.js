@@ -69,6 +69,7 @@ AI_EXPERIENCE_META = {
   }
 }
 */
+import { createPulseCoreMemory } from "../../PULSE-CORE/PulseCoreMemory.js";
 
 // ============================================================================
 // META — v16-Immortal-GPU+-CI
@@ -255,6 +256,39 @@ export function getSchemaArterySnapshot() {
 }
 
 // ============================================================================
+// CORE MEMORY — HOT SYMBOLIC SNAPSHOTS
+// ============================================================================
+
+const CoreMemory = createPulseCoreMemory();
+const ROUTE = "schema-global";
+
+const KEY_LAST_FIRESTORE = "last-firestore-schema";
+const KEY_LAST_SQL = "last-sql-schema";
+const KEY_LAST_BINARY = "last-binary-schema";
+const KEY_LAST_MERGED = "last-merged-schema";
+const KEY_LAST_VALIDATE = "last-validate-result";
+const KEY_LAST_DIFF = "last-diff-result";
+const KEY_LAST_OVERLAY = "last-presence-overlay";
+const KEY_LAST_BINARY_OUT = "last-binary-out";
+
+export function getLastSchemaState() {
+  CoreMemory.prewarm();
+
+  return {
+    meta: PulseSchemaMeta,
+    artery: getSchemaArterySnapshot(),
+    firestoreSchema: CoreMemory.get(ROUTE, KEY_LAST_FIRESTORE),
+    sqlSchema: CoreMemory.get(ROUTE, KEY_LAST_SQL),
+    binarySchema: CoreMemory.get(ROUTE, KEY_LAST_BINARY),
+    mergedSchema: CoreMemory.get(ROUTE, KEY_LAST_MERGED),
+    lastValidateResult: CoreMemory.get(ROUTE, KEY_LAST_VALIDATE),
+    lastDiffResult: CoreMemory.get(ROUTE, KEY_LAST_DIFF),
+    lastPresenceOverlay: CoreMemory.get(ROUTE, KEY_LAST_OVERLAY),
+    lastBinaryOut: CoreMemory.get(ROUTE, KEY_LAST_BINARY_OUT)
+  };
+}
+
+// ============================================================================
 // Presence / Continuance / CI / Binary-Delta Overlays (symbolic only)
 // ============================================================================
 
@@ -305,7 +339,7 @@ export function buildSchemaPresenceOverlay({
         unchangedBits: 0
       };
 
-  return Object.freeze({
+  const overlay = Object.freeze({
     presenceField: presenceContext,
     advantageField: advantageContext,
     fallbackBandLevel,
@@ -324,6 +358,9 @@ export function buildSchemaPresenceOverlay({
     ciOverlay: ciHint,
     binaryDeltaOverlay: binaryDeltaHint
   });
+
+  CoreMemory.set(ROUTE, KEY_LAST_OVERLAY, overlay);
+  return overlay;
 }
 
 // ============================================================================
@@ -354,6 +391,7 @@ export function unifyFromFirestore(firestoreSchema) {
   });
 
   _bumpArtery("firestore", Object.keys(fields).length);
+  CoreMemory.set(ROUTE, KEY_LAST_FIRESTORE, schema);
   return schema;
 }
 
@@ -389,6 +427,7 @@ export function unifyFromSQL(sqlSchema) {
   });
 
   _bumpArtery("sql", Object.keys(fields).length);
+  CoreMemory.set(ROUTE, KEY_LAST_SQL, schema);
   return schema;
 }
 
@@ -400,6 +439,7 @@ export function unifyFromBinary(binaryBuffer) {
   if (!binaryBuffer) {
     const schema = new PulseSchema({});
     _bumpArtery("binary", 0);
+    CoreMemory.set(ROUTE, KEY_LAST_BINARY, schema);
     return schema;
   }
 
@@ -417,6 +457,7 @@ export function unifyFromBinary(binaryBuffer) {
       meta: { error: "Failed to decode binary schema", detail: String(e) }
     });
     _bumpArtery("binary", 0);
+    CoreMemory.set(ROUTE, KEY_LAST_BINARY, schema);
     return schema;
   }
 
@@ -441,6 +482,7 @@ export function unifyFromBinary(binaryBuffer) {
   });
 
   _bumpArtery("binary", Object.keys(fields).length);
+  CoreMemory.set(ROUTE, KEY_LAST_BINARY, schema);
   return schema;
 }
 
@@ -471,6 +513,7 @@ export function unifyToBinary(pulseSchema) {
   const buffer = new TextEncoder().encode(jsonStr);
 
   _bumpArtery("binary", Object.keys(pulseSchema.fields || {}).length);
+  CoreMemory.set(ROUTE, KEY_LAST_BINARY_OUT, buffer);
   return buffer;
 }
 
@@ -534,6 +577,7 @@ export function mergeSchemas(schemaA, schemaB) {
   });
 
   _bumpArtery("merge", Object.keys(mergedFields).length);
+  CoreMemory.set(ROUTE, KEY_LAST_MERGED, merged);
   return merged;
 }
 
@@ -632,12 +676,15 @@ export function validateDocument(pulseSchema, doc) {
   const fieldCount = Object.keys(fields).length;
   _bumpArtery("validate", fieldCount);
 
-  return Object.freeze({
+  const result = Object.freeze({
     ok: Object.keys(errors).length === 0 && missingRequired.length === 0,
     errors,
     missingRequired,
     fieldCount
   });
+
+  CoreMemory.set(ROUTE, KEY_LAST_VALIDATE, result);
+  return result;
 }
 
 // ============================================================================
@@ -684,6 +731,7 @@ export function computeSchemaDiff(schemaA, schemaB) {
   });
 
   _bumpArtery("diff", allKeys.size);
+  CoreMemory.set(ROUTE, KEY_LAST_DIFF, diff);
   return diff;
 }
 
@@ -727,7 +775,9 @@ const PulseSchemaAPI_v16 = {
   computeSchemaDiff,
   summarizeSchemaComplexity,
   buildSchemaPresenceOverlay,
-  getSchemaArterySnapshot
+  getSchemaArterySnapshot,
+  getLastSchemaState,
+  CoreMemory
 };
 
 export default PulseSchemaAPI_v16;

@@ -11,6 +11,8 @@
 //   - Bridges 32-lane chunkers ↔ CoreMemory via coreMemoryBridge.
 //   - Deterministic, symbolic, no randomness, no network fetch logic.
 // ============================================================================
+import * as PulseLogger        from "./PulseProofLogger.js";
+import * as PulseVitalsMonitor from "./PulseProofMonitor.js";
 import { PulseProofBridge as PulseCoreMemoryBridge,  log, warn, error } from "./PulseWorldBridge.js";
 
 export const PulsePowerRole = Object.freeze({

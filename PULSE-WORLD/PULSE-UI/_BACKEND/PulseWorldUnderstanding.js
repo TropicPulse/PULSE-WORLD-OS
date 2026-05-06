@@ -42,8 +42,8 @@ import { route, PulseProofLogger, log, warn, error } from "./PulseWorldBridge.js
 // ============================================================================
 //  IMPORTS — MAPS (Intent, Organism, IQ)
 // ============================================================================
-import { PulseIntentMap } from "../../PULSE-BAND/PULSE-OS/PulseIntentMap.js";
-import { PulseOrganismMap } from "../../PULSE-BAND/PULSE-OS/PulseOrganismMap.js";
+import { PulseIntentMap } from "../../PULSE-BAND/PULSE-X/PulseWorldIntentMap.js";
+import { PulseOrganismMap } from "../../PULSE-BAND/PULSE-X/PulseWorldOrganismMap.js";
 import createPulseWorldCore from "../../PULSE-BAND/PULSE-EXPANSION/PulseUser-v16.js";
 import { createDualBandOrganism as PulseBinaryOrganismBoot } from "../../PULSE-BAND/PULSE-AI/aiDualBand-v16.js";
 

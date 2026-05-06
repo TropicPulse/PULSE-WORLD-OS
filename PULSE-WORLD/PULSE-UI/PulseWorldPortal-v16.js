@@ -91,6 +91,8 @@ import { route as BridgeRoute, PulseProofLogger, log, warn, error, startUndersta
 import * as PulsePower         from "./_BACKEND/PulseWorldPower-v16.js";
 import * as PulseUIErrors      from "./_FRONTEND/PulseUIErrors-v16.js";
 import * as PulseUIFlow        from "./_FRONTEND/PulseUIFlow-v16.js";
+import * as PulsePageScanner from "./_FRONTEND/PulseUIPageScanner-v16.js";
+import { createPulseRouteMemory as PulseUIRouteMemory } from "./_FRONTEND/PulseUIRouteMemory-v16.js";
 /* 1. SKIN REFLEX — SIDE‑EFFECT IMPORT, AUTO‑ATTACHES (SCANNER) */
 import * as PulseSkinReflex    from "./_FRONTEND/PulseUISkinReflex.js"; // PageScannerV12 auto hooks surface here
 

@@ -104,8 +104,8 @@ import {db, admin} from "../../NETLIFY/FUNCTIONS/helpers.js"
 //  • Hybrid crown model: OvermindPrime sees heartbeats + AI requests
 // ============================================================================
 import { aiOvermindPrime } from "../../PULSE-BAND/PULSE-AI/aiOvermindPrime.js";
-import { createForwardEngine } from "../../PULSE-BAND/PULSE-ENGINE/ForwardEngine.js";
-import { createBackwardEngine } from "../../PULSE-BAND/PULSE-ENGINE/BackwardEngine.js";
+import { createForwardEngine } from "../../PULSE-BAND/PULSE-ENGINE/ForwardMotion-v16.js";
+import { createBackwardEngine } from "../../PULSE-BAND/PULSE-ENGINE/BackwardMotion-v16.js";
 import PulseUIErrors from "../_FRONTEND/PulseUIErrors-v16.js";
 import { initUIFlow } from "../_FRONTEND/PulseUIFlow-v16.js";
 import { route, PulseProofLogger, log, warn, error } from "./PulseWorldBridge.js";

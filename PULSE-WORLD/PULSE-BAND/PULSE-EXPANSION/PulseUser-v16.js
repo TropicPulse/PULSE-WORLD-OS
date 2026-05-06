@@ -82,8 +82,8 @@ import {
 } from "../PULSE-PROXY/PulseProxyContext-v16.js";
 
 // ⭐ SUBIMPORTS YOU REQUESTED (runtime / scheduler / overmind)
-import { getPulseRuntimeContext } from "../PULSE-X/PulseRuntime-v2.js";
-import { getPulseSchedulerContext } from "../PULSE-X/PulseScheduler-v2.js";
+import { getPulseRuntimeContext } from "../PULSE-X/PulseWorldRuntime-v2.js";
+import { getPulseSchedulerContext } from "../PULSE-X/PulseWorldScheduler-v2.js";
 import { getPulseOvermindContext } from "../PULSE-AI/aiOvermindPrime.js";
 
 // Evolution engine

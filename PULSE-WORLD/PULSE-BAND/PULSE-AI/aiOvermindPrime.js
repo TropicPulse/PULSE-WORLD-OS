@@ -37,9 +37,9 @@ AI_EXPERIENCE_META = {
 
 import { PulseProofLogger } from "../../PULSE-UI/_BACKEND/PulseProofLogger.js";
 
-import { PulseOrganismMap } from "../PULSE-OS/PulseOrganismMap.js";
-import { PulseIQMap } from "../PULSE-OS/PulseIQMap.js";
-import { PulseIntentMap } from "../PULSE-OS/PulseIntentMap.js";
+import { PulseOrganismMap } from "../PULSE-X/PulseWorldOrganismMap.js";
+import { PulseIQMap } from "../PULSE-X/PulseWorldIQMap.js";
+import { PulseIntentMap } from "../PULSE-X/PulseWorldIntentMap.js";
 // ============================================================================
 //  AI ORGANISM (v14.4 IMMORTAL-INTEL)
 // ============================================================================

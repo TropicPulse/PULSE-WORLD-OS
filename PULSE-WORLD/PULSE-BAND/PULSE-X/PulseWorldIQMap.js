@@ -55,9 +55,9 @@ AI_EXPERIENCE_META = {
 }
 */
 
-import { PulseOrganismMap } from "./PulseOrganismMap.js";
+import { PulseOrganismMap } from "./PulseWorldOrganismMap.js";
 import { log, warn, error as logError } from "../../PULSE-UI/_BACKEND/PulseProofLogger.js";
-import { bootCortex } from "./PulseOSBrainCortex.js";
+import { bootCortex } from "../PULSE-OS/PulseOSBrainCortex.js";
 import { createPulseAIChunker } from "../ai-core/PulseAIChunker-v16.js"; // path adjust as needed
 
 // -----------------------------------------------------------------------------

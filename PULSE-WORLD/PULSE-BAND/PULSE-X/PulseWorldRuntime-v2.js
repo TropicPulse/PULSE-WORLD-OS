@@ -122,7 +122,7 @@ import * as PulseSchema from "../PULSE-FINALITY/PULSE-SCHEMA/PulseSchema-CoreMem
 import { createPulseCoreMemory } from "../PULSE-CORE/PulseCoreMemory.js";
 
 // Binary substrate (Touch-aware v2.4)
-import BinarySubstrateV2 from "./BinarySubstrate-v2.js";
+import BinarySubstrateV2 from "./PulseWorldBinarySubstrate-v2.js";
 const { packMultiOrganismPlan, packExecutionResult } = BinarySubstrateV2;
 
 // -------------------------

@@ -62,7 +62,7 @@ AI_EXPERIENCE_META = {
   contract: {
     always: [
       "PulseGPUBrain",
-      "PulseContinuanceCoreMemory",
+      "PulseCoreMemory",
       "PulseSchema"
     ],
     never: [
@@ -73,7 +73,7 @@ AI_EXPERIENCE_META = {
   }
 }
 */
-
+import { createPulseCoreMemory } from "../../PULSE-CORE/PulseCoreMemory.js";
 // ============================================================================
 //  IMPORTS
 // ============================================================================
@@ -145,6 +145,19 @@ export const PulseContinuanceMeta = Object.freeze({
     ])
   })
 });
+
+// ============================================================================
+//  CORE MEMORY — IMMORTAL HOT MEMORY ORGAN
+// ============================================================================
+const CoreMemory = createPulseCoreMemory();
+const ROUTE = "continuance-global";
+
+const KEY_LAST_PACKET = "last-continuance-packet";
+const KEY_LAST_RISK = "last-risk-report";
+const KEY_LAST_PREEMPTIVE = "last-preemptive-plan";
+const KEY_LAST_REPLICATION = "last-replication-plan";
+const KEY_LAST_PRESENCE = "last-presence-field";
+const KEY_LAST_ADVANTAGE = "last-advantage-field";
 
 // ============================================================================
 //  PACKET EMITTER — deterministic, continuance-scoped
@@ -666,7 +679,7 @@ export function buildReplicationPlan(
 }
 
 // ============================================================================
-//  HIGH-LEVEL CONTINUANCE COMPUTE (GPU-first, packet-emitting)
+//  HIGH-LEVEL CONTINUANCE COMPUTE (GPU-first, packet-emitting + CoreMemory)
 // ============================================================================
 
 export function computeContinuance({
@@ -709,7 +722,7 @@ export function computeContinuance({
 
   const durationMs = Date.now() - start;
 
-  return emitContinuancePacket("gpu-compute", {
+  const packet = emitContinuancePacket("gpu-compute", {
     riskReport,
     preemptivePlan,
     replicationPlan,
@@ -719,6 +732,34 @@ export function computeContinuance({
     ciDeltaPacket,
     durationMs
   });
+
+  // CoreMemory integration — hot symbolic snapshot
+  CoreMemory.set(ROUTE, KEY_LAST_RISK, riskReport);
+  CoreMemory.set(ROUTE, KEY_LAST_PREEMPTIVE, preemptivePlan);
+  CoreMemory.set(ROUTE, KEY_LAST_REPLICATION, replicationPlan);
+  CoreMemory.set(ROUTE, KEY_LAST_PRESENCE, presenceField);
+  CoreMemory.set(ROUTE, KEY_LAST_ADVANTAGE, advantageField);
+  CoreMemory.set(ROUTE, KEY_LAST_PACKET, packet);
+
+  return packet;
+}
+
+// ============================================================================
+//  HOT MEMORY ACCESSOR — last continuance state
+// ============================================================================
+
+export function getLastContinuanceState() {
+  CoreMemory.prewarm();
+
+  return {
+    meta: PulseContinuanceMeta,
+    lastPacket: CoreMemory.get(ROUTE, KEY_LAST_PACKET),
+    riskReport: CoreMemory.get(ROUTE, KEY_LAST_RISK),
+    preemptivePlan: CoreMemory.get(ROUTE, KEY_LAST_PREEMPTIVE),
+    replicationPlan: CoreMemory.get(ROUTE, KEY_LAST_REPLICATION),
+    presenceField: CoreMemory.get(ROUTE, KEY_LAST_PRESENCE),
+    advantageField: CoreMemory.get(ROUTE, KEY_LAST_ADVANTAGE)
+  };
 }
 
 // ============================================================================
@@ -747,7 +788,11 @@ const PulseContinuanceAPI = {
   buildContinuanceRiskReport,
   buildPreemptiveMovePlan,
   buildReplicationPlan,
-  computeContinuance
+  computeContinuance,
+
+  // CoreMemory integration
+  getLastContinuanceState,
+  CoreMemory
 };
 
 export default PulseContinuanceAPI;

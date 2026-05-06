@@ -72,6 +72,7 @@ AI_EXPERIENCE_META = {
   }
 }
 */
+import { createPulseCoreMemory } from "../../PULSE-CORE/PulseCoreMemory.js";
 
 // -------------------------
 // META EXPORT
@@ -111,6 +112,32 @@ export const PulseOmniHostingMeta = Object.freeze({
     epoch: "16-Immortal-GPU+-CI"
   })
 });
+
+// -------------------------
+// CORE MEMORY — IMMORTAL HOT MEMORY ORGAN
+// -------------------------
+
+const CoreMemory = createPulseCoreMemory();
+const ROUTE = "omnihosting-global";
+
+const KEY_LAST_PLACEMENT = "last-placement-plan";
+const KEY_LAST_FAILOVER = "last-failover-plan";
+const KEY_LAST_PACKET = "last-omnihosting-packet";
+
+// -------------------------
+// PACKET EMITTER
+// -------------------------
+
+function emitOmniHostingPacket(type, payload) {
+  return Object.freeze({
+    meta: PulseOmniHostingMeta,
+    packetType: `omnihosting-${type}`,
+    packetId: `omnihosting-${type}-${Date.now()}`,
+    timestamp: Date.now(),
+    epoch: PulseOmniHostingMeta.evo.epoch,
+    ...payload
+  });
+}
 
 // -------------------------
 // Host Descriptor
@@ -490,7 +517,20 @@ export function buildPlacementPlan(
     hostTiers[h.name] = bucketHostTier(score);
   }
 
-  return {
+  const presenceField = {
+    band: presenceContext.band || "pulseband",
+    deviceId: presenceContext.deviceId || null,
+    hydraNodeId: presenceContext.hydraNodeId || null,
+    route: presenceContext.route || "/"
+  };
+
+  const advantageField = {
+    advantageScore: advantageContext.advantageScore ?? 1.0,
+    cascadeLevel: advantageContext.cascadeLevel ?? 0,
+    timeSavedMs: advantageContext.timeSavedMs ?? 0
+  };
+
+  const plan = {
     selectedHosts: selectedNames,
     eligibleHosts: eligibleNames,
     minInstances,
@@ -503,17 +543,8 @@ export function buildPlacementPlan(
     prewarmHint,
 
     // v16-Immortal-GPU+-CI symbolic surfaces
-    presenceField: {
-      band: presenceContext.band || "pulseband",
-      deviceId: presenceContext.deviceId || null,
-      hydraNodeId: presenceContext.hydraNodeId || null,
-      route: presenceContext.route || "/"
-    },
-    advantageField: {
-      advantageScore: advantageContext.advantageScore ?? 1.0,
-      cascadeLevel: advantageContext.cascadeLevel ?? 0,
-      timeSavedMs: advantageContext.timeSavedMs ?? 0
-    },
+    presenceField,
+    advantageField,
     continuanceHint,
     ciHint,
     binaryDeltaHint,
@@ -522,6 +553,10 @@ export function buildPlacementPlan(
     hostScores,
     hostTiers
   };
+
+  CoreMemory.set(ROUTE, KEY_LAST_PLACEMENT, plan);
+
+  return plan;
 }
 
 // -------------------------
@@ -589,7 +624,20 @@ export function buildFailoverPlan(
     hostTiers[h.name] = bucketHostTier(score);
   }
 
-  return {
+  const presenceField = {
+    band: presenceContext.band || "pulseband",
+    deviceId: presenceContext.deviceId || null,
+    hydraNodeId: presenceContext.hydraNodeId || null,
+    route: presenceContext.route || "/"
+  };
+
+  const advantageField = {
+    advantageScore: advantageContext.advantageScore ?? 1.0,
+    cascadeLevel: advantageContext.cascadeLevel ?? 0,
+    timeSavedMs: advantageContext.timeSavedMs ?? 0
+  };
+
+  const plan = {
     failedHost: failedHostName,
     failoverTargets,
     schemaVersion: pulseSchema.version,
@@ -601,17 +649,8 @@ export function buildFailoverPlan(
     prewarmHint,
 
     // v16-Immortal-GPU+-CI symbolic surfaces
-    presenceField: {
-      band: presenceContext.band || "pulseband",
-      deviceId: presenceContext.deviceId || null,
-      hydraNodeId: presenceContext.hydraNodeId || null,
-      route: presenceContext.route || "/"
-    },
-    advantageField: {
-      advantageScore: advantageContext.advantageScore ?? 1.0,
-      cascadeLevel: advantageContext.cascadeLevel ?? 0,
-      timeSavedMs: advantageContext.timeSavedMs ?? 0
-    },
+    presenceField,
+    advantageField,
     continuanceHint,
     ciHint,
     binaryDeltaHint,
@@ -619,6 +658,42 @@ export function buildFailoverPlan(
 
     hostScores,
     hostTiers
+  };
+
+  CoreMemory.set(ROUTE, KEY_LAST_FAILOVER, plan);
+
+  return plan;
+}
+
+// -------------------------
+// High-level packet wrapper
+// -------------------------
+
+export function computeOmniHostingPacket({
+  placementPlan = null,
+  failoverPlan = null
+} = {}) {
+  const packet = emitOmniHostingPacket("compute", {
+    placementPlan,
+    failoverPlan
+  });
+
+  CoreMemory.set(ROUTE, KEY_LAST_PACKET, packet);
+  return packet;
+}
+
+// -------------------------
+// HOT MEMORY ACCESSOR
+// -------------------------
+
+export function getLastOmniHostingState() {
+  CoreMemory.prewarm();
+
+  return {
+    meta: PulseOmniHostingMeta,
+    lastPlacementPlan: CoreMemory.get(ROUTE, KEY_LAST_PLACEMENT),
+    lastFailoverPlan: CoreMemory.get(ROUTE, KEY_LAST_FAILOVER),
+    lastPacket: CoreMemory.get(ROUTE, KEY_LAST_PACKET)
   };
 }
 
@@ -632,7 +707,10 @@ const PulseOmniHostingAPI = {
   buildCapabilityMatrix,
   evaluateHostForSchema,
   buildPlacementPlan,
-  buildFailoverPlan
+  buildFailoverPlan,
+  computeOmniHostingPacket,
+  getLastOmniHostingState,
+  CoreMemory
 };
 
 export default PulseOmniHostingAPI;

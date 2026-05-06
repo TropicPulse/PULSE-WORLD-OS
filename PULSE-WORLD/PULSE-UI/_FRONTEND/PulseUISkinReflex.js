@@ -94,12 +94,12 @@ const db =
   (typeof globalThis !== "undefined" && globalThis.db) ||
   (typeof window !== "undefined" && window.db) ||
   null;
-
+import * as PulseLogger        from "../_BACKEND/PulseProofLogger.js";
+import { safeRoute as route } from "../_BACKEND/PulseWorldBridge.js";
 import PulseUIErrors from "./PulseUIErrors-v16.js";
+import { getUIFlowSnapshot } from "./PulseUIFlow-v16.js";
 import PulsePageScanner from "./PulseUIPageScanner-v16.js";
 import createPulseRouteMemory from "./PulseUIRouteMemory-v16.js";
-import { safeRoute as route } from "../_BACKEND/PulseWorldBridge.js";
-import { getUIFlowSnapshot } from "./PulseUIFlow-v16.js";
 
 function isOnline() {
   if (typeof window !== "undefined" && typeof window.PULSE_ONLINE === "boolean") {

@@ -118,10 +118,10 @@ import {
   createPulseScheduler,
   PulseSchedulerMeta,
   getPulseSchedulerContext
-} from "../PULSE-X/PulseScheduler-v2.js";
+} from "../PULSE-X/PulseWorldScheduler-v2.js";
 
 // Runtime v2 (multi-organism execution + binary frames)
-import { PulseRuntimeV2, getPulseRuntimeContext } from "../PULSE-X/PulseRuntime-v2.js";
+import { PulseRuntimeV2, getPulseRuntimeContext } from "../PULSE-X/PulseWorldRuntime-v2.js";
 
 const {
   runPulseTickV2,
