@@ -13,6 +13,7 @@
 //   - Deterministic color mapping (epoch-stable).
 //   - Renderer-agnostic output.
 //   - Role-aware overlays (nodeAdmin, reproduction, castle, server, expansion).
+//   - Shifter-aware: visually distinct, static-like overlays for shifter pulses.
 // ============================================================================
 
 /*
@@ -34,6 +35,11 @@ AI_EXPERIENCE_META = {
     advantageView: true,
     windowSafe: true,
 
+    shifterAware: true,
+    pulseTypeAware: true,
+    gradientAware: true,
+    anomalyOverlayAware: true,
+
     deterministic: true,
     driftProof: true,
     pureCompute: true,
@@ -54,21 +60,8 @@ AI_EXPERIENCE_META = {
   }
 }
 */
-// ============================================================================
-// FILE: /PulseOS/Scanner/PulseHeatMap-v16.js
-// PULSE OS — v16-IMMORTAL
-// UNIVERSAL HEATMAP ORGAN — ROLE-COLOR + DIAGNOSTICS + WARNINGS
-// ============================================================================
-// ROLE (v16-IMMORTAL):
-//   - Convert any grid into a universal, role-colored heatmap representation.
-//   - Detect degradation, inefficiency, drift, imbalance, and instability.
-//   - Attach warning icons + severity levels to any node.
-//   - Presence-aware, harmonic-aware, dual-band-aware, multi-spin-aware.
-//   - Renderer-agnostic output.
-// ============================================================================
 
 export function createPulseHeatMap({ trace = false } = {}) {
-
   // ---------------------------------------------------------------------------
   // ENVIRONMENT TEMPLATES
   // ---------------------------------------------------------------------------
@@ -82,6 +75,125 @@ export function createPulseHeatMap({ trace = false } = {}) {
 
   function registerTemplate(name, sprite, mapCoord) {
     templates[name] = { sprite, mapCoord };
+  }
+
+  // ---------------------------------------------------------------------------
+  // INTERNAL HELPERS — GRADIENT / PULSE SIGNATURE / SHIFTER STATIC
+  // ---------------------------------------------------------------------------
+  function sampleCell(grid, x, y) {
+    if (!grid || y < 0 || y >= grid.length) return null;
+    if (x < 0 || x >= grid[0].length) return null;
+    return grid[y][x];
+  }
+
+  function computeLocalGradient(grid, x, y) {
+    const c = sampleCell(grid, x, y);
+    if (!c) {
+      return {
+        gradientMagnitude: 0,
+        gradientDirection: 0,
+        presenceGradient: 0
+      };
+    }
+
+    const left  = sampleCell(grid, x - 1, y) || c;
+    const right = sampleCell(grid, x + 1, y) || c;
+    const up    = sampleCell(grid, x, y - 1) || c;
+    const down  = sampleCell(grid, x, y + 1) || c;
+
+    const dCenter = c.density ?? 0;
+    const dX = (right.density ?? dCenter) - (left.density ?? dCenter);
+    const dY = (down.density ?? dCenter) - (up.density ?? dCenter);
+
+    const pCenter = c.presence ?? 0;
+    const pX = (right.presence ?? pCenter) - (left.presence ?? pCenter);
+    const pY = (down.presence ?? pCenter) - (up.presence ?? pCenter);
+
+    const gradientMagnitude = clamp(Math.sqrt(dX * dX + dY * dY), 0, 2);
+    const gradientDirection = Math.atan2(dY, dX); // radians
+    const presenceGradient = clamp(Math.sqrt(pX * pX + pY * pY), 0, 2);
+
+    return {
+      gradientMagnitude,
+      gradientDirection,
+      presenceGradient
+    };
+  }
+
+  function computePulseSignature(cell) {
+    const density = clamp(cell.density ?? 0, 0, 1);
+    const wave = clamp(cell.wave ?? 0, 0, 1);
+    const presence = clamp(cell.presence ?? 0, 0, 1);
+    const contrast = clamp(cell.contrast ?? 0, 0, 1);
+
+    const binaryBand = clamp((density * 0.6 + contrast * 0.4), 0, 1);
+    const pulseBand = clamp((wave * 0.7 + presence * 0.3), 0, 1);
+
+    const dualBandCoherence = clamp(
+      1 - Math.abs(binaryBand - pulseBand),
+      0,
+      1
+    );
+
+    const pulseType =
+      pulseBand > 0.75
+        ? "surge"
+        : pulseBand > 0.5
+        ? "active"
+        : pulseBand > 0.25
+        ? "idle"
+        : "cold";
+
+    return {
+      binaryBand,
+      pulseBand,
+      dualBandCoherence,
+      pulseType
+    };
+  }
+
+  function computeShifterStatic(cell, gradientMagnitude, harmonicDrift) {
+    const isShifter =
+      Array.isArray(cell.tags) && cell.tags.includes("shifter");
+
+    if (!isShifter) {
+      return {
+        isShifter: false,
+        shifterStaticIntensity: 0,
+        shifterNoiseBand: 0,
+        shifterEdgeSharpness: 0
+      };
+    }
+
+    const density = clamp(cell.density ?? 0, 0, 1);
+    const wave = clamp(cell.wave ?? 0, 0, 1);
+    const presence = clamp(cell.presence ?? 0, 0, 1);
+
+    const staticBase =
+      0.4 * wave +
+      0.3 * gradientMagnitude +
+      0.2 * harmonicDrift +
+      0.1 * (1 - presence);
+
+    const shifterStaticIntensity = clamp(staticBase, 0, 1);
+    const shifterNoiseBand = clamp(wave * 0.8 + density * 0.2, 0, 1);
+    const shifterEdgeSharpness = clamp(gradientMagnitude * 0.9, 0, 1);
+
+    return {
+      isShifter: true,
+      shifterStaticIntensity,
+      shifterNoiseBand,
+      shifterEdgeSharpness
+    };
+  }
+
+  function shifterOverlayColor(staticIntensity) {
+    // Static-like magenta/cyan glitch band
+    if (staticIntensity > 0.8) return "rgb(255, 0, 255)";   // hard magenta
+    if (staticIntensity > 0.6) return "rgb(180, 0, 255)";   // violet
+    if (staticIntensity > 0.4) return "rgb(0, 255, 255)";   // cyan
+    if (staticIntensity > 0.2) return "rgb(120, 255, 255)"; // soft cyan
+    return null;
   }
 
   // ---------------------------------------------------------------------------
@@ -157,7 +269,10 @@ export function createPulseHeatMap({ trace = false } = {}) {
     presenceAvg,
     harmonicDrift,
     coherenceScore,
-    envType
+    envType,
+    gradientMagnitude,
+    pulseSignature,
+    shifterStatic
   }) {
     const issues = [];
 
@@ -238,6 +353,40 @@ export function createPulseHeatMap({ trace = false } = {}) {
       });
     }
 
+    // 7. Gradient anomalies (edges / fractures)
+    if (gradientMagnitude > 0.9) {
+      issues.push({
+        type: "gradient-fracture",
+        severity: "high",
+        icon: "🪓"
+      });
+    } else if (gradientMagnitude > 0.6) {
+      issues.push({
+        type: "gradient-edge",
+        severity: "medium",
+        icon: "〰️"
+      });
+    }
+
+    // 8. Dual-band decoherence
+    if (pulseSignature.dualBandCoherence < 0.4) {
+      issues.push({
+        type: "dualband-decoherence",
+        severity: "medium",
+        icon: "🌀"
+      });
+    }
+
+    // 9. Shifter-specific anomalies
+    if (shifterStatic.isShifter && shifterStatic.shifterStaticIntensity > 0.4) {
+      issues.push({
+        type: "shifter-static",
+        severity:
+          shifterStatic.shifterStaticIntensity > 0.75 ? "high" : "medium",
+        icon: "📡"
+      });
+    }
+
     return issues;
   }
 
@@ -270,34 +419,87 @@ export function createPulseHeatMap({ trace = false } = {}) {
 
         value += spinBoost(spins, x, y);
 
-        const heatColor = baseHeatColorFromValue(value, presenceAvg, coherenceScore);
+        const gradientInfo = computeLocalGradient(grid, x, y);
+        const pulseSignature = computePulseSignature(cell);
+        const shifterStatic = computeShifterStatic(
+          cell,
+          gradientInfo.gradientMagnitude,
+          harmonicDrift
+        );
+
+        const heatColor = baseHeatColorFromValue(
+          value,
+          presenceAvg,
+          coherenceScore
+        );
         const roleColor = roleColorForCell(cell, envType);
-        const finalColor = roleColor || heatColor;
+
+        const shifterColor =
+          shifterOverlayColor(shifterStatic.shifterStaticIntensity);
+
+        // Final color priority:
+        //   1. Shifter overlay (if present)
+        //   2. Role color
+        //   3. Base heat color
+        const finalColor = shifterColor || roleColor || heatColor;
 
         const diagnostics = diagnoseCell(cell, {
           presenceAvg,
           harmonicDrift,
           coherenceScore,
-          envType
+          envType,
+          gradientMagnitude: gradientInfo.gradientMagnitude,
+          pulseSignature,
+          shifterStatic
         });
 
         const { envX, envY } = tmpl.mapCoord(x, y, W - 1, H - 1);
 
         points.push({
+          // core coordinates
           x,
           y,
+          envX,
+          envY,
+          sprite: tmpl.sprite,
+
+          // scalar value + color stack
           value,
           color: finalColor,
           heatColor,
           roleColor,
-          diagnostics,     // ⭐ NEW: list of issues + icons
-          warningIcon: diagnostics[0]?.icon ?? null, // ⭐ NEW: top-level icon
+          shifterOverlayColor: shifterColor,
+
+          // diagnostics
+          diagnostics,                     // list of issues + icons
+          warningIcon: diagnostics[0]?.icon ?? null,
           severity: diagnostics[0]?.severity ?? "none",
-          envX,
-          envY,
-          sprite: tmpl.sprite,
+
+          // dual-band / pulse signature
+          binaryBand: pulseSignature.binaryBand,
+          pulseBand: pulseSignature.pulseBand,
+          dualBandCoherence: pulseSignature.dualBandCoherence,
+          pulseType: pulseSignature.pulseType, // "surge" | "active" | "idle" | "cold"
+
+          // gradient / presence field
+          gradientMagnitude: gradientInfo.gradientMagnitude,
+          gradientDirection: gradientInfo.gradientDirection,
+          presenceGradient: gradientInfo.presenceGradient,
+
+          // shifter-specific overlays
+          isShifter: shifterStatic.isShifter,
+          shifterStaticIntensity: shifterStatic.shifterStaticIntensity,
+          shifterNoiseBand: shifterStatic.shifterNoiseBand,
+          shifterEdgeSharpness: shifterStatic.shifterEdgeSharpness,
+
+          // original cell context
           tags: cell.tags,
           presence: cell.presence,
+          density: cell.density,
+          wave: cell.wave,
+          contrast: cell.contrast,
+
+          // global harmonic context
           harmonics: coherenceScore,
           harmonicDrift,
           presenceAvg
@@ -306,7 +508,12 @@ export function createPulseHeatMap({ trace = false } = {}) {
     }
 
     if (trace) {
-      console.log("[PulseHeatMap‑v16-IMMORTAL] env:", envType, "points:", points.length);
+      console.log(
+        "[PulseHeatMap‑v16-IMMORTAL] env:",
+        envType,
+        "points:",
+        points.length
+      );
     }
 
     return {

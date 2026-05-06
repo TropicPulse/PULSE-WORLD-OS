@@ -1,47 +1,129 @@
 import fs from "fs";
 import path from "path";
 
-// Look one folder back, then scan forward into all subfolders
+// ============================================================================
+// ROOT — one folder back, then scan forward
+// ============================================================================
 const ROOT = path.resolve(process.cwd(), "..");
 
-// v12.3‑EVO aware patterns — minimal, non‑redundant
-const META_PATTERNS = [
-  // Organ identity
-  /ORGAN:\s*([A-Za-z0-9_-]+)/i,
-  /identity:\s*["']?([A-Za-z0-9.\-]+)["']?/i,
+// ============================================================================
+// FIVE-LAYER METABLOCK DEFINITIONS
+// ============================================================================
+const LAYERS = {
+  identity: [
+    /ORGAN:/i,
+    /identity:/i,
+    /organId:/i,
+    /role:/i,
+    /layer:/i,
+    /epoch:/i,
+    /version:/i,
+    /lineage:/i
+  ],
+  evo: [
+    /evo:\s*\{/i,
+    /presenceAware/i,
+    /dualBand/i,
+    /binaryAware/i,
+    /gpuAware/i,
+    /arteryAware/i,
+    /juryAware/i,
+    /shifterAware/i,
+    /timelineFlowAware/i,
+    /multiSpin/i
+  ],
+  contract: [
+    /contract:\s*\{/i,
+    /always:\s*\[/i,
+    /never:\s*\[/i,
+    /purpose:/i
+  ],
+  guarantees: [
+    /guarantees:\s*\{/i,
+    /deterministic/i,
+    /driftProof/i,
+    /zeroNetwork/i,
+    /zeroFilesystem/i,
+    /zeroMutation/i,
+    /zeroRandomness/i,
+    /pureCompute/i,
+    /windowSafe/i
+  ],
+  safety: [
+    /safety:\s*\{/i,
+    /AI_EXPERIENCE_META/i,
+    /Pulse[A-Za-z0-9]+Meta/i,
+    /IMMORTAL/i,
+    /ORGANISM/i,
+    /Presence/i,
+    /Harmonics/i,
+    /DualBand/i,
+    /Shifter/i,
+    /Proxy/i,
+    /Mesh/i,
+    /Cortex/i,
+    /Organism/i,
+    /PulseWorld/i,
+    /PulseOS/i
+  ]
+};
 
-  // Versioning (v11, v12, v12.3, EVO, Presence, Harmonics)
-  /VERSION:\s*([A-Za-z0-9.\-]+)/i,
-  /v\d+(?:\.\d+)?(?:\.\d+)?-?(?:EVO|Presence|Harmonics)?/i,
+// Flatten all patterns for raw match listing
+const META_PATTERNS = Object.values(LAYERS).flat();
 
-  // Pulse organ naming (Behavior, BinaryBehavior, Scanner, Cortex, HeatMap, etc.)
-  /Pulse[A-Za-z0-9_-]+-v\d+(?:\.\d+)?(?:\.\d+)?-?(?:EVO|Presence|Harmonics)?/i,
-
-  // Layer / Cortex / Mode tags
-  /layer:\s*["']?([A-Za-z0-9_-]+)["']?/i,
-  /cortex:\s*["']?([A-Za-z0-9_-]+)["']?/i,
-  /presence:\s*["']?([A-Za-z0-9._-]+)["']?/i,
-  /harmonics:\s*["']?([A-Za-z0-9._-]+)["']?/i,
-  /dualband:\s*["']?([A-Za-z0-9._-]+)["']?/i
-];
-
+// ============================================================================
+// SCAN A SINGLE FILE
+// ============================================================================
 function scanFile(filePath) {
   const text = fs.readFileSync(filePath, "utf8");
-  const results = [];
 
-  for (const pattern of META_PATTERNS) {
-    const match = text.match(pattern);
-    if (match) {
-      results.push({
-        pattern: pattern.toString(),
-        match: match[1] || match[0]
-      });
+  const layerHits = {};
+  const rawMatches = [];
+
+  // initialize layer hit counters
+  for (const layer of Object.keys(LAYERS)) {
+    layerHits[layer] = 0;
+  }
+
+  // scan patterns
+  for (const layer of Object.keys(LAYERS)) {
+    for (const pattern of LAYERS[layer]) {
+      const match = text.match(pattern);
+      if (match) {
+        layerHits[layer]++;
+        rawMatches.push({
+          layer,
+          pattern: pattern.toString(),
+          match: match[1] || match[0]
+        });
+      }
     }
   }
 
-  return results;
+  // compute layer completeness
+  const layerScores = {};
+  for (const layer of Object.keys(LAYERS)) {
+    const found = layerHits[layer];
+    const total = LAYERS[layer].length;
+    const score = Math.round((found / total) * 100);
+    layerScores[layer] = score;
+  }
+
+  // compute overall completeness
+  const overall =
+    Object.values(layerScores).reduce((a, b) => a + b, 0) /
+    Object.keys(layerScores).length;
+
+  return {
+    rawMatches,
+    layerScores,
+    overallScore: Math.round(overall)
+  };
 }
 
+// ============================================================================
+// RECURSIVE WALK
+// ============================================================================
 function walk(dir, results = []) {
   const entries = fs.readdirSync(dir, { withFileTypes: true });
 
@@ -51,11 +133,11 @@ function walk(dir, results = []) {
     if (entry.isDirectory()) {
       walk(full, results);
     } else if (entry.isFile() && full.endsWith(".js")) {
-      const meta = scanFile(full);
-      if (meta.length > 0) {
+      const scan = scanFile(full);
+      if (scan.rawMatches.length > 0) {
         results.push({
           file: full.replace(ROOT, "."),
-          meta
+          ...scan
         });
       }
     }
@@ -64,12 +146,57 @@ function walk(dir, results = []) {
   return results;
 }
 
+// ============================================================================
+// FIX RECOMMENDATION ENGINE
+// ============================================================================
+function recommendFixes(layerScores) {
+  const fixes = [];
+
+  for (const [layer, score] of Object.entries(layerScores)) {
+    if (score === 100) continue;
+
+    if (score === 0) {
+      fixes.push(`❌ Missing entire ${layer} block — add full ${layer} metablock.`);
+    } else if (score < 50) {
+      fixes.push(`⚠️ ${layer} block incomplete (${score}%) — add missing required fields.`);
+    } else {
+      fixes.push(`🔧 ${layer} block partially complete (${score}%) — verify optional fields.`);
+    }
+  }
+
+  return fixes;
+}
+
+// ============================================================================
+// RUN SCAN
+// ============================================================================
 const output = walk(ROOT);
 
-console.log("=== Pulse Metadata Scan (v12.3‑EVO) ===");
+// compute global health
+const globalScore =
+  output.reduce((a, f) => a + f.overallScore, 0) / (output.length || 1);
+
+console.log("=== Pulse Metadata Scan (v18‑IMMORTAL, 5‑Layer Metablock Scanner + Damage Wizard) ===");
+console.log(`\nGLOBAL ORGANISM COMPLETENESS: ${globalScore.toFixed(1)}%`);
+console.log("=====================================================================");
+
 output.forEach((item) => {
   console.log(`\nFILE: ${item.file}`);
-  item.meta.forEach((m) => {
-    console.log(`  → ${m.match}`);
+  console.log(`  → Overall completeness: ${item.overallScore}%`);
+
+  console.log("  → Layer scores:");
+  for (const [layer, score] of Object.entries(item.layerScores)) {
+    console.log(`      ${layer.padEnd(12)} : ${score}%`);
+  }
+
+  const fixes = recommendFixes(item.layerScores);
+  if (fixes.length > 0) {
+    console.log("  → Recommended fixes:");
+    fixes.forEach((f) => console.log(`      ${f}`));
+  }
+
+  console.log("  → Raw matches:");
+  item.rawMatches.forEach((m) => {
+    console.log(`      [${m.layer}] ${m.match}`);
   });
 });

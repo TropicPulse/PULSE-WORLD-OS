@@ -190,7 +190,7 @@ export function prewarmBinaryLoopScanner(dualBand = null, { trace = false } = {}
 export function createBinaryLoopScanner({ trace = false } = {}) {
   // -------------------------------------------------------------------------
   // ARTERY — loop load/pressure metrics (window-safe)
-// -------------------------------------------------------------------------
+  // -------------------------------------------------------------------------
   const artery = {
     loops: 0,
     lastMode: null,
@@ -255,7 +255,7 @@ export function createBinaryLoopScanner({ trace = false } = {}) {
 
   // -------------------------------------------------------------------------
   // CORE: BINARY → NUMBER (DETERMINISTIC)
-// -------------------------------------------------------------------------
+  // -------------------------------------------------------------------------
   function bitsToNumber(bits) {
     let n = 0;
     for (let i = 0; i < bits.length; i++) {
@@ -278,6 +278,16 @@ export function createBinaryLoopScanner({ trace = false } = {}) {
     return offset;
   }
 
+  function _windowBucket(index, max) {
+    if (max <= 0) return "none";
+    const r = index / max;
+    if (r < 0.15) return "head";
+    if (r < 0.35) return "front";
+    if (r < 0.65) return "center";
+    if (r < 0.85) return "back";
+    return "tail";
+  }
+
   // ========================================================================
   // MODE 1 — STANDARD LOOP INDEX (FAST, RESPONSIVE, DUAL-BAND AWARE)
   // ========================================================================
@@ -285,65 +295,103 @@ export function createBinaryLoopScanner({ trace = false } = {}) {
     if (!isPureBinary(bits)) {
       throw new Error("[BinaryLoopScanner‑16] non-binary bits passed to nextIndex");
     }
+    if (!Number.isFinite(max) || max <= 0) {
+      throw new Error("[BinaryLoopScanner‑16] invalid max passed to nextIndex");
+    }
 
     const base = bitsToNumber(bits);
-    const bandOffset = dualBandOffset(max, presence, harmonicBias);
+    const raw = base % max;
 
-    const idx = Math.abs(base + Math.floor(spinPhase) + bandOffset) % max;
+    const spin = ((raw + (spinPhase | 0)) % max + max) % max;
+    const offset = dualBandOffset(max, presence, harmonicBias);
+
+    const index = ((spin + offset) % max + max) % max;
 
     _updateArtery({
       mode: "standard",
       bitsLength: bits.length,
-      index: idx
+      index
     });
 
     if (trace) {
       // eslint-disable-next-line no-console
-      console.log("[LoopScanner‑16] STANDARD:", { idx, presence, harmonicBias });
+      console.log("[BinaryLoopScanner‑16] STANDARD", {
+        base,
+        raw,
+        spin,
+        offset,
+        index,
+        windowBucket: _windowBucket(index, max)
+      });
     }
-    return idx;
+
+    return index;
   }
 
   // ========================================================================
-  // MODE 2 — DEEP LOOP INDEX (SLOW, STABLE, MRI-LIKE)
-  // ========================================================================
+  // MODE 2 — DEEP LOOP INDEX (SLOW, MRI-LIKE, DEPTH-WEIGHTED)
+// ========================================================================
   function nextIndexDeep(bits, max, spinPhase = 0, presence = 0, harmonicBias = 0) {
     if (!isPureBinary(bits)) {
       throw new Error("[BinaryLoopScanner‑16] non-binary bits passed to nextIndexDeep");
     }
+    if (!Number.isFinite(max) || max <= 0) {
+      throw new Error("[BinaryLoopScanner‑16] invalid max passed to nextIndexDeep");
+    }
 
-    const base = Math.floor(bitsToNumber(bits) * 0.25); // slow down movement
-    const bandOffset = dualBandOffset(max, presence, harmonicBias);
+    const base = bitsToNumber(bits);
+    const folded = (base ^ (base >>> 1)) >>> 0; // Gray-code style fold
+    const raw = folded % max;
 
-    const idx = Math.abs(base + Math.floor(spinPhase) + bandOffset) % max;
+    const depthBias = Math.floor((bits.length % 17) * 0.07 * max); // stable, bit-length based
+    const spin = ((raw + depthBias + (spinPhase | 0)) % max + max) % max;
+    const offset = dualBandOffset(max, presence * 0.7, harmonicBias * 1.1);
+
+    const index = ((spin + offset) % max + max) % max;
 
     _updateArtery({
       mode: "deep",
       bitsLength: bits.length,
-      index: idx
+      index
     });
 
     if (trace) {
       // eslint-disable-next-line no-console
-      console.log("[LoopScanner‑16] DEEP:", { idx, presence, harmonicBias });
+      console.log("[BinaryLoopScanner‑16] DEEP", {
+        base,
+        folded,
+        raw,
+        depthBias,
+        spin,
+        offset,
+        index,
+        windowBucket: _windowBucket(index, max)
+      });
     }
-    return idx;
+
+    return index;
   }
 
   // ========================================================================
-  // MODE 3 — MULTI LOOP INDEX (3-PHASE MULTI-SPIN, DUAL-BAND AWARE)
-  // ========================================================================
+  // MODE 3 — MULTI LOOP (3-PHASE MULTI-SPIN INDICES)
+// ========================================================================
   function nextIndexMulti(bits, max, presence = 0, harmonicBias = 0) {
     if (!isPureBinary(bits)) {
       throw new Error("[BinaryLoopScanner‑16] non-binary bits passed to nextIndexMulti");
     }
+    if (!Number.isFinite(max) || max <= 0) {
+      throw new Error("[BinaryLoopScanner‑16] invalid max passed to nextIndexMulti");
+    }
 
     const base = bitsToNumber(bits);
-    const bandOffset = dualBandOffset(max, presence, harmonicBias);
+    const raw = base % max;
 
-    const indices = [0, 1, 2].map(i => {
-      const phase = (Math.PI * 2 * i) / 3;
-      const idx = Math.abs(base + Math.floor(phase * 10) + bandOffset) % max;
+    const offset = dualBandOffset(max, presence, harmonicBias);
+    const phaseStep = Math.max(1, Math.floor(max / 3));
+
+    const indices = [0, 1, 2].map((i) => {
+      const phase = i * phaseStep;
+      const idx = ((raw + phase + offset) % max + max) % max;
       return idx;
     });
 
@@ -355,89 +403,116 @@ export function createBinaryLoopScanner({ trace = false } = {}) {
 
     if (trace) {
       // eslint-disable-next-line no-console
-      console.log("[LoopScanner‑16] MULTI:", { indices, presence, harmonicBias });
+      console.log("[BinaryLoopScanner‑16] MULTI", {
+        base,
+        raw,
+        offset,
+        indices,
+        windows: indices.map((i) => _windowBucket(i, max))
+      });
     }
+
     return indices;
   }
 
   // ========================================================================
-  // MODE 4 — EDGE LOOP INDEX (OUTLINE EMPHASIS, DUAL-BAND AWARE)
-  // ========================================================================
+  // MODE 4 — EDGE LOOP (OUTLINE-EMPHASIS, EDGE-BIASED)
+// ========================================================================
   function nextIndexEdge(bits, max, spinPhase = 0, presence = 0, harmonicBias = 0) {
     if (!isPureBinary(bits)) {
       throw new Error("[BinaryLoopScanner‑16] non-binary bits passed to nextIndexEdge");
     }
+    if (!Number.isFinite(max) || max <= 0) {
+      throw new Error("[BinaryLoopScanner‑16] invalid max passed to nextIndexEdge");
+    }
 
     const base = bitsToNumber(bits);
-    const bandOffset = dualBandOffset(max, presence, harmonicBias);
+    const raw = base % max;
 
-    // Even → left/top edge, Odd → right/bottom edge
-    const edgeBias = (base % 2 === 0) ? 0 : max - 1;
+    const edgePull = clamp((presence * 0.5 + harmonicBias * 0.5), 0, 1);
+    const towardHead = (base & 1) === 0; // stable parity-based choice
 
-    const idx = Math.abs(edgeBias + Math.floor(spinPhase) + bandOffset) % max;
+    const edgeOffset = Math.floor(edgePull * (max * 0.25));
+    const edgeBase = towardHead ? (raw - edgeOffset) : (raw + edgeOffset);
+
+    const spin = ((edgeBase + (spinPhase | 0)) % max + max) % max;
+    const offset = dualBandOffset(max, presence * 0.8, harmonicBias * 0.8);
+
+    const index = ((spin + offset) % max + max) % max;
 
     _updateArtery({
       mode: "edge",
       bitsLength: bits.length,
-      index: idx
+      index
     });
 
     if (trace) {
       // eslint-disable-next-line no-console
-      console.log("[LoopScanner‑16] EDGE:", { idx, presence, harmonicBias });
+      console.log("[BinaryLoopScanner‑16] EDGE", {
+        base,
+        raw,
+        edgePull,
+        towardHead,
+        edgeOffset,
+        edgeBase,
+        spin,
+        offset,
+        index,
+        windowBucket: _windowBucket(index, max)
+      });
     }
-    return idx;
+
+    return index;
   }
 
   // ========================================================================
-  // MODE 5 — FLAT LOOP INDEX (LOW-VARIANCE, CALMING, DUAL-BAND AWARE)
-  // ========================================================================
+  // MODE 5 — FLAT LOOP (LOW-VARIANCE, CENTER-BIASED)
+// ========================================================================
   function nextIndexFlat(bits, max, presence = 0, harmonicBias = 0) {
     if (!isPureBinary(bits)) {
       throw new Error("[BinaryLoopScanner‑16] non-binary bits passed to nextIndexFlat");
     }
+    if (!Number.isFinite(max) || max <= 0) {
+      throw new Error("[BinaryLoopScanner‑16] invalid max passed to nextIndexFlat");
+    }
 
     const base = bitsToNumber(bits);
-    const bandOffset = dualBandOffset(max, presence, harmonicBias);
+    const raw = base % max;
 
-    // Flatten movement: only 10% of normal range, then dual-band offset
-    const flatBase = Math.floor((base % max) * 0.1);
-    const idx = (flatBase + bandOffset) % max;
+    const center = Math.floor(max / 2);
+    const spread = Math.max(1, Math.floor(max * 0.15));
+
+    const calmFactor = 1 - clamp((presence * 0.4 + harmonicBias * 0.6), 0, 1);
+    const localOffset = Math.floor(((raw / max) - 0.5) * spread * calmFactor * 2);
+
+    const index = ((center + localOffset) % max + max) % max;
 
     _updateArtery({
       mode: "flat",
       bitsLength: bits.length,
-      index: idx
+      index
     });
 
     if (trace) {
       // eslint-disable-next-line no-console
-      console.log("[LoopScanner‑16] FLAT:", { idx, presence, harmonicBias });
+      console.log("[BinaryLoopScanner‑16] FLAT", {
+        base,
+        raw,
+        center,
+        spread,
+        calmFactor,
+        localOffset,
+        index,
+        windowBucket: _windowBucket(index, max)
+      });
     }
-    return idx;
+
+    return index;
   }
 
   // ========================================================================
-  // ADVANTAGE VIEW — MULTI-MODE SNAPSHOT + SYMBOLIC HINTS (v16-IMMORTAL)
+  // ADVANTAGE VIEW — ALL MODES + SYMBOLIC HINTS
   // ========================================================================
-  // args:
-  //   bits[]         → required
-  //   max            → required
-  //   spinPhase      → optional
-  //   presence       → optional (0–1)
-  //   harmonicBias   → optional (0–1)
-  //
-  // returns:
-  //   {
-  //     indices: { standard, deep, multi[3], edge, flat },
-  //     hints: {
-  //       scanAggression: 0–1,
-  //       calmness: 0–1,
-  //       edgeFocus: 0–1,
-  //       dualBandInfluence: 0–1
-  //     },
-  //     artery: { ...snapshot }
-  //   }
   function nextAdvantageView({
     bits,
     max,
@@ -449,7 +524,7 @@ export function createBinaryLoopScanner({ trace = false } = {}) {
       throw new Error("[BinaryLoopScanner‑16] non-binary bits passed to nextAdvantageView");
     }
     if (!Number.isFinite(max) || max <= 0) {
-      throw new Error("[BinaryLoopScanner‑16] nextAdvantageView requires positive max");
+      throw new Error("[BinaryLoopScanner‑16] invalid max passed to nextAdvantageView");
     }
 
     const standard = nextIndex(bits, max, spinPhase, presence, harmonicBias);
@@ -458,71 +533,85 @@ export function createBinaryLoopScanner({ trace = false } = {}) {
     const edge = nextIndexEdge(bits, max, spinPhase, presence, harmonicBias);
     const flat = nextIndexFlat(bits, max, presence, harmonicBias);
 
-    // symbolic hints only, no behavior change
+    const coverageSpan = (() => {
+      const all = [standard, deep, edge, flat, ...multi];
+      const min = Math.min(...all);
+      const maxIdx = Math.max(...all);
+      return max > 0 ? (maxIdx - min) / max : 0;
+    })();
+
+    const edgeFocus = (() => {
+      const nearHead = edge < max * 0.15;
+      const nearTail = edge > max * 0.85;
+      return nearHead || nearTail ? 1 : 0;
+    })();
+
+    const calmness = (() => {
+      const center = Math.floor(max / 2);
+      const dist = Math.abs(flat - center) / (max || 1);
+      return clamp(1 - dist * 2, 0, 1);
+    })();
+
+    const multiSpread = (() => {
+      if (!multi || multi.length === 0) return 0;
+      const min = Math.min(...multi);
+      const maxIdx = Math.max(...multi);
+      return max > 0 ? (maxIdx - min) / max : 0;
+    })();
+
     const dualBandInfluence = clamp(presence * 0.6 + harmonicBias * 0.4, 0, 1);
-    const scanAggression = clamp(1 - dualBandInfluence * 0.3, 0, 1);
-    const calmness = clamp(dualBandInfluence * 0.5 + 0.2, 0, 1);
-    const edgeFocus = clamp((edge === 0 || edge === max - 1) ? 1 : 0.4, 0, 1);
 
-    const snapshot = artery.snapshot();
-
-    return emitLoopPacket("advantage-view", {
-      indices: {
+    return Object.freeze({
+      meta: BinaryLoopScannerMeta,
+      modes: {
         standard,
         deep,
         multi,
         edge,
         flat
       },
+      windows: {
+        standard: _windowBucket(standard, max),
+        deep: _windowBucket(deep, max),
+        edge: _windowBucket(edge, max),
+        flat: _windowBucket(flat, max),
+        multi: multi.map((i) => _windowBucket(i, max))
+      },
       hints: {
-        scanAggression,
-        calmness,
+        coverageSpan,
         edgeFocus,
+        calmness,
+        multiSpread,
         dualBandInfluence
       },
-      artery: snapshot
-    });
-  }
-
-  // ========================================================================
-  // SNAPSHOT MEMBRANE — ARTERY VIEW
-  // ========================================================================
-  function snapshotMembrane() {
-    return emitLoopPacket("snapshot", {
       artery: artery.snapshot()
     });
   }
 
   // ========================================================================
-  // ORGAN EXPORT
+  // EXPORT
   // ========================================================================
   return {
     meta: BinaryLoopScannerMeta,
 
+    // core modes
     nextIndex,
     nextIndexDeep,
     nextIndexMulti,
     nextIndexEdge,
     nextIndexFlat,
 
+    // advantage surface
     nextAdvantageView,
-    snapshotMembrane,
 
-    getArterySnapshot: () => artery.snapshot()
+    // artery snapshot
+    snapshotArtery: () => artery.snapshot()
   };
 }
 
-// ---------------------------------------------------------------------------
+// ============================================================================
 // UTIL
-// ---------------------------------------------------------------------------
+// ============================================================================
 function clamp(v, min, max) {
-  return Math.max(min, Math.min(max, v));
-}
-
-if (typeof module !== "undefined") {
-  module.exports = {
-    BinaryLoopScannerMeta,
-    prewarmBinaryLoopScanner,
-    createBinaryLoopScanner
-  };
+  return v < min ? min : v > max ? max : v;
 }
