@@ -9,7 +9,7 @@
                  minimum-scale=1,
                  user-scalable=no">
 
-  <title>Pulse Motion Engine Block — v16-IMMORTAL</title>
+  <title>PulseEngineBlock — v16 IMMORTAL</title>
 
   <!-- ============================================================================
        PULSE UI SKIN ORGAN (BASE)
@@ -31,33 +31,34 @@
   <!-- ============================================================================
        HTML LAYER (SKELETON)
        ----------------------------------------------------------------------------
-       MotionPage-v16 Skeleton
+       PulseEngineBlock-v16 Skeleton
        --------------------------------
        This wrapper reconstructs into:
-         • ForwardMotion
-         • BackwardMotion
-         • Any future motion lane
+         • ForwardMotion-v16
+         • BackwardMotion-v16
+         • Any future motion lane (lateral, rotational, etc.)
        ============================================================================ -->
-  <div id="motion-wrapper"></div>
+  <div id="pulse-engine-block"></div>
 
   <!-- ============================================================================
        JS LAYER (CORTEX)
        ============================================================================ -->
 <script type="module">
 /* ============================================================================
-   AI_EXPERIENCE_META — MotionPage-v16
+   AI_EXPERIENCE_META — PulseEngineBlock-v16
    ----------------------------------------------------------------------------
-   This page is a universal motion shell. It does NOT contain motion logic.
+   This page is the ENGINE BLOCK for the entire motion subsystem.
+   It does NOT contain motion logic.
    It loads:
      • PulseMotionEngine-v16 (unified engine)
-     • ForwardMotion-v16.js OR BackwardMotion-v16.js (lane wrapper)
+     • A lane wrapper (ForwardMotion-v16.js or BackwardMotion-v16.js)
      • UI organism organs (Memory, Code, Brain, Router, Impulse, Binary)
    ============================================================================ */
 const AI_EXPERIENCE_META = {
-  identity: "MotionPage",
+  identity: "PulseEngineBlock",
   version: "v16-IMMORTAL",
-  layer: "motion_shell",
-  role: "motion_page_bootstrap",
+  layer: "engine_block",
+  role: "motion_engine_bootstrap",
   evo: {
     unifiedMotion: true,
     laneAgnostic: true,
@@ -70,6 +71,32 @@ const AI_EXPERIENCE_META = {
     triHeartAware: true
   }
 };
+
+/* ============================================================================
+   PAGE_INDEX — PulseEngineBlock-v16
+   ----------------------------------------------------------------------------
+   PURPOSE:
+     The PulseEngineBlock is the root membrane for all motion lanes.
+     It boots the UI organism, loads the unified motion engine, and exposes
+     lane-specific wrappers to the global window.
+
+   RESPONSIBILITIES:
+     • Load UI organs in correct v16 IMMORTAL order
+     • Load lane wrapper (ForwardMotion-v16 or BackwardMotion-v16)
+     • Prewarm the membrane
+     • Handle trust boundary (INSIDE / OUTSIDE)
+     • Expose Motion API to window.PulseEngineBlock
+
+   FORBIDDEN:
+     • No compute logic
+     • No pattern expansion/compression
+     • No shifter usage
+     • No artery mutation
+     • No direct engine manipulation
+
+   NOTES:
+     This file must remain thin, deterministic, and drift-proof.
+   ============================================================================ */
 
 /* ============================================================================
    0. BOOT MEMBRANE — MUST BE FIRST
@@ -103,7 +130,7 @@ import { createPulseEvolutionaryBinary } from "../../PULSE-UI/PulseEvolutionaryB
      • "./ForwardMotion-v16.js"
      • "./BackwardMotion-v16.js"
    ============================================================================ */
-import * as Motion from "./BackwardMotion-v16.js";
+import { createPulseCompass } from "./PulseCompass-v16.js";
 
 /* ============================================================================
    5. MOCK CNS (replace with real CNS when wired)
@@ -120,7 +147,7 @@ const CNS = {
 const Evolution = {
   getPageLineage() {
     return {
-      lineage: "v16-motion",
+      lineage: "PulseEngineBlock-v16",
       stable: true,
       page: window.location.pathname
     };
@@ -134,7 +161,7 @@ const Evolution = {
    7. INSTANTIATE UI ORGANS — v16 IMMORTAL ORDER
    ============================================================================ */
 const MemoryOrgan = createPulseEvolutionaryMemory({
-  routeId: window.location.pathname || "MotionPage"
+  routeId: window.location.pathname || "PulseEngineBlock"
 });
 
 const CodeOrgan = createPulseEvolutionaryCode({
@@ -170,19 +197,25 @@ const BinaryOrgan = createPulseEvolutionaryBinary({
   MemoryOrgan
 });
 
+const Motion = createPulseCompass({
+  MemoryOrgan,
+  trace: false
+});
+
+
 /* ============================================================================
    8. PREWARM — v16 IMMORTAL
    ============================================================================ */
-async function prewarmMotionMembrane() {
+async function prewarmEngineBlock() {
   try {
     await MemoryOrgan.prewarm?.();
     await BinaryOrgan.prewarm?.();
     await BrainOrgan.prewarm?.();
     await Motion.prewarm?.();
 
-    console.log("[PREWARM] Motion membrane prewarmed.");
+    console.log("[PREWARM] PulseEngineBlock membrane prewarmed.");
   } catch (err) {
-    console.warn("[PREWARM] Motion membrane prewarm failed:", err);
+    console.warn("[PREWARM] PulseEngineBlock prewarm failed:", err);
   }
 }
 
@@ -192,7 +225,7 @@ async function prewarmMotionMembrane() {
 async function runMotionTick() {
   const res = Motion.tick?.();
   if (res?.metrics) {
-    console.log("[MOTION-TICK]", res.metrics);
+    console.log("[ENGINEBLOCK-TICK]", res.metrics);
   }
 }
 
@@ -200,9 +233,9 @@ async function runMotionTick() {
    10. BOOT SEQUENCE — TRUSTED / UNTRUSTED
    ============================================================================ */
 (async () => {
-  console.log("[BOOT] MotionPage starting…");
+  console.log("[BOOT] PulseEngineBlock starting…");
 
-  await prewarmMotionMembrane();
+  await prewarmEngineBlock();
 
   const trust =
     typeof PulseSkinReflex.checkTrust === "function"
@@ -221,7 +254,7 @@ async function runMotionTick() {
       }
     });
 
-    window.MotionPage = {
+    window.PulseEngineBlock = {
       evolve: (payload) =>
         CodeOrgan.evolve({ type: "portal:update", payload }),
       submit: Motion.submit,
@@ -245,13 +278,13 @@ async function runMotionTick() {
       type: "page:inside",
       payload: {
         mode: "inside",
-        title: "MotionPage",
+        title: "PulseEngineBlock",
         content: "Trusted session restored."
       }
     });
   }
 
-  window.MotionPage = {
+  window.PulseEngineBlock = {
     evolve: (payload) =>
       CodeOrgan.evolve({ type: "page:update", payload }),
     route: (route, opts) => RouterOrgan.go(route, opts),
@@ -267,7 +300,7 @@ async function runMotionTick() {
     icons: PulseIcons
   };
 
-  console.log("[BOOT] MotionPage ready in INSIDE mode.");
+  console.log("[BOOT] PulseEngineBlock ready in INSIDE mode.");
 })();
 </script>
 
