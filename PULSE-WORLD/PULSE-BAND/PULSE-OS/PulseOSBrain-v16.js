@@ -206,7 +206,7 @@ import { PulseOrganismMap } from "../PULSE-X/PulseWorldOrganismMap-v21.js";
 import { PulseOSEvolution } from "./PulseOSBrainEvolution.js";
 
 import checkBand from "../PULSE-X/PULSE-WORLD-BAND.js";
-import checkIdentity from "../PULSE-X/PulseWorldIdentity-v16.js";
+import checkIdentity from "../PULSE-X/PulseWorldIdentity-v20.js";
 import checkRouterMemory from "../PULSE-PROXY/PulseProxyMemoryRouter-v16.js";
 
 // ============================================================================

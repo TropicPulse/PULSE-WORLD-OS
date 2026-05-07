@@ -1,36 +1,37 @@
 // ============================================================================
-// FILE: PULSE-proxy/CheckIdentity-v16-Immortal-Dualband-Presence-ADVANTAGE.js
-// PULSE IDENTITY ENGINE — v16-Immortal-Dualband-Presence-ADVANTAGE
-// “THE SELF++++ • BINARY-FIRST IDENTITY ENGINE • DUALBAND PRESENCE + ADVANTAGE CORE”
+// FILE: PULSE-proxy/PulseWorldIdentity-v20.js
+// PULSE IDENTITY ENGINE — v20-Immortal-WorldPresence-ADVANTAGE
+// “THE SELF++++WORLD • BINARY-FIRST IDENTITY ENGINE • DUALBAND PRESENCE + WORLD + ADVANTAGE CORE”
 // ============================================================================
 //
-// ROLE (v16-Immortal-Dualband-Presence-ADVANTAGE):
-//   • Canonical identity + presence + advantage validator for a binary-first organism.
-//   • Dualband identity engine (Symbolic A → Binary B → Symbolic A) with compression metadata.
-//   • Backbone of PulseBand / PulseNet / CheckBand / RouterMemory identity field.
-//   • Preserves lineage, drift markers, binary signatures, device trust, and advantage field.
+// ROLE (v20-Immortal-WorldPresence-ADVANTAGE):
+//   • Canonical identity + presence + world + advantage validator for a binary-first organism.
+//   • Dualband identity engine (Symbolic A → Binary B → Symbolic A) with compression + world metadata.
+//   • Backbone of PulseBand / PulseNet / CheckBand / RouterMemory / PulseWorldSocialGraph identity field.
+//   • Preserves lineage, drift markers, binary signatures, device trust, presence field, world field, advantage field.
 //   • Presence-aware: Bluetooth / device / band presence surfaces, offline-first survival.
-//   • Advantage-aware: local advantage hints, cascade level, time-saved descriptors.
-//   • Deterministic, replayable, lineage-safe, drift-aware, cache/chunk/prewarm-aware.
-//   • Returns authoritative v16 identity + presence + advantage snapshot.
+//   • World-aware: worldBand, social profile, trust/reputation, skill tiers, job/earn readiness.
+//   • Advantage-aware: unified advantage hints, cascade level, time-saved descriptors, world-advantage overlays.
+//   • Deterministic, replayable, lineage-safe, drift-aware, cache/chunk/prewarm-aware, artery-aware.
+//   • Returns authoritative v20 identity + presence + world + advantage snapshot.
 //
-// CONTRACT (v16-Immortal-Dualband-Presence-ADVANTAGE):
+// CONTRACT (v20-Immortal-WorldPresence-ADVANTAGE):
 //   • Fail-open: invalid identity → null (frontend + PulseBand handle fallback).
 //   • Never mutate original input; always clone/normalize.
-//   • Always return structurally complete v16 identity snapshot when valid.
+//   • Always return structurally complete v20 identity snapshot when valid.
 //   • Never trust external identity providers blindly; token is treated as hint only.
 //   • No astral layers, no legacy PNS, no translator cores.
-//   • Binary-first nervous system compliance; dualband compression + unified advantage field.
-//   • No network fetch; no timers; no randomness; no external mutation.
+//   • Binary-first nervous system compliance; dualband compression + unified world+advantage field.
+//   • No network fetch; no timers beyond Date.now(); no randomness; no external mutation.
 // ============================================================================
 
 /*
 AI_EXPERIENCE_META = {
   identity: "CheckIdentity",
-  version: "v16-Immortal-Dualband-Presence-ADVANTAGE",
+  version: "v20-Immortal-WorldPresence-ADVANTAGE",
   layer: "backend_identity_engine",
-  role: "binary_first_identity_healer",
-  lineage: "PulseProxy-v16-Immortal",
+  role: "binary_first_identity_healer_world",
+  lineage: "PulseProxy-v16-Immortal → v18-Bridge → v20-WorldPresence",
 
   evo: {
     // Core identity engine
@@ -46,7 +47,7 @@ AI_EXPERIENCE_META = {
     replaySafe: true,
     zeroMutationOfInput: true,
     zeroRandomness: true,
-    zeroTimers: true,
+    zeroTimers: false, // Date.now() for timestamps only
     zeroNetworkFetch: true,
     zeroExternalMutation: true,
     zeroDynamicImports: true,
@@ -54,12 +55,20 @@ AI_EXPERIENCE_META = {
     zeroAI: true,
     zeroAutonomy: true,
 
-    // Presence / mesh / band
+    // Presence / mesh / band / world
     presenceAware: true,
     bluetoothPresenceAware: true,
     bandPresenceAware: true,
     identityPresenceField: true,
     offlineSurvivalReady: true,
+    worldPresenceAware: true,
+    worldBandAware: true,
+    socialGraphAware: true,
+    trustAware: true,
+    reputationAware: true,
+    skillTierAware: true,
+    jobReadinessAware: true,
+    earnReadinessAware: true,
 
     // Advantage / topology / chunking
     unifiedAdvantageField: true,
@@ -69,6 +78,7 @@ AI_EXPERIENCE_META = {
     chunkAware: true,
     prewarmAware: true,
     pulseTopologyAware: true,
+    arteryAware: true,
 
     // Context awareness
     deviceTrustAware: true,
@@ -76,7 +86,7 @@ AI_EXPERIENCE_META = {
     localAware: true,
     internetAware: true,
     safeRouteFree: true,
-    worldLensAware: false
+    worldLensAware: true
   },
 
   contract: {
@@ -86,7 +96,10 @@ AI_EXPERIENCE_META = {
       "CheckBand",
       "CheckRouterMemory",
       "CheckIdentity",
-      "PulseOSBrain"
+      "PulseOSBrain",
+      "PulseWorldSocialGraph",
+      "PulseProofBridge",
+      "PulseChunker"
     ],
     never: [
       "legacyIdentity",
@@ -99,11 +112,11 @@ AI_EXPERIENCE_META = {
 }
 */
 
-export const PulseOSCheckIdentityMeta = Object.freeze({
+export const PulseOSCheckIdentityMetaV20 = Object.freeze({
   layer: "PulseProxyIdentityEngine",
-  role: "BINARY_FIRST_IDENTITY_ORGAN",
-  version: "v16-Immortal-Dualband-Presence-ADVANTAGE",
-  identity: "CheckIdentity-v16-Immortal-Dualband-Presence-ADVANTAGE",
+  role: "BINARY_FIRST_IDENTITY_ORGAN_WORLD",
+  version: "v20-Immortal-WorldPresence-ADVANTAGE",
+  identity: "CheckIdentity-v20-Immortal-WorldPresence-ADVANTAGE",
 
   guarantees: Object.freeze({
     deterministic: true,
@@ -125,7 +138,7 @@ export const PulseOSCheckIdentityMeta = Object.freeze({
     compressionAware: true,
     offlineSurvivalReady: true,
 
-    // Advantage / presence field
+    // Presence + world + advantage field
     unifiedAdvantageField: true,
     advantageCascadeAware: true,
     pulseEfficiencyAware: true,
@@ -133,15 +146,24 @@ export const PulseOSCheckIdentityMeta = Object.freeze({
     bluetoothPresenceAware: true,
     bandPresenceAware: true,
     identityPresenceField: true,
+    worldPresenceAware: true,
+    worldBandAware: true,
+    socialGraphAware: true,
+    trustAware: true,
+    reputationAware: true,
+    skillTierAware: true,
+    jobReadinessAware: true,
+    earnReadinessAware: true,
     cacheWarmupAware: true,
     chunkAware: true,
     prewarmAware: true,
     pulseTopologyAware: true,
+    arteryAware: true,
 
     // Execution prohibitions (binary core)
     zeroMutationOfInput: true,
     zeroRandomness: true,
-    zeroTimers: true,
+    zeroTimers: false, // timestamps only
     zeroNetworkFetch: true,
     zeroExternalMutation: true,
     zeroDynamicImports: true,
@@ -152,7 +174,7 @@ export const PulseOSCheckIdentityMeta = Object.freeze({
     // Environment
     localAware: true,
     internetAware: true,
-    worldLensAware: false
+    worldLensAware: true
   }),
 
   contract: Object.freeze({
@@ -162,16 +184,24 @@ export const PulseOSCheckIdentityMeta = Object.freeze({
       "DualBandContext",
       "DeviceTrustContext",
       "PresenceContext",
+      "WorldPresenceContext",
       "AdvantageContext",
-      "TopologyContext"
+      "TopologyContext",
+      "SocialGraphContext",
+      "EarnContext",
+      "JobContext",
+      "ArteryContext"
     ],
     output: [
       "AuthoritativeIdentitySnapshot",
       "IdentityDiagnostics",
       "IdentitySignatures",
       "IdentityPresenceSnapshot",
+      "IdentityWorldSnapshot",
       "IdentityAdvantageSnapshot",
       "IdentityTopologySnapshot",
+      "IdentitySocialSnapshot",
+      "IdentityArterySnapshot",
       "IdentityHealingState"
     ]
   }),
@@ -190,7 +220,8 @@ export const PulseOSCheckIdentityMeta = Object.freeze({
       "CheckIdentity-v12.0-Evo",
       "CheckIdentity-v12.1-Evo",
       "CheckIdentity-v12.2-Evo",
-      "CheckIdentity-v12.3-Presence-Evo-BINARY-MAX"
+      "CheckIdentity-v12.3-Presence-Evo-BINARY-MAX",
+      "CheckIdentity-v16-Immortal-Dualband-Presence-ADVANTAGE"
     ]
   }),
 
@@ -204,9 +235,9 @@ export const PulseOSCheckIdentityMeta = Object.freeze({
     pattern: "A-B-A",
     baseline: "symbolic identity → binary compression → symbolic return",
     adaptive:
-      "binary-first identity + presence/advantage/topology overlays + chunk/prewarm-aware descriptors",
+      "binary-first identity + presence/world/advantage/topology/social overlays + chunk/prewarm-aware descriptors",
     return:
-      "deterministic identity + presence + advantage + topology snapshot + signatures"
+      "deterministic identity + presence + world + advantage + topology + social + artery snapshot + signatures"
   })
 });
 
@@ -214,10 +245,10 @@ export const PulseOSCheckIdentityMeta = Object.freeze({
 // LAYER CONSTANTS + DIAGNOSTICS
 // ============================================================================
 
-const LAYER_ID   = "IDENTITY-LAYER-BINARY";
-const LAYER_NAME = "THE SELF++++";
-const LAYER_ROLE = "BINARY-FIRST SENSE-OF-SELF ENGINE";
-const LAYER_VER  = "16-Immortal-Dualband-Presence-ADVANTAGE";
+const LAYER_ID   = "IDENTITY-LAYER-BINARY-WORLD";
+const LAYER_NAME = "THE SELF++++WORLD";
+const LAYER_ROLE = "BINARY-FIRST SENSE-OF-SELF + WORLD ENGINE";
+const LAYER_VER  = "20-Immortal-WorldPresence-ADVANTAGE";
 
 const IDENTITY_DIAGNOSTICS_ENABLED =
   process.env.PULSE_IDENTITY_DIAGNOSTICS === "true" ||
@@ -257,7 +288,7 @@ function resolveMode(event) {
 }
 
 // ============================================================================
-// BINARY SIGNATURES — v16-Immortal-Dualband-Presence-ADVANTAGE
+// SIGNATURES — v20-Immortal-WorldPresence-ADVANTAGE
 // ============================================================================
 
 function computeBinarySignature(identity) {
@@ -267,7 +298,10 @@ function computeBinarySignature(identity) {
       lineage: identity.lineage,
       drift: identity.drift,
       presenceBand: identity?.presence?.band || "unknown",
-      advantageScore: identity?.advantage?.advantageScore ?? null
+      worldBand: identity?.world?.worldBand || "unknown",
+      advantageScore: identity?.advantage?.advantageScore ?? null,
+      trustScore: identity?.world?.trustScore ?? null,
+      reputationScore: identity?.world?.reputationScore ?? null
     });
 
     let hash = 0;
@@ -275,9 +309,9 @@ function computeBinarySignature(identity) {
       hash = (hash * 31 + seed.charCodeAt(i)) >>> 0;
     }
 
-    return "BIN-" + hash.toString(16).padStart(8, "0");
+    return "BIN20-" + hash.toString(16).padStart(8, "0");
   } catch {
-    return "BIN-00000000";
+    return "BIN20-00000000";
   }
 }
 
@@ -289,7 +323,8 @@ function computePresenceSignature(identity, presence) {
       bluetooth: !!presence?.bluetooth,
       band: presence?.band || "unknown",
       route: presence?.route || "unknown",
-      presenceLevel: presence?.presenceLevel || "Unknown"
+      presenceLevel: presence?.presenceLevel || "Unknown",
+      lastSeenMs: presence?.lastSeenMs || 0
     });
 
     let hash = 0;
@@ -297,9 +332,33 @@ function computePresenceSignature(identity, presence) {
       hash = (hash * 31 + seed.charCodeAt(i)) >>> 0;
     }
 
-    return "PRES-" + hash.toString(16).padStart(8, "0");
+    return "PRES20-" + hash.toString(16).padStart(8, "0");
   } catch {
-    return "PRES-00000000";
+    return "PRES20-00000000";
+  }
+}
+
+function computeWorldSignature(world) {
+  try {
+    const seed = JSON.stringify({
+      worldBand: world?.worldBand || "presence",
+      systemAge: world?.systemAge || 0,
+      skillTier: world?.skillTier || null,
+      mentorTier: world?.mentorTier || null,
+      trustScore: world?.trustScore || 0,
+      reputationScore: world?.reputationScore || 0,
+      followers: world?.followersCount || 0,
+      following: world?.followingCount || 0
+    });
+
+    let hash = 0;
+    for (let i = 0; i < seed.length; i++) {
+      hash = (hash * 31 + seed.charCodeAt(i)) >>> 0;
+    }
+
+    return "WORLD20-" + hash.toString(16).padStart(8, "0");
+  } catch {
+    return "WORLD20-00000000";
   }
 }
 
@@ -309,7 +368,9 @@ function computeAdvantageSignature(advantage) {
       score: advantage?.advantageScore ?? null,
       band: advantage?.advantageBand || "neutral",
       cascadeLevel: advantage?.cascadeLevel ?? 0,
-      field: advantage?.field || "identity"
+      field: advantage?.field || "identity",
+      worldAdvantageBand: advantage?.worldAdvantageBand || "neutral",
+      timeSavedMs: advantage?.timeSavedMs ?? null
     });
 
     let hash = 0;
@@ -317,9 +378,9 @@ function computeAdvantageSignature(advantage) {
       hash = (hash * 31 + seed.charCodeAt(i)) >>> 0;
     }
 
-    return "ADV-" + hash.toString(16).padStart(8, "0");
+    return "ADV20-" + hash.toString(16).padStart(8, "0");
   } catch {
-    return "ADV-00000000";
+    return "ADV20-00000000";
   }
 }
 
@@ -329,7 +390,8 @@ function computeTopologySignature(topology) {
       momHeart: topology?.momHeart?.identity || null,
       dadHeart: topology?.dadHeart?.identity || null,
       babyHeart: topology?.babyHeart?.identity || null,
-      bandSource: topology?.bandSource || "unknown"
+      bandSource: topology?.bandSource || "unknown",
+      fallbackRules: topology?.fallbackRules || null
     });
 
     let hash = 0;
@@ -337,9 +399,30 @@ function computeTopologySignature(topology) {
       hash = (hash * 31 + seed.charCodeAt(i)) >>> 0;
     }
 
-    return "TOPO-" + hash.toString(16).padStart(8, "0");
+    return "TOPO20-" + hash.toString(16).padStart(8, "0");
   } catch {
-    return "TOPO-00000000";
+    return "TOPO20-00000000";
+  }
+}
+
+function computeArterySignature(artery) {
+  try {
+    const seed = JSON.stringify({
+      throughputBucket: artery?.throughputBucket || "unknown",
+      pressureBucket: artery?.pressureBucket || "unknown",
+      budgetBucket: artery?.budgetBucket || "unknown",
+      reproductionHint: artery?.reproductionHint || "none",
+      earnReadiness: artery?.earnReadiness || "unknown"
+    });
+
+    let hash = 0;
+    for (let i = 0; i < seed.length; i++) {
+      hash = (hash * 31 + seed.charCodeAt(i)) >>> 0;
+    }
+
+    return "ARTERY20-" + hash.toString(16).padStart(8, "0");
+  } catch {
+    return "ARTERY20-00000000";
   }
 }
 
@@ -363,12 +446,15 @@ function safeNum(v, d = 0) {
   return typeof v === "number" && !isNaN(v) ? v : d;
 }
 
+function safeArr(v, d = []) {
+  return Array.isArray(v) ? v : d;
+}
+
 // ============================================================================
-// ADVANTAGE + TOPOLOGY HINTS — metadata-only, no network
+// ADVANTAGE + TOPOLOGY + WORLD HINTS — metadata-only, no network
 // ============================================================================
 
-// v16: optional local advantage hint (pure metadata, no network)
-function safeAdvantageHint(advantageContext = {}) {
+function safeAdvantageHint(advantageContext = {}, worldContext = {}) {
   try {
     const score = safeNum(
       advantageContext.advantageScore,
@@ -379,21 +465,30 @@ function safeAdvantageHint(advantageContext = {}) {
       advantageContext.band || "neutral"
     );
 
+    const worldAdvantageBand = safeStr(
+      worldContext.worldAdvantageBand,
+      worldContext.worldBand || "presence"
+    );
+
     return {
       advantageScore: score,
       advantageBand: band,
+      worldAdvantageBand,
       regionAdvantage: safeObj(advantageContext.regionAdvantage, {}),
       cascadeHints: safeObj(advantageContext.cascadeHints, {}),
       cascadeLevel: safeNum(advantageContext.cascadeLevel, 0),
+      timeSavedMs: safeNum(advantageContext.timeSavedMs, null),
       field: safeStr(advantageContext.field, "identity")
     };
   } catch {
     return {
       advantageScore: null,
       advantageBand: "neutral",
+      worldAdvantageBand: "presence",
       regionAdvantage: {},
       cascadeHints: {},
       cascadeLevel: 0,
+      timeSavedMs: null,
       field: "identity"
     };
   }
@@ -439,16 +534,113 @@ function safeTopologyHint(topologyContext = {}) {
   }
 }
 
+function safeWorldPresenceHint(worldContext = {}, socialContext = {}) {
+  try {
+    const trustScore = safeNum(worldContext.trustScore, socialContext.trustScore || 0);
+    const reputationScore = safeNum(
+      worldContext.reputationScore,
+      socialContext.reputationScore || 0
+    );
+
+    return {
+      worldBand: safeStr(worldContext.worldBand, "presence"),
+      systemAge: safeNum(worldContext.systemAge, socialContext.systemAge || 0),
+      presenceBand: safeStr(worldContext.presenceBand, socialContext.presenceBand || "symbolic"),
+      skillTier: safeStr(worldContext.skillTier, socialContext.skillTier || null),
+      mentorTier: safeStr(worldContext.mentorTier, socialContext.mentorTier || null),
+      trustScore,
+      reputationScore,
+      followersCount: safeNum(worldContext.followersCount, socialContext.followersCount || 0),
+      followingCount: safeNum(worldContext.followingCount, socialContext.followingCount || 0),
+      jobReadiness: safeStr(worldContext.jobReadiness, socialContext.jobReadiness || "unknown"),
+      earnReadiness: safeStr(worldContext.earnReadiness, socialContext.earnReadiness || "unknown")
+    };
+  } catch {
+    return {
+      worldBand: "presence",
+      systemAge: 0,
+      presenceBand: "symbolic",
+      skillTier: null,
+      mentorTier: null,
+      trustScore: 0,
+      reputationScore: 0,
+      followersCount: 0,
+      followingCount: 0,
+      jobReadiness: "unknown",
+      earnReadiness: "unknown"
+    };
+  }
+}
+
+function safeSocialSnapshot(socialContext = {}) {
+  try {
+    return {
+      hasGraph: !!socialContext.hasGraph,
+      nodeDegree: safeNum(socialContext.nodeDegree, 0),
+      mentorCount: safeNum(socialContext.mentorCount, 0),
+      menteeCount: safeNum(socialContext.menteeCount, 0),
+      partyCount: safeNum(socialContext.partyCount, 0),
+      sessionCount: safeNum(socialContext.sessionCount, 0),
+      coworkCount: safeNum(socialContext.coworkCount, 0),
+      lastSnapshotTs: safeNum(socialContext.lastSnapshotTs, 0)
+    };
+  } catch {
+    return {
+      hasGraph: false,
+      nodeDegree: 0,
+      mentorCount: 0,
+      menteeCount: 0,
+      partyCount: 0,
+      sessionCount: 0,
+      coworkCount: 0,
+      lastSnapshotTs: 0
+    };
+  }
+}
+
+function safeArterySnapshot(arteryContext = {}) {
+  try {
+    return {
+      throughput: safeNum(arteryContext.throughput, 0),
+      pressure: safeNum(arteryContext.pressure, 0),
+      cost: safeNum(arteryContext.cost, 0),
+      budget: safeNum(arteryContext.budget, 0),
+      throughputBucket: safeStr(arteryContext.throughputBucket, "critical"),
+      pressureBucket: safeStr(arteryContext.pressureBucket, "none"),
+      costBucket: safeStr(arteryContext.costBucket, "none"),
+      budgetBucket: safeStr(arteryContext.budgetBucket, "critical"),
+      reproductionHint: safeStr(arteryContext.reproductionHint, "none"),
+      earnReadiness: safeStr(arteryContext.earnReadiness, "unknown")
+    };
+  } catch {
+    return {
+      throughput: 0,
+      pressure: 0,
+      cost: 0,
+      budget: 0,
+      throughputBucket: "critical",
+      pressureBucket: "none",
+      costBucket: "none",
+      budgetBucket: "critical",
+      reproductionHint: "none",
+      earnReadiness: "unknown"
+    };
+  }
+}
+
 // ============================================================================
-// HELPERS — NORMALIZE IDENTITY TO v16-Immortal-Dualband-Presence-ADVANTAGE SHAPE
+// HELPERS — NORMALIZE IDENTITY TO v20-Immortal-WorldPresence-ADVANTAGE SHAPE
 // ============================================================================
 
 function normalizeIdentity(
   raw,
   mode,
   presenceContext = {},
+  worldContext = {},
   advantageContext = {},
-  topologyContext = {}
+  topologyContext = {},
+  socialContext = {},
+  arteryContext = {}
 ) {
   if (!raw || typeof raw !== "object") return null;
 
@@ -458,18 +650,25 @@ function normalizeIdentity(
     band: safeStr(presenceContext.band, "unknown"),
     route: safeStr(presenceContext.route, "unknown"),
     lastSeenMs: safeNum(presenceContext.lastSeenMs, 0),
-    presenceLevel: safeStr(presenceContext.presenceLevel, "Unknown")
+    presenceLevel: safeStr(presenceContext.presenceLevel, "Unknown"),
+    page: safeStr(presenceContext.page, null),
+    mode: safeStr(presenceContext.mode, null)
   };
 
-  const advantage = safeAdvantageHint(advantageContext);
+  const world = safeWorldPresenceHint(worldContext, socialContext);
+  const advantage = safeAdvantageHint(advantageContext, world);
   const topology = safeTopologyHint(topologyContext);
+  const social = safeSocialSnapshot(socialContext);
+  const artery = safeArterySnapshot(arteryContext);
+
+  const now = Date.now();
 
   const normalized = {
     // Core identity
-    uid: safeStr(raw.uid),
+    uid: safeStr(raw.uid || raw.userId, null),
     email: safeStr(raw.email),
     name: safeStr(raw.name),
-    roles: Array.isArray(raw.roles) ? raw.roles : [],
+    roles: safeArr(raw.roles),
 
     // Identity health + drift markers
     identityHealth: safeStr(raw.identityHealth, "Unknown"),
@@ -485,26 +684,41 @@ function normalizeIdentity(
     sessionAge: safeNum(raw.sessionAge, 0),
     lastVaultVisit: safeNum(raw.lastVaultVisit, 0),
 
-    // Timestamps (symbolic; binary core treats as opaque)
-    createdAt: raw.createdAt || Date.now(),
-    updatedAt: Date.now(),
+    // Device + session profile (metadata only)
+    deviceProfile: safeObj(raw.deviceProfile, {
+      platform: safeStr(raw.platform, "unknown"),
+      userAgent: safeStr(raw.userAgent, null)
+    }),
+    sessionProfile: safeObj(raw.sessionProfile, {
+      entryRoute: safeStr(raw.entryRoute, null),
+      lastRoute: safeStr(raw.lastRoute, null)
+    }),
 
-    // Presence + advantage + topology fields
+    // Timestamps (symbolic; binary core treats as opaque)
+    createdAt: raw.createdAt || now,
+    updatedAt: now,
+
+    // Presence + world + advantage + topology + social + artery fields
     presence,
+    world,
     advantage,
     topology,
+    social,
+    artery,
 
     // Context injection
     layer: LAYER_NAME,
     context:
-      "Canonical backend identity + presence + advantage + topology snapshot (v16-Immortal-Dualband-Presence-ADVANTAGE)",
+      "Canonical backend identity + presence + world + advantage + topology + social + artery snapshot (v20-Immortal-WorldPresence-ADVANTAGE)",
     mode
   };
 
   normalized.binarySignature = computeBinarySignature(normalized);
   normalized.presenceSignature = computePresenceSignature(normalized, presence);
+  normalized.worldSignature = computeWorldSignature(world);
   normalized.advantageSignature = computeAdvantageSignature(advantage);
   normalized.topologySignature = computeTopologySignature(topology);
+  normalized.arterySignature = computeArterySignature(artery);
 
   return normalized;
 }
@@ -534,23 +748,20 @@ async function dualbandRepair(identity) {
 
   return {
     ...binary,
-    repairMode: "dualband"
+    repairMode: "dualband-world"
   };
 }
 
 // ============================================================================
-// IDENTITY LOADER — 99% AUTOMATED, 1% resendToken
-// Token → minimal identity seed (no DB, no cache wiring here)
+// IDENTITY LOADER — token → minimal identity seed (no DB, no cache wiring)
 // ============================================================================
 
 async function validateAndLoadIdentity(token) {
   if (!token || typeof token !== "string") return null;
 
-  // Extract raw token
   const raw = token.replace("identity=", "").trim();
   if (!raw) return null;
 
-  // Decode token → symbolic seed
   let decoded;
   try {
     decoded = JSON.parse(Buffer.from(raw, "base64").toString("utf8"));
@@ -558,7 +769,6 @@ async function validateAndLoadIdentity(token) {
     return null;
   }
 
-  // Must have uid
   if (!decoded?.uid) return null;
 
   return {
@@ -589,18 +799,28 @@ function buildIdentityDiagnostics(normalized, mode) {
     identityVersion: normalized.identityVersion,
     presenceBand: normalized?.presence?.band || "unknown",
     presenceLevel: normalized?.presence?.presenceLevel || "Unknown",
+    worldBand: normalized?.world?.worldBand || "presence",
+    systemAge: normalized?.world?.systemAge || 0,
+    skillTier: normalized?.world?.skillTier || null,
+    mentorTier: normalized?.world?.mentorTier || null,
+    trustScore: normalized?.world?.trustScore || 0,
+    reputationScore: normalized?.world?.reputationScore || 0,
+    jobReadiness: normalized?.world?.jobReadiness || "unknown",
+    earnReadiness: normalized?.world?.earnReadiness || "unknown",
     advantageBand: normalized?.advantage?.advantageBand || "neutral",
     advantageScore: normalized?.advantage?.advantageScore ?? null,
     topologyBandSource: normalized?.topology?.bandSource || "identity",
     binarySignature: normalized.binarySignature,
     presenceSignature: normalized.presenceSignature,
+    worldSignature: normalized.worldSignature,
     advantageSignature: normalized.advantageSignature,
-    topologySignature: normalized.topologySignature
+    topologySignature: normalized.topologySignature,
+    arterySignature: normalized.arterySignature
   };
 }
 
 // ============================================================================
-// BACKEND ENTRY POINT — “THE SELF++++” v16-Immortal-Dualband-Presence-ADVANTAGE
+// BACKEND ENTRY POINT — “THE SELF++++WORLD” v20-Immortal-WorldPresence-ADVANTAGE
 // ============================================================================
 
 export const handler = async (event, context) => {
@@ -637,17 +857,24 @@ export const handler = async (event, context) => {
       mode
     });
 
-    // Presence + advantage + topology context are injected by caller / organism wiring
+    // Presence + world + advantage + topology + social + artery context
+    // are injected by caller / organism wiring (Portal/Bridge/NodeAdmin/etc.)
     const presenceContext = event?.presenceContext || {};
+    const worldContext = event?.worldContext || {};
     const advantageContext = event?.advantageContext || {};
     const topologyContext = event?.topologyContext || {};
+    const socialContext = event?.socialContext || {};
+    const arteryContext = event?.arteryContext || {};
 
     const normalized = normalizeIdentity(
       repaired,
       mode,
       presenceContext,
+      worldContext,
       advantageContext,
-      topologyContext
+      topologyContext,
+      socialContext,
+      arteryContext
     );
 
     const diagnostics = buildIdentityDiagnostics(normalized, mode);
@@ -656,8 +883,10 @@ export const handler = async (event, context) => {
       uid: normalized?.uid || null,
       version: normalized?.identityVersion,
       presenceSignature: normalized?.presenceSignature,
+      worldSignature: normalized?.worldSignature,
       advantageSignature: normalized?.advantageSignature,
       topologySignature: normalized?.topologySignature,
+      arterySignature: normalized?.arterySignature,
       mode
     });
 
@@ -675,7 +904,7 @@ export const handler = async (event, context) => {
     };
 
   } catch (err) {
-    safeError("CheckIdentity v16-Immortal-Dualband-Presence-ADVANTAGE error:", err);
+    safeError("CheckIdentity v20-Immortal-WorldPresence-ADVANTAGE error:", err);
 
     logSelf("FATAL_ERROR", {
       message: err?.message || "Unknown error",

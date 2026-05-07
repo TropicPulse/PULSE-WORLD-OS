@@ -23,7 +23,7 @@ import {
   log,
   warn,
   error
-} from "./PulseWorldBridge-v18.js";
+} from "./PulseWorldBridge-v20.js";
 
 // Optional: AI Console v20 (if present in global / bridge)
 const g =

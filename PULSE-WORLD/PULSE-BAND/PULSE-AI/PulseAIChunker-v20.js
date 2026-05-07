@@ -1,90 +1,107 @@
 // ============================================================================
-//  PulseAIChunker v17.0-IMMORTAL
-//  32-LANE DUALBAND CHUNKER — BINARY + SYMBOLIC, ORGANISM-GRADE
+//  PulseAIChunker v20.0-IMMORTAL-UNIVERSAL
+//  32-LANE DUALBAND CHUNKER — BINARY + SYMBOLIC + WORLD, ORGANISM-GRADE
+//  Universal Chunk Organ for PulseOS v18+ (Chunker + World + Identity Aware)
 // ============================================================================
 
 /*
-AI_EXPERIENCE_META:
-  organ: PulseAIChunker
-  version: 17.0.0
-  tier: IMMORTAL
-  layer: ai_core
-  role: ai_chunker
+AI_EXPERIENCE_META = {
+  identity: "PulseAIChunker",
+  version: "v20.0-IMMORTAL-UNIVERSAL",
+  layer: "ai_core",
+  role: "universal_chunk_engine",
+  lineage: "PulseAIChunker-v17 → v20-IMMORTAL-UNIVERSAL",
 
-  description:
-    "PulseAIChunker is a dualband, 32-lane chunking engine for binary and
-     symbolic payloads. It is non-mind, deterministic, and drift-proof.
+  evo: {
+    // Core chunking
+    chunker: true,
+    dualBand: true,
+    binaryAware: true,
+    symbolicAware: true,
+    lane32: true,
+    prewarmAware: true,
+    cacheAware: true,
+    profileAware: true,
+    presenceBandAware: true,
+    worldBandAware: true,
+    backendAware: true,
+    identityAware: true,
+    topologyAware: true,
+    advantageAware: true,
 
-     It:
-       - splits large payloads into fixed or adaptive chunks
-       - supports 32 parallel logical lanes
-       - tags chunks with lane, band, and lineage metadata
-       - supports binary (Uint8Array/ArrayBuffer) and JSON-serializable objects
-       - can prewarm chunk maps for hot paths (organism boot, arteries, trust)
-       - never performs cognition, inference, or semantic reasoning
+    // Determinism + purity
+    deterministic: true,
+    driftProof: true,
+    pureCompute: true,
+    zeroNetwork: true,
+    zeroFilesystem: true,
+    zeroMutationOfInput: true,
 
-     It is designed to be used by:
-       - OrganismKernel (prewarm + boot)
-       - PulseAIWorldCore / PulseWorldCore (world snapshots)
-       - PulseTrustEvidence (evidence chunking)
-       - OvermindPrime (prewarmed views)
-       - Any organ that needs deterministic chunking without interpretation."
+    // Organism alignment
+    organismAware: true,
+    pulseWorldAware: true,
+    pulseChunkerAligned: true,
+    pulseWorldChunkerAligned: true,
+    bridgeAligned: true
+  },
 
-  evo:
-    chunker: true
-    dualBand: true
-    binaryAware: true
-    symbolicAware: true
-    lane32: true
-    prewarmAware: true
-    cacheAware: true
+  boundaries: [
+    "No semantic understanding.",
+    "No AI reasoning or inference.",
+    "No mutation of upstream data.",
+    "No compression beyond structural chunking.",
+    "No encryption or obfuscation."
+  ],
 
-    deterministic: true
-    driftProof: true
-    pureCompute: true
-    zeroNetwork: true
-    zeroFilesystem: true
-    zeroMutationOfInput: true
+  contract: {
+    input: [
+      "chunkBinary(buffer, options)",
+      "chunkJSON(value, options)",
+      "chunkText(text, options)",
+      "chunkLines(text, options)",
+      "chunkBackendPlan(plan, options)",
+      "chunkBackendState(state, options)",
+      "chunkBackendLogs(text, options)",
+      "chunkWorldSnapshot(snapshot, options)",
+      "chunkEvidence(evidence, options)",
+      "chunkTimeline(events, options)",
+      "reassembleBinary(chunks)",
+      "reassembleJSON(chunks)",
+      "reassembleText(chunks)",
+      "reassembleLines(chunks)",
+      "prewarmPattern(label, pattern)",
+      "prewarmProfile(profileId, profile)"
+    ],
+    output: [
+      "getMeta()",
+      "getLaneStats()",
+      "getPatterns()",
+      "getProfiles()",
+      "getProfileStats()"
+    ]
+  },
 
-  boundaries:
-    - "No semantic understanding."
-    - "No AI reasoning or inference."
-    - "No mutation of upstream data."
-    - "No compression beyond structural chunking."
-    - "No encryption or obfuscation."
-
-  contract:
-    input:
-      - chunkBinary(buffer, options)
-      - chunkJSON(value, options)
-      - reassembleBinary(chunks)
-      - reassembleJSON(chunks)
-      - prewarmPattern(label, pattern)
-    output:
-      - getLaneStats()
-      - getPatterns()
-      - getMeta()
-
-  identity:
-    band: "ai_core"
-    type: "organ"
-    mind: false
+  identity: {
+    band: "ai_core",
+    type: "organ",
+    mind: false,
     immutable: true
+  }
+};
 */
+
 // ============================================================================
-//  META
-//  PulseAIChunker-v17.0-IMMORTAL
-//  ELITE BACKEND CHUNKER — dualband, prewarm-aware, profile-aware, backend-safe
+//  META — v20 IMMORTAL UNIVERSAL CHUNKER
 // ============================================================================
 
 export const PulseAIChunkerMeta = Object.freeze({
-  id: "PulseAIChunker-v17.0-IMMORTAL",
-  version: "17.0.0",
-  role: "AI_CHUNKER",
+  id: "PulseAIChunker-v20.0-IMMORTAL-UNIVERSAL",
+  version: "20.0.0",
+  role: "UNIVERSAL_AI_CHUNKER",
   layer: "ai_core",
   mind: false,
   description:
-    "IMMORTAL 32-lane dualband chunker for backend binary + symbolic payloads with prewarm + profiles.",
+    "IMMORTAL 32-lane dualband universal chunker for backend + world + identity payloads with prewarm + profiles.",
   identity: {
     type: "organ",
     name: "PulseAIChunker",
@@ -98,11 +115,15 @@ export const PulseAIChunkerMeta = Object.freeze({
     symbolicPrimary: true,
     binaryAware: true,
     backendAware: true,
+    worldBandAware: true,
+    presenceBandAware: true,
     profileAware: true,
     prewarmAware: true,
     cacheAware: true,
     chunkAware: true,
-    presenceBandAware: true,
+    identityAware: true,
+    topologyAware: true,
+    advantageAware: true,
     deterministic: true,
     driftProof: true,
     pureCompute: true,
@@ -149,8 +170,31 @@ function _safeString(input) {
   return String(input);
 }
 
+// Simple deterministic hash (non-crypto, pure compute)
+function _hashString(str) {
+  let h = 0;
+  const s = String(str || "");
+  for (let i = 0; i < s.length; i++) {
+    h = (h + s.charCodeAt(i) * (i + 1)) % 1000000007;
+  }
+  return `h${h}`;
+}
+
+// Build a deterministic session id for a payload + identity + profile
+function _buildSessionId({ uid, band, worldBand, backendKind, chunkProfile, payloadHash }) {
+  const seed = JSON.stringify({
+    uid: uid || null,
+    band: band || "dual",
+    worldBand: worldBand || "backend",
+    backendKind: backendKind || "generic",
+    chunkProfile: chunkProfile || "default",
+    payloadHash: payloadHash || null
+  });
+  return _hashString(seed);
+}
+
 // ============================================================================
-//  CLASS — 32-LANE DUALBAND BACKEND CHUNKER (ELITE)
+//  CLASS — 32-LANE DUALBAND UNIVERSAL CHUNKER (ELITE v20)
 // ============================================================================
 
 export class PulseAIChunker {
@@ -233,7 +277,11 @@ export class PulseAIChunker {
         maxChunkSize: pattern.maxChunkSize || this.config.maxChunkSize,
         lanes: pattern.lanes || this.config.lanes,
         band: pattern.band || "dual",
-        profile: pattern.profile || this.config.defaultProfile
+        profile: pattern.profile || this.config.defaultProfile,
+        presenceBand: pattern.presenceBand || "symbolic",
+        worldBand: pattern.worldBand || "backend",
+        backendKind: pattern.backendKind || "generic",
+        chunkProfile: pattern.chunkProfile || pattern.profile || this.config.defaultProfile
       }
     });
     this.patterns.set(label, stored);
@@ -241,8 +289,8 @@ export class PulseAIChunker {
   }
 
   // --------------------------------------------------------------------------
-  //  PREWARM PROFILE (backend-aware profiles)
-//  - profileId: e.g. "backend-plan", "backend-logs", "backend-state"
+  //  PREWARM PROFILE (backend/world-aware profiles)
+  //  - profileId: e.g. "backend-plan", "backend-logs", "world-social", "world-state"
 // --------------------------------------------------------------------------
   prewarmProfile(profileId, profile = {}) {
     if (!profileId) return;
@@ -256,7 +304,8 @@ export class PulseAIChunker {
         lanes: profile.lanes || this.config.lanes,
         band: profile.band || "dual",
         presenceBand: profile.presenceBand || "symbolic",
-        backendKind: profile.backendKind || "generic", // plan | state | logs | frames
+        worldBand: profile.worldBand || "backend", // backend | world | identity | evidence
+        backendKind: profile.backendKind || "generic", // plan | state | logs | frames | world
         chunkProfile: profile.chunkProfile || profileId
       }
     });
@@ -293,6 +342,7 @@ export class PulseAIChunker {
       lanes: this.config.lanes,
       band: options.band || "dual",
       presenceBand: options.presenceBand || "symbolic",
+      worldBand: options.worldBand || "backend",
       backendKind: options.backendKind || "generic",
       chunkProfile: profileId
     };
@@ -323,14 +373,22 @@ export class PulseAIChunker {
         base.band,
       presenceBand:
         options.presenceBand ||
+        fromPattern.presenceBand ||
         fromProfile.presenceBand ||
         base.presenceBand,
+      worldBand:
+        options.worldBand ||
+        fromPattern.worldBand ||
+        fromProfile.worldBand ||
+        base.worldBand,
       backendKind:
         options.backendKind ||
+        fromPattern.backendKind ||
         fromProfile.backendKind ||
         base.backendKind,
       chunkProfile:
         options.chunkProfile ||
+        fromPattern.chunkProfile ||
         fromProfile.chunkProfile ||
         base.chunkProfile,
       label,
@@ -356,7 +414,7 @@ export class PulseAIChunker {
 
   // --------------------------------------------------------------------------
   //  LANE ASSIGNMENT (ROUND-ROBIN, DETERMINISTIC PER INSTANCE)
-  // --------------------------------------------------------------------------
+// --------------------------------------------------------------------------
   _assignLane(counterRef, lanes) {
     const lane = counterRef.value % lanes;
     counterRef.value += 1;
@@ -364,8 +422,8 @@ export class PulseAIChunker {
   }
 
   // --------------------------------------------------------------------------
-  //  BINARY CHUNKING (backend-safe)
-//  - options: { band, label, profile, presenceBand, backendKind, chunkProfile }
+  //  BINARY CHUNKING (backend/world-safe)
+//  - options: { band, label, profile, presenceBand, worldBand, backendKind, chunkProfile, uid, lineage, route, organism }
 // --------------------------------------------------------------------------
   chunkBinary(buffer, options = {}) {
     const ts = _now();
@@ -381,6 +439,16 @@ export class PulseAIChunker {
       Math.max(profile.defaultChunkSize, 1),
       profile.maxChunkSize
     );
+
+    const payloadHash = _hashString(bytes.toString());
+    const sessionId = _buildSessionId({
+      uid: options.uid,
+      band: profile.band,
+      worldBand: profile.worldBand,
+      backendKind: profile.backendKind,
+      chunkProfile: profile.chunkProfile,
+      payloadHash
+    });
 
     const chunks = [];
     const laneCounter = { value: 0 };
@@ -403,8 +471,15 @@ export class PulseAIChunker {
           profile: profile.profileId,
           size: slice.length,
           presenceBand: profile.presenceBand,
+          worldBand: profile.worldBand,
           backendKind: profile.backendKind,
-          chunkProfile: profile.chunkProfile
+          chunkProfile: profile.chunkProfile,
+          sessionId,
+          payloadHash,
+          uid: options.uid || null,
+          lineage: options.lineage || null,
+          route: options.route || null,
+          organism: options.organism || null
         },
         payload: slice
       });
@@ -424,10 +499,12 @@ export class PulseAIChunker {
     }
 
     if (this.config.trace) {
-      console.log("[PulseAIChunker] chunkBinary", {
+      console.log("[PulseAIChunker v20] chunkBinary", {
         label: profile.label,
         profile: profile.profileId,
         band: profile.band,
+        worldBand: profile.worldBand,
+        backendKind: profile.backendKind,
         totalLength,
         chunkSize,
         chunks: chunks.length
@@ -468,7 +545,7 @@ export class PulseAIChunker {
 
   // --------------------------------------------------------------------------
   //  JSON / SYMBOLIC CHUNKING (STRINGIFIED)
-//  - options: { band, label, profile, presenceBand, backendKind, chunkProfile }
+//  - options: { band, label, profile, presenceBand, worldBand, backendKind, chunkProfile, uid, lineage, route, organism }
 // --------------------------------------------------------------------------
   chunkJSON(value, options = {}) {
     const profile = this._resolveProfile({
@@ -485,8 +562,13 @@ export class PulseAIChunker {
       label: profile.label,
       profile: profile.profileId,
       presenceBand: profile.presenceBand,
+      worldBand: profile.worldBand,
       backendKind: profile.backendKind,
-      chunkProfile: profile.chunkProfile
+      chunkProfile: profile.chunkProfile,
+      uid: options.uid,
+      lineage: options.lineage,
+      route: options.route,
+      organism: options.organism
     });
 
     const jsonChunks = binaryChunks.map((c) =>
@@ -500,10 +582,12 @@ export class PulseAIChunker {
     );
 
     if (this.config.trace) {
-      console.log("[PulseAIChunker] chunkJSON", {
+      console.log("[PulseAIChunker v20] chunkJSON", {
         label: profile.label,
         profile: profile.profileId,
         band: profile.band,
+        worldBand: profile.worldBand,
+        backendKind: profile.backendKind,
         length: json.length,
         chunks: jsonChunks.length
       });
@@ -542,8 +626,13 @@ export class PulseAIChunker {
       label: profile.label,
       profile: profile.profileId,
       presenceBand: profile.presenceBand,
+      worldBand: profile.worldBand,
       backendKind: profile.backendKind,
-      chunkProfile: profile.chunkProfile
+      chunkProfile: profile.chunkProfile,
+      uid: options.uid,
+      lineage: options.lineage,
+      route: options.route,
+      organism: options.organism
     }).map((c) =>
       Object.freeze({
         meta: {
@@ -583,10 +672,22 @@ export class PulseAIChunker {
     let buffer = [];
     let currentSize = 0;
 
+    const self = this;
+
     function flushChunk(chunker, lane, index, totalPlaceholder) {
       const joined = buffer.join("\n");
       const encoder = new TextEncoder();
       const bytes = encoder.encode(joined);
+
+      const payloadHash = _hashString(bytes.toString());
+      const sessionId = _buildSessionId({
+        uid: options.uid,
+        band: profile.band,
+        worldBand: profile.worldBand,
+        backendKind: profile.backendKind,
+        chunkProfile: profile.chunkProfile,
+        payloadHash
+      });
 
       const chunk = Object.freeze({
         meta: {
@@ -601,8 +702,15 @@ export class PulseAIChunker {
           profile: profile.profileId,
           size: bytes.length,
           presenceBand: profile.presenceBand,
+          worldBand: profile.worldBand,
           backendKind: profile.backendKind,
-          chunkProfile: profile.chunkProfile
+          chunkProfile: profile.chunkProfile,
+          sessionId,
+          payloadHash,
+          uid: options.uid || null,
+          lineage: options.lineage || null,
+          route: options.route || null,
+          organism: options.organism || null
         },
         payload: bytes
       });
@@ -622,16 +730,16 @@ export class PulseAIChunker {
       currentSize += 1;
 
       if (currentSize >= maxLines) {
-        const lane = this._assignLane(laneCounter, profile.lanes);
-        flushChunk(this, lane, chunks.length, null);
+        const lane = self._assignLane(laneCounter, profile.lanes);
+        flushChunk(self, lane, chunks.length, null);
         buffer = [];
         currentSize = 0;
       }
     }
 
     if (buffer.length > 0) {
-      const lane = this._assignLane(laneCounter, profile.lanes);
-      flushChunk(this, lane, chunks.length, null);
+      const lane = self._assignLane(laneCounter, profile.lanes);
+      flushChunk(self, lane, chunks.length, null);
     }
 
     for (const c of chunks) {
@@ -639,10 +747,12 @@ export class PulseAIChunker {
     }
 
     if (this.config.trace) {
-      console.log("[PulseAIChunker] chunkLines", {
+      console.log("[PulseAIChunker v20] chunkLines", {
         label: profile.label,
         profile: profile.profileId,
         band: profile.band,
+        worldBand: profile.worldBand,
+        backendKind: profile.backendKind,
         lines: lines.length,
         chunks: chunks.length
       });
@@ -683,6 +793,39 @@ export class PulseAIChunker {
       profile: options.profile || "backend-logs"
     });
   }
+
+  // --------------------------------------------------------------------------
+  //  WORLD / IDENTITY / EVIDENCE HELPERS — PulseWorld-aligned
+  // --------------------------------------------------------------------------
+  // snapshot: PulseWorldSocialGraph snapshot or world state
+  chunkWorldSnapshot(snapshot, options = {}) {
+    return this.chunkJSON(snapshot, {
+      ...options,
+      backendKind: "world",
+      worldBand: options.worldBand || "world",
+      profile: options.profile || "world-state"
+    });
+  }
+
+  // evidence: trust / reputation / logs / identity evidence bundle
+  chunkEvidence(evidence, options = {}) {
+    return this.chunkJSON(evidence, {
+      ...options,
+      backendKind: "evidence",
+      worldBand: options.worldBand || "world",
+      profile: options.profile || "world-evidence"
+    });
+  }
+
+  // events: ordered timeline of events (identity, presence, jobs, etc.)
+  chunkTimeline(events, options = {}) {
+    return this.chunkJSON(events, {
+      ...options,
+      backendKind: "timeline",
+      worldBand: options.worldBand || "world",
+      profile: options.profile || "world-timeline"
+    });
+  }
 }
 
 // ============================================================================
@@ -692,29 +835,62 @@ export class PulseAIChunker {
 export function createPulseAIChunker(config = {}) {
   const core = new PulseAIChunker(config);
 
-  // Prewarm some canonical backend profiles
+  // Canonical backend profiles
   core.prewarmProfile("backend-default", {
     backendKind: "generic",
     chunkProfile: "backend-default",
-    presenceBand: "symbolic"
+    presenceBand: "symbolic",
+    worldBand: "backend"
   });
 
   core.prewarmProfile("backend-plan", {
     backendKind: "plan",
     chunkProfile: "backend-plan",
-    presenceBand: "symbolic"
+    presenceBand: "symbolic",
+    worldBand: "backend"
   });
 
   core.prewarmProfile("backend-state", {
     backendKind: "state",
     chunkProfile: "backend-state",
-    presenceBand: "symbolic"
+    presenceBand: "symbolic",
+    worldBand: "backend"
   });
 
   core.prewarmProfile("backend-logs", {
     backendKind: "logs",
     chunkProfile: "backend-logs",
-    presenceBand: "symbolic"
+    presenceBand: "symbolic",
+    worldBand: "backend"
+  });
+
+  // World / social / evidence profiles (PulseWorld-aligned)
+  core.prewarmProfile("world-state", {
+    backendKind: "world",
+    chunkProfile: "world-state",
+    presenceBand: "symbolic",
+    worldBand: "world"
+  });
+
+  core.prewarmProfile("world-social", {
+    backendKind: "world",
+    chunkProfile: "world-social",
+    presenceBand: "symbolic",
+    worldBand: "world"
+  });
+
+  core.prewarmProfile("world-evidence", {
+    backendKind: "evidence",
+    chunkProfile: "world-evidence",
+    presenceBand: "symbolic",
+    worldBand: "world"
+  });
+
+  core.prewarmProfile("world-timeline", {
+    backendKind: "timeline",
+    chunkProfile: "world-timeline",
+    presenceBand: "symbolic",
+    worldBand: "world"
   });
 
   return Object.freeze({
@@ -744,16 +920,23 @@ export function createPulseAIChunker(config = {}) {
     chunkBackendPlan: (plan, options) => core.chunkBackendPlan(plan, options),
     chunkBackendState: (state, options) =>
       core.chunkBackendState(state, options),
-    chunkBackendLogs: (text, options) => core.chunkBackendLogs(text, options)
+    chunkBackendLogs: (text, options) => core.chunkBackendLogs(text, options),
+
+    chunkWorldSnapshot: (snapshot, options) =>
+      core.chunkWorldSnapshot(snapshot, options),
+    chunkEvidence: (evidence, options) =>
+      core.chunkEvidence(evidence, options),
+    chunkTimeline: (events, options) =>
+      core.chunkTimeline(events, options)
   });
 }
 
 // ============================================================================
-//  DEFAULT SINGLETON (ELITE BACKEND PROFILE)
+//  DEFAULT SINGLETON (ELITE UNIVERSAL PROFILE)
 // ============================================================================
 
 export const pulseAIChunker = createPulseAIChunker({
-  id: "PulseAIChunker-Default-v17",
+  id: "PulseAIChunker-Default-v20",
   defaultChunkSize: 4096,
   maxChunkSize: 65536,
   trace: false,

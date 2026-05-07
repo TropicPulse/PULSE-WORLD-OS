@@ -102,7 +102,7 @@ AI_EXPERIENCE_META = {
 // ============================================================
 import { startPulseNet, pulseNetIngressFromUser, pulseNetFastLanePulse} from "./_BACKEND/PULSE-WORLD.js";
 
-import { route as bridgeRoute, PulseProofLogger as PulseLogger, log, warn, error, startUnderstanding as PulseUnderstanding, PulseBinaryOrganismBoot} from "./_BACKEND/PulseWorldBridge-v18.js";
+import { route as bridgeRoute, PulseProofLogger as PulseLogger, log, warn, error, startUnderstanding as PulseUnderstanding, PulseBinaryOrganismBoot} from "./_BACKEND/PulseWorldBridge-v20.js";
 
 import { PulseTouchDetector } from "./_OUTERSENSES/PULSE-TOUCH-DETECTOR.js";
 import { PulseTouchWarmup } from "./_OUTERSENSES/PULSE-TOUCH-WARMUP.js";

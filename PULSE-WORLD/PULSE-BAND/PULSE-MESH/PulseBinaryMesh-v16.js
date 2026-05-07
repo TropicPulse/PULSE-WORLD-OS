@@ -163,7 +163,7 @@ import PulseMeshThalamus from "./PulseMeshThalamus.js";
 // ============================================================================
 import PresenceAIView from "./PulseMeshPresenceAIView.js";
 import MentorUpgradeRequest from "./PulseMeshMentorUpgradeRequest.js";
-import { createPulseWorldSocialGraph } from "../PULSE-X/PulseWorldSocialGraph-v17.js";
+import { createPulseWorldSocialGraph } from "../PULSE-X/PulseWorldSocialGraph-v20.js";
 
 // ============================================================================
 // CORTEX + TENDONS (SHAPING LAYERS — ALWAYS LAST)

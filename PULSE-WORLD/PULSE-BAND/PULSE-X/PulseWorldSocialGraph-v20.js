@@ -1,26 +1,27 @@
 // ============================================================================
-// FILE: /organs/world/PulseWorldSocialGraph-v17.0-Immortal.js
-// PULSE OS v17.0+ PRESENCE‑EVO‑IMMORTAL
-// Pulse‑World Social Graph (v17 IMMORTAL)
+// FILE: /organs/world/PulseWorldSocialGraph-v20-IMMORTAL-ADV++.js
+// PULSE OS v20+ PRESENCE‑EVO‑IMMORTAL‑ADV++
+// Pulse‑World Social Graph (v20 IMMORTAL‑ADV++)
 // Deterministic • Metadata‑Only • Presence + Jobs + Mentorship + Upgrades +
-// Skills + Trust + Parties + Sessions + Co-Work + Reputation
-// Full Advantage Stack: Prewarm • Chunk • Cache • Presence‑Band • World‑Band
+// Skills + Trust + Parties + Sessions + Co-Work + Reputation + Earn + Identity
+// Full Advantage Stack: Prewarm • Chunk • Cache • Presence‑Band • World‑Band • Earn‑Band
+// Identity‑v20 aligned • NodeAdmin‑v20 ready • Artery‑aware
 // ============================================================================
 //
 // Nodes: users (uid)
 // Edges: presence, jobs, mentorship, upgrades, skills, trust, party, session,
-//        cowork, reputation, follow, block, invite, collaboration.
+//        cowork, reputation, follow, block, invite, collaboration, earn, identity_link.
 // No payload data, only relationship metadata.
-// Graph is symbolic‑primary, binary‑aware, prewarm‑aware, chunk‑aware.
+// Graph is symbolic‑primary, binary‑aware, prewarm‑aware, chunk‑aware, advantage‑aware.
 // ============================================================================
 
 /*
 AI_EXPERIENCE_META = {
   identity: "PulseWorldSocialGraph",
-  version: "v17.0-WORLD-SOCIAL-GRAPH-Immortal",
+  version: "v20.0-WORLD-SOCIAL-GRAPH-IMMORTAL-ADV++",
   layer: "world_social",
-  role: "social_graph_engine",
-  lineage: "PulseWorld-v15 → PulseWorld-v17",
+  role: "social_graph_engine_v20",
+  lineage: "PulseWorld-v15 → PulseWorld-v17 → PulseWorld-v20-IMMORTAL-ADV++",
 
   evo: {
     socialGraph: true,
@@ -31,6 +32,8 @@ AI_EXPERIENCE_META = {
     mentorshipAware: true,
     jobAware: true,
     earnAware: true,
+    earnBandAware: true,
+    identityAware: true,
     skillAware: true,
     trustAware: true,
     partyAware: true,
@@ -59,7 +62,12 @@ AI_EXPERIENCE_META = {
     safeRouteFree: true,
     zeroExternalMutation: true,
     unifiedAdvantageField: true,
-    coordinatorFree: true
+    coordinatorFree: true,
+    arteryAware: true,
+    arteryV5: true,
+    snapshotAware: true,
+    packetAware: true,
+    windowAware: true
   },
 
   contract: {
@@ -74,7 +82,8 @@ AI_EXPERIENCE_META = {
       "PulseMeshSurvivalInstincts",
       "PulseWorldSkillRegistry",
       "PulseWorldTrustSignals",
-      "PulseWorldReputationEngine"
+      "PulseWorldReputationEngine",
+      "CheckIdentity-v20-IMMORTAL-ADV++"
     ],
     never: [
       "legacySocialGraph",
@@ -100,11 +109,12 @@ export function createPulseWorldSocialGraph({
   const meta = {
     layer: "PulseWorldSocialGraph",
     role: "SOCIAL_GRAPH",
-    version: "17.0-WORLD-SOCIAL-GRAPH-Immortal",
+    version: "20.0-WORLD-SOCIAL-GRAPH-IMMORTAL-ADV++",
     evo: {
       presenceAware: true,
       socialAware: true,
       earnAware: true,
+      earnBandAware: true,
       unifiedAdvantageField: true,
       deterministicField: true,
       driftProof: true,
@@ -119,7 +129,8 @@ export function createPulseWorldSocialGraph({
       followAware: true,
       blockAware: true,
       inviteAware: true,
-      collaborationAware: true
+      collaborationAware: true,
+      identityAware: true
     }
   };
 
@@ -151,7 +162,9 @@ export function createPulseWorldSocialGraph({
         skillTier: person.skillTier || null,
         mentorTier: person.mentorTier || null,
         reputationScore: person.reputationScore || null,
-        trustLevel: person.trustLevel || null
+        trustLevel: person.trustLevel || null,
+        earnBand: person.earnBand || "unknown",
+        jobTier: person.jobTier || null
       });
     }
   }
@@ -177,12 +190,14 @@ export function createPulseWorldSocialGraph({
       cache_surface: true,
       presence_band: edgeMeta.presenceBand || "symbolic",
       world_band: edgeMeta.worldBand || "presence",
+      earn_band: edgeMeta.earnBand || "unknown",
       band_kind: "world_social_edge",
       edge_type: edgeType,
       skill_tier: edgeMeta.skillTier || null,
       mentor_tier: edgeMeta.mentorTier || null,
       reputation_weight: edgeMeta.reputationWeight || null,
-      trust_weight: edgeMeta.trustWeight || null
+      trust_weight: edgeMeta.trustWeight || null,
+      job_tier: edgeMeta.jobTier || null
     };
   }
 
@@ -243,7 +258,9 @@ export function createPulseWorldSocialGraph({
         uid: a.uid,
         displayName: a.displayName,
         systemAge: a.systemAge,
-        presenceBand: a.presenceBand
+        presenceBand: a.presenceBand,
+        earnBand: a.earnBand,
+        jobTier: a.jobTier
       });
 
       addEdge("job", "system", a.uid, {
@@ -255,7 +272,8 @@ export function createPulseWorldSocialGraph({
         systemAge: a.systemAge,
         powerUser: a.powerUser,
         score: a.score,
-        jobTier: a.jobTier || null
+        jobTier: a.jobTier || null,
+        earnBand: a.earnBand || "unknown"
       });
     }
   }
@@ -423,6 +441,67 @@ export function createPulseWorldSocialGraph({
       timestamp,
       presenceBand: event.presenceBand || "symbolic",
       worldBand: "reputation"
+    });
+  }
+
+  // ========================================================================
+  // EARN INGESTION — earn edges (jobs, tasks, payouts)
+  // ========================================================================
+  function ingestEarnEvent(event) {
+    if (!event) return;
+
+    const {
+      uid,
+      earnType,
+      amount,
+      currency,
+      jobId,
+      jobTier,
+      earnBand,
+      timestamp,
+      source
+    } = event;
+
+    ensureNode({ uid, earnBand, jobTier });
+
+    addEdge("earn", "system", uid, {
+      earnType,
+      amount,
+      currency,
+      jobId,
+      jobTier,
+      earnBand: earnBand || "unknown",
+      timestamp,
+      source,
+      presenceBand: event.presenceBand || "symbolic",
+      worldBand: "earn"
+    });
+  }
+
+  // ========================================================================
+  // IDENTITY LINKING — connect to identity v20 snapshots
+  // ========================================================================
+  function ingestIdentityLink(uid, identitySnapshot) {
+    if (!uid || !identitySnapshot) return;
+
+    ensureNode({
+      uid,
+      displayName: identitySnapshot.name,
+      systemAge: identitySnapshot.sessionAge || 0,
+      presenceBand: identitySnapshot?.presence?.band || "symbolic",
+      earnBand: identitySnapshot?.earn?.earnBand || "unknown",
+      jobTier: identitySnapshot?.advantage?.jobReadiness || null
+    });
+
+    addEdge("identity_link", uid, `identity:${identitySnapshot.uid}`, {
+      identityVersion: identitySnapshot.identityVersion,
+      binarySignature: identitySnapshot.binarySignature,
+      presenceSignature: identitySnapshot.presenceSignature,
+      advantageSignature: identitySnapshot.advantageSignature,
+      topologySignature: identitySnapshot.topologySignature,
+      earnSignature: identitySnapshot.earnSignature,
+      presenceBand: identitySnapshot?.presence?.band || "symbolic",
+      worldBand: "identity"
     });
   }
 
@@ -605,6 +684,20 @@ export function createPulseWorldSocialGraph({
     }));
   }
 
+  function getEarnProfile(uid) {
+    const edges = getIncomingEdges(uid, "earn");
+    let total = 0;
+    const byJob = {};
+    for (const e of edges) {
+      const amt = e.meta.amount || 0;
+      total += amt;
+      const jobId = e.meta.jobId || "unknown";
+      if (!byJob[jobId]) byJob[jobId] = 0;
+      byJob[jobId] += amt;
+    }
+    return { totalEarned: total, byJob };
+  }
+
   // ========================================================================
   // SNAPSHOT
   // ========================================================================
@@ -638,6 +731,8 @@ export function createPulseWorldSocialGraph({
     ingestPartyMembership,
     ingestSessionPresence,
     ingestCoworkSnapshot,
+    ingestEarnEvent,
+    ingestIdentityLink,
 
     // queries
     getNode,
@@ -652,6 +747,7 @@ export function createPulseWorldSocialGraph({
     getReputationScore,
     getSkillProfile,
     getPresenceNeighborhood,
+    getEarnProfile,
 
     // snapshot
     snapshot

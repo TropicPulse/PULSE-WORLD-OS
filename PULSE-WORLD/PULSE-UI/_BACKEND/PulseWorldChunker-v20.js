@@ -1,26 +1,28 @@
 // ============================================================================
-// FILE: /PULSE-UI/_BACKEND/PulseWorldChunker-v18.js
-// PULSE CHUNK ENGINE — v18-Immortal
-//  - Payload chunking (backend + compiler/ACTNOW-aligned)
-//  - Cache/delta engine
-//  - Route-level folding carpet (full route chunking)
-//  - PulseBandSession-aware
-//  - v18-Immortal: 32-lane cache + top-chunk memory + TTL
-//  - Compiler/ACTNOW-aware envelopes (ready for front chunk lanes)
+// FILE: /PULSE-UI/_BACKEND/PulseWorldChunker-v20-Immortal-World.js
+// PULSE WORLD CHUNK ENGINE — v20-Immortal-World
+//  - Payload + Route + World-Graph chunking (backend + compiler/ACTNOW-aligned)
+//  - Cache/delta engine (DB-scoped, deterministic, drift-proof)
+//  - Route-level folding carpet (full route chunking, world-aware)
+//  - PulseBandSession-aware + WorldBand-aware + PresenceBand-aware
+//  - v20-Immortal: 64-lane cache + top-chunk memory + TTL + lane health
+//  - Compiler/ACTNOW-aware envelopes (front chunk lanes ready)
+//  - Identity/World/Bridge-aware: chunkProfile hints, presence tags, world bands
 // ============================================================================
 
 /*
 AI_EXPERIENCE_META = {
-  identity: "PulseChunker",
-  version: "v18-Immortal",
+  identity: "PulseWorldChunker",
+  version: "v20-Immortal-World",
   layer: "os_chunker",
   role: "chunking_and_prewarm_engine",
-  lineage: "PulseOS-v14 → v17-Immortal → v18-Immortal",
+  lineage: "PulseOS-v14 → v17-Immortal → v18-Immortal → v20-Immortal-World",
 
   evo: {
     chunking: true,
     prewarm: true,
     cacheAware: true,
+    deltaAware: true,
 
     deterministic: true,
     driftProof: true,
@@ -30,15 +32,26 @@ AI_EXPERIENCE_META = {
     symbolicPrimary: true,
     binaryAware: true,
     dualBand: true,
+    worldBandAware: true,
+    presenceBandAware: true,
 
     safeRouteFree: true,
     zeroMutationOfInput: true,
 
-    // v18 upgrades
+    // v18+ upgrades
     compilerAware: true,
     actnowAware: true,
     unifiedEnvelope: true,
-    laneProfileAware: true
+    laneProfileAware: true,
+
+    // v20 world upgrades
+    worldGraphAware: true,
+    identityChunkAware: true,
+    advantageAware: true,
+    presenceAware: true,
+    bridgeEnvAware: true,
+    laneHealthAware: true,
+    profileStatsAware: true
   },
 
   contract: {
@@ -47,7 +60,9 @@ AI_EXPERIENCE_META = {
       "PulseOSBBB",
       "PulseBinaryOS",
       "PulseWorldCompiler",
-      "ACTNOW"
+      "ACTNOW",
+      "PulseWorldSocialGraph",
+      "CheckIdentity-v20-Immortal-Dualband-Presence-WORLD-ADVANTAGE"
     ],
     never: [
       "legacyChunker",
@@ -59,13 +74,13 @@ AI_EXPERIENCE_META = {
 */
 
 // ============================================================================
-// META BLOCK — ORGAN IDENTITY (v18-Immortal)
+// META BLOCK — ORGAN IDENTITY (v20-Immortal-World)
 // ============================================================================
-export const PulseChunkerMeta = Object.freeze({
+export const PulseWorldChunkerMeta = Object.freeze({
   layer: "Backend",
-  role: "PAYLOAD_CHUNK_ENGINE",
-  version: "v18-Immortal",
-  identity: "PulseChunker-v18-Immortal",
+  role: "WORLD_PAYLOAD_CHUNK_ENGINE",
+  version: "v20-Immortal-World",
+  identity: "PulseWorldChunker-v20-Immortal-World",
   guarantees: Object.freeze({
     deterministicSessionId: true,
     cacheAware: true,
@@ -78,16 +93,18 @@ export const PulseChunkerMeta = Object.freeze({
     backendKindAware: true,
     profileAware: true,
     laneAware: true,
+    laneHealthAware: true,
+    profileStatsAware: true,
     noFrontendExposure: true,
     noDynamicImports: true,
     noEval: true,
     noRandomness: true
-    // noTiming: timing only used for TTL/observability, not identity
+    // timing only used for TTL/observability, not identity
   }),
   contract: Object.freeze({
     input: [
       "userId",
-      "payload",
+      "payload | routeDescriptor | worldSnapshot",
       "chunkSize",
       "baseVersion",
       "sizeOnly",
@@ -95,7 +112,9 @@ export const PulseChunkerMeta = Object.freeze({
       "band",
       "backendKind?",
       "worldBand?",
-      "chunkProfile?"
+      "chunkProfile?",
+      "identitySnapshot?",
+      "worldGraphSnapshot?"
     ],
     output: [
       "sessionId",
@@ -106,7 +125,11 @@ export const PulseChunkerMeta = Object.freeze({
       "band",
       "backendKind?",
       "worldBand?",
-      "chunkProfile?"
+      "chunkProfile?",
+      "laneId?",
+      "envelopeId?",
+      "laneHealth?",
+      "profileStats?"
     ]
   }),
   evo: Object.freeze({
@@ -139,6 +162,18 @@ function isRouteDescriptor(input) {
     Array.isArray(input.imports) &&
     Array.isArray(input.assets) &&
     Array.isArray(input.payloads)
+  );
+}
+
+// ============================================================================
+// WORLD SNAPSHOT CONTRACT — symbolic-only, world-aware
+// ============================================================================
+function isWorldSnapshot(input) {
+  if (!input || typeof input !== "object") return false;
+  return (
+    typeof input.meta === "object" &&
+    Array.isArray(input.nodes || []) &&
+    Array.isArray(input.edges || [])
   );
 }
 
@@ -253,12 +288,12 @@ function normalizeBackendPayload(payload) {
 }
 
 // ============================================================================
-// FACTORY — CNS‑SAFE CHUNKER (Brain + Logger)
+// FACTORY — CNS‑SAFE WORLD CHUNKER (Brain + Logger)
 // ============================================================================
-export function createPulseChunker({ Brain, Logger } = {}) {
+export function createPulseWorldChunker({ Brain, Logger } = {}) {
   if (!Brain && !Logger) {
     throw new Error(
-      "PulseChunker v18-Immortal: Missing Brain/Logger injection."
+      "PulseWorldChunker v20-Immortal-World: Missing Brain/Logger injection."
     );
   }
 
@@ -278,14 +313,15 @@ export function createPulseChunker({ Brain, Logger } = {}) {
   const sessions = new Map();
 
   const MetaForLore = {
-    identity: "PulseChunker-v18-Immortal",
-    version: "18.0.0",
+    identity: "PulseWorldChunker-v20-Immortal-World",
+    version: "20.0.0",
     guarantees: {
       laneAware: true,
       presenceAware: true,
       binarySafe: true,
       cacheAware: true,
       routeDescriptorAware: true,
+      worldSnapshotAware: true,
       loreInjected: true,
       backendKindAware: true,
       worldBandAware: true,
@@ -293,7 +329,7 @@ export function createPulseChunker({ Brain, Logger } = {}) {
     },
     contract: {
       input: [
-        "routeDescriptor | rawPayload",
+        "routeDescriptor | rawPayload | worldSnapshot",
         "laneId",
         "envelopeId",
         "userId",
@@ -301,7 +337,9 @@ export function createPulseChunker({ Brain, Logger } = {}) {
         "sizeOnly",
         "backendKind?",
         "worldBand?",
-        "chunkProfile?"
+        "chunkProfile?",
+        "identitySnapshot?",
+        "worldGraphSnapshot?"
       ],
       output: [
         "ok",
@@ -314,15 +352,17 @@ export function createPulseChunker({ Brain, Logger } = {}) {
         "payloadHash",
         "backendKind?",
         "worldBand?",
-        "chunkProfile?"
+        "chunkProfile?",
+        "laneHealth?",
+        "profileStats?"
       ]
     }
   };
 
   // ========================================================================
-  // 32-LANE TOP-CHUNK MEMORY — lane-partitioned cache + TTL + lane stats
+  // 64-LANE TOP-CHUNK MEMORY — lane-partitioned cache + TTL + lane stats
   // ========================================================================
-  const LANE_COUNT = 32;
+  const LANE_COUNT = 64;
   const LANE_MASK = LANE_COUNT - 1;
   const CACHE_TTL_MS = 7 * 24 * 60 * 60 * 1000; // ~1 week
 
@@ -355,6 +395,7 @@ export function createPulseChunker({ Brain, Logger } = {}) {
     url,
     payload,
     routeDescriptor,
+    worldSnapshot,
     baseVersion,
     sizeOnly,
     backendKind,
@@ -371,6 +412,11 @@ export function createPulseChunker({ Brain, Logger } = {}) {
       return `route::${routeDescriptor.route}::${base}::${sizeTag}::${bk}::${wb}::${cp}`;
     }
 
+    if (worldSnapshot && typeof worldSnapshot.meta === "object") {
+      const worldId = worldSnapshot.meta?.version || "world";
+      return `world::${worldId}::${base}::${sizeTag}::${bk}::${wb}::${cp}`;
+    }
+
     if (typeof payload === "string") {
       return `payload::${payload}::${base}::${sizeTag}::${bk}::${wb}::${cp}`;
     }
@@ -380,6 +426,23 @@ export function createPulseChunker({ Brain, Logger } = {}) {
     }
 
     return `anon::${base}::${sizeTag}::${bk}::${wb}::${cp}`;
+  }
+
+  function getLaneHealth() {
+    const now = Date.now();
+    return laneStats.map((stat) => {
+      const ageMs = stat.lastTs ? now - stat.lastTs : null;
+      const hot = ageMs != null && ageMs < 60 * 1000;
+      return {
+        laneId: stat.laneId,
+        entries: stat.entries,
+        hits: stat.hits,
+        misses: stat.misses,
+        evictions: stat.evictions,
+        lastTs: stat.lastTs,
+        hot
+      };
+    });
   }
 
   function getCacheEntry(cacheKey) {
@@ -425,7 +488,7 @@ export function createPulseChunker({ Brain, Logger } = {}) {
     stat.entries = laneStore.size;
     stat.lastTs = now;
 
-    log("[PulseChunker v18] Cache stored", {
+    log("[PulseWorldChunker v20] Cache stored", {
       cacheKey,
       laneIndex,
       expiresAt
@@ -467,7 +530,7 @@ export function createPulseChunker({ Brain, Logger } = {}) {
       );
     }
 
-    log("[PulseChunker v18] Prewarmed profile", { profileId });
+    log("[PulseWorldChunker v20] Prewarmed profile", { profileId });
 
     return stored;
   }
@@ -517,6 +580,15 @@ export function createPulseChunker({ Brain, Logger } = {}) {
     profileStats.set(profileId, stat);
   }
 
+  function getProfileStatsSnapshot() {
+    return Array.from(profileStats.values()).map((s) => ({
+      profileId: s.profileId,
+      chunks: s.chunks,
+      bytes: s.bytes,
+      lastTs: s.lastTs
+    }));
+  }
+
   // ------------------------------------------------------------------------
   // PulseBandSession — deterministic session bootstrap (no time in ID)
   // ------------------------------------------------------------------------
@@ -546,7 +618,7 @@ export function createPulseChunker({ Brain, Logger } = {}) {
 
     sessions.set(sessionId, session);
 
-    log("[PulseChunker v18] PulseBandSession started", {
+    log("[PulseWorldChunker v20] PulseBandSession started", {
       sessionId,
       hasDb: !!session.db
     });
@@ -559,7 +631,7 @@ export function createPulseChunker({ Brain, Logger } = {}) {
   // ------------------------------------------------------------------------
   function registerBackendOrgan(name, { chunk, prewarm } = {}) {
     if (!name || typeof chunk !== "function") {
-      warn("[PulseChunker v18] registerBackendOrgan called with invalid args", {
+      warn("[PulseWorldChunker v20] registerBackendOrgan called with invalid args", {
         name,
         hasChunk: typeof chunk === "function"
       });
@@ -567,18 +639,18 @@ export function createPulseChunker({ Brain, Logger } = {}) {
     }
 
     backendOrgans.set(name, { chunk, prewarm });
-    log("[PulseChunker v18] Registered backend organ for chunking", { name });
+    log("[PulseWorldChunker v20] Registered backend organ for chunking", { name });
   }
 
   // ------------------------------------------------------------------------
   // Prewarm — universal warmup for chunker + registered organs
   // ------------------------------------------------------------------------
   function prewarm() {
-    log("[PulseChunker v18] Prewarm start", {
+    log("[PulseWorldChunker v20] Prewarm start", {
       organs: backendOrgans.size
     });
 
-    // Prewarm canonical profiles
+    // Canonical backend profiles
     prewarmProfile("backend-default", {
       backendKind: "generic",
       worldBand: "backend",
@@ -611,13 +683,38 @@ export function createPulseChunker({ Brain, Logger } = {}) {
       chunkProfile: "backend-logs"
     });
 
+    // World-aware profiles
+    prewarmProfile("world-social", {
+      backendKind: "world-social",
+      worldBand: "world",
+      presenceTag: "world-social",
+      band: "dual",
+      chunkProfile: "world-social"
+    });
+
+    prewarmProfile("world-identity", {
+      backendKind: "world-identity",
+      worldBand: "world",
+      presenceTag: "world-identity",
+      band: "dual",
+      chunkProfile: "world-identity"
+    });
+
+    prewarmProfile("world-earn", {
+      backendKind: "world-earn",
+      worldBand: "world",
+      presenceTag: "world-earn",
+      band: "dual",
+      chunkProfile: "world-earn"
+    });
+
     for (const [name, organ] of backendOrgans.entries()) {
       if (typeof organ.prewarm === "function") {
         try {
           organ.prewarm();
-          log("[PulseChunker v18] Prewarmed organ", { name });
+          log("[PulseWorldChunker v20] Prewarmed organ", { name });
         } catch (e) {
-          warn("[PulseChunker v18] Prewarm failed for organ", {
+          warn("[PulseWorldChunker v20] Prewarm failed for organ", {
             name,
             error: e?.message
           });
@@ -625,7 +722,7 @@ export function createPulseChunker({ Brain, Logger } = {}) {
       }
     }
 
-    log("[PulseChunker v18] Prewarm complete");
+    log("[PulseWorldChunker v20] Prewarm complete");
   }
 
   // ------------------------------------------------------------------------
@@ -687,7 +784,7 @@ export function createPulseChunker({ Brain, Logger } = {}) {
 
     bumpProfileStats(profile.profileId, payloadBytes);
 
-    log("[PulseChunker v18] Chunk payload computed", {
+    log("[PulseWorldChunker v20] Chunk payload computed", {
       userId,
       payloadBytes,
       totalChunks,
@@ -712,7 +809,7 @@ export function createPulseChunker({ Brain, Logger } = {}) {
   }) {
     if (!db) {
       warn(
-        "[PulseChunker v18] generateCache called without db; returning passthrough."
+        "[PulseWorldChunker v20] generateCache called without db; returning passthrough."
       );
       return sizeOnly ? 0 : payload;
     }
@@ -813,6 +910,7 @@ export function createPulseChunker({ Brain, Logger } = {}) {
       url: null,
       payload: null,
       routeDescriptor: descriptor,
+      worldSnapshot: null,
       baseVersion,
       sizeOnly: false,
       backendKind: "route",
@@ -837,7 +935,7 @@ export function createPulseChunker({ Brain, Logger } = {}) {
         ok: true
       });
 
-      log("[PulseChunker v18] Route descriptor cache hit", {
+      log("[PulseWorldChunker v20] Route descriptor cache hit", {
         route,
         cacheKey,
         laneIndex
@@ -850,7 +948,9 @@ export function createPulseChunker({ Brain, Logger } = {}) {
         presence,
         sessionId: cachedResp.sessionId,
         payloadBytes: cachedResp.payloadBytes,
-        payloadHash: cachedResp.payloadHash
+        payloadHash: cachedResp.payloadHash,
+        laneHealth: getLaneHealth(),
+        profileStats: getProfileStatsSnapshot()
       };
     }
 
@@ -863,7 +963,7 @@ export function createPulseChunker({ Brain, Logger } = {}) {
         const resolved = await resolveCacheRequest(imp, baseVersion, false);
         resolvedImports.push(resolved);
       } catch (e) {
-        warn("[PulseChunker v18] Failed to resolve import", {
+        warn("[PulseWorldChunker v20] Failed to resolve import", {
           route,
           imp,
           error: e?.message
@@ -876,7 +976,7 @@ export function createPulseChunker({ Brain, Logger } = {}) {
         const resolved = await resolveCacheRequest(asset, baseVersion, false);
         resolvedAssets.push(resolved);
       } catch (e) {
-        warn("[PulseChunker v18] Failed to resolve asset", {
+        warn("[PulseWorldChunker v20] Failed to resolve asset", {
           route,
           asset,
           error: e?.message
@@ -889,7 +989,7 @@ export function createPulseChunker({ Brain, Logger } = {}) {
         const resolved = await resolveCacheRequest(p, baseVersion, false);
         resolvedPayloads.push(resolved);
       } catch (e) {
-        warn("[PulseChunker v18] Failed to resolve payload", {
+        warn("[PulseWorldChunker v20] Failed to resolve payload", {
           route,
           payload: p,
           error: e?.message
@@ -956,7 +1056,124 @@ export function createPulseChunker({ Brain, Logger } = {}) {
 
     putCacheEntry(cacheKey, response);
 
-    return response;
+    return {
+      ...response,
+      laneHealth: getLaneHealth(),
+      profileStats: getProfileStatsSnapshot()
+    };
+  }
+
+  // ------------------------------------------------------------------------
+  // World Snapshot Folding — PulseWorldSocialGraph snapshot
+  // ------------------------------------------------------------------------
+  async function foldWorldSnapshot(
+    worldSnapshot,
+    { laneId, envelopeId, userId, baseVersion }
+  ) {
+    const cacheKey = buildCacheKey({
+      url: null,
+      payload: null,
+      routeDescriptor: null,
+      worldSnapshot,
+      baseVersion,
+      sizeOnly: false,
+      backendKind: "world-social",
+      worldBand: "world",
+      chunkProfile: "world-social"
+    });
+
+    const cached = getCacheEntry(cacheKey);
+    if (cached) {
+      const { entry, laneIndex } = cached;
+      const cachedResp = entry.response;
+
+      const presence = buildPresenceEnvelope({
+        laneId,
+        envelopeId,
+        band: "dual",
+        wave: "stable",
+        dualBand: true,
+        presenceTag: cachedResp.presence?.presenceTag || "world-social",
+        worldBand: cachedResp.presence?.worldBand || "world",
+        bandKind: "backend_chunk_world",
+        ok: true
+      });
+
+      log("[PulseWorldChunker v20] World snapshot cache hit", {
+        cacheKey,
+        laneIndex
+      });
+
+      return {
+        ok: true,
+        data: cachedResp.data,
+        kind: cachedResp.kind,
+        presence,
+        sessionId: cachedResp.sessionId,
+        payloadBytes: cachedResp.payloadBytes,
+        payloadHash: cachedResp.payloadHash,
+        laneHealth: getLaneHealth(),
+        profileStats: getProfileStatsSnapshot()
+      };
+    }
+
+    const { kind, buffer } = normalizeBackendPayload(worldSnapshot);
+    const metaChunk = chunkPayload({
+      userId,
+      payload: buffer,
+      baseVersion: baseVersion || "v1",
+      presenceTag: "world-social",
+      band: "dual",
+      backendKind: "world-social",
+      worldBand: "world",
+      chunkProfile: "world-social"
+    });
+
+    const presence = buildPresenceEnvelope({
+      laneId,
+      envelopeId,
+      band: "dual",
+      wave: "coherent",
+      dualBand: true,
+      presenceTag: "world-social",
+      worldBand: "world",
+      bandKind: "backend_chunk_world",
+      ok: true
+    });
+
+    const lore = generateLoreHeader({
+      meta: MetaForLore,
+      payloadType: kind,
+      baseVersion,
+      presenceTag: "world-social",
+      band: "dual",
+      backendKind: "world-social",
+      worldBand: "world",
+      chunkProfile: "world-social"
+    });
+
+    const dna = {
+      __lore: lore,
+      __chunk: worldSnapshot
+    };
+
+    const response = {
+      ok: true,
+      data: dna,
+      kind,
+      presence,
+      sessionId: metaChunk.sessionId,
+      payloadBytes: metaChunk.payloadBytes,
+      payloadHash: metaChunk.payloadHash
+    };
+
+    putCacheEntry(cacheKey, response);
+
+    return {
+      ...response,
+      laneHealth: getLaneHealth(),
+      profileStats: getProfileStatsSnapshot()
+    };
   }
 
   // ------------------------------------------------------------------------
@@ -971,6 +1188,7 @@ export function createPulseChunker({ Brain, Logger } = {}) {
     sizeOnly,
     payload,
     routeDescriptor,
+    worldSnapshot,
     backendKind = "generic",
     worldBand = "backend",
     chunkProfile = "backend-default"
@@ -985,10 +1203,20 @@ export function createPulseChunker({ Brain, Logger } = {}) {
         });
       }
 
+      if (worldSnapshot && isWorldSnapshot(worldSnapshot)) {
+        return await foldWorldSnapshot(worldSnapshot, {
+          laneId,
+          envelopeId,
+          userId,
+          baseVersion
+        });
+      }
+
       const cacheKey = buildCacheKey({
         url,
         payload,
         routeDescriptor: null,
+        worldSnapshot: null,
         baseVersion,
         sizeOnly: !!sizeOnly,
         backendKind,
@@ -1013,7 +1241,7 @@ export function createPulseChunker({ Brain, Logger } = {}) {
           ok: true
         });
 
-        log("[PulseChunker v18] Payload cache hit", {
+        log("[PulseWorldChunker v20] Payload cache hit", {
           url,
           cacheKey,
           laneIndex
@@ -1026,7 +1254,9 @@ export function createPulseChunker({ Brain, Logger } = {}) {
           presence,
           sessionId: cachedResp.sessionId,
           payloadBytes: cachedResp.payloadBytes,
-          payloadHash: cachedResp.payloadHash
+          payloadHash: cachedResp.payloadHash,
+          laneHealth: getLaneHealth(),
+          profileStats: getProfileStatsSnapshot()
         };
       }
 
@@ -1092,121 +1322,61 @@ export function createPulseChunker({ Brain, Logger } = {}) {
         putCacheEntry(cacheKey, response);
       }
 
-      return response;
+      return {
+        ...response,
+        laneHealth: getLaneHealth(),
+        profileStats: getProfileStatsSnapshot()
+      };
     } catch (e) {
-      error("[PulseChunker v18] chunkRoute failed", {
+      error("[PulseWorldChunker v20] chunkRoute fatal error", {
         url,
-        laneId,
-        envelopeId,
         error: e?.message
-      });
-
-      const presence = buildPresenceEnvelope({
-        laneId,
-        envelopeId,
-        band: "dual",
-        wave: "distorted",
-        dualBand: true,
-        presenceTag: "error",
-        worldBand,
-        bandKind: "backend_chunk_route",
-        ok: false
       });
 
       return {
         ok: false,
-        error: e?.message || "Chunk route failed",
-        presence
+        data: null,
+        kind: "error",
+        presence: buildPresenceEnvelope({
+          laneId,
+          envelopeId,
+          band: "dual",
+          wave: "degraded",
+          dualBand: true,
+          presenceTag: "error",
+          worldBand,
+          bandKind: "backend_chunk_route",
+          ok: false
+        }),
+        sessionId: null,
+        payloadBytes: 0,
+        payloadHash: "h0",
+        laneHealth: getLaneHealth(),
+        profileStats: getProfileStatsSnapshot()
       };
     }
   }
 
-  // ------------------------------------------------------------------------
-  // CNS Handler — fetchExternalResource adapter
-  // ------------------------------------------------------------------------
-  async function handleFetchExternalResource(request) {
-    const {
-      url,
-      laneId,
-      envelopeId,
-      userId,
-      baseVersion,
-      sizeOnly,
-      payload,
-      routeDescriptor,
-      backendKind,
-      worldBand,
-      chunkProfile
-    } = request || {};
-
-    return await chunkRoute({
-      url,
-      laneId,
-      envelopeId,
-      userId,
-      baseVersion,
-      sizeOnly,
-      payload,
-      routeDescriptor,
-      backendKind,
-      worldBand,
-      chunkProfile
-    });
-  }
-
-  // ------------------------------------------------------------------------
-  // Public API
-  // ------------------------------------------------------------------------
+  // ========================================================================
+  // PUBLIC API
+  // ========================================================================
   return {
-    meta: PulseChunkerMeta,
+    meta: MetaForLore,
 
-    // CNS wiring
+    // sessions
     startPulseBandSession,
+
+    // registration
     registerBackendOrgan,
+
+    // prewarm
     prewarm,
 
-    // Core primitive
-    chunkPayload,
-
-    // Cache / route helpers
-    resolveCacheRequest,
-    generateCache,
+    // core chunk route
     chunkRoute,
-    handleFetchExternalResource,
 
-    // Profiles / lanes
-    prewarmProfile,
-    getProfiles() {
-      const out = {};
-      for (const [k, v] of profiles.entries()) out[k] = v;
-      return out;
-    },
-    getProfileStats() {
-      const out = {};
-      for (const [k, v] of profileStats.entries()) out[k] = { ...v };
-      return out;
-    },
-    getLaneStats() {
-      return laneStats.map((s) => ({ ...s }));
-    },
-
-    // Utilities
-    getSession(sessionId) {
-      return sessions.get(sessionId) || null;
-    },
-
-    hasBackendOrgan(name) {
-      return backendOrgans.has(name);
-    },
-
-    isRouteDescriptor,
-    generateLoreHeader,
-
-    getLaneCacheSnapshot() {
-      return laneStores.map((store, idx) => ({
-        laneId: idx,
-        size: store.size
-      }));
-    }
+    // diagnostics
+    getLaneHealth,
+    getProfileStatsSnapshot
   };
 }

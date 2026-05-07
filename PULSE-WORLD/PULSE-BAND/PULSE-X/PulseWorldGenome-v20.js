@@ -104,7 +104,7 @@ import * as PulseTranslatorSkeletalIntake from "../PULSE-TRANSLATOR/PulseTransla
 import * as PulseTranslatorSkeletalOutput from "../PULSE-TRANSLATOR/PulseTranslatorSkeletalOutput-v17.js";
 
 // Social graph organ
-import { createPulseWorldSocialGraph } from "./PulseWorldSocialGraph-v17.js";
+import { createPulseWorldSocialGraph } from "./PulseWorldSocialGraph-v20.js";
 
 // ============================================================================
 //  LOCAL CACHES (WORLD-LAYER)

@@ -107,8 +107,8 @@ import { createForwardEngine } from "../../PULSE-BAND/PULSE-ENGINE/ForwardMotion
 import { createBackwardEngine } from "../../PULSE-BAND/PULSE-ENGINE/BackwardMotion-v16.js";
 import PulseUIErrors from "../_FRONTEND/PulseUIErrors-v16.js";
 import { initUIFlow } from "../_FRONTEND/PulseUIFlow-v16.js";
-import { route, PulseProofLogger, log, warn, error } from "./PulseWorldBridge-v18.js";
-import { PulseUnderstanding } from "./PulseWorldUnderstanding-v18.js";
+import { route, PulseProofLogger, log, warn, error } from "./PulseWorldBridge-v20.js";
+import { PulseUnderstanding } from "./PulseWorldUnderstanding-v20.js";
 
 // ============================================================================
 // GLOBAL ORGANISM MEMORY (shared across all imports)

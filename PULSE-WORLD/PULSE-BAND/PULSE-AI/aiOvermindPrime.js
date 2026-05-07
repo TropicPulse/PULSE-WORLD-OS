@@ -35,7 +35,7 @@ AI_EXPERIENCE_META = {
 }
 */
 
-import { PulseProofLogger } from "../../PULSE-UI/_BACKEND/PulseProofLogger.js";
+import { PulseProofLogger } from "../../PULSE-UI/_BACKEND/PulseProofLogger-v20.js";
 
 import { PulseOrganismMap } from "../PULSE-X/PulseWorldOrganismMap-v21.js";
 import { PulseIQMap } from "../PULSE-X/PulseWorldIQMap-v20.js";
@@ -49,7 +49,7 @@ import { aiOrganism } from "./aiOrganism-v16.js";
 //  CORE ORGANISM LAYERS
 // ============================================================================
 import { NodeAdmin } from "../PULSE-TOOLS/PulseNodeAdmin-v20.js";
-import { BeaconEngine } from "../PULSE-EXPANSION/PulseBeaconEngine-v16.js";
+import { BeaconEngine } from "../PULSE-EXPANSION/PulseBeaconEngine-v20.js";
 
 // ============================================================================
 //  ROUTING + MESH (Presence-Aware v12.3)
@@ -79,10 +79,10 @@ import { readCoreMemoryEarn, writeCoreMemoryEarn} from "../PULSE-CORE/PulseCoreE
 
 import { readCoreMemorySend, writeCoreMemorySend} from "../PULSE-CORE/PulseCoreSendMemoryAdapter.js";
 
-import { PulseUnderstanding } from "../../PULSE-UI/_BACKEND/PulseWorldUnderstanding-v18.js";
+import { PulseUnderstanding } from "../../PULSE-UI/_BACKEND/PulseWorldUnderstanding-v20.js";
 import { PulseGovernor } from "../PULSE-OS/PulseOSGovernor.js";
-import { PulseVitalsMonitor } from "../../PULSE-UI/_BACKEND/PulseProofMonitor.js";
-import { PulseBinaryTech } from "../PULSE-TECH/PulseBinaryTech-v16.js";
+import { PulseVitalsMonitor } from "../../PULSE-UI/_BACKEND/PulseProofMonitor-v20.js";
+import { PulseBinaryTech } from "../PULSE-TECH/PulseBinaryTech-v20.js";
 
 // ———————————————————————————————
 // 1. CORE CROWN CONTRACTS
@@ -131,8 +131,8 @@ import createAIExperience from "./aiExperience.js";
 // ———————————————————————————————
 import createAIBinaryPipeline from "./aiPipeline.js";
 import runAI from "./aiEngine-v16.js";
-import pulseAIChunker from "./PulseAIChunker-v17.js";
-import createPulseFileScanner from "./PulseFileScanner-v16.js";
+import pulseAIChunker from "./PulseAIChunker-v20.js";
+import createPulseFileScanner from "./PulseFileScanner-v20.js";
 // ———————————————————————————————
 // 7. WATCHDOG + VITALS + LOGGING
 // ———————————————————————————————
@@ -147,7 +147,6 @@ import createPersonalFrameOrgan from "./aiPersonalFrame.js";
 import getBoundariesForPersona from "./boundaries.js";
 import getPermissionsForPersona from "./permissions.js";
 import createExperienceFrameOrgan from "./Experience-v16.js";
-import { hash } from "node:crypto";
 
 // ============================================================================
 //  META
