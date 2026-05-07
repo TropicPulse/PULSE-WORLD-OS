@@ -1,10 +1,12 @@
 // ============================================================================
-//  PulseNodeEvolution-v16.js
-//  IMMORTAL-tier, shifter-first, sectional fallback evolution layer
-//  - Sits ABOVE all nodes (NodeAdmin, Intellect, Reproduction, Mesh, Earn, etc.)
-//  - Does NOT rewrite existing organs
-//  - Upgrades pulses, manages shifter pools, and applies sectional fallback
+//  PulseNodeEvolution-v20-IMMORTAL.js
+//  IMMORTAL-tier, shifter-first, sectional fallback evolution layer — v20
+//  - Sits ABOVE all nodes (admin, intellect, reproduction, mesh, earn, presence, worker, generic).
+//  - Does NOT rewrite existing organs.
+//  - Upgrades pulses, manages shifter pools, and applies sectional fallback.
+//  - Dual-band, chunk/prewarm-aware, deterministic, drift-proof.
 // ============================================================================
+
 
 /**
  * CONFIG CONTRACT (host system must provide):
@@ -57,8 +59,57 @@
  *   });
  */
 
+export const PulseNodeEvolutionMeta = Object.freeze({
+  id: "PulseNodeEvolution-v20-IMMORTAL",
+  version: "20.0.0",
+  layer: "node_evolution",
+  role: "IMMORTAL_NODE_EVOLUTION_LAYER",
+  description:
+    "IMMORTAL shifter-first, sectional fallback evolution layer above all node organs.",
+  identity: Object.freeze({
+    type: "organ",
+    name: "PulseNodeEvolution",
+    band: "meta",
+    mind: false,
+    immutable: true
+  }),
+  evo: Object.freeze({
+    shifterFirst: true,
+    sectionalFallback: true,
+    nodeAware: true,
+    meshAware: true,
+    earnAware: true,
+    presenceAware: true,
+    workerAware: true,
+    adminAware: true,
+    intellectAware: true,
+    reproductionAware: true,
+
+    symbolicPrimary: true,
+    binaryAware: true,
+    dualBand: true,
+
+    deterministic: true,
+    deterministicField: true,
+    driftProof: true,
+    multiInstanceReady: true,
+    selfRepairable: true,
+
+    chunkAware: true,
+    cacheAware: true,
+    prewarmAware: true,
+
+    zeroNetwork: true,
+    zeroFilesystem: true,
+    zeroRandomness: true,
+    zeroTimers: true,
+    zeroMutationOfInput: true,
+    zeroRoutingInfluence: true
+  })
+});
+
 // ============================================================================
-//  Utility: shallow clone
+//  Utility: shallow clone (JSON-based, deterministic)
 // ============================================================================
 function clone(obj) {
   return obj && typeof obj === "object"
@@ -70,6 +121,7 @@ function clone(obj) {
 //  Shifter Pool (Party) — shared across all nodes
 //  - Maintains a small pool of prewarmed shifter pulses
 //  - Used as compute satellites for factoring/intelligence
+//  - v20: adds simple poolMeta surface (no timers, no randomness)
 // ============================================================================
 function createShifterPool({
   createShifterPulse,
@@ -78,9 +130,16 @@ function createShifterPool({
   log = () => {}
 }) {
   const pool = [];
+  const poolMeta = {
+    version: "v20-IMMORTAL",
+    targetSize: poolSize,
+    initialized: false,
+    refreshCount: 0
+  };
 
   function initPool(baseCtx = {}) {
     if (!createShifterPulse) return;
+    if (poolMeta.initialized) return;
     for (let i = pool.length; i < poolSize; i++) {
       try {
         const shifter = createShifterPulse({
@@ -96,10 +155,12 @@ function createShifterPool({
         break;
       }
     }
+    poolMeta.initialized = true;
   }
 
   function refreshPool(ctx = {}) {
     if (!evolveShifterPulse || pool.length === 0) return;
+    poolMeta.refreshCount++;
     for (let i = 0; i < pool.length; i++) {
       try {
         pool[i] = evolveShifterPulse(pool[i], {
@@ -119,15 +180,23 @@ function createShifterPool({
     return pool.slice(0, Math.min(count, pool.length));
   }
 
+  function snapshot() {
+    return {
+      meta: { ...poolMeta },
+      size: pool.length
+    };
+  }
+
   return {
     initPool,
     refreshPool,
-    getSatellites
+    getSatellites,
+    snapshot
   };
 }
 
 // ============================================================================
-//  Sectional Fallback Logic
+//  Sectional Fallback Logic — v20
 //  - Shifter-first per section
 //  - Sectional capability checks
 //  - Legacy fallback per section
@@ -161,17 +230,15 @@ function createSectionalFallback({
         return false;
       }
     }
-    return true; // default: yes
+    return true;
   }
 
   // Connector: pre-section (before shifter/legacy)
   function preSectionConnector({ nodeType, pulse, context }) {
-    // This is where you can normalize, tag, or wrap pulses before evolution.
-    // Keep it minimal and deterministic.
     const nextPulse = clone(pulse);
     nextPulse.meta = nextPulse.meta || {};
-    nextPulse.meta.nodeType = nodeType;
-    nextPulse.meta.evolutionLayer = "PulseNodeEvolution-v16";
+    nextPulse.meta.nodeType = nodeType || "generic";
+    nextPulse.meta.evolutionLayer = "PulseNodeEvolution-v20-IMMORTAL";
     return nextPulse;
   }
 
@@ -181,7 +248,7 @@ function createSectionalFallback({
     nextPulse.meta = nextPulse.meta || {};
     nextPulse.meta.sectionMeta = {
       ...(nextPulse.meta.sectionMeta || {}),
-      [nodeType]: sectionMeta
+      [nodeType || "generic"]: sectionMeta
     };
     return nextPulse;
   }
@@ -192,9 +259,8 @@ function createSectionalFallback({
     if (!sectionSupportsShifter(nodeType, context)) return null;
 
     try {
-      // Use satellites as “pets” to precompute intelligence if desired
       const satellites = shifterPool.getSatellites(3);
-      let satelliteIntel = [];
+      const satelliteIntel = [];
 
       for (const sat of satellites) {
         try {
@@ -216,7 +282,6 @@ function createSectionalFallback({
         }
       }
 
-      // Create a shifter pulse specifically for this node/pulse
       const shifter = createShifterPulse({
         jobId: pulse.jobId || null,
         pattern: pulse.pattern || "UNKNOWN_PATTERN",
@@ -230,12 +295,11 @@ function createSectionalFallback({
         presenceBandState: pulse.presenceBandState || null,
         harmonicDrift: pulse.harmonicDrift || null,
         coherenceScore: pulse.coherenceScore || null,
-        satellitesIntel: satelliteIntel
+        satellitesIntel
       });
 
       if (!shifter) return null;
 
-      // Shifter is already a fully evolved IMMORTAL pulse organism
       return {
         pulse: shifter,
         meta: {
@@ -254,7 +318,6 @@ function createSectionalFallback({
   function tryLegacySection({ nodeType, pulse, context }) {
     const h = getSectionHandler(nodeType);
     if (typeof h.legacyUpgrade !== "function") {
-      // No legacy handler — return original pulse
       return {
         pulse,
         meta: {
@@ -280,7 +343,7 @@ function createSectionalFallback({
         meta: {
           mode: "legacy-error-pass-through",
           nodeType,
-          error: String(err)
+          error: String(err && err.message ? err.message : err)
         }
       };
     }
@@ -288,11 +351,12 @@ function createSectionalFallback({
 
   // Public: evolve a pulse for a given nodeType with sectional fallback
   function evolveNodePulse({ nodeType, pulse, context = {} }) {
-    const pre = preSectionConnector({ nodeType, pulse, context });
+    const safeNodeType = nodeType || "generic";
 
-    // 1) Try shifter-first for this section
+    const pre = preSectionConnector({ nodeType: safeNodeType, pulse, context });
+
     const shifterResult = tryShifterFirst({
-      nodeType,
+      nodeType: safeNodeType,
       pulse: pre,
       context
     });
@@ -301,18 +365,16 @@ function createSectionalFallback({
     if (shifterResult && shifterResult.pulse) {
       chosen = shifterResult;
     } else {
-      // 2) Sectional legacy fallback
       const legacyResult = tryLegacySection({
-        nodeType,
+        nodeType: safeNodeType,
         pulse: pre,
         context
       });
       chosen = legacyResult;
     }
 
-    // 3) Post-section connector
     const post = postSectionConnector({
-      nodeType,
+      nodeType: safeNodeType,
       pulse: chosen.pulse,
       context,
       sectionMeta: chosen.meta
@@ -324,17 +386,20 @@ function createSectionalFallback({
   return {
     evolveNodePulse,
     preSectionConnector,
-    postSectionConnector
+    postSectionConnector,
+    getSectionHandler,
+    sectionSupportsShifter
   };
 }
 
 // ============================================================================
-//  Factory: createPulseNodeEvolutionV16
+//  Factory: createPulseNodeEvolutionV20
 //  - Returns an object with evolveNodePulse()
-//  - Intended to be used by ALL nodes (admin, intellect, reproduction, etc.)
+//  - Intended to be used by ALL nodes (admin, intellect, reproduction, mesh,
+//    earn, presence, worker, generic)
 // ============================================================================
 
-export function createPulseNodeEvolutionV16(config) {
+export function createPulseNodeEvolutionV20(config = {}) {
   const {
     createShifterPulse,
     evolveShifterPulse,
@@ -342,9 +407,8 @@ export function createPulseNodeEvolutionV16(config) {
     envCapabilities = {},
     log = () => {},
     shifterPoolSize = 5
-  } = config || {};
+  } = config;
 
-  // Global shifter pool shared across all nodes
   const shifterPool = createShifterPool({
     createShifterPulse,
     evolveShifterPulse,
@@ -353,9 +417,8 @@ export function createPulseNodeEvolutionV16(config) {
   });
 
   // Initialize pool once at startup
-  shifterPool.initPool();
+  shifterPool.initPool({});
 
-  // Sectional fallback engine
   const sectional = createSectionalFallback({
     handlers,
     envCapabilities,
@@ -365,8 +428,9 @@ export function createPulseNodeEvolutionV16(config) {
     log
   });
 
-  // Public API
-  return {
+  return Object.freeze({
+    meta: PulseNodeEvolutionMeta,
+
     /**
      * Evolve a pulse for a given nodeType with shifter-first + sectional fallback.
      *
@@ -384,51 +448,15 @@ export function createPulseNodeEvolutionV16(config) {
      */
     refreshShifterPool(ctx = {}) {
       shifterPool.refreshPool(ctx);
+    },
+
+    /**
+     * Optional: snapshot shifter pool state (size + meta).
+     */
+    snapshotShifterPool() {
+      return shifterPool.snapshot();
     }
-  };
+  });
 }
 
-// ============================================================================
-//  Example minimal handler wiring (host-side, not part of the layer itself)
-// ============================================================================
-//
-// import { createSymPulseV2, evolvePulseV2 } from "./SymPulseV2.js";
-// import { createPulseNodeEvolutionV16 } from "./PulseNodeEvolution-v16.js";
-//
-// const evolutionLayer = createPulseNodeEvolutionV16({
-//   createShifterPulse: createSymPulseV2,
-//   evolveShifterPulse: evolvePulseV2,
-//   handlers: {
-//     admin: {
-//       legacyUpgrade: (pulse, ctx) => pulse, // plug NodeAdmin legacy logic here
-//       supportsShifter: (ctx) => true
-//     },
-//     intellect: {
-//       legacyUpgrade: (pulse, ctx) => pulse, // plug NodeAdmin-Intellect legacy logic
-//       supportsShifter: (ctx) => true
-//     },
-//     reproduction: {
-//       legacyUpgrade: (pulse, ctx) => pulse, // plug Reproduction legacy logic
-//       supportsShifter: (ctx) => true
-//     },
-//     generic: {
-//       legacyUpgrade: (pulse, ctx) => pulse,
-//       supportsShifter: (ctx) => true
-//     }
-//   },
-//   envCapabilities: {
-//     supportsShifterGlobally: () => true
-//   },
-//   log: (...args) => console.log("[PulseNodeEvolution-v16]", ...args)
-// });
-//
-// // Usage inside any node:
-// const upgradedPulse = evolutionLayer.evolveNodePulse({
-//   nodeType: "admin",
-//   pulse,
-//   context: { routerHint: "ADMIN", meshHint: null, organHint: null }
-// });
-//
-// ============================================================================
-//  End of PulseNodeEvolution-v16.js
-// ============================================================================
+export default createPulseNodeEvolutionV20;

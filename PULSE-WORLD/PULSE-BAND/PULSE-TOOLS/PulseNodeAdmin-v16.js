@@ -308,7 +308,7 @@ import PulseBinaryFramework from "./PulseBinaryFramework.js";
 import PulseBinaryLoopScanner from "./PulseBinaryLoopScanner.js";
 import PulseBinaryWaveScanner from "./PulseBinaryWaveScanner.js";
 import PulseEvolutionaryScanner from "./PulseEvolutionaryScanner.js";
-import PulseHeatMap from "./PulseHeatMap.js";
+import PulseHeatMap from "./PulseHeatMap-v20.js";
 import PulseLoopScanner from "./PulseLoopScanner.js";
 import PulseNodeAdminIntellect from "./PulseNodeAdminIntellect-v16.js";
 import { createPulseNodeEvolutionV16 as PulseNodeAdminEvolution } from "./PulseNodeAdminEvolution-v16.js";
