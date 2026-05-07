@@ -54,7 +54,7 @@ AI_EXPERIENCE_META = {
 // -----------------------------------------------------------------------------
 // IMPORTS (pure contracts; real system wires concrete implementations)
 // -----------------------------------------------------------------------------
-import { PulseOrganismMap } from "./PulseWorldOrganismMap-v17.js";
+import { PulseOrganismMap } from "./PulseWorldOrganismMap-v21.js";
 import { createPulseAIChunker } from "../ai-core/PulseAIChunker-v16.js";
 import { log, warn, error as logError } from "../../PULSE-UI/_BACKEND/PulseProofLogger.js";
 

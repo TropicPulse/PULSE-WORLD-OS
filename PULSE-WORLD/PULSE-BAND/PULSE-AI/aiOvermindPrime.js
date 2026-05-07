@@ -37,7 +37,7 @@ AI_EXPERIENCE_META = {
 
 import { PulseProofLogger } from "../../PULSE-UI/_BACKEND/PulseProofLogger.js";
 
-import { PulseOrganismMap } from "../PULSE-X/PulseWorldOrganismMap-v17.js";
+import { PulseOrganismMap } from "../PULSE-X/PulseWorldOrganismMap-v21.js";
 import { PulseIQMap } from "../PULSE-X/PulseWorldIQMap-v20.js";
 import { PulseIntentMap } from "../PULSE-X/PulseWorldIntentMap-v17.js";
 // ============================================================================

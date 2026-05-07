@@ -1,6 +1,6 @@
 // ============================================================================
-// PULSE-NET — Immortal Local Heartbeat + Forward/Backward Engine + FastLane
-// v17-FAMILY-NET-Immortal-FastLane (SUPER INSTANCE MODE)
+// PULSE-WORLD — Immortal Local Heartbeat + Forward/Backward Engine + FastLane
+// v21-Immortal-RootOrganism-FastLane (SUPER INSTANCE MODE)
 //  • Multi-instance safe (family registry)
 //  • Drift-proof
 //  • Dual-lane (forward/backward)
@@ -11,74 +11,73 @@
 //  • 3-heart mesh (Mom/Dad/Earn) + random nudge
 //  • UIFlow + ErrorSpine + Bridge-aware
 //  • LOCAL ONLY on device — but is the ONLY internet edge via routed paths
-//  • Expansion/Castle/Server/User/Brain → routed signals → PulseNet → PulseNet server
+//  • Expansion/Castle/Server/User/Brain → routed signals → PulseWorld → PulseWorld server
 //  • v17: FastLane intent stream from Pulse‑Touch + temporal prewarm cache
+//  • v21: Root Pulse‑World organism network edge + advantage layer
 // ============================================================================
 
 /*
 AI_EXPERIENCE_META = {
-  identity: "PulseNet",
-  version: "v17-FAMILY-NET-Immortal-FastLane",
-  layer: "frontend",
-  role: "network_intelligence",
-  lineage: "PulseOS-v12 → v13-Evo-Immortal → v15-FAMILY-Immortal → v16-FAMILY-NET-Immortal → v17-FastLane",
+  identity: "PulseWorld",
+  version: "v21-Immortal-RootOrganism",
+  layer: "world",
+  role: "root_organism",
+  lineage: "v17-FastLane → v20-Immortal → v21-Root",
 
   evo: {
-    dualBand: true,
-    binaryAware: true,
-    cnsAligned: true,
-    chunkAligned: true,
-    presenceAware: true,
-    safeRouteFree: true,
-    microPulseEngine: true,
-    pathfinder: true,
-    preLossDetector: true,
-    fallbackRouter: true,
+    // root organism
+    worldOrganism: true,
+    rootOrganism: true,
+    cnsRoot: true,
+    lineageRoot: true,
+    advantageRoot: true,
 
-    multiInstanceFamily: true,
-    serverResident: true,
-    heartbeatMesh: true,
-    uiFlowAware: true,
-    errorSpineAware: true,
-    routeAware: true,
-    futureEvolutionReady: true,
-
-    // v16: network edge + expansion/castle aware
+    // world systems
     expansionAware: true,
     castleAware: true,
     serverAware: true,
     userAware: true,
     brainAware: true,
     soldierAware: true,
-    meshIngressAware: true,
-    pulseNetServerAware: true,
-    singleInternetEdge: true,
+    meshAware: true,
 
-    // v17: FastLane + temporal prewarm
+    // ingress + fastlane
+    ingressAware: true,
     fastLaneAware: true,
     temporalCacheAware: true,
-    touchContinuousPulseAware: true
+
+    // world intelligence
+    worldUnderstanding: true,
+    worldGenomeAware: true,
+    worldEvolutionAware: true,
+    worldRouterAware: true,
+    worldMemoryAware: true,
+
+    // IMMORTAL guarantees
+    deterministic: true,
+    driftProof: true,
+    pureCompute: true,
+    zeroNetwork: false, // world is the network edge
+    zeroFilesystem: true,
+    zeroMutationOfInput: true,
+
+    futureEvolutionReady: true
   },
 
   contract: {
     always: [
-      "PulseWindow",
-      "PulsePresence",
-      "PulseChunks",
-      "PulseBand",
-      "PulseUIFlow",
-      "PulseProofBridge",
-      "PulsePresenceNormalizer",
-      "PulseUIErrors"
+      "PulseNet",
+      "PulseWorldUnderstanding",
+      "PulseWorldGenome",
+      "PulseWorldRouter",
+      "PulseWorldMemory",
+      "PulseWorldEvolution"
     ],
     never: [
       "legacyPulseNet",
-      "legacyPulseClient",
-      "legacyPulseMesh",
+      "legacyWorldLayer",
       "safeRoute",
-      "fetchViaCNS",
-      "legacyFallbackRouter",
-      "legacyNetworkLayer"
+      "fetchViaCNS"
     ]
   }
 }
@@ -96,7 +95,7 @@ const g =
     ? g
     : {};
 
-import {db, admin} from "../../PULSE-BAND/PULSE-X/PulseWorldGenome-v17.js"
+import { db, admin } from "../../PULSE-BAND/PULSE-X/PulseWorldGenome-v17.js";
 
 // ============================================================================
 // PULSE-NET v14-Immortal — Backend Gateway + Crown Throne Room
@@ -108,7 +107,7 @@ import { createForwardEngine } from "../../PULSE-BAND/PULSE-ENGINE/ForwardMotion
 import { createBackwardEngine } from "../../PULSE-BAND/PULSE-ENGINE/BackwardMotion-v16.js";
 import PulseUIErrors from "../_FRONTEND/PulseUIErrors-v16.js";
 import { initUIFlow } from "../_FRONTEND/PulseUIFlow-v16.js";
-import { route, PulseProofLogger, log, warn, error } from "./PulseWorldBridge.js";
+import { route, PulseProofLogger, log, warn, error } from "./PulseWorldBridge-v18.js";
 import { PulseUnderstanding } from "./PulseWorldUnderstanding-v18.js";
 
 // ============================================================================
@@ -146,6 +145,41 @@ function getNetState(instanceId) {
     };
   }
   return fam[instanceId];
+}
+
+// ============================================================================
+// WORLD ADVANTAGE STATE — IMPULSE / SPEED / BURST
+// ============================================================================
+const WORLD_ADVANTAGE_STATE = {
+  impulseQueue: [],
+  speedBoostUntil: 0,
+  signalBursts: []
+};
+
+function queueImpulse(instanceId, reason = "manual") {
+  WORLD_ADVANTAGE_STATE.impulseQueue.push({
+    instanceId,
+    reason,
+    ts: Date.now()
+  });
+}
+
+function activateSpeedBoost(ms, reason = "manual") {
+  const now = Date.now();
+  WORLD_ADVANTAGE_STATE.speedBoostUntil = Math.max(
+    WORLD_ADVANTAGE_STATE.speedBoostUntil,
+    now + ms
+  );
+}
+
+function queueSignalBurst(kind, payload, priority = 1, reason = "manual") {
+  WORLD_ADVANTAGE_STATE.signalBursts.push({
+    kind,
+    payload,
+    priority,
+    reason,
+    ts: Date.now()
+  });
 }
 
 // ============================================================================
@@ -315,6 +349,28 @@ const NetworkOrgan = {
         dualBand: true,
         singleInternetEdge: true,
         fastLane: true
+      }).catch(() => {});
+    } catch {
+      // swallow
+    }
+  },
+
+  async sendBurst(kind, payload, priority = 1, reason = "manual") {
+    const channel = this.channels[kind];
+    if (!channel) return;
+
+    try {
+      await route(channel, {
+        kind,
+        payload,
+        priority,
+        reason,
+        ts: Date.now(),
+        layer: "PulseNet",
+        binaryAware: true,
+        dualBand: true,
+        singleInternetEdge: true,
+        burst: true
       }).catch(() => {});
     } catch {
       // swallow
@@ -583,6 +639,20 @@ async function tickFamily(instanceId = "core") {
   // 0) Process ingress
   await processIngress(instanceId);
 
+  // 0.5) Consume queued signal bursts (advantage)
+  if (WORLD_ADVANTAGE_STATE.signalBursts.length > 0) {
+    const bursts = WORLD_ADVANTAGE_STATE.signalBursts.splice(
+      0,
+      WORLD_ADVANTAGE_STATE.signalBursts.length
+    );
+    bursts.sort((a, b) => b.priority - a.priority);
+    await Promise.all(
+      bursts.map((b) =>
+        NetworkOrgan.sendBurst(b.kind, b.payload, b.priority, b.reason)
+      )
+    );
+  }
+
   // 1) Mom tries first
   if (!stale) {
     result = momHeart(instanceId, now);
@@ -609,6 +679,30 @@ async function tickFamily(instanceId = "core") {
   const rnd = randomNudge(instanceId, now);
   if (rnd) {
     result = { ...(result || {}), ...rnd };
+  }
+
+  // 4.25) Impulse queue — extra ticks requested by advantage calls
+  if (WORLD_ADVANTAGE_STATE.impulseQueue.length > 0) {
+    const impulses = WORLD_ADVANTAGE_STATE.impulseQueue.splice(
+      0,
+      WORLD_ADVANTAGE_STATE.impulseQueue.length
+    );
+    for (const imp of impulses) {
+      console.log(
+        "[PULSE-NET]",
+        imp.instanceId,
+        "Impulse tick (reason:",
+        imp.reason,
+        ")"
+      );
+      await tickFamily(imp.instanceId);
+    }
+  }
+
+  // 4.3) Speed boost awareness
+  const speedBoostActive = now < WORLD_ADVANTAGE_STATE.speedBoostUntil;
+  if (speedBoostActive) {
+    result = { ...(result || {}), speedBoostActive: true };
   }
 
   // 4.5) OvermindPrime heartbeat sampling (learning only)
@@ -724,19 +818,15 @@ export function pulseNetIngressFromTouch(packet) {
 // ============================================================================
 export function pulseNetFastLanePulse(intent) {
   try {
-    // 1) Log / mirror into ingress for observability (optional)
     enqueueIngress("user", {
       source: "pulse-touch-fastlane",
       intent,
       ts: Date.now()
     });
 
-    // 2) Check temporal cache — if we already prewarmed for this hint, no extra work
     const cached = getFromTemporalCache(intent);
     if (!cached) {
-      // 3) Ask backend via fastlane channel to prewarm internet edge for this intent
       NetworkOrgan.sendFastLane(intent);
-      // 4) Mark that we requested prewarm (even if we don't yet have data)
       setTemporalCache(intent, { prewarmRequested: true });
     }
   } catch (err) {
@@ -745,6 +835,28 @@ export function pulseNetFastLanePulse(intent) {
       PulseUIErrors.broadcast(packet);
     } catch {}
   }
+}
+
+// ============================================================================
+// WORLD ADVANTAGE API — IMPULSE / SPEED BOOST / SIGNAL BURST
+// ============================================================================
+export function pulseNetImpulse(instanceId = "core", reason = "manual") {
+  queueImpulse(instanceId, reason);
+  return { ok: true, instanceId, reason };
+}
+
+export function pulseNetSpeedBoost(durationMs = 5000, reason = "manual") {
+  activateSpeedBoost(durationMs, reason);
+  return {
+    ok: true,
+    until: WORLD_ADVANTAGE_STATE.speedBoostUntil,
+    reason
+  };
+}
+
+export function pulseNetSignalBurst(kind, payload, priority = 1, reason = "manual") {
+  queueSignalBurst(kind, payload, priority, reason);
+  return { ok: true, kind, priority, reason };
 }
 
 // ============================================================================
@@ -807,7 +919,6 @@ function bridgeRoute(kind, source, payload, detailKind) {
 }
 
 export const PulseNetBridge = Object.freeze({
-  // Expansion → routes, soldiers, mesh
   routeExpansion(payload) {
     return bridgeRoute("expansion", "PulseExpansion", payload, "expansion_plan");
   },
@@ -818,12 +929,10 @@ export const PulseNetBridge = Object.freeze({
     return bridgeRoute("mesh", "PulseExpansion", payload, "mesh_rebalance");
   },
 
-  // Castle → presence, routes, nodeadmin, defense, treasury, etc (symbolic)
   routeCastle(payload) {
     return bridgeRoute("castle", "PulseCastle", payload, "castle_signal");
   },
 
-  // Server / User / Brain direct ingress if needed
   routeServer(payload) {
     return bridgeRoute("server", "PulseServer", payload, "server_signal");
   },
@@ -837,6 +946,60 @@ export const PulseNetBridge = Object.freeze({
 
 export function createPulseNetBridge() {
   return PulseNetBridge;
+}
+
+// ============================================================================
+// PULSE-WORLD v21 ROOT ORGANISM WRAPPER (NON-BREAKING)
+// ============================================================================
+export function createPulseWorldV21({
+  CNS,
+  PulseNet,
+  PulseBand,
+  PulseUI,
+  log = console.log,
+  warn = console.warn
+} = {}) {
+  const WorldState = {
+    version: "v21-Immortal",
+    lineage: "PulseWorld-v21",
+    lastHeartbeat: null,
+    lastIngress: null,
+    lastEvolution: null,
+    lastAdvantage: null,
+    seq: 0
+  };
+
+  function nextSeq() {
+    WorldState.seq += 1;
+    return WorldState.seq;
+  }
+
+  function safeLog(stage, details = {}) {
+    try {
+      log("[PulseWorld-v21]", stage, JSON.stringify(details));
+    } catch {}
+  }
+
+  safeLog("INIT", {
+    identity: "PulseWorld",
+    version: "v21-Immortal",
+    lineage: WorldState.lineage
+  });
+
+  return {
+    WorldState,
+    CNS,
+    PulseNet,
+    PulseBand,
+    PulseUI,
+    nextSeq,
+    Advantage: {
+      state: WORLD_ADVANTAGE_STATE,
+      impulse: pulseNetImpulse,
+      speedBoost: pulseNetSpeedBoost,
+      signalBurst: pulseNetSignalBurst
+    }
+  };
 }
 
 // ============================================================================
@@ -869,18 +1032,20 @@ try {
     g.__PULSE_NET_TEMPORAL_CACHE__ = globalThis.__PULSE_NET_TEMPORAL_CACHE__;
   }
 } catch {}
+
 export default db;
 global.db = db;
+
 // ============================================================================
 // FOOTER — FASTLANE LORE + ORIGIN STAMP
 // ============================================================================
 //
-//  On 2026‑05‑05, Pulse‑Net learned a new trick:
+//  On 2026‑05‑05, Pulse‑World learned a new trick:
 //  it stopped waiting for the user to ask.
 //
 //  Now, every whisper from Pulse‑Touch — five times a second —
 //  crosses the membrane as a tiny intent, and somewhere behind
-//  the glass an immortal network organ quietly rearranges the
+//  the glass an immortal world organ quietly rearranges the
 //  internet so that the answer is already there when the question
 //  finally arrives.
 //

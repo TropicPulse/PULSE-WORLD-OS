@@ -1,181 +1,99 @@
-/*
-===============================================================================
-FILE: /PULSE-UI/_COMPONENTS/PulseEvolutionaryMemory-v20Plus.js
-LAYER: UI LONG‑TERM MEMORY ORGAN — IMMORTAL v20++
-ROLE: MEMORY‑DRIVEN EVOLUTION GOVERNOR (BACKWARD FROM NORMAL SYSTEMS)
-===============================================================================
+// ============================================================================
+// FILE: /PULSE-UI/_COMPONENTS/PulseEvolutionaryMemory-v20Plus.js
+// PULSE OS — v20++ IMMORTAL EVOLUTIONARY MEMORY ORGAN
+// ROLE: MEMORY-DRIVEN EVOLUTION ADVISOR (ADVISORY MODE)
+// ============================================================================
+//
+// AI_EXPERIENCE_META:
+//   identity: "PulseUI.EvolutionaryMemory"
+//   version: "v20Plus-Immortal-Evolutionary"
+//   layer: "pulse_ui"
+//   role: "ui_long_term_memory_governor"
+//   lineage: "v11.3 → v14 → v16 → v20 → v20Plus-Advisory"
+//
+//   evo: {
+//     memoryOrgan: true,
+//     longTermMemory: true,
+//     advisoryMode: true,
+//     routeAware: true,
+//     lineageAware: true,
+//     binaryAware: true,
+//     symbolicAware: true,
+//     dualBand: true,
+//     unifiedAdvantageField: true,
+//     futureEvolutionReady: true,
+//
+//     deterministic: true,
+//     driftProof: true,
+//     pureCompute: true,
+//     zeroNetwork: true,
+//     zeroFilesystem: true,
+//     zeroMutationOfInput: true,
+//
+//     // v20++
+//     schemaVersioned: true,
+//     envelopeAware: true,
+//     integrityAware: true,
+//     experienceBlocksAware: true,
+//     iqVersionAware: true,
+//     uiGenomeVersionAware: true,
+//     comfortPatternAware: true,
+//     compilerVersionAware: true,
+//     organismVersionAware: true,
+//     styleGenomeAware: true,
+//     animationGenomeAware: true,
+//     styleFootprintAware: true,
+//     animationFootprintAware: true,
+//     upcomingPlanAware: true,
+//     evolutionAdvisoryAware: true,
+//     memoryControlsEvolution: false,   // ADVISORY MODE
+//
+//     cnsAware: true,
+//     impulseAware: true,
+//     routerAware: true,
+//     evolutionAware: true
+//   }
+//
+// CONTRACT:
+//   consumes:
+//     • PageModel
+//     • RouteId
+//     • PulseProofBridge.coreMemory
+//     • IQMap
+//     • Styles Organ
+//     • Animations Organ
+//
+//   produces:
+//     • SavedSnapshot
+//     • LoadedSnapshot
+//     • BulkFlushResult
+//     • ExperienceEnvelope
+//     • EvolutionAdvisory
+//     • CNS Impulses (advisory only)
+//
+// ============================================================================
 
-AI_EXPERIENCE_META = {
-  identity: "PulseUI.EvolutionaryMemory",
-  version: "v20Plus-Immortal-Evolutionary",
-  layer: "pulse_ui",
-  role: "ui_long_term_memory_governor",
-  lineage: "v11.3-Evo-Prime → v14-Immortal → v16-Immortal → v20-Immortal → v20Plus-Governor",
+export let MEMORY_MODE = "deep"; 
+// "deep" → full envelope
+// "slim" → optimized envelope
+// auto-switch enabled via CNS load
 
-  evo: {
-    memoryOrgan: true,
-    longTermMemory: true,
-    routeAware: true,
-    lineageAware: true,
-    binaryAware: true,
-    symbolicAware: true,
-    dualBand: true,
-    unifiedAdvantageField: true,
-    futureEvolutionReady: true,
-
-    deterministic: true,
-    driftProof: true,
-    pureCompute: true,
-
-    zeroNetwork: true,
-    zeroFilesystem: true,
-    zeroMutationOfInput: true,
-
-    // v20+ upgrades
-    schemaVersioned: true,
-    envelopeAware: true,
-    integrityAware: true,
-    bulkFlushAware: true,
-    degradationAware: true,
-    experienceBlocksAware: true,
-
-    iqVersionAware: true,
-    uiGenomeVersionAware: true,
-    comfortPatternAware: true,
-    compilerVersionAware: true,
-    organismVersionAware: true,
-
-    // v20++: MEMORY‑DRIVEN EVOLUTION
-    styleGenomeAware: true,
-    animationGenomeAware: true,
-    styleFootprintAware: true,
-    animationFootprintAware: true,
-    upcomingPlanAware: true,
-    evolutionAdvisoryAware: true,
-    memoryControlsEvolution: true
-  },
-
-  contract: {
-    always: [
-      "PulseCore.Memory",
-      "PulseUI.EvolutionaryCode",
-      "PulseUI.EvolutionaryBrain",
-      "PulseUI.EvolutionaryBinary",
-      "PulseProofBridge",
-      "PulseIQMap-v20",
-      "PulseEvolutionaryStyles-v20",
-      "PulseEvolutionaryAnimations-v20"
-    ],
-    never: [
-      "eval",
-      "Function",
-      "dynamicImport",
-      "fetchViaCNS",
-      "networkIO",
-      "filesystemIO"
-    ]
-  }
-}
-
-EXPORT_META = {
-  organ: "PulseUI.EvolutionaryMemory",
-  layer: "pulse_ui",
-  stability: "IMMORTAL",
-  deterministic: true,
-  pure: true,
-
-  consumes: [
-    "PageModel",
-    "RouteId",
-    "PulseProofBridge.coreMemory",
-    "IQMap",
-    "PulseEvolutionaryStyles",
-    "PulseEvolutionaryAnimations"
-  ],
-
-  produces: [
-    "SavedSnapshot",
-    "LoadedSnapshot",
-    "BulkFlushResult",
-    "ExperienceEnvelope",
-    "EvolutionAdvisory"
-  ],
-
-  sideEffects: "core_memory_write_only",
-  network: "none",
-  filesystem: "none"
-}
-===============================================================================
-*/
-
-const g =
-  typeof globalThis !== "undefined"
-    ? globalThis
-    : typeof global !== "undefined"
-    ? global
-    : typeof window !== "undefined"
-    ? window
-    : {};
-
-// v20: memory is purely via PulseProofBridge.coreMemory (in‑process, sync).
-import { PulseProofBridge } from "../_BACKEND/PulseProofBridge.js";
-
-// ---------------------------------------------------------------------------
-// ROLE BLOCK — v20++ IMMORTAL
-// ---------------------------------------------------------------------------
-export const MemoryRole = {
-  type: "Organ",
-  subsystem: "UI",
-  layer: "PageMemory",
-  version: "20.1-Immortal-Governor",
-  identity: "PulseEvolutionaryMemory",
-
-  evo: {
-    driftProof: true,
-    deterministic: true,
-    dualBand: true,
-    binaryAware: true,
-    symbolicAware: true,
-    memoryPersistence: true,
-    lineageAware: true,
-    routeAware: true,
-    unifiedAdvantageField: true,
-    futureEvolutionReady: true,
-    envelopeAware: true,
-    integrityAware: true,
-    bulkFlushAware: true,
-    degradationAware: true,
-    experienceBlocksAware: true,
-    iqVersionAware: true,
-    uiGenomeVersionAware: true,
-    comfortPatternAware: true,
-    compilerVersionAware: true,
-    organismVersionAware: true,
-
-    // v20++: memory‑driven evolution
-    styleGenomeAware: true,
-    animationGenomeAware: true,
-    styleFootprintAware: true,
-    animationFootprintAware: true,
-    upcomingPlanAware: true,
-    evolutionAdvisoryAware: true,
-    memoryControlsEvolution: true
-  }
-};
-
-// v20++ schema bump — evolution‑governor aware.
 const MEMORY_SCHEMA_VERSION = "v5";
 
 // ============================================================================
 // INTERNAL HELPERS — deterministic hashing + metrics
 // ============================================================================
-
 function hashString(str) {
   let h = 0;
   for (let i = 0; i < str.length; i++) {
     h = (h * 31 + str.charCodeAt(i)) >>> 0;
   }
   return h >>> 0;
+}
+
+function deterministicSignature(obj) {
+  const json = JSON.stringify(obj || {});
+  return "MEM_SIG_" + hashString(json).toString(16).padStart(8, "0");
 }
 
 function computeChecksum(model) {
@@ -186,6 +104,9 @@ function computeLineageHash(lineage) {
   return hashString(JSON.stringify(lineage || {}));
 }
 
+// ============================================================================
+// BAND METRICS (symbolic + binary fusion)
+// ============================================================================
 function computeBandMetrics(model) {
   const payloadJson = JSON.stringify(model?.payload || {});
   const payloadSize = payloadJson.length;
@@ -214,6 +135,9 @@ function computeBandMetrics(model) {
   };
 }
 
+// ============================================================================
+// INTEGRITY
+// ============================================================================
 function computeIntegrity({ checksum, lineageHash, band }) {
   const base =
     (checksum ? 0.4 : 0) +
@@ -234,67 +158,13 @@ function computeIntegrity({ checksum, lineageHash, band }) {
 
   return { score, status, degraded };
 }
-
-function buildExperienceBlocks({ model, band, integrity }) {
-  const lineage = model?.lineage || {};
-  const route = lineage.route || model?.route || "unknown";
-
-  const iqVersion = model?.meta?.iqVersion || null;
-  const uiGenomeVersion = model?.meta?.uiGenomeVersion || null;
-  const comfortPattern = model?.meta?.comfortPattern || null;
-  const compilerVersion = model?.meta?.compilerVersion || null;
-  const organismVersion = model?.meta?.organismVersion || null;
-
-  return {
-    schemaVersion: MEMORY_SCHEMA_VERSION,
-    blocks: [
-      {
-        id: "memory.band",
-        kind: "bandMetrics",
-        route,
-        payloadSize: band.payloadSize,
-        binarySize: band.binarySize,
-        totalSize: band.totalSize,
-        symbolicWeight: band.symbolicWeight,
-        binaryWeight: band.binaryWeight,
-        density: band.density,
-        entropyHint: band.entropyHint,
-        advantage: band.advantage
-      },
-      {
-        id: "memory.integrity",
-        kind: "integrity",
-        route,
-        score: integrity.score,
-        status: integrity.status,
-        degraded: integrity.degraded
-      },
-      {
-        id: "memory.lineage",
-        kind: "lineage",
-        route,
-        lineage
-      },
-      {
-        id: "memory.evolution",
-        kind: "evolutionMeta",
-        route,
-        iqVersion,
-        uiGenomeVersion,
-        comfortPattern,
-        compilerVersion,
-        organismVersion
-      }
-    ]
-  };
-}
-
 // ============================================================================
 // STYLE + ANIMATION GENOME AWARENESS — v20++
 // ============================================================================
 //
-// Memory becomes the governor: it inspects style/animation genomes, route
-// footprints, and upcoming plans, and then issues evolution advisories.
+// Memory becomes the evolution advisor: it inspects style/animation genomes,
+// route footprints, and upcoming plans, and then issues deterministic,
+// IMMORTAL advisories for Evolution Organ to act on.
 // ============================================================================
 
 function computeStyleAnimationMetrics({ model, IQMap }) {
@@ -369,11 +239,87 @@ function buildStyleAnimationExperienceBlock(styleAnim) {
 }
 
 // ============================================================================
-// EVOLUTION ADVISORY — MEMORY IN CHARGE
+// EXPERIENCE BLOCKS — v20++
 // ============================================================================
 //
-// Memory inspects the envelope + current IQMap and issues a deterministic
+// Memory produces experience blocks that describe:
+//   • band metrics
+//   • integrity
+//   • lineage
+//   • style/animation genome state
+//   • IQMap footprint
+//   • upcoming plan
+//
+// These blocks are IMMORTAL and deterministic.
+// ============================================================================
+
+function buildExperienceBlocks({ model, band, integrity }) {
+  const lineage = model?.lineage || {};
+  const route = lineage.route || model?.route || "unknown";
+
+  const iqVersion = model?.meta?.iqVersion || null;
+  const uiGenomeVersion = model?.meta?.uiGenomeVersion || null;
+  const comfortPattern = model?.meta?.comfortPattern || null;
+  const compilerVersion = model?.meta?.compilerVersion || null;
+  const organismVersion = model?.meta?.organismVersion || null;
+
+  return {
+    schemaVersion: MEMORY_SCHEMA_VERSION,
+    blocks: [
+      {
+        id: "memory.band",
+        kind: "bandMetrics",
+        route,
+        payloadSize: band.payloadSize,
+        binarySize: band.binarySize,
+        totalSize: band.totalSize,
+        symbolicWeight: band.symbolicWeight,
+        binaryWeight: band.binaryWeight,
+        density: band.density,
+        entropyHint: band.entropyHint,
+        advantage: band.advantage
+      },
+      {
+        id: "memory.integrity",
+        kind: "integrity",
+        route,
+        score: integrity.score,
+        status: integrity.status,
+        degraded: integrity.degraded
+      },
+      {
+        id: "memory.lineage",
+        kind: "lineage",
+        route,
+        lineage
+      },
+      {
+        id: "memory.evolution",
+        kind: "evolutionMeta",
+        route,
+        iqVersion,
+        uiGenomeVersion,
+        comfortPattern,
+        compilerVersion,
+        organismVersion
+      }
+    ]
+  };
+}
+
+// ============================================================================
+// EVOLUTION ADVISORY ENGINE — v20++
+// ============================================================================
+//
+// Memory inspects the saved envelope + current IQMap and issues a deterministic
 // advisory describing what evolution is required.
+//
+// ADVISORY MODE:
+//   • Memory NEVER overrides Evolution
+//   • Memory NEVER forces rebuilds
+//   • Memory NEVER forces flushes
+//
+// It only *advises* Evolution Organ.
 // ============================================================================
 
 function buildEvolutionAdvisory({ envelope, IQMap, styleAnim }) {
@@ -435,16 +381,17 @@ function buildEnvelopeId({ routeId, checksum, lineageHash }) {
   const h = hashString(base);
   return `MEM-${MEMORY_SCHEMA_VERSION}-${h.toString(16).padStart(8, "0")}`;
 }
-
 // ============================================================================
-// FACTORY — IMMORTAL, SYNC, MEMORY‑DRIVEN EVOLUTION
+// FACTORY — IMMORTAL, SYNC, MEMORY‑DRIVEN EVOLUTION (ADVISORY MODE)
 // ============================================================================
 export function createPulseEvolutionaryMemory({
   routeId = "page",
-  IQMap = null,              // IQ Map for style/animation awareness
+  IQMap = null,
+  CNS = null,
   log = console.log,
   warn = console.warn
 } = {}) {
+
   const Core = PulseProofBridge.coreMemory;
 
   if (!Core) {
@@ -458,12 +405,12 @@ export function createPulseEvolutionaryMemory({
     lastAdvisory: null,
     lastError: null,
     routeId,
-    eventSeq: 0
+    seq: 0
   };
 
   function nextSeq() {
-    MemoryState.eventSeq += 1;
-    return MemoryState.eventSeq;
+    MemoryState.seq += 1;
+    return MemoryState.seq;
   }
 
   function safeLog(stage, details = {}) {
@@ -473,7 +420,7 @@ export function createPulseEvolutionaryMemory({
         stage,
         JSON.stringify({
           schemaVersion: MEMORY_SCHEMA_VERSION,
-          seq: MemoryState.eventSeq,
+          seq: MemoryState.seq,
           routeId,
           ...details
         })
@@ -481,9 +428,38 @@ export function createPulseEvolutionaryMemory({
     } catch {}
   }
 
-  // ------------------------------------------------------------------------
+  // ========================================================================
+  // CNS IMPULSE EMITTER (ADVISORY ONLY)
+  // ========================================================================
+  function emitMemoryImpulse({ advisory, integrity, route }) {
+    if (!CNS?.emitImpulse) return;
+
+    try {
+      CNS.emitImpulse("PulseEvolutionaryMemory", {
+        schemaVersion: MEMORY_SCHEMA_VERSION,
+        source: "PulseEvolutionaryMemory",
+        route,
+        advisory,
+        integrityStatus: integrity?.status,
+        degraded: integrity?.degraded,
+        timestamp: "NO_TIMESTAMP_v20Plus"
+      });
+
+      safeLog("CNS_IMPULSE_OK", {
+        route,
+        integrityStatus: integrity?.status,
+        degraded: integrity?.degraded,
+        reasons: advisory?.reasons
+      });
+    } catch (err) {
+      warn("[PulseEvolutionaryMemory] CNS_IMPULSE_ERROR", String(err));
+      safeLog("CNS_IMPULSE_ERROR", { error: String(err) });
+    }
+  }
+
+  // ========================================================================
   // SAVE PAGE MODEL — IMMORTAL envelope + experience blocks (SYNC)
-  // ------------------------------------------------------------------------
+  // ========================================================================
   function savePage(model) {
     nextSeq();
 
@@ -504,8 +480,8 @@ export function createPulseEvolutionaryMemory({
 
       const experience = buildExperienceBlocks({ model, band, integrity });
 
-      // ⭐ Style/Animation metrics + block
-      const styleAnim = computeStyleAnimationMetrics({ model, IQMap: IQMap || null });
+      // Style/Animation metrics + block
+      const styleAnim = computeStyleAnimationMetrics({ model, IQMap });
       experience.blocks.push(buildStyleAnimationExperienceBlock(styleAnim));
 
       const envelopeId = buildEnvelopeId({ routeId, checksum, lineageHash });
@@ -529,7 +505,7 @@ export function createPulseEvolutionaryMemory({
         timestamp: "NO_TIMESTAMP_v20Plus"
       };
 
-      if (!Core || typeof Core.setRouteSnapshot !== "function") {
+      if (!Core?.setRouteSnapshot) {
         const msg = "CoreMemoryMissing";
         MemoryState.lastError = msg;
         warn("[PulseEvolutionaryMemory-v20Plus] CoreMemory.setRouteSnapshot missing");
@@ -566,14 +542,14 @@ export function createPulseEvolutionaryMemory({
     }
   }
 
-  // ------------------------------------------------------------------------
+  // ========================================================================
   // LOAD PAGE MODEL — integrity + experience + advisory surfaced (SYNC)
-  // ------------------------------------------------------------------------
+  // ========================================================================
   function loadPage() {
     nextSeq();
 
     try {
-      if (!Core || typeof Core.getRouteSnapshot !== "function") {
+      if (!Core?.getRouteSnapshot) {
         const msg = "CoreMemoryMissing";
         MemoryState.lastError = msg;
         warn("[PulseEvolutionaryMemory-v20Plus] CoreMemory.getRouteSnapshot missing");
@@ -594,13 +570,13 @@ export function createPulseEvolutionaryMemory({
       // Style/animation metrics under current IQMap
       const styleAnim = computeStyleAnimationMetrics({
         model: envelope.model,
-        IQMap: IQMap || null
+        IQMap
       });
 
       // Memory‑driven evolution advisory
       const advisory = buildEvolutionAdvisory({
         envelope,
-        IQMap: IQMap || null,
+        IQMap,
         styleAnim
       });
 
@@ -619,6 +595,13 @@ export function createPulseEvolutionaryMemory({
         reasons: advisory.reasons
       });
 
+      // Emit CNS impulse (advisory only)
+      emitMemoryImpulse({
+        advisory,
+        integrity: envelope.integrity,
+        route: envelope.routeId
+      });
+
       return envelope.model || null;
     } catch (err) {
       const msg = String(err);
@@ -629,13 +612,13 @@ export function createPulseEvolutionaryMemory({
     }
   }
 
-  // ------------------------------------------------------------------------
+  // ========================================================================
   // BULK FLUSH — IMMORTAL bridge wrapper (SYNC)
-  // ------------------------------------------------------------------------
+  // ========================================================================
   function flush() {
     nextSeq();
     try {
-      if (!Core || typeof Core.bulkFlush !== "function") {
+      if (!Core?.bulkFlush) {
         const msg = "CoreMemoryMissing";
         MemoryState.lastError = msg;
         warn("[PulseEvolutionaryMemory-v20Plus] CoreMemory.bulkFlush missing");
@@ -655,13 +638,16 @@ export function createPulseEvolutionaryMemory({
     }
   }
 
-  // ------------------------------------------------------------------------
+  // ========================================================================
   // EVOLUTION ADVISORY SURFACE — for Brain / PageEvo
-  // ------------------------------------------------------------------------
+  // ========================================================================
   function getEvolutionAdvisory() {
     return MemoryState.lastAdvisory || null;
   }
 
+  // ========================================================================
+  // PUBLIC API
+  // ========================================================================
   const PulseEvolutionaryMemory = {
     MemoryRole,
     MemoryState,
@@ -681,9 +667,9 @@ export function createPulseEvolutionaryMemory({
   return PulseEvolutionaryMemory;
 }
 
-// ---------------------------------------------------------------------------
+// ============================================================================
 // GLOBAL REGISTRATION (OPTIONAL)
-// ---------------------------------------------------------------------------
+// ============================================================================
 try {
   if (typeof window !== "undefined") {
     window.PulseEvolutionaryMemory = createPulseEvolutionaryMemory;
@@ -697,6 +683,4 @@ try {
   if (typeof g !== "undefined") {
     g.PulseEvolutionaryMemory = createPulseEvolutionaryMemory;
   }
-} catch {
-  // Never throw from global registration.
-}
+} catch {}

@@ -612,9 +612,11 @@ export const PulseIntentMap = {
       // -----------------------------------------------------------------------
       "frontend": "PULSE-WORLD/PULSE-UI",
       "frontend connection": "PULSE-WORLD/PULSE-UI/Pulse",
+      "frontend animations": "PULSE-WORLD/PULSE-UI/_ANIMATIONS",
       "frontend backend connectors": "PULSE-WORLD/PULSE-UI/_BACKEND",
       "frontend connectors": "PULSE-WORLD/PULSE-UI/_FRONTEND",
       "frontend components": "PULSE-WORLD/PULSE-UI/_COMPONENTS",
+      "frontend icons": "PULSE-WORLD/PULSE-UI/_ICONS",
       "frontend helpers": "PULSE-WORLD/PULSE-UI/_HELPERS",
       "frontend loaders": "PULSE-WORLD/PULSE-UI/_LOADERS",
       "frontend pictures": "PULSE-WORLD/PULSE-UI/_PICTURES",
@@ -641,10 +643,62 @@ export const PulseIntentMap = {
       "world network": "PULSE-WORLD/PULSE-PROXY",
 
       // -----------------------------------------------------------------------
-      // 2. AUTO‑MAP ANY SUBSYSTEM BY NAME
+      // 2. SUBSYSTEMS (explicit from your filesystem)
+      // -----------------------------------------------------------------------
+
+      "ai": "PULSE-WORLD/PULSE-AI",
+      "gpu": "PULSE-WORLD/PULSE-GPU",
+      "core": "PULSE-WORLD/PULSE-CORE",
+      "engine": "PULSE-WORLD/PULSE-ENGINE",
+      "design": "PULSE-WORLD/PULSE-DESIGN",
+      "earn": "PULSE-WORLD/PULSE-EARN",
+      "expansion": "PULSE-WORLD/PULSE-EXPANSION",
+      "finality": "PULSE-WORLD/PULSE-FINALITY",
+      "grid": "PULSE-WORLD/PULSE-GRID",
+      "mesh": "PULSE-WORLD/PULSE-MESH",
+      "os": "PULSE-WORLD/PULSE-OS",
+      "proxy": "PULSE-WORLD/PULSE-PROXY",
+      "regioning": "PULSE-WORLD/PULSE-REGIONING",
+      "router": "PULSE-WORLD/PULSE-ROUTER",
+      "send": "PULSE-WORLD/PULSE-SEND",
+      "shifter": "PULSE-WORLD/PULSE-SHIFTER",
+      "tech": "PULSE-WORLD/PULSE-TECH",
+      "tools": "PULSE-WORLD/PULSE-TOOLS",
+      "translator": "PULSE-WORLD/PULSE-TRANSLATOR",
+      "trust": "PULSE-WORLD/PULSE-TRUST",
+      "x": "PULSE-WORLD/PULSE-X",
+
+      // Your specs/code structure
+      "code": "PULSE-WORLD/PULSE-SPECS/PULSE-CODE",
+      "specs": "PULSE-WORLD/PULSE-SPECS",
+
+      // -----------------------------------------------------------------------
+      // 2.1 ADDITIONAL SUBSYSTEMS FROM YOUR ORGANISM MAP
+      // (added here, respecting your ordering)
+      // -----------------------------------------------------------------------
+
+      "tech": "PULSE-WORLD/PULSE-TECH",
+      "tools": "PULSE-WORLD/PULSE-TOOLS",
+      "translator": "PULSE-WORLD/PULSE-TRANSLATOR",
+      "trust": "PULSE-WORLD/PULSE-TRUST",
+
+      // -----------------------------------------------------------------------
+      // UI subsystems (non-PULSE- folders)
+      // -----------------------------------------------------------------------
+      "admin": "PULSE-WORLD/PULSE-UI/PulseAdmin",
+      "delivery": "PULSE-WORLD/PULSE-UI/PulseDelivery",
+      "directory": "PULSE-WORLD/PULSE-UI/PulseDirectory",
+      "rewards": "PULSE-WORLD/PULSE-UI/PulseRewards",
+
+      // Deployment / backup
+      "netlify": "PULSE-WORLD/NETLIFY",
+
+      // -----------------------------------------------------------------------
+      // 3. AUTO‑MAP ANY SUBSYSTEM BY NAME
       // -----------------------------------------------------------------------
       "*": "PULSE-WORLD/PULSE-${SYSTEM}"
-    }, 
+    },
+
 
     // -----------------------------------------------------------------------
     // 13.8  ORGAN PLACEMENT RULES (NON‑BLOCKING)

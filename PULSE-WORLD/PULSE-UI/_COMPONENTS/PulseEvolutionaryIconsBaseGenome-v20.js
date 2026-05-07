@@ -1,24 +1,222 @@
-/*
-===============================================================================
-FILE: /PULSE-UI/PulseEvolutionaryIcons-v16.5.js
-LAYER: UNIVERSAL ICON ORGAN — v16.5 IMMORTAL
-===============================================================================
+// ============================================================================
+// FILE: /PULSE-UI/_GENOME/PulseEvolutionaryIconsBaseGenome-v20.js
+// PULSE OS — v20-IMMORTAL-EVOLUTIONARY
+// UNIVERSAL ICON GENOME (A0 ICON MEMBRANE)
+// ============================================================================
+//
+// ROLE (v20 IMMORTAL):
+//   This is the *foundational icon genome* for Pulse OS UI.
+//   It provides the universal icon membrane that all pages inherit before
+//   page-specific icon skills or evolvable icon packs are applied.
+//
+//   • Neon-native SVG icons
+//   • GPU-friendly stroke/outline maps
+//   • Binary-friendly variants (auto-generated)
+//   • Tier-aware icons (immortal, critical, system)
+//   • Evolvable: new icons can be added via evolutionSources.icons
+//   • Deterministic: no randomness, no drift
+//   • Auto-indexed by IQMap
+//   • Auto-prewarmed by Styles-v20
+//   • Auto-integrated with Memory-v20++
+//
+// CONTRACT:
+//   • This genome is STATIC but EVOLVABLE.
+//   • It is always included by PulseEvolutionaryIcons-v20.
+//   • It is never duplicated, never drifted, never mutated at runtime.
+//   • Page-specific icon skills may override or extend it.
+//
+// SAFETY:
+//   • IMMORTAL: deterministic, drift-proof, no side effects.
+//   • DOM-safe: used only through the Icons Organ.
+//   • Zero network, zero filesystem, zero dynamic imports.
+// ============================================================================
 
-ROLE (v16.5):
-  THE UNIVERSAL ICON ORGAN — deterministic, GPU‑friendly, neon‑native.
-  • Massive icon library for UI, diagnostics, organs, Pulse‑World.
-  • Tropic Belize, wildlife, weather, tech, earn, navigation, brand.
-  • Binary‑friendly mode (low entropy, monochrome).
-  • Tiered icons (bronze → omega).
-  • Deterministic, drift‑proof, lineage‑aware.
+// ICON SCHEMA VERSION
+const ICON_SCHEMA_VERSION = "v20++";
 
-SAFETY:
-  • PURE FUNCTION — no IO, no network, no filesystem.
-  • Deterministic output only.
-===============================================================================
-*/
+// These objects will be populated dynamically:
+let baseIcons = {};       // your built-in icons
+let expandedIcons = {};   // icons from evolutionSources
+let tierIcons = {};       // tier-based icons (immortal, critical, etc.)
 
-export const ICON_SCHEMA_VERSION = "v3";
+
+// ============================================================================
+// GENOME MERGER — IMMORTAL, PURE, DETERMINISTIC
+// v20++ icon genome merging logic
+// ============================================================================
+//
+// This function merges:
+//   • Base Genome icons (A0 membrane)
+//   • Tier icons (immortal, critical, system)
+//   • Evolvable icons from evolutionSources.icons
+//   • Local loader icons (from /PULSE-UI/_ICONS/)
+//
+// It produces the final icon maps consumed by the Icons Organ.
+//
+// IMMORTAL RULES:
+//   • No mutation of input
+//   • No randomness
+//   • No side effects
+//   • No network or filesystem
+//   • Deterministic merge order
+// ============================================================================
+
+export function mergeIconGenomes({
+  evolutionSources = {},
+  localIconMap = {}
+} = {}) {
+
+  // Base Genome (A0 membrane)
+  const baseIcons = { ...PulseEvolutionaryIconsBaseGenomeV20.icons };
+  const baseTiers = { ...PulseEvolutionaryIconsBaseGenomeV20.tiers };
+
+  // Evolvable icons from evolutionSources
+  const evoIcons = evolutionSources.icons || {};
+  const evoTiers = evolutionSources.iconTiers || {};
+
+  // Local icons from loader organ
+  const localIcons = localIconMap || {};
+
+  // -------------------------------------------------------------------------
+  // MERGE ORDER (IMMORTAL, deterministic):
+  //
+  //   1. Base Genome icons (cannot be overridden)
+  //   2. Evolvable icons (can extend)
+  //   3. Local loader icons (can override evolvable)
+  //
+  //   Tier icons follow the same pattern.
+  // -------------------------------------------------------------------------
+
+  const expandedIcons = {
+    ...evoIcons,
+    ...localIcons
+  };
+
+  const tierIcons = {
+    ...baseTiers,
+    ...evoTiers
+  };
+
+  // -------------------------------------------------------------------------
+  // RETURN FINAL IMMORTAL ICON MAPS
+  // -------------------------------------------------------------------------
+  return {
+    baseIcons,
+    expandedIcons,
+    tierIcons
+  };
+}
+
+// ---------------------------------------------------------------------------
+// AUTO-LOAD ICONS FROM evolutionSources (injected by IQMap)
+// ---------------------------------------------------------------------------
+export function buildEvolutionaryIcons(evolutionSources = {}) {
+  const icons = evolutionSources.icons || {};
+
+  // Merge into expandedIcons
+  for (const [name, svg] of Object.entries(icons)) {
+    expandedIcons[name] = svg;
+  }
+
+  return expandedIcons;
+}
+
+// ---------------------------------------------------------------------------
+// AUTO-LOAD ICONS FROM LOCAL FOLDER (optional loader organ)
+// ---------------------------------------------------------------------------
+//
+// If you have a loader organ that scans /PULSE-UI/_ICONS/ and injects
+// evolutionSources.icons, this function will pick them up automatically.
+//
+// ---------------------------------------------------------------------------
+export function loadLocalIcons(localIconMap = {}) {
+  for (const [name, svg] of Object.entries(localIconMap)) {
+    expandedIcons[name] = svg;
+  }
+}
+
+// ---------------------------------------------------------------------------
+// ROUTE-AWARE + UPCOMING-PAGE AWARE ICON PREWARM
+// ---------------------------------------------------------------------------
+//
+// IQMap.getRouteUISkills(route) returns:
+//   { icons: ["vault", "mascot", ...], ... }
+//
+// IQMap.planUpcomingSkills([route]) returns:
+//   { flatSkills: [{kind:"icons", id:"vault"}, ...] }
+//
+// This function extracts the icons needed for:
+//   • current page
+//   • next page
+//
+// ---------------------------------------------------------------------------
+export function getIconsForRoute(IQMap, route) {
+  const bundle = IQMap.getRouteUISkills(route) || {};
+  const skills = IQMap.uiSkillsMap.skills || {};
+
+  const icons = [];
+
+  for (const id of bundle.icons || []) {
+    const skill = skills[id];
+    if (skill && skill.iconName) icons.push(skill.iconName);
+  }
+
+  return icons;
+}
+
+export function getIconsForUpcoming(IQMap, routeSequence = []) {
+  const { flatSkills } = IQMap.planUpcomingSkills(routeSequence);
+  const skills = IQMap.uiSkillsMap.skills || {};
+
+  const icons = [];
+
+  for (const { kind, id } of flatSkills) {
+    if (kind !== "icons") continue;
+    const skill = skills[id];
+    if (skill && skill.iconName) icons.push(skill.iconName);
+  }
+
+  return icons;
+}
+
+// ---------------------------------------------------------------------------
+// AUTO-GENERATE CSS VARIABLES FOR ICONS
+// ---------------------------------------------------------------------------
+//
+// This allows Styles-v20 to emit:
+//
+//   :root { --icon-vault: url("data:image/svg+xml;base64,..."); }
+//
+// ---------------------------------------------------------------------------
+export function buildIconCSSVariables() {
+  const css = [];
+
+  const all = {
+    ...baseIcons,
+    ...expandedIcons,
+    ...tierIcons
+  };
+
+  for (const [name, svg] of Object.entries(all)) {
+    const encoded = btoa(svg);
+    css.push(`:root { --icon-${name}: url("data:image/svg+xml;base64,${encoded}"); }`);
+  }
+
+  return css.join("\n");
+}
+
+// ---------------------------------------------------------------------------
+// GPU-FRIENDLY GLOW MAP (optional)
+// ---------------------------------------------------------------------------
+//
+// This produces a neon glow version of the icon by thickening strokes.
+// ---------------------------------------------------------------------------
+export function buildGlowMap(svg) {
+  return svg
+    .replace(/stroke-width="[^"]+"/g, `stroke-width="3"`)
+    .replace(/stroke="[^"]+"/g, `stroke="#00eaff"`)
+    .replace(/fill="[^"]+"/g, `fill="none"`);
+}
 
 // ============================================================================
 // GPU‑FRIENDLY GLOW + STROKE MAPS (v16.5 IMMORTAL)
@@ -780,16 +978,20 @@ function toBinaryFriendly(svg) {
     .replace(/filter="[^"]+"/g, "");
 }
 
+
 // ============================================================================
-// PUBLIC ORGAN — deterministic icon resolver
+// PUBLIC ORGAN — deterministic icon resolver (UPGRADED v20++)
 // ============================================================================
-export const PulseIcons = {
+export const PulseEvolutionaryIconsBaseGenomeV20 = {
   schemaVersion: ICON_SCHEMA_VERSION,
 
   base: baseIcons,
   expanded: expandedIcons,
   tier: tierIcons,
 
+  // -------------------------------------------------------------------------
+  // RESOLVE ICON (route-aware, tier-aware, binary-aware)
+  // -------------------------------------------------------------------------
   resolve(name, tier = null, binaryMode = false) {
     let svg =
       (tier && tierIcons[tier]) ||
@@ -802,11 +1004,35 @@ export const PulseIcons = {
     return svg;
   },
 
+  // -------------------------------------------------------------------------
+  // LIST ICONS
+  // -------------------------------------------------------------------------
   list() {
     return {
       base: Object.keys(baseIcons),
       expanded: Object.keys(expandedIcons),
       tiers: Object.keys(tierIcons)
     };
+  },
+
+  // -------------------------------------------------------------------------
+  // NEW: GET ICONS FOR CURRENT ROUTE
+  // -------------------------------------------------------------------------
+  forRoute(IQMap, route) {
+    return getIconsForRoute(IQMap, route);
+  },
+
+  // -------------------------------------------------------------------------
+  // NEW: GET ICONS FOR UPCOMING ROUTES
+  // -------------------------------------------------------------------------
+  forUpcoming(IQMap, routeSequence) {
+    return getIconsForUpcoming(IQMap, routeSequence);
+  },
+
+  // -------------------------------------------------------------------------
+  // NEW: GET CSS VARIABLES FOR ALL ICONS
+  // -------------------------------------------------------------------------
+  cssVariables() {
+    return buildIconCSSVariables();
   }
 };

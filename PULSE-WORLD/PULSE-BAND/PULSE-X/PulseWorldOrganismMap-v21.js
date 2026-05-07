@@ -1,10 +1,11 @@
 // ============================================================================
-// PulseOrganismMap.js — v17‑IMMORTAL‑EVO
+// PulseWorldOrganismMap-v21.js — v21‑IMMORTAL‑EVO‑WORLD
 // THE JEWEL OF THE ORGANISM — THE GENOME
 // ----------------------------------------------------------------------------
-// LAWS OF THE ORGANISM:
-//   • Any folder starting with "PULSE-" is a system.
-//   • Any .js file inside that folder is an organ.
+// LAWS OF THE ORGANISM (v21):
+//   • Any folder starting with "PULSE-" is a SYSTEM.
+//   • Any .js file inside that folder is an ORGAN.
+//   • Any nested PULSE-* folder is a SUBSYSTEM.
 //   • No hardcoded clusters, organs, or pages.
 //   • The filesystem IS the organism.
 //   • The organism map IS the genome.
@@ -12,13 +13,14 @@
 //   • ALL network fetch MUST go through Route API.
 //   • Genome must NEVER fetch directly.
 //   • Patterns > versions. Naming discipline IS evolution.
+//   • World-aware: detects PulseWorld, PulseWorldBand, PulseWorldOS, etc.
+//   • Evolves automatically as new PULSE-* folders appear.
 // ============================================================================
 
 let fs = null;
 let db = null;
 let routes = null;
 let schema = null;
-// eslint-disable-next-line no-unused-vars
 let fetchAPI = null;
 
 // ============================================================================
@@ -87,7 +89,7 @@ export function getFsAPI({ trace = false } = {}) {
 }
 
 // ============================================================================
-// ROUTE API — FETCH‑AWARE (IMMORTAL v16+)
+// ROUTE API — FETCH‑AWARE (IMMORTAL v21)
 // ============================================================================
 export function getRouteAPI({ trace = false } = {}) {
   const log = (msg, data) => trace && console.log(`[aiDeps:routes] ${msg}`, data);
@@ -103,7 +105,6 @@ export function getRouteAPI({ trace = false } = {}) {
       return null;
     },
 
-    // IMMORTAL: deterministic route resolution
     async resolve(url) {
       log("resolve", { url });
 
@@ -114,12 +115,11 @@ export function getRouteAPI({ trace = false } = {}) {
         meta: {
           layer: "PulseRouteAPI",
           role: "ROUTE_RESOLUTION",
-          version: "17-IMMORTAL-EVO"
+          version: "21-IMMORTAL-WORLD"
         }
       };
     },
 
-    // Perform fetch THROUGH the route
     async fetchThroughRoute(route, options = {}) {
       log("fetchThroughRoute", { route, options });
 
@@ -153,7 +153,7 @@ export function getRouteAPI({ trace = false } = {}) {
 }
 
 // ============================================================================
-//  SCHEMA API — Required by aiEvolution
+// SCHEMA API — Required by aiEvolution
 // ============================================================================
 export function getSchemaAPI({ trace = false } = {}) {
   const log = (msg, data) => trace && console.log(`[aiDeps:schema] ${msg}`, data);
@@ -172,7 +172,7 @@ export function getSchemaAPI({ trace = false } = {}) {
 }
 
 // ============================================================================
-// FETCH API — ROUTE‑AWARE, IMMORTAL v17
+// FETCH API — ROUTE‑AWARE, IMMORTAL v21
 // ============================================================================
 export function getFetchAPI({ trace = false, routes } = {}) {
   const log = (msg, data) => trace && console.log(`[aiDeps:fetch] ${msg}`, data);
@@ -180,7 +180,7 @@ export function getFetchAPI({ trace = false, routes } = {}) {
   const meta = {
     layer: "PulseFetchAPI",
     role: "NETWORK_ADAPTER",
-    version: "17-IMMORTAL-EVO",
+    version: "21-IMMORTAL-WORLD",
     evo: {
       deterministicField: true,
       unifiedAdvantageField: true,
@@ -191,6 +191,7 @@ export function getFetchAPI({ trace = false, routes } = {}) {
       symbolicAware: true,
       presenceAware: true,
       bandAware: true,
+      worldAware: true,
       zeroMutation: true,
       zeroExternalMutation: true,
       zeroRoutingInfluence: true,
@@ -214,24 +215,18 @@ export function getFetchAPI({ trace = false, routes } = {}) {
 }
 
 // ============================================================================
-// CACHESTORAGE ORGAN — v17‑IMMORTAL‑EVO
+// CACHESTORAGE ORGAN — v21‑IMMORTAL‑WORLD
 // ============================================================================
 export function getCacheStorageOrgan({ trace = false } = {}) {
   const log = (msg, data) => trace && console.log(`[aiDeps:cache] ${msg}`, data);
 
   const CACHE_PATTERNS = Object.freeze({
-    // Root publish folder: index + static pages + static assets
     rootStatic: /^\/[^\/]+\.(html|css|js|json|png|jpe?g|webp|svg)$/i,
-
-    // Frontend Pulse folders: PULSE* but NOT PULSE-* (Pulse, PulseAdmin, PulseDelivery, etc.)
     pulseFrontend: /^\/PULSE(?!-)[^\/]*\/.*\.(html|css|js|json|png|jpe?g|webp|svg)$/i,
-
-    // Static micro‑chunks (by naming convention)
     microChunks: /micro\-chunk/i
   });
 
   const EXCLUDE_PATTERNS = Object.freeze({
-    // Thinking / reactive / observing organs
     brain: /OSBrain/i,
     logger: /ProofLogger/i,
     monitor: /ProofMonitor/i,
@@ -240,10 +235,11 @@ export function getCacheStorageOrgan({ trace = false } = {}) {
     errors: /UIErrors/i,
     touch: /PULSE\-TOUCH/i,
     net: /PULSE\-NET/i,
+    world: /PULSE\-WORLD/i,
+    band: /PULSE\-WORLD\-BAND/i,
+    os: /PULSE\-WORLD\-OS/i,
     overmind: /Overmind/i,
     heartbeat: /Heartbeat/i,
-
-    // Dynamic / user / backend‑driven
     dashboard: /dashboard/i,
     admin: /admin/i,
     report: /report/i,
@@ -253,12 +249,10 @@ export function getCacheStorageOrgan({ trace = false } = {}) {
   function shouldCache(path) {
     const p = path.toLowerCase();
 
-    // Exclusions first — anything with a mind or live data
     for (const key in EXCLUDE_PATTERNS) {
       if (EXCLUDE_PATTERNS[key].test(p)) return false;
     }
 
-    // Inclusions — static, shell, micro‑page, micro‑chunk
     for (const key in CACHE_PATTERNS) {
       if (CACHE_PATTERNS[key].test(p)) return true;
     }
@@ -273,7 +267,7 @@ export function getCacheStorageOrgan({ trace = false } = {}) {
     }
 
     const allFiles = await fsAPI.getAllFiles();
-    const cache = await caches.open("pulse-immortal-v17");
+    const cache = await caches.open("pulse-immortal-v21");
 
     for (const file of allFiles) {
       if (file.type !== "file") continue;
@@ -294,7 +288,7 @@ export function getCacheStorageOrgan({ trace = false } = {}) {
     meta: {
       layer: "PulseCacheStorageOrgan",
       role: "FIRST_FRAME_FREEZER",
-      version: "17-IMMORTAL-EVO",
+      version: "21-IMMORTAL-WORLD",
       evo: {
         patternDriven: true,
         driftProof: true,
@@ -307,43 +301,146 @@ export function getCacheStorageOrgan({ trace = false } = {}) {
     }
   });
 }
-
 // ============================================================================
-// SYSTEM CLASSIFIER — v17 (WORLD / UI / BAND / CORE / PROXY)
+// SYSTEM CLASSIFIER — v21 (WORLD / UI / BAND / OS / ROUTER / PROXY / CORE / GPU / AI / EARN / TECH / etc.)
 // ============================================================================
 function classifySystem(system) {
   const name = system.name.toLowerCase();
-  const path = system.path.toLowerCase();
 
-  // Root world
-  if (name === "pulse-world") return { layer: "world_root", kind: "world" };
+  // AI
+  if (name === "pulse-ai") 
+    return { layer: "ai", kind: "ai" };
 
-  // Frontend universe
-  if (name === "pulse-ui" || path.includes("/pulse-world/pulse-ui")) {
-    return { layer: "frontend", kind: "ui" };
-  }
-
-  // Backend universe (band)
-  if (name === "pulse-band" || path.includes("/pulse-world/pulse-band")) {
+  // BAND
+  if (name === "pulse-band") 
     return { layer: "backend", kind: "band" };
-  }
 
-  // Backend core engine (PULSE-X under PULSE-BAND)
-  if (name === "pulse-x" && path.includes("/pulse-world/pulse-band")) {
-    return { layer: "backend_core", kind: "world_engine" };
-  }
+  // CODE (specifications / schema / definitions)
+  if (name === "pulse-code") 
+    return { layer: "specs", kind: "code" };
 
-  // Proxy / boundary
-  if (name === "pulse-proxy") {
+  // CORE (foundational logic)
+  if (name === "pulse-core") 
+    return { layer: "core", kind: "core" };
+
+  // DESIGN SYSTEM
+  if (name === "pulse-design") 
+    return { layer: "design", kind: "design" };
+
+  // EARN (economic engine)
+  if (name === "pulse-earn") 
+    return { layer: "earn", kind: "earn" };
+
+  // ENGINE (compute engine)
+  if (name === "pulse-engine") 
+    return { layer: "engine", kind: "engine" };
+
+  // EXPANSION (feature expansion layer)
+  if (name === "pulse-expansion") 
+    return { layer: "expansion", kind: "expansion" };
+
+  // FINALITY (transaction finalization)
+  if (name === "pulse-finality") 
+    return { layer: "finality", kind: "finality" };
+
+  // GPU (compute acceleration)
+  if (name === "pulse-gpu") 
+    return { layer: "gpu", kind: "gpu" };
+
+  // GRID (distributed compute grid)
+  if (name === "pulse-grid") 
+    return { layer: "grid", kind: "grid" };
+
+  // MESH (mesh networking)
+  if (name === "pulse-mesh") 
+    return { layer: "mesh", kind: "mesh" };
+
+  // OS (device OS layer)
+  if (name === "pulse-os") 
+    return { layer: "os", kind: "os" };
+
+  // PROXY (boundary layer)
+  if (name === "pulse-proxy") 
     return { layer: "proxy", kind: "boundary" };
-  }
 
-  // Default: generic system
+  // REGIONING (geo/region logic)
+  if (name === "pulse-regioning") 
+    return { layer: "regioning", kind: "regioning" };
+
+  // ROUTER (network routing)
+  if (name === "pulse-router") 
+    return { layer: "router", kind: "router" };
+
+  // SEND (send engine)
+  if (name === "pulse-send") 
+    return { layer: "send", kind: "send" };
+
+  // SPECS (schema/specification layer)
+  if (name === "pulse-specs") 
+    return { layer: "specs", kind: "specs" };
+
+  // SHIFTER (data transformation)
+  if (name === "pulse-shifter") 
+    return { layer: "shifter", kind: "shifter" };
+
+  // TECH (device tech layer)
+  if (name === "pulse-tech") 
+    return { layer: "tech", kind: "tech" };
+
+  // TOOLS (developer tools)
+  if (name === "pulse-tools") 
+    return { layer: "tools", kind: "tools" };
+
+  // TRANSLATOR (language engine)
+  if (name === "pulse-translator") 
+    return { layer: "translator", kind: "translator" };
+
+  // TRUST (identity/auth)
+  if (name === "pulse-trust") 
+    return { layer: "trust", kind: "trust" };
+
+  // UI (frontend)
+  if (name === "pulse-ui") 
+    return { layer: "frontend", kind: "ui" };
+
+  // WORLD ROOT (organism root)
+  if (name === "pulse-world") 
+    return { layer: "world_root", kind: "world" };
+
+  // X (core engine)
+  if (name === "pulse-x") 
+    return { layer: "core_engine", kind: "engine" };
+
+  // SECURITY LAYER ENTRANCE UI
+  if (name === "pulse") 
+    return { layer: "security_ui", kind: "pulse" };
+
+  // ADMIN UI
+  if (name === "pulseadmin") 
+    return { layer: "admin_ui", kind: "admin" };
+
+  // DELIVERY UI
+  if (name === "pulsedelivery") 
+    return { layer: "delivery_ui", kind: "delivery" };
+
+  // DIRECTORY UI
+  if (name === "pulsedirectory") 
+    return { layer: "directory_ui", kind: "directory" };
+
+  // REWARDS UI
+  if (name === "pulserewards") 
+    return { layer: "rewards_ui", kind: "rewards" };
+
+  // NETLIFY (deployment/backup)
+  if (name === "netlify") 
+    return { layer: "backup", kind: "backup" };
+
+  // DEFAULT
   return { layer: "generic", kind: "system" };
 }
 
 // ============================================================================
-// SCAN SYSTEMS — Pure FS API, v17‑IMMORTAL
+// SCAN SYSTEMS — Pure FS API, v21‑IMMORTAL‑WORLD
 // ============================================================================
 async function scanPulseSystems() {
   fs = getFsAPI({ trace: false });
@@ -396,7 +493,7 @@ export async function buildPulseOrganismMap(baseDir = "/") {
   const cacheOrgan = getCacheStorageOrgan({ trace: false });
 
   return Object.freeze({
-    version: "17‑IMMORTAL‑EVO‑GENOME",
+    version: "21‑IMMORTAL‑EVO‑WORLD‑GENOME",
     generatedAt: new Date().toISOString(),
     systems,
 

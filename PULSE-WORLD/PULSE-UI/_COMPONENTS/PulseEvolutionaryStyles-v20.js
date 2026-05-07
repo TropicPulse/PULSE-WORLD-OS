@@ -62,15 +62,26 @@ AI_EXPERIENCE_META = {
   }
 }
 */
+// ============================================================================
+// FILE: /PULSE-UI/_COMPONENTS/PulseEvolutionaryStyles-v20.js
+// PULSE OS — v20-IMMORTAL-EVOLUTIONARY
+// AUTO-BUILT PAGE CSS • UI SKILLS GENOME → PAGE-SCOPED CSS EMITTER
+// ============================================================================
+
+import { PulseEvolutionaryStylesBaseGenomeV20 } 
+  from "../_COMPONENTS/PulseEvolutionaryStylesBaseGenome-v20.js";
+
+import { PulseEvolutionaryAnimationsBaseGenomeV20 } 
+  from "../_COMPONENTS/PulseEvolutionaryAnimationsBaseGenome-v20.js";
+
+import { createPulseEvolutionaryIcons } 
+  from "./PulseEvolutionaryIcons-v20.js";
+
+import { createPulseEvolutionaryAnimations } 
+  from "./PulseEvolutionaryAnimations-v20.js";
 
 // ============================================================================
-// IMPORT BASE GENOMES (A0 MEMBRANES)
-// ============================================================================
-import { PulseEvolutionaryStylesBaseGenomeV20 } from "../_GENOME/PulseEvolutionaryStylesBaseGenome-v20.js";
-import { PulseEvolutionaryAnimationsBaseGenomeV20 } from "../_GENOME/PulseEvolutionaryAnimationsBaseGenome-v20.js";
-
-// ============================================================================
-// INTERNAL HELPERS — deterministic, pure
+// INTERNAL HELPERS
 // ============================================================================
 function ensureStyleTag() {
   if (typeof document === "undefined") return null;
@@ -89,7 +100,7 @@ function escapeCSS(str) {
 }
 
 // ============================================================================
-// CSS BUILDERS — each skill kind → CSS snippet
+// CSS BUILDERS
 // ============================================================================
 function buildHookCSS(skill) {
   const name = skill.name || skill.id;
@@ -101,11 +112,14 @@ function buildStyleCSS(skill) {
   return skill.css || "";
 }
 
-function buildIconCSS(skill) {
+function buildIconCSS(skill, Icons) {
   const name = skill.name || skill.id;
+  const svg = Icons.resolve(skill.iconName || name);
+  const encoded = btoa(svg);
+
   return `
     :root {
-      --icon-${escapeCSS(name)}: url("${escapeCSS(skill.src)}");
+      --icon-${escapeCSS(name)}: url("data:image/svg+xml;base64,${encoded}");
     }
   `;
 }
@@ -121,16 +135,29 @@ function buildTimingTokenCSS(tokens) {
 }
 
 // ============================================================================
-// MAIN ORGAN FACTORY — PulseEvolutionaryStyles v20
+// MAIN ORGAN FACTORY
 // ============================================================================
 export function createPulseEvolutionaryStyles({
   IQMap,
+  Icons = null,
+  Animations = null,
   log = console.log,
   warn = console.warn
 } = {}) {
+
   if (!IQMap) {
     warn("[PulseEvolutionaryStyles-v20] Missing IQMap");
     return null;
+  }
+
+  // Create Icons Organ if not provided
+  if (!Icons) {
+    Icons = createPulseEvolutionaryIcons({ IQMap });
+  }
+
+  // Create Animations Organ if not provided
+  if (!Animations) {
+    Animations = createPulseEvolutionaryAnimations({ IQMap });
   }
 
   const StyleState = {
@@ -156,34 +183,32 @@ export function createPulseEvolutionaryStyles({
 
     const cssParts = [];
 
-    // ⭐ ALWAYS include Base Style Genome (A0)
+    // Base genomes
     cssParts.push(PulseEvolutionaryStylesBaseGenomeV20.css);
-
-    // ⭐ ALWAYS include Base Animation Genome (A0)
     cssParts.push(PulseEvolutionaryAnimationsBaseGenomeV20.css);
 
-    // timing tokens
+    // Timing tokens
     cssParts.push(buildTimingTokenCSS(tokens));
 
-    // hooks
+    // Hooks
     for (const id of bundle.hooks || []) {
       const skill = skills[id];
       if (skill) cssParts.push(buildHookCSS(skill));
     }
 
-    // styles
+    // Styles
     for (const id of bundle.styles || []) {
       const skill = skills[id];
       if (skill) cssParts.push(buildStyleCSS(skill));
     }
 
-    // icons
+    // Icons
     for (const id of bundle.icons || []) {
       const skill = skills[id];
-      if (skill) cssParts.push(buildIconCSS(skill));
+      if (skill) cssParts.push(buildIconCSS(skill, Icons));
     }
 
-    // animations
+    // Animations
     for (const id of bundle.animations || []) {
       const skill = skills[id];
       if (skill) cssParts.push(buildAnimationCSS(skill));
@@ -193,7 +218,7 @@ export function createPulseEvolutionaryStyles({
   }
 
   // -------------------------------------------------------------------------
-  // BUILD CSS FOR UPCOMING ROUTES (prewarm)
+  // UPCOMING PAGE CSS (prewarm)
   // -------------------------------------------------------------------------
   function buildUpcomingCSS(routeSequence = []) {
     const { flatSkills } = IQMap.planUpcomingSkills(routeSequence);
@@ -202,10 +227,8 @@ export function createPulseEvolutionaryStyles({
 
     const cssParts = [];
 
-    // ⭐ Base genomes included ONCE for prewarm
     cssParts.push(PulseEvolutionaryStylesBaseGenomeV20.css);
     cssParts.push(PulseEvolutionaryAnimationsBaseGenomeV20.css);
-
     cssParts.push(buildTimingTokenCSS(tokens));
 
     for (const { kind, id } of flatSkills) {
@@ -214,7 +237,7 @@ export function createPulseEvolutionaryStyles({
 
       if (kind === "hooks") cssParts.push(buildHookCSS(skill));
       if (kind === "styles") cssParts.push(buildStyleCSS(skill));
-      if (kind === "icons") cssParts.push(buildIconCSS(skill));
+      if (kind === "icons") cssParts.push(buildIconCSS(skill, Icons));
       if (kind === "animations") cssParts.push(buildAnimationCSS(skill));
     }
 
@@ -233,7 +256,7 @@ export function createPulseEvolutionaryStyles({
   }
 
   // -------------------------------------------------------------------------
-  // PUBLIC API — IMMORTAL EVOLUTIONARY STYLE ORGAN
+  // PUBLIC API
   // -------------------------------------------------------------------------
   const PulseEvolutionaryStyles = {
     identity: "PulseEvolutionaryStyles-v20",
@@ -273,15 +296,3 @@ export function createPulseEvolutionaryStyles({
 
   return PulseEvolutionaryStyles;
 }
-
-// ---------------------------------------------------------------------------
-// GLOBAL REGISTRATION (optional)
-// ---------------------------------------------------------------------------
-try {
-  if (typeof window !== "undefined") {
-    window.PulseEvolutionaryStyles = createPulseEvolutionaryStyles;
-  }
-  if (typeof globalThis !== "undefined") {
-    globalThis.PulseEvolutionaryStyles = createPulseEvolutionaryStyles;
-  }
-} catch {}

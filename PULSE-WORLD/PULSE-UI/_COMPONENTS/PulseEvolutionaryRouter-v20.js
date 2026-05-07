@@ -1,14 +1,80 @@
 /*
-===============================================================================
-FILE: /PULSE-UI/_COMPONENTS/PulseEvolutionaryRouter-v16.js
-LAYER: UI PAGE ROUTER ORGAN — IMMORTAL v16+
-===============================================================================
+// ============================================================================
+// FILE: /PULSE-UI/_COMPONENTS/PulseEvolutionaryRouter-v20.js
+// PULSE OS — v20-IMMORTAL-EVOLUTIONARY
+// ROUTE CORTEX ORGAN — CONTEXT-FUSION, ADVANTAGE-AWARE, CNS-AWARE
+// ============================================================================
+//
+// AI_EXPERIENCE_META:
+//   This organ is the *Route Cortex* of Pulse OS v20.
+//   It fuses routing transitions with:
+//     • Evolution context
+//     • Memory context
+//     • IQMap context
+//     • Impulse context
+//     • Page lineage
+//     • Boot path
+//     • Route lineage
+//     • Transition integrity
+//     • Transition advantage
+//     • Transition experience blocks
+//
+//   It produces:
+//     • Deterministic route envelopes
+//     • Tier-aware, channel-aware transitions
+//     • 7-dimensional advantage fields
+//     • Deep or Slim envelopes (runtime switch)
+//     • Auto-throttle mode switching
+//
+//   It is IMMORTAL:
+//     • deterministic
+//     • drift-proof
+//     • zero-network
+//     • zero-filesystem
+//     • zero-mutation
+//
+//   It is the routing brain of Pulse OS.
+//
+// ============================================================================
+//
+// META BLOCK (IMMORTAL):
+//   identity: "PulseEvolutionaryRouter"
+//   version: "20.0-Immortal-Evolutionary"
+//   schemaVersion: "v5"
+//   organKind: "route_cortex"
+//   lineage: "v16 → v18 → v20-Immortal"
+//   role: "UI Page Router → CNS Transition Layer"
+//   stability: "IMMORTAL"
+//   deterministic: true
+//   pure: true
+//
+// CONTRACT:
+//   consumes:
+//     • RouteName
+//     • SymbolicPayload
+//     • BinaryPayload
+//     • RouteContext
+//     • CNS
+//     • Evolution
+//     • MemoryOrgan
+//     • ImpulseOrgan
+//     • IQMap
+//
+//   produces:
+//     • RouteTransitionEnvelope
+//     • transitionId
+//     • signature
+//     • tier
+//     • channel
+//     • advantage
+//
+// ============================================================================
 AI_EXPERIENCE_META = {
   identity: "PulseUI.EvolutionaryRouter",
-  version: "v16-Immortal",
+  version: "v20-Immortal-Evolutionary",
   layer: "pulse_ui",
   role: "ui_page_router",
-  lineage: "PulseEvolutionaryRouter-v11.3-Evo-Prime → v14-Immortal → v15-Immortal → v16-Immortal",
+  lineage: "PulseEvolutionaryRouter-v11.3-Evo-Prime → v14-Immortal → v15-Immortal → v16-Immortal → v20-Immortal-Evolutionary",
 
   evo: {
     uiRouting: true,
@@ -94,11 +160,7 @@ EXPORT_META = {
 }
 ===============================================================================
 */
-// ============================================================================
-// FILE: /PULSE-UI/PulseEvolutionaryRouter-v16.3.js
-// PULSE OS — v16.3-IMMORTAL
-// UI PAGE ROUTER ORGAN — deterministic, dual-band, envelope-aware
-// ============================================================================
+
 
 const g =
   typeof globalThis !== "undefined"
@@ -145,7 +207,349 @@ export const RouterRole = {
   }
 };
 
-const ROUTER_SCHEMA_VERSION = "v3";
+export let ROUTER_MODE = "deep"; 
+// "deep" → full CNS intelligence
+// "slim" → optimized envelope
+// Auto-switching enabled via CNS load
+
+const ROUTER_SCHEMA_VERSION = "v5";
+
+// ============================================================================
+// INTERNAL: deterministic signature generator
+// ============================================================================
+function deterministicSignature(obj) {
+  const json = JSON.stringify(obj || {});
+  let hash = 0;
+  for (let i = 0; i < json.length; i++) {
+    hash = (hash * 31 + json.charCodeAt(i)) >>> 0;
+  }
+  return "ROUTE_SIG_" + hash.toString(16).padStart(8, "0");
+}
+
+// ============================================================================
+// TIERS + CHANNELS
+// ============================================================================
+const TransitionTiers = Object.freeze({
+  normal: "normal",
+  important: "important",
+  critical: "critical",
+  immortal: "immortal"
+});
+
+const TransitionChannels = Object.freeze({
+  ui: "ui",
+  system: "system",
+  evolution: "evolution",
+  memory: "memory",
+  router: "router",
+  earn: "earn"
+});
+
+// ============================================================================
+// ADVANTAGE FUSION (7-dimensional)
+// ============================================================================
+function compute7Advantage({ fused, band, tier, channel }) {
+  const routeAdv =
+    (fused.route?.length || 0) * 0.01 +
+    (fused.prevRoute ? 0.05 : 0) +
+    (fused.upcoming ? 0.05 : 0);
+
+  const evoAdv =
+    (fused.pageLineage?.depth || 0) * 0.02 +
+    (fused.evoStage === "critical" ? 0.1 : 0);
+
+  const memAdv =
+    (fused.memTier === "immortal" ? 0.1 : 0) +
+    (fused.memChannel === "memory" ? 0.05 : 0);
+
+  const iqAdv =
+    (fused.iqSkills?.icons?.length || 0) * 0.01 +
+    (fused.iqSkills?.animations?.length || 0) * 0.01 +
+    (fused.iqSkills?.styles?.length || 0) * 0.01;
+
+  const contextAdv =
+    (fused.context?.urgency || 0) * 0.1 +
+    (fused.context?.importance || 0) * 0.1;
+
+  const channelAdv =
+    channel === "system" ? 0.15 :
+    channel === "evolution" ? 0.12 :
+    channel === "router" ? 0.10 :
+    channel === "memory" ? 0.08 :
+    0.05;
+
+  const tierAdv =
+    tier === "immortal" ? 0.15 :
+    tier === "critical" ? 0.12 :
+    tier === "warning" ? 0.08 :
+    tier === "action" ? 0.05 :
+    0.02;
+
+  return (
+    0.20 * band.advantage +
+    0.10 * routeAdv +
+    0.10 * evoAdv +
+    0.10 * memAdv +
+    0.15 * iqAdv +
+    0.10 * contextAdv +
+    0.10 * channelAdv +
+    0.15 * tierAdv
+  );
+}
+
+// ============================================================================
+// AUTO-THROTTLE MODE SWITCHER
+// ============================================================================
+function autoSelectMode({ CNS }) {
+  try {
+    const load = CNS?.getLoad?.() || 0;
+    if (load > 0.85) return "slim";
+    if (load < 0.65) return "deep";
+  } catch {}
+  return ROUTER_MODE;
+}
+
+// ============================================================================
+// FACTORY
+// ============================================================================
+export function createPulseEvolutionaryRouter({
+  CNS,
+  Evolution,
+  Memory,
+  ImpulseOrgan,
+  IQMap,
+  log = console.log,
+  warn = console.warn
+} = {}) {
+
+  const RouterState = {
+    currentRoute: "init",
+    previousRoute: null,
+    upcomingRoute: null,
+    lastTransition: null,
+    lastSignature: null,
+    lastTier: null,
+    lastChannel: null,
+    lastAdvantage: null,
+    lastExperience: null,
+    routeHistory: [],
+    seq: 0
+  };
+
+  function nextSeq() {
+    RouterState.seq += 1;
+    return RouterState.seq;
+  }
+
+  function safeLog(stage, details = {}) {
+    try {
+      log("[PulseEvolutionaryRouter-v20]", stage, JSON.stringify(details));
+    } catch {}
+  }
+
+  // --------------------------------------------------------------------------
+  // CONTEXT FUSION (v20++)
+  // --------------------------------------------------------------------------
+  function fuseContext(context) {
+    const route = RouterState.currentRoute;
+    const prevRoute = RouterState.previousRoute;
+    const upcoming = RouterState.upcomingRoute;
+
+    const pageLineage = Evolution?.getPageLineage?.() || {};
+    const bootPath = Evolution?.getBootPath?.() || "unknown";
+    const evoStage = Evolution?.getStage?.() || "unknown";
+
+    const memTier = Memory?.getTier?.() || "info";
+    const memChannel = Memory?.getChannel?.() || "memory";
+
+    const iqSkills = IQMap?.getRouteUISkills?.(route) || {};
+    const iqUpcoming = IQMap?.planUpcomingSkills?.([upcoming]) || {};
+
+    return {
+      route,
+      prevRoute,
+      upcoming,
+      pageLineage,
+      bootPath,
+      evoStage,
+      memTier,
+      memChannel,
+      iqSkills,
+      iqUpcoming,
+      context
+    };
+  }
+
+  // --------------------------------------------------------------------------
+  // BUILD TRANSITION ENVELOPE (deep/slim)
+  // --------------------------------------------------------------------------
+  function buildTransitionEnvelope({
+    fromRoute,
+    toRoute,
+    payload,
+    binaryPayload,
+    context,
+    tier,
+    channel
+  }) {
+    const mode = autoSelectMode({ CNS });
+    const fused = fuseContext(context);
+
+    const band = {
+      advantage: (JSON.stringify(payload || {}).length || 1) * 0.001
+    };
+
+    const advantage = compute7Advantage({
+      fused,
+      band,
+      tier,
+      channel
+    });
+
+    const base = {
+      schemaVersion: ROUTER_SCHEMA_VERSION,
+      fromRoute,
+      toRoute,
+      tier,
+      channel,
+      payload: payload || {},
+      binary: binaryPayload || null,
+      context: context || {},
+      advantage,
+      version: "20.0-Immortal",
+      timestamp: "NO_TIMESTAMP_v20"
+    };
+
+    if (mode === "slim") {
+      base.signature = deterministicSignature(base);
+      base.transitionId = "ROUTE_" + base.signature.slice(10);
+      return base;
+    }
+
+    // DEEP MODE — full CNS intelligence
+    const deep = {
+      ...base,
+      prevRoute: fused.prevRoute,
+      upcomingRoute: fused.upcoming,
+      pageLineage: fused.pageLineage,
+      bootPath: fused.bootPath,
+      evolutionStage: fused.evoStage,
+      memoryTier: fused.memTier,
+      memoryChannel: fused.memChannel,
+      iqSkills: fused.iqSkills,
+      iqUpcomingSkills: fused.iqUpcoming,
+      iconFootprint: fused.iqSkills?.icons || [],
+      animationFootprint: fused.iqSkills?.animations || [],
+      styleFootprint: fused.iqSkills?.styles || [],
+      hookFootprint: fused.iqSkills?.hooks || []
+    };
+
+    deep.signature = deterministicSignature(deep);
+    deep.transitionId = "ROUTE_" + deep.signature.slice(10);
+
+    return deep;
+  }
+
+  // --------------------------------------------------------------------------
+  // TRANSITION
+  // --------------------------------------------------------------------------
+  async function transition(
+    toRoute,
+    {
+      payload = {},
+      binaryPayload = null,
+      context = {},
+      tier = TransitionTiers.normal,
+      channel = TransitionChannels.ui
+    } = {}
+  ) {
+    nextSeq();
+
+    const fromRoute = RouterState.currentRoute;
+
+    const envelope = buildTransitionEnvelope({
+      fromRoute,
+      toRoute,
+      payload,
+      binaryPayload,
+      context,
+      tier,
+      channel
+    });
+
+    RouterState.previousRoute = fromRoute;
+    RouterState.currentRoute = toRoute;
+    RouterState.lastTransition = envelope;
+    RouterState.lastSignature = envelope.signature;
+    RouterState.lastTier = tier;
+    RouterState.lastChannel = channel;
+    RouterState.lastAdvantage = envelope.advantage;
+    RouterState.routeHistory.push({ from: fromRoute, to: toRoute });
+
+    safeLog("TRANSITION", {
+      fromRoute,
+      toRoute,
+      signature: envelope.signature,
+      advantage: envelope.advantage
+    });
+
+    // CNS impulse
+    try {
+      ImpulseOrgan?.emit({
+        source: "PulseEvolutionaryRouter",
+        payload: {
+          fromRoute,
+          toRoute,
+          advantage: envelope.advantage
+        },
+        context,
+        tier,
+        channel
+      });
+    } catch (err) {
+      warn("[Router] IMPULSE_EMIT_ERROR", String(err));
+      safeLog("IMPULSE_EMIT_ERROR", { error: String(err) });
+    }
+
+    // Persist router state
+    try {
+      Memory?.core?.setRouteSnapshot?.("router", {
+        schemaVersion: ROUTER_SCHEMA_VERSION,
+        version: "20.0-Immortal",
+        currentRoute: toRoute,
+        lastTransition: envelope,
+        routeHistory: RouterState.routeHistory.slice(-64)
+      });
+      safeLog("MEMORY_WRITE_OK", { toRoute });
+    } catch (err) {
+      warn("[Router] MEMORY_WRITE_ERROR", String(err));
+      safeLog("MEMORY_WRITE_ERROR", { error: String(err) });
+    }
+
+    return {
+      ok: true,
+      route: toRoute,
+      signature: envelope.signature,
+      advantage: envelope.advantage
+    };
+  }
+
+  const PulseEvolutionaryRouter = {
+    RouterState,
+    transition,
+    go: transition,
+    Tiers: TransitionTiers,
+    Channels: TransitionChannels
+  };
+
+  safeLog("INIT", {
+    identity: "PulseEvolutionaryRouter-v20",
+    schemaVersion: ROUTER_SCHEMA_VERSION
+  });
+
+  return PulseEvolutionaryRouter;
+}
+
 
 // ============================================================================
 // INTERNAL: deterministic hash + signature

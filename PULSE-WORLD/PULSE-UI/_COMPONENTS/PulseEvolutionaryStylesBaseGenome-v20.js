@@ -1,7 +1,7 @@
 // ============================================================================
 // FILE: /PULSE-UI/_COMPONENTS/PulseEvolutionaryStylesBaseGenome-v20.js
 // PULSE OS — v20-IMMORTAL-EVOLUTIONARY
-// UNIVERSAL UI SKIN GENOME (A0/A1/A2/A3 SURFACE MEMBRANE)
+// UNIVERSAL UI SKIN GENOME (A0–A5 SURFACE MEMBRANE)
 // ============================================================================
 //
 // ROLE (v20 IMMORTAL):
@@ -9,40 +9,39 @@
 //   It provides the universal membrane that all pages inherit before
 //   page-specific UI skills are applied.
 //
-//   • 3D parallax depth layers
-//   • Neon edge-tracing v3
-//   • Immortal-grade shadows + glow rings
-//   • Glass-membrane refractive surfaces
-//   • Binary spectral tinting
-//   • Pulse shimmer v3 (deterministic)
-//   • Tier-aware chroma flares
-//   • Route-aware underglow
-//   • CNS impulse ripple v2
+//   A0: Global reset + dark membrane
+//   A1: 3D surfaces + neon edges + glow rings
+//   A2: Blocks, cards, wrappers, containers
+//   A3: Buttons, icons, shimmer, impulse, tiers
+//   A4: Forms, inputs, selects, toggles, sliders
+//   A5: Lists, tables, modals, toasts, badges, chips, navbars
 //
 // CONTRACT:
-//   • This genome is STATIC but EVOLVABLE.
-//   • It is always included by PulseEvolutionaryStyles-v20.
-//   • It is never duplicated, never drifted, never mutated at runtime.
+//   • STATIC but EVOLVABLE.
+//   • Always included by Styles Organ.
+//   • Never duplicated, never drifted, never mutated.
 //   • Page-specific skills may override or extend it.
 //
 // SAFETY:
-//   • IMMORTAL: deterministic, drift-proof, no side effects.
-//   • DOM-safe: applied only through the Styles Organ.
+//   • IMMORTAL: deterministic, drift-proof.
+//   • DOM-safe: applied only through Styles Organ.
 // ============================================================================
 
 export const PulseEvolutionaryStylesBaseGenomeV20 = {
   id: "base_skin_v20",
   kind: "style_pack",
   version: "20.0-Immortal-Evolutionary",
-  description: "Universal Pulse OS v20 Skin (A0/A1/A2/A3 Membrane)",
+  description: "Universal Pulse OS v20 Skin (A0–A5 Membrane)",
 
   css: `
 /* ============================================================================
    PulseEvolutionaryStylesBaseGenome — v20‑IMMORTAL
-   UNIVERSAL PULSE OS UI SKIN ORGAN (A0/A1/A2/A3 SURFACE MEMBRANE)
+   UNIVERSAL PULSE OS UI SKIN ORGAN (A0–A5 SURFACE MEMBRANE)
    ============================================================================ */
 
-/* GLOBAL RESET -------------------------------------------------------------- */
+/* ============================================================================
+   A0 — GLOBAL RESET + DARK MEMBRANE
+   ============================================================================ */
 html, body {
   margin: 0;
   padding: 0;
@@ -54,51 +53,28 @@ html, body {
   perspective: 1600px;
 }
 
-/* WRAPPER ------------------------------------------------------------------- */
-#evo-wrapper {
-  padding: 32px;
-  max-width: 1080px;
-  margin: 0 auto;
-  display: flex;
-  flex-direction: column;
-  gap: 28px;
-  position: relative;
+*, *::before, *::after {
+  box-sizing: border-box;
 }
 
-/* AMBIENT PARTICLES --------------------------------------------------------- */
-#evo-wrapper::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  background-image:
-    radial-gradient(circle, rgba(0,255,255,0.12) 0%, transparent 60%),
-    radial-gradient(circle, rgba(0,255,255,0.08) 0%, transparent 70%);
-  background-size: 220px 220px, 340px 340px;
-  background-position: 20% 30%, 80% 70%;
-  opacity: 0.15;
-  filter: blur(12px);
-}
-
-/* BLOCKS -------------------------------------------------------------------- */
-.evo-block {
+/* ============================================================================
+   A1 — 3D SURFACES + NEON EDGES + GLOW RINGS
+   ============================================================================ */
+.evo-surface {
   background: rgba(18, 18, 18, 0.78);
   border: 1px solid rgba(0, 255, 255, 0.12);
   border-radius: 18px;
-  padding: 28px;
+  padding: 24px;
   backdrop-filter: blur(14px) saturate(160%);
   transform-style: preserve-3d;
-  transform: translateZ(0px);
-  transition: transform 0.35s ease, box-shadow 0.35s ease, border-color 0.35s ease;
-
+  transition: 0.35s ease;
   box-shadow:
     0 8px 22px rgba(0,0,0,0.55),
     0 18px 42px rgba(0,0,0,0.65),
     inset 0 0 0 1px rgba(255,255,255,0.05);
 }
 
-/* 3D HOVER LIFT + MICRO‑TILT ------------------------------------------------ */
-.evo-block:hover {
+.evo-surface:hover {
   transform: translateY(-6px) rotateX(3deg) rotateY(-2deg);
   border-color: rgba(0, 255, 255, 0.45);
   box-shadow:
@@ -107,8 +83,7 @@ html, body {
     inset 0 0 0 1px rgba(255,255,255,0.08);
 }
 
-/* NEON EDGE‑TRACE v3 -------------------------------------------------------- */
-.evo-block::after {
+.evo-surface::after {
   content: "";
   position: absolute;
   inset: 0;
@@ -125,26 +100,39 @@ html, body {
   filter: blur(6px);
 }
 
-/* TITLES -------------------------------------------------------------------- */
-.evo-title {
-  font-size: 1.65rem;
-  margin-bottom: 14px;
-  font-weight: 600;
-  color: #00eaff;
-  text-shadow:
-    0 0 12px rgba(0, 255, 255, 0.55),
-    0 0 22px rgba(0, 255, 255, 0.35);
+/* ============================================================================
+   A2 — WRAPPERS, BLOCKS, CONTAINERS
+   ============================================================================ */
+#evo-wrapper {
+  padding: 32px;
+  max-width: 1080px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+  position: relative;
 }
 
-/* CONTENT ------------------------------------------------------------------- */
-.evo-content {
-  font-size: 1.1rem;
-  line-height: 1.65rem;
-  color: #dcdcdc;
-  white-space: pre-wrap;
+.evo-block { composes: evo-surface; }
+
+/* Ambient particles */
+#evo-wrapper::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-image:
+    radial-gradient(circle, rgba(0,255,255,0.12) 0%, transparent 60%),
+    radial-gradient(circle, rgba(0,255,255,0.08) 0%, transparent 70%);
+  background-size: 220px 220px, 340px 340px;
+  background-position: 20% 30%, 80% 70%;
+  opacity: 0.15;
+  filter: blur(12px);
 }
 
-/* BUTTONS ------------------------------------------------------------------- */
+/* ============================================================================
+   A3 — BUTTONS, ICONS, SHIMMER, IMPULSE, TIERS
+   ============================================================================ */
 .evo-button {
   display: inline-flex;
   align-items: center;
@@ -158,7 +146,6 @@ html, body {
   font-size: 1rem;
   transition: 0.28s ease;
   transform-style: preserve-3d;
-
   box-shadow:
     0 6px 16px rgba(0,0,0,0.55),
     inset 0 0 0 1px rgba(255,255,255,0.06);
@@ -172,19 +159,17 @@ html, body {
     0 0 18px rgba(0, 255, 255, 0.45);
 }
 
-/* ICONS --------------------------------------------------------------------- */
 .evo-icon {
   width: 22px;
   height: 22px;
   filter: drop-shadow(0 0 6px rgba(0,255,255,0.55));
 }
 
-/* SHIMMER EFFECT v3 --------------------------------------------------------- */
+/* Shimmer */
 .evo-shimmer {
   position: relative;
   overflow: hidden;
 }
-
 .evo-shimmer::before {
   content: "";
   position: absolute;
@@ -200,53 +185,180 @@ html, body {
   );
   animation: shimmer-v3 2.4s linear infinite;
 }
-
 @keyframes shimmer-v3 {
   0% { left: -180%; }
   100% { left: 180%; }
 }
 
-/* ROUTE-AWARE UNDERGLOW ----------------------------------------------------- */
-.evo-route-active {
-  box-shadow:
-    0 0 22px rgba(0, 255, 255, 0.75),
-    inset 0 0 0 1px rgba(255,255,255,0.10) !important;
-  border-color: rgba(0, 255, 255, 0.75) !important;
-}
-
-/* BINARY SPECTRAL TINT ------------------------------------------------------ */
-.evo-binary {
-  border-color: rgba(0, 255, 255, 0.65) !important;
-  box-shadow:
-    0 0 20px rgba(0, 255, 255, 0.65),
-    inset 0 0 0 1px rgba(255,255,255,0.08) !important;
-  filter: saturate(140%);
-}
-
-/* CNS IMPULSE RIPPLE v2 ----------------------------------------------------- */
+/* Impulse */
 .evo-impulse {
   animation: impulse-ripple 0.55s ease-out;
 }
-
 @keyframes impulse-ripple {
   0% { box-shadow: 0 0 0 rgba(0,255,255,0); }
   40% { box-shadow: 0 0 26px rgba(0,255,255,0.65); }
   100% { box-shadow: 0 0 0 rgba(0,255,255,0); }
 }
 
-/* TIER-AWARE CHROMA FLARES -------------------------------------------------- */
+/* Tiers */
 .evo-tier-critical {
   box-shadow:
     0 0 26px rgba(255, 60, 60, 0.75),
     inset 0 0 0 1px rgba(255,255,255,0.10) !important;
   border-color: rgba(255, 60, 60, 0.75) !important;
 }
-
 .evo-tier-immortal {
   box-shadow:
     0 0 32px rgba(0, 255, 150, 0.85),
     inset 0 0 0 1px rgba(255,255,255,0.12) !important;
   border-color: rgba(0, 255, 150, 0.85) !important;
+}
+
+/* ============================================================================
+   A4 — FORMS, INPUTS, SELECTS, TOGGLES, SLIDERS
+   ============================================================================ */
+.evo-input {
+  width: 100%;
+  padding: 12px 16px;
+  border-radius: 12px;
+  background: rgba(20,20,20,0.85);
+  border: 1px solid rgba(0,255,255,0.18);
+  color: #e8e8e8;
+  font-size: 1rem;
+  transition: 0.25s ease;
+}
+.evo-input:focus {
+  outline: none;
+  border-color: rgba(0,255,255,0.55);
+  box-shadow: 0 0 12px rgba(0,255,255,0.45);
+}
+
+.evo-select {
+  composes: evo-input;
+  appearance: none;
+  background-image: linear-gradient(45deg, transparent 50%, #00eaff 50%),
+                    linear-gradient(135deg, #00eaff 50%, transparent 50%);
+  background-position: calc(100% - 20px) calc(50% - 4px),
+                       calc(100% - 16px) calc(50% + 4px);
+  background-size: 6px 6px, 6px 6px;
+  background-repeat: no-repeat;
+}
+
+.evo-toggle {
+  width: 48px;
+  height: 24px;
+  border-radius: 24px;
+  background: rgba(0,255,255,0.15);
+  position: relative;
+  cursor: pointer;
+  transition: 0.25s ease;
+}
+.evo-toggle::after {
+  content: "";
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 20px;
+  height: 20px;
+  background: #00eaff;
+  border-radius: 50%;
+  transition: 0.25s ease;
+}
+.evo-toggle.active {
+  background: rgba(0,255,255,0.45);
+}
+.evo-toggle.active::after {
+  transform: translateX(24px);
+}
+
+.evo-slider {
+  width: 100%;
+  appearance: none;
+  height: 4px;
+  background: rgba(0,255,255,0.25);
+  border-radius: 4px;
+}
+.evo-slider::-webkit-slider-thumb {
+  appearance: none;
+  width: 18px;
+  height: 18px;
+  background: #00eaff;
+  border-radius: 50%;
+  cursor: pointer;
+}
+
+/* ============================================================================
+   A5 — LISTS, TABLES, MODALS, TOASTS, BADGES, CHIPS, NAVBARS
+   ============================================================================ */
+.evo-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.evo-list-item {
+  composes: evo-surface;
+  padding: 18px;
+}
+
+.evo-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: rgba(20,20,20,0.85);
+}
+.evo-table th, .evo-table td {
+  padding: 14px;
+  border-bottom: 1px solid rgba(0,255,255,0.12);
+}
+
+.evo-modal {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.75);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  backdrop-filter: blur(8px);
+}
+.evo-modal-content {
+  composes: evo-surface;
+  max-width: 480px;
+}
+
+.evo-toast {
+  composes: evo-surface;
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  padding: 18px 24px;
+}
+
+.evo-badge {
+  display: inline-block;
+  padding: 4px 10px;
+  border-radius: 12px;
+  background: rgba(0,255,255,0.25);
+  color: #00eaff;
+  font-size: 0.85rem;
+}
+
+.evo-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border-radius: 16px;
+  background: rgba(0,255,255,0.18);
+  color: #00eaff;
+}
+
+.evo-navbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 18px 24px;
+  background: rgba(10,10,10,0.85);
+  border-bottom: 1px solid rgba(0,255,255,0.12);
 }
 `
 };

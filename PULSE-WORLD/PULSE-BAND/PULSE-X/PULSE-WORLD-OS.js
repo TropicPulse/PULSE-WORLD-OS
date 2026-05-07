@@ -1,19 +1,22 @@
 #!/usr/bin/env node
 /**
  * =============================================================================
- *  PULSEBAND CONTINUANCE DAEMON — v16-IMMORTAL-EVO
- *  File: PulseDaemon.js  (server-side organism runtime)
+ *  PULSE-WORLD-OS CONTINUANCE DAEMON — v21-IMMORTAL-WORLD-OS
+ *  File: PULSE-WORLD-OS.js  (server-side / device-side organism runtime)
  *
  *  PURPOSE:
  *    • Fully autonomous, no user input.
  *    • Auto-detects ALL folders starting with "PULSE" (PULSEGPU, PULSESEND, etc).
  *    • Treats each folder as an organ in the organism.
  *    • Shows CPU, MEM, heat, advantage, prewarm, prechunk, continuance.
+ *    • Detects ROUTE / WORLD / OS / BOOT patterns for Pulse‑World‑OS routing.
+ *    • Builds a live "boot map" of organs and their inferred boot roles.
  *    • Evolvable: words, patterns, no hardcoded versions in logic.
- *    • Runs forever on your server — dedicated or shared.
+ *    • Runs forever on your server or device — dedicated or shared.
  *    • Requires NO .json, NO metadata, NO extra files.
  *
- *  THIS IS THE ONE-FILE, ZERO-DEPENDENCY, AUTO-ORGANISM DAEMON (v16 IMMORTAL-EVO).
+ *  THIS IS THE ONE-FILE, ZERO-DEPENDENCY, AUTO-ORGANISM DAEMON
+ *  NOW UPGRADED TO v21-IMMORTAL-WORLD-OS.
  * =============================================================================
  */
 
@@ -25,12 +28,13 @@ const path = require("path");
  *  0. AI EXPERIENCE META / EXPORT META
  * ============================================================================= */
 const AI_EXPERIENCE_META = {
-  identity: "PulseBand.ContinuanceDaemon",
-  version: "v16-Immortal-Evo",
-  layer: "pulse_daemon",
-  role: "organism_runtime + continuance_monitor",
-  lineage: "PulseBandDaemon-v5 → PulseDaemon-v16-Immortal-Evo",
+  identity: "PulseWorldOS.PulseBand.ContinuanceDaemon",
+  version: "v21-Immortal-World-OS",
+  layer: "pulse_world_os_daemon",
+  role: "organism_runtime + continuance_monitor + world_os_boot_mapper",
+  lineage: "PulseBandDaemon-v5 → PulseDaemon-v16-Immortal-Evo → PulseWorldOS-v21",
   evo: {
+    // core daemon traits
     driftProof: true,
     deterministicLoop: true,
     zeroConfig: true,
@@ -41,23 +45,38 @@ const AI_EXPERIENCE_META = {
     prewarmAware: true,
     prechunkAware: true,
     advantageAware: true,
-    futureBootLoaderReady: true
+
+    // world-os traits
+    worldOSLoader: true,
+    deviceDaemon: true,
+    routeDiscovery: true,
+    bootSequenceAware: true,
+    pulseWorldAware: true,
+    pulseBandAware: true,
+    pulseRouteAware: true,
+    pulseEarnAware: true,
+    pulseGPUAware: true,
+
+    // future evolution
+    futureBootLoaderReady: true,
+    futureDeviceMeshReady: true
   }
 };
 
 const EXPORT_META = {
   organ: "PulseDaemon",
-  layer: "pulse_daemon",
-  stability: "IMMORTAL-EVO",
+  layer: "pulse_world_os_daemon",
+  stability: "IMMORTAL-WORLD-OS",
   deterministic: true,
   exposes: [
     "start",
     "stop",
     "getOrgans",
-    "getSnapshot"
+    "getSnapshot",
+    "getBootMap"
   ],
   sideEffects: "process_interval_only",
-  network: "none (v16 daemon core)"
+  network: "none (local world-os daemon core)"
 };
 
 /* =============================================================================
@@ -92,11 +111,14 @@ const ICONS = {
   cold:   "❄️",
   chunk:  "📦",
   bolt:   "⚡",
-  evo:    "🧬"
+  evo:    "🧬",
+  boot:   "🚀",
+  world:  "🌍",
+  os:     "🖥️"
 };
 
 /* =============================================================================
- *  2. CONFIGURATION (IMMORTAL-EVO)
+ *  2. CONFIGURATION (IMMORTAL-WORLD-OS)
  * ============================================================================= */
 const CONFIG = {
   tickMs: 5000,                 // main loop interval
@@ -109,11 +131,17 @@ const CONFIG = {
   },
   patterns: {
     organPrefix: /^PULSE/i
+  },
+  bootPatterns: {
+    world: /WORLD/i,
+    os: /OS/i,
+    route: /ROUTE|NET|WORLDROUTE/i,
+    boot: /BOOT|LOADER|START/i
   }
 };
 
 /* =============================================================================
- *  3. PROCESS SNAPSHOT (CPU + MEMORY) — v16 IMMORTAL-EVO
+ *  3. PROCESS SNAPSHOT (CPU + MEMORY) — v21 IMMORTAL-WORLD-OS
  * ============================================================================= */
 function getProcessSnapshot() {
   const mem = process.memoryUsage();
@@ -154,12 +182,19 @@ class PulseOrgan {
     this.prechunked = false;
     this.continuanceScore = 0;
 
+    // world-os boot / route inference
+    this.bootRole = this.inferBootRole(folderName);
+    this.routeRole = this.inferRouteRole(folderName);
+
     this.meta = {
       type: this.type,
+      bootRole: this.bootRole,
+      routeRole: this.routeRole,
       evo: {
         prewarmAware: false,
         prechunkAware: false,
-        advantageAware: false
+        advantageAware: false,
+        worldOSAware: !!this.bootRole || !!this.routeRole
       }
     };
   }
@@ -174,6 +209,20 @@ class PulseOrgan {
     if (upper.includes("ROUTE"))  return "route";
     if (upper.includes("VITAL"))  return "vitals";
     return "generic";
+  }
+
+  inferBootRole(name) {
+    const upper = name.toUpperCase();
+    if (CONFIG.bootPatterns.boot.test(upper))   return "boot";
+    if (CONFIG.bootPatterns.os.test(upper))     return "os";
+    if (CONFIG.bootPatterns.world.test(upper))  return "world";
+    return null;
+  }
+
+  inferRouteRole(name) {
+    const upper = name.toUpperCase();
+    if (CONFIG.bootPatterns.route.test(upper))  return "route";
+    return null;
   }
 
   resolveIcon(type) {
@@ -325,8 +374,17 @@ class PulseOrgan {
         ? ICONS.evo
         : "";
 
+    const bootBadge =
+      this.bootRole === "boot"  ? ICONS.boot :
+      this.bootRole === "os"    ? ICONS.os :
+      this.bootRole === "world" ? ICONS.world :
+      "";
+
+    const routeBadge =
+      this.routeRole === "route" ? ICONS.route : "";
+
     return [
-      `${this.color}${this.icon}${c.reset} ${c.bold}${this.id}${c.reset} ${evoIcon}`,
+      `${this.color}${this.icon}${COLORS.reset} ${c.bold}${this.id}${c.reset} ${evoIcon}${bootBadge}${routeBadge}`,
       `CPU: ${cpuColor}${this.cpu.toFixed(0)}%${c.reset}`,
       `MEM: ${memColor}${this.mem.toFixed(0)}%${c.reset}`,
       `ADV: ${c.cyan}${this.advantage.toFixed(2)}×${c.reset}`,
@@ -339,7 +397,7 @@ class PulseOrgan {
 }
 
 /* =============================================================================
- *  5. PULSEBAND DAEMON — ROOT ORGANISM (v16 IMMORTAL-EVO)
+ *  5. PULSEBAND / PULSE-WORLD-OS DAEMON — ROOT ORGANISM (v21 IMMORTAL-WORLD-OS)
  * ============================================================================= */
 class PulseBandDaemon {
   constructor() {
@@ -347,6 +405,15 @@ class PulseBandDaemon {
     this.tickCount = 0;
     this.timer = null;
     this.lastSnapshot = null;
+
+    // world-os boot map
+    this.bootMap = {
+      world: [],
+      os: [],
+      boot: [],
+      route: [],
+      other: []
+    };
   }
 
   discoverOrgans() {
@@ -360,6 +427,38 @@ class PulseBandDaemon {
 
       this.organs.push(new PulseOrgan(name));
     }
+
+    this.buildBootMap();
+  }
+
+  buildBootMap() {
+    const bootMap = {
+      world: [],
+      os: [],
+      boot: [],
+      route: [],
+      other: []
+    };
+
+    for (const organ of this.organs) {
+      if (organ.bootRole === "world") {
+        bootMap.world.push(organ.id);
+      } else if (organ.bootRole === "os") {
+        bootMap.os.push(organ.id);
+      } else if (organ.bootRole === "boot") {
+        bootMap.boot.push(organ.id);
+      }
+
+      if (organ.routeRole === "route") {
+        bootMap.route.push(organ.id);
+      }
+
+      if (!organ.bootRole && !organ.routeRole) {
+        bootMap.other.push(organ.id);
+      }
+    }
+
+    this.bootMap = bootMap;
   }
 
   async start() {
@@ -390,7 +489,7 @@ class PulseBandDaemon {
     console.clear();
 
     console.log(
-      `${c.bold}${ICONS.band} PulseBand Continuance Daemon v16-IMMORTAL-EVO${c.reset}`
+      `${c.bold}${ICONS.band} PulseWorld-OS Continuance Daemon v21-IMMORTAL-WORLD-OS${c.reset}`
     );
     console.log(
       `${c.dim}Tick: ${this.tickCount}  |  Time: ${snapshot.timestamp}${c.reset}`
@@ -415,6 +514,24 @@ class PulseBandDaemon {
     }
 
     console.log("");
+    console.log(`${c.bold}WORLD-OS BOOT MAP:${c.reset}`);
+    console.log(
+      `  ${ICONS.world} WORLD: ${c.cyan}${this.bootMap.world.join(", ") || "(none)"}${c.reset}`
+    );
+    console.log(
+      `  ${ICONS.os} OS:    ${c.cyan}${this.bootMap.os.join(", ") || "(none)"}${c.reset}`
+    );
+    console.log(
+      `  ${ICONS.boot} BOOT:  ${c.cyan}${this.bootMap.boot.join(", ") || "(none)"}${c.reset}`
+    );
+    console.log(
+      `  ${ICONS.route} ROUTE: ${c.cyan}${this.bootMap.route.join(", ") || "(none)"}${c.reset}`
+    );
+    console.log(
+      `  OTHER: ${c.dim}${this.bootMap.other.join(", ") || "(none)"}${c.reset}`
+    );
+
+    console.log("");
     console.log(
       `${c.dim}This daemon is always-on, auto-running the organism loop for all PULSE* folders.${c.reset}`
     );
@@ -426,13 +543,13 @@ class PulseBandDaemon {
   logBanner() {
     const c = COLORS;
     console.log(
-      `${c.bold}${ICONS.band} Starting PulseBand Continuance Daemon...${c.reset}`
+      `${c.bold}${ICONS.band} Starting PulseWorld-OS Continuance Daemon...${c.reset}`
     );
     console.log(
       `${c.dim}Root: ${CONFIG.rootDir}  |  Detecting all PULSE* folders as organs.${c.reset}`
     );
     console.log(
-      `${c.dim}Mode: v16-IMMORTAL-EVO, zero-config, filesystem-as-organism.${c.reset}`
+      `${c.dim}Mode: v21-IMMORTAL-WORLD-OS, zero-config, filesystem-as-organism, world-os boot map aware.${c.reset}`
     );
     console.log("");
   }
@@ -440,13 +557,13 @@ class PulseBandDaemon {
   shutdown(signal) {
     const c = COLORS;
     console.log(
-      `${c.red}${ICONS.err} Shutting down PulseBand (${signal})${c.reset}`
+      `${c.red}${ICONS.err} Shutting down PulseWorld-OS Daemon (${signal})${c.reset}`
     );
     if (this.timer) clearInterval(this.timer);
     process.exit(0);
   }
 
-  // v16 API surface for future boot loader
+  // v21 API surface for future boot loader / admin dashboards / device OS
   getOrgans() {
     return this.organs.map(o => ({
       id: o.id,
@@ -458,8 +575,14 @@ class PulseBandDaemon {
       continuanceScore: o.continuanceScore,
       prewarmed: o.prewarmed,
       prechunked: o.prechunked,
-      lastRun: o.lastRun
+      lastRun: o.lastRun,
+      bootRole: o.bootRole,
+      routeRole: o.routeRole
     }));
+  }
+
+  getBootMap() {
+    return this.bootMap;
   }
 
   getSnapshot() {
@@ -468,7 +591,8 @@ class PulseBandDaemon {
       exportMeta: EXPORT_META,
       tickCount: this.tickCount,
       lastSnapshot: this.lastSnapshot,
-      organs: this.getOrgans()
+      organs: this.getOrgans(),
+      bootMap: this.getBootMap()
     };
   }
 
@@ -489,13 +613,13 @@ function rand(min, max) {
 }
 
 /* =============================================================================
- *  7. AUTO‑RUN ENTRYPOINT (v16 IMMORTAL-EVO)
+ *  7. AUTO‑RUN ENTRYPOINT (v21 IMMORTAL-WORLD-OS)
  * ============================================================================= */
 (async function main() {
   const daemon = new PulseBandDaemon();
   await daemon.start();
 
-  // Expose for future boot loader / admin dashboards
+  // Expose for future boot loader / admin dashboards / device OS
   if (typeof global !== "undefined") {
     global.PulseDaemon = daemon;
   }
