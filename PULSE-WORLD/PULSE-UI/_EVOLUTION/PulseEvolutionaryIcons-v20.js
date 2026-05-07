@@ -1,5 +1,5 @@
 // ============================================================================
-// FILE: /PULSE-UI/_COMPONENTS/PulseEvolutionaryIcons-v20.js
+// FILE: /PULSE-UI/_EVOLUTION/PulseEvolutionaryIcons-v20.js
 // PULSE OS — v20-IMMORTAL-EVOLUTIONARY
 // ICON ORGAN — AUTO-BUILT, ROUTE-AWARE, UPCOMING-AWARE
 // ============================================================================
@@ -35,7 +35,7 @@
 // ============================================================================
 
 import { PulseEvolutionaryIconsBaseGenomeV20, mergeIconGenomes } 
-  from "../_COMPONENTS/PulseEvolutionaryIconsBaseGenome-v20.js";
+  from "../_EVOLUTION/PulseEvolutionaryIconsBaseGenome-v20.js";
 
 // ============================================================================
 // HELPERS — deterministic, pure

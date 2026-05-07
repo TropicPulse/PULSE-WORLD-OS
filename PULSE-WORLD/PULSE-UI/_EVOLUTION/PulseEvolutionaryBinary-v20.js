@@ -1,5 +1,5 @@
 // ============================================================================
-// FILE: /PULSE-UI/_COMPONENTS/PulseEvolutionaryBinary-v20.js
+// FILE: /PULSE-UI/_EVOLUTION/PulseEvolutionaryBinary-v20.js
 // PULSE OS — v20-IMMORTAL-EVOLUTIONARY
 // BINARY EVOLUTION ORGAN — SYMBOLIC↔BINARY ENVELOPE + ADVANTAGE + ARTERIES
 // ============================================================================

@@ -1,5 +1,5 @@
 // ============================================================================
-// FILE: /PULSE-UI/_COMPONENTS/PulseEvolutionaryStyles-v20.js
+// FILE: /PULSE-UI/_EVOLUTION/PulseEvolutionaryStyles-v20.js
 // PULSE OS — v20-IMMORTAL-EVOLUTIONARY
 // AUTO-BUILT PAGE CSS • UI SKILLS GENOME → PAGE-SCOPED CSS EMITTER
 // ============================================================================
@@ -63,16 +63,16 @@ AI_EXPERIENCE_META = {
 }
 */
 // ============================================================================
-// FILE: /PULSE-UI/_COMPONENTS/PulseEvolutionaryStyles-v20.js
+// FILE: /PULSE-UI/_EVOLUTION/PulseEvolutionaryStyles-v20.js
 // PULSE OS — v20-IMMORTAL-EVOLUTIONARY
 // AUTO-BUILT PAGE CSS • UI SKILLS GENOME → PAGE-SCOPED CSS EMITTER
 // ============================================================================
 
 import { PulseEvolutionaryStylesBaseGenomeV20 } 
-  from "../_COMPONENTS/PulseEvolutionaryStylesBaseGenome-v20.js";
+  from "../_EVOLUTION/PulseEvolutionaryStylesBaseGenome-v20.js";
 
 import { PulseEvolutionaryAnimationsBaseGenomeV20 } 
-  from "../_COMPONENTS/PulseEvolutionaryAnimationsBaseGenome-v20.js";
+  from "../_EVOLUTION/PulseEvolutionaryAnimationsBaseGenome-v20.js";
 
 import { createPulseEvolutionaryIcons } 
   from "./PulseEvolutionaryIcons-v20.js";

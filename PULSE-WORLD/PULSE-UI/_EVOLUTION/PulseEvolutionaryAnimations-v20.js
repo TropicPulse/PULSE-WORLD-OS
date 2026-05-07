@@ -1,5 +1,5 @@
 // ============================================================================
-// FILE: /PULSE-UI/_COMPONENTS/PulseEvolutionaryAnimations-v20.js
+// FILE: /PULSE-UI/_EVOLUTION/PulseEvolutionaryAnimations-v20.js
 // PULSE OS — v20-IMMORTAL-EVOLUTIONARY
 // ANIMATION ORGAN — AUTO-BUILT, ROUTE-AWARE, UPCOMING-AWARE
 // ============================================================================
@@ -33,7 +33,7 @@
 // ============================================================================
 
 import { PulseEvolutionaryAnimationsBaseGenomeV20 }
-  from "../_COMPONENTS/PulseEvolutionaryAnimationsBaseGenome-v20.js";
+  from "../_EVOLUTION/PulseEvolutionaryAnimationsBaseGenome-v20.js";
 
 // ============================================================================
 // HELPERS — deterministic, pure

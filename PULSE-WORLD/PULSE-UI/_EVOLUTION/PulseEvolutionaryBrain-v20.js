@@ -1,5 +1,5 @@
 // ============================================================================
-// FILE: /PULSE-UI/_COMPONENTS/PulseEvolutionaryBrain-v20.js
+// FILE: /PULSE-UI/_EVOLUTION/PulseEvolutionaryBrain-v20.js
 // PULSE OS — v20-IMMORTAL-EVOLUTIONARY
 // UI PAGE BRAIN / PAGE CORTEX — ADVANTAGE-AWARE, ROUTE-AWARE, BINARY-AWARE
 // ============================================================================
