@@ -144,15 +144,15 @@ AI_EXPERIENCE_META = {
 }
 */
 
-import { onRequest, onCall } from "firebase-functions/v2/https";
-import { onDocumentWritten, onDocumentWrittenWithAuthContext } from "firebase-functions/v2/firestore";
-import nodemailer from "nodemailer";
+
+
+
 import { defineSecret } from "firebase-functions/params";
 import express from "express";
-import { admin, db } from "../PULSE-X/PulseWorldGenome-v17.js";
+import { admin, db } from "../PULSE-X/PulseWorldGenome-v20.js";
 import { getStripe as Stripe } from "../../NETLIFY/FUNCTIONS/stripe.js";
 import { getTwilioClient as twilio } from "../../NETLIFY/FUNCTIONS/sms.js";
-import { log, warn, error, logger } from "../../PULSE-UI/_BACKEND/PulseProofLogger.js";
+import { log, warn, error, logger } from "../../PULSE-UI/_BACKEND/PulseProofLogger-v20.js";
 
 
 
@@ -179,25 +179,25 @@ function pulseCors(req, res, next) {
   next();
 }
 
-const EMAIL_PASSWORD = defineSecret("EMAIL_PASSWORD");
-const STRIPE_PASSWORD = defineSecret("STRIPE_SECRET_KEY");
-const JWT_SECRET = defineSecret("JWT_SECRET");
+const EMAIL_PASSWORD = process.env.EMAIL_PASSWORD;
+const STRIPE_PASSWORD = process.env.STRIPE_SECRET_KEY;
+const JWT_SECRET = process.env.JWT_SECRET;
 // CLOUD RUN ENVIRONMENTS
 const TP_API_KEY = window.TP_API_KEY;
 const BASE_PAYMENT_URL = window.BASE_PAYMENT_URL;
 const GOOGLE_MAPS_KEY = window.GOOGLE_MAPS_KEY;
 const PLACEHOLDER_IMAGE_URL = window.PLACEHOLDER_IMAGE_URL;
 
-const STRIPE_WEBHOOK_SECRET = defineSecret("STRIPE_SECRET_WEBHOOK");
-const MESSAGING_SERVICE_SID = defineSecret("MESSAGING_SERVICE_SID");
-const ACCOUNT_SID = defineSecret("ACCOUNT_SID");
-const AUTH_TOKEN = defineSecret("AUTH_TOKEN");
+const STRIPE_WEBHOOK_SECRET = process.env.STRIPE_SECRET_WEBHOOK;
+const MESSAGING_SERVICE_SID = process.env.MESSAGING_SERVICE_SID;
+const ACCOUNT_SID = process.env.ACCOUNT_SID;
+const AUTH_TOKEN = process.env.AUTH_TOKEN;
 
 // CONFIG
-const PIN_COLLECTION = "Users";
-const RATE_LIMIT_WINDOW_MS = 60 * 1000; // 1 minute
-const MAX_REQUESTS_PER_WINDOW = 5;
-const PIN_TTL_MS = MAX_REQUESTS_PER_WINDOW * RATE_LIMIT_WINDOW_MS; // 5 minutes
+const PIN_COLLECTION = process.env.PIN_COLLECTION;
+const RATE_LIMIT_WINDOW_MS = process.env.RATE_LIMIT_WINDOW_MS;
+const MAX_REQUESTS_PER_WINDOW = process.env.MAX_REQUESTS_PER_WINDOW;
+const PIN_TTL_MS = process.env.PIN_TTL_MS;
 
 const corsHandler = pulseCors;
 

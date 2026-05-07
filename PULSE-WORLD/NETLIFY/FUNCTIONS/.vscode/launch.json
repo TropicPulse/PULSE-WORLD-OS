@@ -2,7 +2,7 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "name": "Attach to Firebase Functions",
+      "name": "Attach to PulseWorld Backend",
       "type": "node",
       "request": "attach",
       "port": 9229,

@@ -112,12 +112,12 @@ import PulseBeaconMesh, {
 } from "./PulseBeaconMesh-v20.js";
 
 // Touch / presence
-import { getPulseTouchContext } from "../../PULSE-UI/PULSE-TOUCH.js";
+import { getPulseTouchContext } from "../../PULSE-UI/PULSE-WORLD-TOUCH.js";
 
 // Runtime / scheduler / overmind
 import { getPulseRuntimeContext } from "../PULSE-X/PulseWorldRuntime-v20.js";
 import { getPulseSchedulerContext } from "../PULSE-X/PulseWorldScheduler-v20.js";
-import { getPulseOvermindContext } from "../PULSE-AI/aiOvermindPrime-v20.js";
+import { getPulseOvermindContext } from "../PULSE-X/PULSE-WORLD-AI-PRIME.js";
 
 // (Optional) Earn / treasury integration hook (symbolic only)
 import { getEarnContext } from "../PULSE-EARN/PulseEarn-v16.js";

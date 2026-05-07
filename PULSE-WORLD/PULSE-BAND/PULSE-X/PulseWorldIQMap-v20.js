@@ -33,6 +33,13 @@
 //
 //  This is the *brain contract* of the organism.
 // ============================================================================
+//
+//  ██████╗ ██╗   ██╗██╗     ███████╗███████╗██╗    ██╗ ██████╗ ██████╗ ██╗     ██████╗
+//  ██╔══██ ██║   ██║██║     ██╔════╝██╔════╝██║    ██║██╔═══██╗██╔══██╗██║     ██╔══██╗
+//  ██████  ██║   ██║██║     ███████╗█████╗  ██║ █╗ ██║██║   ██║██████╔╝██║     ██║  ██║
+//  ██╔══   ██║   ██║██║     ╚════██║██╔══╝  ██║███╗██║██║   ██║██╔══██╗██║     ██║  ██║
+//  ██      ╚██████╔╝███████╗███████║███████╗╚███╔███╔╝╚██████╔╝██║  ██║███████╗██████╔╝
+//  ╚╝       ╚═════╝ ╚══════╝╚═════╝ ╚══════╝ ╚══╝╚══╝  ╚═════╝ ╚═╝  ╚═╝╚══════╝╚═════╝
 
 /*
 AI_EXPERIENCE_META = {
@@ -145,7 +152,25 @@ const VERSION_MAP = {
   patternPlanner: "v20-PATTERN-PLANNER-COMFORT",
   patternExecutor: "v20-PATTERN-EXECUTOR-COMFORT"
 };
+const EMAIL_PASSWORD = process.env.EMAIL_PASSWORD;
+const STRIPE_PASSWORD = process.env.STRIPE_SECRET_KEY;
+const JWT_SECRET = process.env.JWT_SECRET;
+// CLOUD RUN ENVIRONMENTS
+const TP_API_KEY = window.TP_API_KEY;
+const BASE_PAYMENT_URL = window.BASE_PAYMENT_URL;
+const GOOGLE_MAPS_KEY = window.GOOGLE_MAPS_KEY;
+const PLACEHOLDER_IMAGE_URL = window.PLACEHOLDER_IMAGE_URL;
 
+const STRIPE_WEBHOOK_SECRET = process.env.STRIPE_SECRET_WEBHOOK;
+const MESSAGING_SERVICE_SID = process.env.MESSAGING_SERVICE_SID;
+const ACCOUNT_SID = process.env.ACCOUNT_SID;
+const AUTH_TOKEN = process.env.AUTH_TOKEN;
+
+// CONFIG
+const PIN_COLLECTION = process.env.PIN_COLLECTION;
+const RATE_LIMIT_WINDOW_MS = process.env.RATE_LIMIT_WINDOW_MS;
+const MAX_REQUESTS_PER_WINDOW = process.env.MAX_REQUESTS_PER_WINDOW;
+const PIN_TTL_MS = process.env.PIN_TTL_MS;
 // -----------------------------------------------------------------------------
 // FRONTEND / WORLD TOPOLOGY (WORLD‑LAYER VIEW)
 // -----------------------------------------------------------------------------

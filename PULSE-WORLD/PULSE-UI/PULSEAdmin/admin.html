@@ -10,7 +10,7 @@ import * as PulseWindow from "./PulseWorldPortal-v16.js";
 
   
   (async () => {
-
+    
     const firebaseConfig = {
       apiKey: "AIzaSyD4I5YDtZMMC_tDuwR9CEjhs_iAdrLzthQ",
       authDomain: "tropic-pulse.firebaseapp.com",
@@ -1568,7 +1568,9 @@ function buildPayload(existing = {}) {
 
   return payload;
 }
-
+function BECLEAN(input) {
+  return playfulClean(sanitizeEverything(input));
+}
 const emailTemplates = {
 newUser: {
   subject: (payload) => "Welcome to Tropic Pulse!",

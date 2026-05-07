@@ -113,12 +113,12 @@ import { getBeaconEngineContext } from "./PulseBeaconEngine-v16.js";
 import { getConsoleContext } from "./PulseBeaconConsole-v16.js";
 
 // Touch
-import { getPulseTouchContext } from "../../PULSE-UI/PULSE-TOUCH.js";
+import { getPulseTouchContext } from "../../PULSE-UI/PULSE-WORLD-TOUCH.js";
 
 // Runtime / Scheduler / Overmind
 import { getPulseRuntimeContext } from "../PULSE-X/PulseWorldRuntime-v20.js";
 import { getPulseSchedulerContext } from "../PULSE-X/PulseWorldScheduler-v20.js";
-import { getPulseOvermindContext } from "../PULSE-AI/aiOvermindPrime-v20.js";
+import { getPulseOvermindContext } from "../PULSE-X/PULSE-WORLD-AI-PRIME.js";
 
 // Proxy
 import {

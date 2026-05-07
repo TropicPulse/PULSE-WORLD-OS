@@ -81,7 +81,7 @@ AI_EXPERIENCE_META = {
 // ============================================================================
 
 import { Personas, getPersona } from "./persona.js";
-import Overmind from "./aiOvermindPrime-v20.js";
+import Overmind from "../PULSE-X/PULSE-WORLD-AI-PRIME.js";
 import NodeAdmin from "../PULSE-TOOLS/PulseNodeAdmin-v20.js";
 
 // ============================================================================

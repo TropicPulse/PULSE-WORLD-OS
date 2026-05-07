@@ -103,13 +103,13 @@ import {
 // PulseNet bridge (symbolic adapter to PULSE-NET)
 import {
   createPulseNetBridge
-} from "../../PULSE-UI/_BACKEND/PULSE-WORLD.js";
+} from "../PULSE-X/PULSE-WORLD.js";
 
 // Touch / presence
-import { getPulseTouchContext } from "../../PULSE-UI/PULSE-TOUCH.js";
+import { getPulseTouchContext } from "../../PULSE-UI/PULSE-WORLD-TOUCH.js";
 
 // Runtime / scheduler / overmind
-import { getPulseOvermindContext, createOvermindPrime } from "../PULSE-AI/aiOvermindPrime-v20.js";
+import { getPulseOvermindContext, createOvermindPrime } from "../PULSE-X/PULSE-WORLD-AI-PRIME.js";
 
 // (Optional) Earn / treasury integration hook (symbolic only)
 import { getEarnContext, evolveEarn } from "../PULSE-EARN/PulseEarn-v16.js";

@@ -189,7 +189,7 @@ export const PulseSchedulerMetaV17 = Object.freeze({
 // ============================================================================
 
 import { routeAIRequest } from "../PULSE-AI/aiRouter-v16.js";
-import { createOvermindOrgan } from "../PULSE-AI/aiOvermindPrime-v20.js";
+import { createOvermindOrgan } from "./PULSE-WORLD-AI-PRIME.js";
 
 // RUNTIME (Touch + prewarm/cache-aware, v17+)
 import PulseRuntimeV17 from "./PulseWorldRuntime-v17.js";

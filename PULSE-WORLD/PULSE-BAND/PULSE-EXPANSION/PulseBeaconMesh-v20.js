@@ -188,7 +188,7 @@ import createBinaryMesh, {
 } from "../PULSE-MESH/PulseBinaryMesh-v16.js";
 
 // Touch / presence
-import { getPulseTouchContext } from "../../PULSE-UI/PULSE-TOUCH.js";
+import { getPulseTouchContext } from "../../PULSE-UI/PULSE-WORLD-TOUCH.js";
 
 // Runtime (hot instances / regions / presence / modes / pages)
 import { getPulseRuntimeContext } from "../PULSE-X/PulseWorldRuntime-v20.js";
@@ -197,7 +197,7 @@ import { getPulseRuntimeContext } from "../PULSE-X/PulseWorldRuntime-v20.js";
 import { getPulseSchedulerContext } from "../PULSE-X/PulseWorldScheduler-v20.js";
 
 // Overmind (world-lens / safety / persona mix)
-import { getPulseOvermindContext } from "../PULSE-AI/aiOvermindPrime-v20.js";
+import { getPulseOvermindContext } from "../PULSE-X/PULSE-WORLD-AI-PRIME.js";
 
 // Continuance (GPU continuance physics)
 import {
