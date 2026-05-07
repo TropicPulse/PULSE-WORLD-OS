@@ -1,15 +1,17 @@
 // ============================================================================
-//  PULSE‑TRUST CREATOR FLAGS v16++ IMMORTAL
+//  PULSE‑TRUST CREATOR FLAGS v20.0.0 IMMORTAL
 //  Constitutional Fusion Layer • Creator‑Facing Risk Dashboard
+//  ER‑Ready • CNS‑Aware • Evidence‑Helping
 // ============================================================================
 
 /*
 AI_EXPERIENCE_META:
   organ: PulseTrustCreatorFlags
-  version: 16.2.0
+  version: 20.0.0
   tier: IMMORTAL
   layer: trust
   role: trust_creator_flags
+  mind: false
 
   description:
     "PulseTrustCreatorFlags is the constitutional fusion layer that aggregates
@@ -25,11 +27,14 @@ AI_EXPERIENCE_META:
        - dominance patterns
        - anomaly clusters
        - AI‑origin influence
+       - CNS bandSnapshot (PulseWorldBand)
+       - trustEvidence (Evidential Records v20)
 
      It produces:
        - a fused, immutable, constitutional risk object
        - a Creator‑grade dashboard of the organism’s integrity
        - a single source of truth for high‑risk regimes
+       - an ER‑ready snapshot for long‑term forensic continuity
 
      It does not decide. It informs.
      It does not override. It reveals.
@@ -38,8 +43,8 @@ AI_EXPERIENCE_META:
      This is the Creator’s window into the organism’s justice membrane."
 
   lineage:
-    parent: "PulseTrustCreatorFlags-v15"
-    evolution: "v16++ IMMORTAL — RAW + AI‑mirror + delta + systemic fusion"
+    parent: "PulseTrustCreatorFlags-v16++"
+    evolution: "v20++ IMMORTAL — RAW + AI‑mirror + delta + systemic fusion + CNS + ER"
 
   identity:
     type: "organ"
@@ -53,26 +58,32 @@ AI_EXPERIENCE_META:
     - "Never performs AI reasoning."
     - "Always deterministic and drift-proof."
     - "Always metadata-only."
+    - "Always ER‑ready and CNS‑aware."
 */
 
 export const PulseTrustCreatorFlagsMeta = Object.freeze({
-  id: "PulseTrustCreatorFlags-v16++",
-  version: "16.2.0",
+  id: "PulseTrustCreatorFlags-v20++",
+  version: "20.0.0",
   role: "trust_creator_flags",
   mind: false,
   description:
-    "IMMORTAL fusion layer producing Creator‑level constitutional risk flags.",
+    "IMMORTAL fusion layer producing Creator‑level constitutional risk flags, CNS‑aware.",
   identity: {
     type: "organ",
     name: "PulseTrustCreatorFlags",
     band: "trust",
     mind: false,
     immutable: true
+  },
+  schema: {
+    snapshotType: "trust_creator_flags",
+    categories: ["RAW_AI"],
+    erReady: true
   }
 });
 
 // ============================================================================
-//  CREATOR FLAG FUSION ENGINE
+//  CREATOR FLAG FUSION ENGINE v20
 // ============================================================================
 export function fuseCreatorFlags({
   juryResult = null,            // verdict + creatorFlags + lenses + delta
@@ -80,7 +91,11 @@ export function fuseCreatorFlags({
   councilSnapshot = null,       // systemicFlags
   expansionCompliance = null,   // violations + riskProfile + complianceScore
   delta = null,                 // RAW vs AI divergence
-  advantage = null              // environmental pressure
+  advantage = null,             // environmental pressure
+  bandSnapshot = null,          // CNS band state
+  trustEvidence = null,         // latest PulseTrustEvidence packet (optional)
+  ts = Date.now(),
+  creatorSessionId = null
 } = {}) {
 
   // --------------------------------------------------------------------------
@@ -109,6 +124,18 @@ export function fuseCreatorFlags({
 
   // BoxCamera anomaly risk
   const anomalyRisk = boxAnomalies.some(a => (a?.severity ?? 1) >= 3);
+
+  // CNS band instability
+  const bandMode = bandSnapshot?.mode ?? null;
+  const bandRisk =
+    bandMode === "high_risk" ||
+    bandMode === "offline_biased" ||
+    (bandSnapshot?.fallbackLevel ?? 0) > 0;
+
+  // TrustEvidence drift signals (optional)
+  const evidenceDrift =
+    trustEvidence?.categories?.RAW_AI?.length >= 5 ||
+    trustEvidence?.categories?.AI?.length >= 5;
 
   // --------------------------------------------------------------------------
   //  FUSED FLAGS — IMMORTAL TIER
@@ -145,14 +172,23 @@ export function fuseCreatorFlags({
     rawVsAiDivergence: deltaMagnitude >= 10,
 
     // Environmental stress
-    environmentHighPressure: stressScore >= 50
+    environmentHighPressure: stressScore >= 50,
+
+    // CNS band instability
+    bandInstability: !!bandRisk,
+
+    // TrustEvidence drift
+    trustEvidenceDrift: !!evidenceDrift
   };
 
   // --------------------------------------------------------------------------
-  //  RETURN IMMUTABLE CREATOR SNAPSHOT
+  //  ER‑READY CREATOR SNAPSHOT
   // --------------------------------------------------------------------------
-  return Object.freeze({
+  const snapshot = Object.freeze({
     meta: PulseTrustCreatorFlagsMeta,
+    schema: PulseTrustCreatorFlagsMeta.schema,
+    ts,
+    creatorSessionId,
     flags: Object.freeze(fused),
     context: Object.freeze({
       juryResult,
@@ -160,9 +196,13 @@ export function fuseCreatorFlags({
       councilSnapshot,
       expansionCompliance,
       deltaMagnitude,
-      stressScore
+      stressScore,
+      bandSnapshot,
+      trustEvidence
     })
   });
+
+  return snapshot;
 }
 
 export default fuseCreatorFlags;

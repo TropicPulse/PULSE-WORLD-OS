@@ -1,21 +1,28 @@
 // ============================================================================
-// PULSE-WORLD : PulseBeaconEngine-v16.js
+// PULSE-WORLD : PulseBeaconEngine-v20-Immortal-GPU+-CI.js
 // ORGAN TYPE: Bluetooth Presence / Membrane Organism
-// VERSION: v15-Immortal (Hybrid, Every-Advantage, Every-Prewarm, Mesh-/User-/WorldCore-Aware, Monolithic Membrane)
+// VERSION: v20-Immortal-GPU+-CI (Every-Advantage, Every-Prewarm, Mesh/WorldCore/Continuance/OmniHosting/CI/Binary-Delta-Aware)
 // ============================================================================
 //
 // ROLE:
 //   PulseBeaconEngine is the Bluetooth membrane of PulseWorld.
-//   It turns region + mesh + castle + user + worldCore state into deterministic,
-//   SafetyFrame-compliant Bluetooth presence frames AND EMITS THEM over Bluetooth.
+//   It turns region + mesh + castle + user + worldCore + continuance + omniHosting
+//   state into deterministic, SafetyFrame-compliant Bluetooth presence frames
+//   AND EMITS THEM over Bluetooth.
 //
-//   v15-Immortal upgrades:
+//   v20-Immortal-GPU+-CI upgrades:
+//     - GPU-aware, CI-aware, Continuance-aware, Binary-Delta-aware
 //     - WorldCore-aware, Mesh-aware, Router-aware, Server-aware
 //     - Explicit userContext attachment (user ↔ membrane)
-//     - Direct consumption of PulseMesh.buildUserMeshSignal() / worldMesh signals
-//     - Chunk-prewarm + cache-hints surfaced as first-class fields
-//     - Deterministic “profile lanes” for discovery/presence/mesh/expand
-//     - Ready for dual-band symbolic/binary presence frames
+//     - Direct consumption of:
+//         • PulseMesh user/region signals
+//         • PulseWorldCore AI-mirror advantage/truth vectors
+//         • PulseContinuance risk reports + overlays
+//         • PulseOmniHosting placement/failover plans
+//     - Chunk/cache/prewarm/fallback surfaced as first-class IMMORTAL fields
+//     - Deterministic “profile lanes” for discovery/presence/mesh/expand/immortal
+//     - Dual-band symbolic/binary presence frames (band + binaryField + waveField)
+//     - Artery metrics for broadcast load + pressure (pure compute, symbolic only)
 //     - INTERNAL Bluetooth emitter: this file is the ONLY place that can emit Bluetooth.
 //
 // CONTRACT:
@@ -26,61 +33,11 @@
 //   - This organ is the ONLY Bluetooth membrane in the organism.
 // ============================================================================
 
-/*
-AI_EXPERIENCE_META = {
-  identity: "PulseBeaconEngine",
-  version: "v15-Immortal",
-  layer: "presence_engine",
-  role: "bluetooth_presence_engine",
-  lineage: "PulsePresence-v15",
-
-  evo: {
-    presenceEngine: true,
-    bluetoothBroadcast: true,
-    proximityField: true,
-    advantageBand: true,
-    fallbackBand: true,
-    chunkPrewarm: true,
-    densityAware: true,
-    meshAware: true,
-    worldCoreAware: true,
-    userAware: true,
-    routerAware: true,
-    serverAware: true,
-
-    symbolicPrimary: true,
-    binaryAware: true,
-    dualBand: true,
-
-    deterministic: true,
-    driftProof: true,
-    zeroMutationOfInput: true,
-    zeroNetwork: true,
-    zeroFilesystem: true
-  },
-
-  contract: {
-    always: [
-      "PulseBeaconMesh",
-      "PulseUser",
-      "PulseExpansion",
-      "PulseMesh",
-      "PulseRouter",
-      "PulseServer"
-    ],
-    never: [
-      "safeRoute",
-      "fetchViaCNS"
-    ]
-  }
-}
-*/
-
 export const PulseBeaconMeta = Object.freeze({
-  organId: "PulseBeaconEngine-v15-Immortal",
+  organId: "PulseBeaconEngine-v20-Immortal-GPU+-CI",
   role: "BLUETOOTH_MEMBRANE",
-  version: "v15-Immortal",
-  epoch: "v15-Immortal",
+  version: "20-Immortal-GPU+-CI",
+  epoch: "20-Immortal-GPU+-CI",
   layer: "Membrane",
   safety: Object.freeze({
     deterministic: true,
@@ -116,11 +73,20 @@ export const PulseBeaconMeta = Object.freeze({
     worldCoreAware: true,
     userAware: true,
     routerAware: true,
-    serverAware: true
+    serverAware: true,
+
+    // v16+ overlays
+    gpuAware: true,
+    ciAware: true,
+    continuanceAware: true,
+    binaryDeltaAware: true,
+    arteryMetricsAware: true,
+
+    epoch: "20-Immortal-GPU+-CI"
   }),
   contract: Object.freeze({
     purpose:
-      "Bluetooth presence membrane for PulseWorld. Broadcasts presence, mesh status, pressure, and castle readiness within SafetyFrame.",
+      "Bluetooth presence membrane for PulseWorld. Broadcasts presence, mesh status, pressure, continuance hints, and castle readiness within SafetyFrame.",
     never: Object.freeze([
       "auto-connect devices",
       "bypass SafetyFrame",
@@ -137,7 +103,7 @@ export const PulseBeaconMeta = Object.freeze({
       "allow control via NodeAdmin and Overmind directives",
       "adapt power/interval deterministically based on inputs",
       "remain mesh-aware and expansion-aware",
-      "surface presence/advantage/chunk-prewarm fields"
+      "surface presence/advantage/chunk-prewarm/continuance/CI/binary-delta fields"
     ])
   })
 });
@@ -145,22 +111,13 @@ export const PulseBeaconMeta = Object.freeze({
 // ============================================================================
 // INTERNAL BLUETOOTH EMITTER (ONLY HARDWARE EDGE IN THE ORGANISM)
 // ============================================================================
-//
-// This is the ONLY place in the entire codebase that is allowed to touch
-// real Bluetooth APIs. Platform glue (Android/iOS/Web/ESP32/etc.) must be
-// wired here and nowhere else.
-//
-// Implementations should map (payload, profile) → platform BLE advertiser.
-//
-// NOTE: This is "real" in the sense that when wired, it actually emits.
-// If not wired, it throws, making "fake" impossible to silently pass.
-//
+
 let _nativeBluetoothDriver = null; // platform-specific driver, internal only
 
 export function attachNativeBluetoothDriver(driver) {
   // driver MUST implement: driver.broadcast(payload, profile)
   if (!driver || typeof driver.broadcast !== "function") {
-    throw new Error("[PulseBeaconEngine-v15] Invalid native Bluetooth driver");
+    throw new Error("[PulseBeaconEngine-v20] Invalid native Bluetooth driver");
   }
   _nativeBluetoothDriver = driver;
   return { ok: true };
@@ -168,20 +125,35 @@ export function attachNativeBluetoothDriver(driver) {
 
 function nativeBluetoothBroadcast(payload, profile) {
   if (!_nativeBluetoothDriver) {
-    // No silent fake. If not wired, this is a hard failure.
     throw new Error(
-      "[PulseBeaconEngine-v15] nativeBluetoothBroadcast called with no attached driver"
+      "[PulseBeaconEngine-v20] nativeBluetoothBroadcast called with no attached driver"
     );
   }
-  // This is the ONLY real hardware edge.
   _nativeBluetoothDriver.broadcast(payload, profile);
 }
 
 // ============================================================================
-// FACTORY: createPulseBeaconEngine — v15-Immortal
-// Hybrid: consumes global hints + mesh/user/worldCore snapshots,
-//         produces local presence/advantage/band/chunk fields,
-//         and EMITS via internal nativeBluetoothBroadcast.
+// HELPERS
+// ============================================================================
+
+function clamp01(v) {
+  if (v == null || Number.isNaN(v)) return 0;
+  if (v < 0) return 0;
+  if (v > 1) return 1;
+  return v;
+}
+
+function stableHash(str) {
+  let h = 0;
+  const s = String(str || "");
+  for (let i = 0; i < s.length; i++) {
+    h = (h + s.charCodeAt(i) * (i + 1)) % 100000;
+  }
+  return `be${h}`;
+}
+
+// ============================================================================
+// FACTORY: createPulseBeaconEngine — v20-Immortal-GPU+-CI
 // ============================================================================
 
 export function createPulseBeaconEngine({
@@ -189,21 +161,22 @@ export function createPulseBeaconEngine({
   regionID = null,
   boundCastleID = null,
   trace = false,
-  safetyPolicy = null,     // fn({ mode, payload, signalProfile }) => { allowed: boolean }
-  globalHints = null       // unified global hints object (hybrid v15)
+  safetyPolicy = null, // fn({ mode, payload, signalProfile }) => { allowed: boolean, reason?: string }
+  globalHints = null   // unified global hints object (hybrid v20)
 } = {}) {
   // --------------------------------------------------------------------------
   // INTERNAL STATE
   // --------------------------------------------------------------------------
-  let activeMode = "discovery"; // discovery | presence | adaptive | pulse-reach | pulse-storm | PULSE-MESH | pulse-expand
+  let activeMode =
+    "discovery"; // discovery | presence | adaptive | pulse-reach | pulse-storm | PULSE-MESH | pulse-expand | pulse-immortal
   let tick = 0;
 
-  const identity = {
-    engineID,
+  const identity = Object.freeze({
+    engineID: engineID || stableHash(`engine-${regionID || "global"}`),
     regionID,
     boundCastleID,
     createdBy: "PulseExpansion"
-  };
+  });
 
   const payloadState = {
     regionTag: null,
@@ -236,25 +209,39 @@ export function createPulseBeaconEngine({
     seenDevicesCount: 0,
     optInAttempts: 0,
     successfulJoins: 0,
-    lastBroadcast: null
+    lastBroadcast: null,
+    totalBroadcasts: 0
   };
 
-  // v15+ global → local hybrid hints
+  // v20 artery metrics (symbolic only)
+  const artery = {
+    totalBroadcasts: 0,
+    lastMode: null,
+    lastPayloadSize: 0,
+    lastSignalPower: "auto",
+    lastIntervalProfile: "auto",
+    loadBucket: "idle",     // idle | low | medium | high | saturated
+    pressureBucket: "none"  // none | low | medium | high | overload
+  };
+
+  // v20+ global → local hybrid hints
   let lastGlobalHints = globalHints || null;
 
   // External bridges
   let overmind = null;
   let nodeAdmin = null;
 
-  // Attachments (mesh/user/worldCore/server/router)
-  let meshSnapshotProvider = null;     // () => mesh.getSnapshot()
-  let worldCoreSnapshotProvider = null;// () => worldCore.getSnapshot()
-  let routerSnapshotProvider = null;   // () => router.getSnapshot()
-  let serverSnapshotProvider = null;   // () => pulseServerSnapshot
-  let userContext = null;              // user/session context (symbolic only)
+  // Attachments (mesh/user/worldCore/server/router/continuance/omniHosting)
+  let meshSnapshotProvider = null;          // () => mesh.getSnapshot()
+  let worldCoreSnapshotProvider = null;     // () => worldCore.snapshotWorld()
+  let routerSnapshotProvider = null;        // () => router.getSnapshot()
+  let serverSnapshotProvider = null;        // () => pulseServerSnapshot
+  let continuanceSnapshotProvider = null;   // () => getLastContinuanceState()
+  let omniHostingSnapshotProvider = null;   // () => getLastOmniHostingState()
+  let userContext = null;                   // user/session context (symbolic only)
 
   // --------------------------------------------------------------------------
-  // BASELINE DEFINITIONS (A)
+  // BASELINE DEFINITIONS
   // --------------------------------------------------------------------------
   const Modes = Object.freeze({
     baseline: {
@@ -295,6 +282,11 @@ export function createPulseBeaconEngine({
         description: "Gradual region expansion under mesh guidance",
         powerProfile: "medium",
         intervalProfile: "auto"
+      },
+      "pulse-immortal": {
+        description: "Continuance/CI-aware immortal presence lane",
+        powerProfile: "medium",
+        intervalProfile: "steady"
       }
     },
     defaults: {
@@ -336,10 +328,49 @@ export function createPulseBeaconEngine({
   });
 
   // --------------------------------------------------------------------------
-  // HELPERS
+  // LOGGING / ARTERY
   // --------------------------------------------------------------------------
   function log(...args) {
-    if (trace) console.log("[PulseBeaconEngine-v15]", ...args);
+    if (trace) console.log("[PulseBeaconEngine-v20]", ...args);
+  }
+
+  function bumpArtery(payload, profile) {
+    artery.totalBroadcasts += 1;
+    artery.lastMode = activeMode;
+    artery.lastPayloadSize = payload ? JSON.stringify(payload).length : 0;
+    artery.lastSignalPower = profile.powerProfile;
+    artery.lastIntervalProfile = profile.intervalProfile;
+
+    const load = clamp01(artery.totalBroadcasts / 16384);
+    const pressure = clamp01(artery.lastPayloadSize / 8192);
+
+    artery.loadBucket =
+      load >= 0.9
+        ? "saturated"
+        : load >= 0.7
+        ? "high"
+        : load >= 0.4
+        ? "medium"
+        : load > 0
+        ? "low"
+        : "idle";
+
+    artery.pressureBucket =
+      pressure >= 0.9
+        ? "overload"
+        : pressure >= 0.7
+        ? "high"
+        : pressure >= 0.4
+        ? "medium"
+        : pressure > 0
+        ? "low"
+        : "none";
+  }
+
+  function getArterySnapshot() {
+    return Object.freeze({
+      ...artery
+    });
   }
 
   function rememberBroadcast(payload, profile) {
@@ -349,6 +380,8 @@ export function createPulseBeaconEngine({
       payload,
       profile
     };
+    telemetry.totalBroadcasts += 1;
+    bumpArtery(payload, profile);
   }
 
   function emitToOvermind(eventType, data) {
@@ -372,8 +405,8 @@ export function createPulseBeaconEngine({
   }
 
   // --------------------------------------------------------------------------
-  // ATTACHMENTS (Mesh / WorldCore / Router / Server / User)
-  // --------------------------------------------------------------------------
+  // ATTACHMENTS (Mesh / WorldCore / Router / Server / User / Continuance / OmniHosting)
+// --------------------------------------------------------------------------
   function attachMeshSnapshotProvider(provider) {
     meshSnapshotProvider = typeof provider === "function" ? provider : null;
     return { ok: true, hasProvider: !!meshSnapshotProvider };
@@ -394,11 +427,31 @@ export function createPulseBeaconEngine({
     return { ok: true, hasProvider: !!serverSnapshotProvider };
   }
 
+  function attachContinuanceSnapshotProvider(provider) {
+    continuanceSnapshotProvider = typeof provider === "function" ? provider : null;
+    return { ok: true, hasProvider: !!continuanceSnapshotProvider };
+  }
+
+  function attachOmniHostingSnapshotProvider(provider) {
+    omniHostingSnapshotProvider = typeof provider === "function" ? provider : null;
+    return { ok: true, hasProvider: !!omniHostingSnapshotProvider };
+  }
+
   function attachUserContext(ctx) {
     userContext = ctx || null;
     emitToOvermind("user-context-updated", { userContext });
     emitToNodeAdmin("user-context-updated", { userContext });
     return { ok: true, userContext };
+  }
+
+  function attachOvermind(o) {
+    overmind = o || null;
+    return { ok: true, overmindAttached: !!overmind };
+  }
+
+  function attachNodeAdmin(n) {
+    nodeAdmin = n || null;
+    return { ok: true, nodeAdminAttached: !!nodeAdmin };
   }
 
   function readMeshView() {
@@ -421,9 +474,29 @@ export function createPulseBeaconEngine({
     }
   }
 
+  function readContinuanceView() {
+    if (!continuanceSnapshotProvider) return null;
+    try {
+      const snap = continuanceSnapshotProvider();
+      return snap || null;
+    } catch {
+      return null;
+    }
+  }
+
+  function readOmniHostingView() {
+    if (!omniHostingSnapshotProvider) return null;
+    try {
+      const snap = omniHostingSnapshotProvider();
+      return snap || null;
+    } catch {
+      return null;
+    }
+  }
+
   // --------------------------------------------------------------------------
-  // GLOBAL HINTS (v15 HYBRID)
-  // --------------------------------------------------------------------------
+  // GLOBAL HINTS (v20 HYBRID)
+// --------------------------------------------------------------------------
   function setGlobalHints(hints) {
     lastGlobalHints = hints || null;
     emitToOvermind("global-hints-updated", { hints: lastGlobalHints });
@@ -465,7 +538,7 @@ export function createPulseBeaconEngine({
 
   // --------------------------------------------------------------------------
   // PAYLOAD ENGINE (LOCAL + GLOBAL HINTS + MESH/WORLDCORE)
-  // --------------------------------------------------------------------------
+// --------------------------------------------------------------------------
   function updatePayloadFromContext({
     regionTag = null,
     castlePresence = null,
@@ -489,7 +562,7 @@ export function createPulseBeaconEngine({
     if (fallbackBandLevel !== null) payloadState.fallbackBandLevel = fallbackBandLevel;
     if (coldStartPhase !== null) payloadState.coldStartPhase = coldStartPhase;
 
-    // Mesh + worldCore auto-hydration (symbolic only)
+    // Mesh auto-hydration (symbolic only)
     const meshView = readMeshView();
     if (meshView && meshView.densityHealth?.A_metrics) {
       const dh = meshView.densityHealth.A_metrics;
@@ -502,6 +575,7 @@ export function createPulseBeaconEngine({
       }
     }
 
+    // WorldCore advantage/presence hints (symbolic only)
     const wcView = readWorldCoreView();
     if (wcView?.advantageContext?.presenceField?.presenceTier && !payloadState.regionTag) {
       payloadState.regionTag = wcView.advantageContext.presenceField.presenceTier;
@@ -511,6 +585,100 @@ export function createPulseBeaconEngine({
     emitToNodeAdmin("payload-updated", { payloadState });
 
     return { ok: true, payloadState: { ...payloadState } };
+  }
+
+  // --------------------------------------------------------------------------
+  // CONTINUANCE / CI / BINARY-DELTA FIELDS (symbolic overlays)
+// --------------------------------------------------------------------------
+  function buildContinuanceField() {
+    const cont = readContinuanceView();
+    const risk = cont?.riskReport || null;
+
+    if (!risk) {
+      return Object.freeze({
+        globalRisk: 0,
+        fallbackBandLevel: 0,
+        prewarmHint: { shouldPrewarm: false, reason: "no_risk_report" },
+        cacheHint: { keepHot: false, priority: "normal", gpuMode: "cpu" },
+        chunkHint: { chunkAggression: 1, gpuMode: "cpu" },
+        notes: ["no_continuance_state"]
+      });
+    }
+
+    return Object.freeze({
+      globalRisk: clamp01(risk.globalRisk || 0),
+      fallbackBandLevel: risk.fallbackBandLevel ?? 0,
+      prewarmHint: risk.prewarmHint || null,
+      cacheHint: risk.cacheHint || null,
+      chunkHint: risk.chunkHint || null,
+      gpuMode: risk.gpuMode || "cpu",
+      notes: Array.isArray(risk.notes) ? risk.notes.slice() : []
+    });
+  }
+
+  function buildCIField() {
+    const cont = readContinuanceView();
+    const ciSurface = cont?.lastPacket?.ciSurface || null;
+
+    if (!ciSurface) {
+      return Object.freeze({
+        ciActive: false,
+        ciMode: "none",
+        ciScore: 0
+      });
+    }
+
+    return Object.freeze({
+      ciActive: true,
+      ciMode: ciSurface.mode || "unknown",
+      ciScore: clamp01(ciSurface.ciScore ?? 1)
+    });
+  }
+
+  function buildBinaryDeltaField() {
+    const cont = readContinuanceView();
+    const deltaPacket = cont?.lastPacket?.ciDeltaPacket || null;
+    const delta = deltaPacket?.delta || null;
+
+    if (!delta) {
+      return Object.freeze({
+        deltaPresent: false,
+        addedBits: 0,
+        removedBits: 0,
+        unchangedBits: 0
+      });
+    }
+
+    return Object.freeze({
+      deltaPresent: true,
+      addedBits: delta.addedCount ?? 0,
+      removedBits: delta.removedCount ?? 0,
+      unchangedBits: delta.unchangedCount ?? 0
+    });
+  }
+
+  function buildOmniHostingField() {
+    const oh = readOmniHostingView();
+    const placement = oh?.lastPlacementPlan || null;
+    const failover = oh?.lastFailoverPlan || null;
+
+    return Object.freeze({
+      placement: placement
+        ? {
+            selectedHosts: placement.selectedHosts || [],
+            eligibleHosts: placement.eligibleHosts || [],
+            fallbackBandLevel: placement.fallbackBandLevel ?? 0,
+            artery: placement.artery || null
+          }
+        : null,
+      failover: failover
+        ? {
+            failoverTargets: failover.failoverTargets || [],
+            fallbackBandLevel: failover.fallbackBandLevel ?? 0,
+            artery: failover.artery || null
+          }
+        : null
+    });
   }
 
   // --------------------------------------------------------------------------
@@ -524,6 +692,7 @@ export function createPulseBeaconEngine({
 
     const meshView = readMeshView();
     const wcView = readWorldCoreView();
+    const contField = buildContinuanceField();
 
     const regionPresence =
       payloadState.regionTag ||
@@ -545,6 +714,13 @@ export function createPulseBeaconEngine({
       meshView?.densityHealth?.A_metrics?.meshPressureIndex ??
       0;
 
+    const fallbackBandLevel =
+      fallbackCtx.fallbackBandLevel ??
+      gh.fallbackBandLevel ??
+      payloadState.fallbackBandLevel ??
+      contField.fallbackBandLevel ??
+      0;
+
     return Object.freeze({
       bandPresence: presenceCtx.bandPresence || "unknown",
       routerPresence: presenceCtx.routerPresence || "unknown",
@@ -555,11 +731,7 @@ export function createPulseBeaconEngine({
       castlePresence: payloadState.castlePresence ? "present" : "absent",
       regionPresence,
       advantageBand: advantageCtx.advantageBand || payloadState.advantageHint || "neutral",
-      fallbackBandLevel:
-        fallbackCtx.fallbackBandLevel ??
-        gh.fallbackBandLevel ??
-        payloadState.fallbackBandLevel ??
-        0,
+      fallbackBandLevel,
       coldStartPhase: payloadState.coldStartPhase
     });
   }
@@ -580,18 +752,36 @@ export function createPulseBeaconEngine({
   function buildHintsField() {
     const gh = lastGlobalHints || {};
     const fallbackCtx = gh.fallbackContext || {};
+    const contField = buildContinuanceField();
 
     const fallbackBandLevel =
       fallbackCtx.fallbackBandLevel ??
       gh.fallbackBandLevel ??
       payloadState.fallbackBandLevel ??
+      contField.fallbackBandLevel ??
       0;
+
+    const chunkHints = {
+      ...(gh.chunkHints || {}),
+      // continuance chunkAggression wins if present
+      ...(contField.chunkHint ? { chunkAggression: contField.chunkHint.chunkAggression } : {})
+    };
+
+    const cacheHints = {
+      ...(gh.cacheHints || {}),
+      ...(contField.cacheHint || {})
+    };
+
+    const prewarmHints = {
+      ...(gh.prewarmHints || {}),
+      ...(contField.prewarmHint || {})
+    };
 
     return Object.freeze({
       fallbackBandLevel,
-      chunkHints: gh.chunkHints || {},
-      cacheHints: gh.cacheHints || {},
-      prewarmHints: gh.prewarmHints || {},
+      chunkHints,
+      cacheHints,
+      prewarmHints,
       regionChunkPlan: gh.regionChunkPlan || {}
     });
   }
@@ -602,24 +792,44 @@ export function createPulseBeaconEngine({
     const binaryField = gh.binaryField || null;
     const waveField = gh.waveField || null;
 
+    const ciField = buildCIField();
+    const binaryDeltaField = buildBinaryDeltaField();
+
     return Object.freeze({
       bandSignature,
       binaryField,
-      waveField
+      waveField,
+      ciField,
+      binaryDeltaField
     });
   }
 
   function buildChunkPrewarmField() {
-    const gh = lastGlobalHints || {};
     const hintsField = buildHintsField();
 
     return Object.freeze({
-      planVersion: "v15-Beacon-ChunkPrewarm",
+      planVersion: "v20-Beacon-ChunkPrewarm-Immortal-GPU+-CI",
       fallbackBandLevel: hintsField.fallbackBandLevel,
       chunkHints: hintsField.chunkHints,
       cacheHints: hintsField.cacheHints,
       prewarmHints: hintsField.prewarmHints,
       regionChunkPlan: hintsField.regionChunkPlan
+    });
+  }
+
+  function buildImmortalField() {
+    const contField = buildContinuanceField();
+    const ciField = buildCIField();
+    const binaryDeltaField = buildBinaryDeltaField();
+    const omniField = buildOmniHostingField();
+
+    return Object.freeze({
+      epoch: PulseBeaconMeta.epoch,
+      continuance: contField,
+      ci: ciField,
+      binaryDelta: binaryDeltaField,
+      omniHosting: omniField,
+      artery: getArterySnapshot()
     });
   }
 
@@ -646,6 +856,7 @@ export function createPulseBeaconEngine({
     const hintsField = buildHintsField();
     const bandField = buildBandField();
     const chunkPrewarmField = buildChunkPrewarmField();
+    const immortalField = buildImmortalField();
 
     return Object.freeze({
       ...base,
@@ -655,6 +866,7 @@ export function createPulseBeaconEngine({
       hintsField,
       bandField,
       chunkPrewarmField,
+      immortalField,
       userContext: userContext || null,
       globalHints: {
         fallbackBandLevel: hintsField.fallbackBandLevel,
@@ -670,8 +882,8 @@ export function createPulseBeaconEngine({
   }
 
   // --------------------------------------------------------------------------
-  // SIGNAL SHAPING ENGINE (USES GLOBAL HINTS + MESH/WORLDCORE)
-  // --------------------------------------------------------------------------
+  // SIGNAL SHAPING ENGINE (USES GLOBAL HINTS + MESH/WORLDCORE/CONTINUANCE)
+// --------------------------------------------------------------------------
   function computeSignalProfile({
     densityHint,
     demandHint,
@@ -698,15 +910,29 @@ export function createPulseBeaconEngine({
 
     const gh = lastGlobalHints || {};
     const fallbackCtx = gh.fallbackContext || {};
+    const contField = buildContinuanceField();
+
     const fallbackBandLevel =
       fallbackCtx.fallbackBandLevel ??
       gh.fallbackBandLevel ??
       payloadState.fallbackBandLevel ??
+      contField.fallbackBandLevel ??
       0;
 
-    const chunkAggression = gh.chunkHints?.chunkAggression ?? 0;
-    const cachePriority = gh.cacheHints?.priority || "normal";
-    const prewarmNeeded = gh.prewarmHints?.shouldPrewarm || false;
+    const chunkAggression =
+      gh.chunkHints?.chunkAggression ??
+      contField.chunkHint?.chunkAggression ??
+      0;
+
+    const cachePriority =
+      gh.cacheHints?.priority ||
+      contField.cacheHint?.priority ||
+      "normal";
+
+    const prewarmNeeded =
+      gh.prewarmHints?.shouldPrewarm ||
+      contField.prewarmHint?.shouldPrewarm ||
+      false;
 
     const meshView = readMeshView();
 
@@ -751,6 +977,13 @@ export function createPulseBeaconEngine({
       if (effectiveRegionType === "home") {
         powerProfile = powerProfile === "high" ? "medium" : powerProfile;
       }
+    }
+
+    // Continuance-aware shaping.
+    if (contField.globalRisk >= 0.6) {
+      // high risk → keep presence strong but not insane
+      if (powerProfile === "low") powerProfile = "medium";
+      if (intervalProfile === "sparse") intervalProfile = "steady";
     }
 
     // Global hints influence:
@@ -812,7 +1045,7 @@ export function createPulseBeaconEngine({
 
   // --------------------------------------------------------------------------
   // BROADCAST ENGINE (REAL BLUETOOTH EMISSION VIA INTERNAL EMITTER)
-  // --------------------------------------------------------------------------
+// --------------------------------------------------------------------------
   function broadcastOnce({
     densityHint,
     demandHint,
@@ -849,7 +1082,6 @@ export function createPulseBeaconEngine({
     emitToOvermind("broadcast", { payload, profile });
     emitToNodeAdmin("broadcast", { payload, profile });
 
-    // REAL EMISSION: this is the ONLY hardware edge.
     nativeBluetoothBroadcast(payload, profile);
 
     log("Broadcast:", { payload, profile });
@@ -858,7 +1090,7 @@ export function createPulseBeaconEngine({
 
   // --------------------------------------------------------------------------
   // DIRECTIVE ENGINE (OVERMIND + NODEADMIN)
-  // --------------------------------------------------------------------------
+// --------------------------------------------------------------------------
   function applyDirective(directive) {
     if (!directive || typeof directive !== "object") {
       return { ok: false, reason: "invalid-directive" };
@@ -906,192 +1138,83 @@ export function createPulseBeaconEngine({
 
     emitToOvermind("directive-applied", { directive, result });
     emitToNodeAdmin("directive-applied", { directive, result });
-    log("Directive applied:", { directive, result });
+
     return result;
   }
 
   // --------------------------------------------------------------------------
-  // BRIDGES
+  // SNAPSHOTS
   // --------------------------------------------------------------------------
-  function attachNodeAdminBridge(bridge) {
-    nodeAdmin = bridge || null;
-    const hasBridge = !!bridge;
-    emitToOvermind("nodeadmin-bridge-set", { hasBridge });
-    log("NodeAdmin bridge set:", { hasBridge });
-    return { ok: true, hasBridge };
-  }
-
-  function handleNodeAdminIntent(intentName, payload = {}) {
-    if (!intentName) return { ok: false, reason: "no-intent" };
-
-    const ctx = payload.contextHints || {};
-
-    if (intentName === "broadcast-discovery") {
-      setMode("discovery");
-      return broadcastOnce(ctx);
-    }
-
-    if (intentName === "broadcast-presence") {
-      setMode("presence");
-      return broadcastOnce(ctx);
-    }
-
-    if (intentName === "pulse-reach") {
-      setMode("pulse-reach");
-      return broadcastOnce(ctx);
-    }
-
-    if (intentName === "pulse-storm") {
-      setMode("pulse-storm");
-      return broadcastOnce(ctx);
-    }
-
-    if (intentName === "PULSE-MESH") {
-      setMode("PULSE-MESH");
-      return broadcastOnce(ctx);
-    }
-
-    if (intentName === "pulse-expand") {
-      setMode("pulse-expand");
-      return broadcastOnce(ctx);
-    }
-
-    return { ok: false, reason: "unknown-intent" };
-  }
-
-  function attachOvermindBridge(bridge) {
-    overmind = bridge || null;
-    const hasBridge = !!bridge;
-    emitToOvermind("overmind-bridge-set", { hasBridge });
-    log("Overmind bridge set:", { hasBridge });
-    return { ok: true, hasBridge };
-  }
-
-  // --------------------------------------------------------------------------
-  // TELEMETRY & SNAPSHOT
-  // --------------------------------------------------------------------------
-  function getTelemetry() {
-    return Object.freeze({ ...telemetry });
-  }
-
   function getStateSnapshot() {
     return Object.freeze({
-      organId: PulseBeaconMeta.organId,
-      identity: { ...identity },
-      mode: activeMode,
-      tick,
+      meta: PulseBeaconMeta,
+      identity,
       payloadState: { ...payloadState },
       signalState: { ...signalState },
+      optInState: { ...optInState },
       telemetry: { ...telemetry },
-      multiInstance: { ...MultiInstance },
-      contracts: { ...Contracts },
-      globalHints: lastGlobalHints,
-      presenceField: buildPresenceField(),
-      advantageField: buildAdvantageField(),
-      hintsField: buildHintsField(),
-      bandField: buildBandField(),
-      chunkPrewarmField: buildChunkPrewarmField()
+      globalHints: lastGlobalHints || null,
+      artery: getArterySnapshot(),
+      mode: activeMode,
+      multiInstance: MultiInstance
     });
   }
 
-  function getManual() {
-    return {
-      meta: PulseBeaconMeta,
-      description:
-        "PulseBeaconEngine-v15 is the monolithic Bluetooth membrane organ for PulseWorld, fully presence/advantage/band/chunk-prewarm aware, and the ONLY Bluetooth emitter.",
-      usage: {
-        setMode:
-          "beacon.setMode('discovery' | 'presence' | 'adaptive' | 'pulse-reach' | 'pulse-storm' | 'PULSE-MESH' | 'pulse-expand')",
-        updatePayloadFromContext:
-          "beacon.updatePayloadFromContext({ regionTag?, castlePresence?, meshStatus?, meshPressureIndex?, meshStrength?, loadHint?, userProfile?, advantageHint?, fallbackBandLevel?, coldStartPhase? })",
-        setGlobalHints:
-          "beacon.setGlobalHints({ presenceContext?, advantageContext?, fallbackContext?, fallbackBandLevel?, chunkHints?, cacheHints?, prewarmHints?, regionPresence?, regionAdvantage?, regionChunkPlan?, bandSignature?, binaryField?, waveField?, meshPressureIndex?, meshStrength?, densityHint?, demandHint?, regionType?, meshStatus? })",
-        attachMeshSnapshotProvider:
-          "beacon.attachMeshSnapshotProvider(() => mesh.getSnapshot())",
-        attachWorldCoreSnapshotProvider:
-          "beacon.attachWorldCoreSnapshotProvider(() => worldCore.getSnapshot())",
-        attachUserContext:
-          "beacon.attachUserContext(userContext)",
-        buildPresenceField: "beacon.buildPresenceField() → presenceField",
-        buildAdvantageField: "beacon.buildAdvantageField() → advantageField",
-        buildHintsField: "beacon.buildHintsField() → hintsField",
-        buildBandField: "beacon.buildBandField() → bandField",
-        buildChunkPrewarmField: "beacon.buildChunkPrewarmField() → chunkPrewarmField",
-        buildPayload: "beacon.buildPayload() → full broadcast payload",
-        computeSignalProfile:
-          "beacon.computeSignalProfile({ densityHint?, demandHint?, regionType?, meshStatus? }) → signalProfile",
-        broadcastOnce:
-          "beacon.broadcastOnce({ densityHint?, demandHint?, regionType?, meshStatus? })",
-        applyDirective:
-          "beacon.applyDirective({ mode?, payloadUpdate?, globalHints?, broadcastNow?, contextHints? })",
-        attachOvermindBridge:
-          "beacon.attachOvermindBridge({ emit? })",
-        attachNodeAdminBridge:
-          "beacon.attachNodeAdminBridge({ onBeaconEvent? })",
-        handleNodeAdminIntent:
-          "beacon.handleNodeAdminIntent(intentName, { contextHints? })",
-        getStateSnapshot: "beacon.getStateSnapshot()",
-        getTelemetry: "beacon.getTelemetry()",
-        attachNativeBluetoothDriver:
-          "attachNativeBluetoothDriver({ broadcast(payload, profile) }) // ONLY hardware edge"
-      },
-      caveat:
-        "Hardware emission is performed ONLY via nativeBluetoothBroadcast(payload, profile) using the attached native driver. This organ is the sole Bluetooth emitter and must remain deterministic and SafetyFrame-compliant."
-    };
+  function getTelemetry() {
+    return Object.freeze({
+      ...telemetry,
+      artery: getArterySnapshot()
+    });
   }
 
   // --------------------------------------------------------------------------
-  // PUBLIC API
+  // PUBLIC API SURFACE
   // --------------------------------------------------------------------------
-  return {
+  return Object.freeze({
     meta: PulseBeaconMeta,
+    identity,
 
-    // identity
-    identity: { ...identity },
-
-    // mode
-    setMode,
-    getMode,
-
-    // payload
-    updatePayloadFromContext,
-    buildPayload,
-
-    // global hints (hybrid v15)
-    setGlobalHints,
+    // snapshots
+    getStateSnapshot,
+    getTelemetry,
     getGlobalHints,
-    buildPresenceField,
-    buildAdvantageField,
-    buildHintsField,
-    buildBandField,
-    buildChunkPrewarmField,
-
-    // signal
-    computeSignalProfile,
-
-    // broadcast
-    broadcastOnce,
-
-    // directives
-    applyDirective,
-
-    // bridges
-    attachOvermindBridge,
-    attachNodeAdminBridge,
-    handleNodeAdminIntent,
+    setGlobalHints,
 
     // attachments
     attachMeshSnapshotProvider,
     attachWorldCoreSnapshotProvider,
     attachRouterSnapshotProvider,
     attachServerSnapshotProvider,
+    attachContinuanceSnapshotProvider,
+    attachOmniHostingSnapshotProvider,
     attachUserContext,
+    attachOvermind,
+    attachNodeAdmin,
 
-    // telemetry
-    getStateSnapshot,
-    getTelemetry,
+    // mode
+    setMode,
+    getMode,
 
-    // manual
-    getManual
-  };
+    // payload + fields
+    updatePayloadFromContext,
+    buildPresenceField,
+    buildAdvantageField,
+    buildHintsField,
+    buildBandField,
+    buildChunkPrewarmField,
+    buildImmortalField,
+
+    // continuance/CI/binary/omni fields (exposed if needed)
+    buildContinuanceField,
+    buildCIField,
+    buildBinaryDeltaField,
+    buildOmniHostingField,
+
+    // artery
+    getArterySnapshot,
+
+    // broadcast + directives
+    broadcastOnce,
+    applyDirective
+  });
 }

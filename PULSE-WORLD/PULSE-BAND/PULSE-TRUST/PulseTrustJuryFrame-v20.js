@@ -1,20 +1,26 @@
 // ============================================================================
-//  PULSE‑TRUST JURY FRAME v16++ IMMORTAL — VERDICT ENGINE WRAPPER
+//  PULSE‑TRUST JURY FRAME v20.0.0 IMMORTAL — VERDICT ENGINE WRAPPER
 //  12‑Lens Constitutional Justice Engine • RAW + AI‑Mirror Aware
-//  Bridges JuryFeed → JuryFrame → Trust Fabric
+//  Bridges JuryFeed → JuryFrame → Trust Fabric → Evidential Records
 // ============================================================================
 
 /*
 AI_EXPERIENCE_META:
   organ: PulseTrustJuryFrame
-  version: 16.2.0
+  version: 20.0.0
   tier: IMMORTAL
   role: trust_jury_frame
+  mind: false
+
   description:
     "Trust-facing wrapper around the IMMORTAL JuryFrame justice engine.
      Accepts RAW + AI‑mirror evidence packets from PulseTrustJuryFeed,
      applies the 12‑lens constitutional justice system,
-     and emits deterministic verdicts for the Trust fabric."
+     and emits deterministic verdicts for the Trust fabric.
+
+     It does not judge candidates directly — it exposes the JuryFrame’s
+     lens breakdowns, artery decisions, and worldLens outcomes in a
+     metadata‑rich, ER‑ready snapshot for systemic oversight."
 
   guarantees:
     - "Never mutates evidence."
@@ -22,11 +28,12 @@ AI_EXPERIENCE_META:
     - "Never filters or compresses juryFeed."
     - "Always produces deterministic verdicts."
     - "Always drift‑proof and immutable."
-    - "Always preserves lens breakdowns."
+    - "Always preserves lens breakdowns and artery decisions."
+    - "Always ER‑ready and schema‑tagged."
 
   lineage:
-    parent: "JuryFrame-v12.3-Evo+"
-    evolution: "v16++ IMMORTAL — RAW + AI‑mirror + delta aware"
+    parent: "JuryFrame-v16++"
+    evolution: "v20++ IMMORTAL — RAW + AI‑mirror + delta aware + ER‑ready"
 
   identity:
     type: "organ"
@@ -42,24 +49,30 @@ AI_EXPERIENCE_META:
       - boundaryArtery
       - intent / context / candidate
     feeds:
-      - JuryCouncil
-      - CreatorFlags
-      - ExpansionCompliance
+      - JuryCouncil (systemic drift)
+      - CreatorFlags (creator‑visible signals)
+      - ExpansionCompliance (constitutional enforcement)
+      - PulseTrustEvidence / Evidential Records (as RAW_AI snapshot)
+
+  schema:
+    snapshotType: "trust_jury_frame_verdict"
+    categories: ["RAW_AI"]
+    erReady: true
 */
 
 import {
   JuryFrameMeta,
   createJuryFrame,
   evaluateJury
-} from "../PULSE-AI-JURY/JuryFrame-v16++.js";
+} from "../PULSE-AI/JuryFrame.js";
 
 export const PulseTrustJuryFrameMeta = Object.freeze({
-  id: "PulseTrustJuryFrame-v16++",
-  version: "16.2.0",
+  id: "PulseTrustJuryFrame-v20++",
+  version: "20.0.0",
   role: "trust_jury_frame",
   mind: false,
   description:
-    "IMMORTAL trust-facing wrapper around the JuryFrame justice engine.",
+    "IMMORTAL trust-facing wrapper around the JuryFrame justice engine, ER‑ready.",
   identity: {
     type: "organ",
     name: "PulseTrustJuryFrame",
@@ -67,27 +80,35 @@ export const PulseTrustJuryFrameMeta = Object.freeze({
     mind: false,
     immutable: true
   },
-  juryMeta: JuryFrameMeta
+  juryMeta: JuryFrameMeta,
+  schema: {
+    snapshotType: "trust_jury_frame_verdict",
+    categories: ["RAW_AI"],
+    erReady: true
+  }
 });
 
 // ============================================================================
-//  CLASS — TRUST JURY FRAME WRAPPER
+//  CLASS — TRUST JURY FRAME WRAPPER v20
 // ============================================================================
 export function createPulseTrustJuryFrame({ safetyAPI } = {}) {
   // Underlying IMMORTAL JuryFrame
   const jury = createJuryFrame({ safetyAPI });
 
   // --------------------------------------------------------------------------
-  //  EVALUATE — MAIN VERDICT ENTRYPOINT
-  // --------------------------------------------------------------------------
+  //  EVALUATE — MAIN VERDICT ENTRYPOINT (ER‑ready)
+// --------------------------------------------------------------------------
   function evaluate({
     intent = null,
     context = null,
     candidate = null,
     juryFeed = null,
     binaryVitals = null,
-    boundaryArtery = null
+    boundaryArtery = null,
+    requestId = null,
+    juryId = null
   } = {}) {
+    const ts = Date.now();
 
     // No mutation, no inference, no filtering.
     const verdict = jury.evaluate({
@@ -99,14 +120,25 @@ export function createPulseTrustJuryFrame({ safetyAPI } = {}) {
       boundaryArtery
     });
 
-    return Object.freeze({
+    const snapshot = Object.freeze({
       meta: PulseTrustJuryFrameMeta,
-      verdict,
+      schema: PulseTrustJuryFrameMeta.schema,
+      ts,
+      requestId,
+      juryId,
+      intent,
+      context,
+      candidateRef: candidate?.id ?? null,
+      juryFeedRef: juryFeed?.meta?.id ?? null,
+      verdict: verdict || null,
       lenses: verdict?.lenses || null,
       worldLens: verdict?.worldLens || null,
       artery: verdict?.artery || null,
-      ts: Date.now()
+      // Optional high‑level flags if JuryFrame exposes them
+      flags: verdict?.flags || null
     });
+
+    return snapshot;
   }
 
   // --------------------------------------------------------------------------
@@ -120,7 +152,7 @@ export function createPulseTrustJuryFrame({ safetyAPI } = {}) {
 }
 
 // ============================================================================
-//  ONE‑OFF EVALUATION HELPER
+//  ONE‑OFF EVALUATION HELPER (thin pass‑through)
 // ============================================================================
 export function evaluateWithTrustJury(args = {}) {
   return evaluateJury(args);

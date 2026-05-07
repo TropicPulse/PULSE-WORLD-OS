@@ -51,7 +51,7 @@ AI_EXPERIENCE_META = {
 import { onRequest, onCall } from "firebase-functions/v2/https";
 import nodemailer from "nodemailer";
 import { corsHandler, fetch } from "../PULSE-X/PulseWorldTransport-v17.js";
-import { db, admin } from "../PULSE-X/PulseWorldGenome-v17.js"
+import { db, admin } from "../PULSE-X/PulseWorldGenome-v20.js"
 
 
 // ---------------------------------------------------------------------------

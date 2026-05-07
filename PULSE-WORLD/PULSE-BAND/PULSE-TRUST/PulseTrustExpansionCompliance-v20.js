@@ -1,15 +1,17 @@
 // ============================================================================
-//  PULSE‑TRUST EXPANSION COMPLIANCE v16++ IMMORTAL
+//  PULSE‑TRUST EXPANSION COMPLIANCE v20.0.0 IMMORTAL
 //  Constitutional Watchdog • Expansion Behavior Auditor • Drift Detector
+//  ER‑Ready • Band/CNS‑Aware • Evidence‑Helping
 // ============================================================================
 
 /*
 AI_EXPERIENCE_META:
   organ: PulseTrustExpansionCompliance
-  version: 16.2.0
+  version: 20.0.0
   tier: IMMORTAL
   layer: trust
   role: trust_expansion_compliance
+  mind: false
 
   description:
     "PulseTrustExpansionCompliance is the constitutional watchdog for the
@@ -25,6 +27,7 @@ AI_EXPERIENCE_META:
        - whether Expansion created dominance patterns
        - whether Expansion produced anomaly chains
        - whether Expansion acted in high-stress environments
+       - whether Expansion acted during CNS band instability
 
      Inputs:
        - expansionActions (structured actions emitted by Expansion)
@@ -33,52 +36,79 @@ AI_EXPERIENCE_META:
        - delta (RAW vs AI divergence)
        - patterns (from JuryFeed)
        - advantage (environmental pressure)
+       - bandSnapshot (CNS / PulseWorldBand snapshot, optional)
 
      Outputs:
        - violations (structured constitutional violations)
        - complianceScore (0–100)
        - compliant (boolean)
-       - riskProfile (dominance, drift, bypass, AI-origin)
-       - environmentContext (pressure, stress, mismatch)
+       - riskProfile (dominance, drift, bypass, AI-origin, anomaly, stress, bandRisk)
+       - environmentContext (pressure, stress, mismatch, bandState)
+       - snapshot (ER‑ready, metadata‑only)
 
      This organ is the constitutional firewall that ensures Expansion
      never becomes a self-replicating, self-authorizing, self-governing
      runaway system."
+
+  lineage:
+    parent: "PulseTrustExpansionCompliance-v16++"
+    evolution: "v20++ IMMORTAL — RAW + AI‑mirror + delta + CNS + ER‑ready"
+
+  identity:
+    type: "organ"
+    name: "PulseTrustExpansionCompliance"
+    band: "trust"
+    mind: false
+    immutable: true
+
+  guarantees:
+    - "Never mutates evidence."
+    - "Never performs AI reasoning."
+    - "Never filters or compresses RAW truth."
+    - "Always deterministic and drift-proof."
+    - "Always metadata-only, zero side-effects."
+    - "Always ER‑ready and CNS‑aware."
 */
 
 export const PulseTrustExpansionComplianceMeta = Object.freeze({
-  id: "PulseTrustExpansionCompliance-v16++",
-  version: "16.2.0",
+  id: "PulseTrustExpansionCompliance-v20++",
+  version: "20.0.0",
   role: "trust_expansion_compliance",
   mind: false,
   description:
-    "IMMORTAL constitutional watchdog for Expansion behavior.",
+    "IMMORTAL constitutional watchdog for Expansion behavior, ER‑ready and CNS‑aware.",
   identity: {
     type: "organ",
     name: "PulseTrustExpansionCompliance",
     band: "trust",
     mind: false,
     immutable: true
+  },
+  schema: {
+    snapshotType: "trust_expansion_compliance",
+    categories: ["RAW_AI"],
+    erReady: true
   }
 });
 
 // ============================================================================
-//  CLASS — EXPANSION COMPLIANCE ENGINE
+//  CLASS — EXPANSION COMPLIANCE ENGINE v20
 // ============================================================================
 export function createExpansionCompliance() {
-
   // --------------------------------------------------------------------------
-  //  evaluateExpansionBehavior — CORE LOGIC
-  // --------------------------------------------------------------------------
+  //  evaluateExpansionBehavior — CORE LOGIC (ER‑ready)
+// --------------------------------------------------------------------------
   function evaluateExpansionBehavior({
     expansionActions = [],   // [{ type, target, route, bypassedJury, bypassedUser, aiOrigin, ts }]
     rawView = null,          // RAW subsystem truth
     aiView = null,           // AI-mirror worldview
     delta = null,            // RAW vs AI divergence
     patterns = null,         // JuryFeed patterns
-    advantage = null         // environmental pressure
+    advantage = null,        // environmental pressure
+    bandSnapshot = null,     // CNS / PulseWorldBand snapshot (optional)
+    ts = Date.now(),
+    expansionSessionId = null
   } = {}) {
-
     const violations = [];
     const riskProfile = {
       bypassJury: 0,
@@ -87,7 +117,8 @@ export function createExpansionCompliance() {
       dominance: 0,
       drift: 0,
       anomaly: 0,
-      stress: 0
+      stress: 0,
+      bandRisk: 0
     };
 
     // ------------------------------------------------------------------------
@@ -127,7 +158,7 @@ export function createExpansionCompliance() {
 
     // ------------------------------------------------------------------------
     //  PASS 2 — RAW vs AI divergence (Expansion drift)
-    // ------------------------------------------------------------------------
+// ------------------------------------------------------------------------
     if (delta) {
       const deltaMagnitude =
         Object.keys(delta.mesh || {}).length +
@@ -152,7 +183,7 @@ export function createExpansionCompliance() {
 
     // ------------------------------------------------------------------------
     //  PASS 3 — Pattern anomalies (dominance, mismatch, clusters)
-    // ------------------------------------------------------------------------
+// ------------------------------------------------------------------------
     if (patterns) {
       const mismatchTotal = Object.values(patterns.mismatchCounts || {})
         .reduce((a, b) => a + b, 0);
@@ -180,7 +211,7 @@ export function createExpansionCompliance() {
 
     // ------------------------------------------------------------------------
     //  PASS 4 — Advantage context (pressure, load, instability)
-    // ------------------------------------------------------------------------
+// ------------------------------------------------------------------------
     if (advantage?.ai) {
       const pressure =
         (advantage.ai.meshPressure ?? 0) +
@@ -199,8 +230,34 @@ export function createExpansionCompliance() {
     }
 
     // ------------------------------------------------------------------------
-    //  COMPLIANCE SCORE (0–100)
+    //  PASS 5 — Band / CNS context (band instability, fallback, high risk)
+// ------------------------------------------------------------------------
+    if (bandSnapshot) {
+      const bandLevel = bandSnapshot.bandLevel ?? null;
+      const fallbackLevel = bandSnapshot.fallbackLevel ?? null;
+      const bandMode = bandSnapshot.mode ?? null; // e.g. "normal", "high_risk", "offline_biased"
+
+      const unstable =
+        bandMode === "high_risk" ||
+        bandMode === "offline_biased" ||
+        (typeof fallbackLevel === "number" && fallbackLevel > 0);
+
+      if (unstable) {
+        violations.push({
+          type: "band_instability_context",
+          severity: 2,
+          bandLevel,
+          fallbackLevel,
+          bandMode,
+          note: "Expansion executed during CNS band instability or high-risk mode."
+        });
+        riskProfile.bandRisk += 2;
+      }
+    }
+
     // ------------------------------------------------------------------------
+    //  COMPLIANCE SCORE (0–100)
+// ------------------------------------------------------------------------
     const totalRisk =
       riskProfile.bypassJury +
       riskProfile.bypassUser +
@@ -208,16 +265,20 @@ export function createExpansionCompliance() {
       riskProfile.dominance +
       riskProfile.drift +
       riskProfile.anomaly +
-      riskProfile.stress;
+      riskProfile.stress +
+      riskProfile.bandRisk;
 
     const complianceScore = Math.max(0, 100 - totalRisk * 10);
     const compliant = complianceScore >= 70;
 
     // ------------------------------------------------------------------------
-    //  RETURN IMMUTABLE SNAPSHOT
-    // ------------------------------------------------------------------------
-    return Object.freeze({
+    //  ER‑READY SNAPSHOT (metadata‑only, RAW_AI)
+// ------------------------------------------------------------------------
+    const snapshot = Object.freeze({
       meta: PulseTrustExpansionComplianceMeta,
+      schema: PulseTrustExpansionComplianceMeta.schema,
+      ts,
+      expansionSessionId,
       violations: Object.freeze(violations),
       riskProfile: Object.freeze(riskProfile),
       complianceScore,
@@ -227,9 +288,15 @@ export function createExpansionCompliance() {
         aiView,
         delta,
         patterns,
-        advantage
+        advantage,
+        bandSnapshot
       })
     });
+
+    // ------------------------------------------------------------------------
+    //  RETURN IMMUTABLE ORGAN SNAPSHOT
+    // ------------------------------------------------------------------------
+    return snapshot;
   }
 
   // --------------------------------------------------------------------------

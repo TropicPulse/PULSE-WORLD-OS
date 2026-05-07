@@ -90,7 +90,7 @@ AI_EXPERIENCE_META = {
 import { createCommunityReflex } from "./PulseMeshFlow.js";
 import { applyPulseCortex } from "./PulseMeshCortex.js";
 import { applyPulseMeshTendons } from "./PulseMeshTendons.js";
-import { applyMeshSignalFactoring } from "./PulseMeshSignalFactoring.js";
+import { applyMeshSignalFactoring } from "./PulseMeshSignalFactoring-v20.js";
 import { createPulseMeshImmuneSystem as recordMeshDriftEvent } from "./PulseMeshImmuneSystem.js";
 import * as PulseMeshSkinReflex from "./PulseMeshSkinReflex.js";
 

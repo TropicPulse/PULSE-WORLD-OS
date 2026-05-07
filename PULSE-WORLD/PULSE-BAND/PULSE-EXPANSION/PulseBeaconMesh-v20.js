@@ -1,35 +1,45 @@
 /**
  * ============================================================================
- *  PULSE-WORLD : PulseBeaconMesh-v16-Immortal-ORGANISM.js
- *  ROLE: Local membrane simulator + density/mode/advantage debugger
- *  VERSION: v16-Immortal-ORGANISM (v16→v18 Every-Advantage, Shifter-Aware)
+ *  PULSE-WORLD : PulseBeaconMesh-v20-Immortal-NET.js
+ *  ROLE: Local membrane simulator + density/mode/advantage/network debugger
+ *  VERSION: v20-Immortal-NET (v16→v18→v20 Every-Advantage, Shifter+Continuance+OmniHosting-Aware)
  *  LAYER: BeaconMesh
- *  IDENTITY: PulseBeaconMesh-v16-Immortal-ORGANISM
+ *  IDENTITY: PulseBeaconMesh-v20-Immortal-NET
  * ============================================================================
  *
  *  PURPOSE:
  *    This organ simulates local world conditions and feeds them into the
  *    PulseBeaconEngine IMMORTAL chain. It does NOT compute signal physics.
  *
- *    In v16-Immortal-ORGANISM, BeaconMesh is no longer an isolated helper.
- *    It is the LOCAL MEMBRANE of the organism, wired symbolically into:
+ *    In v20-Immortal-NET, BeaconMesh is the LOCAL MEMBRANE of the organism,
+ *    wired symbolically into:
  *
  *      - PulseExpansion (world / region / cluster)
  *      - PulseCastle (castle / beacon / console)
  *      - PulseServer (server lanes)
+ *      - PulseRouter (routing lanes)
  *      - PulseUser (user lanes)
  *      - PulseTouch (presence / mode / page / chunkProfile / trust / identity)
  *      - PulseNet (mesh family / ingress / pressure)
  *      - PulseMesh (symbolic mesh organism)
+ *      - PulseBinaryMesh (binary mesh organism)
  *      - PulseRuntime (hot instances / regions / presence / modes / pages)
  *      - PulseScheduler (macro tick orchestration)
  *      - PulseOvermind (world-lens / safety)
+ *      - PulseWorldCore (AI-mirror worldview)
+ *      - PulseContinuance (GPU continuance physics)
+ *      - PulseOmniHosting (hosting physics / artery metrics)
+ *      - PulseProxy (dual-band proxy envelope)
  *
- *    v16→v18 upgrade:
- *      - Every‑Advantage overlays (mesh + user + proxy).
+ *    v16→v18→v20 upgrades:
+ *      - Every‑Advantage overlays (mesh + user + proxy + continuance + omnihosting).
  *      - Shifter‑aware presence tiers and band shifts.
  *      - Chunk‑prewarm + chunk‑plan hints surfaced to Beacon Engine.
  *      - Proxy envelope surfaced but never mutated.
+ *      - Continuance risk + fallback band + prewarm/cache/chunk hints surfaced.
+ *      - OmniHosting artery metrics surfaced as mesh pressure / expansion hints.
+ *      - Multi‑radio profile awareness (Bluetooth + LTE‑assist symbolic fields).
+ *      - Ultra‑low‑power “signal mode” lanes (symbolic only, no physics).
  *
  *    CONTRACT:
  *      - Never mutate the Beacon Engine.
@@ -39,19 +49,25 @@
  *      - Always deterministic.
  *      - Pure membrane surface (symbolic composition only).
  */
+
 /*
 AI_EXPERIENCE_META = {
   identity: "PulseBeaconMesh",
-  version: "v16-Immortal-ORGANISM",
+  version: "v20-Immortal-NET",
   layer: "beacon_mesh",
   role: "local_membrane_simulator",
-  lineage: "PulseBeaconMesh-v1 → v11-Evo → v14-Immortal → v16-Immortal-ORGANISM",
+  lineage: "PulseBeaconMesh-v1 → v11-Evo → v14-Immortal → v16-Immortal-ORGANISM → v20-Immortal-NET",
 
   evo: {
     localMembrane: true,
     organismAware: true,
     dualBandAware: true,
     meshAware: true,
+    proxyAware: true,
+    continuanceAware: true,
+    omniHostingAware: true,
+    multiRadioAware: true,
+    lteAssistAware: true,
 
     deterministic: true,
     driftProof: true,
@@ -84,7 +100,9 @@ AI_EXPERIENCE_META = {
     schedulerAware: true,
     overmindAware: true,
     meshOrganismAware: true,
-    proxyAware: true
+    worldCoreAware: true,
+    continuanceRiskAware: true,
+    arteryAware: true
   },
 
   contract: {
@@ -93,13 +111,19 @@ AI_EXPERIENCE_META = {
       "PulseExpansion",
       "PulseCastle",
       "PulseServer",
+      "PulseRouter",
       "PulseUser",
       "PulseTouch",
       "PulseNet",
       "PulseMesh",
+      "PulseBinaryMesh",
       "PulseRuntime",
       "PulseScheduler",
-      "PulseOvermind"
+      "PulseOvermind",
+      "PulseWorldCore",
+      "PulseContinuance",
+      "PulseOmniHosting",
+      "PulseProxy"
     ],
     never: [
       "routerCore",
@@ -140,8 +164,15 @@ import {
 } from "./PulseRouter-v16.js";
 
 // User lanes
-import { getPulseUserContext, createPulseWorldCore } from "./PulseUser-v16.js";
+import { getPulseUserContext } from "./PulseUser-v16.js";
 
+// WorldCore (AI mirror)
+import {
+  createPulseWorldCore,
+  pulseWorldCore
+} from "../PULSE-AI/PulseWorldCore-v16.js";
+
+// Beacon Engine + Console
 import {
   getBeaconEngineContext,
   PulseBeaconEngine
@@ -160,13 +191,23 @@ import createBinaryMesh, {
 import { getPulseTouchContext } from "../../PULSE-UI/PULSE-TOUCH.js";
 
 // Runtime (hot instances / regions / presence / modes / pages)
-import { getPulseRuntimeContext } from "../PULSE-X/PulseWorldRuntime-v17.js";
+import { getPulseRuntimeContext } from "../PULSE-X/PulseWorldRuntime-v20.js";
 
 // Scheduler (macro ticks / policies / world-lens stop conditions)
-import { getPulseSchedulerContext } from "../PULSE-X/PulseWorldScheduler-v17.js";
+import { getPulseSchedulerContext } from "../PULSE-X/PulseWorldScheduler-v20.js";
 
 // Overmind (world-lens / safety / persona mix)
 import { getPulseOvermindContext } from "../PULSE-AI/aiOvermindPrime.js";
+
+// Continuance (GPU continuance physics)
+import {
+  getLastContinuanceState
+} from "../PULSE-CONTINUANCE/PulseContinuance-v16-Immortal-GPU+.js";
+
+// OmniHosting (hosting physics / artery metrics)
+import {
+  getLastOmniHostingState
+} from "../PULSE-HOSTING/PulseOmniHosting-v16-Immortal-GPU+-CI.js";
 
 // Proxy context (IMMORTAL dual-band envelope)
 import {
@@ -185,8 +226,8 @@ import {
 export const PulseBeaconMeshMeta = Object.freeze({
   layer: "BeaconMesh",
   role: "LOCAL_MEMBRANE_SIMULATOR",
-  version: "v16-Immortal-ORGANISM",
-  identity: "PulseBeaconMesh-v16-Immortal-ORGANISM",
+  version: "v20-Immortal-NET",
+  identity: "PulseBeaconMesh-v20-Immortal-NET",
 
   guarantees: Object.freeze({
     deterministic: true,
@@ -220,7 +261,12 @@ export const PulseBeaconMeshMeta = Object.freeze({
     schedulerAware: true,
     overmindAware: true,
     meshOrganismAware: true,
-    proxyAware: true
+    proxyAware: true,
+    worldCoreAware: true,
+    continuanceRiskAware: true,
+    arteryAware: true,
+    multiRadioAware: true,
+    lteAssistAware: true
   })
 });
 
@@ -237,6 +283,13 @@ function stableHash(str) {
   return `bm${h}`;
 }
 
+function clamp01(v) {
+  if (v == null || Number.isNaN(v)) return 0;
+  if (v < 0) return 0;
+  if (v > 1) return 1;
+  return v;
+}
+
 function buildOrganismContext() {
   const expansion = getPulseExpansionContext?.() || {};
   const castle = getPulseCastleContext?.() || {};
@@ -248,6 +301,14 @@ function buildOrganismContext() {
   const runtime = getPulseRuntimeContext?.() || {};
   const scheduler = getPulseSchedulerContext?.() || {};
   const overmind = getPulseOvermindContext?.() || {};
+
+  const worldCoreSnapshot =
+    typeof pulseWorldCore?.snapshotWorld === "function"
+      ? pulseWorldCore.snapshotWorld()
+      : null;
+
+  const continuanceState = getLastContinuanceState?.() || null;
+  const omniHostingState = getLastOmniHostingState?.() || null;
 
   const proxyMeta = {
     context: getProxyContext?.() || null,
@@ -269,6 +330,9 @@ function buildOrganismContext() {
     runtime,
     scheduler,
     overmind,
+    worldCoreSnapshot,
+    continuanceState,
+    omniHostingState,
     meshMeta: PulseMeshMeta,
     binaryMeshMeta: BinaryMeshMeta,
     expansionMeta: PulseExpansionMeta,
@@ -302,8 +366,101 @@ function buildScenarioProfile({
   });
 }
 
+// Multi‑radio profile (symbolic only: Bluetooth + LTE‑assist)
+function burstWindowsDutyCycle(risk, pressure) {
+  const r = Math.max(risk, pressure);
+  if (r >= 0.8) return "short-high";
+  if (r >= 0.6) return "medium-high";
+  if (r >= 0.4) return "medium";
+  return "low";
+}
+
+function buildMultiRadioProfile({
+  densityHint = "medium",
+  demandHint = "medium",
+  meshStatus = "unknown",
+  continuanceRisk = 0,
+  proxyPressure = 0
+} = {}) {
+  const risk = clamp01(continuanceRisk);
+  const pressure = clamp01(proxyPressure);
+
+  let btMode = "signal-low-power"; // signal-low-power | presence-steady | mesh-coop | expansion-lane
+  if (meshStatus === "strong") btMode = "mesh-coop";
+  if (demandHint === "high") btMode = "presence-steady";
+  if (densityHint === "low") btMode = "expansion-lane";
+
+  let lteAssist = "idle"; // idle | assist-light | assist-heavy
+  if (risk >= 0.6 || pressure >= 0.6) {
+    lteAssist = "assist-heavy";
+  } else if (risk >= 0.3 || pressure >= 0.3) {
+    lteAssist = "assist-light";
+  }
+
+  const burstWindows = {
+    enabled: risk >= 0.7 || pressure >= 0.7,
+    reason:
+      risk >= 0.7 || pressure >= 0.7
+        ? "high_risk_or_pressure"
+        : "normal",
+    suggestedDutyCycle: burstWindowsDutyCycle(risk, pressure)
+  };
+
+  return Object.freeze({
+    btMode,
+    lteAssist,
+    burstWindows,
+    meta: {
+      densityHint,
+      demandHint,
+      meshStatus,
+      continuanceRisk: risk,
+      proxyPressure: pressure
+    }
+  });
+}
+
+// Continuance + OmniHosting overlays → global hints patch
+function buildContinuanceOmniHostingOverlay(continuanceState, omniHostingState) {
+  const riskReport = continuanceState?.riskReport || null;
+  const globalRisk = clamp01(riskReport?.globalRisk ?? 0);
+  const fallbackBandLevel = riskReport?.fallbackBandLevel ?? 0;
+  const prewarmHint = riskReport?.prewarmHint || null;
+  const cacheHint = riskReport?.cacheHint || null;
+  const chunkHint = riskReport?.chunkHint || null;
+
+  const artery = omniHostingState?.lastPlacementPlan?.artery ||
+                 omniHostingState?.lastFailoverPlan?.artery ||
+                 null;
+
+  const arteryPressure = clamp01(artery?.pressure ?? 0);
+  const arteryLoad = clamp01(artery?.load ?? 0);
+
+  return Object.freeze({
+    fallbackContext: {
+      fallbackBandLevel
+    },
+    chunkHints: {
+      chunkAggression: chunkHint?.chunkAggression ?? (1 - globalRisk)
+    },
+    cacheHints: {
+      keepHot: cacheHint?.keepHot ?? globalRisk >= 0.4,
+      priority: cacheHint?.priority ?? (globalRisk >= 0.8 ? "critical" : globalRisk >= 0.6 ? "high" : "normal")
+    },
+    prewarmHints: {
+      shouldPrewarm: prewarmHint?.shouldPrewarm ?? globalRisk >= 0.4,
+      reason: prewarmHint?.reason ?? "continuance_overlay"
+    },
+    arteryOverlay: {
+      globalRisk,
+      arteryPressure,
+      arteryLoad
+    }
+  });
+}
+
 // ============================================================================
-// ORGAN: PulseBeaconMesh (v16-Immortal-ORGANISM, Every-Advantage / Shifter)
+// ORGAN: PulseBeaconMesh (v20-Immortal-NET, Every-Advantage / Shifter / NET)
 // ============================================================================
 
 export function PulseBeaconMesh({
@@ -316,7 +473,7 @@ export function PulseBeaconMesh({
     throw new Error("PulseBeaconMesh requires a Beacon Engine instance");
   }
 
-  const log = (...args) => trace && console.log("[PulseBeaconMesh v16]", ...args);
+  const log = (...args) => trace && console.log("[PulseBeaconMesh v20]", ...args);
 
   const snapshotMeta = Object.freeze({
     engineIdentity: beacon?.meta?.identity ?? null,
@@ -408,6 +565,11 @@ export function PulseBeaconMesh({
       meshAdvantage.fallbackBandLevel ??
       0;
 
+    const continuanceOverlay = buildContinuanceOmniHostingOverlay(
+      ctx.continuanceState,
+      ctx.omniHostingState
+    );
+
     return Object.freeze({
       advantageScore:
         touch.advantageScore ??
@@ -425,7 +587,11 @@ export function PulseBeaconMesh({
 
       proxyPressure: proxyMeta.pressure ?? 0,
       proxyBoost: proxyMeta.boost ?? 0,
-      proxyFallback: !!proxyMeta.fallback
+      proxyFallback: !!proxyMeta.fallback,
+
+      continuanceGlobalRisk: continuanceOverlay.arteryOverlay.globalRisk,
+      arteryPressure: continuanceOverlay.arteryOverlay.arteryPressure,
+      arteryLoad: continuanceOverlay.arteryOverlay.arteryLoad
     });
   }
 
@@ -450,6 +616,11 @@ export function PulseBeaconMesh({
       hotPages.includes(page) ||
       hotChunkProfiles.includes(chunkProfile);
 
+    const continuanceOverlay = buildContinuanceOmniHostingOverlay(
+      ctx.continuanceState,
+      ctx.omniHostingState
+    );
+
     return Object.freeze({
       page,
       mode,
@@ -457,7 +628,9 @@ export function PulseBeaconMesh({
       shouldPrewarm,
       hotPages,
       hotChunkProfiles,
-      worldLens: overmind.worldLens || null
+      worldLens: overmind.worldLens || null,
+      continuancePrewarm: continuanceOverlay.prewarmHints,
+      continuanceChunkHints: continuanceOverlay.chunkHints
     });
   }
 
@@ -509,6 +682,19 @@ export function PulseBeaconMesh({
     const meshPressureIndex =
       meshSnapshot?.densityHealth?.metrics?.meshPressureIndex ?? 0;
 
+    const continuanceOverlay = buildContinuanceOmniHostingOverlay(
+      organismContext.continuanceState,
+      organismContext.omniHostingState
+    );
+
+    const multiRadioProfile = buildMultiRadioProfile({
+      densityHint: scenario.densityHint,
+      demandHint: scenario.demandHint,
+      meshStatus: scenario.meshStatus,
+      continuanceRisk: continuanceOverlay.arteryOverlay.globalRisk,
+      proxyPressure: clamp01(organismContext.proxyMeta?.pressure ?? 0)
+    });
+
     return Object.freeze({
       meta: PulseBeaconMeshMeta,
       snapshotMeta,
@@ -521,13 +707,15 @@ export function PulseBeaconMesh({
       meshPressureIndex,
       meshSnapshot,
       binaryMeshSnapshot,
-      organismContext
+      organismContext,
+      continuanceOverlay,
+      multiRadioProfile
     });
   }
 
   // ---------------------------------------------------------------------------
   // 4. Beacon Engine Surface (no mutation, pure calls)
-  // ---------------------------------------------------------------------------
+// ---------------------------------------------------------------------------
   function buildBeaconRequest() {
     const membraneInput = buildMembraneInput();
 
@@ -538,7 +726,7 @@ export function PulseBeaconMesh({
   }
 
   // ---------------------------------------------------------------------------
-  // 5. Composite Field (presence/band/advantage/chunk + proxy)
+  // 5. Composite Field (presence/band/advantage/chunk + proxy + multi-radio)
 // ---------------------------------------------------------------------------
   function buildCompositeField() {
     const membraneInput = buildMembraneInput();
@@ -547,6 +735,7 @@ export function PulseBeaconMesh({
     const chunkPrewarmField = membraneInput.chunkPlanHints;
     const organismCtx = membraneInput.organismContext;
     const proxyMeta = organismCtx.proxyMeta || {};
+    const multiRadioProfile = membraneInput.multiRadioProfile;
 
     const presenceTier =
       presenceField?.presenceTier ??
@@ -591,9 +780,11 @@ export function PulseBeaconMesh({
       proxyMode,
       proxyLineage,
 
+      multiRadioProfile,
+
       organismContext: organismCtx,
       compositeSignature: stableHash(
-        `COMPOSITE::${presenceTier}::${advantageBand}::${meshStrength}::${meshPressureIndex}::${chunkPriority}::${proxyMode}::${proxyPressure}`
+        `COMPOSITE::${presenceTier}::${advantageBand}::${meshStrength}::${meshPressureIndex}::${chunkPriority}::${proxyMode}::${proxyPressure}::${multiRadioProfile?.btMode || "na"}`
       )
     });
   }
@@ -762,6 +953,8 @@ export function PulseBeaconMesh({
       serverMeta: PulseServerMeta,
       routerMeta: PulseRouterMeta,
       proxyMeta: membraneInput.organismContext.proxyMeta,
+      continuanceOverlay: membraneInput.continuanceOverlay,
+      multiRadioProfile: membraneInput.multiRadioProfile,
       organismContext: membraneInput.organismContext
     });
   }

@@ -1,74 +1,90 @@
+// FILE: tropic-pulse-functions/PULSE-WORLD/PULSE-X/PulseWorldGenome-v20-IMMORTAL.js
 /* global log, warn, error */
+
 // ============================================================================
-//  PULSE-WORLD GENOME — UNIVERSAL HELPER CORTEX (v17 IMMORTAL)
-//  FILE: PULSE-WORLD/PULSE-WORLD/PULSE-X/PulseWorldGenome.js
-//
+//  PULSE-WORLD GENOME ORGAN — PulseWorldGenome (v20 IMMORTAL)
+//  World-layer deterministic service organ
 //  ROLE:
-//    • World-layer helper cortex for all backend logic
-//    • Provides core deterministic helpers (fetch, geo, country, parsing)
-//    • Auto-loads + auto-caches additional helpers from long-term memory
-//    • Re-exports world data genome (admin/db/storage) as pass-through
-//    • Abstracts “world data” so we can target Firebase OR SQL
-//    • Safe to import from ANY backend function
-//
-//  LAYERS:
-//    • World layer (PULSE-WORLD)
-//    • Above backend organs (PULSE-BAND, PULSE-X)
-//    • Above storage/data organs (Firebase genome, SQL, etc.)
-//
-//  MEMORY MODE (C):
-//    • If a helper is missing locally, attempt to load from:
-//        - PULSE-WORLD/PULSE-CORE
-//        - PULSE-WORLD/PULSE-MEMORY (if present)
-//        - PULSE-WORLD/PULSE-BAND/PULSE-X (world engine helpers)
-//    • Cache loaded helpers in-memory for this cold start
-//    • Subsequent calls are instant
-//
-//  SAFETY:
-//    • No raw external fetch for JSON — must route through world engine / proxy
-//    • Deterministic, drift-proof, zero-mutation
-// ============================================================================
-// ============================================================================
-// FILE: /PULSE-X/PULSE-WORLD/PulseWorldGenome-v17.js
-// PULSE OS v17 — WORLD GENOME (Social Graph Only)
-// Deterministic • Metadata‑Only • IMMORTAL
+//    - Single world-genome surface for:
+//        • Data genome (Firebase / SQL / future backends)
+//        • Social graph organ
+//        • World helpers (geo, comms, payouts, hashing, routing)
+//        • World prewarm + health
+//    - Deterministic, drift-proof, dual-band, cache-aware.
+//    - No direct raw fetch except via routed world engine.
 // ============================================================================
 
 /*
-AI_EXPERIENCE_META = {
+GENOME_META = {
   identity: "PulseWorldGenome",
-  version: "v17-IMMORTAL",
-  layer: "world",
-  role: "world_genome_conductor",
-  lineage: "PulseWorld-v15 → PulseWorld-v17",
+  version: "v20-IMMORTAL",
+  epoch: "v20-IMMORTAL",
+  layer: "world_layer",
+  role: "world_genome",
+  lineage: "PulseOS-v14 → v16-IMMORTAL → v17-IMMORTAL → v20-IMMORTAL",
 
   evo: {
-    worldGenome: true,
-    socialGraphAware: true,
     deterministic: true,
     driftProof: true,
-    metadataOnly: true,
-    zeroNetwork: true,
-    zeroFilesystem: true,
-    zeroMutationOfInput: true
+    zeroMutation: true,
+    zeroExternalMutation: true,
+
+    worldLayerOrgan: true,
+    founderAligned: true,
+    presenceAware: true,
+    bandAware: true,
+    proxyAware: true,
+    safeInit: true,
+    singleInstance: true,
+    coldStartSafe: true,
+    healthAware: true,
+    namespaceAware: true,
+    cacheAware: true,
+    prewarmAware: true,
+    geoAware: true,
+    intellHashAware: true,
+    binaryAware: true,
+    schedulerAware: true,
+    runtimeV20Aware: true
   },
 
-  contract: {
-    always: [
-      "PulseWorldSocialGraph"
+  placement: {
+    requiredFolder: "PULSE-WORLD",
+    requiredSubsystem: "world_engine",
+    naturalLanguageHook: [
+      "world connection",
+      "world engine",
+      "backend connection",
+      "backend engine",
+      "firebase genome",
+      "world data",
+      "world memory",
+      "world genome",
+      "world helpers"
+    ]
+  },
+
+  notifications: {
+    onMisplacement: "adaptive",
+    adminEmail: [
+      "fordfamilydistribution@gmail.com",
+      "aldwynfox101@gmail.com",
+      "sales@tropicpulse.bz"
     ],
-    never: [
-      "safeRoute",
-      "fetchViaCNS",
-      "dynamicImport",
-      "eval",
-      "Function"
+    adminSMS: "+15096077261",
+    adminMessenger: [
+      "+15096077261",
+      "aldwynfox101@gmail.com"
     ]
   }
 }
 */
 
-// Data genome (Firebase owner)
+// ============================================================================
+//  IMPORTS — DATA GENOME + SPECS + TRANSLATORS + SOCIAL GRAPH
+// ============================================================================
+
+// Data genome (Firebase owner, v20)
 import {
   PulseWorldFirebaseGenome,
   admin as FirebaseAdmin,
@@ -76,7 +92,7 @@ import {
   storage as FirebaseStorage,
   checkWorldDataHealth,
   appendWorldSnapshot
-} from "./PulseWorldFirebaseGenome-v17.js";
+} from "./PulseWorldFirebaseGenome-v20.js";
 
 // Specs genome (schema + DNAs)
 import * as PulseSpecsDNAGenome from "../PULSE-SPECS/PulseSpecsDNAGenome-v17.js";
@@ -87,214 +103,23 @@ import * as PulseTranslatorRNAOutput from "../PULSE-TRANSLATOR/PulseTranslatorRN
 import * as PulseTranslatorSkeletalIntake from "../PULSE-TRANSLATOR/PulseTranslatorSkeletalIntake-v17.js";
 import * as PulseTranslatorSkeletalOutput from "../PULSE-TRANSLATOR/PulseTranslatorSkeletalOutput-v17.js";
 
+// Social graph organ
 import { createPulseWorldSocialGraph } from "./PulseWorldSocialGraph-v17.js";
 
 // ============================================================================
-// WORLD GENOME (v17 IMMORTAL)
-// ============================================================================
-export function createPulseWorldGenome({ PowerUserRanking, log, warn, error } = {}) {
-  // Create the world social graph organ
-  const socialGraph = createPulseWorldSocialGraph({
-    PowerUserRanking,
-    log,
-    warn,
-    error
-  });
-
-  // Genome metadata
-  const meta = {
-    layer: "PulseWorldGenome",
-    role: "WORLD_GENOME",
-    version: "v17-IMMORTAL",
-    organs: {
-      socialGraph: socialGraph.meta
-    }
-  };
-
-  // IMMORTAL genome object
-  return Object.freeze({
-    meta,
-    socialGraph
-  });
-}
-
-
-// ============================================================================
-//  WORLD-LAYER DATA BINDINGS (PASS-THROUGH)
+//  LOCAL CACHES (WORLD-LAYER)
 // ============================================================================
 
-export const admin = FirebaseAdmin;
-export const db = FirebaseDB;
-export const storage = FirebaseStorage;
-
-// ============================================================================
-//  BACKEND ABSTRACTION — FIREBASE OR SQL (OR OTHER)
-// ============================================================================
-
-const WORLD_DATA_BACKEND =
-  process.env.PULSE_WORLD_BACKEND || "firebase"; // "firebase" | "sql" | "mock"
-
-let sqlClient = null;
-
-// Lazy-load SQL client if needed (placeholder; you wire real client)
-async function getSqlClient() {
-  if (WORLD_DATA_BACKEND !== "sql") return null;
-  if (sqlClient) return sqlClient;
-
-  try {
-    const mod = await import("../PULSE-BAND/PULSE-DATA/PulseSqlClient.js");
-    sqlClient = mod.default || mod.sqlClient || mod;
-    return sqlClient;
-  } catch (err) {
-    warn?.("⚠️ [PulseWorldGenome] SQL client load failed:", err?.message || err);
-    return null;
-  }
-}
-
-/**
- * WorldDataProvider — unified interface:
- *   • respects PulseSpecsDNAGenome
- *   • uses Translators to map to/from backend shapes
- *   • routes to Firebase OR SQL based on WORLD_DATA_BACKEND
- */
-export const WorldDataProvider = Object.freeze({
-  backend: WORLD_DATA_BACKEND,
-
-  async getCollection(dnaName) {
-    const dna = PulseSpecsDNAGenome?.getDNA?.(dnaName) || null;
-    if (!dna) throw new Error(`Unknown DNA: ${dnaName}`);
-
-    if (WORLD_DATA_BACKEND === "firebase") {
-      const path = PulseTranslatorSkeletalOutput.toFirebasePath(dna);
-      return db.collection(path);
-    }
-
-    if (WORLD_DATA_BACKEND === "sql") {
-      const client = await getSqlClient();
-      if (!client) throw new Error("SQL backend not available");
-      const table = PulseTranslatorSkeletalOutput.toSqlTable(dna);
-      return { client, table };
-    }
-
-    throw new Error(`Unsupported backend: ${WORLD_DATA_BACKEND}`);
-  },
-
-  async create(dnaName, payload) {
-    const dna = PulseSpecsDNAGenome?.getDNA?.(dnaName) || null;
-    if (!dna) throw new Error(`Unknown DNA: ${dnaName}`);
-
-    const intake = PulseTranslatorRNAIntake.fromWorldPayload(dna, payload);
-
-    if (WORLD_DATA_BACKEND === "firebase") {
-      const col = await this.getCollection(dnaName);
-      const docRef = col.doc(intake.id || undefined);
-      await docRef.set(intake.body, { merge: true });
-      return { id: docRef.id };
-    }
-
-    if (WORLD_DATA_BACKEND === "sql") {
-      const { client, table } = await this.getCollection(dnaName);
-      const row = PulseTranslatorSkeletalIntake.toSqlRow(dna, intake);
-      const res = await client.insert(table, row);
-      return PulseTranslatorRNAOutput.toWorldPayload(dna, res);
-    }
-
-    throw new Error(`Unsupported backend: ${WORLD_DATA_BACKEND}`);
-  },
-
-  async get(dnaName, id) {
-    const dna = PulseSpecsDNAGenome?.getDNA?.(dnaName) || null;
-    if (!dna) throw new Error(`Unknown DNA: ${dnaName}`);
-    if (!id) throw new Error("id required");
-
-    if (WORLD_DATA_BACKEND === "firebase") {
-      const col = await this.getCollection(dnaName);
-      const snap = await col.doc(id).get();
-      if (!snap.exists) return null;
-      return PulseTranslatorRNAOutput.fromFirebaseDoc(dna, snap);
-    }
-
-    if (WORLD_DATA_BACKEND === "sql") {
-      const { client, table } = await this.getCollection(dnaName);
-      const row = await client.getById(table, id);
-      if (!row) return null;
-      return PulseTranslatorRNAOutput.fromSqlRow(dna, row);
-    }
-
-    throw new Error(`Unsupported backend: ${WORLD_DATA_BACKEND}`);
-  }
-});
-
-// ============================================================================
-//  INTERNAL PERF CACHES
-// ============================================================================
 const helperCache = new Map();
 const geoCache = new Map();          // key: query|lat|lng → result
 const staticMapCache = new Map();    // key: lat|lng|placeId|label → url
-
-// ============================================================================
-//  HELPER REGISTRY — AUTO-LOAD + AUTO-CACHE (MODE C)
-// ============================================================================
-export async function getHelper(name) {
-  if (!name || typeof name !== "string") {
-    throw new Error("Helper name required");
-  }
-
-  const key = name.trim();
-
-  if (localHelpers[key]) return localHelpers[key];
-  if (helperCache.has(key)) return helperCache.get(key);
-
-  const candidates = [
-    "../../PULSE-CORE/Helpers.js",
-    "../../PULSE-MEMORY/LongTermHelpers.js",
-    "../../PULSE-BAND/PULSE-X/WorldHelpers.js"
-  ];
-
-  for (const path of candidates) {
-    try {
-      const mod = await import(path);
-      if (mod && typeof mod[key] === "function") {
-        helperCache.set(key, mod[key]);
-        return mod[key];
-      }
-    } catch {
-      // ignore and continue
-    }
-  }
-
-  warn?.(`⚠️ [PulseWorldGenome] Missing helper: ${key}`);
-  throw new Error(`Helper not found: ${key}`);
-}
-
-export async function prewarmWorldHelpers() {
-  const hotHelpers = [
-    "safeFetchJson",
-    "searchPlacesText",
-    "geocodeAddress",
-    "fuzzyGeocode",
-    "normalizeCountry",
-    "parseIncomingRequest"
-  ];
-
-  for (const h of hotHelpers) {
-    try {
-      await getHelper(h);
-    } catch {
-      // best-effort only
-    }
-  }
-
-  try {
-    await checkWorldDataHealth?.();
-  } catch {
-    // best-effort
-  }
-}
+const intellHashCache = new Map();   // key: hashKey → { hash, meta }
+const worldDocCache = new Map();     // key: dnaName|id → payload
 
 // ============================================================================
 //  WORLD ROUTING — NO RAW FETCH FOR JSON
 // ============================================================================
+
 async function routeThroughWorldEngine(task, payload) {
   const router =
     globalThis?.PulseWorldRouter ||
@@ -342,6 +167,7 @@ export async function safeFetchJson(url, options = {}) {
 // ============================================================================
 //  GOOGLE HELPERS (PLACES + GEOCODING) — ROUTED + CACHED
 // ============================================================================
+
 export async function searchPlacesText(query, apiKey) {
   const cacheKey = `places:${query}`;
   if (geoCache.has(cacheKey)) return geoCache.get(cacheKey);
@@ -380,6 +206,7 @@ export async function geocodeAddress(address, apiKey) {
 // ============================================================================
 //  FUZZY GEOCODER (Belize-biased)
 // ============================================================================
+
 export async function fuzzyGeocode(venue, apiKey, knownLat = null, knownLng = null) {
   const cleaned = venue.trim();
   const cacheKey = `fuzzy:${cleaned}|${knownLat || ""}|${knownLng || ""}`;
@@ -525,6 +352,7 @@ export async function fuzzyGeocode(venue, apiKey, knownLat = null, knownLng = nu
 // ============================================================================
 //  STATIC MAP URL (CACHED)
 // ============================================================================
+
 export function buildStaticMapUrl(lat, lng, placeId, key, label = "") {
   const cacheKey = `static:${lat}|${lng}|${placeId || ""}|${label || ""}`;
   if (staticMapCache.has(cacheKey)) return staticMapCache.get(cacheKey);
@@ -548,8 +376,50 @@ export function buildStaticMapUrl(lat, lng, placeId, key, label = "") {
 }
 
 // ============================================================================
+//  GEO PROFILE + TRIP HELPERS (WORLD-AWARE)
+// ============================================================================
+
+export async function buildGeoProfile({ venue, apiKey, knownLat = null, knownLng = null, label = "" }) {
+  const fuzzy = await fuzzyGeocode(venue, apiKey, knownLat, knownLng);
+  if (!fuzzy) {
+    return {
+      ok: false,
+      reason: "NO_GEO_MATCH",
+      venue,
+      mapUrl: null,
+      center: null
+    };
+  }
+
+  const lat = fuzzy.geometry.location.lat;
+  const lng = fuzzy.geometry.location.lng;
+  const mapUrl = buildStaticMapUrl(lat, lng, fuzzy.place_id, apiKey, label || "T");
+
+  return {
+    ok: true,
+    venue,
+    formattedAddress: fuzzy.formatted_address,
+    placeId: fuzzy.place_id,
+    center: { lat, lng },
+    mapUrl
+  };
+}
+
+export function buildTripSummary({ originCountry, destinationCountry, nights, guests }) {
+  return {
+    originCountry: normalizeCountry(originCountry),
+    destinationCountry: normalizeCountry(destinationCountry),
+    nights: Number(nights || 0),
+    guests: Number(guests || 1),
+    band: "world_trip",
+    advantageHint: nights >= 5 ? "long_stay" : "short_stay"
+  };
+}
+
+// ============================================================================
 //  COUNTRY NORMALIZER
 // ============================================================================
+
 export function normalizeCountry(input) {
   if (!input) return "BZ";
 
@@ -613,6 +483,7 @@ export function normalizeCountry(input) {
 // ============================================================================
 //  COMMUNICATION + DATE HELPERS
 // ============================================================================
+
 export function parseSMSBoolean(value) {
   if (!value) return false;
   const v = String(value).toLowerCase().trim();
@@ -672,7 +543,7 @@ export function safeDate(value) {
 
 export function calculateReleaseDate(deliveredAt, delayDays = 3) {
   try {
-    if (!deliveredAt || !admin?.firestore) return null;
+    if (!deliveredAt || !FirebaseAdmin?.firestore) return null;
 
     let date;
     if (typeof deliveredAt.toDate === "function") {
@@ -684,15 +555,16 @@ export function calculateReleaseDate(deliveredAt, delayDays = 3) {
     if (isNaN(date.getTime())) return null;
 
     date.setDate(date.getDate() + delayDays);
-    return admin.firestore.Timestamp.fromDate(date);
+    return FirebaseAdmin.firestore.Timestamp.fromDate(date);
   } catch {
     return null;
   }
 }
 
 // ============================================================================
-//  REQUEST PARSER
+//  REQUEST PARSER (EMAIL / WORLD ENTRYPOINT)
 // ============================================================================
+
 export async function parseIncomingRequest(req) {
   log?.("🔵 [parseIncomingRequest] START");
 
@@ -731,8 +603,8 @@ export async function parseIncomingRequest(req) {
   emailType = temp(merged.emailType || merged.type || emailType, "newUser");
   logId = temp(merged.logId || logId, null);
 
-  if (!logId && db) {
-    logId = db.collection("EmailLogs").doc().id;
+  if (!logId && FirebaseDB) {
+    logId = FirebaseDB.collection("EmailLogs").doc().id;
   }
 
   const rawType = (merged.type || "").toLowerCase();
@@ -813,6 +685,7 @@ export async function parseIncomingRequest(req) {
 // ============================================================================
 //  STRIPE PAYOUT SETTINGS
 // ============================================================================
+
 export async function configurePayoutSettings(stripe, accountId, payFrequency, payDay) {
   log?.("🔵 [configurePayoutSettings] START");
 
@@ -830,7 +703,7 @@ export async function configurePayoutSettings(stripe, accountId, payFrequency, p
     return s;
   };
 
-  if (!db || !admin) {
+  if (!FirebaseDB || !FirebaseAdmin) {
     throw new Error("World data genome not available (admin/db missing)");
   }
 
@@ -848,7 +721,7 @@ export async function configurePayoutSettings(stripe, accountId, payFrequency, p
 
     const account = await stripe.accounts.retrieve(accountId);
 
-    const snap = await db
+    const snap = await FirebaseDB
       .collection("Users")
       .where("TPIdentity.stripeAccountID", "==", accountId)
       .limit(1)
@@ -888,7 +761,7 @@ export async function configurePayoutSettings(stripe, accountId, payFrequency, p
 
     await stripe.accounts.update(accountId, payoutSettings);
 
-    const now = admin.firestore.FieldValue.serverTimestamp();
+    const now = FirebaseAdmin.firestore.FieldValue.serverTimestamp();
 
     await userRef.set(
       {
@@ -926,6 +799,7 @@ export async function configurePayoutSettings(stripe, accountId, payFrequency, p
 // ============================================================================
 //  BINARY FETCH + HASH HELPERS
 // ============================================================================
+
 export async function fetchBuffer(url) {
   try {
     const resp = await fetch(url, { redirect: "follow" });
@@ -984,14 +858,51 @@ export async function computeSha256Hex(buffer) {
 }
 
 // ============================================================================
+//  INTELLHASH (WORLD-AWARE HASH PROFILE)
+// ============================================================================
+
+export async function computeIntellHash({ buffer, tag = "generic", contentType = null }) {
+  if (!buffer) return { ok: false, error: "NO_BUFFER" };
+
+  const size =
+    buffer.length ??
+    buffer.byteLength ??
+    (ArrayBuffer.isView(buffer) ? buffer.byteLength : null) ??
+    0;
+
+  const cacheKey = `${tag}|${size}`;
+  if (intellHashCache.has(cacheKey)) {
+    return { ok: true, cached: true, ...intellHashCache.get(cacheKey) };
+  }
+
+  const hash = await computeSha256Hex(buffer);
+  if (!hash) return { ok: false, error: "HASH_FAILED" };
+
+  const profile = {
+    hash,
+    tag,
+    size,
+    contentType: contentType || null,
+    band: "binary",
+    advantageHint: size > 5_000_000 ? "large_asset" : "small_asset"
+  };
+
+  intellHashCache.set(cacheKey, profile);
+  return { ok: true, cached: false, ...profile };
+}
+
+// ============================================================================
 //  LOCAL HELPER REGISTRY (for getHelper)
 // ============================================================================
+
 const localHelpers = {
   safeFetchJson,
   searchPlacesText,
   geocodeAddress,
   fuzzyGeocode,
   buildStaticMapUrl,
+  buildGeoProfile,
+  buildTripSummary,
   normalizeCountry,
   parseSMSBoolean,
   receiveCommunication,
@@ -1000,12 +911,252 @@ const localHelpers = {
   parseIncomingRequest,
   configurePayoutSettings,
   fetchBuffer,
-  computeSha256Hex
+  computeSha256Hex,
+  computeIntellHash
 };
 
 // ============================================================================
-// 📘 PAGE INDEX — END OF FILE
+//  HELPER REGISTRY — AUTO-LOAD + AUTO-CACHE (MODE C)
 // ============================================================================
+
+export async function getHelper(name) {
+  if (!name || typeof name !== "string") {
+    throw new Error("Helper name required");
+  }
+
+  const key = name.trim();
+
+  if (localHelpers[key]) return localHelpers[key];
+  if (helperCache.has(key)) return helperCache.get(key);
+
+  const candidates = [
+    "../../PULSE-CORE/Helpers.js",
+    "../../PULSE-MEMORY/LongTermHelpers.js",
+    "../../PULSE-BAND/PULSE-X/WorldHelpers.js"
+  ];
+
+  for (const path of candidates) {
+    try {
+      const mod = await import(path);
+      if (mod && typeof mod[key] === "function") {
+        helperCache.set(key, mod[key]);
+        return mod[key];
+      }
+    } catch {
+      // ignore and continue
+    }
+  }
+
+  warn?.(`⚠️ [PulseWorldGenome] Missing helper: ${key}`);
+  throw new Error(`Helper not found: ${key}`);
+}
+
+export async function prewarmWorldHelpers() {
+  const hotHelpers = [
+    "safeFetchJson",
+    "searchPlacesText",
+    "geocodeAddress",
+    "fuzzyGeocode",
+    "normalizeCountry",
+    "parseIncomingRequest",
+    "computeIntellHash"
+  ];
+
+  for (const h of hotHelpers) {
+    try {
+      await getHelper(h);
+    } catch {
+      // best-effort only
+    }
+  }
+
+  try {
+    await checkWorldDataHealth?.();
+  } catch {
+    // best-effort
+  }
+}
+
+// ============================================================================
+//  BACKEND ABSTRACTION — FIREBASE OR SQL (OR OTHER)
+// ============================================================================
+
+const WORLD_DATA_BACKEND =
+  process.env.PULSE_WORLD_BACKEND || "firebase"; // "firebase" | "sql" | "mock"
+
+let sqlClient = null;
+
+// Lazy-load SQL client if needed (placeholder; you wire real client)
+async function getSqlClient() {
+  if (WORLD_DATA_BACKEND !== "sql") return null;
+  if (sqlClient) return sqlClient;
+
+  try {
+    const mod = await import("../PULSE-BAND/PULSE-DATA/PulseSqlClient.js");
+    sqlClient = mod.default || mod.sqlClient || mod;
+    return sqlClient;
+  } catch (err) {
+    warn?.("⚠️ [PulseWorldGenome] SQL client load failed:", err?.message || err);
+    return null;
+  }
+}
+
+/**
+ * WorldDataProvider — unified interface:
+ *   • respects PulseSpecsDNAGenome
+ *   • uses Translators to map to/from backend shapes
+ *   • routes to Firebase OR SQL based on WORLD_DATA_BACKEND
+ *   • v20: worldDocCache-aware
+ */
+export const WorldDataProvider = Object.freeze({
+  backend: WORLD_DATA_BACKEND,
+
+  async getCollection(dnaName) {
+    const dna = PulseSpecsDNAGenome?.getDNA?.(dnaName) || null;
+    if (!dna) throw new Error(`Unknown DNA: ${dnaName}`);
+
+    if (WORLD_DATA_BACKEND === "firebase") {
+      const path = PulseTranslatorSkeletalOutput.toFirebasePath(dna);
+      return FirebaseDB.collection(path);
+    }
+
+    if (WORLD_DATA_BACKEND === "sql") {
+      const client = await getSqlClient();
+      if (!client) throw new Error("SQL backend not available");
+      const table = PulseTranslatorSkeletalOutput.toSqlTable(dna);
+      return { client, table };
+    }
+
+    throw new Error(`Unsupported backend: ${WORLD_DATA_BACKEND}`);
+  },
+
+  async create(dnaName, payload) {
+    const dna = PulseSpecsDNAGenome?.getDNA?.(dnaName) || null;
+    if (!dna) throw new Error(`Unknown DNA: ${dnaName}`);
+
+    const intake = PulseTranslatorRNAIntake.fromWorldPayload(dna, payload);
+
+    if (WORLD_DATA_BACKEND === "firebase") {
+      const col = await this.getCollection(dnaName);
+      const docRef = col.doc(intake.id || undefined);
+      await docRef.set(intake.body, { merge: true });
+
+      const key = `${dnaName}|${docRef.id}`;
+      worldDocCache.set(key, { id: docRef.id, ...intake.body });
+
+      return { id: docRef.id };
+    }
+
+    if (WORLD_DATA_BACKEND === "sql") {
+      const { client, table } = await this.getCollection(dnaName);
+      const row = PulseTranslatorSkeletalIntake.toSqlRow(dna, intake);
+      const res = await client.insert(table, row);
+      const worldPayload = PulseTranslatorRNAOutput.toWorldPayload(dna, res);
+
+      const key = `${dnaName}|${worldPayload.id}`;
+      worldDocCache.set(key, worldPayload);
+
+      return worldPayload;
+    }
+
+    throw new Error(`Unsupported backend: ${WORLD_DATA_BACKEND}`);
+  },
+
+  async get(dnaName, id) {
+    const dna = PulseSpecsDNAGenome?.getDNA?.(dnaName) || null;
+    if (!dna) throw new Error(`Unknown DNA: ${dnaName}`);
+    if (!id) throw new Error("id required");
+
+    const cacheKey = `${dnaName}|${id}`;
+    if (worldDocCache.has(cacheKey)) {
+      return worldDocCache.get(cacheKey);
+    }
+
+    if (WORLD_DATA_BACKEND === "firebase") {
+      const col = await this.getCollection(dnaName);
+      const snap = await col.doc(id).get();
+      if (!snap.exists) return null;
+      const payload = PulseTranslatorRNAOutput.fromFirebaseDoc(dna, snap);
+      worldDocCache.set(cacheKey, payload);
+      return payload;
+    }
+
+    if (WORLD_DATA_BACKEND === "sql") {
+      const { client, table } = await this.getCollection(dnaName);
+      const row = await client.getById(table, id);
+      if (!row) return null;
+      const payload = PulseTranslatorRNAOutput.fromSqlRow(dna, row);
+      worldDocCache.set(cacheKey, payload);
+      return payload;
+    }
+
+    throw new Error(`Unsupported backend: ${WORLD_DATA_BACKEND}`);
+  }
+});
+
+// ============================================================================
+//  WORLD GENOME CREATION (v20 IMMORTAL)
+// ============================================================================
+
+export function createPulseWorldGenome({ PowerUserRanking, log: logger, warn: warner, error: errorLogger } = {}) {
+  // Create the world social graph organ
+  const socialGraph = createPulseWorldSocialGraph({
+    PowerUserRanking,
+    log: logger || log,
+    warn: warner || warn,
+    error: errorLogger || error
+  });
+
+  // Genome metadata
+  const meta = {
+    layer: "PulseWorldGenome",
+    role: "WORLD_GENOME",
+    version: "v20-IMMORTAL",
+    organs: {
+      socialGraph: socialGraph.meta,
+      dataGenome: PulseWorldFirebaseGenome.meta || {
+        role: "WORLD_DATA_GENOME",
+        version: "v20-IMMORTAL"
+      }
+    },
+    backend: WORLD_DATA_BACKEND,
+    cache: {
+      helpers: true,
+      geo: true,
+      staticMaps: true,
+      intellHash: true,
+      worldDocs: true
+    }
+  };
+
+  // IMMORTAL genome object
+  return Object.freeze({
+    meta,
+    socialGraph,
+    dataGenome: PulseWorldFirebaseGenome,
+    worldData: WorldDataProvider,
+    helpers: {
+      getHelper,
+      prewarmWorldHelpers
+    }
+  });
+}
+
+// ============================================================================
+//  EXPORTS — WORLD-LAYER DATA BINDINGS + GENOME INSTANCE
+// ============================================================================
+
+export const admin = FirebaseAdmin;
+export const db = FirebaseDB;
+export const storage = FirebaseStorage;
+
+export {
+  PulseWorldFirebaseGenome,
+  checkWorldDataHealth,
+  appendWorldSnapshot
+};
 
 // Default export instance
 export const pulseWorldGenome = createPulseWorldGenome();
+
+// 📘 PAGE INDEX — END OF FILE

@@ -1,11 +1,21 @@
 // ============================================================================
 //  PULSE INTENT MAP — FOUNDER CONTRACT (v17‑IMMORTAL‑FOUNDER‑INTENT)
-//  Deterministic. Static. Non‑evolvable. Loaded FIRST.
-//  Defines WHAT THE ORGANISM IS ALLOWED TO BE.
-//  Defines the organism’s identity, boundaries, laws, and philosophy.
-//  It is the highest authority in the entire system.
-//  NOTHING overrides this map. NOTHING evolves above it.
+// ----------------------------------------------------------------------------
+//  This file defines the *immutable* identity, boundaries, laws, and philosophy
+//  of the Pulse Organism. It is the FIRST file loaded in the entire system.
+//
+//  • Deterministic
+//  • Static
+//  • Non‑evolvable
+//  • Anti‑mutation
+//  • Anti‑override
+//
+//  NOTHING overrides this map.
+//  NOTHING evolves above this map.
 //  NOTHING may mutate, rewrite, reinterpret, or bypass this map.
+//
+//  This is the ROOT LAW of the organism.
+//  This is the FOUNDER CONTRACT.
 // ============================================================================
 
 /*
@@ -16,10 +26,10 @@ AI_EXPERIENCE_META = {
   role: "pre_brain_pre_organism_law_map",
   lineage: "PulseOS-v14 → PulseOS-v16-IMMORTAL → PulseOS-v17-IMMORTAL",
 
+  // ==========================================================================
+  //  FOUNDER INTENT — THE ROOT OF THE ENTIRE ORGANISM
+  // ==========================================================================
   evo: {
-    // -----------------------------------------------------------------------
-    //  FOUNDER LAW — THE ROOT OF THE ENTIRE ORGANISM
-    // -----------------------------------------------------------------------
     founderIntent: true,
     immutable: true,
     antiMutation: true,
@@ -28,9 +38,9 @@ AI_EXPERIENCE_META = {
     deterministic: true,
     driftProof: true,
 
-    // -----------------------------------------------------------------------
+    // ------------------------------------------------------------------------
     //  LOAD ORDER — NOTHING MAY LOAD BEFORE THIS MAP
-    // -----------------------------------------------------------------------
+    // ------------------------------------------------------------------------
     preOrganism: true,
     preBrain: true,
     preConsciousness: true,
@@ -43,18 +53,18 @@ AI_EXPERIENCE_META = {
     preDualBand: true,
     prePulseNet: true,
 
-    // -----------------------------------------------------------------------
+    // ------------------------------------------------------------------------
     //  ZERO‑RISK GUARANTEES
-    // -----------------------------------------------------------------------
+    // ------------------------------------------------------------------------
     zeroNetworkFetch: true,
     zeroExternalIO: true,
     zeroExternalMutation: true,
     zeroMutationOfInput: true,
     safeRouteFree: true,
 
-    // -----------------------------------------------------------------------
+    // ------------------------------------------------------------------------
     //  AWARENESS FLAGS (NON‑MUTATING)
-    // -----------------------------------------------------------------------
+    // ------------------------------------------------------------------------
     trustFabricAware: true,
     juryAware: true,
     evidenceFabricAware: true,
@@ -68,14 +78,18 @@ AI_EXPERIENCE_META = {
     proxyAware: true,
     pulseNetAware: true,
 
-    // v17 WORLD ARCHITECTURE AWARENESS
+    // ------------------------------------------------------------------------
+    //  v17 WORLD‑LAYER AWARENESS
+    // ------------------------------------------------------------------------
     pulseWorldAware: true,
     pulseUIAware: true,
     pulseBandAware: true,
     pulseXAware: true,
     proxyBoundaryAware: true,
 
-    // v17 SUBSYSTEM AWARENESS (THE ORIGINAL COLONIES)
+    // ------------------------------------------------------------------------
+    //  v17 SUBSYSTEM AWARENESS (THE ORIGINAL COLONIES)
+    // ------------------------------------------------------------------------
     pulseCoreAware: true,
     pulseDesignAware: true,
     pulseEngineAware: true,
@@ -93,11 +107,12 @@ AI_EXPERIENCE_META = {
     pulseTrustAware: true
   },
 
+  // ==========================================================================
+  //  CONTRACT — SYSTEMS THAT MUST OBEY FOUNDER INTENT
+  // ==========================================================================
   contract: {
-    // -----------------------------------------------------------------------
-    //  SYSTEMS THAT MUST OBEY FOUNDER INTENT
-    // -----------------------------------------------------------------------
     always: [
+      // Core organism maps
       "OrganismMap",
       "IQMap",
       "PulseOSLoader",
@@ -110,11 +125,15 @@ AI_EXPERIENCE_META = {
       "PulseRouter",
       "PulseBinaryRouter",
       "PulseAIWorldCore",
+
+      // Trust fabric
       "PulseTrustEvidence",
       "PulseTrustJuryFrame",
       "PulseTrustJuryCouncil",
       "PulseTrustJuryBoxCamera",
       "PulseTrustCreatorFlags",
+
+      // Dual‑band kernel
       "DualBandKernel",
       "PulseNetProxySpine",
 
@@ -129,13 +148,13 @@ AI_EXPERIENCE_META = {
       "PulseWorldState",
       "PulseWorldPresence",
 
-      // v17 PROXY MEMORY
+      // Proxy memory
       "PulseProxyMemoryRouter"
     ],
 
-    // -----------------------------------------------------------------------
-    //  ABSOLUTE PROHIBITIONS
-    // -----------------------------------------------------------------------
+    // ------------------------------------------------------------------------
+    //  ABSOLUTE PROHIBITIONS — MAY NEVER BE LOADED OR EXECUTED
+    // ------------------------------------------------------------------------
     never: [
       "legacyIntentMap",
       "runtimeIntentRewrite",
@@ -144,6 +163,8 @@ AI_EXPERIENCE_META = {
       "fetchViaCNS",
       "dynamicIntent",
       "evolutionIntentRewrite",
+
+      // External IO prohibitions
       "directInternetAccess",
       "directExternalFetch",
       "externalNetworkIO",
@@ -154,6 +175,7 @@ AI_EXPERIENCE_META = {
   }
 }
 */
+
 
 
 export const PulseIntentMap = {

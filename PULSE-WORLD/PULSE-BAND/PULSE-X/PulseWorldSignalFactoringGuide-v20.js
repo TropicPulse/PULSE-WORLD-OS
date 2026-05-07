@@ -1,77 +1,49 @@
 // ============================================================================
-// FILE: PulseSignalFactoringGuide-v16-IMMORTAL-INTEL.js
-// [pulse:guide] SIGNAL FACTORING GUIDE — v16‑IMMORTAL‑INTEL‑BASEFORMULA‑ATLAS
+// FILE: PulseSignalFactoringGuide-v20-IMMORTAL-INTEL-ADVANTAGE.js
+// [pulse:guide] SIGNAL FACTORING GUIDE — v20++ IMMORTAL INTEL + ADVANTAGE ATLAS
 // ----------------------------------------------------------------------------
 // ROLE:
 //   • Read‑only “atlas” over Mesh + Earn signal factoring surfaces.
-//   • Provides a deterministic, in‑memory BaseFormula registry keyed by
-//     baseFormulaKey (INTEL hash) from Mesh/Earn factoring layers.
-//   • Does NOT perform routing or compute; only describes matches + hints.
-//   • Bridges your math vision (/2, base formulas, cheat‑sheet) into a
-//     reusable organ that any layer can consult.
+//   • Deterministic BaseFormula registry keyed by baseFormulaKey (INTEL hash).
+//   • CNS/Band‑aware + Advantage‑aware (pressure, load, latency).
+//   • Emits factoring hints: chunking, prewarm, cache tier, GPU batch style.
+//   • ER‑ready: guide surfaces can be embedded into Evidential Records v20.
+//   • Zero mutation of inputs; metadata‑only; drift‑proof.
 // ----------------------------------------------------------------------------
-// SAFETY CONTRACT (IMMORTAL v16‑INTEL):
-//   • No payload mutation beyond meta/flags.guide* fields.
+// SAFETY CONTRACT (IMMORTAL v20 INTEL+ADVANTAGE):
+//   • No payload mutation beyond meta/flags.signalFactoringGuide* fields.
 //   • No routing influence (metadata only; routers MAY read but not obey).
-//   • No randomness, no timestamps.
+//   • No randomness, no timestamps, no async.
 //   • No external I/O, no FS, no network.
-//   • Zero async, zero side‑effects outside target.meta/flags.
-//   • Deterministic‑field: identical input → identical output.
-//   • Drift‑proof: stable across versions.
+//   • Deterministic-field: identical input → identical output.
+//   • Drift-proof: stable across versions.
+//   • CNS-aware + advantage-aware, but never controlling them.
 // ============================================================================
 
-/*
-AI_EXPERIENCE_META = {
-  identity: "PulseSignalFactoringGuide",
-  version: "v16-IMMORTAL-INTEL",
-  layer: "guide",
+export const PulseSignalFactoringGuideMeta = Object.freeze({
+  id: "PulseSignalFactoringGuide-v20++-ADVANTAGE",
+  version: "20.1.0",
   role: "signal_factoring_guide",
-  lineage: "PulseSignalFactoringGuide-v1 → v16-IMMORTAL-INTEL",
-
-  evo: {
-    signalFactoringAware: true,
-    meshFactoringAware: true,
-    earnFactoringAware: true,
-    baseShapeAware: true,
-    baseFormulaKeyAware: true,
-    patternMatchSurface: true,
-
-    deterministic: true,
-    deterministicField: true,
-    driftProof: true,
-    multiInstanceReady: true,
-    selfRepairable: true,
-
-    zeroNetwork: true,
-    zeroFilesystem: true,
-    zeroAsync: true,
-    zeroRandomness: true,
-    zeroMutationOfInput: true,
-    zeroRoutingInfluence: true
+  mind: false,
+  description:
+    "IMMORTAL INTEL + ADVANTAGE atlas for Mesh/Earn factoring. CNS-aware, ER-ready, chunk/cache/GPU-hinting.",
+  identity: {
+    type: "organ",
+    name: "PulseSignalFactoringGuide",
+    band: "intel",
+    mind: false,
+    immutable: true
   },
-
-  contract: {
-    always: [
-      "PulseMeshSignalFactoring",
-      "PulseEarnSignalFactoring",
-      "PulseMesh",
-      "PulseEarnHeart",
-      "PulseEarnMetabolism",
-      "PulseMeshEcho"
-    ],
-    never: [
-      "userScript",
-      "dynamicEval",
-      "legacyFactoringGuide"
-    ]
+  schema: {
+    snapshotType: "signal_factoring_guide",
+    categories: ["RAW_AI"],
+    erReady: true
   }
-}
-*/
+});
 
 // ============================================================================
-// HASH HELPERS (INTEL‑aligned, but only used for internal tagging)
+// HASH HELPERS (INTEL‑aligned)
 // ============================================================================
-
 function computeHash(str) {
   let h = 0;
   const s = String(str || "");
@@ -92,31 +64,10 @@ function computeHashIntelligence(payload) {
 }
 
 // ============================================================================
-// BASE FORMULA REGISTRY (in‑memory, deterministic, process‑local)
+// BASE FORMULA REGISTRY (IMMORTAL, deterministic, process‑local)
 // ============================================================================
-//
-// This is your “cheat‑sheet” shelf. It is intentionally simple and
-// deterministic: no timestamps, no random IDs, no IO. You can seed it at
-// boot with known formulas, or let higher‑level code call registerBaseFormula.
-// ============================================================================
-
 const _baseFormulaRegistry = Object.create(null);
 
-/**
- * Register a base formula under a baseFormulaKey.
- *
- * baseFormulaKey: INTEL hash from Mesh/Earn factoring (string).
- * descriptor: {
- *   name: string,
- *   version: string,
- *   layerHint: "mesh" | "earn" | "any",
- *   description: string,
- *   tags: string[],
- *   mathShape: string,        // e.g. "O(n log n)", "ax^2+bx+c", "FFT-like"
- *   factorPattern: string,    // e.g. "/2 recursion", "divide-and-conquer"
- *   notes: string
- * }
- */
 export function registerBaseFormula(baseFormulaKey, descriptor) {
   if (!baseFormulaKey || typeof baseFormulaKey !== "string") return;
   if (!descriptor || typeof descriptor !== "object") return;
@@ -124,9 +75,10 @@ export function registerBaseFormula(baseFormulaKey, descriptor) {
   const safeDescriptor = {
     name: String(descriptor.name || "unnamed_formula"),
     version: String(descriptor.version || "v1"),
-    layerHint: descriptor.layerHint === "mesh" || descriptor.layerHint === "earn"
-      ? descriptor.layerHint
-      : "any",
+    layerHint:
+      descriptor.layerHint === "mesh" || descriptor.layerHint === "earn"
+        ? descriptor.layerHint
+        : "any",
     description: String(descriptor.description || ""),
     tags: Array.isArray(descriptor.tags)
       ? descriptor.tags.map(t => String(t))
@@ -139,18 +91,12 @@ export function registerBaseFormula(baseFormulaKey, descriptor) {
   _baseFormulaRegistry[baseFormulaKey] = safeDescriptor;
 }
 
-/**
- * Lookup a base formula by key.
- */
 export function lookupBaseFormula(baseFormulaKey) {
   if (!baseFormulaKey || typeof baseFormulaKey !== "string") return null;
   const entry = _baseFormulaRegistry[baseFormulaKey];
   return entry ? { key: baseFormulaKey, ...entry } : null;
 }
 
-/**
- * List all registered base formulas (for diagnostics / introspection).
- */
 export function listBaseFormulas() {
   return Object.keys(_baseFormulaRegistry).map(key => ({
     key,
@@ -159,20 +105,14 @@ export function listBaseFormulas() {
 }
 
 // ============================================================================
-// FACTORING SNAPSHOT EXTRACTORS
-// ============================================================================
-//
-// These helpers read Mesh/Earn factoring meta and normalize them into a
-// common "snapshot" shape so the guide can reason symmetrically.
+// FACTORING SNAPSHOT EXTRACTORS (Mesh/Earn)
 // ============================================================================
 
 function extractMeshFactoringSnapshot(impulse) {
-  const meta = impulse?.meta?.signalFactoring || impulse?.meta?.earnSignalFactoring || {};
+  const meta = impulse?.meta?.signalFactoring || {};
   const profile = meta.profile || {};
-  const bandBinaryWave = meta.bandBinaryWave || {};
   const advantageField = meta.advantageField || {};
-  const baseShapeSurface = meta.baseShapeSurface || {};
-  const baseFormulaKey = meta.baseFormulaKey || baseShapeSurface.baseFormulaKey || null;
+  const bandBinaryWave = meta.bandBinaryWave || {};
 
   return {
     layer: "mesh",
@@ -182,25 +122,21 @@ function extractMeshFactoringSnapshot(impulse) {
     stride: profile.stride ?? 1,
     presenceTier: profile.presenceTier || "idle",
     presenceBand: profile.presenceBand || profile.band || "symbolic",
-    auraBias: profile.auraBias ?? 0,
-    meshBias: profile.meshBias ?? 0,
-    flowBias: profile.flowBias ?? 0,
     jobCount: profile.jobCount ?? 0,
     cachePriority: profile.cachePriority || "normal",
     prewarmNeeded: !!profile.prewarmNeeded,
-    bandBinaryWave,
+    baseFormulaKey: meta.baseFormulaKey || null,
+    baseShapeSurface: meta.baseShapeSurface || {},
     advantageField,
-    baseShapeSurface,
-    baseFormulaKey
+    bandBinaryWave
   };
 }
 
 function extractEarnFactoringSnapshot(page) {
   const meta = page?.meta?.earnSignalFactoring || {};
   const profile = meta.profile || {};
-  const bandBinaryWave = meta.bandBinaryWave || {};
   const advantageField = meta.advantageField || {};
-  const baseFormulaKey = meta.baseFormulaKey || null; // Earn may add this later
+  const bandBinaryWave = meta.bandBinaryWave || {};
 
   return {
     layer: "earn",
@@ -213,42 +149,110 @@ function extractEarnFactoringSnapshot(page) {
     jobCount: profile.jobCount ?? 0,
     cachePriority: profile.cachePriority || "normal",
     prewarmNeeded: !!profile.prewarmNeeded,
-    bandBinaryWave,
-    advantageField,
+    baseFormulaKey: meta.baseFormulaKey || null,
     baseShapeSurface: meta.baseShapeSurface || {},
-    baseFormulaKey
+    advantageField,
+    bandBinaryWave
   };
 }
 
 // ============================================================================
-// GUIDE DECISION SURFACE
-// ============================================================================
-//
-// Given a factoring snapshot + optional baseFormula match, we build a
-// "guide surface" that describes how strongly this impulse/page should
-// try to snap to a known base formula, and what style of factoring it
-// is likely to benefit from.
+// ADVANTAGE‑AWARE HINTS (chunk, cache, GPU, prewarm)
 // ============================================================================
 
-function buildGuideSurface(snapshot, baseFormula) {
+function buildAdvantageHints(snapshot, baseFormula, bandSnapshot) {
+  const pressure = snapshot.pressure || 0;
+  const depth = snapshot.depth || 0;
+  const jobCount = snapshot.jobCount || 0;
+  const cachePriority = snapshot.cachePriority || "normal";
+  const prewarmNeeded = !!snapshot.prewarmNeeded;
+
+  const bandMode = bandSnapshot?.mode ?? "normal";
+  const bandLevel = bandSnapshot?.bandLevel ?? null;
+  const fallbackLevel = bandSnapshot?.fallbackLevel ?? 0;
+
+  // Chunking hint
+  let chunkStrategy = "none";
+  if (jobCount >= 64 || depth >= 2) {
+    chunkStrategy = "sharded_chunks";
+  } else if (jobCount >= 16) {
+    chunkStrategy = "medium_chunks";
+  }
+
+  // Cache tier hint
+  let cacheTier = "cold";
+  if (cachePriority === "high" || pressure >= 0.5) cacheTier = "hot";
+  else if (cachePriority === "normal" && pressure >= 0.2) cacheTier = "warm";
+
+  // GPU batch hint
+  let gpuBatchStyle = "none";
+  if (snapshot.layer === "mesh" && jobCount >= 32) {
+    gpuBatchStyle = "warp_aligned";
+  } else if (snapshot.layer === "earn" && jobCount >= 16) {
+    gpuBatchStyle = "batched_jobs";
+  }
+
+  // Prewarm hint
+  const prewarmHint = prewarmNeeded || pressure >= 0.4;
+
+  // Band risk hint
+  const bandRisk =
+    bandMode === "high_risk" ||
+    bandMode === "offline_biased" ||
+    fallbackLevel > 0;
+
+  return {
+    chunkStrategy,
+    cacheTier,
+    gpuBatchStyle,
+    prewarmHint,
+    bandMode,
+    bandLevel,
+    fallbackLevel,
+    bandRisk,
+    baseFormulaKey: snapshot.baseFormulaKey || null,
+    baseFormulaName: baseFormula?.name || null
+  };
+}
+
+// ============================================================================
+// GUIDE DECISION SURFACE (IMMORTAL INTEL + ADVANTAGE)
+// ============================================================================
+
+function buildGuideSurface(snapshot, baseFormula, bandSnapshot) {
   const hasFormula = !!baseFormula;
   const pressure = snapshot.pressure || 0;
   const depth = snapshot.depth || 0;
   const stride = snapshot.stride || 1;
   const signal = snapshot.signal || 0;
 
+  // Snap intent
   let snapIntent = "none";
-  if (hasFormula && signal === 1 && pressure >= 0.2) {
-    snapIntent = "strong";
-  } else if (hasFormula && pressure >= 0.1) {
-    snapIntent = "weak";
-  }
+  if (hasFormula && signal === 1 && pressure >= 0.2) snapIntent = "strong";
+  else if (hasFormula && pressure >= 0.1) snapIntent = "weak";
 
+  // Factoring style
   let factoringStyle = "none";
   if (signal === 1 && depth >= 1) {
-    if (stride <= 0.5) factoringStyle = "divide_and_conquer";
-    else factoringStyle = "shallow_factoring";
+    factoringStyle =
+      stride <= 0.5 ? "divide_and_conquer" : "shallow_factoring";
   }
+
+  // CNS band context
+  const bandContext = bandSnapshot
+    ? {
+        bandLevel: bandSnapshot.bandLevel ?? null,
+        fallbackLevel: bandSnapshot.fallbackLevel ?? null,
+        mode: bandSnapshot.mode ?? null
+      }
+    : null;
+
+  // Advantage hints (chunk/cache/GPU/prewarm/bandRisk)
+  const advantageHints = buildAdvantageHints(
+    snapshot,
+    baseFormula,
+    bandSnapshot
+  );
 
   const guidePayload = {
     layer: snapshot.layer,
@@ -265,7 +269,9 @@ function buildGuideSurface(snapshot, baseFormula) {
     baseFormulaName: baseFormula?.name || null,
     baseFormulaVersion: baseFormula?.version || null,
     baseFormulaMathShape: baseFormula?.mathShape || null,
-    baseFormulaPattern: baseFormula?.factorPattern || null
+    baseFormulaPattern: baseFormula?.factorPattern || null,
+    bandContext,
+    advantageHints
   };
 
   const classicString =
@@ -275,17 +281,16 @@ function buildGuideSurface(snapshot, baseFormula) {
     `::STRIDE:${stride}` +
     `::SNAP:${snapIntent}` +
     `::STYLE:${factoringStyle}` +
-    `::FORMULA:${guidePayload.baseFormulaKey || "NONE"}`;
+    `::FORMULA:${guidePayload.baseFormulaKey || "NONE"}` +
+    `::CACHE:${advantageHints.cacheTier}` +
+    `::CHUNK:${advantageHints.chunkStrategy}`;
 
-  const sig = {
+  const signatures = {
     intel: computeHashIntelligence(guidePayload),
     classic: computeHash(classicString)
   };
 
-  return {
-    guidePayload,
-    signatures: sig
-  };
+  return { guidePayload, signatures };
 }
 
 // ============================================================================
@@ -297,18 +302,14 @@ function attachGuideMeta(target, guideSurface) {
   target.meta = target.meta || {};
   target.flags = target.flags || {};
 
-  const existing = target.meta.signalFactoringGuide || {};
-  const merged = {
-    ...existing,
-    version: "v16-IMMORTAL-INTEL",
+  target.meta.signalFactoringGuide = {
+    version: PulseSignalFactoringGuideMeta.version,
     layer: "PulseSignalFactoringGuide",
     guidePayload: guideSurface.guidePayload,
     signatures: guideSurface.signatures
   };
 
-  target.meta.signalFactoringGuide = merged;
   target.flags.signalFactoringGuide = true;
-
   return target;
 }
 
@@ -316,10 +317,7 @@ function attachGuideMeta(target, guideSurface) {
 // PUBLIC API — APPLY GUIDE TO MESH / EARN
 // ============================================================================
 
-/**
- * Apply guide to a mesh impulse (after PulseMeshSignalFactoring).
- */
-export function applySignalFactoringGuideToMesh(impulse) {
+export function applySignalFactoringGuideToMesh(impulse, bandSnapshot = null) {
   if (!impulse) return impulse;
 
   const snapshot = extractMeshFactoringSnapshot(impulse);
@@ -327,14 +325,11 @@ export function applySignalFactoringGuideToMesh(impulse) {
     ? lookupBaseFormula(snapshot.baseFormulaKey)
     : null;
 
-  const guideSurface = buildGuideSurface(snapshot, baseFormula);
+  const guideSurface = buildGuideSurface(snapshot, baseFormula, bandSnapshot);
   return attachGuideMeta(impulse, guideSurface);
 }
 
-/**
- * Apply guide to an earn page (after PulseEarnSignalFactoring).
- */
-export function applySignalFactoringGuideToEarn(page) {
+export function applySignalFactoringGuideToEarn(page, bandSnapshot = null) {
   if (!page) return page;
 
   const snapshot = extractEarnFactoringSnapshot(page);
@@ -342,17 +337,12 @@ export function applySignalFactoringGuideToEarn(page) {
     ? lookupBaseFormula(snapshot.baseFormulaKey)
     : null;
 
-  const guideSurface = buildGuideSurface(snapshot, baseFormula);
+  const guideSurface = buildGuideSurface(snapshot, baseFormula, bandSnapshot);
   return attachGuideMeta(page, guideSurface);
 }
 
 // ============================================================================
-// OPTIONAL: SEED SOME CANONICAL BASE FORMULAS
-// ============================================================================
-//
-// These are just examples. You can replace/extend them at boot.
-// They show how your /2, divide‑and‑conquer, and “mining” patterns
-// can be encoded as reusable base formulas.
+// SEED CANONICAL BASE FORMULAS (IMMORTAL INTEL + ADVANTAGE ATLAS)
 // ============================================================================
 
 function seedDefaultBaseFormulas() {
@@ -361,39 +351,43 @@ function seedDefaultBaseFormulas() {
       key: "HINTEL_DIVIDE_AND_CONQUER_GENERIC",
       descriptor: {
         name: "Generic Divide-and-Conquer",
-        version: "v1",
+        version: "v3",
         layerHint: "any",
-        description: "Generic /2 recursion pattern; suitable for balanced splitting of work or data.",
+        description:
+          "Generic /2 recursion pattern; suitable for balanced splitting of work or data.",
         tags: ["divide_and_conquer", "recursion", "binary_split"],
         mathShape: "T(n) = 2T(n/2) + f(n)",
         factorPattern: "/2 recursion",
-        notes: "Use when depth>1, stride≈1/(depth+1), and pressure is moderate to high."
+        notes:
+          "Use when depth>1, stride≈1/(depth+1), and pressure is moderate to high."
       }
     },
     {
       key: "HINTEL_MESH_MINING_PATTERN",
       descriptor: {
         name: "Mesh Mining Pattern",
-        version: "v1",
+        version: "v3",
         layerHint: "mesh",
         description: "Mesh‑level mining pattern for 64‑way impulse distribution.",
-        tags: ["mining", "mesh", "parallel"],
+        tags: ["mining", "mesh", "parallel", "gpu"],
         mathShape: "O(64 * f(chunk))",
         factorPattern: "fixed‑fanout",
-        notes: "Aligns with 64‑instance miner; treat each channel as a shard."
+        notes:
+          "Aligns with 64‑instance miner; treat each channel as a shard; ideal for warp‑aligned GPU batches."
       }
     },
     {
       key: "HINTEL_EARN_JOB_BATCHING",
       descriptor: {
         name: "Earn Job Batching",
-        version: "v1",
+        version: "v3",
         layerHint: "earn",
         description: "Batch jobs into base formula groups for reuse and caching.",
-        tags: ["earn", "batching", "reuse"],
+        tags: ["earn", "batching", "reuse", "cache"],
         mathShape: "O(batches * f(batchSize))",
         factorPattern: "group‑by‑formula",
-        notes: "Use when many jobs share the same baseFormulaKey."
+        notes:
+          "Use when many jobs share the same baseFormulaKey; pair with warm/hot cache tiers."
       }
     }
   ];
@@ -403,5 +397,4 @@ function seedDefaultBaseFormulas() {
   }
 }
 
-// Seed immediately in this process (deterministic, static content).
 seedDefaultBaseFormulas();

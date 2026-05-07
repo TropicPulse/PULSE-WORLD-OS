@@ -97,7 +97,7 @@ import { PulseCastleMeta } from "../PULSE-EXPANSION/PulseCastle-v16.js";
 import createPulseMesh, { PulseMeshMeta } from "../PULSE-MESH/PulseMesh-v16.js";
 import PulseBeaconMesh, {
   PulseBeaconMeshMeta
-} from "../PULSE-EXPANSION/PulseBeaconMesh-v16.js";
+} from "../PULSE-EXPANSION/PulseBeaconMesh-v20.js";
 import PulseBeaconEngine from "../PULSE-EXPANSION/PulseBeaconEngine-v16.js";
 import { PulseExpansionMeta } from "../PULSE-EXPANSION/PulseExpansion-v16.js";
 import { PulseServerMeta } from "../PULSE-EXPANSION/PulseServer-v16.js";
@@ -111,8 +111,8 @@ import createBinaryRouter from "../PULSE-ROUTER/PulseBinaryRouter-v16.js";
 import PulseRouter from "../PULSE-ROUTER/PulseRouter-v16.js";
 
 // Runtime / Scheduler (symbolic context only)
-import PulseRuntimeV2 from "../PULSE-X/PulseWorldRuntime-v17.js";
-import { createPulseScheduler } from "../PULSE-X/PulseWorldScheduler-v17.js";
+import PulseRuntimeV2 from "../PULSE-X/PulseWorldRuntime-v20.js";
+import { createPulseScheduler } from "../PULSE-X/PulseWorldScheduler-v20.js";
 
 const { getRuntimeStateV2: getRuntimeStateV2Context } = PulseRuntimeV2;
 

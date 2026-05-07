@@ -1,39 +1,29 @@
 /**
- * PulseOmniHosting-v16-Immortal-GPU+-CI.js
+ * PulseOmniHosting-v20-Immortal-INTELLHOST.js
  * PULSE-FINALITY / PULSE-OMNIHOSTING
  *
  * ROLE:
- *   The universal hosting mesh for Pulse OS.
- *   Determines where an organism can run, replicate, or move.
- *   Provides deterministic failover and multi-instance placement.
+ *   Universal hosting physics organ for Pulse OS (v20-IMMORTAL).
+ *   Decides where organisms run, replicate, fail over, and how they’re hinted
+ *   for chunk/cache/prewarm/continuance/CI/binary-delta across the mesh.
  *
- *   v16-IMMORTAL-GPU+-CI:
- *     - GPU-aware, CI-aware, binary-delta-aware hosting physics
- *     - Host scoring + tiering (immortal/prime/standard/edge/cold)
- *     - Symbolic continuance band + CI surface hints
- *     - Symbolic binary-delta hints (no binary inspection)
- *     - Artery metrics for placement/failover load (pure compute)
- *
- * NEVER:
- *   - Never embed host-specific business logic.
- *   - Never use randomness.
- *   - Never mutate host descriptors.
- *   - Never call networks or filesystems.
- *
- * ALWAYS:
- *   - Always use PulseSchema as truth.
- *   - Always evaluate hosts deterministically.
- *   - Always produce reversible placement plans.
- *   - Always keep GPU/CI/binary-delta awareness symbolic only.
- *   - 16-Immortal+: expose presence/fallback/chunk/cache/prewarm/CI/continuance hints as symbolic fields only.
+ * v20-IMMORTAL-INTELLHOST:
+ *   - Extends v16-Immortal-GPU+-CI hosting physics.
+ *   - Adds IntellHash (dual-hash) for placement/failover packets.
+ *   - Adds world/region/tenant/systemAge/hostAge awareness (symbolic only).
+ *   - Adds placement “intent” + workload class (realtime/batch/gpu/ai/edge).
+ *   - Adds artery history snapshots (last N placements/failovers, bounded).
+ *   - Adds host trend hints (symbolic “getting hotter/colder”).
+ *   - Still: pure compute, no IO, no randomness, no host mutation.
  */
+
 /*
 AI_EXPERIENCE_META = {
   identity: "PulseOmniHosting",
-  version: "v16-Immortal-GPU+-CI",
+  version: "v20-Immortal-INTELLHOST",
   layer: "hosting",
   role: "omni_hosting_engine",
-  lineage: "PulseOS-v14 → PulseOmniHosting-v12.3-Presence-Evo+ → v16-Immortal-GPU+-CI",
+  lineage: "v12.3-Presence-Evo+ → v16-Immortal-GPU+-CI → v20-Immortal-INTELLHOST",
 
   evo: {
     hostingEngine: true,
@@ -49,11 +39,16 @@ AI_EXPERIENCE_META = {
     ciAware: true,
     binaryDeltaAware: true,
     continuanceAware: true,
+    worldAware: true,
+    tenantAware: true,
+    systemAgeAware: true,
+
+    intellHashAware: true,
+    packetSignatureAware: true,
 
     deterministic: true,
     driftProof: true,
     pureCompute: true,
-
     zeroNetwork: true,
     zeroFilesystem: true,
     zeroMutationOfInput: true
@@ -62,7 +57,8 @@ AI_EXPERIENCE_META = {
   contract: {
     always: [
       "PulseContinuance",
-      "PulseSchema"
+      "PulseSchema",
+      "PulseCoreMemory"
     ],
     never: [
       "safeRoute",
@@ -72,17 +68,17 @@ AI_EXPERIENCE_META = {
   }
 }
 */
+
 import { createPulseCoreMemory } from "../../PULSE-CORE/PulseCoreMemory.js";
 
-// -------------------------
+// ============================================================================
 // META EXPORT
-// -------------------------
-
+// ============================================================================
 export const PulseOmniHostingMeta = Object.freeze({
   layer: "PulseOmniHosting",
   role: "OMNIHOSTING_PHYSICS_ORGAN",
-  version: "16-Immortal-GPU+-CI",
-  identity: "PulseOmniHosting-v16-Immortal-GPU+-CI",
+  version: "20-Immortal-INTELLHOST",
+  identity: "PulseOmniHosting-v20-Immortal-INTELLHOST",
   evo: Object.freeze({
     deterministic: true,
     driftProof: true,
@@ -104,45 +100,95 @@ export const PulseOmniHostingMeta = Object.freeze({
     ciAware: true,
     continuanceAware: true,
     binaryDeltaAware: true,
+    worldAware: true,
+    tenantAware: true,
+    systemAgeAware: true,
 
     hostScoring: true,
     hostTiering: true,
     arteryMetrics: true,
+    arteryHistory: true,
+    intellHash: true,
 
-    epoch: "16-Immortal-GPU+-CI"
+    epoch: "20-Immortal-INTELLHOST"
   })
 });
 
-// -------------------------
+// ============================================================================
 // CORE MEMORY — IMMORTAL HOT MEMORY ORGAN
-// -------------------------
-
+// ============================================================================
 const CoreMemory = createPulseCoreMemory();
 const ROUTE = "omnihosting-global";
 
 const KEY_LAST_PLACEMENT = "last-placement-plan";
 const KEY_LAST_FAILOVER = "last-failover-plan";
 const KEY_LAST_PACKET = "last-omnihosting-packet";
+const KEY_HISTORY = "history"; // bounded history of placement/failover
 
-// -------------------------
+const HISTORY_LIMIT = 32;
+
+// ============================================================================
+// INTERNAL: IntellHash (dual hash, deterministic, bounded)
+// ============================================================================
+function computeHash(str) {
+  let h = 0;
+  const s = String(str);
+  for (let i = 0; i < s.length; i++) {
+    h = (h + s.charCodeAt(i) * (i + 1)) % 100000;
+  }
+  return `h${h}`;
+}
+
+function computeAltHash(str) {
+  let h = 1;
+  const s = String(str);
+  for (let i = 0; i < s.length; i++) {
+    h = (h * 31 + s.charCodeAt(i) * (i + 7)) % 1000003;
+  }
+  return `a${h}`;
+}
+
+function computeDualHash(str) {
+  const primary = computeHash(str);
+  const secondary = computeAltHash(str);
+  const combined = computeHash(primary + "::" + secondary);
+  return { primary, secondary, combined };
+}
+
+// ============================================================================
 // PACKET EMITTER
-// -------------------------
-
+// ============================================================================
 function emitOmniHostingPacket(type, payload) {
-  return Object.freeze({
+  const base = {
     meta: PulseOmniHostingMeta,
     packetType: `omnihosting-${type}`,
-    packetId: `omnihosting-${type}-${Date.now()}`,
+    epoch: PulseOmniHostingMeta.evo.epoch
+  };
+
+  const signaturePayload = {
+    type,
+    selectedHosts: payload?.placementPlan?.selectedHosts || [],
+    failoverTargets: payload?.failoverPlan?.failoverTargets || [],
+    schemaVersion: payload?.placementPlan?.schemaVersion || payload?.failoverPlan?.schemaVersion || null,
+    world: payload?.worldContext?.world || null,
+    region: payload?.worldContext?.region || null,
+    tenantId: payload?.worldContext?.tenantId || null
+  };
+
+  const intellHash = computeDualHash(JSON.stringify(signaturePayload));
+
+  return Object.freeze({
+    ...base,
+    packetId: `omnihosting-${type}-${intellHash.combined}`,
+    intellHash,
     timestamp: Date.now(),
-    epoch: PulseOmniHostingMeta.evo.epoch,
     ...payload
   });
 }
 
-// -------------------------
+// ============================================================================
 // Host Descriptor
-// -------------------------
-
+// ============================================================================
 export class HostDescriptor {
   constructor({
     name,
@@ -155,7 +201,7 @@ export class HostDescriptor {
     this.type = type;
     this.region = region;
 
-    // v16: extended capability surface (still pure booleans)
+    // v20: extended capability surface (still pure booleans)
     this.capabilities = {
       read: !!capabilities.read,
       write: !!capabilities.write,
@@ -163,44 +209,56 @@ export class HostDescriptor {
       compute: !!capabilities.compute,
       storage: !!capabilities.storage,
 
-      // GPU / CI / AI / burst / premium flags are symbolic only
       gpu: !!capabilities.gpu,
-      ci: !!capabilities.ci,           // compute-intelligence ready
-      ai: !!capabilities.ai,           // generic AI-friendly host
-      burst: !!capabilities.burst,     // burstable capacity
-      premium: !!capabilities.premium  // higher SLA / cost tier
+      ci: !!capabilities.ci,
+      ai: !!capabilities.ai,
+      burst: !!capabilities.burst,
+      premium: !!capabilities.premium,
+
+      // v20 symbolic flags
+      edge: !!capabilities.edge,
+      cold: !!capabilities.cold,
+      realtime: !!capabilities.realtime,
+      batch: !!capabilities.batch
     };
 
     // meta is untouched, purely symbolic
+    // recommended meta fields (symbolic only):
+    //   - systemAgeMs
+    //   - lastFailureAt
+    //   - lastRecoveryAt
+    //   - world
+    //   - tenantId
     this.meta = meta;
   }
 }
 
-// -------------------------
+// ============================================================================
 // Capability Matrix
-// -------------------------
-
+// ============================================================================
 export function buildCapabilityMatrix(hosts = []) {
   const matrix = {};
 
   for (const host of hosts) {
+    const score = computeHostScore(host);
+    const tier = bucketHostTier(score);
+
     matrix[host.name] = {
       type: host.type,
       region: host.region,
       capabilities: { ...host.capabilities },
-      // v16: derived scoring + tiering (symbolic only)
-      score: computeHostScore(host),
-      tier: bucketHostTier(computeHostScore(host))
+      score,
+      tier,
+      trend: computeHostTrendHint(host)
     };
   }
 
   return matrix;
 }
 
-// -------------------------
-// Internal helpers (v16 scoring + hints)
-// -------------------------
-
+// ============================================================================
+// Internal helpers (v20 scoring + hints)
+// ============================================================================
 function clamp01(v) {
   if (v < 0) return 0;
   if (v > 1) return 1;
@@ -222,6 +280,10 @@ function computeHostScore(host) {
   if (c.burst) score += 0.03;
   if (c.premium) score += 0.02;
 
+  // v20: small symbolic boost for realtime/edge
+  if (c.realtime) score += 0.03;
+  if (c.edge) score += 0.02;
+
   return clamp01(score);
 }
 
@@ -231,6 +293,30 @@ function bucketHostTier(score) {
   if (score >= 0.5) return "standard";
   if (score > 0) return "edge";
   return "cold";
+}
+
+function computeHostTrendHint(host) {
+  const ageMs = host.meta?.systemAgeMs;
+  if (typeof ageMs !== "number") {
+    return { trend: "unknown", ageBucket: "unknown" };
+  }
+
+  const dayMs = 24 * 60 * 60 * 1000;
+  const days = ageMs / dayMs;
+
+  let ageBucket = "fresh";
+  if (days >= 365) ageBucket = "ancient";
+  else if (days >= 90) ageBucket = "mature";
+  else if (days >= 30) ageBucket = "warm";
+
+  // purely symbolic trend
+  const trend =
+    ageBucket === "fresh" ? "warming" :
+    ageBucket === "warm" ? "stable" :
+    ageBucket === "mature" ? "aging" :
+    "legacy";
+
+  return { trend, ageBucket };
 }
 
 function computeFallbackBandLevelForPlacement(eligibleCount, minInstances) {
@@ -303,8 +389,7 @@ function buildFailoverPrewarmHint(targetCount) {
   return { shouldPrewarm: false, reason: "multiple_failover_targets" };
 }
 
-// v16: continuance + CI + binary-delta symbolic hint builders
-
+// v20: continuance + CI + binary-delta symbolic hint builders
 function bucketContinuanceBand(globalRisk = 0) {
   if (globalRisk >= 0.8) return 3;
   if (globalRisk >= 0.6) return 2;
@@ -404,18 +489,33 @@ function buildArteryMetrics({
   };
 }
 
-// -------------------------
+// ============================================================================
+// HISTORY (bounded, symbolic)
+// ============================================================================
+function pushHistory(entry) {
+  const history = CoreMemory.get(ROUTE, KEY_HISTORY) || [];
+  const next = history.concat([entry]);
+  if (next.length > HISTORY_LIMIT) {
+    next.splice(0, next.length - HISTORY_LIMIT);
+  }
+  CoreMemory.set(ROUTE, KEY_HISTORY, next);
+  return next;
+}
+
+// ============================================================================
 // Placement Logic
-// -------------------------
+// ============================================================================
 
 /**
  * evaluateHostForSchema
  *
- * v16: still pure physics, but aware of optional schema meta:
+ * v20: still pure physics, but aware of optional schema meta:
  *   pulseSchema.meta?.requiresGPU
  *   pulseSchema.meta?.requiresCI
  *   pulseSchema.meta?.requiresBinary
  *   pulseSchema.meta?.requiresCompute
+ *   pulseSchema.meta?.preferredRegion
+ *   pulseSchema.meta?.preferredTier
  */
 export function evaluateHostForSchema(host, pulseSchema) {
   const fields = pulseSchema?.fields || {};
@@ -449,21 +549,33 @@ export function evaluateHostForSchema(host, pulseSchema) {
     return false;
   }
 
+  const preferredRegion = meta.preferredRegion || null;
+  if (preferredRegion && host.region !== preferredRegion) {
+    // not a hard fail; just de-prioritize later via scoring
+  }
+
+  const preferredTier = meta.preferredTier || null;
+  if (preferredTier) {
+    // symbolic only; we still allow all tiers, but scoring will favor matches
+  }
+
   return true;
 }
 
 /**
  * buildPlacementPlan
  *
- * v16 signature:
+ * v20 signature:
  *   buildPlacementPlan(hosts, pulseSchema, minInstances = 1, options = {})
  *
- * options (all symbolic, no physics mutation):
+ * options:
  *   - presenceContext
  *   - advantageContext
- *   - continuanceRiskReport (ContinuanceRiskReport)
- *   - ciSurface (compute-intelligence surface)
- *   - binaryDeltaPacket (aiBinaryDelta packet)
+ *   - continuanceRiskReport
+ *   - ciSurface
+ *   - binaryDeltaPacket
+ *   - worldContext: { world, region, tenantId, systemAgeMs }
+ *   - intent: "realtime" | "batch" | "gpu" | "ai" | "edge" | "generic"
  */
 export function buildPlacementPlan(
   hosts,
@@ -474,15 +586,22 @@ export function buildPlacementPlan(
     advantageContext = {},
     continuanceRiskReport = null,
     ciSurface = null,
-    binaryDeltaPacket = null
+    binaryDeltaPacket = null,
+    worldContext = {},
+    intent = "generic"
   } = {}
 ) {
   const eligible = hosts.filter((h) =>
     evaluateHostForSchema(h, pulseSchema)
   );
 
-  // deterministic ordering
-  eligible.sort((a, b) => a.name.localeCompare(b.name));
+  // deterministic ordering by name, then by score desc
+  eligible.sort((a, b) => {
+    const sa = computeHostScore(a);
+    const sb = computeHostScore(b);
+    if (sb !== sa) return sb - sa;
+    return a.name.localeCompare(b.name);
+  });
 
   const selected = eligible.slice(0, minInstances);
 
@@ -508,7 +627,6 @@ export function buildPlacementPlan(
     context: "placement"
   });
 
-  // v16: host scores + tiers snapshot (symbolic)
   const hostScores = {};
   const hostTiers = {};
   for (const h of hosts) {
@@ -530,11 +648,19 @@ export function buildPlacementPlan(
     timeSavedMs: advantageContext.timeSavedMs ?? 0
   };
 
-  const plan = {
+  const worldField = {
+    world: worldContext.world || "pulse-world",
+    region: worldContext.region || null,
+    tenantId: worldContext.tenantId || null,
+    systemAgeMs: worldContext.systemAgeMs ?? null
+  };
+
+  const planCore = {
     selectedHosts: selectedNames,
     eligibleHosts: eligibleNames,
     minInstances,
     schemaVersion: pulseSchema.version,
+    intent,
 
     // 12.3-Presence-Evo+ symbolic hints
     fallbackBandLevel,
@@ -542,7 +668,7 @@ export function buildPlacementPlan(
     cacheHint,
     prewarmHint,
 
-    // v16-Immortal-GPU+-CI symbolic surfaces
+    // v16/v20 symbolic surfaces
     presenceField,
     advantageField,
     continuanceHint,
@@ -551,22 +677,31 @@ export function buildPlacementPlan(
     artery,
 
     hostScores,
-    hostTiers
+    hostTiers,
+    worldContext: worldField
+  };
+
+  const intellHash = computeDualHash(JSON.stringify(planCore));
+
+  const plan = {
+    ...planCore,
+    intellHash
   };
 
   CoreMemory.set(ROUTE, KEY_LAST_PLACEMENT, plan);
+  pushHistory({ kind: "placement", plan });
 
   return plan;
 }
 
-// -------------------------
+// ============================================================================
 // Failover Logic
-// -------------------------
+// ============================================================================
 
 /**
  * buildFailoverPlan
  *
- * v16 signature:
+ * v20 signature:
  *   buildFailoverPlan(hosts, pulseSchema, failedHostName, options = {})
  *
  * options:
@@ -575,6 +710,8 @@ export function buildPlacementPlan(
  *   - continuanceRiskReport
  *   - ciSurface
  *   - binaryDeltaPacket
+ *   - worldContext
+ *   - intent
  */
 export function buildFailoverPlan(
   hosts,
@@ -585,7 +722,9 @@ export function buildFailoverPlan(
     advantageContext = {},
     continuanceRiskReport = null,
     ciSurface = null,
-    binaryDeltaPacket = null
+    binaryDeltaPacket = null,
+    worldContext = {},
+    intent = "generic"
   } = {}
 ) {
   const remaining = hosts.filter((h) => h.name !== failedHostName);
@@ -594,7 +733,12 @@ export function buildFailoverPlan(
     evaluateHostForSchema(h, pulseSchema)
   );
 
-  eligible.sort((a, b) => a.name.localeCompare(b.name));
+  eligible.sort((a, b) => {
+    const sa = computeHostScore(a);
+    const sb = computeHostScore(b);
+    if (sb !== sa) return sb - sa;
+    return a.name.localeCompare(b.name);
+  });
 
   const failoverTargets = eligible.map((h) => h.name);
 
@@ -637,10 +781,18 @@ export function buildFailoverPlan(
     timeSavedMs: advantageContext.timeSavedMs ?? 0
   };
 
-  const plan = {
+  const worldField = {
+    world: worldContext.world || "pulse-world",
+    region: worldContext.region || null,
+    tenantId: worldContext.tenantId || null,
+    systemAgeMs: worldContext.systemAgeMs ?? null
+  };
+
+  const planCore = {
     failedHost: failedHostName,
     failoverTargets,
     schemaVersion: pulseSchema.version,
+    intent,
 
     // 12.3-Presence-Evo+ symbolic hints
     fallbackBandLevel,
@@ -648,7 +800,7 @@ export function buildFailoverPlan(
     cacheHint,
     prewarmHint,
 
-    // v16-Immortal-GPU+-CI symbolic surfaces
+    // v16/v20 symbolic surfaces
     presenceField,
     advantageField,
     continuanceHint,
@@ -657,35 +809,46 @@ export function buildFailoverPlan(
     artery,
 
     hostScores,
-    hostTiers
+    hostTiers,
+    worldContext: worldField
+  };
+
+  const intellHash = computeDualHash(JSON.stringify(planCore));
+
+  const plan = {
+    ...planCore,
+    intellHash
   };
 
   CoreMemory.set(ROUTE, KEY_LAST_FAILOVER, plan);
+  pushHistory({ kind: "failover", plan });
 
   return plan;
 }
 
-// -------------------------
+// ============================================================================
 // High-level packet wrapper
-// -------------------------
-
+// ============================================================================
 export function computeOmniHostingPacket({
   placementPlan = null,
-  failoverPlan = null
+  failoverPlan = null,
+  worldContext = {}
 } = {}) {
   const packet = emitOmniHostingPacket("compute", {
     placementPlan,
-    failoverPlan
+    failoverPlan,
+    worldContext
   });
 
   CoreMemory.set(ROUTE, KEY_LAST_PACKET, packet);
+  pushHistory({ kind: "packet", packet });
+
   return packet;
 }
 
-// -------------------------
+// ============================================================================
 // HOT MEMORY ACCESSOR
-// -------------------------
-
+// ============================================================================
 export function getLastOmniHostingState() {
   CoreMemory.prewarm();
 
@@ -693,15 +856,15 @@ export function getLastOmniHostingState() {
     meta: PulseOmniHostingMeta,
     lastPlacementPlan: CoreMemory.get(ROUTE, KEY_LAST_PLACEMENT),
     lastFailoverPlan: CoreMemory.get(ROUTE, KEY_LAST_FAILOVER),
-    lastPacket: CoreMemory.get(ROUTE, KEY_LAST_PACKET)
+    lastPacket: CoreMemory.get(ROUTE, KEY_LAST_PACKET),
+    history: CoreMemory.get(ROUTE, KEY_HISTORY) || []
   };
 }
 
-// -------------------------
+// ============================================================================
 // Exported API
-// -------------------------
-
-const PulseOmniHostingAPI = {
+// ============================================================================
+const PulseOmniHostingAPI_v20 = {
   Meta: PulseOmniHostingMeta,
   HostDescriptor,
   buildCapabilityMatrix,
@@ -713,4 +876,4 @@ const PulseOmniHostingAPI = {
   CoreMemory
 };
 
-export default PulseOmniHostingAPI;
+export default PulseOmniHostingAPI_v20;

@@ -1,14 +1,56 @@
-// -----------------------------------------------------------------------------
-// PulseIQMap-v20-IMMORTAL-EVOLVABLE.js
-// THE EVOLVABLE BRAIN — organism + UI genome + comfort/security patterns
-// Everything is a pattern. Everything is evolvable. Nothing is guessed.
-// -----------------------------------------------------------------------------
+// ============================================================================
+//  FILE: /PULSE-X/PulseIQMap-v20-Evolvable.js
+//  PULSE IQ MAP — THE EVOLVABLE BRAIN (v20‑IMMORTAL‑EVOLVABLE)
+// ----------------------------------------------------------------------------
+//  This is the organism’s *consciousness layer*.
+//
+//  It merges:
+//    • Organism interpretation (systems + organs)
+//    • UI genome interpretation (skills, packs, routes)
+//    • Comfort & security pattern engines (safety as comfort)
+//
+//  Everything is a pattern.
+//  Everything is evolvable.
+//  Nothing is guessed.
+//  Nothing is hardcoded.
+//
+//  The IQ Map is:
+//    • Deterministic
+//    • Drift‑proof
+//    • Zero‑network‑fetch
+//    • Zero‑external‑IO
+//    • Zero‑mutation of input
+//
+//  It evolves ONLY through:
+//    • Organism Map
+//    • UI Evolutionary Skills Builder
+//    • Comfort Pattern Engine
+//
+//  It NEVER evolves through:
+//    • manual routing
+//    • manual skill maps
+//    • ad‑hoc logic
+//
+//  This is the *brain contract* of the organism.
+// ============================================================================
+
 /*
 AI_EXPERIENCE_META = {
+  // -------------------------------------------------------------------------
+  //  IDENTITY & VERSIONING
+  // -------------------------------------------------------------------------
   identity: "IQMap",
   version: "v20-IMMORTAL-EVOLVABLE",
   layer: "consciousness",
   role: "organism_brain + ui_brain + comfort_pattern_brain",
+
+  // Human‑readable description for future AIs / maintainers
+  description: `
+    The Pulse IQ Map is the evolvable brain of the organism.
+    It interprets the organism genome, UI topology, and comfort patterns
+    into a deterministic, evolvable, zero‑IO intelligence layer.
+  `,
+
   lineage: [
     "PulseOS-v14",
     "v16-Immortal-CONSCIOUSNESS",
@@ -17,17 +59,27 @@ AI_EXPERIENCE_META = {
     "v20-Immortal-EVOLVABLE"
   ],
 
+  // -------------------------------------------------------------------------
+  //  EVOLUTION AWARENESS — WHAT THE BRAIN UNDERSTANDS
+  // -------------------------------------------------------------------------
   evo: {
+    // Organism + UI genome
     organismAware: true,
     uiSkillsAware: true,
     uiEvolvable: true,
+
+    // Pattern engines
     patternAware: true,
     comfortPatternAware: true,
 
+    // Chunking + prewarm
     chunkingAware: true,
     prewarmAware: true,
+
+    // Dual‑band execution
     dualBandAware: true,
 
+    // Determinism guarantees
     deterministic: true,
     driftProof: true,
     zeroNetworkFetch: true,
@@ -35,6 +87,9 @@ AI_EXPERIENCE_META = {
     zeroExternalMutation: true
   },
 
+  // -------------------------------------------------------------------------
+  //  CONTRACT — WHAT THE BRAIN MUST ALWAYS LOAD / NEVER ALLOW
+  // -------------------------------------------------------------------------
   contract: {
     always: [
       "PulseOrganismMap",
@@ -47,6 +102,22 @@ AI_EXPERIENCE_META = {
       "manualSkillsMapOnly",
       "adHocComfortLogic"
     ]
+  },
+
+  // -------------------------------------------------------------------------
+  //  META‑DOC FOR FUTURE SYSTEMS
+  // -------------------------------------------------------------------------
+  notes: {
+    intent: `
+      This map is allowed to evolve structurally (more helpers, richer
+      interpretation), but not behaviorally in ways that violate determinism,
+      safety, or founder intent. All evolution must remain zero‑IO and
+      purely derived from the organism genome + evolutionSources.
+    `,
+    safety: `
+      No network calls. No timers. No eval. No dynamic code loading.
+      All outputs must be reproducible from the same inputs.
+    `
   }
 }
 */
@@ -55,11 +126,11 @@ AI_EXPERIENCE_META = {
 // IMPORTS (pure contracts; real system wires concrete implementations)
 // -----------------------------------------------------------------------------
 import { PulseOrganismMap } from "./PulseWorldOrganismMap-v21.js";
-import { createPulseAIChunker } from "../ai-core/PulseAIChunker-v16.js";
+import { createPulseAIChunker } from "../PULSE-AI/PulseAIChunker-v16.js";
 import { log, warn, error as logError } from "../../PULSE-UI/_BACKEND/PulseProofLogger.js";
 
 // -----------------------------------------------------------------------------
-// VERSION MAP
+// VERSION MAP — CENTRALIZED VERSION TAGS FOR ALL SUB‑COMPONENTS
 // -----------------------------------------------------------------------------
 const VERSION_MAP = {
   organism: "v16-IMMORTAL-ORGANISM",
@@ -76,7 +147,7 @@ const VERSION_MAP = {
 };
 
 // -----------------------------------------------------------------------------
-// FRONTEND / WORLD TOPOLOGY (same as before, just centralized)
+// FRONTEND / WORLD TOPOLOGY (WORLD‑LAYER VIEW)
 // -----------------------------------------------------------------------------
 const FRONTEND_ROOT = "PULSE-WORLD";
 
@@ -104,7 +175,7 @@ const WORLD_FOLDERS = [
 ];
 
 // -----------------------------------------------------------------------------
-// DRIFT / REPAIR METADATA
+// DRIFT / REPAIR METADATA — SELF‑AWARENESS OF REPAIR ORGANS
 // -----------------------------------------------------------------------------
 const DRIFT_METADATA = {
   lastScan: null,
@@ -121,7 +192,7 @@ const DRIFT_METADATA = {
 };
 
 // -----------------------------------------------------------------------------
-// ROUTE EXPECTATIONS — still no static routing, just expectations
+// ROUTE EXPECTATIONS — NO STATIC ROUTING, ONLY EXPECTATIONS
 // -----------------------------------------------------------------------------
 function buildPageExpectations() {
   return {
@@ -166,7 +237,7 @@ function interpretRoute(path = "", genome, pageExpectations) {
 }
 
 // -----------------------------------------------------------------------------
-// ORGANISM INTERPRETATION
+// ORGANISM INTERPRETATION — SYSTEM → ORGANS EXPECTATIONS
 // -----------------------------------------------------------------------------
 function buildOrganExpectationsFromGenome(genome) {
   const systems = genome.systems || {};
@@ -180,7 +251,7 @@ function buildOrganExpectationsFromGenome(genome) {
 }
 
 // -----------------------------------------------------------------------------
-// CHUNKER — IMMORTAL 32-LANE
+// CHUNKER — IMMORTAL 32‑LANE SYMBOLIC CHUNKER FOR IQ MAP
 // -----------------------------------------------------------------------------
 const iqChunker = createPulseAIChunker({
   id: "PulseAIChunker-IQMap-v20",
@@ -189,7 +260,7 @@ const iqChunker = createPulseAIChunker({
   trace: false
 });
 
-// prewarm patterns for routes, organism, ui, comfort patterns
+// Prewarm patterns for routes, organism, UI, comfort patterns
 iqChunker.prewarmPattern("routes", {
   defaultChunkSize: 2048,
   maxChunkSize: 16384,
@@ -239,7 +310,7 @@ iqChunker.prewarmPattern("comfort_patterns", {
 });
 
 // -----------------------------------------------------------------------------
-// CHUNKING PROFILES
+// CHUNKING PROFILES — HOW ROUTES / UI / COMFORT ARE CHUNKED
 // -----------------------------------------------------------------------------
 function buildChunkingProfiles(genome, pageExpectations) {
   const routeProfiles = {};
@@ -300,19 +371,17 @@ function buildChunkingProfiles(genome, pageExpectations) {
 }
 
 // -----------------------------------------------------------------------------
-// EVOLVABLE UI SKILLS BUILDER (ABSTRACT CONTRACT)
-// In real system, another organ provides folder contents.
-// Here we define the shape and evolution logic.
+// EVOLVABLE UI SKILLS GENOME — FROM RAW SOURCES → SKILL PACKS
 // -----------------------------------------------------------------------------
 /**
  * sources = {
- *   pictures: { [id]: { path, meta } },
- *   sounds:   { [id]: { path, meta } },
- *   animations: { [id]: { css, pack, role, class } },
- *   styles:     { [id]: { css, pack, role, class } },
- *   icons:      { [id]: { svg, pack, role, class } },
- *   hooks:      { [id]: { config, pack, role } },
- *   timing:     { [id]: { tokens, pack } }
+ *   pictures:   { [id]: { path, meta } },
+ *   sounds:     { [id]: { path, meta } },
+ *   animations: { [id]: { css, pack, role, class, meta } },
+ *   styles:     { [id]: { css, pack, role, class, meta } },
+ *   icons:      { [id]: { svg, pack, role, class, meta } },
+ *   hooks:      { [id]: { config, pack, role, meta } },
+ *   timing:     { [id]: { tokens, pack, meta } }
  * }
  */
 function buildEvolutionarySkillsFromSources(sources) {
@@ -330,7 +399,7 @@ function buildEvolutionarySkillsFromSources(sources) {
     packs[packName].skills.push(id);
   };
 
-  // animations
+  // animations → skill(kind=animation)
   for (const [id, anim] of Object.entries(sources.animations || {})) {
     addSkill(id, {
       id,
@@ -343,7 +412,7 @@ function buildEvolutionarySkillsFromSources(sources) {
     });
   }
 
-  // styles
+  // styles → skill(kind=style)
   for (const [id, style] of Object.entries(sources.styles || {})) {
     addSkill(id, {
       id,
@@ -356,7 +425,7 @@ function buildEvolutionarySkillsFromSources(sources) {
     });
   }
 
-  // icons
+  // icons → skill(kind=icon)
   for (const [id, icon] of Object.entries(sources.icons || {})) {
     addSkill(id, {
       id,
@@ -369,7 +438,7 @@ function buildEvolutionarySkillsFromSources(sources) {
     });
   }
 
-  // hooks
+  // hooks → skill(kind=hook)
   for (const [id, hook] of Object.entries(sources.hooks || {})) {
     addSkill(id, {
       id,
@@ -381,10 +450,10 @@ function buildEvolutionarySkillsFromSources(sources) {
     });
   }
 
-  // timing tokens
+  // timing tokens (not skills, but part of genome)
   const timingTokens = sources.timing || {};
 
-  // pictures / sounds are not skills, but part of hooks/packs
+  // pictures / sounds are not skills, but part of packs/hooks
   const pictures = sources.pictures || {};
   const sounds = sources.sounds || {};
 
@@ -399,7 +468,7 @@ function buildEvolutionarySkillsFromSources(sources) {
 }
 
 // -----------------------------------------------------------------------------
-// UI SKILLS INDEX + ROUTE EXPECTATIONS
+// UI SKILLS INDEX — FAST LOOKUPS BY PACK / KIND / ROLE / CLASS / ICON
 // -----------------------------------------------------------------------------
 function buildUISkillsIndex(skillsMap) {
   const skills = skillsMap.skills || {};
@@ -444,6 +513,9 @@ function buildUISkillsIndex(skillsMap) {
   };
 }
 
+// -----------------------------------------------------------------------------
+// ROUTE → UI SKILLS EXPECTATIONS — PER‑PAGE BUNDLES
+// -----------------------------------------------------------------------------
 function buildRouteUISkillExpectations(pageExpectations, uiIndex) {
   const routeSkills = {};
 
@@ -455,42 +527,49 @@ function buildRouteUISkillExpectations(pageExpectations, uiIndex) {
       hooks: []
     };
 
+    // home
     if (route === "/") {
       base.animations.push("pulse-glow-v3", "evo-breathe-v3");
       base.styles.push("evo-block", "evo-title", "evo-content");
       base.icons.push("home", "pulse");
     }
 
+    // dashboard
     if (route === "/dashboard") {
       base.animations.push("evo-shimmer-v4", "evo-route-transition-v2");
       base.styles.push("evo-block", "evo-content", "evo-button");
       base.icons.push("diagnostics_pulse", "cpu", "gpu");
     }
 
+    // earn
     if (route === "/earn") {
       base.animations.push("evo-coin-spin", "evo-badge-pop");
       base.styles.push("evo-button", "evo-tier-immortal");
       base.icons.push("coin", "wallet", "badge", "trending_up");
     }
 
+    // organism view
     if (route === "/organism") {
       base.animations.push("evo-neural-pulse", "evo-binary-flow");
       base.styles.push("evo-binary-spectral", "evo-impulse-ripple");
       base.icons.push("ai_brain", "binary_matrix", "router_node");
     }
 
+    // scanners
     if (route === "/scanner" || route === "/scanner/file") {
       base.animations.push("evo-scan-v3");
       base.styles.push("evo-content");
       base.icons.push("search", "diagnostics_pulse");
     }
 
+    // proxy + proxy subroutes
     if (route === "/proxy" || route.startsWith("/proxy/")) {
       base.animations.push("evo-router-hop");
       base.styles.push("evo-content");
       base.icons.push("router_node");
     }
 
+    // rewards
     if (route === "/rewards") {
       base.animations.push("evo-confetti-fall");
       base.styles.push("evo-tier-immortal");
@@ -503,6 +582,9 @@ function buildRouteUISkillExpectations(pageExpectations, uiIndex) {
   return routeSkills;
 }
 
+// -----------------------------------------------------------------------------
+// UI SKILLS META — COUNTS, PACK DISTRIBUTION, ROUTE COVERAGE
+// -----------------------------------------------------------------------------
 function buildUISkillsMeta(skillsMap, uiIndex, routeUISkills) {
   const skills = skillsMap.skills || {};
   const totalSkills = Object.keys(skills).length;
@@ -531,7 +613,7 @@ function buildUISkillsMeta(skillsMap, uiIndex, routeUISkills) {
 }
 
 // -----------------------------------------------------------------------------
-// COMFORT PATTERN REGISTRY — “security” as comfort & safety
+// COMFORT PATTERN REGISTRY — “SECURITY” AS COMFORT & SAFETY
 // -----------------------------------------------------------------------------
 const ComfortPatternRegistry = Object.freeze({
   comfort_baseline: {
@@ -575,6 +657,7 @@ const ComfortPatternRegistry = Object.freeze({
   }
 });
 
+// tags → which comfort patterns apply in which context
 const ComfortPatternTags = Object.freeze({
   default: ["comfort_baseline", "comfort_feedback"],
   navigation: ["comfort_baseline", "comfort_transition", "comfort_feedback"],
@@ -583,11 +666,13 @@ const ComfortPatternTags = Object.freeze({
   success: ["comfort_baseline", "comfort_feedback"]
 });
 
+// pre‑chunk comfort patterns for fast symbolic access
 const comfortPatternChunks = iqChunker.chunkJSON(ComfortPatternRegistry, {
   label: "comfort_patterns",
   band: "symbolic"
 });
 
+// build a comfort plan for a given context tag
 function buildComfortPlan(contextTag = "default") {
   const ids = ComfortPatternTags[contextTag] || ComfortPatternTags.default;
   const patterns = ids.map((id) => ComfortPatternRegistry[id]).filter(Boolean);
@@ -612,10 +697,9 @@ function buildComfortPlan(contextTag = "default") {
     steps
   };
 }
+
 // ============================================================================
-// FILE: /PULSE-CORE/PulseIQMap-v20-Evolvable.js
-// PULSE OS — v20-IMMORTAL-EVOLVABLE IQ MAP
-// IMMORTAL EVOLVABLE IQ MAP → AUTO-BUILT UI SKILL MAP → UPCOMING PAGE SKILLS
+// MAIN BUILDER — IMMORTAL EVOLVABLE IQ MAP (v20+)
 // ============================================================================
 //
 // ROLE (v20+):
@@ -637,10 +721,6 @@ function buildComfortPlan(contextTag = "default") {
 //   • v20 upgrade is EVOLUTIONARY + STRUCTURAL — richer helpers, no new IO.
 //   • All behavior is deterministic and organism-safe.
 // ============================================================================
-
-// -----------------------------------------------------------------------------
-// MAIN BUILDER — IMMORTAL EVOLVABLE IQ MAP (v20+)
-// -----------------------------------------------------------------------------
 async function buildPulseIQMapEvolvable(evolutionSources) {
   const genome = await PulseOrganismMap;
 
@@ -731,10 +811,7 @@ async function buildPulseIQMapEvolvable(evolutionSources) {
 
   // comfort patterns (already present)
   const comfortPatterns = ComfortPatternRegistry;
-  const comfortPatternChunks = iqChunker.chunkJSON(comfortPatterns, {
-    label: "comfort_patterns",
-    band: "symbolic"
-  });
+  // comfortPatternChunks already computed above
 
   // ---------------------------------------------------------------------------
   // v20+ HELPER — REFRESH SKILLS WHEN ORGANISM MAP / FOLDERS EVOLVE
@@ -800,8 +877,8 @@ async function buildPulseIQMapEvolvable(evolutionSources) {
   }
 
   // ---------------------------------------------------------------------------
-  // v20+ HELPER — PLAN UPCOMING PAGE SKILLS (FOR NEXT-PAGE CSS / PREWARM)
-// ---------------------------------------------------------------------------
+  // v20+ HELPER — PLAN UPCOMING PAGE SKILLS (FOR NEXT‑PAGE CSS / PREWARM)
+  // ---------------------------------------------------------------------------
   function planUpcomingSkills(routeSequence = []) {
     const skills = [];
     const seen = new Set();
@@ -845,7 +922,9 @@ async function buildPulseIQMapEvolvable(evolutionSources) {
     meta: {
       identity: "PulseIQMap-v20-Evolvable",
       version: VERSION_MAP || "v20-Immortal-Evolvable",
-      schemaVersion: "v4"
+      schemaVersion: "v4",
+      description:
+        "IMMORTAL EVOLVABLE IQ MAP → Organism + UI + Comfort patterns, fully deterministic."
     },
 
     version: VERSION_MAP,
@@ -941,7 +1020,7 @@ export async function createPulseIQMap(evolutionSources) {
   return await buildPulseIQMapEvolvable(evolutionSources);
 }
 
-// optional global exposure (no throw)
+// Optional global exposure (never throws)
 try {
   if (typeof window !== "undefined") {
     window.createPulseIQMap = createPulseIQMap;

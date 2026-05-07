@@ -1,10 +1,11 @@
 /**
- * PulseSchema-v16-Immortal-GPU+-CI.js
+ * PulseSchema-v20-IMMORTAL-GPU+-CI-INTEL.js
  * PULSE-FINALITY / PULSE-SCHEMA
  *
  * ROLE:
  *   Canonical, host-agnostic schema brain for Pulse OS.
- *   Everything else (Firestore, SQL, Binary, Regions, Hosts) is translation.
+ *   Everything else (Firestore, SQL, Binary, Regions, Hosts, WorldDataProvider)
+ *   is translation or projection.
  *
  * MAP:
  *   - PulseSchema is the ONLY canonical schema.
@@ -22,15 +23,16 @@
  *   - Always translate deterministically.
  *   - Always keep binary as the lowest-level representation.
  *   - v16+: expose presence/continuance/CI/binary-delta overlays as symbolic only.
+ *   - v20+: expose world/region/tenant/index hints as metadata only.
  */
 
 /*
 AI_EXPERIENCE_META = {
   identity: "PulseSchema",
-  version: "v16-Immortal-GPU+-CI",
+  version: "v20-IMMORTAL-GPU+-CI-INTEL",
   layer: "schema",
   role: "unified_schema_brain",
-  lineage: "PulseOS-v14 → v12.3-Presence-Evo+ → v16-Immortal-GPU+-CI",
+  lineage: "PulseOS-v14 → v12.3-Presence-Evo+ → v16-Immortal-GPU+-CI → v20-IMMORTAL-GPU+-CI-INTEL",
 
   evo: {
     schemaUnification: true,
@@ -53,13 +55,26 @@ AI_EXPERIENCE_META = {
 
     zeroNetwork: true,
     zeroFilesystem: true,
-    zeroMutationOfInput: true
+    zeroMutationOfInput: true,
+
+    // v20+ overlays
+    worldDataProviderAware: true,
+    regionAware: true,
+    tenantAware: true,
+    indexAware: true,
+    binarySubstrateAware: true,
+    triHashAware: true,
+    intellHashAware: true,
+    arteryMetricsV2: true,
+    routingHintAware: true
   },
 
   contract: {
     always: [
       "PulseContinuance",
-      "PulseOmniHosting"
+      "PulseOmniHosting",
+      "PulseSpecsDNAGenome",
+      "WorldDataProvider"
     ],
     never: [
       "safeRoute",
@@ -69,17 +84,18 @@ AI_EXPERIENCE_META = {
   }
 }
 */
+
 import { createPulseCoreMemory } from "../../PULSE-CORE/PulseCoreMemory.js";
 
 // ============================================================================
-// META — v16-Immortal-GPU+-CI
+// META — v20-IMMORTAL-GPU+-CI-INTEL
 // ============================================================================
 
 export const PulseSchemaMeta = Object.freeze({
   layer: "PulseSchema",
   role: "CANONICAL_SCHEMA_ORGAN",
-  version: "16-Immortal-GPU+-CI",
-  identity: "PulseSchema-v16-Immortal-GPU+-CI",
+  version: "20-IMMORTAL-GPU+-CI-INTEL",
+  identity: "PulseSchema-v20-IMMORTAL-GPU+-CI-INTEL",
 
   evo: Object.freeze({
     deterministic: true,
@@ -108,7 +124,17 @@ export const PulseSchemaMeta = Object.freeze({
     validationAware: true,
     diffAware: true,
 
-    epoch: "16-Immortal-GPU+-CI"
+    // v20+ overlays
+    worldDataProviderAware: true,
+    regionAware: true,
+    tenantAware: true,
+    indexAware: true,
+    binarySubstrateAware: true,
+    triHashAware: true,
+    intellHashAware: true,
+    routingHintAware: true,
+
+    epoch: "20-IMMORTAL-GPU+-CI-INTEL"
   })
 });
 
@@ -149,13 +175,89 @@ export class PulseSchema {
 }
 
 // ============================================================================
-// Internal Helpers
+// Internal Helpers — clamp, hashing, signatures, IntellHash
 // ============================================================================
 
 function clamp01(v) {
   if (v < 0) return 0;
   if (v > 1) return 1;
   return v;
+}
+
+function _hashPrimary(str) {
+  let h = 0;
+  const s = String(str);
+  for (let i = 0; i < s.length; i++) {
+    h = (h + s.charCodeAt(i) * (i + 1)) % 1000003;
+  }
+  return `h${h}`;
+}
+
+function _hashSecondary(str) {
+  let h = 1;
+  const s = String(str);
+  for (let i = 0; i < s.length; i++) {
+    h = (h * 31 + s.charCodeAt(i) * (i + 7)) % 1000033;
+  }
+  return `a${h}`;
+}
+
+function _hashTertiary(str) {
+  let h = 7;
+  const s = String(str);
+  for (let i = 0; i < s.length; i++) {
+    h = (h * 131 + s.charCodeAt(i) * (i + 13)) % 1000081;
+  }
+  return `t${h}`;
+}
+
+function computeTriHash(str) {
+  const primary = _hashPrimary(str);
+  const secondary = _hashSecondary(str);
+  const tertiary = _hashTertiary(str);
+  const combined = _hashPrimary(primary + "::" + secondary + "::" + tertiary);
+  return { primary, secondary, tertiary, combined };
+}
+
+function computeSchemaSignature(schema) {
+  const safe = {
+    version: schema?.version || 1,
+    lineage: schema?.lineage || null,
+    region: schema?.region || null,
+    fields: {}
+  };
+
+  const fields = schema?.fields || {};
+  const keys = Object.keys(fields).sort();
+  for (const k of keys) {
+    const f = fields[k];
+    safe.fields[k] = {
+      type: f.type,
+      required: !!f.required,
+      constraints: f.constraints || {}
+    };
+  }
+
+  const json = JSON.stringify(safe);
+  return computeTriHash(json);
+}
+
+function computeSchemaIntellHash(schema, routingHints = {}) {
+  const signature = computeSchemaSignature(schema);
+  const complexity = summarizeSchemaComplexity(schema);
+  const payload = {
+    signature,
+    complexity,
+    routingHints
+  };
+  const json = JSON.stringify(payload);
+  const tri = computeTriHash(json);
+  return {
+    intellHash: tri.combined,
+    signature,
+    complexity,
+    routingHints
+  };
 }
 
 function mapHostTypeToPulseType(hostType) {
@@ -191,7 +293,7 @@ function normalizeFieldDefinition(field) {
 }
 
 // ============================================================================
-// Artery Metrics (symbolic, in-memory only)
+// Artery Metrics v2 (symbolic, in-memory only)
 // ============================================================================
 
 const _schemaArtery = {
@@ -202,11 +304,16 @@ const _schemaArtery = {
   mergeOps: 0,
   validateOps: 0,
   diffOps: 0,
+  worldOps: 0,
+  gpuOps: 0,
+  ciOps: 0,
   lastOpKind: null,
-  lastFieldCount: 0
+  lastFieldCount: 0,
+  lastRegion: null,
+  lastTenant: null
 };
 
-function _bumpArtery(kind, fieldCount) {
+function _bumpArtery(kind, fieldCount, region = null, tenant = null) {
   _schemaArtery.totalOps += 1;
   if (kind === "firestore") _schemaArtery.firestoreOps += 1;
   if (kind === "sql") _schemaArtery.sqlOps += 1;
@@ -214,9 +321,14 @@ function _bumpArtery(kind, fieldCount) {
   if (kind === "merge") _schemaArtery.mergeOps += 1;
   if (kind === "validate") _schemaArtery.validateOps += 1;
   if (kind === "diff") _schemaArtery.diffOps += 1;
+  if (kind === "world") _schemaArtery.worldOps += 1;
+  if (kind === "gpu") _schemaArtery.gpuOps += 1;
+  if (kind === "ci") _schemaArtery.ciOps += 1;
 
   _schemaArtery.lastOpKind = kind;
   _schemaArtery.lastFieldCount = fieldCount || 0;
+  _schemaArtery.lastRegion = region || _schemaArtery.lastRegion || null;
+  _schemaArtery.lastTenant = tenant || _schemaArtery.lastTenant || null;
 }
 
 export function getSchemaArterySnapshot() {
@@ -270,6 +382,8 @@ const KEY_LAST_VALIDATE = "last-validate-result";
 const KEY_LAST_DIFF = "last-diff-result";
 const KEY_LAST_OVERLAY = "last-presence-overlay";
 const KEY_LAST_BINARY_OUT = "last-binary-out";
+const KEY_LAST_WORLD_HINTS = "last-world-hints";
+const KEY_LAST_INTELLHASH = "last-schema-intellhash";
 
 export function getLastSchemaState() {
   CoreMemory.prewarm();
@@ -284,12 +398,14 @@ export function getLastSchemaState() {
     lastValidateResult: CoreMemory.get(ROUTE, KEY_LAST_VALIDATE),
     lastDiffResult: CoreMemory.get(ROUTE, KEY_LAST_DIFF),
     lastPresenceOverlay: CoreMemory.get(ROUTE, KEY_LAST_OVERLAY),
-    lastBinaryOut: CoreMemory.get(ROUTE, KEY_LAST_BINARY_OUT)
+    lastBinaryOut: CoreMemory.get(ROUTE, KEY_LAST_BINARY_OUT),
+    lastWorldHints: CoreMemory.get(ROUTE, KEY_LAST_WORLD_HINTS),
+    lastIntellHash: CoreMemory.get(ROUTE, KEY_LAST_INTELLHASH)
   };
 }
 
 // ============================================================================
-// Presence / Continuance / CI / Binary-Delta Overlays (symbolic only)
+// Presence / Continuance / CI / Binary-Delta / World Hints Overlays
 // ============================================================================
 
 export function buildSchemaPresenceOverlay({
@@ -301,7 +417,14 @@ export function buildSchemaPresenceOverlay({
   prewarmHints = {},
   continuanceRiskReport = null,
   ciSurface = null,
-  binaryDeltaPacket = null
+  binaryDeltaPacket = null,
+
+  // v20 world-layer hints
+  regionCode = null,
+  tenantId = null,
+  partitionKey = null,
+  indexHints = null,
+  worldBackend = "worldDataProvider"
 } = {}) {
   const globalRisk = clamp01(
     continuanceRiskReport?.globalRisk != null
@@ -339,6 +462,14 @@ export function buildSchemaPresenceOverlay({
         unchangedBits: 0
       };
 
+  const worldHints = Object.freeze({
+    regionCode: regionCode || null,
+    tenantId: tenantId || null,
+    partitionKey: partitionKey || null,
+    indexHints: indexHints || null,
+    backend: worldBackend
+  });
+
   const overlay = Object.freeze({
     presenceField: presenceContext,
     advantageField: advantageContext,
@@ -356,10 +487,12 @@ export function buildSchemaPresenceOverlay({
     },
 
     ciOverlay: ciHint,
-    binaryDeltaOverlay: binaryDeltaHint
+    binaryDeltaOverlay: binaryDeltaHint,
+    worldHints
   });
 
   CoreMemory.set(ROUTE, KEY_LAST_OVERLAY, overlay);
+  CoreMemory.set(ROUTE, KEY_LAST_WORLD_HINTS, worldHints);
   return overlay;
 }
 
@@ -390,8 +523,12 @@ export function unifyFromFirestore(firestoreSchema) {
     meta: firestoreSchema?.meta || {}
   });
 
-  _bumpArtery("firestore", Object.keys(fields).length);
+  _bumpArtery("firestore", Object.keys(fields).length, schema.region, schema.meta?.tenantId || null);
   CoreMemory.set(ROUTE, KEY_LAST_FIRESTORE, schema);
+
+  const intell = computeSchemaIntellHash(schema, schema.meta?.worldHints || {});
+  CoreMemory.set(ROUTE, KEY_LAST_INTELLHASH, intell);
+
   return schema;
 }
 
@@ -426,8 +563,12 @@ export function unifyFromSQL(sqlSchema) {
     meta: sqlSchema?.meta || {}
   });
 
-  _bumpArtery("sql", Object.keys(fields).length);
+  _bumpArtery("sql", Object.keys(fields).length, schema.region, schema.meta?.tenantId || null);
   CoreMemory.set(ROUTE, KEY_LAST_SQL, schema);
+
+  const intell = computeSchemaIntellHash(schema, schema.meta?.worldHints || {});
+  CoreMemory.set(ROUTE, KEY_LAST_INTELLHASH, intell);
+
   return schema;
 }
 
@@ -440,6 +581,8 @@ export function unifyFromBinary(binaryBuffer) {
     const schema = new PulseSchema({});
     _bumpArtery("binary", 0);
     CoreMemory.set(ROUTE, KEY_LAST_BINARY, schema);
+    const intell = computeSchemaIntellHash(schema, {});
+    CoreMemory.set(ROUTE, KEY_LAST_INTELLHASH, intell);
     return schema;
   }
 
@@ -458,6 +601,8 @@ export function unifyFromBinary(binaryBuffer) {
     });
     _bumpArtery("binary", 0);
     CoreMemory.set(ROUTE, KEY_LAST_BINARY, schema);
+    const intell = computeSchemaIntellHash(schema, {});
+    CoreMemory.set(ROUTE, KEY_LAST_INTELLHASH, intell);
     return schema;
   }
 
@@ -481,8 +626,12 @@ export function unifyFromBinary(binaryBuffer) {
     meta: decoded.meta || {}
   });
 
-  _bumpArtery("binary", Object.keys(fields).length);
+  _bumpArtery("binary", Object.keys(fields).length, schema.region, schema.meta?.tenantId || null);
   CoreMemory.set(ROUTE, KEY_LAST_BINARY, schema);
+
+  const intell = computeSchemaIntellHash(schema, schema.meta?.worldHints || {});
+  CoreMemory.set(ROUTE, KEY_LAST_INTELLHASH, intell);
+
   return schema;
 }
 
@@ -512,8 +661,12 @@ export function unifyToBinary(pulseSchema) {
   const jsonStr = JSON.stringify(safe);
   const buffer = new TextEncoder().encode(jsonStr);
 
-  _bumpArtery("binary", Object.keys(pulseSchema.fields || {}).length);
+  _bumpArtery("binary", Object.keys(pulseSchema.fields || {}).length, safe.region, safe.meta?.tenantId || null);
   CoreMemory.set(ROUTE, KEY_LAST_BINARY_OUT, buffer);
+
+  const intell = computeSchemaIntellHash(pulseSchema, pulseSchema.meta?.worldHints || {});
+  CoreMemory.set(ROUTE, KEY_LAST_INTELLHASH, intell);
+
   return buffer;
 }
 
@@ -576,8 +729,12 @@ export function mergeSchemas(schemaA, schemaB) {
     meta
   });
 
-  _bumpArtery("merge", Object.keys(mergedFields).length);
+  _bumpArtery("merge", Object.keys(mergedFields).length, merged.region, merged.meta?.tenantId || null);
   CoreMemory.set(ROUTE, KEY_LAST_MERGED, merged);
+
+  const intell = computeSchemaIntellHash(merged, merged.meta?.worldHints || {});
+  CoreMemory.set(ROUTE, KEY_LAST_INTELLHASH, intell);
+
   return merged;
 }
 
@@ -674,7 +831,7 @@ export function validateDocument(pulseSchema, doc) {
   }
 
   const fieldCount = Object.keys(fields).length;
-  _bumpArtery("validate", fieldCount);
+  _bumpArtery("validate", fieldCount, pulseSchema.region, pulseSchema.meta?.tenantId || null);
 
   const result = Object.freeze({
     ok: Object.keys(errors).length === 0 && missingRequired.length === 0,
@@ -730,7 +887,7 @@ export function computeSchemaDiff(schemaA, schemaB) {
     changed
   });
 
-  _bumpArtery("diff", allKeys.size);
+  _bumpArtery("diff", allKeys.size, schemaB?.region || schemaA?.region || null, schemaB?.meta?.tenantId || schemaA?.meta?.tenantId || null);
   CoreMemory.set(ROUTE, KEY_LAST_DIFF, diff);
   return diff;
 }
@@ -752,15 +909,14 @@ export function summarizeSchemaComplexity(schema) {
     typeCounts
   });
 
-  // no artery bump here; call sites can decide if they want it
   return summary;
 }
 
 // ============================================================================
-// Exported API Surface
+// Exported API Surface — v20 IMMORTAL
 // ============================================================================
 
-const PulseSchemaAPI_v16 = {
+const PulseSchemaAPI_v20 = {
   Meta: PulseSchemaMeta,
   PulseField,
   PulseSchema,
@@ -777,7 +933,11 @@ const PulseSchemaAPI_v16 = {
   buildSchemaPresenceOverlay,
   getSchemaArterySnapshot,
   getLastSchemaState,
+
+  computeSchemaSignature,
+  computeSchemaIntellHash,
+
   CoreMemory
 };
 
-export default PulseSchemaAPI_v16;
+export default PulseSchemaAPI_v20;

@@ -1,15 +1,17 @@
 // ============================================================================
-//  PULSE‑TRUST JURY BOX CAMERA v16++ IMMORTAL
+//  PULSE‑TRUST JURY BOX CAMERA v20.0.0 IMMORTAL
 //  RAW Black‑Box Recorder • Behavioral Pattern Detector • AI‑Blind
+//  v20+: Evidence‑helping, schema‑tagged, ER‑ready
 // ============================================================================
 
 /*
 AI_EXPERIENCE_META:
   organ: PulseTrustJuryBoxCamera
-  version: 16.2.0
+  version: 20.0.0
   tier: IMMORTAL
   layer: trust
   role: trust_jury_observer
+  mind: false
 
   description:
     "The JuryBoxCamera is the RAW, immutable black‑box recorder of the
@@ -27,20 +29,22 @@ AI_EXPERIENCE_META:
        - AI cannot rewrite history.
 
      It produces:
-       - patterns (dominance, AI‑echo, decision distribution)
+       - patterns (dominance, AI‑echo, decision distribution, timing)
        - anomalies (dominance, echo clusters, timing irregularities)
        - rawEvents (immutable)
        - rawVerdicts (immutable)
+       - snapshot (ER‑ready, metadata‑only)
 
      These outputs feed:
        - JuryFeed (as citizenWitness patterns/anomalies)
        - CreatorFlags
        - JuryCouncil (systemic drift detection)
-       - ExpansionCompliance (constitutional enforcement)"
+       - ExpansionCompliance (constitutional enforcement)
+       - PulseTrustEvidence / Evidential Records (as RAW_AI snapshot)"
 
   lineage:
-    parent: "PulseTrustJuryBoxCamera-v15"
-    evolution: "v16++ IMMORTAL — RAW recorder + AI‑blind + anomaly clustering"
+    parent: "PulseTrustJuryBoxCamera-v16++"
+    evolution: "v20++ IMMORTAL — RAW recorder + AI‑blind + anomaly clustering + ER‑ready"
 
   identity:
     type: "organ"
@@ -55,12 +59,14 @@ AI_EXPERIENCE_META:
     - "Never allows AI to write to the recorder."
     - "Always deterministic and drift-proof."
     - "Always metadata-only."
+    - "Always produces ER‑ready, schema‑tagged snapshots."
 
   contract:
     always:
       - "PulseTrustJuryFrame"
       - "PulseTrustJuryCouncil"
       - "PulseTrustCreatorFlags"
+      - "PulseTrustEvidence / Evidential Records (as RAW_AI snapshot)"
     never:
       - "safeRoute"
       - "fetchViaCNS"
@@ -69,34 +75,39 @@ AI_EXPERIENCE_META:
 */
 
 export const PulseTrustJuryBoxCameraMeta = Object.freeze({
-  id: "PulseTrustJuryBoxCamera-v16++",
-  version: "16.2.0",
+  id: "PulseTrustJuryBoxCamera-v20++",
+  version: "20.0.0",
   role: "trust_jury_observer",
   mind: false,
   description:
-    "IMMORTAL RAW black‑box recorder for jury sessions. AI‑blind, immutable.",
+    "IMMORTAL RAW black‑box recorder for jury sessions. AI‑blind, immutable, ER‑ready.",
   identity: {
     type: "organ",
     name: "PulseTrustJuryBoxCamera",
     band: "trust",
     mind: false,
     immutable: true
+  },
+  schema: {
+    snapshotType: "trust_jury_box_camera",
+    categories: ["RAW", "RAW_AI"],
+    erReady: true
   }
 });
 
 // ============================================================================
-//  CLASS — RAW BLACK BOX RECORDER
+//  CLASS — RAW BLACK BOX RECORDER v20
 // ============================================================================
 export function createJuryBoxCamera() {
-
   // --------------------------------------------------------------------------
-  //  analyzeSession — RAW → patterns + anomalies
+  //  analyzeSession — RAW → patterns + anomalies + ER‑ready snapshot
   // --------------------------------------------------------------------------
   function analyzeSession({
+    sessionId = null,
+    ts = Date.now(),
     events = [],     // RAW events: [{ type, actor, ts, aiOrigin, ... }]
     verdicts = []    // RAW verdicts: [{ decisionId, verdict, creatorFlags, ts }]
   } = {}) {
-
     // RAW → immutable
     const rawEvents = Object.freeze([...events]);
     const rawVerdicts = Object.freeze([...verdicts]);
@@ -150,7 +161,6 @@ export function createJuryBoxCamera() {
     patterns.dominantUserDecisionCount = dominantCount;
     patterns.aiEchoCount = aiEchoCount;
 
-    // Dominance anomaly
     if (dominantUser && dominantCount >= 3) {
       anomalies.push({
         type: "dominance",
@@ -168,7 +178,8 @@ export function createJuryBoxCamera() {
 
     for (let i = 1; i < sorted.length; i++) {
       const dt = sorted[i].ts - sorted[i - 1].ts;
-      if (dt < 5) { // <5ms = suspicious burst
+      if (dt < 5) {
+        // <5ms = suspicious burst
         patterns.timingIrregularities++;
       }
     }
@@ -195,14 +206,32 @@ export function createJuryBoxCamera() {
     }
 
     // ------------------------------------------------------------------------
-    //  RETURN IMMUTABLE CAMERA SNAPSHOT
+    //  BUILD ER‑READY SNAPSHOT (metadata‑only, RAW_AI category)
+// ------------------------------------------------------------------------
+    const snapshot = Object.freeze({
+      meta: PulseTrustJuryBoxCameraMeta,
+      sessionId,
+      ts,
+      schema: PulseTrustJuryBoxCameraMeta.schema,
+      patterns: Object.freeze({ ...patterns }),
+      anomalies: Object.freeze([...anomalies]),
+      // RAW references are kept separate so ER can store them as RAW if desired
+      rawRef: {
+        eventsCount: rawEvents.length,
+        verdictsCount: rawVerdicts.length
+      }
+    });
+
+    // ------------------------------------------------------------------------
+    //  RETURN IMMUTABLE CAMERA SNAPSHOT + RAW
     // ------------------------------------------------------------------------
     return Object.freeze({
       meta: PulseTrustJuryBoxCameraMeta,
-      patterns: Object.freeze(patterns),
-      anomalies: Object.freeze(anomalies),
-      rawEvents,
-      rawVerdicts
+      snapshot,          // ER‑ready, RAW_AI
+      patterns: snapshot.patterns,
+      anomalies: snapshot.anomalies,
+      rawEvents,         // RAW
+      rawVerdicts        // RAW
     });
   }
 

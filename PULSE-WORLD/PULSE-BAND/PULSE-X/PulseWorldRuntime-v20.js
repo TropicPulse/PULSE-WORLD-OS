@@ -1,58 +1,74 @@
-/**
- * PulseRuntime-v17-IMMORTAL.js
- * PULSE-X / RUNTIME / v17-IMMORTAL
- *
- * ROLE:
- *   v17 Runtime introduces:
- *     - runtime-level hot-state tracking (instances/regions/hosts)
- *     - binary metrics (frame sizes, counts, bands)
- *     - tick sequencing + logical runtime clock
- *     - region/host heatmaps + presence/mode/page/chunkProfile/trust heatmaps
- *     - chunk/prewarm/cache awareness (symbolic + binary)
- *     - world-adjustment hooks (world engine / expansion aware)
- *     - unified introspection API (symbolic + binary + presence)
- *     - dual-band, presence-aware, advantage-aware runtime spine
- *
- *   Symbolic-first.
- *   Binary-backed.
- *   Memory-spined.
- *   Deterministic.
- */
+// ============================================================================
+//  FILE: /PULSE-X/PulseRuntime-v20-IMMORTAL-ADVANTAGE.js
+//  PULSE RUNTIME v20 — IMMORTAL ADVANTAGE RUNTIME SPINE
+// ----------------------------------------------------------------------------
+//  ROLE (UNDERTOW OF THE ORGANISM):
+//    • Single source of truth for execution ticks across the organism.
+//    • Orchestrates multi‑organism plans (symbolic) and binary execution frames.
+//    • Tracks heat (instances / regions / hosts / presence / trust).
+//    • Tracks chunk profiles, cache behavior, prewarm events, and band usage.
+//    • Exposes a deterministic, introspectable runtime state for the whole world.
+//
+//  DESIGN:
+//    • Symbolic‑first, binary‑backed, memory‑spined.
+//    • Dual‑band, advantage‑aware, presence‑aware.
+//    • No network, no filesystem, no eval, no timers.
+//    • All state flows through CoreMemory; all outputs are replayable.
+// ============================================================================
+
 /*
 AI_EXPERIENCE_META = {
   identity: "PulseRuntime",
-  version: "v17-IMMORTAL",
+  version: "v20-IMMORTAL-ADVANTAGE",
   layer: "runtime",
-  role: "organism_execution_conductor",
-  lineage: "PulseRuntime-v1 → v11-Evo → v13-Presence-Evo+ → v14-Immortal → v2.4-Presence-TOUCH-Immortal → v17-IMMORTAL",
+  role: "organism_undertow_runtime_spine",
+
+  description: `
+    The Pulse Runtime is the undertow of the organism: a deterministic,
+    dual‑band, advantage‑aware execution spine that coordinates multi‑organism
+    plans, binary substrates, and world genomes into a single runtime flow.
+    It does not guess. It does not fetch. It only executes what the organism
+    has already decided it is allowed to be.
+  `,
+
+  lineage: [
+    "PulseRuntime-v1",
+    "v11-Evo",
+    "v13-Presence-Evo+",
+    "v14-Immortal",
+    "v2.4-Presence-TOUCH-Immortal",
+    "v17-IMMORTAL",
+    "v20-IMMORTAL-ADVANTAGE"
+  ],
 
   evo: {
+    // Runtime awareness
     runtimeConductor: true,
     executionCycle: true,
     dualBand: true,
+    advantageAware: true,
+    presenceAware: true,
+    worldLayerAware: true,
+    genomeAware: true,
+    regioningAware: true,
+
+    // Substrate / chunk / cache
     substrateAware: true,
     schedulerAware: true,
-
-    deterministic: true,
-    driftProof: true,
-    pureCompute: true,
-
-    zeroMutationOfInput: true,
-    zeroNetwork: true,
-    zeroFilesystem: true,
-
-    presenceAware: true,
-    advantageAware: true,
-    pulseTouchAware: true,
     chunkAware: true,
     cacheAware: true,
     prewarmAware: true,
     meshAware: true,
-    expansionAware: true,
     multiInstanceReady: true,
-    runtimeAware: true,
-    worldLayerAware: true,
-    genomeAware: true
+
+    // Safety / determinism
+    deterministic: true,
+    driftProof: true,
+    pureCompute: true,
+    zeroNetworkFetch: true,
+    zeroFilesystem: true,
+    zeroExternalMutation: true,
+    zeroMutationOfInput: true
   },
 
   contract: {
@@ -60,28 +76,43 @@ AI_EXPERIENCE_META = {
       "BinarySubstrate",
       "PulseScheduler",
       "PulseSpecs.DNAGenome",
-      "PulseWorldGenome"
+      "PulseWorldGenome",
+      "CoreMemory",
+      "buildMultiOrganismPlan",
+      "summarizeMultiOrganismPlan",
+      "executeMultiOrganismPlan",
+      "packMultiOrganismPlan",
+      "packExecutionResult"
     ],
     never: [
       "safeRoute",
       "fetchViaCNS",
-      "presenceEngine",
-      "meshKernel",
-      "routerCore"
+      "directInternetAccess",
+      "externalNetworkIO",
+      "dynamicEval",
+      "runtimeIntentRewrite"
     ]
+  },
+
+  notes: {
+    undertow: `
+      Think of this runtime as the ocean current under the organism:
+      it moves everything, but it never decides what the coastline is.
+      Founder Intent and Organism Maps define the coastline; Runtime
+      only moves water according to those maps.
+    `
   }
 }
 */
 
-// -------------------------
-// Meta
-// -------------------------
-
+// -----------------------------------------------------------------------------
+// META — RUNTIME ORGAN IDENTITY (IMMUTABLE CONTRACT SHAPE)
+// -----------------------------------------------------------------------------
 export const PulseRuntimeV17Meta = Object.freeze({
-  organId: "PulseRuntime-v17-IMMORTAL",
+  organId: "PulseRuntime-v20-IMMORTAL-ADVANTAGE",
   role: "RUNTIME_SPINE",
-  version: "v17-IMMORTAL",
-  epoch: "v17-IMMORTAL",
+  version: "v20-IMMORTAL-ADVANTAGE",
+  epoch: "v20-IMMORTAL-ADVANTAGE",
   layer: "RuntimeCore",
   safety: Object.freeze({
     deterministic: true,
@@ -106,9 +137,9 @@ export const PulseRuntimeV17Meta = Object.freeze({
   })
 });
 
-// -------------------------
-// Imports
-// -------------------------
+// -----------------------------------------------------------------------------
+// IMPORTS — WORLD / FINALITY / SPECS / GENOME / MEMORY / BINARY SUBSTRATE
+// -----------------------------------------------------------------------------
 
 // World / Regioning (Expansion)
 import * as PulseWorldRegioning from "../PULSE-EXPANSION/PulseExpansion-v16.js";
@@ -118,24 +149,22 @@ import * as PulseContinuance from "../PULSE-FINALITY/PULSE-CONTINUANCE/PulseCont
 import * as PulseOmniHosting from "../PULSE-FINALITY/PULSE-OMNIHOSTING/PulseOmniHosting-v16.js";
 import * as PulseSchema from "../PULSE-FINALITY/PULSE-SCHEMA/PulseSchema-v16.js";
 
-// Specs / Genome (for future runtime-aware schema hooks)
+// Specs / Genome (for runtime‑aware schema hooks)
 import { PULSE_FIELDS_SPEC } from "../PULSE-SPECS/PulseSpecsDNAGenome-v17.js";
 
-// World Genome (for world-layer alignment hooks)
-import { PulseWorldGenome } from "./PulseWorldGenome-v17.js";
+// World Genome (for world‑layer alignment hooks)
+import { PulseWorldGenome } from "./PulseWorldGenome-v20.js";
 
 // Core Memory
 import { createPulseCoreMemory } from "../PULSE-CORE/PulseCoreMemory.js";
 
-// Binary substrate (Touch-aware v2.x)
-import BinarySubstrateV2 from "./PulseWorldBinarySubstrate-v17.js";
+// Binary substrate (Touch‑aware v2.x)
+import BinarySubstrateV2 from "./PulseWorldBinarySubstrate-v20.js";
 const { packMultiOrganismPlan, packExecutionResult } = BinarySubstrateV2;
 
-// -------------------------
-// Runtime Functions Wiring
-// -------------------------
-
-// Build multi-organism plan (Expansion / Regioning layer)
+// -----------------------------------------------------------------------------
+// RUNTIME HOOKS — WORLD / SCHEMA / EXECUTION
+// -----------------------------------------------------------------------------
 const buildMultiOrganismPlan =
   PulseWorldRegioning.buildMultiOrganismPlan ||
   (() => {
@@ -159,17 +188,17 @@ const executeMultiOrganismPlan =
     );
   });
 
-// Optional world-aware adjustment hook (symbolic only)
+// World genome alignment hook
 const adjustForWorldGenome =
   PulseWorldGenome?.adjustRuntimePlanForWorld ||
   ((plan, _policy) => plan);
 
-// -------------------------
-// Runtime Memory
-// -------------------------
-
+// Core runtime memory spine
 const CoreMemory = createPulseCoreMemory();
 
+// -----------------------------------------------------------------------------
+// RUNTIME KEYS — LOGICAL CLOCK, HOT MAPS, BINARY METRICS
+// -----------------------------------------------------------------------------
 const ROUTE = "runtime-v17";
 
 const KEY_TICK = "tick-counter";
@@ -195,12 +224,11 @@ const KEY_HOT_CHUNKS = "hot-chunks";
 const KEY_CACHE_HITS = "cache-hits";
 const KEY_CACHE_MISSES = "cache-misses";
 const KEY_PREWARM_EVENTS = "prewarm-events";
-const KEY_BAND_USAGE = "band-usage"; // symbolic/binary/dual
+const KEY_BAND_USAGE = "band-usage"; // symbolic / binary / dual
 
-// -------------------------
-// Helpers — logical clock / counters
-// -------------------------
-
+// -----------------------------------------------------------------------------
+// TICK / CLOCK — LOGICAL RUNTIME TIME
+// -----------------------------------------------------------------------------
 function bumpTick() {
   const t = CoreMemory.get(ROUTE, KEY_TICK) || 0;
   const next = t + 1;
@@ -212,12 +240,18 @@ function bumpTick() {
   return next;
 }
 
+// -----------------------------------------------------------------------------
+// HOT INSTANCE TRACKING — WHICH RUNTIME INSTANCES ARE ACTIVE
+// -----------------------------------------------------------------------------
 function trackInstance(id) {
   const hot = CoreMemory.get(ROUTE, KEY_HOT_INSTANCES) || {};
   hot[id] = (hot[id] || 0) + 1;
   CoreMemory.set(ROUTE, KEY_HOT_INSTANCES, hot);
 }
 
+// -----------------------------------------------------------------------------
+// WORLD / REGION / HOST / TOUCH HEATMAPS
+// -----------------------------------------------------------------------------
 function trackRegionHostAndTouch(state) {
   if (!state) return;
 
@@ -271,6 +305,9 @@ function trackRegionHostAndTouch(state) {
   CoreMemory.set(ROUTE, KEY_HOT_TRUST, trustMap);
 }
 
+// -----------------------------------------------------------------------------
+// BINARY FRAME METRICS — SIZE + BAND USAGE
+// -----------------------------------------------------------------------------
 function trackFrameSize(uint8, band = "symbolic") {
   const size = uint8?.length || 0;
   const hot = CoreMemory.get(ROUTE, KEY_HOT_FRAME_SIZES) || {};
@@ -282,6 +319,9 @@ function trackFrameSize(uint8, band = "symbolic") {
   CoreMemory.set(ROUTE, KEY_BAND_USAGE, bandUsage);
 }
 
+// -----------------------------------------------------------------------------
+// CHUNK PROFILE METRICS — WHICH CHUNK PROFILES ARE HOT
+// -----------------------------------------------------------------------------
 function trackChunkUsage(chunkProfile) {
   if (!chunkProfile) return;
   const chunks = CoreMemory.get(ROUTE, KEY_HOT_CHUNKS) || {};
@@ -289,6 +329,9 @@ function trackChunkUsage(chunkProfile) {
   CoreMemory.set(ROUTE, KEY_HOT_CHUNKS, chunks);
 }
 
+// -----------------------------------------------------------------------------
+// INTERNAL METRICS HELPERS — CACHE / PREWARM / FRAME TRACKING
+// -----------------------------------------------------------------------------
 function trackCacheHit() {
   const hits = CoreMemory.get(ROUTE, KEY_CACHE_HITS) || 0;
   CoreMemory.set(ROUTE, KEY_CACHE_HITS, hits + 1);
@@ -305,10 +348,9 @@ function trackPrewarmEvent(reason = "generic") {
   CoreMemory.set(ROUTE, KEY_PREWARM_EVENTS, events);
 }
 
-// -------------------------
-// Types
-// -------------------------
-
+// -----------------------------------------------------------------------------
+// BINARY FRAME BUNDLES — SYMBOLIC + BINARY PACKED OUTPUT
+// -----------------------------------------------------------------------------
 export class BinaryFramesBundle {
   constructor({ multiPlanFrame, executionFramesById }) {
     this.multiPlanFrame = multiPlanFrame;
@@ -316,6 +358,9 @@ export class BinaryFramesBundle {
   }
 }
 
+// -----------------------------------------------------------------------------
+// RUNTIME TICK RESULT — SINGLE IMMORTAL TICK SNAPSHOT
+// -----------------------------------------------------------------------------
 export class PulseRuntimeTickResult {
   constructor({
     tick,
@@ -334,10 +379,10 @@ export class PulseRuntimeTickResult {
   }
 }
 
-// -------------------------
-// Runtime Tick (v17-IMMORTAL)
-// -------------------------
-
+// -----------------------------------------------------------------------------
+// MAIN TICK — v20 IMMORTAL ADVANTAGE RUNTIME STEP
+// (names kept v17 for compatibility; semantics are v20+)
+// -----------------------------------------------------------------------------
 export function runPulseTickV17({
   instanceContexts,
   currentStatesById,
@@ -345,22 +390,26 @@ export function runPulseTickV17({
   prewarmHint = null,
   cacheHint = null
 }) {
+  // Prewarm core memory for this route
   CoreMemory.prewarm();
   if (prewarmHint) {
     trackPrewarmEvent(prewarmHint);
   }
 
+  // Logical tick + clock
   const tick = bumpTick();
   const logicalClock = CoreMemory.get(ROUTE, KEY_LOGICAL_CLOCK) || tick;
 
   CoreMemory.set(ROUTE, KEY_LAST_POLICY, globalContinuancePolicy);
 
+  // World‑aware instance contexts (regioning, host, etc.)
   const adjustedContexts =
     PulseWorldRegioning.adjustInstanceContextsForWorld?.(
       instanceContexts,
       globalContinuancePolicy
     ) || instanceContexts;
 
+  // Build + adjust multi‑organism plan
   const multiPlanRaw = buildMultiOrganismPlan(adjustedContexts);
   const multiPlan = adjustForWorldGenome(multiPlanRaw, globalContinuancePolicy);
   const multiPlanSummary = summarizeMultiOrganismPlan(multiPlan);
@@ -368,6 +417,7 @@ export function runPulseTickV17({
   CoreMemory.set(ROUTE, KEY_LAST_PLAN, multiPlan);
   CoreMemory.set(ROUTE, KEY_LAST_PLAN_SUMMARY, multiPlanSummary);
 
+  // Execute plan
   const executionResultsById = executeMultiOrganismPlan(
     multiPlan,
     currentStatesById
@@ -375,6 +425,7 @@ export function runPulseTickV17({
 
   CoreMemory.set(ROUTE, KEY_LAST_EXEC, executionResultsById);
 
+  // Track heat + chunk usage per instance
   for (const [id, state] of Object.entries(currentStatesById)) {
     trackInstance(id);
     trackRegionHostAndTouch(state);
@@ -383,12 +434,15 @@ export function runPulseTickV17({
     }
   }
 
+  // Cache metrics
   if (cacheHint === "hit") trackCacheHit();
   if (cacheHint === "miss") trackCacheMiss();
 
+  // Pack symbolic multi‑plan frame
   const multiPlanFrame = packMultiOrganismPlan(multiPlan);
   trackFrameSize(multiPlanFrame, "symbolic");
 
+  // Pack binary execution frames per instance
   const executionFramesById = {};
   for (const [id, exec] of Object.entries(executionResultsById)) {
     const frame = packExecutionResult(exec);
@@ -403,6 +457,7 @@ export function runPulseTickV17({
 
   CoreMemory.set(ROUTE, KEY_LAST_FRAMES, binaryFrames);
 
+  // Return full tick snapshot
   return new PulseRuntimeTickResult({
     tick,
     logicalClock,
@@ -413,22 +468,25 @@ export function runPulseTickV17({
   });
 }
 
-// -------------------------
-// Introspection API
-// -------------------------
-
+// -----------------------------------------------------------------------------
+// RUNTIME STATE SNAPSHOT — READ‑ONLY VIEW OF HOT STATE
+// -----------------------------------------------------------------------------
 export function getRuntimeStateV17() {
   CoreMemory.prewarm();
 
   return {
+    // clocks
     tick: CoreMemory.get(ROUTE, KEY_TICK),
     logicalClock: CoreMemory.get(ROUTE, KEY_LOGICAL_CLOCK),
+
+    // last policy + plan + exec
     policy: CoreMemory.get(ROUTE, KEY_LAST_POLICY),
     plan: CoreMemory.get(ROUTE, KEY_LAST_PLAN),
     planSummary: CoreMemory.get(ROUTE, KEY_LAST_PLAN_SUMMARY),
     execResults: CoreMemory.get(ROUTE, KEY_LAST_EXEC),
     binaryFrames: CoreMemory.get(ROUTE, KEY_LAST_FRAMES),
 
+    // heat maps
     hotInstances: CoreMemory.get(ROUTE, KEY_HOT_INSTANCES),
     hotRegions: CoreMemory.get(ROUTE, KEY_HOT_REGIONS),
     hotHosts: CoreMemory.get(ROUTE, KEY_HOT_HOSTS),
@@ -440,21 +498,22 @@ export function getRuntimeStateV17() {
     hotChunkProfiles: CoreMemory.get(ROUTE, KEY_HOT_CHUNK_PROFILES),
     hotTrust: CoreMemory.get(ROUTE, KEY_HOT_TRUST),
 
+    // chunk + cache + band usage
     hotChunks: CoreMemory.get(ROUTE, KEY_HOT_CHUNKS),
     cacheHits: CoreMemory.get(ROUTE, KEY_CACHE_HITS),
     cacheMisses: CoreMemory.get(ROUTE, KEY_CACHE_MISSES),
     prewarmEvents: CoreMemory.get(ROUTE, KEY_PREWARM_EVENTS),
     bandUsage: CoreMemory.get(ROUTE, KEY_BAND_USAGE),
 
+    // genome + world meta
     genomeSpecVersion: PULSE_FIELDS_SPEC.version,
     worldGenomeMeta: PulseWorldGenome?.meta || null
   };
 }
 
-// -------------------------
-// Export
-// -------------------------
-
+// -----------------------------------------------------------------------------
+// RUNTIME OBJECT EXPORT — IMMORTAL ADVANTAGE RUNTIME CONTRACT
+// -----------------------------------------------------------------------------
 const PulseRuntimeV17 = {
   meta: PulseRuntimeV17Meta,
   runPulseTickV17,

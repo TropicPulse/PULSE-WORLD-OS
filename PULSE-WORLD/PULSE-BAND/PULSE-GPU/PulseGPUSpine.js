@@ -75,7 +75,7 @@ import { PulseGPUHealer } from "./PulseGPULymphNodes.js";
 import { PulseGPUUXBridge } from "./PulseGPUCognitiveIntelligence.js";
 import { PulseGPUGeneticMemory } from "./PulseGPUGeneticMemory.js";
 import { DEFAULT_USER_PREFERENCES } from "./PulseGPUCommandments.js";
-import { PulseEarnSignalFactoring } from "../PULSE-EARN/PulseEarnSignalFactoring.js";
+import { PulseEarnSignalFactoring } from "../PULSE-EARN/PulseEarnSignalFactoring-v20.js";
 // Extra 16+ integration organs (conceptual, pure metadata)
 import { PulseEarnBridge } from "../PULSE-EARN/PulseEarn-v16.js";
 import { PulseGPUChunkPlanner } from "./PulseGPUChunkPlanner.js";

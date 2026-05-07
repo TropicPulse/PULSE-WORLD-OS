@@ -1,13 +1,13 @@
 // ============================================================================
-// FILE: /specs/PulseSpecsDNAGenome-v17-IMMORTAL.js
-// [pulse:specs] PULSE_SPECS_DNA_GENOME v17-IMMORTAL
+// FILE: /specs/PulseSpecsDNAGenome-v20-IMMORTAL.js
+// [pulse:specs] PULSE_SPECS_DNA_GENOME v20-IMMORTAL
 // OS Data Genome • Canonical Field Language • Deterministic Translation Spec
 // PURE SPEC — NO IO • NO NETWORK • NO AI • NO RUNTIME
 // ============================================================================
 //
-// IDENTITY — THE OS DNA GENOME (v17-IMMORTAL):
+// IDENTITY — THE OS DNA GENOME (v20-IMMORTAL):
 // -------------------------------------------
-// • Immutable genetic blueprint of Pulse OS (v10.4 → v17 IMMORTAL).
+// • Immutable genetic blueprint of Pulse OS (v10.4 → v20 IMMORTAL).
 // • Canonical PulseField language for all v12+ subsystems.
 // • Source of truth for SQL ↔ Pulse ↔ Firestore ↔ WorldDataProvider mappings.
 // • Validation rulebook for translators + healers + shifter engines.
@@ -15,16 +15,18 @@
 // • Drift‑proof, deterministic, backwards‑compatible, evolution‑safe.
 // • Binary‑aware, pulse‑aware, dual‑band, shifter‑aware (symbolic + binary).
 // • Presence/harmonics/IMMORTAL band metadata surfaced as pure schema only.
-// • Multi‑backend aware (firebase/sql/custom) as *metadata only*.
+// • Multi‑backend aware (firebase/sql/worldDataProvider/custom).
+// • v20 adds: IntellHash hints, BinarySubstrate hints, WorldRouter hints,
+//   Scheduler hints, Region/Tenant/Partition/Index v2, and Epoch‑20 stability.
 // ============================================================================
 
 /*
 AI_EXPERIENCE_META = {
   identity: "PulseSpecsDNAGenome",
-  version: "v17-IMMORTAL",
+  version: "v20-IMMORTAL",
   layer: "genome",
   role: "os_data_genome",
-  lineage: "v1 → v9.1 → v10.4 → v11-Evo → v12.3 → v14-Immortal → v17-IMMORTAL",
+  lineage: "v1 → v9.1 → v10.4 → v11-Evo → v12.3 → v14-Immortal → v17-IMMORTAL → v20-IMMORTAL",
 
   evo: {
     genomeCore: true,
@@ -47,7 +49,12 @@ AI_EXPERIENCE_META = {
     regionAware: true,
     tenancyAware: true,
     indexAware: true,
-    immortalBandAware: true
+    immortalBandAware: true,
+    binarySubstrateAware: true,
+    intellHashAware: true,
+    schedulerAware: true,
+    worldRouterAware: true,
+    worldDataProviderAware: true
   },
 
   contract: {
@@ -55,26 +62,32 @@ AI_EXPERIENCE_META = {
       "PulseSchema",
       "PulseContinuance",
       "PulseOmniHosting",
-      "PulseCoreMemory"
+      "PulseCoreMemory",
+      "PulseTranslatorRNA",
+      "PulseTranslatorSkeletal"
     ],
     never: [
       "safeRoute",
       "fetchViaCNS",
       "runtimeExecution",
       "ioOperations",
-      "legacyGenome"
+      "legacyGenome",
+      "binaryExecution"
     ]
   }
 }
 */
 
+// ============================================================================
+//  CONTEXT BLOCK — v20 IMMORTAL
+// ============================================================================
 export const PULSE_FIELDS_CONTEXT = {
   layer: "PulseSpecs",
   role: "OS_DATA_GENOME",
   purpose: "Define canonical PulseField types, rules, and mappings",
   context: "Deterministic data language for all Pulse subsystems",
-  version: 17.0,
-  target: "os-core-v17-IMMORTAL",
+  version: 20.0,
+  target: "os-core-v20-IMMORTAL",
   selfRepairable: false,
 
   evolution: {
@@ -85,7 +98,8 @@ export const PULSE_FIELDS_CONTEXT = {
     "11.0": "Binary‑aware genome extension, v11‑Evo alignment, pulse/binary field layer.",
     "12.3": "Every‑advantage uplift: v12-core alignment, stricter determinism + drift guards.",
     "14.0": "IMMORTAL uplift: dual‑band + presence/harmonics/shifter surfaces.",
-    "17.0": "WorldDataProvider + multi‑backend hints (Firestore/SQL), region/tenant/index metadata."
+    "17.0": "WorldDataProvider + multi‑backend hints (Firestore/SQL), region/tenant/index metadata.",
+    "20.0": "WorldRouter + Scheduler + IntellHash + BinarySubstrate hints, Epoch‑20 stability."
   },
 
   immortal: {
@@ -100,26 +114,47 @@ export const PULSE_FIELDS_CONTEXT = {
     passiveForwarding: true,
     shifterPulseAware: true,
     binaryFrontEndReady: true,
-    symbolicBackEndReady: true
+    symbolicBackEndReady: true,
+    intellHashReady: true,
+    binarySubstrateReady: true,
+    schedulerReady: true,
+    worldRouterReady: true
   },
 
   backends: {
     firebase: {
       dialect: "firestore",
       supportsSubcollections: true,
-      supportsTimestamps: true
+      supportsTimestamps: true,
+      supportsArrayUnion: true,
+      supportsIncrement: true,
+      v20Hints: {
+        binarySubstrateSafe: true,
+        intellHashSafe: true
+      }
     },
     sql: {
       dialect: "generic-sql",
       supportsJson: true,
       supportsIndexes: true,
-      supportsCompositeKeys: true
+      supportsCompositeKeys: true,
+      supportsPartitioning: true,
+      v20Hints: {
+        regionPartitionSafe: true,
+        tenantPartitionSafe: true
+      }
     },
     worldDataProvider: {
       dialect: "abstract",
       routingByDNA: true,
       regionAware: true,
-      tenantAware: true
+      tenantAware: true,
+      schedulerAware: true,
+      v20Hints: {
+        routerSafe: true,
+        binaryAware: true,
+        intellHashAware: true
+      }
     }
   }
 };
@@ -128,7 +163,7 @@ export const PULSE_FIELDS_CONTEXT = {
 // ============================================================================
 // PulseField Types — the universal data language (GENETIC ALPHABET)
 // ============================================================================
-// NOTE: v17 adds no breaking primitives. New types must degrade cleanly.
+// NOTE: v20 adds no breaking primitives. New types must degrade cleanly.
 export const PulseFieldTypes = {
   STRING: "string",
   NUMBER: "number",
@@ -166,7 +201,14 @@ export const PulseFieldTypes = {
   REGION_CODE: "region_code",
   TENANT_ID: "tenant_id",
   PARTITION_KEY: "partition_key",
-  INDEX_HINT: "index_hint"
+  INDEX_HINT: "index_hint",
+
+  // v20 IMMORTAL new field types
+  INTELL_HASH: "intell_hash",               // SHA‑256 + size + advantageHint
+  BINARY_SUBSTRATE_FRAME: "binary_frame",   // fixed‑width substrate frame
+  WORLD_ROUTER_HINT: "world_router_hint",   // routing metadata
+  SCHEDULER_HINT: "scheduler_hint",         // scheduler metadata
+  IMMORTAL_EPOCH: "immortal_epoch"          // epoch‑20 stability marker
 };
 
 
@@ -262,6 +304,53 @@ export const PulseFieldRules = {
   index_hint: {
     baseType: "json",
     strict: false
+  },
+
+  // v20: IntellHash — SHA-256 + size + optional advantage hint
+  intell_hash: {
+    baseType: "string",
+    encoding: "hex",
+    length: 64,
+    carriesSize: true,
+    carriesAdvantageHint: true
+  },
+
+  // v20: BinarySubstrate frame — fixed-width binary frame metadata
+  binary_frame: {
+    baseType: "binary",
+    fixedWidth: true,
+    carriesTag: true,
+    carriesBand: true,
+    carriesSize: true
+  },
+
+  // v20: World router hint — routing metadata for world engine
+  world_router_hint: {
+    baseType: "json",
+    strict: false,
+    fields: {
+      route: "string",
+      region: "string",
+      tenant: "string",
+      priority: "number"
+    }
+  },
+
+  // v20: Scheduler hint — scheduling metadata for world scheduler
+  scheduler_hint: {
+    baseType: "json",
+    strict: false,
+    fields: {
+      cron: "string",
+      window: "string",
+      priority: "number"
+    }
+  },
+
+  // v20: Immortal epoch marker — epoch/version stability
+  immortal_epoch: {
+    baseType: "string",
+    pattern: /^v[0-9]+-IMMORTAL$/
   }
 };
 
@@ -342,7 +431,14 @@ export const PulseToSQL = {
   region_code:   "VARCHAR(16)",
   tenant_id:     "VARCHAR(128)",
   partition_key: "VARCHAR(256)",
-  index_hint:    "JSON"
+  index_hint:    "JSON",
+
+  // v20
+  intell_hash:          "CHAR(64)",
+  binary_frame:         "VARBINARY(8192)",
+  world_router_hint:    "JSON",
+  scheduler_hint:       "JSON",
+  immortal_epoch:       "VARCHAR(32)"
 };
 
 
@@ -382,7 +478,14 @@ export const PulseToFirestore = {
   region_code:   "string",
   tenant_id:     "string",
   partition_key: "string",
-  index_hint:    "map"
+  index_hint:    "map",
+
+  // v20
+  intell_hash:          "string",
+  binary_frame:         "bytes",
+  world_router_hint:    "map",
+  scheduler_hint:       "map",
+  immortal_epoch:       "string"
 };
 
 
@@ -422,7 +525,14 @@ export const PulseToWorldDataProvider = {
   region_code:   "string",
   tenant_id:     "string",
   partition_key: "string",
-  index_hint:    "json"
+  index_hint:    "json",
+
+  // v20
+  intell_hash:          "string",
+  binary_frame:         "binary",
+  world_router_hint:    "json",
+  scheduler_hint:       "json",
+  immortal_epoch:       "string"
 };
 
 
@@ -456,7 +566,7 @@ export function validatePulseField(field) {
 
 
 // ============================================================================
-// PULSE_FIELDS_SPEC — FROZEN GENOME SNAPSHOT (v17-IMMORTAL)
+// PULSE_FIELDS_SPEC — FROZEN GENOME SNAPSHOT (v20-IMMORTAL)
 // ============================================================================
 export const PULSE_FIELDS_SPEC = Object.freeze({
   ...PULSE_FIELDS_CONTEXT,

@@ -4,14 +4,21 @@
  *  ROOT:  PULSE-X
  *  MODE:  runtime
  *  TARGET: multi-tick-orchestration
- *  VERSION: v17-IMMORTAL
+ *  VERSION: v20-IMMORTAL-ADVANTAGE
  *
  *  ROLE:
  *    - Deterministic macro-orchestrator over Router + Overmind + Runtime.
  *    - Runs multi-tick pipelines (sequence of macro ticks).
  *    - Uses Overmind world-lens + dual-band + Pulse-Touch + presence bands.
  *    - Shapes tick flow using presence/mode/page/chunkProfile/trust/advantage.
- *    - Prewarm/cache-aware, runtime-v17-aware, world-layer-aware.
+ *    - Prewarm/cache-aware, runtime-v17+/v20-aware, world-layer-aware.
+ *    - Provides rich, introspectable meta for each tick and the whole pipeline.
+ *
+ *  DESIGN:
+ *    - Lives in PULSE-X (connection/runtime/scheduler/binary overlay).
+ *    - Never owns memory; only calls into PULSE-CORE via Runtime.
+ *    - Symbolic-first orchestration, binary-aware, advantage-aware.
+ *    - All behavior is deterministic and host-agnostic.
  *
  *  GUARANTEES:
  *    - No real-time dependence.
@@ -23,18 +30,49 @@
 /*
 AI_EXPERIENCE_META = {
   identity: "PulseScheduler",
-  version: "v17-IMMORTAL",
-  layer: "scheduler",
+  version: "v20-IMMORTAL-ADVANTAGE",
+  layer: "pulse_x_scheduler",
   role: "macro_orchestrator",
-  lineage: "PulseScheduler-v1 → v11-Evo → v12.3 → v14-Immortal → v2.4-Presence-TOUCH-Immortal → v17-IMMORTAL",
+
+  description: `
+    PulseScheduler is the macro-orchestrator of PULSE-X. It sequences
+    routing, Overmind, and Runtime ticks into a multi-tick pipeline.
+    It is Touch-aware, dual-band-aware, and advantage-aware, but it
+    never rewrites founder intent or organism law. It only schedules
+    what is already allowed.
+
+    For each macro tick, it:
+      - routes the user request (AIRouter),
+      - asks Overmind for a world-lens decision,
+      - runs a runtime tick (PulseRuntime),
+      - collects meta about presence, mode, page, trust, and advantage.
+
+    For the pipeline, it:
+      - tracks cache behavior (hit/miss),
+      - tracks world-lens transitions,
+      - tracks total ticks and final instance state,
+      - exposes a deterministic summary for any observer organ.
+  `,
+
+  lineage: [
+    "PulseScheduler-v1",
+    "v11-Evo",
+    "v12.3",
+    "v14-Immortal",
+    "v2.4-Presence-TOUCH-Immortal",
+    "v17-IMMORTAL",
+    "v20-IMMORTAL-ADVANTAGE"
+  ],
 
   evo: {
     macroScheduler: true,
+    schedulerAware: true,
     runtimeAware: true,
+    runtimeV17Aware: true,
     substrateAware: true,
     dualBand: true,
-    deterministicScheduling: true,
 
+    deterministicScheduling: true,
     deterministic: true,
     driftProof: true,
     pureCompute: true,
@@ -56,20 +94,24 @@ AI_EXPERIENCE_META = {
     prewarmAware: true,
     cacheAware: true,
     worldLayerAware: true,
-    runtimeV17Aware: true
+    multiInstanceReady: true
   },
 
   contract: {
     always: [
       "PulseRuntime",
-      "BinarySubstrate"
+      "BinarySubstrate",
+      "AIRouter",
+      "Overmind"
     ],
     never: [
       "safeRoute",
       "fetchViaCNS",
       "presenceEngine",
       "meshKernel",
-      "routerCore"
+      "routerCore",
+      "directInternetAccess",
+      "externalNetworkIO"
     ]
   }
 }
@@ -82,9 +124,9 @@ AI_EXPERIENCE_META = {
 export const PulseSchedulerMetaV17 = Object.freeze({
   layer: "PulseXScheduler",
   role: "SCHEDULER_ORGAN",
-  version: "v17-IMMORTAL",
-  identity: "PulseScheduler-v17-IMMORTAL",
-  epoch: "v17-IMMORTAL",
+  version: "v20-IMMORTAL-ADVANTAGE",
+  identity: "PulseScheduler-v20-IMMORTAL-ADVANTAGE",
+  epoch: "v20-IMMORTAL-ADVANTAGE",
 
   guarantees: Object.freeze({
     deterministic: true,
@@ -149,7 +191,7 @@ export const PulseSchedulerMetaV17 = Object.freeze({
 import { routeAIRequest } from "../PULSE-AI/aiRouter-v16.js";
 import { createOvermindOrgan } from "../PULSE-AI/aiOvermindPrime.js";
 
-// UPGRADED RUNTIME v17 (Touch + prewarm/cache-aware)
+// RUNTIME (Touch + prewarm/cache-aware, v17+)
 import PulseRuntimeV17 from "./PulseWorldRuntime-v17.js";
 
 const {
@@ -193,7 +235,11 @@ export class SchedulerPipelineResult {
   }
 }
 
-function buildScheduleId(seed = "pulse-scheduler-v17-immortal") {
+// ============================================================================
+//  INTERNAL HELPERS
+// ============================================================================
+
+function buildScheduleId(seed = "pulse-scheduler-v20-immortal-advantage") {
   let hash = 0;
   for (let i = 0; i < seed.length; i++) {
     const chr = seed.charCodeAt(i);
@@ -201,6 +247,48 @@ function buildScheduleId(seed = "pulse-scheduler-v17-immortal") {
     hash |= 0;
   }
   return `sched-${Math.abs(hash)}`;
+}
+
+function summarizeRouting(routing) {
+  if (!routing) return null;
+  return {
+    personaId: routing.personaId || null,
+    safetyMode: routing.personaSafety?.safetyMode || null,
+    archetypePrimaryPage: routing.archetypes?.primaryPage || null,
+    dualBandMode: routing.dualBand?.mode || null,
+    dualBandAdvantage: routing.dualBand?.advantage || null
+  };
+}
+
+function summarizeOvermindDecision(overmindDecision) {
+  if (!overmindDecision) return null;
+  const meta = overmindDecision.meta || {};
+  return {
+    worldLens: meta.worldLens || null,
+    safetyStatus: meta.safetyStatus || null,
+    comfortTag: meta.comfortTag || null,
+    confidence: meta.confidence || null
+  };
+}
+
+function summarizeRuntimeTick(runtimeTick) {
+  if (!runtimeTick) return null;
+  return {
+    logicalClock: runtimeTick.logicalClock || null,
+    planSummary: runtimeTick.multiPlanSummary || null
+  };
+}
+
+function buildTickAdvantageSummary({ routing, overmindDecision, runtimeTick }) {
+  const routingSummary = summarizeRouting(routing);
+  const overmindSummary = summarizeOvermindDecision(overmindDecision);
+  const runtimeSummary = summarizeRuntimeTick(runtimeTick);
+
+  return {
+    routing: routingSummary,
+    overmind: overmindSummary,
+    runtime: runtimeSummary
+  };
 }
 
 // ============================================================================
@@ -217,6 +305,13 @@ export class PulseSchedulerV17 {
       defaultMaxTicks: 3,
       defaultStopOnWorldLens: ["unsafe"],
       defaultPrewarmHint: "scheduler-init",
+
+      // Optional pure observer hooks (no IO, no side effects outside memory):
+      //   onTick(result: SchedulerResult) => void
+      //   onPipeline(result: SchedulerPipelineResult) => void
+      onTick: null,
+      onPipeline: null,
+
       ...config
     };
 
@@ -230,7 +325,7 @@ export class PulseSchedulerV17 {
   }
 
   // --------------------------------------------------------------------------
-  // v17 macro tick (Touch + prewarm/cache-aware)
+  // v20 macro tick (Touch + prewarm/cache-aware + advantage summary)
   // --------------------------------------------------------------------------
   async runMacroTick({
     instances = [],
@@ -248,7 +343,7 @@ export class PulseSchedulerV17 {
     const effectiveScheduleId = scheduleId || buildScheduleId();
 
     reasoning.push(
-      `PulseScheduler-v17-IMMORTAL: macro tick #${tickIndex} (schedule=${effectiveScheduleId}).`
+      `PulseScheduler-v20-IMMORTAL-ADVANTAGE: macro tick #${tickIndex} (schedule=${effectiveScheduleId}).`
     );
 
     const policy =
@@ -262,6 +357,14 @@ export class PulseSchedulerV17 {
         ...dualBand,
         pulseTouch
       });
+
+      reasoning.push(
+        `Routing: persona=${routing?.personaId || "none"}, safetyMode=${
+          routing?.personaSafety?.safetyMode || "standard"
+        }, archetypePrimaryPage=${routing?.archetypes?.primaryPage || "none"}.`
+      );
+    } else {
+      reasoning.push("Routing: disabled or no userRequest provided.");
     }
 
     // 2) OVERMIND (Touch-aware)
@@ -304,6 +407,14 @@ export class PulseSchedulerV17 {
         candidates,
         options: { mode: "normal" }
       });
+
+      reasoning.push(
+        `Overmind: worldLens=${overmindDecision?.meta?.worldLens || "none"}, safetyStatus=${
+          overmindDecision?.meta?.safetyStatus || "unknown"
+        }.`
+      );
+    } else {
+      reasoning.push("Overmind: disabled or routing missing.");
     }
 
     // 3) RUNTIME TICK v17 (Touch + prewarm/cache-aware)
@@ -320,26 +431,48 @@ export class PulseSchedulerV17 {
       });
 
       runtimeTickResult = runtimeResult;
+
+      reasoning.push(
+        `Runtime: logicalClock=${runtimeTickResult.logicalClock}, planSummary=${
+          runtimeTickResult.multiPlanSummary || "none"
+        }.`
+      );
+    } else {
+      reasoning.push("Runtime: disabled by config.");
     }
 
-    // 4) META SUMMARY
+    // 4) ADVANTAGE SUMMARY (routing + overmind + runtime)
+    const advantageSummary = buildTickAdvantageSummary({
+      routing,
+      overmindDecision,
+      runtimeTick: runtimeTickResult
+    });
+
+    // 5) META SUMMARY
     const meta = Object.freeze({
       schedulerMeta: PulseSchedulerMetaV17,
       scheduleId: effectiveScheduleId,
       tickIndex,
+
       routingPersonaId: routing?.personaId || null,
       routingArchetypePrimaryPage:
         routing?.archetypes?.primaryPage || null,
+      routingSafetyMode: routing?.personaSafety?.safetyMode || null,
+
       overmindWorldLens: overmindDecision?.meta?.worldLens || null,
       overmindSafetyStatus: overmindDecision?.meta?.safetyStatus || null,
+      overmindComfortTag: overmindDecision?.meta?.comfortTag || null,
+
       runtimePlanSummary:
         runtimeTickResult?.multiPlanSummary || null,
       runtimeLogicalClock: runtimeTickResult?.logicalClock || null,
+
+      advantageSummary,
       pulseTouch,
       notes: reasoning
     });
 
-    return new SchedulerResult({
+    const result = new SchedulerResult({
       scheduleId: effectiveScheduleId,
       tickIndex,
       routing,
@@ -347,10 +480,21 @@ export class PulseSchedulerV17 {
       runtimeTick: runtimeTickResult,
       meta
     });
+
+    // Optional observer hook (pure)
+    if (typeof this.config.onTick === "function") {
+      try {
+        this.config.onTick(result);
+      } catch {
+        // never throw from observer
+      }
+    }
+
+    return result;
   }
 
   // --------------------------------------------------------------------------
-  // v17: Multi-tick pipeline (Touch + prewarm/cache-aware)
+  // v20: Multi-tick pipeline (Touch + prewarm/cache-aware + pipeline stats)
   // --------------------------------------------------------------------------
   async runPipeline({
     instances = [],
@@ -379,9 +523,16 @@ export class PulseSchedulerV17 {
 
     let currentStateById = { ...currentStatesById };
 
+    let firstWorldLens = null;
+    let lastWorldLens = null;
+    let cacheHits = 0;
+    let cacheMisses = 0;
+
     for (let tickIndex = 0; tickIndex < effectiveMaxTicks; tickIndex++) {
-      const cacheHint =
-        tickIndex === 0 ? "miss" : "hit";
+      const cacheHint = tickIndex === 0 ? "miss" : "hit";
+
+      if (cacheHint === "hit") cacheHits++;
+      if (cacheHint === "miss") cacheMisses++;
 
       const tickResult = await this.runMacroTick({
         instances,
@@ -392,7 +543,9 @@ export class PulseSchedulerV17 {
         pulseTouch,
         scheduleId,
         tickIndex,
-        prewarmHint: prewarmHint || (tickIndex === 0 ? "pipeline-start" : "pipeline-continue"),
+        prewarmHint:
+          prewarmHint ||
+          (tickIndex === 0 ? "pipeline-start" : "pipeline-continue"),
         cacheHint
       });
 
@@ -400,7 +553,15 @@ export class PulseSchedulerV17 {
 
       const worldLens = tickResult.overmindDecision?.meta?.worldLens || null;
 
+      if (tickIndex === 0) {
+        firstWorldLens = worldLens;
+      }
+      lastWorldLens = worldLens;
+
       if (worldLens && effectiveStopOnWorldLens.includes(worldLens)) {
+        reasoning.push(
+          `Pipeline: stopping early on worldLens="${worldLens}" (tickIndex=${tickIndex}).`
+        );
         break;
       }
 
@@ -421,17 +582,33 @@ export class PulseSchedulerV17 {
       schedulerMeta: PulseSchedulerMetaV17,
       scheduleId,
       totalTicks: ticks.length,
+      maxTicksRequested: effectiveMaxTicks,
       stopOnWorldLens: effectiveStopOnWorldLens,
+      firstWorldLens,
+      lastWorldLens,
+      cacheHits,
+      cacheMisses,
       pulseTouch,
       notes: reasoning
     });
 
-    return new SchedulerPipelineResult({
+    const pipelineResult = new SchedulerPipelineResult({
       scheduleId,
       ticks,
       finalStateById: currentStateById,
       meta
     });
+
+    // Optional observer hook (pure)
+    if (typeof this.config.onPipeline === "function") {
+      try {
+        this.config.onPipeline(pipelineResult);
+      } catch {
+        // never throw from observer
+      }
+    }
+
+    return pipelineResult;
   }
 }
 

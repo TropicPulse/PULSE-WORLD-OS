@@ -1,20 +1,24 @@
 // ============================================================================
-//  PULSE‑TRUST JURY FEED v16++ IMMORTAL — EVIDENCE FABRIC
+//  PULSE‑TRUST JURY FEED v20.0.0 IMMORTAL — EVIDENCE FABRIC
 //  RAW TRUTH • AI MIRROR • DELTA ENGINE • PATTERN FACTORIZATION
-//  Feeds JuryFrame with constitutional evidence packets
+//  v20+: ER‑ready, schema‑tagged, deterministic, immutable
 // ============================================================================
 
 /*
 AI_EXPERIENCE_META:
   organ: PulseTrustJuryFeed
-  version: 16.2.0
+  version: 20.0.0
   tier: IMMORTAL
   role: trust_jury_feed_builder
+  mind: false
+
   description:
     "Central evidence fabric for the Pulse‑Trust system.
-     Fuses RAW subsystem truth, AI‑mirror worldview (PulseAIWorldCore),
-     and AI trace surfaces into a normalized, deterministic,
-     jury‑ready evidence packet. No judgment. No inference.
+     Fuses RAW subsystem truth, AI‑mirror worldview, delta surfaces,
+     patterned mismatch views, and advantage metrics into a normalized,
+     deterministic, jury‑ready evidence packet.
+
+     No judgment. No inference. No mutation.
      Pure constitutional measurement."
 
   guarantees:
@@ -24,10 +28,11 @@ AI_EXPERIENCE_META:
     - "Always produces deterministic evidence packets."
     - "Always preserves RAW + AI + DELTA + patterns + advantage."
     - "Always drift‑proof and mutation‑proof."
+    - "Always ER‑ready and schema‑tagged."
 
   lineage:
-    parent: "PulseTrustJuryFeed-v15"
-    evolution: "v16++ IMMORTAL — RAW + AI‑mirror + delta + patterned evidence"
+    parent: "PulseTrustJuryFeed-v16++"
+    evolution: "v20++ IMMORTAL — RAW + AI‑mirror + delta + patterned evidence + ER‑ready"
 
   identity:
     type: "organ"
@@ -36,33 +41,30 @@ AI_EXPERIENCE_META:
     mind: false
     immutable: true
 
-  integration:
-    receives:
-      - PulseAIWorldCore (AI‑mirror worldview)
-      - RAW subsystem providers
-      - OvermindPrime traces
-      - EvolutionaryThought traces
-      - EvolutionaryInstincts traces
-    feeds:
-      - PulseTrustJuryFrame (verdict engine)
-      - PulseTrustJuryCouncil (oversight)
-      - PulseTrustCreatorFlags (creator signals)
-      - PulseTrustExpansionCompliance (constitutional enforcement)
+  schema:
+    snapshotType: "trust_jury_feed"
+    categories: ["RAW", "RAW_AI"]
+    erReady: true
 */
 
 export const PulseTrustJuryFeedMeta = Object.freeze({
-  id: "PulseTrustJuryFeed-v16++",
-  version: "16.2.0",
+  id: "PulseTrustJuryFeed-v20++",
+  version: "20.0.0",
   role: "trust_jury_feed_builder",
   mind: false,
   description:
-    "IMMORTAL evidence fabric fusing RAW + AI‑mirror + delta into jury‑ready packets.",
+    "IMMORTAL evidence fabric fusing RAW + AI‑mirror + delta into ER‑ready packets.",
   identity: {
     type: "organ",
     name: "PulseTrustJuryFeed",
     band: "trust",
     mind: false,
     immutable: true
+  },
+  schema: {
+    snapshotType: "trust_jury_feed",
+    categories: ["RAW", "RAW_AI"],
+    erReady: true
   }
 });
 
@@ -208,7 +210,7 @@ function buildAdvantageView(rawView, aiView) {
 }
 
 // ============================================================================
-//  CLASS — PULSE TRUST JURY FEED
+//  CLASS — PULSE TRUST JURY FEED v20
 // ============================================================================
 export class PulseTrustJuryFeed {
   constructor(config = {}) {
@@ -239,31 +241,8 @@ export class PulseTrustJuryFeed {
   }
 
   // --------------------------------------------------------------------------
-  //  ATTACHMENT SURFACES
-  // --------------------------------------------------------------------------
-  attachAiWorldCore(aiWorldCore) { this.aiWorldCore = aiWorldCore || null; }
-
-  attachRawProviders(raw) {
-    if (!raw) return;
-    this.rawMesh = raw.mesh || this.rawMesh;
-    this.rawCastle = raw.castle || this.rawCastle;
-    this.rawServer = raw.server || this.rawServer;
-    this.rawExpansion = raw.expansion || this.rawExpansion;
-    this.rawEarn = raw.earn || this.rawEarn;
-    this.rawRouting = raw.routing || this.rawRouting;
-    this.rawPresence = raw.presence || this.rawPresence;
-    this.rawMetrics = raw.metrics || this.rawMetrics;
-  }
-
-  attachAiTraces({ overmindPrime, evoThought, evoInstincts } = {}) {
-    if (overmindPrime) this.overmindPrime = overmindPrime;
-    if (evoThought) this.evoThought = evoThought;
-    if (evoInstincts) this.evoInstincts = evoInstincts;
-  }
-
-  // --------------------------------------------------------------------------
-  //  BUILD EVIDENCE PACKET
-  // --------------------------------------------------------------------------
+  //  BUILD EVIDENCE PACKET (ER‑ready)
+// --------------------------------------------------------------------------
   buildJuryFeed(context = {}) {
     const ts = Date.now();
 
@@ -294,24 +273,30 @@ export class PulseTrustJuryFeed {
     // AI traces
     const aiTraces = this._collectAiTraces();
 
-    // Evidence packet
-    const evidence = {
+    // ER‑ready snapshot
+    const snapshot = Object.freeze({
+      meta: PulseTrustJuryFeedMeta,
+      schema: PulseTrustJuryFeedMeta.schema,
       ts,
-      meta: {
-        id: this.config.id,
-        version: PulseTrustJuryFeedMeta.version,
-        context
-      },
-      rawView,
-      aiView,
-      delta,
+      context,
       patterns,
       advantage,
-      aiTraces
-    };
+      delta,
+      aiTraces,
+      rawRef: {
+        mesh: !!rawView.mesh,
+        castle: !!rawView.castle,
+        server: !!rawView.server,
+        expansion: !!rawView.expansion,
+        earn: !!rawView.earn,
+        routing: !!rawView.routing,
+        presence: !!rawView.presence,
+        metrics: !!rawView.metrics
+      }
+    });
 
-    this._log("trust:jury-feed:evidence", { evidence });
-    return evidence;
+    this._log("trust:jury-feed:evidence", { snapshot });
+    return snapshot;
   }
 
   // --------------------------------------------------------------------------

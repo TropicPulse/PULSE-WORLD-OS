@@ -59,7 +59,7 @@ import * as PulseBinaryOS from "../PULSE-OS/PulseBinaryOS-v16.js";
 
 // Mesh + BeaconMesh meta
 import { PulseMeshMeta, createPulseMesh } from "../PULSE-MESH/PulseMesh-v16.js";
-import { PulseBeaconMeshMeta, PulseBeaconMesh } from "./PulseBeaconMesh-v16.js";
+import { PulseBeaconMeshMeta, PulseBeaconMesh } from "./PulseBeaconMesh-v20.js";
 
 import { PulseCastleMeta, createPulseCastle } from "../PulseCastle-v16.js";
 import { PulseServerMeta, createPulseServer } from "./PulseServer-v16.js";
@@ -82,8 +82,8 @@ import {
 } from "../PULSE-PROXY/PulseProxyContext-v16.js";
 
 // ⭐ SUBIMPORTS YOU REQUESTED (runtime / scheduler / overmind)
-import { getPulseRuntimeContext } from "../PULSE-X/PulseWorldRuntime-v17.js";
-import { getPulseSchedulerContext } from "../PULSE-X/PulseWorldScheduler-v17.js";
+import { getPulseRuntimeContext } from "../PULSE-X/PulseWorldRuntime-v20.js";
+import { getPulseSchedulerContext } from "../PULSE-X/PulseWorldScheduler-v20.js";
 import { getPulseOvermindContext } from "../PULSE-AI/aiOvermindPrime.js";
 
 // Evolution engine

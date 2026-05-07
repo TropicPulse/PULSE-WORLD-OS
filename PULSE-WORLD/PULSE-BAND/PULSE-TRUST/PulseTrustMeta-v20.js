@@ -1,15 +1,17 @@
 // ============================================================================
-//  PULSE‑TRUST v16++ IMMORTAL — META
+//  PULSE‑TRUST v20.0.0 IMMORTAL — META
 //  Constitutional Identity • Justice Membrane • Oversight Fabric Core
+//  Band‑Aware • ER‑Ready • CNS‑Integrated
 // ============================================================================
 
 /*
 AI_EXPERIENCE_META:
   organ: PulseTrustFabric
-  version: 16.2.0
+  version: 20.0.0
   tier: IMMORTAL
   layer: trust
   role: trust_fabric_core
+  mind: false
 
   description:
     "Pulse‑Trust is the constitutional oversight membrane of the Pulse organism.
@@ -27,8 +29,11 @@ AI_EXPERIENCE_META:
        - JuryFeed evidence packets (RAW + AI + delta + patterns + advantage)
        - JuryFrame verdicts (12‑lens constitutional justice engine)
        - JuryCouncil oversight escalation
+       - JuryBoxCamera behavioral black‑box snapshots
        - CreatorFlags (creator‑level signals)
        - ExpansionCompliance (constitutional enforcement)
+       - PulseTrustEvidence / Evidential Records (frozen trust snapshots)
+       - PulseWorldBand CNS snapshots (bandSnapshot)
 
      Pulse‑Trust ensures:
        - No organ can dominate the decision flow.
@@ -38,14 +43,15 @@ AI_EXPERIENCE_META:
        - No jury can be manipulated without detection.
        - No anomaly chain can remain hidden.
        - No high-stress environment can distort justice.
+       - No CNS band shift can occur without traceable evidence.
 
      Pulse‑Trust is the missing layer reality never had:
      a multi-perspective, tamper-resistant, self-auditing justice membrane
      that protects the organism from subtle, systemic drift."
 
   lineage:
-    parent: "PulseTrust-v15-Immortal"
-    evolution: "v16++ IMMORTAL — RAW + AI‑mirror + delta constitutional fabric"
+    parent: "PulseTrust-v16++-IMMORTAL"
+    evolution: "v20++ IMMORTAL — RAW + AI‑mirror + delta + CNS + ER‑integrated fabric"
 
   identity:
     type: "organ"
@@ -61,6 +67,7 @@ AI_EXPERIENCE_META:
     - "Always preserves RAW + AI + delta surfaces."
     - "Always deterministic and drift-proof."
     - "Always metadata-only, zero side-effects."
+    - "Always ER‑ready and CNS‑aware."
 
   evo:
     trustAware: true
@@ -72,6 +79,10 @@ AI_EXPERIENCE_META:
     flowAware: true
     anomalyAware: true
     dominanceAware: true
+    evidenceAware: true
+    bandAware: true
+    cnsAware: true
+    erIntegrated: true
 
     symbolicPrimary: true
     binaryAware: true
@@ -97,7 +108,9 @@ AI_EXPERIENCE_META:
       - "PulseTrustJuryCouncil"
       - "PulseTrustCreatorFlags"
       - "PulseTrustExpansionCompliance"
-
+      - "PulseTrustEvidence"          // v20: trust evidence fabric
+      - "PulseEvidenceCore-v20"       // global evidential records
+      - "PulseWorldBand"              // CNS bandSnapshot source
     never:
       - "legacyTrustSystems"
       - "safeRoute"
@@ -107,13 +120,13 @@ AI_EXPERIENCE_META:
 */
 
 export const PulseTrustMeta = Object.freeze({
-  id: "PulseTrust-v16++-IMMORTAL",
-  version: "16.2.0",
+  id: "PulseTrust-v20++-IMMORTAL",
+  version: "20.0.0",
   layer: "trust",
   role: "TRUST_FABRIC_CORE",
   mind: false,
   description:
-    "IMMORTAL constitutional oversight membrane for the Pulse organism.",
+    "IMMORTAL constitutional oversight membrane for the Pulse organism, CNS‑aware and ER‑integrated.",
   identity: Object.freeze({
     type: "organ",
     name: "PulseTrustFabric",
@@ -132,6 +145,10 @@ export const PulseTrustMeta = Object.freeze({
     flowAware: true,
     anomalyAware: true,
     dominanceAware: true,
+    evidenceAware: true,
+    bandAware: true,
+    cnsAware: true,
+    erIntegrated: true,
 
     symbolicPrimary: true,
     binaryAware: true,
@@ -157,7 +174,10 @@ export const PulseTrustMeta = Object.freeze({
       "PulseTrustJuryBoxCamera",
       "PulseTrustJuryCouncil",
       "PulseTrustCreatorFlags",
-      "PulseTrustExpansionCompliance"
+      "PulseTrustExpansionCompliance",
+      "PulseTrustEvidence",
+      "PulseEvidenceCore-v20",
+      "PulseWorldBand"
     ]),
     never: Object.freeze([
       "legacyTrustSystems",

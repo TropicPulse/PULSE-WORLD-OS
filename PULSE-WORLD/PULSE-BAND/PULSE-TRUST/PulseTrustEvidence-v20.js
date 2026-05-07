@@ -1,21 +1,22 @@
 // ============================================================================
-//  PULSE TRUST EVIDENCE v16++ — IMMORTAL CONSTITUTIONAL EVIDENCE FABRIC
+//  PULSE TRUST EVIDENCE v20.0.0 — IMMORTAL CONSTITUTIONAL EVIDENCE FABRIC
 //  RAW • RAW_AI • AI  —  FULL STACK EVIDENCE FOR TRUST & TRANSPARENCY
+//  v20+: Band-integrated, Evidential Records–native, CNS-aware
 // ============================================================================
 
 /*
 AI_EXPERIENCE_META:
   organ: PulseTrustEvidence
-  version: 16.2.0
+  version: 20.0.0
   tier: IMMORTAL
   role: trust_evidence_fabric
   mind: false
 
   description:
     "Non-mind constitutional evidence fabric. Pulls RAW, RAW_AI, and AI-layer
-     signals from world, user, trust, jury, expansion, and overmind subsystems.
-     Freezes them into immutable evidence packets for transparency, drift
-     detection, and creator oversight. Never interprets, never judges,
+     signals from world, user, trust, jury, expansion, overmind, band, and infra
+     subsystems. Freezes them into immutable evidence packets for transparency,
+     drift detection, and creator oversight. Never interprets, never judges,
      never rewrites."
 
   guarantees:
@@ -41,8 +42,8 @@ AI_EXPERIENCE_META:
     immutable: true
 
   lineage:
-    parent: "PulseEvidenceCore-v16"
-    evolution: "v16++ IMMORTAL — constitutional trust evidence fusion"
+    parent: "PulseEvidenceCore-v20"
+    evolution: "v20++ IMMORTAL — CNS-integrated constitutional trust evidence fusion"
 
   safety:
     - "No legal framing."
@@ -63,11 +64,13 @@ AI_EXPERIENCE_META:
       - OvermindPrime.snapshotMeta() / snapshotTrust()
       - Server.snapshot()
       - Castle.snapshot()
+      - PulseWorldBand.snapshotBand()          // v20+: CNS snapshot
     feeds:
       - OvermindPrime (trustSnapshot)
       - PulseTrust (evidence history)
       - Creator tools (inspection, oversight)
       - Debug / audit tooling
+      - PulseEvidenceCore-v20 (global evidential records)
 
   contract:
     input:
@@ -80,35 +83,41 @@ AI_EXPERIENCE_META:
       - getLatestPacket()
       - getTimeline()
       - getByCategory(category)
+      - getByLabel(label)
 
   immortal:
     drift_protection: true
     mutation_protection: true
     deterministic: true
-    constitutional: true   // constitutional in the software sense, not legal
+    constitutional: true
 */
 
 // ============================================================================
 //  META EXPORT
 // ============================================================================
 export const PulseTrustEvidenceMeta = Object.freeze({
-  id: "PulseTrustEvidence-v16++",
-  version: "16.2.0",
+  id: "PulseTrustEvidence-v20++",
+  version: "20.0.0",
   role: "trust_evidence_fabric",
   mind: false,
   description:
-    "IMMORTAL non-mind trust evidence fabric for RAW / RAW_AI / AI signals.",
+    "IMMORTAL non-mind trust evidence fabric for RAW / RAW_AI / AI signals, CNS-integrated.",
   identity: {
     type: "organ",
     name: "PulseTrustEvidence",
     band: "trust",
     mind: false,
     immutable: true
+  },
+  schema: {
+    categories: ["RAW", "RAW_AI", "AI"],
+    cnsIntegrated: true,
+    evidentialRecordsNative: true
   }
 });
 
 // ============================================================================
-//  CLASS — CONSTITUTIONAL TRUST EVIDENCE FABRIC
+//  CLASS — CONSTITUTIONAL TRUST EVIDENCE FABRIC v20
 // ============================================================================
 export class PulseTrustEvidence {
   constructor(config = {}) {
@@ -129,14 +138,17 @@ export class PulseTrustEvidence {
     this.server = config.server || null;                 // Server snapshot
     this.castle = config.castle || null;                 // Castle snapshot
 
-    // Optional underlying evidence core (append-only log)
-    this.evidenceCore = config.evidenceCore || null;     // PulseEvidenceCore
+    // v20+: CNS / Band integration
+    this.bandCore = config.bandCore || null;             // PulseWorldBand / CheckBand CNS
+
+    // Optional underlying evidence core (append-only log, global evidential records)
+    this.evidenceCore = config.evidenceCore || null;     // PulseEvidenceCore-v20
     this.records = [];                                   // local append-only if no evidenceCore
 
     // Lightweight index (metadata-only, never mutates packets)
     this.index = {
       byLabel: new Map(),   // label -> [packetRefs]
-      byCategory: {         // RAW / RAW_AI / AI presence
+      byCategory: {
         RAW: [],
         RAW_AI: [],
         AI: []
@@ -146,9 +158,9 @@ export class PulseTrustEvidence {
     this.logger = config.logger || console;
   }
 
-  // ==========================================================================
-  //  CAPTURE FULL EVIDENCE PACKET
-  // ==========================================================================
+  // ========================================================================
+  //  CAPTURE FULL EVIDENCE PACKET (CNS-AWARE)
+// ========================================================================
   captureEvidence(label = "tick", context = {}) {
     const ts = Date.now();
 
@@ -188,9 +200,13 @@ export class PulseTrustEvidence {
     const serverSnapshot = this._safeCall(this.server, "snapshot") || null;
     const castleSnapshot = this._safeCall(this.castle, "snapshot") || null;
 
-    // ------------------------------------------------------------------------
+    // v20+: CNS / BAND SNAPSHOT
+    const bandSnapshot =
+      this._safeCall(this.bandCore, "snapshotBand") || null;
+
+    // ----------------------------------------------------------------------
     //  CATEGORIZE: RAW / RAW_AI / AI (structural, not judgment)
-    // ------------------------------------------------------------------------
+    // ----------------------------------------------------------------------
     const rawEntries = [];
     const rawAIEntries = [];
     const aiEntries = [];
@@ -199,6 +215,7 @@ export class PulseTrustEvidence {
     this._pushIfPresent(rawEntries, "world_snapshot", worldSnapshot);
     this._pushIfPresent(rawEntries, "server_snapshot", serverSnapshot);
     this._pushIfPresent(rawEntries, "castle_snapshot", castleSnapshot);
+    this._pushIfPresent(rawEntries, "band_snapshot", bandSnapshot);
     this._pushIfPresent(
       rawEntries,
       "citizen_witness_raw",
@@ -230,20 +247,23 @@ export class PulseTrustEvidence {
       citizenWitness?.ai ?? null
     );
 
-    // ------------------------------------------------------------------------
-    //  IMMUTABLE EVIDENCE PACKET
-    // ------------------------------------------------------------------------
+    // ----------------------------------------------------------------------
+    //  IMMUTABLE EVIDENCE PACKET (EVIDENTIAL RECORDS–NATIVE)
+// ----------------------------------------------------------------------
     const packet = Object.freeze({
       ts,
       label,
       context: {
         id: context.id || null,
         tick: context.tick || null,
-        worldLens: context.worldLens || null
+        worldLens: context.worldLens || null,
+        bandEvent: context.bandEvent || null,      // e.g. "band_shift", "fallback_event"
+        bandContext: context.bandContext || null   // optional structured band info
       },
       meta: {
         id: this.config.id,
-        version: PulseTrustEvidenceMeta.version
+        version: PulseTrustEvidenceMeta.version,
+        schema: PulseTrustEvidenceMeta.schema
       },
       categories: {
         RAW: rawEntries,
@@ -261,12 +281,14 @@ export class PulseTrustEvidence {
       juryBoxSnapshot,
       juryCouncilSnapshot,
       serverSnapshot,
-      castleSnapshot
+      castleSnapshot,
+      bandSnapshot
     });
 
     // Store in underlying evidence core if present, else local
     if (this.evidenceCore) {
-      this.evidenceCore.recordRaw(packet); // packet itself is RAW evidence of system state
+      // packet itself is RAW evidence of system state
+      this.evidenceCore.recordRaw(packet);
     } else {
       this.records.push(packet);
       this._indexPacket(packet);
@@ -276,9 +298,9 @@ export class PulseTrustEvidence {
     return packet;
   }
 
-  // ==========================================================================
+  // ========================================================================
   //  DIRECT RECORDING HELPERS (DELEGATE OR LOCAL APPEND-ONLY)
-// ==========================================================================
+// ========================================================================
   recordRaw(data) {
     if (this.evidenceCore) {
       return this.evidenceCore.recordRaw(data);
@@ -312,9 +334,9 @@ export class PulseTrustEvidence {
     return entry;
   }
 
-  // ==========================================================================
+  // ========================================================================
   //  GETTERS
-  // ==========================================================================
+  // ========================================================================
   getEvidenceHistory() {
     if (this.evidenceCore) return this.evidenceCore.getEvidence();
     return [...this.records];
@@ -334,22 +356,27 @@ export class PulseTrustEvidence {
     }));
   }
 
-  // v16++: category-aware for both packet categories and direct entries
   getByCategory(category) {
     if (this.evidenceCore) return this.evidenceCore.getByCategory(category);
 
-    // If asking for RAW / RAW_AI / AI presence in packets
     if (category === "RAW" || category === "RAW_AI" || category === "AI") {
       return this.index.byCategory[category].slice();
     }
 
-    // Fallback: direct entries with category field (recordRaw/RawAI/AI)
     return this.records.filter((r) => r.category === category);
   }
 
-  // ==========================================================================
+  getByLabel(label) {
+    if (this.evidenceCore && this.evidenceCore.getByLabel) {
+      return this.evidenceCore.getByLabel(label);
+    }
+    const arr = this.index.byLabel.get(label);
+    return arr ? arr.slice() : [];
+  }
+
+  // ========================================================================
   //  INTERNAL HELPERS (NON-MIND)
-// ==========================================================================
+// ========================================================================
   _safeCall(target, method) {
     try {
       if (!target || typeof target[method] !== "function") return null;
@@ -370,14 +397,14 @@ export class PulseTrustEvidence {
       category,
       meta: {
         id: this.config.id,
-        version: PulseTrustEvidenceMeta.version
+        version: PulseTrustEvidenceMeta.version,
+        schema: PulseTrustEvidenceMeta.schema
       },
       data
     });
   }
 
   _indexPacket(packet) {
-    // byLabel
     const label = packet.label || null;
     if (label != null) {
       if (!this.index.byLabel.has(label)) {
@@ -386,7 +413,6 @@ export class PulseTrustEvidence {
       this.index.byLabel.get(label).push(packet);
     }
 
-    // byCategory presence
     if (packet.categories?.RAW?.length) {
       this.index.byCategory.RAW.push(packet);
     }
@@ -399,7 +425,6 @@ export class PulseTrustEvidence {
   }
 
   _indexEntry(entry) {
-    // Direct entries have a single category field
     const cat = entry.category;
     if (!cat) return;
     if (this.index.byCategory[cat]) {
@@ -434,7 +459,8 @@ export function createPulseTrustEvidence(config = {}) {
     getEvidenceHistory: () => core.getEvidenceHistory(),
     getLatestPacket: () => core.getLatestPacket(),
     getTimeline: () => core.getTimeline(),
-    getByCategory: (c) => core.getByCategory(c)
+    getByCategory: (c) => core.getByCategory(c),
+    getByLabel: (l) => core.getByLabel(l)
   });
 }
 

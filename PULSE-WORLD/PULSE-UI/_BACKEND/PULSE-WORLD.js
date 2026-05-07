@@ -95,7 +95,7 @@ const g =
     ? g
     : {};
 
-import { db, admin } from "../../PULSE-BAND/PULSE-X/PulseWorldGenome-v17.js";
+import { db, admin } from "../../PULSE-BAND/PULSE-X/PulseWorldGenome-v20.js";
 
 // ============================================================================
 // PULSE-NET v14-Immortal — Backend Gateway + Crown Throne Room

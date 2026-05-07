@@ -39,7 +39,7 @@ import { PulseProofLogger } from "../../PULSE-UI/_BACKEND/PulseProofLogger.js";
 
 import { PulseOrganismMap } from "../PULSE-X/PulseWorldOrganismMap-v21.js";
 import { PulseIQMap } from "../PULSE-X/PulseWorldIQMap-v20.js";
-import { PulseIntentMap } from "../PULSE-X/PulseWorldIntentMap-v17.js";
+import { PulseIntentMap } from "../PULSE-X/PulseWorldIntentMap-v21.js";
 // ============================================================================
 //  AI ORGANISM (v14.4 IMMORTAL-INTEL)
 // ============================================================================
@@ -118,7 +118,7 @@ import {
   createJuryCouncil,
   fuseCreatorFlags,
   createExpansionCompliance
-} from "../PULSE-TRUST/PulseTrust-v16.js";
+} from "../PULSE-TRUST/PulseTrust-v20.js";
 
 // ———————————————————————————————
 // 5. MEMORY + EXPERIENCE (META ONLY)

@@ -73,7 +73,7 @@ import * as PulseEarnImmuneSystem      from "./PulseEarnImmuneSystem.js";
 import * as PulseEarnMetabolism        from "./PulseEarnMetabolism.js";
 import * as PulseEarnNervousSystem     from "./PulseEarnNervousSystem.js";
 import * as PulseEarnSkeletalSystem    from "./PulseEarnSkeletalSystem.js";
-import { PulseEarnSignalFactoring } from "./PulseEarnSignalFactoring.js";
+import { PulseEarnSignalFactoring } from "./PulseEarnSignalFactoring-v20.js";
 
 // --- MARKET EARN ORGANS ----------------------------------------------------
 import PulseEarnMktAuctioneer     from "./PulseEarnMktAuctioneer.js";

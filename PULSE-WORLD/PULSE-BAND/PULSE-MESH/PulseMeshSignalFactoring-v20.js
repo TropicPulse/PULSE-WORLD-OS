@@ -1,20 +1,20 @@
 // ============================================================================
-// FILE: PulseMeshSignalFactoring-v16-IMMORTAL-INTEL++.js
-// [pulse:mesh] SIGNAL FACTORING LAYER — v16‑IMMORTAL‑INTEL‑DUALHASH‑BASESHAPE
+// FILE: PulseMeshSignalFactoring-v20-IMMORTAL-INTEL-ADVANTAGE.js
+// [pulse:mesh] SIGNAL FACTORING LAYER — v20++ IMMORTAL INTEL + ADVANTAGE + ER
 // ----------------------------------------------------------------------------
 // ROLE:
 //   • Mesh‑level 1/0 factoring engine (metadata‑only, INTEL‑aware, base‑shape aware).
 //   • Mirrors CNS/Earn factoring (stride, depth, /2 pattern) at mesh layer.
 //   • Shapes impulses with factoring pressure from aura, flow, mesh, presence.
 //   • Emits dual INTEL + classic signatures for factoring + base‑shape state.
+//   • CNS/Band‑aware + Advantage‑aware (GPU, bandwidth, density).
+//   • ER‑ready: factoring surfaces can be embedded into Evidential Records v20.
 //   • NEVER mutates payloads beyond meta/flags — flags + meta only.
 //   • Deterministic: same impulse + same context → same factoring result.
 //   • Zero randomness, zero timestamps, zero async, zero network.
-//   • Drift‑proof, multi‑instance‑ready, chunk/prewarm‑ready.
-//   • Used by: Spine, Tendons, Aura, Flow, Thalamus, Cognition, Endocrine,
-//              Immune, Organs, Earn, MeshEcho, PresenceRelay.
+//   • Drift‑proof, multi‑instance‑ready, chunk/prewarm/cache‑aware.
 // ----------------------------------------------------------------------------
-// SAFETY CONTRACT (IMMORTAL v16‑INTEL):
+// SAFETY CONTRACT (IMMORTAL v20 INTEL+ADVANTAGE):
 //   • No payload mutation (only meta/flags fields are allowed).
 //   • No routing influence (metadata only; routers MAY read but not obey).
 //   • No randomness, no timestamps.
@@ -22,16 +22,16 @@
 //   • Zero async, zero side‑effects outside impulse.meta/flags.
 //   • Deterministic‑field: identical input → identical output.
 //   • Drift‑proof: stable across versions.
-//   • Dual‑hash: INTEL + classic signatures for every factoring/base‑shape event.
+//   • CNS‑aware + advantage‑aware, but never controlling them.
 // ============================================================================
 
 /*
 AI_EXPERIENCE_META = {
   identity: "PulseMeshSignalFactoring",
-  version: "v16-IMMORTAL-INTEL++",
+  version: "v20-IMMORTAL-INTEL-ADVANTAGE",
   layer: "mesh",
   role: "mesh_signal_factoring_engine",
-  lineage: "PulseMeshSignalFactoring-v14 → v15-Evo → v16-IMMORTAL-INTEL → v16-IMMORTAL-INTEL++",
+  lineage: "PulseMeshSignalFactoring-v14 → v15-Evo → v16-IMMORTAL-INTEL → v16-IMMORTAL-INTEL++ → v20-IMMORTAL-INTEL-ADVANTAGE",
 
   evo: {
     // Core factoring traits
@@ -111,14 +111,33 @@ AI_EXPERIENCE_META = {
 }
 */
 
+
+export const PulseMeshSignalFactoringMeta = Object.freeze({
+  id: "PulseMeshSignalFactoring-v20++-IMMORTAL-INTEL-ADVANTAGE",
+  version: "20.1.0",
+  layer: "mesh",
+  role: "mesh_signal_factoring_engine",
+  mind: false,
+  description:
+    "IMMORTAL v20++ mesh factoring engine. INTEL + advantage + CNS-aware, ER-ready, dual-hash, base-shape aware.",
+  identity: {
+    type: "organ",
+    name: "PulseMeshSignalFactoring",
+    band: "mesh",
+    mind: false,
+    immutable: true
+  },
+  schema: {
+    snapshotType: "mesh_signal_factoring",
+    categories: ["RAW_AI"],
+    erReady: true
+  }
+});
+
 // ============================================================================
-// HASH HELPERS — v16‑IMMORTAL‑INTEL (dual‑hash)
+// HASH HELPERS — v20 IMMORTAL INTEL (dual‑hash)
 // ============================================================================
 
-/**
- * Classic lightweight hash — structure‑insensitive, cheap, stable.
- * Used for "classic" signatures.
- */
 function computeHash(str) {
   let h = 0;
   const s = String(str || "");
@@ -128,10 +147,6 @@ function computeHash(str) {
   return `h${h}`;
 }
 
-/**
- * INTEL hash — structure‑aware, deterministic, no IO, no time.
- * Used for INTEL signatures and baseFormulaKey.
- */
 function computeHashIntelligence(payload) {
   const base = JSON.stringify(payload || "");
   let h = 0;
@@ -142,9 +157,6 @@ function computeHashIntelligence(payload) {
   return `HINTEL_${h}`;
 }
 
-/**
- * Dual hash signature builder — INTEL + classic.
- */
 function buildDualHashSignature(label, intelPayload, classicString) {
   const intelBase = {
     label,
@@ -178,23 +190,16 @@ function normalizeBand(band) {
 }
 
 // ============================================================================
-// BAND / BINARY / WAVE SURFACE (mesh‑level)
-// ============================================================================
-//
-// This is the mesh‑level analog of the Earn band/binary/wave surface.
-// It encodes a "binary surface" and a "wave surface" for the impulse,
-// giving you parity, density, and shiftDepth (log2‑like) plus a symbolic
-// wave envelope. This is where your "binary is 1/0, everything /2" vision
-// gets a structural home at mesh scale.
+// BAND / BINARY / WAVE SURFACE (mesh‑level, v20)
 // ============================================================================
 
 function buildMeshBandBinaryWave(impulse, cycleIndex, deviceProfile = {}) {
   const band = normalizeBand(
     impulse?.meta?.band ||
-    impulse?.band ||
-    deviceProfile?.band ||
-    deviceProfile?.presenceBand ||
-    "symbolic"
+      impulse?.band ||
+      deviceProfile?.band ||
+      deviceProfile?.presenceBand ||
+      "symbolic"
   );
 
   const idLen = String(impulse?.id || impulse?.key || "NO_IMPULSE_ID").length;
@@ -252,15 +257,10 @@ function buildMeshBandBinaryWave(impulse, cycleIndex, deviceProfile = {}) {
 }
 
 // ============================================================================
-// ADVANTAGE FIELD (mesh‑level)
-// ============================================================================
-//
-// Mesh advantage is lighter than Earn, but still gives a scalar "advantageScore"
-// that can be used to bias prewarm and cache priority. It reads deviceProfile
-// and the band/binary/wave surface.
+// ADVANTAGE FIELD (mesh‑level, v20)
 // ============================================================================
 
-function buildMeshAdvantageField(impulse, deviceProfile, bandPack, factoringProfile) {
+function buildMeshAdvantageField(impulse, deviceProfile, bandPack, factoringProfile, bandSnapshot) {
   const gpuScore = safeNumber(deviceProfile?.gpuScore || 0);
   const bandwidth = safeNumber(deviceProfile?.bandwidthMbps || 0);
 
@@ -269,6 +269,10 @@ function buildMeshAdvantageField(impulse, deviceProfile, bandPack, factoringProf
 
   const presenceTier = factoringProfile.presenceTier;
 
+  const bandMode = bandSnapshot?.mode ?? "normal";
+  const bandLevel = bandSnapshot?.bandLevel ?? null;
+  const fallbackLevel = bandSnapshot?.fallbackLevel ?? 0;
+
   const advantageScore =
     gpuScore * 0.0005 +
     bandwidth * 0.0002 +
@@ -276,24 +280,29 @@ function buildMeshAdvantageField(impulse, deviceProfile, bandPack, factoringProf
     amplitude * 0.00001 +
     (presenceTier === "presence_high" ? 0.01 : 0);
 
+  const bandRisk =
+    bandMode === "high_risk" ||
+    bandMode === "offline_biased" ||
+    fallbackLevel > 0;
+
   return {
-    advantageVersion: "M-16.0-MESH",
+    advantageVersion: "M-20.0-MESH",
     band: bandPack.band,
     gpuScore,
     bandwidth,
     binaryDensity: density,
     waveAmplitude: amplitude,
     presenceTier,
-    advantageScore
+    advantageScore,
+    bandMode,
+    bandLevel,
+    fallbackLevel,
+    bandRisk
   };
 }
 
 // ============================================================================
-// CHUNK / PREWARM PLAN (mesh‑level)
-// ============================================================================
-//
-// This is the mesh‑level prewarm plan. It doesn't DO prewarm, it only
-// describes intent and surfaces. Downstream organs decide what to do.
+// CHUNK / PREWARM / CACHE PLAN (mesh‑level, v20)
 // ============================================================================
 
 function buildMeshChunkPrewarmPlan(impulse, factoringProfile, bandPack, advantageField) {
@@ -319,12 +328,28 @@ function buildMeshChunkPrewarmPlan(impulse, factoringProfile, bandPack, advantag
     (factoringProfile.meshPressureIndex || 0) * 2 +
     (factoringProfile.flowPressureIndex || 0) * 2;
 
+  // GPU batch hint
+  let gpuBatchStyle = "none";
+  if (channelCount >= 32) {
+    gpuBatchStyle = "warp_aligned";
+  }
+
+  // Cache tier hint
+  let cacheTier = "cold";
+  if (factoringProfile.cachePriority === "high" || advantageField.advantageScore >= 0.5) {
+    cacheTier = "hot";
+  } else if (factoringProfile.cachePriority === "normal" && advantageField.advantageScore >= 0.2) {
+    cacheTier = "warm";
+  }
+
   return {
-    planVersion: "v16-IMMORTAL-INTEL-MESH",
+    planVersion: "v20-IMMORTAL-INTEL-MESH",
     priorityLabel,
     bandPresence: factoringProfile.presenceTier,
     band: bandPack.band,
     planSurface,
+    gpuBatchStyle,
+    cacheTier,
     chunks: {
       impulseEnvelope: true,
       channelList: true,
@@ -343,14 +368,7 @@ function buildMeshChunkPrewarmPlan(impulse, factoringProfile, bandPack, advantag
 }
 
 // ============================================================================
-// FACTORING PROFILE (mesh‑level 1/0, depth, stride)
-// ============================================================================
-//
-// This is the core of your /2 vision at mesh scale.
-// We build a factoringPressure from aura/flow/mesh, then derive:
-//   • signal (1/0)
-//   • depth (grows with cycles + pressure)
-//   • stride (1, then 1/2‑like, then 1/3‑like, etc.)
+// FACTORING PROFILE (mesh‑level 1/0, depth, stride, v20)
 // ============================================================================
 
 function buildMeshFactoringProfile(impulse, cycleIndex, context) {
@@ -390,7 +408,7 @@ function buildMeshFactoringProfile(impulse, cycleIndex, context) {
   const prewarmNeeded = pressure > 0.25;
 
   return {
-    version: "v16-IMMORTAL-INTEL-MESH",
+    version: "v20-IMMORTAL-INTEL-MESH",
     cycleIndex,
     pressure,
     depth,
@@ -399,9 +417,9 @@ function buildMeshFactoringProfile(impulse, cycleIndex, context) {
     auraBias,
     meshBias,
     flowBias,
-    auraPressureIdx,
-    meshPressureIdx,
-    flowPressureIdx,
+    auraPressureIndex: auraPressureIdx,
+    meshPressureIndex: meshPressureIdx,
+    flowPressureIndex: flowPressureIdx,
     presenceTier,
     presenceBand,
     prewarmNeeded
@@ -409,13 +427,7 @@ function buildMeshFactoringProfile(impulse, cycleIndex, context) {
 }
 
 // ============================================================================
-// BASE SHAPE / BASE FORMULA SURFACE (mesh‑level)
-// ============================================================================
-//
-// This is where your "cheat sheet" lives at mesh scale.
-// We compress the impulse into a baseShapeSurface and emit a baseFormulaKey
-// (INTEL hash) that can be used by a BaseFormulaLibrary organ to snap
-// future impulses to known patterns.
+// BASE SHAPE / BASE FORMULA SURFACE (mesh‑level, v20)
 // ============================================================================
 
 function buildMeshBaseShapeSurface(impulse, factoringProfile, bandPack, advantageField) {
@@ -429,7 +441,7 @@ function buildMeshBaseShapeSurface(impulse, factoringProfile, bandPack, advantag
   }, {});
 
   const shapePayload = {
-    version: "v16-IMMORTAL-INTEL-MESH-BASESHAPE",
+    version: "v20-IMMORTAL-INTEL-MESH-BASESHAPE",
     presenceTier: factoringProfile.presenceTier,
     presenceBand: factoringProfile.presenceBand,
     auraPressureIndex: factoringProfile.auraPressureIndex,
@@ -442,6 +454,8 @@ function buildMeshBaseShapeSurface(impulse, factoringProfile, bandPack, advantag
     binaryDensity: bandPack.binaryField.density,
     waveAmplitude: bandPack.waveField.amplitude,
     advantageScore: advantageField.advantageScore,
+    bandMode: advantageField.bandMode,
+    bandRisk: advantageField.bandRisk,
     channelKinds: channelKindHistogram,
     impulseKind: String(impulse?.kind || impulse?.type || "impulse"),
     route: String(impulse?.route || impulse?.path || "mesh")
@@ -462,6 +476,8 @@ function buildMeshBaseShapeSurface(impulse, factoringProfile, bandPack, advantag
     bandPack.binaryField.density,
     bandPack.waveField.amplitude.toFixed(4),
     advantageField.advantageScore.toFixed(6),
+    shapePayload.bandMode,
+    shapePayload.bandRisk ? "RISK" : "SAFE",
     JSON.stringify(channelKindHistogram),
     shapePayload.impulseKind,
     shapePayload.route
@@ -485,20 +501,14 @@ function buildMeshBaseShapeSurface(impulse, factoringProfile, bandPack, advantag
 }
 
 // ============================================================================
-// IMMORTAL META TEMPLATE — v16‑IMMORTAL‑INTEL (mesh)
-// ============================================================================
-//
-// This is the mesh‑level meta block. It carries:
-//   • factoring profile (pressure, signal, depth, stride, biases)
-//   • dual‑hash signatures
-//   • base‑shape + baseFormulaKey surfaces
+// IMMORTAL META TEMPLATE — v20 IMMORTAL INTEL (mesh)
 // ============================================================================
 
 function buildMeshSignalFactoringMeta(existingMeta, cycleIndex, factoringProfile) {
   const base = existingMeta || {};
   const intelPayload = {
     kind: "meshSignalFactoring",
-    version: "v16-IMMORTAL-INTEL",
+    version: PulseMeshSignalFactoringMeta.version,
     cycleIndex,
     pressure: factoringProfile.pressure,
     signal: factoringProfile.signal,
@@ -527,7 +537,7 @@ function buildMeshSignalFactoringMeta(existingMeta, cycleIndex, factoringProfile
     signalFactoring: {
       layer: "PulseMeshSignalFactoring",
       role: "MESH_SIGNAL_FACTORS",
-      version: "v16-IMMORTAL-INTEL",
+      version: PulseMeshSignalFactoringMeta.version,
       target: "full-mesh",
       selfRepairable: true,
       evo: {
@@ -573,14 +583,7 @@ function buildMeshSignalFactoringMeta(existingMeta, cycleIndex, factoringProfile
 let meshFactoringCycle = 0;
 
 // ============================================================================
-// CORE API — applyMeshSignalFactoring (v16‑IMMORTAL‑INTEL++)
-// ============================================================================
-//
-// NOTE:
-//   • This function is intentionally "big" in metadata, small in math.
-//   • All heavy lifting is in how richly we describe the factoring event.
-//   • The actual factoring (job /2, sub‑jobs, etc.) is done by downstream
-//     organs that read these flags and profiles.
+// CORE API — applyMeshSignalFactoring (v20 IMMORTAL INTEL + ADVANTAGE)
 // ============================================================================
 
 export function applyMeshSignalFactoring(impulse, context = {}) {
@@ -588,7 +591,6 @@ export function applyMeshSignalFactoring(impulse, context = {}) {
 
   meshFactoringCycle++;
 
-  // Ensure meta/flags containers exist
   impulse.meta = impulse.meta || {};
   impulse.flags = impulse.flags || {};
 
@@ -607,9 +609,7 @@ export function applyMeshSignalFactoring(impulse, context = {}) {
   const prewarmNeeded   = !!(context.prewarmNeeded || impulse.flags.prewarmNeeded);
   const presenceBand    = context.band || impulse.band || "symbolic";
 
-  // -------------------------------------------------------------------------
-  // 1) Extract factoring pressures (aura + flow + mesh)
-  // -------------------------------------------------------------------------
+  // 1) Extract factoring pressures
   const auraBias  = impulse.flags.aura_factoring_bias ?? 0;
   const flowBias  = context.flowPressure ?? 0;
   const meshBias  = context.meshPressure ?? 0;
@@ -622,9 +622,7 @@ export function applyMeshSignalFactoring(impulse, context = {}) {
   const clampedPressure = clamp01(factoringPressure);
   impulse.flags.mesh_factoring_pressure = clampedPressure;
 
-  // -------------------------------------------------------------------------
-  // 2) Compute factoring signal (1 or 0)
-  // -------------------------------------------------------------------------
+  // 2) Compute factoring signal
   const highPressure   = clampedPressure >= 0.6;
   const lowPressure    = clampedPressure <= 0.2;
   const criticalCache  = cachePriority === "critical";
@@ -637,15 +635,12 @@ export function applyMeshSignalFactoring(impulse, context = {}) {
   } else if (lowPressure) {
     signal = 0;
   } else {
-    // mid‑band: preserve existing factoringSignal if present, else 0
     signal = impulse.flags.factoringSignal ?? 0;
   }
 
   impulse.flags.factoringSignal = signal;
 
-  // -------------------------------------------------------------------------
-  // 3) Compute factoring depth (mirrors CNS stride/depth)
-// -------------------------------------------------------------------------
+  // 3) Compute factoring depth
   const previousDepth = impulse.flags.factoringDepth ?? 0;
   const depth =
     signal === 1
@@ -654,37 +649,25 @@ export function applyMeshSignalFactoring(impulse, context = {}) {
 
   impulse.flags.factoringDepth = depth;
 
-  // -------------------------------------------------------------------------
-  // 4) Compute factoring stride (/2‑like pattern)
-// -------------------------------------------------------------------------
-  // depth = 0 → stride = 1 (no factoring)
-  // depth = 1 → stride ≈ 1/2
-  // depth = 2 → stride ≈ 1/3
-  // depth = 3 → stride ≈ 1/4
-  // ...
+  // 4) Compute factoring stride
   const stride =
     depth > 0 ? 1 / (depth + 1) : 1;
 
   impulse.flags.factoringStride = stride;
 
-  // -------------------------------------------------------------------------
-  // 5) Tag factoring intent (metadata only)
-// -------------------------------------------------------------------------
+  // 5) Tag factoring intent
   impulse.flags.mesh_factoring_intent =
     signal === 1
       ? "prefer_factored_path"
       : "normal";
 
-  // -------------------------------------------------------------------------
-  // 6) Build factoring profile surface (IMMORTAL v16 mesh profile)
-// -------------------------------------------------------------------------
+  // 6) Build factoring profile
   const factoringProfile = buildMeshFactoringProfile(
     impulse,
     meshFactoringCycle,
     { presenceField }
   );
 
-  // Enrich with Earn‑style extras for symmetry
   factoringProfile.advantageTier      = advantageTier;
   factoringProfile.jobCount           = jobCount;
   factoringProfile.cachePriority      = cachePriority;
@@ -697,9 +680,9 @@ export function applyMeshSignalFactoring(impulse, context = {}) {
     ...factoringProfile
   };
 
-  // -------------------------------------------------------------------------
-  // 7) Band/Binary/Wave + Advantage + Chunk/Prewarm (v16 IMMORTAL INTEL)
-// -------------------------------------------------------------------------
+  // 7) Band/Binary/Wave + Advantage + Chunk/Prewarm (v20)
+  const bandSnapshot = context.bandSnapshot || null;
+
   const bandPack = buildMeshBandBinaryWave(
     impulse,
     meshFactoringCycle,
@@ -710,7 +693,8 @@ export function applyMeshSignalFactoring(impulse, context = {}) {
     impulse,
     context.deviceProfile || {},
     bandPack,
-    factoringProfile
+    factoringProfile,
+    bandSnapshot
   );
 
   const meshChunkPrewarmPlan = buildMeshChunkPrewarmPlan(
@@ -720,9 +704,7 @@ export function applyMeshSignalFactoring(impulse, context = {}) {
     meshAdvantageField
   );
 
-  // -------------------------------------------------------------------------
-  // 8) Base‑shape + baseFormulaKey (mesh‑level cheat‑sheet hook)
-// -------------------------------------------------------------------------
+  // 8) Base‑shape + baseFormulaKey
   const baseShapeSurface = buildMeshBaseShapeSurface(
     impulse,
     factoringProfile,
@@ -730,9 +712,7 @@ export function applyMeshSignalFactoring(impulse, context = {}) {
     meshAdvantageField
   );
 
-  // -------------------------------------------------------------------------
-  // 9) Attach IMMORTAL META BLOCK with INTEL + classic signatures + surfaces
-  // -------------------------------------------------------------------------
+  // 9) Attach IMMORTAL META BLOCK
   impulse.meta = buildMeshSignalFactoringMeta(
     impulse.meta,
     meshFactoringCycle,

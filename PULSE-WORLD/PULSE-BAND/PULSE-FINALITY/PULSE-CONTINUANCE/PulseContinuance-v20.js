@@ -1,40 +1,47 @@
 // ============================================================================
-//  PulseContinuance-v16-Immortal-GPU+.js
-//  PULSE-FINALITY / PULSE-CONTINUANCE / GPU SURVIVAL PHYSICS
+//  FILE: PulseContinuance-v20-Immortal-INTEL-WORLD.js
+//  PULSE-FINALITY / PULSE-CONTINUANCE / GPU+WORLD SURVIVAL PHYSICS
 //
 //  ROLE:
-//    Predictive survival physics for Pulse OS, now GPU-accelerated.
-//    Reads region/grid/host signals and proposes preemptive movement or
-//    replication BEFORE outages or instability hit the organism.
+//    Predictive survival physics for Pulse OS, now:
+//      • GPU-accelerated
+//      • World/region/tenant aware
+//      • OmniHosting-aware (placement/failover surfaces)
+//      • Schema-aware (requiresGPU/CI/Binary/etc)
+//      • DualHash + IntellHash signatures for every major surface
 //
-//    v16-IMMORTAL:
+//    v20-IMMORTAL-INTEL-WORLD:
 //      • CPU + GPU dual-path continuance physics
 //      • GPU-instability prediction + trend forecasting
 //      • GPU risk smoothing + inertia + momentum
 //      • IMMORTAL chunk/cache/prewarm hints
 //      • Presence / fallback / advantage-aware
 //      • CI-aware (compute surfaces + deltas)
+//      • World/geo/tenant-aware symbolic hints
+//      • DualHash + IntellHash signatures for risk/plan packets
+//      • Artery metrics for continuance load/pressure
 //      • Pure compute, zero randomness, zero IO
 //
 //  NEVER:
 //    - Never call real hosts or networks.
 //    - Never introduce randomness.
 //    - Never mutate input descriptors or signals.
+//    - Never schedule or route directly.
 //
 //  ALWAYS:
 //    - Always operate on symbolic descriptors.
 //    - Always be deterministic for the same inputs.
 //    - Always output explicit, reversible plans.
-//    - Attach presence/fallback/chunk/cache/prewarm hints as pure metadata.
+//    - Attach presence/fallback/chunk/cache/prewarm/world hints as pure metadata.
 // ============================================================================
 
 /*
 AI_EXPERIENCE_META = {
   identity: "PulseContinuanceGPUPlus",
-  version: "v16-Immortal",
-  layer: "continuance_gpu",
-  role: "gpu_continuance_engine",
-  lineage: "PulseContinuance-v12.3-Presence-Evo+ → v14 → v16-Immortal-GPU+",
+  version: "v20-Immortal-INTEL-WORLD",
+  layer: "continuance_gpu_world",
+  role: "gpu_world_continuance_engine",
+  lineage: "v12.3-Presence-Evo+ → v14 → v16-Immortal-GPU+ → v20-Immortal-INTEL-WORLD",
 
   evo: {
     continuanceEngine: true,
@@ -50,6 +57,16 @@ AI_EXPERIENCE_META = {
     gpuMetaReasoning: true,
     gpuHeuristics: true,
 
+    worldAware: true,
+    regionAware: true,
+    tenantAware: true,
+    omniHostingAware: true,
+    schemaAware: true,
+
+    dualHashAware: true,
+    intellHashAware: true,
+    arteryMetricsAware: true,
+
     deterministic: true,
     driftProof: true,
     pureCompute: true,
@@ -63,30 +80,32 @@ AI_EXPERIENCE_META = {
     always: [
       "PulseGPUBrain",
       "PulseCoreMemory",
-      "PulseSchema"
+      "PulseSchema",
+      "PulseOmniHosting"
     ],
     never: [
       "safeRoute",
       "fetchViaCNS",
-      "legacyContinuance"
+      "legacyContinuance",
+      "runtimeScheduler",
+      "router"
     ]
   }
 }
 */
+
 import { createPulseCoreMemory } from "../../PULSE-CORE/PulseCoreMemory.js";
-// ============================================================================
-//  IMPORTS
-// ============================================================================
 import { PulseGPUBrain } from "../../PULSE-GPU/PulseGPUBrain.js";
 
 // ============================================================================
-//  META — v16-IMMORTAL
+//  META — v20-IMMORTAL-INTEL-WORLD
 // ============================================================================
+
 export const PulseContinuanceMeta = Object.freeze({
-  layer: "ContinuanceGPU",
-  role: "GPU_CONTINUANCE_ENGINE",
-  version: "16-Immortal",
-  identity: "PulseContinuanceGPUPlus-v16-Immortal",
+  layer: "ContinuanceGPUWorld",
+  role: "GPU_WORLD_CONTINUANCE_ENGINE",
+  version: "20-Immortal-INTEL-WORLD",
+  identity: "PulseContinuanceGPUPlus-v20-Immortal-INTEL-WORLD",
 
   evo: Object.freeze({
     deterministic: true,
@@ -111,17 +130,27 @@ export const PulseContinuanceMeta = Object.freeze({
     cacheAware: true,
     prewarmAware: true,
 
+    worldAware: true,
+    regionAware: true,
+    tenantAware: true,
+    omniHostingAware: true,
+    schemaAware: true,
+
+    dualHashAware: true,
+    intellHashAware: true,
+    arteryMetricsAware: true,
+
     pureCompute: true,
     zeroRandomness: true,
     zeroMutationOfInput: true,
     zeroNetwork: true,
     zeroFilesystem: true,
-    epoch: "16-Immortal"
+    epoch: "20-Immortal-INTEL-WORLD"
   }),
 
   contract: Object.freeze({
     purpose:
-      "Compute GPU-accelerated continuance risk, preemptive moves, and replication plans " +
+      "Compute GPU-accelerated, world-aware continuance risk, preemptive moves, and replication plans " +
       "while remaining deterministic, IO-free, and physics-pure.",
 
     never: Object.freeze([
@@ -139,7 +168,7 @@ export const PulseContinuanceMeta = Object.freeze({
       "remain pure symbolic compute",
       "remain deterministic across identical inputs",
       "expose explicit, reversible plans",
-      "attach presence/fallback/chunk/cache/prewarm hints as metadata",
+      "attach presence/fallback/chunk/cache/prewarm/world hints as metadata",
       "remain GPU-accelerated when available",
       "fallback to CPU deterministically when GPU is unavailable"
     ])
@@ -149,8 +178,9 @@ export const PulseContinuanceMeta = Object.freeze({
 // ============================================================================
 //  CORE MEMORY — IMMORTAL HOT MEMORY ORGAN
 // ============================================================================
+
 const CoreMemory = createPulseCoreMemory();
-const ROUTE = "continuance-global";
+const ROUTE = "continuance-global-v20";
 
 const KEY_LAST_PACKET = "last-continuance-packet";
 const KEY_LAST_RISK = "last-risk-report";
@@ -158,27 +188,84 @@ const KEY_LAST_PREEMPTIVE = "last-preemptive-plan";
 const KEY_LAST_REPLICATION = "last-replication-plan";
 const KEY_LAST_PRESENCE = "last-presence-field";
 const KEY_LAST_ADVANTAGE = "last-advantage-field";
+const KEY_LAST_WORLD = "last-world-overlay";
+const KEY_LAST_ARTERY = "last-artery-metrics";
+
+// ============================================================================
+//  DUALHASH / INTELLHASH HELPERS (pure, bounded, deterministic)
+// ============================================================================
+
+function _simpleHash(str, seed = 0) {
+  const s = String(str);
+  let h = seed >>> 0;
+  for (let i = 0; i < s.length; i++) {
+    h = (h * 131 + s.charCodeAt(i)) >>> 0;
+  }
+  return h >>> 0;
+}
+
+function computeDualHash(str) {
+  const primary = _simpleHash(str, 0x1234abcd);
+  const secondary = _simpleHash(str, 0x9e3779b1);
+  const combined = _simpleHash(`${primary}:${secondary}`, 0xdeadbeef);
+  return {
+    primary: `h${primary.toString(16)}`,
+    secondary: `a${secondary.toString(16)}`,
+    combined: `c${combined.toString(16)}`
+  };
+}
+
+function computeIntellHash(payload) {
+  const json = JSON.stringify(payload || {});
+  const base = _simpleHash(json, 0x31415926);
+  const band = _simpleHash(json, 0x27182818);
+  const world = _simpleHash(json, 0x0badc0de);
+  return {
+    intell: `i${base.toString(16)}`,
+    band: `b${band.toString(16)}`,
+    world: `w${world.toString(16)}`
+  };
+}
 
 // ============================================================================
 //  PACKET EMITTER — deterministic, continuance-scoped
 // ============================================================================
+
 function emitContinuancePacket(type, payload) {
-  return Object.freeze({
+  const base = {
     meta: PulseContinuanceMeta,
     packetType: `continuance-${type}`,
-    packetId: `continuance-${type}-${Date.now()}`,
-    timestamp: Date.now(),
-    epoch: PulseContinuanceMeta.evo.epoch,
+    epoch: PulseContinuanceMeta.evo.epoch
+  };
+
+  const timestamp = Date.now();
+  const packetId = `continuance-${type}-${timestamp}`;
+
+  const signatures = {
+    packetIdDualHash: computeDualHash(packetId),
+    payloadIntellHash: computeIntellHash(payload)
+  };
+
+  return Object.freeze({
+    ...base,
+    packetId,
+    timestamp,
+    signatures,
     ...payload
   });
 }
 
 // ============================================================================
-//  Types (v16-IMMORTAL, extended)
+//  Types (v20-IMMORTAL, extended)
 // ============================================================================
 
 export class RegionSignal {
-  constructor({ regionId, instability = 0, trend = "stable", meta = {} }) {
+  constructor({
+    regionId,
+    instability = 0,
+    trend = "stable",
+    meta = {}
+  }) {
     this.regionId = regionId;
     this.instability = clamp01(instability);
     this.trend = trend;
@@ -207,46 +294,73 @@ export class CurrentPlacementPlan {
     selectedHosts = [],
     eligibleHosts = [],
     minInstances = 1,
-    schemaVersion = 1
+    schemaVersion = 1,
+    worldRegion = null,
+    tenantId = null
   }) {
     this.selectedHosts = selectedHosts;
     this.eligibleHosts = eligibleHosts;
     this.minInstances = minInstances;
     this.schemaVersion = schemaVersion;
+    this.worldRegion = worldRegion;
+    this.tenantId = tenantId;
   }
 }
 
 export class PreemptiveMovePlan {
-  constructor({ moveFrom = [], moveTo = [], reason = "", riskScore = 0 }) {
+  constructor({
+    moveFrom = [],
+    moveTo = [],
+    reason = "",
+    riskScore = 0,
+    worldHints = {}
+  }) {
     this.moveFrom = moveFrom;
     this.moveTo = moveTo;
     this.reason = reason;
     this.riskScore = clamp01(riskScore);
+    this.worldHints = worldHints;
   }
 }
 
 export class ReplicationPlan {
-  constructor({ replicateTo = [], reason = "", riskScore = 0 }) {
+  constructor({
+    replicateTo = [],
+    reason = "",
+    riskScore = 0,
+    worldHints = {}
+  }) {
     this.replicateTo = replicateTo;
     this.reason = reason;
     this.riskScore = clamp01(riskScore);
+    this.worldHints = worldHints;
   }
 }
 
 /**
- * ContinuanceRiskReport v16-Immortal-GPU+
+ * ContinuanceRiskReport v20-Immortal-INTEL-WORLD
  *
  * perRegion: { [regionId: string]: number }   // 0.0 - 1.0
  * globalRisk: number                          // 0.0 - 1.0
  * notes: string[]
  *
- * v16+ additions:
+ * v20 additions:
  *   fallbackBandLevel: 0–3
  *   prewarmHint: { shouldPrewarm: boolean, reason: string }
  *   cacheHint: { keepHot: boolean, priority: "normal"|"medium"|"high"|"critical" }
  *   chunkHint: { chunkAggression: number (0–1) }
  *   gpuMode: "gpu" | "cpu"
  *   gpuDetail: { smoothed: number[], amplified: number[], decayed: number[], momentum: number[] }
+ *   worldOverlay: {
+ *     worldRegion: string | null,
+ *     tenantId: string | null,
+ *     geoGrid: string | null,
+ *     omniPlacementId: string | null
+ *   }
+ *   signatures: {
+ *     riskDualHash,
+ *     worldIntellHash
+ *   }
  */
 export class ContinuanceRiskReport {
   constructor({
@@ -258,7 +372,9 @@ export class ContinuanceRiskReport {
     cacheHint = null,
     chunkHint = null,
     gpuMode = "cpu",
-    gpuDetail = null
+    gpuDetail = null,
+    worldOverlay = null,
+    signatures = null
   }) {
     this.perRegion = perRegion;
     this.globalRisk = clamp01(globalRisk);
@@ -269,6 +385,8 @@ export class ContinuanceRiskReport {
     this.chunkHint = chunkHint;
     this.gpuMode = gpuMode;
     this.gpuDetail = gpuDetail;
+    this.worldOverlay = worldOverlay;
+    this.signatures = signatures;
   }
 }
 
@@ -327,6 +445,86 @@ function buildChunkHint(globalRisk, gpuMode) {
     chunkAggression,
     gpuMode
   };
+}
+
+function buildWorldOverlay({
+  worldRegion = null,
+  tenantId = null,
+  geoGrid = null,
+  omniPlacementId = null
+} = {}) {
+  return {
+    worldRegion,
+    tenantId,
+    geoGrid,
+    omniPlacementId
+  };
+}
+
+// ============================================================================
+//  ARTERY METRICS — continuance load/pressure
+// ============================================================================
+
+const _continuanceArtery = {
+  totalOps: 0,
+  riskOps: 0,
+  preemptiveOps: 0,
+  replicationOps: 0,
+  packetOps: 0,
+  lastOpKind: null,
+  lastRegionCount: 0,
+  lastHostCount: 0
+};
+
+function _bumpArtery(kind, { regionCount = 0, hostCount = 0 } = {}) {
+  _continuanceArtery.totalOps += 1;
+  if (kind === "risk") _continuanceArtery.riskOps += 1;
+  if (kind === "preemptive") _continuanceArtery.preemptiveOps += 1;
+  if (kind === "replication") _continuanceArtery.replicationOps += 1;
+  if (kind === "packet") _continuanceArtery.packetOps += 1;
+
+  _continuanceArtery.lastOpKind = kind;
+  _continuanceArtery.lastRegionCount = regionCount;
+  _continuanceArtery.lastHostCount = hostCount;
+}
+
+export function getContinuanceArterySnapshot() {
+  const totalOps = Math.max(1, _continuanceArtery.totalOps || 1);
+  const load = clamp01(totalOps / 32768);
+  const pressure = clamp01(
+    (_continuanceArtery.lastRegionCount + _continuanceArtery.lastHostCount) /
+      16384
+  );
+
+  const loadBucket =
+    load >= 0.9
+      ? "saturated"
+      : load >= 0.7
+      ? "high"
+      : load >= 0.4
+      ? "medium"
+      : load > 0
+      ? "low"
+      : "idle";
+
+  const pressureBucket =
+    pressure >= 0.9
+      ? "overload"
+      : pressure >= 0.7
+      ? "high"
+      : pressure >= 0.4
+      ? "medium"
+      : pressure > 0
+      ? "low"
+      : "none";
+
+  return Object.freeze({
+    ..._continuanceArtery,
+    load,
+    loadBucket,
+    pressure,
+    pressureBucket
+  });
 }
 
 // ============================================================================
@@ -500,10 +698,19 @@ export function computeGlobalRiskGPU(perRegionRisk = {}) {
 }
 
 // ============================================================================
-//  UNIFIED RISK REPORT (GPU-first, CPU fallback)
+//  UNIFIED RISK REPORT (GPU-first, CPU fallback, world-aware)
 // ============================================================================
 
-export function buildContinuanceRiskReport(regionSignals, gridSignals) {
+export function buildContinuanceRiskReport(
+  regionSignals,
+  gridSignals,
+  {
+    worldRegion = null,
+    tenantId = null,
+    geoGrid = null,
+    omniPlacementId = null
+  } = {}
+) {
   let gpuMode = "cpu";
   let perRegion;
   let globalRisk;
@@ -551,7 +758,21 @@ export function buildContinuanceRiskReport(regionSignals, gridSignals) {
   const cacheHint = buildCacheHint(globalRisk, gpuMode);
   const chunkHint = buildChunkHint(globalRisk, gpuMode);
 
-  return new ContinuanceRiskReport({
+  const worldOverlay = buildWorldOverlay({
+    worldRegion,
+    tenantId,
+    geoGrid,
+    omniPlacementId
+  });
+
+  const signatures = {
+    riskDualHash: computeDualHash(
+      JSON.stringify({ perRegion, globalRisk, gpuMode })
+    ),
+    worldIntellHash: computeIntellHash(worldOverlay)
+  };
+
+  const report = new ContinuanceRiskReport({
     perRegion,
     globalRisk,
     notes,
@@ -560,15 +781,34 @@ export function buildContinuanceRiskReport(regionSignals, gridSignals) {
     cacheHint,
     chunkHint,
     gpuMode,
-    gpuDetail
+    gpuDetail,
+    worldOverlay,
+    signatures
   });
+
+  _bumpArtery("risk", {
+    regionCount: Object.keys(perRegion).length,
+    hostCount: 0
+  });
+
+  return report;
 }
 
 // ============================================================================
-//  PREEMPTIVE MOVE PLAN (GPU-aware, deterministic)
+//  PREEMPTIVE MOVE PLAN (GPU-aware, world-aware, deterministic)
 // ============================================================================
 
-export function buildPreemptiveMovePlan(hosts, placement, perRegionRisk) {
+export function buildPreemptiveMovePlan(
+  hosts,
+  placement,
+  perRegionRisk,
+  {
+    worldRegion = null,
+    tenantId = null,
+    geoGrid = null,
+    omniPlacementId = null
+  } = {}
+) {
   const byName = {};
   for (const h of hosts) byName[h.name] = h;
 
@@ -610,34 +850,68 @@ export function buildPreemptiveMovePlan(hosts, placement, perRegionRisk) {
       ? "No high-risk hosts in current placement."
       : "High-risk regions detected for current placement. Proposing preemptive movement.";
 
-  return new PreemptiveMovePlan({
+  const worldHints = buildWorldOverlay({
+    worldRegion,
+    tenantId,
+    geoGrid,
+    omniPlacementId
+  });
+
+  const plan = new PreemptiveMovePlan({
     moveFrom,
     moveTo,
     reason,
-    riskScore
+    riskScore,
+    worldHints
   });
+
+  _bumpArtery("preemptive", {
+    regionCount: Object.keys(perRegionRisk).length,
+    hostCount: hosts.length
+  });
+
+  return plan;
 }
 
 // ============================================================================
-//  REPLICATION PLAN (GPU-aware, deterministic)
+//  REPLICATION PLAN (GPU-aware, world-aware, deterministic)
 // ============================================================================
 
 export function buildReplicationPlan(
   hosts,
   placement,
   perRegionRisk,
-  minInstances
+  minInstances,
+  {
+    worldRegion = null,
+    tenantId = null,
+    geoGrid = null,
+    omniPlacementId = null
+  } = {}
 ) {
   const byName = {};
   for (const h of hosts) byName[h.name] = h;
 
   const currentCount = placement.selectedHosts.length;
   if (currentCount >= minInstances) {
-    return new ReplicationPlan({
+    const plan = new ReplicationPlan({
       replicateTo: [],
       reason: "Minimum instance count already satisfied.",
-      riskScore: 0
+      riskScore: 0,
+      worldHints: buildWorldOverlay({
+        worldRegion,
+        tenantId,
+        geoGrid,
+        omniPlacementId
+      })
     });
+
+    _bumpArtery("replication", {
+      regionCount: Object.keys(perRegionRisk).length,
+      hostCount: hosts.length
+    });
+
+    return plan;
   }
 
   const eligible = placement.eligibleHosts
@@ -671,11 +945,26 @@ export function buildReplicationPlan(
       ? "No suitable low-risk hosts available for replication."
       : "Replicating to lower-risk hosts to satisfy minimal instance floor.";
 
-  return new ReplicationPlan({
+  const worldHints = buildWorldOverlay({
+    worldRegion,
+    tenantId,
+    geoGrid,
+    omniPlacementId
+  });
+
+  const plan = new ReplicationPlan({
     replicateTo,
     reason,
-    riskScore
+    riskScore,
+    worldHints
   });
+
+  _bumpArtery("replication", {
+    regionCount: Object.keys(perRegionRisk).length,
+    hostCount: hosts.length
+  });
+
+  return plan;
 }
 
 // ============================================================================
@@ -690,21 +979,44 @@ export function computeContinuance({
   presenceContext = {},
   advantageContext = {},
   ciSurface = null,
-  ciDeltaPacket = null
+  ciDeltaPacket = null,
+  worldRegion = null,
+  tenantId = null,
+  geoGrid = null,
+  omniPlacementId = null
 }) {
   const start = Date.now();
 
-  const riskReport = buildContinuanceRiskReport(regionSignals, gridSignals);
+  const riskReport = buildContinuanceRiskReport(regionSignals, gridSignals, {
+    worldRegion,
+    tenantId,
+    geoGrid,
+    omniPlacementId
+  });
+
   const preemptivePlan = buildPreemptiveMovePlan(
     hosts,
     placement,
-    riskReport.perRegion
+    riskReport.perRegion,
+    {
+      worldRegion,
+      tenantId,
+      geoGrid,
+      omniPlacementId
+    }
   );
+
   const replicationPlan = buildReplicationPlan(
     hosts,
     placement,
     riskReport.perRegion,
-    placement.minInstances
+    placement.minInstances,
+    {
+      worldRegion,
+      tenantId,
+      geoGrid,
+      omniPlacementId
+    }
   );
 
   const presenceField = {
@@ -720,9 +1032,10 @@ export function computeContinuance({
     timeSavedMs: advantageContext.timeSavedMs ?? 0
   };
 
+  const artery = getContinuanceArterySnapshot();
   const durationMs = Date.now() - start;
 
-  const packet = emitContinuancePacket("gpu-compute", {
+  const packetPayload = {
     riskReport,
     preemptivePlan,
     replicationPlan,
@@ -730,8 +1043,15 @@ export function computeContinuance({
     advantageField,
     ciSurface,
     ciDeltaPacket,
+    worldRegion,
+    tenantId,
+    geoGrid,
+    omniPlacementId,
+    artery,
     durationMs
-  });
+  };
+
+  const packet = emitContinuancePacket("gpu-world-compute", packetPayload);
 
   // CoreMemory integration — hot symbolic snapshot
   CoreMemory.set(ROUTE, KEY_LAST_RISK, riskReport);
@@ -739,7 +1059,19 @@ export function computeContinuance({
   CoreMemory.set(ROUTE, KEY_LAST_REPLICATION, replicationPlan);
   CoreMemory.set(ROUTE, KEY_LAST_PRESENCE, presenceField);
   CoreMemory.set(ROUTE, KEY_LAST_ADVANTAGE, advantageField);
+  CoreMemory.set(ROUTE, KEY_LAST_WORLD, {
+    worldRegion,
+    tenantId,
+    geoGrid,
+    omniPlacementId
+  });
+  CoreMemory.set(ROUTE, KEY_LAST_ARTERY, artery);
   CoreMemory.set(ROUTE, KEY_LAST_PACKET, packet);
+
+  _bumpArtery("packet", {
+    regionCount: Object.keys(riskReport.perRegion || {}).length,
+    hostCount: hosts.length
+  });
 
   return packet;
 }
@@ -758,7 +1090,9 @@ export function getLastContinuanceState() {
     preemptivePlan: CoreMemory.get(ROUTE, KEY_LAST_PREEMPTIVE),
     replicationPlan: CoreMemory.get(ROUTE, KEY_LAST_REPLICATION),
     presenceField: CoreMemory.get(ROUTE, KEY_LAST_PRESENCE),
-    advantageField: CoreMemory.get(ROUTE, KEY_LAST_ADVANTAGE)
+    advantageField: CoreMemory.get(ROUTE, KEY_LAST_ADVANTAGE),
+    worldOverlay: CoreMemory.get(ROUTE, KEY_LAST_WORLD),
+    artery: CoreMemory.get(ROUTE, KEY_LAST_ARTERY)
   };
 }
 
@@ -766,7 +1100,7 @@ export function getLastContinuanceState() {
 //  Exported API
 // ============================================================================
 
-const PulseContinuanceAPI = {
+const PulseContinuanceAPI_v20 = {
   meta: PulseContinuanceMeta,
 
   RegionSignal,
@@ -790,9 +1124,10 @@ const PulseContinuanceAPI = {
   buildReplicationPlan,
   computeContinuance,
 
-  // CoreMemory integration
+  // Artery + CoreMemory
+  getContinuanceArterySnapshot,
   getLastContinuanceState,
   CoreMemory
 };
 
-export default PulseContinuanceAPI;
+export default PulseContinuanceAPI_v20;

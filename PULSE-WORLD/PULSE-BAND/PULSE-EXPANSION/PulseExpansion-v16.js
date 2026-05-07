@@ -88,7 +88,7 @@ import {
 import {
   PulseBeaconMeshMeta,
   PulseBeaconMesh
-} from "./PulseBeaconMesh-v16.js";
+} from "./PulseBeaconMesh-v20.js";
 
 // v11 mesh + binary mesh metas
 import { PulseMeshMeta } from "../PULSE-MESH/PulseMesh-v16.js";
@@ -104,8 +104,8 @@ import {
 import { getPulseTouchContext } from "../../PULSE-UI/PULSE-TOUCH.js";
 
 // Runtime / scheduler / overmind
-import { getPulseRuntimeContext } from "../PULSE-X/PulseWorldRuntime-v17.js";
-import { getPulseSchedulerContext } from "../PULSE-X/PulseWorldScheduler-v17.js";
+import { getPulseRuntimeContext } from "../PULSE-X/PulseWorldRuntime-v20.js";
+import { getPulseSchedulerContext } from "../PULSE-X/PulseWorldScheduler-v20.js";
 import { getPulseOvermindContext } from "../PULSE-AI/aiOvermindPrime.js";
 
 // (Optional) Earn / treasury integration hook (symbolic only)

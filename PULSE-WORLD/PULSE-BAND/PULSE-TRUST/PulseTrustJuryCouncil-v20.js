@@ -1,15 +1,17 @@
 // ============================================================================
-//  PULSE‑TRUST JURY COUNCIL v16++ IMMORTAL — META-JURY
+//  PULSE‑TRUST JURY COUNCIL v20.0.0 IMMORTAL — META-JURY
 //  Evaluates Jury behavior over time • Detects systemic drift & manipulation
+//  v20+: Evidence‑helping, schema‑tagged, ER‑ready
 // ============================================================================
 
 /*
 AI_EXPERIENCE_META:
   organ: PulseTrustJuryCouncil
-  version: 16.2.0
+  version: 20.0.0
   tier: IMMORTAL
   layer: trust
   role: trust_jury_council
+  mind: false
 
   description:
     "The JuryCouncil is the meta‑jury of the Pulse organism.
@@ -40,11 +42,11 @@ AI_EXPERIENCE_META:
        - juryDrift
 
      These flags feed CreatorFlags, ExpansionCompliance,
-     and OvermindPrime’s high‑risk behavioral adjustments."
+     OvermindPrime, and Evidential Records as ER‑ready snapshots."
 
   lineage:
-    parent: "PulseTrustJuryCouncil-v15"
-    evolution: "v16++ IMMORTAL — systemic drift + AI‑mirror delta aware"
+    parent: "PulseTrustJuryCouncil-v16++"
+    evolution: "v20++ IMMORTAL — systemic drift + AI‑mirror delta aware + ER‑ready"
 
   identity:
     type: "organ"
@@ -59,12 +61,14 @@ AI_EXPERIENCE_META:
     - "Never filters or compresses evidence."
     - "Always deterministic and drift-proof."
     - "Always metadata-only."
+    - "Always produces ER‑ready, schema‑tagged snapshots."
 
   contract:
     always:
       - "PulseTrustJuryFrame"
       - "PulseTrustCreatorFlags"
       - "PulseTrustJuryFeed"
+      - "PulseTrustEvidence / Evidential Records (as RAW_AI snapshot)"
     never:
       - "safeRoute"
       - "fetchViaCNS"
@@ -72,42 +76,48 @@ AI_EXPERIENCE_META:
 */
 
 export const PulseTrustJuryCouncilMeta = Object.freeze({
-  id: "PulseTrustJuryCouncil-v16++",
-  version: "16.2.0",
+  id: "PulseTrustJuryCouncil-v20++",
+  version: "20.0.0",
   role: "trust_jury_council",
   mind: false,
   description:
-    "IMMORTAL meta‑jury evaluating systemic jury behavior over time.",
+    "IMMORTAL meta‑jury evaluating systemic jury behavior over time, ER‑ready.",
   identity: {
     type: "organ",
     name: "PulseTrustJuryCouncil",
     band: "trust",
     mind: false,
     immutable: true
+  },
+  schema: {
+    snapshotType: "trust_jury_council",
+    categories: ["RAW_AI"],
+    erReady: true
   }
 });
 
 // ============================================================================
-//  CLASS — META-JURY
+//  CLASS — META-JURY v20
 // ============================================================================
 export function createJuryCouncil() {
-
   // --------------------------------------------------------------------------
-  //  REVIEW JURY HISTORY — CORE META-JURY LOGIC
-  // --------------------------------------------------------------------------
-  function reviewJuryHistory({ juryDecisions = [] } = {}) {
+  //  REVIEW JURY HISTORY — CORE META-JURY LOGIC (ER‑ready)
+// --------------------------------------------------------------------------
+  function reviewJuryHistory({
+    juryDecisions = [],
+    councilId = null,
+    ts = Date.now()
+  } = {}) {
     let failCount = 0;
     let warnCount = 0;
     let aiOriginRiskCount = 0;
     let dominanceRiskCount = 0;
 
-    // New metrics for v16++
     let lensInstabilityCount = 0;
     let environmentStressCount = 0;
     let deltaDivergenceCount = 0;
     let anomalyClusterCount = 0;
 
-    // Track lens patterns
     const lensFailureMap = {};
     const lensDominanceMap = {};
 
@@ -126,13 +136,10 @@ export function createJuryCouncil() {
       if (flags.aiOriginRisk) aiOriginRiskCount++;
       if (flags.dominanceRisk) dominanceRiskCount++;
 
-      // Lens instability
       if (flags.lensInstability) lensInstabilityCount++;
-
-      // Environment stress
       if (flags.environmentStress) environmentStressCount++;
 
-      // RAW vs AI divergence
+      // RAW vs AI divergence magnitude (mesh/castle/server/expansion/earn/routing/presence/metrics)
       const deltaMagnitude =
         Object.keys(delta.mesh || {}).length +
         Object.keys(delta.castle || {}).length +
@@ -145,7 +152,7 @@ export function createJuryCouncil() {
 
       if (deltaMagnitude >= 10) deltaDivergenceCount++;
 
-      // Anomaly clustering
+      // Anomaly clustering via mismatchCounts
       if (patterns?.mismatchCounts) {
         const totalMismatch = Object.values(patterns.mismatchCounts)
           .reduce((a, b) => a + b, 0);
@@ -184,10 +191,13 @@ export function createJuryCouncil() {
     };
 
     // ------------------------------------------------------------------------
-    //  RETURN IMMUTABLE META-JURY SNAPSHOT
-    // ------------------------------------------------------------------------
-    return Object.freeze({
+    //  BUILD ER‑READY SNAPSHOT (metadata‑only, RAW_AI)
+// ------------------------------------------------------------------------
+    const snapshot = Object.freeze({
       meta: PulseTrustJuryCouncilMeta,
+      schema: PulseTrustJuryCouncilMeta.schema,
+      councilId,
+      ts,
       stats: {
         total: juryDecisions.length,
         failCount,
@@ -202,6 +212,16 @@ export function createJuryCouncil() {
         lensDominanceMap
       },
       systemicFlags
+    });
+
+    // ------------------------------------------------------------------------
+    //  RETURN IMMUTABLE META-JURY SNAPSHOT (ER‑ready)
+// ------------------------------------------------------------------------
+    return Object.freeze({
+      meta: PulseTrustJuryCouncilMeta,
+      snapshot,
+      stats: snapshot.stats,
+      systemicFlags: snapshot.systemicFlags
     });
   }
 
