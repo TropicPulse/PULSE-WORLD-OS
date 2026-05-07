@@ -1,4 +1,7 @@
 
+/* 0. BOOT MEMBRANE — MUST BE FIRST */
+import * as PulseWindow from "./PulseWorldPortal-v16.js";
+
 function mark(label) {
   console.log("[INDEX]", label);
 }

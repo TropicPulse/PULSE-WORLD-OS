@@ -106,7 +106,7 @@ const db =
   null;
 
 import PulseUIErrors from "./PulseUIErrors-v16.js";
-import { PulseProofBridge } from "../_BACKEND/PulseWorldBridge.js";
+import { PulseProofBridge } from "../_BACKEND/PulseWorldBridge-v18.js";
 
 export const RouteMemoryRole = {
   type: "Organ",

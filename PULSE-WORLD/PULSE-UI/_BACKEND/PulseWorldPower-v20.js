@@ -1,26 +1,54 @@
 // ============================================================================
-// FILE: /PulsePower-v16.js
-// LAYER: PULSE-PORTAL — PRESENTATION / POWER LAYER (IMMORTAL v16)
+// FILE: /PulseWorldPower-v20.js
+// LAYER: PULSE-PORTAL — PRESENTATION / POWER LAYER (IMMORTAL v20)
 // ----------------------------------------------------------------------------
 // ROLE:
-//   - Presentation-side “Power” organ for Pulse OS v16.
-//   - Takes all prewarm + chunking signals and turns them into:
+//   - Presentation-side “Power” organ for Pulse OS v20.
+//   - Takes all prewarm + chunking + ACTNow + AIConsole signals and turns them into:
 //       * DOM hints (preload, prefetch, priority)
 //       * Route + page + asset memory
 //       * Cross-layer prewarm hints for router / pages / images / fonts
+//       * Chunker v20 lane hints for 32-lane CNS
+//       * ACTNow v20 hint surface (frontend_hot_swap, etc.)
+//       * AIConsole v20 narrative line for each touch
 //   - Bridges 32-lane chunkers ↔ CoreMemory via coreMemoryBridge.
 //   - Deterministic, symbolic, no randomness, no network fetch logic.
+//   - v20: AIConsole-aware, ACTNow-aware, dual-band world prewarm.
 // ============================================================================
-import * as PulseLogger        from "./PulseProofLogger.js";
-import * as PulseVitalsMonitor from "./PulseProofMonitor.js";
-import { PulseProofBridge as PulseCoreMemoryBridge,  log, warn, error } from "./PulseWorldBridge.js";
 
+import * as PulseLogger        from "./PulseProofLogger-v16.js";
+import * as PulseVitalsMonitor from "./PulseProofMonitor-v20.js";
+import {
+  PulseProofBridge as PulseCoreMemoryBridge,
+  log,
+  warn,
+  error
+} from "./PulseWorldBridge-v18.js";
+
+// Optional: AI Console v20 (if present in global / bridge)
+const g =
+  typeof globalThis !== "undefined"
+    ? globalThis
+    : typeof global !== "undefined"
+    ? global
+    : typeof window !== "undefined"
+    ? window
+    : {};
+
+const PulseAIConsole =
+  (g && g.PulseAIConsoleV20) ||
+  (g && g.PulseAIConsole) ||
+  null;
+
+// ============================================================================
+// ROLE META — v20 IMMORTAL
+// ============================================================================
 export const PulsePowerRole = Object.freeze({
   type: "Organ",
   subsystem: "PulsePortal",
   layer: "PresentationPower",
-  version: "v16-Immortal",
-  identity: "PulsePower-v16",
+  version: "v20-Immortal",
+  identity: "PulsePower-v20",
   evo: Object.freeze({
     deterministic: true,
     driftProof: true,
@@ -39,7 +67,19 @@ export const PulsePowerRole = Object.freeze({
 
     zeroRandomness: true,
     zeroEval: true,
-    zeroDynamicImports: true
+    zeroDynamicImports: true,
+
+    // v18
+    bridgeAligned: true,
+    actNowHintAware: true,
+    chunkProfileAware: true,
+    laneHintAware: true,
+
+    // v20 upgrades
+    aiConsoleAware: true,
+    narrativeFieldAware: true,
+    worldPrewarmAware: true,
+    fightFlightHintAware: true
   })
 });
 
@@ -81,13 +121,14 @@ function cmStart() {
 // CONSTANTS / KEYS
 // ============================================================================
 
-const POWER_ROUTE_KEY = "pulse:power:v16";
+const POWER_ROUTE_KEY = "pulse:power:v20";
 
-const KEY_POWER_STATE = `${POWER_ROUTE_KEY}:state`;
-const KEY_POWER_HISTORY = `${POWER_ROUTE_KEY}:history`;
+const KEY_POWER_STATE       = `${POWER_ROUTE_KEY}:state`;
+const KEY_POWER_HISTORY     = `${POWER_ROUTE_KEY}:history`;
 const KEY_POWER_PREDICTIONS = `${POWER_ROUTE_KEY}:predictions`;
-const KEY_POWER_ASSETS = `${POWER_ROUTE_KEY}:assets`;
+const KEY_POWER_ASSETS      = `${POWER_ROUTE_KEY}:assets`;
 const KEY_POWER_CHUNK_HINTS = `${POWER_ROUTE_KEY}:chunkHints`;
+const KEY_POWER_ACTNOW_HINT = `${POWER_ROUTE_KEY}:actnowHints`;
 
 const DEFAULT_LANES = {
   frontChunkLanes: 32,
@@ -95,48 +136,6 @@ const DEFAULT_LANES = {
   aiChunkLanes: 32,
   backendChunkLanes: 32 // if unused, stays symbolic
 };
-
-// ============================================================================
-// TYPES (logical, not enforced)
-// ============================================================================
-//
-// PowerState {
-//   currentPageId: string
-//   currentRoute: string
-//   lastTouchTs: number
-//   lanes: { frontChunkLanes, backChunkLanes, aiChunkLanes, backendChunkLanes }
-// }
-//
-// PowerHistory {
-//   pages: string[]
-//   routes: string[]
-// }
-//
-// PowerPredictions {
-//   nextPages: string[]
-//   nextRoutes: string[]
-// }
-//
-// PowerAssets {
-//   byPage: {
-//     [pageId]: {
-//       images: string[]
-//       fonts: string[]
-//       scripts: string[]
-//       styles: string[]
-//     }
-//   }
-// }
-//
-// PowerChunkHints {
-//   lanes: { ...DEFAULT_LANES }
-//   prewarmTargets: {
-//     pages: string[]
-//     routes: string[]
-//     images: string[]
-//     fonts: string[]
-//   }
-// }
 
 // ============================================================================
 // HELPERS
@@ -235,8 +234,12 @@ function saveChunkHints(hints) {
   cmWrite(KEY_POWER_CHUNK_HINTS, hints);
 }
 
+function saveActNowHints(hints) {
+  cmWrite(KEY_POWER_ACTNOW_HINT, hints);
+}
+
 // ============================================================================
-// PREDICTION / ROUTE MEMORY
+// HISTORY / PREDICTION / ROUTE MEMORY
 // ============================================================================
 
 function updateHistoryAndPredictions({ pageId, route }) {
@@ -315,7 +318,7 @@ function collectPrewarmAssets(predictions) {
 }
 
 // ============================================================================
-// CHUNK HINTS (32-lane fields)
+// CHUNK HINTS (32-lane fields) + ACTNOW HINTS v20
 // ============================================================================
 
 function buildChunkHints({ state, predictions, assets }) {
@@ -329,11 +332,27 @@ function buildChunkHints({ state, predictions, assets }) {
   };
 
   const hints = {
+    version: "v20",
     lanes,
     prewarmTargets
   };
 
   saveChunkHints(hints);
+  return hints;
+}
+
+// v20: ACTNow hint surface (frontend_hot_swap, symbolic band)
+function buildActNowHints({ predictions }) {
+  const hints = {
+    version: "v20",
+    renewalSuggested: true,
+    renewalKind: "frontend_hot_swap",
+    renewalBand: "symbolic",
+    candidateRoutes: uniqueList(predictions.nextRoutes || []),
+    candidatePages: uniqueList(predictions.nextPages || [])
+  };
+
+  saveActNowHints(hints);
   return hints;
 }
 
@@ -404,6 +423,37 @@ function applyPrewarmToDOM({ predictions, assets }, doc) {
 }
 
 // ============================================================================
+// AI CONSOLE NARRATIVE (v20) — metadata-only
+// ============================================================================
+
+function announceToAIConsole({ pageId, route, predictions, prewarmAssets }) {
+  if (!PulseAIConsole || typeof PulseAIConsole.onSystemNarration !== "function") {
+    return;
+  }
+
+  const msg =
+    `Pulse: Preparing route "${route || "unknown"}" ` +
+    `with page "${pageId || "unknown"}" ` +
+    `→ next pages: [${(predictions.nextPages || []).join(", ")}] ` +
+    `images: ${prewarmAssets.images.length}, fonts: ${prewarmAssets.fonts.length}.`;
+
+  try {
+    PulseAIConsole.onSystemNarration(msg, {
+      organ: PulsePowerRole.identity,
+      version: PulsePowerRole.version,
+      route: route || null,
+      pageId: pageId || null,
+      nextPages: predictions.nextPages || [],
+      nextRoutes: predictions.nextRoutes || [],
+      images: prewarmAssets.images || [],
+      fonts: prewarmAssets.fonts || []
+    });
+  } catch {
+    // Power organ must never throw because of console
+  }
+}
+
+// ============================================================================
 // TOUCH / ENTRYPOINT
 // ============================================================================
 //
@@ -444,8 +494,17 @@ export function pulsePowerTouch({
     predictions,
     assets: prewarmAssets
   });
+  const actNowHints = buildActNowHints({ predictions });
 
   applyPrewarmToDOM({ predictions, assets: prewarmAssets }, doc);
+
+  // v20: AI Console narrative drop
+  announceToAIConsole({
+    pageId: state.currentPageId,
+    route: state.currentRoute,
+    predictions,
+    prewarmAssets
+  });
 
   return {
     ok: true,
@@ -453,7 +512,8 @@ export function pulsePowerTouch({
     state,
     predictions,
     prewarmAssets,
-    chunkHints
+    chunkHints,
+    actNowHints
   };
 }
 
@@ -467,8 +527,17 @@ export function getPulsePowerSnapshot() {
   const predictions = loadPowerPredictions();
   const assets = loadPowerAssets();
   const chunkHints = cmRead(KEY_POWER_CHUNK_HINTS, {
+    version: "v20",
     lanes: clone(DEFAULT_LANES),
     prewarmTargets: { pages: [], routes: [], images: [], fonts: [] }
+  });
+  const actNowHints = cmRead(KEY_POWER_ACTNOW_HINT, {
+    version: "v20",
+    renewalSuggested: false,
+    renewalKind: "frontend_hot_swap",
+    renewalBand: "symbolic",
+    candidateRoutes: [],
+    candidatePages: []
   });
 
   return {
@@ -477,7 +546,8 @@ export function getPulsePowerSnapshot() {
     history,
     predictions,
     assets,
-    chunkHints
+    chunkHints,
+    actNowHints
   };
 }
 

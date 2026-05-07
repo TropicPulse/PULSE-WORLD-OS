@@ -83,8 +83,12 @@ EXPORT_META = {
   filesystem: "none"
 }
 */
+// ============================================================================
+// FILE: /PULSE-UI/_COMPONENTS/PulseEvolutionaryImpulse-v16.js
+// PULSE OS — v16-IMMORTAL
+// UI PAGE IMPULSE ORGAN — deterministic, tier-aware, channel-aware
+// ============================================================================
 
-// Global handle
 const g =
   typeof globalThis !== "undefined"
     ? globalThis
@@ -92,11 +96,8 @@ const g =
     ? global
     : typeof window !== "undefined"
     ? window
-    : typeof g !== "undefined"
-    ? g
     : {};
 
-// Prefer global db if present (logger page / server)
 const db =
   (g && g.db) ||
   (typeof global !== "undefined" && global.db) ||
@@ -104,6 +105,9 @@ const db =
   (typeof window !== "undefined" && window.db) ||
   null;
 
+// ---------------------------------------------------------------------------
+// ROLE
+// ---------------------------------------------------------------------------
 export const ImpulseRole = {
   type: "Organ",
   subsystem: "UI",
@@ -136,7 +140,7 @@ export const ImpulseRole = {
 const IMPULSE_SCHEMA_VERSION = "v3";
 
 // ============================================================================
-// INTERNAL: deterministic signature generator (no randomness)
+// INTERNAL: deterministic signature generator
 // ============================================================================
 function deterministicSignature(obj) {
   const json = JSON.stringify(obj || {});
@@ -148,7 +152,7 @@ function deterministicSignature(obj) {
 }
 
 // ============================================================================
-// INTERNAL: impulse tiers (structural layer)
+// TIERS
 // ============================================================================
 const ImpulseTiers = Object.freeze({
   info: "info",
@@ -159,7 +163,7 @@ const ImpulseTiers = Object.freeze({
 });
 
 // ============================================================================
-// INTERNAL: impulse channels (structural layer)
+// CHANNELS
 // ============================================================================
 const ImpulseChannels = Object.freeze({
   ui: "ui",
@@ -171,21 +175,18 @@ const ImpulseChannels = Object.freeze({
 });
 
 // ============================================================================
-// INTERNAL: band metrics + advantage (deterministic)
+// BAND METRICS
 // ============================================================================
 function computeBandMetrics(payload, binaryPayload) {
   const symJson = JSON.stringify(payload || {});
   const symSize = symJson.length;
-
   const binSize = Array.isArray(binaryPayload) ? binaryPayload.length : 0;
 
   const total = symSize + binSize || 1;
   const symbolicWeight = symSize / total;
   const binaryWeight = binSize / total;
 
-  const advantage =
-    0.4 * symbolicWeight +
-    0.6 * binaryWeight;
+  const advantage = 0.4 * symbolicWeight + 0.6 * binaryWeight;
 
   return {
     symbolicSize: symSize,
@@ -196,9 +197,10 @@ function computeBandMetrics(payload, binaryPayload) {
   };
 }
 
-// deterministic tier classifier from context + payload
+// ============================================================================
+// TIER CLASSIFIER
+// ============================================================================
 function classifyTier({ payload, context }) {
-  const p = payload || {};
   const c = context || {};
 
   const severity =
@@ -215,7 +217,9 @@ function classifyTier({ payload, context }) {
   return ImpulseTiers.info;
 }
 
-// deterministic channel classifier from context + route
+// ============================================================================
+// CHANNEL CLASSIFIER
+// ============================================================================
 function classifyChannel({ context, route }) {
   const c = context || {};
   const r = route || "";
@@ -232,7 +236,7 @@ function classifyChannel({ context, route }) {
 }
 
 // ============================================================================
-// FACTORY — creates the impulse organ
+// FACTORY
 // ============================================================================
 export function createPulseEvolutionaryImpulse({
   CNS,
@@ -262,7 +266,7 @@ export function createPulseEvolutionaryImpulse({
   function safeLog(stage, details = {}) {
     try {
       log(
-        "[PulseEvolutionaryImpulse]",
+        "[PulseEvolutionaryImpulse-v16]",
         stage,
         JSON.stringify({
           schemaVersion: IMPULSE_SCHEMA_VERSION,
@@ -274,7 +278,7 @@ export function createPulseEvolutionaryImpulse({
   }
 
   // --------------------------------------------------------------------------
-  // BUILD IMPULSE ENVELOPE — deterministic, binary-native, tier-aware
+  // BUILD ENVELOPE
   // --------------------------------------------------------------------------
   function buildImpulseEnvelope({
     source,
@@ -318,7 +322,7 @@ export function createPulseEvolutionaryImpulse({
   }
 
   // --------------------------------------------------------------------------
-  // EMIT IMPULSE — deterministic, dual-band, CNS-aware
+  // EMIT
   // --------------------------------------------------------------------------
   function emit({
     source = "UI",
@@ -378,7 +382,10 @@ export function createPulseEvolutionaryImpulse({
     ImpulseState,
     emit,
     Tiers: ImpulseTiers,
-    Channels: ImpulseChannels
+    Channels: ImpulseChannels,
+    getAdvantageSnapshot() {
+      return ImpulseState.lastAdvantage || null;
+    }
   };
 
   safeLog("INIT", {
@@ -390,17 +397,12 @@ export function createPulseEvolutionaryImpulse({
   return PulseEvolutionaryImpulse;
 }
 
+// ---------------------------------------------------------------------------
+// GLOBAL REGISTRATION
+// ---------------------------------------------------------------------------
 try {
-  if (typeof window !== "undefined") {
-    window.PulseEvolutionaryImpulse = createPulseEvolutionaryImpulse;
-  }
-  if (typeof globalThis !== "undefined") {
-    globalThis.PulseEvolutionaryImpulse = createPulseEvolutionaryImpulse;
-  }
-  if (typeof global !== "undefined") {
-    global.PulseEvolutionaryImpulse = createPulseEvolutionaryImpulse;
-  }
-  if (typeof g !== "undefined") {
-    g.PulseEvolutionaryImpulse = createPulseEvolutionaryImpulse;
-  }
+  if (typeof window !== "undefined") window.PulseEvolutionaryImpulse = createPulseEvolutionaryImpulse;
+  if (typeof globalThis !== "undefined") globalThis.PulseEvolutionaryImpulse = createPulseEvolutionaryImpulse;
+  if (typeof global !== "undefined") global.PulseEvolutionaryImpulse = createPulseEvolutionaryImpulse;
+  if (typeof g !== "undefined") g.PulseEvolutionaryImpulse = createPulseEvolutionaryImpulse;
 } catch {}

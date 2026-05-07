@@ -1,6 +1,6 @@
 /*
 ===============================================================================
-FILE: /PULSE-UI/PulseEvolutionaryRouter-v16.js
+FILE: /PULSE-UI/_COMPONENTS/PulseEvolutionaryRouter-v16.js
 LAYER: UI PAGE ROUTER ORGAN — IMMORTAL v16+
 ===============================================================================
 AI_EXPERIENCE_META = {
@@ -94,8 +94,12 @@ EXPORT_META = {
 }
 ===============================================================================
 */
+// ============================================================================
+// FILE: /PULSE-UI/PulseEvolutionaryRouter-v16.3.js
+// PULSE OS — v16.3-IMMORTAL
+// UI PAGE ROUTER ORGAN — deterministic, dual-band, envelope-aware
+// ============================================================================
 
-// Global handle
 const g =
   typeof globalThis !== "undefined"
     ? globalThis
@@ -103,23 +107,20 @@ const g =
     ? global
     : typeof window !== "undefined"
     ? window
-    : typeof g !== "undefined"
-    ? g
     : {};
 
-// Prefer global db if present (logger page / server)
 const db =
   (g && g.db) ||
   (typeof global !== "undefined" && global.db) ||
   (typeof globalThis !== "undefined" && globalThis.db) ||
   (typeof window !== "undefined" && window.db) ||
   null;
-  
+
 export const RouterRole = {
   type: "Organ",
   subsystem: "UI",
   layer: "PageRouter",
-  version: "16.0-Immortal",
+  version: "16.3-Immortal",
   identity: "PulseEvolutionaryRouter",
 
   evo: {
@@ -135,6 +136,11 @@ export const RouterRole = {
     signatureAware: true,
     tierAware: true,
     channelAware: true,
+    envelopeAware: true,
+    historyAware: true,
+    integrityAware: true,
+    degradationAware: true,
+    experienceBlocksAware: true,
     futureEvolutionReady: true
   }
 };
@@ -142,7 +148,7 @@ export const RouterRole = {
 const ROUTER_SCHEMA_VERSION = "v3";
 
 // ============================================================================
-// INTERNAL: deterministic signature + hash
+// INTERNAL: deterministic hash + signature
 // ============================================================================
 function hashString(str) {
   let h = 0;
@@ -159,7 +165,7 @@ function deterministicSignature(obj) {
 }
 
 // ============================================================================
-// INTERNAL: transition tiers + channels
+// TIERS + CHANNELS
 // ============================================================================
 const TransitionTiers = Object.freeze({
   normal: "normal",
@@ -177,7 +183,7 @@ const TransitionChannels = Object.freeze({
 });
 
 // ============================================================================
-// INTERNAL: advantage + integrity + experience blocks
+// ADVANTAGE + INTEGRITY + EXPERIENCE
 // ============================================================================
 function computeTransitionAdvantage({ payload, binaryPayload }) {
   const payloadJson = JSON.stringify(payload || {});
@@ -193,9 +199,7 @@ function computeTransitionAdvantage({ payload, binaryPayload }) {
   const density = binaryWeight;
   const entropyHint = 1 - Math.abs(0.5 - density) * 2;
 
-  const advantage =
-    0.4 * symbolicWeight +
-    0.6 * binaryWeight;
+  const advantage = 0.4 * symbolicWeight + 0.6 * binaryWeight;
 
   return {
     payloadSize,
@@ -280,7 +284,7 @@ function buildEnvelopeId({ fromRoute, toRoute, signature }) {
 }
 
 // ============================================================================
-// FACTORY — creates the router organ
+// FACTORY
 // ============================================================================
 export function createPulseEvolutionaryRouter({
   CNS,
@@ -312,7 +316,7 @@ export function createPulseEvolutionaryRouter({
   function safeLog(stage, details = {}) {
     try {
       log(
-        "[PulseEvolutionaryRouter-v16]",
+        "[PulseEvolutionaryRouter-v16.3]",
         stage,
         JSON.stringify({
           schemaVersion: ROUTER_SCHEMA_VERSION,
@@ -325,7 +329,7 @@ export function createPulseEvolutionaryRouter({
   }
 
   // --------------------------------------------------------------------------
-  // ROUTING TABLE — deterministic, lineage-aware
+  // ROUTING TABLE
   // --------------------------------------------------------------------------
   const ROUTES = {
     init: {
@@ -354,7 +358,7 @@ export function createPulseEvolutionaryRouter({
   }
 
   // --------------------------------------------------------------------------
-  // BUILD TRANSITION ENVELOPE — deterministic, dual-band, experience-aware
+  // BUILD TRANSITION ENVELOPE
   // --------------------------------------------------------------------------
   function buildTransitionEnvelope({
     fromRoute,
@@ -368,6 +372,7 @@ export function createPulseEvolutionaryRouter({
     const lineage = Evolution?.getPageLineage?.() || {};
     const advantage = computeTransitionAdvantage({ payload, binaryPayload });
     const integrity = computeTransitionIntegrity({ fromRoute, toRoute, advantage });
+
     const baseEnvelope = {
       schemaVersion: ROUTER_SCHEMA_VERSION,
       fromRoute,
@@ -404,7 +409,7 @@ export function createPulseEvolutionaryRouter({
   }
 
   // --------------------------------------------------------------------------
-  // TRANSITION — deterministic, CNS-aware, MemoryOrgan/CoreMemory-aware
+  // TRANSITION
   // --------------------------------------------------------------------------
   async function transition(
     toRoute,
@@ -420,7 +425,7 @@ export function createPulseEvolutionaryRouter({
 
     if (!isValidRoute(toRoute)) {
       const err = "InvalidRoute";
-      warn("[PulseEvolutionaryRouter-v16] INVALID_ROUTE", toRoute);
+      warn("[Router] INVALID_ROUTE", toRoute);
       safeLog("INVALID_ROUTE", { toRoute, error: err });
       return { ok: false, error: err };
     }
@@ -430,7 +435,7 @@ export function createPulseEvolutionaryRouter({
 
     if (!allowed.includes(toRoute)) {
       const err = "RouteNotAllowed";
-      warn("[PulseEvolutionaryRouter-v16] ROUTE_NOT_ALLOWED", { fromRoute, toRoute });
+      warn("[Router] ROUTE_NOT_ALLOWED", { fromRoute, toRoute });
       safeLog("ROUTE_NOT_ALLOWED", { fromRoute, toRoute, error: err });
       return { ok: false, error: err };
     }
@@ -461,7 +466,7 @@ export function createPulseEvolutionaryRouter({
       degraded: envelope.integrity.degraded
     });
 
-    // Emit impulse to CNS via ImpulseOrgan
+    // CNS impulse
     try {
       ImpulseOrgan?.emit({
         source: "PulseEvolutionaryRouter",
@@ -477,11 +482,11 @@ export function createPulseEvolutionaryRouter({
         channel
       });
     } catch (err) {
-      warn("[PulseEvolutionaryRouter-v16] IMPULSE_EMIT_ERROR", String(err));
+      warn("[Router] IMPULSE_EMIT_ERROR", String(err));
       safeLog("IMPULSE_EMIT_ERROR", { error: String(err) });
     }
 
-    // Persist router state via MemoryOrgan → CoreMemory (through bridge)
+    // Persist router state via CoreMemory
     try {
       MemoryOrgan?.core?.setRouteSnapshot?.("router", {
         schemaVersion: ROUTER_SCHEMA_VERSION,
@@ -492,7 +497,7 @@ export function createPulseEvolutionaryRouter({
       });
       safeLog("MEMORY_WRITE_OK", { toRoute });
     } catch (err) {
-      warn("[PulseEvolutionaryRouter-v16] MEMORY_WRITE_ERROR", String(err));
+      warn("[Router] MEMORY_WRITE_ERROR", String(err));
       safeLog("MEMORY_WRITE_ERROR", { error: String(err) });
     }
 
@@ -539,17 +544,12 @@ export function createPulseEvolutionaryRouter({
   return PulseEvolutionaryRouter;
 }
 
+// ---------------------------------------------------------------------------
+// GLOBAL REGISTRATION
+// ---------------------------------------------------------------------------
 try {
-  if (typeof window !== "undefined") {
-    window.PulseEvolutionaryRouter = createPulseEvolutionaryRouter;
-  }
-  if (typeof globalThis !== "undefined") {
-    globalThis.PulseEvolutionaryRouter = createPulseEvolutionaryRouter;
-  }
-  if (typeof global !== "undefined") {
-    global.PulseEvolutionaryRouter = createPulseEvolutionaryRouter;
-  }
-  if (typeof g !== "undefined") {
-    g.PulseEvolutionaryRouter = createPulseEvolutionaryRouter;
-  }
+  if (typeof window !== "undefined") window.PulseEvolutionaryRouter = createPulseEvolutionaryRouter;
+  if (typeof globalThis !== "undefined") globalThis.PulseEvolutionaryRouter = createPulseEvolutionaryRouter;
+  if (typeof global !== "undefined") global.PulseEvolutionaryRouter = createPulseEvolutionaryRouter;
+  if (typeof g !== "undefined") g.PulseEvolutionaryRouter = createPulseEvolutionaryRouter;
 } catch {}

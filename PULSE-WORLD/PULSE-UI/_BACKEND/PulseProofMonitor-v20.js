@@ -1,17 +1,17 @@
 // ============================================================================
-//  PULSE OS — PROOF VITALS MONITOR (v16‑IMMORTAL‑OFFLINE‑FIRST)
+//  PULSE OS — PROOF VITALS MONITOR (v20‑IMMORTAL‑PROOF‑MONITOR)
 //  “Organism Life Witness / Continuous Vitals / Offline-First Telemetry”
 // ============================================================================
 //
-//  EXPERIENCE METADATA (v16 IMMORTAL)
+//  EXPERIENCE METADATA (v20 IMMORTAL)
 // ============================================================================
 /*
 AI_EXPERIENCE_META = {
   identity: "PulseProofMonitor",
-  version: "v16-Immortal-OFFLINE-FIRST",
+  version: "v20-Immortal-Proof-Monitor",
   layer: "frontend",
   role: "observer_monitor",
-  lineage: "PulseOS-v16",
+  lineage: "PulseOS-v20",
 
   evo: {
     binaryAware: true,
@@ -21,7 +21,13 @@ AI_EXPERIENCE_META = {
     speedAware: true,
     experienceAware: true,
 
-    chunkAligned: false,
+    chunkAligned: true,
+    chunkProfileAware: true,
+    actNowAware: true,
+    powerAware: true,
+    compilerAware: true,
+    routerMemoryAware: true,
+
     safeRouteFree: true,
     vitalsMonitor: true,
     passive: true,
@@ -69,9 +75,9 @@ AI_EXPERIENCE_META = {
 }
 */
 
-console.log("Monitor v16-Immortal");
+console.log("Monitor v20-Immortal-Proof");
 
-import { pulseLog, log, warn, error } from "./PulseProofLogger.js";
+import { pulseLog, log, warn, error } from "./PulseProofLogger-v20.js";
 
 // ============================================================================
 //  GLOBAL + DB
@@ -107,14 +113,14 @@ function isOnline() {
 }
 
 // ============================================================================
-//  ORGAN IDENTITY — v16 IMMORTAL
+//  ORGAN IDENTITY — v20 IMMORTAL PROOF MONITOR
 // ============================================================================
 export const PulseRole = {
   type: "Organ",
   subsystem: "ProofLayer",
   layer: "ProofVitalsMonitor",
-  version: "16.0-Immortal-OFFLINE-FIRST",
-  identity: "PulseProofVitalsMonitor",
+  version: "20.0-Immortal-Proof-Monitor",
+  identity: "PulseProofVitalsMonitor-v20",
 
   evo: {
     driftProof: true,
@@ -152,7 +158,13 @@ export const PulseRole = {
     localStoreMirrored: true,
     replayAware: true,
     loggerAligned: true,
-    monitorSeparated: true
+    monitorSeparated: true,
+
+    chunkAligned: true,
+    chunkProfileAware: true,
+    actNowAware: true,
+    powerAware: true,
+    compilerAware: true
   }
 };
 
@@ -160,7 +172,7 @@ const PROOF_CONTEXT = {
   layer: PulseRole.layer,
   role: PulseRole.identity,
   version: PulseRole.version,
-  lineage: "proof-core-v16",
+  lineage: "proof-core-v20",
   evo: PulseRole.evo
 };
 
@@ -214,9 +226,9 @@ function makeHealthBar(status) {
 }
 
 // ============================================================================
-//  LOCAL STORAGE BUFFER — v16 IMMORTAL
+//  LOCAL STORAGE BUFFER — v20 IMMORTAL
 // ============================================================================
-const VITALS_LS_KEY = "PulseVitals.v16.buffer";
+const VITALS_LS_KEY = "PulseVitals.v20.buffer";
 const VITALS_LS_MAX = 4000;
 
 function hasLocalStorage() {
@@ -288,7 +300,7 @@ function appendVitalsEntry(kind, payload) {
 }
 
 // ============================================================================
-//  FIREBASE FLUSH — SEPARATE MONITOR COLLECTION
+//  FIREBASE FLUSH — SEPARATE MONITOR COLLECTION (ASYNC, OPTIONAL)
 // ============================================================================
 async function flushVitalsToFirebase() {
   if (!db || typeof db.collection !== "function") return;
@@ -334,7 +346,7 @@ export const HIGHEND_MULT = 2;
 export const EARN_MODE_MULT = 1.5;
 
 export const ENABLE_PERFORMANCE_LOGGING = true;
-export const PERFORMANCE_LOG_COLLECTION = "MonitorPerformanceLogs";
+export const PERFORMANCE_LOG_COLLECTION = "MonitorPerformanceLogsV20";
 
 // ============================================================================
 //  BACKEND METRICS
@@ -570,7 +582,7 @@ export function allocateInstances(
 // ============================================================================
 export function printRouteScan(route = {}) {
   console.groupCollapsed(
-    "%c🔍 ROUTE SCAN — PulseOS v16‑IMMORTAL‑OFFLINE‑FIRST",
+    "%c🔍 ROUTE SCAN — PulseOS v20‑IMMORTAL‑PROOF‑MONITOR",
     "color:#03A9F4; font-weight:bold;"
   );
 

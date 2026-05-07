@@ -109,7 +109,7 @@ import { createBackwardEngine } from "../../PULSE-BAND/PULSE-ENGINE/BackwardMoti
 import PulseUIErrors from "../_FRONTEND/PulseUIErrors-v16.js";
 import { initUIFlow } from "../_FRONTEND/PulseUIFlow-v16.js";
 import { route, PulseProofLogger, log, warn, error } from "./PulseWorldBridge.js";
-import { PulseUnderstanding } from "./PulseWorldUnderstanding.js";
+import { PulseUnderstanding } from "./PulseWorldUnderstanding-v18.js";
 
 // ============================================================================
 // GLOBAL ORGANISM MEMORY (shared across all imports)

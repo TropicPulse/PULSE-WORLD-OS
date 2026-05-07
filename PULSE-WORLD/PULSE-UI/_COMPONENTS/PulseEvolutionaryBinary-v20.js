@@ -1,112 +1,27 @@
 // ============================================================================
-// FILE: /PULSE-UI/PulseEvolutionaryBinary-v16.js
-// PULSE OS — v16-IMMORTAL
-// UI BINARY EVOLUTION ORGAN — GPU‑Friendly, Route/Lineage/Artery + Advantage View
+// FILE: /PULSE-UI/_COMPONENTS/PulseEvolutionaryBinary-v20.js
+// PULSE OS — v20-IMMORTAL-EVOLUTIONARY
+// BINARY EVOLUTION ORGAN — SYMBOLIC↔BINARY ENVELOPE + ADVANTAGE + ARTERIES
 // ============================================================================
 //
-// ROLE (v16-IMMORTAL):
-//   THE UI BINARY EVOLUTION ORGAN — GPU‑friendly binary evolution layer.
-//   • Encodes symbolic UI payloads into deterministic binary representations.
-//   • Compresses binary into low‑entropy GPU‑friendly chunks.
-//   • Builds route‑aware, lineage‑aware, artery‑aware, checksum‑aware envelopes.
-//   • Exposes advantageView for diagnostics / Earn / PulseNet without IO.
-//   • Decodes compressed binary back into symbolic payloads with integrity hints.
+// ROLE (v20-IMMORTAL-EVOLUTIONARY):
+//   THE BINARY ARTERY ORGAN — deterministic symbolic↔binary envelope builder.
+//   • Encodes symbolic payloads into binary bitstreams + compressed chunks.
+//   • Wraps them in a schema-versioned envelope with advantage + artery hints.
+//   • Decodes compressed chunks back into symbolic payloads (pure, deterministic).
+//   • Exposes advantage snapshot for Brain / Router / PageEvo.
 //
 // CONTRACT:
-//   • PURE FUNCTION — no IO, no network, no filesystem.
-//   • READ‑ONLY — no mutation of caller‑provided payloads.
-//   • NO eval(), NO Function(), NO dynamic imports.
-//   • Deterministic output only.
+//   • PURE ORGAN — no network, no timers, no eval, no dynamic imports.
+//   • Binary is non-executable; metadata-only representation.
+//   • Deterministic encode/decode + envelope construction.
+//   • Route + lineage + artery hints are read-only, never mutated.
 //
 // SAFETY:
-//   • v16 upgrade is PURE + STRUCTURAL — logic is richer but still safe.
-//   • All behavior is deterministic and organism‑safe.
+//   • v20 upgrade is EVOLUTIONARY + STRUCTURAL — richer envelope + advantage.
+//   • All behavior is deterministic and organism-safe.
 // ============================================================================
 
-/*
-===============================================================================
-AI_EXPERIENCE_META = {
-  identity: "PulseUI.EvolutionaryBinary",
-  version: "v16-Immortal",
-  layer: "pulse_ui",
-  role: "ui_binary_evolution_organ",
-  lineage: "PulseEvolutionaryBinary-v11.3-Evo-Prime → v14-Immortal → v15-Immortal → v16-Immortal",
-
-  evo: {
-    uiOrgan: true,
-    binaryCore: true,
-    gpuFriendly: true,
-    dualBand: true,
-    binaryAware: true,
-    symbolicAware: true,
-    routeAware: true,
-    lineageAware: true,
-    arteryAware: true,
-    unifiedAdvantageField: true,
-    futureEvolutionReady: true,
-
-    deterministic: true,
-    driftProof: true,
-    pureCompute: true,
-    lowEntropy: true,
-
-    zeroNetwork: true,
-    zeroFilesystem: true,
-    zeroMutationOfInput: true,
-
-    envelopeAware: true,
-    checksumAware: true,
-    schemaVersioned: true,
-    sizeGuarded: true,
-    windowSafe: true,
-    advantageView: true
-  },
-
-  contract: {
-    always: [
-      "PulseUI.RouteOrgan",
-      "PulseUI.Evolution",
-      "PulseDesign.Manifest",
-      "PulseCore.Memory"
-    ],
-    never: [
-      "eval",
-      "Function",
-      "dynamicImport",
-      "fetchViaCNS",
-      "safeRoute"
-    ]
-  }
-}
-===============================================================================
-EXPORT_META = {
-  organ: "PulseUI.EvolutionaryBinary",
-  layer: "pulse_ui",
-  stability: "IMMORTAL",
-  deterministic: true,
-  pure: true,
-
-  consumes: [
-    "SymbolicPayload",
-    "RouteOrgan",
-    "Evolution"
-  ],
-
-  produces: [
-    "BinaryBits",
-    "CompressedBinaryChunks",
-    "BinaryEnvelope",
-    "DecodedPayload",
-    "AdvantageView"
-  ],
-
-  sideEffects: "logging_only",
-  network: "none",
-  filesystem: "none"
-}
-*/
-
-// Global handle
 const g =
   typeof globalThis !== "undefined"
     ? globalThis
@@ -114,11 +29,8 @@ const g =
     ? global
     : typeof window !== "undefined"
     ? window
-    : typeof g !== "undefined"
-    ? g
     : {};
 
-// Prefer global db if present (logger page / server)
 const db =
   (g && g.db) ||
   (typeof global !== "undefined" && global.db) ||
@@ -126,45 +38,53 @@ const db =
   (typeof window !== "undefined" && window.db) ||
   null;
 
+// ---------------------------------------------------------------------------
+// BINARY ROLE — v20 IMMORTAL EVOLUTIONARY
+// ---------------------------------------------------------------------------
 export const BinaryRole = {
   type: "Organ",
   subsystem: "UI",
-  layer: "PageBinary",
-  version: "16.0-Immortal",
-  identity: "PulseEvolutionaryBinary",
+  layer: "BinaryEvo",
+  version: "20.0-Immortal-Evolutionary",
+  identity: "PulseEvolutionaryBinary-v20",
 
   evo: {
     driftProof: true,
     deterministic: true,
-    binaryCore: true,
+
     dualBand: true,
-    binaryAware: true,
     symbolicAware: true,
-    gpuFriendly: true,
-    lowEntropy: true,
+    binaryAware: true,
+    binaryNonExecutable: true,
+
+    envelopeSchemaAware: true,
+    advantageView: true,
+    arteryAware: true,
     routeAware: true,
     lineageAware: true,
-    arteryAware: true,
+
     unifiedAdvantageField: true,
     futureEvolutionReady: true,
-    envelopeAware: true,
-    checksumAware: true,
-    schemaVersioned: true,
-    sizeGuarded: true,
-    windowSafe: true,
-    advantageView: true
+
+    // v20 upgrades
+    v20EnvelopeSchema: true,
+    v20AdvantageEntropy: true,
+    v20ArteryHints: true,
+    v20BrainAligned: true,
+    v20PageEvoAligned: true
   }
 };
 
 const MAX_JSON_LENGTH = 64 * 1024; // guard against runaway payloads (pure check only)
-const ENVELOPE_SCHEMA_VERSION = "v3";
+const ENVELOPE_SCHEMA_VERSION = "v4";
 
 // ---------------------------------------------------------------------------
 // SYMBOLIC ↔ BINARY
 // ---------------------------------------------------------------------------
 function encodeSymbolicToBinary(obj) {
   const json = JSON.stringify(obj || {});
-  const safeJson = json.length > MAX_JSON_LENGTH ? json.slice(0, MAX_JSON_LENGTH) : json;
+  const safeJson =
+    json.length > MAX_JSON_LENGTH ? json.slice(0, MAX_JSON_LENGTH) : json;
 
   const bits = [];
   for (let i = 0; i < safeJson.length; i++) {
@@ -196,7 +116,7 @@ function decodeBinaryToSymbolic(bits) {
 }
 
 // ---------------------------------------------------------------------------
-// BINARY COMPRESSION
+// BINARY COMPRESSION (4-bit packing)
 // ---------------------------------------------------------------------------
 function compressBinary(bits) {
   const out = [];
@@ -233,7 +153,7 @@ function checksumChunks(chunks) {
   let hash = 0;
   for (let i = 0; i < chunks.length; i++) {
     const v = chunks[i] & 0xFF;
-    hash = (hash * 31 + v) >>> 0; // unsigned 32‑bit
+    hash = (hash * 31 + v) >>> 0;
   }
   return hash;
 }
@@ -255,35 +175,39 @@ function normalizeBand(b) {
   return x === "binary" ? "binary" : "symbolic";
 }
 
-function clamp(v) {
+function clamp01(v) {
   const n = Number(v);
   if (!Number.isFinite(n)) return 0;
   if (n < 0) return 0;
   if (n > 1) return 1;
   return n;
 }
+
 // ---------------------------------------------------------------------------
-// ADVANTAGE VIEW + ARTERY HINTS
+// ADVANTAGE VIEW + ARTERY HINTS — v20
 // ---------------------------------------------------------------------------
 function computeAdvantageView({ bits, compressed, route, lineage }) {
   const bitLength = bits.length;
   const chunkLength = compressed.length;
 
-  const density = bitLength ? compressed.length / bitLength : 0;
-  const entropyHint = density > 0 ? clamp(1 - Math.abs(0.5 - density) * 2, 0, 1) : 0;
+  const density = bitLength ? chunkLength / bitLength : 0;
+  const entropyHint =
+    density > 0 ? clamp01(1 - Math.abs(0.5 - density) * 2) : 0;
 
-  const routeStr = typeof route === "string" ? route : JSON.stringify(route || {});
+  const routeStr =
+    typeof route === "string" ? route : JSON.stringify(route || {});
   const lineageStr = JSON.stringify(lineage || {});
 
   const routeHash = hashString(routeStr);
   const lineageHash = hashString(lineageStr);
 
   const sizeTier =
-    bitLength > 48 * 1024 ? "huge" :
-    bitLength > 24 * 1024 ? "large" :
-    bitLength > 8 * 1024  ? "medium" :
-    bitLength > 0         ? "small" :
-                            "empty";
+    bitLength > 256 * 1024 ? "colossal" :
+    bitLength > 48 * 1024  ? "huge" :
+    bitLength > 24 * 1024  ? "large" :
+    bitLength > 8 * 1024   ? "medium" :
+    bitLength > 0          ? "small" :
+                             "empty";
 
   return {
     bitLength,
@@ -297,7 +221,6 @@ function computeAdvantageView({ bits, compressed, route, lineage }) {
 }
 
 function deriveArteryHints(RouteOrgan) {
-  // Pure read of RouteOrgan; no IO, no mutation
   const arteries = RouteOrgan?.Arteries || RouteOrgan?.arteries || null;
   if (!arteries || typeof arteries !== "object") {
     return {
@@ -336,7 +259,7 @@ function deriveArteryHints(RouteOrgan) {
 }
 
 // ---------------------------------------------------------------------------
-// ENVELOPE BUILDER
+//– ENVELOPE BUILDER — v20
 // ---------------------------------------------------------------------------
 function buildEnvelope(payload, compressed, { Evolution, RouteOrgan }) {
   const lineage = Evolution?.getPageLineage?.() || {};
@@ -345,14 +268,16 @@ function buildEnvelope(payload, compressed, { Evolution, RouteOrgan }) {
   const size = compressed?.length || 0;
   const checksum = checksumChunks(compressed || []);
 
+  const bits = expandBinary(compressed || []);
   const advantage = computeAdvantageView({
-    bits: expandBinary(compressed || []),
+    bits,
     compressed: compressed || [],
     route,
     lineage
   });
 
-  const routeStr = typeof route === "string" ? route : JSON.stringify(route || {});
+  const routeStr =
+    typeof route === "string" ? route : JSON.stringify(route || {});
   const routeHash = advantage.routeHash || hashString(routeStr);
 
   const envelopeId = buildEnvelopeId(checksum, size, routeHash);
@@ -362,7 +287,7 @@ function buildEnvelope(payload, compressed, { Evolution, RouteOrgan }) {
     checksum,
     size,
     schemaVersion: ENVELOPE_SCHEMA_VERSION,
-    sizeGuard: size > 0 && size <= MAX_JSON_LENGTH * 2,
+    sizeGuard: size >= 0 && size <= MAX_JSON_LENGTH * 2,
     checksumNonZero: checksum !== 0
   };
 
@@ -372,18 +297,19 @@ function buildEnvelope(payload, compressed, { Evolution, RouteOrgan }) {
     version: BinaryRole.version,
     route,
     lineage,
+    band: normalizeBand(payload?.__band),
     compressed,
     checksum,
     size,
     arteryHints,
     advantage,
     integrity,
-    timestamp: "NO_TIMESTAMP_v16" // deterministic placeholder
+    timestamp: "NO_TIMESTAMP_v20"
   };
 }
 
 // ---------------------------------------------------------------------------
-// FACTORY
+// FACTORY — PULSE EVOLUTIONARY BINARY v20
 // ---------------------------------------------------------------------------
 export function createPulseEvolutionaryBinary({
   Evolution,
@@ -402,15 +328,29 @@ export function createPulseEvolutionaryBinary({
 
   function safeLog(stage, details = {}) {
     try {
-      log("[PulseEvolutionaryBinary-v16]", stage, JSON.stringify(details));
-    } catch {}
+      log(
+        "[PulseEvolutionaryBinary-v20]",
+        stage,
+        JSON.stringify({
+          schemaVersion: ENVELOPE_SCHEMA_VERSION,
+          identity: BinaryRole.identity,
+          version: BinaryRole.version,
+          ...details
+        })
+      );
+    } catch {
+      // never throw
+    }
   }
 
   function encode(payload) {
     try {
       const bits = encodeSymbolicToBinary(payload);
       const compressed = compressBinary(bits);
-      const envelope = buildEnvelope(payload, compressed, { Evolution, RouteOrgan });
+      const envelope = buildEnvelope(payload, compressed, {
+        Evolution,
+        RouteOrgan
+      });
 
       BinaryState.lastEncoded = bits;
       BinaryState.lastCompressed = compressed;
@@ -419,7 +359,7 @@ export function createPulseEvolutionaryBinary({
 
       safeLog("ENCODE_OK", {
         bitLength: bits.length,
-        compressed: compressed.length,
+        compressedLength: compressed.length,
         checksum: envelope.checksum,
         sizeTier: envelope.advantage.sizeTier
       });
@@ -432,7 +372,9 @@ export function createPulseEvolutionaryBinary({
         advantage: envelope.advantage
       };
     } catch (err) {
-      warn("[PulseEvolutionaryBinary-v16] ENCODE_ERROR", String(err));
+      const msg = String(err);
+      warn("[PulseEvolutionaryBinary-v20] ENCODE_ERROR", msg);
+      safeLog("ENCODE_ERROR", { error: msg });
       return { ok: false, error: "EncodeError" };
     }
   }
@@ -448,7 +390,9 @@ export function createPulseEvolutionaryBinary({
       safeLog("DECODE_OK", { bitLength: bits.length });
       return { ok: true, payload: obj };
     } catch (err) {
-      warn("[PulseEvolutionaryBinary-v16] DECODE_ERROR", String(err));
+      const msg = String(err);
+      warn("[PulseEvolutionaryBinary-v20] DECODE_ERROR", msg);
+      safeLog("DECODE_ERROR", { error: msg });
       return { ok: false, error: "DecodeError" };
     }
   }
@@ -457,12 +401,13 @@ export function createPulseEvolutionaryBinary({
     BinaryRole,
     BinaryState,
     encode,
-    decode
+    decode,
+    getAdvantageSnapshot() {
+      return BinaryState.lastAdvantage || null;
+    }
   };
 
   safeLog("INIT", {
-    identity: BinaryRole.identity,
-    version: BinaryRole.version,
     schemaVersion: ENVELOPE_SCHEMA_VERSION
   });
 
@@ -485,4 +430,6 @@ try {
   if (typeof g !== "undefined") {
     g.PulseEvolutionaryBinary = createPulseEvolutionaryBinary;
   }
-} catch {}
+} catch {
+  // never throw
+}

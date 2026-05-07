@@ -1,15 +1,15 @@
 /*
 ===============================================================================
-FILE: /PULSE-UI/PulseEvolutionaryIcons-v16.js
-LAYER: UNIVERSAL ICON ORGAN — v16 IMMORTAL
+FILE: /PULSE-UI/PulseEvolutionaryIcons-v16.5.js
+LAYER: UNIVERSAL ICON ORGAN — v16.5 IMMORTAL
 ===============================================================================
 
-ROLE (v16):
+ROLE (v16.5):
   THE UNIVERSAL ICON ORGAN — deterministic, GPU‑friendly, neon‑native.
-  • Provides a massive icon library for UI, diagnostics, heatmaps, organs.
-  • Supports binary‑friendly mode (low entropy, monochrome).
-  • Supports tiered icons (bronze → omega).
-  • Supports role‑color icons (nodeadmin, server, castle, expansion, etc).
+  • Massive icon library for UI, diagnostics, organs, Pulse‑World.
+  • Tropic Belize, wildlife, weather, tech, earn, navigation, brand.
+  • Binary‑friendly mode (low entropy, monochrome).
+  • Tiered icons (bronze → omega).
   • Deterministic, drift‑proof, lineage‑aware.
 
 SAFETY:
@@ -21,7 +21,7 @@ SAFETY:
 export const ICON_SCHEMA_VERSION = "v3";
 
 // ============================================================================
-// GPU‑FRIENDLY GLOW + STROKE MAPS (v16 IMMORTAL)
+// GPU‑FRIENDLY GLOW + STROKE MAPS (v16.5 IMMORTAL)
 // ============================================================================
 const glow = Object.freeze({
   cyan:    "drop-shadow(0 0 6px rgba(0,255,255,0.45))",
@@ -49,7 +49,7 @@ const stroke = Object.freeze({
 });
 
 // ============================================================================
-// BASE ICONS — deterministic SVGs
+// BASE ICONS — core Pulse icons
 // ============================================================================
 const baseIcons = Object.freeze({
   pulse: `
@@ -93,15 +93,28 @@ const baseIcons = Object.freeze({
             stroke-width="2"
             stroke-linecap="round" />
     </svg>
+  `,
+
+  stable: `
+    <svg viewBox="0 0 24 24" fill="none">
+      <circle cx="12" cy="12" r="10"
+              stroke="${stroke.green}"
+              stroke-width="2"
+              filter="${glow.green}" />
+      <path d="M8 12l3 3 5-5"
+            stroke="${stroke.green}"
+            stroke-width="2"
+            stroke-linecap="round" />
+    </svg>
   `
 });
 
 // ============================================================================
-// EXPANDED ICON PACK — v16 IMMORTAL (40+ ICONS)
+// EXPANDED ICON PACK — UI, system, PulseWorld, Tropic, Tech, Earn, etc.
 // ============================================================================
 const expandedIcons = Object.freeze({
 
-  // UI / SYSTEM
+  // UI / SYSTEM --------------------------------------------------------------
   plus: `
     <svg viewBox="0 0 24 24" fill="none">
       <path d="M12 5v14M5 12h14"
@@ -138,7 +151,6 @@ const expandedIcons = Object.freeze({
     </svg>
   `,
 
-  // DIAGNOSTICS / WARNINGS
   warning: `
     <svg viewBox="0 0 24 24" fill="none">
       <path d="M12 9v4m0 4h.01M3 19h18L12 3 3 19z"
@@ -160,20 +172,7 @@ const expandedIcons = Object.freeze({
     </svg>
   `,
 
-  stable: `
-    <svg viewBox="0 0 24 24" fill="none">
-      <circle cx="12" cy="12" r="10"
-              stroke="${stroke.green}"
-              stroke-width="2"
-              filter="${glow.green}" />
-      <path d="M8 12l3 3 5-5"
-            stroke="${stroke.green}"
-            stroke-width="2"
-            stroke-linecap="round" />
-    </svg>
-  `,
-
-  // NODEADMIN / SYSTEM ROLES
+  // NODEADMIN / SYSTEM ROLES -------------------------------------------------
   nodeadmin: `
     <svg viewBox="0 0 24 24" fill="none">
       <circle cx="12" cy="8" r="4"
@@ -231,7 +230,6 @@ const expandedIcons = Object.freeze({
     </svg>
   `,
 
-  // ENERGY / PULSEWORLD
   energy: `
     <svg viewBox="0 0 24 24" fill="none">
       <path d="M13 2L3 14h7l-1 8 10-12h-7l1-8z"
@@ -263,7 +261,6 @@ const expandedIcons = Object.freeze({
     </svg>
   `,
 
-  // SOCIAL / USER
   user: `
     <svg viewBox="0 0 24 24" fill="none">
       <circle cx="12" cy="8" r="4"
@@ -300,6 +297,462 @@ const expandedIcons = Object.freeze({
             stroke="${stroke.white}"
             stroke-width="2"
             filter="${glow.white}" />
+    </svg>
+  `,
+
+  // TROPIC BELIZE ------------------------------------------------------------
+  palm: `
+    <svg viewBox="0 0 24 24" fill="none">
+      <path d="M12 22v-8M8 8c2-3 6-3 8 0M6 6c2-2 6-2 8 0M10 7c-2-2-4-2-6-1"
+            stroke="${stroke.green}"
+            stroke-width="2"
+            stroke-linecap="round"
+            filter="${glow.green}" />
+    </svg>
+  `,
+
+  beach_wave: `
+    <svg viewBox="0 0 24 24" fill="none">
+      <path d="M3 16c2-2 4-2 6 0s4 2 6 0 4-2 6 0"
+            stroke="${stroke.cyan}"
+            stroke-width="2"
+            stroke-linecap="round"
+            filter="${glow.cyan}" />
+      <path d="M3 20h18"
+            stroke="${stroke.white}"
+            stroke-width="1"
+            stroke-linecap="round" />
+    </svg>
+  `,
+
+  coconut: `
+    <svg viewBox="0 0 24 24" fill="none">
+      <circle cx="12" cy="13" r="6"
+              stroke="${stroke.brown || '#8b4513'}"
+              stroke-width="2" />
+      <circle cx="10" cy="11" r="1"
+              stroke="${stroke.white}"
+              stroke-width="1" />
+      <circle cx="13" cy="10" r="1"
+              stroke="${stroke.white}"
+              stroke-width="1" />
+    </svg>
+  `,
+
+  reef_coral: `
+    <svg viewBox="0 0 24 24" fill="none">
+      <path d="M6 20c0-4 2-6 4-8M10 20c0-3 1-5 3-7M14 20c0-2 1-4 3-5"
+            stroke="${stroke.orange}"
+            stroke-width="2"
+            stroke-linecap="round"
+            filter="${glow.orange}" />
+    </svg>
+  `,
+
+  conch_shell: `
+    <svg viewBox="0 0 24 24" fill="none">
+      <path d="M4 16c4-6 8-8 16-8-2 6-6 10-12 12-2-1-3-2-4-4z"
+            stroke="${stroke.gold}"
+            stroke-width="2"
+            filter="${glow.gold}" />
+    </svg>
+  `,
+
+  hammock: `
+    <svg viewBox="0 0 24 24" fill="none">
+      <path d="M4 8v4m16-4v4"
+            stroke="${stroke.white}"
+            stroke-width="2"
+            stroke-linecap="round" />
+      <path d="M4 12c4 4 12 4 16 0"
+            stroke="${stroke.green}"
+            stroke-width="2"
+            stroke-linecap="round"
+            filter="${glow.green}" />
+    </svg>
+  `,
+
+  tropical_drink: `
+    <svg viewBox="0 0 24 24" fill="none">
+      <path d="M7 4h10l-2 6H9L7 4z"
+            stroke="${stroke.cyan}"
+            stroke-width="2"
+            filter="${glow.cyan}" />
+      <path d="M10 10v6c0 2 1 3 2 3s2-1 2-3v-6"
+            stroke="${stroke.white}"
+            stroke-width="2" />
+      <path d="M14 4l3-2"
+            stroke="${stroke.yellow}"
+            stroke-width="2"
+            stroke-linecap="round"
+            filter="${glow.yellow}" />
+    </svg>
+  `,
+
+  mayan_temple: `
+    <svg viewBox="0 0 24 24" fill="none">
+      <path d="M10 4h4v2h2v3h2v3h2v6H4v-6h2v-3h2V6h2V4z"
+            stroke="${stroke.orange}"
+            stroke-width="2"
+            filter="${glow.orange}" />
+    </svg>
+  `,
+
+  island_pin: `
+    <svg viewBox="0 0 24 24" fill="none">
+      <circle cx="12" cy="9" r="3"
+              stroke="${stroke.cyan}"
+              stroke-width="2"
+              filter="${glow.cyan}" />
+      <path d="M12 12v7"
+            stroke="${stroke.green}"
+            stroke-width="2"
+            stroke-linecap="round"
+            filter="${glow.green}" />
+      <path d="M6 20c2-2 4-2 6-2s4 0 6 2"
+            stroke="${stroke.white}"
+            stroke-width="1" />
+    </svg>
+  `,
+
+  // WILDLIFE -----------------------------------------------------------------
+  toucan: `
+    <svg viewBox="0 0 24 24" fill="none">
+      <path d="M6 8c2-3 6-3 8 0v8H8c-2 0-3-2-3-4 0-2 1-4 1-4z"
+            stroke="${stroke.white}"
+            stroke-width="2"
+            filter="${glow.white}" />
+      <path d="M14 8c3-2 5-2 7 0-2 2-4 2-7 0z"
+            stroke="${stroke.yellow}"
+            stroke-width="2"
+            filter="${glow.yellow}" />
+    </svg>
+  `,
+
+  jaguar: `
+    <svg viewBox="0 0 24 24" fill="none">
+      <path d="M6 8l3-3h6l3 3v6l-3 4H9l-3-4V8z"
+            stroke="${stroke.gold}"
+            stroke-width="2"
+            filter="${glow.gold}" />
+      <circle cx="10" cy="11" r="1" fill="${stroke.black}" />
+      <circle cx="14" cy="11" r="1" fill="${stroke.black}" />
+    </svg>
+  `,
+
+  sea_turtle: `
+    <svg viewBox="0 0 24 24" fill="none">
+      <ellipse cx="12" cy="12" rx="4" ry="5"
+               stroke="${stroke.green}"
+               stroke-width="2"
+               filter="${glow.green}" />
+      <path d="M12 7V4M12 20v-3M8 12H5M19 12h-3"
+            stroke="${stroke.green}"
+            stroke-width="2"
+            stroke-linecap="round" />
+    </svg>
+  `,
+
+  stingray: `
+    <svg viewBox="0 0 24 24" fill="none">
+      <path d="M4 10c4-4 12-4 16 0-4 4-12 4-16 0z"
+            stroke="${stroke.cyan}"
+            stroke-width="2"
+            filter="${glow.cyan}" />
+      <path d="M12 14c0 4 1 6 3 8"
+            stroke="${stroke.white}"
+            stroke-width="1"
+            stroke-linecap="round" />
+    </svg>
+  `,
+
+  dolphin: `
+    <svg viewBox="0 0 24 24" fill="none">
+      <path d="M4 14c2-4 6-6 10-6 2 0 4 1 6 2-2 1-3 2-4 4-2 0-4 0-6 2-1-1-3-2-6-2z"
+            stroke="${stroke.blue}"
+            stroke-width="2"
+            filter="${glow.blue}" />
+    </svg>
+  `,
+
+  // WEATHER ------------------------------------------------------------------
+  sun: `
+    <svg viewBox="0 0 24 24" fill="none">
+      <circle cx="12" cy="12" r="4"
+              stroke="${stroke.yellow}"
+              stroke-width="2"
+              filter="${glow.yellow}" />
+      <path d="M12 3v2M12 19v2M5 12h2M17 12h2M6 6l1.5 1.5M16.5 16.5L18 18M6 18l1.5-1.5M16.5 7.5L18 6"
+            stroke="${stroke.yellow}"
+            stroke-width="1.5" />
+    </svg>
+  `,
+
+  partly_cloudy: `
+    <svg viewBox="0 0 24 24" fill="none">
+      <circle cx="9" cy="9" r="3"
+              stroke="${stroke.yellow}"
+              stroke-width="2"
+              filter="${glow.yellow}" />
+      <path d="M7 16h8a3 3 0 000-6 4 4 0 00-7.8 1"
+            stroke="${stroke.white}"
+            stroke-width="2"
+            stroke-linecap="round" />
+    </svg>
+  `,
+
+  rain: `
+    <svg viewBox="0 0 24 24" fill="none">
+      <path d="M6 14h10a3 3 0 000-6 4 4 0 00-7.8 1"
+            stroke="${stroke.white}"
+            stroke-width="2"
+            stroke-linecap="round" />
+      <path d="M8 16l-1 3M12 16l-1 3M16 16l-1 3"
+            stroke="${stroke.cyan}"
+            stroke-width="2"
+            stroke-linecap="round"
+            filter="${glow.cyan}" />
+    </svg>
+  `,
+
+  storm: `
+    <svg viewBox="0 0 24 24" fill="none">
+      <path d="M6 13h10a3 3 0 000-6 4 4 0 00-7.8 1"
+            stroke="${stroke.white}"
+            stroke-width="2"
+            stroke-linecap="round" />
+      <path d="M11 14l-2 4h3l-2 4"
+            stroke="${stroke.yellow}"
+            stroke-width="2"
+            stroke-linecap="round"
+            filter="${glow.yellow}" />
+    </svg>
+  `,
+
+  hurricane_spiral: `
+    <svg viewBox="0 0 24 24" fill="none">
+      <path d="M12 4c-4 0-7 3-7 7 0 3 2 5 5 5 3 0 5-2 5-5 0-3-2-5-5-5"
+            stroke="${stroke.cyan}"
+            stroke-width="2"
+            filter="${glow.cyan}" />
+    </svg>
+  `,
+
+  // TECH / OS ----------------------------------------------------------------
+  cpu: `
+    <svg viewBox="0 0 24 24" fill="none">
+      <rect x="7" y="7" width="10" height="10"
+            stroke="${stroke.white}"
+            stroke-width="2"
+            filter="${glow.white}" />
+      <rect x="10" y="10" width="4" height="4"
+            stroke="${stroke.cyan}"
+            stroke-width="2"
+            filter="${glow.cyan}" />
+      <path d="M9 3v3M15 3v3M9 18v3M15 18v3M3 9h3M3 15h3M18 9h3M18 15h3"
+            stroke="${stroke.white}"
+            stroke-width="1.5" />
+    </svg>
+  `,
+
+  gpu: `
+    <svg viewBox="0 0 24 24" fill="none">
+      <rect x="4" y="6" width="16" height="12"
+            stroke="${stroke.green}"
+            stroke-width="2"
+            filter="${glow.green}" />
+      <circle cx="12" cy="12" r="3"
+              stroke="${stroke.green}"
+              stroke-width="2" />
+      <path d="M4 9h-2M4 15h-2M22 9h-2M22 15h-2"
+            stroke="${stroke.white}"
+            stroke-width="1.5" />
+    </svg>
+  `,
+
+  ai_brain: `
+    <svg viewBox="0 0 24 24" fill="none">
+      <path d="M9 5a3 3 0 00-3 3v2a3 3 0 003 3v2a3 3 0 003 3"
+            stroke="${stroke.purple}"
+            stroke-width="2"
+            filter="${glow.purple}" />
+      <path d="M15 5a3 3 0 013 3v2a3 3 0 01-3 3v2a3 3 0 01-3 3"
+            stroke="${stroke.cyan}"
+            stroke-width="2"
+            filter="${glow.cyan}" />
+    </svg>
+  `,
+
+  binary_matrix: `
+    <svg viewBox="0 0 24 24" fill="none">
+      <path d="M6 6h3v3H6zM11 6h3v3h-3zM16 6h3v3h-3zM6 11h3v3H6zM11 11h3v3h-3zM16 11h3v3h-3zM6 16h3v3H6zM11 16h3v3h-3zM16 16h3v3h-3z"
+            stroke="${stroke.white}"
+            stroke-width="1.2"
+            filter="${glow.white}" />
+    </svg>
+  `,
+
+  diagnostics_pulse: `
+    <svg viewBox="0 0 24 24" fill="none">
+      <path d="M3 12h4l2-4 3 8 2-4h7"
+            stroke="${stroke.cyan}"
+            stroke-width="2"
+            stroke-linecap="round"
+            filter="${glow.cyan}" />
+    </svg>
+  `,
+
+  router_node: `
+    <svg viewBox="0 0 24 24" fill="none">
+      <circle cx="12" cy="12" r="3"
+              stroke="${stroke.blue}"
+              stroke-width="2"
+              filter="${glow.blue}" />
+      <path d="M12 5v2M12 17v2M5 12h2M17 12h2M7 7l1.5 1.5M15.5 15.5L17 17M7 17l1.5-1.5M15.5 8.5L17 7"
+            stroke="${stroke.white}"
+            stroke-width="1.5" />
+    </svg>
+  `,
+
+  // EARN / ECONOMY -----------------------------------------------------------
+  coin: `
+    <svg viewBox="0 0 24 24" fill="none">
+      <circle cx="12" cy="12" r="6"
+              stroke="${stroke.gold}"
+              stroke-width="2"
+              filter="${glow.gold}" />
+      <path d="M10 10h4v4h-4z"
+            stroke="${stroke.gold}"
+            stroke-width="1.5" />
+    </svg>
+  `,
+
+  wallet: `
+    <svg viewBox="0 0 24 24" fill="none">
+      <rect x="4" y="7" width="16" height="10" rx="2"
+            stroke="${stroke.orange}"
+            stroke-width="2"
+            filter="${glow.orange}" />
+      <circle cx="16" cy="12" r="1"
+              stroke="${stroke.white}"
+              stroke-width="1" />
+    </svg>
+  `,
+
+  trending_up: `
+    <svg viewBox="0 0 24 24" fill="none">
+      <path d="M4 16l5-5 4 4 7-9"
+            stroke="${stroke.green}"
+            stroke-width="2"
+            stroke-linecap="round"
+            filter="${glow.green}" />
+      <path d="M15 7h5v5"
+            stroke="${stroke.green}"
+            stroke-width="2"
+            stroke-linecap="round" />
+    </svg>
+  `,
+
+  trending_down: `
+    <svg viewBox="0 0 24 24" fill="none">
+      <path d="M4 8l5 5 4-4 7 9"
+            stroke="${stroke.red}"
+            stroke-width="2"
+            stroke-linecap="round"
+            filter="${glow.red}" />
+      <path d="M15 17h5v-5"
+            stroke="${stroke.red}"
+            stroke-width="2"
+            stroke-linecap="round" />
+    </svg>
+  `,
+
+  badge: `
+    <svg viewBox="0 0 24 24" fill="none">
+      <circle cx="12" cy="9" r="4"
+              stroke="${stroke.gold}"
+              stroke-width="2"
+              filter="${glow.gold}" />
+      <path d="M8 13l-2 7 6-3 6 3-2-7"
+            stroke="${stroke.gold}"
+            stroke-width="2" />
+    </svg>
+  `,
+
+  // NAVIGATION ---------------------------------------------------------------
+  search: `
+    <svg viewBox="0 0 24 24" fill="none">
+      <circle cx="11" cy="11" r="4"
+              stroke="${stroke.white}"
+              stroke-width="2"
+              filter="${glow.white}" />
+      <path d="M15 15l4 4"
+            stroke="${stroke.cyan}"
+            stroke-width="2"
+            stroke-linecap="round"
+            filter="${glow.cyan}" />
+    </svg>
+  `,
+
+  map_pin: `
+    <svg viewBox="0 0 24 24" fill="none">
+      <path d="M12 4a5 5 0 015 5c0 3-5 9-5 9s-5-6-5-9a5 5 0 015-5z"
+            stroke="${stroke.cyan}"
+            stroke-width="2"
+            filter="${glow.cyan}" />
+      <circle cx="12" cy="9" r="1.5"
+              stroke="${stroke.white}"
+              stroke-width="1" />
+    </svg>
+  `,
+
+  compass: `
+    <svg viewBox="0 0 24 24" fill="none">
+      <circle cx="12" cy="12" r="8"
+              stroke="${stroke.white}"
+              stroke-width="2"
+              filter="${glow.white}" />
+      <path d="M10 14l2-6 2 6-2 2-2-2z"
+            stroke="${stroke.cyan}"
+            stroke-width="1.5"
+            filter="${glow.cyan}" />
+    </svg>
+  `,
+
+  // BRAND / AESTHETIC --------------------------------------------------------
+  neon_ring: `
+    <svg viewBox="0 0 24 24" fill="none">
+      <circle cx="12" cy="12" r="7"
+              stroke="${stroke.cyan}"
+              stroke-width="2"
+              filter="${glow.cyan}" />
+      <circle cx="12" cy="12" r="10"
+              stroke="${stroke.purple}"
+              stroke-width="1"
+              filter="${glow.purple}" />
+    </svg>
+  `,
+
+  glow_orb: `
+    <svg viewBox="0 0 24 24" fill="none">
+      <circle cx="12" cy="12" r="5"
+              stroke="${stroke.gold}"
+              stroke-width="2"
+              filter="${glow.gold}" />
+      <circle cx="12" cy="12" r="2"
+              stroke="${stroke.white}"
+              stroke-width="1"
+              filter="${glow.white}" />
+    </svg>
+  `,
+
+  pulse_wave: `
+    <svg viewBox="0 0 24 24" fill="none">
+      <path d="M3 12h4l2-4 3 8 2-4h7"
+            stroke="${stroke.cyan}"
+            stroke-width="2"
+            stroke-linecap="round"
+            filter="${glow.cyan}" />
     </svg>
   `
 });

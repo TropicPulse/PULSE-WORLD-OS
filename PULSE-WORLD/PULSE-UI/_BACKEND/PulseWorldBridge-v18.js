@@ -94,7 +94,7 @@ AI_EXPERIENCE_META = {
 // ============================================================================
 //  GLOBAL + DB + LOGGER — IMMORTAL SNAPSHOT
 // ============================================================================
-import { PulseProofLogger, log, warn, error } from "./PulseProofLogger.js";
+import { PulseProofLogger, log, warn, error } from "./PulseProofLogger-v20.js";
 
 const g =
   typeof globalThis !== "undefined"

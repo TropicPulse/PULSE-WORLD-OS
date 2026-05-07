@@ -131,7 +131,7 @@ import * as aiHeartbeat from "../PULSE-AI/aiHeartbeat.js";
 import {
   pulseEarnFromHeartbeat,
   getPulseEarnHeartHealingState
-} from "../PULSE-WORLD/PULSE-EARN/PulseEarnHeartbeat.js";
+} from "../PULSE-EARN/PulseEarnHeartbeat.js";
 
 // ============================================================================
 // MOM HEART IDENTITY — v16‑IMMORTAL‑TRI‑HEART

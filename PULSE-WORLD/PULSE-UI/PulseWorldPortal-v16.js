@@ -85,9 +85,9 @@ AI_EXPERIENCE_META = {
 // ============================================================================
 // IMPORTS — PORTAL-ATTACHED ORGANS (SURFACE-SAFE)
 // ============================================================================
-import * as PulseLogger        from "./_BACKEND/PulseProofLogger.js";
-import * as PulseVitalsMonitor from "./_BACKEND/PulseProofMonitor.js";
-import { route as BridgeRoute, PulseProofLogger, log, warn, error, startUnderstanding as PulseUnderstanding, PulseBinaryOrganismBoot} from "./_BACKEND/PulseWorldBridge.js";
+import * as PulseLogger        from "./_BACKEND/PulseProofLogger-v16.js";
+import * as PulseVitalsMonitor from "./_BACKEND/PulseProofMonitor-v16.js";
+import { route as BridgeRoute, PulseProofLogger, log, warn, error, startUnderstanding as PulseUnderstanding, PulseBinaryOrganismBoot} from "./_BACKEND/PulseWorldBridge-v18.js";
 import * as PulsePower         from "./_BACKEND/PulseWorldPower-v16.js";
 import * as PulseUIErrors      from "./_FRONTEND/PulseUIErrors-v16.js";
 import * as PulseUIFlow        from "./_FRONTEND/PulseUIFlow-v16.js";

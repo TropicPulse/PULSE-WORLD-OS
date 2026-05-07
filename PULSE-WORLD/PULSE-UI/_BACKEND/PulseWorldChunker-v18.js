@@ -1,20 +1,21 @@
 // ============================================================================
-// FILE: /PULSE-OS/PulseOSChunker-v17.js
-// PULSE CHUNK ENGINE — v17-Immortal
-//  - Payload chunking
+// FILE: /PULSE-UI/_BACKEND/PulseWorldChunker-v18.js
+// PULSE CHUNK ENGINE — v18-Immortal
+//  - Payload chunking (backend + compiler/ACTNOW-aligned)
 //  - Cache/delta engine
 //  - Route-level folding carpet (full route chunking)
 //  - PulseBandSession-aware
-//  - v17-Immortal: 32-lane cache + top-chunk memory + TTL
+//  - v18-Immortal: 32-lane cache + top-chunk memory + TTL
+//  - Compiler/ACTNOW-aware envelopes (ready for front chunk lanes)
 // ============================================================================
 
 /*
 AI_EXPERIENCE_META = {
   identity: "PulseChunker",
-  version: "v17-Immortal",
+  version: "v18-Immortal",
   layer: "os_chunker",
   role: "chunking_and_prewarm_engine",
-  lineage: "PulseOS-v14",
+  lineage: "PulseOS-v14 → v17-Immortal → v18-Immortal",
 
   evo: {
     chunking: true,
@@ -31,14 +32,22 @@ AI_EXPERIENCE_META = {
     dualBand: true,
 
     safeRouteFree: true,
-    zeroMutationOfInput: true
+    zeroMutationOfInput: true,
+
+    // v18 upgrades
+    compilerAware: true,
+    actnowAware: true,
+    unifiedEnvelope: true,
+    laneProfileAware: true
   },
 
   contract: {
     always: [
       "PulseOSBrain",
       "PulseOSBBB",
-      "PulseBinaryOS"
+      "PulseBinaryOS",
+      "PulseWorldCompiler",
+      "ACTNOW"
     ],
     never: [
       "legacyChunker",
@@ -48,14 +57,15 @@ AI_EXPERIENCE_META = {
   }
 }
 */
+
 // ============================================================================
-// META BLOCK — ORGAN IDENTITY (v17-IMMORTAL)
+// META BLOCK — ORGAN IDENTITY (v18-Immortal)
 // ============================================================================
 export const PulseChunkerMeta = Object.freeze({
   layer: "Backend",
   role: "PAYLOAD_CHUNK_ENGINE",
-  version: "v17-Immortal",
-  identity: "PulseChunker-v17-Immortal",
+  version: "v18-Immortal",
+  identity: "PulseChunker-v18-Immortal",
   guarantees: Object.freeze({
     deterministicSessionId: true,
     cacheAware: true,
@@ -248,7 +258,7 @@ function normalizeBackendPayload(payload) {
 export function createPulseChunker({ Brain, Logger } = {}) {
   if (!Brain && !Logger) {
     throw new Error(
-      "PulseChunker v17-Immortal: Missing Brain/Logger injection."
+      "PulseChunker v18-Immortal: Missing Brain/Logger injection."
     );
   }
 
@@ -268,8 +278,8 @@ export function createPulseChunker({ Brain, Logger } = {}) {
   const sessions = new Map();
 
   const MetaForLore = {
-    identity: "PulseChunker-v17-Immortal",
-    version: "17.0.0",
+    identity: "PulseChunker-v18-Immortal",
+    version: "18.0.0",
     guarantees: {
       laneAware: true,
       presenceAware: true,
@@ -415,7 +425,7 @@ export function createPulseChunker({ Brain, Logger } = {}) {
     stat.entries = laneStore.size;
     stat.lastTs = now;
 
-    log("[PulseChunker v17] Cache stored", {
+    log("[PulseChunker v18] Cache stored", {
       cacheKey,
       laneIndex,
       expiresAt
@@ -457,7 +467,7 @@ export function createPulseChunker({ Brain, Logger } = {}) {
       );
     }
 
-    log("[PulseChunker v17] Prewarmed profile", { profileId });
+    log("[PulseChunker v18] Prewarmed profile", { profileId });
 
     return stored;
   }
@@ -509,7 +519,7 @@ export function createPulseChunker({ Brain, Logger } = {}) {
 
   // ------------------------------------------------------------------------
   // PulseBandSession — deterministic session bootstrap (no time in ID)
-// ------------------------------------------------------------------------
+  // ------------------------------------------------------------------------
   function startPulseBandSession({
     trace,
     db: dbOverride,
@@ -536,7 +546,7 @@ export function createPulseChunker({ Brain, Logger } = {}) {
 
     sessions.set(sessionId, session);
 
-    log("[PulseChunker v17] PulseBandSession started", {
+    log("[PulseChunker v18] PulseBandSession started", {
       sessionId,
       hasDb: !!session.db
     });
@@ -549,7 +559,7 @@ export function createPulseChunker({ Brain, Logger } = {}) {
   // ------------------------------------------------------------------------
   function registerBackendOrgan(name, { chunk, prewarm } = {}) {
     if (!name || typeof chunk !== "function") {
-      warn("[PulseChunker v17] registerBackendOrgan called with invalid args", {
+      warn("[PulseChunker v18] registerBackendOrgan called with invalid args", {
         name,
         hasChunk: typeof chunk === "function"
       });
@@ -557,14 +567,14 @@ export function createPulseChunker({ Brain, Logger } = {}) {
     }
 
     backendOrgans.set(name, { chunk, prewarm });
-    log("[PulseChunker v17] Registered backend organ for chunking", { name });
+    log("[PulseChunker v18] Registered backend organ for chunking", { name });
   }
 
   // ------------------------------------------------------------------------
   // Prewarm — universal warmup for chunker + registered organs
   // ------------------------------------------------------------------------
   function prewarm() {
-    log("[PulseChunker v17] Prewarm start", {
+    log("[PulseChunker v18] Prewarm start", {
       organs: backendOrgans.size
     });
 
@@ -605,9 +615,9 @@ export function createPulseChunker({ Brain, Logger } = {}) {
       if (typeof organ.prewarm === "function") {
         try {
           organ.prewarm();
-          log("[PulseChunker v17] Prewarmed organ", { name });
+          log("[PulseChunker v18] Prewarmed organ", { name });
         } catch (e) {
-          warn("[PulseChunker v17] Prewarm failed for organ", {
+          warn("[PulseChunker v18] Prewarm failed for organ", {
             name,
             error: e?.message
           });
@@ -615,12 +625,12 @@ export function createPulseChunker({ Brain, Logger } = {}) {
       }
     }
 
-    log("[PulseChunker v17] Prewarm complete");
+    log("[PulseChunker v18] Prewarm complete");
   }
 
   // ------------------------------------------------------------------------
   // Core chunking primitive (metadata only; no splitting yet)
-//  - now profile-aware / backendKind-aware / worldBand-aware
+  //  - profile-aware / backendKind-aware / worldBand-aware
   // ------------------------------------------------------------------------
   function chunkPayload({
     userId,
@@ -677,7 +687,7 @@ export function createPulseChunker({ Brain, Logger } = {}) {
 
     bumpProfileStats(profile.profileId, payloadBytes);
 
-    log("[PulseChunker v17] Chunk payload computed", {
+    log("[PulseChunker v18] Chunk payload computed", {
       userId,
       payloadBytes,
       totalChunks,
@@ -702,7 +712,7 @@ export function createPulseChunker({ Brain, Logger } = {}) {
   }) {
     if (!db) {
       warn(
-        "[PulseChunker v17] generateCache called without db; returning passthrough."
+        "[PulseChunker v18] generateCache called without db; returning passthrough."
       );
       return sizeOnly ? 0 : payload;
     }
@@ -827,7 +837,7 @@ export function createPulseChunker({ Brain, Logger } = {}) {
         ok: true
       });
 
-      log("[PulseChunker v17] Route descriptor cache hit", {
+      log("[PulseChunker v18] Route descriptor cache hit", {
         route,
         cacheKey,
         laneIndex
@@ -853,7 +863,7 @@ export function createPulseChunker({ Brain, Logger } = {}) {
         const resolved = await resolveCacheRequest(imp, baseVersion, false);
         resolvedImports.push(resolved);
       } catch (e) {
-        warn("[PulseChunker v17] Failed to resolve import", {
+        warn("[PulseChunker v18] Failed to resolve import", {
           route,
           imp,
           error: e?.message
@@ -866,7 +876,7 @@ export function createPulseChunker({ Brain, Logger } = {}) {
         const resolved = await resolveCacheRequest(asset, baseVersion, false);
         resolvedAssets.push(resolved);
       } catch (e) {
-        warn("[PulseChunker v17] Failed to resolve asset", {
+        warn("[PulseChunker v18] Failed to resolve asset", {
           route,
           asset,
           error: e?.message
@@ -879,7 +889,7 @@ export function createPulseChunker({ Brain, Logger } = {}) {
         const resolved = await resolveCacheRequest(p, baseVersion, false);
         resolvedPayloads.push(resolved);
       } catch (e) {
-        warn("[PulseChunker v17] Failed to resolve payload", {
+        warn("[PulseChunker v18] Failed to resolve payload", {
           route,
           payload: p,
           error: e?.message
@@ -1003,7 +1013,7 @@ export function createPulseChunker({ Brain, Logger } = {}) {
           ok: true
         });
 
-        log("[PulseChunker v17] Payload cache hit", {
+        log("[PulseChunker v18] Payload cache hit", {
           url,
           cacheKey,
           laneIndex
@@ -1084,7 +1094,7 @@ export function createPulseChunker({ Brain, Logger } = {}) {
 
       return response;
     } catch (e) {
-      error("[PulseChunker v17] chunkRoute failed", {
+      error("[PulseChunker v18] chunkRoute failed", {
         url,
         laneId,
         envelopeId,

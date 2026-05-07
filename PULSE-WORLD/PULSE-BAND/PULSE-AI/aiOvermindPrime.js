@@ -38,7 +38,7 @@ AI_EXPERIENCE_META = {
 import { PulseProofLogger } from "../../PULSE-UI/_BACKEND/PulseProofLogger.js";
 
 import { PulseOrganismMap } from "../PULSE-X/PulseWorldOrganismMap-v17.js";
-import { PulseIQMap } from "../PULSE-X/PulseWorldIQMap-v16.js";
+import { PulseIQMap } from "../PULSE-X/PulseWorldIQMap-v20.js";
 import { PulseIntentMap } from "../PULSE-X/PulseWorldIntentMap-v17.js";
 // ============================================================================
 //  AI ORGANISM (v14.4 IMMORTAL-INTEL)
@@ -79,7 +79,7 @@ import { readCoreMemoryEarn, writeCoreMemoryEarn} from "../PULSE-CORE/PulseCoreE
 
 import { readCoreMemorySend, writeCoreMemorySend} from "../PULSE-CORE/PulseCoreSendMemoryAdapter.js";
 
-import { PulseUnderstanding } from "../../PULSE-UI/_BACKEND/PulseWorldUnderstanding.js";
+import { PulseUnderstanding } from "../../PULSE-UI/_BACKEND/PulseWorldUnderstanding-v18.js";
 import { PulseGovernor } from "../PULSE-OS/PulseOSGovernor.js";
 import { PulseVitalsMonitor } from "../../PULSE-UI/_BACKEND/PulseProofMonitor.js";
 import { PulseBinaryTech } from "../PULSE-TECH/PulseBinaryTech-v16.js";
