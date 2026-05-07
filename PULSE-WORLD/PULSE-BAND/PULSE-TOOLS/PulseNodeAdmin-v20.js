@@ -1,17 +1,18 @@
 // ============================================================================
-//  PULSE OS v16‑IMMORTAL‑ADV++ — NODEADMIN ORGAN
+//  PULSE OS v20‑IMMORTAL‑ADV+++ — NODEADMIN ORGAN
 //  Network Brain • Sentinel Command • Intent + Memory Cortex
 //  OVERMIND‑PRIME‑AWARE • PRESENCE‑AWARE • MESH/CASTLE/EXPANSION/ROUTER/BEACON‑AWARE
 //  PREWARM/CACHE/CHUNK‑AWARE • DETERMINISTIC • SYNTHETIC‑ONLY • ARTERY v5
+//  EVOLUTION‑AWARE (v20) • HEATMAP‑AWARE (v20) • SHIFTER‑AWARE • SNAPSHOT‑AWARE
 // ============================================================================
 
 /*
 AI_EXPERIENCE_META = {
   identity: "aiNodeAdmin",
-  version: "v16-Immortal-Adv++",
+  version: "v20-Immortal-Adv+++",
   layer: "ai_core",
   role: "nodeadmin_organ",
-  lineage: "PulseNodeAdmin-v11-Evo → v12.3-Presence-Evo++ → v16-Immortal-Adv++",
+  lineage: "PulseNodeAdmin-v11-Evo → v12.3-Presence-Evo++ → v16-Immortal-Adv++ → v20-Immortal-Adv+++",
 
   evo: {
     nodeAdmin: true,
@@ -46,7 +47,15 @@ AI_EXPERIENCE_META = {
     windowAware: true,
     multiInstanceIdentity: true,
     packetAware: true,
-    snapshotAware: true
+    snapshotAware: true,
+
+    evolutionAwareV20: true,
+    heatmapAwareV20: true,
+    shifterAware: true,
+    presenceBandAware: true,
+    earnAware: true,
+    worldCoreAware: true,
+    beaconAware: true
   },
 
   contract: {
@@ -57,10 +66,10 @@ AI_EXPERIENCE_META = {
 */
 
 export const NodeAdminMeta = Object.freeze({
-  organId: "PulseNodeAdmin-v16-Immortal-Adv++",
+  organId: "PulseNodeAdmin-v20-Immortal-Adv+++",
   role: "NODEADMIN_ORGAN",
-  version: "16-Immortal-Adv++",
-  epoch: "v16-Immortal-Adv++",
+  version: "20-Immortal-Adv+++",
+  epoch: "v20-Immortal-Adv+++",
   layer: "NetworkBrain",
 
   safety: Object.freeze({
@@ -90,12 +99,18 @@ export const NodeAdminMeta = Object.freeze({
     arteryV5: true,
     overmindAware: true,
     earnAware: true,
-    reproductionAware: true
+    reproductionAware: true,
+    evolutionAwareV20: true,
+    heatmapAwareV20: true,
+    shifterAware: true,
+    snapshotAware: true,
+    worldCoreAware: true,
+    beaconAware: true
   }),
 
   contract: Object.freeze({
     purpose:
-      "Local coordinator for soldiers, servers, and castle load. Executes Expansion plans, manages soldier lifecycle, applies earning pressure, integrates presence/advantage/chunk/mesh/castle/server signals, and exposes deterministic snapshots + artery metrics.",
+      "Local coordinator for soldiers, servers, and castle load. Executes Expansion plans, manages soldier lifecycle, applies earning pressure, integrates presence/advantage/chunk/mesh/castle/server/worldCore/beacon signals, and exposes deterministic snapshots + artery metrics.",
 
     never: Object.freeze([
       "mutate external state",
@@ -110,7 +125,7 @@ export const NodeAdminMeta = Object.freeze({
       "log decisions to internal memory",
       "expose state via reports and snapshots",
       "treat backend AI as advisory only",
-      "treat presence/social/earn/mesh/castle/expansion/router/beacon as metadata-only signals",
+      "treat presence/social/earn/mesh/castle/expansion/router/beacon/worldCore as metadata-only signals",
       "treat prewarm/cache/chunk plans as hints only, not imperative commands",
       "treat soldierDelegation and desiredSoldiers as advisory quotas",
       "treat treasury deltas as symbolic only",
@@ -120,7 +135,7 @@ export const NodeAdminMeta = Object.freeze({
 });
 
 // ============================================================================
-//  GLOBAL NODEADMIN ARTERY REGISTRY — v16 IMMORTAL‑ADV++
+//  GLOBAL NODEADMIN ARTERY REGISTRY — v20 IMMORTAL‑ADV+++
 // ============================================================================
 
 const _globalNodeAdminArteryRegistry = new Map();
@@ -298,7 +313,7 @@ function computeNodeAdminArteryV5({
 }
 
 // ============================================================================
-//  IMPORTS — ANALYSIS / SCANNERS (UNCHANGED)
+//  IMPORTS — ANALYSIS / SCANNERS / EVOLUTION / HEATMAP (v20)
 // ============================================================================
 
 import PulseAdminInspector from "./PulseAdminInspector.js";
@@ -310,12 +325,12 @@ import PulseBinaryWaveScanner from "./PulseBinaryWaveScanner.js";
 import PulseEvolutionaryScanner from "./PulseEvolutionaryScanner.js";
 import PulseHeatMap from "./PulseHeatMap-v20.js";
 import PulseLoopScanner from "./PulseLoopScanner.js";
-import PulseNodeAdminIntellect from "./PulseNodeAdminIntellect-v16.js";
-import { createPulseNodeEvolutionV16 as PulseNodeAdminEvolution } from "./PulseNodeAdminEvolution-v16.js";
+import PulseNodeAdminIntellect from "./PulseNodeAdminIntellect-v20.js";
+import { createPulseNodeEvolutionV20 as PulseNodeAdminEvolution } from "./PulseNodeAdminEvolution-v20.js";
 import PulseWaveScanner from "./PulseWaveScanner.js";
 
 // ============================================================================
-//  FACTORY: createPulseNodeAdmin — v16‑IMMORTAL‑ADV++
+//  FACTORY: createPulseNodeAdmin — v20‑IMMORTAL‑ADV+++
 // ============================================================================
 
 let _nodeAdminInstanceCount = 0;
@@ -325,7 +340,6 @@ const _nodeAdminEvolution = PulseNodeAdminEvolution({
   nodeType: "admin",
   trace: false // or true if you want evolution‑level tracing
 });
-
 
 export function createPulseNodeAdmin({
   trace = false,
@@ -418,10 +432,13 @@ export function createPulseNodeAdmin({
   const windowMs = 60000;
 
   // ---------------------------------------------------------------------------
-  // EVOLUTION LAYER HELPER (Shifter‑first, sectional fallback)
+  // EVOLUTION LAYER HELPER (Shifter‑first, sectional fallback, v20)
 // ---------------------------------------------------------------------------
   function evolveAdminPulse(pulse, extraCtx = {}) {
-    if (!_nodeAdminEvolution || typeof _nodeAdminEvolution.evolveNodePulse !== "function") {
+    if (
+      !_nodeAdminEvolution ||
+      typeof _nodeAdminEvolution.evolveNodePulse !== "function"
+    ) {
       return pulse;
     }
 
@@ -919,32 +936,6 @@ export function createPulseNodeAdmin({
     return advice;
   }
 
-  function beaconAdvice() {
-    if (!beaconSnapshot) return null;
-
-    const presenceField = beaconSnapshot.presenceField || beaconSnapshot.presence || {};
-    const advantageField = beaconSnapshot.advantageField || beaconSnapshot.advantage || {};
-    const bandSignature = beaconSnapshot.bandSignature || null;
-    const binaryField = beaconSnapshot.binaryField || null;
-    const waveField = beaconSnapshot.waveField || null;
-
-    const meshStatus = presenceField.meshStatus || "unknown";
-    const regionTag = presenceField.regionTag || presenceField.region || "unknown";
-
-    const advice = {
-      meshStatus,
-      regionTag,
-      bandSignature,
-      binaryField,
-      waveField,
-      presenceField,
-      advantageField
-    };
-
-    remember("beacon-advice", advice);
-    return advice;
-  }
-
   function worldCoreAdvice() {
     if (!worldCoreSnapshot) return null;
 
@@ -1168,7 +1159,9 @@ export function createPulseNodeAdmin({
         "prewarm hint coordination",
         "cache hint coordination",
         "chunk hint coordination",
-        "nodeAdmin artery v5 snapshots"
+        "nodeAdmin artery v5 snapshots",
+        "evolution-layer v20 shifter-first integration",
+        "heatmap v20 awareness (via snapshots/intellect)"
       ]
     };
   }
@@ -1208,9 +1201,9 @@ export function createPulseNodeAdmin({
   }
 
   // ---------------------------------------------------------------------------
-  // PUBLIC API — v16‑IMMORTAL‑ADV++
-  // ---------------------------------------------------------------------------
-    return Object.freeze({
+  // PUBLIC API — v20‑IMMORTAL‑ADV+++
+// ---------------------------------------------------------------------------
+  return Object.freeze({
     meta: NodeAdminMeta,
     instanceIndex,
     instanceId,
@@ -1250,19 +1243,14 @@ export function createPulseNodeAdmin({
     // intellect
     analyzeAndAdvise,
 
-    // evolution (fallback pulse system layer, shifter‑first)
+    // evolution (fallback pulse system layer, shifter‑first, v20)
     evolveAdminPulse,
 
     // introspection
     getAbilities,
     getManual
   });
-
 }
-
-// ============================================================================
-//  DUAL‑MODE EXPORTS (ESM + CommonJS)
-// ============================================================================
 
 if (typeof module !== "undefined") {
   module.exports = {

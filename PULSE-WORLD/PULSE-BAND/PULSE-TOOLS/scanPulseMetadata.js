@@ -7,10 +7,14 @@ import path from "path";
 const ROOT = path.resolve(process.cwd(), "..");
 
 // ============================================================================
-// FIVE-LAYER METABLOCK DEFINITIONS
+// FIVE-LAYER METABLOCK DEFINITIONS — v20 IMMORTAL‑ADV++
+// ============================================================================
+// Every layer now includes ALL v20 organ vocabulary, including:
+// identity++ • evo++ • contract++ • guarantees++ • safety++
 // ============================================================================
 const LAYERS = {
   identity: [
+    /AI_EXPERIENCE_META/i,
     /ORGAN:/i,
     /identity:/i,
     /organId:/i,
@@ -18,26 +22,54 @@ const LAYERS = {
     /layer:/i,
     /epoch:/i,
     /version:/i,
-    /lineage:/i
+    /lineage:/i,
+    /Pulse[A-Za-z0-9]+Meta/i,
+    /v20-Immortal/i,
+    /IMMORTAL/i
   ],
+
   evo: [
     /evo:\s*\{/i,
+    /nodeAdmin/i,
+    /networkBrain/i,
+    /sentinelBrain/i,
+    /presenceIntellect/i,
     /presenceAware/i,
+    /socialGraphAware/i,
+    /meshCastleExpansionAware/i,
+    /routerBeaconWorldCoreAware/i,
+    /reproductionAware/i,
+    /earnAware/i,
+    /chunkPrewarmAware/i,
+    /advantageAware/i,
     /dualBand/i,
+    /bandAware/i,
     /binaryAware/i,
-    /gpuAware/i,
+    /binaryFieldAware/i,
+    /waveFieldAware/i,
     /arteryAware/i,
+    /arteryV5/i,
+    /snapshotAware/i,
+    /packetAware/i,
+    /windowAware/i,
+    /multiInstanceIdentity/i,
+    /spiralAware/i,
+    /gpuAware/i,
     /juryAware/i,
     /shifterAware/i,
     /timelineFlowAware/i,
     /multiSpin/i
   ],
+
   contract: [
     /contract:\s*\{/i,
+    /purpose:/i,
     /always:\s*\[/i,
     /never:\s*\[/i,
-    /purpose:/i
+    /advisory-only/i,
+    /deterministic/i
   ],
+
   guarantees: [
     /guarantees:\s*\{/i,
     /deterministic/i,
@@ -45,14 +77,16 @@ const LAYERS = {
     /zeroNetwork/i,
     /zeroFilesystem/i,
     /zeroMutation/i,
+    /zeroMutationOfInput/i,
     /zeroRandomness/i,
     /pureCompute/i,
-    /windowSafe/i
+    /windowSafe/i,
+    /IMMORTAL/i
   ],
+
   safety: [
     /safety:\s*\{/i,
     /AI_EXPERIENCE_META/i,
-    /Pulse[A-Za-z0-9]+Meta/i,
     /IMMORTAL/i,
     /ORGANISM/i,
     /Presence/i,
@@ -64,7 +98,12 @@ const LAYERS = {
     /Cortex/i,
     /Organism/i,
     /PulseWorld/i,
-    /PulseOS/i
+    /PulseOS/i,
+    /Advantage/i,
+    /Binary/i,
+    /Wave/i,
+    /Sentinel/i,
+    /Overmind/i
   ]
 };
 
@@ -72,7 +111,7 @@ const LAYERS = {
 const META_PATTERNS = Object.values(LAYERS).flat();
 
 // ============================================================================
-// SCAN A SINGLE FILE
+// SCAN A SINGLE FILE — v20 IMMORTAL‑ADV++
 // ============================================================================
 function scanFile(filePath) {
   const text = fs.readFileSync(filePath, "utf8");
@@ -147,7 +186,7 @@ function walk(dir, results = []) {
 }
 
 // ============================================================================
-// FIX RECOMMENDATION ENGINE
+// FIX RECOMMENDATION ENGINE — v20 IMMORTAL‑ADV++
 // ============================================================================
 function recommendFixes(layerScores) {
   const fixes = [];
@@ -168,7 +207,7 @@ function recommendFixes(layerScores) {
 }
 
 // ============================================================================
-// RUN SCAN
+// RUN SCAN — v20 IMMORTAL‑ADV++
 // ============================================================================
 const output = walk(ROOT);
 
@@ -176,7 +215,7 @@ const output = walk(ROOT);
 const globalScore =
   output.reduce((a, f) => a + f.overallScore, 0) / (output.length || 1);
 
-console.log("=== Pulse Metadata Scan (v18‑IMMORTAL, 5‑Layer Metablock Scanner + Damage Wizard) ===");
+console.log("=== Pulse Metadata Scan (v20‑IMMORTAL‑ADV++, 5‑Layer Metablock Scanner + Damage Wizard) ===");
 console.log(`\nGLOBAL ORGANISM COMPLETENESS: ${globalScore.toFixed(1)}%`);
 console.log("=====================================================================");
 

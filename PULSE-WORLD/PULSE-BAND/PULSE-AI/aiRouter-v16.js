@@ -82,7 +82,7 @@ AI_EXPERIENCE_META = {
 
 import { Personas, getPersona } from "./persona.js";
 import Overmind from "./aiOvermindPrime.js";
-import NodeAdmin from "../PULSE-TOOLS/PulseNodeAdmin-v16.js";
+import NodeAdmin from "../PULSE-TOOLS/PulseNodeAdmin-v20.js";
 
 // ============================================================================
 //  IMPORTS — Organism Context (HYBRID: attach OR pull)
