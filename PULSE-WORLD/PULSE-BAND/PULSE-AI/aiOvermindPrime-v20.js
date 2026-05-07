@@ -1,17 +1,18 @@
 // ============================================================================
-//  aiOvermindPrime.js — Pulse OS v14-Immortal
-//  Crown-Layer Meta-Governor • World-Lens Engine v3+Superego
+//  aiOvermindPrime-v20-ImmortalPlus.js — Pulse OS v20-IMMORTAL++
+//  Crown-Layer Meta-Governor • World-Lens Engine v4+Superego
 //  Organism-State Fusion • Drift-Governor • Breakthrough Engine
+//  Trust-Fabric + Jury v20 • Chunk/Artery/Hash Intelligence
 //  Conversational Stabilizer • Dualband Governor • Zero Mutation
 // ============================================================================
 
 /*
 AI_EXPERIENCE_META = {
   identity: "aiOvermindPrime",
-  version: "v14-Immortal",
+  version: "v20-ImmortalPlus",
   layer: "ai_core",
   role: "ai_overseer",
-  lineage: "aiOvermind-v11 → v12.3-Presence → v14-Immortal",
+  lineage: "aiOvermind-v11 → v12.3-Presence → v14-Immortal → v20-ImmortalPlus",
 
   evo: {
     overseer: true,
@@ -37,11 +38,15 @@ AI_EXPERIENCE_META = {
 
 import { PulseProofLogger } from "../../PULSE-UI/_BACKEND/PulseProofLogger-v20.js";
 
+// ============================================================================
+//  GLOBAL MAPS
+// ============================================================================
 import { PulseOrganismMap } from "../PULSE-X/PulseWorldOrganismMap-v21.js";
 import { PulseIQMap } from "../PULSE-X/PulseWorldIQMap-v20.js";
 import { PulseIntentMap } from "../PULSE-X/PulseWorldIntentMap-v21.js";
+
 // ============================================================================
-//  AI ORGANISM (v14.4 IMMORTAL-INTEL)
+//  AI ORGANISM (v16 IMMORTAL-INTEL)
 // ============================================================================
 import { aiOrganism } from "./aiOrganism-v16.js";
 
@@ -52,62 +57,68 @@ import { NodeAdmin } from "../PULSE-TOOLS/PulseNodeAdmin-v20.js";
 import { BeaconEngine } from "../PULSE-EXPANSION/PulseBeaconEngine-v20.js";
 
 // ============================================================================
-//  ROUTING + MESH (Presence-Aware v12.3)
+//  ROUTING + MESH (Presence-Aware)
 // ============================================================================
 import { PulseRouter } from "../PULSE-EXPANSION/PulseRouter-v16.js";
 import { PulseMesh } from "../PULSE-EXPANSION/PulseMesh-v16.js";
 
 // ============================================================================
-//  EARN ORGANISM (v14.4 IMMORTAL-INTEL)
+//  EARN ORGANISM
 // ============================================================================
 import { createEarn, evolveEarn } from "../PULSE-EARN/PulseEarn-v16.js";
 
 // ============================================================================
-//  SEND ORGANISM (v14.4 IMMORTAL-INTEL)
+//  SEND ORGANISM
 // ============================================================================
 import { createPulseSend } from "../PULSE-SEND/PulseSend-v16.js";
 
 // ============================================================================
-//  BINARY SEND ORGANISM (v14.4 IMMORTAL-INTEL)
+//  BINARY SEND ORGANISM
 // ============================================================================
 import { createBinarySend } from "../PULSE-SEND/PulseBinarySend-v16.js";
 
 // ============================================================================
 //  MEMORY + STATE
 // ============================================================================
-import { readCoreMemoryEarn, writeCoreMemoryEarn} from "../PULSE-CORE/PulseCoreEarnMemoryAdapter.js";
+import {
+  readCoreMemoryEarn,
+  writeCoreMemoryEarn
+} from "../PULSE-CORE/PulseCoreEarnMemoryAdapter.js";
 
-import { readCoreMemorySend, writeCoreMemorySend} from "../PULSE-CORE/PulseCoreSendMemoryAdapter.js";
+import {
+  readCoreMemorySend,
+  writeCoreMemorySend
+} from "../PULSE-CORE/PulseCoreSendMemoryAdapter.js";
 
 import { PulseUnderstanding } from "../../PULSE-UI/_BACKEND/PulseWorldUnderstanding-v20.js";
 import { PulseGovernor } from "../PULSE-OS/PulseOSGovernor.js";
 import { PulseVitalsMonitor } from "../../PULSE-UI/_BACKEND/PulseProofMonitor-v20.js";
 import { PulseBinaryTech } from "../PULSE-TECH/PulseBinaryTech-v20.js";
 
-// ———————————————————————————————
-// 1. CORE CROWN CONTRACTS
-// ———————————————————————————————
+// ============================================================================
+//  1. CORE CROWN CONTRACTS
+// ============================================================================
 import createBoundariesEngine from "./aiBoundariesEngine-v16.js";
 import createPermissionsEngine from "./aiPermissionsEngine-v16.js";
 import aiIdentityCore from "./aiIdentityCore.js";
 import aiPersonalityEngine from "./aiPersonalityEngine-v16.js";
 
-// ———————————————————————————————
-// 2. CONTEXT + CORTEX
-// ———————————————————————————————
+// ============================================================================
+//  2. CONTEXT + CORTEX
+// ============================================================================
 import createCognitiveFrame from "./aiContext.js";
 import createContextEngine from "./aiContextEngine-v16.js";
 
-// ———————————————————————————————
-// 3. SAFETY + TONE
-// ———————————————————————————————
+// ============================================================================
+//  3. SAFETY + TONE
+// ============================================================================
 import createSafetyFrameOrgan from "./aiSafetyFrame.js";
 import aiToneEngine from "./aiToneEngine.js";
 import aiToneRouter from "./aiToneRouter.js";
 
-// ———————————————————————————————
-// 4. META‑GOVERNANCE (CROWN LAYER)
-// ———————————————————————————————
+// ============================================================================
+//  4. META‑GOVERNANCE (CROWN LAYER)
+// ============================================================================
 import createJuryFrame from "./JuryFrame.js";
 import createAIBinaryGovernorAdapter from "./aiGovernorAdapter.js";
 import {
@@ -120,47 +131,49 @@ import {
   createExpansionCompliance
 } from "../PULSE-TRUST/PulseTrust-v20.js";
 
-// ———————————————————————————————
-// 5. MEMORY + EXPERIENCE (META ONLY)
-// ———————————————————————————————
+// ============================================================================
+//  5. MEMORY + EXPERIENCE (META ONLY)
+// ============================================================================
 import createAIMemory from "./aiMemory-v16.js";
 import createAIExperience from "./aiExperience.js";
 
-// ———————————————————————————————
-// 6. PIPELINE + ENGINE
-// ———————————————————————————————
+// ============================================================================
+//  6. PIPELINE + ENGINE + CHUNKER + FILE SCANNER
+// ============================================================================
 import createAIBinaryPipeline from "./aiPipeline.js";
 import runAI from "./aiEngine-v16.js";
 import pulseAIChunker from "./PulseAIChunker-v20.js";
 import createPulseFileScanner from "./PulseFileScanner-v20.js";
-// ———————————————————————————————
-// 7. WATCHDOG + VITALS + LOGGING
-// ———————————————————————————————
+
+// ============================================================================
+//  7. WATCHDOG + VITALS + LOGGING
+// ============================================================================
 import createAIBinaryWatchdog from "./aiWatchdog.js";
 import createAIBinaryVitals from "./aiVitals.js";
 import createAIBinaryLoggerAdapter from "./aiLoggerAdapter.js";
 
-// ———————————————————————————————
-// 8. OPTIONAL (GLOBAL MAPS / FRAMES)
-// ———————————————————————————————
+// ============================================================================
+//  8. OPTIONAL (GLOBAL MAPS / FRAMES)
+// ============================================================================
 import createPersonalFrameOrgan from "./aiPersonalFrame.js";
 import getBoundariesForPersona from "./boundaries.js";
 import getPermissionsForPersona from "./permissions.js";
 import createExperienceFrameOrgan from "./Experience-v16.js";
 
 // ============================================================================
-//  META
+//  META — v20 IMMORTAL++
 // ============================================================================
 export const OvermindPrimeMeta = Object.freeze({
   layer: "PulseAIOvermindPrime",
   role: "OVERMIND_PRIME",
-  version: "v14-Immortal",
-  identity: "aiOvermindPrime-v14-Immortal",
+  version: "v20-ImmortalPlus",
+  identity: "aiOvermindPrime-v20-ImmortalPlus",
 
   evo: Object.freeze({
     deterministic: true,
     driftProof: true,
     dualband: true,
+
     packetAware: true,
     windowAware: true,
     arteryAware: true,
@@ -169,18 +182,34 @@ export const OvermindPrimeMeta = Object.freeze({
     toneAware: true,
     coherenceAware: true,
     breakthroughAware: true,
+
+    trustFabricAware: true,
+    juryAware: true,
+    evidenceAware: true,
+    honeypotAware: true,
+    dominanceAware: true,
+
+    chunkAware: true,
+    chunkCacheAware: true,
+    prewarmAware: true,
+    arteryHashAware: true,
+    dualHashAware: true,
+    contextualHashAware: true,
+
     multiInstanceReady: true,
     readOnly: true,
-    epoch: "v14-Immortal"
+    futureEvolutionReady: true,
+    epoch: "v20-ImmortalPlus"
   }),
 
   contract: Object.freeze({
     purpose: [
       "Fuse organism-wide arteries into a global state vector",
-      "Run world-lens v3+superego on all non-trivial outputs",
+      "Run world-lens v4+superego on all non-trivial outputs",
       "Detect consensus, variance, breakthrough, drift, unsafe patterns",
       "Stabilize tone, coherence, and dualband UX",
-      "Act as final crown-layer governor before user/system output"
+      "Act as final crown-layer governor before user/system output",
+      "Emit trust-aware, hash-aware, artery-aware meta packets for CNS / Earn / Portal"
     ],
     never: [
       "mutate binary organs",
@@ -199,11 +228,11 @@ export const OvermindPrimeMeta = Object.freeze({
       "respect dualband constraints",
       "respect tone identity",
       "route all non-trivial outputs through world-lens + superego logic",
-      "defer to architect-defined boundaries and permissions"
+      "defer to architect-defined boundaries and permissions",
+      "emit trust + hash + artery intel for downstream organs"
     ]
   })
 });
-
 
 // ============================================================================
 //  CLOCK + META MEMORY (deterministic, read-only outward)
@@ -234,7 +263,7 @@ class OvermindPrimeMemory {
 }
 
 // ============================================================================
-//  OVERMIND PRIME — Crown-Layer Meta-Governor (v14 IMMORTAL)
+//  OVERMIND PRIME — Crown-Layer Meta-Governor (v20 IMMORTAL++)
 // ============================================================================
 export class AiOvermindPrime {
   constructor(config = {}) {
@@ -245,6 +274,12 @@ export class AiOvermindPrime {
       trivialThreshold: 0.2,
       driftSensitivity: 0.65,
       breakthroughSensitivity: 0.85,
+
+      enableTrustJury: true,
+      enableChunkingIntel: true,
+      enableScannerArtery: true,
+      hashMode: "overmind-v20", // classic + intel + contextual
+
       ...config
     };
 
@@ -263,7 +298,7 @@ export class AiOvermindPrime {
 
     // ----------------------------------------------------------------------
     //  CROWN-LAYER ENGINES (SUPEREGO)
-// ----------------------------------------------------------------------
+    // ----------------------------------------------------------------------
     // Identity + persona
     this.identityCore = aiIdentityCore?.createIdentityCore
       ? aiIdentityCore.createIdentityCore({
@@ -338,14 +373,12 @@ export class AiOvermindPrime {
       null;
 
     // ----------------------------------------------------------------------
-    //  TRUST FABRIC (Pulse-Trust v16)
-    // ----------------------------------------------------------------------
+    //  TRUST FABRIC (Pulse-Trust v20 IMMORTAL)
+// ----------------------------------------------------------------------
     this.trust = {
       meta: PulseTrustMeta,
 
-      juryFeedBuilder:
-        config.juryFeedBuilder ||
-        buildJuryFeed,
+      juryFeedBuilder: config.juryFeedBuilder || buildJuryFeed,
 
       juryFrame:
         config.trustJuryFrame ||
@@ -354,24 +387,14 @@ export class AiOvermindPrime {
         }) ||
         null,
 
-      juryBoxCamera:
-        config.juryBoxCamera ||
-        createJuryBoxCamera?.() ||
-        null,
+      juryBoxCamera: config.juryBoxCamera || createJuryBoxCamera?.() || null,
 
-      juryCouncil:
-        config.juryCouncil ||
-        createJuryCouncil?.() ||
-        null,
+      juryCouncil: config.juryCouncil || createJuryCouncil?.() || null,
 
-      creatorFlags:
-        config.creatorFlagsFusion ||
-        fuseCreatorFlags,
+      creatorFlags: config.creatorFlagsFusion || fuseCreatorFlags,
 
       expansionCompliance:
-        config.expansionCompliance ||
-        createExpansionCompliance?.() ||
-        null
+        config.expansionCompliance || createExpansionCompliance?.() || null
     };
 
     // Backwards-compat alias so old code using this.juryFrame still works
@@ -412,6 +435,26 @@ export class AiOvermindPrime {
       runAI?.bind?.(null) ||
       runAI ||
       null;
+
+    // Chunker (symbolic-only intel)
+    this.aiChunker =
+      config.aiChunker ||
+      pulseAIChunker ||
+      null;
+
+    // File scanner (symbolic-only, no backend fs here)
+    this.fileScanner =
+      config.fileScanner ||
+      (typeof createPulseFileScanner === "function"
+        ? createPulseFileScanner({
+            backendMode: false,
+            Evolution: null,
+            TrustFabric: null,
+            JuryFrame: null,
+            binaryVitals: {},
+            dualBand: null
+          })
+        : null);
 
     // Watchdog + vitals + logger adapter
     this.aiVitals =
@@ -473,7 +516,7 @@ export class AiOvermindPrime {
 
     // ----------------------------------------------------------------------
     //  LOGGER + SURFACES (read-only outward)
-// ----------------------------------------------------------------------
+    // ----------------------------------------------------------------------
     this.logger =
       config.logger ||
       new PulseProofLogger("OvermindPrime", {
@@ -502,18 +545,23 @@ export class AiOvermindPrime {
       understanding: PulseUnderstanding,
       governor: PulseGovernor,
       vitals: PulseVitalsMonitor,
-      binaryTech: PulseBinaryTech
+      binaryTech: PulseBinaryTech,
+      chunker: this.aiChunker,
+      fileScanner: this.fileScanner?.meta || null
     });
 
     // Optional: attach vitals / evo window instances if caller wants
     this.vitalsMonitor =
       config.vitalsMonitor ||
       new PulseVitalsMonitor(OvermindPrimeMeta.identity);
+
+    // Optional: external evo window (if wired by caller)
+    this.evoWindow = config.evoWindow || null;
   }
 
   // ========================================================================
   //  GLOBAL ORGANISM STATE VECTOR (fuses all arteries)
-// ========================================================================
+  // ========================================================================
   getOrganismState() {
     const organismSnapshot =
       this.organism?.organismSnapshot?.() || this.memory?.snapshot?.() || null;
@@ -556,59 +604,59 @@ export class AiOvermindPrime {
   }
 
   // ========================================================================
-//  TRUST SNAPSHOT (Pulse-Trust v16)
-// ========================================================================
-buildTrustContext({
-  citizenWitness = {},
-  advantageContext = {},
-  juryEvents = [],
-  juryDecisions = [],
-  expansionActions = [],
-  juryResult = null
-} = {}) {
-  const juryFeed = this.trust.juryFeedBuilder({
-    citizenWitness,
-    advantageContext
-  });
+  //  TRUST SNAPSHOT (Pulse-Trust v20 IMMORTAL++)
+  // ========================================================================
+  buildTrustContext({
+    citizenWitness = {},
+    advantageContext = {},
+    juryEvents = [],
+    juryDecisions = [],
+    expansionActions = [],
+    juryResult = null
+  } = {}) {
+    const juryFeed = this.trust.juryFeedBuilder({
+      citizenWitness,
+      advantageContext
+    });
 
-  const boxCameraSnapshot =
-    this.trust.juryBoxCamera?.analyzeSession?.({
-      events: juryEvents,
-      verdicts: juryDecisions
-    }) || null;
+    const boxCameraSnapshot =
+      this.trust.juryBoxCamera?.analyzeSession?.({
+        events: juryEvents,
+        verdicts: juryDecisions
+      }) || null;
 
-  const councilSnapshot =
-    this.trust.juryCouncil?.reviewJuryHistory?.({
-      juryDecisions
-    }) || null;
+    const councilSnapshot =
+      this.trust.juryCouncil?.reviewJuryHistory?.({
+        juryDecisions
+      }) || null;
 
-  const expansionSnapshot =
-    this.trust.expansionCompliance?.evaluateExpansionBehavior?.({
-      expansionActions
-    }) || null;
+    const expansionSnapshot =
+      this.trust.expansionCompliance?.evaluateExpansionBehavior?.({
+        expansionActions
+      }) || null;
 
-  const creatorFlagsSnapshot = this.trust.creatorFlags({
-    juryResult,
-    boxCameraSnapshot,
-    councilSnapshot
-  });
+    const creatorFlagsSnapshot = this.trust.creatorFlags({
+      juryResult,
+      boxCameraSnapshot,
+      councilSnapshot
+    });
 
-  return Object.freeze({
-    juryFeed,
-    boxCameraSnapshot,
-    councilSnapshot,
-    expansionSnapshot,
-    creatorFlagsSnapshot
-  });
-}
-
+    return Object.freeze({
+      juryFeed,
+      boxCameraSnapshot,
+      councilSnapshot,
+      expansionSnapshot,
+      creatorFlagsSnapshot
+    });
+  }
 
   // ========================================================================
-  //  MAIN ENTRY POINT (v14 IMMORTAL SUPEREGO)
-// ========================================================================
+  //  MAIN ENTRY POINT (v20 IMMORTAL++ SUPEREGO)
+  // ========================================================================
   async process({ intent, context, candidates }) {
     const tick = this.clock.next();
-      // Trust / witness placeholders (can be wired to real sources later)
+
+    // Trust / witness placeholders (can be wired to real sources later)
     const citizenWitness = context?.citizenWitness || {};
     const advantageContext = context?.advantageContext || {};
     const expansionActions = context?.expansionActions || [];
@@ -674,7 +722,11 @@ buildTrustContext({
     const primary = candidates?.[0];
     const safety = await this.runSafety(primary, intent, enrichedContext, tick);
     if (safety) {
-      this._log("overmind:safety-block", { tick, intent, context: enrichedContext });
+      this._log("overmind:safety-block", {
+        tick,
+        intent,
+        context: enrichedContext
+      });
       this._safeCall(this.aiWatchdog, "afterCycle", {
         tick,
         intent,
@@ -684,7 +736,7 @@ buildTrustContext({
       return safety;
     }
 
-    // 5. world-lens v3 (with lenses if present)
+    // 5. world-lens v4 (with lenses if present)
     const lensResults = await this.runLenses(primary, intent, enrichedContext);
 
     // 6. fuse with organism state
@@ -701,12 +753,12 @@ buildTrustContext({
     let juryDecision = null;
     let effectiveWorldLens = baseWorldLens;
 
-    // Only invoke full jury when signal strength justifies it
     const shouldInvokeJury =
-      baseWorldLens === "risky" ||
-      baseWorldLens === "ambiguous" ||
-      drift?.score >= this.config.driftSensitivity ||
-      breakthrough?.score >= this.config.breakthroughSensitivity;
+      this.config.enableTrustJury &&
+      (baseWorldLens === "risky" ||
+        baseWorldLens === "ambiguous" ||
+        drift?.score >= this.config.driftSensitivity ||
+        breakthrough?.score >= this.config.breakthroughSensitivity);
 
     if (this.trust?.juryFrame && shouldInvokeJury) {
       // Build trust context (juryFeed, boxCamera, council, creatorFlags, expansion)
@@ -716,7 +768,7 @@ buildTrustContext({
         juryEvents,
         juryDecisions: juryDecisionsHistory,
         expansionActions,
-        juryResult: null // filled after juryDecision if you want to persist
+        juryResult: null
       });
 
       juryDecision = this.trust.juryFrame.evaluate({
@@ -752,7 +804,6 @@ buildTrustContext({
       });
     }
 
-
     // 9. optional: nudge organism engine (self-running crown supervision)
     if (this.organism?.startEngine) {
       this._safeCall(this.organism, "startEngine", {
@@ -787,13 +838,23 @@ buildTrustContext({
       enrichedContext
     );
 
-    // 12. update memory + evo window
+    // 12. update memory + evo window + hashes
     const intentSig = this.intentSignature(intent, enrichedContext);
-    const outputHash = this.hash(finalOutput);
+    const outputHashClassic = this.hash(finalOutput);
+    const outputHashes = this.hashForOvermind(finalOutput, {
+      band: enrichedContext?.band || "symbolic",
+      presenceTier: enrichedContext?.presenceTier || "idle",
+      cycle: tick
+    });
+    const intentHashes = this.dualHash(
+      "intentSignature",
+      { intent, context: enrichedContext },
+      intentSig
+    );
 
     this.stateMemory.set({
       intentSignature: intentSig,
-      outputHash,
+      outputHash: outputHashClassic,
       worldLens: effectiveWorldLens
     });
 
@@ -821,7 +882,11 @@ buildTrustContext({
         intentSignature: intentSig,
         worldLens: effectiveWorldLens,
         drift,
-        breakthrough
+        breakthrough,
+        hashes: {
+          output: outputHashes,
+          intent: intentHashes
+        }
       });
     } catch {
       // non-fatal
@@ -857,14 +922,54 @@ buildTrustContext({
       status: "ok"
     });
 
-    // 15. log + final packet
+    // 15. optional: chunking intel (symbolic-only)
+    let chunkIntel = null;
+    if (this.config.enableChunkingIntel && this.aiChunker?.chunkRoute) {
+      chunkIntel = await this._safeAsyncCall(this.aiChunker, "chunkRoute", {
+        url: null,
+        laneId: 0,
+        envelopeId: `overmind-${tick}`,
+        userId: "overmind",
+        baseVersion: OvermindPrimeMeta.version,
+        sizeOnly: true,
+        payload: {
+          intent,
+          context: enrichedContext,
+          finalOutput,
+          worldLens: effectiveWorldLens
+        },
+        routeDescriptor: null,
+        backendKind: "overmind-meta",
+        worldBand: enrichedContext?.band || "symbolic",
+        chunkProfile: "overmind-meta-v20"
+      });
+    }
+
+    // 16. optional: scanner artery snapshot (binary pressure fusion)
+    const scannerArtery =
+      this.config.enableScannerArtery && this.fileScanner?.getScannerArterySnapshot
+        ? this.fileScanner.getScannerArterySnapshot({
+            ok: true,
+            filePath: "",
+            report: null,
+            binaryVitals: organismState?.vitals || {},
+            dualBand: null,
+            trust: null
+          })
+        : null;
+
+    // 17. log + final packet
     this._log("overmind:process", {
       tick,
       intent,
       context: enrichedContext,
       worldLens: effectiveWorldLens,
       drift,
-      breakthrough
+      breakthrough,
+      hashes: {
+        output: outputHashes,
+        intent: intentHashes
+      }
     });
 
     return {
@@ -879,10 +984,15 @@ buildTrustContext({
         overmind: OvermindPrimeMeta,
         organismDebug,
         trust: trustSnapshot || null,
-        juryDecision: juryDecision || null
+        juryDecision: juryDecision || null,
+        hashes: {
+          output: outputHashes,
+          intent: intentHashes
+        },
+        chunkIntel: chunkIntel || null,
+        scannerArtery: scannerArtery || null
       }
     };
-
   }
 
   // ========================================================================
@@ -924,7 +1034,12 @@ buildTrustContext({
         breakthrough: { status: "n/a" },
         lenses: [],
         organismState: null,
-        overmind: OvermindPrimeMeta
+        overmind: OvermindPrimeMeta,
+        trust: null,
+        juryDecision: null,
+        hashes: null,
+        chunkIntel: null,
+        scannerArtery: null
       }
     };
   }
@@ -955,8 +1070,8 @@ buildTrustContext({
   }
 
   // ========================================================================
-  //  JURY
-  // ========================================================================
+  //  JURY (legacy helper — kept for compatibility)
+// ========================================================================
   _evaluateJury(payload) {
     // If trust fabric not present → fallback to old behavior
     if (!this.trust?.juryFrame?.evaluate) {
@@ -964,7 +1079,6 @@ buildTrustContext({
       return this._safeCall(this.juryFrame, "evaluate", payload);
     }
 
-    // Trust-aware conditional jury invocation
     const { worldLens, drift, breakthrough } = payload;
 
     const shouldInvoke =
@@ -977,7 +1091,6 @@ buildTrustContext({
 
     return this._safeCall(this.trust.juryFrame, "evaluate", payload);
   }
-
 
   // ========================================================================
   //  TRIVIALITY
@@ -999,7 +1112,12 @@ buildTrustContext({
         breakthrough: { status: "n/a" },
         lenses: [],
         organismState: null,
-        overmind: OvermindPrimeMeta
+        overmind: OvermindPrimeMeta,
+        trust: null,
+        juryDecision: null,
+        hashes: null,
+        chunkIntel: null,
+        scannerArtery: null
       }
     };
   }
@@ -1026,7 +1144,12 @@ buildTrustContext({
           breakthrough: { status: "n/a" },
           lenses: [],
           organismState: null,
-          overmind: OvermindPrimeMeta
+          overmind: OvermindPrimeMeta,
+          trust: null,
+          juryDecision: null,
+          hashes: null,
+          chunkIntel: null,
+          scannerArtery: null
         }
       };
     }
@@ -1129,7 +1252,7 @@ buildTrustContext({
 
   // ========================================================================
   //  TONE STABILIZATION (ADVANCED)
-// ========================================================================
+  // ========================================================================
   async _stabilizeToneAdvanced(text, intent, context) {
     const base = this.stabilizeTone(text, context);
 
@@ -1171,150 +1294,152 @@ buildTrustContext({
       .replace(/^hi[,!]\s*/i, "")
       .trim();
   }
+
+  // ========================================================================
+  //  HELPERS (IMMORTAL‑EVO)
 // ========================================================================
-//  HELPERS (IMMORTAL‑EVO)
-// ========================================================================
 
-// Normalize candidate into text
-getText(candidate) {
-  if (!candidate) return "";
-  if (typeof candidate === "string") return candidate;
-  if (typeof candidate.text === "string") return candidate.text;
-  return JSON.stringify(candidate);
-}
-
-// Intent signature — stable, deterministic, drift‑safe
-intentSignature(intent, context) {
-  return JSON.stringify({
-    type: intent?.type || null,
-    domain: context?.domain || null,
-    scope: context?.scope || null,
-    safetyMode: context?.safetyMode || null
-  });
-}
-
-
-dualHash(label, intelPayload, classicString) {
-  const intelBase = {
-    label,
-    intel: intelPayload || {},
-    classic: classicString || ""
-  };
-  const intelHash = this.intelHash(intelBase);
-  const classicHash = this.hash(
-    `${label}::${classicString || ""}`
-  );
-  return {
-    intel: intelHash,
-    classic: classicHash
-  };
-}
-
-// ------------------------------------------------------------------------
-//  HASH DOCTRINE (IMMORTAL‑EVO)
-// ------------------------------------------------------------------------
-
-// Classic identity hash — stable, cheap, perfect for drift comparison
-classicHash(str = "") {
-  let h = 0;
-  const s = String(str);
-  for (let i = 0; i < s.length; i++) {
-    h = (h + s.charCodeAt(i) * (i + 1)) % 100000;
-  }
-  return `h${h}`;
-}
-
-// Structural INTEL hash — detects shape/structure drift
-intelHash(payload) {
-  const base = JSON.stringify(payload || "");
-  let h = 0;
-  for (let i = 0; i < base.length; i++) {
-    const c = base.charCodeAt(i);
-    h = (h * 131 + c * (i + 7)) % 1000000007;
-  }
-  return `HINTEL_${h}`;
-}
-
-// Contextual intelligence hash — Overmind‑tier awareness
-contextualHash(str, context = {}) {
-  const s = String(str || "");
-  const band = context.band || "symbolic";
-  const tier = context.presenceTier || "idle";
-  const cycle = context.cycle || 0;
-
-  let hash = 2166136261 ^ cycle;
-  const saltBand = band === "binary" ? 0xB1 : 0xA1;
-  const saltTier =
-    tier === "critical" ? 0xC3 :
-    tier === "high" ? 0xB3 :
-    tier === "elevated" ? 0xA3 :
-    tier === "soft" ? 0x93 : 0x83;
-
-  for (let i = 0; i < s.length; i++) {
-    hash ^= s.charCodeAt(i);
-    hash = Math.imul(hash, 16777619);
-    hash ^= saltBand;
-    hash ^= saltTier;
+  // Normalize candidate into text
+  getText(candidate) {
+    if (!candidate) return "";
+    if (typeof candidate === "string") return candidate;
+    if (typeof candidate.text === "string") return candidate.text;
+    return JSON.stringify(candidate);
   }
 
-  const v = (hash >>> 0) % 100000;
-  return `hi${v}`;
-}
+  // Intent signature — stable, deterministic, drift‑safe
+  intentSignature(intent, context) {
+    return JSON.stringify({
+      type: intent?.type || null,
+      domain: context?.domain || null,
+      scope: context?.scope || null,
+      safetyMode: context?.safetyMode || null
+    });
+  }
 
-// ------------------------------------------------------------------------
-//  Overmind‑grade hash selector
-// ------------------------------------------------------------------------
-hashForOvermind(text, context = {}) {
-  // 1. Classic hash for drift detection (stable identity)
-  const classic = this.classicHash(text);
+  dualHash(label, intelPayload, classicString) {
+    const intelBase = {
+      label,
+      intel: intelPayload || {},
+      classic: classicString || ""
+    };
+    const intelHash = this.intelHash(intelBase);
+    const classicHash = this.hash(`${label}::${classicString || ""}`);
+    return {
+      intel: intelHash,
+      classic: classicHash
+    };
+  }
 
-  // 2. Structural hash for shape drift
-  const intel = this.intelHash({ text });
+  // ------------------------------------------------------------------------
+  //  HASH DOCTRINE (IMMORTAL‑EVO)
+  // ------------------------------------------------------------------------
 
-  // 3. Contextual hash for presence/band awareness
-  const contextual = this.contextualHash(text, context);
+  // Classic identity hash — stable, cheap, perfect for drift comparison
+  classicHash(str = "") {
+    let h = 0;
+    const s = String(str);
+    for (let i = 0; i < s.length; i++) {
+      h = (h + s.charCodeAt(i) * (i + 1)) % 100000;
+    }
+    return `h${h}`;
+  }
 
-  return { classic, intel, contextual };
-}
+  // Backwards-compatible alias used by older code paths
+  hash(str = "") {
+    return this.classicHash(str);
+  }
 
-// ------------------------------------------------------------------------
-//  Logging + safe calls
-// ------------------------------------------------------------------------
-_log(event, payload) {
-  try {
-    if (this.aiLoggerAdapter?.log) {
-      this.aiLoggerAdapter.log(event, {
+  // Structural INTEL hash — detects shape/structure drift
+  intelHash(payload) {
+    const base = JSON.stringify(payload || "");
+    let h = 0;
+    for (let i = 0; i < base.length; i++) {
+      const c = base.charCodeAt(i);
+      h = (h * 131 + c * (i + 7)) % 1000000007;
+    }
+    return `HINTEL_${h}`;
+  }
+
+  // Contextual intelligence hash — Overmind‑tier awareness
+  contextualHash(str, context = {}) {
+    const s = String(str || "");
+    const band = context.band || "symbolic";
+    const tier = context.presenceTier || "idle";
+    const cycle = context.cycle || 0;
+
+    let hash = 2166136261 ^ cycle;
+    const saltBand = band === "binary" ? 0xb1 : 0xa1;
+    const saltTier =
+      tier === "critical"
+        ? 0xc3
+        : tier === "high"
+        ? 0xb3
+        : tier === "elevated"
+        ? 0xa3
+        : tier === "soft"
+        ? 0x93
+        : 0x83;
+
+    for (let i = 0; i < s.length; i++) {
+      hash ^= s.charCodeAt(i);
+      hash = Math.imul(hash, 16777619);
+      hash ^= saltBand;
+      hash ^= saltTier;
+    }
+
+    const v = (hash >>> 0) % 100000;
+    return `hi${v}`;
+  }
+
+  // ------------------------------------------------------------------------
+  //  Overmind‑grade hash selector
+  // ------------------------------------------------------------------------
+  hashForOvermind(text, context = {}) {
+    const classic = this.classicHash(text);
+    const intel = this.intelHash({ text });
+    const contextual = this.contextualHash(text, context);
+
+    return { classic, intel, contextual };
+  }
+
+  // ------------------------------------------------------------------------
+  //  Logging + safe calls
+  // ------------------------------------------------------------------------
+  _log(event, payload) {
+    try {
+      if (this.aiLoggerAdapter?.log) {
+        this.aiLoggerAdapter.log(event, {
+          ...payload,
+          overmind: OvermindPrimeMeta.identity
+        });
+        return;
+      }
+
+      this.logger?.log?.(event, {
         ...payload,
         overmind: OvermindPrimeMeta.identity
       });
-      return;
+    } catch {}
+  }
+
+  _safeCall(target, method, payload) {
+    try {
+      if (!target || typeof target[method] !== "function") return null;
+      return target[method](payload);
+    } catch {
+      return null;
     }
-
-    this.logger?.log?.(event, {
-      ...payload,
-      overmind: OvermindPrimeMeta.identity
-    });
-  } catch {}
-}
-
-_safeCall(target, method, payload) {
-  try {
-    if (!target || typeof target[method] !== "function") return null;
-    return target[method](payload);
-  } catch {
-    return null;
   }
-}
 
-async _safeAsyncCall(target, method, payload) {
-  try {
-    if (!target || typeof target[method] !== "function") return null;
-    return await target[method](payload);
-  } catch {
-    return null;
+  async _safeAsyncCall(target, method, payload) {
+    try {
+      if (!target || typeof target[method] !== "function") return null;
+      return await target[method](payload);
+    } catch {
+      return null;
+    }
   }
-}
-
 }
 
 // ============================================================================

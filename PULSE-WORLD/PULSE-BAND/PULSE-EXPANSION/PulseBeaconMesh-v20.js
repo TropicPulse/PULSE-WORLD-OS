@@ -197,7 +197,7 @@ import { getPulseRuntimeContext } from "../PULSE-X/PulseWorldRuntime-v20.js";
 import { getPulseSchedulerContext } from "../PULSE-X/PulseWorldScheduler-v20.js";
 
 // Overmind (world-lens / safety / persona mix)
-import { getPulseOvermindContext } from "../PULSE-AI/aiOvermindPrime.js";
+import { getPulseOvermindContext } from "../PULSE-AI/aiOvermindPrime-v20.js";
 
 // Continuance (GPU continuance physics)
 import {

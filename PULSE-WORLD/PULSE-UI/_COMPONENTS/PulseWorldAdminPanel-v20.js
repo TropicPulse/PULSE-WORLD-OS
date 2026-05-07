@@ -1,15 +1,15 @@
 // ============================================================================
-//  PULSE OS v16‑IMMORTAL‑EVO+++ — PULSE WORLD ADMIN PANEL ORGAN
+//  PULSE OS v20‑IMMORTAL‑EVO++++ — PULSE WORLD ADMIN PANEL ORGAN
 //  Owner Console • Multi/One Mind • Pulse Control • Evidence Checker
-//  AI Activity • Diagnostics v16 Integration
+//  AI Activity • Diagnostics v20 Integration • Advantage/Speed/Experience View
 //  PURE OBSERVATION. ZERO MUTATION. ZERO IDENTITY LEAKAGE.
 // ============================================================================
 
 export const PulseWorldAdminMeta = Object.freeze({
   layer: "PulseWorldAdminConsole",
   role: "PULSE_WORLD_ADMIN_PANEL_ORGAN",
-  version: "16-Immortal-Evo+++",
-  identity: "aiPulseWorldAdminPanel-v16-Immortal-Evo+++",
+  version: "20-Immortal-Evo++++",
+  identity: "aiPulseWorldAdminPanel-v20-Immortal-Evo++++",
 
   evo: Object.freeze({
     deterministic: true,
@@ -20,20 +20,27 @@ export const PulseWorldAdminMeta = Object.freeze({
     readOnly: true,
     multiInstanceReady: true,
     diagnosticsArteryAware: true,
-    epoch: "16-Immortal-Evo+++",
+    epoch: "20-Immortal-Evo++++",
+
     adminConsole: true,
     introspectionTools: true,
     evidenceAware: true,
     multiMindAware: true,
     pulseGovernorAware: true,
-    aiAuditAware: true
+    aiAuditAware: true,
+
+    advantageFieldAware: true,
+    speedFieldAware: true,
+    experienceFieldAware: true,
+    chunkCachePrewarmAware: true
   }),
 
   contract: Object.freeze({
     purpose: Object.freeze([
       "Provide a rich, owner-facing PulseWorld Admin Panel model",
-      "Expose pulse, mind, performance, security, and evidence views",
+      "Expose pulse, mind, performance, security, evidence, and advantage views",
       "Integrate with diagnostics and evidence organs",
+      "Surface advantage/speed/experience fields for owner control",
       "Stay read-only and identity-safe"
     ]),
     never: Object.freeze([
@@ -109,7 +116,10 @@ const ICONS = Object.freeze({
   governor: "sliders",
   admin: "crown",
   aiEvidence: "scale",
-  aiDrift: "waves"
+  aiDrift: "waves",
+  advantage: "sparkles",
+  speed: "gauge",
+  experience: "orbit"
 });
 
 // ============================================================================
@@ -206,6 +216,51 @@ function colorForEvidenceBucket(bucket) {
   }
 }
 
+function colorForAdvantageBucket(bucket) {
+  switch (bucket) {
+    case "dominant":
+      return COLORS.accentGreen;
+    case "strong":
+      return COLORS.accentCyan;
+    case "present":
+      return COLORS.accentAmber;
+    case "weak":
+      return COLORS.accentPink;
+    default:
+      return COLORS.textSecondary;
+  }
+}
+
+function colorForSpeedBucket(bucket) {
+  switch (bucket) {
+    case "blazing":
+      return COLORS.accentGreen;
+    case "fast":
+      return COLORS.accentCyan;
+    case "steady":
+      return COLORS.accentAmber;
+    case "slow":
+      return COLORS.accentPink;
+    default:
+      return COLORS.textSecondary;
+  }
+}
+
+function colorForExperienceBucket(bucket) {
+  switch (bucket) {
+    case "legendary":
+      return COLORS.accentGreen;
+    case "expert":
+      return COLORS.accentCyan;
+    case "seasoned":
+      return COLORS.accentAmber;
+    case "novice":
+      return COLORS.accentPink;
+    default:
+      return COLORS.textSecondary;
+  }
+}
+
 // ============================================================================
 //  CORE PANEL SECTION BUILDERS
 // ============================================================================
@@ -262,7 +317,7 @@ function buildHeaderSection({ ownerName = "Owner", mode = {}, organism = {} }) {
 
 // ---------------------------------------------------------------------------
 
-function buildHealthSection({ artery = {}, diagnostics = {}, aiEvidence = {} }) {
+function buildHealthSection({ artery = {}, diagnostics = {}, aiEvidence = {}, aiAdvantage = {}, aiSpeed = {}, aiExperience = {} }) {
   const organism = artery.organism || {};
   const pressure = organism.pressure || 0;
   const pressureBucket = organism.pressureBucket || bucketPressure(pressure);
@@ -286,10 +341,22 @@ function buildHealthSection({ artery = {}, diagnostics = {}, aiEvidence = {} }) 
   const omissionPct = Math.round((aiEvidence.omissionPct || 0) * 100);
   const driftPct = Math.round((aiEvidence.drift || 0) * 100);
 
+  const advantageScore = aiAdvantage.score || 0;
+  const advantageBucket = aiAdvantage.bucket || "none";
+  const advantageLabel = aiAdvantage.label || "Advantage";
+
+  const speedScore = aiSpeed.score || 0;
+  const speedBucket = aiSpeed.bucket || "idle";
+  const speedLabel = aiSpeed.label || "Speed";
+
+  const experienceScore = aiExperience.score || 0;
+  const experienceBucket = aiExperience.bucket || "none";
+  const experienceLabel = aiExperience.label || "Experience";
+
   return Object.freeze({
     id: "organism-health",
     type: "cards-row",
-    title: "Organism Health, Pressure & AI Evidence",
+    title: "Organism Health, Pressure, Evidence & Advantage Fields",
     icon: ICONS.health,
     cards: [
       {
@@ -368,6 +435,63 @@ function buildHealthSection({ artery = {}, diagnostics = {}, aiEvidence = {} }) 
             : evidenceBucket === "weak"
             ? `Weak alignment. Mismatch ${mismatchPct}%, omission ${omissionPct}%, drift ${driftPct}%.`
             : `Critical or unknown alignment. Mismatch ${mismatchPct}%, omission ${omissionPct}%, drift ${driftPct}%.`
+      },
+      {
+        id: "ai-advantage",
+        title: advantageLabel,
+        icon: ICONS.advantage,
+        value: Math.round(advantageScore * 100),
+        unit: "%",
+        bucket: advantageBucket,
+        color: colorForAdvantageBucket(advantageBucket),
+        description:
+          advantageBucket === "dominant"
+            ? "Strong systemic advantage active."
+            : advantageBucket === "strong"
+            ? "Clear advantage present."
+            : advantageBucket === "present"
+            ? "Some advantage available."
+            : advantageBucket === "weak"
+            ? "Minimal advantage — can be improved."
+            : "No measurable advantage yet."
+      },
+      {
+        id: "ai-speed",
+        title: speedLabel,
+        icon: ICONS.speed,
+        value: Math.round(speedScore * 100),
+        unit: "%",
+        bucket: speedBucket,
+        color: colorForSpeedBucket(speedBucket),
+        description:
+          speedBucket === "blazing"
+            ? "Peak throughput and responsiveness."
+            : speedBucket === "fast"
+            ? "High performance under load."
+            : speedBucket === "steady"
+            ? "Stable performance."
+            : speedBucket === "slow"
+            ? "Slow under current load."
+            : "Idle or no signal."
+      },
+      {
+        id: "ai-experience",
+        title: experienceLabel,
+        icon: ICONS.experience,
+        value: Math.round(experienceScore * 100),
+        unit: "%",
+        bucket: experienceBucket,
+        color: colorForExperienceBucket(experienceBucket),
+        description:
+          experienceBucket === "legendary"
+            ? "Extremely rich experience history."
+            : experienceBucket === "expert"
+            ? "Deep experience accumulated."
+            : experienceBucket === "seasoned"
+            ? "Solid experience base."
+            : experienceBucket === "novice"
+            ? "Early-stage experience."
+            : "No meaningful experience yet."
       }
     ]
   });
@@ -475,7 +599,7 @@ function buildPulseControlSection({ mode = {}, capabilities = {} }) {
 function buildEarnSection({ earn = {} }) {
   const totalEarn = earn.totalEarn || 0;
   const dailyEarn = earn.dailyEarn || 0;
-  const earnTrend = earn.trend || 0; // positive or negative
+  const earnTrend = earn.trend || 0;
   const trendPositive = earnTrend >= 0;
 
   return Object.freeze({
@@ -536,7 +660,7 @@ function buildAIMindsSection({ aiMinds = [], mode = {}, aiActivity = [] }) {
 
   const items = aiMinds.map((ai) => {
     const archetype = archetypeForAI(ai);
-    const status = ai.status || "idle"; // idle | active | readOnly | isolated
+    const status = ai.status || "idle";
     const lane = ai.lane || "unknown";
     const role = ai.role || "unknown";
     const canAct = status === "active" && aiMode === "active" && mindMode === "multi";
@@ -698,7 +822,7 @@ function buildDiagnosticsSection({ adminDiagnosticsModel = null }) {
       title: "Diagnostics",
       icon: ICONS.diagnostics,
       description:
-        "Admin Diagnostics organ not attached. Link it to see summary cards, issues, AI activity, and evidence."
+        "Admin Diagnostics organ not attached. Link it to see summary cards, issues, AI activity, evidence, and advantage fields."
     });
   }
 
@@ -718,7 +842,7 @@ function buildDiagnosticsSection({ adminDiagnosticsModel = null }) {
 }
 
 // ============================================================================
-//  PUBLIC API — Create PulseWorld Admin Panel Organ (v16‑IMMORTAL‑EVO+++)
+//  PUBLIC API — Create PulseWorld Admin Panel Organ (v20‑IMMORTAL‑EVO++++)
 // ============================================================================
 
 export function createPulseWorldAdminPanel(context = {}) {
@@ -786,6 +910,7 @@ export function createPulseWorldAdminPanel(context = {}) {
   };
 
   function prewarm() {
+    // symbolic-only prewarm hook for future chunk cache / route prewarm
     return true;
   }
 
@@ -794,7 +919,10 @@ export function createPulseWorldAdminPanel(context = {}) {
     const health = buildHealthSection({
       artery,
       diagnostics,
-      aiEvidence: adminDiagnosticsModel?.artery?.aiEvidence || {}
+      aiEvidence: adminDiagnosticsModel?.artery?.aiEvidence || {},
+      aiAdvantage: adminDiagnosticsModel?.artery?.aiAdvantage || {},
+      aiSpeed: adminDiagnosticsModel?.artery?.aiSpeed || {},
+      aiExperience: adminDiagnosticsModel?.artery?.aiExperience || {}
     });
     const pulseControl = buildPulseControlSection({ mode, capabilities });
     const earnPanel = buildEarnSection({ earn });

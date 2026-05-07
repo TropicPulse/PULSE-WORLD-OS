@@ -106,7 +106,7 @@ import { getPulseTouchContext } from "../../PULSE-UI/PULSE-TOUCH.js";
 // Runtime / scheduler / overmind
 import { getPulseRuntimeContext } from "../PULSE-X/PulseWorldRuntime-v20.js";
 import { getPulseSchedulerContext } from "../PULSE-X/PulseWorldScheduler-v20.js";
-import { getPulseOvermindContext } from "../PULSE-AI/aiOvermindPrime.js";
+import { getPulseOvermindContext } from "../PULSE-AI/aiOvermindPrime-v20.js";
 
 // (Optional) Earn / treasury integration hook (symbolic only)
 import { getEarnContext } from "../PULSE-EARN/PulseEarn-v16.js";

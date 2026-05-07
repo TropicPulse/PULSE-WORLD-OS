@@ -102,7 +102,7 @@ import { db, admin } from "../../PULSE-BAND/PULSE-X/PulseWorldGenome-v20.js";
 //  • Single internet edge (via NetworkOrgan → route(...))
 //  • Hybrid crown model: OvermindPrime sees heartbeats + AI requests
 // ============================================================================
-import { aiOvermindPrime } from "../../PULSE-BAND/PULSE-AI/aiOvermindPrime.js";
+import { aiOvermindPrime } from "../../PULSE-BAND/PULSE-AI/aiOvermindPrime-v20.js";
 import { createForwardEngine } from "../../PULSE-BAND/PULSE-ENGINE/ForwardMotion-v16.js";
 import { createBackwardEngine } from "../../PULSE-BAND/PULSE-ENGINE/BackwardMotion-v16.js";
 import PulseUIErrors from "../_FRONTEND/PulseUIErrors-v16.js";

@@ -1,17 +1,17 @@
 // ============================================================================
-//  PULSE OS v16‑IMMORTAL‑EVO++ — ADMIN PANEL DIAGNOSTICS ORGAN
-//  Summary Cards • Issue Table • Trace • Meta • Diagnostics-Artery v4
-//  AI Evidence View • AI Activity View • Multi/One Mind Aware
-//  PURE OBSERVATION. ZERO MUTATION. ZERO IDENTITY LEAKAGE.
+//  PULSE OS v20‑IMMORTAL‑EVO++++ — ADMIN PANEL DIAGNOSTICS ORGAN
+//  Summary Cards • Issue Table • Trace • Meta • Diagnostics-Artery v5
+//  AI Evidence View • AI Activity View • Advantage/Speed/Experience Fields
+//  Multi/One Mind Aware • PURE OBSERVATION. ZERO MUTATION. ZERO IDENTITY LEAKAGE.
 // ============================================================================
 
 /*
 AI_EXPERIENCE_META = {
   identity: "aiAdminPanel",
-  version: "v16-Immortal-Evo++",
+  version: "v20-Immortal-Evo++++",
   layer: "ai_tools",
   role: "ai_admin_console",
-  lineage: "aiAdminPanel-v10 → v12 → v14-Immortal → v16-Immortal-Evo++",
+  lineage: "aiAdminPanel-v10 → v12 → v14-Immortal → v16-Immortal-Evo++ → v20-Immortal-Evo++++",
 
   evo: {
     adminConsole: true,
@@ -30,7 +30,12 @@ AI_EXPERIENCE_META = {
     evidenceAware: true,
     aiAuditAware: true,
     multiMindAware: true,
-    pulseGovernorAware: true
+    pulseGovernorAware: true,
+
+    advantageFieldAware: true,
+    speedFieldAware: true,
+    experienceFieldAware: true,
+    chunkCachePrewarmAware: true
   },
 
   contract: {
@@ -50,8 +55,8 @@ AI_EXPERIENCE_META = {
 export const AdminDiagnosticsMeta = Object.freeze({
   layer: "PulseAIAdminDiagnosticsFrame",
   role: "ADMIN_DIAGNOSTICS_ORGAN",
-  version: "16-Immortal-Evo++",
-  identity: "aiAdminDiagnostics-v16-Immortal-Evo++",
+  version: "20-Immortal-Evo++++",
+  identity: "aiAdminDiagnostics-v20-Immortal-Evo++++",
 
   evo: Object.freeze({
     deterministic: true,
@@ -62,12 +67,17 @@ export const AdminDiagnosticsMeta = Object.freeze({
     readOnly: true,
     multiInstanceReady: true,
     diagnosticsArteryAware: true,
-    epoch: "16-Immortal-Evo++",
+    epoch: "20-Immortal-Evo++++",
 
     evidenceAware: true,
     aiAuditAware: true,
     multiMindAware: true,
-    pulseGovernorAware: true
+    pulseGovernorAware: true,
+
+    advantageFieldAware: true,
+    speedFieldAware: true,
+    experienceFieldAware: true,
+    chunkCachePrewarmAware: true
   }),
 
   contract: Object.freeze({
@@ -75,6 +85,7 @@ export const AdminDiagnosticsMeta = Object.freeze({
       "Transform diagnostics into UI-facing structures",
       "Provide summary cards, issue lists, and trace output",
       "Expose AI evidence and AI activity summaries for admin audit",
+      "Expose advantage/speed/experience fields for owner advantage view",
       "Support admin dashboards and debugging tools",
       "Stay read-only and identity-safe"
     ]),
@@ -99,7 +110,7 @@ export const AdminDiagnosticsMeta = Object.freeze({
 });
 
 // ============================================================================
-// HELPERS — PRESSURE + BUCKETS + EVIDENCE BUCKETS
+// HELPERS — PRESSURE + BUCKETS + EVIDENCE BUCKETS + ADVANTAGE FIELDS
 // ============================================================================
 
 function extractBinaryPressure(binaryVitals = {}) {
@@ -134,15 +145,39 @@ function bucketDrift(drift) {
   return "severe";
 }
 
+function bucketAdvantage(score) {
+  if (score >= 0.9) return "dominant";
+  if (score >= 0.7) return "strong";
+  if (score >= 0.5) return "present";
+  if (score > 0)    return "weak";
+  return "none";
+}
+
+function bucketSpeed(score) {
+  if (score >= 0.9) return "blazing";
+  if (score >= 0.7) return "fast";
+  if (score >= 0.5) return "steady";
+  if (score > 0)    return "slow";
+  return "idle";
+}
+
+function bucketExperience(score) {
+  if (score >= 0.9) return "legendary";
+  if (score >= 0.7) return "expert";
+  if (score >= 0.5) return "seasoned";
+  if (score > 0)    return "novice";
+  return "none";
+}
+
 // ============================================================================
-//  PUBLIC API — Create Admin Diagnostics Organ (v16‑IMMORTAL‑EVO++)
+//  PUBLIC API — Create Admin Diagnostics Organ (v20‑IMMORTAL‑EVO++++)
 // ============================================================================
 
 export function createAdminDiagnosticsOrgan(context = {}) {
   const diagnostics = context?.diagnostics || {};
   const trace = Array.isArray(context?.trace) ? [...context.trace] : [];
 
-  // NEW: AI evidence + AI activity inputs (read-only views)
+  // AI evidence + AI activity inputs (read-only views)
   const evidence = context?.evidence || {
     match: 0,
     mismatch: 0,
@@ -154,12 +189,6 @@ export function createAdminDiagnosticsOrgan(context = {}) {
   const aiActivity = Array.isArray(context?.aiActivity)
     ? context.aiActivity
     : [];
-  // aiActivity item shape (read-only):
-  // {
-  //   id, role, lane, tags, status, lastAction, lastAnswerId,
-  //   evidence: { matchPct, mismatchPct, omissionPct, drift },
-  //   mode: { canAct, readOnly, isolated }
-  // }
 
   const governorMode = context?.governorMode || {
     pulseMode: "normal", // normal | elevated | fallback
@@ -167,12 +196,32 @@ export function createAdminDiagnosticsOrgan(context = {}) {
     aiMode: "active"     // active | readOnly
   };
 
+  // Advantage / speed / experience fields (owner advantage view)
+  const advantageField = context?.advantageField || {
+    score: 0,
+    label: "Advantage",
+    lastUpdate: null
+  };
+
+  const speedField = context?.speedField || {
+    score: 0,
+    label: "Speed",
+    lastUpdate: null
+  };
+
+  const experienceField = context?.experienceField || {
+    score: 0,
+    label: "Experience",
+    lastUpdate: null
+  };
+
   function prewarm() {
+    // symbolic-only prewarm hook for future chunk cache integration
     return true;
   }
 
   // --------------------------------------------------------------------------
-  // SUMMARY CARDS v4 — binary-pressure-aware + evidence-aware
+  // SUMMARY CARDS v5 — binary-pressure-aware + evidence-aware + advantage fields
   // --------------------------------------------------------------------------
   function buildSummaryCards(binaryVitals = {}) {
     const mismatchCount = diagnostics.mismatches?.length || 0;
@@ -193,6 +242,14 @@ export function createAdminDiagnosticsOrgan(context = {}) {
     const omissionPct = (evidence.omission || 0) / totalEvidence;
     const evidenceBucket = bucketEvidenceMatch(matchPct);
     const driftBucket = bucketDrift(evidence.drift || 0);
+
+    const advantageScore = advantageField.score || 0;
+    const speedScore = speedField.score || 0;
+    const experienceScore = experienceField.score || 0;
+
+    const advantageBucket = bucketAdvantage(advantageScore);
+    const speedBucket = bucketSpeed(speedScore);
+    const experienceBucket = bucketExperience(experienceScore);
 
     return Object.freeze([
       {
@@ -247,7 +304,6 @@ export function createAdminDiagnosticsOrgan(context = {}) {
         severity: drift ? "error" : "ok",
         description: drift ? "Schema drift detected." : "No schema drift."
       },
-      // NEW: AI evidence summary card
       {
         id: "ai-evidence",
         title: "AI Evidence Alignment",
@@ -270,12 +326,81 @@ export function createAdminDiagnosticsOrgan(context = {}) {
             : evidenceBucket === "weak"
             ? "Significant mismatches/omissions — audit recommended."
             : "Critical misalignment — treat AI outputs as untrusted until reviewed."
+      },
+      {
+        id: "advantage-field",
+        title: advantageField.label || "Advantage",
+        icon: "sparkles",
+        severity:
+          advantageBucket === "dominant" || advantageBucket === "strong"
+            ? "ok"
+            : advantageBucket === "present"
+            ? "info"
+            : "weak",
+        score: advantageScore,
+        bucket: advantageBucket,
+        description:
+          advantageBucket === "dominant"
+            ? "Strong systemic advantage active."
+            : advantageBucket === "strong"
+            ? "Clear advantage present."
+            : advantageBucket === "present"
+            ? "Some advantage available."
+            : advantageBucket === "weak"
+            ? "Minimal advantage — can be improved."
+            : "No measurable advantage yet."
+      },
+      {
+        id: "speed-field",
+        title: speedField.label || "Speed",
+        icon: "gauge",
+        severity:
+          speedBucket === "blazing" || speedBucket === "fast"
+            ? "ok"
+            : speedBucket === "steady"
+            ? "info"
+            : "weak",
+        score: speedScore,
+        bucket: speedBucket,
+        description:
+          speedBucket === "blazing"
+            ? "Peak throughput and responsiveness."
+            : speedBucket === "fast"
+            ? "High performance under load."
+            : speedBucket === "steady"
+            ? "Stable performance."
+            : speedBucket === "slow"
+            ? "Slow under current load."
+            : "Idle or no signal."
+      },
+      {
+        id: "experience-field",
+        title: experienceField.label || "Experience",
+        icon: "orbit",
+        severity:
+          experienceBucket === "legendary" || experienceBucket === "expert"
+            ? "ok"
+            : experienceBucket === "seasoned"
+            ? "info"
+            : "weak",
+        score: experienceScore,
+        bucket: experienceBucket,
+        description:
+          experienceBucket === "legendary"
+            ? "Extremely rich experience history."
+            : experienceBucket === "expert"
+            ? "Deep experience accumulated."
+            : experienceBucket === "seasoned"
+            ? "Solid experience base."
+            : experienceBucket === "novice"
+            ? "Early-stage experience."
+            : "No meaningful experience yet."
       }
     ]);
   }
 
   // --------------------------------------------------------------------------
-  // ISSUE LIST v4 — binary-pressure-aware + evidence-aware
+  // ISSUE LIST v5 — binary-pressure-aware + evidence-aware
   // --------------------------------------------------------------------------
   function buildIssueList(binaryVitals = {}) {
     const issues = [];
@@ -327,7 +452,6 @@ export function createAdminDiagnosticsOrgan(context = {}) {
       });
     }
 
-    // NEW: evidence-related issues (high-level)
     const totalEvidence =
       (evidence.match || 0) +
       (evidence.mismatch || 0) +
@@ -370,8 +494,8 @@ export function createAdminDiagnosticsOrgan(context = {}) {
   }
 
   // --------------------------------------------------------------------------
-  // ADMIN DIAGNOSTICS ARTERY v4 — symbolic-only, deterministic
-  //  Now also aware of AI evidence + governor mode.
+  // ADMIN DIAGNOSTICS ARTERY v5 — symbolic-only, deterministic
+  //  Now also aware of AI evidence + governor mode + advantage/speed/experience.
 // --------------------------------------------------------------------------
   function diagnosticsArtery({ binaryVitals = {} } = {}) {
     const mismatchCount = diagnostics.mismatches?.length || 0;
@@ -403,6 +527,10 @@ export function createAdminDiagnosticsOrgan(context = {}) {
     const evidenceBucket = bucketEvidenceMatch(matchPct);
     const driftBucket = bucketDrift(evidence.drift || 0);
 
+    const advantageScore = advantageField.score || 0;
+    const speedScore = speedField.score || 0;
+    const experienceScore = experienceField.score || 0;
+
     return {
       organism: {
         pressure,
@@ -422,6 +550,21 @@ export function createAdminDiagnosticsOrgan(context = {}) {
         drift: evidence.drift || 0,
         driftBucket
       },
+      aiAdvantage: {
+        score: advantageScore,
+        bucket: bucketAdvantage(advantageScore),
+        label: advantageField.label || "Advantage"
+      },
+      aiSpeed: {
+        score: speedScore,
+        bucket: bucketSpeed(speedScore),
+        label: speedField.label || "Speed"
+      },
+      aiExperience: {
+        score: experienceScore,
+        bucket: bucketExperience(experienceScore),
+        label: experienceField.label || "Experience"
+      },
       governorMode: {
         pulseMode: governorMode.pulseMode || "normal",
         mindMode: governorMode.mindMode || "multi",
@@ -434,7 +577,6 @@ export function createAdminDiagnosticsOrgan(context = {}) {
   // AI ACTIVITY SUMMARY — symbolic-only, deterministic
   // --------------------------------------------------------------------------
   function buildAIActivitySummary() {
-    // This is purely descriptive: what the AIs are doing, how trusted they are.
     const items = aiActivity.map((ai) => {
       const ev = ai.evidence || {};
       const total =
@@ -471,14 +613,14 @@ export function createAdminDiagnosticsOrgan(context = {}) {
   }
 
   // --------------------------------------------------------------------------
-  // PUBLIC ADMIN DIAGNOSTICS API (v16‑IMMORTAL‑EVO++)
-  // --------------------------------------------------------------------------
+  // PUBLIC ADMIN DIAGNOSTICS API (v20‑IMMORTAL‑EVO++++)
+// --------------------------------------------------------------------------
   return Object.freeze({
     meta: AdminDiagnosticsMeta,
     prewarm,
 
     log(message) {
-      context?.logStep?.(`aiAdminDiagnostics-v16: ${message}`);
+      context?.logStep?.(`aiAdminDiagnostics-v20: ${message}`);
     },
 
     buildModel({ binaryVitals = {}, meta = {} } = {}) {
