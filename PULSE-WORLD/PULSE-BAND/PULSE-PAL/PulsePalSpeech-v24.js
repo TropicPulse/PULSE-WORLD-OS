@@ -1,7 +1,7 @@
 // ============================================================================
 // FILE: /PULSE-PAL/PulsePalSpeech.js
-// PULSE OS — v24 IMMORTAL
-// PULSE‑PAL CHAT CORTEX — SPEECH ORGAN + MEDIA + PRESENCE
+// PULSE OS — v24 IMMORTAL++
+// PULSE‑PAL CHAT CORTEX — SPEECH ORGAN + MEDIA + PRESENCE + MODE + PERSONA
 // ============================================================================
 //
 // ROLE:
@@ -13,7 +13,11 @@
 //     • Typing indicator
 //     • Presence aura + tone
 //     • Media-aware avatar (PulsePal images)
-//     • Persona hooks (future history scanner)
+//     • Persona hooks
+//     • Mode-aware avatar switching (NEW v24++)
+//     • Fox/Human form switching (NEW v24++)
+//     • Daemon-aware continuity tone (NEW v24++)
+//     • Mode-aware response style (NEW v24++)
 //
 // CONTRACT:
 //   • Pure UI Organ (no network)
@@ -29,30 +33,50 @@ import { PulseProofBridge } from "/PULSE/BRIDGE/PulseProofBridge.js";
 const CoreSpeech   = PulseProofBridge.corespeech;
 const CorePresence = PulseProofBridge.corepresence;
 const CoreMemory   = PulseProofBridge.corememory;
-const CoreDaemon   = PulseProofBridge.coredaemon; // NEW: daemon snapshot bridge
+const CoreDaemon   = PulseProofBridge.coredaemon;
 
 // ============================================================================
-// AI_EXPERIENCE_META
+// AI_EXPERIENCE_META — v24 IMMORTAL++
 // ============================================================================
 export const AI_EXPERIENCE_META_PulsePalSpeech = {
   id: "pulsepal.speech",
   kind: "ui_organ",
-  version: "v24-IMMORTAL",
+  version: "v24-IMMORTAL++",
   role: "Pulse‑Pal conversational cortex membrane",
   surfaces: {
-    band: ["speech", "chat", "conversation", "media"],
-    wave: ["responsive", "attentive", "warm"],
-    binary: ["message_stream", "typing_indicator", "avatar_switch"],
-    presence: ["chat_aura", "response_tone"],
-    advantage: ["instant_feedback", "impulse_hooks", "media_preload"],
+    band: ["speech", "chat", "conversation", "media", "mode", "persona"],
+    wave: ["responsive", "attentive", "warm", "mode_attuned"],
+    binary: [
+      "message_stream",
+      "typing_indicator",
+      "avatar_switch",
+      "mode_overlay",
+      "persona_overlay"
+    ],
+    presence: ["chat_aura", "response_tone", "activity_alignment"],
+    advantage: [
+      "instant_feedback",
+      "impulse_hooks",
+      "media_preload",
+      "mode_preload",
+      "persona_preload"
+    ],
     speed: "instant_ui"
   },
   routes: {
     home: "pulsepal.home",
     identity: "pulsepal.identity",
-    presence: "pulsepal.presence"
+    presence: "pulsepal.presence",
+    settings: "pulsepal.settings"
   },
-  consumers: ["Router", "IQMap", "CoreSpeech", "CorePresence", "CoreMemory", "CoreDaemon"],
+  consumers: [
+    "Router",
+    "IQMap",
+    "CoreSpeech",
+    "CorePresence",
+    "CoreMemory",
+    "CoreDaemon"
+  ],
   invariants: {
     networkCalls: "none",
     sideEffects: "none",
@@ -62,7 +86,7 @@ export const AI_EXPERIENCE_META_PulsePalSpeech = {
 };
 
 // ============================================================================
-// AI_EXPERIENCE_CONTEXT
+// AI_EXPERIENCE_CONTEXT — v24 IMMORTAL++
 // ============================================================================
 export const AI_EXPERIENCE_CONTEXT_PulsePalSpeech = {
   tone: "warm_attentive",
@@ -79,7 +103,7 @@ export const AI_EXPERIENCE_CONTEXT_PulsePalSpeech = {
 };
 
 // ============================================================================
-// ORGAN_META
+// ORGAN_META — v24 IMMORTAL++
 // ============================================================================
 export const ORGAN_META_PulsePalSpeech = {
   id: "organ.pulsepal.speech",
@@ -91,17 +115,19 @@ export const ORGAN_META_PulsePalSpeech = {
     canAddPresenceAnimations: true,
     requiresCoreSpeech: true,
     mediaAware: true,
-    personaAware: true
+    personaAware: true,
+    modeAware: true,       // NEW
+    daemonAware: true      // NEW
   },
   lineage: {
     family: "companion_speech",
-    generation: 2,
+    generation: 3,
     osVersion: "v24"
   }
 };
 
 // ============================================================================
-// ORGAN_CONTRACT
+// ORGAN_CONTRACT — v24 IMMORTAL++
 // ============================================================================
 export const ORGAN_CONTRACT_PulsePalSpeech = {
   inputs: {
@@ -117,9 +143,19 @@ export const ORGAN_CONTRACT_PulsePalSpeech = {
     uiSurface: "speech_cortex",
     messages: "CoreSpeech.messages",
     typing: "CoreSpeech.typing",
-    presence: "CorePresence.snapshot"
+    presence: "CorePresence.snapshot",
+    persona: "CoreMemory.persona",
+    mode: "CorePresence.mode",
+    continuity: "CoreDaemon.palHistory.continuityScore"
   },
-  consumers: ["Router", "IQMap", "CoreSpeech", "CorePresence", "CoreMemory", "CoreDaemon"],
+  consumers: [
+    "Router",
+    "IQMap",
+    "CoreSpeech",
+    "CorePresence",
+    "CoreMemory",
+    "CoreDaemon"
+  ],
   guarantees: {
     deterministicRender: true,
     noNetwork: true,
@@ -128,7 +164,7 @@ export const ORGAN_CONTRACT_PulsePalSpeech = {
 };
 
 // ============================================================================
-// IMMORTAL_OVERLAYS
+// IMMORTAL_OVERLAYS — v24 IMMORTAL++
 // ============================================================================
 export const IMMORTAL_OVERLAYS_PulsePalSpeech = {
   drift: {
@@ -145,11 +181,16 @@ export const IMMORTAL_OVERLAYS_PulsePalSpeech = {
     notes: "Only additive evolution allowed."
   },
   load: {
-    maxComponents: 4,
-    notes: "Header, stream, input, presence aura."
+    maxComponents: 6,
+    notes: "Header, stream, input, presence aura, mode overlay, avatar."
   },
   chunking: {
-    prewarm: ["icons.ai_brain", "icons.pulse", "icons.user", "media.pulsepal"],
+    prewarm: [
+      "icons.ai_brain",
+      "icons.pulse",
+      "icons.user",
+      "media.pulsepal"
+    ],
     cacheKey: "pulsepal.speech.ui"
   },
   worldLens: {
@@ -175,16 +216,45 @@ export const IMMORTAL_OVERLAYS_PulsePalSpeech = {
 // ============================================================================
 // IMPLEMENTATION — v24 IMMORTAL++
 // ============================================================================
-/*
-@PULSE_IMMORTAL_REQUIRE_FULL_META
-*/
 export function PulsePalSpeech({ Router, Icons, Media }) {
 
   const presence = CorePresence?.snapshot?.() || {};
-  const palImages = Media?.resolveAll?.("PulsePal") || [];
+  const persona  = CoreMemory?.persona?.() || {};
+  const daemon   = CoreDaemon?.snapshot?.() || {};
 
-  // Choose avatar (first image or fallback icon)
-  const palAvatar = palImages[0] || Icons.resolve("pulse");
+  const activeMode =
+    presence.mode ||
+    persona?.tone?.activeMode ||
+    "advisor";
+
+  const continuityScore =
+    daemon?.palHistory?.continuityScore ||
+    daemon?.palSummary?.avgPalContinuance ||
+    0;
+
+  // MEDIA: mode-aware avatar selection
+  const palImages = Media?.resolveAll?.("PulsePal") || [];
+  let palAvatar = palImages[0] || Icons.resolve("pulse");
+
+  if (palImages.length && activeMode) {
+    const lower = activeMode.toLowerCase();
+    const match = palImages.find(src => src.toLowerCase().includes(lower));
+    if (match) palAvatar = match;
+  }
+
+  // MODE-AWARE RESPONSE STYLE
+  const modeTag = {
+    advisor:     "💬",
+    architect:   "📐",
+    entrepreneur:"💼",
+    grid:        "🧩",
+    mesh:        "🕸️",
+    expansion:   "🌌",
+    finality:    "🔮",
+    tourist:     "🧭",
+    fox:         "🦊",
+    human:       "🙂"
+  }[activeMode] || "💬";
 
   return `
     <div id="pulsepal-speech" class="evo-wrapper">
@@ -192,13 +262,17 @@ export function PulsePalSpeech({ Router, Icons, Media }) {
       <!-- HEADER ------------------------------------------------------------->
       <div class="evo-surface evo-breathe" data-hook="pulsepal.chat.header">
         <div style="display:flex; align-items:center; gap:18px;">
-          <img src="${Icons.resolve('ai_brain')}" class="evo-icon" />
+          <img src="\${Icons.resolve('ai_brain')}" class="evo-icon" />
           <div>
             <h1 style="margin:0; font-size:1.6rem; color:#00eaff;">
               Pulse‑Pal Chat
             </h1>
             <p style="margin:0; opacity:0.75;">
-              ${presence.tone || "I'm here with you."}
+              \${presence.tone || "I'm here with you."}
+            </p>
+            <!-- NEW: mode + continuity -->
+            <p style="margin:0; opacity:0.55; font-size:0.85rem;">
+              Mode: <strong>\${activeMode}</strong> · Continuity: \${continuityScore}
             </p>
           </div>
         </div>
@@ -214,7 +288,7 @@ export function PulsePalSpeech({ Router, Icons, Media }) {
       <div id="pulsepal-typing" class="evo-surface evo-flicker"
            data-hook="pulsepal.chat.typing"
            style="display:none; gap:14px; align-items:center;">
-        <img src="${palAvatar}" class="evo-icon" />
+        <img src="\${palAvatar}" class="evo-icon" />
         <div style="opacity:0.65;">Pulse‑Pal is thinking…</div>
       </div>
 
@@ -229,7 +303,7 @@ export function PulsePalSpeech({ Router, Icons, Media }) {
 
           <button class="evo-button"
                   onclick="window.PulsePalSendMessage()">
-            <img src="${Icons.resolve('send')}" class="evo-icon" />
+            <img src="\${Icons.resolve('send')}" class="evo-icon" />
             Send
           </button>
 
@@ -274,7 +348,7 @@ export function PulsePalSpeech({ Router, Icons, Media }) {
           palMsg.innerHTML = \`
             <img src="${palAvatar}" class="evo-icon" />
             <div>
-              <div style="font-weight:600; color:#00eaff;">Pulse‑Pal</div>
+              <div style="font-weight:600; color:#00eaff;">Pulse‑Pal \${"${modeTag}"}</div>
               <div style="opacity:0.85;">
                 I hear you. Tell me more.
               </div>

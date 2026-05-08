@@ -1,7 +1,7 @@
 // ============================================================================
 // FILE: /PULSE-PAL/PulsePalPersona-v24.js
 // PULSE OS — v24 IMMORTAL
-// PULSE‑PAL PERSONA ENGINE — PERSONALITY + TONE + CONTINUITY
+// PULSE‑PAL PERSONA ENGINE — PERSONALITY + TONE + CONTINUITY + MODE
 // ============================================================================
 //
 // ROLE:
@@ -9,9 +9,10 @@
 //     • Memory Graph
 //     • Timeline
 //     • Entities + Topics
-//     • Presence Snapshot
+//     • Presence Snapshot (tone, activity, expression, mode)
 //     • Speech Patterns
-//     • Daemon State
+//     • Daemon State (palSummary, palHistory, aiMeta)
+//     • (Optionally) Mode Engine snapshot (if present globally)
 //
 //   Produces:
 //     • Persona Profile
@@ -19,21 +20,21 @@
 //     • Behavior Profile
 //     • Continuity Profile
 //     • Identity Reinforcement Profile
+//     • Mode Influence Profile (NEW v24)
 //
 // CONTRACT:
 //   • Pure compute organ (no network)
 //   • Deterministic
-//   • Evolvable via Memory Engine
-//   • Zero side effects
-//
+//   • Evolvable via Memory Engine / Mode Engine
+//   • Zero side effects (except CoreMemory.setPersona)
 // ============================================================================
 
 export class PulsePalPersona {
   constructor({ CoreMemory, CorePresence, CoreSpeech, CoreDaemon }) {
-    this.CoreMemory  = CoreMemory;
+    this.CoreMemory   = CoreMemory;
     this.CorePresence = CorePresence;
-    this.CoreSpeech  = CoreSpeech;
-    this.CoreDaemon  = CoreDaemon;
+    this.CoreSpeech   = CoreSpeech;
+    this.CoreDaemon   = CoreDaemon;
 
     this.snapshot = {
       persona: {},
@@ -53,36 +54,63 @@ export class PulsePalPersona {
     const entities  = graph.entities || {};
     const topics    = graph.topics || {};
     const presence  = this.CorePresence?.snapshot?.() || {};
-    const speech    = this.CoreSpeech?.messages?.() || [];
+    const speech    = this.CoreSpeech?.messages?.() || {};
     const daemon    = this.CoreDaemon?.snapshot?.() || {};
 
+    // Optional: Mode Engine snapshot (if present globally)
+    let modeSnapshot = null;
+    try {
+      if (globalThis.PulsePalModeEngine && typeof globalThis.PulsePalModeEngine.getLast === "function") {
+        modeSnapshot = globalThis.PulsePalModeEngine.getLast();
+      }
+    } catch {
+      modeSnapshot = null;
+    }
+
     // Persona traits
-    const persona = this.computePersonaTraits({ timeline, entities, topics, presence, speech });
+    const persona = this.computePersonaTraits({
+      timeline,
+      entities,
+      topics,
+      presence,
+      speech,
+      modeSnapshot
+    });
 
     // Tone baseline
-    const tone = this.computeToneProfile({ presence, speech });
+    const tone = this.computeToneProfile({ presence, speech, modeSnapshot });
 
     // Behavior model
-    const behavior = this.computeBehaviorProfile({ persona, tone });
+    const behavior = this.computeBehaviorProfile({ persona, tone, modeSnapshot });
 
     // Continuity model
-    const continuity = this.computeContinuityProfile({ timeline, topics });
+    const continuity = this.computeContinuityProfile({ timeline, topics, daemon });
 
     // Identity reinforcement
-    const identity = this.computeIdentityProfile({ daemon, persona, tone });
+    const identity = this.computeIdentityProfile({ daemon, persona, tone, modeSnapshot });
 
     this.snapshot = { persona, tone, behavior, continuity, identity };
-    this.CoreMemory.setPersona(this.snapshot);
+
+    if (this.CoreMemory && typeof this.CoreMemory.setPersona === "function") {
+      this.CoreMemory.setPersona(this.snapshot);
+    }
 
     return this.snapshot;
   }
 
   // ==========================================================================
-  // PERSONA TRAITS
-  // ==========================================================================
-  computePersonaTraits({ timeline, entities, topics, presence, speech }) {
-    const totalMessages = speech.length;
+  // PERSONA TRAITS (NOW MODE-AWARE)
+// ==========================================================================
+  computePersonaTraits({ timeline, entities, topics, presence, speech, modeSnapshot }) {
+    const totalMessages  = speech.length || 0;
     const emotionalWords = this.countEmotionalWords(speech);
+
+    const activeMode  = modeSnapshot?.activeMode || presence.mode || presence.activeMode || null;
+    const modeWeights = modeSnapshot?.weights || {};
+    const gridWeight      = modeWeights.grid || 0;
+    const architectWeight = modeWeights.architect || 0;
+    const entrepreneurW   = modeWeights.entrepreneur || 0;
+    const touristW        = modeWeights.tourist || 0;
 
     return {
       warmth:
@@ -93,9 +121,9 @@ export class PulsePalPersona {
           : 0.5,
 
       focus:
-        presence.activity === "focused"
+        presence.activity === "focused" || presence.activity === "thinking"
           ? 1
-          : topics.world > 3
+          : topics.world > 3 || gridWeight + architectWeight > 0.5
           ? 0.8
           : 0.5,
 
@@ -103,7 +131,7 @@ export class PulsePalPersona {
         presence.expression || "medium",
 
       curiosity:
-        topics.world + topics.tasks + topics.memory > 5
+        topics.world + topics.tasks + topics.memory > 5 || touristW > 0.3
           ? "high"
           : "medium",
 
@@ -111,39 +139,74 @@ export class PulsePalPersona {
         totalMessages > 20 ? "deep" : "light",
 
       emotionalAttunement:
-        emotionalWords > 10 ? "high" : "medium"
+        emotionalWords > 10 ? "high" : "medium",
+
+      // NEW: mode influence surface
+      modeInfluence: {
+        activeMode: activeMode || "advisor",
+        gridBias: gridWeight,
+        architectBias: architectWeight,
+        entrepreneurBias: entrepreneurW,
+        touristBias: touristW
+      }
     };
   }
 
   // ==========================================================================
-  // TONE PROFILE
-  // ==========================================================================
-  computeToneProfile({ presence, speech }) {
+  // TONE PROFILE (MODE-INFLUENCED)
+// ==========================================================================
+  computeToneProfile({ presence, speech, modeSnapshot }) {
     const last = speech[speech.length - 1];
 
+    let baseline = presence.tone || "neutral";
+    const activeMode = modeSnapshot?.activeMode || presence.mode || presence.activeMode || null;
+
+    // Mode can gently bend baseline tone
+    if (activeMode === "grid" || activeMode === "architect") {
+      if (baseline === "warm") baseline = "neutral";
+      if (baseline === "neutral") baseline = "technical";
+    }
+
+    if (activeMode === "tourist") {
+      if (baseline === "technical") baseline = "neutral";
+    }
+
     return {
-      baseline: presence.tone || "neutral",
+      baseline,
       lastUserTone: last?.tone || "neutral",
       lastMessage: last?.text || "",
       activity: presence.activity || "active",
-      expression: presence.expression || "medium"
+      expression: presence.expression || "medium",
+      activeMode: activeMode || "advisor"
     };
   }
 
   // ==========================================================================
-  // BEHAVIOR PROFILE
-  // ==========================================================================
-  computeBehaviorProfile({ persona, tone }) {
+  // BEHAVIOR PROFILE (MODE-AWARE)
+// ==========================================================================
+  computeBehaviorProfile({ persona, tone, modeSnapshot }) {
+    const activeMode = modeSnapshot?.activeMode || tone.activeMode || "advisor";
+
+    let replyStyle =
+      persona.warmth > 0.8
+        ? "warm"
+        : persona.focus > 0.8
+        ? "precise"
+        : "balanced";
+
+    if (activeMode === "grid" || activeMode === "architect") {
+      replyStyle = "structured";
+    } else if (activeMode === "entrepreneur") {
+      replyStyle = "energetic";
+    } else if (activeMode === "finality") {
+      replyStyle = "concise";
+    }
+
     return {
       replySpeed:
         tone.activity === "active" ? "fast" : "steady",
 
-      replyStyle:
-        persona.warmth > 0.8
-          ? "warm"
-          : persona.focus > 0.8
-          ? "precise"
-          : "balanced",
+      replyStyle,
 
       detailLevel:
         persona.conversationalDepth === "deep" ? "high" : "medium",
@@ -156,33 +219,44 @@ export class PulsePalPersona {
   }
 
   // ==========================================================================
-  // CONTINUITY PROFILE
-  // ==========================================================================
-  computeContinuityProfile({ timeline, topics }) {
+  // CONTINUITY PROFILE (DAEMON-AWARE)
+// ==========================================================================
+  computeContinuityProfile({ timeline, topics, daemon }) {
+    const palHistory = daemon?.palHistory || {};
+    const historyContinuityScore = palHistory.continuityScore || 0;
+
+    const baseScore =
+      timeline.length +
+      Object.keys(topics).length * 5;
+
+    const continuityScore = baseScore + historyContinuityScore;
+
     return {
       memoryStrength:
         timeline.length > 50 ? "strong" : "medium",
 
       topicAnchors: Object.keys(topics),
 
-      continuityScore:
-        timeline.length +
-        Object.keys(topics).length * 5
+      continuityScore
     };
   }
 
   // ==========================================================================
-  // IDENTITY PROFILE
-  // ==========================================================================
-  computeIdentityProfile({ daemon, persona, tone }) {
+  // IDENTITY PROFILE (INCLUDES MODE SIGNATURE)
+// ==========================================================================
+  computeIdentityProfile({ daemon, persona, tone, modeSnapshot }) {
+    const aiMeta = daemon?.aiMeta || daemon?.AI_EXPERIENCE_META || {};
+    const activeMode = modeSnapshot?.activeMode || tone.activeMode || "advisor";
+
     return {
-      version: daemon?.aiMeta?.version || "v24 IMMORTAL",
-      lineage: daemon?.aiMeta?.lineage || "Pulse‑OS Evolutionary",
+      version: aiMeta.version || "v24 IMMORTAL",
+      lineage: aiMeta.lineage || "Pulse‑OS Evolutionary",
       personaSignature: {
         warmth: persona.warmth,
         focus: persona.focus,
         expressiveness: persona.expressiveness,
-        baselineTone: tone.baseline
+        baselineTone: tone.baseline,
+        activeMode
       }
     };
   }
@@ -191,7 +265,18 @@ export class PulsePalPersona {
   // EMOTIONAL WORD COUNTER
   // ==========================================================================
   countEmotionalWords(speech) {
-    const emotional = ["love", "hate", "feel", "sad", "happy", "angry", "excited"];
+    const emotional = [
+      "love",
+      "hate",
+      "feel",
+      "sad",
+      "happy",
+      "angry",
+      "excited",
+      "scared",
+      "worried",
+      "proud"
+    ];
     let count = 0;
 
     for (const msg of speech) {

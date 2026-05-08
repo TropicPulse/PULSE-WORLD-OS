@@ -188,8 +188,47 @@ export function PulsePalMemory({ Router, Icons, Media }) {
   const tone      = CoreMemory?.tone?.()      || {};
   const presence  = CorePresence?.snapshot?.() || {};
 
+  // NEW: daemon + pal surfaces
+  const daemonSnapshot = CoreDaemon?.snapshot?.() || {};
+  const palSummary     = daemonSnapshot.palSummary || {};
+  const palHistory     = daemonSnapshot.palHistory || {};
+  const palPersona     = daemonSnapshot.palPersona || {};
+
+  // NEW: continuity score (memory + daemon)
+  const continuityScore =
+    palHistory.continuityScore ??
+    palSummary.avgPalContinuance ??
+    persona?.continuity?.continuityScore ??
+    0;
+
+  // NEW: mode + mode influence
+  const activeMode =
+    palPersona?.tone?.activeMode ||
+    persona?.tone?.activeMode ||
+    presence.activityMode ||
+    presence.activity ||
+    "advisor";
+
+  const modeInfluence =
+    persona?.persona?.modeInfluence ||
+    persona?.modeInfluence ||
+    {};
+
+  const modeList = Object.entries(modeInfluence)
+    .filter(([k, v]) => typeof v === "number")
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 8);
+
+  // Media
   const palImages = Media?.resolveAll?.("PulsePal") || [];
-  const avatar    = palImages[0] || Icons.resolve("pulse");
+  let avatar      = palImages[0] || Icons.resolve("pulse");
+
+  // NEW: mode-aware avatar selection (no removal of original fallback)
+  if (palImages.length && activeMode) {
+    const lower = String(activeMode).toLowerCase();
+    const match = palImages.find(src => String(src).toLowerCase().includes(lower));
+    if (match) avatar = match;
+  }
 
   return `
     <div id="pulsepal-memory" class="evo-wrapper">
@@ -203,6 +242,10 @@ export function PulsePalMemory({ Router, Icons, Media }) {
             <p style="margin:0; opacity:0.75;">
               ${tone.lastUserTone || presence.tone || "How I remember and recall."}
             </p>
+            <!-- NEW: mode + continuity line (additive) -->
+            <p style="margin:0; opacity:0.55; font-size:0.85rem;">
+              Mode: <strong>${activeMode}</strong> · Continuity: ${continuityScore}
+            </p>
           </div>
         </div>
       </div>
@@ -211,6 +254,28 @@ export function PulsePalMemory({ Router, Icons, Media }) {
       <div class="evo-block" data-hook="pulsepal.memory.avatar">
         <h2 style="margin-top:0;">Memory Avatar</h2>
         <img src="${avatar}" class="pal-avatar-preview" />
+        <!-- NEW: avatar note (additive) -->
+        <p style="margin:8px 0 0; opacity:0.7; font-size:0.85rem;">
+          Avatar follows the active mode and preloaded Pulse‑Pal images.
+        </p>
+      </div>
+
+      <!-- NEW: MODE INFLUENCE PANEL ----------------------------------------->
+      <div class="evo-block" data-hook="pulsepal.memory.mode">
+        <h2>Mode Influence</h2>
+        ${
+          modeList.length
+            ? `
+              <ul class="evo-list">
+                ${modeList
+                  .map(([mode, w]) =>
+                    `<li class="evo-list-item">${mode}: ${(w * 100).toFixed(1)}%</li>`
+                  )
+                  .join("")}
+              </ul>
+            `
+            : `<p style="opacity:0.7;">No mode influence detected yet.</p>`
+        }
       </div>
 
       <!-- MEMORY TIER -------------------------------------------------------->

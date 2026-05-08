@@ -1,6 +1,6 @@
 // ============================================================================
-// FILE: /PULSE-PAL/PulsePalPersonaEngine-v24.js
-// PULSE OS — v24 IMMORTAL
+// FILE: /PULSE-PAL/PulsePalPersonaEngine-v24++.js
+// PULSE OS — v24 IMMORTAL++
 // PULSE‑PAL PERSONA ENGINE — TRAITS + TONE + CONTINUITY + IDENTITY
 // ============================================================================
 //
@@ -9,6 +9,7 @@
 //   It fuses:
 //     • CoreMemory persona snapshot
 //     • CoreMemory tone snapshot
+//     • CoreMemory relationship snapshot (optional)
 //     • CoreSpeech recent messages
 //     • CorePresence snapshot
 //     • Daemon palHistory + palSummary (optional)
@@ -16,7 +17,7 @@
 //
 //   It produces a single, deterministic persona surface:
 //     • persona: traits + style
-//     • tone: conversational tone snapshot
+//     • tone: conversational tone snapshot (band + energy + focus)
 //     • behavior: inferred behavior hints
 //     • continuity: continuity + history depth
 //     • identity: stable identity hints
@@ -53,14 +54,14 @@ const getIdentity  = PulseProofBridge.getBridgeIdentitySnapshot
 export const AI_EXPERIENCE_META_PulsePalPersonaEngine = {
   id: "pulsepal.persona.engine",
   kind: "core_engine",
-  version: "v24-IMMORTAL",
+  version: "v24-IMMORTAL++",
   role: "Pulse‑Pal persona synthesis cortex",
   surfaces: {
-    band: ["persona", "tone", "continuity", "identity"],
+    band: ["persona", "tone", "continuity", "identity", "behavior"],
     wave: ["attuned", "stable", "grounded"],
-    binary: ["persona_snapshot", "tone_snapshot", "continuity_snapshot"],
+    binary: ["persona_snapshot", "tone_snapshot", "continuity_snapshot", "identity_snapshot"],
     presence: ["persona_state", "relational_band"],
-    advantage: ["single_persona_surface", "daemon_bridge"],
+    advantage: ["single_persona_surface", "daemon_bridge", "history_aware"],
     speed: "instant_compute"
   },
   routes: {
@@ -86,6 +87,23 @@ export const AI_EXPERIENCE_META_PulsePalPersonaEngine = {
 };
 
 // ============================================================================
+// AI_EXPERIENCE_CONTEXT
+// ============================================================================
+export const AI_EXPERIENCE_CONTEXT_PulsePalPersonaEngine = {
+  tone: "calm_attuned",
+  pacing: "steady",
+  emotionalBand: "connection_safety",
+  primaryIntent: "synthesize_persona_surface",
+  secondaryIntent: "stabilize_tone_and_continuity",
+  userFirstImpression: "persona_is_consistent_and_explainable",
+  visualNotes: {
+    icon: "persona",
+    motion: "low_breathe",
+    colorBand: "cyan_soft"
+  }
+};
+
+// ============================================================================
 // ORGAN_META
 // ============================================================================
 export const ORGAN_META_PulsePalPersonaEngine = {
@@ -105,7 +123,7 @@ export const ORGAN_META_PulsePalPersonaEngine = {
   },
   lineage: {
     family: "companion_persona",
-    generation: 1,
+    generation: 2,
     osVersion: "v24"
   }
 };
@@ -126,7 +144,7 @@ export const ORGAN_CONTRACT_PulsePalPersonaEngine = {
   outputs: {
     personaSnapshot: {
       persona: "traits + style",
-      tone: "tone snapshot",
+      tone: "tone snapshot (band + energy + focus)",
       behavior: "behavior hints",
       continuity: "continuity snapshot",
       identity: "identity snapshot"
@@ -203,14 +221,14 @@ class PulsePalPersonaEngineCore {
     const palSummary     = context.palSummary || null;
     const palHistory     = context.palHistory || null;
 
-    const memoryPersona = CoreMemory?.persona?.() || {};
-    const memoryTone    = CoreMemory?.tone?.()    || {};
-    const relationship  = CoreMemory?.relationship?.() || {};
-    const presence      = CorePresence?.snapshot?.() || {};
-    const daemonCore    = CoreDaemon?.snapshot?.() || {};
-    const identity      = getIdentity() || null;
+    const memoryPersona  = CoreMemory?.persona?.()      || {};
+    const memoryTone     = CoreMemory?.tone?.()         || {};
+    const relationship   = CoreMemory?.relationship?.() || {};
+    const presence       = CorePresence?.snapshot?.()   || {};
+    const daemonCore     = CoreDaemon?.snapshot?.()     || {};
+    const identity       = getIdentity()                || null;
 
-    const speechMessages = CoreSpeech?.messages?.() || [];
+    const speechMessages = CoreSpeech?.messages?.()     || [];
     const lastMessage    = speechMessages[speechMessages.length - 1] || null;
 
     const persona = this.buildPersonaTraits({
@@ -245,7 +263,7 @@ class PulsePalPersonaEngineCore {
     });
 
     const snapshot = {
-      version: "v24-IMMORTAL",
+      version: "v24-IMMORTAL++",
       persona,
       tone,
       behavior,
@@ -285,27 +303,53 @@ class PulsePalPersonaEngineCore {
         ? palSummary.avgPalContinuance / 100
         : 0.5;
 
+    const daemonContinuityHint = daemonCore?.continuity ?? null;
+
+    const tags = Array.isArray(memoryPersona.tags)
+      ? memoryPersona.tags
+      : memoryPersona.tags
+      ? [memoryPersona.tags]
+      : [];
+
     return {
       warmth,
       focus,
       expressiveness,
       trustLevel,
       palWeight,
-      daemonContinuityHint: daemonCore?.continuity ?? null,
-      tags: memoryPersona.tags || []
+      daemonContinuityHint,
+      tags
     };
   }
 
   // --------------------------------------------------------------------------
-  // INTERNAL: tone snapshot
-  // --------------------------------------------------------------------------
+  // INTERNAL: tone snapshot (band + energy + focus)
+// --------------------------------------------------------------------------
   buildToneSnapshot({ memoryTone, presence, lastMessage }) {
     const baseline = memoryTone.baseline || presence?.tone || "neutral";
     const lastUserTone = memoryTone.lastUserTone || lastMessage?.tone || "neutral";
 
+    const band =
+      memoryTone.band ||
+      presence?.band ||
+      "companion";
+
+    const energy =
+      memoryTone.energy ||
+      presence?.energy ||
+      "balanced";
+
+    const focus =
+      memoryTone.focus ||
+      presence?.focus ||
+      "general";
+
     return {
       baseline,
       lastUserTone,
+      band,
+      energy,
+      focus,
       lastMessageText: lastMessage?.text || "",
       lastMessageRole: lastMessage?.role || "unknown"
     };
@@ -334,13 +378,20 @@ class PulsePalPersonaEngineCore {
         ? palSummary.avgPalContinuance / 100
         : 0.5;
 
+    const relationalBand = relationship?.band || "neutral";
+
+    const styleHint =
+      avgLength > 220 ? "long_form"
+      : avgLength > 80 ? "medium_form"
+      : "short_form";
+
     return {
       engagement,
       questionRate: recent.length > 0 ? questionCount / recent.length : 0,
       avgMessageLength: avgLength,
-      relationalBand: relationship?.band || "neutral",
+      relationalBand,
       palContinuance,
-      styleHint: avgLength > 140 ? "long_form" : "short_form"
+      styleHint
     };
   }
 
@@ -348,7 +399,7 @@ class PulsePalPersonaEngineCore {
   // INTERNAL: continuity snapshot
   // --------------------------------------------------------------------------
   buildContinuitySnapshot({ palHistory, daemonSnapshot, daemonCore }) {
-    const historyScore = palHistory?.continuityScore ?? 0;
+    const historyScore    = palHistory?.continuityScore ?? 0;
     const messagesScanned = palHistory?.messagesScanned ?? 0;
 
     const daemonContinuance =
@@ -356,16 +407,16 @@ class PulsePalPersonaEngineCore {
       daemonCore?.continuity ??
       0;
 
-    const continuity = {
+    const combinedContinuity = Math.round(
+      (historyScore * 0.6) + (daemonContinuance * 0.4)
+    );
+
+    return {
       historyScore,
       messagesScanned,
       daemonContinuance,
-      combinedContinuity: Math.round(
-        (historyScore * 0.6) + (daemonContinuance * 0.4)
-      )
+      combinedContinuity
     };
-
-    return continuity;
   }
 
   // --------------------------------------------------------------------------
@@ -431,5 +482,5 @@ try {
 }
 
 // ============================================================================
-// END OF FILE — PulsePalPersonaEngine-v24 IMMORTAL
+// END OF FILE — PulsePalPersonaEngine-v24 IMMORTAL++
 // ============================================================================

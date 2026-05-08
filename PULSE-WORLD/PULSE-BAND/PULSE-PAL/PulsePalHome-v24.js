@@ -1,23 +1,25 @@
 // ============================================================================
-// FILE: /PULSE-PAL/PulsePalHome.js
-// PULSE OS — v24 IMMORTAL
-// PULSE‑PAL HOME PAGE — A0 PRESENCE MEMBRANE + MEDIA + PRESENCE SNAPSHOT
+// FILE: /PULSE-PAL/PulsePalHome-v24++.js
+// PULSE OS — v24 IMMORTAL++
+// PULSE‑PAL HOME PAGE — A0 PRESENCE MEMBRANE + MEDIA + DAEMON SNAPSHOT
 // ============================================================================
 //
 // ROLE:
 //   The Pulse‑Pal Home Page is the A0 surface of the companion.
-//   It introduces:
-//     • Pal Identity (daemon-fed)
-//     • Pal Presence (CorePresence snapshot)
-//     • Pal Avatar (media resolver)
-//     • Quick Actions
-//     • System Status (daemon-fed)
+//   It now introduces:
+//     • Pal Identity (daemon-fed, aiMeta-aware)
+//     • Pal Presence (CorePresence snapshot, tone + activity + band)
+//     • Pal Avatar (media resolver, prewarmed)
+//     • Quick Actions (chat / skills / settings / tasks / system)
+//     • System Status (CoreSystem vitals)
+//     • Daemon Summary (lightweight, non-invasive)
 //     • Persona hooks (future)
+//     • Deterministic IMMORTAL++ UI
 //
 // CONTRACT:
 //   • Pure UI Organ (no network)
 //   • Deterministic render
-//   • Evolvable via IQMap UI Skills
+//   • Evolvable via IQMap UI Skills + Daemon
 //   • Zero side effects
 //
 // ============================================================================
@@ -30,27 +32,43 @@ const CoreDaemon   = PulseProofBridge.coredaemon;
 const CoreSystem   = PulseProofBridge.coresystem;
 
 // ============================================================================
-// AI_EXPERIENCE_META
+// AI_EXPERIENCE_META — v24 IMMORTAL++
 // ============================================================================
 export const AI_EXPERIENCE_META_PulsePalHome = {
   id: "pulsepal.home",
   kind: "ui_organ",
-  version: "v24-IMMORTAL",
+  version: "v24-IMMORTAL++",
   role: "Pulse‑Pal A0 presence membrane",
   surfaces: {
-    band: ["home", "presence", "identity", "media"],
+    band: ["home", "presence", "identity", "media", "daemon"],
     wave: ["calm", "ready", "supportive"],
-    binary: ["router_entry", "companion_entry", "avatar_switch"],
-    presence: ["companion_face", "status_overview"],
-    advantage: ["one_tap_chat", "one_tap_skills", "one_tap_settings", "media_preload"],
+    binary: ["router_entry", "companion_entry", "avatar_switch", "daemon_summary"],
+    presence: ["companion_face", "status_overview", "tone_band"],
+    advantage: [
+      "one_tap_chat",
+      "one_tap_skills",
+      "one_tap_settings",
+      "one_tap_tasks",
+      "one_tap_system",
+      "media_preload"
+    ],
     speed: "instant_ui"
   },
   routes: {
     chat: "pulsepal.chat",
     skills: "pulsepal.skills",
-    settings: "pulsepal.settings"
+    settings: "pulsepal.settings",
+    tasks: "pulsepal.tasks",
+    system: "pulsepal.system"
   },
-  consumers: ["Router", "IQMap", "CompanionLayer", "CorePresence", "CoreDaemon", "CoreSystem"],
+  consumers: [
+    "Router",
+    "IQMap",
+    "CompanionLayer",
+    "CorePresence",
+    "CoreDaemon",
+    "CoreSystem"
+  ],
   invariants: {
     networkCalls: "none",
     sideEffects: "none",
@@ -91,7 +109,8 @@ export const ORGAN_META_PulsePalHome = {
     canThemeWithPresence: true,
     mediaAware: true,
     presenceAware: true,
-    personaAware: true
+    personaAware: true,
+    daemonAware: true
   },
   lineage: {
     family: "companion_home",
@@ -113,11 +132,24 @@ export const ORGAN_CONTRACT_PulsePalHome = {
     CoreSystem: "bridge system organ"
   },
   outputs: {
-    routes: ["pulsepal.chat", "pulsepal.skills", "pulsepal.settings"],
+    routes: [
+      "pulsepal.chat",
+      "pulsepal.skills",
+      "pulsepal.settings",
+      "pulsepal.tasks",
+      "pulsepal.system"
+    ],
     uiSurface: "home_presence_membrane",
     presence: "CorePresence.snapshot"
   },
-  consumers: ["Router", "IQMap", "CompanionLayer", "CorePresence", "CoreDaemon", "CoreSystem"],
+  consumers: [
+    "Router",
+    "IQMap",
+    "CompanionLayer",
+    "CorePresence",
+    "CoreDaemon",
+    "CoreSystem"
+  ],
   guarantees: {
     deterministicRender: true,
     noNetwork: true,
@@ -143,8 +175,8 @@ export const IMMORTAL_OVERLAYS_PulsePalHome = {
     notes: "Only additive evolution allowed."
   },
   load: {
-    maxComponents: 5,
-    notes: "Header, quick actions, presence, status, avatar."
+    maxComponents: 6,
+    notes: "Header, quick actions, presence, status, daemon, avatar."
   },
   chunking: {
     prewarm: [
@@ -152,6 +184,8 @@ export const IMMORTAL_OVERLAYS_PulsePalHome = {
       "icons.ai_brain",
       "icons.binary_matrix",
       "icons.settings",
+      "icons.check",
+      "icons.diagnostics_pulse",
       "media.pulsepal"
     ],
     cacheKey: "pulsepal.home.ui"
@@ -188,8 +222,33 @@ export function PulsePalHome({ Router, Icons, Media }) {
   const palImages = Media?.resolveAll?.("PulsePal") || [];
   const avatar = palImages[0] || Icons.resolve("pulse");
 
-  const version = daemon?.aiMeta?.version || "v24 IMMORTAL";
+  const version = daemon?.aiMeta?.version || "v24 IMMORTAL++";
   const lineage = daemon?.aiMeta?.lineage || "Pulse‑OS Evolutionary";
+
+  const tone   = presence.tone || "Warm";
+  const band   = presence.band || "Companion";
+  const activity = presence.activity || "Active";
+
+  const daemonHtml = daemon?.proxySummary
+    ? `
+      <div class="evo-block" data-hook="pulsepal.home.daemon">
+        <h2 style="margin-top:0;">Daemon Snapshot</h2>
+        <p style="opacity:0.75; margin:0 0 8px 0;">
+          Version: ${version} • Lineage: ${lineage}
+        </p>
+        <ul class="evo-list">
+          <li class="evo-list-item">
+            <img src="${Icons.resolve("diagnostics_pulse")}" class="evo-icon" />
+            Proxies: ${daemon.proxySummary.proxyCount}
+          </li>
+          <li class="evo-list-item">
+            <img src="${Icons.resolve("ai_brain")}" class="evo-icon" />
+            Pals: ${daemon.palSummary?.palCount ?? "1"}
+          </li>
+        </ul>
+      </div>
+    `
+    : "";
 
   return `
     <div id="pulsepal-home" class="evo-wrapper">
@@ -203,7 +262,7 @@ export function PulsePalHome({ Router, Icons, Media }) {
               Pulse‑Pal
             </h1>
             <p style="margin:0; opacity:0.75;">
-              ${presence.tone || "Your Pulse OS Companion"}
+              ${tone} • ${band} • ${version}
             </p>
           </div>
         </div>
@@ -216,17 +275,27 @@ export function PulsePalHome({ Router, Icons, Media }) {
         <div style="display:flex; gap:16px; flex-wrap:wrap;">
 
           <button class="evo-button" onclick="Router.go('pulsepal.chat')">
-            <img src="${Icons.resolve('ai_brain')}" class="evo-icon" />
-            Chat with Pulse‑Pal
+            <img src="${Icons.resolve("ai_brain")}" class="evo-icon" />
+            Chat
           </button>
 
           <button class="evo-button" onclick="Router.go('pulsepal.skills')">
-            <img src="${Icons.resolve('binary_matrix')}" class="evo-icon" />
-            Explore Skills
+            <img src="${Icons.resolve("binary_matrix")}" class="evo-icon" />
+            Skills
+          </button>
+
+          <button class="evo-button" onclick="Router.go('pulsepal.tasks')">
+            <img src="${Icons.resolve("check")}" class="evo-icon" />
+            Tasks
+          </button>
+
+          <button class="evo-button" onclick="Router.go('pulsepal.system')">
+            <img src="${Icons.resolve("diagnostics_pulse")}" class="evo-icon" />
+            System
           </button>
 
           <button class="evo-button" onclick="Router.go('pulsepal.settings')">
-            <img src="${Icons.resolve('settings')}" class="evo-icon" />
+            <img src="${Icons.resolve("settings")}" class="evo-icon" />
             Settings
           </button>
 
@@ -240,9 +309,9 @@ export function PulsePalHome({ Router, Icons, Media }) {
         <div style="display:flex; align-items:center; gap:24px;">
           <img src="${avatar}" class="pal-avatar-preview" />
           <p style="flex:1; opacity:0.85;">
-            ${presence.activity || "Active"} • ${presence.tone || "Warm"}  
+            ${activity} • ${tone}
             <br/>
-            I’m here and ready. Ask anything, explore skills, or open a new Pulse‑World.
+            I’m here and ready. Start a chat, manage tasks, explore skills, or review system state.
           </p>
         </div>
       </div>
@@ -253,26 +322,29 @@ export function PulsePalHome({ Router, Icons, Media }) {
 
         <ul class="evo-list">
           <li class="evo-list-item">
-            <img src="${Icons.resolve('stable')}" class="evo-icon" />
+            <img src="${Icons.resolve("stable")}" class="evo-icon" />
             Core Systems: ${system.core || "Stable"}
           </li>
 
           <li class="evo-list-item">
-            <img src="${Icons.resolve('presence')}" class="evo-icon" />
+            <img src="${Icons.resolve("presence")}" class="evo-icon" />
             Presence Engine: ${system.presence || "Active"}
           </li>
 
           <li class="evo-list-item">
-            <img src="${Icons.resolve('router_node')}" class="evo-icon" />
+            <img src="${Icons.resolve("router_node")}" class="evo-icon" />
             Router Cortex: ${system.router || "Connected"}
           </li>
 
           <li class="evo-list-item">
-            <img src="${Icons.resolve('ai_brain')}" class="evo-icon" />
+            <img src="${Icons.resolve("ai_brain")}" class="evo-icon" />
             Pal Intelligence: ${system.anim || "Online"}
           </li>
         </ul>
       </div>
+
+      <!-- DAEMON SNAPSHOT ----------------------------------------------------->
+      ${daemonHtml}
 
     </div>
   `;

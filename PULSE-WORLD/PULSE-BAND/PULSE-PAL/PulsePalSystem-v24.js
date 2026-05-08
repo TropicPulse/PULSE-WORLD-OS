@@ -1,26 +1,33 @@
 // ============================================================================
 // FILE: /PULSE-PAL/PulsePalSystem.js
-// PULSE OS — v24 IMMORTAL
-// PULSE‑PAL SYSTEM PAGE — DIAGNOSTIC MEMBRANE + WORLD‑OS + MEDIA
+// PULSE OS — v24 IMMORTAL++
+// PULSE‑PAL SYSTEM PAGE — DIAGNOSTIC MEMBRANE + WORLD‑OS + MODE + PERSONA
 // ============================================================================
 //
 // ROLE:
-//   Shows system-level diagnostics for Pulse‑Pal.
-//   Includes:
+//   The Pulse‑Pal System Page is the OS‑level diagnostic membrane.
+//   It renders:
+//     • System vitals (CoreSystem)
 //     • Organ status (daemon-fed)
 //     • Router connectivity
-//     • Presence engine
-//     • Memory engine
+//     • Presence engine state
+//     • Memory engine state
+//     • Persona engine state (NEW v24++)
+//     • Mode engine state (NEW v24++)
 //     • Pulse‑World integration
 //     • Glow / Animation engines
 //     • Proxy summary
-//     • Pulse‑Pal summary
-//     • Media awareness
+//     • Daemon summary
+//     • Pal summary
+//     • Media-aware avatar preview
+//     • Mode-aware avatar switching (NEW v24++)
+//     • Persona-aware overlays (NEW v24++)
+//     • Continuity score (NEW v24++)
 //
 // CONTRACT:
 //   • Pure UI Organ
 //   • Deterministic render
-//   • Evolvable via IQMap + CoreSystem
+//   • Evolvable via IQMap + CoreSystem + CoreDaemon
 //   • Zero side effects
 //
 // ============================================================================
@@ -35,28 +42,52 @@ const CoreRouter   = PulseProofBridge.corerouter;
 const CoreWorld    = PulseProofBridge.coreworld;
 const CoreGlow     = PulseProofBridge.coreglow;
 const CoreAnim     = PulseProofBridge.coreanim;
-const CoreDaemon   = PulseProofBridge.coredaemon; // NEW: daemon snapshot bridge
+const CoreDaemon   = PulseProofBridge.coredaemon;
+const MediaBridge  = PulseProofBridge.coremedia;
 
 // ============================================================================
-// AI_EXPERIENCE_META
+// AI_EXPERIENCE_META — v24 IMMORTAL++
 // ============================================================================
 export const AI_EXPERIENCE_META_PulsePalSystem = {
   id: "pulsepal.system",
   kind: "ui_organ",
-  version: "v24-IMMORTAL",
+  version: "v24-IMMORTAL++",
   role: "Pulse‑Pal diagnostic membrane",
   surfaces: {
-    band: ["system", "diagnostics", "vitals", "media"],
-    wave: ["neutral", "technical", "clear"],
-    binary: ["organ_status", "engine_status", "daemon_status"],
-    presence: ["system_awareness"],
-    advantage: ["full_visibility", "media_preload"],
+    band: [
+      "system",
+      "diagnostics",
+      "vitals",
+      "media",
+      "mode",
+      "persona",
+      "presence",
+      "daemon"
+    ],
+    wave: ["neutral", "technical", "clear", "mode_attuned"],
+    binary: [
+      "organ_status",
+      "engine_status",
+      "daemon_status",
+      "mode_overlay",
+      "persona_overlay",
+      "avatar_preview"
+    ],
+    presence: ["system_awareness", "tone_alignment"],
+    advantage: [
+      "full_visibility",
+      "media_preload",
+      "mode_preload",
+      "persona_preload",
+      "daemon_preload"
+    ],
     speed: "instant_ui"
   },
   routes: {
     home: "pulsepal.home",
     identity: "pulsepal.identity",
-    settings: "pulsepal.settings"
+    settings: "pulsepal.settings",
+    world: "pulsepal.world"
   },
   consumers: [
     "Router",
@@ -78,7 +109,7 @@ export const AI_EXPERIENCE_META_PulsePalSystem = {
 };
 
 // ============================================================================
-// AI_EXPERIENCE_CONTEXT
+// AI_EXPERIENCE_CONTEXT — v24 IMMORTAL++
 // ============================================================================
 export const AI_EXPERIENCE_CONTEXT_PulsePalSystem = {
   tone: "technical_calm",
@@ -95,7 +126,7 @@ export const AI_EXPERIENCE_CONTEXT_PulsePalSystem = {
 };
 
 // ============================================================================
-// ORGAN_META
+// ORGAN_META — v24 IMMORTAL++
 // ============================================================================
 export const ORGAN_META_PulsePalSystem = {
   id: "organ.pulsepal.system",
@@ -106,22 +137,27 @@ export const ORGAN_META_PulsePalSystem = {
     canAddDiagnosticPanels: true,
     requiresCoreSystem: true,
     daemonAware: true,
-    mediaAware: true
+    mediaAware: true,
+    modeAware: true,       // NEW
+    personaAware: true,    // NEW
+    presenceAware: true,   // NEW
+    worldAware: true       // NEW
   },
   lineage: {
     family: "companion_system",
-    generation: 2,
+    generation: 3,
     osVersion: "v24"
   }
 };
 
 // ============================================================================
-// ORGAN_CONTRACT
+// ORGAN_CONTRACT — v24 IMMORTAL++
 // ============================================================================
 export const ORGAN_CONTRACT_PulsePalSystem = {
   inputs: {
     Router: "navigation interface",
     Icons: "icon resolution interface",
+    Media: "media resolver interface",
     CoreSystem: "bridge system organ",
     CoreMemory: "bridge memory organ",
     CorePresence: "bridge presence organ",
@@ -135,7 +171,10 @@ export const ORGAN_CONTRACT_PulsePalSystem = {
     uiSurface: "system_membrane",
     vitals: "CoreSystem.vitals",
     organs: "CoreSystem.organs",
-    daemon: "CoreDaemon.snapshot"
+    daemon: "CoreDaemon.snapshot",
+    mode: "CorePresence.mode",
+    persona: "CoreMemory.persona",
+    continuity: "CoreDaemon.palHistory.continuityScore"
   },
   consumers: [
     "Router",
@@ -156,7 +195,7 @@ export const ORGAN_CONTRACT_PulsePalSystem = {
 };
 
 // ============================================================================
-// IMMORTAL_OVERLAYS
+// IMMORTAL_OVERLAYS — v24 IMMORTAL++
 // ============================================================================
 export const IMMORTAL_OVERLAYS_PulsePalSystem = {
   drift: {
@@ -173,20 +212,22 @@ export const IMMORTAL_OVERLAYS_PulsePalSystem = {
     notes: "Only additive evolution allowed."
   },
   load: {
-    maxComponents: 5,
-    notes: "Header, system vitals, organ list, daemon summary, media panel."
+    maxComponents: 8,
+    notes: "Header, vitals, organs, daemon, persona, mode, world, media."
   },
   chunking: {
     prewarm: [
       "icons.diagnostics_pulse",
       "icons.router_node",
       "icons.presence",
+      "icons.ai_brain",
       "media.pulsepal"
     ],
     cacheKey: "pulsepal.system.ui"
   },
   worldLens: {
-    awareOfWorlds: true
+    awareOfWorlds: true,
+    notes: "Pulse‑World diagnostics included."
   },
   limbic: {
     band: "system_safety"
@@ -208,16 +249,31 @@ export const IMMORTAL_OVERLAYS_PulsePalSystem = {
 // ============================================================================
 // IMPLEMENTATION — v24 IMMORTAL++
 // ============================================================================
-/*
-@PULSE_IMMORTAL_REQUIRE_FULL_META
-*/
 export function PulsePalSystem({ Router, Icons, Media }) {
 
-  const vitals = CoreSystem?.vitals?.() || {};
-  const organs = CoreSystem?.organs?.() || [];
-  const daemon = CoreDaemon?.snapshot?.() || {};
-  const palImages = Media?.resolveAll?.("PulsePal") || [];
+  const vitals     = CoreSystem?.vitals?.() || {};
+  const organs     = CoreSystem?.organs?.() || [];
+  const daemon     = CoreDaemon?.snapshot?.() || {};
+  const persona    = CoreMemory?.persona?.() || {};
+  const presence   = CorePresence?.snapshot?.() || {};
+  const continuity = daemon?.palHistory?.continuityScore || 0;
 
+  const activeMode =
+    presence.mode ||
+    persona?.tone?.activeMode ||
+    "advisor";
+
+  // MEDIA: mode-aware avatar
+  const palImages = Media?.resolveAll?.("PulsePal") || [];
+  let avatar = palImages[0] || Icons.resolve("pulse");
+
+  if (palImages.length && activeMode) {
+    const lower = activeMode.toLowerCase();
+    const match = palImages.find(src => src.toLowerCase().includes(lower));
+    if (match) avatar = match;
+  }
+
+  // DAEMON SUMMARY
   const daemonHtml = daemon?.proxySummary
     ? `
       <div class="evo-block" data-hook="pulsepal.system.daemon">
@@ -226,10 +282,12 @@ export function PulsePalSystem({ Router, Icons, Media }) {
         <p>Binary Count: ${daemon.proxySummary.binaryCount}</p>
         <p>Pal Count: ${daemon.palSummary.palCount}</p>
         <p>Avg Pal Continuance: ${daemon.palSummary.avgPalContinuance}</p>
+        <p>Continuity Score: ${continuity}</p>
       </div>
     `
     : "";
 
+  // MEDIA PANEL
   const mediaHtml = palImages.length
     ? `
       <div class="evo-block" data-hook="pulsepal.system.media">
@@ -257,11 +315,23 @@ export function PulsePalSystem({ Router, Icons, Media }) {
             <p style="margin:0; opacity:0.75;">
               Internal diagnostics and organ status.
             </p>
+            <p style="margin:0; opacity:0.55; font-size:0.85rem;">
+              Mode: <strong>${activeMode}</strong> · Continuity: ${continuity}
+            </p>
           </div>
         </div>
       </div>
 
-      <!-- SYSTEM STATUS ------------------------------------------------------>
+      <!-- AVATAR ------------------------------------------------------------->
+      <div class="evo-block" data-hook="pulsepal.system.avatar">
+        <h2 style="margin-top:0;">System Avatar</h2>
+        <img src="${avatar}" class="pal-avatar-preview" />
+        <p style="opacity:0.7; margin-top:6px; font-size:0.85rem;">
+          Avatar adapts to mode and persona.
+        </p>
+      </div>
+
+      <!-- SYSTEM VITALS ------------------------------------------------------>
       <div class="evo-block" data-hook="pulsepal.system.vitals">
         <h2 style="margin-top:0;">System Vitals</h2>
 

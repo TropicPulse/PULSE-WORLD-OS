@@ -1,25 +1,26 @@
 // ============================================================================
 // FILE: /PULSE-PAL/PulsePalPresence.js
 // PULSE OS — v24 IMMORTAL
-// PULSE‑PAL PRESENCE PAGE — AURA MEMBRANE + MEDIA + TONE ENGINE
+// PULSE‑PAL PRESENCE PAGE — AURA MEMBRANE + MEDIA + TONE + MODE + CONTINUITY
 // ============================================================================
 //
 // ROLE:
-//   Controls Pulse‑Pal’s presence state:
+//   Controls Pulse‑Pal’s live presence state:
 //     • Aura
 //     • Glow
 //     • Emotional tone
-//     • Activity mode (NEW v24)
+//     • Activity mode
 //     • Expression level
-//     • Media-aware avatar preview
+//     • Active archetype / mode (advisor, grid, etc.)
+//     • Media-aware avatar preview (mode-based)
 //     • Presence snapshot (CorePresence)
-//     • Persona hooks (future)
+//     • Persona + continuity surfaces (via daemon / persona engine)
 //
 // CONTRACT:
-//   • Pure UI Organ
+//   • Pure UI Organ (no network)
 //   • Deterministic render
-//   • Evolvable via Presence Engine / IQMap
-//   • Zero side effects
+//   • Evolvable via Presence / Mode / Persona Engines / IQMap
+//   • Zero side effects (only calls CorePresence setters via onclick)
 //
 // ============================================================================
 // BRIDGE INTEGRATION — REQUIRED
@@ -27,7 +28,7 @@
 import { PulseProofBridge } from "/PULSE/BRIDGE/PulseProofBridge.js";
 
 const CorePresence = PulseProofBridge.corepresence;
-const CoreDaemon   = PulseProofBridge.coredaemon; // NEW: daemon snapshot bridge
+const CoreDaemon   = PulseProofBridge.coredaemon; // daemon snapshot bridge
 
 // ============================================================================
 // AI_EXPERIENCE_META
@@ -36,19 +37,38 @@ export const AI_EXPERIENCE_META_PulsePalPresence = {
   id: "pulsepal.presence",
   kind: "ui_organ",
   version: "v24-IMMORTAL",
-  role: "Pulse‑Pal aura + emotional presence membrane",
+  role: "Pulse‑Pal aura + emotional + mode presence membrane",
   surfaces: {
-    band: ["presence", "aura", "tone", "media"],
-    wave: ["warm", "focused", "neutral"],
-    binary: ["aura_mode", "expression_level", "tone_mode", "activity_mode"],
-    presence: ["emotional_state", "aura_state", "activity_state"],
-    advantage: ["explicit_presence_control", "media_preload"],
+    band: ["presence", "aura", "tone", "media", "mode", "continuity"],
+    wave: ["warm", "focused", "neutral", "attuned"],
+    binary: [
+      "aura_mode",
+      "expression_level",
+      "tone_mode",
+      "activity_mode",
+      "active_mode",
+      "avatar_mode"
+    ],
+    presence: [
+      "emotional_state",
+      "aura_state",
+      "activity_state",
+      "mode_state",
+      "continuity_state"
+    ],
+    advantage: [
+      "explicit_presence_control",
+      "media_preload",
+      "mode_flip",
+      "persona_visibility"
+    ],
     speed: "instant_ui"
   },
   routes: {
     home: "pulsepal.home",
     identity: "pulsepal.identity",
-    companion: "pulsepal.companion"
+    companion: "pulsepal.companion",
+    memory: "pulsepal.memory"
   },
   consumers: ["Router", "IQMap", "CorePresence", "CoreDaemon"],
   invariants: {
@@ -66,9 +86,9 @@ export const AI_EXPERIENCE_CONTEXT_PulsePalPresence = {
   tone: "warm_balanced",
   pacing: "steady",
   emotionalBand: "expressive_control",
-  primaryIntent: "let_user_tune_presence",
-  secondaryIntent: "show_aura_modes",
-  userFirstImpression: "this_is_where_pulsepal_feels",
+  primaryIntent: "let_user_tune_presence_and_mode",
+  secondaryIntent: "show_aura_modes_and_continuity",
+  userFirstImpression: "this_is_where_pulsepal_feels_and_which_mode_is_active",
   visualNotes: {
     icon: "presence",
     motion: "soft_breathe",
@@ -88,13 +108,15 @@ export const ORGAN_META_PulsePalPresence = {
     canAddAuraModes: true,
     canAddToneModes: true,
     canAddActivityModes: true,
+    canAddArchetypeModes: true,
     requiresCorePresence: true,
     mediaAware: true,
-    personaAware: true
+    personaAware: true,
+    continuityAware: true
   },
   lineage: {
     family: "companion_presence",
-    generation: 2,
+    generation: 3,
     osVersion: "v24"
   }
 };
@@ -112,7 +134,9 @@ export const ORGAN_CONTRACT_PulsePalPresence = {
   },
   outputs: {
     uiSurface: "presence_membrane",
-    modes: ["aura", "expression", "tone", "activity"]
+    modes: ["aura", "expression", "tone", "activity", "mode"],
+    presenceSnapshot: "CorePresence.snapshot()",
+    daemonSnapshot: "CoreDaemon.snapshot() (palSummary, palHistory, palPersona)"
   },
   consumers: ["Router", "IQMap", "CorePresence", "CoreDaemon"],
   guarantees: {
@@ -128,11 +152,11 @@ export const ORGAN_CONTRACT_PulsePalPresence = {
 export const IMMORTAL_OVERLAYS_PulsePalPresence = {
   drift: {
     allowed: false,
-    notes: "Presence semantics must remain stable."
+    notes: "Presence + mode semantics must remain stable."
   },
   pressure: {
     expectedLoad: "high",
-    notes: "Presence is frequently adjusted by users."
+    notes: "Presence is frequently adjusted by users and engines."
   },
   stability: {
     uiLayout: "stable",
@@ -140,8 +164,8 @@ export const IMMORTAL_OVERLAYS_PulsePalPresence = {
     notes: "Only additive evolution allowed."
   },
   load: {
-    maxComponents: 5,
-    notes: "Header, aura, expression, tone, activity, avatar preview."
+    maxComponents: 7,
+    notes: "Header, avatar, aura, expression, tone, activity, mode, continuity."
   },
   chunking: {
     prewarm: ["icons.presence", "icons.pulse", "icons.neon_ring", "media.pulsepal"],
@@ -156,7 +180,7 @@ export const IMMORTAL_OVERLAYS_PulsePalPresence = {
   triHeart: {
     cognitive: "presence_mode_selection",
     emotional: "attuned_expression",
-    behavioral: "adjust_aura_expression_tone"
+    behavioral: "adjust_aura_expression_tone_mode"
   },
   impulseSpeed: {
     primaryAction: "set_presence_mode",
@@ -176,8 +200,40 @@ export const IMMORTAL_OVERLAYS_PulsePalPresence = {
 export function PulsePalPresence({ Router, Icons, Media }) {
 
   const presence = CorePresence?.snapshot?.() || {};
+  const daemonSnapshot = CoreDaemon?.snapshot?.() || {};
+  const palSummary = daemonSnapshot.palSummary || {};
+  const palHistory = daemonSnapshot.palHistory || {};
+  const palPersona = daemonSnapshot.palPersona || {};
+
   const palImages = Media?.resolveAll?.("PulsePal") || [];
-  const avatar = palImages[0] || Icons.resolve("pulse");
+
+  const activeMode = presence.mode || presence.activeMode || "advisor";
+  const modeWeights = presence.modeWeights || {};
+  const continuityScore =
+    palHistory.continuityScore != null
+      ? palHistory.continuityScore
+      : palSummary.avgPalContinuance != null
+        ? palSummary.avgPalContinuance
+        : 0;
+
+  // Mode-aware avatar resolution: pick image whose name includes the mode
+  let avatar = palImages[0] || Icons.resolve("pulse");
+  if (palImages.length && activeMode) {
+    const lowerMode = String(activeMode).toLowerCase();
+    const match = palImages.find(src =>
+      String(src).toLowerCase().includes(lowerMode)
+    );
+    if (match) avatar = match;
+  }
+
+  const personaTone = palPersona?.tone || {};
+  const personaWarmth = personaTone.warmth ?? presence.warmth ?? null;
+
+  const modeWeightsList = Object.keys(modeWeights).length
+    ? Object.entries(modeWeights)
+        .sort((a, b) => b[1] - a[1])
+        .slice(0, 6)
+    : [];
 
   return `
     <div id="pulsepal-presence" class="evo-wrapper">
@@ -191,16 +247,66 @@ export function PulsePalPresence({ Router, Icons, Media }) {
               Pulse‑Pal Presence
             </h1>
             <p style="margin:0; opacity:0.75;">
-              ${presence.tone || "Adjust my aura, tone, and expression."}
+              ${presence.tone || personaTone.baseline || "Adjust my aura, mode, and expression."}
+            </p>
+            <p style="margin:0; opacity:0.55; font-size:0.85rem;">
+              Active mode: <strong>${activeMode}</strong> · Continuity: ${continuityScore}
             </p>
           </div>
         </div>
       </div>
 
-      <!-- AVATAR PREVIEW ----------------------------------------------------->
-      <div class="evo-block" data-hook="pulsepal.presence.avatar">
-        <h2 style="margin-top:0;">Avatar Preview</h2>
-        <img src="${avatar}" class="pal-avatar-preview" />
+      <!-- AVATAR + MODE ------------------------------------------------------>
+      <div class="evo-block" data-hook="pulsepal.presence.avatar_mode">
+        <div style="display:flex; gap:24px; flex-wrap:wrap; align-items:flex-start;">
+
+          <!-- AVATAR PREVIEW -->
+          <div style="flex:0 0 auto;">
+            <h2 style="margin-top:0;">Avatar Preview</h2>
+            <img src="${avatar}" class="pal-avatar-preview" />
+            <p style="margin:8px 0 0; opacity:0.7; font-size:0.85rem;">
+              Avatar follows the active mode and preloaded Pulse‑Pal images.
+            </p>
+          </div>
+
+          <!-- MODE SELECTION -->
+          <div style="flex:1 1 220px;">
+            <h2 style="margin-top:0;">Archetype Mode</h2>
+            <div style="display:flex; gap:10px; flex-wrap:wrap;">
+              <button class="evo-button" onclick="CorePresence.setMode && CorePresence.setMode('advisor')">Advisor</button>
+              <button class="evo-button" onclick="CorePresence.setMode && CorePresence.setMode('architect')">Architect</button>
+              <button class="evo-button" onclick="CorePresence.setMode && CorePresence.setMode('entrepreneur')">Entrepreneur</button>
+              <button class="evo-button" onclick="CorePresence.setMode && CorePresence.setMode('grid')">Grid</button>
+              <button class="evo-button" onclick="CorePresence.setMode && CorePresence.setMode('mesh')">Mesh</button>
+              <button class="evo-button" onclick="CorePresence.setMode && CorePresence.setMode('tourist')">Tourist</button>
+              <button class="evo-button" onclick="CorePresence.setMode && CorePresence.setMode('expansion')">Expansion</button>
+              <button class="evo-button" onclick="CorePresence.setMode && CorePresence.setMode('finality')">Finality</button>
+              <button class="evo-button" onclick="CorePresence.setMode && CorePresence.setMode('fox')">Fox</button>
+              <button class="evo-button" onclick="CorePresence.setMode && CorePresence.setMode('human')">Human</button>
+            </div>
+
+            ${
+              modeWeightsList.length
+                ? `
+                  <div style="margin-top:12px;">
+                    <p style="margin:0 0 4px; opacity:0.7; font-size:0.85rem;">
+                      Mode blend (top weights):
+                    </p>
+                    <ul class="evo-list" style="margin:0;">
+                      ${modeWeightsList
+                        .map(
+                          ([mode, w]) =>
+                            `<li class="evo-list-item">${mode}: ${(w * 100).toFixed(1)}%</li>`
+                        )
+                        .join("")}
+                    </ul>
+                  </div>
+                `
+                : ""
+            }
+          </div>
+
+        </div>
       </div>
 
       <!-- AURA --------------------------------------------------------------->
@@ -233,7 +339,7 @@ export function PulsePalPresence({ Router, Icons, Media }) {
         </div>
       </div>
 
-      <!-- ACTIVITY MODE (NEW v24) ------------------------------------------->
+      <!-- ACTIVITY MODE ------------------------------------------------------>
       <div class="evo-block" data-hook="pulsepal.presence.activity">
         <h2 style="margin-top:0;">Activity Mode</h2>
         <div style="display:flex; gap:16px; flex-wrap:wrap;">
@@ -241,6 +347,24 @@ export function PulsePalPresence({ Router, Icons, Media }) {
           <button class="evo-button" onclick="CorePresence.setActivity('thinking')">Thinking</button>
           <button class="evo-button" onclick="CorePresence.setActivity('active')">Active</button>
         </div>
+      </div>
+
+      <!-- CONTINUITY + PERSONA GLANCE ---------------------------------------->
+      <div class="evo-block" data-hook="pulsepal.presence.continuity">
+        <h2 style="margin-top:0;">Continuity & Persona</h2>
+        <p style="margin:0 0 4px; opacity:0.8;">
+          History continuity score: <strong>${continuityScore}</strong>
+        </p>
+        <p style="margin:0 0 4px; opacity:0.7; font-size:0.9rem;">
+          Messages scanned: ${palHistory.messagesScanned || 0}
+        </p>
+        ${
+          personaWarmth != null
+            ? `<p style="margin:0; opacity:0.7; font-size:0.9rem;">
+                 Persona warmth: ${personaWarmth}
+               </p>`
+            : ""
+        }
       </div>
 
     </div>
