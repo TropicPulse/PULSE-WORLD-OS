@@ -700,17 +700,6 @@ export const PulseIntentMap = {
       // Your specs/code structure
       "code": "PULSE-WORLD/PULSE-SPECS/PULSE-CODE",
       "specs": "PULSE-WORLD/PULSE-SPECS",
-
-      // -----------------------------------------------------------------------
-      // 2.1 ADDITIONAL SUBSYSTEMS FROM YOUR ORGANISM MAP
-      // (added here, respecting your ordering)
-      // -----------------------------------------------------------------------
-
-      "tech": "PULSE-WORLD/PULSE-TECH",
-      "tools": "PULSE-WORLD/PULSE-TOOLS",
-      "translator": "PULSE-WORLD/PULSE-TRANSLATOR",
-      "trust": "PULSE-WORLD/PULSE-TRUST",
-
       // -----------------------------------------------------------------------
       // UI subsystems (non-PULSE- folders)
       // -----------------------------------------------------------------------
@@ -719,8 +708,10 @@ export const PulseIntentMap = {
       "directory": "PULSE-WORLD/PULSE-UI/PulseDirectory",
       "rewards": "PULSE-WORLD/PULSE-UI/PulseRewards",
 
-      // Deployment / backup
-      "netlify": "PULSE-WORLD/NETLIFY",
+      // // Deployment / backup
+      // "netlify": "PULSE-WORLD/NETLIFY",
+      // // OS Runtime
+      // "pulse-x": "PULSE-WORLD/PULSE-X",
 
       // -----------------------------------------------------------------------
       // 3. AUTO‑MAP ANY SUBSYSTEM BY NAME

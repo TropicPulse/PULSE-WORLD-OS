@@ -295,7 +295,7 @@ function createSectionalFallback({
         presenceBandState: pulse.presenceBandState || null,
         harmonicDrift: pulse.harmonicDrift || null,
         coherenceScore: pulse.coherenceScore || null,
-        satellitesIntel
+        satelliteIntel
       });
 
       if (!shifter) return null;

@@ -44,7 +44,11 @@
 //
 // EXPORTED FUNCTIONS
 // ------------------
-// • getStripe() — returns the singleton Stripe client
+// • getStripe()           — singleton Stripe client
+// • createPaymentIntent() — unified payment engine
+// • handleStripeWebhook() — Stripe CNS processor
+// • determinePayoutCurrency() — currency engine
+// • calculateReleaseDate()    — reserve timing engine
 //
 // INTERNAL LOGIC SUMMARY
 // ----------------------
@@ -69,7 +73,7 @@
 //
 // DEPLOYMENT RULES
 // ----------------
-// • Runs ONLY on Netlify backend
+// • Runs ONLY on backend
 // • Must remain ESM
 // • Must remain side‑effect‑free
 // • Must remain deterministic
@@ -84,18 +88,8 @@
 // ============================================================================
 // AI EXPERIENCE META — IMMORTAL ORGAN BLOCK
 // ============================================================================
-//
-// This block allows AI systems (Copilot, PulseOSBrain, OrganismMap) to
-// understand the identity, lineage, purpose, and constraints of this file.
-// It enables:
-//   • Self‑healing
-//   • Drift detection
-//   • Organism‑level routing
-//   • Contract validation
-//   • Future evolution
-//
-// DO NOT REMOVE THIS BLOCK.
-//
+import { admin, db } from "./PulseWorldGenome-v20.js";
+import Stripe from "stripe";
 
 export const AI_EXPERIENCE_META = {
   identity: "PulseWorldBank.StripeOrgan",
@@ -146,23 +140,6 @@ let stripeInstance = null;
  * getStripe()
  * -----------
  * Returns the singleton Stripe client.
- *
- * BEHAVIOR:
- *   • Reads STRIPE_SECRET_KEY from process.env
- *   • Validates presence
- *   • Creates Stripe client with pinned API version
- *   • Caches instance for future calls
- *
- * RETURNS:
- *   • Stripe client (singleton)
- *
- * THROWS:
- *   • Error if STRIPE_SECRET_KEY is missing
- *
- * NOTES:
- *   • This function is pure and deterministic
- *   • Safe to call from any Netlify function
- *   • Never logs or exposes secrets
  */
 export function getStripe() {
   if (!stripeInstance) {
@@ -188,198 +165,565 @@ export function getStripe() {
 }
 
 // ============================================================================
-// FOOTER — LEARNING NOTES FOR ALDWYN
+// PAYMENT ENGINE — UNIFIED PAYMENT INTENT CREATOR
 // ============================================================================
 //
-// ⭐ STRIPE MASTER NOTES ⭐
-// ------------------------
-// • Stripe is NOT a bank — it is a programmable financial layer
-// • Every object in Stripe is immutable — updates create new versions
-// • Stripe Connect = multi‑party payments (marketplaces)
-// • Stripe Accounts = your vendors / creators / sellers
-// • Stripe Customers = your end‑users
-// • Stripe PaymentIntents = the core payment flow
-// • Stripe SetupIntents = save cards without charging
-// • Stripe Webhooks = the truth source (NEVER trust frontend)
-// • Stripe Balance = your money in Stripe
-// • Stripe Payouts = money leaving Stripe to bank accounts
-// • Stripe Transfers = money moving between connected accounts
+// createPaymentIntent()
+// ---------------------
+// • mode: "reserve"  → reserve metadata flow
+// • mode: "order"    → 5% application_fee_amount flow
 //
-// ⭐ PULSE‑WORLD‑BANK RULES ⭐
-// ---------------------------
-// • All money movement must go through this organ
-// • All Stripe calls must use getStripe()
-// • All payment logic must live in PULSE-WORLD-BANK functions
-// • Never call Stripe directly from UI
-// • Never expose secret keys
-//
-// ⭐ IMMORTAL ORGANISM NOTES ⭐
-// ----------------------------
-// • This file is a “financial organ” in the Pulse organism
-// • It must remain deterministic
-// • It must remain drift‑proof
-// • It must remain stable across versions
-// • It is safe to evolve — but only with explicit intent
-//
-// ============================================================================
-// END OF stripe.js
-// ============================================================================
-
-
-
-// ============================================================================
-// FILE: tropic-pulse-functions/PULSE-WORLD/netlify/functions/stripe-webhook.js
-// ORGAN: PulseWorldBank-v20 (Stripe Webhook CNS)
-// LAYER: PULSE-WORLD / FINANCIAL-CORE / WEBHOOK-INTAKE
-// ============================================================================
-//
-// ROLE:
-//   Netlify Stripe webhook endpoint that processes Stripe events.
-//   Handles three major flows:
-//     1. Vendor onboarding (account.created / account.updated)
-//     2. Reserve system updates (payment_intent.succeeded)
-//     3. Mass email credit purchases (checkout.session.completed)
-//
-//   This file IS a Netlify handler.
-//   This file SHOULD remain narrow and stable.
-//   All heavy logic should be delegated to helpers/organs.
-//
-// WHAT THIS FILE IS:
-//   • A Stripe webhook processor
-//   • A Firestore mutation layer for vendor + wallet updates
-//   • A critical endpoint that must remain correct and deterministic
-//
-// WHAT THIS FILE IS NOT:
-//   • Not a UI endpoint
-//   • Not a general API router
-//   • Not a scoring engine
-//   • Not allowed to contain random new flows
-//
-// SAFETY NOTES:
-//   • Must ALWAYS verify Stripe signatures using rawBody
-//   • Never expose Stripe secrets in logs
-//   • Never mutate unrelated user fields
-//   • Never assume metadata exists — validate defensively
+// Replaces legacy:
+//   • create-reserve-payment.js
+//   • create-order-payment.js
 //
 // ============================================================================
 
-/* global log,warn,error */
+/* global log, error, db */
 
+/* ===========================
+   CREATE AND UPDATE STRIPE ACCOUNT IF NEEDED
+=========================== */
+export async function checkOrCreateStripeAccount(email, country) {
+  console.log("🔵 [checkOrCreateStripeAccount] START");
 
-const STRIPE_WEBHOOK_SECRET = process.env.STRIPE_WEBHOOK_SECRET;
+  const stripe = new Stripe(process.env.STRIPE_PASSWORD);
 
-/**
- * Netlify handler: Stripe webhook
- * -------------------------------
- * Expects:
- *   • POST
- *   • rawBody available (Netlify config: body parsing disabled)
- *   • "stripe-signature" header present
- */
-export async function handler(event, context) {
-  try {
-    if (event.httpMethod !== "POST") {
-      return { statusCode: 405, body: "Method Not Allowed" };
+  // -----------------------------
+  // Helpers
+  // -----------------------------
+  const normalizeEmail = (v) =>
+    typeof v === "string" ? v.trim().toLowerCase() : null;
+
+  const isGarbage = (v) => {
+    if (!v) return true;
+    const s = String(v);
+    return (
+      s.trim() === "" ||
+      s.includes("{{") ||
+      s.includes("add_more_field") ||
+      s.includes("fieldLebal") ||
+      s.includes("fieldValue") ||
+      s.includes("*")
+    );
+  };
+
+  const clean = (v, fallback = null) => {
+    if (isGarbage(v)) return fallback;
+    return String(v).trim();
+  };
+
+  const cleanLower = (v, fallback = null) => {
+    const c = clean(v, fallback);
+    return c ? c.toLowerCase() : fallback;
+  };
+
+  // -----------------------------
+  // 1️⃣ Normalize inputs
+  // -----------------------------
+  const cleanEmail = clean(normalizeEmail(email), null);
+  const thecountry = clean(normalizeCountry(country), "BZ").toUpperCase();
+
+  if (!cleanEmail) {
+    throw new Error("Invalid email passed to checkOrCreateStripeAccount");
+  }
+
+  console.log("🔹 Inputs:", { cleanEmail, thecountry });
+
+  // -----------------------------
+  // 2️⃣ Lookup user (NEW SCHEMA)
+  // -----------------------------
+  const snap = await admin.firestore()
+    .collection("Users")
+    .where("TPIdentity.email", "==", cleanEmail)
+    .limit(1)
+    .get();
+
+  if (snap.empty) {
+    throw new Error(`User not found for email: ${cleanEmail}`);
+  }
+
+  const userDoc = snap.docs[0];
+  const userRef = userDoc.ref;
+  const userData = userDoc.data();
+
+  const role = userData.TPIdentity?.role || "Deliverer";
+  const existingStripeID = clean(userData.TPSecurity?.stripeAccountID, null);
+
+  // -----------------------------
+  // 3️⃣ Determine payFrequency (NEW SCHEMA)
+  // -----------------------------
+  let payFrequency = cleanLower(userData.TPWallet?.payFrequency, null);
+
+  if (!payFrequency) {
+    if (role === "Deliverer") payFrequency = "daily";
+    if (role === "Vendor") payFrequency = "weekly";
+    if (!payFrequency) payFrequency = "daily";
+  }
+
+  const allowedFreq = ["daily", "weekly"];
+  if (!allowedFreq.includes(payFrequency)) {
+    console.log("⚠️ Invalid payFrequency, defaulting to daily");
+    payFrequency = "daily";
+  }
+
+  // -----------------------------
+  // 4️⃣ Determine payDay (NEW SCHEMA)
+  // -----------------------------
+  let payDay = null;
+
+  if (payFrequency === "weekly") {
+    payDay = cleanLower(userData.TPWallet?.payDay, "monday");
+
+    const allowedDays = [
+      "monday", "tuesday", "wednesday",
+      "thursday", "friday"
+    ];
+
+    if (!allowedDays.includes(payDay)) {
+      console.log("⚠️ Invalid payDay, defaulting to monday");
+      payDay = "monday";
     }
+  }
 
-    if (!STRIPE_WEBHOOK_SECRET) {
-      error("[StripeWebhook] STRIPE_WEBHOOK_SECRET is not set");
-      return {
-        statusCode: 500,
-        body: JSON.stringify({ success: false, error: "Webhook not configured" })
-      };
-    }
+  console.log("🔹 Final payout settings:", { payFrequency, payDay });
 
-    const stripe = getStripe();
+  // -----------------------------
+  // 5️⃣ Build Stripe payout schedule
+  // -----------------------------
+  let schedule = {};
 
-    // Stripe requires rawBody for signature verification
-    const rawBody = event.body && event.isBase64Encoded
-      ? Buffer.from(event.body, "base64").toString("utf8")
-      : event.body || "";
+  if (payFrequency === "daily") {
+    schedule = { interval: "daily" };
+  }
 
-    const signature =
-      event.headers["stripe-signature"] ||
-      event.headers["Stripe-Signature"] ||
-      event.headers["stripe-signature".toLowerCase()];
+  if (payFrequency === "weekly") {
+    schedule = {
+      interval: "weekly",
+      weekly_anchor: payDay
+    };
+  }
 
-    if (!signature) {
-      error("[StripeWebhook] Missing stripe-signature header");
-      return {
-        statusCode: 400,
-        body: JSON.stringify({
-          success: false,
-          error: "Missing stripe-signature header"
-        })
-      };
-    }
+  console.log("🔹 Stripe schedule:", schedule);
 
-    let stripeEvent;
+  // -----------------------------
+  // 6️⃣ Update existing Stripe account
+  // -----------------------------
+  if (existingStripeID) {
     try {
-      stripeEvent = stripe.webhooks.constructEvent(
-        rawBody,
-        signature,
-        STRIPE_WEBHOOK_SECRET
-      );
-    } catch (err) {
-      error("[StripeWebhook] Signature verification failed:", err.message);
+      const account = await stripe.accounts.update(existingStripeID, {
+        settings: { payouts: { schedule } }
+      });
+
+      console.log("✅ Updated existing Stripe account:", account.id);
+
       return {
-        statusCode: 400,
-        body: JSON.stringify({
-          success: false,
-          error: "Webhook signature verification failed"
-        })
+        stripeAccountID: account.id,
+        thecountry,
+        role,
+        payFrequency,
+        payDay
       };
+    } catch (err) {
+      console.error("❌ Stripe update failed:", err.message);
+      throw new Error(`Stripe Update Failed: ${err.message}`, { cause: err });
+    }
+  }
+
+  // -----------------------------
+  // 7️⃣ Create new Stripe account
+  // -----------------------------
+  let stripeAccountID = null;
+
+  try {
+    const account = await stripe.accounts.create({
+      type: "express",
+      country: thecountry,
+      email: cleanEmail,
+      capabilities: {
+        transfers: { requested: true }
+      },
+      settings: {
+        payouts: { schedule }
+      }
+    });
+
+    stripeAccountID = account.id;
+
+    console.log("🆕 Created new Stripe account:", stripeAccountID);
+
+  } catch (err) {
+    console.error("❌ Stripe account creation error:", err);
+
+    const search = await stripe.accounts.search({
+      query: `email:'${cleanEmail}'`
+    });
+
+    if (!search.data.length) {
+      throw new Error(
+        `Stripe account exists but cannot be retrieved for ${cleanEmail}`,
+        { cause: err }
+      );
     }
 
-    const eventObj = stripeEvent;
+    stripeAccountID = search.data[0].id;
 
-    // ---------------------------------------------------------
-    // 1. VENDOR ONBOARDING
-    // ---------------------------------------------------------
-    if (eventObj.type === "account.created" || eventObj.type === "account.updated") {
-      const account = eventObj.data.object;
+    console.log("🔍 Found existing Stripe account:", stripeAccountID);
+  }
 
-      const stripeAccountID = account.id;
-      const email = account.email;
-      const country = account.country;
+  // -----------------------------
+  // 8️⃣ Save to Firestore (NEW SCHEMA)
+  // -----------------------------
+  await userRef.set(
+    {
+      TPSecurity: {
+        stripeAccountID
+      },
+      TPIdentity: {
+        country: thecountry
+      },
+      TPWallet: {
+        payFrequency,
+        payDay
+      },
+      updatedAt: admin.firestore.FieldValue.serverTimestamp()
+    },
+    { merge: true }
+  );
 
-      if (email) {
-        const snap = await db
-          .collection("Users")
-          .where("UserEmail", "==", email)
-          .limit(1)
-          .get();
+  console.log("💾 Saved Stripe info to Firestore");
 
-        if (!snap.empty) {
-          const userRef = snap.docs[0].ref;
+  // -----------------------------
+  // 9️⃣ Return values
+  // -----------------------------
+  return {
+    stripeAccountID,
+    thecountry,
+    role,
+    payFrequency,
+    payDay
+  };
+}
 
-          await userRef.set(
-            {
-              UserCountry: country,
+function normalizeCountry(input) {
+  if (!input) return "BZ";
 
-              TPIdentity: {
-                role: "Vendor",
-                stripeAccountID,
-                stripeDashboardURL: null
-              },
+  const value = String(input).trim().toLowerCase();
+  const cleaned = value.replace(/[\u{1F1E6}-\u{1F1FF}]/gu, "").trim();
 
-              TPNotifications: {
-                receiveMassEmails: true
-              },
+  if (/^[a-z]{2}$/i.test(cleaned)) return cleaned.toUpperCase();
 
-              TPWallet: {
-                payFrequency: "weekly",
-                payDay: "monday"
-              },
+  const alpha3 = {
+    usa: "US", can: "CA", mex: "MX", blz: "BZ", gbr: "GB",
+    jam: "JM", tto: "TT", hnd: "HN", gtm: "GT", slv: "SV",
+    nic: "NI", cri: "CR", pan: "PA", dom: "DO", prt: "PR",
+    brb: "BB", lca: "LC", kna: "KN"
+  };
+  if (alpha3[cleaned]) return alpha3[cleaned];
 
-              updatedAt: admin.firestore.FieldValue.serverTimestamp()
+  const map = {
+    "belize": "BZ",
+    "united states": "US",
+    "united states of america": "US",
+    "usa": "US",
+    "us": "US",
+    "mexico": "MX",
+    "canada": "CA",
+    "united kingdom": "GB",
+    "great britain": "GB",
+    "uk": "GB",
+    "jamaica": "JM",
+    "bahamas": "BS",
+    "trinidad and tobago": "TT",
+    "guatemala": "GT",
+    "honduras": "HN",
+    "el salvador": "SV",
+    "nicaragua": "NI",
+    "costa rica": "CR",
+    "panama": "PA",
+    "dominican republic": "DO",
+    "puerto rico": "PR",
+    "barbados": "BB",
+    "saint lucia": "LC",
+    "saint kitts and nevis": "KN",
+    "germany": "DE",
+    "france": "FR",
+    "spain": "ES",
+    "italy": "IT",
+    "australia": "AU",
+    "new zealand": "NZ",
+    "india": "IN",
+    "china": "CN",
+    "japan": "JP",
+    "south korea": "KR",
+    "brazil": "BR",
+    "argentina": "AR",
+    "colombia": "CO",
+    "chile": "CL"
+  };
+
+  return map[cleaned] || "BZ";
+}
+export function sendPixel(res) {
+  const pixel = Buffer.from(
+    "R0lGODlhAQABAPAAAAAAAAAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==",
+    "base64"
+  );
+
+  res.set("Content-Type", "image/gif");
+  res.send(pixel);
+}
+
+export async function findUserStripeBalance(stripeAccountID, stripeSecret) {
+  console.log("🔵 [findUserStripeBalance] START", { stripeAccountID });
+
+  const stripe = new Stripe(stripeSecret);
+
+  try {
+    const balance = await stripe.balance.retrieve({
+      stripeAccount: stripeAccountID
+    });
+
+    // Stripe returns arrays like:
+    // balance.available = [{ amount: 1234, currency: "usd" }]
+    const available = balance?.available?.[0]?.amount ?? 0;
+    const pending = balance?.pending?.[0]?.amount ?? 0;
+
+    const toBZD = (v) => {
+      const n = Number(v);
+      return isNaN(n) ? "0.00" : (n / 100).toFixed(2);
+    };
+
+    const result = {
+      pendingBalance: toBZD(pending),
+      availableBalance: toBZD(available)
+    };
+
+    console.log("🟢 [findUserStripeBalance] RESULT", result);
+    return result;
+
+  } catch (err) {
+    console.error("❌ [findUserStripeBalance] ERROR:", {
+      message: err.message,
+      type: err.type,
+      code: err.code
+    });
+
+    return {
+      pendingBalance: "N/A",
+      availableBalance: "N/A"
+    };
+  }
+}
+
+export async function createPaymentIntent({
+  mode,               // "reserve" or "order"
+  amount,
+  vendorId,
+  customerId,
+  paymentMethodId,
+  stripeAccountID,
+  reserveAmount,
+  currency = "usd",
+  description = "",
+  metadata = {}
+}) {
+  log?.("🔵 [createPaymentIntent] START");
+
+  const stripe = getStripe();
+
+  // Validate mode
+  if (!mode || !["reserve", "order"].includes(mode)) {
+    throw new Error("Invalid mode. Must be 'reserve' or 'order'.");
+  }
+
+  // Normalize amount
+  const normalizeAmount = (v) => {
+    if (v == null) return 0;
+    const decoded = decodeURIComponent(String(v));
+    if (decoded.includes("|")) {
+      return decoded
+        .split("|")
+        .map((x) => Number(x) || 0)
+        .reduce((a, b) => a + b, 0);
+    }
+    const n = Number(decoded);
+    return isNaN(n) ? 0 : Number(n.toFixed(2));
+  };
+
+  const amountCents =
+    mode === "order"
+      ? Math.round(normalizeAmount(amount) * 100)
+      : Number(amount);
+
+  if (!amountCents || !vendorId) {
+    throw new Error("Missing required fields: amount, vendorId");
+  }
+
+  // Vendor lookup
+  const vendorSnap = await db.collection("Users").doc(vendorId).get();
+  if (!vendorSnap.exists) {
+    throw new Error("Vendor not found");
+  }
+
+  const vendorData = vendorSnap.data();
+  const vendorStripeID = stripeAccountID || vendorData.stripeAccountID;
+
+  if (!vendorStripeID) {
+    throw new Error("Vendor missing Stripe account");
+  }
+
+  // Determine currency
+  const info = await determinePayoutCurrency(
+    stripe,
+    vendorStripeID,
+    amountCents
+  );
+
+  // Metadata
+  const fullMetadata = {
+    vendorId: String(vendorId),
+    ...Object.fromEntries(
+      Object.entries(metadata).map(([k, v]) => [k, String(v)])
+    )
+  };
+
+  // MODE: RESERVE
+  if (mode === "reserve") {
+    if (!Number.isInteger(reserveAmount)) {
+      throw new Error("reserveAmount must be an integer in cents");
+    }
+
+    fullMetadata.reserveAmount = String(reserveAmount);
+
+    const pi = await stripe.paymentIntents.create({
+      amount: amountCents,
+      currency: info.transferCurrency,
+      description: description.trim(),
+      metadata: fullMetadata,
+      transfer_data: {
+        destination: vendorStripeID
+      }
+    });
+
+    return {
+      clientSecret: pi.client_secret,
+      paymentIntentId: pi.id
+    };
+  }
+
+  // MODE: ORDER (5% reserve)
+  if (mode === "order") {
+    if (!customerId || !paymentMethodId) {
+      throw new Error("Missing customerId or paymentMethodId");
+    }
+
+    const reserveFee = Math.round(amountCents * 0.05);
+
+    await stripe.paymentMethods.attach(paymentMethodId, {
+      customer: customerId
+    });
+
+    const pi = await stripe.paymentIntents.create({
+      amount: amountCents,
+      currency: info.transferCurrency,
+      customer: customerId,
+      payment_method: paymentMethodId,
+      confirm: true,
+      application_fee_amount: reserveFee,
+      transfer_data: {
+        destination: vendorStripeID
+      },
+      metadata: {
+        vendorId,
+        reserveAmount: reserveFee
+      }
+    });
+
+    return {
+      clientSecret: pi.client_secret,
+      paymentIntentId: pi.id
+    };
+  }
+
+  throw new Error("Unhandled mode in createPaymentIntent");
+}
+
+// ============================================================================
+// WEBHOOK CNS — PURE STRIPE EVENT PROCESSOR
+// ============================================================================
+//
+// handleStripeWebhook()
+// ---------------------
+// • Accepts a VERIFIED Stripe event object
+// • No HTTP, no Netlify, no rawBody
+//
+// ============================================================================
+
+/* global warn */
+
+export async function handleStripeWebhook(eventObj) {
+  const stripe = getStripe();
+
+  // 1. VENDOR ONBOARDING
+  if (eventObj.type === "account.created" || eventObj.type === "account.updated") {
+    const account = eventObj.data.object;
+
+    const stripeAccountID = account.id;
+    const email = account.email;
+    const country = account.country;
+
+    if (email) {
+      const snap = await db
+        .collection("Users")
+        .where("UserEmail", "==", email)
+        .limit(1)
+        .get();
+
+      if (!snap.empty) {
+        const userRef = snap.docs[0].ref;
+
+        await userRef.set(
+          {
+            UserCountry: country,
+
+            TPIdentity: {
+              role: "Vendor",
+              stripeAccountID,
+              stripeDashboardURL: null
             },
-            { merge: true }
-          );
 
-          await db.collection("CHANGES").add({
-            type: "vendorOnboarding",
-            uid: userRef.id,
+            TPNotifications: {
+              receiveMassEmails: true
+            },
+
+            TPWallet: {
+              payFrequency: "weekly",
+              payDay: "monday"
+            },
+
+            updatedAt: admin.firestore.FieldValue.serverTimestamp()
+          },
+          { merge: true }
+        );
+
+        await db.collection("CHANGES").add({
+          type: "vendorOnboarding",
+          uid: userRef.id,
+          stripeAccountID,
+          country,
+          reason: "stripe_vendor_onboarding",
+          actor: "system",
+          source: "stripeWebhook",
+          createdAt: admin.firestore.FieldValue.serverTimestamp()
+        });
+
+        await db
+          .collection("IdentityHistory")
+          .doc(userRef.id)
+          .collection("snapshots")
+          .add({
+            snapshotType: "vendorOnboarding",
             stripeAccountID,
             country,
             reason: "stripe_vendor_onboarding",
@@ -388,493 +732,148 @@ export async function handler(event, context) {
             createdAt: admin.firestore.FieldValue.serverTimestamp()
           });
 
-          await db
-            .collection("IdentityHistory")
-            .doc(userRef.id)
-            .collection("snapshots")
-            .add({
-              snapshotType: "vendorOnboarding",
-              stripeAccountID,
-              country,
-              reason: "stripe_vendor_onboarding",
-              actor: "system",
-              source: "stripeWebhook",
-              createdAt: admin.firestore.FieldValue.serverTimestamp()
-            });
-
-          await stripe.accounts.update(stripeAccountID, {
-            settings: {
-              payouts: {
-                schedule: {
-                  interval: "weekly",
-                  weekly_anchor: "monday"
-                }
+        await stripe.accounts.update(stripeAccountID, {
+          settings: {
+            payouts: {
+              schedule: {
+                interval: "weekly",
+                weekly_anchor: "monday"
               }
             }
-          });
-
-          log(`[StripeWebhook] Vendor updated: ${email} → weekly payouts`);
-        }
-      }
-    }
-
-    // ---------------------------------------------------------
-    // 2. RESERVE SYSTEM
-    // ---------------------------------------------------------
-    if (eventObj.type === "payment_intent.succeeded") {
-      const pi = eventObj.data.object;
-      const vendorId = pi.metadata?.vendorId;
-      const reserveAmount = parseInt(pi.metadata?.reserveAmount || "0", 10);
-
-      let country = null;
-
-      if (pi.transfer_data?.destination) {
-        const acct = await stripe.accounts.retrieve(pi.transfer_data.destination);
-        country = acct.country;
-      }
-
-      if (vendorId && reserveAmount) {
-        const vendorRef = db.collection("Users").doc(vendorId);
-
-        await vendorRef.set(
-          {
-            UserCountry: country,
-
-            TPWallet: {
-              reserveBalance: admin.firestore.FieldValue.increment(reserveAmount),
-              reserveHistory: admin.firestore.FieldValue.arrayUnion({
-                amount: reserveAmount,
-                date: new Date().toISOString(),
-                orderId: pi.id,
-                releaseDate: calculateReleaseDate(new Date(), 60),
-                type: "reserve_add"
-              })
-            }
-          },
-          { merge: true }
-        );
-
-        await db.collection("CHANGES").add({
-          type: "reserveAdd",
-          uid: vendorId,
-          amount: reserveAmount,
-          orderId: pi.id,
-          reason: "reserve_add",
-          actor: "system",
-          source: "stripeWebhook",
-          createdAt: admin.firestore.FieldValue.serverTimestamp()
+          }
         });
 
-        log(
-          `[StripeWebhook] Reserve added: Vendor ${vendorId} +${reserveAmount} cents`
-        );
-      } else {
-        warn(
-          "[StripeWebhook] payment_intent.succeeded missing vendorId or reserveAmount"
-        );
+        log?.(`[StripeWebhook] Vendor updated: ${email} → weekly payouts`);
       }
     }
+  }
 
-    // ---------------------------------------------------------
-    // 3. MASS EMAIL CREDITS
-    // ---------------------------------------------------------
-    if (eventObj.type === "checkout.session.completed") {
-      const session = eventObj.data.object;
+  // 2. RESERVE SYSTEM
+  if (eventObj.type === "payment_intent.succeeded") {
+    const pi = eventObj.data.object;
+    const vendorId = pi.metadata?.vendorId;
+    const reserveAmount = parseInt(pi.metadata?.reserveAmount || "0", 10);
 
-      const eventID = session.metadata?.eventID;
-      if (!eventID) {
-        error("[StripeWebhook] checkout.session.completed missing eventID");
-        return {
-          statusCode: 400,
-          body: JSON.stringify({ error: "Missing eventID" })
-        };
-      }
+    let country = null;
 
-      const eventRef = db.collection("Events").doc(eventID);
-      const eventSnap = await eventRef.get();
+    if (pi.transfer_data?.destination) {
+      const acct = await stripe.accounts.retrieve(pi.transfer_data.destination);
+      country = acct.country;
+    }
 
-      if (!eventSnap.exists) {
-        error("[StripeWebhook] Event not found:", eventID);
-        return {
-          statusCode: 404,
-          body: JSON.stringify({ error: "Event not found" })
-        };
-      }
+    if (vendorId && reserveAmount) {
+      const vendorRef = db.collection("Users").doc(vendorId);
 
-      const eventData = eventSnap.data();
-      const useremail = eventData.email;
-
-      const snap = await db
-        .collection("Users")
-        .where("UserEmail", "==", useremail)
-        .limit(1)
-        .get();
-
-      if (snap.empty) {
-        return {
-          statusCode: 404,
-          body: JSON.stringify({ success: false, error: "Invalid user" })
-        };
-      }
-
-      const userDoc = snap.docs[0];
-      const userRef = userDoc.ref;
-      const userID = userDoc.id;
-
-      const lineItems = await stripe.checkout.sessions.listLineItems(session.id);
-      const quantity = lineItems.data[0]?.quantity || 1;
-
-      await userRef.set(
+      await vendorRef.set(
         {
-          TPNotifications: {
-            paidMassNotificationCredits:
-              admin.firestore.FieldValue.increment(quantity)
+          UserCountry: country,
+
+          TPWallet: {
+            reserveBalance: admin.firestore.FieldValue.increment(reserveAmount),
+            reserveHistory: admin.firestore.FieldValue.arrayUnion({
+              amount: reserveAmount,
+              date: new Date().toISOString(),
+              orderId: pi.id,
+              releaseDate: calculateReleaseDate(new Date(), 60),
+              type: "reserve_add"
+            })
           }
         },
         { merge: true }
       );
 
       await db.collection("CHANGES").add({
-        type: "massEmailCredits",
-        uid: userID,
-        quantity,
-        eventID,
-        reason: "mass_email_credit_purchase",
+        type: "reserveAdd",
+        uid: vendorId,
+        amount: reserveAmount,
+        orderId: pi.id,
+        reason: "reserve_add",
         actor: "system",
         source: "stripeWebhook",
         createdAt: admin.firestore.FieldValue.serverTimestamp()
       });
 
-      log(
-        `[StripeWebhook] Added ${quantity} credits to user ${userID} for event ${eventID}`
+      log?.(
+        `[StripeWebhook] Reserve added: Vendor ${vendorId} +${reserveAmount} cents`
+      );
+    } else {
+      warn?.(
+        "[StripeWebhook] payment_intent.succeeded missing vendorId or reserveAmount"
       );
     }
-
-    return {
-      statusCode: 200,
-      body: JSON.stringify({ success: true, received: true })
-    };
-  } catch (err) {
-    error("[StripeWebhook] error:", err.message);
-    return {
-      statusCode: 500,
-      body: JSON.stringify({ success: false })
-    };
   }
-}
 
-// ============================================================================
-// END OF stripe-webhook.js
-// ============================================================================
+  // 3. MASS EMAIL CREDITS
+  if (eventObj.type === "checkout.session.completed") {
+    const session = eventObj.data.object;
 
-
-
-// ============================================================================
-// FILE: tropic-pulse-functions/PULSE-WORLD/netlify/functions/create-reserve-payment.js
-// ORGAN: PulseWorldBank-v20 (Reserve Payment Creator)
-// LAYER: PULSE-WORLD / FINANCIAL-CORE / PAYMENTS
-// ============================================================================
-//
-// ROLE:
-//   Creates a PaymentIntent that:
-//     • Charges a customer
-//     • Sends funds to a vendor’s connected account
-//     • Allocates a reserveAmount in metadata for later use by webhook
-//
-// EXPECTS (JSON body):
-//   • amount (integer, cents)
-//   • vendorId (string)
-//   • stripeAccountID (string)
-//   • reserveAmount (integer, cents)
-//   • currency (string, default "usd")
-//   • description (string, optional)
-//   • metadata (object, optional)
-//
-// SAFETY:
-//   • Validates required fields
-//   • Ensures amount/reserveAmount are integers
-//   • Ensures metadata is stringified
-//
-// ============================================================================
-
-/* global log,error */
-
-export async function handler(event, context) {
-  log?.("🔵 [/create-reserve-payment] START");
-
-  try {
-    if (event.httpMethod !== "POST") {
-      return { statusCode: 405, body: "Method Not Allowed" };
+    const eventID = session.metadata?.eventID;
+    if (!eventID) {
+      throw new Error("Missing eventID");
     }
 
-    const body = JSON.parse(event.body || "{}");
-    const stripe = getStripeReserve();
+    const eventRef = db.collection("Events").doc(eventID);
+    const eventSnap = await eventRef.get();
 
-    const {
-      amount,
-      vendorId,
-      stripeAccountID,
-      reserveAmount,
-      currency = "usd",
-      description,
-      metadata = {}
-    } = body;
-
-    // -----------------------------
-    // VALIDATION
-    // -----------------------------
-    if (!amount || !vendorId || !stripeAccountID) {
-      return {
-        statusCode: 400,
-        body: JSON.stringify({
-          success: false,
-          error: "Missing required fields: amount, vendorId, stripeAccountID"
-        })
-      };
+    if (!eventSnap.exists) {
+      throw new Error("Event not found");
     }
 
-    if (!Number.isInteger(amount)) {
-      return {
-        statusCode: 400,
-        body: JSON.stringify({
-          success: false,
-          error: "amount must be an integer in cents"
-        })
-      };
+    const eventData = eventSnap.data();
+    const useremail = eventData.email;
+
+    const snap = await db
+      .collection("Users")
+      .where("UserEmail", "==", useremail)
+      .limit(1)
+      .get();
+
+    if (snap.empty) {
+      throw new Error("Invalid user");
     }
 
-    if (!Number.isInteger(reserveAmount)) {
-      return {
-        statusCode: 400,
-        body: JSON.stringify({
-          success: false,
-          error: "reserveAmount must be an integer in cents"
-        })
-      };
-    }
+    const userDoc = snap.docs[0];
+    const userRef = userDoc.ref;
+    const userID = userDoc.id;
 
-    // -----------------------------
-    // METADATA (STRING-ONLY)
-    // -----------------------------
-    const fullMetadata = {
-      vendorId: String(vendorId),
-      reserveAmount: String(reserveAmount || 0),
-      ...Object.fromEntries(
-        Object.entries(metadata).map(([k, v]) => [k, String(v)])
-      )
-    };
+    const lineItems = await stripe.checkout.sessions.listLineItems(session.id);
+    const quantity = lineItems.data[0]?.quantity || 1;
 
-    // -----------------------------
-    // CREATE PAYMENT INTENT
-    // -----------------------------
-    const paymentIntent = await stripe.paymentIntents.create({
-      amount,
-      currency,
-      description: description ? String(description).trim() : "",
-      metadata: fullMetadata,
-      transfer_data: {
-        destination: stripeAccountID
-      }
-    });
-
-    return {
-      statusCode: 200,
-      body: JSON.stringify({
-        success: true,
-        clientSecret: paymentIntent.client_secret,
-        paymentIntentId: paymentIntent.id
-      })
-    };
-  } catch (err) {
-    error?.("Create-reserve-payment error:", err);
-    return {
-      statusCode: 500,
-      body: JSON.stringify({ success: false, error: err.message })
-    };
-  }
-}
-
-// ============================================================================
-// END OF create-reserve-payment.js
-// ============================================================================
-
-
-
-// ============================================================================
-// FILE: tropic-pulse-functions/PULSE-WORLD/netlify/functions/create-order-payment.js
-// ORGAN: PulseWorldBank-v20 (Order Payment Creator)
-// LAYER: PULSE-WORLD / FINANCIAL-CORE / PAYMENTS
-// ============================================================================
-//
-// ROLE:
-//   Creates a PaymentIntent for an order flow that:
-//     • Charges a customer
-//     • Sends funds to a vendor’s connected account
-//     • Applies a 5% reserve via application_fee_amount
-//
-// EXPECTS (JSON body):
-//   • amount (number or string, dollars or encoded)
-//   • vendorId (string)
-//   • customerId (string)
-//   • paymentMethodId (string)
-//
-// BEHAVIOR:
-//   • Cleans and normalizes inputs
-//   • Looks up vendor in Firestore
-//   • Determines payout currency via determinePayoutCurrency()
-//   • Attaches payment method to customer
-//   • Creates PaymentIntent with transfer_data + application_fee_amount
-//
-// ============================================================================
-
-/* global log,error */
-
-export async function handler(event, context) {
-  log?.("🔵 [/create-order-payment] START");
-
-  try {
-    if (event.httpMethod !== "POST") {
-      return { statusCode: 405, body: "Method Not Allowed" };
-    }
-
-    const body = JSON.parse(event.body || "{}");
-    const stripe = getStripeOrder();
-
-    // -----------------------------
-    // CLEANERS
-    // -----------------------------
-    const clean = (v) => {
-      if (!v) return null;
-      const s = String(v).trim();
-      if (
-        s === "" ||
-        s.includes("{{") ||
-        s.includes("add_more_field") ||
-        s.includes("fieldLebal") ||
-        s.includes("fieldValue") ||
-        s.includes("*")
-      )
-        return null;
-      return s;
-    };
-
-    const num = (v) => {
-      if (v == null) return 0;
-      const decoded = decodeURIComponent(String(v));
-      if (decoded.includes("|")) {
-        return decoded
-          .split("|")
-          .map((x) => Number(x) || 0)
-          .reduce((a, b) => a + b, 0);
-      }
-      const n = Number(decoded);
-      return isNaN(n) ? 0 : Number(n.toFixed(2));
-    };
-
-    // -----------------------------
-    // INPUTS
-    // -----------------------------
-    const amount = Math.round(num(body.amount) * 100);
-    const vendorId = clean(body.vendorId);
-    const customerId = clean(body.customerId);
-    const paymentMethodId = clean(body.paymentMethodId);
-
-    if (!amount || !vendorId || !customerId || !paymentMethodId) {
-      return {
-        statusCode: 400,
-        body: JSON.stringify({
-          success: false,
-          error: "Missing required fields"
-        })
-      };
-    }
-
-    // -----------------------------
-    // VENDOR LOOKUP
-    // -----------------------------
-    const vendorSnap = await db.collection("Users").doc(vendorId).get();
-    if (!vendorSnap.exists) {
-      return {
-        statusCode: 404,
-        body: JSON.stringify({
-          success: false,
-          error: "Vendor not found"
-        })
-      };
-    }
-
-    const { stripeAccountID } = vendorSnap.data();
-    if (!stripeAccountID) {
-      return {
-        statusCode: 400,
-        body: JSON.stringify({
-          success: false,
-          error: "Vendor missing Stripe account"
-        })
-      };
-    }
-
-    // -----------------------------
-    // DETERMINE CURRENCY
-    // -----------------------------
-    const info = await determinePayoutCurrency(stripe, stripeAccountID, amount);
-
-    // 5% reserve
-    const reserveAmount = Math.round(amount * 0.05);
-
-    // -----------------------------
-    // ATTACH PAYMENT METHOD
-    // -----------------------------
-    await stripe.paymentMethods.attach(paymentMethodId, { customer: customerId });
-
-    // -----------------------------
-    // CREATE PAYMENT INTENT
-    // -----------------------------
-    const paymentIntent = await stripe.paymentIntents.create({
-      amount,
-      currency: info.transferCurrency,
-      customer: customerId,
-      payment_method: paymentMethodId,
-      confirm: true,
-      application_fee_amount: reserveAmount,
-      transfer_data: {
-        destination: stripeAccountID
+    await userRef.set(
+      {
+        TPNotifications: {
+          paidMassNotificationCredits:
+            admin.firestore.FieldValue.increment(quantity)
+        }
       },
-      metadata: {
-        vendorId,
-        reserveAmount
-      }
+      { merge: true }
+    );
+
+    await db.collection("CHANGES").add({
+      type: "massEmailCredits",
+      uid: userID,
+      quantity,
+      eventID,
+      reason: "mass_email_credit_purchase",
+      actor: "system",
+      source: "stripeWebhook",
+      createdAt: admin.firestore.FieldValue.serverTimestamp()
     });
 
-    log?.("[create-order-payment] PaymentIntent created:", paymentIntent.id);
-
-    return {
-      statusCode: 200,
-      body: JSON.stringify({
-        success: true,
-        clientSecret: paymentIntent.client_secret,
-        paymentIntentId: paymentIntent.id
-      })
-    };
-  } catch (err) {
-    error?.("[create-order-payment] Error creating PaymentIntent:", err);
-    return {
-      statusCode: 500,
-      body: JSON.stringify({
-        success: false,
-        error: "Error creating payment"
-      })
-    };
+    log?.(
+      `[StripeWebhook] Added ${quantity} credits to user ${userID} for event ${eventID}`
+    );
   }
+
+  return { success: true };
 }
 
 // ============================================================================
-// END OF create-order-payment.js
+// CURRENCY ENGINE — IMMORTAL v20
 // ============================================================================
-
 
 export async function determinePayoutCurrency(stripe, stripeAccountID, payoutAmountCents) {
-  log("🔵 [determinePayoutCurrency] START");
+  log?.("🔵 [determinePayoutCurrency] START");
 
   const payoutAmountUSD = payoutAmountCents / 100;
 
@@ -882,7 +881,7 @@ export async function determinePayoutCurrency(stripe, stripeAccountID, payoutAmo
   try {
     account = await stripe.accounts.retrieve(stripeAccountID);
   } catch (err) {
-    error("❌ Stripe account retrieval failed:", err.message);
+    error?.("❌ Stripe account retrieval failed:", err.message);
     return {
       accountCurrency: "usd",
       transferCurrency: "usd",
@@ -942,185 +941,16 @@ export async function determinePayoutCurrency(stripe, stripeAccountID, payoutAmo
 /* ------------------------------------------------------
    Calculate reserve release date (3-day default)
 ------------------------------------------------------ */
-export function calculateReleaseDate(deliveredAt, delayDays = 3, admin) {
-  try {
-    if (!deliveredAt) return null;
-
-    let date;
-
-    if (typeof deliveredAt.toDate === "function") {
-      date = deliveredAt.toDate();
-    } else {
-      date = new Date(deliveredAt);
-    }
-
-    if (isNaN(date.getTime())) return null;
-
-    date.setDate(date.getDate() + delayDays);
-
-    return admin.firestore.Timestamp.fromDate(date);
-  } catch (err) {
-    log("❌ calculateReleaseDate error:", err.message);
-    return null;
-  }
+export function calculateReleaseDate(deliveredAt, delayDays = 3) {
+  const base = deliveredAt instanceof Date ? deliveredAt : new Date(deliveredAt);
+  const result = new Date(base);
+  result.setDate(result.getDate() + delayDays);
+  return result.toISOString();
 }
 
-/* ------------------------------------------------------
-   Calculate platform reserve (default 5%)
------------------------------------------------------- */
-export function calculatePlatformReserve(amountCents, reservePercent = 5) {
-  const reserve = Math.round((amountCents * reservePercent) / 100);
-  return {
-    reserveCents: reserve,
-    reservePercent
-  };
-}
-
-/* ------------------------------------------------------
-   Calculate vendor payout after reserve
------------------------------------------------------- */
-export function calculateVendorPayout(amountCents, reservePercent = 5) {
-  const { reserveCents } = calculatePlatformReserve(amountCents, reservePercent);
-  const vendorCents = amountCents - reserveCents;
-
-  return {
-    vendorCents,
-    reserveCents
-  };
-}
-
-/* ------------------------------------------------------
-   Calculate full payout summary (vendor + reserve + currency)
------------------------------------------------------- */
-export async function buildPayoutSummary({
-  stripe,
-  stripeAccountID,
-  amountCents,
-  reservePercent = 5
-}) {
-  const { vendorCents, reserveCents } = calculateVendorPayout(amountCents, reservePercent);
-
-  const currencyInfo = await determinePayoutCurrency(
-    stripe,
-    stripeAccountID,
-    vendorCents
-  );
-
-  return {
-    vendorCents,
-    reserveCents,
-    ...currencyInfo
-  };
-}
-
-
-export function currency(amount, displayCurrency = "$") {
-  let raw = String(amount || "").replace(/BZ?\$|\$/g, "").trim();
-  const num = Number(raw);
-  const safe = isNaN(num) ? "0.00" : num.toFixed(2);
-
-  let cur = String(displayCurrency || "$").trim().toUpperCase();
-  cur = cur === "USD" || cur === "$" || cur === "US$" ? "$" : "BZ$";
-
-  return `${cur}${safe}`;
-}
-
-export function formatDisplayAmount(displayCurrency, amount) {
-  const safeAmount = Number(amount);
-  const finalAmount = isNaN(safeAmount) ? "0.00" : safeAmount.toFixed(2);
-
-  let cur = String(displayCurrency || "$").trim().toUpperCase();
-  cur = cur === "USD" || cur === "$" || cur === "US$" ? "$" : "BZ$";
-
-  return currency(finalAmount, cur);
-}
-
-/* global log,warn,error */
 // ============================================================================
-// FILE: tropic-pulse-functions/PULSE-WORLD/netlify/functions/root-redirect.js
-// PULSE REDIRECT — VERSION 6.3
-// “THE CROSSING GUARD / SAFE‑PASSAGE REDIRECT LAYER”
+// FOOTER — LEARNING NOTES FOR ALDWYN
 // ============================================================================
 //
-// PAGE INDEX (v6.3 Source of Truth)
-// ---------------------------------
-// ROLE:
-//   root-redirect.js is the **CROSSING GUARD** of the backend.
-//   It stands at the public edge of the system and ensures safe passage
-//   from the app → to Stripe → and back.
-//
-//   • Validates minimal required parameters (userID, eventID)
-//   • Prevents unsafe or malformed crossings
-//   • Redirects users safely to the correct Stripe Payment Link
-//   • Keeps logic minimal, predictable, and deterministic
-//
-// WHAT THIS FILE *IS*:
-//   • A Netlify HTTP redirect endpoint
-//   • A safe-passage layer for payment flows
-//   • A deterministic, zero-side-effect redirector
-//
-// WHAT THIS FILE *IS NOT*:
-//   • NOT a router
-//   • NOT a backend logic module
-//   • NOT a GPU or OS subsystem
-//   • NOT a business logic handler
-//
-// SAFETY CONTRACT (v6.3):
-//   • Validate required query parameters
-//   • Never expose secrets
-//   • Never call external APIs
-//   • Keep redirect URLs explicit and intentional
-//   • Keep logic minimal and deterministic
-//
-// STRUCTURE RULES:
-//   • No imports allowed unless absolutely required
-//   • No mutation of request or response objects
-//   • No additional logic beyond validation + redirect
-//
-// VERSION TAG:
-//   version: 6.3
-//
+// (keep your existing Stripe master notes here if you want)
 // ============================================================================
-// ⭐ v6.3 COMMENT LOG
-// ---------------------------------------------------------------------------
-// • Added full v6.3 PAGE INDEX
-// • Added metaphor layer (CROSSING GUARD / SAFE‑PASSAGE REDIRECT LAYER)
-// • Added safety contract + structure rules
-// • Added v6.3 context map
-// • No logic changes
-// • No renames
-// • No behavior drift
-// ============================================================================
-
-export async function handler(event, context) {
-  try {
-    const params = event.queryStringParameters || {};
-    const userID = params.userID;
-    const eventID = params.eventID;
-
-    if (!userID) {
-      return { statusCode: 400, body: "Missing userID" };
-    }
-    if (!eventID) {
-      return { statusCode: 400, body: "Missing eventID" };
-    }
-
-    const realUrl =
-      `https://pay.tropicpulse.bz/b/00w4gy1ZP0Si7UpcgIfIs01` +
-      `?userID=${encodeURIComponent(userID)}` +
-      `&eventID=${encodeURIComponent(eventID)}`;
-
-    return {
-      statusCode: 302,
-      headers: { Location: realUrl },
-      body: ""
-    };
-
-  } catch (err) {
-    error("Payment redirect error:", err.message);
-    return {
-      statusCode: 500,
-      body: "Payment redirect failed"
-    };
-  }
-}

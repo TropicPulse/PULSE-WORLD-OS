@@ -668,7 +668,7 @@ function mapWeatherCode(code) {
 //   Given free‑text + envState, returns a narrative “future vibes” string.
 //
 
-async function generateFutureScenario(text, user, envState) {
+export async function generateFutureScenario(text, user, envState) {
   const out = [];
   const lower = text.toLowerCase();
 

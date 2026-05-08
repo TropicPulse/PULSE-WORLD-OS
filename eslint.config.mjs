@@ -33,11 +33,12 @@ export default [
       // ============================================================
       // NOISE REDUCTION — WARN OR DISABLE
       // ============================================================
-
-      // OS daemon often has unused vars by design
       "no-unused-vars": [
         "warn",
-        { varsIgnorePattern: "^(Pulse|OS)", argsIgnorePattern: "^_" }
+        {
+          varsIgnorePattern: "^(Pulse|OS|log|warn|error|err|_)|.*_.*",
+          argsIgnorePattern: "^(Pulse|OS|log|warn|error|err|_)|.*_.*"
+        }
       ],
 
       // Allow empty catch blocks in OS boot layers

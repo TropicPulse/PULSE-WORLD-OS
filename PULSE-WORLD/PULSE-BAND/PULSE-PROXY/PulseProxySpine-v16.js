@@ -87,6 +87,31 @@ import { createPulseOSHealerV12_3 as startPulseOSHealer } from "../PULSE-OS/Puls
 import { createGlobalHealerV12 as startGlobalHealer } from "../PULSE-OS/PulseOSImmuneSystem.js";
 import { PulseBinaryOSv11Evo as startPulseOS } from "../PULSE-OS/PulseBinaryOS-v16.js";
 
+import { getStripe as Stripe, stripeInstance, determinePayoutCurrency } from "../PULSE-X/PulseWorldBank-v20.js";
+import { db, admin } from "../PULSE-X/PulseWorldGenome-v20.js";
+import { getTwilioClient as twilio } from "../PULSE-X/PulseWorldSMSAlert-v20.js";
+import { corsHandler } from "../PULSE-X/PulseWorldTransport-v20.js";
+const storage = admin.storage().bucket();
+import { onRequest, onCall } from "firebase-functions/v2/https";
+export const EMAIL_PASSWORD = process.env.EMAIL_PASSWORD;
+const STRIPE_PASSWORD = process.env.STRIPE_SECRET_KEY;
+const JWT_SECRET = process.env.JWT_SECRET;
+// CLOUD RUN ENVIRONMENTS
+const TP_API_KEY = process.env.TP_API_KEY;
+const BASE_PAYMENT_URL = process.env.BASE_PAYMENT_URL;
+const GOOGLE_MAPS_KEY = process.env.GOOGLE_MAPS_KEY;
+const PLACEHOLDER_IMAGE_URL = process.env.PLACEHOLDER_IMAGE_URL;
+
+const STRIPE_WEBHOOK_SECRET = process.env.STRIPE_SECRET_WEBHOOK;
+const MESSAGING_SERVICE_SID = process.env.MESSAGING_SERVICE_SID;
+const ACCOUNT_SID = process.env.ACCOUNT_SID;
+const AUTH_TOKEN = process.env.AUTH_TOKEN;
+
+// CONFIG
+const PIN_COLLECTION = process.env.PIN_COLLECTION;
+const RATE_LIMIT_WINDOW_MS = process.env.RATE_LIMIT_WINDOW_MS;
+const MAX_REQUESTS_PER_WINDOW = process.env.MAX_REQUESTS_PER_WINDOW;
+const PIN_TTL_MS = process.env.PIN_TTL_MS;
 const log   = global.log   || console.log;
 const warn  = global.warn  || console.warn;
 const error = global.error || console.error;
@@ -496,6 +521,504 @@ export function getSpineHealingState() {
 const app = express();
 const PORT = process.env.PORT || 8080;
 
+// CORS for all non-webhook routes
+app.use(corsHandler);
+
+// JSON body parser for normal routes
+app.use(express.json());
+
+/* ---------------- Data Backend Health ---------------- */
+app.get("/health", async (req, res) => {
+  const health = {
+    status: "ok",
+    ts: Date.now(),
+    firestore: "unknown",
+    auth: "unknown",
+    lastFunctionError: global.lastFunctionError || null,
+    lastColdStart: global.lastColdStart || null
+  };
+
+  try {
+    // Firestore check
+    await db.collection("HealthCheck").limit(1).get();
+    health.firestore = "connected";
+  } catch (err) {
+    health.firestore = "error";
+    health.status = "degraded";
+  }
+
+  try {
+    // Auth check
+    await admin.auth().listUsers(1);
+    health.auth = "connected";
+  } catch (err) {
+    health.auth = "error";
+    health.status = "degraded";
+  }
+
+  res.json(health);
+});
+
+/* -----------------------------
+   OTHER EXPRESS ROUTES
+------------------------------ */
+app.post("/create-payment", async (req, res) => {
+  try {
+    const stripe = req.stripe;
+
+    const {
+      amount,
+      vendorId,
+      stripeAccountID,
+      reserveAmount,
+      currency = "usd",
+      description,
+      metadata = {}
+    } = req.body;
+
+    // -----------------------------
+    // VALIDATION
+    // -----------------------------
+    if (!amount || !vendorId || !stripeAccountID) {
+      return res.status(400).json({
+        success: false,
+        error: "Missing required fields: amount, vendorId, stripeAccountID"
+      });
+    }
+
+    if (!Number.isInteger(amount)) {
+      return res.status(400).json({
+        success: false,
+        error: "Amount must be an integer in cents"
+      });
+    }
+
+    if (!Number.isInteger(reserveAmount)) {
+      return res.status(400).json({
+        success: false,
+        error: "reserveAmount must be an integer in cents"
+      });
+    }
+
+    // -----------------------------
+    // METADATA (STRING-ONLY)
+    // -----------------------------
+    const fullMetadata = {
+      vendorId: String(vendorId),
+      reserveAmount: String(reserveAmount || 0),
+      ...Object.fromEntries(
+        Object.entries(metadata).map(([k, v]) => [k, String(v)])
+      )
+    };
+
+    // -----------------------------
+    // CREATE PAYMENT INTENT
+    // -----------------------------
+    const paymentIntent = await stripe.paymentIntents.create({
+      amount,
+      currency,
+      description: description ? String(description).trim() : "",
+      metadata: fullMetadata,
+      transfer_data: {
+        destination: stripeAccountID
+      }
+    });
+
+    return res.json({
+      success: true,
+      clientSecret: paymentIntent.client_secret,
+      paymentIntentId: paymentIntent.id
+    });
+
+  } catch (err) {
+    console.error("Create-payment error:", err);
+    return res.status(500).json({ success: false, error: err.message });
+  }
+});
+
+app.get("/resend-link", async (req, res) => {
+  console.log("🔵 [/resend-link] START");
+
+  const stripe = req.stripe;
+  const twilioClient = req.twilio;
+  const MESSAGING_SERVICE_SID = req.messagingServiceSid;
+
+  // Clean token
+  const clean = (v) => {
+    if (!v) return null;
+    const s = String(v).trim();
+    if (
+      s === "" ||
+      s.includes("{{") ||
+      s.includes("add_more_field") ||
+      s.includes("fieldLebal") ||
+      s.includes("fieldValue") ||
+      s.includes("*")
+    ) return null;
+    return s;
+  };
+
+  const token = clean(req.query.token);
+  if (!token) {
+    return res.status(400).json({ success: false, error: "Missing token" });
+  }
+
+  const usersRef = admin.firestore().collection("Users");
+
+  // 1️⃣ Try permanent token first
+  let snap = await usersRef.where("UserToken", "==", token).limit(1).get();
+
+  // 2️⃣ Try current resend token
+  if (snap.empty) {
+    snap = await usersRef.where("TPIdentity.resendToken", "==", token).limit(1).get();
+  }
+
+  if (snap.empty) {
+    return res.status(404).json({ success: false, error: "Invalid token" });
+  }
+
+  const user = snap.docs[0].data();
+  const userRef = snap.docs[0].ref;
+
+  // -----------------------------
+  // PHONE
+  // -----------------------------
+  let phone =
+    user.UserPhone ||
+    user.Phone ||
+    user.phone ||
+    user.phonenumber ||
+    user.userphone ||
+    null;
+
+  const country = user.UserCountry || "BZ";
+  if (phone) phone = normalizePhone(phone, country);
+
+  if (!phone) {
+    return res.status(400).json({
+      success: false,
+      error: "No phone number on file for SMS resend"
+    });
+  }
+
+  // -----------------------------
+  // STRIPE ACCOUNT ID
+  // -----------------------------
+  const stripeAccountID =
+    user.TPIdentity?.stripeAccountID ||
+    null;
+
+  if (!stripeAccountID) {
+    return res.status(400).json({
+      success: false,
+      error: "User missing Stripe account ID"
+    });
+  }
+
+  // -----------------------------
+  // JWT (for return_url)
+  // -----------------------------
+  const jwt = await admin.auth().createCustomToken(
+    user.TPIdentity?.uid || user.UserID,
+    {
+      email: user.TPIdentity?.email || user.UserEmail,
+      stripeAccountID
+    }
+  );
+
+  // Hash for Stripe metadata
+  const hash = crypto.createHash("sha256").update(jwt).digest("hex").slice(0, 32);
+
+  await stripe.accounts.update(stripeAccountID, {
+    metadata: { tokenHash: hash }
+  });
+
+  // -----------------------------
+  // NOTIFICATIONS: SMS Opt-In
+  // -----------------------------
+  const receiveSMS =
+    user.TPNotifications?.receiveSMS ??
+    false;
+
+  if (!receiveSMS) {
+    return res.status(200).json({
+      success: true,
+      message: "SMS Not Sent (User Opted Out)"
+    });
+  }
+
+  // -----------------------------
+  // STRIPE ONBOARDING LINK
+  // -----------------------------
+  try {
+    const link = await stripe.accountLinks.create({
+      account: stripeAccountID,
+      refresh_url: "/expire.html",
+      return_url: `/StripeSetupComplete.html?token=${encodeURIComponent(jwt)}`,
+      type: "account_onboarding"
+    });
+
+    const newUrl = link.url;
+
+    // -----------------------------
+    // UPDATE NOTIFICATIONS TIMESTAMP
+    // -----------------------------
+    await userRef.set(
+      {
+        TPNotifications: {
+          lastSMSSentAt: admin.firestore.FieldValue.serverTimestamp()
+        }
+      },
+      { merge: true }
+    );
+
+    return res.status(200).json({
+      success: true,
+      message: "Link resent",
+      url: newUrl
+    });
+
+  } catch (err) {
+    console.error("Resend-Link error:", err.message);
+    return res.status(500).json({
+      success: false,
+      error: err.message
+    });
+  }
+});
+
+export function normalizePhone(raw, row, coords = {}) {
+  if (!raw) return null;
+
+  // Clean weird whitespace + NBSP
+  let v = String(raw)
+    .replace(/\u00A0/g, " ")
+    .trim();
+
+  // Strip everything except digits and +
+  v = v.replace(/[^\d+]/g, "");
+
+  // Already valid E.164
+  if (v.startsWith("+") && v.length >= 8 && v.length <= 15) {
+    return v;
+  }
+
+  // Remove leading +
+  if (v.startsWith("+")) v = v.slice(1);
+
+  // Pure digits
+  const digits = v.replace(/\D/g, "");
+
+  // --- BELIZE LOGIC ---
+  // 7‑digit local numbers → +501
+  if (digits.length === 7) {
+    return "+501" + digits;
+  }
+
+  // 501 + 7 digits → +501xxxxxxx
+  if (digits.startsWith("501") && digits.length === 10) {
+    return "+501" + digits.slice(3);
+  }
+
+  // --- US / CANADA ---
+  if (digits.length === 10) {
+    return "+1" + digits;
+  }
+
+  if (digits.length === 11 && digits.startsWith("1")) {
+    return "+1" + digits.slice(1);
+  }
+
+  // --- INTERNATIONAL FALLBACK ---
+  if (digits.length >= 8 && digits.length <= 15) {
+    return "+" + digits;
+  }
+
+  // Reject everything else
+  return null;
+}
+// ===============================
+//  Earn: FAILURE ALERT
+// ===============================
+app.post("/alerts/system-earn-failure", async (req, res) => {
+  try {
+    const payload = req.body;
+
+    console.error("SYSTEM Earn FAILURE:", payload);
+
+    // TODO: send email, log to DB, etc.
+
+    return res.json({ success: true });
+
+  } catch (err) {
+    console.error("Earn failure alert error:", err);
+    return res.status(500).json({
+      success: false,
+      error: "Internal Server Error"
+    });
+  }
+});
+/* ----------------------------------------------------
+   4. EXPORT API FUNCTION
+---------------------------------------------------- */
+export const api = onRequest(
+  {
+    region: "us-central1",
+    memory: "512MiB",
+    secrets: [
+      STRIPE_PASSWORD,
+      STRIPE_WEBHOOK_SECRET,
+      EMAIL_PASSWORD,
+      JWT_SECRET,
+      MESSAGING_SERVICE_SID,
+      ACCOUNT_SID,
+      AUTH_TOKEN
+    ]
+  },
+  (req, res) => {
+    try {
+      if (!stripeInstance) {
+        stripeInstance = new Stripe(STRIPE_PASSWORD.value());
+      }
+
+      req.stripe = stripeInstance;
+
+      req.twilio = twilio(
+        ACCOUNT_SID.value(),
+        AUTH_TOKEN.value()
+      );
+
+      req.messagingServiceSid = MESSAGING_SERVICE_SID.value();
+
+      return app(req, res);
+
+    } catch (err) {
+      console.error("API error:", err);
+      return res.status(500).json({ success: false, error: "Internal Server Error" });
+    }
+  }
+);
+
+app.get("/", async (req, res) => {
+  const userID = req.query.userID;
+  const eventID = req.query.eventID;
+
+  if (!userID) return res.status(400).send("Missing userID");
+  if (!eventID) return res.status(400).send("Missing eventID");
+
+  try {
+    const realUrl =
+      `https://pay.tropicpulse.bz/b/00w4gy1ZP0Si7UpcgIfIs01` +
+      `?userID=${encodeURIComponent(userID)}` +
+      `&eventID=${encodeURIComponent(eventID)}`;
+
+    return res.redirect(realUrl);
+
+  } catch (err) {
+    console.error("Payment redirect error:", err.message);
+    return res.status(500).send("Payment redirect failed");
+  }
+});
+
+// ----------------------------------------------------------------------------------------------------
+// CHECKS STRIPE PAYMENT UPDATES TO MAKE SURE 5% IS TAKEN AS A FEE FOR CHARGEBACKS AND ADDED TO THEIR RESERVE
+// ----------------------------------------------------------------------------------------------------
+app.post("/create-order-payment", async (req, res) => {
+  console.log("🔵 [/create-order-payment] START");
+
+  const stripe = req.stripe;
+
+  const clean = (v) => {
+    if (!v) return null;
+    const s = String(v).trim();
+    if (
+      s === "" ||
+      s.includes("{{") ||
+      s.includes("add_more_field") ||
+      s.includes("fieldLebal") ||
+      s.includes("fieldValue") ||
+      s.includes("*")
+    ) return null;
+    return s;
+  };
+
+  const num = (v) => {
+    if (v == null) return 0;
+    const decoded = decodeURIComponent(String(v));
+    if (decoded.includes("|")) {
+      return decoded.split("|").map(x => Number(x) || 0).reduce((a, b) => a + b, 0);
+    }
+    const n = Number(decoded);
+    return isNaN(n) ? 0 : Number(n.toFixed(2));
+  };
+
+  try {
+    const amount = Math.round(num(req.body.amount) * 100);
+    const vendorId = clean(req.body.vendorId);
+    const customerId = clean(req.body.customerId);
+    const paymentMethodId = clean(req.body.paymentMethodId);
+
+    if (!amount || !vendorId || !customerId || !paymentMethodId) {
+      return res.status(400).json({
+        success: false,
+        error: "Missing required fields"
+      });
+    }
+
+    const vendorSnap = await db.collection("Users").doc(vendorId).get();
+    if (!vendorSnap.exists) {
+      return res.status(404).json({
+        success: false,
+        error: "Vendor not found"
+      });
+    }
+
+    const { stripeAccountID } = vendorSnap.data();
+    if (!stripeAccountID) {
+      return res.status(400).json({
+        success: false,
+        error: "Vendor missing Stripe account"
+      });
+    }
+
+    const info = await determinePayoutCurrency(stripe, stripeAccountID, amount);
+
+    const reserveAmount = Math.round(amount * 0.05);
+
+    await stripe.paymentMethods.attach(paymentMethodId, { customer: customerId });
+
+    const paymentIntent = await stripe.paymentIntents.create({
+      amount,
+      currency: info.transferCurrency,
+      customer: customerId,
+      payment_method: paymentMethodId,
+      confirm: true,
+      application_fee_amount: reserveAmount,
+      transfer_data: {
+        destination: stripeAccountID
+      },
+      metadata: {
+        vendorId,
+        reserveAmount
+      }
+    });
+
+    console.log("✅ PaymentIntent created:", paymentIntent.id);
+
+    return res.json({
+      success: true,
+      clientSecret: paymentIntent.client_secret,
+      paymentIntentId: paymentIntent.id
+    });
+
+  } catch (err) {
+    console.error("❌ Error creating PaymentIntent:", err);
+    return res.status(500).json({
+      success: false,
+      error: "Error creating payment"
+    });
+  }
+});
 // backend-only PulseChunker base URL
 const CHUNKER_BASE =
   process.env.PULSE_CHUNKER_BASE ||

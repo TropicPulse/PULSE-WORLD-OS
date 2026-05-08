@@ -93,6 +93,8 @@
 //
 // DO NOT REMOVE THIS BLOCK.
 //
+import { onRequest, onCall } from "firebase-functions/v2/https";
+import { onDocumentWritten, onDocumentWrittenWithAuthContext} from "firebase-functions/v2/firestore";
 
 export const AI_EXPERIENCE_META = {
   identity: "PulseWorldPointRedemption.PointsOrgan",
@@ -393,6 +395,449 @@ export const redeemPulsePoints = onRequest(
   }
 );
 
+// --- Helpers -----------------------------------------------------
+// Simple helpers – adapt to your existing Pulse Points structure
+// --- Helpers -----------------------------------------------------
+export async function grantPulsePoints(uid, amount, type, label, otherid, referralCode, orderID) {
+  const userRef = db.collection("Users").doc(uid);
+
+  let before = 0;
+  let after = 0;
+  let newStreak = 0;
+  let TPWallet = {};
+  let TPLoyalty = {};
+  const nowTS = admin.firestore.Timestamp.now();
+
+  await db.runTransaction(async (tx) => {
+    const snap = await tx.get(userRef);
+    const user = snap.exists ? snap.data() : {};
+
+    TPWallet = user.TPWallet || {};
+    TPLoyalty = user.TPLoyalty || {};
+
+    before = Number(TPWallet.pointsBalance) || 0;
+    const lifetime = Number(TPWallet.lifetimePoints) || 0;
+    const streak = Number(TPLoyalty.streakCount) || 0;
+
+    after = before + amount;
+    newStreak = streak + 1;
+
+    tx.set(
+      userRef,
+      {
+        TPWallet: {
+          pointsBalance: after,
+          lifetimePoints: lifetime + amount,
+          lastEarnedDate: nowTS
+        },
+        TPLoyalty: {
+          ...TPLoyalty,
+          streakCount: newStreak,
+          updated: nowTS
+        }
+      },
+      { merge: true }
+    );
+  });
+
+  const settings = await db.collection("Settings").doc("global").get().then(s => s.data());
+
+  const entry = {
+    amount,
+    type,
+    label,
+    newUserUID: otherid || null,
+    referralCode: referralCode || null,
+    orderID: orderID || null,
+    reason: "activity",
+    pulsepointsBefore: before,
+    pulsepointsAfter: after,
+    streakCount: newStreak,
+    ts: nowTS
+  };
+
+  entry.pointsSnapshot = buildSnapshotForNonOrderEntry(entry, { TPWallet, TPLoyalty }, settings);
+
+  await addHistory(uid, entry);
+}
+
+export function buildSnapshotForNonOrderEntry(entry, loyalty = {}, settings = {}) {
+  const { seasonalActive, seasonalName, seasonalMultiplier } =
+    getSeasonFromSettings(settings);
+
+  return {
+    type: entry.type || "activity",
+    label: entry.label || "",
+    amount: entry.amount || 0,
+
+    tierMultiplier: loyalty.tierMultiplier ?? 1,
+    streakMultiplier: loyalty.streakMultiplier ?? 1,
+    seasonalMultiplier,
+    maxTotalMultiplier: settings.maxTotalMultiplier,
+
+    seasonalActive,
+    seasonalName,
+
+    basePoints: entry.amount || 0,
+    tierBonusPoints: 0,
+    streakBonusPoints: 0,
+    seasonalBonusPoints: 0,
+    fastDeliveryBonus: 0,
+    delayPenalty: 0,
+    totalPointsEarned: entry.amount || 0,
+
+    ts: entry.ts || admin.firestore.FieldValue.serverTimestamp(),
+    createdAt: entry.createdAt || admin.firestore.FieldValue.serverTimestamp(),
+
+    calculationVersion: settings.calculationVersion ?? 1
+  };
+}
+export async function redeemSomePulsePoints(uid, amount, type, label, otherid, referralCode, orderID) {
+  const userRef = db.collection("Users").doc(uid);
+
+  let before = 0;
+  let after = 0;
+  let TPLoyalty = {};
+  let TPWallet = {};
+  const nowTS = admin.firestore.Timestamp.now();
+
+  await db.runTransaction(async (tx) => {
+    const snap = await tx.get(userRef);
+    const user = snap.exists ? snap.data() : {};
+
+    TPLoyalty = user.TPLoyalty || {};
+    TPWallet = user.TPWallet || {};
+
+    before = Number(TPWallet.pointsBalance) || 0;
+    after = before - amount;
+
+    const updatedLoyalty = {
+      ...TPLoyalty,
+      streakCount: 0,
+      updated: nowTS
+    };
+
+    tx.set(
+      userRef,
+      {
+        TPWallet: {
+          ...TPWallet,
+          pointsBalance: after
+        },
+        TPLoyalty: updatedLoyalty
+      },
+      { merge: true }
+    );
+  });
+
+  const settings = await db.collection("Settings").doc("global").get().then(s => s.data());
+  const { seasonalActive, seasonalName, seasonalMultiplier } = getSeasonFromSettings(settings);
+
+  const entry = {
+    amount: -amount,
+    type,
+    label,
+    newUserUID: otherid || null,
+    referralCode: referralCode || null,
+    orderID: orderID || null,
+    reason: "redeem",
+    pulsepointsBefore: before,
+    pulsepointsAfter: after,
+    streakCount: 0,
+    ts: nowTS,
+    pointsSnapshot: {
+      seasonalName,
+      seasonalMultiplier,
+      seasonalActive,
+      tierName: TPLoyalty.tier || "",
+      tierMultiplier: TPLoyalty.tierMultiplier || 1,
+      streakCount: 0,
+      streakMultiplier: TPLoyalty.streakMultiplier || 1,
+      calculationVersion: TPLoyalty.calculationVersion || 1,
+      pointsBefore: before,
+      pointsAfter: after
+    }
+  };
+
+  await addHistory(uid, entry);
+}
+
+async function addHistory(uid, entry) {
+  const historyRef = db
+    .collection("PulseHistory")
+    .doc(uid)
+    .collection("entries")
+    .doc();
+
+  await historyRef.set({
+    ...entry,
+    createdAt: entry.createdAt || admin.firestore.Timestamp.now()
+  });
+}
+
+export const handleReferral = onCall(
+  {
+    region: "us-central1",
+    timeoutSeconds: 30,
+    memory: "256MiB"
+  },
+  async (req, res) => {
+
+    const data = req.data || {};
+    const context = req.auth;
+
+    const referralCode = data.referralCode;
+    const newUserUID = context && context.uid;
+
+    if (!newUserUID) {
+      throw new Error("Unauthenticated.");
+    }
+
+    if (!referralCode) {
+      throw new Error("Missing referralCode.");
+    }
+
+    // -----------------------------
+    // 1. Look up referrer (NEW SCHEMA)
+    // -----------------------------
+    const refSnap = await db
+      .collection("Users")
+      .where("TPIdentity.referralCode", "==", referralCode)
+      .limit(1)
+      .get();
+
+    if (refSnap.empty) {
+      throw new Error("Invalid referral code.");
+    }
+
+    const referrerDoc = refSnap.docs[0];
+    const referrerUID = referrerDoc.id;
+
+    // -----------------------------
+    // 2. Prevent self-referral
+    // -----------------------------
+    if (referrerUID === newUserUID) {
+      throw new Error("Cannot refer yourself.");
+    }
+
+    // -----------------------------
+    // 3. Prevent double-referral
+    // -----------------------------
+    const existingRef = await db
+      .collection("Referrals")
+      .where("newUserUID", "==", newUserUID)
+      .limit(1)
+      .get();
+
+    if (!existingRef.empty) {
+      throw new Error("User already referred.");
+    }
+
+    // -----------------------------
+    // 4. Create referral record
+    // -----------------------------
+    const referralRef = db.collection("Referrals").doc();
+    const referralPayload = {
+      id: referralRef.id,
+      referrerUID,
+      newUserUID,
+      referralCode,
+      createdAt: admin.firestore.FieldValue.serverTimestamp(),
+      reason: "referral_redemption",
+      actor: "user",
+      source: "handleReferral"
+    };
+
+    await referralRef.set(referralPayload);
+
+    // -----------------------------
+    // 5. Reward referrer + new user
+    // -----------------------------
+    await grantPulsePoints(
+      referrerUID,
+      50,
+      "earn",
+      "referral_referrer",
+      newUserUID,
+      referralCode
+    );
+
+    await grantPulsePoints(
+      newUserUID,
+      25,
+      "earn",
+      "referral_new_user",
+      referrerUID,
+      referralCode
+    );
+
+    // -----------------------------
+    // 6. Log to CHANGES
+    // -----------------------------
+    await db.collection("CHANGES").add({
+      type: "referral",
+      referralCode,
+      referrerUID,
+      newUserUID,
+      metadata: referralPayload,
+      createdAt: admin.firestore.FieldValue.serverTimestamp()
+    });
+
+    // -----------------------------
+    // 7. IdentityHistory snapshots
+    // -----------------------------
+    await db
+      .collection("IdentityHistory")
+      .doc(newUserUID)
+      .collection("snapshots")
+      .add({
+        snapshotType: "referralApplied",
+        referralCode,
+        referrerUID,
+        newUserUID,
+        metadata: referralPayload,
+        createdAt: admin.firestore.FieldValue.serverTimestamp()
+      });
+
+    await db
+      .collection("IdentityHistory")
+      .doc(referrerUID)
+      .collection("snapshots")
+      .add({
+        snapshotType: "referralEarned",
+        referralCode,
+        referrerUID,
+        newUserUID,
+        metadata: referralPayload,
+        createdAt: admin.firestore.FieldValue.serverTimestamp()
+      });
+
+    return {
+      success: true,
+      referrerUID,
+      newUserUID,
+      referralCode
+    };
+  }
+);
+
+async function loadHistory(uid) {
+  // -----------------------------
+  // 1. Load last 50 history entries
+  // -----------------------------
+  const histSnap = await admin
+    .firestore()
+    .collection("PulseHistory")
+    .doc(uid)
+    .collection("entries")
+    .orderBy("ts", "desc")
+    .limit(50)
+    .get();
+
+  const docs = histSnap.docs;
+
+  // -----------------------------
+  // 2. Load global settings once
+  // -----------------------------
+  const settingsSnap = await db.collection("Settings").doc("global").get();
+  const settings = settingsSnap.data() || {};
+
+  // Seasonal logic once
+  const { seasonalActive, seasonalName, seasonalMultiplier } =
+    getSeasonFromSettings(settings);
+
+  // -----------------------------
+  // 3. Timestamp normalizer
+  // -----------------------------
+  const normalizeTS = (ts) => {
+    if (!ts) return null;
+
+    if (typeof ts.toMillis === "function") return ts.toMillis();
+    if (ts instanceof Date) return isNaN(ts.getTime()) ? null : ts.getTime();
+
+    if (typeof ts === "object" && typeof ts._seconds === "number") {
+      return ts._seconds * 1000 + Math.floor((ts._nanoseconds || 0) / 1e6);
+    }
+
+    const d = new Date(ts);
+    return isNaN(d.getTime()) ? null : d.getTime();
+  };
+
+  // -----------------------------
+  // 4. Process each entry in parallel
+  // -----------------------------
+  const orderFetches = docs.map(async (doc) => {
+    const item = { id: doc.id, ...doc.data() };
+
+    // Normalize timestamps
+    item.ts = normalizeTS(item.ts);
+    item.createdAt = normalizeTS(item.createdAt);
+
+    // -----------------------------
+    // If tied to an order → hydrate
+    // -----------------------------
+    if (item.orderID) {
+      const orderSnap = await admin
+        .firestore()
+        .collection("Orders")
+        .doc(String(item.orderID))
+        .get();
+
+      if (orderSnap.exists) {
+        const order = orderSnap.data();
+
+        item.orderLength = order.orderLength ?? null;
+        item.orderedAt = normalizeTS(order.orderedAt);
+        item.deliveredAt = normalizeTS(order.deliveredAt);
+
+        item.pointsSnapshot = order.pointsSnapshot ?? null;
+
+        item.itemName = order.itemName ?? null;
+        item.orderprice = order.orderprice ?? null;
+        item.ordertax = order.ordertax ?? null;
+        item.ordertip = order.ordertip ?? null;
+        item.ordershipping = order.ordershipping ?? null;
+        item.ordertotal = order.ordertotal ?? null;
+        item.payoutAmount = order.payoutAmount ?? null;
+      }
+    }
+
+    // -----------------------------
+    // 5. Generate snapshot if missing
+    // -----------------------------
+    if (!item.pointsSnapshot) {
+      item.pointsSnapshot = {
+        type: item.type,
+        label: item.label,
+        amount: item.amount,
+        basePoints: item.amount,
+        tierMultiplier: 1,
+        streakMultiplier: 1,
+        seasonalMultiplier,
+        tierBonusPoints: 0,
+        streakBonusPoints: 0,
+        seasonalBonusPoints: 0,
+        fastDeliveryBonus: 0,
+        delayPenalty: 0,
+        totalPointsEarned: item.amount,
+        seasonalActive,
+        seasonalName,
+        calculationVersion: 1,
+        ts: item.ts,
+        createdAt: item.createdAt
+      };
+    }
+
+    return item;
+  });
+
+  // -----------------------------
+  // 6. Resolve all parallel fetches
+  // -----------------------------
+  const history = await Promise.all(orderFetches);
+
+  return history;
+}
 // ============================================================================
 // FOOTER — LOYALTY BRAIN NOTES FOR ALDWYN
 // ============================================================================

@@ -942,6 +942,32 @@ export function createPulseNodeAdmin({
     return advice;
   }
 
+  
+  function beaconAdvice() {
+    if (!beaconSnapshot) return null;
+
+    const presenceField =
+      beaconSnapshot.presenceField || beaconSnapshot.presence || {};
+    const advantageField =
+      beaconSnapshot.advantageField || beaconSnapshot.advantage || {};
+    const bandSignature = beaconSnapshot.bandSignature || null;
+    const binaryField = beaconSnapshot.binaryField || null;
+    const waveField = beaconSnapshot.waveField || null;
+    const fallbackBandLevel = beaconSnapshot.globalHints?.fallbackBandLevel ?? 0;
+
+    const advice = {
+      presenceField,
+      advantageField,
+      bandSignature,
+      binaryField,
+      waveField,
+      fallbackBandLevel
+    };
+
+    remember("beacon-advice", advice);
+    return advice;
+  }
+
   function worldCoreAdvice() {
     if (!worldCoreSnapshot) return null;
 

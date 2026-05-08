@@ -1,4 +1,4 @@
-/* global log,warn,error */
+
 // ============================================================================
 //  HISTORICAL CONTEXT — “THE EXPONENTIAL ERA” (was index.js)
 //  A record of the system’s evolution and the acceleration of development
@@ -145,13 +145,13 @@ AI_EXPERIENCE_META = {
 */
 
 
-
-
-import { defineSecret } from "firebase-functions/params";
+import nodemailer from "nodemailer";
+import { onRequest, onCall } from "firebase-functions/v2/https";
+import { onDocumentWritten, onDocumentWrittenWithAuthContext} from "firebase-functions/v2/firestore";
 import express from "express";
 import { admin, db } from "../PULSE-X/PulseWorldGenome-v20.js";
-import { getStripe as Stripe } from "../../NETLIFY/FUNCTIONS/stripe.js";
-import { getTwilioClient as twilio } from "../../NETLIFY/FUNCTIONS/sms.js";
+import { getStripe as Stripe } from "../PULSE-X/PulseWorldBank-v20.js";
+import { getTwilioClient as twilio } from "../PULSE-X/PulseWorldSMSAlert-v20.js";
 import { log, warn, error, logger } from "../../PULSE-UI/_BACKEND/PulseProofLogger-v20.js";
 
 
@@ -179,19 +179,19 @@ function pulseCors(req, res, next) {
   next();
 }
 
-const EMAIL_PASSWORD = process.env.EMAIL_PASSWORD;
-const STRIPE_PASSWORD = process.env.STRIPE_SECRET_KEY;
-const JWT_SECRET = process.env.JWT_SECRET;
+export const EMAIL_PASSWORD = process.env.EMAIL_PASSWORD;
+export const STRIPE_PASSWORD = process.env.STRIPE_SECRET_KEY;
+export const JWT_SECRET = process.env.JWT_SECRET;
 // CLOUD RUN ENVIRONMENTS
-const TP_API_KEY = window.TP_API_KEY;
-const BASE_PAYMENT_URL = window.BASE_PAYMENT_URL;
-const GOOGLE_MAPS_KEY = window.GOOGLE_MAPS_KEY;
-const PLACEHOLDER_IMAGE_URL = window.PLACEHOLDER_IMAGE_URL;
+const TP_API_KEY = process.env.TP_API_KEY;
+const BASE_PAYMENT_URL = process.env.BASE_PAYMENT_URL;
+const GOOGLE_MAPS_KEY = process.env.GOOGLE_MAPS_KEY;
+const PLACEHOLDER_IMAGE_URL = process.env.PLACEHOLDER_IMAGE_URL;
 
-const STRIPE_WEBHOOK_SECRET = process.env.STRIPE_SECRET_WEBHOOK;
-const MESSAGING_SERVICE_SID = process.env.MESSAGING_SERVICE_SID;
-const ACCOUNT_SID = process.env.ACCOUNT_SID;
-const AUTH_TOKEN = process.env.AUTH_TOKEN;
+export const STRIPE_WEBHOOK_SECRET = process.env.STRIPE_SECRET_WEBHOOK;
+export const MESSAGING_SERVICE_SID = process.env.MESSAGING_SERVICE_SID;
+export const ACCOUNT_SID = process.env.ACCOUNT_SID;
+export const AUTH_TOKEN = process.env.AUTH_TOKEN;
 
 // CONFIG
 const PIN_COLLECTION = process.env.PIN_COLLECTION;
@@ -199,7 +199,7 @@ const RATE_LIMIT_WINDOW_MS = process.env.RATE_LIMIT_WINDOW_MS;
 const MAX_REQUESTS_PER_WINDOW = process.env.MAX_REQUESTS_PER_WINDOW;
 const PIN_TTL_MS = process.env.PIN_TTL_MS;
 
-const corsHandler = pulseCors;
+export const corsHandler = pulseCors;
 
 window.__serverTimeOffset = 0;
 
@@ -213,9 +213,9 @@ window.nowMs = function() {
 
 
 const storage = admin.storage().bucket();
-const app = express();
+export const app = express();
 
-let stripeInstance = null;
+export let stripeInstance = null;
 
 function computeHash(str) {
   let h = 0;
@@ -796,7 +796,7 @@ async function logSecurityPatch(uid, patch, reason = "auto") {
 }
 
 
-async function applyTwilightPatch(uid, reason = "auto") {
+export async function applyTwilightPatch(uid, reason = "auto") {
   if (!uid) return;
 
   try {
@@ -3389,7 +3389,7 @@ function BECLEAN(input) {
 // Decide payout currency based on account + platform balance
 // ------------------------------------------------------
 
-async function determinePayoutCurrency(stripe, stripeAccountID, payoutAmountCents) {
+export async function determinePayoutCurrency(stripe, stripeAccountID, payoutAmountCents) {
   console.log("🔵 [determinePayoutCurrency] START");
 
   const payoutAmountUSD = payoutAmountCents / 100;
@@ -4109,7 +4109,7 @@ export function getEnvironmentSummary(envState = {}) {
   ].join("<br>");
 }
 
-function normalizeReminderTrigger(parsed) {
+export function normalizeReminderTrigger(parsed) {
   if (!parsed) return { trigger: "nextVaultOpen" };
 
   if (parsed.trigger === "time") {
@@ -4127,7 +4127,7 @@ function normalizeReminderTrigger(parsed) {
   return { trigger: "nextVaultOpen" };
 }
 
-function buildReminderConfirmation(text) {
+export function buildReminderConfirmation(text) {
   return {
     bubble: `Keeper… you want me to remember: <b>"${text}"</b>?`,
     options: [
@@ -4137,7 +4137,7 @@ function buildReminderConfirmation(text) {
   };
 }
 
-function parseReminderText(raw) {
+export function parseReminderText(raw) {
   if (!raw) return null;
 
   const text = raw.toLowerCase().trim();
@@ -4340,7 +4340,7 @@ function mapWeatherCode(code) {
 // -----------------------------
 // 5. FUTURE SCENARIO ENGINE
 // -----------------------------
-async function generateFutureScenario(text, user, envState) {
+export async function generateFutureScenario(text, user, envState) {
   const out = [];
   const lower = text.toLowerCase();
 
@@ -4771,6 +4771,7 @@ async function handleBusGET(req, rawData) {
 
   console.log("✅ [handleBusGET] COMPLETE");
 }
+
 async function sendNoCreditsEmail({
   email,
   paymentLink,
@@ -4946,7 +4947,7 @@ const personalEmailDomains = [
 // -----------------------------------------------------
 // PHONE NORMALIZER
 // -----------------------------------------------------
-function normalizePhone(raw, row, coords = {}) {
+export function normalizePhone(raw, row, coords = {}) {
   if (!raw) return null;
 
   // Clean weird whitespace + NBSP
@@ -5639,14 +5640,6 @@ function formatHistoryTimestamp(ts) {
   return "";
 }
 
-function generateLoginTokenForUser(userId, email, role, stripeAccountID, jwtSecret) {
-  const payload = { uid: userId, email, role, stripeAccountID };
-
-  return jwt.sign(payload, jwtSecret, {
-    expiresIn: "30d"
-  });
-}
-
 // --- Helpers -----------------------------------------------------
 // Simple helpers – adapt to your existing Pulse Points structure
 // --- Helpers -----------------------------------------------------
@@ -5713,206 +5706,7 @@ async function grantPulsePoints(uid, amount, type, label, otherid, referralCode,
   await addHistory(uid, entry);
 }
 
-async function generateOrdersCache({ sizeOnly = false, deltaRequest = false } = {}) {
-
-  // ---------------------------------------------------------
-  // ⭐ LOAD VERSION FROM Cache_Control/<autoDocId>
-  // ---------------------------------------------------------
-  const controlRef = db.collection("Cache_Control").doc("KCQFBaFpjSaPRDTAhJBg");
-  const controlSnap = await controlRef.get();
-  const control = controlSnap.data() || {};
-  const currentVersion = control.ordersVersion ?? 1;
-
-  // ---------------------------------------------------------
-  // ⭐ LOAD EXISTING SNAPSHOT FROM Cache_Meta/orders
-  // ---------------------------------------------------------
-  const metaRef = db.collection("Cache_Meta").doc("orders");
-  const metaSnap = await metaRef.get();
-  const meta = metaSnap.data() || {};
-
-  const now = Date.now();
-  const lastGenerated = meta.lastGenerated || 0;
-  const cachedVersion = meta.version || 0;
-  const cachedData = meta.data || [];
-
-  const ONE_DAY = 24 * 60 * 60 * 1000;
-
-  const isFreshByTime = now - lastGenerated < ONE_DAY;
-  const isFreshByVersion = cachedVersion === currentVersion;
-  const hasData = Array.isArray(cachedData) && cachedData.length > 0;
-
-  // ---------------------------------------------------------
-  // ⭐ CASE 1 — Fully fresh
-  // ---------------------------------------------------------
-  if (hasData && isFreshByTime && isFreshByVersion) {
-
-    if (deltaRequest) {
-      const delta = { version: currentVersion, added: [], removed: [], changed: [] };
-
-      if (sizeOnly) {
-        const json = JSON.stringify(delta);
-        return Buffer.byteLength(json, "utf8") / 1024;
-      }
-
-      return delta;
-    }
-
-    if (sizeOnly) {
-      const json = JSON.stringify(cachedData);
-      return Buffer.byteLength(json, "utf8") / 1024;
-    }
-
-    return cachedData;
-  }
-
-  // ---------------------------------------------------------
-  // ⭐ CASE 2 — Build NEW full orders snapshot
-  // ---------------------------------------------------------
-
-  const safeMillis = (ts) =>
-    ts?.toMillis?.() ?? (ts?._seconds ? ts._seconds * 1000 : null);
-
-  const allTransactions = [];
-
-  // ---------------------------------------------------------
-  // ⭐ REAL ORDERS
-  // ---------------------------------------------------------
-  const ordersSnap = await db.collection("Orders").get();
-
-  for (const doc of ordersSnap.docs) {
-    const d = doc.data() || {};
-    const orderID = d.orderID || doc.id;
-
-    const uid =
-      d.customerUID ||
-      d.delivererUID ||
-      d.vendorUID ||
-      null;
-
-    allTransactions.push({
-      type: "order",
-      id: doc.id,
-      orderID,
-      uid,
-      label: d.label || null,
-      amount: d.total || 0,
-
-      items: d.items || [],
-      total: d.total || 0,
-      status: d.status || null,
-
-      createdAt: safeMillis(d.createdAt),
-      updatedAt: safeMillis(d.updatedAt),
-      orderedAt: safeMillis(d.orderedAt),
-      deliveredAt: safeMillis(d.deliveredAt)
-    });
-  }
-
-  // ---------------------------------------------------------
-  // ⭐ NON‑ORDER TRANSACTIONS (PulseHistory)
-  // ---------------------------------------------------------
-  const usersSnap = await db.collection("Users").get();
-
-  for (const userDoc of usersSnap.docs) {
-    const uid = userDoc.id;
-
-    const histSnap = await db
-      .collection("PulseHistory")
-      .doc(uid)
-      .collection("entries")
-      .get();
-
-    for (const entry of histSnap.docs) {
-      const h = entry.data();
-
-      // Only include ORDER-LIKE non-order entries
-      if (h.orderID) continue;
-
-      if (!["redeem", "add", "earn", "manual"].includes(h.type)) continue;
-
-      const fakeOrderID = `NON_${uid}_${entry.id}`;
-
-      allTransactions.push({
-        type: "non_order",
-        id: entry.id,
-        orderID: fakeOrderID,
-        uid,
-        label: h.label || "",
-        amount: h.amount || 0,
-
-        items: [],
-        total: h.amount || 0,
-        status: "completed",
-
-        createdAt: safeMillis(h.createdAt),
-        updatedAt: safeMillis(h.createdAt),
-        orderedAt: safeMillis(h.ts),
-        deliveredAt: safeMillis(h.ts)
-      });
-    }
-  }
-
-  // ---------------------------------------------------------
-  // ⭐ WRITE BACK FULL SNAPSHOT
-  // ---------------------------------------------------------
-  await metaRef.set({
-    lastGenerated: now,
-    version: currentVersion,
-    data: allTransactions
-  });
-
-  // ---------------------------------------------------------
-  // ⭐ DELTA MODE
-  // ---------------------------------------------------------
-  if (deltaRequest) {
-    const oldMap = new Map(cachedData.map(t => [t.orderID, t]));
-    const newMap = new Map(allTransactions.map(t => [t.orderID, t]));
-
-    const added = [];
-    const removed = [];
-    const changed = [];
-
-    for (const [id, newEntry] of newMap.entries()) {
-      const oldEntry = oldMap.get(id);
-
-      if (!oldEntry) {
-        added.push(newEntry);
-        continue;
-      }
-
-      if (JSON.stringify(oldEntry) !== JSON.stringify(newEntry)) {
-        changed.push(newEntry);
-      }
-    }
-
-    for (const [id, oldEntry] of oldMap.entries()) {
-      if (!newMap.has(id)) {
-        removed.push(oldEntry);
-      }
-    }
-
-    const delta = { version: currentVersion, added, removed, changed };
-
-    if (sizeOnly) {
-      const json = JSON.stringify(delta);
-      return Buffer.byteLength(json, "utf8") / 1024;
-    }
-
-    return delta;
-  }
-
-  // ---------------------------------------------------------
-  // ⭐ SIZE ONLY (full)
-  // ---------------------------------------------------------
-  if (sizeOnly) {
-    const json = JSON.stringify(allTransactions);
-    return Buffer.byteLength(json, "utf8") / 1024;
-  }
-
-  return allTransactions;
-}
-
-async function redeemSomePulsePoints(uid, amount, type, label, otherid, referralCode, orderID) {
+export async function redeemSomePulsePoints(uid, amount, type, label, otherid, referralCode, orderID) {
   const userRef = db.collection("Users").doc(uid);
 
   let before = 0;
@@ -6257,7 +6051,9 @@ async function loadHistory(uid) {
   const history = await Promise.all(orderFetches);
 
   return history;
-}function normalizeUserRecord(user = {}) {
+}
+
+function normalizeUserRecord(user = {}) {
   // -----------------------------
   // Helpers
   // -----------------------------
@@ -10119,7 +9915,7 @@ export const getServerTime = onRequest(
   }
 );
 
-function fuzzyMatch(input, target, maxDistance = 2) {
+export function fuzzyMatch(input, target, maxDistance = 2) {
   if (!input || !target) return false;
 
   input = input.toLowerCase();
@@ -10418,7 +10214,7 @@ function levenshteinDistance(a, b) {
   return matrix[a.length][b.length];
 }
 
-function getDayName(offset) {
+export function getDayName(offset) {
   const today = new Date();
   const target = new Date(today);
   target.setDate(today.getDate() + offset);
@@ -11547,7 +11343,7 @@ export const getEvents = onRequest(
   }
 );
 
-async function businessLookup(query, userLocation) {
+export async function businessLookup(query, userLocation) {
   // 1. Try exact match
   const exact = await fuzzyFindPlace(query);
   if (exact) {
@@ -11616,7 +11412,7 @@ export const getBusinesses = onRequest(
   }
 );
 
-async function searchEventsByKeyword(keyword) {
+export async function searchEventsByKeyword(keyword) {
   const upper = keyword.toUpperCase();
 
   const snap = await db.collection("Events")
@@ -11653,7 +11449,7 @@ async function searchEventsByKeyword(keyword) {
   });
 }
 
-async function searchBusinessesByKeyword(keyword) {
+export async function searchBusinessesByKeyword(keyword) {
   const upper = keyword.toUpperCase();
 
   const snap = await db.collection("Businesses")
@@ -11703,7 +11499,7 @@ async function searchBusinessesByKeyword(keyword) {
 // -----------------------------
 // EVENT HELPERS
 // -----------------------------
-async function handleEventsToday(text, userContext) {
+export async function handleEventsToday(text, userContext) {
   const events = await getEventsToday();
   const t = (text || "").toLowerCase();
 
@@ -11819,7 +11615,7 @@ function buildNearbyList(list, category, userLoc) {
 }
 
 
-async function getBusinessesByCategory(category) {
+export async function getBusinessesByCategory(category) {
   const all = await getAllBusinesses();
   const key = category.toLowerCase();
 
@@ -11829,7 +11625,7 @@ async function getBusinessesByCategory(category) {
   );
 }
 
-function extractCategory(text) {
+export function extractCategory(text) {
   const t = text.toLowerCase();
 
   const cats = {
@@ -11849,7 +11645,7 @@ function extractCategory(text) {
 }
 
 
-async function searchEventsByDateRange(startStr, endStr) {
+export async function searchEventsByDateRange(startStr, endStr) {
   const snap = await db.collection("Events")
     .where("fromDate", "<=", endStr)
     .orderBy("fromDate")
@@ -11889,7 +11685,7 @@ async function searchEventsByDateRange(startStr, endStr) {
   }));
 }
 
-function buildDirections(place, meta) {
+export function buildDirections(place, meta) {
   const isEvent = !!place.title && !place.busname;
 
   const name = place.busname || place.title || place.name || "Unknown Place";
@@ -11921,7 +11717,7 @@ function buildDirections(place, meta) {
   };
 }
 
-async function fuzzyFindPlace(query) {
+export async function fuzzyFindPlace(query) {
   if (!query) return null;
 
   const allBiz = await getAllBusinesses();
@@ -11958,7 +11754,7 @@ async function fuzzyFindPlace(query) {
   return bestScore > 0 ? best : null;
 }
 
-function extractDestination(text) {
+export function extractDestination(text) {
   if (!text) return null;
 
   const cleaned = text.toLowerCase();
@@ -11970,7 +11766,7 @@ function extractDestination(text) {
   return stripped.length > 1 ? stripped : null;
 }
 
-function getDistanceMeters(userLoc, businessLoc) {
+export function getDistanceMeters(userLoc, businessLoc) {
   if (!userLoc || !businessLoc) return null;
 
   const R = 6371000;
@@ -12048,7 +11844,7 @@ async function getUpcomingEvents() {
 // -----------------------------
 // FORMATTER
 // -----------------------------
-function formatBusinessList(title, list, userLocation = null) {
+export function formatBusinessList(title, list, userLocation = null) {
   let msg = `🌴 <b>${title} in San Pedro</b><br><br>`;
 
   list.slice(0, 5).forEach(b => {
@@ -12078,7 +11874,7 @@ function formatBusinessList(title, list, userLocation = null) {
   return msg;
 }
 
-function handleGeneric(text) {
+export function handleGeneric(text) {
   const t = text.trim().toLowerCase();
   const is = (word) => fuzzyMatch(t, word);
 
@@ -12304,7 +12100,7 @@ function handleGeneric(text) {
   );
 }
 
-async function handlePoints(uid) {
+export async function handlePoints(uid) {
   try {
     const user = await loadUser(uid);
     const points = Number(user.pulsePoints) || 0;
@@ -12325,7 +12121,7 @@ async function handlePoints(uid) {
   }
 }
 
-async function handleBalance(uid) {
+export async function handleBalance(uid) {
   try {
     const user = await loadUser(uid);
     const formatted = Number(user.balance || 0).toFixed(2);
@@ -12345,7 +12141,7 @@ async function handleBalance(uid) {
   }
 }
 
-async function handleUpcomingEvents(text, userContext) {
+export async function handleUpcomingEvents(text, userContext) {
   const events = await getUpcomingEvents();
   const t = (text || "").toLowerCase();
 
@@ -12394,7 +12190,7 @@ async function handleUpcomingEvents(text, userContext) {
   return msg;
 }
 
-function parseFirestoreDate(dateStr) {
+export function parseFirestoreDate(dateStr) {
   if (!dateStr || typeof dateStr !== "string") {
     return new Date("2000-01-01"); // safe fallback
   }
@@ -12481,7 +12277,7 @@ function extractNumbersFromMessyText(text) {
 
   return nums.map(n => parseFloat(n));
 }
-async function handleEstimatePoints(text, userContext = {}) {
+export async function handleEstimatePoints(text, userContext = {}) {
   // Load loyalty context from user (not settings)
   const loyalty = userContext.TPLoyalty || {};
 
@@ -12570,7 +12366,7 @@ async function handleEstimatePoints(text, userContext = {}) {
   };
 }
 
-function isNearby(place, userLocation, maxDistanceMeters = 1200) {
+export function isNearby(place, userLocation, maxDistanceMeters = 1200) {
   const coords = place?.coords;
   if (!coords || !coords.lat || !coords.lng || !userLocation) {
     return {
@@ -12686,7 +12482,7 @@ function wantsNearby(text) {
   );
 }
 
-async function handleCartRequest(text, userContext) {
+export async function handleCartRequest(text, userContext) {
   const all = await getAllBusinesses();
   const userLoc = userContext?.location || null;
 
@@ -12711,7 +12507,7 @@ async function handleCartRequest(text, userContext) {
   return "🛺 Golf Carts are the Main Way to get Around San Pedro.";
 }
 
-async function handleTourRequest(text, userContext) {
+export async function handleTourRequest(text, userContext) {
   const all = await getAllBusinesses();
   const t = text.toLowerCase();
   const userLoc = userContext?.location || null;
@@ -12747,7 +12543,7 @@ async function handleTourRequest(text, userContext) {
   return "🐠 Tell me What Kind of Adventure you Want — Snorkeling, Catamaran, Fishing, or Mainland Tours.";
 }
 
-async function handleBeachRequest(text, userContext) {
+export async function handleBeachRequest(text, userContext) {
   const all = await getAllBusinesses();
   const t = text.toLowerCase();
   const userLoc = userContext?.location || null;
@@ -12779,7 +12575,7 @@ async function handleBeachRequest(text, userContext) {
   return "🏖️ Tell me the Beach Vibe you Want — Quiet, Snorkeling, Swimming, or Secret Beach.";
 }
 
-async function handleBarsRequest(text, userContext) {
+export async function handleBarsRequest(text, userContext) {
   const all = await getAllBusinesses();
   const t = text.toLowerCase();
   const userLoc = userContext?.location || null;
@@ -12815,7 +12611,7 @@ async function handleBarsRequest(text, userContext) {
   return "🍹 What’s your Vibe — Beach Bar, Sunset Cocktails, Live Music, or Nightlife.";
 }
 
-async function handleFoodRequest(text, userContext) {
+export async function handleFoodRequest(text, userContext) {
   const all = await getAllBusinesses();
   const t = text.toLowerCase();
   const userLoc = userContext?.location || null;
@@ -16656,7 +16452,7 @@ async function logVaultHistory(userId, sessionId, role, message, intent = null, 
     });
 }
 
-async function sendAdminInfoEmail(subject, payload = {}) {
+export async function sendAdminInfoEmail(subject, payload = {}) {
   const EMAIL_PASSWORD_VALUE = EMAIL_PASSWORD.value();
   try {
     const transporter = nodemailer.createTransport({
@@ -29134,7 +28930,7 @@ export const getUserSecurity = onRequest(
   }
 );
 
-async function getUserRefByUid(uid) {
+export async function getUserRefByUid(uid) {
   if (!uid) throw new Error("Missing uid");
 
   const usersRef = db.collection("Users");

@@ -93,7 +93,7 @@
 //
 // DO NOT REMOVE THIS BLOCK.
 //
-
+import { onRequest, onCall } from "firebase-functions/v2/https";
 export const AI_EXPERIENCE_META = {
   identity: "PulseWorldSystemAlert.SystemFailureOrgan",
   version: "v20-Immortal",

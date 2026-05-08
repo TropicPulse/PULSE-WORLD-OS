@@ -176,7 +176,7 @@ export function prewarmBinaryLoopScanner(dualBand = null, { trace = false } = {}
   });
 
   if (trace) {
-    // eslint-disable-next-line no-console
+     
     console.log("[BinaryLoopScanner-v16] prewarm", packet);
   }
 
@@ -314,7 +314,7 @@ export function createBinaryLoopScanner({ trace = false } = {}) {
     });
 
     if (trace) {
-      // eslint-disable-next-line no-console
+       
       console.log("[BinaryLoopScanner‑16] STANDARD", {
         base,
         raw,
@@ -356,7 +356,7 @@ export function createBinaryLoopScanner({ trace = false } = {}) {
     });
 
     if (trace) {
-      // eslint-disable-next-line no-console
+       
       console.log("[BinaryLoopScanner‑16] DEEP", {
         base,
         folded,
@@ -402,7 +402,7 @@ export function createBinaryLoopScanner({ trace = false } = {}) {
     });
 
     if (trace) {
-      // eslint-disable-next-line no-console
+       
       console.log("[BinaryLoopScanner‑16] MULTI", {
         base,
         raw,
@@ -447,7 +447,7 @@ export function createBinaryLoopScanner({ trace = false } = {}) {
     });
 
     if (trace) {
-      // eslint-disable-next-line no-console
+       
       console.log("[BinaryLoopScanner‑16] EDGE", {
         base,
         raw,
@@ -494,7 +494,7 @@ export function createBinaryLoopScanner({ trace = false } = {}) {
     });
 
     if (trace) {
-      // eslint-disable-next-line no-console
+       
       console.log("[BinaryLoopScanner‑16] FLAT", {
         base,
         raw,

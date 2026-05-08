@@ -300,7 +300,7 @@ export const aiHumilityFilter = {
     });
 
     if (trace) {
-      // eslint-disable-next-line no-console
+       
       console.log("[aiHumilityFilter] prewarm", packet);
     }
 

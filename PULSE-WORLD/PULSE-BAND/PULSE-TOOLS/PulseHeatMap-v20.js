@@ -624,7 +624,7 @@ export function createPulseHeatMap({ trace = false } = {}) {
     });
 
     if (trace) {
-      // eslint-disable-next-line no-console
+       
       console.log("[PulseHeatMap-v20] built heatmap", {
         envType,
         width,

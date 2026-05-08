@@ -48,19 +48,21 @@ AI_EXPERIENCE_META = {
   }
 }
 */
-
+import { onRequest, onCall } from "firebase-functions/v2/https";
+import { onDocumentWritten, onDocumentWrittenWithAuthContext} from "firebase-functions/v2/firestore";
 import nodemailer from "nodemailer";
 import { corsHandler, fetch } from "../PULSE-X/PulseWorldTransport-v20.js";
 import { db, admin } from "../PULSE-X/PulseWorldGenome-v20.js"
 
-const EMAIL_PASSWORD = process.env.EMAIL_PASSWORD;
+
+export const EMAIL_PASSWORD = process.env.EMAIL_PASSWORD;
 const STRIPE_PASSWORD = process.env.STRIPE_SECRET_KEY;
 const JWT_SECRET = process.env.JWT_SECRET;
 // CLOUD RUN ENVIRONMENTS
-const TP_API_KEY = window.TP_API_KEY;
-const BASE_PAYMENT_URL = window.BASE_PAYMENT_URL;
-const GOOGLE_MAPS_KEY = window.GOOGLE_MAPS_KEY;
-const PLACEHOLDER_IMAGE_URL = window.PLACEHOLDER_IMAGE_URL;
+const TP_API_KEY = process.env.TP_API_KEY;
+const BASE_PAYMENT_URL = process.env.BASE_PAYMENT_URL;
+const GOOGLE_MAPS_KEY = process.env.GOOGLE_MAPS_KEY;
+const PLACEHOLDER_IMAGE_URL = process.env.PLACEHOLDER_IMAGE_URL;
 
 const STRIPE_WEBHOOK_SECRET = process.env.STRIPE_SECRET_WEBHOOK;
 const MESSAGING_SERVICE_SID = process.env.MESSAGING_SERVICE_SID;
@@ -2568,3 +2570,990 @@ NoCredits: {
   }
 }
 };
+
+
+export const onPulseHistoryChanged = onDocumentWritten(
+  "PulseHistory/{uid}/entries/{entryId}",
+  async (event) => {
+    try {
+      const before = event.data?.before?.data() || {};
+      const after  = event.data?.after?.data() || {};
+
+      const location = event.location || "";
+      const source   = event.source || "";
+      const project  = event.project || "";
+
+      await logChange(
+        "PulseHistory",
+        before,
+        after,
+        `${event.params.uid}/${event.params.entryId}`,
+        location,
+        source,
+        project
+      );
+
+      // ⭐ Update timestamp
+      await event.data.after.ref.update({
+        updatedAt: admin.firestore.FieldValue.serverTimestamp()
+      });
+
+    } catch (err) {
+      console.error("onPulseHistoryChanged error:", err);
+      await db.collection("FUNCTION_ERRORS").add({
+        fn: "onPulseHistoryChanged",
+        params: event.params,
+        error: String(err),
+        createdAt: admin.firestore.FieldValue.serverTimestamp()
+      });
+    }
+  }
+);
+
+export const onBusinessChanged = onDocumentWritten(
+  "Businesses/{busId}",
+  async (event) => {
+    try {
+      const before = event.data?.before?.data() || {};
+      const after  = event.data?.after?.data() || {};
+
+      // Prevent infinite loops
+      if (after._changeLogged === true) {
+        return;
+      }
+
+      const location = event.location || "";
+      const source   = event.source || "";
+      const project  = event.project || "";
+
+      await logChange(
+        "Businesses",
+        before,
+        after,
+        event.params.busId,
+        location,
+        source,
+        project
+      );
+
+      // ⭐ Mark + timestamp
+      await event.data.after.ref.update({
+        _changeLogged: true,
+        updatedAt: admin.firestore.FieldValue.serverTimestamp()
+      });
+
+    } catch (err) {
+      console.error("onBusinessChanged error:", err);
+      await db.collection("FUNCTION_ERRORS").add({
+        fn: "onBusinessChanged",
+        params: event.params,
+        error: String(err),
+        createdAt: admin.firestore.FieldValue.serverTimestamp()
+      });
+    }
+  }
+);
+
+export const onEventChanged = onDocumentWritten(
+  "Events/{eventId}",
+  async (event) => {
+    try {
+      const before = event.data?.before?.data() || {};
+      const after  = event.data?.after?.data() || {};
+
+      if (after._changeLogged === true) {
+        return;
+      }
+
+      const location = event.location || "";
+      const source   = event.source || "";
+      const project  = event.project || "";
+
+      await logChange(
+        "Events",
+        before,
+        after,
+        event.params.eventId,
+        location,
+        source,
+        project
+      );
+
+      // ⭐ Mark + timestamp
+      await event.data.after.ref.update({
+        _changeLogged: true,
+        updatedAt: admin.firestore.FieldValue.serverTimestamp()
+      });
+
+    } catch (err) {
+      console.error("onEventChanged error:", err);
+      await db.collection("FUNCTION_ERRORS").add({
+        fn: "onEventChanged",
+        params: event.params,
+        error: String(err),
+        createdAt: admin.firestore.FieldValue.serverTimestamp()
+      });
+    }
+  }
+);
+
+export const onOrderChanged = onDocumentWritten(
+  "Orders/{orderId}",
+  async (event) => {
+    try {
+      const before = event.data?.before?.data() || {};
+      const after  = event.data?.after?.data() || {};
+
+      const location = event.location || "";
+      const source   = event.source || "";
+      const project  = event.project || "";
+
+      await logChange(
+        "Orders",
+        before,
+        after,
+        event.params.orderId,
+        location,
+        source,
+        project
+      );
+
+      // ⭐ Add timestamp
+      await event.data.after.ref.update({
+        updatedAt: admin.firestore.FieldValue.serverTimestamp()
+      });
+
+    } catch (err) {
+      console.error("onOrderChanged error:", err);
+      await db.collection("FUNCTION_ERRORS").add({
+        fn: "onOrderChanged",
+        params: event.params,
+        error: String(err),
+        createdAt: admin.firestore.FieldValue.serverTimestamp()
+      });
+    }
+  }
+);
+
+export const onUserChanged = onDocumentWrittenWithAuthContext(
+  "Users/{uid}",
+  async (event) => {
+    return handleUserChange(event, true);
+  }
+);
+
+export const onUserChangedNoAuth = onDocumentWritten(
+  "Users/{uid}",
+  async (event) => {
+    return handleUserChange(event, false);
+  }
+);
+
+export const onSettingsChanged = onDocumentWritten(
+  "Settings/global",
+  async (event) => {
+    try {
+      const before = event.data?.before?.data() || {};
+      const after  = event.data?.after?.data() || {};
+
+      const location = event.location || "";
+      const source   = event.source || "";
+      const project  = event.project || "";
+
+      await logChange(
+        "Settings",
+        before,
+        after,
+        "global",
+        location,
+        source,
+        project
+      );
+
+      // ⭐ Add updatedAt
+      await event.data.after.ref.update({
+        updatedAt: admin.firestore.FieldValue.serverTimestamp()
+      });
+    } catch (err) {
+      console.error("onSettingsChanged error:", err);
+      await db.collection("FUNCTION_ERRORS").add({
+        fn: "onSettingsChanged",
+        params: event.params,
+        error: String(err),
+        createdAt: admin.firestore.FieldValue.serverTimestamp()
+      });
+    }
+  }
+);
+
+
+export const onPulseHistoryChangedwAuth = onDocumentWrittenWithAuthContext(
+  "PulseHistory/{uid}/entries/{entryId}",
+  async (event) => {
+    try {
+      const actorUID  = event.auth?.uid || null;
+      const targetUID = event.params.uid;
+      const entryId   = event.params.entryId;
+
+      const before = event.data?.before?.data() || {};
+      const after  = event.data?.after?.data() || {};
+
+      const location = event.location || "";
+      const source   = event.source || "";
+      const project  = event.project || "";
+
+      // -----------------------------------------
+      // SECURITY: Cross-user write detection
+      // -----------------------------------------
+      if (actorUID && actorUID !== targetUID) {
+        await db.collection("USER_TRIED").add({
+          reason: "cross_user_write_pulsehistory",
+          actorUID,
+          targetUID,
+          entryId,
+          before,
+          after,
+          path: `PulseHistory/${targetUID}/entries/${entryId}`,
+          userAgent: event.auth?.token?.userAgent || null,
+          ts: Date.now(),
+          createdAt: admin.firestore.FieldValue.serverTimestamp()
+        });
+        return;
+      }
+
+      // -----------------------------------------
+      // Normal diff logging
+      // -----------------------------------------
+      await logChange(
+        "PulseHistory",
+        before,
+        after,
+        `${targetUID}/${entryId}`,
+        location,
+        source,
+        project,
+        actorUID
+      );
+
+      // ⭐ Add updatedAt
+      await event.data.after.ref.update({
+        updatedAt: admin.firestore.FieldValue.serverTimestamp()
+      });
+
+    } catch (err) {
+      console.error("onPulseHistoryChanged error:", err);
+      await db.collection("FUNCTION_ERRORS").add({
+        fn: "onPulseHistoryChanged",
+        params: event.params,
+        error: String(err),
+        createdAt: admin.firestore.FieldValue.serverTimestamp()
+      });
+    }
+  }
+);
+
+export const onBusinessChangedwAuth = onDocumentWrittenWithAuthContext(
+  "Businesses/{busId}",
+  async (event) => {
+    try {
+      const actorUID = event.auth?.uid || null;
+      const busId    = event.params.busId;
+
+      const before = event.data?.before?.data() || {};
+      const after  = event.data?.after?.data() || {};
+
+      // Prevent infinite loops
+      if (after._changeLogged === true) {
+        return;
+      }
+
+      const location = event.location || "";
+      const source   = event.source || "";
+      const project  = event.project || "";
+
+      // -----------------------------------------
+      // SECURITY: Business owner mismatch
+      // -----------------------------------------
+      const ownerUID = after.ownerUID || before.ownerUID || null;
+
+      if (actorUID && ownerUID && actorUID !== ownerUID) {
+        await db.collection("USER_TRIED").add({
+          reason: "cross_user_write_business",
+          actorUID,
+          ownerUID,
+          busId,
+          before,
+          after,
+          path: `Businesses/${busId}`,
+          userAgent: event.auth?.token?.userAgent || null,
+          ts: Date.now(),
+          createdAt: admin.firestore.FieldValue.serverTimestamp()
+        });
+        return;
+      }
+
+      await logChange(
+        "Businesses",
+        before,
+        after,
+        busId,
+        location,
+        source,
+        project,
+        actorUID
+      );
+
+      // ⭐ Mark + timestamp (single update to avoid recursion)
+      await event.data.after.ref.update({
+        _changeLogged: true,
+        updatedAt: admin.firestore.FieldValue.serverTimestamp()
+      });
+
+    } catch (err) {
+      console.error("onBusinessChanged error:", err);
+      await db.collection("FUNCTION_ERRORS").add({
+        fn: "onBusinessChanged",
+        params: event.params,
+        error: String(err),
+        createdAt: admin.firestore.FieldValue.serverTimestamp()
+      });
+    }
+  }
+);
+
+export const onEventChangedwAuth = onDocumentWrittenWithAuthContext(
+  "Events/{eventId}",
+  async (event) => {
+    try {
+      const actorUID = event.auth?.uid || null;
+      const eventId  = event.params.eventId;
+
+      const before = event.data?.before?.data() || {};
+      const after  = event.data?.after?.data() || {};
+
+      // Prevent infinite loops
+      if (after._changeLogged === true) {
+        return;
+      }
+
+      const location = event.location || "";
+      const source   = event.source || "";
+      const project  = event.project || "";
+
+      // -----------------------------------------
+      // SECURITY: Event owner mismatch
+      // -----------------------------------------
+      const ownerUID = after.ownerUID || before.ownerUID || null;
+
+      if (actorUID && ownerUID && actorUID !== ownerUID) {
+        await db.collection("USER_TRIED").add({
+          reason: "cross_user_write_event",
+          actorUID,
+          ownerUID,
+          eventId,
+          before,
+          after,
+          path: `Events/${eventId}`,
+          userAgent: event.auth?.token?.userAgent || null,
+          ts: Date.now(),
+          createdAt: admin.firestore.FieldValue.serverTimestamp()
+        });
+        return;
+      }
+
+      await logChange(
+        "Events",
+        before,
+        after,
+        eventId,
+        location,
+        source,
+        project,
+        actorUID
+      );
+
+      // ⭐ Mark + timestamp
+      await event.data.after.ref.update({
+        _changeLogged: true,
+        updatedAt: admin.firestore.FieldValue.serverTimestamp()
+      });
+
+    } catch (err) {
+      console.error("onEventChanged error:", err);
+      await db.collection("FUNCTION_ERRORS").add({
+        fn: "onEventChanged",
+        params: event.params,
+        error: String(err),
+        createdAt: admin.firestore.FieldValue.serverTimestamp()
+      });
+    }
+  }
+);
+
+export const onOrderChangedwAuth = onDocumentWrittenWithAuthContext(
+  "Orders/{orderId}",
+  async (event) => {
+    try {
+      const actorUID = event.auth?.uid || null;
+      const orderId  = event.params.orderId;
+
+      const before = event.data?.before?.data() || {};
+      const after  = event.data?.after?.data() || {};
+
+      const location = event.location || "";
+      const source   = event.source || "";
+      const project  = event.project || "";
+
+      // -----------------------------------------
+      // SECURITY: Order owner mismatch
+      // -----------------------------------------
+      const ownerUID = after.userUID || before.userUID || null;
+
+      if (actorUID && ownerUID && actorUID !== ownerUID) {
+        await db.collection("USER_TRIED").add({
+          reason: "cross_user_write_order",
+          actorUID,
+          ownerUID,
+          orderId,
+          before,
+          after,
+          path: `Orders/${orderId}`,
+          userAgent: event.auth?.token?.userAgent || null,
+          ts: Date.now(),
+          createdAt: admin.firestore.FieldValue.serverTimestamp()
+        });
+        return;
+      }
+
+      // -----------------------------------------
+      // Normal diff logging
+      // -----------------------------------------
+      await logChange(
+        "Orders",
+        before,
+        after,
+        orderId,
+        location,
+        source,
+        project,
+        actorUID
+      );
+
+      // ⭐ Add updatedAt
+      await event.data.after.ref.update({
+        updatedAt: admin.firestore.FieldValue.serverTimestamp()
+      });
+
+    } catch (err) {
+      console.error("onOrderChanged error:", err);
+      await db.collection("FUNCTION_ERRORS").add({
+        fn: "onOrderChanged",
+        params: event.params,
+        error: String(err),
+        createdAt: admin.firestore.FieldValue.serverTimestamp()
+      });
+    }
+  }
+);
+
+async function handleUserChange(event, hasAuth) {
+  try {
+    const actorUID  = hasAuth ? (event.auth?.uid || null) : null;
+    const targetUID = event.params.uid;
+
+    // Raw before/after
+    const beforeRaw = event.data?.before?.data() || {};
+    const afterRaw  = event.data?.after?.data() || {};
+
+    const location  = event.location || "";
+    const source    = event.source || "";
+    const project   = event.project || "";
+
+    // ---------------------------------------------------------
+    // 1️⃣ Cross-user write guard
+    // ---------------------------------------------------------
+    if (hasAuth && actorUID && actorUID !== targetUID) {
+      await db.collection("USER_TRIED").add({
+        reason: "cross_user_write",
+        actorUID,
+        targetUID,
+        before: beforeRaw,
+        after: afterRaw,
+        path: `Users/${targetUID}`,
+        userAgent: event.auth?.token?.userAgent || null,
+        ts: Date.now(),
+        createdAt: admin.firestore.FieldValue.serverTimestamp()
+      });
+      return;
+    }
+
+    // ---------------------------------------------------------
+    // 2️⃣ Prevent re-logging loops
+    // ---------------------------------------------------------
+    if (afterRaw._changeLogged === true) {
+      return;
+    }
+
+    // ---------------------------------------------------------
+    // 3️⃣ Clean internal fields + prepare for diff
+    // ---------------------------------------------------------
+    const stripInternal = (obj) => {
+      if (!obj || typeof obj !== "object") return obj;
+      const out = {};
+      for (const k of Object.keys(obj)) {
+        if (k.startsWith("_")) continue;
+        out[k] = stripInternal(obj[k]);
+      }
+      return out;
+    };
+
+    const before = stripInternal(beforeRaw);
+    const after  = stripInternal(afterRaw);
+
+    // ---------------------------------------------------------
+    // 4️⃣ Enforce NEW TOKEN RULES
+    // Root-level resendToken is illegal
+    // TPIdentity.resendToken is the ONLY valid token
+    // ---------------------------------------------------------
+    const beforeRootToken = beforeRaw.resendToken ?? null;
+    const afterRootToken  = afterRaw.resendToken ?? null;
+
+    const beforeIdentity = before.TPIdentity || {};
+    const afterIdentity  = after.TPIdentity || {};
+
+    const beforeSessionToken = beforeIdentity.resendToken ?? null;
+    const afterSessionToken  = afterIdentity.resendToken ?? null;
+
+    // ❌ If root token changed → illegal unless initial system set
+    if (beforeRootToken !== afterRootToken) {
+      const isInitialSet =
+        (beforeRootToken === null || beforeRootToken === undefined) &&
+        afterRootToken &&
+        (source === "verifyPin" || source === "system_init");
+
+      if (!isInitialSet) {
+        await db.collection("SECURITY_VIOLATIONS").add({
+          uid: targetUID,
+          reason: "root_resendToken_modified",
+          beforeRootToken,
+          afterRootToken,
+          actorUID,
+          source,
+          location,
+          project,
+          createdAt: admin.firestore.FieldValue.serverTimestamp()
+        });
+
+        // Revert root token
+        await event.data.after.ref.update({
+          resendToken: beforeRootToken,
+          _changeLogged: true
+        });
+
+        return;
+      }
+    }
+
+    // ---------------------------------------------------------
+    // 5️⃣ Detect drift between root + TPIdentity token
+    // ---------------------------------------------------------
+    if (
+      afterRootToken &&
+      afterSessionToken &&
+      afterRootToken !== afterSessionToken
+    ) {
+      await db.collection("DRIFT_LOGS").add({
+        uid: targetUID,
+        rootResendToken: afterRootToken,
+        sessionResendToken: afterSessionToken,
+        reason: "token_drift_detected",
+        actorUID,
+        source,
+        location,
+        project,
+        createdAt: admin.firestore.FieldValue.serverTimestamp()
+      });
+    }
+
+    // ---------------------------------------------------------
+    // 6️⃣ Deep diff (field-level)
+    // ---------------------------------------------------------
+    const diff = {};
+    function walk(b, a, path = "") {
+      const keys = new Set([...Object.keys(b || {}), ...Object.keys(a || {})]);
+
+      for (const key of keys) {
+        const full = path ? `${path}.${key}` : key;
+
+        const bv = b ? b[key] : undefined;
+        const av = a ? a[key] : undefined;
+
+        if (deepEqual(bv, av)) continue;
+
+        if (
+          typeof bv === "object" &&
+          typeof av === "object" &&
+          bv &&
+          av &&
+          !Array.isArray(bv) &&
+          !Array.isArray(av)
+        ) {
+          walk(bv, av, full);
+        } else {
+          diff[full] = {
+            from: bv ?? null,
+            to: av ?? null
+          };
+        }
+      }
+    }
+
+    walk(before, after);
+
+    // ---------------------------------------------------------
+    // 🧠 NEW: Versioning Engine (micro + mid + global)
+    // ---------------------------------------------------------
+
+    const changedGroups = new Set();
+
+    // Detect which TP groups changed
+    for (const path of Object.keys(diff)) {
+      if (path.startsWith("TPIdentity.")) changedGroups.add("TPIdentity");
+      if (path.startsWith("TPLoyalty.")) changedGroups.add("TPLoyalty");
+      if (path.startsWith("TPNotifications.")) changedGroups.add("TPNotifications");
+      if (path.startsWith("TPWallet.")) changedGroups.add("TPWallet");
+      if (path.startsWith("TPSecurity.")) changedGroups.add("TPSecurity");
+      // TPFirebaseAuth is intentionally excluded (no versioning)
+    }
+
+    // ---------------------------------------------------------
+    // 1️⃣ Micro update — only ONE group changed
+    // ---------------------------------------------------------
+    if (changedGroups.size === 1) {
+      const group = [...changedGroups][0];
+
+      await event.data.after.ref.update({
+        [`${group}.calculationVersion`]: admin.firestore.FieldValue.increment(1),
+        updatedAt: admin.firestore.FieldValue.serverTimestamp()
+      });
+    }
+
+    // ---------------------------------------------------------
+    // 2️⃣ Mid update — MULTIPLE groups changed
+    // ---------------------------------------------------------
+    if (changedGroups.size > 1) {
+      await event.data.after.ref.update({
+        UserVersion: admin.firestore.FieldValue.increment(1),
+        updatedAt: admin.firestore.FieldValue.serverTimestamp()
+      });
+    }
+
+    // ---------------------------------------------------------
+    // 3️⃣ Global update — bump CACHE_CONTROL.usersVersion
+    // ---------------------------------------------------------
+    if (changedGroups.size > 0) {
+      const controlRef = db.collection("Config").doc("CACHE_CONTROL");
+      await controlRef.update({
+        usersVersion: admin.firestore.FieldValue.increment(1)
+      });
+    }
+    // ---------------------------------------------------------
+    // 7️⃣ If no diff → snapshot only
+    // ---------------------------------------------------------
+    if (Object.keys(diff).length === 0) {
+      await db
+        .collection("TPIdentityHistory")
+        .doc(targetUID)
+        .collection("snapshots")
+        .add({
+          user: afterRaw,
+          rootResendToken: afterRootToken,
+          sessionResendToken: afterSessionToken,
+          location,
+          source,
+          project,
+          note: "No diff, snapshot only",
+          actorUID,
+          createdAt: admin.firestore.FieldValue.serverTimestamp()
+        });
+
+      await event.data.after.ref.update({ _changeLogged: true });
+      return;
+    }
+
+    // ---------------------------------------------------------
+    // 8️⃣ Log full diff
+    // ---------------------------------------------------------
+    await db.collection("CHANGES").add({
+      collection: "Users",
+      docId: targetUID,
+      diff,
+      timestamp: Date.now(),
+      processed: false,
+      actor: actorUID
+        ? { type: "USER", uid: actorUID }
+        : { type: "SYSTEM", uid: null },
+      location,
+      source,
+      project,
+      createdAt: admin.firestore.FieldValue.serverTimestamp()
+    });
+
+    // ---------------------------------------------------------
+    // 9️⃣ Log TPIdentity-only diff if changed
+    // ---------------------------------------------------------
+    if (!deepEqual(beforeIdentity, afterIdentity)) {
+      const identityDiff = {};
+      for (const k of Object.keys(diff)) {
+        if (k.startsWith("TPIdentity.")) {
+          identityDiff[k] = diff[k];
+        }
+      }
+
+      await db.collection("CHANGES").add({
+        collection: "Users.TPIdentity",
+        docId: targetUID,
+        diff: identityDiff,
+        timestamp: Date.now(),
+        processed: false,
+        actor: actorUID
+          ? { type: "USER", uid: actorUID }
+          : { type: "SYSTEM", uid: null },
+        location,
+        source,
+        project,
+        createdAt: admin.firestore.FieldValue.serverTimestamp()
+      });
+    }
+
+    // ---------------------------------------------------------
+    // 🔟 Snapshot with both tokens
+    // ---------------------------------------------------------
+    await db
+      .collection("TPIdentityHistory")
+      .doc(targetUID)
+      .collection("snapshots")
+      .add({
+        user: afterRaw,
+        rootResendToken: afterRootToken,
+        sessionResendToken: afterSessionToken,
+        location,
+        source,
+        project,
+        actorUID,
+        createdAt: admin.firestore.FieldValue.serverTimestamp()
+      });
+
+    // ---------------------------------------------------------
+    // 1️⃣1️⃣ Mark as logged
+    // ---------------------------------------------------------
+    await event.data.after.ref.update({ _changeLogged: true });
+
+  } catch (err) {
+    await db.collection("FUNCTION_ERRORS").add({
+      fn: "handleUserChange",
+      params: event.params,
+      error: String(err),
+      createdAt: admin.firestore.FieldValue.serverTimestamp()
+    });
+  }
+}
+
+export const onSettingsChangedwAuth = onDocumentWrittenWithAuthContext(
+  "Settings/global",
+  async (event) => {
+    try {
+      const actorUID = event.auth?.uid || null;   // Who performed the write
+      const before   = event.data?.before?.data() || {};
+      const after    = event.data?.after?.data() || {};
+
+      const location = event.location || "";
+      const source   = event.source || "";
+      const project  = event.project || "";
+
+      // -----------------------------------------
+      // 0️⃣ SECURITY CHECK: ONLY ALLOW AUTHORIZED ADMINS
+      // -----------------------------------------
+      // You can customize this list or fetch from Firestore
+      const allowedAdmins = [
+        "EcqiBcTTnqwg8QwSKYWy"
+      ];
+
+      if (!actorUID || !allowedAdmins.includes(actorUID)) {
+        // Log the unauthorized attempt
+        await db.collection("USER_TRIED").add({
+          reason: "unauthorized_settings_write",
+          actorUID,
+          path: "Settings/global",
+          before,
+          after,
+          userAgent: event.auth?.token?.userAgent || null,
+          ts: Date.now(),
+          createdAt: admin.firestore.FieldValue.serverTimestamp()
+        });
+
+        // Optional: revert the write
+        // await event.data.after.ref.set(before, { merge: false });
+
+        // Optional: flag the actor
+        // await db.collection("DANGER_FLAGS").doc(actorUID).set({ flagged: true }, { merge: true });
+
+        return; // Do NOT continue normal processing
+      }
+
+      // -----------------------------------------
+      // 1️⃣ Log the settings diff
+      // -----------------------------------------
+      await logChange(
+        "Settings",
+        before,
+        after,
+        "global",
+        location,
+        source,
+        project,
+        actorUID
+      );
+
+    } catch (err) {
+      console.error("onSettingsChanged error:", err);
+
+      await db.collection("FUNCTION_ERRORS").add({
+        fn: "onSettingsChanged",
+        params: event.params,
+        error: String(err),
+        createdAt: admin.firestore.FieldValue.serverTimestamp()
+      });
+    }
+  }
+);
+
+function deepEqual(a, b) {
+  if (a === b) return true;
+
+  if (typeof a !== typeof b) return false;
+  if (a === null || b === null) return a === b;
+
+  // Arrays
+  if (Array.isArray(a) && Array.isArray(b)) {
+    if (a.length !== b.length) return false;
+    for (let i = 0; i < a.length; i++) {
+      if (!deepEqual(a[i], b[i])) return false;
+    }
+    return true;
+  }
+
+  // Objects
+  if (typeof a === "object") {
+    const aKeys = Object.keys(a);
+    const bKeys = Object.keys(b);
+    if (aKeys.length !== bKeys.length) return false;
+
+    for (const key of aKeys) {
+      if (!deepEqual(a[key], b[key])) return false;
+    }
+    return true;
+  }
+
+  return false;
+}
+
+async function logChange(
+  collection,
+  before,
+  after,
+  docId,
+  location,
+  source,
+  project,
+  actorUID = null
+) {
+  const timestamp = Date.now();
+
+  // Strip internal fields
+  const clean = (obj) => {
+    if (!obj || typeof obj !== "object") return obj;
+    const out = {};
+    for (const k of Object.keys(obj)) {
+      if (k.startsWith("_")) continue;
+      out[k] = clean(obj[k]);
+    }
+    return out;
+  };
+
+  before = clean(before || {});
+  after = clean(after || {});
+
+  // Deep diff collector
+  const diff = {};
+
+  function walk(b, a, path = "") {
+    const keys = new Set([...Object.keys(b || {}), ...Object.keys(a || {})]);
+
+    for (const key of keys) {
+      const full = path ? `${path}.${key}` : key;
+
+      const bv = b ? b[key] : undefined;
+      const av = a ? a[key] : undefined;
+
+      // Identical → skip
+      if (deepEqual(bv, av)) continue;
+
+      // Recurse into nested objects
+      if (
+        typeof bv === "object" &&
+        typeof av === "object" &&
+        bv &&
+        av &&
+        !Array.isArray(bv) &&
+        !Array.isArray(av)
+      ) {
+        walk(bv, av, full);
+      } else {
+        diff[full] = {
+          from: bv ?? null,
+          to: av ?? null
+        };
+      }
+    }
+  }
+
+  walk(before, after);
+
+  // Determine actor
+  const actor = actorUID
+    ? { type: "USER", uid: actorUID }
+    : after._actor || { type: "SYSTEM", uid: null };
+
+  // No diff → still log
+  if (Object.keys(diff).length === 0) {
+    await db.collection("CHANGES").add({
+      collection,
+      docId,
+      diff: {},
+      timestamp,
+      processed: false,
+      actor,
+      location,
+      source,
+      project,
+      note: "No diff, handler executed",
+      createdAt: admin.firestore.FieldValue.serverTimestamp()
+    });
+    return;
+  }
+
+  // Normal diff logging
+  await db.collection("CHANGES").add({
+    collection,
+    docId,
+    diff,
+    timestamp,
+    processed: false,
+    actor,
+    location,
+    source,
+    project,
+    createdAt: admin.firestore.FieldValue.serverTimestamp()
+  });
+}
