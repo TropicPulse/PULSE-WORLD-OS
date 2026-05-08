@@ -2,7 +2,7 @@
  * ============================================================
  *  FILE: PULSE-TOUCH-v20.js
  *  ORGAN: Pulse‑Touch (Sensory Skin / Pre‑Pulse Ignition Organ)
- *  VERSION: v20.0.0-Immortal-Evo+++-Portal-Skin-Continuous
+ *  VERSION: v20.1.0-Immortal-Evo++++-Portal-Skin-Continuous
  *  AUTHOR: Pulse‑OS (Aldwyn’s Organism Architecture)
  * ============================================================
  *
@@ -30,18 +30,27 @@
  *  - Pluggable observers: onPulse, onGate, onSecurity, onTimeline
  *  - Explicit stop() + reconfigure() for organism‑level control
  *
+ *  v20.1 IMMORTAL‑EVO++++:
+ *  -----------------------
+ *  - Stronger browser guards (no doc/window assumptions)
+ *  - Centralized hook registration + exportable hook API
+ *  - Explicit public contract section
+ *  - More deterministic cadence + state transitions
+ *  - Safer bridge/log calls (never crash, always fire‑and‑forget)
+ *
  *  This is the organism’s FIRST NERVE SIGNAL.
  *  The moment the user touches the organism — the organism
  *  touches back, and keeps listening.
  * ============================================================
  */
-/*
-AI_EXPERIENCE_META = {
+
+export const AI_EXPERIENCE_META = {
   identity: "PulseTouch",
-  version: "v20.0.0-Immortal-Evo+++-Portal-Skin-Continuous",
+  version: "v20.1.0-Immortal-Evo++++-Portal-Skin-Continuous",
   layer: "skin",
   role: "first_contact_sensor",
-  lineage: "PulseOS-v13 → v14-Immortal → v4.0.0-Immortal → v16-Immortal-Portal → v17-Continuous → v20-Immortal-Evo+++",
+  lineage:
+    "PulseOS-v13 → v14-Immortal → v4.0.0-Immortal → v16-Immortal-Portal → v17-Continuous → v20-Immortal-Evo+++ → v20.1-Immortal-Evo++++",
 
   evo: {
     prePulse: true,
@@ -115,8 +124,7 @@ AI_EXPERIENCE_META = {
       "legacyNetworkLayer"
     ]
   }
-}
-*/
+};
 
 // ============================================================
 // IMPORTS — PULSE-NET + TOUCH ORGANS + BRIDGE + FUTURE HOOKS
@@ -154,7 +162,7 @@ import { PulsePresenceOracle } from "./_OUTERSENSES/PULSE-PRESENCE-ORACLE.js";
 
 const PULSE_TOUCH_COOKIE_NAME = "pulse_touch";
 const PULSE_TOUCH_MAX_AGE = 86400; // 1 day
-const PULSE_TOUCH_VERSION = "20";
+const PULSE_TOUCH_VERSION = "20.1";
 
 const PULSE_TOUCH_TIMELINE_LS_KEY = "PulseTouch.v20.timeline";
 const PULSE_TOUCH_TIMELINE_MAX = 512;
@@ -183,8 +191,14 @@ const pulseTouchHooks = {
   onPrediction: []
 };
 
-// expose current skin snapshot globally for PulseNet / others
-if (typeof window !== "undefined") {
+// ============================================================
+// GLOBAL STATE SNAPSHOT (BROWSER‑SAFE)
+// ============================================================
+
+const hasWindow = typeof window !== "undefined";
+const hasDocument = typeof document !== "undefined";
+
+if (hasWindow) {
   window.__PULSE_TOUCH__ = window.__PULSE_TOUCH__ || null;
   window.__PULSE_TOUCH_ORIGIN_TS__ =
     window.__PULSE_TOUCH_ORIGIN_TS__ || Date.now();
@@ -194,7 +208,8 @@ if (typeof window !== "undefined") {
       intervalId: null,
       intervalMs: PULSE_TOUCH_PULSE_INTERVAL_MS_BASE,
       lastMode: "burst",
-      lastPulseTs: 0
+      lastPulseTs: 0,
+      lastGateDecision: null
     };
   window.__PULSE_TOUCH_LAST_GATE__ = window.__PULSE_TOUCH_LAST_GATE__ || null;
   window.__PULSE_TOUCH_LAST_SECURITY__ =
@@ -204,7 +219,7 @@ if (typeof window !== "undefined") {
 // optional broadcast channel for multi‑tab awareness
 let pulseTouchChannel = null;
 try {
-  if (typeof window !== "undefined" && "BroadcastChannel" in window) {
+  if (hasWindow && "BroadcastChannel" in window) {
     pulseTouchChannel = new BroadcastChannel(PULSE_TOUCH_BROADCAST_CHANNEL);
   }
 } catch {
@@ -216,8 +231,9 @@ try {
 // ============================================================
 
 function hasLocalStorage() {
+  if (!hasWindow) return false;
   try {
-    if (typeof window === "undefined" || !window.localStorage) return false;
+    if (!window.localStorage) return false;
     const t = "__pulse_touch_test__";
     window.localStorage.setItem(t, "1");
     window.localStorage.removeItem(t);
@@ -270,7 +286,7 @@ function fireTimelineHooks(kind, payload) {
 function appendTouchTimeline(kind, payload = {}) {
   const ts = Date.now();
   const origin =
-    (typeof window !== "undefined" && window.__PULSE_TOUCH_ORIGIN_TS__) || ts;
+    (hasWindow && window.__PULSE_TOUCH_ORIGIN_TS__) || ts;
 
   const entry = {
     ts,
@@ -398,7 +414,7 @@ function applyAdaptiveCadence(state, { security, skin }) {
 // ============================================================
 
 function startContinuousPulseStream(skin, security, gateDecision) {
-  if (typeof window === "undefined") return;
+  if (!hasWindow) return;
   const state = window.__PULSE_TOUCH_PULSE_STATE__;
   if (!state || state.started) return;
 
@@ -432,7 +448,7 @@ function startContinuousPulseStream(skin, security, gateDecision) {
 }
 
 function stopContinuousPulseStream() {
-  if (typeof window === "undefined") return;
+  if (!hasWindow) return;
   const state = window.__PULSE_TOUCH_PULSE_STATE__;
   if (!state || !state.started) return;
 
@@ -546,8 +562,7 @@ function registerHook(kind, fn) {
 
 export function createPulseTouch(options = {}) {
   const originTs =
-    (typeof window !== "undefined" && window.__PULSE_TOUCH_ORIGIN_TS__) ||
-    Date.now();
+    (hasWindow && window.__PULSE_TOUCH_ORIGIN_TS__) || Date.now();
 
   appendTouchTimeline("touch_init_called", {
     originTs,
@@ -560,11 +575,9 @@ export function createPulseTouch(options = {}) {
     }
   });
 
-  /**
-   * ------------------------------------------------------------
-   * 1. DEFAULT METADATA (Organism‑Safe, Non‑PII)
-   * ------------------------------------------------------------
-   */
+  // ------------------------------------------------------------
+  // 1. DEFAULT METADATA (Organism‑Safe, Non‑PII)
+  // ------------------------------------------------------------
   const defaults = {
     region: options.region || "unknown",
     trusted: options.trusted || "0",
@@ -588,7 +601,7 @@ export function createPulseTouch(options = {}) {
   appendTouchTimeline("skin_detected", { skin: detected });
 
   // 3) Expose snapshot globally for PulseNet / Overmind / UI
-  if (typeof window !== "undefined") {
+  if (hasWindow) {
     window.__PULSE_TOUCH__ = detected;
   }
 
@@ -677,9 +690,6 @@ export function createPulseTouch(options = {}) {
   }
 
   // 12) Compiler signal — TOUCH → BRIDGE → COMPILER
-  //     This does NOT run the compiler in the browser.
-  //     It only sends a semantic "please compile" pulse
-  //     to the backend / bridge.
   try {
     bridgeRoute?.("compiler.request", {
       source: "pulse-touch",
@@ -724,6 +734,10 @@ export function createPulseTouch(options = {}) {
     }
   } catch {}
 
+  // ------------------------------------------------------------
+  // INTERNAL HOOK FIRERS (SCOPED TO THIS INSTANCE)
+  // ------------------------------------------------------------
+
   function fireSecurityHooks(sec, skin) {
     const hooks = pulseTouchHooks.onSecurityChange || [];
     for (const fn of hooks) {
@@ -731,7 +745,7 @@ export function createPulseTouch(options = {}) {
         fn({ security: sec, skin });
       } catch {}
     }
-    if (typeof window !== "undefined") {
+    if (hasWindow) {
       window.__PULSE_TOUCH_LAST_SECURITY__ = sec;
     }
   }
@@ -743,7 +757,7 @@ export function createPulseTouch(options = {}) {
         fn({ gateDecision: gate, skin, security: sec });
       } catch {}
     }
-    if (typeof window !== "undefined") {
+    if (hasWindow) {
       window.__PULSE_TOUCH_LAST_GATE__ = {
         ts: Date.now(),
         decision: gate,
@@ -761,6 +775,10 @@ export function createPulseTouch(options = {}) {
     }
   }
 
+  // ------------------------------------------------------------
+  // PUBLIC INSTANCE METHODS
+  // ------------------------------------------------------------
+
   function updatePulseTouchField(key, value) {
     const current = readPulseTouchInternal(defaults);
     current[key] = value;
@@ -768,7 +786,7 @@ export function createPulseTouch(options = {}) {
 
     const detectedUpdated = PulseTouchDetector.normalize(current);
 
-    if (typeof window !== "undefined") {
+    if (hasWindow) {
       window.__PULSE_TOUCH__ = detectedUpdated;
     }
 
@@ -795,9 +813,7 @@ export function createPulseTouch(options = {}) {
 
     // re‑apply adaptive cadence if needed
     try {
-      const state = typeof window !== "undefined"
-        ? window.__PULSE_TOUCH_PULSE_STATE__
-        : null;
+      const state = hasWindow ? window.__PULSE_TOUCH_PULSE_STATE__ : null;
       if (state && state.started) {
         applyAdaptiveCadence(state, {
           security,
@@ -831,13 +847,9 @@ export function createPulseTouch(options = {}) {
     return {
       skin,
       timeline,
-      lastGate:
-        (typeof window !== "undefined" && window.__PULSE_TOUCH_LAST_GATE__) ||
-        null,
+      lastGate: (hasWindow && window.__PULSE_TOUCH_LAST_GATE__) || null,
       lastSecurity:
-        (typeof window !== "undefined" &&
-          window.__PULSE_TOUCH_LAST_SECURITY__) ||
-        null
+        (hasWindow && window.__PULSE_TOUCH_LAST_SECURITY__) || null
     };
   }
 
@@ -853,7 +865,7 @@ export function createPulseTouch(options = {}) {
     };
     writePulseTouchCookie(merged);
     const normalized = PulseTouchDetector.normalize(merged);
-    if (typeof window !== "undefined") {
+    if (hasWindow) {
       window.__PULSE_TOUCH__ = normalized;
     }
     appendTouchTimeline("skin_reconfigured", {
@@ -861,9 +873,7 @@ export function createPulseTouch(options = {}) {
     });
 
     try {
-      const state = typeof window !== "undefined"
-        ? window.__PULSE_TOUCH_PULSE_STATE__
-        : null;
+      const state = hasWindow ? window.__PULSE_TOUCH_PULSE_STATE__ : null;
       if (state && state.started) {
         applyAdaptiveCadence(state, {
           security,
@@ -899,6 +909,10 @@ export function createPulseTouch(options = {}) {
     registerHook("onPrediction", fn);
   }
 
+  // ------------------------------------------------------------
+  // PUBLIC INSTANCE CONTRACT
+  // ------------------------------------------------------------
+
   return {
     update: updatePulseTouchField,
     read,
@@ -920,6 +934,8 @@ export function createPulseTouch(options = {}) {
 // ============================================================
 
 function writePulseTouchCookie(state) {
+  if (!hasDocument) return;
+
   const cookieValue =
     `region=${state.region}` +
     `|trusted=${state.trusted}` +
@@ -931,18 +947,29 @@ function writePulseTouchCookie(state) {
     `|band=${state.band}` +
     `|v=${state.version}`;
 
-  document.cookie =
-    `${PULSE_TOUCH_COOKIE_NAME}=${cookieValue};` +
-    `path=/;` +
-    `max-age=${PULSE_TOUCH_MAX_AGE};` +
-    `SameSite=Lax;` +
-    `Secure`;
+  try {
+    document.cookie =
+      `${PULSE_TOUCH_COOKIE_NAME}=${cookieValue};` +
+      `path=/;` +
+      `max-age=${PULSE_TOUCH_MAX_AGE};` +
+      `SameSite=Lax;` +
+      `Secure`;
+  } catch {
+    appendTouchTimeline("cookie_write_failed", {});
+  }
 }
 
 function readPulseTouchInternal(defaults) {
-  const raw = document.cookie
-    .split("; ")
-    .find((c) => c.startsWith(`${PULSE_TOUCH_COOKIE_NAME}=`));
+  if (!hasDocument) return { ...defaults };
+
+  let raw = "";
+  try {
+    raw = document.cookie
+      .split("; ")
+      .find((c) => c.startsWith(`${PULSE_TOUCH_COOKIE_NAME}=`)) || "";
+  } catch {
+    return { ...defaults };
+  }
 
   if (!raw) return { ...defaults };
 
@@ -994,14 +1021,16 @@ function applyGateDecision(gateDecision, skin) {
 
   if (gateDecision.refresh === true) {
     try {
-      if (typeof window !== "undefined") {
+      if (hasWindow) {
         window.__PULSE_TOUCH_LAST_GATE__ = {
           ts: Date.now(),
           decision: gateDecision,
           skin
         };
       }
-      location.reload();
+      if (hasWindow && typeof location !== "undefined") {
+        location.reload();
+      }
     } catch {
       appendTouchTimeline("gate_refresh_failed", {});
     }
@@ -1009,7 +1038,9 @@ function applyGateDecision(gateDecision, skin) {
 
   if (gateDecision.fallback === true && gateDecision.fallbackUrl) {
     try {
-      location.href = gateDecision.fallbackUrl;
+      if (typeof location !== "undefined") {
+        location.href = gateDecision.fallbackUrl;
+      }
     } catch {
       appendTouchTimeline("gate_fallback_failed", {
         url: gateDecision.fallbackUrl
