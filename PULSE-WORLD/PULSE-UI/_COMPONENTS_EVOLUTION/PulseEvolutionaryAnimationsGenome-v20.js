@@ -1,3 +1,4 @@
+
 // ============================================================================
 // FILE: /PULSE-UI/_COMPONENTS_EVOLUTION/PulseEvolutionaryAnimationsBaseGenome-v20.js
 // PULSE OS — v20-IMMORTAL-EVOLUTIONARY
@@ -34,14 +35,14 @@
 //   • DOM-safe: applied only through the Styles Organ.
 // ============================================================================
 
-export const PulseEvolutionaryAnimationsBaseGenomeV20 = {
+export const PulseEvolutionaryAnimationsBaseGenomeV20 = Object.freeze({
   id: "base_animations_v20",
   kind: "animation_pack",
   version: "20.0-Immortal-Evolutionary",
   description: "Universal Pulse OS v20 Animation Genome (A0 Animation Membrane)",
 
   css: `
-/* ============================================================================
+/* ============================================================================  
    PulseEvolutionaryAnimations.css — v20‑IMMORTAL
    UNIVERSAL ANIMATION ORGAN FOR PULSE UI (EVOLVABLE)
    ============================================================================ */
@@ -61,7 +62,7 @@ export const PulseEvolutionaryAnimationsBaseGenomeV20 = {
   --evo-neon-purple: #b300ff;
   --evo-neon-blue:   #4da3ff;
 
-  /* Evolvable picture registry (populated by Organism Map) */
+  /* Evolvable picture registry */
   --picture-toucan-silhouette: "";
   --picture-jaguar-eyes: "";
   --picture-dolphin-silhouette: "";
@@ -70,13 +71,15 @@ export const PulseEvolutionaryAnimationsBaseGenomeV20 = {
   --picture-vault-bg: "";
   --picture-belize-sunset: "";
 
-  /* Evolvable sound registry (populated by Organism Map) */
+  /* Evolvable sound registry */
   --sound-vault-open: "";
   --sound-mascot-talk: "";
   --sound-earn-badge: "";
 }
 
-/* PULSE GLOW v3 ------------------------------------------------------------- */
+/* ============================================================================  
+   PULSE GLOW v3
+   ============================================================================ */
 @keyframes pulse-glow-v3 {
   0%   { box-shadow: 0 0 4px rgba(0,255,255,0.18); }
   40%  { box-shadow: 0 0 22px rgba(0,255,255,0.65); }
@@ -87,7 +90,9 @@ export const PulseEvolutionaryAnimationsBaseGenomeV20 = {
   animation: pulse-glow-v3 2.8s infinite ease-in-out;
 }
 
-/* BREATHING PANEL v3 -------------------------------------------------------- */
+/* ============================================================================  
+   BREATHING PANEL v3
+   ============================================================================ */
 @keyframes evo-breathe-v3 {
   0%   { transform: scale(1); opacity: 0.9; }
   50%  { transform: scale(1.02); opacity: 1; }
@@ -98,7 +103,9 @@ export const PulseEvolutionaryAnimationsBaseGenomeV20 = {
   animation: evo-breathe-v3 4.6s infinite ease-in-out;
 }
 
-/* SHIMMER v4 (route-aware) -------------------------------------------------- */
+/* ============================================================================  
+   SHIMMER v4
+   ============================================================================ */
 @keyframes evo-shimmer-v4 {
   0%   { left: -180%; }
   100% { left: 180%; }
@@ -125,7 +132,9 @@ export const PulseEvolutionaryAnimationsBaseGenomeV20 = {
   animation: evo-shimmer-v4 2.9s linear infinite;
 }
 
-/* NEON FLICKER v3 ----------------------------------------------------------- */
+/* ============================================================================  
+   NEON FLICKER v3
+   ============================================================================ */
 @keyframes evo-flicker-v3 {
   0%, 18%, 22%, 24%, 53%, 57%, 100% { opacity: 1; }
   20%, 23%, 55% { opacity: 0.32; }
@@ -135,7 +144,9 @@ export const PulseEvolutionaryAnimationsBaseGenomeV20 = {
   animation: evo-flicker-v3 3.8s infinite;
 }
 
-/* BINARY SCAN v3 ------------------------------------------------------------ */
+/* ============================================================================  
+   BINARY SCAN v3
+   ============================================================================ */
 @keyframes evo-scan-v3 {
   0%   { background-position: 0 0; }
   100% { background-position: 0 140%; }
@@ -152,7 +163,9 @@ export const PulseEvolutionaryAnimationsBaseGenomeV20 = {
   animation: evo-scan-v3 1.9s linear infinite;
 }
 
-/* ORGANISM HEARTBEAT v3 ----------------------------------------------------- */
+/* ============================================================================  
+   ORGANISM HEARTBEAT v3
+   ============================================================================ */
 @keyframes evo-heartbeat-v3 {
   0%   { transform: scale(1); }
   18%  { transform: scale(1.07); }
@@ -166,7 +179,9 @@ export const PulseEvolutionaryAnimationsBaseGenomeV20 = {
   animation: evo-heartbeat-v3 3.3s infinite ease-in-out;
 }
 
-/* CNS IMPULSE FLASH v3 ------------------------------------------------------ */
+/* ============================================================================  
+   CNS IMPULSE FLASH v3
+   ============================================================================ */
 @keyframes evo-impulse-flash-v3 {
   0%   { box-shadow: 0 0 0 rgba(0,255,255,0); }
   40%  { box-shadow: 0 0 28px rgba(0,255,255,0.7); }
@@ -177,7 +192,9 @@ export const PulseEvolutionaryAnimationsBaseGenomeV20 = {
   animation: evo-impulse-flash-v3 0.48s ease-out;
 }
 
-/* ROUTE TRANSITION GLOW v2 -------------------------------------------------- */
+/* ============================================================================  
+   ROUTE TRANSITION GLOW v2
+   ============================================================================ */
 @keyframes evo-route-transition-v2 {
   0%   { box-shadow: 0 0 0 rgba(0,255,255,0); }
   50%  { box-shadow: 0 0 22px rgba(0,255,255,0.5); }
@@ -188,7 +205,9 @@ export const PulseEvolutionaryAnimationsBaseGenomeV20 = {
   animation: evo-route-transition-v2 0.65s ease-out;
 }
 
-/* IMMORTAL TIER GLOW v2 ----------------------------------------------------- */
+/* ============================================================================  
+   IMMORTAL TIER GLOW v2
+   ============================================================================ */
 @keyframes evo-immortal-glow-v2 {
   0%   { filter: drop-shadow(0 0 6px rgba(180,0,255,0.45)); }
   50%  { filter: drop-shadow(0 0 16px rgba(180,0,255,0.8)); }
@@ -202,7 +221,6 @@ export const PulseEvolutionaryAnimationsBaseGenomeV20 = {
 /* ============================================================================  
    VAULT / DOOR / PORTAL PACK
    ============================================================================ */
-
 @keyframes evo-vault-wheel-spin {
   0%   { transform: rotate(0deg); }
   40%  { transform: rotate(120deg); }
@@ -246,8 +264,9 @@ export const PulseEvolutionaryAnimationsBaseGenomeV20 = {
   animation: evo-vault-smoke 1.4s ease-out forwards;
 }
 
-/* PORTAL PACK --------------------------------------------------------------- */
-
+/* ============================================================================  
+   PORTAL PACK
+   ============================================================================ */
 @keyframes evo-portal-open {
   0%   { transform: scale(0.4); opacity: 0; box-shadow: 0 0 0 rgba(0,255,255,0); }
   50%  { transform: scale(1.05); opacity: 1; box-shadow: 0 0 26px rgba(0,255,255,0.7); }
@@ -278,7 +297,6 @@ export const PulseEvolutionaryAnimationsBaseGenomeV20 = {
 /* ============================================================================  
    SMOKE / FOG / PARTICLE PACK
    ============================================================================ */
-
 @keyframes evo-smoke-vortex {
   0%   { transform: translate(-10px, 10px) scale(0.9); opacity: 0.0; }
   30%  { opacity: 0.6; }
@@ -336,7 +354,6 @@ export const PulseEvolutionaryAnimationsBaseGenomeV20 = {
 /* ============================================================================  
    MASCOT / CHARACTER PACK
    ============================================================================ */
-
 @keyframes evo-mascot-idle {
   0%   { transform: translateY(0); }
   50%  { transform: translateY(-4px); }
@@ -374,7 +391,6 @@ export const PulseEvolutionaryAnimationsBaseGenomeV20 = {
 /* ============================================================================  
    WEATHER FX PACK (BELIZE TROPIC)
    ============================================================================ */
-
 @keyframes evo-rain-fall {
   0%   { background-position: 0 -40px; opacity: 0.0; }
   10%  { opacity: 0.45; }
@@ -411,12 +427,12 @@ export const PulseEvolutionaryAnimationsBaseGenomeV20 = {
   opacity: 0;
   animation: evo-lightning-flash 3.8s linear infinite;
 }
+
 @keyframes evo-sun-glow {
   0%   { transform: scale(0.95); opacity: 0.7; }
   50%  { transform: scale(1.05); opacity: 1; }
   100% { transform: scale(0.95); opacity: 0.7; }
 }
-
 .evo-weather-sun {
   position: absolute;
   width: 120px;
@@ -696,4 +712,4 @@ export const PulseEvolutionaryAnimationsBaseGenomeV20 = {
   --sound-src: var(--sound-earn-badge);
 }
 `
-};
+});

@@ -4,68 +4,21 @@
 // AUTO-BUILT PAGE CSS • UI SKILLS GENOME → PAGE-SCOPED CSS EMITTER
 // ============================================================================
 //
-// ROLE (v20 IMMORTAL):
-//   The Evolutionary Styles Organ auto-builds CSS for the CURRENT + UPCOMING
-//   pages using the IQ Map’s UI Skills Genome + Base Style/Animation Genomes.
-//   It guarantees:
-//
-//     • Only CSS needed for the current page is emitted.
-//     • Only CSS needed for the NEXT page is prebuilt.
-//     • Base Style Genome (A0 membrane) always included once.
-//     • Base Animation Genome (A0 animation membrane) always included once.
-//     • Fully evolvable: new files → new skills → new CSS automatically.
-//     • Zero drift, zero global CSS, zero duplication.
+// ROLE (IMMORTAL):
+//   • Auto-builds CSS for CURRENT + UPCOMING pages
+//   • Uses IQMap UI Skills Genome
+//   • Includes Base Style + Base Animation genomes exactly once
+//   • Zero drift, zero duplication, zero global CSS
+//   • DOM-guarded (<style data-pulse-style>)
 //
 // CONTRACT:
-//   • PURE FRONTEND ORGAN — no network, no timers, no eval.
-//   • Deterministic CSS generation from symbolic skill definitions.
-//   • Binary surfaces allowed only as metadata (never executed).
+//   • PURE FRONTEND ORGAN — no network, no timers, no eval
+//   • Deterministic CSS generation from symbolic skill definitions
+//   • Binary surfaces allowed only as metadata
 //
 // SAFETY:
-//   • IMMORTAL: zero side effects outside its wrapper.
-//   • DOM-guarded: writes only inside <style data-pulse-style>.
-//   • Evolvable: rebuilds when IQ Map refreshes its skill genome.
-// ============================================================================
-
-/*
-AI_EXPERIENCE_META = {
-  identity: "PulseEvolutionaryStyles",
-  version: "v20-Immortal-Evolutionary",
-  layer: "frontend",
-  role: "page_style_engine",
-  lineage: "PulseOS-v16 → v18 → v20-Immortal-Evolutionary",
-
-  evo: {
-    deterministic: true,
-    driftProof: true,
-    dualBandAware: true,
-    symbolicPrimary: true,
-    binaryAware: true,
-
-    pageScopedCSS: true,
-    autoBuildCSS: true,
-    autoBuildAnimations: true,
-    autoBuildHooks: true,
-    autoBuildIcons: true,
-    autoBuildTokens: true,
-
-    iqMapAware: true,
-    skillGenomeAware: true,
-    routeAware: true,
-    upcomingPageAware: true,
-
-    domGuarded: true,
-    wrapperScoped: true,
-    zeroGlobalCSS: true,
-
-    futureEvolutionReady: true
-  }
-}
-*/
-// ============================================================================
-// FILE: /PULSE-UI/_COMPONENTS_EVOLUTION/PulseEvolutionaryStyles-v20.js
-// PULSE OS — v20-IMMORTAL-EVOLUTIONARY
-// AUTO-BUILT PAGE CSS • UI SKILLS GENOME → PAGE-SCOPED CSS EMITTER
+//   • IMMORTAL: zero side effects outside wrapper
+//   • Evolvable: rebuilds when IQMap refreshes
 // ============================================================================
 
 import { createPulseEvolutionaryIcons } 
@@ -74,8 +27,11 @@ import { createPulseEvolutionaryIcons }
 import { createPulseEvolutionaryAnimations } 
   from "./PulseEvolutionaryAnimations-v20.js";
 
-import { createPulseEvolutionaryAnimations } 
-  from "./PulseEvolutionaryStyles-v20.js";
+import { PulseEvolutionaryStylesBaseGenomeV20 } 
+  from "./PulseEvolutionaryStylesBaseGenome-v20.js";
+
+import { PulseEvolutionaryAnimationsBaseGenomeV20 } 
+  from "./PulseEvolutionaryAnimationsBaseGenome-v20.js";
 
 // ============================================================================
 // INTERNAL HELPERS
@@ -180,7 +136,7 @@ export function createPulseEvolutionaryStyles({
 
     const cssParts = [];
 
-    // Base genomes
+    // Base genomes (always once)
     cssParts.push(PulseEvolutionaryStylesBaseGenomeV20.css);
     cssParts.push(PulseEvolutionaryAnimationsBaseGenomeV20.css);
 

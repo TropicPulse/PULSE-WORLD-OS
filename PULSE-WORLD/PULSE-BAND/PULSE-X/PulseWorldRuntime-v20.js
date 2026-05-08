@@ -156,7 +156,7 @@ import { PULSE_FIELDS_SPEC } from "../PULSE-SPECS/PulseSpecsDNAGenome-v17.js";
 import { PulseWorldGenome } from "./PulseWorldGenome-v20.js";
 
 // Core Memory
-import { createPulseCoreMemory } from "../PULSE-CORE/PulseCoreMemory.js";
+import { createPulseCoreMemory } from "../PULSE-CORE/PulseCoreMemory-v20.js";
 
 // Binary substrate (Touch‑aware v2.x)
 import BinarySubstrateV2 from "./PulseWorldBinarySubstrate-v20.js";

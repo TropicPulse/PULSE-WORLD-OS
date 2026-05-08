@@ -1,35 +1,34 @@
+
 // ============================================================================
 // FILE: /PULSE-UI/_GENOME/PulseEvolutionaryIconsBaseGenome-v20.js
-// PULSE OS — v20-IMMORTAL-EVOLUTIONARY
+// PULSE OS — v20++ IMMORTAL EVOLUTIONARY
 // UNIVERSAL ICON GENOME (A0 ICON MEMBRANE)
 // ============================================================================
 //
-// ROLE (v20 IMMORTAL):
-//   This is the *foundational icon genome* for Pulse OS UI.
-//   It provides the universal icon membrane that all pages inherit before
-//   page-specific icon skills or evolvable icon packs are applied.
-//
-//   • Neon-native SVG icons
-//   • GPU-friendly stroke/outline maps
-//   • Binary-friendly variants (auto-generated)
-//   • Tier-aware icons (immortal, critical, system)
-//   • Evolvable: new icons can be added via evolutionSources.icons
-//   • Deterministic: no randomness, no drift
-//   • Auto-indexed by IQMap
-//   • Auto-prewarmed by Styles-v20
-//   • Auto-integrated with Memory-v20++
+// ROLE (IMMORTAL):
+//   • Foundational icon genome for Pulse OS UI
+//   • Provides universal icon membrane (A0)
+//   • Deterministic, drift-proof, evolvable
+//   • Auto-integrated with:
+//       - Icons Organ (v20 IMMORTAL)
+//       - Styles Organ (v20 IMMORTAL)
+//       - Animations Organ (v20 IMMORTAL)
+//       - IQMap UI Skills Genome
+//       - Memory-v20++
+//       - Router-v20
 //
 // CONTRACT:
-//   • This genome is STATIC but EVOLVABLE.
-//   • It is always included by PulseEvolutionaryIcons-v20.
-//   • It is never duplicated, never drifted, never mutated at runtime.
-//   • Page-specific icon skills may override or extend it.
+//   • STATIC but EVOLVABLE
+//   • Never mutated at runtime
+//   • Always included exactly once
+//   • Page-specific icon skills may extend/override
 //
 // SAFETY:
-//   • IMMORTAL: deterministic, drift-proof, no side effects.
-//   • DOM-safe: used only through the Icons Organ.
-//   • Zero network, zero filesystem, zero dynamic imports.
+//   • IMMORTAL: deterministic, pure, zero side effects
+//   • Zero network, zero filesystem, zero randomness
+//   • Zero dynamic imports, zero eval
 // ============================================================================
+
 
 // ICON SCHEMA VERSION
 const ICON_SCHEMA_VERSION = "v20++";
@@ -61,51 +60,165 @@ let tierIcons = {};       // tier-based icons (immortal, critical, etc.)
 //   • Deterministic merge order
 // ============================================================================
 
+export const PulseEvolutionaryIconsBaseGenomeV20 = Object.freeze({
+
+  schemaVersion: "v20++",
+  identity: "PulseEvolutionaryIconsBaseGenome",
+  version: "20.0-Immortal-Evolutionary",
+  layer: "pulse_ui",
+  role: "icon_genome_a0",
+
+  evo: Object.freeze({
+    deterministic: true,
+    driftProof: true,
+    schemaVersioned: true,
+    iconGenome: true,
+    binaryAware: true,
+    glowAware: true,
+    tierAware: true,
+    evolvable: true,
+    futureEvolutionReady: true,
+
+    zeroNetwork: true,
+    zeroFilesystem: true,
+    zeroMutationOfInput: true,
+    zeroDynamicImports: true,
+    zeroEval: true,
+    zeroRandomness: true
+  }),
+
+  // -------------------------------------------------------------------------
+  // BASE ICONS (A0 MEMBRANE)
+  // -------------------------------------------------------------------------
+  icons: Object.freeze({
+    pulse: `
+      <svg viewBox="0 0 24 24" fill="none">
+        <path d="M3 12h4l2-6 4 12 2-6h6"
+              stroke="#00eaff"
+              stroke-width="2"
+              stroke-linecap="round"
+              filter="drop-shadow(0 0 6px rgba(0,255,255,0.45))" />
+      </svg>
+    `,
+
+    check: `
+      <svg viewBox="0 0 24 24" fill="none">
+        <path d="M5 13l4 4L19 7"
+              stroke="#00ff99"
+              stroke-width="2"
+              stroke-linecap="round"
+              filter="drop-shadow(0 0 6px rgba(0,255,150,0.45))" />
+      </svg>
+    `,
+
+    alert: `
+      <svg viewBox="0 0 24 24" fill="none">
+        <path d="M12 9v4m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"
+              stroke="#ff4d4d"
+              stroke-width="2"
+              stroke-linecap="round"
+              filter="drop-shadow(0 0 6px rgba(255,60,60,0.45))" />
+      </svg>
+    `,
+
+    info: `
+      <svg viewBox="0 0 24 24" fill="none">
+        <circle cx="12" cy="12" r="10"
+                stroke="#00eaff"
+                stroke-width="2"
+                filter="drop-shadow(0 0 6px rgba(0,255,255,0.45))" />
+        <path d="M12 16v-4m0-4h.01"
+              stroke="#00eaff"
+              stroke-width="2"
+              stroke-linecap="round" />
+      </svg>
+    `,
+
+    stable: `
+      <svg viewBox="0 0 24 24" fill="none">
+        <circle cx="12" cy="12" r="10"
+                stroke="#00ff99"
+                stroke-width="2"
+                filter="drop-shadow(0 0 6px rgba(0,255,150,0.45))" />
+        <path d="M8 12l3 3 5-5"
+              stroke="#00ff99"
+              stroke-width="2"
+              stroke-linecap="round" />
+      </svg>
+    `
+  }),
+
+  // -------------------------------------------------------------------------
+  // TIER ICONS (IMMORTAL, CRITICAL, SYSTEM)
+  // -------------------------------------------------------------------------
+  tiers: Object.freeze({
+    immortal: `
+      <svg viewBox="0 0 24 24" fill="none">
+        <circle cx="12" cy="12" r="8"
+                stroke="#ffd700"
+                stroke-width="2"
+                filter="drop-shadow(0 0 8px rgba(255,215,0,0.55))" />
+      </svg>
+    `,
+
+    critical: `
+      <svg viewBox="0 0 24 24" fill="none">
+        <circle cx="12" cy="12" r="8"
+                stroke="#ff4d4d"
+                stroke-width="2"
+                filter="drop-shadow(0 0 6px rgba(255,60,60,0.45))" />
+      </svg>
+    `,
+
+    system: `
+      <svg viewBox="0 0 24 24" fill="none">
+        <circle cx="12" cy="12" r="8"
+                stroke="#4da3ff"
+                stroke-width="2"
+                filter="drop-shadow(0 0 6px rgba(80,160,255,0.45))" />
+      </svg>
+    `
+  })
+});
+
+// ============================================================================
+// IMMORTAL MERGER — PURE, DETERMINISTIC
+// ============================================================================
 export function mergeIconGenomes({
   evolutionSources = {},
-  localIconMap = {}
+  localIconMap = {},
+  baseGenome = PulseEvolutionaryIconsBaseGenomeV20
 } = {}) {
 
-  // Base Genome (A0 membrane)
-  const baseIcons = { ...PulseEvolutionaryIconsBaseGenomeV20.icons };
-  const baseTiers = { ...PulseEvolutionaryIconsBaseGenomeV20.tiers };
+  const baseIcons = Object.freeze({ ...baseGenome.icons });
+  const baseTiers = Object.freeze({ ...baseGenome.tiers });
 
-  // Evolvable icons from evolutionSources
-  const evoIcons = evolutionSources.icons || {};
-  const evoTiers = evolutionSources.iconTiers || {};
+  const evoIcons = Object.freeze({ ...(evolutionSources.icons || {}) });
+  const evoTiers = Object.freeze({ ...(evolutionSources.iconTiers || {}) });
 
-  // Local icons from loader organ
-  const localIcons = localIconMap || {};
+  const localIcons = Object.freeze({ ...(localIconMap || {}) });
 
-  // -------------------------------------------------------------------------
-  // MERGE ORDER (IMMORTAL, deterministic):
-  //
-  //   1. Base Genome icons (cannot be overridden)
-  //   2. Evolvable icons (can extend)
-  //   3. Local loader icons (can override evolvable)
-  //
-  //   Tier icons follow the same pattern.
-  // -------------------------------------------------------------------------
-
-  const expandedIcons = {
+  // IMMORTAL MERGE ORDER:
+  // 1. Base Genome (cannot be overridden)
+  // 2. Evolvable icons
+  // 3. Local loader icons (highest priority)
+  const expandedIcons = Object.freeze({
     ...evoIcons,
     ...localIcons
-  };
+  });
 
-  const tierIcons = {
+  const tierIcons = Object.freeze({
     ...baseTiers,
     ...evoTiers
-  };
+  });
 
-  // -------------------------------------------------------------------------
-  // RETURN FINAL IMMORTAL ICON MAPS
-  // -------------------------------------------------------------------------
   return {
     baseIcons,
     expandedIcons,
     tierIcons
   };
 }
+
 
 // ---------------------------------------------------------------------------
 // AUTO-LOAD ICONS FROM evolutionSources (injected by IQMap)
@@ -249,7 +362,7 @@ const stroke = Object.freeze({
 // ============================================================================
 // BASE ICONS — core Pulse icons
 // ============================================================================
-const baseIcons = Object.freeze({
+baseIcons = Object.freeze({
   pulse: `
     <svg viewBox="0 0 24 24" fill="none">
       <path d="M3 12h4l2-6 4 12 2-6h6"
@@ -310,7 +423,7 @@ const baseIcons = Object.freeze({
 // ============================================================================
 // EXPANDED ICON PACK — UI, system, PulseWorld, Tropic, Tech, Earn, etc.
 // ============================================================================
-const expandedIcons = Object.freeze({
+expandedIcons = Object.freeze({
 
   // UI / SYSTEM --------------------------------------------------------------
   plus: `
@@ -958,7 +1071,7 @@ const expandedIcons = Object.freeze({
 // ============================================================================
 // TIERED ICONS — Bronze / Silver / Gold / Platinum / Immortal / Ultra / Omega
 // ============================================================================
-const tierIcons = Object.freeze({
+tierIcons = Object.freeze({
   bronze:   `<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="#cd7f32" /></svg>`,
   silver:   `<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="#c0c0c0" /></svg>`,
   gold:     `<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="#ffd700" filter="${glow.gold}" /></svg>`,
@@ -978,61 +1091,3 @@ function toBinaryFriendly(svg) {
     .replace(/filter="[^"]+"/g, "");
 }
 
-
-// ============================================================================
-// PUBLIC ORGAN — deterministic icon resolver (UPGRADED v20++)
-// ============================================================================
-export const PulseEvolutionaryIconsBaseGenomeV20 = {
-  schemaVersion: ICON_SCHEMA_VERSION,
-
-  base: baseIcons,
-  expanded: expandedIcons,
-  tier: tierIcons,
-
-  // -------------------------------------------------------------------------
-  // RESOLVE ICON (route-aware, tier-aware, binary-aware)
-  // -------------------------------------------------------------------------
-  resolve(name, tier = null, binaryMode = false) {
-    let svg =
-      (tier && tierIcons[tier]) ||
-      baseIcons[name] ||
-      expandedIcons[name] ||
-      tierIcons.immortal;
-
-    if (binaryMode) svg = toBinaryFriendly(svg);
-
-    return svg;
-  },
-
-  // -------------------------------------------------------------------------
-  // LIST ICONS
-  // -------------------------------------------------------------------------
-  list() {
-    return {
-      base: Object.keys(baseIcons),
-      expanded: Object.keys(expandedIcons),
-      tiers: Object.keys(tierIcons)
-    };
-  },
-
-  // -------------------------------------------------------------------------
-  // NEW: GET ICONS FOR CURRENT ROUTE
-  // -------------------------------------------------------------------------
-  forRoute(IQMap, route) {
-    return getIconsForRoute(IQMap, route);
-  },
-
-  // -------------------------------------------------------------------------
-  // NEW: GET ICONS FOR UPCOMING ROUTES
-  // -------------------------------------------------------------------------
-  forUpcoming(IQMap, routeSequence) {
-    return getIconsForUpcoming(IQMap, routeSequence);
-  },
-
-  // -------------------------------------------------------------------------
-  // NEW: GET CSS VARIABLES FOR ALL ICONS
-  // -------------------------------------------------------------------------
-  cssVariables() {
-    return buildIconCSSVariables();
-  }
-};

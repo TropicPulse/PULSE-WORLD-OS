@@ -4,48 +4,43 @@
 // ANIMATION ORGAN — AUTO-BUILT, ROUTE-AWARE, UPCOMING-AWARE
 // ============================================================================
 //
-// ROLE (v20 IMMORTAL):
-//   This organ builds the FINAL animation CSS used by Pulse OS UI.
-//
-//   It merges:
-//     • Base Animation Genome (A0 membrane)
-//     • Evolvable animation packs (evolutionSources.animations)
-//     • Local animation packs (from loader organ)
-//     • IQMap animation skills
-//
-//   It provides:
-//     • Deterministic keyframe generation
-//     • Timing token emission
-//     • Route-aware animation bundles
-//     • Upcoming-page animation prewarm
-//     • Memory-v20++ integration
-//     • Styles-v20 integration
+// ROLE (IMMORTAL):
+//   • Builds FINAL animation CSS for Pulse OS UI
+//   • Merges:
+//       - Base Animation Genome (A0 membrane)
+//       - Evolvable animation packs (evolutionSources.animations)
+//       - Local animation packs (loader organ)
+//       - IQMap animation skills
+//   • Provides:
+//       - Deterministic keyframe generation
+//       - Timing token emission
+//       - Route-aware animation bundles
+//       - Upcoming-page animation prewarm
+//       - Memory-v20++ integration
+//       - Styles-v20 integration
 //
 // CONTRACT:
-//   • PURE FRONTEND ORGAN — no network, no timers, no eval.
-//   • Deterministic CSS generation.
-//   • IMMORTAL: zero drift, zero mutation of input.
-//   • Evolvable: new animation packs appear automatically.
+//   • PURE FRONTEND ORGAN — no network, no timers, no eval
+//   • Deterministic CSS generation
+//   • IMMORTAL: zero drift, zero mutation of input
+//   • Evolvable: new animation packs appear automatically
 //
 // SAFETY:
-//   • DOM-safe: does not write to DOM directly.
-//   • Memory-safe: no external side effects.
+//   • DOM-safe: does NOT write to DOM directly
+//   • Memory-safe: no external side effects
 // ============================================================================
 
 import { PulseEvolutionaryAnimationsBaseGenomeV20 }
-  from "../_COMPONENTS_EVOLUTION/PulseEvolutionaryAnimationsGenome-v20.js";
+  from "./PulseEvolutionaryAnimationsBaseGenome-v20.js";
 
 // ============================================================================
 // HELPERS — deterministic, pure
 // ============================================================================
-
-// Build keyframes from a skill
 function buildKeyframesCSS(skill) {
   if (!skill || !skill.keyframes) return "";
   return skill.keyframes;
 }
 
-// Build timing tokens
 function buildTimingTokenCSS(tokens) {
   return Object.entries(tokens || {})
     .map(([k, v]) => `:root { --${k}: ${v}; }`)
@@ -81,17 +76,18 @@ export function createPulseEvolutionaryAnimations({
   }
 
   // -------------------------------------------------------------------------
-  // MERGE ANIMATION SOURCES
+  // MERGE ANIMATION SOURCES (IMMORTAL)
   // -------------------------------------------------------------------------
   const baseAnimations = PulseEvolutionaryAnimationsBaseGenomeV20.animations || {};
   const evoAnimations = evolutionSources.animations || {};
   const localAnimations = localAnimationMap || {};
 
-  const mergedAnimations = {
+  // IMMORTAL MERGE: deterministic, left-to-right, no mutation
+  const mergedAnimations = Object.freeze({
     ...baseAnimations,
     ...evoAnimations,
     ...localAnimations
-  };
+  });
 
   // -------------------------------------------------------------------------
   // BUILD CSS FOR A SINGLE ROUTE
@@ -115,6 +111,14 @@ export function createPulseEvolutionaryAnimations({
       if (skill) cssParts.push(buildKeyframesCSS(skill));
     }
 
+    // Evolvable + local animation packs
+    for (const key of Object.keys(mergedAnimations)) {
+      const pack = mergedAnimations[key];
+      if (pack && pack.keyframes) {
+        cssParts.push(pack.keyframes);
+      }
+    }
+
     return cssParts.join("\n\n");
   }
 
@@ -135,6 +139,14 @@ export function createPulseEvolutionaryAnimations({
       if (kind !== "animations") continue;
       const skill = skills[id];
       if (skill) cssParts.push(buildKeyframesCSS(skill));
+    }
+
+    // Evolvable + local animation packs
+    for (const key of Object.keys(mergedAnimations)) {
+      const pack = mergedAnimations[key];
+      if (pack && pack.keyframes) {
+        cssParts.push(pack.keyframes);
+      }
     }
 
     return cssParts.join("\n\n");

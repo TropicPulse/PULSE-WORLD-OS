@@ -279,3 +279,16 @@ OR
 “This is possible in both — just implement it.”
 
 
+/* 
+@PULSE_IMMORTAL_REQUIRE_FULL_META
+This organ requires FULL IMMORTAL++ metadata on every upgrade:
+- AI_EXPERIENCE_META + AI_EXPERIENCE_CONTEXT
+- Full organ metadata + evo flags + lineage
+- Full contract (input/output/consumers)
+- Full experience surfaces (band/wave/binary/presence/advantage)
+- Full IMMORTAL++ overlays (drift, pressure, stability, load)
+- Full chunk/cache/prewarm overlays
+- Full world‑lens, limbic, tri‑heart, impulse‑speed awareness
+- Full healing surfaces + diagnostics
+Always include ALL layers, ALL overlays, ALL IMMORTAL++ structures.
+*/

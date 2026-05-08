@@ -1,41 +1,66 @@
 // ============================================================================
-// FILE: /PULSE-UI/_COMPONENTS_EVOLUTION/PulseEvolutionaryStylesBaseGenome-v20.js
-// PULSE OS — v20-IMMORTAL-EVOLUTIONARY
+// FILE: /PULSE-UI/_GENOME/PulseEvolutionaryStylesBaseGenome-v20.js
+// PULSE OS — v20++ IMMORTAL EVOLUTIONARY
 // UNIVERSAL UI SKIN GENOME (A0–A5 SURFACE MEMBRANE)
 // ============================================================================
 //
-// ROLE (v20 IMMORTAL):
-//   This is the *foundational style genome* for Pulse OS UI.
-//   It provides the universal membrane that all pages inherit before
-//   page-specific UI skills are applied.
-//
-//   A0: Global reset + dark membrane
-//   A1: 3D surfaces + neon edges + glow rings
-//   A2: Blocks, cards, wrappers, containers
-//   A3: Buttons, icons, shimmer, impulse, tiers
-//   A4: Forms, inputs, selects, toggles, sliders
-//   A5: Lists, tables, modals, toasts, badges, chips, navbars
+// ROLE (IMMORTAL):
+//   • Foundational UI skin genome for Pulse OS
+//   • Provides universal A0–A5 membrane
+//   • Deterministic, drift-proof, evolvable
+//   • Auto-integrated with:
+//       - Styles Organ (v20 IMMORTAL)
+//       - Animations Organ (v20 IMMORTAL)
+//       - Icons Organ (v20 IMMORTAL)
+//       - IQMap UI Skills Genome
+//       - Memory-v20++
+//       - Router-v20
 //
 // CONTRACT:
-//   • STATIC but EVOLVABLE.
-//   • Always included by Styles Organ.
-//   • Never duplicated, never drifted, never mutated.
-//   • Page-specific skills may override or extend it.
+//   • STATIC but EVOLVABLE
+//   • Never mutated at runtime
+//   • Always included exactly once
+//   • Page-specific UI skills may extend/override
 //
 // SAFETY:
-//   • IMMORTAL: deterministic, drift-proof.
-//   • DOM-safe: applied only through Styles Organ.
+//   • IMMORTAL: deterministic, pure, zero side effects
+//   • Zero network, zero filesystem, zero randomness
+//   • Zero dynamic imports, zero eval
 // ============================================================================
 
-export const PulseEvolutionaryStylesBaseGenomeV20 = {
-  id: "base_skin_v20",
-  kind: "style_pack",
-  version: "20.0-Immortal-Evolutionary",
-  description: "Universal Pulse OS v20 Skin (A0–A5 Membrane)",
+export const PulseEvolutionaryStylesBaseGenomeV20 = Object.freeze({
 
+  schemaVersion: "v20++",
+  identity: "PulseEvolutionaryStylesBaseGenome",
+  version: "20.0-Immortal-Evolutionary",
+  layer: "pulse_ui",
+  role: "style_genome_a0_a5",
+
+  evo: Object.freeze({
+    deterministic: true,
+    driftProof: true,
+    schemaVersioned: true,
+    styleGenome: true,
+    animationGenomeAware: true,
+    iconGenomeAware: true,
+    iqMapAware: true,
+    evolvable: true,
+    futureEvolutionReady: true,
+
+    zeroNetwork: true,
+    zeroFilesystem: true,
+    zeroMutationOfInput: true,
+    zeroDynamicImports: true,
+    zeroEval: true,
+    zeroRandomness: true
+  }),
+
+  // -------------------------------------------------------------------------
+  // UNIVERSAL CSS MEMBRANE (A0–A5)
+  // -------------------------------------------------------------------------
   css: `
 /* ============================================================================
-   PulseEvolutionaryStylesBaseGenome — v20‑IMMORTAL
+   PulseEvolutionaryStylesBaseGenome — v20++ IMMORTAL
    UNIVERSAL PULSE OS UI SKIN ORGAN (A0–A5 SURFACE MEMBRANE)
    ============================================================================ */
 
@@ -361,4 +386,4 @@ html, body {
   border-bottom: 1px solid rgba(0,255,255,0.12);
 }
 `
-};
+});

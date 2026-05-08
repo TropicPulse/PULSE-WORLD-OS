@@ -98,7 +98,7 @@ import {
 import {
   runInstanceOrchestrator as runAdrenalInstanceOrchestrator,
   PulseProxyAdrenalSystemMeta
-} from "../PULSE-PROXY/PulseProxyAdrenalSystem.js";
+} from "../PULSE-PROXY/PulseProxyAdrenalSystem-v20.js";
 
 // PulseNet bridge (symbolic adapter to PULSE-NET)
 import {

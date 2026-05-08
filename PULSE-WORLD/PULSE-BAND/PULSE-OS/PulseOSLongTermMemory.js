@@ -1328,14 +1328,19 @@ app.get("/resend-link", async (req, res) => {
   // STRIPE ONBOARDING LINK
   // -----------------------------
   try {
-    const link = await stripe.accountLinks.create({
-      account: stripeAccountID,
-      refresh_url: "/expire.html",
-      return_url: `/StripeSetupComplete.html?token=${encodeURIComponent(jwt)}`,
-      type: "account_onboarding"
-    });
+    const token = generateToken();
 
-    const newUrl = link.url;
+      // -----------------------------
+      // STRIPE ONBOARDING LINK
+      // -----------------------------
+      const onboardingLink = await stripe.accountLinks.create({
+        account: stripeAccountID,
+        refresh_url: "https://www.tropicpulse.bz/expire.html",
+        return_url: `https://www.tropicpulse.bz/StripeSetupComplete.html?token=${encodeURIComponent(token)}`,
+        type: "account_onboarding"
+      });
+
+    const newUrl = onboardingLink.url;
 
     // -----------------------------
     // UPDATE NOTIFICATIONS TIMESTAMP
@@ -24974,22 +24979,29 @@ export const createOrGetStripeAccount = onRequest(
         { merge: true }
       );
 
+     // -----------------------------
+      // IMMORTAL‑v20 TOKEN
       // -----------------------------
-      // 8️⃣ STRIPE ONBOARDING LINK
+      const token = generateToken();
+
       // -----------------------------
-      const link = await stripe.accountLinks.create({
+      // STRIPE ONBOARDING LINK
+      // -----------------------------
+      const onboardingLink = await stripe.accountLinks.create({
         account: stripeAccountID,
-          refresh_url: "/expire.html",
-          return_url: `/StripeSetupComplete.html?token=${encodeURIComponent(jwt)}`,
-          type: "account_onboarding"
+        refresh_url: "https://www.tropicpulse.bz/expire.html",
+        return_url: `https://www.tropicpulse.bz/StripeSetupComplete.html?token=${encodeURIComponent(token)}`,
+        type: "account_onboarding"
       });
 
-      const getPaidLink = link.url;
+      const getPaidLink = onboardingLink.url;
 
+      // -----------------------------
+      // RESEND LINK (PUBLIC-SAFE)
+      // -----------------------------
       const reSendLink =
-        "/_REDIRECT/resendlink.html?user=" +
-        encodeURIComponent(username);
-
+        "https://www.tropicpulse.bz/_REDIRECT/resendlink.html?user=" +
+        encodeURIComponent(name);
       // -----------------------------
       // 9️⃣ EMAIL LOG
       // -----------------------------
@@ -25244,17 +25256,19 @@ export const resendStripeLink = onRequest(
         metadata: { tokenHash: hash }
       });
 
+      const token = generateToken();
+
       // -----------------------------
       // STRIPE ONBOARDING LINK
       // -----------------------------
-       const onboardingLink = await stripe.accountLinks.create({
-          account: stripeAccountID,
-          refresh_url: "https://www.tropicpulse.bz/expire.html",
-          return_url: `https://www.tropicpulse.bz/StripeSetupComplete.html?token=${encodeURIComponent(jwt)}`,
-          type: "account_onboarding"
-        });
+      const onboardingLink = await stripe.accountLinks.create({
+        account: stripeAccountID,
+        refresh_url: "https://www.tropicpulse.bz/expire.html",
+        return_url: `https://www.tropicpulse.bz/StripeSetupComplete.html?token=${encodeURIComponent(token)}`,
+        type: "account_onboarding"
+      });
 
-      const getPaidLink = onboardingLink.url;
+    const getPaidLink = onboardingLink.url;
 
       // -----------------------------
       // RESEND LINK (NO TOKEN)
@@ -26494,12 +26508,17 @@ export const sendDynamicEmail = onRequest(
         /* ---------------------------------------------------------
           7️⃣ STRIPE ONBOARDING LINK
         --------------------------------------------------------- */
-        const onboardingLink = await stripe.accountLinks.create({
-          account: stripeAccountID,
-          refresh_url: "https://www.tropicpulse.bz/expire.html",
-          return_url: `https://www.tropicpulse.bz/StripeSetupComplete.html?token=${encodeURIComponent(jwt)}`,
-          type: "account_onboarding"
-        });
+        const token = generateToken();
+
+      // -----------------------------
+      // STRIPE ONBOARDING LINK
+      // -----------------------------
+      const onboardingLink = await stripe.accountLinks.create({
+        account: stripeAccountID,
+        refresh_url: "https://www.tropicpulse.bz/expire.html",
+        return_url: `https://www.tropicpulse.bz/StripeSetupComplete.html?token=${encodeURIComponent(token)}`,
+        type: "account_onboarding"
+      });
 
         /* ---------------------------------------------------------
           8️⃣ RESEND STRIPE LINK — NEW SCHEMA

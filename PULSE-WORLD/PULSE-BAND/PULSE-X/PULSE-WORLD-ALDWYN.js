@@ -83,7 +83,7 @@ import { createBinarySend } from "../PULSE-SEND/PulseBinarySend-v16.js";
 import {
   readCoreMemoryEarn,
   writeCoreMemoryEarn
-} from "../PULSE-CORE/PulseCoreEarnMemoryAdapter.js";
+} from "../PULSE-CORE/PulseCoreEarnMemoryAdapter-v20.js";
 
 import {
   readCoreMemorySend,

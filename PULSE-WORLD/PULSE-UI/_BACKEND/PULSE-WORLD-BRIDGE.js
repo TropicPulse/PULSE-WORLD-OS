@@ -104,6 +104,8 @@ AI_EXPERIENCE_META = {
 //  GLOBAL + DB + LOGGER — IMMORTAL SNAPSHOT
 // ============================================================================
 import { PulseProofLogger, log, warn, error } from "./PulseProofLogger-v20.js";
+// NEW: CoreSpeech v24 speech organ
+import { PulseCoreSpeech } from "/PULSE-CORE/PulseCoreSpeech-v24.js";
 
 const g =
   typeof globalThis !== "undefined"
@@ -586,6 +588,11 @@ export const coreMemoryBridge = {
 };
 
 // ============================================================================
+//  CORE SPEECH ORGAN (v24 IMMORTAL) — ATTACHED TO BRIDGE
+// ============================================================================
+const corespeech = PulseCoreSpeech();
+
+// ============================================================================
 //  FIRE-AND-FORGET ROUTE (Unified v20)
 // ============================================================================
 export function fireAndForgetRoute(path, payload = {}) {
@@ -728,6 +735,7 @@ export const PulseProofBridge = {
   signal,
   prewarmBridge,
   coreMemory: coreMemoryBridge,
+  corespeech, // NEW: Core speech organ exposed to UI + adapters
   PulseNetBoot,
   PulseBinaryOrganismBoot,
   PulseUnderstandingBoot,
@@ -746,6 +754,7 @@ try {
   if (typeof window !== "undefined") {
     window.PulseBridgeStore = PulseBridgeStore;
     window.PulseProofBridge = PulseProofBridge;
+    window.CoreSpeech = corespeech; // optional global alias
   }
   if (typeof global !== "undefined") {
     global.PulseBridgeStore = PulseBridgeStore;

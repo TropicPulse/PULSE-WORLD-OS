@@ -59,7 +59,7 @@ import { createBinaryRouter }                 from "./PulseBinaryRouter-v16.js";
 import { PulseRouterCommandments }            from "./PulseRouterCommandments.js";
 import { PulseEarnRouter }                    from "./PulseRouterEarn-v16.js";
 
-import { createPulseCoreMemory }              from "../PULSE-CORE/PulseCoreMemory.js";
+import { createPulseCoreMemory }              from "../PULSE-CORE/PulseCoreMemory-v20.js";
 import { createPulseMeshPresenceRelay as PulseMeshPresenceRelay }                  from "../PULSE-MESH/PulseMeshPresenceRelay-v16.js";
 
 

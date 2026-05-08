@@ -89,11 +89,11 @@ import {
 } from "../../PULSE-UI/_BACKEND/PulseWorldBridge.js";
 
 // --- PULSE-CORE MEMORY SPINE (FULL SPINE) ----------------------------------
-import PulseCoreMemory                from "../PULSE-CORE/PulseCoreMemory.js";
-import PulseCoreAIMemoryAdapter       from "../PULSE-CORE/PulseCoreAIMemoryAdapter.js";
+import PulseCoreMemory                from "../PULSE-CORE/PulseCoreMemory-v20.js";
+import PulseCoreAIMemoryAdapter       from "../PULSE-CORE/PulseCoreAIMemoryAdapter-v20.js";
 import PulseCoreGPUMemoryAdapter      from "../PULSE-CORE/PulseCoreGPUMemoryAdapter.js";
-import PulseCoreEarnMemoryAdapter     from "../PULSE-CORE/PulseCoreEarnMemoryAdapter.js";
-import PulseBinaryCoreOverlay         from "../PULSE-CORE/PulseBinaryCoreOverlay.js";
+import PulseCoreEarnMemoryAdapter     from "../PULSE-CORE/PulseCoreEarnMemoryAdapter-v20.js";
+import PulseBinaryCoreOverlay         from "../PULSE-CORE/PulseBinaryCoreOverlay-v20.js";
 
 // CoreMemory bridge: structural, deterministic, keyed by memory surfaces.
 export const CoreMemory = Object.freeze({

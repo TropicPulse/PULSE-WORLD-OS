@@ -137,6 +137,7 @@ export default [
   {
     files: [
       "**/PulseProxy*.js",
+      "**/PulseBinaryProxy*.js",
       "**/PulseOSLongTermMemory*.js",
       "**/WBC*.js",
       "**/*Healer*.js",

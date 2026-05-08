@@ -10,6 +10,90 @@
 //    • Mesh‑pulse aware (hops/distance bounded)
 //    • Read‑only experience meta for Overmind/World
 // ============================================================================
+/*
+AI_EXPERIENCE_META = {
+  identity: "PulseTelemetryOrgan",
+  version: "v20-ImmortalPlus-BINARY-MAX-ABA",
+  layer: "telemetry_bloodstream",
+  role: "immortal_telemetry_sensor",
+  lineage: "PulseTelemetry-v20-ImmortalPlus",
+
+  evo: {
+    // Core telemetry laws
+    pureTelemetry: true,
+    sensorOnly: true,
+    noDecisionMaking: true,
+    noRouting: true,
+    noGlobalRoutingState: true,
+    noBusinessLogic: true,
+    noExternalMutation: true,
+    noCompute: true,
+
+    // IMMORTAL guarantees
+    deterministic: true,
+    driftProof: true,
+    zeroRandomness: true,
+    zeroNondeterminism: true,
+    zeroDynamicImports: true,
+    zeroEval: true,
+    zeroTimers: true,
+    zeroAsyncLoops: true,
+    multiInstanceReady: true,
+    noBackend: true,
+    noDOM: true,
+    noWindow: true,
+    noGPU: true,
+
+    // A‑B‑A surfaces
+    bandAware: true,
+    waveFieldAware: true,
+    binaryFieldAware: true,
+    meshPulseReady: true,
+    unifiedAdvantageField: true,
+    pulseEfficiencyAware: true,
+
+    // v20 presence / chunk / cache hints
+    presenceAware: true,
+    cacheChunkAware: true,
+    prewarmAware: true,
+    chunkTelemetryAware: true,
+    meshPresenceAware: true,
+
+    // dual-band / IMMORTAL surfaces
+    symbolicAware: true,
+    binaryAware: true,
+    dualBandAware: true,
+    epochStable: true,
+
+    // Evolutionary awareness
+    patternAware: true,
+    shapeAware: true,
+    evolutionAware: true,
+
+    // Environment
+    worldLensAware: false
+  },
+
+  contract: {
+    input: [
+      "TelemetrySnapshot",
+      "SubsystemHeartbeat",
+      "MeshPulseContext",
+      "DualBandContext"
+    ],
+    output: [
+      "TelemetryVitalSigns",
+      "TelemetryBandSignature",
+      "TelemetryBinaryField",
+      "TelemetryWaveField",
+      "TelemetryAdvantageField",
+      "TelemetryDiagnostics",
+      "TelemetryHealingState",
+      "TelemetryExperienceMeta"
+    ]
+  }
+}
+*/
 
 import {
   VitalsLogger as logger,
@@ -192,6 +276,7 @@ export const PulseTelemetryOrganMeta = Object.freeze({
     return: "deterministic telemetry surfaces + signatures + advantage + experience meta"
   })
 });
+
 
 // ============================================================================
 // INTERNAL STATE — Telemetry Bloodstream (bounded, observational only)

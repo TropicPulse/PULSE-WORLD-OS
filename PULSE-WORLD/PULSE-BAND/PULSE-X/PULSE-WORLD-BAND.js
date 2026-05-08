@@ -99,7 +99,7 @@ AI_EXPERIENCE_META = {
 const admin = global.db;
 const db    = global.db;
 import { VitalsLogger as logger } from "../../PULSE-UI/_BACKEND/PulseProofLogger-v20.js";
-import { PulseLineage } from "../PULSE-PROXY/PulseProxyBBB.js";
+import { PulseLineage } from "../PULSE-PROXY/PulseProxyBBB-v20.js";
 
 // ============================================================================
 //  ORGAN META — v21 IMMORTAL WORLDBAND

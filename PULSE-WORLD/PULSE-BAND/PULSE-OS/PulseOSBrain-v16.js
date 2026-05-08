@@ -207,7 +207,7 @@ import { PulseOSEvolution } from "./PulseOSBrainEvolution.js";
 
 import checkBand from "../PULSE-X/PULSE-WORLD-BAND.js";
 import checkIdentity from "../PULSE-X/PulseWorldIdentity-v20.js";
-import checkRouterMemory from "../PULSE-PROXY/PulseProxyMemoryRouter-v16.js";
+import checkRouterMemory from "../PULSE-PROXY/PulseProxyMemoryRouter-v20.js";
 
 // ============================================================================
 //  CNS BRAIN — v16-Immortal-DUALBAND-Presence-ADVANTAGE-ARTERY

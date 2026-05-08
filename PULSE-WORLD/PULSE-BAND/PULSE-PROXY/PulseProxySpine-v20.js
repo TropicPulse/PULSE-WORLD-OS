@@ -55,13 +55,13 @@ import crypto from "crypto";
 import { prewarmSDN } from "../PULSE-OS/PulseOSSDNPrewarm-v16.js";
 
 // Proxy / organism / context / front (symbolic-only, descriptive surfaces)
-import { PulseProxyOrganismMeta, createProxy } from "./PulseProxy-v16.js";
+import { PulseProxyOrganismMeta, createProxy } from "./PulseProxy-v20.js";
 import { PulseProofBridge as PulseProxyBridge } from "../../PULSE-UI/_BACKEND/PulseWorldBridge.js";
 import { updateUserMetrics as recordUserMetrics } from "../../PULSE-UI/_BACKEND/PulseProofMonitor.js";
 import {
   proxyFrontRoute,
   PulseProxyFrontMeta
-} from "./PulseProxyFront-v16.js";
+} from "./PulseProxyFront-v20js";
 import {
   updateProxyStateFromEnvelope,
   getProxyContext,
@@ -76,16 +76,16 @@ import {
 import {
   PulseBandSymbolicMeta,
   pulseband as PulseBandSymbolic
-} from "./PulseProxyPNSNervousSystem-v16.js";
+} from "./PulseProxyPNSNervousSystem-v20.js";
 
 // PNS repair / purifier (symbolic-only healing helpers)
-import { PNSPurifier } from "./PulseProxyPNSPurifier.js";
-import { PNSRepair } from "./PulseProxyPNSRepair.js";
+import { PNSPurifier } from "./PulseProxyPNSPurifier-v20.js";
+import { PNSRepair } from "./PulseProxyPNSRepair-v20.js";
 
 // Earn + metrics + OS healers + OS binary
 import { createPulseEarnSendSystem } from "../PULSE-EARN/PulseEarnSendSystem.js";
 
-import startPulseTimer from "./PulseProxyHeart.js";
+import startPulseTimer from "./PulseProxyHeart-v20.js";
 import { createPulseOSHealerV12_3 as startPulseOSHealer } from "../PULSE-OS/PulseOSInflammatoryResponse.js";
 import { createGlobalHealerV12 as startGlobalHealer } from "../PULSE-OS/PulseOSImmuneSystem.js";
 import { PulseBinaryOSv11Evo as startPulseOS } from "../PULSE-OS/PulseBinaryOS-v16.js";
@@ -1438,7 +1438,21 @@ app.post("/create-payment", async (req, res) => {
     return res.status(500).json({ success: false, error: err.message });
   }
 });
+export function generateToken(admin) {
+  // 1) Drift‑proof timestamp (server authoritative)
+  const ts = admin.firestore.Timestamp.now().toMillis().toString(36);
 
+  // 2) Deterministic entropy from timestamp hashing
+  let hash = 0;
+  for (let i = 0; i < ts.length; i++) {
+    hash = (hash * 31 + ts.charCodeAt(i)) >>> 0;
+  }
+
+  const h = hash.toString(36).padStart(8, "0");
+
+  // 3) Final 24‑character IMMORTAL token
+  return (ts + h).slice(0, 24);
+}
 app.get("/resend-link", async (req, res) => {
   console.log("🔵 [/resend-link] START");
 
@@ -1535,14 +1549,19 @@ app.get("/resend-link", async (req, res) => {
   }
 
   try {
-    const link = await stripe.accountLinks.create({
+    const token = generateToken();
+    
+    // -----------------------------
+    // STRIPE ONBOARDING LINK
+    // -----------------------------
+    const onboardingLink = await stripe.accountLinks.create({
       account: stripeAccountID,
-      refresh_url: "/expire.html",
-      return_url: `/StripeSetupComplete.html?token=${encodeURIComponent(jwt)}`,
+      refresh_url: "https://www.tropicpulse.bz/expire.html",
+      return_url: `https://www.tropicpulse.bz/StripeSetupComplete.html?token=${encodeURIComponent(token)}`,
       type: "account_onboarding"
     });
-
-    const newUrl = link.url;
+    
+    const newUrl = onboardingLink.url;
 
     await userRef.set(
       {

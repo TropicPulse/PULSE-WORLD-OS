@@ -1,18 +1,150 @@
 // ============================================================================
-//  PULSE OS v20‑IMMORTAL++ — THE LIMBIC SHADOW
+//  PULSE OS v20‑IMMORTAL+++ — THE LIMBIC SHADOW
 //  Unified Projection Layer • Instinct Surface • Meta‑Facade
 //  PURE FACADE. NO LOGIC. NO STATE. NO SIDE‑EFFECTS.
 //  DUAL‑BAND + PRESENCE + ADVANTAGE + WORLD‑LENS PROJECTION.
 // ============================================================================
 
+/*
+AI_EXPERIENCE_META = {
+  identity: "PulseLimbicShadow",
+  version: "v20-ImmortalPlusPlus-BINARY-MAX-ABA-Presence-WorldLens",
+  layer: "limbic_shadow",
+  role: "unified_projection_instinct_layer",
+
+  lineage: {
+    root: "PulseOS-v11",
+    parent: "PulseOS-v20-ImmortalPlus",
+    organismIntegration: "v20-ImmortalPlusPlus",
+    worldIntegration: "PulseWorld-v21-Immortal",
+    meshIntegration: "PulseMesh-v20-ImmortalPlus",
+    routerIntegration: "PulseRouter-v20-ImmortalPlus",
+    proxyIntegration: "PulseProxy-v20-ImmortalPlus",
+    limbicEvolution: "LimbicShadow-v7→v11→v12.3-Evo-Presence→v20-ImmortalPlusPlus"
+  },
+
+  evo: {
+    // Core identity
+    driftProof: true,
+    deterministic: true,
+    projectionOnly: true,
+    instinctSurface: true,
+    unifiedProjectionLayer: true,
+    pureFacade: true,
+    metaOnly: true,
+    zeroBusinessLogic: true,
+    zeroRoutingLogic: true,
+    zeroState: true,
+    zeroSideEffects: true,
+    multiInstanceReady: true,
+    immortalReady: true,
+
+    // Dual-band + presence + advantage
+    dualBandProjection: true,
+    dualBandAware: true,
+    binaryAware: true,
+    symbolicAware: true,
+    bandAware: true,
+    presenceAware: true,
+    presenceFieldAware: true,
+    presenceTierAware: true,
+    unifiedAdvantageField: true,
+    advantageBandAware: true,
+    advantageCascadeAware: true,
+
+    // A‑B‑A + fields
+    waveFieldAware: true,
+    binaryFieldAware: true,
+    limbicBandSignatureAware: true,
+
+    // Instinct + organism/world lenses
+    proxyModeAware: true,
+    pressureFlowAware: true,
+    meshDistanceAware: true,
+    worldLensAware: true,
+    organismVitalAware: true,
+    instinctAuraAware: true,
+    experienceFieldAware: true,
+
+    // World / organism awareness (meta only, no routing)
+    organismAware: true,
+    worldCoreAware: true,
+    meshAware: true,
+    routerAware: true,
+    proxyAware: true,
+    spinalAware: true,
+
+    // Boundaries
+    routingOpaque: true,
+    subsystemBoundaryHidden: true,
+    orchestrationOpaque: true,
+    futureEvolutionReady: true,
+
+    // IMMORTAL guarantees
+    zeroRandomness: true,
+    zeroNetwork: true,
+    zeroIO: true,
+    zeroFilesystem: true,
+    zeroExternalMutation: true,
+    zeroDynamicImports: true,
+    zeroEval: true,
+    zeroTimers: true,
+    zeroAsync: true,
+    zeroWindowMutation: true,
+    zeroDOM: true,
+    zeroGPU: true
+  },
+
+  contract: {
+    input: [
+      "ProjectionContext",
+      "DualBandContext",
+      "AdvantageContext",
+      "PresenceContext",
+      "ProxyContext",
+      "MeshContext",
+      "WorldLensContext",
+      "OrganismVitalContext",
+      "InstinctAuraContext",
+      "ExperienceContext"
+    ],
+    output: [
+      "UnifiedProjectionSurface",
+      "LimbicBandSignature",
+      "LimbicBinaryField",
+      "LimbicWaveField",
+      "LimbicPresenceField",
+      "LimbicAdvantageField",
+      "LimbicProxyModeField",
+      "LimbicMeshDistanceField",
+      "LimbicWorldLensField",
+      "LimbicVitalField",
+      "LimbicAuraField",
+      "LimbicDiagnostics",
+      "LimbicHealingState",
+      "LimbicProjectionSnapshot"
+    ],
+    consumers: [
+      "PulseOSSpinalCord",
+      "PulseWorldCore",
+      "PulseMesh",
+      "PulseRouter",
+      "PulseProxy",
+      "PulseClient",
+      "PulseNet",
+      "PulseUIExperienceLayer"
+    ]
+  }
+};
+*/
 
 // ============================================================================
-//  LIMBIC SHADOW CONTEXT — v20‑IMMORTAL++
+//  LIMBIC SHADOW CONTEXT — v20‑IMMORTAL+++
 // ============================================================================
 export const LIMBIC_SHADOW_CONTEXT = {
   layer: "LimbicShadow",
   role: "UNIFIED_PROJECTION_INSTINCT",
-  version: "20-ImmortalPlus",
+  version: "20-ImmortalPlusPlus",
   purpose: "Unified projection + instinct surface for Pulse organs",
 
   evo: {
@@ -21,10 +153,14 @@ export const LIMBIC_SHADOW_CONTEXT = {
     projectionOnly: true,
     instinctSurface: true,
     unifiedAdvantageField: true,
+    unifiedProjectionLayer: true,
+    pureFacade: true,
+    metaOnly: true,
     multiInstanceReady: true,
 
     // Dual-band + presence
     dualBandProjection: true,
+    dualBandAware: true,
     binaryAware: true,
     symbolicAware: true,
     presenceAware: true,
@@ -35,7 +171,7 @@ export const LIMBIC_SHADOW_CONTEXT = {
     waveFieldAware: true,
     binaryFieldAware: true,
 
-    // NEW v20 IMMORTAL++ instinct surfaces
+    // v20 IMMORTAL+++ instinct surfaces
     advantageBandAware: true,
     presenceTierAware: true,
     proxyModeAware: true,
@@ -44,28 +180,32 @@ export const LIMBIC_SHADOW_CONTEXT = {
     worldLensAware: true,
     organismVitalAware: true,
     instinctAuraAware: true,
+    experienceFieldAware: true,
 
     // World / organism awareness (meta only, no routing)
     organismAware: true,
     worldCoreAware: true,
     meshAware: true,
     routerAware: true,
+    proxyAware: true,
+    spinalAware: true,
 
     routingOpaque: true,
     subsystemBoundaryHidden: true,
+    orchestrationOpaque: true,
     futureEvolutionReady: true
   }
 };
 
 
 // ============================================================================
-//  META — v20 IMMORTAL++
+//  META — v20 IMMORTAL+++
 // ============================================================================
 export const PulseLimbicShadowMeta = Object.freeze({
   layer: "PulseLimbicShadow",
   role: "UNIFIED_PROJECTION_INSTINCT_LAYER",
-  version: "v20-ImmortalPlus-BINARY-MAX-ABA-Presence",
-  identity: "PulseLimbicShadow-v20-ImmortalPlus-BINARY-MAX-ABA-Presence",
+  version: "v20-ImmortalPlusPlus-BINARY-MAX-ABA-Presence-WorldLens",
+  identity: "PulseLimbicShadow-v20-ImmortalPlusPlus-BINARY-MAX-ABA-Presence-WorldLens",
 
   guarantees: Object.freeze({
     deterministic: true,
@@ -77,14 +217,16 @@ export const PulseLimbicShadowMeta = Object.freeze({
     instinctSurface: true,
     unifiedProjectionLayer: true,
     unifiedAdvantageField: true,
+    metaOnly: true,
 
     dualBandProjection: true,
+    dualBandAware: true,
     binaryAware: true,
     symbolicAware: true,
     presenceAware: true,
     presenceFieldAware: true,
 
-    // NEW v20 IMMORTAL++ instinct surfaces
+    // v20 IMMORTAL+++ instinct surfaces
     advantageBandAware: true,
     presenceTierAware: true,
     proxyModeAware: true,
@@ -93,11 +235,15 @@ export const PulseLimbicShadowMeta = Object.freeze({
     worldLensAware: true,
     organismVitalAware: true,
     instinctAuraAware: true,
+    experienceFieldAware: true,
 
     routingOpaque: true,
     subsystemBoundaryHidden: true,
+    orchestrationOpaque: true,
 
     zeroLogic: true,
+    zeroBusinessLogic: true,
+    zeroRoutingLogic: true,
     zeroState: true,
     zeroSideEffects: true,
     zeroRouting: true,
@@ -130,7 +276,8 @@ export const PulseLimbicShadowMeta = Object.freeze({
       "MeshContext",
       "WorldLensContext",
       "OrganismVitalContext",
-      "InstinctAuraContext"
+      "InstinctAuraContext",
+      "ExperienceContext"
     ],
     output: [
       "UnifiedProjectionSurface",
@@ -145,7 +292,8 @@ export const PulseLimbicShadowMeta = Object.freeze({
       "LimbicVitalField",
       "LimbicAuraField",
       "LimbicDiagnostics",
-      "LimbicHealingState"
+      "LimbicHealingState",
+      "LimbicProjectionSnapshot"
     ]
   }),
 
@@ -221,7 +369,7 @@ logShadow("SHADOW_INIT");
 
 
 // ============================================================================
-//  PURE PROJECTION — THE SHADOW SURFACE (v20‑IMMORTAL++)
+//  PURE PROJECTION — THE SHADOW SURFACE (v20‑IMMORTAL+++)
 //  NO LOGIC. NO STATE. NO SIDE‑EFFECTS.
 //  Just reflect whatever the organism has already wired.
 // ============================================================================
@@ -237,3 +385,4 @@ export const PulseClient = G.PulseClient || null;
 //  OPTIONAL META EXPORT — SAFE FOR INTROSPECTION
 // ============================================================================
 export const PULSE_LIMBIC_SHADOW_META = { ...LIMBIC_SHADOW_CONTEXT };
+

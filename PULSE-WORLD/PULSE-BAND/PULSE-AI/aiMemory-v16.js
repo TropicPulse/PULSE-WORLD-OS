@@ -61,7 +61,7 @@ AI_EXPERIENCE_META = {
 }
 */
 
-import { PulseCoreMemory } from "../PULSE-CORE/PulseCoreMemory.js";
+import { PulseCoreMemory } from "../PULSE-CORE/PulseCoreMemory-v20.js";
 
 // ============================================================================
 //  META BLOCK — v16.0-Immortal-ADV++

@@ -34,8 +34,10 @@
 //   • Memory-safe: no external side effects.
 // ============================================================================
 
-import { PulseEvolutionaryIconsBaseGenomeV20, mergeIconGenomes } 
-  from "../_COMPONENTS_EVOLUTION/PulseEvolutionaryIconsGenome-v20.js";
+import {
+  PulseEvolutionaryIconsBaseGenomeV20,
+  mergeIconGenomes
+} from "./PulseEvolutionaryIconsBaseGenome-v20.js";
 
 // ============================================================================
 // HELPERS — deterministic, pure
@@ -43,6 +45,7 @@ import { PulseEvolutionaryIconsBaseGenomeV20, mergeIconGenomes }
 
 // Convert SVG to binary-friendly variant
 function toBinaryFriendly(svg) {
+  if (!svg) return "";
   return svg
     .replace(/stroke="[^"]+"/g, `stroke="#ffffff"`)
     .replace(/fill="[^"]+"/g, `fill="none"`)
@@ -51,6 +54,7 @@ function toBinaryFriendly(svg) {
 
 // GPU glow map (optional aesthetic enhancer)
 function toGlowMap(svg) {
+  if (!svg) return "";
   return svg
     .replace(/stroke-width="[^"]+"/g, `stroke-width="3"`)
     .replace(/stroke="[^"]+"/g, `stroke="#00eaff"`)
@@ -59,6 +63,7 @@ function toGlowMap(svg) {
 
 // Encode SVG as CSS variable
 function encodeSVG(svg) {
+  if (!svg) return "";
   return `data:image/svg+xml;base64,${btoa(svg)}`;
 }
 
@@ -73,9 +78,20 @@ export function createPulseEvolutionaryIcons({
   warn = console.warn
 } = {}) {
 
-  // Merge all icon sources deterministically
-  const { baseIcons, expandedIcons, tierIcons } =
-    mergeIconGenomes({ evolutionSources, localIconMap });
+  // Deterministic, IMMORTAL merge of all icon sources
+  const {
+    baseIcons: mergedBaseIcons,
+    expandedIcons: mergedExpandedIcons,
+    tierIcons: mergedTierIcons
+  } = mergeIconGenomes({
+    evolutionSources,
+    localIconMap,
+    baseGenome: PulseEvolutionaryIconsBaseGenomeV20
+  });
+
+  const baseIcons = Object.freeze({ ...mergedBaseIcons });
+  const expandedIcons = Object.freeze({ ...mergedExpandedIcons });
+  const tierIcons = Object.freeze({ ...mergedTierIcons });
 
   // -------------------------------------------------------------------------
   // ROUTE-AWARE ICON EXTRACTION
@@ -84,7 +100,7 @@ export function createPulseEvolutionaryIcons({
     if (!IQMap) return [];
 
     const bundle = IQMap.getRouteUISkills(route) || {};
-    const skills = IQMap.uiSkillsMap.skills || {};
+    const skills = IQMap.uiSkillsMap?.skills || {};
 
     const icons = [];
 
@@ -103,7 +119,7 @@ export function createPulseEvolutionaryIcons({
     if (!IQMap) return [];
 
     const { flatSkills } = IQMap.planUpcomingSkills(routeSequence);
-    const skills = IQMap.uiSkillsMap.skills || {};
+    const skills = IQMap.uiSkillsMap?.skills || {};
 
     const icons = [];
 
@@ -129,6 +145,7 @@ export function createPulseEvolutionaryIcons({
     };
 
     for (const [name, svg] of Object.entries(all)) {
+      if (!svg) continue;
       css.push(`:root { --icon-${name}: url("${encodeSVG(svg)}"); }`);
     }
 
@@ -138,22 +155,31 @@ export function createPulseEvolutionaryIcons({
   // ========================================================================
   // PUBLIC ORGAN — IMMORTAL ICON RESOLVER
   // ========================================================================
-  const PulseIcons = {
+  const PulseIcons = Object.freeze({
+    identity: "PulseEvolutionaryIcons-v20",
+    version: "20.0-Immortal-Evolutionary",
     schemaVersion: "v20",
 
     base: baseIcons,
     expanded: expandedIcons,
     tier: tierIcons,
 
-    // Resolve icon by name + tier + binary mode
-    resolve(name, tier = null, binaryMode = false) {
+    // Resolve icon by name + tier + binary mode + glow
+    resolve(name, { tier = null, binaryMode = false, glow = false } = {}) {
       let svg =
         (tier && tierIcons[tier]) ||
         baseIcons[name] ||
         expandedIcons[name] ||
-        tierIcons.immortal;
+        tierIcons.immortal ||
+        "";
 
-      if (binaryMode) svg = toBinaryFriendly(svg);
+      if (!svg) return "";
+
+      if (glow) {
+        svg = toGlowMap(svg);
+      } else if (binaryMode) {
+        svg = toBinaryFriendly(svg);
+      }
 
       return svg;
     },
@@ -181,7 +207,7 @@ export function createPulseEvolutionaryIcons({
     cssVariables() {
       return buildCSSVariables();
     }
-  };
+  });
 
   // Log initialization
   try {
@@ -196,9 +222,13 @@ export function createPulseEvolutionaryIcons({
 }
 
 // ---------------------------------------------------------------------------
-// GLOBAL REGISTRATION (optional)
+ // GLOBAL REGISTRATION (optional)
 // ---------------------------------------------------------------------------
 try {
-  if (typeof window !== "undefined") window.PulseEvolutionaryIcons = createPulseEvolutionaryIcons;
-  if (typeof globalThis !== "undefined") globalThis.PulseEvolutionaryIcons = createPulseEvolutionaryIcons;
+  if (typeof window !== "undefined") {
+    window.PulseEvolutionaryIcons = createPulseEvolutionaryIcons;
+  }
+  if (typeof globalThis !== "undefined") {
+    globalThis.PulseEvolutionaryIcons = createPulseEvolutionaryIcons;
+  }
 } catch {}

@@ -10,6 +10,93 @@
 //    • Chunk/presence hints surfaced as advantage metadata
 //    • Experience meta for AI/agents (read‑only, descriptive)
 // ============================================================================
+/*
+AI_EXPERIENCE_META = {
+  identity: "PulseCirculationMonitor",
+  version: "v20-ImmortalPlus-ABA",
+  layer: "circulation_monitor",
+  role: "immortal_sensor",
+  lineage: "PulseBand-v20-ImmortalPlus",
+
+  evo: {
+    // Core sensor laws
+    pureSensor: true,
+    sensorOnly: true,
+    noDecisionMaking: true,
+    noRouting: true,
+    noGlobalState: true,
+    noMutation: true,
+    noExternalMutation: true,
+    noBusinessLogic: true,
+    noCompute: true,
+
+    // IMMORTAL guarantees
+    deterministic: true,
+    driftProof: true,
+    zeroRandomness: true,
+    zeroNondeterminism: true,
+    zeroDynamicImports: true,
+    zeroEval: true,
+    zeroTimers: true,
+    zeroAsyncLoops: true,
+    multiInstanceReady: true,
+
+    // A‑B‑A surfaces
+    bandAware: true,
+    waveFieldAware: true,
+    binaryFieldAware: true,
+    stressFieldAware: true,
+    flowFieldAware: true,
+
+    // v20 presence/harmonics
+    presenceAware: true,
+    harmonicsAware: true,
+    dualBandAware: true,
+    dualBandCompatible: true,
+    unifiedAdvantageField: true,
+    advantageCascadeAware: true,
+    pulseEfficiencyAware: true,
+    passivePrewarm: true,
+    passiveCache: true,
+    passiveChunk: true,
+    passiveRemember: true,
+
+    // Experience surfaces
+    chunkingHintsAware: true,
+    presenceHintsAware: true,
+    experienceMetaAware: true,
+
+    // Evolutionary awareness
+    patternAware: true,
+    shapeAware: true,
+    evolutionAware: true,
+
+    // Environment
+    worldLensAware: false
+  },
+
+  contract: {
+    input: [
+      "CirculationLatency",
+      "CirculationFlow",
+      "DualBandContext",
+      "AdvantageContext"
+    ],
+    output: [
+      "CirculationVitalSigns",
+      "CirculationBandSignature",
+      "CirculationBinaryField",
+      "CirculationWaveField",
+      "CirculationAdvantageField",
+      "CirculationDiagnostics",
+      "CirculationHealingState",
+      "CirculationChunkingHints",
+      "CirculationPresenceHints",
+      "CirculationExperienceMeta"
+    ]
+  }
+}
+*/
 
 import {
   VitalsLogger as logger,
@@ -151,16 +238,13 @@ export const PulseCirculationMonitorMeta = Object.freeze({
     noGlobalState: true,
     noMutation: true,
     noExternalMutation: true,
-    noCompute: true, // no business logic, only measurement (beyond simple derivations)
+    noCompute: true,
     noTimers: true,
     noRandomness: true,
     noDynamicImports: true,
     noEval: true,
 
-    // (Note: measureLatency uses fetch; this is treated as a pure probe, not business logic.)
-    // No backend network mutation, no IO writes.
-
-    // A‑B‑A + band surfaces
+    // A‑B‑A surfaces
     bandAware: true,
     waveFieldAware: true,
     binaryFieldAware: true,
@@ -174,12 +258,16 @@ export const PulseCirculationMonitorMeta = Object.freeze({
     binaryAware: true,
     dualBandAware: true,
 
-    // Presence / chunking / cache-prewarm awareness
+    // Presence / chunking / cache-prewarm
     presenceAware: true,
     chunkingAware: true,
     cachePrewarmAware: true,
 
-    // Environment
+    // Experience surfaces
+    chunkingHintsAware: true,
+    presenceHintsAware: true,
+    experienceMetaAware: true,
+
     worldLensAware: false
   }),
 
@@ -198,12 +286,8 @@ export const PulseCirculationMonitorMeta = Object.freeze({
       "CirculationAdvantageField",
       "CirculationDiagnostics",
       "CirculationHealingState",
-
-      // v12.3+ surfaces
       "CirculationChunkingHints",
       "CirculationPresenceHints",
-
-      // v20+ experience
       "CirculationExperienceMeta"
     ]
   }),
@@ -239,6 +323,7 @@ export const PulseCirculationMonitorMeta = Object.freeze({
       "deterministic vital signs + signatures + advantage + chunk/presence hints + experience meta"
   })
 });
+
 
 // ============================================================================
 //  A‑B‑A SURFACES — Circulation Band + Binary/Wave Fields + Advantage

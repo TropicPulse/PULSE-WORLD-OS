@@ -215,55 +215,107 @@ const DRIFT_METADATA = {
   ],
   scannerOrgans: ["PulseFileScanner", "PulseCodeAnalyzer"]
 };
-
-// -----------------------------------------------------------------------------
-// ROUTE EXPECTATIONS — NO STATIC ROUTING, ONLY EXPECTATIONS
-// -----------------------------------------------------------------------------
 // -----------------------------------------------------------------------------
 // EVOLVABLE ROUTE EXPECTATIONS — IMMORTAL++ IQ-MAP
 // Pattern-based inference instead of static routing
 // -----------------------------------------------------------------------------
 function buildPageExpectations() {
   const patterns = [
+
+    // -------------------------------------------------------------------------
+    // ROOT / UNIVERSAL
+    // -------------------------------------------------------------------------
     { match: /^\/$/, page: "PulseEvolutionaryPage" },
-    { match: /^\/dashboard/, page: "dashboard" },
 
-    // Messaging / Send
-    { match: /send/, page: "PulseSendDashboard" },
+    // -------------------------------------------------------------------------
+    // IDENTITY / BARRIER / LOGIN
+    // -------------------------------------------------------------------------
+    { match: /login/, page: "PulseWorldBarrier" },
 
-    // Earn / Economy
-    { match: /earn/, page: "PulseEarnDashboard" },
-
-    // Settings
-    { match: /settings/, page: "PulseSettingsDashboard" },
-
-    // Organism / World
+    // -------------------------------------------------------------------------
+    // WORLD-LAYER / ORGANISM CORE
+    // -------------------------------------------------------------------------
     { match: /organism/, page: "PulseOSDashboard" },
     { match: /world/, page: "PulseWorldDashboard" },
+    { match: /immune/, page: "PulseOSImmunities" },
+    { match: /diagnostics/, page: "PulseOSDiagnostics" },
 
-    // Scanner
-    { match: /scanner/, page: "TropicScanner" },
+    // -------------------------------------------------------------------------
+    // INVENTORY / DASHBOARD ROOTS
+    // -------------------------------------------------------------------------
+    { match: /^\/dashboard/, page: "PulseWorldInventory" },
 
-    // TPProxy (your real proxy)
-    { match: /TPProxy/, page: "PulseBand" },
-    { match: /proxy/, page: "PulseBand" },
+    // -------------------------------------------------------------------------
+    // DOMAIN: MESSAGING / SEND
+    // -------------------------------------------------------------------------
+    { match: /send/, page: "PulseSendDashboard" },
 
-    // Admin
-    { match: /admin/, page: "admin" },
+    // -------------------------------------------------------------------------
+    // DOMAIN: ECONOMY / EARN
+    // -------------------------------------------------------------------------
+    { match: /earn/, page: "PulseEarnDashboard" },
 
-    // Directory
-    { match: /directory/, page: "businesspage" },
-    // Directory
-    { match: /events/, page: "eventspage" },
+    // -------------------------------------------------------------------------
+    // DOMAIN: GPU / COMPUTE
+    // -------------------------------------------------------------------------
+    { match: /gpu/, page: "PulseGPUDashboard" },
 
-    // Delivery
-    { match: /delivery/, page: "deliverypage" },
+    // -------------------------------------------------------------------------
+    // DOMAIN: AWARE / PRESENCE
+    // -------------------------------------------------------------------------
+    { match: /aware/, page: "PulseAwareDashboard" },
 
-    // Rewards
-    { match: /rewards/, page: "PulsePoints" },
+    // -------------------------------------------------------------------------
+    // DOMAIN: AI
+    // -------------------------------------------------------------------------
+    { match: /ai/, page: "PulseAIDashboard" },
 
-    // User Records
-    { match: /userrecords/, page: "userrecords" }
+    // -------------------------------------------------------------------------
+    // DOMAIN: SCANNER
+    // -------------------------------------------------------------------------
+    { match: /scanner/, page: "PulseWorldScanner" },
+
+    // -------------------------------------------------------------------------
+    // DOMAIN: PROXY / BAND
+    // -------------------------------------------------------------------------
+    { match: /pulseband/, page: "PulseBandDashboard" },
+
+    // -------------------------------------------------------------------------
+    // DOMAIN: PROXY / BAND
+    // -------------------------------------------------------------------------
+    { match: /proxy/, page: "PulseProxyDashboard" },
+
+    // -------------------------------------------------------------------------
+    // DOMAIN: ADMIN / DOMAIN CONTROL
+    // -------------------------------------------------------------------------
+    { match: /admin/, page: "PulseWorldDomain" },
+
+    // -------------------------------------------------------------------------
+    // DOMAIN: DIRECTORY / EVENTS
+    // -------------------------------------------------------------------------
+    { match: /directory/, page: "TropicPulseDirectory" },
+    { match: /events/, page: "TropicPulseEvents" },
+
+    // -------------------------------------------------------------------------
+    // DOMAIN: DELIVERY
+    // -------------------------------------------------------------------------
+    { match: /delivery/, page: "TropicPulseDelivery" },
+
+    // -------------------------------------------------------------------------
+    // DOMAIN: REWARDS
+    // -------------------------------------------------------------------------
+    { match: /rewards/, page: "PulseWorldRewards" },
+    { match: /referral/, page: "PulseWorldReferralCode" },
+
+    // -------------------------------------------------------------------------
+    // VAULT: WALLET
+    // -------------------------------------------------------------------------
+    { match: /vault/, page: "PulseWorldVault" },
+
+    // -------------------------------------------------------------------------
+    // DOMAIN: USER RECORDS / SKILLS
+    // -------------------------------------------------------------------------
+    { match: /userrecords/, page: "PulseWorldSkills" }
   ];
 
   // ---------------------------------------------------------------------------

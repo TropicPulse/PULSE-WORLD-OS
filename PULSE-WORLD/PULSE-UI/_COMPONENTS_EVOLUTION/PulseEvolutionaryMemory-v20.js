@@ -72,12 +72,27 @@
 //     • CNS Impulses (advisory only)
 //
 // ============================================================================
-
+import { PulseProofBridge } from "../_BACKEND/PULSE-WORLD-BRIDGE.js";
 export let MEMORY_MODE = "deep"; 
 // "deep" → full envelope
 // "slim" → optimized envelope
 // auto-switch enabled via CNS load
+const g =
+  typeof globalThis !== "undefined"
+    ? globalThis
+    : typeof global !== "undefined"
+    ? global
+    : typeof window !== "undefined"
+    ? window
+    : {};
 
+const db =
+  g.db ||
+  (typeof global !== "undefined" && global.db) ||
+  (typeof globalThis !== "undefined" && globalThis.db) ||
+  (typeof window !== "undefined" && window.db) ||
+  null;
+  
 const MEMORY_SCHEMA_VERSION = "v5";
 
 // ============================================================================
@@ -237,6 +252,108 @@ function buildStyleAnimationExperienceBlock(styleAnim) {
     upcomingPlan: styleAnim.upcomingPlan
   };
 }
+// ============================================================================
+//  MEMORY ROLE — PulseEvolutionaryMemory-v20Plus IMMORTAL ROLE
+// ============================================================================
+
+export const MemoryRole = Object.freeze({
+  layer: "PulseEvolutionaryMemory",
+  version: "v20Plus-Immortal-Evolutionary",
+  role: "UI_LONG_TERM_MEMORY_GOVERNOR",
+  identity: "PulseUI.EvolutionaryMemory",
+
+  lineage: Object.freeze({
+    root: "PulseMemory-v11.3",
+    parent: "PulseMemory-v20",
+    ancestry: [
+      "PulseMemory-v11.3",
+      "PulseMemory-v14",
+      "PulseMemory-v16",
+      "PulseMemory-v20",
+      "PulseEvolutionaryMemory-v20Plus-Advisory"
+    ]
+  }),
+
+  guarantees: Object.freeze({
+    // Core memory laws
+    memoryOrgan: true,
+    longTermMemory: true,
+    advisoryMode: true,
+    memoryControlsEvolution: false,   // ADVISORY ONLY
+
+    // Awareness
+    routeAware: true,
+    lineageAware: true,
+    binaryAware: true,
+    symbolicAware: true,
+    dualBand: true,
+    unifiedAdvantageField: true,
+    cnsAware: true,
+    impulseAware: true,
+    routerAware: true,
+    evolutionAware: true,
+
+    // Schema + envelope
+    schemaVersioned: true,
+    envelopeAware: true,
+    integrityAware: true,
+    experienceBlocksAware: true,
+    iqVersionAware: true,
+    uiGenomeVersionAware: true,
+    styleGenomeAware: true,
+    animationGenomeAware: true,
+    styleFootprintAware: true,
+    animationFootprintAware: true,
+    upcomingPlanAware: true,
+    evolutionAdvisoryAware: true,
+
+    // Safety
+    deterministic: true,
+    driftProof: true,
+    pureCompute: true,
+    zeroNetwork: true,
+    zeroFilesystem: true,
+    zeroMutationOfInput: true,
+    zeroExternalMutation: true,
+    zeroDynamicImports: true,
+    zeroEval: true,
+    zeroRandomness: true
+  }),
+
+  contract: Object.freeze({
+    consumes: [
+      "PageModel",
+      "RouteId",
+      "PulseProofBridge.coreMemory",
+      "IQMap",
+      "StylesOrgan",
+      "AnimationsOrgan"
+    ],
+    produces: [
+      "SavedSnapshot",
+      "LoadedSnapshot",
+      "BulkFlushResult",
+      "ExperienceEnvelope",
+      "EvolutionAdvisory",
+      "CNSImpulse"
+    ]
+  }),
+
+  bands: Object.freeze({
+    supported: ["symbolic", "binary"],
+    default: "symbolic",
+    behavior: "memory-governor"
+  }),
+
+  architecture: Object.freeze({
+    pattern: "A-B-A",
+    baseline: "experience → envelope → advisory",
+    adaptive:
+      "experience-blocks + lineage + genome footprints + advantage field",
+    return:
+      "deterministic memory snapshot + advisory impulses"
+  })
+});
 
 // ============================================================================
 // EXPERIENCE BLOCKS — v20++
