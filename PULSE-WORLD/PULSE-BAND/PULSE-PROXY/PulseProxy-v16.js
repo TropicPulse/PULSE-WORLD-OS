@@ -79,7 +79,7 @@ import PulseProxyBloodPressure from "./PulseProxyBloodPressure.js";
 import PulseProxyCirculatorySystem from "./PulseProxyCirculatorySystem.js";
 
 import PulseProxyHypothalamus from "./PulseProxyHypothalamus.js";
-import PulseProxySpine from "./PulseProxySpine-v16.js";
+import PulseProxySpine from "./PulseProxySpine-v20.js";
 
 import pulseband from "./PulseProxyPNSNervousSystem-v16.js";   // PNS
 import PulseProxySynapse from "./PulseProxySynapse.js";            // Synapse junctions

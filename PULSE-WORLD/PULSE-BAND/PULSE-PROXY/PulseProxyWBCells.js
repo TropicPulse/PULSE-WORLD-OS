@@ -22,10 +22,10 @@ const Timestamp = (G.firebaseAdmin && G.firebaseAdmin.firestore.Timestamp) ||
                   null;
 
 
-const admin = global.db || G.db;
-const db    = global.db || G.db;
-const log   = global.log || G.log   || console.log;
-const error = global.error || G.error || console.error;
+const admin = global.db || G.db|| window.db;
+const db    = global.db || G.db|| window.db;
+const log   = global.log || G.log|| window.db;
+const error = global.error || G.error || window.error || console.error;
 
 
 // ============================================================================

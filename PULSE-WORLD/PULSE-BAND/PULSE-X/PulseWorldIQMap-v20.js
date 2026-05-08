@@ -219,28 +219,71 @@ const DRIFT_METADATA = {
 // -----------------------------------------------------------------------------
 // ROUTE EXPECTATIONS — NO STATIC ROUTING, ONLY EXPECTATIONS
 // -----------------------------------------------------------------------------
+// -----------------------------------------------------------------------------
+// EVOLVABLE ROUTE EXPECTATIONS — IMMORTAL++ IQ-MAP
+// Pattern-based inference instead of static routing
+// -----------------------------------------------------------------------------
 function buildPageExpectations() {
-  return {
-    "/": ["PulseEvolutionaryPage"],
-    "/dashboard": ["PulseEvolutionaryPage"],
-    "/send": ["PulseEvolutionaryPage"],
-    "/forms/send": ["PulseEvolutionaryPage"],
-    "/earn": ["PulseEvolutionaryPage"],
-    "/settings": ["PulseEvolutionaryPage"],
-    "/organism": ["PulseEvolutionaryPage"],
-    "/scanner": ["PulseEvolutionaryPage"],
-    "/scanner/file": ["PulseEvolutionaryPage"],
-    "/proxy": ["PulseEvolutionaryPage"],
-    "/proxy/health": ["PulseEvolutionaryPage"],
-    "/proxy/metrics": ["PulseEvolutionaryPage"],
-    "/proxy/node": ["PulseEvolutionaryPage"],
-    "/admin": ["PulseEvolutionaryPage"],
-    "/directory": ["PulseEvolutionaryPage"],
-    "/delivery": ["PulseEvolutionaryPage"],
-    "/rewards": ["PulseEvolutionaryPage"],
-    "/userrecords": ["PulseEvolutionaryPage"]
-  };
+  const patterns = [
+    { match: /^\/$/, page: "PulseEvolutionaryPage" },
+    { match: /^\/dashboard/, page: "dashboard" },
+
+    // Messaging / Send
+    { match: /send/, page: "PulseSendDashboard" },
+
+    // Earn / Economy
+    { match: /earn/, page: "PulseEarnDashboard" },
+
+    // Settings
+    { match: /settings/, page: "PulseSettingsDashboard" },
+
+    // Organism / World
+    { match: /organism/, page: "PulseOSDashboard" },
+    { match: /world/, page: "PulseWorldDashboard" },
+
+    // Scanner
+    { match: /scanner/, page: "TropicScanner" },
+
+    // TPProxy (your real proxy)
+    { match: /TPProxy/, page: "PulseBand" },
+    { match: /proxy/, page: "PulseBand" },
+
+    // Admin
+    { match: /admin/, page: "admin" },
+
+    // Directory
+    { match: /directory/, page: "businesspage" },
+    // Directory
+    { match: /events/, page: "eventspage" },
+
+    // Delivery
+    { match: /delivery/, page: "deliverypage" },
+
+    // Rewards
+    { match: /rewards/, page: "PulsePoints" },
+
+    // User Records
+    { match: /userrecords/, page: "userrecords" }
+  ];
+
+  // ---------------------------------------------------------------------------
+  // EVOLVABLE EXPECTATION ENGINE
+  // Takes ANY route and infers the correct page identity
+  // ---------------------------------------------------------------------------
+  return new Proxy({}, {
+    get(_, route) {
+      if (typeof route !== "string") return ["PulseEvolutionaryPage"];
+
+      for (const p of patterns) {
+        if (p.match.test(route)) return [p.page];
+      }
+
+      // fallback: everything unknown evolves through the Evolutionary Page
+      return ["PulseEvolutionaryPage"];
+    }
+  });
 }
+
 
 function interpretRoute(path = "", genome, pageExpectations) {
   if (!path || typeof path !== "string") return "/";

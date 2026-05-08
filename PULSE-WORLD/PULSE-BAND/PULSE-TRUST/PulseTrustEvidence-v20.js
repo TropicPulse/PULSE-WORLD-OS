@@ -91,7 +91,7 @@ AI_EXPERIENCE_META:
     deterministic: true
     constitutional: true
 */
-
+import { admin, db } from "../PULSE-X/PulseWorldFirebaseGenome-v20.js";
 // ============================================================================
 //  META EXPORT
 // ============================================================================
@@ -162,141 +162,125 @@ export class PulseTrustEvidence {
   //  CAPTURE FULL EVIDENCE PACKET (CNS-AWARE)
 // ========================================================================
   captureEvidence(label = "tick", context = {}) {
-    const ts = Date.now();
+  // Deterministic timestamp — NEVER Date.now()
+  const resolvedTs = context.ts ?? admin.firestore.Timestamp.now();
 
-    // WORLD PERSPECTIVE (AI-normalized + advantage)
-    const worldAdvantage =
-      this._safeCall(this.worldCore, "buildAdvantageContext") || null;
-    const worldSnapshot =
-      this._safeCall(this.worldCore, "snapshotWorld") || null;
+  const worldAdvantage =
+    this._safeCall(this.worldCore, "buildAdvantageContext") || null;
+  const worldSnapshot =
+    this._safeCall(this.worldCore, "snapshotWorld") || null;
 
-    // USER PERSPECTIVE
-    const citizenWitness =
-      this._safeCall(this.userCore, "snapshotCitizenWitness") ||
-      this._safeCall(this.userCore, "snapshotUser") ||
-      null;
+  const citizenWitness =
+    this._safeCall(this.userCore, "snapshotCitizenWitness") ||
+    this._safeCall(this.userCore, "snapshotUser") ||
+    null;
 
-    // TRUST / OVERMIND / EXPANSION
-    const trustSnapshot = this._safeCall(this.trustCore, "snapshot") || null;
-    const expansionSnapshot =
-      this._safeCall(this.expansionCompliance, "snapshot") || null;
-    const overmindMeta =
-      this._safeCall(this.overmind, "snapshotMeta") ||
-      this._safeCall(this.overmind, "snapshotTrust") ||
-      null;
+  const trustSnapshot = this._safeCall(this.trustCore, "snapshot") || null;
+  const expansionSnapshot =
+    this._safeCall(this.expansionCompliance, "snapshot") || null;
+  const overmindMeta =
+    this._safeCall(this.overmind, "snapshotMeta") ||
+    this._safeCall(this.overmind, "snapshotTrust") ||
+    null;
 
-    // JURY LAYERS
-    const juryFeed =
-      this._safeCall(this.juryFrame, "snapshotFeed") ||
-      this._safeCall(this.juryFrame, "snapshot") ||
-      null;
+  const juryFeed =
+    this._safeCall(this.juryFrame, "snapshotFeed") ||
+    this._safeCall(this.juryFrame, "snapshot") ||
+    null;
 
-    const juryBoxSnapshot =
-      this._safeCall(this.juryBoxCamera, "snapshot") || null;
-    const juryCouncilSnapshot =
-      this._safeCall(this.juryCouncil, "snapshot") || null;
+  const juryBoxSnapshot =
+    this._safeCall(this.juryBoxCamera, "snapshot") || null;
+  const juryCouncilSnapshot =
+    this._safeCall(this.juryCouncil, "snapshot") || null;
 
-    // INFRASTRUCTURE
-    const serverSnapshot = this._safeCall(this.server, "snapshot") || null;
-    const castleSnapshot = this._safeCall(this.castle, "snapshot") || null;
+  const serverSnapshot = this._safeCall(this.server, "snapshot") || null;
+  const castleSnapshot = this._safeCall(this.castle, "snapshot") || null;
 
-    // v20+: CNS / BAND SNAPSHOT
-    const bandSnapshot =
-      this._safeCall(this.bandCore, "snapshotBand") || null;
+  const bandSnapshot =
+    this._safeCall(this.bandCore, "snapshotBand") || null;
 
-    // ----------------------------------------------------------------------
-    //  CATEGORIZE: RAW / RAW_AI / AI (structural, not judgment)
-    // ----------------------------------------------------------------------
-    const rawEntries = [];
-    const rawAIEntries = [];
-    const aiEntries = [];
+  const rawEntries = [];
+  const rawAIEntries = [];
+  const aiEntries = [];
 
-    // RAW: direct system signals (non-mind, raw state)
-    this._pushIfPresent(rawEntries, "world_snapshot", worldSnapshot);
-    this._pushIfPresent(rawEntries, "server_snapshot", serverSnapshot);
-    this._pushIfPresent(rawEntries, "castle_snapshot", castleSnapshot);
-    this._pushIfPresent(rawEntries, "band_snapshot", bandSnapshot);
-    this._pushIfPresent(
-      rawEntries,
-      "citizen_witness_raw",
-      citizenWitness?.raw ?? null
-    );
+  this._pushIfPresent(rawEntries, "world_snapshot", worldSnapshot);
+  this._pushIfPresent(rawEntries, "server_snapshot", serverSnapshot);
+  this._pushIfPresent(rawEntries, "castle_snapshot", castleSnapshot);
+  this._pushIfPresent(rawEntries, "band_snapshot", bandSnapshot);
+  this._pushIfPresent(
+    rawEntries,
+    "citizen_witness_raw",
+    citizenWitness?.raw ?? null
+  );
 
-    // RAW_AI: AI-built structures grounded in raw data
-    this._pushIfPresent(rawAIEntries, "world_advantage_context", worldAdvantage);
-    this._pushIfPresent(rawAIEntries, "trust_snapshot", trustSnapshot);
-    this._pushIfPresent(
-      rawAIEntries,
-      "expansion_compliance_snapshot",
-      expansionSnapshot
-    );
-    this._pushIfPresent(rawAIEntries, "overmind_meta", overmindMeta);
-    this._pushIfPresent(
-      rawAIEntries,
-      "citizen_witness_structured",
-      citizenWitness?.structured ?? null
-    );
+  this._pushIfPresent(rawAIEntries, "world_advantage_context", worldAdvantage);
+  this._pushIfPresent(rawAIEntries, "trust_snapshot", trustSnapshot);
+  this._pushIfPresent(
+    rawAIEntries,
+    "expansion_compliance_snapshot",
+    expansionSnapshot
+  );
+  this._pushIfPresent(rawAIEntries, "overmind_meta", overmindMeta);
+  this._pushIfPresent(
+    rawAIEntries,
+    "citizen_witness_structured",
+    citizenWitness?.structured ?? null
+  );
 
-    // AI: AI-generated evaluations / feeds / narratives
-    this._pushIfPresent(aiEntries, "jury_feed", juryFeed);
-    this._pushIfPresent(aiEntries, "jury_box_snapshot", juryBoxSnapshot);
-    this._pushIfPresent(aiEntries, "jury_council_snapshot", juryCouncilSnapshot);
-    this._pushIfPresent(
-      aiEntries,
-      "citizen_witness_ai",
-      citizenWitness?.ai ?? null
-    );
+  this._pushIfPresent(aiEntries, "jury_feed", juryFeed);
+  this._pushIfPresent(aiEntries, "jury_box_snapshot", juryBoxSnapshot);
+  this._pushIfPresent(aiEntries, "jury_council_snapshot", juryCouncilSnapshot);
+  this._pushIfPresent(
+    aiEntries,
+    "citizen_witness_ai",
+    citizenWitness?.ai ?? null
+  );
 
-    // ----------------------------------------------------------------------
-    //  IMMUTABLE EVIDENCE PACKET (EVIDENTIAL RECORDS–NATIVE)
-// ----------------------------------------------------------------------
-    const packet = Object.freeze({
-      ts,
-      label,
-      context: {
-        id: context.id || null,
-        tick: context.tick || null,
-        worldLens: context.worldLens || null,
-        bandEvent: context.bandEvent || null,      // e.g. "band_shift", "fallback_event"
-        bandContext: context.bandContext || null   // optional structured band info
-      },
-      meta: {
-        id: this.config.id,
-        version: PulseTrustEvidenceMeta.version,
-        schema: PulseTrustEvidenceMeta.schema
-      },
-      categories: {
-        RAW: rawEntries,
-        RAW_AI: rawAIEntries,
-        AI: aiEntries
-      },
-      // Convenience top-level references (may be null)
-      worldAdvantage,
-      worldSnapshot,
-      citizenWitness,
-      trustSnapshot,
-      expansionSnapshot,
-      overmindMeta,
-      juryFeed,
-      juryBoxSnapshot,
-      juryCouncilSnapshot,
-      serverSnapshot,
-      castleSnapshot,
-      bandSnapshot
-    });
+  const packet = Object.freeze({
+    ts: resolvedTs,
+    label,
+    context: {
+      id: context.id || null,
+      tick: context.tick || null,
+      worldLens: context.worldLens || null,
+      bandEvent: context.bandEvent || null,
+      bandContext: context.bandContext || null
+    },
+    meta: {
+      id: this.config.id,
+      version: PulseTrustEvidenceMeta.version,
+      schema: PulseTrustEvidenceMeta.schema
+    },
+    categories: {
+      RAW: rawEntries,
+      RAW_AI: rawAIEntries,
+      AI: aiEntries
+    },
+    worldAdvantage,
+    worldSnapshot,
+    citizenWitness,
+    trustSnapshot,
+    expansionSnapshot,
+    overmindMeta,
+    juryFeed,
+    juryBoxSnapshot,
+    juryCouncilSnapshot,
+    serverSnapshot,
+    castleSnapshot,
+    bandSnapshot
+  });
 
-    // Store in underlying evidence core if present, else local
-    if (this.evidenceCore) {
-      // packet itself is RAW evidence of system state
-      this.evidenceCore.recordRaw(packet);
-    } else {
-      this.records.push(packet);
-      this._indexPacket(packet);
-    }
-
-    this._log("trust-evidence:packet", { packet });
-    return packet;
+  if (this.evidenceCore) {
+    this.evidenceCore.recordRaw(packet);
+  } else {
+    this.records.push(packet);
+    this._indexPacket(packet);
   }
+
+  this._log("trust-evidence:packet", { packet });
+  return packet;
+}
+
 
   // ========================================================================
   //  DIRECT RECORDING HELPERS (DELEGATE OR LOCAL APPEND-ONLY)
@@ -392,17 +376,18 @@ export class PulseTrustEvidence {
   }
 
   _makeEntry(category, data) {
-    return Object.freeze({
-      ts: Date.now(),
-      category,
-      meta: {
-        id: this.config.id,
-        version: PulseTrustEvidenceMeta.version,
-        schema: PulseTrustEvidenceMeta.schema
-      },
-      data
-    });
-  }
+  return Object.freeze({
+    ts: admin.firestore.Timestamp.now(),
+    category,
+    meta: {
+      id: this.config.id,
+      version: PulseTrustEvidenceMeta.version,
+      schema: PulseTrustEvidenceMeta.schema
+    },
+    data
+  });
+}
+
 
   _indexPacket(packet) {
     const label = packet.label || null;

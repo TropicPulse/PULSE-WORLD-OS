@@ -1,5 +1,5 @@
 // ============================================================================
-//  PULSE PROXY CONTEXT — v16 IMMORTAL ORGANISM
+//  PULSE PROXY CONTEXT — v20 IMMORTAL++ ORGANISM
 //  Symbolic wrapper around BinaryProxy-v12.3-Evo-MAX-ABA
 //  SAFE: No mutation of BinaryProxy. No binary logic. No routing.
 //  PURPOSE: Provide organism-readable proxy state (pressure, fallback, boost).
@@ -10,7 +10,7 @@
 /*
 AI_EXPERIENCE_META = {
   identity: "PulseProxyContext",
-  version: "v16-Immortal-ORGANISM",
+  version: "v20-ImmortalPlus-ORGANISM",
   layer: "organism_context",
   role: "proxy_context_bridge",
   lineage: {
@@ -19,7 +19,8 @@ AI_EXPERIENCE_META = {
     organismIntegration: "v16-Immortal",
     spinalIntegration: "PulseOSSpinalCord-v13.0-Presence-Immortal",
     routerIntegration: "PulseRouter-v16-Immortal",
-    meshIntegration: "PulseMesh-v16-Immortal"
+    meshIntegration: "PulseMesh-v16-Immortal",
+    proxyContextEvolution: "v20-ImmortalPlus"
   },
 
   evo: {
@@ -52,22 +53,26 @@ AI_EXPERIENCE_META = {
     // Determinism
     deterministic: true,
     driftProof: true,
+    pureCompute: true,
     zeroNetwork: true,
     zeroAsync: true,
     zeroFilesystem: true,
     zeroMutationOfBinaryProxy: true,
-    symbolicOnly: true
+    zeroMutationOfInput: true,
+    symbolicOnly: true,
+    futureEvolutionReady: true
   },
 
   guarantees: {
     // Safety
     noBinaryLogic: true,
     noRouting: true,
-    noCompute: true,
     noExternalIO: true,
     noExternalMutation: true,
     noDynamicImports: true,
     noEval: true,
+    noTimers: true,
+    noRandomness: true,
 
     // Organism context
     providesProxyPressure: true,
@@ -82,8 +87,7 @@ AI_EXPERIENCE_META = {
     // Performance
     hotPathSafe: true,
     prewarmAware: true,
-    zeroAllocExceptStateSwap: true,
-    zeroTimers: true
+    zeroAllocExceptStateSwap: true
   },
 
   contract: {
@@ -110,7 +114,7 @@ AI_EXPERIENCE_META = {
 
 function safeNow() {
   try {
-    return Date.now();
+    return Date.now(); // symbolic timestamp only
   } catch {
     return 0;
   }
@@ -118,8 +122,10 @@ function safeNow() {
 
 function derivePressureFromBinaryField(binaryField) {
   if (!binaryField || typeof binaryField !== "object") return 0;
-  const density = typeof binaryField.density === "number" ? binaryField.density : 0;
-  // Map density into [0, 1], tuned for v16 Immortal (higher ceiling than v12.3)
+  const density =
+    typeof binaryField.density === "number" ? binaryField.density : 0;
+
+  // v20: keep same mapping but explicitly clamp [0,1]
   const normalized = density / 4096;
   if (normalized <= 0) return 0;
   if (normalized >= 1) return 1;
@@ -133,7 +139,7 @@ function deriveBoostFromCacheChunkEnvelope(cacheChunkEnvelope) {
   if (typeof sig !== "string" || !sig.length) return 0;
 
   const lastChar = sig.charAt(sig.length - 1);
-  // v16: treat hex F/E/D as graded boost
+  // v20: same graded boost semantics
   if (lastChar === "F" || lastChar === "f") return 1.0;
   if (lastChar === "E" || lastChar === "e") return 0.75;
   if (lastChar === "D" || lastChar === "d") return 0.5;
@@ -147,7 +153,7 @@ function deriveFallbackFromPresenceEnvelope(presenceEnvelope) {
   if (typeof sig !== "string" || !sig.length) return false;
 
   const lastChar = sig.charAt(sig.length - 1);
-  // v16: even hex digit → fallback bias, odd → normal
+  // even hex digit → fallback bias, odd → normal
   const evenHex = ["0", "2", "4", "6", "8", "a", "A", "c", "C", "e", "E"];
   return evenHex.includes(lastChar);
 }
@@ -160,7 +166,7 @@ function deriveMode(pressure, boost, fallback) {
   return "normal";
 }
 
-// v16: advantage hint is pure metadata, no routing, no network
+// v20: advantage hint is pure metadata, no routing, no network
 function deriveAdvantageHint({ pressure, boost, fallback }) {
   if (fallback) {
     return {
@@ -201,7 +207,7 @@ function deriveAdvantageHint({ pressure, boost, fallback }) {
   };
 }
 
-// v16: health hint is symbolic-only, derived from pressure + fallback
+// v20: health hint is symbolic-only, derived from pressure + fallback
 function deriveHealthHint({ pressure, fallback }) {
   let status = "stable";
   let score = 1.0;
@@ -226,21 +232,21 @@ function safeBandSignature(envelope) {
 }
 
 // ============================================================================
-//  INTERNAL STATE — IMMUTABLE SNAPSHOT (v16 IMMORTAL)
+//  INTERNAL STATE — IMMUTABLE SNAPSHOT (v20 IMMORTAL++)
 // ============================================================================
 
 let _proxySeq = 0;
 
 let _proxyState = Object.freeze({
   // Core organism fields
-  pressure: 0,          // 0–1 (derived from binaryField density)
-  boost: 0,             // 0–1 (derived from cacheChunk envelope)
-  fallback: false,      // boolean (derived from presence envelope)
-  mode: "normal",       // "normal" | "boost" | "fallback" | "pressure-high" | "pressure-low"
+  pressure: 0, // 0–1 (derived from binaryField density)
+  boost: 0, // 0–1 (derived from cacheChunk envelope)
+  fallback: false, // boolean (derived from presence envelope)
+  mode: "normal", // "normal" | "boost" | "fallback" | "pressure-high" | "pressure-low"
   lineage: "BinaryProxy-v12.3-Evo-BINARY-MAX-ABA",
-  bandSignature: null,  // last band signature from BinaryProxy envelope
+  bandSignature: null, // last band signature from BinaryProxy envelope
 
-  // v16: advantage + health hints
+  // v20: advantage + health hints
   advantageHint: {
     band: "neutral",
     score: 0.5,
@@ -251,24 +257,21 @@ let _proxyState = Object.freeze({
     score: 1.0
   },
 
-  // v16: last envelope snapshots (symbolic-only, shallow)
+  // last envelope snapshots (symbolic-only, shallow)
   lastBinaryField: null,
   lastCacheChunkEnvelope: null,
   lastPresenceEnvelope: null,
 
-  // v16: sequence + timestamps (symbolic only)
+  // sequence + timestamps (symbolic only)
   seq: _proxySeq,
   lastUpdateReason: "init",
   timestamp: safeNow()
 });
 
-// ============================================================================
-//  UPDATE — called by BinaryProxy envelopes (safe, symbolic-only)
-//  NOTE: This is the ONLY place where proxy context changes.
-//  NOTE: This NEVER mutates BinaryProxy or its envelopes.
-// ============================================================================
-
-export function updateProxyStateFromEnvelope(envelope = {}, reason = "envelope") {
+export function updateProxyStateFromEnvelope(
+  envelope = {},
+  reason = "envelope"
+) {
   const binaryField = envelope && envelope.binaryField;
   const cacheChunkEnvelope = envelope && envelope.cacheChunkEnvelope;
   const presenceEnvelope = envelope && envelope.presenceEnvelope;
@@ -321,7 +324,7 @@ export const getProxyAdvantageHint = () => _proxyState.advantageHint;
 export const getProxyHealthHint = () => _proxyState.healthHint;
 export const getProxySeq = () => _proxyState.seq;
 
-// v16: safe snapshot clone for organisms that want a one-shot view
+// v20: safe snapshot clone for organisms that want a one-shot view
 export function getProxySnapshot() {
   const s = _proxyState;
   return {

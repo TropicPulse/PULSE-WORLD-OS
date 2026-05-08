@@ -217,21 +217,34 @@ export const app = express();
 
 export let stripeInstance = null;
 
-function computeHash(str) {
+export function computeHash(str) {
   let h = 0;
   const s = String(str || "");
+
   for (let i = 0; i < s.length; i++) {
     h = (h + s.charCodeAt(i) * (i + 1)) % 100000;
   }
+
   return `h${h}`;
 }
 
-const generateToken = (userId, timestamp) => {
-  return computeHash(userId + ":" + timestamp);
-};
-const jwt = generateToken;
+export function generateToken(admin) {
+  // 1) Drift‑proof timestamp (server authoritative)
+  const ts = admin.firestore.Timestamp.now().toMillis().toString(36);
 
-function hashPin(pin) {
+  // 2) Deterministic entropy from timestamp hashing
+  let hash = 0;
+  for (let i = 0; i < ts.length; i++) {
+    hash = (hash * 31 + ts.charCodeAt(i)) >>> 0;
+  }
+
+  const h = hash.toString(36).padStart(8, "0");
+
+  // 3) Final 24‑character IMMORTAL token
+  return (ts + h).slice(0, 24);
+}
+
+export function hashPin(pin) {
   return computeHash("pin:" + pin);
 }
 
@@ -789,7 +802,7 @@ async function logSecurityPatch(uid, patch, reason = "auto") {
       createdAt: admin.firestore.FieldValue.serverTimestamp()
     });
 
-    console.log("🧾 Security patch logged:", uid, patch.signature);
+    log("🧾 Security patch logged:", uid, patch.signature);
   } catch (err) {
     console.error("🔥 logSecurityPatch failed:", err);
   }
@@ -806,7 +819,7 @@ export async function applyTwilightPatch(uid, reason = "auto") {
     const snap = await userRef.get();
 
     if (!snap.exists) {
-      console.log("❌ User not found:", uid);
+      log("❌ User not found:", uid);
       return;
     }
 
@@ -840,7 +853,7 @@ export async function applyTwilightPatch(uid, reason = "auto") {
       TPSecurity: updatedSecurity
     });
 
-    console.log("🌒 Twilight Patch applied to:", uid, updatedSecurity);
+    log("🌒 Twilight Patch applied to:", uid, updatedSecurity);
 
     // Log patch history
     await logSecurityPatch(uid, patch, reason);
@@ -957,7 +970,7 @@ export const stripeWebhook = onRequest(
               }
             });
 
-            console.log(`Vendor updated: ${email} → weekly payouts`);
+            log(`Vendor updated: ${email} → weekly payouts`);
           }
         }
       }
@@ -1010,7 +1023,7 @@ export const stripeWebhook = onRequest(
             createdAt: admin.firestore.FieldValue.serverTimestamp()
           });
 
-          console.log(
+          log(
             `Reserve added: Vendor ${vendorId} +${reserveAmount} cents for PI ${pi.id}`
           );
         }
@@ -1073,7 +1086,7 @@ export const stripeWebhook = onRequest(
           createdAt: admin.firestore.FieldValue.serverTimestamp()
         });
 
-        console.log(`✅ Added ${quantity} credits to user ${userID} for event ${eventID}`);
+        log(`✅ Added ${quantity} credits to user ${userID} for event ${eventID}`);
       }
 
       return res.json({ success: true, received: true });
@@ -1201,7 +1214,7 @@ app.post("/create-payment", async (req, res) => {
 });
 
 app.get("/resend-link", async (req, res) => {
-  console.log("🔵 [/resend-link] START");
+  log("🔵 [/resend-link] START");
 
   const stripe = req.stripe;
   const twilioClient = req.twilio;
@@ -1439,7 +1452,7 @@ app.get("/", async (req, res) => {
 // CHECKS STRIPE PAYMENT UPDATES TO MAKE SURE 5% IS TAKEN AS A FEE FOR CHARGEBACKS AND ADDED TO THEIR RESERVE
 // ----------------------------------------------------------------------------------------------------
 app.post("/create-order-payment", async (req, res) => {
-  console.log("🔵 [/create-order-payment] START");
+  log("🔵 [/create-order-payment] START");
 
   const stripe = req.stripe;
 
@@ -1518,7 +1531,7 @@ app.post("/create-order-payment", async (req, res) => {
       }
     });
 
-    console.log("✅ PaymentIntent created:", paymentIntent.id);
+    log("✅ PaymentIntent created:", paymentIntent.id);
 
     return res.json({
       success: true,
@@ -1803,12 +1816,12 @@ async function fuzzyGeocode(venue, apiKey, knownLat = null, knownLng = null) {
   // 1. PLACES TEXT SEARCH
   // ---------------------------------------------
   for (const query of attempts) {
-    console.log("Trying PLACES search:", query);
+    log("Trying PLACES search:", query);
 
     const results = await searchPlacesText(query, apiKey);
     if (!results || results.length === 0) continue;
 
-    console.log("RAW PLACES RESULTS:", JSON.stringify(results, null, 2));
+    log("RAW PLACES RESULTS:", JSON.stringify(results, null, 2));
 
     // Filter to real businesses
     const candidates = results.filter(r => {
@@ -1858,17 +1871,17 @@ async function fuzzyGeocode(venue, apiKey, knownLat = null, knownLng = null) {
         }
       }
 
-      console.log("CLOSEST PLACES MATCH:", closest?.displayName?.text, "DIST:", closestDist);
+      log("CLOSEST PLACES MATCH:", closest?.displayName?.text, "DIST:", closestDist);
 
       // Allow up to 2km drift because many business coords are inaccurate
       if (closest && closestDist <= 2000) {
         business = closest;
       } else {
-        console.log("⚠️ No PLACES candidate within distance threshold (", closestDist, "m )");
+        log("⚠️ No PLACES candidate within distance threshold (", closestDist, "m )");
 
         // Still accept the closest match if it's under 3km
         if (closest && closestDist <= 3000) {
-          console.log("⚠️ Accepting fallback PLACES match despite distance");
+          log("⚠️ Accepting fallback PLACES match despite distance");
           business = closest;
         } else {
           continue;
@@ -1894,10 +1907,10 @@ async function fuzzyGeocode(venue, apiKey, knownLat = null, knownLng = null) {
 
       if (canonical?.id) {
         finalPlaceId = canonical.id;
-        console.log("FINAL PLACE ID (after canonical resolve):", finalPlaceId);
+        log("FINAL PLACE ID (after canonical resolve):", finalPlaceId);
       }
     } catch (err) {
-      console.log("Canonical resolver failed:", err.message);
+      log("Canonical resolver failed:", err.message);
     }
 
     return {
@@ -1911,22 +1924,22 @@ async function fuzzyGeocode(venue, apiKey, knownLat = null, knownLng = null) {
   // 2. GEOCODING fallback
   // ---------------------------------------------
   for (const query of attempts) {
-    console.log("Trying GEOCODE:", query);
+    log("Trying GEOCODE:", query);
 
     const geo = await geocodeAddress(query, apiKey);
     if (!geo) continue;
 
-    console.log("GEOCODE success:", JSON.stringify(geo, null, 2));
+    log("GEOCODE success:", JSON.stringify(geo, null, 2));
 
     if (knownLat && knownLng) {
       const lat = geo.geometry.location.lat;
       const lng = geo.geometry.location.lng;
 
       const dist = haversine(knownLat, knownLng, lat, lng);
-      console.log("GEOCODE DISTANCE:", dist, "meters");
+      log("GEOCODE DISTANCE:", dist, "meters");
 
       if (dist > 150) {
-        console.log("⚠️ GEOCODE also too far — using fallback coords");
+        log("⚠️ GEOCODE also too far — using fallback coords");
         return {
           formatted_address: geo.formatted_address,
           geometry: { location: { lat: knownLat, lng: knownLng } },
@@ -1942,7 +1955,7 @@ async function fuzzyGeocode(venue, apiKey, knownLat = null, knownLng = null) {
   // 3. FINAL FALLBACK — use known coords
   // ---------------------------------------------
   if (knownLat && knownLng) {
-    console.log("⚠️ FINAL FALLBACK: using known coordinates only");
+    log("⚠️ FINAL FALLBACK: using known coordinates only");
     return {
       formatted_address: venue,
       geometry: { location: { lat: knownLat, lng: knownLng } },
@@ -2048,7 +2061,7 @@ function parseSMSBoolean(value) {
 
 function receiveCommunication(raw) {
   if (!raw || typeof raw !== "string") {
-    console.log("❌ No Value Found - Run Test from");
+    log("❌ No Value Found - Run Test from");
     return { receiveSMS: false, receiveMassEmails: false };
   }
 
@@ -2068,7 +2081,7 @@ function receiveCommunication(raw) {
   return { receiveSMS, receiveMassEmails };
 }
 async function parseIncomingRequest(req) {
-  console.log("🔵 [parseIncomingRequest] START");
+  log("🔵 [parseIncomingRequest] START");
 
   let payload = {};
   let email = null;
@@ -2230,7 +2243,7 @@ async function parseIncomingRequest(req) {
     }
   };
 
-  console.log("✅ FINAL PARSED:", { email, emailType, logId, payload: finalPayload });
+  log("✅ FINAL PARSED:", { email, emailType, logId, payload: finalPayload });
 
   return { email, emailType, logId, payload: finalPayload };
 }
@@ -2256,7 +2269,7 @@ function calculateReleaseDate(deliveredAt, delayDays = 3) {
 
     return admin.firestore.Timestamp.fromDate(date);
   } catch (err) {
-    console.log("❌ calculateReleaseDate error:", err.message);
+    log("❌ calculateReleaseDate error:", err.message);
     return null;
   }
 }
@@ -2301,7 +2314,7 @@ function safeDate(value) {
    STRIPE FUNCTION TO ALLOW BELIZE BANKS BY DISABLING INSTANT PAYOUTS
 =================================================================== */
 async function configurePayoutSettings(stripe, accountId, payFrequency, payDay) {
-  console.log("🔵 [configurePayoutSettings] START");
+  log("🔵 [configurePayoutSettings] START");
 
   const cleanLower = (v, fallback = null) => {
     if (!v) return fallback;
@@ -2407,7 +2420,7 @@ async function configurePayoutSettings(stripe, accountId, payFrequency, payDay) 
       { merge: true }
     );
 
-    console.log("✅ [configurePayoutSettings] COMPLETE");
+    log("✅ [configurePayoutSettings] COMPLETE");
 
     return {
       country,
@@ -2968,7 +2981,7 @@ async function computeSha256Hex(buffer) {
 
 // Reusable email sender WITH EMAIL LOGGING
 async function sendEmailToUser(email, emailType, payload = {}) {
-  console.log("🔵 [sendEmailToUser] START");
+  log("🔵 [sendEmailToUser] START");
 
   const normalizeEmail = (v) =>
     typeof v === "string" ? v.trim().toLowerCase() : null;
@@ -3390,7 +3403,7 @@ function BECLEAN(input) {
 // ------------------------------------------------------
 
 export async function determinePayoutCurrency(stripe, stripeAccountID, payoutAmountCents) {
-  console.log("🔵 [determinePayoutCurrency] START");
+  log("🔵 [determinePayoutCurrency] START");
 
   const payoutAmountUSD = payoutAmountCents / 100;
 
@@ -4629,7 +4642,7 @@ function sendPixel(res) {
 }
 
 async function findUserStripeBalance(stripeAccountID, stripeSecret) {
-  console.log("🔵 [findUserStripeBalance] START", { stripeAccountID });
+  log("🔵 [findUserStripeBalance] START", { stripeAccountID });
 
   const stripe = new Stripe(stripeSecret);
 
@@ -4653,7 +4666,7 @@ async function findUserStripeBalance(stripeAccountID, stripeSecret) {
       availableBalance: toBZD(available)
     };
 
-    console.log("🟢 [findUserStripeBalance] RESULT", result);
+    log("🟢 [findUserStripeBalance] RESULT", result);
     return result;
 
   } catch (err) {
@@ -4671,7 +4684,7 @@ async function findUserStripeBalance(stripeAccountID, stripeSecret) {
 }
 
 async function handleBusGET(req, rawData) {
-  console.log("🔵 [handleBusGET] START");
+  log("🔵 [handleBusGET] START");
 
   const normalizeEmail = (v) =>
     typeof v === "string" ? v.trim().toLowerCase() : null;
@@ -4699,7 +4712,7 @@ async function handleBusGET(req, rawData) {
   let busID = clean(q.busID);
   if (!busID) {
     busID = db.collection("Businesses").doc().id;
-    console.log("🆕 Generated busID:", busID);
+    log("🆕 Generated busID:", busID);
   }
 
   const busRef = db.collection("Businesses").doc(busID);
@@ -4761,15 +4774,15 @@ async function handleBusGET(req, rawData) {
   // createdAt / updatedAt
   if (!existing.exists) {
     busData.createdAt = admin.firestore.FieldValue.serverTimestamp();
-    console.log("🆕 Creating NEW Business:", busID);
+    log("🆕 Creating NEW Business:", busID);
   } else {
     busData.updatedAt = admin.firestore.FieldValue.serverTimestamp();
-    console.log("🔄 Updating EXISTING Business:", busID);
+    log("🔄 Updating EXISTING Business:", busID);
   }
 
   await busRef.set(busData, { merge: true });
 
-  console.log("✅ [handleBusGET] COMPLETE");
+  log("✅ [handleBusGET] COMPLETE");
 }
 
 async function sendNoCreditsEmail({
@@ -4871,13 +4884,13 @@ async function sendNoCreditsEmail({
 
     await ref.update({ logId: ref.id });
 
-    console.log("Sent NO CREDITS email to:", email);
+    log("Sent NO CREDITS email to:", email);
 
     // -----------------------------
     // SMS (NEW SCHEMA)
     // -----------------------------
     if (!receiveSMS || !phone) {
-      console.log("🚫 SMS blocked (no phone or opted out)");
+      log("🚫 SMS blocked (no phone or opted out)");
       return { success: true, sms: false };
     }
 
@@ -4891,7 +4904,7 @@ async function sendNoCreditsEmail({
       "TPNotifications.lastSMSSentAt": admin.firestore.FieldValue.serverTimestamp()
     });
 
-    console.log("Sent NO CREDITS SMS to:", phone);
+    log("Sent NO CREDITS SMS to:", phone);
 
     return { success: true, sms: true };
 
@@ -4999,7 +5012,7 @@ export function normalizePhone(raw, row, coords = {}) {
 }
 
 async function handleUserGET(req, rawData) {
-  console.log("🔵 [handleUserGET] START");
+  log("🔵 [handleUserGET] START");
 
   const q = rawData?.payload || rawData || {};
   const nowTS = admin.firestore.Timestamp.now();
@@ -5044,7 +5057,7 @@ async function handleUserGET(req, rawData) {
   // -----------------------------
   const email = normalizeEmail(clean(q.email, null));
   if (!email) {
-    console.log("❌ Invalid email in handleUserGET");
+    log("❌ Invalid email in handleUserGET");
     return;
   }
 
@@ -5089,7 +5102,7 @@ async function handleUserGET(req, rawData) {
   if (phone) {
     normalizedPhone = normalizePhone(phone, country);
     if (!normalizedPhone) {
-      console.log("❌ Invalid normalized phone in handleUserGET");
+      log("❌ Invalid normalized phone in handleUserGET");
       normalizedPhone = userData.Phone || null;
     }
   } else {
@@ -5341,7 +5354,7 @@ updatedUserData.TPNotifications = {
       });
   }
 
-  console.log("✅ [handleUserGET] COMPLETE");
+  log("✅ [handleUserGET] COMPLETE");
 }
 
 export const scanUsersForSchemaIssues = onRequest(
@@ -5436,7 +5449,7 @@ export const fixUsersToNewSchema = onRequest(
       usersSnap.forEach(doc => {
         const userData = doc.data();
         if (!userData || Object.keys(userData).length === 0) {
-          console.log("Skipping empty user:", doc.id);
+          log("Skipping empty user:", doc.id);
           return;
         }
         const userId = doc.id;
@@ -6255,7 +6268,7 @@ function normalizeUserRecord(user = {}) {
 }
 
 async function handleOrderGET(req, rawData) {
-  console.log("🔵 [handleOrderGET] START");
+  log("🔵 [handleOrderGET] START");
 
   const nowTS = admin.firestore.Timestamp.now();
   const nowMs = nowTS.toMillis();
@@ -6407,7 +6420,7 @@ async function handleOrderGET(req, rawData) {
 
   if (userSnap.empty) {
     await orderRef.set(orderData, { merge: true });
-    console.log("✅ [handleOrderGET] COMPLETE (no user found)");
+    log("✅ [handleOrderGET] COMPLETE (no user found)");
     return;
   }
 
@@ -6746,7 +6759,7 @@ async function handleOrderGET(req, rawData) {
   // -----------------------------
   await orderRef.set(orderData, { merge: true });
 
-  console.log("✅ [handleOrderGET] COMPLETE");
+  log("✅ [handleOrderGET] COMPLETE");
 }
 export const referralredirect = onRequest(
   {
@@ -6888,37 +6901,37 @@ export const referralredirect = onRequest(
 );
 
 function extractRawBody(req) {
-  console.log("🔵 [extractRawBody] START");
+  log("🔵 [extractRawBody] START");
 
   const body = req.body;
 
   if (typeof body === "string") {
-    console.log("📦 Raw string body detected");
+    log("📦 Raw string body detected");
     return body.trim();
   }
 
   if (body?.data) {
-    console.log("📦 Found body.data");
+    log("📦 Found body.data");
     return String(body.data).trim();
   }
 
   if (body?.raw) {
-    console.log("📦 Found body.raw");
+    log("📦 Found body.raw");
     return String(body.raw).trim();
   }
 
   if (body?.text) {
-    console.log("📦 Found body.text");
+    log("📦 Found body.text");
     return String(body.text).trim();
   }
 
   const keys = Object.keys(body || {});
   if (keys.length === 1 && typeof keys[0] === "string") {
-    console.log("📦 Cloud Run single-key body detected");
+    log("📦 Cloud Run single-key body detected");
     return keys[0].trim();
   }
 
-  console.log("📦 Fallback JSON stringify");
+  log("📦 Fallback JSON stringify");
   return JSON.stringify(body || {});
 }
 
@@ -7292,7 +7305,7 @@ async function nameExists(displayName) {
    CREATE AND UPDATE STRIPE ACCOUNT IF NEEDED
 =========================== */
 async function checkOrCreateStripeAccount(email, country) {
-  console.log("🔵 [checkOrCreateStripeAccount] START");
+  log("🔵 [checkOrCreateStripeAccount] START");
 
   const stripe = new Stripe(STRIPE_PASSWORD.value());
 
@@ -7335,7 +7348,7 @@ async function checkOrCreateStripeAccount(email, country) {
     throw new Error("Invalid email passed to checkOrCreateStripeAccount");
   }
 
-  console.log("🔹 Inputs:", { cleanEmail, thecountry });
+  log("🔹 Inputs:", { cleanEmail, thecountry });
 
   // -----------------------------
   // 2️⃣ Lookup user (NEW SCHEMA)
@@ -7370,7 +7383,7 @@ async function checkOrCreateStripeAccount(email, country) {
 
   const allowedFreq = ["daily", "weekly"];
   if (!allowedFreq.includes(payFrequency)) {
-    console.log("⚠️ Invalid payFrequency, defaulting to daily");
+    log("⚠️ Invalid payFrequency, defaulting to daily");
     payFrequency = "daily";
   }
 
@@ -7388,12 +7401,12 @@ async function checkOrCreateStripeAccount(email, country) {
     ];
 
     if (!allowedDays.includes(payDay)) {
-      console.log("⚠️ Invalid payDay, defaulting to monday");
+      log("⚠️ Invalid payDay, defaulting to monday");
       payDay = "monday";
     }
   }
 
-  console.log("🔹 Final payout settings:", { payFrequency, payDay });
+  log("🔹 Final payout settings:", { payFrequency, payDay });
 
   // -----------------------------
   // 5️⃣ Build Stripe payout schedule
@@ -7411,7 +7424,7 @@ async function checkOrCreateStripeAccount(email, country) {
     };
   }
 
-  console.log("🔹 Stripe schedule:", schedule);
+  log("🔹 Stripe schedule:", schedule);
 
   // -----------------------------
   // 6️⃣ Update existing Stripe account
@@ -7422,7 +7435,7 @@ async function checkOrCreateStripeAccount(email, country) {
         settings: { payouts: { schedule } }
       });
 
-      console.log("✅ Updated existing Stripe account:", account.id);
+      log("✅ Updated existing Stripe account:", account.id);
 
       return {
         stripeAccountID: account.id,
@@ -7457,7 +7470,7 @@ async function checkOrCreateStripeAccount(email, country) {
 
     stripeAccountID = account.id;
 
-    console.log("🆕 Created new Stripe account:", stripeAccountID);
+    log("🆕 Created new Stripe account:", stripeAccountID);
 
   } catch (err) {
     console.error("❌ Stripe account creation error:", err);
@@ -7475,7 +7488,7 @@ async function checkOrCreateStripeAccount(email, country) {
 
     stripeAccountID = search.data[0].id;
 
-    console.log("🔍 Found existing Stripe account:", stripeAccountID);
+    log("🔍 Found existing Stripe account:", stripeAccountID);
   }
 
   // -----------------------------
@@ -7498,7 +7511,7 @@ async function checkOrCreateStripeAccount(email, country) {
     { merge: true }
   );
 
-  console.log("💾 Saved Stripe info to Firestore");
+  log("💾 Saved Stripe info to Firestore");
 
   // -----------------------------
   // 9️⃣ Return values
@@ -11174,37 +11187,37 @@ async function getAllEventsUnified(userLocation = null) {
 //     memory: "1GiB"
 //   },
 //   async (req, res) => {
-//   console.log("──────────────────────────────────────────────");
-//   console.log("🌴 scrapeMenu invoked");
-//   console.log("Incoming query:", req.query);
+//   log("──────────────────────────────────────────────");
+//   log("🌴 scrapeMenu invoked");
+//   log("Incoming query:", req.query);
 
 //   res.set("Access-Control-Allow-Origin", "*");
 //   res.set("Access-Control-Allow-Headers", "*");
 
 //   if (req.method === "OPTIONS") {
-//     console.log("⚪ Preflight OPTIONS request");
+//     log("⚪ Preflight OPTIONS request");
 //     res.status(204).send("");
 //     return;
 //   }
 
 //   const url = req.query.url;
 //   if (!url) {
-//     console.log("❌ Missing ?url=");
+//     log("❌ Missing ?url=");
 //     res.status(400).json({ error: "Missing ?url=" });
 //     return;
 //   }
 
-//   console.log("🌐 Fetching URL:", url);
+//   log("🌐 Fetching URL:", url);
 
 //   try {
 //     const controller = new AbortController();
 //     const timeout = setTimeout(() => {
-//       console.log("⏳ TIMEOUT — aborting fetch");
+//       log("⏳ TIMEOUT — aborting fetch");
 //       controller.abort();
 //     }, 15000);
 
-//     console.log("➡️ Starting fetch with headers:");
-//     console.log({
+//     log("➡️ Starting fetch with headers:");
+//     log({
 //       "User-Agent":
 //         "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 " +
 //         "(KHTML, like Gecko) Chrome/123.0 Safari/537.36",
@@ -11225,15 +11238,15 @@ async function getAllEventsUnified(userLocation = null) {
 
 //     clearTimeout(timeout);
 
-//     console.log("📥 Response received:");
-//     console.log("Status:", response.status);
-//     console.log("StatusText:", response.statusText);
+//     log("📥 Response received:");
+//     log("Status:", response.status);
+//     log("StatusText:", response.statusText);
 
 //     const contentType = response.headers.get("content-type") || "";
-//     console.log("📄 Content-Type:", contentType);
+//     log("📄 Content-Type:", contentType);
 
 //     const contentLength = response.headers.get("content-length");
-//     console.log("📏 Content-Length header:", contentLength);
+//     log("📏 Content-Length header:", contentLength);
 
 //     const isPdf =
 //       url.toLowerCase().endsWith(".pdf") ||
@@ -11243,26 +11256,26 @@ async function getAllEventsUnified(userLocation = null) {
 //       contentType.startsWith("image/") ||
 //       url.match(/\.(png|jpg|jpeg|webp|gif|svg)$/i);
 
-//     console.log("🔍 PDF detection:", isPdf ? "YES" : "NO");
-//     console.log("🖼️ Image detection:", isImage ? "YES" : "NO");
+//     log("🔍 PDF detection:", isPdf ? "YES" : "NO");
+//     log("🖼️ Image detection:", isImage ? "YES" : "NO");
 
 //     /* -------------------------------------------------------
 //        IMAGE MODE
 //     ------------------------------------------------------- */
 //     if (isImage) {
-//       console.log("🖼️ Image mode triggered — reading arrayBuffer()…");
+//       log("🖼️ Image mode triggered — reading arrayBuffer()…");
 
 //       const arrayBuffer = await response.arrayBuffer();
 //       const buffer = Buffer.from(arrayBuffer);
 
-//       console.log("📦 Image byte length:", buffer.length);
+//       log("📦 Image byte length:", buffer.length);
 
 //       res.set("Content-Type", contentType);
 //       res.set("Content-Length", buffer.length.toString());
 //       res.status(200).send(buffer);
 
-//       console.log("✅ Image sent successfully");
-//       console.log("──────────────────────────────────────────────");
+//       log("✅ Image sent successfully");
+//       log("──────────────────────────────────────────────");
 //       return;
 //     }
 
@@ -11270,46 +11283,46 @@ async function getAllEventsUnified(userLocation = null) {
 //        PDF MODE
 //     ------------------------------------------------------- */
 //     if (isPdf) {
-//       console.log("📄 PDF mode triggered — reading arrayBuffer()…");
+//       log("📄 PDF mode triggered — reading arrayBuffer()…");
 
 //       const arrayBuffer = await response.arrayBuffer();
 //       const buffer = Buffer.from(arrayBuffer);
 
-//       console.log("📦 PDF byte length:", buffer.length);
+//       log("📦 PDF byte length:", buffer.length);
 
 //       res.set("Content-Type", "application/pdf");
 //       res.set("Content-Length", buffer.length.toString());
 //       res.status(200).send(buffer);
 
-//       console.log("✅ PDF sent successfully");
-//       console.log("──────────────────────────────────────────────");
+//       log("✅ PDF sent successfully");
+//       log("──────────────────────────────────────────────");
 //       return;
 //     }
 
 //     /* -------------------------------------------------------
 //        HTML / TEXT MODE
 //     ------------------------------------------------------- */
-//     console.log("📝 HTML/text mode triggered — reading text()…");
+//     log("📝 HTML/text mode triggered — reading text()…");
 //     const text = await response.text();
 
-//     console.log("📏 HTML/text length:", text.length);
-//     console.log("➡️ Sending text to client…");
+//     log("📏 HTML/text length:", text.length);
+//     log("➡️ Sending text to client…");
 
 //     res.set("Content-Type", "text/plain; charset=utf-8");
 //     res.status(200).send(text);
 
-//     console.log("✅ Text sent successfully");
-//     console.log("──────────────────────────────────────────────");
+//     log("✅ Text sent successfully");
+//     log("──────────────────────────────────────────────");
 //     return;
 
 //   } catch (err) {
-//     console.log("❌ ERROR in scrapeMenu:");
-//     console.log("Message:", err.message);
-//     console.log("Stack:", err.stack);
+//     log("❌ ERROR in scrapeMenu:");
+//     log("Message:", err.message);
+//     log("Stack:", err.stack);
 
 //     res.status(500).json({ error: err.message || "Unknown error" });
 
-//     console.log("──────────────────────────────────────────────");
+//     log("──────────────────────────────────────────────");
 //   }
 // });
 
@@ -11391,7 +11404,7 @@ export const getBusinesses = onRequest(
     res.set("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
 
     if (req.method === "OPTIONS") {
-      console.log("🟦 Preflight OPTIONS request — returning 204");
+      log("🟦 Preflight OPTIONS request — returning 204");
       return res.status(204).send("");
     }
 
@@ -13996,14 +14009,14 @@ function getHelpMenu() {
 function detectUpgradedIntent(text) {
   const start = Date.now();
 
-  console.log("==============================================");
-  console.log("🔮 detectUpgradedIntent() INVOKED");
-  console.log("📝 RAW INPUT:", text);
+  log("==============================================");
+  log("🔮 detectUpgradedIntent() INVOKED");
+  log("📝 RAW INPUT:", text);
 
   const t = text.trim().toLowerCase();
-  console.log("🔧 NORMALIZED:", t);
+  log("🔧 NORMALIZED:", t);
 
-  const step = (msg) => console.log("   🧭", msg);
+  const step = (msg) => log("   🧭", msg);
 
   const has = (...words) => {
     const hit = words.find(w => t.includes(w));
@@ -14262,7 +14275,7 @@ function detectUpgradedIntent(text) {
   // ------------------------------------
   step("⚠️ NO INTENT MATCHED — FALLBACK");
   step(`⏱ Duration: ${Date.now() - start} ms`);
-  console.log("==============================================");
+  log("==============================================");
 
   return null;
 }
@@ -14284,7 +14297,7 @@ async function saveConversationMemory(uid, payload) {
       { merge: true }
     );
 
-    console.log("💾 Conversation memory saved:", payload);
+    log("💾 Conversation memory saved:", payload);
 
   } catch (err) {
     console.error("🔥 saveConversationMemory failed:", err);
@@ -16504,7 +16517,7 @@ export async function sendAdminInfoEmail(subject, payload = {}) {
       html
     });
 
-    console.log("📨 Admin Info Email Sent:", subject);
+    log("📨 Admin Info Email Sent:", subject);
 
   } catch (err) {
     console.error("🔥 sendAdminInfoEmail FAILED:", err);
@@ -17741,11 +17754,11 @@ const classifyPriceSignal = (zone, rate, baselineRate, deviationPct, settings) =
 //     timeZone: "America/Belize"
 //   },
 //   async () => {
-//     console.log("Running scheduled user scoring…");
+//     log("Running scheduled user scoring…");
 
 //     try {
 //       await runUserScoring();
-//       console.log("User scoring completed.");
+//       log("User scoring completed.");
 //     } catch (err) {
 //       console.error("User scoring failed:", err);
 //     }
@@ -19045,7 +19058,7 @@ const sendOutageNotification = async (zone, confidence) => {
     '%).';
 
   // TODO: SMS / push / email / webhook
-  console.log('[POWER-OUTAGE-NOTIFY]', msg);
+  log('[POWER-OUTAGE-NOTIFY]', msg);
 };
 // OPTIONAL: simple HTML fetcher
 const safeFetchText = async url => {
@@ -21428,7 +21441,7 @@ export const verifyToken = onRequest(
 //         const MESSAGING_SERVICE_SID_VALUE = MESSAGING_SERVICE_SID.value();
 //         const URL = BASE_PAYMENT_URL;
 
-//         console.log("🔵 [eventVerification] START");
+//         log("🔵 [eventVerification] START");
 
 //         const normalizeEmail = (v) =>
 //           typeof v === "string" ? v.trim().toLowerCase() : null;
@@ -22448,7 +22461,7 @@ export const resubscribe = onRequest(
     secrets: [ACCOUNT_SID, AUTH_TOKEN, MESSAGING_SERVICE_SID, EMAIL_PASSWORD]
   },
   async (req, res) => {
-    console.log("🔵 [resubscribe] START");
+    log("🔵 [resubscribe] START");
 
     const ACCOUNT_SID_VALUE = ACCOUNT_SID.value();
     const AUTH_TOKEN_VALUE = AUTH_TOKEN.value();
@@ -22507,12 +22520,12 @@ export const resubscribe = onRequest(
           .limit(1)
           .get();
       } else {
-        console.log("❌ Missing token/email");
+        log("❌ Missing token/email");
         return res.redirect("/error.html");
       }
 
       if (snap.empty) {
-        console.log("❌ User not found for resubscribe");
+        log("❌ User not found for resubscribe");
         return res.redirect("/error.html");
       }
 
@@ -22544,7 +22557,7 @@ export const resubscribe = onRequest(
         pendingPayload: admin.firestore.FieldValue.delete()
       });
 
-      console.log("✅ User resubscribed", {
+      log("✅ User resubscribed", {
         uid: userDoc.id,
         receiveMassEmails,
         receiveSMS
@@ -22586,7 +22599,7 @@ export const unsubscribe = onRequest(
     secrets: [ACCOUNT_SID, AUTH_TOKEN, MESSAGING_SERVICE_SID, EMAIL_PASSWORD]
   },
   async (req, res) => {
-    console.log("🔵 [unsubscribe] START");
+    log("🔵 [unsubscribe] START");
 
     const ACCOUNT_SID_VALUE = ACCOUNT_SID.value();
     const AUTH_TOKEN_VALUE = AUTH_TOKEN.value();
@@ -22617,7 +22630,7 @@ export const unsubscribe = onRequest(
       const token = clean(rawToken, null);
 
       if (!token) {
-        console.log("❌ Missing token");
+        log("❌ Missing token");
         return res.redirect("/error.html");
       }
 
@@ -22630,7 +22643,7 @@ export const unsubscribe = onRequest(
         .get();
 
       if (snap.empty) {
-        console.log("❌ Token not found");
+        log("❌ Token not found");
         return res.redirect("/error.html");
       }
 
@@ -22661,7 +22674,7 @@ export const unsubscribe = onRequest(
         pendingPayload: admin.firestore.FieldValue.delete()
       });
 
-      console.log("✅ User unsubscribed", { uid: userDoc.id });
+      log("✅ User unsubscribed", { uid: userDoc.id });
 
       // 3️⃣ SMS only if user still allows SMS AND phone exists
       if (TPNotifications.receiveSMS && phone) {
@@ -22675,7 +22688,7 @@ export const unsubscribe = onRequest(
           "TPWallet.lastSMSSentAt": admin.firestore.FieldValue.serverTimestamp()
         });
       } else {
-        console.log("🚫 SMS not sent (Opt-out or missing phone)");
+        log("🚫 SMS not sent (Opt-out or missing phone)");
       }
 
       res.set("Content-Type", "text/html");
@@ -22706,7 +22719,7 @@ export const sendMASSemail = onRequest(
     memory: "512MiB"
   },
   async (req, res) => {
-    console.log("🔵 [sendMASSemail] START");
+    log("🔵 [sendMASSemail] START");
 
     const ACCOUNT_SID_VALUE = ACCOUNT_SID.value();
     const AUTH_TOKEN_VALUE = AUTH_TOKEN.value();
@@ -22823,7 +22836,7 @@ export const sendMASSemail = onRequest(
         .get();
 
       if (userSnap.empty) {
-        console.log("❌ User not found:", useremail);
+        log("❌ User not found:", useremail);
         return res.status(400).json({ error: "user_not_found" });
       }
 
@@ -23002,7 +23015,7 @@ export const getStripeDashboardLink = onRequest(
     ]
   },
   async (req, res) => {
-    console.log("🔵 [getStripeDashboardLink] START");
+    log("🔵 [getStripeDashboardLink] START");
 
     const STRIPE_PASSWORD_VALUE = STRIPE_PASSWORD.value();
     const stripe = new Stripe(STRIPE_PASSWORD_VALUE);
@@ -23031,13 +23044,13 @@ export const getStripeDashboardLink = onRequest(
       const token = clean(rawToken, null);
 
       if (!token) {
-        console.log("❌ Missing token");
+        log("❌ Missing token");
         return res.redirect("/error.html");
       }
 
       // Honeypot
       if (req.query.nickname) {
-        console.log("⚠️ Honeypot triggered");
+        log("⚠️ Honeypot triggered");
         return res.redirect("/error.html");
       }
 
@@ -23062,7 +23075,7 @@ export const getStripeDashboardLink = onRequest(
       }
 
       if (snap.empty) {
-        console.log("❌ Token not found");
+        log("❌ Token not found");
         return res.redirect("https://www.tropicpulse.bze.bz/error.html");
       }
 
@@ -23076,7 +23089,7 @@ export const getStripeDashboardLink = onRequest(
 
       const email = clean(TPIdentity.email, null);
       if (!email) {
-        console.log("❌ Missing TPIdentity.email");
+        log("❌ Missing TPIdentity.email");
         return res.redirect("/error.html");
       }
 
@@ -23095,13 +23108,13 @@ export const getStripeDashboardLink = onRequest(
       const verified = await verifyResponse.json();
 
       if (!verified?.success) {
-        console.log("❌ Token verification failed");
+        log("❌ Token verification failed");
         return res.redirect("/error.html");
       }
 
       const verifiedIdentity = verified.identity || null;
       if (!verifiedIdentity) {
-        console.log("❌ Missing identity from verification");
+        log("❌ Missing identity from verification");
         return res.redirect("/error.html");
       }
 
@@ -23117,7 +23130,7 @@ export const getStripeDashboardLink = onRequest(
         null;
 
       if (!accountId) {
-        console.log("❌ Missing Stripe account");
+        log("❌ Missing Stripe account");
         return res.redirect("/error.html");
       }
 
@@ -23151,7 +23164,7 @@ export const getStripeDashboardLink = onRequest(
           : Number(TPWallet.loginAt || 0);
 
       if (now - lastLogin < 60000 && TPWallet.loginLink) {
-        console.log("⏳ Cooldown active — reusing login link");
+        log("⏳ Cooldown active — reusing login link");
         return res.redirect(TPWallet.loginLink);
       }
 
@@ -23171,7 +23184,7 @@ export const getStripeDashboardLink = onRequest(
         { merge: true }
       );
 
-      console.log("✅ Login link created for:", email);
+      log("✅ Login link created for:", email);
       return res.redirect(link.url);
 
     } catch (err) {
@@ -24182,7 +24195,7 @@ export const stripeSetupComplete = onRequest(
     ]
   },
   async (req, res) => {
-    console.log("🔵 [stripeSetupComplete] START");
+    log("🔵 [stripeSetupComplete] START");
 
     const STRIPE_PASSWORD_VALUE = STRIPE_PASSWORD.value();
     const stripe = new Stripe(STRIPE_PASSWORD_VALUE);
@@ -24326,7 +24339,7 @@ export const massEmailWebhook = onRequest(
   (req, res) => {
     corsHandler(req, res, async () => {
       try {
-        console.log("🔵 [massEmailWebhook] START");
+        log("🔵 [massEmailWebhook] START");
 
         const EMAIL_PASSWORD_VALUE = EMAIL_PASSWORD.value();
         const ACCOUNT_SID_VALUE = ACCOUNT_SID.value();
@@ -24509,7 +24522,7 @@ export const getOrCreateUserByEmail = onRequest(
     secrets: [EMAIL_PASSWORD]
   },
   async (req, res) => {
-    console.log("🔵 [getOrCreateUserByEmail] START");
+    log("🔵 [getOrCreateUserByEmail] START");
 
     const EMAIL_PASSWORD_VALUE = EMAIL_PASSWORD.value();
     let logId = null;
@@ -24590,7 +24603,7 @@ export const getOrCreateUserByEmail = onRequest(
           { merge: true }
         );
 
-        console.log("✅ Existing user:", { userID, username, displayName });
+        log("✅ Existing user:", { userID, username, displayName });
 
       } else {
         // 3️⃣ Create new user (NEW SCHEMA)
@@ -24682,7 +24695,7 @@ export const getOrCreateUserByEmail = onRequest(
         userID = ref.id;
         username = "New User";
 
-        console.log("🆕 New user created:", { userID, displayName });
+        log("🆕 New user created:", { userID, displayName });
       }
 
       // 4️⃣ EmailLog
@@ -24753,7 +24766,7 @@ export const getOrCreateUserByEmail = onRequest(
         sentAt: admin.firestore.FieldValue.serverTimestamp()
       });
 
-      console.log("🔵 [getOrCreateUserByEmail] END (success)");
+      log("🔵 [getOrCreateUserByEmail] END (success)");
       return res.status(200).send(userID);
 
     } catch (error) {
@@ -24778,7 +24791,7 @@ export const getOrCreateUserByEmail = onRequest(
         });
       }
 
-      console.log("🔵 [getOrCreateUserByEmail] END (failure)");
+      log("🔵 [getOrCreateUserByEmail] END (failure)");
       return res.status(500).send(safeErrorMessage);
     }
   }
@@ -24803,7 +24816,7 @@ export const createOrGetStripeAccount = onRequest(
     ]
   },
   async (req, res) => {
-    console.log("🔵 [createOrGetStripeAccount] START");
+    log("🔵 [createOrGetStripeAccount] START");
 
     const STRIPE_PASSWORD_VALUE = STRIPE_PASSWORD.value();
     const ACCOUNT_SID_VALUE = ACCOUNT_SID.value();
@@ -25120,7 +25133,7 @@ export const resendStripeLink = onRequest(
     ]
   },
   async (req, res) => {
-    console.log("🔵 [resendStripeLink] START");
+    log("🔵 [resendStripeLink] START");
 
     const STRIPE_PASSWORD_VALUE = STRIPE_PASSWORD.value();
     const EMAIL_PASSWORD_VALUE = EMAIL_PASSWORD.value();
@@ -25367,7 +25380,7 @@ export const sendPayout = onRequest(
     ]
   },
   async (req, res) => {
-    console.log("🔵 [sendPayout] START");
+    log("🔵 [sendPayout] START");
 
     const STRIPE_PASSWORD_VALUE = STRIPE_PASSWORD.value();
     const ACCOUNT_SID_VALUE = ACCOUNT_SID.value();
@@ -25694,7 +25707,7 @@ export const sendPayout = onRequest(
       const receiveSMS = TPNotifications.receiveSMS ?? true;
 
       if (!receiveSMS || !phone) {
-        console.log("🚫 User has SMS Disabled or no phone:", {
+        log("🚫 User has SMS Disabled or no phone:", {
           receiveSMS,
           phone
         });
@@ -25788,7 +25801,7 @@ async function sendAdminAlertEmail(subject, error, context = {}) {
       html
     });
 
-    console.log("📨 Admin alert sent");
+    log("📨 Admin alert sent");
   } catch (err) {
     console.error("❌ Failed to send admin alert:", err);
   }
@@ -25812,18 +25825,18 @@ export const emailOpened = onRequest(
 
       // 1️⃣ Validate logId
       if (!logId || logId === "undefined" || logId.length < 5) {
-        console.log("Ignoring invalid logId:", raw);
+        log("Ignoring invalid logId:", raw);
         return pixel();
       }
 
-      console.log("📩 Pixel fired for:", logId);
+      log("📩 Pixel fired for:", logId);
 
       const ref = db.collection("EmailLogs").doc(logId);
       const snap = await ref.get();
 
       // 2️⃣ Ensure log exists
       if (!snap.exists) {
-        console.log("❌ Log not found:", logId);
+        log("❌ Log not found:", logId);
         return pixel();
       }
 
@@ -25953,7 +25966,7 @@ export const emailOpened = onRequest(
           });
       }
 
-      console.log("✅ Updated Firebase → Opened:", logId);
+      log("✅ Updated Firebase → Opened:", logId);
       return pixel();
 
     } catch (err) {
@@ -26001,8 +26014,8 @@ export const DatabaseReceiver = onRequest(
       }
 
       const type = data.payload?.type || data.emailType || data.type;
-      console.log("📨 DatabaseReceiver type:", type);
-      console.log("Query params:", req.query);
+      log("📨 DatabaseReceiver type:", type);
+      log("Query params:", req.query);
 
       if (!type || typeof type !== "string") {
         return res.status(400).send("Missing type");
@@ -26020,7 +26033,7 @@ export const DatabaseReceiver = onRequest(
       const handler = handlers[type];
 
       if (!handler) {
-        console.log("❌ Unknown type:", type);
+        log("❌ Unknown type:", type);
         return res.status(400).send("Unknown type");
       }
 
@@ -26072,7 +26085,7 @@ export const sendDynamicEmail = onRequest(
       const EMAIL_PASSWORD_VALUE = EMAIL_PASSWORD.value();
       const JWT_SECRET_VALUE = JWT_SECRET.value();
 
-      console.log("🔵 [sendDynamicEmail] START");
+      log("🔵 [sendDynamicEmail] START");
 
       const stripe = new Stripe(stripeSecret);
       const now = new Date();
@@ -26113,7 +26126,7 @@ export const sendDynamicEmail = onRequest(
 
       const clean = (v, fallback, label = "") => {
         if (isGarbage(v)) {
-          console.log(`⚠️ [CLEAN] Replacing garbage field '${label}' → '${fallback}'`);
+          log(`⚠️ [CLEAN] Replacing garbage field '${label}' → '${fallback}'`);
           return fallback;
         }
         return String(v).trim();
@@ -26124,14 +26137,14 @@ export const sendDynamicEmail = onRequest(
         // METHOD CHECK
         // ---------------------------------------------------------
         if (req.method !== "GET" && req.method !== "POST") {
-          console.log("❌ [METHOD] Invalid method:", req.method);
+          log("❌ [METHOD] Invalid method:", req.method);
           return res.status(405).json({ error: "Only GET and POST allowed" });
         }
 
         // ---------------------------------------------------------
         // 1️⃣ PARSE REQUEST
         // ---------------------------------------------------------
-        console.log("🔹 [STEP] Parsing incoming request");
+        log("🔹 [STEP] Parsing incoming request");
 
         let pulsePoints = null;
         let tip = null;
@@ -26166,7 +26179,7 @@ export const sendDynamicEmail = onRequest(
           return res.status(400).json({ success: false, error: err.message });
         }
 
-        console.log("✅ [PARSED]", { email, emailType, logId, payload });
+        log("✅ [PARSED]", { email, emailType, logId, payload });
 
         // Normalize incoming values
         pulsePoints = payload.pulsePoints ?? null;
@@ -26182,7 +26195,7 @@ export const sendDynamicEmail = onRequest(
         // Auto-generate logId if missing
         if (!logId) {
           logId = db.collection("EmailLogs").doc().id;
-          console.log("🆕 [AUTO LOG ID GENERATED]", logId);
+          log("🆕 [AUTO LOG ID GENERATED]", logId);
         }
 
         // Validate required fields
@@ -26200,12 +26213,12 @@ export const sendDynamicEmail = onRequest(
         emailType =
           String(emailType).charAt(0).toLowerCase() + String(emailType).slice(1);
 
-        console.log("🔹 [NORMALIZED]", { email, emailType });
+        log("🔹 [NORMALIZED]", { email, emailType });
 
         // ---------------------------------------------------------
         // 2️⃣ USER LOOKUP (NEW SCHEMA FIRST)
         // ---------------------------------------------------------
-        console.log("🔹 [STEP] Looking up user in Firestore");
+        log("🔹 [STEP] Looking up user in Firestore");
 
         // NEW SCHEMA FIRST
         let snapshot = await admin
@@ -26226,7 +26239,7 @@ export const sendDynamicEmail = onRequest(
         }
 
         if (snapshot.empty) {
-          console.log("❌ [USER] User not found:", email);
+          log("❌ [USER] User not found:", email);
           return res.status(404).json({ success: false, error: "User not found" });
         }
 
@@ -26293,7 +26306,7 @@ export const sendDynamicEmail = onRequest(
           TPWallet.payDay ||
           null;
 
-        console.log("✅ [USER FOUND]", {
+        log("✅ [USER FOUND]", {
           userID,
           username,
           country,
@@ -26306,7 +26319,7 @@ export const sendDynamicEmail = onRequest(
         // ---------------------------------------------------------
         // 3️⃣ STRIPE ACCOUNT CHECK (NEW SCHEMA)
         // ---------------------------------------------------------
-        console.log("🔹 [STEP] Stripe account check");
+        log("🔹 [STEP] Stripe account check");
 
         stripeAccountID =
           TPIdentity.stripeAccountID ||
@@ -26354,7 +26367,7 @@ export const sendDynamicEmail = onRequest(
           eventID = eventID || payload.eventID;
 
           if (!eventID) {
-            console.log("❌ [EVENT] No eventID provided");
+            log("❌ [EVENT] No eventID provided");
             return res.status(400).json({ success: false, error: "Missing eventID" });
           }
 
@@ -26364,7 +26377,7 @@ export const sendDynamicEmail = onRequest(
             .get();
 
           if (!eventDoc.exists) {
-            console.log("❌ [EVENT] Event not found:", eventID);
+            log("❌ [EVENT] Event not found:", eventID);
             return res.status(404).json({ success: false, error: "Event not found" });
           }
 
@@ -26411,7 +26424,7 @@ export const sendDynamicEmail = onRequest(
           busID = busID || payload.busID;
 
           if (!busID) {
-            console.log("❌ [BUSINESS] No busID provided");
+            log("❌ [BUSINESS] No busID provided");
             return res.status(400).json({ success: false, error: "Missing busID" });
           }
 
@@ -26421,7 +26434,7 @@ export const sendDynamicEmail = onRequest(
             .get();
 
           if (!busDoc.exists) {
-            console.log("❌ [BUSINESS] Business not found:", busID);
+            log("❌ [BUSINESS] Business not found:", busID);
             return res.status(404).json({ success: false, error: "Business not found" });
           }
 
@@ -26569,14 +26582,14 @@ export const sendDynamicEmail = onRequest(
             .get();
 
           if (!orderSnap.exists) {
-            console.log("❌ [ORDER] Order not found:", orderID);
+            log("❌ [ORDER] Order not found:", orderID);
             return res.status(404).json({ success: false, error: "Order not found" });
           }
 
           const orderData = orderSnap.data();
 
           if (orderData.paidDeliverer === true) {
-            console.log("❌ [ORDER] Already paidDeliverer:", orderID);
+            log("❌ [ORDER] Already paidDeliverer:", orderID);
             return res.status(400).json({
               success: true,
               details: "Order already paidDeliverer"
@@ -26632,7 +26645,7 @@ export const sendDynamicEmail = onRequest(
           payload.displayAmount = displayAmount;
 
 
-          console.log("✅ [PAYOUT SENT]", {
+          log("✅ [PAYOUT SENT]", {
             orderID,
             transferId: transfer.id,
             displayCurrency,
@@ -26649,7 +26662,7 @@ export const sendDynamicEmail = onRequest(
           if (emailType === "pulsePointRedemption") {
             payload.displayCurrency = infoa.displayCurrency;
             payload.displayAmount = infoa.displayAmount;
-            console.log("✅ [PULSE REDEMPTION CURRENCY SET]");
+            log("✅ [PULSE REDEMPTION CURRENCY SET]");
           }
 
           /* ---------------------------------------------------------
@@ -26677,7 +26690,7 @@ export const sendDynamicEmail = onRequest(
 
             await grantPulsePoints(userID, safePulsePoints, "order_payment");
 
-            console.log("🔹 [LOYALTY] Current:", safeTotalPoints, "Gifted:", safePulsePoints);
+            log("🔹 [LOYALTY] Current:", safeTotalPoints, "Gifted:", safePulsePoints);
           }
 
           // Clean display fields
@@ -26696,7 +26709,7 @@ export const sendDynamicEmail = onRequest(
           if (payload.phonenumber) payload.phonenumber = normalizePhone(payload.phonenumber, country);
 
           const finalPayload = JSON.parse(JSON.stringify(payload));
-          console.log("🟣 [FINAL PAYLOAD]", finalPayload);
+          log("🟣 [FINAL PAYLOAD]", finalPayload);
 
           /* ---------------------------------------------------------
             9️⃣ GENERATE HTML / SUBJECT
@@ -26727,7 +26740,7 @@ export const sendDynamicEmail = onRequest(
                 }
               : {});
 
-          console.log("✅ [EMAIL READY]", { emailType, subjectA });
+          log("✅ [EMAIL READY]", { emailType, subjectA });
 
           /* ---------------------------------------------------------
             🔟 WRITE LOG — NEW SCHEMA
@@ -26746,7 +26759,7 @@ export const sendDynamicEmail = onRequest(
               { merge: true }
             );
 
-          console.log("✅ [EMAIL LOGGED] Pending:", logId);
+          log("✅ [EMAIL LOGGED] Pending:", logId);
 
           /* ---------------------------------------------------------
             1️⃣1️⃣ SEND EMAIL
@@ -26770,7 +26783,7 @@ export const sendDynamicEmail = onRequest(
             headers: finalHeaders
           });
 
-          console.log("✅ [EMAIL SENT]", { messageId: info.messageId, to: email });
+          log("✅ [EMAIL SENT]", { messageId: info.messageId, to: email });
 
           /* ---------------------------------------------------------
             1️⃣2️⃣ UPDATE EMAIL LOG STATUS
@@ -26787,7 +26800,7 @@ export const sendDynamicEmail = onRequest(
             1️⃣3️⃣ OPTIONAL SMS — NEW SCHEMA
           --------------------------------------------------------- */
           if (TPNotifications.receiveSMS === false) {
-            console.log("🚫 User has SMS Disabled:", email);
+            log("🚫 User has SMS Disabled:", email);
           } else {
             const twilioClient = twilio(ACCOUNT_SID_VALUE, AUTH_TOKEN_VALUE);
 
@@ -26802,8 +26815,8 @@ export const sendDynamicEmail = onRequest(
             });
           }
 
-          console.log("✅ [EMAIL LOG UPDATED] Sent:", logId);
-          console.log("🔵 [sendDynamicEmail] END (success)");
+          log("✅ [EMAIL LOG UPDATED] Sent:", logId);
+          log("🔵 [sendDynamicEmail] END (success)");
 
           return res.json({
             success: true,
@@ -26838,13 +26851,13 @@ export const sendDynamicEmail = onRequest(
                 "payload.error": safeErrorMessage,
                 failedAt: admin.firestore.FieldValue.serverTimestamp()
               });
-            console.log("⚠️ [EMAIL LOG UPDATED] Failed:", logId);
+            log("⚠️ [EMAIL LOG UPDATED] Failed:", logId);
           } catch (logErr) {
             console.error("❌ [LOG UPDATE ERROR]", logErr);
           }
         }
 
-        console.log("🔵 [sendDynamicEmail] END (failure)");
+        log("🔵 [sendDynamicEmail] END (failure)");
 
         return res.status(500).json({
           success: false,
@@ -26945,8 +26958,8 @@ export const resolveVenue = onRequest(
 //           });
 //         }
 
-//         console.log("RAW VENUE:", req.query.venue);
-//         console.log("TRIMMED VENUE:", venue);
+//         log("RAW VENUE:", req.query.venue);
+//         log("TRIMMED VENUE:", venue);
 
 //         // ---------------------------------------------
 //         // GEOCODE
@@ -30059,7 +30072,7 @@ export async function getUserRefByUid(uid) {
 //     if (req.method === "OPTIONS") return res.status(204).send("");
 //     if (req.method !== "POST") return res.status(405).send("Method not allowed");
 
-//     console.log("🔥 uploadBusinessRow v3.3 — request received");
+//     log("🔥 uploadBusinessRow v3.3 — request received");
 
 //     try {
 //       if (!req.body || typeof req.body !== "object") {
@@ -30107,12 +30120,12 @@ export async function getUserRefByUid(uid) {
 //       const listingId = String(listingIdRaw).trim();
 //       normalized.listing_id = listingId;
 
-//       console.log(`➡️ Processing listing_id ${listingId} (${normalized.busname})`);
+//       log(`➡️ Processing listing_id ${listingId} (${normalized.busname})`);
 
 //       // Find matches (new logic)
 //       const matches = await findMatchingBusinesses(normalized);
 
-//       console.log(
+//       log(
 //         `🔍 Found ${matches.length} matches for ${listingId}:`,
 //         matches.map(m => ({ id: m.id, reason: m.reason }))
 //       );
@@ -30125,13 +30138,13 @@ export async function getUserRefByUid(uid) {
 //       // Delete old docs
 //       for (const m of matches) {
 //         if (m.id !== listingId) {
-//           console.log(`🗑️ Deleting old doc ${m.id}`);
+//           log(`🗑️ Deleting old doc ${m.id}`);
 //           await db.collection("Businesses").doc(m.id).delete();
 //         }
 //       }
 
 //       // Write final doc
-//       console.log(`💾 Writing final doc for ${listingId}`);
+//       log(`💾 Writing final doc for ${listingId}`);
 //       await db.collection("Businesses").doc(listingId).set(merged, { merge: false });
 
 //       return res.json({

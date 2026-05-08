@@ -639,7 +639,7 @@ function safeArterySnapshot(arteryContext = {}) {
 // HELPERS — NORMALIZE IDENTITY TO v20-Immortal-WorldPresence-ADVANTAGE SHAPE
 // ============================================================================
 
-function normalizeIdentity(
+export function normalizeIdentity(
   raw,
   mode,
   presenceContext = {},
@@ -647,11 +647,20 @@ function normalizeIdentity(
   advantageContext = {},
   topologyContext = {},
   socialContext = {},
-  arteryContext = {}
+  arteryContext = {},
+  admin // required for deterministic time
 ) {
   if (!raw || typeof raw !== "object") return null;
 
-  const presence = {
+  // ---------------------------------------------------------------------------
+  // 1. DRIFT‑PROOF TIMESTAMP (IMMORTAL)
+  // ---------------------------------------------------------------------------
+  const now = admin.firestore.Timestamp.now().toMillis();
+
+  // ---------------------------------------------------------------------------
+  // 2. CANONICAL PRESENCE SNAPSHOT
+  // ---------------------------------------------------------------------------
+  const presence = Object.freeze({
     deviceId: safeStr(presenceContext.deviceId, ""),
     bluetooth: safeBool(presenceContext.bluetooth, false),
     band: safeStr(presenceContext.band, "unknown"),
@@ -660,16 +669,20 @@ function normalizeIdentity(
     presenceLevel: safeStr(presenceContext.presenceLevel, "Unknown"),
     page: safeStr(presenceContext.page, null),
     mode: safeStr(presenceContext.mode, null)
-  };
+  });
 
-  const world = safeWorldPresenceHint(worldContext, socialContext);
-  const advantage = safeAdvantageHint(advantageContext, world);
-  const topology = safeTopologyHint(topologyContext);
-  const social = safeSocialSnapshot(socialContext);
-  const artery = safeArterySnapshot(arteryContext);
+  // ---------------------------------------------------------------------------
+  // 3. CANONICAL WORLD / ADVANTAGE / TOPOLOGY / SOCIAL / ARTERY SNAPSHOTS
+  // ---------------------------------------------------------------------------
+  const world = Object.freeze(safeWorldPresenceHint(worldContext, socialContext));
+  const advantage = Object.freeze(safeAdvantageHint(advantageContext, world));
+  const topology = Object.freeze(safeTopologyHint(topologyContext));
+  const social = Object.freeze(safeSocialSnapshot(socialContext));
+  const artery = Object.freeze(safeArterySnapshot(arteryContext));
 
-  const now = Date.now();
-
+  // ---------------------------------------------------------------------------
+  // 4. CANONICAL IDENTITY SNAPSHOT (IMMORTAL v21)
+  // ---------------------------------------------------------------------------
   const normalized = {
     // Core identity
     uid: safeStr(raw.uid || raw.userId, null),
@@ -686,26 +699,28 @@ function normalizeIdentity(
     lineage: safeObj(raw.lineage, {}),
     repairMode: safeStr(raw.repairMode, "none"),
 
-    // Session + device
+    // Device + session
     trustedDevice: safeBool(raw.trustedDevice, false),
     sessionAge: safeNum(raw.sessionAge, 0),
     lastVaultVisit: safeNum(raw.lastVaultVisit, 0),
 
-    // Device + session profile (metadata only)
+    // Device profile
     deviceProfile: safeObj(raw.deviceProfile, {
       platform: safeStr(raw.platform, "unknown"),
       userAgent: safeStr(raw.userAgent, null)
     }),
+
+    // Session profile
     sessionProfile: safeObj(raw.sessionProfile, {
       entryRoute: safeStr(raw.entryRoute, null),
       lastRoute: safeStr(raw.lastRoute, null)
     }),
 
-    // Timestamps (symbolic; binary core treats as opaque)
-    createdAt: raw.createdAt || now,
+    // Deterministic timestamps
+    createdAt: safeNum(raw.createdAt, now),
     updatedAt: now,
 
-    // Presence + world + advantage + topology + social + artery fields
+    // Contextual layers
     presence,
     world,
     advantage,
@@ -713,22 +728,32 @@ function normalizeIdentity(
     social,
     artery,
 
-    // Context injection
+    // Layer + mode
     layer: LAYER_NAME,
     context:
-      "Canonical backend identity + presence + world + advantage + topology + social + artery snapshot (v20-Immortal-WorldPresence-ADVANTAGE)",
+      "Canonical backend identity + presence + world + advantage + topology + social + artery snapshot (v21-Immortal-WorldPresence-ADVANTAGE)",
     mode
   };
 
-  normalized.binarySignature = computeBinarySignature(normalized);
-  normalized.presenceSignature = computePresenceSignature(normalized, presence);
-  normalized.worldSignature = computeWorldSignature(world);
-  normalized.advantageSignature = computeAdvantageSignature(advantage);
-  normalized.topologySignature = computeTopologySignature(topology);
-  normalized.arterySignature = computeArterySignature(artery);
+  // ---------------------------------------------------------------------------
+  // 5. FREEZE BEFORE SIGNATURES (IMMORTAL RULE)
+  // ---------------------------------------------------------------------------
+  Object.freeze(normalized);
 
-  return normalized;
+  // ---------------------------------------------------------------------------
+  // 6. SIGNATURES (IMMUTABLE, DETERMINISTIC)
+  // ---------------------------------------------------------------------------
+  return Object.freeze({
+    ...normalized,
+    binarySignature: computeBinarySignature(normalized),
+    presenceSignature: computePresenceSignature(normalized, presence),
+    worldSignature: computeWorldSignature(world),
+    advantageSignature: computeAdvantageSignature(advantage),
+    topologySignature: computeTopologySignature(topology),
+    arterySignature: computeArterySignature(artery)
+  });
 }
+
 
 // ============================================================================
 // DUALBAND IDENTITY REPAIR — A → B → A

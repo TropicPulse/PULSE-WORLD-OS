@@ -46,7 +46,7 @@ AI_EXPERIENCE_META:
     categories: ["RAW", "RAW_AI"]
     erReady: true
 */
-
+import { admin, db } from "../PULSE-X/PulseWorldFirebaseGenome-v20.js";
 export const PulseTrustJuryFeedMeta = Object.freeze({
   id: "PulseTrustJuryFeed-v20++",
   version: "20.0.0",
@@ -244,60 +244,62 @@ export class PulseTrustJuryFeed {
   //  BUILD EVIDENCE PACKET (ER‑ready)
 // --------------------------------------------------------------------------
   buildJuryFeed(context = {}) {
-    const ts = Date.now();
+  // Deterministic timestamp — NEVER Date.now()
+  const ts = admin.firestore.Timestamp.now();
 
-    // RAW truth
-    const rawView = {
-      mesh: this._safeSnapshot(this.rawMesh),
-      castle: this._safeSnapshot(this.rawCastle),
-      server: this._safeSnapshot(this.rawServer),
-      expansion: this._safeSnapshot(this.rawExpansion),
-      earn: this._safeSnapshot(this.rawEarn),
-      routing: this._safeSnapshot(this.rawRouting),
-      presence: this._safeSnapshot(this.rawPresence),
-      metrics: this._safeSnapshot(this.rawMetrics)
-    };
+  // RAW truth
+  const rawView = {
+    mesh: this._safeSnapshot(this.rawMesh),
+    castle: this._safeSnapshot(this.rawCastle),
+    server: this._safeSnapshot(this.rawServer),
+    expansion: this._safeSnapshot(this.rawExpansion),
+    earn: this._safeSnapshot(this.rawEarn),
+    routing: this._safeSnapshot(this.rawRouting),
+    presence: this._safeSnapshot(this.rawPresence),
+    metrics: this._safeSnapshot(this.rawMetrics)
+  };
 
-    // AI-mirror worldview
-    const aiView = this._safeAiWorldSnapshot();
+  // AI-mirror worldview
+  const aiView = this._safeAiWorldSnapshot();
 
-    // Delta
-    const delta = buildSubsystemDelta(rawView, aiView);
+  // Delta
+  const delta = buildSubsystemDelta(rawView, aiView);
 
-    // Patterns
-    const patterns = buildPatternedView(rawView, aiView, delta);
+  // Patterns
+  const patterns = buildPatternedView(rawView, aiView, delta);
 
-    // Advantage
-    const advantage = buildAdvantageView(rawView, aiView);
+  // Advantage
+  const advantage = buildAdvantageView(rawView, aiView);
 
-    // AI traces
-    const aiTraces = this._collectAiTraces();
+  // AI traces
+  const aiTraces = this._collectAiTraces();
 
-    // ER‑ready snapshot
-    const snapshot = Object.freeze({
-      meta: PulseTrustJuryFeedMeta,
-      schema: PulseTrustJuryFeedMeta.schema,
-      ts,
-      context,
-      patterns,
-      advantage,
-      delta,
-      aiTraces,
-      rawRef: {
-        mesh: !!rawView.mesh,
-        castle: !!rawView.castle,
-        server: !!rawView.server,
-        expansion: !!rawView.expansion,
-        earn: !!rawView.earn,
-        routing: !!rawView.routing,
-        presence: !!rawView.presence,
-        metrics: !!rawView.metrics
-      }
-    });
+  // ER‑ready snapshot
+  const snapshot = Object.freeze({
+    meta: PulseTrustJuryFeedMeta,
+    schema: PulseTrustJuryFeedMeta.schema,
+    ts,
+    context,
+    patterns,
+    advantage,
+    delta,
+    aiTraces,
+    rawRef: {
+      mesh: !!rawView.mesh,
+      castle: !!rawView.castle,
+      server: !!rawView.server,
+      expansion: !!rawView.expansion,
+      earn: !!rawView.earn,
+      routing: !!rawView.routing,
+      presence: !!rawView.presence,
+      metrics: !!rawView.metrics
+    }
+  });
 
-    this._log("trust:jury-feed:evidence", { snapshot });
-    return snapshot;
-  }
+  this._log("trust:jury-feed:evidence", { snapshot });
+  return snapshot;
+}
+
 
   // --------------------------------------------------------------------------
   //  INTERNAL HELPERS

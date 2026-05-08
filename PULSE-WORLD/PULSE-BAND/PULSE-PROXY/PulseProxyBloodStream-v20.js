@@ -1,23 +1,68 @@
 // ============================================================================
-//  PULSE OS v12.3‑EVO — TELEMETRY ORGAN
+//  PULSE OS v20-ImmortalPlus — TELEMETRY ORGAN (BLOODSTREAM)
 //  Unified Metrics • Subsystem Heartbeats • Drift Detection
 //  Mesh‑Aware Telemetry Propagation (Mini‑Pulse Distance Engine)
-//  PURE NERVOUS‑SYSTEM ORGAN — NO BACKEND, NO DOM, NO GPU, NO STATE MUTATION
-//  v12.3‑EVO‑BINARY‑MAX‑ABA + CACHE/CHUNK/PRESENCE ADVANTAGE
+//  PURE NERVOUS‑SYSTEM ORGAN — NO BACKEND, NO DOM, NO GPU
+//  v20‑ImmortalPlus‑BINARY‑MAX‑ABA + CACHE/CHUNK/PRESENCE ADVANTAGE
+//    • Deterministic, drift‑proof, multi‑instance safe
+//    • Unified advantage field (distance → advantageScore)
+//    • Dual‑band A‑B‑A surfaces (band/binary/wave)
+//    • Mesh‑pulse aware (hops/distance bounded)
+//    • Read‑only experience meta for Overmind/World
 // ============================================================================
-import { VitalsLogger as logger, PulseVersion,PulseRoles, PulseLineage }        from "../../PULSE-UI/_BACKEND/PulseProofLogger.js";
+
+import {
+  VitalsLogger as logger,
+  PulseVersion,
+  PulseRoles,
+  PulseLineage
+} from "../../PULSE-UI/_BACKEND/PulseProofLogger.js";
 
 // ============================================================================
-//  ORGAN IDENTITY — v12.3‑EVO A‑B‑A
+//  EXPERIENCE META — AI / World / Overmind surfaces
 // ============================================================================
+
+export const PulseTelemetryExperienceMeta = Object.freeze({
+  layer: "PulseTelemetryBloodstream",
+  role: "TELEMETRY_ORGAN_EXPERIENCE",
+  version: "v20-ImmortalPlus-Bloodstream",
+  identity: "PulseTelemetryExperience-v20-ImmortalPlus",
+  experience: {
+    surfaces: {
+      subsystem: true,
+      event: true,
+      hops: true,
+      distance: true,
+      band: true,
+      bandSignature: true,
+      binaryField: true,
+      waveField: true,
+      advantageField: true
+    },
+    narrative: {
+      description:
+        "Telemetry bloodstream that turns raw subsystem events into mesh-aware pulses " +
+        "with band/binary/wave/advantage surfaces. Pure nervous-system organ; no routing, no decisions.",
+      aiUsageHint:
+        "Use these telemetry surfaces to understand subsystem health, mesh distance, and advantage. " +
+        "Never treat this organ as a router, scheduler, or decision-maker."
+    }
+  }
+});
+
+// ============================================================================
+//  ORGAN IDENTITY — v20-ImmortalPlus A‑B‑A
+// ============================================================================
+
 export const PulseRole = {
   type: "Organ",
   subsystem: "PulseTelemetry",
   layer: "Bloodstream",
-  version: "12.3-Evo",
-  identity: "PulseTelemetryOrgan-v12.3-Evo-ABA",
+  version: "20-ImmortalPlus",
+  identity: "PulseTelemetryOrgan-v20-ImmortalPlus-ABA",
 
   evo: {
+    deterministic: true,
     driftProof: true,
     pulseEfficiencyAware: true,
     unifiedAdvantageField: true,
@@ -32,20 +77,26 @@ export const PulseRole = {
     waveFieldAware: true,
     binaryFieldAware: true,
 
-    // 12.3+ presence / cache / chunk advantages
+    // presence / cache / chunk advantages
     cacheChunkAware: true,
     prewarmAware: true,
     presenceAware: true,
     meshPresenceAware: true,
-    chunkTelemetryAware: true
+    chunkTelemetryAware: true,
+
+    // dual-band / IMMORTAL surfaces
+    symbolicAware: true,
+    binaryAware: true,
+    dualBandAware: true,
+    epochStable: true
   }
 };
 
 export const PulseTelemetryOrganMeta = Object.freeze({
   layer: "PulseTelemetryBloodstream",
   role: "TELEMETRY_ORGAN",
-  version: "v12.3-Evo-BINARY-MAX-ABA",
-  identity: "PulseTelemetryOrgan-v12.3-Evo-BINARY-MAX-ABA",
+  version: "v20-ImmortalPlus-BINARY-MAX-ABA",
+  identity: "PulseTelemetryOrgan-v20-ImmortalPlus-BINARY-MAX-ABA",
 
   guarantees: Object.freeze({
     deterministic: true,
@@ -57,17 +108,11 @@ export const PulseTelemetryOrganMeta = Object.freeze({
     sensorOnly: true,
     noDecisionMaking: true,
     noRouting: true,
-    noGlobalState: true,
-    noMutation: true,
+    noGlobalRoutingState: true,
+    noBusinessLogic: true,
     noExternalMutation: true,
-    noCompute: true,              // no business logic, only measurement
-    noAsync: true,
-    noTimers: true,
-    noRandomness: true,
     noDynamicImports: true,
     noEval: true,
-    noNetwork: true,
-    noIO: true,
     noBackend: true,
     noDOM: true,
     noWindow: true,
@@ -81,7 +126,7 @@ export const PulseTelemetryOrganMeta = Object.freeze({
     unifiedAdvantageField: true,
     pulseEfficiencyAware: true,
 
-    // 12.3+ cache/chunk/presence guarantees
+    // cache/chunk/presence guarantees
     cacheChunkAware: true,
     cacheSafe: true,
     chunkSafe: true,
@@ -111,14 +156,16 @@ export const PulseTelemetryOrganMeta = Object.freeze({
       "TelemetryBandSignature",
       "TelemetryBinaryField",
       "TelemetryWaveField",
+      "TelemetryAdvantageField",
       "TelemetryDiagnostics",
-      "TelemetryHealingState"
+      "TelemetryHealingState",
+      "TelemetryExperienceMeta"
     ]
   }),
 
   lineage: Object.freeze({
     root: "PulseTelemetry-v11",
-    parent: "PulseTelemetry-v12.3-Evo",
+    parent: "PulseTelemetry-v20-ImmortalPlus",
     ancestry: [
       "PulseTelemetryOrgan-v7",
       "PulseTelemetryOrgan-v8",
@@ -127,7 +174,8 @@ export const PulseTelemetryOrganMeta = Object.freeze({
       "PulseTelemetryOrgan-v11",
       "PulseTelemetryOrgan-v11-Evo",
       "PulseTelemetryOrgan-v11-Evo-ABA",
-      "PulseTelemetryOrgan-v11.2-Evo-BINARY-MAX"
+      "PulseTelemetryOrgan-v11.2-Evo-BINARY-MAX",
+      "PulseTelemetryOrgan-v12.3-Evo-BINARY-MAX-ABA"
     ]
   }),
 
@@ -140,15 +188,15 @@ export const PulseTelemetryOrganMeta = Object.freeze({
   architecture: Object.freeze({
     pattern: "A-B-A",
     baseline: "metrics → vital signs → A‑B‑A surfaces",
-    adaptive: "binary-field + wave-field overlays",
-    return: "deterministic telemetry surfaces + signatures"
+    adaptive: "binary-field + wave-field overlays + advantage field",
+    return: "deterministic telemetry surfaces + signatures + advantage + experience meta"
   })
 });
 
+// ============================================================================
+// INTERNAL STATE — Telemetry Bloodstream (bounded, observational only)
+// ============================================================================
 
-// ============================================================================
-// INTERNAL STATE — Telemetry Bloodstream (bounded)
-// ============================================================================
 const telemetryStream = [];
 const MAX_STREAM_SIZE = 5000;
 
@@ -158,10 +206,10 @@ const DEFAULT_DISTANCE = 1;
 
 let telemetryCycle = 0;
 
+// ============================================================================
+// A‑B‑A SURFACES — Band + Binary/Wave Fields + Advantage
+// ============================================================================
 
-// ============================================================================
-// A‑B‑A SURFACES — Band + Binary/Wave Fields
-// ============================================================================
 function buildBand(distance) {
   if (distance == null) return "symbolic";
   return distance > 3 ? "binary" : "symbolic";
@@ -210,10 +258,29 @@ function buildTelemetryCycleSignature() {
   return `telemetry-cycle-${(telemetryCycle * 7919) % 99991}`;
 }
 
+// IMMORTAL advantage field: distance → 0–1 advantageScore (closer = higher)
+function buildAdvantageField(distance) {
+  const d = distance ?? DEFAULT_DISTANCE;
+
+  const clamped = Math.max(0, Math.min(MAX_HOPS, d));
+  const advantageScore = Math.max(0, Math.min(1, 1 - clamped / MAX_HOPS));
+
+  let distanceBand = "near";
+  if (clamped >= 4) distanceBand = "far";
+  else if (clamped >= 2) distanceBand = "mid";
+
+  return {
+    distance,
+    distanceBand,
+    advantageScore,
+    advantageSignature: `telemetry-adv-${Math.round(advantageScore * 1000)}`
+  };
+}
 
 // ============================================================================
-// EMIT TELEMETRY — Universal signal emitter (v12.3‑EVO A‑B‑A)
+// EMIT TELEMETRY — Universal signal emitter (v20‑ImmortalPlus A‑B‑A)
 // ============================================================================
+
 export function emitTelemetry(subsystem, event, data = {}) {
   try {
     telemetryCycle++;
@@ -224,6 +291,7 @@ export function emitTelemetry(subsystem, event, data = {}) {
     const binaryField = buildBinaryField(baseDistance);
     const waveField = buildWaveField(baseDistance, band);
     const telemetryCycleSignature = buildTelemetryCycleSignature();
+    const advantageField = buildAdvantageField(baseDistance);
 
     const packet = logger.makeTelemetryPacket(subsystem, event, {
       ...data,
@@ -235,11 +303,13 @@ export function emitTelemetry(subsystem, event, data = {}) {
       binaryField,
       waveField,
       telemetryCycleSignature,
+      advantageField,
       meta: {
         layer: PulseRole.layer,
         version: PulseRole.version,
         subsystem,
-        event
+        event,
+        experienceMeta: PulseTelemetryExperienceMeta
       }
     });
 
@@ -249,17 +319,16 @@ export function emitTelemetry(subsystem, event, data = {}) {
     broadcastTelemetry(packet);
 
     return packet;
-
   } catch (err) {
     logger.error("telemetry", "emit_failed", { error: String(err) });
     return null;
   }
 }
 
+// ============================================================================
+// MINI‑PULSE BROADCAST — Mesh‑safe propagation (v20‑ImmortalPlus)
+// ============================================================================
 
-// ============================================================================
-// MINI‑PULSE BROADCAST — Mesh‑safe propagation (v12.3‑EVO)
-// ============================================================================
 export function broadcastTelemetry(packet) {
   try {
     if (!packet || typeof packet !== "object") return;
@@ -270,18 +339,18 @@ export function broadcastTelemetry(packet) {
     logger.log("telemetry", "broadcast", {
       subsystem: amplified.subsystem,
       hops: amplified.hops,
-      distance: amplified.distance
+      distance: amplified.distance,
+      band: amplified.band
     });
-
   } catch (err) {
     logger.error("telemetry", "broadcast_failed", { error: String(err) });
   }
 }
 
+// ============================================================================
+// MINI‑PULSE AMPLIFIER — Increase distance + hop count (v20‑ImmortalPlus)
+// ============================================================================
 
-// ============================================================================
-// MINI‑PULSE AMPLIFIER — Increase distance + hop count (v12.3‑EVO)
-// ============================================================================
 export function amplifyPulse(packet) {
   const nextHops = (packet.hops ?? 0) + 1;
   const nextDistance = (packet.distance ?? DEFAULT_DISTANCE) + 1;
@@ -290,6 +359,7 @@ export function amplifyPulse(packet) {
   const bandSignature = buildBandSignature(band);
   const binaryField = buildBinaryField(nextDistance);
   const waveField = buildWaveField(nextDistance, band);
+  const advantageField = buildAdvantageField(nextDistance);
 
   return {
     ...packet,
@@ -298,14 +368,15 @@ export function amplifyPulse(packet) {
     band,
     bandSignature,
     binaryField,
-    waveField
+    waveField,
+    advantageField
   };
 }
 
+// ============================================================================
+// RECEIVE MESH PULSE — Accept telemetry from other nodes (v20‑ImmortalPlus)
+// ============================================================================
 
-// ============================================================================
-// RECEIVE MESH PULSE — Accept telemetry from other nodes (v12.3‑EVO)
-// ============================================================================
 export function receiveMeshPulse(packet) {
   try {
     if (!packet || typeof packet !== "object") return;
@@ -315,16 +386,15 @@ export function receiveMeshPulse(packet) {
     if (telemetryStream.length > MAX_STREAM_SIZE) telemetryStream.shift();
 
     broadcastTelemetry(packet);
-
   } catch (err) {
     logger.error("telemetry", "mesh_receive_failed", { error: String(err) });
   }
 }
 
+// ============================================================================
+// HEARTBEAT — Subsystem periodic pulse (v20‑ImmortalPlus)
+// ============================================================================
 
-// ============================================================================
-// HEARTBEAT — Subsystem periodic pulse (v12.3‑EVO)
-// ============================================================================
 export function heartbeat(subsystem, extra = {}) {
   return emitTelemetry(subsystem, "heartbeat", {
     version: PulseVersion[subsystem],
@@ -333,10 +403,10 @@ export function heartbeat(subsystem, extra = {}) {
   });
 }
 
+// ============================================================================
+// DRIFT DETECTION (v20‑ImmortalPlus)
+// ============================================================================
 
-// ============================================================================
-// DRIFT DETECTION (v12.3‑EVO)
-// ============================================================================
 export function detectDrift(subsystem, expectedVersion) {
   const actual = PulseVersion[subsystem];
   if (actual !== expectedVersion) {
@@ -348,10 +418,10 @@ export function detectDrift(subsystem, expectedVersion) {
   return null;
 }
 
+// ============================================================================
+// ANOMALY (v20‑ImmortalPlus)
+// ============================================================================
 
-// ============================================================================
-// ANOMALY (v12.3‑EVO)
-// ============================================================================
 export function anomaly(subsystem, description, details = {}) {
   return emitTelemetry(subsystem, "anomaly", {
     description,
@@ -359,10 +429,10 @@ export function anomaly(subsystem, description, details = {}) {
   });
 }
 
+// ============================================================================
+// PERFORMANCE METRICS (v20‑ImmortalPlus)
+// ============================================================================
 
-// ============================================================================
-// PERFORMANCE METRICS (v12.3‑EVO)
-// ============================================================================
 export function metric(subsystem, name, value, extra = {}) {
   return emitTelemetry(subsystem, "metric", {
     name,
@@ -371,19 +441,24 @@ export function metric(subsystem, name, value, extra = {}) {
   });
 }
 
+// ============================================================================
+// STREAM ACCESS (v20‑ImmortalPlus)
+// ============================================================================
 
-// ============================================================================
-// STREAM ACCESS (v12.3‑EVO)
-// ============================================================================
 export function getStream(limit = 500) {
   if (limit <= 0) return [...telemetryStream];
   return telemetryStream.slice(-limit);
 }
 
+// Optional: compact snapshot for quick debug
+export function getTelemetryStreamSnapshot() {
+  return telemetryStream.slice(-256);
+}
 
 // ============================================================================
-// SNAPSHOT (v12.3‑EVO)
+// SNAPSHOT (v20‑ImmortalPlus)
 // ============================================================================
+
 export function getTelemetrySnapshot() {
   const latest = telemetryStream.slice(-200);
   const bySubsystem = {};
@@ -394,21 +469,22 @@ export function getTelemetrySnapshot() {
   });
 
   return {
-    ts: Date.now(),
+    ts: Date.now(), // local telemetry time is OK (sensor-only)
     totalPackets: telemetryStream.length,
     recentPackets: latest.length,
     bySubsystem,
     meta: {
       layer: PulseRole.layer,
-      version: PulseRole.version
+      version: PulseRole.version,
+      experienceMeta: PulseTelemetryExperienceMeta
     }
   };
 }
 
+// ============================================================================
+// EXPORTS — Telemetry Organ API (v20‑ImmortalPlus BINARY‑MAX‑ABA)
+// ============================================================================
 
-// ============================================================================
-// EXPORTS — Telemetry Organ API (v12.3‑EVO BINARY‑MAX‑ABA)
-// ============================================================================
 export const PulseTelemetry = {
   emit: emitTelemetry,
   heartbeat,
@@ -417,12 +493,14 @@ export const PulseTelemetry = {
   metric,
   getStream,
   getTelemetrySnapshot,
+  getTelemetryStreamSnapshot,
   broadcastTelemetry,
   receiveMeshPulse,
   amplifyPulse,
   meta: {
     layer: PulseRole.layer,
-    version: PulseRole.version
+    version: PulseRole.version,
+    experienceMeta: PulseTelemetryExperienceMeta
   },
   PulseRole
 };

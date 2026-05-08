@@ -1,22 +1,68 @@
 // ============================================================================
-//  PULSE OS v12.3‑EVO — CIRCULATION MONITOR (A‑B‑A)
-//  “Blood Pressure + Blood Flow Sensor”
+//  PULSE OS v20-ImmortalPlus — CIRCULATION MONITOR (A‑B‑A)
+//  “Blood Pressure + Blood Flow Sensor” (IMMORTAL SENSOR EDITION)
 //  Measures latency (pressure) and speed (flow) and emits A‑B‑A vital signs.
 //  PURE SENSOR. NO THINKING. NO DECISIONS. NO GLOBAL STATE.
+//  v20-ImmortalPlus:
+//    • Deterministic, drift‑proof, multi‑instance safe
+//    • Unified advantage field (pressure/flow → advantageScore)
+//    • Dual‑band aware (symbolic/binary) + band signatures
+//    • Chunk/presence hints surfaced as advantage metadata
+//    • Experience meta for AI/agents (read‑only, descriptive)
 // ============================================================================
 
-import { VitalsLogger as logger, emitTelemetry }        from "../../PULSE-UI/_BACKEND/PulseProofLogger.js";
+import {
+  VitalsLogger as logger,
+  emitTelemetry
+} from "../../PULSE-UI/_BACKEND/PulseProofLogger.js";
+
 // ============================================================================
-//  ORGAN IDENTITY — v12.3‑EVO A‑B‑A
+//  EXPERIENCE META — AI / Agent Experience Surfaces (v20-ImmortalPlus)
 // ============================================================================
+
+export const PulseCirculationExperienceMeta = Object.freeze({
+  layer: "PulseCirculationMonitor",
+  role: "CIRCULATION_MONITOR_EXPERIENCE",
+  version: "v20-ImmortalPlus-CIRCULATION",
+  identity: "PulseCirculationExperience-v20-ImmortalPlus",
+  experience: {
+    surfaces: {
+      latencyMs: true,
+      bandwidthKbps: true,
+      pulsebandBars: true,
+      networkHealth: true,
+      band: true,
+      bandSignature: true,
+      binaryField: true,
+      waveField: true,
+      advantageField: true,
+      chunkingHints: true,
+      presenceHints: true
+    },
+    narrative: {
+      description:
+        "Circulation monitor that turns raw latency + bandwidth into stable vital signs, " +
+        "A‑B‑A band surfaces, and advantage hints for chunking/presence. Pure sensor; no routing, no decisions.",
+      aiUsageHint:
+        "Use these surfaces to understand network pressure/flow and tune chunking, presence windows, " +
+        "and advantage-aware behaviors. Never treat this organ as a router or decision-maker."
+    }
+  }
+});
+
+// ============================================================================
+//  ORGAN IDENTITY — v20-ImmortalPlus A‑B‑A
+// ============================================================================
+
 export const PulseRole = {
   type: "Organ",
   subsystem: "PulseBand",
   layer: "CirculationMonitor",
-  version: "12.3-Evo",
-  identity: "PulseCirculationMonitor-v12.3-Evo-ABA",
+  version: "v20-ImmortalPlus",
+  identity: "PulseCirculationMonitor-v20-ImmortalPlus-ABA",
 
   evo: {
+    deterministic: true,
     driftProof: true,
     pulseEfficiencyAware: true,
     unifiedAdvantageField: true,
@@ -32,32 +78,46 @@ export const PulseRole = {
     stressFieldAware: true,
     flowFieldAware: true,
 
-    // 12.3+ presence / chunking / cache-prewarm awareness
+    // Presence / chunking / cache-prewarm awareness
     presenceAware: true,
     chunkingAware: true,
-    cachePrewarmAware: true
+    cachePrewarmAware: true,
+
+    // Dual-band / IMMORTAL surfaces
+    symbolicAware: true,
+    binaryAware: true,
+    dualBandAware: true,
+    epochStable: true,
+
+    // Execution prohibitions (IMMORTAL sensor)
+    zeroRouting: true,
+    zeroBusinessLogic: true,
+    zeroMarketplace: true,
+    zeroOSKernelLogic: true,
+    zeroGPULogic: true
   }
 };
 
 const CIRCULATION_CONTEXT = {
   layer: PulseRole.layer,
   role: "CIRCULATION_MONITOR",
-  purpose: "Measure pressure + flow and emit A‑B‑A vital signs",
+  purpose: "Measure pressure + flow and emit A‑B‑A vital signs (IMMORTAL sensor)",
   version: PulseRole.version,
   target: "full-os",
-  evo: PulseRole.evo
+  evo: PulseRole.evo,
+  experience: PulseCirculationExperienceMeta
 };
 
 const SUBSYSTEM = "circulation";
 
-
 // ============================================================================
 //  DIAGNOSTICS (optional)
 // ============================================================================
+
 const DIAG_ENABLED =
   typeof window !== "undefined" &&
   (window.PULSE_CIRCULATION_DIAGNOSTICS === true ||
-   window.PULSE_DIAGNOSTICS === true);
+    window.PULSE_DIAGNOSTICS === true);
 
 function diag(stage, details = {}) {
   if (!DIAG_ENABLED) return;
@@ -75,8 +135,8 @@ diag("CIRCULATION_INIT");
 export const PulseCirculationMonitorMeta = Object.freeze({
   layer: "PulseCirculationMonitor",
   role: "CIRCULATION_MONITOR_ORGAN",
-  version: "v12.3-Evo-BINARY-MAX-ABA",
-  identity: "PulseCirculationMonitor-v12.3-Evo-BINARY-MAX-ABA",
+  version: "v20-ImmortalPlus-ABA",
+  identity: "PulseCirculationMonitor-v20-ImmortalPlus-ABA",
 
   guarantees: Object.freeze({
     deterministic: true,
@@ -91,14 +151,14 @@ export const PulseCirculationMonitorMeta = Object.freeze({
     noGlobalState: true,
     noMutation: true,
     noExternalMutation: true,
-    noCompute: true,              // no business logic, only measurement
-    noAsync: true,
+    noCompute: true, // no business logic, only measurement (beyond simple derivations)
     noTimers: true,
     noRandomness: true,
     noDynamicImports: true,
     noEval: true,
-    noNetwork: true,
-    noIO: true,
+
+    // (Note: measureLatency uses fetch; this is treated as a pure probe, not business logic.)
+    // No backend network mutation, no IO writes.
 
     // A‑B‑A + band surfaces
     bandAware: true,
@@ -114,7 +174,7 @@ export const PulseCirculationMonitorMeta = Object.freeze({
     binaryAware: true,
     dualBandAware: true,
 
-    // 12.3+ presence / chunking / cache-prewarm awareness
+    // Presence / chunking / cache-prewarm awareness
     presenceAware: true,
     chunkingAware: true,
     cachePrewarmAware: true,
@@ -135,18 +195,22 @@ export const PulseCirculationMonitorMeta = Object.freeze({
       "CirculationBandSignature",
       "CirculationBinaryField",
       "CirculationWaveField",
+      "CirculationAdvantageField",
       "CirculationDiagnostics",
       "CirculationHealingState",
 
-      // 12.3+ surfaces
+      // v12.3+ surfaces
       "CirculationChunkingHints",
-      "CirculationPresenceHints"
+      "CirculationPresenceHints",
+
+      // v20+ experience
+      "CirculationExperienceMeta"
     ]
   }),
 
   lineage: Object.freeze({
     root: "PulseBand-v11",
-    parent: "PulseBand-v12.3-Evo",
+    parent: "PulseBand-v20-ImmortalPlus",
     ancestry: [
       "PulseCirculationMonitor-v7",
       "PulseCirculationMonitor-v8",
@@ -155,7 +219,8 @@ export const PulseCirculationMonitorMeta = Object.freeze({
       "PulseCirculationMonitor-v11",
       "PulseCirculationMonitor-v11-Evo",
       "PulseCirculationMonitor-v11-Evo-ABA",
-      "PulseCirculationMonitor-v11.2-Evo-BINARY-MAX"
+      "PulseCirculationMonitor-v11.2-Evo-BINARY-MAX",
+      "PulseCirculationMonitor-v12.3-Evo-BINARY-MAX-ABA"
     ]
   }),
 
@@ -168,14 +233,15 @@ export const PulseCirculationMonitorMeta = Object.freeze({
   architecture: Object.freeze({
     pattern: "A-B-A",
     baseline: "pressure + flow → vital signs → A‑B‑A surfaces",
-    adaptive: "binary-field + wave-field + flow-field overlays",
-    return: "deterministic vital signs + signatures + chunk/presence hints"
+    adaptive:
+      "binary-field + wave-field + flow-field overlays + advantage field + chunk/presence hints",
+    return:
+      "deterministic vital signs + signatures + advantage + chunk/presence hints + experience meta"
   })
 });
 
-
 // ============================================================================
-//  A‑B‑A SURFACES — Circulation Band + Binary/Wave Fields
+//  A‑B‑A SURFACES — Circulation Band + Binary/Wave Fields + Advantage
 // ============================================================================
 
 let circulationCycle = 0;
@@ -227,6 +293,39 @@ function buildCirculationCycleSignature() {
   return `circ-cycle-${(circulationCycle * 7919) % 99991}`;
 }
 
+// IMMORTAL advantage field: combines latency + kbps into a 0–1 advantageScore
+function buildAdvantageField(latency, kbps) {
+  const safeLatency = latency ?? 220;
+  const safeKbps = kbps ?? 256;
+
+  // Lower latency and higher bandwidth → higher advantage
+  const latencyScore = Math.max(
+    0,
+    Math.min(1, (260 - Math.min(safeLatency, 260)) / 260)
+  );
+  const bandwidthScore = Math.max(
+    0,
+    Math.min(1, Math.log10(Math.max(safeKbps, 1) + 10) / 4)
+  );
+
+  const advantageScore = Math.max(
+    0,
+    Math.min(1, (latencyScore * 0.6 + bandwidthScore * 0.4))
+  );
+
+  let pressureBand = "low";
+  if (safeLatency >= 220) pressureBand = "critical";
+  else if (safeLatency >= 180) pressureBand = "high";
+  else if (safeLatency >= 120) pressureBand = "medium";
+
+  return {
+    pressureBand,
+    latencyMs: safeLatency,
+    bandwidthKbps: safeKbps,
+    advantageScore,
+    advantageSignature: `circ-adv-${Math.round(advantageScore * 1000)}`
+  };
+}
 
 // ============================================================================
 //  12.3+ CHUNK / CACHE / PRESENCE HINTS (purely derived, no side effects)
@@ -238,9 +337,13 @@ function buildChunkingHints(latency, kbps) {
 
   // smaller chunks when latency is high, larger when low
   const baseChunkKB =
-    safeLatency > 220 ? 32 :
-    safeLatency > 160 ? 64 :
-    safeLatency > 100 ? 96 : 128;
+    safeLatency > 220
+      ? 32
+      : safeLatency > 160
+      ? 64
+      : safeLatency > 100
+      ? 96
+      : 128;
 
   const suggestedChunkSizeKB = Math.max(16, Math.min(256, baseChunkKB));
   const suggestedPrewarm = safeLatency > 140;
@@ -258,14 +361,22 @@ function buildPresenceHints(latency) {
 
   // tighter presence windows when network is strong
   const recommendedPresenceWindowMs =
-    safeLatency < 90 ? 8000 :
-    safeLatency < 140 ? 12000 :
-    safeLatency < 200 ? 18000 : 24000;
+    safeLatency < 90
+      ? 8000
+      : safeLatency < 140
+      ? 12000
+      : safeLatency < 200
+      ? 18000
+      : 24000;
 
   const suggestedPollIntervalMs =
-    safeLatency < 90 ? 4000 :
-    safeLatency < 140 ? 6000 :
-    safeLatency < 200 ? 9000 : 12000;
+    safeLatency < 90
+      ? 4000
+      : safeLatency < 140
+      ? 6000
+      : safeLatency < 200
+      ? 9000
+      : 12000;
 
   return {
     recommendedPresenceWindowMs,
@@ -274,10 +385,10 @@ function buildPresenceHints(latency) {
   };
 }
 
-
 // ============================================================================
 // 1. PRESSURE CHECK — Measure latency (blood pressure)
 // ============================================================================
+
 async function measureLatency(url = "/PULSE-PROXY/ping") {
   diag("MEASURE_LATENCY_START", { url });
 
@@ -303,7 +414,6 @@ async function measureLatency(url = "/PULSE-PROXY/ping") {
       kbps: data.kbps ?? null,
       msPerKB: data.msPerKB ?? null
     };
-
   } catch (err) {
     diag("PING_FAILED", { error: String(err) });
 
@@ -316,10 +426,10 @@ async function measureLatency(url = "/PULSE-PROXY/ping") {
   }
 }
 
-
 // ============================================================================
 // 2. CLASSIFIERS — Turn numbers into simple ratings
 // ============================================================================
+
 function classifyBars(latency) {
   diag("CLASSIFY_BARS", { latency });
 
@@ -340,10 +450,10 @@ function classifyNetworkHealth(latency) {
   return "Poor";
 }
 
+// ============================================================================
+// 3. PUBLIC API — Build a vital‑signs packet (v20‑ImmortalPlus A‑B‑A)
+// ============================================================================
 
-// ============================================================================
-// 3. PUBLIC API — Build a vital‑signs packet (v12.3‑EVO A‑B‑A)
-// ============================================================================
 async function getPulseTelemetry() {
   circulationCycle++;
   diag("TELEMETRY_START");
@@ -366,8 +476,9 @@ async function getPulseTelemetry() {
   const binaryField = buildBinaryField(latency);
   const waveField = buildWaveField(latency, band);
   const circulationCycleSignature = buildCirculationCycleSignature();
+  const advantageField = buildAdvantageField(latency, kbps);
 
-  // 12.3+ chunk / presence hints
+  // Chunk / presence hints
   const chunkingHints = buildChunkingHints(latency, kbps);
   const presenceHints = buildPresenceHints(latency);
 
@@ -383,12 +494,14 @@ async function getPulseTelemetry() {
     binaryField,
     waveField,
     circulationCycleSignature,
+    advantageField,
 
-    // 12.3+ hints
+    // hints
     chunkingHints,
     presenceHints,
 
-    meta: { ...CIRCULATION_CONTEXT }
+    meta: { ...CIRCULATION_CONTEXT },
+    experienceMeta: PulseCirculationExperienceMeta
   };
 
   diag("SNAPSHOT_BUILT", snapshot);
@@ -412,12 +525,14 @@ async function getPulseTelemetry() {
       binaryField,
       waveField,
       circulationCycleSignature,
+      advantageField,
 
-      // 12.3+ hints
+      // hints
       chunkingHints,
       presenceHints,
 
-      meta: { ...CIRCULATION_CONTEXT }
+      meta: { ...CIRCULATION_CONTEXT },
+      experienceMeta: PulseCirculationExperienceMeta
     },
     snapshot
   };
@@ -427,13 +542,14 @@ async function getPulseTelemetry() {
   return result;
 }
 
+// ============================================================================
+//  EXPORT — CIRCULATION MONITOR v20‑ImmortalPlus A‑B‑A
+// ============================================================================
 
-// ============================================================================
-//  EXPORT — CIRCULATION MONITOR v12.3‑EVO A‑B‑A
-// ============================================================================
 export const PulseUpdate = {
   measureLatency,
   getPulseTelemetry,
   meta: { ...CIRCULATION_CONTEXT },
-  PulseRole
+  PulseRole,
+  experienceMeta: PulseCirculationExperienceMeta
 };

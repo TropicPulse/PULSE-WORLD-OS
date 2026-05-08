@@ -1,4 +1,3 @@
-import js from "@eslint/js";
 import globals from "globals";
 
 export default [
@@ -6,9 +5,6 @@ export default [
     files: ["**/*.js", "**/*.cjs", "**/*.mjs"],
 
     ignores: [
-      // ============================================================
-      // THE ONLY OS FILE YOU CURRENTLY HAVE
-      // ============================================================
       "PULSE-X/PULSE-WORLD-OS.js"
     ],
 
@@ -31,23 +27,98 @@ export default [
       "preserve-caught-error": "error",
 
       // ============================================================
-      // NOISE REDUCTION — WARN OR DISABLE
+      // PULSE-OS NAMING DIALECT
+      // ============================================================
+      "camelcase": [
+        "warn",
+        {
+          allow: [
+            "^Pulse",
+            "^OS",
+            "^u[A-Z]",
+            ".*_.*",
+            "^[A-Z0-9_]+$",
+            "^req$",
+            "^res$"
+          ],
+          properties: "never",
+          ignoreDestructuring: true
+        }
+      ],
+
+      // ============================================================
+      // UNUSED VARS — PULSE DIALECT
       // ============================================================
       "no-unused-vars": [
         "warn",
         {
-          varsIgnorePattern: "^(Pulse|OS|log|warn|error|err|_)|.*_.*",
-          argsIgnorePattern: "^(Pulse|OS|log|warn|error|err|_)|.*_.*"
+          varsIgnorePattern: "^(Pulse|OS|u|log|warn|error|err)|.*_.*",
+          argsIgnorePattern: "^(Pulse|OS|u|log|warn|error|err|_)|.*_.*"
         }
       ],
 
-      // Allow empty catch blocks in OS boot layers
+      // // ============================================================
+      // // IMMUTABLE PULSE EVOLUTION
+      // // ============================================================
+      // "no-param-reassign": [
+      //   "error",
+      //   {
+      //     props: true,
+      //     ignorePropertyModificationsFor: [
+      //       "Pulse",
+      //       "OS",
+      //       "req",
+      //       "res",
+      //       "input",
+      //       "intent",
+      //       "target",
+      //       "name"
+      //     ]
+      //   }
+      // ],
+
+      // ============================================================
+      // DETERMINISTIC TIME
+      // ============================================================
+      "no-restricted-properties": [
+        "error",
+        {
+          object: "Date",
+          property: "now",
+          message: "Use admin.firestore.Timestamp.now() for deterministic time."
+        }
+      ],
+
+      // ============================================================
+      // DETERMINISTIC RANDOMNESS
+      // ============================================================
+      "no-restricted-globals": [
+        "error",
+        {
+          name: "Math.random",
+          message: "Use generateToken() — randomness is restricted in Pulse‑OS."
+        }
+      ],
+
+      // ============================================================
+      // NO DIRECT CONSOLE
+      // ============================================================
+      "no-console": [
+        "warn",
+        { allow: ["warn", "error"] }
+      ],
+
+      // ============================================================
+      // EMPTY CATCH ALLOWED IN OS BOOT
+      // ============================================================
       "no-empty": [
         "warn",
         { allowEmptyCatch: true }
       ],
 
-      // Harmless in your architecture
+      // ============================================================
+      // HARMLESS IN YOUR ARCHITECTURE
+      // ============================================================
       "no-useless-assignment": "warn",
       "no-self-assign": "warn",
       "no-useless-escape": "warn",
@@ -60,4 +131,27 @@ export default [
       "no-extra-semi": "warn",
     },
   },
+// ============================================================
+  // IMMUNE ORGANS OVERRIDE — allow Date.now(), Math.random(), timers
+  // ============================================================
+  {
+    files: [
+      "**/PulseProxy*.js",
+      "**/PulseOSLongTermMemory*.js",
+      "**/WBC*.js",
+      "**/*Healer*.js",
+      "**/*Immune*.js",
+      "**/*Membrane*.js",
+      "**/PULSE-WORLD*.js",
+      "**/*ProxySpine*.js",
+      "**/*Vault*.js",
+      "**/*Wallet*.js",
+      "**/*Point*.js",
+      "**/*ProxyBlood*.js"
+    ],
+    rules: {
+      "no-restricted-properties": "off",
+      "no-restricted-globals": "off"
+    }
+  }
 ];

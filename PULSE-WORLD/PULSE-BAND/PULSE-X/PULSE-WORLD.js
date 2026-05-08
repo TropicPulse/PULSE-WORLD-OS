@@ -102,7 +102,7 @@ import { db, admin } from "./PulseWorldGenome-v20.js";
 //  • Single internet edge (via NetworkOrgan → route(...))
 //  • Hybrid crown model: OvermindPrime sees heartbeats + AI requests
 // ============================================================================
-import { aiOvermindPrime } from "./PULSE-WORLD-AI-PRIME.js";
+import { aiOvermindPrime } from "./PULSE-WORLD-ALDWYN.js";
 import { createForwardEngine } from "../PULSE-ENGINE/ForwardMotion-v16.js";
 import { createBackwardEngine } from "../PULSE-ENGINE/BackwardMotion-v16.js";
 import PulseUIErrors from "../../PULSE-UI/_FRONTEND/PulseUIErrors-v20.js";
@@ -625,6 +625,46 @@ function randomNudge(instanceId, now) {
 // ============================================================================
 // LOCAL IMMORTAL LOOP (NO NETLIFY, NO HANDLER)
 // ============================================================================
+async function handleCrownReviveIngress(instanceId, now) {
+  const ingress = getIngress();
+  const brainQueue = ingress.brain || [];
+  if (!brainQueue.length) return;
+
+  const org = getOrganism(instanceId);
+  const last = org.lastHeartbeat || 0;
+  const delta = now - last;
+
+  // consume all brain packets this tick
+  const packets = brainQueue.splice(0, brainQueue.length);
+
+  for (const item of packets) {
+    const packet = item.packet || item;
+    const revive =
+      packet?.crownReviveIntent ||
+      (packet?.payload && packet.payload.crownReviveIntent);
+
+    if (!revive) continue;
+    if (revive.type !== "crown_revival_intent") continue;
+
+    // only hiccup if we’re actually stale
+    if (delta > 30_000) {
+      console.log(
+        "[PULSE-NET]",
+        instanceId,
+        "CROWN‑REVIVE intent received, hiccuping world heartbeat…",
+        { reason: revive.reason, delta }
+      );
+
+      // restart engines softly
+      getForwardEngine(instanceId).prewarm();
+      getBackwardEngine(instanceId).prewarm();
+
+      org.lastHeartbeat = now;
+      org.lastBeatSource = "crown-revive";
+    }
+  }
+}
+
 async function tickFamily(instanceId = "core") {
   const now = Date.now();
   const { last } = getHeartbeatState(instanceId);
@@ -636,8 +676,11 @@ async function tickFamily(instanceId = "core") {
 
   let result = null;
 
-  // 0) Process ingress
+  // 0) Process ingress (normal world traffic)
   await processIngress(instanceId);
+
+  // 0.25) Crown‑revive ingress (brain channel from OvermindPrime)
+  await handleCrownReviveIngress(instanceId, now);
 
   // 0.5) Consume queued signal bursts (advantage)
   if (WORLD_ADVANTAGE_STATE.signalBursts.length > 0) {
@@ -729,6 +772,7 @@ async function tickFamily(instanceId = "core") {
   state.lastTick = now;
   return result;
 }
+
 
 // ============================================================================
 // START LOCAL IMMORTAL LOOP (idempotent per instance)
@@ -1054,3 +1098,59 @@ global.db = db;
 //  has been listening for years?
 //
 // ============================================================================
+// ============================================================================
+// PULSE-WORLD v21 ROOT ORGANISM HEALTH SNAPSHOT
+//  • Pure, deterministic, no network
+//  • To be exposed by HTTP edge as /health
+// ============================================================================
+
+export function pulseWorldHealthSnapshot() {
+  const now = Date.now();
+
+  // Organism + net instances (multi-instance safe)
+  const instances = PulseNetInstances();
+  const organisms = instances.organisms || {};
+  const nets = instances.nets || {};
+
+  const organismList = Object.keys(organisms).map((id) => {
+    const o = organisms[id] || {};
+    return {
+      id,
+      forwardTicks: o.forwardTicks || 0,
+      backwardTicks: o.backwardTicks || 0,
+      lastHeartbeat: o.lastHeartbeat || null,
+      lastAIHeartbeat: o.lastAIHeartbeat || null,
+      lastBeatSource: o.lastBeatSource || "none"
+    };
+  });
+
+  const netList = Object.keys(nets).map((id) => {
+    const n = nets[id] || {};
+    return {
+      id,
+      started: !!n.started,
+      lastTick: n.lastTick || null
+    };
+  });
+
+  const temporalCacheSize =
+    globalThis.__PULSE_NET_TEMPORAL_CACHE__?.size ?? 0;
+
+  return {
+    status: "ok",
+    ts: now,
+    version: "v21-Immortal-RootOrganism",
+    identity: "PulseWorld-v21-RootOrganism",
+    organisms: organismList,
+    nets: netList,
+    worldAdvantage: {
+      impulseQueueSize: WORLD_ADVANTAGE_STATE.impulseQueue.length,
+      signalBurstQueueSize: WORLD_ADVANTAGE_STATE.signalBursts.length,
+      speedBoostActiveUntil: WORLD_ADVANTAGE_STATE.speedBoostUntil || 0
+    },
+    temporalCache: {
+      size: temporalCacheSize,
+      max: 512
+    }
+  };
+}

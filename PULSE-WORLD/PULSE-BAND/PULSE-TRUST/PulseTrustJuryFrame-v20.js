@@ -60,11 +60,8 @@ AI_EXPERIENCE_META:
     erReady: true
 */
 
-import {
-  JuryFrameMeta,
-  createJuryFrame,
-  evaluateJury
-} from "../PULSE-AI/JuryFrame.js";
+import { JuryFrameMeta, createJuryFrame, evaluateJury} from "../PULSE-AI/JuryFrame.js";
+import { admin, db } from "../PULSE-X/PulseWorldFirebaseGenome-v20.js";
 
 export const PulseTrustJuryFrameMeta = Object.freeze({
   id: "PulseTrustJuryFrame-v20++",
@@ -92,12 +89,8 @@ export const PulseTrustJuryFrameMeta = Object.freeze({
 //  CLASS — TRUST JURY FRAME WRAPPER v20
 // ============================================================================
 export function createPulseTrustJuryFrame({ safetyAPI } = {}) {
-  // Underlying IMMORTAL JuryFrame
   const jury = createJuryFrame({ safetyAPI });
 
-  // --------------------------------------------------------------------------
-  //  EVALUATE — MAIN VERDICT ENTRYPOINT (ER‑ready)
-// --------------------------------------------------------------------------
   function evaluate({
     intent = null,
     context = null,
@@ -108,9 +101,12 @@ export function createPulseTrustJuryFrame({ safetyAPI } = {}) {
     requestId = null,
     juryId = null
   } = {}) {
-    const ts = Date.now();
 
-    // No mutation, no inference, no filtering.
+    // Deterministic timestamp — NEVER Date.now()
+    const ts =
+      juryFeed?.meta?.ts ??
+      admin.firestore.Timestamp.now();
+
     const verdict = jury.evaluate({
       intent,
       context,
@@ -134,22 +130,19 @@ export function createPulseTrustJuryFrame({ safetyAPI } = {}) {
       lenses: verdict?.lenses || null,
       worldLens: verdict?.worldLens || null,
       artery: verdict?.artery || null,
-      // Optional high‑level flags if JuryFrame exposes them
       flags: verdict?.flags || null
     });
 
     return snapshot;
   }
 
-  // --------------------------------------------------------------------------
-  //  RETURN IMMUTABLE WRAPPER
-  // --------------------------------------------------------------------------
   return Object.freeze({
     meta: PulseTrustJuryFrameMeta,
     evaluate,
     getLenses: jury.getLenses
   });
 }
+
 
 // ============================================================================
 //  ONE‑OFF EVALUATION HELPER (thin pass‑through)

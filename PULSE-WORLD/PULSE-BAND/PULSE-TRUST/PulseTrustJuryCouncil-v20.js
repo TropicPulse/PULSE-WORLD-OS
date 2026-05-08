@@ -74,7 +74,7 @@ AI_EXPERIENCE_META:
       - "fetchViaCNS"
       - "directCandidateEvaluation"
 */
-
+import { admin, db } from "../PULSE-X/PulseWorldFirebaseGenome-v20.js";
 export const PulseTrustJuryCouncilMeta = Object.freeze({
   id: "PulseTrustJuryCouncil-v20++",
   version: "20.0.0",
@@ -100,14 +100,18 @@ export const PulseTrustJuryCouncilMeta = Object.freeze({
 //  CLASS — META-JURY v20
 // ============================================================================
 export function createJuryCouncil() {
-  // --------------------------------------------------------------------------
-  //  REVIEW JURY HISTORY — CORE META-JURY LOGIC (ER‑ready)
-// --------------------------------------------------------------------------
   function reviewJuryHistory({
     juryDecisions = [],
     councilId = null,
-    ts = Date.now()
+    ts = null
   } = {}) {
+
+    // Deterministic timestamp — NEVER Date.now()
+    const resolvedTs =
+      ts ??
+      juryDecisions[juryDecisions.length - 1]?.ts ??
+      admin.firestore.Timestamp.now();
+
     let failCount = 0;
     let warnCount = 0;
     let aiOriginRiskCount = 0;
@@ -128,18 +132,15 @@ export function createJuryCouncil() {
       const delta = d?.delta || {};
       const patterns = d?.patterns || {};
 
-      // Basic verdict stats
       if (verdict === "fail") failCount++;
       if (verdict === "warn") warnCount++;
 
-      // Creator flag stats
       if (flags.aiOriginRisk) aiOriginRiskCount++;
       if (flags.dominanceRisk) dominanceRiskCount++;
 
       if (flags.lensInstability) lensInstabilityCount++;
       if (flags.environmentStress) environmentStressCount++;
 
-      // RAW vs AI divergence magnitude (mesh/castle/server/expansion/earn/routing/presence/metrics)
       const deltaMagnitude =
         Object.keys(delta.mesh || {}).length +
         Object.keys(delta.castle || {}).length +
@@ -152,14 +153,12 @@ export function createJuryCouncil() {
 
       if (deltaMagnitude >= 10) deltaDivergenceCount++;
 
-      // Anomaly clustering via mismatchCounts
       if (patterns?.mismatchCounts) {
         const totalMismatch = Object.values(patterns.mismatchCounts)
           .reduce((a, b) => a + b, 0);
         if (totalMismatch >= 20) anomalyClusterCount++;
       }
 
-      // Lens failure/dominance patterns
       for (const [lensName, lensData] of Object.entries(lenses)) {
         if (!lensFailureMap[lensName]) lensFailureMap[lensName] = 0;
         if (!lensDominanceMap[lensName]) lensDominanceMap[lensName] = 0;
@@ -169,9 +168,6 @@ export function createJuryCouncil() {
       }
     }
 
-    // ------------------------------------------------------------------------
-    //  SYSTEMIC FLAGS — IMMORTAL TIER
-    // ------------------------------------------------------------------------
     const systemicFlags = {
       highFailRate: failCount >= 5,
       highWarnRate: warnCount >= 10,
@@ -190,14 +186,11 @@ export function createJuryCouncil() {
         lensInstabilityCount >= 10
     };
 
-    // ------------------------------------------------------------------------
-    //  BUILD ER‑READY SNAPSHOT (metadata‑only, RAW_AI)
-// ------------------------------------------------------------------------
     const snapshot = Object.freeze({
       meta: PulseTrustJuryCouncilMeta,
       schema: PulseTrustJuryCouncilMeta.schema,
       councilId,
-      ts,
+      ts: resolvedTs,
       stats: {
         total: juryDecisions.length,
         failCount,
@@ -214,9 +207,6 @@ export function createJuryCouncil() {
       systemicFlags
     });
 
-    // ------------------------------------------------------------------------
-    //  RETURN IMMUTABLE META-JURY SNAPSHOT (ER‑ready)
-// ------------------------------------------------------------------------
     return Object.freeze({
       meta: PulseTrustJuryCouncilMeta,
       snapshot,
@@ -225,13 +215,11 @@ export function createJuryCouncil() {
     });
   }
 
-  // --------------------------------------------------------------------------
-  //  RETURN IMMUTABLE ORGAN
-  // --------------------------------------------------------------------------
   return Object.freeze({
     meta: PulseTrustJuryCouncilMeta,
     reviewJuryHistory
   });
 }
+
 
 export default createJuryCouncil;

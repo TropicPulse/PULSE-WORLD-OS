@@ -4,34 +4,14 @@
 // LAYER: PULSE-WORLD / FINANCIAL-CORE / IMMORTAL-V20
 // ============================================================================
 //
-//  ██████╗ ██╗   ██╗██╗     ███████╗███████╗██╗    ██╗ ██████╗ ██████╗ ██╗     ██████╗
-//  ██╔══██ ██║   ██║██║     ██╔════╝██╔════╝██║    ██║██╔═══██╗██╔══██╗██║     ██╔══██╗
-//  ██████  ██║   ██║██║     ███████╗█████╗  ██║ █╗ ██║██║   ██║██████╔╝██║     ██║  ██║
-//  ██╔══   ██║   ██║██║     ╚════██║██╔══╝  ██║███╗██║██║   ██║██╔══██╗██║     ██║  ██║
-//  ██      ╚██████╔╝███████╗███████║███████╗╚███╔███╔╝╚██████╔╝██║  ██║███████╗██████╔╝
-//  ╚╝       ╚═════╝ ╚══════╝╚═════╝ ╚══════╝ ╚══╝╚══╝  ╚═════╝ ╚═╝  ╚═╝╚══════╝╚═════╝
-
-// ============================================================================
-// PAGE INDEX — SOURCE OF TRUTH FOR THIS FILE
-// ============================================================================
-//
 // WHAT THIS FILE **IS**
 // ----------------------
 // • The **Stripe Organ** for Pulse‑World‑Bank v20
-// • A **singleton Stripe client factory**
+// • A **singleton Stripe client factory** (IMMORTAL, drift‑proof)
 // • A **financial nervous‑system adapter**
 // • A **pure logic module** (NO handlers, NO routing)
-// • A **deterministic, drift‑proof, zero‑state organ**
+// • A **deterministic, zero‑state organ**
 // • The **only place** Stripe is initialized in the entire organism
-//
-// WHAT THIS FILE **IS NOT**
-// -------------------------
-// • Not a Netlify handler
-// • Not a router
-// • Not a webhook processor
-// • Not a payment endpoint
-// • Not a business‑logic module
-// • Not allowed to mutate global state
 //
 // RESPONSIBILITIES
 // ----------------
@@ -42,52 +22,14 @@
 // • Provide metadata for AI‑assisted debugging
 // • Provide a stable organ for all payment‑related modules
 //
-// EXPORTED FUNCTIONS
-// ------------------
-// • getStripe()           — singleton Stripe client
-// • createPaymentIntent() — unified payment engine
-// • handleStripeWebhook() — Stripe CNS processor
-// • determinePayoutCurrency() — currency engine
-// • calculateReleaseDate()    — reserve timing engine
-//
-// INTERNAL LOGIC SUMMARY
-// ----------------------
-// • Loads environment variables from process.env
-// • Validates STRIPE_SECRET_KEY
-// • Creates a single Stripe instance
-// • Caches it in module scope
-// • Returns the same instance for all callers
-//
-// ALLOWED IMPORTS
-// ---------------
-// • stripe (official Stripe SDK)
-// • dotenv/config (optional, for local dev)
-// • NO other imports unless Aldwyn approves
-//
-// FORBIDDEN IMPORTS
-// -----------------
-// • Any Netlify handler
-// • Any Firebase function
-// • Any dynamic import
-// • Any file that creates side effects
-//
-// DEPLOYMENT RULES
-// ----------------
-// • Runs ONLY on backend
-// • Must remain ESM
-// • Must remain side‑effect‑free
-// • Must remain deterministic
-//
 // SAFETY CONSTRAINTS
 // ------------------
 // • Never log Stripe secret keys
 // • Never expose Stripe secret keys
 // • Never create multiple Stripe instances
 // • Never change API version without explicit approval
-//
 // ============================================================================
-// AI EXPERIENCE META — IMMORTAL ORGAN BLOCK
-// ============================================================================
+
 import { admin, db } from "./PulseWorldGenome-v20.js";
 import Stripe from "stripe";
 
@@ -130,67 +72,89 @@ export const AI_EXPERIENCE_META = {
 };
 
 // ============================================================================
-// STRIPE ORGAN IMPLEMENTATION
+// STRIPE SINGLETON — IMMORTAL INITIALIZER
 // ============================================================================
 
-// Singleton instance — one per cold start
 let stripeInstance = null;
 
 /**
- * getStripe()
- * -----------
- * Returns the singleton Stripe client.
+ * initializeStripe(optionalKey)
+ * -----------------------------
+ * Internal initializer that guarantees:
+ *  • Exactly one Stripe instance per cold start.
+ *  • Optional override key (first call wins).
  */
-export function getStripe() {
-  if (!stripeInstance) {
-    const key = process.env.STRIPE_SECRET_KEY;
+function initializeStripe(optionalKey) {
+  if (stripeInstance) return stripeInstance;
 
-    if (!key) {
-      throw new Error(
-        "[PulseWorldBank-v20] STRIPE_SECRET_KEY is not set — Stripe organ cannot initialize"
-      );
-    }
+  const envKey = process.env.STRIPE_SECRET_KEY;
+  const key = optionalKey || envKey;
 
-    stripeInstance = new Stripe(key, {
-      apiVersion: "2023-10-16",
-      appInfo: {
-        name: "PulseWorldBank",
-        version: "v20-Immortal",
-        url: "https://tropicpulse.bz"
-      }
-    });
+  if (!key) {
+    throw new Error(
+      "[PulseWorldBank-v20] STRIPE_SECRET_KEY is not set — Stripe organ cannot initialize"
+    );
   }
+
+  stripeInstance = new Stripe(key, {
+    apiVersion: "2023-10-16",
+    appInfo: {
+      name: "PulseWorldBank",
+      version: "v20-Immortal",
+      url: "https://tropicpulse.bz"
+    }
+  });
 
   return stripeInstance;
 }
 
+/**
+ * getStripe()
+ * -----------
+ * Public accessor for the singleton Stripe client.
+ * External modules should always call this instead of `new Stripe(...)`.
+ */
+export function getStripe() {
+  return initializeStripe();
+}
+
 // ============================================================================
-// PAYMENT ENGINE — UNIFIED PAYMENT INTENT CREATOR
-// ============================================================================
-//
-// createPaymentIntent()
-// ---------------------
-// • mode: "reserve"  → reserve metadata flow
-// • mode: "order"    → 5% application_fee_amount flow
-//
-// Replaces legacy:
-//   • create-reserve-payment.js
-//   • create-order-payment.js
-//
+// LOGGING HELPERS — CONSISTENT, SAFE, PREFIXED
 // ============================================================================
 
-/* global log, error, db */
+function logInfo(...args) {
+  // No secrets, no keys, just tagged info.
+  console.log("[PulseWorldBank]", ...args);
+}
 
-/* ===========================
-   CREATE AND UPDATE STRIPE ACCOUNT IF NEEDED
-=========================== */
+function logWarn(...args) {
+  console.warn("[PulseWorldBank][WARN]", ...args);
+}
+
+function logError(...args) {
+  console.error("[PulseWorldBank][ERROR]", ...args);
+}
+
+// ============================================================================
+// ACCOUNT ENGINE — CREATE / UPDATE CONNECTED ACCOUNTS
+// ============================================================================
+
+/**
+ * checkOrCreateStripeAccount(email, country)
+ * -----------------------------------------
+ * • Normalizes email + country.
+ * • Looks up user in Firestore (NEW SCHEMA).
+ * • Ensures payout schedule (daily/weekly + weekday).
+ * • Updates existing Stripe account OR creates a new one.
+ * • Persists Stripe account ID + payout config back to Firestore.
+ */
 export async function checkOrCreateStripeAccount(email, country) {
-  console.log("🔵 [checkOrCreateStripeAccount] START");
+  logInfo("checkOrCreateStripeAccount: START");
 
-  const stripe = new Stripe(process.env.STRIPE_PASSWORD);
+  const stripe = initializeStripe(); // singleton, no extra instances
 
   // -----------------------------
-  // Helpers
+  // Helpers (pure, reusable)
   // -----------------------------
   const normalizeEmail = (v) =>
     typeof v === "string" ? v.trim().toLowerCase() : null;
@@ -228,12 +192,13 @@ export async function checkOrCreateStripeAccount(email, country) {
     throw new Error("Invalid email passed to checkOrCreateStripeAccount");
   }
 
-  console.log("🔹 Inputs:", { cleanEmail, thecountry });
+  logInfo("checkOrCreateStripeAccount: inputs", { cleanEmail, thecountry });
 
   // -----------------------------
   // 2️⃣ Lookup user (NEW SCHEMA)
   // -----------------------------
-  const snap = await admin.firestore()
+  const snap = await admin
+    .firestore()
     .collection("Users")
     .where("TPIdentity.email", "==", cleanEmail)
     .limit(1)
@@ -252,7 +217,7 @@ export async function checkOrCreateStripeAccount(email, country) {
 
   // -----------------------------
   // 3️⃣ Determine payFrequency (NEW SCHEMA)
-  // -----------------------------
+// -----------------------------
   let payFrequency = cleanLower(userData.TPWallet?.payFrequency, null);
 
   if (!payFrequency) {
@@ -263,7 +228,7 @@ export async function checkOrCreateStripeAccount(email, country) {
 
   const allowedFreq = ["daily", "weekly"];
   if (!allowedFreq.includes(payFrequency)) {
-    console.log("⚠️ Invalid payFrequency, defaulting to daily");
+    logWarn("Invalid payFrequency, defaulting to daily");
     payFrequency = "daily";
   }
 
@@ -276,17 +241,23 @@ export async function checkOrCreateStripeAccount(email, country) {
     payDay = cleanLower(userData.TPWallet?.payDay, "monday");
 
     const allowedDays = [
-      "monday", "tuesday", "wednesday",
-      "thursday", "friday"
+      "monday",
+      "tuesday",
+      "wednesday",
+      "thursday",
+      "friday"
     ];
 
     if (!allowedDays.includes(payDay)) {
-      console.log("⚠️ Invalid payDay, defaulting to monday");
+      logWarn("Invalid payDay, defaulting to monday");
       payDay = "monday";
     }
   }
 
-  console.log("🔹 Final payout settings:", { payFrequency, payDay });
+  logInfo("checkOrCreateStripeAccount: payout settings", {
+    payFrequency,
+    payDay
+  });
 
   // -----------------------------
   // 5️⃣ Build Stripe payout schedule
@@ -295,16 +266,14 @@ export async function checkOrCreateStripeAccount(email, country) {
 
   if (payFrequency === "daily") {
     schedule = { interval: "daily" };
-  }
-
-  if (payFrequency === "weekly") {
+  } else if (payFrequency === "weekly") {
     schedule = {
       interval: "weekly",
       weekly_anchor: payDay
     };
   }
 
-  console.log("🔹 Stripe schedule:", schedule);
+  logInfo("checkOrCreateStripeAccount: Stripe schedule", schedule);
 
   // -----------------------------
   // 6️⃣ Update existing Stripe account
@@ -315,7 +284,7 @@ export async function checkOrCreateStripeAccount(email, country) {
         settings: { payouts: { schedule } }
       });
 
-      console.log("✅ Updated existing Stripe account:", account.id);
+      logInfo("Updated existing Stripe account", { accountId: account.id });
 
       return {
         stripeAccountID: account.id,
@@ -325,7 +294,7 @@ export async function checkOrCreateStripeAccount(email, country) {
         payDay
       };
     } catch (err) {
-      console.error("❌ Stripe update failed:", err.message);
+      logError("Stripe update failed", err.message);
       throw new Error(`Stripe Update Failed: ${err.message}`, { cause: err });
     }
   }
@@ -349,11 +318,9 @@ export async function checkOrCreateStripeAccount(email, country) {
     });
 
     stripeAccountID = account.id;
-
-    console.log("🆕 Created new Stripe account:", stripeAccountID);
-
+    logInfo("Created new Stripe account", { accountId: stripeAccountID });
   } catch (err) {
-    console.error("❌ Stripe account creation error:", err);
+    logError("Stripe account creation error", err);
 
     const search = await stripe.accounts.search({
       query: `email:'${cleanEmail}'`
@@ -367,8 +334,9 @@ export async function checkOrCreateStripeAccount(email, country) {
     }
 
     stripeAccountID = search.data[0].id;
-
-    console.log("🔍 Found existing Stripe account:", stripeAccountID);
+    logInfo("Found existing Stripe account via search", {
+      accountId: stripeAccountID
+    });
   }
 
   // -----------------------------
@@ -391,7 +359,7 @@ export async function checkOrCreateStripeAccount(email, country) {
     { merge: true }
   );
 
-  console.log("💾 Saved Stripe info to Firestore");
+  logInfo("Saved Stripe info to Firestore", { stripeAccountID });
 
   // -----------------------------
   // 9️⃣ Return values
@@ -405,6 +373,10 @@ export async function checkOrCreateStripeAccount(email, country) {
   };
 }
 
+// ============================================================================
+// COUNTRY NORMALIZATION — IMMORTAL HELPER
+// ============================================================================
+
 function normalizeCountry(input) {
   if (!input) return "BZ";
 
@@ -414,10 +386,24 @@ function normalizeCountry(input) {
   if (/^[a-z]{2}$/i.test(cleaned)) return cleaned.toUpperCase();
 
   const alpha3 = {
-    usa: "US", can: "CA", mex: "MX", blz: "BZ", gbr: "GB",
-    jam: "JM", tto: "TT", hnd: "HN", gtm: "GT", slv: "SV",
-    nic: "NI", cri: "CR", pan: "PA", dom: "DO", prt: "PR",
-    brb: "BB", lca: "LC", kna: "KN"
+    usa: "US",
+    can: "CA",
+    mex: "MX",
+    blz: "BZ",
+    gbr: "GB",
+    jam: "JM",
+    tto: "TT",
+    hnd: "HN",
+    gtm: "GT",
+    slv: "SV",
+    nic: "NI",
+    cri: "CR",
+    pan: "PA",
+    dom: "DO",
+    prt: "PR",
+    brb: "BB",
+    lca: "LC",
+    kna: "KN"
   };
   if (alpha3[cleaned]) return alpha3[cleaned];
 
@@ -464,6 +450,11 @@ function normalizeCountry(input) {
 
   return map[cleaned] || "BZ";
 }
+
+// ============================================================================
+// PIXEL HELPER — 1x1 GIF
+// ============================================================================
+
 export function sendPixel(res) {
   const pixel = Buffer.from(
     "R0lGODlhAQABAPAAAAAAAAAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==",
@@ -474,18 +465,27 @@ export function sendPixel(res) {
   res.send(pixel);
 }
 
-export async function findUserStripeBalance(stripeAccountID, stripeSecret) {
-  console.log("🔵 [findUserStripeBalance] START", { stripeAccountID });
+// ============================================================================
+// BALANCE LOOKUP — CONNECTED ACCOUNT BALANCE
+// ============================================================================
 
-  const stripe = new Stripe(stripeSecret);
+/**
+ * findUserStripeBalance(stripeAccountID, stripeSecret?)
+ * ----------------------------------------------------
+ * • Reads balance for a connected account.
+ * • Uses the singleton Stripe client.
+ * • Optional `stripeSecret` can seed the singleton on first call.
+ */
+export async function findUserStripeBalance(stripeAccountID, stripeSecret) {
+  logInfo("findUserStripeBalance: START", { stripeAccountID });
+
+  const stripe = initializeStripe(stripeSecret);
 
   try {
     const balance = await stripe.balance.retrieve({
       stripeAccount: stripeAccountID
     });
 
-    // Stripe returns arrays like:
-    // balance.available = [{ amount: 1234, currency: "usd" }]
     const available = balance?.available?.[0]?.amount ?? 0;
     const pending = balance?.pending?.[0]?.amount ?? 0;
 
@@ -499,11 +499,10 @@ export async function findUserStripeBalance(stripeAccountID, stripeSecret) {
       availableBalance: toBZD(available)
     };
 
-    console.log("🟢 [findUserStripeBalance] RESULT", result);
+    logInfo("findUserStripeBalance: RESULT", result);
     return result;
-
   } catch (err) {
-    console.error("❌ [findUserStripeBalance] ERROR:", {
+    logError("findUserStripeBalance: ERROR", {
       message: err.message,
       type: err.type,
       code: err.code
@@ -516,6 +515,20 @@ export async function findUserStripeBalance(stripeAccountID, stripeSecret) {
   }
 }
 
+// ============================================================================
+// PAYMENT ENGINE — UNIFIED PAYMENT INTENT CREATOR
+// ============================================================================
+
+/**
+ * createPaymentIntent(options)
+ * ----------------------------
+ * • mode: "reserve"  → reserve metadata flow
+ * • mode: "order"    → 5% application_fee_amount flow
+ *
+ * Replaces legacy:
+ *   • create-reserve-payment.js
+ *   • create-order-payment.js
+ */
 export async function createPaymentIntent({
   mode,               // "reserve" or "order"
   amount,
@@ -528,16 +541,14 @@ export async function createPaymentIntent({
   description = "",
   metadata = {}
 }) {
-  log?.("🔵 [createPaymentIntent] START");
+  logInfo("createPaymentIntent: START", { mode, vendorId });
 
   const stripe = getStripe();
 
-  // Validate mode
   if (!mode || !["reserve", "order"].includes(mode)) {
     throw new Error("Invalid mode. Must be 'reserve' or 'order'.");
   }
 
-  // Normalize amount
   const normalizeAmount = (v) => {
     if (v == null) return 0;
     const decoded = decodeURIComponent(String(v));
@@ -652,16 +663,14 @@ export async function createPaymentIntent({
 // ============================================================================
 // WEBHOOK CNS — PURE STRIPE EVENT PROCESSOR
 // ============================================================================
-//
-// handleStripeWebhook()
-// ---------------------
-// • Accepts a VERIFIED Stripe event object
-// • No HTTP, no Netlify, no rawBody
-//
-// ============================================================================
 
-/* global warn */
-
+/**
+ * handleStripeWebhook(eventObj)
+ * -----------------------------
+ * • Accepts a VERIFIED Stripe event object.
+ * • No HTTP, no Netlify, no rawBody.
+ * • Updates Firestore for onboarding, reserves, and mass email credits.
+ */
 export async function handleStripeWebhook(eventObj) {
   const stripe = getStripe();
 
@@ -743,7 +752,7 @@ export async function handleStripeWebhook(eventObj) {
           }
         });
 
-        log?.(`[StripeWebhook] Vendor updated: ${email} → weekly payouts`);
+        logInfo("[StripeWebhook] Vendor updated to weekly payouts", { email });
       }
     }
   }
@@ -793,11 +802,12 @@ export async function handleStripeWebhook(eventObj) {
         createdAt: admin.firestore.FieldValue.serverTimestamp()
       });
 
-      log?.(
-        `[StripeWebhook] Reserve added: Vendor ${vendorId} +${reserveAmount} cents`
-      );
+      logInfo("[StripeWebhook] Reserve added", {
+        vendorId,
+        reserveAmount
+      });
     } else {
-      warn?.(
+      logWarn(
         "[StripeWebhook] payment_intent.succeeded missing vendorId or reserveAmount"
       );
     }
@@ -860,9 +870,11 @@ export async function handleStripeWebhook(eventObj) {
       createdAt: admin.firestore.FieldValue.serverTimestamp()
     });
 
-    log?.(
-      `[StripeWebhook] Added ${quantity} credits to user ${userID} for event ${eventID}`
-    );
+    logInfo("[StripeWebhook] Mass email credits added", {
+      userID,
+      quantity,
+      eventID
+    });
   }
 
   return { success: true };
@@ -872,8 +884,18 @@ export async function handleStripeWebhook(eventObj) {
 // CURRENCY ENGINE — IMMORTAL v20
 // ============================================================================
 
-export async function determinePayoutCurrency(stripe, stripeAccountID, payoutAmountCents) {
-  log?.("🔵 [determinePayoutCurrency] START");
+/**
+ * determinePayoutCurrency(stripe, stripeAccountID, payoutAmountCents)
+ * ------------------------------------------------------------------
+ * • Chooses best transfer currency (BZD if supported, else USD, else default).
+ * • Returns both transfer + display amounts.
+ */
+export async function determinePayoutCurrency(
+  stripe,
+  stripeAccountID,
+  payoutAmountCents
+) {
+  logInfo("determinePayoutCurrency: START", { stripeAccountID });
 
   const payoutAmountUSD = payoutAmountCents / 100;
 
@@ -881,7 +903,7 @@ export async function determinePayoutCurrency(stripe, stripeAccountID, payoutAmo
   try {
     account = await stripe.accounts.retrieve(stripeAccountID);
   } catch (err) {
-    error?.("❌ Stripe account retrieval failed:", err.message);
+    logError("Stripe account retrieval failed", err.message);
     return {
       accountCurrency: "usd",
       transferCurrency: "usd",
@@ -915,13 +937,11 @@ export async function determinePayoutCurrency(stripe, stripeAccountID, payoutAmo
     transferAmount = Math.round(bzdDollars * 100);
     displayCurrency = "BZ$";
     displayAmount = bzdDollars;
-
   } else if (supportsUSD) {
     transferCurrency = "usd";
     transferAmount = payoutAmountCents;
     displayCurrency = "$";
     displayAmount = payoutAmountUSD;
-
   } else {
     transferCurrency = defaultCurrency;
     transferAmount = payoutAmountCents;
@@ -938,9 +958,11 @@ export async function determinePayoutCurrency(stripe, stripeAccountID, payoutAmo
   };
 }
 
-/* ------------------------------------------------------
-   Calculate reserve release date (3-day default)
------------------------------------------------------- */
+/**
+ * calculateReleaseDate(deliveredAt, delayDays = 3)
+ * -----------------------------------------------
+ * • Adds `delayDays` to a base date and returns ISO string.
+ */
 export function calculateReleaseDate(deliveredAt, delayDays = 3) {
   const base = deliveredAt instanceof Date ? deliveredAt : new Date(deliveredAt);
   const result = new Date(base);
@@ -954,3 +976,4 @@ export function calculateReleaseDate(deliveredAt, delayDays = 3) {
 //
 // (keep your existing Stripe master notes here if you want)
 // ============================================================================
+

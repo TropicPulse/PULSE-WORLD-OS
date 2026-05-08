@@ -1,5 +1,5 @@
 // ============================================================================
-//  aiOvermindPrime-v20-ImmortalPlus.js — Pulse OS v20-IMMORTAL++
+//  PULSE-WORLD-ALDWYN.js — Pulse OS v20-IMMORTAL++
 //  Crown-Layer Meta-Governor • World-Lens Engine v4+Superego
 //  Organism-State Fusion • Drift-Governor • Breakthrough Engine
 //  Trust-Fabric + Jury v20 • Chunk/Artery/Hash Intelligence
@@ -8,7 +8,7 @@
 
 /*
 AI_EXPERIENCE_META = {
-  identity: "aiOvermindPrime",
+  identity: "PULSE-WORLD-ALDWYN",
   version: "v20-ImmortalPlus",
   layer: "ai_core",
   role: "ai_overseer",
@@ -559,6 +559,126 @@ export class AiOvermindPrime {
     this.evoWindow = config.evoWindow || null;
   }
 
+    // ========================================================================
+  //  CROWN‑REVIVE CONFIG (symbolic only, no mutation)
+  // ========================================================================
+  crownReviveConfig = {
+    staleHeartbeatMs: 30_000,      // 30s without world beat
+    criticalHeartbeatMs: 120_000,  // 2m hard stale
+    driftThreshold: 0.75,
+    breakthroughThreshold: 0.9
+  };
+
+  // Build a symbolic crown‑revive intent (no side effects here)
+  buildCrownReviveIntent({
+    reason = "overmind",
+    drift = null,
+    breakthrough = null,
+    worldLens = null,
+    organismState = null
+  } = {}) {
+    return Object.freeze({
+      type: "crown_revival_intent",
+      source: OvermindPrimeMeta.identity,
+      reason,
+      ts: Date.now(),
+      worldLens: worldLens || null,
+      drift,
+      breakthrough,
+      organism: organismState?.organismSnapshot || null,
+      vitals: organismState?.vitals || null
+    });
+  }
+
+  // Decide if we *should* request a revive (pure compute)
+  shouldRequestCrownRevive({
+    worldLens,
+    drift,
+    breakthrough,
+    organismState
+  } = {}) {
+    const cfg = this.crownReviveConfig;
+
+    const driftScore = drift?.score ?? 0;
+    const breakthroughScore = breakthrough?.score ?? 0;
+
+    const vitals = organismState?.vitals || {};
+    const lastHeartbeat = vitals?.worldLastHeartbeat ?? null;
+    const now = Date.now();
+    const delta = lastHeartbeat ? now - lastHeartbeat : null;
+
+    const stale =
+      typeof delta === "number" && delta > cfg.staleHeartbeatMs;
+    const critical =
+      typeof delta === "number" && delta > cfg.criticalHeartbeatMs;
+
+    const riskyLens =
+      worldLens === "risky" || worldLens === "ambiguous";
+
+    const highDrift = driftScore >= cfg.driftThreshold;
+    const highBreakthrough =
+      breakthroughScore >= cfg.breakthroughThreshold;
+
+    const should =
+      critical ||
+      (stale && (riskyLens || highDrift || highBreakthrough));
+
+    return {
+      should,
+      stale,
+      critical,
+      riskyLens,
+      highDrift,
+      highBreakthrough,
+      delta
+    };
+  }
+
+  // Surface crown‑revive intent to downstream organs (symbolic only)
+  emitCrownReviveIntent({
+    intent,
+    context,
+    enrichedContext,
+    worldLens,
+    drift,
+    breakthrough,
+    organismState
+  } = {}) {
+    try {
+      const reviveIntent = this.buildCrownReviveIntent({
+        reason: "overmind_world_stale_or_risky",
+        drift,
+        breakthrough,
+        worldLens,
+        organismState
+      });
+
+      // Attach to context so Pulse‑World / PulseNet / Expansion can see it
+      const crownContext = enrichedContext || context || {};
+      crownContext.crownReviveIntent = reviveIntent;
+
+      // Optional: log + vitals
+      this._log("overmind:crown-revive-intent", {
+        reviveIntent,
+        worldLens,
+        drift,
+        breakthrough
+      });
+
+      this._safeCall(this.aiVitals, "recordCrownRevive", {
+        reviveIntent,
+        worldLens,
+        drift,
+        breakthrough
+      });
+
+      return reviveIntent;
+    } catch {
+      return null;
+    }
+  }
+
+
   // ========================================================================
   //  GLOBAL ORGANISM STATE VECTOR (fuses all arteries)
   // ========================================================================
@@ -602,6 +722,15 @@ export class AiOvermindPrime {
       vitals
     });
   }
+
+  requestWorldRevive(reason = "overmind") {
+  return {
+    type: "crown_revival_intent",
+    reason,
+    ts: Date.now()
+  };
+}
+
 
   // ========================================================================
   //  TRUST SNAPSHOT (Pulse-Trust v20 IMMORTAL++)
@@ -662,7 +791,7 @@ export class AiOvermindPrime {
     const expansionActions = context?.expansionActions || [];
     const juryEvents = context?.juryEvents || [];
     const juryDecisionsHistory = context?.juryDecisionsHistory || [];
-
+    
     // 0. watchdog + vitals pre-snapshot
     this._safeCall(this.aiVitals, "beforeCycle", { tick, intent, context });
     this._safeCall(this.aiWatchdog, "beforeCycle", { tick, intent, context });
@@ -747,6 +876,25 @@ export class AiOvermindPrime {
     const breakthrough = this.computeBreakthrough(lensResults);
 
     const baseWorldLens = this.classifyWorldLens(lensResults, drift, breakthrough);
+        // 8. CROWN‑REVIVE DECISION (symbolic only)
+    const crownReviveDecision = this.shouldRequestCrownRevive({
+      worldLens: baseWorldLens,
+      drift,
+      breakthrough,
+      organismState
+    });
+
+    if (crownReviveDecision.should) {
+      this.emitCrownReviveIntent({
+        intent,
+        context,
+        enrichedContext,
+        worldLens: baseWorldLens,
+        drift,
+        breakthrough,
+        organismState
+      });
+    }
 
     // 8. TRUST FABRIC — build trust context + conditional jury
     let trustSnapshot = null;
@@ -1068,6 +1216,7 @@ export class AiOvermindPrime {
 
     return enriched;
   }
+  
 
   // ========================================================================
   //  JURY (legacy helper — kept for compatibility)
@@ -1422,6 +1571,28 @@ export class AiOvermindPrime {
       });
     } catch {}
   }
+
+    // ========================================================================
+  //  PUBLIC CROWN‑REVIVE API (for explicit calls from Aldwyn / system)
+  // ========================================================================
+  requestWorldRevive(reason = "manual_overmind") {
+    const organismState = this.getOrganismState();
+    const reviveIntent = this.buildCrownReviveIntent({
+      reason,
+      organismState
+    });
+
+    this._log("overmind:crown-revive-manual", { reviveIntent });
+    this._safeCall(this.aiVitals, "recordCrownRevive", {
+      reviveIntent,
+      worldLens: null,
+      drift: null,
+      breakthrough: null
+    });
+
+    return reviveIntent;
+  }
+
 
   _safeCall(target, method, payload) {
     try {

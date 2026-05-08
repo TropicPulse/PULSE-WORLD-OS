@@ -130,9 +130,8 @@ function normalizeLevel(level) {
   if (v === "warning") return "warn";
   return "info";
 }
-
-function nowMillis() {
-  return Date.now();
+export function nowMillis(admin) {
+  return admin.firestore.Timestamp.now().toMillis();
 }
 
 function buildLogEnvelope(input = {}) {

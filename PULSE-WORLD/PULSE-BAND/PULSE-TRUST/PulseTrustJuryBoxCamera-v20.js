@@ -73,7 +73,7 @@ AI_EXPERIENCE_META:
       - "contentMutation"
       - "AIWriteAccess"
 */
-
+import { admin, db } from "../PULSE-X/PulseWorldFirebaseGenome-v20.js";
 export const PulseTrustJuryBoxCameraMeta = Object.freeze({
   id: "PulseTrustJuryBoxCamera-v20++",
   version: "20.0.0",
@@ -99,20 +99,21 @@ export const PulseTrustJuryBoxCameraMeta = Object.freeze({
 //  CLASS — RAW BLACK BOX RECORDER v20
 // ============================================================================
 export function createJuryBoxCamera() {
-  // --------------------------------------------------------------------------
-  //  analyzeSession — RAW → patterns + anomalies + ER‑ready snapshot
-  // --------------------------------------------------------------------------
   function analyzeSession({
     sessionId = null,
-    ts = Date.now(),
-    events = [],     // RAW events: [{ type, actor, ts, aiOrigin, ... }]
-    verdicts = []    // RAW verdicts: [{ decisionId, verdict, creatorFlags, ts }]
+    ts = null,
+    events = [],
+    verdicts = []
   } = {}) {
-    // RAW → immutable
+
+    // Deterministic timestamp — NEVER Date.now()
+    const resolvedTs =
+      ts ??
+      admin.firestore.Timestamp.now();
+
     const rawEvents = Object.freeze([...events]);
     const rawVerdicts = Object.freeze([...verdicts]);
 
-    // Pattern accumulators
     const patterns = {
       dominantUser: null,
       dominantUserDecisionCount: 0,
@@ -122,30 +123,22 @@ export function createJuryBoxCamera() {
     };
 
     const anomalies = [];
-
-    // Internal counters
     const decisionByUser = new Map();
     let aiEchoCount = 0;
 
-    // ------------------------------------------------------------------------
-    //  PASS 1 — RAW event analysis
-    // ------------------------------------------------------------------------
+    // PASS 1 — RAW event analysis
     for (const e of rawEvents) {
-      // Count decisions per actor
       if (e.type === "decision" && e.actor) {
         const prev = decisionByUser.get(e.actor) || 0;
         decisionByUser.set(e.actor, prev + 1);
       }
 
-      // Count AI-origin echoes
       if (e.aiOrigin === true) {
         aiEchoCount++;
       }
     }
 
-    // ------------------------------------------------------------------------
-    //  PASS 2 — Dominance detection
-    // ------------------------------------------------------------------------
+    // PASS 2 — Dominance detection
     let dominantUser = null;
     let dominantCount = 0;
 
@@ -171,15 +164,12 @@ export function createJuryBoxCamera() {
       });
     }
 
-    // ------------------------------------------------------------------------
-    //  PASS 3 — Timing irregularities (burst decisions, unnatural spacing)
-    // ------------------------------------------------------------------------
+    // PASS 3 — Timing irregularities
     const sorted = [...rawEvents].sort((a, b) => a.ts - b.ts);
 
     for (let i = 1; i < sorted.length; i++) {
       const dt = sorted[i].ts - sorted[i - 1].ts;
       if (dt < 5) {
-        // <5ms = suspicious burst
         patterns.timingIrregularities++;
       }
     }
@@ -193,9 +183,7 @@ export function createJuryBoxCamera() {
       });
     }
 
-    // ------------------------------------------------------------------------
-    //  PASS 4 — AI echo anomaly
-    // ------------------------------------------------------------------------
+    // PASS 4 — AI echo anomaly
     if (aiEchoCount >= 5) {
       anomalies.push({
         type: "aiEchoCluster",
@@ -205,43 +193,35 @@ export function createJuryBoxCamera() {
       });
     }
 
-    // ------------------------------------------------------------------------
-    //  BUILD ER‑READY SNAPSHOT (metadata‑only, RAW_AI category)
-// ------------------------------------------------------------------------
+    // ER‑ready snapshot
     const snapshot = Object.freeze({
       meta: PulseTrustJuryBoxCameraMeta,
       sessionId,
-      ts,
+      ts: resolvedTs,
       schema: PulseTrustJuryBoxCameraMeta.schema,
       patterns: Object.freeze({ ...patterns }),
       anomalies: Object.freeze([...anomalies]),
-      // RAW references are kept separate so ER can store them as RAW if desired
       rawRef: {
         eventsCount: rawEvents.length,
         verdictsCount: rawVerdicts.length
       }
     });
 
-    // ------------------------------------------------------------------------
-    //  RETURN IMMUTABLE CAMERA SNAPSHOT + RAW
-    // ------------------------------------------------------------------------
     return Object.freeze({
       meta: PulseTrustJuryBoxCameraMeta,
-      snapshot,          // ER‑ready, RAW_AI
+      snapshot,
       patterns: snapshot.patterns,
       anomalies: snapshot.anomalies,
-      rawEvents,         // RAW
-      rawVerdicts        // RAW
+      rawEvents,
+      rawVerdicts
     });
   }
 
-  // --------------------------------------------------------------------------
-  //  RETURN IMMUTABLE ORGAN
-  // --------------------------------------------------------------------------
   return Object.freeze({
     meta: PulseTrustJuryBoxCameraMeta,
     analyzeSession
   });
 }
+
 
 export default createJuryBoxCamera;

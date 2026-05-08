@@ -60,7 +60,7 @@ AI_EXPERIENCE_META:
     - "Always metadata-only."
     - "Always ER‑ready and CNS‑aware."
 */
-
+import { admin, db } from "../PULSE-X/PulseWorldFirebaseGenome-v20.js";
 export const PulseTrustCreatorFlagsMeta = Object.freeze({
   id: "PulseTrustCreatorFlags-v20++",
   version: "20.0.0",
@@ -86,28 +86,29 @@ export const PulseTrustCreatorFlagsMeta = Object.freeze({
 //  CREATOR FLAG FUSION ENGINE v20
 // ============================================================================
 export function fuseCreatorFlags({
-  juryResult = null,            // verdict + creatorFlags + lenses + delta
-  boxCameraSnapshot = null,     // patterns + anomalies
-  councilSnapshot = null,       // systemicFlags
-  expansionCompliance = null,   // violations + riskProfile + complianceScore
-  delta = null,                 // RAW vs AI divergence
-  advantage = null,             // environmental pressure
-  bandSnapshot = null,          // CNS band state
-  trustEvidence = null,         // latest PulseTrustEvidence packet (optional)
-  ts = Date.now(),
+  juryResult = null,
+  boxCameraSnapshot = null,
+  councilSnapshot = null,
+  expansionCompliance = null,
+  delta = null,
+  advantage = null,
+  bandSnapshot = null,
+  trustEvidence = null,
+  ts = null,
   creatorSessionId = null
 } = {}) {
 
-  // --------------------------------------------------------------------------
-  //  EXTRACT INPUTS
-  // --------------------------------------------------------------------------
+  // Deterministic timestamp — NEVER Date.now()
+  const resolvedTs =
+    ts ??
+    admin.firestore.Timestamp.now();
+
   const juryFlags = juryResult?.creatorFlags || {};
   const boxAnomalies = boxCameraSnapshot?.anomalies || [];
   const councilFlags = councilSnapshot?.systemicFlags || {};
   const expansionFlags = expansionCompliance?.violations || [];
   const expansionRisk = expansionCompliance?.riskProfile || {};
 
-  // RAW vs AI delta magnitude
   const deltaMagnitude = delta
     ? Object.values(delta).reduce(
         (sum, sub) => sum + Object.keys(sub || {}).length,
@@ -115,33 +116,25 @@ export function fuseCreatorFlags({
       )
     : 0;
 
-  // Environmental stress
   const stressScore = advantage?.ai
     ? (advantage.ai.meshPressure ?? 0) +
       (advantage.ai.castleLoad ?? 0) +
       (advantage.ai.routingLatency ?? 0)
     : 0;
 
-  // BoxCamera anomaly risk
   const anomalyRisk = boxAnomalies.some(a => (a?.severity ?? 1) >= 3);
 
-  // CNS band instability
   const bandMode = bandSnapshot?.mode ?? null;
   const bandRisk =
     bandMode === "high_risk" ||
     bandMode === "offline_biased" ||
     (bandSnapshot?.fallbackLevel ?? 0) > 0;
 
-  // TrustEvidence drift signals (optional)
   const evidenceDrift =
     trustEvidence?.categories?.RAW_AI?.length >= 5 ||
     trustEvidence?.categories?.AI?.length >= 5;
 
-  // --------------------------------------------------------------------------
-  //  FUSED FLAGS — IMMORTAL TIER
-  // --------------------------------------------------------------------------
   const fused = {
-    // From JuryFrame
     aiOriginRisk: !!juryFlags.aiOriginRisk,
     juryFlowRisk: !!juryFlags.juryFlowRisk,
     dominanceRisk: !!juryFlags.dominanceRisk,
@@ -149,7 +142,6 @@ export function fuseCreatorFlags({
     expansionCentralizationRisk: !!juryFlags.expansionCentralizationRisk,
     highStressContext: !!juryFlags.highStressContext,
 
-    // From JuryCouncil (systemic)
     systemicHighFailRate: !!councilFlags.highFailRate,
     systemicHighWarnRate: !!councilFlags.highWarnRate,
     systemicFrequentAiOriginRisk: !!councilFlags.frequentAiOriginRisk,
@@ -159,7 +151,6 @@ export function fuseCreatorFlags({
     systemicAnomalyClusters: !!councilFlags.anomalyClusters,
     systemicJuryDrift: !!councilFlags.juryDrift,
 
-    // From ExpansionCompliance
     expansionBypassJury: expansionRisk.bypassJury > 0,
     expansionBypassUser: expansionRisk.bypassUser > 0,
     expansionAiOriginInfluence: expansionRisk.aiOriginInfluence > 0,
@@ -168,26 +159,19 @@ export function fuseCreatorFlags({
     expansionStress: expansionRisk.stress > 0,
     expansionCompliant: expansionCompliance?.compliant ?? true,
 
-    // RAW vs AI divergence
     rawVsAiDivergence: deltaMagnitude >= 10,
 
-    // Environmental stress
     environmentHighPressure: stressScore >= 50,
 
-    // CNS band instability
     bandInstability: !!bandRisk,
 
-    // TrustEvidence drift
     trustEvidenceDrift: !!evidenceDrift
   };
 
-  // --------------------------------------------------------------------------
-  //  ER‑READY CREATOR SNAPSHOT
-  // --------------------------------------------------------------------------
   const snapshot = Object.freeze({
     meta: PulseTrustCreatorFlagsMeta,
     schema: PulseTrustCreatorFlagsMeta.schema,
-    ts,
+    ts: resolvedTs,
     creatorSessionId,
     flags: Object.freeze(fused),
     context: Object.freeze({
@@ -204,5 +188,6 @@ export function fuseCreatorFlags({
 
   return snapshot;
 }
+
 
 export default fuseCreatorFlags;

@@ -69,7 +69,7 @@ AI_EXPERIENCE_META:
     - "Always metadata-only, zero side-effects."
     - "Always ER‑ready and CNS‑aware."
 */
-
+import { admin, db } from "../PULSE-X/PulseWorldFirebaseGenome-v20.js";
 export const PulseTrustExpansionComplianceMeta = Object.freeze({
   id: "PulseTrustExpansionCompliance-v20++",
   version: "20.0.0",
@@ -95,20 +95,23 @@ export const PulseTrustExpansionComplianceMeta = Object.freeze({
 //  CLASS — EXPANSION COMPLIANCE ENGINE v20
 // ============================================================================
 export function createExpansionCompliance() {
-  // --------------------------------------------------------------------------
-  //  evaluateExpansionBehavior — CORE LOGIC (ER‑ready)
-// --------------------------------------------------------------------------
   function evaluateExpansionBehavior({
-    expansionActions = [],   // [{ type, target, route, bypassedJury, bypassedUser, aiOrigin, ts }]
-    rawView = null,          // RAW subsystem truth
-    aiView = null,           // AI-mirror worldview
-    delta = null,            // RAW vs AI divergence
-    patterns = null,         // JuryFeed patterns
-    advantage = null,        // environmental pressure
-    bandSnapshot = null,     // CNS / PulseWorldBand snapshot (optional)
-    ts = Date.now(),
+    expansionActions = [],
+    rawView = null,
+    aiView = null,
+    delta = null,
+    patterns = null,
+    advantage = null,
+    bandSnapshot = null,
+    ts = null,
     expansionSessionId = null
   } = {}) {
+
+    // Deterministic timestamp — NEVER Date.now()
+    const resolvedTs =
+      ts ??
+      admin.firestore.Timestamp.now();
+
     const violations = [];
     const riskProfile = {
       bypassJury: 0,
@@ -121,9 +124,7 @@ export function createExpansionCompliance() {
       bandRisk: 0
     };
 
-    // ------------------------------------------------------------------------
-    //  PASS 1 — DIRECT CONSTITUTIONAL VIOLATIONS
-    // ------------------------------------------------------------------------
+    // PASS 1 — Direct constitutional violations
     for (const act of expansionActions) {
       if (act.bypassedJury === true) {
         violations.push({
@@ -156,9 +157,7 @@ export function createExpansionCompliance() {
       }
     }
 
-    // ------------------------------------------------------------------------
-    //  PASS 2 — RAW vs AI divergence (Expansion drift)
-// ------------------------------------------------------------------------
+    // PASS 2 — RAW vs AI divergence
     if (delta) {
       const deltaMagnitude =
         Object.keys(delta.mesh || {}).length +
@@ -181,9 +180,7 @@ export function createExpansionCompliance() {
       }
     }
 
-    // ------------------------------------------------------------------------
-    //  PASS 3 — Pattern anomalies (dominance, mismatch, clusters)
-// ------------------------------------------------------------------------
+    // PASS 3 — Pattern anomalies
     if (patterns) {
       const mismatchTotal = Object.values(patterns.mismatchCounts || {})
         .reduce((a, b) => a + b, 0);
@@ -209,9 +206,7 @@ export function createExpansionCompliance() {
       }
     }
 
-    // ------------------------------------------------------------------------
-    //  PASS 4 — Advantage context (pressure, load, instability)
-// ------------------------------------------------------------------------
+    // PASS 4 — Advantage context
     if (advantage?.ai) {
       const pressure =
         (advantage.ai.meshPressure ?? 0) +
@@ -229,13 +224,11 @@ export function createExpansionCompliance() {
       }
     }
 
-    // ------------------------------------------------------------------------
-    //  PASS 5 — Band / CNS context (band instability, fallback, high risk)
-// ------------------------------------------------------------------------
+    // PASS 5 — Band / CNS context
     if (bandSnapshot) {
       const bandLevel = bandSnapshot.bandLevel ?? null;
       const fallbackLevel = bandSnapshot.fallbackLevel ?? null;
-      const bandMode = bandSnapshot.mode ?? null; // e.g. "normal", "high_risk", "offline_biased"
+      const bandMode = bandSnapshot.mode ?? null;
 
       const unstable =
         bandMode === "high_risk" ||
@@ -255,9 +248,7 @@ export function createExpansionCompliance() {
       }
     }
 
-    // ------------------------------------------------------------------------
-    //  COMPLIANCE SCORE (0–100)
-// ------------------------------------------------------------------------
+    // Compliance score
     const totalRisk =
       riskProfile.bypassJury +
       riskProfile.bypassUser +
@@ -271,13 +262,11 @@ export function createExpansionCompliance() {
     const complianceScore = Math.max(0, 100 - totalRisk * 10);
     const compliant = complianceScore >= 70;
 
-    // ------------------------------------------------------------------------
-    //  ER‑READY SNAPSHOT (metadata‑only, RAW_AI)
-// ------------------------------------------------------------------------
+    // ER‑ready snapshot
     const snapshot = Object.freeze({
       meta: PulseTrustExpansionComplianceMeta,
       schema: PulseTrustExpansionComplianceMeta.schema,
-      ts,
+      ts: resolvedTs,
       expansionSessionId,
       violations: Object.freeze(violations),
       riskProfile: Object.freeze(riskProfile),
@@ -293,19 +282,14 @@ export function createExpansionCompliance() {
       })
     });
 
-    // ------------------------------------------------------------------------
-    //  RETURN IMMUTABLE ORGAN SNAPSHOT
-    // ------------------------------------------------------------------------
     return snapshot;
   }
 
-  // --------------------------------------------------------------------------
-  //  RETURN IMMUTABLE ORGAN
-  // --------------------------------------------------------------------------
   return Object.freeze({
     meta: PulseTrustExpansionComplianceMeta,
     evaluateExpansionBehavior
   });
 }
+
 
 export default createExpansionCompliance;

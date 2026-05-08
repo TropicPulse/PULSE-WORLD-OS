@@ -1139,11 +1139,371 @@ export const verifyPin = onRequest(
       try {
         const emailPassword = process.env.EMAIL_PASSWORD;
         const messagingSid = process.env.MESSAGING_SERVICE_SID;
+        const { email, pin, purpose = "login", uid } = req.body || {};
 
-        // ... your existing verifyPin logic continues unchanged ...
+        if (req.method !== "POST") {
+          return res.status(405).json({ success: false, error: "Method not allowed" });
+        }
 
+        if (!pin || typeof pin !== "string" || pin.length !== 6) {
+          return res.status(400).json({ success: false, error: "Invalid PIN" });
+        }
+
+        let userID = null;
+        let userData = null;
+        const normalizedEmail = (email || "").trim().toLowerCase();
+
+        // ---------------------------------------------------------
+        // 1. PRIMARY LOOKUP: NEW SCHEMA (email + PIN)
+        // ---------------------------------------------------------
+        let userSnap = await db
+          .collection("Users")
+          .where("TPIdentity.email", "==", normalizedEmail)
+          .where("TPSecurity.pin.value", "==", pin)
+          .limit(1)
+          .get();
+
+        if (!userSnap.empty) {
+          const doc = userSnap.docs[0];
+          userID = doc.id;
+          userData = doc.data() || {};
+        }
+
+        // ---------------------------------------------------------
+        // 2. LOGIN FLOW (fallback legacy email lookup)
+        // ---------------------------------------------------------
+        if (!userID && purpose === "login") {
+          if (!email || typeof email !== "string" || !email.includes("@")) {
+            return res.status(400).json({ success: false, error: "Invalid email" });
+          }
+
+          // New schema (email + PIN)
+          userSnap = await db
+            .collection("Users")
+            .where("TPIdentity.email", "==", normalizedEmail)
+            .where("TPSecurity.pin.value", "==", pin)
+            .limit(1)
+            .get();
+
+          // Legacy schema (email only)
+          if (userSnap.empty) {
+            userSnap = await db
+              .collection("Users")
+              .where("UserEmail", "==", normalizedEmail)
+              .limit(1)
+              .get();
+          }
+
+          if (userSnap.empty) {
+            return res.status(404).json({ success: false, error: "No account found." });
+          }
+
+          const doc = userSnap.docs[0];
+          userID = doc.id;
+          userData = doc.data() || {};
+        }
+
+        // ---------------------------------------------------------
+        // 3. EMAIL CHANGE FLOW
+        // ---------------------------------------------------------
+        if (!userID && purpose === "emailChange") {
+          if (!uid) {
+            return res.status(400).json({ success: false, error: "Missing uid for email change." });
+          }
+
+          const currentUser = await db.collection("Users").doc(uid).get();
+          if (!currentUser.exists) {
+            return res.status(404).json({ success: false, error: "User not found." });
+          }
+
+          userID = uid;
+          userData = currentUser.data() || {};
+        }
+
+        if (!userID || !userData) {
+          return res.status(500).json({ success: false, error: "User load error" });
+        }
+
+        // ---------------------------------------------------------
+        // 4. LOAD PIN FROM TPSecurity MAP
+        // ---------------------------------------------------------
+        const pinRef = db.collection("Users").doc(userID);
+        const pinSnap = await pinRef.get();
+        const raw = pinSnap.data() || {};
+        const pinData = raw.TPSecurity?.pin || null;
+
+        if (!pinData) {
+          return res.status(400).json({ success: false, error: "PIN not found or expired" });
+        }
+
+        // PURPOSE MISMATCH
+        if (pinData.purpose && pinData.purpose !== purpose) {
+          await db.collection("CHANGES").add({
+            type: "pinVerifyFailed",
+            uid: userID,
+            pin: pinData,
+            purpose,
+            reason: "pin_purpose_failed",
+            actor: "user",
+            source: "verifyPin",
+            createdAt: admin.firestore.FieldValue.serverTimestamp()
+          });
+
+          await db
+            .collection("IdentityHistory")
+            .doc(userID)
+            .collection("snapshots")
+            .add({
+              snapshotType: "pinVerifyFailed",
+              pin: pinData,
+              purpose,
+              reason: "pin_purpose_failed",
+              actor: "user",
+              source: "verifyPin",
+              createdAt: admin.firestore.FieldValue.serverTimestamp()
+            });
+
+          await pinRef.update({ pin: admin.firestore.FieldValue.delete() });
+          return res.status(400).json({ success: false, error: "PIN purpose mismatch" });
+        }
+
+        // EXPIRATION
+        const nowMsGlobal = admin.firestore.Timestamp.now().toMillis();
+        let expiresAt = 0;
+
+        if (pinData.expiresAt instanceof admin.firestore.Timestamp) {
+          expiresAt = pinData.expiresAt.toMillis();
+        } else if (typeof pinData.expiresAt === "number") {
+          expiresAt = pinData.expiresAt;
+        } else if (typeof pinData.expiresAt === "string") {
+          expiresAt = Number(pinData.expiresAt) || 0;
+        }
+
+        if (nowMsGlobal > expiresAt) {
+          await db.collection("CHANGES").add({
+            type: "pinVerifyFailed",
+            uid: userID,
+            pin: pinData,
+            attempts: (pinData.attempts ?? 0) + 1,
+            reason: "pin_expired_failed",
+            actor: "user",
+            source: "verifyPin",
+            createdAt: admin.firestore.FieldValue.serverTimestamp()
+          });
+
+          await db
+            .collection("IdentityHistory")
+            .doc(userID)
+            .collection("snapshots")
+            .add({
+              snapshotType: "pinVerifyFailed",
+              pin: pinData,
+              attempts: (pinData.attempts ?? 0) + 1,
+              reason: "pin_expired_failed",
+              actor: "user",
+              source: "verifyPin",
+              createdAt: admin.firestore.FieldValue.serverTimestamp()
+            });
+
+          await pinRef.update({ pin: admin.firestore.FieldValue.delete() });
+          return res.status(400).json({ success: false, error: "PIN expired" });
+        }
+
+        // TOO MANY ATTEMPTS
+        if ((pinData.attempts ?? 0) >= 5) {
+          await db.collection("CHANGES").add({
+            type: "pinVerifyFailed",
+            uid: userID,
+            pin: pinData,
+            attempts: (pinData.attempts ?? 0) + 1,
+            reason: "pin_toomanyattempts_failed",
+            actor: "user",
+            source: "verifyPin",
+            createdAt: admin.firestore.FieldValue.serverTimestamp()
+          });
+
+          await db
+            .collection("IdentityHistory")
+            .doc(userID)
+            .collection("snapshots")
+            .add({
+              snapshotType: "pinVerifyFailed",
+              pin: pinData,
+              attempts: (pinData.attempts ?? 0) + 1,
+              reason: "pin_toomanyattempts_failed",
+              actor: "user",
+              source: "verifyPin",
+              createdAt: admin.firestore.FieldValue.serverTimestamp()
+            });
+
+          await pinRef.update({ pin: admin.firestore.FieldValue.delete() });
+          return res.status(400).json({ success: false, error: "Too many attempts" });
+        }
+
+        // WRONG PIN
+        if (pinData.value !== pin) {
+          await pinRef.update({
+            "pin.attempts": (pinData.attempts ?? 0) + 1
+          });
+
+          await db.collection("CHANGES").add({
+            type: "pinVerifyFailed",
+            uid: userID,
+            pin: pinData,
+            attempts: (pinData.attempts ?? 0) + 1,
+            reason: "pin_verification_failed",
+            actor: "user",
+            source: "verifyPin",
+            createdAt: admin.firestore.FieldValue.serverTimestamp()
+          });
+
+          await db
+            .collection("IdentityHistory")
+            .doc(userID)
+            .collection("snapshots")
+            .add({
+              snapshotType: "pinVerifyFailed",
+              pin: pinData,
+              attempts: (pinData.attempts ?? 0) + 1,
+              reason: "pin_verification_failed",
+              actor: "user",
+              source: "verifyPin",
+              createdAt: admin.firestore.FieldValue.serverTimestamp()
+            });
+
+          return res.status(400).json({ success: false, error: "Invalid PIN" });
+        }
+
+        // ✅ PIN VALID → clear it
+        await pinRef.update({ pin: admin.firestore.FieldValue.delete() });
+
+        // ---------------------------------------------------------
+        // EMAIL CHANGE FLOW (update TPIdentity.email + legacy Email/UserEmail)
+        // ---------------------------------------------------------
+        if (purpose === "emailChange") {
+          const existingTPIdentity = userData.TPIdentity || {};
+
+          await db.collection("Users").doc(userID).set(
+            {
+              Email: normalizedEmail,
+              UserEmail: normalizedEmail,
+              TPIdentity: {
+                ...existingTPIdentity,
+                email: normalizedEmail
+              }
+            },
+            { merge: true }
+          );
+
+          await db.collection("CHANGES").add({
+            type: "emailChangeVerified",
+            pin: pinData,
+            uid: userID,
+            newEmail: normalizedEmail,
+            reason: "email_change_verified",
+            actor: "user",
+            source: "verifyPin",
+            createdAt: admin.firestore.FieldValue.serverTimestamp()
+          });
+
+          await db
+            .collection("IdentityHistory")
+            .doc(userID)
+            .collection("snapshots")
+            .add({
+              snapshotType: "emailChangeVerified",
+              pin: pinData,
+              newEmail: normalizedEmail,
+              reason: "email_change_verified",
+              actor: "user",
+              source: "verifyPin",
+              createdAt: admin.firestore.FieldValue.serverTimestamp()
+            });
+
+          return res.json({ success: true });
+        }
+
+        // ---------------------------------------------------------
+        // TOKEN LOGIC (SIMPLIFIED v11‑EVO)
+        // ---------------------------------------------------------
+        const tpIdentity = userData.TPIdentity || {};
+        const tpWallet = userData.TPWallet || {};
+
+        // Build identity object (returned to client)
+        const identity = {
+          uid: userID,
+          country: tpIdentity.country || userData.Country || userData.country || null,
+          phone: tpIdentity.phone || userData.Phone || userData.phone || null,
+          displayName: tpIdentity.displayName || userData.DisplayName || null,
+          name: tpIdentity.name || userData.UserName || userData.Name || null,
+          email: tpIdentity.email || userData.UserEmail || userData.Email || normalizedEmail,
+          photoURL: tpIdentity.photoURL || userData.photoURL || null,
+          role: tpIdentity.role || userData.Role || "Customer",
+          referralCode: tpIdentity.referralCode || userData.referralCode || null,
+          stripeAccountID: tpIdentity.stripeAccountID || userData.stripeAccountID || null,
+          stripeDashboardURL: tpIdentity.stripeDashboardURL || null,
+          loginLink: tpIdentity.loginLink || null,
+          trustedDevice: true,
+          paymentSetup: tpIdentity.paymentSetup || userData.PaymentSetup || "Complete",
+          identitySetAt: admin.firestore.Timestamp.now()
+        };
+
+        // Create a simple cryptographic pulse token (non-JWT, opaque)
+        const pulseToken = crypto.randomBytes(32).toString("hex");
+
+        // Attach lineage token to identity (client can treat as resendToken)
+        identity.resendToken = pulseToken;
+
+        // SAVE UPDATED USER (NEW SCHEMA) – no JWT, no rotation logic
+        await db.collection("Users").doc(userID).set(
+          {
+            TPIdentity: {
+              ...tpIdentity,
+              ...identity
+            },
+            TPWallet: {
+              ...tpWallet,
+              lastAppActive: admin.firestore.FieldValue.serverTimestamp()
+            },
+            updatedAt: admin.firestore.FieldValue.serverTimestamp()
+          },
+          { merge: true }
+        );
+
+        await db.collection("CHANGES").add({
+          type: "pinVerifySuccess",
+          pin: pinData,
+          uid: userID,
+          identity,
+          token: pulseToken,
+          reason: "pin_verified",
+          actor: "user",
+          source: "verifyPin",
+          createdAt: admin.firestore.FieldValue.serverTimestamp()
+        });
+
+        await db
+          .collection("IdentityHistory")
+          .doc(userID)
+          .collection("snapshots")
+          .add({
+            snapshotType: "pinVerifySuccess",
+            pin: pinData,
+            identity,
+            token: pulseToken,
+            reason: "pin_verified",
+            actor: "user",
+            source: "verifyPin",
+            createdAt: admin.firestore.FieldValue.serverTimestamp()
+          });
+
+        return res.json({
+          success: true,
+          token: pulseToken,
+          identity
+        });
       } catch (err) {
-        logger.error("verifyPin error", err);
+        console.error("verifyPin error", err);
         return res.status(500).json({ success: false, error: "Internal error" });
       }
     });
@@ -3746,50 +4106,46 @@ function getHelpMenu() {
 }
 
 function detectUpgradedIntent(text) {
+  if (!text || typeof text !== "string") return null;
+
   const start = Date.now();
-
-  console.log("==============================================");
-  console.log("🔮 detectUpgradedIntent() INVOKED");
-  console.log("📝 RAW INPUT:", text);
-
   const t = text.trim().toLowerCase();
-  console.log("🔧 NORMALIZED:", t);
 
   const step = (msg) => console.log("   🧭", msg);
 
   const has = (...words) => {
-    const hit = words.find(w => t.includes(w));
-    if (hit) step(`has("${hit}") matched`);
+    const hit = words.find((w) => t.includes(w));
+    if (hit) step(`has("${hit}")`);
     return !!hit;
   };
 
   const starts = (...words) => {
-    const hit = words.find(w => t.startsWith(w));
-    if (hit) step(`starts("${hit}") matched`);
+    const hit = words.find((w) => t.startsWith(w));
+    if (hit) step(`starts("${hit}")`);
     return !!hit;
   };
 
   const isMath = /\d+(\s*[+\-*/x×]\s*\d+)/.test(t);
-  if (isMath) step("🧮 MATH DETECTED");
+
+  console.log("==============================================");
+  console.log("🔮 detectUpgradedIntent()");
+  console.log("📝 RAW:", text);
+  console.log("🔧 NORMALIZED:", t);
 
   // ------------------------------------
   // 0. ULTRA PRIORITY
   // ------------------------------------
-  step("Checking ULTRA PRIORITY intents...");
+  step("ULTRA PRIORITY...");
 
   if (has("lockdown", "danger mode", "app lock", "lock the app", "panic mode")) {
-    step("INTENT: danger_lockdown");
     return "danger_lockdown";
   }
 
   if (starts("remind me", "set a reminder", "remember", "don't let me forget")) {
-    step("INTENT: set_reminder (direct start match)");
     return "set_reminder";
   }
 
   if (starts("tell me")) {
-    step("tell me... checking exclusions");
-
     const excluded = [
       "tell me how",
       "tell me a joke",
@@ -3802,57 +4158,46 @@ function detectUpgradedIntent(text) {
       "tell me what you're craving"
     ];
 
-    const exclusionHit = excluded.find(x => t.includes(x));
-
-    if (exclusionHit) {
-      step(`❌ Exclusion triggered: ${exclusionHit}`);
-    } else {
-      step("INTENT: set_reminder (tell me)");
+    if (!excluded.some((x) => t.includes(x))) {
       return "set_reminder";
     }
   }
 
   if (has("hello", "hi", "hey", "yo", "hola", "sup", "wassup", "whats up")) {
-    step("INTENT: greeting");
     return "greeting";
   }
 
   // SEND POINTS / BALANCE
   if (starts("send", "give", "transfer")) {
-    step("Checking send/balance logic...");
-
     const emailLike = t.match(/[a-z0-9._%+-]+@[a-z0-9.-]+/i);
     const usernameLike = t.match(/\b[a-z0-9]{3,}\b/);
 
     if (emailLike || usernameLike) {
-      step(`✔ Recipient detected: ${emailLike || usernameLike}`);
-
-      if (has("points")) {
-        step("INTENT: send_points");
-        return "send_points";
-      }
-      if (has("balance", "money")) {
-        step("INTENT: send_balance");
-        return "send_balance";
-      }
-
-      step("INTENT: send_unknown");
+      if (has("points")) return "send_points";
+      if (has("balance", "money")) return "send_balance";
       return "send_unknown";
     }
   }
 
   if (
-    has("directions", "how do i get to", "navigate to", "route to", "take me to", "go to", "tell me how") ||
+    has(
+      "directions",
+      "how do i get to",
+      "navigate to",
+      "route to",
+      "take me to",
+      "go to",
+      "tell me how"
+    ) ||
     starts("directions to")
   ) {
-    step("INTENT: directions");
     return "directions";
   }
 
   // ------------------------------------
-  // 1. HIGH PRIORITY INTENTS
+  // 1. HIGH PRIORITY
   // ------------------------------------
-  step("Checking HIGH PRIORITY intents...");
+  step("HIGH PRIORITY...");
 
   const wildlifeKeywords = [
     "wildlife", "animals", "animal",
@@ -3871,153 +4216,78 @@ function detectUpgradedIntent(text) {
     "pelican", "pelicans"
   ];
 
-  if (has(
-    "weather", "rain", "storm", "storms", "wind", "windy", "waves", "surf",
-    "sea", "ocean", "tide", "sargassum", "sarg", "humidity", "heat", "moons", "hot",
-    "wildlife", "animals", "bugs", "mosquitos", "crocodile", "shark", "turtle",
-    "beach quality", "beach conditions", "beach report", "beach day",
-    ...wildlifeKeywords
-  )) {
-    step("🌦 WEATHER FAMILY triggered");
-
-    if (has("beach quality", "beach conditions", "beach report", "beach day", "how is beach")) {
-      step("INTENT: beach_quality");
+  if (
+    has(
+      "weather", "rain", "storm", "storms", "wind", "windy", "waves", "surf",
+      "sea", "ocean", "tide", "sargassum", "sarg", "humidity", "heat", "moons", "hot",
+      "wildlife", "animals", "bugs", "mosquitos", "crocodile", "shark", "turtle",
+      "beach quality", "beach conditions", "beach report", "beach day",
+      ...wildlifeKeywords
+    )
+  ) {
+    if (has("beach quality", "beach conditions", "beach report", "beach day", "how is beach"))
       return "beach_quality";
-    }
 
-    if (has("wind", "windy")) {
-      step("INTENT: wind");
-      return "wind";
-    }
+    if (has("wind", "windy")) return "wind";
+    if (has("waves", "surf", "sea", "ocean", "tide")) return "waves";
+    if (has("sargassum", "sarg")) return "sargassum";
+    if (has("humidity")) return "humidity";
+    if (has("heat", "hot")) return "heat";
+    if (has("moon", "moons")) return "moon";
+    if (has("storm", "storms")) return "storms";
 
-    if (has("waves", "surf", "sea", "ocean", "tide")) {
-      step("INTENT: waves");
-      return "waves";
-    }
-
-    if (has("sargassum", "sarg")) {
-      step("INTENT: sargassum");
-      return "sargassum";
-    }
-
-    if (has("humidity")) {
-      step("INTENT: humidity");
-      return "humidity";
-    }
-
-    if (has("heat", "hot")) {
-      step("INTENT: heat");
-      return "heat";
-    }
-
-    if (has("moon", "moons")) {
-      step("INTENT: moon");
-      return "moon";
-    }
-
-    if (has("storm", "storms")) {
-      step("INTENT: storms");
-      return "storms";
-    }
-
-    const wildlifeHit = wildlifeKeywords.find(k => t.includes(k));
-    if (wildlifeHit) {
-      step(`🦎 WILDLIFE HIT: ${wildlifeHit}`);
-      step("INTENT: wildlife");
-      return { intent: "wildlife", target: wildlifeHit };
-    }
+    const wildlifeHit = wildlifeKeywords.find((k) => t.includes(k));
+    if (wildlifeHit) return { intent: "wildlife", target: wildlifeHit };
   }
 
   // EVENTS
   if (has("event", "events", "happening", "tonight", "today", "weekend", "live music", "party", "festival", "show", "band")) {
-    step("🎉 EVENTS triggered");
-
-    if (has("today", "tonight", "now")) {
-      step("INTENT: events_today");
-      return "events_today";
-    }
-
-    step("INTENT: events_upcoming");
+    if (has("today", "tonight", "now")) return "events_today";
     return "events_upcoming";
   }
 
   // ------------------------------------
   // 2. MATH / POINTS / BALANCE
   // ------------------------------------
-  if (isMath) {
-    step("INTENT: math");
-    return "math";
-  }
+  if (isMath) return "math";
 
   if (has("points", "pulse points")) {
-    step("POINTS logic triggered");
-
-    if (has("redeem") && /\b\d{3,}\b/.test(t)) {
-      step("INTENT: redeem_points (partial)");
-      return "redeem_points";
-    }
-
-    if (has("how much", "estimate", "calculate", "earn", "get", "worth")) {
-      step("INTENT: estimate_points");
+    if (has("redeem") && /\b\d{3,}\b/.test(t)) return "redeem_points";
+    if (has("how much", "estimate", "calculate", "earn", "get", "worth"))
       return "estimate_points";
-    }
-
-    step("INTENT: points");
     return "points";
   }
 
-  if (has("balance", "my money", "my credits", "wallet", "money")) {
-    step("INTENT: balance");
-    return "balance";
-  }
-
-  if (has("rank", "tier", "level", "streak")) {
-    step("INTENT: rank_info");
-    return "rank_info";
-  }
-
-  if (has("referral", "refer", "invite")) {
-    step("INTENT: referral_info");
-    return "referral_info";
-  }
-
-  if (has("reward", "redeem", "perks", "benefits")) {
-    step("INTENT: redeem_points");
-    return "redeem_points";
-  }
+  if (has("balance", "my money", "my credits", "wallet", "money")) return "balance";
+  if (has("rank", "tier", "level", "streak")) return "rank_info";
+  if (has("referral", "refer", "invite")) return "referral_info";
+  if (has("reward", "redeem", "perks", "benefits")) return "redeem_points";
 
   // ------------------------------------
   // 3. BUSINESS CATEGORIES
   // ------------------------------------
   const cat = extractCategory(t);
-  if (cat) {
-    step(`CATEGORY EXTRACTED: ${cat}`);
-    step(`INTENT: ${cat}`);
-    return cat;
-  }
+  if (cat) return cat;
 
   // ------------------------------------
   // 4. HELP / SUMMARY / ENVIRONMENT
   // ------------------------------------
-  if (has("help", "lost", "confused", "how does this work", "what do i do", "ummm", "menu", "assistance", "assist", "ayuda", "ayudame")) {
-    step("INTENT: help");
+  if (has("help", "lost", "confused", "how does this work", "what do i do", "ummm", "menu", "assistance", "assist", "ayuda", "ayudame"))
     return "help";
-  }
 
-  if (has("summary", "status", "conditions", "environment")) {
-    step("INTENT: environment");
+  if (has("summary", "status", "conditions", "environment"))
     return "environment";
-  }
 
   // ------------------------------------
   // 5. FALLBACK
   // ------------------------------------
-  step("⚠️ NO INTENT MATCHED — FALLBACK");
-  step(`⏱ Duration: ${Date.now() - start} ms`);
+  step("⚠️ NO MATCH — FALLBACK");
+  console.log(`⏱ ${Date.now() - start}ms`);
   console.log("==============================================");
 
   return null;
 }
+
 
 async function saveConversationMemory(uid, payload) {
   try {
