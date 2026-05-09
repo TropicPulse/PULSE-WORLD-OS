@@ -104,7 +104,7 @@ AI_EXPERIENCE_META = {
 //  GLOBAL + DB + LOGGER — IMMORTAL SNAPSHOT
 // ============================================================================
 import { VitalsMonitor as PulseProofMonitor } from "../_MONITOR/PulseProofMonitor-v24.js";
-import { VitalsLogger as PulseProofLogger, log, warn, error, makeTelemetryPacket as emitTelemetry } from "../_MONITOR/PulseProofLogger-v24.js";
+import { VitalsLogger as PulseProofLogger, log, warn, error, makeTelemetryPacket as emitTelemetry, PulseVersion, PulseColors, PulseIcons } from "../_MONITOR/PulseProofLogger-v24.js";
 // NEW: CoreSpeech v24 speech organ
 
 
@@ -745,6 +745,9 @@ export const PulseNetBoot = startPulseNet;
 export const BridgeError = error;
 export const BridgeWarn = warn;
 export const BridgeLog = log;
+export const BridgeVersion = PulseVersion;
+export const BridgeColors = PulseColors;
+export const BridgeIcons = PulseIcons;
 export const PulseProofBridgeLogger = PulseProofLogger;
 export const PulseProofBridgeMonitor = PulseProofMonitor;
 export const PulseProofBridgeTelemetry = emitTelemetry;
