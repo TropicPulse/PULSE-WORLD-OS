@@ -328,7 +328,7 @@ function appendBridgeRecord(kind, payload) {
   saveBridgeBuffer(buf);
 
   // Mirror into GLOBAL_LOGS via logger (portal trust tagging)
-  PulseProofLogger({
+  log({
     subsystem: "bridge",
     system: "PortalTrustLayer",
     organ: "PulseProofBridge",
