@@ -1,15 +1,16 @@
 /* ============================================================================
 AI_EXPERIENCE_META = {
   identity: "PulseTranslator.SkeletalOutput",
-  version: "v17-IMMORTAL",
+  version: "v24-IMMORTAL-Evo+++",
   layer: "pulse_translator",
   role: "skeletal_output_translator",
-  lineage: "SkeletalOutput-v11 → v12.4 → v14-Immortal → v17-IMMORTAL",
+  lineage: "SkeletalOutput-v11 → v12.4 → v14-Immortal → v17-IMMORTAL → v24-IMMORTAL-Evo+++",
 
   evo: {
     skeletalOutput: true,
     genomeDriven: true,
     sqlOutput: true,
+
     symbolicPrimary: true,
     binaryAware: true,
     dualBand: true,
@@ -21,9 +22,19 @@ AI_EXPERIENCE_META = {
     partitionAware: true,
     indexAware: true,
 
+    // v24++ upgrades
+    schemaVersioned: true,
     deterministic: true,
     driftProof: true,
     pureCompute: true,
+    advantageAware: true,
+    integrityAware: true,
+    nullableEnvelopeAware: true,
+    enumContractAware: true,
+    currencyScaleAware: true,
+    percentModeAware: true,
+    jsonAware: true,
+    bitfieldAware: true,
 
     zeroMutationOfInput: true,
     zeroNetwork: true,
@@ -47,13 +58,6 @@ AI_EXPERIENCE_META = {
     ]
   }
 }
-//
-//  ██████╗ ██╗   ██╗██╗     ███████╗███████╗██╗    ██╗ ██████╗ ██████╗ ██╗     ██████╗
-//  ██╔══██ ██║   ██║██║     ██╔════╝██╔════╝██║    ██║██╔═══██╗██╔══██╗██║     ██╔══██╗
-//  ██████  ██║   ██║██║     ███████╗█████╗  ██║ █╗ ██║██║   ██║██████╔╝██║     ██║  ██║
-//  ██╔══   ██║   ██║██║     ╚════██║██╔══╝  ██║███╗██║██║   ██║██╔══██╗██║     ██║  ██║
-//  ██      ╚██████╔╝███████╗███████║███████╗╚███╔███╔╝╚██████╔╝██║  ██║███████╗██████╔╝
-//  ╚╝       ╚═════╝ ╚══════╝╚═════╝ ╚══════╝ ╚══╝╚══╝  ╚═════╝ ╚═╝  ╚═╝╚══════╝╚═════╝
 ===============================================================================
 EXPORT_META = {
   organ: "PulseTranslator.SkeletalOutput",
@@ -81,8 +85,7 @@ EXPORT_META = {
   sql: "no_execution"
 }
 ===============================================================================
-FILE: /pulse-translator/PulseTranslatorSkeletalOutput.js
-LAYER: THE SKELETAL OUTPUT TRANSLATOR (Pulse → SQL)
+FILE: /pulse-translator/PulseTranslatorSkeletalOutput-v24.js
 ===============================================================================
 */
 
@@ -92,15 +95,22 @@ import {
   validatePulseField
 } from "../PULSE-SPECS/PulseSpecsDNAGenome-v20.js";
 
+const SKELETAL_OUTPUT_SCHEMA_VERSION = "v4";
+
 /* ============================================================================
    translatePulseField(field)
    Converts a PulseField → SQL column definition (IMMORTAL bone).
-   v17 IMMORTAL: supports:
-     • band/presence/harmonics/shifter
-     • region/tenant/partition/index-hint
-     • binary/pulse/pulse_binary
-     • currency/percent/enum
-     • nullable wrapper
+   v24 IMMORTAL EVO+++:
+     • nullable envelope → JSON
+     • enum → VARCHAR(255)
+     • currency → DECIMAL(18,scale)
+     • percent → DOUBLE
+     • binary/pulse_binary → VARBINARY(8192)
+     • presence/harmonics/shifter → JSON
+     • band → VARCHAR(32)
+     • region/tenant/partition/index-hint → VARCHAR/JSON
+     • bitfield → BIT or VARBINARY(64)
+     • schemaVersioned, deterministic, drift-proof
 =============================================================================== */
 export function translatePulseField(field) {
   validatePulseField(field);
@@ -108,7 +118,7 @@ export function translatePulseField(field) {
   const columnName = normalizeSQLName(field.name);
 
   // --------------------------------------------------------------------------
-  // NULLABLE WRAPPER → JSON bone storing { isNull, value }
+  // NULLABLE WRAPPER → JSON envelope
   // --------------------------------------------------------------------------
   if (field.type === PulseFieldTypes.NULLABLE) {
     return `${columnName} JSON`;
@@ -125,7 +135,8 @@ export function translatePulseField(field) {
   // CURRENCY → DECIMAL(18,scale)
   // --------------------------------------------------------------------------
   if (field.type === PulseFieldTypes.CURRENCY) {
-    return `${columnName} DECIMAL(18,${field.scale ?? 2})`;
+    const scale = typeof field.scale === "number" ? field.scale : 2;
+    return `${columnName} DECIMAL(18,${scale})`;
   }
 
   // --------------------------------------------------------------------------
@@ -138,9 +149,18 @@ export function translatePulseField(field) {
   // --------------------------------------------------------------------------
   // BINARY / PULSE_BINARY → VARBINARY(8192)
   // --------------------------------------------------------------------------
-  if (field.type === PulseFieldTypes.BINARY ||
-      field.type === PulseFieldTypes.PULSE_BINARY) {
+  if (
+    field.type === PulseFieldTypes.BINARY ||
+    field.type === PulseFieldTypes.PULSE_BINARY
+  ) {
     return `${columnName} VARBINARY(8192)`;
+  }
+
+  // --------------------------------------------------------------------------
+  // BITFIELD → BIT or VARBINARY(64)
+  // --------------------------------------------------------------------------
+  if (field.type === PulseFieldTypes.BITFIELD) {
+    return `${columnName} VARBINARY(64)`;
   }
 
   // --------------------------------------------------------------------------
@@ -193,7 +213,6 @@ export function translatePulseField(field) {
 
 /* ============================================================================
    translatePulseSchema(schemaObject)
-   Converts a PulseField schema → array of SQL column definitions.
 =============================================================================== */
 export function translatePulseSchema(schemaObject = {}) {
   const columns = [];
@@ -207,7 +226,6 @@ export function translatePulseSchema(schemaObject = {}) {
 
 /* ============================================================================
    generateCreateTable(tableName, schemaObject)
-   Produces a full CREATE TABLE statement (IMMORTAL bone formation).
 =============================================================================== */
 export function generateCreateTable(tableName, schemaObject = {}) {
   const normalized = normalizeSQLName(tableName);
@@ -221,7 +239,6 @@ CREATE TABLE ${normalized} (
 
 /* ============================================================================
    generateAddColumn(tableName, field)
-   Produces a SQL migration fragment for adding a column (bone growth).
 =============================================================================== */
 export function generateAddColumn(tableName, field) {
   validatePulseField(field);
@@ -234,7 +251,6 @@ export function generateAddColumn(tableName, field) {
 
 /* ============================================================================
    generateDropColumn(tableName, columnName)
-   Produces a SQL migration fragment for removing a column (bone removal).
 =============================================================================== */
 export function generateDropColumn(tableName, columnName) {
   const normalized = normalizeSQLName(tableName);
@@ -247,5 +263,8 @@ export function generateDropColumn(tableName, columnName) {
    Helpers
 =============================================================================== */
 function normalizeSQLName(name) {
-  return name.trim().toLowerCase().replace(/[^a-z0-9_]/g, "_");
+  return String(name || "")
+    .trim()
+    .toLowerCase()
+    .replace(/[^a-z0-9_]/g, "_");
 }

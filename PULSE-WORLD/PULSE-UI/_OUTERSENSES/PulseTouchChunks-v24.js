@@ -1,21 +1,21 @@
 // ============================================================================
-//  PulseChunks-v2.2-MULTILANE-Immortal
+//  PulseChunks-v24-MULTILANE-Immortal
 //  FRONTEND CHUNK MEMBRANE — 2026 Transport Layer
 //  Chunking • Caching • Prewarm • Zero-Latency Surface
 //  Lore injection • PulseBand integration • Sectional fallback
 //  + Universal de-chunking via PulseChunkNormalizer
 //  + 32-LANE HYBRID CNS ROUTER (binary-aligned, hash-routed)
-//  + v14-Immortal DNA-aware cache + reconstruction
+//  + v24-Immortal DNA-aware cache + reconstruction
 // ============================================================================
 
-/* 
+/*
 AI_EXPERIENCE_META = {
   identity: "PulsePresence",
-  version: "v14-Immortal-MEMBRANE",
+  version: "v24-Immortal-MEMBRANE",
   layer: "frontend",
   role: "presence_loader",
-  lineage: "PulseOS-v14",
-  
+  lineage: "PulseOS-v24",
+
   evo: {
     binaryAware: true,
     dualBand: true,
@@ -25,7 +25,13 @@ AI_EXPERIENCE_META = {
     cnsFallback: true,
     normalizerAligned: true,
     immortalChunkerAligned: true,
-    cacheTTLBounded: true
+    cacheTTLBounded: true,
+
+    ttlAware: true,
+    laneAware: true,
+    dnaVisibilityAware: true,
+    degradedModeAware: true,
+    meshMemoryAligned: true
   },
 
   contract: {
@@ -34,7 +40,7 @@ AI_EXPERIENCE_META = {
       "PulseChunks",
       "PulseBand",
       "PulsePresenceNormalizer",
-      "PulseChunker-v14-Immortal"
+      "PulseChunker-v24-Immortal"
     ],
     never: [
       "safeRoute",
@@ -67,11 +73,11 @@ const db =
   (typeof window !== "undefined" && window.db) ||
   null;
 
-console.log("Presence");
-console.log("[PulseChunks-v2.2-MULTILANE-Immortal] Membrane chunker loading...");
+console.log("Presence v24");
+console.log("[PulseChunks-v24-MULTILANE-Immortal] Membrane chunker loading...");
 
 import { safeRoute as route, fireAndForgetRoute } from "../_BACKEND/PULSE-WORLD-BRIDGE.js";
-import PulseChunkNormalizer from "./PulseTouchChunksNormalizer-v2.js";
+import PulseChunkNormalizer from "./PulseTouchChunksNormalizer-v24.js";
 
 // ============================================================================
 //  LORE TRANSLATOR — Evolvable, deterministic, metadata-driven
@@ -79,13 +85,13 @@ import PulseChunkNormalizer from "./PulseTouchChunksNormalizer-v2.js";
 function stableIndexFromString(str, max) {
   let sum = 0;
   for (let i = 0; i < str.length; i++) sum += str.charCodeAt(i);
-  return sum % max;
+  return max > 0 ? sum % max : 0;
 }
 
 function generateLoreHeader({ meta, context, pulseRole, route }) {
   if (!meta || !context || !pulseRole) return "";
 
-  const evoFlags = Object.keys(meta.evo || {}).filter(k => meta.evo[k]);
+  const evoFlags = Object.keys(meta.evo || {}).filter((k) => meta.evo[k]);
   const neverRules = meta.contract?.never || [];
   const alwaysRules = meta.contract?.always || [];
 
@@ -113,9 +119,9 @@ function generateLoreHeader({ meta, context, pulseRole, route }) {
     `Its voice shifts with each route, yet stays deterministic.`
   ];
 
-  const open = openings[stableIndexFromString(meta.identity, openings.length)];
-  const mid = middles[stableIndexFromString(context.lineage, middles.length)];
-  const close = closings[stableIndexFromString(pulseRole.identity, closings.length)];
+  const open = openings[stableIndexFromString(meta.identity || "", openings.length)];
+  const mid = middles[stableIndexFromString(context.lineage || "", middles.length)];
+  const close = closings[stableIndexFromString(pulseRole.identity || "", closings.length)];
 
   return `
 /*
@@ -136,10 +142,10 @@ function generateLoreHeader({ meta, context, pulseRole, route }) {
 
   Boundaries:
     ✘ NEVER:
-      ${neverRules.map(r => "• " + r).join("\n      ")}
+      ${neverRules.map((r) => "• " + r).join("\n      ")}
 
     ✔ ALWAYS:
-      ${alwaysRules.map(r => "• " + r).join("\n      ")}
+      ${alwaysRules.map((r) => "• " + r).join("\n      ")}
 
   PulseRole Archetype — ${pulseRole.identity}
     Type: ${pulseRole.type}
@@ -148,10 +154,10 @@ function generateLoreHeader({ meta, context, pulseRole, route }) {
     Version: ${pulseRole.version}
 
   Purpose:
-    ${pulseRole.contract.purpose}
+    ${pulseRole.contract?.purpose ?? "Membrane between CNS and presence layer."}
 
-  Tone: ${pulseRole.voice.tone}
-  Style: ${pulseRole.voice.style}
+  Tone: ${pulseRole.voice?.tone ?? "neutral"}
+  Style: ${pulseRole.voice?.style ?? "technical-mythic"}
 
   ${close}
   ────────────────────────────────────────────────────────────────
@@ -172,10 +178,12 @@ function shouldSkipChunk(filePath = "", fileSize = 0) {
   if (filePath.includes("PulseOSLongTermMemory")) return true;
   if (filePath.includes("index.html")) return true;
 
-  if (filePath.includes("PulseChunker") ||
-      filePath.includes("Brainstem") ||
-      filePath.includes("Organs") ||
-      filePath.includes("PulsePresence")) {
+  if (
+    filePath.includes("PulseChunker") ||
+    filePath.includes("Brainstem") ||
+    filePath.includes("Organs") ||
+    filePath.includes("PulsePresence")
+  ) {
     return true;
   }
 
@@ -190,7 +198,7 @@ function shouldSkipChunk(filePath = "", fileSize = 0) {
 const WEEK_MS = 7 * 24 * 60 * 60 * 1000;
 const CACHE_TTL_MS = WEEK_MS;
 
-const chunkCache = new Map();      // url -> { value, ts, presence, kind }
+const chunkCache = new Map(); // url -> { value, ts, presence, kind }
 const chunkFailures = new Map();
 let chunksDegraded = false;
 const MAX_FAILURES_PER_URL = 3;
@@ -199,7 +207,7 @@ let globalFailures = 0;
 
 function isExpired(entry) {
   if (!entry) return true;
-  return (Date.now() - entry.ts) > CACHE_TTL_MS;
+  return Date.now() - entry.ts > CACHE_TTL_MS;
 }
 
 function markChunkFailure(url, err) {
@@ -213,7 +221,9 @@ function markChunkFailure(url, err) {
   if (next >= MAX_FAILURES_PER_URL || globalFailures >= MAX_GLOBAL_FAILURES) {
     if (!chunksDegraded) {
       chunksDegraded = true;
-      console.warn("[PulseChunks] Entering DEGRADED mode — falling back to regular loading.");
+      console.warn(
+        "[PulseChunks] Entering DEGRADED mode — falling back to regular loading."
+      );
     }
   }
 }
@@ -230,18 +240,16 @@ function isChunksDegraded() {
 }
 
 // ============================================================================
-//  PRESENCE / BAND ENVELOPE HELPERS — v14 IMMORTAL FRONT
+//  PRESENCE / BAND ENVELOPE HELPERS — v24 IMMORTAL FRONT
 // ============================================================================
 function buildChunkPresenceEnvelope({ url, fromCache, degraded, kind }) {
-  const presence =
-    degraded ? "degraded-fallback" :
-    fromCache ? "cache-hit" :
-    "fresh";
+  const presence = degraded
+    ? "degraded-fallback"
+    : fromCache
+    ? "cache-hit"
+    : "fresh";
 
-  const wave =
-    degraded ? "distorted" :
-    fromCache ? "stable" :
-    "coherent";
+  const wave = degraded ? "distorted" : fromCache ? "stable" : "coherent";
 
   const band = "symbolic";
   const dualBand = false;
@@ -260,7 +268,7 @@ function buildChunkPresenceEnvelope({ url, fromCache, degraded, kind }) {
 //  32-LANE CNS ROUTER — HYBRID: GLOBAL CACHE + PER-LANE CNS/STATS
 // ============================================================================
 const LANE_COUNT = 32;
-const LANE_MASK  = LANE_COUNT - 1;
+const LANE_MASK = LANE_COUNT - 1;
 
 function hashKey(key = "") {
   let h = 0;
@@ -290,7 +298,7 @@ function createLane(id) {
       successes: 0,
       failures: 0,
       totalLatencyMs: 0,
-      lastError: null,
+      lastError: null
     },
     async fetchViaCNS(url) {
       const start = nowMs();
@@ -307,7 +315,7 @@ function createLane(id) {
         presenceAware: true,
         kind: "chunk",
         laneId: id,
-        envelopeId,
+        envelopeId
       });
 
       const latency = nowMs() - start;
@@ -329,16 +337,15 @@ function createLane(id) {
 const lanes = Array.from({ length: LANE_COUNT }, (_, i) => createLane(i));
 
 function getLaneStatsSnapshot() {
-  return lanes.map(lane => ({
+  return lanes.map((lane) => ({
     id: lane.id,
     envelopeCounter: lane.envelopeCounter,
-    stats: { ...lane.stats },
+    stats: { ...lane.stats }
   }));
 }
 
 // ============================================================================
-//  DNA-AWARE VALUE NORMALIZATION (v14 IMMORTAL BACKEND)
-//  Accepts raw, or { __lore, __chunk } from PulseChunker-v14
+//  DNA-AWARE VALUE NORMALIZATION (v24 IMMORTAL BACKEND)
 // ============================================================================
 function unwrapImmortalDNA(value) {
   if (!value) return value;
@@ -347,7 +354,7 @@ function unwrapImmortalDNA(value) {
 }
 
 // ============================================================================
-//  UNIVERSAL CHUNK FETCHER — v2.2 MULTILANE IMMORTAL
+//  UNIVERSAL CHUNK FETCHER — v24 MULTILANE IMMORTAL
 // ============================================================================
 async function fetchChunk(url) {
   try {
@@ -356,7 +363,7 @@ async function fetchChunk(url) {
       timestamp: Date.now(),
       degraded: chunksDegraded,
       presence: "frontend-dna-request",
-      membrane: "PulseChunks-v2.2-MULTILANE-Immortal",
+      membrane: "PulseChunks-v24-MULTILANE-Immortal"
     });
   } catch (err) {
     console.warn("[PulseDNA] Network visibility logging failed:", err);
@@ -394,12 +401,14 @@ async function fetchChunk(url) {
     return {
       ok: true,
       value,
-      envelope: presence || buildChunkPresenceEnvelope({
-        url,
-        fromCache: true,
-        degraded: false,
-        kind: kind || (typeof value === "string" ? "text-or-url" : "object")
-      })
+      envelope:
+        presence ||
+        buildChunkPresenceEnvelope({
+          url,
+          fromCache: true,
+          degraded: false,
+          kind: kind || (typeof value === "string" ? "text-or-url" : "object")
+        })
     };
   } else if (cachedEntry && isExpired(cachedEntry)) {
     chunkCache.delete(url);
@@ -418,9 +427,9 @@ async function fetchChunk(url) {
 
     const dna = routed.data ?? routed.result ?? url;
     const unwrapped = unwrapImmortalDNA(dna);
-    const kind = routed.kind || (
-      typeof unwrapped === "string" ? "text-or-url" : "object"
-    );
+    const kind =
+      routed.kind ||
+      (typeof unwrapped === "string" ? "text-or-url" : "object");
 
     const envelope = buildChunkPresenceEnvelope({
       url,
@@ -441,7 +450,6 @@ async function fetchChunk(url) {
       value: dna,
       envelope
     };
-
   } catch (err) {
     markChunkFailure(url, err);
 
@@ -460,17 +468,20 @@ async function fetchChunk(url) {
 }
 
 // ============================================================================
-//  IMAGE-SPECIFIC CHUNKER — NORMALIZER-ALIGNED (v2.2 MULTILANE IMMORTAL)
+//  IMAGE-SPECIFIC CHUNKER — NORMALIZER-ALIGNED (v24 MULTILANE IMMORTAL)
 // ============================================================================
 export async function getImage(url) {
   const { value, ok, error, envelope } = await fetchChunk(url);
 
   if (!ok) {
-    console.warn("[PulseChunks] getImage fallback — using raw URL due to chunk failure:", {
-      url,
-      error,
-      envelope
-    });
+    console.warn(
+      "[PulseChunks] getImage fallback — using raw URL due to chunk failure:",
+      {
+        url,
+        error,
+        envelope
+      }
+    );
     return url;
   }
 
@@ -484,10 +495,13 @@ export async function getImage(url) {
     null;
 
   if (!src) {
-    console.warn("[PulseChunks] getImage unknown image format, falling back to URL:", {
-      url,
-      value
-    });
+    console.warn(
+      "[PulseChunks] getImage unknown image format, falling back to URL:",
+      {
+        url,
+        value
+      }
+    );
     return url;
   }
 
@@ -617,7 +631,7 @@ export function prewarm(urls = []) {
 }
 
 // ============================================================================
-//  PULSEBAND INTEGRATION — v14-Evo
+//  PULSEBAND INTEGRATION — v24-Evo
 // ============================================================================
 function handlePulseBandPacket(packet) {
   if (!packet || !packet.type) return;
@@ -632,15 +646,17 @@ function handlePulseBandPacket(packet) {
 
     case "chunk-bundle":
       if (packet.url && packet.data && !chunksDegraded) {
+        const kind =
+          typeof packet.data === "string" ? "text-or-url" : "object";
         chunkCache.set(packet.url, {
           value: packet.data,
           ts: Date.now(),
-          kind: typeof packet.data === "string" ? "text-or-url" : "object",
+          kind,
           presence: buildChunkPresenceEnvelope({
             url: packet.url,
             fromCache: false,
             degraded: false,
-            kind: typeof packet.data === "string" ? "text-or-url" : "object"
+            kind
           })
         });
       }
@@ -648,15 +664,17 @@ function handlePulseBandPacket(packet) {
 
     case "chunk-packet":
       if (packet.url && packet.chunk && !chunksDegraded) {
+        const kind =
+          typeof packet.chunk === "string" ? "text-or-url" : "object";
         chunkCache.set(packet.url, {
           value: packet.chunk,
           ts: Date.now(),
-          kind: typeof packet.chunk === "string" ? "text-or-url" : "object",
+          kind,
           presence: buildChunkPresenceEnvelope({
             url: packet.url,
             fromCache: false,
             degraded: false,
-            kind: typeof packet.chunk === "string" ? "text-or-url" : "object"
+            kind
           })
         });
       }
@@ -690,7 +708,7 @@ function dechunkAll() {
 }
 
 // ============================================================================
-//  OFFLINE IMAGE AUTO-DETECTOR — v2.2 MULTILANE + CNS FALLBACK
+//  OFFLINE IMAGE AUTO-DETECTOR — v24 MULTILANE + CNS FALLBACK
 // ============================================================================
 async function autoLoadOfflineImages() {
   if (typeof document === "undefined") return;
@@ -707,11 +725,14 @@ async function autoLoadOfflineImages() {
       const { value, ok, error, envelope } = await fetchChunk(url);
 
       if (!ok) {
-        console.warn("[PulseChunks] Offline chunk failed — using CNS fallback:", {
-          url,
-          error,
-          envelope
-        });
+        console.warn(
+          "[PulseChunks] Offline chunk failed — using CNS fallback:",
+          {
+            url,
+            error,
+            envelope
+          }
+        );
 
         const fallback = await route("getImages", {
           url,
@@ -738,7 +759,10 @@ async function autoLoadOfflineImages() {
           }
         }
 
-        console.warn("[PulseChunks] CNS fallback failed — leaving image unchanged:", url);
+        console.warn(
+          "[PulseChunks] CNS fallback failed — leaving image unchanged:",
+          url
+        );
         continue;
       }
 
@@ -752,10 +776,13 @@ async function autoLoadOfflineImages() {
         null;
 
       if (!src) {
-        console.warn("[PulseChunks] Normalizer failed — using CNS fallback:", {
-          url,
-          value
-        });
+        console.warn(
+          "[PulseChunks] Normalizer failed — using CNS fallback:",
+          {
+            url,
+            value
+          }
+        );
 
         const fallback = await route("getImages", {
           url,
@@ -782,17 +809,22 @@ async function autoLoadOfflineImages() {
           }
         }
 
-        console.warn("[PulseChunks] CNS fallback failed — leaving image unchanged:", url);
+        console.warn(
+          "[PulseChunks] CNS fallback failed — leaving image unchanged:",
+          url
+        );
         continue;
       }
 
       img.src = src;
-
     } catch (err) {
-      console.warn("[PulseChunks] Offline image load threw — using CNS fallback:", {
-        url,
-        err
-      });
+      console.warn(
+        "[PulseChunks] Offline image load threw — using CNS fallback:",
+        {
+          url,
+          err
+        }
+      );
 
       try {
         const fallback = await route("getImages", {
@@ -820,52 +852,57 @@ async function autoLoadOfflineImages() {
           }
         }
       } catch (fallbackErr) {
-        console.warn("[PulseChunks] CNS fallback threw — leaving image unchanged:", {
-          url,
-          fallbackErr
-        });
+        console.warn(
+          "[PulseChunks] CNS fallback threw — leaving image unchanged:",
+          {
+            url,
+            fallbackErr
+          }
+        );
       }
     }
   }
 }
 
 // ============================================================================
-//  EXPOSE TO WINDOW — WITH STATE + CONTROLS + LANE STATS (v2.2 IMMORTAL)
+//  EXPOSE TO WINDOW — WITH STATE + CONTROLS + LANE STATS (v24 IMMORTAL)
 // ============================================================================
-window.PulseChunks = {
-  // Core API
-  getImage,
-  getImageSync,
-  fetchChunk,
-  prewarm,
-  PulseChunker,
+if (typeof window !== "undefined") {
+  window.PulseChunks = {
+    // Core API
+    getImage,
+    getImageSync,
+    fetchChunk,
+    prewarm,
+    PulseChunker,
 
-  // Reconstruction helpers (for router / mesh memory)
-  reconstructChunk,
-  reconstructRouteDescriptor,
+    // Reconstruction helpers (for router / mesh memory)
+    reconstructChunk,
+    reconstructRouteDescriptor,
 
-  // Sync memory surface
-  getCachedDNA,
-  reconstructCachedChunk,
-  reconstructCachedRouteDescriptor,
+    // Sync memory surface
+    getCachedDNA,
+    reconstructCachedChunk,
+    reconstructCachedRouteDescriptor,
 
-  // State + degradation
-  isDegraded: isChunksDegraded,
-  resetState: resetChunksState,
+    // State + degradation
+    isDegraded: isChunksDegraded,
+    resetState: resetChunksState,
 
-  // Dechunking utilities
-  dechunk,
-  dechunkAll,
+    // Dechunking utilities
+    dechunk,
+    dechunkAll,
 
-  // Full normalizer organ
-  normalizer: PulseChunkNormalizer,
+    // Full normalizer organ
+    normalizer: PulseChunkNormalizer,
 
-  // Lane system
-  lanes,
-  getLaneStats: getLaneStatsSnapshot,
-};
+    // Lane system
+    lanes,
+    getLaneStats: getLaneStatsSnapshot
+  };
+}
 
-export default window.PulseChunks;
+export default typeof window !== "undefined" ? window.PulseChunks : undefined;
 
 if (typeof window !== "undefined" && typeof document !== "undefined") {
   document.addEventListener("DOMContentLoaded", () => {
@@ -880,22 +917,24 @@ if (typeof window !== "undefined") {
 }
 
 console.log(
-  "[PulseChunks-v2.2-MULTILANE-Immortal] Ready — 32-lane membrane active, v14-Immortal DNA-aware cache, TTL-bounded memory, reconstruction helpers online."
+  "[PulseChunks-v24-MULTILANE-Immortal] Ready — 32-lane membrane active, v24-Immortal DNA-aware cache, TTL-bounded memory, reconstruction helpers online."
 );
 
 try {
   if (typeof global !== "undefined") {
-    global.PulseBand = window.PulseBand;
-    global.PulseChunks = window.PulseChunks;
+    global.PulseBand = typeof window !== "undefined" ? window.PulseBand : undefined;
+    global.PulseChunks = typeof window !== "undefined" ? window.PulseChunks : undefined;
   }
   if (typeof globalThis !== "undefined") {
-    globalThis.PulseBand = window.PulseBand;
-    globalThis.PulseChunks = window.PulseChunks;
+    globalThis.PulseBand =
+      typeof window !== "undefined" ? window.PulseBand : globalThis.PulseBand;
+    globalThis.PulseChunks =
+      typeof window !== "undefined" ? window.PulseChunks : globalThis.PulseChunks;
   }
-  
+
   if (typeof g !== "undefined") {
-    g.PulseBand = window.PulseBand;
-    g.PulseChunks = window.PulseChunks;
+    g.PulseBand = typeof window !== "undefined" ? window.PulseBand : g.PulseBand;
+    g.PulseChunks = typeof window !== "undefined" ? window.PulseChunks : g.PulseChunks;
   }
 } catch {
   // never throw

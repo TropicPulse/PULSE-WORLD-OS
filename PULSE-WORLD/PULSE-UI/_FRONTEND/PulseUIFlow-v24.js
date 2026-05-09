@@ -1,21 +1,22 @@
 /* global log,warn,error */
 // ============================================================================
-// FILE: /PulseOS/PULSE-UI/PulseUIFlow-v20.js
-// PULSE OS — v20‑IMMORTAL‑EVO+++
+// FILE: /PulseOS/PULSE-UI/PulseUIFlow-v24-Immortal-Evo++++.js
+// PULSE OS — v24‑IMMORTAL‑EVO++++
 // “UI FLOW ENGINE / INTENT GLUE / HUMAN‑VISIBLE ORGANISM MAP / EVIDENCE-AWARE”
 // Offline‑First • LocalStorage+CoreMemory Mirrored • Replay‑Aware
 // Tier/Channel‑Aware • Router‑Checked • Evolutionary‑Page‑Driven
 // Evidence‑Aware • Diagnostics‑Aware • Admin‑Console‑Ready
+// Vitals‑Aligned • ErrorSpine‑v24‑Aligned • Trust‑Fabric‑Aware
 // ============================================================================
 
 /*
 ===============================================================================
 AI_EXPERIENCE_META = {
   identity: "PulseUIFlow",
-  version: "v20-Immortal-Evo+++",
+  version: "v24-Immortal-Evo++++",
   layer: "pulse_ui",
   role: "ui_flow_engine",
-  lineage: "PulseUIFlow-v13-Evo-PRIME → v14-Immortal → v16-Immortal → v20-Immortal-Evo+++",
+  lineage: "PulseUIFlow-v13-Evo-PRIME → v14-Immortal → v16-Immortal → v20-Immortal-Evo+++ → v24-Immortal-Evo++++",
 
   evo: {
     intentDriven: true,
@@ -56,7 +57,18 @@ AI_EXPERIENCE_META = {
     portalAware: true,
     timeAxisAware: true,
     sessionAware: true,
-    advantageAware: true
+    advantageAware: true,
+
+    // v24++ upgrades
+    vitalsAware: true,
+    uiErrorSpineV24Aware: true,
+    proofMonitorAware: true,
+    loggerAligned: true,
+    monitorAligned: true,
+    errorSpineAligned: true,
+    flowSnapshotAligned: true,
+    multiMindReady: true,
+    futureEvolutionReady: true
   },
 
   contract: {
@@ -70,7 +82,9 @@ AI_EXPERIENCE_META = {
       "PulseWorldAdminPanel",
       "AdminDiagnosticsOrgan",
       "PulseTrust",
-      "PulsePortal"
+      "PulsePortal",
+      "VitalsMonitor",
+      "PulseProofLogger"
     ],
     never: [
       "legacyUIFlow",
@@ -96,7 +110,8 @@ EXPORT_META = {
     "RouterCheckResult",
     "EvolutionaryPage",
     "AdminDiagnosticsModel",
-    "EvidenceSummary"
+    "EvidenceSummary",
+    "VitalsSnapshot"
   ],
 
   produces: [
@@ -113,7 +128,7 @@ EXPORT_META = {
 ===============================================================================
 */
 
-const UIFLOW_SCHEMA_VERSION = "v4";
+const UIFLOW_SCHEMA_VERSION = "v5";
 
 // Global handle
 const g =
@@ -142,16 +157,16 @@ const CoreMemory = PulseProofBridge?.coreMemory || null;
 const Trust = PulseProofBridge?.trust || null;
 
 // ============================================================================
-// IMMORTAL LOCALSTORAGE MIRROR — PulseUIFlowStore v20
+// IMMORTAL LOCALSTORAGE MIRROR — PulseUIFlowStore v24
 // ============================================================================
 
-const UIFLOW_LS_KEY = "PulseUIFlow.v20.buffer";
+const UIFLOW_LS_KEY = "PulseUIFlow.v24.buffer";
 const UIFLOW_LS_MAX = 4000;
 
 function hasLocalStorage() {
   try {
     if (typeof window === "undefined" || !window.localStorage) return false;
-    const t = "__uiflow_v20_test__";
+    const t = "__uiflow_v24_test__";
     window.localStorage.setItem(t, "1");
     window.localStorage.removeItem(t);
     return true;
@@ -177,7 +192,7 @@ function mirrorFlowBufferToCoreMemory(buf) {
   try {
     const envelope = {
       schemaVersion: UIFLOW_SCHEMA_VERSION,
-      version: "20.0-Immortal-Evo+++",
+      version: "24.0-Immortal-Evo++++",
       routeId: "uiFlow",
       buffer: buf,
       timestamp: Date.now()
@@ -222,7 +237,7 @@ export const PulseUIFlowStore = {
     try {
       CoreMemory?.setRouteSnapshot?.("uiFlow", {
         schemaVersion: UIFLOW_SCHEMA_VERSION,
-        version: "20.0-Immortal-Evo+++",
+        version: "24.0-Immortal-Evo++++",
         routeId: "uiFlow",
         buffer: [],
         cleared: true,
@@ -233,15 +248,15 @@ export const PulseUIFlowStore = {
 };
 
 // ============================================================================
-// ROLE / META — v20 IMMORTAL FLOW ROLE
+// ROLE / META — v24 IMMORTAL FLOW ROLE
 // ============================================================================
 
 export const PulseUIFlowRole = {
   type: "UIFlow",
   subsystem: "PulseUIFlow",
   layer: "UI-Flow",
-  version: "20.0-Immortal-Evo+++",
-  identity: "PulseUIFlow-v20-Immortal-Evo+++",
+  version: "24.0-Immortal-Evo++++",
+  identity: "PulseUIFlow-v24-Immortal-Evo++++",
 
   evo: {
     driftProof: true,
@@ -253,7 +268,9 @@ export const PulseUIFlowRole = {
     diagnosticsAware: true,
     evidenceAware: true,
     adminPanelAware: true,
-    trustFabricAware: true
+    trustFabricAware: true,
+    vitalsAware: true,
+    errorSpineAligned: true
   },
 
   flow: {
@@ -263,12 +280,13 @@ export const PulseUIFlowRole = {
     identityAware: true,
     organismAware: true,
     diagnosticsLinked: true,
-    evidenceLinked: true
+    evidenceLinked: true,
+    vitalsLinked: true
   },
 
-  pulseContract: "PulseUIFlow-v4",
-  meshContract: "PulseMesh-v20-ready",
-  sendContract: "PulseSend-v20-ready"
+  pulseContract: "PulseUIFlow-v5",
+  meshContract: "PulseMesh-v24-ready",
+  sendContract: "PulseSend-v24-ready"
 };
 
 const hasWindow = typeof window !== "undefined";
@@ -281,7 +299,7 @@ function safeConsoleLog(...args) {
 
 const FLOW_LAYER_ID   = "UI-FLOW";
 const FLOW_LAYER_NAME = "PULSE UI FLOW ENGINE";
-const FLOW_LAYER_VER  = "20.0-Immortal-Evo+++";
+const FLOW_LAYER_VER  = "24.0-Immortal-Evo++++";
 
 const FLOW_DIAGNOSTICS_ENABLED =
   hasWindow &&
@@ -305,12 +323,12 @@ function logFlow(stage, details = {}) {
       })
     );
   } else {
-    safeConsoleLog("[PulseUIFlow-v20]", stage, details);
+    safeConsoleLog("[PulseUIFlow-v24]", stage, details);
   }
 }
 
 // ============================================================================
-/** INTENT MAP — v20 (same core, extended lanes/hooks) */
+// INTENT MAP — v24 (same core, extended lanes/hooks)
 // ============================================================================
 
 const UIIntentFlowMap = Object.freeze({
@@ -388,7 +406,7 @@ const UIIntentFlowMap = Object.freeze({
 });
 
 // ============================================================================
-// FLOW STATE — v20 IMMORTAL VISIBILITY
+// FLOW STATE — v24 IMMORTAL VISIBILITY
 // ============================================================================
 
 const UIFlowState = {
@@ -399,6 +417,7 @@ const UIFlowState = {
   sessionId: null,
   lastEvidence: null,
   lastDiagnostics: null,
+  lastVitals: null,
 
   setCurrent(flowId) {
     this.last = this.current;
@@ -456,6 +475,11 @@ const UIFlowState = {
     appendFlowRecord("setDiagnosticsSummary", { diagnostics: this.lastDiagnostics });
   },
 
+  setVitalsSnapshot(vitals) {
+    this.lastVitals = vitals || null;
+    appendFlowRecord("setVitalsSnapshot", { vitals: this.lastVitals });
+  },
+
   snapshot() {
     return {
       schemaVersion: UIFLOW_SCHEMA_VERSION,
@@ -465,7 +489,8 @@ const UIFlowState = {
       adminTrusted: this.adminTrusted,
       sessionId: this.sessionId,
       lastEvidence: this.lastEvidence,
-      lastDiagnostics: this.lastDiagnostics
+      lastDiagnostics: this.lastDiagnostics,
+      lastVitals: this.lastVitals
     };
   }
 };
@@ -491,6 +516,16 @@ function getAdminDiagnosticsModel() {
 function getEvidenceSummary() {
   if (!hasWindow) return null;
   return window.PulseEvidenceSummary || null;
+}
+
+function getVitalsSnapshot() {
+  if (!hasWindow) return null;
+  const store = window.PulseVitalsStore || globalThis.PulseVitalsStore || null;
+  try {
+    return store ? store.tail(64) : null;
+  } catch {
+    return null;
+  }
 }
 
 async function evolveToIntent(flowDef, extraPayload = {}) {
@@ -526,7 +561,7 @@ function mirrorStateToCoreMemory() {
     if (CoreMemory && typeof CoreMemory.setRouteSnapshot === "function") {
       CoreMemory.setRouteSnapshot("uiFlowState", {
         schemaVersion: UIFLOW_SCHEMA_VERSION,
-        version: "20.0-Immortal-Evo+++",
+        version: "24.0-Immortal-Evo++++",
         routeId: "uiFlowState",
         state: UIFlowState.snapshot(),
         timestamp: Date.now()
@@ -541,15 +576,17 @@ function buildDiagnosticsEnvelope() {
   const state = UIFlowState.snapshot();
   const diagModel = getAdminDiagnosticsModel();
   const evidence = getEvidenceSummary();
+  const vitals = getVitalsSnapshot();
 
   const envelope = {
     schemaVersion: UIFLOW_SCHEMA_VERSION,
-    version: "20.0-Immortal-Evo+++",
+    version: "24.0-Immortal-Evo++++",
     layer: FLOW_LAYER_ID,
     role: FLOW_LAYER_NAME,
     state,
     diagnostics: diagModel || null,
     evidence: evidence || null,
+    vitals: vitals || null,
     ts: Date.now()
   };
 
@@ -563,17 +600,17 @@ function buildDiagnosticsEnvelope() {
 }
 
 // ============================================================================
-// PUBLIC API — IMMORTAL UI FLOW ENGINE v20
+// PUBLIC API — IMMORTAL UI FLOW ENGINE v24
 // ============================================================================
 
 export async function initUIFlow() {
   appendFlowRecord("init_start", {});
 
-  logFlow("INIT_V20_START", {});
+  logFlow("INIT_V24_START", {});
 
   if (!hasWindow) {
     appendFlowRecord("init_no_window", {});
-    logFlow("INIT_V20_SKIPPED_NO_WINDOW", {});
+    logFlow("INIT_V24_SKIPPED_NO_WINDOW", {});
     return null;
   }
 
@@ -585,7 +622,7 @@ export async function initUIFlow() {
   try {
     if (typeof route === "function") {
       identityContext = await route("identity.check", {
-        reflexOrigin: "UIFlow-v20",
+        reflexOrigin: "UIFlow-v24",
         layer: "UI-Flow",
         binaryAware: true,
         dualBand: true
@@ -613,7 +650,7 @@ export async function initUIFlow() {
   UIFlowState.setAdminTrusted(adminTrusted);
   UIFlowState.setSessionId(sessionId);
 
-  // Evidence + diagnostics snapshots (if present)
+  // Evidence + diagnostics + vitals snapshots (if present)
   try {
     const diagModel = getAdminDiagnosticsModel();
     if (diagModel) {
@@ -630,6 +667,14 @@ export async function initUIFlow() {
         mismatch: evidence.mismatch || 0,
         omission: evidence.omission || 0,
         drift: evidence.drift || 0
+      });
+    }
+
+    const vitals = getVitalsSnapshot();
+    if (vitals) {
+      UIFlowState.setVitalsSnapshot({
+        count: vitals.length,
+        lastTs: vitals[vitals.length - 1]?.ts || null
       });
     }
   } catch {
@@ -654,7 +699,7 @@ export async function initUIFlow() {
     sessionId
   });
 
-  logFlow("INIT_V20_COMPLETE", {
+  logFlow("INIT_V24_COMPLETE", {
     flowId: initialFlow.id,
     identityTrusted,
     adminTrusted
@@ -740,7 +785,7 @@ export async function goToFlowIntent(flowId, options = {}) {
       const result = await route("uiFlowIntentCheck", {
         from: currentFlow ? currentFlow.id : null,
         to: targetFlow.id,
-        reflexOrigin: "UIFlow-v20",
+        reflexOrigin: "UIFlow-v24",
         layer: "UI-Flow",
         binaryAware: true,
         dualBand: true,
@@ -846,22 +891,28 @@ const PulseUIFlowAPI = {
 export default PulseUIFlowAPI;
 
 // ============================================================================
-// GLOBAL EXPOSURE OF IMMORTAL STORE + FLOW ENGINE (v20 + back-compat)
+// GLOBAL EXPOSURE OF IMMORTAL STORE + FLOW ENGINE (v24 + back-compat)
 // ============================================================================
 
 try {
   if (typeof window !== "undefined") {
-    // v20 primary
+    // v24 primary
     window.PulseUIFlow = initUIFlow;
     window.PulseUIFlowStore = PulseUIFlowStore;
-    window.PulseUIFlowV20 = {
+    window.PulseUIFlowV24 = {
       onError: (packet) => {
-        appendFlowRecord("error_spine_packet", packet);
-        logFlow("ERROR_SPINE_PACKET_V20", { signature: packet.signature });
+        appendFlowRecord("error_spine_packet_v24", packet);
+        logFlow("ERROR_SPINE_PACKET_V24", { signature: packet.signature });
       }
     };
 
     // back-compat aliases
+    window.PulseUIFlowV20 = window.PulseUIFlowV20 || {
+      onError: (packet) => {
+        appendFlowRecord("error_spine_packet_v20_alias", packet);
+        logFlow("ERROR_SPINE_PACKET_V20_ALIAS", { signature: packet.signature });
+      }
+    };
     window.PulseUIFlowV16 = window.PulseUIFlowV16 || {
       onError: (packet) => {
         appendFlowRecord("error_spine_packet_legacy", packet);

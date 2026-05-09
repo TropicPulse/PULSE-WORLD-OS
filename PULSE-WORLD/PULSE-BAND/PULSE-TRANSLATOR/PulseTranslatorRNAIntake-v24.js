@@ -1,15 +1,16 @@
 /* ============================================================================
 AI_EXPERIENCE_META = {
   identity: "PulseTranslator.RNAIntake",
-  version: "v17-IMMORTAL",
+  version: "v24-IMMORTAL-Evo+++",
   layer: "pulse_translator",
   role: "rna_intake_translator",
-  lineage: "RNAIntake-v11 → v12.4 → v14-Immortal → v17-IMMORTAL",
+  lineage: "RNAIntake-v11 → v12.4 → v14-Immortal → v17-IMMORTAL → v24-IMMORTAL-Evo+++",
 
   evo: {
     rnaIntake: true,
     genomeDriven: true,
     firestoreIntake: true,
+
     symbolicPrimary: true,
     binaryAware: true,
     dualBand: true,
@@ -19,15 +20,27 @@ AI_EXPERIENCE_META = {
     regionAware: true,
     tenantAware: true,
     partitionAware: true,
+    indexHintAware: true,
+    geoPointAware: true,
+    documentRefAware: true,
+    arrayShapeAware: true,
+    nestedObjectAware: true,
 
     deterministic: true,
     driftProof: true,
     pureCompute: true,
+    schemaVersioned: true,
+    advantageAware: true,
 
     zeroMutationOfInput: true,
     zeroNetwork: true,
     zeroFilesystem: true,
-    zeroFirestoreExecution: true
+    zeroFirestoreExecution: true,
+
+    // v24++ extras
+    modeAgnostic: true,
+    replayFriendly: true,
+    contractStrict: true
   },
 
   contract: {
@@ -76,10 +89,13 @@ EXPORT_META = {
   firestore: "no_execution"
 }
 ===============================================================================
-FILE: /pulse-translator/PulseTranslatorRNAIntake-v17.js
+FILE: /pulse-translator/PulseTranslatorRNAIntake-v24.js
 LAYER: THE RNA INTAKE TRANSLATOR (Firestore → Pulse)
+SCHEMA: RNA_INTAKE_SCHEMA_VERSION = "v4"
 ===============================================================================
 */
+
+const RNA_INTAKE_SCHEMA_VERSION = "v4";
 
 import {
   PulseFieldTypes,
@@ -87,13 +103,40 @@ import {
   validatePulseField
 } from "../PULSE-SPECS/PulseSpecsDNAGenome-v20.js";
 
+// ---------------------------------------------------------------------------
+// ROLE BLOCK — IMMORTAL RNA INTAKE ROLE (pure, zero‑IO)
+// ---------------------------------------------------------------------------
+export const RNAIntakeRole = {
+  type: "Organ",
+  subsystem: "PulseTranslator",
+  layer: "RNAIntake",
+  version: "24.0-IMMORTAL-Evo+++",
+  identity: "PulseTranslator.RNAIntake",
+
+  evo: {
+    deterministic: true,
+    pureCompute: true,
+    driftProof: true,
+    schemaVersioned: true,
+    genomeDriven: true,
+    firestoreIntake: true,
+    arrayShapeAware: true,
+    nestedObjectAware: true,
+    advantageAware: true
+  },
+
+  schemaVersion: RNA_INTAKE_SCHEMA_VERSION
+};
+
 /* ============================================================================
    inferPulseTypeFromFirestore(value)
    Genome‑driven type inference for Firestore runtime values.
-   v17 IMMORTAL: now aware of:
+   v24 IMMORTAL-Evo+++:
      • presence/harmonics/shifter
      • binary/pulse/band
      • region/tenant/partition/index hints
+     • GeoPoint / DocumentReference
+     • array shape + nested object awareness (schema only, no recursion explosion)
 =============================================================================== */
 export function inferPulseTypeFromFirestore(value) {
   if (value === null || value === undefined) {
@@ -101,13 +144,23 @@ export function inferPulseTypeFromFirestore(value) {
   }
 
   // Firestore Timestamp
-  if (value && value.toDate && typeof value.toDate === "function") {
+  if (value && typeof value.toDate === "function") {
     return PulseFieldTypes.TIMESTAMP;
   }
 
   // Firestore Bytes
-  if (value && value.toUint8Array && typeof value.toUint8Array === "function") {
+  if (value && typeof value.toUint8Array === "function") {
     return PulseFieldTypes.BINARY;
+  }
+
+  // Firestore GeoPoint (duck-typed)
+  if (looksLikeGeoPoint(value)) {
+    return PulseFieldTypes.GEOPOINT ?? PulseFieldTypes.OBJECT;
+  }
+
+  // Firestore DocumentReference (duck-typed)
+  if (looksLikeDocumentRef(value)) {
+    return PulseFieldTypes.DOCUMENT_REF ?? PulseFieldTypes.STRING;
   }
 
   const t = typeof value;
@@ -124,14 +177,19 @@ export function inferPulseTypeFromFirestore(value) {
   if (t === "number") return PulseFieldTypes.NUMBER;
   if (t === "boolean") return PulseFieldTypes.BOOLEAN;
 
-  if (Array.isArray(value)) return PulseFieldTypes.ARRAY;
+  if (Array.isArray(value)) {
+    // v24: array shape awareness (but still schema-only, no deep recursion)
+    return PulseFieldTypes.ARRAY;
+  }
 
   if (t === "object") {
-    // IMMORTAL: presence/harmonics/shifter detection
+    // IMMORTAL: presence/harmonics/shifter/index detection
     if (looksLikePresence(value)) return PulseFieldTypes.PRESENCE;
     if (looksLikeHarmonics(value)) return PulseFieldTypes.HARMONICS;
     if (looksLikeShifter(value)) return PulseFieldTypes.PULSE_SHIFTER;
     if (looksLikeIndexHint(value)) return PulseFieldTypes.INDEX_HINT;
+
+    // generic nested object
     return PulseFieldTypes.OBJECT;
   }
 
@@ -141,22 +199,37 @@ export function inferPulseTypeFromFirestore(value) {
 /* ============================================================================
    translateFirestoreField(fieldName, value)
    Converts a Firestore field → canonical PulseField object.
+   v24: adds schemaVersion + ruleHints (if available) + arrayShapeHint.
 =============================================================================== */
 export function translateFirestoreField(fieldName, value) {
   const pulseType = inferPulseTypeFromFirestore(value);
 
+  const nullable = value === null || value === undefined;
+  const originalValueType = typeof value;
+
   const field = {
+    schemaVersion: RNA_INTAKE_SCHEMA_VERSION,
     name: normalizeFieldName(fieldName),
     type: pulseType,
     source: "firestore",
-    originalValueType: typeof value,
-    nullable: value === null || value === undefined
+    originalValueType,
+    nullable
   };
 
   // Nullable wrapper
-  if (field.nullable && field.type !== PulseFieldTypes.NULLABLE) {
+  if (nullable && field.type !== PulseFieldTypes.NULLABLE) {
     field.type = PulseFieldTypes.NULLABLE;
-    field.innerType = PulseFieldTypes.JSON;
+    field.innerType = inferInnerTypeForNullable(value);
+  }
+
+  // v24: array shape hint (schema-only, shallow)
+  if (Array.isArray(value)) {
+    field.arrayShapeHint = inferArrayShapeHint(value);
+  }
+
+  // v24: rule hints from genome rules (if present)
+  if (PulseFieldRules && typeof PulseFieldRules.inferRuleHints === "function") {
+    field.ruleHints = PulseFieldRules.inferRuleHints(field) || null;
   }
 
   validatePulseField(field);
@@ -166,6 +239,7 @@ export function translateFirestoreField(fieldName, value) {
 /* ============================================================================
    translateFirestoreDocument(docData)
    Converts a plain Firestore JS object → PulseField schema map.
+   v24: attaches schemaVersion + role identity on the map envelope.
 =============================================================================== */
 export function translateFirestoreDocument(docData = {}) {
   const out = {};
@@ -174,7 +248,11 @@ export function translateFirestoreDocument(docData = {}) {
     out[key] = translateFirestoreField(key, value);
   }
 
-  return out;
+  return {
+    schemaVersion: RNA_INTAKE_SCHEMA_VERSION,
+    role: RNAIntakeRole.identity,
+    fields: out
+  };
 }
 
 /* ============================================================================
@@ -183,7 +261,7 @@ export function translateFirestoreDocument(docData = {}) {
 =============================================================================== */
 export function translateFirestoreSnapshot(snapshot) {
   if (!snapshot || typeof snapshot.data !== "function") {
-    throw new Error("PulseTranslatorRNAIntake-v17: invalid snapshot");
+    throw new Error("PulseTranslatorRNAIntake-v24: invalid snapshot");
   }
 
   const data = snapshot.data() || {};
@@ -195,13 +273,41 @@ export function translateFirestoreSnapshot(snapshot) {
 =============================================================================== */
 
 function normalizeFieldName(name) {
-  return name.trim().toLowerCase().replace(/[^a-z0-9_]/g, "_");
+  return String(name || "")
+    .trim()
+    .toLowerCase()
+    .replace(/[^a-z0-9_]/g, "_");
+}
+
+function inferInnerTypeForNullable(value) {
+  if (value === null || value === undefined) {
+    return PulseFieldTypes.JSON;
+  }
+  // reuse inference but avoid NULLABLE again
+  const t = inferPulseTypeFromFirestore(value);
+  return t === PulseFieldTypes.NULLABLE ? PulseFieldTypes.JSON : t;
+}
+
+// v24: shallow array shape hint (no recursion explosion)
+function inferArrayShapeHint(arr) {
+  if (!Array.isArray(arr) || arr.length === 0) {
+    return { kind: "empty", innerType: null };
+  }
+
+  const sample = arr[0];
+  const innerType = inferPulseTypeFromFirestore(sample);
+  return {
+    kind: "homogeneous",
+    innerType
+  };
 }
 
 // IMMORTAL band/presence/harmonics/shifter detectors (schema-only)
 function looksLikeBand(v) {
-  return typeof v === "string" &&
-    (v === "symbolic" || v === "binary" || v === "dual");
+  return (
+    typeof v === "string" &&
+    (v === "symbolic" || v === "binary" || v === "dual")
+  );
 }
 
 function looksLikeRegion(v) {
@@ -230,4 +336,24 @@ function looksLikeShifter(obj) {
 
 function looksLikeIndexHint(obj) {
   return obj && typeof obj === "object" && obj.__indexHint === true;
+}
+
+// Firestore GeoPoint duck-typing
+function looksLikeGeoPoint(v) {
+  return (
+    v &&
+    typeof v === "object" &&
+    typeof v.latitude === "number" &&
+    typeof v.longitude === "number"
+  );
+}
+
+// Firestore DocumentReference duck-typing
+function looksLikeDocumentRef(v) {
+  return (
+    v &&
+    typeof v === "object" &&
+    typeof v.path === "string" &&
+    typeof v.id === "string"
+  );
 }

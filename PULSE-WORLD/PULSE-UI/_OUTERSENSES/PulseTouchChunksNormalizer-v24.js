@@ -1,17 +1,18 @@
 // ============================================================================
-//  PulsePresenceNormalizer-SMART v2.0 (v14 IMMORTAL UPGRADE)
+//  PulsePresenceNormalizer-SMART v2.4 (v24 IMMORTAL UPGRADE)
 //  Contract-driven bridge: A → Z
 //  No guessing. No heuristics. No fallback decoding.
-//  Fully aligned with PulseChunks-v2.0-MULTILANE-HYBRID
-//  v14 IMMORTAL: LocalStorage mirroring of ALL normalization events
+//  Fully aligned with PulseChunks-v24-MULTILANE-Immortal
+//  v24 IMMORTAL: LocalStorage mirroring of ALL normalization events
 // ============================================================================
+
 /*
 AI_EXPERIENCE_META = {
   identity: "PulsePresenceNormalizer",
-  version: "v12.5-Evo-SMART-HYBRID",
+  version: "v24-Immortal-SMART-HYBRID",
   layer: "frontend",
   role: "chunk_normalizer",
-  lineage: "PulseOS-v12",
+  lineage: "PulseOS-v24",
 
   evo: {
     binaryAware: true,
@@ -22,11 +23,13 @@ AI_EXPERIENCE_META = {
     smartNormalizer: true,
     unwrapOneLayer: true,
 
-    // v14 IMMORTAL
+    // IMMORTAL
     offlineFirst: true,
     localStoreMirrored: true,
     replayAware: true,
-    modeAgnostic: true
+    modeAgnostic: true,
+    dnaAware: true,
+    meshMemoryAligned: true
   },
 
   contract: {
@@ -68,10 +71,10 @@ const db =
   null;
 
 // ============================================================================
-// IMMORTAL LOCALSTORAGE MIRROR — PulsePresenceNormalizerStore
+// IMMORTAL LOCALSTORAGE MIRROR — PulsePresenceNormalizerStore v24
 // ============================================================================
 
-const PN_LS_KEY = "PulsePresenceNormalizer.v14.buffer";
+const PN_LS_KEY = "PulsePresenceNormalizer.v24.buffer";
 const PN_LS_MAX = 2000;
 
 function hasLocalStorage() {
@@ -104,7 +107,9 @@ function savePNBuffer(buf) {
     const trimmed =
       buf.length > PN_LS_MAX ? buf.slice(buf.length - PN_LS_MAX) : buf;
     window.localStorage.setItem(PN_LS_KEY, JSON.stringify(trimmed));
-  } catch {}
+  } catch {
+    // never throw
+  }
 }
 
 function appendPresenceRecord(kind, payload) {
@@ -160,17 +165,19 @@ export function normalizeImage(value, mime = "image/png") {
 
   let out = null;
 
-  if (typeof value === "string") out = value;
-  else if (value && typeof value.base64 === "string")
+  if (typeof value === "string") {
+    out = value;
+  } else if (value && typeof value.base64 === "string") {
     out = `data:${mime};base64,${value.base64}`;
-  else if (value instanceof Uint8Array)
+  } else if (value instanceof Uint8Array) {
     out = URL.createObjectURL(new Blob([value], { type: mime }));
-  else if (value instanceof ArrayBuffer)
+  } else if (value instanceof ArrayBuffer) {
     out = URL.createObjectURL(new Blob([new Uint8Array(value)], { type: mime }));
-  else if (value instanceof Blob)
+  } else if (value instanceof Blob) {
     out = URL.createObjectURL(value);
-  else if (value && typeof value.url === "string")
+  } else if (value && typeof value.url === "string") {
     out = value.url;
+  }
 
   appendPresenceRecord("normalizeImage_out", { out });
   return out;
@@ -196,7 +203,7 @@ function normalizeJSON(value) {
   appendPresenceRecord("normalizeJSON_in", { value });
 
   value = unwrap(value);
-  const out = typeof value === "object" ? value : null;
+  const out = typeof value === "object" && value !== null ? value : null;
 
   appendPresenceRecord("normalizeJSON_out", { out });
   return out;
@@ -212,12 +219,13 @@ function normalizeBinary(value, mime = "application/octet-stream") {
 
   let out = null;
 
-  if (value instanceof Uint8Array)
+  if (value instanceof Uint8Array) {
     out = new Blob([value], { type: mime });
-  else if (value instanceof ArrayBuffer)
+  } else if (value instanceof ArrayBuffer) {
     out = new Blob([new Uint8Array(value)], { type: mime });
-  else if (value instanceof Blob)
+  } else if (value instanceof Blob) {
     out = value;
+  }
 
   appendPresenceRecord("normalizeBinary_out", { out });
   return out;
@@ -296,4 +304,6 @@ try {
     g.PulseChunkNormalizer = PulseChunkNormalizer;
     g.PulsePresenceNormalizerStore = PulsePresenceNormalizerStore;
   }
-} catch {}
+} catch {
+  // never throw
+}

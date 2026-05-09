@@ -55,7 +55,7 @@ import * as PulseRouterEvolutionaryInstincts  from "./PulseRouterEvolutionaryIns
 import * as PulseRouterEvolutionaryThought    from "./PulseRouterEvolutionaryThought.js";
 
 import { PulseRouter }                        from "./PulseRouter-v16.js";
-import { createBinaryRouter }                 from "./PulseBinaryRouter-v16.js";
+import { createBinaryRouter }                 from "./PulseBinaryRouter-v24.js";
 import { PulseRouterCommandments }            from "./PulseRouterCommandments.js";
 import { PulseEarnRouter }                    from "./PulseRouterEarn-v16.js";
 

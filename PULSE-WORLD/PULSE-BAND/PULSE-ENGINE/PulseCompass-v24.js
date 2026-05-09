@@ -1,20 +1,21 @@
 // ============================================================================
-// PulseCompass-v16-IMMORTAL+.js — Motion Orchestrator & Telemetry Core
+// PulseCompass-v24-Immortal-Evo+++.js — Motion Orchestrator & Telemetry Core
 //  • Dynamic lane selection (forward/backward/…)
 //  • Last-lane memory + health-aware auto-fallback
-//  • Full motion telemetry → Motion_Engine_Logs (via PulseDB-v16)
+//  • Full motion telemetry → Motion_Engine_Logs (via PulseDB-v24)
 //  • Prewarms all dependent lanes + DB
 //  • Zero compute logic — pure routing + reporting
 //  • Future lanes can be added without touching EngineBlock
+//  • Evidence-aware, diagnostics-aware, session-aware, dual-band
 // ============================================================================
 
 /*
 AI_EXPERIENCE_META = {
   identity: "PulseCompass",
-  version: "v16-IMMORTAL+",
+  version: "v24-Immortal-Evo+++",
   layer: "motion_orchestrator",
   role: "lane_selector_health_monitor_and_reporter",
-  lineage: "PulseMotionEngine-v16 → PulseCompass-v16-IMMORTAL+",
+  lineage: "PulseMotionEngine-v16 → PulseCompass-v16-IMMORTAL+ → PulseCompass-v24-Immortal-Evo+++",
 
   evo: {
     laneAgnostic: true,
@@ -31,21 +32,41 @@ AI_EXPERIENCE_META = {
     analyticsAware: true,
     presenceAware: true,
     advantageAware: true,
-    triHeartAware: true
+    triHeartAware: true,
+
+    // v24++ upgrades
+    dualBand: true,
+    binaryAware: true,
+    symbolicAware: true,
+    pulseBandAware: true,
+    sessionAware: true,
+    timeAxisAware: true,
+    diagnosticsAware: true,
+    evidenceAware: true,
+    adminPanelAware: true,
+    portalAware: true,
+    trustFabricAware: true,
+    organismMapAware: true
   },
 
   contract: {
     always: [
       "PulseMotionEngine",
-      "ForwardMotion-v16",
-      "BackwardMotion-v16",
-      "PulseDB-v16"
+      "ForwardMotion-v24-Immortal-Evo+++",
+      "BackwardMotion-v24-Immortal-Evo+++",
+      "PulseDB-v24",
+      "PulsePresence",
+      "PulseAdvantage",
+      "PulseWorldAdminPanel",
+      "AdminDiagnosticsOrgan"
     ],
     never: [
       "BinaryOrgan",
       "ShifterPulse",
       "routerCore",
-      "meshKernel"
+      "meshKernel",
+      "safeRoute",
+      "fetchViaCNS"
     ]
   }
 }
@@ -74,17 +95,29 @@ PAGE_INDEX = {
 }
 */
 
-// Lane wrappers
-import * as Forward from "./ForwardMotion-v16.js";
-import * as Backward from "./BackwardMotion-v16.js";
+// ============================================================================
+// GLOBAL HANDLE (membrane-safe)
+// ============================================================================
+const g =
+  typeof globalThis !== "undefined"
+    ? globalThis
+    : typeof global !== "undefined"
+    ? global
+    : typeof window !== "undefined"
+    ? window
+    : {};
 
-// DB adapter
-import { createPulseDB } from "./PulseDB-v16.js";
+// Lane wrappers (v24)
+import * as Forward from "./ForwardMotion-v24-Immortal-Evo+++.js";
+import * as Backward from "./BackwardMotion-v24-Immortal-Evo+++.js";
+
+// DB adapter (v24)
+import { createPulseDB } from "./PulseDB-v24-Immortal-Evo+++.js";
 
 // Memory keys
-const LAST_LANE_KEY   = "pulse:lastMotionLane";
-const MOTION_LOGS_KEY = "pulse:Motion_Engine_Logs";
-const HEALTH_KEY      = "pulse:Motion_Engine_Health";
+const LAST_LANE_KEY   = "pulse:v24:lastMotionLane";
+const MOTION_LOGS_KEY = "pulse:v24:Motion_Engine_Logs";
+const HEALTH_KEY      = "pulse:v24:Motion_Engine_Health";
 
 // Default lane if none stored
 const DEFAULT_LANE = "forward";
@@ -98,19 +131,19 @@ const LANES = {
 // Health thresholds
 const HEALTH_CONFIG = {
   minTicksForHealth: 8,
-  maxErrorRate: 0.25,      // not used yet, reserved
+  maxErrorRate: 0.25,      // reserved
   maxOverloadPressure: 0.9 // artery.pressure threshold
 };
 
 // ---------------------------------------------------------------------------
-// Orchestrator Factory
+// Orchestrator Factory — v24 IMMORTAL
 // ---------------------------------------------------------------------------
-export function createPulseCompass({ MemoryOrgan, trace = false } = {}) {
+export function createPulseCompass({ MemoryOrgan, trace = false, sessionId = null } = {}) {
   if (!MemoryOrgan) {
-    throw new Error("[PulseCompass] MemoryOrgan is required.");
+    throw new Error("[PulseCompass-v24] MemoryOrgan is required.");
   }
 
-  const PulseDB = createPulseDB({ MemoryOrgan, trace });
+  const PulseDB = createPulseDB({ MemoryOrgan, trace, sessionId });
 
   PulseDB.ensureCollection(MOTION_LOGS_KEY);
   PulseDB.ensureCollection(HEALTH_KEY);
@@ -132,8 +165,16 @@ export function createPulseCompass({ MemoryOrgan, trace = false } = {}) {
   // Logging helpers
   // ------------------------------
   function appendLog(entry) {
-    PulseDB.append(MOTION_LOGS_KEY, entry);
-    if (trace) console.log("[PulseCompass] Log appended:", entry);
+    const envelope = {
+      ...entry,
+      sessionId: sessionId || null,
+      schemaVersion: "v24",
+      version: "24.0-Immortal-Evo+++"
+    };
+    PulseDB.append(MOTION_LOGS_KEY, envelope);
+    if (trace && typeof console !== "undefined") {
+      console.log("[PulseCompass-v24] Log appended:", envelope);
+    }
   }
 
   function readLogs() {
@@ -149,11 +190,17 @@ export function createPulseCompass({ MemoryOrgan, trace = false } = {}) {
   }
 
   function writeHealthSnapshot(snapshot) {
-    PulseDB.append(HEALTH_KEY, {
+    const envelope = {
       timestamp: Date.now(),
-      snapshot
-    });
-    if (trace) console.log("[PulseCompass] Health snapshot recorded:", snapshot);
+      sessionId: sessionId || null,
+      snapshot,
+      schemaVersion: "v24",
+      version: "24.0-Immortal-Evo+++"
+    };
+    PulseDB.append(HEALTH_KEY, envelope);
+    if (trace && typeof console !== "undefined") {
+      console.log("[PulseCompass-v24] Health snapshot recorded:", envelope);
+    }
   }
 
   function computeLaneStats() {
@@ -168,7 +215,9 @@ export function createPulseCompass({ MemoryOrgan, trace = false } = {}) {
           patterns: 0,
           lastTickId: null,
           lastPressure: null,
-          lastLoad: null
+          lastLoad: null,
+          lastBand: null,
+          lastDnaTag: null
         };
       }
       stats[lane].ticks += 1;
@@ -178,6 +227,8 @@ export function createPulseCompass({ MemoryOrgan, trace = false } = {}) {
         stats[lane].lastPressure = log.artery.pressure ?? null;
         stats[lane].lastLoad = log.artery.load ?? null;
       }
+      if (log.band) stats[lane].lastBand = log.band;
+      if (log.dnaTag) stats[lane].lastDnaTag = log.dnaTag;
     }
 
     return stats;
@@ -209,7 +260,9 @@ export function createPulseCompass({ MemoryOrgan, trace = false } = {}) {
         score,
         ticks: s.ticks,
         lastPressure: s.lastPressure,
-        lastLoad: s.lastLoad
+        lastLoad: s.lastLoad,
+        lastBand: s.lastBand || null,
+        lastDnaTag: s.lastDnaTag || null
       };
     }
 
@@ -230,7 +283,9 @@ export function createPulseCompass({ MemoryOrgan, trace = false } = {}) {
       }
     }
 
-    if (trace) console.log("[PulseCompass] Best healthy lane:", bestLane, scores);
+    if (trace && typeof console !== "undefined") {
+      console.log("[PulseCompass-v24] Best healthy lane:", bestLane, scores);
+    }
     return bestLane;
   }
 
@@ -245,7 +300,9 @@ export function createPulseCompass({ MemoryOrgan, trace = false } = {}) {
     Lane = LANES[activeLane];
   }
 
-  if (trace) console.log("[PulseCompass] Initial active lane:", activeLane);
+  if (trace && typeof console !== "undefined") {
+    console.log("[PulseCompass-v24] Initial active lane:", activeLane);
+  }
 
   // -------------------------------------------------------------------------
   // Prewarm EVERYTHING this orchestrator depends on
@@ -264,10 +321,14 @@ export function createPulseCompass({ MemoryOrgan, trace = false } = {}) {
         lanes: Object.keys(LANES)
       });
 
-      if (trace) console.log("[PulseCompass] Prewarm complete.");
+      if (trace && typeof console !== "undefined") {
+        console.log("[PulseCompass-v24] Prewarm complete.");
+      }
       return true;
     } catch (err) {
-      console.warn("[PulseCompass] Prewarm failed:", err);
+      if (typeof console !== "undefined") {
+        console.warn("[PulseCompass-v24] Prewarm failed:", err);
+      }
       return false;
     }
   }
@@ -298,7 +359,6 @@ export function createPulseCompass({ MemoryOrgan, trace = false } = {}) {
       });
     }
 
-    // Health-aware auto-fallback: if current lane looks overloaded, pick best
     const scores = computeHealthScores();
     const current = scores[activeLane];
     if (current && current.lastPressure != null &&
@@ -317,7 +377,9 @@ export function createPulseCompass({ MemoryOrgan, trace = false } = {}) {
   // -------------------------------------------------------------------------
   function switchLane(lane) {
     if (!LANES[lane]) {
-      console.warn("[PulseCompass] Unknown lane:", lane);
+      if (typeof console !== "undefined") {
+        console.warn("[PulseCompass-v24] Unknown lane:", lane);
+      }
       return false;
     }
 
@@ -331,7 +393,9 @@ export function createPulseCompass({ MemoryOrgan, trace = false } = {}) {
       lane
     });
 
-    if (trace) console.log("[PulseCompass] Switched to lane:", lane);
+    if (trace && typeof console !== "undefined") {
+      console.log("[PulseCompass-v24] Switched to lane:", lane);
+    }
     return true;
   }
 

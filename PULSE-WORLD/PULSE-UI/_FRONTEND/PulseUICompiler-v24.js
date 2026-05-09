@@ -1,14 +1,14 @@
 /*
 ===============================================================================
-FILE: /PULSE-UI/_COMPONENTS_EVOLUTION/PulseUICompiler-v20.js
-LAYER: UI GENOME → RENDERABLE BLUEPRINT COMPILER — IMMORTAL v20
+FILE: /PULSE-UI/_FRONTEND/PulseUICompiler-v24.js
+LAYER: UI GENOME → RENDERABLE BLUEPRINT COMPILER — IMMORTAL v24
 ===============================================================================
 AI_EXPERIENCE_META = {
   identity: "PulseUI.Compiler",
-  version: "v20-Immortal",
+  version: "v24-Immortal",
   layer: "pulse_ui",
   role: "ui_genome_compiler",
-  lineage: "PulseUICompiler-v14 → v16 → v20-Immortal",
+  lineage: "PulseUICompiler-v14 → v16 → v20-Immortal → v24-Immortal",
 
   evo: {
     compilerOrgan: true,
@@ -28,7 +28,10 @@ AI_EXPERIENCE_META = {
     schemaVersioned: true,
     bandAware: true,
     advantageAware: true,
-    evolutionMetaAware: true
+    evolutionMetaAware: true,
+    runtimeHintsAware: true,
+    prewarmAware: true,
+    chunkProfileAware: true
   },
 
   contract: {
@@ -77,11 +80,11 @@ EXPORT_META = {
 */
 
 // ============================================================================
-// PULSE OS — v20-IMMORTAL
+// PULSE OS — v24-IMMORTAL
 // UI GENOME COMPILER — PURE, SYNC, ZERO-DOM
 // ============================================================================
 
-const COMPILER_SCHEMA_VERSION = "v3";
+const COMPILER_SCHEMA_VERSION = "v4";
 
 // ---------------------------------------------------------------------------
 // ROLE BLOCK
@@ -90,7 +93,7 @@ export const UICompilerRole = {
   type: "Organ",
   subsystem: "UI",
   layer: "Compiler",
-  version: "20.0-Immortal",
+  version: "24.0-Immortal",
   identity: "PulseUICompiler",
 
   evo: {
@@ -103,7 +106,10 @@ export const UICompilerRole = {
     iqVersionAware: true,
     bandAware: true,
     advantageAware: true,
-    evolutionMetaAware: true
+    evolutionMetaAware: true,
+    runtimeHintsAware: true,
+    prewarmAware: true,
+    chunkProfileAware: true
   }
 };
 
@@ -134,11 +140,16 @@ function extractRouteSlice(uiGenome, routeId) {
 function buildStyleBundle(routeSlice, comfortPattern) {
   const baseTokens = routeSlice?.styleTokens || {};
   const comfortTokens = comfortPattern?.styleTokens || {};
+  const bandTokens = comfortPattern?.bandTokens || {};
+  const advantageTokens = comfortPattern?.advantageTokens || {};
+
   return {
     schemaVersion: COMPILER_SCHEMA_VERSION,
     tokens: {
       ...baseTokens,
-      ...comfortTokens
+      ...comfortTokens,
+      ...bandTokens,
+      ...advantageTokens
     }
   };
 }
@@ -146,11 +157,14 @@ function buildStyleBundle(routeSlice, comfortPattern) {
 function buildAnimationBundle(routeSlice, comfortPattern) {
   const baseAnimations = routeSlice?.animations || {};
   const comfortAnimations = comfortPattern?.animations || {};
+  const microInteractions = comfortPattern?.microInteractions || {};
+
   return {
     schemaVersion: COMPILER_SCHEMA_VERSION,
     animations: {
       ...baseAnimations,
-      ...comfortAnimations
+      ...comfortAnimations,
+      ...microInteractions
     }
   };
 }
@@ -159,13 +173,19 @@ function buildRuntimeHints(routeSlice, iqVersion) {
   const prewarm = routeSlice?.prewarm || [];
   const criticalPaths = routeSlice?.criticalPaths || [];
   const comfortZones = routeSlice?.comfortZones || [];
+  const chunkProfiles = routeSlice?.chunkProfiles || [];
+  const band = routeSlice?.band || "dual";
+  const advantageField = routeSlice?.advantageField || null;
 
   return {
     schemaVersion: COMPILER_SCHEMA_VERSION,
     iqVersion: iqVersion || null,
     prewarm,
     criticalPaths,
-    comfortZones
+    comfortZones,
+    chunkProfiles,
+    band,
+    advantageField
   };
 }
 
@@ -190,7 +210,7 @@ export function createPulseUICompiler({
   function safeLog(stage, details = {}) {
     try {
       log(
-        "[PulseUICompiler-v20]",
+        "[PulseUICompiler-v24]",
         stage,
         JSON.stringify({
           schemaVersion: COMPILER_SCHEMA_VERSION,
@@ -230,7 +250,7 @@ export function createPulseUICompiler({
     if (!uiGenome || typeof uiGenome !== "object") {
       const errorInfo = "InvalidGenome";
       CompilerState.lastError = errorInfo;
-      warn("[PulseUICompiler-v20] INVALID_GENOME");
+      warn("[PulseUICompiler-v24] INVALID_GENOME");
       safeLog("COMPILE_INVALID_GENOME", { error: errorInfo, routeId: normalizedRoute });
       return { ok: false, error: errorInfo };
     }
@@ -242,7 +262,7 @@ export function createPulseUICompiler({
       if (!routeSlice) {
         const errorInfo = "RouteNotFound";
         CompilerState.lastError = errorInfo;
-        warn("[PulseUICompiler-v20] ROUTE_NOT_FOUND", normalizedRoute);
+        warn("[PulseUICompiler-v24] ROUTE_NOT_FOUND", normalizedRoute);
         safeLog("COMPILE_ROUTE_NOT_FOUND", {
           error: errorInfo,
           routeId: normalizedRoute
@@ -294,7 +314,7 @@ export function createPulseUICompiler({
     } catch (err) {
       const msg = String(err);
       CompilerState.lastError = msg;
-      warn("[PulseUICompiler-v20] COMPILE_ERROR", msg);
+      warn("[PulseUICompiler-v24] COMPILE_ERROR", msg);
       safeLog("COMPILE_ERROR", { error: msg });
       return { ok: false, error: "CompileError" };
     }
@@ -316,17 +336,17 @@ export function createPulseUICompiler({
 }
 
 // ---------------------------------------------------------------------------
-// GLOBAL REGISTRATION (OPTIONAL)
+// GLOBAL REGISTRATION (OPTIONAL, NO DOM TOUCH)
 // ---------------------------------------------------------------------------
 try {
-  if (typeof window !== "undefined") {
-    window.PulseUICompiler = createPulseUICompiler;
-  }
   if (typeof globalThis !== "undefined") {
     globalThis.PulseUICompiler = createPulseUICompiler;
   }
   if (typeof global !== "undefined") {
     global.PulseUICompiler = createPulseUICompiler;
+  }
+  if (typeof window !== "undefined") {
+    window.PulseUICompiler = createPulseUICompiler;
   }
 } catch {
   // never throw

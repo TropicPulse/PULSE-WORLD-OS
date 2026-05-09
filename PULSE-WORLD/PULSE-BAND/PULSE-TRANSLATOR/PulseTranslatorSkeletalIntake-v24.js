@@ -1,15 +1,16 @@
 /* ============================================================================
 AI_EXPERIENCE_META = {
   identity: "PulseTranslator.SkeletalIntake",
-  version: "v17-IMMORTAL",
+  version: "v24-IMMORTAL-Evo+++",
   layer: "pulse_translator",
   role: "skeletal_intake_translator",
-  lineage: "SkeletalIntake-v11 → v12.4 → v14-Immortal → v17-IMMORTAL",
+  lineage: "SkeletalIntake-v11 → v12.4 → v14-Immortal → v17-IMMORTAL → v24-IMMORTAL-Evo+++",
 
   evo: {
     skeletalIntake: true,
     genomeDriven: true,
     sqlIntake: true,
+
     symbolicPrimary: true,
     binaryAware: true,
     dualBand: true,
@@ -21,9 +22,19 @@ AI_EXPERIENCE_META = {
     partitionAware: true,
     indexAware: true,
 
+    // v24++ schema intelligence
+    enumAware: true,
+    currencyScaleAware: true,
+    jsonAware: true,
+    arrayAware: true,
+    bitfieldAware: true,
+
     deterministic: true,
     driftProof: true,
     pureCompute: true,
+    schemaVersioned: true,
+    advantageAware: true,
+    integrityAware: true,
 
     zeroMutationOfInput: true,
     zeroNetwork: true,
@@ -47,13 +58,6 @@ AI_EXPERIENCE_META = {
     ]
   }
 }
-//
-//  ██████╗ ██╗   ██╗██╗     ███████╗███████╗██╗    ██╗ ██████╗ ██████╗ ██╗     ██████╗
-//  ██╔══██ ██║   ██║██║     ██╔════╝██╔════╝██║    ██║██╔═══██╗██╔══██╗██║     ██╔══██╗
-//  ██████  ██║   ██║██║     ███████╗█████╗  ██║ █╗ ██║██║   ██║██████╔╝██║     ██║  ██║
-//  ██╔══   ██║   ██║██║     ╚════██║██╔══╝  ██║███╗██║██║   ██║██╔══██╗██║     ██║  ██║
-//  ██      ╚██████╔╝███████╗███████║███████╗╚███╔███╔╝╚██████╔╝██║  ██║███████╗██████╔╝
-//  ╚╝       ╚═════╝ ╚══════╝╚═════╝ ╚══════╝ ╚══╝╚══╝  ╚═════╝ ╚═╝  ╚═╝╚══════╝╚═════╝
 ===============================================================================
 EXPORT_META = {
   organ: "PulseTranslator.SkeletalIntake",
@@ -80,28 +84,25 @@ EXPORT_META = {
   sql: "no_execution"
 }
 ===============================================================================
-FILE: /pulse-translator/PulseTranslatorSkeletalIntake.js
-LAYER: THE SKELETAL INTAKE TRANSLATOR (SQL → Pulse)
+FILE: /pulse-translator/PulseTranslatorSkeletalIntake-v24.js
 ===============================================================================
 */
 
 import {
   SQLToPulse,
   PulseFieldTypes,
+  PulseFieldRules,
   validatePulseField
 } from "../PULSE-SPECS/PulseSpecsDNAGenome-v20.js";
+
+const SKELETAL_SCHEMA_VERSION = "v4";
 
 /* ============================================================================
    normalizeSQLType(sqlType)
    Handles DECIMAL(x,y), NUMERIC(x,y), VARCHAR(n), ENUM('a','b'), etc.
 =============================================================================== */
 function normalizeSQLType(sqlType = "") {
-  const upper = sqlType.toUpperCase().trim();
-
-  // Strip parameters: VARCHAR(255) → VARCHAR
-  const base = upper.replace(/\(.+\)/g, "");
-
-  return base;
+  return sqlType.toUpperCase().trim().replace(/\(.+\)/g, "");
 }
 
 /* ============================================================================
@@ -111,7 +112,6 @@ function normalizeSQLType(sqlType = "") {
 function extractEnumValues(sqlType = "") {
   const match = sqlType.match(/\((.+)\)/);
   if (!match) return [];
-
   return match[1]
     .split(",")
     .map(v => v.trim().replace(/^'|'$/g, ""))
@@ -119,20 +119,30 @@ function extractEnumValues(sqlType = "") {
 }
 
 /* ============================================================================
+   extractDecimalScale(sqlType)
+   DECIMAL(18,2) → 2
+=============================================================================== */
+function extractDecimalScale(sqlType = "") {
+  const m = sqlType.match(/\(\s*\d+\s*,\s*(\d+)\s*\)/);
+  return m ? Number(m[1]) : 2;
+}
+
+/* ============================================================================
    translateSQLColumn(sqlType, columnName)
-   Converts a SQL column definition → PulseField object.
-   v17 IMMORTAL: supports:
-     • DECIMAL → currency
-     • ENUM → enum
+   v24 IMMORTAL EVO+++:
+     • DECIMAL → currency w/ scale
+     • ENUM → enum w/ allowedValues
      • JSON → json
      • VARBINARY/BLOB → binary
      • BIT → bitfield
-     • presence/harmonics/shifter detection (schema-only)
+     • presence/harmonics/shifter detection
      • region/tenant/partition/index-hint detection
+     • nullable envelope
+     • ruleHints + integrity metadata
 =============================================================================== */
 export function translateSQLColumn(sqlType, columnName) {
   if (!sqlType || !columnName) {
-    throw new Error("PulseTranslatorSkeletalIntake-v17: missing sqlType or columnName");
+    throw new Error("PulseTranslatorSkeletalIntake-v24: missing sqlType or columnName");
   }
 
   const normalizedType = normalizeSQLType(sqlType);
@@ -153,22 +163,26 @@ export function translateSQLColumn(sqlType, columnName) {
     pulseType = PulseFieldTypes.JSON;
   }
 
-  // IMMORTAL band/presence/harmonics/shifter detection (schema-only)
+  // BIT → bitfield
+  if (normalizedType === "BIT") {
+    pulseType = PulseFieldTypes.BITFIELD ?? PulseFieldTypes.NUMBER;
+  }
+
+  // IMMORTAL schema-only detectors
   if (looksLikeBand(columnName)) pulseType = PulseFieldTypes.BAND;
   if (looksLikePresence(columnName)) pulseType = PulseFieldTypes.PRESENCE;
   if (looksLikeHarmonics(columnName)) pulseType = PulseFieldTypes.HARMONICS;
   if (looksLikeShifter(columnName)) pulseType = PulseFieldTypes.PULSE_SHIFTER;
 
-  // IMMORTAL region/tenant/partition/index-hint detection
   if (looksLikeRegion(columnName)) pulseType = PulseFieldTypes.REGION_CODE;
   if (looksLikeTenant(columnName)) pulseType = PulseFieldTypes.TENANT_ID;
   if (looksLikePartition(columnName)) pulseType = PulseFieldTypes.PARTITION_KEY;
   if (looksLikeIndexHint(columnName)) pulseType = PulseFieldTypes.INDEX_HINT;
 
-  // Detect NULLABLE (SQL: "columnName TYPE NULL")
   const isNullable = /\bNULL\b/i.test(sqlType);
 
   const field = {
+    schemaVersion: SKELETAL_SCHEMA_VERSION,
     name: normalizeFieldName(columnName),
     type: pulseType,
     source: "sql",
@@ -180,10 +194,20 @@ export function translateSQLColumn(sqlType, columnName) {
     field.allowedValues = extractEnumValues(sqlType);
   }
 
-  // Wrap nullable fields
+  // DECIMAL scale
+  if (pulseType === PulseFieldTypes.CURRENCY) {
+    field.scale = extractDecimalScale(sqlType);
+  }
+
+  // NULLABLE envelope
   if (isNullable) {
     field.type = PulseFieldTypes.NULLABLE;
     field.innerType = pulseType;
+  }
+
+  // v24 ruleHints (if genome supports it)
+  if (PulseFieldRules?.inferRuleHints) {
+    field.ruleHints = PulseFieldRules.inferRuleHints(field) || null;
   }
 
   validatePulseField(field);
@@ -192,13 +216,6 @@ export function translateSQLColumn(sqlType, columnName) {
 
 /* ============================================================================
    translateSQLSchema(schemaObject)
-   Example:
-   {
-     id: "INT",
-     name: "VARCHAR(255)",
-     price: "DECIMAL(18,2)",
-     created_at: "TIMESTAMP NULL"
-   }
 =============================================================================== */
 export function translateSQLSchema(schemaObject = {}) {
   const out = {};
@@ -213,14 +230,15 @@ export function translateSQLSchema(schemaObject = {}) {
 /* ============================================================================
    translateSQLQuery(queryString)
    Extracts SELECT fields → PulseField usage map.
-   v17 IMMORTAL: deterministic, pure, zero‑SQL execution.
+   v24: deterministic, pure, zero‑SQL execution.
 =============================================================================== */
 export function translateSQLQuery(queryString = "") {
   const fields = extractSelectFields(queryString);
 
   return fields.map((f) => ({
+    schemaVersion: SKELETAL_SCHEMA_VERSION,
     name: normalizeFieldName(f),
-    type: PulseFieldTypes.STRING, // default inference
+    type: PulseFieldTypes.STRING,
     source: "sql-query"
   }));
 }
@@ -229,42 +247,27 @@ export function translateSQLQuery(queryString = "") {
    Helpers
 =============================================================================== */
 function normalizeFieldName(name) {
-  return name.trim().toLowerCase().replace(/[^a-z0-9_]/g, "_");
+  return String(name || "")
+    .trim()
+    .toLowerCase()
+    .replace(/[^a-z0-9_]/g, "_");
 }
 
 function extractSelectFields(query) {
   const match = query.match(/select\s+(.+?)\s+from/i);
   if (!match) return [];
-
-  const raw = match[1];
-  return raw
+  return match[1]
     .split(",")
     .map((f) => f.trim().replace(/`/g, ""))
     .filter(Boolean);
 }
 
 /* IMMORTAL schema-only detectors */
-function looksLikeBand(name) {
-  return /band/i.test(name);
-}
-function looksLikePresence(name) {
-  return /presence/i.test(name);
-}
-function looksLikeHarmonics(name) {
-  return /harmonics/i.test(name);
-}
-function looksLikeShifter(name) {
-  return /shifter/i.test(name);
-}
-function looksLikeRegion(name) {
-  return /region|country|locale/i.test(name);
-}
-function looksLikeTenant(name) {
-  return /tenant|account|org/i.test(name);
-}
-function looksLikePartition(name) {
-  return /partition|shard|segment/i.test(name);
-}
-function looksLikeIndexHint(name) {
-  return /index|idx|key/i.test(name);
-}
+function looksLikeBand(name) { return /band/i.test(name); }
+function looksLikePresence(name) { return /presence/i.test(name); }
+function looksLikeHarmonics(name) { return /harmonics/i.test(name); }
+function looksLikeShifter(name) { return /shifter/i.test(name); }
+function looksLikeRegion(name) { return /region|country|locale/i.test(name); }
+function looksLikeTenant(name) { return /tenant|account|org/i.test(name); }
+function looksLikePartition(name) { return /partition|shard|segment/i.test(name); }
+function looksLikeIndexHint(name) { return /index|idx|key/i.test(name); }

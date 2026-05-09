@@ -1,17 +1,17 @@
 /*
 ===============================================================================
-FILE: /PULSE-UI/PulseUIErrors-v20-Immortal-Evo+++.js
-UNIVERSAL ERROR SPINE — v20-Immortal-Evo+++
+FILE: /PULSE-UI/PulseUIErrors-v24-Immortal-Evo+++.js
+UNIVERSAL ERROR SPINE — v24-Immortal-Evo+++
 Membrane-Safe • Drift-Safe • Organism-Wide Error Unifier
 Offline-First • CoreMemory-Mirrored • Evidence-Aware • Portal/Overmind-Aware
 Multi-Mind • Multi-Band • Session-Aware • Future-Evolution-Ready
 ===============================================================================
 AI_EXPERIENCE_META = {
   identity: "PulseUIErrors",
-  version: "v20-Immortal-Evo+++",
+  version: "v24-Immortal-Evo+++",
   layer: "pulse_ui",
   role: "ui_error_spine",
-  lineage: "PulseUIErrors-v12 → v14-Immortal → v16-Immortal → v20-Immortal-Evo+++",
+  lineage: "PulseUIErrors-v12 → v14-Immortal → v16-Immortal → v20-Immortal-Evo+++ → v24-Immortal-Evo+++",
 
   evo: {
     presenceAware: true,
@@ -37,7 +37,7 @@ AI_EXPERIENCE_META = {
     unifiedAdvantageField: true,
     futureEvolutionReady: true,
 
-    // v20++ upgrades
+    // v20++ / v24 upgrades
     portalAware: true,
     overmindAware: true,
     adminPanelAware: true,
@@ -114,10 +114,10 @@ const EvidenceBus = PulseProofBridge.evidenceBus || null;
 const DiagnosticsBus = PulseProofBridge.diagnosticsBus || null;
 
 // ============================================================================
-// IMMORTAL LOCALSTORAGE MIRROR — PulseUIErrorStore v20
+// IMMORTAL LOCALSTORAGE MIRROR — PulseUIErrorStore v24
 // ============================================================================
-const UIE_SCHEMA_VERSION = "v4";
-const UIE_LS_KEY = "PulseUIErrors.v20.buffer";
+const UIE_SCHEMA_VERSION = "v5";
+const UIE_LS_KEY = "PulseUIErrors.v24.buffer";
 const UIE_LS_MAX = 4000;
 
 function uieHasLocalStorage() {
@@ -150,7 +150,9 @@ function uieSaveBuffer(buf) {
     const trimmed =
       buf.length > UIE_LS_MAX ? buf.slice(buf.length - UIE_LS_MAX) : buf;
     window.localStorage.setItem(UIE_LS_KEY, JSON.stringify(trimmed));
-  } catch {}
+  } catch {
+    // never throw
+  }
 }
 
 function uieHashString(str) {
@@ -166,7 +168,6 @@ const UIE_DEDUP_WINDOW_MS = 5000;
 let uieLastEnvelopeByKey = Object.create(null);
 
 function uieShouldSample(kind, envelope) {
-  // simple sampling hook; can be extended later
   const severity = envelope?.severity || "error";
   if (severity === "fatal" || severity === "critical") return true;
   if (severity === "warning") return Math.random() < 0.5;
@@ -208,7 +209,7 @@ function appendUIErrorRecord(kind, payload) {
   try {
     Core?.setRouteSnapshot?.("ui_errors", {
       schemaVersion: UIE_SCHEMA_VERSION,
-      version: "20.0-Immortal-Evo+++",
+      version: "24.0-Immortal-Evo+++",
       kind,
       entry,
       timestamp: Date.now()
@@ -219,7 +220,7 @@ function appendUIErrorRecord(kind, payload) {
   try {
     Core?.appendLog?.("ui_errors_log", {
       schemaVersion: UIE_SCHEMA_VERSION,
-      version: "20.0-Immortal-Evo+++",
+      version: "24.0-Immortal-Evo+++",
       kind,
       entry
     });
@@ -247,7 +248,7 @@ export const PulseUIErrorStore = {
     try {
       Core?.setRouteSnapshot?.("ui_errors", {
         schemaVersion: UIE_SCHEMA_VERSION,
-        version: "20.0-Immortal-Evo+++",
+        version: "24.0-Immortal-Evo+++",
         cleared: true,
         timestamp: Date.now()
       });
@@ -410,13 +411,13 @@ function uieBuildEnvelopeId(packet, signature) {
 }
 
 // ============================================================================
-// UNIVERSAL ERROR SPINE v20
+// UNIVERSAL ERROR SPINE v24
 // ============================================================================
 export const PulseUIErrors = (() => {
   const spineMeta = Object.freeze({
     layer: "PulseUIErrors",
     role: "universal-error-spine",
-    version: "20.0-Immortal-Evo+++",
+    version: "24.0-Immortal-Evo+++",
     schemaVersion: UIE_SCHEMA_VERSION,
     evo: {
       driftSafe: true,
@@ -455,7 +456,8 @@ export const PulseUIErrors = (() => {
     try {
       const portal = typeof window !== "undefined" ? window.PulsePortal : null;
       const env = portal?.env || null;
-      const meta = portal?.meta || portal?.meta || null;
+      const meta = portal?.meta || null;
+
       const route =
         (typeof window !== "undefined" && window.location?.pathname) ||
         meta?.route ||
@@ -587,7 +589,7 @@ export const PulseUIErrors = (() => {
       window?.PulseEvolutionaryPage?.onError?.(envelope);
     } catch {}
 
-    // UI Flow (v16+ / v20+)
+    // UI Flow (v16+ / v20+ / v24+)
     try {
       window?.PulseUIFlowV13?.onError?.(envelope);
     } catch {}
@@ -637,7 +639,7 @@ export const PulseUIErrors = (() => {
         executionContext: {
           sceneType: "error",
           workloadClass: "ui-error",
-          dispatchSignature: "PulseUIErrors.v20",
+          dispatchSignature: "PulseUIErrors.v24",
           shapeSignature: "error-spine",
           extensionId: "PulseUIErrors"
         },
@@ -702,7 +704,7 @@ export const PulseUIErrors = (() => {
       });
     } catch {}
 
-    // Optional: iframe / worker bridges (future hooks)
+    // Optional: iframe / worker bridges (future hooks, no WorkerGlobalScope)
     try {
       window.addEventListener("message", (evt) => {
         if (!evt?.data || !evt.data.__PulseUIError) return;
@@ -739,7 +741,7 @@ export const PulseUIErrors = (() => {
 export default PulseUIErrors;
 
 // ============================================================================
-// GLOBAL EXPOSURE OF IMMORTAL STORE + ERROR SPINE v20
+// GLOBAL EXPOSURE OF IMMORTAL STORE + ERROR SPINE v24
 // ============================================================================
 try {
   if (typeof window !== "undefined") {
