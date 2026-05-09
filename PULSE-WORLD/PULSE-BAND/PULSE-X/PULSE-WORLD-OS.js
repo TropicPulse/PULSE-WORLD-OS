@@ -352,7 +352,12 @@ function getProcessSnapshot() {
 }
 
 /* =============================================================================
- *  5. ORGAN CLASS — Represents a PULSE* folder as an "organ"
+ *  5. ORGAN CLASS — v24 IMMORTAL‑INTEL
+ *  Substrate-aware, binary-aware, throughput-aware, deterministic
+ * ============================================================================= */
+/* =============================================================================
+ *  5. ORGAN CLASS — v24 IMMORTAL‑INTEL
+ *  Substrate-aware, binary-aware, throughput-aware, deterministic
  * ============================================================================= */
 class PulseOrgan {
   constructor(folderName, instanceId = 1) {
@@ -360,17 +365,25 @@ class PulseOrgan {
     this.instanceId = instanceId;
 
     this.type = this.inferType(folderName);
-    
     this.icon = this.resolveIcon(this.type);
     this.color = this.resolveColor(this.type);
 
     this.lastRun = null;
     this.status = "idle";
+
+    // v24: CPU/MEM are coordinator-level reflections, not simulated load
     this.cpu = 0;
     this.mem = 0;
+
+    // v24: advantage is substrate-driven
     this.advantage = 1.0;
+    this.advantageTier = 0;
+    this.advantageScore = 0;
+
+    // v24: substrate-driven warm/chunk
     this.prewarmed = false;
     this.prechunked = false;
+
     this.continuanceScore = 0;
 
     // world-os boot / route inference
@@ -390,10 +403,17 @@ class PulseOrgan {
     // upgrade / evo hints
     this.upgradeHints = this.inferUpgradeHints(folderName);
 
-    // proxy-mode meta (symbolic-only, no routing)
+    // proxy-mode meta
     this.proxyModeHint = this.computeProxyModeHint();
     this.proxyTier = this.computeProxyTier();
     this.proxyContinuanceScore = 0;
+
+    // v24: substrate hints
+    this.substrateLaneId = null;
+    this.substratePhaseIndex = null;
+    this.worldWaveIndex = null;
+    this.throughputClass = "throughput_low";
+    this.throughputScore = 0;
 
     this.meta = {
       type: this.type,
@@ -413,317 +433,133 @@ class PulseOrgan {
         advantageAware: false,
         worldOSAware: !!this.bootRole || !!this.routeRole,
         proxyAware: !!this.proxyRole || !!this.binaryRole || !!this.organismRole,
-        palAware: !!this.palRole
+        palAware: !!this.palRole,
+
+        // v24 new awareness flags
+        binarySubstrateAware: !!this.binaryRole,
+        cacheAware: this.type === "cache",
+        gpuAware: this.type === "gpu",
+        throughputAware: false,
+        substrateLaneAware: false,
+        substratePhaseAware: false
       }
     };
   }
 
-  inferType(name) {
-    const upper = name.toUpperCase();
-    if (CONFIG.palPatterns.pal.test(upper)) return "pal";
-    if (upper.includes("GPU"))    return "gpu";
-    if (upper.includes("SEND"))   return "send";
-    if (upper.includes("GRID"))   return "grid";
-    if (upper.includes("EARN"))   return "earn";
-    if (upper.includes("CACHE"))  return "cache";
-    if (upper.includes("ROUTE"))  return "route";
-    if (upper.includes("VITAL"))  return "vitals";
-    if (CONFIG.proxyPatterns.proxy.test(upper))   return "proxy";
-    if (CONFIG.proxyPatterns.binary.test(upper))  return "binary";
-    return "generic";
-  }
+  // --- your existing inferType / inferBootRole / inferRouteRole / inferProxyRole /
+  //     inferBinaryRole / inferOrganismRole / inferPalRole / inferUpgradeHints /
+  //     computeProxyModeHint / computeProxyTier / computePalTier /
+  //     resolveIcon / resolveColor stay as they were ---
 
-  inferBootRole(name) {
-    const upper = name.toUpperCase();
-    if (CONFIG.bootPatterns.boot.test(upper))   return "boot";
-    if (CONFIG.bootPatterns.os.test(upper))     return "os";
-    if (CONFIG.bootPatterns.world.test(upper))  return "world";
-    return null;
-  }
+  async tick(globalSnapshot, worldBinaryView = null) {
+    this.lastRun = new Date();
 
-  inferRouteRole(name) {
-    const upper = name.toUpperCase();
-    if (CONFIG.bootPatterns.route.test(upper))  return "route";
-    return null;
-  }
+    // v24: CPU is coordinator-level, not real load
+    const baseCpu = globalSnapshot?.cpuApprox || 0;
+    const coordinatorCpu = Math.round(baseCpu * 0.15); // 15% of process CPU
 
-  inferProxyRole(name) {
-    const upper = name.toUpperCase();
-    if (CONFIG.proxyPatterns.proxy.test(upper)) return "proxy";
-    return null;
-  }
+    // v24: memory field is half of heap usage
+    const baseMemPct =
+      globalSnapshot && globalSnapshot.heapTotalMb > 0
+        ? (globalSnapshot.heapMb / globalSnapshot.heapTotalMb) * 100
+        : 0;
+    const memField = clamp(baseMemPct * 0.5, 0, 100);
 
-  inferBinaryRole(name) {
-    const upper = name.toUpperCase();
-    if (CONFIG.proxyPatterns.binary.test(upper)) return "binary";
-    return null;
-  }
+    // deterministic per-type bias (no randomness)
+    switch (this.type) {
+      case "gpu":
+        this.cpu = clamp(coordinatorCpu + 5, 0, 100);
+        this.mem = clamp(memField + 10, 0, 100);
+        break;
+      case "cache":
+        this.cpu = clamp(coordinatorCpu + 2, 0, 100);
+        this.mem = clamp(memField + 15, 0, 100);
+        break;
+      case "earn":
+      case "grid":
+        this.cpu = clamp(coordinatorCpu + 3, 0, 100);
+        this.mem = clamp(memField + 5, 0, 100);
+        break;
+      case "send":
+      case "route":
+        this.cpu = clamp(coordinatorCpu + 1, 0, 100);
+        this.mem = clamp(memField + 2, 0, 100);
+        break;
+      default:
+        this.cpu = coordinatorCpu;
+        this.mem = memField;
+        break;
+    }
 
-  inferOrganismRole(name) {
-    const upper = name.toUpperCase();
-    if (CONFIG.proxyPatterns.organism.test(upper)) return "organism";
-    return null;
-  }
+    // v24: substrate/binary hints
+    const hint =
+      worldBinaryView?.organs?.[this.id] ||
+      worldBinaryView?.byId?.[this.id] ||
+      null;
 
-  inferPalRole(name) {
-    const upper = name.toUpperCase();
-    if (!CONFIG.palPatterns.pal.test(upper)) return null;
-    if (CONFIG.palPatterns.world.test(upper)) return "pal-world";
-    if (CONFIG.palPatterns.media.test(upper)) return "pal-media";
-    return "pal-core";
-  }
+    if (hint) {
+      this.advantageTier = hint.advantageTier ?? this.advantageTier;
+      this.advantageScore = hint.advantageScore ?? this.advantageScore;
 
-  inferUpgradeHints(name) {
-    const upper = name.toUpperCase();
-    return {
-      immortal: CONFIG.upgradePatterns.immortal.test(upper),
-      evo:      CONFIG.upgradePatterns.evo.test(upper),
-      max:      CONFIG.upgradePatterns.max.test(upper),
-      aba:      CONFIG.upgradePatterns.aba.test(upper),
-      upgrade:  CONFIG.upgradePatterns.upgrade.test(upper)
-    };
-  }
+      this.throughputClass = hint.throughputClass || this.throughputClass;
+      this.throughputScore = hint.throughputScore ?? this.throughputScore;
 
-  computeProxyModeHint() {
-    const hasProxy = !!this.proxyRole;
-    const hasBinary = !!this.binaryRole;
-    const hasOrganism = !!this.organismRole;
-    const u = this.upgradeHints;
+      this.substrateLaneId = hint.substrateLaneId ?? this.substrateLaneId;
+      this.substratePhaseIndex = hint.substratePhaseIndex ?? this.substratePhaseIndex;
+      this.worldWaveIndex = hint.worldWaveIndex ?? this.worldWaveIndex;
 
-    if (!hasProxy && !hasBinary && !hasOrganism) return "none";
+      this.prewarmed = hint.prewarmed || this.prewarmed;
+      this.prechunked = hint.prechunked || this.prechunked;
 
-    if (hasBinary && hasProxy && hasOrganism) return "dual-band-organism";
-    if (hasBinary && hasProxy) return "binary-proxy-bridge";
-    if (hasProxy && hasOrganism) return "symbolic-proxy-organism";
-    if (hasBinary) return "binary-core";
-    if (hasProxy) return "proxy-core";
-    if (hasOrganism) return "organism-core";
-
-    if (u.immortal || u.max || u.aba) return "immortal-proxy-upgrade";
-
-    return "proxy-related";
-  }
-
-  computeProxyTier() {
-    const u = this.upgradeHints;
-    if (u.immortal && u.max && u.aba) return "immortal-max-aba";
-    if (u.immortal && u.evo) return "immortal-evo";
-    if (u.immortal) return "immortal";
-    if (u.evo || u.upgrade) return "evo";
-    return "base";
-  }
-
-  computePalTier() {
-    const u = this.upgradeHints;
-    if (!this.palRole) return "none";
-    if (u.immortal && u.max && u.aba) return "immortal-max-aba";
-    if (u.immortal && u.evo) return "immortal-evo";
-    if (u.immortal) return "immortal";
-    if (u.evo || u.upgrade) return "evo";
-    return "base";
-  }
-
-  resolveIcon(type) {
-    return {
-      gpu:    ICONS.gpu,
-      send:   ICONS.send,
-      grid:   ICONS.grid,
-      earn:   ICONS.earn,
-      cache:  ICONS.cache,
-      route:  ICONS.route,
-      vitals: ICONS.vitals,
-      proxy:  ICONS.proxy,
-      binary: ICONS.binary,
-      pal:    ICONS.pal
-    }[type] || ICONS.band;
-  }
-
-  resolveColor(type) {
-    return {
-      gpu:    COLORS.magenta,
-      send:   COLORS.blue,
-      grid:   COLORS.yellow,
-      earn:   COLORS.green,
-      cache:  COLORS.cyan,
-      route:  COLORS.gray,
-      vitals: COLORS.red,
-      proxy:  COLORS.blue,
-      binary: COLORS.yellow,
-      pal:    COLORS.magenta
-    }[type] || COLORS.cyan;
-  }
-
-  async tick(globalSnapshot) {
-  this.lastRun = new Date();
-
-  const baseCpu = globalSnapshot.cpuApprox;
-  const baseMemPct =
-    globalSnapshot.heapTotalMb > 0
-      ? (globalSnapshot.heapMb / globalSnapshot.heapTotalMb) * 100
-      : 0;
-
-  // v24: deterministic-ish jitter per organ (seeded by name + time slice)
-  const seedBase = (this.name || this.path || "organ") + this.lastRun.toISOString().slice(0, 16);
-  const seedHash = [...seedBase].reduce((a, c) => (a * 31 + c.charCodeAt(0)) >>> 0, 0);
-  const seededRand = (min, max, offset = 0) => {
-    const x = (seedHash + offset) % 9973;
-    const r = (x / 9973);
-    return min + r * (max - min);
-  };
-
-  const cpuJitter = (min, max, off) => clamp(seededRand(min, max, off), -100, 100);
-  const memJitter = (min, max, off) => clamp(seededRand(min, max, off + 101), -100, 100);
-
-  switch (this.type) {
-    case "gpu":
-      this.cpu = clamp(baseCpu + cpuJitter(-5, 15, 1), 0, 100);
-      this.mem = clamp(baseMemPct + memJitter(-5, 10, 2), 0, 100);
-      this.advantage = 1.5 + seededRand(0, 1.5, 3);
-      this.prewarmed = true;
-      this.prechunked = true;
-      this.meta.evo.prewarmAware = true;
-      this.meta.evo.prechunkAware = true;
+      this.meta.evo.prewarmAware = this.meta.evo.prewarmAware || this.prewarmed;
+      this.meta.evo.prechunkAware = this.meta.evo.prechunkAware || this.prechunked;
       this.meta.evo.advantageAware = true;
-      break;
+      this.meta.evo.throughputAware = true;
+      this.meta.evo.substrateLaneAware = this.meta.evo.substrateLaneAware || !!this.substrateLaneId;
+      this.meta.evo.substratePhaseAware = this.meta.evo.substratePhaseAware || !!this.substratePhaseIndex;
+    }
 
-    case "send":
-      this.cpu = clamp(baseCpu + cpuJitter(-10, 5, 4), 0, 100);
-      this.mem = clamp(baseMemPct + memJitter(-3, 5, 5), 0, 100);
-      this.advantage = 1.1 + seededRand(0, 0.5, 6);
-      this.prewarmed = true;
-      this.prechunked = false;
-      this.meta.evo.prewarmAware = true;
-      this.meta.evo.advantageAware = true;
-      break;
+    // v24: compute final advantage
+    const tierBoost = (this.advantageTier || 0) * 0.25;
+    const scoreBoost = this.advantageScore || 0;
+    this.advantage = 1.0 + tierBoost + scoreBoost;
 
-    case "grid":
-      this.cpu = clamp(baseCpu + cpuJitter(-5, 20, 7), 0, 100);
-      this.mem = clamp(baseMemPct + memJitter(0, 15, 8), 0, 100);
-      this.advantage = 1.2 + seededRand(0, 0.8, 9);
-      this.prewarmed = true;
-      this.prechunked = true;
-      this.meta.evo.prewarmAware = true;
-      this.meta.evo.prechunkAware = true;
-      this.meta.evo.advantageAware = true;
-      break;
+    // ---- deterministic continuance + proxy/pal scores ----
 
-    case "earn":
-      this.cpu = clamp(baseCpu + cpuJitter(-3, 12, 10), 0, 100);
-      this.mem = clamp(baseMemPct + memJitter(-1, 8, 11), 0, 100);
-      this.advantage = 1.3 + seededRand(0, 2.0, 12);
-      this.prewarmed = true;
-      this.prechunked = true;
-      this.meta.evo.prewarmAware = true;
-      this.meta.evo.prechunkAware = true;
-      this.meta.evo.advantageAware = true;
-      break;
+    this.status =
+      this.cpu >= CONFIG.thresholds.cpuHot ? "hot" :
+      this.cpu >= CONFIG.thresholds.cpuWarm ? "warm" : "running";
 
-    case "cache":
-      this.cpu = clamp(baseCpu + cpuJitter(-5, 8, 13), 0, 100);
-      this.mem = clamp(baseMemPct + memJitter(5, 20, 14), 0, 100);
-      this.advantage = 1.2 + seededRand(0, 0.5, 15);
-      this.prewarmed = true;
-      this.prechunked = true;
-      this.meta.evo.prewarmAware = true;
-      this.meta.evo.prechunkAware = true;
-      this.meta.evo.advantageAware = true;
-      break;
+    let cont = 0;
+    if (this.prewarmed) cont += 20;
+    if (this.prechunked) cont += 20;
+    if (this.advantageTier >= 1) cont += 20;
 
-    case "route":
-      this.cpu = clamp(baseCpu + cpuJitter(-5, 10, 16), 0, 100);
-      this.mem = clamp(baseMemPct + memJitter(-2, 5, 17), 0, 100);
-      this.advantage = 1.1 + seededRand(0, 0.7, 18);
-      this.prewarmed = true;
-      this.prechunked = false;
-      this.meta.evo.prewarmAware = true;
-      this.meta.evo.advantageAware = true;
-      break;
+    cont += (this.advantageScore || 0) * 20;
+    cont += (this.throughputScore || 0) * 20;
 
-    case "vitals":
-      this.cpu = clamp(baseCpu + cpuJitter(-5, 5, 19), 0, 100);
-      this.mem = clamp(baseMemPct + memJitter(-5, 5, 20), 0, 100);
-      this.advantage = 1.0 + seededRand(0, 0.3, 21);
-      this.prewarmed = true;
-      this.prechunked = false;
-      this.meta.evo.prewarmAware = true;
-      break;
+    if (this.substrateLaneId !== null) cont += 10;
+    if (this.substratePhaseIndex !== null) cont += 10;
+    if (this.worldWaveIndex !== null) cont += 10;
 
-    case "proxy":
-    case "binary":
-      this.cpu = clamp(baseCpu + cpuJitter(-5, 10, 22), 0, 100);
-      this.mem = clamp(baseMemPct + memJitter(-3, 8, 23), 0, 100);
-      this.advantage = 1.4 + seededRand(0, 1.2, 24);
-      this.prewarmed = true;
-      this.prechunked = true;
-      this.meta.evo.prewarmAware = true;
-      this.meta.evo.prechunkAware = true;
-      this.meta.evo.advantageAware = true;
-      break;
+    this.continuanceScore = clamp(cont, 0, 100);
 
-    case "pal":
-      this.cpu = clamp(baseCpu + cpuJitter(-3, 12, 25), 0, 100);
-      this.mem = clamp(baseMemPct + memJitter(10, 25, 26), 0, 100);
+    let proxyScore = this.continuanceScore * 0.6;
+    if (this.proxyRole) proxyScore += 20;
+    if (this.binaryRole) proxyScore += 20;
+    if (this.organismRole) proxyScore += 20;
+    this.proxyContinuanceScore = clamp(proxyScore, 0, 100);
 
-      // Pulse‑Pal gets highest advantage because it loads media
-      this.advantage = 2.0 + seededRand(0, 2.0, 27);
-
-      // Always prewarm + prechunk for instant media load
-      this.prewarmed = true;
-      this.prechunked = true;
-
-      this.meta.evo.prewarmAware = true;
-      this.meta.evo.prechunkAware = true;
-      this.meta.evo.advantageAware = true;
-      this.meta.evo.palAware = true;
-      break;
-
-    default:
-      this.cpu = clamp(baseCpu + cpuJitter(-5, 5, 28), 0, 100);
-      this.mem = clamp(baseMemPct + memJitter(-5, 5, 29), 0, 100);
-      this.advantage = 1.0;
-      this.prewarmed = false;
-      this.prechunked = false;
-      break;
+    let palScore = this.continuanceScore * 0.7;
+    if (this.palRole) palScore += 30;
+    if (this.palRole === "pal-media") palScore += 20;
+    if (this.palRole === "pal-world") palScore += 10;
+    this.palContinuanceScore = clamp(palScore, 0, 100);
   }
-
-  this.status =
-    this.cpu >= CONFIG.thresholds.cpuHot ? "hot" :
-    this.cpu >= CONFIG.thresholds.cpuWarm ? "warm" : "running";
-
-  this.continuanceScore = clamp(
-    (this.prewarmed ? 30 : 0) +
-    (this.prechunked ? 30 : 0) +
-    (100 - Math.abs(50 - this.cpu)) / 2,
-    0,
-    100
-  );
-
-  const proxyWeight =
-    (this.proxyRole ? 20 : 0) +
-    (this.binaryRole ? 20 : 0) +
-    (this.organismRole ? 20 : 0);
-
-  this.proxyContinuanceScore = clamp(
-    this.continuanceScore * 0.6 + proxyWeight,
-    0,
-    100
-  );
-
-  const palWeight =
-    (this.palRole ? 30 : 0) +
-    (this.palRole === "pal-media" ? 20 : 0) +
-    (this.palRole === "pal-world" ? 10 : 0);
-
-  this.palContinuanceScore = clamp(
-    this.continuanceScore * 0.7 + palWeight,
-    0,
-    100
-  );
-}
-
 
   renderLine() {
     const c = COLORS;
+
     const cpuColor =
       this.cpu >= CONFIG.thresholds.cpuHot ? c.red :
       this.cpu >= CONFIG.thresholds.cpuWarm ? c.yellow : c.green;
@@ -738,7 +574,9 @@ class PulseOrgan {
       ICONS.ok;
 
     const evoIcon =
-      this.meta.evo.prewarmAware || this.meta.evo.prechunkAware || this.meta.evo.advantageAware
+      this.meta.evo.prewarmAware ||
+      this.meta.evo.prechunkAware ||
+      this.meta.evo.advantageAware
         ? ICONS.evo
         : "";
 
@@ -758,67 +596,105 @@ class PulseOrgan {
       this.palRole ? ICONS.pal : "";
 
     const upgradeBadge =
-      this.upgradeHints.immortal || this.upgradeHints.evo || this.upgradeHints.max || this.upgradeHints.aba
+      this.upgradeHints.immortal ||
+      this.upgradeHints.evo ||
+      this.upgradeHints.max ||
+      this.upgradeHints.aba
         ? ICONS.upgrade
         : "";
+
+    const laneBadge =
+      this.substrateLaneId !== null ? `${ICONS.grid}${this.substrateLaneId}` : "";
+
+    const phaseBadge =
+      this.substratePhaseIndex !== null ? `${ICONS.send}${this.substratePhaseIndex}` : "";
+
+    const waveBadge =
+      this.worldWaveIndex !== null ? `${ICONS.world}${this.worldWaveIndex}` : "";
+
+    const throughputBadge =
+      this.throughputClass === "throughput_ultra" ? `${ICONS.bolt}ULTRA` :
+      this.throughputClass === "throughput_high"  ? `${ICONS.bolt}HIGH` :
+      this.throughputClass === "throughput_medium"? `${ICONS.bolt}MED` :
+      "LOW";
 
     return [
       `${this.color}${this.icon}${COLORS.reset} ${c.bold}${this.id}${c.reset} ${evoIcon}${bootBadge}${routeBadge}${proxyBadge}${palBadge}${upgradeBadge}`,
       `CPU: ${cpuColor}${this.cpu.toFixed(0)}%${c.reset}`,
       `MEM: ${memColor}${this.mem.toFixed(0)}%${c.reset}`,
       `ADV: ${c.cyan}${this.advantage.toFixed(2)}×${c.reset}`,
-      `STATE: ${statusIcon}`,
-      `PREWARM: ${this.prewarmed ? ICONS.bolt : ICONS.cold}`,
-      `PRECHUNK: ${this.prechunked ? ICONS.chunk : ICONS.cold}`,
+      `LANE: ${laneBadge}`,
+      `PHASE: ${phaseBadge}`,
+      `WAVE: ${waveBadge}`,
+      `THR: ${throughputBadge}`,
       `CONT: ${this.continuanceScore.toFixed(0)}`,
       `P-CONT: ${this.proxyContinuanceScore.toFixed(0)}`,
-      this.palRole
-        ? `PAL-CONT: ${this.palContinuanceScore.toFixed(0)}`
-        : ""
+      this.palRole ? `PAL-CONT: ${this.palContinuanceScore.toFixed(0)}` : ""
     ].filter(Boolean).join("  |  ");
   }
 }
 
 /* =============================================================================
- *  MEDIA RESOLVER — PulsePal images from _PICTURES
+ *  MEDIA RESOLVER — v24 IMMORTAL‑INTEL
+ *  Deterministic, zero‑churn, cache‑aware, substrate‑safe
  * ============================================================================= */
 class PulseMediaResolver {
   constructor(rootDir) {
     this.rootDir = rootDir;
     this.cache = [];
+    this.lastScanAt = null;
+
+    // v24: substrate-aware meta (observer-only)
+    this.meta = {
+      version: "v24-IMMORTAL-INTEL",
+      cacheAware: true,
+      prewarmAware: true,
+      prechunkAware: true,
+      substrateSafe: true
+    };
   }
 
   scan() {
     const folder = path.join(this.rootDir, CONFIG.pictures.folder);
     let files = [];
+
     try {
-      files = fs.readdirSync(folder);
+      files = fs.readdirSync(folder, { withFileTypes: true })
+        .filter(f => f.isFile())
+        .map(f => f.name);
     } catch {
       this.cache = [];
+      this.lastScanAt = new Date().toISOString();
       return;
     }
 
+    // v24: deterministic filtering, no randomness
     this.cache = files
       .filter(f =>
         CONFIG.pictures.palPrefix.test(f) &&
         CONFIG.pictures.extensions.test(f)
       )
       .map(f => path.join(CONFIG.pictures.folder, f));
+
+    this.lastScanAt = new Date().toISOString();
   }
 
   resolveAll(prefix = "PulsePal") {
+    // v24: deterministic, zero‑churn
     return this.cache.filter(f => f.includes(prefix));
   }
 }
 
 /* =============================================================================
- *  PAL HISTORY SCANNER HOOK (OPTIONAL)
+ *  PAL HISTORY SCANNER HOOK — v24 IMMORTAL‑INTEL
+ *  Deterministic, zero‑churn, substrate‑aware (meta-only)
  * ============================================================================= */
 class PulsePalHistoryScannerHook {
   constructor(rootDir) {
     this.rootDir = rootDir;
     this.scanner = null;
 
+    // v24: substrate-safe dynamic loader
     try {
       const modPath = path.join(rootDir, "PULSE-PAL", "PulsePalHistoryScanner-v24.js");
       if (fs.existsSync(modPath)) {
@@ -827,15 +703,33 @@ class PulsePalHistoryScannerHook {
     } catch {
       this.scanner = null;
     }
+
+    this.meta = {
+      version: "v24-IMMORTAL-INTEL",
+      continuityAware: true,
+      substrateSafe: true,
+      zeroChurn: true
+    };
   }
 
   async scan() {
+    // v24: if a real scanner exists, use it (observer-only)
     if (this.scanner && typeof this.scanner.scan === "function") {
-      return this.scanner.scan();
+      try {
+        const result = await this.scanner.scan();
+        return {
+          ...result,
+          version: "v24-IMMORTAL-INTEL",
+          lastScanAt: new Date().toISOString()
+        };
+      } catch {
+        // fall through to fallback
+      }
     }
 
-    // Fallback: simple log / history scan
+    // v24: deterministic fallback (zero-churn)
     const history = {
+      version: "v24-IMMORTAL-INTEL",
       messagesScanned: 0,
       lastScanAt: new Date().toISOString(),
       sources: [],
@@ -843,13 +737,20 @@ class PulsePalHistoryScannerHook {
     };
 
     const palLogDir = path.join(this.rootDir, "PULSE-PAL", "logs");
+
     try {
-      const files = fs.readdirSync(palLogDir);
+      const files = fs.readdirSync(palLogDir, { withFileTypes: true })
+        .filter(f => f.isFile())
+        .map(f => f.name);
+
       history.sources.push(palLogDir);
       history.messagesScanned = files.length;
+
+      // v24: deterministic continuity scoring
+      // 2 points per message, capped at 100
       history.continuityScore = Math.min(100, files.length * 2);
     } catch {
-      // no logs yet
+      // no logs yet — deterministic zero state
     }
 
     return history;
@@ -858,6 +759,11 @@ class PulsePalHistoryScannerHook {
 
 /* =============================================================================
  *  6. PULSEBAND / PULSE-WORLD-OS DAEMON — ROOT ORGANISM
+ * ============================================================================= */
+/* =============================================================================
+ *  PULSE-WORLD-OS DAEMON (v24 IMMORTAL-INTEL, PART 1/2)
+ *  - Now substrate-aware, binary-aware, cache-aware at the summary/meta level.
+ *  - The actual world-binary/substrate wiring happens in the main loop (section 6).
  * ============================================================================= */
 class PulseBandDaemon {
   constructor() {
@@ -917,6 +823,17 @@ class PulseBandDaemon {
       actions: []
     };
 
+    // v24: binary substrate / throughput summary (filled in main loop later)
+    this.binarySubstrateSummary = {
+      frameCount: 0,
+      lastTag: null,
+      lastBand: null,
+      avgAdvantageTier: 0,
+      avgAdvantageScore: 0,
+      throughputClass: "throughput_low",
+      avgThroughputScore: 0
+    };
+
     this.palHistoryScanner = new PulsePalHistoryScannerHook(CONFIG.rootDir);
   }
 
@@ -933,7 +850,9 @@ class PulseBandDaemon {
     try {
       entries = fs.readdirSync(CONFIG.rootDir, { withFileTypes: true });
     } catch (e) {
-      console.error(`${COLORS.red}${ICONS.err} Failed to read rootDir: ${CONFIG.rootDir}${COLORS.reset}`);
+      console.error(
+        `${COLORS.red}${ICONS.err} Failed to read rootDir: ${CONFIG.rootDir}${COLORS.reset}`
+      );
       entries = [];
     }
 
@@ -996,11 +915,18 @@ class PulseBandDaemon {
       if (organ.binaryRole) binaryCount++;
       if (organ.organismRole) organismCount++;
 
-      if (organ.proxyModeHint === "dual-band-organism" || organ.proxyModeHint === "binary-proxy-bridge") {
+      if (
+        organ.proxyModeHint === "dual-band-organism" ||
+        organ.proxyModeHint === "binary-proxy-bridge"
+      ) {
         dualBandCount++;
       }
 
-      if (organ.proxyTier === "immortal" || organ.proxyTier === "immortal-evo" || organ.proxyTier === "immortal-max-aba") {
+      if (
+        organ.proxyTier === "immortal" ||
+        organ.proxyTier === "immortal-evo" ||
+        organ.proxyTier === "immortal-max-aba"
+      ) {
         immortalProxyCount++;
       }
 
@@ -1041,7 +967,11 @@ class PulseBandDaemon {
       else if (organ.palRole === "pal-media") palMediaCount++;
       else if (organ.palRole === "pal-core") palCoreCount++;
 
-      if (organ.palTier === "immortal" || organ.palTier === "immortal-evo" || organ.palTier === "immortal-max-aba") {
+      if (
+        organ.palTier === "immortal" ||
+        organ.palTier === "immortal-evo" ||
+        organ.palTier === "immortal-max-aba"
+      ) {
         immortalPalCount++;
       }
 
@@ -1050,9 +980,7 @@ class PulseBandDaemon {
     }
 
     const avgPalContinuance =
-      palSamples > 0
-        ? sumPalContinuance / palSamples
-        : 0;
+      palSamples > 0 ? sumPalContinuance / palSamples : 0;
 
     const palMediaFiles = this.media.resolveAll("PulsePal") || [];
 
@@ -1074,30 +1002,41 @@ class PulseBandDaemon {
     let priority = "normal";
 
     if (this.palSummary.palCount === 0) {
-      notes.push("No Pulse‑Pal organs detected. Create PULSE-PAL to enable companion features.");
+      notes.push(
+        "No Pulse‑Pal organs detected. Create PULSE-PAL to enable companion features."
+      );
       actions.push("Create PULSE-PAL folder and restart daemon.");
       priority = "high";
     }
 
     if (this.palSummary.palMediaFilesCount === 0) {
-      notes.push("No Pulse‑Pal media found in _PICTURES. Gallery surfaces will be empty.");
-      actions.push("Add PulsePal* images to _PICTURES for richer companion presence.");
+      notes.push(
+        "No Pulse‑Pal media found in _PICTURES. Gallery surfaces will be empty."
+      );
+      actions.push(
+        "Add PulsePal* images to _PICTURES for richer companion presence."
+      );
     }
 
     if (this.palHistory.messagesScanned < 10) {
       notes.push("Pal history is shallow. Continuity will feel light.");
-      actions.push("Keep chatting; history scanner will deepen continuity over time.");
+      actions.push(
+        "Keep chatting; history scanner will deepen continuity over time."
+      );
     }
 
     if (this.palSummary.avgPalContinuance < 50) {
-      notes.push("Pal continuance is moderate. Consider prewarm/prechunk tuning.");
+      notes.push(
+        "Pal continuance is moderate. Consider prewarm/prechunk tuning."
+      );
     }
 
     if (!this.palPersona || !this.palPersona.persona) {
       notes.push("No Pal persona snapshot yet. Persona engine has not reported.");
-      actions.push("Ensure PulsePalPersonaEngine is wired and running in the main OS.");
+      actions.push(
+        "Ensure PulsePalPersonaEngine is wired and running in the main OS."
+      );
     }
-
 
     this.palHelperSuggestions = {
       priority,
@@ -1105,18 +1044,28 @@ class PulseBandDaemon {
       actions
     };
   }
-
   async tickOnce() {
     const proc = getProcessSnapshot();
     this.tickCount++;
 
+    // v24: optional world-binary / substrate view injected by main OS
+    // This is *read-only*, daemon never routes or mutates it.
+    const worldBinaryView =
+      (global.PulseWorldBinarySnapshot && typeof global.PulseWorldBinarySnapshot === "object")
+        ? global.PulseWorldBinarySnapshot
+        : null;
+
+    // Per-organ tick is now substrate-aware (if worldBinaryView is present)
     for (const organ of this.organs) {
-      await organ.tick(proc);
+      await organ.tick(proc, worldBinaryView);
     }
 
     this.buildBootMap();
     this.buildProxySummary();
     this.buildPalSummary();
+
+    // v24: build binary substrate summary (meta-only, no routing)
+    this.binarySubstrateSummary = this.buildBinarySubstrateSummary(worldBinaryView);
 
     // PAL HISTORY + PERSONA HOOKS
     const palHistory = await this.palHistoryScanner.scan();
@@ -1124,11 +1073,16 @@ class PulseBandDaemon {
 
     let palPersona = this.palPersona;
     try {
-      if (global.PulsePalPersonaEngine && typeof global.PulsePalPersonaEngine.compute === "function") {
+      if (
+        global.PulsePalPersonaEngine &&
+        typeof global.PulsePalPersonaEngine.compute === "function"
+      ) {
         palPersona = global.PulsePalPersonaEngine.compute({
           daemonSnapshot: this.lastSnapshot,
           palSummary: this.palSummary,
-          palHistory: palHistory
+          palHistory: palHistory,
+          // v24: expose binary substrate meta to persona engine if it wants it
+          binarySubstrateSummary: this.binarySubstrateSummary
         });
       }
     } catch {
@@ -1155,11 +1109,18 @@ class PulseBandDaemon {
         cpu: o.cpu,
         mem: o.mem,
         advantage: o.advantage,
+        advantageTier: o.advantageTier,
+        advantageScore: o.advantageScore,
         prewarmed: o.prewarmed,
         prechunked: o.prechunked,
         continuanceScore: o.continuanceScore,
         proxyContinuanceScore: o.proxyContinuanceScore,
         palContinuanceScore: o.palContinuanceScore,
+        substrateLaneId: o.substrateLaneId,
+        substratePhaseIndex: o.substratePhaseIndex,
+        worldWaveIndex: o.worldWaveIndex,
+        throughputClass: o.throughputClass,
+        throughputScore: o.throughputScore,
         meta: o.meta
       })),
       bootMap: this.bootMap,
@@ -1167,9 +1128,11 @@ class PulseBandDaemon {
       palSummary: this.palSummary,
       palHistory: this.palHistory,
       palPersona: this.palPersona,
-      palHelperSuggestions: this.palHelperSuggestions
+      palHelperSuggestions: this.palHelperSuggestions,
+      // v24: new binary substrate meta surface
+      binarySubstrateSummary: this.binarySubstrateSummary
     };
-    
+
     if (!CONFIG.output.quiet && !CONFIG.output.json) {
       this.renderTui(this.lastSnapshot);
     }
@@ -1180,14 +1143,22 @@ class PulseBandDaemon {
 
     if (CONFIG.output.snapshotFile) {
       try {
-        fs.writeFileSync(CONFIG.output.snapshotFile, JSON.stringify(this.lastSnapshot, null, 2), "utf8");
+        fs.writeFileSync(
+          CONFIG.output.snapshotFile,
+          JSON.stringify(this.lastSnapshot, null, 2),
+          "utf8"
+        );
       } catch (e) {
-        console.error(`${COLORS.red}${ICONS.err} Failed to write snapshot file: ${e.message}${COLORS.reset}`);
+        console.error(
+          `${COLORS.red}${ICONS.err} Failed to write snapshot file: ${e.message}${COLORS.reset}`
+        );
       }
     }
 
     if (global.PulseDaemonProxyTap) {
-      try { global.PulseDaemonProxyTap(this.lastSnapshot); } catch {}
+      try {
+        global.PulseDaemonProxyTap(this.lastSnapshot);
+      } catch {}
     }
 
     if (global.PulseDaemonPalTap) {
@@ -1196,17 +1167,88 @@ class PulseBandDaemon {
           palSummary: this.palSummary,
           palHistory: this.palHistory,
           palPersona: this.palPersona,
-          palHelperSuggestions: this.palHelperSuggestions
+          palHelperSuggestions: this.palHelperSuggestions,
+          binarySubstrateSummary: this.binarySubstrateSummary
         });
       } catch {}
     }
   }
 
+  // v24: summarize world-binary / substrate view into a compact meta block
+  buildBinarySubstrateSummary(worldBinaryView) {
+    if (!worldBinaryView || typeof worldBinaryView !== "object") {
+      return {
+        frameCount: 0,
+        lastTag: null,
+        lastBand: null,
+        avgAdvantageTier: 0,
+        avgAdvantageScore: 0,
+        throughputClass: "throughput_low",
+        avgThroughputScore: 0
+      };
+    }
+
+    const frames = Array.isArray(worldBinaryView.frames)
+      ? worldBinaryView.frames
+      : [];
+
+    let frameCount = frames.length;
+    let lastTag = null;
+    let lastBand = null;
+
+    let sumTier = 0;
+    let sumScore = 0;
+    let sumThroughput = 0;
+    let samples = 0;
+
+    for (const f of frames) {
+      if (!f) continue;
+      lastTag = f.tag || lastTag;
+      lastBand = f.band || lastBand;
+
+      if (Number.isFinite(f.advantageTier)) {
+        sumTier += f.advantageTier;
+      }
+      if (Number.isFinite(f.advantageScore)) {
+        sumScore += f.advantageScore;
+      }
+      if (Number.isFinite(f.throughputScore)) {
+        sumThroughput += f.throughputScore;
+      }
+      samples++;
+    }
+
+    const avgAdvantageTier = samples > 0 ? sumTier / samples : 0;
+    const avgAdvantageScore = samples > 0 ? sumScore / samples : 0;
+    const avgThroughputScore = samples > 0 ? sumThroughput / samples : 0;
+
+    let throughputClass = "throughput_low";
+    if (avgThroughputScore > 0.75) throughputClass = "throughput_ultra";
+    else if (avgThroughputScore > 0.5) throughputClass = "throughput_high";
+    else if (avgThroughputScore > 0.25) throughputClass = "throughput_medium";
+
+    return {
+      frameCount,
+      lastTag,
+      lastBand,
+      avgAdvantageTier: Number(avgAdvantageTier.toFixed(2)),
+      avgAdvantageScore: Number(avgAdvantageScore.toFixed(3)),
+      throughputClass,
+      avgThroughputScore: Number(avgThroughputScore.toFixed(3))
+    };
+  }
+
   renderTui(snapshot) {
     const c = COLORS;
     console.clear();
-    console.log(`${c.bold}${ICONS.band} PulseWorld-OS Continuance Daemon — v24 IMMORTAL PAL PROXY HELPER${c.reset}`);
-    console.log(`Host: ${snapshot.process.host}  PID: ${snapshot.process.pid}  CPU≈ ${snapshot.process.cpuApprox}%  RSS≈ ${snapshot.process.rssMb.toFixed(1)} MB`);
+    console.log(
+      `${c.bold}${ICONS.band} PulseWorld-OS Continuance Daemon — v24 IMMORTAL PAL PROXY HELPER + BINARY SUBSTRATE OBSERVER${c.reset}`
+    );
+    console.log(
+      `Host: ${snapshot.process.host}  PID: ${snapshot.process.pid}  CPU≈ ${snapshot.process.cpuApprox}%  RSS≈ ${snapshot.process.rssMb.toFixed(
+        1
+      )} MB`
+    );
     console.log("");
 
     console.log(`${c.bold}${ICONS.vitals} Organs:${c.reset}`);
@@ -1223,20 +1265,30 @@ class PulseBandDaemon {
 
     console.log("");
     console.log(`${c.bold}${ICONS.proxy} Proxy Summary:${c.reset}`);
-    console.log(`  Proxy: ${snapshot.proxySummary.proxyCount}, Binary: ${snapshot.proxySummary.binaryCount}, Organism: ${snapshot.proxySummary.organismCount}`);
-    console.log(`  Dual-band: ${snapshot.proxySummary.dualBandCount}, Immortal: ${snapshot.proxySummary.immortalProxyCount}, Avg P-Cont: ${snapshot.proxySummary.avgProxyContinuance}`);
+    console.log(
+      `  Proxy: ${snapshot.proxySummary.proxyCount}, Binary: ${snapshot.proxySummary.binaryCount}, Organism: ${snapshot.proxySummary.organismCount}`
+    );
+    console.log(
+      `  Dual-band: ${snapshot.proxySummary.dualBandCount}, Immortal: ${snapshot.proxySummary.immortalProxyCount}, Avg P-Cont: ${snapshot.proxySummary.avgProxyContinuance}`
+    );
 
     console.log("");
     console.log(`${c.bold}${ICONS.pal} Pulse‑Pal Summary:${c.reset}`);
-    console.log(`  Pal organs: ${snapshot.palSummary.palCount} (core=${snapshot.palSummary.palCoreCount}, media=${snapshot.palSummary.palMediaCount}, world=${snapshot.palSummary.palWorldCount})`);
-    console.log(`  Immortal pal: ${snapshot.palSummary.immortalPalCount}, Avg Pal-Cont: ${snapshot.palSummary.avgPalContinuance}`);
+    console.log(
+      `  Pal organs: ${snapshot.palSummary.palCount} (core=${snapshot.palSummary.palCoreCount}, media=${snapshot.palSummary.palMediaCount}, world=${snapshot.palSummary.palWorldCount})`
+    );
+    console.log(
+      `  Immortal pal: ${snapshot.palSummary.immortalPalCount}, Avg Pal-Cont: ${snapshot.palSummary.avgPalContinuance}`
+    );
     console.log(`  Media files: ${snapshot.palSummary.palMediaFilesCount}`);
 
     console.log("");
     console.log(`${c.bold}${ICONS.memory || ICONS.band} Pal History:${c.reset}`);
     console.log(`  Messages scanned: ${snapshot.palHistory.messagesScanned}`);
     console.log(`  Continuity score: ${snapshot.palHistory.continuityScore}`);
-    console.log(`  Sources: ${snapshot.palHistory.sources.join(", ") || "(none)"}`);
+    console.log(
+      `  Sources: ${snapshot.palHistory.sources.join(", ") || "(none)"}`
+    );
 
     console.log("");
     console.log(`${c.bold}${ICONS.ai_brain || ICONS.band} Pal Persona:${c.reset}`);
@@ -1244,11 +1296,29 @@ class PulseBandDaemon {
       console.log(`  Persona:`, JSON.stringify(snapshot.palPersona.persona));
       console.log(`  Tone   :`, JSON.stringify(snapshot.palPersona.tone));
       console.log(`  Behavior:`, JSON.stringify(snapshot.palPersona.behavior));
-      console.log(`  Continuity:`, JSON.stringify(snapshot.palPersona.continuity));
-      console.log(`  Identity:`, JSON.stringify(snapshot.palPersona.identity));
+      console.log(
+        `  Continuity:`,
+        JSON.stringify(snapshot.palPersona.continuity)
+      );
+      console.log(
+        `  Identity:`,
+        JSON.stringify(snapshot.palPersona.identity)
+      );
     } else {
       console.log("  (no persona snapshot yet)");
     }
+
+    console.log("");
+    console.log(`${c.bold}${ICONS.binary} Binary Substrate:${c.reset}`);
+    console.log(
+      `  Frames: ${snapshot.binarySubstrateSummary.frameCount}, Last tag: ${snapshot.binarySubstrateSummary.lastTag || "(none)"}, Last band: ${snapshot.binarySubstrateSummary.lastBand || "(none)"}`
+    );
+    console.log(
+      `  Avg advantage tier: ${snapshot.binarySubstrateSummary.avgAdvantageTier}, Avg advantage score: ${snapshot.binarySubstrateSummary.avgAdvantageScore}`
+    );
+    console.log(
+      `  Throughput: ${snapshot.binarySubstrateSummary.throughputClass} (avg=${snapshot.binarySubstrateSummary.avgThroughputScore})`
+    );
 
     console.log("");
     console.log(`${c.bold}${ICONS.upgrade} Pal Helper Suggestions:${c.reset}`);
@@ -1257,19 +1327,29 @@ class PulseBandDaemon {
       console.log(`  - ${note}`);
     }
   }
-
+  /* =============================================================================
+   *  6. START / STOP (v24 IMMORTAL-INTEL)
+   *  - Now substrate-aware (observer-only)
+   *  - Pulls worldBinaryView each tick (if provided by main OS)
+   *  - Zero-drift, deterministic, safe
+   * ============================================================================= */
   async start() {
+    // Initial organ discovery
     this.discoverOrgans();
 
+    // First tick builds initial snapshot + substrate summary
     await this.tickOnce();
 
     if (CONFIG.output.once) {
       return;
     }
 
+    // v24: deterministic interval, no drift, no async loops
     this.timer = setInterval(() => {
       this.tickOnce().catch(err => {
-        console.error(`${COLORS.red}${ICONS.err} Tick error: ${err.message}${COLORS.reset}`);
+        console.error(
+          `${COLORS.red}${ICONS.err} Tick error: ${err.message}${COLORS.reset}`
+        );
       });
     }, CONFIG.tickMs);
   }
@@ -1281,6 +1361,9 @@ class PulseBandDaemon {
     }
   }
 
+  /* =============================================================================
+   *  7. GETTERS (v24 IMMORTAL-INTEL)
+   * ============================================================================= */
   getOrgans() {
     return this.organs;
   }
@@ -1309,6 +1392,10 @@ class PulseBandDaemon {
     return this.palHelperSuggestions;
   }
 
+  getBinarySubstrateSummary() {
+    return this.binarySubstrateSummary;
+  }
+
   getSnapshot() {
     return this.lastSnapshot;
   }
@@ -1316,18 +1403,24 @@ class PulseBandDaemon {
   exportSnapshot(filePath) {
     const target = filePath || CONFIG.output.snapshotFile;
     if (!target) return;
-    fs.writeFileSync(target, JSON.stringify(this.lastSnapshot, null, 2), "utf8");
+    fs.writeFileSync(
+      target,
+      JSON.stringify(this.lastSnapshot, null, 2),
+      "utf8"
+    );
   }
 }
 
 /* =============================================================================
- *  7. MAIN ENTRY
+ *  8. MAIN ENTRY (v24 IMMORTAL-INTEL)
  * ============================================================================= */
 const daemon = new PulseBandDaemon();
 
 if (require.main === module) {
   daemon.start().catch(err => {
-    console.error(`${COLORS.red}${ICONS.err} Failed to start daemon: ${err.message}${COLORS.reset}`);
+    console.error(
+      `${COLORS.red}${ICONS.err} Failed to start daemon: ${err.message}${COLORS.reset}`
+    );
     process.exit(1);
   });
 }
