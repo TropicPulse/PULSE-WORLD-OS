@@ -1,56 +1,54 @@
 /**
  * ============================================================
- *  FILE: PULSE-TOUCH-v20.js
+ *  FILE: PULSE-TOUCH-v24.js
  *  ORGAN: Pulse‑Touch (Sensory Skin / Pre‑Pulse Ignition Organ)
- *  VERSION: v20.1.0-Immortal-Evo++++-Portal-Skin-Continuous
+ *  VERSION: v24-IMMORTAL++-Portal-Skin-Continuous
  *  AUTHOR: Pulse‑OS (Aldwyn’s Organism Architecture)
  * ============================================================
  *
  *  PURPOSE:
  *  --------
- *  Pulse‑Touch is the FIRST CONTACT organ of the Pulse‑OS
- *  organism. It is the SKIN — the sensory layer that detects
- *  presence BEFORE the organism wakes.
+ *  Pulse‑Touch is the FIRST CONTACT organ of the Pulse‑OS organism.
+ *  It is the SKIN — the sensory layer that detects presence BEFORE
+ *  the organism wakes.
  *
- *  v17 → v20 EVOLUTION:
+ *  v20 → v24 EVOLUTION:
  *  --------------------
- *  - Continuous, low‑cost pulse stream to Pulse‑Net (v17)
+ *  - Continuous, low‑cost pulse stream (v17–v20)
  *  - Fast‑lane “intent only” WSEND pulses (v17)
  *  - Temporal timeline of first contact + ongoing presence (v17)
- *  - Prewarm hints emitted over time, not just once (v17)
- *  - Designed for high limits, low device impact (v17)
+ *  - Prewarm hints emitted over time (v17)
+ *  - Adaptive cadence (v20)
  *
- *  v20 IMMORTAL‑EVO+++:
- *  --------------------
- *  - Adaptive pulse cadence (pressure‑aware, trust‑aware, band‑aware)
- *  - Symbolic/Binary dual‑band skin hints (chunkProfile + band)
- *  - Future‑hooks for prediction, presence‑oracles, and overmind hints
- *  - Evidence + diagnostics hooks (admin/owner panels, no PII)
- *  - Multi‑tab / multi‑window coordination (soft, non‑authoritative)
- *  - Pluggable observers: onPulse, onGate, onSecurity, onTimeline
- *  - Explicit stop() + reconfigure() for organism‑level control
+ *  v24 IMMORTAL++:
+ *  ---------------
+ *  - Full organ integration pipeline:
+ *      • Detector (IMMORTAL++)
+ *      • Warmup (IMMORTAL++)
+ *      • Security (IMMORTAL++)
+ *      • Gate (IMMORTAL++)
+ *      • Predictor (IMMORTAL++)
+ *      • Analytics (IMMORTAL++)
+ *      • Presence Oracle (IMMORTAL++)
+ *      • Advantage Cortex (IMMORTAL++)
+ *      • ThreatShape (IMMORTAL++)
  *
- *  v20.1 IMMORTAL‑EVO++++:
- *  -----------------------
- *  - Stronger browser guards (no doc/window assumptions)
- *  - Centralized hook registration + exportable hook API
- *  - Explicit public contract section
- *  - More deterministic cadence + state transitions
- *  - Safer bridge/log calls (never crash, always fire‑and‑forget)
+ *  - Deterministic TouchState merging
+ *  - Unified downstream routing (Gate/Security/Warmup/Advantage)
+ *  - Zero‑drift, zero‑PII, zero‑tracking guarantees
+ *  - Multi‑tab, multi‑window, multi‑pulse coordination
+ *  - IMMORTAL++ meta, overlays, and contract alignment
  *
- *  This is the organism’s FIRST NERVE SIGNAL.
- *  The moment the user touches the organism — the organism
- *  touches back, and keeps listening.
  * ============================================================
  */
 
 export const AI_EXPERIENCE_META = {
   identity: "PulseTouch",
-  version: "v20.1.0-Immortal-Evo++++-Portal-Skin-Continuous",
+  version: "v24-IMMORTAL++-Portal-Skin-Continuous",
   layer: "skin",
   role: "first_contact_sensor",
   lineage:
-    "PulseOS-v13 → v14-Immortal → v4.0.0-Immortal → v16-Immortal-Portal → v17-Continuous → v20-Immortal-Evo+++ → v20.1-Immortal-Evo++++",
+    "PulseOS-v13 → v14-Immortal → v4.0.0-Immortal → v16-Immortal-Portal → v17-Continuous → v20-Immortal-Evo++++ → v24-IMMORTAL++",
 
   evo: {
     prePulse: true,
@@ -62,15 +60,13 @@ export const AI_EXPERIENCE_META = {
     deterministic: true,
     driftProof: true,
 
-    // IMMORTAL upgrades
+    // IMMORTAL++ guarantees
     zeroPII: true,
     zeroTracking: true,
     zeroInference: true,
     safeCookie: true,
-    prewarmSignal: true,
-    preflightAware: true,
-    chunkProfileAware: true,
-    pageHintAware: true,
+    schemaStable: true,
+    contractStable: true,
 
     // PulseNet integration
     pulseNetAware: true,
@@ -79,7 +75,7 @@ export const AI_EXPERIENCE_META = {
     heartbeatAware: true,
     overmindAware: true,
 
-    // v16-Immortal-Portal: Time-axis + Portal Trust Layer
+    // Portal / Timeline
     timeAxisAware: true,
     firstContactTimeline: true,
     portalTrustEdge: true,
@@ -87,12 +83,12 @@ export const AI_EXPERIENCE_META = {
     loggerAligned: true,
     monitorAligned: true,
 
-    // v17-Continuous: Continuous pulse stream
+    // Continuous pulse
     continuousPulse: true,
     fastLaneAware: true,
     temporalHintAware: true,
 
-    // v20-Immortal-Evo+++:
+    // v20–v24 metabolic evolution
     adaptiveCadence: true,
     pressureAware: true,
     bandAware: true,
@@ -101,7 +97,18 @@ export const AI_EXPERIENCE_META = {
     diagnosticsHooks: true,
     multiTabAware: true,
     governorAware: true,
-    overmindHintAware: true
+    overmindHintAware: true,
+
+    // v24 organ integration
+    detectorAware: true,
+    warmupAware: true,
+    securityAware: true,
+    gateAware: true,
+    predictorAware: true,
+    analyticsAware: true,
+    presenceOracleAware: true,
+    advantageCortexAware: true,
+    threatShapeAware: true
   },
 
   contract: {
@@ -110,6 +117,11 @@ export const AI_EXPERIENCE_META = {
       "PulseTouchWarmup",
       "PulseTouchSecurity",
       "PulseTouchGate",
+      "PulseTouchPredictor",
+      "PulseTouchAnalytics",
+      "PulsePresenceOracle",
+      "pulseTouchAdvantageCortex",
+      "PulseTouchThreatShape",
       "PulseNet",
       "PulseNetIngress",
       "PulseProofBridge",
@@ -146,12 +158,15 @@ import {
   PulseBinaryOrganismBoot
 } from "./_BACKEND/PULSE-WORLD-BRIDGE.js";
 
+// IMMORTAL++ organ factories
 import { PulseTouchDetector } from "./_OUTERSENSES/PULSE-TOUCH-DETECTOR.js";
 import { PulseTouchWarmup } from "./_OUTERSENSES/PULSE-TOUCH-WARMUP.js";
 import { PulseTouchSecurity } from "./_OUTERSENSES/PULSE-TOUCH-SECURITY.js";
 import { PulseTouchGate } from "./_OUTERSENSES/PULSE-TOUCH-GATE.js";
+import { pulseTouchAdvantageCortex } from "./PULSE-TOUCH-ADVANTAGE-v24.js";
+import { PulseTouchThreatShape } from "./_OUTERSENSES/PULSE-TOUCH-THREATSHAPE.js";
 
-// Optional future‑oriented helpers (safe if missing)
+// Optional future‑oriented helpers (IMMORTAL++)
 import { PulseTouchPredictor } from "./_OUTERSENSES/PULSE-TOUCH-PREDICTOR.js";
 import { PulseTouchAnalytics } from "./_OUTERSENSES/PULSE-TOUCH-ANALYTICS.js";
 import { PulsePresenceOracle } from "./_OUTERSENSES/PULSE-PRESENCE-ORACLE.js";
@@ -229,7 +244,6 @@ try {
 // ============================================================
 // TIMELINE HELPERS — IMMORTAL FIRST-CONTACT AXIS
 // ============================================================
-
 function hasLocalStorage() {
   if (!hasWindow) return false;
   try {
@@ -328,7 +342,7 @@ function appendTouchTimeline(kind, payload = {}) {
 }
 
 // ============================================================
-// ADAPTIVE CADENCE ENGINE — PRESSURE/TRUST/BAND AWARE
+// ADAPTIVE CADENCE ENGINE — PRESSURE/TRUST/BAND/PULSE AWARE
 // ============================================================
 
 function computeAdaptiveIntervalMs({ security, skin }) {
@@ -341,6 +355,8 @@ function computeAdaptiveIntervalMs({ security, skin }) {
   const presence = skin?.presence || "active";
   const band = skin?.band || "symbolic";
   const mode = skin?.mode || "fast";
+  const pulseStream = skin?.pulseStream || "continuous";
+  const fastLane = skin?.fastLane || "enabled";
 
   if (presence === "idle" || presence === "background") {
     factor *= 1.8;
@@ -366,6 +382,17 @@ function computeAdaptiveIntervalMs({ security, skin }) {
     factor *= 1.4;
   } else if (mode === "fast") {
     factor *= 0.9;
+  }
+
+  // v24: pulseStream / fastLane hints
+  if (pulseStream === "single") {
+    factor *= 1.2;
+  } else if (pulseStream === "burst") {
+    factor *= 0.95;
+  }
+
+  if (fastLane === "disabled") {
+    factor *= 1.1;
   }
 
   let interval = Math.round(base * factor);
@@ -412,6 +439,28 @@ function applyAdaptiveCadence(state, { security, skin }) {
 // ============================================================
 // CONTINUOUS PULSE ENGINE — FAST-LANE WSEND INTENT STREAM
 // ============================================================
+
+let pulseTouchAnalyticsInstance = null;
+function getPulseTouchAnalytics() {
+  // IMMORTAL++: support both factory and static style
+  if (!PulseTouchAnalytics) return null;
+  if (pulseTouchAnalyticsInstance) return pulseTouchAnalyticsInstance;
+
+  try {
+    if (typeof PulseTouchAnalytics === "function") {
+      const maybe = PulseTouchAnalytics();
+      if (maybe && typeof maybe.recordPulse === "function") {
+        pulseTouchAnalyticsInstance = maybe;
+        return pulseTouchAnalyticsInstance;
+      }
+    }
+  } catch {
+    // fall through to static usage
+  }
+
+  pulseTouchAnalyticsInstance = PulseTouchAnalytics;
+  return pulseTouchAnalyticsInstance;
+}
 
 function startContinuousPulseStream(skin, security, gateDecision) {
   if (!hasWindow) return;
@@ -486,7 +535,9 @@ function sendFastLanePulse(mode, skin, security, gateDecision) {
       presence: skin.presence,
       page: skin.page,
       chunkProfile: skin.chunkProfile,
-      band
+      band,
+      pulseStream: skin.pulseStream || "continuous",
+      fastLane: skin.fastLane || "enabled"
     },
     security: {
       risk: security?.risk ?? "unknown",
@@ -528,9 +579,10 @@ function sendFastLanePulse(mode, skin, security, gateDecision) {
     });
   } catch {}
 
-  // 3) Optional analytics / evidence hooks (read‑only)
+  // 3) Optional analytics / evidence hooks (IMMORTAL++ organ‑aware)
   try {
-    PulseTouchAnalytics?.recordPulse?.({
+    const analytics = getPulseTouchAnalytics();
+    analytics?.recordPulse?.({
       ts,
       mode,
       band,
@@ -556,9 +608,6 @@ function registerHook(kind, fn) {
   });
 }
 
-// ============================================================
-// CORE API — CREATE PULSE TOUCH
-// ============================================================
 
 export function createPulseTouch(options = {}) {
   const originTs =
@@ -574,6 +623,50 @@ export function createPulseTouch(options = {}) {
       band: options.band || null
     }
   });
+
+  // ------------------------------------------------------------
+  // IMMORTAL++ ORGAN INSTANCES (LAZY, SAFE)
+  // ------------------------------------------------------------
+  let predictor = null;
+  let analytics = null;
+  let presenceOracle = null;
+  let advantageCortex = null;
+
+  try {
+    predictor =
+      typeof PulseTouchPredictor === "function"
+        ? PulseTouchPredictor()
+        : PulseTouchPredictor || null;
+  } catch {
+    predictor = null;
+  }
+
+  try {
+    analytics =
+      typeof PulseTouchAnalytics === "function"
+        ? PulseTouchAnalytics()
+        : PulseTouchAnalytics || null;
+  } catch {
+    analytics = null;
+  }
+
+  try {
+    presenceOracle =
+      typeof PulsePresenceOracle === "function"
+        ? PulsePresenceOracle()
+        : PulsePresenceOracle || null;
+  } catch {
+    presenceOracle = null;
+  }
+
+  try {
+    advantageCortex =
+      typeof pulseTouchAdvantageCortex === "function"
+        ? pulseTouchAdvantageCortex()
+        : null;
+  } catch {
+    advantageCortex = null;
+  }
 
   // ------------------------------------------------------------
   // 1. DEFAULT METADATA (Organism‑Safe, Non‑PII)
@@ -613,6 +706,7 @@ export function createPulseTouch(options = {}) {
   appendTouchTimeline("preflights_done", {});
 
   // 5) Warmup: chunks/pages/mode/presence hints
+  let warmupResult = null;
   try {
     appendTouchTimeline("warmup_start", {
       page: detected.page,
@@ -620,7 +714,7 @@ export function createPulseTouch(options = {}) {
       chunkProfile: detected.chunkProfile,
       band: detected.band
     });
-    PulseTouchWarmup.prewarm(detected);
+    warmupResult = PulseTouchWarmup.prewarm(detected);
     appendTouchTimeline("warmup_done", {});
   } catch {
     appendTouchTimeline("warmup_failed", {});
@@ -651,10 +745,61 @@ export function createPulseTouch(options = {}) {
     appendTouchTimeline("gate_failed", {});
   }
 
-  // 8) Optionally act on gate decision (e.g., hard refresh)
+  // 8) IMMORTAL++: Prediction / Presence / Advantage (read‑only, additive)
+  let prediction = null;
+  let presenceInsight = null;
+  let advantageProfile = null;
+
+  try {
+    if (predictor && typeof predictor.predict === "function") {
+      prediction = predictor.predict(detected, {
+        security,
+        warmup: warmupResult
+      });
+      if (prediction) {
+        appendTouchTimeline("prediction_emitted", { predictionHint: true });
+        firePredictionHooks(prediction, detected, security);
+      }
+    }
+  } catch {
+    appendTouchTimeline("prediction_failed", {});
+  }
+
+  try {
+    if (presenceOracle && typeof presenceOracle.evaluate === "function") {
+      presenceInsight = presenceOracle.evaluate(detected, {
+        security,
+        warmup: warmupResult
+      });
+      appendTouchTimeline("presence_oracle_evaluated", {
+        presenceInsightHint: !!presenceInsight
+      });
+    }
+  } catch {
+    appendTouchTimeline("presence_oracle_failed", {});
+  }
+
+  try {
+    if (advantageCortex && typeof advantageCortex.compute === "function") {
+      advantageProfile = advantageCortex.compute({
+        skin: detected,
+        security,
+        warmup: warmupResult,
+        prediction,
+        presence: presenceInsight
+      });
+      appendTouchTimeline("advantage_profile_computed", {
+        advantageHint: !!advantageProfile
+      });
+    }
+  } catch {
+    appendTouchTimeline("advantage_profile_failed", {});
+  }
+
+  // 9) Optionally act on gate decision (e.g., hard refresh)
   applyGateDecision(gateDecision, detected);
 
-  // 9) Ignite PulseNet (local immortal loop) — idempotent
+  // 10) Ignite PulseNet (local immortal loop) — idempotent
   try {
     startPulseNet({
       instanceId: "core",
@@ -666,7 +811,7 @@ export function createPulseTouch(options = {}) {
     appendTouchTimeline("pulsenet_ignite_failed", {});
   }
 
-  // 10) Send initial Touch → PulseNet ingress packet
+  // 11) Send initial Touch → PulseNet ingress packet
   try {
     const packet = {
       source: "pulse-touch",
@@ -674,6 +819,9 @@ export function createPulseTouch(options = {}) {
       skin: detected,
       security,
       gate: gateDecision,
+      prediction,
+      presence: presenceInsight,
+      advantage: advantageProfile,
       ts: Date.now()
     };
     pulseNetIngressFromUser(packet);
@@ -682,14 +830,14 @@ export function createPulseTouch(options = {}) {
     appendTouchTimeline("ingress_initial_failed", {});
   }
 
-  // 11) Start continuous fast‑lane pulse stream
+  // 12) Start continuous fast‑lane pulse stream
   try {
     startContinuousPulseStream(detected, security, gateDecision);
   } catch {
     appendTouchTimeline("pulse_stream_start_failed", {});
   }
 
-  // 12) Compiler signal — TOUCH → BRIDGE → COMPILER
+  // 13) Compiler signal — TOUCH → BRIDGE → COMPILER
   try {
     bridgeRoute?.("compiler.request", {
       source: "pulse-touch",
@@ -706,20 +854,6 @@ export function createPulseTouch(options = {}) {
     });
   } catch {
     appendTouchTimeline("compiler_request_failed", {});
-  }
-
-  // 13) Optional: prediction / presence oracle hooks (read‑only)
-  try {
-    const prediction = PulseTouchPredictor?.predict?.({
-      skin: detected,
-      security
-    });
-    if (prediction) {
-      appendTouchTimeline("prediction_emitted", { predictionHint: true });
-      firePredictionHooks(prediction, detected, security);
-    }
-  } catch {
-    appendTouchTimeline("prediction_failed", {});
   }
 
   // 14) Optional: multi‑tab broadcast (soft presence)
@@ -766,11 +900,11 @@ export function createPulseTouch(options = {}) {
     }
   }
 
-  function firePredictionHooks(prediction, skin, sec) {
+  function firePredictionHooks(pred, skin, sec) {
     const hooks = pulseTouchHooks.onPrediction || [];
     for (const fn of hooks) {
       try {
-        fn({ prediction, skin, security: sec });
+        fn({ prediction: pred, skin, security: sec });
       } catch {}
     }
   }
@@ -796,7 +930,6 @@ export function createPulseTouch(options = {}) {
       skin: detectedUpdated
     });
 
-    // send incremental update into PulseNet as ingress
     try {
       pulseNetIngressFromUser({
         source: "pulse-touch",
@@ -811,7 +944,6 @@ export function createPulseTouch(options = {}) {
       appendTouchTimeline("ingress_update_failed", { key, value });
     }
 
-    // re‑apply adaptive cadence if needed
     try {
       const state = hasWindow ? window.__PULSE_TOUCH_PULSE_STATE__ : null;
       if (state && state.started) {
@@ -909,10 +1041,6 @@ export function createPulseTouch(options = {}) {
     registerHook("onPrediction", fn);
   }
 
-  // ------------------------------------------------------------
-  // PUBLIC INSTANCE CONTRACT
-  // ------------------------------------------------------------
-
   return {
     update: updatePulseTouchField,
     read,
@@ -928,13 +1056,13 @@ export function createPulseTouch(options = {}) {
     onPrediction
   };
 }
-
 // ============================================================
-// COOKIE HELPERS
+// COOKIE HELPERS — IMMORTAL++
 // ============================================================
 
 function writePulseTouchCookie(state) {
   if (!hasDocument) return;
+  if (!state || typeof state !== "object") return;
 
   const cookieValue =
     `region=${state.region}` +
@@ -945,7 +1073,11 @@ function writePulseTouchCookie(state) {
     `|page=${state.page}` +
     `|chunkProfile=${state.chunkProfile}` +
     `|band=${state.band}` +
-    `|v=${state.version}`;
+    `|v=${state.version}` +
+    `|pulseStream=${state.pulseStream || "continuous"}` +
+    `|fastLane=${state.fastLane || "enabled"}` +
+    `|originTs=${state.originTs || ""}` +
+    `|lastPulseTs=${state.lastPulseTs || ""}`;
 
   try {
     document.cookie =
@@ -971,7 +1103,7 @@ function readPulseTouchInternal(defaults) {
     return { ...defaults };
   }
 
-  if (!raw) return { ...defaults };
+  if (!raw || !raw.includes("=")) return { ...defaults };
 
   const value = raw.replace(`${PULSE_TOUCH_COOKIE_NAME}=`, "");
   const parts = value.split("|");
@@ -991,12 +1123,18 @@ function readPulseTouchInternal(defaults) {
     page: parsed.page || defaults.page,
     chunkProfile: parsed.chunkProfile || defaults.chunkProfile,
     band: parsed.band || defaults.band || "symbolic",
-    version: parsed.v || defaults.version
+    version: parsed.v || defaults.version,
+
+    // IMMORTAL++ fields
+    pulseStream: parsed.pulseStream || "continuous",
+    fastLane: parsed.fastLane || "enabled",
+    originTs: parsed.originTs ? Number(parsed.originTs) : null,
+    lastPulseTs: parsed.lastPulseTs ? Number(parsed.lastPulseTs) : null
   };
 }
 
 // ============================================================
-// PREFLIGHT + GATE HELPERS
+// PREFLIGHT + GATE HELPERS — IMMORTAL++
 // ============================================================
 
 function runPreflights(skinState) {
@@ -1038,6 +1176,9 @@ function applyGateDecision(gateDecision, skin) {
 
   if (gateDecision.fallback === true && gateDecision.fallbackUrl) {
     try {
+      appendTouchTimeline("gate_fallback_redirect", {
+        url: gateDecision.fallbackUrl
+      });
       if (typeof location !== "undefined") {
         location.href = gateDecision.fallbackUrl;
       }
@@ -1048,6 +1189,7 @@ function applyGateDecision(gateDecision, skin) {
     }
   }
 }
+
 
 // ============================================================
 //  FOOTER — CONTINUOUS CONTACT LORE

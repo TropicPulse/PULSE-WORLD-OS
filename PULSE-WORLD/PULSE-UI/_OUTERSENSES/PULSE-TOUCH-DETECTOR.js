@@ -1,6 +1,6 @@
 // ============================================================================
 // FILE: /PULSE-TOUCH/PULSE-TOUCH-DETECTOR-v24.js
-// PULSE OS — v24 IMMORTAL
+// PULSE OS — v24 IMMORTAL++
 // PULSE‑TOUCH DETECTOR — EDGE SKIN + COOKIE READER + FASTLANE HINTS
 // ============================================================================
 //
@@ -38,7 +38,7 @@
 export const AI_EXPERIENCE_META_PulseTouchDetector = {
   id: "pulsetouch.detector",
   kind: "edge_skin",
-  version: "v24-IMMORTAL",
+  version: "v24-IMMORTAL++",
   role: "Pulse‑Touch skin signal reader",
   surfaces: {
     band: ["touch", "edge", "skin", "fastlane"],
@@ -204,16 +204,12 @@ export const IMMORTAL_OVERLAYS_PulseTouchDetector = {
 // ============================================================================
 
 /**
- * detectPulseTouch
  * Edge‑safe, deterministic Pulse‑Touch cookie reader.
  *
  * @param {object} event - Edge / Netlify / gateway event with headers.
  * @returns {object} skinState - Normalized Pulse‑Touch state.
  */
 export function detectPulseTouch(event) {
-  // ============================================================
-  // HEADER EXTRACTION — CASE‑SAFE, DRIFT‑PROOF
-  // ============================================================
   const headers = event?.headers || {};
   const cookieHeader =
     headers.cookie ||
@@ -241,20 +237,13 @@ export function detectPulseTouch(event) {
     parsed[k] = v;
   }
 
-  // ============================================================
-  // NORMALIZED SKIN STATE — IMMORTAL + CONTINUOUS / FASTLANE AWARE
-  // ============================================================
   const version = parsed.v || parsed.version || "0";
-
-  // Presence intensity: never inferred — only normalized if present.
   const presence = parsed.presence || "unknown";
-
-  // Pulse stream mode: Touch v17+ may write this; we default safely.
-  const pulseStream = parsed.pulseStream || "continuous"; // "continuous" | "burst" | "single" | "unknown"
-  const fastLane = parsed.fastLane || "enabled";          // "enabled" | "disabled" | "unknown"
+  const pulseStream = parsed.pulseStream || "continuous";
+  const fastLane = parsed.fastLane || "enabled";
 
   return {
-    // CORE FIELDS (original contract)
+    // CORE FIELDS
     region: parsed.region || "unknown",
     trusted: parsed.trusted || "0",
     mode: parsed.mode || "fast",
@@ -262,7 +251,7 @@ export function detectPulseTouch(event) {
     identity: parsed.identity || "anon",
     v: version,
 
-    // IMMORTAL ADVANTAGE FIELDS (v14+)
+    // IMMORTAL ADVANTAGE FIELDS
     page: parsed.page || "index",
     chunkProfile: parsed.chunkProfile || "default",
     integrity: parsed.integrity || "unknown",
@@ -273,19 +262,18 @@ export function detectPulseTouch(event) {
     hydration: parsed.hydration || "auto",
     animation: parsed.animation || "auto",
 
-    // v17+ CONTINUOUS / FASTLANE HINTS
+    // CONTINUOUS / FASTLANE HINTS
     pulseStream,
     fastLane,
     pulseOrigin: parsed.pulseOrigin || "edge",
 
-    // Optional temporal hints; safe defaults if absent
+    // Optional temporal hints
     originTs: parsed.originTs || null,
     lastPulseTs: parsed.lastPulseTs || null
   };
 }
 
 /**
- * DEFAULT SKIN STATE
  * Organism’s “blind touch” state when no pulse_touch cookie is present or readable.
  */
 export function defaultPulseTouchState() {
@@ -297,7 +285,6 @@ export function defaultPulseTouchState() {
     identity: "anon",
     v: "0",
 
-    // IMMORTAL ADVANTAGE DEFAULTS
     page: "index",
     chunkProfile: "default",
     integrity: "unknown",
@@ -308,11 +295,23 @@ export function defaultPulseTouchState() {
     hydration: "auto",
     animation: "auto",
 
-    // v17+ CONTINUOUS / FASTLANE DEFAULTS
     pulseStream: "continuous",
     fastLane: "enabled",
     pulseOrigin: "edge",
     originTs: null,
     lastPulseTs: null
+  };
+}
+
+// ============================================================================
+// FACTORY ORGAN — IMMORTAL++
+// ============================================================================
+export function PulseTouchDetector() {
+  return {
+    meta: ORGAN_META_PulseTouchDetector,
+    contract: ORGAN_CONTRACT_PulseTouchDetector,
+    overlays: IMMORTAL_OVERLAYS_PulseTouchDetector,
+    detect: detectPulseTouch,
+    defaultState: defaultPulseTouchState
   };
 }

@@ -1,31 +1,15 @@
 // ============================================================================
 // FILE: /PULSE-TOUCH/PULSE-TOUCH-WARMUP.js
-// PULSE OS — v24 IMMORTAL
-// PULSE‑TOUCH WARMUP ENGINE — METABOLISM + PRE‑PULSE + ADVANTAGE PRIMING
+// PULSE OS — v24 IMMORTAL++
+// PULSE‑TOUCH WARMUP — METABOLIC PRE‑PULSE ENGINE
 // ============================================================================
 //
 // ROLE:
-//   Metabolic warmup organ at the edge. Given a Pulse‑Touch skin state,
-//   it runs a set of deterministic, non‑blocking, async‑safe warmup tasks:
+//   Metabolic warmup cortex at the edge. Given a Pulse‑Touch skin state,
+//   it runs a set of safe, async, non‑blocking warmup tasks in parallel.
 //
-//     • Pre‑chunk page
-//     • Pre‑hydrate identity + presence (non‑PII)
-//     • Pre‑load region cluster + Earn subsystem
-//     • Preflight chunk + page sanity
-//     • FastLane / pulseStream / temporal warmup
-//     • Hydration / animation / mode / presence / region warmup
-//
-//   v24 keeps v17 semantics but wraps them in IMMORTAL++ meta + overlays.
-//   All tasks remain safe no‑ops by default, ready for future evolution.
-//
-// CONTRACT:
-//   • MUST run safely even as no‑ops
-//   • MUST NOT block page evolution
-//   • MUST NOT require identity
-//   • MUST NOT store PII
-//   • MUST remain async‑safe
-//   • MUST remain drift‑proof
-//   • MUST remain deterministic
+//   It never blocks routing, never touches PII, never reaches the network.
+//   It only prepares local, in‑memory hints for downstream organs.
 //
 // ============================================================================
 // AI_EXPERIENCE_META — v24 IMMORTAL++
@@ -89,7 +73,6 @@ export const ORGAN_META_PulseTouchWarmup = {
     deterministic: true,
     driftProof: true,
 
-    // IMMORTAL guarantees
     zeroPII: true,
     zeroTracking: true,
     silentWarmup: true,
@@ -100,7 +83,6 @@ export const ORGAN_META_PulseTouchWarmup = {
     earlyChunkSanity: true,
     earlyPagePrep: true,
 
-    // v24 FastLane / Continuous Pulse
     pulseStreamAware: true,
     fastLaneAware: true,
     temporalWarmupAware: true,
@@ -134,7 +116,9 @@ export const ORGAN_CONTRACT_PulseTouchWarmup = {
     pulseTouch: "Pulse‑Touch skinState from detector"
   },
   outputs: {
-    warmed: "boolean"
+    warmed: "boolean",
+    tasks: "string[] of completed warmup task ids",
+    advantageWarmup: "summary of warmup‑relevant hints"
   },
   consumers: [
     "PulseTouchGate",
@@ -183,24 +167,11 @@ export const IMMORTAL_OVERLAYS_PulseTouchWarmup = {
 // IMPLEMENTATION — v24 IMMORTAL++
 // ============================================================================
 //
-// NOTE:
-//   Implementation is the v17 warmup pipeline, preserved, wrapped in
-//   IMMORTAL++ meta. All tasks are safe no‑ops by default.
+// v17 warmup pipeline preserved, wrapped in IMMORTAL++ meta.
+// All tasks are safe no‑ops by default, but return task ids so
+// downstream organs can introspect what was warmed.
 // ============================================================================
 export async function warmupOrganism(pulseTouch) {
-  /**
-   * ------------------------------------------------------------
-   *  v24 IMMORTAL FASTLANE WARMUP
-   *  Run ALL warmup tasks in parallel.
-   *  They MUST be:
-   *    - safe
-   *    - async
-   *    - non‑blocking
-   *    - non‑PII
-   *    - deterministic
-   * ------------------------------------------------------------
-   */
-
   const {
     page,
     chunkProfile,
@@ -214,146 +185,180 @@ export async function warmupOrganism(pulseTouch) {
     identity
   } = pulseTouch;
 
+  const tasks = [];
+
   await Promise.all([
-    prechunkPage(page, chunkProfile),
-    prehydrateIdentity(identity),
-    prehydratePresence(presence),
-    preloadCluster(region),
-    preloadEarn(identity),
-    preflightChunkSanity(chunkProfile),
-    preflightPagePrep(page),
+    (async () => {
+      await prechunkPage(page, chunkProfile);
+      tasks.push("prechunk_page");
+    })(),
+    (async () => {
+      await prehydrateIdentity(identity);
+      tasks.push("prehydrate_identity");
+    })(),
+    (async () => {
+      await prehydratePresence(presence);
+      tasks.push("prehydrate_presence");
+    })(),
+    (async () => {
+      await preloadCluster(region);
+      tasks.push("region_cluster_warmup");
+    })(),
+    (async () => {
+      await preloadEarn(identity);
+      tasks.push("earn_warmup");
+    })(),
+    (async () => {
+      await preflightChunkSanity(chunkProfile);
+      tasks.push("chunk_sanity");
+    })(),
+    (async () => {
+      await preflightPagePrep(page);
+      tasks.push("page_prep");
+    })(),
 
     // v24 FASTLANE / CONTINUOUS PULSE WARMUP
-    warmupPulseStream(pulseStream),
-    warmupFastLane(fastLane),
-    warmupTemporalHints(pulseTouch),
-    warmupHydrationTier(hydration),
-    warmupAnimationTier(animation),
-    warmupModeTier(mode),
-    warmupPresenceIntensity(presence),
-    warmupRegionCluster(region)
+    (async () => {
+      await warmupPulseStream(pulseStream);
+      tasks.push("pulse_stream_warmup");
+    })(),
+    (async () => {
+      await warmupFastLane(fastLane);
+      tasks.push("fastlane_warmup");
+    })(),
+    (async () => {
+      await warmupTemporalHints(pulseTouch);
+      tasks.push("temporal_warmup");
+    })(),
+    (async () => {
+      await warmupHydrationTier(hydration);
+      tasks.push("hydration_tier_warmup");
+    })(),
+    (async () => {
+      await warmupAnimationTier(animation);
+      tasks.push("animation_tier_warmup");
+    })(),
+    (async () => {
+      await warmupModeTier(mode);
+      tasks.push("mode_tier_warmup");
+    })(),
+    (async () => {
+      await warmupPresenceIntensity(presence);
+      tasks.push("presence_intensity_warmup");
+    })(),
+    (async () => {
+      await warmupRegionCluster(region);
+      tasks.push("region_cluster_warmup");
+    })()
   ]);
 
-  return true;
+  const advantageWarmup = {
+    page,
+    chunkProfile,
+    region,
+    presence,
+    mode,
+    pulseStream,
+    fastLane,
+    hydration,
+    animation,
+    identity
+  };
+
+  return {
+    warmed: true,
+    tasks,
+    advantageWarmup
+  };
 }
 
-/* ============================================================
- *  ADVANTAGE: Pre‑chunk page
- * ============================================================ */
+// ============================================================================
+// TASK IMPLEMENTATIONS — ALL SAFE NO‑OPS (IMMORTAL++)
+// ============================================================================
 async function prechunkPage(page, chunkProfile) {
   void page;
   void chunkProfile;
   return true;
 }
 
-/* ============================================================
- *  ADVANTAGE: Pre‑hydrate identity (non‑PII)
- * ============================================================ */
 async function prehydrateIdentity(identity) {
   void identity;
   return true;
 }
 
-/* ============================================================
- *  ADVANTAGE: Pre‑hydrate presence
- * ============================================================ */
 async function prehydratePresence(presence) {
   void presence;
   return true;
 }
 
-/* ============================================================
- *  ADVANTAGE: Pre‑load region cluster
- * ============================================================ */
 async function preloadCluster(region) {
   void region;
   return true;
 }
 
-/* ============================================================
- *  ADVANTAGE: Pre‑load Earn subsystem
- * ============================================================ */
 async function preloadEarn(identity) {
   void identity;
   return true;
 }
 
-/* ============================================================
- *  ADVANTAGE: Early chunk sanity check
- * ============================================================ */
 async function preflightChunkSanity(chunkProfile) {
   void chunkProfile;
   return true;
 }
 
-/* ============================================================
- *  ADVANTAGE: Early page prep
- * ============================================================ */
 async function preflightPagePrep(page) {
   void page;
   return true;
 }
 
-/* ============================================================
- *  v24 ADVANTAGE: Pulse stream warmup
- * ============================================================ */
 async function warmupPulseStream(pulseStream) {
   void pulseStream;
   return true;
 }
 
-/* ============================================================
- *  v24 ADVANTAGE: FastLane warmup
- * ============================================================ */
 async function warmupFastLane(fastLane) {
   void fastLane;
   return true;
 }
 
-/* ============================================================
- *  v24 ADVANTAGE: Temporal warmup
- * ============================================================ */
 async function warmupTemporalHints(pulseTouch) {
   void pulseTouch;
   return true;
 }
 
-/* ============================================================
- *  v24 ADVANTAGE: Hydration tier warmup
- * ============================================================ */
 async function warmupHydrationTier(hydration) {
   void hydration;
   return true;
 }
 
-/* ============================================================
- *  v24 ADVANTAGE: Animation tier warmup
- * ============================================================ */
 async function warmupAnimationTier(animation) {
   void animation;
   return true;
 }
 
-/* ============================================================
- *  v24 ADVANTAGE: Mode tier warmup
- * ============================================================ */
 async function warmupModeTier(mode) {
   void mode;
   return true;
 }
 
-/* ============================================================
- *  v24 ADVANTAGE: Presence intensity warmup
- * ============================================================ */
 async function warmupPresenceIntensity(presence) {
   void presence;
   return true;
 }
 
-/* ============================================================
- *  v24 ADVANTAGE: Region cluster warmup
- * ============================================================ */
 async function warmupRegionCluster(region) {
   void region;
   return true;
+}
+
+// ============================================================================
+// FACTORY ORGAN — IMMORTAL++
+// ============================================================================
+export function PulseTouchWarmup() {
+  return {
+    meta: ORGAN_META_PulseTouchWarmup,
+    contract: ORGAN_CONTRACT_PulseTouchWarmup,
+    overlays: IMMORTAL_OVERLAYS_PulseTouchWarmup,
+    warmup: warmupOrganism
+  };
 }

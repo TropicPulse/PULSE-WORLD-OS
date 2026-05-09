@@ -1,6 +1,6 @@
 // ============================================================================
 // FILE: /PULSE-TOUCH/PULSE-TOUCH-SECURITY.js
-// PULSE OS — v24 IMMORTAL
+// PULSE OS — v24 IMMORTAL++
 // PULSE‑TOUCH SECURITY CORTEX — RISK ENGINE + TRUST CLASSIFIER + THREATSHAPE
 // ============================================================================
 //
@@ -21,11 +21,13 @@
 //     • Deterministic, drift‑proof, additive‑only evolution
 //
 // ============================================================================
-// AI_EXPERIENCE_META — v24 IMMORTAL++
+// DEPENDENCIES
 // ============================================================================
-
 import { buildThreatShape as PulseTouchThreatShape } from "./PULSE-TOUCH-THREATSHAPE.js";
 
+// ============================================================================
+// AI_EXPERIENCE_META — v24 IMMORTAL++
+// ============================================================================
 export const AI_EXPERIENCE_META_PulseTouchSecurity = {
   id: "pulsetouch.security",
   kind: "cortex_organ",
@@ -174,9 +176,8 @@ export const IMMORTAL_OVERLAYS_PulseTouchSecurity = {
 // IMPLEMENTATION — v24 IMMORTAL++
 // ============================================================================
 //
-// NOTE:
-//   Core scoring logic is the v17 engine, preserved.
-//   v24 adds ThreatShape + FastLane + continuous pulse scoring.
+// Core scoring logic is the v17 engine, preserved.
+// v24 adds ThreatShape + FastLane + continuous pulse scoring.
 // ============================================================================
 export function evaluateSecurity(pulseTouch, event) {
   // ============================================================
@@ -279,5 +280,17 @@ export function evaluateSecurity(pulseTouch, event) {
     action,
     advantage,
     threatShape
+  };
+}
+
+// ============================================================================
+// FACTORY ORGAN — IMMORTAL++
+// ============================================================================
+export function PulseTouchSecurity() {
+  return {
+    meta: ORGAN_META_PulseTouchSecurity,
+    contract: ORGAN_CONTRACT_PulseTouchSecurity,
+    overlays: IMMORTAL_OVERLAYS_PulseTouchSecurity,
+    evaluate: evaluateSecurity
   };
 }

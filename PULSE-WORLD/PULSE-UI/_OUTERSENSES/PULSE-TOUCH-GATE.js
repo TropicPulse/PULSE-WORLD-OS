@@ -32,12 +32,12 @@
 import { detectPulseTouch } from "./PULSE-TOUCH-DETECTOR.js";
 import { pulseTouchWarmup } from "./PULSE-TOUCH-WARMUP.js";
 import { pulseTouchSecurity } from "./PULSE-TOUCH-SECURITY.js";
-import { pulseTouchAdvantageCortex } from "./PULSE-TOUCH-ADVANTAGE-v24.js";
+import { pulseTouchAdvantageCortex } from "./PULSE-TOUCH-ADVANTAGE.js";
 
 // Optional future‑oriented helpers (safe if missing)
-import { PulseTouchPredictor } from "./_OUTERSENSES/PULSE-TOUCH-PREDICTOR.js";
-import { PulseTouchAnalytics } from "./_OUTERSENSES/PULSE-TOUCH-ANALYTICS.js";
-import { PulsePresenceOracle } from "./_OUTERSENSES/PULSE-PRESENCE-ORACLE.js";
+import { PulseTouchPredictor } from "./PULSE-TOUCH-PREDICTOR.js";
+import { PulseTouchAnalytics } from "./PULSE-TOUCH-ANALYTICS.js";
+import { PulsePresenceOracle } from "./PULSE-PRESENCE-ORACLE.js";
 
 // ============================================================================
 // AI_EXPERIENCE_META — v24 IMMORTAL++

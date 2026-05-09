@@ -1,66 +1,65 @@
-/**
- * ============================================================
- *  ORGAN META: Pulse‑Touch ThreatShape Engine
- *  ORGAN TYPE: Cortex Organ (THREAT SHAPE)
- *  ORGAN LAYER: Edge / Netlify Function / Pre‑Entry Firewall
- *  ORGAN ROLE: Early Threat Shape Classification
- *  ORGAN VERSION: v18.0‑IMMORTAL
- *  ORGAN LINEAGE:
- *      - Touch v17 (Detector / Security / Gate / Warmup)
- *      - ThreatShape v18 (Pre‑Entry Firewall Cortex)
- *
- *  THREAT MODEL (3 SHAPES):
- *      1) NOT_A_THREAT
- *         - Fail‑open, full speed, 99.5% of traffic.
- *
- *      2) POSSIBLE_THREAT
- *         - Fail‑open, full speed.
- *         - Immediately notify operator (email/webhook).
- *         - Operator can: BLOCK, SLOW, or JUST WATCH.
- *
- *      3) MAJOR_THREAT
- *         - Immediate HELLNO.
- *         - Route to /hellno.html.
- *         - Mark as “stop pulsing this environment”.
- *
- *  ORGAN CONTRACT:
- *      - MUST NOT use PII.
- *      - MUST NOT infer personal identity.
- *      - MUST remain deterministic and drift‑proof.
- *      - MUST output a stable ThreatShape object.
- *
- *  OUTPUT SHAPE:
- *      ThreatShape = {
- *        shape: "NOT_A_THREAT" | "POSSIBLE_THREAT" | "MAJOR_THREAT",
- *        recommendedAction: "allow" | "alert" | "hellno",
- *        riskScore: number,        // 0–100
- *        reasons: string[],        // human‑readable reasons
- *        regionRisk: "safe" | "restricted" | "blocked",
- *        pulseRisk: "normal" | "anomalous" | "hostile",
- *        temporalRisk: "normal" | "drift" | "suspicious",
- *        clusterRisk: "safe" | "unknown" | "blocked",
- *        meta: {
- *          region: string | null,
- *          pulseStream: string | null,
- *          fastLane: string | null,
- *          mode: string | null,
- *          presence: string | null,
- *          originTs: number | null,
- *          lastPulseTs: number | null
- *        }
- *      }
- *
- * ============================================================
- */
-/*
-AI_EXPERIENCE_META = {
-  identity: "PulseTouchThreatShape",
-  version: "v18-Immortal",
-  layer: "cortex",
+// ============================================================================
+// FILE: /PULSE-TOUCH/PULSE-TOUCH-THREATSHAPE.js
+// PULSE OS — v24 IMMORTAL++
+// PULSE‑TOUCH THREATSHAPE ENGINE — 3‑SHAPE THREAT MODEL
+// ============================================================================
+//
+// ROLE:
+//   Early threat shape classification for Pulse‑Touch at the edge.
+//   Consumes Pulse‑Touch skinState and produces a stable ThreatShape object:
+//
+//     • shape: NOT_A_THREAT | POSSIBLE_THREAT | MAJOR_THREAT
+//     • recommendedAction: allow | alert | hellno
+//     • riskScore: 0–100
+//     • reasons: string[]
+//     • regionRisk / pulseRisk / temporalRisk / clusterRisk
+//     • meta: region / pulseStream / fastLane / mode / presence / timestamps
+//
+// CONTRACT:
+//   • MUST NOT use PII
+//   • MUST NOT infer personal identity
+//   • MUST remain deterministic and drift‑proof
+//   • MUST output a stable ThreatShape object
+//
+// ============================================================================
+// AI_EXPERIENCE_META — v24 IMMORTAL++
+// ============================================================================
+export const AI_EXPERIENCE_META_PulseTouchThreatShape = {
+  id: "pulsetouch.threatshape",
+  kind: "cortex_organ",
+  version: "v24-IMMORTAL++",
   role: "threat_shape_engine",
-  lineage: "PulseOS-v13 → v17-Touch → v18-ThreatShape",
+  surfaces: {
+    band: ["security", "threatshape", "risk"],
+    wave: ["analytical", "cold", "early_firewall"],
+    binary: ["not_a_threat", "possible_threat", "major_threat"],
+    presence: ["threatshape_state"],
+    advantage: [
+      "region_risk",
+      "pulse_risk",
+      "temporal_risk",
+      "cluster_risk",
+      "shape_hint"
+    ],
+    speed: "instant_compute"
+  },
+  invariants: {
+    networkCalls: "none",
+    sideEffects: "none",
+    determinism: "strict",
+    mutation: "forbidden_at_runtime"
+  }
+};
 
-  evo: {
+// ============================================================================
+// ORGAN META
+// ============================================================================
+export const ORGAN_META_PulseTouchThreatShape = {
+  id: "organ.pulsetouch.threatshape",
+  organism: "PulseTouch",
+  layer: "edge.security.threatshape",
+  tier: "IMMORTAL",
+  evoFlags: {
     deterministic: true,
     driftProof: true,
     regionAware: true,
@@ -76,26 +75,76 @@ AI_EXPERIENCE_META = {
     zeroIdentityInference: true,
 
     failOpenAware: true,
-    threeShapeModel: true, // NOT / POSSIBLE / MAJOR
+    threeShapeModel: true,
     operatorAlertAware: true,
     hellnoAware: true
   },
-
-  contract: {
-    always: [
-      "PulseTouchDetector",
-      "PulseTouchSecurity",
-      "PulseTouchGate"
-    ],
-    never: [
-      "identityInference",
-      "PII",
-      "tracking",
-      "deviceFingerprinting"
+  lineage: {
+    family: "pulsetouch_threatshape",
+    generation: 2,
+    osVersion: "v24",
+    history: [
+      "Touch v17 (Detector / Security / Gate / Warmup)",
+      "ThreatShape v18 (Pre‑Entry Firewall Cortex)",
+      "ThreatShape v24 (IMMORTAL++ ThreatShape Engine)"
     ]
   }
-}
-*/
+};
+
+// ============================================================================
+// ORGAN CONTRACT
+// ============================================================================
+export const ORGAN_CONTRACT_PulseTouchThreatShape = {
+  inputs: {
+    pulseTouch: "Pulse‑Touch skinState from detector",
+    event: "Edge / Netlify event (optional, for future use)"
+  },
+  outputs: {
+    threatShape: "ThreatShape object (3‑shape model)",
+    securityDecision: "Optional skeleton decision (trustLevel/action)",
+    notifyOperator: "boolean",
+    hellno: "boolean"
+  },
+  guarantees: {
+    deterministic: true,
+    noNetwork: true,
+    noSideEffects: true,
+    zeroPII: true,
+    zeroTracking: true,
+    zeroIdentityInference: true
+  }
+};
+
+// ============================================================================
+// IMMORTAL OVERLAYS
+// ============================================================================
+export const IMMORTAL_OVERLAYS_PulseTouchThreatShape = {
+  drift: {
+    allowed: false,
+    notes: "Shape thresholds and semantics must remain stable."
+  },
+  pressure: {
+    expectedLoad: "high",
+    notes: "Runs on many requests; must remain O(1)."
+  },
+  stability: {
+    semantics: "stable",
+    notes: "Only additive evolution allowed; existing shapes must not change meaning."
+  },
+  load: {
+    maxComponents: 1,
+    notes: "Single ThreatShape per evaluation."
+  },
+  triHeart: {
+    cognitive: "early_threat_classification",
+    emotional: "no_emotion",
+    behavioral: "fail_open_by_default"
+  }
+};
+
+// ============================================================================
+// CORE IMPLEMENTATION — v24 IMMORTAL++
+// ============================================================================
 
 /**
  * Build a ThreatShape from early environment identity.
@@ -121,9 +170,8 @@ export function buildThreatShape(pulseTouch, event = {}) {
   // ------------------------------------------------------------
   let regionRisk = "safe"; // safe | restricted | blocked
 
-  // Hard‑block regions (MAJOR THREAT candidates)
-  const BLOCKED_REGIONS = new Set(["kp"]); // North Korea, etc.
-  const RESTRICTED_REGIONS = new Set(["ng"]); // e.g. Nigeria, tunable
+  const BLOCKED_REGIONS = new Set(["kp"]);
+  const RESTRICTED_REGIONS = new Set(["ng"]);
 
   if (BLOCKED_REGIONS.has(region)) {
     regionRisk = "blocked";
@@ -175,7 +223,7 @@ export function buildThreatShape(pulseTouch, event = {}) {
   }
 
   // ------------------------------------------------------------
-  // CLUSTER RISK (simple placeholder; can evolve later)
+  // CLUSTER RISK
   // ------------------------------------------------------------
   let clusterRisk = "safe"; // safe | unknown | blocked
 
@@ -186,7 +234,7 @@ export function buildThreatShape(pulseTouch, event = {}) {
   }
 
   // ------------------------------------------------------------
-  // MODE / PRESENCE HINTS (light‑weight)
+  // MODE / PRESENCE HINTS
   // ------------------------------------------------------------
   if (mode === "safe") {
     riskScore += 5;
@@ -199,7 +247,7 @@ export function buildThreatShape(pulseTouch, event = {}) {
   }
 
   // ------------------------------------------------------------
-  // NORMALIZE RISK SCORE (cap 0–100)
+  // NORMALIZE RISK SCORE (0–100)
   // ------------------------------------------------------------
   if (riskScore < 0) riskScore = 0;
   if (riskScore > 100) riskScore = 100;
@@ -207,16 +255,13 @@ export function buildThreatShape(pulseTouch, event = {}) {
   // ------------------------------------------------------------
   // MAP RISK → THREAT SHAPE (3‑tier model)
   // ------------------------------------------------------------
-  let shape = "NOT_A_THREAT"; // NOT_A_THREAT | POSSIBLE_THREAT | MAJOR_THREAT
-  let recommendedAction = "allow"; // allow | alert | hellno
+  let shape = "NOT_A_THREAT";
+  let recommendedAction = "allow";
 
-  // MAJOR THREAT: hard‑blocked region or extremely high risk
   if (regionRisk === "blocked" || riskScore >= 80) {
     shape = "MAJOR_THREAT";
     recommendedAction = "hellno";
-  }
-  // POSSIBLE THREAT: restricted region, unknown cluster, or medium risk
-  else if (
+  } else if (
     regionRisk === "restricted" ||
     clusterRisk === "unknown" ||
     riskScore >= 40
@@ -224,7 +269,6 @@ export function buildThreatShape(pulseTouch, event = {}) {
     shape = "POSSIBLE_THREAT";
     recommendedAction = "alert";
   }
-  // else: NOT_A_THREAT (default)
 
   return {
     shape,
@@ -248,9 +292,7 @@ export function buildThreatShape(pulseTouch, event = {}) {
 }
 
 /**
- * Integration helper:
  * Map ThreatShape → Security decision skeleton.
- * Security Cortex can refine this further if needed.
  */
 export function threatShapeToSecurityDecision(threatShape) {
   const { shape, riskScore } = threatShape;
@@ -263,7 +305,7 @@ export function threatShapeToSecurityDecision(threatShape) {
     action = "hellno";
   } else if (shape === "POSSIBLE_THREAT") {
     trustLevel = "suspicious";
-    action = "allow"; // fail‑open, but operator alerted
+    action = "allow"; // fail‑open, operator alerted
   } else if (riskScore >= 20) {
     trustLevel = "neutral";
     action = "allow";
@@ -277,7 +319,6 @@ export function threatShapeToSecurityDecision(threatShape) {
 }
 
 /**
- * Integration helper:
  * Decide whether to notify operator (email/webhook) based on ThreatShape.
  */
 export function shouldNotifyOperator(threatShape) {
@@ -285,9 +326,23 @@ export function shouldNotifyOperator(threatShape) {
 }
 
 /**
- * Integration helper:
  * Decide whether to hard‑block (HELLNO) based on ThreatShape.
  */
 export function shouldHellno(threatShape) {
   return threatShape.shape === "MAJOR_THREAT";
+}
+
+// ============================================================================
+// FACTORY ORGAN — IMMORTAL++
+// ============================================================================
+export function PulseTouchThreatShape() {
+  return {
+    meta: ORGAN_META_PulseTouchThreatShape,
+    contract: ORGAN_CONTRACT_PulseTouchThreatShape,
+    overlays: IMMORTAL_OVERLAYS_PulseTouchThreatShape,
+    build: buildThreatShape,
+    toSecurityDecision: threatShapeToSecurityDecision,
+    shouldNotifyOperator,
+    shouldHellno
+  };
 }
