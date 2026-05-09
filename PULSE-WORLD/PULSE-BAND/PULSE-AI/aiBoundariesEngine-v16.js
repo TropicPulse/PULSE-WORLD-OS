@@ -51,7 +51,7 @@ AI_EXPERIENCE_META = {
 }
 */
 
-import { getBoundariesForPersona, canPerformDynamic } from "./permissions.js";
+import { getBoundariesForPersona, canPerformDynamic } from "./aiBoundaries.js";
 
 // ============================================================================
 //  META — v16 IMMORTAL‑ADVANTAGE, MEMORY + GPU + EARN + HEARTBEAT + CHUNKING

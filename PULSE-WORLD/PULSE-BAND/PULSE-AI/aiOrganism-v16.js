@@ -158,9 +158,9 @@ import { createAIBinaryNervousSystem } from "./aiNervousSystem.js";
 // ============================================================================
 //  COMMANDMENTS / SUPEREGO LAYER
 // ============================================================================
-import { createPersonaEngine } from "./persona.js";
-import { createBoundariesEngine } from "./boundaries.js";
-import { createPermissionsEngine } from "./permissions.js";
+import { createPersonaEngine } from "./aiPersonality.js";
+import { createBoundariesEngine } from "./aiBoundaries.js";
+import { createPermissionsEngine } from "./aiPermissions.js";
 
 // ============================================================================
 //  COGNITIVE FRAME / CONTEXT / CORTEX
@@ -198,8 +198,8 @@ import aiDeliveryEngine, {
   prewarmDeliveryEngine
 } from "./aiDeliveryEngine.js";
 
-import { aiEvolutionEngine } from "./aiEvolutionEngine-v16.js";
-import { aiDualBand } from "./aiDualBand-v16.js";
+import { aiEvolutionEngine } from "./aiEvolutionEngine-v24.js";
+import { aiDualBand } from "./aiDualBand-v24.js";
 
 // ============================================================================
 //  SCRIBE / DIAGNOSTICS / DEPS
@@ -239,7 +239,7 @@ import depsSurface, {
 // ============================================================================
 //  AI ENGINE
 // ============================================================================
-import { runAI, ExecutionEngineMeta } from "./aiEngine-v16.js";
+import { runAI, ExecutionEngineMeta } from "./aiEngine-v24.js";
 
 // ============================================================================
 //  ORGANISM ARTERY — v16 IMMORTAL++

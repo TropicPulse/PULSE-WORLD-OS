@@ -1,6 +1,6 @@
 // ============================================================================
-//  aiDualBand-v16-Immortal-ORGANISM.js
-//  PULSE OS v16-Immortal — Dual-Band Organism (Symbolic ↔ Binary)
+//  aiDualBand-v24-Immortal-ORGANISM++.js
+//  PULSE OS v24-Immortal++ — Dual-Band Organism (Symbolic ↔ Binary)
 //  Organism Bridge • Context Engine • Clinical + Structural + ScanFile Aware
 //  PURE BRIDGE. ZERO MUTATION. ZERO RANDOMNESS.
 // ============================================================================
@@ -8,10 +8,10 @@
 /*
 AI_EXPERIENCE_META = {
   identity: "aiDualband",
-  version: "v16-Immortal-ORGANISM",
+  version: "v24-Immortal-ORGANISM++",
   layer: "ai_core",
   role: "dualband_bridge_organism",
-  lineage: "aiDualband-v11 → v13.0-Evo+++ → v14-Immortal → v16-Immortal-ORGANISM",
+  lineage: "aiDualband-v11 → v13.0-Evo+++ → v14-Immortal → v16-Immortal-ORGANISM → v24-Immortal-ORGANISM++",
 
   evo: {
     dualBand: true,
@@ -35,7 +35,19 @@ AI_EXPERIENCE_META = {
 
     proxyAware: true,
     proxyPressureAware: true,
-    proxyFallbackAware: true
+    proxyFallbackAware: true,
+
+    // v24++ advantages
+    daemonOriented: true,
+    sealedOrganism: true,
+    portalCompatible: true,
+    bridgeCompatible: true,
+    dualMembraneAware: true,
+    worldStateAware: true,
+    personaAware: true,
+    pulseDensityAware: true,
+    gpuLaneAware: true,
+    binaryOverlayAware: true
   },
 
   contract: {
@@ -48,8 +60,8 @@ AI_EXPERIENCE_META = {
 export const DualBandMeta = Object.freeze({
   layer: "PulseAIDualBandKernel",
   role: "DUAL_BAND_BRIDGE_ORGAN",
-  version: "v16-Immortal-ORGANISM",
-  identity: "aiDualBandBridge-v16-Immortal-ORGANISM",
+  version: "v24-Immortal-ORGANISM++",
+  identity: "aiDualBandBridge-v24-Immortal-ORGANISM++",
 
   evo: Object.freeze({
     driftProof: true,
@@ -81,7 +93,20 @@ export const DualBandMeta = Object.freeze({
     cacheAware: true,
     arteryAware: true,
     prewarmAware: true,
-    epoch: "v16-Immortal-ORGANISM"
+
+    // v24++ organism/kernel semantics
+    daemonOriented: true,
+    sealedOrganism: true,
+    portalCompatible: true,
+    bridgeCompatible: true,
+    dualMembraneAware: true,
+    worldStateAware: true,
+    personaAware: true,
+    pulseDensityAware: true,
+    gpuLaneAware: true,
+    binaryOverlayAware: true,
+
+    epoch: "v24-Immortal-ORGANISM++"
   }),
 
   contract: Object.freeze({
@@ -96,7 +121,9 @@ export const DualBandMeta = Object.freeze({
       "modify persona logic",
       "modify router logic",
       "modify cortex logic",
-      "treat the organism as a tool instead of an organism"
+      "treat the organism as a tool instead of an organism",
+      "portalBypass",
+      "bridgeBypass"
     ]),
 
     always: Object.freeze([
@@ -107,7 +134,11 @@ export const DualBandMeta = Object.freeze({
       "expose unified dual-band surface",
       "expose dual-band artery metrics deterministically",
       "preserve organism identity",
-      "preserve drift-proof architecture"
+      "preserve drift-proof architecture",
+      "respect sealedOrganismBoundary",
+      "remain daemonCompatible",
+      "remain portalCompatible",
+      "remain bridgeCompatible"
     ])
   })
 });
@@ -149,7 +180,7 @@ import {
 
 import { createPermissionsEngine } from "./aiPermissionsEngine-v16.js";
 import { createBoundariesEngine } from "./aiBoundariesEngine-v16.js";
-import { createPersonaEngine } from "./persona.js";
+import { createPersonaEngine } from "./aiPersonality.js";
 
 import {
   createContextEngine,
@@ -163,11 +194,11 @@ import createCognitiveFrame, {
 
 import { createCortex, prewarmAICortex } from "./aiCortex-v16.js";
 import { createRouterEngine } from "./aiRouter-v16.js";
-import { runAI, ExecutionEngineMeta } from "./aiEngine-v16.js";
+import { runAI, ExecutionEngineMeta } from "./aiEngine-v24.js";
 
 import aiDeliveryEngine, { prewarmDeliveryEngine } from "./aiDeliveryEngine.js";
 import aiEmotionEngine, { prewarmEmotionEngine } from "./aiEmotionEngine.js";
-import createEarnAPI, { EarnMeta, prewarmEarnOrgan } from "./aiEarn-v16.js";
+import createEarnAPI, { EarnMeta, prewarmEarnOrgan } from "./aiEarn-v24.js";
 
 import { createTouristAPI } from "./aiTourist.js";
 import { createArchitectAPI } from "./aiArchitect.js";
@@ -193,8 +224,8 @@ import { createPulseAIChunker } from "./PulseAIChunker-v20.js";
 const DUAL_BAND_CONTEXT = Object.freeze({
   layer: "DualBandOrganism",
   role: "DUAL_BAND_BRIDGE",
-  version: "v16-Immortal-ORGANISM",
-  lineage: "pulse-dual-band-v16-Immortal-ORGANISM",
+  version: "v24-Immortal-ORGANISM++",
+  lineage: "pulse-dual-band-v24-Immortal-ORGANISM++",
   evo: Object.freeze({
     dualBand: true,
     binaryFirst: true,
@@ -203,7 +234,17 @@ const DUAL_BAND_CONTEXT = Object.freeze({
     proxyAware: true,
     chunkAware: true,
     cacheAware: true,
-    arteryAware: true
+    arteryAware: true,
+    daemonOriented: true,
+    sealedOrganism: true,
+    portalCompatible: true,
+    bridgeCompatible: true,
+    dualMembraneAware: true,
+    worldStateAware: true,
+    personaAware: true,
+    pulseDensityAware: true,
+    gpuLaneAware: true,
+    binaryOverlayAware: true
   })
 });
 
@@ -316,7 +357,9 @@ function dualBandArtery({ diagnostics = {}, binaryVitals = {} } = {}) {
       fallback: proxyOverlay.proxyFallback,
       mode: proxyOverlay.proxyMode,
       lineage: proxyOverlay.proxyLineage
-    }
+    },
+    gpu: binaryVitals.gpu || null,
+    binaryOverlay: binaryVitals.binaryOverlay || null
   });
 
   const arteryChunks = dualBandChunker.chunkJSON(artery, {
@@ -328,7 +371,7 @@ function dualBandArtery({ diagnostics = {}, binaryVitals = {} } = {}) {
 }
 
 // ============================================================================
-//  DUAL‑BAND BRIDGE PREWARM ENGINE — v16‑IMMORTAL-ORGANISM
+//  DUAL‑BAND BRIDGE PREWARM ENGINE — v24‑IMMORTAL-ORGANISM++
 // ============================================================================
 export function prewarmDualBandBridge({ trace = false } = {}) {
   try {
@@ -386,18 +429,18 @@ export function prewarmDualBandBridge({ trace = false } = {}) {
     );
 
     if (trace) {
-      console.log("[DualBandBridge v16] prewarm complete");
+      console.log("[DualBandBridge v24] prewarm complete");
     }
 
     return true;
   } catch (err) {
-    console.error("[DualBandBridge Prewarm v16] Failed:", err);
+    console.error("[DualBandBridge Prewarm v24] Failed:", err);
     return false;
   }
 }
 
 // ============================================================================
-//  createDualBandOrganism() — v16‑IMMORTAL-ORGANISM
+//  createDualBandOrganism() — v24‑IMMORTAL-ORGANISM++
 // ============================================================================
 export function createDualBandOrganism({
   trace = false,
@@ -597,13 +640,15 @@ export function createDualBandOrganism({
       meta: {
         layer: "DualBandScanSurface",
         role: "SCAN_SURFACE",
-        version: "v16-Immortal-ORGANISM",
+        version: "v24-Immortal-ORGANISM++",
         evo: {
           deterministic: true,
           driftProof: true,
           readOnly: true,
           chunkAware: true,
-          arteryAware: true
+          arteryAware: true,
+          gpuLaneAware: true,
+          binaryOverlayAware: true
         }
       },
       artery,
@@ -678,7 +723,7 @@ export function createDualBandOrganism({
 }
 
 // ============================================================================
-//  PUBLIC API — v16‑IMMORTAL-ORGANISM
+//  PUBLIC API — v24‑IMMORTAL-ORGANISM++
 // ============================================================================
 export const DualBandAPI = {
   DualBandMeta,

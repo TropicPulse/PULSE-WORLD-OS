@@ -80,7 +80,7 @@ AI_EXPERIENCE_META = {
 //  IMPORTS — Personas / Overmind / NodeAdmin
 // ============================================================================
 
-import { Personas, getPersona } from "./persona.js";
+import { Personas, getPersona } from "./aiPersonality.js";
 import Overmind from "../PULSE-X/PULSE-WORLD-ALDWYN.js";
 import NodeAdmin from "../PULSE-TOOLS/PulseNodeAdmin-v20.js";
 
@@ -104,8 +104,8 @@ import { PulseServerMeta } from "../PULSE-EXPANSION/PulseServer-v16.js";
 import { PulseRouterMeta } from "../PULSE-EXPANSION/PulseRouter-v16.js";
 
 // Earn / Band / Send
-import { getEarnContext } from "../PULSE-EARN/PulseEarn-v16.js";
-import { createDualBandOrganism as PulseBinaryOrganismBoot } from "./aiDualBand-v16.js";
+import { getEarnContext } from "../PULSE-EARN/PulseEarn-v24.js";
+import { createDualBandOrganism as PulseBinaryOrganismBoot } from "./aiDualBand-v24.js";
 import { createBinarySend as PulseSendBin } from "../PULSE-SEND/PulseBinarySend-v16.js";
 import createBinaryRouter from "../PULSE-ROUTER/PulseBinaryRouter-v16.js";
 import PulseRouter from "../PULSE-ROUTER/PulseRouter-v16.js";

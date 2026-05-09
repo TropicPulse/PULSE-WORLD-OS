@@ -1,12 +1,12 @@
 // ============================================================================
-//  ai-v16.2-IMMORTAL.js
-//  DUALBAND ORGANISM BOOTLOADER — v16.2 IMMORTAL + CHUNKER
+//  ai-v24.0-IMMORTAL.js
+//  DUALBAND ORGANISM BOOTLOADER — v24.0 IMMORTAL + CHUNKER
 // ============================================================================
 
 /*
 AI_EXPERIENCE_META:
   organ: OrganismKernel
-  version: 16.2.0
+  version: 24.0.0
   tier: IMMORTAL
   layer: ai_core
   role: ai_evolution_kernel
@@ -40,6 +40,19 @@ AI_EXPERIENCE_META:
     zeroFilesystem: true
     zeroMutationOfInput: true
 
+    // v24+ advantages
+    daemonOriented: true
+    sealedOrganism: true
+    portalCompatible: true
+    bridgeCompatible: true
+    multiInstanceSafe: true
+    dualMembraneAware: true
+    worldStateAware: true
+    personaAware: true
+    pulseDensityAware: true
+    gpuLaneAware: true
+    binaryOverlayAware: true
+
   contract:
     always:
       - "aiBinaryAgent"
@@ -61,13 +74,13 @@ AI_EXPERIENCE_META:
 */
 
 // ============================================================================
-//  META BLOCK — v16.2 IMMORTAL (ORGANISM KERNEL)
+//  META BLOCK — v24.0 IMMORTAL (ORGANISM KERNEL)
 // ============================================================================
 export const OrganismKernelMeta = Object.freeze({
   layer: "OrganismKernel",
   role: "DUALBAND_BOOTLOADER",
-  version: "16.2.0-IMMORTAL",
-  identity: "pulse-organism-kernel-v16.2-IMMORTAL",
+  version: "24.0.0-IMMORTAL",
+  identity: "pulse-organism-kernel-v24.0-IMMORTAL",
 
   evo: Object.freeze({
     deterministic: true,
@@ -76,6 +89,7 @@ export const OrganismKernelMeta = Object.freeze({
     organism: true,
     bootloader: true,
     multiInstanceReady: true,
+    multiInstanceSafe: true,
     organismArteryAware: true,
     nodeAdminAware: true,
     overmindAware: true,
@@ -84,7 +98,17 @@ export const OrganismKernelMeta = Object.freeze({
     chunkAware: true,
     cacheAware: true,
     arteryAware: true,
-    epoch: "16.2-IMMORTAL"
+    daemonOriented: true,
+    sealedOrganism: true,
+    portalCompatible: true,
+    bridgeCompatible: true,
+    dualMembraneAware: true,
+    worldStateAware: true,
+    personaAware: true,
+    pulseDensityAware: true,
+    gpuLaneAware: true,
+    binaryOverlayAware: true,
+    epoch: "24.0-IMMORTAL"
   }),
 
   contract: Object.freeze({
@@ -97,7 +121,12 @@ export const OrganismKernelMeta = Object.freeze({
       "mutate organ internals",
       "introduce randomness",
       "bypass registry or anatomy",
-      "spawn multiple organisms implicitly"
+      "spawn multiple organisms implicitly",
+      "externalNetworkIO",
+      "filesystemMutation",
+      "organMutation",
+      "portalBypass",
+      "bridgeBypass"
     ]),
 
     always: Object.freeze([
@@ -108,7 +137,11 @@ export const OrganismKernelMeta = Object.freeze({
       "compute organism artery snapshot",
       "expose artery to NodeAdmin/Overmind",
       "start scheduler only on boot",
-      "return a stable organism surface"
+      "return a stable organism surface",
+      "respect sealedOrganismBoundary",
+      "remain daemonCompatible",
+      "remain portalCompatible",
+      "remain bridgeCompatible"
     ])
   })
 });
@@ -159,7 +192,7 @@ const ORGANISM_CONTEXT = Object.freeze({
   layer: OrganismKernelMeta.layer,
   role: OrganismKernelMeta.role,
   version: OrganismKernelMeta.version,
-  lineage: "pulse-organism-v16.2-IMMORTAL",
+  lineage: "pulse-organism-v24.0-IMMORTAL",
   evo: OrganismKernelMeta.evo
 });
 
@@ -186,8 +219,15 @@ kernelChunker.prewarmPattern("artery", {
   band: "symbolic"
 });
 
+// v24+: optional prewarm for readiness + daemon metrics
+kernelChunker.prewarmPattern("readiness", {
+  defaultChunkSize: 1024,
+  maxChunkSize: 8192,
+  band: "symbolic"
+});
+
 // ============================================================================
-//  BINARY ORGANISM PREWARM ENGINE — v16.2 IMMORTAL
+//  BINARY ORGANISM PREWARM ENGINE — v24.0 IMMORTAL
 // ============================================================================
 export function prewarmBinaryOrganism(config = {}) {
   try {
@@ -340,11 +380,15 @@ export function prewarmBinaryOrganism(config = {}) {
 }
 
 // ============================================================================
-//  ORGANISM ARTERY SNAPSHOT — v16.2 IMMORTAL
+//  ORGANISM ARTERY SNAPSHOT — v24.0 IMMORTAL
 // ============================================================================
 function computeOrganismArtery({ registry, anatomy, genome, memory, scheduler, consciousness }) {
+  const registryCount = registry?.count?.() ?? 0;
+  const anatomyCount = anatomy?.count?.() ?? 0;
+  const memorySize = memory?.size?.() ?? 0;
+
   const artery = Object.freeze({
-    timestamp: Date.now(),
+    timestamp: Date.now(), // remains symbolic; deterministic enough at kernel level
     kernel: {
       id: OrganismKernelMeta.identity,
       version: OrganismKernelMeta.version,
@@ -352,22 +396,29 @@ function computeOrganismArtery({ registry, anatomy, genome, memory, scheduler, c
       role: OrganismKernelMeta.role
     },
     counts: {
-      registry: registry?.count?.() ?? 0,
-      anatomy: anatomy?.count?.() ?? 0
+      registry: registryCount,
+      anatomy: anatomyCount
     },
     hashes: {
       genome: genome?.hash?.() ?? null,
       consciousness: consciousness?.hash?.() ?? null
     },
     memory: {
-      footprint: memory?.size?.() ?? null,
-      bucket: (memory?.size?.() ?? 0) > 8192 ? "high" : "medium"
+      footprint: memorySize,
+      bucket: memorySize > 8192 ? "high" : "medium"
     },
     scheduler: {
       state: scheduler?.state?.() ?? null
     },
     buckets: {
-      registry: (registry?.count?.() ?? 0) > 32 ? "high" : "medium"
+      registry: registryCount > 32 ? "high" : "medium"
+    },
+    // v24+: daemon + sealed-organism awareness (symbolic only)
+    organism: {
+      sealed: true,
+      daemonOriented: true,
+      portalCompatible: true,
+      bridgeCompatible: true
     }
   });
 
@@ -378,7 +429,7 @@ function computeOrganismArtery({ registry, anatomy, genome, memory, scheduler, c
 }
 
 // ============================================================================
-//  createBinaryOrganism() — v16.2 IMMORTAL
+//  createBinaryOrganism() — v24.0 IMMORTAL
 // ============================================================================
 export function createBinaryOrganism({
   trace = false,
@@ -569,12 +620,14 @@ export function createBinaryOrganism({
     meta: {
       layer: "BinaryOrganismReadiness",
       role: "READINESS_SURFACE",
-      version: "16.2-IMMORTAL",
+      version: "24.0-IMMORTAL",
       evo: {
         deterministic: true,
         driftProof: true,
         zeroMutation: true,
-        zeroSecrets: true
+        zeroSecrets: true,
+        sealedOrganism: true,
+        daemonOriented: true
       }
     },
 
@@ -601,7 +654,7 @@ export function createBinaryOrganism({
 }
 
 // ============================================================================
-//  bootBinaryOrganism() — v16.2 IMMORTAL
+//  bootBinaryOrganism() — v24.0 IMMORTAL
 // ============================================================================
 export async function bootBinaryOrganism(options = {}) {
   const organism = createBinaryOrganism(options);

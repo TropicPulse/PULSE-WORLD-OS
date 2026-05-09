@@ -95,7 +95,7 @@ import * as PulseGPUAstralNervousSystem from "./PulseGPUAstralNervousSystem-v24.
 import * as PulseGPUNervousSystem       from "./PulseGPUNervousSystem-v24.js";
 
 import * as PulseGPUCognitiveLayer      from "./PulseGPUCognitiveLayer-v24.js";
-import * as PulseGPUCognitiveIntelligence from "./PulseGPUCognitiveIntelligence-v24-Immortal++.js";
+import * as PulseGPUCognitiveIntelligence from "./PulseGPUCognitiveIntelligence-v24.js";
 import * as PulseGPUWisdomCortex        from "./PulseGPUWIsdomCortex-v24.js";
 
 import * as PulseGPUSurvivalInstincts   from "./PulseGPUSurvivalInstincts-v24.js";

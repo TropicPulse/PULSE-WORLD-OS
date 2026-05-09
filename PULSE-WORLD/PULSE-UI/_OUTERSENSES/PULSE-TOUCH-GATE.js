@@ -37,7 +37,7 @@ import { pulseTouchAdvantageCortex } from "./PULSE-TOUCH-ADVANTAGE.js";
 // Optional future‑oriented helpers (safe if missing)
 import { PulseTouchPredictor } from "./PULSE-TOUCH-PREDICTOR.js";
 import { PulseTouchAnalytics } from "./PULSE-TOUCH-ANALYTICS.js";
-import { PulsePresenceOracle } from "./PULSE-PRESENCE-ORACLE.js";
+import { PulsePresenceOracle } from "./PULSE-TOUCH-PRESENCE-ORACLE.js";
 
 // ============================================================================
 // AI_EXPERIENCE_META — v24 IMMORTAL++

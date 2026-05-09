@@ -28,10 +28,10 @@ import { createPulseEvolutionaryAnimations }
   from "./PulseEvolutionaryAnimations-v20.js";
 
 import { PulseEvolutionaryStylesBaseGenomeV20 } 
-  from "./PulseEvolutionaryStylesBaseGenome-v20.js";
+  from "./PulseEvolutionaryStylesGenome-v20.js";
 
 import { PulseEvolutionaryAnimationsBaseGenomeV20 } 
-  from "./PulseEvolutionaryAnimationsBaseGenome-v20.js";
+  from "./PulseEvolutionaryAnimationsGenome-v20.js";
 
 // ============================================================================
 // INTERNAL HELPERS

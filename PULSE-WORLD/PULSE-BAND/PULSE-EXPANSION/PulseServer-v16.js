@@ -68,7 +68,7 @@ AI_EXPERIENCE_META = {
 //  IMPORTS — Organs it feeds and orchestrates
 // ============================================================================
 
-import { logger } from "../../PULSE-UI/_BACKEND/PulseProofLogger-v20.js";
+import { logger } from "../../PULSE-UI/_MONITOR/PulseProofLogger-v20.js";
 
 // v16 Expansion / Castle
 import {
@@ -112,7 +112,7 @@ import { getPulseTouchContext } from "../../PULSE-UI/PULSE-WORLD-TOUCH.js";
 import { getPulseOvermindContext, createOvermindPrime } from "../PULSE-X/PULSE-WORLD-ALDWYN.js";
 
 // (Optional) Earn / treasury integration hook (symbolic only)
-import { getEarnContext, evolveEarn } from "../PULSE-EARN/PulseEarn-v16.js";
+import { getEarnContext, evolveEarn } from "../PULSE-EARN/PulseEarn-v24.js";
 // Scheduler (Router + Overmind + Runtime v2 macro pipeline)
 import {
   createPulseScheduler,
@@ -130,7 +130,7 @@ const {
 } = PulseRuntimeV2;
 
 // DualBand / Binary field (optional, advantage-only)
-import { createDualBandOrganism as PulseBinaryOrganismBoot } from "../PULSE-AI/aiDualBand-v16.js";
+import { createDualBandOrganism as PulseBinaryOrganismBoot } from "../PULSE-AI/aiDualBand-v24.js";
 import { createBinarySend as PulseSendBin } from "../PULSE-SEND/PulseBinarySend-v16.js";
 
 // Proxy context (v16 IMMORTAL ORGANISM)

@@ -16,14 +16,14 @@
 //   - v20: AIConsole-aware, ACTNow-aware, dual-band world prewarm.
 // ============================================================================
 
-import * as PulseLogger        from "./PulseProofLogger-v20.js";
-import * as PulseVitalsMonitor from "./PulseProofMonitor-v20.js";
+import * as PulseLogger        from "../../PULSE-UI/_MONITOR/PulseProofLogger-v20.js";
+import * as PulseVitalsMonitor from "../../PULSE-UI/_MONITOR/PulseProofMonitor-v20.js";
 import {
   PulseProofBridge as PulseCoreMemoryBridge,
   log,
   warn,
   error
-} from "./PULSE-WORLD-BRIDGE.js";
+} from "../../PULSE-UI/_BACKEND/PULSE-WORLD-BRIDGE.js";
 
 // Optional: AI Console v20 (if present in global / bridge)
 const g =

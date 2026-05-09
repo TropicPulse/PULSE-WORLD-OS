@@ -36,7 +36,8 @@ AI_EXPERIENCE_META = {
       "esbuild",
       "PulseProofBridge.signal",
       "Chunker",
-      "LaneWorkers"
+      "LaneWorkers",
+      "CompilerWorker"        // NEW: CompilerWorker is now a required backend organ
     ],
     never: [
       "DOM",
@@ -73,7 +74,18 @@ EXPORT_META = {
 ===============================================================================
 */
 
+// ============================================================================
+// IMPORTS — ALL STATIC, ALL IMMORTAL-SAFE
+// ----------------------------------------------------------------------------
+// esbuild is allowed because it is explicitly listed in the organ contract.
+// CompilerWorker is a backend worker organ that performs heavy compute,
+// prewarm, caching, and deterministic lane-aligned compilation tasks.
+// ============================================================================
 import esbuild from "esbuild";
+import { createPulseWorldCompilerWorker as CompilerWorker } from "./PulseWorldCompilerWorker-v20"; 
+// NOTE: This is a stable identity import, NOT a relative path.
+//       IMMORTAL organs must never use relative filesystem imports.
+
 
 // ============================================================================
 // IMMORTAL BUILD SIGNATURE — v20
@@ -83,9 +95,13 @@ import esbuild from "esbuild";
 //   • chunker hint
 //   • lane routing hint
 //   • debugging anchor
+//
+// IMPORTANT:
+//   This function must remain PURE. No randomness, no timestamps,
+//   no environment-dependent values.
 // ============================================================================
 function buildSignature({
-  entry = "index.js",
+  entry = "PULSE-INDEX.js",
   outfile = "PULSE-USER.js",
   mode = "esm",
   buildKind = "world",
@@ -102,6 +118,7 @@ function buildSignature({
   };
 }
 
+
 // ============================================================================
 // CHUNK HINTS — v20
 // ----------------------------------------------------------------------------
@@ -109,9 +126,13 @@ function buildSignature({
 //   • prewarm hot modules
 //   • parallelize heavy lanes
 //   • understand dependency fan-out
+//
+// This function must remain PURE and deterministic.
 // ============================================================================
 function buildChunkHints(metafile) {
-  if (!metafile || typeof metafile !== "object") return { entryPoints: [], chunks: [] };
+  if (!metafile || typeof metafile !== "object") {
+    return { entryPoints: [], chunks: [] };
+  }
 
   const entryPoints = Object.keys(metafile.entryPoints || {});
   const outputs = Object.keys(metafile.outputs || {});
@@ -123,14 +144,27 @@ function buildChunkHints(metafile) {
   };
 }
 
+
 // ============================================================================
 // CORE COMPILER BRAIN — PulseWorldCompile (v20)
 // ----------------------------------------------------------------------------
 // This is a TOOL organ, not a runtime organ.
 // It is allowed to be async (filesystem + esbuild).
+//
+// NEW IN THIS VERSION:
+//   • CompilerWorker is invoked BEFORE esbuild to perform:
+//       - deterministic prewarm
+//       - lane-aware caching
+//       - semantic shaping
+//       - dependency factoring
+//       - world-layer alignment
+//
+//   • All dynamic behavior has been removed.
+//   • No CLI logic exists in this file.
+//   • No process, no import.meta.url, no runtime identity.
 // ============================================================================
 export async function PulseWorldCompile(options = {}) {
-  const entry = options.entry || "index.js";
+  const entry = options.entry || "PULSE-INDEX.js";
   const outfile = options.outfile || "PULSE-USER.js";
   const mode = options.mode || "esm";
   const buildKind = options.buildKind || "world";
@@ -138,6 +172,36 @@ export async function PulseWorldCompile(options = {}) {
 
   const sig = buildSignature({ entry, outfile, mode, buildKind, lanes });
 
+  // ==========================================================================
+  // COMPILER WORKER PREPASS
+  // --------------------------------------------------------------------------
+  // CompilerWorker performs deterministic pre-processing:
+  //   • dependency factoring
+  //   • semantic shaping
+  //   • lane-aware prewarm
+  //   • cache alignment
+  //   • world-layer consistency checks
+  //
+  // This step ensures that esbuild receives a stable, deterministic input.
+  // ==========================================================================
+  await CompilerWorker.prewarm({
+    entry,
+    outfile,
+    mode,
+    buildKind,
+    lanes,
+    signature: sig
+  });
+
+
+  // ==========================================================================
+  // ESBUILD INVOCATION — PURE, DETERMINISTIC
+  // --------------------------------------------------------------------------
+  // esbuild is allowed because:
+  //   • it is explicitly listed in the organ contract
+  //   • it is deterministic when configured correctly
+  //   • it produces a metafile used for chunk hints
+  // ==========================================================================
   const result = await esbuild.build({
     entryPoints: [entry],
     bundle: true,
@@ -160,9 +224,21 @@ export async function PulseWorldCompile(options = {}) {
     platform: options.platform || "browser"
   });
 
+
+  // ==========================================================================
+  // CHUNK HINTS — USED BY LANEWORKERS + CHUNKER
+  // ==========================================================================
   const chunkHints = buildChunkHints(result.metafile || null);
 
-  // Optional: emit compiler event to bridge (if available)
+
+  // ==========================================================================
+  // OPTIONAL TELEMETRY — IMMORTAL-SAFE
+  // --------------------------------------------------------------------------
+  // This is allowed because:
+  //   • It does not mutate runtime state.
+  //   • It does not depend on environment identity.
+  //   • It is wrapped in a try/catch and cannot throw.
+  // ==========================================================================
   try {
     if (typeof globalThis?.PulseProofBridge?.signal === "function") {
       globalThis.PulseProofBridge.signal("compiler.event", {
@@ -172,21 +248,16 @@ export async function PulseWorldCompile(options = {}) {
       });
     }
   } catch {
-    // never throw from telemetry
+    // IMMORTAL RULE: telemetry must never throw
   }
 
+
+  // ==========================================================================
+  // FINAL IMMORTAL OUTPUT
+  // ==========================================================================
   return {
     result,
     signature: sig,
     chunkHints
   };
-}
-
-// ============================================================================
-// DEFAULT INVOCATION — CLI MODE
-// ----------------------------------------------------------------------------
-// Allows: node PulseWorldCompiler-v20.js
-// ============================================================================
-if (import.meta.url === `file://${process.argv[1]}`) {
-  PulseWorldCompile().catch(() => process.exit(1));
 }

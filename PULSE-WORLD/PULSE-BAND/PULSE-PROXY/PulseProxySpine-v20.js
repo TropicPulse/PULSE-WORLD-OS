@@ -49,7 +49,6 @@
 import express from "express";
 import nodemailer from "nodemailer";
 import { createClient } from "redis";
-import crypto from "crypto";
 
 // SDN prewarm engine (spinal reflex ignition for backend spine, passive only)
 import { prewarmSDN } from "../PULSE-OS/PulseOSSDNPrewarm-v16.js";
@@ -57,7 +56,7 @@ import { prewarmSDN } from "../PULSE-OS/PulseOSSDNPrewarm-v16.js";
 // Proxy / organism / context / front (symbolic-only, descriptive surfaces)
 import { PulseProxyOrganismMeta, createProxy } from "./PulseProxy-v20.js";
 import { PulseProofBridge as PulseProxyBridge } from "../../PULSE-UI/_BACKEND/PULSE-WORLD-BRIDGE.js";
-import { updateUserMetrics as recordUserMetrics } from "../../PULSE-UI/_BACKEND/PulseProofMonitor-v20.js";
+import { updateUserMetrics as recordUserMetrics } from "../../PULSE-UI/_MONITOR/PulseProofMonitor-v20.js";
 import {
   proxyFrontRoute,
   PulseProxyFrontMeta
@@ -92,7 +91,7 @@ import { PulseBinaryOSv11Evo as startPulseOS } from "../PULSE-OS/PulseBinaryOS-v
 
 // Binary/GPU metrics (descriptive only)
 import { getBinaryMetrics } from "../PULSE-OS/PulseBinaryOS-v16.js";
-import { getGPUMetrics } from "../PULSE-OS/PulseGPUOrgan-v16.js";
+import { getGPUMetrics } from "../PULSE-GPU/PulseGPU-v24.js";
 
 import { getStripe as Stripe, stripeInstance, determinePayoutCurrency } from "../PULSE-X/PulseWorldBank-v20.js";
 import { db, admin } from "../PULSE-X/PulseWorldGenome-v20.js";

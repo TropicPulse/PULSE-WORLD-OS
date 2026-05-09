@@ -98,26 +98,17 @@ AI_EXPERIENCE_META = {
 // IMPORTS — PORTAL-ATTACHED ORGANS (SURFACE-SAFE)
 // ============================================================================
 
-import * as PulseLogger from "../_BACKEND/PulseProofLogger-v20.js";
-import * as PulseVitalsMonitor from "../_BACKEND/PulseProofMonitor-v20.js";
-import {
-  route as BridgeRoute,
-  PulseProofLogger,
-  log,
-  warn,
-  error,
-  startUnderstanding as PulseUnderstanding,
-  PulseBinaryOrganismBoot
-} from "../_BACKEND/PULSE-WORLD-BRIDGE.js";
-import * as PulsePower from "../_BACKEND/PulseWorldPower-v20.js";
+import * as PulseLogger from "../_MONITOR/PulseProofLogger-v20.js";
+import * as PulseVitalsMonitor from "../_MONITOR/PulseProofMonitor-v20.js";
+import { route as BridgeRoute, PulseProofLogger, log, warn, error, startUnderstanding as PulseUnderstanding, PulseBinaryOrganismBoot} from "../_BACKEND/PULSE-WORLD-BRIDGE.js";
+import * as PulsePower from "../../PULSE-BAND/PULSE-X/PulseWorldPower-v20.js";
 import * as PulseUIErrors from "./PulseUIErrors-v20.js";
 import * as PulseUIFlow from "./PulseUIFlow-v20.js";
-import * as PulsePageScanner from "./_FRONTEND/PulseUIPageScanner-v20.js";
-import { createPulseRouteMemory as PulseUIRouteMemory } from "./_FRONTEND/PulseUIRouteMemory-v20.js";
-import * as PulseSkinReflex from "./_FRONTEND/PulseUISkinReflex-v20.js";
+import * as PulsePageScanner from "../_FRONTEND/PulseUIPageScanner-v20.js";
+import { createPulseRouteMemory as PulseUIRouteMemory } from "../_FRONTEND/PulseUIRouteMemory-v20.js";
+import * as PulseSkinReflex from "../_FRONTEND/PulseUISkinReflex-v20.js";
 
-import { createAdminDiagnosticsOrgan } from "./_BACKEND/PulseAdminDiagnostics-v20.js";
-import { createPulseWorldAdminPanel } from "./_BACKEND/PulseWorldAdminPanel-v20.js";
+import { createAdminDiagnosticsOrgan, createPulseWorldAdminPanel } from "../_BACKEND/PulseWorldAdminPanel-v20.js";
 
 // ============================================================================
 // GLOBAL HANDLE + OPTIONAL DB
@@ -380,7 +371,6 @@ const baseMetaPack = {
   pulseRole,
   route: buildRouteId()
 };
-
 // ============================================================================
 // MEMBRANE BOOT (BROWSER ONLY) — PREWARM, CHUNKS, FETCH, IMAGE, PORTAL SURFACE
 // ============================================================================
@@ -391,7 +381,6 @@ if (isBrowser()) {
     // PORTAL-SAFE FETCH HELPERS — IMAGE + CHUNK + PREWARM
     // ------------------------------------------------------------------------
 
-    // fetchImage — routes through PulseChunks image pipeline if present
     window.fetchImage =
       window.fetchImage ||
       (async function (url) {
@@ -401,12 +390,11 @@ if (isBrowser()) {
             return await window.PulseChunks.getImage(url);
           }
         } catch (err) {
-          console.error("[PulsePortal-v20] fetchImage chunk error:", err);
+          console.error("[PulsePortal-v24] fetchImage chunk error:", err);
         }
         return url;
       });
 
-    // fetchChunk — routes through PulseChunks.PulseChunker or fallback fetchChunk
     window.fetchChunk =
       window.fetchChunk ||
       (async function (url) {
@@ -432,12 +420,11 @@ if (isBrowser()) {
             return await window.PulseChunks.fetchChunk(url);
           }
         } catch (err) {
-          console.error("[PulsePortal-v20] fetchChunk error:", err);
+          console.error("[PulsePortal-v24] fetchChunk error:", err);
         }
         return null;
       });
 
-    // prewarmAssets — hint PulseChunks to prewarm imports/assets
     window.prewarmAssets =
       window.prewarmAssets ||
       function (urls = []) {
@@ -446,11 +433,10 @@ if (isBrowser()) {
             window.PulseChunks.prewarm(urls);
           }
         } catch (err) {
-          console.error("[PulsePortal-v20] prewarmAssets error:", err);
+          console.error("[PulsePortal-v24] prewarmAssets error:", err);
         }
       };
 
-    // PulseRouteCarpet — route-level prewarm descriptor
     window.PulseRouteCarpet =
       window.PulseRouteCarpet ||
       {
@@ -467,7 +453,7 @@ if (isBrowser()) {
             return { route: routeId, prewarmed: urls.length };
           } catch (err) {
             console.error(
-              "[PulsePortal-v20] PulseRouteCarpet.unfold error:",
+              "[PulsePortal-v24] PulseRouteCarpet.unfold error:",
               err
             );
             return { route: buildRouteId(), prewarmed: 0 };
@@ -498,7 +484,7 @@ if (isBrowser()) {
         });
       }
     } catch (err) {
-      console.error("[PulsePortal-v20] Image src patch failed:", err);
+      console.error("[PulsePortal-v24] Image src patch failed:", err);
     }
 
     // ------------------------------------------------------------------------
@@ -506,8 +492,8 @@ if (isBrowser()) {
     // ------------------------------------------------------------------------
     try {
       const originalFetch = window.fetch?.bind(window);
-      if (originalFetch && !window.__PulseFetchPatched_v20) {
-        window.__PulseFetchPatched_v20 = true;
+      if (originalFetch && !window.__PulseFetchPatched_v24) {
+        window.__PulseFetchPatched_v24 = true;
 
         window.fetch = async function (resource, options) {
           try {
@@ -518,13 +504,11 @@ if (isBrowser()) {
               typeof url === "string" &&
               url.match(/\.(png|jpe?g|webp|gif|avif|svg)$/i);
 
-            // Route images through fetchImage if available
             if (isImage && window.fetchImage) {
               const blobUrl = await window.fetchImage(url);
               return originalFetch(blobUrl, options);
             }
 
-            // Route through logger's route if available
             const hasLoggerRoute =
               window.PulseLogger &&
               typeof window.PulseLogger.route === "function";
@@ -547,14 +531,137 @@ if (isBrowser()) {
               }
             }
           } catch (err) {
-            console.error("[PulsePortalFetch-v20] error:", err);
+            console.error("[PulsePortalFetch-v24] error:", err);
           }
 
           return originalFetch(resource, options);
         };
       }
     } catch (err) {
-      console.error("[PulsePortal-v20] fetch patch failed:", err);
+      console.error("[PulsePortal-v24] fetch patch failed:", err);
+    }
+
+    // ------------------------------------------------------------------------
+    // PULSEBAND REQUEST HANDLER (existing)
+    // ------------------------------------------------------------------------
+    if (window.pulseband && !window.PulseBand) {
+      window.PulseBand = window.pulseband;
+
+      window.PulseBand.on("request", async (packet) => {
+        let url, method, bodyOrQuery;
+
+        switch (packet.type) {
+          case "start":
+            url = "/PULSE-PROXY/pulseband/session";
+            method = "POST";
+            bodyOrQuery = packet;
+            break;
+
+          case "next":
+            url = "/PULSE-PROXY/pulseband/next";
+            method = "GET";
+            bodyOrQuery = {
+              sessionId: packet.sessionId,
+              userId: packet.userId
+            };
+            break;
+
+          case "ack":
+            url = "/PULSE-PROXY/pulseband/ack";
+            method = "POST";
+            bodyOrQuery = packet;
+            break;
+
+          case "redownload":
+            url = "/PULSE-PROXY/pulseband/redownload";
+            method = "POST";
+            bodyOrQuery = packet;
+            break;
+
+          default:
+            return;
+        }
+
+        const isGet = method === "GET";
+
+        const query = isGet
+          ? "?" + new URLSearchParams(bodyOrQuery).toString()
+          : "";
+
+        const opts = isGet
+          ? { method: "GET" }
+          : {
+              method: "POST",
+              headers: { "content-type": "application/json" },
+              body: JSON.stringify(bodyOrQuery)
+            };
+
+        let data = null;
+
+        try {
+          const hasLoggerRoute =
+            window.PulseLogger &&
+            typeof window.PulseLogger.route === "function";
+
+          if (hasLoggerRoute) {
+            data = await window.PulseLogger.route("fetchProxy", {
+              url: url + query,
+              method,
+              body: bodyOrQuery,
+              layer: "A1",
+              reflexOrigin: "PulseBand",
+              binaryAware: true,
+              dualBand: true,
+              presenceAware: true
+            });
+          } else {
+            const res = await fetch(url + query, opts);
+            data = await res.json().catch(() => null);
+          }
+        } catch (err) {
+          console.error("[PulsePortal-v24] PulseBand request failed:", err);
+        }
+
+        try {
+          if (window.PulseBand && data) {
+            window.PulseBand.emit("response:" + packet.sessionId, data);
+          }
+        } catch (err) {
+          console.error("[PulsePortal-v24] PulseBand emit failed:", err);
+        }
+      });
+
+      window.PulseBandStart = (opts) => window.PulseBand.start(opts);
+    }
+
+    // ------------------------------------------------------------------------
+    // ⭐ NEW: PULSENET_INGRESS + PULSENET_FASTLANE LISTENERS
+    // ------------------------------------------------------------------------
+
+    if (window.PulsePortalBridge && typeof window.PulsePortalBridge.on === "function") {
+      window.PulsePortalBridge.on("PULSENET_INGRESS", async (payload) => {
+        try {
+          await fetch("/PULSE-PROXY/pulsenet/ingress", {
+            method: "POST",
+            headers: { "content-type": "application/json" },
+            body: JSON.stringify(payload)
+          });
+        } catch (err) {
+          console.error("[PulsePortal-v24] PULSENET_INGRESS failed:", err);
+        }
+      });
+
+      window.PulsePortalBridge.on("PULSENET_FASTLANE", async (payload) => {
+        try {
+          await fetch("/PULSE-PROXY/pulsenet/fastlane", {
+            method: "POST",
+            headers: { "content-type": "application/json" },
+            body: JSON.stringify(payload)
+          });
+        } catch (err) {
+          console.error("[PulsePortal-v24] PULSENET_FASTLANE failed:", err);
+        }
+      });
     }
 
     // ------------------------------------------------------------------------
@@ -584,7 +691,7 @@ if (isBrowser()) {
           window.prewarmAssets(allUrls);
         }
       } catch (err) {
-        console.error("[PulsePortal-v20] asset prewarm failed:", err);
+        console.error("[PulsePortal-v24] asset prewarm failed:", err);
       }
     });
 
@@ -595,13 +702,6 @@ if (isBrowser()) {
       ? Object.freeze({ ...window.PulseSurface, ...surfaceMeta })
       : surfaceMeta;
 
-    // Attach a single, frozen PulsePortal surface for the page:
-    // - meta/env/power
-    // - logger + vitals
-    // - UI (flow + errors)
-    // - skin reflex + page scanner + route memory
-    // - bridge hooks (route + understanding + binary boot)
-    // - admin diagnostics + admin panel hooks (read-only)
     window.PulsePortal = window.PulsePortal || Object.freeze({
       meta: surfaceMeta,
       env: PulseSurfaceEnvironment,
@@ -632,9 +732,10 @@ if (isBrowser()) {
       db
     });
   } catch (err) {
-    console.error("[PulsePortal-v20] Membrane chunk layer failed:", err);
+    console.error("[PulsePortal-v24] Membrane chunk layer failed:", err);
   }
 }
+
 
 // ============================================================================
 // SURFACE MEMBRANE INITIALIZATION — LOGGER + MONITOR + ERRORS + SKIN REFLEX

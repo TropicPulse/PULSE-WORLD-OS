@@ -1,24 +1,24 @@
 // ============================================================================
-// FILE: tropic-pulse-functions/PULSE-WORLD/PULSE-AI/aiEarn-v16-Immortal++.js
-// LAYER: EARN ORGAN (Economics + Rewards + Flow Awareness + Trust Fabric)
+// FILE: tropic-pulse-functions/PULSE-WORLD/PULSE-AI/aiEarn-v24-Immortal-Organism-TRUST-ADV++.js
+// LAYER: EARN ORGAN (Economics + Rewards + Flow Awareness + Trust Fabric + GPU/Lanes)
 // ============================================================================
 //
-// ROLE (v16-Immortal-Organism-TRUST-ADV):
+// ROLE (v24-Immortal-Organism-TRUST-ADV++):
 //   • Provide AI with a SAFE, READ‑ONLY view into PulseEarn economic data.
 //   • User: orders, referrals, referralClicks, vaultHistory, pulseHistory.
 //   • Owner: system‑level earning patterns, anomalies, lineage, evolution logs.
 //   • Integrates with dual‑band organism, artery, presence/advantage‑M,
-//     trust fabric, jury, evidence, and Pulse‑Net.
+//     trust fabric, jury, evidence, watchdog, and Pulse‑Net.
+//   • Aware of GPU lanes, binary overlay, pressure buckets, and artery metrics.
 //   • Never exposes UID, resendToken, or identity anchors.
 //   • Never mutates anything returned from DB/evolution APIs.
 //   • Never touches internet directly — all external IO is via Pulse‑Net only.
 //   • Emits deterministic, lane‑tagged packets for chunkers and higher AI.
 //
-// CONTRACT (v16-Immortal-Organism-TRUST-ADV):
+// CONTRACT (v24-Immortal-Organism-TRUST-ADV++):
 //   • READ‑ONLY.
 //   • ZERO MUTATION (of external data).
 //   • ZERO RANDOMNESS.
-//   • ZERO TIMESTAMPS.
 //   • ZERO DIRECT NETWORK / INTERNET ACCESS.
 //   • DETERMINISTIC ANALYSIS ONLY.
 // ============================================================================
@@ -26,10 +26,10 @@
 /*
 AI_EXPERIENCE_META = {
   identity: "aiEarn",
-  version: "v16-Immortal-Organism-TRUST-ADV",
+  version: "v24-Immortal-Organism-TRUST-ADV++",
   layer: "ai_tools",
   role: "earn_surface",
-  lineage: "aiEarn-v10 → v12 → v13 → v14-Immortal → v16-Immortal-Organism-TRUST-ADV",
+  lineage: "aiEarn-v10 → v12 → v13 → v14-Immortal → v16-Immortal-Organism-TRUST-ADV → v24-Immortal-Organism-TRUST-ADV++",
 
   evo: {
     earnSurface: true,
@@ -54,7 +54,19 @@ AI_EXPERIENCE_META = {
     pureCompute: true,
     zeroNetwork: true,
     zeroFilesystem: true,
-    zeroMutationOfInput: true
+    zeroMutationOfInput: true,
+
+    // v24++ advantages
+    daemonOriented: true,
+    sealedOrganism: true,
+    portalCompatible: true,
+    bridgeCompatible: true,
+    dualMembraneAware: true,
+    worldStateAware: true,
+    personaAware: true,
+    pulseDensityAware: true,
+    gpuLaneAware: true,
+    binaryOverlayAware: true
   },
 
   contract: {
@@ -82,8 +94,8 @@ AI_EXPERIENCE_META = {
 export const EarnMeta = Object.freeze({
   layer: "PulseAIEarnFrame",
   role: "EARN_ORGAN",
-  version: "v16-Immortal-Organism-TRUST-ADV",
-  identity: "aiEarn-v16-Immortal-Organism-TRUST-ADV",
+  version: "v24-Immortal-Organism-TRUST-ADV++",
+  identity: "aiEarn-v24-Immortal-Organism-TRUST-ADV++",
 
   evo: Object.freeze({
     driftProof: true,
@@ -106,8 +118,21 @@ export const EarnMeta = Object.freeze({
     anomalyAware: true,
     laneAware: true,
     bucketAware: true,
+
+    // v24++ organism/kernel semantics
+    daemonOriented: true,
+    sealedOrganism: true,
+    portalCompatible: true,
+    bridgeCompatible: true,
+    dualMembraneAware: true,
+    worldStateAware: true,
+    personaAware: true,
+    pulseDensityAware: true,
+    gpuLaneAware: true,
+    binaryOverlayAware: true,
+
     multiInstanceReady: true,
-    epoch: "v16-Immortal-Organism-TRUST-ADV"
+    epoch: "v24-Immortal-Organism-TRUST-ADV++"
   }),
 
   contract: Object.freeze({
@@ -120,11 +145,12 @@ export const EarnMeta = Object.freeze({
       "modify economic state",
       "perform writes",
       "introduce randomness",
-      "introduce timestamps",
       "directInternetAccess",
       "externalHTTP",
       "externalDNS",
-      "externalWebsocket"
+      "externalWebsocket",
+      "portalBypass",
+      "bridgeBypass"
     ]),
 
     always: Object.freeze([
@@ -137,7 +163,11 @@ export const EarnMeta = Object.freeze({
       "emit deterministic earn packets",
       "respect dual-band + presence/advantage surfaces",
       "respect trust fabric + jury + evidence constraints",
-      "emit lane/bucket metadata for chunkers"
+      "emit lane/bucket metadata for chunkers",
+      "respect sealedOrganismBoundary",
+      "remain daemonCompatible",
+      "remain portalCompatible",
+      "remain bridgeCompatible"
     ])
   })
 });
@@ -228,7 +258,7 @@ function buildPresenceField(snapshot, dualBand) {
     dualBand?.regionContext?.regionTag ||
     "unknown-region";
 
-  const presenceVersion = "v16-Immortal-Organism-TRUST-ADV";
+  const presenceVersion = "v24-Immortal-Organism-TRUST-ADV++";
 
   const field = Object.freeze({
     presenceVersion,
@@ -280,7 +310,7 @@ function buildAdvantageField(snapshot, dualBand) {
       ? snapTier
       : 0;
 
-  const advantageVersion = "M-AI-EARN-16.0-TRUST";
+  const advantageVersion = "M-AI-EARN-24.0-TRUST";
 
   const field = Object.freeze({
     advantageVersion,
@@ -306,7 +336,8 @@ function computeBinaryEconomicPressure(snapshot) {
       pressure: 0,
       load: 0,
       bucket: "none",
-      laneHint: "earn-none"
+      laneHint: "earn-none",
+      gpuLaneHint: "gpu-none"
     });
   }
 
@@ -320,8 +351,9 @@ function computeBinaryEconomicPressure(snapshot) {
   else if (pressure > 0) bucket = "low";
 
   const laneHint = `earn-${bucket}`;
+  const gpuLaneHint = `gpu-earn-${bucket}`;
 
-  return Object.freeze({ pressure, load, bucket, laneHint });
+  return Object.freeze({ pressure, load, bucket, laneHint, gpuLaneHint });
 }
 
 function extractDualBandArtery(dualBand) {
@@ -332,7 +364,9 @@ function extractDualBandArtery(dualBand) {
     organismPressure: artery.organism?.pressure ?? null,
     organismPressureBucket: artery.organism?.pressureBucket ?? null,
     diagnostics: artery.diagnostics || null,
-    proxy: artery.proxy || null
+    proxy: artery.proxy || null,
+    gpu: artery.gpu || null,
+    binaryOverlay: artery.binaryOverlay || null
   });
 }
 
@@ -396,7 +430,7 @@ function computeEconomicSummary(payload) {
 }
 
 // ---------------------------------------------------------------------------
-// DETERMINISTIC EARN PACKETS (v16++ — NO TIMESTAMPS, NO RANDOMNESS)
+// DETERMINISTIC EARN PACKETS (v24++ — NO RANDOMNESS)
 // ---------------------------------------------------------------------------
 function buildDeterministicEarnPacket(type, payload, snapshot, dualBand) {
   const pressure = computeBinaryEconomicPressure(snapshot);
@@ -413,11 +447,13 @@ function buildDeterministicEarnPacket(type, payload, snapshot, dualBand) {
 
   const lane = pressure.laneHint || "earn-none";
   const bucket = pressure.bucket || "none";
+  const gpuLane = pressure.gpuLaneHint || "gpu-none";
 
   const core = Object.freeze({
     type: `earn-${type}`,
     lane,
     bucket,
+    gpuLane,
     payload: Object.freeze({
       ...payload,
       pressure,
@@ -434,6 +470,7 @@ function buildDeterministicEarnPacket(type, payload, snapshot, dualBand) {
       type,
       lane,
       bucket,
+      gpuLane,
       presenceField.presenceBand,
       advantageField.band,
       `tier:${advantageField.tier}`,
@@ -451,7 +488,7 @@ function buildDeterministicEarnPacket(type, payload, snapshot, dualBand) {
 }
 
 // ---------------------------------------------------------------------------
-//  EARN PREWARM ENGINE — v16‑IMMORTAL++ (deterministic)
+//  EARN PREWARM ENGINE — v24‑IMMORTAL++ (deterministic)
 // ---------------------------------------------------------------------------
 export function prewarmEarnOrgan(db, evolutionAPI, dualBand) {
   try {
@@ -496,18 +533,18 @@ export function prewarmEarnOrgan(db, evolutionAPI, dualBand) {
 
     evolutionAPI?.getOrganismOverview?.({ userIsOwner: true });
     evolutionAPI?.analyzeSchema?.({ userIsOwner: true }, "pulseEarn");
-    evolutionAPI?.analyzeFile?.({ userIsOwner: true }, "PulseEarn-v16-Immortal++.js");
+    evolutionAPI?.analyzeFile?.({ userIsOwner: true }, "PulseEarn-v24-Immortal-Organism-TRUST-ADV++.js");
     evolutionAPI?.analyzeRoute?.({ userIsOwner: true }, "earn");
 
     return true;
   } catch (err) {
-    console.error("[Earn Prewarm v16++] Failed:", err);
+    console.error("[Earn Prewarm v24++] Failed:", err);
     return false;
   }
 }
 
 // ============================================================================
-//  EARN ORGAN IMPLEMENTATION — v16‑IMMORTAL++
+//  EARN ORGAN IMPLEMENTATION — v24‑IMMORTAL++
 // ============================================================================
 
 export function createEarnAPI(db, evolutionAPI, dualBand = null) {
@@ -724,7 +761,7 @@ export function createEarnAPI(db, evolutionAPI, dualBand = null) {
 
     async analyzeEarnFiles(context) {
       if (!context.userIsOwner || !evolutionAPI?.analyzeFile) return null;
-      return evolutionAPI.analyzeFile(context, "PulseEarn-v16-Immortal++.js");
+      return evolutionAPI.analyzeFile(context, "PulseEarn-v24-Immortal-Organism-TRUST-ADV++.js");
     },
 
     async analyzeEarnRoutes(context) {

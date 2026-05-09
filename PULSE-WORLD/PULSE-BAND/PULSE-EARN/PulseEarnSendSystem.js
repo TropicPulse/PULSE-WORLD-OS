@@ -152,7 +152,7 @@ export const PulseEarnSendSystemMeta = Object.freeze({
 });
 
 // Legacy bridge imports
-import { createEarn, evolveEarn } from "./PulseEarn-v16.js";
+import { createEarn, evolveEarn } from "./PulseEarn-v24.js";
 import { PulseEarnContinuancePulse } from "./PulseEarnContinuancePulse.js";
 
 // ============================================================================

@@ -134,7 +134,7 @@ AI_EXPERIENCE_META = {
 // -----------------------------------------------------------------------------
 import { PulseOrganismMap } from "./PulseWorldOrganismMap-v21.js";
 import { createPulseAIChunker } from "../PULSE-AI/PulseAIChunker-v20.js";
-import { log, warn, error as logError } from "../../PULSE-UI/_BACKEND/PulseProofLogger-v20.js";
+import { log, warn, error as logError } from "../../PULSE-UI/_MONITOR/PulseProofLogger-v20.js";
 
 // -----------------------------------------------------------------------------
 // VERSION MAP — CENTRALIZED VERSION TAGS FOR ALL SUB‑COMPONENTS

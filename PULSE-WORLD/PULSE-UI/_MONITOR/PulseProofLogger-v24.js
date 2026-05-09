@@ -1,14 +1,15 @@
 // ============================================================================
-// PulseProofLogger-v20-IMMORTAL-EVOLVABLE
+// PulseProofLogger-v24-IMMORTAL-EVOLVABLE
 // PURE APPEND-ONLY LOGGER — ZERO ASYNC, ZERO NETWORK, HEARTBEAT-FLUSHABLE
 // Designed for 10ms bursts of 1000+ messages without blocking or drift.
 // ============================================================================
 //
-// CORE PRINCIPLES
-// ---------------
+// CORE PRINCIPLES (v24++)
+// -----------------------
 // 1) Logger is a NERVE ENDING, not a NETWORK CLIENT.
 //    - It ONLY records events locally.
 //    - It NEVER talks to Firebase, CNS, HTTP, or any remote.
+//    - It is world-agnostic: any backend/frontend organ can attach.
 //
 // 2) Logger is SYNC-ONLY and APPEND-ONLY.
 //    - No async, no await, no promises.
@@ -27,18 +28,26 @@
 //
 // 5) LOGGER IS EVOLUTION-AWARE BUT NOT EVOLUTION-DRIVING.
 //    - It can tag logs with IQ version, UI genome version,
-//      comfort pattern, compiler version, etc.
+//      comfort pattern, compiler version, organism version, etc.
 //    - But it does NOT compute or mutate those systems.
 //      It only records what it’s told.
 //
-// 6) AI CONSOLE / PROMPTS ARE REMOVED FROM LOGGER.
-//    - Developer-console-based AI interaction is no longer the path.
-//    - We will use a dedicated UI organ (e.g., dropdown AI console)
-//      for AI interaction, not the logger.
+// 6) LOGGER IS MULTI-LAYER AWARE (v24++).
+//    - Can run in WINDOW, WORKER, NODE, or UNKNOWN.
+//    - Uses a unified global surface (globalThis) where possible.
+//    - Storage strategy is environment-aware but still local-only.
 //
+// 7) AI CONSOLE / PROMPTS ARE REMOVED FROM LOGGER.
+//    - Developer-console-based AI interaction is not the path.
+//    - A dedicated UI organ handles AI interaction, not the logger.
+//
+// 8) LOGGER IS SCHEMA-STABLE AND EVOLVABLE.
+//    - Every entry carries a schemaVersion.
+//    - New fields are additive and optional.
+//    - Heartbeat can branch on schemaVersion safely.
 // ============================================================================
 
-console.log("PulseProofLogger v20-IMMORTAL-EVOLVABLE");
+console.log("PulseProofLogger v24-IMMORTAL-EVOLVABLE");
 
 // Capture original console to avoid recursion and preserve native behavior
 const _c = { ...console };
@@ -51,35 +60,60 @@ const g =
     ? global
     : typeof window !== "undefined"
     ? window
-    : typeof g !== "undefined"
-    ? g
+    : typeof self !== "undefined"
+    ? self
     : {};
 
 // -----------------------------------------------------------------------------
 // Environment + layer detection (pure, no flags, no network)
 // -----------------------------------------------------------------------------
-//
-// These helpers are intentionally minimal and synchronous.
-// They infer context (layer, us/them, page) without any external calls.
-// This keeps logging cheap and deterministic.
-//
 
 function normalizeLayerName(layer) {
   if (!layer) return null;
   return String(layer).trim();
 }
 
+function detectEnvironmentKind() {
+  // Browser window
+  if (typeof window !== "undefined" && typeof document !== "undefined") {
+    return "WINDOW";
+  }
+
+  // Web Worker (Dedicated, Shared, Service)
+  // SAFE: does NOT reference WorkerGlobalScope
+  if (typeof self !== "undefined" && typeof self.postMessage === "function") {
+    return "WORKER";
+  }
+
+  // Node.js
+  if (typeof process !== "undefined" && process.versions && process.versions.node) {
+    return "NODE";
+  }
+
+  return "UNKNOWN";
+}
+
+
 function detectLayer(metaLayer = null) {
   const explicit = normalizeLayerName(metaLayer);
   if (explicit) return explicit;
 
-  if (typeof window !== "undefined") return "WINDOW";
-  return "UNKNOWN";
+  const env = detectEnvironmentKind();
+  switch (env) {
+    case "WINDOW":
+      return "WINDOW";
+    case "WORKER":
+      return "WORKER";
+    case "NODE":
+      return "NODE";
+    default:
+      return "UNKNOWN";
+  }
 }
 
 function detectUsVsThem(layer) {
   const upper = String(layer || "").toUpperCase();
-  return upper.includes("PULSENET") ? "US" : "THEM";
+  return upper.includes("PULSENET") || upper.includes("PULSEWORLD") ? "US" : "THEM";
 }
 
 function detectPage() {
@@ -89,21 +123,25 @@ function detectPage() {
   return null;
 }
 
-// -----------------------------------------------------------------------------
-// LocalStorage OFFLINE LOG STORE — v20 IMMORTAL (PURELY LOCAL)
-// -----------------------------------------------------------------------------
-//
-// This is the ONLY persistence layer the logger touches.
-// - No Firebase
-// - No CNS
-// - No network
-//
-// Heartbeat will read from this store and push logs to remote systems.
-// Logger only appends and trims.
-//
+function detectNodeProcessId() {
+  if (typeof process !== "undefined" && process.pid) {
+    return process.pid;
+  }
+  return null;
+}
 
-const LS_KEY_LOGS = "PulseProofLogger.v20.logs";
-const LS_MAX_ENTRIES = 12000; // allow high-burst logging without unbounded growth
+// -----------------------------------------------------------------------------
+// Local persistence strategy — v24 IMMORTAL (PURELY LOCAL)
+// -----------------------------------------------------------------------------
+//
+// Browser: localStorage
+// Node / Worker / Unknown: in-memory only
+// No network, no disk writes, no async.
+// Heartbeat is responsible for shipping logs elsewhere.
+// -----------------------------------------------------------------------------
+
+const LS_KEY_LOGS = "PulseProofLogger.v24.logs";
+const LS_MAX_ENTRIES = 16000;
 
 function hasLocalStorage() {
   try {
@@ -117,7 +155,7 @@ function hasLocalStorage() {
   }
 }
 
-function loadLocalLogs() {
+function loadLocalLogsFromStorage() {
   if (!hasLocalStorage()) return [];
   try {
     const raw = window.localStorage.getItem(LS_KEY_LOGS);
@@ -130,7 +168,7 @@ function loadLocalLogs() {
   }
 }
 
-function saveLocalLogs(entries) {
+function saveLocalLogsToStorage(entries) {
   if (!hasLocalStorage()) return;
   try {
     const trimmed =
@@ -143,13 +181,25 @@ function saveLocalLogs(entries) {
   }
 }
 
-// In-memory buffer mirrors localStorage; all operations are sync and cheap.
-let localLogBuffer = loadLocalLogs();
+// In-memory buffer mirrors localStorage when available.
+let localLogBuffer = loadLocalLogsFromStorage();
+let inMemoryOnly = !hasLocalStorage();
+
+function persistLocalLogs(entries) {
+  if (inMemoryOnly) {
+    if (entries.length > LS_MAX_ENTRIES) {
+      localLogBuffer = entries.slice(entries.length - LS_MAX_ENTRIES);
+    } else {
+      localLogBuffer = entries;
+    }
+    return;
+  }
+  saveLocalLogsToStorage(entries);
+}
 
 function appendLocalLog(entry) {
-  // PURE APPEND — no async, no network, no branching on environment.
   localLogBuffer.push(entry);
-  saveLocalLogs(localLogBuffer);
+  persistLocalLogs(localLogBuffer);
 }
 
 function getLocalLogs({ level = null, subsystem = null } = {}) {
@@ -160,29 +210,23 @@ function getLocalLogs({ level = null, subsystem = null } = {}) {
   });
 }
 
-// Heartbeat-only drain: HEART reads + clears, then posts wherever it wants.
-// This is the ONLY place logs are "removed" from the buffer.
 function drainLocalLogsForHeartbeat() {
   const copy = localLogBuffer.slice();
   localLogBuffer = [];
-  saveLocalLogs(localLogBuffer);
+  persistLocalLogs(localLogBuffer);
   return copy;
 }
 
 // -----------------------------------------------------------------------------
 // Version / roles / colors / icons (metadata only, no behavior)
 // -----------------------------------------------------------------------------
-//
-// These are purely descriptive. They help format console output and
-// annotate logs with subsystem identity.
-//
 
 export const PulseVersion = {
-  proof: "20.0",
-  logger: "20.0",
-  renderer: "20.0",
-  gpu: "20.0",
-  band: "20.0",
+  proof: "24.0",
+  logger: "24.0",
+  renderer: "24.0",
+  gpu: "24.0",
+  band: "24.0",
   legacy: "11.x"
 };
 
@@ -215,7 +259,7 @@ export const PulseIcons = {
 
 function formatPrefix(subsystem) {
   const role = PulseRoles[subsystem] || "SUBSYSTEM";
-  const version = PulseVersion[subsystem] || "20.x";
+  const version = PulseVersion[subsystem] || "24.x";
   const icon = PulseIcons[subsystem] || PulseIcons.legacy;
   return `${icon} ${role} v${version}`;
 }
@@ -223,15 +267,10 @@ function formatPrefix(subsystem) {
 // -----------------------------------------------------------------------------
 // Telemetry packet formatter (LOCAL-ONLY, NO NETWORK)
 // -----------------------------------------------------------------------------
-//
-// This does NOT send telemetry anywhere.
-// It only builds a structured packet that Heartbeat or another organ
-// may choose to send later.
-//
 
 export function makeTelemetryPacket(subsystem, event, data = {}) {
   const ts = Date.now();
-  const version = PulseVersion[subsystem] || "20.x";
+  const version = PulseVersion[subsystem] || "24.x";
   const role = PulseRoles[subsystem] || "SUBSYSTEM";
   const icon = PulseIcons[subsystem] || PulseIcons.legacy;
 
@@ -250,7 +289,11 @@ export function makeTelemetryPacket(subsystem, event, data = {}) {
     parent: data.lineageParent || null
   };
 
+  const envKind = detectEnvironmentKind();
+  const nodePid = detectNodeProcessId();
+
   return {
+    schemaVersion: "24.0",
     ts,
     subsystem,
     event,
@@ -258,9 +301,13 @@ export function makeTelemetryPacket(subsystem, event, data = {}) {
     role,
     icon,
     data,
+    env: {
+      kind: envKind,
+      nodePid
+    },
     meta: {
       layer: "PulseProofLogger",
-      version: "20.0-Immortal-META",
+      version: "24.0-Immortal-META",
       subsystem,
       event,
       band,
@@ -277,11 +324,6 @@ export function makeTelemetryPacket(subsystem, event, data = {}) {
 // -----------------------------------------------------------------------------
 // IMMORTAL LOG ENTRY BUILDER — PURE, SYNC, HEARTBEAT-FRIENDLY
 // -----------------------------------------------------------------------------
-//
-// This is the core shape of a log entry.
-// It includes evolution-aware fields but does not compute them.
-// The caller (IQ, UI genome, compiler, etc.) provides those values.
-//
 
 let logIdCounter = Date.now();
 
@@ -301,7 +343,6 @@ function makeLocalLogEntry(level, subsystem, message, rest, meta = {}) {
   const speedField = meta.speedField || null;
   const experienceField = meta.experienceField || null;
 
-  // v20 evolution metadata (all optional, purely descriptive)
   const iqVersion = meta.iqVersion || null;
   const uiGenomeVersion = meta.uiGenomeVersion || null;
   const comfortPattern = meta.comfortPattern || null;
@@ -309,7 +350,11 @@ function makeLocalLogEntry(level, subsystem, message, rest, meta = {}) {
   const compilerVersion = meta.compilerVersion || null;
   const organismVersion = meta.organismVersion || null;
 
+  const envKind = detectEnvironmentKind();
+  const nodePid = detectNodeProcessId();
+
   return {
+    schemaVersion: "24.0",
     id: `L${++logIdCounter}`,
     ts: Date.now(),
     level,
@@ -334,7 +379,10 @@ function makeLocalLogEntry(level, subsystem, message, rest, meta = {}) {
     route,
     compilerVersion,
     organismVersion,
-    // "synced" is now a semantic flag Heartbeat can use if it wants.
+    env: {
+      kind: envKind,
+      nodePid
+    },
     synced: false
   };
 }
@@ -342,10 +390,6 @@ function makeLocalLogEntry(level, subsystem, message, rest, meta = {}) {
 // -----------------------------------------------------------------------------
 // CORE PULSE LOGGING PIPELINE — PURELY LOCAL, ZERO NETWORK
 // -----------------------------------------------------------------------------
-//
-// This is the ONLY place where log entries are created and appended.
-// No async, no network, no flush, no routing.
-//
 
 export function pulseLog({
   layer = null,
@@ -403,10 +447,6 @@ export function pulseLog({
 // -----------------------------------------------------------------------------
 // ARG NORMALIZATION + SAFETY
 // -----------------------------------------------------------------------------
-//
-// This keeps the public log/warn/error/critical API ergonomic while still
-// feeding a structured pipeline.
-//
 
 function normalizeArgs(args) {
   let subsystem = "legacy";
@@ -416,17 +456,14 @@ function normalizeArgs(args) {
 
   const first = args[0];
 
-  // CSS-style console formatting: log("%c...", "color:red", ...)
   if (typeof first === "string" && first.startsWith("%c")) {
     return { subsystem, message: first, rest: args.slice(1), raw: true };
   }
 
-  // Subsystem + message: log("logger", "Something happened", ...)
   if (args.length >= 2 && typeof first === "string" && typeof args[1] === "string") {
     return { subsystem: first, message: args[1], rest: args.slice(2), raw: false };
   }
 
-  // Object-based logging: log({ ... })
   if (typeof first === "object" && first !== null) {
     const obj = first;
     if (obj.pulseLayer === "NERVOUS-SYSTEM") subsystem = "band";
@@ -435,18 +472,15 @@ function normalizeArgs(args) {
     return { subsystem, message: "", rest: [obj], raw: false };
   }
 
-  // Single argument: log("hello")
   if (args.length === 1) {
     return { subsystem, message: first, rest: [], raw: false };
   }
 
-  // Fallback: join everything into a single string
   return { subsystem, message: args.join(" "), rest: [], raw: false };
 }
 
 function mark404(message) {
   if (typeof message === "string" && message.trim() === "404") {
-    // Mark 404s distinctly without changing semantics.
     return "404*";
   }
   return message;
@@ -455,13 +489,6 @@ function mark404(message) {
 // -----------------------------------------------------------------------------
 // CORE LOGGING FUNCTIONS — PURE, BURST-SAFE, HEARTBEAT-FRIENDLY
 // -----------------------------------------------------------------------------
-//
-// These are the functions you actually call: log, warn, error, critical.
-// They:
-//   1) Format to the original console (for dev visibility).
-//   2) Append to the local log buffer via pulseLog().
-// No async, no network, no flush.
-//
 
 export function log(...args) {
   const { subsystem, message, rest, raw } = normalizeArgs(args);
@@ -549,10 +576,6 @@ export function critical(...args) {
 // -----------------------------------------------------------------------------
 // GROUPING HELPERS
 // -----------------------------------------------------------------------------
-//
-// These are purely visual helpers for the dev console.
-// They do not affect logging behavior.
-//
 
 export function group(subsystem, label) {
   const color = PulseColors[subsystem] || "#fff";
@@ -570,14 +593,6 @@ export function groupEnd() {
 // -----------------------------------------------------------------------------
 // PulseLoggerStore — HEARTBEAT INTERFACE (PURELY LOCAL)
 // -----------------------------------------------------------------------------
-//
-// This is the official interface Heartbeat uses to:
-//   - inspect logs
-//   - clear logs
-//   - drain logs for remote posting
-//
-// Heartbeat is the ONLY organ that should call drainForHeartbeat().
-//
 
 export const PulseLoggerStore = {
   getAll() {
@@ -586,7 +601,7 @@ export const PulseLoggerStore = {
 
   clear() {
     localLogBuffer = [];
-    saveLocalLogs(localLogBuffer);
+    persistLocalLogs(localLogBuffer);
   },
 
   tail(n = 200) {
@@ -595,7 +610,6 @@ export const PulseLoggerStore = {
     return buf.slice(Math.max(0, buf.length - n));
   },
 
-  // Heartbeat uses this to atomically drain logs and then post them elsewhere.
   drainForHeartbeat() {
     return drainLocalLogsForHeartbeat();
   }
@@ -604,11 +618,6 @@ export const PulseLoggerStore = {
 // -----------------------------------------------------------------------------
 // Pulse command handler (LOCAL-ONLY, NO NETWORK)
 // -----------------------------------------------------------------------------
-//
-// We keep a minimal "Pulse: ..." console command handler for dev ergonomics,
-// but we REMOVE all AI prompt / telemetry routing / persistence.
-// This is now strictly local and diagnostic.
-//
 
 function handlePulseCommand(cmd) {
   const raw = cmd.slice(6).trim();
@@ -644,20 +653,14 @@ function handlePulseCommand(cmd) {
 }
 
 // -----------------------------------------------------------------------------
-// Legacy console redirects — logger is the membrane (NO ASYNC, NO NETWORK)
+// Legacy console redirects — logger is the membrane
 // -----------------------------------------------------------------------------
-//
-// We intercept console.log/warn/error and route them through our logger,
-// but we always use the captured original console methods (_c) internally
-// to avoid recursion.
-//
 
 const originalConsoleLog = _c.log;
 const originalConsoleWarn = _c.warn;
 const originalConsoleError = _c.error;
 
 console.log = (...args) => {
-  // Special dev command: "Pulse: ..."
   if (typeof args[0] === "string" && args[0].startsWith("Pulse:")) {
     handlePulseCommand(args[0]);
     return;
@@ -674,12 +677,8 @@ console.error = (...args) => {
 };
 
 // -----------------------------------------------------------------------------
-// GLOBAL LOGGER BINDINGS — v20 IMMORTAL + OFFLINE LOG SURFACE
+// GLOBAL LOGGER BINDINGS — v24 IMMORTAL + OFFLINE LOG SURFACE
 // -----------------------------------------------------------------------------
-//
-// We expose the logger globally for convenience, but we DO NOT expose any
-// network or flush functions. Heartbeat owns flushing.
-//
 
 (function bindLogger() {
   try {
@@ -696,18 +695,17 @@ console.error = (...args) => {
         getByLevel: (level) => getLocalLogs({ level }),
         getBySubsystem: (subsystem) => getLocalLogs({ subsystem }),
         clear: () => PulseLoggerStore.clear()
-        // No flush here — Heartbeat owns flushing to network.
       };
     }
 
-    globalThis.log = log;
-    globalThis.warn = warn;
-    globalThis.error = error;
-    globalThis.critical = critical;
-    globalThis.group = group;
-    globalThis.groupEnd = groupEnd;
+    g.log = log;
+    g.warn = warn;
+    g.error = error;
+    g.critical = critical;
+    g.group = group;
+    g.groupEnd = groupEnd;
 
-    globalThis.PulseOfflineLogs = {
+    g.PulseOfflineLogs = {
       getAll: () => getLocalLogs(),
       getByLevel: (level) => getLocalLogs({ level }),
       getBySubsystem: (subsystem) => getLocalLogs({ subsystem }),
@@ -721,10 +719,6 @@ console.error = (...args) => {
 // -----------------------------------------------------------------------------
 // VitalsLogger EXPORT
 // -----------------------------------------------------------------------------
-//
-// This is the public logger object. It is IMMORTAL, EVOLVABLE, and
-// completely decoupled from network and async behavior.
-//
 
 export const VitalsLogger = {
   log,
@@ -736,7 +730,7 @@ export const VitalsLogger = {
   makeTelemetryPacket,
   getLocalLogs,
   PulseLoggerStore,
-  meta: { layer: "PulseProofLogger", version: "20.0-Immortal-EVOLVABLE" }
+  meta: { layer: "PulseProofLogger", version: "24.0-Immortal-EVOLVABLE" }
 };
 
 export const logger = { ...VitalsLogger };

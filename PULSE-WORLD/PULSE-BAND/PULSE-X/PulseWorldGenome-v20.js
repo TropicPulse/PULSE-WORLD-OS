@@ -818,44 +818,45 @@ export async function fetchBuffer(url) {
     return { ok: false, error: String(err) };
   }
 }
-
 export async function computeSha256Hex(buffer) {
-  try {
-    if (
-      globalThis.crypto &&
-      globalThis.crypto.subtle &&
-      typeof globalThis.crypto.subtle.digest === "function"
-    ) {
-      let ab;
-
-      if (buffer instanceof ArrayBuffer) {
-        ab = buffer;
-      } else if (ArrayBuffer.isView(buffer)) {
-        ab = buffer.buffer.slice(buffer.byteOffset, buffer.byteOffset + buffer.byteLength);
-      } else {
-        ab = Buffer.from(buffer).buffer;
-      }
-
-      const hashBuf = await globalThis.crypto.subtle.digest("SHA-256", ab);
-      const hashArr = Array.from(new Uint8Array(hashBuf));
-      return hashArr.map(b => b.toString(16).padStart(2, "0")).join("");
-    }
-  } catch {
-    // fall through
+  // Ensure we have WebCrypto
+  if (
+    !globalThis.crypto ||
+    !globalThis.crypto.subtle ||
+    typeof globalThis.crypto.subtle.digest !== "function"
+  ) {
+    return null; // No crypto available
   }
 
   try {
-    const nodeBuf = Buffer.isBuffer(buffer)
-      ? buffer
-      : Buffer.from(buffer);
+    let ab;
 
-    const crypto = await import("crypto");
-    return crypto.createHash("sha256").update(nodeBuf).digest("hex");
+    // Normalize input to ArrayBuffer
+    if (buffer instanceof ArrayBuffer) {
+      ab = buffer;
+    } else if (ArrayBuffer.isView(buffer)) {
+      ab = buffer.buffer.slice(buffer.byteOffset, buffer.byteOffset + buffer.byteLength);
+    } else {
+      ab = Buffer.from(buffer).buffer;
+    }
+
+    // Compute SHA‑256
+    const hashBuf = await globalThis.crypto.subtle.digest("SHA-256", ab);
+    const hashArr = new Uint8Array(hashBuf);
+
+    // Convert to hex
+    let hex = "";
+    for (let i = 0; i < hashArr.length; i++) {
+      hex += hashArr[i].toString(16).padStart(2, "0");
+    }
+
+    return hex;
   } catch (err) {
-    warn?.("⚠️ computeSha256Hex fallback failed:", err);
+    warn?.("⚠️ computeSha256Hex failed:", err);
     return null;
   }
 }
+
 
 // ============================================================================
 //  INTELLHASH (WORLD-AWARE HASH PROFILE)
@@ -930,9 +931,9 @@ export async function getHelper(name) {
   if (helperCache.has(key)) return helperCache.get(key);
 
   const candidates = [
-    "../../PULSE-CORE/PulseWorldFirebaseGenome-v20.js",
-    "../../PULSE-MEMORY/LongTermPulseWorldFirebaseGenome-v20.js",
-    "../../PULSE-BAND/PULSE-X/WorldPulseWorldFirebaseGenome-v20.js"
+    "./PulseWorldFirebaseGenome-v20.js",
+    "./PulseWorldFirebaseLogger-v20.js",
+    "./PulseWorldFirebaseAdapter-v20.js"
   ];
 
   for (const path of candidates) {
@@ -992,7 +993,7 @@ async function getSqlClient() {
   if (sqlClient) return sqlClient;
 
   try {
-    const mod = await import("../PULSE-BAND/PULSE-DATA/PulseSqlClient.js");
+    const mod = await import("../PULSE-TRANSLATOR/PulseTranslatorSkeletalClient.js");
     sqlClient = mod.default || mod.sqlClient || mod;
     return sqlClient;
   } catch (err) {

@@ -100,7 +100,7 @@ import {
   PulseVersion,
   PulseRoles,
   PulseLineage
-} from "../../PULSE-UI/_BACKEND/PulseProofLogger-v20.js";
+} from "../../PULSE-UI/_MONITOR/PulseProofLogger-v20.js";
 
 // ============================================================================
 //  EXPERIENCE META — AI / World / Overmind surfaces

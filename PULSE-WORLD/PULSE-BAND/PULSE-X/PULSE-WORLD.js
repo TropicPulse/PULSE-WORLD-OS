@@ -108,7 +108,7 @@ import { createBackwardEngine } from "../PULSE-ENGINE/BackwardMotion-v16.js";
 import PulseUIErrors from "../../PULSE-UI/_FRONTEND/PulseUIErrors-v20.js";
 import { initUIFlow } from "../../PULSE-UI/_FRONTEND/PulseUIFlow-v20.js";
 import { route, PulseProofLogger, log, warn, error } from "../../PULSE-UI/_BACKEND/PULSE-WORLD-BRIDGE.js";
-import { PulseUnderstanding } from "../../PULSE-UI/_BACKEND/PULSE-WORLD-UNDERSTANDING.js";
+import { PulseUnderstanding } from "./PULSE-WORLD-UNDERSTANDING.js";
 
 // ============================================================================
 // GLOBAL ORGANISM MEMORY (shared across all imports)

@@ -1,5 +1,5 @@
 // ============================================================================
-// FILE: /PULSE-UI/_GENOME/PulseEvolutionaryStylesBaseGenome-v20.js
+// FILE: /PULSE-UI/_GENOME/PulseEvolutionaryStylesGenome-v20.js
 // PULSE OS — v20++ IMMORTAL EVOLUTIONARY
 // UNIVERSAL UI SKIN GENOME (A0–A5 SURFACE MEMBRANE)
 // ============================================================================

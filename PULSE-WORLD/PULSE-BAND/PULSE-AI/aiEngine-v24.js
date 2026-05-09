@@ -1,5 +1,5 @@
 // ============================================================================
-//  aiExecutionEngine.js — Pulse OS v16‑IMMORTAL++
+//  aiExecutionEngine.js — Pulse OS v24‑IMMORTAL++
 //  Dual‑Band Execution • Persona Routing • Organ Dispatch • Trust‑Aware
 //  PURE EXECUTION. ZERO MUTATION. ZERO RANDOMNESS.
 // ============================================================================
@@ -7,10 +7,10 @@
 /*
 AI_EXPERIENCE_META = {
   identity: "aiEngine",
-  version: "v16-Immortal++",
+  version: "v24-Immortal++",
   layer: "ai_core",
   role: "ai_execution_engine",
-  lineage: "aiEngine-v9 → v11 → v12.3-Presence → v14-Immortal → v16-Immortal++",
+  lineage: "aiEngine-v9 → v11 → v12.3-Presence → v14-Immortal → v16-Immortal++ → v24-Immortal++",
 
   evo: {
     executionEngine: true,
@@ -33,7 +33,19 @@ AI_EXPERIENCE_META = {
     pureCompute: true,
     zeroNetwork: true,
     zeroFilesystem: true,
-    zeroMutationOfInput: true
+    zeroMutationOfInput: true,
+
+    // v24++ advantages
+    daemonOriented: true,
+    sealedOrganism: true,
+    portalCompatible: true,
+    bridgeCompatible: true,
+    dualMembraneAware: true,
+    worldStateAware: true,
+    personaAware: true,
+    pulseDensityAware: true,
+    gpuLaneAware: true,
+    binaryOverlayAware: true
   },
 
   contract: {
@@ -46,8 +58,8 @@ AI_EXPERIENCE_META = {
 export const ExecutionEngineMeta = Object.freeze({
   layer: "PulseAIExecutionKernel",
   role: "EXECUTION_ENGINE",
-  version: "16-Immortal++",
-  identity: "aiExecutionEngine-v16-Immortal++",
+  version: "24-Immortal++",
+  identity: "aiExecutionEngine-v24-Immortal++",
 
   evo: Object.freeze({
     driftProof: true,
@@ -77,8 +89,19 @@ export const ExecutionEngineMeta = Object.freeze({
     permissionsEngineAware: true,
     watchdogAware: true,
 
+    // v24++ organism/kernel semantics
+    daemonOriented: true,
+    sealedOrganism: true,
+    portalCompatible: true,
+    bridgeCompatible: true,
+    dualMembraneAware: true,
+    worldStateAware: true,
+    pulseDensityAware: true,
+    gpuLaneAware: true,
+    binaryOverlayAware: true,
+
     multiInstanceReady: true,
-    epoch: "16-Immortal++"
+    epoch: "24-Immortal++"
   }),
 
   contract: Object.freeze({
@@ -93,7 +116,9 @@ export const ExecutionEngineMeta = Object.freeze({
       "alter persona logic",
       "override dual-band safety",
       "ignore artery pressure",
-      "ignore trust fabric risk"
+      "ignore trust fabric risk",
+      "portalBypass",
+      "bridgeBypass"
     ]),
     always: Object.freeze([
       "build deterministic cognitive frame",
@@ -105,7 +130,11 @@ export const ExecutionEngineMeta = Object.freeze({
       "respect trust fabric + jury signals",
       "route execution through correct mode",
       "emit context + execution packets deterministically",
-      "return unified response packet"
+      "return unified response packet",
+      "respect sealedOrganismBoundary",
+      "remain daemonCompatible",
+      "remain portalCompatible",
+      "remain bridgeCompatible"
     ])
   }),
 
@@ -132,10 +161,10 @@ export const ExecutionEngineMeta = Object.freeze({
 });
 
 import { createCognitiveFrame as createAIContext } from "./aiContext.js";
-import { createBrainstem } from "./aiBrainstem-v16.js";
-import { resolvePersonaV12 } from "./persona.js";
+import { createBrainstem } from "./aiBrainstem-v24.js";
+import { resolvePersonaV12 } from "./aiPersonality.js";
 import { routeAIRequest } from "./aiRouter-v16.js";
-import { canPerformDynamic } from "./boundaries.js";
+import { canPerformDynamic } from "./aiBoundaries.js";
 
 import { createArchitectOrgan as runArchitectMode } from "./aiArchitect.js";
 import { createClinicianOrgan as runObserverMode } from "./aiClinician.js";
@@ -182,7 +211,7 @@ export function prewarmExecutionEngine({ trace = false } = {}) {
 }
 
 // ============================================================================
-// CORE EXECUTION — v16‑IMMORTAL++
+// CORE EXECUTION — v24‑IMMORTAL++
 // ============================================================================
 export async function runAI(
   request = {},

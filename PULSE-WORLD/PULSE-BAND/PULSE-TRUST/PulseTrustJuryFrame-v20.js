@@ -60,7 +60,7 @@ AI_EXPERIENCE_META:
     erReady: true
 */
 
-import { JuryFrameMeta, createJuryFrame, evaluateJury} from "../PULSE-AI/JuryFrame.js";
+import { JuryFrameMeta, createJuryFrame, evaluateJury} from "../PULSE-AI/aiJuryFrame.js";
 import { admin, db } from "../PULSE-X/PulseWorldFirebaseGenome-v20.js";
 
 export const PulseTrustJuryFrameMeta = Object.freeze({

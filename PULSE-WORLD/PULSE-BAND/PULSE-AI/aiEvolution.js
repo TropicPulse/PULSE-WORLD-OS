@@ -108,7 +108,7 @@ export const AI_EVOLUTION_META = Object.freeze({
   })
 });
 
-import { Personas } from "./persona.js";
+import { Personas } from "./aiPersonality.js";
 import { getOrganismSnapshot } from "./aiDeps-v16.js";
 
 // ============================================================================

@@ -120,7 +120,7 @@ const admin =
   (typeof window !== "undefined" && window.db) ||
   null;
 
-import { VitalsLogger as logger } from "../../PULSE-UI/_BACKEND/PulseProofLogger-v20.js";
+import { VitalsLogger as logger } from "../../PULSE-UI/_MONITOR/PulseProofLogger-v20.js";
 import { safeRoute as route } from "../../PULSE-UI/_BACKEND/PULSE-WORLD-BRIDGE.js";
 import { PulseLineage } from "./PulseProxyBBB-v20.js";
 

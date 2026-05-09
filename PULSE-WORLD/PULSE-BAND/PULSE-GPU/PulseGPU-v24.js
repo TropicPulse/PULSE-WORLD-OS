@@ -98,7 +98,7 @@ import * as PulseGPUAstralNervousSystem  from "./PulseGPUAstralNervousSystem-v24
 import * as PulseGPUNervousSystem        from "./PulseGPUNervousSystem-v24.js";
 
 import * as PulseGPUCognitiveIntelligence from "./PulseGPUCognitiveIntelligence-v24.js";
-import * as PulseGPUCognitiveLayer        from "./PulseGPUSettingsRestorer-v24.js"; // cognitive layer / restorer v24++
+import * as PulseGPUCognitiveLayer        from "./PulseGPUCognitiveLayer-v24.js"; // cognitive layer / restorer v24++
 import * as PulseGPUWisdomCortex         from "./PulseGPUWIsdomCortex-v24.js";
 
 import * as PulseGPUSurvivalInstincts    from "./PulseGPUSurvivalInstincts-v24.js";
@@ -112,7 +112,7 @@ import {
   ORGAN_META_PulseGPUChunkPlanner,
   ORGAN_CONTRACT_PulseGPUChunkPlanner,
   PulseGPUChunkPlanner
-} from "./PulseGPUChunkPlanner.js";
+} from "./PulseGPUChunkPlanner-v24.js";
 
 import {
   PulseNetBoot,

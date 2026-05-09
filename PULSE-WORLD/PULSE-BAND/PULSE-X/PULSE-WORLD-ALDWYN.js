@@ -36,7 +36,7 @@ AI_EXPERIENCE_META = {
 }
 */
 
-import { PulseProofLogger } from "../../PULSE-UI/_BACKEND/PulseProofLogger-v20.js";
+import { PulseProofLogger } from "../../PULSE-UI/_MONITOR/PulseProofLogger-v20.js";
 
 // ============================================================================
 //  GLOBAL MAPS
@@ -65,7 +65,7 @@ import { PulseMesh } from "../PULSE-EXPANSION/PulseMesh-v16.js";
 // ============================================================================
 //  EARN ORGANISM
 // ============================================================================
-import { createEarn, evolveEarn } from "../PULSE-EARN/PulseEarn-v16.js";
+import { createEarn, evolveEarn } from "../PULSE-EARN/PulseEarn-v24.js";
 
 // ============================================================================
 //  SEND ORGANISM
@@ -90,9 +90,9 @@ import {
   writeCoreMemorySend
 } from "../PULSE-CORE/PulseCoreSendMemoryAdapter-v20.js";
 
-import { PulseUnderstanding } from "../../PULSE-UI/_BACKEND/PULSE-WORLD-UNDERSTANDING.js";
+import { PulseUnderstanding } from "./PULSE-WORLD-UNDERSTANDING.js";
 import { PulseGovernor } from "../PULSE-OS/PulseOSGovernor.js";
-import { PulseVitalsMonitor } from "../../PULSE-UI/_BACKEND/PulseProofMonitor-v20.js";
+import { PulseVitalsMonitor } from "../../PULSE-UI/_MONITOR/PulseProofMonitor-v20.js";
 import { PulseBinaryTech } from "../PULSE-TECH/PulseBinaryTech-v20.js";
 
 // ============================================================================
@@ -119,7 +119,7 @@ import aiToneRouter from "../PULSE-AI/aiToneRouter.js";
 // ============================================================================
 //  4. META‑GOVERNANCE (CROWN LAYER)
 // ============================================================================
-import createJuryFrame from "../PULSE-AI/JuryFrame.js";
+import createJuryFrame from "../PULSE-AI/aiJuryFrame.js";
 import createAIBinaryGovernorAdapter from "../PULSE-AI/aiGovernorAdapter.js";
 import {
   PulseTrustMeta,
@@ -141,7 +141,7 @@ import createAIExperience from "../PULSE-AI/aiExperience.js";
 //  6. PIPELINE + ENGINE + CHUNKER + FILE SCANNER
 // ============================================================================
 import createAIBinaryPipeline from "../PULSE-AI/aiPipeline.js";
-import runAI from "../PULSE-AI/aiEngine-v16.js";
+import runAI from "../PULSE-AI/aiEngine-v24.js";
 import pulseAIChunker from "../PULSE-AI/PulseAIChunker-v20.js";
 import createPulseFileScanner from "../PULSE-AI/PulseFileScanner-v20.js";
 
@@ -156,9 +156,9 @@ import createAIBinaryLoggerAdapter from "../PULSE-AI/aiLoggerAdapter.js";
 //  8. OPTIONAL (GLOBAL MAPS / FRAMES)
 // ============================================================================
 import createPersonalFrameOrgan from "../PULSE-AI/aiPersonalFrame.js";
-import getBoundariesForPersona from "../PULSE-AI/boundaries.js";
-import getPermissionsForPersona from "../PULSE-AI/permissions.js";
-import createExperienceFrameOrgan from "../PULSE-AI/Experience-v16.js";
+import getBoundariesForPersona from "../PULSE-AI/aiBoundaries.js";
+import getPermissionsForPersona from "../PULSE-AI/aiPermissions.js";
+import createExperienceFrameOrgan from "../PULSE-AI/aiExperienceFrame-v16.js";
 
 // ============================================================================
 //  META — v20 IMMORTAL++

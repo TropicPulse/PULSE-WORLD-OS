@@ -37,7 +37,7 @@
 import {
   PulseEvolutionaryIconsBaseGenomeV20,
   mergeIconGenomes
-} from "./PulseEvolutionaryIconsBaseGenome-v20.js";
+} from "./PulseEvolutionaryIconsGenome-v20.js";
 
 // ============================================================================
 // HELPERS — deterministic, pure

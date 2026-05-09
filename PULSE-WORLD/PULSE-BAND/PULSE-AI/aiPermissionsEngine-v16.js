@@ -73,7 +73,7 @@ AI_EXPERIENCE_META = {
 }
 */
 
-import { getPermissionsForPersona, ForbiddenActions } from "./permissions.js";
+import { getPermissionsForPersona, ForbiddenActions } from "./aiPermissions.js";
 
 export const PermissionsMeta = Object.freeze({
   layer: "PulseAIPermissionsLayer",

@@ -108,7 +108,7 @@ import corsHandler from "./PulseWorldTransport-v20.js";
 import redeemSomePulsePoints from "./PulseWorldPointRedemption-v20.js";
 import { getEnvironmentState, getEnvironmentSummary,generateEnvironmentalInsights,generateFutureScenario,generateSmartEnvironmentalAdvice,applyEnvironmentalMultipliers } from "./PulseWorldEcoSystem-v20.js";
 import { sendPinEmail, sendAdminAlertEmail, sendAdminInfoEmail, hashPin } from "./PulseWorldEmailAlert-v20.js";
-import { VitalsLogger as logger } from "../../PULSE-UI/_BACKEND/PulseProofLogger-v20.js";
+import { VitalsLogger as logger } from "../../PULSE-UI/_MONITOR/PulseProofLogger-v20.js";
 
 // ============================================================================
 // IMPORTS

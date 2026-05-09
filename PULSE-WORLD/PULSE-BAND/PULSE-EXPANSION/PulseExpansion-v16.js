@@ -61,7 +61,7 @@ AI_EXPERIENCE_META = {
 }
 */
 
-import { logger } from "../../PULSE-UI/_BACKEND/PulseProofLogger-v20.js";
+import { logger } from "../../PULSE-UI/_MONITOR/PulseProofLogger-v20.js";
 
 // v12.3 presence-era metas (still valid for server/router)
 import {
@@ -109,7 +109,7 @@ import { getPulseSchedulerContext } from "../PULSE-X/PulseWorldScheduler-v20.js"
 import { getPulseOvermindContext } from "../PULSE-X/PULSE-WORLD-ALDWYN.js";
 
 // (Optional) Earn / treasury integration hook (symbolic only)
-import { getEarnContext } from "../PULSE-EARN/PulseEarn-v16.js";
+import { getEarnContext } from "../PULSE-EARN/PulseEarn-v24.js";
 
 // PROXY CONTEXT — v16 IMMORTAL ORGANISM
 import {

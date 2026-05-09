@@ -92,17 +92,17 @@ export * from "./PulseGPULymphNodes-v24.js";
 // ============================================================================
 // GPU WARM PATH / CACHE HINTS (v24-Immortal++)
 // ============================================================================
-export * from "./PulseGPUWarmPathCache.js";
+export * from "./PulseGPUWarmPathCache-v24.js";
 
 // ============================================================================
 // GPU NERVOUS SYSTEM / SESSION TRACER (v24-Immortal++)
 // ============================================================================
-export * from "./PulseGPUSessionTracer-v24.js";
+export * from "./PulseGPUNervousSystem-v24.js";
 
 // ============================================================================
 // GPU WISDOM CORTEX / INSIGHTS ENGINE (v24-Immortal++)
 // ============================================================================
-export * from "./PulseGPUInsightsEngine-v24.js";
+export * from "./PulseGPUWIsdomCortex-v24.js";
 
 // ============================================================================
 // META BLOCK — Astral Nervous System Identity (v24-Immortal++)

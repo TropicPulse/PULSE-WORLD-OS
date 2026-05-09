@@ -17,7 +17,7 @@ import * as PulseGPUGeneticMemory       from "./PulseGPUGeneticMemory-v24.js";
 import * as PulseGPUGuardianCortex      from "./PulseGPUGuardianCortex-v24.js";
 import * as PulseGPULymphNodes          from "./PulseGPULymphNodes-v24.js";
 import * as PulseGPUSurvivalInstincts   from "./PulseGPUSurvivalInstincts-v24.js";
-import * as PulseGPUChunkPlannerModule  from "./PulseGPUChunkPlanner.js"; // awareness only
+import * as PulseGPUChunkPlannerModule  from "./PulseGPUChunkPlanner-v24.js"; // awareness only
 
 // ============================================================================
 // SHARED EVO + CONTRACTS (v24-IMMORTAL++)

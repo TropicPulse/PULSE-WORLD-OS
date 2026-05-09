@@ -95,7 +95,7 @@ AI_EXPERIENCE_META = {
 */
 
 import { createPulseCoreMemory } from "../../PULSE-CORE/PulseCoreMemory-v24.js";
-import { PulseGPUBrain } from "../../PULSE-GPU/PulseGPUBrain.js";
+import { PulseGPUBrain } from "../../PULSE-GPU/PulseGPUBrain-v24.js";
 
 // ============================================================================
 //  META — v20-IMMORTAL-INTEL-WORLD

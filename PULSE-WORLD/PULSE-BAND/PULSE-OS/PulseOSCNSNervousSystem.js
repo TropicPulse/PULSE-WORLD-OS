@@ -173,13 +173,13 @@ export const PulseOSCNSNervousSystemMeta = Object.freeze({
 // ============================================================================
 import { PulseOSShortTermMemory } from "./PulseOSShortTermMemory.js";
 // PageScannerV12: A1/A2 intelligence pack, used here as CNS-level passive/active scanner
-import { PageScannerV12 } from "../../PULSE-UI/_BACKEND/PulseUISkinReflex-v20.js";
+import { PageScannerV12 } from "../../PULSE-UI/_FRONTEND/PulseUISkinReflex-v20.js";
 
 import checkBand from "../PULSE-X/PULSE-WORLD-BAND.js";
 import checkIdentity from "../PULSE-X/PulseWorldIdentity-v20.js";
 import checkRouterMemory from "../PULSE-PROXY/PulseProxyMemoryRouter-v20.js";
 
-import { createDualBandOrganism } from "../PULSE-AI/aiDualBand-v16.js";
+import { createDualBandOrganism } from "../PULSE-AI/aiDualBand-v24.js";
 
 
 // ============================================================================

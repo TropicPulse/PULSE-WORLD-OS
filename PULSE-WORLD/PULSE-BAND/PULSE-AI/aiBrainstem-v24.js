@@ -1,10 +1,10 @@
 // ============================================================================
-//  PULSE OS v16‑IMMORTAL++ — BRAINSTEM
+//  PULSE OS v24‑IMMORTAL++ — BRAINSTEM
 //  Organ Assembly • Dual‑Band Context Binding • CNS + Pulse‑Net Integration
 //  PURE ORGANISM. ZERO MUTATION. ZERO RANDOMNESS. ZERO DIRECT INTERNET.
 // ============================================================================
 //
-// ROLE (v16‑Immortal++ Hybrid):
+// ROLE (v24‑Immortal++ Hybrid):
 //   • Assemble CNS engines, symbolic organs, and the dual‑band organism
 //     into a unified, deterministic, drift‑proof Pulse OS organism.
 //   • Bind persona/boundaries/permissions/router/cortex to DualBand organism.
@@ -24,10 +24,10 @@
 /*
 AI_EXPERIENCE_META = {
   identity: "createOrgans",
-  version: "v16-Immortal++-Hybrid-Spine",
+  version: "v24-Immortal++-Hybrid-Spine",
   layer: "ai_tools",
   role: "organ_creation_engine",
-  lineage: "createOrgans-v11 → v13-SPINE → v14-Immortal → v16-Immortal++-Hybrid-Spine",
+  lineage: "createOrgans-v11 → v13-SPINE → v14-Immortal → v16-Immortal++-Hybrid-Spine → v24-Immortal++-Hybrid-Spine",
 
   evo: {
     organCreation: true,
@@ -51,7 +51,19 @@ AI_EXPERIENCE_META = {
     pureCompute: true,
     zeroNetwork: true,          // no raw internet; Pulse‑Net only
     zeroFilesystem: true,
-    zeroMutationOfInput: true
+    zeroMutationOfInput: true,
+
+    // v24++ advantages
+    daemonOriented: true,
+    sealedOrganism: true,
+    portalCompatible: true,
+    bridgeCompatible: true,
+    dualMembraneAware: true,
+    worldStateAware: true,
+    personaAware: true,
+    pulseDensityAware: true,
+    gpuLaneAware: true,
+    binaryOverlayAware: true
   },
 
   contract: {
@@ -82,8 +94,8 @@ export const BrainstemMeta = Object.freeze({
   subsystem: "aiBrainstem",
   layer: "OrganAssembly",
   role: "BRAINSTEM_ORGAN",
-  version: "16-IMMORTAL++-HYBRID-SPINE",
-  identity: "aiBrainstem-v16-IMMORTAL++-HYBRID-SPINE",
+  version: "24-IMMORTAL++-HYBRID-SPINE",
+  identity: "aiBrainstem-v24-IMMORTAL++-HYBRID-SPINE",
 
   evo: Object.freeze({
     driftProof: true,
@@ -106,7 +118,20 @@ export const BrainstemMeta = Object.freeze({
     dominanceAware: true,
     pulseNetAware: true,
     organismUserSegregation: true,
-    epoch: "v16-IMMORTAL++-HYBRID-SPINE"
+
+    // v24++ organism/kernel semantics
+    daemonOriented: true,
+    sealedOrganism: true,
+    portalCompatible: true,
+    bridgeCompatible: true,
+    dualMembraneAware: true,
+    worldStateAware: true,
+    personaAware: true,
+    pulseDensityAware: true,
+    gpuLaneAware: true,
+    binaryOverlayAware: true,
+
+    epoch: "v24-IMMORTAL++-HYBRID-SPINE"
   }),
 
   contract: Object.freeze({
@@ -124,7 +149,9 @@ export const BrainstemMeta = Object.freeze({
       "directInternetAccess",
       "externalHTTP",
       "externalDNS",
-      "externalWebsocket"
+      "externalWebsocket",
+      "portalBypass",
+      "bridgeBypass"
     ]),
 
     always: Object.freeze([
@@ -137,7 +164,11 @@ export const BrainstemMeta = Object.freeze({
       "bind trust fabric + jury + evidence surfaces",
       "route all external IO via Pulse‑Net / Pulse surfaces",
       "return a frozen organism map",
-      "remain read-only and drift-proof"
+      "remain read-only and drift-proof",
+      "respect sealedOrganismBoundary",
+      "remain daemonCompatible",
+      "remain portalCompatible",
+      "remain bridgeCompatible"
     ])
   }),
 
@@ -151,7 +182,8 @@ export const BrainstemMeta = Object.freeze({
 // ============================================================================
 
 // ⭐ CNS‑SAFE v16 Chunker (32 lanes, Pulse‑Net aware)
-import { pulseAIChunker as createPulseChunker } from "./PulseAIChunker-v20.js"; // implementation upgraded at source
+// (implementation itself can be upgraded to v24 later; interface remains stable)
+import { pulseAIChunker as createPulseChunker } from "./PulseAIChunker-v20.js";
 
 import PulseOSPresence from "../PULSE-OS/PulseOSPresence-v16.js";
 import PulseMeshPresenceRelay from "../PULSE-MESH/PulseMeshPresenceRelay-v16.js";
@@ -162,16 +194,16 @@ import { createTouristAPI, prewarmTourist } from "./aiTourist.js";
 import { createEnvironmentAPI } from "./aiEnvironment.js";
 import { createPowerAPI } from "./aiPowerPrime.js";
 import { createEvolutionAPI } from "./aiEvolution.js";
-import { createEarnAPI } from "./aiEarn-v16.js";
+import { createEarnAPI } from "./aiEarn-v24.js";
 import { createDiagnosticsWriteAPI } from "./aiDiagnosticsWrite.js";
 
-import { createPersonaEngine } from "./persona.js";
-import { createBoundariesEngine } from "./boundaries.js";
-import { createPermissionsEngine } from "./permissions.js";
+import { createPersonaEngine } from "./aiPersonality.js";
+import { createBoundariesEngine } from "./aiBoundaries.js";
+import { createPermissionsEngine } from "./aiPermissions.js";
 import { createRouterEngine } from "./aiRouter-v16.js";
 import { createCortex } from "./aiCortex-v16.js";
 
-import { createDualBandOrganism } from "./aiDualBand-v16.js";
+import { createDualBandOrganism } from "./aiDualBand-v24.js";
 
 // Non-binary symbolic organs
 import { createDoctorAPI } from "./aiDoctorAssistant.js";
@@ -183,8 +215,8 @@ import { createClinicianAPI } from "./aiClinician.js";
 import { createEvolutionaryAPI } from "./aiEvolutionary.js";
 
 // (Trust / jury / evidence surfaces would be imported here when implemented)
-// import { createTrustFabricAPI } from "./aiTrustFabric.js";
-// import { createJuryFrameAPI } from "./aiJuryFrame.js";
+import { createSafetyFrameOrgan } from "./aiSafetyFrame.js";
+import { createJuryFrame } from "./aiJuryFrame.js";
 
 // ============================================================================
 //  INTERNAL HELPERS — Pulse‑Net + Chunker lanes
@@ -259,7 +291,7 @@ function buildChunkerConfig(context, db, fsAPI, routeAPI, schemaAPI, pulseNetSur
 }
 
 // ============================================================================
-//  ORGAN ASSEMBLY — v16‑IMMORTAL++ Hybrid Spine
+//  ORGAN ASSEMBLY — v24‑IMMORTAL++ Hybrid Spine
 // ============================================================================
 export function createOrgans(context, db, fsAPI, routeAPI, schemaAPI) {
   // ------------------------------------------------------------------------
@@ -286,6 +318,7 @@ export function createOrgans(context, db, fsAPI, routeAPI, schemaAPI) {
 
   // ------------------------------------------------------------------------
   // 2) CNS CHUNKER — v16 Hybrid Spine (32 lanes, Pulse‑Net aware)
+  //    (implementation can be upgraded to v24 later; interface is stable)
 // ------------------------------------------------------------------------
   const chunker = createPulseChunker(
     buildChunkerConfig(context, db, fsAPI, routeAPI, schemaAPI, pulseNetSurface)
@@ -364,7 +397,7 @@ export function createOrgans(context, db, fsAPI, routeAPI, schemaAPI) {
   const evolutionary = createEvolutionaryAPI({ context, db });
 
   // ------------------------------------------------------------------------
-  // 7) CORE ORGANS (v10.4 → v16‑IMMORTAL++)
+  // 7) CORE ORGANS (v10.4 → v24‑IMMORTAL++)
 // ------------------------------------------------------------------------
   const architect = createArchitectAPI({ context, db });
   const tourist = createTouristAPI({ context, db });

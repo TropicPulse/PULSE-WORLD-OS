@@ -112,7 +112,7 @@ export const TouristMeta = Object.freeze({
   }
 });
 
-import { Personas } from "./persona.js";
+import { Personas } from "./aiPersonality.js";
 
 function emitTouristChunkPacket(type, payload) {
   return Object.freeze({

@@ -1,5 +1,5 @@
 // ============================================================================
-//  aiEvolutionEngine.js — Pulse OS v16‑IMMORTAL++
+//  aiEvolutionEngine.js — Pulse OS v24‑IMMORTAL++
 //  Evolution Organ • Passive + Active User Evolution • Trust‑Aware • Jury‑Aware
 //  PURE META. ZERO MUTATION. ZERO RANDOMNESS.
 // ============================================================================
@@ -7,10 +7,10 @@
 /*
 AI_EXPERIENCE_META = {
   identity: "aiEvolutionEngine",
-  version: "v16-Immortal++",
+  version: "v24-Immortal++",
   layer: "ai_core",
   role: "evolution_engine",
-  lineage: "aiEvolutionEngine-v10 → v12 → v12.3-Presence → v14-Immortal → v15-OMNI → v16-Immortal++",
+  lineage: "aiEvolutionEngine-v10 → v12 → v12.3-Presence → v14-Immortal → v15-OMNI → v16-Immortal++ → v24-Immortal++",
 
   evo: {
     evolutionEngine: true,
@@ -30,7 +30,19 @@ AI_EXPERIENCE_META = {
     trustFabricAware: true,
     juryAware: true,
     arteryAware: true,
-    packetAware: true
+    packetAware: true,
+
+    // v24++ advantages
+    daemonOriented: true,
+    sealedOrganism: true,
+    portalCompatible: true,
+    bridgeCompatible: true,
+    dualMembraneAware: true,
+    worldStateAware: true,
+    personaAware: true,
+    pulseDensityAware: true,
+    gpuLaneAware: true,
+    binaryOverlayAware: true
   },
 
   contract: {
@@ -43,8 +55,8 @@ AI_EXPERIENCE_META = {
 export const EvolutionEngineMeta = Object.freeze({
   layer: "PulseAIEvolutionCortex",
   role: "EVOLUTION_ENGINE",
-  version: "16-Immortal++",
-  identity: "aiEvolutionEngine-v16-Immortal++",
+  version: "24-Immortal++",
+  identity: "aiEvolutionEngine-v24-Immortal++",
 
   evo: Object.freeze({
     driftProof: true,
@@ -88,7 +100,19 @@ export const EvolutionEngineMeta = Object.freeze({
     multiInstanceReady: true,
     readOnly: true,
 
-    epoch: "16-Immortal++"
+    // v24++ organism/kernel semantics
+    daemonOriented: true,
+    sealedOrganism: true,
+    portalCompatible: true,
+    bridgeCompatible: true,
+    dualMembraneAware: true,
+    worldStateAware: true,
+    personaAware: true,
+    pulseDensityAware: true,
+    gpuLaneAware: true,
+    binaryOverlayAware: true,
+
+    epoch: "24-Immortal++"
   }),
 
   contract: Object.freeze({
@@ -103,7 +127,9 @@ export const EvolutionEngineMeta = Object.freeze({
       "imply superiority",
       "evolve the user without explicit request",
       "modify organism state",
-      "introduce randomness"
+      "introduce randomness",
+      "portalBypass",
+      "bridgeBypass"
     ]),
 
     always: Object.freeze([
@@ -117,7 +143,11 @@ export const EvolutionEngineMeta = Object.freeze({
       "offer passive evolution",
       "offer active evolution on request",
       "stay dual-band aware without mutating bands",
-      "emit deterministic evolution packets only"
+      "emit deterministic evolution packets only",
+      "respect sealedOrganismBoundary",
+      "remain daemonCompatible",
+      "remain portalCompatible",
+      "remain bridgeCompatible"
     ])
   }),
 
@@ -181,7 +211,7 @@ export function prewarmEvolutionEngine(
   { trace = false, trustFabric = null, juryFrame = null } = {}
 ) {
   try {
-    if (trace) console.log("[aiEvolutionEngine] prewarm: starting");
+    if (trace) console.log("[aiEvolutionEngine v24] prewarm: starting");
 
     const state = Object.freeze({
       evolved: true,
@@ -208,7 +238,7 @@ export function prewarmEvolutionEngine(
 
     juryFrame?.recordEvidence?.("evolution-prewarm", packet);
 
-    if (trace) console.log("[aiEvolutionEngine] prewarm: complete");
+    if (trace) console.log("[aiEvolutionEngine v24] prewarm: complete");
     return packet;
   } catch (err) {
     const packet = emitEvolutionPacket(
@@ -226,7 +256,7 @@ export function prewarmEvolutionEngine(
 }
 
 // ============================================================================
-// CORE ENGINE OBJECT — v16‑IMMORTAL++
+// CORE ENGINE OBJECT — v24‑IMMORTAL++
 // ============================================================================
 export function createEvolutionEngine({ trustFabric = null, juryFrame = null } = {}) {
   const engine = {

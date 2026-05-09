@@ -159,7 +159,7 @@ import { PulseWorldGenome } from "./PulseWorldGenome-v20.js";
 import { createPulseCoreMemory } from "../PULSE-CORE/PulseCoreMemory-v24.js";
 
 // Binary substrate (Touch‑aware v2.x)
-import BinarySubstrateV2 from "./PulseWorldBinarySubstrate-v20.js";
+import BinarySubstrateV2 from "./PulseWorldBinarySubstrate-v24.js";
 const { packMultiOrganismPlan, packExecutionResult } = BinarySubstrateV2;
 
 // -----------------------------------------------------------------------------

@@ -166,16 +166,16 @@ import { createTouristAPI, prewarmTourist } from "./aiTourist.js";
 import { createEnvironmentAPI } from "./aiEnvironment.js";
 import { createPowerAPI } from "./aiPowerPrime.js";
 import { createEvolutionAPI } from "./aiEvolution.js";
-import { createEarnAPI } from "./aiEarn-v16.js";
+import { createEarnAPI } from "./aiEarn-v24.js";
 import { createDiagnosticsWriteAPI } from "./aiDiagnosticsWrite.js";
 
-import { createPersonaEngine } from "./persona.js";
-import { createBoundariesEngine } from "./boundaries.js";
-import { createPermissionsEngine } from "./permissions.js";
+import { createPersonaEngine } from "./aiPersonality.js";
+import { createBoundariesEngine } from "./aiBoundaries.js";
+import { createPermissionsEngine } from "./aiPermissions.js";
 import { createRouterEngine } from "./aiRouter-v16.js";
 import { createCortex } from "./aiCortex-v16.js";
 
-import { createDualBandOrganism } from "./aiDualBand-v16.js";
+import { createDualBandOrganism } from "./aiDualBand-v24.js";
 
 // Non-binary symbolic organs
 import { createDoctorAPI } from "./aiDoctorAssistant.js";
@@ -187,8 +187,8 @@ import { createClinicianAPI } from "./aiClinician.js";
 import { createEvolutionaryAPI } from "./aiEvolutionary.js";
 
 // (Future trust / jury / evidence surfaces)
-// import { createTrustFabricAPI } from "./aiTrustFabric.js";
-// import { createJuryFrameAPI } from "./aiJuryFrame.js";
+import { createSafetyFrameOrgan } from "./aiSafetyFrame.js";
+import { createJuryFrame } from "./aiJuryFrame.js";
 
 // ============================================================================
 //  INTERNAL HELPERS — Pulse‑Net + Chunker lanes

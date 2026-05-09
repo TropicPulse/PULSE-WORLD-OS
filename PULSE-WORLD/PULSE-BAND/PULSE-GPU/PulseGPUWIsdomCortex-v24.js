@@ -89,8 +89,8 @@ import {
 } from "./PulseGPUCognitiveIntelligence-v24.js";
 
 // Optional: read-only helpers from other organs (no side effects)
-import { PulseGPUGeneticMemory } from "./PulseGPUGeneticMemory.js";
-import { PulseGPUWarmPathCache } from "./PulseGPUWarmPathCache.js";
+import { PulseGPUGeneticMemory } from "./PulseGPUGeneticMemory-v24.js";
+import { PulseGPUWarmPathCache } from "./PulseGPUWarmPathCache-v24.js";
 
 // ------------------------------------------------------
 // Helpers

@@ -143,19 +143,16 @@ export const AI_EXPERIENCE_META = {
 // ============================================================
 
 import {
-  startPulseNet,
-  pulseNetIngressFromUser,
-  pulseNetFastLanePulse
-} from "../PULSE-BAND/PULSE-X/PULSE-WORLD.js";
-
-import {
   route as bridgeRoute,
   PulseProofLogger as PulseLogger,
   log,
   warn,
   error,
   startUnderstanding as PulseUnderstanding,
-  PulseBinaryOrganismBoot
+  PulseBinaryOrganismBoot,
+  startPulseNet,
+  pulseNetIngressFromUser,
+  pulseNetFastLanePulse
 } from "./_BACKEND/PULSE-WORLD-BRIDGE.js";
 
 // IMMORTAL++ organ factories
@@ -163,13 +160,13 @@ import { PulseTouchDetector } from "./_OUTERSENSES/PULSE-TOUCH-DETECTOR.js";
 import { PulseTouchWarmup } from "./_OUTERSENSES/PULSE-TOUCH-WARMUP.js";
 import { PulseTouchSecurity } from "./_OUTERSENSES/PULSE-TOUCH-SECURITY.js";
 import { PulseTouchGate } from "./_OUTERSENSES/PULSE-TOUCH-GATE.js";
-import { pulseTouchAdvantageCortex } from "./PULSE-TOUCH-ADVANTAGE-v24.js";
+import { pulseTouchAdvantageCortex } from "./_OUTERSENSES/PULSE-TOUCH-ADVANTAGE.js";
 import { PulseTouchThreatShape } from "./_OUTERSENSES/PULSE-TOUCH-THREATSHAPE.js";
 
 // Optional future‑oriented helpers (IMMORTAL++)
 import { PulseTouchPredictor } from "./_OUTERSENSES/PULSE-TOUCH-PREDICTOR.js";
 import { PulseTouchAnalytics } from "./_OUTERSENSES/PULSE-TOUCH-ANALYTICS.js";
-import { PulsePresenceOracle } from "./_OUTERSENSES/PULSE-PRESENCE-ORACLE.js";
+import { PulsePresenceOracle } from "./_OUTERSENSES/PULSE-TOUCH-PRESENCE-ORACLE.js";
 
 // ============================================================
 // CONSTANTS — COOKIE + VERSION + TIMELINE + PULSE CONFIG

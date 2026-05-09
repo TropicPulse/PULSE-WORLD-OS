@@ -158,7 +158,6 @@ export const AI_EXPERIENCE_META = {
 // ============================================================================
 
 import { onRequest } from "firebase-functions/v2/https";
-import crypto from "crypto";
 import nodemailer from "nodemailer";
 import twilio from "twilio";
 

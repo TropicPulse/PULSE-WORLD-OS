@@ -51,7 +51,7 @@ import {
   OwnerPermissions,
   JuryAIPermissions,
   PersonaCapabilityClass
-} from "./permissions.js";
+} from "./aiPermissions.js";
 
 import {
   ArchitectAIBoundaries,
@@ -60,7 +60,7 @@ import {
   NeutralAIBoundaries,
   BoundaryModes,
   selectBoundaryMode
-} from "./boundaries.js";
+} from "./aiBoundaries.js";
 
 // ============================================================================
 // META — Persona Engine (v16‑IMMORTAL++)

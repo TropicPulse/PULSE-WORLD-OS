@@ -31,7 +31,7 @@
 // ============================================================================
 
 import { PulseEvolutionaryAnimationsBaseGenomeV20 }
-  from "./PulseEvolutionaryAnimationsBaseGenome-v20.js";
+  from "./PulseEvolutionaryAnimationsGenome-v20.js";
 
 // ============================================================================
 // HELPERS — deterministic, pure

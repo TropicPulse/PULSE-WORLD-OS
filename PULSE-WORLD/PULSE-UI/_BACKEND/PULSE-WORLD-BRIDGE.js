@@ -624,6 +624,15 @@ export function fetchImageThroughBridge(url) {
     send(envelope("IMAGE_REQUEST", { requestId, url }));
   });
 }
+export function pulseNetFastLane(data = {}) {
+  trace("PULSENET_FASTLANE", data);
+  send(envelope("PULSENET_FASTLANE", data));
+}
+
+export function pulseNetIngress(data = {}) {
+  trace("PULSENET_INGRESS", data);
+  send(envelope("PULSENET_INGRESS", data));
+}
 
 // ============================================================================
 //  START UNDERSTANDING (Unified v20)
@@ -740,6 +749,8 @@ export const PulseProofBridge = {
   coreMemory: coreMemoryBridge,
   coreSpeech: coreSpeechBridge, // NEW: Core speech organ exposed to UI + adapters
   PulseNetBoot,
+  pulseNetFastLane,
+  pulseNetIngress,
   PulseBinaryOrganismBoot,
   PulseUnderstandingBoot,
   PulseBridgeStore,
