@@ -55,8 +55,7 @@ import { prewarmSDN } from "../PULSE-OS/PulseOSSDNPrewarm-v16.js";
 
 // Proxy / organism / context / front (symbolic-only, descriptive surfaces)
 import { PulseProxyOrganismMeta, createProxy } from "./PulseProxy-v20.js";
-import { PulseProofBridge as PulseProxyBridge } from "../../PULSE-UI/_BACKEND/PULSE-WORLD-BRIDGE.js";
-import { updateUserMetrics as recordUserMetrics } from "../../PULSE-UI/_MONITOR/PulseProofMonitor-v24.js";
+import { PulseProofBridge as PulseProxyBridge, updateUserMetrics as recordUserMetrics } from "../../PULSE-UI/_BACKEND/PULSE-WORLD-BRIDGE.js";
 import {
   proxyFrontRoute,
   PulseProxyFrontMeta

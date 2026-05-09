@@ -1,7 +1,7 @@
 
 /* 0. BOOT MEMBRANE — MUST BE FIRST */
 import * as PulseWindow from "../_FRONTEND/PULSE-WORLD-PORTAL.js";
-import * as PulseVitalsMonitor from "../_MONITOR/PulseProofMonitor-v24.js"
+
 function mark(label) {
   console.log("[INDEX]", label);
 }
@@ -54,7 +54,7 @@ if (!window.__PULSE_UI_INIT__) {
     ============================================================ */
     (async () => {
       try {
-        const vitals    = PulseVitalsMonitor.Vitals?.generate?.() ?? null;
+        const vitals    = window.VitalsMonitor.Vitals?.generate?.() ?? null;
         const binary    = window.PulseBinary ?? null;
         const sentience = binary?.Sentience?.snapshot?.() ?? null;
 

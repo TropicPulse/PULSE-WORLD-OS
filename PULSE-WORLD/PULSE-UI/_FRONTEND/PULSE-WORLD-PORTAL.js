@@ -99,7 +99,7 @@ AI_EXPERIENCE_META = {
 // ============================================================================
 
 
-import { route as BridgeRoute, PulseProofBridgeLogger as PulseProofLogger, PulseProofBridgeLogger as PulseProofMonitor, BridgeLog as log, BridgeWarn as warn, BridgeError as error, startUnderstanding as PulseUnderstanding, PulseBinaryOrganismBoot} from "../_BACKEND/PULSE-WORLD-BRIDGE.js";
+import { route as BridgeRoute, PulseProofBridgeLogger as PulseProofLogger, PulseProofBridgeLogger as PulseProofMonitor, BridgeLog as log, BridgeWarn as warn, BridgeError as error, startUnderstanding as PulseUnderstanding, PulseBinaryOrganismBoot, PulseProofBridgeMonitor} from "../_BACKEND/PULSE-WORLD-BRIDGE.js";
 
 import * as PulseUIErrors from "./PulseUIErrors-v24.js";
 import * as PulseUIFlow from "./PulseUIFlow-v24.js";
@@ -1061,7 +1061,6 @@ const PulsePortalAPI = Object.freeze({
 });
 
 export default PulsePortalAPI;
-
 // ============================================================================
 // GLOBAL MIRRORS — OPTIONAL, FOR NODE/SSR/TOOLS
 // ============================================================================

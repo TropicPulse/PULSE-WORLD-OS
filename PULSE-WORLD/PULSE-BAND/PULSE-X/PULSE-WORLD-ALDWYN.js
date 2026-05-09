@@ -36,7 +36,7 @@ AI_EXPERIENCE_META = {
 }
 */
 
-import { PulseProofBridgeLogger as PulseProofLogger } from "../../PULSE-UI/_BACKEND/PULSE-WORLD-BRIDGE.js";
+import { PulseProofBridgeLogger as PulseProofLogger, PulseProofBridgeMonitor as PulseVitalsMonitor } from "../../PULSE-UI/_BACKEND/PULSE-WORLD-BRIDGE.js";
 
 // ============================================================================
 //  GLOBAL MAPS
@@ -92,7 +92,6 @@ import {
 
 import { PulseUnderstanding } from "./PULSE-WORLD-UNDERSTANDING.js";
 import { PulseGovernor } from "../PULSE-OS/PulseOSGovernor.js";
-import { PulseVitalsMonitor } from "../../PULSE-UI/_MONITOR/PulseProofMonitor-v24.js";
 import { PulseBinaryTech } from "../PULSE-TECH/PulseBinaryTech-v20.js";
 
 // ============================================================================
