@@ -96,12 +96,8 @@ AI_EXPERIENCE_META = {
  */
 
 import nodemailer from "nodemailer";
-import {
-  VitalsLogger as logger,
-  error as logError,
-  warn as logWarn,
-  log as logInfo
-} from "../../PULSE-UI/_MONITOR/PulseProofLogger-v24.js";
+import { PulseProofBridgeLogger as logger, BridgeError as logError, BridgeLog as logInfo, BridgeWarn as logWarn } from "../../PULSE-UI/_BACKEND/PULSE-WORLD-BRIDGE.js";
+
 import { admin, db } from "../../PULSE-BAND/PULSE-X/PulseWorldGenome-v20.js";
 import { twilio } from "../../PULSE-BAND/PULSE-X/PulseWorldSMSAlert-v20.js";
 import {

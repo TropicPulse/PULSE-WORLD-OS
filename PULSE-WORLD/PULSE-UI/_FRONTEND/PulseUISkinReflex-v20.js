@@ -174,11 +174,10 @@ const db =
   (typeof window !== "undefined" && window.db) ||
   null;
 
-// v20 logger + bridge + organs
-import * as PulseLogger from "../_MONITOR/PulseProofLogger-v24.js";
 import {
   safeRoute as safeRouteV20,
-  safeRoute as safeRouteLegacy
+  safeRoute as safeRouteLegacy,
+  PulseProofBridgeLogger as PulseLogger
 } from "../_BACKEND/PULSE-WORLD-BRIDGE.js";
 import PulseUIErrors from "./PulseUIErrors-v24.js";
 import { getUIFlowSnapshot } from "./PulseUIFlow-v24.js";

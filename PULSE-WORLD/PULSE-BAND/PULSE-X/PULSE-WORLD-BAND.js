@@ -98,7 +98,7 @@ AI_EXPERIENCE_META = {
 
 const admin = global.db;
 const db    = global.db;
-import { VitalsLogger as logger } from "../../PULSE-UI/_MONITOR/PulseProofLogger-v24.js";
+import { PulseProofBridgeLogger as logger } from "../../PULSE-UI/_BACKEND/PULSE-WORLD-BRIDGE.js";
 import { PulseLineage } from "../PULSE-PROXY/PulseProxyBBB-v20.js";
 
 // ============================================================================

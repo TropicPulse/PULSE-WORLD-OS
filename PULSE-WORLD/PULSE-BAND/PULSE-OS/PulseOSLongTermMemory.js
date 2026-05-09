@@ -152,7 +152,7 @@ import express from "express";
 import { admin, db } from "../PULSE-X/PulseWorldGenome-v20.js";
 import { getStripe as Stripe } from "../PULSE-X/PulseWorldBank-v20.js";
 import { getTwilioClient as twilio } from "../PULSE-X/PulseWorldSMSAlert-v20.js";
-import { log, warn, error, logger } from "../../PULSE-UI/_MONITOR/PulseProofLogger-v24.js";
+import { PulseProofBridgeLogger as logger, BridgeLog as log } from "../../PULSE-UI/_BACKEND/PULSE-WORLD-BRIDGE.js";
 
 
 

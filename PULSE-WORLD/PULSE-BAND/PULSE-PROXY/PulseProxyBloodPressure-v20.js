@@ -99,9 +99,9 @@ AI_EXPERIENCE_META = {
 */
 
 import {
-  VitalsLogger as logger,
-  emitTelemetry
-} from "../../PULSE-UI/_MONITOR/PulseProofLogger-v24.js";
+  PulseProofBridgeLogger as logger,
+  PulseProofBridgeTelemetry as emitTelemetry
+} from "../../PULSE-UI/_BACKEND/PULSE-WORLD-BRIDGE.js";
 
 // ============================================================================
 //  EXPERIENCE META — AI / Agent Experience Surfaces (v20-ImmortalPlus)

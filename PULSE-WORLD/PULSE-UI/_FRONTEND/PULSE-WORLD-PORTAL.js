@@ -98,9 +98,8 @@ AI_EXPERIENCE_META = {
 // IMPORTS — PORTAL-ATTACHED ORGANS (SURFACE-SAFE)
 // ============================================================================
 
-import * as PulseLogger from "../_MONITOR/PulseProofLogger-v24.js";
-import * as PulseVitalsMonitor from "../_MONITOR/PulseProofMonitor-v24.js";
-import { route as BridgeRoute, PulseProofBridgeLogger as PulseProofLogger, BridgeLog as log, BridgeWarn as warn, BridgeError as error, startUnderstanding as PulseUnderstanding, PulseBinaryOrganismBoot} from "../_BACKEND/PULSE-WORLD-BRIDGE.js";
+
+import { route as BridgeRoute, PulseProofBridgeLogger as PulseProofLogger, PulseProofBridgeLogger as PulseProofMonitor, BridgeLog as log, BridgeWarn as warn, BridgeError as error, startUnderstanding as PulseUnderstanding, PulseBinaryOrganismBoot} from "../_BACKEND/PULSE-WORLD-BRIDGE.js";
 
 import * as PulseUIErrors from "./PulseUIErrors-v24.js";
 import * as PulseUIFlow from "./PulseUIFlow-v24.js";
@@ -722,8 +721,8 @@ if (isBrowser()) {
     window.PulsePortal = window.PulsePortal || Object.freeze({
       meta: surfaceMeta,
       env: PulseSurfaceEnvironment,
-      logger: PulseLogger,
-      vitals: PulseVitalsMonitor,
+      logger: PulseProofLogger,
+      vitals: PulseProofMonitor,
       ui: {
         errors: PulseUIErrors,
         flow: PulseUIFlow

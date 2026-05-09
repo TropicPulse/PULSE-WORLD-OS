@@ -36,7 +36,7 @@ AI_EXPERIENCE_META = {
 }
 */
 
-import { PulseProofLogger } from "../../PULSE-UI/_MONITOR/PulseProofLogger-v24.js";
+import { PulseProofBridgeLogger as PulseProofLogger } from "../../PULSE-UI/_BACKEND/PULSE-WORLD-BRIDGE.js";
 
 // ============================================================================
 //  GLOBAL MAPS
