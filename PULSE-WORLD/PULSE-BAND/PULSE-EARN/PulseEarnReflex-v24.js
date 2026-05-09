@@ -1,17 +1,17 @@
 // ============================================================================
-//  PulseEarnReflex-v16.0-Immortal-ADV.js
-//  Side-Attached Earn Reflex (v16 Immortal-ADV + Advantage‑M16 + Chunk/Prewarm)
+//  PulseEarnReflex-v24.0-Immortal-ADV-SUPERIOR.js
+//  Side-Attached Earn Reflex (v24 Immortal-ADV-SUPERIOR + Advantage‑M24 + Chunk/Prewarm + 24++ Overlays)
 //  Pure deterministic reflex builder (zero routing, zero sending, zero compute)
-//  Binary-first A-B-A + DualHash + Presence/Advantage/Chunk surfaces (metadata-only)
+//  Binary-first A-B-A + DualHash + Presence/Advantage/Chunk surfaces (metadata-only) + 24++ Reflex Profiles
 // ============================================================================
 
 /*
 AI_EXPERIENCE_META = {
   identity: "PulseEarnReflex",
-  version: "v16-Immortal-ADV",
+  version: "v24-Immortal-ADV-SUPERIOR",
   layer: "earn_reflex",
   role: "earn_reflex_arc",
-  lineage: "PulseEarnReflex-v11 → v12.3 → v13 → v14-Immortal → v16-Immortal-ADV",
+  lineage: "PulseEarnReflex-v11 → v12.3 → v13 → v14-Immortal → v16-Immortal-ADV → v24-Immortal-ADV-SUPERIOR",
 
   evo: {
     reflexArc: true,
@@ -30,7 +30,12 @@ AI_EXPERIENCE_META = {
 
     dualHash: true,
     hashIntellectField: true,
-    presenceAdvantageChunkUnified: true
+    presenceAdvantageChunkUnified: true,
+
+    // 24++ overlays
+    reflexComputeProfileAware: true,
+    reflexPressureProfileAware: true,
+    reflexTriHeartAware: true
   },
 
   contract: {
@@ -48,14 +53,14 @@ AI_EXPERIENCE_META = {
 */
 
 // ============================================================================
-// ORGAN IDENTITY — v16.0-Immortal-ADV
+// ORGAN IDENTITY — v24.0-Immortal-ADV-SUPERIOR
 // ============================================================================
 export const PulseRole = {
   type: "Reflex",
   subsystem: "PulseEarnReflex",
   layer: "B1-SubHealerReflexArc",
-  version: "16.0-Immortal-ADV",
-  identity: "PulseEarnReflex-v16.0-Immortal-ADV",
+  version: "24.0-Immortal-ADV-SUPERIOR",
+  identity: "PulseEarnReflex-v24.0-Immortal-ADV-SUPERIOR",
 
   evo: {
     driftProof: true,
@@ -91,15 +96,20 @@ export const PulseRole = {
     bandNormalizationAware: true,
 
     environmentAgnostic: true,
-    multiInstanceReady: true
+    multiInstanceReady: true,
+
+    // 24++
+    reflexComputeProfileAware: true,
+    reflexPressureProfileAware: true,
+    reflexTriHeartAware: true
   }
 };
 
 export const PulseEarnReflexMeta = Object.freeze({
   layer: "PulseEarnReflex",
   role: "EARN_REFLEX_ORGAN",
-  version: "v16.0-Immortal-ADV",
-  identity: "PulseEarnReflex-v16.0-Immortal-ADV",
+  version: "v24.0-Immortal-ADV-SUPERIOR",
+  identity: "PulseEarnReflex-v24.0-Immortal-ADV-SUPERIOR",
 
   guarantees: Object.freeze({
     deterministic: true,
@@ -133,7 +143,12 @@ export const PulseEarnReflexMeta = Object.freeze({
     zeroMutation: true,
 
     worldLensAware: false,
-    multiInstanceReady: true
+    multiInstanceReady: true,
+
+    // 24++
+    reflexComputeProfileAware: true,
+    reflexPressureProfileAware: true,
+    reflexTriHeartAware: true
   }),
 
   contract: Object.freeze({
@@ -152,7 +167,10 @@ export const PulseEarnReflexMeta = Object.freeze({
       "ReflexAdvantageField",
       "ReflexChunkPrewarmPlan",
       "ReflexBandBinaryWave",
-      "ReflexDualHashField"
+      "ReflexDualHashField",
+      "ReflexComputeProfile",
+      "ReflexPressureProfile",
+      "ReflexTriHeartField"
     ]
   })
 });
@@ -183,13 +201,17 @@ const reflexHealing = {
 
   lastReflexSignature: null,
   lastDualHashField: null,
-  lastHashIntellectSignature: null
+  lastHashIntellectSignature: null,
+
+  // 24++ overlays
+  lastReflexComputeProfile: null,
+  lastReflexPressureProfile: null,
+  lastReflexTriHeartField: null
 };
 
 // ============================================================================
 // HELPERS
 // ============================================================================
-
 function computeHash(str) {
   let h = 0;
   const s = String(str || "");
@@ -254,7 +276,7 @@ function getReflexId(event, pulse) {
 }
 
 // ============================================================================
-// A-B-A BINARY + WAVE (v16 Immortal-ADV)
+// A-B-A BINARY + WAVE (v24 Immortal-ADV-SUPERIOR)
 // ============================================================================
 function buildReflexBandBinaryWave(event, pulse, reflexId, cycleIndex, device) {
   const band = normalizeBand(
@@ -274,8 +296,8 @@ function buildReflexBandBinaryWave(event, pulse, reflexId, cycleIndex, device) {
   const surface = pulseLen + organLen + reasonLen + gpuScore + bandwidth + cycleIndex;
 
   const binaryField = {
-    binaryReflexSignature: computeHash(`BREFLEX16::${reflexId}::${surface}`),
-    binarySurfaceSignature: computeHash(`BSURF_RFX16::${surface}`),
+    binaryReflexSignature: computeHash(`BREFLEX24::${reflexId}::${surface}`),
+    binarySurfaceSignature: computeHash(`BSURF_RFX24::${surface}`),
     binarySurface: {
       pulseLen,
       organLen,
@@ -298,7 +320,7 @@ function buildReflexBandBinaryWave(event, pulse, reflexId, cycleIndex, device) {
     mode: band === "binary" ? "compression-wave" : "symbolic-wave"
   };
 
-  const bandSignature = computeHash(`BAND::REFLEX16::${band}::${cycleIndex}`);
+  const bandSignature = computeHash(`BAND::REFLEX24::${band}::${cycleIndex}`);
 
   reflexHealing.lastBand = band;
   reflexHealing.lastBandSignature = bandSignature;
@@ -309,7 +331,7 @@ function buildReflexBandBinaryWave(event, pulse, reflexId, cycleIndex, device) {
 }
 
 // ============================================================================
-// PRESENCE FIELD (v16 Immortal-ADV)
+// PRESENCE FIELD (v24 Immortal-ADV-SUPERIOR)
 // ============================================================================
 function buildPresenceField(event, pulse, device, cycleIndex) {
   const organLen = String(getOrgan(event)).length;
@@ -326,12 +348,12 @@ function buildPresenceField(event, pulse, device, cycleIndex) {
   const presenceBand = normalizeBand(device?.presenceBand || device?.band || "symbolic");
 
   const presenceSignatureBase =
-    `RFX_PRESENCE_V16::${presenceTier}::${organLen}::${reasonLen}::${pulseLen}::${cycleIndex}::${presenceBand}`;
+    `RFX_PRESENCE_V24::${presenceTier}::${organLen}::${reasonLen}::${pulseLen}::${cycleIndex}::${presenceBand}`;
   const presenceHash = computeHash(presenceSignatureBase);
   const presenceIntellect = computeHashIntelligence(presenceSignatureBase);
 
   const presenceField = {
-    presenceVersion: "v16.0-Immortal-ADV",
+    presenceVersion: "v24.0-Immortal-ADV-SUPERIOR",
     presenceTier,
     presenceBand,
     organLen,
@@ -348,7 +370,7 @@ function buildPresenceField(event, pulse, device, cycleIndex) {
 }
 
 // ============================================================================
-// ADVANTAGE‑M16 FIELD (structural-only, richer surface)
+// ADVANTAGE‑M24 FIELD (structural-only, richer surface)
 // ============================================================================
 function buildAdvantageField(event, pulse, device, bandPack, presenceField) {
   const gpuScore = device?.gpuScore || 0;
@@ -371,7 +393,7 @@ function buildAdvantageField(event, pulse, device, bandPack, presenceField) {
     (presenceTier === "presence_high" ? 0.01 : 0);
 
   const advantageField = {
-    advantageVersion: "M-16.0-REFLEX",
+    advantageVersion: "M-24.0-REFLEX",
     band: bandPack.band,
     presenceBand: presenceField.presenceBand,
     gpuScore,
@@ -390,7 +412,7 @@ function buildAdvantageField(event, pulse, device, bandPack, presenceField) {
 }
 
 // ============================================================================
-// CHUNK / CACHE / PREWARM PLAN (v16-AdvantageM)
+// CHUNK / CACHE / PREWARM PLAN (v24-AdvantageM)
 // ============================================================================
 function buildChunkPrewarmPlan(event, pulse, device, presenceField, advantageField) {
   let priorityLabel = "normal";
@@ -409,7 +431,7 @@ function buildChunkPrewarmPlan(event, pulse, device, presenceField, advantageFie
     (device?.chunkField?.prewarmSlots ?? 0) * 3;
 
   const chunkPrewarmPlan = {
-    planVersion: "v16.0-AdvantageM-Reflex",
+    planVersion: "v24.0-AdvantageM-Reflex",
     priorityLabel,
     bandPresence: presenceField.presenceTier,
     planSurface,
@@ -436,7 +458,85 @@ function buildChunkPrewarmPlan(event, pulse, device, presenceField, advantageFie
 }
 
 // ============================================================================
-// REFLEX ORGANISM BUILDER (v16)
+// 24++ REFLEX PROFILES (Compute / Pressure / Tri‑Heart)
+// ============================================================================
+function buildReflexComputeProfile(reflexId, bandPack, presenceField, advantageField) {
+  const density = bandPack.binaryField.density;
+  const amplitude = bandPack.waveField.amplitude;
+
+  let computeTier = "reflex_tier_low";
+  const magnitude = density + amplitude;
+  if (magnitude >= 800) computeTier = "reflex_tier_ultra";
+  else if (magnitude >= 400) computeTier = "reflex_tier_high";
+  else if (magnitude >= 150) computeTier = "reflex_tier_mid";
+
+  const profile = {
+    profileVersion: "REFLEX-COMPUTE-24++",
+    reflexId,
+    band: bandPack.band,
+    binaryDensity: density,
+    waveAmplitude: amplitude,
+    presenceTier: presenceField.presenceTier,
+    advantageScore: advantageField.advantageScore,
+    computeTier
+  };
+
+  reflexHealing.lastReflexComputeProfile = profile;
+  return profile;
+}
+
+function buildReflexPressureProfile(presenceField, advantageField) {
+  const magnitude =
+    (presenceField.organLen || 0) +
+    (presenceField.reasonLen || 0) +
+    (presenceField.pulseLen || 0) +
+    (advantageField.advantageScore || 0) * 1000;
+
+  let pressureTier = "reflex_pressure_idle";
+  if (magnitude >= 300) pressureTier = "reflex_pressure_critical";
+  else if (magnitude >= 200) pressureTier = "reflex_pressure_high";
+  else if (magnitude >= 80) pressureTier = "reflex_pressure_elevated";
+  else if (magnitude > 0) pressureTier = "reflex_pressure_soft";
+
+  const profile = {
+    profileVersion: "REFLEX-PRESSURE-24++",
+    pressureTier,
+    presenceTier: presenceField.presenceTier,
+    organLen: presenceField.organLen,
+    reasonLen: presenceField.reasonLen,
+    pulseLen: presenceField.pulseLen,
+    advantageScore: advantageField.advantageScore
+  };
+
+  reflexHealing.lastReflexPressureProfile = profile;
+  return profile;
+}
+
+function buildTriHeartField(presenceField, advantageField) {
+  const tri = {
+    triHeartVersion: "REFLEX-TRI-24++",
+    liveness: {
+      alive: true,
+      presenceTier: presenceField.presenceTier
+    },
+    advantage: {
+      advantageTier: advantageField.advantageScore > 0 ? 1 : 0,
+      advantageScore: advantageField.advantageScore
+    },
+    speed: {
+      contractionSpeedTier: presenceField.presenceTier
+    },
+    presence: {
+      presenceTier: presenceField.presenceTier
+    }
+  };
+
+  reflexHealing.lastReflexTriHeartField = tri;
+  return tri;
+}
+
+// ============================================================================
+// REFLEX ORGANISM BUILDER (v24)
 // ============================================================================
 function buildReflexEarn(event, pulse, instanceContext) {
   const pulseId = getPulseId(pulse);
@@ -450,8 +550,8 @@ function buildReflexEarn(event, pulse, instanceContext) {
   return {
     EarnRole: {
       kind: "EarnReflex",
-      version: "16.0-Immortal-ADV",
-      identity: "EarnReflex-v16.0-Immortal-ADV"
+      version: "24.0-Immortal-ADV-SUPERIOR",
+      identity: "EarnReflex-v24.0-Immortal-ADV-SUPERIOR"
     },
 
     jobId: pulseId,
@@ -478,7 +578,7 @@ function buildReflexEarn(event, pulse, instanceContext) {
 
     meta: {
       reflex: true,
-      origin: "PulseEarnReflex-v16.0-Immortal-ADV",
+      origin: "PulseEarnReflex-v24.0-Immortal-ADV-SUPERIOR",
       sourceOrgan: organ,
       sourceReason: reason,
       sourcePulseId: pulseId,
@@ -491,22 +591,30 @@ function buildReflexEarn(event, pulse, instanceContext) {
 }
 
 // ============================================================================
-// REFLEX SIGNATURE + DUALHASH FIELD
+// REFLEX SIGNATURE + DUALHASH FIELD (v24)
 // ============================================================================
 function buildReflexSignatures(reflexId, presenceField, bandPack, advantageField) {
-  const base =
-    `${reflexId}::${presenceField.presenceTier}::${bandPack.band}::${advantageField.advantageScore}`;
-  const dual = buildDualHashSignature("REFLEX16", base);
+  const intelPayload = {
+    reflexId,
+    presenceTier: presenceField.presenceTier,
+    band: bandPack.band,
+    advantageScore: advantageField.advantageScore
+  };
 
-  const reflexSignature = dual.primary;
-  const hashIntellectSignature = dual.intellect;
+  const classicString =
+    `REFLEX24::${reflexId}::${presenceField.presenceTier}::${bandPack.band}`;
+
+  const dual = buildDualHashSignature("REFLEX24", intelPayload, classicString);
+
+  const reflexSignature = dual.classic;
+  const hashIntellectSignature = dual.intel;
 
   const dualHashField = {
-    label: "REFLEX16",
-    basePayload: base,
-    primarySignature: dual.primary,
-    intellectSignature: dual.intellect,
-    buildDualHashSignaturenature: dual.buildDualHashSignaturenature
+    label: "REFLEX24",
+    intelPayload,
+    classicString,
+    reflexSignature,
+    hashIntellectSignature
   };
 
   reflexHealing.lastReflexSignature = reflexSignature;
@@ -517,7 +625,7 @@ function buildReflexSignatures(reflexId, presenceField, bandPack, advantageField
 }
 
 // ============================================================================
-// PUBLIC API — FULL v16 Immortal-ADV REFLEX
+// PUBLIC API — FULL v24 Immortal-ADV-SUPERIOR REFLEX
 // ============================================================================
 export const PulseEarnReflex = {
 
@@ -582,6 +690,23 @@ export const PulseEarnReflex = {
     const { reflexSignature, dualHashField, hashIntellectSignature } =
       buildReflexSignatures(reflexId, presenceField, bandPack, advantageField);
 
+    const reflexComputeProfile = buildReflexComputeProfile(
+      reflexId,
+      bandPack,
+      presenceField,
+      advantageField
+    );
+
+    const reflexPressureProfile = buildReflexPressureProfile(
+      presenceField,
+      advantageField
+    );
+
+    const reflexTriHeartField = buildTriHeartField(
+      presenceField,
+      advantageField
+    );
+
     const diagnostics = {
       reflexId,
       pulseId: getPulseId(pulse),
@@ -603,7 +728,11 @@ export const PulseEarnReflex = {
 
       dualHashField,
       reflexSignature,
-      hashIntellectSignature
+      hashIntellectSignature,
+
+      reflexComputeProfile,
+      reflexPressureProfile,
+      reflexTriHeartField
     };
 
     return {
@@ -622,6 +751,9 @@ export const PulseEarnReflex = {
       presenceField,
       advantageField,
       chunkPrewarmPlan,
+      reflexComputeProfile,
+      reflexPressureProfile,
+      reflexTriHeartField,
       earnReflex
     };
   },

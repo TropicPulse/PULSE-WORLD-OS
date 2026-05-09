@@ -1,16 +1,17 @@
 // ============================================================================
-// FILE: PulseEarnChunker-v24.js
-// [pulse:earn] CHUNKER LAYER — v24‑IMMORTAL‑INTEL++‑THROUGHPUT‑SUBSTRATE
+// FILE: PulseEarnChunker-v24-IMMORTAL-INTEL++-UPGRADED.js
+// [pulse:earn] CHUNKER LAYER — v24‑IMMORTAL‑INTEL++‑THROUGHPUT‑SUBSTRATE‑24++
 // ----------------------------------------------------------------------------
 // ROLE:
 //   • Consume Earn v24 signal‑factoring surfaces and turn them into EXECUTION plans.
 //   • Redefine throughput by aligning chunks with GPU lanes, warps, memory bursts.
 //   • Operate at the lowest possible software layer without touching firmware.
 //   • Deterministic, drift‑proof, multi‑instance safe, metadata‑only (no routing).
+//   • Expose full INTEL dual‑hash surfaces + healing diagnostics for observability.
 // ----------------------------------------------------------------------------
 // SAFETY CONTRACT (IMMORTAL v24‑INTEL):
 //   • No payload mutation beyond page.meta / page.flags / page.runtime (optional).
-//   • No routing influence (metadata only; routers MAY read but not obey).
+//   • No routing influence (metadata only; routers MAY read but MUST NOT obey).
 //   • No randomness, no timestamps, no async, no network, no filesystem.
 //   • Zero side‑effects outside page.meta / page.flags / page.runtime.
 //   • Deterministic‑field: identical input → identical output.
@@ -19,10 +20,10 @@
 /*
 AI_EXPERIENCE_META = {
   identity: "PulseEarnChunker",
-  version: "v24-IMMORTAL-INTEL++",
-  layer: "earn",
+  version: "v24-IMMORTAL-INTEL++-24PLUS",
+  layer: "earn_chunker",
   role: "earn_chunker_throughput_engine",
-  lineage: "PulseEarnChunker-v16 → v20 → v24-IMMORTAL-INTEL++",
+  lineage: "PulseEarnChunker-v16 → v20 → v24-IMMORTAL-INTEL++ → v24-IMMORTAL-INTEL++-24PLUS",
 
   evo: {
     chunkerEngine: true,
@@ -69,9 +70,83 @@ AI_EXPERIENCE_META = {
     baseShapeAware: true,
     baseFormulaKeyAware: true,
     patternMatchSurface: true
+  },
+
+  contract: {
+    input: [
+      "EarnPageEnvelope",
+      "EarnSignalFactoring",
+      "DeviceProfileContext"
+    ],
+    output: [
+      "EarnPageEnvelopeWithChunker",
+      "ChunkerExecutionEnvelope",
+      "ChunkerHealingState",
+      "ChunkerSignatures"
+    ]
   }
-}
+};
 */
+
+// ============================================================================
+// PUBLIC META — PulseEarnChunkerMeta (v24-IMMORTAL-INTEL++-24PLUS)
+// ============================================================================
+export const PulseEarnChunkerMeta = Object.freeze({
+  layer: "PulseEarnChunker",
+  role: "EARN_CHUNKER_THROUGHPUT_ENGINE",
+  version: "v24-IMMORTAL-INTEL++-24PLUS",
+  identity: "PulseEarnChunker-v24-IMMORTAL-INTEL++-24PLUS",
+
+  guarantees: Object.freeze({
+    deterministic: true,
+    deterministicField: true,
+    driftProof: true,
+    noRandomness: true,
+    noRealTime: true,
+    noExternalIO: true,
+
+    zeroNetwork: true,
+    zeroFilesystem: true,
+    zeroAsync: true,
+    zeroEval: true,
+    zeroUserCode: true,
+    zeroDynamicImports: true,
+    zeroRoutingInfluence: true,
+    zeroMutationOutsidePageMetaFlagsRuntime: true,
+
+    dualBandAware: true,
+    binaryAware: true,
+    waveFieldAware: true,
+    healingMetadataAware: true,
+
+    chunkAware: true,
+    prewarmAware: true,
+    cacheAware: true,
+    throughputAware: true,
+
+    intelSignatureAware: true,
+    dualHashAware: true,
+    structureAware: true,
+    contextAware: true,
+
+    multiInstanceReady: true,
+    worldLensAware: false
+  }),
+
+  contract: Object.freeze({
+    input: [
+      "EarnPageEnvelope",
+      "EarnSignalFactoring",
+      "DeviceProfileContext"
+    ],
+    output: [
+      "EarnPageEnvelopeWithChunker",
+      "ChunkerExecutionEnvelope",
+      "ChunkerHealingState",
+      "ChunkerSignatures"
+    ]
+  })
+});
 
 // ============================================================================
 // HASH / GENERIC HELPERS — v24 IMMORTAL
@@ -119,6 +194,56 @@ function clamp01(v) {
 function safeNumber(v, fallback = 0) {
   const n = Number(v);
   return Number.isFinite(n) ? n : fallback;
+}
+
+function normalizeBand(band) {
+  const b = String(band || "symbolic").toLowerCase();
+  return b === "binary" ? "binary" : "symbolic";
+}
+
+// ============================================================================
+// HEALING METADATA — Chunker Health / Throughput Log (v24-IMMORTAL-INTEL++-24PLUS)
+// ============================================================================
+const chunkerHealing = {
+  cycleCount: 0,
+
+  lastPageId: null,
+  lastMarketplaceId: null,
+  lastJobId: null,
+
+  lastBand: "symbolic",
+  lastBandSignatureIntel: null,
+  lastBandSignatureClassic: null,
+
+  lastThroughputClass: null,
+  lastThroughputScore: null,
+
+  lastWarpSize: null,
+  lastLaneGroups: null,
+  lastGpuLaneCount: null,
+  lastGpuLaneUtilization: null,
+
+  lastCacheTier: null,
+  lastPlanTier: null,
+  lastBurstSize: null,
+
+  lastExecutionSignatureIntel: null,
+  lastExecutionSignatureClassic: null,
+
+  lastAdvantageScore: null,
+  lastPlanScore: null,
+  lastBinaryDensity: null,
+  lastWaveAmplitude: null,
+
+  lastChunkPlanVersion: null,
+  lastChunkPlanPriority: null,
+
+  lastFactoringProfileKind: null,
+  lastFactoringProfileHash: null
+};
+
+export function getPulseEarnChunkerHealingState() {
+  return { ...chunkerHealing };
 }
 
 // ============================================================================
@@ -179,7 +304,7 @@ function buildChunkExecutionEnvelope({
   factoringProfile,
   deviceProfile
 }) {
-  const band = bandPack?.band || "symbolic";
+  const band = normalizeBand(bandPack?.band || "symbolic");
 
   const gpuLaneCount =
     safeNumber(deviceProfile?.gpuLaneCount ??
@@ -192,7 +317,10 @@ function buildChunkExecutionEnvelope({
             0);
 
   const warpSize = deriveWarpSizeFromBand(band);
-  const laneGroups = deriveLaneGroupCount(gpuLaneCount, advantageField?.advantageTier ?? 0);
+  const laneGroups = deriveLaneGroupCount(
+    gpuLaneCount,
+    advantageField?.advantageTier ?? 0
+  );
 
   const cacheTier = chunkPlan.cacheTier || "cold";
   const planTier  = chunkPlan.planTier  || "plan_low";
@@ -234,6 +362,14 @@ function buildChunkExecutionEnvelope({
     cacheFactoringProfile: !!chunkPlan.cache?.factoringProfile
   };
 
+  const factoringProfileKind = factoringProfile?.kind || "unknown";
+  const factoringProfileHash = computeHash(
+    JSON.stringify({
+      kind: factoringProfileKind,
+      tier: factoringProfile?.tier || null
+    })
+  );
+
   const intelPayload = {
     band,
     gpuWarpPlan,
@@ -244,7 +380,8 @@ function buildChunkExecutionEnvelope({
     planTier,
     planScore: chunkPlan?.planScore ?? 0,
     density,
-    amplitude
+    amplitude,
+    factoringProfileKind
   };
 
   const classicString =
@@ -254,13 +391,45 @@ function buildChunkExecutionEnvelope({
     `::LANES:${gpuLaneCount}` +
     `::THR:${throughput.cls}` +
     `::PTIER:${planTier}` +
-    `::CTIER:${cacheTier}`;
+    `::CTIER:${cacheTier}` +
+    `::FPK:${factoringProfileKind}`;
 
   const sig = buildDualHashSignature(
     "EARN_CHUNK_EXECUTION_ENVELOPE_v24",
     intelPayload,
     classicString
   );
+
+  // Healing update
+  chunkerHealing.lastBand = band;
+  chunkerHealing.lastBandSignatureIntel = sig.intel;
+  chunkerHealing.lastBandSignatureClassic = sig.classic;
+
+  chunkerHealing.lastThroughputClass = throughput.cls;
+  chunkerHealing.lastThroughputScore = throughput.score;
+
+  chunkerHealing.lastWarpSize = warpSize;
+  chunkerHealing.lastLaneGroups = laneGroups;
+  chunkerHealing.lastGpuLaneCount = gpuLaneCount;
+  chunkerHealing.lastGpuLaneUtilization = gpuLaneUtilization;
+
+  chunkerHealing.lastCacheTier = cacheTier;
+  chunkerHealing.lastPlanTier = planTier;
+  chunkerHealing.lastBurstSize = burstSize;
+
+  chunkerHealing.lastExecutionSignatureIntel = sig.intel;
+  chunkerHealing.lastExecutionSignatureClassic = sig.classic;
+
+  chunkerHealing.lastAdvantageScore = safeNumber(advantageField?.advantageScore ?? 0, 0);
+  chunkerHealing.lastPlanScore = safeNumber(chunkPlan?.planScore ?? 0, 0);
+  chunkerHealing.lastBinaryDensity = density;
+  chunkerHealing.lastWaveAmplitude = amplitude;
+
+  chunkerHealing.lastChunkPlanVersion = chunkPlan.planVersion || null;
+  chunkerHealing.lastChunkPlanPriority = chunkPlan.priorityLabel || null;
+
+  chunkerHealing.lastFactoringProfileKind = factoringProfileKind;
+  chunkerHealing.lastFactoringProfileHash = factoringProfileHash;
 
   return {
     version: "v24-IMMORTAL-INTEL-EARN-CHUNKER",
@@ -276,14 +445,16 @@ function buildChunkExecutionEnvelope({
 }
 
 // ============================================================================
-// CORE API — applyEarnChunker (v24‑IMMORTAL‑INTEL++)
+// CORE API — applyEarnChunker (v24‑IMMORTAL‑INTEL++‑24PLUS)
 // ============================================================================
 
 export function applyEarnChunker(page, context = {}) {
   if (!page) return page;
 
-  page.meta   = page.meta   || {};
-  page.flags  = page.flags  || {};
+  chunkerHealing.cycleCount++;
+
+  page.meta    = page.meta    || {};
+  page.flags   = page.flags   || {};
   page.runtime = page.runtime || {}; // optional runtime envelope
 
   const esf = page.meta.earnSignalFactoring;
@@ -292,9 +463,9 @@ export function applyEarnChunker(page, context = {}) {
     return page;
   }
 
-  const chunkPlan       = esf.chunkPrewarmPlan || null;
-  const advantageField  = esf.advantageField   || null;
-  const bandPack        = esf.bandBinaryWave   || null;
+  const chunkPlan        = esf.chunkPrewarmPlan || null;
+  const advantageField   = esf.advantageField   || null;
+  const bandPack         = esf.bandBinaryWave   || null;
   const factoringProfile = esf.profile || page.flags.earn_factoring_profile || null;
 
   if (!chunkPlan || !advantageField || !bandPack || !factoringProfile) {
@@ -303,6 +474,15 @@ export function applyEarnChunker(page, context = {}) {
   }
 
   const deviceProfile = context.deviceProfile || {};
+
+  // Optional identity surfaces for healing
+  const pageId = page.id || page.meta.pageId || null;
+  const jobId = page.meta.jobId || null;
+  const marketplaceId = page.meta.marketplaceId || null;
+
+  chunkerHealing.lastPageId = pageId;
+  chunkerHealing.lastJobId = jobId;
+  chunkerHealing.lastMarketplaceId = marketplaceId;
 
   const executionEnvelope = buildChunkExecutionEnvelope({
     chunkPlan,

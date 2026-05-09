@@ -1,81 +1,71 @@
 // ============================================================================
-// FILE: tropic-pulse-functions/PULSE-WORLD/PULSE-EARN/PulseEarnSkeletalSystem-v16-IMMORTAL-MAX.js
-// LAYER: THE SKELETAL SYSTEM + VITAL SIGNS MONITOR (v16-IMMORTAL-MAX A-B-A-INTEL)
-// ROLE: Deterministic Device Phenotype + Structural Limits + Physiological Baselines
-//       + Presence Field + Chunk/Cache/Prewarm + Advantage‑M Surfaces
-//       + Dual-Hash INTEL Signatures + Device Lineage + Compatibility Surfaces
-// ============================================================================
-//
-// ROLE (v16-IMMORTAL-MAX):
-//   THE SKELETAL SYSTEM — Pulse‑Earn’s structural capacity declaration.
-//   • CPU cores = bone density (deterministic)
-//   • Memory = marrow capacity (deterministic)
-//   • GPU = muscular fiber potential (deterministic)
-//
-//   THE VITAL SIGNS MONITOR — Pulse‑Earn’s physiological baseline.
-//   • Bandwidth = circulatory throughput (deterministic)
-//   • Stability = organism homeostasis (deterministic)
-//
-//   PRESENCE + A-B-A DUAL-BAND EXTENSION (v16):
-//   • band = symbolic | binary (phenotype-declared, binary-first capable)
-//   • presenceBand = organism presence field hint
-//   • binaryField = deterministic binary surface
-//   • waveField = deterministic wave surface
-//   • chunkField = deterministic chunk/cache/prewarm budget surface
-//   • advantageField = Advantage‑M skeletal surface (gpu/bw/presence/chunk)
-//   • buildDualHashSignature = INTEL dual-hash signature for every major surface
-//
-// PURPOSE (v16-IMMORTAL-MAX):
-//   • Provide deterministic, drift‑proof device profiling.
-//   • Guarantee safe capability declaration.
-//   • Supply Survival Instincts + Reflex + Earn + PulseSend with:
-//       - phenotype
-//       - presence
-//       - chunk/cache/prewarm
-//       - skeletal Advantage‑M field
-//       - compatibility surfaces (muscle / nervous / lymph / endocrine / embassy)
-//   • Emit pattern + signature surfaces for v16‑IMMORTAL diagnostics.
+//  PulseEarnSkeletalSystem-v24-Superior-Immortal.js
+//  THE SKELETAL SYSTEM (v24-Superior-Immortal + Advantage‑M + Compatibility‑C)
+//  Deterministic Capability Engine + Phenotype Passport + Intel Dual-Hash Surfaces
+//  A‑B‑A Band/Binary/Wave + Presence + Advantage + Compatibility (24++ IMMORTAL)
 // ============================================================================
 
 /*
 AI_EXPERIENCE_META = {
   identity: "PulseEarnSkeletalSystem",
-  version: "v16-Immortal-MAX",
+  version: "v24-Superior-Immortal",
   layer: "earn_skeletal",
-  role: "earn_structural_support",
-  lineage: "PulseEarnSkeletalSystem-v10.4 → v11-Evo → v13.1-Presence-Immortal-ADV → v16-Immortal-MAX",
+  role: "earn_skeletal_capability_engine",
+  lineage: "PulseEarnSkeletalSystem-v9 → v10 → v11 → v11-Evo → v12.3-Presence → v13.0-Presence-Immortal → v13.1-Presence-Immortal-ADV → v16-Immortal-MAX → v24-Superior-Immortal",
 
   evo: {
     skeletalSystem: true,
-    structuralSupport: true,
-    jobFramework: true,
+    capabilityEngine: true,
+    phenotypePassport: true,
+    structuralLimits: true,
+    physiologicalBaselines: true,
+
     dualBand: true,
     symbolicPrimary: true,
     binaryAware: true,
+    waveFieldAware: true,
+
+    presenceField: true,
+    advantageField: true,
+    compatibilityField: true,
+    chunkCachePrewarmField: true,
 
     deterministic: true,
+    deterministicPhenotype: true,
+    deterministicStructuralLimits: true,
+    deterministicPhysiologicalBaselines: true,
+    deterministicPresenceField: true,
+    deterministicAdvantageField: true,
+    deterministicCompatibilityField: true,
+
     driftProof: true,
     pureCompute: true,
     zeroNetwork: true,
     zeroFilesystem: true,
     zeroMutationOfInput: true,
+    zeroAsync: true,
+    zeroRandomness: true,
+    zeroAI: true,
+    zeroUserCode: true,
+    zeroDynamicImports: true,
+    zeroEval: true,
+    zeroCrypto: true,
+    zeroHardwareProbing: true,
+    zeroOSInspection: true,
 
-    dualHashIntel: true,
-    extendedPhenotypeSurfaces: true,
-    extendedPresenceSurfaces: true,
-    extendedAdvantageSurfaces: true,
-    extendedChunkSurfaces: true,
-    compatibilitySurfaces: true
+    intelHashAware: true,
+    dualHashAware: true,
+    compatibilitySurfaces: true,
+    healingMetadataAware: true
   },
 
   contract: {
     always: [
-      "PulseEarnMuscleSystem",
       "PulseEarnNervousSystem",
-      "PulseEarnHeart",
+      "PulseEarnMuscleSystem",
+      "PulseEarnReflexRouter",
       "PulseEarnLymphNodes",
-      "PulseEarnEndocrineSystem",
-      "PulseEarnMktEmbassyLedger"
+      "PulseEarnEndocrineSystem"
     ],
     never: [
       "safeRoute",
@@ -88,8 +78,8 @@ AI_EXPERIENCE_META = {
 export const PulseEarnSkeletalSystemMeta = Object.freeze({
   layer: "PulseEarnSkeletalSystem",
   role: "EARN_SKELETAL_ORGAN",
-  version: "v16-Immortal-MAX",
-  identity: "PulseEarnSkeletalSystem-v16-Immortal-MAX",
+  version: "v24-Superior-Immortal",
+  identity: "PulseEarnSkeletalSystem-v24-Superior-Immortal",
 
   guarantees: Object.freeze({
     deterministic: true,
@@ -129,13 +119,14 @@ export const PulseEarnSkeletalSystemMeta = Object.freeze({
     gpuFieldAware: true,
     advantageFieldAware: true,
 
+    // Compatibility + intel
+    compatibilityFieldAware: true,
+    dualHashIntel: true,
+    compatibilitySurfaces: true,
+
     // Environment
     worldLensAware: false,
-    multiInstanceReady: true,
-
-    // v16 INTEL
-    dualHashIntel: true,
-    compatibilitySurfaces: true
+    multiInstanceReady: true
   }),
 
   contract: Object.freeze({
@@ -157,8 +148,8 @@ export const PulseEarnSkeletalSystemMeta = Object.freeze({
   }),
 
   lineage: Object.freeze({
-    root: "PulseOS-v16-Immortal",
-    parent: "PulseEarn-v16-Immortal",
+    root: "PulseOS-v24-Superior-Immortal",
+    parent: "PulseEarn-v24-Superior-Immortal",
     ancestry: [
       "PulseEarnSkeletalSystem-v9",
       "PulseEarnSkeletalSystem-v10",
@@ -166,7 +157,8 @@ export const PulseEarnSkeletalSystemMeta = Object.freeze({
       "PulseEarnSkeletalSystem-v11-Evo",
       "PulseEarnSkeletalSystem-v12.3-Presence",
       "PulseEarnSkeletalSystem-v13.0-Presence-Immortal",
-      "PulseEarnSkeletalSystem-v13.1-Presence-Immortal-ADV"
+      "PulseEarnSkeletalSystem-v13.1-Presence-Immortal-ADV",
+      "PulseEarnSkeletalSystem-v16-Immortal-MAX"
     ]
   }),
 
@@ -215,7 +207,7 @@ const skeletalHealing = {
   lastCompatibilityField: null,
   lastCompatibilitySignature: null,
 
-  // v16 dual-hash INTEL surfaces
+  // v24 dual-hash INTEL surfaces
   lastPhenotypeIntelSig: null,
   lastStructuralIntelSig: null,
   lastPhysIntelSig: null,
@@ -234,7 +226,7 @@ const skeletalHealing = {
 };
 
 // ---------------------------------------------------------------------------
-// Deterministic Hash Helpers — v16-IMMORTAL-MAX
+// Deterministic Hash Helpers — v24-SUPERIOR-IMMORTAL
 // ---------------------------------------------------------------------------
 
 function computeHash(str) {
@@ -284,18 +276,18 @@ function normalizePresenceBand(presenceBand) {
 }
 
 // ---------------------------------------------------------------------------
-// Deterministic Phenotype — v16-IMMORTAL-MAX
+// Deterministic Phenotype — v24-SUPERIOR-IMMORTAL
 // Still no hardware probing; phenotype is deterministic and override‑only.
 // ---------------------------------------------------------------------------
 let phenotype = {
-  id: "DEVICE-16-IMMORTAL-MAX",
+  id: "DEVICE-24-SUPERIOR-IMMORTAL",
 
   // Structural capacity (skeletal system)
   cpuCores: 12,
   memoryMB: 32768,
 
   // Muscular potential
-  gpuModel: "deterministic-gpu-v16",
+  gpuModel: "deterministic-gpu-v24",
   vramMB: 8192,
   gpuScore: 1600,
 
@@ -312,7 +304,7 @@ let phenotype = {
   cacheLines: 256,
   prewarmSlots: 16,
 
-  // Extended v16 capability envelope
+  // Extended v24 capability envelope
   maxConcurrentJobs: 4,
   maxMarketplaceStreams: 3,
   maxReflexDepth: 2,
@@ -445,7 +437,7 @@ function buildPresenceField(p, cycleIndex) {
     cycleIndex;
 
   return {
-    presenceVersion: "v16-IMMORTAL-MAX",
+    presenceVersion: "v24-Superior-Immortal",
     presenceBand,
     presenceSignature: computeHash(
       `PRES_FIELD::${presenceBand}::${chunkBudget}::${cacheLines}::${prewarmSlots}::${surface}`
@@ -461,7 +453,7 @@ function buildPresenceField(p, cycleIndex) {
 }
 
 // ---------------------------------------------------------------------------
-// INTERNAL: Advantage‑M Skeletal Field (v16-IMMORTAL-MAX)
+// INTERNAL: Advantage‑M Skeletal Field (v24-SUPERIOR-IMMORTAL)
 // ---------------------------------------------------------------------------
 function buildSkeletalAdvantageField(p, presenceField, binaryField, waveField) {
   const gpuScore = p.gpuScore || 0;
@@ -485,7 +477,7 @@ function buildSkeletalAdvantageField(p, presenceField, binaryField, waveField) {
     (presenceTier === "presence_high" ? 0.01 : 0);
 
   const advantageField = {
-    advantageVersion: "M-SKELETAL-16",
+    advantageVersion: "M-SKELETAL-24-SUPERIOR",
     band: normalizeBand(p.band),
     presenceBand: presenceField.presenceBand,
     gpuScore,
@@ -503,7 +495,7 @@ function buildSkeletalAdvantageField(p, presenceField, binaryField, waveField) {
     `ADV_SKEL::${gpuScore}::${bandwidth}::${density}::${amplitude}::${chunkBudget}::${cacheLines}::${prewarmSlots}::${presenceTier}`
   );
 
-  const intelSig = buildDualHashSignature("SKELETAL_ADVANTAGE_V16", {
+  const intelSig = buildDualHashSignature("SKELETAL_ADVANTAGE_V24_SUP", {
     gpuScore,
     bandwidth,
     density,
@@ -523,7 +515,7 @@ function buildSkeletalAdvantageField(p, presenceField, binaryField, waveField) {
 }
 
 // ---------------------------------------------------------------------------
-// INTERNAL: Compatibility Field (v16-IMMORTAL-MAX)
+// INTERNAL: Compatibility Field (v24-SUPERIOR-IMMORTAL)
 // ---------------------------------------------------------------------------
 //
 // This exposes how well this skeletal phenotype can cooperate with:
@@ -564,7 +556,7 @@ function buildSkeletalCompatibilityField(p, advantageField) {
     (advantageField.presenceTier === "presence_high" ? 0.01 : 0);
 
   const compatibilityField = {
-    compatibilityVersion: "SKELETAL_COMPAT_V16",
+    compatibilityVersion: "SKELETAL_COMPAT_V24_SUP",
     muscleAffinity,
     nervousAffinity,
     lymphAffinity,
@@ -576,7 +568,7 @@ function buildSkeletalCompatibilityField(p, advantageField) {
     `COMP_SKEL::${muscleAffinity.toFixed(6)}::${nervousAffinity.toFixed(6)}::${lymphAffinity.toFixed(6)}::${endocrineAffinity.toFixed(6)}::${embassyAffinity.toFixed(6)}`
   );
 
-  const intelSig = buildDualHashSignature("SKELETAL_COMPAT_V16", {
+  const intelSig = buildDualHashSignature("SKELETAL_COMPAT_V24_SUP", {
     muscleAffinity,
     nervousAffinity,
     lymphAffinity,
@@ -593,7 +585,7 @@ function buildSkeletalCompatibilityField(p, advantageField) {
 
 // ---------------------------------------------------------------------------
 // MAIN EXPORT — getPulseEarnDeviceProfile()
-// Phenotype Passport + Structural Identity + Advantage‑M + Compatibility (v16)
+// Phenotype Passport + Structural Identity + Advantage‑M + Compatibility (v24)
 // ---------------------------------------------------------------------------
 export function getPulseEarnDeviceProfile() {
   skeletalHealing.cycleCount++;
@@ -615,7 +607,7 @@ export function getPulseEarnDeviceProfile() {
   const { compatibilityField, compatibilitySignature, compatibilityIntelSig } =
     buildSkeletalCompatibilityField(phenotype, advantageField);
 
-  const phenotypeIntelSig = buildDualHashSignature("SKELETAL_PHENOTYPE_V16", {
+  const phenotypeIntelSig = buildDualHashSignature("SKELETAL_PHENOTYPE_V24_SUP", {
     cpuCores: phenotype.cpuCores,
     memoryMB: phenotype.memoryMB,
     gpuScore: phenotype.gpuScore,
@@ -625,18 +617,18 @@ export function getPulseEarnDeviceProfile() {
     presenceBand: presenceField.presenceBand
   });
 
-  const structuralIntelSig = buildDualHashSignature("SKELETAL_STRUCT_V16", {
+  const structuralIntelSig = buildDualHashSignature("SKELETAL_STRUCT_V24_SUP", {
     cpuCores: phenotype.cpuCores,
     memoryMB: phenotype.memoryMB,
     gpuScore: phenotype.gpuScore
   });
 
-  const physIntelSig = buildDualHashSignature("SKELETAL_PHYS_V16", {
+  const physIntelSig = buildDualHashSignature("SKELETAL_PHYS_V24_SUP", {
     bandwidthMbps: phenotype.bandwidthMbps,
     stabilityScore: phenotype.stabilityScore
   });
 
-  const presenceIntelSig = buildDualHashSignature("SKELETAL_PRESENCE_V16", {
+  const presenceIntelSig = buildDualHashSignature("SKELETAL_PRESENCE_V24_SUP", {
     presenceBand: presenceField.presenceBand,
     chunkBudgetKB: presenceField.chunkField.chunkBudgetKB,
     cacheLines: presenceField.chunkField.cacheLines,
@@ -668,12 +660,12 @@ export function getPulseEarnDeviceProfile() {
     presenceBand: presenceField.presenceBand,
     presenceSignature,
 
-    // v16 signatures
+    // v24 signatures
     structuralSignature,
     physiologicalSignature,
     phenotypeSignature,
 
-    // v16 pattern surface
+    // v24 pattern surface
     devicePattern,
 
     // A-B-A binary + wave surfaces
@@ -699,7 +691,7 @@ export function getPulseEarnDeviceProfile() {
     maxReflexDepth: phenotype.maxReflexDepth,
     maxPulseSendConcurrency: phenotype.maxPulseSendConcurrency,
 
-    // v16 INTEL surfaces
+    // v24 INTEL surfaces
     phenotypeIntelSig,
     structuralIntelSig,
     physIntelSig,
@@ -737,7 +729,7 @@ export function getPulseEarnDeviceProfile() {
 }
 
 // ---------------------------------------------------------------------------
-// Export Healing Metadata — Phenotype Health Report (v16-IMMORTAL-MAX)
+// Export Healing Metadata — Phenotype Health Report (v24-SUPERIOR-IMMORTAL)
 // ---------------------------------------------------------------------------
 export function getPulseEarnSkeletalHealingState() {
   return { ...skeletalHealing };

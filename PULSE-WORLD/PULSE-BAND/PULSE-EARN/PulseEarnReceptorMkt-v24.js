@@ -1,35 +1,28 @@
 // ============================================================================
-// FILE: tropic-pulse-functions/PULSE-WORLD/PULSE-EARN/PulseEarnReceptor-v16-IMMORTAL-INTEL.js
+// FILE: tropic-pulse-functions/PULSE-WORLD/PULSE-EARN/PulseEarnReceptor-v24-IMMORTAL-INTEL-SUPERIOR.js
 // LAYER: THE STANDARD RECEPTOR (Marketplace Protocol + Universal Adapter)
-// PULSE EARN — v16-IMMORTAL-INTEL A‑B‑A + DualHash + Presence + Advantage + Chunk
+// PULSE EARN — v24-IMMORTAL-INTEL-SUPERIOR A‑B‑A + DualHash + Presence + Advantage + Chunk + 24++ Overlays
 // ============================================================================
 //
-// ROLE (v16-IMMORTAL-INTEL):
+// ROLE (v24-IMMORTAL-INTEL-SUPERIOR):
 //   THE STANDARD RECEPTOR — Pulse‑Earn’s canonical marketplace interface.
 //   • Deterministic sensory receptor for marketplace signals.
 //   • Pure adapter: ping(), fetchJobs(), submitResult(), normalizeJob().
 //   • Configurable receptor DNA (no network).
 //   • Emits receptorPattern, receptorSignature(+Intel), endpointSignature(+Intel).
-//   • Emits unified v16 presence/advantage/chunk surfaces.
+//   • Emits unified v24 presence/advantage/chunk surfaces.
 //   • Emits A‑B‑A bandSignature(+Intel) + binaryField + waveField.
 //   • Dual‑hash signatures: classic + intel for core surfaces.
-//
-// CONTRACT (v16-IMMORTAL-INTEL):
-//   • PURE RECEPTOR — deterministic, drift‑proof.
-//   • NO async, NO network, NO randomness, NO timestamps.
-//   • NO eval(), NO Function(), NO dynamic imports.
-//   • READ‑ONLY except deterministic config override.
-//   • NEVER mutate job objects.
-//   • Unified Earn v16 presence/advantage/chunk schema.
+//   • 24++: receptorComputeProfile + receptorPressureProfile + Tri‑Heart overlays.
 // ============================================================================
 
 /*
 AI_EXPERIENCE_META = {
   identity: "PulseEarnReceptorMkt",
-  version: "v16-IMMORTAL-INTEL",
+  version: "v24-IMMORTAL-INTEL-SUPERIOR",
   layer: "earn_receptor",
   role: "earn_market_receptor",
-  lineage: "PulseEarnReceptorMkt-v11 → v12.3 → v13.0-Presence-Immortal → v16-IMMORTAL-INTEL",
+  lineage: "PulseEarnReceptorMkt-v11 → v12.3 → v13.0-Presence-Immortal → v16-IMMORTAL-INTEL → v24-IMMORTAL-INTEL-SUPERIOR",
 
   evo: {
     receptor: true,
@@ -56,7 +49,12 @@ AI_EXPERIENCE_META = {
     intelSignatureAware: true,
     dualHashAware: true,
     structureAware: true,
-    contextAware: true
+    contextAware: true,
+
+    // 24++ overlays
+    computeProfileAware: true,
+    pressureProfileAware: true,
+    triHeartAware: true
   },
 
   contract: {
@@ -76,8 +74,8 @@ AI_EXPERIENCE_META = {
 export const PulseEarnReceptorMeta = Object.freeze({
   layer: "PulseEarnReceptor",
   role: "EARN_STANDARD_RECEPTOR",
-  version: "v16-IMMORTAL-INTEL",
-  identity: "PulseEarnReceptor-v16-IMMORTAL-INTEL",
+  version: "v24-IMMORTAL-INTEL-SUPERIOR",
+  identity: "PulseEarnReceptor-v24-IMMORTAL-INTEL-SUPERIOR",
 
   guarantees: Object.freeze({
     deterministic: true,
@@ -103,7 +101,12 @@ export const PulseEarnReceptorMeta = Object.freeze({
     zeroAI: true,
     zeroUserCode: true,
     deterministicConfigOverride: true,
-    neverMutateJobObjects: true
+    neverMutateJobObjects: true,
+
+    // 24++ overlays
+    computeProfileAware: true,
+    pressureProfileAware: true,
+    triHeartAware: true
   }),
 
   contract: Object.freeze({
@@ -120,7 +123,10 @@ export const PulseEarnReceptorMeta = Object.freeze({
       "ReceptorSubmissionResult",
       "ReceptorNormalizationResult",
       "ReceptorSignatures",
-      "ReceptorHealingState"
+      "ReceptorHealingState",
+      "ReceptorComputeProfile",
+      "ReceptorPressureProfile",
+      "ReceptorTriHeartField"
     ]
   })
 });
@@ -146,7 +152,7 @@ let receptorConfig = {
 let receptorCycle = 0;
 
 // ============================================================================
-// HASH HELPERS — v16 IMMORTAL INTEL
+// HASH HELPERS — v24 IMMORTAL INTEL SUPERIOR
 // ============================================================================
 
 function computeHash(str) {
@@ -191,7 +197,7 @@ function normalizeBand(b) {
 }
 
 // ============================================================================
-// Unified v16 Presence Field
+// Unified v24 Presence Field (24++)
 // ============================================================================
 function classifyPresenceTier(pressure) {
   if (pressure >= 150) return "critical";
@@ -222,7 +228,7 @@ function buildPresenceField(globalHints = {}, cycle) {
 
   const intelPayload = {
     kind: "receptorPresence",
-    version: "v16-IMMORTAL-INTEL",
+    version: "v24-IMMORTAL-INTEL-SUPERIOR",
     presenceTier,
     meshPressureIndex,
     castleLoadLevel,
@@ -234,10 +240,10 @@ function buildPresenceField(globalHints = {}, cycle) {
   const classicString =
     `RECEPTOR_PRESENCE::${presenceTier}::${meshPressureIndex}::${castleLoadLevel}`;
 
-  const sig = buildDualHashSignature("RECEPTOR_PRESENCE", intelPayload, classicString);
+  const sig = buildDualHashSignature("RECEPTOR_PRESENCE_V24", intelPayload, classicString);
 
   return {
-    presenceVersion: "v16-IMMORTAL-INTEL",
+    presenceVersion: "v24-IMMORTAL-INTEL-SUPERIOR",
     presenceTier,
 
     bandPresence: ghP.bandPresence || normalizeBand(receptorConfig.band),
@@ -263,7 +269,7 @@ function buildPresenceField(globalHints = {}, cycle) {
 }
 
 // ============================================================================
-// Advantage‑C v16
+// Advantage‑C v24 (24++)
 // ============================================================================
 function buildAdvantageField(bandPack, presenceField, globalHints = {}) {
   const density = bandPack.binaryField.binarySurface.density;
@@ -291,7 +297,7 @@ function buildAdvantageField(bandPack, presenceField, globalHints = {}) {
 
   const intelPayload = {
     kind: "receptorAdvantage",
-    version: "C-16.0",
+    version: "C-24.0",
     density,
     amplitude,
     presenceTier: presenceField.presenceTier,
@@ -303,10 +309,10 @@ function buildAdvantageField(bandPack, presenceField, globalHints = {}) {
   const classicString =
     `RECEPTOR_ADVANTAGE::${presenceField.presenceTier}::${advantageTier}`;
 
-  const sig = buildDualHashSignature("RECEPTOR_ADVANTAGE", intelPayload, classicString);
+  const sig = buildDualHashSignature("RECEPTOR_ADVANTAGE_V24", intelPayload, classicString);
 
   return {
-    advantageVersion: "C-16.0",
+    advantageVersion: "C-24.0",
     advantageScore,
     advantageTier,
     fallbackBandLevel,
@@ -316,7 +322,7 @@ function buildAdvantageField(bandPack, presenceField, globalHints = {}) {
 }
 
 // ============================================================================
-// Chunk / Cache / Prewarm Plan v16
+// Chunk / Cache / Prewarm Plan v24 (24++)
 // ============================================================================
 function buildChunkPrewarmPlan(presenceField, advantageField) {
   const basePriority =
@@ -339,7 +345,7 @@ function buildChunkPrewarmPlan(presenceField, advantageField) {
 
   const intelPayload = {
     kind: "receptorChunkPlan",
-    version: "v16-StandardReceptor-AdvantageC",
+    version: "v24-StandardReceptor-AdvantageC",
     priority,
     presenceTier: presenceField.presenceTier,
     advantageTier: advantageField.advantageTier
@@ -348,10 +354,10 @@ function buildChunkPrewarmPlan(presenceField, advantageField) {
   const classicString =
     `RECEPTOR_CHUNK_PLAN::${presenceField.presenceTier}::${priority}`;
 
-  const sig = buildDualHashSignature("RECEPTOR_CHUNK_PLAN", intelPayload, classicString);
+  const sig = buildDualHashSignature("RECEPTOR_CHUNK_PLAN_V24", intelPayload, classicString);
 
   return {
-    planVersion: "v16-StandardReceptor-AdvantageC",
+    planVersion: "v24-StandardReceptor-AdvantageC",
     priority,
     band: presenceField.presenceTier,
     chunks: {
@@ -372,7 +378,7 @@ function buildChunkPrewarmPlan(presenceField, advantageField) {
 }
 
 // ============================================================================
-// A‑B‑A Binary + Wave Surfaces (v16)
+// A‑B‑A Binary + Wave Surfaces (v24)
 // ============================================================================
 function buildBinaryField(cfg, cycle) {
   const patternLen =
@@ -397,7 +403,7 @@ function buildBinaryField(cfg, cycle) {
   };
 
   const classicString = `BRECEPTOR::${surface}`;
-  const sig = buildDualHashSignature("RECEPTOR_BIN", intelPayload, classicString);
+  const sig = buildDualHashSignature("RECEPTOR_BIN_V24", intelPayload, classicString);
 
   return {
     binaryPhenotypeSignatureIntel: sig.intel,
@@ -431,7 +437,7 @@ function buildWaveField(cfg, cycle, band) {
   };
 
   const classicString = `RECEPTOR_WAVE::${b}::AMP::${amplitude}`;
-  const sig = buildDualHashSignature("RECEPTOR_WAVE", intelPayload, classicString);
+  const sig = buildDualHashSignature("RECEPTOR_WAVE_V24", intelPayload, classicString);
 
   return {
     wavePhenotypeSignatureIntel: sig.intel,
@@ -441,6 +447,72 @@ function buildWaveField(cfg, cycle, band) {
     phase,
     band: b,
     mode: b === "binary" ? "compression-wave" : "symbolic-wave"
+  };
+}
+
+// ============================================================================
+// 24++ Receptor Compute Profile + Pressure Profile + Tri‑Heart
+// ============================================================================
+function buildReceptorComputeProfile(cfg, bandPack) {
+  const jobCount = Array.isArray(cfg.endpoints.jobs) ? cfg.endpoints.jobs.length : 0;
+  const healthScore = cfg.healthScore || 1;
+
+  const computeTier =
+    jobCount >= 64 ? "tier_ultra" :
+    jobCount >= 32 ? "tier_high" :
+    jobCount >= 8 ? "tier_mid" :
+    "tier_low";
+
+  return {
+    profileVersion: "RECEPTOR-COMPUTE-24++",
+    routeBand: bandPack.band,
+    jobCount,
+    healthScore,
+    computeTier,
+    binaryDensity: bandPack.binaryField.binarySurface.density,
+    waveAmplitude: bandPack.waveField.amplitude
+  };
+}
+
+function buildReceptorPressureProfile(presenceField, advantageField) {
+  const magnitude =
+    (presenceField.meshPressureIndex || 0) +
+    (presenceField.castleLoadLevel || 0) +
+    (advantageField.advantageScore || 0) * 1000;
+
+  let pressureTier = "pressure_idle";
+  if (magnitude >= 300) pressureTier = "pressure_critical";
+  else if (magnitude >= 200) pressureTier = "pressure_high";
+  else if (magnitude >= 80) pressureTier = "pressure_elevated";
+  else if (magnitude > 0) pressureTier = "pressure_soft";
+
+  return {
+    profileVersion: "RECEPTOR-PRESSURE-24++",
+    pressureTier,
+    presenceTier: presenceField.presenceTier,
+    meshPressureIndex: presenceField.meshPressureIndex || 0,
+    castleLoadLevel: presenceField.castleLoadLevel || 0,
+    advantageTier: advantageField.advantageTier
+  };
+}
+
+function buildTriHeartField(presenceField, advantageField) {
+  return {
+    triHeartVersion: "RECEPTOR-TRI-24++",
+    liveness: {
+      alive: true,
+      presenceTier: presenceField.presenceTier
+    },
+    advantage: {
+      advantageTier: advantageField.advantageTier,
+      advantageScore: advantageField.advantageScore
+    },
+    speed: {
+      contractionSpeedTier: presenceField.presenceTier
+    },
+    presence: {
+      presenceTier: presenceField.presenceTier
+    }
   };
 }
 
@@ -533,7 +605,7 @@ export function configurePulseEarnReceptor(config) {
 }
 
 // ============================================================================
-// normalizeJob — strict unified v16 job schema
+// normalizeJob — strict unified v24 job schema
 // ============================================================================
 function normalizeJob(raw, globalHints = {}) {
   if (!raw || typeof raw !== "object") {
@@ -609,7 +681,7 @@ function normalizeJob(raw, globalHints = {}) {
     _abaBinaryDensity: binaryField.binarySurface.density,
     _abaWaveAmplitude: waveField.amplitude,
 
-    // Unified v16 presence/advantage/chunk
+    // Unified v24 presence/advantage/chunk
     presenceField,
     advantageField,
     chunkPlan
@@ -618,7 +690,7 @@ function normalizeJob(raw, globalHints = {}) {
 
 // ============================================================================
 // Sensory Functions — ping(), fetchJobs(), submitResult()
-// PURE deterministic behavior, unified v16 presence surfaces.
+// PURE deterministic behavior, unified v24 presence surfaces + 24++ overlays.
 // ============================================================================
 function ping(globalHints = {}) {
   receptorCycle++;
@@ -644,15 +716,18 @@ function ping(globalHints = {}) {
   );
 
   const chunkPlan = buildChunkPrewarmPlan(presenceField, advantageField);
+  const computeProfile = buildReceptorComputeProfile(receptorConfig, { band, binaryField, waveField });
+  const pressureProfile = buildReceptorPressureProfile(presenceField, advantageField);
+  const triHeartField = buildTriHeartField(presenceField, advantageField);
 
   const sig = buildDualHashSignature(
-    "RECEPTOR_PING",
+    "RECEPTOR_PING_V24",
     { latency, cycleIndex: receptorCycle, receptorId: receptorConfig.id },
     `PING::${latency}::${receptorConfig.id}::CYCLE::${receptorCycle}`
   );
 
   const bandSig = buildDualHashSignature(
-    "RECEPTOR_BAND",
+    "RECEPTOR_BAND_V24",
     { band, receptorId: receptorConfig.id },
     `BAND::${band}::${receptorConfig.id}`
   );
@@ -668,7 +743,10 @@ function ping(globalHints = {}) {
     waveField,
     presenceField,
     advantageField,
-    chunkPlan
+    chunkPlan,
+    receptorComputeProfile: computeProfile,
+    receptorPressureProfile: pressureProfile,
+    receptorTriHeartField: triHeartField
   };
 }
 
@@ -694,15 +772,18 @@ function fetchJobs(globalHints = {}) {
   );
 
   const chunkPlan = buildChunkPrewarmPlan(presenceField, advantageField);
+  const computeProfile = buildReceptorComputeProfile(receptorConfig, { band, binaryField, waveField });
+  const pressureProfile = buildReceptorPressureProfile(presenceField, advantageField);
+  const triHeartField = buildTriHeartField(presenceField, advantageField);
 
   const sig = buildDualHashSignature(
-    "RECEPTOR_FETCH",
+    "RECEPTOR_FETCH_V24",
     { count: normalizedJobs.length, cycleIndex: receptorCycle, receptorId: receptorConfig.id },
     `JOBS::${normalizedJobs.length}::${receptorConfig.id}::CYCLE::${receptorCycle}`
   );
 
   const bandSig = buildDualHashSignature(
-    "RECEPTOR_BAND",
+    "RECEPTOR_BAND_V24",
     { band, receptorId: receptorConfig.id },
     `BAND::${band}::${receptorConfig.id}`
   );
@@ -718,7 +799,10 @@ function fetchJobs(globalHints = {}) {
     waveField,
     presenceField,
     advantageField,
-    chunkPlan
+    chunkPlan,
+    receptorComputeProfile: computeProfile,
+    receptorPressureProfile: pressureProfile,
+    receptorTriHeartField: triHeartField
   };
 }
 
@@ -737,16 +821,19 @@ function submitResult(job, result, globalHints = {}) {
   );
 
   const chunkPlan = buildChunkPrewarmPlan(presenceField, advantageField);
+  const computeProfile = buildReceptorComputeProfile(receptorConfig, { band, binaryField, waveField });
+  const pressureProfile = buildReceptorPressureProfile(presenceField, advantageField);
+  const triHeartField = buildTriHeartField(presenceField, advantageField);
 
   if (!job || !job.id) {
     const sig = buildDualHashSignature(
-      "RECEPTOR_SUBMIT",
+      "RECEPTOR_SUBMIT_V24",
       { jobId: null, cycleIndex: receptorCycle, receptorId: receptorConfig.id, ok: false },
       `SUBMIT::NONE::INVALID::${receptorConfig.id}::CYCLE::${receptorCycle}`
     );
 
     const bandSig = buildDualHashSignature(
-      "RECEPTOR_BAND",
+      "RECEPTOR_BAND_V24",
       { band, receptorId: receptorConfig.id },
       `BAND::${band}::${receptorConfig.id}`
     );
@@ -763,20 +850,23 @@ function submitResult(job, result, globalHints = {}) {
       waveField,
       presenceField,
       advantageField,
-      chunkPlan
+      chunkPlan,
+      receptorComputeProfile: computeProfile,
+      receptorPressureProfile: pressureProfile,
+      receptorTriHeartField: triHeartField
     };
   }
 
   const status = receptorConfig.endpoints.submitStatus;
 
   const sig = buildDualHashSignature(
-    "RECEPTOR_SUBMIT",
+    "RECEPTOR_SUBMIT_V24",
     { jobId: job.id, cycleIndex: receptorCycle, receptorId: receptorConfig.id, status },
     `SUBMIT::${job.id}::${status}::${receptorConfig.id}::CYCLE::${receptorCycle}`
   );
 
   const bandSig = buildDualHashSignature(
-    "RECEPTOR_BAND",
+    "RECEPTOR_BAND_V24",
     { band, receptorId: receptorConfig.id },
     `BAND::${band}::${receptorConfig.id}`
   );
@@ -795,12 +885,15 @@ function submitResult(job, result, globalHints = {}) {
     waveField,
     presenceField,
     advantageField,
-    chunkPlan
+    chunkPlan,
+    receptorComputeProfile: computeProfile,
+    receptorPressureProfile: pressureProfile,
+    receptorTriHeartField: triHeartField
   };
 }
 
 // ============================================================================
-// PUBLIC EXPORT — PulseEarnReceptor v16-IMMORTAL-INTEL A‑B‑A
+// PUBLIC EXPORT — PulseEarnReceptor v24-IMMORTAL-INTEL-SUPERIOR A‑B‑A
 // ============================================================================
 export const PulseEarnReceptor = {
   id: () => receptorConfig.id,
@@ -839,6 +932,9 @@ export const PulseEarnReceptor = {
     );
 
     const chunkPlan = buildChunkPrewarmPlan(presenceField, advantageField);
+    const computeProfile = buildReceptorComputeProfile(receptorConfig, { band, binaryField, waveField });
+    const pressureProfile = buildReceptorPressureProfile(presenceField, advantageField);
+    const triHeartField = buildTriHeartField(presenceField, advantageField);
 
     return {
       id: receptorConfig.id,
@@ -865,7 +961,10 @@ export const PulseEarnReceptor = {
 
       presenceField,
       advantageField,
-      chunkPlan
+      chunkPlan,
+      receptorComputeProfile: computeProfile,
+      receptorPressureProfile: pressureProfile,
+      receptorTriHeartField: triHeartField
     };
   }
 };

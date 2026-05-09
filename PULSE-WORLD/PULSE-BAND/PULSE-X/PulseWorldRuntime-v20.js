@@ -142,7 +142,7 @@ export const PulseRuntimeV17Meta = Object.freeze({
 // -----------------------------------------------------------------------------
 
 // World / Regioning (Expansion)
-import * as PulseWorldRegioning from "../PULSE-EXPANSION/PulseExpansion-v16.js";
+import * as PulseWorldRegioning from "../PULSE-EXPANSION/PulseExpansion-v24.js";
 
 // Delta Engine (CoreMemory integrations)
 import * as PulseContinuance from "../PULSE-FINALITY/PULSE-CONTINUANCE/PulseContinuance-v20.js";

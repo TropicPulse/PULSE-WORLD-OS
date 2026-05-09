@@ -117,10 +117,10 @@ AI_EXPERIENCE_META = {
 
 // --- CORE EARN ORGAN --------------------------------------------------------
 // --- BIOLOGICAL EARN ORGANS -----------------------------------------------
-import * as PulseEarnHeart from "./PulseEarnHeart.js";
-import * as PulseEarnCirculatorySystem from "./PulseEarnCirculatorySystem.js";
-import * as PulseEarnEndocrineSystem   from "./PulseEarnEndocrineSystem.js";
-import * as PulseEarnImmuneSystem      from "./PulseEarnImmuneSystem.js";
+import * as PulseEarnHeart from "./PulseEarnHeart-v24.js";
+import * as PulseEarnCirculatorySystem from "./PulseEarnCirculatorySystem-v24.js";
+import * as PulseEarnEndocrineSystem   from "./PulseEarnEndocrineSystem-v24.js";
+import * as PulseEarnImmuneSystem      from "./PulseEarnImmuneSystem-v24.js";
 import * as PulseEarnMetabolism        from "./PulseEarnMetabolism.js";
 import * as PulseEarnNervousSystem     from "./PulseEarnNervousSystem.js";
 import * as PulseEarnSkeletalSystem    from "./PulseEarnSkeletalSystem.js";

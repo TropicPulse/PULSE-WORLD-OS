@@ -1,51 +1,67 @@
 // ============================================================================
-//  PULSE OS v12.3‑PRESENCE‑EVO+ — POWER‑PRIME RISK ENGINE
-//  Predictive Risk Vector • Artery Fusion • Drift‑Aware • Deterministic
+//  PULSE OS v24‑IMMORTAL‑ORGANISM — POWER‑PRIME RISK ENGINE
+//  Predictive Risk Vector • Artery Fusion • Drift‑Aware • Mesh / Proxy‑Aware
 //  Presence • Advantage • Fallback Bands • Chunk/Cache/Prewarm Hints
 //  PURE COMPUTE. ZERO MUTATION. ZERO RANDOMNESS. ZERO I/O.
 // ============================================================================
 /*
 AI_EXPERIENCE_META = {
   identity: "powerRiskEngine",
-  version: "v14-Immortal",
+  version: "v24-Immortal-ORGANISM",
   layer: "pulsegrid_compute",
   role: "risk_compute_engine",
-  lineage: "PowerPrime-v14",
+  lineage: "PowerPrime-v14 → PowerRiskEngine-v12.3 → PowerRiskEngine-v24-Immortal-ORGANISM",
 
   evo: {
-    riskEngine: true,               // Computes risk vectors
-    arteryFusion: true,             // Fuses artery signals
-    outageLikelihood: true,         // Predicts outage probability
-    driftRisk: true,                // Computes drift risk
-    continuanceAware: true,         // Integrates continuance metrics
-    advantageAware: true,           // Integrates advantage context
+    riskEngine: true,
+    arteryFusion: true,
+    outageLikelihood: true,
+    driftRisk: true,
+    continuanceAware: true,
+    advantageAware: true,
 
-    deterministic: true,            // Pure math, no randomness
-    driftProof: true,               // Outputs must never drift
-    pureCompute: true,              // No side effects
-    zeroMutationOfInput: true,      // Never mutate incoming data
-    zeroNetwork: true,              // No fetch, no external calls
-    zeroFilesystem: true,           // No disk access
-    zeroAsync: true,                // Fully synchronous
-    binarySafe: true,               // Safe for binary artery inputs
-    symbolicSafe: true,             // Safe for symbolic inputs
-    dualBandAware: true,            // Accepts both, but does not generate symbolic AI output
+    deterministic: true,
+    driftProof: true,
+    pureCompute: true,
+    zeroMutationOfInput: true,
+    zeroNetwork: true,
+    zeroFilesystem: true,
+    zeroAsync: true,
+    binarySafe: true,
+    symbolicSafe: true,
+    dualBandAware: true,
 
-    safeRouteFree: true             // Must never use safeRoute
+    presenceAware: true,
+    bandPresenceAware: true,
+    routerPresenceAware: true,
+    fallbackBandAware: true,
+    chunkAware: true,
+    cacheAware: true,
+    prewarmAware: true,
+    coldStartAware: true,
+
+    meshAware: true,
+    meshPressureAware: true,
+    proxyAware: true,
+    proxyPressureAware: true,
+    proxyFallbackAware: true,
+    proxyBoostAware: true
   },
 
   contract: {
     always: [
-      "powerContinuanceEngine",     // Risk engine depends on continuance metrics
-      "aiPowerPrime"                // AI organ consumes risk vectors
+      "powerContinuanceEngine",
+      "aiPowerPrime",
+      "PulseWorldCore",
+      "PulseUser"
     ],
     never: [
       "legacyRiskEngine",
       "safeRoute",
       "fetchViaCNS",
-      "aiInference",                // No AI allowed inside compute engine
-      "meshAwareness",              // Not a mesh organ
-      "presenceAwareness"           // Not a presence organ
+      "aiInference",
+      "meshRouting",
+      "networkIO"
     ]
   }
 }
@@ -54,8 +70,8 @@ AI_EXPERIENCE_META = {
 export const PowerRiskEngineMeta = Object.freeze({
   layer: "PulseAIPowerPrime",
   role: "POWER_RISK_ENGINE",
-  version: "12.3-Presence-Evo+",
-  identity: "powerRiskEngine-v12.3-Presence-Evo+",
+  version: "v24-Immortal-ORGANISM",
+  identity: "powerRiskEngine-v24-Immortal-ORGANISM",
 
   evo: Object.freeze({
     deterministic: true,
@@ -77,8 +93,13 @@ export const PowerRiskEngineMeta = Object.freeze({
     cacheAware: true,
     prewarmAware: true,
     coldStartAware: true,
-    readOnly: true,
-    epoch: "12.3-Presence-Evo+"
+    meshAware: true,
+    meshPressureAware: true,
+    proxyAware: true,
+    proxyPressureAware: true,
+    proxyFallbackAware: true,
+    proxyBoostAware: true,
+    epoch: "v24-Immortal-ORGANISM"
   }),
 
   guarantees: Object.freeze({
@@ -98,7 +119,9 @@ export const PowerRiskEngineMeta = Object.freeze({
       "FusedArteriesSnapshot",
       "ContinuanceSnapshot",
       "PresenceContext",
-      "AdvantageContext"
+      "AdvantageContext",
+      "MeshContext",
+      "ProxyContext"
     ],
     output: [
       "PowerRiskVector",
@@ -204,9 +227,7 @@ export function computePowerRiskVector({
   const latest = power?.[0] || null;
   const fused = fuseArteryWeights(fusedArteries);
 
-  // --------------------------------------------------------------------------
   // 1. GRID INSTABILITY SCORE (history-based)
-  // --------------------------------------------------------------------------
   let instability = 0;
   if (Array.isArray(history) && history.length > 3) {
     let jumps = 0;
@@ -221,9 +242,7 @@ export function computePowerRiskVector({
     instability = norm(jumps / history.length);
   }
 
-  // --------------------------------------------------------------------------
   // 2. OUTAGE‑LIKELIHOOD SCORE (predictive)
-// --------------------------------------------------------------------------
   const outageLikelihood = norm(
     0.4 * instability +
       0.2 * fused.metabolicPressure +
@@ -231,9 +250,7 @@ export function computePowerRiskVector({
       0.2 * fused.pipelinePressure
   );
 
-  // --------------------------------------------------------------------------
   // 3. DRIFT‑RISK SCORE (schema + file + route + scanner)
-  // --------------------------------------------------------------------------
   const driftRisk = norm(
     0.25 * fused.scannerDrift +
       0.25 * fused.evolutionSchemaDrift +
@@ -241,9 +258,7 @@ export function computePowerRiskVector({
       0.25 * fused.evolutionRouteDrift
   );
 
-  // --------------------------------------------------------------------------
   // 4. ORGANISM PRESSURE SCORE (metabolic + nervous + pipeline + immune)
-  // --------------------------------------------------------------------------
   const organismPressure = norm(
     0.3 * fused.metabolicPressure +
       0.25 * fused.routingPressure +
@@ -251,29 +266,21 @@ export function computePowerRiskVector({
       0.2 * fused.immuneRisk
   );
 
-  // --------------------------------------------------------------------------
   // 5. HORMONE‑MODULATED RISK (stress ↑, stability ↓)
-  // --------------------------------------------------------------------------
   const hormoneMod = norm(
     0.6 * fused.hormoneStress + 0.4 * (1 - fused.hormoneStability)
   );
 
-  // --------------------------------------------------------------------------
   // 6. MEMORY‑STABILITY MODULATION (unstable memory increases risk)
-  // --------------------------------------------------------------------------
   const memoryMod = norm(
     0.5 * (1 - fused.memoryStability) + 0.5 * fused.memoryDrift
   );
 
-  // --------------------------------------------------------------------------
   // 7. CONTINUANCE‑AWARE RISK (low continuance → higher risk)
-  // --------------------------------------------------------------------------
   const cont = continuance?.continuanceScore ?? 0;
   const continuanceMod = norm(1 - cont);
 
-  // --------------------------------------------------------------------------
   // 8. FINAL POWER‑RISK SCORE (weighted fusion)
-  // --------------------------------------------------------------------------
   const riskScore = norm(
     0.25 * organismPressure +
       0.2 * outageLikelihood +
@@ -370,8 +377,7 @@ export function buildPowerBeaconSignals({ riskVector, continuance, fusedArteries
 }
 
 // ============================================================================
-//  FULL 12.3+ PRESENCE / ADVANTAGE / FALLBACK / CHUNK PLAN
-//  “Backbone for PulseBand / CheckBand / RouterMemory / Identity”
+//  FULL v24 PRESENCE / ADVANTAGE / MESH / PROXY / FALLBACK / CHUNK PLAN
 // ============================================================================
 
 export function buildPowerRiskPresencePlan({
@@ -381,6 +387,8 @@ export function buildPowerRiskPresencePlan({
   continuance,
   presenceContext = {},
   advantageContext = {},
+  meshContext = {},
+  proxyContext = {},
   settings = {}
 }) {
   const riskVector = computePowerRiskVector({
@@ -401,7 +409,7 @@ export function buildPowerRiskPresencePlan({
   const risk = riskVector.riskScore;
   const contScore = continuance?.continuanceScore ?? 0;
 
-  // Fallback band ladder (0–3)
+  // Base fallback band ladder (0–3)
   let fallbackBandLevel = 0;
   if (risk >= 0.85 || contScore <= 0.2) {
     fallbackBandLevel = 3;
@@ -409,6 +417,22 @@ export function buildPowerRiskPresencePlan({
     fallbackBandLevel = 2;
   } else if (risk >= 0.4 || contScore <= 0.5) {
     fallbackBandLevel = 1;
+  }
+
+  // Mesh / proxy modulation
+  const meshPressure = norm(safeNum(meshContext.meshPressureIndex, 0));
+  const proxyPressure = norm(safeNum(proxyContext.proxyPressure, 0));
+  const proxyFallback = safeBool(proxyContext.proxyFallback, false);
+  const proxyBoost = norm(safeNum(proxyContext.proxyBoost, 0));
+
+  if (meshPressure > 0.8 || proxyPressure > 0.8 || proxyFallback) {
+    fallbackBandLevel = Math.max(fallbackBandLevel, 3);
+  } else if (meshPressure > 0.6 || proxyPressure > 0.6) {
+    fallbackBandLevel = Math.max(fallbackBandLevel, 2);
+  }
+
+  if (proxyBoost > 0.5 && !proxyFallback && proxyPressure < 0.7) {
+    fallbackBandLevel = Math.max(0, fallbackBandLevel - 1);
   }
 
   // PulseBand aggression (0–1, inverse of risk)
@@ -424,7 +448,9 @@ export function buildPowerRiskPresencePlan({
 
   const routerPresence = {
     routerHealthy: safeBool(presenceContext.routerHealthy, true),
-    proxyHealthy: safeBool(presenceContext.proxyHealthy, true)
+    proxyHealthy: safeBool(presenceContext.proxyHealthy, true),
+    meshPressureIndex: meshPressure,
+    proxyMode: proxyContext.proxyMode || null
   };
 
   // Advantage field
@@ -462,19 +488,23 @@ export function buildPowerRiskPresencePlan({
         : risk >= 0.4
         ? "medium"
         : "normal",
-    advantageScore: advantage.advantageScore
+    advantageScore: advantage.advantageScore,
+    meshPressureIndex: meshPressure,
+    proxyPressureIndex: proxyPressure
   };
 
   const chunkHints = {
     chunkAggression: pulseBandAggression,
     preferBinaryChunks: true,
-    preferPresenceChunks: risk >= 0.4 || contScore <= 0.5
+    preferPresenceChunks: risk >= 0.4 || contScore <= 0.5,
+    meshPressureIndex: meshPressure,
+    fallbackBandLevel
   };
 
   return Object.freeze({
     meta: {
       ...PowerRiskEngineMeta,
-      mode: "presence-plan-12.3+"
+      mode: "presence-plan-v24"
     },
     riskVector,
     summary,
@@ -491,3 +521,11 @@ export function buildPowerRiskPresencePlan({
     chunkHints
   });
 }
+
+export default {
+  PowerRiskEngineMeta,
+  computePowerRiskVector,
+  buildPowerRiskSummary,
+  buildPowerBeaconSignals,
+  buildPowerRiskPresencePlan
+};

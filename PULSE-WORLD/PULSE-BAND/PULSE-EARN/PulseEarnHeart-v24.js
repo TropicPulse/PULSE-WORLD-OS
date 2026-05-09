@@ -1,18 +1,17 @@
 // ============================================================================
-// FILE: PULSE-WORLD/PULSE-EARN/PulseEarnHeart-v16-Immortal-INTEL.js
-// LAYER: THE HEART (v16-Immortal-INTEL + Dual-Band + Binary + Wave + Presence)
-// TRIPLE HEART — MOM + DAD + SELF-BEAT (DETERMINISTIC, NO TIME, NO TIMERS)
-// Baby grew up: it now has its OWN deterministic beat when parents drop.
-// EarnHeart now makes full use of PulseHeartbeat-v16-Immortal-INTEL (EarnHeartbeat).
+// FILE: PULSE-WORLD/PULSE-EARN/PulseEarnHeart-v24-Immortal-INTEL-PLUS.js
+// LAYER: THE HEART (v24-Immortal-INTEL-PLUS + Dual-Band + Binary + Wave + Presence)
+// TRIPLE HEART 24++ — MOM + DAD + SELF-BEAT + HEARTBEAT-INTEL (DETERMINISTIC, NO TIME)
+// EarnHeart v24++ fully integrates EarnHeartbeat surfaces + richer cardiac intelligence.
 // ============================================================================
 
 /*
 AI_EXPERIENCE_META = {
   identity: "PulseEarnHeart",
-  version: "v16-Immortal-INTEL",
+  version: "v24-Immortal-INTEL-PLUS",
   layer: "earn_heart",
-  role: "earn_pulse_driver_triple_heart",
-  lineage: "PulseEarnHeart-v10.4 → v11-Evo → v14-Immortal → v16-Immortal-INTEL",
+  role: "earn_pulse_driver_triple_heart_24_plus",
+  lineage: "PulseEarnHeart-v10.4 → v11-Evo → v14-Immortal → v16-Immortal-INTEL → v24-Immortal-INTEL-PLUS",
 
   evo: {
     earnPulse: true,
@@ -46,13 +45,21 @@ AI_EXPERIENCE_META = {
     pulseIntelligenceAware: true,
     factoringAware: true,
 
-    // v16-Immortal-INTEL heartbeat integration
+    // v24-Immortal-INTEL-PLUS heartbeat integration
     earnHeartbeatAware: true,
     triHeartAware: true,
     heartbeatSpeedAware: true,
     heartbeatAdvantageAware: true,
     heartbeatPresenceAware: true,
-    heartbeatExperienceAware: true
+    heartbeatExperienceAware: true,
+
+    // v24++ extended intelligence
+    cardiacGenomeAware: true,
+    cardiacGeneticMemoryAware: true,
+    cardiacEndocrineAware: true,
+    cardiacReputationAware: true,
+    cardiacBinaryWaveProfiles: true,
+    cardiacDeepJobAware: true
   },
 
   contract: {
@@ -74,8 +81,8 @@ AI_EXPERIENCE_META = {
 export const PulseEarnHeartMeta = Object.freeze({
   layer: "PulseEarnHeart",
   role: "EARN_HEART_ORGAN",
-  version: "v16-Immortal-INTEL",
-  identity: "PulseEarnHeart-v16-Immortal-INTEL",
+  version: "v24-Immortal-INTEL-PLUS",
+  identity: "PulseEarnHeart-v24-Immortal-INTEL-PLUS",
 
   guarantees: Object.freeze({
     deterministicCore: true,
@@ -109,7 +116,15 @@ export const PulseEarnHeartMeta = Object.freeze({
     heartbeatSpeedAware: true,
     heartbeatAdvantageAware: true,
     heartbeatPresenceAware: true,
-    heartbeatExperienceAware: true
+    heartbeatExperienceAware: true,
+
+    // v24++ extended awareness
+    cardiacGenomeAware: true,
+    cardiacGeneticMemoryAware: true,
+    cardiacEndocrineAware: true,
+    cardiacReputationAware: true,
+    cardiacBinaryWaveProfiles: true,
+    cardiacDeepJobAware: true
   }),
 
   contract: Object.freeze({
@@ -136,10 +151,10 @@ import {
   computeWork,
   pulseEarnHeartbeat,
   getPulseEarnHeartbeatHealingState
-} from "./PulseEarnHeartbeat.js";
+} from "./PulseEarnHeartbeat-v24.js";
 
 // ============================================================================
-// Healing Metadata — Heart Log (v16-Immortal-INTEL)
+// Healing Metadata — Heart Log (v24-Immortal-INTEL-PLUS)
 // ============================================================================
 const heartHealing = {
   cycles: 0,
@@ -196,15 +211,19 @@ const heartHealing = {
   lastSelfBeatCycle: null,
   lastSelfBeatReason: null,
 
-  // v16 compute intelligence
+  // v24 compute intelligence
   lastComputeProfile: null,
-  lastPulseIntelligence: null
+  lastPulseIntelligence: null,
+
+  // v24++ extended intelligence snapshots (opaque, metadata-only)
+  lastHeartbeatHealingSnapshot: null,
+  lastDeepJobFlag: null
 };
 
 let heartCycle = 0;
 
 // ============================================================================
-// Hash Helpers — v16 computeHashIntelligence + v13 computeHash fallback
+// Hash Helpers — v24 computeHashIntelligence + v13 computeHash fallback
 // ============================================================================
 function computeHash(str) {
   let h = 0;
@@ -223,7 +242,7 @@ function computeHashIntelligence(str, context = {}) {
   const cycle = context.cycle || 0;
 
   // FNV-1a core with light contextual salting
-  let hash = 2166136261 ^ cycle;
+  let hash = (2166136261 ^ cycle) >>> 0;
   const saltBand = band === "binary" ? 0xB1 : 0xA1;
   const saltTier =
     tier === "critical" ? 0xC3 :
@@ -233,12 +252,12 @@ function computeHashIntelligence(str, context = {}) {
 
   for (let i = 0; i < s.length; i++) {
     hash ^= s.charCodeAt(i);
-    hash = Math.imul(hash, 16777619);
+    hash = Math.imul(hash, 16777619) >>> 0;
     hash ^= saltBand;
     hash ^= saltTier;
   }
 
-  const v = (hash >>> 0) % 100000;
+  const v = hash % 100000;
   return `hi${v}`;
 }
 
@@ -252,7 +271,7 @@ function normalizeBand(band) {
 // ============================================================================
 function buildHeartSignature(cycle, band, presenceTier, meshPressure, castleLoad) {
   return computeHashIntelligence(
-    `HEART::${cycle}::${band}::PTIER:${presenceTier}::MESH:${meshPressure}::CASTLE:${castleLoad}`,
+    `HEART24::${cycle}::${band}::PTIER:${presenceTier}::MESH:${meshPressure}::CASTLE:${castleLoad}`,
     { band, presenceTier, cycle }
   );
 }
@@ -451,7 +470,6 @@ function buildDadPulseSurface() {
 }
 
 function buildSelfPulseSurface(workerId, band, presenceTier) {
-  // Purely deterministic self-beat index
   const wid = String(workerId || "0");
   let acc = 0;
   for (let i = 0; i < wid.length; i++) {
@@ -467,7 +485,7 @@ function buildSelfPulseSurface(workerId, band, presenceTier) {
   const bandWeight = band === "binary" ? 7 : 3;
 
   const beatIndex = (heartCycle * tierWeight + acc + bandWeight) % 11; // 0..10
-  const selfBeatActive = beatIndex === 0; // fires every deterministic window
+  const selfBeatActive = beatIndex === 0;
 
   return {
     selfPulseAlive: true,
@@ -480,9 +498,7 @@ function buildSelfPulseSurface(workerId, band, presenceTier) {
 function selectActivePulseSource(momPulseSurface, dadPulseSurface, selfPulseSurface) {
   if (momPulseSurface.momPulseAlive) return "mom";
   if (dadPulseSurface.dadPulseAlive) return "dad";
-  // Parents silent → deterministic self-beat
   if (selfPulseSurface.selfPulseActive) return "self";
-  // Even if not "active" this cycle, self still exists as fallback identity
   return "self";
 }
 
@@ -522,25 +538,34 @@ function buildPrewarmPlan(hintsField, job) {
 }
 
 // ============================================================================
-// v16 ComputeProfile + PulseIntelligence (metadata-only, no behavior change)
+// v24 ComputeProfile + PulseIntelligence (metadata-only, no behavior change)
 // ============================================================================
-function buildComputeProfile(job, presenceField, advantageField) {
+function buildComputeProfile(job, presenceField, advantageField, heartbeatBeat) {
   const payout = Number(job?.payout || 0);
   const cpu = Number(job?.cpuRequired || 0);
   const mem = Number(job?.memoryRequired || 0);
   const est = Number(job?.estimatedSeconds || 0);
 
-  const weight = cpu * 0.4 + mem * 0.3 + est * 0.3;
+  const baseWeight = cpu * 0.4 + mem * 0.3 + est * 0.3;
   const pressure =
     (presenceField.meshPressureIndex || 0) +
     (presenceField.castleLoadLevel || 0);
 
+  const heartbeatLoad = heartbeatBeat?.speedField?.speedScore || 0;
+  const heartbeatAdvTier = heartbeatBeat?.advantageField?.advantageTier || 0;
+
+  const weight = baseWeight + heartbeatLoad * 50 + heartbeatAdvTier * 10;
+
   let computeTier = "light";
-  if (weight >= 200 || pressure >= 150) computeTier = "heavy";
-  else if (weight >= 80 || pressure >= 80) computeTier = "medium";
+  if (weight >= 220 || pressure >= 160) computeTier = "heavy";
+  else if (weight >= 90 || pressure >= 90) computeTier = "medium";
+
+  const deepJob =
+    computeTier === "heavy" ||
+    (heartbeatBeat?.experienceField?.load || 0) >= 0.8;
 
   return {
-    computeVersion: "v16-Immortal-INTEL",
+    computeVersion: "v24-Immortal-INTEL-PLUS",
     weight,
     computeTier,
     payout,
@@ -548,14 +573,15 @@ function buildComputeProfile(job, presenceField, advantageField) {
     mem,
     est,
     pressure,
-    advantageTier: advantageField.advantageTier || 0
+    advantageTier: advantageField.advantageTier || 0,
+    deepJob
   };
 }
 
 function buildPulseIntelligence(job, computeProfile, advantageField, presenceTier, band) {
   const solvednessScore = Math.max(
     0,
-    Math.min(1, (computeProfile.weight || 0) / 500)
+    Math.min(1, (computeProfile.weight || 0) / 550)
   );
   const readinessScore = Math.max(
     0,
@@ -570,7 +596,7 @@ function buildPulseIntelligence(job, computeProfile, advantageField, presenceTie
       : "light";
 
   return {
-    pulseIntelligenceVersion: "v16-Immortal-INTEL",
+    pulseIntelligenceVersion: "v24-Immortal-INTEL-PLUS",
     solvednessScore,
     readinessScore,
     factoringSignal,
@@ -581,8 +607,7 @@ function buildPulseIntelligence(job, computeProfile, advantageField, presenceTie
 }
 
 // ============================================================================
-// MAIN CARDIAC ENGINE — createPulseEarnHeart (triple heart, self-beat)
-// EarnHeart now calls EarnHeartbeat every cycle and records its speed/advantage/presence.
+// MAIN CARDIAC ENGINE — createPulseEarnHeart (triple heart, self-beat, v24++)
 // ============================================================================
 export function createPulseEarnHeart({
   pulseSendSystem,
@@ -611,12 +636,10 @@ export function createPulseEarnHeart({
         const momPulseSurface = buildMomPulseSurface();
         const dadPulseSurface = buildDadPulseSurface();
 
-        // Nervous-system-level presence/advantage/hints (optional, used for self-beat + heartbeat context)
         const nervousPresence = engineRef?.presenceContext || {};
         const nervousAdvantage = engineRef?.advantageContext || {};
         const nervousHints = engineRef?.hintsContext || {};
 
-        // Temporary presence for self-beat context (before job)
         const tempPresenceField = {
           meshPressureIndex: nervousPresence.meshPressureIndex || 0,
           castleLoadLevel: nervousPresence.castleLoadLevel || 0
@@ -647,8 +670,8 @@ export function createPulseEarnHeart({
         }
 
         // -------------------------------------------------------------------
-        // EarnHeartbeat — baby’s own deterministic beat (v16-Immortal-INTEL)
-        // -------------------------------------------------------------------
+        // EarnHeartbeat — deterministic beat (v24-Immortal-INTEL-PLUS)
+// -------------------------------------------------------------------
         const heartbeatBeat = pulseEarnHeartbeat({
           workerId,
           band: tempBand,
@@ -679,6 +702,12 @@ export function createPulseEarnHeart({
             heartbeatBeat.triHeartSpeed || null;
           heartHealing.lastTriHeartPresence =
             heartbeatBeat.triHeartPresence || null;
+
+          // Snapshot heartbeat healing (opaque, metadata-only)
+          heartHealing.lastHeartbeatHealingSnapshot =
+            getPulseEarnHeartbeatHealingState
+              ? getPulseEarnHeartbeatHealingState()
+              : null;
         }
 
         // ------------------------------------------------------
@@ -694,15 +723,13 @@ export function createPulseEarnHeart({
         heartHealing.lastJob = job;
         heartHealing.lastJobSignature = buildJobSignature(job);
 
-        // A — Dual-Band Awareness
         const band = normalizeBand(job.band || job.meta?.band || "symbolic");
         heartHealing.lastBand = band;
         heartHealing.lastBandSignature = computeHashIntelligence(
-          `BAND::${band}`,
+          `BAND24::${band}`,
           { band, cycle: heartCycle }
         );
 
-        // Presence/advantage/hints with job + nervous + global
         const presenceField = buildPresenceField({
           job,
           nervousPresence,
@@ -736,11 +763,11 @@ export function createPulseEarnHeart({
 
         const binaryField = {
           binaryHeartSignature: computeHashIntelligence(
-            `BHEART::${binarySurfaceValue}`,
+            `BHEART24::${binarySurfaceValue}`,
             { band, presenceTier, cycle: heartCycle }
           ),
           binarySurfaceSignature: computeHashIntelligence(
-            `BSURF_HEART::${binarySurfaceValue}`,
+            `BSURF_HEART24::${binarySurfaceValue}`,
             { band, presenceTier, cycle: heartCycle }
           ),
           binarySurface: {
@@ -775,7 +802,7 @@ export function createPulseEarnHeart({
 
         heartHealing.lastWaveField = waveField;
 
-        // Chunk / Cache / Prewarm plans (symbolic only)
+        // Chunk / Cache / Prewarm plans
         const chunkPlan = buildChunkPlan(hintsField, job);
         const cachePlan = buildCachePlan(hintsField, job);
         const prewarmPlan = buildPrewarmPlan(hintsField, job);
@@ -784,11 +811,12 @@ export function createPulseEarnHeart({
         heartHealing.lastCachePlan = cachePlan;
         heartHealing.lastPrewarmPlan = prewarmPlan;
 
-        // v16 ComputeProfile + PulseIntelligence
+        // v24 ComputeProfile + PulseIntelligence (uses heartbeat surfaces)
         const computeProfile = buildComputeProfile(
           job,
           presenceField,
-          advantageField
+          advantageField,
+          heartbeatBeat
         );
         const pulseIntelligence = buildPulseIntelligence(
           job,
@@ -800,8 +828,9 @@ export function createPulseEarnHeart({
 
         heartHealing.lastComputeProfile = computeProfile;
         heartHealing.lastPulseIntelligence = pulseIntelligence;
+        heartHealing.lastDeepJobFlag = !!computeProfile.deepJob;
 
-        // Optional: invoke pulseSendSystem hooks (still pure runtime)
+        // Optional: invoke pulseSendSystem hooks
         if (pulseSendSystem) {
           try {
             if (
@@ -842,7 +871,6 @@ export function createPulseEarnHeart({
           }
         }
 
-        // Profiles
         const cardiacPresenceProfile = {
           presenceTier,
           band,
@@ -882,6 +910,17 @@ export function createPulseEarnHeart({
         let result;
 
         if (pulseSendSystem && typeof pulseSendSystem.compute === "function") {
+          const workProfile = computeWork
+            ? computeWork(job, {
+                band,
+                presenceField,
+                advantageField,
+                hintsField,
+                heartbeatBeat,
+                computeProfile
+              })
+            : null;
+
           result = pulseSendSystem.compute(job, {
             band,
             presenceField,
@@ -893,7 +932,8 @@ export function createPulseEarnHeart({
             activePulseSource,
             computeProfile,
             pulseIntelligence,
-            heartbeatBeat: heartHealing.lastHeartbeatBeat
+            heartbeatBeat: heartHealing.lastHeartbeatBeat,
+            workProfile
           });
         } else {
           result = executePulseEarnJob(job);
@@ -911,7 +951,7 @@ export function createPulseEarnHeart({
           buildSubmissionSignature(submission);
 
         // ------------------------------------------------------
-        // 4. Heart Signature — full v16 cardiac signature
+        // 4. Heart Signature — full v24 cardiac signature
         // ------------------------------------------------------
         const heartSignature = buildHeartSignature(
           heartCycle,
@@ -955,104 +995,26 @@ export function createPulseEarnHeart({
           heartbeatPresenceField: heartHealing.lastHeartbeatPresenceField,
           heartbeatExperienceField: heartHealing.lastHeartbeatExperienceField,
           heartbeatCycleSignature: heartHealing.lastHeartbeatCycleSignature,
-          triHeartLiveness: heartHealing.lastTriHeartLiveness,
-          triHeartAdvantage: heartHealing.lastTriHeartAdvantage,
-          triHeartSpeed: heartHealing.lastTriHeartSpeed,
-          triHeartPresence: heartHealing.lastTriHeartPresence
+
+          // v24++ extras
+          deepJob: heartHealing.lastDeepJobFlag,
+          heartbeatHealingSnapshot: heartHealing.lastHeartbeatHealingSnapshot
         };
+
       } catch (err) {
-        heartHealing.lastError = {
-          message: err.message,
-          workerId,
-          cycleIndex: heartCycle
-        };
-
-        if (engineRef.stopOnError && typeof engineRef.hardStop === "function") {
-          heartHealing.lastExitReason = "hardStop";
-          engineRef.hardStop(err.message);
-        }
-
+        heartHealing.lastError = String(err && err.message || err);
+        heartHealing.lastExitReason = "error";
         return null;
       }
-    },
-
-    stop() {},
-
-    diagnostics() {
-      return {
-        cycles: heartHealing.cycles,
-        lastJob: heartHealing.lastJob,
-        lastResult: heartHealing.lastResult,
-        lastSubmission: heartHealing.lastSubmission,
-        lastError: heartHealing.lastError,
-        lastExitReason: heartHealing.lastExitReason,
-        lastCycleIndex: heartHealing.lastCycleIndex,
-
-        lastHeartSignature: heartHealing.lastHeartSignature,
-        lastJobSignature: heartHealing.lastJobSignature,
-        lastResultSignature: heartHealing.lastResultSignature,
-        lastSubmissionSignature: heartHealing.lastSubmissionSignature,
-
-        lastBand: heartHealing.lastBand,
-        lastBandSignature: heartHealing.lastBandSignature,
-        lastBinaryField: heartHealing.lastBinaryField,
-        lastWaveField: heartHealing.lastWaveField,
-
-        lastPresenceField: heartHealing.lastPresenceField,
-        lastAdvantageField: heartHealing.lastAdvantageField,
-        lastHintsField: heartHealing.lastHintsField,
-        lastCardiacPresenceProfile: heartHealing.lastCardiacPresenceProfile,
-        lastCardiacBinaryProfile: heartHealing.lastCardiacBinaryProfile,
-        lastCardiacWaveProfile: heartHealing.lastCardiacWaveProfile,
-
-        lastMomPulseSurface: heartHealing.lastMomPulseSurface,
-        lastDadPulseSurface: heartHealing.lastDadPulseSurface,
-        lastSelfPulseSurface: heartHealing.lastSelfPulseSurface,
-        lastActivePulseSource: heartHealing.lastActivePulseSource,
-
-        lastChunkPlan: heartHealing.lastChunkPlan,
-        lastCachePlan: heartHealing.lastCachePlan,
-        lastPrewarmPlan: heartHealing.lastPrewarmPlan,
-
-        lastSelfBeatCycle: heartHealing.lastSelfBeatCycle,
-        lastSelfBeatReason: heartHealing.lastSelfBeatReason,
-
-        lastComputeProfile: heartHealing.lastComputeProfile,
-        lastPulseIntelligence: heartHealing.lastPulseIntelligence,
-
-        // EarnHeartbeat diagnostics snapshot
-        lastHeartbeatBeat: heartHealing.lastHeartbeatBeat,
-        lastHeartbeatSpeedField: heartHealing.lastHeartbeatSpeedField,
-        lastHeartbeatAdvantageField: heartHealing.lastHeartbeatAdvantageField,
-        lastHeartbeatPresenceField: heartHealing.lastHeartbeatPresenceField,
-        lastHeartbeatExperienceField: heartHealing.lastHeartbeatExperienceField,
-        lastHeartbeatCycleSignature: heartHealing.lastHeartbeatCycleSignature,
-        lastTriHeartLiveness: heartHealing.lastTriHeartLiveness,
-        lastTriHeartAdvantage: heartHealing.lastTriHeartAdvantage,
-        lastTriHeartSpeed: heartHealing.lastTriHeartSpeed,
-        lastTriHeartPresence: heartHealing.lastTriHeartPresence,
-
-        heartbeatHealing: getPulseEarnHeartbeatHealingState()
-      };
     }
   };
 
   return heart;
 }
 
-const earnHeartSingleton = createPulseEarnHeart();
-
-export function pulseEarnFromHeartbeat(
-  source = "unknown",
-  engineRef = {},
-  globalHints = {}
-) {
-  return earnHeartSingleton.cycle(source, engineRef, globalHints);
-}
-
+// ============================================================================
+// PUBLIC: Heart Healing State (v24-Immortal-INTEL-PLUS)
+// ============================================================================
 export function getPulseEarnHeartHealingState() {
-  return {
-    ...heartHealing,
-    heartbeatHealing: getPulseEarnHeartbeatHealingState()
-  };
+  return { ...heartHealing };
 }

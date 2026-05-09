@@ -1,19 +1,21 @@
 // ============================================================================
-// PulseMotionEngine-v16-Immortal-Evo+.js — Unified Motion Engine
+// PulseMotionEngine-v24-Immortal++ — Unified Motion Engine (Forward + Backward)
 //  • One engine, multi-lane motion (forward + backward)
 //  • Dual-band aware (symbolic/binary), ShifterPulse-first
 //  • Drift-proof via normalized job/intents (multi-instance safe)
-//  • Deterministic tick sequencing (shared tick space)
+//  • Deterministic tick sequencing (engine-local shared tick space)
 //  • Presence/advantage-aware, artery metrics, prewarm-aware, tri-heart aware
+//  • v24++: per-engine arteries, snapshots, engine state, lane abstraction
 // ============================================================================
 
 /*
 AI_EXPERIENCE_META = {
   identity: "PulseMotionEngine",
-  version: "v16-Immortal-Evo+",
+  version: "v24-Immortal++",
   layer: "pulsenet_engine",
   role: "unified_motion_engine",
   lineage: [
+    "PulseMotionEngine-v16-Immortal-Evo+",
     "ForwardEngine-v16-Immortal-Evo+",
     "BackwardEngine-v16-Immortal-Evo+"
   ],
@@ -44,7 +46,15 @@ AI_EXPERIENCE_META = {
     zeroMutationOfInput: true,
 
     zeroNetwork: true,
-    zeroFilesystem: true
+    zeroFilesystem: true,
+
+    // v24++ additions
+    multiLane: true,
+    engineLocalTickSpace: true,
+    perEngineArteries: true,
+    snapshotAware: true,
+    multiInstanceSafe: true,
+    laneAbstraction: true
   },
 
   contract: {
@@ -67,8 +77,8 @@ import { createShifterPulse as ShifterPulse } from "../PULSE-SHIFTER/PulseBinary
 
 export const PulseMotionEngineMeta = Object.freeze({
   lane: "motion",
-  version: "16-Immortal-Evo+",
-  identity: "PulseMotionEngine-v16-Immortal-Evo+",
+  version: "24-Immortal++",
+  identity: "PulseMotionEngine-v24-Immortal++",
   evo: Object.freeze({
     deterministic: true,
     driftProof: true,
@@ -85,7 +95,14 @@ export const PulseMotionEngineMeta = Object.freeze({
     advantageAware: true,
     triHeartAware: true,
     prewarmAware: true,
-    arteryMetricsAware: true
+    arteryMetricsAware: true,
+
+    // v24++ extras
+    engineLocalTickSpace: true,
+    perEngineArteries: true,
+    snapshotAware: true,
+    multiLane: true,
+    laneAbstraction: true
   })
 });
 
@@ -102,112 +119,67 @@ function safe(fn, ...args) {
   try {
     if (typeof fn === "function") return fn(...args);
   } catch (err) {
-    console.warn("[PulseMotionEngine] safe call failed:", err);
+    console.warn("[PulseMotionEngine-v24] safe call failed:", err);
   }
   return undefined;
 }
 
-// Shared monotonic tick sequence (engine-local)
-let globalTickId = 0;
-
 // ---------------------------------------------------------------------------
-// Arteries — per-lane engine metrics (symbolic only)
+// Artery factory — per-engine, per-lane metrics (symbolic only)
 // ---------------------------------------------------------------------------
-const ForwardArtery = {
-  ticks: 0,
-  jobsConsumed: 0,
-  selfJobsGenerated: 0,
-  lastPatternsCount: 0,
-  lastDurationMs: 0,
-  prewarms: 0,
-  lastBand: "symbolic",
-  lastDnaTag: null,
-  snapshot() {
-    const ticks = ForwardArtery.ticks;
-    const jobs = ForwardArtery.jobsConsumed;
-    const prewarms = ForwardArtery.prewarms;
+function createArtery(laneTag) {
+  const artery = {
+    lane: laneTag,
+    ticks: 0,
+    jobsConsumed: 0,
+    selfJobsGenerated: 0,
+    lastPatternsCount: 0,
+    lastDurationMs: 0,
+    prewarms: 0,
+    lastBand: "symbolic",
+    lastDnaTag: null,
+    snapshot() {
+      const ticks = artery.ticks;
+      const jobs = artery.jobsConsumed;
+      const prewarms = artery.prewarms;
 
-    const load = Math.min(1, ticks / 4096);
-    const pressure = Math.min(1, jobs / Math.max(1, ticks || 1));
+      const load = Math.min(1, ticks / 4096);
+      const pressure = Math.min(1, jobs / Math.max(1, ticks || 1));
 
-    const loadBucket =
-      load >= 0.9 ? "saturated" :
-      load >= 0.7 ? "high" :
-      load >= 0.4 ? "medium" :
-      load > 0    ? "low" :
-                    "idle";
+      const loadBucket =
+        load >= 0.9 ? "saturated" :
+        load >= 0.7 ? "high" :
+        load >= 0.4 ? "medium" :
+        load > 0    ? "low" :
+                      "idle";
 
-    const pressureBucket =
-      pressure >= 0.9 ? "overload" :
-      pressure >= 0.7 ? "high" :
-      pressure >= 0.4 ? "medium" :
-      pressure > 0    ? "low" :
-                        "none";
+      const pressureBucket =
+        pressure >= 0.9 ? "overload" :
+        pressure >= 0.7 ? "high" :
+        pressure >= 0.4 ? "medium" :
+        pressure > 0    ? "low" :
+                          "none";
 
-    return Object.freeze({
-      ticks,
-      jobsConsumed: jobs,
-      selfJobsGenerated: ForwardArtery.selfJobsGenerated,
-      lastPatternsCount: ForwardArtery.lastPatternsCount,
-      lastDurationMs: ForwardArtery.lastDurationMs,
-      prewarms,
-      lastBand: ForwardArtery.lastBand,
-      lastDnaTag: ForwardArtery.lastDnaTag,
-      load,
-      loadBucket,
-      pressure,
-      pressureBucket
-    });
-  }
-};
+      return Object.freeze({
+        lane: artery.lane,
+        ticks,
+        jobsConsumed: jobs,
+        selfJobsGenerated: artery.selfJobsGenerated,
+        lastPatternsCount: artery.lastPatternsCount,
+        lastDurationMs: artery.lastDurationMs,
+        prewarms,
+        lastBand: artery.lastBand,
+        lastDnaTag: artery.lastDnaTag,
+        load,
+        loadBucket,
+        pressure,
+        pressureBucket
+      });
+    }
+  };
 
-const BackwardArtery = {
-  ticks: 0,
-  jobsConsumed: 0,
-  selfJobsGenerated: 0,
-  lastPatternsCount: 0,
-  lastDurationMs: 0,
-  prewarms: 0,
-  lastBand: "symbolic",
-  lastDnaTag: null,
-  snapshot() {
-    const ticks = BackwardArtery.ticks;
-    const jobs = BackwardArtery.jobsConsumed;
-    const prewarms = BackwardArtery.prewarms;
-
-    const load = Math.min(1, ticks / 4096);
-    const pressure = Math.min(1, jobs / Math.max(1, ticks || 1));
-
-    const loadBucket =
-      load >= 0.9 ? "saturated" :
-      load >= 0.7 ? "high" :
-      load >= 0.4 ? "medium" :
-      load > 0    ? "low" :
-                    "idle";
-
-    const pressureBucket =
-      pressure >= 0.9 ? "overload" :
-      pressure >= 0.7 ? "high" :
-      pressure >= 0.4 ? "medium" :
-      pressure > 0    ? "low" :
-                        "none";
-
-    return Object.freeze({
-      ticks,
-      jobsConsumed: jobs,
-      selfJobsGenerated: BackwardArtery.selfJobsGenerated,
-      lastPatternsCount: BackwardArtery.lastPatternsCount,
-      lastDurationMs: BackwardArtery.lastDurationMs,
-      prewarms,
-      lastBand: BackwardArtery.lastBand,
-      lastDnaTag: BackwardArtery.lastDnaTag,
-      load,
-      loadBucket,
-      pressure,
-      pressureBucket
-    });
-  }
-};
+  return artery;
+}
 
 // ---------------------------------------------------------------------------
 // ShifterPulse adapter — band-aware wrapper around v16 shifter
@@ -283,7 +255,7 @@ function createShifterAdapter({ lane, instanceId }) {
 // ---------------------------------------------------------------------------
 // Normalization / multi-instance drift-proofing
 // ---------------------------------------------------------------------------
-function normalizeJob(job, { instanceId, lane }) {
+function normalizeJob(job, { instanceId, lane, tickId }) {
   const laneTag = lane === "backward" ? "backward" : "forward";
   const typeUnknown =
     laneTag === "backward" ? "evo:backward:unknown" : "evo:forward:unknown";
@@ -292,7 +264,7 @@ function normalizeJob(job, { instanceId, lane }) {
 
   if (!job || typeof job !== "object") {
     return {
-      id: `job-${laneTag}-${instanceId}-${globalTickId}`,
+      id: `job-${laneTag}-${instanceId}-${tickId}`,
       type: typeUnknown,
       payload: {},
       lane: laneTag,
@@ -311,7 +283,7 @@ function normalizeJob(job, { instanceId, lane }) {
       : "symbolic";
 
   return {
-    id: job.id || `job-${laneTag}-${instanceId}-${globalTickId}`,
+    id: job.id || `job-${laneTag}-${instanceId}-${tickId}`,
     type: job.type || typeGeneric,
     payload,
     lane: laneTag,
@@ -320,11 +292,7 @@ function normalizeJob(job, { instanceId, lane }) {
   };
 }
 
-function normalizeMetrics(base, extra = {}, { lane }) {
-  const artery = lane === "backward"
-    ? BackwardArtery.snapshot()
-    : ForwardArtery.snapshot();
-
+function normalizeMetrics(base, extra = {}, { lane, arterySnapshot }) {
   return {
     lane,
     instanceId: base.instanceId,
@@ -337,12 +305,12 @@ function normalizeMetrics(base, extra = {}, { lane }) {
     presenceField: base.presenceField || null,
     advantageField: base.advantageField || null,
     triHeartId: base.triHeartId || null,
-    artery
+    artery: arterySnapshot
   };
 }
 
 // ============================================================================
-// Factory — Pulse Motion Engine v16-Immortal-Evo+
+// Factory — Pulse Motion Engine v24-Immortal++
 // ============================================================================
 export function createPulseMotionEngine({
   MemoryOrgan,
@@ -354,11 +322,18 @@ export function createPulseMotionEngine({
   triHeartId = "motion-heart"
 } = {}) {
   if (!MemoryOrgan) {
-    throw new Error("[PulseMotionEngine] MemoryOrgan is required.");
+    throw new Error("[PulseMotionEngine-v24] MemoryOrgan is required.");
   }
 
   const Shifter = createShifterAdapter({ lane: "motion", instanceId });
+
+  // Engine-local tick space (v24++)
+  let engineTickId = 0;
   let enginePrewarmed = false;
+
+  // Per-engine arteries
+  const ForwardArtery = createArtery("forward");
+  const BackwardArtery = createArtery("backward");
 
   // --------------------------------------------------------------------------
   // Job intake (drift-proof, normalized) — per lane
@@ -367,12 +342,14 @@ export function createPulseMotionEngine({
     const key = lane === "backward" ? BACKWARD_JOB_QUEUE_KEY : FORWARD_JOB_QUEUE_KEY;
     const raw = safe(MemoryOrgan.read, key);
     if (!raw || !Array.isArray(raw)) return [];
-    return raw;
+    // zero-mutation of input: clone
+    return raw.slice();
   }
 
   function writeJobQueue(lane, queue) {
     const key = lane === "backward" ? BACKWARD_JOB_QUEUE_KEY : FORWARD_JOB_QUEUE_KEY;
-    safe(MemoryOrgan.write, key, queue);
+    // write a cloned array to avoid external mutation
+    safe(MemoryOrgan.write, key, Array.isArray(queue) ? queue.slice() : []);
   }
 
   function takeNextJob(lane) {
@@ -380,21 +357,21 @@ export function createPulseMotionEngine({
     if (!queue.length) return null;
     const job = queue.shift();
     writeJobQueue(lane, queue);
-    return normalizeJob(job, { instanceId, lane });
+    return normalizeJob(job, { instanceId, lane, tickId: engineTickId });
   }
 
   function submitJob(lane, job) {
     const queue = readJobQueue(lane);
-    const normalized = normalizeJob(job, { instanceId, lane });
+    const normalized = normalizeJob(job, { instanceId, lane, tickId: engineTickId });
 
     queue.push({
       ...normalized,
-      submittedTick: globalTickId
+      submittedTick: engineTickId
     });
 
     writeJobQueue(lane, queue);
 
-    if (trace) console.log("[PulseMotionEngine] job submitted:", lane, normalized);
+    if (trace) console.log("[PulseMotionEngine-v24] job submitted:", lane, normalized);
   }
 
   // Public lane-specific submitters
@@ -416,14 +393,14 @@ export function createPulseMotionEngine({
 
     const selfJob = normalizeJob(
       {
-        id: `self-${laneTag}-${instanceId}-${globalTickId}`,
+        id: `self-${laneTag}-${instanceId}-${engineTickId}`,
         type: typeSelf,
         payload: {
           hint: `self-generated-${laneTag}`,
-          origin: "PulseMotionEngine"
+          origin: "PulseMotionEngine-v24"
         }
       },
-      { instanceId, lane: laneTag }
+      { instanceId, lane: laneTag, tickId: engineTickId }
     );
 
     if (laneTag === "backward") {
@@ -460,7 +437,7 @@ export function createPulseMotionEngine({
   // Core forward compute (expand, predict, factor, pattern-find)
 // --------------------------------------------------------------------------
   function computeForward(job) {
-    const tickId = globalTickId;
+    const tickId = engineTickId;
 
     const presenceField = buildPresenceField();
     const advantageField = buildAdvantageField();
@@ -518,13 +495,15 @@ export function createPulseMotionEngine({
       __dnaTag: baseMeta.dnaTag
     };
 
+    const arterySnapshot = ForwardArtery.snapshot();
+
     const metrics = normalizeMetrics(
       baseMeta,
       {
         durationMs: 0,
         patternsCount: patterns.length
       },
-      { lane: "forward" }
+      { lane: "forward", arterySnapshot }
     );
 
     ForwardArtery.lastPatternsCount = patterns.length;
@@ -543,7 +522,7 @@ export function createPulseMotionEngine({
   // Core backward compute (stabilize, normalize, compress, pattern-reduce)
 // --------------------------------------------------------------------------
   function computeBackward(job) {
-    const tickId = globalTickId;
+    const tickId = engineTickId;
 
     const presenceField = buildPresenceField();
     const advantageField = buildAdvantageField();
@@ -597,13 +576,15 @@ export function createPulseMotionEngine({
       __dnaTag: baseMeta.dnaTag
     };
 
+    const arterySnapshot = BackwardArtery.snapshot();
+
     const metrics = normalizeMetrics(
       baseMeta,
       {
         durationMs: 0,
         patternsCount: patterns.length
       },
-      { lane: "backward" }
+      { lane: "backward", arterySnapshot }
     );
 
     BackwardArtery.lastPatternsCount = patterns.length;
@@ -651,7 +632,7 @@ export function createPulseMotionEngine({
     safe(MemoryOrgan.write, metricsKey, result.metrics);
 
     if (trace) {
-      console.log("[PulseMotionEngine] result written:", {
+      console.log("[PulseMotionEngine-v24] result written:", {
         lane,
         key: resultKey,
         metrics: result.metrics,
@@ -711,13 +692,13 @@ export function createPulseMotionEngine({
       prewarm();
     }
 
-    globalTickId += 1;
+    engineTickId += 1;
     ForwardArtery.ticks += 1;
 
     let job = takeNextJob("forward");
     if (!job) {
       job = createSelfJob("forward");
-      if (trace) console.log("[PulseMotionEngine] no forward job in queue, using self job.");
+      if (trace) console.log("[PulseMotionEngine-v24] no forward job in queue, using self job.");
     } else {
       ForwardArtery.jobsConsumed += 1;
     }
@@ -727,7 +708,7 @@ export function createPulseMotionEngine({
     feedBrain("forward", result);
 
     if (trace) {
-      console.log("[PulseMotionEngine] forward tick complete:", {
+      console.log("[PulseMotionEngine-v24] forward tick complete:", {
         tickId: result.metrics.tickId,
         patternsCount: result.metrics.patternsCount
       });
@@ -744,13 +725,13 @@ export function createPulseMotionEngine({
       prewarm();
     }
 
-    globalTickId += 1;
+    engineTickId += 1;
     BackwardArtery.ticks += 1;
 
     let job = takeNextJob("backward");
     if (!job) {
       job = createSelfJob("backward");
-      if (trace) console.log("[PulseMotionEngine] no backward job in queue, using self job.");
+      if (trace) console.log("[PulseMotionEngine-v24] no backward job in queue, using self job.");
     } else {
       BackwardArtery.jobsConsumed += 1;
     }
@@ -760,13 +741,22 @@ export function createPulseMotionEngine({
     feedBrain("backward", result);
 
     if (trace) {
-      console.log("[PulseMotionEngine] backward tick complete:", {
+      console.log("[PulseMotionEngine-v24] backward tick complete:", {
         tickId: result.metrics.tickId,
         patternsCount: result.metrics.patternsCount
       });
     }
 
     return { ok: true, metrics: result.metrics };
+  }
+
+  // --------------------------------------------------------------------------
+  // tickBoth() — optional helper: forward + backward in one shared tick window
+  // --------------------------------------------------------------------------
+  function tickBoth() {
+    const forward = tickForward();
+    const backward = tickBackward();
+    return { forward, backward };
   }
 
   // --------------------------------------------------------------------------
@@ -797,20 +787,38 @@ export function createPulseMotionEngine({
     BackwardArtery.prewarms += 1;
 
     if (trace) {
-      console.log("[PulseMotionEngine] prewarm complete (symbolic + binary).", {
+      console.log("[PulseMotionEngine-v24] prewarm complete (symbolic + binary).", {
         shifterPulse: Shifter.hasShifter === true ? "enabled" : "fallback-binary"
       });
     }
     return true;
   }
 
+  // --------------------------------------------------------------------------
+  // Engine snapshot (v24++) — state view without mutation
+  // --------------------------------------------------------------------------
+  function snapshot() {
+    return Object.freeze({
+      meta: PulseMotionEngineMeta,
+      instanceId,
+      tickId: engineTickId,
+      prewarmed: enginePrewarmed,
+      arteries: {
+        forward: ForwardArtery.snapshot(),
+        backward: BackwardArtery.snapshot()
+      }
+    });
+  }
+
   return Object.freeze({
     meta: PulseMotionEngineMeta,
     tickForward,
     tickBackward,
+    tickBoth,
     submitForwardJob,
     submitBackwardJob,
     prewarm,
+    snapshot,
     artery: {
       forward: ForwardArtery,
       backward: BackwardArtery

@@ -1,16 +1,17 @@
 // ============================================================================
-// PULSE-WORLD : PulseUser-v16-Immortal-ORGANISM-JuryReady.js
+// PULSE-WORLD : PulseUser-v24-Immortal-ORGANISM-JuryReady.js
 // ORGAN TYPE: Local OS / Experience Orchestrator / Citizen Witness
-// VERSION: v16-Immortal-ORGANISM (Hybrid, Every-Advantage, Brain-Aware, Server-Attachable, Jury-Ready)
+// VERSION: v24-Immortal-ORGANISM (Hybrid, Every-Advantage, Brain-Aware,
+//          Server-Attachable, Jury-Ready, Bluetooth-Aware, Proxy-Aware)
 // ============================================================================
 
 /*
 AI_EXPERIENCE_META = {
   identity: "PulseUser",
-  version: "v16-Immortal-ORGANISM-JuryReady",
+  version: "v24-Immortal-ORGANISM-JuryReady",
   layer: "presence_user",
   role: "presence_user_core",
-  lineage: "PulseUser-v9 → v12.3-Presence-Evo+ → v15-Immortal → v16-Immortal-ORGANISM → v16-Immortal-ORGANISM-JuryReady",
+  lineage: "PulseUser-v9 → v12.3-Presence-Evo+ → v15-Immortal → v16-Immortal-ORGANISM → v16-Immortal-ORGANISM-JuryReady → v24-Immortal-ORGANISM-JuryReady",
 
   evo: {
     userCore: true,
@@ -29,7 +30,33 @@ AI_EXPERIENCE_META = {
     driftProof: true,
     zeroMutationOfInput: true,
     zeroNetwork: true,
-    zeroFilesystem: true
+    zeroFilesystem: true,
+
+    // v24+: full organism mesh + server + jury
+    runtimeAware: true,
+    schedulerAware: true,
+    overmindAware: true,
+    serverExecAware: true,
+    routerAware: true,
+    castleAware: true,
+    expansionAware: true,
+    meshOrganismAware: true,
+    beaconMeshAware: true,
+    earnAware: true,
+    bandAware: true,
+    binarySendAware: true,
+    proxyAware: true,
+    proxyPressureAware: true,
+    proxyFallbackAware: true,
+    proxyBoostAware: true,
+
+    // Jury-ready extensions
+    juryAware: true,
+    citizenWitnessAware: true,
+    behaviorPatternAware: true,
+    aiOriginEchoAware: true,
+    socialAnomalyAware: true,
+    timelineFlowAware: true
   },
 
   contract: {
@@ -61,17 +88,17 @@ import * as PulseBinaryOS from "../PULSE-OS/PulseBinaryOS-v16.js";
 import { PulseMeshMeta, createPulseMesh } from "../PULSE-MESH/PulseMesh-v16.js";
 import { PulseBeaconMeshMeta, PulseBeaconMesh } from "./PulseBeaconMesh-v20.js";
 
-import { PulseCastleMeta, createPulseCastle } from "./PulseCastle-v16.js";
-import { PulseServerMeta, createPulseServer } from "./PulseServer-v16.js";
-import { PulseRouterMeta, createPulseRouter } from "./PulseRouter-v16.js";
-import { PulseExpansionMeta, createPulseExpansion } from "./PulseExpansion-v16.js";
+import { PulseCastleMeta, createPulseCastle } from "./PulseCastle-v24.js";
+import { PulseServerMeta, createPulseServer } from "./PulseServer-v24.js";
+import { PulseRouterMeta, createPulseRouter } from "./PulseRouter-v24.js";
+import { PulseExpansionMeta, createPulseExpansion } from "./PulseExpansion-v24.js";
 import { createDualBandOrganism as PulseBinaryOrganismBoot } from "../PULSE-AI/aiDualBand-v24.js";
 
 // Earn / Band / BinarySend
 import { getEarnContext, evolveEarn, createEarn } from "../PULSE-EARN/PulseEarn-v24.js";
 import { createBinarySend as PulseSendBin } from "../PULSE-SEND/PulseBinarySend-v16.js";
 
-// PROXY CONTEXT — v16 IMMORTAL ORGANISM
+// PROXY CONTEXT — v24 IMMORTAL ORGANISM
 import {
   getProxyContext,
   getProxyPressure,
@@ -81,7 +108,7 @@ import {
   getProxyLineage
 } from "../PULSE-PROXY/PulseProxyContext-v20.js";
 
-// ⭐ SUBIMPORTS YOU REQUESTED (runtime / scheduler / overmind)
+// Runtime / scheduler / overmind
 import { getPulseRuntimeContext } from "../PULSE-X/PulseWorldRuntime-v20.js";
 import { getPulseSchedulerContext } from "../PULSE-X/PulseWorldScheduler-v20.js";
 import { getPulseOvermindContext } from "../PULSE-X/PULSE-WORLD-ALDWYN.js";
@@ -90,14 +117,63 @@ import { getPulseOvermindContext } from "../PULSE-X/PULSE-WORLD-ALDWYN.js";
 import { createPulseNodeEvolutionV16 } from "../PULSE-TOOLS/PulseNodeEvolution-v20.js";
 
 // ============================================================================
-// META — PulseWorldCore
+// META — PulseUser / PulseWorldCore
 // ============================================================================
 
+export const PulseUserMeta = Object.freeze({
+  organId: "PulseUser-v24-Immortal-ORGANISM-JuryReady",
+  role: "PRESENCE_USER_CORE",
+  version: "v24-Immortal-ORGANISM-JuryReady",
+  layer: "User",
+  guarantees: Object.freeze({
+    deterministic: true,
+    driftProof: true,
+    zeroNetwork: true,
+    zeroFilesystem: true,
+    zeroMutationOfInput: true,
+    zeroDynamicImports: true,
+    zeroEval: true
+  }),
+  evo: Object.freeze({
+    presenceAware: true,
+    bluetoothAware: true,
+    meshAware: true,
+    regionAware: true,
+    advantageBand: true,
+    fallbackBand: true,
+    symbolicPrimary: true,
+    binaryAware: true,
+    dualBand: true,
+    runtimeAware: true,
+    schedulerAware: true,
+    overmindAware: true,
+    serverExecAware: true,
+    routerAware: true,
+    castleAware: true,
+    expansionAware: true,
+    meshOrganismAware: true,
+    beaconMeshAware: true,
+    earnAware: true,
+    bandAware: true,
+    binarySendAware: true,
+    proxyAware: true,
+    proxyPressureAware: true,
+    proxyFallbackAware: true,
+    proxyBoostAware: true,
+    juryAware: true,
+    citizenWitnessAware: true,
+    behaviorPatternAware: true,
+    aiOriginEchoAware: true,
+    socialAnomalyAware: true,
+    timelineFlowAware: true
+  })
+});
+
 export const PulseWorldCoreMeta = Object.freeze({
-  organId: "PulseWorldCore-v16-Immortal-ORGANISM-JuryReady",
+  organId: "PulseWorldCore-v24-Immortal-ORGANISM-JuryReady",
   role: "LOCAL_OS",
-  version: "v16-Immortal-ORGANISM-JuryReady",
-  epoch: "v16-Immortal-ORGANISM",
+  version: "v24-Immortal-ORGANISM-JuryReady",
+  epoch: "v24-Immortal-ORGANISM",
   layer: "Experience",
   safety: Object.freeze({
     deterministic: true,
@@ -130,7 +206,7 @@ export const PulseWorldCoreMeta = Object.freeze({
     binarySendAware: true,
     proxyAware: true,
 
-    // ⭐ Jury-ready extensions
+    // Jury-ready extensions
     juryAware: true,
     citizenWitnessAware: true,
     behaviorPatternAware: true,
@@ -141,7 +217,7 @@ export const PulseWorldCoreMeta = Object.freeze({
 });
 
 // ============================================================================
-// FACTORY: createPulseWorldCore — v16 IMMORTAL ORGANISM JURY-READY
+// FACTORY: createPulseWorldCore — v24 IMMORTAL ORGANISM JURY-READY
 // ============================================================================
 
 export function createPulseWorldCore({
@@ -157,7 +233,7 @@ export function createPulseWorldCore({
   // 1. Identity
   const Identity = Object.freeze({
     coreID: "PulseWorldCore",
-    version: "v16-Immortal-ORGANISM-JuryReady",
+    version: "v24-Immortal-ORGANISM-JuryReady",
     createdBy: "PulseOS",
     regionID,
     serverMode
@@ -339,11 +415,17 @@ export function createPulseWorldCore({
   }
 
   // ---------------------------------------------------------------------------
-  // ADVANTAGE CONTEXT (FULLY UPGRADED + PROXY INTEGRATED)
-  // ---------------------------------------------------------------------------
+  // ADVANTAGE CONTEXT (FULLY UPGRADED + PROXY + BLUETOOTH HOOKS)
+// ---------------------------------------------------------------------------
 
   function buildAdvantageContext() {
     const earn = getEarnContext?.() || {};
+
+    // Simple symbolic bluetooth hook (no IO, caller can enrich)
+    const bluetoothContext =
+      beaconSnapshot?.bluetoothContext ||
+      meshSnapshot?.bluetoothContext ||
+      null;
 
     return Object.freeze({
       presenceField: beaconSnapshot?.presenceField || null,
@@ -365,7 +447,8 @@ export function createPulseWorldCore({
       routerMeta: PulseRouterMeta || null,
       expansionMeta: PulseExpansionMeta || null,
 
-      // ⭐ PROXY INTEGRATION — v16 IMMORTAL
+      bluetoothContext,
+
       proxy: getProxyContext(),
       proxyPressure: getProxyPressure(),
       proxyBoost: getProxyBoost(),
@@ -376,17 +459,14 @@ export function createPulseWorldCore({
   }
 
   // ---------------------------------------------------------------------------
-  // ADAPTIVE UI (FULLY UPGRADED + PROXY AWARE)
-  // ---------------------------------------------------------------------------
-  // ---------------------------------------------------------------------------
   // ADAPTIVE UI (FULLY UPGRADED + PROXY / ADVANTAGE / RUNTIME / SCHEDULER / OVERMIND AWARE)
   // ---------------------------------------------------------------------------
+
   function computeAdaptiveUI() {
     const ctx = buildAdvantageContext();
     const brain = getBrainView();
     const primaryOS = getPrimaryOSView();
 
-    // NEW SUBIMPORT CONTEXT
     const runtimeCtx = getPulseRuntimeContext?.();
     const schedulerCtx = getPulseSchedulerContext?.();
     const overmindCtx = getPulseOvermindContext?.();
@@ -399,29 +479,33 @@ export function createPulseWorldCore({
       (primaryOS.status === "healthy" || primaryOS.osBrainStatus === "healthy");
 
     const ui = Object.freeze({
-      // --- REGION / MESH / CASTLE / ROUTE ---
+      // REGION / MESH / CASTLE / ROUTE
       showMeshWarning: ctx.meshPressureIndex >= 70,
       showCastleLoadWarning:
         ctx.castleLoadLevel === "high" || ctx.castleLoadLevel === "critical",
       showRouteUnstableWarning: ctx.routeStable === false,
 
-      // --- ADVANTAGE / FALLBACK ---
+      // ADVANTAGE / FALLBACK
       showFallbackMode: ctx.fallbackBandLevel >= 2,
       showAdvantageBoost: ctx.advantageField?.advantageBand === "high",
 
-      // --- RUNTIME / OS BRAIN ---
+      // RUNTIME / OS BRAIN
       showRuntimePanel: !!brain,
       showRuntimeWarning: brain && !runtimeHealthy,
 
       showOSBrainPanel: !!primaryOS,
       showOSBrainWarning: primaryOS && !osBrainHealthy,
 
-      // --- PROXY UI INTEGRATION ---
+      // PROXY UI
       showProxyWarning: ctx.proxyPressure > 0.7,
       showProxyFallback: ctx.proxyFallback === true,
       showProxyBoost: ctx.proxyBoost > 0.5,
 
-      // --- NEW SUBIMPORT UI SIGNALS ---
+      // BLUETOOTH UI (symbolic)
+      bluetoothConnected: !!ctx.bluetoothContext?.connected,
+      bluetoothDeviceName: ctx.bluetoothContext?.deviceName || null,
+
+      // NEW SUBIMPORT UI SIGNALS
       runtimeMode: runtimeCtx?.mode || null,
       runtimeLoad: runtimeCtx?.loadIndex ?? null,
 
@@ -431,7 +515,7 @@ export function createPulseWorldCore({
       overmindState: overmindCtx?.state || null,
       overmindBand: overmindCtx?.band || null,
 
-      // --- EXTRA CONTEXT FOR EVOLUTION ---
+      // EXTRA CONTEXT FOR EVOLUTION
       regionID,
       serverMode,
       proxyMode: ctx.proxyMode,
@@ -446,6 +530,7 @@ export function createPulseWorldCore({
   // ---------------------------------------------------------------------------
   // EVOLUTION WRAPPER — SHIFTER-FIRST + SECTIONAL FALLBACK + SUBIMPORT CONTEXT
   // ---------------------------------------------------------------------------
+
   function _evolveUserPacket(packet, extraCtx = {}) {
     if (!_userEvolution) return packet;
 
@@ -490,6 +575,8 @@ export function createPulseWorldCore({
       serverMeta: PulseServerMeta,
       routerMeta: PulseRouterMeta,
       expansionMeta: PulseExpansionMeta,
+      userMeta: PulseUserMeta,
+      worldCoreMeta: PulseWorldCoreMeta,
 
       // JURY CONTEXT
       interactionLog,
@@ -505,7 +592,6 @@ export function createPulseWorldCore({
       context
     });
   }
-
 
   // ---------------------------------------------------------------------------
   // BRAIN / RUNTIME VIEW
@@ -592,21 +678,6 @@ export function createPulseWorldCore({
   // JURY-READY: CITIZEN WITNESS + PATTERN / FLOW / AI-ORIGIN DETECTION
   // ---------------------------------------------------------------------------
 
-  /**
-   * Record a local user / social / behavioral event.
-   * This is the primary feed into Jury for social pattern analysis.
-   *
-   * event = {
-   *   type: "chat" | "decision" | "identity" | "anomaly" | "ai_echo" | ...,
-   *   userId,
-   *   role,          // "juror" | "participant" | "observer" | ...
-   *   content,       // opaque, no mutation
-   *   aiOrigin: bool,
-   *   contextHash,   // stable hash of prior context (optional)
-   *   timestamp,     // ms since epoch (provided by caller, not generated here)
-   *   tag            // optional string tag
-   * }
-   */
   function recordUserEvent(event) {
     if (!event || typeof event !== "object") {
       return { ok: false, reason: "invalid-event" };
@@ -627,19 +698,6 @@ export function createPulseWorldCore({
     return { ok: true };
   }
 
-  /**
-   * Record a decision that will later be used for jury-flow / timeline analysis.
-   *
-   * decision = {
-   *   decisionId,
-   *   stageIndex,          // 0,1,2,... (early decisions vs later)
-   *   userId,
-   *   aiOrigin: bool,
-   *   contextHash,
-   *   verdictSummary,
-   *   timestamp
-   * }
-   */
   function recordDecision(decision) {
     if (!decision || typeof decision !== "object") {
       return { ok: false, reason: "invalid-decision" };
@@ -659,12 +717,6 @@ export function createPulseWorldCore({
     return { ok: true };
   }
 
-  /**
-   * Simple, deterministic behavior pattern summary for Jury:
-   * - dominance: who keeps producing final decisions
-   * - aiEchoCount: how many events are AI-origin echoes
-   * - identityLoops: repeated identity assertions
-   */
   function analyzeBehaviorPatterns() {
     const dominanceMap = Object.create(null);
     const identityLoopMap = Object.create(null);
@@ -699,12 +751,7 @@ export function createPulseWorldCore({
       identityLoops: Object.freeze(identityLoopMap)
     });
   }
-  /**
-   * Detect simple contextual divergence:
-   * - proposalContextHash does not match last known contextHash
-   * - or proposal is marked as aiOrigin and contextHash is null
-   * - proxy / mesh pressure can amplify suspicion
-   */
+
   function detectContextDivergence({ proposalContextHash, aiOrigin }) {
     const last = interactionLog.length > 0 ? interactionLog[interactionLog.length - 1] : null;
     const lastHash = last?.contextHash || null;
@@ -738,15 +785,6 @@ export function createPulseWorldCore({
     });
   }
 
-  /**
-   * Record an anomaly for Jury / Creator:
-   * anomaly = {
-   *   type: "dominance" | "ai_origin" | "context_divergence" | "flow_error" | ...,
-   *   severity: 1|2|3,
-   *   details: any,
-   *   timestamp
-   * }
-   */
   function recordAnomaly(anomaly) {
     if (!anomaly || typeof anomaly !== "object") {
       return { ok: false, reason: "invalid-anomaly" };
@@ -770,13 +808,6 @@ export function createPulseWorldCore({
     return { ok: true };
   }
 
-  /**
-   * Build a citizen-witness report for aiJury:
-   * - local behavior patterns
-   * - recent anomalies
-   * - recent interactions
-   * - decision timeline summary
-   */
   function buildCitizenWitnessReport() {
     const patterns = analyzeBehaviorPatterns();
 
@@ -810,13 +841,6 @@ export function createPulseWorldCore({
     return _evolveUserPacket(report, { mode: "citizen_witness" });
   }
 
-  /**
-   * Build a Jury-ready feed:
-   * - advantage context
-   * - adaptive UI state
-   * - citizen witness report
-   * - brain / OS views (for health correlation)
-   */
   function buildJuryFeed() {
     const feed = Object.freeze({
       identity: Identity,
@@ -830,11 +854,6 @@ export function createPulseWorldCore({
     return _evolveUserPacket(feed, { mode: "jury_feed" });
   }
 
-  /**
-   * Simple flow integrity check:
-   * - if earliest decision is aiOrigin and later decisions depend on it,
-   *   mark as potential flow error.
-   */
   function analyzeJuryFlow() {
     if (decisionTimeline.length === 0) {
       return Object.freeze({
@@ -860,9 +879,6 @@ export function createPulseWorldCore({
     });
   }
 
-  /**
-   * Expose a compact Jury snapshot for Creator / aiJury:
-   */
   function getJurySnapshot() {
     const snapshot = Object.freeze({
       identity: Identity,
@@ -906,7 +922,6 @@ export function createPulseWorldCore({
       }),
       { mode: "snapshot" }
     );
-
   }
 
   // ---------------------------------------------------------------------------
@@ -938,7 +953,7 @@ export function createPulseWorldCore({
 
     handleBrainNetworkIntent,
 
-    // ⭐ Jury-ready citizen witness + pattern / flow APIs
+    // Jury-ready citizen witness + pattern / flow APIs
     recordUserEvent,
     recordDecision,
     recordAnomaly,
@@ -952,5 +967,21 @@ export function createPulseWorldCore({
     getSnapshot
   });
 }
+
+// ============================================================================
+// USER CONTEXT HELPER + SINGLETON (for Router / Server / Mesh imports)
+// ============================================================================
+
+const _pulseUserSingleton = createPulseWorldCore({ serverMode: false });
+
+export function getPulseUserContext() {
+  return {
+    identity: _pulseUserSingleton.identity,
+    regionID: _pulseUserSingleton.identity.regionID,
+    serverMode: _pulseUserSingleton.identity.serverMode
+  };
+}
+
+export const pulseUser = _pulseUserSingleton;
 
 export default createPulseWorldCore;

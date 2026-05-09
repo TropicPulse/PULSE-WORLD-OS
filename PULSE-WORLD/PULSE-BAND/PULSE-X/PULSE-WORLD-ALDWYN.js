@@ -59,8 +59,8 @@ import { BeaconEngine } from "../PULSE-EXPANSION/PulseBeaconEngine-v20.js";
 // ============================================================================
 //  ROUTING + MESH (Presence-Aware)
 // ============================================================================
-import { PulseRouter } from "../PULSE-EXPANSION/PulseRouter-v16.js";
-import { PulseMesh } from "../PULSE-EXPANSION/PulseMesh-v16.js";
+import { PulseRouter } from "../PULSE-EXPANSION/PulseRouter-v24.js";
+import { PulseMesh } from "../PULSE-EXPANSION/PulseMesh-v24.js";
 
 // ============================================================================
 //  EARN ORGANISM

@@ -1,24 +1,24 @@
 /**
  * ============================================================================
- *  PULSE OS v16‑IMMORTAL — PULSE ROUTER (TRAFFIC BRAIN / ORGANISM-AWARE)
- *  PulseRouter-v16-Immortal-ORGANISM.js
+ *  PULSE OS v24‑IMMORTAL-ORGANISM — PULSE ROUTER (TRAFFIC BRAIN / ORGANISM-AWARE)
+ *  PulseRouter-v24.js
  * ============================================================================
  *
  *  ROLE:
  *    - Traffic brain of a region.
  *    - Decides how to route user requests: castle / mesh / cloud.
  *    - Reads Castle, Mesh (symbolic + binary), Expansion, Beacon, User, WorldCore,
- *      Runtime, Scheduler, Overmind, Earn.
+ *      Runtime, Scheduler, Overmind, Earn, Proxy.
  *    - Suggests better routes and corridor protection (never auto-applies).
  *    - Pure symbolic planner: no network, no filesystem, no AI execution.
  */
 /*
 AI_EXPERIENCE_META = {
   identity: "PulseRouter",
-  version: "v16-Immortal-ORGANISM",
+  version: "v24-Immortal-ORGANISM",
   layer: "presence_router",
   role: "presence_route_planner",
-  lineage: "PulseRouter-v13-Presence-Evo+ → v16-Immortal-ORGANISM",
+  lineage: "PulseRouter-v13-Presence-Evo+ → v16-Immortal-ORGANISM → v24-Immortal-ORGANISM",
 
   evo: {
     routePlanner: true,
@@ -35,6 +35,8 @@ AI_EXPERIENCE_META = {
     zeroMutationOfInput: true,
     zeroNetwork: true,
     zeroFilesystem: true,
+    zeroDynamicImports: true,
+    zeroEval: true,
 
     userAware: true,
     worldCoreAware: true,
@@ -50,7 +52,13 @@ AI_EXPERIENCE_META = {
     proxyAware: true,
     proxyPressureAware: true,
     proxyFallbackAware: true,
-    proxyBoostAware: true
+    proxyBoostAware: true,
+
+    federalAware: true,
+    nodeAdminAware: true,
+    corridorProtectionAware: true,
+    everyAdvantageAware: true,
+    bluetoothAware: true
   },
 
   contract: {
@@ -84,24 +92,27 @@ import {
   PulseExpansionMeta,
   createPulseExpansion,
   getPulseExpansionContext
-} from "./PulseExpansion-v16.js";
-import { PulseCastleMeta, createPulseCastle } from "./PulseCastle-v16.js";
-import { PulseServerMeta, createPulseServer } from "./PulseServer-v16.js";
+} from "./PulseExpansion-v24.js";
+
+import { PulseCastleMeta, createPulseCastle } from "./PulseCastle-v24.js";
+import { PulseServerMeta, createPulseServer } from "./PulseServer-v24.js";
+
 // User lanes + world core
 import {
   getPulseUserContext,
   createPulseWorldCore,
   pulseUser,
   PulseUserMeta
-} from "./PulseUser-v16.js";
+} from "./PulseUser-v24.js";
 
-// Mesh (symbolic + binary)
+// Mesh (symbolic + binary) — v24 IMMORTAL ORGANISM
 import createBinaryMesh, {
   BinaryMeshMeta
-} from "../PULSE-MESH/PulseBinaryMesh-v16.js";
+} from "../PULSE-MESH/PulseBinaryMesh-v24.js";
+
 import createPulseMesh, {
   PulseMeshMeta
-} from "../PULSE-MESH/PulseMesh-v16.js";
+} from "../PULSE-MESH/PulseMesh-v24.js";
 
 // Beacon engine (optional, for presence / region signals)
 import PulseBeaconEngine from "./PulseBeaconEngine-v20.js";
@@ -133,13 +144,13 @@ import {
 } from "../PULSE-PROXY/PulseProxyContext-v20.js";
 
 // ============================================================================
-//  META — Router Identity
+//  META — Router Identity v24
 // ============================================================================
 export const PulseRouterMeta = Object.freeze({
-  organId: "PulseRouter-v16-Immortal-ORGANISM",
+  organId: "PulseRouter-v24-Immortal-ORGANISM",
   role: "TRAFFIC_BRAIN",
-  version: "v16-Immortal-ORGANISM",
-  epoch: "v16-Immortal-ORGANISM",
+  version: "v24-Immortal-ORGANISM",
+  epoch: "v24-Immortal-ORGANISM",
   layer: "Routing",
   safety: Object.freeze({
     deterministic: true,
@@ -147,7 +158,9 @@ export const PulseRouterMeta = Object.freeze({
     noAsyncDrift: true,
     syntheticOnly: true,
     zeroNetwork: true,
-    zeroFilesystem: true
+    zeroFilesystem: true,
+    zeroDynamicImports: true,
+    zeroEval: true
   }),
   evo: Object.freeze({
     presenceAware: true,
@@ -171,7 +184,13 @@ export const PulseRouterMeta = Object.freeze({
     proxyAware: true,
     proxyPressureAware: true,
     proxyFallbackAware: true,
-    proxyBoostAware: true
+    proxyBoostAware: true,
+
+    federalAware: true,
+    nodeAdminAware: true,
+    corridorProtectionAware: true,
+    everyAdvantageAware: true,
+    bluetoothAware: true
   })
 });
 
@@ -187,31 +206,38 @@ function computeHash(str) {
   return `h${h}`;
 }
 
-function buildBinaryField(cycle) {
-  const density = 10 + cycle * 3;
-  const surface = density + 12;
+function buildBinaryField(cycle, proxyMeta) {
+  const densityBase = 10 + cycle * 3;
+  const proxyPressure = proxyMeta?.proxyPressure ?? 0;
+  const density = densityBase + Math.round(proxyPressure * 4);
+  const surface = density + 16;
+
   return {
-    binaryPhenotypeSignature: computeHash(`ROUTER_BEXP::${surface}`),
-    binarySurfaceSignature: computeHash(`ROUTER_BEXP_SURF::${surface}`),
-    binarySurface: { density, surface, patternLen: 16 },
+    binaryPhenotypeSignature: computeHash(`ROUTER_BEXP24::${surface}::${proxyPressure}`),
+    binarySurfaceSignature: computeHash(`ROUTER_BEXP24_SURF::${surface}`),
+    binarySurface: { density, surface, patternLen: 24 },
     parity: surface % 2,
     shiftDepth: Math.floor(Math.log2(surface || 1))
   };
 }
 
-function buildWaveField(cycle, band) {
-  const amplitude = (cycle + 1) * (band === "binary" ? 9 : 5);
+function buildWaveField(cycle, band, proxyMeta) {
+  const baseAmp = band === "binary" ? 9 : 5;
+  const proxyBoost = proxyMeta?.proxyBoost ?? 0;
+  const amplitude = (cycle + 1) * baseAmp + Math.round(proxyBoost * 8);
+
   return {
     amplitude,
-    wavelength: amplitude + 5,
-    phase: amplitude % 32,
+    wavelength: amplitude + 7,
+    phase: amplitude % 48,
     band,
     mode: band === "binary" ? "compression-wave" : "symbolic-wave"
   };
 }
 
-function buildBandSignature(band) {
-  return computeHash(`ROUTER_EXP_BAND::${band}`);
+function buildBandSignature(band, proxyMeta) {
+  const mode = proxyMeta?.proxyMode || "normal";
+  return computeHash(`ROUTER_EXP_BAND24::${band}::${mode}`);
 }
 
 // ============================================================================
@@ -307,7 +333,7 @@ function getLocalBeaconEngine() {
 }
 
 // ============================================================================
-// FACTORY: createPulseRouter — v16-Immortal-ORGANISM
+// FACTORY: createPulseRouter — v24-Immortal-ORGANISM
 // ============================================================================
 export function createPulseRouter({
   routerID = null,
@@ -322,14 +348,14 @@ export function createPulseRouter({
     routerID,
     regionID,
     createdBy: "PulseWorldCore",
-    version: "v16-Immortal-ORGANISM"
+    version: "v24-Immortal-ORGANISM"
   });
 
   function log(...args) {
-    if (trace) console.log("[PulseRouter v16]", ...args);
+    if (trace) console.log("[PulseRouter v24]", ...args);
   }
 
-  log("PulseRouter v16 created:", { routerID, regionID });
+  log("PulseRouter v24 created:", { routerID, regionID });
 
   // A-B-A cycle + last fields
   let cycle = 0;
@@ -374,6 +400,7 @@ export function createPulseRouter({
     castleSnapshot = snapshot || null;
     return { ok: true };
   }
+
   function attachExpansion(snapshot) {
     expansionSnapshot = snapshot || null;
     return { ok: true };
@@ -401,7 +428,7 @@ export function createPulseRouter({
 
   // --------------------------------------------------------------------------
   // 3. Global Hints (presence/advantage/fallback)
-  // --------------------------------------------------------------------------
+// --------------------------------------------------------------------------
   let lastGlobalHints = globalHints || null;
 
   function setGlobalHints(hints) {
@@ -603,7 +630,7 @@ export function createPulseRouter({
 
   // --------------------------------------------------------------------------
   // 6. Decision Engine (Routing Decisions)
-  // --------------------------------------------------------------------------
+// --------------------------------------------------------------------------
   function routeTo(target, reason, context = {}) {
     return Object.freeze({
       target,
@@ -625,11 +652,21 @@ export function createPulseRouter({
 
   function decideRoute(request) {
     cycle += 1;
+
+    const proxyMeta = {
+      proxy: getProxyContext() || null,
+      proxyPressure: getProxyPressure() ?? 0,
+      proxyBoost: getProxyBoost() ?? 0,
+      proxyFallback: getProxyFallback() ?? false,
+      proxyMode: getProxyMode() || "normal",
+      proxyLineage: getProxyLineage() || null
+    };
+
     const band = "symbolic";
 
-    lastBinaryField = buildBinaryField(cycle);
-    lastWaveField = buildWaveField(cycle, band);
-    lastBandSignature = buildBandSignature(band);
+    lastBinaryField = buildBinaryField(cycle, proxyMeta);
+    lastWaveField = buildWaveField(cycle, band, proxyMeta);
+    lastBandSignature = buildBandSignature(band, proxyMeta);
 
     const mesh = getMeshSignals();
     const castle = getCastleSignals();
@@ -649,15 +686,6 @@ export function createPulseRouter({
       0;
 
     const osBrainStatus = userSignals.osBrainStatus;
-
-    const proxyMeta = {
-      proxy: getProxyContext() || null,
-      proxyPressure: getProxyPressure(),
-      proxyBoost: getProxyBoost(),
-      proxyFallback: getProxyFallback(),
-      proxyMode: getProxyMode(),
-      proxyLineage: getProxyLineage()
-    };
 
     // Proxy-aware bias: if proxy is in hard fallback, prefer cloud
     if (proxyMeta.proxyFallback || proxyMeta.proxyMode === "fallback") {
@@ -697,6 +725,7 @@ export function createPulseRouter({
         proxyMeta
       });
     }
+
     // 0. If OS brain is unhealthy or fallback band is high, bias toward cloud
     if (osBrainStatus !== "healthy" || fallbackBandLevel >= 3) {
       return routeTo("cloud", "osBrainUnhealthyOrHighFallback", {
@@ -797,7 +826,7 @@ export function createPulseRouter({
 
   // --------------------------------------------------------------------------
   // 7. Route Suggestion Engine (Every-Advantage)
-  // --------------------------------------------------------------------------
+// --------------------------------------------------------------------------
   function suggestBetterRoutes() {
     if (!meshSnapshotSymbolic && !meshSnapshotBinary) {
       return { ok: false, reason: "missing-mesh" };
@@ -1003,3 +1032,5 @@ export function createPulseRouter({
     getSnapshot
   });
 }
+
+export default createPulseRouter;

@@ -145,26 +145,26 @@ import {
   PulseExpansionMeta,
   createPulseExpansion,
   getPulseExpansionContext
-} from "./PulseExpansion-v16.js";
+} from "./PulseExpansion-v24.js";
 
 // Castle / beacon / console
 import {
   PulseCastleMeta,
   createPulseCastle,
   getPulseCastleContext
-} from "./PulseCastle-v16.js";
+} from "./PulseCastle-v24.js";
 import {
   PulseServerMeta,
   createPulseServer,
   getPulseServerContext
-} from "./PulseServer-v16.js";
+} from "./PulseServer-v24.js";
 import {
   PulseRouterMeta,
   createPulseRouter
-} from "./PulseRouter-v16.js";
+} from "./PulseRouter-v24.js";
 
 // User lanes
-import { getPulseUserContext } from "./PulseUser-v16.js";
+import { getPulseUserContext } from "./PulseUser-v24.js";
 
 // WorldCore (AI mirror)
 import {

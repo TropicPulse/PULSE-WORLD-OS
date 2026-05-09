@@ -1,17 +1,17 @@
 // ============================================================================
-//  PulseEarnReflexRouter-v16.0-Immortal-ADV.js
-//  Reflex → Earn Synapse (v16 Immortal-ADV + Advantage‑M16 + Chunk/Prewarm)
+//  PulseEarnReflexRouter-v24.2-Immortal-ADV.js
+//  Reflex → Earn Synapse (v24.2 Immortal-ADV + Advantage‑M24++ + Chunk/Prewarm)
 //  Deterministic, Zero-Async, Zero-Routing, Zero-Sending
-//  Pure Reflex → Earn Handoff with DualBand + DualHash + Presence surfaces
+//  Pure Reflex → Earn Handoff with DualBand + DualHash + Presence/Advantage surfaces
 // ============================================================================
 
 /*
 AI_EXPERIENCE_META = {
   identity: "PulseEarnReflexRouter",
-  version: "v16-Immortal-ADV",
+  version: "v24.2-Immortal-ADV",
   layer: "earn_reflex",
   role: "earn_reflex_router",
-  lineage: "PulseEarnReflexRouter-v11 → v12.3 → v13 → v14-Immortal → v16-Immortal-ADV",
+  lineage: "PulseEarnReflexRouter-v11 → v12.3 → v13 → v14-Immortal → v16-Immortal-ADV → v24.2-Immortal-ADV",
 
   evo: {
     reflexRouter: true,
@@ -22,15 +22,20 @@ AI_EXPERIENCE_META = {
     binaryAware: true,
 
     deterministic: true,
+    deterministicField: true,
     driftProof: true,
     pureCompute: true,
     zeroNetwork: true,
     zeroFilesystem: true,
     zeroMutationOfInput: true,
+    zeroAsync: true,
+    zeroRandomness: true,
 
     dualHash: true,
     hashIntellectField: true,
-    presenceAdvantageChunkUnified: true
+    presenceAdvantageChunkUnified: true,
+    routerHealingAware: true,
+    routerIntelSurfaceAware: true
   },
 
   contract: {
@@ -51,8 +56,8 @@ export const PulseRole = {
   type: "Synapse",
   subsystem: "PulseEarnReflexRouter",
   layer: "B1-ReflexToEarn",
-  version: "16.0-Immortal-ADV",
-  identity: "PulseEarnReflexRouter-v16.0-Immortal-ADV",
+  version: "24.2-Immortal-ADV",
+  identity: "PulseEarnReflexRouter-v24.2-Immortal-ADV",
 
   evo: {
     driftProof: true,
@@ -94,8 +99,8 @@ export const PulseRole = {
 export const PulseEarnReflexRouterMeta = Object.freeze({
   layer: "PulseEarnReflexRouter",
   role: "EARN_REFLEX_ROUTER_ORGAN",
-  version: "v16.0-Immortal-ADV",
-  identity: "PulseEarnReflexRouter-v16.0-Immortal-ADV",
+  version: "v24.2-Immortal-ADV",
+  identity: "PulseEarnReflexRouter-v24.2-Immortal-ADV",
 
   guarantees: Object.freeze({
     deterministic: true,
@@ -151,12 +156,13 @@ export const PulseEarnReflexRouterMeta = Object.freeze({
 });
 
 // ============================================================================
-// INTERNAL STATE
+// INTERNAL STATE — v24.2 Immortal-ADV
 // ============================================================================
 const routedReflexes = new Map();
 let reflexRouteCycle = 0;
 
 const routerHealing = {
+  version: "v24.2-Immortal-ADV",
   cycleCount: 0,
 
   lastReflexId: null,
@@ -174,11 +180,14 @@ const routerHealing = {
 
   lastRouterSignature: null,
   lastDualHashField: null,
-  lastHashIntellectSignature: null
+  lastHashIntellectSignature: null,
+
+  lastDeviceProfileSnapshot: null,
+  lastReflexSliceContext: null
 };
 
 // ============================================================================
-// HELPERS
+// HELPERS — v24.2 dual-hash + intel
 // ============================================================================
 
 function computeHash(str) {
@@ -213,7 +222,9 @@ function buildDualHashSignature(label, intelPayload, classicString) {
   );
   return {
     intel: intelHash,
-    classic: classicHash
+    classic: classicHash,
+    primary: classicHash,
+    intellect: intelHash
   };
 }
 
@@ -245,7 +256,7 @@ function getReflexIdFromEarnReflex(earnReflex) {
 }
 
 // ============================================================================
-// A‑B‑A BINARY + WAVE (v16 Immortal-ADV)
+// A‑B‑A BINARY + WAVE (v24.2 Immortal-ADV)
 // ============================================================================
 function buildRouteBandBinaryWave(earnReflex, reflexId, cycleIndex, device) {
   const pattern = earnReflex?.pattern || "NO_PATTERN";
@@ -263,9 +274,24 @@ function buildRouteBandBinaryWave(earnReflex, reflexId, cycleIndex, device) {
 
   const surface = patternLen + lineageDepth + gpuScore + bandwidth + cycleIndex;
 
+  const intelPayload = {
+    kind: "routerBandBinaryWave",
+    version: "v24.2",
+    patternLen,
+    lineageDepth,
+    gpuScore,
+    bandwidth,
+    cycleIndex,
+    surface,
+    band
+  };
+
+  const classicString = `RFX_ROUTER24_BANDWAVE::${band}::${surface}`;
+  const bandDual = buildDualHashSignature("REFLEX_ROUTER24_BANDWAVE", intelPayload, classicString);
+
   const binaryField = {
-    binaryReflexSignature: computeHash(`BREFLEX_ROUTE16::${reflexId}::${surface}`),
-    binarySurfaceSignature: computeHash(`BSURF_RFX_ROUTE16::${surface}`),
+    binaryReflexSignature: computeHash(`BREFLEX_ROUTE24::${reflexId}::${surface}`),
+    binarySurfaceSignature: computeHash(`BSURF_RFX_ROUTE24::${surface}`),
     binarySurface: {
       patternLen,
       lineageDepth,
@@ -276,7 +302,8 @@ function buildRouteBandBinaryWave(earnReflex, reflexId, cycleIndex, device) {
     },
     parity: surface % 2 === 0 ? 0 : 1,
     density: patternLen + lineageDepth + gpuScore + bandwidth,
-    shiftDepth: Math.max(0, Math.floor(Math.log2(surface || 1)))
+    shiftDepth: Math.max(0, Math.floor(Math.log2(surface || 1))),
+    bandIntelSignature: bandDual.intel
   };
 
   const waveField = {
@@ -284,21 +311,22 @@ function buildRouteBandBinaryWave(earnReflex, reflexId, cycleIndex, device) {
     wavelength: cycleIndex || 1,
     phase: (patternLen + lineageDepth + cycleIndex) % 16,
     band,
-    mode: band === "binary" ? "compression-wave" : "symbolic-wave"
+    mode: band === "binary" ? "compression-wave" : "symbolic-wave",
+    waveIntelSignature: bandDual.intel
   };
 
-  const bandSignature = computeHash(`BAND::REFLEX_ROUTER16::${band}::${cycleIndex}`);
+  const bandSignature = bandDual.classic;
 
   routerHealing.lastBand = band;
   routerHealing.lastBandSignature = bandSignature;
   routerHealing.lastBinaryField = binaryField;
   routerHealing.lastWaveField = waveField;
 
-  return { band, bandSignature, binaryField, waveField };
+  return { band, bandSignature, binaryField, waveField, bandDual };
 }
 
 // ============================================================================
-// PRESENCE FIELD (v16 Immortal-ADV)
+// PRESENCE FIELD (v24.2 Immortal-ADV)
 // ============================================================================
 function buildPresenceField(earnReflex, device, cycleIndex) {
   const patternLen = (earnReflex?.pattern || "").length;
@@ -313,21 +341,32 @@ function buildPresenceField(earnReflex, device, cycleIndex) {
 
   const presenceBand = normalizeBand(device?.presenceBand || device?.band || "symbolic");
 
-  const base =
-    `RFX_ROUTER_PRESENCE_V16::${presenceTier}::${patternLen}::${lineageDepth}::${cycleIndex}::${presenceBand}`;
-  const presenceSignature = computeHash(base);
-  const presenceIntellectSignature = computeHashIntelligence(base);
+  const intelPayload = {
+    kind: "routerPresence",
+    version: "v24.2-Immortal-ADV",
+    presenceTier,
+    patternLen,
+    lineageDepth,
+    stability,
+    cycleIndex,
+    presenceBand
+  };
+
+  const classicString =
+    `RFX_ROUTER_PRESENCE_V24.2::${presenceTier}::${patternLen}::${lineageDepth}::${cycleIndex}::${presenceBand}`;
+
+  const dual = buildDualHashSignature("REFLEX_ROUTER24_PRESENCE", intelPayload, classicString);
 
   const presenceField = {
-    presenceVersion: "v16.0-Immortal-ADV",
+    presenceVersion: "v24.2-Immortal-ADV",
     presenceTier,
     presenceBand,
     patternLen,
     lineageDepth,
     stability,
     cycleIndex,
-    presenceSignature,
-    presenceIntellectSignature
+    presenceSignature: dual.classic,
+    presenceIntellectSignature: dual.intel
   };
 
   routerHealing.lastPresenceField = presenceField;
@@ -335,7 +374,7 @@ function buildPresenceField(earnReflex, device, cycleIndex) {
 }
 
 // ============================================================================
-// ADVANTAGE‑M16 FIELD (structural-only, richer surface)
+// ADVANTAGE‑M24++ FIELD (structural-only, richer surface)
 // ============================================================================
 function buildAdvantageField(earnReflex, device, bandPack, presenceField) {
   const gpuScore = device?.gpuScore || 0;
@@ -357,8 +396,14 @@ function buildAdvantageField(earnReflex, device, bandPack, presenceField) {
     (chunkBudgetKB + cacheLines + prewarmSlots) * 0.000001 +
     (presenceTier === "presence_high" ? 0.01 : 0);
 
-  const advantageField = {
-    advantageVersion: "M-16.0-REFLEX-ROUTER",
+  let advantageTier = 0;
+  if (advantageScore >= 0.05) advantageTier = 3;
+  else if (advantageScore >= 0.02) advantageTier = 2;
+  else if (advantageScore > 0) advantageTier = 1;
+
+  const intelPayload = {
+    kind: "routerAdvantage",
+    version: "M-24.2-REFLEX-ROUTER",
     band: bandPack.band,
     presenceBand: presenceField.presenceBand,
     gpuScore,
@@ -369,7 +414,31 @@ function buildAdvantageField(earnReflex, device, bandPack, presenceField) {
     cacheLines,
     prewarmSlots,
     presenceTier,
-    advantageScore
+    advantageScore,
+    advantageTier
+  };
+
+  const classicString =
+    `RFX_ROUTER_ADVANTAGE24.2::${presenceTier}::${advantageTier}`;
+
+  const dual = buildDualHashSignature("REFLEX_ROUTER24_ADVANTAGE", intelPayload, classicString);
+
+  const advantageField = {
+    advantageVersion: "M-24.2-REFLEX-ROUTER",
+    band: bandPack.band,
+    presenceBand: presenceField.presenceBand,
+    gpuScore,
+    bandwidth,
+    binaryDensity: density,
+    waveAmplitude: amplitude,
+    chunkBudgetKB,
+    cacheLines,
+    prewarmSlots,
+    presenceTier,
+    advantageScore,
+    advantageTier,
+    advantageSignature: dual.classic,
+    advantageIntelSignature: dual.intel
   };
 
   routerHealing.lastAdvantageField = advantageField;
@@ -377,7 +446,7 @@ function buildAdvantageField(earnReflex, device, bandPack, presenceField) {
 }
 
 // ============================================================================
-// CHUNK / CACHE / PREWARM PLAN (v16-AdvantageM)
+// CHUNK / CACHE / PREWARM PLAN (v24.2-AdvantageM)
 // ============================================================================
 function buildChunkPrewarmPlan(earnReflex, device, presenceField, advantageField) {
   let priorityLabel = "normal";
@@ -395,8 +464,22 @@ function buildChunkPrewarmPlan(earnReflex, device, presenceField, advantageField
     (device?.chunkField?.cacheLines ?? 0) * 2 +
     (device?.chunkField?.prewarmSlots ?? 0) * 3;
 
+  const intelPayload = {
+    kind: "routerChunkPlan",
+    version: "v24.2-AdvantageM-ReflexRouter",
+    priorityLabel,
+    bandPresence: presenceField.presenceTier,
+    planSurface,
+    advantageTier: advantageField.advantageTier
+  };
+
+  const classicString =
+    `RFX_ROUTER_CHUNKPLAN24.2::${presenceField.presenceTier}::${priorityLabel}::${planSurface}`;
+
+  const dual = buildDualHashSignature("REFLEX_ROUTER24_CHUNKPLAN", intelPayload, classicString);
+
   const chunkPrewarmPlan = {
-    planVersion: "v16.0-AdvantageM-ReflexRouter",
+    planVersion: "v24.2-AdvantageM-ReflexRouter",
     priorityLabel,
     bandPresence: presenceField.presenceTier,
     planSurface,
@@ -414,7 +497,9 @@ function buildChunkPrewarmPlan(earnReflex, device, presenceField, advantageField
       nervousSystem: presenceField.presenceTier !== "presence_idle",
       receptorLayer: presenceField.presenceTier !== "presence_idle",
       earnSystem: presenceField.presenceTier === "presence_high"
-    }
+    },
+    chunkPlanSignature: dual.classic,
+    chunkPlanIntelSignature: dual.intel
   };
 
   routerHealing.lastChunkPrewarmPlan = chunkPrewarmPlan;
@@ -422,11 +507,26 @@ function buildChunkPrewarmPlan(earnReflex, device, presenceField, advantageField
 }
 
 // ============================================================================
-// DIAGNOSTICS (v16, with dualhash-aware fields)
+// DIAGNOSTICS (v24.2, dualhash-aware surfaces)
 // ============================================================================
-function buildReflexDiagnostics(earnReflex, reflexId, state, bandPack, presenceField) {
+function buildReflexDiagnostics(earnReflex, reflexId, state, bandPack, presenceField, advantageField, chunkPrewarmPlan) {
   const pattern = earnReflex?.pattern || "NO_PATTERN";
   const lineageDepth = earnReflex?.lineage?.length || 0;
+
+  const intelPayload = {
+    kind: "routerDiagnostics",
+    version: "v24.2",
+    reflexId,
+    pattern,
+    lineageDepth,
+    cycleIndex: reflexRouteCycle,
+    instanceCount: state.count
+  };
+
+  const classicString =
+    `RFX_ROUTER_DIAG24.2::${reflexId}::${pattern}::${reflexRouteCycle}`;
+
+  const dual = buildDualHashSignature("REFLEX_ROUTER24_DIAG", intelPayload, classicString);
 
   return {
     reflexId,
@@ -444,31 +544,38 @@ function buildReflexDiagnostics(earnReflex, reflexId, state, bandPack, presenceF
 
     band: bandPack.band,
     bandSignature: bandPack.bandSignature,
+    bandIntelSignature: bandPack.bandDual?.intel,
+
     binaryField: bandPack.binaryField,
     waveField: bandPack.waveField,
 
-    presenceField
+    presenceField,
+    advantageField,
+    chunkPrewarmPlan,
+
+    diagnosticsSignature: dual.classic,
+    diagnosticsIntelSignature: dual.intel
   };
 }
 
 // ============================================================================
-// ROUTER SIGNATURE + DUALHASH FIELD
+// ROUTER SIGNATURE + DUALHASH FIELD (v24.2)
 // ============================================================================
 function buildRouterSignatures(reflexId, diagnostics, presenceField, bandPack, advantageField) {
   const base =
     `${reflexId}::${diagnostics.pattern}::${diagnostics.cycleIndex}` +
     `::${bandPack.band}::${presenceField.presenceTier}::${advantageField.advantageScore}`;
-  const dual = buildDualHashSignature("REFLEX_ROUTER16", base);
+
+  const dual = buildDualHashSignature("REFLEX_ROUTER24", base);
 
   const routerSignature = dual.primary;
   const hashIntellectSignature = dual.intellect;
 
   const dualHashField = {
-    label: "REFLEX_ROUTER16",
+    label: "REFLEX_ROUTER24",
     basePayload: base,
     primarySignature: dual.primary,
-    intellectSignature: dual.intellect,
-    buildDualHashSignaturenature: dual.buildDualHashSignaturenature
+    intellectSignature: dual.intellect
   };
 
   routerHealing.lastRouterSignature = routerSignature;
@@ -479,7 +586,7 @@ function buildRouterSignatures(reflexId, diagnostics, presenceField, bandPack, a
 }
 
 // ============================================================================
-// PUBLIC API — v16 Immortal-ADV Reflex Router
+// PUBLIC API — v24.2 Immortal-ADV Reflex Router
 // ============================================================================
 export const PulseEarnReflexRouter = {
 
@@ -504,6 +611,14 @@ export const PulseEarnReflexRouter = {
     routerHealing.lastReflexId = reflexId;
     routerHealing.lastPattern = earnReflex.pattern || null;
     routerHealing.lastLineageDepth = earnReflex.lineage?.length || 0;
+    routerHealing.lastDeviceProfileSnapshot = {
+      band: deviceProfile.band,
+      presenceBand: deviceProfile.presenceBand,
+      gpuScore: deviceProfile.gpuScore,
+      bandwidthMbps: deviceProfile.bandwidthMbps,
+      stabilityScore: deviceProfile.stabilityScore
+    };
+    routerHealing.lastReflexSliceContext = reflexSliceContext || null;
 
     const bandPack = buildRouteBandBinaryWave(
       earnReflex,
@@ -537,7 +652,9 @@ export const PulseEarnReflexRouter = {
       reflexId,
       state,
       bandPack,
-      presenceField
+      presenceField,
+      advantageField,
+      chunkPrewarmPlan
     );
 
     const { routerSignature, dualHashField, hashIntellectSignature } =
@@ -545,8 +662,8 @@ export const PulseEarnReflexRouter = {
 
     const handoff = {
       kind: "ReflexRouterHandoff",
-      version: "16.0-Immortal-ADV",
-      identity: "PulseEarnReflexRouter-v16.0-Immortal-ADV",
+      version: "24.2-Immortal-ADV",
+      identity: "PulseEarnReflexRouter-v24.2-Immortal-ADV",
       reflexId,
       pattern: earnReflex.pattern,
       jobId: earnReflex.jobId,

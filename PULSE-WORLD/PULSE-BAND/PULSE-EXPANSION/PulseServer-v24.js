@@ -1,6 +1,6 @@
 // ============================================================================
-//  PULSE OS v16‑IMMORTAL‑ORGANISM — PULSE SERVER (EXEC ENGINE / ADVANTAGE HUB)
-//  PulseServer-v16-Immortal-ORGANISM.js
+//  PULSE OS v24‑IMMORTAL‑ORGANISM — PULSE SERVER (EXEC ENGINE / ADVANTAGE HUB)
+//  PulseServer-v24.js
 //
 //  ROLE:
 //    - Deterministic compute / exec engine for the organism.
@@ -11,17 +11,17 @@
 //    - WorldCore-aware, user-aware, mesh-aware, brain-aware, PulseNet-bridge-aware.
 //    - DualBand-aware + binary send aware (symbolic + binary lanes).
 //    - NO direct network fetch: all network is via higher PulseNet bridge / expansion.
-//    - v16+: Castle-aware, Expansion-aware, can act as Castle-General fallback
+//    - v16+ / v24: Castle-aware, Expansion-aware, can act as Castle-General fallback
 //      when Castle is absent or degraded (server-as-central-castle).
 // ============================================================================
 
 /*
 AI_EXPERIENCE_META = {
   identity: "PulseServer",
-  version: "v16-Immortal-ORGANISM",
+  version: "v24-Immortal-ORGANISM",
   layer: "presence_server",
   role: "presence_region_server",
-  lineage: "PulsePresence-v15-Immortal → v16-Immortal-ORGANISM",
+  lineage: "PulsePresence-v15-Immortal → v16-Immortal-ORGANISM → v24-Immortal-ORGANISM",
 
   evo: {
     regionServer: true,
@@ -39,7 +39,7 @@ AI_EXPERIENCE_META = {
     zeroNetwork: true,
     zeroFilesystem: true,
 
-    // v16+: castle + expansion + PulseNet bridge
+    // v16+ / v24: castle + expansion + PulseNet bridge
     castleAware: true,
     expansionAware: true,
     pulseNetBridgeAware: true,
@@ -70,29 +70,29 @@ AI_EXPERIENCE_META = {
 
 import { logger } from "../../PULSE-UI/_MONITOR/PulseProofLogger-v20.js";
 
-// v16 Expansion / Castle
+// v24 Expansion / Castle
 import {
   PulseExpansionMeta,
-  createPulseExpansion
-} from "./PulseExpansion-v16.js";
+  createPulseExpansion,
+  summarizeCastlePresence
+} from "./PulseExpansion-v24.js";
 
 import {
   PulseCastleMeta,
-  summarizeCastlePresence,
   computeCastlePresence
-} from "./PulseCastle-v16.js";
+} from "./PulseCastle-v24.js";
 
-// Router (still v12.3 presence-era)
+// Router v24
 import {
   PulseRouterMeta,
   createPulseRouter
-} from "./PulseRouter-v16.js";
+} from "./PulseRouter-v24.js";
 
 // User lanes / WorldCore
 import {
   getPulseUserContext,
   createPulseWorldCore
-} from "./PulseUser-v16.js";
+} from "./PulseUser-v24.js";
 
 // Adrenal (compute starter / circulation governor)
 import {
@@ -101,18 +101,23 @@ import {
 } from "../PULSE-PROXY/PulseProxyAdrenalSystem-v20.js";
 
 // PulseNet bridge (symbolic adapter to PULSE-NET)
-import {
-  createPulseNetBridge
-} from "../PULSE-X/PULSE-WORLD.js";
+import { createPulseNetBridge } from "../PULSE-X/PULSE-WORLD.js";
 
 // Touch / presence
 import { getPulseTouchContext } from "../../PULSE-UI/PULSE-WORLD-TOUCH.js";
 
 // Runtime / scheduler / overmind
-import { getPulseOvermindContext, createOvermindPrime } from "../PULSE-X/PULSE-WORLD-ALDWYN.js";
+import {
+  getPulseOvermindContext,
+  createOvermindPrime
+} from "../PULSE-X/PULSE-WORLD-ALDWYN.js";
 
 // (Optional) Earn / treasury integration hook (symbolic only)
-import { getEarnContext, evolveEarn } from "../PULSE-EARN/PulseEarn-v24.js";
+import {
+  getEarnContext,
+  evolveEarn
+} from "../PULSE-EARN/PulseEarn-v24.js";
+
 // Scheduler (Router + Overmind + Runtime v2 macro pipeline)
 import {
   createPulseScheduler,
@@ -121,7 +126,10 @@ import {
 } from "../PULSE-X/PulseWorldScheduler-v20.js";
 
 // Runtime v2 (multi-organism execution + binary frames)
-import { PulseRuntimeV2, getPulseRuntimeContext } from "../PULSE-X/PulseWorldRuntime-v20.js";
+import {
+  PulseRuntimeV2,
+  getPulseRuntimeContext
+} from "../PULSE-X/PulseWorldRuntime-v20.js";
 
 const {
   runPulseTickV2,
@@ -133,7 +141,7 @@ const {
 import { createDualBandOrganism as PulseBinaryOrganismBoot } from "../PULSE-AI/aiDualBand-v24.js";
 import { createBinarySend as PulseSendBin } from "../PULSE-SEND/PulseBinarySend-v16.js";
 
-// Proxy context (v16 IMMORTAL ORGANISM)
+// Proxy context (IMMORTAL ORGANISM)
 import {
   getProxyContext,
   getProxyPressure,
@@ -142,6 +150,7 @@ import {
   getProxyMode,
   getProxyLineage
 } from "../PULSE-PROXY/PulseProxyContext-v20.js";
+
 import { createPulseNodeEvolutionV16 } from "../PULSE-TOOLS/PulseNodeEvolution-v20.js";
 
 // ============================================================================
@@ -150,8 +159,8 @@ import { createPulseNodeEvolutionV16 } from "../PULSE-TOOLS/PulseNodeEvolution-v
 export const PulseServerMeta = Object.freeze({
   layer: "PulseServer",
   role: "PRESENCE_EXEC_ENGINE",
-  version: "v16-Immortal-ORGANISM",
-  identity: "PulseServer-v16-Immortal-ORGANISM-EXEC",
+  version: "v24-Immortal-ORGANISM",
+  identity: "PulseServer-v24-Immortal-ORGANISM-EXEC",
 
   guarantees: Object.freeze({
     deterministic: true,
@@ -216,12 +225,8 @@ export const PulseServerMeta = Object.freeze({
   }),
 
   contract: Object.freeze({
-    input: [
-      "PulseServerJobRequest"
-    ],
-    output: [
-      "PulseServerJobResult"
-    ]
+    input: ["PulseServerJobRequest"],
+    output: ["PulseServerJobResult"]
   }),
 
   lineage: Object.freeze({
@@ -235,7 +240,8 @@ export const PulseServerMeta = Object.freeze({
       "PulseServer-v12-Evo",
       "PulseServer-v12.3-Presence-Evo+",
       "PulseServer-v13-Presence-Evo+",
-      "PulseServer-v15-Immortal-Presence-Evo+"
+      "PulseServer-v15-Immortal-Presence-Evo+",
+      "PulseServer-v16-Immortal-ORGANISM"
     ]
   })
 });
@@ -251,6 +257,7 @@ export class PulseServerJobResult {
     adrenalMeta,
     adrenalTickAccepted,
     cacheHit = false,
+    castleFallback,
     meta = {}
   }) {
     this.serverMeta = serverMeta;
@@ -259,6 +266,7 @@ export class PulseServerJobResult {
     this.adrenalMeta = adrenalMeta;
     this.adrenalTickAccepted = adrenalTickAccepted;
     this.cacheHit = cacheHit;
+    this.castleFallback = castleFallback || null;
     this.meta = meta;
   }
 }
@@ -363,7 +371,7 @@ export class PulseServerPresenceExec {
       defaultGlobalPolicy: {},
       defaultMaxTicks: 3,
       defaultStopOnWorldLens: ["unsafe"],
-      
+
       // Integration points
       worldCore: null,
       mesh: null,
@@ -391,6 +399,7 @@ export class PulseServerPresenceExec {
     this.regionId = this.config.regionId || null;
     this.hostName = this.config.hostName || null;
     this.serverId = this.config.serverId || null;
+
     this._serverEvolution = createPulseNodeEvolutionV16({
       nodeType: "server",
       trace: false
@@ -413,7 +422,7 @@ export class PulseServerPresenceExec {
     this.binarySend =
       this.config.binarySend ||
       (typeof PulseSendBin === "function"
-        ? PulseSendBin({ source: "PulseServer-v16" })
+        ? PulseSendBin({ source: "PulseServer-v24" })
         : null);
 
     // Scheduler
@@ -424,7 +433,7 @@ export class PulseServerPresenceExec {
       ...this.config.schedulerConfig
     });
 
-    // Expansion (v16) — server-aware, castle-aware, PulseNet-bridge-aware
+    // Expansion (v24) — server-aware, castle-aware, PulseNet-bridge-aware
     this.expansion =
       typeof createPulseExpansion === "function"
         ? createPulseExpansion({})
@@ -550,54 +559,53 @@ export class PulseServerPresenceExec {
   }
 
   _evolveServerPacket(packet, extraCtx = {}) {
-  if (!this._serverEvolution) return packet;
+    if (!this._serverEvolution) return packet;
 
-  const context = {
-    // SERVER CONTEXT
-    regionId: this.regionId,
-    hostName: this.hostName,
-    serverId: this.serverId,
+    const context = {
+      // SERVER CONTEXT
+      regionId: this.regionId,
+      hostName: this.hostName,
+      serverId: this.serverId,
 
-    // USER / WORLDCORE / MESH
-    userContext: this.userContext,
-    worldCore: this.worldCore,
-    mesh: this.mesh,
+      // USER / WORLDCORE / MESH
+      userContext: this.userContext,
+      worldCore: this.worldCore,
+      mesh: this.mesh,
 
-    // RUNTIME / SCHEDULER / OVERMIND / EARN
-    runtime: getPulseRuntimeContext?.(),
-    scheduler: getPulseSchedulerContext?.(),
-    overmind: getPulseOvermindContext?.(),
-    earn: getEarnContext?.(),
+      // RUNTIME / SCHEDULER / OVERMIND / EARN
+      runtime: getPulseRuntimeContext?.(),
+      scheduler: getPulseSchedulerContext?.(),
+      overmind: getPulseOvermindContext?.(),
+      earn: getEarnContext?.(),
 
-    // PROXY CONTEXT
-    proxyMode: getProxyMode?.(),
-    proxyPressure: getProxyPressure?.(),
-    proxyBoost: getProxyBoost?.(),
-    proxyFallback: getProxyFallback?.(),
-    proxyLineage: getProxyLineage?.(),
-    proxyContext: getProxyContext?.(),
+      // PROXY CONTEXT
+      proxyMode: getProxyMode?.(),
+      proxyPressure: getProxyPressure?.(),
+      proxyBoost: getProxyBoost?.(),
+      proxyFallback: getProxyFallback?.(),
+      proxyLineage: getProxyLineage?.(),
+      proxyContext: getProxyContext?.(),
 
-    // TOUCH
-    touch: getPulseTouchContext?.(),
+      // TOUCH
+      touch: getPulseTouchContext?.(),
 
-    // METAS
-    serverMeta: PulseServerMeta,
-    routerMeta: PulseRouterMeta,
-    castleMeta: PulseCastleMeta,
-    expansionMeta: PulseExpansionMeta,
-    schedulerMeta: PulseSchedulerMeta,
-    adrenalMeta: PulseProxyAdrenalSystemMeta,
+      // METAS
+      serverMeta: PulseServerMeta,
+      routerMeta: PulseRouterMeta,
+      castleMeta: PulseCastleMeta,
+      expansionMeta: PulseExpansionMeta,
+      schedulerMeta: PulseSchedulerMeta,
+      adrenalMeta: PulseProxyAdrenalSystemMeta,
 
-    ...extraCtx
-  };
+      ...extraCtx
+    };
 
-  return this._serverEvolution.evolveNodePulse({
-    nodeType: "server",
-    pulse: packet,
-    context
-  });
-}
-
+    return this._serverEvolution.evolveNodePulse({
+      nodeType: "server",
+      pulse: packet,
+      context
+    });
+  }
 
   // --------------------------------------------------------------------------
   // 0) Memory prewarm + hot batch reuse
@@ -806,6 +814,7 @@ export class PulseServerPresenceExec {
       cacheKey
     });
   }
+
   // --------------------------------------------------------------------------
   // 6) Castle-General fallback — server becomes central castle if needed
   // --------------------------------------------------------------------------
@@ -922,7 +931,8 @@ export class PulseServerPresenceExec {
         regionId,
         hostName,
         serverCastleId,
-        serverCastlePresence: evolvedResult.serverCastlePresence || serverCastlePresence,
+        serverCastlePresence:
+          evolvedResult.serverCastlePresence || serverCastlePresence,
         previousCastlePresence: castlePresenceField,
         meshSnapshot,
         proxy: {
@@ -983,7 +993,7 @@ export class PulseServerPresenceExec {
   } = {}) {
     const notes = [];
 
-    notes.push("PulseServer-v16-Immortal-ORGANISM-EXEC: starting job.");
+    notes.push("PulseServer-v24-Immortal-ORGANISM-EXEC: starting job.");
 
     const cached = this.maybeGetCachedJob(cacheKey);
     if (cached) {
@@ -1018,25 +1028,20 @@ export class PulseServerPresenceExec {
 
     notes.push(
       batchReused
-        ? "Hot batch reused for instances/currentStates."
-        : "New batch stored as hot for future reuse."
+        ? "Hot batch reuse: using prewarmed instance batch."
+        : "No hot batch reuse: new batch registered."
     );
 
-    const {
-      adrenalTickAccepted,
-      adrenalMeta
-    } = await this.runAdrenalIfEnabled(adrenalPulse);
+    // 1) Adrenal tick (optional)
+    const adrenalResult = await this.runAdrenalIfEnabled(adrenalPulse);
+    if (adrenalResult.adrenalTickAccepted) {
+      notes.push("Adrenal tick accepted and executed.");
+    } else {
+      notes.push("Adrenal tick skipped (disabled).");
+    }
 
-    notes.push(
-      adrenalTickAccepted
-        ? "Adrenal tick executed (compute circulation updated)."
-        : "Adrenal tick skipped (disabled)."
-    );
-
-    const {
-      schedulerPipeline,
-      schedulerMeta
-    } = await this.runSchedulerPipeline({
+    // 2) Scheduler pipeline
+    const schedulerResult = await this.runSchedulerPipeline({
       instances: effectiveInstances,
       currentStatesById: effectiveStates,
       globalContinuancePolicy,
@@ -1046,132 +1051,123 @@ export class PulseServerPresenceExec {
       stopOnWorldLens
     });
 
+    const schedulerPipeline = schedulerResult.schedulerPipeline;
     notes.push(
       schedulerPipeline
-        ? `Scheduler pipeline completed with ${schedulerPipeline.ticks.length} ticks.`
+        ? "Scheduler pipeline executed."
         : "Scheduler pipeline skipped (disabled)."
     );
 
-    let runtimeV2TickResult = null;
-    if (this.config.enableRuntimeV2DirectTick) {
-      runtimeV2TickResult = this.runRuntimeV2IfEnabled({
-        instanceContexts: effectiveInstances,
+    // 3) Optional direct Runtime v2 tick
+    let runtimeStateV2 = null;
+    if (this.config.enableRuntimeV2DirectTick && schedulerPipeline) {
+      const instanceContexts =
+        schedulerPipeline.instanceContexts || effectiveInstances;
+
+      runtimeStateV2 = this.runRuntimeV2IfEnabled({
+        instanceContexts,
         currentStatesById: effectiveStates,
         globalContinuancePolicy:
           globalContinuancePolicy ?? this.config.defaultGlobalPolicy
       });
-      notes.push("Runtime v2 direct tick executed (extra compute pass).");
+
+      if (runtimeStateV2) {
+        notes.push("Runtime v2 direct tick executed.");
+      } else {
+        notes.push("Runtime v2 direct tick skipped (disabled).");
+      }
     } else {
-      notes.push("Runtime v2 direct tick skipped (disabled).");
+      notes.push("Runtime v2 direct tick not executed (no scheduler pipeline or disabled).");
     }
 
-    const runtimeStateV2 = getRuntimeStateV2();
-    notes.push("Runtime v2 state snapshot captured (hot-state + binary frames).");
-
-    const advantageContext =
-      this.worldCore &&
-      typeof this.worldCore.buildAdvantageContext === "function"
-        ? this.worldCore.buildAdvantageContext()
-        : null;
-
-    const worldCoreSnapshot =
-      this.worldCore && typeof this.worldCore.getSnapshot === "function"
-        ? this.worldCore.getSnapshot()
-        : null;
-
-    const meshSnapshot =
-      this.mesh && typeof this.mesh.getSnapshot === "function"
-        ? this.mesh.getSnapshot()
-        : null;
-
-    const dualBandSnapshot =
-      dualBand ||
-      (this.dualBandEngine &&
-      typeof this.dualBandEngine.getSnapshot === "function"
-        ? this.dualBandEngine.getSnapshot()
-        : null);
-
-    const proxyMeta = {
-      proxy: getProxyContext(),
-      proxyPressure: getProxyPressure(),
-      proxyBoost: getProxyBoost(),
-      proxyFallback: getProxyFallback(),
-      proxyMode: getProxyMode(),
-      proxyLineage: getProxyLineage()
-    };
-
+    // 4) Castle fallback evaluation
     const castleFallback = this.evaluateCastleFallbackAndSignal({
       runtimeStateV2,
       schedulerPipeline
     });
 
-    const meta = Object.freeze({
-      serverMeta: PulseServerMeta,
-      schedulerMeta,
-      adrenalMeta,
-      advantageContext,
-      worldCoreSnapshot,
-      meshSnapshot,
-      dualBandSnapshot,
-      userContext: this.userContext || null,
-      pulseNetBridgeAttached: !!this.pulseNetBridge,
-      binarySendAttached: !!this.binarySend,
-      proxyMeta,
-      castleFallback,
-      notes
-    });
+    if (castleFallback.takeover) {
+      notes.push(
+        `Castle-General fallback active: server acting as central castle (${castleFallback.reason}).`
+      );
+    } else {
+      notes.push(
+        `Castle-General fallback not active (${castleFallback.reason}).`
+      );
+    }
 
-    const result = new PulseServerJobResult({
+    // 5) Build job result
+    const baseResult = new PulseServerJobResult({
       serverMeta: PulseServerMeta,
       schedulerPipeline,
-      runtimeStateV2: {
-        state: runtimeStateV2,
-        directTick: runtimeV2TickResult
-      },
-      adrenalMeta,
-      adrenalTickAccepted,
+      runtimeStateV2,
+      adrenalMeta: adrenalResult.adrenalMeta,
+      adrenalTickAccepted: adrenalResult.adrenalTickAccepted,
       cacheHit: false,
-      meta
+      castleFallback,
+      meta: {
+        notes
+      }
     });
 
-    this.maybeStoreCachedJob(cacheKey, result);
-
     const evolvedResult = this._evolveServerPacket
-      ? this._evolveServerPacket(result, {
-          mode: "server_job",
-          runtimeStateV2,
-          schedulerPipeline,
-          advantageContext,
-          worldCoreSnapshot,
-          meshSnapshot,
-          dualBandSnapshot,
-          proxyMeta,
-          castleFallback
+      ? this._evolveServerPacket(baseResult, {
+          mode: "server_job_completed"
         })
-      : result;
+      : baseResult;
+
+    // 6) Cache store (if enabled)
+    this.maybeStoreCachedJob(cacheKey, evolvedResult);
 
     return evolvedResult;
   }
 
+  // --------------------------------------------------------------------------
+  // Snapshot — introspection surface
+  // --------------------------------------------------------------------------
+  getSnapshot() {
+    const runtimeState = getRuntimeStateV2?.() || null;
+
+    const base = {
+      organId: PulseServerMeta.identity,
+      meta: PulseServerMeta,
+      config: this.config,
+      regionId: this.regionId,
+      hostName: this.hostName,
+      serverId: this.serverId,
+      proxy: {
+        mode: getProxyMode(),
+        pressure: getProxyPressure(),
+        boost: getProxyBoost(),
+        fallback: getProxyFallback(),
+        lineage: getProxyLineage()
+      },
+      runtimeStateV2: runtimeState,
+      worldCoreAttached: !!this.worldCore,
+      meshAttached: !!this.mesh,
+      pulseNetBridgeAttached: !!this.pulseNetBridge,
+      dualBandAttached: !!this.dualBandEngine,
+      binarySendAttached: !!this.binarySend
+    };
+
+    return this._evolveServerPacket
+      ? this._evolveServerPacket(base, { mode: "server_snapshot" })
+      : base;
+  }
 }
 
 // ============================================================================
-//  PUBLIC API — Create / Singleton
+// FACTORY — createPulseServer v24
 // ============================================================================
+
 export function createPulseServer(config = {}) {
   const core = new PulseServerPresenceExec(config);
 
   return Object.freeze({
     meta: PulseServerMeta,
+    core,
 
-    async runServerJob(payload) {
-      return core.runServerJob(payload);
-    },
-
-    async runBrainNetworkJob(payload) {
-      return core.runBrainNetworkJob(payload);
-    },
-
+    // integration
     attachWorldCore(worldCore) {
       return core.attachWorldCore(worldCore);
     },
@@ -1181,16 +1177,29 @@ export function createPulseServer(config = {}) {
     attachUserContext(userContext) {
       return core.attachUserContext(userContext);
     },
-    attachPulseNetBridge(pulseNetBridge) {
-      return core.attachPulseNetBridge(pulseNetBridge);
+    attachPulseNetBridge(bridge) {
+      return core.attachPulseNetBridge(bridge);
     },
-    attachDualBandEngine(dualBandEngine) {
-      return core.attachDualBandEngine(dualBandEngine);
+    attachDualBandEngine(engine) {
+      return core.attachDualBandEngine(engine);
     },
     attachBinarySend(binarySend) {
       return core.attachBinarySend(binarySend);
+    },
+
+    // jobs
+    runServerJob(payload) {
+      return core.runServerJob(payload);
+    },
+    runBrainNetworkJob(payload) {
+      return core.runBrainNetworkJob(payload);
+    },
+
+    // snapshot
+    getSnapshot() {
+      return core.getSnapshot();
     }
   });
 }
 
-export const pulseServer = createPulseServer();
+export default createPulseServer;

@@ -1,44 +1,44 @@
 /**
  * ============================================================================
- *  PULSE-WORLD : PulseMesh-v16-Immortal-ORGANISM.js
+ *  PULSE-WORLD : PulseMesh-v24-Immortal++.js
  *  ORGAN TYPE: Connectivity / Symbolic Mesh Organism
- *  VERSION: v16-Immortal-ORGANISM
+ *  VERSION: v24-Immortal++
  * ============================================================================
  *
- *  ROLE:
+ *  ROLE (v24++):
  *    PulseMesh is the symbolic connective tissue of PulseWorld.
- *
- *    In v16-Immortal-ORGANISM, Mesh is no longer a floating kernel.
  *    It is the ORGANISM MAP — the symbolic view that connects:
  *
- *      - PulseExpansion (world / region / cluster)
- *      - PulseCastle (castles / beacons / engines)
+ *      - PulseExpansion (federal strategist)
+ *      - PulseCastle (presence host)
  *      - PulseServer (server lanes)
  *      - PulseUser (user lanes)
- *      - PulseTouch (presence / mode / page / chunkProfile / trust / identity)
+ *      - PulseTouch (presence / identity / persona / trust)
  *      - PulseNet (mesh family / ingress / pressure)
- *      - PulseRuntime (hot instances / regions / presence / modes / pages)
+ *      - PulseRuntime (hot instances / modes / pages)
  *      - PulseScheduler (macro tick orchestration)
  *      - PulseOvermind (world-lens / safety)
  *
  *    It does NOT route, send, forward, or execute anything.
- *    It ONLY computes and emits symbolic signals:
+ *    It ONLY computes symbolic signals:
  *
  *      - density
  *      - health
  *      - pressure
  *      - presence
  *      - advantage
- *      - organism lanes (user / castle / server / router / runtime / overmind)
+ *      - persona / identity tier
+ *      - device / bluetooth / band presence
  *      - world-mesh aggregation
+ *      - proxy pressure / fallback / boost
  *
- *  CONTRACT:
+ *  CONTRACT (v24++):
  *    - Pure symbolic mesh (no routing, no sending, no execution).
- *    - Prefer local-first symbolic signals.
+ *    - Deterministic, drift-proof, zero-mutation.
+ *    - Multi-mesh aggregation (symbolic only).
+ *    - Dual-band symbolic/binary.
+ *    - Prewarm-aware, chunk-aware, cache-aware.
  *    - Must expose clear density + health + pressure + lane signals.
- *    - Must remain deterministic, synthetic, and drift-proof.
- *    - Must support multi-mesh / world-mesh aggregation (symbolic only).
- *    - Must never mutate input.
  *    - Must never perform network or filesystem operations.
  *    - Must never depend on real time or randomness.
  */
@@ -46,29 +46,34 @@
 /*
 AI_EXPERIENCE_META = {
   identity: "PulseMesh",
-  version: "v16-Immortal-ORGANISM",
+  version: "v24-Immortal++",
   layer: "connectivity",
   role: "symbolic_mesh_organism",
-  lineage: "PulseMesh-v1 → v11-Evo → v15-Immortal → v16-Immortal-ORGANISM",
+  lineage: "PulseMesh-v1 → v11-Evo → v15-Immortal → v16-Immortal → v24-Immortal++",
 
   evo: {
     symbolicMeshKernel: true,
     organismMap: true,
     dualBandAware: true,
     binaryAware: true,
+    symbolicPrimary: true,
 
     deterministic: true,
     driftProof: true,
     pureCompute: true,
-
+    zeroMutationOfInput: true,
     zeroNetwork: true,
     zeroFilesystem: true,
-    zeroMutationOfInput: true,
     zeroDynamicImports: true,
     zeroEval: true,
 
     presenceAware: true,
     advantageAware: true,
+    personaAware: true,
+    identityTierAware: true,
+    bluetoothAware: true,
+    devicePresenceAware: true,
+
     meshPressureAware: true,
     densityAware: true,
     costAware: true,
@@ -90,37 +95,35 @@ AI_EXPERIENCE_META = {
     proxyAware: true,
     proxyPressureAware: true,
     proxyFallbackAware: true,
-    proxyBoostAware: true
+    proxyBoostAware: true,
+
+    chunkPrewarmAware: true,
+    cacheAware: true,
+    prewarmAware: true
   }
 }
 */
 
 // ============================================================================
-// IMPORTS — ORGANISM CONTEXT PROVIDERS
+// IMPORTS — v24 ORGANISM CONTEXT
 // ============================================================================
 
-// Expansion / Castle / Server / Router
-import { PulseExpansionMeta, createPulseExpansion } from "./PulseExpansion-v16.js";
-import { PulseCastleMeta, createPulseCastle } from "./PulseCastle-v16.js";
-import { PulseServerMeta, createPulseServer } from "./PulseServer-v16.js";
-import { PulseRouterMeta, createPulseRouter } from "./PulseRouter-v16.js";
+import { PulseExpansionMeta, createPulseExpansion } from "./PulseExpansion-v24.js";
+import { PulseCastleMeta, createPulseCastle } from "./PulseCastle-v24.js";
+import { PulseServerMeta, createPulseServer } from "./PulseServer-v24.js";
+import { PulseRouterMeta, createPulseRouter } from "./PulseRouter-v24.js";
 
-// User lanes
-import { getPulseUserContext, createPulseWorldCore } from "./PulseUser-v16.js";
+import { getPulseUserContext, createPulseWorldCore } from "./PulseUser-v24.js";
 
-// Beacon Engine / Console
 import { getBeaconEngineContext } from "./PulseBeaconEngine-v20.js";
 import { getConsoleContext } from "./PulseBeaconConsole-v20.js";
 
-// Touch
 import { getPulseTouchContext } from "../../PULSE-UI/PULSE-WORLD-TOUCH.js";
 
-// Runtime / Scheduler / Overmind
 import { getPulseRuntimeContext } from "../PULSE-X/PulseWorldRuntime-v20.js";
 import { getPulseSchedulerContext } from "../PULSE-X/PulseWorldScheduler-v20.js";
 import { getPulseOvermindContext } from "../PULSE-X/PULSE-WORLD-ALDWYN.js";
 
-// Proxy
 import {
   getProxyContext,
   getProxyPressure,
@@ -131,23 +134,12 @@ import {
 } from "../PULSE-PROXY/PulseProxyContext-v20.js";
 
 // ============================================================================
-// v16 ORGANISM CONTEXT SHIMS (symbolic-only)
+// SINGLETONS (v24)
 // ============================================================================
 
-const _expansionSingleton =
-  (typeof createPulseExpansion === "function"
-    ? createPulseExpansion({})
-    : null) || null;
-
-const _castleSingleton =
-  (typeof createPulseCastle === "function"
-    ? createPulseCastle({})
-    : null) || null;
-
-const _serverSingleton =
-  (typeof createPulseServer === "function"
-    ? createPulseServer({})
-    : null) || null;
+const _expansionSingleton = createPulseExpansion({});
+const _castleSingleton = createPulseCastle({});
+const _serverSingleton = createPulseServer({});
 
 function getPulseExpansionContext() {
   return { meta: PulseExpansionMeta, core: _expansionSingleton };
@@ -162,14 +154,13 @@ function getPulseServerContext() {
 }
 
 // ============================================================================
-// META
+// META — v24
 // ============================================================================
 
 export const PulseMeshMeta = Object.freeze({
-  organId: "PulseMesh-v16-Immortal-ORGANISM",
+  organId: "PulseMesh-v24-Immortal++",
   role: "SYMBOLIC_MESH_ORGANISM",
-  version: "v16-Immortal-ORGANISM",
-  epoch: "v16-Immortal-ORGANISM",
+  version: "v24-Immortal++",
   layer: "Connectivity",
 
   guarantees: Object.freeze({
@@ -187,7 +178,11 @@ export const PulseMeshMeta = Object.freeze({
 
     presenceAware: true,
     advantageAware: true,
-    fallbackBandAware: true,
+    personaAware: true,
+    identityTierAware: true,
+    bluetoothAware: true,
+    devicePresenceAware: true,
+
     meshPressureAware: true,
     densityAware: true,
     costAware: true,
@@ -209,12 +204,16 @@ export const PulseMeshMeta = Object.freeze({
     proxyAware: true,
     proxyPressureAware: true,
     proxyFallbackAware: true,
-    proxyBoostAware: true
+    proxyBoostAware: true,
+
+    chunkPrewarmAware: true,
+    cacheAware: true,
+    prewarmAware: true
   })
 });
 
 // ============================================================================
-// FACTORY: createPulseMesh — v16 IMMORTAL ORGANISM
+// FACTORY — PulseMesh v24-Immortal++
 // ============================================================================
 
 export function createPulseMesh({
@@ -222,15 +221,15 @@ export function createPulseMesh({
   regionID = null,
   trace = false
 } = {}) {
+
   const Identity = Object.freeze({
     meshID,
     regionID,
-    createdBy: "PulseExpansion",
-    version: "v16-Immortal-ORGANISM"
+    createdBy: "PulseExpansion-v24",
+    version: "v24-Immortal++"
   });
 
-  const log = (...args) => trace && console.log("[PulseMesh v16]", ...args);
-  log("PulseMesh created:", { meshID, regionID });
+  const log = (...args) => trace && console.log("[PulseMesh v24]", ...args);
 
   // --------------------------------------------------------------------------
   // 1. Topology
@@ -251,7 +250,7 @@ export function createPulseMesh({
   };
 
   // --------------------------------------------------------------------------
-  // 2. Density / Health / Pressure
+  // 2. Density / Health / Pressure (v24)
   // --------------------------------------------------------------------------
   const DensityHealth = {
     metrics: {
@@ -279,79 +278,57 @@ export function createPulseMesh({
   };
 
   // --------------------------------------------------------------------------
-  // 3. Organism Context
+  // 3. Organism Context (v24)
   // --------------------------------------------------------------------------
   function buildOrganismContext() {
-    const expansion = getPulseExpansionContext();
-    const castle = getPulseCastleContext();
-    const beaconEngine = getBeaconEngineContext?.() || {};
-    const consoleCtx = getConsoleContext?.() || {};
-    const server = getPulseServerContext();
-    const user = getPulseUserContext?.() || {};
-    const touch = getPulseTouchContext?.() || {};
-    const runtime = getPulseRuntimeContext?.() || {};
-    const scheduler = getPulseSchedulerContext?.() || {};
-    const overmind = getPulseOvermindContext?.() || {};
-
-    const proxyMeta = {
-      context: getProxyContext?.() || null,
-      pressure: getProxyPressure?.() ?? 0,
-      boost: getProxyBoost?.() ?? 0,
-      fallback: getProxyFallback?.() ?? false,
-      mode: getProxyMode?.() || "normal",
-      lineage: getProxyLineage?.() || null
-    };
-
     return {
-      expansion,
-      castle,
-      beaconEngine,
-      console: consoleCtx,
-      server,
-      user,
-      touch,
-      runtime,
-      scheduler,
-      overmind,
-      proxyMeta
+      expansion: getPulseExpansionContext(),
+      castle: getPulseCastleContext(),
+      beaconEngine: getBeaconEngineContext?.() || {},
+      console: getConsoleContext?.() || {},
+      server: getPulseServerContext(),
+      user: getPulseUserContext?.() || {},
+      touch: getPulseTouchContext?.() || {},
+      runtime: getPulseRuntimeContext?.() || {},
+      scheduler: getPulseSchedulerContext?.() || {},
+      overmind: getPulseOvermindContext?.() || {},
+      proxyMeta: {
+        context: getProxyContext?.() || null,
+        pressure: getProxyPressure?.() ?? 0,
+        boost: getProxyBoost?.() ?? 0,
+        fallback: getProxyFallback?.() ?? false,
+        mode: getProxyMode?.() || "normal",
+        lineage: getProxyLineage?.() || null
+      }
     };
   }
 
   // --------------------------------------------------------------------------
-  // 4. Presence & Advantage Fields
+  // 4. Presence & Advantage (v24++)
   // --------------------------------------------------------------------------
   function buildPresenceField() {
     const ctx = buildOrganismContext();
     const touch = ctx.touch || {};
     const runtime = ctx.runtime || {};
-    const net = ctx.net || {};
-    const overmind = ctx.overmind || {};
-    const proxyMeta = ctx.proxyMeta || {};
+    const proxy = ctx.proxyMeta || {};
 
     return Object.freeze({
       bandPresence: touch.bandPresence || "unknown",
-      routerPresence: net.routerPresence || "unknown",
       devicePresence: touch.devicePresence || "unknown",
-      meshPresence: DensityHealth.metrics.meshStrength || "unknown",
+      bluetoothPresence: touch.bluetoothPresence || "off",
+      persona: touch.persona || "neutral",
+      identityTier: touch.identityTier || "anon",
+      trusted: touch.trusted || "unknown",
 
-      touchPresence: touch.presence || "unknown",
       touchMode: touch.mode || "unknown",
       touchPage: touch.page || "unknown",
-      touchChunkProfile: touch.chunkProfile || "default",
-      touchTrusted: touch.trusted || "unknown",
-      touchIdentityTier: touch.identityTier || "anon",
+      chunkProfile: touch.chunkProfile || "default",
 
       runtimeHotPresence: runtime.hotPresence || null,
-      runtimeHotModes: runtime.hotModes || null,
-      runtimeHotPages: runtime.hotPages || null,
+      runtimeModes: runtime.hotModes || null,
 
-      netInstanceCount: net.instanceCount || null,
-      netIngressPressure: net.meshPressureIndex || null,
-
-      overmindWorldLens: overmind.worldLens || null,
-
-      proxyMode: proxyMeta.mode || "normal",
-      proxyFallback: !!proxyMeta.fallback
+      proxyMode: proxy.mode,
+      proxyFallback: proxy.fallback
     });
   }
 
@@ -359,31 +336,25 @@ export function createPulseMesh({
     const ctx = buildOrganismContext();
     const touch = ctx.touch || {};
     const runtime = ctx.runtime || {};
-    const expansion = ctx.expansion || {};
     const user = ctx.user || {};
-    const proxyMeta = ctx.proxyMeta || {};
+    const proxy = ctx.proxyMeta || {};
 
     return Object.freeze({
-      advantageScore: touch.advantageScore ?? null,
+      advantageScore: touch.advantageScore ?? 0,
       advantageBand: touch.advantageBand ?? "neutral",
       fallbackBandLevel: touch.fallbackBandLevel ?? 0,
 
-      touchAdvantage: touch.advantageScore ?? null,
-      touchTrust: touch.trust ?? "unknown",
-      touchIdentityTier: touch.identityTier ?? "anon",
-
+      userContributionScore: user.contributionScore ?? 0,
       runtimeContributionHeat: runtime.hotInstances || null,
-      expansionTier: expansion.tier || null,
-      userContributionScore: user.contributionScore ?? null,
 
-      proxyPressure: proxyMeta.pressure ?? 0,
-      proxyBoost: proxyMeta.boost ?? 0,
-      proxyFallback: !!proxyMeta.fallback
+      proxyPressure: proxy.pressure,
+      proxyBoost: proxy.boost,
+      proxyFallback: proxy.fallback
     });
   }
 
   // --------------------------------------------------------------------------
-  // 5. Density + Pressure
+  // 5. Density + Pressure (v24++)
   // --------------------------------------------------------------------------
   function computeDensityAndPressure({
     userCount,
@@ -447,7 +418,7 @@ export function createPulseMesh({
   }
 
   // --------------------------------------------------------------------------
-  // 6. Symbolic Lanes
+  // 6. Symbolic Lanes (v24++)
   // --------------------------------------------------------------------------
   function buildExpansionSignal() {
     const ctx = buildOrganismContext();
@@ -456,8 +427,6 @@ export function createPulseMesh({
     return Object.freeze({
       regionID: regionID || expansion.regionID || null,
       meshID,
-      clusterID: expansion.clusterID || null,
-      shardID: expansion.shardID || null,
       density: DensityHealth.metrics.userCount,
       meshStrength: DensityHealth.metrics.meshStrength,
       meshPressureIndex: DensityHealth.metrics.meshPressureIndex,
@@ -520,7 +489,7 @@ export function createPulseMesh({
     const net = ctx.net || {};
     const scheduler = ctx.scheduler || {};
     const overmind = ctx.overmind || {};
-    const proxyMeta = ctx.proxyMeta || {};
+    const proxy = ctx.proxyMeta || {};
 
     return Object.freeze({
       routerLoad: net.routerLoad || null,
@@ -532,15 +501,16 @@ export function createPulseMesh({
       overmindSafetyStatus: overmind.safetyStatus || null,
       meshPressureIndex: DensityHealth.metrics.meshPressureIndex,
 
-      proxyMode: proxyMeta.mode || "normal",
-      proxyPressure: proxyMeta.pressure ?? 0,
-      proxyFallback: !!proxyMeta.fallback
+      proxyMode: proxy.mode,
+      proxyPressure: proxy.pressure,
+      proxyFallback: proxy.fallback
     });
   }
+
   function buildRuntimeSignal() {
     const ctx = buildOrganismContext();
     const runtime = ctx.runtime || {};
-    const proxyMeta = ctx.proxyMeta || {};
+    const proxy = ctx.proxyMeta || {};
 
     return Object.freeze({
       hotInstances: runtime.hotInstances || null,
@@ -551,17 +521,16 @@ export function createPulseMesh({
       hotChunkProfiles: runtime.hotChunkProfiles || null,
       hotTrust: runtime.hotTrust || null,
 
-      // NEW SUBIMPORT SIGNALS
       runtimeMode: runtime.mode || null,
       runtimeLoadIndex: runtime.loadIndex ?? null,
       runtimeRegion: runtime.region || null,
 
       meshPressureIndex: DensityHealth.metrics.meshPressureIndex,
-      proxyMode: proxyMeta.mode || "normal"
+      proxyMode: proxy.mode
     });
   }
 
-  function buildTouchSignal() {
+    function buildTouchSignal() {
     const ctx = buildOrganismContext();
     const touch = ctx.touch || {};
     const proxyMeta = ctx.proxyMeta || {};
@@ -576,17 +545,23 @@ export function createPulseMesh({
       trusted: touch.trusted || "unknown",
       region: touch.region || regionID || "unknown",
 
-      // NEW SUBIMPORT SIGNALS
+      // NEW SUBIMPORT SIGNALS (v24++ advantage lane)
       touchAdvantage: touch.advantageScore ?? null,
       touchFallbackBand: touch.fallbackBandLevel ?? 0,
       touchPersona: touch.persona || null,
+      touchDeviceClass: touch.deviceClass || "generic",
+      touchRadioBand: touch.radioBand || "bluetooth-symbolic",
+      touchBandwidthTier: touch.bandwidthTier || "normal",
 
-      proxyMode: proxyMeta.mode || "normal"
+      proxyMode: proxyMeta.mode || "normal",
+      proxyPressure: proxyMeta.pressure ?? 0,
+      proxyBoost: proxyMeta.boost ?? 0,
+      proxyFallback: !!proxyMeta.fallback
     });
   }
 
   // --------------------------------------------------------------------------
-  // 7. Multi-Mesh / World-Mesh Aggregation
+  // 7. Multi-Mesh / World-Mesh Aggregation (v24++ advantage-aware)
   // --------------------------------------------------------------------------
   const neighborMeshes = Object.create(null);
 
@@ -608,6 +583,8 @@ export function createPulseMesh({
     let totalCastles = DensityHealth.metrics.castleCount;
     let maxPressure = DensityHealth.metrics.meshPressureIndex;
 
+    let neighborCount = 0;
+
     for (const provider of Object.values(neighborMeshes)) {
       try {
         const snap = provider();
@@ -617,11 +594,16 @@ export function createPulseMesh({
         if (typeof dh.meshPressureIndex === "number") {
           maxPressure = Math.max(maxPressure, dh.meshPressureIndex);
         }
-      } catch {}
+        neighborCount++;
+      } catch {
+        // symbolic-only, ignore neighbor failures
+      }
     }
 
     const proxyPressure = getProxyPressure?.() ?? 0;
+    const proxyBoost = getProxyBoost?.() ?? 0;
     const proxyFallback = getProxyFallback?.() ?? false;
+    const proxyMode = getProxyMode?.() || "normal";
 
     if (proxyPressure > 0) {
       maxPressure = Math.min(100, maxPressure + Math.round(proxyPressure * 10));
@@ -629,42 +611,63 @@ export function createPulseMesh({
     if (proxyFallback) {
       maxPressure = Math.min(100, maxPressure + 5);
     }
+    if (proxyBoost > 0) {
+      maxPressure = Math.max(0, maxPressure - Math.round(proxyBoost * 3));
+    }
 
     return Object.freeze({
-      worldMeshID: "PulseWorldMesh",
+      worldMeshID: "PulseWorldMesh-v24++",
       regionID,
       localUserCount: DensityHealth.metrics.userCount,
       localCastleCount: DensityHealth.metrics.castleCount,
       localMeshPressureIndex: DensityHealth.metrics.meshPressureIndex,
       aggregatedUserCount: totalUsers,
       aggregatedCastleCount: totalCastles,
-      aggregatedMaxPressureIndex: maxPressure
+      aggregatedMaxPressureIndex: maxPressure,
+      neighborMeshCount: neighborCount,
+      proxyMode,
+      proxyPressure,
+      proxyBoost,
+      proxyFallback
     });
   }
 
   // --------------------------------------------------------------------------
-  // 8. Prewarm
+  // 8. Prewarm (v24++ every-advantage symbolic prewarm)
   // --------------------------------------------------------------------------
   function prewarm() {
-    log("Prewarm: PulseMesh v16 symbolic prewarm.");
+    log("Prewarm: PulseMesh v24++ symbolic-mesh-organism prewarm.");
     return {
       ok: true,
       meta: {
         organId: PulseMeshMeta.organId,
         version: PulseMeshMeta.version,
-        prewarmKind: "symbolic-mesh-organism"
+        epoch: PulseMeshMeta.epoch,
+        prewarmKind: "symbolic-mesh-organism-v24-advantage",
+        lanesPrewarmed: [
+          "expansion",
+          "castle",
+          "user",
+          "server",
+          "router",
+          "runtime",
+          "touch",
+          "worldMesh"
+        ]
       }
     };
   }
 
   // --------------------------------------------------------------------------
-  // 9. Snapshot
+  // 9. Snapshot (v24++ organism snapshot)
   // --------------------------------------------------------------------------
   function getSnapshot() {
     const ctx = buildOrganismContext();
 
     return Object.freeze({
       organId: PulseMeshMeta.organId,
+      version: PulseMeshMeta.version,
+      epoch: PulseMeshMeta.epoch,
       identity: Identity,
       topology: Topology,
       densityHealth: DensityHealth,
@@ -687,7 +690,7 @@ export function createPulseMesh({
   }
 
   // --------------------------------------------------------------------------
-  // 10. Public API
+  // 10. Public API (v24++ mesh organism)
   // --------------------------------------------------------------------------
   return Object.freeze({
     meta: PulseMeshMeta,

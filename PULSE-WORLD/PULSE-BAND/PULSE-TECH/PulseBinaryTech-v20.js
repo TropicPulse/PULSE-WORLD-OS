@@ -82,7 +82,7 @@ import { createPulseBinaryShifterEvolutionaryPulse } from "../PULSE-SHIFTER/Puls
 import { createLegacyPulse as createPulseV1Legacy } from "../PULSE-SEND/PulseSendLegacyPulse-v16.js";
 
 // v3 Continuance Pulse surface (earn/continuance)
-import { PulseEarnContinuancePulse as createPulseV3Continuance } from "../PULSE-EARN/PulseEarnContinuancePulse.js";
+import { PulseEarnContinuancePulse as createPulseV3Continuance } from "../PULSE-EARN/PulseEarnContinuancePulse-v24.js";
 
 // v2 Evolution Engine (earn-side v2)
 import { createPulseV2 as createPulseV2Earn } from "../PULSE-SEND/PulseV2EvolutionEngine-v16.js";

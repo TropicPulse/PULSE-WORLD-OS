@@ -1,48 +1,65 @@
 // ============================================================================
-//  PULSE OS v12.3‑PRESENCE‑EVO+ — POWER‑PRIME CONTINUANCE ENGINE
-//  Continuance v3 • Fluctuations v3 • Outages v3 • Presence • Advantage
+//  PULSE OS v24‑IMMORTAL‑ORGANISM — POWER‑PRIME CONTINUANCE ENGINE
+//  Continuance v3 • Fluctuations v3 • Outages v3 • Presence • Advantage • Proxy
 //  PURE COMPUTE. ZERO MUTATION. ZERO RANDOMNESS. ZERO I/O.
 // ============================================================================
+
 /*
 AI_EXPERIENCE_META = {
   identity: "powerContinuanceEngine",
-  version: "v14-Immortal",
+  version: "v24-Immortal-ORGANISM",
   layer: "pulsegrid_compute",
   role: "continuance_compute_engine",
-  lineage: "PowerPrime-v14",
+  lineage: "PowerPrime-v12.3 → PowerPrime-v14 → PowerContinuanceEngine-v24-Immortal-ORGANISM",
 
   evo: {
-    continuanceEngine: true,        // Computes continuance metrics
-    outageDetection: true,          // Detects outage patterns
-    fluctuationDetection: true,     // Detects fluctuation patterns
-    stabilityComputation: true,     // Computes stability + load factors
+    continuanceEngine: true,
+    outageDetection: true,
+    fluctuationDetection: true,
+    stabilityComputation: true,
 
-    deterministic: true,            // Pure math, no randomness
-    driftProof: true,               // Outputs must never drift
-    pureCompute: true,              // No side effects
-    zeroMutationOfInput: true,      // Never mutate incoming data
-    zeroNetwork: true,              // No fetch, no external calls
-    zeroFilesystem: true,           // No disk access
-    zeroAsync: true,                // Fully synchronous
-    binarySafe: true,               // Safe for binary artery inputs
-    symbolicSafe: true,             // Safe for symbolic inputs
-    dualBandAware: true,            // Accepts both, but does not generate symbolic AI output
+    deterministic: true,
+    driftProof: true,
+    pureCompute: true,
+    zeroMutationOfInput: true,
+    zeroNetwork: true,
+    zeroFilesystem: true,
+    zeroAsync: true,
+    binarySafe: true,
+    symbolicSafe: true,
+    dualBandAware: true,
 
-    safeRouteFree: true             // Must never use safeRoute
+    presenceAware: true,
+    bandPresenceAware: true,
+    routerPresenceAware: true,
+    advantageAware: true,
+    fallbackBandAware: true,
+    chunkAware: true,
+    cacheAware: true,
+    prewarmAware: true,
+    coldStartAware: true,
+
+    meshAware: true,
+    proxyAware: true,
+    proxyPressureAware: true,
+    proxyFallbackAware: true,
+    proxyBoostAware: true
   },
 
   contract: {
     always: [
-      "powerRiskEngine",            // Risk engine consumes continuance metrics
-      "aiPowerPrime"                // AI organ reads outputs (read-only)
+      "powerRiskEngine",
+      "aiPowerPrime",
+      "PulseWorldCore",
+      "PulseUser"
     ],
     never: [
       "legacyContinuanceEngine",
       "safeRoute",
       "fetchViaCNS",
-      "aiInference",                // No AI allowed inside compute engine
-      "meshAwareness",              // Not a mesh organ
-      "presenceAwareness"           // Not a presence organ
+      "aiInference",
+      "meshRouting",
+      "networkIO"
     ]
   }
 }
@@ -51,8 +68,8 @@ AI_EXPERIENCE_META = {
 export const PowerContinuanceEngineMeta = Object.freeze({
   layer: "PulseAIPowerPrime",
   role: "POWER_CONTINUANCE_ENGINE",
-  version: "12.3-Presence-Evo+",
-  identity: "powerContinuanceEngine-v12.3-Presence-Evo+",
+  version: "v24-Immortal-ORGANISM",
+  identity: "powerContinuanceEngine-v24-Immortal-ORGANISM",
 
   evo: Object.freeze({
     deterministic: true,
@@ -72,8 +89,12 @@ export const PowerContinuanceEngineMeta = Object.freeze({
     cacheAware: true,
     prewarmAware: true,
     coldStartAware: true,
-    readOnly: true,
-    epoch: "12.3-Presence-Evo+"
+    meshAware: true,
+    proxyAware: true,
+    proxyPressureAware: true,
+    proxyFallbackAware: true,
+    proxyBoostAware: true,
+    epoch: "v24-Immortal-ORGANISM"
   }),
 
   guarantees: Object.freeze({
@@ -93,7 +114,9 @@ export const PowerContinuanceEngineMeta = Object.freeze({
       "FusedArteriesSnapshot",
       "OrganismSnapshot",
       "PresenceContext",
-      "AdvantageContext"
+      "AdvantageContext",
+      "MeshContext",
+      "ProxyContext"
     ],
     output: [
       "ContinuanceMetricsV3",
@@ -123,6 +146,10 @@ function safeNum(v, d = 0) {
 
 function safeObj(v, d = {}) {
   return v && typeof v === "object" ? v : d;
+}
+
+function safeBool(v, d = false) {
+  return typeof v === "boolean" ? v : d;
 }
 
 // ============================================================================
@@ -173,7 +200,7 @@ export function computeContinuanceMetricsV3({
       if (pct >= 20) jumps++;
     }
     const jumpRatio = Math.min(1, jumps / h.length);
-    stability = 1 - jumpRatio; // more jumps → less stability
+    stability = 1 - jumpRatio;
   }
 
   // Load factor from metabolic + pipeline + routing
@@ -275,16 +302,9 @@ export function detectOutagesV3(history, config = {}, context = {}) {
 }
 
 // ============================================================================
-/*  CONTINUANCE PRESENCE PLAN v3
-    “Backbone of identity + PulseBand fallback / chunk / cache / prewarm hints”
-    Pure compute: takes metrics + fluctuations + outages + presence/advantage
-    and returns a deterministic plan for:
-      • fallbackBandLevel (0–3)
-      • pulseBandAggression (0–1)
-      • prewarmHints (routes/chunks to prewarm)
-      • cacheHints (what to keep hot)
-      • presenceField (band + router presence snapshot)
-*/
+//  CONTINUANCE PRESENCE PLAN v3 (v24 IMMORTAL)
+//  Backbone of identity + PulseBand fallback / chunk / cache / prewarm hints
+//  + mesh / proxy modulation (still pure compute)
 // ============================================================================
 
 export function computeContinuancePresencePlanV3({
@@ -293,6 +313,8 @@ export function computeContinuancePresencePlanV3({
   organismSnapshot,
   presenceContext = {},
   advantageContext = {},
+  meshContext = {},
+  proxyContext = {},
   config = {}
 }) {
   const metrics = computeContinuanceMetricsV3({
@@ -329,10 +351,32 @@ export function computeContinuancePresencePlanV3({
     fallbackBandLevel = 1;
   }
 
+  // Mesh + proxy modulation of fallback
+  const meshPressure = norm(
+    safeNum(meshContext.meshPressureIndex, 0)
+  );
+  const proxyPressure = norm(
+    safeNum(proxyContext.proxyPressure, 0)
+  );
+  const proxyFallback = safeBool(proxyContext.proxyFallback, false);
+  const proxyBoost = norm(
+    safeNum(proxyContext.proxyBoost, 0)
+  );
+
+  if (meshPressure > 0.8 || proxyPressure > 0.8 || proxyFallback) {
+    fallbackBandLevel = Math.max(fallbackBandLevel, 3);
+  } else if (meshPressure > 0.6 || proxyPressure > 0.6) {
+    fallbackBandLevel = Math.max(fallbackBandLevel, 2);
+  }
+
+  if (proxyBoost > 0.5 && !proxyFallback && proxyPressure < 0.7) {
+    fallbackBandLevel = Math.max(0, fallbackBandLevel - 1);
+  }
+
   // PulseBand aggression: how “hard” we’re allowed to push (0–1)
   const pulseBandAggression = norm(1 - c);
 
-  // Presence field (band + router)
+  // Presence field (band + router + mesh + proxy)
   const bandPresence = {
     band: presenceContext.band || "pulseband",
     deviceId: presenceContext.deviceId || null,
@@ -341,7 +385,9 @@ export function computeContinuancePresencePlanV3({
 
   const routerPresence = {
     routerHealthy: safeBool(organismSnapshot?.binary?.router?.healthy, true),
-    proxyHealthy: safeBool(organismSnapshot?.binary?.proxy?.healthy, true)
+    proxyHealthy: safeBool(organismSnapshot?.binary?.proxy?.healthy, true),
+    meshPressureIndex: safeNum(meshContext.meshPressureIndex, null),
+    proxyMode: proxyContext.proxyMode || null
   };
 
   // Chunk / cache / prewarm hints
@@ -363,13 +409,17 @@ export function computeContinuancePresencePlanV3({
   const cacheHints = {
     keepHot: c >= 0.4 || l >= 0.5,
     priority: c >= 0.7 ? "critical" : c >= 0.4 ? "high" : "normal",
-    advantageScore
+    advantageScore,
+    meshPressureIndex: meshPressure,
+    proxyPressureIndex: proxyPressure
   };
 
   const chunkHints = {
     chunkAggression: pulseBandAggression,
     preferBinaryChunks: true,
-    preferPresenceChunks: c >= 0.4
+    preferPresenceChunks: c >= 0.4,
+    meshPressureIndex: meshPressure,
+    fallbackBandLevel
   };
 
   return Object.freeze({
@@ -392,7 +442,10 @@ export function computeContinuancePresencePlanV3({
   });
 }
 
-// small helper used above
-function safeBool(v, d = false) {
-  return typeof v === "boolean" ? v : d;
-}
+export default {
+  PowerContinuanceEngineMeta,
+  computeContinuanceMetricsV3,
+  detectFluctuationsV3,
+  detectOutagesV3,
+  computeContinuancePresencePlanV3
+};

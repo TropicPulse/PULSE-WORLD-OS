@@ -73,7 +73,7 @@ import PulsePowerAPI from "./PulseWorldPower-v20.js";
 // ============================================================================
 import { PulseIntentMap } from "./PulseWorldIntentMap-v21.js";
 import { PulseOrganismMap } from "./PulseWorldOrganismMap-v21.js";
-import createPulseWorldCore from "../PULSE-EXPANSION/PulseUser-v16.js";
+import createPulseWorldCore from "../PULSE-EXPANSION/PulseUser-v24.js";
 import { createDualBandOrganism as PulseBinaryOrganismBoot } from "../PULSE-AI/aiDualBand-v24.js";
 
 // ============================================================================

@@ -1,36 +1,37 @@
 // ============================================================================
-// FILE: tropic-pulse-functions/PULSE-WORLD/PULSE-EARN/PulseEarnCustomReceptor-v16-Immortal-INTEL.js
-// LAYER: THE GENETIC REGULATOR (v16-Immortal-INTEL A‑B‑A)
-// (Deterministic Marketplace Interpreter + Receptor Builder + v16 Surfaces)
+// FILE: PulseEarnCustomReceptor-v24-Immortal-INTEL.js
+// LAYER: THE GENETIC REGULATOR (v24-Immortal-INTEL A‑B‑A)
+// (Deterministic Marketplace Interpreter + Receptor Builder + v24 Surfaces)
 // ============================================================================
 //
-// ROLE (v16-Immortal-INTEL A‑B‑A):
-//   THE GENETIC REGULATOR — deterministic marketplace interpreter for Earn v16.
+// ROLE (v24-Immortal-INTEL A‑B‑A):
+//   THE GENETIC REGULATOR — deterministic marketplace interpreter for Earn v24.
 //   • Reads receptor DNA from static deterministic config (no network).
-//   • Expresses that DNA into a functional v16 receptor phenotype.
+//   • Expresses that DNA into a functional v24 receptor phenotype.
 //   • Enforces the universal interface (ping, fetchJobs, submitResult, normalizeJob).
-//   • Emits v16 presence/advantage/chunk/computeProfile/pulseIntelligence surfaces.
+//   • Emits v24 presence/advantage/chunk/computeProfile/pulseIntelligence surfaces.
 //   • Emits A‑B‑A bandSignature + binaryField + waveField.
 //   • Fully factoring‑aware + prewarm/cache/chunk aware.
+//   • Continuance/risk/capabilityModel aware as metadata-only.
 //   • Pure, drift‑proof, zero user code, zero async.
 //
-// CONTRACT (v16-Immortal-INTEL):
+// CONTRACT (v24-Immortal-INTEL):
 //   • PURE RECEPTOR — deterministic, drift‑proof.
 //   • NO async, NO network, NO randomness, NO timestamps.
 //   • NO eval(), NO Function(), NO dynamic imports.
 //   • NEVER mutate job objects.
 //   • READ‑ONLY except deterministic DNA caching.
-//   • Unified Earn v16 presence/advantage/chunk/computeProfile/pulseIntelligence schema.
+//   • Unified Earn v24 presence/advantage/chunk/computeProfile/pulseIntelligence schema.
 //   • Dual-band A‑B‑A: symbolic primary, binary aware, metadata-only.
 // ============================================================================
 
 /*
 AI_EXPERIENCE_META = {
   identity: "PulseEarnCustomReceptorMkt",
-  version: "v16-Immortal-INTEL",
+  version: "v24-Immortal-INTEL",
   layer: "earn_receptor",
   role: "earn_market_receptor",
-  lineage: "PulseEarnCustomReceptorMkt-v11 → v12.3 → v13 → v14.4 → v16-Immortal-INTEL",
+  lineage: "PulseEarnCustomReceptorMkt-v11 → v12.3 → v13 → v14.4 → v16-Immortal-INTEL → v24-Immortal-INTEL",
 
   evo: {
     customReceptor: true,
@@ -46,6 +47,9 @@ AI_EXPERIENCE_META = {
     zeroMutationOfInput: true,
     zeroNetwork: true,
     zeroFilesystem: true,
+    zeroAsync: true,
+    zeroTimers: true,
+    zeroDateNow: true,
 
     presenceAware: true,
     advantageAware: true,
@@ -57,7 +61,12 @@ AI_EXPERIENCE_META = {
 
     // A‑B‑A surfaces
     binaryFieldAware: true,
-    waveFieldAware: true
+    waveFieldAware: true,
+
+    // v24 extensions
+    continuanceAware: true,
+    riskAware: true,
+    capabilityModelAware: true
   },
 
   contract: {
@@ -78,8 +87,8 @@ AI_EXPERIENCE_META = {
 export const PulseEarnCustomReceptorMeta = Object.freeze({
   layer: "PulseEarnCustomReceptor",
   role: "EARN_RECEPTOR_ORGAN",
-  version: "v16-Immortal-INTEL",
-  identity: "PulseEarnCustomReceptor-v16-Immortal-INTEL",
+  version: "v24-Immortal-INTEL",
+  identity: "PulseEarnCustomReceptor-v24-Immortal-INTEL",
 
   guarantees: Object.freeze({
     deterministic: true,
@@ -108,14 +117,21 @@ export const PulseEarnCustomReceptorMeta = Object.freeze({
 
     factoringAware: true,
     pulseIntelligenceAware: true,
-    computeProfileAware: true
+    computeProfileAware: true,
+
+    continuanceAware: true,
+    riskAware: true,
+    capabilityModelAware: true
   }),
 
   contract: Object.freeze({
     input: [
       "DeterministicMarketplaceConfig",
       "DualBandContext",
-      "GlobalHintsPresenceField"
+      "GlobalHintsPresenceField",
+      "ContinuanceSnapshot",   // optional, metadata-only
+      "RiskSnapshot",          // optional, metadata-only
+      "CapabilityModel"        // optional, metadata-only
     ],
     output: [
       "ReceptorPingResult",
@@ -144,13 +160,18 @@ function normalizeBand(band) {
   return b === "binary" ? "binary" : "symbolic";
 }
 
+function clamp01(x) {
+  if (x == null || Number.isNaN(x)) return 0;
+  return Math.max(0, Math.min(1, x));
+}
+
 // ============================================================================
-// Deterministic Genetic DNA (v16 IMMORTAL)
+// Deterministic Genetic DNA (v24 IMMORTAL)
 // ============================================================================
 const DETERMINISTIC_RECEPTOR_DNA = {
   id: "CUSTOM",
   name: "Custom Marketplace",
-  version: "16-Immortal-INTEL",
+  version: "24-Immortal-INTEL",
   healthScore: 1.0,
 
   band: "symbolic", // symbolic | binary
@@ -163,7 +184,7 @@ const DETERMINISTIC_RECEPTOR_DNA = {
 
   headers: {},
 
-  lineage: "Receptor-GeneticRegulator-v16-Immortal-INTEL",
+  lineage: "Receptor-GeneticRegulator-v24-Immortal-INTEL",
   phenotype: "MarketplaceReceptor"
 };
 
@@ -186,7 +207,7 @@ function loadMarketplaceDNA() {
 }
 
 // ============================================================================
-// Presence v16 — Unified v16 Presence Field
+// Presence v24 — Unified v24 Presence Field
 // ============================================================================
 function classifyPresenceTier(pressure) {
   if (pressure >= 150) return "critical";
@@ -218,7 +239,7 @@ function buildPresenceField(globalHints = {}, cycle) {
   const dna = loadMarketplaceDNA();
 
   return {
-    presenceVersion: "v16.0-Presence-Immortal-INTEL",
+    presenceVersion: "v24-Immortal-INTEL",
     presenceTier,
 
     bandPresence: ghP.bandPresence || normalizeBand(dna.band),
@@ -239,15 +260,15 @@ function buildPresenceField(globalHints = {}, cycle) {
     cycle,
 
     presenceSignature: computeHash(
-      `CUSTOM_PRESENCE_V16::${presenceTier}::${meshPressureIndex}::${castleLoadLevel}`
+      `CUSTOM_PRESENCE_V24::${presenceTier}::${meshPressureIndex}::${castleLoadLevel}`
     )
   };
 }
 
 // ============================================================================
-// Advantage‑C v16 — Advantage Surfaces
+// Advantage‑C v24 — Advantage Surfaces
 // ============================================================================
-function buildAdvantageField(bandPack, presenceField, globalHints = {}) {
+function buildAdvantageField(bandPack, presenceField, globalHints = {}, continuanceSnapshot = null, riskSnapshot = null) {
   const density = bandPack.binaryField.binarySurface.density;
   const amplitude = bandPack.waveField.amplitude;
 
@@ -262,7 +283,18 @@ function buildAdvantageField(bandPack, presenceField, globalHints = {}) {
     presenceField.presenceTier === "soft" ? 0.005 :
     0;
 
-  const advantageScore = baseScore + presenceBoost;
+  const contScore = continuanceSnapshot && typeof continuanceSnapshot.continuanceScore === "number"
+    ? continuanceSnapshot.continuanceScore
+    : 0;
+
+  const riskScore = riskSnapshot && typeof riskSnapshot.riskScore === "number"
+    ? riskSnapshot.riskScore
+    : 0;
+
+  const continuanceBoost = (1 - clamp01(contScore)) * 0.01;
+  const riskBoost = clamp01(riskScore) * 0.01;
+
+  const advantageScore = baseScore + presenceBoost + continuanceBoost + riskBoost;
 
   let advantageTier = 0;
   if (advantageScore >= 0.05) advantageTier = 3;
@@ -272,15 +304,17 @@ function buildAdvantageField(bandPack, presenceField, globalHints = {}) {
   const fallbackBandLevel = globalHints.fallbackBandLevel ?? 0;
 
   return {
-    advantageVersion: "C-16.0-INTEL",
+    advantageVersion: "C-24.0-INTEL",
     advantageScore,
     advantageTier,
-    fallbackBandLevel
+    fallbackBandLevel,
+    continuanceScore: contScore,
+    riskScore
   };
 }
 
 // ============================================================================
-// Chunk / Cache / Prewarm Plan v16 — Chunking Surfaces
+// Chunk / Cache / Prewarm Plan v24 — Chunking Surfaces
 // ============================================================================
 function buildChunkPrewarmPlan(presenceField, advantageField) {
   const basePriority =
@@ -302,7 +336,7 @@ function buildChunkPrewarmPlan(presenceField, advantageField) {
   const priority = basePriority + advantageBoost;
 
   return {
-    planVersion: "v16.0-CustomReceptor-AdvantageC-INTEL",
+    planVersion: "v24-CustomReceptor-AdvantageC-INTEL",
     priority,
     band: presenceField.presenceTier,
     chunks: {
@@ -321,7 +355,7 @@ function buildChunkPrewarmPlan(presenceField, advantageField) {
 }
 
 // ============================================================================
-// A‑B‑A Binary + Wave Surfaces (v16)
+// A‑B‑A Binary + Wave Surfaces (v24)
 // ============================================================================
 function buildBinaryField(dna, cycle) {
   const patternLen =
@@ -336,8 +370,8 @@ function buildBinaryField(dna, cycle) {
   const surface = density + patternLen;
 
   return {
-    binaryPhenotypeSignature: computeHash(`BCUSTOM_V16::${surface}`),
-    binarySurfaceSignature: computeHash(`BCUSTOM_SURF_V16::${surface}`),
+    binaryPhenotypeSignature: computeHash(`BCUSTOM_V24::${surface}`),
+    binarySurfaceSignature: computeHash(`BCUSTOM_SURF_V24::${surface}`),
     binarySurface: {
       patternLen,
       density,
@@ -364,7 +398,7 @@ function buildWaveField(dna, cycle, band) {
 }
 
 // ============================================================================
-// Hints + Compute Profile v16 — Metadata-only, Receptor-level
+// Hints + Compute Profile v24 — Metadata-only, Receptor-level
 // ============================================================================
 function buildHintsField(globalHints = {}) {
   return Object.freeze({
@@ -372,13 +406,11 @@ function buildHintsField(globalHints = {}) {
     chunkHints: globalHints.chunkHints || {},
     cacheHints: globalHints.cacheHints || {},
     prewarmHints: globalHints.prewarmHints || {},
-    coldStartHints: globalHints.coldStartHints || {}
+    coldStartHints: globalHints.coldStartHints || {},
+    gpuPreferred: !!globalHints.gpuPreferred,
+    minerPreferred: !!globalHints.minerPreferred,
+    airPreferred: !!globalHints.airPreferred
   });
-}
-
-function clamp01(x) {
-  if (x == null || Number.isNaN(x)) return 0;
-  return Math.max(0, Math.min(1, x));
 }
 
 function normalizeCachePriority(p) {
@@ -397,7 +429,7 @@ function deriveFactoringSignal({ meshPressureIndex = 0, cachePriority = "normal"
   return 0;
 }
 
-function buildComputeProfile({ band, globalHints = {}, presenceField }) {
+function buildComputeProfile({ band, globalHints = {}, presenceField, capabilityModel = {} }) {
   const b = normalizeBand(band);
   const hintsField = buildHintsField(globalHints);
   const cachePriority = normalizeCachePriority(hintsField.cacheHints.priority);
@@ -410,6 +442,11 @@ function buildComputeProfile({ band, globalHints = {}, presenceField }) {
     prewarmNeeded
   });
 
+  const performanceRatio = capabilityModel.performanceRatio ?? 1;
+  const gpuScore = capabilityModel.gpuScore ?? 0;
+  const minerScore = capabilityModel.minerScore ?? 0;
+  const airScore = capabilityModel.airScore ?? 0;
+
   return Object.freeze({
     routeBand: b,
     fallbackBandLevel: hintsField.fallbackBandLevel,
@@ -419,16 +456,19 @@ function buildComputeProfile({ band, globalHints = {}, presenceField }) {
     binaryPreferred: b === "binary",
     symbolicPreferred: b === "symbolic",
     factoringSignal,
-    performanceRatio: 1
+    performanceRatio,
+    gpuPreferred: hintsField.gpuPreferred || gpuScore > 0,
+    minerPreferred: hintsField.minerPreferred || minerScore > 0,
+    airPreferred: hintsField.airPreferred || airScore > 0
   });
 }
 
 // ============================================================================
-// Pulse Intelligence v16 for Custom Receptor — Logic-only
+// Pulse Intelligence v24 for Custom Receptor — Logic-only
 // ============================================================================
-function computePulseIntelligenceForMarket({ band, presenceField, advantageField, factoringSignal }) {
+function computePulseIntelligenceForMarket({ band, presenceField, advantageField, computeProfile }) {
   const bandIsBinary = band === "binary" ? 1 : 0;
-  const factoring = factoringSignal ? 1 : 0;
+  const factoring = computeProfile.factoringSignal ? 1 : 0;
 
   const advantageScore = advantageField.advantageScore || 0;
   const advantageTier = advantageField.advantageTier || 0;
@@ -441,12 +481,15 @@ function computePulseIntelligenceForMarket({ band, presenceField, advantageField
     presenceTier === "soft"     ? 0.4 :
     0.2;
 
+  const performanceRatio = computeProfile.performanceRatio || 1;
+
   const solvednessScore = Math.max(
     0,
     Math.min(
-      advantageScore * 10 * 0.5 +
-      presenceWeight * 0.3 +
-      factoring * 0.2,
+      advantageScore * 10 * 0.4 +
+      presenceWeight * 0.25 +
+      factoring * 0.2 +
+      performanceRatio * 0.15,
       1
     )
   );
@@ -462,19 +505,20 @@ function computePulseIntelligenceForMarket({ band, presenceField, advantageField
     0,
     Math.min(
       solvednessScore * 0.6 +
-      (bandIsBinary ? 0.2 : 0) +
-      (advantageTier >= 2 ? 0.2 : advantageTier === 1 ? 0.1 : 0),
+      (bandIsBinary ? 0.15 : 0) +
+      (advantageTier >= 2 ? 0.25 : advantageTier === 1 ? 0.1 : 0),
       1
     )
   );
 
   return {
     solvednessScore,
-    factoringSignal: factoring ? "high" : "low",
+    factoringSignal: computeProfile.factoringSignal ? "high" : "low",
     computeTier,
     readinessScore,
     band,
-    advantageTier
+    advantageTier,
+    performanceRatio
   };
 }
 
@@ -483,30 +527,30 @@ function computePulseIntelligenceForMarket({ band, presenceField, advantageField
 // ============================================================================
 function buildReceptorSignature(dna) {
   return computeHash(
-    `RECEPTOR_V16::${dna.id}::${dna.version}::${normalizeBand(dna.band)}`
+    `RECEPTOR_V24::${dna.id}::${dna.version}::${normalizeBand(dna.band)}`
   );
 }
 
 function buildPingSignature(latency) {
-  return computeHash(`PING_V16::CUSTOM::${latency}`);
+  return computeHash(`PING_V24::CUSTOM::${latency}`);
 }
 
 function buildJobListSignature(count) {
-  return computeHash(`JOBS_V16::CUSTOM::${count}`);
+  return computeHash(`JOBS_V24::CUSTOM::${count}`);
 }
 
 function buildSubmissionSignature(jobId, status) {
-  return computeHash(`SUBMIT_V16::CUSTOM::${jobId}::${status}`);
+  return computeHash(`SUBMIT_V24::CUSTOM::${jobId}::${status}`);
 }
 
 function buildBandSignature(dna) {
-  return computeHash(`RECEPTOR_BAND_V16::${normalizeBand(dna.band)}::${dna.id}`);
+  return computeHash(`RECEPTOR_BAND_V24::${normalizeBand(dna.band)}::${dna.id}`);
 }
 
 // ============================================================================
-// normalizeJob — strict unified v16 job schema + v16 surfaces
+// normalizeJob — strict unified v24 job schema + v24 surfaces
 // ============================================================================
-function normalizeJob(raw, globalHints = {}) {
+function normalizeJob(raw, globalHints = {}, continuanceSnapshot = null, riskSnapshot = null, capabilityModel = {}) {
   const dna = loadMarketplaceDNA();
 
   if (!raw || typeof raw !== "object") {
@@ -560,17 +604,24 @@ function normalizeJob(raw, globalHints = {}) {
   const advantageField = buildAdvantageField(
     { band, binaryField, waveField },
     presenceField,
-    globalHints
+    globalHints,
+    continuanceSnapshot,
+    riskSnapshot
   );
 
   const chunkPlan = buildChunkPrewarmPlan(presenceField, advantageField);
-  const computeProfile = buildComputeProfile({ band, globalHints, presenceField });
+  const computeProfile = buildComputeProfile({
+    band,
+    globalHints,
+    presenceField,
+    capabilityModel
+  });
 
   const pulseIntelligence = computePulseIntelligenceForMarket({
     band,
     presenceField,
     advantageField,
-    factoringSignal: computeProfile.factoringSignal
+    computeProfile
   });
 
   return {
@@ -590,7 +641,7 @@ function normalizeJob(raw, globalHints = {}) {
     _abaBinaryDensity: binaryField.binarySurface.density,
     _abaWaveAmplitude: waveField.amplitude,
 
-    // Unified v16 surfaces
+    // Unified v24 surfaces
     presenceField,
     advantageField,
     chunkPlan,
@@ -601,9 +652,9 @@ function normalizeJob(raw, globalHints = {}) {
 
 // ============================================================================
 // Receptor Expression — ping(), fetchJobs(), submitResult()
-// Unified v16 presence/advantage/chunk/computeProfile/pulseIntelligence surfaces.
+// Unified v24 presence/advantage/chunk/computeProfile/pulseIntelligence surfaces.
 // ============================================================================
-function ping(globalHints = {}) {
+function ping(globalHints = {}, continuanceSnapshot = null, riskSnapshot = null, capabilityModel = {}) {
   customReceptorCycle++;
 
   const dna = loadMarketplaceDNA();
@@ -622,17 +673,24 @@ function ping(globalHints = {}) {
   const advantageField = buildAdvantageField(
     { band, binaryField, waveField },
     presenceField,
-    globalHints
+    globalHints,
+    continuanceSnapshot,
+    riskSnapshot
   );
 
   const chunkPlan = buildChunkPrewarmPlan(presenceField, advantageField);
-  const computeProfile = buildComputeProfile({ band, globalHints, presenceField });
+  const computeProfile = buildComputeProfile({
+    band,
+    globalHints,
+    presenceField,
+    capabilityModel
+  });
 
   const pulseIntelligence = computePulseIntelligenceForMarket({
     band,
     presenceField,
     advantageField,
-    factoringSignal: computeProfile.factoringSignal
+    computeProfile
   });
 
   return {
@@ -650,14 +708,14 @@ function ping(globalHints = {}) {
   };
 }
 
-function fetchJobs(globalHints = {}) {
+function fetchJobs(globalHints = {}, continuanceSnapshot = null, riskSnapshot = null, capabilityModel = {}) {
   customReceptorCycle++;
 
   const dna = loadMarketplaceDNA();
   const jobs = Array.isArray(dna.endpoints.jobs) ? dna.endpoints.jobs : [];
 
   const normalizedJobs = jobs
-    .map(j => normalizeJob(j, globalHints))
+    .map(j => normalizeJob(j, globalHints, continuanceSnapshot, riskSnapshot, capabilityModel))
     .filter(j => j !== null);
 
   const presenceField = buildPresenceField(globalHints, customReceptorCycle);
@@ -668,17 +726,24 @@ function fetchJobs(globalHints = {}) {
   const advantageField = buildAdvantageField(
     { band, binaryField, waveField },
     presenceField,
-    globalHints
+    globalHints,
+    continuanceSnapshot,
+    riskSnapshot
   );
 
   const chunkPlan = buildChunkPrewarmPlan(presenceField, advantageField);
-  const computeProfile = buildComputeProfile({ band, globalHints, presenceField });
+  const computeProfile = buildComputeProfile({
+    band,
+    globalHints,
+    presenceField,
+    capabilityModel
+  });
 
   const pulseIntelligence = computePulseIntelligenceForMarket({
     band,
     presenceField,
     advantageField,
-    factoringSignal: computeProfile.factoringSignal
+    computeProfile
   });
 
   return {
@@ -696,7 +761,7 @@ function fetchJobs(globalHints = {}) {
   };
 }
 
-function submitResult(job, result, globalHints = {}) {
+function submitResult(job, result, globalHints = {}, continuanceSnapshot = null, riskSnapshot = null, capabilityModel = {}) {
   customReceptorCycle++;
 
   const dna = loadMarketplaceDNA();
@@ -709,17 +774,24 @@ function submitResult(job, result, globalHints = {}) {
   const advantageField = buildAdvantageField(
     { band, binaryField, waveField },
     presenceField,
-    globalHints
+    globalHints,
+    continuanceSnapshot,
+    riskSnapshot
   );
 
   const chunkPlan = buildChunkPrewarmPlan(presenceField, advantageField);
-  const computeProfile = buildComputeProfile({ band, globalHints, presenceField });
+  const computeProfile = buildComputeProfile({
+    band,
+    globalHints,
+    presenceField,
+    capabilityModel
+  });
 
   const pulseIntelligence = computePulseIntelligenceForMarket({
     band,
     presenceField,
     advantageField,
-    factoringSignal: computeProfile.factoringSignal
+    computeProfile
   });
 
   if (!job || !job.id) {
@@ -760,13 +832,13 @@ function submitResult(job, result, globalHints = {}) {
 }
 
 // ============================================================================
-// Export — The Genetic Regulator Organ (v16-Immortal-INTEL A‑B‑A)
+// Export — The Genetic Regulator Organ (v24-Immortal-INTEL A‑B‑A)
 // ============================================================================
 export const PulseEarnCustomReceptor = {
   id: "CUSTOM",
   name: "Custom Marketplace",
-  version: "16-Immortal-INTEL",
-  lineage: "Receptor-GeneticRegulator-v16-Immortal-INTEL",
+  version: "24-Immortal-INTEL",
+  lineage: "Receptor-GeneticRegulator-v24-Immortal-INTEL",
 
   receptorSignature: () => buildReceptorSignature(loadMarketplaceDNA()),
   bandSignature: () => buildBandSignature(loadMarketplaceDNA()),
@@ -778,4 +850,9 @@ export const PulseEarnCustomReceptor = {
   fetchJobs,
   submitResult,
   normalizeJob
+};
+
+export default {
+  PulseEarnCustomReceptorMeta,
+  PulseEarnCustomReceptor
 };

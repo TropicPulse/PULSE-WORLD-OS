@@ -1,81 +1,70 @@
 // ============================================================================
-// FILE: PulseEarnSurvivalInstincts-v16-IMMORTAL-INTEL.js
-// LAYER: THE SURVIVAL INSTINCTS (v16-IMMORTAL-INTEL A-B-A)
-// (Worker Protection + Evolutionary Scaling + Fair Workload Defense
-//  + Presence/Advantage-M/Chunk/Prewarm Surfaces + INTEL Dualhash)
-// ============================================================================
-//
-// ROLE (v16-IMMORTAL-INTEL):
-//   THE SURVIVAL INSTINCTS — Pulse‑Earn’s evolved worker‑protection engine.
-//   • Rejects unsafe jobs (structural incompatibility).
-//   • Rejects unfair jobs (low pay, high metabolic cost).
-//   • Rejects exploitative jobs (bandwidth drain, long runtimes).
-//   • Applies deterministic evolutionary capability + presence/advantage‑M scaling.
-//   • Approves only safe, profitable, fair workloads.
-//   • Emits deterministic, INTEL dual‑hashed survival diagnostics.
-//
-// PURPOSE:
-//   • Provide deterministic, drift‑proof job scoring.
-//   • Apply evolutionary + presence/advantage‑M scaling to device capability.
-//   • Ensure the device is never overloaded or underpaid.
-//   • Guarantee that only profitable, safe workloads enter the pipeline.
-//   • Surface a stable, inspectable survival + presence + advantage signature per job.
-//
-// CONTRACT:
-//   • PURE SCORING ENGINE — no AI layers, no translation, no memory model.
-//   • NO imports, NO eval(), NO dynamic behavior.
-//   • NEVER mutate job objects.
-//   • Deterministic compatibility + profitability + presence/advantage scoring only.
-//   • NO timestamps, NO randomness.
-//   • Internal healing state is allowed to mutate; external objects are not.
+//  PulseEarnSurvivalInstincts-v24-IMMORTAL-INTEL-MAX.js
+//  EARN SURVIVAL ORGAN (v24 IMMORTAL-INTEL-MAX)
+//  Deterministic Survival Scoring + Compatibility + Evolutionary Scaling
+//  DualBand + DualHash-INTEL + Presence/Advantage/Chunk/Cache/Prewarm Surfaces
+//  Zero async, zero network, zero filesystem, zero AI, zero user code
 // ============================================================================
 
 /*
 AI_EXPERIENCE_META = {
   identity: "PulseEarnSurvivalInstincts",
-  version: "v16-IMMORTAL-INTEL",
+  version: "v24-IMMORTAL-INTEL-MAX",
   layer: "earn_survival",
-  role: "earn_survival_brainstem",
-  lineage: "PulseEarnSurvivalInstincts-v11 → v12.3 → v14-Immortal → v16-IMMORTAL-INTEL",
+  role: "earn_survival_organ",
+  lineage: "v9 → v10 → v11 → v11-Evo → v12.3-Presence-Evo+ → v13.0-Presence-Immortal-ADV → v16-IMMORTAL-INTEL → v24-IMMORTAL-INTEL-MAX",
 
   evo: {
-    survivalBrainstem: true,
-    threatHeuristics: true,
-    overloadPrevention: true,
+    survivalOrgan: true,
+    compatibilityEngine: true,
+    profitabilityEngine: true,
+    evolutionaryScaling: true,
+    fairnessDefense: true,
+
     dualBand: true,
     symbolicPrimary: true,
     binaryAware: true,
+    waveAware: true,
 
     deterministic: true,
+    deterministicField: true,
     driftProof: true,
     pureCompute: true,
     zeroNetwork: true,
     zeroFilesystem: true,
     zeroMutationOfInput: true,
+    zeroAsync: true,
+    zeroRandomness: true,
+
+    presenceAdvantageChunkUnified: true,
+    cachePrewarmAware: true,
+    hintsAware: true,
 
     intelSignatureAware: true,
-    dualHashAware: true
+    dualHashAware: true,
+    structureAware: true,
+    contextAware: true
   },
 
   contract: {
     always: [
-      "PulseEarnImmuneSystem",
-      "PulseEarnLymphNodes",
-      "PulseEarnReflexRouter"
+      "PulseEarnSkeletalSystem",
+      "PulseEarnMuscleSystem",
+      "PulseEarnReceptorMkt"
     ],
     never: [
       "safeRoute",
       "fetchViaCNS"
     ]
   }
-}
+};
 */
 
 export const PulseEarnSurvivalInstinctsMeta = Object.freeze({
   layer: "PulseEarnSurvivalInstincts",
   role: "EARN_SURVIVAL_ORGAN",
-  version: "v16-IMMORTAL-INTEL",
-  identity: "PulseEarnSurvivalInstincts-v16-IMMORTAL-INTEL",
+  version: "v24-IMMORTAL-INTEL-MAX",
+  identity: "PulseEarnSurvivalInstincts-v24-IMMORTAL-INTEL-MAX",
 
   guarantees: Object.freeze({
     deterministic: true,
@@ -145,15 +134,16 @@ export const PulseEarnSurvivalInstinctsMeta = Object.freeze({
   }),
 
   lineage: Object.freeze({
-    root: "PulseOS-v16-IMMORTAL-INTEL",
-    parent: "PulseEarn-v16-IMMORTAL-INTEL",
+    root: "PulseOS-v24-IMMORTAL-INTEL-MAX",
+    parent: "PulseEarn-v24-IMMORTAL-INTEL-MAX",
     ancestry: [
       "PulseEarnSurvivalInstincts-v9",
       "PulseEarnSurvivalInstincts-v10",
       "PulseEarnSurvivalInstincts-v11",
       "PulseEarnSurvivalInstincts-v11-Evo",
       "PulseEarnSurvivalInstincts-v12.3-Presence-Evo+",
-      "PulseEarnSurvivalInstincts-v13.0-Presence-Immortal-ADV"
+      "PulseEarnSurvivalInstincts-v13.0-Presence-Immortal-ADV",
+      "PulseEarnSurvivalInstincts-v16-IMMORTAL-INTEL"
     ]
   }),
 
@@ -167,14 +157,15 @@ export const PulseEarnSurvivalInstinctsMeta = Object.freeze({
   architecture: Object.freeze({
     pattern: "A-B-A",
     baseline: "deterministic compatibility → evolutionary scaling → fairness defense",
-    adaptive: "binary/wave surfaces + dual-band + presence/advantage‑M + chunk/cache/prewarm signatures + INTEL dualhash",
-    return: "deterministic survival score + decision + signatures + presence/advantage surfaces"
+    adaptive:
+      "binary/wave surfaces + dual-band + presence/advantage‑M + chunk/cache/prewarm signatures + INTEL dualhash",
+    return:
+      "deterministic survival score + decision + signatures + presence/advantage surfaces"
   })
 });
 
-
 // ---------------------------------------------------------------------------
-// Healing Metadata — Survival Instinct Activity Log (v16-IMMORTAL-INTEL)
+// Healing Metadata — Survival Instinct Activity Log (v24-IMMORTAL-INTEL-MAX)
 // ---------------------------------------------------------------------------
 const survivalHealing = {
   lastJobId: null,
@@ -199,22 +190,31 @@ const survivalHealing = {
   // pattern / signature surface
   lastJobPattern: null,
   lastDevicePattern: null,
-  lastSurvivalSignature: null, // classic
+
+  // classic + intel survival signatures
+  lastSurvivalSignatureClassic: null,
+  lastSurvivalSignatureIntel: null,
 
   // presence / advantage / hints surfaces
   presenceTier: null,
   presenceField: null,
   presenceVersion: null,
+  presenceSignatureClassic: null,
+  presenceSignatureIntel: null,
+
   advantageField: null,
   advantageVersion: null,
+  advantageSignatureClassic: null,
+  advantageSignatureIntel: null,
+
   hintsField: null,
-  presenceSignature: null,
-  advantageSignature: null,
-  hintsSignature: null,
+  hintsSignatureClassic: null,
+  hintsSignatureIntel: null,
 
   // band + binary + wave surfaces
   lastBand: "symbolic",
-  lastBandSignature: null,
+  lastBandSignatureClassic: null,
+  lastBandSignatureIntel: null,
   lastBinaryField: null,
   lastWaveField: null,
 
@@ -228,12 +228,9 @@ const survivalHealing = {
   }
 };
 
-
-
 // ---------------------------------------------------------------------------
-// Deterministic Hash Helpers — v16-IMMORTAL-MAX
+// Deterministic Hash Helpers — v24-IMMORTAL-INTEL-MAX
 // ---------------------------------------------------------------------------
-
 function computeHash(str) {
   let h = 0;
   const s = String(str || "");
@@ -261,9 +258,7 @@ function buildDualHashSignature(label, intelPayload, classicString) {
     classic: classicString || ""
   };
   const intelHash = computeHashIntelligence(intelBase);
-  const classicHash = computeHash(
-    `${label}::${classicString || ""}`
-  );
+  const classicHash = computeHash(`${label}::${classicString || ""}`);
   return {
     intel: intelHash,
     classic: classicHash
@@ -279,7 +274,6 @@ function normalizePresenceBand(presenceBand) {
   const p = String(presenceBand || "symbolic").toLowerCase();
   return p === "binary" ? "binary" : "symbolic";
 }
-
 
 // ---------------------------------------------------------------------------
 // Numeric safety helpers
@@ -301,9 +295,8 @@ function nonNegative(value, fallback) {
   return v < 0 ? 0 : v;
 }
 
-
 // ---------------------------------------------------------------------------
- // Degradation Tier — aligned with presence tiers
+// Degradation Tier — aligned with presence tiers
 // ---------------------------------------------------------------------------
 function classifyDegradationTier(healthScore) {
   const h = typeof healthScore === "number" ? healthScore : 1.0;
@@ -315,9 +308,8 @@ function classifyDegradationTier(healthScore) {
   return "presenceCriticalDegrade";
 }
 
-
 // ---------------------------------------------------------------------------
-// Presence / Advantage‑M / Hints Surfaces (v16-IMMORTAL-INTEL)
+// Presence / Advantage‑M / Hints Surfaces (v24-IMMORTAL-INTEL-MAX)
 // ---------------------------------------------------------------------------
 function buildPresenceField(deviceProfile, dualBandContext) {
   const presenceContext = (dualBandContext && dualBandContext.presenceContext) || {};
@@ -341,7 +333,7 @@ function buildPresenceField(deviceProfile, dualBandContext) {
   const cacheLines = chunkField.cacheLines || 0;
   const prewarmSlots = chunkField.prewarmSlots || 0;
 
-  const presenceVersion = "v16-IMMORTAL-INTEL-SURVIVAL";
+  const presenceVersion = "v24-IMMORTAL-INTEL-MAX-SURVIVAL";
 
   const field = {
     presenceVersion,
@@ -365,9 +357,16 @@ function buildPresenceField(deviceProfile, dualBandContext) {
     `prewarm:${prewarmSlots}`
   ].join("::");
 
+  const sig = buildDualHashSignature(
+    "SURVIVAL_PRESENCE_V24",
+    { field },
+    raw
+  );
+
   survivalHealing.presenceField = field;
   survivalHealing.presenceVersion = presenceVersion;
-  survivalHealing.presenceSignature = buildDualHashSignature(`PRESENCE::${raw}`);
+  survivalHealing.presenceSignatureClassic = sig.classic;
+  survivalHealing.presenceSignatureIntel = sig.intel;
 
   return field;
 }
@@ -398,7 +397,7 @@ function buildAdvantageField(deviceProfile, dualBandContext) {
       ? skTier
       : 0;
 
-  const advantageVersion = "M-SURVIVAL-16.0";
+  const advantageVersion = "M-SURVIVAL-24.0";
 
   const field = {
     advantageVersion,
@@ -410,10 +409,21 @@ function buildAdvantageField(deviceProfile, dualBandContext) {
     skeletalTier: skTier
   };
 
-  const raw = `ADV_M::v:${advantageVersion}::score:${score}::band:${band}::tier:${tier}::skScore:${skScore}::skBand:${skBand}::skTier:${skTier}`;
+  const raw =
+    `ADV_M::v:${advantageVersion}::score:${score}` +
+    `::band:${band}::tier:${tier}` +
+    `::skScore:${skScore}::skBand:${skBand}::skTier:${skTier}`;
+
+  const sig = buildDualHashSignature(
+    "SURVIVAL_ADVANTAGE_V24",
+    { field },
+    raw
+  );
+
   survivalHealing.advantageField = field;
   survivalHealing.advantageVersion = advantageVersion;
-  survivalHealing.advantageSignature = buildDualHashSignature(raw);
+  survivalHealing.advantageSignatureClassic = sig.classic;
+  survivalHealing.advantageSignatureIntel = sig.intel;
 
   return field;
 }
@@ -438,8 +448,15 @@ function buildHintsField(dualBandContext) {
     JSON.stringify(coldStartHints || {})
   ].join("::");
 
+  const sig = buildDualHashSignature(
+    "SURVIVAL_HINTS_V24",
+    { field },
+    raw
+  );
+
   survivalHealing.hintsField = field;
-  survivalHealing.hintsSignature = buildDualHashSignature(`HINTS::${raw}`);
+  survivalHealing.hintsSignatureClassic = sig.classic;
+  survivalHealing.hintsSignatureIntel = sig.intel;
 
   return field;
 }
@@ -452,19 +469,36 @@ function buildBandBinaryWaveSurfaces(deviceProfile, dualBandContext) {
     "symbolic";
 
   const band = normalizeBand(bandRaw);
-  const bandSignature = buildDualHashSignature(`BAND::SURVIVAL::${band}`);
+
+  const bandSig = buildDualHashSignature(
+    "SURVIVAL_BAND_V24",
+    { band },
+    `BAND::SURVIVAL::${band}`
+  );
+
   survivalHealing.lastBand = band;
-  survivalHealing.lastBandSignature = bandSignature;
+  survivalHealing.lastBandSignatureClassic = bandSig.classic;
+  survivalHealing.lastBandSignatureIntel = bandSig.intel;
 
   const skeletalBinary = deviceProfile && deviceProfile.binaryField;
   const skeletalWave = deviceProfile && deviceProfile.waveField;
 
   if (skeletalBinary && skeletalWave) {
+    const surfaceVal =
+      skeletalBinary.binarySurface && skeletalBinary.binarySurface.surface;
+
     const binaryField = {
       ...skeletalBinary,
-      binarySurvivalSignature: buildDualHashSignature(
-        `BSURV::${skeletalBinary.binarySurface && skeletalBinary.binarySurface.surface}`
-      )
+      binarySurvivalSignatureClassic: buildDualHashSignature(
+        "SURVIVAL_BINARY_V24",
+        { surface: surfaceVal },
+        `BSURV::${surfaceVal}`
+      ).classic,
+      binarySurvivalSignatureIntel: buildDualHashSignature(
+        "SURVIVAL_BINARY_V24",
+        { surface: surfaceVal },
+        `BSURV::${surfaceVal}`
+      ).intel
     };
 
     const waveField = {
@@ -476,7 +510,7 @@ function buildBandBinaryWaveSurfaces(deviceProfile, dualBandContext) {
     survivalHealing.lastBinaryField = binaryField;
     survivalHealing.lastWaveField = waveField;
 
-    return { band, bandSignature, binaryField, waveField };
+    return { band, bandSignature: bandSig.classic, binaryField, waveField };
   }
 
   const cpu = deviceProfile && deviceProfile.cpuCores ? deviceProfile.cpuCores : 0;
@@ -486,9 +520,25 @@ function buildBandBinaryWaveSurfaces(deviceProfile, dualBandContext) {
 
   const surface = cpu + mem + gpu + cycle;
 
+  const binarySig = buildDualHashSignature(
+    "SURVIVAL_BINARY_V24",
+    { cpu, mem, gpu, cycle, surface },
+    `BSURV::${surface}`
+  );
+
   const binaryField = {
-    binarySurvivalSignature: buildDualHashSignature(`BSURV::${surface}`),
-    binarySurfaceSignature: buildDualHashSignature(`BSURF_SURV::${surface}`),
+    binarySurvivalSignatureClassic: binarySig.classic,
+    binarySurvivalSignatureIntel: binarySig.intel,
+    binarySurfaceSignatureClassic: buildDualHashSignature(
+      "SURVIVAL_BINARY_SURFACE_V24",
+      { surface },
+      `BSURF_SURV::${surface}`
+    ).classic,
+    binarySurfaceSignatureIntel: buildDualHashSignature(
+      "SURVIVAL_BINARY_SURFACE_V24",
+      { surface },
+      `BSURF_SURV::${surface}`
+    ).intel,
     binarySurface: {
       cpu,
       mem,
@@ -516,12 +566,11 @@ function buildBandBinaryWaveSurfaces(deviceProfile, dualBandContext) {
   survivalHealing.lastBinaryField = binaryField;
   survivalHealing.lastWaveField = waveField;
 
-  return { band, bandSignature, binaryField, waveField };
+  return { band, bandSignature: bandSig.classic, binaryField, waveField };
 }
 
-
 // ---------------------------------------------------------------------------
-// Classic Survival Signature (kept for backward readers)
+// Classic Survival Signature (kept for backward readers, dualhash-backed)
 // ---------------------------------------------------------------------------
 function buildSurvivalSignature({
   jobId,
@@ -544,9 +593,21 @@ function buildSurvivalSignature({
     `stab:${toNumber(stabilityBonus, 0.5)}`
   ].join("::");
 
-  return buildDualHashSignature(raw);
+  return buildDualHashSignature(
+    "EARN_SURVIVAL_CLASSIC_V24",
+    {
+      jobId: jobId || null,
+      marketplaceId: marketplaceId || null,
+      compatibility: !!compatibility,
+      profitPerSecond: toNumber(profitPerSecond, 0),
+      bandwidthPenalty: toNumber(bandwidthPenalty, 0),
+      tier: tier || null,
+      healthScore: toNumber(healthScore, 1),
+      stabilityBonus: toNumber(stabilityBonus, 0.5)
+    },
+    raw
+  );
 }
-
 
 // ---------------------------------------------------------------------------
 // COMPATIBILITY CHECKS — Worker Safety Rules
@@ -568,7 +629,6 @@ function isJobCompatible(rawJob, deviceProfile) {
 
   return true;
 }
-
 
 // ---------------------------------------------------------------------------
 // EVOLUTIONARY CAPABILITY BOOST — Organism Advantage‑M
@@ -619,7 +679,7 @@ function computeEvolutionaryBoost(
   boost += Math.min(amplitude / 5000, 0.1);
 
   boost += Math.min(advScore * 0.03, 0.15);
-  boost += Math.min(advTier * 0.02, 0.10);
+  boost += Math.min(advTier * 0.02, 0.1);
 
   boost += chunkBoost + cacheBoost + prewarmBoost;
 
@@ -628,7 +688,6 @@ function computeEvolutionaryBoost(
 
   return boost;
 }
-
 
 // ---------------------------------------------------------------------------
 // RUNTIME ESTIMATION — Workload Difficulty
@@ -645,7 +704,6 @@ function estimateRuntimeSeconds(rawJob, deviceProfile, evoBoost) {
   return base / sf;
 }
 
-
 // ---------------------------------------------------------------------------
 // PAYOUT ESTIMATION — Fair Compensation
 // ---------------------------------------------------------------------------
@@ -653,7 +711,6 @@ function estimatePayout(rawJob) {
   if (rawJob.payout) return rawJob.payout;
   return 0.01;
 }
-
 
 // ---------------------------------------------------------------------------
 // BANDWIDTH PENALTY — Hidden Cost Detection
@@ -672,7 +729,6 @@ function estimateBandwidthPenalty(rawJob, deviceProfile, band) {
   if (ratio > 1) return ratio * 0.01 * bandMultiplier;
   return ratio * 0.001 * bandMultiplier;
 }
-
 
 // ---------------------------------------------------------------------------
 // PATTERN BUILDERS — Job / Device Pattern Surfaces
@@ -719,9 +775,8 @@ function buildDevicePattern(deviceProfile) {
   );
 }
 
-
 // ---------------------------------------------------------------------------
-// scoreJobForDevice — Survival Instinct Approval Process (v16-IMMORTAL-INTEL)
+// MAIN EXPORT — scoreJobForDevice (v24-IMMORTAL-INTEL-MAX)
 // ---------------------------------------------------------------------------
 export function scoreJobForDevice(rawJob, deviceProfile, dualBandContext) {
   const job = rawJob || {};
@@ -730,7 +785,6 @@ export function scoreJobForDevice(rawJob, deviceProfile, dualBandContext) {
   survivalHealing.cycleCount++;
   survivalHealing.lastJobId = job.id ?? null;
   survivalHealing.lastMarketplaceId = job.marketplaceId ?? null;
-
   survivalHealing.lastDecision = null;
   survivalHealing.lastRejectionReason = null;
   survivalHealing.lastApprovalReason = null;
@@ -750,14 +804,14 @@ export function scoreJobForDevice(rawJob, deviceProfile, dualBandContext) {
   const presenceTier = `${baseTier}::advTier:${advTier}`;
 
   survivalHealing.presenceTier = presenceTier;
+  survivalHealing.lastTier = baseTier;
+  survivalHealing.lastHealthScore = healthScore;
 
   // 1. Worker Safety Check — Survival Protection
   const compatible = isJobCompatible(job, device);
   survivalHealing.lastCompatibility = compatible;
 
   const stabilityBonus = clamp(device.stabilityScore, 0, 1.5) || 0.5;
-  survivalHealing.lastTier = baseTier;
-  survivalHealing.lastHealthScore = healthScore;
   survivalHealing.lastStabilityBonus = stabilityBonus;
 
   if (!compatible) {
@@ -788,7 +842,8 @@ export function scoreJobForDevice(rawJob, deviceProfile, dualBandContext) {
       stabilityBonus
     });
 
-    survivalHealing.lastSurvivalSignature = classicSurvivalSignature;
+    survivalHealing.lastSurvivalSignatureClassic = classicSurvivalSignature.classic;
+    survivalHealing.lastSurvivalSignatureIntel = classicSurvivalSignature.intel;
 
     const decision = "rejected_incompatible";
     survivalHealing.lastDecision = decision;
@@ -800,24 +855,20 @@ export function scoreJobForDevice(rawJob, deviceProfile, dualBandContext) {
 
     const survivalIntelPayload = {
       kind: "earnSurvivalScore",
-      version: "v16-IMMORTAL-INTEL",
+      version: "v24-IMMORTAL-INTEL-MAX",
       cycleIndex: survivalHealing.cycleCount,
       jobId: survivalHealing.lastJobId,
       marketplaceId: survivalHealing.lastMarketplaceId,
-
       rawScore: -Infinity,
       finalScore: -Infinity,
       decision,
       compatibility: false,
-
       profitPerSecond,
       bandwidthPenalty,
       healthScore,
       stabilityBonus,
-
       presenceTier,
       advantageTier: advTier,
-
       band,
       bandSignature,
       binaryDensity: binaryField.density,
@@ -830,18 +881,18 @@ export function scoreJobForDevice(rawJob, deviceProfile, dualBandContext) {
       `::RAW:-INF::FINAL:-INF::DEC:${decision}`;
 
     const dualSig = buildDualHashSignature(
-      "EARN_SURVIVAL_SCORE",
+      "EARN_SURVIVAL_SCORE_V24",
       survivalIntelPayload,
       survivalClassicString
     );
 
-    survivalHealing.lastSurvivalSignature = dualSig.classic;
+    survivalHealing.lastSurvivalSignatureClassic = dualSig.classic;
+    survivalHealing.lastSurvivalSignatureIntel = dualSig.intel;
 
     const diagnostics = {
       jobId: survivalHealing.lastJobId,
       marketplaceId: survivalHealing.lastMarketplaceId,
       cycleIndex: survivalHealing.cycleCount,
-
       compatibility: false,
       decision,
       profitPerSecond,
@@ -851,19 +902,15 @@ export function scoreJobForDevice(rawJob, deviceProfile, dualBandContext) {
       evoBoost: null,
       stabilityBonus,
       healthScore,
-
       presenceTier,
       advantageTier: advTier,
-
       band,
       bandSignature,
       binaryField,
       waveField,
-
       presenceField,
       advantageField,
       hintsField,
-
       survivalSignatureIntel: dualSig.intel,
       survivalSignatureClassic: dualSig.classic
     };
@@ -879,7 +926,7 @@ export function scoreJobForDevice(rawJob, deviceProfile, dualBandContext) {
     };
   }
 
-  // 2. Evolutionary Capability Scaling — Organism Advantage + Presence
+  // 2. Evolutionary capability boost
   const evoBoost = computeEvolutionaryBoost(
     device,
     presenceField,
@@ -891,7 +938,7 @@ export function scoreJobForDevice(rawJob, deviceProfile, dualBandContext) {
   );
   survivalHealing.lastEvolutionBoost = evoBoost;
 
-  // 3. Workload Evaluation — Difficulty
+  // 3. Runtime estimation
   const estimatedRuntimeSeconds = nonNegative(
     estimateRuntimeSeconds(job, device, evoBoost),
     1
@@ -921,7 +968,6 @@ export function scoreJobForDevice(rawJob, deviceProfile, dualBandContext) {
   const finalScore = Number.isFinite(rawScore) ? rawScore : -Infinity;
   survivalHealing.lastScore = finalScore;
 
-  // 7. Pattern + Signature Surface (classic)
   const jobPattern = buildJobPattern(job);
   const devicePattern = buildDevicePattern(device);
   survivalHealing.lastJobPattern = jobPattern;
@@ -938,15 +984,15 @@ export function scoreJobForDevice(rawJob, deviceProfile, dualBandContext) {
     stabilityBonus
   });
 
-  survivalHealing.lastSurvivalSignature = classicSurvivalSignature;
+  survivalHealing.lastSurvivalSignatureClassic = classicSurvivalSignature.classic;
+  survivalHealing.lastSurvivalSignatureIntel = classicSurvivalSignature.intel;
 
-  // 8. Decision
   const decision =
     finalScore > 0 ? "approved" : "rejected_unprofitable";
-
   survivalHealing.lastDecision = decision;
   survivalHealing.lastApprovalReason =
     finalScore > 0 ? "profitable_and_compatible" : null;
+
   if (finalScore <= 0 && !survivalHealing.lastRejectionReason) {
     survivalHealing.lastRejectionReason = "non_profitable_or_neutral";
   }
@@ -955,27 +1001,22 @@ export function scoreJobForDevice(rawJob, deviceProfile, dualBandContext) {
   survivalHealing.lastBinaryField = binaryField;
   survivalHealing.lastWaveField = waveField;
 
-  // 9. v16‑IMMORTAL‑INTEL dualhash survival signature
   const survivalIntelPayload = {
     kind: "earnSurvivalScore",
-    version: "v16-IMMORTAL-INTEL",
+    version: "v24-IMMORTAL-INTEL-MAX",
     cycleIndex: survivalHealing.cycleCount,
     jobId: survivalHealing.lastJobId,
     marketplaceId: survivalHealing.lastMarketplaceId,
-
     rawScore,
     finalScore,
     decision,
     compatibility: true,
-
     profitPerSecond,
     bandwidthPenalty,
     healthScore,
     stabilityBonus,
-
     presenceTier,
     advantageTier: advTier,
-
     band,
     bandSignature,
     binaryDensity: binaryField.density,
@@ -990,18 +1031,18 @@ export function scoreJobForDevice(rawJob, deviceProfile, dualBandContext) {
     `::DEC:${decision}`;
 
   const dualSig = buildDualHashSignature(
-    "EARN_SURVIVAL_SCORE",
+    "EARN_SURVIVAL_SCORE_V24",
     survivalIntelPayload,
     survivalClassicString
   );
 
-  survivalHealing.lastSurvivalSignature = dualSig.classic;
+  survivalHealing.lastSurvivalSignatureClassic = dualSig.classic;
+  survivalHealing.lastSurvivalSignatureIntel = dualSig.intel;
 
   const diagnostics = {
     jobId: survivalHealing.lastJobId,
     marketplaceId: survivalHealing.lastMarketplaceId,
     cycleIndex: survivalHealing.cycleCount,
-
     compatibility: true,
     decision,
     profitPerSecond,
@@ -1011,19 +1052,15 @@ export function scoreJobForDevice(rawJob, deviceProfile, dualBandContext) {
     evoBoost,
     stabilityBonus,
     healthScore,
-
     presenceTier,
     advantageTier: advTier,
-
     band,
     bandSignature,
     binaryField,
     waveField,
-
     presenceField,
     advantageField,
     hintsField,
-
     survivalSignatureIntel: dualSig.intel,
     survivalSignatureClassic: dualSig.classic
   };
@@ -1039,9 +1076,8 @@ export function scoreJobForDevice(rawJob, deviceProfile, dualBandContext) {
   };
 }
 
-
 // ---------------------------------------------------------------------------
-// Export Healing Metadata — Survival Instinct Report (v16-IMMORTAL-INTEL)
+// Export Healing Metadata — Survival Health Report (v24-IMMORTAL-INTEL-MAX)
 // ---------------------------------------------------------------------------
 export function getPulseEarnSurvivalHealingState() {
   return { ...survivalHealing };
