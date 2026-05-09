@@ -1,5 +1,5 @@
 // ============================================================================
-// FILE: PULSE-WORLD-BINARY.js
+// FILE: PULSE-WORLD-BINARY-OS.js
 // PULSE WORLD BINARY CORE — v24‑IMMORTAL‑INTEL++‑SUBSTRATE‑PRIME
 // ----------------------------------------------------------------------------
 // WORLD-FIRST ROLE (FOUNDATION LAYER):
