@@ -122,7 +122,7 @@ const db =
   (typeof window !== "undefined" && window.db) ||
   null;
 
-import PulseUIErrors from "./PulseUIErrors-v20.js";
+import PulseUIErrors from "./PulseUIErrors-v24.js";
 import { PulseProofBridge } from "../_BACKEND/PULSE-WORLD-BRIDGE.js";
 
 // CoreMemory + buses via bridge

@@ -1,16 +1,17 @@
 // ============================================================================
-//  PulseMeshRouter-v16-IMMORTAL-INTEL-DualHash — MESH ROUTING ORGAN
-//  Symbolic + Binary + Intel + DualHash + Prewarm + PresenceScope
-//  Deterministic Mesh Path Selection • Pattern/Lineage/Page/Binary-Aware
+//  PulseMeshRouter-v24-IMMORTAL-INTEL-TriHash — MESH ROUTING ORGAN 24++
+//  Symbolic + Binary + Presence + CacheChunk + Cosmos + AdvantageField
+//  IntelDualHash + TriHash • Deterministic Mesh Path Selection
+//  Pattern/Lineage/Page/Binary/Presence/Cache/Cosmos-Aware • Drift-Proof
 // ============================================================================
 
 /*
 AI_EXPERIENCE_META = {
   identity: "PulseRouterMesh",
-  version: "v16-IMMORTAL-INTEL-DualHash",
+  version: "v24-IMMORTAL-INTEL-TriHash",
   layer: "frontend",
   role: "router_mesh_engine",
-  lineage: "PulseOS-v16",
+  lineage: "PulseOS-v24-IMMORTAL",
 
   evo: {
     meshCore: true,
@@ -19,11 +20,18 @@ AI_EXPERIENCE_META = {
     binaryAware: true,
     symbolicAware: true,
     presenceAware: true,
+    cacheChunkAware: true,
+    cosmosAware: true,
+    advantageFieldAware: true,
     chunkAligned: true,
     safeRouteFree: true,
     multiRoute: true,
+    multiPresenceAware: true,
     dualHashReady: true,
-    intelReady: true
+    triHashReady: true,
+    intelReady: true,
+    driftProof: true,
+    snapshotReady: true
   },
 
   contract: {
@@ -48,19 +56,19 @@ AI_EXPERIENCE_META = {
 
 
 // ============================================================================
-// IMPORT SURFACE — Router Mesh Unit (v16++)
+// IMPORT SURFACE — Router Mesh Unit (v24++)
 // ============================================================================
-import * as PulseRouterEvolutionaryDesign     from "./PulseRouterEvolutionaryDesign.js";
-import * as PulseRouterEvolutionaryInstincts  from "./PulseRouterEvolutionaryInstincts.js";
-import * as PulseRouterEvolutionaryThought    from "./PulseRouterEvolutionaryThought.js";
+import * as PulseRouterEvolutionaryDesign     from "./PulseRouterEvolutionaryDesign-v24.js";
+import * as PulseRouterEvolutionaryInstincts  from "./PulseRouterEvolutionaryInstincts-v24.js";
+import * as PulseRouterEvolutionaryThought    from "./PulseRouterEvolutionaryThought-v24.js";
 
-import { PulseRouter }                        from "./PulseRouter-v16.js";
+import { PulseRouter }                        from "./PulseRouter-v24.js";
 import { createBinaryRouter }                 from "./PulseBinaryRouter-v24.js";
-import { PulseRouterCommandments }            from "./PulseRouterCommandments.js";
-import { PulseEarnRouter }                    from "./PulseRouterEarn-v16.js";
+import { PulseRouterCommandments }            from "./PulseRouterCommandments-v24.js";
+import { PulseEarnRouter }                    from "./PulseRouterEarn-v24.js";
 
 import { createPulseCoreMemory }              from "../PULSE-CORE/PulseCoreMemory-v24.js";
-import { createPulseMeshPresenceRelay as PulseMeshPresenceRelay }                  from "../PULSE-MESH/PulseMeshPresenceRelay-v16.js";
+import { createPulseMeshPresenceRelay as PulseMeshPresenceRelay } from "../PULSE-MESH/PulseMeshPresenceRelay-v24.js";
 
 
 // ============================================================================
@@ -70,8 +78,8 @@ export const PulseMeshRole = {
   type: "MeshRouter",
   subsystem: "PulseMesh",
   layer: "Routing",
-  version: "16.0-IMMORTAL-INTEL-DualHash",
-  identity: "PulseMeshRouter-v16-IMMORTAL-INTEL-DualHash",
+  version: "24.0-IMMORTAL-INTEL-TriHash",
+  identity: "PulseMeshRouter-v24-IMMORTAL-INTEL-TriHash",
 
   evo: {
     driftProof: true,
@@ -86,8 +94,10 @@ export const PulseMeshRole = {
     cacheChunkAware: true,
     prewarmAware: true,
     multiPresenceAware: true,
+    cosmosAware: true,
 
     dualHashReady: true,
+    triHashReady: true,
     intelReady: true
   },
 
@@ -98,8 +108,8 @@ export const PulseMeshRole = {
     errorRouteAround: true
   },
 
-  meshContract: "PulseMesh-v16",
-  sendContract: "PulseSend-v16"
+  meshContract: "PulseMesh-v24",
+  sendContract: "PulseSend-v24"
 };
 
 
@@ -115,6 +125,7 @@ const KEY_HOT_PATTERNS    = "mesh-hot-patterns";
 const KEY_HOT_PAGES       = "mesh-hot-pages";
 const KEY_HOT_BINARY      = "mesh-hot-binary";
 const KEY_HOT_PATHS       = "mesh-hot-paths";
+const KEY_HOT_COSMOS      = "mesh-hot-cosmos";
 
 function trackMeshPattern(pattern) {
   if (!pattern) return;
@@ -145,6 +156,13 @@ function trackMeshPath(path) {
   MeshCoreMemory.set(MESH_ROUTE, KEY_HOT_PATHS, hot);
 }
 
+function trackMeshCosmos(cosmosSig) {
+  if (!cosmosSig) return;
+  const hot = MeshCoreMemory.get(MESH_ROUTE, KEY_HOT_COSMOS) || {};
+  hot[cosmosSig] = (hot[cosmosSig] || 0) + 1;
+  MeshCoreMemory.set(MESH_ROUTE, KEY_HOT_COSMOS, hot);
+}
+
 function storeMeshDecision(decision, surface) {
   MeshCoreMemory.set(MESH_ROUTE, KEY_LAST_DECISION, decision);
   MeshCoreMemory.set(MESH_ROUTE, KEY_LAST_SURFACE, surface);
@@ -152,6 +170,7 @@ function storeMeshDecision(decision, surface) {
   trackMeshPage(surface.pageId);
   trackMeshBinary(surface.binary);
   trackMeshPath(decision.meshPath);
+  trackMeshCosmos(surface.cosmosSignature);
 }
 
 
@@ -169,18 +188,52 @@ function stableStringify(value) {
   );
 }
 
-function simpleHash(str) {
+function simpleHash32(str) {
   let hash = 0;
   for (let i = 0; i < str.length; i++) {
     hash = (hash << 5) - hash + str.charCodeAt(i);
     hash |= 0;
   }
-  return (hash >>> 0).toString(16);
+  return (hash >>> 0) >>> 0;
+}
+
+function simpleHash(str) {
+  return simpleHash32(str).toString(16);
+}
+
+function clamp01(v) {
+  if (typeof v !== "number" || Number.isNaN(v)) return 0;
+  if (v < 0) return 0;
+  if (v > 1) return 1;
+  return v;
 }
 
 
 // ============================================================================
-//  DUALHASH HELPERS (Mesh Decision)
+//  COSMOS HELPERS — v24 IMMORTAL
+// ============================================================================
+function normalizeCosmos(cosmos = {}) {
+  return {
+    universeId: cosmos.universeId || "u:default",
+    timelineId: cosmos.timelineId || "t:main",
+    branchId: cosmos.branchId || "b:root",
+    worldId: cosmos.worldId || "w:primary",
+    shardId: cosmos.shardId || "s:0"
+  };
+}
+
+function cosmosSignature(cosmos) {
+  const raw = `${cosmos.universeId}|${cosmos.timelineId}|${cosmos.branchId}|${cosmos.worldId}|${cosmos.shardId}`;
+  let h = 0;
+  for (let i = 0; i < raw.length; i++) {
+    h = (h * 31 + raw.charCodeAt(i)) >>> 0;
+  }
+  return `cx24-${h.toString(16)}`;
+}
+
+
+// ============================================================================
+//  INTEL DUALHASH + TRIHASH HELPERS (Mesh Decision)
 // ============================================================================
 function hash131(raw) {
   let h = 0;
@@ -201,14 +254,67 @@ function hash257(raw) {
 }
 
 function computeDualHashMeshDecision(shape) {
-  const raw = JSON.stringify(shape);
+  const raw = stableStringify(shape || {});
   const h1 = hash131(raw);
   const h2 = hash257(raw);
   const combined = hash131(`${h1.toString(16)}::${h2.toString(16)}`);
   return {
-    primary: `md16-p${h1.toString(16)}`,
-    secondary: `md16-s${h2.toString(16)}`,
-    combined: `md16-c${combined.toString(16)}`
+    primary: `md24-p${h1.toString(16)}`,
+    secondary: `md24-s${h2.toString(16)}`,
+    combined: `md24-c${combined.toString(16)}`
+  };
+}
+
+function intelDualHash(shape) {
+  const raw = stableStringify(shape || {});
+  const mid = Math.floor(raw.length / 2);
+
+  const left = raw.slice(0, mid);
+  const right = raw.slice(mid);
+
+  const h1 = simpleHash32(left);
+  const h2 = simpleHash32(right);
+
+  const hi = (BigInt(h1) << 32n) | BigInt(h2);
+  const lo = BigInt(simpleHash32(raw));
+
+  const combined = (hi ^ (lo << 1n)) & ((1n << 96n) - 1n);
+
+  const hiHex = hi.toString(16);
+  const loHex = combined.toString(16);
+
+  return {
+    primary: `idh24-${hiHex}`,
+    secondary: `idh24s-${loHex}`,
+    hi,
+    lo
+  };
+}
+
+function triHash(shape) {
+  const raw = stableStringify(shape || {});
+  const len = raw.length || 1;
+  const third = Math.floor(len / 3);
+
+  const a = raw.slice(0, third);
+  const b = raw.slice(third, 2 * third);
+  const c = raw.slice(2 * third);
+
+  const hA = simpleHash32(a);
+  const hB = simpleHash32(b);
+  const hC = simpleHash32(c);
+
+  const hi = (BigInt(hA) << 32n) | BigInt(hB);
+  const mid = BigInt(hC);
+  const lo = BigInt(simpleHash32(raw));
+
+  const combined = (hi ^ (mid << 16n) ^ (lo << 1n)) & ((1n << 112n) - 1n);
+
+  return {
+    triPrimary: `th24-${combined.toString(16)}`,
+    hi,
+    mid,
+    lo
   };
 }
 
@@ -226,7 +332,7 @@ function buildLineageSignature(lineage) {
   return lineage.join(">");
 }
 
-function buildPageAncestrySignature({ pattern, lineage, pageId }) {
+function buildPageAncestrySignature({ pattern, lineage, pageId, cosmos }) {
   const safePattern = typeof pattern === "string" ? pattern : "";
   const safeLineage = Array.isArray(lineage) ? lineage : [];
   const safePageId = pageId || "NO_PAGE";
@@ -235,7 +341,8 @@ function buildPageAncestrySignature({ pattern, lineage, pageId }) {
     pattern: safePattern,
     patternAncestry: buildPatternAncestry(safePattern),
     lineageSignature: buildLineageSignature(safeLineage),
-    pageId: safePageId
+    pageId: safePageId,
+    cosmosSignature: cosmosSignature(cosmos)
   };
 
   return simpleHash(stableStringify(shape));
@@ -288,23 +395,25 @@ function classifyDegradationTier(healthScore) {
 // ============================================================================
 //  CACHE / PREWARM / PRESENCE SCOPE
 // ============================================================================
-function buildCacheChunkKey({ pattern, lineage, pageId, binary }) {
+function buildCacheChunkKey({ pattern, lineage, pageId, binary, cosmos }) {
   const shape = {
     pattern,
     lineage,
     pageId,
     binaryPattern: binary.binaryPattern,
-    binaryMode: binary.binaryMode
+    binaryMode: binary.binaryMode,
+    cosmosSignature: cosmosSignature(cosmos)
   };
   return "mesh-cache::" + simpleHash(stableStringify(shape));
 }
 
-function buildPrewarmHint({ pattern, pageId, binary }) {
+function buildPrewarmHint({ pattern, pageId, binary, cosmos }) {
   const base = {
     pattern,
     pageId,
     hasBinary: binary.hasBinary,
-    binaryPattern: binary.binaryPattern
+    binaryPattern: binary.binaryPattern,
+    cosmosSignature: cosmosSignature(cosmos)
   };
   const hash = simpleHash(stableStringify(base));
   const bucket = parseInt(hash.slice(0, 2), 16) % 3;
@@ -316,30 +425,72 @@ function buildPrewarmHint({ pattern, pageId, binary }) {
   };
 }
 
-function buildPresenceScope({ pattern, pageId, binary }) {
+function buildPresenceScope({ pattern, pageId, binary, cosmos }) {
   if (binary.hasBinary && binary.binaryPattern) {
     const key =
       "mesh-presence::page::" +
-      simpleHash(`${pattern}::${pageId}::${binary.binaryPattern}`);
+      simpleHash(
+        `${pattern}::${pageId}::${binary.binaryPattern}::${cosmosSignature(
+          cosmos
+        )}`
+      );
     return { scope: "page", presenceKey: key };
   }
 
-  const key = "mesh-presence::local::" + simpleHash(`${pattern}::${pageId}`);
+  const key = "mesh-presence::local::" +
+    simpleHash(`${pattern}::${pageId}::${cosmosSignature(cosmos)}`);
   return { scope: "local", presenceKey: key };
 }
 
 
 // ============================================================================
-//  MESH INTEL SURFACE (IMMORTAL v16)
+//  ADVANTAGE FIELD (mesh-level view)
 // ============================================================================
-function buildMeshIntel(pulse, meshShape) {
+function computeMeshAdvantageField(pulse = {}, meshShape = {}, cosmos = {}) {
+  if (typeof pulse.advantageField === "number") {
+    return clamp01(pulse.advantageField);
+  }
+
+  const healthScore =
+    typeof pulse.healthScore === "number" ? clamp01(pulse.healthScore) : 1.0;
+
+  const lineageDepth = Array.isArray(pulse.lineage)
+    ? pulse.lineage.length
+    : 0;
+
+  const patternStrength =
+    typeof pulse.pattern === "string" ? Math.min(64, pulse.pattern.length) : 8;
+
+  const binary = extractBinarySurface(pulse.payload || {});
+  const binaryBoost = binary.hasBinary ? 0.8 : 0.5;
+
+  const cx = normalizeCosmos(pulse.cosmos || cosmos || {});
+  const cosmosStability = cx.universeId === "u:default" ? 0.9 : 0.8;
+
+  const base =
+    healthScore * 0.4 +
+    clamp01(lineageDepth / 16) * 0.2 +
+    clamp01(patternStrength / 64) * 0.2 +
+    cosmosStability * 0.2;
+
+  const adv = base * 0.75 + binaryBoost * 0.25;
+  return clamp01(adv);
+}
+
+
+// ============================================================================
+//  MESH INTEL SURFACE (IMMORTAL v24)
+// ============================================================================
+function buildMeshIntel(pulse, meshShape, cosmos) {
   const healthScore = typeof pulse.healthScore === "number"
     ? pulse.healthScore
     : 1.0;
 
   const tier = classifyDegradationTier(healthScore);
 
-  const advantageField = pulse.advantageField || null;
+  const advantageField =
+    computeMeshAdvantageField(pulse, meshShape, cosmos);
+
   const pulseCompute   = pulse.pulseCompute || null;
 
   const solvednessScore =
@@ -358,6 +509,8 @@ function buildMeshIntel(pulse, meshShape) {
       : null;
 
   const dualHash = computeDualHashMeshDecision(meshShape);
+  const intelHash = intelDualHash(meshShape);
+  const tri = triHash(meshShape);
 
   return {
     healthScore,
@@ -367,7 +520,9 @@ function buildMeshIntel(pulse, meshShape) {
     solvednessScore,
     computeTier,
     factoringSignal,
-    dualHash
+    dualHash,
+    intelHash,
+    triHash: tri
   };
 }
 
@@ -375,7 +530,7 @@ function buildMeshIntel(pulse, meshShape) {
 // ============================================================================
 //  DETERMINISTIC MESH PATH SELECTION (Symbolic + Binary)
 // ============================================================================
-function chooseMeshPath(pulse) {
+function chooseMeshPath(pulse, cosmos) {
   const binary = extractBinarySurface(pulse.payload || {});
 
   if (binary.hasBinary && binary.binaryHints?.meshHint) {
@@ -384,14 +539,20 @@ function chooseMeshPath(pulse) {
 
   const pattern = pulse.pattern || "UNKNOWN_PATTERN";
   const lineageDepth = Array.isArray(pulse.lineage) ? pulse.lineage.length : 0;
+  const cxSig = cosmosSignature(normalizeCosmos(pulse.cosmos || cosmos || {}));
 
-  const raw = `${pattern}::${lineageDepth}`;
+  const raw = `${pattern}::${lineageDepth}::${cxSig}`;
   let acc = 0;
   for (let i = 0; i < raw.length; i++) {
-    acc = (acc + raw.charCodeAt(i) * (i + 11)) % 6151;
+    acc = (acc + raw.charCodeAt(i) * (i + 11)) % 12289;
   }
 
-  const paths = ["mesh-local", "mesh-remote", "mesh-os-fallback"];
+  const paths = [
+    "mesh-local",
+    "mesh-remote",
+    "mesh-os-fallback",
+    "mesh-cosmos-lane"
+  ];
   return paths[acc % paths.length];
 }
 
@@ -400,6 +561,7 @@ function chooseMeshPath(pulse) {
 //  INTERNAL — pure mesh decision builder
 // ============================================================================
 function buildMeshDecision(pulse) {
+  const cosmos = normalizeCosmos(pulse.cosmos || {});
   const pattern = pulse.pattern || "UNKNOWN_PATTERN";
   const lineage = Array.isArray(pulse.lineage) ? pulse.lineage.slice() : [];
   const pageId = pulse.pageId || "NO_PAGE";
@@ -417,30 +579,33 @@ function buildMeshDecision(pulse) {
   const pageAncestrySignature =
     typeof pulse.pageAncestrySignature === "string"
       ? pulse.pageAncestrySignature
-      : buildPageAncestrySignature({ pattern, lineage, pageId });
+      : buildPageAncestrySignature({ pattern, lineage, pageId, cosmos });
 
   const binary = extractBinarySurface(pulse.payload || {});
   const tier = classifyDegradationTier(pulse.healthScore ?? 1);
 
-  const meshPath = chooseMeshPath(pulse);
+  const meshPath = chooseMeshPath(pulse, cosmos);
 
   const cacheChunkKey = buildCacheChunkKey({
     pattern,
     lineage,
     pageId,
-    binary
+    binary,
+    cosmos
   });
 
   const prewarmHint = buildPrewarmHint({
     pattern,
     pageId,
-    binary
+    binary,
+    cosmos
   });
 
   const presenceScope = buildPresenceScope({
     pattern,
     pageId,
-    binary
+    binary,
+    cosmos
   });
 
   const meshShape = {
@@ -455,10 +620,11 @@ function buildMeshDecision(pulse) {
     binary,
     cacheChunkKey,
     prewarmHint,
-    presenceScope
+    presenceScope,
+    cosmosSignature: cosmosSignature(cosmos)
   };
 
-  const meshIntel = buildMeshIntel(pulse, meshShape);
+  const meshIntel = buildMeshIntel(pulse, meshShape, cosmos);
 
   return {
     decision: {
@@ -477,6 +643,7 @@ function buildMeshDecision(pulse) {
       cacheChunkKey,
       prewarmHint,
       presenceScope,
+      cosmosSignature: cosmosSignature(cosmos),
       meshIntel
     }
   };
@@ -484,7 +651,7 @@ function buildMeshDecision(pulse) {
 
 
 // ============================================================================
-//  PUBLIC API — PulseMeshRouter (v16 IMMORTAL INTEL DualHash)
+//  PUBLIC API — PulseMeshRouter (v24 IMMORTAL INTEL TriHash)
 // ============================================================================
 export const PulseMeshRouter = {
 
@@ -517,7 +684,8 @@ export const PulseMeshRouter = {
       hotPatterns: MeshCoreMemory.get(MESH_ROUTE, KEY_HOT_PATTERNS),
       hotPages: MeshCoreMemory.get(MESH_ROUTE, KEY_HOT_PAGES),
       hotBinaryPatterns: MeshCoreMemory.get(MESH_ROUTE, KEY_HOT_BINARY),
-      hotPaths: MeshCoreMemory.get(MESH_ROUTE, KEY_HOT_PATHS)
+      hotPaths: MeshCoreMemory.get(MESH_ROUTE, KEY_HOT_PATHS),
+      hotCosmos: MeshCoreMemory.get(MESH_ROUTE, KEY_HOT_COSMOS)
     };
   }
 };

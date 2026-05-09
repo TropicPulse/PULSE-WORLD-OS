@@ -118,8 +118,8 @@ import {
 // Optional: specs + translators awareness (no imports here to avoid coupling)
 // Architect only tags meta so downstream can plug in:
 //   PULSE-SPECS/PulseSpecsDNAGenome-v20.js
-//   PULSE-TRANSLATOR/PulseTranslatorRNAIntake-v17.js
-//   PULSE-TRANSLATOR/PulseTranslatorRNAOutput-v17.js
+//   PULSE-TRANSLATOR/PulseTranslatorRNAIntake-v24.js
+//   PULSE-TRANSLATOR/PulseTranslatorRNAOutput-v24.js
 //   PULSE-TRANSLATOR/PulseTranslatorSkeletalIntake.js
 //   PULSE-TRANSLATOR/PulseTranslatorSkeletalOutput.js
 

@@ -98,10 +98,10 @@ import {
 import * as PulseSpecsDNAGenome from "../PULSE-SPECS/PulseSpecsDNAGenome-v20.js";
 
 // Translators (RNA/Skeletal → backend shapes)
-import * as PulseTranslatorRNAIntake from "../PULSE-TRANSLATOR/PulseTranslatorRNAIntake-v17.js";
-import * as PulseTranslatorRNAOutput from "../PULSE-TRANSLATOR/PulseTranslatorRNAOutput-v17.js";
-import * as PulseTranslatorSkeletalIntake from "../PULSE-TRANSLATOR/PulseTranslatorSkeletalIntake-v17.js";
-import * as PulseTranslatorSkeletalOutput from "../PULSE-TRANSLATOR/PulseTranslatorSkeletalOutput-v17.js";
+import * as PulseTranslatorRNAIntake from "../PULSE-TRANSLATOR/PulseTranslatorRNAIntake-v24.js";
+import * as PulseTranslatorRNAOutput from "../PULSE-TRANSLATOR/PulseTranslatorRNAOutput-v24.js";
+import * as PulseTranslatorSkeletalIntake from "../PULSE-TRANSLATOR/PulseTranslatorSkeletalIntake-v24.js";
+import * as PulseTranslatorSkeletalOutput from "../PULSE-TRANSLATOR/PulseTranslatorSkeletalOutput-v24.js";
 
 // Social graph organ
 import { createPulseWorldSocialGraph } from "./PulseWorldSocialGraph-v20.js";

@@ -101,7 +101,7 @@ import {
   error as logError,
   warn as logWarn,
   log as logInfo
-} from "../../PULSE-UI/_MONITOR/PulseProofLogger-v20.js";
+} from "../../PULSE-UI/_MONITOR/PulseProofLogger-v24.js";
 import { admin, db } from "../../PULSE-BAND/PULSE-X/PulseWorldGenome-v20.js";
 import { twilio } from "../../PULSE-BAND/PULSE-X/PulseWorldSMSAlert-v20.js";
 import {

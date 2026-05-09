@@ -225,17 +225,17 @@ export const PULSE_EARN_IMMUNE_CONTEXT = Object.freeze({
 // Imports — subsystem vitals (healing state providers)
 // ============================================================================
 
-import { getEarnEngineHealingState } from "./PulseEarnMuscleSystem.js";
+import { getEarnEngineHealingState } from "./PulseEarnMuscleSystem-v24.js";
 import { getPulseEarnHeartHealingState } from "./PulseEarnHeart-v24.js";
-import { getPulseEarnMetabolismHealingState } from "./PulseEarnMetabolism.js";
-import { getPulseEarnLymphHealingState } from "./PulseEarnLymphNodes.js";
+import { getPulseEarnMetabolismHealingState } from "./PulseEarnMetabolism-v24.js";
+import { getPulseEarnLymphHealingState } from "./PulseEarnLymphNodes-v24.js";
 import {
   getPulseEarnGeneticMemoryHealingState,
   synthesizePulseEarnGene,
   writePulseEarnGene
 } from "./PulseEarnGeneticMemory-v24.js";
 
-import { getPulseEarnNervousSystemHealingState } from "./PulseEarnNervousSystem.js";
+import { getPulseEarnNervousSystemHealingState } from "./PulseEarnNervousSystem-v24.js";
 
 // ============================================================================
 // Immune State — medical chart (immune memory)

@@ -116,7 +116,7 @@ const advantageContext =
 // ============================================================================
 // ENGINE IMPORT (v24 IMMORTAL MOTION ENGINE)
 // ============================================================================
-import { createPulseMotionEngine } from "./PulseMotionEngine-v24-Immortal-Evo+++.js";
+import { createPulseMotionEngine } from "./PulseMotionEngine-v24.js";
 
 // ============================================================================
 // ENGINE INSTANCE (BACKWARD FACE) — ZERO-COMPUTE WRAPPER

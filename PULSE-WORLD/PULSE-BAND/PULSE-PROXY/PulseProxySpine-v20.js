@@ -56,7 +56,7 @@ import { prewarmSDN } from "../PULSE-OS/PulseOSSDNPrewarm-v16.js";
 // Proxy / organism / context / front (symbolic-only, descriptive surfaces)
 import { PulseProxyOrganismMeta, createProxy } from "./PulseProxy-v20.js";
 import { PulseProofBridge as PulseProxyBridge } from "../../PULSE-UI/_BACKEND/PULSE-WORLD-BRIDGE.js";
-import { updateUserMetrics as recordUserMetrics } from "../../PULSE-UI/_MONITOR/PulseProofMonitor-v20.js";
+import { updateUserMetrics as recordUserMetrics } from "../../PULSE-UI/_MONITOR/PulseProofMonitor-v24.js";
 import {
   proxyFrontRoute,
   PulseProxyFrontMeta
@@ -82,7 +82,7 @@ import { PNSPurifier } from "./PulseProxyPNSPurifier-v20.js";
 import { PNSRepair } from "./PulseProxyPNSRepair-v20.js";
 
 // Earn + metrics + OS healers + OS binary
-import { createPulseEarnSendSystem } from "../PULSE-EARN/PulseEarnSendSystem.js";
+import { createPulseEarnSendSystem } from "../PULSE-EARN/PulseEarnSendSystem-v24.js";
 
 import startPulseTimer from "./PulseProxyHeart-v20.js";
 import { createPulseOSHealerV12_3 as startPulseOSHealer } from "../PULSE-OS/PulseOSInflammatoryResponse.js";

@@ -1,21 +1,32 @@
 // ============================================================================
-//  PART 1/3
-//  PulseRouterEvolutionaryDesign-v16-IMMORTAL-AdvMultiPresence-IntelDualHash
-//  ROUTER DESIGN CORTEX (Symbolic + Binary + Advantage v4 + Prewarm/Cache/Chunk/Multi‑Presence v4)
-//  Deterministic Architectural Memory • Drift‑Proof • Pure Memory Organ • Cosmos‑Aware
+// FILE: PulseRouterEvolutionaryDesign-v24-IMMORTAL-INTEL++-DualBand.js
+// ROUTER DESIGN CORTEX v24 — Symbolic + Binary + Advantage v4 + Multi-Presence
+// ----------------------------------------------------------------------------
+// ROLE:
+//   • Long-term architectural memory for routing design blueprints.
+//   • Symbolic + binary + cosmos + advantage v4 + prewarm/cache/chunk/presence.
+//   • Deterministic, drift-proof, multi-instance safe, snapshot-ready.
+//   • Pure memory organ: no routing, no IO, no randomness.
+// ----------------------------------------------------------------------------
+// SAFETY CONTRACT (IMMORTAL v24-INTEL):
+//   • No randomness, no timestamps, no async, no network, no filesystem.
+//   • Deterministic-field: identical input → identical output.
+//   • No mutation of caller payloads; only internal store state.
+//   • Zero eval, zero dynamic imports, zero user code.
 // ============================================================================
 
 /*
 AI_EXPERIENCE_META = {
   identity: "PulseRouterEvolutionaryDesign",
-  version: "v16.0-IMMORTAL-DESIGN",
-  layer: "frontend",
+  version: "v24-IMMORTAL-INTEL++-DualBand",
+  layer: "routing",
   role: "router_design_cortex",
-  lineage: "PulseOS-v16-IMMORTAL",
+  lineage: "PulseRouterEvolutionaryDesign-v16 → v24-IMMORTAL-INTEL++-DualBand",
 
   evo: {
     designCore: true,
     deterministic: true,
+    deterministicField: true,
     dualBand: true,
     presenceAware: true,
     chunkAligned: true,
@@ -35,7 +46,12 @@ AI_EXPERIENCE_META = {
     multiPresenceAware: true,
     prewarmAware: true,
     cacheAware: true,
-    chunkAware: true
+    chunkAware: true,
+    intelSignatureAware: true,
+    dualHashAware: true,
+    structureAware: true,
+    contextAware: true,
+    multiInstanceReady: true
   },
 
   contract: {
@@ -59,32 +75,31 @@ AI_EXPERIENCE_META = {
       "legacyChunker"
     ]
   }
-}
+};
 */
 
-
 // ============================================================================
-// IMPORTS — Router Mesh / Earn / Law Surfaces (symbolic contracts only)
+// IMPORTS — Router Mesh / Earn / Commandments (symbolic contracts only)
 // ============================================================================
-import { PulseMeshRouter } from "./PulseRouterMesh-v16.js";
-import { PulseEarnRouter } from "./PulseRouterEarn-v16.js";
+import { PulseMeshRouter } from "./PulseRouterMesh-v24.js";
+import { PulseEarnRouter } from "./PulseRouterEarn-v24.js";
 import {
   PulseRouterCommandments,
   buildRouteKey as buildCommandmentRouteKey
-} from "./PulseRouterCommandments.js";
+} from "./PulseRouterCommandments-v24.js";
 
-
-// ------------------------------------------------------------
-// v16‑IMMORTAL CONTEXT METADATA — Router Design Identity
-// ------------------------------------------------------------
-const ROUTER_DESIGN_CONTEXT_V16 = {
+// ============================================================================
+// v24 IMMORTAL CONTEXT METADATA — Router Design Identity
+// ============================================================================
+const ROUTER_DESIGN_CONTEXT_V24 = {
   layer: "PulseRouterEvolutionaryDesign",
   role: "ROUTER_DESIGN_CORTEX",
-  purpose: "Long‑term architectural memory for route design blueprints (v16 IMMORTAL)",
+  purpose:
+    "Long-term architectural memory for route design blueprints (v24 IMMORTAL INTEL++)",
   context:
-    "Stores route design intent, lineage, constraints, evolution, binary metadata, cosmos, multi‑presence + prewarm/cache/chunk hints",
+    "Stores route design intent, lineage, constraints, evolution, binary metadata, cosmos, multi-presence + prewarm/cache/chunk hints",
   target: "dual-stack-router",
-  version: "16.0-IMMORTAL",
+  version: "24.0-IMMORTAL-INTEL++-DualBand",
   selfRepairable: true,
 
   evo: {
@@ -93,18 +108,17 @@ const ROUTER_DESIGN_CONTEXT_V16 = {
     driftProof: true,
     multiInstanceReady: true,
     unifiedAdvantageField: true,
-    pulseSend11Ready: true,
+    pulseSendReady: true,
 
-    routingContract: "PulseSend-v11",
-    routerOrganContract: "PulseRouter-v11",
-    earnCompatibility: "Earn-v3",
+    routingContract: "PulseSend-v24",
+    routerOrganContract: "PulseRouter-v24",
+    earnCompatibility: "PulseEarn-v24",
 
     binaryAware: true,
     cosmosAware: true,
     meshAware: true,
     earnAware: true,
 
-    // v16+: full advantage + prewarm/cache/chunk/multi‑presence
     advantageFieldAware: true,
     prewarmAware: true,
     cacheAware: true,
@@ -112,7 +126,8 @@ const ROUTER_DESIGN_CONTEXT_V16 = {
     presenceAware: true,
     multiPresenceAware: true,
     triHashAware: true,
-    intelDualHashAware: true
+    intelDualHashAware: true,
+    intelSignatureAware: true
   },
 
   loopTheory: {
@@ -123,10 +138,47 @@ const ROUTER_DESIGN_CONTEXT_V16 = {
   }
 };
 
+// ============================================================================
+// HASH / INTEL HELPERS — v24 IMMORTAL INTEL
+// ============================================================================
+function computeHash(str) {
+  let h = 0;
+  const s = String(str || "");
+  for (let i = 0; i < s.length; i++) {
+    h = (h + s.charCodeAt(i) * (i + 1)) % 100000;
+  }
+  return `h${h}`;
+}
 
-// ------------------------------------------------------------
-// COSMOS HELPERS — v16 IMMORTAL
-// ------------------------------------------------------------
+function computeHashIntelligence(payload) {
+  const base = JSON.stringify(payload || "");
+  let h = 0;
+  for (let i = 0; i < base.length; i++) {
+    const c = base.charCodeAt(i);
+    h = (h * 131 + c * (i + 7)) % 1000000007;
+  }
+  return `HINTEL_${h}`;
+}
+
+function buildDualHashSignature(label, intelPayload, classicString) {
+  const intelBase = {
+    label,
+    intel: intelPayload || {},
+    classic: classicString || ""
+  };
+  const intelHash = computeHashIntelligence(intelBase);
+  const classicHash = computeHash(`${label}::${classicString || ""}`);
+  const combined = computeHash(`${intelHash}::${classicHash}`);
+  return {
+    intel: intelHash,
+    classic: classicHash,
+    combined
+  };
+}
+
+// ============================================================================
+// COSMOS HELPERS — v24 IMMORTAL
+// ============================================================================
 function normalizeCosmos(cosmos = {}) {
   return {
     universeId: cosmos.universeId || "u:default",
@@ -143,13 +195,12 @@ function cosmosSignature(cosmos) {
   for (let i = 0; i < raw.length; i++) {
     h = (h * 31 + raw.charCodeAt(i)) >>> 0;
   }
-  return `cx16-${h.toString(16)}`;
+  return `cx24-${h.toString(16)}`;
 }
 
-
-// ------------------------------------------------------------
+// ============================================================================
 // Utility: stable JSON stringify
-// ------------------------------------------------------------
+// ============================================================================
 function stableStringify(value) {
   if (value === null || typeof value !== "object") {
     return JSON.stringify(value);
@@ -164,10 +215,9 @@ function stableStringify(value) {
   return "{" + parts.join(",") + "}";
 }
 
-
-// ------------------------------------------------------------
-// Utility: deterministic hash (32‑bit)
-// ------------------------------------------------------------
+// ============================================================================
+// Utility: deterministic hash (32-bit)
+// ============================================================================
 function simpleHash32(str) {
   let hash = 0;
   for (let i = 0; i < str.length; i++) {
@@ -178,10 +228,9 @@ function simpleHash32(str) {
   return (hash >>> 0) >>> 0;
 }
 
-
-// ------------------------------------------------------------
-// IntelDualHash + TriHash — v16 Design Fingerprints
-// ------------------------------------------------------------
+// ============================================================================
+// IntelDualHash + TriHash — v24 Design Fingerprints
+// ============================================================================
 function intelDualHash(shape) {
   const raw = stableStringify(shape || {});
   const mid = Math.floor(raw.length / 2);
@@ -201,8 +250,8 @@ function intelDualHash(shape) {
   const loHex = combined.toString(16);
 
   return {
-    primary: `idh16-${hiHex}`,
-    secondary: `idh16s-${loHex}`,
+    primary: `idh24-${hiHex}`,
+    secondary: `idh24s-${loHex}`,
     hi,
     lo
   };
@@ -228,17 +277,16 @@ function triHash(shape) {
   const combined = (hi ^ (mid << 16n) ^ (lo << 1n)) & ((1n << 112n) - 1n);
 
   return {
-    triPrimary: `th16-${combined.toString(16)}`,
+    triPrimary: `th24-${combined.toString(16)}`,
     hi,
     mid,
     lo
   };
 }
 
-
-// ------------------------------------------------------------
+// ============================================================================
 // Symbolic ancestry helpers
-// ------------------------------------------------------------
+// ============================================================================
 function buildPatternAncestry(pattern) {
   if (!pattern || typeof pattern !== "string") return [];
   return pattern.split("/").filter(Boolean);
@@ -265,18 +313,18 @@ function buildPageAncestrySignature({ pattern, lineage, pageId, cosmos }) {
   return simpleHash32(stableStringify(shape)).toString(16);
 }
 
-
-// ------------------------------------------------------------
+// ============================================================================
 // Binary ancestry helpers (optional)
-// ------------------------------------------------------------
+// ============================================================================
 function extractBinarySurface(payload = {}) {
-  const binaryPattern  = payload.binaryPattern || null;
-  const binaryMode     = payload.binaryMode || null;
-  const binaryPayload  = payload.binaryPayload || null;
-  const binaryHints    = payload.binaryHints || null;
-  const binaryStrength = typeof payload.binaryStrength === "number"
-    ? payload.binaryStrength
-    : null;
+  const binaryPattern = payload.binaryPattern || null;
+  const binaryMode = payload.binaryMode || null;
+  const binaryPayload = payload.binaryPayload || null;
+  const binaryHints = payload.binaryHints || null;
+  const binaryStrength =
+    typeof payload.binaryStrength === "number"
+      ? payload.binaryStrength
+      : null;
 
   const hasBinary =
     !!binaryPattern ||
@@ -295,10 +343,9 @@ function extractBinarySurface(payload = {}) {
   };
 }
 
-
-// ------------------------------------------------------------
-// Design hash — Architectural Fingerprint v16
-// ------------------------------------------------------------
+// ============================================================================
+// Design hash — Architectural Fingerprint v24
+// ============================================================================
 function computeDesignHash(design) {
   const serialized = stableStringify(design || {});
   return simpleHash32(serialized).toString(16);
@@ -312,10 +359,9 @@ function computeDesignTriHash(design) {
   return triHash(design || {});
 }
 
-
-// ------------------------------------------------------------
-// Design scoring — Structural Fitness Score v16
-// ------------------------------------------------------------
+// ============================================================================
+// Design scoring — Structural Fitness Score v24
+// ============================================================================
 function scoreDesign(designStats = {}) {
   const {
     stability = 1.0,
@@ -341,10 +387,9 @@ function scoreDesign(designStats = {}) {
   return base * 0.8 + meshEarnBoost * 0.2;
 }
 
-
-// ------------------------------------------------------------
+// ============================================================================
 // Advantage field — unified design advantage v4
-// ------------------------------------------------------------
+// ============================================================================
 function clamp01(v) {
   if (typeof v !== "number" || Number.isNaN(v)) return 0;
   if (v < 0) return 0;
@@ -357,46 +402,57 @@ function computeDesignAdvantageField(designStats = {}, binarySurface = {}, cosmo
     return clamp01(designStats.advantageField);
   }
 
-  const stability = typeof designStats.stability === "number"
-    ? clamp01(designStats.stability)
-    : 1.0;
+  const stability =
+    typeof designStats.stability === "number"
+      ? clamp01(designStats.stability)
+      : 1.0;
 
-  const clarity = typeof designStats.clarity === "number"
-    ? clamp01(designStats.clarity)
-    : 1.0;
+  const clarity =
+    typeof designStats.clarity === "number"
+      ? clamp01(designStats.clarity)
+      : 1.0;
 
-  const lineageStrength = typeof designStats.lineageStrength === "number"
-    ? clamp01(designStats.lineageStrength)
-    : 1.0;
+  const lineageStrength =
+    typeof designStats.lineageStrength === "number"
+      ? clamp01(designStats.lineageStrength)
+      : 1.0;
 
-  const meshAffinity = typeof designStats.meshAffinity === "number"
-    ? clamp01(designStats.meshAffinity)
-    : 0.8;
+  const meshAffinity =
+    typeof designStats.meshAffinity === "number"
+      ? clamp01(designStats.meshAffinity)
+      : 0.8;
 
-  const earnAffinity = typeof designStats.earnAffinity === "number"
-    ? clamp01(designStats.earnAffinity)
-    : 0.8;
+  const earnAffinity =
+    typeof designStats.earnAffinity === "number"
+      ? clamp01(designStats.earnAffinity)
+      : 0.8;
 
-  const cosmosStability = typeof designStats.cosmosStability === "number"
-    ? clamp01(designStats.cosmosStability)
-    : 1.0;
+  const cosmosStability =
+    typeof designStats.cosmosStability === "number"
+      ? clamp01(designStats.cosmosStability)
+      : 1.0;
 
   const binaryStrength =
     typeof binarySurface.binaryStrength === "number"
       ? clamp01(binarySurface.binaryStrength)
-      : (binarySurface.hasBinary ? 0.75 : 0.5);
+      : binarySurface.hasBinary
+      ? 0.75
+      : 0.5;
 
-  const base = stability * 0.3 + clarity * 0.2 + lineageStrength * 0.2 + cosmosStability * 0.3;
+  const base =
+    stability * 0.3 +
+    clarity * 0.2 +
+    lineageStrength * 0.2 +
+    cosmosStability * 0.3;
   const meshEarnBoost = (meshAffinity + earnAffinity) * 0.25;
   const adv = base * 0.7 + binaryStrength * 0.15 + meshEarnBoost * 0.15;
 
   return clamp01(adv);
 }
 
-
-// ------------------------------------------------------------
+// ============================================================================
 // Prewarm / Cache / Chunk / Presence design hints (single + multi)
-// ------------------------------------------------------------
+// ============================================================================
 function buildPrewarmDesign({ pattern, binary, advantageField, cosmos }) {
   return {
     enabled: true,
@@ -414,7 +470,9 @@ function buildPrewarmDesign({ pattern, binary, advantageField, cosmos }) {
 function buildCacheDesign({ pattern, binary, advantageField, cosmos }) {
   return {
     enabled: true,
-    strategy: binary.hasBinary ? "binary-hot-cache-design" : "symbolic-hot-cache-design",
+    strategy: binary.hasBinary
+      ? "binary-hot-cache-design"
+      : "symbolic-hot-cache-design",
     tiers: ["L1-route", "L2-organ", "L3-world", "L4-cosmos"],
     pattern,
     advantageField,
@@ -452,14 +510,14 @@ function buildPresenceDesign({ pattern, pageId, binary, advantageField, cosmos }
     pattern,
     pageId,
     advantageField,
-    binarySignal:
-      binary.hasBinary ? (binary.binaryMode || "binary-present") : "none",
+    binarySignal: binary.hasBinary
+      ? binary.binaryMode || "binary-present"
+      : "none",
     binaryAware: binary.hasBinary,
     cosmosSignature: cosmosSignature(cosmos)
   };
 }
 
-// 16+: multi‑presence profiles (per‑route, per‑page, per‑mode, per‑cosmos)
 function buildMultiPresenceProfiles({ pattern, pageId, binary, advantageField, cosmos }) {
   const baseId = `${pattern || "NO_PATTERN"}::${pageId || "NO_PAGE"}::${cosmosSignature(
     cosmos
@@ -506,33 +564,45 @@ function buildMultiPresenceProfiles({ pattern, pageId, binary, advantageField, c
 }
 
 // ============================================================================
-//  END PART 1/3 — Helpers, Context, Advantage, Presence, Multi‑Presence
-//  NEXT: PART 2/3 — PulseRouterDesignStore v16 IMMORTAL
+// HEALING METADATA — Design Cortex Health Log (v24 IMMORTAL INTEL++)
 // ============================================================================
-// ============================================================================
-//  PART 2/3
-//  PulseRouterDesignStore‑v16‑IMMORTAL‑AdvMultiPresence‑IntelDualHash‑TriHash
-//  FULL DESIGN MEMORY ORGAN (Symbolic + Binary + Cosmos + Advantage v4)
-//  Deterministic Architectural Memory • Drift‑Proof • IMMORTAL Snapshot Engine
-// ============================================================================
+const designHealing = {
+  cycleCount: 0,
 
+  lastRouteId: null,
+  lastDesignHash: null,
+  lastDesignDualHashIntel: null,
+  lastDesignDualHashClassic: null,
+  lastDesignTriHash: null,
 
-// ------------------------------------------------------------
-// Memory entry model — Architectural Design Record (DualStack v16 IMMORTAL)
-// ------------------------------------------------------------
+  lastAdvantageField: null,
+  lastScore: null,
+
+  lastPattern: null,
+  lastPageId: null,
+  lastCosmosSignature: null
+};
+
+export function getPulseRouterEvolutionaryDesignHealingState() {
+  return { ...designHealing };
+}
+
+// ============================================================================
+// Memory entry model — Architectural Design Record (DualStack v24 IMMORTAL)
+// ============================================================================
 class PulseRouterDesignStore {
   constructor() {
     this.entries = new Map();
-    this.meta = { ...ROUTER_DESIGN_CONTEXT_V16 };
+    this.meta = { ...ROUTER_DESIGN_CONTEXT_V24 };
   }
 
   clear() {
     this.entries.clear();
   }
 
-  // ------------------------------------------------------------
-  // recordDesign — the HEART of the Evolutionary Design Cortex
-  // ------------------------------------------------------------
+  // -------------------------------------------------------------------------
+  // recordDesign — HEART of the Evolutionary Design Cortex
+  // -------------------------------------------------------------------------
   recordDesign({
     routeId,
     design,
@@ -565,7 +635,11 @@ class PulseRouterDesignStore {
     });
 
     const binary = extractBinarySurface(payload || {});
-    const advantageField = computeDesignAdvantageField(designStats || {}, binary, cx);
+    const advantageField = computeDesignAdvantageField(
+      designStats || {},
+      binary,
+      cx
+    );
 
     const loopTheory = {
       routingCompletion: true,
@@ -574,9 +648,6 @@ class PulseRouterDesignStore {
       errorRouteAround: true
     };
 
-    // ------------------------------------------------------------
-    // Build design‑level prewarm/cache/chunk/presence hints
-    // ------------------------------------------------------------
     const prewarmDesign = buildPrewarmDesign({
       pattern: safePattern,
       binary,
@@ -614,9 +685,6 @@ class PulseRouterDesignStore {
       cosmos: cx
     });
 
-    // ------------------------------------------------------------
-    // Base entry (IMMORTAL v16)
-    // ------------------------------------------------------------
     const baseEntry = {
       routeId,
       designHash,
@@ -629,7 +697,6 @@ class PulseRouterDesignStore {
 
       advantageField,
 
-      // symbolic ancestry
       pattern: safePattern,
       patternAncestry,
       lineage: safeLineage,
@@ -637,14 +704,11 @@ class PulseRouterDesignStore {
       pageId: safePageId,
       pageAncestrySignature,
 
-      // binary ancestry
       binary,
 
-      // cosmos ancestry
       cosmos: cx,
       cosmosSignature: cosmosSignature(cx),
 
-      // design‑level prewarm/cache/chunk/presence hints
       prewarmDesign,
       cacheDesign,
       chunkDesign,
@@ -652,12 +716,9 @@ class PulseRouterDesignStore {
       multiPresenceProfiles,
 
       loopTheory,
-      meta: { ...ROUTER_DESIGN_CONTEXT_V16 }
+      meta: { ...ROUTER_DESIGN_CONTEXT_V24 }
     };
 
-    // ------------------------------------------------------------
-    // Merge logic — IMMORTAL v16 (keeps bestScore, merges ancestry)
-    // ------------------------------------------------------------
     if (!existing || score > existing.bestScore) {
       this.entries.set(routeId, baseEntry);
     } else {
@@ -703,19 +764,27 @@ class PulseRouterDesignStore {
       this.entries.set(routeId, merged);
     }
 
-    return this.entries.get(routeId);
+    const finalEntry = this.entries.get(routeId);
+
+    designHealing.cycleCount++;
+    designHealing.lastRouteId = routeId;
+    designHealing.lastDesignHash = designHash;
+    designHealing.lastDesignDualHashIntel = dualHash.primary;
+    designHealing.lastDesignDualHashClassic = dualHash.secondary;
+    designHealing.lastDesignTriHash = triHash.triPrimary;
+    designHealing.lastAdvantageField = advantageField;
+    designHealing.lastScore = finalEntry.bestScore;
+    designHealing.lastPattern = safePattern;
+    designHealing.lastPageId = safePageId;
+    designHealing.lastCosmosSignature = finalEntry.cosmosSignature;
+
+    return finalEntry;
   }
 
-  // ------------------------------------------------------------
-  // getDesign — retrieve IMMORTAL design entry
-  // ------------------------------------------------------------
   getDesign(routeId) {
     return this.entries.get(routeId) || null;
   }
 
-  // ------------------------------------------------------------
-  // getSnapshot — FULL IMMORTAL SNAPSHOT
-  // ------------------------------------------------------------
   getSnapshot() {
     const out = {};
     for (const [key, entry] of this.entries.entries()) {
@@ -730,7 +799,6 @@ class PulseRouterDesignStore {
 
         advantageField: entry.advantageField,
 
-        // symbolic ancestry
         pattern: entry.pattern,
         patternAncestry: entry.patternAncestry.slice(),
         lineage: entry.lineage.slice(),
@@ -738,19 +806,18 @@ class PulseRouterDesignStore {
         pageId: entry.pageId,
         pageAncestrySignature: entry.pageAncestrySignature,
 
-        // binary ancestry
         binary: { ...entry.binary },
 
-        // cosmos ancestry
         cosmos: { ...entry.cosmos },
         cosmosSignature: entry.cosmosSignature,
 
-        // design hints
         prewarmDesign: { ...entry.prewarmDesign },
         cacheDesign: { ...entry.cacheDesign },
         chunkDesign: { ...entry.chunkDesign },
         presenceDesign: { ...entry.presenceDesign },
-        multiPresenceProfiles: entry.multiPresenceProfiles.map((p) => ({ ...p })),
+        multiPresenceProfiles: entry.multiPresenceProfiles.map((p) => ({
+          ...p
+        })),
 
         loopTheory: { ...entry.loopTheory }
       };
@@ -758,16 +825,10 @@ class PulseRouterDesignStore {
     return out;
   }
 
-  // ------------------------------------------------------------
-  // serialize — IMMORTAL safe
-  // ------------------------------------------------------------
   serialize() {
     return JSON.stringify([...this.entries.values()]);
   }
 
-  // ------------------------------------------------------------
-  // deserialize — IMMORTAL migration logic
-  // ------------------------------------------------------------
   deserialize(jsonString) {
     this.entries.clear();
     if (!jsonString) return;
@@ -905,7 +966,7 @@ class PulseRouterDesignStore {
           errorRouteAround: true
         },
 
-        meta: { ...ROUTER_DESIGN_CONTEXT_V16 }
+        meta: { ...ROUTER_DESIGN_CONTEXT_V24 }
       };
 
       this.entries.set(safeEntry.routeId, safeEntry);
@@ -913,53 +974,35 @@ class PulseRouterDesignStore {
   }
 }
 
-
 // ============================================================================
-//  END PART 2/3 — PulseRouterDesignStore v16 IMMORTAL
-//  NEXT: PART 3/3 — Public API Wrapper + Exports
+// Public API wrapper — Design Cortex Surface v24 IMMORTAL
 // ============================================================================
-// ============================================================================
-//  PART 3/3
-//  PulseRouterEvolutionaryDesign‑v16‑IMMORTAL
-//  PUBLIC DESIGN CORTEX SURFACE + INTEGRATION HOOKS + EXPORTS
-// ============================================================================
-
-
-// ------------------------------------------------------------
-// Public API wrapper — Design Cortex Surface v16 IMMORTAL
-// ------------------------------------------------------------
 class PulseRouterEvolutionaryDesign {
   constructor() {
     this.store = new PulseRouterDesignStore();
-    this.meta = { ...ROUTER_DESIGN_CONTEXT_V16 };
+    this.meta = { ...ROUTER_DESIGN_CONTEXT_V24 };
 
-    // Optional: attach law + mesh + earn surfaces (symbolic integration only)
     this.commandments = new PulseRouterCommandments();
     this.meshRouter = PulseMeshRouter;
     this.earnRouter = PulseEarnRouter;
   }
 
-  // Core design recording
   recordDesign(designEntry) {
     return this.store.recordDesign(designEntry);
   }
 
-  // Retrieve design by routeId
   getDesign(routeId) {
     return this.store.getDesign(routeId);
   }
 
-  // Expose scoring as pure function
   scoreDesign(stats) {
     return scoreDesign(stats);
   }
 
-  // IMMORTAL snapshot
   getSnapshot() {
     return this.store.getSnapshot();
   }
 
-  // Serialization
   serialize() {
     return this.store.serialize();
   }
@@ -972,11 +1015,9 @@ class PulseRouterEvolutionaryDesign {
     this.store.clear();
   }
 
-  // ------------------------------------------------------------
-  // v16+ — Integration helpers with Mesh / Earn / Commandments
-  // ------------------------------------------------------------
-
-  // Build a design entry from a mesh routing decision
+  // -------------------------------------------------------------------------
+  // Integration helpers — Mesh / Earn / Commandments → Design Cortex
+  // -------------------------------------------------------------------------
   fromMeshDecision({ routeId, meshDecision, design, designStats }) {
     if (!meshDecision) return null;
 
@@ -993,43 +1034,41 @@ class PulseRouterEvolutionaryDesign {
       presenceScope
     } = meshDecision;
 
-    const cosmos = {}; // mesh is typically local‑world; cosmos can be extended upstream
+    const cosmos = meshDecision.cosmos || {};
 
     const enrichedDesign = {
       ...(design || {}),
       mesh: {
         meshPath: meshDecision.meshPath,
         tier: meshDecision.tier,
-        cacheChunkKey,
-        prewarmHint,
-        presenceScope
-      },
-      ancestry: {
-        pattern,
-        patternAncestry,
-        lineage,
-        lineageSignature,
-        pageId,
-        pageAncestrySignature
-      },
-      binary: binary || {}
+        cacheChunkKey: cacheChunkKey || null,
+        prewarmHint: prewarmHint || null,
+        presenceScope: presenceScope || null
+      }
     };
 
-    return this.recordDesign({
+    const enrichedStats = {
+      ...(designStats || {}),
+      meshAffinity:
+        typeof (designStats || {}).meshAffinity === "number"
+          ? designStats.meshAffinity
+          : 0.9
+    };
+
+    return this.store.recordDesign({
       routeId,
       design: enrichedDesign,
-      designStats: designStats || {},
+      designStats: enrichedStats,
       pattern,
       lineage,
       pageId,
-      payload: binary || {},
+      payload: { ...(binary || {}) },
       cosmos
     });
   }
 
-  // Build a design entry from an earn routing decision
   fromEarnDecision({ routeId, earnDecision, design, designStats }) {
-    if (!earnDecision) return null;
+    if (!earnDecision || !earnDecision.decision) return null;
 
     const {
       pattern,
@@ -1039,123 +1078,109 @@ class PulseRouterEvolutionaryDesign {
       pageId,
       pageAncestrySignature,
       binary,
-      tier
-    } = earnDecision;
+      earnIntel
+    } = earnDecision.surface || earnDecision.decision;
 
-    const cosmos = {}; // earn is typically world‑level; cosmos can be extended upstream
+    const cosmos = earnDecision.cosmos || {};
 
     const enrichedDesign = {
       ...(design || {}),
       earn: {
-        targetPath: earnDecision.targetPath,
-        tier
-      },
-      ancestry: {
-        pattern,
-        patternAncestry,
-        lineage,
-        lineageSignature,
-        pageId,
-        pageAncestrySignature
-      },
-      binary: binary || {}
+        targetPath: earnDecision.decision.targetPath,
+        tier: earnDecision.decision.tier,
+        earnIntel: earnIntel || null
+      }
     };
 
-    return this.recordDesign({
+    const enrichedStats = {
+      ...(designStats || {}),
+      earnAffinity:
+        typeof (designStats || {}).earnAffinity === "number"
+          ? designStats.earnAffinity
+          : 0.9
+    };
+
+    return this.store.recordDesign({
       routeId,
       design: enrichedDesign,
-      designStats: designStats || {},
+      designStats: enrichedStats,
       pattern,
       lineage,
       pageId,
-      payload: binary || {},
+      payload: { ...(binary || {}) },
       cosmos
     });
   }
 
-  // Build a design entry from a commandments route key + law context
-  fromCommandments({
-    routeId,
-    tierId,
-    context,
-    pattern,
-    lineage,
-    pageId,
-    payload,
-    cosmos,
-    design,
-    designStats
-  }) {
-    const cx = normalizeCosmos(cosmos || {});
-    const { key, intelDualHash } = buildCommandmentRouteKey({
-      routeId,
-      tierId,
-      context,
-      pattern,
-      lineage,
-      pageId,
-      payload,
-      cosmos: cx
-    });
+  fromCommandments({ routeId, commandmentsPayload, design, designStats }) {
+    if (!commandmentsPayload) return null;
 
-    const lawEntry = this.commandments.getCommandments({
-      routeId,
-      tierId,
-      context,
+    const entry = this.commandments.setCommandments(commandmentsPayload);
+
+    const {
       pattern,
+      patternAncestry,
       lineage,
+      lineageSignature,
       pageId,
-      payload,
-      cosmos: cx
-    });
+      pageAncestrySignature,
+      binary,
+      cosmos
+    } = entry;
 
     const enrichedDesign = {
       ...(design || {}),
-      law: {
-        routeKey: key,
-        intelDualHash,
-        commandments: lawEntry.commandments || {}
+      commandments: {
+        routeId: entry.routeId,
+        tierId: entry.tierId,
+        commandments: entry.commandments,
+        dualHash: entry.dualHash
       }
     };
 
-    return this.recordDesign({
+    const enrichedStats = {
+      ...(designStats || {}),
+      clarity:
+        typeof (designStats || {}).clarity === "number"
+          ? designStats.clarity
+          : 0.95
+    };
+
+    return this.store.recordDesign({
       routeId,
       design: enrichedDesign,
-      designStats: designStats || {},
+      designStats: enrichedStats,
       pattern,
       lineage,
       pageId,
-      payload,
-      cosmos: cx
+      payload: { ...(binary || {}) },
+      cosmos
     });
+  }
+
+  getMeta() {
+    return { ...this.meta };
+  }
+
+  getHealingState() {
+    return getPulseRouterEvolutionaryDesignHealingState();
   }
 }
 
-
-// ------------------------------------------------------------
+// ============================================================================
 // EXPORTS
-// ------------------------------------------------------------
+// ============================================================================
 export {
-  // Core organ
   PulseRouterEvolutionaryDesign,
   PulseRouterDesignStore,
-
-  // Hash / advantage helpers
+  ROUTER_DESIGN_CONTEXT_V24,
+  scoreDesign,
   computeDesignHash,
   computeDesignDualHash,
   computeDesignTriHash,
-  scoreDesign,
   computeDesignAdvantageField,
-
-  // Ancestry / cosmos helpers
   buildPatternAncestry,
   buildLineageSignature,
   buildPageAncestrySignature,
-  extractBinarySurface,
-  normalizeCosmos,
-  cosmosSignature,
-
-  // Hash helpers
-  intelDualHash,
-  triHash
+  extractBinarySurface
 };

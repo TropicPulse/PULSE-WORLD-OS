@@ -143,8 +143,8 @@ export const AI_INSTRUMENTS_META = Object.freeze({
 // ============================================================================
 // SECTION 1 — IMPORTS
 // ============================================================================
-import { translateFirestoreDocument, translateFirestoreField } from "../PULSE-TRANSLATOR/PulseTranslatorRNAIntake-v17.js";
-import { translateSQLSchema, translatePulseSchemaToFirestore } from "../PULSE-TRANSLATOR/PulseTranslatorRNAOutput-v17.js";
+import { translateFirestoreDocument, translateFirestoreField } from "../PULSE-TRANSLATOR/PulseTranslatorRNAIntake-v24.js";
+import { translateSQLSchema, translatePulseSchemaToFirestore } from "../PULSE-TRANSLATOR/PulseTranslatorRNAOutput-v24.js";
 import { validatePulseField } from "../PULSE-SPECS/PulseSpecsDNAGenome-v20.js";
 
 // ============================================================================

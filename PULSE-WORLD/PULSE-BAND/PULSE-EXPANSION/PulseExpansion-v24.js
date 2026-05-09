@@ -85,7 +85,7 @@ AI_EXPERIENCE_META = {
 }
 */
 
-import { logger } from "../../PULSE-UI/_MONITOR/PulseProofLogger-v20.js";
+import { logger } from "../../PULSE-UI/_MONITOR/PulseProofLogger-v24.js";
 
 // v24 Castle + v24 world core
 import {

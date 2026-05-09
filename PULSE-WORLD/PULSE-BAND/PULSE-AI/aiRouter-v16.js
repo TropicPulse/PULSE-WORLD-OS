@@ -107,8 +107,8 @@ import { PulseRouterMeta } from "../PULSE-EXPANSION/PulseRouter-v24.js";
 import { getEarnContext } from "../PULSE-EARN/PulseEarn-v24.js";
 import { createDualBandOrganism as PulseBinaryOrganismBoot } from "./aiDualBand-v24.js";
 import { createBinarySend as PulseSendBin } from "../PULSE-SEND/PulseBinarySend-v16.js";
-import createBinaryRouter from "../PULSE-ROUTER/PulseBinaryRouter-v16.js";
-import PulseRouter from "../PULSE-ROUTER/PulseRouter-v16.js";
+import createBinaryRouter from "../PULSE-ROUTER/PulseBinaryRouter-v24.js";
+import PulseRouter from "../PULSE-ROUTER/PulseRouter-v24.js";
 
 // Runtime / Scheduler (symbolic context only)
 import PulseRuntimeV2 from "../PULSE-X/PulseWorldRuntime-v20.js";

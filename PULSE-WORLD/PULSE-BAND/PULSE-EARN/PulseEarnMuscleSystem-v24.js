@@ -140,8 +140,8 @@ export const PulseEarnMuscleSystemMeta = Object.freeze({
   })
 });
 
-import { fetchJobFromMarketplace } from "./PulseEarnNervousSystem.js";
-import { submitMarketplaceResult } from "./PulseEarnLymphNodes.js";
+import { fetchJobFromMarketplace } from "./PulseEarnNervousSystem-v24.js";
+import { submitMarketplaceResult } from "./PulseEarnLymphNodes-v24.js";
 import { getPulseEarnDeviceProfile } from "./PulseEarnSkeletalSystem-v24.js";
 
 // ============================================================================

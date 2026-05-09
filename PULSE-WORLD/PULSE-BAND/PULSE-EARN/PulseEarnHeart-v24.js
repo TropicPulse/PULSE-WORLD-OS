@@ -144,9 +144,9 @@ export const PulseEarnHeartMeta = Object.freeze({
   })
 });
 
-import { getNextMarketplaceJob } from "./PulseEarnNervousSystem.js";
-import { executePulseEarnJob } from "./PulseEarnMetabolism.js";
-import { submitPulseEarnResult } from "./PulseEarnLymphNodes.js";
+import { getNextMarketplaceJob } from "./PulseEarnNervousSystem-v24.js";
+import { executePulseEarnJob } from "./PulseEarnMetabolism-v24.js";
+import { submitPulseEarnResult } from "./PulseEarnLymphNodes-v24.js";
 import {
   computeWork,
   pulseEarnHeartbeat,

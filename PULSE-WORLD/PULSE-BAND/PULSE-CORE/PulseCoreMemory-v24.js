@@ -20,6 +20,7 @@ Always include ALL layers, ALL overlays, ALL IMMORTAL++ structures.
 */
 
 // Adapters — forward‑only, no barrels
+
 import { createPulseGPUOrchestrator }      from "./PulseCoreGpuMemoryAdapter-v20.js";
 import { createPulseAIMemoryAdapter }      from "./PulseCoreAIMemoryAdapter-v20.js";
 import { createPulseEarnMemoryAdapter }    from "./PulseCoreEarnMemoryAdapter-v20.js";
@@ -29,7 +30,8 @@ import { createPulseRouterMemoryAdapter }  from "./PulseCoreRouterMemoryAdapter-
 import { createPulseSendMemoryAdapter }    from "./PulseCoreSendMemoryAdapter-v20.js";
 import { PulseCoreLayersOrgan }            from "./PulseCoreLayers-v20.js";
 import PulseCoreSpeech from "./PulseCoreSpeech-v24.js";
-
+import { PulseCoreBrain }      from "./PulseCoreBrain-v20.js";
+import { PulseCoreEvolution }      from "./PulseCoreEvolution-v20.js";
 
 const coreSpeech = PulseCoreSpeech.create({
   dnaTag: "core-speech",

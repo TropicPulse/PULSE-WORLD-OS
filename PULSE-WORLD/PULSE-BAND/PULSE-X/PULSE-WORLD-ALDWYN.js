@@ -36,7 +36,7 @@ AI_EXPERIENCE_META = {
 }
 */
 
-import { PulseProofLogger } from "../../PULSE-UI/_MONITOR/PulseProofLogger-v20.js";
+import { PulseProofLogger } from "../../PULSE-UI/_MONITOR/PulseProofLogger-v24.js";
 
 // ============================================================================
 //  GLOBAL MAPS
@@ -92,7 +92,7 @@ import {
 
 import { PulseUnderstanding } from "./PULSE-WORLD-UNDERSTANDING.js";
 import { PulseGovernor } from "../PULSE-OS/PulseOSGovernor.js";
-import { PulseVitalsMonitor } from "../../PULSE-UI/_MONITOR/PulseProofMonitor-v20.js";
+import { PulseVitalsMonitor } from "../../PULSE-UI/_MONITOR/PulseProofMonitor-v24.js";
 import { PulseBinaryTech } from "../PULSE-TECH/PulseBinaryTech-v20.js";
 
 // ============================================================================

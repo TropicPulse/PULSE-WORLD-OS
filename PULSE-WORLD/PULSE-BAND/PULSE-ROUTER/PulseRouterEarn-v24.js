@@ -1,59 +1,27 @@
 // ============================================================================
-//  PulseEarnRouter-v16-IMMORTAL-INTEL-DualHash
-//  EARN ROUTING ORGAN (Symbolic + Binary + Intel)
-//  Deterministic Earn Routing • Pattern/Lineage/Page/Binary-Aware
-//  + CoreMemory Integration: hot patterns/pages/binary surfaces
-//  + DualHash Decision Keys + EarnIntel Surface
+// FILE: PulseEarnRouter-v24-IMMORTAL-INTEL++-DualHash.js
+// [pulse:earn] ROUTING LAYER — v24‑IMMORTAL‑INTEL++
+// ----------------------------------------------------------------------------
+// ROLE:
+//   • Deterministic Earn routing spine (pattern/lineage/page/binary aware).
+//   • Upgrades v16 EarnRouter to v24 IMMORTAL INTEL++ dualhash surfaces.
+//   • Uses PulseCoreMemory v24 for hot‑pattern / hot‑page / hot‑binary tracking.
+//   • Emits full INTEL routing envelope + healing state.
+// ----------------------------------------------------------------------------
+// SAFETY CONTRACT (IMMORTAL v24‑INTEL):
+//   • No randomness, no timestamps, no async, no network, no filesystem.
+//   • No mutation of pulse input; only CoreMemory + internal healing state.
+//   • Deterministic‑field: identical input → identical routing decision.
+//   • Zero eval, zero dynamic imports, zero user code.
 // ============================================================================
 
 /*
 AI_EXPERIENCE_META = {
-  identity: "PulseRouterEarn",
-  version: "v16-IMMORTAL-INTEL-DualHash",
-  layer: "frontend",
-  role: "earn_router",
-  lineage: "PulseOS-v16",
-
-  evo: {
-    earnCore: true,
-    advantageV2: true,
-    dualBand: true,
-    presenceAware: true,
-    chunkAligned: true,
-    safeRouteFree: true,
-    deterministic: true,
-    dualHashReady: true,
-    intelReady: true,
-    coreMemoryAware: true,
-    binarySurfaceReady: true
-  },
-
-  contract: {
-    always: [
-      "PulseRouter",
-      "PulseBinaryRouter",
-      "PulseRouterCommandments",
-      "PulsePresence",
-      "PulseChunks"
-    ],
-    never: [
-      "legacyEarnRouter",
-      "legacyRouter",
-      "safeRoute",
-      "fetchViaCNS"
-    ]
-  }
-}
-*/
-
-import { createPulseCoreMemory } from "../PULSE-CORE/PulseCoreMemory-v24.js";
-
-export const PulseEarnRole = {
-  type: "EarnRouter",
-  subsystem: "PulseEarn",
-  layer: "Routing",
-  version: "16.0-IMMORTAL-INTEL-DualHash",
-  identity: "PulseEarnRouter-v16-IMMORTAL-INTEL-DualHash",
+  identity: "PulseEarnRouter",
+  version: "v24-IMMORTAL-INTEL++-DualHash",
+  layer: "earn",
+  role: "earn_routing_spine",
+  lineage: "PulseEarnRouter-v16-IMMORTAL-INTEL-DualHash → v24-IMMORTAL-INTEL++-DualHash",
 
   evo: {
     driftProof: true,
@@ -71,7 +39,58 @@ export const PulseEarnRole = {
     hotBinarySurfaceAware: true,
 
     dualHashReady: true,
-    intelReady: true
+    intelReady: true,
+    intelSignatureAware: true,
+    structureAware: true,
+    contextAware: true,
+
+    multiInstanceReady: true,
+    deterministicField: true,
+    selfRepairable: true
+  },
+
+  contract: {
+    input: ["PulseEarnEnvelope"],
+    output: [
+      "EarnRoutingDecision",
+      "EarnRoutingSurface",
+      "EarnRoutingIntel",
+      "EarnRoutingHealingState"
+    ]
+  }
+};
+*/
+
+import { createPulseCoreMemory } from "../PULSE-CORE/PulseCoreMemory-v24.js";
+
+// ============================================================================
+// ROLE META
+// ============================================================================
+export const PulseEarnRole = {
+  type: "EarnRouter",
+  subsystem: "PulseEarn",
+  layer: "Routing",
+  version: "24.0-IMMORTAL-INTEL++-DualHash",
+  identity: "PulseEarnRouter-v24-IMMORTAL-INTEL++-DualHash",
+
+  evo: {
+    driftProof: true,
+    patternAware: true,
+    lineageAware: true,
+    pageAware: true,
+    deterministicRouting: true,
+    unifiedAdvantageField: true,
+    loopTheoryAware: true,
+
+    binaryAware: true,
+    coreMemoryAware: true,
+    hotPatternAware: true,
+    hotPageAware: true,
+    hotBinarySurfaceAware: true,
+
+    dualHashReady: true,
+    intelReady: true,
+    intelSignatureAware: true
   },
 
   loopTheory: {
@@ -81,16 +100,15 @@ export const PulseEarnRole = {
     errorRouteAround: true
   },
 
-  earnContract: "PulseEarn-v16",
-  sendContract: "PulseSend-v16"
+  earnContract: "PulseEarn-v24",
+  sendContract: "PulseSend-v24"
 };
 
-
 // ============================================================================
-//  CORE MEMORY — hot caching / presence
+// CORE MEMORY + KEYS
 // ============================================================================
 const CoreMemory = createPulseCoreMemory();
-const ROUTE = "earn-router-global";
+const ROUTE = "earn-router-global-v24";
 
 const KEY_LAST_DECISION = "last-decision";
 const KEY_LAST_PULSE_SURFACE = "last-pulse-surface";
@@ -98,6 +116,70 @@ const KEY_HOT_PATTERNS = "hot-patterns";
 const KEY_HOT_PAGES = "hot-pages";
 const KEY_HOT_BINARY = "hot-binary-patterns";
 
+// ============================================================================
+// HASH / DUALHASH HELPERS — v24 IMMORTAL INTEL
+// ============================================================================
+function computeHash(str) {
+  let h = 0;
+  const s = String(str || "");
+  for (let i = 0; i < s.length; i++) {
+    h = (h + s.charCodeAt(i) * (i + 1)) % 100000;
+  }
+  return `h${h}`;
+}
+
+function computeHashIntelligence(payload) {
+  const base = JSON.stringify(payload || "");
+  let h = 0;
+  for (let i = 0; i < base.length; i++) {
+    const c = base.charCodeAt(i);
+    h = (h * 131 + c * (i + 7)) % 1000000007;
+  }
+  return `HINTEL_${h}`;
+}
+
+function buildDualHashSignature(label, intelPayload, classicString) {
+  const intelBase = {
+    label,
+    intel: intelPayload || {},
+    classic: classicString || ""
+  };
+  const intelHash = computeHashIntelligence(intelBase);
+  const classicHash = computeHash(`${label}::${classicString || ""}`);
+  return {
+    intel: intelHash,
+    classic: classicHash
+  };
+}
+
+// ============================================================================
+// HEALING METADATA — Earn Routing Health Log (v24 IMMORTAL INTEL++)
+// ============================================================================
+const earnRoutingHealing = {
+  cycleCount: 0,
+
+  lastPattern: null,
+  lastTier: null,
+  lastTargetPath: null,
+
+  lastPageId: null,
+  lastPatternAncestry: null,
+  lastLineageSignature: null,
+  lastPageAncestrySignature: null,
+
+  lastBinarySurface: null,
+
+  lastIntelSignatureIntel: null,
+  lastIntelSignatureClassic: null
+};
+
+export function getPulseEarnRoutingHealingState() {
+  return { ...earnRoutingHealing };
+}
+
+// ============================================================================
+// HOT TRACKING HELPERS
+// ============================================================================
 function trackPattern(pattern) {
   if (!pattern) return;
   const hot = CoreMemory.get(ROUTE, KEY_HOT_PATTERNS) || {};
@@ -128,9 +210,8 @@ function storeDecision(decision, pulseSurface) {
   trackBinary(pulseSurface.binary);
 }
 
-
 // ============================================================================
-//  HELPERS — symbolic ancestry
+// ANCESTRY HELPERS
 // ============================================================================
 function buildPatternAncestry(pattern) {
   if (!pattern || typeof pattern !== "string") return [];
@@ -154,18 +235,12 @@ function buildPageAncestrySignature({ pattern, lineage, pageId }) {
     pageId: safePageId
   };
 
-  let raw = JSON.stringify(shape);
-  let hash = 0;
-  for (let i = 0; i < raw.length; i++) {
-    hash = (hash << 5) - hash + raw.charCodeAt(i);
-    hash |= 0;
-  }
-  return (hash >>> 0).toString(16);
+  const raw = JSON.stringify(shape);
+  return computeHash(raw);
 }
 
-
 // ============================================================================
-//  HELPERS — binary ancestry (optional)
+// BINARY SURFACE EXTRACTION
 // ============================================================================
 function extractBinarySurface(payload = {}) {
   const binaryPattern  = payload.binaryPattern || null;
@@ -193,43 +268,8 @@ function extractBinarySurface(payload = {}) {
   };
 }
 
-
 // ============================================================================
-//  HASH / DUALHASH HELPERS (Earn Decision)
-// ============================================================================
-function hash131(raw) {
-  let h = 0;
-  const s = String(raw);
-  for (let i = 0; i < s.length; i++) {
-    h = (h * 131 + s.charCodeAt(i)) >>> 0;
-  }
-  return h >>> 0;
-}
-
-function hash257(raw) {
-  let h = 1;
-  const s = String(raw);
-  for (let i = 0; i < s.length; i++) {
-    h = (h * 257 + s.charCodeAt(i)) >>> 0;
-  }
-  return h >>> 0;
-}
-
-function computeDualHashEarnDecision(shape) {
-  const raw = JSON.stringify(shape);
-  const h1 = hash131(raw);
-  const h2 = hash257(raw);
-  const combined = hash131(`${h1.toString(16)}::${h2.toString(16)}`);
-  return {
-    primary: `ed16-p${h1.toString(16)}`,
-    secondary: `ed16-s${h2.toString(16)}`,
-    combined: `ed16-c${combined.toString(16)}`
-  };
-}
-
-
-// ============================================================================
-//  DEGRADATION TIER
+// DEGRADATION TIER
 // ============================================================================
 function classifyDegradationTier(healthScore) {
   const h = typeof healthScore === "number" ? healthScore : 1.0;
@@ -240,9 +280,8 @@ function classifyDegradationTier(healthScore) {
   return "criticalDegrade";
 }
 
-
 // ============================================================================
-//  DETERMINISTIC EARN PATH SELECTION (Symbolic + Binary)
+// PATH SELECTION — deterministic Earn path
 // ============================================================================
 function chooseEarnPath(pulse) {
   const pattern = pulse.pattern || "UNKNOWN_PATTERN";
@@ -264,14 +303,12 @@ function chooseEarnPath(pulse) {
   return paths[acc % paths.length];
 }
 
-
 // ============================================================================
-//  EARN INTEL SURFACE (IMMORTAL v16)
+// INTEL SURFACE — v24 dualhash Earn routing INTEL
 // ============================================================================
 function buildEarnIntel(pulse, decisionShape) {
-  const healthScore = typeof pulse.healthScore === "number"
-    ? pulse.healthScore
-    : 1.0;
+  const healthScore =
+    typeof pulse.healthScore === "number" ? pulse.healthScore : 1.0;
 
   const tier = classifyDegradationTier(healthScore);
 
@@ -293,7 +330,33 @@ function buildEarnIntel(pulse, decisionShape) {
       ? pulseCompute.factoringSignal
       : null;
 
-  const dualHash = computeDualHashEarnDecision(decisionShape);
+  const intelPayload = {
+    kind: "earnRoutingDecision",
+    version: "v24-IMMORTAL-INTEL++-DualHash",
+    decisionShape,
+    healthScore,
+    tier,
+    advantageField,
+    pulseCompute,
+    solvednessScore,
+    computeTier,
+    factoringSignal
+  };
+
+  const classicString =
+    `EARN_ROUTE::PATH:${decisionShape.targetPath}` +
+    `::TIER:${tier}` +
+    `::PAT:${decisionShape.pattern}` +
+    `::PAGE:${decisionShape.pageId}`;
+
+  const dualSig = buildDualHashSignature(
+    "PULSE_EARN_ROUTING_v24",
+    intelPayload,
+    classicString
+  );
+
+  earnRoutingHealing.lastIntelSignatureIntel = dualSig.intel;
+  earnRoutingHealing.lastIntelSignatureClassic = dualSig.classic;
 
   return {
     healthScore,
@@ -303,13 +366,12 @@ function buildEarnIntel(pulse, decisionShape) {
     solvednessScore,
     computeTier,
     factoringSignal,
-    dualHash
+    dualHash: dualSig
   };
 }
 
-
 // ============================================================================
-//  INTERNAL — pure decision builder (no CoreMemory side effects)
+// DECISION BUILDER — full v24 Earn routing surface
 // ============================================================================
 function buildEarnDecision(pulse) {
   const pattern = pulse.pattern || "UNKNOWN_PATTERN";
@@ -350,6 +412,16 @@ function buildEarnDecision(pulse) {
 
   const earnIntel = buildEarnIntel(pulse, decisionShape);
 
+  earnRoutingHealing.cycleCount++;
+  earnRoutingHealing.lastPattern = pattern;
+  earnRoutingHealing.lastTier = tier;
+  earnRoutingHealing.lastTargetPath = targetPath;
+  earnRoutingHealing.lastPageId = pageId;
+  earnRoutingHealing.lastPatternAncestry = patternAncestry;
+  earnRoutingHealing.lastLineageSignature = lineageSignature;
+  earnRoutingHealing.lastPageAncestrySignature = pageAncestrySignature;
+  earnRoutingHealing.lastBinarySurface = binary;
+
   return {
     decision: {
       targetPath,
@@ -381,9 +453,8 @@ function buildEarnDecision(pulse) {
   };
 }
 
-
 // ============================================================================
-//  PUBLIC API — PulseEarnRouter (DualStack + CoreMemory + INTEL + DualHash)
+// PUBLIC API — PulseEarnRouter v24 IMMORTAL INTEL++
 // ============================================================================
 export const PulseEarnRouter = {
 
@@ -406,7 +477,8 @@ export const PulseEarnRouter = {
       lastPulseSurface: CoreMemory.get(ROUTE, KEY_LAST_PULSE_SURFACE),
       hotPatterns: CoreMemory.get(ROUTE, KEY_HOT_PATTERNS),
       hotPages: CoreMemory.get(ROUTE, KEY_HOT_PAGES),
-      hotBinaryPatterns: CoreMemory.get(ROUTE, KEY_HOT_BINARY)
+      hotBinaryPatterns: CoreMemory.get(ROUTE, KEY_HOT_BINARY),
+      healing: getPulseEarnRoutingHealingState()
     };
   },
 

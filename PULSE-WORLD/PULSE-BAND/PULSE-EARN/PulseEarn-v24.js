@@ -121,17 +121,17 @@ import * as PulseEarnHeart from "./PulseEarnHeart-v24.js";
 import * as PulseEarnCirculatorySystem from "./PulseEarnCirculatorySystem-v24.js";
 import * as PulseEarnEndocrineSystem   from "./PulseEarnEndocrineSystem-v24.js";
 import * as PulseEarnImmuneSystem      from "./PulseEarnImmuneSystem-v24.js";
-import * as PulseEarnMetabolism        from "./PulseEarnMetabolism.js";
-import * as PulseEarnNervousSystem     from "./PulseEarnNervousSystem.js";
-import * as PulseEarnSkeletalSystem    from "./PulseEarnSkeletalSystem.js";
-import { PulseEarnSignalFactoring } from "./PulseEarnSignalFactoring-v24.js";
+import * as PulseEarnMetabolism        from "./PulseEarnMetabolism-v24.js";
+import * as PulseEarnNervousSystem     from "./PulseEarnNervousSystem-v24.js";
+import * as PulseEarnSkeletalSystem    from "./PulseEarnSkeletalSystem-v24.js";
+import * as PulseEarnSignalFactoring from "./PulseEarnSignalFactoring-v24.js";
+
+import * as PulseEarnReflex     from "./PulseEarnReflex-v24.js";
+import * as PulseEarnReflexRouter    from "./PulseEarnReflexRouter-v24.js";
+import * as PulseEarnSurvivalInstincts from "./PulseEarnSurvivalInstincts-v24.js";
 
 // --- MARKET EARN ORGANS ----------------------------------------------------
-import PulseEarnMktAuctioneer     from "./PulseEarnMktAuctioneer.js";
-import PulseEarnMktAmbassador     from "./PulseEarnMktAmbassador.js";
-import PulseEarnMktBroker         from "./PulseEarnMktBroker.js";
-import PulseEarnMktCourier        from "./PulseEarnMktCourier.js";
-import PulseEarnMktForager        from "./PulseEarnMktForager.js";
+import PulseEarnMktConsulate     from "./PulseEarnMktConsulate.js";
 
 import {
   PulseNetBoot,

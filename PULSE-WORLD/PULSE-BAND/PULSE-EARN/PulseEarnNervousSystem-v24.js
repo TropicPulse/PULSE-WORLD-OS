@@ -185,7 +185,7 @@ import {
   getPulseEarnDeviceProfile
 } from "./PulseEarnSkeletalSystem-v24.js";
 
-import { sendResultToMarketplace } from "./PulseEarnLymphNodes.js";
+import { sendResultToMarketplace } from "./PulseEarnLymphNodes-v24.js";
 
 // ============================================================================
 // Healing Metadata — Neural Activity Log (v24-Immortal-INTEL-Superior)

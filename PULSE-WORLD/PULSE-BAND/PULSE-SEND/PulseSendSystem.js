@@ -75,7 +75,7 @@ import { createPulseV2 } from "./PulseV2EvolutionEngine-v16.js";
 import { createLegacyPulse } from "./PulseSendLegacyPulse-v16.js";
 
 // Router + Mesh + Send
-import { PulseRouter } from "../PULSE-ROUTER/PulseRouter-v16.js";
+import { PulseRouter } from "../PULSE-ROUTER/PulseRouter-v24.js";
 import { PulseMesh } from "../PULSE-MESH/PulseMesh-v16.js";
 import { createPulseSendImpulse as createPulseSend } from "./PulseSendImpulse-v16.js";
 import { createPulseSendReturn } from "./PulseSendReturn.js";

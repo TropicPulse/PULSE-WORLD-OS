@@ -1,7 +1,7 @@
 
 /* 0. BOOT MEMBRANE — MUST BE FIRST */
-import * as PulseWindow from "./PULSE-WORLD-PORTAL.js";
-import * as PulseVitalsMonitor from "../_MONITOR/PulseProofMonitor-v20.js"
+import * as PulseWindow from "../_FRONTEND/PULSE-WORLD-PORTAL.js";
+import * as PulseVitalsMonitor from "../_MONITOR/PulseProofMonitor-v24.js"
 function mark(label) {
   console.log("[INDEX]", label);
 }

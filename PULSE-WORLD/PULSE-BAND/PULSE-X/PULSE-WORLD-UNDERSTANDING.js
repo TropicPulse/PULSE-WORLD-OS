@@ -80,7 +80,7 @@ import { createDualBandOrganism as PulseBinaryOrganismBoot } from "../PULSE-AI/a
 //  IMPORTS — SYMBOLIC / BINARY ORGANS
 // ============================================================================
 import { createProxy as PulseProxySym } from "../PULSE-PROXY/PulseProxy-v20.js";
-import { PulseRouter as PulseRouterSym } from "../PULSE-ROUTER/PulseRouter-v16.js";
+import { PulseRouter as PulseRouterSym } from "../PULSE-ROUTER/PulseRouter-v24.js";
 import { createGPUDispatch as PulseGPUSym } from "../PULSE-GPU/PulseGPU-v24.js";
 import { createPulseMesh as PulseMeshSym } from "../PULSE-MESH/PulseMesh-v16.js";
 import { createPulseSend as PulseSendSym } from "../PULSE-SEND/PulseSend-v16.js";
@@ -90,7 +90,7 @@ import { createEarn as PulseEarnSym } from "../PULSE-EARN/PulseEarn-v24.js";
 //  IMPORTS — BINARY SHADOW (NO BOOT HERE)
 // ============================================================================
 import { createBinaryProxy } from "../PULSE-PROXY/PulseBinaryProxy-v20.js";
-import { createBinaryRouter as PulseRouterBin } from "../PULSE-ROUTER/PulseBinaryRouter-v16.js";
+import { createBinaryRouter as PulseRouterBin } from "../PULSE-ROUTER/PulseBinaryRouter-v24.js";
 import { PulseBinaryGPU as PulseGPUBin } from "../PULSE-GPU/PulseBinaryGPU-v24.js";
 import { createBinaryMesh as PulseMeshBin } from "../PULSE-MESH/PulseBinaryMesh-v16.js";
 import { createBinarySend as PulseSendBin } from "../PULSE-SEND/PulseBinarySend-v16.js";

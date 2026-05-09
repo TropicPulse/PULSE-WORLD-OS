@@ -86,7 +86,7 @@ AI_EXPERIENCE_META = {
 // ============================================================================
 //  IMPORTS (backend-safe, organism-aware)
 // ============================================================================
-import { logger } from "../../PULSE-UI/_MONITOR/PulseProofLogger-v20.js";
+import { logger } from "../../PULSE-UI/_MONITOR/PulseProofLogger-v24.js";
 
 import {
   PulseExpansionMeta,

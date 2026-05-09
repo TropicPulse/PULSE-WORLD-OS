@@ -1,56 +1,103 @@
 // ============================================================================
-//  PulseRouterCommandmentsStore-v16-IMMORTAL-DualHash
-//  Deterministic Commandment Memory for PulseRouter-v16 / BinaryRouter-v16
-// ============================================================================
-//
-//  ROLE:
-//    - Stores symbolic routing commandments across universes/timelines/branches.
-//    - Deterministic ancestry signatures (pattern, lineage, page, cosmos).
-//    - DualHash route keys for drift-proof lookup.
-//    - Binary-surface extraction for dual-stack routing (symbolic + binary).
-//    - Zero randomness, zero mutation, drift-proof.
-//    - Reversible serialization.
+// FILE: PulseRouterCommandments-v24.js
+// PULSE ROUTER COMMANDMENTS — v24 IMMORTAL INTEL++ DUALHASH
+// ----------------------------------------------------------------------------
+// ROLE:
+//   • Deterministic storage + retrieval of routing commandments keyed by
+//     full route surface (routeId/tier/context/pattern/lineage/page/cosmos/binary).
+//   • Cosmos / pattern / lineage / page / binary aware.
+//   • DualHash INTEL route keys (intel + classic + combined) for diagnostics.
+//   • Pure metadata organ: no routing, no IO, no randomness.
+// ----------------------------------------------------------------------------
+// SAFETY CONTRACT (IMMORTAL v24‑INTEL):
+//   • No randomness, no timestamps, no async, no network, no filesystem.
+//   • Deterministic‑field: identical input → identical output.
+//   • Zero eval, zero dynamic imports, zero user code.
+//   • No mutation of caller payloads; only internal store state.
 // ============================================================================
 
 /*
 AI_EXPERIENCE_META = {
   identity: "PulseRouterCommandments",
-  version: "v16-IMMORTAL-DualHash",
-  layer: "frontend",
-  role: "router_law",
-  lineage: "PulseOS-v16",
+  version: "v24-IMMORTAL-INTEL++-DualHash",
+  layer: "routing",
+  role: "router_commandments_spine",
+  lineage: "PulseRouterCommandments-v16 → v24-IMMORTAL-INTEL++-DualHash",
 
   evo: {
-    lawCore: true,
     deterministic: true,
-    dualBand: true,
-    presenceAware: true,
-    chunkAligned: true,
-    safeRouteFree: true,
-    dualHashReady: true,
-    binarySurfaceReady: true
+    deterministicField: true,
+    driftProof: true,
+    multiInstanceReady: true,
+
+    cosmosAware: true,
+    patternAware: true,
+    lineageAware: true,
+    pageAware: true,
+    binaryAware: true,
+
+    intelSignatureAware: true,
+    dualHashAware: true,
+    structureAware: true,
+    contextAware: true
   },
 
   contract: {
-    always: [
-      "PulseRouter",
-      "PulseBinaryRouter",
-      "PulseRouterEarn"
+    input: [
+      "RouterCommandmentsSetPayload",
+      "RouterCommandmentsGetPayload"
     ],
-    never: [
-      "legacyRouterLaw",
-      "legacyRouter",
-      "safeRoute",
-      "fetchViaCNS"
+    output: [
+      "RouterCommandmentsEntry",
+      "RouterCommandmentsSnapshot",
+      "RouterCommandmentsIntel",
+      "RouterCommandmentsHealingState"
     ]
   }
-}
+};
 */
 
+// ============================================================================
+// HASH / INTEL HELPERS — v24 IMMORTAL INTEL
+// ============================================================================
+function computeHash(str) {
+  let h = 0;
+  const s = String(str || "");
+  for (let i = 0; i < s.length; i++) {
+    h = (h + s.charCodeAt(i) * (i + 1)) % 100000;
+  }
+  return `h${h}`;
+}
 
-// ------------------------------------------------------------
-// COSMOS HELPERS
-// ------------------------------------------------------------
+function computeHashIntelligence(payload) {
+  const base = JSON.stringify(payload || "");
+  let h = 0;
+  for (let i = 0; i < base.length; i++) {
+    const c = base.charCodeAt(i);
+    h = (h * 131 + c * (i + 7)) % 1000000007;
+  }
+  return `HINTEL_${h}`;
+}
+
+function buildDualHashSignature(label, intelPayload, classicString) {
+  const intelBase = {
+    label,
+    intel: intelPayload || {},
+    classic: classicString || ""
+  };
+  const intelHash = computeHashIntelligence(intelBase);
+  const classicHash = computeHash(`${label}::${classicString || ""}`);
+  const combined = computeHash(`${intelHash}::${classicHash}`);
+  return {
+    intel: intelHash,
+    classic: classicHash,
+    combined
+  };
+}
+
+// ============================================================================
+// COSMOS + ROUTE SURFACE HELPERS
+// ============================================================================
 function normalizeCosmos(cosmos = {}) {
   return {
     universeId: cosmos.universeId || "u:default",
@@ -65,47 +112,9 @@ function cosmosSignature(cosmos) {
   for (let i = 0; i < raw.length; i++) {
     h = (h * 31 + raw.charCodeAt(i)) >>> 0;
   }
-  return `cx${h.toString(16)}`;
+  return `cx24-${h.toString(16)}`;
 }
 
-
-// ------------------------------------------------------------
-// HASH / DUALHASH HELPERS
-// ------------------------------------------------------------
-function hash131(raw) {
-  let h = 0;
-  const s = String(raw);
-  for (let i = 0; i < s.length; i++) {
-    h = (h * 131 + s.charCodeAt(i)) >>> 0;
-  }
-  return h >>> 0;
-}
-
-function hash257(raw) {
-  let h = 1;
-  const s = String(raw);
-  for (let i = 0; i < s.length; i++) {
-    h = (h * 257 + s.charCodeAt(i)) >>> 0;
-  }
-  return h >>> 0;
-}
-
-function computeDualHashRouteKey(rawShape) {
-  const raw = JSON.stringify(rawShape);
-  const h1 = hash131(raw);
-  const h2 = hash257(raw);
-  const combined = hash131(`${h1.toString(16)}::${h2.toString(16)}`);
-  return {
-    primary: `rk16-p${h1.toString(16)}`,
-    secondary: `rk16-s${h2.toString(16)}`,
-    combined: `rk16-c${combined.toString(16)}`
-  };
-}
-
-
-// ------------------------------------------------------------
-// ANCESTRY HELPERS
-// ------------------------------------------------------------
 function buildPatternAncestry(pattern) {
   if (!pattern || typeof pattern !== "string") return [];
   return pattern.split("/").filter(Boolean);
@@ -134,10 +143,9 @@ function buildPageAncestrySignature({ pattern, lineage, pageId, cosmos }) {
   return (hash >>> 0).toString(16);
 }
 
-
-// ------------------------------------------------------------
-// BINARY SURFACE (dual-stack)
-// ------------------------------------------------------------
+// ============================================================================
+// BINARY SURFACE EXTRACTION
+// ============================================================================
 function extractBinarySurface(payload) {
   if (!payload || typeof payload !== "object") return {};
   const out = {};
@@ -150,10 +158,32 @@ function extractBinarySurface(payload) {
   return out;
 }
 
+// ============================================================================
+// ROUTE KEY — v24 DualHash INTEL
+// ============================================================================
+function computeDualHashRouteKey(rawShape) {
+  const raw = JSON.stringify(rawShape);
 
-// ------------------------------------------------------------
-// ROUTE KEY (v16 IMMORTAL DualHash)
-// ------------------------------------------------------------
+  const intelPayload = {
+    kind: "routerCommandmentsRouteKey",
+    version: "v24-IMMORTAL-INTEL++-DualHash",
+    shape: rawShape
+  };
+
+  const classicString = raw;
+  const dual = buildDualHashSignature(
+    "PULSE_ROUTER_COMMANDMENTS_ROUTE_KEY_v24",
+    intelPayload,
+    classicString
+  );
+
+  return {
+    primary: dual.intel,
+    secondary: dual.classic,
+    combined: dual.combined
+  };
+}
+
 function buildRouteKey({
   routeId,
   tierId,
@@ -188,10 +218,9 @@ function buildRouteKey({
   };
 }
 
-
-// ------------------------------------------------------------
-// NORMALIZATION (unchanged semantics, v16-stable)
-// ------------------------------------------------------------
+// ============================================================================
+// COMMANDMENTS NORMALIZATION
+// ============================================================================
 function normalizeCommandments(cmd = {}) {
   const out = {};
   for (const k of Object.keys(cmd)) {
@@ -202,14 +231,39 @@ function normalizeCommandments(cmd = {}) {
   return out;
 }
 
+// ============================================================================
+// HEALING METADATA — Commandments Health Log (v24 IMMORTAL INTEL++)
+// ============================================================================
+const commandmentsHealing = {
+  cycleCount: 0,
 
-// ------------------------------------------------------------
-// STORE — v16 IMMORTAL DualHash
-// ------------------------------------------------------------
+  lastSetRouteKey: null,
+  lastSetTierId: null,
+  lastSetRouteId: null,
+
+  lastGetRouteKey: null,
+  lastGetHit: false,
+
+  lastSnapshotSize: 0,
+
+  lastSetSignatureIntel: null,
+  lastSetSignatureClassic: null,
+
+  lastSnapshotSignatureIntel: null,
+  lastSnapshotSignatureClassic: null
+};
+
+export function getPulseRouterCommandmentsHealingState() {
+  return { ...commandmentsHealing };
+}
+
+// ============================================================================
+// COMMANDMENTS STORE — v24 IMMORTAL INTEL++
+// ============================================================================
 class PulseRouterCommandmentsStore {
   constructor() {
     this.entries = new Map();
-    this.meta = { version: "16-IMMORTAL-DualHash" };
+    this.meta = { version: "24-IMMORTAL-INTEL++-DualHash" };
   }
 
   clear() {
@@ -273,10 +327,42 @@ class PulseRouterCommandmentsStore {
 
       binary,
       commandments: normalized,
-      meta: { version: "16-IMMORTAL-DualHash" }
+      meta: { version: "24-IMMORTAL-INTEL++-DualHash" }
     };
 
     this.entries.set(key, entry);
+
+    // healing
+    commandmentsHealing.cycleCount++;
+    commandmentsHealing.lastSetRouteKey = key;
+    commandmentsHealing.lastSetRouteId = entry.routeId;
+    commandmentsHealing.lastSetTierId = entry.tierId;
+
+    const intelPayload = {
+      kind: "routerCommandmentsSet",
+      version: "v24-IMMORTAL-INTEL++-DualHash",
+      routeId: entry.routeId,
+      tierId: entry.tierId,
+      pattern: entry.pattern,
+      lineageDepth: entry.lineage.length
+    };
+
+    const classicString =
+      `SET:${entry.routeId}` +
+      `::TIER:${entry.tierId}` +
+      `::PAT:${entry.pattern}` +
+      `::LIN:${entry.lineage.length}` +
+      `::KEY:${key}`;
+
+    const sig = buildDualHashSignature(
+      "PULSE_ROUTER_COMMANDMENTS_SET_v24",
+      intelPayload,
+      classicString
+    );
+
+    commandmentsHealing.lastSetSignatureIntel = sig.intel;
+    commandmentsHealing.lastSetSignatureClassic = sig.classic;
+
     return entry;
   }
 
@@ -307,6 +393,11 @@ class PulseRouterCommandmentsStore {
     });
 
     const entry = this.entries.get(key);
+
+    commandmentsHealing.cycleCount++;
+    commandmentsHealing.lastGetRouteKey = key;
+    commandmentsHealing.lastGetHit = !!entry;
+
     if (entry) return entry;
 
     return {
@@ -331,7 +422,7 @@ class PulseRouterCommandmentsStore {
 
       binary: extractBinarySurface(payload),
       commandments: normalizeCommandments({}),
-      meta: { version: "16-IMMORTAL-DualHash" }
+      meta: { version: "24-IMMORTAL-INTEL++-DualHash" }
     };
   }
 
@@ -355,6 +446,30 @@ class PulseRouterCommandmentsStore {
         dualHash: { ...entry.dualHash }
       };
     }
+
+    const size = Object.keys(out).length;
+    commandmentsHealing.cycleCount++;
+    commandmentsHealing.lastSnapshotSize = size;
+
+    const intelPayload = {
+      kind: "routerCommandmentsSnapshot",
+      version: "v24-IMMORTAL-INTEL++-DualHash",
+      size
+    };
+
+    const classicString =
+      `SNAPSHOT::SIZE:${size}` +
+      `::RAW:${computeHash(JSON.stringify(out || {}))}`;
+
+    const sig = buildDualHashSignature(
+      "PULSE_ROUTER_COMMANDMENTS_SNAPSHOT_v24",
+      intelPayload,
+      classicString
+    );
+
+    commandmentsHealing.lastSnapshotSignatureIntel = sig.intel;
+    commandmentsHealing.lastSnapshotSignatureClassic = sig.classic;
+
     return out;
   }
 
@@ -438,7 +553,7 @@ class PulseRouterCommandmentsStore {
 
         binary: entry.binary || {},
         commandments: normalizeCommandments(entry.commandments || {}),
-        meta: { version: "16-IMMORTAL-DualHash" }
+        meta: { version: "24-IMMORTAL-INTEL++-DualHash" }
       };
 
       this.entries.set(safeEntry.key, safeEntry);
@@ -446,14 +561,18 @@ class PulseRouterCommandmentsStore {
   }
 }
 
-
-// ------------------------------------------------------------
-// PUBLIC API WRAPPER
-// ------------------------------------------------------------
+// ============================================================================
+// PUBLIC WRAPPER — PulseRouterCommandments v24
+// ============================================================================
 class PulseRouterCommandments {
   constructor() {
     this.store = new PulseRouterCommandmentsStore();
-    this.meta = { version: "16-IMMORTAL-DualHash" };
+    this.meta = {
+      version: "v24-IMMORTAL-INTEL++-DualHash",
+      identity: "PulseRouterCommandments-v24-IMMORTAL-INTEL++-DualHash",
+      layer: "routing",
+      role: "router_commandments_spine"
+    };
   }
 
   setCommandments(payload) {
@@ -479,14 +598,22 @@ class PulseRouterCommandments {
   clear() {
     this.store.clear();
   }
+
+  getMeta() {
+    return { ...this.meta };
+  }
+
+  getHealingState() {
+    return getPulseRouterCommandmentsHealingState();
+  }
 }
 
-
-// ------------------------------------------------------------
+// ============================================================================
 // EXPORTS
-// ------------------------------------------------------------
+// ============================================================================
 export {
   PulseRouterCommandments,
+  PulseRouterCommandmentsStore,
   buildRouteKey,
   normalizeCommandments
 };

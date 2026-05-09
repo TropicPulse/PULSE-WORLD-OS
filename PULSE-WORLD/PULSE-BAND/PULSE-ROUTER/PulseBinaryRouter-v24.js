@@ -109,18 +109,18 @@ export const PulseBinaryRouterRole = {
 };
 
 // --- EVOLUTIONARY ROUTER ORGANS --------------------------------------------
-import * as PulseRouterEvolutionaryDesign     from "./PulseRouterEvolutionaryDesign.js";
-import * as PulseRouterEvolutionaryInstincts  from "./PulseRouterEvolutionaryInstincts.js";
-import * as PulseRouterEvolutionaryThought    from "./PulseRouterEvolutionaryThought.js";
+import * as PulseRouterEvolutionaryDesign     from "./PulseRouterEvolutionaryDesign-v24.js";
+import * as PulseRouterEvolutionaryInstincts  from "./PulseRouterEvolutionaryInstincts-v24.js";
+import * as PulseRouterEvolutionaryThought    from "./PulseRouterEvolutionaryThought-v24.js";
 
 // --- MESH ROUTER ------------------------------------------------------------
-import * as PulseRouterMesh           from "./PulseRouterMesh-v16.js";
+import * as PulseRouterMesh           from "./PulseRouterMesh-v24.js";
 
 // --- EARN-AWARE ROUTER ------------------------------------------------------
-import * as PulseRouterEarn           from "./PulseRouterEarn-v16.js";
+import * as PulseRouterEarn           from "./PulseRouterEarn-v24.js";
 
 // --- ROUTER COMMANDMENTS ----------------------------------------------------
-import * as PulseRouterCommandments   from "./PulseRouterCommandments.js";
+import * as PulseRouterCommandments   from "./PulseRouterCommandments-v24.js";
 
 // ============================================================================
 // INTERNAL HELPERS — HASH / DUALHASH / INTELLIGENCE (pure, deterministic)
