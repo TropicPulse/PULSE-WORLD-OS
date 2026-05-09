@@ -110,6 +110,31 @@ import * as PulseSkinReflex from "../_FRONTEND/PulseUISkinReflex-v20.js";
 
 import { createAdminDiagnosticsOrgan, createPulseWorldAdminPanel } from "../_BACKEND/PulseWorldAdminPanel-v20.js";
 
+// import {
+//   route as bridgeRoute,
+//   PulseProofLogger as PulseLogger,
+//   log,
+//   warn,
+//   error,
+//   startUnderstanding as PulseUnderstanding,
+//   PulseBinaryOrganismBoot,
+//   startPulseNet,
+//   pulseNetIngressFromUser,
+//   pulseNetFastLanePulse
+// } from "./_BACKEND/PULSE-WORLD-BRIDGE.js";
+
+// // IMMORTAL++ organ factories
+// import { PulseTouchDetector } from "./_OUTERSENSES/PULSE-TOUCH-DETECTOR.js";
+// import { PulseTouchWarmup } from "./_OUTERSENSES/PULSE-TOUCH-WARMUP.js";
+// import { PulseTouchSecurity } from "./_OUTERSENSES/PULSE-TOUCH-SECURITY.js";
+// import { PulseTouchGate } from "./_OUTERSENSES/PULSE-TOUCH-GATE.js";
+// import { pulseTouchAdvantageCortex } from "./_OUTERSENSES/PULSE-TOUCH-ADVANTAGE.js";
+// import { PulseTouchThreatShape } from "./_OUTERSENSES/PULSE-TOUCH-THREATSHAPE.js";
+
+// // Optional future‑oriented helpers (IMMORTAL++)
+// import { PulseTouchPredictor } from "./_OUTERSENSES/PULSE-TOUCH-PREDICTOR.js";
+// import { PulseTouchAnalytics } from "./_OUTERSENSES/PULSE-TOUCH-ANALYTICS.js";
+// import { PulsePresenceOracle } from "./_OUTERSENSES/PULSE-TOUCH-PRESENCE-ORACLE.js";
 // ============================================================================
 // GLOBAL HANDLE + OPTIONAL DB
 // ============================================================================

@@ -137,58 +137,62 @@
 //     ]
 //   }
 // };
+// ============================================================
+// IMPORTS — DISABLED IN PORTAL-SAFE TOUCH (v24++)
+// ============================================================
+// All imports are intentionally commented out. PulseTouch is a
+// global-first-contact organ and MUST NOT run as a module.
+
+// import { ... } from "./_BACKEND/...";
+// import { PulseTouchDetector } from "./_OUTERSENSES/...";
+// import { PulseTouchWarmup } from "./_OUTERSENSES/...";
+// import { PulseTouchSecurity } from "./_OUTERSENSES/...";
+// import { PulseTouchGate } from "./_OUTERSENSES/...";
+// import { pulseTouchAdvantageCortex } from "./_OUTERSENSES/...";
+// import { PulseTouchThreatShape } from "./_OUTERSENSES/...";
+// import { PulseTouchPredictor } from "./_OUTERSENSES/...";
+// import { PulseTouchAnalytics } from "./_OUTERSENSES/...";
+// import { PulsePresenceOracle } from "./_OUTERSENSES/...";
+
+// All Touch organs will be accessed through window.*
+// Example:
+//   window.PulseTouchDetector
+//   window.PulseTouchWarmup
+//   window.PulseTouchSecurity
+//   window.PulseTouchGate
+//   window.pulseTouchAdvantageCortex
+//   window.PulseTouchThreatShape
+//   window.PulseTouchPredictor
+//   window.PulseTouchAnalytics
+//   window.PulsePresenceOracle
+//   window.PulseNet
+//   window.PulseProofLogger
+//   window.PulseBridgeRoute
+// ============================================================
+
+
 
 // ============================================================
-// IMPORTS — PULSE-NET + TOUCH ORGANS + BRIDGE + FUTURE HOOKS
-// ============================================================
-
-import {
-  route as bridgeRoute,
-  PulseProofLogger as PulseLogger,
-  log,
-  warn,
-  error,
-  startUnderstanding as PulseUnderstanding,
-  PulseBinaryOrganismBoot,
-  startPulseNet,
-  pulseNetIngressFromUser,
-  pulseNetFastLanePulse
-} from "./_BACKEND/PULSE-WORLD-BRIDGE.js";
-
-// IMMORTAL++ organ factories
-import { PulseTouchDetector } from "./_OUTERSENSES/PULSE-TOUCH-DETECTOR.js";
-import { PulseTouchWarmup } from "./_OUTERSENSES/PULSE-TOUCH-WARMUP.js";
-import { PulseTouchSecurity } from "./_OUTERSENSES/PULSE-TOUCH-SECURITY.js";
-import { PulseTouchGate } from "./_OUTERSENSES/PULSE-TOUCH-GATE.js";
-import { pulseTouchAdvantageCortex } from "./_OUTERSENSES/PULSE-TOUCH-ADVANTAGE.js";
-import { PulseTouchThreatShape } from "./_OUTERSENSES/PULSE-TOUCH-THREATSHAPE.js";
-
-// Optional future‑oriented helpers (IMMORTAL++)
-import { PulseTouchPredictor } from "./_OUTERSENSES/PULSE-TOUCH-PREDICTOR.js";
-import { PulseTouchAnalytics } from "./_OUTERSENSES/PULSE-TOUCH-ANALYTICS.js";
-import { PulsePresenceOracle } from "./_OUTERSENSES/PULSE-TOUCH-PRESENCE-ORACLE.js";
-
-// ============================================================
-// CONSTANTS — COOKIE + VERSION + TIMELINE + PULSE CONFIG
+// CONSTANTS — COOKIE + VERSION + TIMELINE + PULSE CONFIG (v24++)
 // ============================================================
 
 const PULSE_TOUCH_COOKIE_NAME = "pulse_touch";
 const PULSE_TOUCH_MAX_AGE = 86400; // 1 day
-const PULSE_TOUCH_VERSION = "20.1";
+const PULSE_TOUCH_VERSION = "24.0-IMMORTAL++";
 
-const PULSE_TOUCH_TIMELINE_LS_KEY = "PulseTouch.v20.timeline";
-const PULSE_TOUCH_TIMELINE_MAX = 512;
+const PULSE_TOUCH_TIMELINE_LS_KEY = "PulseTouch.v24.timeline";
+const PULSE_TOUCH_TIMELINE_MAX = 1024; // v24++ expanded buffer
 
 // continuous pulse base config (safe, low impact)
-const PULSE_TOUCH_PULSE_INTERVAL_MS_BASE = 220; // ~4.5 pulses/sec
-const PULSE_TOUCH_PULSE_INTERVAL_MS_MIN = 120;
+const PULSE_TOUCH_PULSE_INTERVAL_MS_BASE = 180; // v24++ faster baseline
+const PULSE_TOUCH_PULSE_INTERVAL_MS_MIN = 90;
 const PULSE_TOUCH_PULSE_INTERVAL_MS_MAX = 600;
 
-const PULSE_TOUCH_PULSE_BURST_COUNT = 10; // initial burst
-const PULSE_TOUCH_PULSE_BURST_SPACING_MS = 55;
+const PULSE_TOUCH_PULSE_BURST_COUNT = 12; // v24++ slightly denser
+const PULSE_TOUCH_PULSE_BURST_SPACING_MS = 45;
 
 // multi‑tab coordination (soft, non‑authoritative)
-const PULSE_TOUCH_BROADCAST_CHANNEL = "PulseTouch.v20.channel";
+const PULSE_TOUCH_BROADCAST_CHANNEL = "PulseTouch.v24.channel";
 
 // in‑memory preflight registry (per page load)
 const pulseTouchPreflights = [];
@@ -200,8 +204,12 @@ const pulseTouchHooks = {
   onGateDecision: [],
   onTimelineEvent: [],
   onCadenceChange: [],
-  onPrediction: []
+  onPrediction: [],
+  onThreatShape: [],
+  onPresenceOracle: []
 };
+
+
 
 // ============================================================
 // GLOBAL STATE SNAPSHOT (BROWSER‑SAFE)
@@ -212,8 +220,10 @@ const hasDocument = typeof document !== "undefined";
 
 if (hasWindow) {
   window.__PULSE_TOUCH__ = window.__PULSE_TOUCH__ || null;
+
   window.__PULSE_TOUCH_ORIGIN_TS__ =
     window.__PULSE_TOUCH_ORIGIN_TS__ || Date.now();
+
   window.__PULSE_TOUCH_PULSE_STATE__ =
     window.__PULSE_TOUCH_PULSE_STATE__ || {
       started: false,
@@ -221,9 +231,14 @@ if (hasWindow) {
       intervalMs: PULSE_TOUCH_PULSE_INTERVAL_MS_BASE,
       lastMode: "burst",
       lastPulseTs: 0,
-      lastGateDecision: null
+      lastGateDecision: null,
+      lastThreatShape: null,
+      lastPresenceOracle: null
     };
-  window.__PULSE_TOUCH_LAST_GATE__ = window.__PULSE_TOUCH_LAST_GATE__ || null;
+
+  window.__PULSE_TOUCH_LAST_GATE__ =
+    window.__PULSE_TOUCH_LAST_GATE__ || null;
+
   window.__PULSE_TOUCH_LAST_SECURITY__ =
     window.__PULSE_TOUCH_LAST_SECURITY__ || null;
 }
@@ -238,9 +253,12 @@ try {
   pulseTouchChannel = null;
 }
 
+
+
 // ============================================================
-// TIMELINE HELPERS — IMMORTAL FIRST-CONTACT AXIS
+// TIMELINE HELPERS — IMMORTAL FIRST-CONTACT AXIS (v24++)
 // ============================================================
+
 function hasLocalStorage() {
   if (!hasWindow) return false;
   try {
@@ -277,20 +295,15 @@ function saveTouchTimeline(buf) {
       PULSE_TOUCH_TIMELINE_LS_KEY,
       JSON.stringify(trimmed)
     );
-  } catch {
-    // never throw
-  }
+  } catch {}
 }
 
 function fireTimelineHooks(kind, payload) {
   const hooks = pulseTouchHooks.onTimelineEvent || [];
-  if (!hooks.length) return;
   for (const fn of hooks) {
     try {
       fn({ kind, payload });
-    } catch {
-      // hooks must never crash the organism
-    }
+    } catch {}
   }
 }
 
@@ -315,31 +328,31 @@ function appendTouchTimeline(kind, payload = {}) {
 
   fireTimelineHooks(kind, entry.payload);
 
-  // Optional: mirror into bridge (fire-and-forget) for CNS/log surfaces
+  // Optional: mirror into bridge (fire-and-forget)
   try {
-    bridgeRoute?.("touch.timeline", {
+    window.PulseBridgeRoute?.("touch.timeline", {
       ts,
       dt: entry.dt,
       kind,
       payload: entry.payload
-    }).catch?.(() => {});
+    });
   } catch {}
 
-  // Optional: mirror into logger collection if available
+  // Optional: mirror into logger
   try {
-    if (PulseLogger && typeof PulseLogger.route === "function") {
-      PulseLogger.route("touchTimeline.log", {
-        ts,
-        dt: entry.dt,
-        kind,
-        payload: entry.payload
-      }).catch?.(() => {});
-    }
+    window.PulseProofLogger?.route?.("touchTimeline.log", {
+      ts,
+      dt: entry.dt,
+      kind,
+      payload: entry.payload
+    });
   } catch {}
 }
 
+
+
 // ============================================================
-// ADAPTIVE CADENCE ENGINE — PRESSURE/TRUST/BAND/PULSE AWARE
+// ADAPTIVE CADENCE ENGINE — PRESSURE/TRUST/BAND/PULSE AWARE (v24++)
 // ============================================================
 
 function computeAdaptiveIntervalMs({ security, skin }) {
@@ -355,50 +368,28 @@ function computeAdaptiveIntervalMs({ security, skin }) {
   const pulseStream = skin?.pulseStream || "continuous";
   const fastLane = skin?.fastLane || "enabled";
 
-  if (presence === "idle" || presence === "background") {
-    factor *= 1.8;
-  }
+  if (presence === "idle" || presence === "background") factor *= 1.8;
+  if (risk === "high" || risk === "critical") factor *= 1.6;
+  else if (risk === "low") factor *= 0.9;
 
-  if (risk === "high" || risk === "critical") {
-    factor *= 1.6;
-  } else if (risk === "low") {
-    factor *= 0.9;
-  }
+  if (trust === "trusted") factor *= 0.9;
+  else if (trust === "untrusted") factor *= 1.3;
 
-  if (trust === "trusted") {
-    factor *= 0.9;
-  } else if (trust === "untrusted") {
-    factor *= 1.3;
-  }
+  if (band === "binary") factor *= 0.85;
 
-  if (band === "binary") {
-    factor *= 0.85;
-  }
+  if (mode === "slow") factor *= 1.4;
+  else if (mode === "fast") factor *= 0.9;
 
-  if (mode === "slow") {
-    factor *= 1.4;
-  } else if (mode === "fast") {
-    factor *= 0.9;
-  }
+  if (pulseStream === "single") factor *= 1.2;
+  else if (pulseStream === "burst") factor *= 0.95;
 
-  // v24: pulseStream / fastLane hints
-  if (pulseStream === "single") {
-    factor *= 1.2;
-  } else if (pulseStream === "burst") {
-    factor *= 0.95;
-  }
-
-  if (fastLane === "disabled") {
-    factor *= 1.1;
-  }
+  if (fastLane === "disabled") factor *= 1.1;
 
   let interval = Math.round(base * factor);
-  if (interval < PULSE_TOUCH_PULSE_INTERVAL_MS_MIN) {
+  if (interval < PULSE_TOUCH_PULSE_INTERVAL_MS_MIN)
     interval = PULSE_TOUCH_PULSE_INTERVAL_MS_MIN;
-  }
-  if (interval > PULSE_TOUCH_PULSE_INTERVAL_MS_MAX) {
+  if (interval > PULSE_TOUCH_PULSE_INTERVAL_MS_MAX)
     interval = PULSE_TOUCH_PULSE_INTERVAL_MS_MAX;
-  }
 
   return interval;
 }
@@ -433,31 +424,35 @@ function applyAdaptiveCadence(state, { security, skin }) {
   }
 }
 
+
+
 // ============================================================
-// CONTINUOUS PULSE ENGINE — FAST-LANE WSEND INTENT STREAM
+// CONTINUOUS PULSE ENGINE — FAST-LANE WSEND INTENT STREAM (v24++)
 // ============================================================
 
 let pulseTouchAnalyticsInstance = null;
 function getPulseTouchAnalytics() {
-  // IMMORTAL++: support both factory and static style
-  if (!PulseTouchAnalytics) return null;
+  const A = window.PulseTouchAnalytics;
+  if (!A) return null;
+
   if (pulseTouchAnalyticsInstance) return pulseTouchAnalyticsInstance;
 
   try {
-    if (typeof PulseTouchAnalytics === "function") {
-      const maybe = PulseTouchAnalytics();
+    if (typeof A === "function") {
+      const maybe = A();
       if (maybe && typeof maybe.recordPulse === "function") {
         pulseTouchAnalyticsInstance = maybe;
-        return pulseTouchAnalyticsInstance;
+        return maybe;
       }
     }
-  } catch {
-    // fall through to static usage
-  }
+  } catch {}
 
-  pulseTouchAnalyticsInstance = PulseTouchAnalytics;
-  return pulseTouchAnalyticsInstance;
+  pulseTouchAnalyticsInstance = A;
+  return A;
 }
+// ============================================================
+// CONTINUOUS PULSE ENGINE — FAST-LANE WSEND INTENT STREAM (v24++)
+// ============================================================
 
 function startContinuousPulseStream(skin, security, gateDecision) {
   if (!hasWindow) return;
@@ -474,7 +469,7 @@ function startContinuousPulseStream(skin, security, gateDecision) {
     intervalMs: state.intervalMs
   });
 
-  // Initial burst: fast, dense hints to Pulse‑Net
+  // Initial burst (IMMORTAL++: denser, safer)
   try {
     for (let i = 0; i < PULSE_TOUCH_PULSE_BURST_COUNT; i++) {
       setTimeout(() => {
@@ -483,7 +478,7 @@ function startContinuousPulseStream(skin, security, gateDecision) {
     }
   } catch {}
 
-  // Continuous stream: low‑cost, steady hints
+  // Continuous stream
   try {
     state.intervalId = setInterval(() => {
       sendFastLanePulse("continuous", skin, security, gateDecision);
@@ -501,6 +496,7 @@ function stopContinuousPulseStream() {
   try {
     if (state.intervalId) clearInterval(state.intervalId);
   } catch {}
+
   state.intervalId = null;
   state.started = false;
 
@@ -509,7 +505,6 @@ function stopContinuousPulseStream() {
 
 function firePulseHooks(mode, payload) {
   const hooks = pulseTouchHooks.onPulse || [];
-  if (!hooks.length) return;
   for (const fn of hooks) {
     try {
       fn({ mode, payload });
@@ -557,14 +552,14 @@ function sendFastLanePulse(mode, skin, security, gateDecision) {
 
   firePulseHooks(mode, payload);
 
-  // 1) Direct Pulse‑Net fast‑lane (WSEND‑style intent)
+  // 1) PulseNet FastLane (Portal-safe)
   try {
-    pulseNetFastLanePulse(payload);
+    window.pulseNetFastLanePulse?.(payload);
   } catch {}
 
-  // 2) Optional ingress (normal path) for analytics / overmind
+  // 2) Optional ingress
   try {
-    pulseNetIngressFromUser({
+    window.pulseNetIngressFromUser?.({
       source: "pulse-touch",
       event: "pulse",
       ts,
@@ -576,7 +571,7 @@ function sendFastLanePulse(mode, skin, security, gateDecision) {
     });
   } catch {}
 
-  // 3) Optional analytics / evidence hooks (IMMORTAL++ organ‑aware)
+  // 3) Analytics (IMMORTAL++)
   try {
     const analytics = getPulseTouchAnalytics();
     analytics?.recordPulse?.({
@@ -599,14 +594,18 @@ function registerHook(kind, fn) {
   const bucket = pulseTouchHooks[kind];
   if (!bucket) return;
   bucket.push(fn);
+
   appendTouchTimeline("hook_registered", {
     kind,
     count: bucket.length
   });
 }
 
+// ============================================================
+// CREATE PULSE TOUCH — IMMORTAL++ PORTAL-SAFE ORGANISM
+// ============================================================
 
-export function createPulseTouch(options = {}) {
+function createPulseTouch(options = {}) {
   const originTs =
     (hasWindow && window.__PULSE_TOUCH_ORIGIN_TS__) || Date.now();
 
@@ -622,7 +621,7 @@ export function createPulseTouch(options = {}) {
   });
 
   // ------------------------------------------------------------
-  // IMMORTAL++ ORGAN INSTANCES (LAZY, SAFE)
+  // IMMORTAL++ ORGAN INSTANCES (NO IMPORTS — GLOBAL ONLY)
   // ------------------------------------------------------------
   let predictor = null;
   let analytics = null;
@@ -631,39 +630,31 @@ export function createPulseTouch(options = {}) {
 
   try {
     predictor =
-      typeof PulseTouchPredictor === "function"
-        ? PulseTouchPredictor()
-        : PulseTouchPredictor || null;
-  } catch {
-    predictor = null;
-  }
+      typeof window.PulseTouchPredictor === "function"
+        ? window.PulseTouchPredictor()
+        : window.PulseTouchPredictor || null;
+  } catch {}
 
   try {
     analytics =
-      typeof PulseTouchAnalytics === "function"
-        ? PulseTouchAnalytics()
-        : PulseTouchAnalytics || null;
-  } catch {
-    analytics = null;
-  }
+      typeof window.PulseTouchAnalytics === "function"
+        ? window.PulseTouchAnalytics()
+        : window.PulseTouchAnalytics || null;
+  } catch {}
 
   try {
     presenceOracle =
-      typeof PulsePresenceOracle === "function"
-        ? PulsePresenceOracle()
-        : PulsePresenceOracle || null;
-  } catch {
-    presenceOracle = null;
-  }
+      typeof window.PulsePresenceOracle === "function"
+        ? window.PulsePresenceOracle()
+        : window.PulsePresenceOracle || null;
+  } catch {}
 
   try {
     advantageCortex =
-      typeof pulseTouchAdvantageCortex === "function"
-        ? pulseTouchAdvantageCortex()
+      typeof window.pulseTouchAdvantageCortex === "function"
+        ? window.pulseTouchAdvantageCortex()
         : null;
-  } catch {
-    advantageCortex = null;
-  }
+  } catch {}
 
   // ------------------------------------------------------------
   // 1. DEFAULT METADATA (Organism‑Safe, Non‑PII)
@@ -680,47 +671,40 @@ export function createPulseTouch(options = {}) {
     version: PULSE_TOUCH_VERSION
   };
 
-  // 1) Seed cookie immediately
+  // 1) Seed cookie
   writePulseTouchCookie(defaults);
   appendTouchTimeline("cookie_seeded", { state: defaults });
 
-  // 2) Read + normalize via Detector (IMMORTAL contract)
-  const detected = PulseTouchDetector.normalize(
+  // 2) Detector
+  const detected = window.PulseTouchDetector?.normalize(
     readPulseTouchInternal(defaults)
-  );
+  ) || defaults;
+
   appendTouchTimeline("skin_detected", { skin: detected });
 
-  // 3) Expose snapshot globally for PulseNet / Overmind / UI
-  if (hasWindow) {
-    window.__PULSE_TOUCH__ = detected;
-  }
+  // 3) Expose globally
+  if (hasWindow) window.__PULSE_TOUCH__ = detected;
 
-  // 4) Run pre‑registered preflight checks as early as possible
+  // 4) Preflights
   appendTouchTimeline("preflights_start", {
     count: pulseTouchPreflights.length
   });
   runPreflights(detected);
   appendTouchTimeline("preflights_done", {});
 
-  // 5) Warmup: chunks/pages/mode/presence hints
+  // 5) Warmup
   let warmupResult = null;
   try {
-    appendTouchTimeline("warmup_start", {
-      page: detected.page,
-      mode: detected.mode,
-      chunkProfile: detected.chunkProfile,
-      band: detected.band
-    });
-    warmupResult = PulseTouchWarmup.prewarm(detected);
+    warmupResult = window.PulseTouchWarmup?.prewarm?.(detected);
     appendTouchTimeline("warmup_done", {});
   } catch {
     appendTouchTimeline("warmup_failed", {});
   }
 
-  // 6) Security: compute trust/risk profile
+  // 6) Security
   let security = null;
   try {
-    security = PulseTouchSecurity.evaluate(detected);
+    security = window.PulseTouchSecurity?.evaluate?.(detected);
     appendTouchTimeline("security_evaluated", { security });
     fireSecurityHooks(security, detected);
   } catch {
@@ -728,10 +712,10 @@ export function createPulseTouch(options = {}) {
     appendTouchTimeline("security_failed", {});
   }
 
-  // 7) Gate: decide boot path (fast/safe/slow/refresh/fallback)
+  // 7) Gate
   let gateDecision = null;
   try {
-    gateDecision = PulseTouchGate.decide({
+    gateDecision = window.PulseTouchGate?.decide?.({
       skin: detected,
       security
     });
@@ -742,13 +726,13 @@ export function createPulseTouch(options = {}) {
     appendTouchTimeline("gate_failed", {});
   }
 
-  // 8) IMMORTAL++: Prediction / Presence / Advantage (read‑only, additive)
+  // 8) Prediction / Presence / Advantage
   let prediction = null;
   let presenceInsight = null;
   let advantageProfile = null;
 
   try {
-    if (predictor && typeof predictor.predict === "function") {
+    if (predictor?.predict) {
       prediction = predictor.predict(detected, {
         security,
         warmup: warmupResult
@@ -761,7 +745,6 @@ export function createPulseTouch(options = {}) {
   } catch {
     appendTouchTimeline("prediction_failed", {});
   }
-
   try {
     if (presenceOracle && typeof presenceOracle.evaluate === "function") {
       presenceInsight = presenceOracle.evaluate(detected, {
@@ -796,9 +779,9 @@ export function createPulseTouch(options = {}) {
   // 9) Optionally act on gate decision (e.g., hard refresh)
   applyGateDecision(gateDecision, detected);
 
-  // 10) Ignite PulseNet (local immortal loop) — idempotent
+  // 10) Ignite PulseNet (local immortal loop) — idempotent, portal-safe
   try {
-    startPulseNet({
+    window.startPulseNet?.({
       instanceId: "core",
       intervalMs: 750,
       superInstance: true
@@ -821,7 +804,7 @@ export function createPulseTouch(options = {}) {
       advantage: advantageProfile,
       ts: Date.now()
     };
-    pulseNetIngressFromUser(packet);
+    window.pulseNetIngressFromUser?.(packet);
     appendTouchTimeline("ingress_initial_sent", {});
   } catch {
     appendTouchTimeline("ingress_initial_failed", {});
@@ -834,16 +817,18 @@ export function createPulseTouch(options = {}) {
     appendTouchTimeline("pulse_stream_start_failed", {});
   }
 
-  // 13) Compiler signal — TOUCH → BRIDGE → COMPILER
+  // 13) Compiler signal — TOUCH → BRIDGE → COMPILER (portal-safe)
   try {
-    bridgeRoute?.("compiler.request", {
-      source: "pulse-touch",
-      reason: "first_contact",
-      page: detected.page,
-      chunkProfile: detected.chunkProfile,
-      band: detected.band,
-      ts: Date.now()
-    }).catch?.(() => {});
+    window.bridgeRoute
+      ?.("compiler.request", {
+        source: "pulse-touch",
+        reason: "first_contact",
+        page: detected.page,
+        chunkProfile: detected.chunkProfile,
+        band: detected.band,
+        ts: Date.now()
+      })
+      ?.catch?.(() => {});
     appendTouchTimeline("compiler_request_sent", {
       page: detected.page,
       chunkProfile: detected.chunkProfile,
@@ -915,7 +900,8 @@ export function createPulseTouch(options = {}) {
     current[key] = value;
     writePulseTouchCookie(current);
 
-    const detectedUpdated = PulseTouchDetector.normalize(current);
+    const detectedUpdated =
+      window.PulseTouchDetector?.normalize?.(current) || current;
 
     if (hasWindow) {
       window.__PULSE_TOUCH__ = detectedUpdated;
@@ -928,7 +914,7 @@ export function createPulseTouch(options = {}) {
     });
 
     try {
-      pulseNetIngressFromUser({
+      window.pulseNetIngressFromUser?.({
         source: "pulse-touch",
         event: "update",
         key,
@@ -956,7 +942,8 @@ export function createPulseTouch(options = {}) {
 
   function read() {
     const current = readPulseTouchInternal(defaults);
-    const normalized = PulseTouchDetector.normalize(current);
+    const normalized =
+      window.PulseTouchDetector?.normalize?.(current) || current;
     appendTouchTimeline("skin_read", { skin: normalized });
     return normalized;
   }
@@ -993,7 +980,8 @@ export function createPulseTouch(options = {}) {
       ...nextOptions
     };
     writePulseTouchCookie(merged);
-    const normalized = PulseTouchDetector.normalize(merged);
+    const normalized =
+      window.PulseTouchDetector?.normalize?.(merged) || merged;
     if (hasWindow) {
       window.__PULSE_TOUCH__ = normalized;
     }
@@ -1053,6 +1041,7 @@ export function createPulseTouch(options = {}) {
     onPrediction
   };
 }
+
 // ============================================================
 // COOKIE HELPERS — IMMORTAL++
 // ============================================================

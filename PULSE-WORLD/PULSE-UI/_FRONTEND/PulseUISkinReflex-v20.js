@@ -177,7 +177,7 @@ const db =
 // v20 logger + bridge + organs
 import * as PulseLogger from "../_MONITOR/PulseProofLogger-v24.js";
 import {
-  safeRouteV20,
+  safeRoute as safeRouteV20,
   safeRoute as safeRouteLegacy
 } from "../_BACKEND/PULSE-WORLD-BRIDGE.js";
 import PulseUIErrors from "./PulseUIErrors-v24.js";
