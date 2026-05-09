@@ -154,12 +154,12 @@ export const BrainstemMeta = Object.freeze({
 // ============================================================================
 
 // ⭐ CNS‑SAFE v16 Chunker (32 lanes, Pulse‑Net aware)
-import { createPulseChunker } from "./PulseAIChunker-v16.js";
+import { createPulseChunker } from "./PulseAIChunker-v20.js";
 
 import PulseOSPresence from "../PULSE-OS/PulseOSPresence-v16.js";
 import PulseMeshPresenceRelay from "../PULSE-MESH/PulseMeshPresenceRelay-v16.js";
-import pulseAIChunker from "./PulseAIChunker-v16.js";
-import createPulseFileScanner from "./PulseFileScanner-v16.js";
+import pulseAIChunker from "./PulseAIChunker-v20.js";
+import createPulseFileScanner from "./PulseFileScanner-v20.js";
 import { createArchitectAPI } from "./aiArchitect.js";
 import { createTouristAPI, prewarmTourist } from "./aiTourist.js";
 

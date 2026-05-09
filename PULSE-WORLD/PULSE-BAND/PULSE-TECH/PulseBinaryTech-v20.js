@@ -73,22 +73,22 @@ AI_EXPERIENCE_META = {
 // ---------------------------------------------------------------------------
 
 // v2 Evolution Engine core (shifter-side v2, symbolic)
-import { createPulseV2 as createPulseV2Shifter } from "../PULSE-SHIFTER/PulseShifterEvolutionaryPulse-v16-Immortal-INTEL.js";
+import { createPulseV2 as createPulseV2Shifter } from "../PULSE-SHIFTER/PulseShifterEvolutionaryPulse-v16.js";
 
 // Binary Shifter Evolutionary Pulse front-end
-import { createPulseBinaryShifterEvolutionaryPulse } from "../PULSE-SHIFTER/PulseBinaryShifterEvolutionaryPulse-v16-Immortal-INTEL.js";
+import { createPulseBinaryShifterEvolutionaryPulse } from "../PULSE-SHIFTER/PulseBinaryShifterEvolutionaryPulse-v16.js";
 
 // v1 Legacy Pulse surface (PULSE-SEND)
 import { createLegacyPulse as createPulseV1Legacy } from "../PULSE-SEND/PulseSendLegacyPulse-v16.js";
 
 // v3 Continuance Pulse surface (earn/continuance)
-import { PulseEarnContinuancePulse as createPulseV3Continuance } from "../PULSE-EARN/PulseEarnContinuancePulse-v16.js";
+import { PulseEarnContinuancePulse as createPulseV3Continuance } from "../PULSE-EARN/PulseEarnContinuancePulse.js";
 
 // v2 Evolution Engine (earn-side v2)
-import { createPulseV2 as createPulseV2Earn } from "../PULSE-SEND/PulseV2EvolutionEngine-v16-Immortal-INTEL.js";
+import { createPulseV2 as createPulseV2Earn } from "../PULSE-SEND/PulseV2EvolutionEngine-v16.js";
 
 // v3 Unified organism pulse
-import { createPulseV3 } from "../PULSE-SEND/PulseV3UnifiedOrganism-v16-Immortal-INTEL.js";
+import { createPulseV3 } from "../PULSE-SEND/PulseV3UnifiedOrganism-v16.js";
 
 
 // ===========================================================================

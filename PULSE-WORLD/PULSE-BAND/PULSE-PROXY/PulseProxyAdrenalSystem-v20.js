@@ -114,7 +114,7 @@ AI_EXPERIENCE_META = {
 }
 */
 
-import { logger } from "../../PULSE-UI/_BACKEND/PulseProofLogger.js";
+import { logger } from "../../PULSE-UI/_BACKEND/PulseProofLogger-v20.js";
 import { PulseLineage } from "./PulseProxyBBB-v20.js";
 
 const db = global.db;

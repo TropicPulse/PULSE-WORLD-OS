@@ -17,8 +17,8 @@
 @PULSE_IMMORTAL_REQUIRE_FULL_META
 */
 
-import { CoreMemoryRole, createPulseCoreMemory } from "./PulseCoreMemory.js";
-import { CoreLayersRole, PulseCoreLayersOrgan } from "./PulseCoreLayers.js";
+import { CoreMemoryRole, createPulseCoreMemory } from "./PulseCoreMemory-v24.js";
+import { CoreLayersRole, PulseCoreLayersOrgan } from "./PulseCoreLayers-v20.js";
 
 // ============================================================================
 //  AI_EXPERIENCE_META (IMMORTAL++)

@@ -117,7 +117,7 @@ AI_EXPERIENCE_META = {
 */
 
 // v20-ImmortalPlus: CoreMemory integration (unchanged import surface)
-import { PulseCoreMemory } from "../PULSE-CORE/PulseCoreMemory.js";
+import { PulseCoreMemory } from "../PULSE-CORE/PulseCoreMemory-v24.js";
 
 // ============================================================================
 //  METADATA — v20-ImmortalPlus-ADVANTAGE-FIRST

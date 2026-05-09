@@ -192,7 +192,7 @@ import { routeAIRequest } from "../PULSE-AI/aiRouter-v16.js";
 import { createOvermindOrgan } from "./PULSE-WORLD-ALDWYN.js";
 
 // RUNTIME (Touch + prewarm/cache-aware, v17+)
-import PulseRuntimeV17 from "./PulseWorldRuntime-v17.js";
+import PulseRuntimeV17 from "./PulseWorldRuntime-v20.js";
 
 const {
   runPulseTickV17: runPulseTick,

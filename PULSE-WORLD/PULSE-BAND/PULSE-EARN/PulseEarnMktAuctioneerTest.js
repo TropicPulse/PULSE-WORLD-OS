@@ -49,7 +49,7 @@ AI_EXPERIENCE_META = {
 import {
   PulseEarnMktAuctioneer,
   getPulseEarnMktAuctioneerHealingState
-} from "./PulseEarnMktAuctioneer-v16-IMMORTAL-INTEL.js";
+} from "./PulseEarnMktAuctioneer.js";
 
 // Optional deterministic global presence hints
 const globalHints = {

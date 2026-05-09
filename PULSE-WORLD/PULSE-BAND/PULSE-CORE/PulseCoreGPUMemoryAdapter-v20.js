@@ -301,7 +301,7 @@ export const GPUOrchestratorRoutes = {
 // ============================================================================
 //  FACTORY — PURE, DETERMINISTIC DISPATCHER (v20 IMMORTAL)
 // ============================================================================
-import { createPulseBinaryOverlay } from "./PulseBinaryOverlay.js";
+import { createPulseBinaryOverlay } from "./PulseBinaryCoreOverlay-v20.js";
 
 export function createPulseGPUOrchestrator({
   overlay = createPulseBinaryOverlay(),

@@ -89,7 +89,7 @@ import {
   SQLToPulse,
   PulseFieldTypes,
   validatePulseField
-} from "../PULSE-SPECS/PulseSpecsDNAGenome-v17.js";
+} from "../PULSE-SPECS/PulseSpecsDNAGenome-v20.js";
 
 /* ============================================================================
    normalizeSQLType(sqlType)

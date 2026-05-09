@@ -101,7 +101,7 @@ AI_EXPERIENCE_META = {
 
 // Expansion / Castle / Server / Router
 import { PulseExpansionMeta, createPulseExpansion } from "./PulseExpansion-v16.js";
-import { PulseCastleMeta, createPulseCastle } from "../PulseCastle-v16.js";
+import { PulseCastleMeta, createPulseCastle } from "./PulseCastle-v16.js";
 import { PulseServerMeta, createPulseServer } from "./PulseServer-v16.js";
 import { PulseRouterMeta, createPulseRouter } from "./PulseRouter-v16.js";
 
@@ -109,8 +109,8 @@ import { PulseRouterMeta, createPulseRouter } from "./PulseRouter-v16.js";
 import { getPulseUserContext, createPulseWorldCore } from "./PulseUser-v16.js";
 
 // Beacon Engine / Console
-import { getBeaconEngineContext } from "./PulseBeaconEngine-v16.js";
-import { getConsoleContext } from "./PulseBeaconConsole-v16.js";
+import { getBeaconEngineContext } from "./PulseBeaconEngine-v20.js";
+import { getConsoleContext } from "./PulseBeaconConsole-v20.js";
 
 // Touch
 import { getPulseTouchContext } from "../../PULSE-UI/PULSE-WORLD-TOUCH.js";
@@ -128,7 +128,7 @@ import {
   getProxyFallback,
   getProxyMode,
   getProxyLineage
-} from "../PULSE-PROXY/PulseProxyContext-v16.js";
+} from "../PULSE-PROXY/PulseProxyContext-v20.js";
 
 // ============================================================================
 // v16 ORGANISM CONTEXT SHIMS (symbolic-only)

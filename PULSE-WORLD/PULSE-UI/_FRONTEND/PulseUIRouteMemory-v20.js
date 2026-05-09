@@ -123,7 +123,7 @@ const db =
   null;
 
 import PulseUIErrors from "./PulseUIErrors-v20.js";
-import { PulseProofBridge } from "../_BACKEND/PulseWorldBridge-v20.js";
+import { PulseProofBridge } from "../_BACKEND/PULSE-WORLD-BRIDGE.js";
 
 // CoreMemory + buses via bridge
 const CoreMemory = PulseProofBridge?.coreMemory || null;

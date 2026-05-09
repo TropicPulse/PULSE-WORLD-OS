@@ -74,7 +74,7 @@
 //
 // ALLOWED IMPORTS
 // ---------------
-// • { admin, db } from "./helpers.js"
+// • { admin, db } from "./PulseWorldFirebaseGenome-v20.js"
 // • No other imports unless explicitly approved
 //
 // FORBIDDEN IMPORTS
@@ -155,7 +155,7 @@ export const AI_EXPERIENCE_META = {
 // IMPORTS
 // ============================================================================
 
-import { admin, db } from "./helpers.js";
+import { admin, db } from "./PulseWorldFirebaseGenome-v20.js";
 
 // ============================================================================
 // 1. ENVIRONMENTAL MULTIPLIERS

@@ -1,5 +1,5 @@
 // ============================================================================
-// FILE: tropic-pulse-functions/PULSE-WORLD/PULSE-EARN/PulseEarnMktAuctioneer-v16-IMMORTAL-INTEL.js
+// FILE: tropic-pulse-functions/PULSE-WORLD/PULSE-EARN/PulseEarnMktAuctioneer-v16.js
 // LAYER: MARKETPLACE AUCTIONEER (v16‑IMMORTAL‑INTEL‑DUALHASH A‑B‑A)
 // Vast.ai Deterministic Adapter + Presence/Advantage/Hints/Factoring Surfaces
 // ============================================================================

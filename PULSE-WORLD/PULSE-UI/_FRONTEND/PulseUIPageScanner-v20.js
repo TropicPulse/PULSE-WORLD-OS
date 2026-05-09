@@ -113,7 +113,7 @@ EXPORT_META = {
 */
 
 import PulseUIErrors from "./PulseUIErrors-v20.js";
-import { PulseProofBridge } from "../_BACKEND/PulseWorldBridge-v20.js";
+import { PulseProofBridge } from "../_BACKEND/PULSE-WORLD-BRIDGE.js";
 
 // Global handle
 const g =

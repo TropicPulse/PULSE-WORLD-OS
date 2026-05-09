@@ -1,5 +1,5 @@
 // ============================================================================
-//  PulseCoreMemory.js — v24‑IMMORTAL‑HYBRID‑SPINE
+//  PulseCoreMemory-v24.js — v24‑IMMORTAL‑HYBRID‑SPINE
 //  ORGANISM‑WIDE BINARY MEMORY SPINE (DUAL‑BAND) + SEMANTIC MEMORY ENGINE
 //  “LOAD RARELY, SERVE CONSTANTLY, FLUSH INTENTIONALLY, HEAL WHILE SPINNING”
 //  “PLUS: TIMELINE + GRAPH + PERSONA + TONE (v24 SEMANTIC OVERLAY)”
@@ -20,14 +20,21 @@ Always include ALL layers, ALL overlays, ALL IMMORTAL++ structures.
 */
 
 // Adapters — forward‑only, no barrels
-import { createPulseGPUOrchestrator }      from "./PulseCoreGpuMemoryAdapter.js";
+import { createPulseGPUOrchestrator }      from "./PulseCoreGpuMemoryAdapter-v20.js";
 import { createPulseAIMemoryAdapter }      from "./PulseCoreAIMemoryAdapter-v20.js";
 import { createPulseEarnMemoryAdapter }    from "./PulseCoreEarnMemoryAdapter-v20.js";
-import { createPulseMeshMemoryAdapter }    from "./PulseCoreMeshMemoryAdapter.js";
-import { createPulseProxyMemoryAdapter }   from "./PulseCoreProxyMemoryAdapter.js";
-import { createPulseRouterMemoryAdapter }  from "./PulseCoreRouterMemoryAdapter.js";
-import { createPulseSendMemoryAdapter }    from "./PulseCoreSendMemoryAdapter.js";
+import { createPulseMeshMemoryAdapter }    from "./PulseCoreMeshMemoryAdapter-v20.js";
+import { createPulseProxyMemoryAdapter }   from "./PulseCoreProxyMemoryAdapter-v20.js";
+import { createPulseRouterMemoryAdapter }  from "./PulseCoreRouterMemoryAdapter-v20.js";
+import { createPulseSendMemoryAdapter }    from "./PulseCoreSendMemoryAdapter-v20.js";
 import { PulseCoreLayersOrgan }            from "./PulseCoreLayers-v20.js";
+import PulseCoreSpeech from "./PulseCoreSpeech-v24.js";
+
+
+const coreSpeech = PulseCoreSpeech.create({
+  dnaTag: "core-speech",
+  role: PulseCoreSpeech.CoreSpeechRole
+});
 
 // ============================================================================
 //  AI_EXPERIENCE_META (IMMORTAL++)
@@ -912,111 +919,151 @@ export function createPulseCoreMemory({
     delete Cache.hotLoop[id];
   }
 
-  const PulseCoreMemory = {
-    CoreMemoryRole,
-    Meta,
-    Cache,
+  // ============================================================================
+//  PULSE CORE MEMORY — v24 IMMORTAL++
+//  FINAL ORGAN OBJECT + ADAPTERS + SEMANTIC ENGINE + BACKEND API
+// ============================================================================
 
-    prewarm,
-    bulkLoad,
-    bulkFlush,
-
-    get,
-    set,
-    getRouteSnapshot,
-    setRouteSnapshot,
-    clearRoute,
-    clearAll,
-
-    getHotKeys,
-    coolDown,
-
-    // IMMORTAL meta exports
-    AI_EXPERIENCE_META_PulseCoreMemory,
-    AI_EXPERIENCE_CONTEXT_PulseCoreMemory,
-    CORE_MEMORY_META_PulseCoreMemory,
-    CORE_MEMORY_CONTRACT_PulseCoreMemory,
-    IMMORTAL_OVERLAYS_PulseCoreMemory,
-
-    // Layer attachment (5 upgraded layers via PulseCoreLayersOrgan)
-    layers: PulseCoreLayersOrgan
-  };
-
-  // ========================================================================
-  //  ADAPTERS — v20 IMMORTAL MEMORY ORGAN ADAPTER LAYER
-  // ========================================================================
-  const adapters = {
-    gpu:    createPulseGPUOrchestrator({ dnaTag, version: "24.0-IMMORTAL-GPU-MEMORY", log }),
-    ai:     createPulseAIMemoryAdapter({ dnaTag, version: "24.0-IMMORTAL-AI-MEMORY", log }),
-    earn:   createPulseEarnMemoryAdapter({ dnaTag, version: "24.0-IMMORTAL-EARN-MEMORY", log }),
-    mesh:   createPulseMeshMemoryAdapter({ dnaTag, version: "24.0-IMMORTAL-MESH-MEMORY", log }),
-    proxy:  createPulseProxyMemoryAdapter({ dnaTag, version: "24.0-IMMORTAL-PROXY-MEMORY", log }),
-    router: createPulseRouterMemoryAdapter({ dnaTag, version: "24.0-IMMORTAL-ROUTER-MEMORY", log }),
-    send:   createPulseSendMemoryAdapter({ dnaTag, version: "24.0-IMMORTAL-SEND-MEMORY", log })
-  };
-
-  PulseCoreMemory.adapters = adapters;
-
-  // ========================================================================
-  //  v24 SEMANTIC ATTACHMENT — HYBRID A
-  // ========================================================================
-  const semantic = new PulseCoreSemanticMemory_v24();
-  const engine   = new PulseCoreMemoryEngine_v24({ semantic });
-
-  // Patch get/set to feed semantic layer (non-breaking, additive)
-  const originalGet = get;
-  const originalSet = set;
-
-  PulseCoreMemory.get = function(routeId, key) {
-    const value = originalGet(routeId, key);
-    semantic.addTimeline({
-      type: "access",
-      routeId,
-      key,
-      value,
-      timestamp: Date.now()
-    });
-    return value;
-  };
-
-  PulseCoreMemory.set = function(routeId, key, value) {
-    originalSet(routeId, key, value);
-    semantic.addItem({ routeId, key, value });
-  };
-
-  // Expose semantic + engine
-  PulseCoreMemory.semantic = semantic;
-  PulseCoreMemory.engine   = engine;
-
-  // Expose v24 semantic APIs
-  PulseCoreMemory.timeline     = () => semantic.timeline();
-  PulseCoreMemory.graph        = () => semantic.graph();
-  PulseCoreMemory.persona      = () => semantic.persona();
-  PulseCoreMemory.tone         = () => semantic.tone();
-  PulseCoreMemory.relationship = () => semantic.relationship();
-  PulseCoreMemory.items        = () => semantic.items();
-  PulseCoreMemory.setTier      = (t) => semantic.setTier(t);
-
-  // Engine triggers (feeds are optional; UI/daemon can pass speech/presence/daemon)
-  PulseCoreMemory.fullScan    = (feeds) => engine.fullScan(feeds || {});
-  PulseCoreMemory.incremental = (feeds) => engine.incremental(feeds || {});
-
-  safeLog("INIT", {
-    identity: CoreMemoryRole.identity,
-    version: CoreMemoryRole.version,
-    dualBand: CoreMemoryRole.evo.dualBand,
-    semantic: true,
-    dnaTag
-  });
-
-  return PulseCoreMemory;
-}
-
-export { createPulseCoreMemory as PulseCoreMemory };
-
-const PulseCoreMemoryAPI = {
+const PulseCoreMemory = {
   CoreMemoryRole,
-  create: createPulseCoreMemory
+  Meta,
+  Cache,
+
+  // Core operations
+  prewarm,
+  bulkLoad,
+  bulkFlush,
+
+  get,
+  set,
+  getRouteSnapshot,
+  setRouteSnapshot,
+  clearRoute,
+  clearAll,
+
+  // Loop theory
+  getHotKeys,
+  coolDown,
+
+  // IMMORTAL meta exports
+  AI_EXPERIENCE_META_PulseCoreMemory,
+  AI_EXPERIENCE_CONTEXT_PulseCoreMemory,
+  CORE_MEMORY_META_PulseCoreMemory,
+  CORE_MEMORY_CONTRACT_PulseCoreMemory,
+  IMMORTAL_OVERLAYS_PulseCoreMemory,
+
+  // Layer attachment (PulseCoreLayersOrgan v20 → v24 compatible)
+  layers: PulseCoreLayersOrgan
+};
+
+// ============================================================================
+//  ADAPTERS — v24 IMMORTAL MEMORY ORGAN ADAPTER LAYER
+// ============================================================================
+const adapters = {
+  gpu:    createPulseGPUOrchestrator({ dnaTag, version: "24.0-IMMORTAL-GPU-MEMORY", log }),
+  ai:     createPulseAIMemoryAdapter({ dnaTag, version: "24.0-IMMORTAL-AI-MEMORY", log }),
+  earn:   createPulseEarnMemoryAdapter({ dnaTag, version: "24.0-IMMORTAL-EARN-MEMORY", log }),
+  mesh:   createPulseMeshMemoryAdapter({ dnaTag, version: "24.0-IMMORTAL-MESH-MEMORY", log }),
+  proxy:  createPulseProxyMemoryAdapter({ dnaTag, version: "24.0-IMMORTAL-PROXY-MEMORY", log }),
+  router: createPulseRouterMemoryAdapter({ dnaTag, version: "24.0-IMMORTAL-ROUTER-MEMORY", log }),
+  send:   createPulseSendMemoryAdapter({ dnaTag, version: "24.0-IMMORTAL-SEND-MEMORY", log })
+};
+
+PulseCoreMemory.adapters = adapters;
+
+// ============================================================================
+//  v24 SEMANTIC ATTACHMENT — HYBRID A
+// ============================================================================
+const semantic = new PulseCoreSemanticMemory_v24();
+const engine   = new PulseCoreMemoryEngine_v24({ semantic });
+
+// Patch get/set to feed semantic layer (non-breaking, additive)
+const originalGet = get;
+const originalSet = set;
+
+PulseCoreMemory.get = function(routeId, key) {
+  const value = originalGet(routeId, key);
+  semantic.addTimeline({
+    type: "access",
+    routeId,
+    key,
+    value,
+    timestamp: Date.now()
+  });
+  return value;
+};
+
+PulseCoreMemory.set = function(routeId, key, value) {
+  originalSet(routeId, key, value);
+  semantic.addItem({ routeId, key, value });
+};
+
+// Expose semantic + engine
+PulseCoreMemory.semantic = semantic;
+PulseCoreMemory.engine   = engine;
+
+// v24 semantic APIs
+PulseCoreMemory.timeline     = () => semantic.timeline();
+PulseCoreMemory.graph        = () => semantic.graph();
+PulseCoreMemory.persona      = () => semantic.persona();
+PulseCoreMemory.tone         = () => semantic.tone();
+PulseCoreMemory.relationship = () => semantic.relationship();
+PulseCoreMemory.items        = () => semantic.items();
+PulseCoreMemory.setTier      = (t) => semantic.setTier(t);
+
+// Engine triggers
+PulseCoreMemory.fullScan    = (feeds) => engine.fullScan(feeds || {});
+PulseCoreMemory.incremental = (feeds) => engine.incremental(feeds || {});
+
+// Init log
+safeLog("INIT", {
+  identity: CoreMemoryRole.identity,
+  version: CoreMemoryRole.version,
+  dualBand: CoreMemoryRole.evo.dualBand,
+  semantic: true,
+  dnaTag
+});
+return PulseCoreMemory;
+}
+// ============================================================================
+//  BACKEND API SURFACE — v24 IMMORTAL++
+//  (THIS IS WHAT THE BRIDGE CALLS — NO ROUTEHANDLER REQUIRED)
+// ============================================================================
+export const PulseCoreMemoryAPI = {
+  CoreMemoryRole,
+  create: createPulseCoreMemory,
+
+  read(key, routeId = "global") {
+    const inst = createPulseCoreMemory();
+    return inst.get(routeId, key);
+  },
+
+  write(key, value, routeId = "global") {
+    const inst = createPulseCoreMemory();
+    inst.set(routeId, key, value);
+    return true;
+  },
+
+  start(ts = Date.now()) {
+    return { startedAt: ts };
+  },
+
+  snapshot(routeId = "global") {
+    const inst = createPulseCoreMemory();
+    return inst.getRouteSnapshot(routeId);
+  },
+
+  clearRoute(routeId) {
+    const inst = createPulseCoreMemory();
+    inst.clearRoute(routeId);
+    return true;
+  },
+
+  clearAll() {
+    const inst = createPulseCoreMemory();
+    inst.clearAll();
+    return true;
+  }
 };
 
 export default PulseCoreMemoryAPI;

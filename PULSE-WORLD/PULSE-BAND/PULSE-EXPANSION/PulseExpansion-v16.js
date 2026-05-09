@@ -61,7 +61,7 @@ AI_EXPERIENCE_META = {
 }
 */
 
-import { logger } from "../../PULSE-UI/_BACKEND/PulseProofLogger.js";
+import { logger } from "../../PULSE-UI/_BACKEND/PulseProofLogger-v20.js";
 
 // v12.3 presence-era metas (still valid for server/router)
 import {
@@ -98,7 +98,7 @@ import { BinaryMeshMeta } from "../PULSE-MESH/PulseBinaryMesh-v16.js";
 import {
   PulseBeaconMeta as PulseBeaconEngineMeta,
   createPulseBeaconEngine
-} from "./PulseBeaconEngine-v16.js";
+} from "./PulseBeaconEngine-v20.js";
 
 // Touch / presence
 import { getPulseTouchContext } from "../../PULSE-UI/PULSE-WORLD-TOUCH.js";
@@ -119,9 +119,9 @@ import {
   getProxyFallback,
   getProxyMode,
   getProxyLineage
-} from "../PULSE-PROXY/PulseProxyContext-v16.js";
+} from "../PULSE-PROXY/PulseProxyContext-v20.js";
 
-import { createPulseNodeEvolutionV16 } from "./PulseNodeAdminEvolution-v16.js";
+import { createPulseNodeEvolutionV16 } from "../PULSE-TOOLS/PulseNodeEvolution-v20.js";
 // ============================================================================
 //  PULSE-NET BRIDGE CONTRACT (NO IMPORTS, PURELY INJECTED)
 // ============================================================================

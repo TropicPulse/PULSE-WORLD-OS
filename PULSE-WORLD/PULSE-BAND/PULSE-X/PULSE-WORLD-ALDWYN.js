@@ -88,7 +88,7 @@ import {
 import {
   readCoreMemorySend,
   writeCoreMemorySend
-} from "../PULSE-CORE/PulseCoreSendMemoryAdapter.js";
+} from "../PULSE-CORE/PulseCoreSendMemoryAdapter-v20.js";
 
 import { PulseUnderstanding } from "../../PULSE-UI/_BACKEND/PULSE-WORLD-UNDERSTANDING.js";
 import { PulseGovernor } from "../PULSE-OS/PulseOSGovernor.js";

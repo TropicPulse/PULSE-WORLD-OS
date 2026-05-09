@@ -30,7 +30,7 @@
 // ============================================================================
 // BRIDGE INTEGRATION — REQUIRED
 // ============================================================================
-import { PulseProofBridge } from "/PULSE/BRIDGE/PulseProofBridge.js";
+import { PulseProofBridge } from "../../PULSE-UI/_BACKEND/PULSE-WORLD-BRIDGE.js";
 
 const CoreSettings = PulseProofBridge.coresettings;
 const CoreMemory   = PulseProofBridge.corememory;

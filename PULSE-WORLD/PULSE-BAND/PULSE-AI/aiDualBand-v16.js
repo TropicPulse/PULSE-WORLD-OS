@@ -183,7 +183,7 @@ import {
   getProxyFallback,
   getProxyMode,
   getProxyLineage
-} from "../PULSE-PROXY/PulseProxyContext-v16.js";
+} from "../PULSE-PROXY/PulseProxyContext-v20.js";
 
 import { createPulseAIChunker } from "./PulseAIChunker-v20.js";
 

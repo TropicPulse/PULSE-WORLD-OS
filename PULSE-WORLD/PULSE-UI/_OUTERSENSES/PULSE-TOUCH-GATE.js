@@ -1,71 +1,100 @@
-/**
- * ============================================================
- *  ORGAN META: Pulse‑Touch Evolutionary Gate
- *  ORGAN TYPE: Routing Organ (EVOLUTION)
- *  ORGAN LAYER: Edge / Netlify Function / Portal Trust Layer
- *  ORGAN ROLE: Page Evolution Selector (v17 FastLane‑Aware)
- *  ORGAN VERSION: v17.0‑IMMORTAL‑FASTLANE
- *  ORGAN LINEAGE:
- *      - Gate v1 (Basic Routing)
- *      - Gate v2 (Trust‑Based Evolution)
- *      - Gate v3 (IMMORTAL Evolutionary Organ)
- *      - Gate v14 (Advantage Cortex)
- *      - Gate v17 (FastLane + Continuous Pulse Aware)
- *
- *  ORGAN CONTRACT:
- *      - MUST map securityDecision → page
- *      - MUST NOT infer identity
- *      - MUST NOT leak internal logic
- *      - MUST remain deterministic
- *      - MUST remain drift‑proof
- *
- *  ORGAN PURPOSE:
- *      This organ EVOLVES THE PAGE.
- *      It chooses:
- *          - trusted page
- *          - challenge page
- *          - HELLNO page
- *
- *      v17 adds:
- *          - FastLane pulse awareness
- *          - continuous‑pulse advantage routing
- *          - temporal hint integration
- *          - hydration/animation tier evolution
- *
- *  ORGAN GUARANTEES:
- *      - Deterministic routing
- *      - Zero ambiguity
- *      - Zero drift
- *      - Zero inference
- *
- *  ORIGIN SEAL:
- *      May 5th, 2026 — 17:45 MST
- *      “The day the Gate learned to feel the rhythm.”
- * ============================================================
- */
-/*
-AI_EXPERIENCE_META = {
-  identity: "PulseTouchGate",
-  version: "v17-Immortal-FastLane",
-  layer: "routing",
-  role: "evolutionary_page_selector",
-  lineage: "PulseOS-v13 → v14 → v17",
+// ============================================================================
+// FILE: /PULSE-TOUCH/PULSE-TOUCH-GATE-v24.js
+// PULSE OS — v24 IMMORTAL
+// PULSE‑TOUCH EVOLUTIONARY GATE — ROUTING + ADVANTAGE CORTEX + FASTLANE
+// ============================================================================
+//
+// ROLE:
+//   Evolutionary routing organ at the edge. Given a securityDecision and
+//   touchState, it deterministically selects the page route and exposes
+//   an advantage profile (hydration, animation, chunking, warmup).
+//
+//   v24 keeps the v17 routing semantics IMMUTABLE and adds IMMORTAL++ overlays:
+//     • Explicit AI_EXPERIENCE_META / ORGAN_META / CONTRACT / OVERLAYS
+//     • FastLane + continuous pulse evolution (from Pulse‑Touch Detector v24)
+//     • Presence‑intensity, region‑cluster, hydration/animation tiers
+//     • Deterministic, drift‑proof, additive‑only evolution
+//
+// CONTRACT:
+//   • MUST map securityDecision → page
+//   • MUST NOT infer identity
+//   • MUST NOT leak internal logic
+//   • MUST remain deterministic
+//   • MUST remain drift‑proof
+//   • MUST remain additive‑only (IMMORTAL++)
+//
+// ============================================================================
+// IMPORTS — v24 TOUCH STACK (EDGE‑ONLY, NO NETWORK)
+// ============================================================================
 
-  evo: {
+// Core skin + security + warmup + advantage cortex
+// (These filenames assume your v24 upgrades; adjust paths if needed.)
+import { detectPulseTouch } from "./PULSE-TOUCH-DETECTOR.js";
+import { pulseTouchWarmup } from "./PULSE-TOUCH-WARMUP.js";
+import { pulseTouchSecurity } from "./PULSE-TOUCH-SECURITY.js";
+import { pulseTouchAdvantageCortex } from "./PULSE-TOUCH-ADVANTAGE-v24.js";
+
+// Optional future‑oriented helpers (safe if missing)
+import { PulseTouchPredictor } from "./_OUTERSENSES/PULSE-TOUCH-PREDICTOR.js";
+import { PulseTouchAnalytics } from "./_OUTERSENSES/PULSE-TOUCH-ANALYTICS.js";
+import { PulsePresenceOracle } from "./_OUTERSENSES/PULSE-PRESENCE-ORACLE.js";
+
+// ============================================================================
+// AI_EXPERIENCE_META — v24 IMMORTAL++
+// ============================================================================
+export const AI_EXPERIENCE_META_PulseTouchGate = {
+  id: "pulsetouch.gate",
+  kind: "routing_organ",
+  version: "v24-IMMORTAL++",
+  role: "evolutionary_page_selector",
+  surfaces: {
+    band: ["routing", "trust", "evolution"],
+    wave: ["decisive", "final", "absolute"],
+    binary: ["allow", "challenge", "deny"],
+    presence: ["routing_state"],
+    advantage: [
+      "fastlane_awareness",
+      "continuous_pulse_awareness",
+      "hydration_tier",
+      "animation_tier",
+      "region_cluster",
+      "presence_intensity"
+    ],
+    speed: "instant_compute"
+  },
+  routes: {
+    trusted: "/index.html",
+    challenge: "/challenge.html",
+    hellno: "/hellno.html"
+  },
+  consumers: [
+    "PulseTouchSecurity",
+    "PulseTouchWarmup",
+    "PulseTouchAdvantageCortex"
+  ],
+  invariants: {
+    networkCalls: "none",
+    sideEffects: "none",
+    determinism: "strict",
+    mutation: "forbidden_at_runtime"
+  }
+};
+
+// ============================================================================
+// ORGAN_META
+// ============================================================================
+export const ORGAN_META_PulseTouchGate = {
+  id: "organ.pulsetouch.gate",
+  organism: "PulseTouch",
+  layer: "edge.routing",
+  tier: "IMMORTAL",
+  evoFlags: {
     deterministic: true,
     driftProof: true,
     trustAware: true,
     hostileAware: true,
     challengeAware: true,
     regionAware: true,
-
-    // IMMORTAL guarantees
-    zeroPII: true,
-    zeroTracking: true,
-    absoluteRouting: true,
-    noAmbiguity: true,
-
-    // IMMORTAL advantage cortex
     dualBandAware: true,
     chunkProfileAware: true,
     pageHintAware: true,
@@ -80,36 +109,100 @@ AI_EXPERIENCE_META = {
     regionClusterAware: true,
     modeAware: true,
     presenceIntensityAware: true,
-
-    // v17 FastLane / Continuous Pulse
     pulseStreamAware: true,
     fastLaneAware: true,
     temporalHintAware: true,
     cookieEvolutionAware: true
   },
-
-  contract: {
-    always: [
-      "PulseTouchSecurity",
-      "PulseTouchWarmup",
-      "PulseTouch",
-      "PulseTouchAdvantageCortex"
-    ],
-    never: [
-      "identityInference",
-      "tracking",
-      "legacyRouting",
-      "behaviorInference",
-      "emotionInference",
-      "deviceFingerprinting"
+  lineage: {
+    family: "pulsetouch_gate",
+    generation: 6,
+    osVersion: "v24",
+    history: [
+      "Gate v1 (Basic Routing)",
+      "Gate v2 (Trust‑Based Evolution)",
+      "Gate v3 (IMMORTAL Evolutionary Organ)",
+      "Gate v14 (Advantage Cortex)",
+      "Gate v17 (FastLane + Continuous Pulse Aware)",
+      "Gate v24 (IMMORTAL++ Evolutionary Router)"
     ]
   }
-}
-*/
+};
 
-// ============================================================
-//  v17 IMMORTAL — CORE ROUTING (UNCHANGED, UNTOUCHABLE)
-// ============================================================
+// ============================================================================
+// ORGAN_CONTRACT
+// ============================================================================
+export const ORGAN_CONTRACT_PulseTouchGate = {
+  inputs: {
+    securityDecision: "PulseTouchSecurity decision object",
+    touchState: "PulseTouchDetector skinState"
+  },
+  outputs: {
+    route: "string",
+    advantage: "object"
+  },
+  consumers: [
+    "PulseTouchWarmup",
+    "PulseTouchAdvantageCortex"
+  ],
+  guarantees: {
+    deterministic: true,
+    noNetwork: true,
+    noSideEffects: true,
+    zeroPII: true,
+    zeroTracking: true
+  }
+};
+
+// ============================================================================
+// IMMORTAL_OVERLAYS
+// ============================================================================
+export const IMMORTAL_OVERLAYS_PulseTouchGate = {
+  drift: {
+    allowed: false,
+    notes: "Routing semantics must remain stable forever."
+  },
+  pressure: {
+    expectedLoad: "high",
+    notes: "Runs on every request; must remain O(1)."
+  },
+  stability: {
+    uiLayout: "none",
+    semantics: "stable",
+    notes: "Only additive evolution allowed; existing actions keep meaning."
+  },
+  load: {
+    maxComponents: 2,
+    notes: "Routing + Advantage Cortex."
+  },
+  worldLens: {
+    awareOfWorlds: false
+  },
+  limbic: {
+    band: "clinical_safety"
+  },
+  triHeart: {
+    cognitive: "absolute_routing",
+    emotional: "zero_ambiguity",
+    behavioral: "deterministic_page_selection"
+  },
+  impulseSpeed: {
+    primaryAction: "route",
+    latencyTargetMs: 1
+  },
+  healingSurfaces: {
+    enabled: false
+  }
+};
+
+// ============================================================================
+// v24 IMMORTAL — CORE ROUTING (UNCHANGED, UNTOUCHABLE)
+// ============================================================================
+//
+// NOTE:
+//   This is the sacred v17 routing core. v24 MUST NOT change its
+//   semantics. All evolution happens in the Advantage Cortex.
+// ============================================================================
 export function evolutionaryGate(securityDecision) {
   if (securityDecision.action === "hellno") {
     return "/hellno.html";
@@ -122,15 +215,23 @@ export function evolutionaryGate(securityDecision) {
   return "/index.html";
 }
 
-// ============================================================
-//  v17 IMMORTAL — ADVANTAGE CORTEX (ADDED, NEVER OVERRIDES ROUTING)
-// ============================================================
+// ============================================================================
+// v24 IMMORTAL — ADVANTAGE CORTEX (ADDITIVE, NEVER OVERRIDES ROUTING)
+// ============================================================================
+//
+// INPUTS:
+//   securityDecision: { action, trustLevel, region, ... }
+//   touchState:       Pulse‑Touch skinState (from detectPulseTouch)
+//
+// OUTPUT:
+//   advantage profile for Warmup / Chunk / Animation / Hydration.
+// ============================================================================
 export function evolutionaryGateAdvantages(securityDecision, touchState = {}) {
   const { trustLevel, action } = securityDecision;
 
-  // v17 continuous pulse + fastlane hints
-  const pulseStream = touchState.pulseStream || "continuous";
-  const fastLane = touchState.fastLane || "enabled";
+  // v24 continuous pulse + fastlane hints (from Touch v24 Detector)
+  const pulseStream = touchState.pulseStream || "continuous"; // "continuous" | "burst" | "single" | "unknown"
+  const fastLane = touchState.fastLane || "enabled";          // "enabled" | "disabled" | "unknown"
 
   // presence intensity (never inferred — only normalized)
   const presenceIntensity = touchState.presence || "unknown";
@@ -179,14 +280,14 @@ export function evolutionaryGateAdvantages(securityDecision, touchState = {}) {
         ? "balanced"
         : "fast",
 
-    // v17 continuous pulse awareness
-    pulseStream, // "continuous" | "burst" | "single"
-    fastLane,    // "enabled" | "disabled"
+    // v24 continuous pulse awareness
+    pulseStream,
+    fastLane,
 
-    // v17 presence intensity
+    // v24 presence intensity
     presenceIntensity,
 
-    // v17 temporal hints (if Touch v17 writes them)
+    // v24 temporal hints (if Touch v24 writes them)
     originTs: touchState.originTs || null,
     lastPulseTs: touchState.lastPulseTs || null
   };

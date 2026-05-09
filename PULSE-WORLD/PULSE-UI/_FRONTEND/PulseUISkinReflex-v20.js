@@ -179,9 +179,9 @@ import * as PulseLogger from "../_BACKEND/PulseProofLogger-v20.js";
 import {
   safeRouteV20,
   safeRoute as safeRouteLegacy
-} from "../_BACKEND/PULSE-WORLD-BRIDGE-v20.js";
+} from "../_BACKEND/PULSE-WORLD-BRIDGE.js";
 import PulseUIErrors from "./PulseUIErrors-v20.js";
-import { getUIFlowSnapshot } from "./PulseUIFlow-v16.js";
+import { getUIFlowSnapshot } from "./PulseUIFlow-v20.js";
 import PulsePageScanner from "./PulseUIPageScanner-v20.js";
 import createPulseRouteMemory from "./PulseUIRouteMemory-v20.js";
 

@@ -113,7 +113,7 @@ tropic-pulse-functions/PULSE-WORLD/
     │       ├── env.js
     │       ├── environment.js
     │       ├── firebase.js
-    │       ├── helpers.js
+    │       ├── PulseWorldFirebaseGenome-v20.js
     │       ├── http.js
     │       ├── marketplaces.js
                 ENDPOINT.JS -----<<<<<

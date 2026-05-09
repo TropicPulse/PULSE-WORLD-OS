@@ -113,13 +113,13 @@ import { walkRepo } from "./PulseDesignRepoWalker.js";              // THE CARTO
 import { writeManifest } from "./PulseDesignManifestWriter.js";     // THE SURVEYOR
 import {
   buildPulseOrganismMap as buildOrganismMap
-} from "../PULSE-X/PulseWorldOrganismMap-v17.js";               // THE GENOME ENGINE
+} from "../PULSE-X/PulseWorldOrganismMap-v21.js";               // THE GENOME ENGINE
 
 // Optional: specs + translators awareness (no imports here to avoid coupling)
 // Architect only tags meta so downstream can plug in:
-//   PULSE-SPECS/PulseSpecsDNAGenome-v17.js
-//   PULSE-TRANSLATOR/PulseTranslatorRNAIntake.js
-//   PULSE-TRANSLATOR/PulseTranslatorRNAOutput.js
+//   PULSE-SPECS/PulseSpecsDNAGenome-v20.js
+//   PULSE-TRANSLATOR/PulseTranslatorRNAIntake-v17.js
+//   PULSE-TRANSLATOR/PulseTranslatorRNAOutput-v17.js
 //   PULSE-TRANSLATOR/PulseTranslatorSkeletalIntake.js
 //   PULSE-TRANSLATOR/PulseTranslatorSkeletalOutput.js
 

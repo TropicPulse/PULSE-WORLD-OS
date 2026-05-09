@@ -1,66 +1,88 @@
-/**
- * ============================================================
- *  ORGAN META: Pulse‑Touch Detector
- *  ORGAN TYPE: Sensory Organ (SKIN)
- *  ORGAN LAYER: Edge / Netlify Function / Gateway
- *  ORGAN ROLE: First‑Contact Signal Reader (Continuous FastLane‑Aware)
- *  ORGAN VERSION: v17.0‑IMMORTAL‑CONTINUOUS
- *  ORGAN LINEAGE:
- *      - Pulse‑Touch v1 (Skin Hint)
- *      - Pulse‑Touch v2 (Pre‑Pulse)
- *      - Pulse‑Touch v3 (IMMORTAL Sensory Organ)
- *      - Pulse‑Touch v14 (Immortal Advantage Skin)
- *      - Pulse‑Touch v17 (Continuous FastLane Skin)
- *
- *  ORGAN CONTRACT:
- *      - MUST read pulse_touch cookie safely
- *      - MUST normalize missing fields
- *      - MUST NOT infer identity
- *      - MUST NOT store PII
- *      - MUST NOT track user
- *      - MUST remain deterministic
- *      - MUST remain drift‑proof
- *
- *  ORGAN PURPOSE:
- *      This organ is the organism’s SKIN at the EDGE.
- *      It is the FIRST NERVE ENDING.
- *      It reads the Pulse‑Touch cookie from the raw internet
- *      signal (request headers) BEFORE the organism wakes,
- *      BEFORE the UI loads, BEFORE any conscious layer.
- *
- *      v17 adds awareness of:
- *        - continuous pulse streams
- *        - fast‑lane intent hints
- *        - temporal evolution of the cookie
- *        - advantage routing fields used by Touch v17
- *
- *  ORGAN GUARANTEES:
- *      - Safe defaults
- *      - Non‑PII
- *      - Non‑tracking
- *      - Deterministic output
- *      - Stable, forward‑compatible schema
- *
- *  ORGAN EXPERIENCE META:
- *      - Tone: Clinical, precise, sensory
- *      - Behavior: Never guess, never assume, never infer
- *      - Output: Clean, normalized, organism‑ready
- *
- *  ORIGIN STAMP:
- *      On 2026‑05‑05, this detector learned to read
- *      continuous FastLane skin signals.
- *      This is the day the edge began to feel the rhythm.
- * ============================================================
- */
-/*
-AI_EXPERIENCE_META = {
-  identity: "PulseTouchDetector",
-  version: "v17-Immortal-Continuous",
-  layer: "edge",
-  role: "skin_signal_reader",
-  lineage: "PulseOS-v13 → v14-Immortal → v17-Immortal-Continuous",
+// ============================================================================
+// FILE: /PULSE-TOUCH/PULSE-TOUCH-DETECTOR-v24.js
+// PULSE OS — v24 IMMORTAL
+// PULSE‑TOUCH DETECTOR — EDGE SKIN + COOKIE READER + FASTLANE HINTS
+// ============================================================================
+//
+// ROLE:
+//   The Pulse‑Touch Detector is the organism’s SKIN at the EDGE.
+//   It is the first nerve ending that reads the pulse_touch cookie
+//   from raw internet signal (request headers) BEFORE:
+//
+//     • The organism wakes
+//     • The UI loads
+//     • Any conscious layer runs
+//
+//   It produces a normalized, deterministic “skin state” object
+//   that downstream organs (Warmup, Security, Gate, Advantage Cortex)
+//   can safely consume.
+//
+// CONTRACT:
+//   • MUST read pulse_touch cookie safely
+//   • MUST normalize missing fields
+//   • MUST NOT infer identity
+//   • MUST NOT store PII
+//   • MUST NOT track user
+//   • MUST remain deterministic
+//   • MUST remain drift‑proof
+//
+// v24 IMMORTAL++:
+//   • Preserves v17 continuous / fastlane semantics
+//   • Adds explicit AI_EXPERIENCE_META / ORGAN_META / CONTRACT / OVERLAYS
+//   • Keeps schema stable and forward‑compatible
+//   • No imports, no network, no side effects
+//
+// ============================================================================
+// AI_EXPERIENCE_META
+// ============================================================================
+export const AI_EXPERIENCE_META_PulseTouchDetector = {
+  id: "pulsetouch.detector",
+  kind: "edge_skin",
+  version: "v24-IMMORTAL",
+  role: "Pulse‑Touch skin signal reader",
+  surfaces: {
+    band: ["touch", "edge", "skin", "fastlane"],
+    wave: ["clinical", "precise", "sensory"],
+    binary: ["cookie_present", "cookie_missing"],
+    presence: ["touch_state", "region_hint"],
+    advantage: [
+      "safe_defaults",
+      "schema_stable",
+      "fastlane_hints",
+      "continuous_pulse_hints"
+    ],
+    speed: "instant_compute"
+  },
+  routes: {
+    warmup: "pulsetouch.warmup",
+    security: "pulsetouch.security",
+    gate: "pulsetouch.gate"
+  },
+  consumers: [
+    "PulseTouchWarmup",
+    "PulseTouchSecurity",
+    "PulseTouchGate",
+    "PulseTouchAdvantageCortex",
+    "PulseTouchPreflight",
+    "PulseTouchChunkEngine"
+  ],
+  invariants: {
+    networkCalls: "none",
+    sideEffects: "none",
+    determinism: "strict",
+    mutation: "forbidden_at_runtime"
+  }
+};
 
-  evo: {
+// ============================================================================
+// ORGAN_META
+// ============================================================================
+export const ORGAN_META_PulseTouchDetector = {
+  id: "organ.pulsetouch.detector",
+  organism: "PulseTouch",
+  layer: "edge.skin",
+  tier: "IMMORTAL",
+  evoFlags: {
     deterministic: true,
     driftProof: true,
     safeDefaults: true,
@@ -69,14 +91,6 @@ AI_EXPERIENCE_META = {
     regionAware: true,
     trustAware: true,
     identityHintAware: true,
-
-    // IMMORTAL guarantees
-    zeroPII: true,
-    zeroTracking: true,
-    zeroGuessing: true,
-    zeroAssumptions: true,
-
-    // IMMORTAL ADVANTAGES
     dualBandAware: true,
     chunkProfileAware: true,
     pageHintAware: true,
@@ -86,44 +100,116 @@ AI_EXPERIENCE_META = {
     hydrationTierAware: true,
     animationTierAware: true,
     advantageRouting: true,
-    deterministicFallbacks: true,
-    driftProofParsing: true,
     regionClusterAware: true,
     modeAware: true,
     presenceIntensityAware: true,
     cookieVersionAware: true,
     cookieIntegrityAware: true,
     cookieEvolutionAware: true,
-
-    // v17 CONTINUOUS / FASTLANE
     pulseStreamAware: true,
     fastLaneAware: true,
     temporalHintAware: true
   },
-
-  contract: {
-    always: [
-      "PulseTouch",
-      "PulseTouchSecurity",
-      "PulseTouchWarmup",
-      "PulseTouchGate",
-      "PulseTouchAdvantageCortex",
-      "PulseTouchPreflight",
-      "PulseTouchChunkEngine"
-    ],
-    never: [
-      "identityInference",
-      "tracking",
-      "unsafeHeaders",
-      "legacyParsers",
-      "behaviorInference",
-      "emotionInference",
-      "deviceFingerprinting"
+  lineage: {
+    family: "pulsetouch_skin",
+    generation: 5,
+    osVersion: "v24",
+    history: [
+      "Pulse‑Touch v1 (Skin Hint)",
+      "Pulse‑Touch v2 (Pre‑Pulse)",
+      "Pulse‑Touch v3 (IMMORTAL Sensory Organ)",
+      "Pulse‑Touch v14 (Immortal Advantage Skin)",
+      "Pulse‑Touch v17 (Continuous FastLane Skin)",
+      "Pulse‑Touch v24 (IMMORTAL++ Edge Skin)"
     ]
   }
-}
-*/
+};
 
+// ============================================================================
+// ORGAN_CONTRACT
+// ============================================================================
+export const ORGAN_CONTRACT_PulseTouchDetector = {
+  inputs: {
+    event: "edge request event with headers"
+  },
+  outputs: {
+    skinState: "normalized pulse_touch state object"
+  },
+  consumers: [
+    "PulseTouchWarmup",
+    "PulseTouchSecurity",
+    "PulseTouchGate",
+    "PulseTouchAdvantageCortex",
+    "PulseTouchPreflight",
+    "PulseTouchChunkEngine"
+  ],
+  guarantees: {
+    deterministic: true,
+    noNetwork: true,
+    noSideEffects: true,
+    zeroPII: true,
+    zeroTracking: true,
+    zeroGuessing: true,
+    zeroAssumptions: true
+  }
+};
+
+// ============================================================================
+// IMMORTAL_OVERLAYS
+// ============================================================================
+export const IMMORTAL_OVERLAYS_PulseTouchDetector = {
+  drift: {
+    allowed: false,
+    notes: "Cookie parsing + schema semantics must remain stable."
+  },
+  pressure: {
+    expectedLoad: "high",
+    notes: "Runs on every edge request; must stay cheap."
+  },
+  stability: {
+    uiLayout: "none",
+    semantics: "stable",
+    notes: "Only additive evolution allowed; existing fields must not change meaning."
+  },
+  load: {
+    maxComponents: 1,
+    notes: "Single skinState object per request."
+  },
+  chunking: {
+    prewarm: [],
+    cacheKey: "pulsetouch.detector.skinstate"
+  },
+  worldLens: {
+    awareOfWorlds: false
+  },
+  limbic: {
+    band: "clinical_safety"
+  },
+  triHeart: {
+    cognitive: "normalize_touch_state",
+    emotional: "never_guess",
+    behavioral: "feed_downstream_organs"
+  },
+  impulseSpeed: {
+    primaryAction: "detect_pulse_touch",
+    latencyTargetMs: 1
+  },
+  healingSurfaces: {
+    enabled: false
+  }
+};
+
+// ============================================================================
+// IMPLEMENTATION — v24 IMMORTAL++
+// ============================================================================
+
+/**
+ * detectPulseTouch
+ * Edge‑safe, deterministic Pulse‑Touch cookie reader.
+ *
+ * @param {object} event - Edge / Netlify / gateway event with headers.
+ * @returns {object} skinState - Normalized Pulse‑Touch state.
+ */
 export function detectPulseTouch(event) {
   // ============================================================
   // HEADER EXTRACTION — CASE‑SAFE, DRIFT‑PROOF
@@ -156,18 +242,16 @@ export function detectPulseTouch(event) {
   }
 
   // ============================================================
-  // NORMALIZED SKIN STATE — IMMORTAL + CONTINUOUS AWARE
-  //  (ADDED FIELDS ONLY; ORIGINAL CONTRACT PRESERVED)
+  // NORMALIZED SKIN STATE — IMMORTAL + CONTINUOUS / FASTLANE AWARE
   // ============================================================
   const version = parsed.v || parsed.version || "0";
 
-  // Presence intensity: we never infer — only normalize if present
+  // Presence intensity: never inferred — only normalized if present.
   const presence = parsed.presence || "unknown";
 
-  // Pulse stream mode: Touch v17 writes continuous pulses, but
-  // the cookie may not yet carry this field; we default safely.
-  const pulseStream = parsed.pulseStream || "continuous"; // semantic default
-  const fastLane = parsed.fastLane || "enabled";          // semantic default
+  // Pulse stream mode: Touch v17+ may write this; we default safely.
+  const pulseStream = parsed.pulseStream || "continuous"; // "continuous" | "burst" | "single" | "unknown"
+  const fastLane = parsed.fastLane || "enabled";          // "enabled" | "disabled" | "unknown"
 
   return {
     // CORE FIELDS (original contract)
@@ -189,11 +273,12 @@ export function detectPulseTouch(event) {
     hydration: parsed.hydration || "auto",
     animation: parsed.animation || "auto",
 
-    // v17 CONTINUOUS / FASTLANE HINTS
-    pulseStream,                 // "continuous" | "burst" | "single" | "unknown"
-    fastLane,                    // "enabled" | "disabled" | "unknown"
-    pulseOrigin: parsed.pulseOrigin || "edge", // where the pulse was first seen
-    // Optional temporal hints if future cookies add them; safe defaults now:
+    // v17+ CONTINUOUS / FASTLANE HINTS
+    pulseStream,
+    fastLane,
+    pulseOrigin: parsed.pulseOrigin || "edge",
+
+    // Optional temporal hints; safe defaults if absent
     originTs: parsed.originTs || null,
     lastPulseTs: parsed.lastPulseTs || null
   };
@@ -201,10 +286,9 @@ export function detectPulseTouch(event) {
 
 /**
  * DEFAULT SKIN STATE
- * This is the organism’s “blind touch” state.
- * It is used when no pulse_touch cookie is present or readable.
+ * Organism’s “blind touch” state when no pulse_touch cookie is present or readable.
  */
-function defaultPulseTouchState() {
+export function defaultPulseTouchState() {
   return {
     region: "unknown",
     trusted: "0",
@@ -224,7 +308,7 @@ function defaultPulseTouchState() {
     hydration: "auto",
     animation: "auto",
 
-    // v17 CONTINUOUS / FASTLANE DEFAULTS
+    // v17+ CONTINUOUS / FASTLANE DEFAULTS
     pulseStream: "continuous",
     fastLane: "enabled",
     pulseOrigin: "edge",

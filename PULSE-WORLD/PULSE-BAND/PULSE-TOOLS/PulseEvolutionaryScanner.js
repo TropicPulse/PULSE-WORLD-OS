@@ -59,11 +59,11 @@ AI_EXPERIENCE_META = {
 }
 */
 
-import { createBinaryPulse } from "../PULSE-TECH/PulseBinaryTech-v16.js";
-import { createBinaryWaveScanner } from "../PULSE-TOOLS/PulseBinaryWaveScanner.js";
-import { createBinaryLoopScanner } from "../PULSE-TOOLS/PulseBinaryLoopScanner.js";
-import { createPulseAdminInspector } from "../PULSE-TOOLS/PulseAdminInspector.js";
-import { createPageEvo as PageEvo } from "../PULSE-TOOLS/PulseBinaryFramework.js";
+import { createBinaryPulse } from "../PULSE-TECH/PulseBinaryTech-v20.js";
+import { createBinaryWaveScanner } from "./PulseWaveScanner.js";
+import { createBinaryLoopScanner } from "./PulseLoopScanner.js";
+import { createPulseAdminInspector } from "./PulseAdminInspector.js";
+import { createPageEvo as PageEvo } from "./PulseBinaryFramework.js";
 
 // ============================================================================
 // GRID HELPERS

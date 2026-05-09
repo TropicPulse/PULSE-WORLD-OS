@@ -46,7 +46,7 @@ AI_EXPERIENCE_META = {
 }
 */
 
-import { createPulseCoreMemory } from "../PULSE-CORE/PulseCoreMemory-v20.js";
+import { createPulseCoreMemory } from "../PULSE-CORE/PulseCoreMemory-v24.js";
 
 export const PulseEarnRole = {
   type: "EarnRouter",

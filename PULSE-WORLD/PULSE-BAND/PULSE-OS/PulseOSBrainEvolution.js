@@ -50,7 +50,7 @@ AI_EXPERIENCE_META = {
 }
 */
 
-import { PulseCoreMemory } from "../PULSE-CORE/PulseCoreMemory-v20.js";
+import { PulseCoreMemory } from "../PULSE-CORE/PulseCoreMemory-v24.js";
 
 // ============================================================================
 // ROLE + IDENTITY (v14-Immortal)

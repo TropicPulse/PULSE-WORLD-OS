@@ -68,19 +68,19 @@ AI_EXPERIENCE_META = {
 //  IMPORTS — Organs it feeds and orchestrates
 // ============================================================================
 
-import { logger } from "../../PULSE-UI/_BACKEND/PulseProofLogger.js";
+import { logger } from "../../PULSE-UI/_BACKEND/PulseProofLogger-v20.js";
 
 // v16 Expansion / Castle
 import {
   PulseExpansionMeta,
   createPulseExpansion
-} from "../PulseExpansion-v16.js";
+} from "./PulseExpansion-v16.js";
 
 import {
   PulseCastleMeta,
   summarizeCastlePresence,
   computeCastlePresence
-} from "../PulseCastle-v16.js";
+} from "./PulseCastle-v16.js";
 
 // Router (still v12.3 presence-era)
 import {
@@ -141,8 +141,8 @@ import {
   getProxyFallback,
   getProxyMode,
   getProxyLineage
-} from "../PULSE-PROXY/PulseProxyContext-v16.js";
-import { createPulseNodeEvolutionV16 } from "./PulseNodeAdminEvolution-v16.js";
+} from "../PULSE-PROXY/PulseProxyContext-v20.js";
+import { createPulseNodeEvolutionV16 } from "../PULSE-TOOLS/PulseNodeEvolution-v20.js";
 
 // ============================================================================
 //  META — PulseServer Identity

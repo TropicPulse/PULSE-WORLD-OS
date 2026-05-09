@@ -1,5 +1,5 @@
 // ============================================================================
-//  PulseBinaryOverlay.js — v20-IMMORTAL-BINARY-OVERLAY
+//  PulseBinaryCoreOverlay-v20.js — v20-IMMORTAL-BINARY-OVERLAY
 //  ORGANISM‑WIDE BINARY MEMORY OVERLAY
 //  “GRAB ONCE. CANONICALIZE ONCE. REUSE FOREVER. NEVER DRIFT.”
 //  • v20 AI_EXPERIENCE_META (IMMORTAL identity)

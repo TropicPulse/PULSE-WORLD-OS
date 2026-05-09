@@ -94,7 +94,7 @@ AI_EXPERIENCE_META = {
 }
 */
 
-import { createPulseCoreMemory } from "../../PULSE-CORE/PulseCoreMemory.js";
+import { createPulseCoreMemory } from "../../PULSE-CORE/PulseCoreMemory-v24.js";
 import { PulseGPUBrain } from "../../PULSE-GPU/PulseGPUBrain.js";
 
 // ============================================================================

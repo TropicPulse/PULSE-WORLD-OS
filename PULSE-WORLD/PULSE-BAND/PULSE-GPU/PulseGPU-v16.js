@@ -108,14 +108,14 @@ import {
   PulseNetBoot,
   PulseNet,
   PulseProofBridge
-} from "../../PULSE-UI/_BACKEND/PulseWorldBridge.js";
+} from "../../PULSE-UI/_BACKEND/PULSE-WORLD-BRIDGE.js";
 
 
 // --- PULSE-CORE MEMORY SPINE (FULL SPINE) ----------------------------------
-import PulseCoreMemory                from "../PULSE-CORE/PulseCoreMemory-v20.js";
+import PulseCoreMemory                from "../PULSE-CORE/PulseCoreMemory-v24.js";
 import PulseCoreAIMemoryAdapter      from "../PULSE-CORE/PulseCoreAIMemoryAdapter-v20.js";
-import PulseCoreGPUMemoryAdapter      from "../PULSE-CORE/PulseCoreGPUMemoryAdapter.js";
-import PulseCoreProxyMemoryAdapter      from "../PULSE-CORE/PulseCoreProxyMemoryAdapter.js";
+import PulseCoreGPUMemoryAdapter      from "../PULSE-CORE/PulseCoreGpuMemoryAdapter-v20.js";
+import PulseCoreProxyMemoryAdapter      from "../PULSE-CORE/PulseCoreProxyMemoryAdapter-v20.js";
 import PulseCoreEarnMemoryAdapter     from "../PULSE-CORE/PulseCoreEarnMemoryAdapter-v20.js";
 import PulseBinaryCoreOverlay         from "../PULSE-CORE/PulseBinaryCoreOverlay-v20.js";
 

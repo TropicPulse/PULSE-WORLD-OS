@@ -86,7 +86,7 @@ AI_EXPERIENCE_META = {
 //  IMPORTS (backend-safe, organism-aware)
 // ============================================================================
 
-import { logger } from "../../PULSE-UI/_BACKEND/PulseProofLogger.js";
+import { logger } from "../../PULSE-UI/_BACKEND/PulseProofLogger-v20.js";
 
 // Expansion / world
 import {
@@ -122,7 +122,7 @@ import createBinaryMesh, {
 } from "../PULSE-MESH/PulseBinaryMesh-v16.js";
 
 // Beacon engine + membrane
-import PulseBeaconEngine from "./PulseBeaconEngine-v16.js";
+import PulseBeaconEngine from "./PulseBeaconEngine-v20.js";
 import PulseBeaconMesh, {
   PulseBeaconMeshMeta
 } from "./PulseBeaconMesh-v20.js";
@@ -150,8 +150,8 @@ import {
   getProxyFallback,
   getProxyMode,
   getProxyLineage
-} from "../PULSE-PROXY/PulseProxyContext-v16.js";
-import { createPulseNodeEvolutionV16 } from "./PulseNodeAdminEvolution-v16.js";
+} from "../PULSE-PROXY/PulseProxyContext-v20.js";
+import { createPulseNodeEvolutionV16 } from "../PULSE-TOOLS/PulseNodeEvolution-v20.js";
 
 const _castleEvolution = createPulseNodeEvolutionV16({
   nodeType: "castle",

@@ -157,11 +157,11 @@ AI_EXPERIENCE_META = {
 // ============================================================================
 // CORE MEMORY — IMMORTAL IMPULSE MEMORY
 // ============================================================================
-import { PulseCoreMemory } from "../PULSE-CORE/PulseCoreMemory-v20.js";
+import { PulseCoreMemory } from "../PULSE-CORE/PulseCoreMemory-v24.js";
 import { createPulseV3 } from "../PULSE-SEND/PulseV3UnifiedOrganism-v16.js";
 import { createPulseV2 } from "../PULSE-SEND/PulseV2EvolutionEngine-v16.js";
 import { createLegacyPulse } from "../PULSE-SEND/PulseSendLegacyPulse-v16.js";
-import { computeSpeedPolicy } from "../PULSE-PROXY/PulseProxyImpulseSpeed.js";
+import { computeSpeedPolicy } from "../PULSE-PROXY/PulseProxyImpulseSpeed-v20.js";
 
 const CORE_MEMORY_NAMESPACE = "PulseImpulse-v20-Immortal-CHUNK";
 const coreMemory = new PulseCoreMemory();

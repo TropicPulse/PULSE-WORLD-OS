@@ -78,14 +78,14 @@ AI_EXPERIENCE_META = {
 // ============================================================================
 //  IMPORTS (backend-safe, organism-aware)
 // ============================================================================
-import { logger } from "../../PULSE-UI/_BACKEND/PulseProofLogger.js";
+import { logger } from "../../PULSE-UI/_BACKEND/PulseProofLogger-v20.js";
 
 import {
   PulseExpansionMeta,
   createPulseExpansion,
   getPulseExpansionContext
 } from "./PulseExpansion-v16.js";
-import { PulseCastleMeta, createPulseCastle } from "../PulseCastle-v16.js";
+import { PulseCastleMeta, createPulseCastle } from "./PulseCastle-v16.js";
 import { PulseServerMeta, createPulseServer } from "./PulseServer-v16.js";
 // User lanes + world core
 import {
@@ -104,7 +104,7 @@ import createPulseMesh, {
 } from "../PULSE-MESH/PulseMesh-v16.js";
 
 // Beacon engine (optional, for presence / region signals)
-import PulseBeaconEngine from "./PulseBeaconEngine-v16.js";
+import PulseBeaconEngine from "./PulseBeaconEngine-v20.js";
 
 // Beacon membrane (for meta only, if needed)
 import PulseBeaconMesh, {
@@ -130,7 +130,7 @@ import {
   getProxyFallback,
   getProxyMode,
   getProxyLineage
-} from "../PULSE-PROXY/PulseProxyContext-v16.js";
+} from "../PULSE-PROXY/PulseProxyContext-v20.js";
 
 // ============================================================================
 //  META — Router Identity

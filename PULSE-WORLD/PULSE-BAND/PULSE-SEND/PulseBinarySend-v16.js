@@ -186,7 +186,7 @@ import {
   getProxyFallback,
   getProxyMode,
   getProxyLineage
-} from "../PULSE-PROXY/PulseProxyContext-v16.js";
+} from "../PULSE-PROXY/PulseProxyContext-v20.js";
 
 // ============================================================================
 //  PROXY INTEGRATION — BinarySend Throughput Control (symbolic-only)

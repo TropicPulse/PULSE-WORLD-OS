@@ -1,5 +1,5 @@
 // ============================================================================
-// FILE: /PULSE-PROXY/PulseProxyImpulseSpeed.js
+// FILE: /PULSE-PROXY/PulseProxyImpulseSpeed-v20.js
 // PULSE OS v20‑IMMORTALPLUS+++ — IMPULSE SPEED GOVERNOR
 // “ADVANTAGE‑AWARE SPEED POLICY ENGINE / DRIFT‑ENVELOPE GOVERNOR / BURST SAFETY”
 // Pure Backend Organ • Deterministic • Drift‑Proof • Zero Network • Zero IO

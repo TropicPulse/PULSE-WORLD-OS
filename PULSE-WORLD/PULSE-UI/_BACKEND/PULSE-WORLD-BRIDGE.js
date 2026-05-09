@@ -105,7 +105,7 @@ AI_EXPERIENCE_META = {
 // ============================================================================
 import { PulseProofLogger, log, warn, error } from "./PulseProofLogger-v20.js";
 // NEW: CoreSpeech v24 speech organ
-import { PulseCoreSpeech } from "/PULSE-CORE/PulseCoreSpeech-v24.js";
+
 
 const g =
   typeof globalThis !== "undefined"
@@ -586,11 +586,14 @@ export const coreMemoryBridge = {
   write: (key, value) => safeRoute("coreMemory.write", { key, value }),
   start: () => safeRoute("coreMemory.start", { ts: Date.now() })
 };
+export const coreSpeechBridge = {
+  messages: () => safeRoute("coreSpeech.messages", {}),
+  stats: () => safeRoute("coreSpeech.stats", {}),
+  last: () => safeRoute("coreSpeech.last", {}),
+  push: (msg) => safeRoute("coreSpeech.push", { msg }),
+  clear: () => safeRoute("coreSpeech.clear", {})
+};
 
-// ============================================================================
-//  CORE SPEECH ORGAN (v24 IMMORTAL) — ATTACHED TO BRIDGE
-// ============================================================================
-const corespeech = PulseCoreSpeech();
 
 // ============================================================================
 //  FIRE-AND-FORGET ROUTE (Unified v20)
@@ -735,7 +738,7 @@ export const PulseProofBridge = {
   signal,
   prewarmBridge,
   coreMemory: coreMemoryBridge,
-  corespeech, // NEW: Core speech organ exposed to UI + adapters
+  coreSpeech: coreSpeechBridge, // NEW: Core speech organ exposed to UI + adapters
   PulseNetBoot,
   PulseBinaryOrganismBoot,
   PulseUnderstandingBoot,
@@ -754,7 +757,6 @@ try {
   if (typeof window !== "undefined") {
     window.PulseBridgeStore = PulseBridgeStore;
     window.PulseProofBridge = PulseProofBridge;
-    window.CoreSpeech = corespeech; // optional global alias
   }
   if (typeof global !== "undefined") {
     global.PulseBridgeStore = PulseBridgeStore;

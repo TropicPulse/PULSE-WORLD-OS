@@ -86,7 +86,7 @@ AI_EXPERIENCE_META = {
 */
 
 import { PulseGPUBrainExport } from "./PulseGPUBrain.js";
-import { computeComputerIntelligence } from "./PulseGPUComputerIntelligence.js";
+import { PulseGPUCognitiveIntelligence } from "./PulseGPUCognitiveIntelligence.js";
 
 const PULSE_GPU_RUNTIME_VERSION = "16.0-Immortal";
 

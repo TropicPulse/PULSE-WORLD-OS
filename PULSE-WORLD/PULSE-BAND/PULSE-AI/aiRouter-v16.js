@@ -98,7 +98,7 @@ import createPulseMesh, { PulseMeshMeta } from "../PULSE-MESH/PulseMesh-v16.js";
 import PulseBeaconMesh, {
   PulseBeaconMeshMeta
 } from "../PULSE-EXPANSION/PulseBeaconMesh-v20.js";
-import PulseBeaconEngine from "../PULSE-EXPANSION/PulseBeaconEngine-v16.js";
+import PulseBeaconEngine from "../PULSE-EXPANSION/PulseBeaconEngine-v20.js";
 import { PulseExpansionMeta } from "../PULSE-EXPANSION/PulseExpansion-v16.js";
 import { PulseServerMeta } from "../PULSE-EXPANSION/PulseServer-v16.js";
 import { PulseRouterMeta } from "../PULSE-EXPANSION/PulseRouter-v16.js";
@@ -124,7 +124,7 @@ import {
   getProxyFallback,
   getProxyMode,
   getProxyLineage
-} from "../PULSE-PROXY/PulseProxyContext-v16.js";
+} from "../PULSE-PROXY/PulseProxyContext-v20.js";
 
 // ============================================================================
 //  META — AI Router Identity

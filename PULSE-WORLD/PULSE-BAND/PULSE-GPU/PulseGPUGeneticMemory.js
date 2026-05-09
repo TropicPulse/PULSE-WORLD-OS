@@ -90,7 +90,7 @@ AI_EXPERIENCE_META = {
 }
 */
 
-import { PulseCoreMemory } from "../PULSE-CORE/PulseCoreMemory-v20.js";
+import { PulseCoreMemory } from "../PULSE-CORE/PulseCoreMemory-v24.js";
 
 // ============================================================================
 // CONTEXT METADATA — Genetic Memory Identity (v16-Immortal)

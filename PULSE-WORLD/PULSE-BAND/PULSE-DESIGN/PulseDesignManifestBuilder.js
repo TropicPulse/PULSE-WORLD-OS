@@ -74,7 +74,7 @@ LAYER: THE ARCHIVIST (System Historian + Canonical Recorder + Genome Builder)
 */
 
 import path from "path";
-import { walkRepo } from "./repoWalker-v17.js";          // THE CARTOGRAPHER (v17)
+import { walkRepo } from "./PulseDesignRepoWalker.js";          // THE CARTOGRAPHER (v17)
 import { classifyFile } from "./PulseDesignFileClassifier.js";      // THE ANATOMIST
 // NOTE: Surveyor is NOT imported here — Archivist never writes files.
 

@@ -1,5 +1,5 @@
 // ============================================================================
-//  PulseCoreLayers.js — v20-IMMORTAL-LAYERS
+//  PulseCoreLayers-v20.js — v20-IMMORTAL-LAYERS
 //  ORGANISM‑WIDE MEMORY LAYER MANAGER
 //  “RAM IS A SCRATCHPAD. CORE IS THE TRUTH. PRESENCE DECIDES EVERYTHING.”
 //  • v20 AI_EXPERIENCE_META (IMMORTAL identity)

@@ -145,18 +145,18 @@ export const PulseRuntimeV17Meta = Object.freeze({
 import * as PulseWorldRegioning from "../PULSE-EXPANSION/PulseExpansion-v16.js";
 
 // Delta Engine (CoreMemory integrations)
-import * as PulseContinuance from "../PULSE-FINALITY/PULSE-CONTINUANCE/PulseContinuance-v16.js";
-import * as PulseOmniHosting from "../PULSE-FINALITY/PULSE-OMNIHOSTING/PulseOmniHosting-v16.js";
-import * as PulseSchema from "../PULSE-FINALITY/PULSE-SCHEMA/PulseSchema-v16.js";
+import * as PulseContinuance from "../PULSE-FINALITY/PULSE-CONTINUANCE/PulseContinuance-v20.js";
+import * as PulseOmniHosting from "../PULSE-FINALITY/PULSE-OMNIHOSTING/PulseOmniHosting-v20.js";
+import * as PulseSchema from "../PULSE-FINALITY/PULSE-SCHEMA/PulseSchema-v20.js";
 
 // Specs / Genome (for runtime‑aware schema hooks)
-import { PULSE_FIELDS_SPEC } from "../PULSE-SPECS/PulseSpecsDNAGenome-v17.js";
+import { PULSE_FIELDS_SPEC } from "../PULSE-SPECS/PulseSpecsDNAGenome-v20.js";
 
 // World Genome (for world‑layer alignment hooks)
 import { PulseWorldGenome } from "./PulseWorldGenome-v20.js";
 
 // Core Memory
-import { createPulseCoreMemory } from "../PULSE-CORE/PulseCoreMemory-v20.js";
+import { createPulseCoreMemory } from "../PULSE-CORE/PulseCoreMemory-v24.js";
 
 // Binary substrate (Touch‑aware v2.x)
 import BinarySubstrateV2 from "./PulseWorldBinarySubstrate-v20.js";

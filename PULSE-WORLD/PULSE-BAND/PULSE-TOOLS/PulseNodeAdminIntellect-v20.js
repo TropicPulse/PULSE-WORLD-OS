@@ -612,15 +612,15 @@ function computeNodeAdminArteryV5({
 
 import PulseAdminInspector from "./PulseAdminInspector.js";
 import PulseBehaviorScanner from "./PulseBehaviorScanner.js";
-import PulseBinaryBehaviorScanner from "./PulseBinaryBehaviorScanner.js";
+import PulseBinaryBehaviorScanner from "./PulseBehaviorScanner.js";
 import PulseBinaryFramework from "./PulseBinaryFramework.js";
-import PulseBinaryLoopScanner from "./PulseBinaryLoopScanner.js";
-import PulseBinaryWaveScanner from "./PulseBinaryWaveScanner.js";
+import PulseBinaryLoopScanner from "./PulseLoopScanner.js";
+import PulseBinaryWaveScanner from "./PulseWaveScanner.js";
 import PulseEvolutionaryScanner from "./PulseEvolutionaryScanner.js";
 import PulseHeatMap from "./PulseHeatMap-v20.js";
 import PulseLoopScanner from "./PulseLoopScanner.js";
 import PulseNodeAdminIntellect from "./PulseNodeAdminIntellect-v20.js";
-import { createPulseNodeEvolutionV16 as PulseNodeAdminEvolution } from "./PulseNodeAdminEvolution-v16.js";
+import { createPulseNodeEvolutionV16 as PulseNodeAdminEvolution } from "./PulseNodeEvolution-v20.js";
 import PulseWaveScanner from "./PulseWaveScanner.js";
 
 // ============================================================================

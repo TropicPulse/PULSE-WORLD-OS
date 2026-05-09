@@ -198,7 +198,7 @@ function nextRouterEpoch() {
 // ============================================================================
 //  FACTORY — v20 IMMORTAL
 // ============================================================================
-import { createPulseBinaryOverlay } from "./PulseBinaryOverlay.js";
+import { createPulseBinaryOverlay } from "./PulseBinaryCoreOverlay-v20.js";
 
 export function createPulseRouterMemoryAdapter({
   overlay = createPulseBinaryOverlay(),

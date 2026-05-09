@@ -152,7 +152,7 @@ import {
   PulseCastleMeta,
   createPulseCastle,
   getPulseCastleContext
-} from "../PulseCastle-v16.js";
+} from "./PulseCastle-v16.js";
 import {
   PulseServerMeta,
   createPulseServer,
@@ -170,14 +170,14 @@ import { getPulseUserContext } from "./PulseUser-v16.js";
 import {
   createPulseWorldCore,
   pulseWorldCore
-} from "../PULSE-AI/PulseWorldCore-v16.js";
+} from "../PULSE-EXPANSION/PulseAIWorldCore-v20.js";
 
 // Beacon Engine + Console
 import {
   getBeaconEngineContext,
   PulseBeaconEngine
-} from "./PulseBeaconEngine-v16.js";
-import { getConsoleContext } from "./PulseBeaconConsole-v16.js";
+} from "./PulseBeaconEngine-v20.js";
+import { getConsoleContext } from "./PulseBeaconConsole-v20.js";
 
 // Mesh organism (symbolic + binary)
 import createPulseMesh, {
@@ -202,12 +202,12 @@ import { getPulseOvermindContext } from "../PULSE-X/PULSE-WORLD-ALDWYN.js";
 // Continuance (GPU continuance physics)
 import {
   getLastContinuanceState
-} from "../PULSE-CONTINUANCE/PulseContinuance-v16-Immortal-GPU+.js";
+} from "../PULSE-FINALITY/PULSE-CONTINUANCE/PulseContinuance-v20.js";
 
 // OmniHosting (hosting physics / artery metrics)
 import {
   getLastOmniHostingState
-} from "../PULSE-HOSTING/PulseOmniHosting-v16-Immortal-GPU+-CI.js";
+} from "../PULSE-FINALITY/PULSE-OMNIHOSTING/PulseOmniHosting-v20.js";
 
 // Proxy context (IMMORTAL dual-band envelope)
 import {
@@ -217,7 +217,7 @@ import {
   getProxyFallback,
   getProxyMode,
   getProxyLineage
-} from "../PULSE-PROXY/PulseProxyContext-v16.js";
+} from "../PULSE-PROXY/PulseProxyContext-v20.js";
 
 // ============================================================================
 // META

@@ -76,7 +76,7 @@ EXPORT_META = {
   firestore: "no_execution"
 }
 ===============================================================================
-FILE: /pulse-translator/PulseTranslatorRNAIntake.js
+FILE: /pulse-translator/PulseTranslatorRNAIntake-v17.js
 LAYER: THE RNA INTAKE TRANSLATOR (Firestore → Pulse)
 ===============================================================================
 */
@@ -85,7 +85,7 @@ import {
   PulseFieldTypes,
   PulseFieldRules,
   validatePulseField
-} from "../PULSE-SPECS/PulseSpecsDNAGenome-v17.js";
+} from "../PULSE-SPECS/PulseSpecsDNAGenome-v20.js";
 
 /* ============================================================================
    inferPulseTypeFromFirestore(value)

@@ -90,7 +90,7 @@ EXPORT_META = {
 // CoreMemory via PulseProofBridge (only import)
 // ---------------------------------------------------------------------------
 
-import { PulseProofBridge } from "../../PULSE-UI/_BACKEND/PulseProofBridge.js";
+import { PulseProofBridge } from "../../PULSE-UI/_BACKEND/PULSE-WORLD-BRIDGE.js";
 
 const CoreMemory = PulseProofBridge.coreMemory;
 

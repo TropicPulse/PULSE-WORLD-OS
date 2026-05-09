@@ -95,7 +95,7 @@ import {
 } from "./PulseWorldFirebaseGenome-v20.js";
 
 // Specs genome (schema + DNAs)
-import * as PulseSpecsDNAGenome from "../PULSE-SPECS/PulseSpecsDNAGenome-v17.js";
+import * as PulseSpecsDNAGenome from "../PULSE-SPECS/PulseSpecsDNAGenome-v20.js";
 
 // Translators (RNA/Skeletal → backend shapes)
 import * as PulseTranslatorRNAIntake from "../PULSE-TRANSLATOR/PulseTranslatorRNAIntake-v17.js";
@@ -930,9 +930,9 @@ export async function getHelper(name) {
   if (helperCache.has(key)) return helperCache.get(key);
 
   const candidates = [
-    "../../PULSE-CORE/Helpers.js",
-    "../../PULSE-MEMORY/LongTermHelpers.js",
-    "../../PULSE-BAND/PULSE-X/WorldHelpers.js"
+    "../../PULSE-CORE/PulseWorldFirebaseGenome-v20.js",
+    "../../PULSE-MEMORY/LongTermPulseWorldFirebaseGenome-v20.js",
+    "../../PULSE-BAND/PULSE-X/WorldPulseWorldFirebaseGenome-v20.js"
   ];
 
   for (const path of candidates) {

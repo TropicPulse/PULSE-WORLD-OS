@@ -137,7 +137,7 @@ AI_EXPERIENCE_META = {
 */
 
 import PulseProxyHeart from "./PulseProxyHeart-v20.js";
-import PulseProxyBloodPressure from "./PulseProxyBloodPressure.js";
+import PulseProxyBloodPressure from "./PulseProxyBloodPressure-v20.js";
 import PulseProxyCirculatorySystem from "./PulseProxyCirculatorySystem-v20.js";
 
 import PulseProxyHypothalamus from "./PulseProxyHypothalamus-v20.js";
@@ -146,7 +146,7 @@ import PulseProxySpine from "./PulseProxySpine-v20.js";
 import pulseband from "./PulseProxyPNSNervousSystem-v20.js";   // PNS
 import PulseProxySynapse from "./PulseProxySynapse-v20.js";   // Synapse junctions
 
-import { PulseClient, PulseNet, PULSE_LIMBIC_SHADOW_META } from "./PulseProxyLimbic.js";
+import { PulseClient, PulseNet, PULSE_LIMBIC_SHADOW_META } from "./PulseProxyLimbic-v20.js";
 
 import {
   scanUserScoresForInstanceHints,
@@ -164,7 +164,7 @@ import createPulseProxyInnerAgent from "./PulseProxyInnerAgent-v20.js";
 
 import PulseProxyImpulse from "./PulseProxyImpulse-v20.js";
 
-import PulseProxyBloodstream from "./PulseProxyBloodstream.js";
+import PulseProxyBloodstream from "./PulseProxyBloodstream-v20.js";
 
 import PulseProxyAdrenalSystem from "./PulseProxyAdrenalSystem-v20.js";
 
@@ -175,12 +175,12 @@ import pulseHistoryRepair from "./PulseProxyPNSRepair-v20.js";
 import {
   PulseNetBoot,
   PulseProofBridge
-} from "../../PULSE-UI/_BACKEND/PulseWorldBridge.js";
+} from "../../PULSE-UI/_BACKEND/PULSE-WORLD-BRIDGE.js";
 
 // --- PULSE-CORE MEMORY SPINE (FULL SPINE) ----------------------------------
-import PulseCoreMemory from "../PULSE-CORE/PulseCoreMemory-v20.js";
+import PulseCoreMemory from "../PULSE-CORE/PulseCoreMemory-v24.js";
 import PulseCoreAIMemoryAdapter from "../PULSE-CORE/PulseCoreAIMemoryAdapter-v20.js";
-import PulseCoreProxyMemoryAdapter from "../PULSE-CORE/PulseCoreProxyMemoryAdapter.js";
+import PulseCoreProxyMemoryAdapter from "../PULSE-CORE/PulseCoreProxyMemoryAdapter-v20.js";
 import PulseBinaryCoreOverlay from "../PULSE-CORE/PulseBinaryCoreOverlay-v20.js";
 
 // CoreMemory bridge: structural, deterministic, keyed by memory surfaces.
