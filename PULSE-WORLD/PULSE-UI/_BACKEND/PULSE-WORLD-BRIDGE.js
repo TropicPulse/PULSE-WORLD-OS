@@ -741,6 +741,9 @@ export const route = safeRoute;
 export const PulseBinaryOrganismBoot = startDualBandAI;
 export const PulseUnderstandingBoot = startUnderstanding;
 export const PulseNetBoot = startPulseNet;
+export const BridgeError = error;
+export const BridgeWarn = warn;
+export const BridgeLog = log;
 export const PulseProofBridgeLogger = PulseProofLogger;
 
 export const PulseProofBridge = {

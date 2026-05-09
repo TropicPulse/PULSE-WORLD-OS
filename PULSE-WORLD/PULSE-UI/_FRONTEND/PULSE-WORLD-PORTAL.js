@@ -100,7 +100,7 @@ AI_EXPERIENCE_META = {
 
 import * as PulseLogger from "../_MONITOR/PulseProofLogger-v24.js";
 import * as PulseVitalsMonitor from "../_MONITOR/PulseProofMonitor-v24.js";
-import { route as BridgeRoute, PulseProofBridgeLogger as PulseProofLogger, log, warn, error, startUnderstanding as PulseUnderstanding, PulseBinaryOrganismBoot} from "../_BACKEND/PULSE-WORLD-BRIDGE.js";
+import { route as BridgeRoute, PulseProofBridgeLogger as PulseProofLogger, BridgeLog as log, BridgeWarn as warn, BridgeError as error, startUnderstanding as PulseUnderstanding, PulseBinaryOrganismBoot} from "../_BACKEND/PULSE-WORLD-BRIDGE.js";
 
 import * as PulseUIErrors from "./PulseUIErrors-v24.js";
 import * as PulseUIFlow from "./PulseUIFlow-v24.js";
