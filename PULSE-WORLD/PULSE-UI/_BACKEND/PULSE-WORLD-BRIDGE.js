@@ -103,7 +103,7 @@ AI_EXPERIENCE_META = {
 // ============================================================================
 //  GLOBAL + DB + LOGGER — IMMORTAL SNAPSHOT
 // ============================================================================
-import { PulseProofLogger, log, warn, error } from "../_MONITOR/PulseProofLogger-v24.js";
+import { VitalsLogger as PulseProofLogger, log, warn, error } from "../_MONITOR/PulseProofLogger-v24.js";
 // NEW: CoreSpeech v24 speech organ
 
 

@@ -42,101 +42,101 @@
  * ============================================================
  */
 
-export const AI_EXPERIENCE_META = {
-  identity: "PulseTouch",
-  version: "v24-IMMORTAL++-Portal-Skin-Continuous",
-  layer: "skin",
-  role: "first_contact_sensor",
-  lineage:
-    "PulseOS-v13 → v14-Immortal → v4.0.0-Immortal → v16-Immortal-Portal → v17-Continuous → v20-Immortal-Evo++++ → v24-IMMORTAL++",
+// export const AI_EXPERIENCE_META = {
+//   identity: "PulseTouch",
+//   version: "v24-IMMORTAL++-Portal-Skin-Continuous",
+//   layer: "skin",
+//   role: "first_contact_sensor",
+//   lineage:
+//     "PulseOS-v13 → v14-Immortal → v4.0.0-Immortal → v16-Immortal-Portal → v17-Continuous → v20-Immortal-Evo++++ → v24-IMMORTAL++",
 
-  evo: {
-    prePulse: true,
-    presenceAware: true,
-    identityHintAware: true,
-    regionHintAware: true,
-    trustHintAware: true,
-    dualBand: true,
-    deterministic: true,
-    driftProof: true,
+//   evo: {
+//     prePulse: true,
+//     presenceAware: true,
+//     identityHintAware: true,
+//     regionHintAware: true,
+//     trustHintAware: true,
+//     dualBand: true,
+//     deterministic: true,
+//     driftProof: true,
 
-    // IMMORTAL++ guarantees
-    zeroPII: true,
-    zeroTracking: true,
-    zeroInference: true,
-    safeCookie: true,
-    schemaStable: true,
-    contractStable: true,
+//     // IMMORTAL++ guarantees
+//     zeroPII: true,
+//     zeroTracking: true,
+//     zeroInference: true,
+//     safeCookie: true,
+//     schemaStable: true,
+//     contractStable: true,
 
-    // PulseNet integration
-    pulseNetAware: true,
-    pulseNetIgnition: true,
-    pulseNetIngressAware: true,
-    heartbeatAware: true,
-    overmindAware: true,
+//     // PulseNet integration
+//     pulseNetAware: true,
+//     pulseNetIgnition: true,
+//     pulseNetIngressAware: true,
+//     heartbeatAware: true,
+//     overmindAware: true,
 
-    // Portal / Timeline
-    timeAxisAware: true,
-    firstContactTimeline: true,
-    portalTrustEdge: true,
-    bridgeAligned: true,
-    loggerAligned: true,
-    monitorAligned: true,
+//     // Portal / Timeline
+//     timeAxisAware: true,
+//     firstContactTimeline: true,
+//     portalTrustEdge: true,
+//     bridgeAligned: true,
+//     loggerAligned: true,
+//     monitorAligned: true,
 
-    // Continuous pulse
-    continuousPulse: true,
-    fastLaneAware: true,
-    temporalHintAware: true,
+//     // Continuous pulse
+//     continuousPulse: true,
+//     fastLaneAware: true,
+//     temporalHintAware: true,
 
-    // v20–v24 metabolic evolution
-    adaptiveCadence: true,
-    pressureAware: true,
-    bandAware: true,
-    predictionHooks: true,
-    evidenceHooks: true,
-    diagnosticsHooks: true,
-    multiTabAware: true,
-    governorAware: true,
-    overmindHintAware: true,
+//     // v20–v24 metabolic evolution
+//     adaptiveCadence: true,
+//     pressureAware: true,
+//     bandAware: true,
+//     predictionHooks: true,
+//     evidenceHooks: true,
+//     diagnosticsHooks: true,
+//     multiTabAware: true,
+//     governorAware: true,
+//     overmindHintAware: true,
 
-    // v24 organ integration
-    detectorAware: true,
-    warmupAware: true,
-    securityAware: true,
-    gateAware: true,
-    predictorAware: true,
-    analyticsAware: true,
-    presenceOracleAware: true,
-    advantageCortexAware: true,
-    threatShapeAware: true
-  },
+//     // v24 organ integration
+//     detectorAware: true,
+//     warmupAware: true,
+//     securityAware: true,
+//     gateAware: true,
+//     predictorAware: true,
+//     analyticsAware: true,
+//     presenceOracleAware: true,
+//     advantageCortexAware: true,
+//     threatShapeAware: true
+//   },
 
-  contract: {
-    always: [
-      "PulseTouchDetector",
-      "PulseTouchWarmup",
-      "PulseTouchSecurity",
-      "PulseTouchGate",
-      "PulseTouchPredictor",
-      "PulseTouchAnalytics",
-      "PulsePresenceOracle",
-      "pulseTouchAdvantageCortex",
-      "PulseTouchThreatShape",
-      "PulseNet",
-      "PulseNetIngress",
-      "PulseProofBridge",
-      "PulseProofLogger"
-    ],
-    never: [
-      "identityInference",
-      "tracking",
-      "PII",
-      "legacyCookies",
-      "legacyPulseNet",
-      "legacyNetworkLayer"
-    ]
-  }
-};
+//   contract: {
+//     always: [
+//       "PulseTouchDetector",
+//       "PulseTouchWarmup",
+//       "PulseTouchSecurity",
+//       "PulseTouchGate",
+//       "PulseTouchPredictor",
+//       "PulseTouchAnalytics",
+//       "PulsePresenceOracle",
+//       "pulseTouchAdvantageCortex",
+//       "PulseTouchThreatShape",
+//       "PulseNet",
+//       "PulseNetIngress",
+//       "PulseProofBridge",
+//       "PulseProofLogger"
+//     ],
+//     never: [
+//       "identityInference",
+//       "tracking",
+//       "PII",
+//       "legacyCookies",
+//       "legacyPulseNet",
+//       "legacyNetworkLayer"
+//     ]
+//   }
+// };
 
 // ============================================================
 // IMPORTS — PULSE-NET + TOUCH ORGANS + BRIDGE + FUTURE HOOKS
