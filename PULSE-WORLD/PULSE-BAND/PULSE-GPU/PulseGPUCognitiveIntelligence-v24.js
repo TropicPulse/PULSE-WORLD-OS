@@ -1,131 +1,52 @@
 /* global log,warn */
 // ============================================================================
 // FILE: PULSE-GPU/PulseGPUCognitiveIntelligence.js
-// PULSE GPU COGNITIVE INTELLIGENCE v16-Immortal
-// “CORTEX → WISDOM → UXBRIDGE” — FULL COGNITIVE FRAME PIPELINE
+// PULSE GPU COGNITIVE INTELLIGENCE v24-IMMORTAL++
+// “CORTEX → WISDOM → UXBRIDGE → CHUNKER” — FULL COGNITIVE FRAME PIPELINE
 // PURE LOGIC • PURE DETERMINISM • ZERO SIDE EFFECTS
 // SYMBOLIC + BINARY AWARE • DISPATCH-AWARE • MEMORY-AWARE • PRESENCE-AWARE
-// INTELLIGENT-COMPUTE-AWARE • EARN-AWARE • IMMORTAL-READY
+// INTELLIGENT-COMPUTE-AWARE • CHUNK-AWARE • EARN-AWARE • IMMORTAL++
 // ============================================================================
 
-import * as PulseGPUBrain              from "./PulseGPUBrain.js";
-import * as PulseGPUWisdomCortex       from "./PulseGPUWisdomCortex.js";
-import * as PulseGPUAstralMuscleSystem from "./PulseGPUAstralMuscleSystem.js";
-import * as PulseGPUAstralNervousSystem from "./PulseGPUAstralNervousSystem.js";
-import * as PulseGPUSpine              from "./PulseGPUSpine.js";
-import * as PulseGPUGeneticMemory      from "./PulseGPUGeneticMemory.js";
-import * as PulseGPUGuardianCortex     from "./PulseGPUGuardianCortex.js";
-import * as PulseGPULymphNodes         from "./PulseGPULymphNodes.js";
-import * as PulseGPUSurvivalInstincts  from "./PulseGPUSurvivalInstincts.js";
-
-/*
-AI_EXPERIENCE_META = {
-  identity: "PulseGPUCognitiveIntelligence",
-  version: "v16-Immortal",
-  layer: "gpu_cognition",
-  role: "gpu_cognitive_intelligence_cortex",
-  lineage: "PulseGPU-v16-Immortal",
-
-  evo: {
-    // Core cognition
-    gpuCompute: true,
-    tensorEngine: true,
-    parallelSafe: true,
-    cognitiveSimulation: true,
-    reasoningSimulation: true,
-    patternFusion: true,
-
-    // Awareness
-    symbolicSafe: true,
-    binarySafe: true,
-    dualBandAware: true,
-    gpuDispatchAware: true,
-    gpuMemoryAware: true,
-    gpuAdvantageAware: true,
-    presenceAware: true,
-    dnaAware: true,
-    versionAware: true,
-
-    // Mesh linkage
-    meshLinked: true,
-    astralMeshLinked: true,
-    guardianLinked: true,
-    healerLinked: true,
-    muscleLinked: true,
-    nervousSystemLinked: true,
-    wisdomLinked: true,
-    survivalLinked: true,
-    brainLinked: true,
-    spineLinked: true,
-    geneticMemoryLinked: true,
-
-    // Immortal + Earn
-    deterministic: true,
-    driftProof: true,
-    pureCompute: true,
-    zeroMutationOfInput: true,
-    zeroNetwork: true,
-    zeroFilesystem: true,
-    immortalReady: true,
-    immortalSurface: true,
-    earnAware: true,
-    earnCompatibility: "Earn-v4-Presence",
-
-    // Contracts
-    routingContract: "PulseSend-v16",
-    gpuOrganContract: "PulseGPU-v16-Immortal",
-    binaryGpuOrganContract: "PulseBinaryGPU-v16-Immortal",
-    workgroupLawVersion: 16
-  },
-
-  contract: {
-    always: [
-      "PulseGPUBrain",
-      "PulseGPUWisdomCortex",
-      "PulseGPUAstralMuscleSystem",
-      "PulseGPUAstralNervousSystem",
-      "PulseGPUSpine",
-      "PulseGPUGeneticMemory",
-      "PulseGPUGuardianCortex",
-      "PulseGPULymphNodes",
-      "PulseGPUSurvivalInstincts"
-    ],
-    never: [
-      "PulseOSCortex",
-      "safeRoute",
-      "fetchViaCNS",
-      "legacyGPUCognitiveIntelligence"
-    ]
-  }
-}
-*/
+import * as PulseGPUBrain                from "./PulseGPUBrain-v24.js";
+import * as PulseGPUWisdomCortex        from "./PulseGPUWIsdomCortex-v24.js";
+import * as PulseGPUAstralMuscleSystem  from "./PulseGPUAstralMuscleSystem-v24.js";
+import * as PulseGPUAstralNervousSystem from "./PulseGPUAstralNervousSystem-v24.js";
+import * as PulseGPUSpine               from "./PulseGPUSpine-v24.js";
+import * as PulseGPUGeneticMemory       from "./PulseGPUGeneticMemory-v24.js";
+import * as PulseGPUGuardianCortex      from "./PulseGPUGuardianCortex-v24.js";
+import * as PulseGPULymphNodes          from "./PulseGPULymphNodes-v24.js";
+import * as PulseGPUSurvivalInstincts   from "./PulseGPUSurvivalInstincts-v24.js";
+import * as PulseGPUChunkPlannerModule  from "./PulseGPUChunkPlanner.js"; // awareness only
 
 // ============================================================================
-// SHARED EVO + CONTRACTS
+// SHARED EVO + CONTRACTS (v24-IMMORTAL++)
 // ============================================================================
 
-const PULSE_GPU_COGNITION_VERSION = "16.0-Immortal";
+const PULSE_GPU_COGNITION_VERSION = "24.0-IMMORTAL++";
 
 const COGNITIVE_EVO = {
+  // Core cognition
   gpuCompute: true,
   tensorEngine: true,
   parallelSafe: true,
-
   cognitiveSimulation: true,
   reasoningSimulation: true,
   patternFusion: true,
 
+  // Awareness
   symbolicSafe: true,
   binarySafe: true,
   dualBandAware: true,
   gpuDispatchAware: true,
   gpuMemoryAware: true,
   gpuAdvantageAware: true,
-
   presenceAware: true,
   dnaAware: true,
   versionAware: true,
+  instanceAware: true,
 
+  // Mesh / organ linkage
   meshLinked: true,
   astralMeshLinked: true,
   guardianLinked: true,
@@ -138,6 +59,12 @@ const COGNITIVE_EVO = {
   spineLinked: true,
   geneticMemoryLinked: true,
 
+  // Chunk / layout awareness
+  chunkAware: true,
+  chunkPlannerAware: true,
+  gpuChunkPlanAware: true,
+
+  // Immortal + Earn
   deterministic: true,
   driftProof: true,
   pureCompute: true,
@@ -149,20 +76,18 @@ const COGNITIVE_EVO = {
   earnAware: true,
   earnCompatibility: "Earn-v4-Presence",
 
-  routingContract: "PulseSend-v16",
-  gpuOrganContract: "PulseGPU-v16-Immortal",
-  binaryGpuOrganContract: "PulseBinaryGPU-v16-Immortal",
-  workgroupLawVersion: 16
+  // Contracts
+  routingContract: "PulseSend-v24-IMMORTAL++",
+  gpuOrganContract: "PulseGPU-v24-IMMORTAL++",
+  binaryGpuOrganContract: "PulseBinaryGPU-v24-IMMORTAL++",
+  workgroupLawVersion: 24
 };
 
 // ============================================================================
-// COGNITIVE FRAME — FULL GPU THOUGHT (D)
+// COGNITIVE FRAME — FULL GPU THOUGHT
 // ============================================================================
 //
-// A cognitive frame is the full “GPU thought” object that flows:
-//   Brain → Cognitive Cortex → Wisdom Cortex → UXBridge → UX
-//
-// It is deterministic, pure, and fully presence/advantage/dispatch aware.
+// Flows: Brain → Cognitive Cortex → Wisdom → UXBridge (+ Chunker awareness)
 // ============================================================================
 
 class CognitiveFrame {
@@ -180,6 +105,7 @@ class CognitiveFrame {
     symbolic = {},
     binary = {},
     recommendedActions = [],
+    chunkContext = null,
     dnaTag = "default-dna",
     instanceId = "",
     version = PULSE_GPU_COGNITION_VERSION,
@@ -200,6 +126,7 @@ class CognitiveFrame {
     this.recommendedActions = Array.isArray(recommendedActions)
       ? recommendedActions
       : [];
+    this.chunkContext = chunkContext;
 
     this.meta = {
       layer: "PulseGPUCognitiveIntelligence",
@@ -214,12 +141,7 @@ class CognitiveFrame {
 }
 
 // ============================================================================
-// COMPUTER INTELLIGENCE HOOK (Earn-aware)
-// ============================================================================
-//
-// This is the “new computer intelligence function” — a pure, deterministic
-// mapper from CognitiveFrame → ComputerIntelligenceFrame, explicitly
-// Earn-aware but still zero side effects.
+// COMPUTER INTELLIGENCE HOOK (Earn-aware, v24)
 // ============================================================================
 
 function computeComputerIntelligence(cognitiveFrame, { earnMode = false } = {}) {
@@ -227,13 +149,14 @@ function computeComputerIntelligence(cognitiveFrame, { earnMode = false } = {}) 
     return null;
   }
 
-  const base = cognitiveFrame instanceof CognitiveFrame
-    ? cognitiveFrame
-    : new CognitiveFrame(cognitiveFrame);
+  const base =
+    cognitiveFrame instanceof CognitiveFrame
+      ? cognitiveFrame
+      : new CognitiveFrame(cognitiveFrame);
 
   const ci = {
     identity: "PulseGPUComputerIntelligenceFrame",
-    version: "16.0-Immortal",
+    version: PULSE_GPU_COGNITION_VERSION,
     layer: "gpu_computer_intelligence",
     earnMode: !!earnMode,
     dnaTag: base.meta?.dnaTag,
@@ -252,6 +175,7 @@ function computeComputerIntelligence(cognitiveFrame, { earnMode = false } = {}) 
     symbolic: base.symbolic,
     binary: base.binary,
     recommendedActions: base.recommendedActions,
+    chunkContext: base.chunkContext,
 
     evo: {
       ...COGNITIVE_EVO,
@@ -260,9 +184,9 @@ function computeComputerIntelligence(cognitiveFrame, { earnMode = false } = {}) 
     },
 
     contracts: {
-      routingContract: "PulseSend-v16",
-      gpuOrganContract: "PulseGPU-v16-Immortal",
-      binaryGpuOrganContract: "PulseBinaryGPU-v16-Immortal",
+      routingContract: "PulseSend-v24-IMMORTAL++",
+      gpuOrganContract: "PulseGPU-v24-IMMORTAL++",
+      binaryGpuOrganContract: "PulseBinaryGPU-v24-IMMORTAL++",
       earnCompatibility: "Earn-v4-Presence"
     }
   };
@@ -271,17 +195,58 @@ function computeComputerIntelligence(cognitiveFrame, { earnMode = false } = {}) 
 }
 
 // ============================================================================
-// COGNITIVE CORTEX — RAW COGNITION LAYER
+// INTERNAL: CHUNK CONTEXT DERIVATION (pure, planner-aware, no direct calls)
 // ============================================================================
-//
-// Input: Brain’s intelligentCompute snapshot + GPU evidence
-// Output: CognitiveFrame (with cognition/dispatch/advantage/presence filled)
+
+function deriveChunkContextFromDispatchHistory(gpuDispatchHistory = []) {
+  const count = Array.isArray(gpuDispatchHistory)
+    ? gpuDispatchHistory.length
+    : 0;
+
+  if (count === 0) {
+    return {
+      chunkProfile: "default",
+      plannerStrategy: "balanced",
+      plannerChunks: null,
+      rechunkRecommended: false
+    };
+  }
+
+  const last = gpuDispatchHistory[count - 1];
+
+  const pattern = last?.pattern || "gpu-default";
+  const advantageScore =
+    typeof last?.meta?.advantageScore === "number"
+      ? last.meta.advantageScore
+      : 0;
+
+  let chunkProfile = "default";
+  if (pattern.includes("gpu")) chunkProfile = "gpu";
+  if (pattern.includes("rich")) chunkProfile = "rich";
+
+  let plannerStrategy = "balanced";
+  if (advantageScore > 0.2) plannerStrategy = "aggressive_gpu";
+  else if (advantageScore < -0.2) plannerStrategy = "safe_minimal";
+
+  const rechunkRecommended =
+    advantageScore < -0.2 || advantageScore > 0.4;
+
+  return {
+    chunkProfile,
+    plannerStrategy,
+    plannerChunks: null, // symbolic only; real chunks come from PulseGPUChunkPlanner
+    rechunkRecommended
+  };
+}
+
+// ============================================================================
+// COGNITIVE CORTEX — RAW COGNITION LAYER (v24)
 // ============================================================================
 
 class PulseGPUCognitiveCortex {
   static meta = {
     layer: "PulseGPUCognitiveCortex",
-    version: "16.0-Immortal",
+    version: PULSE_GPU_COGNITION_VERSION,
     target: "full-gpu",
     evo: COGNITIVE_EVO
   };
@@ -302,9 +267,8 @@ class PulseGPUCognitiveCortex {
       ? gpuDispatchHistory.length
       : 0;
 
-    const lastDispatch = dispatchCount > 0
-      ? gpuDispatchHistory[dispatchCount - 1]
-      : null;
+    const lastDispatch =
+      dispatchCount > 0 ? gpuDispatchHistory[dispatchCount - 1] : null;
 
     const shapeSignature = {
       pattern: lastDispatch?.pattern || "gpu-default",
@@ -375,14 +339,27 @@ class PulseGPUCognitiveCortex {
     };
 
     const narrative = {
-      summary: "Cognitive frame initialized (raw cognition layer).",
+      summary: "Cognitive frame initialized (raw cognition layer, v24-IMMORTAL++).",
       details: {
         hasAdvantageMap: advantage.hasAdvantageMap,
         dispatchHistoryCount: advantage.dispatchHistoryCount
       }
     };
 
+    const chunkContext = deriveChunkContextFromDispatchHistory(
+      gpuDispatchHistory
+    );
+
     const recommendedActions = [];
+    if (chunkContext.rechunkRecommended) {
+      recommendedActions.push({
+        type: "rechunk-needed",
+        severity: "medium",
+        hint: "re-evaluate-gpu-chunk-layout",
+        chunkProfile: chunkContext.chunkProfile,
+        plannerStrategy: chunkContext.plannerStrategy
+      });
+    }
 
     const frame = new CognitiveFrame({
       cognition,
@@ -398,6 +375,7 @@ class PulseGPUCognitiveCortex {
       symbolic,
       binary,
       recommendedActions,
+      chunkContext,
       dnaTag,
       instanceId,
       version: PULSE_GPU_COGNITION_VERSION,
@@ -406,14 +384,17 @@ class PulseGPUCognitiveCortex {
 
     log(
       "gpu",
-      "[Cognition] PulseGPUCognitiveCortex.buildCognitiveFrame v16-Immortal",
+      "[Cognition] PulseGPUCognitiveCortex.buildCognitiveFrame v24-IMMORTAL++",
       "color:#9C27B0;",
       {
         dispatchHistoryCount: dispatchCount,
         hasAdvantageMap: advantage.hasAdvantageMap,
         dnaTag,
         instanceId,
-        earnMode
+        earnMode,
+        chunkProfile: chunkContext.chunkProfile,
+        plannerStrategy: chunkContext.plannerStrategy,
+        rechunkRecommended: chunkContext.rechunkRecommended
       }
     );
 
@@ -422,17 +403,13 @@ class PulseGPUCognitiveCortex {
 }
 
 // ============================================================================
-// WISDOM CORTEX — INTERPRETATION LAYER
-// ============================================================================
-//
-// Input: CognitiveFrame
-// Output: CognitiveFrame (with interpretation/narrative/tier/performance enriched)
+// WISDOM CORTEX — INTERPRETATION LAYER (v24)
 // ============================================================================
 
 class PulseGPUWisdomBridge {
   static meta = {
     layer: "PulseGPUWisdomBridge",
-    version: "16.0-Immortal",
+    version: PULSE_GPU_COGNITION_VERSION,
     target: "full-gpu",
     evo: COGNITIVE_EVO
   };
@@ -440,9 +417,8 @@ class PulseGPUWisdomBridge {
   static interpret(frame) {
     if (!frame || typeof frame !== "object") return null;
 
-    const base = frame instanceof CognitiveFrame
-      ? frame
-      : new CognitiveFrame(frame);
+    const base =
+      frame instanceof CognitiveFrame ? frame : new CognitiveFrame(frame);
 
     const dispatchCount =
       base.dispatch?.dispatchHistoryCount ||
@@ -465,7 +441,9 @@ class PulseGPUWisdomBridge {
       hasAdvantageMap: !!base.advantage?.hasAdvantageMap,
       symbolicPreferred: !!base.symbolic?.symbolicPreferred,
       binaryMode: !!base.binary?.binaryMode,
-      dualMode: !!base.binary?.dualMode
+      dualMode: !!base.binary?.dualMode,
+      chunkAware: !!base.chunkContext,
+      rechunkRecommended: !!base.chunkContext?.rechunkRecommended
     };
 
     const narrative = {
@@ -475,7 +453,10 @@ class PulseGPUWisdomBridge {
         dispatchHistoryCount: dispatchCount,
         symbolicPreferred: interpretation.symbolicPreferred,
         binaryMode: interpretation.binaryMode,
-        dualMode: interpretation.dualMode
+        dualMode: interpretation.dualMode,
+        chunkProfile: base.chunkContext?.chunkProfile || "default",
+        plannerStrategy: base.chunkContext?.plannerStrategy || "balanced",
+        rechunkRecommended: interpretation.rechunkRecommended
       }
     };
 
@@ -511,6 +492,16 @@ class PulseGPUWisdomBridge {
       });
     }
 
+    if (interpretation.rechunkRecommended) {
+      recommendedActions.push({
+        type: "rechunk-needed",
+        severity: "medium",
+        hint: "re-evaluate-gpu-chunk-layout",
+        chunkProfile: base.chunkContext?.chunkProfile || "default",
+        plannerStrategy: base.chunkContext?.plannerStrategy || "balanced"
+      });
+    }
+
     const enriched = new CognitiveFrame({
       cognition: base.cognition,
       interpretation,
@@ -525,6 +516,7 @@ class PulseGPUWisdomBridge {
       symbolic: base.symbolic,
       binary: base.binary,
       recommendedActions,
+      chunkContext: base.chunkContext,
       dnaTag: base.meta?.dnaTag,
       instanceId: base.meta?.instanceId,
       version: base.meta?.version,
@@ -533,12 +525,13 @@ class PulseGPUWisdomBridge {
 
     log(
       "gpu",
-      "[Wisdom] PulseGPUWisdomBridge.interpret v16-Immortal",
+      "[Wisdom] PulseGPUWisdomBridge.interpret v24-IMMORTAL++",
       "color:#3F51B5;",
       {
         performanceLabel,
         advantageScore,
-        dispatchHistoryCount: dispatchCount
+        dispatchHistoryCount: dispatchCount,
+        rechunkRecommended: interpretation.rechunkRecommended
       }
     );
 
@@ -547,21 +540,10 @@ class PulseGPUWisdomBridge {
 }
 
 // ============================================================================
-// UX BRIDGE — NOTIFICATION LAYER (v16-Immortal)
-// ============================================================================
-//
-// Input: CognitiveFrame (enriched by Wisdom)
-// Output: Notifications (UX-safe, deterministic, self-repairable)
+// UX BRIDGE — NOTIFICATION LAYER (v24)
 // ============================================================================
 
-function buildNotification({
-  kind,
-  severity,
-  title,
-  message,
-  actions,
-  meta
-}) {
+function buildNotification({ kind, severity, title, message, actions, meta }) {
   const notif = {
     kind: kind || "performance",
     severity: severity || "low",
@@ -569,7 +551,7 @@ function buildNotification({
     message: message || "",
     meta: {
       layer: "PulseGPUUXBridge",
-      version: "16.0-Immortal",
+      version: PULSE_GPU_COGNITION_VERSION,
       target: "full-gpu",
       selfRepairable: true,
 
@@ -579,7 +561,7 @@ function buildNotification({
         driftProof: true,
         multiInstanceReady: true,
         unifiedAdvantageField: true,
-        pulseSend16Ready: true,
+        pulseSend24Ready: true,
 
         presenceAware: true,
         dnaAware: true,
@@ -591,10 +573,12 @@ function buildNotification({
         gpuDispatchAware: true,
         gpuMemoryAware: true,
         gpuAdvantageAware: true,
+        chunkAware: true,
+        chunkPlannerAware: true,
 
-        routingContract: "PulseSend-v16",
-        gpuOrganContract: "PulseGPU-v16-Immortal",
-        binaryGpuOrganContract: "PulseBinaryGPU-v16-Immortal",
+        routingContract: "PulseSend-v24-IMMORTAL++",
+        gpuOrganContract: "PulseGPU-v24-IMMORTAL++",
+        binaryGpuOrganContract: "PulseBinaryGPU-v24-IMMORTAL++",
         earnCompatibility: "Earn-v4-Presence"
       },
 
@@ -622,7 +606,7 @@ class PulseGPUUXBridge {
 
   static meta = {
     layer: "PulseGPUUXBridge",
-    version: "16.0-Immortal",
+    version: PULSE_GPU_COGNITION_VERSION,
     target: "full-gpu",
     selfRepairable: true,
     evo: {
@@ -630,7 +614,7 @@ class PulseGPUUXBridge {
       advantageCascadeAware: true,
       pulseEfficiencyAware: true,
       unifiedAdvantageField: true,
-      pulseSend16Ready: true
+      pulseSend24Ready: true
     }
   };
 
@@ -638,9 +622,8 @@ class PulseGPUUXBridge {
   fromCognitiveFrame(frame) {
     if (!frame || typeof frame !== "object") return [];
 
-    const base = frame instanceof CognitiveFrame
-      ? frame
-      : new CognitiveFrame(frame);
+    const base =
+      frame instanceof CognitiveFrame ? frame : new CognitiveFrame(frame);
 
     const notifications = [];
 
@@ -656,7 +639,10 @@ class PulseGPUUXBridge {
       instanceId: base.meta?.instanceId,
       earnMode: base.meta?.earnMode,
       shapeSignature: base.shapeSignature,
-      patternSignature: base.patternSignature
+      patternSignature: base.patternSignature,
+      chunkProfile: base.chunkContext?.chunkProfile || "default",
+      plannerStrategy: base.chunkContext?.plannerStrategy || "balanced",
+      rechunkRecommended: !!base.chunkContext?.rechunkRecommended
     };
 
     // Performance narrative
@@ -680,8 +666,8 @@ class PulseGPUUXBridge {
           ],
           meta: {
             repairHint: "restore-baseline-settings",
-            routingContract: "PulseSend-v16",
-            gpuOrganContract: "PulseGPU-v16-Immortal",
+            routingContract: "PulseSend-v24-IMMORTAL++",
+            gpuOrganContract: "PulseGPU-v24-IMMORTAL++",
             ...gpuMeta
           }
         })
@@ -706,8 +692,8 @@ class PulseGPUUXBridge {
           ],
           meta: {
             repairHint: "promote-current-to-baseline",
-            routingContract: "PulseSend-v16",
-            gpuOrganContract: "PulseGPU-v16-Immortal",
+            routingContract: "PulseSend-v24-IMMORTAL++",
+            gpuOrganContract: "PulseGPU-v24-IMMORTAL++",
             ...gpuMeta
           }
         })
@@ -736,8 +722,42 @@ class PulseGPUUXBridge {
           ],
           meta: {
             repairHint: "suggest-baseline-settings",
-            routingContract: "PulseSend-v16",
-            gpuOrganContract: "PulseGPU-v16-Immortal",
+            routingContract: "PulseSend-v24-IMMORTAL++",
+            gpuOrganContract: "PulseGPU-v24-IMMORTAL++",
+            ...gpuMeta
+          }
+        })
+      );
+    }
+
+    // Chunk / rechunk hint
+    if (base.chunkContext?.rechunkRecommended) {
+      notifications.push(
+        buildNotification({
+          kind: "chunk-layout",
+          severity: "medium",
+          title: "GPU chunk layout can be improved",
+          message:
+            "Observed GPU advantage suggests your GPU chunk layout could be re-optimized.",
+          actions: [
+            {
+              label: "Re-evaluate GPU chunks",
+              actionType: "request-gpu-rechunk",
+              payload: {
+                chunkProfile: base.chunkContext.chunkProfile,
+                plannerStrategy: base.chunkContext.plannerStrategy
+              }
+            }
+          ],
+          meta: {
+            repairHint: "re-evaluate-gpu-chunk-layout",
+            routingContract: "PulseSend-v24-IMMORTAL++",
+            gpuOrganContract: "PulseGPU-v24-IMMORTAL++",
+            chunkPlannerAware: true,
+            chunkPlannerId:
+              PulseGPUChunkPlannerModule
+                ?.AI_EXPERIENCE_META_PulseGPUChunkPlanner?.id ||
+              "pulsegpu.chunk_planner",
             ...gpuMeta
           }
         })
@@ -768,8 +788,8 @@ class PulseGPUUXBridge {
             ],
             meta: {
               repairHint: act.hint || "restore-baseline-settings",
-              routingContract: "PulseSend-v16",
-              gpuOrganContract: "PulseGPU-v16-Immortal",
+              routingContract: "PulseSend-v24-IMMORTAL++",
+              gpuOrganContract: "PulseGPU-v24-IMMORTAL++",
               ...gpuMeta
             }
           })
@@ -796,8 +816,45 @@ class PulseGPUUXBridge {
             ],
             meta: {
               repairHint: act.hint || "promote-current-to-baseline",
-              routingContract: "PulseSend-v16",
-              gpuOrganContract: "PulseGPU-v16-Immortal",
+              routingContract: "PulseSend-v24-IMMORTAL++",
+              gpuOrganContract: "PulseGPU-v24-IMMORTAL++",
+              ...gpuMeta
+            }
+          })
+        );
+      }
+
+      if (act.type === "rechunk-needed") {
+        notifications.push(
+          buildNotification({
+            kind: "chunk-layout",
+            severity: act.severity || "medium",
+            title: "GPU chunk layout misaligned",
+            message:
+              "Chunk layout appears misaligned with observed GPU advantage; a new GPU chunk plan is recommended.",
+            actions: [
+              {
+                label: "Request new chunk plan",
+                actionType: "request-gpu-rechunk",
+                payload: {
+                  chunkProfile:
+                    act.chunkProfile || base.chunkContext?.chunkProfile,
+                  plannerStrategy:
+                    act.plannerStrategy ||
+                    base.chunkContext?.plannerStrategy ||
+                    "balanced"
+                }
+              }
+            ],
+            meta: {
+              repairHint: act.hint || "re-evaluate-gpu-chunk-layout",
+              routingContract: "PulseSend-v24-IMMORTAL++",
+              gpuOrganContract: "PulseGPU-v24-IMMORTAL++",
+              chunkPlannerAware: true,
+              chunkPlannerId:
+                PulseGPUChunkPlannerModule
+                  ?.AI_EXPERIENCE_META_PulseGPUChunkPlanner?.id ||
+                "pulsegpu.chunk_planner",
               ...gpuMeta
             }
           })

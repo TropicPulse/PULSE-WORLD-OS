@@ -1,11 +1,11 @@
 // ============================================================================
-// FILE: tropic-pulse-functions/PULSE-WORLD/PULSE-GPU/PulseGPUGeneticMemory.js
-// PULSE GPU GENETIC MEMORY v16‑IMMORTAL — THE DNA ARCHIVE
+// FILE: tropic-pulse-functions/PULSE-WORLD/PULSE-GPU/PulseGPUGeneticMemory-v24.js
+// PULSE GPU GENETIC MEMORY v24‑IMMORTAL++ — THE DNA ARCHIVE
 // Long-Horizon Pattern Memory • Lineage Store • Deterministic Pattern Engine
-// CoreMemory‑Integrated • ComputerIntelligence‑Aware • Earn‑v4‑Presence‑Ready
+// CoreMemory‑v24‑Integrated • ComputerIntelligence‑Aware • Earn‑v24‑GPU‑Ready
 // ============================================================================
 //
-// IDENTITY — THE DNA ARCHIVE (v16‑IMMORTAL):
+// IDENTITY — THE DNA ARCHIVE (v24‑IMMORTAL++):
 //  --------------------------------------------------------
 //  • Long-term genetic memory of the GPU organism.
 //  • Stores lineage, execution signatures, binary-mode outcomes, and patterns.
@@ -14,9 +14,9 @@
 //  • No prediction — only pattern recognition over what actually happened.
 //  • Designed for Advisor, Healer, Orchestrator, Insights, UI, Engine, Earn.
 //  • Advantage-cascade aware: systemic gains improve pattern density.
-//  • PulseSend-v16-ready • Earn-v4-Presence-ready • Dual-band + CI aware.
+//  • PulseSend-v24-ready • Earn-v24-GPU-ready • Dual-band + CI aware.
 //
-// SAFETY CONTRACT (v16‑IMMORTAL):
+// SAFETY CONTRACT (v24‑IMMORTAL++):
 //  ---------------------------------------------
 //  • No randomness
 //  • No timestamps
@@ -32,10 +32,10 @@
 /*
 AI_EXPERIENCE_META = {
   identity: "PulseGPUGeneticMemory",
-  version: "v16-Immortal",
+  version: "v24-Immortal++",
   layer: "gpu_brain",
   role: "gpu_genetic_memory",
-  lineage: "PulseGPU-v16-Immortal",
+  lineage: "PulseGPU-v24-Immortal++",
 
   evo: {
     gpuCompute: true,
@@ -58,6 +58,7 @@ AI_EXPERIENCE_META = {
     gpuMemoryAware: true,
     gpuAdvantageAware: true,
     presenceAware: true,
+    gameAware: true,
     dnaAware: true,
     versionAware: true,
     instanceAware: true,
@@ -65,21 +66,21 @@ AI_EXPERIENCE_META = {
     // CI + Earn
     computerIntelligenceAware: true,
     earnAware: true,
-    earnCompatibility: "Earn-v4-Presence",
+    earnCompatibility: "Earn-v24-GPU",
 
     // Contracts
     coreMemoryAware: true,
-    coreMemoryContract: "PulseCoreMemory-v16-Immortal",
-    routingContract: "PulseSend-v16",
-    gpuOrganContract: "PulseGPU-v16-Immortal",
-    binaryGpuOrganContract: "PulseBinaryGPU-v16-Immortal"
+    coreMemoryContract: "PulseCoreMemory-v24-Immortal++",
+    routingContract: "PulseSend-v24",
+    gpuOrganContract: "PulseGPU-v24-Immortal++",
+    binaryGpuOrganContract: "PulseBinaryGPU-v24-Immortal++"
   },
 
   contract: {
     always: [
       "PulseGPUBrain",
       "PulseGPUCognitiveLayer",
-      "PulseGPUDriveCenter"
+      "PulseGPUDriveCenter-v24"
     ],
     never: [
       "safeRoute",
@@ -93,7 +94,7 @@ AI_EXPERIENCE_META = {
 import { PulseCoreMemory } from "../PULSE-CORE/PulseCoreMemory-v24.js";
 
 // ============================================================================
-// CONTEXT METADATA — Genetic Memory Identity (v16-Immortal)
+// CONTEXT METADATA — Genetic Memory Identity (v24-Immortal++)
 // ============================================================================
 const GENETIC_MEMORY_CONTEXT = {
   layer: "PulseGPUGeneticMemory",
@@ -101,9 +102,9 @@ const GENETIC_MEMORY_CONTEXT = {
   purpose:
     "Long-horizon genetic memory for configs, execution signatures, patterns, lineage, correlations, and CI fields",
   context:
-    "Stores lineage, binary-mode outcomes, dispatch signatures, shape signatures, pattern stats, and advantage vectors",
+    "Stores lineage, binary-mode outcomes, dispatch signatures, shape signatures, pattern stats, advantage vectors, and Earn hints",
   target: "full-gpu+binary+symbolic",
-  version: "16-Immortal",
+  version: "24-Immortal++",
   selfRepairable: true,
 
   evo: {
@@ -112,7 +113,7 @@ const GENETIC_MEMORY_CONTEXT = {
     driftProof: true,
     multiInstanceReady: true,
     unifiedAdvantageField: true,
-    pulseSend16Ready: true,
+    pulseSend24Ready: true,
 
     dualModeEvolution: true,
     binaryAware: true,
@@ -121,19 +122,21 @@ const GENETIC_MEMORY_CONTEXT = {
     gpuDispatchAware: true,
     gpuMemoryAware: true,
     gpuAdvantageAware: true,
+    presenceAware: true,
+    gameAware: true,
 
-    // v16 IMMORTAL contracts
+    // v24 IMMORTAL++ contracts
     coreMemoryAware: true,
-    coreMemoryContract: "PulseCoreMemory-v16-Immortal",
-    routingContract: "PulseSend-v16",
-    gpuOrganContract: "PulseGPU-v16-Immortal",
-    binaryGpuOrganContract: "PulseBinaryGPU-v16-Immortal",
-    earnCompatibility: "Earn-v4-Presence",
+    coreMemoryContract: "PulseCoreMemory-v24-Immortal++",
+    routingContract: "PulseSend-v24",
+    gpuOrganContract: "PulseGPU-v24-Immortal++",
+    binaryGpuOrganContract: "PulseBinaryGPU-v24-Immortal++",
+    earnCompatibility: "Earn-v24-GPU",
 
     // Legacy compatibility
-    legacyRoutingContract: "PulseSend-v10.4",
-    legacyGPUOrganContract: "PulseGPU-v10.4",
-    legacyEarnCompatibility: "Earn-v2"
+    legacyRoutingContract: "PulseSend-v16",
+    legacyGPUOrganContract: "PulseGPU-v16-Immortal",
+    legacyEarnCompatibility: "Earn-v4-Presence"
   }
 };
 
@@ -144,7 +147,13 @@ function stableStringify(value) {
   if (value === null || typeof value !== "object") return JSON.stringify(value);
   if (Array.isArray(value)) return "[" + value.map(stableStringify).join(",") + "]";
   const keys = Object.keys(value).sort();
-  return "{" + keys.map(k => JSON.stringify(k) + ":" + stableStringify(value[k])).join(",") + "}";
+  return (
+    "{" +
+    keys
+      .map((k) => JSON.stringify(k) + ":" + stableStringify(value[k]))
+      .join(",") +
+    "}"
+  );
 }
 
 // ============================================================================
@@ -166,7 +175,7 @@ function clamp(v, min, max) {
 }
 
 // ============================================================================
-// Signature builders — v16 IMMORTAL
+// Signature builders — v24 IMMORTAL++
 // ============================================================================
 function buildGameKey(gameProfile = {}) {
   const {
@@ -190,7 +199,15 @@ function buildHardwareKey(hardwareProfile = {}) {
     platform = ""
   } = hardwareProfile;
 
-  return stableStringify({ gpuModel, driverVersion, vramMB, cpuModel, ramMB, deviceClass, platform });
+  return stableStringify({
+    gpuModel,
+    driverVersion,
+    vramMB,
+    cpuModel,
+    ramMB,
+    deviceClass,
+    platform
+  });
 }
 
 function buildTierKey(tierProfile = {}) {
@@ -212,7 +229,11 @@ function buildExecutionContextKey(executionContext = {}) {
     dispatchSignature = "",
     shapeSignature = "",
     qualityPreset = "",
-    rayTracing = false
+    rayTracing = false,
+    // v24: optional Earn + presence hints
+    presence = "",
+    earnBand = "",
+    earnTierHint = ""
   } = executionContext;
 
   return stableStringify({
@@ -225,7 +246,10 @@ function buildExecutionContextKey(executionContext = {}) {
     dispatchSignature,
     shapeSignature,
     qualityPreset,
-    rayTracing
+    rayTracing,
+    presence,
+    earnBand,
+    earnTierHint
   });
 }
 
@@ -240,7 +264,7 @@ function buildGeneticKey({ gameProfile, hardwareProfile, tierProfile, executionC
 }
 
 // ============================================================================
-// Pattern aggregation — v16 IMMORTAL
+// Pattern aggregation — v24 IMMORTAL++
 // ============================================================================
 function safeNumber(n, fallback = 0) {
   return typeof n === "number" && !Number.isNaN(n) ? n : fallback;
@@ -259,11 +283,23 @@ function aggregatePatternStats(existing, sample) {
 
         // pressure + advantage vectors
         pressureVector: { gpu: 0, thermal: 0, memory: 0, mesh: 0, aura: 0 },
-        advantageVector: { scoreDelta: 0, stabilityDelta: 0, earnPotential: 0 },
+        advantageVector: {
+          scoreDelta: 0,
+          stabilityDelta: 0,
+          earnPotential: 0
+        },
 
         // mode ratios
         binaryModeRatio: 0,
         symbolicModeRatio: 0,
+
+        // v24: Earn + presence stats (metadata-only)
+        earnStats: {
+          avgEarnTier: 0,
+          avgEarnUtilization: 0,
+          presenceIdleRatio: 0,
+          presenceActiveRatio: 0
+        },
 
         // CI surface (metadata-only)
         computerIntelligence: {
@@ -280,25 +316,46 @@ function aggregatePatternStats(existing, sample) {
   const sMinFPS = safeNumber(sample.minFPS);
   const sStutters = clamp(safeNumber(sample.stutters), 0, 100000);
   const sCrash = sample.crashFlag ? 1 : 0;
-  const sDuration = clamp(safeNumber(sample.totalDurationMs), 0, 60 * 60 * 1000);
+  const sDuration = clamp(
+    safeNumber(sample.totalDurationMs),
+    0,
+    60 * 60 * 1000
+  );
 
   next.avgFPS = (next.avgFPS * count + sAvgFPS) / newCount;
   next.minFPS = (next.minFPS * count + sMinFPS) / newCount;
 
   const stutterRateSample = sDuration > 0 ? sStutters / sDuration : 0;
-  next.stutterRate = (next.stutterRate * count + stutterRateSample) / newCount;
+  next.stutterRate =
+    (next.stutterRate * count + stutterRateSample) / newCount;
 
   next.crashRate = (next.crashRate * count + sCrash) / newCount;
-  next.avgDurationMs = (next.avgDurationMs * count + sDuration) / newCount;
+  next.avgDurationMs =
+    (next.avgDurationMs * count + sDuration) / newCount;
 
   if (sample.pressureSnapshot) {
     const p = sample.pressureSnapshot;
     next.pressureVector = {
-      gpu: (next.pressureVector.gpu * count + safeNumber(p.gpuLoadPressure)) / newCount,
-      thermal: (next.pressureVector.thermal * count + safeNumber(p.thermalPressure)) / newCount,
-      memory: (next.pressureVector.memory * count + safeNumber(p.memoryPressure)) / newCount,
-      mesh: (next.pressureVector.mesh * count + safeNumber(p.meshStormPressure)) / newCount,
-      aura: (next.pressureVector.aura * count + safeNumber(p.auraTension)) / newCount
+      gpu:
+        (next.pressureVector.gpu * count +
+          safeNumber(p.gpuLoadPressure)) /
+        newCount,
+      thermal:
+        (next.pressureVector.thermal * count +
+          safeNumber(p.thermalPressure)) /
+        newCount,
+      memory:
+        (next.pressureVector.memory * count +
+          safeNumber(p.memoryPressure)) /
+        newCount,
+      mesh:
+        (next.pressureVector.mesh * count +
+          safeNumber(p.meshStormPressure)) /
+        newCount,
+      aura:
+        (next.pressureVector.aura * count +
+          safeNumber(p.auraTension)) /
+        newCount
     };
   }
 
@@ -306,12 +363,16 @@ function aggregatePatternStats(existing, sample) {
     const a = sample.advantageSnapshot;
     next.advantageVector = {
       scoreDelta:
-        (next.advantageVector.scoreDelta * count + safeNumber(a.scoreDelta)) / newCount,
+        (next.advantageVector.scoreDelta * count +
+          safeNumber(a.scoreDelta)) /
+        newCount,
       stabilityDelta:
-        (next.advantageVector.stabilityDelta * count + safeNumber(a.stabilityDelta)) /
+        (next.advantageVector.stabilityDelta * count +
+          safeNumber(a.stabilityDelta)) /
         newCount,
       earnPotential:
-        (next.advantageVector.earnPotential * count + safeNumber(a.earnPotential)) /
+        (next.advantageVector.earnPotential * count +
+          safeNumber(a.earnPotential)) /
         newCount
     };
   }
@@ -320,13 +381,51 @@ function aggregatePatternStats(existing, sample) {
     const total = sample.binaryStepCount + sample.symbolicStepCount;
     if (total > 0) {
       next.binaryModeRatio =
-        (next.binaryModeRatio * count + sample.binaryStepCount / total) / newCount;
+        (next.binaryModeRatio * count +
+          sample.binaryStepCount / total) /
+        newCount;
       next.symbolicModeRatio =
-        (next.symbolicModeRatio * count + sample.symbolicStepCount / total) / newCount;
+        (next.symbolicModeRatio * count +
+          sample.symbolicStepCount / total) /
+        newCount;
     }
   }
 
-  if (sample.computerIntelligence && typeof sample.computerIntelligence === "object") {
+  // v24: Earn + presence aggregation (metadata-only)
+  if (sample.earnSnapshot && typeof sample.earnSnapshot === "object") {
+    const es = sample.earnSnapshot;
+    const prev = next.earnStats || {
+      avgEarnTier: 0,
+      avgEarnUtilization: 0,
+      presenceIdleRatio: 0,
+      presenceActiveRatio: 0
+    };
+
+    const tierNumeric = safeNumber(es.tierNumeric, 0);
+    const util = clamp(
+      safeNumber(es.utilizationPercent, 0),
+      0,
+      100
+    );
+    const idleFlag = es.presence === "idle" ? 1 : 0;
+    const activeFlag = es.presence === "active" ? 1 : 0;
+
+    next.earnStats = {
+      avgEarnTier:
+        (prev.avgEarnTier * count + tierNumeric) / newCount,
+      avgEarnUtilization:
+        (prev.avgEarnUtilization * count + util) / newCount,
+      presenceIdleRatio:
+        (prev.presenceIdleRatio * count + idleFlag) / newCount,
+      presenceActiveRatio:
+        (prev.presenceActiveRatio * count + activeFlag) / newCount
+    };
+  }
+
+  if (
+    sample.computerIntelligence &&
+    typeof sample.computerIntelligence === "object"
+  ) {
     const ci = sample.computerIntelligence;
     const prev = next.computerIntelligence || {
       performancePressure: 0,
@@ -336,11 +435,17 @@ function aggregatePatternStats(existing, sample) {
 
     next.computerIntelligence = {
       performancePressure:
-        (prev.performancePressure * count + safeNumber(ci.performancePressure)) / newCount,
+        (prev.performancePressure * count +
+          safeNumber(ci.performancePressure)) /
+        newCount,
       stabilitySignal:
-        (prev.stabilitySignal * count + safeNumber(ci.stabilitySignal)) / newCount,
+        (prev.stabilitySignal * count +
+          safeNumber(ci.stabilitySignal)) /
+        newCount,
       confidence:
-        (prev.confidence * count + clamp(safeNumber(ci.confidence), 0, 1)) / newCount
+        (prev.confidence * count +
+          clamp(safeNumber(ci.confidence), 0, 1)) /
+        newCount
     };
   }
 
@@ -349,14 +454,14 @@ function aggregatePatternStats(existing, sample) {
 }
 
 // ============================================================================
-// Genetic Memory Store — v16 IMMORTAL + CoreMemory Integration
+// Genetic Memory Store — v24 IMMORTAL++ + CoreMemory v24 Integration
 // ============================================================================
 class PulseGPUGeneticMemoryStore {
   constructor() {
     this.entries = new Map();
     this.meta = { ...GENETIC_MEMORY_CONTEXT };
-    this.coreMemory = new PulseCoreMemory("PulseGPU.GeneticMemory.v16");
-    this.namespace = "PulseGPU.GeneticMemory.v16";
+    this.coreMemory = new PulseCoreMemory("PulseGPU.GeneticMemory.v24");
+    this.namespace = "PulseGPU.GeneticMemory.v24";
   }
 
   clear() {
@@ -374,9 +479,16 @@ class PulseGPUGeneticMemoryStore {
     metrics,
     traceSummary,
     advantageSnapshot,
-    computerIntelligence
+    computerIntelligence,
+    // v24: optional Earn snapshot (from PulseGPUEarnProfile-v24)
+    earnSnapshot
   }) {
-    const key = buildGeneticKey({ gameProfile, hardwareProfile, tierProfile, executionContext });
+    const key = buildGeneticKey({
+      gameProfile,
+      hardwareProfile,
+      tierProfile,
+      executionContext
+    });
 
     const existing = this.entries.get(key);
 
@@ -390,10 +502,14 @@ class PulseGPUGeneticMemoryStore {
       binaryStepCount: traceSummary?.binaryStepCount ?? 0,
       symbolicStepCount: traceSummary?.symbolicStepCount ?? 0,
       advantageSnapshot: advantageSnapshot || null,
-      computerIntelligence: computerIntelligence || null
+      computerIntelligence: computerIntelligence || null,
+      earnSnapshot: earnSnapshot || null
     };
 
-    const updatedStats = aggregatePatternStats(existing?.patternStats, sample);
+    const updatedStats = aggregatePatternStats(
+      existing?.patternStats,
+      sample
+    );
 
     const entry = {
       key,
@@ -415,8 +531,18 @@ class PulseGPUGeneticMemoryStore {
     return entry;
   }
 
-  getPatternForContext({ gameProfile, hardwareProfile, tierProfile, executionContext }) {
-    const key = buildGeneticKey({ gameProfile, hardwareProfile, tierProfile, executionContext });
+  getPatternForContext({
+    gameProfile,
+    hardwareProfile,
+    tierProfile,
+    executionContext
+  }) {
+    const key = buildGeneticKey({
+      gameProfile,
+      hardwareProfile,
+      tierProfile,
+      executionContext
+    });
 
     const local = this.entries.get(key);
     if (local) return local;
@@ -475,6 +601,7 @@ class PulseGPUGeneticMemoryStore {
       const pv = ps.pressureVector || {};
       const av = ps.advantageVector || {};
       const ci = ps.computerIntelligence || {};
+      const es = ps.earnStats || {};
 
       const safeEntry = {
         key: entry.key,
@@ -503,6 +630,12 @@ class PulseGPUGeneticMemoryStore {
           },
           binaryModeRatio: ps.binaryModeRatio || 0,
           symbolicModeRatio: ps.symbolicModeRatio || 0,
+          earnStats: {
+            avgEarnTier: es.avgEarnTier || 0,
+            avgEarnUtilization: es.avgEarnUtilization || 0,
+            presenceIdleRatio: es.presenceIdleRatio || 0,
+            presenceActiveRatio: es.presenceActiveRatio || 0
+          },
           computerIntelligence: {
             performancePressure: ci.performancePressure || 0,
             stabilitySignal: ci.stabilitySignal || 0,
@@ -522,7 +655,7 @@ class PulseGPUGeneticMemoryStore {
 }
 
 // ============================================================================
-// Public API — Genetic Memory Surface (v16 IMMORTAL)
+// Public API — Genetic Memory Surface (v24 IMMORTAL++)
 // ============================================================================
 class PulseGPUGeneticMemory {
   constructor() {

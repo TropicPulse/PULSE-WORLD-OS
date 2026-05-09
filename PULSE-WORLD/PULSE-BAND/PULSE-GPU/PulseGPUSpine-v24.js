@@ -1,21 +1,21 @@
 // ============================================================================
-//  PULSE GPU ORCHESTRATOR v16-Immortal-Spine — THE SPINE / BRAINSTEM
-//  Autonomic Nervous System • Reflex Router • Pressure Regulator
-//  Dual-Mode (Binary + Symbolic) • Dispatch-Aware • Memory-Aware
-//  Deterministic • Fail-Open • Zero Side Effects
+//  PULSE GPU ORCHESTRATOR v24-Immortal-Spine — THE SPINE / BRAINSTEM
+//  Autonomic Nervous System • Reflex Router • Pressure / Advantage Regulator
+//  Dual-Mode (Binary + Symbolic) • Dispatch-Aware • Memory-Aware • Chunk-Aware
+//  Deterministic • Fail-Open • Zero Side Effects (no time, no randomness)
 // ============================================================================
 //
-//  WHAT THIS ORGAN IS:
-//  --------------------
+//  WHAT THIS ORGAN IS (v24++):
+//  ---------------------------
 //  • The GPU organism’s BRAINSTEM + SPINAL CORD.
 //  • Routes signals between all GPU organs (Brain, Engine, Healer, Advisor).
 //  • Maintains life-support loops: pressure, load, mode, reflex arcs.
 //  • Starts/ends sessions, records sensory input, emits impulses.
 //  • Feeds GeneticMemory, InsightsEngine, SurvivalInstincts, UXBridge, Earn.
-//  • Binary + symbolic mode coordinator.
-//  • Pure metadata: no GPU calls, no async, no randomness.
+//  • Binary + symbolic mode coordinator, chunk-plan + warm-path aware.
+//  • Pure metadata: no GPU calls, no async, no randomness, no timestamps.
 //
-//  SAFETY CONTRACT (v16-Immortal-Spine):
+//  SAFETY CONTRACT (v24-Immortal-Spine):
 //  -------------------------------------
 //  • No randomness
 //  • No timestamps
@@ -28,10 +28,10 @@
 /*
 AI_EXPERIENCE_META = {
   identity: "PulseGPUSpine",
-  version: "v16-Immortal-Spine",
+  version: "v24-Immortal-Spine",
   layer: "gpu_runtime",
   role: "gpu_spine",
-  lineage: "PulseGPU-v16",
+  lineage: "PulseGPU-v24++",
 
   evo: {
     gpuSpine: true,
@@ -45,7 +45,17 @@ AI_EXPERIENCE_META = {
 
     zeroNetwork: true,
     zeroFilesystem: true,
-    zeroMutationOfInput: true
+    zeroMutationOfInput: true,
+
+    // v24++ awareness
+    unifiedAdvantageField: true,
+    advantageCascadeAware: true,
+    pulseEfficiencyAware: true,
+    chunkingAware: true,
+    warmPathAware: true,
+    binaryGpuAware: true,
+    symbolicGpuAware: true,
+    dualBandAware: true
   },
 
   contract: {
@@ -65,31 +75,33 @@ AI_EXPERIENCE_META = {
 }
 */
 
-import { PulseGPUEventEmitter } from "./PulseGPUSynapses.js";
-import { PulseGPUInsightsEngine } from "./PulseGPUWisdomCortex.js";
-import { PulseGPUSessionTracer } from "./PulseGPUNervousSystem.js";
-import { PulseGPUPerformanceAdvisor } from "./PulseGPUDriveCenter.js";
-import { PulseGPUSettingsRestorer } from "./PulseGPUCognitiveLayer.js";
-import { PulseGPUGuardianCortex } from "./PulseGPUGuardianCortex.js";
-import { PulseGPUHealer } from "./PulseGPULymphNodes.js";
-import { PulseGPUUXBridge } from "./PulseGPUCognitiveIntelligence.js";
-import { PulseGPUGeneticMemory } from "./PulseGPUGeneticMemory.js";
-import { DEFAULT_USER_PREFERENCES } from "./PulseGPUCommandments.js";
-import { PulseEarnSignalFactoring } from "../PULSE-EARN/PulseEarnSignalFactoring-v20.js";
-// Extra 16+ integration organs (conceptual, pure metadata)
-import { PulseEarnBridge } from "../PULSE-EARN/PulseEarn-v16.js";
-import { PulseGPUChunkPlanner } from "./PulseGPUChunkPlanner.js";
-import { PulseGPUWarmPathCache } from "./PulseGPUWarmPathCache.js";
-import { PulseGPUBridge } from "./PulseBinaryGPU-v16.js";
+import { PulseGPUEventEmitter } from "./PulseGPUSynapses-v24.js";
+import { PulseGPUInsightsEngine } from "./PulseGPUWIsdomCortex-v24.js";
+import { PulseGPUSessionTracer } from "./PulseGPUNervousSystem-v24.js";
+import { PulseGPUPerformanceAdvisor } from "./PulseGPUDriveCenter-v24.js";
+import { PulseGPUSettingsRestorer } from "./PulseGPUCognitiveLayer-v24.js";
+import { PulseGPUGuardianCortex } from "./PulseGPUGuardianCortex-v24.js";
+import { PulseGPUHealer } from "./PulseGPULymphNodes-v24.js";
+import { PulseGPUUXBridge } from "./PulseGPUCognitiveIntelligence-v24.js";
+import { PulseGPUGeneticMemory } from "./PulseGPUGeneticMemory-v24.js";
+import { DEFAULT_USER_PREFERENCES } from "./PulseGPUCommandments-v24.js";
+import { PulseEarnSignalFactoring } from "../PULSE-EARN/PulseEarnSignalFactoring-v24.js";
+
+// Extra v24++ integration organs (conceptual, pure metadata)
+import { PulseEarnBridge } from "../PULSE-EARN/PulseEarn-v24.js";
+import { PulseGPUChunkPlanner } from "./PulseGPUChunkPlanner-v24.js";
+import { PulseGPUWarmPathCache } from "./PulseGPUWarmPathCache-v24.js";
+import { createPulseGPUImmortal } from "./PulseGPU-v24.js";
+import { createPulseBinaryGPUImmortal } from "./PulseBinaryGPU-v24.js";
 
 // ============================================================================
-//  ORCHESTRATOR META — Brainstem Identity (v16-Immortal-Spine)
+//  ORCHESTRATOR META — Brainstem Identity (v24-Immortal-Spine)
 // ============================================================================
-const PULSE_GPU_ORCHESTRATOR_META_V16 = {
+const PULSE_GPU_ORCHESTRATOR_META_V24 = {
   layer: "PulseGPUOrchestrator",
   role: "BRAINSTEM",
-  version: "16-Immortal-Spine",
-  target: "full-gpu+binary+presence",
+  version: "24-Immortal-Spine",
+  target: "full-gpu+binary+presence+chunking",
   selfRepairable: true,
 
   evo: {
@@ -129,16 +141,17 @@ const PULSE_GPU_ORCHESTRATOR_META_V16 = {
     earnJobRouting: true,
     earnAdvantageAware: true,
 
-    // Routing + organism contracts
-    pulseSend16Ready: true,
-    routingContract: "PulseSend-v16-Immortal",
-    gpuOrganContract: "PulseGPU-v16-Immortal-Spine",
-    earnCompatibility: "Earn-v5-Immortal",
+    // Routing + organism contracts (v24++)
+    pulseSend24Ready: true,
+    routingContract: "PulseSend-v24-Immortal",
+    gpuOrganContract: "PulseGPU-v24-Immortal",
+    binaryGpuOrganContract: "PulseBinaryGPU-v24-Immortal",
+    earnCompatibility: "Earn-v6-Immortal",
 
     // Legacy metadata
-    legacyRoutingContract: "PulseSend-v12.3",
-    legacyGPUOrganContract: "PulseGPU-v12.3-Evo-Spine",
-    legacyEarnCompatibility: "Earn-v3"
+    legacyRoutingContract: "PulseSend-v16-Immortal",
+    legacyGPUOrganContract: "PulseGPU-v16-Immortal-Spine",
+    legacyEarnCompatibility: "Earn-v5-Immortal"
   }
 };
 
@@ -169,7 +182,7 @@ function buildPressureSnapshotFromStep(step = {}) {
 }
 
 // ============================================================================
-//  EXECUTION CONTEXT BUILDER — For Genetic Memory v16+
+//  EXECUTION CONTEXT BUILDER — For Genetic Memory v24+
 // ============================================================================
 function buildExecutionContextFromSession({
   metrics = {},
@@ -199,6 +212,18 @@ function buildExecutionContextFromSession({
     summary.gpuContext?.shapeSignature ||
     "";
 
+  const chunkPattern =
+    metrics.chunkPattern ||
+    gpuContext?.chunkPattern ||
+    summary.gpuContext?.chunkPattern ||
+    "";
+
+  const warmPathKey =
+    metrics.warmPathKey ||
+    gpuContext?.warmPathKey ||
+    summary.gpuContext?.warmPathKey ||
+    "";
+
   return {
     binaryMode,
     pipelineId,
@@ -207,20 +232,61 @@ function buildExecutionContextFromSession({
     resolution,
     refreshRate,
     dispatchSignature,
-    shapeSignature
+    shapeSignature,
+    chunkPattern,
+    warmPathKey
   };
 }
 
 // ============================================================================
-//  ADVANTAGE SNAPSHOT BUILDER — 16+ Advantage Field
+//  CHUNKING SNAPSHOT BUILDER — v24++ Chunk / Warm-Path Field
+// ============================================================================
+function buildChunkingSnapshot({
+  chunkPlan = null,
+  warmPathKey = "",
+  cacheHit = false
+} = {}) {
+  if (!chunkPlan) {
+    return {
+      hasChunkPlan: false,
+      warmPathKey: warmPathKey || "",
+      cacheHit,
+      chunkPattern: null,
+      chunkProfile: null,
+      plannerStrategy: null,
+      plannerChunks: 0
+    };
+  }
+
+  const profile = chunkPlan.profile || {};
+  const plannerStrategy = profile.plannerStrategy || null;
+  const plannerChunks = Array.isArray(chunkPlan.chunks)
+    ? chunkPlan.chunks.length
+    : profile.plannerChunks || 0;
+
+  return {
+    hasChunkPlan: true,
+    warmPathKey: warmPathKey || "",
+    cacheHit,
+    chunkPattern: chunkPlan.pattern || null,
+    chunkProfile: profile.name || profile.id || null,
+    plannerStrategy,
+    plannerChunks
+  };
+}
+
+// ============================================================================
+//  ADVANTAGE SNAPSHOT BUILDER — v24+ Advantage Field (GPU + Chunking)
 // ============================================================================
 function buildAdvantageSnapshot({
   summary = {},
   pressureSnapshot = null,
-  geneticMemoryEntry = null
+  geneticMemoryEntry = null,
+  chunkingSnapshot = null
 } = {}) {
   const ps = pressureSnapshot || {};
   const gm = geneticMemoryEntry?.patternStats || {};
+  const cs = chunkingSnapshot || {};
 
   return {
     sampleCount: gm.sampleCount || summary.stepCount || 0,
@@ -242,12 +308,21 @@ function buildAdvantageSnapshot({
     binaryStepCount: summary.binaryStepCount || 0,
     symbolicStepCount: summary.symbolicStepCount || 0,
     prewarmStepCount: summary.prewarmStepCount || 0,
-    cacheHitStepCount: summary.cacheHitStepCount || 0
+    cacheHitStepCount: summary.cacheHitStepCount || 0,
+
+    // v24++ chunking advantage
+    hasChunkPlan: !!cs.hasChunkPlan,
+    warmPathKey: cs.warmPathKey || "",
+    warmPathCacheHit: !!cs.cacheHit,
+    chunkPattern: cs.chunkPattern || null,
+    chunkProfile: cs.chunkProfile || null,
+    plannerStrategy: cs.plannerStrategy || null,
+    plannerChunks: cs.plannerChunks || 0
   };
 }
 
 // ============================================================================
-//  TRACE SUMMARY → GENETIC MEMORY TRACE SNAPSHOT (v16+ advantage-aware)
+//  TRACE SUMMARY → GENETIC MEMORY TRACE SNAPSHOT (v24+ advantage-aware)
 // ============================================================================
 function buildTraceSummaryForGeneticMemory({
   summary = {},
@@ -272,7 +347,7 @@ function buildTraceSummaryForGeneticMemory({
 }
 
 // ============================================================================
-//  PULSE GPU ORCHESTRATOR v16-Immortal-Spine — THE SPINE / BRAINSTEM
+//  PULSE GPU ORCHESTRATOR v24-Immortal-Spine — THE SPINE / BRAINSTEM
 // ============================================================================
 class PulseGPUOrchestrator {
   constructor(options = {}) {
@@ -315,7 +390,7 @@ class PulseGPUOrchestrator {
 
     this.uxBridge = options.uxBridge || new PulseGPUUXBridge();
 
-    // 16+ organs
+    // v24++ Earn / Chunk / Warm-path
     this.earnBridge =
       options.earnBridge || new PulseEarnBridge({ mode: "gpu" });
 
@@ -325,17 +400,20 @@ class PulseGPUOrchestrator {
     this.warmPathCache =
       options.warmPathCache || new PulseGPUWarmPathCache();
 
-    this.proxyBridge =
-      options.proxyBridge ||
-      new PulseGPUBridge(options.importProxy || null);
+    // Immortal GPU surfaces (metadata only, not invoked for time-based ops)
+    this.gpuImmortal =
+      options.gpuImmortal || createPulseGPUImmortal({ logger: options.logger });
+    this.binaryGpuImmortal =
+      options.binaryGpuImmortal ||
+      createPulseBinaryGPUImmortal({ logger: options.logger });
 
     // Identity metadata
-    this.meta = { ...PULSE_GPU_ORCHESTRATOR_META_V16 };
+    this.meta = { ...PULSE_GPU_ORCHESTRATOR_META_V24 };
   }
 
   // ========================================================================
-  // PREWARM — Deterministic Warm Path Priming (v16+ full cluster)
-// ========================================================================
+  // PREWARM — Deterministic Warm Path Priming (v24+ full cluster)
+  // ========================================================================
   prewarm() {
     const dummyGameProfile = { gameId: "prewarm-game" };
     const dummyHardwareProfile = { gpuModel: "prewarm-gpu" };
@@ -436,15 +514,21 @@ class PulseGPUOrchestrator {
     this.uxBridge.fromRestorePlan(restorePlan);
     this.uxBridge.fromInsights([]);
 
+    const execCtx = buildExecutionContextFromSession({
+      metrics: dummyMetrics,
+      summary: {},
+      gpuContext: {
+        ...dummyGpuContext,
+        chunkPattern: chunkPlan?.pattern || "",
+        warmPathKey: cacheKey || ""
+      }
+    });
+
     const gmEntry = this.geneticMemory.recordObservation({
       gameProfile: dummyGameProfile,
       hardwareProfile: dummyHardwareProfile,
       tierProfile: dummyTierProfile,
-      executionContext: buildExecutionContextFromSession({
-        metrics: dummyMetrics,
-        summary: {},
-        gpuContext: dummyGpuContext
-      }),
+      executionContext: execCtx,
       metrics: {},
       traceSummary: buildTraceSummaryForGeneticMemory({
         summary: {},
@@ -453,18 +537,34 @@ class PulseGPUOrchestrator {
       })
     });
 
+    const chunkingSnapshot = buildChunkingSnapshot({
+      chunkPlan,
+      warmPathKey: cacheKey,
+      cacheHit: true
+    });
+
+    const advantageSnapshot = buildAdvantageSnapshot({
+      summary: {},
+      pressureSnapshot: null,
+      geneticMemoryEntry: gmEntry,
+      chunkingSnapshot
+    });
+
     // Earn prewarm (pure metadata, no network)
     const earnWarm = this.earnBridge.buildWarmJobTemplate({
       gameProfile: dummyGameProfile,
       hardwareProfile: dummyHardwareProfile,
       tierProfile: dummyTierProfile,
-      geneticMemoryEntry: gmEntry
+      geneticMemoryEntry: gmEntry,
+      advantageSnapshot
     });
 
     return {
       prewarmed: true,
       chunkPlan,
       cacheKey,
+      chunkingSnapshot,
+      advantageSnapshot,
       earnWarm,
       meta: this.meta
     };
@@ -649,11 +749,39 @@ class PulseGPUOrchestrator {
       healingReport
     });
 
+    // CHUNKING SNAPSHOT — v24++ chunk / warm-path field
+    const warmPathKey = this.warmPathCache.buildKey({
+      gameProfile,
+      hardwareProfile,
+      tierProfile,
+      gpuContext: gpuContext || null
+    });
+
+    const cached = this.warmPathCache.get(warmPathKey) || null;
+    const chunkPlan =
+      cached?.chunkPlan ||
+      this.chunkPlanner.buildPlan({
+        gameProfile,
+        hardwareProfile,
+        tierProfile,
+        gpuContext: gpuContext || null
+      });
+
+    const chunkingSnapshot = buildChunkingSnapshot({
+      chunkPlan,
+      warmPathKey,
+      cacheHit: !!cached
+    });
+
     // GENETIC MEMORY — Long-Horizon Pattern Archive
     const executionContext = buildExecutionContextFromSession({
       metrics,
       summary: summary || {},
-      gpuContext: gpuContext || null
+      gpuContext: {
+        ...(gpuContext || {}),
+        chunkPattern: chunkingSnapshot.chunkPattern || "",
+        warmPathKey: chunkingSnapshot.warmPathKey || ""
+      }
     });
 
     // First record to genetic memory to get pattern stats
@@ -673,7 +801,8 @@ class PulseGPUOrchestrator {
     const advantageSnapshot = buildAdvantageSnapshot({
       summary: summary || {},
       pressureSnapshot,
-      geneticMemoryEntry
+      geneticMemoryEntry,
+      chunkingSnapshot
     });
 
     const traceSummary = buildTraceSummaryForGeneticMemory({
@@ -685,7 +814,9 @@ class PulseGPUOrchestrator {
     this.eventEmitter.emit("genetic-memory-updated", {
       sessionId,
       geneticMemoryEntry,
-      traceSummary
+      traceSummary,
+      chunkingSnapshot,
+      advantageSnapshot
     });
 
     // UX BRIDGE — Cognitive Communication Layer
@@ -712,7 +843,8 @@ class PulseGPUOrchestrator {
       metrics,
       executionContext,
       traceSummary,
-      geneticMemoryEntry
+      geneticMemoryEntry,
+      advantageSnapshot
     });
 
     const earnDecision = this.earnBridge.evaluateJobAdvantage({
@@ -736,6 +868,7 @@ class PulseGPUOrchestrator {
       geneticMemoryEntry,
       notifications,
       pressureSnapshot,
+      chunkingSnapshot,
       advantageSnapshot,
       traceSummary,
       earnJob,
@@ -745,7 +878,7 @@ class PulseGPUOrchestrator {
 
   // ========================================================================
   // EARN JOB ROUTING — Explicit Call (metadata only)
-// ========================================================================
+  // ========================================================================
   routeEarnJob(jobPayload = {}, context = {}) {
     const job = this.earnBridge.buildJobFromPayload(jobPayload, context);
     const decision = this.earnBridge.evaluateJobAdvantage({
@@ -795,10 +928,6 @@ class PulseGPUOrchestrator {
   // ========================================================================
   // PROXY / CACHE HELPERS
   // ========================================================================
-  getProxyAttachment() {
-    return this.proxyBridge.getProxy();
-  }
-
   getSessionTrace(sessionId) {
     return this.sessionTracer.getSessionTrace(sessionId);
   }
@@ -817,9 +946,10 @@ class PulseGPUOrchestrator {
 // ============================================================================
 export {
   PulseGPUOrchestrator,
-  PULSE_GPU_ORCHESTRATOR_META_V16,
+  PULSE_GPU_ORCHESTRATOR_META_V24,
   buildPressureSnapshotFromStep,
   buildExecutionContextFromSession,
+  buildChunkingSnapshot,
   buildAdvantageSnapshot,
   buildTraceSummaryForGeneticMemory
 };

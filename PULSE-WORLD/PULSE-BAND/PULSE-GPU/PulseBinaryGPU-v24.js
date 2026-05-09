@@ -1,22 +1,24 @@
 // ============================================================================
-//  PulseBinaryGPU-v16-Immortal — BINARY GPU ORGAN (FULL v16 UPGRADE)
+//  PulseBinaryGPU-v24-Immortal++ — BINARY GPU ORGAN (FULL v24++ UPGRADE)
 //  Deterministic GPU Dispatch Organ • Pattern + Lineage + Shape + Presence
 //  Binary/Dual-Mode • Pressure-Aware • Factoring-Aware • Mesh/Aura/Earn-Aware
+//  Chunker-Aware • GPU Chunk Planner-Aware
 //  “PLAN ONCE. REUSE FOREVER. NEVER DRIFT.”
 // ============================================================================
 
 /*
 AI_EXPERIENCE_META:
   organ: PulseBinaryGPU
-  version: 16.0.0
+  version: 24.0.0-Immortal++
   tier: IMMORTAL
   role: gpu_binary_surface
   mind: false
 
   description:
-    "IMMORTAL binary GPU organ. Deterministic dispatch descriptor with full
-     lineage, shape, pressure, factoring, and presence awareness. Provides
-     v16-level snapshots, advantage view, and prewarm hooks. No AI reasoning."
+    "IMMORTAL++ binary GPU organ. Deterministic dispatch descriptor with full
+     lineage, shape, pressure, factoring, presence, and chunker awareness.
+     Provides v24-level snapshots, advantage view, and prewarm hooks.
+     No AI reasoning."
 
   guarantees:
     - "Never mutates input payloads."
@@ -39,15 +41,15 @@ AI_EXPERIENCE_META:
     immutable: true
 
   lineage:
-    parent: "PulseBinaryGPU-v12-Evo-Presence-Max"
-    evolution: "v16 IMMORTAL — full advantage + snapshot + prewarm upgrade"
+    parent: "PulseBinaryGPU-v16-Immortal"
+    evolution: "v24 IMMORTAL++ — full advantage + snapshot + prewarm + chunker upgrade"
 
   integration:
     receives:
       - pressureSnapshot (mesh/aura/earn pressure)
       - factoringSnapshot
-      - gpuCoreView (PulseGPUCore-v16)
-      - chunkCache / prewarm hooks
+      - gpuCoreView (PulseGPUCore-v24)
+      - chunkCache / prewarm hooks / chunker hints
     feeds:
       - PulseWorldCore (worldSnapshot.raw.gpuBinary)
       - PulseTrustEvidence (RAW/RAW_AI evidence)
@@ -60,6 +62,7 @@ AI_EXPERIENCE_META:
       - describeBinaryPlan(pattern, options, env)
       - snapshotBinarySurface()
       - prewarmBinaryChunks(hints)
+      - intelligentComputeHint(dispatch)
     output:
       - binaryDispatchDescriptor
       - evolvedBinaryDispatchDescriptor
@@ -73,33 +76,33 @@ AI_EXPERIENCE_META:
 */
 
 // ---------------------------------------------------------------------------
-//  IMPORTS (as in v12)
+//  IMPORTS
 // ---------------------------------------------------------------------------
 
-import * as PulseGPUBrain              from "./PulseGPUBrain.js";
-import * as PulseGPUDrive              from "./PulseGPUDrive.js";
-import * as PulseGPUDriveCenter        from "./PulseGPUDriveCenter.js";
-import * as PulseGPUDriveEngine        from "./PulseGPUDriveCenter.js";      // alias
-import * as PulseGPUSpine              from "./PulseGPUSpine.js";
-import * as PulseGPUGeneticMemory      from "./PulseGPUGeneticMemory.js";
+import * as PulseGPUBrain              from "./PulseGPUBrain-v24.js";
+import * as PulseGPUDrive              from "./PulseGPUDrive-v24.js";
+import * as PulseGPUDriveCenter        from "./PulseGPUDriveCenter-v24.js";
+import * as PulseGPUDriveEngine        from "./PulseGPUDriveCenter-v24.js";      // alias
+import * as PulseGPUSpine              from "./PulseGPUSpine-v24.js";
+import * as PulseGPUGeneticMemory      from "./PulseGPUGeneticMemory-v24.js";
 
-import * as PulseGPUAstralMuscleSystem from "./PulseGPUAstralMuscleSystem.js";
+import * as PulseGPUAstralMuscleSystem from "./PulseGPUAstralMuscleSystem-v24.js";
 
-import * as PulseGPUGuardianCortex     from "./PulseGPUGuardianCortex.js";
-import * as PulseGPULymphNodes         from "./PulseGPULymphNodes.js";
+import * as PulseGPUGuardianCortex     from "./PulseGPUGuardianCortex-v24.js";
+import * as PulseGPULymphNodes         from "./PulseGPULymphNodes-v24.js";
 
-import * as PulseGPUAstralNervousSystem from "./PulseGPUAstralNervousSystem.js";
-import * as PulseGPUNervousSystem       from "./PulseGPUNervousSystem.js";
+import * as PulseGPUAstralNervousSystem from "./PulseGPUAstralNervousSystem-v24.js";
+import * as PulseGPUNervousSystem       from "./PulseGPUNervousSystem-v24.js";
 
-import * as PulseGPUCognitiveLayer      from "./PulseGPUCognitiveLayer.js";
-import * as PulseGPUCognitiveIntelligence from "./PulseGPUCognitiveIntelligence.js";
-import * as PulseGPUWisdomCortex        from "./PulseGPUWisdomCortex.js";
+import * as PulseGPUCognitiveLayer      from "./PulseGPUCognitiveLayer-v24.js";
+import * as PulseGPUCognitiveIntelligence from "./PulseGPUCognitiveIntelligence-v24-Immortal++.js";
+import * as PulseGPUWisdomCortex        from "./PulseGPUWIsdomCortex-v24.js";
 
-import * as PulseGPUSurvivalInstincts   from "./PulseGPUSurvivalInstincts.js";
+import * as PulseGPUSurvivalInstincts   from "./PulseGPUSurvivalInstincts-v24.js";
 
-import * as PulseGPUSynapses            from "./PulseGPUSynapses.js";
+import * as PulseGPUSynapses            from "./PulseGPUSynapses-v24.js";
 
-import * as PulseGPUCommandments        from "./PulseGPUCommandments.js";
+import * as PulseGPUCommandments        from "./PulseGPUCommandments-v24.js";
 
 import {
   PulseNetBoot,
@@ -110,7 +113,7 @@ import {
 
 // --- PULSE-CORE MEMORY SPINE (FULL SPINE) ----------------------------------
 import PulseCoreMemory                from "../PULSE-CORE/PulseCoreMemory-v24.js";
-import PulseCoreAIMemoryAdapter      from "../PULSE-CORE/PulseCoreAIMemoryAdapter-v20.js";
+import PulseCoreAIMemoryAdapter       from "../PULSE-CORE/PulseCoreAIMemoryAdapter-v20.js";
 import PulseCoreGPUMemoryAdapter      from "../PULSE-CORE/PulseCoreGpuMemoryAdapter-v20.js";
 import PulseCoreEarnMemoryAdapter     from "../PULSE-CORE/PulseCoreEarnMemoryAdapter-v20.js";
 import PulseBinaryCoreOverlay         from "../PULSE-CORE/PulseBinaryCoreOverlay-v20.js";
@@ -126,15 +129,15 @@ export const CoreMemory = Object.freeze({
 });
 
 // ---------------------------------------------------------------------------
-//  CORE ROLE / METABLOCK — UPGRADED TO v16
+//  CORE ROLE / METABLOCK — UPGRADED TO v24++
 // ---------------------------------------------------------------------------
 
 export const BinaryGPURole = {
   type: "GPU",
   subsystem: "PulseGPU",
   layer: "ComputeOrgan",
-  version: "16.0-Immortal",
-  identity: "PulseBinaryGPU-v16-Immortal",
+  version: "24.0-Immortal++",
+  identity: "PulseBinaryGPU-v24-Immortal++",
 
   evo: {
     driftProof: true,
@@ -162,15 +165,21 @@ export const BinaryGPURole = {
     dnaAware: true,
     versionAware: true,
 
+    // Chunker awareness
+    gpuChunkPlannerAware: true,
+    gpuChunkerAware: true,
+    gpuChunkProfileAware: true,
+    gpuChunkPlanAware: true,
+
     zeroCompute: true,
     zeroMutation: true,
     zeroRoutingInfluence: true
   },
 
   pulseContract: "Pulse-v4-Presence",
-  meshContract: "PulseMeshSpine-v16",
-  routerContract: "PulseRouter-v16",
-  sendContract: "PulseSend-v16",
+  meshContract: "PulseMeshSpine-v24",
+  routerContract: "PulseRouter-v24",
+  sendContract: "PulseSend-v24",
   earnContract: "Earn-v6-Immortal"
 };
 
@@ -179,12 +188,12 @@ export const BinaryGPUMetaBlock = {
   subsystem: "PulseGPU",
   layer: "ComputeOrgan",
   role: "Binary-GPU-Dispatch",
-  version: "16.0-Immortal",
+  version: "24.0-Immortal++",
   evo: BinaryGPURole.evo
 };
 
 // ---------------------------------------------------------------------------
-//  INTERNAL HELPERS — deterministic, tiny, pure (from v12, unchanged)
+//  INTERNAL HELPERS — deterministic, tiny, pure
 // ---------------------------------------------------------------------------
 
 function buildLineage(parentLineage, pattern) {
@@ -399,7 +408,7 @@ function computeAdvantageScore({ pattern, modeBias, binaryMode, dualMode, pressu
 }
 
 // ---------------------------------------------------------------------------
-//  v16 DISPATCH FACTORY (based on v12, version bumped, meta enriched)
+//  v24 DISPATCH FACTORY
 // ---------------------------------------------------------------------------
 
 export function createBinaryGPUDispatch({
@@ -412,7 +421,7 @@ export function createBinaryGPUDispatch({
   factoringSnapshot = null,
   context = {},
   dnaTag = "default-dna",
-  version = "16.0-Immortal"
+  version = "24.0-Immortal++"
 }) {
   const { binaryMode, dualMode } = resolveBinaryModeSurface(context);
 
@@ -453,7 +462,9 @@ export function createBinaryGPUDispatch({
     instanceId: context.instanceId || "",
     multiInstance: multiInstanceHint,
     dispatchSignature,
-    shapeSignature
+    shapeSignature,
+    chunkProfile: context.chunkProfile || null,
+    chunkPlanId: context.chunkPlanId || null
   };
 
   return {
@@ -483,7 +494,7 @@ export function createBinaryGPUDispatch({
 }
 
 // ---------------------------------------------------------------------------
-//  v16 EVOLUTION ENGINE
+//  v24 EVOLUTION ENGINE
 // ---------------------------------------------------------------------------
 
 export function evolveBinaryGPUDispatch(dispatch, context = {}) {
@@ -546,7 +557,9 @@ export function evolveBinaryGPUDispatch(dispatch, context = {}) {
     instanceId: ctxRest.instanceId || prevExec.instanceId || "",
     multiInstance: multiInstanceHint,
     dispatchSignature,
-    shapeSignature
+    shapeSignature,
+    chunkProfile: ctxRest.chunkProfile || prevExec.chunkProfile || null,
+    chunkPlanId: ctxRest.chunkPlanId || prevExec.chunkPlanId || null
   };
 
   return {
@@ -560,7 +573,7 @@ export function evolveBinaryGPUDispatch(dispatch, context = {}) {
     binaryMode,
     dualMode,
     dnaTag: dispatch.dnaTag || "default-dna",
-    version: dispatch.version || "16.0-Immortal",
+    version: dispatch.version || "24.0-Immortal++",
     executionContext,
     meta: {
       shapeSignature,
@@ -576,7 +589,7 @@ export function evolveBinaryGPUDispatch(dispatch, context = {}) {
 }
 
 // ---------------------------------------------------------------------------
-//  IMMORTAL SURFACE CLASS — SNAPSHOT + ADVANTAGE + PREWARM
+//  IMMORTAL SURFACE CLASS — SNAPSHOT + ADVANTAGE + PREWARM + HINT
 // ---------------------------------------------------------------------------
 
 export class PulseBinaryGPUImmortal {
@@ -588,13 +601,13 @@ export class PulseBinaryGPUImmortal {
 
     this.pressure = config.pressure || null;   // mesh/aura/earn pressure provider
     this.factoring = config.factoring || null; // factoring provider
-    this.gpuCore = config.gpuCore || null;     // PulseGPUCore-v16
+    this.gpuCore = config.gpuCore || null;     // PulseGPUCore-v24
     this.chunkCache = config.chunkCache || null;
 
     this.logger = config.logger || console;
   }
 
-  // v16: structural plan description (no change to dispatch math)
+  // v24++: structural plan description
   describeBinaryPlan(pattern, options = {}, env = {}) {
     const parentLineage = options.parentLineage || [];
     const binaryMode = !!options.binaryMode;
@@ -657,14 +670,15 @@ export class PulseBinaryGPUImmortal {
       profile,
       advantageScore,
       pressureSnapshot,
-      factoringSnapshot
+      factoringSnapshot,
+      chunkCacheSnapshot: this._snapshotChunkCache()
     };
 
-    this._log("binary-gpu:plan-v16", { plan });
+    this._log("binary-gpu:plan-v24++", { plan });
     return plan;
   }
 
-  // v16: surface snapshot for world/trust
+  // v24++: surface snapshot for world/trust
   snapshotBinarySurface() {
     const gpuView =
       this._safeCall(this.gpuCore, "buildGpuView") ||
@@ -686,64 +700,63 @@ export class PulseBinaryGPUImmortal {
       chunkCache: this._snapshotChunkCache()
     };
 
-    this._log("binary-gpu:snapshot-surface-v16", { snapshot });
+    this._log("binary-gpu:snapshot-surface-v24++", { snapshot });
     return snapshot;
   }
 
-  
-    // Intelligent compute hint — advisory only, no execution
-    intelligentComputeHint(dispatch) {
-      if (!dispatch || !dispatch.meta) {
-        return {
-          level: "none",
-          reason: "no-dispatch",
-          suggestions: []
-        };
-      }
-  
-      const { profile, modeBias, advantageScore, pressureSnapshot } = dispatch.meta;
-      const suggestions = [];
-  
-      if (profile?.style?.includes("throughput") && pressureSnapshot?.gpuLoadPressure > 0.8) {
-        suggestions.push("consider-reducing-batch-size");
-        suggestions.push("prefer-streaming-or-latency-profile");
-      }
-  
-      if (profile?.style?.includes("latency") && pressureSnapshot?.gpuLoadPressure < 0.3) {
-        suggestions.push("consider-increasing-batch-size");
-      }
-  
-      if (modeBias === "memory-conservative" && profile?.maxBatchSize > 4) {
-        suggestions.push("cap-batch-size-to-4-for-memory");
-      }
-  
-      if (advantageScore < 2) {
-        suggestions.push("pattern-may-benefit-from-fuse-or-batch-variant");
-      }
-  
-      const level =
-        suggestions.length === 0 ? "none" :
-        suggestions.length <= 2 ? "mild" :
-        "strong";
-  
-      const hint = {
-        ts: Date.now(),
-        meta: {
-          id: this.config.id,
-          version: BinaryGPURole.version
-        },
-        level,
-        modeKind: dispatch.modeKind,
-        modeBias,
-        advantageScore,
-        suggestions
+  // Intelligent compute hint — advisory only, no execution
+  intelligentComputeHint(dispatch) {
+    if (!dispatch || !dispatch.meta) {
+      return {
+        level: "none",
+        reason: "no-dispatch",
+        suggestions: []
       };
-  
-      this._log("binary-gpu:intelligent-hint-v16", { hint });
-      return hint;
     }
 
-  // v16: prewarm / chunk preheat hook
+    const { profile, modeBias, advantageScore, pressureSnapshot } = dispatch.meta;
+    const suggestions = [];
+
+    if (profile?.style?.includes("throughput") && pressureSnapshot?.gpuLoadPressure > 0.8) {
+      suggestions.push("consider-reducing-batch-size");
+      suggestions.push("prefer-streaming-or-latency-profile");
+    }
+
+    if (profile?.style?.includes("latency") && pressureSnapshot?.gpuLoadPressure < 0.3) {
+      suggestions.push("consider-increasing-batch-size");
+    }
+
+    if (modeBias === "memory-conservative" && profile?.maxBatchSize > 4) {
+      suggestions.push("cap-batch-size-to-4-for-memory");
+    }
+
+    if (advantageScore < 2) {
+      suggestions.push("pattern-may-benefit-from-fuse-or-batch-variant");
+    }
+
+    const level =
+      suggestions.length === 0 ? "none" :
+      suggestions.length <= 2 ? "mild" :
+      "strong";
+
+    const hint = {
+      ts: Date.now(),
+      meta: {
+        id: this.config.id,
+        version: BinaryGPURole.version
+      },
+      level,
+      modeKind: dispatch.modeKind,
+      modeBias,
+      advantageScore,
+      suggestions
+    };
+
+    this._log("binary-gpu:intelligent-hint-v24++", { hint });
+    return hint;
+  }
+
+  // v24++: prewarm / chunk preheat hook
   prewarmBinaryChunks(hints = {}) {
     if (!this.chunkCache || typeof this.chunkCache.prewarm !== "function") {
       return null;
@@ -755,7 +768,7 @@ export class PulseBinaryGPUImmortal {
     };
 
     const result = this.chunkCache.prewarm(payload);
-    this._log("binary-gpu:prewarm-chunks-v16", { payload, result });
+    this._log("binary-gpu:prewarm-chunks-v24++", { payload, result });
     return result;
   }
 
@@ -764,7 +777,7 @@ export class PulseBinaryGPUImmortal {
       GPURole: BinaryGPURole,
       metaBlock: BinaryGPUMetaBlock
     };
-    this._log("binary-gpu:diagnostics-v16", { diag });
+    this._log("binary-gpu:diagnostics-v24++", { diag });
     return diag;
   }
 
@@ -802,7 +815,7 @@ export class PulseBinaryGPUImmortal {
 }
 
 // ---------------------------------------------------------------------------
-//  PUBLIC ORGAN — PulseBinaryGPU (v16-Immortal)
+//  PUBLIC ORGAN — PulseBinaryGPU (v24-Immortal++)
 // ---------------------------------------------------------------------------
 
 export const PulseBinaryGPU = {
@@ -816,7 +829,7 @@ export const PulseBinaryGPU = {
     factoringSnapshot = null,
     context = {},
     dnaTag = "default-dna",
-    version = "16.0-Immortal"
+    version = "24.0-Immortal++"
   ) {
     const jobId   = earn.jobId;
     const pattern = earn.pattern || "gpu-binary-default";
@@ -870,6 +883,7 @@ export function createPulseBinaryGPUImmortal(config = {}) {
       core.describeBinaryPlan(pattern, options, env),
     snapshotBinarySurface: () => core.snapshotBinarySurface(),
     prewarmBinaryChunks: (hints) => core.prewarmBinaryChunks(hints),
+    intelligentComputeHint: (dispatch) => core.intelligentComputeHint(dispatch),
     diagnostics: () => core.diagnostics()
   });
 }

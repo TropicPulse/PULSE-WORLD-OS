@@ -1,56 +1,58 @@
 /* global log,warn */
 // ============================================================================
-//  PULSE GPU BRAIN v16-Immortal — THE ANALYST CORTEX / BRAINSTEM
+//  PULSE GPU BRAIN v24-Immortal++ — THE ANALYST CORTEX / BRAINSTEM
 //  CPU-SIDE INTELLIGENCE DIVISION (FULL-GPU, API-AGNOSTIC)
 //  PURE LOGIC. PURE DETERMINISM. ZERO SIDE EFFECTS.
 //  SYMBOLIC + BINARY AWARE • DISPATCH-AWARE • MEMORY-AWARE • PRESENCE-AWARE
-//  PREWARM + CHUNK + CACHE-AWARE • IMMORTAL SURFACE
+//  PREWARM + CHUNK + CACHE-AWARE • IMMORTAL++ SURFACE • v24 CONTRACTS
 // ============================================================================
 
 // ---------------------------------------------------------------------------
-//  GPU ORGAN IMPORT SURFACE (v16-Immortal, awareness only — zero coupling)
+//  GPU ORGAN IMPORT SURFACE (v24-Immortal++, awareness only — zero coupling)
 //  NOTE: These imports are for identity, contracts, and future intelligent
 //        compute hooks. No direct calls here: brain stays pure.
 // ---------------------------------------------------------------------------
 
-import * as PulseGPUBrain              from "./PulseGPUBrain.js";              // self-identity (for meta / diagnostics)
-import * as PulseGPU                   from "./PulseGPU-v16.js";
-import * as PulseBinaryGPU             from "./PulseBinaryGPU-v16.js";
+import * as PulseGPU                   from "./PulseGPU-v24.js";
+import * as PulseBinaryGPU             from "./PulseBinaryGPU-v24.js";
 
-import * as PulseGPUDrive              from "./PulseGPUDrive.js";
-import * as PulseGPUDriveCenter        from "./PulseGPUDriveCenter.js";
-import * as PulseGPUDriveEngine        from "./PulseGPUDriveCenter.js";        // alias
+import * as PulseGPUDrive              from "./PulseGPUDrive-v24.js";
+import * as PulseGPUDriveCenter        from "./PulseGPUDriveCenter-v24.js";
+import * as PulseGPUDriveEngine        from "./PulseGPUDriveCenter-v24.js"; // alias
 
-import * as PulseGPUSpine              from "./PulseGPUSpine.js";
-import * as PulseGPUGeneticMemory      from "./PulseGPUGeneticMemory.js";
+import * as PulseGPUSpine              from "./PulseGPUSpine-v24.js";
+import * as PulseGPUGeneticMemory      from "./PulseGPUGeneticMemory-v24.js";
 
-import * as PulseGPUAstralMuscleSystem from "./PulseGPUAstralMuscleSystem.js";
-import * as PulseGPUAstralNervousSystem from "./PulseGPUAstralNervousSystem.js";
+import * as PulseGPUAstralMuscleSystem from "./PulseGPUAstralMuscleSystem-v24.js";
+import * as PulseGPUAstralNervousSystem from "./PulseGPUAstralNervousSystem-v24.js";
 
-import * as PulseGPUGuardianCortex     from "./PulseGPUGuardianCortex.js";
-import * as PulseGPULymphNodes         from "./PulseGPULymphNodes.js";
+import * as PulseGPUGuardianCortex     from "./PulseGPUGuardianCortex-v24.js";
+import * as PulseGPULymphNodes         from "./PulseGPULymphNodes-v24.js";
 
-import * as PulseGPUCognitiveLayer      from "./PulseGPUCognitiveLayer.js";
-import * as PulseGPUCognitiveIntelligence from "./PulseGPUCognitiveIntelligence.js";
-import * as PulseGPUWisdomCortex        from "./PulseGPUWisdomCortex.js";
+import * as PulseGPUCognitiveLayer      from "./PulseGPUCognitiveLayer-v24.js";
+import * as PulseGPUCognitiveIntelligence from "./PulseGPUCognitiveIntelligence-v24.js";
+import * as PulseGPUWisdomCortex        from "./PulseGPUWIsdomCortex-v24.js";
 
-import * as PulseGPUSurvivalInstincts   from "./PulseGPUSurvivalInstincts.js";
+import * as PulseGPUSurvivalInstincts   from "./PulseGPUSurvivalInstincts-v24.js";
 
-import * as PulseGPUSynapses            from "./PulseGPUSynapses.js";
+import * as PulseGPUSynapses            from "./PulseGPUSynapses-v24.js";
 
-import * as PulseGPUCommandments        from "./PulseGPUCommandments.js";
+import * as PulseGPUCommandments        from "./PulseGPUCommandments-v24.js";
+
+// Optional: GPU chunker identity (no instantiation here, brain stays pure)
+import * as PulseGPUChunker             from "./PulseGPUChunker-v24.js";
 
 // ============================================================================
-//  AI EXPERIENCE META (v16-Immortal)
+//  AI EXPERIENCE META (v24-Immortal++)
 // ============================================================================
 
 /*
 AI_EXPERIENCE_META = {
   identity: "PulseGPUBrain",
-  version: "v16-Immortal",
+  version: "v24-Immortal++",
   layer: "gpu_brain",
   role: "gpu_precompute_brain",
-  lineage: "PulseGPU-v16",
+  lineage: "PulseGPU-v24-Immortal++",
 
   evo: {
     // Core brain traits
@@ -74,14 +76,14 @@ AI_EXPERIENCE_META = {
     gpuMemoryAware: true,
     gpuAdvantageAware: true,
 
-    // Immortal surface / v16 upgrades
+    // Immortal++ surface / v24 upgrades
     immortalSurface: true,
     immortalContract: true,
     prewarmReady: true,
     chunkCacheReady: true,
     presencePrewarmReady: true,
     intelligentComputeReady: true,
-    advantageFieldV16: true,
+    advantageFieldV24: true,
 
     // Organ mesh awareness
     astralMuscleAware: true,
@@ -93,6 +95,7 @@ AI_EXPERIENCE_META = {
     wisdomCortexAware: true,
     survivalInstinctAware: true,
     commandmentsAware: true,
+    gpuChunkerAware: true,
 
     // Presence / identity
     presenceAware: true,
@@ -100,12 +103,12 @@ AI_EXPERIENCE_META = {
     versionAware: true,
     instanceAware: true,
 
-    // Contracts (v16-Immortal)
-    routingContract: "PulseSend-v16-Immortal",
-    gpuOrganContract: "PulseGPU-v16-Immortal",
-    binaryGpuOrganContract: "PulseBinaryGPU-v16-Immortal",
-    earnCompatibility: "Earn-v4-Presence",   // can be bumped when Earn v16 is live
-    workgroupLawVersion: 16,
+    // Contracts (v24-Immortal++)
+    routingContract: "PulseSend-v24-Immortal++",
+    gpuOrganContract: "PulseGPU-v24-Immortal++",
+    binaryGpuOrganContract: "PulseBinaryGPU-v24-Immortal++",
+    earnCompatibility: "Earn-v24-GPU",
+    workgroupLawVersion: 24,
     zeroImportShaderPipeline: true
   },
 
@@ -126,7 +129,8 @@ AI_EXPERIENCE_META = {
       "PulseGPUWisdomCortex",
       "PulseGPUSurvivalInstincts",
       "PulseGPUSynapses",
-      "PulseGPUCommandments"
+      "PulseGPUCommandments",
+      "PulseGPUChunker"
     ],
     never: [
       "safeRoute",
@@ -139,26 +143,26 @@ AI_EXPERIENCE_META = {
 
 log(
   "gpu",
-  "PulseGPUBrain v16-Immortal — Analyst Cortex / Brainstem active " +
-    "(dual-mode + binary + presence + immortal surface, PulseSend‑v16‑Immortal‑ready)."
+  "PulseGPUBrain v24-Immortal++ — Analyst Cortex / Brainstem active " +
+    "(dual-mode + binary + presence + immortal++ surface, PulseSend‑v24‑Immortal++‑ready)."
 );
 
 // ------------------------------------------------------
 // GLOBAL VERSIONS
 // ------------------------------------------------------
 
-const PULSE_GPU_BRAIN_VERSION = "16.0-Immortal";
-const PULSE_GPU_BRAIN_SCHEMA_VERSION = 12; // v8 → v12 schema evolution for v16 brain
+const PULSE_GPU_BRAIN_VERSION = "24.0-Immortal++";
+const PULSE_GPU_BRAIN_SCHEMA_VERSION = 12; // v8 → v12 schema evolution
 
 // ------------------------------------------------------
-// DUAL-MODE + BINARY + PRESENCE ADVANTAGE BLOCK (v16-Immortal)
+// DUAL-MODE + BINARY + PRESENCE ADVANTAGE BLOCK (v24-Immortal++)
 // ------------------------------------------------------
 
 const DUAL_MODE_EVO = {
   // Biological / mental
-  metabolicBoost: 1.4,
-  neuralReflexBoost: 1.5,
-  stabilityBoost: 1.6,
+  metabolicBoost: 1.5,
+  neuralReflexBoost: 1.6,
+  stabilityBoost: 1.8,
   cognitiveStabilityField: true,
   immortalCortexField: true,
 
@@ -166,19 +170,19 @@ const DUAL_MODE_EVO = {
   multiInstanceReady: true,
   deterministicNeuron: true,
   parallelSafe: true,
-  fanOutScaling: 1.2,
+  fanOutScaling: 1.3,
   clusterCoherence: true,
   zeroDriftCloning: true,
-  reflexPropagation: 1.1,
+  reflexPropagation: 1.2,
   shaderPipelinePurity: true,
 
   // Fusion — BOTH layers active
   dualModeEvolution: true,
-  organismClusterBoost: 1.3,
+  organismClusterBoost: 1.4,
   cognitiveComputeLink: true,
   unifiedAdvantageField: true,
-  unifiedAdvantageFieldV16: true,
-  pulseSend16Ready: true,
+  unifiedAdvantageFieldV24: true,
+  pulseSend24Ready: true,
 
   // Binary / symbolic awareness
   binaryAware: true,
@@ -200,16 +204,16 @@ const DUAL_MODE_EVO = {
   instanceAware: true,
 
   // PulseSend / organism contracts (conceptual only)
-  routingContract: "PulseSend-v16-Immortal",
-  gpuOrganContract: "PulseGPU-v16-Immortal",
-  binaryGpuOrganContract: "PulseBinaryGPU-v16-Immortal",
-  earnCompatibility: "Earn-v4-Presence",
-  workgroupLawVersion: 16,
+  routingContract: "PulseSend-v24-Immortal++",
+  gpuOrganContract: "PulseGPU-v24-Immortal++",
+  binaryGpuOrganContract: "PulseBinaryGPU-v24-Immortal++",
+  earnCompatibility: "Earn-v24-GPU",
+  workgroupLawVersion: 24,
   zeroImportShaderPipeline: true
 };
 
 // ------------------------------------------------------
-// PACKAGE DEFINITIONS (STRUCTURAL ONLY) — v16-Immortal, presence-aware
+// PACKAGE DEFINITIONS (STRUCTURAL ONLY) — v24-Immortal++, presence-aware
 // ------------------------------------------------------
 
 class PulseTexturePackage {
@@ -354,7 +358,7 @@ class PulseShaderPackage {
       evo: DUAL_MODE_EVO,
       brainVersion: PULSE_GPU_BRAIN_VERSION,
       schemaVersion: PULSE_GPU_BRAIN_SCHEMA_VERSION,
-      shaderContract: "WGSL-v16-Immortal",
+      shaderContract: "WGSL-v24-Immortal++",
       dnaTag,
       zeroImportShaderPipeline: true,
       ...metadata
@@ -386,8 +390,8 @@ class PulseRenderPlanPackage {
       evo: DUAL_MODE_EVO,
       brainVersion: PULSE_GPU_BRAIN_VERSION,
       schemaVersion: PULSE_GPU_BRAIN_SCHEMA_VERSION,
-      routingContract: "PulseSend-v16-Immortal",
-      renderPlanContract: "PulseGPU-RenderPlan-v16-Immortal",
+      routingContract: "PulseSend-v24-Immortal++",
+      renderPlanContract: "PulseGPU-RenderPlan-v24-Immortal++",
       frameGraphContract: "FrameGraph-v8",
       dnaTag,
       prewarmReady: true,
@@ -414,7 +418,7 @@ class PulseGPUDispatchHintPackage {
       evo: DUAL_MODE_EVO,
       brainVersion: PULSE_GPU_BRAIN_VERSION,
       schemaVersion: PULSE_GPU_BRAIN_SCHEMA_VERSION,
-      dispatchHintContract: "PulseGPU-DispatchHints-v16-Immortal",
+      dispatchHintContract: "PulseGPU-DispatchHints-v24-Immortal++",
       dnaTag,
       intelligentComputeReady: true,
       ...metadata
@@ -423,7 +427,7 @@ class PulseGPUDispatchHintPackage {
 }
 
 // ------------------------------------------------------
-// BRAIN INPUT (RAW ASSET + GPU MEMORY / DISPATCH CONTEXT) — v16-Immortal
+// BRAIN INPUT (RAW ASSET + GPU MEMORY / DISPATCH CONTEXT) — v24-Immortal++
 // ------------------------------------------------------
 
 class BrainInput {
@@ -466,15 +470,15 @@ class BrainInput {
 
     this.evo = DUAL_MODE_EVO;
     this.brainVersion = PULSE_GPU_BRAIN_VERSION;
-    this.routingContract = "PulseSend-v16-Immortal";
-    this.gpuOrganContract = "PulseGPU-v16-Immortal";
-    this.binaryGpuOrganContract = "PulseBinaryGPU-v16-Immortal";
-    this.earnCompatibility = "Earn-v4-Presence";
+    this.routingContract = "PulseSend-v24-Immortal++";
+    this.gpuOrganContract = "PulseGPU-v24-Immortal++";
+    this.binaryGpuOrganContract = "PulseBinaryGPU-v24-Immortal++";
+    this.earnCompatibility = "Earn-v24-GPU";
   }
 }
 
 // ------------------------------------------------------
-// INTELLIGENT COMPUTE HINT (v16-Immortal, pure helper)
+// INTELLIGENT COMPUTE HINT (v24-Immortal++, pure helper)
 // ------------------------------------------------------
 
 function computeIntelligentAdvantage(brainInput) {
@@ -496,7 +500,7 @@ function computeIntelligentAdvantage(brainInput) {
 }
 
 // ------------------------------------------------------
-// OPTIMIZATION PIPELINES (PURE, DETERMINISTIC) — v16-Immortal
+// OPTIMIZATION PIPELINES (PURE, DETERMINISTIC) — v24-Immortal++
 // ------------------------------------------------------
 
 class TextureOptimizer {
@@ -505,14 +509,15 @@ class TextureOptimizer {
 
     log(
       "gpu",
-      "[Analyst] TextureOptimizer v16-Immortal → pass-through (memory + presence + prewarm aware)",
+      "[Analyst] TextureOptimizer v24-Immortal++ → pass-through (memory + presence + prewarm + chunk-aware)",
       "color:#8BC34A;",
       {
         count: rawTextures.length,
         hasGpuMemory: !!brainInput.gpuMemorySnapshot,
         dnaTag: brainInput.dnaTag,
         instanceId: brainInput.instanceId,
-        prewarmRecommended: intel.prewarmRecommended
+        prewarmRecommended: intel.prewarmRecommended,
+        chunkCacheRecommended: intel.chunkCacheRecommended
       }
     );
 
@@ -521,7 +526,7 @@ class TextureOptimizer {
       dnaTag: brainInput.dnaTag,
       metadata: {
         sourceCount: rawTextures.length,
-        optimizerContract: "TextureOptimizer-v16-Immortal",
+        optimizerContract: "TextureOptimizer-v24-Immortal++",
         hasGpuMemorySnapshot: !!brainInput.gpuMemorySnapshot,
         instanceId: brainInput.instanceId,
         intelligentAdvantage: intel
@@ -540,7 +545,7 @@ class MeshOptimizer {
 
     log(
       "gpu",
-      "[Analyst] MeshOptimizer v16-Immortal → pass-through (dispatch + presence + chunk-cache aware)",
+      "[Analyst] MeshOptimizer v24-Immortal++ → pass-through (dispatch + presence + chunk-cache aware)",
       "color:#8BC34A;",
       {
         count: rawMeshes.length,
@@ -556,7 +561,7 @@ class MeshOptimizer {
       dnaTag: brainInput.dnaTag,
       metadata: {
         sourceCount: rawMeshes.length,
-        optimizerContract: "MeshOptimizer-v16-Immortal",
+        optimizerContract: "MeshOptimizer-v24-Immortal++",
         dispatchHistoryCount,
         instanceId: brainInput.instanceId,
         intelligentAdvantage: intel
@@ -571,7 +576,7 @@ class LightingBaker {
 
     log(
       "gpu",
-      "[Analyst] LightingBaker v16-Immortal → placeholder (advantage + presence + prewarm aware)",
+      "[Analyst] LightingBaker v24-Immortal++ → placeholder (advantage + presence + prewarm aware)",
       "color:#8BC34A;",
       {
         sceneCount: rawScenes.length,
@@ -586,7 +591,7 @@ class LightingBaker {
       dnaTag: brainInput.dnaTag,
       metadata: {
         sceneCount: rawScenes.length,
-        bakerContract: "LightingBaker-v16-Immortal",
+        bakerContract: "LightingBaker-v24-Immortal++",
         hasAdvantageMap: !!brainInput.gpuAdvantageMap,
         instanceId: brainInput.instanceId,
         intelligentAdvantage: intel
@@ -605,7 +610,7 @@ class AnimationBaker {
 
     log(
       "gpu",
-      "[Analyst] AnimationBaker v16-Immortal → pass-through (usage + presence + intelligent compute aware)",
+      "[Analyst] AnimationBaker v24-Immortal++ → pass-through (usage + presence + intelligent compute aware)",
       "color:#8BC34A;",
       {
         clipCount: rawAnimations.length,
@@ -621,7 +626,7 @@ class AnimationBaker {
       dnaTag: brainInput.dnaTag,
       metadata: {
         clipCount: rawAnimations.length,
-        bakerContract: "AnimationBaker-v16-Immortal",
+        bakerContract: "AnimationBaker-v24-Immortal++",
         hasUsagePatterns,
         instanceId: brainInput.instanceId,
         intelligentAdvantage: intel
@@ -640,7 +645,7 @@ class ShaderCompiler {
 
     log(
       "gpu",
-      "[Analyst] ShaderCompiler v16-Immortal → pass-through (binary/symbolic + presence + immortal aware)",
+      "[Analyst] ShaderCompiler v24-Immortal++ → pass-through (binary/symbolic + presence + immortal++ aware)",
       "color:#8BC34A;",
       {
         shaderCount: rawShaders.length,
@@ -656,7 +661,7 @@ class ShaderCompiler {
       dnaTag: brainInput.dnaTag,
       metadata: {
         shaderCount: rawShaders.length,
-        compilerContract: "ShaderCompiler-v16-Immortal",
+        compilerContract: "ShaderCompiler-v24-Immortal++",
         hasDispatchHistory,
         instanceId: brainInput.instanceId,
         intelligentAdvantage: intel
@@ -676,7 +681,7 @@ class GPUDispatchHintBuilder {
 
     log(
       "gpu",
-      "[Analyst] GPUDispatchHintBuilder v16-Immortal → intelligent placeholder",
+      "[Analyst] GPUDispatchHintBuilder v24-Immortal++ → intelligent placeholder",
       "color:#8BC34A;",
       {
         dispatchHistoryCount: history.length,
@@ -722,7 +727,7 @@ class GPUDispatchHintBuilder {
       observedCount: bucket.count,
       lastAdvantageScore: bucket.lastAdvantageScore,
       intelligentModeHint: intel.modeHint
-  }));
+    }));
 
     return new PulseGPUDispatchHintPackage({
       patternHints,
@@ -738,7 +743,7 @@ class GPUDispatchHintBuilder {
 }
 
 // ------------------------------------------------------
-// RENDER PLANNER — v16-Immortal
+// RENDER PLANNER — v24-Immortal++
 // ------------------------------------------------------
 
 class RenderPlanner {
@@ -750,7 +755,7 @@ class RenderPlanner {
 
     log(
       "gpu",
-      "RenderPlanner v16-Immortal → placeholder (dispatch + memory + presence + prewarm aware)",
+      "RenderPlanner v24-Immortal++ → placeholder (dispatch + memory + presence + prewarm aware)",
       {
         sceneCount: rawScenes.length,
         hasUsagePatterns,
@@ -767,7 +772,7 @@ class RenderPlanner {
         sceneCount: rawScenes.length,
         hasUsagePatterns,
         hasGpuMemorySnapshot: !!brainInput.gpuMemorySnapshot,
-        plannerContract: "RenderPlanner-v16-Immortal",
+        plannerContract: "RenderPlanner-v24-Immortal++",
         instanceId: brainInput.instanceId,
         intelligentAdvantage: intel
       }
@@ -776,14 +781,14 @@ class RenderPlanner {
 }
 
 // ------------------------------------------------------
-// BRAIN ORCHESTRATOR (PURE, SYNCHRONOUS, v16-Immortal)
+// BRAIN ORCHESTRATOR (PURE, SYNCHRONOUS, v24-Immortal++)
 // ------------------------------------------------------
 
 class PulseGPUBrainController {
   static buildPackages(brainInput) {
     log(
       "gpu",
-      "[Analyst] buildPackages() v16-Immortal — starting",
+      "[Analyst] buildPackages() v24-Immortal++ — starting",
       "color:#03A9F4;",
       {
         schemaVersion: brainInput.schemaVersion,
@@ -802,12 +807,12 @@ class PulseGPUBrainController {
       }
     );
 
-    const textures   = TextureOptimizer.process(brainInput.rawTextures, brainInput);
-    const meshes     = MeshOptimizer.process(brainInput.rawMeshes, brainInput);
-    const lighting   = LightingBaker.process(brainInput.rawScenes, brainInput);
-    const animation  = AnimationBaker.process(brainInput.rawAnimations, brainInput);
-    const shaders    = ShaderCompiler.process(brainInput.rawShaders, brainInput);
-    const renderPlan = RenderPlanner.process(
+    const textures      = TextureOptimizer.process(brainInput.rawTextures, brainInput);
+    const meshes        = MeshOptimizer.process(brainInput.rawMeshes, brainInput);
+    const lighting      = LightingBaker.process(brainInput.rawScenes, brainInput);
+    const animation     = AnimationBaker.process(brainInput.rawAnimations, brainInput);
+    const shaders       = ShaderCompiler.process(brainInput.rawShaders, brainInput);
+    const renderPlan    = RenderPlanner.process(
       brainInput.rawScenes,
       brainInput.usagePatterns,
       brainInput
@@ -828,16 +833,16 @@ class PulseGPUBrainController {
       dispatchHints,
 
       evo: DUAL_MODE_EVO,
-      routingContract: "PulseSend-v16-Immortal",
-      gpuOrganContract: "PulseGPU-v16-Immortal",
-      binaryGpuOrganContract: "PulseBinaryGPU-v16-Immortal",
+      routingContract: "PulseSend-v24-Immortal++",
+      gpuOrganContract: "PulseGPU-v24-Immortal++",
+      binaryGpuOrganContract: "PulseBinaryGPU-v24-Immortal++",
       dnaTag: brainInput.dnaTag,
       instanceId: brainInput.instanceId
     };
 
     log(
       "gpu",
-      "[Analyst] buildPackages() v16-Immortal — complete",
+      "[Analyst] buildPackages() v24-Immortal++ — complete",
       "color:#4CAF50;",
       {
         schemaVersion: packageSet.schemaVersion,
@@ -859,7 +864,7 @@ class PulseGPUBrainExport {
   static buildAndStore(brainInput) {
     log(
       "gpu",
-      "[Analyst] buildAndStore() v16-Immortal",
+      "[Analyst] buildAndStore() v24-Immortal++",
       "color:#03A9F4;"
     );
 
@@ -867,7 +872,7 @@ class PulseGPUBrainExport {
 
     log(
       "gpu",
-      "[Analyst] packageSet stored v16-Immortal",
+      "[Analyst] packageSet stored v24-Immortal++",
       "color:#4CAF50;"
     );
 
@@ -877,7 +882,7 @@ class PulseGPUBrainExport {
   static exportToRuntime() {
     log(
       "gpu",
-      "[Analyst] exportToRuntime() v16-Immortal",
+      "[Analyst] exportToRuntime() v24-Immortal++",
       "color:#03A9F4;",
       { hasPackageSet: !!this.packageSet }
     );

@@ -1,10 +1,10 @@
 /* global log,warn,error */
 // ============================================================================
-// FILE: tropic-pulse-functions/PULSE-WORLD/PULSE-GPU/PulseGPUDrive.js
+// FILE: PULSE-WORLD/PULSE-GPU/PulseGPUDrive-v24.js
 // LAYER: MOMENTUM NETWORK — GPU RUNTIME (BRAIN → ENGINE FLOW)
 //
-// PulseGPURuntime v16-Immortal
-// Deterministic, Drift‑Proof, PulseSend‑v16‑Ready, Presence‑Aware, CI‑Aware
+// PulseGPURuntime v24-IMMORTAL++
+// Deterministic, Drift‑Proof, Earn‑Aware, Presence‑Aware, CI‑Aware, GPU‑Advantage‑Aware
 // ============================================================================
 //
 // ROLE — MOMENTUM NETWORK:
@@ -13,15 +13,20 @@
 //  • Loads GPU Brain packages → creates GPU buffers + shader modules.
 //  • Exposes meshes/shaders/textures/dispatch hints to Astral Muscle Engine.
 //  • Binary-aware, symbolic-aware, dispatch-aware, memory-aware, presence-aware.
+//  • Earn‑aware + game‑aware via PulseGPUEarnProfile.
 //  • CognitiveFrame-aware + ComputerIntelligence-aware (metadata + surfaces).
 //  • Fail-open: if anything is missing, surfaces stay empty but never throw.
-/*
-AI_EXPERIENCE_META = {
+//
+// ============================================================================
+// AI_EXPERIENCE_META — v24 IMMORTAL++
+// ============================================================================
+export const AI_EXPERIENCE_META_PulseGPUDrive = {
   identity: "PulseGPUDrive",
-  version: "v16-Immortal",
+  version: "v24-IMMORTAL++",
   layer: "gpu_runtime",
   role: "gpu_runtime_surface",
-  lineage: "PulseGPU-v16-Immortal",
+  lineage:
+    "PulseGPU-v16-Immortal → PulseGPU-v20-Advantage → PulseGPUDrive-v24-Immortal++",
 
   evo: {
     gpuRuntime: true,
@@ -61,20 +66,23 @@ AI_EXPERIENCE_META = {
     immortalReady: true,
     immortalSurface: true,
     earnAware: true,
-    earnCompatibility: "Earn-v4-Presence",
+    earnCompatibility: "Earn-v24-GPU",
 
     // Contracts
-    routingContract: "PulseSend-v16",
-    gpuOrganContract: "PulseGPU-v16-Immortal",
-    binaryGpuOrganContract: "PulseBinaryGPU-v16-Immortal",
-    workgroupLawVersion: 16
+    routingContract: "PulseSend-v24",
+    gpuOrganContract: "PulseGPU-v24-Immortal++",
+    binaryGpuOrganContract: "PulseBinaryGPU-v24-Immortal++",
+    workgroupLawVersion: 24
   },
 
   contract: {
     always: [
       "PulseGPUDriveCenter",
       "PulseGPUBrain",
-      "PulseGPU"
+      "PulseGPU",
+      "PulseGPUEarnProfile",
+      "PulseGPUChunkPlanner",
+      "PulseGPUWarmPathCache"
     ],
     never: [
       "safeRoute",
@@ -82,13 +90,18 @@ AI_EXPERIENCE_META = {
       "legacyGPURuntime"
     ]
   }
-}
-*/
+};
 
-import { PulseGPUBrainExport } from "./PulseGPUBrain.js";
-import { PulseGPUCognitiveIntelligence } from "./PulseGPUCognitiveIntelligence.js";
+// ============================================================================
+// IMPORTS — GPU BRAIN + CI + ADVANTAGE ORGANS
+// ============================================================================
+import { PulseGPUBrainExport } from "./PulseGPUBrain-v24.js";
+import { PulseGPUCognitiveIntelligence } from "./PulseGPUCognitiveIntelligence-v24.js";
+import { buildPulseGPUEarnProfile } from "./PulseGPUEarnProfile-v24.js";
+import { PulseGPUChunkPlanner } from "./PulseGPUChunkPlanner-v24.js";
+import { PulseGPUWarmPathCache } from "./PulseGPUWarmPathCache-v24.js";
 
-const PULSE_GPU_RUNTIME_VERSION = "16.0-Immortal";
+const PULSE_GPU_RUNTIME_VERSION = "24.0-Immortal++";
 
 // ============================================================================
 // GPU CONTEXT WRAPPER — Momentum Network: Conduction Node
@@ -112,9 +125,9 @@ class PulseGPUContext {
         driftProof: true,
         multiInstanceReady: true,
         unifiedAdvantageField: true,
-        pulseSend16Ready: true,
+        pulseSend24Ready: true,
 
-        // v16 Immortal Presence
+        // v24 Immortal Presence
         presenceAware: true,
         dnaAware: true,
         versionAware: true,
@@ -131,44 +144,44 @@ class PulseGPUContext {
         cognitiveFrameAware: true,
         computerIntelligenceAware: true,
 
-        routingContract: "PulseSend-v16",
-        gpuOrganContract: "PulseGPU-v16-Immortal",
-        binaryGpuOrganContract: "PulseBinaryGPU-v16-Immortal",
-        earnCompatibility: "Earn-v4-Presence"
+        routingContract: "PulseSend-v24",
+        gpuOrganContract: "PulseGPU-v24-Immortal++",
+        binaryGpuOrganContract: "PulseBinaryGPU-v24-Immortal++",
+        earnCompatibility: "Earn-v24-GPU"
       }
     };
   }
 
   async init(canvas) {
     if (!canvas) {
-      warn("PulseGPUContext: canvas not provided (fail-open).");
+      warn?.("PulseGPUContext: canvas not provided (fail-open).");
       this.ready = false;
       return;
     }
 
     if (!navigator.gpu) {
-      warn("PulseGPUContext: WebGPU unavailable (fail-open).");
+      warn?.("PulseGPUContext: WebGPU unavailable (fail-open).");
       this.ready = false;
       return;
     }
 
     this.adapter = await navigator.gpu.requestAdapter();
     if (!this.adapter) {
-      warn("PulseGPUContext: adapter unavailable (fail-open).");
+      warn?.("PulseGPUContext: adapter unavailable (fail-open).");
       this.ready = false;
       return;
     }
 
     this.device = await this.adapter.requestDevice();
     if (!this.device) {
-      warn("PulseGPUContext: device unavailable (fail-open).");
+      warn?.("PulseGPUContext: device unavailable (fail-open).");
       this.ready = false;
       return;
     }
 
     const context = canvas.getContext("webgpu");
     if (!context) {
-      warn("PulseGPUContext: cannot acquire WebGPU context (fail-open).");
+      warn?.("PulseGPUContext: cannot acquire WebGPU context (fail-open).");
       this.ready = false;
       return;
     }
@@ -217,12 +230,17 @@ class PulseGPURuntimeLoader {
     this.meshBuffers = [];
     this.shaderModules = [];
 
-    this.dispatchHints = null;      // v16: metadata + CI input
-    this.gpuMemorySnapshot = null;  // v16: optional, metadata-only
+    this.dispatchHints = null;      // v24: metadata + CI input
+    this.gpuMemorySnapshot = null;  // v24: optional, metadata-only
 
-    // v16: cognitive + CI runtime surfaces (metadata-only, fail-open)
+    // v24: cognitive + CI runtime surfaces (metadata-only, fail-open)
     this.cognitiveFrame = null;
     this.computerIntelligence = null;
+
+    // v24: earn / play profile + warm path planning
+    this.earnProfile = null;
+    this.chunkPlan = null;
+    this.warmPathCache = null;
 
     this.meta = {
       layer: "PulseGPURuntimeLoader",
@@ -235,9 +253,9 @@ class PulseGPURuntimeLoader {
         driftProof: true,
         multiInstanceReady: true,
         unifiedAdvantageField: true,
-        pulseSend16Ready: true,
+        pulseSend24Ready: true,
 
-        // v16 Immortal Presence
+        // v24 Immortal Presence
         presenceAware: true,
         dnaAware: true,
         versionAware: true,
@@ -254,42 +272,79 @@ class PulseGPURuntimeLoader {
         cognitiveFrameAware: true,
         computerIntelligenceAware: true,
 
-        routingContract: "PulseSend-v16",
-        gpuOrganContract: "PulseGPU-v16-Immortal",
-        binaryGpuOrganContract: "PulseBinaryGPU-v16-Immortal",
-        earnCompatibility: "Earn-v4-Presence"
+        // Earn / game awareness
+        earnAware: true,
+        gameAware: true,
+
+        routingContract: "PulseSend-v24",
+        gpuOrganContract: "PulseGPU-v24-Immortal++",
+        binaryGpuOrganContract: "PulseBinaryGPU-v24-Immortal++",
+        earnCompatibility: "Earn-v24-GPU"
       }
     };
   }
 
   loadPackages() {
-    const pkg = PulseGPUBrainExport.exportToRuntime();
+    const pkg = PulseGPUBrainExport?.exportToRuntime?.();
     if (!pkg) {
-      warn("PulseGPURuntimeLoader: no packageSet available (fail-open).");
+      warn?.("PulseGPURuntimeLoader: no packageSet available (fail-open).");
       this.packages = null;
       return null;
     }
 
     this.packages = pkg;
 
-    // v16: load dispatch hints + memory snapshot if present
+    // v24: load dispatch hints + memory snapshot if present
     this.dispatchHints = pkg.dispatchHints || null;
     this.gpuMemorySnapshot = pkg.gpuMemorySnapshot || null;
 
-    // v16: optional cognitive frame + CI snapshot (metadata-only, fail-open)
+    // v24: optional cognitive frame (metadata-only, fail-open)
     this.cognitiveFrame = pkg.cognitiveFrame || null;
 
+    // v24: CI snapshot (metadata-only, fail-open)
     try {
-      this.computerIntelligence = computeComputerIntelligence({
-        dispatchHints: this.dispatchHints,
-        gpuMemorySnapshot: this.gpuMemorySnapshot,
-        renderPlan: pkg.renderPlan || null,
-        dnaTag: pkg.dnaTag,
-        instanceId: pkg.instanceId,
-        brainVersion: pkg.brainVersion
-      });
+      this.computerIntelligence =
+        PulseGPUCognitiveIntelligence?.compute?.({
+          dispatchHints: this.dispatchHints,
+          gpuMemorySnapshot: this.gpuMemorySnapshot,
+          renderPlan: pkg.renderPlan || null,
+          dnaTag: pkg.dnaTag,
+          instanceId: pkg.instanceId,
+          brainVersion: pkg.brainVersion
+        }) || null;
     } catch {
       this.computerIntelligence = null;
+    }
+
+    // v24: Earn / game context (if brain exports it)
+    const earnContext = pkg.earnContext || null;
+    if (earnContext) {
+      try {
+        this.earnProfile = buildPulseGPUEarnProfile(earnContext);
+      } catch {
+        this.earnProfile = null;
+      }
+    }
+
+    // v24: Chunk planning + warm path cache (if available)
+    try {
+      this.chunkPlan = PulseGPUChunkPlanner?.plan?.({
+        brain: pkg,
+        earnProfile: this.earnProfile,
+        dispatchHints: this.dispatchHints
+      }) || null;
+    } catch {
+      this.chunkPlan = null;
+    }
+
+    try {
+      this.warmPathCache = PulseGPUWarmPathCache?.build?.({
+        brain: pkg,
+        earnProfile: this.earnProfile,
+        chunkPlan: this.chunkPlan
+      }) || null;
+    } catch {
+      this.warmPathCache = null;
     }
 
     return this.packages;
@@ -390,9 +445,9 @@ class PulseGPURuntime {
         driftProof: true,
         multiInstanceReady: true,
         unifiedAdvantageField: true,
-        pulseSend16Ready: true,
+        pulseSend24Ready: true,
 
-        // v16 Immortal Presence
+        // v24 Immortal Presence
         presenceAware: true,
         dnaAware: true,
         versionAware: true,
@@ -409,10 +464,14 @@ class PulseGPURuntime {
         cognitiveFrameAware: true,
         computerIntelligenceAware: true,
 
-        routingContract: "PulseSend-v16",
-        gpuOrganContract: "PulseGPU-v16-Immortal",
-        binaryGpuOrganContract: "PulseBinaryGPU-v16-Immortal",
-        earnCompatibility: "Earn-v4-Presence"
+        // Earn / game awareness
+        earnAware: true,
+        gameAware: true,
+
+        routingContract: "PulseSend-v24",
+        gpuOrganContract: "PulseGPU-v24-Immortal++",
+        binaryGpuOrganContract: "PulseBinaryGPU-v24-Immortal++",
+        earnCompatibility: "Earn-v24-GPU"
       }
     };
   }
@@ -421,6 +480,7 @@ class PulseGPURuntime {
     await this.loader.initialize(canvas);
   }
 
+  // Core GPU context
   getGPUContext() {
     return {
       adapter: this.context.adapter,
@@ -431,6 +491,7 @@ class PulseGPURuntime {
     };
   }
 
+  // Raw buffers / modules
   getTextures() {
     return this.loader.textureBuffers;
   }
@@ -447,7 +508,7 @@ class PulseGPURuntime {
     return this.loader.packages;
   }
 
-  // v16: expose dispatch hints + memory snapshot
+  // v24: dispatch hints + memory snapshot
   getDispatchHints() {
     return this.loader.dispatchHints;
   }
@@ -456,7 +517,7 @@ class PulseGPURuntime {
     return this.loader.gpuMemorySnapshot;
   }
 
-  // v16: cognitive + CI runtime surfaces (for Earn / Spine / Wisdom)
+  // v24: cognitive + CI runtime surfaces (for Earn / Spine / Wisdom)
   getCognitiveFrame() {
     return this.loader.cognitiveFrame;
   }
@@ -465,7 +526,7 @@ class PulseGPURuntime {
     return this.loader.computerIntelligence;
   }
 
-  // v16: compatibility surfaces for Astral Muscle / Spine
+  // v24: compatibility surfaces for Astral Muscle / Spine
   getMeshesFromPackages() {
     return this.loader.meshBuffers;
   }
@@ -474,7 +535,7 @@ class PulseGPURuntime {
     return this.loader.shaderModules;
   }
 
-  // v16: optional dispatch surfaces (fail-open, empty)
+  // v24: optional dispatch surfaces (fail-open, empty)
   getGPUDispatchesFromPackages() {
     return this.loader.packages?.gpuDispatches || [];
   }
@@ -483,9 +544,23 @@ class PulseGPURuntime {
     return this.getGPUDispatchesFromPackages();
   }
 
-  // v16: optional Earn frame surface (for Spine planning) — fail-open
+  // v24: optional Earn frame surface (for Spine planning) — fail-open
   getCurrentEarnFrame() {
     return this.loader.packages?.earnFrame || null;
+  }
+
+  // v24: Earn / game GPU profile (scheduler view)
+  getEarnProfile() {
+    return this.loader.earnProfile;
+  }
+
+  // v24: Chunk plan + warm path cache (for GPU advantage routing)
+  getChunkPlan() {
+    return this.loader.chunkPlan;
+  }
+
+  getWarmPathCache() {
+    return this.loader.warmPathCache;
   }
 }
 

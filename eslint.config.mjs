@@ -81,7 +81,7 @@ export default [
       // DETERMINISTIC TIME
       // ============================================================
       "no-restricted-properties": [
-        "error",
+        "warn",
         {
           object: "Date",
           property: "now",

@@ -1,11 +1,12 @@
 // ============================================================================
-// FILE: tropic-pulse-functions/PULSE-WORLD/PULSE-GPU/PulseGPUSurvivalInstincts.js
-// PULSE GPU SURVIVAL INSTINCTS v16-Immortal-Evo-Core — THE EVOLUTION CORE
+// FILE: tropic-pulse-functions/PULSE-WORLD/PULSE-GPU/PulseGPUSurvivalInstincts-v24.js
+// PULSE GPU SURVIVAL INSTINCTS v24-Immortal-Evo-Core — THE EVOLUTION CORE
 // Adaptive Identity Layer • Genetic Memory • Best‑Self Preservation Engine
 // Prewarm‑Aware • Chunk‑Aware • Cache‑Aware • Presence‑Aware • Earn‑Field‑Aware
+// Warm‑Path‑Aware • Cold‑Path‑Safe • Multi‑Instance‑Aware • Advantage‑Field‑24
 // ============================================================================
 //
-// SAFETY CONTRACT (v16-Immortal-Evo-Core):
+// SAFETY CONTRACT (v24-Immortal-Evo-Core):
 //  --------------------------------------
 //  • No randomness
 //  • No timestamps
@@ -16,15 +17,16 @@
 //  • Fail-open: malformed metrics/settings → safe defaults
 //  • Self-repair-ready: entries include OS metadata
 //  • Deterministic: same inputs → same evolutionary memory
-//  • Legacy-safe: v10.4/v11/v12.3 callers still behave identically
+//  • Legacy-safe: v10.4/v11/v12.3/v16 callers still behave identically
 // ============================================================================
+
 /*
 AI_EXPERIENCE_META = {
   identity: "PulseGPUSurvivalInstincts",
-  version: "v16-Immortal-Evo-Core",
+  version: "v24-Immortal-Evo-Core",
   layer: "gpu_guardian",
   role: "gpu_survival_instincts",
-  lineage: "PulseGPU-v16",
+  lineage: "PulseGPU-v24",
 
   evo: {
     gpuSurvival: true,
@@ -55,17 +57,16 @@ AI_EXPERIENCE_META = {
 }
 */
 
-// v16: imports so SurvivalInstincts is wired into the organism
-import { PulseGPUSessionTracer } from "./PulseGPUNervousSystem.js";
-import { PulseGPUHealer } from "./PulseGPULymphNodes.js";
-import { PulseGPUGeneticMemory } from "./PulseGPUGeneticMemory.js";
-import { SCORE_CONSTANTS } from "./PulseGPUCommandments.js";
-// optional Earn field integration (conceptual)
-import { evolveEarn, createEarn } from "../PULSE-EARN/PulseEarn-v16.js";
-
+// v24: imports so SurvivalInstincts is wired into the v24 organism
+import { PulseGPUSessionTracer } from "./PulseGPUNervousSystem-v24.js";
+import { PulseGPUHealer } from "./PulseGPULymphNodes-v24.js";
+import { PulseGPUGeneticMemory } from "./PulseGPUGeneticMemory-v24.js";
+import { SCORE_CONSTANTS } from "./PulseGPUCommandments-v24.js";
+// optional Earn field integration (conceptual, v24-compatible)
+import { evolveEarn, createEarn } from "../PULSE-EARN/PulseEarn-v24.js";
 
 // ------------------------------------------------------------
-// ⭐ OS‑v16-Immortal-Evo-Core CONTEXT METADATA — Survival Instincts Identity
+// ⭐ OS‑v24-Immortal-Evo-Core CONTEXT METADATA — Survival Instincts Identity
 // ------------------------------------------------------------
 const SURVIVAL_CONTEXT = {
   layer: "PulseGPUSurvivalInstincts",
@@ -75,7 +76,7 @@ const SURVIVAL_CONTEXT = {
   context:
     "Stores best-known configs, metrics, traces, mode/pressure stats, and supports regression detection",
   target: "full-gpu+binary+presence",
-  version: "16-Immortal-Evo-Core",
+  version: "24-Immortal-Evo-Core",
   selfRepairable: true,
 
   evo: {
@@ -117,11 +118,18 @@ const SURVIVAL_CONTEXT = {
     advantageSnapshotAware: true,
     earnFieldAware: true,
 
+    // v24: extended advantage field
+    warmPathHitAware: true,
+    coldPathPenaltyAware: true,
+    prewarmStepAware: true,
+    cacheMissPenaltyAware: true,
+    multiInstanceShapingAware: true,
+
     // PulseSend / Earn contracts (current + legacy, conceptual only)
     pulseSend16Ready: true,
     routingContract: "PulseSend-v16-Immortal",
-    gpuOrganContract: "PulseGPU-v16-Evo",
-    binaryGpuOrganContract: "PulseBinaryGPU-v16-Evo",
+    gpuOrganContract: "PulseGPU-v24-Evo",
+    binaryGpuOrganContract: "PulseBinaryGPU-v24-Evo",
     earnCompatibility: "Earn-v5-Immortal",
 
     legacyRoutingContract: "PulseSend-v10.4",
@@ -171,7 +179,7 @@ function computeSettingsHash(settings) {
 }
 
 // ------------------------------------------------------------
-// Advantage snapshot hash — Advantage Fingerprint (v16)
+// Advantage snapshot hash — Advantage Fingerprint (v24)
 // ------------------------------------------------------------
 function computeAdvantageSnapshotHash(advantageSnapshot) {
   if (!advantageSnapshot || typeof advantageSnapshot !== "object") {
@@ -190,7 +198,6 @@ function runEarnEvolution(settings, metrics, executionContext) {
   let evolvedSettings = safeSettings;
   let earnMeta = null;
 
-  // Helper: validate a returned settings object
   function isValidSettings(obj) {
     return obj && typeof obj === "object";
   }
@@ -212,7 +219,7 @@ function runEarnEvolution(settings, metrics, executionContext) {
       }
     }
   } catch {
-    // fail-open: ignore Earn failure, continue
+    // fail-open
   }
 
   // 2) If evolveEarn fails, try createEarn (secondary evolution driver)
@@ -232,7 +239,7 @@ function runEarnEvolution(settings, metrics, executionContext) {
       }
     }
   } catch {
-    // fail-open: ignore Earn failure, continue
+    // fail-open
   }
 
   // 3) If both Earn paths fail → system evolution only
@@ -242,10 +249,9 @@ function runEarnEvolution(settings, metrics, executionContext) {
   };
 }
 
-
 // ------------------------------------------------------------
-// Session scoring — Evolutionary Fitness Score (v12.3 dual-band + pressure)
-// + v16 prewarm/chunk/cache/presence/earn shaping
+// Session scoring — Evolutionary Fitness Score (v12.3/v16 dual-band + pressure)
+// + v24 prewarm/chunk/cache/presence/earn/warm-path/cold-path shaping
 // ------------------------------------------------------------
 function clamp(value, min, max) {
   if (typeof value !== "number" || Number.isNaN(value)) return min;
@@ -258,7 +264,6 @@ function clamp(value, min, max) {
 function baseScoreSession(metrics = {}) {
   if (!metrics || typeof metrics !== "object") return 0;
 
-  // v10.4 compatibility: accept both camelCase and legacy keys
   const {
     avgFPS,
     minFPS,
@@ -299,7 +304,6 @@ function extractModeAndPressureStats({
   let binaryStepCount = 0;
   let symbolicStepCount = 0;
 
-  // Prefer explicit traceSummary (from SessionTracer)
   if (traceSummary && typeof traceSummary === "object") {
     if (typeof traceSummary.binaryStepCount === "number") {
       binaryStepCount = clamp(traceSummary.binaryStepCount, 0, 1_000_000);
@@ -308,7 +312,6 @@ function extractModeAndPressureStats({
       symbolicStepCount = clamp(traceSummary.symbolicStepCount, 0, 1_000_000);
     }
   } else if (Array.isArray(trace)) {
-    // Fallback: infer from steps (SessionTracer steps)
     trace.forEach((step) => {
       if (!step || typeof step !== "object") return;
       if (step.binaryModeObserved) binaryStepCount += 1;
@@ -320,7 +323,6 @@ function extractModeAndPressureStats({
   const binaryRatio = totalSteps > 0 ? binaryStepCount / totalSteps : 0;
   const symbolicRatio = totalSteps > 0 ? symbolicStepCount / totalSteps : 0;
 
-  // Pressure snapshot: prefer explicit, else from traceSummary
   const p =
     pressureSnapshot ||
     (traceSummary && traceSummary.pressureSnapshot) ||
@@ -357,7 +359,7 @@ function extractModeAndPressureStats({
   };
 }
 
-// v16: prewarm / chunk / cache / presence / earn shaping factors
+// v24: prewarm / chunk / cache / presence / earn / warm-path / cold-path shaping factors
 function extractAdvantageShapingFromMetrics(metrics = {}) {
   const prewarmCoverage =
     typeof metrics.prewarmCoverage === "number"
@@ -384,17 +386,47 @@ function extractAdvantageShapingFromMetrics(metrics = {}) {
       ? clamp(metrics.earnYieldScore, 0, 1)
       : 0;
 
+  const warmPathHitRatio =
+    typeof metrics.warmPathHitRatio === "number"
+      ? clamp(metrics.warmPathHitRatio, 0, 1)
+      : 0;
+
+  const coldPathPenaltyRatio =
+    typeof metrics.coldPathPenaltyRatio === "number"
+      ? clamp(metrics.coldPathPenaltyRatio, 0, 1)
+      : 0;
+
+  const prewarmStepRatio =
+    typeof metrics.prewarmStepRatio === "number"
+      ? clamp(metrics.prewarmStepRatio, 0, 1)
+      : 0;
+
+  const cacheMissPenaltyRatio =
+    typeof metrics.cacheMissPenaltyRatio === "number"
+      ? clamp(metrics.cacheMissPenaltyRatio, 0, 1)
+      : 0;
+
+  const multiInstanceUtilization =
+    typeof metrics.multiInstanceUtilization === "number"
+      ? clamp(metrics.multiInstanceUtilization, 0, 1)
+      : 0;
+
   return {
     prewarmCoverage,
     chunkWarmthScore,
     cacheHitRatio,
     presenceUptimeRatio,
-    earnYieldScore
+    earnYieldScore,
+    warmPathHitRatio,
+    coldPathPenaltyRatio,
+    prewarmStepRatio,
+    cacheMissPenaltyRatio,
+    multiInstanceUtilization
   };
 }
 
-// v12.3 score: base FPS score + dual-band + pressure shaping
-// v16: extended with prewarm/chunk/cache/presence/earn shaping
+// v12.3/v16 score: base FPS score + dual-band + pressure shaping
+// v24: extended with prewarm/chunk/cache/presence/earn/warm-path/cold-path/multi-instance shaping
 function scoreSession(metrics = {}, options = {}) {
   const baseScore = baseScoreSession(metrics);
 
@@ -414,25 +446,25 @@ function scoreSession(metrics = {}, options = {}) {
 
   const { binaryRatio, symbolicRatio, pressureScore } = modeStats;
 
-  // Dual-band shaping:
-  //  • Reward balanced dual-mode slightly.
-  //  • Reward stable binary usage if requested.
-  //  • Penalize high pressure.
-  const dualBalance = 1 - Math.abs(binaryRatio - symbolicRatio); // 1 when balanced
-  const dualBonus = 0.05 * dualBalance; // up to +0.05
+  const dualBalance = 1 - Math.abs(binaryRatio - symbolicRatio);
+  const dualBonus = 0.05 * dualBalance;
 
   const binaryBiasBonus =
-    binaryMode === "binary" ? 0.05 * binaryRatio : 0; // up to +0.05 when strongly binary
+    binaryMode === "binary" ? 0.05 * binaryRatio : 0;
 
-  const pressurePenalty = 0.15 * pressureScore; // up to -0.15 at max pressure
+  const pressurePenalty = 0.15 * pressureScore;
 
-  // v16 advantage shaping
   const {
     prewarmCoverage,
     chunkWarmthScore,
     cacheHitRatio,
     presenceUptimeRatio,
-    earnYieldScore
+    earnYieldScore,
+    warmPathHitRatio,
+    coldPathPenaltyRatio,
+    prewarmStepRatio,
+    cacheMissPenaltyRatio,
+    multiInstanceUtilization
   } = extractAdvantageShapingFromMetrics(metrics);
 
   const prewarmBonus = 0.04 * prewarmCoverage;
@@ -440,6 +472,12 @@ function scoreSession(metrics = {}, options = {}) {
   const cacheBonus = 0.04 * cacheHitRatio;
   const presenceBonus = 0.03 * presenceUptimeRatio;
   const earnBonus = 0.05 * earnYieldScore;
+
+  const warmPathBonus = 0.04 * warmPathHitRatio;
+  const coldPathPenalty = 0.04 * coldPathPenaltyRatio;
+  const prewarmStepBonus = 0.03 * prewarmStepRatio;
+  const cacheMissPenalty = 0.03 * cacheMissPenaltyRatio;
+  const multiInstanceBonus = 0.03 * multiInstanceUtilization;
 
   let score =
     baseScore +
@@ -450,7 +488,12 @@ function scoreSession(metrics = {}, options = {}) {
     chunkBonus +
     cacheBonus +
     presenceBonus +
-    earnBonus;
+    earnBonus +
+    warmPathBonus +
+    prewarmStepBonus +
+    multiInstanceBonus -
+    coldPathPenalty -
+    cacheMissPenalty;
 
   return clamp(score, 0, 1);
 }
@@ -508,7 +551,7 @@ function buildExecutionContextKey(executionContext = null) {
   }
 
   const {
-    binaryMode = "auto", // "auto" | "binary" | "non-binary" | "dual"
+    binaryMode = "auto",
     pipelineId = "",
     sceneType = "",
     workloadClass = "",
@@ -532,7 +575,7 @@ function buildExecutionContextKey(executionContext = null) {
   });
 }
 
-// v16 composite key: game + hardware + tier + settings + mode + execution + advantage
+// v24 composite key: game + hardware + tier + settings + mode + execution + advantage + earn
 function buildCompositeKey(
   gameProfile,
   hardwareProfile,
@@ -541,7 +584,7 @@ function buildCompositeKey(
   binaryMode,
   executionContext,
   advantageSnapshotHash,
-  earnFingerprint // v16: Earn evolution fingerprint
+  earnFingerprint
 ) {
   const gameKey = buildGameKey(gameProfile);
   const hwKey = buildHardwareKey(hardwareProfile);
@@ -563,7 +606,7 @@ function buildCompositeKey(
 }
 
 // ------------------------------------------------------------
-// Memory entry model — Evolutionary Record (v16 Immortal)
+// Memory entry model — Evolutionary Record (v24 Immortal)
 // ------------------------------------------------------------
 class PulseGPUSurvivalInstinctsStore {
   constructor() {
@@ -575,7 +618,7 @@ class PulseGPUSurvivalInstinctsStore {
     this.entries.clear();
   }
 
-  // v16: accepts optional traceSummary, pressureSnapshot, executionContext, advantageSnapshot, Earn evolution
+  // v24: accepts optional traceSummary, pressureSnapshot, executionContext, advantageSnapshot, Earn evolution
   recordSession({
     gameProfile,
     hardwareProfile,
@@ -589,14 +632,12 @@ class PulseGPUSurvivalInstinctsStore {
     executionContext = null,
     advantageSnapshot = null
   }) {
-    // 1) Run Earn evolution chain (evolveEarn → createEarn → system)
     const { evolvedSettings, earnMeta } = runEarnEvolution(
       settings,
       metrics,
       executionContext
     );
 
-    // 2) Hashes
     const settingsHash = computeSettingsHash(evolvedSettings);
     const advantageSnapshotHash = computeAdvantageSnapshotHash(
       advantageSnapshot
@@ -606,7 +647,6 @@ class PulseGPUSurvivalInstinctsStore {
         ? earnMeta.fingerprint
         : "";
 
-    // 3) Composite key now includes Earn fingerprint
     const key = buildCompositeKey(
       gameProfile,
       hardwareProfile,
@@ -618,7 +658,6 @@ class PulseGPUSurvivalInstinctsStore {
       earnFingerprint
     );
 
-    // 4) Mode + pressure stats
     const modeStats = extractModeAndPressureStats({
       trace,
       traceSummary,
@@ -626,7 +665,6 @@ class PulseGPUSurvivalInstinctsStore {
       binaryMode
     });
 
-    // 5) Score session (system evolution) — Earn score is folded inside
     const metricsForScoring = {
       ...(metrics || {}),
       earnYieldScore: earnMeta?.score ?? metrics?.earnYieldScore ?? 0,
@@ -670,7 +708,7 @@ class PulseGPUSurvivalInstinctsStore {
     return this.entries.get(key);
   }
 
-  // v16: best-self selection now Earn-aware
+  // v24: best-self selection now Earn-aware
   getBestSettingsFor(
     gameProfile,
     hardwareProfile,
@@ -689,7 +727,6 @@ class PulseGPUSurvivalInstinctsStore {
       if (buildHardwareKey(entry.hardwareProfile) !== hwKey) continue;
       if (tierKey && buildTierKey(entry.tierProfile) !== tierKey) continue;
 
-      // v16: binary mode preference still respected
       if (
         preferredBinaryMode &&
         entry.binaryMode &&
@@ -698,7 +735,6 @@ class PulseGPUSurvivalInstinctsStore {
         continue;
       }
 
-      // v16: Earn-first best-self selection
       if (!bestEntry) {
         bestEntry = entry;
         continue;
@@ -779,8 +815,9 @@ class PulseGPUSurvivalInstinctsStore {
     });
   }
 }
+
 // ------------------------------------------------------------
-// Public API wrapper — Evolution Core Surface (v16 Immortal)
+// Public API wrapper — Evolution Core Surface (v24 Immortal)
 // ------------------------------------------------------------
 class PulseGPUSurvivalInstincts {
   constructor() {
@@ -788,17 +825,10 @@ class PulseGPUSurvivalInstincts {
     this.meta = { ...SURVIVAL_CONTEXT };
   }
 
-  // v16: recordSession now Earn-first, system-fallback, advantage-aware
   recordSession(session) {
-    // session may contain:
-    // gameProfile, hardwareProfile, tierProfile,
-    // settings, metrics, trace, traceSummary,
-    // pressureSnapshot, binaryMode, executionContext,
-    // advantageSnapshot, earnMeta (optional)
     return this.store.recordSession(session || {});
   }
 
-  // v16: best-self selection now Earn-aware + system-aware
   getBestSettingsFor(gameProfile, hardwareProfile, tierProfile, opts) {
     return this.store.getBestSettingsFor(
       gameProfile,
@@ -808,51 +838,22 @@ class PulseGPUSurvivalInstincts {
     );
   }
 
-  // v16: regression detection now includes Earn evolution deltas
   detectRegression(currentMetrics, baselineMetrics, options) {
-    // options may include:
-    // { current: { trace, pressureSnapshot, binaryMode }, baseline: {...} }
     return detectRegression(currentMetrics, baselineMetrics, options || {});
   }
 
-  // v16: scoreSession now includes:
-  // • dual-band shaping
-  // • pressure shaping
-  // • prewarm shaping
-  // • chunk shaping
-  // • cache shaping
-  // • presence shaping
-  // • earnYieldScore shaping
-  // • earnEvolutionScore shaping
   scoreSession(metrics, options) {
     return scoreSession(metrics || {}, options || {});
   }
 
-  // v16: serialize entire evolutionary memory including:
-  // • Earn fingerprints
-  // • advantageSnapshotHash
-  // • executionContext
-  // • pressure stats
-  // • mode ratios
-  // • bestMetrics
-  // • settingsHash
   serialize() {
     return this.store.serialize();
   }
 
-  // v16: deserialize now restores:
-  // • Earn meta
-  // • Earn fingerprint
-  // • advantageSnapshot
-  // • modeStats
-  // • pressureScore
-  // • executionContext
-  // • full SURVIVAL_CONTEXT metadata
   deserialize(jsonString) {
     this.store.deserialize(jsonString);
   }
 
-  // v16: clear entire evolutionary memory
   clear() {
     this.store.clear();
   }

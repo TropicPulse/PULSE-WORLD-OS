@@ -1,50 +1,25 @@
 /* global log,warn */
 // ============================================================================
-//  PULSE GPU INSIGHTS ENGINE v16-Immortal — THE WISDOM CORTEX
+//  PULSE GPU INSIGHTS ENGINE v24-Immortal++-MAX — THE WISDOM CORTEX
 //  Deterministic, Pure Logic, Drift‑Proof Analytics Over Session Traces
-//  COGNITIVE-FRAME AWARE • COMPUTER-INTELLIGENCE AWARE • EARN-AWARE
+//  COGNITIVE-FRAME AWARE • COMPUTER-INTELLIGENCE AWARE • EARN-v24-GPU AWARE
+//  GENETIC-MEMORY-LINKED • NERVOUS-SYSTEM-LINKED • WARM-PATH-AWARE • HEALER-AWARE
 // ============================================================================
-//
-// IDENTITY — THE WISDOM CORTEX (v16-Immortal):
-//  ------------------------------------------
-//  • Interpretive cortex of the GPU organism.
-//  • Observes baseline traces (past) and current traces (present).
-//  • Compares them with deterministic clarity, no guessing.
-//  • Reveals meaning already encoded in the data.
-//  • Binary-aware, symbolic-aware, dual-band-aware (metadata only).
-//  • Spine-aware: aligned with Orchestrator / Spine / Genetic Memory.
-//  • Chunking-aware + prewarm-ready (metadata only).
-//  • Advantage‑cascade aware: systemic gains improve insight flow.
-//  • PulseSend‑v16‑ready: insights routable by compute router.
-//  • Earn‑v4‑Presence‑ready.
-//  • CognitiveFrame-aware: can emit GPU “thoughts” per step change.
-//  • ComputerIntelligence-aware: can emit CI frames for Earn mode.
-// ============================================================================
-//
-// SAFETY CONTRACT (v16-Immortal):
-//  ------------------------------
-//  • No randomness
-//  • No timestamps
-//  • No GPU calls
-//  • No DOM
-//  • No Node APIs
-//  • No network or filesystem access
-//  • Fail‑open: malformed traces → ignored, never crash
-//  • Deterministic: same traces → same insights
-//  • Self‑repair‑ready: insights include metadata
-// ============================================================================
-/*
-AI_EXPERIENCE_META = {
+
+export const AI_EXPERIENCE_META_PulseGPUWisdomCortex = {
   identity: "PulseGPUWisdomCortex",
-  version: "v16-Immortal",
+  version: "v24-Immortal++-MAX",
   layer: "gpu_wisdom",
   role: "gpu_wisdom_cortex",
-  lineage: "PulseGPU-v16-Immortal",
+  lineage: "PulseGPU-v24-Immortal++",
 
   evo: {
     gpuCognition: true,
     gpuHeuristics: true,
     gpuMetaReasoning: true,
+    gpuPatternReading: true,
+    gpuPressureReading: true,
+    gpuWarmPathReading: true,
 
     gpuCompute: true,
     deterministic: true,
@@ -65,31 +40,39 @@ AI_EXPERIENCE_META = {
     presenceAware: true,
     dnaAware: true,
     versionAware: true,
+    instanceAware: true,
 
     // Mesh linkage
     brainLinked: true,
     cognitionLinked: true,
     spineLinked: true,
     geneticMemoryLinked: true,
+    nervousSystemLinked: true,
+    healerLinked: true,
+    lymphNodeLinked: true,
+    warmPathCacheLinked: true,
 
-    // Immortal + Earn
+    // Immortal + Earn v24
     immortalReady: true,
     immortalSurface: true,
     earnAware: true,
-    earnCompatibility: "Earn-v4-Presence",
+    earnCompatibility: "Earn-v24-GPU",
 
     // Contracts
-    routingContract: "PulseSend-v16",
-    gpuOrganContract: "PulseGPU-v16-Immortal",
-    binaryGpuOrganContract: "PulseBinaryGPU-v16-Immortal",
-    workgroupLawVersion: 16
+    routingContract: "PulseSend-v24",
+    gpuOrganContract: "PulseGPU-v24-Immortal++",
+    binaryGpuOrganContract: "PulseBinaryGPU-v24-Immortal++",
+    workgroupLawVersion: 24
   },
 
   contract: {
     always: [
       "PulseGPUBrain",
       "PulseGPUCognitiveIntelligence",
-      "PulseGPUGeneticMemory"
+      "PulseGPUGeneticMemory",
+      "PulseGPUSessionTracer",
+      "PulseGPUHealer",
+      "PulseGPUWarmPathCache"
     ],
     never: [
       "safeRoute",
@@ -97,14 +80,17 @@ AI_EXPERIENCE_META = {
       "legacyWisdomCortex"
     ]
   }
-}
-*/
+};
 
-import { INSIGHT_THRESHOLDS } from "./PulseGPUCommandments.js";
+import { INSIGHT_THRESHOLDS } from "./PulseGPUCommandments-v24.js";
 import {
   CognitiveFrame,
   computeComputerIntelligence
-} from "./PulseGPUCognitiveIntelligence.js";
+} from "./PulseGPUCognitiveIntelligence-v24.js";
+
+// Optional: read-only helpers from other organs (no side effects)
+import { PulseGPUGeneticMemory } from "./PulseGPUGeneticMemory.js";
+import { PulseGPUWarmPathCache } from "./PulseGPUWarmPathCache.js";
 
 // ------------------------------------------------------
 // Helpers
@@ -124,15 +110,28 @@ function classifyDelta(deltaPercent) {
 
   const absDelta = Math.abs(deltaPercent);
   const low = INSIGHT_THRESHOLDS?.MIN_STEP_DELTA_PERCENT ?? 5;
+  const medium = INSIGHT_THRESHOLDS?.MEDIUM_STEP_DELTA_PERCENT ?? 20;
+  const high = INSIGHT_THRESHOLDS?.HIGH_STEP_DELTA_PERCENT ?? 40;
 
   if (absDelta < low) return "low";
-  if (absDelta < 20) return "medium";
-  if (absDelta < 40) return "high";
+  if (absDelta < medium) return "medium";
+  if (absDelta < high) return "high";
   return "critical";
 }
 
+function safePercentDelta(baseline, current) {
+  const b = typeof baseline === "number" && baseline > 0 ? baseline : 0;
+  const c = typeof current === "number" ? current : 0;
+  if (b === 0) return 0;
+  return ((b - c) / b) * 100;
+}
+
+function safeNumber(v, fallback = 0) {
+  return typeof v === "number" && !Number.isNaN(v) ? v : fallback;
+}
+
 // ------------------------------------------------------
-// CognitiveFrame builder for a single step change
+// CognitiveFrame builder for a single step change (v24++ MAX)
 // ------------------------------------------------------
 
 function buildCognitiveFrameForStepChange({
@@ -143,6 +142,9 @@ function buildCognitiveFrameForStepChange({
   gameProfile,
   hardwareProfile,
   tierProfile,
+  pressureVector,
+  geneticPattern,
+  warmPathHints,
   dnaTag = "default-dna",
   instanceId = "",
   earnMode = false
@@ -161,7 +163,10 @@ function buildCognitiveFrameForStepChange({
     stepId,
     deltaPercent,
     baselineAvgDurationMs,
-    currentAvgDurationMs
+    currentAvgDurationMs,
+    pressureVector,
+    geneticPattern,
+    warmPathHints
   };
 
   const performance = {
@@ -181,13 +186,20 @@ function buildCognitiveFrameForStepChange({
     details: {
       deltaPercent,
       baselineAvgDurationMs,
-      currentAvgDurationMs
+      currentAvgDurationMs,
+      pressureVector,
+      warmPathTier: warmPathHints?.cacheTier || "none"
     }
   };
 
   const frame = new CognitiveFrame({
     cognition,
-    interpretation: {},
+    interpretation: {
+      warmPathAlignment: warmPathHints?.cacheTier || "none",
+      pressureBand: pressureVector
+        ? classifyPressureBand(pressureVector)
+        : "unknown"
+    },
     narrative,
     tier: {
       currentTier: tierProfile?.tierId || null,
@@ -195,12 +207,18 @@ function buildCognitiveFrameForStepChange({
     },
     performance,
     dispatch: {},
-    advantage: {},
+    advantage: {
+      regressionRisk:
+        performanceLabel === "slower" ? classifyDelta(deltaPercent) : "low",
+      improvementBand:
+        performanceLabel === "faster" ? classifyDelta(deltaPercent) : "low",
+      warmPathTier: warmPathHints?.cacheTier || "none"
+    },
     presence: {
-      context: null,
+      context: "wisdom_step_delta",
       dnaTag,
       instanceId,
-      intelligentCompute: null
+      intelligentCompute: earnMode ? "earn-aware" : null
     },
     shapeSignature: {},
     patternSignature: {},
@@ -215,8 +233,20 @@ function buildCognitiveFrameForStepChange({
   return frame;
 }
 
+function classifyPressureBand(pressureVector) {
+  if (!pressureVector) return "unknown";
+  const gpu = safeNumber(pressureVector.gpu, 0);
+  const thermal = safeNumber(pressureVector.thermal, 0);
+  const memory = safeNumber(pressureVector.memory, 0);
+  const maxP = Math.max(gpu, thermal, memory);
+  if (maxP < 0.3) return "low";
+  if (maxP < 0.6) return "medium";
+  if (maxP < 0.85) return "high";
+  return "critical";
+}
+
 // ------------------------------------------------------
-// Insight builder (v16-Immortal, CognitiveFrame-aware)
+// Insight builder (v24-Immortal++ MAX, CognitiveFrame-aware)
 // ------------------------------------------------------
 
 function buildInsight({
@@ -242,7 +272,7 @@ function buildInsight({
     meta: {
       layer: "PulseGPUInsightsEngine",
       role: "WISDOM_CORTEX",
-      version: "16.0-Immortal",
+      version: "24.0-Immortal++-MAX",
       target: "full-gpu+binary+spine",
       selfRepairable: true,
 
@@ -256,6 +286,8 @@ function buildInsight({
         dualBandReady: true,
         chunkingReady: true,
         prewarmReady: true,
+        warmPathAware: true,
+        geneticMemoryAware: true,
 
         binaryAware: true,
         symbolicAware: true,
@@ -263,11 +295,11 @@ function buildInsight({
         gpuMemoryAware: true,
         gpuAdvantageAware: true,
 
-        pulseSend16Ready: true,
-        routingContract: "PulseSend-v16",
-        gpuOrganContract: "PulseGPU-v16-Immortal",
-        binaryGpuOrganContract: "PulseBinaryGPU-v16-Immortal",
-        earnCompatibility: "Earn-v4-Presence"
+        pulseSend24Ready: true,
+        routingContract: "PulseSend-v24",
+        gpuOrganContract: "PulseGPU-v24-Immortal++",
+        binaryGpuOrganContract: "PulseBinaryGPU-v24-Immortal++",
+        earnCompatibility: "Earn-v24-GPU"
       }
     }
   };
@@ -315,7 +347,8 @@ function groupStepsById(traces = []) {
       if (!group) {
         group = {
           durations: [],
-          metaSamples: []
+          metaSamples: [],
+          pressureSnapshots: []
         };
         groups.set(stepId, group);
       }
@@ -327,6 +360,10 @@ function groupStepsById(traces = []) {
         hardwareProfile: trace.hardwareProfile || {},
         tierProfile: trace.tierProfile || {}
       });
+
+      if (step.pressureSnapshot && typeof step.pressureSnapshot === "object") {
+        group.pressureSnapshots.push(step.pressureSnapshot);
+      }
     });
   });
 
@@ -345,6 +382,26 @@ function computeStepAverages(groups) {
 
     const avg = sum / durations.length;
 
+    let pressureVector = null;
+    if (group.pressureSnapshots.length > 0) {
+      const agg = { gpu: 0, thermal: 0, memory: 0, mesh: 0, aura: 0 };
+      group.pressureSnapshots.forEach((p) => {
+        agg.gpu += safeNumber(p.gpuLoadPressure, 0);
+        agg.thermal += safeNumber(p.thermalPressure, 0);
+        agg.memory += safeNumber(p.memoryPressure, 0);
+        agg.mesh += safeNumber(p.meshStormPressure, 0);
+        agg.aura += safeNumber(p.auraTension, 0);
+      });
+      const c = group.pressureSnapshots.length || 1;
+      pressureVector = {
+        gpu: agg.gpu / c,
+        thermal: agg.thermal / c,
+        memory: agg.memory / c,
+        mesh: agg.mesh / c,
+        aura: agg.aura / c
+      };
+    }
+
     result.set(stepId, {
       avgDurationMs: avg,
       sampleCount: durations.length,
@@ -352,7 +409,8 @@ function computeStepAverages(groups) {
         gameProfile: {},
         hardwareProfile: {},
         tierProfile: {}
-      }
+      },
+      pressureVector
     });
   }
 
@@ -360,16 +418,29 @@ function computeStepAverages(groups) {
 }
 
 // ------------------------------------------------------
-// Wisdom Cortex Engine (v16-Immortal)
+// Wisdom Cortex Engine (v24-Immortal++ MAX)
 // ------------------------------------------------------
 
 class PulseGPUInsightsEngine {
-  constructor() {}
+  constructor({ geneticMemory, warmPathCache } = {}) {
+    this.geneticMemory =
+      geneticMemory instanceof PulseGPUGeneticMemory
+        ? geneticMemory
+        : new PulseGPUGeneticMemory();
+    this.warmPathCache = warmPathCache || PulseGPUWarmPathCache;
+  }
 
+  // Core: step duration deltas + pressure + genetic pattern + warm-path hints
   analyzeStepDurations(
     baselineTraces = [],
     currentTraces = [],
-    { dnaTag = "default-dna", instanceId = "", earnMode = false } = {}
+    {
+      dnaTag = "default-dna",
+      instanceId = "",
+      earnMode = false,
+      page = "gpu-session",
+      chunkProfile = "gpu"
+    } = {}
   ) {
     const baselineGroups = groupStepsById(baselineTraces);
     const currentGroups = groupStepsById(currentTraces);
@@ -386,8 +457,7 @@ class PulseGPUInsightsEngine {
 
       if (baselineAvg <= 0) continue;
 
-      const delta = (baselineAvg - currentAvg) / baselineAvg;
-      const deltaPercent = delta * 100;
+      const deltaPercent = safePercentDelta(baselineAvg, currentAvg);
 
       const minDelta =
         INSIGHT_THRESHOLDS?.MIN_STEP_DELTA_PERCENT ?? 5;
@@ -403,7 +473,32 @@ class PulseGPUInsightsEngine {
           ? `Step "${stepId}" is faster than baseline.`
           : `Step "${stepId}" is slower than baseline.`;
 
-      // Build CognitiveFrame + ComputerIntelligence for this step change
+      // Genetic pattern lookup (read-only)
+      const geneticPattern =
+        this.geneticMemory.getPatternForContext({
+          gameProfile,
+          hardwareProfile,
+          tierProfile,
+          executionContext: {
+            binaryMode: "auto",
+            sceneType: stepId,
+            workloadClass: "gpu_step"
+          }
+        }) || null;
+
+      // Warm path hints (read-only, deterministic)
+      const warmPathHints = this.warmPathCache.compute({
+        page,
+        chunkProfile,
+        gpuCapable: true,
+        trust: "trusted",
+        risk: "low",
+        pulseStream: "continuous",
+        fastLane: "enabled"
+      });
+
+      const pressureVector = currentInfo.pressureVector || null;
+
       const cognitiveFrame = buildCognitiveFrameForStepChange({
         stepId,
         deltaPercent,
@@ -412,6 +507,9 @@ class PulseGPUInsightsEngine {
         gameProfile,
         hardwareProfile,
         tierProfile,
+        pressureVector,
+        geneticPattern,
+        warmPathHints,
         dnaTag,
         instanceId,
         earnMode
@@ -436,7 +534,11 @@ class PulseGPUInsightsEngine {
           currentAvgDurationMs: currentAvg,
           extra: {
             baselineSampleCount: baselineInfo.sampleCount,
-            currentSampleCount: currentInfo.sampleCount
+            currentSampleCount: currentInfo.sampleCount,
+            pressureVector,
+            warmPathTier: warmPathHints.cacheTier,
+            geneticSampleCount:
+              geneticPattern?.patternStats?.sampleCount || 0
           },
           cognitiveFrame,
           computerIntelligence
@@ -454,7 +556,9 @@ class PulseGPUInsightsEngine {
     gpuModel,
     dnaTag = "default-dna",
     instanceId = "",
-    earnMode = false
+    earnMode = false,
+    page = "gpu-session",
+    chunkProfile = "gpu"
   }) {
     const filteredBaseline = baselineTraces.filter((trace) => {
       if (!trace) return false;
@@ -477,7 +581,9 @@ class PulseGPUInsightsEngine {
     return this.analyzeStepDurations(filteredBaseline, filteredCurrent, {
       dnaTag,
       instanceId,
-      earnMode
+      earnMode,
+      page,
+      chunkProfile
     });
   }
 }

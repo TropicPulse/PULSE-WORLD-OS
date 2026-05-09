@@ -1,7 +1,7 @@
 // ============================================================================
-// FILE: /PULSE-GPU/PulseGPUWarmPathCache.js
+// FILE: /PULSE-GPU/PulseGPUWarmPathCache-v24-ImmortalPlusPlus.js
 // PULSE OS — v24 IMMORTAL++
-// PULSE‑GPU WARM PATH CACHE — GPU WARM PATH HINT ENGINE
+// PULSE‑GPU WARM PATH CACHE — GPU WARM PATH HINT ENGINE (Every Advantage)
 // ============================================================================
 
 export const AI_EXPERIENCE_META_PulseGPUWarmPathCache = {
@@ -11,10 +11,10 @@ export const AI_EXPERIENCE_META_PulseGPUWarmPathCache = {
   role: "gpu_warm_path_hints",
   surfaces: {
     band: ["gpu", "cache", "warm_path"],
-    wave: ["latency", "smoothness"],
+    wave: ["latency", "smoothness", "fanout", "stability"],
     binary: ["warm", "cold"],
     presence: ["warm_path_state"],
-    advantage: ["warm_paths", "cache_tier"],
+    advantage: ["warm_paths", "cache_tier", "prewarm_budget", "fanout_profile"],
     speed: "instant_compute"
   },
   invariants: {
@@ -41,7 +41,9 @@ export const ORGAN_META_PulseGPUWarmPathCache = {
     pageHintAware: true,
     chunkProfileAware: true,
     trustAware: true,
-    riskAware: true
+    riskAware: true,
+    warmPathAware: true,
+    cacheTierAware: true
   }
 };
 
@@ -58,8 +60,10 @@ export const ORGAN_CONTRACT_PulseGPUWarmPathCache = {
   outputs: {
     enabled: "boolean",
     reason: "string",
-    warmPaths: "Array<{ id, priority, prewarm, cacheHint }>",
-    cacheTier: "none | light | strong"
+    warmPaths: "Array<{ id, priority, prewarm, cacheHint, lane, band, throttle }>",
+    cacheTier: "none | light | medium | strong",
+    prewarmBudget: "number",          // 0–100 (relative budget)
+    fanoutProfile: "conservative | balanced | aggressive"
   },
   guarantees: {
     deterministic: true,
@@ -69,7 +73,7 @@ export const ORGAN_CONTRACT_PulseGPUWarmPathCache = {
 };
 
 // ============================================================================
-// IMPLEMENTATION — v24 IMMORTAL++
+// IMPLEMENTATION — v24 IMMORTAL++ (Every Advantage)
 // ============================================================================
 
 export const PulseGPUWarmPathCache = {
@@ -87,23 +91,47 @@ export const PulseGPUWarmPathCache = {
     const pulseStream = input.pulseStream || "continuous";
     const fastLane = input.fastLane || "enabled";
 
+    // Hard guard: no GPU or hostile trust → fully off
     if (!gpuCapable || trust === "hostile") {
       return {
         enabled: false,
         reason: !gpuCapable ? "gpu_not_capable" : "trust_hostile",
         warmPaths: [],
-        cacheTier: "none"
+        cacheTier: "none",
+        prewarmBudget: 0,
+        fanoutProfile: "conservative"
       };
     }
 
     const cacheTier = computeCacheTier({ trust, risk, pulseStream, fastLane });
-    const warmPaths = buildWarmPaths({ page, chunkProfile, cacheTier });
+    if (cacheTier === "none") {
+      return {
+        enabled: false,
+        reason: "risk_or_stream_not_suitable",
+        warmPaths: [],
+        cacheTier,
+        prewarmBudget: 0,
+        fanoutProfile: "conservative"
+      };
+    }
+
+    const prewarmBudget = computePrewarmBudget({ cacheTier, pulseStream, chunkProfile });
+    const fanoutProfile = computeFanoutProfile({ cacheTier, risk, pulseStream });
+
+    const warmPaths = buildWarmPaths({
+      page,
+      chunkProfile,
+      cacheTier,
+      fanoutProfile
+    });
 
     return {
-      enabled: cacheTier !== "none",
+      enabled: warmPaths.length > 0,
       reason: "planned",
       warmPaths,
-      cacheTier
+      cacheTier,
+      prewarmBudget,
+      fanoutProfile
     };
   }
 };
@@ -116,30 +144,69 @@ function computeCacheTier({ trust, risk, pulseStream, fastLane }) {
   let tier = "none";
 
   const lowRisk = risk === "low" || risk === "unknown";
+  const mediumRisk = risk === "medium";
   const goodTrust = trust === "trusted" || trust === "neutral";
+  const cautiousTrust = trust === "suspicious";
   const goodStream = pulseStream === "continuous" || pulseStream === "burst";
   const fastLaneOk = fastLane === "enabled";
 
   if (goodTrust && lowRisk && goodStream && fastLaneOk) {
     tier = "strong";
-  } else if (goodTrust && lowRisk) {
+  } else if ((goodTrust && lowRisk) || (goodTrust && mediumRisk && goodStream)) {
+    tier = "medium";
+  } else if ((goodTrust || cautiousTrust) && (lowRisk || mediumRisk)) {
     tier = "light";
   }
 
   return tier;
 }
 
-function buildWarmPaths({ page, chunkProfile, cacheTier }) {
-  const warmPaths = [];
+function computePrewarmBudget({ cacheTier, pulseStream, chunkProfile }) {
+  // 0–100 relative budget
+  let base =
+    cacheTier === "strong"
+      ? 80
+      : cacheTier === "medium"
+      ? 55
+      : cacheTier === "light"
+      ? 30
+      : 0;
 
+  if (pulseStream === "burst") base += 5;
+  if (pulseStream === "single") base -= 10;
+  if (chunkProfile === "rich" || chunkProfile === "gpu") base += 5;
+
+  if (base < 0) base = 0;
+  if (base > 100) base = 100;
+  return base;
+}
+
+function computeFanoutProfile({ cacheTier, risk, pulseStream }) {
+  if (cacheTier === "strong" && (risk === "low" || risk === "unknown") && pulseStream !== "single") {
+    return "aggressive";
+  }
+  if (cacheTier === "light" || risk === "high" || risk === "critical") {
+    return "conservative";
+  }
+  return "balanced";
+}
+
+function buildWarmPaths({ page, chunkProfile, cacheTier, fanoutProfile }) {
+  const warmPaths = [];
   if (cacheTier === "none") return warmPaths;
+
+  const eager = cacheTier === "strong";
+  const medium = cacheTier === "medium";
 
   // Primary GPU path
   warmPaths.push({
     id: `${page}:gpu-main`,
     priority: 1,
-    prewarm: cacheTier === "strong" ? "eager" : "lazy",
-    cacheHint: "primary"
+    prewarm: eager ? "eager" : medium ? "semi-eager" : "lazy",
+    cacheHint: "primary",
+    lane: "fast",
+    band: "gpu",
+    throttle: fanoutProfile === "aggressive" ? "open" : "guarded"
   });
 
   // Secondary / decorative GPU path
@@ -147,8 +214,11 @@ function buildWarmPaths({ page, chunkProfile, cacheTier }) {
     warmPaths.push({
       id: `${page}:gpu-secondary`,
       priority: 2,
-      prewarm: "lazy",
-      cacheHint: "secondary"
+      prewarm: medium || eager ? "lazy" : "idle",
+      cacheHint: "secondary",
+      lane: "normal",
+      band: "gpu",
+      throttle: fanoutProfile === "conservative" ? "tight" : "guarded"
     });
   }
 
@@ -156,8 +226,11 @@ function buildWarmPaths({ page, chunkProfile, cacheTier }) {
   warmPaths.push({
     id: `${page}:shell`,
     priority: 3,
-    prewarm: "idle",
-    cacheHint: "shell"
+    prewarm: eager ? "idle" : "background",
+    cacheHint: "shell",
+    lane: "shell",
+    band: "cache",
+    throttle: "tight"
   });
 
   return warmPaths;

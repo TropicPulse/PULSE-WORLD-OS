@@ -1,32 +1,35 @@
 /* global log,warn */
 // ============================================================================
-// FILE: tropic-pulse-functions/PULSE-WORLD/PULSE-GPU/PulseGPUSettingsRestorer.js
-// PULSE GPU SETTINGS RESTORER v16-Immortal
-// “COGNITIVE RECOGNITION LAYER / RESTORATION PLANNER”
+// FILE: tropic-pulse-functions/PULSE-WORLD/PULSE-GPU/PulseGPUSettingsRestorer-v24.js
+// PULSE GPU SETTINGS RESTORER v24-Immortal++
+// “COGNITIVE RECOGNITION LAYER / RESTORATION PLANNER / CHUNK-AWARE”
 // ============================================================================
 //
-// PERSONALITY + ROLE (v16-Immortal):
+// PERSONALITY + ROLE (v24-Immortal++):
 //   PulseGPUSettingsRestorer is the **COGNITIVE RECOGNITION LAYER**.
 //   It is the **RESTORATION PLANNER** — the subsystem that reads advice
 //   and recognizes what concrete action should be taken.
 //
 //   • Consumes advisor insights (Drive Center) + memory entries (Evolution Core)
 //   • Can also consume GPU dispatch/memory hints (Brain/Spine/History)
-//   • Recognizes whether to restore, apply optimal, upgrade tier, or noop
+//   • Can consume GPU chunk / session surfaces (GPU chunker / GPU chunk planner)
+//   • Recognizes whether to restore, apply optimal, upgrade tier, noop, or rechunk
 //   • Produces deterministic restoration plans for the Healer + Orchestrator
-//   • PulseSend‑v16‑ready: plans can be routed by the compute router
-//   • Earn‑v4‑Presence‑ready
+//   • PulseSend‑v24‑ready: plans can be routed by the compute router
+//   • Earn‑v24‑Presence‑ready
 //   • Binary-aware, symbolic-aware, dispatch-aware, memory-aware, presence-aware
+//   • Chunk-aware, chunkProfile-aware, chunkSession-aware
 //   • CognitiveFrame-aware: can emit GPU “thought frames” for each plan
 //   • ComputerIntelligence-aware: can emit CI frames for Earn mode
 // ============================================================================
+
 /*
 AI_EXPERIENCE_META = {
   identity: "PulseGPUCognitiveLayer",
-  version: "v16-Immortal",
+  version: "v24-Immortal++",
   layer: "gpu_cognition",
   role: "gpu_cognitive_layer",
-  lineage: "PulseGPU-v16-Immortal",
+  lineage: "PulseGPU-v24-Immortal++",
 
   evo: {
     gpuCognition: true,
@@ -57,12 +60,19 @@ AI_EXPERIENCE_META = {
     immortalReady: true,
     immortalSurface: true,
     earnAware: true,
-    earnCompatibility: "Earn-v4-Presence",
+    earnCompatibility: "Earn-v24-Presence",
 
-    routingContract: "PulseSend-v16",
-    gpuOrganContract: "PulseGPU-v16-Immortal",
-    binaryGpuOrganContract: "PulseBinaryGPU-v16-Immortal",
-    workgroupLawVersion: 16
+    routingContract: "PulseSend-v24",
+    gpuOrganContract: "PulseGPU-v24-Immortal++",
+    binaryGpuOrganContract: "PulseBinaryGPU-v24-Immortal++",
+    workgroupLawVersion: 24,
+
+    // Chunk / planner / chunker awareness
+    chunkAware: true,
+    chunkProfileAware: true,
+    chunkSessionAware: true,
+    gpuChunkPlannerAware: true,
+    pulseAIChunkerAware: true
   },
 
   contract: {
@@ -83,19 +93,19 @@ AI_EXPERIENCE_META = {
 import {
   CognitiveFrame,
   computeComputerIntelligence
-} from "./PulseGPUCognitiveIntelligence.js";
+} from "./PulseGPUCognitiveIntelligence-v24.js";
 
-// ------------------------------------------------------------
-// OS‑v16-Immortal CONTEXT METADATA
-// ------------------------------------------------------------
+// ============================================================================
+// OS‑v24-Immortal++ CONTEXT METADATA (chunk-aware, v24 contracts)
+// ============================================================================
 const RESTORER_CONTEXT = {
   layer: "PulseGPUSettingsRestorer",
   role: "GPU_SETTINGS_RESTORER",
-  purpose: "Deterministic planner for GPU settings restoration",
+  purpose: "Deterministic planner for GPU settings restoration (v24-Immortal++, chunk-aware)",
   context:
-    "Consumes advisor insights + memory entries + GPU hints to produce restoration plans",
+    "Consumes advisor insights + memory entries + GPU + chunk hints to produce restoration plans",
   target: "full-gpu",
-  version: "16.0-Immortal",
+  version: "24.0-Immortal++",
   selfRepairable: true,
 
   evo: {
@@ -104,7 +114,7 @@ const RESTORER_CONTEXT = {
     driftProof: true,
     multiInstanceReady: true,
     unifiedAdvantageField: true,
-    pulseSend16Ready: true,
+    pulseSend24Ready: true,
 
     // Presence Evolution
     presenceAware: true,
@@ -119,25 +129,34 @@ const RESTORER_CONTEXT = {
     gpuMemoryAware: true,
     gpuAdvantageAware: true,
 
+    // Chunk / chunker / planner awareness
+    chunkAware: true,
+    chunkProfileAware: true,
+    chunkSessionAware: true,
+    gpuChunkPlannerAware: true,
+    pulseAIChunkerAware: true,
+
     // Contracts
-    routingContract: "PulseSend-v16",
-    gpuOrganContract: "PulseGPU-v16-Immortal",
-    binaryGpuOrganContract: "PulseBinaryGPU-v16-Immortal",
-    earnCompatibility: "Earn-v4-Presence"
+    routingContract: "PulseSend-v24",
+    gpuOrganContract: "PulseGPU-v24-Immortal++",
+    binaryGpuOrganContract: "PulseBinaryGPU-v24-Immortal++",
+    earnCompatibility: "Earn-v24-Presence",
+    workgroupLawVersion: 24
   }
 };
 
-// ------------------------------------------------------------
-// CognitiveFrame builder for advice → plan
-// ------------------------------------------------------------
+// ============================================================================
+// CognitiveFrame builder for advice → plan (v24-Immortal++, chunk-aware)
+// ============================================================================
 function buildCognitiveFrameForAdvice(
   advice,
   gpuContext,
   {
     dnaTag = "default-dna",
     instanceId = "",
-    version = "16.0-Immortal",
-    earnMode = false
+    version = "24.0-Immortal++",
+    earnMode = false,
+    chunkContext = null
   } = {}
 ) {
   if (!advice || typeof advice !== "object") return null;
@@ -156,6 +175,7 @@ function buildCognitiveFrameForAdvice(
     if (type === "suboptimal") return "Suboptimal configuration detected; optimal settings available.";
     if (type === "tier-upgrade-opportunity") return "Tier upgrade opportunity detected.";
     if (type === "improvement") return "Performance improvement detected; no restoration required.";
+    if (type === "rechunk-needed") return "Chunk layout misaligned; GPU chunk strategy update recommended.";
     return "Advice received for GPU configuration.";
   })();
 
@@ -166,7 +186,8 @@ function buildCognitiveFrameForAdvice(
     gameProfile,
     hardwareProfile,
     tierProfile,
-    gpuContext
+    gpuContext,
+    chunkContext
   };
 
   const performance = {
@@ -188,7 +209,9 @@ function buildCognitiveFrameForAdvice(
       severity,
       deltaPercent,
       gpuPattern: advice.gpuPattern,
-      gpuShapeSignature: advice.gpuShapeSignature
+      gpuShapeSignature: advice.gpuShapeSignature,
+      chunkProfile: advice.chunkProfile || chunkContext?.chunkProfile || null,
+      chunkSessionId: chunkContext?.sessionId || null
     }
   };
 
@@ -228,9 +251,9 @@ function buildCognitiveFrameForAdvice(
   return frame;
 }
 
-// ------------------------------------------------------------
-// Restoration plan builder (v16-Immortal + OS metadata + cognition)
-// ------------------------------------------------------------
+// ============================================================================
+/** Restoration plan builder (v24-Immortal++ + OS metadata + cognition + chunks) */
+// ============================================================================
 function buildPlan({
   action,
   reason,
@@ -238,9 +261,10 @@ function buildPlan({
   baselineSettings = null,
   extra = null,
   gpuContext = null,
+  chunkContext = null,
   dnaTag = "default-dna",
   instanceId = "",
-  version = "16.0-Immortal",
+  version = "24.0-Immortal++",
   cognitiveFrame = null,
   computerIntelligence = null,
   earnMode = false
@@ -252,6 +276,7 @@ function buildPlan({
     baselineSettings,
     extra,
     gpuContext: gpuContext || null,
+    chunkContext: chunkContext || null,
     meta: {
       ...RESTORER_CONTEXT,
       dnaTag,
@@ -264,9 +289,9 @@ function buildPlan({
   };
 }
 
-// ------------------------------------------------------------
+// ============================================================================
 // Plan validation (for healing layer)
-// ------------------------------------------------------------
+// ============================================================================
 function validatePlan(plan) {
   if (!plan || typeof plan !== "object") return false;
   if (typeof plan.action !== "string") return false;
@@ -275,9 +300,10 @@ function validatePlan(plan) {
   return true;
 }
 
-// ------------------------------------------------------------
-// PulseGPUSettingsRestorer v16-Immortal — Cognitive Recognition Layer
-// ------------------------------------------------------------
+// ============================================================================
+// PulseGPUSettingsRestorer v24-Immortal++ — Cognitive Recognition Layer
+// Chunk-aware, GPU-memory-aware, dispatch-aware
+// ============================================================================
 class PulseGPUSettingsRestorer {
   constructor() {}
 
@@ -286,16 +312,17 @@ class PulseGPUSettingsRestorer {
   // ----------------------------------------------------
   // Main entry point:
   //   Takes an array of advice objects → returns a plan.
-  //   Optionally includes GPU context + presence identity + earnMode.
-// ----------------------------------------------------
+  //   Optionally includes GPU context + presence identity + earnMode + chunkContext.
+  // ----------------------------------------------------
   buildRestorePlan(
     adviceList = [],
     gpuContext = null,
     {
       dnaTag = "default-dna",
       instanceId = "",
-      version = "16.0-Immortal",
-      earnMode = false
+      version = "24.0-Immortal++",
+      earnMode = false,
+      chunkContext = null // { chunkProfile, sessionId, laneStats, profileStats, plannerStrategy, plannerChunks }
     } = {}
   ) {
     if (!Array.isArray(adviceList) || adviceList.length === 0) {
@@ -303,6 +330,7 @@ class PulseGPUSettingsRestorer {
         action: "noop",
         reason: "No advice available.",
         gpuContext,
+        chunkContext,
         dnaTag,
         instanceId,
         version,
@@ -326,6 +354,7 @@ class PulseGPUSettingsRestorer {
         action: "noop",
         reason: "No valid advice available.",
         gpuContext,
+        chunkContext,
         dnaTag,
         instanceId,
         version,
@@ -336,12 +365,13 @@ class PulseGPUSettingsRestorer {
     const top = sorted[0];
 
     // Build CognitiveFrame + ComputerIntelligence for the chosen advice
-    const gpuCtx = this._buildGpuContextFromAdvice(top, gpuContext);
+    const gpuCtx = this._buildGpuContextFromAdvice(top, gpuContext, chunkContext);
     const cognitiveFrame = buildCognitiveFrameForAdvice(top, gpuCtx, {
       dnaTag,
       instanceId,
       version,
-      earnMode
+      earnMode,
+      chunkContext
     });
     const computerIntelligence = computeComputerIntelligence(cognitiveFrame, {
       earnMode
@@ -353,7 +383,8 @@ class PulseGPUSettingsRestorer {
       version,
       cognitiveFrame,
       computerIntelligence,
-      earnMode
+      earnMode,
+      chunkContext
     };
 
     switch (top.type) {
@@ -368,6 +399,9 @@ class PulseGPUSettingsRestorer {
 
       case "improvement":
         return this.buildRestorePlanForImprovement(top, gpuCtx, presence);
+
+      case "rechunk-needed":
+        return this.buildRestorePlanForRechunk(top, gpuCtx, presence);
 
       default:
         return buildPlan({
@@ -461,9 +495,53 @@ class PulseGPUSettingsRestorer {
   }
 
   // ----------------------------------------------------
-  // Internal: build GPU context snapshot from advice + external gpuContext
+  // Rechunk-needed → ask GPU chunk planner / chunker to re-layout
+  //   (pure plan: no direct calls, just a deterministic instruction)
   // ----------------------------------------------------
-  _buildGpuContextFromAdvice(advice, gpuContext) {
+  buildRestorePlanForRechunk(advice, gpuContext, presence = {}) {
+    const chunkProfile =
+      advice.chunkProfile ||
+      presence.chunkContext?.chunkProfile ||
+      "gpu-default";
+
+    const plannerStrategy =
+      presence.chunkContext?.plannerStrategy || "balanced";
+
+    const plannerChunks =
+      presence.chunkContext?.plannerChunks || null;
+
+    return buildPlan({
+      action: "rechunk",
+      reason:
+        "Chunk layout misaligned with observed GPU advantage; rechunking recommended.",
+      targetSettings: null,
+      baselineSettings: null,
+      extra: {
+        deltaPercent: advice.deltaPercent,
+        gpuPattern: advice.gpuPattern,
+        gpuShapeSignature: advice.gpuShapeSignature,
+        chunkProfile,
+        plannerStrategy,
+        plannerChunks,
+        repairHint:
+          advice.extra?.repairHint ||
+          "invoke-gpu-chunk-planner-v24"
+      },
+      gpuContext,
+      chunkContext: presence.chunkContext || {
+        chunkProfile,
+        plannerStrategy,
+        plannerChunks
+      },
+      ...presence
+    });
+  }
+
+  // ----------------------------------------------------
+  // Internal: build GPU context snapshot from advice + external gpuContext
+  //           (v24, chunk-aware)
+// ----------------------------------------------------
+  _buildGpuContextFromAdvice(advice, gpuContext, chunkContext) {
     const base =
       gpuContext && typeof gpuContext === "object" ? { ...gpuContext } : {};
 
@@ -483,7 +561,14 @@ class PulseGPUSettingsRestorer {
       advantageScore:
         typeof advice.advantageScore === "number"
           ? advice.advantageScore
-          : base.advantageScore || 0
+          : base.advantageScore || 0,
+      chunkProfile:
+        advice.chunkProfile ||
+        chunkContext?.chunkProfile ||
+        base.chunkProfile ||
+        null,
+      chunkSessionId:
+        chunkContext?.sessionId || base.chunkSessionId || null
     };
   }
 }
