@@ -558,7 +558,7 @@ export function getPulsePowerSnapshot() {
 const PulsePowerAPI = {
   PulsePowerRole,
   pulsePowerTouch,
-  getPulsePowerSnapshot
+  getPulsePowerSnapshot,
 };
 
 export default PulsePowerAPI;

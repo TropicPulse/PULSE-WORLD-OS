@@ -66,7 +66,7 @@ import { createPulseWorldFightFlightResponseV20 } from "./PulseWorldFightFlightR
 // ============================================================================
 //  IMPORTS — PRESENTATION / POWER (v20)
 // ============================================================================
-import PulsePowerAPI from "./PulseWorldPower-v20.js";
+import { getPulsePowerSnapshot as PulseSurfaceEnvironment, PulsePowerAPI } from "./PulseWorldPower-v20.js";
 
 // ============================================================================
 //  IMPORTS — MAPS (Intent, Organism, IQ)
@@ -147,6 +147,14 @@ const PULSE_UNDERSTANDING_CONTEXT = {
   }
 };
 
+// Optional: derive a surface power profile from TOUCH + environment
+const PulseSurfacePower =
+  PulsePowerAPI && typeof PulsePowerAPI.buildSurfacePower === "function"
+    ? PulsePowerAPI.buildSurfacePower(
+        PulseSurfaceEnvironment,
+        typeof window !== "undefined" ? window.__PULSE_TOUCH__ || null : null
+      )
+    : null;
 // ============================================================================
 //  ENVIRONMENT SNAPSHOT (UPGRADED — USE PORTAL / POWER IF PRESENT)
 // ============================================================================

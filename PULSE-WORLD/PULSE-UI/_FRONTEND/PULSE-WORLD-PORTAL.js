@@ -101,7 +101,7 @@ AI_EXPERIENCE_META = {
 import * as PulseLogger from "../_MONITOR/PulseProofLogger-v24.js";
 import * as PulseVitalsMonitor from "../_MONITOR/PulseProofMonitor-v24.js";
 import { route as BridgeRoute, PulseProofLogger, log, warn, error, startUnderstanding as PulseUnderstanding, PulseBinaryOrganismBoot} from "../_BACKEND/PULSE-WORLD-BRIDGE.js";
-import * as PulsePower from "../../PULSE-BAND/PULSE-X/PulseWorldPower-v20.js";
+
 import * as PulseUIErrors from "./PulseUIErrors-v24.js";
 import * as PulseUIFlow from "./PulseUIFlow-v24.js";
 import * as PulsePageScanner from "../_FRONTEND/PulseUIPageScanner-v20.js";
@@ -288,14 +288,6 @@ function buildSurfaceEnvironment() {
 
 const PulseSurfaceEnvironment = buildSurfaceEnvironment();
 
-// Optional: derive a surface power profile from TOUCH + environment
-const PulseSurfacePower =
-  PulsePower && typeof PulsePower.buildSurfacePower === "function"
-    ? PulsePower.buildSurfacePower(
-        PulseSurfaceEnvironment,
-        typeof window !== "undefined" ? window.__PULSE_TOUCH__ || null : null
-      )
-    : null;
 
 // ============================================================================
 // MEMBRANE META — PULSE PORTAL CONTEXT
@@ -327,7 +319,6 @@ const surfaceMeta = Object.freeze({
     adminConsoleAware: true
   },
   environment: PulseSurfaceEnvironment,
-  power: PulseSurfacePower,
   contract: {
     never: [
       "expose organs",
@@ -705,7 +696,6 @@ if (isBrowser()) {
     window.PulsePortal = window.PulsePortal || Object.freeze({
       meta: surfaceMeta,
       env: PulseSurfaceEnvironment,
-      power: PulseSurfacePower,
       logger: PulseLogger,
       vitals: PulseVitalsMonitor,
       ui: {
@@ -854,7 +844,6 @@ if (isBrowser()) {
           await PulseUnderstanding({
             meta: baseMetaPack,
             env: PulseSurfaceEnvironment,
-            power: PulseSurfacePower,
             binary: window.PulseBinary || null
           });
         }
@@ -870,7 +859,6 @@ if (isBrowser()) {
           PulseUIFlow.init({
             meta: baseMetaPack,
             env: PulseSurfaceEnvironment,
-            power: PulseSurfacePower
           });
         }
       } catch (err) {
