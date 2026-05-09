@@ -120,11 +120,11 @@ AI_EXPERIENCE_META = {
 //  OSKernel imports (backend‑safe)
 // ============================================================================
 import {
-  logger,
+  PulseProofBridgeLogger as logger,
   PulseVersion,
   PulseRoles,
   PulseLineage
-} from "../../PULSE-UI/_MONITOR/PulseProofLogger-v24.js";
+} from "../../PULSE-UI/_BACKEND/PULSE-WORLD-BRIDGE.js";
 
 // ============================================================================
 //  EXPERIENCE META — AI / Agent / Overmind surfaces

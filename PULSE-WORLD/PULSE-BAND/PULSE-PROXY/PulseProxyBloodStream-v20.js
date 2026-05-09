@@ -96,11 +96,11 @@ AI_EXPERIENCE_META = {
 */
 
 import {
-  VitalsLogger as logger,
+  PulseProofBridgeLogger as logger,
   PulseVersion,
   PulseRoles,
   PulseLineage
-} from "../../PULSE-UI/_MONITOR/PulseProofLogger-v24.js";
+} from "../../PULSE-UI/_BACKEND/PULSE-WORLD-BRIDGE.js";
 
 // ============================================================================
 //  EXPERIENCE META — AI / World / Overmind surfaces
