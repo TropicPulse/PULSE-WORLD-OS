@@ -1,9 +1,8 @@
 /* ============================================================
    0. BOOT MEMBRANE — MUST BE FIRST
-   + IMPORT SKINREFLEX BEFORE ANY UI LOGIC
 ============================================================ */
 
-// 🔥 NEW — import SkinReflex (A1 layer)
+// Import SkinReflex so A1 layer is loaded in this surface
 import "../_MONITOR/PulseUISkinReflex-v24.js";
 
 function mark(...args) {
@@ -16,23 +15,8 @@ function mark(...args) {
 if (!window.__PULSE_UI_INIT__) {
   window.__PULSE_UI_INIT__ = true;
 
-  document.addEventListener("DOMContentLoaded", async () => {
+  document.addEventListener("DOMContentLoaded", () => {
     mark("WINDOW DOM STARTED INDEX PAGE");
-
-    /* ============================================================
-       WAIT FOR SKINREFLEX BEFORE ANYTHING ELSE
-       (prevents getHook undefined)
-    ============================================================ */
-    while (
-      !window.getHook ||
-      !window.getAuth ||
-      !window.getMap ||
-      !window.callHelper
-    ) {
-      await new Promise(res => setTimeout(res, 20));
-    }
-
-    mark("SkinReflex A1 layer detected — INDEX is safe to run.");
 
     /* ============================================================
        2. PULSEBAND UI — UI ONLY (NO ENGINE LOGIC)
