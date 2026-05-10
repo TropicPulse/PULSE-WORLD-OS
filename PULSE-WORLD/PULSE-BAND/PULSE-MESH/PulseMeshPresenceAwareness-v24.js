@@ -1,15 +1,15 @@
 // ============================================================================
-// FILE: PulseMeshPresenceAwarenessPage.js
-// PULSE OS v15.0 — PRESENCE-Evo-MESH-AWARE
+// FILE: PulseMeshPresenceAwarenessPage-v24-IMMORTAL-ADVANTAGE++.js
+// PULSE OS v24.0 — PRESENCE-Evo-MESH-AWARE-ADVANTAGE++
 // ---------------------------------------------------------------------------
-//  PRESENCE AWARENESS PAGE (HUMAN-FACING, IMMORTAL-GRADE COMMENTARY)
+//  PRESENCE AWARENESS PAGE (HUMAN-FACING, IMMORTAL-ADVANTAGE HUD)
 // ---------------------------------------------------------------------------
 //  ROLE:
-//    • This organ is the *human-facing presence HUD*.
-//    • It shows nearby users with safe, non-sensitive metadata.
-//    • It exposes skillLevel, masteryTier, systemAgeCategory, meshRole,
-//      meshIdentity, presenceBand, and distance.
-//    • It is the canonical “social radar” of the organism.
+//    • Human-facing presence HUD / “social radar” of the organism.
+//    • Shows nearby users with safe, non-sensitive metadata only.
+//    • Exposes skillLevel, masteryTier, systemAgeCategory, meshRole,
+//      meshIdentity, presenceBand, distance, and advantage/pressure hints.
+//    • Mirrors PresenceAIView fields in a human-readable way.
 //
 //  ARCHITECTURAL POSITION:
 //    • Lives in the Presence layer.
@@ -25,7 +25,7 @@
 //        - MentorUpgradeRequest
 //        - PresenceJobView
 //
-//  GUARANTEES:
+//  GUARANTEES (v24-IMMORTAL-ADVANTAGE++):
 //    • Deterministic — same input → same output.
 //    • Drift-proof — no presence drift.
 //    • Zero-mutation — never mutates presence objects.
@@ -36,6 +36,8 @@
 //    • Mastery-aware — exposes skillLevel + masteryTier.
 //    • System-age-aware — exposes systemAgeCategory.
 //    • Human-safe — no private data, no sensitive fields.
+//    • Advantage-aware — shows advantageField / advantageBand.
+//    • Pressure-aware — can surface meshPressure / flowPressure hints.
 //
 //  CONTRACT:
 //    ALWAYS:
@@ -53,33 +55,38 @@ import {
   OrganismIdentity,
   buildPulseOrganismMap as buildOrganismMap
 } from "../PULSE-X/PulseWorldOrganismMap-v24.js";
+
 const Identity = OrganismIdentity(import.meta.url);
 
 // 2 — EXPORT GENOME METADATA
-// export const PulseMeshMeta = Identity.OrganMeta;
 export const pulseRole = Identity.pulseRole;
 export const PulseRole = Identity.pulseRole;
 export const surfaceMeta = Identity.surfaceMeta;
 export const pulseLoreContext = Identity.pulseLoreContext;
-// export const PULSE_EARN_IMMUNE_CONTEXT = Identity.pulseLoreContext;
 export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
 export const EXPORT_META = Identity.EXPORT_META;
+
+// ============================================================================
+// FACTORY — v24 IMMORTAL-ADVANTAGE++
+// ============================================================================
 export function createPresenceAwarenessPage({
   PulseSenses,
   PresenceScanner,
   SystemClock,
   IdentityDirectory,
   PublicProfile,
-  log, warn, error
+  log,
+  warn,
+  error
 }) {
 
   // -------------------------------------------------------------------------
-  // META BLOCK — IMMORTAL-GRADE
-  // -------------------------------------------------------------------------
+  // META BLOCK — IMMORTAL-ADVANTAGE++
+// -------------------------------------------------------------------------
   const meta = Object.freeze({
     layer: "PresenceAwarenessPage",
     role: "PRESENCE_HUD",
-    version: "15.0-Evo",
+    version: "24.0-IMMORTAL-ADVANTAGE++",
     evo: {
       presenceAware: true,            // Reads presence bands + state
       meshAware: true,                // Includes mesh hops + relay
@@ -93,12 +100,29 @@ export function createPresenceAwarenessPage({
       zeroCompute: true,              // Pure metadata shaping
       zeroMutation: true,             // Never mutates inputs
       zeroNetworkFetch: true,         // No external fetch
+      meshPressureAware: true,        // Can surface mesh pressure hints
+      flowPressureAware: true,        // Can surface flow pressure hints
       safeRouteFree: true             // No safeRoute allowed
     }
   });
 
   // -------------------------------------------------------------------------
-  // SAFE NEARBY PRESENCE (HUMAN-FACING, v15.0)
+  // HELPERS
+  // -------------------------------------------------------------------------
+  function clamp01(v) {
+    if (typeof v !== "number" || Number.isNaN(v)) return 0;
+    return Math.max(0, Math.min(1, v));
+  }
+
+  function classifyAgeCategory(days) {
+    if (typeof days !== "number" || Number.isNaN(days)) return "unknown";
+    if (days < 30) return "new";
+    if (days < 365) return "mature";
+    return "veteran";
+  }
+
+  // -------------------------------------------------------------------------
+  // SAFE NEARBY PRESENCE (HUMAN-FACING, v24.0)
 // -------------------------------------------------------------------------
 //  INPUT:
 //    • PresenceScanner.scanNearby()
@@ -107,13 +131,21 @@ export function createPresenceAwarenessPage({
 //    • displayName
 //    • distance
 //    • meshHops
+//    • meshDistance
 //    • presenceBand
+//    • meshPresenceBand
 //    • systemAge
 //    • systemAgeCategory
 //    • skillLevel
 //    • masteryTier
 //    • meshRole
 //    • meshIdentity
+//    • advantageField
+//    • advantageBand
+//    • meshProximity
+//    • meshPressure
+//    • flowPressure
+//    • signalStrength
 //    • publicDetails (safe)
 // -------------------------------------------------------------------------
   function buildNearbyPresenceList() {
@@ -122,15 +154,34 @@ export function createPresenceAwarenessPage({
 
       return raw.map((p) => ({
         displayName: IdentityDirectory.safeName(p.uid),
-        distance: p.distance,
+
+        distance: p.distance ?? null,
         meshHops: p.meshHops ?? null,
-        presenceBand: p.presenceBand,
-        systemAge: SystemClock.safeAgeOf(p.uid),
+        meshDistance: p.meshDistance ?? null,
+
+        presenceBand: p.presenceBand ?? "symbolic",
+        meshPresenceBand: p.meshPresenceBand ?? null,
+
+        systemAge: SystemClock.safeAgeOf
+          ? SystemClock.safeAgeOf(p.uid)
+          : (p.systemAge ?? null),
         systemAgeCategory: p.systemAgeCategory ?? null,
+
         skillLevel: p.skillLevel ?? null,
         masteryTier: p.masteryTier ?? null,
+
         meshRole: p.meshRole ?? null,
         meshIdentity: p.meshIdentity ?? null,
+
+        advantageField: p.advantageField ?? null,
+        advantageBand: p.advantageBand ?? null,
+
+        meshProximity: p.meshProximity ?? null,
+        meshPressure: p.meshPressure ?? null,
+        flowPressure: p.flowPressure ?? null,
+
+        signalStrength: p.signalStrength ?? null,
+
         publicDetails: PublicProfile.safeDetails(p.uid)
       }));
     } catch (err) {
@@ -140,16 +191,12 @@ export function createPresenceAwarenessPage({
   }
 
   // -------------------------------------------------------------------------
-  // SYSTEM AGE (SELF, HUMAN-FACING)
+  // SYSTEM AGE (SELF, HUMAN-FACING, v24.0)
 // -------------------------------------------------------------------------
   function getSystemAge() {
     try {
       const days = SystemClock.organismAgeDays();
-      let category = "unknown";
-
-      if (days < 30) category = "new";
-      else if (days < 365) category = "mature";
-      else category = "veteran";
+      const category = classifyAgeCategory(days);
 
       return {
         uptimeSeconds: SystemClock.uptimeSeconds(),
@@ -167,18 +214,29 @@ export function createPresenceAwarenessPage({
   }
 
   // -------------------------------------------------------------------------
-  // PAGE BUILDER (v15.0)
+  // PAGE BUILDER (v24.0 IMMORTAL-ADVANTAGE++)
 // -------------------------------------------------------------------------
   function build(entryNodeId, context = {}) {
     const senses = PulseSenses.forAwarenessPage(entryNodeId, context);
     const nearby = buildNearbyPresenceList();
     const age = getSystemAge();
 
+    const meshPressure = clamp01(senses.mesh?.pressure ?? 0);
+    const flowPressure = clamp01(senses.flow?.pressure ?? 0);
+
+    const pressureField = {
+      meshPressure,
+      flowPressure,
+      combinedPressure: clamp01((meshPressure + flowPressure) / 2)
+    };
+
     return Object.freeze({
       meta,
+
       performance: senses.performance,
       stability: senses.stability,
       drift: senses.drift,
+
       environment: senses.environment,
       safety: senses.safety,
       hormones: senses.hormones,
@@ -186,7 +244,10 @@ export function createPresenceAwarenessPage({
       mesh: senses.mesh,
       sdn: senses.sdn,
       mode: senses.mode,
+
       narrative: senses.narrative,
+      pressureField,
+
       nearbyPresence: nearby,
       systemAge: age
     });

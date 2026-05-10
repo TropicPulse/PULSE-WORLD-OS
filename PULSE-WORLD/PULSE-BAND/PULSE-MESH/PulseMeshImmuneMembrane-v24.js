@@ -1,10 +1,10 @@
 // ============================================================================
-//  PULSE OS v15-Evo-Immortal — IMMUNE MEMBRANE LAYER  // red
+//  PULSE OS v24-IMMORTAL-ADVANTAGE++ — IMMUNE MEMBRANE LAYER  // red
 //  “System Safety Membrane / Structural Validation / Quarantine / Metadata‑Only”
 // ============================================================================
 //
-// IDENTITY — IMMUNE MEMBRANE (v15-Evo-Immortal):
-// ---------------------------------------------
+// IDENTITY — IMMUNE MEMBRANE (v24-IMMORTAL-ADVANTAGE++):
+// ------------------------------------------------------
 // • First-line safety membrane for all impulses.
 // • Pure structural validation — no pressure gating.
 // • Pure metadata-only — zero payload mutation.
@@ -14,7 +14,7 @@
 // • Presence-aware, binary-aware, dual-band-ready, drift-proof,
 //   advantage-aware, mesh-pressure-aware, flow-aware, drift-aware.
 //
-// SAFETY CONTRACT (v15):
+// SAFETY CONTRACT (v24):
 // ----------------------
 // • No payload access.
 // • No score/energy mutation.
@@ -26,28 +26,32 @@
 // • Zero randomness, zero timestamps, zero async.
 // • Zero mutation of input outside metadata flags.
 // ============================================================================
+
 import {
-  OrganismIdentity,
-  buildPulseOrganismMap as buildOrganismMap
+  OrganismIdentity
 } from "../PULSE-X/PulseWorldOrganismMap-v24.js";
+
 const Identity = OrganismIdentity(import.meta.url);
 
-// 2 — EXPORT GENOME METADATA
-// export const PulseMeshMeta = Identity.OrganMeta;
+// ---------------------------------------------------------------------------
+// META EXPORTS — v24 IMMORTAL KERNEL
+// ---------------------------------------------------------------------------
 export const pulseRole = Identity.pulseRole;
 export const PulseRole = Identity.pulseRole;
 export const surfaceMeta = Identity.surfaceMeta;
 export const pulseLoreContext = Identity.pulseLoreContext;
-// export const PULSE_EARN_IMMUNE_CONTEXT = Identity.pulseLoreContext;
 export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
 export const EXPORT_META = Identity.EXPORT_META;
 
+// ============================================================================
+// IMMUNE MEMBRANE ORGAN — v24-IMMORTAL-ADVANTAGE++
+// ============================================================================
 export function createPulseImmune() {
 
   const meta = {
     layer: "PulseImmune",
     role: "IMMUNE_MEMBRANE",
-    version: "15-Evo-Immortal",
+    version: "24-IMMORTAL-ADVANTAGE++",
     target: "full-mesh",
     selfRepairable: true,
     evo: {
@@ -80,15 +84,14 @@ export function createPulseImmune() {
     }
   };
 
-
   // ---------------------------------------------------------------------------
-  // STRUCTURAL VALIDATION (v15)
-  // ---------------------------------------------------------------------------
+  // STRUCTURAL VALIDATION (v24)
+// ---------------------------------------------------------------------------
   function validateStructure(impulse) {
-    if (!impulse.id) return fail("missing_id");
-    if (!impulse.payloadRef) return fail("missing_payloadRef");
+    if (!impulse.id)                return fail("missing_id");
+    if (!impulse.payloadRef)        return fail("missing_payloadRef");
     if (typeof impulse.energy !== "number") return fail("invalid_energy");
-    if (typeof impulse.score !== "number") return fail("invalid_score");
+    if (typeof impulse.score  !== "number") return fail("invalid_score");
     return pass();
   }
 
@@ -98,12 +101,10 @@ export function createPulseImmune() {
 
     if (keys.length > 256) return fail("too_many_flags");
 
-    // v15: forbid obviously unsafe meta flags
     if (flags.unsafe_override === true) return fail("unsafe_override_flag");
 
     return pass();
   }
-
 
   // ---------------------------------------------------------------------------
   // MODE SANITY (binary/symbolic/dual/presence-band)
@@ -127,10 +128,9 @@ export function createPulseImmune() {
     return pass();
   }
 
-
   // ---------------------------------------------------------------------------
-  // ANOMALY QUARANTINE (v15)
-  // ---------------------------------------------------------------------------
+  // ANOMALY QUARANTINE (v24)
+// ---------------------------------------------------------------------------
   function quarantine(impulse) {
     const f = impulse.flags || {};
 
@@ -157,10 +157,9 @@ export function createPulseImmune() {
     return pass();
   }
 
-
   // ---------------------------------------------------------------------------
-  // ROUTE HINT SANITY (v15)
-  // ---------------------------------------------------------------------------
+  // ROUTE HINT SANITY (v24)
+// ---------------------------------------------------------------------------
   function routeSanity(impulse) {
     const hint = impulse.routeHint;
     if (!hint) return pass();
@@ -173,35 +172,38 @@ export function createPulseImmune() {
     return pass();
   }
 
-
   // ---------------------------------------------------------------------------
-  // ENERGY FLOOR (v15)
-  // ---------------------------------------------------------------------------
+  // ENERGY FLOOR (v24)
+// ---------------------------------------------------------------------------
   function energyFloor(impulse) {
     if (isNaN(impulse.energy)) return fail("energy_nan");
-    if (impulse.energy < 0) return fail("energy_negative");
+    if (impulse.energy < 0)    return fail("energy_negative");
     return pass();
   }
 
-
   // ---------------------------------------------------------------------------
-  // PRESSURE / DRIFT REFLECTION (metadata-only, no gating)
-  // ---------------------------------------------------------------------------
-  function reflectPressureAndDrift(impulse) {
+  // PRESSURE / DRIFT / ADVANTAGE REFLECTION (metadata-only)
+// ---------------------------------------------------------------------------
+  function reflectPressureDriftAdvantage(impulse) {
     const f = impulse.flags || {};
 
     let pressureScore = 0;
-    if (f.flow_throttled) pressureScore += 0.3;
-    if (f.aura_system_under_tension) pressureScore += 0.3;
-    if (f.aura_in_loop) pressureScore += 0.2;
-    if (f.cortex_anomaly || f.cortex_flow_anomaly || f.cortex_factoring_anomaly) {
-      pressureScore += 0.3;
-    }
+    if (f.flow_throttled)              pressureScore += 0.3;
+    if (f.aura_system_under_tension)   pressureScore += 0.3;
+    if (f.aura_in_loop)                pressureScore += 0.2;
+    if (f.cortex_anomaly ||
+        f.cortex_flow_anomaly ||
+        f.cortex_factoring_anomaly)    pressureScore += 0.3;
 
     const driftScore =
       (f.aura_in_loop ? 0.3 : 0) +
       (f.aura_system_under_tension ? 0.2 : 0) +
       (f.immune_quarantined ? 0.3 : 0);
+
+    const advantageBias =
+      typeof f.aura_advantage_bias === "number"
+        ? clamp01(f.aura_advantage_bias)
+        : 0;
 
     if (pressureScore > 0) {
       impulse.flags.immune_pressure_reflection = clamp01(pressureScore);
@@ -211,14 +213,17 @@ export function createPulseImmune() {
       impulse.flags.immune_drift_reflection = clamp01(driftScore);
     }
 
-    if (pressureScore > 0 || driftScore > 0) {
+    if (advantageBias > 0) {
+      impulse.flags.immune_advantage_reflection = advantageBias;
+    }
+
+    if (pressureScore > 0 || driftScore > 0 || advantageBias > 0) {
       impulse.flags.immune_watch_only = true;
     }
   }
 
-
   // ---------------------------------------------------------------------------
-  // IMMUNE ENGINE (v15)
+  // IMMUNE ENGINE (v24-IMMORTAL-ADVANTAGE++)
 // ---------------------------------------------------------------------------
   function applyPulseImmune(impulse) {
     impulse.flags = impulse.flags || {};
@@ -238,20 +243,18 @@ export function createPulseImmune() {
       if (!result.ok) {
         impulse.flags[`immune_${result.reason}`] = true;
         impulse.flags.immune_failed = true;
-        // still reflect pressure/drift for diagnostics
-        reflectPressureAndDrift(impulse);
+        reflectPressureDriftAdvantage(impulse);
         return impulse;
       }
     }
 
     impulse.flags.immune_passed = true;
-    reflectPressureAndDrift(impulse);
+    reflectPressureDriftAdvantage(impulse);
     return impulse;
   }
 
   return applyPulseImmune;
 }
-
 
 // ---------------------------------------------------------------------------
 // HELPERS

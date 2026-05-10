@@ -1,11 +1,12 @@
 // ============================================================================
-// [pulse:echo] PULSE_OS_DIAGNOSTIC_REFLECTION v15-Evo-Immortal  // silver
+// FILE: PulseOSDiagnosticReflection-v24-IMMORTAL-ADVANTAGE.js
+// [pulse:echo] PULSE_OS_DIAGNOSTIC_REFLECTION v24-IMMORTAL-ADVANTAGE++  // silver
 // Diagnostic Reflection Layer • Metadata-Only • Read-Only • Non-Interference
 // Presence-Aware • Binary-Aware • Dual-Band • Drift-Proof • Advantage-Aware
 // ============================================================================
 //
-// IDENTITY — THE SILVER ORGAN (v15-Evo-Immortal):
-// -----------------------------------------------
+// IDENTITY — THE SILVER ORGAN (v24-IMMORTAL-ADVANTAGE++):
+// -------------------------------------------------------
 // • Sends metadata-only diagnostic pulses ("echo pulses").
 // • Measures system friction, drift, loops, sync, organ usage, mesh pressure.
 // • Reads metadata from all layers without influencing them.
@@ -17,38 +18,40 @@
 //   unified-advantage-field, mesh-pressure-aware, flow-aware, drift-aware,
 //   multi-instance-ready, chunk/prewarm-ready.
 //
-// SAFETY CONTRACT (v15):
-// -----------------------
+// SAFETY CONTRACT (v24):
+// ----------------------
 // • Metadata-only
 // • Read-only
 // • No loops, no sync, no hormones, no memory writes
 // • No autonomy, no sentience, no self-model
 // • Deterministic: same system → same reflection
-// • Zero imports — all dependencies injected by CNS
+// • Zero imports for logic — all dependencies injected by CNS
 // • Zero routing influence
 // • Zero mutation of input
 // ============================================================================
+
 import {
-  OrganismIdentity,
-  buildPulseOrganismMap as buildOrganismMap
+  OrganismIdentity
 } from "../PULSE-X/PulseWorldOrganismMap-v24.js";
+
 const Identity = OrganismIdentity(import.meta.url);
 
-// 2 — EXPORT GENOME METADATA
+// ---------------------------------------------------------------------------
+// META EXPORTS — v24 IMMORTAL KERNEL
+// ---------------------------------------------------------------------------
 export const pulseRole = Identity.pulseRole;
 export const surfaceMeta = Identity.surfaceMeta;
 export const pulseLoreContext = Identity.pulseLoreContext;
-// export const PULSE_EARN_IMMUNE_CONTEXT = Identity.pulseLoreContext;
 export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
 export const EXPORT_META = Identity.EXPORT_META;
-// ============================================================================
-// [pulse:echo] PULSE_OS_DIAGNOSTIC_REFLECTION v15-Evo-Immortal  // silver
-// FULL UTILIZATION EDITION — now fully mesh-aware
-// ============================================================================
 
+// ============================================================================
+// PULSE_OS_DIAGNOSTIC_REFLECTION v24-IMMORTAL-ADVANTAGE++
+// FULL UTILIZATION EDITION — fully mesh-aware, aura-aware, advantage-aware
+// ============================================================================
 export function createPulseEcho({
   flow,
-  mesh,   // <-- NOW FULLY USED
+  mesh,
   log,
   warn,
   error
@@ -57,7 +60,7 @@ export function createPulseEcho({
   const meta = {
     layer: "PulseEcho",
     role: "DIAGNOSTIC_REFLECTION",
-    version: "15-Evo-Immortal-FULL-MESH",
+    version: "24-IMMORTAL-ADVANTAGE++",
     target: "full-mesh",
     selfRepairable: true,
     evo: {
@@ -91,9 +94,9 @@ export function createPulseEcho({
     }
   };
 
-  // -------------------------------------------------------
+  // -------------------------------------------------------------------------
   // PUBLIC: SEND_ECHO
-  // -------------------------------------------------------
+  // -------------------------------------------------------------------------
   function sendEcho(entryNodeId, context = {}) {
     const echo = createEchoPulse(context);
 
@@ -104,15 +107,15 @@ export function createPulseEcho({
       binaryMode: false,
       dualMode: true,
       presenceBand: context.presenceBand || "symbolic",
-      presenceTag: context.presenceTag || "PulseEcho-v15"
+      presenceTag: context.presenceTag || "PulseEcho-v24"
     });
 
     return extractReflection(result);
   }
 
-  // -------------------------------------------------------
+  // -------------------------------------------------------------------------
   // INTERNAL: CREATE ECHO PULSE
-  // -------------------------------------------------------
+  // -------------------------------------------------------------------------
   function createEchoPulse(context) {
     return {
       id: "echo_diagnostic",
@@ -121,25 +124,23 @@ export function createPulseEcho({
         echo: true,
         echo_meta: meta,
         presence_band: context.presenceBand || "symbolic",
-        presence_tag: context.presenceTag || "PulseEcho-v15"
+        presence_tag: context.presenceTag || "PulseEcho-v24"
       },
       metadata: { context },
       payloadRef: null
     };
   }
 
-  // -------------------------------------------------------
-  // INTERNAL: EXTRACT REFLECTION (NOW MESH-AWARE)
-// -------------------------------------------------------
+  // -------------------------------------------------------------------------
+  // INTERNAL: EXTRACT REFLECTION (MESH + AURA + ADVANTAGE AWARE)
+// -------------------------------------------------------------------------
   function extractReflection(impulse) {
     const flags = impulse.flags || {};
 
     return {
       echoId: impulse.id || "echo_diagnostic",
 
-      // ---------------------------------------------------
       // MODE + PRESENCE
-      // ---------------------------------------------------
       mode: {
         binary: !!flags.binary_mode,
         symbolic: !flags.binary_mode,
@@ -148,14 +149,12 @@ export function createPulseEcho({
 
       presence: {
         band: flags.presence_band || "symbolic",
-        tag: flags.presence_tag || "PulseEcho-v15",
+        tag: flags.presence_tag || "PulseEcho-v24",
         auraBand: flags.aura_presence_band || null,
         auraTag: flags.aura_presence_tag || null
       },
 
-      // ---------------------------------------------------
       // FLOW + PRESSURE
-      // ---------------------------------------------------
       flow: {
         throttled: !!flags.flow_throttled,
         reason: flags.flow_throttled_reason || null,
@@ -163,9 +162,7 @@ export function createPulseEcho({
         recentThrottleRate: flags.recent_throttle_rate ?? null
       },
 
-      // ---------------------------------------------------
       // AURA PRESSURE + LOOPING
-      // ---------------------------------------------------
       aura: {
         inLoop: !!flags.aura_in_loop,
         loopDepth: flags.aura_loop_depth ?? 0,
@@ -176,12 +173,12 @@ export function createPulseEcho({
         factoringBias: flags.aura_factoring_bias ?? null,
         prefersBinaryMesh: !!flags.aura_prefers_binary_mesh,
         binaryMeshBias: flags.aura_binary_mesh_bias ?? null,
-        binaryOSAvailable: !!flags.aura_binary_os_available
+        binaryOSAvailable: !!flags.aura_binary_os_available,
+        advantageBias: flags.aura_advantage_bias ?? null,
+        advantageCascade: !!flags.aura_advantage_cascade
       },
 
-      // ---------------------------------------------------
-      // MESH (NOW FULLY REFLECTED)
-      // ---------------------------------------------------
+      // MESH (FULLY REFLECTED)
       mesh: {
         hops: typeof impulse.hops === "number" ? impulse.hops : 0,
 
@@ -191,19 +188,16 @@ export function createPulseEcho({
 
         driftPressure: flags.drift_pressure ?? null,
 
-        // NEW: mesh environment reflection
         meshMeta: mesh?.meta ?? null,
         meshSystems: mesh?.systems ? Object.keys(mesh.systems) : [],
         meshLinks: mesh?.symbolicMesh?.links
           ? Object.keys(mesh.symbolicMesh.links)
           : [],
-        binaryMeshReady: mesh?.binaryMesh ? true : false,
-        symbolicMeshReady: mesh?.symbolicMesh ? true : false
+        binaryMeshReady: !!mesh?.binaryMesh,
+        symbolicMeshReady: !!mesh?.symbolicMesh
       },
 
-      // ---------------------------------------------------
       // REFLEX + IMMUNE + MEMORY + HORMONES
-      // ---------------------------------------------------
       reflex: {
         dropped: hasAnyReflexDropFlag(flags),
         reflexFlags: extractPrefixed(flags, "instinct_")
@@ -221,19 +215,17 @@ export function createPulseEcho({
         event: flags.hormone_event || null
       },
 
-      // ---------------------------------------------------
       // ADVANTAGE FIELD
-      // ---------------------------------------------------
       advantage: {
         binaryPreferred: !!flags.aura_prefers_binary_mesh,
         binaryBias: flags.aura_binary_mesh_bias ?? null,
         factoredPath: !!flags.mesh_factored,
-        factorDepth: flags.mesh_factor_depth ?? null
+        factorDepth: flags.mesh_factor_depth ?? null,
+        advantageBias: flags.aura_advantage_bias ?? null,
+        advantageCascade: !!flags.aura_advantage_cascade
       },
 
-      // ---------------------------------------------------
       // STABILITY + DRIFT
-      // ---------------------------------------------------
       stability: estimateStability(flags),
       driftRisk: estimateDrift(flags),
 
@@ -241,9 +233,9 @@ export function createPulseEcho({
     };
   }
 
-  // -------------------------------------------------------
+  // -------------------------------------------------------------------------
   // STABILITY + DRIFT HEURISTICS
-  // -------------------------------------------------------
+  // -------------------------------------------------------------------------
   function estimateStability(flags) {
     let score = 1;
 
@@ -263,17 +255,18 @@ export function createPulseEcho({
     if (flags.aura_system_under_tension) risk += 0.2;
     if (flags.immune_quarantined) risk += 0.3;
     if (flags.flow_throttled) risk += 0.2;
-    if (flags.drift_pressure !== undefined) risk += flags.drift_pressure * 0.3;
+    if (flags.drift_pressure !== undefined) risk += (flags.drift_pressure || 0) * 0.3;
 
     return Math.max(0, Math.min(1, risk));
   }
 
-  // -------------------------------------------------------
+  // -------------------------------------------------------------------------
   // HELPERS
-  // -------------------------------------------------------
+  // -------------------------------------------------------------------------
   function hasAnyReflexDropFlag(flags) {
-    return Object.keys(flags).some((k) => k.startsWith("instinct_") && k.endsWith("_drop"))
-        || Object.keys(flags).some((k) => k.startsWith("reflex_drop_at_"));
+    const keys = Object.keys(flags);
+    return keys.some((k) => k.startsWith("instinct_") && k.endsWith("_drop")) ||
+           keys.some((k) => k.startsWith("reflex_drop_at_"));
   }
 
   function extractPrefixed(flags, prefix) {
@@ -282,9 +275,9 @@ export function createPulseEcho({
       .map((k) => k.replace(prefix, ""));
   }
 
-  // -------------------------------------------------------
+  // -------------------------------------------------------------------------
   // PUBLIC API
-  // -------------------------------------------------------
+  // -------------------------------------------------------------------------
   return {
     meta,
     sendEcho

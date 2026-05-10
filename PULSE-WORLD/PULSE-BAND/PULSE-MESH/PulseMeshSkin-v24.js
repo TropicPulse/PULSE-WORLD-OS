@@ -1,55 +1,54 @@
 // ============================================================================
-// FILE: /organs/skin/PulseMeshSkin.js
-// [pulse:mesh] PULSE_OS_SKIN_LAYER v12.3-Presence-Evo-MAX-PRIME  // silver
-// Boundary Membrane • Entry–Exit Normalization • Deterministic Skin
+// FILE: /organs/skin/PulseMeshSkin-v24-IMMORTAL-ADVANTAGE++.js
+// [pulse:mesh] PULSE_OS_SKIN_LAYER v24-IMMORTAL-ADVANTAGE++  // silver
+// Boundary Membrane • Entry–Exit Normalization • Zero-Trust Surface
+// Deterministic • Drift-Proof • Metadata-Only • Dual-Band • Mesh-Aware
 // ============================================================================
 //
-// IDENTITY — THE SKIN (v12.3):
-// ----------------------------
+// IDENTITY — THE SKIN (v24 IMMORTAL ADVANTAGE++):
+// -----------------------------------------------
 // • First organ touched by every impulse entering the organism.
 // • Last organ to touch every impulse leaving the organism.
-// • Normalizes entry (score, energy, mode, presence-band).
-// • Cleans exit (strips internal metadata).
-// • Pure metadata-only — zero payload mutation.
-// • No pressure reactivity, no friction, no noise.
+// • Pure metadata-only normalization — zero payload mutation.
+// • Zero-trust boundary membrane: validates, tags, normalizes.
 // • Deterministic-field, drift-proof, SDN-aligned.
 // • Presence-aware, binary-aware, dual-band-ready.
+// • Mesh-aware, advantage-aware, pressure-aware.
+// • IMMORTAL: zero randomness, zero compute, zero shaping.
 //
-// SAFETY CONTRACT (v12.3):
-// -------------------------
+// SAFETY CONTRACT (v24):
+// -----------------------
 // • No routing, no compute, no shaping.
 // • No payload mutation.
 // • No async, no randomness.
-// • Metadata-only, reversible, safe.
-// • Zero imports — CNS injects dependencies.
-// • Drift-proof, deterministic, multi-instance-ready.
+// • Zero external mutation.
+// • Zero network fetch.
+// • Deterministic, reversible, safe.
+// • Multi-instance-ready.
 // ============================================================================
-import {
-  OrganismIdentity,
-  buildPulseOrganismMap as buildOrganismMap
-} from "../PULSE-X/PulseWorldOrganismMap-v24.js";
+
+import { OrganismIdentity } from "../PULSE-X/PulseWorldOrganismMap-v24.js";
 const Identity = OrganismIdentity(import.meta.url);
 
-// 2 — EXPORT GENOME METADATA
-// export const PulseMeshMeta = Identity.OrganMeta;
+// META EXPORTS
 export const pulseRole = Identity.pulseRole;
 export const PulseRole = Identity.pulseRole;
 export const surfaceMeta = Identity.surfaceMeta;
 export const pulseLoreContext = Identity.pulseLoreContext;
-// export const PULSE_EARN_IMMUNE_CONTEXT = Identity.pulseLoreContext;
 export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
 export const EXPORT_META = Identity.EXPORT_META;
+
 export function createPulseSkin({ log, warn, error }) {
 
   // ==========================================================================
-  // IMMORTAL META — v15
+  // IMMORTAL META — v24
   // ==========================================================================
   const SkinState = {
     meta: Object.freeze({
       layer: "PulseSkin",
       role: "BOUNDARY_MEMBRANE",
-      version: "15-Evo-Immortal",
-      lineage: "PulseMesh-v15",
+      version: "24-IMMORTAL-ADVANTAGE++",
+      lineage: "PulseMesh-v24",
       target: "full-mesh",
       selfRepairable: true,
 
@@ -69,15 +68,15 @@ export function createPulseSkin({ log, warn, error }) {
         meshAware: true,
 
         advantageCascadeAware: true,
-        pulseEfficiencyAware: true,
         unifiedAdvantageField: true,
+        pulseEfficiencyAware: true,
+
+        meshPressureAware: true,
+        auraPressureAware: true,
+
         deterministicField: true,
         futureEvolutionReady: true,
         multiInstanceReady: true,
-
-        signalFactoringAware: true,
-        meshPressureAware: true,
-        auraPressureAware: true,
 
         zeroCompute: true,
         zeroMutation: true,
@@ -117,7 +116,7 @@ export function createPulseSkin({ log, warn, error }) {
     normalizeEntry(impulse) {
       impulse.flags = impulse.flags || {};
       impulse.flags.skin_entry_normalized = true;
-      impulse.flags.skin_lineage = "skin-v15-immortal";
+      impulse.flags.skin_lineage = "skin-v24-immortal";
 
       // ---------------------------------------------------
       // MODE + PRESENCE-BAND DETERMINISTIC TAGGING
@@ -125,17 +124,17 @@ export function createPulseSkin({ log, warn, error }) {
       if (impulse.flags.binary_mode) {
         impulse.flags.skin_mode = "binary";
         impulse.band = "binary";
-        impulse.flags.skin_band_lineage = "band-binary-v15";
+        impulse.flags.skin_band_lineage = "band-binary-v24";
       }
       else if (impulse.flags.dual_mode) {
         impulse.flags.skin_mode = "dual";
         impulse.band = "dual";
-        impulse.flags.skin_band_lineage = "band-dual-v15";
+        impulse.flags.skin_band_lineage = "band-dual-v24";
       }
       else {
         impulse.flags.skin_mode = "symbolic";
         impulse.band = "symbolic";
-        impulse.flags.skin_band_lineage = "band-symbolic-v15";
+        impulse.flags.skin_band_lineage = "band-symbolic-v24";
       }
 
       // ---------------------------------------------------
@@ -150,9 +149,21 @@ export function createPulseSkin({ log, warn, error }) {
       impulse.flags.skin_presence_band = impulse.band;
 
       // ---------------------------------------------------
+      // ADVANTAGE + PRESSURE REFLECTION (metadata-only)
+      // ---------------------------------------------------
+      if (impulse.flags.mesh_pressure != null)
+        impulse.flags.skin_mesh_pressure_reflection = impulse.flags.mesh_pressure;
+
+      if (impulse.flags.aura_pressure != null)
+        impulse.flags.skin_aura_pressure_reflection = impulse.flags.aura_pressure;
+
+      if (impulse.flags.advantage_field != null)
+        impulse.flags.skin_advantage_field = impulse.flags.advantage_field;
+
+      // ---------------------------------------------------
       // IMMORTAL SURFACE SIGNATURE
       // ---------------------------------------------------
-      impulse.flags.skin_surface_signature = "surface-v15-immortal";
+      impulse.flags.skin_surface_signature = "surface-v24-immortal";
 
       return impulse;
     },
@@ -167,9 +178,7 @@ export function createPulseSkin({ log, warn, error }) {
       // IMMORTAL: safe metadata scrubbing
       impulse.flags.skin_exit_scrubbed = true;
 
-      // We do NOT delete flags — we mark them as scrubbed.
-      // Router/SendSystem may remove internal flags later.
-
+      // We do NOT delete flags — Router/SendSystem may strip internals later.
       return impulse;
     }
   };
@@ -201,7 +210,6 @@ export function createPulseSkin({ log, warn, error }) {
     state: SkinState
   };
 }
-
 
 // ============================================================================
 // HELPERS

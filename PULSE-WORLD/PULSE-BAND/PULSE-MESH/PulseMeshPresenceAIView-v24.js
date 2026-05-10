@@ -1,18 +1,19 @@
 // ============================================================================
-// FILE: PulseMeshPresenceAIView.js
-// PULSE OS v15.0 — PRESENCE-Evo-MESH-AWARE
+// FILE: PulseMeshPresenceAIView-v24-IMMORTAL-ADVANTAGE++.js
+// PULSE OS v24.0 — PRESENCE-Evo-MESH-AWARE-ADVANTAGE++
 // ---------------------------------------------------------------------------
-//  PRESENCE AI VIEW (MACHINE-FACING, IMMORTAL-GRADE COMMENTARY)
+//  PRESENCE AI VIEW (MACHINE-FACING, IMMORTAL-ADVANTAGE FIELD)
 // ---------------------------------------------------------------------------
 //  ROLE:
-//    • This organ is the *safe, machine-facing presence surface*.
-//    • It exposes presence, mesh, mastery, and system-age metadata to AI
-//      without leaking unsafe or high-pressure details.
-//    • It is the canonical source for:
-//        - nearbyPresence (AI-safe)
+//    • Safe, machine-facing presence surface for AI + Overmind.
+//    • Exposes presence, mesh, mastery, system-age, and advantage metadata
+//      without leaking unsafe or high-pressure internals.
+//    • Canonical source for:
+//        - nearbyPresence (AI-safe, v24 fields)
 //        - systemAge (AI-safe)
 //        - performance + stability + drift signals
 //        - mesh + mode + aura + hormones + environment
+//        - advantageField + pressureField (AI-readable)
 //
 //  ARCHITECTURAL POSITION:
 //    • Lives in the Presence layer.
@@ -28,16 +29,17 @@
 //        - OvermindPresence
 //        - PresenceJobView
 //
-//  GUARANTEES:
+//  GUARANTEES (v24-IMMORTAL-ADVANTAGE++):
 //    • Deterministic — same input → same output.
 //    • Drift-proof — no topology or scoring drift.
 //    • Zero-mutation — never mutates presence or profile objects.
-//    • Zero-compute — pure metadata shaping, no heavy math.
 //    • Zero-network — no external fetch, no remote calls.
 //    • Dual-band — exposes binary + symbolic presence bands safely.
 //    • Mesh-aware — includes mesh hops, distance, and mesh presence band.
 //    • Mastery-aware — exposes skillLevel + masteryTier (read-only).
 //    • System-age-aware — exposes systemAge + ageCategory (read-only).
+//    • Advantage-field-aware — exposes advantageBand / advantageField.
+//    • Pressure-aware — exposes meshPressure / flowPressure (read-only).
 //
 //  CONTRACT:
 //    ALWAYS:
@@ -50,38 +52,43 @@
 //      • fetchViaCNS
 //
 // ============================================================================
+
 import {
   OrganismIdentity,
   buildPulseOrganismMap as buildOrganismMap
 } from "../PULSE-X/PulseWorldOrganismMap-v24.js";
+
 const Identity = OrganismIdentity(import.meta.url);
 
 // 2 — EXPORT GENOME METADATA
-// export const PulseMeshMeta = Identity.OrganMeta;
 export const pulseRole = Identity.pulseRole;
 export const PulseRole = Identity.pulseRole;
 export const surfaceMeta = Identity.surfaceMeta;
 export const pulseLoreContext = Identity.pulseLoreContext;
-// export const PULSE_EARN_IMMUNE_CONTEXT = Identity.pulseLoreContext;
 export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
 export const EXPORT_META = Identity.EXPORT_META;
 
+// ============================================================================
+// FACTORY — v24 IMMORTAL-ADVANTAGE++
+// ============================================================================
 export function createPresenceAIView({
   PulseSenses,
   PresenceScanner,
   SystemClock,
   IdentityDirectory,
   PublicProfile,
-  log, warn, error
+  log,
+  warn,
+  error
 }) {
 
   // -------------------------------------------------------------------------
-  // META BLOCK — IMMORTAL-GRADE
-  // -------------------------------------------------------------------------
+  // META BLOCK — IMMORTAL-ADVANTAGE++
+// -------------------------------------------------------------------------
   const meta = Object.freeze({
     layer: "PresenceAIView",
     role: "PRESENCE_AI_API",
-    version: "15.0-Evo",
+    version: "24.0-IMMORTAL-ADVANTAGE++",
     evo: {
       presenceAware: true,            // Reads presence bands + state
       meshAware: true,                // Includes mesh hops + distance
@@ -96,12 +103,29 @@ export function createPresenceAIView({
       zeroCompute: true,              // Pure metadata shaping
       zeroMutation: true,             // Never mutates inputs
       zeroNetworkFetch: true,         // No external fetch
+      meshPressureAware: true,        // Reads meshPressure if present
+      flowPressureAware: true,        // Reads flowPressure if present
       safeRouteFree: true             // No safeRoute allowed
     }
   });
 
   // -------------------------------------------------------------------------
-  // SAFE NEARBY PRESENCE (AI-READABLE, v15.0)
+  // HELPERS
+  // -------------------------------------------------------------------------
+  function clamp01(v) {
+    if (typeof v !== "number" || Number.isNaN(v)) return 0;
+    return Math.max(0, Math.min(1, v));
+  }
+
+  function classifyAgeCategory(days) {
+    if (typeof days !== "number" || Number.isNaN(days)) return "unknown";
+    if (days < 30) return "new";
+    if (days < 365) return "mature";
+    return "veteran";
+  }
+
+  // -------------------------------------------------------------------------
+  // SAFE NEARBY PRESENCE (AI-READABLE, v24.0)
 // -------------------------------------------------------------------------
 //  INPUT:
 //    • PresenceScanner.scanNearby() → raw presence nodes
@@ -110,17 +134,22 @@ export function createPresenceAIView({
 //    • uid
 //    • displayName (safe)
 //    • distance
-//    • meshHops (optional, mesh-aware)
-//    • meshDistance (optional, mesh-aware)
+//    • meshHops
+//    • meshDistance
 //    • presenceBand
+//    • meshPresenceBand (optional)
 //    • systemAge
 //    • systemAgeCategory
 //    • skillLevel
 //    • masteryTier
 //    • meshRole
 //    • meshIdentity
-//    • advantageField
+//    • advantageField / advantageBand
+//    • meshProximity
+//    • meshPressure
+//    • flowPressure
 //    • signalStrength
+//    • mentorAffinity (optional, metadata-only)
 //    • publicDetails (safe)
 // -------------------------------------------------------------------------
   function buildNearbyPresenceAI() {
@@ -130,18 +159,34 @@ export function createPresenceAIView({
       return raw.map((p) => ({
         uid: p.uid,
         displayName: IdentityDirectory.safeName(p.uid),
-        distance: p.distance,
+
+        distance: p.distance ?? null,
         meshHops: p.meshHops ?? null,
         meshDistance: p.meshDistance ?? null,
-        presenceBand: p.presenceBand,
+
+        presenceBand: p.presenceBand ?? "symbolic",
+        meshPresenceBand: p.meshPresenceBand ?? null,
+
         systemAge: p.systemAge ?? null,
         systemAgeCategory: p.systemAgeCategory ?? null,
+
         skillLevel: p.skillLevel ?? null,
         masteryTier: p.masteryTier ?? null,
+
         meshRole: p.meshRole ?? null,
         meshIdentity: p.meshIdentity ?? null,
+
         advantageField: p.advantageField ?? null,
+        advantageBand: p.advantageBand ?? null,
+
+        meshProximity: p.meshProximity ?? null,
+        meshPressure: p.meshPressure ?? null,
+        flowPressure: p.flowPressure ?? null,
+
         signalStrength: p.signalStrength ?? null,
+
+        mentorAffinity: p.mentorAffinity ?? null,
+
         publicDetails: PublicProfile.safeDetails(p.uid)
       }));
     } catch (err) {
@@ -151,7 +196,7 @@ export function createPresenceAIView({
   }
 
   // -------------------------------------------------------------------------
-  // SYSTEM AGE (SELF, AI-SAFE)
+  // SYSTEM AGE (SELF, AI-SAFE, v24.0)
 // -------------------------------------------------------------------------
 //  INPUT:
 //    • SystemClock
@@ -165,15 +210,7 @@ export function createPresenceAIView({
     try {
       const uptimeSeconds = SystemClock.uptimeSeconds();
       const organismAgeDays = SystemClock.organismAgeDays();
-
-      let organismAgeCategory = "unknown";
-      if (organismAgeDays < 30) {
-        organismAgeCategory = "new";
-      } else if (organismAgeDays < 365) {
-        organismAgeCategory = "mature";
-      } else {
-        organismAgeCategory = "veteran";
-      }
+      const organismAgeCategory = classifyAgeCategory(organismAgeDays);
 
       return {
         uptimeSeconds,
@@ -191,7 +228,7 @@ export function createPresenceAIView({
   }
 
   // -------------------------------------------------------------------------
-  // AI VIEW BUILDER (v15.0)
+  // AI VIEW BUILDER (v24.0 IMMORTAL-ADVANTAGE++)
 // -------------------------------------------------------------------------
 //  INPUT:
 //    • entryNodeId — presence node requesting the view
@@ -202,8 +239,9 @@ export function createPresenceAIView({
 //    • performance + stability + drift signals
 //    • environment + safety + hormones + aura
 //    • mesh + sdn + mode + presence
+//    • pressureField (mesh/flow)
 //    • narrative_for_ai
-//    • nearbyPresence (AI-safe, v15 fields)
+//    • nearbyPresence (AI-safe, v24 fields)
 //    • systemAge (self, AI-safe)
 // -------------------------------------------------------------------------
   function build(entryNodeId, context = {}) {
@@ -211,12 +249,24 @@ export function createPresenceAIView({
     const nearby = buildNearbyPresenceAI();
     const age = getSystemAgeAI();
 
+    const meshPressure = clamp01(senses.mesh?.pressure ?? 0);
+    const flowPressure = clamp01(senses.flow?.pressure ?? 0);
+
+    const pressureField = {
+      meshPressure,
+      flowPressure,
+      combinedPressure: clamp01((meshPressure + flowPressure) / 2)
+    };
+
     return Object.freeze({
       meta,
+
       performance_percent: senses.performance_percent,
       performance_hint: senses.performance_hint,
+
       stability: senses.stability,
       drift_risk: senses.drift_risk,
+
       environment: senses.environment,
       safety: senses.safety,
       hormones: senses.hormones,
@@ -225,7 +275,11 @@ export function createPresenceAIView({
       sdn: senses.sdn,
       mode: senses.mode,
       presence: senses.presence,
+
+      pressureField,
+
       narrative_for_ai: senses.narrative_for_ai,
+
       nearbyPresence: nearby,
       systemAge: age
     });

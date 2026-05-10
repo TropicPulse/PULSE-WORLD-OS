@@ -1,24 +1,26 @@
 // ============================================================================
-// FILE: /organs/tendons/PulseMeshTendons-v15.0-Immortal.js
-// PULSE OS — v15.0-MESH-Immortal
+// FILE: /organs/tendons/PulseMeshTendons-v24-Immortal.js
+// PULSE OS — v24-MESH-Immortal
 // CONNECTIVE TISSUE ORGAN — “PulseMeshTendons”
 // Intent Translation • Earn-Ready Metadata • Deterministic Connective Tissue
 // Full Advantage Stack: Prewarm • Chunk • Cache • Presence-Band • GPU-Warm
+// Unified-Advantage-Field • IMMORTAL, Coordinator-Free, Metadata-Only
 // ============================================================================
 //
-// IDENTITY — THE TENDON ORGAN (v15.0-Immortal):
-// --------------------------------------------
+// IDENTITY — THE TENDON ORGAN (v24-Immortal):
+// ------------------------------------------
 // • Translates Cortex intent into earn-ready metadata.
 // • Classifies impulses (heavy/medium/light) deterministically.
 // • Shapes routeHint based on class + mode (symbolic/binary/dual).
-// • Stabilizes energy deterministically (v15+ contract).
+// • Stabilizes energy deterministically (v15+ contract, preserved).
 // • Attaches volatility + earn-context for EarnEngine.
-// • Emits earn-prewarm / earn-chunk / earn-cache / presence-band tags.
+// • Emits earn-prewarm / earn-chunk / earn-cache / presence-band / gpu-warm tags.
 // • Pure metadata-only — zero payload mutation.
 // • Deterministic, drift-proof, connective tissue.
 // • Binary-aware, dual-mode-ready, presence-aware, dual-band-ready.
 // • Unified-advantage-field aligned, coordinator-free.
 // ============================================================================
+
 import {
   OrganismIdentity,
   buildPulseOrganismMap as buildOrganismMap
@@ -26,12 +28,10 @@ import {
 const Identity = OrganismIdentity(import.meta.url);
 
 // 2 — EXPORT GENOME METADATA
-// export const PulseMeshMeta = Identity.OrganMeta;
 export const pulseRole = Identity.pulseRole;
 export const PulseRole = Identity.pulseRole;
 export const surfaceMeta = Identity.surfaceMeta;
 export const pulseLoreContext = Identity.pulseLoreContext;
-// export const PULSE_EARN_IMMUNE_CONTEXT = Identity.pulseLoreContext;
 export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
 export const EXPORT_META = Identity.EXPORT_META;
 
@@ -40,10 +40,11 @@ export function createPulseMeshTendons({ log, warn, error }) {
   const tendonMeta = {
     layer: "PulseMeshTendons",
     role: "INTENT_TRANSLATION",
-    version: "15.0-MESH-TENDONS-Immortal",
+    version: "24-MESH-TENDONS-Immortal",
     target: "full-mesh",
     selfRepairable: true,
     evo: {
+      // Awareness
       dualMode: true,
       binaryAware: true,
       symbolicAware: true,
@@ -52,20 +53,23 @@ export function createPulseMeshTendons({ log, warn, error }) {
       localAware: true,
       internetAware: true,
 
+      // Advantage + efficiency
       advantageCascadeAware: true,
       pulseEfficiencyAware: true,
+      unifiedAdvantageField: true,
+
+      // Field guarantees
+      deterministicField: true,
       driftProof: true,
       multiInstanceReady: true,
-
-      unifiedAdvantageField: true,
-      deterministicField: true,
       futureEvolutionReady: true,
 
+      // Pressure + factoring
       signalFactoringAware: true,
       meshPressureAware: true,
       auraPressureAware: true,
 
-      // v15.0+ advantage flags
+      // v24+ advantage flags
       prewarmAware: true,
       chunkAware: true,
       cacheAware: true,
@@ -73,14 +77,34 @@ export function createPulseMeshTendons({ log, warn, error }) {
       dualBandReady: true,
       gpuWarmAware: true,
 
+      // Safety / zero-side-effect guarantees
       zeroCompute: true,
       zeroMutation: true,
-      zeroRoutingInfluence: true
+      zeroRoutingInfluence: true,
+      zeroNetworkFetch: true,
+      zeroExternalMutation: true
+    },
+
+    contract: {
+      always: [
+        "intent-translation",
+        "earn-ready-metadata",
+        "metadata-only",
+        "unified-advantage-field",
+        "deterministic-field"
+      ],
+      never: [
+        "payload-mutation",
+        "async",
+        "network",
+        "fs-io",
+        "non-deterministic-compute"
+      ]
     }
   };
 
   // --------------------------------------------------------------------------
-  // Presence-Band Helper (v15.0)
+  // Presence-Band Helper (v24)
   // --------------------------------------------------------------------------
   function classifyPresenceBand(impulse) {
     const f = impulse.flags || {};
@@ -91,8 +115,9 @@ export function createPulseMeshTendons({ log, warn, error }) {
   }
 
   // ========================================================================
-  // Tendon Pack (v15.0-Immortal)
-  // ========================================================================
+  // Tendon Pack (v24-Immortal)
+  // (Behavior preserved from v15.0 — deterministic, metadata-only)
+// ========================================================================
   const PulseMeshTendons = {
 
     // -------------------------------------------------------
@@ -107,7 +132,7 @@ export function createPulseMeshTendons({ log, warn, error }) {
     },
 
     // -------------------------------------------------------
-    // ROUTE HINT — v15.0 (class + mode + presence-band)
+    // ROUTE HINT — (class + mode + presence-band)
     // -------------------------------------------------------
     routeHint(impulse, cls, presenceBand) {
       impulse.flags = impulse.flags || {};
@@ -131,7 +156,7 @@ export function createPulseMeshTendons({ log, warn, error }) {
     },
 
     // -------------------------------------------------------
-    // SHAPE ENERGY — deterministic stabilization (v15.0)
+    // SHAPE ENERGY — deterministic stabilization
     // -------------------------------------------------------
     shapeEnergy(impulse, cls) {
       impulse.flags = impulse.flags || {};
@@ -141,7 +166,7 @@ export function createPulseMeshTendons({ log, warn, error }) {
       if (cls === "heavy") e *= 1.05;
       if (cls === "light") e *= 0.95;
 
-      // v15.0: binary mode slightly boosts stability
+      // binary mode slightly boosts stability
       if (impulse.flags.binary_mode) e *= 1.02;
 
       impulse.energy = e;
@@ -150,7 +175,7 @@ export function createPulseMeshTendons({ log, warn, error }) {
     },
 
     // -------------------------------------------------------
-    // NORMALIZE EARN ENERGY — clamp to safe range (v15.0)
+    // NORMALIZE EARN ENERGY — clamp to safe range
     // -------------------------------------------------------
     normalizeEarnEnergy(impulse) {
       impulse.flags = impulse.flags || {};
@@ -163,12 +188,12 @@ export function createPulseMeshTendons({ log, warn, error }) {
     },
 
     // -------------------------------------------------------
-    // ATTACH VOLATILITY — deterministic (v15.0)
-// -------------------------------------------------------
+    // ATTACH VOLATILITY — deterministic
+    // -------------------------------------------------------
     attachVolatility(impulse) {
       impulse.flags = impulse.flags || {};
 
-      // v15.0: volatility is mode-aware but deterministic
+      // volatility is mode-aware but deterministic
       if (impulse.flags.binary_mode) {
         impulse.flags.earner_volatility = 0.1;
       } else if (impulse.flags.dual_mode) {
@@ -247,10 +272,11 @@ export function createPulseMeshTendons({ log, warn, error }) {
   };
 
   // ========================================================================
-  // Tendon Engine (v15.0-Immortal)
+  // Tendon Engine (v24-Immortal)
   // “Apply connective tissue shaping for Mesh → EarnEngine”
   // Full advantage: prewarm + chunk + cache + presence-band + gpu-warm
-  // ========================================================================
+  // (Behavior preserved from v15.0)
+// ========================================================================
   function applyPulseMeshTendons(impulse) {
     impulse.flags = impulse.flags || {};
     impulse.flags.tendon_meta = tendonMeta;

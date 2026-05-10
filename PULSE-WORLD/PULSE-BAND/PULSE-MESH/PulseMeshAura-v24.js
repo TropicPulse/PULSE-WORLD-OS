@@ -1,25 +1,25 @@
 // ============================================================================
-// FILE: /organs/aura/PulseMeshAura-v15-Evo-Immortal.js
-// [pulse:mesh] PULSE_MESH_AURA v15-Evo-Immortal  // violet
+// FILE: /PULSE-MESH/PulseMeshAura-v24-IMMORTAL-ADVANTAGE.js
+// [pulse:mesh] PULSE_MESH_AURA v24-IMMORTAL-ADVANTAGE++
 // System-wide Field Layer • Stabilization Loops • Multi-Instance Resonance
 // Metadata-only • Zero Compute • Zero Payload Mutation (flags-only)
-// Presence-aware • Binary-aware • Advantage-cascade-aware
+// Presence-aware • Binary-aware • Advantage-cascade-aware • Drift-proof
 // ============================================================================
 //
-// IDENTITY — THE AURA FIELD (v15-Evo-Immortal):
-//  --------------------------------------------
+// IDENTITY — THE AURA FIELD (v24-IMMORTAL-ADVANTAGE++):
+//  ----------------------------------------------------
 //  • Organism-wide field surrounding all pulses and instances.
 //  • Provides stabilization loops (loop field).
 //  • Provides multi-instance resonance (sync field).
-//  • Senses Flow pressure + recent throttles → adaptive stabilization hints.
-//  • Senses mesh factoring pressure → factoring hints for mesh/organs.
+//  • Senses Flow pressure + recent throttles → stabilization hints.
+//  • Senses mesh factoring pressure → factoring hints.
 //  • Metadata-only: tags, hints, and gentle shaping fields (flags-only).
 //  • Advantage-cascade aware: inherits ANY systemic advantage automatically.
 //  • Binary-aware + Presence-aware: tags pulses with band + presence origin.
 //  • Fully deterministic: same impulse + same AuraState → same aura tags.
 //  • Zero randomness, zero timestamps, zero async, zero network, zero FS.
 //
-// SAFETY CONTRACT (v15):
+// SAFETY CONTRACT (v24):
 //  ----------------------
 //  • No randomness
 //  • No timestamps
@@ -31,49 +31,55 @@
 //  • Zero imports for logic — external deps only via callers
 //  • Presence-aware but presence stays in metadata only
 // ============================================================================
+
 import {
-  OrganismIdentity,
-  buildPulseOrganismMap as buildOrganismMap
+  OrganismIdentity
 } from "../PULSE-X/PulseWorldOrganismMap-v24.js";
+
 const Identity = OrganismIdentity(import.meta.url);
 
-// 2 — EXPORT GENOME METADATA
-// export const PulseMeshMeta = Identity.OrganMeta;
+// ---------------------------------------------------------------------------
+// META EXPORTS — v24 IMMORTAL KERNEL
+// ---------------------------------------------------------------------------
 export const pulseRole = Identity.pulseRole;
-// export const BinaryGPURole = Identity.pulseRole;
 export const surfaceMeta = Identity.surfaceMeta;
 export const pulseLoreContext = Identity.pulseLoreContext;
-// export const PULSE_EARN_IMMUNE_CONTEXT = Identity.pulseLoreContext;
 export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
 export const EXPORT_META = Identity.EXPORT_META;
 
-// -----------------------------------------------------------
-// Aura State (global, metadata-only)
-// -----------------------------------------------------------
+// ============================================================================
+// AURA STATE — v24 IMMORTAL ADVANTAGE++
+// ============================================================================
 const AuraState = {
-  loopStrength: 0.0,          // 0..1: how aggressively we loop drifted impulses
-  loopMaxDepth: 3,            // max loop passes before we stop tagging loops
+  // Stabilization
+  loopStrength: 0.0,
+  loopMaxDepth: 3,
 
-  instanceId: "instance-1",   // logical instance identifier
+  // Multi-instance resonance
+  instanceId: "instance-default",
   clusterId: "cluster-default",
-  syncStrength: 0.0,          // 0..1: how strongly we prefer sync across instances
+  syncStrength: 0.0,
 
-  flowPressure: 0.0,          // 0..1: perceived mesh/flow pressure
-  recentThrottleRate: 0.0,    // 0..1: recent throttling intensity
+  // Flow + pressure sensing
+  flowPressure: 0.0,
+  recentThrottleRate: 0.0,
 
-  // Binary-awareness knobs
-  binaryPreference: 0.0,      // 0..1: how strongly we prefer binary routes
-  binaryMeshReady: true,      // whether mesh has binary counterpart
-  binaryOSReady: true,        // whether OS has binary counterpart
+  // Binary-awareness
+  binaryPreference: 0.0,
+  binaryMeshReady: true,
+  binaryOSReady: true,
 
-  // Presence-awareness knobs
-  presenceBand: "symbolic",           // "symbolic" | "binary" | "dual"
-  presenceTag: "PulseMeshAura-v15",   // origin tag for aura application
+  // Presence-awareness
+  presenceBand: "symbolic", // symbolic | binary | dual
+  presenceTag: "PulseMeshAura-v24",
+
+  // Advantage-awareness
+  advantageBias: 0.0, // 0..1: systemic advantage cascade
 
   meta: {
     layer: "PulseMeshAura",
     role: "AURA_FIELD",
-    version: "15-Evo-Immortal",
+    version: "24-IMMORTAL-ADVANTAGE++",
     target: "full-mesh",
     selfRepairable: true,
     evo: {
@@ -90,8 +96,6 @@ const AuraState = {
       deterministicField: true,
       zeroCompute: true,
       zeroMutation: true,
-
-      // Binary + Presence additions
       binaryAware: true,
       binaryMeshReady: true,
       binaryOSReady: true,
@@ -102,49 +106,27 @@ const AuraState = {
   }
 };
 
-
-// -----------------------------------------------------------
-// Aura Control (trusted writers only, metadata-only)
-//   • All setters are clamp/validate-only, no side effects.
-//   • Used by higher layers (Flow, Presence, Mesh) to tune aura.
-// -----------------------------------------------------------
+// ============================================================================
+// AURA CONTROL — trusted writers only (Flow, Mesh, Presence, Brainstem)
+// ============================================================================
 export const PulseAuraControl = {
-  setLoopStrength(v) {
-    AuraState.loopStrength = clamp01(v);
-  },
+  setLoopStrength(v) { AuraState.loopStrength = clamp01(v); },
   setLoopMaxDepth(d) {
     AuraState.loopMaxDepth = Number.isFinite(d) ? Math.max(0, d) : AuraState.loopMaxDepth;
   },
-  setSyncStrength(v) {
-    AuraState.syncStrength = clamp01(v);
+  setSyncStrength(v) { AuraState.syncStrength = clamp01(v); },
+  setInstanceId(id) { if (typeof id === "string" && id) AuraState.instanceId = id; },
+  setClusterId(id) { if (typeof id === "string" && id) AuraState.clusterId = id; },
+  setFlowPressure(v) { AuraState.flowPressure = clamp01(v); },
+  setRecentThrottleRate(v) { AuraState.recentThrottleRate = clamp01(v); },
+  setBinaryPreference(v) { AuraState.binaryPreference = clamp01(v); },
+  setPresenceBand(b) {
+    if (b === "symbolic" || b === "binary" || b === "dual") AuraState.presenceBand = b;
   },
-  setInstanceId(id) {
-    if (typeof id === "string" && id) AuraState.instanceId = id;
-  },
-  setClusterId(id) {
-    if (typeof id === "string" && id) AuraState.clusterId = id;
-  },
-  setFlowPressure(v) {
-    AuraState.flowPressure = clamp01(v);
-  },
-  setRecentThrottleRate(v) {
-    AuraState.recentThrottleRate = clamp01(v);
-  },
-  setBinaryPreference(v) {
-    AuraState.binaryPreference = clamp01(v);
-  },
-  setPresenceBand(band) {
-    if (band === "symbolic" || band === "binary" || band === "dual") {
-      AuraState.presenceBand = band;
-    }
-  },
-  setPresenceTag(tag) {
-    if (typeof tag === "string" && tag) {
-      AuraState.presenceTag = tag;
-    }
-  },
+  setPresenceTag(tag) { if (typeof tag === "string" && tag) AuraState.presenceTag = tag; },
+  setAdvantageBias(v) { AuraState.advantageBias = clamp01(v); },
+
   snapshot() {
-    // Shallow clone; metadata-only, safe for AI surfaces.
     return {
       ...AuraState,
       meta: {
@@ -155,33 +137,26 @@ export const PulseAuraControl = {
   }
 };
 
-
-// -----------------------------------------------------------
-// Aura Pack: loop + sync + stabilization + binary + presence hints
-//   • Each function is pure metadata shaping (flags-only).
-//   • No payload mutation, no compute beyond simple thresholds.
-// -----------------------------------------------------------
+// ============================================================================
+// AURA PACK — v24 IMMORTAL ADVANTAGE++
+// Pure metadata shaping. Flags only. Zero compute.
+// ============================================================================
 export const PulseAura = {
 
-  // Stabilization sensing: mark tension + stabilization need.
+  // Stabilization sensing
   senseStabilization(impulse) {
     const p = AuraState.flowPressure;
     const t = AuraState.recentThrottleRate;
 
     impulse.flags = impulse.flags || {};
 
-    if (p > 0.3 || t > 0.1) {
-      impulse.flags["aura_system_under_tension"] = true;
-    }
-
-    if (p > 0.5 || t > 0.2) {
-      impulse.flags["aura_stabilization_needed"] = true;
-    }
+    if (p > 0.25 || t > 0.1) impulse.flags["aura_system_under_tension"] = true;
+    if (p > 0.45 || t > 0.2) impulse.flags["aura_stabilization_needed"] = true;
 
     return impulse;
   },
 
-  // Loop tagging: mark impulses that should re-enter stabilizing loops.
+  // Loop tagging
   tagLoop(impulse) {
     impulse.flags = impulse.flags || {};
 
@@ -191,28 +166,25 @@ export const PulseAura = {
       impulse.flags?.aura_stabilization_needed ||
       impulse.flags?.skin_boundary_load > 0.7;
 
-    const currentDepth = impulse.flags?.aura_loop_depth || 0;
+    const depth = impulse.flags?.aura_loop_depth || 0;
 
-    if (
-      drifted &&
-      AuraState.loopStrength > 0 &&
-      currentDepth < AuraState.loopMaxDepth
-    ) {
+    if (drifted && AuraState.loopStrength > 0 && depth < AuraState.loopMaxDepth) {
       impulse.flags["aura_in_loop"] = true;
-      impulse.flags["aura_loop_depth"] = currentDepth + 1;
+      impulse.flags["aura_loop_depth"] = depth + 1;
     }
 
     return impulse;
   },
 
-  // Loop hint: prefer stable routes when in loop.
+  // Loop hint
   loopHint(impulse) {
-    if (!impulse.flags?.aura_in_loop) return impulse;
-    impulse.flags["aura_prefers_stable_routes"] = true;
+    if (impulse.flags?.aura_in_loop) {
+      impulse.flags["aura_prefers_stable_routes"] = true;
+    }
     return impulse;
   },
 
-  // Sync tagging: attach instance + cluster identity.
+  // Sync tagging
   tagSync(impulse) {
     impulse.flags = impulse.flags || {};
     impulse.flags["aura_instance"] = AuraState.instanceId;
@@ -220,20 +192,21 @@ export const PulseAura = {
     return impulse;
   },
 
-  // Sync hint: mark impulses as sync candidates when syncStrength > 0.
+  // Sync hint
   syncHint(impulse) {
-    if (AuraState.syncStrength <= 0) return impulse;
-    impulse.flags = impulse.flags || {};
-    impulse.flags["aura_sync_candidate"] = true;
+    if (AuraState.syncStrength > 0) {
+      impulse.flags = impulse.flags || {};
+      impulse.flags["aura_sync_candidate"] = true;
+    }
     return impulse;
   },
 
-  // Factoring hint: suggest factored paths under pressure/throttle.
+  // Factoring hint
   factoringHint(impulse) {
     const p = AuraState.flowPressure;
     const t = AuraState.recentThrottleRate;
 
-    if (p <= 0.3 && t <= 0.1) return impulse;
+    if (p <= 0.25 && t <= 0.1) return impulse;
 
     impulse.flags = impulse.flags || {};
     impulse.flags["aura_prefers_factored_paths"] = true;
@@ -242,7 +215,7 @@ export const PulseAura = {
     return impulse;
   },
 
-  // Binary-awareness hinting: bias toward binary mesh/OS when ready.
+  // Binary-awareness
   binaryHint(impulse) {
     impulse.flags = impulse.flags || {};
 
@@ -258,21 +231,28 @@ export const PulseAura = {
     return impulse;
   },
 
-  // Presence-awareness hinting (band + origin tag).
+  // Presence-awareness
   presenceHint(impulse) {
     impulse.flags = impulse.flags || {};
     impulse.flags["aura_presence_band"] = AuraState.presenceBand;
     impulse.flags["aura_presence_tag"] = AuraState.presenceTag;
     return impulse;
+  },
+
+  // Advantage-awareness
+  advantageHint(impulse) {
+    if (AuraState.advantageBias > 0) {
+      impulse.flags = impulse.flags || {};
+      impulse.flags["aura_advantage_bias"] = AuraState.advantageBias;
+      impulse.flags["aura_advantage_cascade"] = true;
+    }
+    return impulse;
   }
 };
 
-
-// -----------------------------------------------------------
-// Aura Engine (applied per impulse)
-//   • Single entrypoint for the organism.
-//   • Attaches aura_meta + all aura hints in a deterministic order.
-// -----------------------------------------------------------
+// ============================================================================
+// APPLY AURA — v24 IMMORTAL ADVANTAGE++
+// ============================================================================
 export function applyPulseAura(impulse) {
   impulse.flags = impulse.flags || {};
   impulse.flags.aura_meta = AuraState.meta;
@@ -285,16 +265,16 @@ export function applyPulseAura(impulse) {
   PulseAura.factoringHint(impulse);
   PulseAura.binaryHint(impulse);
   PulseAura.presenceHint(impulse);
+  PulseAura.advantageHint(impulse);
 
   impulse.flags["aura_applied"] = true;
 
   return impulse;
 }
 
-
-// -----------------------------------------------------------
-// Helper
-// -----------------------------------------------------------
+// ============================================================================
+// INTERNAL — clamp
+// ============================================================================
 function clamp01(v) {
   if (typeof v !== "number" || Number.isNaN(v)) return 0;
   return Math.max(0, Math.min(1, v));

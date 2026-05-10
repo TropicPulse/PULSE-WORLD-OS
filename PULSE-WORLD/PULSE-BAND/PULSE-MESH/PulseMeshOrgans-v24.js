@@ -1,45 +1,49 @@
 // ============================================================================
-//  PULSE OS v15.0-MESH-ORGANS-Evo — SURVIVAL / MESH ORGANS LAYER  // orange
+// FILE: PulseMeshOrgans-v24-IMMORTAL-ADVANTAGE.js
+// PULSE OS v24 — MESH ORGANS LAYER (IMMORTAL-ADVANTAGE++)
+// ---------------------------------------------------------------------------
 //  “Functional Organ Map of the Mesh Body”
 //  Capability Signatures • Deterministic Organ Matching • Metadata-Only
-// ============================================================================
+// ---------------------------------------------------------------------------
 //
-// IDENTITY (v15.0):
-// ------------------
+// IDENTITY (v24):
+// ---------------
 // • Maps impulses to functional + mesh organs (storage, routing, security,
 //   earnPrep, binaryPrep, meshSignal, presence, meshFlow, meshCognition,
-//   meshAwareness).
+//   meshAwareness, meshAdvantage, meshStability).
 // • Pure metadata-only classification — zero payload mutation.
 // • Deterministic-field, drift-proof, SDN-aligned.
-// • No pressure gating.
 // • Multi-instance-ready, unified-advantage-field,
 //   binary-aware, dual-mode-ready, presence-aware, mesh-aware.
+// • Zero randomness, zero timestamps, zero async, zero network.
 // ============================================================================
+
 import {
-  OrganismIdentity,
-  buildPulseOrganismMap as buildOrganismMap
+  OrganismIdentity
 } from "../PULSE-X/PulseWorldOrganismMap-v24.js";
+
 const Identity = OrganismIdentity(import.meta.url);
 
-// 2 — EXPORT GENOME METADATA
-// export const PulseMeshMeta = Identity.OrganMeta;
+// META EXPORTS
 export const pulseRole = Identity.pulseRole;
 export const PulseRole = Identity.pulseRole;
 export const surfaceMeta = Identity.surfaceMeta;
 export const pulseLoreContext = Identity.pulseLoreContext;
-// export const PULSE_EARN_IMMUNE_CONTEXT = Identity.pulseLoreContext;
 export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
 export const EXPORT_META = Identity.EXPORT_META;
 
+// ============================================================================
+// ORGAN FACTORY — v24 IMMORTAL ADVANTAGE++
+// ============================================================================
 export function createPulseOrgans() {
 
-  // -------------------------------------------------------
-  // IMMORTAL META (v15)
-  // -------------------------------------------------------
-  const organMeta = {
+  // -------------------------------------------------------------------------
+  // IMMORTAL META (v24++)
+  // -------------------------------------------------------------------------
+  const organMeta = Object.freeze({
     layer: "PulseOrgans",
     role: "FUNCTIONAL_ORGAN_MAP",
-    version: "15.0-MESH-ORGANS-Evo-Immortal",
+    version: "24-IMMORTAL-ADVANTAGE++",
     target: "full-mesh",
     selfRepairable: true,
     evo: {
@@ -69,26 +73,31 @@ export function createPulseOrgans() {
       zeroMutation: true,
       zeroRoutingInfluence: true
     }
-  };
+  });
 
-
-  // -------------------------------------------------------
-  // ORGAN DEFINITIONS (v15 IMMORTAL)
-  // -------------------------------------------------------
+  // -------------------------------------------------------------------------
+  // ORGAN DEFINITIONS — v24 IMMORTAL ADVANTAGE++
+  // -------------------------------------------------------------------------
   const PulseOrgans = {
 
+    // -----------------------------------------------------
+    // STORAGE ORGAN — deterministic, safe default
+    // -----------------------------------------------------
     storage: {
       id: "organ-storage",
-      lineage: "mesh-storage-v15",
+      lineage: "mesh-storage-v24",
       capabilities: ["store", "retrieve", "index"],
       match(impulse) {
         return impulse.flags?.cortex_intent === "normal";
       }
     },
 
+    // -----------------------------------------------------
+    // ROUTING ORGAN — deterministic, high-score or push_hard
+    // -----------------------------------------------------
     routing: {
       id: "organ-routing",
-      lineage: "mesh-routing-v15",
+      lineage: "mesh-routing-v24",
       capabilities: ["route", "shape", "classify"],
       match(impulse) {
         return impulse.flags?.cortex_intent === "push_hard" ||
@@ -96,9 +105,12 @@ export function createPulseOrgans() {
       }
     },
 
+    // -----------------------------------------------------
+    // SECURITY ORGAN — anomaly-first
+    // -----------------------------------------------------
     security: {
       id: "organ-security",
-      lineage: "mesh-security-v15",
+      lineage: "mesh-security-v24",
       capabilities: ["validate", "verify", "protect"],
       match(impulse) {
         return impulse.flags?.cortex_anomaly ||
@@ -107,9 +119,12 @@ export function createPulseOrgans() {
       }
     },
 
+    // -----------------------------------------------------
+    // EARN PREP ORGAN — deterministic, based on routeHint
+    // -----------------------------------------------------
     earnPrep: {
       id: "organ-earnprep",
-      lineage: "mesh-earnprep-v15",
+      lineage: "mesh-earnprep-v24",
       capabilities: ["prepare", "shape_intent", "assign_earner"],
       match(impulse) {
         return typeof impulse.routeHint === "string" &&
@@ -117,9 +132,12 @@ export function createPulseOrgans() {
       }
     },
 
+    // -----------------------------------------------------
+    // BINARY PREP ORGAN — binary mode or binary band
+    // -----------------------------------------------------
     binaryPrep: {
       id: "organ-binaryprep",
-      lineage: "mesh-binaryprep-v15",
+      lineage: "mesh-binaryprep-v24",
       capabilities: ["binary_prepare", "binary_shape", "binary_assign"],
       match(impulse) {
         return impulse.flags?.binary_mode === true ||
@@ -128,9 +146,12 @@ export function createPulseOrgans() {
       }
     },
 
+    // -----------------------------------------------------
+    // MESH SIGNAL ORGAN — factoring, tension, dual-band
+    // -----------------------------------------------------
     meshSignal: {
       id: "organ-meshsignal",
-      lineage: "mesh-signal-v15",
+      lineage: "mesh-signal-v24",
       capabilities: ["mesh_signal", "mesh_factor", "mesh_trace"],
       match(impulse) {
         return impulse.flags?.aura_prefers_factored_paths ||
@@ -141,9 +162,12 @@ export function createPulseOrgans() {
       }
     },
 
+    // -----------------------------------------------------
+    // PRESENCE ORGAN — presence band shaping
+    // -----------------------------------------------------
     presence: {
       id: "organ-presence",
-      lineage: "mesh-presence-v15",
+      lineage: "mesh-presence-v24",
       capabilities: ["presence_shape", "presence_tag", "presence_band"],
       match(impulse) {
         return typeof impulse.band === "string" &&
@@ -151,9 +175,12 @@ export function createPulseOrgans() {
       }
     },
 
+    // -----------------------------------------------------
+    // MESH FLOW ORGAN — topology + lane activity
+    // -----------------------------------------------------
     meshFlow: {
       id: "organ-meshflow",
-      lineage: "mesh-flow-v15",
+      lineage: "mesh-flow-v24",
       capabilities: ["mesh_flow_tag", "mesh_flow_shape"],
       match(impulse) {
         return impulse.flags?.mesh_flow ||
@@ -163,9 +190,12 @@ export function createPulseOrgans() {
       }
     },
 
+    // -----------------------------------------------------
+    // MESH COGNITION ORGAN — decision + coordinator signals
+    // -----------------------------------------------------
     meshCognition: {
       id: "organ-meshcognition",
-      lineage: "mesh-cognition-v15",
+      lineage: "mesh-cognition-v24",
       capabilities: ["mesh_cognition_tag", "mesh_reasoning_tag"],
       match(impulse) {
         return impulse.flags?.mesh_cognition ||
@@ -175,9 +205,12 @@ export function createPulseOrgans() {
       }
     },
 
+    // -----------------------------------------------------
+    // MESH AWARENESS ORGAN — observation + presence
+    // -----------------------------------------------------
     meshAwareness: {
       id: "organ-meshawareness",
-      lineage: "mesh-awareness-v15",
+      lineage: "mesh-awareness-v24",
       capabilities: ["mesh_awareness_tag", "mesh_presence_tag"],
       match(impulse) {
         return impulse.flags?.mesh_presence ||
@@ -185,13 +218,40 @@ export function createPulseOrgans() {
                impulse.flags?.mesh_observe_only ||
                impulse.flags?.hormone_presence_dual_pressure;
       }
+    },
+
+    // -----------------------------------------------------
+    // MESH ADVANTAGE ORGAN — advantage cascade + bias
+    // -----------------------------------------------------
+    meshAdvantage: {
+      id: "organ-meshadvantage",
+      lineage: "mesh-advantage-v24",
+      capabilities: ["advantage_tag", "advantage_bias", "advantage_cascade"],
+      match(impulse) {
+        return typeof impulse.flags?.aura_advantage_bias === "number" ||
+               impulse.flags?.aura_advantage_cascade === true;
+      }
+    },
+
+    // -----------------------------------------------------
+    // MESH STABILITY ORGAN — drift, tension, loop depth
+    // -----------------------------------------------------
+    meshStability: {
+      id: "organ-meshstability",
+      lineage: "mesh-stability-v24",
+      capabilities: ["stability_tag", "drift_tag", "loop_tag"],
+      match(impulse) {
+        return impulse.flags?.aura_in_loop ||
+               impulse.flags?.aura_system_under_tension ||
+               impulse.flags?.immune_drift_reflection ||
+               impulse.flags?.immune_pressure_reflection;
+      }
     }
   };
 
-
-  // ========================================================================
-  // ORGAN ENGINE (v15 IMMORTAL)
-  // ========================================================================
+  // -------------------------------------------------------------------------
+  // ORGAN ENGINE — v24 IMMORTAL ADVANTAGE++
+  // -------------------------------------------------------------------------
   function applyPulseOrgans(impulse) {
     impulse = impulse || {};
     impulse.flags = impulse.flags || {};
@@ -203,7 +263,6 @@ export function createPulseOrgans() {
       const organ = PulseOrgans[key];
       if (organ.match(impulse)) {
         impulse.organs.push(organ.id);
-
         impulse.flags[`organ_${organ.id}`] = true;
         impulse.flags[`organ_lineage_${organ.id}`] = organ.lineage;
       }
@@ -212,9 +271,9 @@ export function createPulseOrgans() {
     return impulse;
   }
 
-  return {
+  return Object.freeze({
     apply: applyPulseOrgans,
     organs: PulseOrgans,
     meta: organMeta
-  };
+  });
 }

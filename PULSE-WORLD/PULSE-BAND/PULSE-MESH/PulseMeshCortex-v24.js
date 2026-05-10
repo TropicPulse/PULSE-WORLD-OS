@@ -1,12 +1,12 @@
 // ============================================================================
-// FILE: PulseMeshCortex-v15-Evo-Immortal.js
-// [pulse:mesh] COMMUNITY_CORTEX_LAYER v15-Evo-Immortal  // blue
+// FILE: PulseMeshCortex-v24-IMMORTAL-ADVANTAGE.js
+// [pulse:mesh] COMMUNITY_CORTEX_LAYER v24-IMMORTAL-ADVANTAGE++  // blue
 // Strategic Decision Layer • Survival-Pattern Instincts • Metadata-Only
 // Presence-Aware • Binary-Aware • Dual-Band • Drift-Proof • Advantage-Aware
 // ============================================================================
 //
-// IDENTITY — THE MESH CORTEX (v15-Evo-Immortal):
-// ----------------------------------------------
+// IDENTITY — THE MESH CORTEX (v24-IMMORTAL-ADVANTAGE++):
+// ------------------------------------------------------
 // • High-level strategic decision layer for impulses (community cortex).
 // • Applies survival-pattern instincts: risk, novelty, cooperation, budgeting.
 // • Sets strategic priority + intent, NEVER computes or mutates payloads.
@@ -18,7 +18,7 @@
 // • Fully deterministic: same impulse + same context → same score + intent.
 // • Zero randomness, zero timestamps, zero async, zero network, zero FS.
 //
-// SAFETY CONTRACT (v15):
+// SAFETY CONTRACT (v24):
 // ----------------------
 // • No randomness
 // • No timestamps
@@ -29,36 +29,34 @@
 // • Fail-open: missing context → safe defaults
 // • Metadata-only shaping (no routing side-effects by itself)
 // ============================================================================
+
 import {
-  OrganismIdentity,
-  buildPulseOrganismMap as buildOrganismMap
+  OrganismIdentity
 } from "../PULSE-X/PulseWorldOrganismMap-v24.js";
+
 const Identity = OrganismIdentity(import.meta.url);
 
-// 2 — EXPORT GENOME METADATA
+// ---------------------------------------------------------------------------
+// META EXPORTS — v24 IMMORTAL KERNEL
+// ---------------------------------------------------------------------------
 export const pulseRole = Identity.pulseRole;
 export const surfaceMeta = Identity.surfaceMeta;
 export const pulseLoreContext = Identity.pulseLoreContext;
-// export const PULSE_EARN_IMMUNE_CONTEXT = Identity.pulseLoreContext;
 export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
 export const EXPORT_META = Identity.EXPORT_META;
 
 // ============================================================================
-// FILE: PulseMeshCortex-v15-Evo-Immortal.js
-// [pulse:mesh] COMMUNITY_CORTEX_LAYER v15-Evo-Immortal  // blue
-// Strategic Decision Layer • Survival-Pattern Instincts • Metadata-Only
-// Presence-Aware • Binary-Aware • Dual-Band • Drift-Proof • Advantage-Aware
+// COMMUNITY CORTEX LAYER — v24 IMMORTAL ADVANTAGE++
 // ============================================================================
-
 export function createPulseMeshCortex({ context = {}, log, warn, error } = {}) {
 
-  // -----------------------------------------------------------
+  // -------------------------------------------------------------------------
   // IMMORTAL META (attached to every impulse)
-  // -----------------------------------------------------------
+// -------------------------------------------------------------------------
   const CORTEX_META = {
     layer: "PulseCortex",
     role: "MESH_STRATEGIC_LAYER",
-    version: "15-Evo-Immortal",
+    version: "24-IMMORTAL-ADVANTAGE++",
     target: "full-mesh",
     selfRepairable: true,
     evo: {
@@ -83,11 +81,12 @@ export function createPulseMeshCortex({ context = {}, log, warn, error } = {}) {
     }
   };
 
-  // -----------------------------------------------------------
-  // Instinct Pack (v15 IMMORTAL)
-  // -----------------------------------------------------------
+  // -------------------------------------------------------------------------
+  // INSTINCT PACK — v24 IMMORTAL ADVANTAGE++
+// -------------------------------------------------------------------------
   const PulseCortex = {
 
+    // Risk instinct: penalize high cost + high threat.
     risk(impulse, ctx = {}) {
       const base = impulse.score ?? 0.5;
       const cost = ctx.estimatedCost ?? 0.0;
@@ -96,6 +95,7 @@ export function createPulseMeshCortex({ context = {}, log, warn, error } = {}) {
       return clamp01(base - penalty);
     },
 
+    // Novelty instinct: boost low-frequency impulses.
     novelty(impulse, ctx = {}) {
       const base = impulse.score ?? 0.5;
       const seen = ctx.frequency ?? 0.0;
@@ -103,12 +103,14 @@ export function createPulseMeshCortex({ context = {}, log, warn, error } = {}) {
       return clamp01(base + boost);
     },
 
+    // Cooperation instinct: reward wide impact radius.
     cooperation(impulse, ctx = {}) {
       const base = impulse.score ?? 0.5;
       const reach = ctx.impactRadius ?? 0.0;
       return clamp01(base + reach * 0.25);
     },
 
+    // Resource budget instinct: respect load, flow, throttle, factoring.
     resourceBudget(impulse, ctx = {}) {
       const base = impulse.score ?? 0.5;
       const load = ctx.globalLoad ?? 0.0;
@@ -117,14 +119,15 @@ export function createPulseMeshCortex({ context = {}, log, warn, error } = {}) {
       const factoringBias = impulse.flags?.aura_factoring_bias ?? 0.0;
 
       let penalty = 0;
-      if (load >= 0.5) penalty += (load - 0.5) * 0.4;
+      if (load >= 0.5)        penalty += (load - 0.5) * 0.4;
       if (flowPressure > 0.3) penalty += flowPressure * 0.4;
-      if (throttle > 0.0) penalty += throttle * 0.5;
-      if (factoringBias > 0.0) penalty += factoringBias * 0.4;
+      if (throttle > 0.0)     penalty += throttle * 0.5;
+      if (factoringBias > 0)  penalty += factoringBias * 0.4;
 
       return clamp01(base - penalty);
     },
 
+    // Binary awareness: small bias toward binary when requested.
     binaryAwareness(impulse, ctx = {}) {
       const base = impulse.score ?? 0.5;
       const bias = ctx.binaryBias ?? 0.0;
@@ -132,14 +135,24 @@ export function createPulseMeshCortex({ context = {}, log, warn, error } = {}) {
       return clamp01(base + bias * 0.15);
     },
 
+    // Presence awareness: slight preference for binary/dual band.
     presenceAwareness(impulse) {
       const base = impulse.score ?? 0.5;
       const band = impulse.band ?? "symbolic";
       if (band === "binary") return clamp01(base + 0.05);
-      if (band === "dual") return clamp01(base + 0.03);
+      if (band === "dual")   return clamp01(base + 0.03);
       return base;
     },
 
+    // Advantage awareness: cascade systemic advantage into score.
+    advantageAwareness(impulse, ctx = {}) {
+      const base = impulse.score ?? 0.5;
+      const advantage = ctx.advantageBias ?? 0.0;
+      if (advantage <= 0) return base;
+      return clamp01(base + advantage * 0.1);
+    },
+
+    // Anomaly tagging: flags-only, no score mutation.
     anomaly(impulse, ctx = {}) {
       const weird = ctx.anomalyScore ?? 0.0;
 
@@ -154,22 +167,23 @@ export function createPulseMeshCortex({ context = {}, log, warn, error } = {}) {
     }
   };
 
-  // -----------------------------------------------------------
-  // Cortex Engine (IMMORTAL)
-  // -----------------------------------------------------------
+  // -------------------------------------------------------------------------
+  // CORTEX ENGINE — v24 IMMORTAL ADVANTAGE++
+// -------------------------------------------------------------------------
   function applyPulseCortex(impulse, ctx = {}) {
     impulse.meta = impulse.meta || {};
     impulse.meta.cortex = CORTEX_META;
 
     let score = impulse.score ?? 0.5;
 
-    // Deterministic instinct pipeline
+    // Deterministic instinct pipeline (fixed order)
     score = PulseCortex.risk({ ...impulse, score }, ctx);
     score = PulseCortex.novelty({ ...impulse, score }, ctx);
     score = PulseCortex.cooperation({ ...impulse, score }, ctx);
     score = PulseCortex.resourceBudget({ ...impulse, score }, ctx);
     score = PulseCortex.binaryAwareness({ ...impulse, score }, ctx);
     score = PulseCortex.presenceAwareness({ ...impulse, score }, ctx);
+    score = PulseCortex.advantageAwareness({ ...impulse, score }, ctx);
 
     impulse.score = score;
 
@@ -182,9 +196,9 @@ export function createPulseMeshCortex({ context = {}, log, warn, error } = {}) {
     return impulse;
   }
 
-  // -----------------------------------------------------------
-  // Helpers
-  // -----------------------------------------------------------
+  // -------------------------------------------------------------------------
+  // HELPERS
+  // -------------------------------------------------------------------------
   function clamp01(v) {
     return Math.max(0, Math.min(1, v));
   }
@@ -202,20 +216,19 @@ export function createPulseMeshCortex({ context = {}, log, warn, error } = {}) {
       factoringBias > 0.5;
 
     if (score >= 0.85 && !environmentHot) return "push_hard";
-    if (score >= 0.5) return "normal";
-    if (score < 0.3) return "defer_or_drop";
+    if (score >= 0.5)                     return "normal";
+    if (score < 0.3)                      return "defer_or_drop";
     return "cautious";
   }
 
-  // -----------------------------------------------------------
-  // CONTEXT ATTACHMENT (IMMORTAL)
-  // -----------------------------------------------------------
-  // This makes Cortex globally available to all mesh organs.
+  // -------------------------------------------------------------------------
+  // CONTEXT ATTACHMENT — IMMORTAL
+  // -------------------------------------------------------------------------
   context.applyPulseCortex = applyPulseCortex;
 
-  // -----------------------------------------------------------
+  // -------------------------------------------------------------------------
   // PUBLIC API
-  // -----------------------------------------------------------
+  // -------------------------------------------------------------------------
   return {
     apply: applyPulseCortex,
     instincts: PulseCortex,

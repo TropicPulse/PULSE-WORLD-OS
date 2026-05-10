@@ -1,12 +1,13 @@
 // ============================================================================
-// [pulse:mesh] COMMUNITY_FLOW_LAYER v15-Evo-Immortal  // rainbow
+// FILE: PulseMeshFlow-v24-IMMORTAL-ADVANTAGE.js
+// [pulse:mesh] COMMUNITY_FLOW_LAYER v24-IMMORTAL-ADVANTAGE++  // rainbow
 // Full-Spectrum Coordination • Deterministic Lifecycle Sequencer
 // Metadata-Only • Zero Recursion • Zero Routing • SDN-Aligned
 // Presence-Aware • Binary-Aware • Dual-Band • Drift-Proof • Echo-Aware
 // ============================================================================
 //
-// IDENTITY — THE FLOW ORGAN (v12.3):
-// ----------------------------------
+// IDENTITY — THE FLOW ORGAN (v24-IMMORTAL-ADVANTAGE++):
+// -----------------------------------------------------
 // • Pure lifecycle sequencer for impulses.
 // • Coordinates Skin → Reflex → Cortex → Tendons → Organs → Immune
 //                     → Memory → Hormones → Aura → Router → SendSystem.
@@ -18,8 +19,8 @@
 // • SDN-aware: receives impulses from SDN, returns shaped impulses.
 // • Presence-aware, binary-aware, dual-band-aware.
 //
-// SAFETY CONTRACT (v12.3):
-// -------------------------
+// SAFETY CONTRACT (v24):
+// ----------------------
 // • No payload access.
 // • No compute.
 // • No recursion.
@@ -28,23 +29,26 @@
 // • No mutation outside metadata.
 // • Deterministic-field, unified-advantage-field, drift-proof.
 // ============================================================================
+
 import {
-  OrganismIdentity,
-  buildPulseOrganismMap as buildOrganismMap
+  OrganismIdentity
 } from "../PULSE-X/PulseWorldOrganismMap-v24.js";
+
 const Identity = OrganismIdentity(import.meta.url);
 
-// 2 — EXPORT GENOME METADATA
-// export const PulseMeshMeta = Identity.OrganMeta;
+// ---------------------------------------------------------------------------
+// META EXPORTS — v24 IMMORTAL KERNEL
+// ---------------------------------------------------------------------------
 export const pulseRole = Identity.pulseRole;
 export const PulseRole = Identity.pulseRole;
 export const surfaceMeta = Identity.surfaceMeta;
 export const pulseLoreContext = Identity.pulseLoreContext;
-// export const PULSE_EARN_IMMUNE_CONTEXT = Identity.pulseLoreContext;
 export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
 export const EXPORT_META = Identity.EXPORT_META;
 
-
+// ============================================================================
+// COMMUNITY FLOW LAYER — v24 IMMORTAL ADVANTAGE++
+// ============================================================================
 export function createPulseMeshFlow({
   applyPulseSkin,
   createCommunityReflex,
@@ -66,7 +70,7 @@ export function createPulseMeshFlow({
   const meta = {
     layer: "PulseFlow",
     role: "FLOW_ORCHESTRATOR",
-    version: "15-Evo-Immortal",
+    version: "24-IMMORTAL-ADVANTAGE++",
     target: "full-mesh",
     selfRepairable: true,
     evo: {
@@ -122,14 +126,15 @@ export function createPulseMeshFlow({
         if (dualMode)   impulse.flags.dual_mode   = true;
         if (echoMode)   impulse.flags.echo_mode   = true;
 
-        // presence band + tag
+        // presence band
         if (context.presenceBand) impulse.band = context.presenceBand;
         else if (!impulse.band)   impulse.band = binaryMode ? "binary" : "symbolic";
 
+        // presence tag (aura-visible)
         if (context.presenceTag) {
           impulse.flags.aura_presence_tag = context.presenceTag;
         } else if (!impulse.flags.aura_presence_tag) {
-          impulse.flags.aura_presence_tag = "PulseFlow-v15";
+          impulse.flags.aura_presence_tag = "PulseFlow-v24";
         }
 
         // Halo: impulse start
@@ -183,14 +188,12 @@ export function createPulseMeshFlow({
           //   • No Router / SendSystem
           // -----------------------------------------------------------------
           if (echoMode) {
-            log?.("[PulseFlow v15] Echo-mode run (diagnostic, read-only)", {
+            log?.("[PulseFlow v24] Echo-mode run (diagnostic, read-only)", {
               entryNodeId,
               band: impulse.band,
               presenceTag: impulse.flags.aura_presence_tag
             });
 
-            // Aura still tags tension/loops for diagnostics, but other organs
-            // should respect echoMode and avoid side effects.
             applyPulseAura(impulse, { echoMode });
 
             return finalize(impulse);
@@ -236,7 +239,6 @@ export function createPulseMeshFlow({
             presenceBand: impulse.band
           });
 
-          // track hops if Router annotates them
           if (typeof routed?.hops === "number") {
             PulseHaloCounters?.meshHops?.(routed.hops);
           }
@@ -247,7 +249,6 @@ export function createPulseMeshFlow({
           // 12. SKIN EXIT
           applyPulseSkin(moved, "exit");
 
-          // Flow throttling awareness (if any guard tagged it)
           if (moved.flags?.flow_throttled) {
             PulseHaloCounters?.impulseThrottled?.();
           }
@@ -255,7 +256,7 @@ export function createPulseMeshFlow({
           return finalize(moved);
 
         } catch (err) {
-          warn?.("[PulseFlow v15] Flow error", { error: String(err) });
+          warn?.("[PulseFlow v24] Flow error", { error: String(err) });
           impulse.flags.flow_error = String(err);
           return finalize(impulse);
         }
