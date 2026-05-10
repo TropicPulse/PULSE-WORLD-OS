@@ -1025,6 +1025,25 @@ export function createPulseSkinReflex({
     callHelper,
     routeMemory: RouteMemory
   };
+  // ============================================================
+  //  GLOBAL EXPORTS — MAKE A1 HELPERS AVAILABLE ON window
+  // ============================================================
+  try {
+    if (typeof window !== "undefined") {
+      window.getAuth    = getAuth;
+      window.getHook    = getHook;
+      window.getMap     = getMap;
+      window.callHelper = callHelper;
+
+      // Optional aliases (safe)
+      window.PulseGetAuth    = getAuth;
+      window.PulseGetHook    = getHook;
+      window.PulseGetMap     = getMap;
+      window.PulseCallHelper = callHelper;
+    }
+  } catch (err) {
+    console.error("[SkinReflex] Failed to export globals:", err);
+  }
 
   return SkinReflex;
 }
