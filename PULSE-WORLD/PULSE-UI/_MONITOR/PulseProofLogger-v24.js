@@ -200,7 +200,8 @@ export const PulseColors = {
   renderer: "#29B6F6",
   gpu: "#7E57C2",
   band: "#66BB6A",
-  legacy: "#BDBDBD"
+  legacy: "#BDBDBD",
+  signal: "#90CAF9"
 };
 
 export const PulseIcons = {
@@ -209,7 +210,8 @@ export const PulseIcons = {
   renderer: "✨",
   gpu: "🎨",
   band: "🧠",
-  legacy: "🖥️"
+  legacy: "🖥️",
+  signal: "📡"
 };
 
 function formatPrefix(subsystem) {
@@ -414,6 +416,7 @@ export function pulseLog({
 
 // -----------------------------------------------------------------------------
 //  ARG NORMALIZATION — IMMORTAL++
+//  (UPGRADED: understands PulseProofSignal comment packets)
 // -----------------------------------------------------------------------------
 
 function normalizeArgs(args) {
@@ -424,14 +427,43 @@ function normalizeArgs(args) {
 
   const first = args[0];
 
+  // 1) CSS console style: "%c..."
   if (typeof first === "string" && first.startsWith("%c")) {
     return { subsystem, message: first, rest: args.slice(1), raw: true };
   }
 
+  // 2) PulseProofSignal pattern: log("comment", { ...signalComment })
+  if (
+    args.length === 2 &&
+    first === "comment" &&
+    typeof args[1] === "object" &&
+    args[1] !== null
+  ) {
+    const obj = args[1];
+    subsystem = "signal";
+
+    const pretty =
+      obj.pretty ||
+      obj.summary ||
+      obj.message ||
+      obj.signalPacketType ||
+      "signal-comment";
+
+    // We keep the full object in rest so DevTools can expand it.
+    return {
+      subsystem,
+      message: pretty,
+      rest: [obj],
+      raw: false
+    };
+  }
+
+  // 3) Two-string pattern: "subsystem", "message"
   if (args.length >= 2 && typeof first === "string" && typeof args[1] === "string") {
     return { subsystem: first, message: args[1], rest: args.slice(2), raw: false };
   }
 
+  // 4) Object-first pattern: log({ ... })
   if (typeof first === "object" && first !== null) {
     const obj = first;
     if (obj.pulseLayer === "NERVOUS-SYSTEM") subsystem = "band";
@@ -440,10 +472,12 @@ function normalizeArgs(args) {
     return { subsystem, message: "", rest: [obj], raw: false };
   }
 
+  // 5) Single arg
   if (args.length === 1) {
     return { subsystem, message: first, rest: [], raw: false };
   }
 
+  // 6) Fallback: join everything
   return { subsystem, message: args.join(" "), rest: [], raw: false };
 }
 
@@ -467,7 +501,11 @@ export function log(...args) {
   if (raw) {
     _c.log(safeMessage, ...rest);
   } else {
-    _c.log(`%c${prefix} — ${safeMessage}`, `color:${color}; font-weight:bold;`, ...rest);
+    _c.log(
+      `%c${prefix} — ${safeMessage}`,
+      `color:${color}; font-weight:bold;`,
+      ...rest
+    );
   }
 
   pulseLog({ level: "log", subsystem, message: safeMessage, rest });
@@ -522,7 +560,8 @@ export function critical(...args) {
 
 export function comment(...args) {
   const { subsystem, message, rest } = normalizeArgs(args);
-  const prefix = formatPrefix(subsystem || "signal");
+  const effectiveSubsystem = subsystem || "signal";
+  const prefix = formatPrefix(effectiveSubsystem);
   const safeMessage = mark404(message);
 
   _c.log(
@@ -533,7 +572,7 @@ export function comment(...args) {
 
   pulseLog({
     level: "comment",
-    subsystem: subsystem || "signal",
+    subsystem: effectiveSubsystem,
     message: safeMessage,
     rest
   });
