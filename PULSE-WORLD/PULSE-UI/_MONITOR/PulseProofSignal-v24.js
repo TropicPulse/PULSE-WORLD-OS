@@ -220,12 +220,10 @@ const TopLayerMerge = {
   },
 
   _buildMergedComment(packets, kinds, lastPacket) {
-    // Base comment from last packet (top-layer style)
     const base = buildCommentFromSignalPacket(lastPacket, "merged-burst");
     base.summary = `Merged ${packets.length} signals (last: ${lastPacket.packetType})`;
     base.signalPacketType = "signal-top-layer";
 
-    // Attach subsignal summary list
     base.details.subsignals = packets.map((p, idx) => ({
       id: p.packetId,
       type: p.packetType,
@@ -236,17 +234,14 @@ const TopLayerMerge = {
       ts: p.timestamp
     }));
 
-    // Attach merged fields (CSS-style "computed signal")
     const computed = {};
     for (const p of packets) {
       Object.assign(computed, p);
     }
     base.details.computed = safeClone(computed);
 
-    // Color based on last packet / computed level
     base.color = getColorForPacket(lastPacket);
 
-    // Pretty string for legacy loggers
     base.pretty = JSON.stringify(
       {
         summary: base.summary,
@@ -283,7 +278,6 @@ const TopLayerMerge = {
 };
 
 function emitCommentLogForPacket(packet, kind = "direct") {
-  // Instead of logging every packet, we merge them CSS-style into a top-layer comment.
   try {
     TopLayerMerge.add(packet, kind);
   } catch {
@@ -324,6 +318,7 @@ function defaultSendBatch(batch, endpoint = DEFAULT_ENDPOINT) {
 // ============================================================================
 //  INTERNAL BUFFER — burst-safe, window-aware
 // ============================================================================
+
 const SignalBuffer = {
   _queue: [],
   _max: 2048,
@@ -472,7 +467,6 @@ function safeWrap(fn, wrapper) {
     try {
       result = original.apply(this, args);
     } catch (err) {
-      // Logger failure must not break signal
       const packet = emitSignalPacket("logger-error", {
         source: "logger",
         error: String(err && err.message ? err.message : err),
@@ -635,8 +629,19 @@ export const PulseProofSignal = Object.freeze({
    * Mirror a logger entry into signal space.
    * Safe even if logger is broken.
    * CSS-style: contributes to merged top-layer comment.
+   *
+   * IMMORTAL++ RULE:
+   *  - Do NOT re-signalize signal-authored logs.
+   *  - Prevents Signal <-> Logger comment loops and recursive JSON.
    */
   fromLogEntry(entry) {
+    if (!entry || typeof entry !== "object") return null;
+
+    // HARD STOP: never mirror signal subsystem logs back into signal space
+    if (entry.subsystem === "signal") {
+      return null;
+    }
+
     const packet = normalizeLogEntryToSignal(entry);
     if (packet) {
       SignalBuffer.push(packet);
